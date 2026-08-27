@@ -7206,6 +7206,52 @@ CHANGELOG_BY_LANG.es.unshift({
 });
 
 CHANGELOG_BY_LANG.fr.unshift({
+  version: "v1.10.66",
+  date: "2026-08-27",
+  title: "Enrichissement Carte Minecraft 3D & Suppression de la Barre de Défilement",
+  items: [
+    "Suppression définitive de la scrollbar parasite sur la carte Minecraft de l'accueil.",
+    "Refonte esthétique avec halo lumineux au sol, badge d'édition Java, bouton de copie UUID et liens directs NameMC et téléchargement de skin.",
+    "Validation : build Next.js 105/105 pages, 100% tests unitaires, 0 erreur.",
+    "Version affichée : v1.10.66.",
+  ],
+});
+
+CHANGELOG_BY_LANG.en.unshift({
+  version: "v1.10.66",
+  date: "2026-08-27",
+  title: "Minecraft 3D Card Visual Enrichment & Scrollbar Elimination",
+  items: [
+    "Removed unsightly black scrollbar on the Home Minecraft 3D widget.",
+    "Added glowing pedestal, Java edition badge, UUID copy-to-clipboard, NameMC profile and skin download quick links.",
+    "Validation: Next.js 105/105 pages build, 100% unit tests passed, 0 errors.",
+    "Version badge: v1.10.66.",
+  ],
+});
+
+CHANGELOG_BY_LANG.es.unshift({
+  version: "v1.10.66",
+  date: "2026-08-27",
+  title: "Mejora de la tarjeta Minecraft 3D y eliminación de barra de scroll",
+  items: [
+    "Eliminación de la barra de scroll y adición de enlaces rápidos.",
+    "Validación : build, lint, tests.",
+    "Versión : v1.10.66.",
+  ],
+});
+
+CHANGELOG_BY_LANG.de.unshift({
+  version: "v1.10.66",
+  date: "2026-08-27",
+  title: "Minecraft 3D Karte optisches Upgrade & Scrollleisten-Entfernung",
+  items: [
+    "Scrollbalken entfernt und Schnellzugriffe wie NameMC hinzugefügt.",
+    "Validierung: build, lint, tests.",
+    "Version: v1.10.66.",
+  ],
+});
+
+CHANGELOG_BY_LANG.fr.unshift({
   version: "v1.10.65",
   date: "2026-08-27",
   title: "Correction Panneaux Connexions (createPortal z-[99999], Sauvegarde API & Icône Tracker.gg)",

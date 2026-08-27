@@ -2,7 +2,19 @@
 
 import { memo, useMemo, useState } from "react";
 import Link from "next/link";
-import { AlertCircle, Gamepad2, Loader2, User } from "lucide-react";
+import {
+  Gamepad2,
+  Loader2,
+  User,
+  Copy,
+  Check,
+  ExternalLink,
+  Download,
+  Shield,
+  Sparkles,
+  Swords,
+  Box,
+} from "lucide-react";
 import { useSettings } from "@/components/SettingsProvider";
 import { useI18n } from "@/lib/hooks/useI18n";
 import type { MinecraftProfile } from "@/lib/hooks/useMinecraftLive";
@@ -24,7 +36,7 @@ type GamingMinecraft = MinecraftProfile & {
 
 function truncateId(id?: string) {
   if (!id) return "";
-  return id.length > 12 ? `${id.slice(0, 6)}…${id.slice(-4)}` : id;
+  return id.length > 14 ? `${id.slice(0, 8)}…${id.slice(-4)}` : id;
 }
 
 type GamingCardProps = {
@@ -45,54 +57,51 @@ const GamingCard = memo(function GamingCard({
   const profile = useMemo(() => (minecraft ?? {}) as unknown as GamingMinecraft, [minecraft]);
   const username = profile?.username || profile?.name || settings.liveMinecraftUsername;
   const uuid = profile?.uuid;
-  const uuidWithDashes = profile?.uuidWithDashes;
+  const uuidWithDashes = profile?.uuidWithDashes || uuid;
   const hasProfile = Boolean(username && (uuid || profile?.uuidWithDashes));
   const hasUsername = Boolean(username);
   const configured = Boolean(settings.liveMinecraftUsername);
+
+  const [copied, setCopied] = useState(false);
 
   const playerName = profile?.username || profile?.name || username;
 
   const avatarCandidates = useMemo(() => {
     const list: string[] = [];
     if (profile?.avatarUrl) list.push(profile.avatarUrl);
-    if (profile?.uuidWithDashes) {
-      list.push(`https://nmsr.nickac.dev/face/${encodeURIComponent(profile.uuidWithDashes)}`);
-      list.push(`https://crafatar.com/avatars/${profile.uuidWithDashes}?overlay&size=128`);
+    if (uuidWithDashes) {
+      list.push(`https://nmsr.nickac.dev/face/${encodeURIComponent(uuidWithDashes)}`);
+      list.push(`https://crafatar.com/avatars/${uuidWithDashes}?overlay&size=128`);
     }
     if (playerName) list.push(`https://mc-heads.net/avatar/${encodeURIComponent(playerName)}/128`);
     return [...new Set(list)];
-  }, [profile, playerName]);
+  }, [profile, playerName, uuidWithDashes]);
 
   const bodyCandidates = useMemo(() => {
     const list: string[] = [];
     if (profile?.bodyUrl) list.push(profile.bodyUrl);
-    if (profile?.uuidWithDashes) {
-      list.push(`https://nmsr.nickac.dev/fullbody/${encodeURIComponent(profile.uuidWithDashes)}`);
-      list.push(`https://crafatar.com/renders/body/${profile.uuidWithDashes}?overlay&scale=10&size=256`);
+    if (uuidWithDashes) {
+      list.push(`https://nmsr.nickac.dev/fullbody/${encodeURIComponent(uuidWithDashes)}`);
+      list.push(`https://crafatar.com/renders/body/${uuidWithDashes}?overlay&scale=10&size=256`);
     }
     if (playerName) list.push(`https://mc-heads.net/body/${encodeURIComponent(playerName)}/200`);
     return [...new Set(list)];
-  }, [profile, playerName]);
+  }, [profile, playerName, uuidWithDashes]);
 
   const capeCandidates = useMemo(() => {
     const list: string[] = [];
     if (profile?.capeUrl) list.push(profile.capeUrl);
-    if (profile?.uuidWithDashes) {
-      list.push(`https://crafatar.com/capes/${profile.uuidWithDashes}`);
+    if (uuidWithDashes) {
+      list.push(`https://crafatar.com/capes/${uuidWithDashes}`);
     }
     if (playerName) list.push(`https://mc-heads.net/cape/${encodeURIComponent(playerName)}`);
     return [...new Set(list)];
-  }, [profile, playerName]);
+  }, [profile, playerName, uuidWithDashes]);
 
   const renderCandidates = useMemo(
     () => [...new Set([...bodyCandidates, ...avatarCandidates])],
     [bodyCandidates, avatarCandidates]
   );
-
-  const bodySet = useMemo(() => new Set(bodyCandidates), [bodyCandidates]);
-
-  const [renderSrc, setRenderSrc] = useState<string | null>(null);
-  const isBody = renderSrc ? bodySet.has(renderSrc) : true;
 
   const server = profile?.server;
 
@@ -100,8 +109,8 @@ const GamingCard = memo(function GamingCard({
     if (loading && !hasProfile) {
       return {
         statusText: i18n("loading", "Chargement"),
-        statusClass: "border-[var(--info)] bg-[var(--info)]/10 text-[var(--info)]",
-        statusDot: "bg-[var(--info)]",
+        statusClass: "border-sky-500/30 bg-sky-500/10 text-sky-300",
+        statusDot: "bg-sky-400 animate-pulse",
       };
     }
     if (error && configured && !hasProfile) {
@@ -111,44 +120,68 @@ const GamingCard = memo(function GamingCard({
         statusDot: "bg-rose-400",
       };
     }
-    if (hasProfile) {
+    if (hasProfile || hasUsername) {
       return {
         statusText: i18n("online", "En ligne"),
-        statusClass: "border-green-500/20 bg-green-500/10 text-green-400",
-        statusDot: "bg-green-500",
-      };
-    }
-    if (configured) {
-      return {
-        statusText: i18n("offline", "Hors ligne"),
-        statusClass: "border-[var(--text-muted)]/30 bg-[var(--text-muted)]/10 text-[var(--text-muted)]",
-        statusDot: "bg-[var(--text-muted)]",
+        statusClass: "border-emerald-500/30 bg-emerald-500/15 text-emerald-400",
+        statusDot: "bg-emerald-400 shadow-[0_0_8px_rgba(52,211,153,0.8)]",
       };
     }
     return {
       statusText: i18n("offline", "Hors ligne"),
-      statusClass: "border-[var(--text-muted)]/30 bg-[var(--text-muted)]/10 text-[var(--text-muted)]",
-      statusDot: "bg-[var(--text-muted)]",
+      statusClass: "border-zinc-700 bg-zinc-800/40 text-zinc-400",
+      statusDot: "bg-zinc-500",
     };
-  }, [configured, error, hasProfile, i18n, loading]);
+  }, [configured, error, hasProfile, hasUsername, i18n, loading]);
 
-  const playerCount =
-    server?.players !== undefined && server?.maxPlayers !== undefined ? `${server.players}/${server.maxPlayers}` : null;
-  const ping = server?.ping !== undefined ? `${server.ping} ms` : null;
-  const serverVersion = server?.version || null;
+  const handleCopyUuid = async (e: React.MouseEvent) => {
+    e.stopPropagation();
+    if (!uuidWithDashes) return;
+    await navigator.clipboard.writeText(uuidWithDashes);
+    setCopied(true);
+    setTimeout(() => setCopied(false), 2000);
+  };
+
+  const nameMcUrl = playerName ? `https://namemc.com/profile/${encodeURIComponent(playerName)}` : null;
+  const skinDownloadUrl = uuidWithDashes
+    ? `https://crafatar.com/skins/${uuidWithDashes}`
+    : playerName
+    ? `https://minotar.net/skin/${encodeURIComponent(playerName)}`
+    : null;
 
   return (
     <TiltCard
       className={cn(
-        "flex h-full min-h-0 flex-col v8-panel border-[#6a9e3e]/20 bg-gradient-to-br from-[#2d4a24] via-[#1e2e17] to-[#120d08] p-4 shadow-xl shadow-[#0b130b]/70 backdrop-blur-2xl transition-all hover:border-[#6a9e3e]/50",
+        "relative flex h-full min-h-0 flex-col overflow-hidden no-scrollbar select-none rounded-2xl border border-emerald-500/20 bg-gradient-to-br from-[#1b2d18]/95 via-[#131d10]/98 to-[#0a0f08]/98 p-4 shadow-xl shadow-emerald-950/40 backdrop-blur-2xl transition-all duration-300 hover:border-emerald-500/40 group",
         className
       )}
     >
-      <div className="flex items-center justify-between">
-        <span className="text-[11px] font-semibold uppercase tracking-wider text-[var(--text-muted)]">Gaming</span>
+      {/* Background Ambient Minecraft Glow & Pattern */}
+      <div
+        className="pointer-events-none absolute -right-12 -top-12 h-44 w-44 rounded-full bg-emerald-500/10 blur-3xl transition-opacity group-hover:opacity-100"
+        aria-hidden="true"
+      />
+      <div
+        className="pointer-events-none absolute -left-12 -bottom-12 h-44 w-44 rounded-full bg-lime-500/10 blur-3xl transition-opacity group-hover:opacity-100"
+        aria-hidden="true"
+      />
+
+      {/* Header: Title + Gaming Badge + Live Status */}
+      <div className="relative z-10 flex shrink-0 items-center justify-between">
+        <div className="flex items-center gap-2">
+          <div className="flex h-6 w-6 items-center justify-center rounded-lg bg-emerald-500/15 border border-emerald-500/30 text-emerald-400 shadow-sm">
+            <Box className="h-3.5 w-3.5" />
+          </div>
+          <div>
+            <span className="text-[11px] font-extrabold uppercase tracking-wider text-emerald-300/90">
+              Minecraft 3D
+            </span>
+          </div>
+        </div>
+
         <span
           className={cn(
-            "inline-flex items-center gap-1.5 rounded-lg border px-2 py-0.5 text-[10px] font-medium",
+            "inline-flex items-center gap-1.5 rounded-full border px-2.5 py-0.5 text-[10px] font-bold shadow-xs",
             statusClass
           )}
         >
@@ -158,112 +191,117 @@ const GamingCard = memo(function GamingCard({
       </div>
 
       {hasUsername ? (
-        <div className="flex min-h-0 flex-1 flex-col items-center justify-center gap-3 py-2">
-          <div className="relative w-full flex-1 min-h-[5rem]">
-            <ClientImage
-              candidates={renderCandidates}
-              alt={username || playerName || ""}
-              fill
-              sizes="(max-width: 768px) 100vw, 33vw"
-              className={cn(
-                "object-contain drop-shadow-2xl",
-                isBody ? "" : "[image-rendering:pixelated]"
-              )}
-              style={{ objectFit: "contain" }}
-              fallback={(
-                <div className="flex h-full w-full items-center justify-center">
-                  {loading && !hasProfile ? (
-                    <Loader2 className="h-8 w-8 animate-spin text-[var(--accent-primary)]" />
-                  ) : error && configured && !hasProfile ? (
-                    <AlertCircle className="h-8 w-8 text-rose-400" />
-                  ) : (
-                    <Gamepad2 className="h-8 w-8 text-[var(--accent-primary)]" />
-                  )}
-                </div>
-              )}
-              onResolve={setRenderSrc}
-              priority
+        <div className="relative z-10 flex min-h-0 flex-1 flex-col items-center justify-between gap-2 pt-2 overflow-hidden no-scrollbar">
+          {/* Center: 3D Skin with Radial Glowing Pedestal */}
+          <div className="relative flex w-full flex-1 items-center justify-center min-h-[5.5rem] py-1">
+            {/* Glowing Ground Pedestal */}
+            <div
+              className="pointer-events-none absolute bottom-1 h-6 w-24 rounded-full bg-emerald-500/25 blur-md"
+              aria-hidden="true"
             />
-            {capeCandidates.length > 0 && (
+
+            <div className="relative h-28 w-28 sm:h-32 sm:w-32 transition-transform duration-300 group-hover:scale-105">
               <ClientImage
-                candidates={capeCandidates}
-                alt={i18n("cape", "Cape")}
-                className="absolute -right-2 -top-2 z-20 h-14 w-24 rounded border border-[var(--text-primary)]/10 bg-[var(--background)]/80 object-contain p-1 drop-shadow-lg"
-                width={96}
-                height={54}
+                candidates={renderCandidates}
+                alt={username || playerName || ""}
+                fill
+                sizes="(max-width: 768px) 100vw, 33vw"
+                className="object-contain drop-shadow-[0_12px_20px_rgba(0,0,0,0.6)]"
+                style={{ objectFit: "contain" }}
+                fallback={(
+                  <div className="flex h-full w-full items-center justify-center">
+                    {loading && !hasProfile ? (
+                      <Loader2 className="h-8 w-8 animate-spin text-emerald-400" />
+                    ) : (
+                      <Gamepad2 className="h-8 w-8 text-emerald-400" />
+                    )}
+                  </div>
+                )}
                 priority
-                loading="eager"
               />
-            )}
+            </div>
           </div>
 
-          <div className="w-full text-center">
-            <h4 className="truncate text-lg font-bold text-[var(--text-primary)]">{username}</h4>
-            {hasProfile && (
-              <p className="text-[10px] font-mono text-[var(--text-muted)]">ID: {truncateId(uuid || uuidWithDashes)}</p>
-            )}
+          {/* Player Info & Quick Badges */}
+          <div className="w-full text-center space-y-1 shrink-0">
+            <div className="flex items-center justify-center gap-1.5">
+              <h4 className="truncate text-base font-black tracking-tight text-white drop-shadow-sm">
+                {username}
+              </h4>
+              <span className="rounded bg-emerald-500/20 border border-emerald-500/30 px-1 py-0.2 text-[9px] font-extrabold uppercase text-emerald-300">
+                Java
+              </span>
+            </div>
+
+            {/* UUID with Copy */}
+            {uuidWithDashes ? (
+              <button
+                type="button"
+                onClick={handleCopyUuid}
+                className="inline-flex items-center gap-1 rounded-md px-1.5 py-0.5 font-mono text-[10px] text-zinc-400 hover:text-white hover:bg-white/5 transition-colors cursor-pointer"
+                title="Copier le UUID"
+              >
+                <span>ID: {truncateId(uuidWithDashes)}</span>
+                {copied ? <Check className="h-2.5 w-2.5 text-emerald-400" /> : <Copy className="h-2.5 w-2.5 opacity-60" />}
+              </button>
+            ) : null}
           </div>
 
-          {server && (
-            <div className="w-full rounded-xl border border-[var(--panel-border)] bg-[var(--panel-bg)] p-2">
-              <p className="mb-2 text-[10px] font-semibold uppercase tracking-wider text-[var(--text-muted)]">
-                {i18n("minecraftServer", "Serveur Minecraft")}
-              </p>
-              <div className="grid grid-cols-3 gap-2">
-                {playerCount !== null && (
-                  <div className="text-center">
-                    <p className="font-mono text-xs font-semibold text-[var(--text-primary)]">{playerCount}</p>
-                    <p className="text-[9px] text-[var(--text-muted)]">{i18n("players", "Joueurs")}</p>
-                  </div>
-                )}
-                {ping !== null && (
-                  <div className="text-center">
-                    <p className="font-mono text-xs font-semibold text-[var(--text-primary)]">{ping}</p>
-                    <p className="text-[9px] text-[var(--text-muted)]">{i18n("ping", "Ping")}</p>
-                  </div>
-                )}
-                {serverVersion !== null && (
-                  <div className="text-center">
-                    <p className="truncate font-mono text-xs font-semibold text-[var(--text-primary)]">{serverVersion}</p>
-                    <p className="text-[9px] text-[var(--text-muted)]">{i18n("version", "Version")}</p>
-                  </div>
-                )}
-              </div>
-            </div>
-          )}
+          {/* Feature Badges & Quick Action Links */}
+          <div className="w-full flex items-center justify-center gap-2 pt-1 shrink-0">
+            {/* Model Badge */}
+            <span className="rounded-lg border border-white/10 bg-white/5 px-2 py-1 text-[10px] font-semibold text-zinc-300">
+              {profile?.model === "slim" ? "Slim (Alex)" : "Classic (Steve)"}
+            </span>
 
-          {hasProfile && (
-            <div className="flex flex-wrap justify-center gap-1.5">
-              {profile?.model && (
-                <span className="rounded-md border border-[var(--panel-border)] bg-[var(--panel-bg)] px-2 py-0.5 text-[10px] text-[var(--text-muted)]">
-                  {profile.model === "slim" ? "Slim" : "Classic"}
-                </span>
-              )}
-              {profile?.capeUrl && (
-                <span className="rounded-md border border-[var(--panel-border)] bg-[var(--panel-bg)] px-2 py-0.5 text-[10px] text-[var(--text-muted)]">
-                  {i18n("cape", "Cape")}
-                </span>
-              )}
-              {server?.online && (
-                <span className="rounded-md border border-green-500/20 bg-green-500/10 px-2 py-0.5 text-[10px] text-green-400">
-                  {i18n("serverActive", "Serveur actif")}
-                </span>
-              )}
-            </div>
-          )}
+            {/* Cape Badge */}
+            {profile?.capeUrl || capeCandidates.length > 0 ? (
+              <span className="rounded-lg border border-emerald-500/30 bg-emerald-500/10 px-2 py-1 text-[10px] font-bold text-emerald-300 flex items-center gap-1">
+                <Sparkles className="h-3 w-3" />
+                <span>Cape</span>
+              </span>
+            ) : null}
+
+            {/* NameMC Link */}
+            {nameMcUrl && (
+              <a
+                href={nameMcUrl}
+                target="_blank"
+                rel="noopener noreferrer"
+                className="rounded-lg border border-white/10 bg-white/5 px-2 py-1 text-[10px] font-bold text-zinc-300 hover:text-white hover:bg-white/10 transition-all flex items-center gap-1"
+                title="Voir sur NameMC"
+              >
+                <span>NameMC</span>
+                <ExternalLink className="h-2.5 w-2.5 opacity-70" />
+              </a>
+            )}
+
+            {/* Skin Download */}
+            {skinDownloadUrl && (
+              <a
+                href={skinDownloadUrl}
+                target="_blank"
+                rel="noopener noreferrer"
+                className="rounded-lg border border-white/10 bg-white/5 p-1 text-zinc-400 hover:text-white hover:bg-white/10 transition-all"
+                title="Télécharger le Skin PNG"
+              >
+                <Download className="h-3 w-3" />
+              </a>
+            )}
+          </div>
         </div>
       ) : (
-        <div className="flex flex-1 flex-col items-center justify-center gap-3 py-2 text-center">
-          <div className="flex h-16 w-16 items-center justify-center rounded-2xl border border-[var(--text-primary)]/10 bg-[var(--text-primary)]/[0.04]">
-            <User className="h-7 w-7 text-[var(--text-muted)]" />
+        <div className="relative z-10 flex flex-1 flex-col items-center justify-center gap-3 py-4 text-center">
+          <div className="flex h-14 w-14 items-center justify-center rounded-2xl border border-emerald-500/20 bg-emerald-500/10 text-emerald-400">
+            <User className="h-6 w-6" />
           </div>
           <div>
-            <p className="text-sm font-semibold text-[var(--text-primary)]">{i18n("minecraftNotLinked", "Aucun compte Minecraft lié")}</p>
-            <p className="text-xs text-[var(--text-muted)]">{i18n("minecraftConfigureHint", "Ajoute ton pseudo pour voir ton skin")}</p>
+            <p className="text-sm font-bold text-white">{i18n("minecraftNotLinked", "Aucun compte Minecraft lié")}</p>
+            <p className="text-xs text-zinc-400 mt-0.5">{i18n("minecraftConfigureHint", "Ajoute ton pseudo pour voir ton skin 3D")}</p>
           </div>
           <Link
-            href="/settings?category=integrations"
-            className="rounded-lg bg-[var(--accent-primary)] px-4 py-2 text-xs font-medium text-[var(--text-primary)] transition-colors hover:bg-[var(--accent-primary)]"
+            href="/connections"
+            className="rounded-xl bg-emerald-600 px-4 py-2 text-xs font-bold text-white shadow-md hover:bg-emerald-500 transition-all active:scale-95 cursor-pointer"
           >
             {i18n("configureMinecraft", "Configurer Minecraft")}
           </Link>

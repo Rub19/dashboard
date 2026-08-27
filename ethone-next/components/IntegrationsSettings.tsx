@@ -2,6 +2,7 @@
 
 import { useCallback, useEffect, useMemo, useState } from "react";
 import { useSearchParams } from "next/navigation";
+import { motion, AnimatePresence } from "framer-motion";
 import { Plug, RefreshCcw, Zap, Search } from "lucide-react";
 import { fetchWorker } from "@/lib/api";
 import { useI18n } from "@/lib/hooks/useI18n";
@@ -299,22 +300,35 @@ export default function IntegrationsSettings() {
               }
             />
           ) : (
-            <div className="grid grid-cols-1 gap-4 sm:grid-cols-2 lg:grid-cols-3">
-              {filtered.map((integration) => (
-                <ConnectionCard
-                  key={integration.id}
-                  integration={integration}
-                  clientId={clientIds[integration.id] || ""}
-                  onClientIdChange={handleClientIdChange}
-                  credentialConnected={credentials.connected}
-                  oauthConnected={connected}
-                  credentials={credentials}
-                  health={health[integration.id]}
-                  onTest={testOne}
-                  onDisconnect={handleDisconnect}
-                />
-              ))}
-            </div>
+            <motion.div
+              layout="position"
+              className="grid grid-cols-1 gap-4 sm:grid-cols-2 lg:grid-cols-3"
+            >
+              <AnimatePresence mode="popLayout">
+                {filtered.map((integration) => (
+                  <motion.div
+                    key={integration.id}
+                    layout="position"
+                    initial={{ opacity: 0, scale: 0.96 }}
+                    animate={{ opacity: 1, scale: 1 }}
+                    exit={{ opacity: 0, scale: 0.96 }}
+                    transition={{ duration: 0.22, ease: "easeOut" }}
+                  >
+                    <ConnectionCard
+                      integration={integration}
+                      clientId={clientIds[integration.id] || ""}
+                      onClientIdChange={handleClientIdChange}
+                      credentialConnected={credentials.connected}
+                      oauthConnected={connected}
+                      credentials={credentials}
+                      health={health[integration.id]}
+                      onTest={testOne}
+                      onDisconnect={handleDisconnect}
+                    />
+                  </motion.div>
+                ))}
+              </AnimatePresence>
+            </motion.div>
           )}
         </div>
       </div>

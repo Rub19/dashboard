@@ -2,9 +2,20 @@
 
 import { useMemo, useRef } from "react";
 import { motion } from "framer-motion";
-import { Blocks, BriefcaseBusiness, Brain, Code2, Gamepad2, HeartPulse, MessageSquare, Music, Plug } from "lucide-react";
+import {
+  Blocks,
+  BriefcaseBusiness,
+  Brain,
+  Code2,
+  Gamepad2,
+  HeartPulse,
+  MessageSquare,
+  Music,
+  Plug,
+} from "lucide-react";
 import { useI18n } from "@/lib/hooks/useI18n";
 import { INTEGRATION_CATEGORIES, INTEGRATIONS } from "@/lib/integrations";
+import { hapticLightImpact } from "@/lib/haptics";
 import { cn } from "@/lib/utils";
 
 const CATEGORY_ICONS: Record<string, React.ReactNode> = {
@@ -23,7 +34,13 @@ function countByCategory(id: string) {
   return INTEGRATIONS.filter((i) => i.category === id).length;
 }
 
-export default function CategoryTabs({ active, onChange }: { active: string; onChange: (id: string) => void }) {
+export default function CategoryTabs({
+  active,
+  onChange,
+}: {
+  active: string;
+  onChange: (id: string) => void;
+}) {
   const i18n = useI18n();
   const tabsRef = useRef<HTMLDivElement>(null);
 
@@ -34,7 +51,7 @@ export default function CategoryTabs({ active, onChange }: { active: string; onC
       ref={tabsRef}
       role="tablist"
       aria-label={i18n("categories", "Catégories")}
-      className="flex items-center gap-2 overflow-x-auto pb-1 no-scrollbar"
+      className="flex items-center gap-1.5 overflow-x-auto p-1.5 no-scrollbar rounded-2xl bg-black/40 border border-white/5 backdrop-blur-xl"
     >
       {tabs.map((cat) => {
         const isActive = active === cat.id;
@@ -45,30 +62,46 @@ export default function CategoryTabs({ active, onChange }: { active: string; onC
             type="button"
             role="tab"
             aria-selected={isActive}
-            onClick={() => onChange(cat.id)}
+            onClick={() => {
+              hapticLightImpact();
+              onChange(cat.id);
+            }}
             className={cn(
-              "group relative flex min-h-[40px] shrink-0 items-center gap-2 whitespace-nowrap rounded-full border px-3.5 py-2 text-xs font-medium transition-all",
+              "group relative flex min-h-[38px] shrink-0 items-center gap-2 whitespace-nowrap rounded-xl px-3.5 py-1.5 text-xs font-semibold select-none cursor-pointer transition-colors duration-150",
               isActive
-                ? "border-[var(--accent-primary)]/40 bg-[var(--accent-primary)]/10 text-[var(--accent-primary)]"
-                : "border-transparent bg-[var(--panel-bg)] text-[var(--text-muted)] hover:bg-[var(--surface-hover)]/40 hover:text-[var(--text-primary)]"
+                ? "text-[var(--accent-primary)]"
+                : "text-[var(--text-muted)] hover:text-[var(--text-primary)] hover:bg-white/[0.03]"
             )}
           >
             {isActive && (
               <motion.div
                 layoutId="activeCategoryPill"
-                className="absolute inset-0 rounded-full border border-[var(--accent-primary)]/30 bg-[var(--accent-primary)]/5"
-                style={{ zIndex: -1 }}
-                transition={{ type: "spring", stiffness: 300, damping: 30 }}
+                className="absolute inset-0 rounded-xl border border-[var(--accent-primary)]/40 bg-[var(--accent-primary)]/15 shadow-[0_0_15px_rgba(20,184,166,0.15)]"
+                transition={{
+                  type: "spring",
+                  stiffness: 400,
+                  damping: 32,
+                  mass: 0.8,
+                }}
               />
             )}
-            <span className={cn("transition-colors", isActive ? "text-[var(--accent-primary)]" : "text-[var(--text-muted)] group-hover:text-[var(--text-primary)]")}>
-              {CATEGORY_ICONS[cat.id] || <Plug className="h-3.5 w-3.5" />}
-            </span>
-            <span>{i18n(cat.id, cat.label)}</span>
             <span
               className={cn(
-                "ml-0.5 flex h-4 min-w-[1.25rem] items-center justify-center rounded-full px-1 text-[10px] font-semibold",
-                isActive ? "bg-[var(--accent-primary)]/20 text-[var(--accent-primary)]" : "bg-[var(--text-primary)]/[0.04] text-[var(--text-muted)]"
+                "relative z-10 transition-colors duration-150",
+                isActive
+                  ? "text-[var(--accent-primary)]"
+                  : "text-[var(--text-muted)] group-hover:text-[var(--text-primary)]"
+              )}
+            >
+              {CATEGORY_ICONS[cat.id] || <Plug className="h-3.5 w-3.5" />}
+            </span>
+            <span className="relative z-10">{i18n(cat.id, cat.label)}</span>
+            <span
+              className={cn(
+                "relative z-10 ml-0.5 flex h-4 min-w-[1.25rem] items-center justify-center rounded-full px-1.5 text-[10px] font-bold transition-colors duration-150",
+                isActive
+                  ? "bg-[var(--accent-primary)]/25 text-[var(--accent-primary)]"
+                  : "bg-white/5 text-[var(--text-muted)] group-hover:text-zinc-300"
               )}
             >
               {count}

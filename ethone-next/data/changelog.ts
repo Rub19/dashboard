@@ -7206,6 +7206,52 @@ CHANGELOG_BY_LANG.es.unshift({
 });
 
 CHANGELOG_BY_LANG.fr.unshift({
+  version: "v1.10.68",
+  date: "2026-08-27",
+  title: "Animation Ultra-Fluide des Onglets de Catégories dans Connexions",
+  items: [
+    "Refonte de l'animation de pillule active dans CategoryTabs (spring physics 60fps sans conflits CSS).",
+    "Transition fluide avec AnimatePresence et layout='position' sur la grille de cartes d'intégrations.",
+    "Validation : build Next.js 105/105 pages, 100% tests unitaires, 0 erreur.",
+    "Version affichée : v1.10.68.",
+  ],
+});
+
+CHANGELOG_BY_LANG.en.unshift({
+  version: "v1.10.68",
+  date: "2026-08-27",
+  title: "Butter-Smooth Category Tab Animations in Connections",
+  items: [
+    "Overhauled CategoryTabs active indicator with pure Framer Motion spring physics, eliminating any stutter or border flickering.",
+    "Added smooth popLayout transitions across integration cards during filter changes.",
+    "Validation: Next.js 105/105 pages build, 100% unit tests passed, 0 errors.",
+    "Version badge: v1.10.68.",
+  ],
+});
+
+CHANGELOG_BY_LANG.es.unshift({
+  version: "v1.10.68",
+  date: "2026-08-27",
+  title: "Animación fluida de pestañas en Conexiones",
+  items: [
+    "Física de resortes mejorada para cambio suave de categorías.",
+    "Validación : build, lint, tests.",
+    "Versión : v1.10.68.",
+  ],
+});
+
+CHANGELOG_BY_LANG.de.unshift({
+  version: "v1.10.68",
+  date: "2026-08-27",
+  title: "Butterweiche Kategorie-Animationen in Verbindungen",
+  items: [
+    "Reibungslose Reiter-Übergänge und flüssige Raster-Animationen.",
+    "Validierung: build, lint, tests.",
+    "Version: v1.10.68.",
+  ],
+});
+
+CHANGELOG_BY_LANG.fr.unshift({
   version: "v1.10.67",
   date: "2026-08-27",
   title: "Perfectionnement des Formulations Françaises des Brain Insights",

@@ -26,45 +26,31 @@ type IslandContextValue = {
 
 const IslandContext = createContext<IslandContextValue | null>(null);
 
-// Shell physics: light, fast spring with minimal bounce. The shell animates
-// real width/height (not transforms), so slots are never scale-distorted.
+// Shell physics: ultra smooth spring with subtle inertia and organic damping
 const SHELL_SPRING = {
   type: "spring",
-  duration: 0.55,
-  bounce: 0.12,
+  stiffness: 420,
+  damping: 32,
+  mass: 0.8,
 } as const;
 
-// Content gets a touch more life than the shell.
+// Content spring: synchronized with shell
 const CONTENT_SPRING = {
   type: "spring",
-  duration: 0.55,
-  bounce: 0.18,
+  stiffness: 440,
+  damping: 34,
+  mass: 0.7,
 } as const;
 
-// Constant radius — never animated. The browser clamps it to half the shell
-// height, so the pill-to-rounded-rect morph falls out of the resize for free
-// with zero chance of corner glitches.
 const RADIUS = 32;
-
-// iPhone pill dimensions. Also the shell's pre-measure animate target: if the
-// first commit already has a view active (e.g. a click replayed after
-// hydration), the shell blooms from the pill instead of rendering expanded
-// with no animation. Lives in `animate`, not `initial`, so server and client
-// markup agree.
-const PILL_WIDTH = 126;
-const PILL_HEIGHT = 37;
+const PILL_WIDTH = 130;
+const PILL_HEIGHT = 40;
 
 /** Tracks the natural size of the content so the shell can spring to it. */
 function useContentSize() {
   const ref = useRef<HTMLDivElement | null>(null);
-  const [size, setSize] = useState<{ width: number; height: number } | null>(
-    null,
-  );
+  const [size, setSize] = useState<{ width: number; height: number } | null>(null);
 
-  // Synchronous mount measure: the shell must own explicit dimensions before
-  // the first interaction. ResizeObserver fires async after mount — a quick
-  // first press could beat it, leaving the shell auto-sized so the view
-  // snapped open instead of springing.
   useLayoutEffect(() => {
     const el = ref.current;
     if (!el) return;
@@ -102,32 +88,26 @@ function Slot({
       data-testid={testId}
       initial={
         reduce
-          ? { opacity: 0, filter: "blur(0px)" }
-          : { opacity: 0, scale: 0.9, y: -8, filter: "blur(5px)" }
+          ? { opacity: 0 }
+          : { opacity: 0, scale: 0.94, y: -6, filter: "blur(4px)" }
       }
       animate={
         reduce
-          ? { opacity: 1, filter: "blur(0px)" }
+          ? { opacity: 1 }
           : { opacity: 1, scale: 1, y: 0, filter: "blur(0px)" }
       }
-      // Exit gets sucked up into the pill — fast, blur-free, before the
-      // shrinking shell can clip it.
       exit={
         reduce
-          ? { opacity: 0, filter: "blur(0px)", transition: { duration: 0.1 } }
+          ? { opacity: 0, transition: { duration: 0.1 } }
           : {
               opacity: 0,
-              scale: 0.9,
-              y: -6,
-              filter: "blur(0px)",
-              transition: { duration: 0.08, ease: EASE_OUT },
+              scale: 0.94,
+              y: -4,
+              filter: "blur(3px)",
+              transition: { duration: 0.1, ease: EASE_OUT },
             }
       }
-      // One spring drives transform, opacity and blur together — no per
-      // property tweens, no delays. Content travels with the shell.
       transition={reduce ? { duration: 0.15 } : CONTENT_SPRING}
-      // Anchored to the pill line: content unfurls downward out of it and is
-      // sucked back up into it.
       style={{ transformOrigin: "top center" }}
       className={cn("flex items-center justify-center", className)}
     >
@@ -144,6 +124,7 @@ export interface DynamicIslandProps extends Omit<HTMLMotionProps<"div">, "onDrag
   /** DynamicIslandView elements. */
   children?: ReactNode;
   className?: string;
+  progressPercent?: number;
 }
 
 export function DynamicIsland({
@@ -151,6 +132,7 @@ export function DynamicIsland({
   compact,
   children,
   className,
+  progressPercent,
   onClick,
   onMouseEnter,
   onMouseLeave,
@@ -173,34 +155,37 @@ export function DynamicIsland({
             ? { width: size.width, height: size.height }
             : { width: PILL_WIDTH, height: PILL_HEIGHT }
         }
+        whileHover={
+          reduce
+            ? undefined
+            : {
+                scale: expanded ? 1 : 1.02,
+                boxShadow: "0 12px 36px -4px rgba(0,0,0,0.6), 0 0 28px -4px var(--glow-color)",
+              }
+        }
+        whileTap={reduce ? undefined : { scale: 0.98 }}
         transition={reduce ? { duration: 0 } : SHELL_SPRING}
         style={{ borderRadius: RADIUS }}
-        whileTap={reduce ? undefined : { scale: 0.98 }}
         onClick={onClick}
         onMouseEnter={onMouseEnter}
         onMouseLeave={onMouseLeave}
-        // items-start pins content to the top edge while the shell springs, so
-        // expansion reads as unfurling downward out of the pill.
         className={cn(
           "relative inline-flex items-start justify-center overflow-hidden",
-          "border border-[var(--accent-primary)]/30 bg-[var(--panel-bg)] text-[var(--text-primary)]",
-          "shadow-2xl shadow-[0_0_24px_-6px_var(--glow-color)] backdrop-blur-2xl",
-          "cursor-pointer pointer-events-auto select-none",
+          "border border-[var(--panel-border)]/[0.22] bg-[var(--bg-main)]/90 text-[var(--text-primary)]",
+          "shadow-[0_8px_32px_-4px_rgba(0,0,0,0.55),0_0_20px_-6px_var(--glow-color)] backdrop-blur-3xl",
+          "cursor-pointer pointer-events-auto select-none transition-colors duration-200",
           "before:pointer-events-none before:absolute before:inset-0 before:z-10 before:rounded-[inherit]",
-          "before:bg-gradient-to-b before:from-[var(--text-primary)]/5 before:to-transparent",
+          "before:bg-gradient-to-b before:from-[var(--text-primary)]/[0.06] before:to-transparent",
           className,
         )}
         {...rest}
       >
-        {/* w-max keeps this at the natural size of the active content; the
-            shell springs toward it. */}
         <div ref={sizerRef} className="w-max">
           <AnimatePresence mode="popLayout" initial={false}>
             {!expanded && compact ? (
               <Slot
                 keyId="compact"
-                // iPhone pill proportions: ~126 x 37.
-                className="h-[38px] min-w-[126px] gap-2 px-4 py-0 text-xs font-medium"
+                className="h-10 min-w-[130px] gap-2.5 px-3.5 py-0 text-xs font-medium"
               >
                 {compact}
               </Slot>
@@ -208,6 +193,18 @@ export function DynamicIsland({
           </AnimatePresence>
           {children}
         </div>
+
+        {/* Micro progress line at the very bottom of the capsule */}
+        {!expanded && typeof progressPercent === "number" && progressPercent > 0 && (
+          <div className="pointer-events-none absolute inset-x-3.5 bottom-0.5 h-[1.5px] overflow-hidden rounded-full bg-[var(--text-primary)]/[0.08]">
+            <motion.div
+              className="h-full rounded-full bg-gradient-to-r from-[var(--accent-primary)]/80 to-[var(--accent-primary)]"
+              initial={{ width: 0 }}
+              animate={{ width: `${Math.min(100, Math.max(0, progressPercent))}%` }}
+              transition={{ duration: 0.3, ease: "easeOut" }}
+            />
+          </div>
+        )}
       </motion.div>
     </IslandContext.Provider>
   );
@@ -235,7 +232,7 @@ export function DynamicIslandView({
   return (
     <AnimatePresence mode="popLayout" initial={false}>
       {active ? (
-        <Slot keyId={id} data-testid={testId} className={cn("px-6 py-4", className)}>
+        <Slot keyId={id} data-testid={testId} className={cn("px-5 py-4", className)}>
           {children}
         </Slot>
       ) : null}

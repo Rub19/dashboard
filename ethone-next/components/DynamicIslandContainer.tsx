@@ -77,27 +77,28 @@ function SpotifyCompact({
   const trackTitle = title || fallback;
 
   return (
-    <div className="flex h-9 min-w-[120px] items-center gap-2.5 px-0">
+    <div className="flex h-10 min-w-[130px] max-w-[240px] items-center gap-2.5 px-0.5 select-none">
       <SafeImage
         candidates={coverCandidates}
         alt={trackTitle}
-        size={20}
-        className="h-5 w-5 shrink-0 rounded object-cover bg-[var(--panel-bg)]"
-        iconClassName="h-3 w-3 text-[var(--text-muted)]"
+        size={24}
+        className="h-6 w-6 shrink-0 rounded-lg object-cover ring-1 ring-white/10 bg-[var(--surface-raised)]"
+        iconClassName="h-3.5 w-3.5 text-[var(--accent-primary)]"
         loading="eager"
         priority
         timeoutMs={8000}
         crossOrigin="anonymous"
       />
-      <span className="min-w-0 flex-1 truncate text-[10px] font-medium text-[var(--text-primary)]" title={trackTitle}>
+      <span className="min-w-0 flex-1 truncate text-xs font-semibold tracking-tight text-[var(--text-primary)]" title={trackTitle}>
         {trackTitle}
       </span>
       <AudioVisualizer
         isPlaying={!!isPlaying}
-        bars={8}
-        barWidth={1.5}
+        bars={5}
+        barWidth={2}
         gap={1.5}
-        className="h-3 w-10 shrink-0 opacity-70"
+        minHeight={0.2}
+        className="h-3.5 w-5 shrink-0 opacity-90"
         color="var(--accent-primary)"
         seed={trackTitle}
       />
@@ -348,6 +349,17 @@ export default function DynamicIslandContainer() {
     if (!focus.state.total) return 0;
     return Math.min(100, Math.max(0, (1 - focus.state.remaining / focus.state.total) * 100));
   }, [focus.state.total, focus.state.remaining]);
+
+  const spotifyPct = useMemo(() => {
+    if (!nowPlaying?.durationMs || !nowPlaying.progressMs) return 0;
+    return Math.min(100, Math.max(0, (nowPlaying.progressMs / nowPlaying.durationMs) * 100));
+  }, [nowPlaying?.durationMs, nowPlaying?.progressMs]);
+
+  const activeProgress = useMemo(() => {
+    if (selectedView === "spotify" && nowPlaying?.isPlaying) return spotifyPct;
+    if (selectedView === "pomodoro" && focus.state.phase !== "idle") return pomodoroPct;
+    return 0;
+  }, [selectedView, nowPlaying?.isPlaying, spotifyPct, pomodoroPct, focus.state.phase]);
 
   // The compact pill shows the active activity, or a default ETHONE clock
   // capsule when the island is visible but no specific activity is present.
@@ -631,6 +643,7 @@ export default function DynamicIslandContainer() {
             data-testid="dynamic-island"
             view={expanded && selectedView ? selectedView : null}
             compact={compact}
+            progressPercent={activeProgress}
             onClick={toggleExpanded}
             onKeyDown={handleKeyDown}
             onMouseEnter={onIslandEnter}

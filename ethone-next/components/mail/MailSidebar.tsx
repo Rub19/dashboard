@@ -158,28 +158,20 @@ export default function MailSidebar({
                   onChange(f.id);
                 }}
                 className={cn(
-                  "group relative flex w-full items-center rounded-xl text-xs font-medium transition-all",
+                  "group relative flex w-full items-center rounded-xl text-xs font-medium transition-all duration-150 cursor-pointer",
                   collapsed ? "h-10 justify-center px-0" : "justify-between px-3 py-2",
                   isActive
-                    ? "text-[var(--text-primary)] font-semibold shadow-sm"
-                    : "text-[var(--text-muted)] hover:bg-[var(--panel-bg)] hover:text-[var(--text-primary)]"
+                    ? "border border-[var(--accent-primary)]/30 bg-[var(--accent-primary)]/15 text-[var(--text-primary)] font-semibold shadow-xs"
+                    : "border border-transparent text-[var(--text-muted)] hover:bg-[var(--surface-hover)]/40 hover:text-[var(--text-primary)]"
                 )}
                 title={f.label}
               >
-                {isActive && (
-                  <motion.div
-                    layoutId="activeFolderPill"
-                    className="absolute inset-0 rounded-xl border border-[var(--accent-primary)]/30 bg-[var(--accent-primary)]/15 shadow-sm"
-                    transition={{ type: "spring", stiffness: 400, damping: 30 }}
-                  />
-                )}
-
-                <span className={cn("relative z-10 flex items-center gap-2.5 min-w-0", collapsed && "justify-center")}>
+                <span className={cn("flex items-center gap-2.5 min-w-0", collapsed && "justify-center")}>
                   <span
                     className={cn(
-                      "transition-colors",
+                      "transition-colors duration-150",
                       isActive
-                        ? "text-[var(--accent-primary)] scale-105"
+                        ? "text-[var(--accent-primary)]"
                         : f.color || "text-[var(--text-muted)] group-hover:text-[var(--text-primary)]"
                     )}
                   >

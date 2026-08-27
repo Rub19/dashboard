@@ -102,10 +102,8 @@ export default function MailThreadItem({
     >
       {/* Active Pill Indicator */}
       {active && (
-        <motion.div
-          layoutId="activeThreadIndicator"
+        <div
           className="pointer-events-none absolute left-0 top-1 bottom-1 w-1 rounded-r-full bg-[var(--accent-primary)] shadow-[0_0_8px_var(--glow-color)]"
-          transition={{ type: "spring", stiffness: 450, damping: 32 }}
         />
       )}
 

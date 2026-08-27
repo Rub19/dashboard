@@ -7206,6 +7206,42 @@ CHANGELOG_BY_LANG.es.unshift({
 });
 
 CHANGELOG_BY_LANG.fr.unshift({
+  version: "v1.10.83",
+  date: "2026-08-27",
+  title: "Correction CI/CD : Apostrophe Non Échappée dans MissionControl",
+  items: [
+    "Correction de l'erreur ESLint react/no-unescaped-entities dans MissionControl.tsx (apostrophe non échappée ligne 413).",
+    "Le CI GitHub Actions (Build Web / Lint Next.js) repasse au vert.",
+    "Version affichée : v1.10.83.",
+  ],
+});
+
+CHANGELOG_BY_LANG.en.unshift({
+  version: "v1.10.83",
+  date: "2026-08-27",
+  title: "CI/CD Fix: Unescaped Apostrophe in MissionControl",
+  items: [
+    "Fixed ESLint react/no-unescaped-entities error in MissionControl.tsx (unescaped apostrophe at line 413).",
+    "GitHub Actions CI (Build Web / Lint Next.js) now passes with 0 errors.",
+    "Version badge: v1.10.83.",
+  ],
+});
+
+CHANGELOG_BY_LANG.es.unshift({
+  version: "v1.10.83",
+  date: "2026-08-27",
+  title: "Fix CI/CD: apóstrofe sin escapar en MissionControl",
+  items: ["Corrección de error ESLint en MissionControl.tsx.", "Versión : v1.10.83."],
+});
+
+CHANGELOG_BY_LANG.de.unshift({
+  version: "v1.10.83",
+  date: "2026-08-27",
+  title: "CI/CD-Fix: Nicht-escapter Apostroph in MissionControl",
+  items: ["ESLint-Fehler in MissionControl.tsx behoben.", "Version: v1.10.83."],
+});
+
+CHANGELOG_BY_LANG.fr.unshift({
   version: "v1.10.82",
   date: "2026-08-27",
   title: "Corrections : Double Croix Météo, Cercle Spotlight & Sidebar Avatar",

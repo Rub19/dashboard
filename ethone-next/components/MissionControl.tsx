@@ -410,7 +410,7 @@ function MissionControlHUD() {
                     <div>
                       <p className="text-sm font-semibold text-white/60">Aucune fenêtre ouverte</p>
                       <p className="text-xs text-white/40 mt-0.5">
-                        Cliquez sur une application dans la liste de droite pour l'ouvrir.
+                        Cliquez sur une application dans la liste de droite pour l&apos;ouvrir.
                       </p>
                     </div>
                   </div>

@@ -7206,6 +7206,52 @@ CHANGELOG_BY_LANG.es.unshift({
 });
 
 CHANGELOG_BY_LANG.fr.unshift({
+  version: "v1.10.63",
+  date: "2026-08-27",
+  title: "Mise à Niveau de Sécurité Next.js 16.3.3 (Correction Vulnérabilités Snyk)",
+  items: [
+    "Application du patch de sécurité Next.js 16.3.3 et eslint-config-next 16.3.3 (résolution des vulnérabilités Directory Traversal et Insecure Optimizations).",
+    "Audit de sécurité global : 0 vulnérabilité détectée sur l'ensemble des 741 dépendances du projet.",
+    "Validation : 100% des tests unitaires réussis, build Next.js 105/105 pages, 0 erreur.",
+    "Version affichée : v1.10.63.",
+  ],
+});
+
+CHANGELOG_BY_LANG.en.unshift({
+  version: "v1.10.63",
+  date: "2026-08-27",
+  title: "Next.js 16.3.3 Security Upgrade (Snyk Vulnerability Patch)",
+  items: [
+    "Applied Next.js 16.3.3 and eslint-config-next 16.3.3 security patches (fixed Directory Traversal & Insecure Optimizations).",
+    "Global security audit: 0 vulnerabilities found across all 741 dependencies.",
+    "Validation: 100% unit tests passed, Next.js 105/105 pages build, 0 errors.",
+    "Version badge: v1.10.63.",
+  ],
+});
+
+CHANGELOG_BY_LANG.es.unshift({
+  version: "v1.10.63",
+  date: "2026-08-27",
+  title: "Actualización de seguridad Next.js 16.3.3 (Parche de Snyk)",
+  items: [
+    "Actualización de dependencias de seguridad y 0 vulnerabilidades.",
+    "Validación : build, lint, tests.",
+    "Versión : v1.10.63.",
+  ],
+});
+
+CHANGELOG_BY_LANG.de.unshift({
+  version: "v1.10.63",
+  date: "2026-08-27",
+  title: "Next.js 16.3.3 Sicherheits-Upgrade (Snyk Schwachstellen-Patch)",
+  items: [
+    "Next.js 16.3.3 Sicherheits-Patch angewendet, 0 Schwachstellen.",
+    "Validierung: build, lint, tests.",
+    "Version: v1.10.63.",
+  ],
+});
+
+CHANGELOG_BY_LANG.fr.unshift({
   version: "v1.10.62",
   date: "2026-08-27",
   title: "Correction Complète CI/CD GitHub Actions & Validation Linter ESLint 0 Erreur",

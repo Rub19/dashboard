@@ -77,7 +77,7 @@ export default function MailAliasSetup({ createAlias, onCreated }: MailAliasSetu
         transition={{ duration: 0.2, ease: "easeOut" }}
         className="w-full max-w-md rounded-3xl border border-[var(--text-primary)]/[0.1] bg-zinc-950/90 p-6 shadow-[0_25px_60px_rgba(0,0,0,0.85)] backdrop-blur-2xl sm:p-8 flex flex-col gap-5"
       >
-        <div className="mb-1 flex h-12 w-12 items-center justify-center rounded-2xl border border-[var(--text-primary)]/[0.08] bg-[var(--text-primary)]/[0.04] text-purple-500">
+        <div className="mb-1 flex h-12 w-12 items-center justify-center rounded-2xl border border-[var(--accent-primary)]/30 bg-[var(--accent-primary)]/10 text-[var(--accent-primary)] shadow-sm">
           <Mail className="h-5 w-5" />
         </div>
 

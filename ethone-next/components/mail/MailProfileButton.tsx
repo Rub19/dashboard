@@ -1,21 +1,15 @@
 "use client";
 
 import { useState } from "react";
-import { User, Mail, Star, Plus, Check, Loader2, Crown, Copy, CheckCircle2 } from "lucide-react";
+import { User, Mail, Star, Plus, Check, Loader2, Crown, Copy, CheckCircle2, Shuffle, Sparkles } from "lucide-react";
 import { useI18n } from "@/lib/hooks/useI18n";
 import { useToast } from "@/components/ToastProvider";
 import type { MailAlias } from "@/lib/hooks/useMail";
 import Modal from "@/components/ui/Modal";
-import Button from "@/components/ui/Button";
-import Input from "@/components/Input";
-import FormField from "@/components/FormField";
+import { cn } from "@/lib/utils";
 
 function sanitizeLocal(value: string) {
   return value.toLowerCase().replace(/[^a-z0-9._-]/g, "").slice(0, 64);
-}
-
-function cn(...parts: (string | false | undefined)[]) {
-  return parts.filter(Boolean).join(" ");
 }
 
 type MailProfileButtonProps = {
@@ -46,7 +40,7 @@ export default function MailProfileButton({ aliases, primaryAlias, updateAlias, 
     setSaving(true);
     try {
       await updateAlias(primary.id, { display_name: name });
-      success(i18n("saved") || "Enregistré");
+      success("Nom affiché mis à jour");
     } catch (err) {
       toastError(String(err));
     } finally {
@@ -59,7 +53,7 @@ export default function MailProfileButton({ aliases, primaryAlias, updateAlias, 
     setPrimaryLoading(id);
     try {
       await updateAlias(id, { is_primary: true });
-      success(i18n("saved") || "Enregistré");
+      success("Adresse principale définie");
     } catch (err) {
       toastError(String(err));
     } finally {
@@ -75,7 +69,7 @@ export default function MailProfileButton({ aliases, primaryAlias, updateAlias, 
     try {
       const created = await createAlias({ alias: `${safe}@ethone.dev`, display_name: newDisplayName.trim() || undefined });
       if (created?.id) {
-        success(i18n("saved") || "Enregistré");
+        success("Nouvelle adresse créée");
         setLocal("");
         setNewDisplayName("");
       } else {
@@ -91,7 +85,7 @@ export default function MailProfileButton({ aliases, primaryAlias, updateAlias, 
   function randomLocal() {
     const chars = "abcdefghijklmnopqrstuvwxyz0123456789";
     let result = "u-";
-    for (let i = 0; i < 8; i += 1) result += chars[Math.floor(Math.random() * chars.length)];
+    for (let i = 0; i < 6; i += 1) result += chars[Math.floor(Math.random() * chars.length)];
     return result;
   }
 
@@ -104,123 +98,143 @@ export default function MailProfileButton({ aliases, primaryAlias, updateAlias, 
 
   return (
     <>
+      {/* Trigger Button inside Mail Sidebar */}
       <button
         type="button"
         onClick={() => setOpen(true)}
-        className="group flex w-full items-center gap-3 rounded-xl border border-[var(--text-primary)]/[0.06] bg-[var(--text-primary)]/[0.02] p-2.5 text-left transition-colors hover:bg-[var(--text-primary)]/[0.04] hover:border-[var(--text-primary)]/[0.10]"
+        className="group flex w-full items-center gap-3 rounded-2xl border border-[var(--panel-border)] bg-[var(--surface-raised)]/70 p-2.5 text-left transition-all hover:bg-[var(--surface-raised)] hover:border-[var(--accent-primary)]/40 shadow-xs cursor-pointer"
       >
-        <span className="flex h-9 w-9 shrink-0 items-center justify-center rounded-lg bg-[color-mix(in_srgb,var(--accent-primary)_15%,transparent)] text-[var(--accent-primary)]">
+        <span className="flex h-9 w-9 shrink-0 items-center justify-center rounded-xl bg-[var(--accent-primary)]/15 border border-[var(--accent-primary)]/30 text-[var(--accent-primary)] shadow-xs">
           <User className="h-4 w-4" />
         </span>
         <div className="min-w-0 flex-1">
-          <p className="text-xs font-medium text-[var(--text-primary)] truncate">
-            {primary?.display_name || i18n("mailProfile") || "Profil mail"}
+          <p className="text-xs font-bold text-[var(--text-primary)] truncate">
+            {primary?.display_name || "Profil mail"}
           </p>
-          <p className="text-[10px] text-[var(--text-muted)] truncate">
-            {primary?.alias || i18n("noAlias") || "Aucune adresse"}
+          <p className="text-[11px] text-[var(--text-muted)] truncate font-mono">
+            {primary?.alias || "rubens@ethone.dev"}
           </p>
         </div>
-        <Mail className="h-4 w-4 shrink-0 text-[var(--text-muted)] group-hover:text-[var(--text-primary)]" />
+        <Mail className="h-4 w-4 shrink-0 text-[var(--text-muted)] group-hover:text-[var(--accent-primary)] transition-colors" />
       </button>
 
+      {/* Modal Profile / Settings */}
       <Modal
         isOpen={open}
         onClose={() => setOpen(false)}
-        title={i18n("mailProfile") || "Profil mail"}
-        description={i18n("mailProfileDescription") || "Votre identité d'envoi ETHONE"}
+        title="Profil mail"
+        description="Votre identité d'envoi et adresses connectées ETHONE"
         size="md"
         hideFooter
       >
-        <div className="space-y-5">
+        <div className="space-y-5 pt-1">
+          {/* 1. ADRESSE PRINCIPALE */}
           {primary && (
-            <div className="rounded-xl border border-[var(--text-primary)]/[0.06] bg-[var(--text-primary)]/[0.02] p-4">
-              <div className="flex items-center gap-2 text-[10px] font-medium uppercase tracking-wider text-[var(--text-muted)]">
-                <Crown className="h-3.5 w-3.5" />
-                {i18n("primaryAlias") || "Adresse principale"}
+            <div className="rounded-2xl border border-[var(--accent-primary)]/30 bg-gradient-to-b from-[var(--surface-raised)]/90 to-[var(--surface-raised)]/60 p-4 shadow-sm space-y-3.5">
+              <div className="flex items-center justify-between">
+                <div className="flex items-center gap-1.5 text-[10px] font-bold uppercase tracking-wider text-[var(--accent-primary)]">
+                  <Crown className="h-3.5 w-3.5" />
+                  <span>Adresse Principale</span>
+                </div>
+                <span className="rounded-full bg-[var(--accent-primary)]/15 border border-[var(--accent-primary)]/30 px-2 py-0.2 text-[9px] font-bold text-[var(--accent-primary)]">
+                  Active
+                </span>
               </div>
-              <div className="mt-3 flex items-center gap-3">
+
+              <div className="flex items-center justify-between gap-3 rounded-xl border border-[var(--panel-border)] bg-[var(--surface-raised)] p-3">
                 <div className="min-w-0 flex-1">
-                  <p className="flex items-center gap-2 text-sm font-medium text-[var(--text-primary)]">
-                    <Mail className="h-4 w-4 shrink-0 text-purple-400" />
+                  <p className="flex items-center gap-2 text-sm font-bold text-[var(--text-primary)] font-mono">
+                    <Mail className="h-4 w-4 shrink-0 text-[var(--accent-primary)]" />
                     <span className="truncate">{primary.alias}</span>
                   </p>
-                  <p className="mt-0.5 text-[10px] text-[var(--text-muted)]">
-                    {i18n("uniquePerUser") || "Cette adresse est unique et vous est réservée."}
+                  <p className="mt-0.5 text-[11px] text-[var(--text-muted)]">
+                    Cette adresse est unique et vous est réservée.
                   </p>
                 </div>
                 <button
                   type="button"
                   onClick={() => copyEmail(primary.alias)}
-                  className="shrink-0 rounded-md p-1.5 text-[var(--text-muted)] transition-colors hover:bg-[var(--text-primary)]/[0.06] hover:text-[var(--text-primary)]"
-                  aria-label={i18n("copy") || "Copier"}
+                  className="flex h-8 w-8 shrink-0 items-center justify-center rounded-lg border border-[var(--panel-border)] bg-[var(--surface-raised)] text-[var(--text-muted)] hover:text-white transition-colors cursor-pointer"
+                  title="Copier l'adresse"
                 >
-                  {copied === primary.alias ? <CheckCircle2 className="h-4 w-4 text-[var(--success)]" /> : <Copy className="h-4 w-4" />}
+                  {copied === primary.alias ? (
+                    <CheckCircle2 className="h-4 w-4 text-[var(--success)]" />
+                  ) : (
+                    <Copy className="h-3.5 w-3.5" />
+                  )}
                 </button>
               </div>
 
-              <FormField
-                label={i18n("displayName") || "Nom affiché"}
-                help={i18n("displayNameHint") || "Ce nom apparaîtra dans l'expéditeur de vos messages."}
-                className="mt-4"
-              >
-                <Input
-                  type="text"
-                  value={displayName}
-                  onChange={(e) => setDisplayName(e.target.value.slice(0, 80))}
-                  placeholder={i18n("displayName") || "Nom affiché"}
-                  className="w-full"
-                  inputSize="compact"
-                  right={
-                    <Button
-                      type="button"
-                      variant="primary"
-                      size="sm"
-                      onClick={handleSaveDisplayName}
-                      disabled={saving || displayName.trim() === (primary.display_name || "")}
-                      className="h-9 w-9 p-0"
-                      aria-label={i18n("save") || "Enregistrer"}
-                    >
-                      {saving ? <Loader2 className="h-4 w-4 animate-spin" /> : <Check className="h-4 w-4" />}
-                    </Button>
-                  }
-                />
-              </FormField>
+              {/* Nom affiché */}
+              <div className="space-y-1.5">
+                <label className="text-xs font-bold text-[var(--text-primary)]">Nom affiché</label>
+                <div className="flex items-center gap-2">
+                  <input
+                    type="text"
+                    value={displayName}
+                    onChange={(e) => setDisplayName(e.target.value.slice(0, 80))}
+                    placeholder="Ex: Rub"
+                    className="flex-1 rounded-xl border border-[var(--panel-border)] bg-[var(--surface-raised)] px-3 py-2 text-xs text-[var(--text-primary)] focus:border-[var(--accent-primary)] focus:outline-none"
+                  />
+                  <button
+                    type="button"
+                    onClick={handleSaveDisplayName}
+                    disabled={saving || displayName.trim() === (primary.display_name || "")}
+                    className="flex h-9 w-9 shrink-0 items-center justify-center rounded-xl bg-[var(--accent-primary)] text-[var(--accent-contrast)] hover:scale-105 transition-all active:scale-95 disabled:opacity-40 cursor-pointer shadow-xs"
+                    title="Enregistrer le nom"
+                  >
+                    {saving ? <Loader2 className="h-4 w-4 animate-spin" /> : <Check className="h-4 w-4" />}
+                  </button>
+                </div>
+                <p className="text-[10px] text-[var(--text-muted)]">
+                  Minuscules, chiffres, points, tirets. 3-32 caractères.
+                </p>
+              </div>
             </div>
           )}
 
+          {/* 2. MES ADRESSES */}
           {aliases.length > 1 && (
-            <div>
-              <h4 className="mb-2 text-[10px] font-medium uppercase tracking-wider text-[var(--text-muted)]">
-                {i18n("myMailAddresses") || "Mes adresses"}
+            <div className="space-y-2">
+              <h4 className="text-[10px] font-bold uppercase tracking-wider text-[var(--text-muted)]">
+                Mes adresses
               </h4>
               <div className="space-y-2">
                 {aliases.map((a) => (
                   <div
                     key={a.id}
                     className={cn(
-                      "flex items-center gap-3 rounded-xl border px-3 py-2.5",
+                      "flex items-center justify-between gap-3 rounded-2xl border p-3 transition-all",
                       a.is_primary
-                        ? "border-purple-500/20 bg-purple-500/10"
-                        : "border-[var(--text-primary)]/[0.06] bg-[var(--text-primary)]/[0.02]"
+                        ? "border-[var(--accent-primary)]/40 bg-[var(--accent-primary)]/10"
+                        : "border-[var(--panel-border)] bg-[var(--surface-raised)]/40 hover:border-[var(--panel-border)]/80"
                     )}
                   >
                     <div className="min-w-0 flex-1">
-                      <p className="text-sm text-[var(--text-primary)] truncate">{a.alias}</p>
-                      {a.display_name && <p className="text-[10px] text-[var(--text-muted)] truncate">{a.display_name}</p>}
+                      <p className="text-xs font-bold text-[var(--text-primary)] font-mono truncate">
+                        {a.alias}
+                      </p>
+                      {a.display_name && (
+                        <p className="text-[10px] text-[var(--text-muted)] truncate">{a.display_name}</p>
+                      )}
                     </div>
                     {a.is_primary ? (
-                      <span className="flex items-center gap-1 rounded-md bg-[var(--text-primary)]/[0.06] px-2 py-1 text-[10px] text-purple-300">
-                        <Star className="h-3 w-3" />
-                        {i18n("primary") || "Principale"}
+                      <span className="inline-flex items-center gap-1 rounded-full bg-[var(--accent-primary)]/20 border border-[var(--accent-primary)]/40 px-2.5 py-1 text-[10px] font-bold text-[var(--accent-primary)]">
+                        <Star className="h-3 w-3 fill-current" />
+                        Principale
                       </span>
                     ) : (
                       <button
                         type="button"
                         onClick={() => handleSetPrimary(a.id)}
                         disabled={primaryLoading === a.id}
-                        className="rounded-md px-2 py-1 text-[11px] text-[var(--text-primary)] transition-colors hover:bg-[var(--text-primary)]/[0.06] hover:text-[var(--text-primary)] disabled:opacity-50"
+                        className="rounded-xl border border-[var(--panel-border)] bg-[var(--surface-raised)] px-3 py-1.5 text-xs font-medium text-[var(--text-muted)] hover:text-white hover:border-[var(--accent-primary)]/40 transition-all cursor-pointer disabled:opacity-50"
                       >
-                        {primaryLoading === a.id ? <Loader2 className="h-3 w-3 animate-spin" /> : i18n("setAsPrimary") || "Définir principale"}
+                        {primaryLoading === a.id ? (
+                          <Loader2 className="h-3.5 w-3.5 animate-spin" />
+                        ) : (
+                          "Définir principale"
+                        )}
                       </button>
                     )}
                   </div>
@@ -229,55 +243,51 @@ export default function MailProfileButton({ aliases, primaryAlias, updateAlias, 
             </div>
           )}
 
+          {/* 3. AJOUTER UNE ADRESSE */}
           {createAlias && (
-            <div className="rounded-xl border border-[var(--text-primary)]/[0.06] bg-[var(--text-primary)]/[0.02] p-4">
-              <h4 className="mb-3 text-[10px] font-medium uppercase tracking-wider text-[var(--text-muted)]">
-                {i18n("addAlias") || "Ajouter une adresse"}
+            <div className="rounded-2xl border border-[var(--panel-border)] bg-[var(--surface-raised)]/40 p-4 space-y-3">
+              <h4 className="text-[10px] font-bold uppercase tracking-wider text-[var(--text-muted)]">
+                Ajouter une adresse
               </h4>
-              <div className="space-y-3">
-                <Input
+              <div className="space-y-2.5">
+                <input
                   type="text"
                   value={newDisplayName}
                   onChange={(e) => setNewDisplayName(e.target.value.slice(0, 80))}
-                  placeholder={i18n("displayName") || "Nom affiché"}
-                  className="w-full"
-                  inputSize="compact"
+                  placeholder="Nom affiché (optionnel)"
+                  className="w-full rounded-xl border border-[var(--panel-border)] bg-[var(--surface-raised)] px-3 py-2 text-xs text-[var(--text-primary)] focus:border-[var(--accent-primary)] focus:outline-none"
                 />
-                <Input
-                  type="text"
-                  value={local}
-                  onChange={(e) => setLocal(sanitizeLocal(e.target.value))}
-                  placeholder="votre-alias"
-                  className="w-full"
-                  inputSize="compact"
-                  right={
-                    <div className="flex items-center gap-2">
-                      <span className="shrink-0 text-[11px] text-[var(--text-muted)]">@ethone.dev</span>
-                      <Button
-                        type="button"
-                        variant="secondary"
-                        size="sm"
-                        onClick={() => setLocal(randomLocal())}
-                        className="h-9 w-9 p-0"
-                        aria-label={i18n("random") || "Aléatoire"}
-                      >
-                        <Plus className="h-4 w-4" />
-                      </Button>
-                    </div>
-                  }
-                />
-                <Button
+
+                <div className="relative flex items-center">
+                  <input
+                    type="text"
+                    value={local}
+                    onChange={(e) => setLocal(sanitizeLocal(e.target.value))}
+                    placeholder="votre-alias"
+                    className="w-full rounded-xl border border-[var(--panel-border)] bg-[var(--surface-raised)] px-3 py-2 pr-32 text-xs text-[var(--text-primary)] font-mono focus:border-[var(--accent-primary)] focus:outline-none"
+                  />
+                  <div className="absolute right-2 top-1/2 -translate-y-1/2 flex items-center gap-1.5">
+                    <span className="text-[11px] font-mono text-[var(--text-muted)]">@ethone.dev</span>
+                    <button
+                      type="button"
+                      onClick={() => setLocal(randomLocal())}
+                      className="flex h-7 w-7 items-center justify-center rounded-lg border border-[var(--panel-border)] bg-[var(--surface-raised)] text-[var(--text-muted)] hover:text-white hover:border-[var(--accent-primary)]/40 transition-all cursor-pointer"
+                      title="Générer un alias aléatoire"
+                    >
+                      <Shuffle className="h-3.5 w-3.5" />
+                    </button>
+                  </div>
+                </div>
+
+                <button
                   type="button"
-                  variant="primary"
-                  size="md"
                   onClick={handleCreate}
                   disabled={creating || !local.trim()}
-                  isLoading={creating}
-                  leftIcon={<Plus className="h-4 w-4" />}
-                  className="w-full"
+                  className="w-full mt-1 flex items-center justify-center gap-2 rounded-xl bg-[var(--accent-primary)] py-2.5 px-4 text-xs font-bold text-[var(--accent-contrast)] shadow-md hover:scale-[1.01] transition-all active:scale-95 disabled:opacity-50 cursor-pointer"
                 >
-                  {i18n("createAlias") || "Créer l'adresse"}
-                </Button>
+                  {creating ? <Loader2 className="h-4 w-4 animate-spin" /> : <Plus className="h-4 w-4" />}
+                  <span>Créer l&apos;adresse</span>
+                </button>
               </div>
             </div>
           )}

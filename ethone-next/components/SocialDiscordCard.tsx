@@ -128,32 +128,25 @@ const SocialDiscordCard = memo(function SocialDiscordCard({
   const hasOAuth = isOAuth;
 
   const { badgeColor, badgeLabel, badgeTone } = useMemo(() => {
-    if (loading && !hasLanyard && hasAnyConnection) {
-      return {
-        badgeColor: "bg-[var(--info)]",
-        badgeLabel: i18n("loading", "Chargement"),
-        badgeTone: "border-[var(--info)] bg-[var(--info)]/10 text-[var(--info)]",
-      };
-    }
-    if (error && hasAnyConnection && !hasLanyard) {
-      return {
-        badgeColor: "bg-[var(--danger)]",
-        badgeLabel: i18n("error", "Erreur"),
-        badgeTone: "border-[var(--danger)]/30 bg-[var(--danger)]/10 text-[var(--danger)]",
-      };
-    }
     if (hasLanyard) {
       return { badgeColor: color, badgeLabel: label, badgeTone: statusTone(status) };
     }
     if (hasAnyConnection) {
       return {
-        badgeColor: "bg-[var(--accent-primary)]",
+        badgeColor: "bg-emerald-400",
         badgeLabel: i18n("connected", "Connecté"),
-        badgeTone: "border-[var(--accent-primary)] bg-[var(--accent-primary)]/10 text-[var(--accent-primary)]",
+        badgeTone: "border-emerald-500/30 bg-emerald-500/10 text-emerald-400",
+      };
+    }
+    if (loading) {
+      return {
+        badgeColor: "bg-sky-400",
+        badgeLabel: i18n("loading", "Chargement"),
+        badgeTone: "border-sky-500/30 bg-sky-500/10 text-sky-300",
       };
     }
     return { badgeColor: color, badgeLabel: label, badgeTone: statusTone(status) };
-  }, [color, error, hasAnyConnection, hasLanyard, i18n, label, loading, status]);
+  }, [color, hasAnyConnection, hasLanyard, i18n, label, loading, status]);
 
   const activities = lanyard?.activities ?? [];
   const customStatus = activities.find((activity) => activity.name === "Custom Status")?.state;
@@ -203,45 +196,39 @@ const SocialDiscordCard = memo(function SocialDiscordCard({
   return (
     <TiltCard
       className={cn(
-        "relative flex h-full min-h-0 flex-col v8-panel overflow-hidden bg-gradient-to-br from-indigo-950/40 via-purple-900/10 to-black/20 p-4 shadow-xl shadow-black/50 backdrop-blur-2xl transition-all hover:border-indigo-500/25",
+        "relative flex h-full min-h-0 flex-col overflow-hidden no-scrollbar select-none rounded-2xl border border-[var(--border)] bg-[var(--panel-bg)] p-4 shadow-xl backdrop-blur-2xl transition-all duration-300 hover:border-[var(--border-hover)]",
         className
       )}
     >
-      {activeMusic?.cover && (
-        <div className="absolute inset-0 z-0 overflow-hidden">
-          <ClientImage
-            candidates={[activeMusic.cover]}
-            alt=""
-            fill
-            className="!z-0 object-cover opacity-20 blur-sm"
-            priority
-            fallback={null}
-          />
-          <div className="absolute inset-0 z-10 bg-gradient-to-t from-black/80 via-black/50 to-black/30" />
-        </div>
-      )}
-      <div className="relative z-20 flex h-full min-h-0 flex-col">
+      <div className="relative z-10 flex h-full min-h-0 flex-col gap-3">
+        {/* Header */}
         <div className="flex items-center justify-between">
-        <span className="text-[11px] font-semibold uppercase tracking-wider text-[var(--text-muted)]">
-          Social & Media
-        </span>
-        <span
-          className={cn(
-            "inline-flex items-center gap-1.5 rounded-lg border px-2 py-0.5 text-[10px] font-medium",
-            badgeTone
-          )}
-        >
-          <span className={cn("h-1.5 w-1.5 rounded-full", badgeColor)} />
-          {badgeLabel}
-        </span>
-      </div>
+          <div className="flex items-center gap-2">
+            <div className="flex h-6 w-6 items-center justify-center rounded-lg bg-[var(--accent-primary)]/10 text-[var(--accent-primary)]">
+              <Icon name="message-square" className="h-3.5 w-3.5" />
+            </div>
+            <span className="text-[11px] font-bold uppercase tracking-wider text-[var(--text-muted)]">
+              Social & Media
+            </span>
+          </div>
 
-      {!hasLanyard && !hasOAuth && !hasMusic ? (
+          <span
+            className={cn(
+              "inline-flex items-center gap-1.5 rounded-full border px-2.5 py-0.5 text-[10px] font-bold shadow-xs",
+              badgeTone
+            )}
+          >
+            <span className={cn("h-1.5 w-1.5 rounded-full", badgeColor)} />
+            {badgeLabel}
+          </span>
+        </div>
+
+      {!hasLanyard && !hasOAuth && !activeMusic ? (
         <div className="flex flex-1 flex-col items-center justify-center gap-3 rounded-xl border border-[var(--text-primary)]/[0.05] bg-[var(--text-primary)]/[0.02] p-4 text-center">
           {loading && hasAnyConnection ? (
             <Loader2 className="h-6 w-6 animate-spin text-[var(--text-muted)]" />
-          ) : error && hasAnyConnection ? (
-            <AlertCircle className="h-6 w-6 text-[var(--danger)]" />
+          ) : hasAnyConnection ? (
+            <Radio className="h-6 w-6 text-emerald-400 animate-pulse" />
           ) : (
             <RadioOff className="h-6 w-6 text-[var(--text-muted)]" />
           )}

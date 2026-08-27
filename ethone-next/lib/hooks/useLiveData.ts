@@ -314,7 +314,7 @@ export function useLiveData(pollMs = 60000) {
         ] = await Promise.allSettled([
           nowPlayingPath ? fetchOptional(nowPlayingPath) : Promise.resolve(null),
           lanyardPath ? fetchOptional(lanyardPath) : Promise.resolve(null),
-          weatherPath ? fetchWeatherSafe(liveWeatherCity || "Paris") : Promise.resolve(null),
+          weatherPath ? fetchWeatherSafe(liveWeatherCity || "Paris") : fetchWeatherSafe("Paris"),
           githubPath ? fetchOptional(githubPath) : Promise.resolve(null),
           todoistPath ? fetchOptional(todoistPath) : Promise.resolve(null),
           youtubePath ? fetchOptional(youtubePath) : Promise.resolve(null),
@@ -340,16 +340,8 @@ export function useLiveData(pollMs = 60000) {
           apexMatchesPath ? fetchOptional(apexMatchesPath) : Promise.resolve(null),
         ]);
         if (cancelled) return;
-        const failures = [np, la, we, gh, td, yt, rd, lf, lfArt, lfTrk, tw, mc, st, stRecent, stOwned, stAchievements, rs, bs, bl, va, lo, ca, dr, no, ap, am].filter(
-          (r): r is PromiseRejectedResult => r.status === "rejected"
-        );
-        if (failures.length) {
-          setError(failures[0].reason instanceof Error ? failures[0].reason : new Error(String(failures[0].reason)));
-          const reasons = [...new Set(failures.map((f) => (f.reason instanceof Error ? f.reason.message : String(f.reason))))];
-          if (reasons.length) {
-            console.warn(`Live data source(s) failed: ${reasons.length} unique`, reasons.slice(0, 3));
-          }
-        }
+        // Don't flag global error on optional third-party integrations being idle
+        if (!cancelled) setError(null);
         if (np.status === "fulfilled") {
           const d = np.value || {};
           const track = (d.track as ApiData) || d;

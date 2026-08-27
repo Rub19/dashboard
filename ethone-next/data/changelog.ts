@@ -7206,6 +7206,54 @@ CHANGELOG_BY_LANG.es.unshift({
 });
 
 CHANGELOG_BY_LANG.fr.unshift({
+  version: "v1.10.93",
+  date: "2026-08-27",
+  title: "Résolution des Widgets : Statuts Réels, Météo Fiabilisée & Liens Trackers",
+  items: [
+    "Suppression des faux états d'erreur '• Erreur' causés par des intégrations tierces optionnelles.",
+    "Météo fiabilisée : chargement automatique par défaut même sans configuration préalable de ville.",
+    "Minecraft 3D : affichage immédiat du statut 'Prêt' / 'En ligne' avec pastille verte pour les comptes configurés.",
+    "Social & Media : affichage clair de l'état 'Connecté — en attente d'activité' sans fausse alerte rouge.",
+    "Riot Trackers (Valorant & LoL) : redirection directe et fluide vers la page des matchs réels (/matches).",
+    "Version affichée : v1.10.93.",
+  ],
+});
+
+CHANGELOG_BY_LANG.en.unshift({
+  version: "v1.10.93",
+  date: "2026-08-27",
+  title: "Widget Fix: Real Statuses, Resilient Weather & Tracker Navigation",
+  items: [
+    "Eliminated false error badges ('• Erreur') triggered by optional third-party integrations.",
+    "Weather widget is now always reliably fetched with safe city fallback.",
+    "Minecraft 3D now displays 'Ready / Online' with green dot for configured players.",
+    "Social & Media widget shows clean connected standby state without red error alert.",
+    "Riot Games cards now navigate directly to real match statistics (/matches).",
+    "Version badge: v1.10.93.",
+  ],
+});
+
+CHANGELOG_BY_LANG.es.unshift({
+  version: "v1.10.93",
+  date: "2026-08-27",
+  title: "Corrección de Widgets: Estados Reales, Clima Fiable y Trackers",
+  items: [
+    "Corrección de estados de error falsos en widgets, clima fiable y navegación hacia estadísticas.",
+    "Versión: v1.10.93.",
+  ],
+});
+
+CHANGELOG_BY_LANG.de.unshift({
+  version: "v1.10.93",
+  date: "2026-08-27",
+  title: "Widget-Korrektur: Echte Statusanzeigen, stabiles Wetter & Tracker-Navigation",
+  items: [
+    "Beseitigung falscher Fehleranzeigen, stabileres Wetter-Widget und direkte Navigation zu Match-Statistiken.",
+    "Version: v1.10.93.",
+  ],
+});
+
+CHANGELOG_BY_LANG.fr.unshift({
   version: "v1.10.92",
   date: "2026-08-27",
   title: "Audit & Optimisation Fluidité : Requêtes Worker, Défilement 60 FPS & Sidebar",

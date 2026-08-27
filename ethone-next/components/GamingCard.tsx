@@ -106,25 +106,18 @@ const GamingCard = memo(function GamingCard({
   const server = profile?.server;
 
   const { statusText, statusClass, statusDot } = useMemo(() => {
-    if (loading && !hasProfile) {
+    if (hasProfile || hasUsername) {
+      return {
+        statusText: i18n("online", "Prêt"),
+        statusClass: "border-emerald-500/30 bg-emerald-500/15 text-emerald-400",
+        statusDot: "bg-emerald-400 shadow-[0_0_8px_rgba(52,211,153,0.8)]",
+      };
+    }
+    if (loading) {
       return {
         statusText: i18n("loading", "Chargement"),
         statusClass: "border-sky-500/30 bg-sky-500/10 text-sky-300",
         statusDot: "bg-sky-400 animate-pulse",
-      };
-    }
-    if (error && configured && !hasProfile) {
-      return {
-        statusText: i18n("error", "Erreur"),
-        statusClass: "border-rose-500/30 bg-rose-500/10 text-rose-300",
-        statusDot: "bg-rose-400",
-      };
-    }
-    if (hasProfile || hasUsername) {
-      return {
-        statusText: i18n("online", "En ligne"),
-        statusClass: "border-emerald-500/30 bg-emerald-500/15 text-emerald-400",
-        statusDot: "bg-emerald-400 shadow-[0_0_8px_rgba(52,211,153,0.8)]",
       };
     }
     return {

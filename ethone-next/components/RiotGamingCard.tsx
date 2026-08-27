@@ -2,6 +2,7 @@
 
 import { memo, useMemo, useState } from "react";
 import Link from "next/link";
+import { useRouter } from "next/navigation";
 import { AlertCircle, Loader2, User, ExternalLink, Activity } from "lucide-react";
 import { useSettings } from "@/components/SettingsProvider";
 import { useI18n } from "@/lib/hooks/useI18n";
@@ -103,6 +104,7 @@ export const RiotGamingCardContent = memo(function RiotGamingCardContent({
   onOpenTracker,
 }: RiotGamingCardProps) {
   const i18n = useI18n();
+  const router = useRouter();
   const { settings } = useSettings();
   const config = GAME_CONFIG[game];
 
@@ -204,10 +206,14 @@ export const RiotGamingCardContent = memo(function RiotGamingCardContent({
             type="button"
             onClick={(e) => {
               e.stopPropagation();
-              onOpenTracker?.();
+              if (onOpenTracker) {
+                onOpenTracker();
+              } else {
+                router.push("/matches");
+              }
             }}
             className={cn(
-              "rounded-xl px-4 py-2 text-xs font-bold transition-all active:scale-95",
+              "rounded-xl px-4 py-2 text-xs font-bold transition-all active:scale-95 cursor-pointer",
               game === "valorant" ? "bg-[var(--danger)] text-white shadow-md shadow-rose-900/30" : "bg-[var(--warning)] text-black shadow-md shadow-amber-900/30"
             )}
           >
@@ -234,7 +240,11 @@ export const RiotGamingCardContent = memo(function RiotGamingCardContent({
             type="button"
             onClick={(e) => {
               e.stopPropagation();
-              onOpenTracker?.();
+              if (onOpenTracker) {
+                onOpenTracker();
+              } else {
+                router.push("/matches");
+              }
             }}
             className={cn(
               "w-full rounded-xl py-2 px-3 text-xs font-bold transition-all flex items-center justify-center gap-1.5 active:scale-95 cursor-pointer shadow-md",

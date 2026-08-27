@@ -5,9 +5,9 @@ const SESSION_KEY = "ethone-focus-session-v1";
 const CLOUD_SYNC_INTERVAL = 1000; // 1s debounce for continuous ticks
 
 export type FocusPhase = "idle" | "focus" | "shortBreak" | "longBreak";
-export type FocusPreset = "pomodoro" | "deep-work" | "sprint" | "custom" | "quick";
+export type FocusPreset = "pomodoro" | "deep-work" | "sprint" | "flow" | "study" | "quick" | "custom";
 
-export const FOCUS_PRESETS: FocusPreset[] = ["pomodoro", "deep-work", "sprint", "custom"];
+export const FOCUS_PRESETS: FocusPreset[] = ["pomodoro", "deep-work", "sprint", "flow", "study", "quick", "custom"];
 
 type PresetConfig = {
   work: number;
@@ -19,9 +19,11 @@ const PRESETS: Record<string, PresetConfig> = {
   pomodoro: { work: 25, shortBreak: 5, longBreak: 15 },
   "deep-work": { work: 50, shortBreak: 10, longBreak: 30 },
   deep: { work: 50, shortBreak: 10, longBreak: 30 },
-  sprint: { work: 10, shortBreak: 2, longBreak: 5 },
-  quick: { work: 15, shortBreak: 3, longBreak: 10 },
-  custom: { work: 45, shortBreak: 5, longBreak: 15 },
+  sprint: { work: 15, shortBreak: 3, longBreak: 8 },
+  flow: { work: 90, shortBreak: 20, longBreak: 30 },
+  study: { work: 45, shortBreak: 10, longBreak: 20 },
+  quick: { work: 10, shortBreak: 2, longBreak: 5 },
+  custom: { work: 30, shortBreak: 5, longBreak: 15 },
 };
 
 type FocusSession = Omit<FocusTimerState, "format"> & {
@@ -330,6 +332,19 @@ export class FocusTimer {
     });
     this.lastTick = Date.now();
     this.startInterval();
+    this.persist();
+    this.flushCloudPersist();
+    this.notify();
+  }
+
+  adjustTime(deltaSeconds: number): void {
+    const newRemaining = Math.max(60, this.state.remaining + deltaSeconds);
+    const newTotal = Math.max(newRemaining, this.state.total + (deltaSeconds > 0 ? deltaSeconds : 0));
+    this.state = this.makeState({
+      ...this.state,
+      remaining: newRemaining,
+      total: newTotal,
+    });
     this.persist();
     this.flushCloudPersist();
     this.notify();

@@ -1,57 +1,56 @@
 "use client";
 
-import { useEffect, useRef } from "react";
+import { useEffect, useRef, useState } from "react";
 import { motion } from "framer-motion";
-import { Play, Pause, RotateCcw, SkipForward, Maximize2, Minimize2, Brain, Clock, Coffee } from "lucide-react";
 import { useI18n } from "@/lib/hooks/useI18n";
 import { useToast } from "@/components/ToastProvider";
 import { useFocus } from "@/components/FocusProvider";
 import { triggerPomodoroCompletedNotification } from "@/lib/local-notifications";
 import { useSettings } from "@/components/SettingsProvider";
 import { useZenMode } from "@/lib/hooks/useZenMode";
-import FocusTimerRing from "@/components/FocusTimerRing";
+import { Icon } from "@/lib/icons";
+import FocusTimer2026 from "@/components/focus/FocusTimer2026";
+import FocusTaskQueue from "@/components/focus/FocusTaskQueue";
+import FocusSoundscapeMixer from "@/components/focus/FocusSoundscapeMixer";
+import FocusScenes from "@/components/focus/FocusScenes";
+import FocusStatsAndGoals from "@/components/focus/FocusStatsAndGoals";
+import { cn } from "@/lib/utils";
 
-const PRESETS = [
-  { id: "pomodoro", label: "Pomodoro (25m)" },
-  { id: "deep-work", label: "Deep Work (50m)" },
-  { id: "sprint", label: "Sprint (15m)" },
-  { id: "custom", label: "Personnalisé" },
+const FOCUS_MODES = [
+  { id: "pomodoro", label: "Pomodoro", duration: "25m / 5m" },
+  { id: "deep-work", label: "Deep Work", duration: "50m / 10m" },
+  { id: "sprint", label: "Sprint", duration: "15m / 3m" },
+  { id: "flow", label: "Flow", duration: "90m / 20m" },
+  { id: "study", label: "Study", duration: "45m / 10m" },
+  { id: "quick", label: "Quick Focus", duration: "10m" },
 ] as const;
-
-type PresetId = (typeof PRESETS)[number]["id"];
-
-function formatTotalFocus(totalSeconds: number) {
-  const hours = Math.floor(totalSeconds / 3600);
-  const minutes = Math.floor((totalSeconds % 3600) / 60);
-  if (hours > 0) return `${hours}h ${String(minutes).padStart(2, "0")}min`;
-  return `${minutes} min`;
-}
 
 export default function FocusPage() {
   const i18n = useI18n();
   const { success } = useToast();
-  const { state, start, pause, resume, stop, skipBreak, format } = useFocus();
+  const { state, start, pause, resume, stop, skipBreak, adjustTime, format } = useFocus();
   const { settings, update } = useSettings();
-  const { zenMode, toggle } = useZenMode();
+  const { zenMode, toggle: toggleZen } = useZenMode();
+  const [activeTask, setActiveTask] = useState<{ id: string; title: string } | null>(null);
   const prevPhase = useRef(state.phase);
 
   useEffect(() => {
-    if (prevPhase.current === "focus" && (state.phase === "shortBreak" || state.phase === "longBreak")) {
-      success(i18n("focusDone"));
+    if (
+      prevPhase.current === "focus" &&
+      (state.phase === "shortBreak" || state.phase === "longBreak")
+    ) {
+      success("Cycle terminé ! Prenez une pause bien méritée.");
       void triggerPomodoroCompletedNotification(state.activePreset || "Focus");
     }
     prevPhase.current = state.phase;
-  }, [state.phase, state.activePreset, success, i18n]);
+  }, [state.phase, state.activePreset, success]);
 
-  const activePreset = (state.activePreset || settings.focusPreset || "pomodoro") as PresetId;
-
+  const activePreset = state.activePreset || settings.focusPreset || "pomodoro";
   const progress = state.total > 0 ? (state.total - state.remaining) / state.total : 0;
 
-  function select(preset: PresetId) {
-    start(preset);
-    if (PRESETS.some((p) => p.id === preset)) {
-      update({ focusPreset: preset });
-    }
+  function selectMode(presetId: string) {
+    start(presetId);
+    update({ focusPreset: presetId as never });
   }
 
   function togglePlay() {
@@ -70,165 +69,146 @@ export default function FocusPage() {
     } else if (zenMode && typeof document !== "undefined" && document.fullscreenElement) {
       document.exitFullscreen().catch(() => {});
     }
-    toggle();
+    toggleZen();
   }
 
-  const isBreak = state.phase === "shortBreak" || state.phase === "longBreak";
-  const isIdle = state.phase === "idle";
-
-  const cycleLabel = isBreak
-    ? i18n(state.phase)
-    : i18n("focusCycle").replace("{{cycle}}", String(state.cycle)).replace("{{total}}", "4");
-
   return (
-    <div className="flex h-full min-h-0 w-full flex-col overflow-hidden">
-      <div className="min-h-0 flex-1 w-full overflow-y-auto os-scroll">
-        <div className="w-full space-y-5 px-0 pb-10 pt-0">
-          <div className="flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-between">
-        <div>
-          <h1 className="text-2xl font-bold tracking-tight text-[var(--text-primary)] flex items-center gap-3">
-            <span>{i18n("focusTitle")}</span>
-          </h1>
-          <p className="text-xs text-[var(--text-muted)] mt-0.5">{i18n("focusDescription")}</p>
+    <div className="flex h-full min-h-0 w-full flex-col overflow-hidden bg-transparent">
+      {/* Top Bar Header */}
+      <header className="flex items-center justify-between border-b border-[var(--panel-border)]/60 bg-[var(--panel-bg)]/40 px-6 py-3.5 backdrop-blur-xl">
+        <div className="flex items-center gap-3">
+          <div className="flex h-8 w-8 items-center justify-center rounded-xl bg-[var(--accent-primary)]/15 text-[var(--accent-primary)] font-bold">
+            <Icon name="timer" className="h-4 w-4" />
+          </div>
+          <div>
+            <h1 className="text-sm font-bold text-[var(--text-primary)]">
+              ETHONE Focus OS
+            </h1>
+            <p className="text-[10px] text-[var(--text-muted)]">
+              Environnement de concentration haute fidélité
+            </p>
+          </div>
         </div>
+
+        {/* Zen Mode Button */}
         <button
           type="button"
           onClick={handleZen}
-          className={`inline-flex items-center gap-1.5 rounded-xl border px-3 py-1.5 text-xs font-medium transition-all ${
+          className={cn(
+            "flex items-center gap-1.5 rounded-xl border px-3 py-1.5 text-xs font-semibold transition-all",
             zenMode
-              ? "border-[var(--accent-primary)]/30 bg-[var(--accent-primary)]/10 text-[var(--accent-primary)]"
-              : "border-[var(--panel-border)] bg-[var(--text-primary)]/[0.04] text-[var(--text-muted)] hover:bg-[var(--text-primary)]/[0.08] hover:text-[var(--text-primary)]"
-          }`}
-          title={zenMode ? i18n("disableZen") : i18n("enableZen")}
+              ? "border-[var(--accent-primary)]/40 bg-[var(--accent-primary)]/15 text-[var(--accent-primary)]"
+              : "border-[var(--panel-border)] bg-[var(--surface-raised)]/60 text-[var(--text-muted)] hover:text-[var(--text-primary)]"
+          )}
         >
-          {zenMode ? <Minimize2 className="h-3.5 w-3.5" /> : <Maximize2 className="h-3.5 w-3.5" />}
-          {zenMode ? i18n("disableZen") : i18n("enableZen")}
+          <Icon name={zenMode ? "corners-in" : "corners-out"} className="h-3.5 w-3.5" />
+          <span>{zenMode ? "Quitter Zen" : "Mode Zen"}</span>
         </button>
-      </div>
+      </header>
 
-      <div className="inline-flex w-full justify-center p-1 bg-[var(--text-primary)]/[0.03] border border-[var(--text-primary)]/[0.08] rounded-xl backdrop-blur-md">
-        {PRESETS.map((preset) => {
-          const active = activePreset === preset.id;
-          return (
-            <button
-              key={preset.id}
-              type="button"
-              onClick={() => select(preset.id)}
-              className="relative z-10 px-3.5 py-2 text-xs font-medium transition-colors text-left"
-            >
-              {active && (
-                <motion.div
-                  layoutId="activeFocusPreset"
-                  className="absolute inset-0 rounded-lg"
-                  style={{
-                    background: "var(--accent-muted, rgba(168, 85, 247, 0.12))",
-                    border: "1px solid var(--accent-border, rgba(168, 85, 247, 0.3))",
-                    boxShadow: "0 0 12px var(--accent-glow, rgba(168, 85, 247, 0.15))",
-                  }}
-                  transition={{ type: "spring", stiffness: 450, damping: 35 }}
-                />
-              )}
-              <span
-                className="relative z-10"
-                style={{ color: active ? "#ffffff" : "#a1a1aa" }}
-              >
-                {i18n(preset.label)}
-              </span>
-            </button>
-          );
-        })}
-      </div>
+      {/* Main Responsive Grid Layout */}
+      <div className="flex-1 overflow-y-auto os-scroll p-4 sm:p-6">
+        <div className="max-w-6xl mx-auto w-full space-y-6">
+          {/* Focus Mode Selector Bar */}
+          <div className="flex items-center justify-start sm:justify-center gap-1.5 overflow-x-auto no-scrollbar p-1 rounded-2xl border border-[var(--panel-border)] bg-[var(--surface-raised)]/50 backdrop-blur-md">
+            {FOCUS_MODES.map((mode) => {
+              const isActive = activePreset === mode.id;
+              return (
+                <button
+                  key={mode.id}
+                  type="button"
+                  onClick={() => selectMode(mode.id)}
+                  className={cn(
+                    "flex shrink-0 items-center gap-1.5 rounded-xl px-3.5 py-1.5 text-xs font-medium transition-all",
+                    isActive
+                      ? "bg-[var(--accent-primary)] text-[var(--accent-contrast)] font-semibold shadow-md"
+                      : "text-[var(--text-muted)] hover:text-[var(--text-primary)] hover:bg-[var(--surface-hover)]/40"
+                  )}
+                >
+                  <span>{mode.label}</span>
+                  <span className="text-[10px] opacity-75">({mode.duration})</span>
+                </button>
+              );
+            })}
+          </div>
 
-      <div className="v8-panel p-5 shadow-xl shadow-black/50">
-        <div className="pointer-events-none absolute inset-0 bg-gradient-to-b from-white/[0.03] to-transparent rounded-2xl" />
-        <FocusTimerRing
-          progress={progress}
-          remaining={format(state.remaining)}
-          label={cycleLabel}
-          size={288}
-        />
+          {/* Brain Smart Recommendation Pill */}
+          <div className="flex items-center gap-2.5 rounded-2xl border border-[var(--accent-primary)]/25 bg-[var(--accent-primary)]/10 px-4 py-2.5 text-xs text-[var(--text-primary)] shadow-sm">
+            <Icon name="brain" className="h-4 w-4 text-[var(--accent-primary)] shrink-0" />
+            <span className="text-[var(--text-muted)]">Recommandation Brain :</span>
+            <span className="font-semibold text-[var(--text-primary)]">
+              {activeTask
+                ? `Lancez une session sur "${activeTask.title}" avec l'ambiance Pluie pour un focus optimal.`
+                : "Associez une tâche à votre session pour maximiser votre flow."}
+            </span>
+          </div>
 
-        <div className="flex items-center justify-center gap-3">
-          <button
-            type="button"
-            aria-label={state.paused || isIdle ? i18n("play") : i18n("pause")}
-            onClick={togglePlay}
-            className="flex h-14 w-14 items-center justify-center rounded-2xl shadow-xl transition-all duration-200 hover:scale-105 active:scale-95"
-            style={{
-              background: "var(--accent-color, var(--accent-primary))",
-              color: "var(--accent-contrast)",
-              boxShadow: "0 0 24px var(--accent-glow, rgba(16, 185, 129, 0.35))",
-            }}
-          >
-            {state.paused || isIdle ? (
-              <Play className="h-6 w-6 fill-current ml-0.5" />
-            ) : (
-              <Pause className="h-6 w-6 fill-current" />
-            )}
-          </button>
+          {/* 2-Column Responsive Layout */}
+          <div className="grid grid-cols-1 lg:grid-cols-12 gap-6 items-start">
+            {/* Left Column: Center Timer */}
+            <div className="lg:col-span-7 flex flex-col items-center justify-center rounded-3xl border border-[var(--panel-border)] bg-[var(--surface-raised)]/50 p-6 shadow-xl backdrop-blur-2xl">
+              <FocusTimer2026
+                progress={progress}
+                remaining={format(state.remaining)}
+                phase={state.phase}
+                cycle={state.cycle}
+                paused={state.paused}
+                onTogglePlay={togglePlay}
+                onStop={stop}
+                onSkipBreak={skipBreak}
+                onAdjustTime={adjustTime}
+                activeTaskTitle={activeTask?.title}
+              />
+            </div>
 
-          <button
-            type="button"
-            aria-label={i18n("stop")}
-            onClick={stop}
-            className="flex h-11 w-11 items-center justify-center rounded-xl border border-[var(--panel-border)] bg-[var(--text-primary)]/[0.04] text-[var(--text-muted)] transition-all hover:bg-[var(--text-primary)]/[0.08] hover:text-[var(--text-primary)]"
-          >
-            <RotateCcw className="h-4 w-4" />
-          </button>
+            {/* Right Column: Task Queue & Stats & Mixer */}
+            <div className="lg:col-span-5 flex flex-col gap-5">
+              {/* Task Queue */}
+              <FocusTaskQueue
+                activeTaskId={activeTask?.id || null}
+                onSelectTask={(t) => setActiveTask(t)}
+              />
 
-          <button
-            type="button"
-            aria-label={i18n("skipBreak")}
-            onClick={skipBreak}
-            disabled={!isBreak}
-            className={`flex h-11 w-11 items-center justify-center rounded-xl border transition-all ${
-              isBreak
-                ? "border-[var(--panel-border)] bg-[var(--text-primary)]/[0.04] text-[var(--text-muted)] hover:bg-[var(--text-primary)]/[0.08] hover:text-[var(--text-primary)]"
-                : "border-[var(--text-primary)]/[0.06] bg-[var(--text-primary)]/[0.02] text-[var(--text-muted)] cursor-not-allowed"
-            }`}
-          >
-            <SkipForward className="h-4 w-4" />
-          </button>
+              {/* Focus Scenes */}
+              <FocusScenes />
+
+              {/* Soundscape Mixer */}
+              <FocusSoundscapeMixer />
+
+              {/* Stats & Goals */}
+              <FocusStatsAndGoals
+                completedPomodoros={state.completedPomodoros}
+                totalFocusSeconds={state.totalFocusSeconds}
+                completedBreaks={state.completedBreaks}
+              />
+            </div>
+          </div>
         </div>
       </div>
 
-      <div className="grid grid-cols-1 gap-3 sm:grid-cols-3 w-full">
-        <div className="v8-panel p-4 flex flex-col items-center text-center transition-all hover:border-[var(--text-primary)]/[0.16]">
-          <Brain className="h-5 w-5 mb-2" style={{ color: "var(--accent-color, #10b981)" }} />
-          <p className="text-2xl font-bold font-mono text-[var(--text-primary)]">{state.completedPomodoros}</p>
-          <p className="text-xs text-[var(--text-muted)] mt-1">{i18n("pomodoros")}</p>
-        </div>
-
-        <div className="v8-panel p-4 flex flex-col items-center text-center transition-all hover:border-[var(--text-primary)]/[0.16]">
-          <Clock className="h-5 w-5 text-amber-400 mb-2" />
-          <p className="text-2xl font-bold font-mono text-[var(--text-primary)]">{formatTotalFocus(state.totalFocusSeconds)}</p>
-          <p className="text-xs text-[var(--text-muted)] mt-1">{i18n("totalFocus")}</p>
-        </div>
-
-        <div className="v8-panel p-4 flex flex-col items-center text-center transition-all hover:border-[var(--text-primary)]/[0.16]">
-          <Coffee className="h-5 w-5 text-[var(--info)] mb-2" />
-          <p className="text-2xl font-bold font-mono text-[var(--text-primary)]">{state.completedBreaks}</p>
-          <p className="text-xs text-[var(--text-muted)] mt-1">{i18n("breaks")}</p>
-        </div>
-      </div>
-      </div>
-      </div>
-
+      {/* Fullscreen Zen Overlay */}
       {zenMode && (
-        <div className="fixed inset-0 z-[var(--z-modal)] flex flex-col items-center justify-center bg-[var(--background)]/90 backdrop-blur-2xl">
-          <div className="absolute inset-0 bg-gradient-radial from-[var(--accent-primary)] via-transparent to-transparent" />
-          <FocusTimerRing
+        <div className="fixed inset-0 z-[var(--z-modal)] flex flex-col items-center justify-center bg-[var(--bg-main)]/95 backdrop-blur-3xl p-6">
+          <FocusTimer2026
             progress={progress}
             remaining={format(state.remaining)}
-            label={cycleLabel}
-            size={320}
+            phase={state.phase}
+            cycle={state.cycle}
+            paused={state.paused}
+            onTogglePlay={togglePlay}
+            onStop={stop}
+            onSkipBreak={skipBreak}
+            onAdjustTime={adjustTime}
+            size={360}
+            activeTaskTitle={activeTask?.title}
           />
+
           <button
             type="button"
             onClick={handleZen}
-            className="absolute bottom-8 rounded-xl border border-[var(--panel-border)] bg-[var(--text-primary)]/[0.04] px-4 py-2 text-xs text-[var(--text-primary)] transition-all hover:bg-[var(--text-primary)]/[0.08] hover:text-[var(--text-primary)]"
+            className="mt-8 rounded-xl border border-[var(--panel-border)] bg-[var(--surface-raised)]/60 px-4 py-2 text-xs font-semibold text-[var(--text-primary)] hover:border-[var(--accent-primary)]/40 transition-all"
           >
-            {i18n("disableZen")}
+            Quitter le mode Zen (Échap)
           </button>
         </div>
       )}

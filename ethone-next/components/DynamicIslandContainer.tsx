@@ -829,6 +829,17 @@ export default function DynamicIslandContainer() {
                     <Icon name="stop" pack="phosphor" className="h-3.5 w-3.5" />
                     {i18n("stop")}
                   </button>
+                  <button
+                    type="button"
+                    onClick={() => {
+                      router.push("/focus");
+                      setMode("COMPACT");
+                    }}
+                    className="flex items-center gap-1.5 rounded-xl border border-[var(--panel-border)] px-3 py-1.5 text-xs font-medium text-[var(--text-muted)] transition-colors hover:border-[var(--accent-primary)]/40 hover:text-[var(--text-primary)]"
+                  >
+                    <Icon name="arrow-square-out" pack="phosphor" className="h-3.5 w-3.5" />
+                    Ouvrir Focus
+                  </button>
                 </div>
               </div>
             </DynamicIslandView>

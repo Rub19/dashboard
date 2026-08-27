@@ -12,6 +12,8 @@ import {
 import { useSettings } from "@/components/SettingsProvider";
 import type { SoundAmbient } from "@/lib/settings";
 
+export type { SoundAmbient };
+
 export type SoundType =
   | "click"
   | "hover"

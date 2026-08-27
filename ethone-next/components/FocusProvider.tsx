@@ -16,6 +16,7 @@ type FocusContextValue = {
   stop: () => void;
   skip: () => void;
   skipBreak: () => void;
+  adjustTime: (deltaSeconds: number) => void;
   format: (seconds?: number) => string;
 };
 
@@ -92,6 +93,7 @@ export function FocusProvider({ children }: { children: React.ReactNode }) {
       stop: () => focusTimer.stop(),
       skip: () => focusTimer.skipBreak(),
       skipBreak: () => focusTimer.skipBreak(),
+      adjustTime: (deltaSeconds: number) => focusTimer.adjustTime(deltaSeconds),
       format: (seconds?: number) => focusTimer.formatRemaining(seconds),
     }),
     [state]

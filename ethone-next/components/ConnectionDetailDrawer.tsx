@@ -22,6 +22,7 @@ import {
   Key,
   Shield,
   Radio,
+  CheckCircle2,
 } from "lucide-react";
 import { useI18n } from "@/lib/hooks/useI18n";
 import { useSettings } from "@/components/SettingsProvider";
@@ -99,26 +100,34 @@ export default function ConnectionDetailDrawer({
   const [copied, setCopied] = useState<string | null>(null);
   const [discordMode, setDiscordMode] = useState<"lanyard" | "oauth">("lanyard");
 
-  // Field values
+  // Field definitions
   const publicFieldDefs = useMemo(() => PUBLIC_FIELDS[integration.id] || [], [integration.id]);
   const credFieldDefs = useMemo(() => CREDENTIAL_FIELDS[integration.id] || [], [integration.id]);
 
   const [publicValues, setPublicValues] = useState<Record<string, string>>({});
   const [credValues, setCredValues] = useState<Record<string, string>>({});
 
+  // Restore values on open
   useEffect(() => {
+    if (!isOpen) return;
+
     const pub: Record<string, string> = {};
     publicFieldDefs.forEach((f) => {
-      pub[f.key as string] = (settings as unknown as Record<string, string>)[f.key as string] || "";
+      const stored = (settings as unknown as Record<string, string>)[f.key as string] || "";
+      pub[f.key as string] = stored;
     });
     setPublicValues(pub);
 
     const cred: Record<string, string> = {};
     credFieldDefs.forEach((f) => {
-      cred[f.key as string] = "";
+      let saved = "";
+      if (typeof window !== "undefined") {
+        saved = localStorage.getItem(`ethone:cred:${integration.id}:${String(f.key)}`) || "";
+      }
+      cred[f.key as string] = saved;
     });
     setCredValues(cred);
-  }, [publicFieldDefs, credFieldDefs, settings, isOpen]);
+  }, [publicFieldDefs, credFieldDefs, settings, integration.id, isOpen]);
 
   const isConnected = status === "connected";
   const variant =
@@ -171,19 +180,25 @@ export default function ConnectionDetailDrawer({
         update(patch as never);
       }
 
-      // Save credential fields in provider-credentials
+      // Save credential fields in provider-credentials & localStorage
       if (credFieldDefs.length > 0) {
         const payload: Record<string, string> = {};
         credFieldDefs.forEach((f) => {
           const v = (credValues[f.key as string] || "").trim();
-          if (v) payload[f.key as string] = v;
+          if (v) {
+            payload[f.key as string] = v;
+            if (typeof window !== "undefined") {
+              localStorage.setItem(`ethone:cred:${integration.id}:${String(f.key)}`, v);
+            }
+          }
         });
+
         if (Object.keys(payload).length > 0) {
           await credentials.save(integration.id, payload as never);
         }
       }
 
-      success("Identifiants enregistrés avec succès");
+      success("Identifiants enregistrés avec succès !");
       onTest();
     } catch (err) {
       showError(err instanceof Error ? err.message : "Erreur d'enregistrement");
@@ -197,28 +212,28 @@ export default function ConnectionDetailDrawer({
   return (
     <AnimatePresence>
       {isOpen && (
-        <div className="fixed inset-0 z-50 overflow-hidden" aria-modal="true" role="dialog">
-          {/* Backdrop */}
+        <div className="fixed inset-0 z-[1000] overflow-hidden" aria-modal="true" role="dialog">
+          {/* Backdrop with strong blur and dimming */}
           <motion.div
             initial={{ opacity: 0 }}
             animate={{ opacity: 1 }}
             exit={{ opacity: 0 }}
             transition={{ duration: 0.2 }}
             onClick={onClose}
-            className="fixed inset-0 bg-black/80 backdrop-blur-md"
+            className="fixed inset-0 bg-black/85 backdrop-blur-md"
           />
 
-          {/* Drawer Sliding from Right with Full Viewport Fit & Safe Padding */}
+          {/* Drawer Sliding from Right with Top Priority Z-Index */}
           <motion.div
             initial={{ x: "100%" }}
             animate={{ x: 0 }}
             exit={{ x: "100%" }}
             transition={{ type: "spring", stiffness: 320, damping: 30 }}
             onClick={(e) => e.stopPropagation()}
-            className="fixed right-0 top-0 bottom-0 h-full w-full max-w-xl border-l border-[var(--panel-border)] bg-[var(--panel-bg)]/98 shadow-2xl backdrop-blur-2xl flex flex-col z-50 overflow-hidden"
+            className="fixed right-0 top-0 bottom-0 h-full w-full max-w-xl border-l border-[var(--panel-border)] bg-[var(--panel-bg)]/98 shadow-2xl backdrop-blur-2xl flex flex-col z-[1001] overflow-hidden"
           >
-            {/* Header: Always perfectly positioned with safe area padding */}
-            <div className="flex shrink-0 items-start justify-between border-b border-[var(--panel-border)] p-4 sm:p-5 bg-black/20 pt-[max(1.25rem,env(safe-area-inset-top))]">
+            {/* Header: Fixed at top of drawer with safe spacing */}
+            <div className="flex shrink-0 items-start justify-between border-b border-[var(--panel-border)] px-5 py-4 bg-black/40">
               <div className="flex items-center gap-3 min-w-0">
                 <div className="flex h-11 w-11 shrink-0 items-center justify-center rounded-2xl bg-[var(--surface-raised)] border border-[var(--panel-border)] shadow-sm">
                   <ServiceIcon id={integration.id} icon={integration.icon} className="h-6 w-6" colored />
@@ -250,8 +265,8 @@ export default function ConnectionDetailDrawer({
               </button>
             </div>
 
-            {/* Scrollable Content */}
-            <div className="flex-1 space-y-6 overflow-y-auto p-4 sm:p-6 os-scroll pb-[max(5rem,env(safe-area-inset-bottom))]">
+            {/* Scrollable Content Body */}
+            <div className="flex-1 space-y-6 overflow-y-auto p-5 os-scroll">
               {/* Status & Quick Guide */}
               <div className="flex items-center justify-between">
                 <div className="flex items-center gap-2">
@@ -320,7 +335,7 @@ export default function ConnectionDetailDrawer({
               {/* Configuration / Credentials Form */}
               {hasFields && (integration.id !== "discord" || discordMode === "lanyard") && (
                 <Section title="Configuration & Identifiants API">
-                  <div className="space-y-3 rounded-2xl border border-[var(--panel-border)] bg-[var(--surface-raised)]/50 p-4">
+                  <div className="space-y-3.5 rounded-2xl border border-[var(--panel-border)] bg-[var(--surface-raised)]/50 p-4">
                     {/* Public Fields */}
                     {publicFieldDefs.map((f) => (
                       <div key={String(f.key)} className="space-y-1">
@@ -359,12 +374,19 @@ export default function ConnectionDetailDrawer({
                     {credFieldDefs.map((f) => {
                       const isPwd = f.type === "password";
                       const show = showPassword[f.key as string];
+                      const hasSavedKey = Boolean(credValues[f.key as string]?.trim());
+
                       return (
                         <div key={String(f.key)} className="space-y-1.5">
                           <div className="flex items-center justify-between">
                             <label className="text-xs font-semibold text-[var(--text-primary)] flex items-center gap-1.5">
                               <Key className="h-3.5 w-3.5 text-[var(--accent-primary)]" />
                               <span>{i18n(f.label, f.label)}</span>
+                              {hasSavedKey && (
+                                <span className="inline-flex items-center gap-1 text-[10px] font-medium text-emerald-400 bg-emerald-500/10 px-1.5 py-0.2 rounded border border-emerald-500/20">
+                                  <CheckCircle2 className="h-2.5 w-2.5" /> Enregistrée
+                                </span>
+                              )}
                             </label>
                             {f.portalUrl && (
                               <a
@@ -408,7 +430,7 @@ export default function ConnectionDetailDrawer({
                       type="button"
                       onClick={handleSaveCredentials}
                       disabled={saving}
-                      className="mt-2 flex w-full items-center justify-center gap-1.5 rounded-xl bg-[var(--accent-primary)] py-2 px-3 text-xs font-bold text-[var(--accent-contrast)] shadow-md hover:opacity-90 active:scale-95 transition-all cursor-pointer disabled:opacity-50"
+                      className="mt-2 flex w-full items-center justify-center gap-1.5 rounded-xl bg-[var(--accent-primary)] py-2.5 px-3 text-xs font-bold text-[var(--accent-contrast)] shadow-md hover:opacity-90 active:scale-95 transition-all cursor-pointer disabled:opacity-50"
                     >
                       {saving ? (
                         <Loader2 className="h-3.5 w-3.5 animate-spin" />
@@ -500,8 +522,8 @@ export default function ConnectionDetailDrawer({
               )}
             </div>
 
-            {/* Bottom Actions Bar */}
-            <div className="border-t border-[var(--panel-border)] p-4 bg-black/40 flex items-center justify-between gap-3 shrink-0">
+            {/* Bottom Actions Bar: Always fixed at bottom of drawer */}
+            <div className="border-t border-[var(--panel-border)] px-5 py-4 bg-black/50 flex items-center justify-between gap-3 shrink-0">
               <button
                 type="button"
                 onClick={onTest}

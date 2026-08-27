@@ -10,20 +10,7 @@ function RiotGamesSvg({ className, color }: { className?: string; color?: string
       className={className}
       aria-hidden="true"
     >
-      <path d="M13.447 3.553L1.5 9.079v5.842l11.947 5.526L22.5 14.921V9.079L13.447 3.553zm-1.079 2.21l7.105 3.316-7.105 3.316-7.105-3.316 7.105-3.316zm-7.895 4.868l6.816 3.184v6.368l-6.816-3.184v-6.368zm8.974 9.552v-6.368l6.816-3.184v6.368l-6.816 3.184z" />
-    </svg>
-  );
-}
-
-function TrackerGgSvg({ className, color }: { className?: string; color?: string }) {
-  return (
-    <svg
-      viewBox="0 0 24 24"
-      fill={color || "#FF2E55"}
-      className={className}
-      aria-hidden="true"
-    >
-      <path d="M12 2L2 7v10l10 5 10-5V7L12 2zm0 2.8l7.2 3.6-7.2 3.6-7.2-3.6L12 4.8zm-8 4.6l7 3.5v6.3l-7-3.5V9.4zm9 9.8v-6.3l7-3.5v6.3l-7 3.5z" />
+      <path d="M13.433 0l-5.32 7.037L10.05 10.95 0 14.152l3.414 7.604 5.92-2.183-1.042 4.427 10.871-3.693 4.837-18.06zM22.756 24L17.7 22.046l.732-2.884 4.324 1.48z" />
     </svg>
   );
 }
@@ -75,6 +62,8 @@ const OVERRIDES: Record<string, string> = {
   email: "tabler:mail",
   weather: "tabler:cloud-sun",
   rss: "tabler:rss",
+  "tracker-gg": "simple-icons:trackeregg",
+  tracker: "simple-icons:trackeregg",
 };
 
 const COLORS: Record<string, string> = {
@@ -112,6 +101,7 @@ const COLORS: Record<string, string> = {
   weather: "#FFB020",
   rss: "#FFA500",
   riot: "#EB0029",
+  riotgames: "#EB0029",
   "tracker-gg": "#FF2E55",
   valorant: "#FF4655",
 };
@@ -127,10 +117,6 @@ export default function ServiceIcon({
 
   if (id === "riot" || id === "riotgames") {
     return <RiotGamesSvg className={className} color={color} />;
-  }
-
-  if (id === "tracker-gg" || id === "tracker") {
-    return <TrackerGgSvg className={className} color={color} />;
   }
 
   if (id === "valorant") {

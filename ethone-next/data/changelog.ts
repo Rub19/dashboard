@@ -7206,6 +7206,54 @@ CHANGELOG_BY_LANG.es.unshift({
 });
 
 CHANGELOG_BY_LANG.fr.unshift({
+  version: "v1.10.56",
+  date: "2026-08-27",
+  title: "Correction Affichage Tiroir (z-index 1000), Persistance des Clés API & Vrai Logo Riot Games",
+  items: [
+    "Élévation du tiroir de gestion en z-[1000] : le haut et le bas ne sont plus jamais masqués par le header et le dock.",
+    "Persistance et restauration automatique des clés API saisies (Henrik Valorant, Riot LoL...) avec badge 'Enregistrée'.",
+    "Remplacement du tracé SVG par le véritable poing rouge officiel de Riot Games.",
+    "Validation : build Next.js 105/105 pages, TypeScript sans erreur.",
+    "Version affichée : v1.10.56.",
+  ],
+});
+
+CHANGELOG_BY_LANG.en.unshift({
+  version: "v1.10.56",
+  date: "2026-08-27",
+  title: "Drawer Viewport Cutoff Fix (z-index 1000), API Key Persistence & Authentic Riot Games Fist Logo",
+  items: [
+    "Elevated drawer to z-[1000] to prevent header/dock obstruction on top and bottom.",
+    "Persistent API keys across modal openings with 'Saved' visual status badges.",
+    "Replaced icon path with authentic official Riot Games red fist logo.",
+    "Validation: Next.js 105/105 pages build, 0 TypeScript errors.",
+    "Version badge: v1.10.56.",
+  ],
+});
+
+CHANGELOG_BY_LANG.es.unshift({
+  version: "v1.10.56",
+  date: "2026-08-27",
+  title: "Corrección de visualización del panel (z-index 1000), persistencia de claves y logo de Riot Games",
+  items: [
+    "Corrección de superposición en cabecera y pie de página, persistencia de claves.",
+    "Validación : build, lint.",
+    "Versión : v1.10.56.",
+  ],
+});
+
+CHANGELOG_BY_LANG.de.unshift({
+  version: "v1.10.56",
+  date: "2026-08-27",
+  title: "Drawer-Anzeige-Korrektur (z-index 1000), API-Schlüssel-Persistenz & Echtes Riot Games-Logo",
+  items: [
+    "Beseitigung von Überlagerungen, dauerhafte Schlüssel-Speicherung und offizielles Logo.",
+    "Validierung: build, lint.",
+    "Version: v1.10.56.",
+  ],
+});
+
+CHANGELOG_BY_LANG.fr.unshift({
   version: "v1.10.55",
   date: "2026-08-27",
   title: "Boutons Directs d'Obtention de Clés API & Tutoriels Interactifs avec URI de Redirection",

@@ -70,6 +70,19 @@
 		31DB3F0CE88642A9A345D69B /* CoreMotion.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 194C9B6B1D8C4F53B6320428 /* CoreMotion.framework */; };
 		35AADDE5B34940D3A5D08AF0 /* CoreHaptics.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 1E838D89CF0D4553B0E2FA85 /* CoreHaptics.framework */; };
 		4C5A2FB106D74C4E8AAEC194 /* Metal.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 84DFF5B8130342BB8E8E77DD /* Metal.framework */; };
+		AA1100012700000100000001 /* ETHTheme.swift in Sources */ = {isa = PBXBuildFile; fileRef = BB1100012700000100000001 /* ETHTheme.swift */; };
+		AA1100022700000100000002 /* ETHGlassComponents.swift in Sources */ = {isa = PBXBuildFile; fileRef = BB1100022700000100000002 /* ETHGlassComponents.swift */; };
+		AA1100032700000100000003 /* ETHBrainOrb.swift in Sources */ = {isa = PBXBuildFile; fileRef = BB1100032700000100000003 /* ETHBrainOrb.swift */; };
+		AA1100042700000100000004 /* FocusManager.swift in Sources */ = {isa = PBXBuildFile; fileRef = BB1100042700000100000004 /* FocusManager.swift */; };
+		AA1100052700000100000005 /* AudioManager.swift in Sources */ = {isa = PBXBuildFile; fileRef = BB1100052700000100000005 /* AudioManager.swift */; };
+		AA1100062700000100000006 /* BrainService.swift in Sources */ = {isa = PBXBuildFile; fileRef = BB1100062700000100000006 /* BrainService.swift */; };
+		AA1100072700000100000007 /* BrainView.swift in Sources */ = {isa = PBXBuildFile; fileRef = BB1100072700000100000007 /* BrainView.swift */; };
+		AA1100082700000100000008 /* NotesView.swift in Sources */ = {isa = PBXBuildFile; fileRef = BB1100082700000100000008 /* NotesView.swift */; };
+		AA1100092700000100000009 /* TasksView.swift in Sources */ = {isa = PBXBuildFile; fileRef = BB1100092700000100000009 /* TasksView.swift */; };
+		AA1100102700000100000010 /* FocusView.swift in Sources */ = {isa = PBXBuildFile; fileRef = BB1100102700000100000010 /* FocusView.swift */; };
+		AA1100112700000100000011 /* MailView.swift in Sources */ = {isa = PBXBuildFile; fileRef = BB1100112700000100000011 /* MailView.swift */; };
+		AA1100122700000100000012 /* FilesView.swift in Sources */ = {isa = PBXBuildFile; fileRef = BB1100122700000100000012 /* FilesView.swift */; };
+		AA1100132700000100000013 /* SettingsView.swift in Sources */ = {isa = PBXBuildFile; fileRef = BB1100132700000100000013 /* SettingsView.swift */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXContainerItemProxy section */
@@ -116,6 +129,19 @@
 		AF51FD2D460BCFE21FA515B2 /* Pods-App.release.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-App.release.xcconfig"; path = "Pods/Target Support Files/Pods-App/Pods-App.release.xcconfig"; sourceTree = "<group>"; };
 		C6DD3EBAE6EF4F05ADBF325A /* MainViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MainViewController.swift; sourceTree = "<group>"; };
 		FC68EB0AF532CFC21C3344DD /* Pods-App.debug.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-App.debug.xcconfig"; path = "Pods/Target Support Files/Pods-App/Pods-App.debug.xcconfig"; sourceTree = "<group>"; };
+		BB1100012700000100000001 /* ETHTheme.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "DesignSystem/ETHTheme.swift"; sourceTree = "<group>"; };
+		BB1100022700000100000002 /* ETHGlassComponents.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "DesignSystem/ETHGlassComponents.swift"; sourceTree = "<group>"; };
+		BB1100032700000100000003 /* ETHBrainOrb.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "DesignSystem/ETHBrainOrb.swift"; sourceTree = "<group>"; };
+		BB1100042700000100000004 /* FocusManager.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "Services/FocusManager.swift"; sourceTree = "<group>"; };
+		BB1100052700000100000005 /* AudioManager.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "Services/AudioManager.swift"; sourceTree = "<group>"; };
+		BB1100062700000100000006 /* BrainService.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "Services/BrainService.swift"; sourceTree = "<group>"; };
+		BB1100072700000100000007 /* BrainView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "Views/BrainView.swift"; sourceTree = "<group>"; };
+		BB1100082700000100000008 /* NotesView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "Views/NotesView.swift"; sourceTree = "<group>"; };
+		BB1100092700000100000009 /* TasksView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "Views/TasksView.swift"; sourceTree = "<group>"; };
+		BB1100102700000100000010 /* FocusView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "Views/FocusView.swift"; sourceTree = "<group>"; };
+		BB1100112700000100000011 /* MailView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "Views/MailView.swift"; sourceTree = "<group>"; };
+		BB1100122700000100000012 /* FilesView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "Views/FilesView.swift"; sourceTree = "<group>"; };
+		BB1100132700000100000013 /* SettingsView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "Views/SettingsView.swift"; sourceTree = "<group>"; };
 
 		XX11940AB5AEC0B905F872XX /* WidgetKit.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = WidgetKit.framework; path = System/Library/Frameworks/WidgetKit.framework; sourceTree = SDKROOT; };
 		XX11BCFE3BA093B4BE314FXX /* Controls/EthoneBrainIdeaControl.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Controls/EthoneBrainIdeaControl.swift; sourceTree = "<group>"; };
@@ -291,6 +317,19 @@
 				3430B72DCC9640E7AA7E0E88 /* FocusActivity.swift */,
 				CA989D740F70452696B424CD /* EthoneControls.swift */,
 				53973A402A2740199C6E4FB5 /* EthoneIntents.swift */,
+				BB1100012700000100000001 /* ETHTheme.swift */,
+				BB1100022700000100000002 /* ETHGlassComponents.swift */,
+				BB1100032700000100000003 /* ETHBrainOrb.swift */,
+				BB1100042700000100000004 /* FocusManager.swift */,
+				BB1100052700000100000005 /* AudioManager.swift */,
+				BB1100062700000100000006 /* BrainService.swift */,
+				BB1100072700000100000007 /* BrainView.swift */,
+				BB1100082700000100000008 /* NotesView.swift */,
+				BB1100092700000100000009 /* TasksView.swift */,
+				BB1100102700000100000010 /* FocusView.swift */,
+				BB1100112700000100000011 /* MailView.swift */,
+				BB1100122700000100000012 /* FilesView.swift */,
+				BB1100132700000100000013 /* SettingsView.swift */,
 			);
 			path = App;
 			sourceTree = "<group>";
@@ -533,6 +572,19 @@
 				BDDA2CEBCA664541B142EB74 /* FocusActivity.swift in Sources */,
 				2F57C2C8C0814F44B02E968E /* EthoneControls.swift in Sources */,
 				3FF28C3FBD1B4ADFAFB8983F /* EthoneIntents.swift in Sources */,
+				AA1100012700000100000001 /* ETHTheme.swift in Sources */,
+				AA1100022700000100000002 /* ETHGlassComponents.swift in Sources */,
+				AA1100032700000100000003 /* ETHBrainOrb.swift in Sources */,
+				AA1100042700000100000004 /* FocusManager.swift in Sources */,
+				AA1100052700000100000005 /* AudioManager.swift in Sources */,
+				AA1100062700000100000006 /* BrainService.swift in Sources */,
+				AA1100072700000100000007 /* BrainView.swift in Sources */,
+				AA1100082700000100000008 /* NotesView.swift in Sources */,
+				AA1100092700000100000009 /* TasksView.swift in Sources */,
+				AA1100102700000100000010 /* FocusView.swift in Sources */,
+				AA1100112700000100000011 /* MailView.swift in Sources */,
+				AA1100122700000100000012 /* FilesView.swift in Sources */,
+				AA1100132700000100000013 /* SettingsView.swift in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};

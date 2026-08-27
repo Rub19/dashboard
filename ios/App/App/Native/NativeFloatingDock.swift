@@ -1,50 +1,67 @@
-import SwiftUI
+﻿import SwiftUI
 import UIKit
 
-struct NativeFloatingDock: View {
+public enum Tab: String, CaseIterable {
+    case home = "Home"
+    case brain = "Brain"
+    case tasks = "Tâches"
+    case focus = "Focus"
+    case notes = "Notes"
+    case settings = "Réglages"
+
+    public var icon: String {
+        switch self {
+        case .home: return "house.fill"
+        case .brain: return "sparkles"
+        case .tasks: return "checkmark.circle.fill"
+        case .focus: return "timer"
+        case .notes: return "note.text"
+        case .settings: return "gearshape.fill"
+        }
+    }
+}
+
+public struct NativeFloatingDock: View {
     @Binding var selectedTab: Tab
 
-    let items: [(Tab, String, String)] = [
-        (.home, "Home", "house"),
-        (.tasks, "Tasks", "checkmark.circle"),
-        (.brain, "Brain", "sparkles"),
-        (.notes, "Notes", "note.text"),
-        (.settings, "Settings", "gearshape")
-    ]
+    public init(selectedTab: Binding<Tab>) {
+        self._selectedTab = selectedTab
+    }
 
-    var body: some View {
-        HStack(spacing: 0) {
-            ForEach(items, id: \.0) { tab, label, icon in
+    public var body: some View {
+        HStack(spacing: 4) {
+            ForEach(Tab.allCases, id: \.self) { tab in
                 let selected = selectedTab == tab
                 Button {
-                    HapticManager.shared.playGlassTap()
-                    withAnimation(.spring(response: 0.35, dampingFraction: 0.75)) {
+                    HapticManager.shared.selection()
+                    withAnimation(ETHTheme.springSnappy) {
                         selectedTab = tab
                     }
                 } label: {
                     VStack(spacing: 4) {
-                        Image(systemName: icon)
-                            .font(.system(size: 22, weight: .semibold))
-                            .symbolEffect(.bounce, value: selected)
-                            .symbolEffect(.pulse, value: selected)
-                            .symbolEffect(.variableColor, value: selected)
-                        Text(label)
-                            .font(.caption2)
+                        Image(systemName: tab.icon)
+                            .font(.system(size: 19, weight: .semibold))
+                            .foregroundStyle(selected ? ETHTheme.emerald : .secondary)
+
+                        Text(tab.rawValue)
+                            .font(.system(size: 10, weight: selected ? .bold : .medium))
+                            .foregroundStyle(selected ? .primary : .secondary)
                     }
-                    .foregroundStyle(selected ? .primary : .secondary)
                     .frame(maxWidth: .infinity)
-                    .padding(.vertical, 10)
+                    .padding(.vertical, 8)
                     .background(
                         selected
-                            ? Capsule().fill(.thinMaterial)
-                                .overlay(Capsule().stroke(Color.white.opacity(0.2), lineWidth: 0.5))
+                            ? Capsule()
+                                .fill(Color.white.opacity(0.1))
+                                .overlay(Capsule().stroke(ETHTheme.emerald.opacity(0.3), lineWidth: 0.8))
                             : nil
                     )
                 }
+                .buttonStyle(.plain)
             }
         }
-        .padding(.horizontal, 14)
-        .padding(.vertical, 8)
+        .padding(.horizontal, 10)
+        .padding(.vertical, 6)
         .background(
             Capsule()
                 .fill(.ultraThinMaterial)
@@ -52,7 +69,11 @@ struct NativeFloatingDock: View {
                     Capsule()
                         .stroke(
                             LinearGradient(
-                                gradient: Gradient(colors: [Color.white.opacity(0.35), Color.white.opacity(0.05), Color.clear]),
+                                colors: [
+                                    Color.white.opacity(0.30),
+                                    Color.white.opacity(0.08),
+                                    Color.clear
+                                ],
                                 startPoint: .topLeading,
                                 endPoint: .bottomTrailing
                             ),
@@ -60,13 +81,8 @@ struct NativeFloatingDock: View {
                         )
                 )
         )
-        .shadow(color: Color.black.opacity(0.45), radius: 28, x: 0, y: 14)
+        .shadow(color: Color.black.opacity(0.45), radius: 24, x: 0, y: 12)
         .padding(.horizontal, 16)
-        .padding(.bottom, 12)
-        .ethoneSensoryFeedback(.selection, trigger: selectedTab)
+        .padding(.bottom, 10)
     }
-}
-
-enum Tab: String, CaseIterable {
-    case home, tasks, brain, notes, settings
 }

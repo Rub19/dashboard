@@ -1,7 +1,9 @@
-import SwiftUI
+﻿import SwiftUI
 
-struct DashboardView: View {
+public struct DashboardView: View {
     @ObservedObject var manager: SupabaseManager
+    var onSelectTab: ((Tab) -> Void)? = nil
+
     @State private var showAuth = false
     @State private var selectedCard: String? = nil
     @Namespace private var animation
@@ -11,25 +13,34 @@ struct DashboardView: View {
         GridItem(.flexible(), spacing: 14)
     ]
 
-    var body: some View {
+    public init(manager: SupabaseManager, onSelectTab: ((Tab) -> Void)? = nil) {
+        self.manager = manager
+        self.onSelectTab = onSelectTab
+    }
+
+    public var body: some View {
         ZStack {
             ScrollView {
                 VStack(alignment: .leading, spacing: 20) {
+                    // Header with Greeting
                     HStack(alignment: .firstTextBaseline) {
                         VStack(alignment: .leading, spacing: 4) {
-                            Text("ETHONE")
-                                .font(.largeTitle.weight(.black))
-                                .foregroundStyle(.primary)
+                            HStack(spacing: 6) {
+                                Text("Bonjour Rub")
+                                    .font(.system(size: 26, weight: .bold))
+                                    .foregroundStyle(.primary)
+                                ETHStatusBadge(label: "En ligne", tone: ETHTheme.emerald)
+                            }
 
-                            Text("Tableau de bord natif")
-                                .font(.subheadline)
+                            Text("Votre espace personnel intelligent")
+                                .font(.system(size: 13))
                                 .foregroundStyle(.secondary)
                         }
 
                         Spacer()
 
                         Button {
-                            Haptic.light()
+                            HapticManager.shared.light()
                             showAuth.toggle()
                         } label: {
                             Image(systemName: "faceid")
@@ -41,171 +52,71 @@ struct DashboardView: View {
                     }
                     .padding(.horizontal)
 
-                    if let error = manager.errorMessage {
-                        Text(error)
-                            .font(.caption)
-                            .foregroundStyle(.red)
-                            .padding()
-                            .background(RoundedRectangle(cornerRadius: 12).fill(.ultraThinMaterial))
-                            .padding(.horizontal)
-                    }
+                    // Hero Brain Briefing Card
+                    ETHGlassCard(cornerRadius: 22, padding: 16) {
+                        VStack(alignment: .leading, spacing: 12) {
+                            HStack {
+                                HStack(spacing: 8) {
+                                    ETHBrainOrb(state: .idle, size: 28)
+                                    Text("Briefing Brain")
+                                        .font(.system(size: 16, weight: .bold))
+                                        .foregroundStyle(.primary)
+                                }
+                                Spacer()
+                                ETHModelBadge("Claude 3.7")
+                            }
 
+                            Text("Vous avez \(manager.tasks.filter { !$0.done }.count) tâches en cours aujourd'hui. Aucun conflit d'agenda détecté.")
+                                .font(.system(size: 14))
+                                .foregroundStyle(.secondary)
+                                .lineLimit(2)
+
+                            HStack {
+                                Spacer()
+                                Button(action: { onSelectTab?(.brain) }) {
+                                    HStack(spacing: 4) {
+                                        Text("Consulter Brain")
+                                            .font(.system(size: 13, weight: .semibold))
+                                        Image(systemName: "arrow.right")
+                                            .font(.system(size: 11, weight: .bold))
+                                    }
+                                    .foregroundStyle(ETHTheme.violet)
+                                }
+                            }
+                        }
+                    }
+                    .padding(.horizontal)
+
+                    // Bento Grid
                     BentoGridView(columns: columns) {
-                        BentoPressable(id: "focus", namespace: animation, onTap: { selectedCard = "focus" }) {
+                        BentoPressable(id: "focus", namespace: animation, onTap: { onSelectTab?(.focus) }) {
                             if #available(iOS 26.0, *) {
                                 FocusTimerCard()
                             } else {
                                 FocusFallbackCard()
                             }
                         }
-                        .opacity(selectedCard == "focus" ? 0 : 1)
 
-                        BentoPressable(id: "tasks", namespace: animation, onTap: { selectedCard = "tasks" }) {
+                        BentoPressable(id: "tasks", namespace: animation, onTap: { onSelectTab?(.tasks) }) {
                             TasksCard(manager: manager)
                         }
-                        .opacity(selectedCard == "tasks" ? 0 : 1)
 
-                        BentoPressable(id: "brain", namespace: animation, onTap: { selectedCard = "brain" }) {
+                        BentoPressable(id: "brain", namespace: animation, onTap: { onSelectTab?(.brain) }) {
                             BrainCaptureCard()
                         }
-                        .opacity(selectedCard == "brain" ? 0 : 1)
 
-                        BentoPressable(id: "storage", namespace: animation, onTap: { selectedCard = "storage" }) {
+                        BentoPressable(id: "storage", namespace: animation, onTap: { onSelectTab?(.settings) }) {
                             StorageMetricsCard()
                         }
-                        .opacity(selectedCard == "storage" ? 0 : 1)
                     }
                     .padding(.horizontal)
                 }
                 .padding(.top, 24)
                 .padding(.bottom, 120)
             }
-
-            if let selected = selectedCard {
-                FullScreenBentoCard(id: selected, namespace: animation) {
-                    withAnimation(.spring(response: 0.45, dampingFraction: 0.8)) {
-                        selectedCard = nil
-                    }
-                }
-                .zIndex(1)
-            }
         }
         .sheet(isPresented: $showAuth) {
             BiometricSheet()
-        }
-    }
-}
-
-struct FullScreenBentoCard: View {
-    let id: String
-    var namespace: Namespace.ID
-    let onClose: () -> Void
-
-    var body: some View {
-        ZStack(alignment: .topTrailing) {
-            Color.black.opacity(0.6)
-                .ignoresSafeArea()
-                .onTapGesture { onClose() }
-
-            LiquidGlassContainer {
-                VStack(alignment: .leading, spacing: 20) {
-                    HStack {
-                        Text(title(for: id))
-                            .font(.largeTitle.weight(.bold))
-                        Spacer()
-                        Button {
-                            onClose()
-                        } label: {
-                            Image(systemName: "xmark.circle.fill")
-                                .font(.title2)
-                                .symbolEffect(.bounce, value: true)
-                        }
-                    }
-
-                    Text("Vue plein écran avec matchedGeometryEffect.")
-                        .font(.body)
-                        .foregroundStyle(.secondary)
-
-                    Spacer()
-                }
-                .padding()
-                .frame(maxWidth: .infinity, maxHeight: .infinity)
-            }
-            .matchedGeometryEffect(id: id, in: namespace, properties: .position, anchor: .center, isSource: false)
-            .padding(20)
-            .frame(maxWidth: .infinity, maxHeight: .infinity)
-        }
-    }
-
-    private func title(for id: String) -> String {
-        switch id {
-        case "focus": return "Focus"
-        case "tasks": return "Tâches"
-        case "brain": return "Brain"
-        case "storage": return "Stockage"
-        default: return "ETHONE"
-        }
-    }
-}
-
-struct FocusFallbackCard: View {
-    var body: some View {
-        LiquidGlassContainer {
-            VStack(alignment: .leading, spacing: 12) {
-                HStack {
-                    Image(systemName: "target")
-                        .font(.title2)
-                    Spacer()
-                    Text("25:00")
-                        .font(.system(.title3, design: .rounded).monospacedDigit())
-                        .fontWeight(.bold)
-                }
-
-                Text("Focus")
-                    .font(.headline)
-
-                Text("Mise à niveau vers iOS 26 pour le minuteur Live Activity.")
-                    .font(.caption)
-                    .foregroundStyle(.secondary)
-
-                Spacer()
-            }
-        }
-    }
-}
-
-struct BiometricSheet: View {
-    @StateObject private var auth = BiometricAuth()
-    @Environment(\.dismiss) private var dismiss
-
-    var body: some View {
-        VStack(spacing: 24) {
-            Image(systemName: "faceid")
-                .font(.system(size: 72))
-                .symbolEffect(.bounce, value: auth.isUnlocked)
-
-            Text("Déverrouiller ETHONE")
-                .font(.title2.weight(.bold))
-
-            Button {
-                Task { await auth.authenticate() }
-            } label: {
-                Text("Utiliser Face ID / Touch ID")
-                    .font(.headline)
-                    .padding()
-                    .frame(maxWidth: .infinity)
-                    .background(Capsule().fill(.ultraThinMaterial))
-            }
-
-            if let error = auth.error {
-                Text(error)
-                    .font(.caption)
-                    .foregroundStyle(.red)
-            }
-        }
-        .padding()
-        .onChange(of: auth.isUnlocked) { _, unlocked in
-            if unlocked { dismiss() }
         }
     }
 }

@@ -172,6 +172,11 @@ export default function IntegrationsSettings() {
     } catch {}
   }, []);
 
+  const handleDisconnect = useCallback((id: string) => {
+    setConnected((prev) => ({ ...prev, [id]: false }));
+    setClientIds((prev) => ({ ...prev, [id]: "" }));
+  }, []);
+
   const handleSelectMyConnection = useCallback((id: string) => {
     setFilter("all");
     setSearch("");
@@ -200,6 +205,7 @@ export default function IntegrationsSettings() {
           credentials={credentials}
           health={health[integration.id]}
           onTest={testOne}
+          onDisconnect={handleDisconnect}
         />
       );
 

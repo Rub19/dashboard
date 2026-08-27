@@ -92,6 +92,7 @@ export default function ConnectionCard({
   credentials,
   health,
   onTest,
+  onDisconnect,
 }: {
   integration: Integration;
   clientId: string;
@@ -101,6 +102,7 @@ export default function ConnectionCard({
   credentials: CredentialsApi;
   health?: PingResult;
   onTest?: (id: string) => void;
+  onDisconnect?: (id: string) => void;
 }) {
   const i18n = useI18n();
   const { settings, update } = useSettings();
@@ -308,6 +310,7 @@ export default function ConnectionCard({
       if (integration.id === "spotify") {
         try { localStorage.removeItem(`ethone:clientId:${integration.id}`); } catch {}
       }
+      onDisconnect?.(integration.id);
       success(i18n("disconnectSuccess"));
     } catch (err) {
       showError(err instanceof Error ? err.message : i18n("error"));

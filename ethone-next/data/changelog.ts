@@ -7206,6 +7206,54 @@ CHANGELOG_BY_LANG.es.unshift({
 });
 
 CHANGELOG_BY_LANG.fr.unshift({
+  version: "v1.10.31",
+  date: "2026-08-27",
+  title: "Fix déconnexion connexions OAuth",
+  items: [
+    "Ajout du callback `onDisconnect` sur `ConnectionCard`.",
+    "Mise à jour de l'état `connected` dans `IntegrationsSettings` après déconnexion.",
+    "Validation : build, lint.",
+    "Version affichée : v1.10.31.",
+  ],
+});
+
+CHANGELOG_BY_LANG.en.unshift({
+  version: "v1.10.31",
+  date: "2026-08-27",
+  title: "Fix OAuth connection disconnect",
+  items: [
+    "Added `onDisconnect` callback to `ConnectionCard`.",
+    "Update `connected` state in `IntegrationsSettings` after disconnect.",
+    "Validation: build, lint.",
+    "Version badge: v1.10.31.",
+  ],
+});
+
+CHANGELOG_BY_LANG.es.unshift({
+  version: "v1.10.31",
+  date: "2026-08-27",
+  title: "Fix desconexión conexiones OAuth",
+  items: [
+    "Callback `onDisconnect` añadido a `ConnectionCard`.",
+    "Actualización del estado `connected` en `IntegrationsSettings` tras desconectar.",
+    "Validación : build, lint.",
+    "Versión : v1.10.31.",
+  ],
+});
+
+CHANGELOG_BY_LANG.de.unshift({
+  version: "v1.10.31",
+  date: "2026-08-27",
+  title: "OAuth-Verbindung Trennen fix",
+  items: [
+    "`onDisconnect` Callback zu `ConnectionCard` hinzugefügt.",
+    "Aktualisierung des `connected` Zustands in `IntegrationsSettings` nach dem Trennen.",
+    "Validierung: build, lint.",
+    "Version: v1.10.31.",
+  ],
+});
+
+CHANGELOG_BY_LANG.fr.unshift({
   version: "v1.10.30",
   date: "2026-08-27",
   title: "Files : suppression ancien écran Drive non connecté",

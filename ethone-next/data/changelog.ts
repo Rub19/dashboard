@@ -7206,6 +7206,58 @@ CHANGELOG_BY_LANG.es.unshift({
 });
 
 CHANGELOG_BY_LANG.fr.unshift({
+  version: "v1.10.43",
+  date: "2026-08-27",
+  title: "Refonte des Notifications Toast Obsidian Glass 2026 & Nouvelles Alertes",
+  items: [
+    "Design Obsidian Glass 2026 : fond sombre ultra-luxe, bordures fines lumineuses, auras néon colorées et flou d'arrière-plan.",
+    "Barre de progression laser animée avec arrêt fluide au survol et indicateurs radars à impulsion lumineuse.",
+    "Système anti-doublon (deduplication) pour éviter les notifications superposées inutiles.",
+    "Nouvelles notifications interactives : changement de modèle Brain IA, bascule de thème, changement d'espace et statut de build.",
+    "Validation : build Next.js 105/105 pages, TypeScript sans erreur.",
+    "Version affichée : v1.10.43.",
+  ],
+});
+
+CHANGELOG_BY_LANG.en.unshift({
+  version: "v1.10.43",
+  date: "2026-08-27",
+  title: "Obsidian Glass 2026 Toast Notifications Rework & New Alerts",
+  items: [
+    "Obsidian Glass 2026 Design: luxury dark container, fine luminous borders, ambient neon glows and backdrop blur.",
+    "Laser gradient progress bar with hover-pause and pulsing radar dots.",
+    "Deduplication engine preventing repeated stacked duplicate notifications.",
+    "New interactive notifications: Brain AI model switched, theme toggle, space switch, and build status.",
+    "Validation: Next.js 105/105 pages build, 0 TypeScript errors.",
+    "Version badge: v1.10.43.",
+  ],
+});
+
+CHANGELOG_BY_LANG.es.unshift({
+  version: "v1.10.43",
+  date: "2026-08-27",
+  title: "Rediseño de Notificaciones Toast Obsidian Glass 2026",
+  items: [
+    "Diseño Obsidian Glass con auras de neón y barras de progreso láser.",
+    "Sistema anti-duplicados y nuevas alertas de IA y temas.",
+    "Validación : build, lint.",
+    "Versión : v1.10.43.",
+  ],
+});
+
+CHANGELOG_BY_LANG.de.unshift({
+  version: "v1.10.43",
+  date: "2026-08-27",
+  title: "Obsidian Glass 2026 Toast-Benachrichtigungen Redesign",
+  items: [
+    "Obsidian Glass Design mit Neon-Aura und Laser-Fortschrittsbalken.",
+    "Anti-Duplikat-System und neue Benachrichtigungen für KI und Themes.",
+    "Validierung: build, lint.",
+    "Version: v1.10.43.",
+  ],
+});
+
+CHANGELOG_BY_LANG.fr.unshift({
   version: "v1.10.42",
   date: "2026-08-27",
   title: "Correction du tri chronologique du Changelog (Versions récentes en haut)",

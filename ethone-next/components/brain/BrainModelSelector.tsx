@@ -4,6 +4,7 @@ import { useState, useRef, useEffect } from "react";
 import { Icon } from "@/lib/icons";
 import { Sparkles, Zap, Brain, Code, Cpu, ShieldCheck } from "lucide-react";
 import { cn } from "@/lib/utils";
+import { useToast } from "@/components/ToastProvider";
 
 export interface AIModel {
   id: string;
@@ -102,6 +103,7 @@ export default function BrainModelSelector({
 }: BrainModelSelectorProps) {
   const [isOpen, setIsOpen] = useState(false);
   const menuRef = useRef<HTMLDivElement>(null);
+  const { notify } = useToast();
 
   const activeModel =
     AVAILABLE_MODELS.find((m) => m.id === selectedModelId || m.openRouterModel === selectedModelId) ||
@@ -158,6 +160,7 @@ export default function BrainModelSelector({
                   onClick={() => {
                     onSelectModel(model.id);
                     setIsOpen(false);
+                    notify.modelSwitched(model.name);
                   }}
                   className={cn(
                     "group flex w-full flex-col gap-0.5 rounded-xl p-2.5 text-left transition-all cursor-pointer",

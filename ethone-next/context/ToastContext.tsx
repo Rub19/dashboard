@@ -11,6 +11,7 @@ import RichToast, { type RichToastVariant } from "@/components/RichToast";
 import FlagIcon, { LANGUAGE_LABELS, type Language } from "@/components/FlagIcon";
 import DiscordIcon from "@/components/DiscordIcon";
 import ClientImage from "@/components/ClientImage";
+import { Sparkles, Brain, Palette, Layers, RefreshCw, ShieldAlert, CheckCircle2 } from "lucide-react";
 
 type ToastType = "success" | "error" | "info" | "warning" | "loading";
 
@@ -18,11 +19,13 @@ export type { ToastType };
 
 export type ToastInput = {
   type?: ToastType;
+  variant?: RichToastVariant;
   title?: string;
   description?: string;
   message?: string;
   duration?: number;
   dedupKey?: string;
+  badge?: string;
   action?: { label: string; onClick: () => void };
   icon?: React.ReactNode;
 };
@@ -44,11 +47,15 @@ export type NotifyApi = {
   taskAdded: (title?: string) => string;
   taskDeleted: () => string;
   clipboard: () => string;
+  modelSwitched: (modelName: string) => string;
+  themeSwitched: (themeName: string) => string;
+  workspaceSwitched: (space: string) => string;
+  versionInfo: (version: string, commit?: string) => string;
 };
 
 interface ToastApi {
   show: (input: ToastInput) => string;
-  success: (title: string, description?: string) => string;
+  success: (title: string, description?: string, action?: { label: string; onClick: () => void }) => string;
   error: (title: string, description?: string) => string;
   info: (title: string, description?: string) => string;
   warning: (title: string, description?: string) => string;
@@ -77,13 +84,6 @@ const SOUND_MAP: Record<ToastType, string | null> = {
   loading: null,
 };
 
-const VARIANT_BORDER: Record<Exclude<ToastType, "loading">, string> = {
-  success: "border-[var(--success)]/40",
-  error: "border-[var(--danger)]/40",
-  warning: "border-[var(--warning)]/40",
-  info: "border-[var(--info)]/40",
-};
-
 function DiscordAvatar({ avatarUrl }: { avatarUrl?: string }) {
   if (!avatarUrl) return <DiscordIcon className="h-5 w-5" />;
   return (
@@ -92,7 +92,7 @@ function DiscordAvatar({ avatarUrl }: { avatarUrl?: string }) {
       alt=""
       width={36}
       height={36}
-      className="h-9 w-9 rounded-lg"
+      className="h-9 w-9 rounded-lg object-cover"
       fallback={
         <span className="flex h-full w-full items-center justify-center text-[var(--text-primary)]">
           <DiscordIcon className="h-5 w-5" />
@@ -100,6 +100,22 @@ function DiscordAvatar({ avatarUrl }: { avatarUrl?: string }) {
       }
     />
   );
+}
+
+function defaultIconFor(type: ToastType) {
+  switch (type) {
+    case "success":
+      return <Icon name="check" pack="phosphor" className="h-5 w-5 text-emerald-400" />;
+    case "error":
+      return <Icon name="x" pack="phosphor" className="h-5 w-5 text-rose-400" />;
+    case "warning":
+      return <Icon name="warning" pack="phosphor" className="h-5 w-5 text-amber-400" />;
+    case "loading":
+      return <Icon name="loader-2" pack="phosphor" className="h-5 w-5 animate-spin text-[var(--accent-primary)]" />;
+    case "info":
+    default:
+      return <Icon name="info" pack="phosphor" className="h-5 w-5 text-cyan-400" />;
+  }
 }
 
 export function ToastProvider({ children }: { children: React.ReactNode }) {
@@ -120,11 +136,13 @@ export function ToastProvider({ children }: { children: React.ReactNode }) {
           ? Infinity
           : (input.duration ?? DEFAULT_DURATION);
 
+      // Auto-deduplication: if dedupKey matches, remove existing instance
       if (input.dedupKey) {
         const existing = activeDedups.current.get(input.dedupKey);
         if (existing) sonnerToast.dismiss(existing);
       }
 
+      // Record critical toasts in notification center history
       if (title && (type === "error" || type === "warning")) {
         const key = `${title}:${description ?? ""}:${type}`;
         const now = Date.now();
@@ -145,56 +163,21 @@ export function ToastProvider({ children }: { children: React.ReactNode }) {
       const sound = SOUND_MAP[type];
       if (sound) play(sound as Parameters<typeof play>[0]);
 
-      const action = input.action
-        ? {
-            label: input.action.label,
-            onClick: input.action.onClick,
-          }
-        : undefined;
-
-      let toastId: string | number;
-      if (input.icon && type !== "loading") {
-        const border =
-          VARIANT_BORDER[type as keyof typeof VARIANT_BORDER] || "border-[var(--panel-border)]";
-
-        toastId = sonnerToast.custom(
-          () => (
-            <RichToast
-              icon={input.icon}
-              title={title}
-              description={description}
-              variant={type as RichToastVariant}
-              action={input.action}
-              duration={duration}
-            />
-          ),
-          { duration, className: border }
-        );
-      } else {
-        const common = {
-          description,
-          duration,
-          ...(action ? { action } : {}),
-        };
-
-        switch (type) {
-          case "success":
-            toastId = sonnerToast.success(title, common);
-            break;
-          case "error":
-            toastId = sonnerToast.error(title, common);
-            break;
-          case "warning":
-            toastId = sonnerToast.warning(title, common);
-            break;
-          case "loading":
-            toastId = sonnerToast.loading(title, common);
-            break;
-          default:
-            toastId = sonnerToast(title, common);
-            break;
-        }
-      }
+      // Render ultra-sleek RichToast for all notifications
+      const toastId = sonnerToast.custom(
+        () => (
+          <RichToast
+            icon={input.icon || defaultIconFor(type)}
+            title={title}
+            description={description}
+            variant={input.variant || (type as RichToastVariant)}
+            action={input.action}
+            duration={duration}
+            badge={input.badge}
+          />
+        ),
+        { duration, className: "w-full max-w-[23rem] bg-transparent border-0 shadow-none p-0" }
+      );
 
       const id = String(toastId);
 
@@ -215,32 +198,58 @@ export function ToastProvider({ children }: { children: React.ReactNode }) {
   );
 
   const success = useCallback(
-    (title: string, description?: string) =>
-      show({ title, description, type: "success", icon: <Icon name="check" pack="phosphor" className="h-5 w-5" /> }),
+    (title: string, description?: string, action?: { label: string; onClick: () => void }) =>
+      show({
+        title,
+        description,
+        type: "success",
+        action,
+        icon: <Icon name="check" pack="phosphor" className="h-5 w-5 text-emerald-400" />,
+      }),
     [show]
   );
 
   const error = useCallback(
     (title: string, description?: string) =>
-      show({ title, description, type: "error", icon: <Icon name="x" pack="phosphor" className="h-5 w-5" /> }),
+      show({
+        title,
+        description,
+        type: "error",
+        icon: <Icon name="x" pack="phosphor" className="h-5 w-5 text-rose-400" />,
+      }),
     [show]
   );
 
   const info = useCallback(
     (title: string, description?: string) =>
-      show({ title, description, type: "info", icon: <Icon name="info" pack="phosphor" className="h-5 w-5" /> }),
+      show({
+        title,
+        description,
+        type: "info",
+        icon: <Icon name="info" pack="phosphor" className="h-5 w-5 text-cyan-400" />,
+      }),
     [show]
   );
 
   const warning = useCallback(
     (title: string, description?: string) =>
-      show({ title, description, type: "warning", icon: <Icon name="warning" pack="phosphor" className="h-5 w-5" /> }),
+      show({
+        title,
+        description,
+        type: "warning",
+        icon: <Icon name="warning" pack="phosphor" className="h-5 w-5 text-amber-400" />,
+      }),
     [show]
   );
 
   const loading = useCallback(
     (title: string, description?: string) =>
-      show({ title, description, type: "loading", icon: <Icon name="loader-2" pack="phosphor" className="h-5 w-5" /> }),
+      show({
+        title,
+        description,
+        type: "loading",
+        icon: <Icon name="loader-2" pack="phosphor" className="h-5 w-5 animate-spin text-[var(--accent-primary)]" />,
+      }),
     [show]
   );
 
@@ -255,9 +264,12 @@ export function ToastProvider({ children }: { children: React.ReactNode }) {
       language: (lang: Language) =>
         show({
           type: "info",
+          variant: "info",
           title: `${i18n("language", "Langue")} : ${LANGUAGE_LABELS[lang] || lang}`,
           icon: <FlagIcon code={lang} className="h-full w-full" />,
           duration: 3000,
+          dedupKey: "language-toast",
+          badge: "LANGUE",
         }),
 
       discord: (user?: DiscordNotifyUser) => {
@@ -270,79 +282,155 @@ export function ToastProvider({ children }: { children: React.ReactNode }) {
           : i18n("discordConnected", "Compte Discord connecté");
         return show({
           type: "success",
+          variant: "success",
           title,
           description,
           icon: <DiscordAvatar avatarUrl={user?.avatarUrl} />,
           duration: 4000,
+          dedupKey: "discord-toast",
+          badge: "DISCORD",
         });
       },
 
       discordDisconnect: () =>
         show({
           type: "info",
+          variant: "warning",
           title: i18n("disconnectSuccess", "Déconnecté de Discord"),
-          icon: <Icon name="unlink" pack="phosphor" className="h-5 w-5" />,
+          icon: <Icon name="unlink" pack="phosphor" className="h-5 w-5 text-amber-400" />,
           duration: 3000,
+          dedupKey: "discord-toast",
+          badge: "DISCORD",
         }),
 
       sync: (title?: string, description?: string) =>
         show({
           type: "success",
+          variant: "success",
           title: title || i18n("settingsSaved", "Préférences sauvegardées"),
           description: description || i18n("syncedViaWorker", "Synchronisées via le Worker"),
-          icon: <Icon name="cloud" pack="phosphor" className="h-5 w-5" />,
+          icon: <Icon name="cloud" pack="phosphor" className="h-5 w-5 text-emerald-400" />,
           duration: 3000,
+          dedupKey: "sync-toast",
+          badge: "CLOUD",
         }),
 
       reset: () =>
         show({
           type: "info",
+          variant: "warning",
           title: i18n("settingsReset", "Paramètres rétablis"),
           description: i18n("defaultPreferencesRestored", "Valeurs par défaut restaurées"),
-          icon: <Icon name="check" pack="phosphor" className="h-5 w-5" />,
+          icon: <Icon name="check" pack="phosphor" className="h-5 w-5 text-amber-400" />,
           duration: 3000,
+          dedupKey: "reset-toast",
+          badge: "RESET",
         }),
 
       noteCreated: (noteTitle?: string) =>
         show({
           type: "success",
+          variant: "success",
           title: i18n("noteCreated", "Note créée"),
-          description: noteTitle,
-          icon: <Icon name="file-text" pack="phosphor" className="h-5 w-5" />,
+          description: noteTitle || "Note enregistrée dans votre espace.",
+          icon: <Icon name="file-text" pack="phosphor" className="h-5 w-5 text-emerald-400" />,
           duration: 3000,
+          dedupKey: "note-created-toast",
+          badge: "NOTE",
         }),
 
       noteDeleted: (count = 1) =>
         show({
           type: "info",
+          variant: "warning",
           title: `${i18n("deleted", "Supprimée")}${count > 1 ? ` (${count})` : ""}`,
-          icon: <Icon name="trash-2" pack="phosphor" className="h-5 w-5" />,
+          description: `${count} note(s) supprimée(s).`,
+          icon: <Icon name="trash-2" pack="phosphor" className="h-5 w-5 text-rose-400" />,
           duration: 3000,
+          dedupKey: "note-deleted-toast",
+          badge: "SUPPRESSION",
         }),
 
       taskAdded: (taskTitle?: string) =>
         show({
           type: "success",
+          variant: "success",
           title: i18n("added", "Tâche ajoutée"),
-          description: taskTitle,
-          icon: <Icon name="check-square" pack="phosphor" className="h-5 w-5" />,
+          description: taskTitle || "Tâche planifiée avec succès.",
+          icon: <Icon name="check-square" pack="phosphor" className="h-5 w-5 text-emerald-400" />,
           duration: 3000,
+          dedupKey: "task-added-toast",
+          badge: "TÂCHE",
         }),
 
       taskDeleted: () =>
         show({
           type: "info",
+          variant: "warning",
           title: i18n("deleted", "Tâche supprimée"),
-          icon: <Icon name="trash-2" pack="phosphor" className="h-5 w-5" />,
+          icon: <Icon name="trash-2" pack="phosphor" className="h-5 w-5 text-amber-400" />,
           duration: 3000,
+          dedupKey: "task-deleted-toast",
+          badge: "TÂCHE",
         }),
 
       clipboard: () =>
         show({
           type: "success",
+          variant: "success",
           title: i18n("copied", "Copié dans le presse-papiers"),
-          icon: <Icon name="clipboard-check" pack="phosphor" className="h-5 w-5" />,
-          duration: 2000,
+          icon: <Icon name="clipboard-check" pack="phosphor" className="h-5 w-5 text-emerald-400" />,
+          duration: 2200,
+          dedupKey: "clipboard-toast",
+          badge: "COPIE",
+        }),
+
+      modelSwitched: (modelName: string) =>
+        show({
+          type: "info",
+          variant: "ai",
+          title: "Modèle IA sélectionné",
+          description: modelName,
+          icon: <Brain className="h-5 w-5 text-purple-400" />,
+          duration: 3000,
+          dedupKey: "model-switch-toast",
+          badge: "BRAIN AI",
+        }),
+
+      themeSwitched: (themeName: string) =>
+        show({
+          type: "info",
+          variant: "info",
+          title: "Thème d'affichage",
+          description: `Thème activé : ${themeName}`,
+          icon: <Palette className="h-5 w-5 text-cyan-400" />,
+          duration: 2500,
+          dedupKey: "theme-switch-toast",
+          badge: "DESIGN",
+        }),
+
+      workspaceSwitched: (space: string) =>
+        show({
+          type: "info",
+          variant: "version",
+          title: "Espace de travail",
+          description: `Espace actif : ${space}`,
+          icon: <Layers className="h-5 w-5 text-emerald-400" />,
+          duration: 2500,
+          dedupKey: "workspace-switch-toast",
+          badge: "ESPACE",
+        }),
+
+      versionInfo: (version: string, commit?: string) =>
+        show({
+          type: "info",
+          variant: "version",
+          title: "Version actuelle",
+          description: `${version} ${commit ? `· #${commit}` : ""}`,
+          icon: <Icon name="tag" pack="phosphor" className="h-5 w-5 text-emerald-400" />,
+          duration: 3500,
+          dedupKey: "current-version-toast",
+          badge: "SYSTÈME",
         }),
     }),
     [i18n, show]
@@ -371,35 +459,14 @@ export function ToastProvider({ children }: { children: React.ReactNode }) {
       {children}
       <Toaster
         position={isMobile ? "bottom-center" : "bottom-right"}
-        closeButton
+        closeButton={false}
         expand
         visibleToasts={4}
-        offset="1rem"
+        offset="1.25rem"
+        gap={10}
         toastOptions={{
           unstyled: true,
-          classNames: {
-            toast:
-              "group relative flex w-[22rem] max-w-[calc(100vw-1.5rem)] items-start gap-3 rounded-[var(--panel-radius)] border border-[var(--border)] bg-[var(--surface-raised)] p-3.5 text-sm text-[var(--text-primary)] shadow-2xl backdrop-blur-md pointer-events-auto",
-            title: "font-medium",
-            description: "mt-0.5 text-xs text-[var(--text-muted)]",
-            actionButton:
-              "ml-auto rounded-lg border border-[var(--border-subtle)] bg-[var(--surface)] px-2.5 py-1.5 text-[11px] font-semibold text-[var(--text-primary)] transition-colors hover:bg-[var(--surface-raised)]",
-            cancelButton: "hidden",
-            closeButton:
-              "absolute right-2 top-2 rounded-md p-1 text-[var(--text-muted)] opacity-60 transition-all hover:bg-[var(--surface)] hover:text-[var(--text-primary)] hover:opacity-100 focus:opacity-100",
-            error: "border-[var(--danger)]/30 text-[var(--danger)] shadow-[0_4px_20px_rgba(244,63,94,0.12)]",
-            success: "border-[var(--success)]/30 text-[var(--success)] shadow-[0_4px_20px_rgba(52,211,153,0.12)]",
-            warning: "border-[var(--warning)]/30 text-[var(--warning)] shadow-[0_4px_20px_rgba(245,158,11,0.12)]",
-            info: "border-[var(--info)]/30 text-[var(--info)] shadow-[0_4px_20px_rgba(56,189,248,0.12)]",
-          },
-        }}
-        icons={{
-          success: <span className="h-2.5 w-2.5 rounded-full bg-[var(--success)] shadow-[0_0_6px_var(--success)]" />,
-          error: <span className="h-2.5 w-2.5 rounded-full bg-[var(--danger)] shadow-[0_0_6px_var(--danger)]" />,
-          warning: <span className="h-2.5 w-2.5 rounded-full bg-[var(--warning)] shadow-[0_0_6px_var(--warning)]" />,
-          info: <span className="h-2.5 w-2.5 rounded-full bg-[var(--info)] shadow-[0_0_6px_var(--info)]" />,
-          loading: <Icon name="loader-2" pack="phosphor" className="h-4 w-4 animate-spin text-[var(--accent-primary)]" />,
-          close: <Icon name="x" pack="phosphor" className="h-3.5 w-3.5" />,
+          className: "pointer-events-auto",
         }}
       />
     </ToastContext.Provider>

@@ -36,7 +36,7 @@ export default function ValorantDayHeader({ group, onViewReport }: ValorantDayHe
         {/* Record (Wins // Losses) */}
         <div className="flex items-center gap-1.5 font-mono font-black text-xs pl-2">
           <span className="text-emerald-400">{group.wins} W</span>
-          <span className="text-zinc-600">//</span>
+          <span className="text-zinc-600">{"//"}</span>
           <span className="text-rose-400">{group.losses} L</span>
         </div>
       </div>
@@ -52,8 +52,8 @@ export default function ValorantDayHeader({ group, onViewReport }: ValorantDayHe
         {/* K/D/A Breakdown */}
         <div className="text-right">
           <span className="block text-[8px] font-extrabold uppercase text-zinc-500">
-            {group.totalKills} K <span className="text-zinc-600">//</span> {group.totalDeaths} D{" "}
-            <span className="text-zinc-600">//</span> {group.totalAssists} A
+            {group.totalKills} K <span className="text-zinc-600">{"//"}</span> {group.totalDeaths} D{" "}
+            <span className="text-zinc-600">{"//"}</span> {group.totalAssists} A
           </span>
           <span className="font-mono text-xs font-bold text-white">
             {group.avgKda} <span className="text-[10px] text-zinc-400">K/D/A</span>

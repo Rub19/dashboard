@@ -7206,6 +7206,52 @@ CHANGELOG_BY_LANG.es.unshift({
 });
 
 CHANGELOG_BY_LANG.fr.unshift({
+  version: "v1.10.62",
+  date: "2026-08-27",
+  title: "Correction Complète CI/CD GitHub Actions & Validation Linter ESLint 0 Erreur",
+  items: [
+    "Résolution de l'ensemble des erreurs ESLint bloquant le workflow GitHub Actions 'Build and Lint Next.js'.",
+    "Correction des nœuds de commentaires JSX et des entités non échappées dans les guides et trackers.",
+    "Validation : 100% des tests unitaires réussis (11 suites, 52 tests), build Next.js 105/105 pages, 0 erreur ESLint/TypeScript.",
+    "Version affichée : v1.10.62.",
+  ],
+});
+
+CHANGELOG_BY_LANG.en.unshift({
+  version: "v1.10.62",
+  date: "2026-08-27",
+  title: "CI/CD GitHub Actions Workflow Fix & 0-Error ESLint Validation",
+  items: [
+    "Fixed all ESLint errors blocking the 'Build and Lint Next.js' GitHub Actions workflow.",
+    "Cleaned JSX comment textnodes, unescaped quotes, and React Compiler memoization dependencies.",
+    "Validation: 100% unit tests passed (11 suites, 52 tests), Next.js 105/105 pages build, 0 ESLint/TypeScript errors.",
+    "Version badge: v1.10.62.",
+  ],
+});
+
+CHANGELOG_BY_LANG.es.unshift({
+  version: "v1.10.62",
+  date: "2026-08-27",
+  title: "Corrección de CI/CD GitHub Actions y validación de ESLint con 0 errores",
+  items: [
+    "Corrección de errores de linter y validación completa de pruebas.",
+    "Validación : build, lint, tests.",
+    "Versión : v1.10.62.",
+  ],
+});
+
+CHANGELOG_BY_LANG.de.unshift({
+  version: "v1.10.62",
+  date: "2026-08-27",
+  title: "CI/CD GitHub Actions Workflow Fix & 0-Fehler ESLint Validierung",
+  items: [
+    "Behebung aller Linter-Fehler und erfolgreiche Ausführung aller Unit-Tests.",
+    "Validierung: build, lint, tests.",
+    "Version: v1.10.62.",
+  ],
+});
+
+CHANGELOG_BY_LANG.fr.unshift({
   version: "v1.10.61",
   date: "2026-08-27",
   title: "Véritable Logo Poing Officiel Riot Games avec Découpes des Doigts",

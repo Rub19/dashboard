@@ -262,7 +262,7 @@ export default function LolTrackerView() {
               <span className="rounded bg-emerald-500/15 text-emerald-400 px-1.5 py-0.5">
                 {totalWins} W
               </span>
-              <span className="text-zinc-600">//</span>
+              <span className="text-zinc-600">{"//"}</span>
               <span className="rounded bg-rose-500/15 text-rose-400 px-1.5 py-0.5">
                 {totalLosses} L
               </span>
@@ -285,7 +285,7 @@ export default function LolTrackerView() {
               Avg KDA <span className="text-sm font-black text-white">{avgKda}</span>
             </span>
             <span className="block mt-1 font-mono text-[10px] text-zinc-500">
-              {avgKills} // {avgDeaths} // {avgAssists}
+              {avgKills} {"//"} {avgDeaths} {"//"} {avgAssists}
             </span>
           </div>
 

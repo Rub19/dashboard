@@ -377,7 +377,7 @@ export default function TasksPage() {
                     className="mt-4 flex items-center gap-2 rounded-2xl bg-purple-600 px-4 py-2 text-xs font-bold text-white shadow-lg shadow-purple-600/30 transition-all hover:bg-purple-500 active:scale-95 cursor-pointer"
                   >
                     <Sparkles className="h-3.5 w-3.5" />
-                    <span>Générer un plan avec l'IA</span>
+                    <span>Générer un plan avec l&apos;IA</span>
                   </button>
                 </motion.div>
               ) : (

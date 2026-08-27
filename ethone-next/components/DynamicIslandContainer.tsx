@@ -353,7 +353,7 @@ export default function DynamicIslandContainer() {
   const spotifyPct = useMemo(() => {
     if (!nowPlaying?.durationMs || !nowPlaying.progressMs) return 0;
     return Math.min(100, Math.max(0, (nowPlaying.progressMs / nowPlaying.durationMs) * 100));
-  }, [nowPlaying?.durationMs, nowPlaying?.progressMs]);
+  }, [nowPlaying]);
 
   const activeProgress = useMemo(() => {
     if (selectedView === "spotify" && nowPlaying?.isPlaying) return spotifyPct;

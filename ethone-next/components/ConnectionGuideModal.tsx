@@ -77,13 +77,13 @@ function GuideSteps({
               ) : (
                 <>
                   <Copy className="h-3 w-3" />
-                  <span>Copier l'URI</span>
+                  <span>Copier l&apos;URI</span>
                 </>
               )}
             </button>
           </div>
           <p className="text-[10px] text-[var(--text-muted)]">
-            Collez cette URL exacte dans le champ "Redirect URIs" de votre console développeur :
+            Collez cette URL exacte dans le champ &quot;Redirect URIs&quot; de votre console développeur :
           </p>
           <code className="block w-full truncate rounded-lg border border-[var(--panel-border)] bg-black/60 px-2.5 py-1.5 font-mono text-[11px] text-[var(--accent-primary)] select-all">
             {redirectUri}
@@ -255,7 +255,7 @@ export default function ConnectionGuideModal({
                   onClick={onClose}
                   className="rounded-xl bg-[var(--accent-primary)] px-4 py-2 text-xs font-bold text-[var(--accent-contrast)] shadow-md hover:opacity-90 transition-all cursor-pointer"
                 >
-                  J'ai configuré mes accès
+                  J&apos;ai configuré mes accès
                 </button>
               </div>
             </motion.div>

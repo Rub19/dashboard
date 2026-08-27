@@ -84,7 +84,7 @@ export default function ValorantMatchRow({ match, index }: ValorantMatchRowProps
           {/* Map & Mode Details */}
           <div className="min-w-0">
             <p className="text-[11px] font-medium text-zinc-400">
-              {formatTimeAgo(meta.timestamp)} <span className="text-zinc-600">//</span>{" "}
+              {formatTimeAgo(meta.timestamp)} <span className="text-zinc-600">{"//"}</span>{" "}
               <span className="text-zinc-300">{meta.modeName || "Swiftplay"}</span>
             </p>
             <div className="flex items-center gap-2 mt-0.5">

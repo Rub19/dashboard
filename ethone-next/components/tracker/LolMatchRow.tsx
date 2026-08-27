@@ -76,7 +76,7 @@ export default function LolMatchRow({ match, index }: LolMatchRowProps) {
           {/* Mode Details */}
           <div className="min-w-[110px]">
             <p className="text-[10px] font-medium text-zinc-400">
-              {formatLolTimeAgo(meta?.timestamp)} <span className="text-zinc-600">//</span>{" "}
+              {formatLolTimeAgo(meta?.timestamp)} <span className="text-zinc-600">{"//"}</span>{" "}
               <span>{formatLolDuration(meta?.duration)}</span>
             </p>
             <h4 className="text-sm font-bold text-white tracking-wide mt-0.5">
@@ -196,8 +196,8 @@ export default function LolMatchRow({ match, index }: LolMatchRowProps) {
           {/* K/D/A & Ratio */}
           <div className="text-center min-w-[70px]">
             <span className="block font-mono text-[10px] font-bold text-zinc-400">
-              {kills} <span className="text-zinc-600">//</span> {deaths}{" "}
-              <span className="text-zinc-600">//</span> {assists}
+              {kills} <span className="text-zinc-600">{"//"}</span> {deaths}{" "}
+              <span className="text-zinc-600">{"//"}</span> {assists}
             </span>
             <span
               className={cn(

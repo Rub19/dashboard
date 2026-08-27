@@ -106,7 +106,7 @@ export default function TrackerModal({
           return;
         }
 
-        const list = (res?.data?.matches || res?.data || res?.matches || res || []) as any[];
+        const list = (res?.data?.matches || res?.data || res?.matches || res || []) as unknown[];
         if (Array.isArray(list) && list.length > 0) {
           if (isVal) setValoMatches(list as ValorantMatch[]);
           else setLolMatches(list as LolMatch[]);
@@ -275,7 +275,7 @@ export default function TrackerModal({
                     <span className="rounded bg-emerald-500/15 text-emerald-400 px-1 py-0.5">
                       {lolWins} W
                     </span>
-                    <span className="text-zinc-600">//</span>
+                    <span className="text-zinc-600">{"//"}</span>
                     <span className="rounded bg-rose-500/15 text-rose-400 px-1 py-0.5">
                       {lolLosses} L
                     </span>
@@ -296,7 +296,7 @@ export default function TrackerModal({
                     Avg KDA <span className="text-xs font-black text-white">{lolAvgKda}</span>
                   </span>
                   <span className="block mt-1 font-mono text-[9px] text-zinc-500 truncate">
-                    {lolSumKills} // {lolSumDeaths} // {lolSumAssists}
+                    {lolSumKills} {"//"} {lolSumDeaths} {"//"} {lolSumAssists}
                   </span>
                 </div>
 

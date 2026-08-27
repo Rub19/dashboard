@@ -23,7 +23,7 @@ export default function LolDayHeader({ group }: LolDayHeaderProps) {
         {/* Record (Wins // Losses) */}
         <div className="flex items-center gap-1.5 font-mono font-black text-xs pl-2">
           <span className="text-emerald-400">{group.wins} W</span>
-          <span className="text-zinc-600">//</span>
+          <span className="text-zinc-600">{"//"}</span>
           <span className="text-rose-400">{group.losses} L</span>
         </div>
       </div>

@@ -7206,6 +7206,46 @@ CHANGELOG_BY_LANG.es.unshift({
 });
 
 CHANGELOG_BY_LANG.fr.unshift({
+  version: "v1.12.14",
+  date: "2026-08-28",
+  title: "Lecture Spotify Temps Réel : Échange PKCE Direct & Double Sonde de Lecture",
+  items: [
+    "Intégration de l'échange de jeton direct PKCE avec Spotify pour une validation immédiate sans dépendance serveur.",
+    "Double sonde sur les endpoints /me/player et /currently-playing pour détecter instantanément tout changement de musique.",
+    "Mise à jour en temps réel de la Dynamic Island et du lecteur Now Playing.",
+  ],
+});
+
+CHANGELOG_BY_LANG.en.unshift({
+  version: "v1.12.14",
+  date: "2026-08-28",
+  title: "Real-Time Spotify Playback: Direct PKCE Exchange & Dual Player Probe",
+  items: [
+    "Integrated direct PKCE token exchange with Spotify for instant client authorization.",
+    "Dual player probing across /me/player and /currently-playing for immediate song detection.",
+    "Real-time reactive display in Dynamic Island and Dock.",
+  ],
+});
+
+CHANGELOG_BY_LANG.es.unshift({
+  version: "v1.12.14",
+  date: "2026-08-28",
+  title: "Spotify en Tiempo Real: Intercambio PKCE y Detección Instantánea",
+  items: [
+    "Intercambio directo de tokens PKCE y visualización en tiempo real en la Dynamic Island.",
+  ],
+});
+
+CHANGELOG_BY_LANG.de.unshift({
+  version: "v1.12.14",
+  date: "2026-08-28",
+  title: "Spotify Echtzeit-Wiedergabe: Direkter PKCE-Austausch & Dual-Probe",
+  items: [
+    "Direkter PKCE-Token-Austausch und verzögerungsfreie Erkennung in der Dynamic Island.",
+  ],
+});
+
+CHANGELOG_BY_LANG.fr.unshift({
   version: "v1.12.13",
   date: "2026-08-28",
   title: "Discord OAuth2 & Portabilité : Saisie Directe du Client ID et Scopes Optimisés",

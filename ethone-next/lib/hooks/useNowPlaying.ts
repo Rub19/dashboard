@@ -129,9 +129,15 @@ export function useNowPlaying(pollMs = 10000) {
       // 1. Try Spotify Web API directly with token
       if (spotifyToken) {
         try {
-          const spotifyRes = await fetch("https://api.spotify.com/v1/me/player/currently-playing", {
+          let spotifyRes = await fetch("https://api.spotify.com/v1/me/player/currently-playing", {
             headers: { Authorization: `Bearer ${spotifyToken}` },
           });
+
+          if (spotifyRes.status === 204 || (spotifyRes.status === 200 && !spotifyRes.body)) {
+            spotifyRes = await fetch("https://api.spotify.com/v1/me/player", {
+              headers: { Authorization: `Bearer ${spotifyToken}` },
+            });
+          }
 
           if (spotifyRes.status === 200) {
             const spJson = (await spotifyRes.json()) as {

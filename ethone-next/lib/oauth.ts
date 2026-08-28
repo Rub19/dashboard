@@ -152,6 +152,36 @@ export async function exchangeCode(
 ) {
   const cfg = PROVIDERS[provider];
   if (!cfg) throw new Error("Unknown provider: " + provider);
+
+  // 1. Direct PKCE exchange for Spotify
+  if (provider === "spotify") {
+    const codeVerifier = typeof token === "object" ? token.codeVerifier : undefined;
+    if (codeVerifier) {
+      try {
+        const bodyParams = new URLSearchParams({
+          grant_type: "authorization_code",
+          code,
+          redirect_uri: REDIRECT_URI,
+          client_id: clientId,
+          code_verifier: codeVerifier,
+        });
+
+        const directRes = await fetch("https://accounts.spotify.com/api/token", {
+          method: "POST",
+          headers: {
+            "Content-Type": "application/x-www-form-urlencoded",
+          },
+          body: bodyParams.toString(),
+        });
+
+        if (directRes.ok) {
+          const directData = await directRes.json();
+          return { ok: true, data: directData };
+        }
+      } catch {}
+    }
+  }
+
   const body: Record<string, string> = { code, clientId, redirectUri: REDIRECT_URI };
   if (token) {
     if (typeof token === "string") {

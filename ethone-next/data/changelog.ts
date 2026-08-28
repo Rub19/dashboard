@@ -7206,6 +7206,46 @@ CHANGELOG_BY_LANG.es.unshift({
 });
 
 CHANGELOG_BY_LANG.fr.unshift({
+  version: "v1.12.12",
+  date: "2026-08-28",
+  title: "Diagnostic Spotify & Connexions : Résolution du Statut Null & Test Direct Web API",
+  items: [
+    "Diagnostic en direct via Spotify Web API (/v1/me et /player) affichant profil, type de compte et état de lecture.",
+    "Traitement intelligent du cas où aucune musique n'est en cours (retourne Connecté avec succès au lieu de Null).",
+    "Persistance automatique et synchronisée des jetons Spotify OAuth2.",
+  ],
+});
+
+CHANGELOG_BY_LANG.en.unshift({
+  version: "v1.12.12",
+  date: "2026-08-28",
+  title: "Spotify & Connections Diagnostic: Null Status Resolution & Direct Web API Test",
+  items: [
+    "Direct live diagnostic via Spotify Web API displaying profile, account type, and playback status.",
+    "Graceful handling of idle playback states (returning Connected instead of null).",
+    "Synchronized OAuth2 access token persistence across all storage keys.",
+  ],
+});
+
+CHANGELOG_BY_LANG.es.unshift({
+  version: "v1.12.12",
+  date: "2026-08-28",
+  title: "Diagnóstico de Spotify: Corrección de Estado Null y Conexión Directa",
+  items: [
+    "Diagnóstico en vivo con Spotify Web API y corrección del estado sin reproducción.",
+  ],
+});
+
+CHANGELOG_BY_LANG.de.unshift({
+  version: "v1.12.12",
+  date: "2026-08-28",
+  title: "Spotify-Diagnose: Behebung des Null-Status & Direkter API-Test",
+  items: [
+    "Direkte Web-API-Diagnose und saubere Rückmeldung bei inaktiver Wiedergabe.",
+  ],
+});
+
+CHANGELOG_BY_LANG.fr.unshift({
   version: "v1.12.11",
   date: "2026-08-28",
   title: "Discord Lanyard : Guide & Saisie Explicite de l'ID Utilisateur Personnel",

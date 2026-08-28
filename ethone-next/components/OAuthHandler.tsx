@@ -67,6 +67,10 @@ export default function OAuthHandler() {
             const accessToken = (tokenData as Record<string, string>).access_token || (tokenData as Record<string, string>).token;
             if (accessToken) {
               localStorage.setItem(`ethone:token:${provider}`, accessToken);
+              if (provider === "spotify") {
+                localStorage.setItem("spotify_access_token", accessToken);
+                localStorage.setItem("ethone:connected:spotify", "true");
+              }
               setField(provider, "accessToken", accessToken);
             }
           }

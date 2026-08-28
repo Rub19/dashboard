@@ -194,8 +194,15 @@ export function useLiveData(pollMs = 60000) {
       ? `/api/spotify/now-playing?clientId=${encodeURIComponent(spotifyClientId)}`
       : null;
 
-  const lanyardPath = liveLanyardUserId
-    ? `/api/lanyard/presence?userId=${encodeURIComponent(liveLanyardUserId)}`
+  const lanyardUserId =
+    liveLanyardUserId ||
+    (typeof window !== "undefined"
+      ? localStorage.getItem("ethone:pub:discord:liveLanyardUserId") ||
+        localStorage.getItem("ethone:discord:userId")
+      : null);
+
+  const lanyardPath = lanyardUserId
+    ? `/api/lanyard/presence?userId=${encodeURIComponent(lanyardUserId)}`
     : null;
 
   const weatherPath = liveWeatherCity
@@ -533,14 +540,14 @@ export function useLiveData(pollMs = 60000) {
 
   const records: LiveRecord[] = [];
 
-  if (nowPlaying?.isPlaying) {
+  if (nowPlaying?.isPlaying || isSpotifyConnected || nowPlaying?.title) {
     records.push({
       id: "nowplaying",
       source: "nowplaying",
-      label: nowPlaying.source || "Spotify",
-      title: nowPlaying.title || "En lecture",
-      subtitle: nowPlaying.artist,
-      meta: nowPlaying.album,
+      label: nowPlaying?.source || "Spotify",
+      title: nowPlaying?.title || "Connecté",
+      subtitle: nowPlaying?.artist || "Prêt pour la lecture",
+      meta: nowPlaying?.album,
       image: getArtworkUrl(nowPlaying as unknown as ApiData),
       status: "connected",
     });
@@ -554,16 +561,24 @@ export function useLiveData(pollMs = 60000) {
     });
   }
 
-  if (lanyard?.discord_status) {
-    const activity = lanyard.activities?.[0];
+  const isDiscordConnected =
+    connected.has("discord") ||
+    Boolean(lanyardUserId) ||
+    (typeof window !== "undefined" &&
+      (localStorage.getItem("ethone:connected:discord") === "true" ||
+        Boolean(localStorage.getItem("ethone:token:discord")) ||
+        Boolean(localStorage.getItem("ethone:pub:discord:liveLanyardUserId"))));
+
+  if (lanyard?.discord_status || isDiscordConnected) {
+    const activity = lanyard?.activities?.[0];
     records.push({
       id: "lanyard",
       source: "lanyard",
       label: "Discord",
-      title: lanyard.displayName || lanyard.discord_status,
-      subtitle: activity?.name,
+      title: lanyard?.displayName || (lanyard?.discord_status ? lanyard.discord_status : "Connecté"),
+      subtitle: activity?.name || (lanyard?.discord_status ? undefined : "En ligne"),
       meta: activity?.details,
-      image: lanyard.avatarUrl,
+      image: lanyard?.avatarUrl,
       status: error ? "error" : "connected",
     });
   } else {

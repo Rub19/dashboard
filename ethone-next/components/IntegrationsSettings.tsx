@@ -7,6 +7,7 @@ import { Plug, RefreshCcw, Zap, Search } from "lucide-react";
 import { fetchWorker } from "@/lib/api";
 import { useI18n } from "@/lib/hooks/useI18n";
 import { useSettings } from "@/components/SettingsProvider";
+import { useToast } from "@/components/ToastProvider";
 import { useProviderCredentials } from "@/lib/hooks/useProviderCredentials";
 import { INTEGRATIONS, INTEGRATION_CATEGORIES } from "@/lib/integrations";
 import { isConfigured, pingIntegration, type PingResult } from "@/lib/connection-config";
@@ -40,7 +41,8 @@ export default function IntegrationsSettings() {
   const [search, setSearch] = useState("");
 
   const i18n = useI18n();
-  const { settings } = useSettings();
+  const { settings, update } = useSettings();
+  const { success: toastSuccess } = useToast();
   const credentials = useProviderCredentials();
   const searchParams = useSearchParams();
 
@@ -161,10 +163,90 @@ export default function IntegrationsSettings() {
     } catch {}
   }, []);
 
-  const handleDisconnect = useCallback((id: string) => {
-    setConnected((prev) => ({ ...prev, [id]: false }));
-    setClientIds((prev) => ({ ...prev, [id]: "" }));
-  }, []);
+  const handleDisconnect = useCallback(
+    async (id: string) => {
+      // 1. Remove from localStorage
+      if (typeof window !== "undefined") {
+        localStorage.removeItem(`ethone:connected:${id}`);
+        localStorage.removeItem(`ethone:token:${id}`);
+        localStorage.removeItem(`ethone:clientId:${id}`);
+        localStorage.removeItem(`ethone:pub:${id}`);
+        localStorage.removeItem(`ethone:cred:${id}`);
+        Object.keys(localStorage).forEach((key) => {
+          if (key.startsWith(`ethone:pub:${id}:`) || key.startsWith(`ethone:cred:${id}:`)) {
+            localStorage.removeItem(key);
+          }
+        });
+      }
+
+      // 2. Remove credentials
+      await credentials.remove(id).catch(() => {});
+
+      // 3. Clear settings keys
+      const settingsPatch: Record<string, string> = {};
+      if (id === "spotify") {
+        settingsPatch.liveSpotifyClientId = "";
+        settingsPatch.liveNowPlayingSource = "none";
+      } else if (id === "discord") {
+        settingsPatch.liveLanyardUserId = "";
+      } else if (id === "youtube") {
+        settingsPatch.liveYoutubeClientId = "";
+      } else if (id === "reddit") {
+        settingsPatch.liveRedditClientId = "";
+      } else if (id === "google-calendar") {
+        settingsPatch.calendarClientId = "";
+      } else if (id === "google-drive") {
+        settingsPatch.driveClientId = "";
+      } else if (id === "steam") {
+        settingsPatch.liveSteamId = "";
+        settingsPatch.liveSteamAppId = "";
+      } else if (id === "lastfm") {
+        settingsPatch.liveLastfmUsername = "";
+      } else if (id === "twitch") {
+        settingsPatch.liveTwitchLogin = "";
+      } else if (id === "minecraft") {
+        settingsPatch.liveMinecraftUsername = "";
+      } else if (id === "weather") {
+        settingsPatch.liveWeatherCity = "";
+      } else if (id === "bluesky") {
+        settingsPatch.liveBlueskyHandle = "";
+      } else if (id === "riot") {
+        settingsPatch.liveTrackerRiotName = "";
+        settingsPatch.liveTrackerRiotTag = "";
+      }
+      if (Object.keys(settingsPatch).length > 0) {
+        update(settingsPatch as never);
+      }
+
+      // 4. Update local component state
+      setConnected((prev) => ({ ...prev, [id]: false }));
+      setClientIds((prev) => ({ ...prev, [id]: "" }));
+      setHealth((prev) => {
+        const next = { ...prev };
+        delete next[id];
+        return next;
+      });
+
+      // 5. Tell worker to revoke / delete connection
+      void fetchWorker("/api/connections/disconnect", {
+        method: "POST",
+        body: JSON.stringify({ provider: id }),
+      }).catch(() => {});
+
+      // 6. Broadcast event for other components and hooks
+      if (typeof window !== "undefined") {
+        window.dispatchEvent(
+          new CustomEvent("v8:connection-updated", {
+            detail: { provider: id, connected: false },
+          })
+        );
+      }
+
+      const integration = INTEGRATIONS.find((i) => i.id === id);
+      toastSuccess(`Déconnecté de ${integration?.name || id}`);
+    },
+    [credentials, update, toastSuccess]
+  );
 
   return (
     <div className="h-full min-h-0 w-full flex flex-col overflow-hidden bg-transparent">

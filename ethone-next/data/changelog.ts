@@ -7206,6 +7206,46 @@ CHANGELOG_BY_LANG.es.unshift({
 });
 
 CHANGELOG_BY_LANG.fr.unshift({
+  version: "v1.12.02",
+  date: "2026-08-28",
+  title: "Connexions & Cartes 3D : Bouton Déconnecter Réactif & Synchronisation Discord",
+  items: [
+    "Refonte complète de l'action Déconnecter : purge immédiate des tokens, stockage local, identifiants chiffrés et clés de paramètres.",
+    "Synchronisation parfaite entre la barre des connexions actives, la fiche détaillée et la carte 3D pour Discord et l'ensemble des services.",
+    "Diffusion en temps réel de l'événement de déconnexion pour mettre à jour instantanément tous les widgets et le Dock.",
+  ],
+});
+
+CHANGELOG_BY_LANG.en.unshift({
+  version: "v1.12.02",
+  date: "2026-08-28",
+  title: "Connections & 3D Cards: Reactive Disconnect Button & Discord Sync",
+  items: [
+    "Complete overhaul of Disconnect action: instant purge of tokens, local storage, encrypted credentials, and setting keys.",
+    "Perfect synchronization between active connections bar, detail drawer, and 3D card for Discord and all services.",
+    "Real-time event broadcast to immediately refresh all widgets and the Dock upon disconnection.",
+  ],
+});
+
+CHANGELOG_BY_LANG.es.unshift({
+  version: "v1.12.02",
+  date: "2026-08-28",
+  title: "Conexiones & Tarjetas 3D: Botón Desconectar y Sincronización Discord",
+  items: [
+    "Solución completa para la desconexión de servicios y sincronización exacta de Discord en tarjetas 3D.",
+  ],
+});
+
+CHANGELOG_BY_LANG.de.unshift({
+  version: "v1.12.02",
+  date: "2026-08-28",
+  title: "Verbindungen & 3D-Karten: Trennen-Button & Discord-Synchronisation",
+  items: [
+    "Vollständige Überarbeitung der Trennfunktion und nahtlose Synchronisation von Discord und 3D-Karten.",
+  ],
+});
+
+CHANGELOG_BY_LANG.fr.unshift({
   version: "v1.12.01",
   date: "2026-08-28",
   title: "Connexions & Médias : Intégration Immédiate de Spotify dans le Dock & Dynamic Island",

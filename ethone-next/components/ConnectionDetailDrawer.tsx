@@ -137,17 +137,21 @@ export default function ConnectionDetailDrawer({
 
   const capabilities = useMemo(() => getCapabilities(integration.id), [integration.id]);
 
-  const isConnected = status === "connected" || !!credentials.connected[integration.id];
+  const isConnected =
+    status === "connected" ||
+    !!credentials.connected[integration.id] ||
+    (typeof window !== "undefined" &&
+      localStorage.getItem(`ethone:connected:${integration.id}`) === "true");
 
   const variant: BadgeVariant =
-    status === "connected"
+    isConnected
       ? "success"
       : status === "error"
       ? "danger"
       : "muted";
 
   const statusLabel =
-    status === "connected"
+    isConnected
       ? i18n("connected", "Connecté")
       : status === "error"
       ? i18n("connectionFailed", "Erreur")
@@ -559,7 +563,11 @@ export default function ConnectionDetailDrawer({
               {isConnected ? (
                 <button
                   type="button"
-                  onClick={onDisconnect}
+                  onClick={() => {
+                    hapticLightImpact();
+                    onDisconnect();
+                    onClose();
+                  }}
                   className="flex items-center gap-2 rounded-xl border border-rose-500/30 bg-rose-500/10 px-4 py-2.5 text-xs font-bold text-rose-300 hover:bg-rose-500/20 transition-all active:scale-95 cursor-pointer"
                 >
                   <Unplug className="h-3.5 w-3.5" />

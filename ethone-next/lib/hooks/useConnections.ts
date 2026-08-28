@@ -1,14 +1,18 @@
 import { useCallback, useEffect, useState } from "react";
 import { fetchWorker } from "@/lib/api";
+import { INTEGRATIONS } from "@/lib/integrations";
 
-const OAUTH_PROVIDERS = ["spotify", "youtube", "reddit", "google-calendar", "google-drive", "github", "notion", "todoist"];
+const ALL_PROVIDERS = INTEGRATIONS.map((i) => i.id);
 
 export function useConnections() {
   const [connected, setConnected] = useState<Set<string>>(() => {
     const initial = new Set<string>();
     if (typeof window !== "undefined") {
-      OAUTH_PROVIDERS.forEach((p) => {
-        if (localStorage.getItem(`ethone:connected:${p}`) === "true") {
+      ALL_PROVIDERS.forEach((p) => {
+        if (
+          localStorage.getItem(`ethone:connected:${p}`) === "true" ||
+          Boolean(localStorage.getItem(`ethone:token:${p}`))
+        ) {
           initial.add(p);
         }
       });
@@ -20,8 +24,11 @@ export function useConnections() {
   const refresh = useCallback(() => {
     const localConnected = new Set<string>();
     if (typeof window !== "undefined") {
-      OAUTH_PROVIDERS.forEach((p) => {
-        if (localStorage.getItem(`ethone:connected:${p}`) === "true") {
+      ALL_PROVIDERS.forEach((p) => {
+        if (
+          localStorage.getItem(`ethone:connected:${p}`) === "true" ||
+          Boolean(localStorage.getItem(`ethone:token:${p}`))
+        ) {
           localConnected.add(p);
         }
       });
@@ -33,7 +40,10 @@ export function useConnections() {
         const set = new Set<string>(localConnected);
         rows.forEach((row: { provider: string; connected: boolean }) => {
           if (row.connected) set.add(row.provider);
-          else if (row.connected === false && !localStorage.getItem(`ethone:connected:${row.provider}`)) {
+          else if (
+            row.connected === false &&
+            localStorage.getItem(`ethone:connected:${row.provider}`) !== "true"
+          ) {
             set.delete(row.provider);
           }
         });
@@ -45,6 +55,39 @@ export function useConnections() {
       .finally(() => setLoaded(true));
   }, []);
 
+  const disconnect = useCallback((provider: string) => {
+    if (typeof window !== "undefined") {
+      localStorage.removeItem(`ethone:connected:${provider}`);
+      localStorage.removeItem(`ethone:token:${provider}`);
+      localStorage.removeItem(`ethone:clientId:${provider}`);
+      localStorage.removeItem(`ethone:pub:${provider}`);
+      localStorage.removeItem(`ethone:cred:${provider}`);
+      // Remove any specific subkeys
+      Object.keys(localStorage).forEach((key) => {
+        if (
+          key.startsWith(`ethone:pub:${provider}:`) ||
+          key.startsWith(`ethone:cred:${provider}:`)
+        ) {
+          localStorage.removeItem(key);
+        }
+      });
+      window.dispatchEvent(
+        new CustomEvent("v8:connection-updated", {
+          detail: { provider, connected: false },
+        })
+      );
+    }
+    setConnected((prev) => {
+      const next = new Set(prev);
+      next.delete(provider);
+      return next;
+    });
+    void fetchWorker("/api/connections/disconnect", {
+      method: "POST",
+      body: JSON.stringify({ provider }),
+    }).catch(() => {});
+  }, []);
+
   useEffect(() => {
     refresh();
     const handleUpdate = () => refresh();
@@ -54,5 +97,5 @@ export function useConnections() {
     }
   }, [refresh]);
 
-  return { connected, loaded, refresh };
+  return { connected, loaded, refresh, disconnect };
 }

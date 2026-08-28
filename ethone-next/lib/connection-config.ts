@@ -252,13 +252,36 @@ export function isConfigured(
   oauthConnected: Record<string, boolean>
 ): boolean {
   if (integration.status === "restricted" || integration.status === "limited") return false;
-  const isLocallyConnected = typeof window !== "undefined" && localStorage.getItem(`ethone:connected:${integration.id}`) === "true";
+  const isLocallyConnected =
+    typeof window !== "undefined" &&
+    localStorage.getItem(`ethone:connected:${integration.id}`) === "true";
+
+  if (oauthConnected[integration.id] === true || isLocallyConnected) {
+    return true;
+  }
+
   if (integration.id === "spotify") {
-    const hasClientId = Boolean(settings.liveSpotifyClientId || (typeof window !== "undefined" && localStorage.getItem("ethone:clientId:spotify")));
-    if (oauthConnected.spotify === true || isLocallyConnected || (hasClientId && settings.liveNowPlayingSource === "spotify")) {
+    const hasClientId = Boolean(
+      settings.liveSpotifyClientId ||
+        (typeof window !== "undefined" && localStorage.getItem("ethone:clientId:spotify"))
+    );
+    if (hasClientId && settings.liveNowPlayingSource === "spotify") {
       return true;
     }
   }
+
+  if (integration.id === "discord") {
+    const hasDiscordId = Boolean(
+      settings.liveLanyardUserId && settings.liveLanyardUserId.trim().length > 0
+    );
+    const hasDiscordLocal =
+      typeof window !== "undefined" &&
+      Boolean(localStorage.getItem("ethone:pub:discord:liveLanyardUserId"));
+    if (hasDiscordId || hasDiscordLocal) {
+      return true;
+    }
+  }
+
   const publicFields = PUBLIC_FIELDS[integration.id] || [];
   const credentialFields = CREDENTIAL_FIELDS[integration.id] || [];
   if (publicFields.length === 0 && credentialFields.length === 0) {

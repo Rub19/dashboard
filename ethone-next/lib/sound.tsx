@@ -625,56 +625,156 @@ function createAmbientBuffer(ctx: BaseAudioContext, type: SoundAmbient): AudioBu
   return buffer;
 }
 
-/** Multi-layer procedural rain: continuous shower, mid-body pink noise and close droplets. */
+/**
+ * Ultra-high quality ASMR Sleep Rain:
+ * - Warm velvet low-pass rain bed (rooftop/window acoustics, zero harsh hiss).
+ * - Organic acoustic micro-droplets on glass/leaves with resonant damping.
+ * - Slow ambient breathing envelope for soothing, deeply relaxing sleep ASMR.
+ */
 function renderRainLayer(data: Float32Array, sampleRate: number): void {
   const length = data.length;
-  const dropDecay = Math.exp(-1 / (sampleRate * 0.06));
 
-  const drops: { start: number; amp: number }[] = [];
-  let t = Math.floor(sampleRate * 0.2);
-  while (t < length) {
-    t += Math.floor(sampleRate * (0.04 + Math.random() * 0.25));
-    if (t >= length) break;
-    drops.push({ start: t, amp: 0.3 + Math.random() * 0.6 });
-  }
-  drops.sort((a, b) => a.start - b.start);
-
+  // 1. Warm Pink-Brown noise cascade (Bed of rain on rooftop)
+  let p0 = 0, p1 = 0, p2 = 0, p3 = 0, p4 = 0, p5 = 0, p6 = 0;
   let brown = 0;
-  let p0 = 0,
-    p1 = 0,
-    p2 = 0,
-    p3 = 0,
-    p4 = 0,
-    p5 = 0,
-    p6 = 0;
-  let nextDrop = 0;
-  let dropEnv = 0;
+  let lpBed = 0;
+  const lpBedCoeff = Math.exp(-2 * Math.PI * 1100 / sampleRate);
+
+  // 2. ASMR Micro-Droplets (individual soothing impacts on window pane)
+  const dropCount = Math.floor((length / sampleRate) * 55); // ~55 organic drops/sec
+  const dropStarts = new Float32Array(dropCount);
+  const dropFreqs = new Float32Array(dropCount);
+  const dropAmps = new Float32Array(dropCount);
+  const dropDecays = new Float32Array(dropCount);
+
+  for (let d = 0; d < dropCount; d++) {
+    dropStarts[d] = Math.floor(Math.random() * (length - sampleRate * 0.05));
+    // Resonant frequencies of raindrops on glass/wood (1200Hz - 3400Hz)
+    dropFreqs[d] = 1200 + Math.random() * 2200;
+    dropAmps[d] = 0.08 + Math.random() * 0.22;
+    // Fast tactile ASMR decay (6ms - 22ms)
+    const decaySec = 0.006 + Math.random() * 0.016;
+    dropDecays[d] = Math.exp(-1 / (sampleRate * decaySec));
+  }
+
+  // Active droplet state tracking
+  let activeDropPhase = 0;
+  let activeDropFreq = 1800;
+  let activeDropEnv = 0;
+  let activeDropDecay = 0.95;
+
+  // Pre-sort drop starts for sequential activation
+  const sortedDropIndices = Array.from({ length: dropCount }, (_, i) => i).sort(
+    (a, b) => dropStarts[a] - dropStarts[b]
+  );
+  let nextDropIdx = 0;
 
   for (let i = 0; i < length; i++) {
     const white = Math.random() * 2 - 1;
 
-    brown = (brown + 0.04 * white) / 1.04;
-
+    // Pink noise filter (Paul Kellet's refined 6-pole filter)
     p0 = 0.99886 * p0 + white * 0.0555179;
     p1 = 0.99332 * p1 + white * 0.0750759;
     p2 = 0.969 * p2 + white * 0.153852;
     p3 = 0.8665 * p3 + white * 0.3104856;
     p4 = 0.55 * p4 + white * 0.5329522;
     p5 = -0.7616 * p5 - white * 0.016898;
-    const pink = (p0 + p1 + p2 + p3 + p4 + p5 + p6 + white * 0.5362) * 0.18;
+    const pink = (p0 + p1 + p2 + p3 + p4 + p5 + p6 + white * 0.5362) * 0.16;
     p6 = white * 0.115926;
 
-    while (nextDrop < drops.length && i >= drops[nextDrop].start) {
-      dropEnv += drops[nextDrop].amp;
-      nextDrop++;
+    // Brown noise integration (deep soothing warmth)
+    brown = (brown + 0.035 * white) / 1.035;
+
+    // Smooth low-pass the bed to remove all abrasive white hiss
+    const rawBed = brown * 0.55 + pink * 0.45;
+    lpBed = (1 - lpBedCoeff) * rawBed + lpBedCoeff * lpBed;
+
+    // Activate new raindrop impacts
+    while (
+      nextDropIdx < dropCount &&
+      i >= dropStarts[sortedDropIndices[nextDropIdx]]
+    ) {
+      const idx = sortedDropIndices[nextDropIdx];
+      activeDropEnv += dropAmps[idx];
+      activeDropFreq = dropFreqs[idx];
+      activeDropDecay = dropDecays[idx];
+      nextDropIdx++;
     }
-    dropEnv *= dropDecay;
-    const droplet = dropEnv * white;
 
-    const time = i / sampleRate;
-    const modulation = 0.85 + 0.15 * Math.sin(time * 0.25) + 0.08 * Math.sin(time * 0.06);
+    // Synthesize organic drop impact (resonant ping + micro texture)
+    let dropletSound = 0;
+    if (activeDropEnv > 0.0005) {
+      activeDropPhase += (2 * Math.PI * activeDropFreq) / sampleRate;
+      const dropSine = Math.sin(activeDropPhase);
+      dropletSound = activeDropEnv * (dropSine * 0.65 + white * 0.35);
+      activeDropEnv *= activeDropDecay;
+    }
 
-    data[i] = Math.max(-1, Math.min(1, (brown * 0.55 + pink * 0.45 + droplet * 0.8) * modulation * 0.9));
+    // Ultra-smooth ASMR natural breathing modulation (14s and 26s gentle cycles)
+    const t = i / sampleRate;
+    const swell = 0.92 + 0.08 * Math.sin(t * (2 * Math.PI / 14)) + 0.04 * Math.sin(t * (2 * Math.PI / 26));
+
+    // Combine warm bed + tactile ASMR patter
+    const combined = (lpBed * 0.72 + dropletSound * 0.38) * swell;
+    data[i] = Math.max(-0.95, Math.min(0.95, combined * 0.92));
+  }
+}
+
+/**
+ * Heavy Thunderstorm:
+ * - Heavy torrential downpour bed with gusting wind.
+ * - Deep visceral rolling thunder rumbles with low-frequency sub-bass reverberation (32Hz-80Hz).
+ */
+function renderStorm(data: Float32Array, sampleRate: number): void {
+  const length = data.length;
+
+  // 1. Heavy torrential rain bed with wind surge
+  let brown = 0;
+  let p0 = 0, p1 = 0, p2 = 0, p3 = 0, p4 = 0, p5 = 0;
+  for (let i = 0; i < length; i++) {
+    const white = Math.random() * 2 - 1;
+    brown = (brown + 0.06 * white) / 1.06;
+    p0 = 0.99886 * p0 + white * 0.0555;
+    p1 = 0.99332 * p1 + white * 0.075;
+    p2 = 0.969 * p2 + white * 0.153;
+    p3 = 0.8665 * p3 + white * 0.31;
+    p4 = 0.55 * p4 + white * 0.53;
+    const pink = (p0 + p1 + p2 + p3 + p4 + white * 0.53) * 0.18;
+
+    const t = i / sampleRate;
+    const gust = 0.75 + 0.25 * Math.sin(t * 0.3) + 0.15 * Math.sin(t * 0.85);
+    data[i] = (brown * 0.5 + pink * 0.5) * gust * 0.7;
+  }
+
+  // 2. Realistic rolling thunder strikes
+  const thunderEvents = [
+    { start: Math.floor(sampleRate * 2.2), duration: Math.floor(sampleRate * 4.2), intensity: 0.95, pitch: 42 },
+    { start: Math.floor(sampleRate * 9.8), duration: Math.floor(sampleRate * 5.0), intensity: 1.0, pitch: 36 },
+  ];
+
+  for (const thunder of thunderEvents) {
+    let rumbleNoise = 0;
+    for (let i = 0; i < thunder.duration && thunder.start + i < length; i++) {
+      const idx = thunder.start + i;
+      const t = i / sampleRate;
+
+      // Realistic thunder envelope: sharp rolling rise (0.15s), prolonged deep rolling tail
+      const attack = Math.min(1, t / 0.2);
+      const decay = Math.exp(-t * 0.65);
+      const envelope = attack * decay * thunder.intensity;
+
+      // Multi-harmonic sub-bass rolling rumble
+      const sub1 = Math.sin(2 * Math.PI * thunder.pitch * t + Math.sin(t * 2.5) * 1.5) * 0.45;
+      const sub2 = Math.sin(2 * Math.PI * (thunder.pitch * 1.7) * t) * 0.3;
+      const sub3 = Math.sin(2 * Math.PI * (thunder.pitch * 2.4) * t) * 0.18;
+
+      // Low-frequency crackle and turbulent atmospheric rolling tail
+      const white = Math.random() * 2 - 1;
+      rumbleNoise = (rumbleNoise + 0.08 * white) / 1.08;
+
+      const rollingClap = (sub1 + sub2 + sub3 + rumbleNoise * 0.4) * envelope;
+      data[idx] = Math.max(-0.98, Math.min(0.98, data[idx] * 0.75 + rollingClap * 0.75));
+    }
   }
 }
 
@@ -784,29 +884,6 @@ function renderColorScene(data: Float32Array, sampleRate: number, type: "forest"
     }
     const burst = Math.sin(phase) * env * 0.7;
     data[i] = Math.max(-1, Math.min(1, data[i] + burst));
-  }
-}
-
-function renderStorm(data: Float32Array, sampleRate: number): void {
-  renderRainLayer(data, sampleRate);
-  const length = data.length;
-  // Natural spaced thunder strikes
-  const thunders = [
-    { start: Math.floor(sampleRate * 2.8), duration: sampleRate * 1.8, intensity: 0.85 },
-    { start: Math.floor(sampleRate * 9.5), duration: sampleRate * 2.4, intensity: 0.95 },
-  ];
-
-  for (const thunder of thunders) {
-    for (let i = 0; i < thunder.duration && thunder.start + i < length; i++) {
-      const idx = thunder.start + i;
-      const t = i / sampleRate;
-      const attack = Math.min(1, t * 15);
-      const decay = Math.exp(-t * 1.2);
-      const sub = Math.sin(2 * Math.PI * 48 * t) * 0.45;
-      const mid = Math.sin(2 * Math.PI * 92 * t + (Math.random() - 0.5) * 0.5) * 0.3;
-      const rumble = (sub + mid + (Math.random() * 2 - 1) * 0.25) * attack * decay * thunder.intensity;
-      data[idx] = Math.max(-1, Math.min(1, data[idx] * 0.8 + rumble));
-    }
   }
 }
 

@@ -7206,6 +7206,46 @@ CHANGELOG_BY_LANG.es.unshift({
 });
 
 CHANGELOG_BY_LANG.fr.unshift({
+  version: "v1.11.10",
+  date: "2026-08-28",
+  title: "Audio & Ambiances : Synthèse Pluie ASMR Apaisante & Orage Réaliste",
+  items: [
+    "Refonte acoustique complète de la pluie : texture ASMR veloutée sur toit et fenêtres avec micro-gouttelettes résonantes apaisantes (sans bruit blanc strident).",
+    "Distinction marquée de l'orage : averse torrentielle dense avec roulements de tonnerre cinématiques profonds en sub-bass (32Hz–80Hz).",
+    "Modulation de respiration naturelle ultra-lente pour favoriser le sommeil et la concentration.",
+  ],
+});
+
+CHANGELOG_BY_LANG.en.unshift({
+  version: "v1.11.10",
+  date: "2026-08-28",
+  title: "Audio & Soundscapes: Soothing Sleep ASMR Rain & Cinematic Thunderstorm",
+  items: [
+    "Complete acoustic overhaul of Rain: warm velvet rooftop/window ASMR bed with organic resonant micro-droplets.",
+    "Distinct heavy Thunderstorm: torrential rainfall with deep, visceral rolling thunder sub-bass reverberation (32Hz–80Hz).",
+    "Ultra-slow natural breathing modulation designed for restorative sleep and deep focus.",
+  ],
+});
+
+CHANGELOG_BY_LANG.es.unshift({
+  version: "v1.11.10",
+  date: "2026-08-28",
+  title: "Audio y Ambientes: Lluvia ASMR Relajante y Tormenta Realista",
+  items: [
+    "Rediseño acústico de lluvia relajante ASMR y truenos profundos para dormir.",
+  ],
+});
+
+CHANGELOG_BY_LANG.de.unshift({
+  version: "v1.11.10",
+  date: "2026-08-28",
+  title: "Audio & Klangwelten: Beruhigender ASMR-Schlafregen & Realistisches Gewitter",
+  items: [
+    "Vollständige Überarbeitung des Regensoundscapes mit ASMR-Wassertropfen und tiefem Donnergrollen.",
+  ],
+});
+
+CHANGELOG_BY_LANG.fr.unshift({
   version: "v1.11.09",
   date: "2026-08-28",
   title: "Paramètres & Navigation : Contrôleur Déterministe & Scroll-Spy Maître",

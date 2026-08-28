@@ -973,15 +973,40 @@ export function SoundProvider({ children }: { children: ReactNode }) {
     settingsRef.current = settings;
   }, [settings]);
 
+  const isUnlockedRef = useRef(false);
+
+  useEffect(() => {
+    const unlock = () => {
+      isUnlockedRef.current = true;
+      const ctx = audioRef.current;
+      if (ctx && ctx.state === "suspended") {
+        ctx.resume().catch(() => {});
+      }
+    };
+    window.addEventListener("pointerdown", unlock, { once: true, passive: true });
+    window.addEventListener("keydown", unlock, { once: true, passive: true });
+    window.addEventListener("touchstart", unlock, { once: true, passive: true });
+    return () => {
+      window.removeEventListener("pointerdown", unlock);
+      window.removeEventListener("keydown", unlock);
+      window.removeEventListener("touchstart", unlock);
+    };
+  }, []);
+
   const ensureContext = useCallback((): AudioContext | null => {
     if (audioRef.current) return audioRef.current;
+    if (typeof window === "undefined") return null;
     const AC =
       window.AudioContext || (window as unknown as { webkitAudioContext?: typeof AudioContext }).webkitAudioContext;
     if (!AC) return null;
     try {
       audioRef.current = new AC({ latencyHint: "interactive" });
     } catch {
-      audioRef.current = new AC();
+      try {
+        audioRef.current = new AC();
+      } catch {
+        return null;
+      }
     }
     const ctx = audioRef.current;
     const output = ctx.createGain();
@@ -1024,7 +1049,8 @@ export function SoundProvider({ children }: { children: ReactNode }) {
       if (!ctx || !output || type === "none") return;
 
       if (ctx.state === "suspended") {
-        void ctx.resume();
+        if (!isUnlockedRef.current) return;
+        ctx.resume().catch(() => {});
       }
 
       const master = settingsRef.current.masterVolume ? (settingsRef.current.soundVolume ?? 50) / 100 : 0;
@@ -1130,7 +1156,7 @@ export function SoundProvider({ children }: { children: ReactNode }) {
   useEffect(() => {
     if (settings.ambientSound === "none") {
       stopAmbience();
-    } else {
+    } else if (isUnlockedRef.current) {
       ensureContext();
       startAmbience(settings.ambientSound);
     }
@@ -1151,7 +1177,7 @@ export function SoundProvider({ children }: { children: ReactNode }) {
   }, [settings.mediaDucking]);
 
   useEffect(() => {
-    if (settings.ambientSound === "none") return;
+    if (settings.ambientSound === "none" || !isUnlockedRef.current) return;
     ensureContext();
     startAmbience(settings.ambientSound);
   }, [settings.masterVolume, settings.soundVolume, startAmbience, settings.ambientSound, ensureContext]);
@@ -1168,7 +1194,7 @@ export function SoundProvider({ children }: { children: ReactNode }) {
         if (!ctx) return;
 
         if (ctx.state === "suspended") {
-          void ctx.resume();
+          ctx.resume().catch(() => {});
         }
 
         const output = outputGainRef.current;

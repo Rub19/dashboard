@@ -7206,6 +7206,46 @@ CHANGELOG_BY_LANG.es.unshift({
 });
 
 CHANGELOG_BY_LANG.fr.unshift({
+  version: "v1.12.08",
+  date: "2026-08-28",
+  title: "Optimisation Audio & Console : Élimination des Avertissements AudioContext & NotificationBridge",
+  items: [
+    "Gestion optimisée de l'AudioContext avec déverrouillage fluide aux premiers gestes utilisateur (évite tout avertissement Chrome Autoplay).",
+    "Nettoyage du pont de notifications mail en mode hors-ligne sans erreur console.",
+    "Formulaire structuré pour la saisie des identifiants et clés API dans les tiroirs d'intégration.",
+  ],
+});
+
+CHANGELOG_BY_LANG.en.unshift({
+  version: "v1.12.08",
+  date: "2026-08-28",
+  title: "Audio & Console Optimization: AudioContext Autoplay & NotificationBridge Cleanup",
+  items: [
+    "Optimized AudioContext lifecycle with graceful user gesture unlocking preventing browser warnings.",
+    "Clean offline fallback for Mail NotificationBridge eliminating noisy console errors.",
+    "Structured form validation for credential inputs across integration drawers.",
+  ],
+});
+
+CHANGELOG_BY_LANG.es.unshift({
+  version: "v1.12.08",
+  date: "2026-08-28",
+  title: "Optimización de Audio y Consola: Limpieza de Advertencias y Errores",
+  items: [
+    "Desbloqueo silencioso del AudioContext en interacciones de usuario y gestión offline sin errores.",
+  ],
+});
+
+CHANGELOG_BY_LANG.de.unshift({
+  version: "v1.12.08",
+  date: "2026-08-28",
+  title: "Audio- und Konsolenoptimierung: Bereinigung von Warnungen",
+  items: [
+    "Optimierte AudioContext-Initialisierung und bereinigte Offline-Verarbeitung.",
+  ],
+});
+
+CHANGELOG_BY_LANG.fr.unshift({
   version: "v1.12.07",
   date: "2026-08-28",
   title: "Connexions & Intégrations : Résolution Intégrale des Liens OAuth2 et Connexions API",

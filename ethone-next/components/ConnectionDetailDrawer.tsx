@@ -346,7 +346,13 @@ export default function ConnectionDetailDrawer({
               {/* Configuration / Credentials Form */}
               {hasFields && (integration.id !== "discord" || discordMode === "lanyard") && (
                 <Section title="Configuration & Identifiants API">
-                  <div className="space-y-4 rounded-2xl border border-[var(--panel-border)] bg-[var(--surface-raised)]/50 p-4">
+                  <form
+                    onSubmit={(e) => {
+                      e.preventDefault();
+                      void handleSaveCredentials();
+                    }}
+                    className="space-y-4 rounded-2xl border border-[var(--panel-border)] bg-[var(--surface-raised)]/50 p-4"
+                  >
                     {/* Public Fields */}
                     {publicFieldDefs.map((f) => (
                       <div key={String(f.key)} className="space-y-1.5">
@@ -383,6 +389,7 @@ export default function ConnectionDetailDrawer({
 
                     {/* Credential Fields */}
                     {credFieldDefs.map((f) => {
+                      const isSecret = f.type === "password" || f.type === "token";
                       const show = !!showPassword[f.key as string];
                       const val = credValues[f.key as string] || "";
                       const hasLocal = typeof window !== "undefined" && !!localStorage.getItem(`ethone:cred:${integration.id}:${String(f.key)}`);
@@ -414,7 +421,7 @@ export default function ConnectionDetailDrawer({
 
                           <div className="relative">
                             <input
-                              type={show ? "text" : "password"}
+                              type={isSecret && !show ? "password" : "text"}
                               value={val}
                               onChange={(e) =>
                                 setCredValues((p) => ({ ...p, [f.key as string]: e.target.value }))
@@ -455,15 +462,14 @@ export default function ConnectionDetailDrawer({
 
                     {/* Save Button */}
                     <button
-                      type="button"
-                      onClick={handleSaveCredentials}
+                      type="submit"
                       disabled={saving}
                       className="mt-2 flex w-full items-center justify-center gap-2 rounded-xl bg-emerald-600 px-4 py-3 text-xs font-bold text-white shadow-lg shadow-emerald-600/30 transition hover:bg-emerald-500 active:scale-98 disabled:opacity-50 cursor-pointer"
                     >
                       {saving ? <Loader2 className="h-4 w-4 animate-spin" /> : <Save className="h-4 w-4" />}
                       <span>{saving ? "Enregistrement..." : "Enregistrer les identifiants"}</span>
                     </button>
-                  </div>
+                  </form>
                 </Section>
               )}
 

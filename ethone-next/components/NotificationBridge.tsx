@@ -43,8 +43,8 @@ export default function NotificationBridge() {
             data: { url: "/mail/" },
           });
         }
-      } catch (err) {
-        console.error("NotificationBridge mail fetch failed:", err);
+      } catch {
+        // Silently handle offline / disconnected worker without console errors
       }
     }
 

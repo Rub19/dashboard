@@ -7206,6 +7206,46 @@ CHANGELOG_BY_LANG.es.unshift({
 });
 
 CHANGELOG_BY_LANG.fr.unshift({
+  version: "v1.12.10",
+  date: "2026-08-28",
+  title: "Discord OAuth2 Officiel : Intégration de l'Application Client ID",
+  items: [
+    "Intégration du Client ID officiel de l'application Discord dans le moteur OAuth2.",
+    "Support transparent du flux d'autorisation Discord avec redirection sécurisée.",
+    "Mise à jour des instructions pour les Redirect URIs dans le portail développeur Discord.",
+  ],
+});
+
+CHANGELOG_BY_LANG.en.unshift({
+  version: "v1.12.10",
+  date: "2026-08-28",
+  title: "Discord Official OAuth2: Application Client ID Integration",
+  items: [
+    "Integrated official Discord Application Client ID into the OAuth2 engine.",
+    "Seamless Discord authorization flow with secure redirection.",
+    "Updated instructions for Discord Developer Portal redirect URIs.",
+  ],
+});
+
+CHANGELOG_BY_LANG.es.unshift({
+  version: "v1.12.10",
+  date: "2026-08-28",
+  title: "Discord OAuth2 Oficial: Integración del Client ID de la Aplicación",
+  items: [
+    "Integración del Client ID oficial de Discord en el motor OAuth2.",
+  ],
+});
+
+CHANGELOG_BY_LANG.de.unshift({
+  version: "v1.12.10",
+  date: "2026-08-28",
+  title: "Discord Offizielles OAuth2: Client-ID-Integration",
+  items: [
+    "Offizielle Discord-App-Client-ID im OAuth2-Modul hinterlegt.",
+  ],
+});
+
+CHANGELOG_BY_LANG.fr.unshift({
   version: "v1.12.09",
   date: "2026-08-28",
   title: "Discord & Intégrations : Mode Lanyard Sans Configuration & Assistant OAuth2 Avancé",

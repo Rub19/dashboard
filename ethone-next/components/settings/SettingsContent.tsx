@@ -40,6 +40,7 @@ import SettingsSection from "./SettingsSection";
 import SettingField, { type FieldDef } from "./SettingField";
 import { SwitchControl } from "./SettingControls";
 import { useSettingsForm } from "./SettingsFormContext";
+import SettingsErrorBoundary from "./primitives/SettingsErrorBoundary";
 import { useModifiedCount } from "./useModifiedCount";
 import AppearanceSettings from "./AppearanceSettings";
 import UserProfileCard from "./UserProfileCard";
@@ -1359,7 +1360,7 @@ export default function SettingsContent({
               </div>
               <div>
                 <h4 className="text-base font-bold text-[var(--text-primary)]">ETHONE OS Desktop & Web</h4>
-                <p className="text-xs text-[var(--text-muted)]">Version 1.11.10 (Turbopack / Next.js 16.3.3)</p>
+                <p className="text-xs text-[var(--text-muted)]">Version 1.12.00 (Turbopack / Next.js 16.3.3)</p>
               </div>
             </div>
             <p className="text-xs text-[var(--text-muted)] leading-relaxed">
@@ -1565,7 +1566,9 @@ export default function SettingsContent({
               <h2 className="sr-only">{category.label}</h2>
             )}
             <div className="grid grid-cols-1 gap-4">
-              {sections.map(renderSection)}
+              <SettingsErrorBoundary categoryName={category.label}>
+                {sections.map(renderSection)}
+              </SettingsErrorBoundary>
             </div>
           </div>
         );

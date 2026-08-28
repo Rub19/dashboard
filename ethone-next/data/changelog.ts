@@ -7206,6 +7206,50 @@ CHANGELOG_BY_LANG.es.unshift({
 });
 
 CHANGELOG_BY_LANG.fr.unshift({
+  version: "v1.12.00",
+  date: "2026-08-28",
+  title: "ETHONE Settings 2.0 : Rebuild Majeur — Navigation, UI, Primitives & Stabilité Absolue",
+  items: [
+    "Reconstruction complète de l'architecture des Réglages : la barre latérale est la source unique de vérité avec indicateur actif déterministe.",
+    "Nouvelle suite de composants primitifs harmonisés : SettingsSection, SettingsGroup, SettingsRow, SettingsToggle, SettingsSlider, SettingsSelect, SettingsDangerZone et SettingsPreview.",
+    "Élimination totale des flashs noirs, des sauts de layout et des transitions concurrentes.",
+    "Isolation complète par ErrorBoundary pour chaque catégorie de paramètres.",
+    "Indicateur de sauvegarde discret et synchronisation asynchrone non-bloquante avec Supabase.",
+  ],
+});
+
+CHANGELOG_BY_LANG.en.unshift({
+  version: "v1.12.00",
+  date: "2026-08-28",
+  title: "ETHONE Settings 2.0: Major Rebuild — Navigation, UI, Primitives & Total Stability",
+  items: [
+    "Complete architecture rebuild of Settings: sidebar as the single source of truth with deterministic gliding active pill.",
+    "New unified UI primitives suite: SettingsSection, SettingsGroup, SettingsRow, SettingsToggle, SettingsSlider, SettingsSelect, SettingsDangerZone, and SettingsPreview.",
+    "Total elimination of black flashes, layout thrashing, and concurrent race-condition animations.",
+    "Resilient section-level ErrorBoundary protection across all 22 configuration modules.",
+    "Discrete non-intrusive save badge with non-blocking debounced cloud synchronization.",
+  ],
+});
+
+CHANGELOG_BY_LANG.es.unshift({
+  version: "v1.12.00",
+  date: "2026-08-28",
+  title: "ETHONE Settings 2.0: Reconstrucción Mayor — Navegación, UI y Estabilidad",
+  items: [
+    "Reconstrucción completa de la arquitectura de Ajustes con primitivas unificadas y navegación determinista.",
+  ],
+});
+
+CHANGELOG_BY_LANG.de.unshift({
+  version: "v1.12.00",
+  date: "2026-08-28",
+  title: "ETHONE Settings 2.0: Großer Umbau — Navigation, UI und Absolute Stabilität",
+  items: [
+    "Vollständige Neugestaltung der Einstellungen mit einheitlichen Primitiven und deterministischer Navigation.",
+  ],
+});
+
+CHANGELOG_BY_LANG.fr.unshift({
   version: "v1.11.10",
   date: "2026-08-28",
   title: "Audio & Ambiances : Synthèse Pluie ASMR Apaisante & Orage Réaliste",

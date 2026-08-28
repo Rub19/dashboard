@@ -43,16 +43,31 @@ export default function SettingsLayout({ initialSection }: { initialSection?: st
   const [searchResults, setSearchResults] = useState<{ type: "section" | "field"; id: string; label: string | null; sectionId?: string }[]>([]);
   const [showSearchDropdown, setShowSearchDropdown] = useState(false);
 
+  const scrollLockTimerRef = useRef<number | null>(null);
+
   const scrollToCategory = useCallback((id: string) => {
+    const container = contentRef.current;
+    if (!container) return;
     const el =
-      (contentRef.current?.querySelector(`[data-section="${id}"]`) as HTMLElement | null) ||
-      (contentRef.current?.querySelector(`[data-category="${id}"]`) as HTMLElement | null);
+      (container.querySelector(`[data-category="${id}"]`) as HTMLElement | null) ||
+      (container.querySelector(`[data-section="${id}"]`) as HTMLElement | null);
     if (!el) return;
+
     isScrollingRef.current = true;
-    el.scrollIntoView({ behavior: "smooth", block: "start" });
-    window.setTimeout(() => {
+    if (scrollLockTimerRef.current) window.clearTimeout(scrollLockTimerRef.current);
+
+    const containerRect = container.getBoundingClientRect();
+    const elRect = el.getBoundingClientRect();
+    const targetScrollTop = container.scrollTop + (elRect.top - containerRect.top) - 12;
+
+    container.scrollTo({
+      top: Math.max(0, targetScrollTop),
+      behavior: "smooth",
+    });
+
+    scrollLockTimerRef.current = window.setTimeout(() => {
       isScrollingRef.current = false;
-    }, 450);
+    }, 750);
   }, []);
 
   const scrollToSearchResult = useCallback((result: { type: "section" | "field"; id: string; sectionId?: string }) => {
@@ -72,7 +87,7 @@ export default function SettingsLayout({ initialSection }: { initialSection?: st
     setShowSearchDropdown(false);
     window.setTimeout(() => {
       isScrollingRef.current = false;
-    }, 450);
+    }, 750);
   }, []);
 
   // Initial scroll only once on mount
@@ -90,14 +105,13 @@ export default function SettingsLayout({ initialSection }: { initialSection?: st
 
   const handleSelectCategory = useCallback(
     (id: string) => {
-      if (id === activeCategory) return;
       setActiveCategory(id);
       if (typeof window !== "undefined") {
         window.history.replaceState(null, "", `/settings/${id}`);
       }
       scrollToCategory(id);
     },
-    [activeCategory, scrollToCategory]
+    [scrollToCategory]
   );
 
   const handleCategoryInView = useCallback(

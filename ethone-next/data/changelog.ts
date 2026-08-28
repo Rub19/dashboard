@@ -7206,6 +7206,46 @@ CHANGELOG_BY_LANG.es.unshift({
 });
 
 CHANGELOG_BY_LANG.fr.unshift({
+  version: "v1.11.08",
+  date: "2026-08-28",
+  title: "Réglages : Rework Complet de la Navigation, Défilement Précis & Pilule Active",
+  items: [
+    "Résolution du bug de sélection des catégories : réponse immédiate au 1er clic sans blocage.",
+    "Calcul déterministe du défilement dans le conteneur des réglages avec marge optimale sous les en-têtes.",
+    "Indicateur de sélection animé avec ressort fluide (Framer Motion layoutId) et retour haptique instantané.",
+  ],
+});
+
+CHANGELOG_BY_LANG.en.unshift({
+  version: "v1.11.08",
+  date: "2026-08-28",
+  title: "Settings: Complete Navigation Rework, Precise Scrolling & Active Pill Indicator",
+  items: [
+    "Fixed category selection responsiveness: instant 1-click jump without race conditions.",
+    "Deterministic relative scroll offset calculation inside the settings main viewport.",
+    "Animated floating selection pill with fluid spring physics (layoutId) and haptic feedback.",
+  ],
+});
+
+CHANGELOG_BY_LANG.es.unshift({
+  version: "v1.11.08",
+  date: "2026-08-28",
+  title: "Ajustes: Rediseño de Navegación y Desplazamiento Fluido",
+  items: [
+    "Corrección de la navegación por categorías y cálculo exacto del desplazamiento.",
+  ],
+});
+
+CHANGELOG_BY_LANG.de.unshift({
+  version: "v1.11.08",
+  date: "2026-08-28",
+  title: "Einstellungen: Überarbeitete Navigation & Präzises Scrollen",
+  items: [
+    "Sofortige Reaktionszeit beim Anklicken von Kategorien und flüssige Animationen.",
+  ],
+});
+
+CHANGELOG_BY_LANG.fr.unshift({
   version: "v1.11.07",
   date: "2026-08-28",
   title: "Spotify & Intégrations OAuth : Synchronisation Instantanée de l'État Connecté & Widgets",

@@ -1,9 +1,11 @@
 "use client";
 
 import { useCallback, useEffect, useRef } from "react";
+import { motion } from "framer-motion";
 import { Icon } from "@/lib/icons";
 import { cn } from "@/lib/utils";
 import { useI18n } from "@/lib/hooks/useI18n";
+import { hapticLightImpact } from "@/lib/haptics";
 
 export type CategoryDef = {
   id: string;
@@ -88,6 +90,15 @@ export default function SettingsNavigation({
 
   const activeIndex = CATEGORY_ORDER.findIndex((c) => c.id === active);
 
+  useEffect(() => {
+    if (activeIndex >= 0) {
+      const el = buttonsRef.current[activeIndex];
+      if (el) {
+        el.scrollIntoView({ behavior: "smooth", block: "nearest", inline: "nearest" });
+      }
+    }
+  }, [activeIndex]);
+
   const focusIndex = useCallback((index: number) => {
     const el = buttonsRef.current[index];
     if (el) {
@@ -121,12 +132,15 @@ export default function SettingsNavigation({
         const last = CATEGORY_ORDER.length - 1;
         onSelect(CATEGORY_ORDER[last].id);
         focusIndex(last);
-      } else if (e.key === "Enter" || e.key === " ") {
-        // Let the button click handle activation while keeping focus.
       }
     },
     [activeIndex, direction, focusIndex, onSelect]
   );
+
+  const handleClick = (id: string) => {
+    hapticLightImpact();
+    onSelect(id);
+  };
 
   const commonItem = (cat: CategoryDef, index: number) => {
     const isActive = active === cat.id;
@@ -138,33 +152,41 @@ export default function SettingsNavigation({
         data-testid={`settings-nav-${cat.id}`}
         tabIndex={isActive ? 0 : -1}
         aria-current={isActive ? "page" : undefined}
-        onClick={() => onSelect(cat.id)}
+        onClick={() => handleClick(cat.id)}
         onKeyDown={handleKeyDown}
         className={cn(
-          "group flex min-h-[44px] w-full items-start gap-3 rounded-[var(--panel-radius)] px-3 py-2 text-left text-sm font-medium transition-[color,background-color,border-color] duration-200 focus:outline-none focus-visible:ring-2 focus-visible:ring-[var(--accent-primary)]/50 focus-visible:ring-offset-2 focus-visible:ring-offset-[var(--background)]",
+          "group relative flex min-h-[44px] w-full items-center gap-3 rounded-2xl px-3 py-2.5 text-left text-sm font-medium transition-colors duration-150 outline-none select-none cursor-pointer",
           isActive
-            ? "bg-[var(--accent-primary)]/10 text-[var(--accent-primary)]"
-            : "text-[var(--text-muted)] hover:bg-[var(--surface-hover)]/30 hover:text-[var(--text-primary)]"
+            ? "text-[var(--accent-primary)] font-semibold"
+            : "text-[var(--text-muted)] hover:text-[var(--text-primary)] hover:bg-[var(--surface-hover)]/40"
         )}
       >
+        {isActive && (
+          <motion.div
+            layoutId="settings-nav-active-pill"
+            className="absolute inset-0 rounded-2xl border border-[var(--accent-primary)]/25 bg-[var(--accent-primary)]/10 shadow-[0_0_16px_var(--glow-color)]"
+            transition={{ type: "spring", stiffness: 380, damping: 30 }}
+          />
+        )}
+
         <span
           className={cn(
-            "flex h-7 w-7 shrink-0 items-center justify-center rounded-[var(--panel-radius)] transition-colors",
+            "relative z-10 flex h-8 w-8 shrink-0 items-center justify-center rounded-xl transition-transform group-hover:scale-105",
             isActive
-              ? "bg-[var(--accent-primary)]/20 text-[var(--accent-primary)]"
-              : "bg-[var(--surface-raised)] text-[var(--text-muted)] group-hover:text-[var(--text-primary)]"
+              ? "bg-[var(--accent-primary)]/20 text-[var(--accent-primary)] shadow-sm"
+              : "bg-[var(--surface-raised)]/70 text-[var(--text-muted)] group-hover:text-[var(--text-primary)]"
           )}
         >
           <Icon name={cat.icon} className="h-4 w-4" aria-hidden="true" />
         </span>
-        <span className="flex min-w-0 flex-col items-start text-left">
-          <span className="truncate">{cat.label}</span>
-          <span className="truncate text-[11px] font-normal text-[var(--text-muted)]">
+        <span className="relative z-10 flex min-w-0 flex-1 flex-col items-start text-left">
+          <span className="truncate text-[13px] leading-tight">{cat.label}</span>
+          <span className="truncate text-[11px] font-normal text-[var(--text-muted)] group-hover:text-[var(--text-secondary)]">
             {i18n(cat.descriptionKey || "", cat.description)}
           </span>
         </span>
         {isActive && (
-          <span className="ml-auto h-1.5 w-1.5 rounded-full bg-[var(--accent-primary)]" aria-hidden="true" />
+          <span className="relative z-10 ml-auto h-2 w-2 shrink-0 rounded-full bg-[var(--accent-primary)] shadow-[0_0_8px_var(--accent-primary)]" aria-hidden="true" />
         )}
       </button>
     );
@@ -175,7 +197,7 @@ export default function SettingsNavigation({
       <nav
         aria-label="Catégories de paramètres"
         className={cn(
-          "flex items-center gap-1 overflow-x-auto pb-2 no-scrollbar snap-x snap-mandatory",
+          "flex items-center gap-1.5 overflow-x-auto pb-2 no-scrollbar snap-x snap-mandatory",
           className
         )}
         onKeyDown={handleKeyDown}
@@ -194,17 +216,20 @@ export default function SettingsNavigation({
               data-testid={`settings-nav-${cat.id}`}
               tabIndex={isActive ? 0 : -1}
               aria-current={isActive ? "page" : undefined}
-              onClick={() => onSelect(cat.id)}
+              onClick={() => handleClick(cat.id)}
               onKeyDown={handleKeyDown}
               className={cn(
-                "flex shrink-0 snap-start items-center gap-2 rounded-full border px-3 py-1.5 text-xs font-medium transition-[color,background-color,border-color] duration-200 focus:outline-none focus-visible:ring-2 focus-visible:ring-[var(--accent-primary)]/50 focus-visible:ring-offset-2 focus-visible:ring-offset-[var(--background)] min-h-[44px] min-w-[44px] touch-manipulation",
+                "relative flex shrink-0 snap-start items-center gap-2 rounded-full border px-3.5 py-2 text-xs font-medium transition-all duration-150 outline-none min-h-[44px] touch-manipulation cursor-pointer",
                 isActive
-                  ? "border-[var(--accent-primary)]/30 bg-[var(--accent-primary)]/10 text-[var(--accent-primary)]"
-                  : "border-transparent text-[var(--text-muted)] hover:bg-[var(--surface-hover)]/30 hover:text-[var(--text-primary)]"
+                  ? "border-[var(--accent-primary)]/40 bg-[var(--accent-primary)]/15 text-[var(--accent-primary)] font-semibold shadow-xs"
+                  : "border-[var(--panel-border)]/60 bg-[var(--panel-bg)] text-[var(--text-muted)] hover:border-[var(--accent-primary)]/30 hover:text-[var(--text-primary)]"
               )}
             >
               <Icon name={cat.icon} className="h-3.5 w-3.5" aria-hidden="true" />
               <span className="whitespace-nowrap">{cat.label}</span>
+              {isActive && (
+                <span className="h-1.5 w-1.5 rounded-full bg-[var(--accent-primary)] shadow-[0_0_6px_var(--accent-primary)]" />
+              )}
             </button>
           );
         })}
@@ -218,7 +243,7 @@ export default function SettingsNavigation({
       className={cn("flex h-full w-full flex-col", className)}
       onKeyDown={handleKeyDown}
     >
-      <div className="flex flex-col gap-0.5">
+      <div className="flex flex-col gap-1 pr-1">
         {CATEGORY_ORDER.map((cat, index) => commonItem(cat, index))}
       </div>
     </nav>

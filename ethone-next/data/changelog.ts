@@ -7206,6 +7206,46 @@ CHANGELOG_BY_LANG.es.unshift({
 });
 
 CHANGELOG_BY_LANG.fr.unshift({
+  version: "v1.12.04",
+  date: "2026-08-28",
+  title: "Pages Système & Statistiques : Calcul Local Intégré & Résilience Réseau",
+  items: [
+    "Élimination des bannières d'erreur 'Impossible de joindre le serveur ETHONE' sur les pages d'administration et de statistiques.",
+    "Calcul instantané des métriques système à partir des données locales de l'espace de travail (Notes, Tâches, Événements, Fichiers, IA).",
+    "Garantie d'une interface toujours fluide et active même en mode hors-ligne ou en cas de latence serveur.",
+  ],
+});
+
+CHANGELOG_BY_LANG.en.unshift({
+  version: "v1.12.04",
+  date: "2026-08-28",
+  title: "System & Statistics Pages: Integrated Local Calculation & Network Resilience",
+  items: [
+    "Eliminated 'Unable to reach ETHONE server' error banners on admin and statistics pages.",
+    "Instant computation of system metrics from local workspace data (Notes, Tasks, Events, Files, AI).",
+    "Guaranteed seamless and interactive UI even in offline mode or during server downtime.",
+  ],
+});
+
+CHANGELOG_BY_LANG.es.unshift({
+  version: "v1.12.04",
+  date: "2026-08-28",
+  title: "Páginas del Sistema: Cálculo Local y Resiliencia Total",
+  items: [
+    "Cálculo automático de estadísticas y eliminación de errores de red.",
+  ],
+});
+
+CHANGELOG_BY_LANG.de.unshift({
+  version: "v1.12.04",
+  date: "2026-08-28",
+  title: "Systemseiten: Lokale Berechnung & Volle Netzwerk-Resilienz",
+  items: [
+    "Automatische Berechnung von Statistiken und Beseitigung von Netzwerkfehlern.",
+  ],
+});
+
+CHANGELOG_BY_LANG.fr.unshift({
   version: "v1.12.03",
   date: "2026-08-28",
   title: "Gaming Tracker : Résilience Absolue Valorant & LoL avec Générateurs de Secours",

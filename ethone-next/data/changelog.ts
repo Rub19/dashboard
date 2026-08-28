@@ -7206,6 +7206,48 @@ CHANGELOG_BY_LANG.es.unshift({
 });
 
 CHANGELOG_BY_LANG.fr.unshift({
+  version: "v1.11.09",
+  date: "2026-08-28",
+  title: "Paramètres & Navigation : Contrôleur Déterministe & Scroll-Spy Maître",
+  items: [
+    "Élimination totale des sauts de catégorie inopinés lors des modifications de réglages, toggles ou synchronisation Supabase.",
+    "Nouveau contrôleur de navigation centralisé `useSettingsNavigation` avec machine d'état stricte (`IDLE` / `NAVIGATING`).",
+    "Scroll-spy à calcul d'aire dominante et hystérèse déclenché uniquement par un vrai geste de scroll manuel de l'utilisateur.",
+    "Verrouillage absolu du scroll programmatique avec détection `scrollend` et annulation des requêtes concurrentes.",
+  ],
+});
+
+CHANGELOG_BY_LANG.en.unshift({
+  version: "v1.11.09",
+  date: "2026-08-28",
+  title: "Settings & Navigation: Deterministic Controller & Master Scroll-Spy",
+  items: [
+    "Total elimination of spurious category jumps during setting changes, toggles, or Supabase sync.",
+    "New centralized `useSettingsNavigation` controller with strict state machine (`IDLE` / `NAVIGATING`).",
+    "Dominant area scroll-spy with hysteresis triggered strictly by manual user scroll gestures.",
+    "Bulletproof programmatic scroll locking with `scrollend` event detection and cancellation of concurrent requests.",
+  ],
+});
+
+CHANGELOG_BY_LANG.es.unshift({
+  version: "v1.11.09",
+  date: "2026-08-28",
+  title: "Ajustes: Controlador Determinista y Scroll-Spy Maestro",
+  items: [
+    "Eliminación total de saltos involuntarios de categorías y bloqueo determinista de navegación.",
+  ],
+});
+
+CHANGELOG_BY_LANG.de.unshift({
+  version: "v1.11.09",
+  date: "2026-08-28",
+  title: "Einstellungen: Deterministischer Controller & Master Scroll-Spy",
+  items: [
+    "Vollständige Beseitigung ungewollter Kategoriewechsel und deterministisches Scroll-Sperren.",
+  ],
+});
+
+CHANGELOG_BY_LANG.fr.unshift({
   version: "v1.11.08",
   date: "2026-08-28",
   title: "Réglages : Rework Complet de la Navigation, Défilement Précis & Pilule Active",

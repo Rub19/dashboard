@@ -1,7 +1,7 @@
 "use client";
 
-import { useCallback, useEffect, useRef, useState, useTransition } from "react";
-import { useParams, useRouter } from "next/navigation";
+import { useCallback, useEffect, useRef, useState } from "react";
+import { useParams, useRouter, useSearchParams } from "next/navigation";
 import { RotateCcw, Save, X, ChevronRight } from "lucide-react";
 import { useI18n } from "@/lib/hooks/useI18n";
 import Input from "@/components/Input";
@@ -16,11 +16,7 @@ import Button from "@/components/ui/Button";
 import Modal from "@/components/ui/Modal";
 import SettingsNavigation, { CATEGORY_ORDER, sectionCategory } from "./SettingsNavigation";
 import SettingsContent from "./SettingsContent";
-
-function resolveCategory(value: string | null | undefined): string {
-  if (!value) return CATEGORY_ORDER[0].id;
-  return CATEGORY_ORDER.some((c) => c.id === value) ? value : sectionCategory(value);
-}
+import { useSettingsNavigation, resolveCategory } from "./useSettingsNavigation";
 
 export default function SettingsLayout({ initialSection }: { initialSection?: string }) {
   const i18n = useI18n();
@@ -28,114 +24,34 @@ export default function SettingsLayout({ initialSection }: { initialSection?: st
   const { error: showError, notify } = useToast();
   const form = useSettingsForm();
   const params = useParams();
+  const searchParams = useSearchParams();
   const router = useRouter();
-  const contentRef = useRef<HTMLDivElement>(null);
+  const contentRef = useRef<HTMLElement | null>(null);
   const searchRef = useRef<HTMLInputElement>(null);
-  const mountedRef = useRef(false);
-  const urlReplaceTimerRef = useRef<number | null>(null);
 
   const sectionParam = typeof params?.section === "string" ? params.section : undefined;
-  const [activeCategory, setActiveCategory] = useState(() =>
-    resolveCategory(initialSection ?? sectionParam)
-  );
-  const isScrollingRef = useRef(false);
+  const categoryParam = searchParams?.get("category") || searchParams?.get("section") || undefined;
+  const targetInitial = initialSection ?? sectionParam ?? categoryParam;
+
+  const {
+    activeCategory,
+    navState,
+    navigateTo,
+    registerContainerRef,
+    registerCategoryRef,
+  } = useSettingsNavigation({
+    initialSection: targetInitial,
+  });
+
   const [isResetModalOpen, setIsResetModalOpen] = useState(false);
   const [searchResults, setSearchResults] = useState<{ type: "section" | "field"; id: string; label: string | null; sectionId?: string }[]>([]);
   const [showSearchDropdown, setShowSearchDropdown] = useState(false);
 
-  const scrollLockTimerRef = useRef<number | null>(null);
-
-  const scrollToCategory = useCallback((id: string) => {
-    const container = contentRef.current;
-    if (!container) return;
-    const el =
-      (container.querySelector(`[data-category="${id}"]`) as HTMLElement | null) ||
-      (container.querySelector(`[data-section="${id}"]`) as HTMLElement | null);
-    if (!el) return;
-
-    isScrollingRef.current = true;
-    if (scrollLockTimerRef.current) window.clearTimeout(scrollLockTimerRef.current);
-
-    const containerRect = container.getBoundingClientRect();
-    const elRect = el.getBoundingClientRect();
-    const targetScrollTop = container.scrollTop + (elRect.top - containerRect.top) - 12;
-
-    container.scrollTo({
-      top: Math.max(0, targetScrollTop),
-      behavior: "smooth",
-    });
-
-    scrollLockTimerRef.current = window.setTimeout(() => {
-      isScrollingRef.current = false;
-    }, 750);
-  }, []);
-
   const scrollToSearchResult = useCallback((result: { type: "section" | "field"; id: string; sectionId?: string }) => {
-    let el: HTMLElement | null = null;
-    if (result.type === "section") {
-      el = contentRef.current?.querySelector(`[data-section="${CSS.escape(result.id)}"]`) as HTMLElement | null;
-    } else {
-      el = contentRef.current?.querySelector(`[data-setting-key="${CSS.escape(result.id)}"]`) as HTMLElement | null;
-    }
-    if (!el && result.sectionId) {
-      el = contentRef.current?.querySelector(`[data-section="${CSS.escape(result.sectionId)}"]`) as HTMLElement | null;
-    }
-    if (!el) return;
-    isScrollingRef.current = true;
-    el.scrollIntoView({ behavior: "smooth", block: "center" });
-    el.focus({ preventScroll: true });
+    const targetCategory = result.sectionId ? resolveCategory(result.sectionId) : resolveCategory(result.id);
+    navigateTo(targetCategory, "search");
     setShowSearchDropdown(false);
-    window.setTimeout(() => {
-      isScrollingRef.current = false;
-    }, 750);
-  }, []);
-
-  // Initial scroll only once on mount
-  useEffect(() => {
-    if (mountedRef.current) return;
-    mountedRef.current = true;
-    const raw = initialSection ?? sectionParam;
-    const category = resolveCategory(raw);
-    setActiveCategory(category);
-    const t = window.setTimeout(() => {
-      scrollToCategory(raw || category);
-    }, 100);
-    return () => window.clearTimeout(t);
-  }, [initialSection, sectionParam, scrollToCategory]);
-
-  const handleSelectCategory = useCallback(
-    (id: string) => {
-      setActiveCategory(id);
-      if (typeof window !== "undefined") {
-        window.history.replaceState(null, "", `/settings/${id}`);
-      }
-      scrollToCategory(id);
-    },
-    [scrollToCategory]
-  );
-
-  const handleCategoryInView = useCallback(
-    (id: string) => {
-      if (isScrollingRef.current) return;
-      setActiveCategory((prev) => {
-        if (prev === id) return prev;
-        if (typeof window !== "undefined") {
-          if (urlReplaceTimerRef.current) window.clearTimeout(urlReplaceTimerRef.current);
-          urlReplaceTimerRef.current = window.setTimeout(() => {
-            window.history.replaceState(null, "", `/settings/${id}`);
-          }, 250);
-        }
-        return id;
-      });
-    },
-    []
-  );
-
-  useEffect(() => {
-    return () => {
-      if (urlReplaceTimerRef.current) window.clearTimeout(urlReplaceTimerRef.current);
-    };
-  }, []);
+  }, [navigateTo]);
 
   const handleReset = useCallback(() => {
     setIsResetModalOpen(true);
@@ -358,7 +274,7 @@ export default function SettingsLayout({ initialSection }: { initialSection?: st
       <div className="mb-4 block md:hidden">
         <SettingsNavigation
           active={activeCategory}
-          onSelect={handleSelectCategory}
+          onSelect={(id) => navigateTo(id, "user")}
           direction="horizontal"
         />
       </div>
@@ -369,14 +285,17 @@ export default function SettingsLayout({ initialSection }: { initialSection?: st
           <div className="sticky top-0 h-full max-h-full">
             <SettingsNavigation
               active={activeCategory}
-              onSelect={handleSelectCategory}
+              onSelect={(id) => navigateTo(id, "user")}
               direction="vertical"
             />
           </div>
         </aside>
 
         <main
-          ref={contentRef}
+          ref={(el) => {
+            contentRef.current = el;
+            registerContainerRef(el);
+          }}
           className="min-h-0 w-full flex-1 overflow-y-auto os-scroll pb-8 pr-1 pt-4 will-change-scroll transform-gpu overscroll-contain"
         >
           {/* Breadcrumb */}
@@ -404,7 +323,7 @@ export default function SettingsLayout({ initialSection }: { initialSection?: st
 
           <SettingsContent
             contentRef={contentRef}
-            onCategoryChange={handleCategoryInView}
+            registerCategoryRef={registerCategoryRef}
           />
         </main>
       </div>

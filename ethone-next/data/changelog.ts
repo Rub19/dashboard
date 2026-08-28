@@ -7206,6 +7206,46 @@ CHANGELOG_BY_LANG.es.unshift({
 });
 
 CHANGELOG_BY_LANG.fr.unshift({
+  version: "v1.12.15",
+  date: "2026-08-28",
+  title: "Contrôles Spotify Natifs : Lecture, Pause, Suivant & Volume Directs",
+  items: [
+    "Contrôles de lecture natifs directs via Spotify Web API (Play, Pause, Suivant, Précédent, Volume, Like).",
+    "Prise en charge universelle sans configuration manuelle côté portail développeur.",
+    "Synchronisation immédiate sur la Dynamic Island, le Dock et le widget Media.",
+  ],
+});
+
+CHANGELOG_BY_LANG.en.unshift({
+  version: "v1.12.15",
+  date: "2026-08-28",
+  title: "Native Spotify Controls: Direct Play, Pause, Next & Volume Commands",
+  items: [
+    "Native direct Spotify Web API playback commands (Play, Pause, Next, Previous, Volume, Like).",
+    "Universal zero-manual-maintenance user authentication.",
+    "Instant real-time sync across Dynamic Island, Dock, and Media Widget.",
+  ],
+});
+
+CHANGELOG_BY_LANG.es.unshift({
+  version: "v1.12.15",
+  date: "2026-08-28",
+  title: "Controles Nativos de Spotify: Reproducción, Pausa y Volumen Directos",
+  items: [
+    "Controles directos vía Spotify Web API en la Dynamic Island y Dock.",
+  ],
+});
+
+CHANGELOG_BY_LANG.de.unshift({
+  version: "v1.12.15",
+  date: "2026-08-28",
+  title: "Native Spotify-Steuerung: Direkte Play-, Pause- & Lautstärkebefehle",
+  items: [
+    "Direkte Spotify Web API-Wiedergabesteuerung in Dynamic Island und Dock.",
+  ],
+});
+
+CHANGELOG_BY_LANG.fr.unshift({
   version: "v1.12.14",
   date: "2026-08-28",
   title: "Lecture Spotify Temps Réel : Échange PKCE Direct & Double Sonde de Lecture",

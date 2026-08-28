@@ -26,6 +26,7 @@ import { cn } from "@/lib/utils";
 import VolumeSlider from "@/components/VolumeSlider";
 import UploadIslandView from "@/components/UploadIslandView";
 import { useDynamicIslandQueue, type IslandView, type IslandEvent } from "@/lib/hooks/useDynamicIslandQueue";
+import { sendSpotifyCommand } from "@/lib/spotify-client";
 
 const EASE_OUT = [0.16, 1, 0.3, 1] as const;
 
@@ -607,15 +608,9 @@ export default function DynamicIslandContainer() {
       }
       setPendingSpotify(true);
       try {
-        const body: Record<string, string | number> = { action, clientId };
-        if (extras) {
-          Object.entries(extras).forEach(([k, v]) => {
-            body[k] = v;
-          });
-        }
-        await fetchWorker("/api/spotify/control", {
-          method: "POST",
-          body: JSON.stringify(body),
+        await sendSpotifyCommand(action as "play" | "pause" | "next" | "previous" | "volume" | "seek" | "save" | "unsave", {
+          clientId,
+          ...extras,
         });
         refetchNowPlaying();
       } catch {
@@ -644,22 +639,15 @@ export default function DynamicIslandContainer() {
   );
 
   const toggleLike = useCallback(async () => {
-    const clientId =
-      settings.liveSpotifyClientId ||
-      (typeof window !== "undefined" ? localStorage.getItem("ethone:cred:spotify:clientId") : null) ||
-      OAUTH_APP_CLIENT_IDS.spotify;
     const trackId = nowPlaying?.id;
-    if (!clientId || !trackId) {
+    if (!trackId) {
       showError(i18n("configureToEnable"));
       return;
     }
     setLikeLoading(true);
     try {
       const action = isSaved ? "unsave" : "save";
-      await fetchWorker("/api/spotify/control", {
-        method: "POST",
-        body: JSON.stringify({ action, clientId, trackId }),
-      });
+      await sendSpotifyCommand(action, { trackId });
       setIsSaved((s) => !s);
       refetchNowPlaying();
     } catch {
@@ -667,7 +655,7 @@ export default function DynamicIslandContainer() {
     } finally {
       setLikeLoading(false);
     }
-  }, [settings.liveSpotifyClientId, nowPlaying?.id, isSaved, i18n, refetchNowPlaying, showError]);
+  }, [nowPlaying?.id, isSaved, i18n, refetchNowPlaying, showError]);
 
   const onSpotifySeek = useCallback(
     (value: number) => {

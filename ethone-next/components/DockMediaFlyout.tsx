@@ -18,6 +18,7 @@ import { useI18n } from "@/lib/hooks/useI18n";
 import { OAUTH_APP_CLIENT_IDS } from "@/lib/oauth";
 import type { NowPlaying } from "@/lib/hooks/useLiveData";
 import VolumeSlider from "@/components/VolumeSlider";
+import { sendSpotifyCommand } from "@/lib/spotify-client";
 import MediaProgress from "@/components/MediaProgress";
 import SafeImage from "@/components/SafeImage";
 
@@ -105,17 +106,12 @@ export default function DockMediaFlyout({ nowPlaying, clientId }: DockMediaFlyou
 
   const control = useCallback(
     async (action: string, extras?: Record<string, unknown>) => {
-      if (!effectiveClientId) {
-        showError(i18n("configureToEnable"));
-        return;
-      }
       setPending(true);
       try {
-        const body: Record<string, string | number> = { action, clientId: effectiveClientId };
-        if (extras) {
-          Object.entries(extras).forEach(([k, v]) => (body[k] = v as string | number));
-        }
-        await fetchWorker("/api/spotify/control", { method: "POST", body: JSON.stringify(body) });
+        await sendSpotifyCommand(action as "play" | "pause" | "next" | "previous" | "volume" | "seek" | "save" | "unsave", {
+          clientId: effectiveClientId,
+          ...extras,
+        });
         success(i18n("ok"));
       } catch (err) {
         showError(err instanceof Error ? err.message : i18n("playbackControlFailed"));
@@ -127,9 +123,9 @@ export default function DockMediaFlyout({ nowPlaying, clientId }: DockMediaFlyou
   );
 
   async function toggleLike() {
-    if (!clientId || !trackId) return;
+    if (!trackId) return;
     const action = isLiked ? "unsave" : "save";
-    await control(action, { trackId });
+    await sendSpotifyCommand(action, { trackId });
     setIsLiked((v) => !v);
   }
 

@@ -11,6 +11,7 @@ import { useConnections } from "@/lib/hooks/useConnections";
 import { fetchWorker } from "@/lib/api";
 import { useToast } from "@/components/ToastProvider";
 import { useRouter } from "next/navigation";
+import { sendSpotifyCommand } from "@/lib/spotify-client";
 
 function formatTime(ms: number) {
   const seconds = Math.max(0, Math.floor(ms / 1000));
@@ -79,15 +80,12 @@ export default function MediaWidget({ className = "" }: { className?: string }) 
 
   const control = useCallback(
     async (action: "play" | "pause" | "next" | "previous" | "seek", positionMs?: number) => {
-      if (!settings.liveSpotifyClientId) {
-        showError(i18n("configureToEnable"));
-        return;
-      }
       setPending(true);
       try {
-        const body: Record<string, string | number> = { action, clientId: settings.liveSpotifyClientId };
-        if (action === "seek" && positionMs !== undefined) body.positionMs = Math.round(positionMs);
-        await fetchWorker("/api/spotify/control", { method: "POST", body: JSON.stringify(body) });
+        await sendSpotifyCommand(action, {
+          clientId: settings.liveSpotifyClientId,
+          positionMs: positionMs !== undefined ? Math.round(positionMs) : undefined,
+        });
       } catch {
         showError(i18n("playbackControlFailed"));
       } finally {

@@ -473,6 +473,82 @@ export default function ConnectionDetailDrawer({
                 </Section>
               )}
 
+              {/* Discord OAuth2 Dedicated Configuration */}
+              {integration.id === "discord" && discordMode === "oauth" && (
+                <Section title="Configuration OAuth2 Discord">
+                  <div className="space-y-4 rounded-2xl border border-indigo-500/30 bg-indigo-500/5 p-4">
+                    <div className="space-y-1.5">
+                      <div className="flex items-center justify-between">
+                        <label className="block text-xs font-semibold text-[var(--text-primary)]">
+                          Client ID Application Discord
+                        </label>
+                        <a
+                          href="https://discord.com/developers/applications"
+                          target="_blank"
+                          rel="noopener noreferrer"
+                          className="inline-flex items-center gap-1 text-[11px] text-indigo-400 hover:underline font-semibold"
+                        >
+                          <span>Discord Dev Portal</span>
+                          <ExternalLink className="h-3 w-3" />
+                        </a>
+                      </div>
+                      <input
+                        type="text"
+                        value={credValues.clientId || ""}
+                        onChange={(e) =>
+                          setCredValues((p) => ({ ...p, clientId: e.target.value }))
+                        }
+                        placeholder="Ex: 123456789012345678..."
+                        className="w-full rounded-xl border border-[var(--panel-border)] bg-[var(--surface-sunken)] px-3.5 py-2.5 text-xs font-mono text-[var(--text-primary)] placeholder-[var(--text-muted)] focus:border-indigo-500 focus:outline-none"
+                      />
+                    </div>
+
+                    <div className="space-y-1.5">
+                      <label className="block text-xs font-semibold text-[var(--text-primary)]">
+                        Client Secret Discord
+                      </label>
+                      <input
+                        type="password"
+                        value={credValues.clientSecret || ""}
+                        onChange={(e) =>
+                          setCredValues((p) => ({ ...p, clientSecret: e.target.value }))
+                        }
+                        placeholder="Ex: aB3dE5gH7iJ9kL1..."
+                        className="w-full rounded-xl border border-[var(--panel-border)] bg-[var(--surface-sunken)] px-3.5 py-2.5 text-xs font-mono text-[var(--text-primary)] placeholder-[var(--text-muted)] focus:border-indigo-500 focus:outline-none"
+                      />
+                    </div>
+
+                    <div className="space-y-1.5">
+                      <label className="block text-xs font-semibold text-[var(--text-primary)]">
+                        Redirect URI (à renseigner dans Discord Dev Portal)
+                      </label>
+                      <div className="flex items-center gap-2">
+                        <input
+                          type="text"
+                          readOnly
+                          value={typeof window !== "undefined" ? window.location.origin + "/" : "https://ethone.dev/"}
+                          className="w-full rounded-xl border border-[var(--panel-border)] bg-[var(--surface-sunken)]/60 px-3.5 py-2 text-xs font-mono text-zinc-400 select-all"
+                        />
+                        <button
+                          type="button"
+                          onClick={() => handleCopy(typeof window !== "undefined" ? window.location.origin + "/" : "https://ethone.dev/", "redirectUri")}
+                          className="shrink-0 rounded-xl border border-white/10 bg-white/5 p-2 text-zinc-300 hover:bg-white/10 hover:text-white transition cursor-pointer"
+                          title="Copier Redirect URI"
+                        >
+                          {copied === "redirectUri" ? <Check className="h-4 w-4 text-emerald-400" /> : <Copy className="h-4 w-4" />}
+                        </button>
+                      </div>
+                    </div>
+
+                    <div className="rounded-xl border border-amber-500/20 bg-amber-500/10 p-3">
+                      <p className="text-[11px] text-amber-300 leading-relaxed">
+                        💡 <strong>Astuce :</strong> Vous pouvez basculer sur <strong>Lanyard (ID Discord)</strong> ci-dessus pour connecter votre Discord instantanément en 1 clic sans devoir créer d&apos;application.
+                      </p>
+                    </div>
+                  </div>
+                </Section>
+              )}
+
               {/* Status Section */}
               <Section title="État du service">
                 <div className="grid grid-cols-2 gap-3 text-xs">
@@ -599,6 +675,14 @@ export default function ConnectionDetailDrawer({
                         onClose();
                         return;
                       } else {
+                        const discordClientId = credValues.clientId?.trim();
+                        if (!discordClientId) {
+                          showError("Veuillez renseigner votre Client ID Discord ou utiliser le mode Lanyard (1-clic).");
+                          return;
+                        }
+                        if (typeof window !== "undefined") {
+                          localStorage.setItem("ethone:clientId:discord", discordClientId);
+                        }
                         onConnect?.();
                         return;
                       }

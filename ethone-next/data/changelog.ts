@@ -7206,6 +7206,46 @@ CHANGELOG_BY_LANG.es.unshift({
 });
 
 CHANGELOG_BY_LANG.fr.unshift({
+  version: "v1.12.09",
+  date: "2026-08-28",
+  title: "Discord & Intégrations : Mode Lanyard Sans Configuration & Assistant OAuth2 Avancé",
+  items: [
+    "Priorisation automatique du mode Lanyard pour Discord : connexion en 1 clic avec votre identifiant Discord (statut, avatar, jeux, Spotify).",
+    "Section dédiée pour le mode OAuth2 Discord avec configuration Client ID / Secret et Redirect URI.",
+    "Suppression des identifiants factices pour éviter l'écran « Unknown Application » sur Discord.",
+  ],
+});
+
+CHANGELOG_BY_LANG.en.unshift({
+  version: "v1.12.09",
+  date: "2026-08-28",
+  title: "Discord & Integrations: Zero-Config Lanyard Mode & Advanced OAuth2 Assistant",
+  items: [
+    "Automatic prioritization of Lanyard mode for Discord: 1-click connection using your Discord User ID.",
+    "Dedicated OAuth2 Discord setup panel with Client ID/Secret fields and exact Redirect URI.",
+    "Eliminated placeholder client IDs to prevent Discord's 'Unknown Application' screen.",
+  ],
+});
+
+CHANGELOG_BY_LANG.es.unshift({
+  version: "v1.12.09",
+  date: "2026-08-28",
+  title: "Discord e Integraciones: Modo Lanyard Directo y Asistente OAuth2",
+  items: [
+    "Conexión en 1 clic para Discord con ID de usuario y configuración limpia de OAuth2.",
+  ],
+});
+
+CHANGELOG_BY_LANG.de.unshift({
+  version: "v1.12.09",
+  date: "2026-08-28",
+  title: "Discord & Integrationen: 1-Klick-Lanyard-Modus & OAuth2-Assistent",
+  items: [
+    "1-Klick-Verbindung für Discord via User-ID und erweiterte OAuth2-Konfiguration.",
+  ],
+});
+
+CHANGELOG_BY_LANG.fr.unshift({
   version: "v1.12.08",
   date: "2026-08-28",
   title: "Optimisation Audio & Console : Élimination des Avertissements AudioContext & NotificationBridge",

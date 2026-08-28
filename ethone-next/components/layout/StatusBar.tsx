@@ -21,8 +21,8 @@ import {
 } from "lucide-react";
 import { useLiveWidgetStore } from "@/lib/hooks/useLiveWidgetStore";
 import { useAuth } from "@/components/AuthProvider";
-import { useActiveProfile, useSettings } from "@/components/SettingsProvider";
-import { useProfile } from "@/lib/hooks/useProfile";
+import { useUserIdentity } from "@/lib/hooks/useUserIdentity";
+import { useSettings } from "@/components/SettingsProvider";
 import { useI18n } from "@/lib/hooks/useI18n";
 import { useSyncStore, type SyncState } from "@/lib/stores/sync";
 import { WORKER_URL } from "@/lib/api";
@@ -186,9 +186,8 @@ export default function StatusBar() {
   const i18n = useI18n();
   const router = useRouter();
   const pathname = usePathname();
-  const { user, signOut } = useAuth();
-  const { activeProfile } = useActiveProfile();
-  const { profile: publicProfile } = useProfile();
+  const { signOut } = useAuth();
+  const { displayName } = useUserIdentity();
   const { isOpen, isMinimized, openLive, closeLive } = useLiveWidgetStore();
   const online = useOnlineStatus();
   const { ping, pingging } = usePing();
@@ -196,7 +195,7 @@ export default function StatusBar() {
   const [menuOpen, setMenuOpen] = useState(false);
   const menuRef = useRef<HTMLDivElement>(null);
 
-  const userLabel = publicProfile?.display_name || activeProfile?.name || user?.email || i18n("guest");
+  const userLabel = displayName || i18n("guest");
   const sessionRole = useSessionRole();
 
   const syncStatus = useSyncStore((s) => s.status);

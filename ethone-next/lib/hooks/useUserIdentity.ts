@@ -25,8 +25,8 @@ export function useUserIdentity(): UserIdentity {
     if (typeof window !== "undefined") {
       try {
         const savedName = localStorage.getItem("ethone_user_name");
-        const savedAvatar = localStorage.getItem("ethone_user_avatar");
-        // Clear old auto-imported Google full name and photo
+        const savedAvatar = localStorage.getItem("ethone_user_avatar") || localStorage.getItem("ethone_custom_avatar");
+        // Clear old auto-imported Google full name
         if (savedName && savedName !== "Rubens Lespinasse") {
           setCachedName(savedName);
         } else if (savedName === "Rubens Lespinasse") {
@@ -63,12 +63,13 @@ export function useUserIdentity(): UserIdentity {
     (user?.email ? user.email.split("@")[0] : "") ||
     "Rub";
 
-  // Resolution of avatar URL: only custom user uploaded avatar or profile avatar, never force Google OAuth photo
+  // Resolution of avatar URL: custom user uploaded avatar or profile avatar
   const avatarUrl =
     (publicProfile?.avatar_url && !publicProfile.avatar_url.includes("googleusercontent.com") ? publicProfile.avatar_url : undefined) ||
     (activeProfile as unknown as { avatar_url?: string; avatar?: string })?.avatar_url ||
     (activeProfile as unknown as { avatar_url?: string; avatar?: string })?.avatar ||
     (typeof meta.custom_avatar_url === "string" ? meta.custom_avatar_url : undefined) ||
+    (typeof meta.avatar_url === "string" && !meta.avatar_url.includes("googleusercontent.com") ? meta.avatar_url : undefined) ||
     (cachedAvatar && !cachedAvatar.includes("googleusercontent.com") ? cachedAvatar : undefined) ||
     undefined;
 

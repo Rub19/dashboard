@@ -877,7 +877,7 @@ export function AnimatedSidebarMenuButton({
         transition={context.reduce ? REDUCED_TRANSITION : LABEL_TRANSITION}
         className={cn(
           "relative z-10 min-w-0 flex-1 truncate whitespace-nowrap",
-          panel.collapsed && "pointer-events-none"
+          panel.collapsed && "hidden"
         )}
       >
         {children}
@@ -887,7 +887,7 @@ export function AnimatedSidebarMenuButton({
           {badge}
         </span>
       ) : null}
-      {ariaExpanded !== undefined ? (
+      {ariaExpanded !== undefined && !panel.collapsed ? (
         <motion.span
           aria-hidden="true"
           initial={false}
@@ -908,7 +908,7 @@ export function AnimatedSidebarMenuButton({
   const interactiveClassName = cn(
     "group relative flex w-full min-w-0 overflow-hidden rounded-2xl py-2.5 text-[13px] font-medium outline-none transition-colors duration-150",
     panel.collapsed
-      ? "items-center justify-center gap-0 px-0"
+      ? "items-center justify-center gap-0 px-0 mx-auto"
       : "items-center gap-3 px-3.5 text-left",
     "text-[var(--text-muted)] hover:text-[var(--text-primary)]",
     "focus-visible:bg-[var(--text-primary)]/[0.08] focus-visible:ring-2 focus-visible:ring-[var(--accent-primary)]",

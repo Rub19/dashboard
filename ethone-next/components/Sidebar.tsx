@@ -103,7 +103,7 @@ const SidebarBrand = memo(function SidebarBrand() {
         transition={{ duration: 0.24, ease: [0.25, 1, 0.5, 1] }}
         className={cn(
           "text-sm font-bold tracking-tight whitespace-nowrap",
-          collapsed && "pointer-events-none"
+          collapsed && "hidden"
         )}
       >
         ETHONE
@@ -214,7 +214,7 @@ const SidebarProfile = memo(function SidebarProfile({ collapsed }: { collapsed: 
         transition={{ duration: 0.24, ease: [0.25, 1, 0.5, 1] }}
         className={cn(
           "min-w-0 flex-1 truncate text-[11px] font-semibold text-[var(--text-primary)] group-hover:text-[var(--accent-primary)] transition-colors text-left whitespace-nowrap",
-          collapsed && "pointer-events-none"
+          collapsed && "hidden"
         )}
       >
         {displayName}

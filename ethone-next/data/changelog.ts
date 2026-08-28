@@ -7206,6 +7206,46 @@ CHANGELOG_BY_LANG.es.unshift({
 });
 
 CHANGELOG_BY_LANG.fr.unshift({
+  version: "v1.11.06",
+  date: "2026-08-28",
+  title: "Sidebar & Profil : Centrage Parfait des Icônes Réduites & Synchronisation de l'Identité",
+  items: [
+    "Centrage géométrique strict des icônes de la barre latérale en mode réduit (suppression des offsets de layout).",
+    "Synchronisation globale du nom de profil (`Rub`) dans la barre d'état inférieure droite et les menus d'en-tête.",
+    "Résolution complète de la photo de profil personnalisée à travers tous les composants du système.",
+  ],
+});
+
+CHANGELOG_BY_LANG.en.unshift({
+  version: "v1.11.06",
+  date: "2026-08-28",
+  title: "Sidebar & Profile: Pixel-Perfect Collapsed Icon Centering & Unified Identity Sync",
+  items: [
+    "Strict geometric centering for collapsed sidebar navigation icons (zero flex offset).",
+    "Global synchronization of user profile name (`Rub`) across bottom status bar and top dropdown.",
+    "Unified custom profile avatar resolution across all OS surfaces.",
+  ],
+});
+
+CHANGELOG_BY_LANG.es.unshift({
+  version: "v1.11.06",
+  date: "2026-08-28",
+  title: "Barra Lateral y Perfil: Centrado de Iconos y Sincronización",
+  items: [
+    "Centrado geométrico de los iconos colapsados y sincronización del perfil de usuario.",
+  ],
+});
+
+CHANGELOG_BY_LANG.de.unshift({
+  version: "v1.11.06",
+  date: "2026-08-28",
+  title: "Seitenleiste & Profil: Zentrierte Icons & Identitätssynchronisierung",
+  items: [
+    "Perfekte Zentrierung der reduzierten Seitenleisten-Icons und Synchronisierung des Benutzernamens.",
+  ],
+});
+
+CHANGELOG_BY_LANG.fr.unshift({
   version: "v1.11.05",
   date: "2026-08-27",
   title: "CI/CD & Builds GitHub : Réparation Complète des Workflows (Web, iOS, Android)",

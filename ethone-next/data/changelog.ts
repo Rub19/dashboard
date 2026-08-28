@@ -7206,6 +7206,46 @@ CHANGELOG_BY_LANG.es.unshift({
 });
 
 CHANGELOG_BY_LANG.fr.unshift({
+  version: "v1.12.13",
+  date: "2026-08-28",
+  title: "Discord OAuth2 & Portabilité : Saisie Directe du Client ID et Scopes Optimisés",
+  items: [
+    "Ouverture directe du panneau de configuration Discord pour coller votre Client ID officiel.",
+    "Ajustement des permissions et scopes OAuth2 (identify email) évitant les erreurs de droits.",
+    "Mode Lanyard sans friction privilégié par défaut pour tous les utilisateurs.",
+  ],
+});
+
+CHANGELOG_BY_LANG.en.unshift({
+  version: "v1.12.13",
+  date: "2026-08-28",
+  title: "Discord OAuth2 & Flexibility: Direct Client ID Input & Streamlined Scopes",
+  items: [
+    "Direct modal prompt to paste custom Discord Application Client ID without typo risks.",
+    "Streamlined OAuth2 permissions and scopes (identify email).",
+    "Zero-config Lanyard mode prioritized by default.",
+  ],
+});
+
+CHANGELOG_BY_LANG.es.unshift({
+  version: "v1.12.13",
+  date: "2026-08-28",
+  title: "Discord OAuth2: Entrada Directa de Client ID y Scopes Optimizados",
+  items: [
+    "Entrada directa de Client ID de Discord y permisos simplificados.",
+  ],
+});
+
+CHANGELOG_BY_LANG.de.unshift({
+  version: "v1.12.13",
+  date: "2026-08-28",
+  title: "Discord OAuth2: Direkte Client-ID-Eingabe & Optimierte Scopes",
+  items: [
+    "Direkte Eingabe der Discord-Client-ID und optimierte Berechtigungen.",
+  ],
+});
+
+CHANGELOG_BY_LANG.fr.unshift({
   version: "v1.12.12",
   date: "2026-08-28",
   title: "Diagnostic Spotify & Connexions : Résolution du Statut Null & Test Direct Web API",

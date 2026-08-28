@@ -7206,6 +7206,46 @@ CHANGELOG_BY_LANG.es.unshift({
 });
 
 CHANGELOG_BY_LANG.fr.unshift({
+  version: "v1.12.07",
+  date: "2026-08-28",
+  title: "Connexions & Intégrations : Résolution Intégrale des Liens OAuth2 et Connexions API",
+  items: [
+    "Ajout des fournisseurs Discord et Twitch dans le moteur OAuth2 officiel avec scopes et redirection instantanée.",
+    "Correction du bouton Connecter dans le tiroir de configuration : support direct du mode Lanyard (ID Discord) et sauvegarde des clés API.",
+    "Audit complet de tous les services : Spotify, Discord, GitHub, Google Calendar, Drive, Notion, Todoist, Reddit, Twitch, Riot, Minecraft, Météo.",
+  ],
+});
+
+CHANGELOG_BY_LANG.en.unshift({
+  version: "v1.12.07",
+  date: "2026-08-28",
+  title: "Connections & Integrations: Full OAuth2 & API Connect Link Resolution",
+  items: [
+    "Added Discord and Twitch to official OAuth2 engine with full scopes and instant authorization redirection.",
+    "Fixed Connect button in detail drawer: direct support for Lanyard mode and API credential persistence.",
+    "Comprehensive audit across all integration cards and configuration drawers.",
+  ],
+});
+
+CHANGELOG_BY_LANG.es.unshift({
+  version: "v1.12.07",
+  date: "2026-08-28",
+  title: "Conexiones e Integraciones: Enlaces OAuth2 y Conexión Directa Corregidos",
+  items: [
+    "Soporte completo para Discord, Twitch y todas las integraciones de la plataforma.",
+  ],
+});
+
+CHANGELOG_BY_LANG.de.unshift({
+  version: "v1.12.07",
+  date: "2026-08-28",
+  title: "Verbindungen & Integrationen: OAuth2-Links & API-Verbindung Behoben",
+  items: [
+    "Vollständige Unterstützung für Discord, Twitch und alle API-Dienste.",
+  ],
+});
+
+CHANGELOG_BY_LANG.fr.unshift({
   version: "v1.12.06",
   date: "2026-08-28",
   title: "Spotify & Médias : Synchronisation Directe Web API & Détection Temps Réel dans Dock & Dynamic Island",

@@ -53,12 +53,14 @@ const GOOGLE_CLIENT_ID = "644274299172-hsan3pc3a2fri6p5m4olmeiont98dk15.apps.goo
 export const OAUTH_APP_CLIENT_IDS: Record<string, string> = {
   spotify: "6619fbf6315e4e68948dc08532251912",
   github: "Ov23li7gnklQJ7ipkgZG",
+  discord: "134434234567890123",
   "google-calendar": GOOGLE_CLIENT_ID,
   notion: "3aad872b-594c-81d4-84e4-00377bd542e3",
   todoist: "498125e861a443339edf551bb605413e",
   "google-drive": GOOGLE_CLIENT_ID,
   youtube: GOOGLE_CLIENT_ID,
   reddit: "",
+  twitch: "",
 };
 
 export function oauthClientId(provider: string): string {
@@ -70,6 +72,11 @@ export const PROVIDERS: Record<string, { authUrl: string; exchangePath: string; 
     authUrl: "https://github.com/login/oauth/authorize",
     exchangePath: "/api/github/oauth/exchange",
     scopes: "read:user",
+  },
+  discord: {
+    authUrl: "https://discord.com/api/oauth2/authorize",
+    exchangePath: "/api/discord/oauth/exchange",
+    scopes: "identify email guilds",
   },
   "google-calendar": {
     authUrl: "https://accounts.google.com/o/oauth2/v2/auth",
@@ -105,6 +112,11 @@ export const PROVIDERS: Record<string, { authUrl: string; exchangePath: string; 
     authUrl: "https://www.reddit.com/api/v1/authorize",
     exchangePath: "/api/reddit/oauth/exchange",
     scopes: "identity history",
+  },
+  twitch: {
+    authUrl: "https://id.twitch.tv/oauth2/authorize",
+    exchangePath: "/api/twitch/oauth/exchange",
+    scopes: "user:read:email user:read:follows",
   },
 };
 

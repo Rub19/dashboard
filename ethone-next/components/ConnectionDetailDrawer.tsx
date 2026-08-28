@@ -576,12 +576,42 @@ export default function ConnectionDetailDrawer({
               ) : (
                 <button
                   type="button"
-                  onClick={() => {
+                  onClick={async () => {
+                    hapticLightImpact();
+                    if (integration.id === "discord") {
+                      if (discordMode === "lanyard") {
+                        await handleSaveCredentials();
+                        if (typeof window !== "undefined") {
+                          localStorage.setItem("ethone:connected:discord", "true");
+                          window.dispatchEvent(
+                            new CustomEvent("v8:connection-updated", {
+                              detail: { provider: "discord", connected: true },
+                            })
+                          );
+                        }
+                        onTest();
+                        onClose();
+                        return;
+                      } else {
+                        onConnect?.();
+                        return;
+                      }
+                    }
+
+                    if (hasFields) {
+                      await handleSaveCredentials();
+                      if (typeof window !== "undefined") {
+                        localStorage.setItem(`ethone:connected:${integration.id}`, "true");
+                        window.dispatchEvent(
+                          new CustomEvent("v8:connection-updated", {
+                            detail: { provider: integration.id, connected: true },
+                          })
+                        );
+                      }
+                      onTest();
+                    }
+
                     if (integration.status === "oauth") {
-                      onConnect?.();
-                    } else if (hasFields) {
-                      handleSaveCredentials();
-                    } else {
                       onConnect?.();
                     }
                   }}

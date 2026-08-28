@@ -17,7 +17,7 @@ import {
 import { useI18n } from "@/lib/hooks/useI18n";
 import { useSettings } from "@/components/SettingsProvider";
 import { useToast } from "@/components/ToastProvider";
-import { startOAuthConnect, PROVIDERS as OAUTH_PROVIDERS } from "@/lib/oauth";
+import { startOAuthConnect, PROVIDERS as OAUTH_PROVIDERS, OAUTH_APP_CLIENT_IDS } from "@/lib/oauth";
 import { getIntegrationConfig } from "@/lib/integrations.config";
 import type { Integration } from "@/lib/integrations";
 import { isConfigured, type PingResult } from "@/lib/connection-config";
@@ -74,20 +74,25 @@ export default function ConnectionCard({
     const currentId =
       clientId ||
       (settings as unknown as Record<string, string>)[`${integration.id}ClientId`] ||
-      (integration.id === "spotify" ? "6619fbf6315e4e68948dc08532251912" : "") ||
-      (OAUTH_PROVIDERS[integration.id] ? "6619fbf6315e4e68948dc08532251912" : "");
-    if (!currentId.trim()) {
+      (typeof window !== "undefined" ? localStorage.getItem(`ethone:clientId:${integration.id}`) : "") ||
+      OAUTH_APP_CLIENT_IDS[integration.id] ||
+      "";
+
+    if (!currentId.trim() && !OAUTH_APP_CLIENT_IDS[integration.id]) {
       setDrawerOpen(true);
       return;
     }
+    const effectiveId = currentId.trim() || OAUTH_APP_CLIENT_IDS[integration.id];
     setConnecting(true);
     try {
-      if (integration.id === "spotify") update({ liveSpotifyClientId: currentId, liveNowPlayingSource: "spotify" } as never);
-      if (integration.id === "youtube") update({ liveYoutubeClientId: currentId } as never);
-      if (integration.id === "google-calendar") update({ calendarClientId: currentId } as never);
-      if (integration.id === "google-drive") update({ driveClientId: currentId } as never);
-      const authUrl = await startOAuthConnect(integration.id, currentId, { provider: integration.id, clientId: currentId });
-      window.location.href = authUrl;
+      if (integration.id === "spotify") update({ liveSpotifyClientId: effectiveId, liveNowPlayingSource: "spotify" } as never);
+      if (integration.id === "youtube") update({ liveYoutubeClientId: effectiveId } as never);
+      if (integration.id === "google-calendar") update({ calendarClientId: effectiveId } as never);
+      if (integration.id === "google-drive") update({ driveClientId: effectiveId } as never);
+      const authUrl = await startOAuthConnect(integration.id, effectiveId, { provider: integration.id, clientId: effectiveId });
+      if (authUrl) {
+        window.location.href = authUrl;
+      }
     } catch (err) {
       showError(err instanceof Error ? err.message : "Erreur de connexion");
       setConnecting(false);

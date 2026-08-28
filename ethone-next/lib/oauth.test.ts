@@ -36,7 +36,7 @@ describe("oauth", () => {
 
   it("covers all expected providers", () => {
     expect(Object.keys(PROVIDERS).sort()).toEqual([
-      "github", "google-calendar", "google-drive", "notion", "reddit", "spotify", "todoist", "youtube",
+      "discord", "github", "google-calendar", "google-drive", "notion", "reddit", "spotify", "todoist", "twitch", "youtube",
     ]);
   });
 });

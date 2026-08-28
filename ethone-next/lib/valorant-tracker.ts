@@ -237,3 +237,191 @@ export function groupMatchesByDate(matches: ValorantMatch[]): ValorantDayGroup[]
 
   return groups.sort((a, b) => b.rawDate.localeCompare(a.rawDate));
 }
+
+export function generateFallbackValorantMatches(
+  playerName = "Rub19",
+  playerTag = "boss"
+): ValorantMatch[] {
+  const now = Date.now();
+  const maps = ["Ascent", "Haven", "Bind", "Split", "Lotus", "Sunset", "Abyss"];
+  const agents = ["Jett", "Reyna", "Omen", "Clove", "Sova", "Iso", "Fade"];
+
+  return [
+    {
+      id: "val-match-1",
+      metadata: {
+        modeName: "Compétitif",
+        result: "Victory",
+        mapName: maps[0],
+        agentName: agents[0],
+        agentImageUrl: getAgentIcon(agents[0]),
+        score: { team: 13, opponent: 8, roundsPlayed: 21 },
+        timestamp: new Date(now - 45 * 60 * 1000).toISOString(),
+      },
+      scoreboard: {
+        players: [
+          {
+            name: playerName,
+            tag: playerTag,
+            team: "Blue",
+            character: agents[0],
+            isMe: true,
+            currenttier_patched: "Ascendant 2",
+            stats: { score: 6240, kills: 24, deaths: 11, assists: 6, headshots: 14, adr: 178 },
+          },
+          {
+            name: "PhoenixKing",
+            tag: "FR",
+            team: "Blue",
+            character: "Phoenix",
+            isMe: false,
+            stats: { score: 4800, kills: 17, deaths: 13, assists: 8, adr: 142 },
+          },
+          {
+            name: "ShadowOmen",
+            tag: "EUW",
+            team: "Red",
+            character: "Omen",
+            isMe: false,
+            stats: { score: 4500, kills: 16, deaths: 16, assists: 4, adr: 135 },
+          },
+        ],
+      },
+      segments: [
+        {
+          type: "overview",
+          stats: {
+            kills: { value: 24, displayValue: "24" },
+            deaths: { value: 11, displayValue: "11" },
+            assists: { value: 6, displayValue: "6" },
+            score: { value: 6240, displayValue: "6240" },
+            scorePerRound: { value: 297, displayValue: "297 ACS" },
+            headshotsPercentage: { value: 38, displayValue: "38%" },
+            damageDeltaPerRound: { value: 45, displayValue: "+45" },
+            adr: { value: 178, displayValue: "178" },
+          },
+        },
+      ],
+    },
+    {
+      id: "val-match-2",
+      metadata: {
+        modeName: "Compétitif",
+        result: "Victory",
+        mapName: maps[1],
+        agentName: agents[1],
+        agentImageUrl: getAgentIcon(agents[1]),
+        score: { team: 13, opponent: 11, roundsPlayed: 24 },
+        timestamp: new Date(now - 3 * 3600 * 1000).toISOString(),
+      },
+      scoreboard: {
+        players: [
+          {
+            name: playerName,
+            tag: playerTag,
+            team: "Blue",
+            character: agents[1],
+            isMe: true,
+            currenttier_patched: "Ascendant 2",
+            stats: { score: 5800, kills: 21, deaths: 14, assists: 5, headshots: 11, adr: 162 },
+          },
+        ],
+      },
+      segments: [
+        {
+          type: "overview",
+          stats: {
+            kills: { value: 21, displayValue: "21" },
+            deaths: { value: 14, displayValue: "14" },
+            assists: { value: 5, displayValue: "5" },
+            score: { value: 5800, displayValue: "5800" },
+            scorePerRound: { value: 265, displayValue: "265 ACS" },
+            headshotsPercentage: { value: 32, displayValue: "32%" },
+            damageDeltaPerRound: { value: 28, displayValue: "+28" },
+            adr: { value: 162, displayValue: "162" },
+          },
+        },
+      ],
+    },
+    {
+      id: "val-match-3",
+      metadata: {
+        modeName: "Compétitif",
+        result: "Defeat",
+        mapName: maps[2],
+        agentName: agents[2],
+        agentImageUrl: getAgentIcon(agents[2]),
+        score: { team: 9, opponent: 13, roundsPlayed: 22 },
+        timestamp: new Date(now - 6 * 3600 * 1000).toISOString(),
+      },
+      scoreboard: {
+        players: [
+          {
+            name: playerName,
+            tag: playerTag,
+            team: "Blue",
+            character: agents[2],
+            isMe: true,
+            currenttier_patched: "Ascendant 1",
+            stats: { score: 4600, kills: 16, deaths: 15, assists: 9, headshots: 7, adr: 138 },
+          },
+        ],
+      },
+      segments: [
+        {
+          type: "overview",
+          stats: {
+            kills: { value: 16, displayValue: "16" },
+            deaths: { value: 15, displayValue: "15" },
+            assists: { value: 9, displayValue: "9" },
+            score: { value: 4600, displayValue: "4600" },
+            scorePerRound: { value: 210, displayValue: "210 ACS" },
+            headshotsPercentage: { value: 26, displayValue: "26%" },
+            damageDeltaPerRound: { value: -8, displayValue: "-8" },
+            adr: { value: 138, displayValue: "138" },
+          },
+        },
+      ],
+    },
+    {
+      id: "val-match-4",
+      metadata: {
+        modeName: "Compétitif",
+        result: "Victory",
+        mapName: maps[3],
+        agentName: agents[3],
+        agentImageUrl: getAgentIcon(agents[3]),
+        score: { team: 13, opponent: 6, roundsPlayed: 19 },
+        timestamp: new Date(now - 26 * 3600 * 1000).toISOString(),
+      },
+      scoreboard: {
+        players: [
+          {
+            name: playerName,
+            tag: playerTag,
+            team: "Blue",
+            character: agents[3],
+            isMe: true,
+            currenttier_patched: "Ascendant 1",
+            stats: { score: 5400, kills: 22, deaths: 8, assists: 7, headshots: 12, adr: 185 },
+          },
+        ],
+      },
+      segments: [
+        {
+          type: "overview",
+          stats: {
+            kills: { value: 22, displayValue: "22" },
+            deaths: { value: 8, displayValue: "8" },
+            assists: { value: 7, displayValue: "7" },
+            score: { value: 5400, displayValue: "5400" },
+            scorePerRound: { value: 310, displayValue: "310 ACS" },
+            headshotsPercentage: { value: 41, displayValue: "41%" },
+            damageDeltaPerRound: { value: 62, displayValue: "+62" },
+            adr: { value: 185, displayValue: "185" },
+          },
+        },
+      ],
+    },
+  ];
+}

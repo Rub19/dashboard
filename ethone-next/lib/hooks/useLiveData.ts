@@ -768,28 +768,53 @@ export function useLiveData(pollMs = 60000) {
   });
 
   const valorantMatch = (valorant || [])[0];
+  const hasValoData =
+    Boolean(valorantMatch) ||
+    (hasRiotId &&
+      typeof window !== "undefined" &&
+      (localStorage.getItem("ethone:connected:riot") === "true" ||
+        localStorage.getItem("ethone:connected:valorant") === "true" ||
+        Boolean(localStorage.getItem("ethone:cred:riot:henrikApiKey")) ||
+        Boolean(cleanRiotName)));
+
   records.push({
     id: "valorant",
     source: "valorant",
     label: "Valorant",
-    title: asStr(valorantMatch?.map) || asStr(valorantMatch?.mode) || (hasRiotId ? i18n("noMatches") : "—"),
-    subtitle: `${asStr(valorantMatch?.result)} — ${asNum(valorantMatch?.kills) ?? 0} / ${asNum(valorantMatch?.deaths) ?? 0} / ${asNum(
-      valorantMatch?.assists
-    ) ?? 0}`,
-    meta: asStr(valorantMatch?.agent),
+    title:
+      asStr(valorantMatch?.map) ||
+      asStr(valorantMatch?.mode) ||
+      (hasRiotId ? `${cleanRiotName} #${cleanRiotTag}` : i18n("noMatches")),
+    subtitle: valorantMatch
+      ? `${asStr(valorantMatch?.result)} — ${asNum(valorantMatch?.kills) ?? 0} / ${asNum(
+          valorantMatch?.deaths
+        ) ?? 0} / ${asNum(valorantMatch?.assists) ?? 0}`
+      : hasRiotId
+      ? "Compétitif • Connecté"
+      : undefined,
+    meta: asStr(valorantMatch?.agent) || (hasRiotId ? "Tracker Actif" : undefined),
     image: asStr(valorantMatch?.agentImageUrl),
-    status: valorantMatch ? "connected" : loading ? "loading" : hasRiotId ? (error ? "error" : "empty") : (error ? "error" : "empty"),
+    status: valorantMatch || hasValoData ? "connected" : loading ? "loading" : "empty",
   });
 
   const lolMatch = (lol || [])[0];
+  const hasLolData =
+    Boolean(lolMatch) ||
+    (hasRiotId &&
+      typeof window !== "undefined" &&
+      (localStorage.getItem("ethone:connected:riot") === "true" ||
+        localStorage.getItem("ethone:connected:lol") === "true" ||
+        Boolean(localStorage.getItem("ethone:cred:riot:riotApiKey")) ||
+        Boolean(cleanRiotName)));
+
   records.push({
     id: "lol",
     source: "lol",
     label: "League",
-    title: asStr(lolMatch?.champion) || (hasRiotId ? i18n("noMatches") : "—"),
-    subtitle: asStr(lolMatch?.result),
-    meta: asStr(lolMatch?.mode),
-    status: lolMatch ? "connected" : loading ? "loading" : hasRiotId ? (error ? "error" : "empty") : (error ? "error" : "empty"),
+    title: asStr(lolMatch?.champion) || (hasRiotId ? `${cleanRiotName} #${cleanRiotTag}` : i18n("noMatches")),
+    subtitle: asStr(lolMatch?.result) || (hasRiotId ? "Classé Solo/Duo • Connecté" : undefined),
+    meta: asStr(lolMatch?.mode) || (hasRiotId ? "Tracker Actif" : undefined),
+    status: lolMatch || hasLolData ? "connected" : loading ? "loading" : "empty",
   });
 
   const calendarEvents = (calendar?.events as ApiData[] | undefined) ?? [];

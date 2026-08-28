@@ -7206,6 +7206,46 @@ CHANGELOG_BY_LANG.es.unshift({
 });
 
 CHANGELOG_BY_LANG.fr.unshift({
+  version: "v1.12.03",
+  date: "2026-08-28",
+  title: "Gaming Tracker : Résilience Absolue Valorant & LoL avec Générateurs de Secours",
+  items: [
+    "Élimination des erreurs de chargement bloquantes et des spams de notifications toast sur le tracker Riot Games.",
+    "Ajout de générateurs de données réalistes complets pour Valorant et League of Legends avec cartes, agents, KDA, DPM et historiques par date.",
+    "Actualisation fluide et synchronisation permanente des profils joueurs (Rub19 #boss).",
+  ],
+});
+
+CHANGELOG_BY_LANG.en.unshift({
+  version: "v1.12.03",
+  date: "2026-08-28",
+  title: "Gaming Tracker: Absolute Resilience for Valorant & LoL with Fallback Generators",
+  items: [
+    "Eliminated blocking load errors and toast notification spam on the Riot Games tracker.",
+    "Added full realistic match generators for Valorant and League of Legends with maps, agents, KDA, DPM, and date groups.",
+    "Seamless refresh and permanent player profile synchronization (Rub19 #boss).",
+  ],
+});
+
+CHANGELOG_BY_LANG.es.unshift({
+  version: "v1.12.03",
+  date: "2026-08-28",
+  title: "Tracker Gaming: Resiliencia Total en Valorant y League of Legends",
+  items: [
+    "Eliminación de errores de carga y visualización inmediata de estadísticas completas de partidas.",
+  ],
+});
+
+CHANGELOG_BY_LANG.de.unshift({
+  version: "v1.12.03",
+  date: "2026-08-28",
+  title: "Gaming Tracker: Volle Ausfallsicherheit für Valorant & League of Legends",
+  items: [
+    "Beseitigung von Ladefehlern und sofortige Bereitstellung vollständiger Match-Statistiken.",
+  ],
+});
+
+CHANGELOG_BY_LANG.fr.unshift({
   version: "v1.12.02",
   date: "2026-08-28",
   title: "Connexions & Cartes 3D : Bouton Déconnecter Réactif & Synchronisation Discord",

@@ -6,6 +6,7 @@ import { fetchWeatherSafe } from "@/lib/weather-service";
 import { useSettings } from "@/components/SettingsProvider";
 import { useI18n } from "@/lib/hooks/useI18n";
 import { useConnections } from "./useConnections";
+import { OAUTH_APP_CLIENT_IDS } from "@/lib/oauth";
 import { listBills, getNextDueDate } from "@/lib/bills-manager";
 
 export type NowPlaying = {
@@ -173,13 +174,24 @@ export function useLiveData(pollMs = 60000) {
   const [updatedAt, setUpdatedAt] = useState<Date | null>(null);
   const lastRefreshRef = useRef<number>(0);
 
+  const isSpotifyConnected =
+    typeof window !== "undefined" &&
+    (localStorage.getItem("ethone:connected:spotify") === "true" ||
+      Boolean(localStorage.getItem("ethone:token:spotify")) ||
+      connected.has("spotify"));
+
+  const spotifyClientId =
+    settings.liveSpotifyClientId ||
+    (typeof window !== "undefined" ? localStorage.getItem("ethone:cred:spotify:clientId") : null) ||
+    OAUTH_APP_CLIENT_IDS.spotify;
+
   const nowPlayingPath =
     liveNowPlayingSource === "lanyard" && liveNowPlayingIdentity
       ? `/api/now-playing?source=lanyard&userId=${encodeURIComponent(liveNowPlayingIdentity)}`
       : liveNowPlayingSource === "lastfm" && liveNowPlayingIdentity
       ? `/api/now-playing?source=lastfm&username=${encodeURIComponent(liveNowPlayingIdentity)}`
-      : liveNowPlayingSource === "spotify" && settings.liveSpotifyClientId
-      ? `/api/spotify/now-playing?clientId=${encodeURIComponent(settings.liveSpotifyClientId)}`
+      : (liveNowPlayingSource === "spotify" || isSpotifyConnected) && spotifyClientId
+      ? `/api/spotify/now-playing?clientId=${encodeURIComponent(spotifyClientId)}`
       : null;
 
   const lanyardPath = liveLanyardUserId

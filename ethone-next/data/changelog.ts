@@ -7206,6 +7206,46 @@ CHANGELOG_BY_LANG.es.unshift({
 });
 
 CHANGELOG_BY_LANG.fr.unshift({
+  version: "v1.12.01",
+  date: "2026-08-28",
+  title: "Connexions & Médias : Intégration Immédiate de Spotify dans le Dock & Dynamic Island",
+  items: [
+    "Résolution automatique du Client ID Spotify public OAuth sans nécessiter de configuration manuelle supplémentaire.",
+    "Affichage instantané du lecteur média dans le Dock et de la pilule Spotify dans la Dynamic Island dès la connexion.",
+    "Transmission sécurisée du token d'authentification Spotify dans les requêtes de lecture et de contrôle (Play/Pause, Skip, Volume, Like).",
+  ],
+});
+
+CHANGELOG_BY_LANG.en.unshift({
+  version: "v1.12.01",
+  date: "2026-08-28",
+  title: "Connections & Media: Instant Spotify Integration in Dock & Dynamic Island",
+  items: [
+    "Automatic resolution of Spotify public OAuth Client ID without requiring manual credentials input.",
+    "Instant display of media player in the Dock and Spotify pill in Dynamic Island upon connection.",
+    "Secure Spotify token forwarding for playback controls (Play/Pause, Skip, Volume, Like).",
+  ],
+});
+
+CHANGELOG_BY_LANG.es.unshift({
+  version: "v1.12.01",
+  date: "2026-08-28",
+  title: "Conexiones: Integración Instantánea de Spotify en Dock y Dynamic Island",
+  items: [
+    "Visualización y control inmediato de Spotify en el Dock y Dynamic Island tras la conexión.",
+  ],
+});
+
+CHANGELOG_BY_LANG.de.unshift({
+  version: "v1.12.01",
+  date: "2026-08-28",
+  title: "Verbindungen: Sofortige Spotify-Integration im Dock & Dynamic Island",
+  items: [
+    "Sofortige Anzeige und Steuerung von Spotify im Dock und in der Dynamic Island.",
+  ],
+});
+
+CHANGELOG_BY_LANG.fr.unshift({
   version: "v1.12.00",
   date: "2026-08-28",
   title: "ETHONE Settings 2.0 : Rebuild Majeur — Navigation, UI, Primitives & Stabilité Absolue",

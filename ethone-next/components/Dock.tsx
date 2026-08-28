@@ -10,6 +10,7 @@ import { useCommandPalette } from "@/components/CommandPaletteProvider";
 import { useI18n } from "@/lib/hooks/useI18n";
 import { useNotifications } from "@/lib/hooks/useNotifications";
 import { useNowPlaying } from "@/lib/hooks/useNowPlaying";
+import { OAUTH_APP_CLIENT_IDS } from "@/lib/oauth";
 import { Icon } from "@/lib/icons";
 import FlatCard from "@/components/FlatCard";
 import DockControlCenter from "@/components/DockControlCenter";
@@ -99,12 +100,25 @@ function Dock() {
     [i18n]
   );
 
+  const isSpotifyConnected =
+    typeof window !== "undefined" &&
+    (localStorage.getItem("ethone:connected:spotify") === "true" ||
+      Boolean(localStorage.getItem("ethone:token:spotify")));
+
   const spotifyNow = useMemo<NowPlaying | null>(() => {
-    if (nowPlaying?.source?.toLowerCase() === "spotify" && nowPlaying?.isPlaying) {
+    if (nowPlaying) {
       return nowPlaying;
     }
+    if (isSpotifyConnected) {
+      return {
+        source: "spotify",
+        title: "Spotify",
+        artist: "Prêt pour la lecture",
+        isPlaying: false,
+      };
+    }
     return null;
-  }, [nowPlaying]);
+  }, [nowPlaying, isSpotifyConnected]);
 
   useEffect(() => {
     if (!launcherOpen) return;
@@ -264,7 +278,10 @@ function Dock() {
               className="pointer-events-auto inline-flex items-center gap-1.5 overflow-x-auto no-scrollbar v8-dock px-3.5 py-1.5 select-none backdrop-blur-2xl border border-white/10 bg-[#080c14]/85 shadow-[0_12px_40px_rgba(0,0,0,0.7),0_0_0_1px_rgba(255,255,255,0.05)] rounded-2xl"
               aria-label={i18n("dock")}
             >
-              <DockMediaFlyout nowPlaying={spotifyNow} clientId={settings.liveSpotifyClientId} />
+              <DockMediaFlyout
+                nowPlaying={spotifyNow}
+                clientId={settings.liveSpotifyClientId || OAUTH_APP_CLIENT_IDS.spotify}
+              />
 
               {settings.dockItems.includes("weather") && <DockWeatherFlyout />}
 

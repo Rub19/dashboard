@@ -3,6 +3,7 @@
 import { useEffect, useMemo } from "react";
 import { useSettings } from "@/components/SettingsProvider";
 import { useCachedFetch } from "@/lib/hooks/useCachedFetch";
+import { OAUTH_APP_CLIENT_IDS } from "@/lib/oauth";
 import type { NowPlaying } from "@/lib/hooks/useLiveData";
 
 type ApiData = Record<string, unknown>;
@@ -110,8 +111,22 @@ export function useNowPlaying(pollMs = 30000) {
     if (source === "lastfm" && identity) {
       return `/api/now-playing?source=lastfm&username=${encodeURIComponent(identity)}`;
     }
-    if (source === "spotify" && settings.liveSpotifyClientId) {
-      return `/api/spotify/now-playing?clientId=${encodeURIComponent(settings.liveSpotifyClientId)}`;
+
+    const isSpotifyConnected =
+      typeof window !== "undefined" &&
+      (localStorage.getItem("ethone:connected:spotify") === "true" ||
+        Boolean(localStorage.getItem("ethone:token:spotify")) ||
+        Boolean(localStorage.getItem("spotify_access_token")));
+
+    const spotifyClientId =
+      settings.liveSpotifyClientId ||
+      (typeof window !== "undefined" ? localStorage.getItem("ethone:cred:spotify:clientId") : null) ||
+      OAUTH_APP_CLIENT_IDS.spotify;
+
+    if (source === "spotify" || (!source && isSpotifyConnected) || isSpotifyConnected) {
+      if (spotifyClientId) {
+        return `/api/spotify/now-playing?clientId=${encodeURIComponent(spotifyClientId)}`;
+      }
     }
     return null;
   }, [settings.liveNowPlayingSource, settings.liveNowPlayingIdentity, settings.liveSpotifyClientId]);

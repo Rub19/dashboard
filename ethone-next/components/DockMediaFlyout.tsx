@@ -15,6 +15,7 @@ import { fetchWorker } from "@/lib/api";
 import { useRouter } from "next/navigation";
 import { useToast } from "@/components/ToastProvider";
 import { useI18n } from "@/lib/hooks/useI18n";
+import { OAUTH_APP_CLIENT_IDS } from "@/lib/oauth";
 import type { NowPlaying } from "@/lib/hooks/useLiveData";
 import VolumeSlider from "@/components/VolumeSlider";
 import MediaProgress from "@/components/MediaProgress";
@@ -39,7 +40,11 @@ export default function DockMediaFlyout({ nowPlaying, clientId }: DockMediaFlyou
   const progressRef = useRef(nowPlaying?.progressMs || 0);
   const volumeTimeoutRef = useRef<ReturnType<typeof setTimeout> | null>(null);
 
-  const hasClientId = !!clientId;
+  const effectiveClientId =
+    clientId ||
+    (typeof window !== "undefined" ? localStorage.getItem("ethone:cred:spotify:clientId") : null) ||
+    OAUTH_APP_CLIENT_IDS.spotify;
+  const hasClientId = !!effectiveClientId;
   const hasTrack = !!nowPlaying;
   const title = nowPlaying?.title || "";
   const artist = nowPlaying?.artist || "";
@@ -100,13 +105,13 @@ export default function DockMediaFlyout({ nowPlaying, clientId }: DockMediaFlyou
 
   const control = useCallback(
     async (action: string, extras?: Record<string, unknown>) => {
-      if (!clientId) {
+      if (!effectiveClientId) {
         showError(i18n("configureToEnable"));
         return;
       }
       setPending(true);
       try {
-        const body: Record<string, string | number> = { action, clientId };
+        const body: Record<string, string | number> = { action, clientId: effectiveClientId };
         if (extras) {
           Object.entries(extras).forEach(([k, v]) => (body[k] = v as string | number));
         }
@@ -118,7 +123,7 @@ export default function DockMediaFlyout({ nowPlaying, clientId }: DockMediaFlyou
         setPending(false);
       }
     },
-    [clientId, i18n, showError, success],
+    [effectiveClientId, i18n, showError, success],
   );
 
   async function toggleLike() {

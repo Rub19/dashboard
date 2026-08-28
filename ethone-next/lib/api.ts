@@ -91,9 +91,11 @@ export async function fetchWorker(
       const riotKey = localStorage.getItem("ethone:cred:riot:riotApiKey") || localStorage.getItem("ethone:cred:riot:apiKey");
       const henrikKey = localStorage.getItem("ethone:cred:riot:henrikApiKey") || localStorage.getItem("ethone:cred:valorant:apiKey");
       const trackerKey = localStorage.getItem("ethone:cred:tracker:apiKey") || localStorage.getItem("ethone:cred:tracker-gg:apiKey");
+      const spotifyToken = localStorage.getItem("ethone:token:spotify") || localStorage.getItem("spotify_access_token");
       if (riotKey && !headers.has("x-riot-api-key")) headers.set("x-riot-api-key", riotKey);
       if (henrikKey && !headers.has("x-henrik-api-key")) headers.set("x-henrik-api-key", henrikKey);
       if (trackerKey && !headers.has("x-tracker-api-key")) headers.set("x-tracker-api-key", trackerKey);
+      if (spotifyToken && !headers.has("x-spotify-token")) headers.set("x-spotify-token", spotifyToken);
     } catch {}
   }
 

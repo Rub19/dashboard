@@ -18,6 +18,7 @@ import { useSettings } from "@/components/SettingsProvider";
 import { useToast } from "@/components/ToastProvider";
 import { fetchWorker } from "@/lib/api";
 import { useUploadQueue } from "@/lib/upload-queue";
+import { OAUTH_APP_CLIENT_IDS } from "@/lib/oauth";
 import { useDynamicIslandStore } from "@/lib/stores/dynamic-island";
 import { useBrainActivityStore } from "@/lib/stores/brain-activity";
 import { useActivityJournal } from "@/lib/hooks/useActivityJournal";
@@ -276,7 +277,12 @@ export default function DynamicIslandContainer() {
     setIsSaved(nowPlaying?.isSaved ?? false);
   }, [nowPlaying?.volumePercent, nowPlaying?.isSaved, nowPlaying?.id]);
 
-  const spotifyActive = !!nowPlaying?.title || !!nowPlaying?.isPlaying;
+  const isSpotifyConnected =
+    typeof window !== "undefined" &&
+    (localStorage.getItem("ethone:connected:spotify") === "true" ||
+      Boolean(localStorage.getItem("ethone:token:spotify")));
+
+  const spotifyActive = !!nowPlaying?.title || !!nowPlaying?.isPlaying || isSpotifyConnected;
   const pomodoroActive = focus.state.phase !== "idle";
   const brainActive = isThinking;
   const syncActive = syncing || pendingCount > 0;
@@ -591,7 +597,10 @@ export default function DynamicIslandContainer() {
   // Spotify controls
   const spotifyControl = useCallback(
     async (action: string, extras?: Record<string, string | number>) => {
-      const clientId = settings.liveSpotifyClientId;
+      const clientId =
+        settings.liveSpotifyClientId ||
+        (typeof window !== "undefined" ? localStorage.getItem("ethone:cred:spotify:clientId") : null) ||
+        OAUTH_APP_CLIENT_IDS.spotify;
       if (!clientId) {
         showError(i18n("configureToEnable"));
         return;
@@ -635,7 +644,10 @@ export default function DynamicIslandContainer() {
   );
 
   const toggleLike = useCallback(async () => {
-    const clientId = settings.liveSpotifyClientId;
+    const clientId =
+      settings.liveSpotifyClientId ||
+      (typeof window !== "undefined" ? localStorage.getItem("ethone:cred:spotify:clientId") : null) ||
+      OAUTH_APP_CLIENT_IDS.spotify;
     const trackId = nowPlaying?.id;
     if (!clientId || !trackId) {
       showError(i18n("configureToEnable"));

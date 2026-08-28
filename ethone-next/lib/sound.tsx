@@ -730,7 +730,7 @@ function renderStorm(data: Float32Array, sampleRate: number): void {
 
   // 1. Heavy torrential rain bed with wind surge
   let brown = 0;
-  let p0 = 0, p1 = 0, p2 = 0, p3 = 0, p4 = 0, p5 = 0;
+  let p0 = 0, p1 = 0, p2 = 0, p3 = 0, p4 = 0;
   for (let i = 0; i < length; i++) {
     const white = Math.random() * 2 - 1;
     brown = (brown + 0.06 * white) / 1.06;

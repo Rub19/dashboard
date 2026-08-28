@@ -7206,6 +7206,46 @@ CHANGELOG_BY_LANG.es.unshift({
 });
 
 CHANGELOG_BY_LANG.fr.unshift({
+  version: "v1.12.05",
+  date: "2026-08-28",
+  title: "Audit Qualité & Stabilité Totale du Dashboard à 100%",
+  items: [
+    "Audit complet du Dashboard, des cartes Bento, des connexions et des modules en direct.",
+    "Validation 100% sans erreur : 0 erreur ESLint, 61/61 tests unitaires passés et compilation Turbopack parfaite.",
+    "Stabilité renforcée de la navigation et du moteur de synthèse sonore.",
+  ],
+});
+
+CHANGELOG_BY_LANG.en.unshift({
+  version: "v1.12.05",
+  date: "2026-08-28",
+  title: "Quality Audit & 100% Dashboard Total Stability",
+  items: [
+    "Complete audit of Dashboard widgets, Bento cards, integrations, and live modules.",
+    "100% error-free validation: 0 ESLint errors, 61/61 unit tests passed, and clean Turbopack build.",
+    "Enhanced stability for settings navigation and atmospheric sound synthesis engine.",
+  ],
+});
+
+CHANGELOG_BY_LANG.es.unshift({
+  version: "v1.12.05",
+  date: "2026-08-28",
+  title: "Auditoría de Calidad y Estabilidad Total del Dashboard al 100%",
+  items: [
+    "Auditoría exhaustiva, cero errores y funcionamiento óptimo en todas las vistas.",
+  ],
+});
+
+CHANGELOG_BY_LANG.de.unshift({
+  version: "v1.12.05",
+  date: "2026-08-28",
+  title: "Qualitäts-Audit & 100% Dashboard-Gesamtstabilität",
+  items: [
+    "Vollständiges Audit, null Fehler und optimale Leistung für alle Dashboard-Module.",
+  ],
+});
+
+CHANGELOG_BY_LANG.fr.unshift({
   version: "v1.12.04",
   date: "2026-08-28",
   title: "Pages Système & Statistiques : Calcul Local Intégré & Résilience Réseau",

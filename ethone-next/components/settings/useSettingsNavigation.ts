@@ -252,6 +252,6 @@ export function useSettingsNavigation({
     navigateTo,
     registerContainerRef,
     registerCategoryRef,
-    isProgrammatic: isProgrammaticRef.current,
+    isProgrammatic: () => isProgrammaticRef.current,
   };
 }

@@ -252,10 +252,19 @@ export function isConfigured(
   oauthConnected: Record<string, boolean>
 ): boolean {
   if (integration.status === "restricted" || integration.status === "limited") return false;
+  const isLocallyConnected = typeof window !== "undefined" && localStorage.getItem(`ethone:connected:${integration.id}`) === "true";
+  if (integration.id === "spotify") {
+    const hasClientId = Boolean(settings.liveSpotifyClientId || (typeof window !== "undefined" && localStorage.getItem("ethone:clientId:spotify")));
+    if (oauthConnected.spotify === true || isLocallyConnected || (hasClientId && settings.liveNowPlayingSource === "spotify")) {
+      return true;
+    }
+  }
   const publicFields = PUBLIC_FIELDS[integration.id] || [];
   const credentialFields = CREDENTIAL_FIELDS[integration.id] || [];
   if (publicFields.length === 0 && credentialFields.length === 0) {
-    if (integration.status === "oauth") return oauthConnected[integration.id] === true;
+    if (integration.status === "oauth") {
+      return oauthConnected[integration.id] === true || isLocallyConnected;
+    }
     return false;
   }
   return isApiConfigured(integration, settings, credentialConnected);

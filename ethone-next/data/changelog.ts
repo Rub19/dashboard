@@ -7206,6 +7206,46 @@ CHANGELOG_BY_LANG.es.unshift({
 });
 
 CHANGELOG_BY_LANG.fr.unshift({
+  version: "v1.11.07",
+  date: "2026-08-28",
+  title: "Spotify & Intégrations OAuth : Synchronisation Instantanée de l'État Connecté & Widgets",
+  items: [
+    "Persistance locale immédiate de l'état connecté OAuth (`connected:true`) pour Spotify et tous les fournisseurs.",
+    "Notification d'événement en temps réel (`v8:connection-updated`) pour actualiser les cartes de connexion et widgets sans recharger.",
+    "Résolution robuste du flux Now Playing Spotify dans `useLiveData` et `useConnections`.",
+  ],
+});
+
+CHANGELOG_BY_LANG.en.unshift({
+  version: "v1.11.07",
+  date: "2026-08-28",
+  title: "Spotify & OAuth Integrations: Instant Connected State & Widget Sync",
+  items: [
+    "Immediate local persistence of OAuth connected state (`connected:true`) for Spotify and all providers.",
+    "Real-time event notification (`v8:connection-updated`) refreshing connection cards and widgets instantly.",
+    "Robust Spotify Now Playing resolution across `useLiveData` and `useConnections`.",
+  ],
+});
+
+CHANGELOG_BY_LANG.es.unshift({
+  version: "v1.11.07",
+  date: "2026-08-28",
+  title: "Spotify e Integraciones: Sincronización Inmediata del Estado",
+  items: [
+    "Persistencia inmediata del estado conectado de Spotify y actualización de widgets.",
+  ],
+});
+
+CHANGELOG_BY_LANG.de.unshift({
+  version: "v1.11.07",
+  date: "2026-08-28",
+  title: "Spotify & Integrationen: Sofortige Statussynchronisierung",
+  items: [
+    "Sofortige Speicherung des Verbindungsstatus und Widget-Aktualisierung für Spotify.",
+  ],
+});
+
+CHANGELOG_BY_LANG.fr.unshift({
   version: "v1.11.06",
   date: "2026-08-28",
   title: "Sidebar & Profil : Centrage Parfait des Icônes Réduites & Synchronisation de l'Identité",

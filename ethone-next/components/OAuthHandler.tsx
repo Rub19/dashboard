@@ -10,7 +10,7 @@ export default function OAuthHandler() {
   const [status, setStatus] = useState<string | null>(null);
   const handled = useRef(false);
   const { update } = useSettings();
-  const { getField } = useIntegrationStore();
+  const { getField, setField } = useIntegrationStore();
 
   useEffect(() => {
     if (handled.current) return;
@@ -57,17 +57,32 @@ export default function OAuthHandler() {
       token = { codeVerifier: verifier };
     }
     exchangeCode(provider, code, resolvedClientId, token)
-      .then(() => {
+      .then((res) => {
         try {
           localStorage.setItem(`ethone:clientId:${provider}`, resolvedClientId);
+          localStorage.setItem(`ethone:connected:${provider}`, "true");
           localStorage.removeItem(`ethone:oauth:verifier:${provider}`);
+          const tokenData = res?.data ?? res;
+          if (tokenData && typeof tokenData === "object") {
+            const accessToken = (tokenData as Record<string, string>).access_token || (tokenData as Record<string, string>).token;
+            if (accessToken) {
+              localStorage.setItem(`ethone:token:${provider}`, accessToken);
+              setField(provider, "accessToken", accessToken);
+            }
+          }
         } catch {}
         setUserState(`clientId:${provider}`, resolvedClientId).catch(() => {});
-        if (provider === "spotify") update({ liveSpotifyClientId: resolvedClientId, liveNowPlayingSource: "spotify" } as never);
+        if (provider === "spotify") {
+          update({ liveSpotifyClientId: resolvedClientId, liveNowPlayingSource: "spotify" } as never);
+        }
         if (provider === "youtube") update({ liveYoutubeClientId: resolvedClientId } as never);
         if (provider === "reddit") update({ liveRedditClientId: resolvedClientId } as never);
         if (provider === "google-calendar") update({ calendarClientId: resolvedClientId } as never);
         if (provider === "google-drive") update({ driveClientId: resolvedClientId } as never);
+
+        if (typeof window !== "undefined") {
+          window.dispatchEvent(new CustomEvent("v8:connection-updated", { detail: { provider, connected: true } }));
+        }
         setStatus("✨ Connecté avec succès !");
       })
       .catch((err) => setStatus(err.message || "Échec de connexion"))

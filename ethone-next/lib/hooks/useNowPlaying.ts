@@ -1,9 +1,9 @@
 "use client";
 
-import { useEffect, useMemo } from "react";
+import { useCallback, useEffect, useMemo, useRef, useState } from "react";
 import { useSettings } from "@/components/SettingsProvider";
-import { useCachedFetch } from "@/lib/hooks/useCachedFetch";
 import { OAUTH_APP_CLIENT_IDS } from "@/lib/oauth";
+import { fetchWorker } from "@/lib/api";
 import type { NowPlaying } from "@/lib/hooks/useLiveData";
 
 type ApiData = Record<string, unknown>;
@@ -95,81 +95,212 @@ function mapNowPlaying(raw: unknown): NowPlaying | null {
   };
 }
 
-export function useNowPlaying(pollMs = 30000) {
+export function useNowPlaying(pollMs = 10000) {
   const { settings } = useSettings();
   const { performanceMode = "normal" } = settings;
-  // The Dynamic Island passes 1s explicitly so Spotify skips and play/pause
-  // changes are reflected without needing a manual test in Settings.
-  const basePollMs = performanceMode === "low" && pollMs > 1000 ? 120000 : pollMs;
+  const basePollMs = performanceMode === "low" ? 30000 : Math.max(3000, pollMs);
 
-  const path = useMemo(() => {
-    const source = settings.liveNowPlayingSource;
-    const identity = settings.liveNowPlayingIdentity;
-    if (source === "lanyard" && identity) {
-      return `/api/now-playing?source=lanyard&userId=${encodeURIComponent(identity)}`;
-    }
-    if (source === "lastfm" && identity) {
-      return `/api/now-playing?source=lastfm&username=${encodeURIComponent(identity)}`;
-    }
+  const [data, setData] = useState<NowPlaying | null>(null);
+  const [loading, setLoading] = useState(false);
+  const [error, setError] = useState<Error | null>(null);
+  const fetchingRef = useRef(false);
 
-    const isSpotifyConnected =
-      typeof window !== "undefined" &&
-      (localStorage.getItem("ethone:connected:spotify") === "true" ||
-        Boolean(localStorage.getItem("ethone:token:spotify")) ||
-        Boolean(localStorage.getItem("spotify_access_token")));
+  const fetchLiveTrack = useCallback(async () => {
+    if (typeof window === "undefined" || fetchingRef.current) return;
+    fetchingRef.current = true;
 
-    const spotifyClientId =
-      settings.liveSpotifyClientId ||
-      (typeof window !== "undefined" ? localStorage.getItem("ethone:cred:spotify:clientId") : null) ||
-      OAUTH_APP_CLIENT_IDS.spotify;
+    try {
+      const spotifyToken =
+        localStorage.getItem("ethone:token:spotify") ||
+        localStorage.getItem("spotify_access_token") ||
+        localStorage.getItem("ethone:cred:spotify:accessToken") ||
+        localStorage.getItem("ethone:cred:spotify:token");
 
-    if (source === "spotify" || (!source && isSpotifyConnected) || isSpotifyConnected) {
-      if (spotifyClientId) {
-        return `/api/spotify/now-playing?clientId=${encodeURIComponent(spotifyClientId)}`;
+      const isSpotifyConnected =
+        localStorage.getItem("ethone:connected:spotify") === "true" || Boolean(spotifyToken);
+
+      const discordId =
+        (settings.liveNowPlayingSource === "lanyard" ? settings.liveNowPlayingIdentity : null) ||
+        settings.liveNowPlayingIdentity ||
+        localStorage.getItem("ethone:pub:lanyardUserId") ||
+        localStorage.getItem("ethone:cred:discord:userId") ||
+        localStorage.getItem("ethone:clientId:discord");
+
+      // 1. Try Spotify Web API directly with token
+      if (spotifyToken) {
+        try {
+          const spotifyRes = await fetch("https://api.spotify.com/v1/me/player/currently-playing", {
+            headers: { Authorization: `Bearer ${spotifyToken}` },
+          });
+
+          if (spotifyRes.status === 200) {
+            const spJson = (await spotifyRes.json()) as {
+              is_playing?: boolean;
+              progress_ms?: number;
+              item?: {
+                id?: string;
+                name?: string;
+                duration_ms?: number;
+                artists?: { name: string }[];
+                album?: { name: string; images?: { url: string }[] };
+              };
+            };
+
+            if (spJson?.item) {
+              const mapped: NowPlaying = {
+                id: spJson.item.id,
+                source: "spotify",
+                title: spJson.item.name,
+                artist: spJson.item.artists?.map((a) => a.name).join(", "),
+                album: spJson.item.album?.name,
+                cover: spJson.item.album?.images?.[0]?.url,
+                artworkUrl: spJson.item.album?.images?.[0]?.url,
+                covers: spJson.item.album?.images?.map((i) => i.url) || [],
+                progressMs: spJson.progress_ms,
+                durationMs: spJson.item.duration_ms,
+                isPlaying: Boolean(spJson.is_playing),
+                isSaved: false,
+              };
+              setData(mapped);
+              setError(null);
+              return;
+            }
+          }
+        } catch {
+          // Fall through to Lanyard / Worker proxy
+        }
       }
-    }
-    return null;
-  }, [settings.liveNowPlayingSource, settings.liveNowPlayingIdentity, settings.liveSpotifyClientId]);
 
-  const { data, loading, error, refresh } = useCachedFetch<NowPlaying | null>({
-    path,
-    ttl: 5000,
-    map: mapNowPlaying,
-  });
+      // 2. Try Discord Lanyard presence for active Spotify playback
+      if (discordId) {
+        try {
+          const lanyardRes = await fetch(`https://api.lanyard.rest/v1/users/${encodeURIComponent(discordId)}`);
+          if (lanyardRes.ok) {
+            const lJson = (await lanyardRes.json()) as {
+              data?: {
+                spotify?: {
+                  track_id?: string;
+                  song?: string;
+                  artist?: string;
+                  album?: string;
+                  album_art_url?: string;
+                  timestamps?: { start?: number; end?: number };
+                };
+                listening_to_spotify?: boolean;
+              };
+            };
+
+            const sp = lJson?.data?.spotify;
+            if (sp && sp.song) {
+              const start = sp.timestamps?.start;
+              const end = sp.timestamps?.end;
+              const mapped: NowPlaying = {
+                id: sp.track_id,
+                source: "spotify",
+                title: sp.song,
+                artist: sp.artist,
+                album: sp.album,
+                cover: sp.album_art_url,
+                artworkUrl: sp.album_art_url,
+                covers: sp.album_art_url ? [sp.album_art_url] : [],
+                progressMs: start ? Math.max(0, Date.now() - start) : undefined,
+                durationMs: start && end ? end - start : undefined,
+                isPlaying: true,
+                isSaved: false,
+              };
+              setData(mapped);
+              setError(null);
+              return;
+            }
+          }
+        } catch {
+          // Fall through
+        }
+      }
+
+      // 3. Try Worker now-playing endpoint
+      const spotifyClientId =
+        settings.liveSpotifyClientId ||
+        localStorage.getItem("ethone:cred:spotify:clientId") ||
+        OAUTH_APP_CLIENT_IDS.spotify;
+
+      if (isSpotifyConnected && spotifyClientId) {
+        try {
+          const res = await fetchWorker(`/api/spotify/now-playing?clientId=${encodeURIComponent(spotifyClientId)}`);
+          const mapped = mapNowPlaying(res);
+          if (mapped && (mapped.title || mapped.isPlaying)) {
+            setData(mapped);
+            setError(null);
+            return;
+          }
+        } catch {
+          // Fall through
+        }
+      }
+
+      // 4. If Spotify is connected but idle
+      if (isSpotifyConnected) {
+        setData({
+          source: "spotify",
+          title: "Spotify",
+          artist: "Connecté • Prêt pour la lecture",
+          isPlaying: false,
+        });
+      } else {
+        setData(null);
+      }
+    } catch (err) {
+      setError(err instanceof Error ? err : new Error(String(err)));
+    } finally {
+      fetchingRef.current = false;
+      setLoading(false);
+    }
+  }, [settings.liveSpotifyClientId, settings.liveNowPlayingSource, settings.liveNowPlayingIdentity]);
 
   useEffect(() => {
-    if (!path) return;
+    fetchLiveTrack();
+  }, [fetchLiveTrack]);
+
+  // Polling loop
+  useEffect(() => {
     if (typeof document !== "undefined" && document.hidden) return;
 
-    // Dynamic interval: fast when playing, relaxed when paused to keep 60 FPS
-    const intervalMs = data?.isPlaying ? Math.max(4000, basePollMs) : 30000;
+    const intervalMs = data?.isPlaying ? Math.min(5000, basePollMs) : basePollMs;
     const interval = setInterval(() => {
       if (typeof document !== "undefined" && !document.hidden) {
-        refresh();
+        fetchLiveTrack();
       }
     }, intervalMs);
     return () => clearInterval(interval);
-  }, [data?.isPlaying, basePollMs, path, refresh]);
+  }, [data?.isPlaying, basePollMs, fetchLiveTrack]);
 
+  // Visibility & connection events
   useEffect(() => {
     function onVisible() {
-      if (document.visibilityState === "visible") refresh();
+      if (document.visibilityState === "visible") fetchLiveTrack();
     }
-    function onFocus() {
-      refresh();
+    function onConnectionUpdate() {
+      fetchLiveTrack();
     }
+
     document.addEventListener("visibilitychange", onVisible);
-    window.addEventListener("focus", onFocus);
+    window.addEventListener("focus", onVisible);
+    window.addEventListener("v8:connection-updated", onConnectionUpdate);
+    window.addEventListener("v8:nowplaying-updated", onConnectionUpdate);
+
     return () => {
       document.removeEventListener("visibilitychange", onVisible);
-      window.removeEventListener("focus", onFocus);
+      window.removeEventListener("focus", onVisible);
+      window.removeEventListener("v8:connection-updated", onConnectionUpdate);
+      window.removeEventListener("v8:nowplaying-updated", onConnectionUpdate);
     };
-  }, [refresh]);
+  }, [fetchLiveTrack]);
 
   return {
     nowPlaying: data,
     loading,
     error,
-    refetch: refresh,
+    refetch: fetchLiveTrack,
   };
 }
+

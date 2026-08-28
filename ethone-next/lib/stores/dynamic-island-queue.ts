@@ -23,10 +23,10 @@ export const ISLAND_VIEW_PRIORITY: Record<IslandView, number> = {
   mail: 6,
   timer: 5,
   brain: 5,
+  spotify: 4,
   pomodoro: 4,
   upload: 3,
   sync: 2,
-  spotify: 1,
 };
 
 export type IslandEvent = {

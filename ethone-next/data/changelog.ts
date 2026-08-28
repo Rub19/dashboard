@@ -7206,6 +7206,46 @@ CHANGELOG_BY_LANG.es.unshift({
 });
 
 CHANGELOG_BY_LANG.fr.unshift({
+  version: "v1.12.06",
+  date: "2026-08-28",
+  title: "Spotify & Médias : Synchronisation Directe Web API & Détection Temps Réel dans Dock & Dynamic Island",
+  items: [
+    "Intégration d'un flux de détection direct Spotify Web API et repli automatique sur la présence Discord Lanyard.",
+    "Affichage immédiat et prioritaire de la lecture Spotify dans la Dynamic Island avec visualiseur audio actif.",
+    "Synchronisation instantanée du Dock avec pochette d'album, contrôles multimédias et barre de progression fluide.",
+  ],
+});
+
+CHANGELOG_BY_LANG.en.unshift({
+  version: "v1.12.06",
+  date: "2026-08-28",
+  title: "Spotify & Media: Direct Web API Sync & Real-Time Detection in Dock & Dynamic Island",
+  items: [
+    "Added direct Spotify Web API client polling with automatic Discord Lanyard presence fallback.",
+    "Instant high-priority Spotify display in the Dynamic Island with active audio visualizer.",
+    "Immediate Dock synchronization with album artwork, playback controls, and smooth seek progress bar.",
+  ],
+});
+
+CHANGELOG_BY_LANG.es.unshift({
+  version: "v1.12.06",
+  date: "2026-08-28",
+  title: "Spotify y Medios: Sincronización Inmediata en Dock y Dynamic Island",
+  items: [
+    "Detección directa en tiempo real de la reproducción de Spotify y presencia Discord.",
+  ],
+});
+
+CHANGELOG_BY_LANG.de.unshift({
+  version: "v1.12.06",
+  date: "2026-08-28",
+  title: "Spotify & Medien: Sofortige Erkennung in Dock & Dynamic Island",
+  items: [
+    "Direkte Echtzeit-Synchronisierung von Spotify-Tracks und Discord-Präsenz.",
+  ],
+});
+
+CHANGELOG_BY_LANG.fr.unshift({
   version: "v1.12.05",
   date: "2026-08-28",
   title: "Audit Qualité & Stabilité Totale du Dashboard à 100%",

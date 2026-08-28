@@ -7206,6 +7206,45 @@ CHANGELOG_BY_LANG.es.unshift({
 });
 
 CHANGELOG_BY_LANG.fr.unshift({
+  version: "v1.12.11",
+  date: "2026-08-28",
+  title: "Discord Lanyard : Guide & Saisie Explicite de l'ID Utilisateur Personnel",
+  items: [
+    "Clarification visuelle complète pour distinguer l'ID utilisateur personnel Discord du bot / application.",
+    "Guide étape par étape intégré dans le tiroir pour copier son identifiant Discord en 2 clics.",
+    "Validation et synchronisation instantanée du statut, avatar et flux multimédia Lanyard.",
+  ],
+});
+
+CHANGELOG_BY_LANG.en.unshift({
+  version: "v1.12.11",
+  date: "2026-08-28",
+  title: "Discord Lanyard: Explicit Personal User ID Input & Guided Setup",
+  items: [
+    "Added clear step-by-step guide to copy and enter your personal Discord User ID (not bot ID).",
+    "Instant validation and synchronization of presence, avatar, Spotify, and games.",
+  ],
+});
+
+CHANGELOG_BY_LANG.es.unshift({
+  version: "v1.12.11",
+  date: "2026-08-28",
+  title: "Discord Lanyard: Guía y Entrada Explícita de ID de Usuario",
+  items: [
+    "Guía paso a paso para ingresar el ID de cuenta de Discord personal.",
+  ],
+});
+
+CHANGELOG_BY_LANG.de.unshift({
+  version: "v1.12.11",
+  date: "2026-08-28",
+  title: "Discord Lanyard: Benutzer-ID-Eingabe & Schritt-für-Schritt-Anleitung",
+  items: [
+    "Schritt-für-Schritt-Anleitung zur Eingabe der persönlichen Discord-Benutzer-ID.",
+  ],
+});
+
+CHANGELOG_BY_LANG.fr.unshift({
   version: "v1.12.10",
   date: "2026-08-28",
   title: "Discord OAuth2 Officiel : Intégration de l'Application Client ID",

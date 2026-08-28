@@ -21,7 +21,7 @@ export type CredentialFieldDef = {
 };
 
 export const PUBLIC_FIELDS: Record<string, PublicFieldDef[]> = {
-  discord: [{ key: "liveLanyardUserId", label: "ID Utilisateur Discord" }],
+  discord: [{ key: "liveLanyardUserId", label: "Votre ID Utilisateur Discord Personnel" }],
   steam: [
     { key: "liveSteamId", label: "Steam ID (64 bits)" },
     { key: "liveSteamAppId", label: "Steam App ID (optionnel)" },

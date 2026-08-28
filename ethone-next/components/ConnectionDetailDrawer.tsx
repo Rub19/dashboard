@@ -374,15 +374,36 @@ export default function ConnectionDetailDrawer({
                             ))}
                           </select>
                         ) : (
-                          <input
-                            type="text"
-                            value={publicValues[f.key as string] || ""}
-                            onChange={(e) =>
-                              setPublicValues((p) => ({ ...p, [f.key as string]: e.target.value }))
-                            }
-                            placeholder={`Entrez ${f.label}...`}
-                            className="w-full rounded-xl border border-[var(--panel-border)] bg-[var(--surface-sunken)] px-3.5 py-2.5 text-xs text-[var(--text-primary)] placeholder-[var(--text-muted)] focus:border-[var(--accent-primary)] focus:outline-none"
-                          />
+                          <div className="space-y-2">
+                            <input
+                              type="text"
+                              value={publicValues[f.key as string] || ""}
+                              onChange={(e) =>
+                                setPublicValues((p) => ({ ...p, [f.key as string]: e.target.value }))
+                              }
+                              placeholder={
+                                integration.id === "discord"
+                                  ? "Ex: 279328249871204352 (votre ID utilisateur personnel)"
+                                  : `Entrez ${f.label}...`
+                              }
+                              className="w-full rounded-xl border border-[var(--panel-border)] bg-[var(--surface-sunken)] px-3.5 py-2.5 text-xs text-[var(--text-primary)] placeholder-[var(--text-muted)] focus:border-[var(--accent-primary)] focus:outline-none font-mono"
+                            />
+                            {integration.id === "discord" && (
+                              <div className="rounded-xl border border-indigo-500/20 bg-indigo-500/10 p-3 text-[11px] text-indigo-300 space-y-1.5 leading-relaxed">
+                                <p className="font-semibold text-indigo-200">
+                                  📌 Comment trouver votre ID Discord personnel ?
+                                </p>
+                                <ol className="list-decimal list-inside space-y-0.5 text-zinc-300">
+                                  <li>Dans Discord : <strong>Paramètres</strong> &gt; <strong>Avancés</strong> &gt; Activez <strong>Mode développeur</strong>.</li>
+                                  <li>Faites un clic droit sur <strong>votre profil / avatar</strong> (en bas à gauche) &gt; <strong>Copier l&apos;identifiant d&apos;utilisateur</strong>.</li>
+                                  <li>Collez-le ci-dessus et cliquez sur <strong>Connecter</strong>.</li>
+                                </ol>
+                                <p className="pt-1 text-[10px] text-zinc-400">
+                                  ⚠️ <em>Remarque : Votre compte Discord doit avoir rejoint le serveur Lanyard (<a href="https://discord.gg/lanyard" target="_blank" rel="noreferrer" className="text-indigo-400 underline font-medium">discord.gg/lanyard</a>) pour activer la diffusion de présence.</em>
+                                </p>
+                              </div>
+                            )}
+                          </div>
                         )}
                       </div>
                     ))}

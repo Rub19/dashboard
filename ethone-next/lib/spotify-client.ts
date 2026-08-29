@@ -71,7 +71,7 @@ export async function sendSpotifyCommand(
       }
 
       if (endpoint) {
-        const res = await fetch(endpoint, {
+        let res = await fetch(endpoint, {
           method,
           headers: {
             Authorization: `Bearer ${token}`,
@@ -79,6 +79,42 @@ export async function sendSpotifyCommand(
           },
           body,
         });
+
+        // If 404 No Active Device, try to find an available device and transfer/retry
+        if (res.status === 404 || res.status === 403) {
+          try {
+            const devRes = await fetch("https://api.spotify.com/v1/me/player/devices", {
+              headers: { Authorization: `Bearer ${token}` },
+            });
+            if (devRes.ok) {
+              const devData = (await devRes.json()) as { devices?: Array<{ id: string; is_active?: boolean }> };
+              const targetDevice = devData.devices?.find((d) => d.is_active) || devData.devices?.[0];
+              if (targetDevice?.id) {
+                if (action === "play") {
+                  res = await fetch("https://api.spotify.com/v1/me/player", {
+                    method: "PUT",
+                    headers: {
+                      Authorization: `Bearer ${token}`,
+                      "Content-Type": "application/json",
+                    },
+                    body: JSON.stringify({ device_ids: [targetDevice.id], play: true }),
+                  });
+                } else {
+                  const retryUrl = new URL(endpoint);
+                  retryUrl.searchParams.set("device_id", targetDevice.id);
+                  res = await fetch(retryUrl.toString(), {
+                    method,
+                    headers: {
+                      Authorization: `Bearer ${token}`,
+                      "Content-Type": "application/json",
+                    },
+                    body,
+                  });
+                }
+              }
+            }
+          } catch {}
+        }
 
         if (res.status === 204 || res.status === 200) {
           if (typeof window !== "undefined") {

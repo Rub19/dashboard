@@ -359,19 +359,16 @@ export default function DynamicIslandContainer() {
 
   const onIslandEnter = useCallback(() => {
     if (islandLeaveTimer.current) window.clearTimeout(islandLeaveTimer.current);
-    if (mode === "EXPANDED" || mode === "INTERACTIVE") {
-      setMode("INTERACTIVE");
-    }
-  }, [mode]);
+    setMode("EXPANDED");
+  }, []);
 
   const onIslandLeave = useCallback(() => {
     if (islandLeaveTimer.current) window.clearTimeout(islandLeaveTimer.current);
-    if (mode === "EXPANDED" && !userSelected) {
-      islandLeaveTimer.current = window.setTimeout(() => setMode("COMPACT"), 400);
-    } else if (mode === "INTERACTIVE") {
-      islandLeaveTimer.current = window.setTimeout(() => setMode("EXPANDED"), 400);
-    }
-  }, [mode, userSelected]);
+    islandLeaveTimer.current = window.setTimeout(() => {
+      setMode(activeViews.length > 0 ? "COMPACT" : "IDLE");
+      setUserSelected(false);
+    }, 280);
+  }, [activeViews.length]);
 
   const pomodoroPct = useMemo(() => {
     if (!focus.state.total) return 0;

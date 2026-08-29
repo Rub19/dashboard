@@ -7206,6 +7206,46 @@ CHANGELOG_BY_LANG.es.unshift({
 });
 
 CHANGELOG_BY_LANG.fr.unshift({
+  version: "v1.12.21",
+  date: "2026-08-29",
+  title: "Dynamic Island : Déploiement au Survol & Contrôles Spotify Actifs avec Détection d'Appareil",
+  items: [
+    "Rétablissement du déploiement fluide de la Dynamic Island au survol de la souris et repli automatique lors de la sortie.",
+    "Détection et activation automatique des appareils Spotify (Desktop, Web, Mobile) lors de la lecture/pause pour éviter tout blocage.",
+    "Synchronisation instantanée des contrôles de volume, pistes et lecture.",
+  ],
+});
+
+CHANGELOG_BY_LANG.en.unshift({
+  version: "v1.12.21",
+  date: "2026-08-29",
+  title: "Dynamic Island: Hover Expand/Collapse & Active Spotify Device Routing",
+  items: [
+    "Restored seamless hover expansion and automatic collapse on mouse leave for the Dynamic Island.",
+    "Automatic Spotify device detection and active playback transfer on play/pause commands.",
+    "Instant real-time sync for volume, track skipping, and playback state.",
+  ],
+});
+
+CHANGELOG_BY_LANG.es.unshift({
+  version: "v1.12.21",
+  date: "2026-08-29",
+  title: "Dynamic Island: Expansión al Pasar el Ratón y Control de Spotify",
+  items: [
+    "Expansión al pasar el ratón en la Dynamic Island y activación automática de dispositivos de Spotify.",
+  ],
+});
+
+CHANGELOG_BY_LANG.de.unshift({
+  version: "v1.12.21",
+  date: "2026-08-29",
+  title: "Dynamic Island: Hover-Erweiterung & Spotify-Geräterouting",
+  items: [
+    "Fließende Hover-Erweiterung für die Dynamic Island und automatische Geräteaktivierung.",
+  ],
+});
+
+CHANGELOG_BY_LANG.fr.unshift({
   version: "v1.12.20",
   date: "2026-08-29",
   title: "Dock Média Flyout : Ouverture Fiable au Clic & Maintien au Survol",

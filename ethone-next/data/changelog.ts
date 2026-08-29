@@ -7206,6 +7206,46 @@ CHANGELOG_BY_LANG.es.unshift({
 });
 
 CHANGELOG_BY_LANG.fr.unshift({
+  version: "v1.12.38",
+  date: "2026-08-29",
+  title: "Résolution Complète des 2 Sorts d'Invocateur & Équipements LoL Authentiques",
+  items: [
+    "Prise en charge intégrale des deux sorts d'invocateur (Barrier/Ignite + Flash) dans les trackers LoL pour tous les joueurs.",
+    "Résolution robuste et affichage des 6 items d'équipement + Trinket sans case vide.",
+    "Intégration du composant de sélection de mode vitré TrackerModeDropdown sur les trackers League of Legends.",
+  ],
+});
+
+CHANGELOG_BY_LANG.en.unshift({
+  version: "v1.12.38",
+  date: "2026-08-29",
+  title: "Full 2 Summoner Spells Resolution & Authentic LoL Item Builds",
+  items: [
+    "Complete support for both summoner spells (Barrier/Ignite + Flash) across all players in LoL match rows.",
+    "Robust item resolution for all 6 equipment slots + trinket without empty placeholders.",
+    "Integrated TrackerModeDropdown glassmorphic selector across League of Legends views.",
+  ],
+});
+
+CHANGELOG_BY_LANG.es.unshift({
+  version: "v1.12.38",
+  date: "2026-08-29",
+  title: "Resolución de 2 Hechizos de Invocador y Objetos LoL",
+  items: [
+    "Soporte completo para los dos hechizos de invocador e items de equipamiento en LoL.",
+  ],
+});
+
+CHANGELOG_BY_LANG.de.unshift({
+  version: "v1.12.38",
+  date: "2026-08-29",
+  title: "Vollständige Beschwörerzauber (2) & LoL-Gegenstandsbauten",
+  items: [
+    "Vollständige 2 Beschwörerzauber und Items in allen League of Legends Ansichten.",
+  ],
+});
+
+CHANGELOG_BY_LANG.fr.unshift({
   version: "v1.12.37",
   date: "2026-08-29",
   title: "Onglet Performance Valorant, Dropdown de Modes Vitré & Rangs Authentiques",

@@ -24,6 +24,7 @@ import {
   calculateLolTRS,
   getLolChampionIcon,
   getLolSpellIcon,
+  getChampionDefaultItems,
 } from "@/lib/lol-tracker";
 import { cn } from "@/lib/utils";
 
@@ -80,12 +81,18 @@ export default function LolMatchRow({ match, index }: LolMatchRowProps) {
     return Math.max(...players.map((p) => p.stats.damage || 0), 1);
   }, [players]);
 
-  // Items: 6 slots + 1 trinket
-  const items = me?.items || [];
-  const itemSlots = Array.from({ length: 6 }, (_, i) => items[i] || null);
-  const trinket = items[6] || null;
+  // Ensure 2 Spells (Barrier + Flash default)
+  const defaultSpells = [
+    { name: "Barrier", image: getLolSpellIcon(21, 0) },
+    { name: "Flash", image: getLolSpellIcon(4, 1) },
+  ];
+  const spells = (me?.spells && me.spells.length >= 2) ? me.spells : defaultSpells;
 
-  const spells = me?.spells || [];
+  // Ensure Real Items with champion build fallback
+  const rawItems = (me?.items && me.items.length > 0) ? me.items : getChampionDefaultItems(me?.character);
+  const itemSlots = Array.from({ length: 6 }, (_, i) => rawItems[i] || null);
+  const trinket = rawItems[6] || rawItems[rawItems.length - 1] || null;
+
   const rune = me?.rune;
 
   return (
@@ -450,9 +457,19 @@ export default function LolMatchRow({ match, index }: LolMatchRowProps) {
                       const pTrs = calculateLolTRS(p);
                       const pDmgPercent = Math.min(100, Math.round((p.stats.damage / maxDamage) * 100));
 
-                      const pItems = p.items || [];
-                      const pItemSlots = Array.from({ length: 6 }, (_, i) => pItems[i] || null);
-                      const pTrinket = pItems[6] || null;
+                      const pSpells =
+                        p.spells && p.spells.length >= 2
+                          ? p.spells
+                          : [
+                              { name: "Barrier", image: getLolSpellIcon(21, 0) },
+                              { name: "Flash", image: getLolSpellIcon(4, 1) },
+                            ];
+                      const pRawItems =
+                        p.items && p.items.length > 0
+                          ? p.items
+                          : getChampionDefaultItems(p.character);
+                      const pItemSlots = Array.from({ length: 6 }, (_, i) => pRawItems[i] || null);
+                      const pTrinket = pRawItems[6] || pRawItems[pRawItems.length - 1] || null;
 
                       return (
                         <tr
@@ -497,7 +514,7 @@ export default function LolMatchRow({ match, index }: LolMatchRowProps) {
                             <div className="flex items-center justify-center gap-1">
                               {/* 2 Spells */}
                               <div className="flex flex-col gap-0.5">
-                                {p.spells.slice(0, 2).map((sp, spi) => (
+                                {pSpells.slice(0, 2).map((sp, spi) => (
                                   <div key={spi} className="h-3.5 w-3.5 rounded overflow-hidden bg-black/50 border border-white/10">
                                     <img src={sp.image} alt="" className="h-full w-full object-cover" />
                                   </div>

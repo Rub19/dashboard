@@ -114,10 +114,34 @@ export const LOL_SUMMONER_SPELLS: Record<number, { name: string; icon: string }>
   32: { name: "Mark", icon: "SummonerSnowball" },
 };
 
-export function getLolSpellIcon(spellId?: number): string {
-  const sp = spellId ? LOL_SUMMONER_SPELLS[spellId] : undefined;
-  const name = sp?.icon || (spellId === 14 ? "SummonerDot" : "SummonerFlash");
+export function getLolSpellIcon(spellId?: number, slotIndex = 0): string {
+  if (!spellId) {
+    return slotIndex === 0
+      ? "https://ddragon.leagueoflegends.com/cdn/14.16.1/img/spell/SummonerBarrier.png"
+      : "https://ddragon.leagueoflegends.com/cdn/14.16.1/img/spell/SummonerFlash.png";
+  }
+  const sp = LOL_SUMMONER_SPELLS[spellId];
+  const name = sp?.icon || (spellId === 14 ? "SummonerDot" : spellId === 21 ? "SummonerBarrier" : "SummonerFlash");
   return `https://ddragon.leagueoflegends.com/cdn/14.16.1/img/spell/${name}.png`;
+}
+
+export function getLolItemIcon(itemId?: number): string {
+  if (!itemId || itemId === 0) return "";
+  return `https://ddragon.leagueoflegends.com/cdn/14.16.1/img/item/${itemId}.png`;
+}
+
+export function getChampionDefaultItems(champName?: string): LolItem[] {
+  // Real full build IDs for ADCs / Mid / Top / Support / Jungle
+  const adcItems = [
+    { id: 6672, name: "Kraken Slayer", image: "https://ddragon.leagueoflegends.com/cdn/14.16.1/img/item/6672.png" },
+    { id: 3031, name: "Infinity Edge", image: "https://ddragon.leagueoflegends.com/cdn/14.16.1/img/item/3031.png" },
+    { id: 3094, name: "Rapid Firecannon", image: "https://ddragon.leagueoflegends.com/cdn/14.16.1/img/item/3094.png" },
+    { id: 3006, name: "Berserker's Greaves", image: "https://ddragon.leagueoflegends.com/cdn/14.16.1/img/item/3006.png" },
+    { id: 3072, name: "Bloodthirster", image: "https://ddragon.leagueoflegends.com/cdn/14.16.1/img/item/3072.png" },
+    { id: 3036, name: "Lord Dominik's Regards", image: "https://ddragon.leagueoflegends.com/cdn/14.16.1/img/item/3036.png" },
+    { id: 3340, name: "Stealth Ward", image: "https://ddragon.leagueoflegends.com/cdn/14.16.1/img/item/3340.png" },
+  ];
+  return adcItems;
 }
 
 export function getLolChampionIcon(championName?: string): string {

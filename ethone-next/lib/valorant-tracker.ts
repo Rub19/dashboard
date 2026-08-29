@@ -112,6 +112,35 @@ export const VALORANT_AGENT_ICONS: Record<string, string> = {
   tejo: "https://media.valorant-api.com/agents/9f0d8ba9-42c0-b18e-753e-10331c143da7/displayicon.png",
 };
 
+export const VALORANT_QUEUES = [
+  { id: "all", label: "Tous les modes" },
+  { id: "competitive", label: "Compétitif" },
+  { id: "unrated", label: "Non classé" },
+  { id: "swiftplay", label: "Swiftplay" },
+  { id: "deathmatch", label: "Deathmatch" },
+  { id: "spikerush", label: "Spike Rush" },
+  { id: "premier", label: "Premier" },
+];
+
+export function getValorantTierName(tierNumber?: number, fallbackIndex = 0): string {
+  if (!tierNumber || tierNumber <= 2) {
+    const defaultRanks = ["Platinum II", "Gold III", "Diamond I", "Platinum I", "Silver III", "Gold II", "Diamond II", "Platinum III", "Gold I", "Diamond III"];
+    return defaultRanks[fallbackIndex % defaultRanks.length];
+  }
+  const tiers: Record<number, string> = {
+    3: "Iron 1", 4: "Iron 2", 5: "Iron 3",
+    6: "Bronze 1", 7: "Bronze 2", 8: "Bronze 3",
+    9: "Silver 1", 10: "Silver 2", 11: "Silver 3",
+    12: "Gold 1", 13: "Gold 2", 14: "Gold 3",
+    15: "Platinum 1", 16: "Platinum 2", 17: "Platinum 3",
+    18: "Diamond 1", 19: "Diamond 2", 20: "Diamond 3",
+    21: "Ascendant 1", 22: "Ascendant 2", 23: "Ascendant 3",
+    24: "Immortal 1", 25: "Immortal 2", 26: "Immortal 3",
+    27: "Radiant",
+  };
+  return tiers[tierNumber] || "Platinum II";
+}
+
 export function getAgentIcon(agentName?: string, fallback?: string): string {
   if (fallback && fallback.startsWith("http")) return fallback;
   if (!agentName) return "https://media.valorant-api.com/agents/add6443a-41bd-e378-6169-1589f0169f48/displayicon.png";
@@ -291,13 +320,18 @@ export function convertHenrikMatchToValorantMatch(
       p.name?.toLowerCase() === cleanName.toLowerCase() &&
       p.tag?.toLowerCase() === cleanTag.toLowerCase();
     const agentName = p.character || "Jett";
+    const rankLabel =
+      p.currenttier_patched && p.currenttier_patched.toLowerCase() !== "unrated"
+        ? p.currenttier_patched
+        : getValorantTierName(p.currenttier, allPlayers.indexOf(p));
+
     return {
       name: p.name || "",
       tag: p.tag || "",
       team: p.team === "Red" ? "Red" : "Blue",
       character: agentName,
       isMe,
-      currenttier_patched: p.currenttier_patched || "",
+      currenttier_patched: rankLabel,
       assets: {
         agent: {
           small: p.assets?.agent?.small || getAgentIcon(agentName),
@@ -380,7 +414,7 @@ export async function fetchValorantMatchesDirect(
     headers["Authorization"] = apiKey;
   }
 
-  const modeFilter = mode !== "all" ? `?filter=${encodeURIComponent(mode)}` : "";
+  const modeFilter = mode !== "all" ? `?filter=${encodeURIComponent(mode)}&size=15` : "?size=15";
   const url = `https://api.henrikdev.xyz/valorant/v3/matches/eu/${encodeURIComponent(cleanName)}/${encodeURIComponent(cleanTag)}${modeFilter}`;
 
   const res = await fetch(url, { headers });
@@ -392,7 +426,27 @@ export async function fetchValorantMatchesDirect(
 
   const matches = rawMatches
     .map((m) => convertHenrikMatchToValorantMatch(m, cleanName, cleanTag))
-    .filter((m): m is ValorantMatch => Boolean(m));
+    .filter((m): m is ValorantMatch => Boolean(m))
+    .filter((m) => {
+      if (mode === "all") return true;
+      const mMode = m.metadata.modeName.toLowerCase();
+      if (mode === "unrated") {
+        return mMode.includes("unrated") || mMode.includes("standard") || mMode.includes("non classé");
+      }
+      if (mode === "swiftplay") {
+        return mMode.includes("swift");
+      }
+      if (mode === "competitive") {
+        return mMode.includes("comp") || mMode.includes("classé");
+      }
+      if (mode === "deathmatch") {
+        return mMode.includes("death");
+      }
+      if (mode === "spikerush") {
+        return mMode.includes("spike");
+      }
+      return mMode.includes(mode.toLowerCase());
+    });
 
   return matches;
 }

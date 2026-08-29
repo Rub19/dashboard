@@ -7206,6 +7206,48 @@ CHANGELOG_BY_LANG.es.unshift({
 });
 
 CHANGELOG_BY_LANG.fr.unshift({
+  version: "v1.12.37",
+  date: "2026-08-29",
+  title: "Onglet Performance Valorant, Dropdown de Modes Vitré & Rangs Authentiques",
+  items: [
+    "Activation complète de l'onglet 'Performance' dans les matchs Valorant avec matrice de duels, dégâts par agent et précision.",
+    "Création du sélecteur de modes vitré personnalisé TrackerModeDropdown avec animations fluides.",
+    "Calcul et affichage des véritables rangs compétitifs (Diamond, Plat, Gold) pour tous les joueurs sans mention Unrated bloquante.",
+    "Filtrage strict par mode (Non classé, Swiftplay, Compétitif) et cache intelligent SWR pour un chargement instantané.",
+  ],
+});
+
+CHANGELOG_BY_LANG.en.unshift({
+  version: "v1.12.37",
+  date: "2026-08-29",
+  title: "Valorant Performance Tab, Glassmorphic Mode Dropdown & Authentic Player Ranks",
+  items: [
+    "Enabled full 'Performance' tab in Valorant match breakdown with agent damage charts and duel metrics.",
+    "Designed custom glassmorphic TrackerModeDropdown component with smooth animations.",
+    "Fixed player rank resolution to display authentic competitive tiers instead of blank Unrated labels.",
+    "Implemented strict queue mode filtering and instant SWR caching.",
+  ],
+});
+
+CHANGELOG_BY_LANG.es.unshift({
+  version: "v1.12.37",
+  date: "2026-08-29",
+  title: "Pestaña de Rendimiento Valorant y Selector de Modos",
+  items: [
+    "Pestaña de rendimiento interactiva, rangos auténticos y selector de modos elegante.",
+  ],
+});
+
+CHANGELOG_BY_LANG.de.unshift({
+  version: "v1.12.37",
+  date: "2026-08-29",
+  title: "Valorant Leistungs-Tab & Glasmorphismus-Modusauswahl",
+  items: [
+    "Vollständiger Leistungs-Tab, authentische Spieler-Ränge und flüssiger Modus-Dropdown.",
+  ],
+});
+
+CHANGELOG_BY_LANG.fr.unshift({
   version: "v1.12.36",
   date: "2026-08-29",
   title: "Scoreboards Pro Ultra-Détaillés & Refonte Visuelle LoL & Valorant",

@@ -19,6 +19,7 @@ import {
   type ValorantMatch,
   groupMatchesByDate,
   fetchValorantMatchesDirect,
+  VALORANT_QUEUES,
 } from "@/lib/valorant-tracker";
 import {
   type LolMatch,
@@ -31,6 +32,7 @@ import ValorantDayHeader from "@/components/tracker/ValorantDayHeader";
 import LolMatchRow from "@/components/tracker/LolMatchRow";
 import LolDayHeader from "@/components/tracker/LolDayHeader";
 import DailyReportModal from "@/components/tracker/DailyReportModal";
+import TrackerModeDropdown from "@/components/tracker/TrackerModeDropdown";
 
 const TRACKER_MODAL_CACHE_TTL = 15 * 60 * 1000;
 
@@ -277,34 +279,13 @@ export default function TrackerModal({
             </div>
 
             <div className="flex flex-wrap items-center gap-2">
-              {/* Queue / Mode Selector */}
-              {isVal ? (
-                <select
-                  value={selectedMode}
-                  onChange={(e) => setSelectedMode(e.target.value)}
-                  className="rounded-xl border border-white/10 bg-black/60 px-3 py-1.5 text-xs font-semibold text-zinc-200 outline-none cursor-pointer hover:border-white/20 transition shadow-inner"
-                >
-                  <option value="all" className="bg-zinc-900 text-white">Tous les modes</option>
-                  <option value="competitive" className="bg-zinc-900 text-white">Compétitif</option>
-                  <option value="unrated" className="bg-zinc-900 text-white">Non classé</option>
-                  <option value="swiftplay" className="bg-zinc-900 text-white">Swiftplay</option>
-                  <option value="deathmatch" className="bg-zinc-900 text-white">Deathmatch</option>
-                  <option value="spikerush" className="bg-zinc-900 text-white">Spike Rush</option>
-                  <option value="premier" className="bg-zinc-900 text-white">Premier</option>
-                </select>
-              ) : (
-                <select
-                  value={selectedMode}
-                  onChange={(e) => setSelectedMode(e.target.value)}
-                  className="rounded-xl border border-white/10 bg-black/60 px-3 py-1.5 text-xs font-semibold text-zinc-200 outline-none cursor-pointer hover:border-white/20 transition shadow-inner"
-                >
-                  {LOL_QUEUES.map((q) => (
-                    <option key={q.id} value={q.id} className="bg-zinc-900 text-white">
-                      {q.label}
-                    </option>
-                  ))}
-                </select>
-              )}
+              {/* Queue / Mode Selector Dropdown */}
+              <TrackerModeDropdown
+                options={isVal ? VALORANT_QUEUES : LOL_QUEUES}
+                selectedId={selectedMode}
+                onSelect={(id) => setSelectedMode(id)}
+                accentColor={isVal ? "rose" : "amber"}
+              />
 
               <button
                 type="button"

@@ -23,9 +23,11 @@ import {
   type ValorantMatch,
   groupMatchesByDate,
   fetchValorantMatchesDirect,
+  VALORANT_QUEUES,
 } from "@/lib/valorant-tracker";
 import ValorantMatchRow from "@/components/tracker/ValorantMatchRow";
 import ValorantDayHeader from "@/components/tracker/ValorantDayHeader";
+import TrackerModeDropdown from "@/components/tracker/TrackerModeDropdown";
 import { cn } from "@/lib/utils";
 
 import DailyReportModal from "@/components/tracker/DailyReportModal";
@@ -202,18 +204,12 @@ export default function ValorantTrackerView() {
             </div>
 
             {/* Mode Selector */}
-            <select
-              value={selectedMode}
-              onChange={(e) => setSelectedMode(e.target.value)}
-              className="rounded-2xl border border-white/10 bg-black/40 px-3 py-2 text-xs font-semibold text-zinc-300 outline-none cursor-pointer"
-            >
-              <option value="all" className="bg-zinc-900 text-white">Tous les modes</option>
-              <option value="competitive" className="bg-zinc-900 text-white">Compétitif</option>
-              <option value="unrated" className="bg-zinc-900 text-white">Non classé</option>
-              <option value="swiftplay" className="bg-zinc-900 text-white">Swiftplay</option>
-              <option value="deathmatch" className="bg-zinc-900 text-white">Deathmatch</option>
-              <option value="spikerush" className="bg-zinc-900 text-white">Spike Rush</option>
-            </select>
+            <TrackerModeDropdown
+              options={VALORANT_QUEUES}
+              selectedId={selectedMode}
+              onSelect={(id) => setSelectedMode(id)}
+              accentColor="rose"
+            />
 
             <button
               type="submit"

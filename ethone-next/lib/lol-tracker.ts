@@ -291,6 +291,15 @@ export async function fetchLolMatchesDirect(
         ) || participants[0];
       if (!me) continue;
 
+      if (queue !== "all") {
+        const qLower = queue.toLowerCase();
+        if (qLower === "solo_duo" && info.queueId !== 420) continue;
+        if (qLower === "flex" && info.queueId !== 440) continue;
+        if (qLower === "draft" && info.queueId !== 400) continue;
+        if (qLower === "aram" && info.gameMode !== "ARAM" && info.queueId !== 450) continue;
+        if (qLower === "arena" && info.queueId !== 1700) continue;
+      }
+
       const duration = info.gameDuration || 1;
       const durationMin = duration / 60;
       const kills = me.kills || 0;

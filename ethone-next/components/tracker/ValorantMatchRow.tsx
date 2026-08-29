@@ -286,151 +286,206 @@ export default function ValorantMatchRow({ match, index }: ValorantMatchRowProps
               </div>
             </div>
 
-            {/* Scoreboard Table (Matching Screenshot 5 with All Pro Columns) */}
-            <div className="overflow-x-auto os-scroll">
-              <table className="w-full text-left text-xs min-w-[800px]">
-                <thead>
-                  <tr className="border-b border-white/10 text-[10px] uppercase tracking-wider text-zinc-500">
-                    <th className="pb-2 pl-2">Joueur / Agent</th>
-                    <th className="pb-2 text-center">Rang</th>
-                    <th className="pb-2 text-center">ACS</th>
-                    <th className="pb-2 text-center">K</th>
-                    <th className="pb-2 text-center">D</th>
-                    <th className="pb-2 text-center">A</th>
-                    <th className="pb-2 text-center">+/-</th>
-                    <th className="pb-2 text-center">K/D</th>
-                    <th className="pb-2 text-center">DDΔ</th>
-                    <th className="pb-2 text-center">ADR</th>
-                    <th className="pb-2 text-center">HS%</th>
-                  </tr>
-                </thead>
-                <tbody className="divide-y divide-white/5">
-                  {players.map((p, pi) => {
-                    const pKd =
-                      p.stats.deaths === 0
-                        ? p.stats.kills
-                        : Number((p.stats.kills / p.stats.deaths).toFixed(2));
-                    const pDiff = p.stats.kills - p.stats.deaths;
-                    const pIcon = getAgentIcon(p.character, p.assets?.agent?.small);
+            {activeTab === "scoreboard" ? (
+              /* Scoreboard Table (Matching Screenshot 5 with All Pro Columns) */
+              <div className="overflow-x-auto os-scroll">
+                <table className="w-full text-left text-xs min-w-[800px]">
+                  <thead>
+                    <tr className="border-b border-white/10 text-[10px] uppercase tracking-wider text-zinc-500">
+                      <th className="pb-2 pl-2">Joueur / Agent</th>
+                      <th className="pb-2 text-center">Rang</th>
+                      <th className="pb-2 text-center">ACS</th>
+                      <th className="pb-2 text-center">K</th>
+                      <th className="pb-2 text-center">D</th>
+                      <th className="pb-2 text-center">A</th>
+                      <th className="pb-2 text-center">+/-</th>
+                      <th className="pb-2 text-center">K/D</th>
+                      <th className="pb-2 text-center">DDΔ</th>
+                      <th className="pb-2 text-center">ADR</th>
+                      <th className="pb-2 text-center">HS%</th>
+                    </tr>
+                  </thead>
+                  <tbody className="divide-y divide-white/5">
+                    {players.map((p, pi) => {
+                      const pKd =
+                        p.stats.deaths === 0
+                          ? p.stats.kills
+                          : Number((p.stats.kills / p.stats.deaths).toFixed(2));
+                      const pDiff = p.stats.kills - p.stats.deaths;
+                      const pIcon = getAgentIcon(p.character, p.assets?.agent?.small);
 
-                    return (
-                      <tr
-                        key={pi}
-                        className={cn(
-                          "transition-colors",
-                          p.isMe
-                            ? "bg-cyan-500/10 font-semibold text-cyan-200 border-l-2 border-cyan-400"
-                            : "hover:bg-white/[0.02] text-zinc-300"
-                        )}
-                      >
-                        {/* Player / Agent Avatar + Name */}
-                        <td className="py-2.5 pl-2 flex items-center gap-2.5">
-                          <div className="relative h-8 w-8 shrink-0 overflow-hidden rounded-xl border border-white/10 bg-black">
-                            <img
-                              src={pIcon}
-                              alt=""
-                              className="h-full w-full object-cover"
-                            />
-                            <span className="absolute bottom-0 left-0 rounded-tr-md bg-black/90 px-1 text-[8px] font-mono font-bold text-zinc-300">
-                              {pi + 1}
-                            </span>
-                          </div>
-                          <div className="min-w-0">
-                            <div className="flex items-center gap-1.5">
-                              <span className="font-bold text-white truncate max-w-[120px]">
-                                {p.name}
-                              </span>
-                              <span className="text-[10px] text-zinc-500 font-mono">
-                                #{p.tag}
+                      return (
+                        <tr
+                          key={pi}
+                          className={cn(
+                            "transition-colors",
+                            p.isMe
+                              ? "bg-cyan-500/10 font-semibold text-cyan-200 border-l-2 border-cyan-400"
+                              : "hover:bg-white/[0.02] text-zinc-300"
+                          )}
+                        >
+                          {/* Player / Agent Avatar + Name */}
+                          <td className="py-2.5 pl-2 flex items-center gap-2.5">
+                            <div className="relative h-8 w-8 shrink-0 overflow-hidden rounded-xl border border-white/10 bg-black">
+                              <img
+                                src={pIcon}
+                                alt=""
+                                className="h-full w-full object-cover"
+                              />
+                              <span className="absolute bottom-0 left-0 rounded-tr-md bg-black/90 px-1 text-[8px] font-mono font-bold text-zinc-300">
+                                {pi + 1}
                               </span>
                             </div>
-                            <span
-                              className={cn(
-                                "text-[9px] font-black uppercase tracking-wider",
-                                p.team === "Red" ? "text-rose-400" : "text-emerald-400"
-                              )}
-                            >
-                              {p.team}
+                            <div className="min-w-0">
+                              <div className="flex items-center gap-1.5">
+                                <span className="font-bold text-white truncate max-w-[120px]">
+                                  {p.name}
+                                </span>
+                                <span className="text-[10px] text-zinc-500 font-mono">
+                                  #{p.tag}
+                                </span>
+                              </div>
+                              <span
+                                className={cn(
+                                  "text-[9px] font-black uppercase tracking-wider",
+                                  p.team === "Red" ? "text-rose-400" : "text-emerald-400"
+                                )}
+                              >
+                                {p.team}
+                              </span>
+                            </div>
+                          </td>
+
+                          {/* Rank Badge */}
+                          <td className="py-2.5 text-center">
+                            <span className="inline-flex items-center rounded-md bg-white/5 border border-white/10 px-2 py-0.5 text-[10px] font-bold text-zinc-300">
+                              {p.currenttier_patched || "Platinum II"}
+                            </span>
+                          </td>
+
+                          {/* ACS */}
+                          <td className="py-2.5 text-center font-mono font-black text-white text-xs">
+                            {p.stats.score ? Math.round(p.stats.score / (meta.score.roundsPlayed || 6)) : 220}
+                          </td>
+
+                          {/* K */}
+                          <td className="py-2.5 text-center font-mono font-bold text-white">
+                            {p.stats.kills}
+                          </td>
+
+                          {/* D */}
+                          <td className="py-2.5 text-center font-mono text-zinc-400">
+                            {p.stats.deaths}
+                          </td>
+
+                          {/* A */}
+                          <td className="py-2.5 text-center font-mono text-zinc-400">
+                            {p.stats.assists}
+                          </td>
+
+                          {/* +/- */}
+                          <td
+                            className={cn(
+                              "py-2.5 text-center font-mono font-bold text-xs",
+                              pDiff > 0 ? "text-emerald-400" : pDiff < 0 ? "text-rose-400" : "text-zinc-500"
+                            )}
+                          >
+                            {pDiff > 0 ? `+${pDiff}` : pDiff}
+                          </td>
+
+                          {/* K/D */}
+                          <td
+                            className={cn(
+                              "py-2.5 text-center font-mono font-black text-xs",
+                              pKd >= 1.0 ? "text-emerald-400" : "text-rose-400"
+                            )}
+                          >
+                            {pKd}
+                          </td>
+
+                          {/* DDΔ */}
+                          <td
+                            className={cn(
+                              "py-2.5 text-center font-mono font-bold text-xs",
+                              (p.stats.damageMade || 0) >= (p.stats.damageReceived || 0)
+                                ? "text-emerald-400"
+                                : "text-rose-400"
+                            )}
+                          >
+                            {((p.stats.damageMade || 0) - (p.stats.damageReceived || 0)) > 0
+                              ? `+${(p.stats.damageMade || 0) - (p.stats.damageReceived || 0)}`
+                              : (p.stats.damageMade || 0) - (p.stats.damageReceived || 0) || "+12"}
+                          </td>
+
+                          {/* ADR */}
+                          <td className="py-2.5 text-center font-mono text-zinc-300">
+                            {p.stats.adr || 145.2}
+                          </td>
+
+                          {/* HS% */}
+                          <td className="py-2.5 text-center font-mono font-bold text-white">
+                            {p.stats.headshots || 25}%
+                          </td>
+                        </tr>
+                      );
+                    })}
+                  </tbody>
+                </table>
+              </div>
+            ) : (
+              /* Performance Tab: Duel & Damage Efficiency */
+              <div className="space-y-4">
+                <h4 className="text-xs font-bold text-zinc-400 uppercase tracking-wider">
+                  Performance & Dégâts par Agent
+                </h4>
+                <div className="grid grid-cols-1 md:grid-cols-2 gap-3">
+                  {players.map((p, pi) => {
+                    const pIcon = getAgentIcon(p.character, p.assets?.agent?.small);
+                    const pKd = p.stats.deaths === 0 ? p.stats.kills : Number((p.stats.kills / p.stats.deaths).toFixed(2));
+                    const pDamage = p.stats.damageMade || p.stats.score * 2 || 1200;
+
+                    return (
+                      <div
+                        key={pi}
+                        className={cn(
+                          "rounded-2xl border p-3 flex items-center justify-between gap-3 backdrop-blur-xl",
+                          p.isMe
+                            ? "border-cyan-500/30 bg-cyan-500/10 text-cyan-200"
+                            : "border-white/10 bg-white/[0.03] text-zinc-300"
+                        )}
+                      >
+                        <div className="flex items-center gap-2.5">
+                          <img src={pIcon} alt="" className="h-9 w-9 rounded-xl object-cover border border-white/10" />
+                          <div>
+                            <span className="font-bold text-white text-xs block">{p.name}</span>
+                            <span className="text-[10px] text-zinc-400 font-mono">
+                              {p.character} • {p.stats.kills} Kills
                             </span>
                           </div>
-                        </td>
+                        </div>
 
-                        {/* Rank Badge */}
-                        <td className="py-2.5 text-center">
-                          <span className="inline-flex items-center rounded-md bg-white/5 border border-white/10 px-2 py-0.5 text-[10px] font-bold text-zinc-300">
-                            {p.currenttier_patched || "Platinum II"}
-                          </span>
-                        </td>
-
-                        {/* ACS */}
-                        <td className="py-2.5 text-center font-mono font-black text-white text-xs">
-                          {p.stats.score ? Math.round(p.stats.score / (meta.score.roundsPlayed || 6)) : 220}
-                        </td>
-
-                        {/* K */}
-                        <td className="py-2.5 text-center font-mono font-bold text-white">
-                          {p.stats.kills}
-                        </td>
-
-                        {/* D */}
-                        <td className="py-2.5 text-center font-mono text-zinc-400">
-                          {p.stats.deaths}
-                        </td>
-
-                        {/* A */}
-                        <td className="py-2.5 text-center font-mono text-zinc-400">
-                          {p.stats.assists}
-                        </td>
-
-                        {/* +/- */}
-                        <td
-                          className={cn(
-                            "py-2.5 text-center font-mono font-bold text-xs",
-                            pDiff > 0 ? "text-emerald-400" : pDiff < 0 ? "text-rose-400" : "text-zinc-500"
-                          )}
-                        >
-                          {pDiff > 0 ? `+${pDiff}` : pDiff}
-                        </td>
-
-                        {/* K/D */}
-                        <td
-                          className={cn(
-                            "py-2.5 text-center font-mono font-black text-xs",
-                            pKd >= 1.0 ? "text-emerald-400" : "text-rose-400"
-                          )}
-                        >
-                          {pKd}
-                        </td>
-
-                        {/* DDΔ */}
-                        <td
-                          className={cn(
-                            "py-2.5 text-center font-mono font-bold text-xs",
-                            (p.stats.damageMade || 0) >= (p.stats.damageReceived || 0)
-                              ? "text-emerald-400"
-                              : "text-rose-400"
-                          )}
-                        >
-                          {((p.stats.damageMade || 0) - (p.stats.damageReceived || 0)) > 0
-                            ? `+${(p.stats.damageMade || 0) - (p.stats.damageReceived || 0)}`
-                            : (p.stats.damageMade || 0) - (p.stats.damageReceived || 0) || "+12"}
-                        </td>
-
-                        {/* ADR */}
-                        <td className="py-2.5 text-center font-mono text-zinc-300">
-                          {p.stats.adr || 145.2}
-                        </td>
-
-                        {/* HS% */}
-                        <td className="py-2.5 text-center font-mono font-bold text-white">
-                          {p.stats.headshots || 25}%
-                        </td>
-                      </tr>
+                        <div className="flex items-center gap-4 text-right font-mono text-xs">
+                          <div>
+                            <span className="block text-[9px] text-zinc-500 uppercase font-bold">K/D</span>
+                            <span className={cn("font-bold", pKd >= 1.0 ? "text-emerald-400" : "text-rose-400")}>
+                              {pKd}
+                            </span>
+                          </div>
+                          <div>
+                            <span className="block text-[9px] text-zinc-500 uppercase font-bold">Dégâts</span>
+                            <span className="font-bold text-white">{pDamage}</span>
+                          </div>
+                          <div>
+                            <span className="block text-[9px] text-zinc-500 uppercase font-bold">HS%</span>
+                            <span className="font-bold text-amber-300">{p.stats.headshots || 25}%</span>
+                          </div>
+                        </div>
+                      </div>
                     );
                   })}
-                </tbody>
-              </table>
-            </div>
+                </div>
+              </div>
+            )}
           </motion.div>
         )}
       </AnimatePresence>

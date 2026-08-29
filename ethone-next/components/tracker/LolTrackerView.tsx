@@ -23,6 +23,7 @@ import {
 import LolMatchRow from "@/components/tracker/LolMatchRow";
 import LolDayHeader from "@/components/tracker/LolDayHeader";
 import DailyReportModal from "@/components/tracker/DailyReportModal";
+import TrackerModeDropdown from "@/components/tracker/TrackerModeDropdown";
 import { cn } from "@/lib/utils";
 
 const LOL_CACHE_TTL_MS = 15 * 60 * 1000; // 15 minutes
@@ -228,17 +229,12 @@ export default function LolTrackerView() {
             </div>
 
             {/* Queue Selector */}
-            <select
-              value={selectedQueue}
-              onChange={(e) => setSelectedQueue(e.target.value)}
-              className="rounded-2xl border border-white/10 bg-black/40 px-3 py-2 text-xs font-semibold text-zinc-300 outline-none cursor-pointer"
-            >
-              {LOL_QUEUES.map((q) => (
-                <option key={q.id} value={q.id} className="bg-zinc-900 text-white">
-                  {q.label}
-                </option>
-              ))}
-            </select>
+            <TrackerModeDropdown
+              options={LOL_QUEUES}
+              selectedId={selectedQueue}
+              onSelect={(id) => setSelectedQueue(id)}
+              accentColor="amber"
+            />
 
             <button
               type="submit"

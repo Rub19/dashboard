@@ -82,9 +82,36 @@ function asStringList(value: unknown): string[] {
   return value.map(asStr).filter((item): item is string => Boolean(item));
 }
 
+async function fetchLanyardDirect(userId?: string | null): Promise<ApiData | null> {
+  if (!userId) return null;
+  try {
+    const res = await fetch(`https://api.lanyard.rest/v1/users/${encodeURIComponent(userId)}`);
+    if (res.ok) {
+      const json = (await res.json()) as { success?: boolean; data?: ApiData };
+      if (json.success && json.data) {
+        return json.data;
+      }
+    }
+  } catch {}
+  return null;
+}
+
 async function fetchOptional(path: string): Promise<ApiData | null> {
   const res = (await fetchWorkerCached(path)) as { data?: ApiData } | null;
   return res?.data ?? null;
+}
+
+async function fetchLanyardWithFallback(path: string | null, userId?: string | null): Promise<ApiData | null> {
+  if (path) {
+    try {
+      const res = await fetchOptional(path);
+      if (res) return res;
+    } catch {}
+  }
+  if (userId) {
+    return fetchLanyardDirect(userId);
+  }
+  return null;
 }
 
 function getArtworkUrl(np: ApiData | null): string | undefined {
@@ -332,7 +359,7 @@ export function useLiveData(pollMs = 60000) {
           am,
         ] = await Promise.allSettled([
           nowPlayingPath ? fetchOptional(nowPlayingPath) : Promise.resolve(null),
-          lanyardPath ? fetchOptional(lanyardPath) : Promise.resolve(null),
+          lanyardPath || lanyardUserId ? fetchLanyardWithFallback(lanyardPath, lanyardUserId) : Promise.resolve(null),
           weatherPath ? fetchWeatherSafe(liveWeatherCity || "Paris") : fetchWeatherSafe("Paris"),
           githubPath ? fetchOptional(githubPath) : Promise.resolve(null),
           todoistPath ? fetchOptional(todoistPath) : Promise.resolve(null),
@@ -361,37 +388,34 @@ export function useLiveData(pollMs = 60000) {
         if (cancelled) return;
         // Don't flag global error on optional third-party integrations being idle
         if (!cancelled) setError(null);
-        if (np.status === "fulfilled") {
-          const d = np.value || {};
+        if (np.status === "fulfilled" && np.value) {
+          const d = np.value;
           const track = (d.track as ApiData) || d;
           setNowPlaying({
-            id: asStr(track.id ?? d.id),
-            source: asStr(d.source) || "Spotify",
-            title: asStr(track.title ?? d.title),
-            artist: asStr(track.artist ?? d.artist),
-            album: asStr(track.album ?? d.album),
-            cover: asStr(track.cover ?? track.artworkUrl ?? track.artwork ?? d.cover ?? d.artworkUrl ?? d.artwork),
-            artworkUrl: asStr(track.artworkUrl ?? track.artwork ?? track.cover ?? d.artworkUrl ?? d.artwork ?? d.cover),
-            covers: [...new Set([...asStringList(track.covers), ...asStringList(d.covers)])],
+            title: asStr(track.title || track.name),
+            artist: asStr(track.artist),
+            cover: getArtworkUrl(track) || getArtworkUrl(d),
+            source: asStr(d.source) || "spotify",
             progressMs: asNum(track.progressMs ?? d.progressMs),
             durationMs: asNum(track.durationMs ?? d.durationMs),
             isPlaying: Boolean(d.isPlaying ?? d.playing ?? track.isPlaying ?? track.playing),
             isSaved: track.isSaved === true,
           });
         }
-        if (la.status === "fulfilled") {
-          const d = (la.value || {}) as ApiData;
+        if (la.status === "fulfilled" && la.value) {
+          const d = la.value;
           const discordUser = (d.discord_user as ApiData) || {};
-          const lanyardUserId = asStr(discordUser.id) || asStr(d.userId);
           const lanyardAvatarHash = asStr(discordUser.avatar) || asStr(d.avatarHash);
           const lanyardDiscriminator = asStr(discordUser.discriminator) || asStr(d.discriminator);
           const lanyardAvatarUrl =
+            asStr(discordUser.avatarUrl) ||
             asStr(d.avatarUrl) ||
             (lanyardUserId && lanyardAvatarHash
               ? `https://cdn.discordapp.com/avatars/${lanyardUserId}/${lanyardAvatarHash}.${String(lanyardAvatarHash).startsWith("a_") ? "gif" : "png"}?size=256`
               : "");
+          const spotifyData = (d.spotify as ApiData) || null;
           setLanyard({
-            userId: lanyardUserId,
+            userId: lanyardUserId || undefined,
             displayName:
               asStr(discordUser.global_name) || asStr(discordUser.display_name) || asStr(d.displayName),
             username: asStr(discordUser.username) || asStr(d.username),
@@ -402,14 +426,14 @@ export function useLiveData(pollMs = 60000) {
               (d.discord_status as LanyardPresence["discord_status"]) ||
               (d.status as LanyardPresence["discord_status"]) ||
               "offline",
-            spotify: d.spotify
+            spotify: spotifyData
               ? {
-                  playing: Boolean((d.spotify as ApiData).playing),
-                  title: asStr((d.spotify as ApiData).title),
-                  artist: asStr((d.spotify as ApiData).artist),
-                  album: asStr((d.spotify as ApiData).album),
-                  artwork: asStr((d.spotify as ApiData).artworkUrl ?? (d.spotify as ApiData).artwork),
-                  artworkUrl: asStr((d.spotify as ApiData).artworkUrl ?? (d.spotify as ApiData).artwork),
+                  playing: Boolean(spotifyData.playing ?? d.listening_to_spotify ?? true),
+                  title: asStr(spotifyData.song || spotifyData.title),
+                  artist: asStr(spotifyData.artist),
+                  album: asStr(spotifyData.album),
+                  artwork: asStr(spotifyData.album_art_url || spotifyData.artworkUrl || spotifyData.artwork),
+                  artworkUrl: asStr(spotifyData.album_art_url || spotifyData.artworkUrl || spotifyData.artwork),
                 }
               : undefined,
             activities: Array.isArray(d.activities)

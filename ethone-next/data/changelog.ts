@@ -7206,6 +7206,46 @@ CHANGELOG_BY_LANG.es.unshift({
 });
 
 CHANGELOG_BY_LANG.fr.unshift({
+  version: "v1.12.28",
+  date: "2026-08-29",
+  title: "Discord Presence & Activités Temps Réel (Palworld, Spotify, Jeux)",
+  items: [
+    "Interrogation client directe et haute fréquence de l'API Lanyard pour la présence Discord en temps réel.",
+    "Affichage instantané des jeux en cours (Palworld, Valorant, etc.) et de la musique Spotify avec pochette et barre de progression.",
+    "Détection automatique du statut En Ligne, Ne Pas Déranger et Absent.",
+  ],
+});
+
+CHANGELOG_BY_LANG.en.unshift({
+  version: "v1.12.28",
+  date: "2026-08-29",
+  title: "Real-Time Discord Presence & Live Activities (Palworld, Spotify, Gaming)",
+  items: [
+    "Direct high-frequency client-side polling for real-time Discord presence via Lanyard.",
+    "Instant display of ongoing games (Palworld, Valorant, etc.) and Spotify playback with cover art.",
+    "Automatic detection of Online, DND, and Idle Discord presence statuses.",
+  ],
+});
+
+CHANGELOG_BY_LANG.es.unshift({
+  version: "v1.12.28",
+  date: "2026-08-29",
+  title: "Presencia en Tiempo Real de Discord y Actividades",
+  items: [
+    "Detección de juegos (Palworld) y Spotify en tiempo real en Discord.",
+  ],
+});
+
+CHANGELOG_BY_LANG.de.unshift({
+  version: "v1.12.28",
+  date: "2026-08-29",
+  title: "Echtzeit-Discord-Präsenz & Live-Aktivitäten",
+  items: [
+    "Echtzeiterkennung von Spielen (Palworld) und Spotify auf Discord.",
+  ],
+});
+
+CHANGELOG_BY_LANG.fr.unshift({
   version: "v1.12.27",
   date: "2026-08-29",
   title: "Carte 3D Discord Complète (Profil, Avatar, Guilds) & Nettoyage du Volet OAuth",

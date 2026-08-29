@@ -297,15 +297,15 @@ const SocialDiscordCard = memo(function SocialDiscordCard({
                       }
                     />
                   </div>
-                  {/* Official Discord Status Badge with Cutout Ring */}
-                  <div className="absolute -bottom-1 -right-1 flex h-5 w-5 items-center justify-center rounded-full bg-[#0c0d14] p-0.5 shadow-md">
+                  {/* Official Discord Status Badge (Overlayed ON TOP of avatar with high z-index) */}
+                  <div className="absolute -bottom-0.5 -right-0.5 z-30 flex h-4.5 w-4.5 items-center justify-center rounded-full bg-[#0c0d14] p-0.5 shadow-lg">
                     {status === "dnd" ? (
                       <div className="flex h-full w-full items-center justify-center rounded-full bg-rose-500 shadow-sm shadow-rose-500/50">
                         <div className="h-0.5 w-2 rounded-full bg-white" />
                       </div>
                     ) : status === "idle" ? (
                       <div className="relative h-full w-full rounded-full bg-amber-400 shadow-sm shadow-amber-500/50">
-                        <div className="absolute -left-0.5 -top-0.5 h-2.5 w-2.5 rounded-full bg-[#0c0d14]" />
+                        <div className="absolute -left-0.5 -top-0.5 h-2 w-2 rounded-full bg-[#0c0d14]" />
                       </div>
                     ) : status === "online" ? (
                       <div className="h-full w-full rounded-full bg-emerald-400 shadow-sm shadow-emerald-500/50" />
@@ -331,7 +331,11 @@ const SocialDiscordCard = memo(function SocialDiscordCard({
             {gameActivity && (
               <div className="w-full shrink-0 rounded-2xl border border-white/[0.08] bg-white/[0.03] p-2.5 text-center shadow-inner backdrop-blur-md">
                 <div className="flex items-center justify-center gap-2">
-                  <GameBrandIcon name={gameActivity.name} className="h-5 w-5" />
+                  <GameBrandIcon
+                    name={gameActivity.name}
+                    iconUrl={gameActivity.largeImage}
+                    className="h-5 w-5"
+                  />
                   <p className="text-xs font-bold text-white tracking-wide">{gameActivity.name}</p>
                 </div>
                 {gameActivity.details && (

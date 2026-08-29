@@ -48,6 +48,8 @@ export type LanyardPresence = {
     name: string;
     state?: string;
     details?: string;
+    largeImage?: string;
+    smallImage?: string;
   }>;
 };
 
@@ -448,11 +450,31 @@ export function useLiveData(pollMs = 60000) {
                 }
               : undefined,
             activities: Array.isArray(d.activities)
-              ? d.activities.map((a: unknown) => ({
-                  name: asStr((a as ApiData).name) || "",
-                  state: asStr((a as ApiData).state),
-                  details: asStr((a as ApiData).details),
-                }))
+              ? d.activities.map((a: unknown) => {
+                  const act = a as ApiData;
+                  const assets = act.assets as ApiData | undefined;
+                  const appId = asStr(act.application_id);
+                  let largeImage = asStr(assets?.large_image || assets?.largeImage);
+                  let smallImage = asStr(assets?.small_image || assets?.smallImage);
+
+                  if (largeImage) {
+                    if (largeImage.startsWith("mp:external/")) {
+                      largeImage = `https://media.discordapp.net/external/${largeImage.replace(/^mp:external\//, "")}`;
+                    } else if (largeImage.startsWith("spotify:")) {
+                      largeImage = `https://i.scdn.co/image/${largeImage.replace(/^spotify:/, "")}`;
+                    } else if (!largeImage.startsWith("http") && appId) {
+                      largeImage = `https://cdn.discordapp.com/app-assets/${appId}/${largeImage}.png`;
+                    }
+                  }
+
+                  return {
+                    name: asStr(act.name) || "",
+                    state: asStr(act.state),
+                    details: asStr(act.details),
+                    largeImage,
+                    smallImage,
+                  };
+                })
               : [],
           });
         }

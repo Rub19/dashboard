@@ -6,13 +6,28 @@ import { cn } from "@/lib/utils";
 
 type GameBrandIconProps = {
   name?: string;
+  iconUrl?: string;
   className?: string;
 };
 
 export const GameBrandIcon = memo(function GameBrandIcon({
   name = "",
-  className = "h-4 w-4",
+  iconUrl,
+  className = "h-5 w-5",
 }: GameBrandIconProps) {
+  if (iconUrl && iconUrl.startsWith("http")) {
+    return (
+      <img
+        src={iconUrl}
+        alt={name}
+        className={cn("rounded-md object-contain shrink-0", className)}
+        onError={(e) => {
+          (e.target as HTMLElement).style.display = "none";
+        }}
+      />
+    );
+  }
+
   const clean = name.toLowerCase().trim();
 
   // Palworld (Official Pal Sphere & Pal Emblem)

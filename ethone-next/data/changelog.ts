@@ -7206,6 +7206,44 @@ CHANGELOG_BY_LANG.es.unshift({
 });
 
 CHANGELOG_BY_LANG.fr.unshift({
+  version: "v1.12.35",
+  date: "2026-08-29",
+  title: "Badge de Statut Discord Superposé sur l'Avatar & Extraction d'Icône de Jeu Rich Presence",
+  items: [
+    "Positionnement du badge de statut Discord (DND / Occupé) directement au-dessus de la photo de profil avec z-index élevé.",
+    "Extraction automatique de l'icône de jeu Rich Presence Discord (largeImage) avec fallback Palworld HD.",
+  ],
+});
+
+CHANGELOG_BY_LANG.en.unshift({
+  version: "v1.12.35",
+  date: "2026-08-29",
+  title: "Overlay Discord Status Badge & Rich Presence Game Icon Extraction",
+  items: [
+    "Adjusted Discord status badge layer to sit directly on top of the avatar corner with high z-index.",
+    "Extracted live Discord Rich Presence game icons with HD Palworld fallback.",
+  ],
+});
+
+CHANGELOG_BY_LANG.es.unshift({
+  version: "v1.12.35",
+  date: "2026-08-29",
+  title: "Badge Discord Superpuesto e Icono de Juego Rich Presence",
+  items: [
+    "Badge de estado Discord superpuesto sobre el avatar e icono oficial de juego.",
+  ],
+});
+
+CHANGELOG_BY_LANG.de.unshift({
+  version: "v1.12.35",
+  date: "2026-08-29",
+  title: "Überlagertes Discord-Statusbadge & Rich Presence Spiel-Icon",
+  items: [
+    "Discord-Statusbadge direkt über dem Profilbild und Rich Presence Icon-Extraktion.",
+  ],
+});
+
+CHANGELOG_BY_LANG.fr.unshift({
   version: "v1.12.34",
   date: "2026-08-29",
   title: "Rapports Quotidiens Animés, Sorts & Items LoL Complets et Icônes Agents Valorant",

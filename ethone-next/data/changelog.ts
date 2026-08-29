@@ -7206,6 +7206,46 @@ CHANGELOG_BY_LANG.es.unshift({
 });
 
 CHANGELOG_BY_LANG.fr.unshift({
+  version: "v1.12.44",
+  date: "2026-08-29",
+  title: "Synchronisation des Véritables Cartes de Joueur, Icônes et Rangs API",
+  items: [
+    "Récupération de la vraie Player Card Valorant officielle du compte (eb741e28...) et de l'icône d'invocateur LoL (3795).",
+    "Affichage du véritable rang compétitif Valorant (Ascendant 3) et niveau officiel (343).",
+    "Affichage du niveau réel d'invocateur LoL (44) et rangs officiels synchronisés via HenrikDev et Riot API.",
+  ],
+});
+
+CHANGELOG_BY_LANG.en.unshift({
+  version: "v1.12.44",
+  date: "2026-08-29",
+  title: "Direct Sync of Authentic Account Player Cards, Icons & Ranks",
+  items: [
+    "Fetched official account Player Card for Valorant and Summoner Icon for LoL (3795).",
+    "Displayed authentic Valorant competitive rank (Ascendant 3) and account level (343).",
+    "Synced true LoL summoner level (44) and official ranked status via HenrikDev & Riot API.",
+  ],
+});
+
+CHANGELOG_BY_LANG.es.unshift({
+  version: "v1.12.44",
+  date: "2026-08-29",
+  title: "Sincronización de Tarjetas de Jugador, Iconos y Rangos Reales",
+  items: [
+    "Obtención de la tarjeta oficial de Valorant y del icono de invocador de LoL.",
+  ],
+});
+
+CHANGELOG_BY_LANG.de.unshift({
+  version: "v1.12.44",
+  date: "2026-08-29",
+  title: "Synchronisierung echter Spielerkarten, Icons und Ränge",
+  items: [
+    "Echte Valorant-Spielerkarte und LoL-Beschwörersymbol über APIs synchronisiert.",
+  ],
+});
+
+CHANGELOG_BY_LANG.fr.unshift({
   version: "v1.12.43",
   date: "2026-08-29",
   title: "Récupération en Direct des Données Riot Authentiques (Valorant & LoL)",

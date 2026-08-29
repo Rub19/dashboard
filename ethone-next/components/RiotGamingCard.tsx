@@ -112,6 +112,7 @@ export const RiotGamingCardContent = memo(function RiotGamingCardContent({
   const displayTag = playerTag || settings.liveTrackerRiotTag;
   const configured = Boolean(displayName && displayTag);
 
+  const [profileData, setProfileData] = useState<any>(null);
   const [fetchedMatches, setFetchedMatches] = useState<any[] | null>(null);
   const [fetching, setFetching] = useState(false);
 
@@ -124,16 +125,27 @@ export const RiotGamingCardContent = memo(function RiotGamingCardContent({
     let cancelled = false;
     setFetching(true);
 
-    const endpoint =
+    const profileEndpoint =
+      game === "valorant"
+        ? `https://raspy-fog-bf5b.rub19-mailpro.workers.dev/api/stats/valorant-profile?name=${encodeURIComponent(cleanName)}&tag=${encodeURIComponent(cleanTag)}`
+        : `https://raspy-fog-bf5b.rub19-mailpro.workers.dev/api/stats/lol-profile?name=${encodeURIComponent(cleanName)}&tag=${encodeURIComponent(cleanTag)}`;
+
+    const matchesEndpoint =
       game === "valorant"
         ? `https://raspy-fog-bf5b.rub19-mailpro.workers.dev/api/stats/valorant-matches?name=${encodeURIComponent(cleanName)}&tag=${encodeURIComponent(cleanTag)}`
         : `https://raspy-fog-bf5b.rub19-mailpro.workers.dev/api/stats/lol-matches?name=${encodeURIComponent(cleanName)}&tag=${encodeURIComponent(cleanTag)}`;
 
-    fetch(endpoint)
-      .then((res) => res.json())
-      .then((json) => {
-        if (!cancelled && json?.ok && Array.isArray(json.data) && json.data.length > 0) {
-          setFetchedMatches(json.data);
+    Promise.allSettled([
+      fetch(profileEndpoint).then((r) => r.json()),
+      fetch(matchesEndpoint).then((r) => r.json()),
+    ])
+      .then(([profRes, matchRes]) => {
+        if (cancelled) return;
+        if (profRes.status === "fulfilled" && profRes.value?.ok && profRes.value?.data) {
+          setProfileData(profRes.value.data);
+        }
+        if (matchRes.status === "fulfilled" && matchRes.value?.ok && Array.isArray(matchRes.value?.data)) {
+          setFetchedMatches(matchRes.value.data);
         }
       })
       .catch(() => {})
@@ -150,47 +162,29 @@ export const RiotGamingCardContent = memo(function RiotGamingCardContent({
   const latest = useMemo(() => (activeMatches || [])[0] as RiotMatch | undefined, [activeMatches]);
   const meta = useMemo(() => getMeta(latest), [latest]);
 
-  const playerObj = useMemo(() => {
-    if (!latest) return null;
-    const scoreboard = (latest.scoreboard || {}) as { players?: any[] };
-    const players = scoreboard.players || [];
-    const cleanName = displayName?.toLowerCase().trim();
-    return players.find((p) => p.isMe || p.name?.toLowerCase() === cleanName) || players[0];
-  }, [latest, displayName]);
-
   const liveAvatarUrl = useMemo(() => {
+    if (profileData?.avatarUrl) return profileData.avatarUrl;
     if (game === "valorant") {
-      return (
-        playerObj?.assets?.agent?.small ||
-        playerObj?.assets?.card?.small ||
-        asStr(meta?.agentImageUrl) ||
-        "https://media.valorant-api.com/agents/add6443a-41bd-e414-f6ad-e58d267f4e95/displayicon.png"
-      );
+      return "https://media.valorant-api.com/playercards/eb741e28-4545-92a3-cb5a-6a8de025e9b7/smallart.png";
     }
-    return (
-      playerObj?.assets?.champion?.small ||
-      asStr(meta?.agentImageUrl) ||
-      "https://ddragon.leagueoflegends.com/cdn/14.16.1/img/champion/Xayah.png"
-    );
-  }, [game, playerObj, meta]);
+    return "https://ddragon.leagueoflegends.com/cdn/16.17.1/img/profileicon/3795.png";
+  }, [profileData, game]);
 
   const liveRank = useMemo(() => {
-    if (game === "valorant") {
-      const rawRank = playerObj?.currenttier_patched;
-      if (rawRank && rawRank.toLowerCase() !== "unrated") return rawRank;
-      return "Silver II";
-    }
-    return "Bronze II (12 LP)";
-  }, [game, playerObj]);
+    const overview = profileData?.segments?.find((s: any) => s.type === "overview");
+    const rankVal = overview?.stats?.rank?.displayValue;
+    if (rankVal) return rankVal;
+    if (game === "valorant") return "Ascendant 3";
+    return "Unranked";
+  }, [profileData, game]);
 
   const liveLevel = useMemo<string>(() => {
-    if (game === "valorant") {
-      const lvl = playerObj?.level ? String(playerObj.level) : "343";
-      return `Lv. ${lvl}`;
-    }
-    const lvl = playerObj?.level ? String(playerObj.level) : "18";
-    return `Lv. ${lvl}`;
-  }, [game, playerObj]);
+    const overview = profileData?.segments?.find((s: any) => s.type === "overview");
+    const levelVal = overview?.stats?.level?.displayValue;
+    if (levelVal) return `Lv. ${levelVal}`;
+    if (game === "valorant") return "Lv. 343";
+    return "Lv. 44";
+  }, [profileData, game]);
 
   const status = useMemo(() => {
     if ((propLoading || fetching) && !latest) {
@@ -277,8 +271,8 @@ export const RiotGamingCardContent = memo(function RiotGamingCardContent({
                 onError={(e) => {
                   (e.target as HTMLImageElement).src =
                     game === "valorant"
-                      ? "https://media.valorant-api.com/playercards/3432dc3d-47da-4675-67ae-53adb1fdad5e/displayicon.png"
-                      : "https://ddragon.leagueoflegends.com/cdn/14.16.1/img/champion/Ahri.png";
+                      ? "https://media.valorant-api.com/playercards/eb741e28-4545-92a3-cb5a-6a8de025e9b7/smallart.png"
+                      : "https://ddragon.leagueoflegends.com/cdn/16.17.1/img/profileicon/3795.png";
                 }}
               />
             </div>
@@ -301,7 +295,14 @@ export const RiotGamingCardContent = memo(function RiotGamingCardContent({
             {/* Real Ranks */}
             {game === "valorant" ? (
               <div className="mt-1 flex items-center justify-center gap-1.5">
-                <span className="inline-flex items-center gap-1 rounded-md px-2 py-0.5 text-[10px] font-black uppercase tracking-wider border shadow-xs bg-slate-500/15 text-slate-300 border-slate-500/30">
+                <span className={cn(
+                  "inline-flex items-center gap-1 rounded-md px-2 py-0.5 text-[10px] font-black uppercase tracking-wider border shadow-xs",
+                  liveRank.toLowerCase().includes("ascendant") || liveRank.toLowerCase().includes("radiant") || liveRank.toLowerCase().includes("immortal")
+                    ? "bg-emerald-500/20 text-emerald-300 border-emerald-500/40 shadow-emerald-500/20"
+                    : liveRank.toLowerCase().includes("plat") || liveRank.toLowerCase().includes("dia")
+                    ? "bg-cyan-500/20 text-cyan-300 border-cyan-500/40"
+                    : "bg-slate-500/20 text-slate-300 border-slate-500/40"
+                )}>
                   {liveRank}
                 </span>
                 {Boolean(asStr(meta?.modeName)) && (
@@ -316,7 +317,7 @@ export const RiotGamingCardContent = memo(function RiotGamingCardContent({
                   Solo/Duo: {liveRank}
                 </span>
                 <span className="inline-flex items-center gap-1 rounded-md px-1.5 py-0.5 text-[9px] font-black tracking-wider border shadow-xs bg-slate-500/15 text-slate-300 border-slate-500/30">
-                  Flex: Argent IV (45 LP)
+                  Flex: Non classé
                 </span>
               </div>
             )}

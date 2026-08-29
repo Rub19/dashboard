@@ -7206,6 +7206,44 @@ CHANGELOG_BY_LANG.es.unshift({
 });
 
 CHANGELOG_BY_LANG.fr.unshift({
+  version: "v1.12.46",
+  date: "2026-08-30",
+  title: "Logos Officiels SVG pour Valorant et League of Legends",
+  items: [
+    "Remplacement des icônes génériques par les véritables logos vectoriels officiels de Valorant et League of Legends.",
+    "Intégration haute définition des insignes et des emblèmes officiels Riot Games.",
+  ],
+});
+
+CHANGELOG_BY_LANG.en.unshift({
+  version: "v1.12.46",
+  date: "2026-08-30",
+  title: "Official SVG Logos for Valorant & League of Legends",
+  items: [
+    "Replaced generic icons with official brand vector logos for Valorant and League of Legends.",
+    "High-definition integration of authentic Riot Games crests and emblems.",
+  ],
+});
+
+CHANGELOG_BY_LANG.es.unshift({
+  version: "v1.12.46",
+  date: "2026-08-30",
+  title: "Logos Oficiales SVG de Valorant y League of Legends",
+  items: [
+    "Sustitución de iconos genéricos por los logos oficiales vectoriales.",
+  ],
+});
+
+CHANGELOG_BY_LANG.de.unshift({
+  version: "v1.12.46",
+  date: "2026-08-30",
+  title: "Offizielle SVG-Logos für Valorant und League of Legends",
+  items: [
+    "Ersetzung generischer Symbole durch offizielle Vektorlogos.",
+  ],
+});
+
+CHANGELOG_BY_LANG.fr.unshift({
   version: "v1.12.45",
   date: "2026-08-30",
   title: "Synchronisation Complète des Rangs Solo/Duo et Flex LoL via Riot API",

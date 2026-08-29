@@ -7206,6 +7206,46 @@ CHANGELOG_BY_LANG.es.unshift({
 });
 
 CHANGELOG_BY_LANG.fr.unshift({
+  version: "v1.12.20",
+  date: "2026-08-29",
+  title: "Dock Média Flyout : Ouverture Fiable au Clic & Maintien au Survol",
+  items: [
+    "Ouverture et fermeture fluides du lecteur multimédia étendu au clic sur l'icône du Dock.",
+    "Maintien persistant de la carte popover lors de la navigation et des interactions multimédias.",
+    "Fermeture propre au clic extérieur et gestion intelligente du survol.",
+  ],
+});
+
+CHANGELOG_BY_LANG.en.unshift({
+  version: "v1.12.20",
+  date: "2026-08-29",
+  title: "Dock Media Flyout: Reliable Click Toggle & Persistent Hover Bridge",
+  items: [
+    "Seamless click-to-toggle opening for the extended Dock media player.",
+    "Persistent popover state during mouse navigation and media control interactions.",
+    "Clean outside click dismissal and smart hover bridge handling.",
+  ],
+});
+
+CHANGELOG_BY_LANG.es.unshift({
+  version: "v1.12.20",
+  date: "2026-08-29",
+  title: "Dock Flyout Multimedia: Apertura Confiable y Persistencia",
+  items: [
+    "Apertura fluida al hacer clic y persistencia del reproductor en el Dock.",
+  ],
+});
+
+CHANGELOG_BY_LANG.de.unshift({
+  version: "v1.12.20",
+  date: "2026-08-29",
+  title: "Dock-Medien-Flyout: Zuverlässiges Öffnen per Klick",
+  items: [
+    "Reibungsloses Umschalten per Klick und persistenter Player im Dock.",
+  ],
+});
+
+CHANGELOG_BY_LANG.fr.unshift({
   version: "v1.12.19",
   date: "2026-08-29",
   title: "Synchronisation Spotify Haute Fréquence & Sonde Historique Récent",

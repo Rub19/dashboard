@@ -86,23 +86,45 @@ export default function DockMediaFlyout({ nowPlaying, clientId }: DockMediaFlyou
     return () => clearInterval(interval);
   }, [isPlaying, duration]);
 
+  const popoverRef = useRef<HTMLDivElement | null>(null);
+
+  const updatePosition = useCallback(() => {
+    if (!buttonRef.current) return;
+    const rect = buttonRef.current.getBoundingClientRect();
+    const padding = 12;
+    const gap = 8;
+    const width = 320; // w-80
+    const left = Math.min(rect.left, window.innerWidth - width - padding);
+    const bottom = window.innerHeight - rect.top + gap;
+    setPos({ left: Math.max(padding, left), bottom });
+  }, []);
+
   function handleEnter() {
     if (timeoutRef.current) clearTimeout(timeoutRef.current);
-    if (buttonRef.current) {
-      const rect = buttonRef.current.getBoundingClientRect();
-      const padding = 12;
-      const gap = 8;
-      const width = 320; // w-80
-      const left = Math.min(rect.left, window.innerWidth - width - padding);
-      const bottom = window.innerHeight - rect.top - gap;
-      setPos({ left: Math.max(padding, left), bottom });
-    }
+    updatePosition();
     setOpen(true);
   }
 
   function handleLeave() {
-    timeoutRef.current = setTimeout(() => setOpen(false), 250);
+    if (timeoutRef.current) clearTimeout(timeoutRef.current);
+    timeoutRef.current = setTimeout(() => setOpen(false), 300);
   }
+
+  useEffect(() => {
+    if (!open) return;
+    function handleClickOutside(e: MouseEvent) {
+      if (
+        popoverRef.current &&
+        !popoverRef.current.contains(e.target as Node) &&
+        buttonRef.current &&
+        !buttonRef.current.contains(e.target as Node)
+      ) {
+        setOpen(false);
+      }
+    }
+    document.addEventListener("mousedown", handleClickOutside);
+    return () => document.removeEventListener("mousedown", handleClickOutside);
+  }, [open]);
 
   const control = useCallback(
     async (action: string, extras?: Record<string, unknown>) => {
@@ -207,7 +229,12 @@ export default function DockMediaFlyout({ nowPlaying, clientId }: DockMediaFlyou
         ref={buttonRef}
         type="button"
         aria-label={buttonLabel}
-        onClick={() => setOpen((v) => !v)}
+        onClick={(e) => {
+          e.stopPropagation();
+          if (timeoutRef.current) clearTimeout(timeoutRef.current);
+          updatePosition();
+          setOpen((v) => !v);
+        }}
         className="group/media relative flex h-10 w-10 cursor-pointer flex-col items-center justify-center rounded-xl transition-all duration-200 ease-out hover:bg-white/[0.08] hover:scale-115 active:scale-95"
       >
         <div className={`relative flex items-center justify-center overflow-hidden rounded-lg transition-all ${
@@ -243,10 +270,15 @@ export default function DockMediaFlyout({ nowPlaying, clientId }: DockMediaFlyou
       <AnimatePresence>
         {open && (
           <motion.div
+            ref={popoverRef}
             initial={{ opacity: 0, scale: 0.95 }}
             animate={{ opacity: 1, scale: 1 }}
             exit={{ opacity: 0, scale: 0.95 }}
             transition={{ duration: 0.15, ease: "easeOut" }}
+            onMouseEnter={() => {
+              if (timeoutRef.current) clearTimeout(timeoutRef.current);
+            }}
+            onMouseLeave={handleLeave}
             style={{ position: "fixed", left: pos.left, bottom: pos.bottom }}
             className="z-[var(--z-popover)] w-80 rounded-xl border border-[var(--text-primary)]/10 bg-[var(--background)]/95 p-4 shadow-2xl backdrop-blur-2xl pointer-events-auto origin-bottom"
           >

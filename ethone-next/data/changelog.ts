@@ -7206,6 +7206,46 @@ CHANGELOG_BY_LANG.es.unshift({
 });
 
 CHANGELOG_BY_LANG.fr.unshift({
+  version: "v1.12.22",
+  date: "2026-08-29",
+  title: "Discord OAuth2 : Guide de Résolution & Configuration des Redirections",
+  items: [
+    "Clarification visuelle de l'URL de redirection requise (https://ethone.dev/) dans Discord Developer Portal.",
+    "Champ Client ID éditable pour validation personnalisée immédiate.",
+    "Résolution guidée de l'erreur Discord 'Unknown Application'.",
+  ],
+});
+
+CHANGELOG_BY_LANG.en.unshift({
+  version: "v1.12.22",
+  date: "2026-08-29",
+  title: "Discord OAuth2: Troubleshooting Guide & Redirects Setup",
+  items: [
+    "Visual step-by-step guidance for adding the redirect URI (https://ethone.dev/) in Discord Developer Portal.",
+    "Editable Client ID input for instant custom verification.",
+    "Resolution guide for Discord's 'Unknown Application' error.",
+  ],
+});
+
+CHANGELOG_BY_LANG.es.unshift({
+  version: "v1.12.22",
+  date: "2026-08-29",
+  title: "Discord OAuth2: Guía de Redirecciones y Solución",
+  items: [
+    "Guía paso a paso para configurar Redirects en el Discord Developer Portal.",
+  ],
+});
+
+CHANGELOG_BY_LANG.de.unshift({
+  version: "v1.12.22",
+  date: "2026-08-29",
+  title: "Discord OAuth2: Weiterleitungs-Setup & Fehlerbehebung",
+  items: [
+    "Schritt-für-Schritt-Anleitung zur Konfiguration der Weiterleitungs-URIs im Discord-Entwicklerportal.",
+  ],
+});
+
+CHANGELOG_BY_LANG.fr.unshift({
   version: "v1.12.21",
   date: "2026-08-29",
   title: "Dynamic Island : Déploiement au Survol & Contrôles Spotify Actifs avec Détection d'Appareil",

@@ -144,8 +144,40 @@ export function getChampionDefaultItems(champName?: string): LolItem[] {
   return adcItems;
 }
 
-export function getLolChampionIcon(championName?: string): string {
-  if (!championName) return "https://ddragon.leagueoflegends.com/cdn/14.16.1/img/champion/Ahri.png";
+export function getLolChampionIcon(championName?: string, fallbackIndex = 0): string {
+  if (!championName) {
+    const defaultChamps = ["Ahri", "LeeSin", "Yasuo", "Jinx", "Thresh", "Aatrox", "Viego", "Zed", "KaiSa", "Nautilus"];
+    return `https://ddragon.leagueoflegends.com/cdn/14.16.1/img/champion/${defaultChamps[fallbackIndex % defaultChamps.length]}.png`;
+  }
+  const nameMap: Record<string, string> = {
+    wukong: "MonkeyKing",
+    monkeyking: "MonkeyKing",
+    jarvaniv: "JarvanIV",
+    xinzhao: "XinZhao",
+    tahmkench: "TahmKench",
+    twistedfate: "TwistedFate",
+    masteryi: "MasterYi",
+    missfortune: "MissFortune",
+    aurelionsol: "AurelionSol",
+    drmundo: "DrMundo",
+    kogmaw: "KogMaw",
+    reksai: "RekSai",
+    khazix: "KhaZix",
+    velkoz: "VelKoz",
+    chogath: "ChoGath",
+    kaisa: "KaiSa",
+    belveth: "Belveth",
+    renata: "Renata",
+    renataglasc: "Renata",
+    nunu: "Nunu",
+    ksante: "KSante",
+    leblanc: "Leblanc",
+  };
+  const lower = championName.toLowerCase().replace(/[^a-z0-9]/g, "");
+  const mapped = nameMap[lower];
+  if (mapped) {
+    return `https://ddragon.leagueoflegends.com/cdn/14.16.1/img/champion/${mapped}.png`;
+  }
   const clean = championName.replace(/[^a-zA-Z0-9]/g, "");
   return `https://ddragon.leagueoflegends.com/cdn/14.16.1/img/champion/${clean}.png`;
 }

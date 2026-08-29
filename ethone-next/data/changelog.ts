@@ -7206,6 +7206,44 @@ CHANGELOG_BY_LANG.es.unshift({
 });
 
 CHANGELOG_BY_LANG.fr.unshift({
+  version: "v1.12.41",
+  date: "2026-08-29",
+  title: "Résolution Complète des 5v5 Champions LoL & Fallbacks d'Items Indestructibles",
+  items: [
+    "Suppression définitive des cases noires dans l'aperçu 5v5 des équipes avec mapping officiel des champions Riot (MonkeyKing, ChoGath, KaiSa, etc.).",
+    "Résolution complète et fallbacks visuels sur l'ensemble des slots d'items pour éliminer toute icône d'image cassée.",
+  ],
+});
+
+CHANGELOG_BY_LANG.en.unshift({
+  version: "v1.12.41",
+  date: "2026-08-29",
+  title: "Full 5v5 LoL Champion Roster Resolution & Indestructible Item Fallbacks",
+  items: [
+    "Fixed blank boxes in 5v5 team preview with official champion name normalization.",
+    "Added robust image error fallbacks across all item slots to prevent broken image placeholders.",
+  ],
+});
+
+CHANGELOG_BY_LANG.es.unshift({
+  version: "v1.12.41",
+  date: "2026-08-29",
+  title: "Resolución de Campeones 5v5 e Items LoL",
+  items: [
+    "Corrección de cuadros vacíos en vista 5v5 y resolución de items.",
+  ],
+});
+
+CHANGELOG_BY_LANG.de.unshift({
+  version: "v1.12.41",
+  date: "2026-08-29",
+  title: "Vollständige 5v5 LoL Champion-Kader & Gegenstand-Fallbacks",
+  items: [
+    "Behebung leerer Kästchen in der 5v5-Teamübersicht und Gegenstandsbild-Fehlerbehandlung.",
+  ],
+});
+
+CHANGELOG_BY_LANG.fr.unshift({
   version: "v1.12.40",
   date: "2026-08-29",
   title: "Vraies Cartes de Joueur Valorant, Icônes d'Invocateur & Rangs Solo/Duo + Flex",

@@ -283,24 +283,36 @@ const SocialDiscordCard = memo(function SocialDiscordCard({
             {(hasLanyard || hasOAuth) && (
               <div className="flex flex-col items-center gap-2 text-center">
                 <div className="relative h-16 w-16 shrink-0">
-                  <ClientImage
-                    candidates={[primaryAvatar]}
-                    alt={displayName}
-                    fill
-                    className="rounded-2xl border border-white/[0.08] shadow-lg"
-                    priority
-                    fallback={
-                      <div className="flex h-full w-full items-center justify-center rounded-2xl border border-white/[0.08] bg-white/[0.04] text-lg font-bold text-white">
-                        {displayName.slice(0, 2).toUpperCase()}
+                  <div className="relative h-full w-full overflow-hidden rounded-2xl border border-white/[0.08] shadow-lg">
+                    <ClientImage
+                      candidates={[primaryAvatar]}
+                      alt={displayName}
+                      fill
+                      className="object-cover"
+                      priority
+                      fallback={
+                        <div className="flex h-full w-full items-center justify-center bg-white/[0.04] text-lg font-bold text-white">
+                          {displayName.slice(0, 2).toUpperCase()}
+                        </div>
+                      }
+                    />
+                  </div>
+                  {/* Official Discord Status Badge with Cutout Ring */}
+                  <div className="absolute -bottom-1 -right-1 flex h-5 w-5 items-center justify-center rounded-full bg-[#0c0d14] p-0.5 shadow-md">
+                    {status === "dnd" ? (
+                      <div className="flex h-full w-full items-center justify-center rounded-full bg-rose-500 shadow-sm shadow-rose-500/50">
+                        <div className="h-0.5 w-2 rounded-full bg-white" />
                       </div>
-                    }
-                  />
-                  <span
-                    className={cn(
-                      "absolute -bottom-1 -right-1 h-4 w-4 rounded-full border-2 border-[#0c0d14]",
-                      color
+                    ) : status === "idle" ? (
+                      <div className="relative h-full w-full rounded-full bg-amber-400 shadow-sm shadow-amber-500/50">
+                        <div className="absolute -left-0.5 -top-0.5 h-2.5 w-2.5 rounded-full bg-[#0c0d14]" />
+                      </div>
+                    ) : status === "online" ? (
+                      <div className="h-full w-full rounded-full bg-emerald-400 shadow-sm shadow-emerald-500/50" />
+                    ) : (
+                      <div className="h-full w-full rounded-full border-2 border-zinc-500 bg-[#0c0d14]" />
                     )}
-                  />
+                  </div>
                 </div>
                 <div className="min-w-0">
                   <p className="truncate text-base font-bold text-white">{displayName}</p>
@@ -317,9 +329,9 @@ const SocialDiscordCard = memo(function SocialDiscordCard({
             )}
 
             {gameActivity && (
-              <div className="w-full shrink-0 rounded-xl border border-white/[0.08] bg-white/[0.03] p-2.5 text-center shadow-inner">
+              <div className="w-full shrink-0 rounded-2xl border border-white/[0.08] bg-white/[0.03] p-2.5 text-center shadow-inner backdrop-blur-md">
                 <div className="flex items-center justify-center gap-2">
-                  <GameBrandIcon name={gameActivity.name} className="h-4 w-4" />
+                  <GameBrandIcon name={gameActivity.name} className="h-5 w-5" />
                   <p className="text-xs font-bold text-white tracking-wide">{gameActivity.name}</p>
                 </div>
                 {gameActivity.details && (

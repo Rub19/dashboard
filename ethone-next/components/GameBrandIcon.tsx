@@ -15,11 +15,36 @@ export const GameBrandIcon = memo(function GameBrandIcon({
 }: GameBrandIconProps) {
   const clean = name.toLowerCase().trim();
 
-  // Palworld
+  // Palworld (Official Pal Sphere & Pal Emblem)
   if (clean.includes("palworld")) {
     return (
-      <svg viewBox="0 0 24 24" fill="currentColor" className={cn("text-amber-400", className)}>
-        <path d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm0 3c1.66 0 3 1.34 3 3 0 .88-.38 1.67-.98 2.22l2.6 4.51c-.49.33-1.02.6-1.58.8L12.5 11h-1l-2.54 4.53c-.56-.2-1.09-.47-1.58-.8l2.6-4.51C9.38 9.67 9 8.88 9 8c0-1.66 1.34-3 3-3zm-4 8c.55 0 1 .45 1 1s-.45 1-1 1-1-.45-1-1 .45-1 1-1zm8 0c.55 0 1 .45 1 1s-.45 1-1 1-1-.45-1-1 .45-1 1-1z" />
+      <svg viewBox="0 0 32 32" fill="none" className={cn("shrink-0", className)}>
+        <defs>
+          <linearGradient id="palworldSphereGrad" x1="0%" y1="0%" x2="100%" y2="100%">
+            <stop offset="0%" stopColor="#38bdf8" />
+            <stop offset="50%" stopColor="#0284c7" />
+            <stop offset="100%" stopColor="#0369a1" />
+          </linearGradient>
+          <linearGradient id="palworldGoldGrad" x1="0%" y1="0%" x2="100%" y2="100%">
+            <stop offset="0%" stopColor="#fde047" />
+            <stop offset="50%" stopColor="#eab308" />
+            <stop offset="100%" stopColor="#ca8a04" />
+          </linearGradient>
+          <radialGradient id="palworldCoreGlow" cx="50%" cy="50%" r="50%">
+            <stop offset="0%" stopColor="#ffffff" />
+            <stop offset="60%" stopColor="#7dd3fc" />
+            <stop offset="100%" stopColor="#0284c7" />
+          </radialGradient>
+        </defs>
+        {/* Outer Golden Wings & Rim */}
+        <circle cx="16" cy="16" r="14" fill="url(#palworldSphereGrad)" stroke="url(#palworldGoldGrad)" strokeWidth="2" />
+        {/* Central Golden Cross Lattice */}
+        <path d="M16 2v28M2 16h28" stroke="url(#palworldGoldGrad)" strokeWidth="2.5" strokeLinecap="round" />
+        {/* Wing Accents */}
+        <path d="M8 8c3 2 5 5 5 8s-2 6-5 8M24 8c-3 2-5 5-5 8s2 6 5 8" stroke="url(#palworldGoldGrad)" strokeWidth="1.8" strokeLinecap="round" />
+        {/* Glowing Center Pal Core */}
+        <circle cx="16" cy="16" r="5" fill="url(#palworldCoreGlow)" stroke="#ffffff" strokeWidth="1" />
+        <circle cx="16" cy="16" r="2" fill="#ffffff" />
       </svg>
     );
   }

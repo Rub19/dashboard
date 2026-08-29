@@ -7206,6 +7206,44 @@ CHANGELOG_BY_LANG.es.unshift({
 });
 
 CHANGELOG_BY_LANG.fr.unshift({
+  version: "v1.12.33",
+  date: "2026-08-29",
+  title: "Badge Statut Discord Pixel-Perfect (DND avec barre blanche) & Logo Palworld Pal Sphere HD",
+  items: [
+    "Refonte du badge de statut Discord sur la photo de profil avec masque officiel et barre blanche pour le mode Ne Pas Déranger (Occupé/DND).",
+    "Icône officielle Palworld Pal Sphere haute définition avec dégradés métalliques or/cyan et taille ajustée.",
+  ],
+});
+
+CHANGELOG_BY_LANG.en.unshift({
+  version: "v1.12.33",
+  date: "2026-08-29",
+  title: "Pixel-Perfect Discord DND Badge & High-Def Palworld Pal Sphere Icon",
+  items: [
+    "Redesigned avatar status badge with authentic cutout ring and white horizontal bar for DND mode.",
+    "Official HD Palworld Pal Sphere SVG icon with golden/cyan metallic gradients and enhanced scale.",
+  ],
+});
+
+CHANGELOG_BY_LANG.es.unshift({
+  version: "v1.12.33",
+  date: "2026-08-29",
+  title: "Badge Discord DND y Logo Palworld HD",
+  items: [
+    "Badge oficial de estado DND en avatar e icono Palworld Pal Sphere en alta definición.",
+  ],
+});
+
+CHANGELOG_BY_LANG.de.unshift({
+  version: "v1.12.33",
+  date: "2026-08-29",
+  title: "Discord DND-Statusbadge & Palworld HD-Icon",
+  items: [
+    "Offizielles DND-Badge auf Profilbild und Palworld Pal-Sphere Vektor-Icon.",
+  ],
+});
+
+CHANGELOG_BY_LANG.fr.unshift({
   version: "v1.12.32",
   date: "2026-08-29",
   title: "Brain IA : Moteur Multi-Modèles Réel, Réponses Libres & Fin des Réponses Répétitives",

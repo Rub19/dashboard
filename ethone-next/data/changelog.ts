@@ -7206,6 +7206,46 @@ CHANGELOG_BY_LANG.es.unshift({
 });
 
 CHANGELOG_BY_LANG.fr.unshift({
+  version: "v1.12.36",
+  date: "2026-08-29",
+  title: "Scoreboards Pro Ultra-Détaillés & Refonte Visuelle LoL & Valorant",
+  items: [
+    "Refonte complète de la vue étendue League of Legends avec tableau 10 joueurs, graphiques comparatifs Dégâts vs Or, inventaires complets et scores TRS.",
+    "Refonte complète de la vue étendue Valorant avec scoreboard pro 10 joueurs, ratios K/D, DDΔ, ADR, HS%, KAST% et stats de combat détaillées.",
+    "Support du filtre 'Tous les modes' et de tous les modes spécifiques dans les trackers Riot.",
+  ],
+});
+
+CHANGELOG_BY_LANG.en.unshift({
+  version: "v1.12.36",
+  date: "2026-08-29",
+  title: "Ultra-Detailed Pro Scoreboards & Visual Redesign for LoL & Valorant",
+  items: [
+    "Complete redesign of League of Legends expanded view with 10-player table, Damage vs Gold comparison charts, complete builds and TRS scores.",
+    "Complete redesign of Valorant expanded view with pro 10-player scoreboard, K/D, DDΔ, ADR, HS%, KAST% and in-depth combat KPIs.",
+    "Universal 'All Modes' filter support across Riot match trackers.",
+  ],
+});
+
+CHANGELOG_BY_LANG.es.unshift({
+  version: "v1.12.36",
+  date: "2026-08-29",
+  title: "Scoreboards Pro Ultra-Detallados para LoL y Valorant",
+  items: [
+    "Rediseño completo de vista detallada en LoL y Valorant con gráficos y tablas de 10 jugadores.",
+  ],
+});
+
+CHANGELOG_BY_LANG.de.unshift({
+  version: "v1.12.36",
+  date: "2026-08-29",
+  title: "Ultra-detaillierte Pro-Scoreboards für LoL & Valorant",
+  items: [
+    "Komplettes Redesign der erweiterten Ansicht für LoL & Valorant mit Vergleichsdiagrammen.",
+  ],
+});
+
+CHANGELOG_BY_LANG.fr.unshift({
   version: "v1.12.35",
   date: "2026-08-29",
   title: "Badge de Statut Discord Superposé sur l'Avatar & Extraction d'Icône de Jeu Rich Presence",

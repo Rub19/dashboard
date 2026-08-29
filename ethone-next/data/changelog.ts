@@ -7206,6 +7206,44 @@ CHANGELOG_BY_LANG.es.unshift({
 });
 
 CHANGELOG_BY_LANG.fr.unshift({
+  version: "v1.12.40",
+  date: "2026-08-29",
+  title: "Vraies Cartes de Joueur Valorant, Icônes d'Invocateur & Rangs Solo/Duo + Flex",
+  items: [
+    "Affichage de la carte de joueur Valorant (Player Card) avec rang ajusté (Silver II) et niveau (Lv. 343).",
+    "Affichage de l'icône d'invocateur LoL et des deux rangs simultanés (Solo/Duo: Bronze II et Flex: Argent IV).",
+  ],
+});
+
+CHANGELOG_BY_LANG.en.unshift({
+  version: "v1.12.40",
+  date: "2026-08-29",
+  title: "Valorant Player Cards, LoL Summoner Icons & Dual Solo/Duo + Flex Ranks",
+  items: [
+    "Displayed authentic Valorant Player Card with Silver II rank and account level.",
+    "Displayed LoL summoner icon and dual ranks (Solo/Duo & Flex).",
+  ],
+});
+
+CHANGELOG_BY_LANG.es.unshift({
+  version: "v1.12.40",
+  date: "2026-08-29",
+  title: "Tarjetas de Jugador Valorant y Rangos Solo/Duo + Flex en LoL",
+  items: [
+    "Tarjetas oficiales de jugador y doble rango para League of Legends.",
+  ],
+});
+
+CHANGELOG_BY_LANG.de.unshift({
+  version: "v1.12.40",
+  date: "2026-08-29",
+  title: "Valorant Spielerkarten & LoL Solo/Duo + Flex Ränge",
+  items: [
+    "Offizielle Spielerkarten und zweifache Ranganzeige für LoL.",
+  ],
+});
+
+CHANGELOG_BY_LANG.fr.unshift({
   version: "v1.12.39",
   date: "2026-08-29",
   title: "Photos de Profil, Niveaux et Rangs Compétitifs sur les Cartes Bento Riot",

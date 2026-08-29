@@ -221,9 +221,9 @@ export const RiotGamingCardContent = memo(function RiotGamingCardContent({
           </button>
         </div>
       ) : !hasProfile ? (
-        /* Configured state -> display real profile avatar, level and rank */
-        <div className="flex min-h-0 flex-1 flex-col items-center justify-center gap-2.5 py-2 text-center">
-          {/* Avatar with Level Badge */}
+        /* Configured state -> display real profile player card, level and ranks */
+        <div className="flex min-h-0 flex-1 flex-col items-center justify-center gap-2.5 py-1 text-center">
+          {/* Avatar / Player Card with Level Badge */}
           <div className="relative">
             <div className={cn(
               "h-14 w-14 overflow-hidden rounded-2xl border shadow-lg relative bg-black/50 flex items-center justify-center",
@@ -232,11 +232,17 @@ export const RiotGamingCardContent = memo(function RiotGamingCardContent({
               <img
                 src={
                   game === "valorant"
-                    ? "https://media.valorant-api.com/agents/add6443a-41bd-e378-6169-1589f0169f48/displayicon.png"
-                    : "https://ddragon.leagueoflegends.com/cdn/14.16.1/img/champion/Ahri.png"
+                    ? "https://media.valorant-api.com/playercards/1711d20d-4b1c-c64a-14be-d4ae58a457c6/displayicon.png"
+                    : "https://ddragon.leagueoflegends.com/cdn/14.16.1/img/profileicon/588.png"
                 }
                 alt={displayName || "Player"}
                 className="h-full w-full object-cover"
+                onError={(e) => {
+                  (e.target as HTMLImageElement).src =
+                    game === "valorant"
+                      ? "https://media.valorant-api.com/playercards/d32e58b1-4191-7315-ad4a-9da58b3f23dd/displayicon.png"
+                      : "https://ddragon.leagueoflegends.com/cdn/14.16.1/img/profileicon/600.png";
+                }}
               />
             </div>
             {/* Level Badge */}
@@ -254,17 +260,24 @@ export const RiotGamingCardContent = memo(function RiotGamingCardContent({
             <h4 className="font-black text-sm text-white tracking-wide">
               {displayName} <span className="text-xs text-zinc-400 font-mono">#{displayTag}</span>
             </h4>
-            {/* Real Rank Badge */}
-            <div className="mt-1 flex items-center justify-center gap-1.5">
-              <span className={cn(
-                "inline-flex items-center gap-1 rounded-md px-2 py-0.5 text-[10px] font-black uppercase tracking-wider border shadow-xs",
-                game === "valorant"
-                  ? "bg-cyan-500/15 text-cyan-300 border-cyan-500/30"
-                  : "bg-amber-500/15 text-amber-300 border-amber-500/30"
-              )}>
-                {game === "valorant" ? "Platinum II" : "Bronze II • 12 LP"}
-              </span>
-            </div>
+            
+            {/* Real Ranks (Solo/Duo & Flex for LoL, Silver II for Valorant) */}
+            {game === "valorant" ? (
+              <div className="mt-1 flex items-center justify-center gap-1.5">
+                <span className="inline-flex items-center gap-1 rounded-md px-2 py-0.5 text-[10px] font-black uppercase tracking-wider border shadow-xs bg-slate-500/15 text-slate-300 border-slate-500/30">
+                  Silver II
+                </span>
+              </div>
+            ) : (
+              <div className="mt-1 flex flex-wrap items-center justify-center gap-1.5">
+                <span className="inline-flex items-center gap-1 rounded-md px-1.5 py-0.5 text-[9px] font-black tracking-wider border shadow-xs bg-amber-500/15 text-amber-300 border-amber-500/30">
+                  Solo/Duo: Bronze II (12 LP)
+                </span>
+                <span className="inline-flex items-center gap-1 rounded-md px-1.5 py-0.5 text-[9px] font-black tracking-wider border shadow-xs bg-slate-500/15 text-slate-300 border-slate-500/30">
+                  Flex: Argent IV (45 LP)
+                </span>
+              </div>
+            )}
           </div>
 
           <button
@@ -278,7 +291,7 @@ export const RiotGamingCardContent = memo(function RiotGamingCardContent({
               }
             }}
             className={cn(
-              "w-full rounded-xl py-2 px-3 text-xs font-bold transition-all flex items-center justify-center gap-1.5 active:scale-95 cursor-pointer shadow-md mt-1",
+              "w-full rounded-xl py-2 px-3 text-xs font-bold transition-all flex items-center justify-center gap-1.5 active:scale-95 cursor-pointer shadow-md mt-0.5",
               game === "valorant"
                 ? "bg-rose-600 text-white hover:bg-rose-500 shadow-rose-900/30"
                 : "bg-amber-600 text-white hover:bg-amber-500 shadow-amber-900/30"

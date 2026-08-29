@@ -7206,6 +7206,46 @@ CHANGELOG_BY_LANG.es.unshift({
 });
 
 CHANGELOG_BY_LANG.fr.unshift({
+  version: "v1.12.32",
+  date: "2026-08-29",
+  title: "Brain IA : Moteur Multi-Modèles Réel, Réponses Libres & Fin des Réponses Répétitives",
+  items: [
+    "Suppression définitive de la réponse statique répétitive 'J'ai bien analysé votre demande'.",
+    "Nouveau moteur d'inférence IA multi-fournisseurs (OpenRouter, Groq, DeepSeek, Réseau IA Public & Moteur Contextuel).",
+    "Génération de réponses dynamiques, intelligentes et libres pour chaque modèle (DeepSeek R1, DeepSeek V3, Claude, Llama 3.3, Mistral, Qwen).",
+  ],
+});
+
+CHANGELOG_BY_LANG.en.unshift({
+  version: "v1.12.32",
+  date: "2026-08-29",
+  title: "Brain AI: Real Multi-Model Inference & Natural Dynamic Responses",
+  items: [
+    "Permanently removed static repetitive placeholder fallback message.",
+    "Integrated multi-tiered resilient AI engine with direct free model endpoints & provider keys.",
+    "True dynamic reasoning and conversation across all selected models.",
+  ],
+});
+
+CHANGELOG_BY_LANG.es.unshift({
+  version: "v1.12.32",
+  date: "2026-08-29",
+  title: "Brain IA con Respuestas Dinámicas y Libres Multi-Modelo",
+  items: [
+    "Eliminado el mensaje estático repetitivo e integradas respuestas IA reales.",
+  ],
+});
+
+CHANGELOG_BY_LANG.de.unshift({
+  version: "v1.12.32",
+  date: "2026-08-29",
+  title: "Brain KI mit echten dynamischen Antworten & Multi-Modell",
+  items: [
+    "Wegfall statischer Antworten; echte KI-Generierung für alle Modelle.",
+  ],
+});
+
+CHANGELOG_BY_LANG.fr.unshift({
   version: "v1.12.31",
   date: "2026-08-29",
   title: "Modal Tracker Riot : Sélecteur de Mode & Zéro Faux Matchs Résiduel",

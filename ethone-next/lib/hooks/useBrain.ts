@@ -18,6 +18,7 @@ import {
   BRAIN_MEMORY_CATEGORIES,
 } from "@/lib/brain/preferences";
 import { brainComplete, brainDiagnostic, brainProviderList } from "@/lib/brain/providers";
+import { askBrainAI } from "@/lib/brain/ai-engine";
 import { listBrainMemories, createBrainMemory, updateBrainMemory, removeBrainMemory, clearBrainMemories, type BrainMemory } from "@/lib/brain/memory";
 import { createBrainActionRegistry, type BrainMailClient } from "@/lib/brain/action-registry";
 import { createAutomationWatcher, sanitizeAutomationTrigger, type AutomationRule } from "@/lib/brain/automation";
@@ -291,56 +292,16 @@ export function useBrain(mailClient?: BrainMailClient) {
         : undefined;
 
     try {
-      let content = "";
-      let providerName = "openrouter-free";
-      let modelName = selectedModel || "DeepSeek V3 (Gratuit)";
-
-    try {
-      const chatRes = await fetch("/api/brain/chat", {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({
-          messages: currentMessages.map((m) => ({ role: m.role, content: m.content })),
-          model: selectedModel,
-        }),
+      const aiResponse = await askBrainAI({
+        messages: currentMessages.map((m) => ({ role: m.role, content: m.content })),
+        modelId: selectedModel,
+        systemPrompt:
+          "Tu es Brain, l'assistant IA intégré à ETHONE OS. Réponds de façon vivante, intelligente, naturelle et proactive en français. Réponds directement et librement à ce que demande l'utilisateur.",
       });
-      if (chatRes.ok) {
-        const chatData = await chatRes.json();
-        if (chatData.content) {
-          content = chatData.content;
-          providerName = chatData.provider || "openrouter-free";
-          modelName = chatData.model || selectedModel;
-        }
-      }
-    } catch (e) {
-      console.warn("API route /api/brain/chat fallback to worker:", e);
-    }
 
-    if (!content) {
-      try {
-        const res = await brainComplete({
-          provider: preferences.provider.active,
-          fallback: preferences.provider.active === "cloudflare" ? preferences.provider.fallback : undefined,
-          model: selectedModel || preferences.provider.model,
-          messages: currentMessages.map((m) => ({ role: m.role, content: m.content })),
-          context: {
-            persona: preferences.persona,
-            tone: preferences.tone,
-            detail: preferences.detail,
-            language: preferences.language,
-            systemContext: brainCtx.context,
-            recentMemory: brainCtx.recent,
-            attachments: attachments.map((a) => ({ name: a.name, type: a.type })),
-          },
-          baseUrl,
-        });
-
-        content = res?.data?.content || res?.data?.text || "Je suis à votre disposition. Que souhaitez-vous accomplir ?";
-        providerName = res?.data?.provider || preferences.provider.active;
-      } catch {
-        content = `J'ai bien analysé votre demande. Comment puis-je vous aider davantage sur ETHONE OS ?`;
-      }
-    }
+      const content = aiResponse.content;
+      const providerName = aiResponse.provider;
+      const modelName = aiResponse.model || selectedModel;
 
     const durationMs = Date.now() - startTime;
     

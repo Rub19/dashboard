@@ -8,6 +8,7 @@ import {
   RefreshCw,
   AlertCircle,
   Loader2,
+  Swords,
 } from "lucide-react";
 import { cn } from "@/lib/utils";
 import GameIcon from "@/components/icons/GameIcon";
@@ -17,12 +18,13 @@ import { fetchWorker } from "@/lib/api";
 import {
   type ValorantMatch,
   groupMatchesByDate,
-  generateFallbackValorantMatches,
+  fetchValorantMatchesDirect,
 } from "@/lib/valorant-tracker";
 import {
   type LolMatch,
   groupLolMatchesByDate,
-  generateFallbackLolMatches,
+  fetchLolMatchesDirect,
+  LOL_QUEUES,
 } from "@/lib/lol-tracker";
 import ValorantMatchRow from "@/components/tracker/ValorantMatchRow";
 import ValorantDayHeader from "@/components/tracker/ValorantDayHeader";
@@ -51,12 +53,13 @@ export default function TrackerModal({
   onRefresh,
 }: TrackerModalProps) {
   const { settings } = useSettings();
-  const { error: showToastError, success: showToastSuccess } = useToast();
+  const { error: showToastError, success: showToastSuccess, notify } = useToast();
   const isVal = game === "valorant";
 
-  const effectiveName = playerName || settings.liveTrackerRiotName || "";
-  const effectiveTag = playerTag || settings.liveTrackerRiotTag || "";
+  const effectiveName = playerName || settings.liveTrackerRiotName || "Rub19";
+  const effectiveTag = playerTag || settings.liveTrackerRiotTag || "boss";
 
+  const [selectedMode, setSelectedMode] = useState<string>("all");
   const [loading, setLoading] = useState(false);
   const [syncing, setSyncing] = useState(false);
   const [valoMatches, setValoMatches] = useState<ValorantMatch[]>([]);
@@ -64,13 +67,15 @@ export default function TrackerModal({
   const [errorMessage, setErrorMessage] = useState<string | null>(null);
 
   const cacheKey = useMemo(
-    () => `ethone-modal-${game}-cache:${effectiveName.toLowerCase().trim()}:${effectiveTag.toLowerCase().trim()}`,
-    [game, effectiveName, effectiveTag]
+    () => `ethone-modal-${game}-cache:${effectiveName.toLowerCase().trim()}:${effectiveTag.toLowerCase().trim()}:${selectedMode}`,
+    [game, effectiveName, effectiveTag, selectedMode]
   );
 
   const fetchRealMatches = useCallback(
     async (force = false) => {
-      if (!effectiveName || !effectiveTag) return;
+      const cleanName = effectiveName.trim();
+      const cleanTag = effectiveTag.trim().replace(/^#/, "");
+      if (!cleanName || !cleanTag) return;
 
       // Check LocalStorage cache
       if (!force) {
@@ -78,7 +83,7 @@ export default function TrackerModal({
           const cached = localStorage.getItem(cacheKey);
           if (cached) {
             const parsed = JSON.parse(cached);
-            if (Date.now() - parsed.ts < TRACKER_MODAL_CACHE_TTL && Array.isArray(parsed.matches) && parsed.matches.length > 0) {
+            if (Date.now() - parsed.ts < TRACKER_MODAL_CACHE_TTL && Array.isArray(parsed.matches)) {
               if (isVal) setValoMatches(parsed.matches);
               else setLolMatches(parsed.matches);
               setErrorMessage(null);
@@ -92,69 +97,91 @@ export default function TrackerModal({
       else setLoading(true);
       setErrorMessage(null);
 
+      const henrikApiKey =
+        typeof window !== "undefined"
+          ? localStorage.getItem("ethone:cred:riot:henrikApiKey") ||
+            localStorage.getItem("ethone:cred:riot:apiKey") ||
+            localStorage.getItem("ethone:cred:tracker:apiKey")
+          : null;
+
+      const riotApiKey =
+        typeof window !== "undefined"
+          ? localStorage.getItem("ethone:cred:riot:riotApiKey") ||
+            localStorage.getItem("ethone:cred:riot:apiKey")
+          : null;
+
       try {
-        const cleanName = effectiveName.trim();
-        const cleanTag = effectiveTag.trim().replace(/^#/, "");
-        const endpoint = isVal
-          ? `/api/stats/valorant-matches?name=${encodeURIComponent(cleanName)}&tag=${encodeURIComponent(cleanTag)}`
-          : `/api/stats/lol-matches?name=${encodeURIComponent(cleanName)}&tag=${encodeURIComponent(cleanTag)}`;
-
-        let list: unknown[] = [];
-        try {
-          const res = await fetchWorker(endpoint);
-          list = (res?.data?.matches || res?.data || res?.matches || res || []) as unknown[];
-        } catch {
-          list = isVal
-            ? generateFallbackValorantMatches(cleanName, cleanTag)
-            : generateFallbackLolMatches(cleanName, cleanTag);
-        }
-
         if (isVal) {
-          const validValo =
-            Array.isArray(list) && list.length > 0
-              ? (list as ValorantMatch[])
-              : generateFallbackValorantMatches(cleanName, cleanTag);
-          setValoMatches(validValo);
+          let validMatches: ValorantMatch[] = [];
+          try {
+            validMatches = await fetchValorantMatchesDirect(cleanName, cleanTag, selectedMode, henrikApiKey);
+          } catch (directErr) {
+            try {
+              const modeParam = selectedMode !== "all" ? `&mode=${encodeURIComponent(selectedMode)}` : "";
+              const res = await fetchWorker(
+                `/api/stats/valorant-matches?name=${encodeURIComponent(cleanName)}&tag=${encodeURIComponent(cleanTag)}${modeParam}`
+              );
+              const rawList = (res?.data?.matches || res?.data || res?.matches || res || []) as ValorantMatch[];
+              validMatches = Array.isArray(rawList) ? rawList : [];
+            } catch {
+              validMatches = [];
+            }
+          }
+          setValoMatches(validMatches);
+          if (validMatches.length > 0) {
+            try {
+              localStorage.setItem(cacheKey, JSON.stringify({ matches: validMatches, ts: Date.now() }));
+            } catch {}
+          }
+          if (force) {
+            if (validMatches.length > 0) showToastSuccess(`${validMatches.length} parties Valorant synchronisées`);
+            else showToastError(`Aucun match trouvé pour ${cleanName}#${cleanTag} (${selectedMode})`);
+          }
         } else {
-          const validLol =
-            Array.isArray(list) && list.length > 0
-              ? (list as LolMatch[])
-              : generateFallbackLolMatches(cleanName, cleanTag);
-          setLolMatches(validLol);
+          let validMatches: LolMatch[] = [];
+          try {
+            validMatches = await fetchLolMatchesDirect(cleanName, cleanTag, selectedMode, riotApiKey);
+          } catch (directErr) {
+            try {
+              const queueParam = selectedMode !== "all" ? `&mode=${encodeURIComponent(selectedMode)}` : "";
+              const res = await fetchWorker(
+                `/api/stats/lol-matches?name=${encodeURIComponent(cleanName)}&tag=${encodeURIComponent(cleanTag)}${queueParam}`
+              );
+              const rawList = (res?.data?.matches || res?.data || res?.matches || res || []) as LolMatch[];
+              validMatches = Array.isArray(rawList) ? rawList : [];
+            } catch {
+              validMatches = [];
+            }
+          }
+          setLolMatches(validMatches);
+          if (validMatches.length > 0) {
+            try {
+              localStorage.setItem(cacheKey, JSON.stringify({ matches: validMatches, ts: Date.now() }));
+            } catch {}
+          }
+          if (force) {
+            if (validMatches.length > 0) showToastSuccess(`${validMatches.length} parties LoL actualisées`);
+            else showToastError(`Aucune partie LoL trouvée pour ${cleanName}#${cleanTag}`);
+          }
         }
         setErrorMessage(null);
-
-        try {
-          localStorage.setItem(cacheKey, JSON.stringify({ matches: list, ts: Date.now() }));
-        } catch {}
-        if (force) showToastSuccess(`Matchs ${isVal ? "Valorant" : "LoL"} actualisés`);
-      } catch {
-        const cleanName = effectiveName.trim() || "Rub19";
-        const cleanTag = effectiveTag.trim().replace(/^#/, "") || "boss";
-        if (isVal) {
-          setValoMatches(generateFallbackValorantMatches(cleanName, cleanTag));
-        } else {
-          setLolMatches(generateFallbackLolMatches(cleanName, cleanTag));
-        }
-        setErrorMessage(null);
+      } catch (err) {
+        setErrorMessage(err instanceof Error ? err.message : "Erreur de récupération");
+        if (isVal) setValoMatches([]);
+        else setLolMatches([]);
       } finally {
         setLoading(false);
         setSyncing(false);
       }
     },
-    [isVal, effectiveName, effectiveTag, cacheKey, showToastSuccess]
+    [isVal, effectiveName, effectiveTag, selectedMode, cacheKey, showToastSuccess, showToastError]
   );
 
   useEffect(() => {
     if (isOpen) {
-      if (initialMatches && initialMatches.length > 0) {
-        if (isVal) setValoMatches(initialMatches as unknown as ValorantMatch[]);
-        else setLolMatches(initialMatches as unknown as LolMatch[]);
-      } else {
-        fetchRealMatches(false);
-      }
+      fetchRealMatches(false);
     }
-  }, [isOpen, isVal, initialMatches, fetchRealMatches]);
+  }, [isOpen, fetchRealMatches]);
 
   const valoDayGroups = useMemo(() => {
     if (!isVal) return [];
@@ -247,7 +274,36 @@ export default function TrackerModal({
               </div>
             </div>
 
-            <div className="flex items-center gap-2">
+            <div className="flex flex-wrap items-center gap-2">
+              {/* Queue / Mode Selector */}
+              {isVal ? (
+                <select
+                  value={selectedMode}
+                  onChange={(e) => setSelectedMode(e.target.value)}
+                  className="rounded-xl border border-white/10 bg-black/60 px-3 py-1.5 text-xs font-semibold text-zinc-200 outline-none cursor-pointer hover:border-white/20 transition shadow-inner"
+                >
+                  <option value="all" className="bg-zinc-900 text-white">Tous les modes</option>
+                  <option value="competitive" className="bg-zinc-900 text-white">Compétitif</option>
+                  <option value="unrated" className="bg-zinc-900 text-white">Non classé</option>
+                  <option value="swiftplay" className="bg-zinc-900 text-white">Swiftplay</option>
+                  <option value="deathmatch" className="bg-zinc-900 text-white">Deathmatch</option>
+                  <option value="spikerush" className="bg-zinc-900 text-white">Spike Rush</option>
+                  <option value="premier" className="bg-zinc-900 text-white">Premier</option>
+                </select>
+              ) : (
+                <select
+                  value={selectedMode}
+                  onChange={(e) => setSelectedMode(e.target.value)}
+                  className="rounded-xl border border-white/10 bg-black/60 px-3 py-1.5 text-xs font-semibold text-zinc-200 outline-none cursor-pointer hover:border-white/20 transition shadow-inner"
+                >
+                  {LOL_QUEUES.map((q) => (
+                    <option key={q.id} value={q.id} className="bg-zinc-900 text-white">
+                      {q.label}
+                    </option>
+                  ))}
+                </select>
+              )}
+
               <button
                 type="button"
                 onClick={() => fetchRealMatches(true)}

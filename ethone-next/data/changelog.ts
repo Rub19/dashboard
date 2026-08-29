@@ -7206,6 +7206,46 @@ CHANGELOG_BY_LANG.es.unshift({
 });
 
 CHANGELOG_BY_LANG.fr.unshift({
+  version: "v1.12.31",
+  date: "2026-08-29",
+  title: "Modal Tracker Riot : Sélecteur de Mode & Zéro Faux Matchs Résiduel",
+  items: [
+    "Ajout du sélecteur de mode/queue dans le bandeau de la modal plein écran Tracker Riot (Valorant & LoL).",
+    "Élimination totale des générateurs de placeholders dans le TrackerModal et les bibliothèques de tracking.",
+    "Synchronisation directe avec les clés API configurées (HenrikDev & Riot API).",
+  ],
+});
+
+CHANGELOG_BY_LANG.en.unshift({
+  version: "v1.12.31",
+  date: "2026-08-29",
+  title: "Riot Tracker Modal: Queue Selector & Zero Residual Placeholders",
+  items: [
+    "Added full queue/mode dropdown directly in Riot Tracker full-screen modal.",
+    "Total eradication of fallback match generators across all components.",
+    "Direct API queries via configured HenrikDev & Riot API credentials.",
+  ],
+});
+
+CHANGELOG_BY_LANG.es.unshift({
+  version: "v1.12.31",
+  date: "2026-08-29",
+  title: "Modal Tracker Riot con selector de modo sin placeholders",
+  items: [
+    "Selector de colas y partidas reales en la modal de Riot.",
+  ],
+});
+
+CHANGELOG_BY_LANG.de.unshift({
+  version: "v1.12.31",
+  date: "2026-08-29",
+  title: "Riot Tracker Modal mit Queue-Filter & ohne Fallbacks",
+  items: [
+    "Echter Queue-Auswahl-Filter im Riot Modal ohne simulierte Matches.",
+  ],
+});
+
+CHANGELOG_BY_LANG.fr.unshift({
   version: "v1.12.30",
   date: "2026-08-29",
   title: "Carte 3D Discord Glossy : Logos Jeux SVG & Fond Album Immersif",

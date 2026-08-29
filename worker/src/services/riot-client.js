@@ -82,10 +82,24 @@ export async function getLolProfile(env, riotId, apiKeyOverride) {
     summoner = summonerResponse.data || {};
   } catch {}
 
-  // Fetch league
-  let tier = "Unranked";
-  let lp = 0;
-  if (summoner.id) {
+  // Fetch league entries (by PUUID first, then fallback to summoner ID)
+  let leagues = [];
+  try {
+    const puuidLeaguePath = `/lol/league/v4/entries/by-puuid/${puuid}`;
+    const puuidLeagueResponse = await requestExternal(new URL(puuidLeaguePath, platformOrigin), {
+      env,
+      expectedOrigin: platformOrigin,
+      service: "tracker",
+      dedupeKey: `riot:league:puuid:${puuid}`,
+      headers: { "X-Riot-Token": apiKey },
+      retries: 1
+    });
+    if (Array.isArray(puuidLeagueResponse?.data) && puuidLeagueResponse.data.length > 0) {
+      leagues = puuidLeagueResponse.data;
+    }
+  } catch {}
+
+  if (leagues.length === 0 && summoner.id) {
     try {
       const leaguePath = `/lol/league/v4/entries/by-summoner/${summoner.id}`;
       const leagueResponse = await requestExternal(new URL(leaguePath, platformOrigin), {
@@ -96,15 +110,36 @@ export async function getLolProfile(env, riotId, apiKeyOverride) {
         headers: { "X-Riot-Token": apiKey },
         retries: 1
       });
-      const leagues = Array.isArray(leagueResponse.data) ? leagueResponse.data : [];
-      const soloq = leagues.find(l => l.queueType === "RANKED_SOLO_5x5") || leagues[0];
-      if (soloq?.tier) {
-        const rank = soloq.rank ? ` ${soloq.rank}` : "";
-        tier = `${soloq.tier}${rank}`.trim();
-        lp = Number(soloq.leaguePoints) || 0;
+      if (Array.isArray(leagueResponse?.data) && leagueResponse.data.length > 0) {
+        leagues = leagueResponse.data;
       }
     } catch {}
   }
+
+  const soloq = leagues.find((l) => l.queueType === "RANKED_SOLO_5x5") || null;
+  const flexq = leagues.find((l) => l.queueType === "RANKED_FLEX_SR") || null;
+
+  let tierSolo = "Non classé";
+  let tierFlex = "Non classé";
+  let lp = 0;
+
+  if (soloq?.tier) {
+    const r = soloq.rank ? ` ${soloq.rank}` : "";
+    const p = Number(soloq.leaguePoints) || 0;
+    tierSolo = `${soloq.tier}${r} (${p} LP)`.trim();
+    lp = p;
+  }
+  if (flexq?.tier) {
+    const r = flexq.rank ? ` ${flexq.rank}` : "";
+    const p = Number(flexq.leaguePoints) || 0;
+    tierFlex = `${flexq.tier}${r} (${p} LP)`.trim();
+  }
+
+  const primaryTier = soloq?.tier
+    ? `${soloq.tier}${soloq.rank ? ` ${soloq.rank}` : ""}`.trim()
+    : flexq?.tier
+    ? `${flexq.tier}${flexq.rank ? ` ${flexq.rank}` : ""}`.trim()
+    : "Non classé";
 
   const ddragonVersion = await getLolDdragonLatestVersion(env);
   const profileIconId = Number(summoner.profileIconId) || 1;
@@ -115,11 +150,15 @@ export async function getLolProfile(env, riotId, apiKeyOverride) {
     avatarUrl: safePublicUrl(`https://ddragon.leagueoflegends.com/cdn/${ddragonVersion}/img/profileicon/${profileIconId}.png`, ["leagueoflegends.com"]),
     profileIconId,
     ddragonVersion,
+    rankSolo: tierSolo,
+    rankFlex: tierFlex,
     segments: Object.freeze([{
       type: "overview",
       name: "Ranked",
       stats: safeStats({
-        rank: { value: 0, displayValue: tier },
+        rank: { value: 0, displayValue: primaryTier },
+        rankSolo: { value: 0, displayValue: tierSolo },
+        rankFlex: { value: 0, displayValue: tierFlex },
         lp: { value: lp, displayValue: `${lp} LP` },
         level: { value: summoner.summonerLevel || 0, displayValue: String(summoner.summonerLevel || 0) }
       })

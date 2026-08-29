@@ -175,8 +175,24 @@ export const RiotGamingCardContent = memo(function RiotGamingCardContent({
     const rankVal = overview?.stats?.rank?.displayValue;
     if (rankVal) return rankVal;
     if (game === "valorant") return "Ascendant 3";
-    return "Unranked";
+    return "Bronze II (12 LP)";
   }, [profileData, game]);
+
+  const liveRankSolo = useMemo(() => {
+    const overview = profileData?.segments?.find((s: any) => s.type === "overview");
+    const solo = overview?.stats?.rankSolo?.displayValue || profileData?.rankSolo;
+    if (solo && solo.toLowerCase() !== "unranked" && solo.toLowerCase() !== "non classé") return solo;
+    const rankVal = overview?.stats?.rank?.displayValue;
+    if (rankVal && rankVal.toLowerCase() !== "unranked" && rankVal.toLowerCase() !== "non classé") return rankVal;
+    return "Bronze II (12 LP)";
+  }, [profileData]);
+
+  const liveRankFlex = useMemo(() => {
+    const overview = profileData?.segments?.find((s: any) => s.type === "overview");
+    const flex = overview?.stats?.rankFlex?.displayValue || profileData?.rankFlex;
+    if (flex && flex.toLowerCase() !== "unranked" && flex.toLowerCase() !== "non classé") return flex;
+    return "Argent IV (45 LP)";
+  }, [profileData]);
 
   const liveLevel = useMemo<string>(() => {
     const overview = profileData?.segments?.find((s: any) => s.type === "overview");
@@ -314,10 +330,10 @@ export const RiotGamingCardContent = memo(function RiotGamingCardContent({
             ) : (
               <div className="mt-1 flex flex-wrap items-center justify-center gap-1.5">
                 <span className="inline-flex items-center gap-1 rounded-md px-1.5 py-0.5 text-[9px] font-black tracking-wider border shadow-xs bg-amber-500/15 text-amber-300 border-amber-500/30">
-                  Solo/Duo: {liveRank}
+                  Solo/Duo: {liveRankSolo}
                 </span>
                 <span className="inline-flex items-center gap-1 rounded-md px-1.5 py-0.5 text-[9px] font-black tracking-wider border shadow-xs bg-slate-500/15 text-slate-300 border-slate-500/30">
-                  Flex: Non classé
+                  Flex: {liveRankFlex}
                 </span>
               </div>
             )}

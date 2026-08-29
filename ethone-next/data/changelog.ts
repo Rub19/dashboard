@@ -7206,6 +7206,44 @@ CHANGELOG_BY_LANG.es.unshift({
 });
 
 CHANGELOG_BY_LANG.fr.unshift({
+  version: "v1.12.45",
+  date: "2026-08-30",
+  title: "Synchronisation Complète des Rangs Solo/Duo et Flex LoL via Riot API",
+  items: [
+    "Support étendu de l'API Riot League v4 par PUUID et identifiant d'invocateur pour la récupération des ligues actives.",
+    "Résolution et affichage séparé précis des rangs Solo/Duo et Flex en direct sur la carte Bento.",
+  ],
+});
+
+CHANGELOG_BY_LANG.en.unshift({
+  version: "v1.12.45",
+  date: "2026-08-30",
+  title: "Complete Sync of LoL Solo/Duo and Flex Ranks via Riot API",
+  items: [
+    "Extended Riot League v4 API support by PUUID and summoner ID for active leagues.",
+    "Accurate separate display of Solo/Duo and Flex ranks live on the Bento card.",
+  ],
+});
+
+CHANGELOG_BY_LANG.es.unshift({
+  version: "v1.12.45",
+  date: "2026-08-30",
+  title: "Sincronización de Rangos LoL Solo/Duo y Flex",
+  items: [
+    "Soporte ampliado de la API de Riot para ligas Solo/Duo y Flex.",
+  ],
+});
+
+CHANGELOG_BY_LANG.de.unshift({
+  version: "v1.12.45",
+  date: "2026-08-30",
+  title: "Vollständige Synchronisierung der LoL Solo/Duo- und Flex-Ränge",
+  items: [
+    "Erweiterte Riot API League v4 Unterstützung für Solo/Duo- und Flex-Ligen.",
+  ],
+});
+
+CHANGELOG_BY_LANG.fr.unshift({
   version: "v1.12.44",
   date: "2026-08-29",
   title: "Synchronisation des Véritables Cartes de Joueur, Icônes et Rangs API",

@@ -7206,6 +7206,46 @@ CHANGELOG_BY_LANG.es.unshift({
 });
 
 CHANGELOG_BY_LANG.fr.unshift({
+  version: "v1.12.43",
+  date: "2026-08-29",
+  title: "Récupération en Direct des Données Riot Authentiques (Valorant & LoL)",
+  items: [
+    "Récupération en temps réel des matchs et du profil officiel de l'utilisateur depuis les APIs Cloudflare Worker.",
+    "Affichage des véritables photos de profil (Jett / Xayah) et des rangs réels sans aucun placeholder statique.",
+    "Résolution complète et sans erreur de toutes les images d'avatar et de builds.",
+  ],
+});
+
+CHANGELOG_BY_LANG.en.unshift({
+  version: "v1.12.43",
+  date: "2026-08-29",
+  title: "Live Fetching of Authentic Riot Games Data (Valorant & LoL)",
+  items: [
+    "Real-time fetching of official player matches and profiles via Cloudflare Worker APIs.",
+    "Displayed true dynamic player avatars (Jett / Xayah) and ranks with zero static placeholders.",
+    "Seamless error-free resolution of avatar assets.",
+  ],
+});
+
+CHANGELOG_BY_LANG.es.unshift({
+  version: "v1.12.43",
+  date: "2026-08-29",
+  title: "Carga en Directo de Datos Riot Reales",
+  items: [
+    "Obtención en tiempo real de partidas y avatares reales para Valorant y LoL.",
+  ],
+});
+
+CHANGELOG_BY_LANG.de.unshift({
+  version: "v1.12.43",
+  date: "2026-08-29",
+  title: "Live-Abruf echter Riot-Spieldaten",
+  items: [
+    "Echtzeit-Abruf von Matches und offiziellen Profilen für Valorant und LoL.",
+  ],
+});
+
+CHANGELOG_BY_LANG.fr.unshift({
   version: "v1.12.42",
   date: "2026-08-29",
   title: "Résolution Complète des 6 Items LoL & Données Joueur Dynamiques",

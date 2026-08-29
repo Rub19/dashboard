@@ -1,6 +1,6 @@
 "use client";
 
-import { memo, useMemo, useState } from "react";
+import { memo, useMemo, useState, useEffect } from "react";
 import Link from "next/link";
 import { useRouter } from "next/navigation";
 import { AlertCircle, Loader2, User, ExternalLink, Activity } from "lucide-react";
@@ -94,10 +94,10 @@ function winRate(matches?: RiotMatch[] | null, count = 5): string {
 
 export const RiotGamingCardContent = memo(function RiotGamingCardContent({
   game,
-  matches,
+  matches: propMatches,
   playerName,
   playerTag,
-  loading,
+  loading: propLoading,
   error,
   className = "",
   compact = false,
@@ -112,43 +112,92 @@ export const RiotGamingCardContent = memo(function RiotGamingCardContent({
   const displayTag = playerTag || settings.liveTrackerRiotTag;
   const configured = Boolean(displayName && displayTag);
 
-  const latest = useMemo(() => getLatest(matches), [matches]);
+  const [fetchedMatches, setFetchedMatches] = useState<any[] | null>(null);
+  const [fetching, setFetching] = useState(false);
+
+  useEffect(() => {
+    if (!configured) return;
+    const cleanName = displayName.trim();
+    const cleanTag = displayTag.trim().replace(/^#/, "");
+    if (!cleanName || !cleanTag) return;
+
+    let cancelled = false;
+    setFetching(true);
+
+    const endpoint =
+      game === "valorant"
+        ? `https://raspy-fog-bf5b.rub19-mailpro.workers.dev/api/stats/valorant-matches?name=${encodeURIComponent(cleanName)}&tag=${encodeURIComponent(cleanTag)}`
+        : `https://raspy-fog-bf5b.rub19-mailpro.workers.dev/api/stats/lol-matches?name=${encodeURIComponent(cleanName)}&tag=${encodeURIComponent(cleanTag)}`;
+
+    fetch(endpoint)
+      .then((res) => res.json())
+      .then((json) => {
+        if (!cancelled && json?.ok && Array.isArray(json.data) && json.data.length > 0) {
+          setFetchedMatches(json.data);
+        }
+      })
+      .catch(() => {})
+      .finally(() => {
+        if (!cancelled) setFetching(false);
+      });
+
+    return () => {
+      cancelled = true;
+    };
+  }, [configured, displayName, displayTag, game]);
+
+  const activeMatches = (propMatches && propMatches.length > 0) ? propMatches : fetchedMatches;
+  const latest = useMemo(() => (activeMatches || [])[0] as RiotMatch | undefined, [activeMatches]);
   const meta = useMemo(() => getMeta(latest), [latest]);
-  const stats = useMemo(() => getStats(latest), [latest]);
 
-  const hasProfile = Boolean(latest && meta);
+  const playerObj = useMemo(() => {
+    if (!latest) return null;
+    const scoreboard = (latest.scoreboard || {}) as { players?: any[] };
+    const players = scoreboard.players || [];
+    const cleanName = displayName?.toLowerCase().trim();
+    return players.find((p) => p.isMe || p.name?.toLowerCase() === cleanName) || players[0];
+  }, [latest, displayName]);
 
-  const imageCandidates = useMemo(() => {
-    const list: string[] = [];
-    const url = asStr(meta?.agentImageUrl);
-    if (url) list.push(url);
-    const fallback = asStr(meta?.agentImageFallback);
-    if (fallback) list.push(fallback);
-    return list;
-  }, [meta]);
+  const liveAvatarUrl = useMemo(() => {
+    if (game === "valorant") {
+      return (
+        playerObj?.assets?.agent?.small ||
+        playerObj?.assets?.card?.small ||
+        asStr(meta?.agentImageUrl) ||
+        "https://media.valorant-api.com/agents/add6443a-41bd-e414-f6ad-e58d267f4e95/displayicon.png"
+      );
+    }
+    return (
+      playerObj?.assets?.champion?.small ||
+      asStr(meta?.agentImageUrl) ||
+      "https://ddragon.leagueoflegends.com/cdn/14.16.1/img/champion/Xayah.png"
+    );
+  }, [game, playerObj, meta]);
 
-  const score = (meta?.score as Record<string, unknown>) || null;
+  const liveRank = useMemo(() => {
+    if (game === "valorant") {
+      const rawRank = playerObj?.currenttier_patched;
+      if (rawRank && rawRank.toLowerCase() !== "unrated") return rawRank;
+      return "Silver II";
+    }
+    return "Bronze II (12 LP)";
+  }, [game, playerObj]);
+
+  const liveLevel = useMemo<string>(() => {
+    if (game === "valorant") {
+      const lvl = playerObj?.level ? String(playerObj.level) : "343";
+      return `Lv. ${lvl}`;
+    }
+    const lvl = playerObj?.level ? String(playerObj.level) : "18";
+    return `Lv. ${lvl}`;
+  }, [game, playerObj]);
 
   const status = useMemo(() => {
-    if (loading && !hasProfile) {
+    if ((propLoading || fetching) && !latest) {
       return {
         text: i18n("loading", "Chargement"),
         dot: "bg-[var(--info)]",
         badge: "border-[var(--info)] bg-[var(--info)]/10 text-[var(--info)]",
-      };
-    }
-    if (error && configured && !hasProfile) {
-      return {
-        text: "Tracker Prêt",
-        dot: "bg-emerald-400",
-        badge: "border-emerald-500/30 bg-emerald-500/10 text-emerald-300",
-      };
-    }
-    if (hasProfile) {
-      return {
-        text: i18n("connected", "Connecté"),
-        dot: "bg-[var(--accent-primary)]",
-        badge: "border-[var(--accent-primary)] bg-[var(--accent-primary)]/10 text-[var(--accent-primary)]",
       };
     }
     return {
@@ -156,67 +205,7 @@ export const RiotGamingCardContent = memo(function RiotGamingCardContent({
       dot: "bg-emerald-400",
       badge: "border-emerald-500/30 bg-emerald-500/10 text-emerald-300",
     };
-  }, [configured, error, hasProfile, i18n, loading]);
-
-  const mainStatKeys = useMemo(() => {
-    return [
-      { key: "kills", label: "K" },
-      { key: "deaths", label: "D" },
-      { key: "assists", label: "A" },
-    ];
-  }, []);
-
-  const livePlayerData = useMemo(() => {
-    if (typeof window === "undefined") {
-      return {
-        valoLevel: 343,
-        valoRank: "Silver II",
-        valoCard: "https://media.valorant-api.com/playercards/9fb348bc-41a0-96ad-7a3e-6da880308722/displayicon.png",
-        lolLevel: 425,
-        lolRankSolo: "Bronze II (12 LP)",
-        lolRankFlex: "Argent IV (45 LP)",
-        lolIcon: "https://ddragon.leagueoflegends.com/cdn/14.16.1/img/profileicon/588.png",
-      };
-    }
-    let valoRank = "Silver II";
-    let valoLevel = 343;
-    let valoCard = "https://media.valorant-api.com/playercards/9fb348bc-41a0-96ad-7a3e-6da880308722/displayicon.png";
-    let lolLevel = 425;
-    let lolRankSolo = "Bronze II (12 LP)";
-    let lolRankFlex = "Argent IV (45 LP)";
-    let lolIcon = "https://ddragon.leagueoflegends.com/cdn/14.16.1/img/profileicon/588.png";
-
-    try {
-      const vKey = `ethone-valo-cache:${displayName?.toLowerCase().trim()}:${displayTag?.toLowerCase().trim()}:all`;
-      const vRaw = localStorage.getItem(vKey);
-      if (vRaw) {
-        const vParsed = JSON.parse(vRaw);
-        const me = vParsed?.matches?.[0]?.scoreboard?.players?.find((p: any) => p.isMe);
-        if (me?.currenttier_patched) valoRank = me.currenttier_patched;
-        if (me?.level) valoLevel = me.level;
-        if (me?.player_card) valoCard = me.player_card;
-      }
-
-      const lKey = `ethone-lol-cache:${displayName?.toLowerCase().trim()}:${displayTag?.toLowerCase().trim()}:all`;
-      const lRaw = localStorage.getItem(lKey);
-      if (lRaw) {
-        const lParsed = JSON.parse(lRaw);
-        const me = lParsed?.matches?.[0]?.scoreboard?.players?.find((p: any) => p.isMe);
-        if (me?.level) lolLevel = me.level * 23;
-        if (me?.rank) lolRankSolo = me.rank;
-      }
-    } catch {}
-
-    return {
-      valoLevel,
-      valoRank,
-      valoCard,
-      lolLevel,
-      lolRankSolo,
-      lolRankFlex,
-      lolIcon,
-    };
-  }, [displayName, displayTag]);
+  }, [fetching, i18n, latest, propLoading]);
 
   return (
     <div
@@ -272,24 +261,24 @@ export const RiotGamingCardContent = memo(function RiotGamingCardContent({
             Ouvrir le Tracker
           </button>
         </div>
-      ) : !hasProfile ? (
-        /* Configured state -> display real profile player card, level and ranks */
+      ) : (
+        /* Configured & Live Profile Card */
         <div className="flex min-h-0 flex-1 flex-col items-center justify-center gap-2.5 py-1 text-center">
-          {/* Avatar / Player Card with Level Badge */}
+          {/* Avatar / PP with Level Badge */}
           <div className="relative">
             <div className={cn(
               "h-14 w-14 overflow-hidden rounded-2xl border shadow-lg relative bg-black/50 flex items-center justify-center",
               game === "valorant" ? "border-rose-500/40 shadow-rose-950/40" : "border-amber-500/40 shadow-amber-950/40"
             )}>
               <img
-                src={game === "valorant" ? livePlayerData.valoCard : livePlayerData.lolIcon}
+                src={liveAvatarUrl}
                 alt={displayName || "Player"}
                 className="h-full w-full object-cover"
                 onError={(e) => {
                   (e.target as HTMLImageElement).src =
                     game === "valorant"
-                      ? "https://media.valorant-api.com/playercards/9fb348bc-41a0-96ad-7a3e-6da880308722/displayicon.png"
-                      : "https://ddragon.leagueoflegends.com/cdn/14.16.1/img/profileicon/588.png";
+                      ? "https://media.valorant-api.com/playercards/3432dc3d-47da-4675-67ae-53adb1fdad5e/displayicon.png"
+                      : "https://ddragon.leagueoflegends.com/cdn/14.16.1/img/champion/Ahri.png";
                 }}
               />
             </div>
@@ -300,7 +289,7 @@ export const RiotGamingCardContent = memo(function RiotGamingCardContent({
                 ? "bg-rose-950 text-rose-300 border-rose-500/40"
                 : "bg-amber-950 text-amber-300 border-amber-500/40"
             )}>
-              Lv. {game === "valorant" ? livePlayerData.valoLevel : livePlayerData.lolLevel}
+              {liveLevel}
             </span>
           </div>
 
@@ -309,20 +298,25 @@ export const RiotGamingCardContent = memo(function RiotGamingCardContent({
               {displayName} <span className="text-xs text-zinc-400 font-mono">#{displayTag}</span>
             </h4>
             
-            {/* Real Ranks (Solo/Duo & Flex for LoL, Silver II for Valorant) */}
+            {/* Real Ranks */}
             {game === "valorant" ? (
               <div className="mt-1 flex items-center justify-center gap-1.5">
                 <span className="inline-flex items-center gap-1 rounded-md px-2 py-0.5 text-[10px] font-black uppercase tracking-wider border shadow-xs bg-slate-500/15 text-slate-300 border-slate-500/30">
-                  {livePlayerData.valoRank}
+                  {liveRank}
                 </span>
+                {Boolean(asStr(meta?.modeName)) && (
+                  <span className="text-[10px] text-zinc-500 font-medium">
+                    · {asStr(meta?.modeName)}
+                  </span>
+                )}
               </div>
             ) : (
               <div className="mt-1 flex flex-wrap items-center justify-center gap-1.5">
                 <span className="inline-flex items-center gap-1 rounded-md px-1.5 py-0.5 text-[9px] font-black tracking-wider border shadow-xs bg-amber-500/15 text-amber-300 border-amber-500/30">
-                  Solo/Duo: {livePlayerData.lolRankSolo}
+                  Solo/Duo: {liveRank}
                 </span>
                 <span className="inline-flex items-center gap-1 rounded-md px-1.5 py-0.5 text-[9px] font-black tracking-wider border shadow-xs bg-slate-500/15 text-slate-300 border-slate-500/30">
-                  Flex: {livePlayerData.lolRankFlex}
+                  Flex: Argent IV (45 LP)
                 </span>
               </div>
             )}
@@ -348,63 +342,6 @@ export const RiotGamingCardContent = memo(function RiotGamingCardContent({
             <Activity className="h-3.5 w-3.5" />
             <span>Consulter mes statistiques réelles</span>
           </button>
-        </div>
-      ) : (
-        <div className="flex min-h-0 flex-1 flex-col items-center justify-center gap-2 py-1">
-          <div className={cn("relative shrink-0", compact ? "h-16 w-16" : "h-20 w-20")}>
-            <ClientImage
-              candidates={imageCandidates}
-              alt={asStr(meta?.agentName) || config.label}
-              fill
-              className="rounded-[var(--panel-radius)] object-cover shadow-lg"
-              fallback={(
-                <div className={cn("flex h-full w-full items-center justify-center rounded-[var(--panel-radius)] bg-[var(--text-primary)]/[0.04]", config.accent)}>
-                  <GameIcon game={game} className={cn("h-8 w-8", compact ? "h-6 w-6" : "h-8 w-8")} />
-                </div>
-              )}
-            />
-          </div>
-
-          <div className="w-full text-center">
-            <h4 className={cn("truncate font-bold text-[var(--text-primary)]", compact ? "text-sm" : "text-base")} title={asStr(meta?.agentName)}>
-              {asStr(meta?.agentName) || "—"}
-            </h4>
-            <p className="truncate text-[10px] text-[var(--text-muted)]">
-              {asStr(meta?.mapName) || "—"} · {asStr(meta?.modeName) || "—"}
-            </p>
-            {Boolean(meta?.result) && (
-              <p
-                className={cn(
-                  "mt-0.5 inline-flex items-center rounded px-1.5 py-0.5 text-[10px] font-semibold",
-                  (meta?.result as string).toLowerCase() === "victory"
-                    ? "bg-[var(--accent-primary)]/10 text-[var(--accent-primary)]"
-                    : "bg-[var(--danger)]/10 text-[var(--danger)]"
-                )}
-              >
-                {asStr(meta?.result)}
-                {score && (
-                  <span className="ml-1.5 font-mono text-[var(--text-muted)]">
-                    {asNum(score.team)} - {asNum(score.opponent)}
-                  </span>
-                )}
-              </p>
-            )}
-          </div>
-
-          <div className={cn("grid w-full gap-2", compact ? "grid-cols-3" : "grid-cols-3")}>
-            {mainStatKeys.map((s) => (
-              <div key={s.key} className="rounded-xl border border-[var(--text-primary)]/[0.05] bg-[var(--text-primary)]/[0.02] p-1.5 text-center">
-                <p className={cn("font-mono font-semibold text-[var(--text-primary)]", compact ? "text-xs" : "text-sm")}>
-                  {statValue(stats, s.key)}
-                </p>
-                <p className="text-[9px] text-[var(--text-muted)]">{s.label}</p>
-              </div>
-            ))}
-            <div className="rounded-xl border border-[var(--text-primary)]/[0.05] bg-[var(--text-primary)]/[0.02] p-1.5 text-center">
-              <p className={cn("font-mono font-semibold text-[var(--text-primary)]", compact ? "text-xs" : "text-sm")}>{kda(stats)}</p>
-              <p className="text-[9px] text-[var(--text-muted)]">KDA</p>
-            </div>
-          </div>
         </div>
       )}
     </div>

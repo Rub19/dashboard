@@ -38,7 +38,7 @@ export default function OAuthHandler() {
       state?.clientId ||
       (typeof window !== "undefined" ? localStorage.getItem(`ethone:clientId:${provider}`) : "") ||
       OAUTH_APP_CLIENT_IDS[provider] ||
-      (provider === "spotify" ? "6619fbf6315e4e68948dc08532251912" : provider === "discord" ? "1339597090232078376" : "");
+      (provider === "spotify" ? "6619fbf6315e4e68948dc08532251912" : provider === "discord" ? "1539597090232078376" : "");
 
     if (!resolvedClientId) return;
     handled.current = true;

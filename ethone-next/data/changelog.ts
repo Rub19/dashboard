@@ -7206,6 +7206,46 @@ CHANGELOG_BY_LANG.es.unshift({
 });
 
 CHANGELOG_BY_LANG.fr.unshift({
+  version: "v1.12.23",
+  date: "2026-08-29",
+  title: "Discord OAuth2 : Correction de l'Identifiant Bot (1539597090232078376)",
+  items: [
+    "Mise à jour exacte du Client ID du bot Discord officiel (1539597090232078376).",
+    "Résolution définitive de l'erreur Discord 'Unknown Application'.",
+    "Autorisation immédiate et liaison de compte en 1 clic.",
+  ],
+});
+
+CHANGELOG_BY_LANG.en.unshift({
+  version: "v1.12.23",
+  date: "2026-08-29",
+  title: "Discord OAuth2: Bot Client ID Correction (1539597090232078376)",
+  items: [
+    "Accurate update of the official Discord Bot Client ID (1539597090232078376).",
+    "Permanent fix for Discord's 'Unknown Application' error.",
+    "Instant 1-click authorization and account pairing.",
+  ],
+});
+
+CHANGELOG_BY_LANG.es.unshift({
+  version: "v1.12.23",
+  date: "2026-08-29",
+  title: "Discord OAuth2: Corrección del Client ID",
+  items: [
+    "Actualización del Client ID del bot oficial (1539597090232078376).",
+  ],
+});
+
+CHANGELOG_BY_LANG.de.unshift({
+  version: "v1.12.23",
+  date: "2026-08-29",
+  title: "Discord OAuth2: Korrektur der Bot-Client-ID",
+  items: [
+    "Aktualisierung der offiziellen Discord-Bot-Client-ID (1539597090232078376).",
+  ],
+});
+
+CHANGELOG_BY_LANG.fr.unshift({
   version: "v1.12.22",
   date: "2026-08-29",
   title: "Discord OAuth2 : Guide de Résolution & Configuration des Redirections",

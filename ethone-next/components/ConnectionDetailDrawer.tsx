@@ -551,11 +551,11 @@ export default function ConnectionDetailDrawer({
                       </div>
                       <input
                         type="text"
-                        value={credValues.clientId || "1339597090232078376"}
+                        value={credValues.clientId || "1539597090232078376"}
                         onChange={(e) =>
                           setCredValues((p) => ({ ...p, clientId: e.target.value }))
                         }
-                        placeholder="Ex: 1339597090232078376"
+                        placeholder="Ex: 1539597090232078376"
                         className="w-full rounded-xl border border-[var(--panel-border)] bg-[var(--surface-sunken)] px-3.5 py-2 text-xs font-mono text-[var(--text-primary)] placeholder-[var(--text-muted)] focus:border-indigo-500 focus:outline-none"
                       />
                     </div>
@@ -720,7 +720,7 @@ export default function ConnectionDetailDrawer({
                         const discordClientId =
                           (credValues.clientId && !credValues.clientId.includes("@")
                             ? credValues.clientId.trim()
-                            : "") || "1339597090232078376";
+                            : "") || "1539597090232078376";
 
                         if (typeof window !== "undefined") {
                           localStorage.setItem("ethone:clientId:discord", discordClientId);

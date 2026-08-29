@@ -191,6 +191,195 @@ export function groupLolMatchesByDate(matches: LolMatch[]): LolDayGroup[] {
   return groups.sort((a, b) => b.rawDate.localeCompare(a.rawDate));
 }
 
+export const LOL_QUEUES = [
+  { id: "all", label: "Tous les modes", queueId: null },
+  { id: "ranked_solo_duo", label: "Classé Solo / Duo", queueId: 420 },
+  { id: "ranked_flex", label: "Classé Flex 5v5", queueId: 440 },
+  { id: "draft", label: "Partie normale (Draft)", queueId: 400 },
+  { id: "blind", label: "Partie normale (Blind / Quickplay)", queueId: 490 },
+  { id: "aram", label: "ARAM (Abîme Hurlant)", queueId: 450 },
+  { id: "arena", label: "Arena (2v2v2v2)", queueId: 1700 },
+  { id: "clash", label: "Tournois Clash", queueId: 700 },
+];
+
+export async function fetchLolMatchesDirect(
+  name: string,
+  tag: string,
+  queue: string = "all",
+  apiKey?: string | null
+): Promise<LolMatch[]> {
+  const cleanName = name.trim();
+  const cleanTag = tag.trim().replace(/^#/, "");
+  if (!cleanName || !cleanTag) return [];
+
+  const headers: Record<string, string> = {};
+  if (apiKey) {
+    headers["X-Riot-Token"] = apiKey;
+  }
+
+  // 1. Account by Riot ID
+  const accountUrl = `https://europe.api.riotgames.com/riot/account/v1/accounts/by-riot-id/${encodeURIComponent(cleanName)}/${encodeURIComponent(cleanTag)}`;
+  const accRes = await fetch(accountUrl, { headers });
+  if (!accRes.ok) {
+    throw new Error(`Riot API Account: ${accRes.status}`);
+  }
+  const accJson = await accRes.json();
+  const puuid = accJson.puuid;
+  if (!puuid) return [];
+
+  // 2. Matches IDs by PUUID
+  const qObj = LOL_QUEUES.find((q) => q.id === queue);
+  const queueParam = qObj?.queueId ? `&queue=${qObj.queueId}` : "";
+  const matchIdsUrl = `https://europe.api.riotgames.com/lol/match/v5/matches/by-puuid/${encodeURIComponent(puuid)}/ids?count=10${queueParam}`;
+  const idsRes = await fetch(matchIdsUrl, { headers });
+  if (!idsRes.ok) {
+    throw new Error(`Riot API Match IDs: ${idsRes.status}`);
+  }
+  const matchIds: string[] = await idsRes.json();
+  if (!Array.isArray(matchIds) || matchIds.length === 0) return [];
+
+  // 3. Fetch each match in parallel
+  const matchDetails = await Promise.allSettled(
+    matchIds.slice(0, 8).map(async (mId) => {
+      const mUrl = `https://europe.api.riotgames.com/lol/match/v5/matches/${encodeURIComponent(mId)}`;
+      const mRes = await fetch(mUrl, { headers });
+      if (!mRes.ok) return null;
+      return mRes.json();
+    })
+  );
+
+  const validMatches: LolMatch[] = [];
+
+  for (const item of matchDetails) {
+    if (item.status === "fulfilled" && item.value) {
+      const matchData = item.value;
+      const info = matchData.info || {};
+      const participants: any[] = info.participants || [];
+      const me =
+        participants.find(
+          (p) =>
+            p.puuid === puuid ||
+            p.riotIdGameName?.toLowerCase() === cleanName.toLowerCase()
+        ) || participants[0];
+      if (!me) continue;
+
+      const duration = info.gameDuration || 1;
+      const durationMin = duration / 60;
+      const kills = me.kills || 0;
+      const deaths = me.deaths || 0;
+      const assists = me.assists || 0;
+      const kda =
+        deaths === 0
+          ? kills + assists
+          : Number(((kills + assists) / deaths).toFixed(2));
+      const cs = (me.totalMinionsKilled || 0) + (me.neutralMinionsKilled || 0);
+      const csPerMin = Number((cs / Math.max(1, durationMin)).toFixed(1));
+      const damage = me.totalDamageDealtToChampions || 0;
+      const damagePerMin = Math.round(damage / Math.max(1, durationMin));
+      const gold = me.goldEarned || 0;
+      const goldPerMin = Math.round(gold / Math.max(1, durationMin));
+
+      const modeName =
+        info.gameMode === "ARAM"
+          ? "ARAM"
+          : info.queueId === 420
+          ? "Classé Solo/Duo"
+          : info.queueId === 440
+          ? "Classé Flex"
+          : info.queueId === 400
+          ? "Draft Normale"
+          : info.queueId === 1700
+          ? "Arena"
+          : info.gameMode || "Classé";
+
+      const championName = me.championName || "Ahri";
+      const championImg = `https://ddragon.leagueoflegends.com/cdn/14.16.1/img/champion/${championName}.png`;
+
+      const players: LolPlayer[] = participants.map((p) => {
+        const isMe =
+          p.puuid === puuid ||
+          p.riotIdGameName?.toLowerCase() === cleanName.toLowerCase();
+        return {
+          name: p.riotIdGameName || p.summonerName || "",
+          tag: p.riotIdTagline || "",
+          team: p.teamId === 100 ? "Blue" : "Red",
+          isMe,
+          win: Boolean(p.win),
+          championId: p.championId,
+          character: p.championName,
+          level: p.champLevel || 1,
+          position: p.teamPosition || p.individualPosition || "",
+          spells: [
+            {
+              name: "Spell 1",
+              image: `https://ddragon.leagueoflegends.com/cdn/14.16.1/img/spell/SummonerFlash.png`,
+            },
+          ],
+          items: [],
+          stats: {
+            kills: p.kills || 0,
+            deaths: p.deaths || 0,
+            assists: p.assists || 0,
+            kda:
+              p.deaths === 0
+                ? p.kills + p.assists
+                : Number(((p.kills + p.assists) / p.deaths).toFixed(2)),
+            cs: (p.totalMinionsKilled || 0) + (p.neutralMinionsKilled || 0),
+            csPerMin: Number(
+              ((p.totalMinionsKilled || 0) / Math.max(1, durationMin)).toFixed(1)
+            ),
+            gold: p.goldEarned || 0,
+            goldPerMin: Math.round((p.goldEarned || 0) / Math.max(1, durationMin)),
+            damage: p.totalDamageDealtToChampions || 0,
+            damagePerMin: Math.round(
+              (p.totalDamageDealtToChampions || 0) / Math.max(1, durationMin)
+            ),
+          },
+        };
+      });
+
+      validMatches.push({
+        id: matchData.metadata?.matchId || `lol-${info.gameCreation || Date.now()}`,
+        metadata: {
+          modeName,
+          result: me.win ? "Victory" : "Defeat",
+          championName,
+          championId: me.championId,
+          championImageUrl: championImg,
+          duration,
+          timestamp: info.gameCreation
+            ? new Date(info.gameCreation).toISOString()
+            : new Date().toISOString(),
+        },
+        scoreboard: {
+          players,
+        },
+        segments: [
+          {
+            type: "overview",
+            stats: {
+              kills: { value: kills, displayValue: String(kills) },
+              deaths: { value: deaths, displayValue: String(deaths) },
+              assists: { value: assists, displayValue: String(assists) },
+              kda: { value: kda, displayValue: kda.toFixed(2) },
+              cs: { value: cs, displayValue: String(cs) },
+              csPerMin: { value: csPerMin, displayValue: String(csPerMin) },
+              damagePerMin: { value: damagePerMin, displayValue: String(damagePerMin) },
+              goldPerMin: { value: goldPerMin, displayValue: String(goldPerMin) },
+              totalDamageDealtToChampions: {
+                value: damage,
+                displayValue: `${(damage / 1000).toFixed(1)}k`,
+              },
+            },
+          },
+        ],
+      });
+    }
+  }
+
+  return validMatches;
+}
+
 export function generateFallbackLolMatches(
   playerName = "Rub19",
   playerTag = "boss"

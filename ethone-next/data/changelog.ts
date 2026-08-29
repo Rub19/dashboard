@@ -7206,6 +7206,46 @@ CHANGELOG_BY_LANG.es.unshift({
 });
 
 CHANGELOG_BY_LANG.fr.unshift({
+  version: "v1.12.29",
+  date: "2026-08-29",
+  title: "Trackers Valorant & LoL Réels (Sans Placeholder & Filtres de Modes Complets)",
+  items: [
+    "Suppression définitive des faux matchs/placeholders sur les trackers Valorant et League of Legends.",
+    "Intégration directe des APIs officielles (HenrikDev & Riot Games) avec prise en compte de vos clés API.",
+    "Sélecteur complet de modes Valorant (Compétitif, Non classé, Swiftplay, Deathmatch, Spike Rush, Premier) et LoL (Ranked Solo/Duo, Flex, Normal Draft, ARAM, Arena, Clash).",
+  ],
+});
+
+CHANGELOG_BY_LANG.en.unshift({
+  version: "v1.12.29",
+  date: "2026-08-29",
+  title: "Real Valorant & LoL Match Trackers (Zero Placeholders & Full Queue Filters)",
+  items: [
+    "Completely removed mock/placeholder games on Valorant and League of Legends trackers.",
+    "Direct integration with official HenrikDev and Riot Games APIs using your credentials.",
+    "Full mode selectors for Valorant (Comp, Unrated, Swiftplay, Deathmatch, Spike Rush) and LoL (Ranked Solo/Duo, Flex, Draft, ARAM, Arena).",
+  ],
+});
+
+CHANGELOG_BY_LANG.es.unshift({
+  version: "v1.12.29",
+  date: "2026-08-29",
+  title: "Trackers Reales de Valorant y LoL sin Placeholders",
+  items: [
+    "Eliminados todos los datos simulados en Valorant y LoL; integración con APIs oficiales.",
+  ],
+});
+
+CHANGELOG_BY_LANG.de.unshift({
+  version: "v1.12.29",
+  date: "2026-08-29",
+  title: "Echte Valorant & LoL Tracker ohne Platzhalter",
+  items: [
+    "Entfernung aller Platzhalterdaten; direkte offizielle API-Abfragen für Valorant und LoL.",
+  ],
+});
+
+CHANGELOG_BY_LANG.fr.unshift({
   version: "v1.12.28",
   date: "2026-08-29",
   title: "Discord Presence & Activités Temps Réel (Palworld, Spotify, Jeux)",

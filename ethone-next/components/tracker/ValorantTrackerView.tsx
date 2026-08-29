@@ -22,7 +22,7 @@ import { fetchWorker } from "@/lib/api";
 import {
   type ValorantMatch,
   groupMatchesByDate,
-  generateFallbackValorantMatches,
+  fetchValorantMatchesDirect,
 } from "@/lib/valorant-tracker";
 import ValorantMatchRow from "@/components/tracker/ValorantMatchRow";
 import ValorantDayHeader from "@/components/tracker/ValorantDayHeader";
@@ -84,48 +84,64 @@ export default function ValorantTrackerView() {
       else setLoading(true);
       setErrorMsg(null);
 
+      const henrikApiKey =
+        typeof window !== "undefined"
+          ? localStorage.getItem("ethone:cred:riot:henrikApiKey") ||
+            localStorage.getItem("ethone:cred:riot:apiKey") ||
+            localStorage.getItem("ethone:cred:tracker:apiKey")
+          : null;
+
       try {
-        const modeParam = selectedMode !== "all" ? `&mode=${encodeURIComponent(selectedMode)}` : "";
         let validMatches: ValorantMatch[] = [];
 
+        // 1. Direct Henrik API call
         try {
-          const res = await fetchWorker(
-            `/api/stats/valorant-matches?name=${encodeURIComponent(cleanName)}&tag=${encodeURIComponent(cleanTag)}${modeParam}`
-          );
-          const rawList = (res?.data?.matches || res?.data || res?.matches || res || []) as ValorantMatch[];
-          validMatches = Array.isArray(rawList) ? rawList : [];
-        } catch {
-          validMatches = generateFallbackValorantMatches(cleanName, cleanTag);
-        }
-
-        if (validMatches.length === 0) {
-          validMatches = generateFallbackValorantMatches(cleanName, cleanTag);
+          validMatches = await fetchValorantMatchesDirect(cleanName, cleanTag, selectedMode, henrikApiKey);
+        } catch (directErr) {
+          // 2. Fallback to Cloudflare Worker
+          try {
+            const modeParam = selectedMode !== "all" ? `&mode=${encodeURIComponent(selectedMode)}` : "";
+            const res = await fetchWorker(
+              `/api/stats/valorant-matches?name=${encodeURIComponent(cleanName)}&tag=${encodeURIComponent(cleanTag)}${modeParam}`
+            );
+            const rawList = (res?.data?.matches || res?.data || res?.matches || res || []) as ValorantMatch[];
+            validMatches = Array.isArray(rawList) ? rawList : [];
+          } catch {
+            validMatches = [];
+          }
         }
 
         setMatches(validMatches);
         setLastSyncTime(new Date());
 
-        // Cache result
-        try {
-          localStorage.setItem(
-            cacheKey,
-            JSON.stringify({
-              matches: validMatches,
-              timestamp: Date.now(),
-            })
-          );
-        } catch {}
+        if (validMatches.length > 0) {
+          try {
+            localStorage.setItem(
+              cacheKey,
+              JSON.stringify({
+                matches: validMatches,
+                timestamp: Date.now(),
+              })
+            );
+          } catch {}
+        }
 
-        if (force) success("Données Valorant synchronisées");
+        if (force) {
+          if (validMatches.length > 0) {
+            success(`${validMatches.length} parties Valorant synchronisées`);
+          } else {
+            showError(`Aucun match trouvé pour ${cleanName}#${cleanTag} (${selectedMode})`);
+          }
+        }
       } catch (err) {
-        const fallback = generateFallbackValorantMatches(cleanName, cleanTag);
-        setMatches(fallback);
+        setErrorMsg(err instanceof Error ? err.message : "Erreur lors de la récupération des matchs Valorant");
+        setMatches([]);
       } finally {
         setLoading(false);
         setSyncing(false);
       }
     },
-    [riotName, riotTag, selectedMode, cacheKey, success]
+    [riotName, riotTag, selectedMode, cacheKey, success, showError]
   );
 
   // Load once on mount or when account changes (using cache)

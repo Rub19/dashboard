@@ -238,6 +238,163 @@ export function groupMatchesByDate(matches: ValorantMatch[]): ValorantDayGroup[]
   return groups.sort((a, b) => b.rawDate.localeCompare(a.rawDate));
 }
 
+export function convertHenrikMatchToValorantMatch(
+  rawMatch: any,
+  cleanName: string,
+  cleanTag: string
+): ValorantMatch | null {
+  if (!rawMatch || !rawMatch.metadata) return null;
+  const meta = rawMatch.metadata;
+  const allPlayers: any[] = rawMatch.players?.all_players || [];
+  const myPlayer =
+    allPlayers.find(
+      (p) =>
+        p.name?.toLowerCase() === cleanName.toLowerCase() &&
+        p.tag?.toLowerCase() === cleanTag.toLowerCase()
+    ) || allPlayers[0];
+
+  if (!myPlayer) return null;
+
+  const myTeamColor = myPlayer.team?.toLowerCase() === "red" ? "Red" : "Blue";
+  const teams = rawMatch.teams || {};
+  const myTeamObj = myTeamColor === "Red" ? teams.red : teams.blue;
+  const opponentTeamObj = myTeamColor === "Red" ? teams.blue : teams.red;
+
+  const teamWon = myTeamObj?.has_won ?? ((myTeamObj?.rounds_won || 0) > (opponentTeamObj?.rounds_won || 0));
+  const result = teamWon
+    ? "Victory"
+    : (myTeamObj?.rounds_won === opponentTeamObj?.rounds_won ? "Draw" : "Defeat");
+
+  const myKills = myPlayer.stats?.kills || 0;
+  const myDeaths = myPlayer.stats?.deaths || 0;
+  const myAssists = myPlayer.stats?.assists || 0;
+  const myScore = myPlayer.stats?.score || 0;
+  const roundsPlayed =
+    meta.rounds_played ||
+    ((myTeamObj?.rounds_won || 0) + (opponentTeamObj?.rounds_won || 0)) ||
+    1;
+  const acs = Math.round(myScore / Math.max(1, roundsPlayed));
+  const hs = myPlayer.stats?.headshots || 0;
+  const bs = myPlayer.stats?.bodyshots || 0;
+  const ls = myPlayer.stats?.legshots || 0;
+  const totalShots = hs + bs + ls;
+  const hsPercent = totalShots > 0 ? Math.round((hs / totalShots) * 100) : 0;
+  const damageMade = myPlayer.damage_made || 0;
+  const damageReceived = myPlayer.damage_received || 0;
+  const damageDelta = Math.round((damageMade - damageReceived) / Math.max(1, roundsPlayed));
+  const adr = Math.round(damageMade / Math.max(1, roundsPlayed));
+
+  const players: ValorantPlayer[] = allPlayers.map((p) => {
+    const isMe =
+      p.name?.toLowerCase() === cleanName.toLowerCase() &&
+      p.tag?.toLowerCase() === cleanTag.toLowerCase();
+    const agentName = p.character || "Jett";
+    return {
+      name: p.name || "",
+      tag: p.tag || "",
+      team: p.team === "Red" ? "Red" : "Blue",
+      character: agentName,
+      isMe,
+      currenttier_patched: p.currenttier_patched || "",
+      assets: {
+        agent: {
+          small: p.assets?.agent?.small || getAgentIcon(agentName),
+        },
+      },
+      stats: {
+        score: p.stats?.score || 0,
+        kills: p.stats?.kills || 0,
+        deaths: p.stats?.deaths || 0,
+        assists: p.stats?.assists || 0,
+        headshots: p.stats?.headshots,
+        bodyshots: p.stats?.bodyshots,
+        legshots: p.stats?.legshots,
+        damageMade: p.damage_made,
+        damageReceived: p.damage_received,
+        adr: Math.round((p.damage_made || 0) / Math.max(1, roundsPlayed)),
+      },
+    };
+  });
+
+  const agentName = myPlayer.character || "Jett";
+
+  return {
+    id: meta.matchid || `val-${meta.game_start || Date.now()}`,
+    metadata: {
+      modeName: meta.mode || "Compétitif",
+      result,
+      mapName: meta.map || "Ascent",
+      agentName,
+      agentImageUrl: myPlayer.assets?.agent?.small || getAgentIcon(agentName),
+      score: {
+        team: myTeamObj?.rounds_won ?? 0,
+        opponent: opponentTeamObj?.rounds_won ?? 0,
+        roundsPlayed,
+      },
+      timestamp: meta.game_start
+        ? new Date(meta.game_start * 1000).toISOString()
+        : new Date().toISOString(),
+    },
+    scoreboard: {
+      teams: {
+        Red: { roundsWon: teams.red?.rounds_won ?? 0 },
+        Blue: { roundsWon: teams.blue?.rounds_won ?? 0 },
+      },
+      players,
+    },
+    segments: [
+      {
+        type: "overview",
+        stats: {
+          kills: { value: myKills, displayValue: String(myKills) },
+          deaths: { value: myDeaths, displayValue: String(myDeaths) },
+          assists: { value: myAssists, displayValue: String(myAssists) },
+          score: { value: myScore, displayValue: String(myScore) },
+          scorePerRound: { value: acs, displayValue: `${acs} ACS` },
+          headshotsPercentage: { value: hsPercent, displayValue: `${hsPercent}%` },
+          damageDeltaPerRound: {
+            value: damageDelta,
+            displayValue: damageDelta >= 0 ? `+${damageDelta}` : String(damageDelta),
+          },
+          adr: { value: adr, displayValue: String(adr) },
+        },
+      },
+    ],
+  };
+}
+
+export async function fetchValorantMatchesDirect(
+  name: string,
+  tag: string,
+  mode: string = "all",
+  apiKey?: string | null
+): Promise<ValorantMatch[]> {
+  const cleanName = name.trim();
+  const cleanTag = tag.trim().replace(/^#/, "");
+  if (!cleanName || !cleanTag) return [];
+
+  const headers: Record<string, string> = {};
+  if (apiKey) {
+    headers["Authorization"] = apiKey;
+  }
+
+  const modeFilter = mode !== "all" ? `?filter=${encodeURIComponent(mode)}` : "";
+  const url = `https://api.henrikdev.xyz/valorant/v3/matches/eu/${encodeURIComponent(cleanName)}/${encodeURIComponent(cleanTag)}${modeFilter}`;
+
+  const res = await fetch(url, { headers });
+  if (!res.ok) {
+    throw new Error(`Henrik API ${res.status}: ${res.statusText}`);
+  }
+  const json = await res.json();
+  const rawMatches: any[] = Array.isArray(json?.data) ? json.data : [];
+
+  const matches = rawMatches
+    .map((m) => convertHenrikMatchToValorantMatch(m, cleanName, cleanTag))
+    .filter((m): m is ValorantMatch => Boolean(m));
+
+  return matches;
+}
+
 export function generateFallbackValorantMatches(
   playerName = "Rub19",
   playerTag = "boss"

@@ -17,7 +17,8 @@ import { fetchWorker } from "@/lib/api";
 import {
   type LolMatch,
   groupLolMatchesByDate,
-  generateFallbackLolMatches,
+  fetchLolMatchesDirect,
+  LOL_QUEUES,
 } from "@/lib/lol-tracker";
 import LolMatchRow from "@/components/tracker/LolMatchRow";
 import LolDayHeader from "@/components/tracker/LolDayHeader";
@@ -79,47 +80,63 @@ export default function LolTrackerView() {
       else setLoading(true);
       setErrorMsg(null);
 
+      const riotApiKey =
+        typeof window !== "undefined"
+          ? localStorage.getItem("ethone:cred:riot:riotApiKey") ||
+            localStorage.getItem("ethone:cred:riot:apiKey")
+          : null;
+
       try {
-        const queueParam = selectedQueue !== "all" ? `&mode=${encodeURIComponent(selectedQueue)}` : "";
         let validMatches: LolMatch[] = [];
 
+        // 1. Direct Riot API call
         try {
-          const res = await fetchWorker(
-            `/api/stats/lol-matches?name=${encodeURIComponent(cleanName)}&tag=${encodeURIComponent(cleanTag)}${queueParam}`
-          );
-          const rawList = (res?.data?.matches || res?.data || res?.matches || res || []) as LolMatch[];
-          validMatches = Array.isArray(rawList) ? rawList : [];
-        } catch {
-          validMatches = generateFallbackLolMatches(cleanName, cleanTag);
-        }
-
-        if (validMatches.length === 0) {
-          validMatches = generateFallbackLolMatches(cleanName, cleanTag);
+          validMatches = await fetchLolMatchesDirect(cleanName, cleanTag, selectedQueue, riotApiKey);
+        } catch (directErr) {
+          // 2. Fallback to Cloudflare Worker
+          try {
+            const queueParam = selectedQueue !== "all" ? `&mode=${encodeURIComponent(selectedQueue)}` : "";
+            const res = await fetchWorker(
+              `/api/stats/lol-matches?name=${encodeURIComponent(cleanName)}&tag=${encodeURIComponent(cleanTag)}${queueParam}`
+            );
+            const rawList = (res?.data?.matches || res?.data || res?.matches || res || []) as LolMatch[];
+            validMatches = Array.isArray(rawList) ? rawList : [];
+          } catch {
+            validMatches = [];
+          }
         }
 
         setMatches(validMatches);
         setLastSyncTime(new Date());
 
-        try {
-          localStorage.setItem(
-            cacheKey,
-            JSON.stringify({
-              matches: validMatches,
-              timestamp: Date.now(),
-            })
-          );
-        } catch {}
+        if (validMatches.length > 0) {
+          try {
+            localStorage.setItem(
+              cacheKey,
+              JSON.stringify({
+                matches: validMatches,
+                timestamp: Date.now(),
+              })
+            );
+          } catch {}
+        }
 
-        if (force) success("Données League of Legends actualisées");
+        if (force) {
+          if (validMatches.length > 0) {
+            success(`${validMatches.length} parties LoL actualisées`);
+          } else {
+            showError(`Aucune partie LoL trouvée pour ${cleanName}#${cleanTag}`);
+          }
+        }
       } catch (err: unknown) {
-        const fallback = generateFallbackLolMatches(cleanName, cleanTag);
-        setMatches(fallback);
+        setErrorMsg(err instanceof Error ? err.message : "Erreur lors de la récupération des données LoL");
+        setMatches([]);
       } finally {
         setLoading(false);
         setSyncing(false);
       }
     },
-    [riotName, riotTag, selectedQueue, cacheKey, success]
+    [riotName, riotTag, selectedQueue, cacheKey, success, showError]
   );
 
   useEffect(() => {
@@ -214,10 +231,11 @@ export default function LolTrackerView() {
               onChange={(e) => setSelectedQueue(e.target.value)}
               className="rounded-2xl border border-white/10 bg-black/40 px-3 py-2 text-xs font-semibold text-zinc-300 outline-none cursor-pointer"
             >
-              <option value="all" className="bg-zinc-900 text-white">Toutes les files</option>
-              <option value="ranked" className="bg-zinc-900 text-white">Ranked Solo / Duo</option>
-              <option value="normal" className="bg-zinc-900 text-white">Normal Draft</option>
-              <option value="aram" className="bg-zinc-900 text-white">ARAM</option>
+              {LOL_QUEUES.map((q) => (
+                <option key={q.id} value={q.id} className="bg-zinc-900 text-white">
+                  {q.label}
+                </option>
+              ))}
             </select>
 
             <button

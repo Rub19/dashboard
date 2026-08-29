@@ -7206,6 +7206,46 @@ CHANGELOG_BY_LANG.es.unshift({
 });
 
 CHANGELOG_BY_LANG.fr.unshift({
+  version: "v1.12.19",
+  date: "2026-08-29",
+  title: "Synchronisation Spotify Haute Fréquence & Sonde Historique Récent",
+  items: [
+    "Sonde haute fréquence (3s) pour la mise à jour ultra-réactive de la Dynamic Island et du Dock.",
+    "Intégration du fallback sur l'historique d'écoute récent (/recently-played) pour afficher la pochette et le titre même en pause.",
+    "Bascule fluide et détection de lecture multi-appareils.",
+  ],
+});
+
+CHANGELOG_BY_LANG.en.unshift({
+  version: "v1.12.19",
+  date: "2026-08-29",
+  title: "High-Frequency Spotify Playback Sync & Recent History Probe",
+  items: [
+    "High-frequency 3s polling for ultra-responsive Dynamic Island and Dock updates.",
+    "Integrated recent history fallback (/recently-played) to display real cover art and metadata even when paused.",
+    "Seamless multi-device playback synchronization.",
+  ],
+});
+
+CHANGELOG_BY_LANG.es.unshift({
+  version: "v1.12.19",
+  date: "2026-08-29",
+  title: "Sincronización de Alta Frecuencia de Spotify",
+  items: [
+    "Sondeo de 3 segundos y visualización de pistas recientes en la Dynamic Island.",
+  ],
+});
+
+CHANGELOG_BY_LANG.de.unshift({
+  version: "v1.12.19",
+  date: "2026-08-29",
+  title: "Hochfrequente Spotify-Synchronisation & Verlaufssonde",
+  items: [
+    "3-Sekunden-Polling und Erkennung von Tracks in der Dynamic Island.",
+  ],
+});
+
+CHANGELOG_BY_LANG.fr.unshift({
   version: "v1.12.18",
   date: "2026-08-29",
   title: "Discord OAuth2 Enrichi : Scopes Serveurs (Guilds) & Comptes Liés (Connections)",

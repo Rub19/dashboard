@@ -95,10 +95,10 @@ function mapNowPlaying(raw: unknown): NowPlaying | null {
   };
 }
 
-export function useNowPlaying(pollMs = 10000) {
+export function useNowPlaying(pollMs = 3000) {
   const { settings } = useSettings();
   const { performanceMode = "normal" } = settings;
-  const basePollMs = performanceMode === "low" ? 30000 : Math.max(3000, pollMs);
+  const basePollMs = performanceMode === "low" ? 15000 : Math.max(2000, pollMs);
 
   const [data, setData] = useState<NowPlaying | null>(null);
   const [loading, setLoading] = useState(false);
@@ -165,6 +165,43 @@ export function useNowPlaying(pollMs = 10000) {
                 progressMs: spJson.progress_ms,
                 durationMs: spJson.item.duration_ms,
                 isPlaying: Boolean(spJson.is_playing),
+                isSaved: false,
+              };
+              setData(mapped);
+              setError(null);
+              return;
+            }
+          }
+
+          // Fallback to recently-played if currently idle
+          const recentRes = await fetch("https://api.spotify.com/v1/me/player/recently-played?limit=1", {
+            headers: { Authorization: `Bearer ${spotifyToken}` },
+          });
+          if (recentRes.ok) {
+            const rJson = (await recentRes.json()) as {
+              items?: Array<{
+                track?: {
+                  id?: string;
+                  name?: string;
+                  duration_ms?: number;
+                  artists?: { name: string }[];
+                  album?: { name: string; images?: { url: string }[] };
+                };
+              }>;
+            };
+            const lastTrack = rJson?.items?.[0]?.track;
+            if (lastTrack) {
+              const mapped: NowPlaying = {
+                id: lastTrack.id,
+                source: "spotify",
+                title: lastTrack.name,
+                artist: lastTrack.artists?.map((a) => a.name).join(", "),
+                album: lastTrack.album?.name,
+                cover: lastTrack.album?.images?.[0]?.url,
+                artworkUrl: lastTrack.album?.images?.[0]?.url,
+                covers: lastTrack.album?.images?.map((i) => i.url) || [],
+                durationMs: lastTrack.duration_ms,
+                isPlaying: false,
                 isSaved: false,
               };
               setData(mapped);

@@ -7206,6 +7206,46 @@ CHANGELOG_BY_LANG.es.unshift({
 });
 
 CHANGELOG_BY_LANG.fr.unshift({
+  version: "v1.12.16",
+  date: "2026-08-29",
+  title: "Discord OAuth2 : Assistant de Saisie du Client ID & Remplissage Rapide du Bot",
+  items: [
+    "Bouton d'insertion rapide en 1 clic de l'identifiant bot Discord (1339597090232078376).",
+    "Détection automatique des erreurs de saisie (adresse email au lieu d'un ID numérique).",
+    "Instructions claires pour l'autorisation et les permissions de l'application.",
+  ],
+});
+
+CHANGELOG_BY_LANG.en.unshift({
+  version: "v1.12.16",
+  date: "2026-08-29",
+  title: "Discord OAuth2: Client ID Helper & Quick Bot ID Filler",
+  items: [
+    "1-click quick-fill button for Discord Bot Client ID (1339597090232078376).",
+    "Automatic input validation preventing email addresses in place of numeric IDs.",
+    "Streamlined authorization flow and error-free connection.",
+  ],
+});
+
+CHANGELOG_BY_LANG.es.unshift({
+  version: "v1.12.16",
+  date: "2026-08-29",
+  title: "Discord OAuth2: Asistente de Client ID y Relleno Rápido",
+  items: [
+    "Botón de inserción rápida para el Client ID del bot de Discord.",
+  ],
+});
+
+CHANGELOG_BY_LANG.de.unshift({
+  version: "v1.12.16",
+  date: "2026-08-29",
+  title: "Discord OAuth2: Client-ID-Assistent & Schnelleinfügen",
+  items: [
+    "Schnell-Einfügen-Schaltfläche für die Discord-Bot-Client-ID.",
+  ],
+});
+
+CHANGELOG_BY_LANG.fr.unshift({
   version: "v1.12.15",
   date: "2026-08-28",
   title: "Contrôles Spotify Natifs : Lecture, Pause, Suivant & Volume Directs",

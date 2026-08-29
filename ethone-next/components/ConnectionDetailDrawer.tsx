@@ -501,7 +501,7 @@ export default function ConnectionDetailDrawer({
                     <div className="space-y-1.5">
                       <div className="flex items-center justify-between">
                         <label className="block text-xs font-semibold text-[var(--text-primary)]">
-                          Client ID Application Discord
+                          Client ID Application Discord (Numérique)
                         </label>
                         <a
                           href="https://discord.com/developers/applications"
@@ -519,14 +519,26 @@ export default function ConnectionDetailDrawer({
                         onChange={(e) =>
                           setCredValues((p) => ({ ...p, clientId: e.target.value }))
                         }
-                        placeholder="Ex: 123456789012345678..."
+                        placeholder="Ex: 1339597090232078376 (Pas d'adresse email)"
                         className="w-full rounded-xl border border-[var(--panel-border)] bg-[var(--surface-sunken)] px-3.5 py-2.5 text-xs font-mono text-[var(--text-primary)] placeholder-[var(--text-muted)] focus:border-indigo-500 focus:outline-none"
                       />
+                      {credValues.clientId?.includes("@") && (
+                        <p className="text-[11px] font-semibold text-rose-400">
+                          ⚠️ Le Client ID n&apos;est pas votre adresse email. C&apos;est le numéro à 19 chiffres (ex: 1339597090232078376) copié depuis Discord Dev Portal &gt; OAuth2.
+                        </p>
+                      )}
+                      <button
+                        type="button"
+                        onClick={() => setCredValues((p) => ({ ...p, clientId: "1339597090232078376" }))}
+                        className="text-[10px] text-indigo-400 hover:underline cursor-pointer"
+                      >
+                        ⚡ Insérer mon Client ID Bot : <strong>1339597090232078376</strong>
+                      </button>
                     </div>
 
                     <div className="space-y-1.5">
                       <label className="block text-xs font-semibold text-[var(--text-primary)]">
-                        Client Secret Discord
+                        Client Secret Discord (Optionnel pour PKCE)
                       </label>
                       <input
                         type="password"
@@ -697,8 +709,8 @@ export default function ConnectionDetailDrawer({
                         return;
                       } else {
                         const discordClientId = credValues.clientId?.trim();
-                        if (!discordClientId) {
-                          showError("Veuillez renseigner votre Client ID Discord ou utiliser le mode Lanyard (1-clic).");
+                        if (!discordClientId || discordClientId.includes("@")) {
+                          showError("Le Client ID doit être un numéro à 18-19 chiffres (ex: 1339597090232078376), et non une adresse e-mail.");
                           return;
                         }
                         if (typeof window !== "undefined") {

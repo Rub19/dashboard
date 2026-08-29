@@ -90,7 +90,7 @@ const DEFAULT_WIDGETS: WidgetLayout[] = [
 
 export default function DashboardOverview() {
   const i18n = useI18n();
-  const { settings } = useSettings();
+  const { settings, update: updateSettings } = useSettings();
   const { greeting, dashboard, nowPlaying, loading, error } = useHomeData();
   const live = useLiveData();
   const tasksApi = useCloudTasks();
@@ -117,7 +117,11 @@ export default function DashboardOverview() {
     // appear when a saved layout exists without them.
     const merged: WidgetLayout[] = defaults.map((w) => {
       const override = savedMap.get(w.id);
-      return override ? { ...w, ...override } : w;
+      if (override) {
+        const isVisible = override.visible !== false && !hidden.has(w.id);
+        return { ...w, ...override, visible: isVisible };
+      }
+      return w;
     });
 
     // Append any custom widgets the user previously added that are not in defaults.
@@ -245,10 +249,20 @@ export default function DashboardOverview() {
 
   const toggleSection = useCallback(
     (id: string) => {
+      const currentHidden = new Set(settings.homeHiddenSections || []);
+      const isCurrentlyVisible = widgets.find((w) => w.id === id)?.visible ?? true;
+      if (isCurrentlyVisible) {
+        currentHidden.add(id);
+      } else {
+        currentHidden.delete(id);
+      }
+      const nextHidden = Array.from(currentHidden);
+      updateSettings({ homeHiddenSections: nextHidden });
+
       const next = widgets.map((w) => (w.id === id ? { ...w, visible: !w.visible } : w));
       void updateLayout(next);
     },
-    [widgets, updateLayout]
+    [widgets, updateLayout, settings.homeHiddenSections, updateSettings]
   );
 
   const visibleSet = useMemo(() => new Set(widgets.filter((w) => w.visible).map((w) => w.id)), [widgets]);

@@ -3,7 +3,7 @@
 import { useCallback, useEffect, useMemo, useState } from "react";
 import ClientImage from "@/components/ClientImage";
 import { useRouter } from "next/navigation";
-import { ChevronRight } from "lucide-react";
+import { ChevronRight, LogOut } from "lucide-react";
 import { Icon } from "@/lib/icons";
 import { useAuth } from "@/components/AuthProvider";
 import { useUserIdentity } from "@/lib/hooks/useUserIdentity";
@@ -98,7 +98,7 @@ export default function UserProfileDropdown({ dataTestId = "user-profile-trigger
     return CHANGELOG_BY_LANG[settings.language] || CHANGELOG;
   }, [settings.language]);
 
-  const VERSION_LABEL = "v1.12.46";
+  const VERSION_LABEL = "v1.12.47";
 
   const menuItems = [
     {
@@ -352,7 +352,7 @@ export default function UserProfileDropdown({ dataTestId = "user-profile-trigger
                   <div className="absolute left-0 top-2 bottom-2 w-1 rounded-r-full bg-[var(--danger)] opacity-0 shadow-[0_0_8px_rgba(239,68,68,0.5)] transition-all duration-150 group-hover:opacity-100" />
                   <div className="flex items-center gap-2.5 pl-1">
                     <div className="flex h-7 w-7 shrink-0 items-center justify-center rounded-lg bg-[var(--danger)]/15 text-[var(--danger)] transition-transform duration-150 group-hover:scale-110">
-                      <Icon name="sign-out" className="h-4 w-4" />
+                      <LogOut className="h-4 w-4" />
                     </div>
                     <span>Se déconnecter</span>
                   </div>

@@ -9,6 +9,7 @@ import { Icon } from "@/lib/icons";
 import BrandMark from "@/components/BrandMark";
 import { NAVIGATION_ITEMS, isActiveRoute } from "@/lib/navigation";
 import { hapticLightImpact, hapticMediumImpact } from "@/lib/haptics";
+import { useAnimatedSidebar } from "@/components/motion/animated-sidebar";
 
 function cn(...parts: (string | false | undefined)[]) {
   return parts.filter(Boolean).join(" ");
@@ -22,13 +23,22 @@ export default function FloatingLiquidDock() {
   const [drawerOpen, setDrawerOpen] = useState(false);
   const [pressedId, setPressedId] = useState<string | null>(null);
 
+  let animatedSidebar: ReturnType<typeof useAnimatedSidebar> | null = null;
+  try {
+    // eslint-disable-next-line react-hooks/rules-of-hooks
+    animatedSidebar = useAnimatedSidebar();
+  } catch {}
+
+  const isMenuOpen = drawerOpen || Boolean(animatedSidebar?.openMobile);
+
   useEffect(() => {
     function onCloseDrawer() {
       setDrawerOpen(false);
+      animatedSidebar?.setOpenMobile(false);
     }
     window.addEventListener("v8:request-close-drawer", onCloseDrawer);
     return () => window.removeEventListener("v8:request-close-drawer", onCloseDrawer);
-  }, []);
+  }, [animatedSidebar]);
 
   const allItems = useMemo(
     () => NAVIGATION_ITEMS.map((item) => ({ ...item, label: i18n(item.label) })),
@@ -49,9 +59,13 @@ export default function FloatingLiquidDock() {
   );
 
   const onMenuPress = useCallback(async () => {
-    setDrawerOpen(true);
     await hapticMediumImpact();
-  }, []);
+    if (animatedSidebar) {
+      animatedSidebar.setOpenMobile(!animatedSidebar.openMobile);
+    } else {
+      setDrawerOpen(true);
+    }
+  }, [animatedSidebar]);
 
   function handleDrawerDragEnd(_event: unknown, info: PanInfo) {
     const threshold = 80;
@@ -66,7 +80,10 @@ export default function FloatingLiquidDock() {
       <nav
         data-zen-hidden
         data-liquid-dock
-        className="fixed bottom-5 left-1/2 z-[var(--z-dock)] flex h-[64px] w-[92%] max-w-[390px] -translate-x-1/2 flex-row items-center justify-around rounded-full border border-[var(--panel-border)] bg-[var(--panel-bg)]/80 pb-[env(safe-area-inset-bottom)] px-2 shadow-2xl backdrop-blur-2xl md:hidden"
+        className={cn(
+          "fixed bottom-5 left-1/2 z-[var(--z-dock)] flex h-[64px] w-[92%] max-w-[390px] -translate-x-1/2 flex-row items-center justify-around rounded-full border border-[var(--panel-border)] bg-[var(--panel-bg)]/80 pb-[env(safe-area-inset-bottom)] px-2 shadow-2xl backdrop-blur-2xl md:hidden transition-all duration-200",
+          isMenuOpen ? "opacity-0 pointer-events-none translate-y-12" : "opacity-100 translate-y-0"
+        )}
       >
         {visibleItems.map((item) => {
           const isActive = isActiveRoute(pathname, item.href);

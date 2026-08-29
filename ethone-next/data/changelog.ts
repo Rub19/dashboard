@@ -7206,6 +7206,52 @@ CHANGELOG_BY_LANG.es.unshift({
 });
 
 CHANGELOG_BY_LANG.fr.unshift({
+  version: "v1.12.47",
+  date: "2026-08-30",
+  title: "Optimisations Mobiles, Synchronisation Supabase & Avatars",
+  items: [
+    "Synchronisation instantanée des sections masquées du Dashboard avec Supabase entre PC et mobile.",
+    "Masquage automatique du Dock flottant lors de l'ouverture du menu latéral sur mobile.",
+    "Correction complète de l'affichage de l'avatar profil sur PC et mobile (support complet Google OAuth et custom).",
+    "Ajout de l'icône de déconnexion et restauration de l'icône de recherche rapide dans l'en-tête.",
+    "Atténuation subtile des halos d'ambiance nocturne pour un rendu visuel épuré.",
+  ],
+});
+
+CHANGELOG_BY_LANG.en.unshift({
+  version: "v1.12.47",
+  date: "2026-08-30",
+  title: "Mobile UI Polish, Supabase Sync & Profile Avatars",
+  items: [
+    "Instant Supabase synchronization of hidden Dashboard sections across desktop and mobile devices.",
+    "Automatic hide of floating dock when mobile navigation drawer is opened.",
+    "Full resolution of user avatar profile picture across navbar and sidebar.",
+    "Added logout icon and restored top search trigger icon.",
+    "Subtle tuning of nighttime ambient aura.",
+  ],
+});
+
+CHANGELOG_BY_LANG.es.unshift({
+  version: "v1.12.47",
+  date: "2026-08-30",
+  title: "Ajustes Móviles, Sincronización Supabase y Avatares",
+  items: [
+    "Sincronización de secciones ocultas con Supabase entre móvil y escritorio.",
+    "Ocultación automática del dock al abrir el menú lateral en móvil.",
+  ],
+});
+
+CHANGELOG_BY_LANG.de.unshift({
+  version: "v1.12.47",
+  date: "2026-08-30",
+  title: "Mobile Optimierungen, Supabase-Sync & Avatare",
+  items: [
+    "Automatische Synchronisierung ausgeblendeter Dashboard-Bereiche via Supabase.",
+    "Automatisches Ausblenden des mobilen Docks bei geöffnetem Menü.",
+  ],
+});
+
+CHANGELOG_BY_LANG.fr.unshift({
   version: "v1.12.46",
   date: "2026-08-30",
   title: "Logos Officiels SVG pour Valorant et League of Legends",

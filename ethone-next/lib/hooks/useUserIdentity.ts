@@ -33,11 +33,8 @@ export function useUserIdentity(): UserIdentity {
           localStorage.setItem("ethone_user_name", "Rub");
           setCachedName("Rub");
         }
-        if (savedAvatar && !savedAvatar.includes("googleusercontent.com")) {
+        if (savedAvatar) {
           setCachedAvatar(savedAvatar);
-        } else if (savedAvatar?.includes("googleusercontent.com")) {
-          localStorage.removeItem("ethone_user_avatar");
-          setCachedAvatar("");
         }
       } catch {
         // ignore storage restrictions
@@ -63,14 +60,15 @@ export function useUserIdentity(): UserIdentity {
     (user?.email ? user.email.split("@")[0] : "") ||
     "Rub";
 
-  // Resolution of avatar URL: custom user uploaded avatar or profile avatar
+  // Resolution of avatar URL: custom user uploaded avatar or profile avatar or OAuth avatar
   const avatarUrl =
-    (publicProfile?.avatar_url && !publicProfile.avatar_url.includes("googleusercontent.com") ? publicProfile.avatar_url : undefined) ||
+    publicProfile?.avatar_url ||
     (activeProfile as unknown as { avatar_url?: string; avatar?: string })?.avatar_url ||
     (activeProfile as unknown as { avatar_url?: string; avatar?: string })?.avatar ||
     (typeof meta.custom_avatar_url === "string" ? meta.custom_avatar_url : undefined) ||
-    (typeof meta.avatar_url === "string" && !meta.avatar_url.includes("googleusercontent.com") ? meta.avatar_url : undefined) ||
-    (cachedAvatar && !cachedAvatar.includes("googleusercontent.com") ? cachedAvatar : undefined) ||
+    (typeof meta.avatar_url === "string" ? meta.avatar_url : undefined) ||
+    (typeof meta.picture === "string" ? meta.picture : undefined) ||
+    cachedAvatar ||
     undefined;
 
   useEffect(() => {
@@ -79,7 +77,7 @@ export function useUserIdentity(): UserIdentity {
         if (displayName && displayName !== "Invité" && displayName !== "Utilisateur ETHONE") {
           localStorage.setItem("ethone_user_name", displayName);
         }
-        if (avatarUrl && !avatarUrl.includes("googleusercontent.com")) {
+        if (avatarUrl) {
           localStorage.setItem("ethone_user_avatar", avatarUrl);
         }
       } catch {

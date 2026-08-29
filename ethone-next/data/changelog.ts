@@ -7206,6 +7206,46 @@ CHANGELOG_BY_LANG.es.unshift({
 });
 
 CHANGELOG_BY_LANG.fr.unshift({
+  version: "v1.12.17",
+  date: "2026-08-29",
+  title: "Discord OAuth2 Universel : Connexion Directe 1-Clic via Bot ETHONE Officiel",
+  items: [
+    "Connexion Discord directe 1-clic : clic sur « Connecter » redirige instantanément vers la page d'autorisation de votre bot ETHONE.",
+    "Intégration native du Client ID 1339597090232078376 sans aucune saisie ni configuration requise pour les utilisateurs.",
+    "Gestion automatique de la redirection et activation immédiate du profil.",
+  ],
+});
+
+CHANGELOG_BY_LANG.en.unshift({
+  version: "v1.12.17",
+  date: "2026-08-29",
+  title: "Universal Discord OAuth2: 1-Click Direct Connection via Official ETHONE Bot",
+  items: [
+    "Direct 1-click Discord OAuth2 connection: clicking 'Connect' instantly redirects to the authorization page.",
+    "Native pre-configured Client ID 1339597090232078376 with zero manual setup required.",
+    "Automatic callback handling and instant profile activation.",
+  ],
+});
+
+CHANGELOG_BY_LANG.es.unshift({
+  version: "v1.12.17",
+  date: "2026-08-29",
+  title: "Discord OAuth2 Universal: Conexión Directa en 1 Clic",
+  items: [
+    "Conexión directa en 1 clic con el bot oficial de Discord sin configuración previa.",
+  ],
+});
+
+CHANGELOG_BY_LANG.de.unshift({
+  version: "v1.12.17",
+  date: "2026-08-29",
+  title: "Universelles Discord OAuth2: 1-Klick-Direktverbindung",
+  items: [
+    "1-Klick-Direktverbindung mit dem offiziellen Discord-Bot ohne manuelle Einrichtung.",
+  ],
+});
+
+CHANGELOG_BY_LANG.fr.unshift({
   version: "v1.12.16",
   date: "2026-08-29",
   title: "Discord OAuth2 : Assistant de Saisie du Client ID & Remplissage Rapide du Bot",

@@ -496,59 +496,53 @@ export default function ConnectionDetailDrawer({
 
               {/* Discord OAuth2 Dedicated Configuration */}
               {integration.id === "discord" && discordMode === "oauth" && (
-                <Section title="Configuration OAuth2 Discord">
+                <Section title="Connexion OAuth2 Discord (Officiel)">
                   <div className="space-y-4 rounded-2xl border border-indigo-500/30 bg-indigo-500/5 p-4">
-                    <div className="space-y-1.5">
-                      <div className="flex items-center justify-between">
-                        <label className="block text-xs font-semibold text-[var(--text-primary)]">
-                          Client ID Application Discord (Numérique)
-                        </label>
-                        <a
-                          href="https://discord.com/developers/applications"
-                          target="_blank"
-                          rel="noopener noreferrer"
-                          className="inline-flex items-center gap-1 text-[11px] text-indigo-400 hover:underline font-semibold"
-                        >
-                          <span>Discord Dev Portal</span>
-                          <ExternalLink className="h-3 w-3" />
-                        </a>
-                      </div>
-                      <input
-                        type="text"
-                        value={credValues.clientId || ""}
-                        onChange={(e) =>
-                          setCredValues((p) => ({ ...p, clientId: e.target.value }))
-                        }
-                        placeholder="Ex: 1339597090232078376 (Pas d'adresse email)"
-                        className="w-full rounded-xl border border-[var(--panel-border)] bg-[var(--surface-sunken)] px-3.5 py-2.5 text-xs font-mono text-[var(--text-primary)] placeholder-[var(--text-muted)] focus:border-indigo-500 focus:outline-none"
-                      />
-                      {credValues.clientId?.includes("@") && (
-                        <p className="text-[11px] font-semibold text-rose-400">
-                          ⚠️ Le Client ID n&apos;est pas votre adresse email. C&apos;est le numéro à 19 chiffres (ex: 1339597090232078376) copié depuis Discord Dev Portal &gt; OAuth2.
+                    <div className="flex items-center justify-between">
+                      <div>
+                        <p className="text-xs font-bold text-white flex items-center gap-1.5">
+                          <CheckCircle2 className="h-4 w-4 text-emerald-400" />
+                          <span>Bot ETHONE Officiel Pré-Configuré</span>
                         </p>
-                      )}
-                      <button
-                        type="button"
-                        onClick={() => setCredValues((p) => ({ ...p, clientId: "1339597090232078376" }))}
-                        className="text-[10px] text-indigo-400 hover:underline cursor-pointer"
+                        <p className="text-[11px] text-zinc-400 mt-0.5">
+                          ID de l&apos;application : <code className="text-indigo-300 font-mono">1339597090232078376</code>
+                        </p>
+                      </div>
+                      <a
+                        href="https://discord.com/developers/applications"
+                        target="_blank"
+                        rel="noopener noreferrer"
+                        className="inline-flex items-center gap-1 text-[11px] text-indigo-400 hover:underline font-semibold"
                       >
-                        ⚡ Insérer mon Client ID Bot : <strong>1339597090232078376</strong>
-                      </button>
+                        <span>Discord Dev Portal</span>
+                        <ExternalLink className="h-3 w-3" />
+                      </a>
                     </div>
 
-                    <div className="space-y-1.5">
-                      <label className="block text-xs font-semibold text-[var(--text-primary)]">
-                        Client Secret Discord (Optionnel pour PKCE)
+                    <div className="rounded-xl border border-indigo-500/20 bg-indigo-500/10 p-3 text-[11px] text-indigo-200 leading-relaxed">
+                      💡 Cliquez simplement sur <strong>« Connecter »</strong> ci-dessous pour ouvrir directement la page d&apos;autorisation Discord de votre bot et lier votre compte en 1 clic !
+                    </div>
+
+                    <div className="space-y-1.5 pt-1">
+                      <label className="block text-[11px] font-semibold text-zinc-400">
+                        Redirect URI (déjà configurée dans le bot)
                       </label>
-                      <input
-                        type="password"
-                        value={credValues.clientSecret || ""}
-                        onChange={(e) =>
-                          setCredValues((p) => ({ ...p, clientSecret: e.target.value }))
-                        }
-                        placeholder="Ex: aB3dE5gH7iJ9kL1..."
-                        className="w-full rounded-xl border border-[var(--panel-border)] bg-[var(--surface-sunken)] px-3.5 py-2.5 text-xs font-mono text-[var(--text-primary)] placeholder-[var(--text-muted)] focus:border-indigo-500 focus:outline-none"
-                      />
+                      <div className="flex items-center gap-2">
+                        <input
+                          type="text"
+                          readOnly
+                          value={typeof window !== "undefined" ? window.location.origin + "/" : "https://ethone.dev/"}
+                          className="w-full rounded-xl border border-[var(--panel-border)] bg-[var(--surface-sunken)]/60 px-3.5 py-2 text-xs font-mono text-zinc-400 select-all"
+                        />
+                        <button
+                          type="button"
+                          onClick={() => handleCopy(typeof window !== "undefined" ? window.location.origin + "/" : "https://ethone.dev/", "redirectUri")}
+                          className="shrink-0 rounded-xl border border-white/10 bg-white/5 p-2 text-zinc-300 hover:bg-white/10 hover:text-white transition cursor-pointer"
+                          title="Copier Redirect URI"
+                        >
+                          {copied === "redirectUri" ? <Check className="h-4 w-4 text-emerald-400" /> : <Copy className="h-4 w-4" />}
+                        </button>
+                      </div>
                     </div>
 
                     <div className="space-y-1.5">
@@ -708,11 +702,11 @@ export default function ConnectionDetailDrawer({
                         onClose();
                         return;
                       } else {
-                        const discordClientId = credValues.clientId?.trim();
-                        if (!discordClientId || discordClientId.includes("@")) {
-                          showError("Le Client ID doit être un numéro à 18-19 chiffres (ex: 1339597090232078376), et non une adresse e-mail.");
-                          return;
-                        }
+                        const discordClientId =
+                          (credValues.clientId && !credValues.clientId.includes("@")
+                            ? credValues.clientId.trim()
+                            : "") || "1339597090232078376";
+
                         if (typeof window !== "undefined") {
                           localStorage.setItem("ethone:clientId:discord", discordClientId);
                         }

@@ -1,7 +1,7 @@
 "use client";
 
 import { useEffect, useRef, useState } from "react";
-import { exchangeCode, parseOAuthState } from "@/lib/oauth";
+import { exchangeCode, parseOAuthState, OAUTH_APP_CLIENT_IDS } from "@/lib/oauth";
 import { setUserState } from "@/lib/user-state";
 import { useSettings } from "@/components/SettingsProvider";
 import { useIntegrationStore } from "@/lib/hooks/useIntegrationStore";
@@ -37,7 +37,8 @@ export default function OAuthHandler() {
     const resolvedClientId =
       state?.clientId ||
       (typeof window !== "undefined" ? localStorage.getItem(`ethone:clientId:${provider}`) : "") ||
-      (provider === "spotify" ? "6619fbf6315e4e68948dc08532251912" : "");
+      OAUTH_APP_CLIENT_IDS[provider] ||
+      (provider === "spotify" ? "6619fbf6315e4e68948dc08532251912" : provider === "discord" ? "1339597090232078376" : "");
 
     if (!resolvedClientId) return;
     handled.current = true;
@@ -78,6 +79,9 @@ export default function OAuthHandler() {
         setUserState(`clientId:${provider}`, resolvedClientId).catch(() => {});
         if (provider === "spotify") {
           update({ liveSpotifyClientId: resolvedClientId, liveNowPlayingSource: "spotify" } as never);
+        }
+        if (provider === "discord") {
+          localStorage.setItem("ethone:connected:discord", "true");
         }
         if (provider === "youtube") update({ liveYoutubeClientId: resolvedClientId } as never);
         if (provider === "reddit") update({ liveRedditClientId: resolvedClientId } as never);

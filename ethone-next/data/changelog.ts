@@ -7206,6 +7206,46 @@ CHANGELOG_BY_LANG.es.unshift({
 });
 
 CHANGELOG_BY_LANG.fr.unshift({
+  version: "v1.12.26",
+  date: "2026-08-29",
+  title: "Cartes Live & Connexions : Rendu 3D Tilt Exclusif (Minecraft, Météo, Discord, Riot)",
+  items: [
+    "Application exclusive de la perspective 3D Tilt sur les cartes de connexion interactives (Minecraft 3D, Météo, Discord/Spotify, Valorant, LOL).",
+    "Restauration du design épuré et sobre sur les autres modules Bento standards (Tâches, Notes, Horloge, Système).",
+    "Amélioration de la fluidité et des reflets lumineux au survol.",
+  ],
+});
+
+CHANGELOG_BY_LANG.en.unshift({
+  version: "v1.12.26",
+  date: "2026-08-29",
+  title: "Live Connection Cards: Dedicated 3D Perspective Tilt (Minecraft, Weather, Discord, Riot)",
+  items: [
+    "Exclusive 3D Tilt perspective on interactive live connection cards (Minecraft 3D, Weather, Discord/Spotify, Valorant, LOL).",
+    "Restored clean, subtle flat styling for standard Bento widgets (Tasks, Notes, Clock, System).",
+    "Enhanced hover smoothness and ambient glowing reflections.",
+  ],
+});
+
+CHANGELOG_BY_LANG.es.unshift({
+  version: "v1.12.26",
+  date: "2026-08-29",
+  title: "Tarjetas Live: Efecto 3D Exclusivo para Conexiones",
+  items: [
+    "Efecto 3D Tilt exclusivo en las tarjetas de conexión (Minecraft 3D, Clima, Discord, Riot).",
+  ],
+});
+
+CHANGELOG_BY_LANG.de.unshift({
+  version: "v1.12.26",
+  date: "2026-08-29",
+  title: "Live-Karten: Exklusive 3D-Perspektive für Verbindungen",
+  items: [
+    "Exklusive 3D-Tilt-Perspektive für Verbindungskarten (Minecraft 3D, Wetter, Discord, Riot).",
+  ],
+});
+
+CHANGELOG_BY_LANG.fr.unshift({
   version: "v1.12.25",
   date: "2026-08-29",
   title: "Discord OAuth2 Complet (Échange Direct & Profil) & Rendu 3D Bento sur l'Accueil",

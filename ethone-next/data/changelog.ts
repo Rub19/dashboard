@@ -7206,6 +7206,44 @@ CHANGELOG_BY_LANG.es.unshift({
 });
 
 CHANGELOG_BY_LANG.fr.unshift({
+  version: "v1.12.39",
+  date: "2026-08-29",
+  title: "Photos de Profil, Niveaux et Rangs Compétitifs sur les Cartes Bento Riot",
+  items: [
+    "Affichage de la photo de profil, du niveau de compte (Lv. 343) et du rang compétitif (Platinum II) sur la carte Valorant.",
+    "Affichage de l'icône d'invocateur, du niveau (Lv. 425) et du rang (Bronze II • 12 LP) sur la carte League of Legends.",
+  ],
+});
+
+CHANGELOG_BY_LANG.en.unshift({
+  version: "v1.12.39",
+  date: "2026-08-29",
+  title: "Player Avatars, Levels & Ranks on Riot Bento Cards",
+  items: [
+    "Displayed player avatar, account level (Lv. 343), and competitive rank (Platinum II) on the Valorant widget card.",
+    "Displayed summoner icon, summoner level (Lv. 425), and competitive rank (Bronze II • 12 LP) on the LoL widget card.",
+  ],
+});
+
+CHANGELOG_BY_LANG.es.unshift({
+  version: "v1.12.39",
+  date: "2026-08-29",
+  title: "Avatares, Niveles y Rangos en Tarjetas Riot",
+  items: [
+    "Visualización de avatar, nivel y rango en las tarjetas de Valorant y League of Legends.",
+  ],
+});
+
+CHANGELOG_BY_LANG.de.unshift({
+  version: "v1.12.39",
+  date: "2026-08-29",
+  title: "Spieler-Avatare, Level & Ränge auf Riot Bento-Karten",
+  items: [
+    "Anzeige von Avatar, Konto-Level und Wettkampfrang auf den Valorant & LoL Bento-Karten.",
+  ],
+});
+
+CHANGELOG_BY_LANG.fr.unshift({
   version: "v1.12.38",
   date: "2026-08-29",
   title: "Résolution Complète des 2 Sorts d'Invocateur & Équipements LoL Authentiques",

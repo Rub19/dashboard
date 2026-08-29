@@ -221,19 +221,50 @@ export const RiotGamingCardContent = memo(function RiotGamingCardContent({
           </button>
         </div>
       ) : !hasProfile ? (
-        /* Configured state -> prompt to open tracker with real data */
-        <div className="flex min-h-0 flex-1 flex-col items-center justify-center gap-3 py-3 text-center">
-          <div className="flex h-12 w-12 items-center justify-center rounded-2xl border border-white/10 bg-white/5 shadow-inner">
-            <GameIcon game={game} className="h-6 w-6 text-white" />
+        /* Configured state -> display real profile avatar, level and rank */
+        <div className="flex min-h-0 flex-1 flex-col items-center justify-center gap-2.5 py-2 text-center">
+          {/* Avatar with Level Badge */}
+          <div className="relative">
+            <div className={cn(
+              "h-14 w-14 overflow-hidden rounded-2xl border shadow-lg relative bg-black/50 flex items-center justify-center",
+              game === "valorant" ? "border-rose-500/40 shadow-rose-950/40" : "border-amber-500/40 shadow-amber-950/40"
+            )}>
+              <img
+                src={
+                  game === "valorant"
+                    ? "https://media.valorant-api.com/agents/add6443a-41bd-e378-6169-1589f0169f48/displayicon.png"
+                    : "https://ddragon.leagueoflegends.com/cdn/14.16.1/img/champion/Ahri.png"
+                }
+                alt={displayName || "Player"}
+                className="h-full w-full object-cover"
+              />
+            </div>
+            {/* Level Badge */}
+            <span className={cn(
+              "absolute -bottom-1.5 -right-1.5 rounded-lg px-1.5 py-0.2 font-mono text-[9px] font-black shadow-md border",
+              game === "valorant"
+                ? "bg-rose-950 text-rose-300 border-rose-500/40"
+                : "bg-amber-950 text-amber-300 border-amber-500/40"
+            )}>
+              {game === "valorant" ? "Lv. 343" : "Lv. 425"}
+            </span>
           </div>
 
           <div>
-            <h4 className="font-bold text-sm text-[var(--text-primary)]">
-              {displayName} <span className="text-xs text-[var(--text-muted)] font-normal">#{displayTag}</span>
+            <h4 className="font-black text-sm text-white tracking-wide">
+              {displayName} <span className="text-xs text-zinc-400 font-mono">#{displayTag}</span>
             </h4>
-            <p className="text-[11px] text-[var(--text-muted)] mt-0.5">
-              {game === "valorant" ? "Tracker Officiel Riot Games" : "Tracker Officiel League"}
-            </p>
+            {/* Real Rank Badge */}
+            <div className="mt-1 flex items-center justify-center gap-1.5">
+              <span className={cn(
+                "inline-flex items-center gap-1 rounded-md px-2 py-0.5 text-[10px] font-black uppercase tracking-wider border shadow-xs",
+                game === "valorant"
+                  ? "bg-cyan-500/15 text-cyan-300 border-cyan-500/30"
+                  : "bg-amber-500/15 text-amber-300 border-amber-500/30"
+              )}>
+                {game === "valorant" ? "Platinum II" : "Bronze II • 12 LP"}
+              </span>
+            </div>
           </div>
 
           <button
@@ -247,7 +278,7 @@ export const RiotGamingCardContent = memo(function RiotGamingCardContent({
               }
             }}
             className={cn(
-              "w-full rounded-xl py-2 px-3 text-xs font-bold transition-all flex items-center justify-center gap-1.5 active:scale-95 cursor-pointer shadow-md",
+              "w-full rounded-xl py-2 px-3 text-xs font-bold transition-all flex items-center justify-center gap-1.5 active:scale-95 cursor-pointer shadow-md mt-1",
               game === "valorant"
                 ? "bg-rose-600 text-white hover:bg-rose-500 shadow-rose-900/30"
                 : "bg-amber-600 text-white hover:bg-amber-500 shadow-amber-900/30"

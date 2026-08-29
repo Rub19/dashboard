@@ -145,8 +145,8 @@ export function getChampionDefaultItems(champName?: string): LolItem[] {
 }
 
 export function getLolChampionIcon(championName?: string, fallbackIndex = 0): string {
-  if (!championName) {
-    const defaultChamps = ["Ahri", "LeeSin", "Yasuo", "Jinx", "Thresh", "Aatrox", "Viego", "Zed", "KaiSa", "Nautilus"];
+  const defaultChamps = ["Ahri", "LeeSin", "Yasuo", "Jinx", "Thresh", "Aatrox", "Viego", "Zed", "Kaisa", "Nautilus"];
+  if (!championName || championName === "None" || championName === "null" || championName === "undefined") {
     return `https://ddragon.leagueoflegends.com/cdn/14.16.1/img/champion/${defaultChamps[fallbackIndex % defaultChamps.length]}.png`;
   }
   const nameMap: Record<string, string> = {
@@ -162,10 +162,10 @@ export function getLolChampionIcon(championName?: string, fallbackIndex = 0): st
     drmundo: "DrMundo",
     kogmaw: "KogMaw",
     reksai: "RekSai",
-    khazix: "KhaZix",
-    velkoz: "VelKoz",
-    chogath: "ChoGath",
-    kaisa: "KaiSa",
+    khazix: "Khazix",
+    velkoz: "Velkoz",
+    chogath: "Chogath",
+    kaisa: "Kaisa",
     belveth: "Belveth",
     renata: "Renata",
     renataglasc: "Renata",
@@ -179,6 +179,9 @@ export function getLolChampionIcon(championName?: string, fallbackIndex = 0): st
     return `https://ddragon.leagueoflegends.com/cdn/14.16.1/img/champion/${mapped}.png`;
   }
   const clean = championName.replace(/[^a-zA-Z0-9]/g, "");
+  if (!clean) {
+    return `https://ddragon.leagueoflegends.com/cdn/14.16.1/img/champion/${defaultChamps[fallbackIndex % defaultChamps.length]}.png`;
+  }
   return `https://ddragon.leagueoflegends.com/cdn/14.16.1/img/champion/${clean}.png`;
 }
 

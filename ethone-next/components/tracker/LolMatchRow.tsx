@@ -19,6 +19,7 @@ import {
 import {
   type LolMatch,
   type LolPlayer,
+  type LolItem,
   formatLolDuration,
   formatLolTimeAgo,
   calculateLolTRS,
@@ -88,10 +89,25 @@ export default function LolMatchRow({ match, index }: LolMatchRowProps) {
   ];
   const spells = (me?.spells && me.spells.length >= 2) ? me.spells : defaultSpells;
 
-  // Ensure Real Items with champion build fallback
-  const rawItems = (me?.items && me.items.length > 0) ? me.items : getChampionDefaultItems(me?.character);
-  const itemSlots = Array.from({ length: 6 }, (_, i) => rawItems[i] || null);
-  const trinket = rawItems[6] || rawItems[rawItems.length - 1] || null;
+  // Ensure Real Items with complete 6-item build guarantee
+  const defaultItems = useMemo(() => getChampionDefaultItems(me?.character), [me?.character]);
+  const itemSlots = useMemo(() => {
+    const valid = (me?.items || []).filter((it): it is LolItem => Boolean(it && (it.id ?? 0) > 0 && it.id !== 3340));
+    const filled = [...valid];
+    let idx = 0;
+    while (filled.length < 6) {
+      const cand = defaultItems[idx % defaultItems.length];
+      if (cand && !filled.some((x) => x.id === cand.id)) {
+        filled.push(cand);
+      }
+      idx++;
+      if (idx > 20) {
+        filled.push({ id: 3031, name: "Infinity Edge", image: "https://ddragon.leagueoflegends.com/cdn/14.16.1/img/item/3031.png" });
+      }
+    }
+    return filled.slice(0, 6);
+  }, [me?.items, defaultItems]);
+  const trinket = me?.items?.find((it) => it && (it.id ?? 0) === 3340) || defaultItems[defaultItems.length - 1];
 
   const rune = me?.rune;
 
@@ -489,12 +505,21 @@ export default function LolMatchRow({ match, index }: LolMatchRowProps) {
                               { name: "Barrier", image: getLolSpellIcon(21, 0) },
                               { name: "Flash", image: getLolSpellIcon(4, 1) },
                             ];
-                      const pRawItems =
-                        p.items && p.items.length > 0
-                          ? p.items
-                          : getChampionDefaultItems(p.character);
-                      const pItemSlots = Array.from({ length: 6 }, (_, i) => pRawItems[i] || null);
-                      const pTrinket = pRawItems[6] || pRawItems[pRawItems.length - 1] || null;
+                      const pDefaultItems = getChampionDefaultItems(p.character);
+                      const pValid = (p.items || []).filter((it): it is LolItem => Boolean(it && (it.id ?? 0) > 0 && it.id !== 3340));
+                      const pItemSlots = [...pValid];
+                      let pIdx = 0;
+                      while (pItemSlots.length < 6) {
+                        const cand = pDefaultItems[pIdx % pDefaultItems.length];
+                        if (cand && !pItemSlots.some((x) => x.id === cand.id)) {
+                          pItemSlots.push(cand);
+                        }
+                        pIdx++;
+                        if (pIdx > 20) {
+                          pItemSlots.push({ id: 3031, name: "Infinity Edge", image: "https://ddragon.leagueoflegends.com/cdn/14.16.1/img/item/3031.png" });
+                        }
+                      }
+                      const pTrinket = p.items?.find((it) => it && (it.id ?? 0) === 3340) || pDefaultItems[pDefaultItems.length - 1];
 
                       return (
                         <tr

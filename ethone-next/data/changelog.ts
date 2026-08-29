@@ -7206,6 +7206,46 @@ CHANGELOG_BY_LANG.es.unshift({
 });
 
 CHANGELOG_BY_LANG.fr.unshift({
+  version: "v1.12.42",
+  date: "2026-08-29",
+  title: "Résolution Complète des 6 Items LoL & Données Joueur Dynamiques",
+  items: [
+    "Garantie absolue des 6 slots d'équipements LoL complétés à 100% sans case vide ni dashed border.",
+    "Correction des noms de champions Riot DataDragon (Kaisa, Chogath, Velkoz, Khazix) pour éliminer les cases noires.",
+    "Synchronisation dynamique du rang, niveau et photo de profil Valorant et LoL sur les cartes Bento.",
+  ],
+});
+
+CHANGELOG_BY_LANG.en.unshift({
+  version: "v1.12.42",
+  date: "2026-08-29",
+  title: "Full 6-Item Builds & Dynamic Player Profile Resolution",
+  items: [
+    "Guaranteed 100% full 6 item builds eliminating any empty slots or dashed borders.",
+    "Fixed DataDragon champion name normalization (Kaisa, Chogath, Velkoz, Khazix).",
+    "Dynamically resolved player card, level, and ranks on Bento cards.",
+  ],
+});
+
+CHANGELOG_BY_LANG.es.unshift({
+  version: "v1.12.42",
+  date: "2026-08-29",
+  title: "6 Items Completos y Datos Dinámicos de Jugador",
+  items: [
+    "Garantía de 6 items completos y resolución de campeones en Riot Bento cards.",
+  ],
+});
+
+CHANGELOG_BY_LANG.de.unshift({
+  version: "v1.12.42",
+  date: "2026-08-29",
+  title: "Vollständige 6-Gegenstand-Builds & Dynamische Spielerdaten",
+  items: [
+    "Vollständige 6 Items ohne leere Felder und dynamische Daten auf den Riot-Karten.",
+  ],
+});
+
+CHANGELOG_BY_LANG.fr.unshift({
   version: "v1.12.41",
   date: "2026-08-29",
   title: "Résolution Complète des 5v5 Champions LoL & Fallbacks d'Items Indestructibles",

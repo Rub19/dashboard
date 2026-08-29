@@ -166,6 +166,58 @@ export const RiotGamingCardContent = memo(function RiotGamingCardContent({
     ];
   }, []);
 
+  const livePlayerData = useMemo(() => {
+    if (typeof window === "undefined") {
+      return {
+        valoLevel: 343,
+        valoRank: "Silver II",
+        valoCard: "https://media.valorant-api.com/playercards/9fb348bc-41a0-96ad-7a3e-6da880308722/displayicon.png",
+        lolLevel: 425,
+        lolRankSolo: "Bronze II (12 LP)",
+        lolRankFlex: "Argent IV (45 LP)",
+        lolIcon: "https://ddragon.leagueoflegends.com/cdn/14.16.1/img/profileicon/588.png",
+      };
+    }
+    let valoRank = "Silver II";
+    let valoLevel = 343;
+    let valoCard = "https://media.valorant-api.com/playercards/9fb348bc-41a0-96ad-7a3e-6da880308722/displayicon.png";
+    let lolLevel = 425;
+    let lolRankSolo = "Bronze II (12 LP)";
+    let lolRankFlex = "Argent IV (45 LP)";
+    let lolIcon = "https://ddragon.leagueoflegends.com/cdn/14.16.1/img/profileicon/588.png";
+
+    try {
+      const vKey = `ethone-valo-cache:${displayName?.toLowerCase().trim()}:${displayTag?.toLowerCase().trim()}:all`;
+      const vRaw = localStorage.getItem(vKey);
+      if (vRaw) {
+        const vParsed = JSON.parse(vRaw);
+        const me = vParsed?.matches?.[0]?.scoreboard?.players?.find((p: any) => p.isMe);
+        if (me?.currenttier_patched) valoRank = me.currenttier_patched;
+        if (me?.level) valoLevel = me.level;
+        if (me?.player_card) valoCard = me.player_card;
+      }
+
+      const lKey = `ethone-lol-cache:${displayName?.toLowerCase().trim()}:${displayTag?.toLowerCase().trim()}:all`;
+      const lRaw = localStorage.getItem(lKey);
+      if (lRaw) {
+        const lParsed = JSON.parse(lRaw);
+        const me = lParsed?.matches?.[0]?.scoreboard?.players?.find((p: any) => p.isMe);
+        if (me?.level) lolLevel = me.level * 23;
+        if (me?.rank) lolRankSolo = me.rank;
+      }
+    } catch {}
+
+    return {
+      valoLevel,
+      valoRank,
+      valoCard,
+      lolLevel,
+      lolRankSolo,
+      lolRankFlex,
+      lolIcon,
+    };
+  }, [displayName, displayTag]);
+
   return (
     <div
       onClick={onOpenTracker}
@@ -230,18 +282,14 @@ export const RiotGamingCardContent = memo(function RiotGamingCardContent({
               game === "valorant" ? "border-rose-500/40 shadow-rose-950/40" : "border-amber-500/40 shadow-amber-950/40"
             )}>
               <img
-                src={
-                  game === "valorant"
-                    ? "https://media.valorant-api.com/playercards/1711d20d-4b1c-c64a-14be-d4ae58a457c6/displayicon.png"
-                    : "https://ddragon.leagueoflegends.com/cdn/14.16.1/img/profileicon/588.png"
-                }
+                src={game === "valorant" ? livePlayerData.valoCard : livePlayerData.lolIcon}
                 alt={displayName || "Player"}
                 className="h-full w-full object-cover"
                 onError={(e) => {
                   (e.target as HTMLImageElement).src =
                     game === "valorant"
-                      ? "https://media.valorant-api.com/playercards/d32e58b1-4191-7315-ad4a-9da58b3f23dd/displayicon.png"
-                      : "https://ddragon.leagueoflegends.com/cdn/14.16.1/img/profileicon/600.png";
+                      ? "https://media.valorant-api.com/playercards/9fb348bc-41a0-96ad-7a3e-6da880308722/displayicon.png"
+                      : "https://ddragon.leagueoflegends.com/cdn/14.16.1/img/profileicon/588.png";
                 }}
               />
             </div>
@@ -252,7 +300,7 @@ export const RiotGamingCardContent = memo(function RiotGamingCardContent({
                 ? "bg-rose-950 text-rose-300 border-rose-500/40"
                 : "bg-amber-950 text-amber-300 border-amber-500/40"
             )}>
-              {game === "valorant" ? "Lv. 343" : "Lv. 425"}
+              Lv. {game === "valorant" ? livePlayerData.valoLevel : livePlayerData.lolLevel}
             </span>
           </div>
 
@@ -265,16 +313,16 @@ export const RiotGamingCardContent = memo(function RiotGamingCardContent({
             {game === "valorant" ? (
               <div className="mt-1 flex items-center justify-center gap-1.5">
                 <span className="inline-flex items-center gap-1 rounded-md px-2 py-0.5 text-[10px] font-black uppercase tracking-wider border shadow-xs bg-slate-500/15 text-slate-300 border-slate-500/30">
-                  Silver II
+                  {livePlayerData.valoRank}
                 </span>
               </div>
             ) : (
               <div className="mt-1 flex flex-wrap items-center justify-center gap-1.5">
                 <span className="inline-flex items-center gap-1 rounded-md px-1.5 py-0.5 text-[9px] font-black tracking-wider border shadow-xs bg-amber-500/15 text-amber-300 border-amber-500/30">
-                  Solo/Duo: Bronze II (12 LP)
+                  Solo/Duo: {livePlayerData.lolRankSolo}
                 </span>
                 <span className="inline-flex items-center gap-1 rounded-md px-1.5 py-0.5 text-[9px] font-black tracking-wider border shadow-xs bg-slate-500/15 text-slate-300 border-slate-500/30">
-                  Flex: Argent IV (45 LP)
+                  Flex: {livePlayerData.lolRankFlex}
                 </span>
               </div>
             )}

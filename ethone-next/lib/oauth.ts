@@ -76,7 +76,7 @@ export const PROVIDERS: Record<string, { authUrl: string; exchangePath: string; 
   discord: {
     authUrl: "https://discord.com/api/oauth2/authorize",
     exchangePath: "/api/discord/oauth/exchange",
-    scopes: "identify email",
+    scopes: "identify email guilds connections",
   },
   "google-calendar": {
     authUrl: "https://accounts.google.com/o/oauth2/v2/auth",

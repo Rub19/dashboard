@@ -7,8 +7,13 @@ export const INTEGRATION_CAPABILITIES: Record<
     permissions: ["Profil", "Lecture en cours", "Playlists"],
   },
   discord: {
-    capabilities: ["Afficher la présence", "Afficher les serveurs", "Afficher l’activité"],
-    permissions: ["Présence", "Identifiant utilisateur"],
+    capabilities: [
+      "Afficher la présence et le statut en direct",
+      "Lister vos serveurs et communautés (Guilds)",
+      "Afficher les comptes liés (Steam, Spotify, Twitch, Riot, PlayStation, Xbox)",
+      "Synchronisation du profil, avatar et bannière",
+    ],
+    permissions: ["Profil & Email", "Serveurs (Guilds)", "Comptes liés (Connections)"],
   },
   youtube: {
     capabilities: ["Afficher les abonnements", "Lister les dernières vidéos", "Suivre l’activité"],

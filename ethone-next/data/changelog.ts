@@ -7206,6 +7206,46 @@ CHANGELOG_BY_LANG.es.unshift({
 });
 
 CHANGELOG_BY_LANG.fr.unshift({
+  version: "v1.12.18",
+  date: "2026-08-29",
+  title: "Discord OAuth2 Enrichi : Scopes Serveurs (Guilds) & Comptes Liés (Connections)",
+  items: [
+    "Extension des autorisations Discord aux serveurs (Guilds) et comptes tiers liés (Steam, Twitch, Spotify, Riot, Xbox, PlayStation).",
+    "Affichage enrichi des capacités et permissions dans le centre d'intégrations.",
+    "Synchronisation globale des communautés et profils gaming.",
+  ],
+});
+
+CHANGELOG_BY_LANG.en.unshift({
+  version: "v1.12.18",
+  date: "2026-08-29",
+  title: "Enriched Discord OAuth2: Guilds & Linked Connections Scopes",
+  items: [
+    "Extended Discord authorization to include user servers (Guilds) and third-party linked accounts (Steam, Twitch, Spotify, Riot, Xbox, PlayStation).",
+    "Detailed capabilities and permissions preview in the connections drawer.",
+    "Global synchronization for gaming profiles and communities.",
+  ],
+});
+
+CHANGELOG_BY_LANG.es.unshift({
+  version: "v1.12.18",
+  date: "2026-08-29",
+  title: "Discord OAuth2 Enriquecido: Servidores y Cuentas Vinculadas",
+  items: [
+    "Soporte ampliado para servidores (Guilds) y cuentas vinculadas de Discord.",
+  ],
+});
+
+CHANGELOG_BY_LANG.de.unshift({
+  version: "v1.12.18",
+  date: "2026-08-29",
+  title: "Erweitertes Discord OAuth2: Server- und Verbindungsumfang",
+  items: [
+    "Erweiterter Zugriff auf Discord-Server (Guilds) und verknüpfte Gaming-Konten.",
+  ],
+});
+
+CHANGELOG_BY_LANG.fr.unshift({
   version: "v1.12.17",
   date: "2026-08-29",
   title: "Discord OAuth2 Universel : Connexion Directe 1-Clic via Bot ETHONE Officiel",

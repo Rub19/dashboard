@@ -82,6 +82,22 @@ export default function OAuthHandler() {
         }
         if (provider === "discord") {
           localStorage.setItem("ethone:connected:discord", "true");
+          const tokenData = res?.data ?? res;
+          const tokenStr = (tokenData as Record<string, string>)?.access_token || (tokenData as Record<string, string>)?.token;
+          if (tokenStr) {
+            fetch("https://discord.com/api/v10/users/@me", {
+              headers: { Authorization: `Bearer ${tokenStr}` },
+            })
+              .then((r) => (r.ok ? r.json() : null))
+              .then((u) => {
+                if (u?.id) {
+                  localStorage.setItem("ethone:pub:discord:liveLanyardUserId", u.id);
+                  localStorage.setItem("ethone:cred:discord:userId", u.id);
+                  update({ liveLanyardUserId: u.id } as never);
+                }
+              })
+              .catch(() => {});
+          }
         }
         if (provider === "youtube") update({ liveYoutubeClientId: resolvedClientId } as never);
         if (provider === "reddit") update({ liveRedditClientId: resolvedClientId } as never);

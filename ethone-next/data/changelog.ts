@@ -7206,6 +7206,46 @@ CHANGELOG_BY_LANG.es.unshift({
 });
 
 CHANGELOG_BY_LANG.fr.unshift({
+  version: "v1.12.25",
+  date: "2026-08-29",
+  title: "Discord OAuth2 Complet (Échange Direct & Profil) & Rendu 3D Bento sur l'Accueil",
+  items: [
+    "Échange automatique et sécurisé du code d'autorisation Discord OAuth2 avec enregistrement immédiat du token et du profil utilisateur.",
+    "Bouton 'Tester' dans les paramètres validant directement le token OAuth2 Discord et l'accès API officiel.",
+    "Activation de la perspective 3D Tilt dynamique sur l'ensemble des cartes Bento de la page d'accueil au survol.",
+  ],
+});
+
+CHANGELOG_BY_LANG.en.unshift({
+  version: "v1.12.25",
+  date: "2026-08-29",
+  title: "Full Discord OAuth2 (Direct Exchange & Profile) & Home Bento 3D Tilt",
+  items: [
+    "Direct and secure Discord OAuth2 token exchange with automatic user profile and state retention.",
+    "Diagnostic 'Test' button verifying Discord OAuth2 tokens via official Discord API.",
+    "Restored dynamic 3D perspective tilt across all Home Bento cards on mouse hover.",
+  ],
+});
+
+CHANGELOG_BY_LANG.es.unshift({
+  version: "v1.12.25",
+  date: "2026-08-29",
+  title: "Discord OAuth2 Completo y Efecto 3D Bento",
+  items: [
+    "Intercambio directo de tokens de Discord OAuth2 y perspectiva 3D en las tarjetas del inicio.",
+  ],
+});
+
+CHANGELOG_BY_LANG.de.unshift({
+  version: "v1.12.25",
+  date: "2026-08-29",
+  title: "Discord OAuth2 & 3D-Bento-Perspektive",
+  items: [
+    "Direkter Discord OAuth2-Tokenaustausch und dynamische 3D-Tilt-Effekte auf der Startseite.",
+  ],
+});
+
+CHANGELOG_BY_LANG.fr.unshift({
   version: "v1.12.24",
   date: "2026-08-29",
   title: "Identité Visuelle ETHONE : Logos Circulaires HD Optimisés Discord & Réseaux",

@@ -5,6 +5,8 @@ import { Icon } from "@/lib/icons";
 import { cn } from "@/lib/utils";
 import { hapticLightImpact } from "@/lib/haptics";
 import WidgetState, { type WidgetStateType } from "./WidgetState";
+import { TiltCard } from "@/components/ui/TiltCard";
+import { useSettings } from "@/components/SettingsProvider";
 
 export type BentoCardProps = {
   title?: string;
@@ -35,8 +37,12 @@ function BentoCard({
   onAction,
   actionLabel,
 }: BentoCardProps) {
+  const { settings } = useSettings();
+
   return (
-    <div
+    <TiltCard
+      max={4}
+      glare={settings.uiGlow}
       data-context-menu="bento"
       onPointerDown={hapticLightImpact}
       className={cn(
@@ -89,7 +95,7 @@ function BentoCard({
           )}
         </div>
       </div>
-    </div>
+    </TiltCard>
   );
 }
 

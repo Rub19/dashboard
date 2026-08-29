@@ -481,8 +481,47 @@ export async function pingIntegration(
     }
   }
 
-  // 2. Direct Discord Lanyard test
+  // 2. Direct Discord OAuth2 or Lanyard test
   if (integration.id === "discord") {
+    const discordToken =
+      typeof window !== "undefined"
+        ? localStorage.getItem("ethone:token:discord") ||
+          localStorage.getItem("ethone:cred:discord:accessToken")
+        : null;
+
+    if (discordToken) {
+      try {
+        const meRes = await fetch("https://discord.com/api/v10/users/@me", {
+          headers: { Authorization: `Bearer ${discordToken}` },
+        });
+        if (meRes.ok) {
+          const user = (await meRes.json()) as {
+            id?: string;
+            username?: string;
+            global_name?: string;
+            discriminator?: string;
+            email?: string;
+            avatar?: string;
+            mfa_enabled?: boolean;
+          };
+          const ms = Math.round((typeof performance !== "undefined" ? performance.now() : start) - start);
+          return {
+            ok: true,
+            status: "connected",
+            ms,
+            data: {
+              statut: "Connecté avec succès (OAuth2 Officiel)",
+              utilisateur: user.global_name || user.username || user.id,
+              tag: user.discriminator && user.discriminator !== "0" ? `#${user.discriminator}` : `@${user.username}`,
+              id: user.id,
+              email: user.email || "Autorisé",
+              securite_2fa: user.mfa_enabled ? "Activée" : "Non activée",
+            },
+          };
+        }
+      } catch {}
+    }
+
     const discordUserId =
       settings.liveLanyardUserId ||
       (typeof window !== "undefined"

@@ -7206,6 +7206,46 @@ CHANGELOG_BY_LANG.es.unshift({
 });
 
 CHANGELOG_BY_LANG.fr.unshift({
+  version: "v1.12.24",
+  date: "2026-08-29",
+  title: "Identité Visuelle ETHONE : Logos Circulaires HD Optimisés Discord & Réseaux",
+  items: [
+    "Génération des avatars circulaires officiels ETHONE haute définition (1024x1024) au format PNG.",
+    "Bague néon dégradée circulaire ajustée pour un rendu parfait sur Discord, Twitter et Steam sans coupure.",
+    "Ajout des fichiers de branding dans le dossier public et documentation d'accès.",
+  ],
+});
+
+CHANGELOG_BY_LANG.en.unshift({
+  version: "v1.12.24",
+  date: "2026-08-29",
+  title: "ETHONE Brand Identity: Circular HD Avatars for Discord & Socials",
+  items: [
+    "High-definition official circular ETHONE avatars (1024x1024 PNG).",
+    "Tailored neon glowing circular ring for pixel-perfect display in Discord avatars without edge cuts.",
+    "Added branding assets to public directory with direct local access.",
+  ],
+});
+
+CHANGELOG_BY_LANG.es.unshift({
+  version: "v1.12.24",
+  date: "2026-08-29",
+  title: "Identidad ETHONE: Avatares Circulares HD para Discord",
+  items: [
+    "Avatares circulares HD de ETHONE adaptados para Discord sin recortes.",
+  ],
+});
+
+CHANGELOG_BY_LANG.de.unshift({
+  version: "v1.12.24",
+  date: "2026-08-29",
+  title: "ETHONE-Markenidentität: Zirkuläre HD-Avatare für Discord",
+  items: [
+    "Hochauflösende runde ETHONE-Avatare (1024x1024 PNG) für Discord.",
+  ],
+});
+
+CHANGELOG_BY_LANG.fr.unshift({
   version: "v1.12.23",
   date: "2026-08-29",
   title: "Discord OAuth2 : Correction de l'Identifiant Bot (1539597090232078376)",

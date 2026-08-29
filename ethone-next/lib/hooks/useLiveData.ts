@@ -41,6 +41,8 @@ export type LanyardPresence = {
     album?: string;
     artwork?: string;
     artworkUrl?: string;
+    progressMs?: number;
+    durationMs?: number;
   };
   activities?: Array<{
     name: string;
@@ -414,6 +416,13 @@ export function useLiveData(pollMs = 60000) {
               ? `https://cdn.discordapp.com/avatars/${lanyardUserId}/${lanyardAvatarHash}.${String(lanyardAvatarHash).startsWith("a_") ? "gif" : "png"}?size=256`
               : "");
           const spotifyData = (d.spotify as ApiData) || null;
+          const spotifyTimestamps = (spotifyData?.timestamps as ApiData) || {};
+          const spStart = asNum(spotifyTimestamps.start) || 0;
+          const spEnd = asNum(spotifyTimestamps.end) || 0;
+          const spDuration = spEnd > spStart ? spEnd - spStart : 0;
+          const spProgress =
+            spStart > 0 ? Math.max(0, Math.min(spDuration, Date.now() - spStart)) : 0;
+
           setLanyard({
             userId: lanyardUserId || undefined,
             displayName:
@@ -434,6 +443,8 @@ export function useLiveData(pollMs = 60000) {
                   album: asStr(spotifyData.album),
                   artwork: asStr(spotifyData.album_art_url || spotifyData.artworkUrl || spotifyData.artwork),
                   artworkUrl: asStr(spotifyData.album_art_url || spotifyData.artworkUrl || spotifyData.artwork),
+                  progressMs: spProgress,
+                  durationMs: spDuration,
                 }
               : undefined,
             activities: Array.isArray(d.activities)

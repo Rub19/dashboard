@@ -7206,6 +7206,48 @@ CHANGELOG_BY_LANG.es.unshift({
 });
 
 CHANGELOG_BY_LANG.fr.unshift({
+  version: "v1.12.30",
+  date: "2026-08-29",
+  title: "Carte 3D Discord Glossy : Logos Jeux SVG & Fond Album Immersif",
+  items: [
+    "Suppression des contours blancs au profit d'un design sombre ultra-épuré et transparent.",
+    "Ajout d'une bibliothèque d'icônes SVG pour les jeux populaires (Palworld, Valorant, LoL, CS2, Fortnite, Minecraft, GTA, etc.).",
+    "Arrière-plan 3D glossy dynamique basé sur la pochette Spotify avec effet de flou et reflets immersifs.",
+    "Correction de l'affichage du '0' et synchronisation en direct de la barre de progression musicale.",
+  ],
+});
+
+CHANGELOG_BY_LANG.en.unshift({
+  version: "v1.12.30",
+  date: "2026-08-29",
+  title: "Glossy 3D Discord Card: Game Brand SVGs & Immersive Album Backdrop",
+  items: [
+    "Removed harsh white borders for a sleek, dark glassy aesthetic.",
+    "Added SVG game brand logos for popular titles (Palworld, Valorant, LoL, CS2, Fortnite, Minecraft, GTA, etc.).",
+    "Dynamic glossy 3D backdrop matching current Spotify album cover with ambient lighting.",
+    "Fixed zero display bug and animated music progress bar.",
+  ],
+});
+
+CHANGELOG_BY_LANG.es.unshift({
+  version: "v1.12.30",
+  date: "2026-08-29",
+  title: "Tarjeta 3D Discord Glossy y Logos SVG de Juegos",
+  items: [
+    "Diseño oscuro y brillante con logos SVG (Palworld, Valorant) y fondo de álbum 3D.",
+  ],
+});
+
+CHANGELOG_BY_LANG.de.unshift({
+  version: "v1.12.30",
+  date: "2026-08-29",
+  title: "Glossy 3D Discord-Karte & Spiel-SVG-Logos",
+  items: [
+    "Dunkles, gläsernes Design mit Spiel-SVGs (Palworld) und 3D-Albumhintergrund.",
+  ],
+});
+
+CHANGELOG_BY_LANG.fr.unshift({
   version: "v1.12.29",
   date: "2026-08-29",
   title: "Trackers Valorant & LoL Réels (Sans Placeholder & Filtres de Modes Complets)",

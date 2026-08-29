@@ -7206,6 +7206,48 @@ CHANGELOG_BY_LANG.es.unshift({
 });
 
 CHANGELOG_BY_LANG.fr.unshift({
+  version: "v1.12.34",
+  date: "2026-08-29",
+  title: "Rapports Quotidiens Animés, Sorts & Items LoL Complets et Icônes Agents Valorant",
+  items: [
+    "Nouveau modal 'View Report' avec statistiques agrégées de la journée, comparaison avec la veille (diff K/D, HS%, ACS/DPM) et conseils IA coach personnalisés.",
+    "Support complet des 2 sorts d'invocateur (Flash, Ignite, TP, etc.) et des 6 items + trinket dans le tracker League of Legends.",
+    "Correction des portraits et icônes d'agents Valorant pour toutes les cartes et modes.",
+  ],
+});
+
+CHANGELOG_BY_LANG.en.unshift({
+  version: "v1.12.34",
+  date: "2026-08-29",
+  title: "Animated Daily Reports, Complete LoL Spells/Items & Valorant Agent Portraits",
+  items: [
+    "New animated 'View Report' modal with daily aggregate stats, day-over-day KPI trends and AI coach recommendations.",
+    "Extracted both summoner spells and all 6 items + trinket in League of Legends tracker.",
+    "Fixed Valorant agent portraits resolution across all modes.",
+  ],
+});
+
+CHANGELOG_BY_LANG.es.unshift({
+  version: "v1.12.34",
+  date: "2026-08-29",
+  title: "Informes Diarios Animados, Hechizos y Objetos LoL Completos",
+  items: [
+    "Nuevo modal 'View Report' con estadísticas diarias, comparación con el día anterior y consejos coach.",
+    "Visualización completa de los 2 hechizos de invocador e inventario de 6 objetos en LoL.",
+  ],
+});
+
+CHANGELOG_BY_LANG.de.unshift({
+  version: "v1.12.34",
+  date: "2026-08-29",
+  title: "Animierte Tagesberichte, LoL-Zauber/Items & Valorant-Agenten",
+  items: [
+    "Neues 'View Report'-Modal mit täglicher Statistik, Vortagesvergleich und KI-Coach-Tipps.",
+    "Vollständige Anzeige beider Beschwörerzauber und aller 6 Gegenstände in LoL.",
+  ],
+});
+
+CHANGELOG_BY_LANG.fr.unshift({
   version: "v1.12.33",
   date: "2026-08-29",
   title: "Badge Statut Discord Pixel-Perfect (DND avec barre blanche) & Logo Palworld Pal Sphere HD",

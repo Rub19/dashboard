@@ -28,6 +28,8 @@ import ValorantMatchRow from "@/components/tracker/ValorantMatchRow";
 import ValorantDayHeader from "@/components/tracker/ValorantDayHeader";
 import { cn } from "@/lib/utils";
 
+import DailyReportModal from "@/components/tracker/DailyReportModal";
+
 const VALORANT_CACHE_TTL_MS = 15 * 60 * 1000; // 15 minutes cache
 
 interface CacheData {
@@ -37,10 +39,10 @@ interface CacheData {
 
 export default function ValorantTrackerView() {
   const { settings, update } = useSettings();
-  const { success, error: showError, notify } = useToast();
+  const { success, error: showError } = useToast();
 
-  const [riotName, setRiotName] = useState(settings.liveTrackerRiotName || "TenZ");
-  const [riotTag, setRiotTag] = useState(settings.liveTrackerRiotTag || "0001");
+  const [riotName, setRiotName] = useState(settings.liveTrackerRiotName || "Rub19");
+  const [riotTag, setRiotTag] = useState(settings.liveTrackerRiotTag || "boss");
   const [selectedMode, setSelectedMode] = useState<string>("all");
 
   const [matches, setMatches] = useState<ValorantMatch[]>([]);
@@ -48,6 +50,7 @@ export default function ValorantTrackerView() {
   const [syncing, setSyncing] = useState(false);
   const [lastSyncTime, setLastSyncTime] = useState<Date | null>(null);
   const [errorMsg, setErrorMsg] = useState<string | null>(null);
+  const [activeReportIndex, setActiveReportIndex] = useState<number | null>(null);
 
   const cacheKey = useMemo(
     () => `ethone-valo-cache:${riotName.toLowerCase().trim()}:${riotTag.toLowerCase().trim()}:${selectedMode}`,
@@ -277,7 +280,10 @@ export default function ValorantTrackerView() {
           dayGroups.map((group, gi) => (
             <div key={group.rawDate || gi} className="space-y-2">
               {/* Day Header Group Matching Screenshot */}
-              <ValorantDayHeader group={group} />
+              <ValorantDayHeader
+                group={group}
+                onViewReport={() => setActiveReportIndex(gi)}
+              />
 
               {/* Match Rows */}
               <div className="space-y-2">
@@ -293,6 +299,17 @@ export default function ValorantTrackerView() {
           ))
         )}
       </div>
+
+      {/* Daily Report Modal with Animations */}
+      {activeReportIndex !== null && dayGroups[activeReportIndex] && (
+        <DailyReportModal
+          isOpen={true}
+          onClose={() => setActiveReportIndex(null)}
+          game="valorant"
+          currentGroup={dayGroups[activeReportIndex]}
+          previousGroup={dayGroups[activeReportIndex + 1] || null}
+        />
+      )}
     </div>
   );
 }

@@ -107,15 +107,17 @@ export const VALORANT_AGENT_ICONS: Record<string, string> = {
   cypher: "https://media.valorant-api.com/agents/117ed9e3-49f3-6512-3ccf-0cada7e3823b/displayicon.png",
   sage: "https://media.valorant-api.com/agents/569fdd95-4d10-43ab-ca70-79becc718b46/displayicon.png",
   deadlock: "https://media.valorant-api.com/agents/cc8b64c8-4b25-4ff9-6e7f-37b4da43d235/displayicon.png",
-  chamber: "https://media.valorant-api.com/agents/22697a3d-45bf-8dd7-4fec-84a9e28c69d7/displayicon.png",
+  chamber: "https://media.valorant-api.com/agents/d9f77475-4424-d2f8-eb7f-ab8eed5fa124/displayicon.png",
   vyse: "https://media.valorant-api.com/agents/b6953258-4ca7-4402-9a3b-da0f4c3a2f3a/displayicon.png",
+  tejo: "https://media.valorant-api.com/agents/9f0d8ba9-42c0-b18e-753e-10331c143da7/displayicon.png",
 };
 
 export function getAgentIcon(agentName?: string, fallback?: string): string {
-  if (!agentName) return fallback || "https://media.valorant-api.com/agents/add6443a-41bd-e378-6169-1589f0169f48/displayicon.png";
+  if (fallback && fallback.startsWith("http")) return fallback;
+  if (!agentName) return "https://media.valorant-api.com/agents/add6443a-41bd-e378-6169-1589f0169f48/displayicon.png";
   const clean = agentName.toLowerCase().replace(/[^a-z]/g, "");
   if (VALORANT_AGENT_ICONS[clean]) return VALORANT_AGENT_ICONS[clean];
-  return fallback || "https://media.valorant-api.com/agents/add6443a-41bd-e378-6169-1589f0169f48/displayicon.png";
+  return "https://media.valorant-api.com/agents/add6443a-41bd-e378-6169-1589f0169f48/displayicon.png";
 }
 
 export function formatTimeAgo(isoTimestamp?: string): string {

@@ -30,6 +30,7 @@ import ValorantMatchRow from "@/components/tracker/ValorantMatchRow";
 import ValorantDayHeader from "@/components/tracker/ValorantDayHeader";
 import LolMatchRow from "@/components/tracker/LolMatchRow";
 import LolDayHeader from "@/components/tracker/LolDayHeader";
+import DailyReportModal from "@/components/tracker/DailyReportModal";
 
 const TRACKER_MODAL_CACHE_TTL = 15 * 60 * 1000;
 
@@ -65,6 +66,7 @@ export default function TrackerModal({
   const [valoMatches, setValoMatches] = useState<ValorantMatch[]>([]);
   const [lolMatches, setLolMatches] = useState<LolMatch[]>([]);
   const [errorMessage, setErrorMessage] = useState<string | null>(null);
+  const [activeReportIndex, setActiveReportIndex] = useState<number | null>(null);
 
   const cacheKey = useMemo(
     () => `ethone-modal-${game}-cache:${effectiveName.toLowerCase().trim()}:${effectiveTag.toLowerCase().trim()}:${selectedMode}`,
@@ -429,7 +431,10 @@ export default function TrackerModal({
             ) : isVal ? (
               valoDayGroups.map((group, gi) => (
                 <div key={group.rawDate || gi} className="space-y-2">
-                  <ValorantDayHeader group={group} />
+                  <ValorantDayHeader
+                    group={group}
+                    onViewReport={() => setActiveReportIndex(gi)}
+                  />
                   <div className="space-y-2">
                     {group.matches.map((match, mi) => (
                       <ValorantMatchRow
@@ -444,7 +449,10 @@ export default function TrackerModal({
             ) : (
               lolDayGroups.map((group, gi) => (
                 <div key={group.rawDate || gi} className="space-y-2">
-                  <LolDayHeader group={group} />
+                  <LolDayHeader
+                    group={group}
+                    onViewReport={() => setActiveReportIndex(gi)}
+                  />
                   <div className="space-y-2">
                     {group.matches.map((match, mi) => (
                       <LolMatchRow
@@ -460,6 +468,25 @@ export default function TrackerModal({
           </div>
         </motion.div>
       </div>
+
+      {/* Daily Report Modal */}
+      {activeReportIndex !== null && (
+        <DailyReportModal
+          isOpen={true}
+          onClose={() => setActiveReportIndex(null)}
+          game={game}
+          currentGroup={
+            isVal
+              ? valoDayGroups[activeReportIndex]
+              : lolDayGroups[activeReportIndex]
+          }
+          previousGroup={
+            isVal
+              ? valoDayGroups[activeReportIndex + 1] || null
+              : lolDayGroups[activeReportIndex + 1] || null
+          }
+        />
+      )}
     </AnimatePresence>
   );
 }

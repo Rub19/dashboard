@@ -4,6 +4,8 @@ export interface LolItemAsset {
   image?: string;
 }
 
+export type LolItem = LolItemAsset;
+
 export interface LolSpellAsset {
   name?: string;
   image?: string;
@@ -96,6 +98,32 @@ export interface LolDayGroup {
   avgKda: number;
   avgGpm: number;
   matches: LolMatch[];
+}
+
+export const LOL_SUMMONER_SPELLS: Record<number, { name: string; icon: string }> = {
+  1: { name: "Cleanse", icon: "SummonerBoost" },
+  3: { name: "Exhaust", icon: "SummonerExhaust" },
+  4: { name: "Flash", icon: "SummonerFlash" },
+  6: { name: "Ghost", icon: "SummonerHaste" },
+  7: { name: "Heal", icon: "SummonerHeal" },
+  11: { name: "Smite", icon: "SummonerSmite" },
+  12: { name: "Teleport", icon: "SummonerTeleport" },
+  13: { name: "Clarity", icon: "SummonerMana" },
+  14: { name: "Ignite", icon: "SummonerDot" },
+  21: { name: "Barrier", icon: "SummonerBarrier" },
+  32: { name: "Mark", icon: "SummonerSnowball" },
+};
+
+export function getLolSpellIcon(spellId?: number): string {
+  const sp = spellId ? LOL_SUMMONER_SPELLS[spellId] : undefined;
+  const name = sp?.icon || (spellId === 14 ? "SummonerDot" : "SummonerFlash");
+  return `https://ddragon.leagueoflegends.com/cdn/14.16.1/img/spell/${name}.png`;
+}
+
+export function getLolChampionIcon(championName?: string): string {
+  if (!championName) return "https://ddragon.leagueoflegends.com/cdn/14.16.1/img/champion/Ahri.png";
+  const clean = championName.replace(/[^a-zA-Z0-9]/g, "");
+  return `https://ddragon.leagueoflegends.com/cdn/14.16.1/img/champion/${clean}.png`;
 }
 
 export function formatLolDuration(seconds?: number): string {
@@ -293,12 +321,39 @@ export async function fetchLolMatchesDirect(
           : info.gameMode || "Classé";
 
       const championName = me.championName || "Ahri";
-      const championImg = `https://ddragon.leagueoflegends.com/cdn/14.16.1/img/champion/${championName}.png`;
+      const championImg = getLolChampionIcon(championName);
 
       const players: LolPlayer[] = participants.map((p) => {
         const isMe =
           p.puuid === puuid ||
           p.riotIdGameName?.toLowerCase() === cleanName.toLowerCase();
+
+        // 2 Summoner Spells
+        const sp1Id = p.summoner1Id || (isMe ? 4 : 4);
+        const sp2Id = p.summoner2Id || (isMe ? 14 : 12);
+
+        const spells = [
+          {
+            name: LOL_SUMMONER_SPELLS[sp1Id]?.name || "Flash",
+            image: getLolSpellIcon(sp1Id),
+          },
+          {
+            name: LOL_SUMMONER_SPELLS[sp2Id]?.name || "Ignite",
+            image: getLolSpellIcon(sp2Id),
+          },
+        ];
+
+        // 6 Items + 1 Trinket
+        const itemIds = [p.item0, p.item1, p.item2, p.item3, p.item4, p.item5, p.item6];
+        const items = itemIds.map((itemId) => {
+          if (!itemId || itemId === 0) return null;
+          return {
+            id: itemId,
+            name: `Item ${itemId}`,
+            image: `https://ddragon.leagueoflegends.com/cdn/14.16.1/img/item/${itemId}.png`,
+          };
+        }).filter(Boolean) as LolItem[];
+
         return {
           name: p.riotIdGameName || p.summonerName || "",
           tag: p.riotIdTagline || "",
@@ -309,13 +364,8 @@ export async function fetchLolMatchesDirect(
           character: p.championName,
           level: p.champLevel || 1,
           position: p.teamPosition || p.individualPosition || "",
-          spells: [
-            {
-              name: "Spell 1",
-              image: `https://ddragon.leagueoflegends.com/cdn/14.16.1/img/spell/SummonerFlash.png`,
-            },
-          ],
-          items: [],
+          spells,
+          items,
           stats: {
             kills: p.kills || 0,
             deaths: p.deaths || 0,

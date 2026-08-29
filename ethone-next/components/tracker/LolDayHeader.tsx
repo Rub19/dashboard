@@ -1,12 +1,14 @@
 "use client";
 
+import { TrendingUp } from "lucide-react";
 import type { LolDayGroup } from "@/lib/lol-tracker";
 
 interface LolDayHeaderProps {
   group: LolDayGroup;
+  onViewReport?: () => void;
 }
 
-export default function LolDayHeader({ group }: LolDayHeaderProps) {
+export default function LolDayHeader({ group, onViewReport }: LolDayHeaderProps) {
   return (
     <div className="flex flex-col md:flex-row md:items-center justify-between gap-3 px-3 py-2 text-xs select-none">
       {/* Left: Date + Count + Record */}
@@ -19,6 +21,16 @@ export default function LolDayHeader({ group }: LolDayHeaderProps) {
             {group.count}
           </span>
         </div>
+
+        {/* View Report Link */}
+        <button
+          type="button"
+          onClick={onViewReport}
+          className="flex items-center gap-1 text-[11px] font-bold text-amber-400 hover:text-amber-300 transition-colors cursor-pointer"
+        >
+          <TrendingUp className="h-3.5 w-3.5" />
+          <span>View Report</span>
+        </button>
 
         {/* Record (Wins // Losses) */}
         <div className="flex items-center gap-1.5 font-mono font-black text-xs pl-2">

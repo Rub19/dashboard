@@ -22,6 +22,7 @@ import {
 } from "@/lib/lol-tracker";
 import LolMatchRow from "@/components/tracker/LolMatchRow";
 import LolDayHeader from "@/components/tracker/LolDayHeader";
+import DailyReportModal from "@/components/tracker/DailyReportModal";
 import { cn } from "@/lib/utils";
 
 const LOL_CACHE_TTL_MS = 15 * 60 * 1000; // 15 minutes
@@ -44,6 +45,7 @@ export default function LolTrackerView() {
   const [syncing, setSyncing] = useState(false);
   const [lastSyncTime, setLastSyncTime] = useState<Date | null>(null);
   const [errorMsg, setErrorMsg] = useState<string | null>(null);
+  const [activeReportIndex, setActiveReportIndex] = useState<number | null>(null);
 
   const cacheKey = useMemo(
     () => `ethone-lol-cache:${riotName.toLowerCase().trim()}:${riotTag.toLowerCase().trim()}:${selectedQueue}`,
@@ -354,7 +356,10 @@ export default function LolTrackerView() {
           dayGroups.map((group, gi) => (
             <div key={group.rawDate || gi} className="space-y-2">
               {/* Day Header */}
-              <LolDayHeader group={group} />
+              <LolDayHeader
+                group={group}
+                onViewReport={() => setActiveReportIndex(gi)}
+              />
 
               {/* Match Rows */}
               <div className="space-y-2">
@@ -370,6 +375,17 @@ export default function LolTrackerView() {
           ))
         )}
       </div>
+
+      {/* Daily Report Modal with Animations */}
+      {activeReportIndex !== null && dayGroups[activeReportIndex] && (
+        <DailyReportModal
+          isOpen={true}
+          onClose={() => setActiveReportIndex(null)}
+          game="lol"
+          currentGroup={dayGroups[activeReportIndex]}
+          previousGroup={dayGroups[activeReportIndex + 1] || null}
+        />
+      )}
     </div>
   );
 }

@@ -7206,6 +7206,46 @@ CHANGELOG_BY_LANG.es.unshift({
 });
 
 CHANGELOG_BY_LANG.fr.unshift({
+  version: "v1.12.27",
+  date: "2026-08-29",
+  title: "Carte 3D Discord Complète (Profil, Avatar, Guilds) & Nettoyage du Volet OAuth",
+  items: [
+    "Affichage immédiat et complet de la carte 3D Discord (Avatar HD, Pseudo, Global Name, Guilds, Activité en direct) dès la connexion.",
+    "Suppression des encadrés d'instructions redondants dans le volet de configuration Discord.",
+    "Synchronisation instantanée du profil utilisateur sans écran d'attente.",
+  ],
+});
+
+CHANGELOG_BY_LANG.en.unshift({
+  version: "v1.12.27",
+  date: "2026-08-29",
+  title: "Full 3D Discord Card (Profile, Avatar, Guilds) & OAuth Drawer Cleanup",
+  items: [
+    "Immediate full display of the 3D Discord Card (HD Avatar, Username, Global Name, Guilds, Live Activity).",
+    "Cleaned up redundant instruction boxes in the Discord OAuth configuration drawer.",
+    "Instant client-side Discord profile sync without fallback standby screens.",
+  ],
+});
+
+CHANGELOG_BY_LANG.es.unshift({
+  version: "v1.12.27",
+  date: "2026-08-29",
+  title: "Tarjeta 3D Discord Completa y Limpieza del Panel",
+  items: [
+    "Visualización completa de la tarjeta 3D de Discord con perfil y gremios.",
+  ],
+});
+
+CHANGELOG_BY_LANG.de.unshift({
+  version: "v1.12.27",
+  date: "2026-08-29",
+  title: "Vollständige 3D-Discord-Karte & Drawer-Bereinigung",
+  items: [
+    "Sofortige Anzeige der vollständigen 3D-Discord-Karte mit Avatar und Profil.",
+  ],
+});
+
+CHANGELOG_BY_LANG.fr.unshift({
   version: "v1.12.26",
   date: "2026-08-29",
   title: "Cartes Live & Connexions : Rendu 3D Tilt Exclusif (Minecraft, Météo, Discord, Riot)",

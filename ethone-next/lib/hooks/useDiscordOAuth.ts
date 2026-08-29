@@ -76,6 +76,70 @@ export function useDiscordOAuth() {
   const fetchProfile = useCallback(async () => {
     setLoading(true);
     setError(null);
+
+    // 1. Direct client-side check if token exists in localStorage
+    const localToken =
+      typeof window !== "undefined"
+        ? localStorage.getItem("ethone:token:discord") ||
+          localStorage.getItem("ethone:cred:discord:accessToken")
+        : null;
+
+    if (localToken) {
+      try {
+        const [meRes, guildsRes] = await Promise.all([
+          fetch("https://discord.com/api/v10/users/@me", {
+            headers: { Authorization: `Bearer ${localToken}` },
+          }),
+          fetch("https://discord.com/api/v10/users/@me/guilds", {
+            headers: { Authorization: `Bearer ${localToken}` },
+          }).catch(() => null),
+        ]);
+
+        if (meRes.ok) {
+          const u = await meRes.json();
+          let guilds: DiscordGuild[] = [];
+          if (guildsRes && guildsRes.ok) {
+            const rawGuilds = await guildsRes.json();
+            guilds = Array.isArray(rawGuilds)
+              ? rawGuilds.map((g: { id: string; name: string; owner?: boolean; icon?: string }) => ({
+                  id: g.id,
+                  name: g.name,
+                  owner: !!g.owner,
+                  iconUrl: g.icon ? `https://cdn.discordapp.com/icons/${g.id}/${g.icon}.png?size=64` : "",
+                }))
+              : [];
+          }
+
+          const avatarUrl = u.avatar
+            ? `https://cdn.discordapp.com/avatars/${u.id}/${u.avatar}.${u.avatar.startsWith("a_") ? "gif" : "png"}?size=256`
+            : `https://cdn.discordapp.com/embed/avatars/${(parseInt(u.discriminator || "0", 10) % 5) || 0}.png`;
+
+          const profileData: DiscordProfile = {
+            connected: true,
+            mode: "oauth2",
+            user: {
+              id: u.id,
+              username: u.username,
+              globalName: u.global_name || u.username,
+              displayName: u.global_name || u.username,
+              avatarUrl,
+              avatarUrlSmall: avatarUrl,
+              bannerUrl: u.banner ? `https://cdn.discordapp.com/banners/${u.id}/${u.banner}.png` : "",
+              email: u.email || "",
+              verified: !!u.verified,
+              premiumType: u.premium_type || 0,
+            },
+            guilds,
+            syncedAt: new Date().toISOString(),
+          };
+
+          setProfile(profileData);
+          setLoading(false);
+          return;
+        }
+      } catch {}
+    }
+
     try {
       const result = await fetchWorker("/api/discord/oauth/profile");
       setProfile(result?.data || { connected: false });

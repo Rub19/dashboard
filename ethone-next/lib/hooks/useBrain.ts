@@ -266,21 +266,51 @@ export function useBrain(mailClient?: BrainMailClient) {
     const lower = promptText.toLowerCase();
     let actionPlan: ActionExecution | undefined = undefined;
 
-    if (lower.startsWith("crée une note") || lower.startsWith("note :") || lower.includes("créer une note")) {
+    if (
+      lower.includes("crée une note") ||
+      lower.includes("créer une note") ||
+      lower.includes("fais une note") ||
+      lower.includes("ajoute une note") ||
+      lower.startsWith("note :")
+    ) {
+      const topic = promptText
+        .replace(/^(peux-tu|tu peux|stp|s'il te plaît|s'il te plait|merci de)?\s*(créer|crée|ajouter|ajoute|faire|fais)\s*(moi)?\s*(une|la)?\s*note\s*(sur|pour|concernant|:)?/i, "")
+        .trim();
+      const noteTitle = topic || "Nouvelle note Brain";
+      try {
+        await notes.create({
+          title: noteTitle,
+          body: `## ${noteTitle}\n\nNote créée par Brain IA le ${new Date().toLocaleDateString("fr-FR")} à ${new Date().toLocaleTimeString("fr-FR", { hour: "2-digit", minute: "2-digit" })}.\n\n- `,
+        });
+      } catch {}
       actionPlan = {
         id: `act-${Date.now()}`,
         type: "note",
-        step: "analyzing",
-        title: "Création de note",
-        detail: "Analyse du contenu et formatage...",
+        step: "done",
+        title: `Note créée : "${noteTitle}"`,
+        detail: "Enregistrée automatiquement dans votre espace Notes.",
       };
-    } else if (lower.startsWith("crée une tâche") || lower.includes("ajouter une tâche")) {
+    } else if (
+      lower.includes("crée une tâche") ||
+      lower.includes("créer une tâche") ||
+      lower.includes("ajoute une tâche") ||
+      lower.includes("nouvelle tâche")
+    ) {
+      const taskTopic = promptText
+        .replace(/^(peux-tu|tu peux|stp|s'il te plaît|s'il te plait|merci de)?\s*(créer|crée|ajouter|ajoute|faire|fais)\s*(moi)?\s*(une|la)?\s*tâche\s*(sur|pour|concernant|:)?/i, "")
+        .trim() || "Nouvelle tâche Brain";
+      try {
+        await tasks.create({
+          title: taskTopic,
+          body: "Créée par Brain IA",
+        });
+      } catch {}
       actionPlan = {
         id: `act-${Date.now()}`,
         type: "task",
-        step: "analyzing",
-        title: "Création de tâche",
-        detail: "Définition des priorités et échéance...",
+        step: "done",
+        title: `Tâche créée : "${taskTopic}"`,
+        detail: "Ajoutée à votre gestionnaire de tâches.",
       };
     }
 

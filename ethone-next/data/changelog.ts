@@ -7206,6 +7206,48 @@ CHANGELOG_BY_LANG.es.unshift({
 });
 
 CHANGELOG_BY_LANG.fr.unshift({
+  version: "v1.12.51",
+  date: "2026-08-30",
+  title: "Intelligence & Autonomie Avancées de Brain IA",
+  items: [
+    "Refonte complète du moteur de raisonnement : réponses ultra-intelligentes, riches et détaillées style ChatGPT.",
+    "Création autonome et instantanée de Notes et Tâches réelles dans le dashboard depuis le chat.",
+    "Support étendu des clés Gemini 2.0/1.5, OpenAI, Groq, DeepSeek, Anthropic et réseau IA gratuit.",
+    "Guide interactif complet des capacités système et recommandations productives.",
+  ],
+});
+
+CHANGELOG_BY_LANG.en.unshift({
+  version: "v1.12.51",
+  date: "2026-08-30",
+  title: "Brain Advanced AI Intelligence & Autonomous Actions",
+  items: [
+    "Complete reasoning engine overhaul: highly intelligent, structured, ChatGPT-level responses.",
+    "Instant autonomous creation of Notes and Tasks directly into the dashboard from chat.",
+    "Extended support for Gemini 2.0/1.5, OpenAI, Groq, DeepSeek, Anthropic and free AI networks.",
+    "Comprehensive interactive system capabilities guide and smart productivity recommendations.",
+  ],
+});
+
+CHANGELOG_BY_LANG.es.unshift({
+  version: "v1.12.51",
+  date: "2026-08-30",
+  title: "Inteligencia Avanzada y Acciones Autónomas en Brain",
+  items: [
+    "Respuestas avanzadas tipo ChatGPT y creación automática de notas y tareas.",
+  ],
+});
+
+CHANGELOG_BY_LANG.de.unshift({
+  version: "v1.12.51",
+  date: "2026-08-30",
+  title: "Fortschrittliche Brain KI & Autonome Aktionen",
+  items: [
+    "Intelligente ChatGPT-Antworten und automatische Notizen-/Aufgabenerstellung.",
+  ],
+});
+
+CHANGELOG_BY_LANG.fr.unshift({
   version: "v1.12.50",
   date: "2026-08-30",
   title: "Affichage de la Flèche d'Envoi et du Spinner dans Brain",

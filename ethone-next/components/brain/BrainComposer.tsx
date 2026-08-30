@@ -1,6 +1,7 @@
 "use client";
 
 import { useState, useRef, useCallback } from "react";
+import { ArrowUp, Loader2 } from "lucide-react";
 import { Icon } from "@/lib/icons";
 import { cn } from "@/lib/utils";
 import BrainModelSelector from "./BrainModelSelector";
@@ -248,13 +249,14 @@ export default function BrainComposer({
               type="button"
               onClick={handleSubmit}
               disabled={loading || !text.trim()}
-              className="flex h-8.5 w-8.5 items-center justify-center rounded-xl bg-[var(--accent-primary)] text-[var(--accent-contrast)] font-bold shadow-md transition-all hover:scale-105 active:scale-95 disabled:opacity-40 disabled:hover:scale-100"
-              title="Envoyer"
+              className="flex h-8.5 w-8.5 items-center justify-center rounded-xl bg-[var(--accent-primary)] text-[var(--accent-contrast)] font-bold shadow-md transition-all hover:scale-105 active:scale-95 disabled:opacity-40 disabled:hover:scale-100 cursor-pointer"
+              title={loading ? "Traitement en cours..." : "Envoyer"}
+              aria-label={loading ? "Traitement en cours" : "Envoyer"}
             >
               {loading ? (
-                <Icon name="arrows-clockwise" className="h-4 w-4 animate-spin" />
+                <Loader2 className="h-4 w-4 animate-spin text-[var(--accent-contrast)]" />
               ) : (
-                <Icon name="arrow-up" className="h-4 w-4" />
+                <ArrowUp className="h-4 w-4 text-[var(--accent-contrast)] stroke-[2.5]" />
               )}
             </button>
           </div>

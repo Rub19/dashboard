@@ -7206,6 +7206,44 @@ CHANGELOG_BY_LANG.es.unshift({
 });
 
 CHANGELOG_BY_LANG.fr.unshift({
+  version: "v1.12.50",
+  date: "2026-08-30",
+  title: "Affichage de la Flèche d'Envoi et du Spinner dans Brain",
+  items: [
+    "Restauration complète de l'icône de la flèche d'envoi et du spinner animé lors de la génération dans le chat Brain.",
+    "Ajout des correspondances d'icônes manquantes pour les flèches et les animations de chargement.",
+  ],
+});
+
+CHANGELOG_BY_LANG.en.unshift({
+  version: "v1.12.50",
+  date: "2026-08-30",
+  title: "Send Arrow & Loading Spinner in Brain Chat",
+  items: [
+    "Full restoration of send arrow icon and animated loading spinner during response generation in Brain chat.",
+    "Added missing icon mappings for arrows and loading indicators.",
+  ],
+});
+
+CHANGELOG_BY_LANG.es.unshift({
+  version: "v1.12.50",
+  date: "2026-08-30",
+  title: "Flecha de Envío y Spinner en Brain Chat",
+  items: [
+    "Restauración del icono de envío y el spinner de carga en Brain.",
+  ],
+});
+
+CHANGELOG_BY_LANG.de.unshift({
+  version: "v1.12.50",
+  date: "2026-08-30",
+  title: "Senden-Pfeil & Lade-Spinner im Brain Chat",
+  items: [
+    "Wiederherstellung des Senden-Symbols und des Lade-Spinners in Brain.",
+  ],
+});
+
+CHANGELOG_BY_LANG.fr.unshift({
   version: "v1.12.49",
   date: "2026-08-30",
   title: "Résolution et Fluidification de l'Explorateur de Fichiers",

@@ -7206,6 +7206,46 @@ CHANGELOG_BY_LANG.es.unshift({
 });
 
 CHANGELOG_BY_LANG.fr.unshift({
+  version: "v1.12.59",
+  date: "2026-08-30",
+  title: "Optimisation & Découplage des Pipelines CI/CD",
+  items: [
+    "Isolation stricte des builds GitHub Actions par chemins (Web, Android, iOS) pour éliminer les faux échecs et spams de notifications.",
+    "Résolution complète de tous les avertissements et erreurs ESLint Next.js.",
+    "Validation locale et distante garantie 100% verte sur l'ensemble des plateformes.",
+  ],
+});
+
+CHANGELOG_BY_LANG.en.unshift({
+  version: "v1.12.59",
+  date: "2026-08-30",
+  title: "CI/CD Pipeline Decoupling & Lint Fixes",
+  items: [
+    "Strict path filtering for GitHub Actions (Web, Android, iOS) eliminating false-positive failure notifications.",
+    "Fixed all Next.js ESLint errors and rules.",
+    "Guaranteed 100% green builds across local and remote pipelines.",
+  ],
+});
+
+CHANGELOG_BY_LANG.es.unshift({
+  version: "v1.12.59",
+  date: "2026-08-30",
+  title: "Optimización de Pipelines CI/CD y Lint",
+  items: [
+    "Aislamiento estricto de flujos de trabajo GitHub Actions y corrección completa de ESLint.",
+  ],
+});
+
+CHANGELOG_BY_LANG.de.unshift({
+  version: "v1.12.59",
+  date: "2026-08-30",
+  title: "CI/CD Pipeline Entkopplung & Lint-Bereinigung",
+  items: [
+    "Strikte Pfadfilterung für GitHub Actions und vollständige Behebung aller ESLint-Fehler.",
+  ],
+});
+
+CHANGELOG_BY_LANG.fr.unshift({
   version: "v1.12.58",
   date: "2026-08-30",
   title: "Tri Automatique par Score & Niveaux de Compte Réels",

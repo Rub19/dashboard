@@ -29,7 +29,7 @@ export async function sendSpotifyCommand(
     try {
       let endpoint = "";
       let method = "POST";
-      let body: BodyInit | undefined = undefined;
+      const body: BodyInit | undefined = undefined;
 
       switch (action) {
         case "play":

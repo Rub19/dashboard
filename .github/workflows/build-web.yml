@@ -2,9 +2,16 @@ name: Build Web (Next.js)
 
 on:
   push:
-    branches: [main, feat/clean-monorepo-cross-platform-alignment, fix/cloudflare-pages-and-worker, fix/css-legacy-imports, feat/merge-discord-bot, feat/merge-tracker-secure, qa/comprehensive-cross-platform-testing]
+    branches: [main]
+    paths:
+      - 'ethone-next/**'
+      - '.github/workflows/build-web.yml'
   pull_request:
     branches: [main]
+    paths:
+      - 'ethone-next/**'
+      - '.github/workflows/build-web.yml'
+  workflow_dispatch:
 
 permissions:
   contents: read

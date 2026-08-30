@@ -2,9 +2,16 @@ name: Build Android
 
 on:
   push:
-    branches: [main, feat/clean-monorepo-cross-platform-alignment, feat/full-native-android-compose, qa/comprehensive-cross-platform-testing]
+    branches: [main]
+    paths:
+      - 'android/**'
+      - '.github/workflows/build-android.yml'
   pull_request:
     branches: [main]
+    paths:
+      - 'android/**'
+      - '.github/workflows/build-android.yml'
+  workflow_dispatch:
 
 jobs:
   build:

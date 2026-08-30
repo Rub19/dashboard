@@ -455,7 +455,7 @@ export function useLiveData(pollMs = 60000) {
                   const assets = act.assets as ApiData | undefined;
                   const appId = asStr(act.application_id);
                   let largeImage = asStr(assets?.large_image || assets?.largeImage);
-                  let smallImage = asStr(assets?.small_image || assets?.smallImage);
+                  const smallImage = asStr(assets?.small_image || assets?.smallImage);
 
                   if (largeImage) {
                     if (largeImage.startsWith("mp:external/")) {

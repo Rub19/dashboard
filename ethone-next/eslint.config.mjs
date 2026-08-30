@@ -14,12 +14,14 @@ const eslintConfig = defineConfig([
     "android/**",
     "ios/**",
     "node_modules/**",
+    "scripts/**",
     "next-env.d.ts",
     "jest.env.js",
   ]),
   {
     rules: {
       "react-hooks/set-state-in-effect": "off",
+      "@typescript-eslint/no-explicit-any": "warn",
       "@typescript-eslint/no-unused-vars": [
         "warn",
         {

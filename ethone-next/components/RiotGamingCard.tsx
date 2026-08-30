@@ -92,6 +92,37 @@ function winRate(matches?: RiotMatch[] | null, count = 5): string {
   return String(Math.round((wins / list.length) * 100));
 }
 
+export function getValorantRankStyle(rank?: string): string {
+  if (!rank) return "bg-zinc-700/20 text-zinc-400 border-zinc-600/30";
+  const r = rank.toLowerCase();
+  if (r.includes("radiant")) return "bg-amber-400/25 text-amber-200 border-amber-300/60 shadow-amber-300/30";
+  if (r.includes("immortal") || r.includes("immortel")) return "bg-rose-600/25 text-rose-300 border-rose-500/50 shadow-rose-500/25";
+  if (r.includes("ascendant")) return "bg-emerald-500/20 text-emerald-300 border-emerald-500/40 shadow-emerald-500/20";
+  if (r.includes("diamond") || r.includes("diamant")) return "bg-purple-500/20 text-purple-300 border-purple-500/40 shadow-purple-500/20";
+  if (r.includes("platinum") || r.includes("platine")) return "bg-cyan-500/20 text-cyan-300 border-cyan-500/40 shadow-cyan-500/15";
+  if (r.includes("gold") || r.includes("or")) return "bg-yellow-500/20 text-yellow-300 border-yellow-500/40 shadow-yellow-500/15";
+  if (r.includes("silver") || r.includes("argent")) return "bg-slate-300/20 text-slate-200 border-slate-400/40 shadow-slate-400/10";
+  if (r.includes("bronze")) return "bg-amber-800/25 text-amber-300 border-amber-600/40 shadow-amber-800/20";
+  if (r.includes("iron") || r.includes("fer")) return "bg-zinc-500/20 text-zinc-300 border-zinc-500/40 shadow-zinc-500/10";
+  return "bg-slate-500/20 text-slate-300 border-slate-500/40";
+}
+
+export function getLolRankStyle(rank?: string): string {
+  if (!rank) return "bg-zinc-700/20 text-zinc-400 border-zinc-600/30";
+  const r = rank.toLowerCase();
+  if (r.includes("challenger")) return "bg-sky-400/25 text-sky-200 border-sky-300/60 shadow-sky-400/30";
+  if (r.includes("grandmaster") || r.includes("grand maître") || r.includes("grand maitre")) return "bg-red-600/25 text-red-300 border-red-500/50 shadow-red-500/30";
+  if (r.includes("master") || r.includes("maître") || r.includes("maitre")) return "bg-purple-500/25 text-purple-300 border-purple-500/50 shadow-purple-500/30";
+  if (r.includes("diamond") || r.includes("diamant")) return "bg-blue-500/20 text-blue-300 border-blue-500/40 shadow-blue-500/20";
+  if (r.includes("emerald") || r.includes("émeraude") || r.includes("emeraude")) return "bg-emerald-500/20 text-emerald-300 border-emerald-500/40 shadow-emerald-500/20";
+  if (r.includes("platinum") || r.includes("platine")) return "bg-teal-500/20 text-teal-300 border-teal-500/40 shadow-teal-500/20";
+  if (r.includes("gold") || r.includes("or")) return "bg-yellow-500/20 text-yellow-300 border-yellow-500/40 shadow-yellow-500/20";
+  if (r.includes("silver") || r.includes("argent")) return "bg-slate-400/20 text-slate-200 border-slate-400/40 shadow-slate-400/10";
+  if (r.includes("bronze")) return "bg-amber-800/25 text-amber-300 border-amber-600/40 shadow-amber-900/20";
+  if (r.includes("iron") || r.includes("fer")) return "bg-stone-500/20 text-stone-300 border-stone-500/40 shadow-stone-500/10";
+  return "bg-slate-500/20 text-slate-300 border-slate-500/40";
+}
+
 export const RiotGamingCardContent = memo(function RiotGamingCardContent({
   game,
   matches: propMatches,
@@ -312,27 +343,29 @@ export const RiotGamingCardContent = memo(function RiotGamingCardContent({
             {game === "valorant" ? (
               <div className="mt-1 flex items-center justify-center gap-1.5">
                 <span className={cn(
-                  "inline-flex items-center gap-1 rounded-md px-2 py-0.5 text-[10px] font-black uppercase tracking-wider border shadow-xs",
-                  liveRank.toLowerCase().includes("ascendant") || liveRank.toLowerCase().includes("radiant") || liveRank.toLowerCase().includes("immortal")
-                    ? "bg-emerald-500/20 text-emerald-300 border-emerald-500/40 shadow-emerald-500/20"
-                    : liveRank.toLowerCase().includes("plat") || liveRank.toLowerCase().includes("dia")
-                    ? "bg-cyan-500/20 text-cyan-300 border-cyan-500/40"
-                    : "bg-slate-500/20 text-slate-300 border-slate-500/40"
+                  "inline-flex items-center gap-1 rounded-md px-2 py-0.5 text-[10px] font-black uppercase tracking-wider border shadow-xs transition-all",
+                  getValorantRankStyle(liveRank)
                 )}>
                   {liveRank}
                 </span>
                 {Boolean(asStr(meta?.modeName)) && (
-                  <span className="text-[10px] text-zinc-500 font-medium">
+                  <span className="text-[10px] text-zinc-400 font-medium">
                     · {asStr(meta?.modeName)}
                   </span>
                 )}
               </div>
             ) : (
               <div className="mt-1 flex flex-wrap items-center justify-center gap-1.5">
-                <span className="inline-flex items-center gap-1 rounded-md px-1.5 py-0.5 text-[9px] font-black tracking-wider border shadow-xs bg-amber-500/15 text-amber-300 border-amber-500/30">
+                <span className={cn(
+                  "inline-flex items-center gap-1 rounded-md px-1.5 py-0.5 text-[9px] font-black tracking-wider border shadow-xs transition-all",
+                  getLolRankStyle(liveRankSolo)
+                )}>
                   Solo/Duo: {liveRankSolo}
                 </span>
-                <span className="inline-flex items-center gap-1 rounded-md px-1.5 py-0.5 text-[9px] font-black tracking-wider border shadow-xs bg-slate-500/15 text-slate-300 border-slate-500/30">
+                <span className={cn(
+                  "inline-flex items-center gap-1 rounded-md px-1.5 py-0.5 text-[9px] font-black tracking-wider border shadow-xs transition-all",
+                  getLolRankStyle(liveRankFlex)
+                )}>
                   Flex: {liveRankFlex}
                 </span>
               </div>

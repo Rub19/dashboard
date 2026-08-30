@@ -7206,6 +7206,44 @@ CHANGELOG_BY_LANG.es.unshift({
 });
 
 CHANGELOG_BY_LANG.fr.unshift({
+  version: "v1.12.53",
+  date: "2026-08-30",
+  title: "Couleurs Officielles des Rangs Valorant & League of Legends",
+  items: [
+    "Attribution des vraies couleurs officielles pour tous les rangs (Immortal en pourpre/cramoisi, Radiant en or radieux, Ascendant en émeraude, Bronze en cuivre chaud).",
+    "Harmonisation dynamique des badges de rang Solo/Duo et Flex sur League of Legends.",
+  ],
+});
+
+CHANGELOG_BY_LANG.en.unshift({
+  version: "v1.12.53",
+  date: "2026-08-30",
+  title: "Authentic Valorant & League of Legends Rank Tier Colors",
+  items: [
+    "Applied accurate official rank tier colors (Immortal in crimson/magenta, Radiant in bright gold, Ascendant in emerald, Bronze in rich copper).",
+    "Dynamic color styling for Solo/Duo and Flex rank badges on League of Legends.",
+  ],
+});
+
+CHANGELOG_BY_LANG.es.unshift({
+  version: "v1.12.53",
+  date: "2026-08-30",
+  title: "Colores Oficiales de Rangos Valorant y LoL",
+  items: [
+    "Colores oficiales auténticos para Immortal, Radiant, Ascendant, Bronze y todos los rangos.",
+  ],
+});
+
+CHANGELOG_BY_LANG.de.unshift({
+  version: "v1.12.53",
+  date: "2026-08-30",
+  title: "Offizielle Rangfarben für Valorant & LoL",
+  items: [
+    "Authentische Rangfarben für alle Ränge in Valorant und League of Legends.",
+  ],
+});
+
+CHANGELOG_BY_LANG.fr.unshift({
   version: "v1.12.52",
   date: "2026-08-30",
   title: "Priorité à la Photo de Profil Personnalisée & Discord",

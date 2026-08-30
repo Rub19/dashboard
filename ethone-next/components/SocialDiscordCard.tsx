@@ -1,6 +1,6 @@
 "use client";
 
-import { memo, useCallback, useEffect, useMemo } from "react";
+import { memo, useCallback, useEffect, useMemo, useState } from "react";
 import { useRouter } from "next/navigation";
 import { AlertCircle, ExternalLink, Loader2, Music, Radio, RadioOff } from "lucide-react";
 import { useSettings } from "@/components/SettingsProvider";
@@ -79,6 +79,7 @@ const SocialDiscordCard = memo(function SocialDiscordCard({
   const i18n = useI18n();
   const { settings, update } = useSettings();
   const { profile: oauthProfile } = useDiscordOAuth();
+  const [localLanyard, setLocalLanyard] = useState<LanyardPresence | null>(null);
 
   const handleConnectIntegrations = useCallback(() => {
     router.push("/settings?category=integrations");
@@ -93,14 +94,60 @@ const SocialDiscordCard = memo(function SocialDiscordCard({
     }
   }, [isOAuth, oauthUserId, settings.liveLanyardUserId, update]);
 
-  const userId = lanyard?.userId || oauthProfile?.user?.id;
-  const avatarHash = lanyard?.avatarHash;
-  const discriminator = lanyard?.discriminator;
-  const avatarUrl = lanyard?.avatarUrl || oauthProfile?.user?.avatarUrl;
-  const username = lanyard?.username || oauthProfile?.user?.username;
+  const effectiveUserId = lanyard?.userId || settings.liveLanyardUserId || oauthUserId;
+
+  useEffect(() => {
+    if (lanyard) return;
+    if (!effectiveUserId) return;
+
+    let cancelled = false;
+    async function fetchDirect() {
+      try {
+        const res = await fetch(`https://api.lanyard.rest/v1/users/${encodeURIComponent(effectiveUserId!)}`);
+        if (res.ok) {
+          const json = await res.json();
+          if (json?.success && json?.data && !cancelled) {
+            const d = json.data;
+            const discordUser = d.discord_user || {};
+            const avatarHash = discordUser.avatar || d.avatarHash;
+            const avatarUrl =
+              discordUser.avatarUrl ||
+              (avatarHash
+                ? `https://cdn.discordapp.com/avatars/${effectiveUserId}/${avatarHash}.${String(avatarHash).startsWith("a_") ? "gif" : "png"}?size=256`
+                : "");
+            setLocalLanyard({
+              userId: effectiveUserId,
+              displayName: discordUser.global_name || discordUser.display_name || discordUser.username || d.displayName,
+              username: discordUser.username || d.username,
+              avatarUrl,
+              avatarHash,
+              discriminator: discordUser.discriminator,
+              discord_status: d.discord_status || d.status || "online",
+              activities: d.activities,
+              spotify: d.spotify,
+            });
+          }
+        }
+      } catch {}
+    }
+    fetchDirect();
+    const timer = setInterval(fetchDirect, 20000);
+    return () => {
+      cancelled = true;
+      clearInterval(timer);
+    };
+  }, [lanyard, effectiveUserId]);
+
+  const effectiveLanyard = lanyard || localLanyard;
+
+  const userId = effectiveLanyard?.userId || oauthProfile?.user?.id;
+  const avatarHash = effectiveLanyard?.avatarHash;
+  const discriminator = effectiveLanyard?.discriminator;
+  const avatarUrl = effectiveLanyard?.avatarUrl || oauthProfile?.user?.avatarUrl;
+  const username = effectiveLanyard?.username || oauthProfile?.user?.username;
   const displayName =
-    lanyard?.displayName ||
-    lanyard?.username ||
+    effectiveLanyard?.displayName ||
+    effectiveLanyard?.username ||
     oauthProfile?.user?.displayName ||
     oauthProfile?.user?.username ||
     "Discord";
@@ -114,7 +161,7 @@ const SocialDiscordCard = memo(function SocialDiscordCard({
     return "";
   }, [avatarHash, userId, avatarUrl]);
 
-  const rawStatus = lanyard?.discord_status || (isOAuth ? "online" : "offline");
+  const rawStatus = effectiveLanyard?.discord_status || (isOAuth ? "online" : "offline");
   const status = rawStatus;
   const color = statusColor(status);
   const label = statusLabel(status);
@@ -128,7 +175,7 @@ const SocialDiscordCard = memo(function SocialDiscordCard({
         : Boolean(settings.liveSpotifyClientId);
 
   const hasAnyConnection = isLanyardConfigured || isNowPlayingSourceConfigured || isOAuth;
-  const hasLanyard = Boolean(lanyard?.userId);
+  const hasLanyard = Boolean(effectiveLanyard?.userId || effectiveLanyard?.username);
   const hasOAuth = isOAuth;
 
   const { badgeColor, badgeLabel, badgeTone } = useMemo(() => {
@@ -152,13 +199,13 @@ const SocialDiscordCard = memo(function SocialDiscordCard({
     return { badgeColor: color, badgeLabel: label, badgeTone: statusTone(status) };
   }, [color, hasAnyConnection, hasLanyard, i18n, label, loading, status]);
 
-  const activities = lanyard?.activities ?? [];
+  const activities = (effectiveLanyard?.activities || []) as Array<{ name?: string; state?: string; details?: string; largeImage?: string }>;
   const customStatus = activities.find((activity) => activity.name === "Custom Status")?.state;
   const gameActivity = activities.find(
     (activity) => activity.name !== "Custom Status" && activity.name !== "Spotify"
   );
 
-  const lanyardSpotify = lanyard?.spotify;
+  const lanyardSpotify = effectiveLanyard?.spotify;
   const lanyardMusic: NowPlaying | null =
     lanyardSpotify && lanyardSpotify.playing
       ? {

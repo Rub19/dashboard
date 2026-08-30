@@ -7206,6 +7206,44 @@ CHANGELOG_BY_LANG.es.unshift({
 });
 
 CHANGELOG_BY_LANG.fr.unshift({
+  version: "v1.12.48",
+  date: "2026-08-30",
+  title: "Optimisation du Widget Discord sur Mobile & Présence Live",
+  items: [
+    "Synchronisation directe et instantanée du statut et de l'activité Discord sur web mobile via Lanyard & OAuth.",
+    "Affichage fluide de l'avatar Discord, du statut en ligne/occupé et des sessions de jeu en direct sur mobile.",
+  ],
+});
+
+CHANGELOG_BY_LANG.en.unshift({
+  version: "v1.12.48",
+  date: "2026-08-30",
+  title: "Discord Mobile Widget Polish & Live Presence",
+  items: [
+    "Direct and instant Discord status and activity sync on mobile web through Lanyard & OAuth.",
+    "Seamless display of Discord avatar, status badges, and live game sessions on mobile.",
+  ],
+});
+
+CHANGELOG_BY_LANG.es.unshift({
+  version: "v1.12.48",
+  date: "2026-08-30",
+  title: "Widget de Discord en Móvil y Presencia en Vivo",
+  items: [
+    "Sincronización instantánea del estado de Discord en navegadores móviles.",
+  ],
+});
+
+CHANGELOG_BY_LANG.de.unshift({
+  version: "v1.12.48",
+  date: "2026-08-30",
+  title: "Discord Mobile Widget & Live-Präsenz",
+  items: [
+    "Direkte und sofortige Synchronisierung des Discord-Status auf Mobilgeräten.",
+  ],
+});
+
+CHANGELOG_BY_LANG.fr.unshift({
   version: "v1.12.47",
   date: "2026-08-30",
   title: "Optimisations Mobiles, Synchronisation Supabase & Avatars",

@@ -63,7 +63,20 @@ export function useCloudFiles(clientId?: string) {
         await cache.setFiles(list as Record<string, unknown>[]);
       }
     } catch (err) {
-      setError(err instanceof Error ? err : new Error(String(err)));
+      if (cache && !query.trim() && !trashed) {
+        try {
+          const cached = await (favorites ? cache.getFavorites() : cache.getFiles());
+          if (cached && cached.length > 0) {
+            setFiles(cached as CloudFile[]);
+            return;
+          }
+        } catch {}
+      }
+      setFiles([]);
+      const msg = (err instanceof Error ? err.message : String(err)).toLowerCase();
+      if (!msg.includes("auth") && !msg.includes("session") && !msg.includes("401")) {
+        setError(err instanceof Error ? err : new Error(String(err)));
+      }
     } finally {
       setLoading(false);
     }
@@ -80,7 +93,20 @@ export function useCloudFiles(clientId?: string) {
         await cache.setFavorites(list as Record<string, unknown>[]);
       }
     } catch (err) {
-      setError(err instanceof Error ? err : new Error(String(err)));
+      if (cache) {
+        try {
+          const cached = await cache.getFavorites();
+          if (cached && cached.length > 0) {
+            setFiles(cached as CloudFile[]);
+            return;
+          }
+        } catch {}
+      }
+      setFiles([]);
+      const msg = (err instanceof Error ? err.message : String(err)).toLowerCase();
+      if (!msg.includes("auth") && !msg.includes("session") && !msg.includes("401")) {
+        setError(err instanceof Error ? err : new Error(String(err)));
+      }
     } finally {
       setLoading(false);
     }

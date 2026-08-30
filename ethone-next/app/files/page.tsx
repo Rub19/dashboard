@@ -33,6 +33,7 @@ import Input from "@/components/Input";
 import Button from "@/components/ui/Button";
 import Select from "@/components/ui/Select";
 import FileUploadZone from "@/components/FileUploadZone";
+import { useSettings } from "@/components/SettingsProvider";
 import { Checkbox } from "@/components/ui/Checkbox";
 import {
   Folder,
@@ -100,8 +101,10 @@ type Modal =
 
 export default function FilesPage() {
   const i18n = useI18n();
+  const { settings } = useSettings();
   const { success, error: toastError } = useToast();
-  const [clientId, setClientId] = useUserState<string>("clientId:google-drive", "");
+  const [storedClientId, setClientId] = useUserState<string>("clientId:google-drive", "");
+  const clientId = settings.driveClientId || storedClientId;
   const {
     files,
     loading,
@@ -972,8 +975,8 @@ export default function FilesPage() {
           </div>
         )}
 
-        {/* Error notification */}
-        {error && (
+        {/* Error notification (only if drive is connected and real error occurs) */}
+        {error && clientId && (
           <EmptyState
             icon="alert-circle"
             title={i18n("error", "Erreur de chargement")}
@@ -1037,7 +1040,7 @@ export default function FilesPage() {
               ))}
             </>
           ) : filteredFiles.length === 0 ? (
-            !clientId ? (
+            error && clientId ? null : !clientId ? (
               <div className="col-span-full">
                 <EmptyState
                   icon="cloud"

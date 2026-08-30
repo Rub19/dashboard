@@ -7206,6 +7206,46 @@ CHANGELOG_BY_LANG.es.unshift({
 });
 
 CHANGELOG_BY_LANG.fr.unshift({
+  version: "v1.12.49",
+  date: "2026-08-30",
+  title: "Résolution et Fluidification de l'Explorateur de Fichiers",
+  items: [
+    "Gestion intelligente des erreurs réseau et fallback hors-ligne automatique dans l'explorateur de fichiers.",
+    "Suppression du double affichage Erreur / Connexion Drive lors du chargement initial.",
+    "Détection automatique du Google Drive Client ID configuré dans les réglages.",
+  ],
+});
+
+CHANGELOG_BY_LANG.en.unshift({
+  version: "v1.12.49",
+  date: "2026-08-30",
+  title: "File Explorer Fixes & Clean Initial State",
+  items: [
+    "Smart handling of network errors and automatic offline cache fallback in the File Explorer.",
+    "Eliminated duplicate stacked error / connect banners on initial view.",
+    "Automatic detection of configured Google Drive Client ID from settings.",
+  ],
+});
+
+CHANGELOG_BY_LANG.es.unshift({
+  version: "v1.12.49",
+  date: "2026-08-30",
+  title: "Correcciones en el Explorador de Archivos",
+  items: [
+    "Manejo inteligente de errores y caché en el explorador de archivos.",
+  ],
+});
+
+CHANGELOG_BY_LANG.de.unshift({
+  version: "v1.12.49",
+  date: "2026-08-30",
+  title: "Datei-Explorer Fehlerbehebungen",
+  items: [
+    "Intelligente Fehlerbehandlung und sauberer Startzustand im Datei-Explorer.",
+  ],
+});
+
+CHANGELOG_BY_LANG.fr.unshift({
   version: "v1.12.48",
   date: "2026-08-30",
   title: "Optimisation du Widget Discord sur Mobile & Présence Live",

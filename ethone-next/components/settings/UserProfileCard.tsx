@@ -14,6 +14,8 @@ import { Icon } from "@/lib/icons";
 import { useDiscordOAuth } from "@/lib/hooks/useDiscordOAuth";
 import Button from "@/components/ui/Button";
 
+import { useUserIdentity } from "@/lib/hooks/useUserIdentity";
+
 function maskId(id: string) {
   if (!id) return "";
   if (id.length <= 8) return "•".repeat(id.length);
@@ -35,36 +37,10 @@ export default function UserProfileCard({
   const { profile } = useProfile();
   const { profile: discordProfile } = useDiscordOAuth();
   const { settings } = useSettings();
-
-  const meta = (user?.user_metadata || {}) as Record<string, unknown>;
-  const discordName =
-    discordProfile?.user?.displayName ||
-    discordProfile?.user?.globalName ||
-    discordProfile?.user?.username;
+  const { displayName, avatarUrl, email } = useUserIdentity();
 
   const isDiscordLinked = Boolean(discordProfile?.connected);
-
-  const customFromMeta =
-    (typeof meta.custom_display_name === "string" ? meta.custom_display_name : undefined) ||
-    (typeof meta.display_name === "string" ? meta.display_name : undefined) ||
-    (typeof meta.username === "string" ? meta.username : undefined);
-
-  const displayName =
-    profile?.display_name ||
-    profile?.username ||
-    discordName ||
-    customFromMeta ||
-    (user?.email && (user.email.startsWith("rub19") || user.email.startsWith("rub")) ? "Rub" : undefined) ||
-    (user?.email ? user.email.split("@")[0] : "") ||
-    "Rub";
-
-  const email = user?.email || "";
   const rawPublicId = profile?.public_id || user?.id || "local";
-  const avatarUrl =
-    (profile?.avatar_url && !profile.avatar_url.includes("googleusercontent.com") ? profile.avatar_url : undefined) ||
-    discordProfile?.user?.avatarUrl ||
-    (typeof meta.custom_avatar_url === "string" ? meta.custom_avatar_url : undefined) ||
-    undefined;
 
   const [masked, setMasked] = useState(true);
 

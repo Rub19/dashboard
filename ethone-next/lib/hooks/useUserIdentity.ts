@@ -4,7 +4,6 @@ import { useEffect, useMemo, useState } from "react";
 import { useAuth } from "@/components/AuthProvider";
 import { useActiveProfile } from "@/components/SettingsProvider";
 import { useProfile } from "@/lib/hooks/useProfile";
-import { useDiscordOAuth } from "@/lib/hooks/useDiscordOAuth";
 
 export type UserIdentity = {
   displayName: string;
@@ -14,11 +13,27 @@ export type UserIdentity = {
   isGuest: boolean;
 };
 
+/**
+ * Returns true if an avatar URL is an external OAuth avatar (Google or Discord)
+ * that should NOT be used for the core ETHONE profile picture.
+ */
+function isExternalOAuthAvatar(url?: string | null): boolean {
+  if (!url || typeof url !== "string") return true;
+  const lower = url.toLowerCase();
+  return (
+    lower.includes("googleusercontent.com") ||
+    lower.includes("google.com") ||
+    lower.includes("discordapp.com") ||
+    lower.includes("cdn.discordapp.com") ||
+    lower.includes("discord.com") ||
+    lower.includes("discordapp.net")
+  );
+}
+
 export function useUserIdentity(): UserIdentity {
   const { user } = useAuth();
   const { activeProfile } = useActiveProfile();
   const { profile: publicProfile } = useProfile();
-  const { profile: discordProfile } = useDiscordOAuth();
 
   const [cachedName, setCachedName] = useState<string>("");
   const [cachedAvatar, setCachedAvatar] = useState<string>("");
@@ -31,15 +46,23 @@ export function useUserIdentity(): UserIdentity {
           localStorage.getItem("ethone_custom_avatar") ||
           localStorage.getItem("ethone:custom:avatar") ||
           localStorage.getItem("ethone_user_avatar");
-        // Clear old auto-imported Google full name
+
         if (savedName && savedName !== "Rubens Lespinasse") {
           setCachedName(savedName);
         } else if (savedName === "Rubens Lespinasse") {
           localStorage.setItem("ethone_user_name", "Rub");
           setCachedName("Rub");
         }
+
         if (savedAvatar) {
-          setCachedAvatar(savedAvatar);
+          if (isExternalOAuthAvatar(savedAvatar)) {
+            localStorage.removeItem("ethone_user_avatar");
+            localStorage.removeItem("ethone_custom_avatar");
+            localStorage.removeItem("ethone:custom:avatar");
+            setCachedAvatar("");
+          } else {
+            setCachedAvatar(savedAvatar);
+          }
         }
       } catch {
         // ignore storage restrictions
@@ -65,25 +88,17 @@ export function useUserIdentity(): UserIdentity {
     (user?.email ? user.email.split("@")[0] : "") ||
     "Rub";
 
-  // Resolution of avatar URL: custom user uploaded avatar or profile avatar or Discord avatar, avoiding Google avatar if a custom ETHONE one was set!
-  const customAvatar =
-    (publicProfile?.avatar_url && !publicProfile.avatar_url.includes("googleusercontent.com")
-      ? publicProfile.avatar_url
-      : undefined) ||
-    discordProfile?.user?.avatarUrl ||
-    (typeof meta.custom_avatar_url === "string" ? meta.custom_avatar_url : undefined) ||
-    (activeProfile as unknown as { avatar_url?: string; avatar?: string })?.avatar_url ||
-    (activeProfile as unknown as { avatar_url?: string; avatar?: string })?.avatar ||
-    (cachedAvatar && !cachedAvatar.includes("googleusercontent.com") ? cachedAvatar : undefined);
+  // Resolution of avatar URL: custom user uploaded avatar on ETHONE only (strictly excluding Google & Discord avatars!)
+  const candidateAvatars = [
+    typeof meta.custom_avatar_url === "string" ? meta.custom_avatar_url : undefined,
+    publicProfile?.avatar_url,
+    (activeProfile as unknown as { avatar_url?: string; avatar?: string })?.avatar_url,
+    (activeProfile as unknown as { avatar_url?: string; avatar?: string })?.avatar,
+    typeof meta.avatar_url === "string" ? meta.avatar_url : undefined,
+    cachedAvatar,
+  ];
 
-  const fallbackAvatar =
-    publicProfile?.avatar_url ||
-    (typeof meta.avatar_url === "string" ? meta.avatar_url : undefined) ||
-    (typeof meta.picture === "string" ? meta.picture : undefined) ||
-    cachedAvatar ||
-    undefined;
-
-  const avatarUrl = customAvatar || fallbackAvatar;
+  const avatarUrl = candidateAvatars.find((url) => url && !isExternalOAuthAvatar(url)) || undefined;
 
   useEffect(() => {
     if (typeof window !== "undefined") {
@@ -91,8 +106,9 @@ export function useUserIdentity(): UserIdentity {
         if (displayName && displayName !== "Invité" && displayName !== "Utilisateur ETHONE") {
           localStorage.setItem("ethone_user_name", displayName);
         }
-        if (avatarUrl) {
+        if (avatarUrl && !isExternalOAuthAvatar(avatarUrl)) {
           localStorage.setItem("ethone_user_avatar", avatarUrl);
+          localStorage.setItem("ethone_custom_avatar", avatarUrl);
         }
       } catch {
         // ignore
@@ -120,3 +136,4 @@ export function useUserIdentity(): UserIdentity {
     isGuest: !user,
   };
 }
+

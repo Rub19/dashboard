@@ -7206,6 +7206,46 @@ CHANGELOG_BY_LANG.es.unshift({
 });
 
 CHANGELOG_BY_LANG.fr.unshift({
+  version: "v1.12.57",
+  date: "2026-08-30",
+  title: "Sanctuarisation de la Photo de Profil ETHONE",
+  items: [
+    "Suppression totale de l'écrasement de la photo de profil ETHONE par Discord ou Google.",
+    "L'avatar Discord reste strictement cantonné au widget Discord et ne contamine plus le profil de l'OS.",
+    "Préservation exclusive de la photo de profil personnalisée ETHONE et nettoyage des caches OAuth externes.",
+  ],
+});
+
+CHANGELOG_BY_LANG.en.unshift({
+  version: "v1.12.57",
+  date: "2026-08-30",
+  title: "ETHONE Core Avatar Protection",
+  items: [
+    "Removed any override of the primary ETHONE avatar by Discord or Google OAuth.",
+    "Discord avatar is strictly isolated to the Discord Card.",
+    "Preserved custom ETHONE user avatar and cleared external OAuth avatar caches.",
+  ],
+});
+
+CHANGELOG_BY_LANG.es.unshift({
+  version: "v1.12.57",
+  date: "2026-08-30",
+  title: "Protección del Avatar de Perfil ETHONE",
+  items: [
+    "Aislamiento estricto del avatar de Discord y preservación del avatar de ETHONE.",
+  ],
+});
+
+CHANGELOG_BY_LANG.de.unshift({
+  version: "v1.12.57",
+  date: "2026-08-30",
+  title: "Schutz des ETHONE Profilbilds",
+  items: [
+    "Strikte Trennung des Discord-Profilbilds und Schutz des benutzerdefinierten ETHONE-Profilbilds.",
+  ],
+});
+
+CHANGELOG_BY_LANG.fr.unshift({
   version: "v1.12.56",
   date: "2026-08-30",
   title: "Scoreboard Séparé par Équipe & Trait de Groupe Tracker.gg",

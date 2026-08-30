@@ -41,29 +41,40 @@ export function useUserIdentity(): UserIdentity {
   useEffect(() => {
     if (typeof window !== "undefined") {
       try {
-        const savedName = localStorage.getItem("ethone_user_name");
-        const savedAvatar =
-          localStorage.getItem("ethone_custom_avatar") ||
-          localStorage.getItem("ethone:custom:avatar") ||
-          localStorage.getItem("ethone_user_avatar");
+        const updateFromStorage = () => {
+          const savedName = localStorage.getItem("ethone_user_name");
+          const savedAvatar =
+            localStorage.getItem("ethone_custom_avatar") ||
+            localStorage.getItem("ethone:custom:avatar") ||
+            localStorage.getItem("ethone_user_avatar");
 
-        if (savedName && savedName !== "Rubens Lespinasse") {
-          setCachedName(savedName);
-        } else if (savedName === "Rubens Lespinasse") {
-          localStorage.setItem("ethone_user_name", "Rub");
-          setCachedName("Rub");
-        }
-
-        if (savedAvatar) {
-          if (isExternalOAuthAvatar(savedAvatar)) {
-            localStorage.removeItem("ethone_user_avatar");
-            localStorage.removeItem("ethone_custom_avatar");
-            localStorage.removeItem("ethone:custom:avatar");
-            setCachedAvatar("");
-          } else {
-            setCachedAvatar(savedAvatar);
+          if (savedName && savedName !== "Rubens Lespinasse") {
+            setCachedName(savedName);
+          } else if (savedName === "Rubens Lespinasse") {
+            localStorage.setItem("ethone_user_name", "Rub");
+            setCachedName("Rub");
           }
-        }
+
+          if (savedAvatar) {
+            if (isExternalOAuthAvatar(savedAvatar)) {
+              localStorage.removeItem("ethone_user_avatar");
+              localStorage.removeItem("ethone_custom_avatar");
+              localStorage.removeItem("ethone:custom:avatar");
+              setCachedAvatar("");
+            } else {
+              setCachedAvatar(savedAvatar);
+            }
+          }
+        };
+
+        updateFromStorage();
+        window.addEventListener("ethone:identity:update", updateFromStorage);
+        window.addEventListener("storage", updateFromStorage);
+
+        return () => {
+          window.removeEventListener("ethone:identity:update", updateFromStorage);
+          window.removeEventListener("storage", updateFromStorage);
+        };
       } catch {
         // ignore storage restrictions
       }

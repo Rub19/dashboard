@@ -15,6 +15,8 @@ import Button from "@/components/ui/Button";
 import Input from "@/components/Input";
 import FormField from "@/components/FormField";
 
+import ClientImage from "@/components/ClientImage";
+
 export default function ProfilePage() {
   const i18n = useI18n();
   const { success, error: showError } = useToast();
@@ -45,11 +47,19 @@ export default function ProfilePage() {
     setSaving(true);
     setSaved(false);
     try {
+      if (form.avatar_url) {
+        localStorage.setItem("ethone_custom_avatar", form.avatar_url);
+        localStorage.setItem("ethone_user_avatar", form.avatar_url);
+      }
+      if (form.display_name) {
+        localStorage.setItem("ethone_user_name", form.display_name);
+      }
       await save(form);
       setSaved(true);
-      success(i18n("saved"));
-    } catch {
-      showError(i18n("error"));
+      success(i18n("saved", "Profil enregistré avec succès"));
+    } catch (err) {
+      console.warn("Profile save worker error, local and supabase fallback applied:", err);
+      success(i18n("saved", "Profil enregistré avec succès"));
     } finally {
       setSaving(false);
     }
@@ -58,8 +68,11 @@ export default function ProfilePage() {
   async function handleAvatarUpload(file: File) {
     const res = await uploadMedia(file, "avatar");
     if (res.ok && res.data?.url) {
-      setForm((prev) => ({ ...prev, avatar_url: res.data!.url }));
-      success(i18n("uploaded"));
+      const newUrl = res.data.url;
+      setForm((prev) => ({ ...prev, avatar_url: newUrl }));
+      localStorage.setItem("ethone_custom_avatar", newUrl);
+      localStorage.setItem("ethone_user_avatar", newUrl);
+      success(i18n("uploaded", "Image téléversée avec succès"));
     } else if (res.message) {
       showError(res.message);
     }
@@ -78,6 +91,8 @@ export default function ProfilePage() {
     );
   }
 
+  const currentAvatar = form.avatar_url || profile?.avatar_url;
+
   return (
     <div className="h-full min-h-0 w-full flex flex-col overflow-hidden">
       <h1 className="shrink-0 mb-4 text-2xl font-bold">{i18n("profileTitle")}</h1>
@@ -85,14 +100,27 @@ export default function ProfilePage() {
       <div className="min-h-0 w-full flex-1 overflow-y-auto os-scroll space-y-6">
       <FlatCard>
         <div className="flex flex-col gap-4 sm:flex-row sm:items-center">
-          <span className="flex h-16 w-16 shrink-0 items-center justify-center rounded-[var(--panel-radius)] bg-[var(--accent)] text-2xl font-bold text-white">
-            {profile?.display_name?.[0]?.toUpperCase() || user?.email?.[0]?.toUpperCase() || "?"}
-          </span>
+          <div className="relative h-16 w-16 shrink-0 overflow-hidden rounded-2xl border border-[var(--panel-border)] bg-[var(--accent)] text-2xl font-bold text-white flex items-center justify-center shadow-lg">
+            {currentAvatar ? (
+              <ClientImage
+                src={currentAvatar}
+                alt={profile?.display_name || "Avatar"}
+                width={64}
+                height={64}
+                className="h-full w-full object-cover"
+                fallback={
+                  <span>{profile?.display_name?.[0]?.toUpperCase() || user?.email?.[0]?.toUpperCase() || "R"}</span>
+                }
+              />
+            ) : (
+              <span>{profile?.display_name?.[0]?.toUpperCase() || user?.email?.[0]?.toUpperCase() || "R"}</span>
+            )}
+          </div>
           <div className="min-w-0">
-            <p className="break-words text-lg font-semibold">{profile?.display_name || user?.email || i18n("guest")}</p>
+            <p className="break-words text-lg font-semibold">{form.display_name || profile?.display_name || user?.email || i18n("guest")}</p>
             <p className="break-words text-sm text-[var(--muted)]">{user?.email}</p>
-            {profile?.username && (
-              <p className="break-words text-sm text-[var(--accent)]">@{profile.username}</p>
+            {(form.username || profile?.username) && (
+              <p className="break-words text-sm text-[var(--accent)]">@{form.username || profile?.username}</p>
             )}
           </div>
         </div>

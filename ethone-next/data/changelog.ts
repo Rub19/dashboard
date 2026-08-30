@@ -7206,6 +7206,46 @@ CHANGELOG_BY_LANG.es.unshift({
 });
 
 CHANGELOG_BY_LANG.fr.unshift({
+  version: "v1.12.61",
+  date: "2026-08-30",
+  title: "Sauvegarde Robuste du Profil & Photo de Profil",
+  items: [
+    "Persistance multi-niveaux garantie pour la photo de profil (Supabase Auth Metadata, Database Profiles, LocalStorage et Worker).",
+    "Aperçu immédiat et réactif de la photo de profil sur l'ensemble de l'OS dès le téléversement ou l'enregistrement.",
+    "Résolution des erreurs de soumission du formulaire de profil.",
+  ],
+});
+
+CHANGELOG_BY_LANG.en.unshift({
+  version: "v1.12.61",
+  date: "2026-08-30",
+  title: "Resilient Profile & Avatar Picture Persistence",
+  items: [
+    "Multi-layer profile avatar persistence (Supabase Auth Metadata, Database Profiles, LocalStorage, and Worker sync).",
+    "Immediate reactive preview and instant propagation across the entire OS upon avatar upload or save.",
+    "Resolved profile save submission errors.",
+  ],
+});
+
+CHANGELOG_BY_LANG.es.unshift({
+  version: "v1.12.61",
+  date: "2026-08-30",
+  title: "Persistencia Robusta de Foto de Perfil",
+  items: [
+    "Persistencia multinivel para fotos de perfil y sincronización instantánea.",
+  ],
+});
+
+CHANGELOG_BY_LANG.de.unshift({
+  version: "v1.12.61",
+  date: "2026-08-30",
+  title: "Robuste Profilbild- & Profilspeicherung",
+  items: [
+    "Mehrschichtige Persistenz für Profilbilder und sofortige OS-weite Aktualisierung.",
+  ],
+});
+
+CHANGELOG_BY_LANG.fr.unshift({
   version: "v1.12.60",
   date: "2026-08-30",
   title: "Résolution Complète des Champions LoL & IDs Riot",

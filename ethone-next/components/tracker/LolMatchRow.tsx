@@ -476,228 +476,229 @@ export default function LolMatchRow({ match, index }: LolMatchRowProps) {
               </div>
             </div>
 
-            {/* Scoreboard Tab Content */}
+            {/* Scoreboard Tab Content (Separated Blue / Red Teams) */}
             {activeTab === "scoreboard" ? (
-              <div className="overflow-x-auto os-scroll">
-                <table className="w-full text-left text-xs min-w-[700px]">
-                  <thead>
-                    <tr className="border-b border-white/10 text-[10px] uppercase tracking-wider text-zinc-500">
-                      <th className="pb-2 pl-2">Joueur / Champion</th>
-                      <th className="pb-2 text-center">Build</th>
-                      <th className="pb-2 text-center">TRS</th>
-                      <th className="pb-2 text-center">K / D / A</th>
-                      <th className="pb-2 text-center">Dégâts infligés</th>
-                      <th className="pb-2 text-center">CS (CS/M)</th>
-                      <th className="pb-2 text-center">Or</th>
-                    </tr>
-                  </thead>
-                  <tbody className="divide-y divide-white/5">
-                    {players.map((p, pi) => {
-                      const pKda =
-                        p.stats.deaths === 0
-                          ? p.stats.kills + p.stats.assists
-                          : Number(((p.stats.kills + p.stats.assists) / p.stats.deaths).toFixed(2));
-                      const pTrs = calculateLolTRS(p);
-                      const pDmgPercent = Math.min(100, Math.round((p.stats.damage / maxDamage) * 100));
+              <div className="space-y-4 overflow-x-auto os-scroll">
+                {[
+                  {
+                    name: "Équipe Bleue",
+                    players: blueTeam.length > 0 ? blueTeam : players.slice(0, Math.ceil(players.length / 2)),
+                    isBlue: true,
+                    win: blueTeam.some((p) => p.win),
+                    stats: blueStats,
+                    badgeStyle: "border-cyan-500/30 bg-cyan-950/40 text-cyan-300",
+                  },
+                  {
+                    name: "Équipe Rouge",
+                    players: redTeam.length > 0 ? redTeam : players.slice(Math.ceil(players.length / 2)),
+                    isBlue: false,
+                    win: redTeam.some((p) => p.win),
+                    stats: redStats,
+                    badgeStyle: "border-rose-500/30 bg-rose-950/40 text-rose-300",
+                  },
+                ].map((teamGroup, gi) => {
+                  return (
+                    <div key={gi} className="space-y-1.5 min-w-[700px]">
+                      {/* Team Header Bar */}
+                      <div className={cn("flex items-center justify-between px-3 py-1.5 rounded-xl border text-xs font-bold shadow-xs", teamGroup.badgeStyle)}>
+                        <div className="flex items-center gap-2">
+                          <span className="uppercase tracking-wider">{teamGroup.name}</span>
+                          <span className="text-[11px] font-medium opacity-80">
+                            {teamGroup.win ? "· Victoire" : "· Défaite"}
+                          </span>
+                        </div>
+                        <div className="flex items-center gap-3 text-xs font-mono">
+                          <span>{teamGroup.stats.totalKills} Kills</span>
+                          <span>·</span>
+                          <span>{teamGroup.stats.totalGold.toLocaleString()} Or</span>
+                        </div>
+                      </div>
 
-                      const pSpells =
-                        p.spells && p.spells.length >= 2
-                          ? p.spells
-                          : [
-                              { name: "Barrier", image: getLolSpellIcon(21, 0) },
-                              { name: "Flash", image: getLolSpellIcon(4, 1) },
-                            ];
-                      const pDefaultItems = getChampionDefaultItems(p.character);
-                      const pValid = (p.items || []).filter((it): it is LolItem => Boolean(it && (it.id ?? 0) > 0 && it.id !== 3340));
-                      const pItemSlots = [...pValid];
-                      let pIdx = 0;
-                      while (pItemSlots.length < 6) {
-                        const cand = pDefaultItems[pIdx % pDefaultItems.length];
-                        if (cand && !pItemSlots.some((x) => x.id === cand.id)) {
-                          pItemSlots.push(cand);
-                        }
-                        pIdx++;
-                        if (pIdx > 20) {
-                          pItemSlots.push({ id: 3031, name: "Infinity Edge", image: "https://ddragon.leagueoflegends.com/cdn/14.16.1/img/item/3031.png" });
-                        }
-                      }
-                      const pTrinket = p.items?.find((it) => it && (it.id ?? 0) === 3340) || pDefaultItems[pDefaultItems.length - 1];
+                      {/* Team Players Table */}
+                      <table className="w-full text-left text-xs">
+                        <thead>
+                          <tr className="border-b border-white/10 text-[10px] uppercase tracking-wider text-zinc-500">
+                            <th className="pb-1.5 pl-2">Joueur / Champion</th>
+                            <th className="pb-1.5 text-center">Build</th>
+                            <th className="pb-1.5 text-center">TRS</th>
+                            <th className="pb-1.5 text-center">K / D / A</th>
+                            <th className="pb-1.5 text-center">Dégâts infligés</th>
+                            <th className="pb-1.5 text-center">CS (CS/M)</th>
+                            <th className="pb-1.5 text-center">Or</th>
+                          </tr>
+                        </thead>
+                        <tbody className="divide-y divide-white/5">
+                          {teamGroup.players.map((p, pi) => {
+                            const pKda =
+                              p.stats.deaths === 0
+                                ? p.stats.kills + p.stats.assists
+                                : Number(((p.stats.kills + p.stats.assists) / p.stats.deaths).toFixed(2));
+                            const pTrs = calculateLolTRS(p);
+                            const pDmgPercent = Math.min(100, Math.round((p.stats.damage / maxDamage) * 100));
 
-                      const pParty = partyMap.getParty(p, pi);
+                            const pSpells =
+                              p.spells && p.spells.length >= 2
+                                ? p.spells
+                                : [
+                                    { name: "Barrier", image: getLolSpellIcon(21, 0) },
+                                    { name: "Flash", image: getLolSpellIcon(4, 1) },
+                                  ];
+                            const pDefaultItems = getChampionDefaultItems(p.character);
+                            const pValid = (p.items || []).filter((it): it is LolItem => Boolean(it && (it.id ?? 0) > 0 && it.id !== 3340));
+                            const pItemSlots = [...pValid];
+                            let pIdx = 0;
+                            while (pItemSlots.length < 6) {
+                              const cand = pDefaultItems[pIdx % pDefaultItems.length];
+                              if (cand && !pItemSlots.some((x) => x.id === cand.id)) {
+                                pItemSlots.push(cand);
+                              }
+                              pIdx++;
+                              if (pIdx > 20) {
+                                pItemSlots.push({ id: 3031, name: "Infinity Edge", image: "https://ddragon.leagueoflegends.com/cdn/14.16.1/img/item/3031.png" });
+                              }
+                            }
+                            const pTrinket = p.items?.find((it) => it && (it.id ?? 0) === 3340) || pDefaultItems[pDefaultItems.length - 1];
+                            const pParty = partyMap.getParty(p, pi + (gi * 5));
 
-                      return (
-                        <tr
-                          key={pi}
-                          className={cn(
-                            "transition-colors",
-                            p.isMe
-                              ? "bg-cyan-500/10 font-semibold text-cyan-200 border-l-2 border-cyan-400"
-                              : "hover:bg-white/[0.02] text-zinc-300"
-                          )}
-                        >
-                          {/* Champion & Player Info + Party Indicator */}
-                          <td className="py-2.5 pl-2 flex items-center gap-2">
-                            {/* Party indicator pastille */}
-                            <div
-                              className="w-2.5 flex items-center justify-center shrink-0 cursor-default"
-                              title={pParty ? `${pParty.partyName} (${pParty.size} joueurs en groupe)` : "Joueur Solo"}
-                            >
-                              {pParty ? (
-                                <span
-                                  className={cn(
-                                    "h-2 w-2 rounded-full ring-2 transition-all shrink-0 animate-pulse",
-                                    pParty.color.dot,
-                                    pParty.color.ring,
-                                    pParty.color.glow
-                                  )}
-                                />
-                              ) : (
-                                <span className="h-1.5 w-1.5 rounded-full bg-zinc-700/40" />
-                              )}
-                            </div>
-
-                            <div className="relative h-8 w-8 shrink-0 overflow-hidden rounded-xl border border-white/10 bg-black">
-                              <img
-                                src={getLolChampionIcon(p.character)}
-                                alt=""
-                                className="h-full w-full object-cover"
-                              />
-                              <span className="absolute bottom-0 left-0 rounded-tr-md bg-black/90 px-1 text-[8px] font-mono font-bold text-zinc-300">
-                                {p.level || 1}
-                              </span>
-                            </div>
-                            <div className="min-w-0">
-                              <div className="flex items-center gap-1.5">
-                                <span className="font-bold text-white truncate max-w-[120px]">{p.name}</span>
-                                <span className="text-[10px] text-zinc-500 font-mono">#{p.tag}</span>
-                              </div>
-                              <div className="flex items-center gap-1.5">
-                                <span
-                                  className={cn(
-                                    "text-[9px] font-extrabold uppercase",
-                                    p.team === "Blue" ? "text-cyan-400" : "text-rose-400"
-                                  )}
-                                >
-                                  {p.team} Side
-                                </span>
-                                {pParty && (
-                                  <span className={cn("text-[8px] font-bold px-1 rounded-sm border", pParty.color.bg, pParty.color.text, pParty.color.border)}>
-                                    {pParty.partyName}
-                                  </span>
+                            return (
+                              <tr
+                                key={pi}
+                                className={cn(
+                                  "transition-colors",
+                                  p.isMe
+                                    ? "bg-cyan-500/10 font-semibold text-cyan-200 border-l-2 border-cyan-400"
+                                    : "hover:bg-white/[0.02] text-zinc-300"
                                 )}
-                              </div>
-                            </div>
-                          </td>
-
-                          {/* Build (Spells + 6 Items + Trinket) */}
-                          <td className="py-2.5 text-center">
-                            <div className="flex items-center justify-center gap-1">
-                              {/* 2 Spells */}
-                              <div className="flex flex-col gap-0.5">
-                                {pSpells.slice(0, 2).map((sp, spi) => (
-                                  <div key={spi} className="h-3.5 w-3.5 rounded overflow-hidden bg-black/50 border border-white/10">
-                                    <img
-                                      src={sp.image}
-                                      alt=""
-                                      className="h-full w-full object-cover"
-                                      onError={(e) => {
-                                        (e.target as HTMLImageElement).src =
-                                          spi === 0
-                                            ? "https://ddragon.leagueoflegends.com/cdn/14.16.1/img/spell/SummonerBarrier.png"
-                                            : "https://ddragon.leagueoflegends.com/cdn/14.16.1/img/spell/SummonerFlash.png";
-                                      }}
-                                    />
-                                  </div>
-                                ))}
-                              </div>
-
-                              {/* 6 Items */}
-                              <div className="grid grid-cols-3 grid-rows-2 gap-0.5">
-                                {pItemSlots.map((item, ii) => (
+                              >
+                                {/* Champion & Player Info with Left Party Trait Bar */}
+                                <td className="py-2 pl-2 flex items-center gap-2">
+                                  {/* Sleek Vertical Party Trait Bar (Matching Screen 2) */}
                                   <div
-                                    key={ii}
-                                    className="h-3.5 w-3.5 rounded overflow-hidden bg-black/40 border border-white/10 flex items-center justify-center"
+                                    className="h-8 w-1 flex items-center justify-center shrink-0 cursor-default"
+                                    title={pParty ? `${pParty.partyName} (${pParty.size} joueurs en groupe)` : "Joueur Solo"}
                                   >
-                                    {item?.image && (
-                                      <img
-                                        src={item.image}
-                                        alt=""
-                                        className="h-full w-full object-cover"
-                                        onError={(e) => {
-                                          const fallbackItemIds = [6672, 3031, 3094, 3006, 3072, 3036];
-                                          (e.target as HTMLImageElement).src = `https://ddragon.leagueoflegends.com/cdn/14.16.1/img/item/${fallbackItemIds[ii % 6]}.png`;
-                                        }}
+                                    {pParty ? (
+                                      <div
+                                        className={cn(
+                                          "h-8 w-1 rounded-full shrink-0 shadow-sm",
+                                          pParty.color.dot,
+                                          pParty.color.glow
+                                        )}
                                       />
+                                    ) : (
+                                      <div className="h-8 w-1 rounded-full bg-transparent" />
                                     )}
                                   </div>
-                                ))}
-                              </div>
 
-                              {/* Trinket */}
-                              <div className="h-7 w-3.5 rounded overflow-hidden bg-black/40 border border-amber-500/30 flex items-center justify-center">
-                                {pTrinket?.image && (
-                                  <img
-                                    src={pTrinket.image}
-                                    alt=""
-                                    className="h-3.5 w-3.5 object-cover"
-                                    onError={(e) => {
-                                      (e.target as HTMLImageElement).src = "https://ddragon.leagueoflegends.com/cdn/14.16.1/img/item/3340.png";
-                                    }}
-                                  />
-                                )}
-                              </div>
-                            </div>
-                          </td>
+                                  <div className="relative h-8 w-8 shrink-0 overflow-hidden rounded-xl border border-white/10 bg-black">
+                                    <img
+                                      src={getLolChampionIcon(p.character)}
+                                      alt=""
+                                      className="h-full w-full object-cover"
+                                    />
+                                    <span className="absolute bottom-0 left-0 rounded-tr-md bg-black/90 px-1 text-[8px] font-mono font-bold text-zinc-300">
+                                      {p.level || 1}
+                                    </span>
+                                  </div>
+                                  <div className="min-w-0">
+                                    <div className="flex items-center gap-1.5">
+                                      <span className="font-bold text-white truncate max-w-[120px]">{p.name}</span>
+                                      <span className="text-[10px] text-zinc-500 font-mono">#{p.tag}</span>
+                                    </div>
+                                    <span className="text-[10px] text-zinc-400 font-medium block truncate">
+                                      {p.character || "Champion"}
+                                    </span>
+                                  </div>
+                                </td>
 
-                          {/* TRS Score */}
-                          <td className="py-2.5 text-center font-mono font-black text-xs text-white">
-                            {pTrs}
-                          </td>
+                                {/* Build (Spells + 6 Items + Trinket) */}
+                                <td className="py-2 text-center">
+                                  <div className="flex items-center justify-center gap-1">
+                                    {/* 2 Spells */}
+                                    <div className="flex flex-col gap-0.5">
+                                      {pSpells.slice(0, 2).map((sp, spi) => (
+                                        <div key={spi} className="h-3.5 w-3.5 rounded overflow-hidden bg-black/50 border border-white/10">
+                                          <img
+                                            src={sp.image}
+                                            alt=""
+                                            className="h-full w-full object-cover"
+                                          />
+                                        </div>
+                                      ))}
+                                    </div>
 
-                          {/* K / D / A */}
-                          <td className="py-2.5 text-center font-mono">
-                            <div className="font-bold text-white">
-                              {p.stats.kills} / {p.stats.deaths} / {p.stats.assists}
-                            </div>
-                            <span
-                              className={cn(
-                                "text-[10px] font-bold",
-                                pKda >= 3.0 ? "text-cyan-400" : pKda >= 1.0 ? "text-amber-300" : "text-rose-400"
-                              )}
-                            >
-                              {pKda.toFixed(2)} KDA
-                            </span>
-                          </td>
+                                    {/* 6 Items Grid */}
+                                    <div className="grid grid-cols-3 gap-0.5">
+                                      {pItemSlots.slice(0, 6).map((it, iti) => (
+                                        <div key={iti} className="h-4 w-4 rounded bg-black/60 border border-white/10 overflow-hidden">
+                                          <img
+                                            src={it.image}
+                                            alt=""
+                                            className="h-full w-full object-cover"
+                                          />
+                                        </div>
+                                      ))}
+                                    </div>
 
-                          {/* Damage with visual gauge bar */}
-                          <td className="py-2.5 text-center min-w-[130px]">
-                            <div className="flex items-center justify-center gap-2">
-                              <span className="font-mono font-bold text-white">
-                                {p.stats.damage.toLocaleString()}
-                              </span>
-                              <div className="w-14 h-1.5 rounded-full bg-white/10 overflow-hidden">
-                                <div
-                                  className="h-full rounded-full bg-rose-500"
-                                  style={{ width: `${pDmgPercent}%` }}
-                                />
-                              </div>
-                            </div>
-                          </td>
+                                    {/* Trinket */}
+                                    <div className="h-4 w-4 rounded bg-black/60 border border-amber-500/30 overflow-hidden ml-0.5">
+                                      <img
+                                        src={pTrinket?.image || "https://ddragon.leagueoflegends.com/cdn/14.16.1/img/item/3340.png"}
+                                        alt=""
+                                        className="h-full w-full object-cover"
+                                      />
+                                    </div>
+                                  </div>
+                                </td>
 
-                          {/* CS */}
-                          <td className="py-2.5 text-center font-mono text-zinc-400">
-                            {p.stats.cs} ({p.stats.csPerMin}/m)
-                          </td>
+                                {/* TRS */}
+                                <td className="py-2 text-center font-mono font-bold text-zinc-300">
+                                  {pTrs}
+                                </td>
 
-                          {/* Gold */}
-                          <td className="py-2.5 text-center font-mono font-bold text-amber-300">
-                            {p.stats.gold.toLocaleString()}
-                          </td>
-                        </tr>
-                      );
-                    })}
-                  </tbody>
-                </table>
+                                {/* K / D / A */}
+                                <td className="py-2 text-center font-mono">
+                                  <span className="font-bold text-white">{p.stats.kills}</span>
+                                  <span className="text-zinc-500 mx-0.5">/</span>
+                                  <span className="text-rose-400 font-bold">{p.stats.deaths}</span>
+                                  <span className="text-zinc-500 mx-0.5">/</span>
+                                  <span className="text-zinc-400">{p.stats.assists}</span>
+                                  <span className={cn("block text-[9px] font-extrabold", pKda >= 3.0 ? "text-emerald-400" : "text-zinc-400")}>
+                                    {pKda}:1 KDA
+                                  </span>
+                                </td>
+
+                                {/* Dégâts infligés + Mini Barre */}
+                                <td className="py-2 text-center min-w-[100px]">
+                                  <span className="font-mono text-xs font-bold text-zinc-200 block">
+                                    {p.stats.damage.toLocaleString()}
+                                  </span>
+                                  <div className="h-1 w-full bg-white/5 rounded-full overflow-hidden mt-1">
+                                    <div
+                                      className={cn("h-full rounded-full", p.team === "Blue" ? "bg-cyan-400" : "bg-rose-400")}
+                                      style={{ width: `${pDmgPercent}%` }}
+                                    />
+                                  </div>
+                                </td>
+
+                                {/* CS (CS/M) */}
+                                <td className="py-2 text-center font-mono text-xs text-zinc-300">
+                                  <span>{p.stats.cs}</span>
+                                  <span className="text-[10px] text-zinc-500 block">({p.stats.csPerMin}/m)</span>
+                                </td>
+
+                                {/* Gold */}
+                                <td className="py-2 text-center font-mono text-xs font-bold text-amber-300">
+                                  {(p.stats.gold / 1000).toFixed(1)}k
+                                </td>
+                              </tr>
+                            );
+                          })}
+                        </tbody>
+                      </table>
+                    </div>
+                  );
+                })}
               </div>
             ) : (
               /* Charts Tab: Dégâts & Or comparison */

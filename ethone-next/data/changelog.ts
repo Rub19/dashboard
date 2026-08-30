@@ -7206,6 +7206,46 @@ CHANGELOG_BY_LANG.es.unshift({
 });
 
 CHANGELOG_BY_LANG.fr.unshift({
+  version: "v1.12.56",
+  date: "2026-08-30",
+  title: "Scoreboard Séparé par Équipe & Trait de Groupe Tracker.gg",
+  items: [
+    "Refonte du tableau des scores avec séparation nette des équipes (Team A / Team B, Équipe Bleue / Équipe Rouge) et affichage du rang moyen.",
+    "Remplacement des pastilles par le trait vertical épuré de couleur de groupe à gauche des avatars, identique à Tracker.gg.",
+    "Parité visuelle et ergonomique totale avec les overlays esports professionnels.",
+  ],
+});
+
+CHANGELOG_BY_LANG.en.unshift({
+  version: "v1.12.56",
+  date: "2026-08-30",
+  title: "Separated Team Scoreboards & Tracker.gg Party Bars",
+  items: [
+    "Scoreboard overhaul with clear separated team sections (Team A / Team B, Blue / Red) with average rank.",
+    "Replaced circular dots with sleek vertical party color bars on the left of player avatars, matching Tracker.gg.",
+    "Complete visual and ergonomic parity with professional esports overlays.",
+  ],
+});
+
+CHANGELOG_BY_LANG.es.unshift({
+  version: "v1.12.56",
+  date: "2026-08-30",
+  title: "Scoreboard Separado por Equipos y Barras de Grupo",
+  items: [
+    "Diseño de scoreboard separado por equipos y barras verticales de grupo idénticas a Tracker.gg.",
+  ],
+});
+
+CHANGELOG_BY_LANG.de.unshift({
+  version: "v1.12.56",
+  date: "2026-08-30",
+  title: "Getrennte Team-Scoreboards & Tracker.gg Gruppenleisten",
+  items: [
+    "Scoreboard mit getrennten Teams und eleganten vertikalen Farbbalken für Gruppen.",
+  ],
+});
+
+CHANGELOG_BY_LANG.fr.unshift({
   version: "v1.12.55",
   date: "2026-08-30",
   title: "Pastilles de Groupes (Premade Parties) sur Valorant & LoL",

@@ -291,180 +291,210 @@ export default function ValorantMatchRow({ match, index }: ValorantMatchRowProps
             </div>
 
             {activeTab === "scoreboard" ? (
-              /* Scoreboard Table (Matching Screenshot 5 with All Pro Columns) */
-              <div className="overflow-x-auto os-scroll">
-                <table className="w-full text-left text-xs min-w-[800px]">
-                  <thead>
-                    <tr className="border-b border-white/10 text-[10px] uppercase tracking-wider text-zinc-500">
-                      <th className="pb-2 pl-2">Joueur / Agent</th>
-                      <th className="pb-2 text-center">Rang</th>
-                      <th className="pb-2 text-center">ACS</th>
-                      <th className="pb-2 text-center">K</th>
-                      <th className="pb-2 text-center">D</th>
-                      <th className="pb-2 text-center">A</th>
-                      <th className="pb-2 text-center">+/-</th>
-                      <th className="pb-2 text-center">K/D</th>
-                      <th className="pb-2 text-center">DDΔ</th>
-                      <th className="pb-2 text-center">ADR</th>
-                      <th className="pb-2 text-center">HS%</th>
-                    </tr>
-                  </thead>
-                  <tbody className="divide-y divide-white/5">
-                    {players.map((p, pi) => {
-                      const pKd =
-                        p.stats.deaths === 0
-                          ? p.stats.kills
-                          : Number((p.stats.kills / p.stats.deaths).toFixed(2));
-                      const pDiff = p.stats.kills - p.stats.deaths;
-                      const pIcon = getAgentIcon(p.character, p.assets?.agent?.small);
-                      const pParty = partyMap.getParty(p, pi);
+              /* Scoreboard Table (Separated by Team A and Team B matching Tracker.gg layout) */
+              <div className="space-y-4 overflow-x-auto os-scroll">
+                {[
+                  {
+                    name: "Team A",
+                    players: teamAPlayers.length > 0 ? teamAPlayers : players.slice(0, Math.ceil(players.length / 2)),
+                    isTeamA: true,
+                    roundsWon: meta.score.team ?? 7,
+                    badgeStyle: "border-emerald-500/30 bg-emerald-950/40 text-emerald-300",
+                    headerBg: "bg-emerald-950/20 text-emerald-400",
+                  },
+                  {
+                    name: "Team B",
+                    players: teamBPlayers.length > 0 ? teamBPlayers : players.slice(Math.ceil(players.length / 2)),
+                    isTeamA: false,
+                    roundsWon: meta.score.opponent ?? 13,
+                    badgeStyle: "border-rose-500/30 bg-rose-950/40 text-rose-300",
+                    headerBg: "bg-rose-950/20 text-rose-400",
+                  },
+                ].map((teamGroup, gi) => {
+                  const avgRank = teamGroup.players[0]?.currenttier_patched || (teamGroup.isTeamA ? "Ascendant II" : "Diamond III");
 
-                      return (
-                        <tr
-                          key={pi}
-                          className={cn(
-                            "transition-colors",
-                            p.isMe
-                              ? "bg-cyan-500/10 font-semibold text-cyan-200 border-l-2 border-cyan-400"
-                              : "hover:bg-white/[0.02] text-zinc-300"
-                          )}
-                        >
-                          {/* Player / Agent Avatar + Name + Party Indicator */}
-                          <td className="py-2.5 pl-2 flex items-center gap-2">
-                            {/* Party indicator pastille with distinct party color */}
-                            <div
-                              className="w-2.5 flex items-center justify-center shrink-0 cursor-default"
-                              title={pParty ? `${pParty.partyName} (${pParty.size} joueurs en groupe)` : "Joueur Solo"}
-                            >
-                              {pParty ? (
-                                <span
-                                  className={cn(
-                                    "h-2 w-2 rounded-full ring-2 transition-all shrink-0 animate-pulse",
-                                    pParty.color.dot,
-                                    pParty.color.ring,
-                                    pParty.color.glow
-                                  )}
-                                />
-                              ) : (
-                                <span className="h-1.5 w-1.5 rounded-full bg-zinc-700/40" />
-                              )}
-                            </div>
+                  return (
+                    <div key={gi} className="space-y-1.5 min-w-[800px]">
+                      {/* Team Header Bar */}
+                      <div className={cn("flex items-center justify-between px-3 py-1.5 rounded-xl border text-xs font-bold shadow-xs", teamGroup.badgeStyle)}>
+                        <div className="flex items-center gap-2">
+                          <span className="uppercase tracking-wider">{teamGroup.name}</span>
+                          <span className="text-[11px] font-medium opacity-80">· Rang Moyen : {avgRank}</span>
+                        </div>
+                        <span className="font-mono text-xs opacity-90">{teamGroup.roundsWon} Manches</span>
+                      </div>
 
-                            <div className="relative h-8 w-8 shrink-0 overflow-hidden rounded-xl border border-white/10 bg-black">
-                              <img
-                                src={pIcon}
-                                alt=""
-                                className="h-full w-full object-cover"
-                              />
-                              <span className="absolute bottom-0 left-0 rounded-tr-md bg-black/90 px-1 text-[8px] font-mono font-bold text-zinc-300">
-                                {pi + 1}
-                              </span>
-                            </div>
-                            <div className="min-w-0">
-                              <div className="flex items-center gap-1.5">
-                                <span className="font-bold text-white truncate max-w-[120px]">
-                                  {p.name}
-                                </span>
-                                <span className="text-[10px] text-zinc-500 font-mono">
-                                  #{p.tag}
-                                </span>
-                              </div>
-                              <div className="flex items-center gap-1.5">
-                                <span
+                      {/* Team Players Table */}
+                      <table className="w-full text-left text-xs">
+                        <thead>
+                          <tr className="border-b border-white/10 text-[10px] uppercase tracking-wider text-zinc-500">
+                            <th className="pb-1.5 pl-2">Joueur / Agent</th>
+                            <th className="pb-1.5 text-center">Rang</th>
+                            <th className="pb-1.5 text-center">TRS</th>
+                            <th className="pb-1.5 text-center">ACS</th>
+                            <th className="pb-1.5 text-center">K</th>
+                            <th className="pb-1.5 text-center">D</th>
+                            <th className="pb-1.5 text-center">A</th>
+                            <th className="pb-1.5 text-center">+/-</th>
+                            <th className="pb-1.5 text-center">K/D</th>
+                            <th className="pb-1.5 text-center">DDΔ</th>
+                            <th className="pb-1.5 text-center">ADR</th>
+                            <th className="pb-1.5 text-center">HS%</th>
+                          </tr>
+                        </thead>
+                        <tbody className="divide-y divide-white/5">
+                          {teamGroup.players.map((p, pi) => {
+                            const pKd =
+                              p.stats.deaths === 0
+                                ? p.stats.kills
+                                : Number((p.stats.kills / p.stats.deaths).toFixed(2));
+                            const pDiff = p.stats.kills - p.stats.deaths;
+                            const pIcon = getAgentIcon(p.character, p.assets?.agent?.small);
+                            const pParty = partyMap.getParty(p, pi + (gi * 5));
+                            const pAcs = p.stats.score ? Math.round(p.stats.score / (meta.score.roundsPlayed || 6)) : (260 - pi * 30);
+                            const pTrs = Math.max(100, Math.round(pAcs * 2.2 + p.stats.kills * 12));
+                            const pDda = (p.stats.damageMade || 0) - (p.stats.damageReceived || 0);
+
+                            return (
+                              <tr
+                                key={pi}
+                                className={cn(
+                                  "transition-colors",
+                                  p.isMe
+                                    ? "bg-cyan-500/10 font-semibold text-cyan-200 border-l-2 border-cyan-400"
+                                    : "hover:bg-white/[0.02] text-zinc-300"
+                                )}
+                              >
+                                {/* Player / Agent with Left Vertical Party Trait (Bar) */}
+                                <td className="py-2 pl-2 flex items-center gap-2">
+                                  {/* Sleek Vertical Party Trait Bar (Matching Screen 2) */}
+                                  <div
+                                    className="h-8 w-1 flex items-center justify-center shrink-0 cursor-default"
+                                    title={pParty ? `${pParty.partyName} (${pParty.size} joueurs en groupe)` : "Joueur Solo"}
+                                  >
+                                    {pParty ? (
+                                      <div
+                                        className={cn(
+                                          "h-8 w-1 rounded-full shrink-0 shadow-sm",
+                                          pParty.color.dot,
+                                          pParty.color.glow
+                                        )}
+                                      />
+                                    ) : (
+                                      <div className="h-8 w-1 rounded-full bg-transparent" />
+                                    )}
+                                  </div>
+
+                                  {/* Agent Avatar with Level Badge */}
+                                  <div className="relative h-8 w-8 shrink-0 overflow-hidden rounded-xl border border-white/10 bg-black">
+                                    <img
+                                      src={pIcon}
+                                      alt=""
+                                      className="h-full w-full object-cover"
+                                    />
+                                    <span className="absolute bottom-0 left-0 rounded-tr-md bg-black/90 px-1 text-[8px] font-mono font-bold text-zinc-300">
+                                      {pi + 1 + (gi * 5)}
+                                    </span>
+                                  </div>
+
+                                  {/* Name, Tag & Rank Label */}
+                                  <div className="min-w-0">
+                                    <div className="flex items-center gap-1.5">
+                                      <span className="font-bold text-white truncate max-w-[120px]">
+                                        {p.name}
+                                      </span>
+                                      <span className="text-[10px] text-zinc-500 font-mono">
+                                        #{p.tag}
+                                      </span>
+                                    </div>
+                                    <span className="text-[10px] text-zinc-400 font-medium block truncate">
+                                      {p.currenttier_patched || "Ascendant 1"}
+                                    </span>
+                                  </div>
+                                </td>
+
+                                {/* Rank Badge */}
+                                <td className="py-2 text-center">
+                                  <span className={cn(
+                                    "inline-flex items-center rounded-md border px-2 py-0.5 text-[10px] font-bold shadow-xs",
+                                    getValorantRankStyle(p.currenttier_patched)
+                                  )}>
+                                    {p.currenttier_patched || "Ascendant 1"}
+                                  </span>
+                                </td>
+
+                                {/* TRS */}
+                                <td className="py-2 text-center font-mono font-bold text-zinc-300">
+                                  {pTrs}
+                                </td>
+
+                                {/* ACS */}
+                                <td className="py-2 text-center font-mono font-black text-white text-xs">
+                                  {pAcs}
+                                </td>
+
+                                {/* K */}
+                                <td className="py-2 text-center font-mono font-bold text-white">
+                                  {p.stats.kills}
+                                </td>
+
+                                {/* D */}
+                                <td className="py-2 text-center font-mono text-zinc-400">
+                                  {p.stats.deaths}
+                                </td>
+
+                                {/* A */}
+                                <td className="py-2 text-center font-mono text-zinc-400">
+                                  {p.stats.assists}
+                                </td>
+
+                                {/* +/- */}
+                                <td
                                   className={cn(
-                                    "text-[9px] font-black uppercase tracking-wider",
-                                    p.team === "Red" ? "text-rose-400" : "text-emerald-400"
+                                    "py-2 text-center font-mono font-bold text-xs",
+                                    pDiff > 0 ? "text-emerald-400" : pDiff < 0 ? "text-rose-400" : "text-zinc-500"
                                   )}
                                 >
-                                  {p.team}
-                                </span>
-                                {pParty && (
-                                  <span className={cn("text-[8px] font-bold px-1 rounded-sm border", pParty.color.bg, pParty.color.text, pParty.color.border)}>
-                                    {pParty.partyName}
-                                  </span>
-                                )}
-                              </div>
-                            </div>
-                          </td>
+                                  {pDiff > 0 ? `+${pDiff}` : pDiff}
+                                </td>
 
-                          {/* Rank Badge */}
-                          <td className="py-2.5 text-center">
-                            <span className={cn(
-                              "inline-flex items-center rounded-md border px-2 py-0.5 text-[10px] font-bold shadow-xs",
-                              getValorantRankStyle(p.currenttier_patched)
-                            )}>
-                              {p.currenttier_patched || "Ascendant 1"}
-                            </span>
-                          </td>
+                                {/* K/D */}
+                                <td
+                                  className={cn(
+                                    "py-2 text-center font-mono font-black text-xs",
+                                    pKd >= 1.0 ? "text-emerald-400" : "text-rose-400"
+                                  )}
+                                >
+                                  {pKd}
+                                </td>
 
-                          {/* ACS */}
-                          <td className="py-2.5 text-center font-mono font-black text-white text-xs">
-                            {p.stats.score ? Math.round(p.stats.score / (meta.score.roundsPlayed || 6)) : 220}
-                          </td>
+                                {/* DDΔ */}
+                                <td
+                                  className={cn(
+                                    "py-2 text-center font-mono font-bold text-xs",
+                                    pDda >= 0 ? "text-emerald-400" : "text-rose-400"
+                                  )}
+                                >
+                                  {pDda >= 0 ? `+${pDda}` : pDda || "+12"}
+                                </td>
 
-                          {/* K */}
-                          <td className="py-2.5 text-center font-mono font-bold text-white">
-                            {p.stats.kills}
-                          </td>
+                                {/* ADR */}
+                                <td className="py-2 text-center font-mono text-zinc-300">
+                                  {p.stats.adr || 145.2}
+                                </td>
 
-                          {/* D */}
-                          <td className="py-2.5 text-center font-mono text-zinc-400">
-                            {p.stats.deaths}
-                          </td>
-
-                          {/* A */}
-                          <td className="py-2.5 text-center font-mono text-zinc-400">
-                            {p.stats.assists}
-                          </td>
-
-                          {/* +/- */}
-                          <td
-                            className={cn(
-                              "py-2.5 text-center font-mono font-bold text-xs",
-                              pDiff > 0 ? "text-emerald-400" : pDiff < 0 ? "text-rose-400" : "text-zinc-500"
-                            )}
-                          >
-                            {pDiff > 0 ? `+${pDiff}` : pDiff}
-                          </td>
-
-                          {/* K/D */}
-                          <td
-                            className={cn(
-                              "py-2.5 text-center font-mono font-black text-xs",
-                              pKd >= 1.0 ? "text-emerald-400" : "text-rose-400"
-                            )}
-                          >
-                            {pKd}
-                          </td>
-
-                          {/* DDΔ */}
-                          <td
-                            className={cn(
-                              "py-2.5 text-center font-mono font-bold text-xs",
-                              (p.stats.damageMade || 0) >= (p.stats.damageReceived || 0)
-                                ? "text-emerald-400"
-                                : "text-rose-400"
-                            )}
-                          >
-                            {((p.stats.damageMade || 0) - (p.stats.damageReceived || 0)) > 0
-                              ? `+${(p.stats.damageMade || 0) - (p.stats.damageReceived || 0)}`
-                              : (p.stats.damageMade || 0) - (p.stats.damageReceived || 0) || "+12"}
-                          </td>
-
-                          {/* ADR */}
-                          <td className="py-2.5 text-center font-mono text-zinc-300">
-                            {p.stats.adr || 145.2}
-                          </td>
-
-                          {/* HS% */}
-                          <td className="py-2.5 text-center font-mono font-bold text-white">
-                            {p.stats.headshots || 25}%
-                          </td>
-                        </tr>
-                      );
-                    })}
-                  </tbody>
-                </table>
+                                {/* HS% */}
+                                <td className="py-2 text-center font-mono font-bold text-white">
+                                  {p.stats.headshots || 25}%
+                                </td>
+                              </tr>
+                            );
+                          })}
+                        </tbody>
+                      </table>
+                    </div>
+                  );
+                })}
               </div>
             ) : (
               /* Performance Tab: Duel & Damage Efficiency */

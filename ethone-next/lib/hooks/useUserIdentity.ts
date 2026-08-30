@@ -4,6 +4,7 @@ import { useEffect, useMemo, useState } from "react";
 import { useAuth } from "@/components/AuthProvider";
 import { useActiveProfile } from "@/components/SettingsProvider";
 import { useProfile } from "@/lib/hooks/useProfile";
+import { useDiscordOAuth } from "@/lib/hooks/useDiscordOAuth";
 
 export type UserIdentity = {
   displayName: string;
@@ -17,6 +18,7 @@ export function useUserIdentity(): UserIdentity {
   const { user } = useAuth();
   const { activeProfile } = useActiveProfile();
   const { profile: publicProfile } = useProfile();
+  const { profile: discordProfile } = useDiscordOAuth();
 
   const [cachedName, setCachedName] = useState<string>("");
   const [cachedAvatar, setCachedAvatar] = useState<string>("");
@@ -25,7 +27,10 @@ export function useUserIdentity(): UserIdentity {
     if (typeof window !== "undefined") {
       try {
         const savedName = localStorage.getItem("ethone_user_name");
-        const savedAvatar = localStorage.getItem("ethone_user_avatar") || localStorage.getItem("ethone_custom_avatar");
+        const savedAvatar =
+          localStorage.getItem("ethone_custom_avatar") ||
+          localStorage.getItem("ethone:custom:avatar") ||
+          localStorage.getItem("ethone_user_avatar");
         // Clear old auto-imported Google full name
         if (savedName && savedName !== "Rubens Lespinasse") {
           setCachedName(savedName);
@@ -60,16 +65,25 @@ export function useUserIdentity(): UserIdentity {
     (user?.email ? user.email.split("@")[0] : "") ||
     "Rub";
 
-  // Resolution of avatar URL: custom user uploaded avatar or profile avatar or OAuth avatar
-  const avatarUrl =
-    publicProfile?.avatar_url ||
+  // Resolution of avatar URL: custom user uploaded avatar or profile avatar or Discord avatar, avoiding Google avatar if a custom ETHONE one was set!
+  const customAvatar =
+    (publicProfile?.avatar_url && !publicProfile.avatar_url.includes("googleusercontent.com")
+      ? publicProfile.avatar_url
+      : undefined) ||
+    discordProfile?.user?.avatarUrl ||
+    (typeof meta.custom_avatar_url === "string" ? meta.custom_avatar_url : undefined) ||
     (activeProfile as unknown as { avatar_url?: string; avatar?: string })?.avatar_url ||
     (activeProfile as unknown as { avatar_url?: string; avatar?: string })?.avatar ||
-    (typeof meta.custom_avatar_url === "string" ? meta.custom_avatar_url : undefined) ||
+    (cachedAvatar && !cachedAvatar.includes("googleusercontent.com") ? cachedAvatar : undefined);
+
+  const fallbackAvatar =
+    publicProfile?.avatar_url ||
     (typeof meta.avatar_url === "string" ? meta.avatar_url : undefined) ||
     (typeof meta.picture === "string" ? meta.picture : undefined) ||
     cachedAvatar ||
     undefined;
+
+  const avatarUrl = customAvatar || fallbackAvatar;
 
   useEffect(() => {
     if (typeof window !== "undefined") {

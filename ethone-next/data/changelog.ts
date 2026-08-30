@@ -7206,6 +7206,44 @@ CHANGELOG_BY_LANG.es.unshift({
 });
 
 CHANGELOG_BY_LANG.fr.unshift({
+  version: "v1.12.52",
+  date: "2026-08-30",
+  title: "Priorité à la Photo de Profil Personnalisée & Discord",
+  items: [
+    "Priorité absolue donnée à votre avatar personnalisé et Discord dans toute l'interface.",
+    "Empêche la photo de compte Google par défaut d'écraser votre photo de profil personnalisée.",
+  ],
+});
+
+CHANGELOG_BY_LANG.en.unshift({
+  version: "v1.12.52",
+  date: "2026-08-30",
+  title: "Custom Avatar & Discord Profile Picture Priority",
+  items: [
+    "Strict priority given to custom uploaded and Discord avatars across the entire OS.",
+    "Prevents default Google account photos from overriding your custom profile avatar.",
+  ],
+});
+
+CHANGELOG_BY_LANG.es.unshift({
+  version: "v1.12.52",
+  date: "2026-08-30",
+  title: "Prioridad del Avatar Personalizado y Discord",
+  items: [
+    "Prioridad estricta al avatar personalizado y de Discord sobre la foto de Google.",
+  ],
+});
+
+CHANGELOG_BY_LANG.de.unshift({
+  version: "v1.12.52",
+  date: "2026-08-30",
+  title: "Priorität für Benutzerdefiniertes & Discord-Profilbild",
+  items: [
+    "Klare Priorität für benutzerdefinierte Profilbilder und Discord-Avatare.",
+  ],
+});
+
+CHANGELOG_BY_LANG.fr.unshift({
   version: "v1.12.51",
   date: "2026-08-30",
   title: "Intelligence & Autonomie Avancées de Brain IA",

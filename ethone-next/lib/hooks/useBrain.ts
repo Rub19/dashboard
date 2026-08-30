@@ -281,7 +281,7 @@ export function useBrain(mailClient?: BrainMailClient) {
       actionPlan = {
         id: `act-${Date.now()}`,
         type: "note",
-        step: "running",
+        step: "executing",
         title: `Note créée : "${pendingNoteTitle}"`,
         detail: "Génération et enregistrement du contenu Markdown...",
       };
@@ -306,6 +306,59 @@ export function useBrain(mailClient?: BrainMailClient) {
         step: "done",
         title: `Tâche créée : "${taskTopic}"`,
         detail: "Ajoutée à votre gestionnaire de tâches.",
+      };
+    } else if (lower.includes("focus") || lower.includes("scène") || lower.includes("scene")) {
+      if (lower.includes("nuit") || lower.includes("night") || lower.includes("coding")) {
+        if (typeof window !== "undefined") {
+          window.dispatchEvent(new CustomEvent("ethone:scene:trigger", { detail: { scene: "night-coding" } }));
+        }
+        actionPlan = {
+          id: `act-${Date.now()}`,
+          type: "task",
+          step: "done",
+          title: "Scène 'Night Coding' activée",
+          detail: "Ambiance pluie & Deep Work lancés.",
+        };
+      } else if (lower.includes("forêt") || lower.includes("forest")) {
+        if (typeof window !== "undefined") {
+          window.dispatchEvent(new CustomEvent("ethone:scene:trigger", { detail: { scene: "deep-forest" } }));
+        }
+        actionPlan = {
+          id: `act-${Date.now()}`,
+          type: "task",
+          step: "done",
+          title: "Scène 'Deep Forest' activée",
+          detail: "Ambiance forêt lancée.",
+        };
+      } else if (lower.includes("café") || lower.includes("cozy")) {
+        if (typeof window !== "undefined") {
+          window.dispatchEvent(new CustomEvent("ethone:scene:trigger", { detail: { scene: "cozy-study" } }));
+        }
+        actionPlan = {
+          id: `act-${Date.now()}`,
+          type: "task",
+          step: "done",
+          title: "Scène 'Cozy Study' activée",
+          detail: "Ambiance café lancée.",
+        };
+      }
+    } else if (lower.includes("thème sombre") || lower.includes("mode sombre") || lower.includes("dark mode")) {
+      updateSettings({ theme: "obsidian" });
+      actionPlan = {
+        id: `act-${Date.now()}`,
+        type: "task",
+        step: "done",
+        title: "Thème sombre Obsidian appliqué",
+        detail: "Apparence ajustée.",
+      };
+    } else if (lower.includes("thème clair") || lower.includes("mode clair") || lower.includes("light mode")) {
+      updateSettings({ theme: "solar-eclipse" });
+      actionPlan = {
+        id: `act-${Date.now()}`,
+        type: "task",
+        step: "done",
+        title: "Thème Solar Eclipse appliqué",
+        detail: "Apparence ajustée.",
       };
     }
 

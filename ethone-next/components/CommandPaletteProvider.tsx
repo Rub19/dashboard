@@ -1,6 +1,7 @@
 "use client";
 
 import { createContext, useContext, useState } from "react";
+import CommandPalette from "@/components/CommandPalette";
 
 const CommandPaletteContext = createContext<{
   open: boolean;
@@ -19,6 +20,7 @@ export default function CommandPaletteProvider({
   return (
     <CommandPaletteContext.Provider value={{ open, setOpen }}>
       {children}
+      <CommandPalette />
     </CommandPaletteContext.Provider>
   );
 }

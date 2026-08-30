@@ -120,6 +120,21 @@ export default function NotesPage() {
     if (!ok && error) showError(i18n("shareFailed"));
   }
 
+  function exportNoteAsFile(noteTitle: string, noteBody: string) {
+    hapticMediumImpact();
+    const cleanText = stripHtml(noteBody);
+    const blob = new Blob([`# ${noteTitle || "Note"}\n\n${cleanText}`], { type: "text/markdown;charset=utf-8" });
+    const url = URL.createObjectURL(blob);
+    const a = document.createElement("a");
+    a.href = url;
+    a.download = `${(noteTitle || "note").toLowerCase().replace(/[^a-z0-9]/g, "-")}.md`;
+    document.body.appendChild(a);
+    a.click();
+    document.body.removeChild(a);
+    URL.revokeObjectURL(url);
+    notify.noteCreated("Fichier .md téléchargé !");
+  }
+
   async function bulkDelete() {
     try {
       await Promise.all(selectedItems.map((n) => remove(n.id)));
@@ -230,6 +245,16 @@ export default function NotesPage() {
                 </div>
                 <button
                   type="button"
+                  onClick={() => exportNoteAsFile(note.title, note.body)}
+                  disabled={loading}
+                  data-tooltip="Exporter en .md"
+                  className="shrink-0 text-[var(--text-muted)] transition-colors hover:text-[var(--accent-primary)] disabled:opacity-50"
+                  title="Télécharger en .md"
+                >
+                  <Icon name="hard-drive" className="h-4 w-4" />
+                </button>
+                <button
+                  type="button"
                   onClick={() => shareNote(note)}
                   disabled={loading}
                   data-tooltip={i18n("share")}
@@ -295,16 +320,27 @@ export default function NotesPage() {
           <span className="text-[11px] font-mono text-[var(--text-muted)]">
             {currentWords} {i18n("words")} · {currentChars} caractères
           </span>
-          <button
-            type="button"
-            onClick={addNote}
-            disabled={loading || !title.trim()}
-            className="inline-flex items-center gap-1.5 rounded-xl px-4 py-2 text-xs font-semibold transition-all active:scale-95 disabled:opacity-50"
-            style={{ background: "var(--accent-color, var(--accent-primary))", color: "var(--accent-contrast)" }}
-          >
-            <Icon name="save" className="h-3.5 w-3.5" />
-            {i18n("save")}
-          </button>
+          <div className="flex items-center gap-2">
+            <button
+              type="button"
+              onClick={() => exportNoteAsFile(title || "Nouvelle Note", body)}
+              disabled={loading || (!title.trim() && !body.trim())}
+              className="inline-flex items-center gap-1.5 rounded-xl border border-[var(--panel-border)] bg-[var(--surface-raised)] px-3 py-2 text-xs font-semibold text-[var(--text-primary)] transition-all hover:bg-[var(--surface-hover)] active:scale-95 disabled:opacity-50"
+            >
+              <Icon name="hard-drive" className="h-3.5 w-3.5" />
+              Exporter (.md)
+            </button>
+            <button
+              type="button"
+              onClick={addNote}
+              disabled={loading || !title.trim()}
+              className="inline-flex items-center gap-1.5 rounded-xl px-4 py-2 text-xs font-semibold transition-all active:scale-95 disabled:opacity-50"
+              style={{ background: "var(--accent-color, var(--accent-primary))", color: "var(--accent-contrast)" }}
+            >
+              <Icon name="save" className="h-3.5 w-3.5" />
+              {i18n("save")}
+            </button>
+          </div>
         </div>
       </div>
     </div>

@@ -7206,6 +7206,48 @@ CHANGELOG_BY_LANG.es.unshift({
 });
 
 CHANGELOG_BY_LANG.fr.unshift({
+  version: "v1.13.0",
+  date: "2026-08-31",
+  title: "Mise à Niveau Majeure : Command Palette, Export Notes & Briefing Audio",
+  items: [
+    "Command Palette Globale (Ctrl+K / Cmd+K) activée et accessible partout pour la navigation et la recherche universelle.",
+    "Exportation propre des Notes en fichier .md téléchargeable et copie Markdown fidèle.",
+    "Bandeau de statistiques de combat et Top Agents/Champions sur le Tracker Valorant et LoL.",
+    "Briefing Audio Quotidien avec synthèse vocale instantanée et exécution de macros multiactions en langage naturel dans Brain.",
+  ],
+});
+
+CHANGELOG_BY_LANG.en.unshift({
+  version: "v1.13.0",
+  date: "2026-08-31",
+  title: "Major Upgrade: Global Command Palette, Notes Export & Audio Briefing",
+  items: [
+    "Global Command Palette (Ctrl+K / Cmd+K) enabled for fast universal OS search and navigation.",
+    "Downloadable .md file export and clean Markdown copy for Notes.",
+    "Overview combat stats and Top Agents/Champions banner on Valorant and LoL trackers.",
+    "Daily Audio Briefing with instant TTS synthesis and natural language multi-action macros in Brain.",
+  ],
+});
+
+CHANGELOG_BY_LANG.es.unshift({
+  version: "v1.13.0",
+  date: "2026-08-31",
+  title: "Actualización Mayor: Command Palette, Exportación de Notas y Audio",
+  items: [
+    "Paleta de comandos global (Ctrl+K), exportación de notas a .md y briefing de audio con síntesis de voz.",
+  ],
+});
+
+CHANGELOG_BY_LANG.de.unshift({
+  version: "v1.13.0",
+  date: "2026-08-31",
+  title: "Großes Upgrade: Command Palette, Notizen-Export & Audio-Briefing",
+  items: [
+    "Globale Command Palette (Strg+K), Download von .md-Notizen und tägliches Audio-Briefing mit Sprachausgabe.",
+  ],
+});
+
+CHANGELOG_BY_LANG.fr.unshift({
   version: "v1.12.63",
   date: "2026-08-30",
   title: "Correction de l'Icône Scène Focus Deep Forest",

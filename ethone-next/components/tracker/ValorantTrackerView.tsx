@@ -174,6 +174,40 @@ export default function ValorantTrackerView() {
   const totalLosses = totalMatchesCount - totalWins;
   const winRate = totalMatchesCount > 0 ? Math.round((totalWins / totalMatchesCount) * 100) : 0;
 
+  const topAgents = useMemo(() => {
+    const counts: Record<string, { matches: number; wins: number; kills: number; deaths: number; img: string }> = {};
+    matches.forEach((m) => {
+      const char = m.metadata?.agentName || "Jett";
+      const isWin = m.metadata?.result?.toLowerCase() === "victory" || ((m.metadata?.score?.team || 0) > (m.metadata?.score?.opponent || 0));
+      const k = m.segments?.[0]?.stats?.kills?.value || 0;
+      const d = m.segments?.[0]?.stats?.deaths?.value || 1;
+      const img = m.metadata?.agentImageUrl || "";
+      if (!counts[char]) {
+        counts[char] = { matches: 0, wins: 0, kills: 0, deaths: 0, img };
+      }
+      counts[char].matches += 1;
+      if (isWin) counts[char].wins += 1;
+      counts[char].kills += k;
+      counts[char].deaths += d;
+    });
+    return Object.entries(counts)
+      .map(([name, data]) => ({
+        name,
+        matches: data.matches,
+        winRate: Math.round((data.wins / data.matches) * 100),
+        kda: (data.kills / Math.max(1, data.deaths)).toFixed(2),
+        img: data.img,
+      }))
+      .sort((a, b) => b.matches - a.matches)
+      .slice(0, 3);
+  }, [matches]);
+
+  const avgAcs = useMemo(() => {
+    if (matches.length === 0) return 0;
+    const sum = matches.reduce((acc, m) => acc + (m.segments?.[0]?.stats?.scorePerRound?.value || 210), 0);
+    return Math.round(sum / matches.length);
+  }, [matches]);
+
   return (
     <div className="flex h-full min-h-0 w-full flex-col overflow-hidden space-y-4">
       {/* Top Search & Filter Bar */}
@@ -242,6 +276,47 @@ export default function ValorantTrackerView() {
           </div>
         </form>
       </div>
+
+      {/* Overview Stats & Top Agents Banner */}
+      {matches.length > 0 && (
+        <div className="shrink-0 grid grid-cols-1 sm:grid-cols-3 gap-3">
+          {/* Winrate & Match Stats */}
+          <div className="rounded-2xl border border-white/10 bg-[#0c0d14]/70 p-3.5 backdrop-blur-xl flex items-center justify-between shadow-md">
+            <div>
+              <p className="text-[10px] font-bold uppercase tracking-wider text-zinc-400">Victoires / Ratio</p>
+              <p className="text-lg font-black text-white">{winRate}% <span className="text-xs font-normal text-zinc-400">({totalWins}V - {totalLosses}D)</span></p>
+            </div>
+            <div className="flex h-10 w-10 items-center justify-center rounded-xl bg-rose-500/15 text-rose-400 font-bold border border-rose-500/20">
+              {winRate}%
+            </div>
+          </div>
+
+          {/* Average Combat Score (ACS) */}
+          <div className="rounded-2xl border border-white/10 bg-[#0c0d14]/70 p-3.5 backdrop-blur-xl flex items-center justify-between shadow-md">
+            <div>
+              <p className="text-[10px] font-bold uppercase tracking-wider text-zinc-400">Score de Combat Moyen (ACS)</p>
+              <p className="text-lg font-black text-cyan-400">{avgAcs} <span className="text-xs font-normal text-zinc-400">pts/round</span></p>
+            </div>
+            <div className="flex h-10 w-10 items-center justify-center rounded-xl bg-cyan-500/15 text-cyan-400 font-bold border border-cyan-500/20">
+              ACS
+            </div>
+          </div>
+
+          {/* Top Agent */}
+          <div className="rounded-2xl border border-white/10 bg-[#0c0d14]/70 p-3.5 backdrop-blur-xl flex items-center justify-between shadow-md">
+            <div className="min-w-0">
+              <p className="text-[10px] font-bold uppercase tracking-wider text-zinc-400">Agent Principal</p>
+              <p className="text-lg font-black text-white truncate">{topAgents[0]?.name || "Valorant"}</p>
+            </div>
+            {topAgents[0] && (
+              <div className="text-right">
+                <span className="text-xs font-bold text-emerald-400">{topAgents[0].winRate}% WR</span>
+                <p className="text-[10px] text-zinc-400">{topAgents[0].kda} KDA</p>
+              </div>
+            )}
+          </div>
+        </div>
+      )}
 
       {/* Main Content Area */}
       <div className="min-h-0 w-full flex-1 overflow-y-auto os-scroll space-y-6 pr-1">

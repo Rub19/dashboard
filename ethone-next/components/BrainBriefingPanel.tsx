@@ -110,6 +110,22 @@ const BrainBriefingPanel = memo(function BrainBriefingPanel({ _className = "", _
     focus.start("focus");
   }, [focus]);
 
+  const [speaking, setSpeaking] = useState(false);
+  const handleSpeakBriefing = useCallback(() => {
+    if (typeof window === "undefined" || !("speechSynthesis" in window)) return;
+    if (speaking) {
+      window.speechSynthesis.cancel();
+      setSpeaking(false);
+      return;
+    }
+    const utterance = new SpeechSynthesisUtterance(`${greeting.label}. ${synthesis}`);
+    utterance.lang = settings?.language === "en" ? "en-US" : "fr-FR";
+    utterance.onend = () => setSpeaking(false);
+    utterance.onerror = () => setSpeaking(false);
+    setSpeaking(true);
+    window.speechSynthesis.speak(utterance);
+  }, [greeting.label, synthesis, settings?.language, speaking]);
+
   const handleDismissSynthesis = useCallback(() => {
     setSynthesisDismissed(true);
   }, []);
@@ -138,6 +154,18 @@ const BrainBriefingPanel = memo(function BrainBriefingPanel({ _className = "", _
         <div className="rounded-xl border border-[var(--accent-primary)]/20 bg-[var(--accent-primary)]/10 p-3">
           <p className="text-sm font-medium text-[var(--text-primary)]">{synthesis}</p>
           <div className="mt-2 flex flex-wrap gap-2">
+            <button
+              type="button"
+              onClick={handleSpeakBriefing}
+              className={`inline-flex items-center gap-1.5 rounded-lg border border-purple-500/30 px-2.5 py-1.5 text-[11px] font-semibold transition-all ${
+                speaking
+                  ? "bg-purple-500/20 text-purple-300 animate-pulse"
+                  : "bg-purple-500/10 text-purple-400 hover:bg-purple-500/20"
+              }`}
+            >
+              <Icon name="volume" className="h-3 w-3" />
+              {speaking ? "Lecture en cours..." : "Écouter le Briefing"}
+            </button>
             <button
               type="button"
               onClick={handleStartFocus}

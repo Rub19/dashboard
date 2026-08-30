@@ -136,6 +136,9 @@ import {
   UserRound,
   Settings2,
   MoreHorizontal,
+  Trees,
+  TreePine,
+  TreeDeciduous,
   type LucideIcon,
 } from "lucide-react";
 
@@ -286,6 +289,11 @@ const LUCIDE_ICON_MAP: Record<string, LucideIcon> = {
   "user-round": UserRound,
   "settings-2": Settings2,
   "more-horizontal": MoreHorizontal,
+  tree: Trees,
+  trees: Trees,
+  "tree-pine": TreePine,
+  "tree-deciduous": TreeDeciduous,
+  forest: Trees,
 };
 
 export type { LucideIcon } from "lucide-react";

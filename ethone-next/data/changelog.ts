@@ -7206,6 +7206,44 @@ CHANGELOG_BY_LANG.es.unshift({
 });
 
 CHANGELOG_BY_LANG.fr.unshift({
+  version: "v1.12.63",
+  date: "2026-08-30",
+  title: "Correction de l'Icône Scène Focus Deep Forest",
+  items: [
+    "Ajout des mappings d'icônes d'arbres et forêts (Trees, TreePine, TreeDeciduous) dans le registre d'icônes unifié.",
+    "Restauration de l'icône visible pour la scène Focus 'Deep Forest'.",
+  ],
+});
+
+CHANGELOG_BY_LANG.en.unshift({
+  version: "v1.12.63",
+  date: "2026-08-30",
+  title: "Fix Deep Forest Focus Scene Icon",
+  items: [
+    "Added tree and forest icon mappings (Trees, TreePine, TreeDeciduous) to the unified icon registry.",
+    "Restored visible icon for the 'Deep Forest' Focus scene card.",
+  ],
+});
+
+CHANGELOG_BY_LANG.es.unshift({
+  version: "v1.12.63",
+  date: "2026-08-30",
+  title: "Corrección de Ícono Deep Forest",
+  items: [
+    "Restauración del ícono para la escena Focus Deep Forest.",
+  ],
+});
+
+CHANGELOG_BY_LANG.de.unshift({
+  version: "v1.12.63",
+  date: "2026-08-30",
+  title: "Korrektur des Deep Forest Focus-Icons",
+  items: [
+    "Wiederherstellung des Baum-/Wald-Icons für die Focus-Szene 'Deep Forest'.",
+  ],
+});
+
+CHANGELOG_BY_LANG.fr.unshift({
   version: "v1.12.62",
   date: "2026-08-30",
   title: "Rendu Markdown Riche de l'IA & Enregistrement des Notes",

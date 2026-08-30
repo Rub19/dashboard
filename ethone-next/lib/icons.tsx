@@ -208,6 +208,11 @@ const MAP: Record<string, Partial<Record<IconPack, string>>> = {
   "user-round": { lucide: "user-round", phosphor: "user", tabler: "user", heroicons: "user", radix: "person" },
   "settings-2": { lucide: "settings-2", phosphor: "gear", tabler: "settings", heroicons: "cog-8-tooth", radix: "gear" },
   "more-horizontal": { lucide: "more-horizontal", phosphor: "dots-three", tabler: "dots", heroicons: "ellipsis-horizontal", radix: "dots-horizontal" },
+  tree: { lucide: "trees", phosphor: "tree", tabler: "trees", heroicons: "sparkles", radix: "component-1" },
+  trees: { lucide: "trees", phosphor: "tree", tabler: "trees", heroicons: "sparkles", radix: "component-1" },
+  "tree-pine": { lucide: "tree-pine", phosphor: "tree-evergreen", tabler: "trees", heroicons: "sparkles", radix: "component-1" },
+  "tree-deciduous": { lucide: "tree-deciduous", phosphor: "tree", tabler: "trees", heroicons: "sparkles", radix: "component-1" },
+  forest: { lucide: "trees", phosphor: "tree-evergreen", tabler: "trees", heroicons: "sparkles", radix: "component-1" },
 };
 
 export function useIconName(name: string, pack: IconPack = "lucide") {

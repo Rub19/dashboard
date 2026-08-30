@@ -7206,6 +7206,46 @@ CHANGELOG_BY_LANG.es.unshift({
 });
 
 CHANGELOG_BY_LANG.fr.unshift({
+  version: "v1.12.60",
+  date: "2026-08-30",
+  title: "Résolution Complète des Champions LoL & IDs Riot",
+  items: [
+    "Intégration du dictionnaire complet de 168+ champions League of Legends et de leurs identifiants Riot officiels.",
+    "Résolution native des champions modernes (Yone, Yuumi, Aurora, Qiyana, Briar, Smolder, Hwei, etc.).",
+    "Suppression définitive du fallback forcé vers Ahri en cas d'erreur de chargement.",
+  ],
+});
+
+CHANGELOG_BY_LANG.en.unshift({
+  version: "v1.12.60",
+  date: "2026-08-30",
+  title: "Comprehensive LoL Champion Resolution & Riot IDs",
+  items: [
+    "Integrated complete dictionary of 168+ LoL champions with official Riot IDs.",
+    "Native resolution for modern champions (Yone, Yuumi, Aurora, Qiyana, Briar, Smolder, Hwei, etc.).",
+    "Removed forced Ahri fallback on image load errors.",
+  ],
+});
+
+CHANGELOG_BY_LANG.es.unshift({
+  version: "v1.12.60",
+  date: "2026-08-30",
+  title: "Resolución de Campeones LoL y IDs de Riot",
+  items: [
+    "Diccionario completo de campeones de LoL y resolución de IDs oficiales.",
+  ],
+});
+
+CHANGELOG_BY_LANG.de.unshift({
+  version: "v1.12.60",
+  date: "2026-08-30",
+  title: "Vollständige LoL Champion-Auflösung & Riot-IDs",
+  items: [
+    "Vollständiges Wörterbuch aller LoL-Champions und Entfernung des Ahri-Fallbacks.",
+  ],
+});
+
+CHANGELOG_BY_LANG.fr.unshift({
   version: "v1.12.59",
   date: "2026-08-30",
   title: "Optimisation & Découplage des Pipelines CI/CD",

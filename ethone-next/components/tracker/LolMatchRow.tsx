@@ -158,13 +158,13 @@ export default function LolMatchRow({ match, index }: LolMatchRowProps) {
             <img
               src={
                 meta?.championImageUrl ||
-                getLolChampionIcon(me?.character || meta?.championName)
+                getLolChampionIcon(me?.character || meta?.championName, me?.championId || meta?.championId, index)
               }
-              alt={me?.character || "Champion"}
+              alt={me?.character || meta?.championName || "Champion"}
               className="h-full w-full object-cover"
               onError={(e) => {
                 (e.target as HTMLImageElement).src =
-                  "https://ddragon.leagueoflegends.com/cdn/14.16.1/img/champion/Ahri.png";
+                  getLolChampionIcon(me?.character || meta?.championName, me?.championId || meta?.championId, index);
               }}
             />
             {me?.level && (

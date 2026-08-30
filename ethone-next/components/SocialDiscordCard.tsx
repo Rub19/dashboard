@@ -201,9 +201,22 @@ const SocialDiscordCard = memo(function SocialDiscordCard({
 
   const activities = (effectiveLanyard?.activities || []) as Array<{ name?: string; state?: string; details?: string; largeImage?: string }>;
   const customStatus = activities.find((activity) => activity.name === "Custom Status")?.state;
-  const gameActivity = activities.find(
-    (activity) => activity.name !== "Custom Status" && activity.name !== "Spotify"
-  );
+  
+  const gameActivity = useMemo(() => {
+    if (!activities.length) return undefined;
+    const candidates = activities.filter(
+      (a) => a.name && a.name !== "Custom Status" && a.name !== "Spotify"
+    );
+    if (!candidates.length) return undefined;
+
+    // Prioritize real games (Valorant, League, Steam, etc.) over browser rich presence
+    const browserKeywords = ["opera", "chrome", "firefox", "edge", "brave", "safari", "browser", "visual studio code", "code"];
+    const realGame = candidates.find(
+      (a) => !browserKeywords.some((b) => a.name?.toLowerCase().includes(b))
+    );
+
+    return realGame || candidates[0];
+  }, [activities]);
 
   const lanyardSpotify = effectiveLanyard?.spotify;
   const lanyardMusic: NowPlaying | null =

@@ -7206,6 +7206,44 @@ CHANGELOG_BY_LANG.es.unshift({
 });
 
 CHANGELOG_BY_LANG.fr.unshift({
+  version: "v1.12.54",
+  date: "2026-08-30",
+  title: "Priorisation des Jeux Réels sur Discord & Lanyard",
+  items: [
+    "Priorité automatique aux jeux réels (Valorant, League of Legends, Steam) par rapport aux extensions de navigateur (Opera, Chrome).",
+    "Affichage précis et instantané du jeu actif dans la carte Discord en temps réel.",
+  ],
+});
+
+CHANGELOG_BY_LANG.en.unshift({
+  version: "v1.12.54",
+  date: "2026-08-30",
+  title: "Real Game Priority in Discord Presence",
+  items: [
+    "Automatic priority given to real games (Valorant, League, Steam) over browser extension presences (Opera, Chrome).",
+    "Accurate real-time display of active game in the Discord presence card.",
+  ],
+});
+
+CHANGELOG_BY_LANG.es.unshift({
+  version: "v1.12.54",
+  date: "2026-08-30",
+  title: "Prioridad de Juegos en Discord Presence",
+  items: [
+    "Prioridad automática a juegos reales sobre extensiones de navegador.",
+  ],
+});
+
+CHANGELOG_BY_LANG.de.unshift({
+  version: "v1.12.54",
+  date: "2026-08-30",
+  title: "Echtzeit-Spielpriorität in Discord Presence",
+  items: [
+    "Automatische Priorität für echte Spiele gegenüber Browser-Erweiterungen.",
+  ],
+});
+
+CHANGELOG_BY_LANG.fr.unshift({
   version: "v1.12.53",
   date: "2026-08-30",
   title: "Couleurs Officielles des Rangs Valorant & League of Legends",

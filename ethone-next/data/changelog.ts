@@ -7206,6 +7206,46 @@ CHANGELOG_BY_LANG.es.unshift({
 });
 
 CHANGELOG_BY_LANG.fr.unshift({
+  version: "v1.12.55",
+  date: "2026-08-30",
+  title: "Pastilles de Groupes (Premade Parties) sur Valorant & LoL",
+  items: [
+    "Détection automatique des escouades et duos/trios/5-stacks dans les matchs via les clés API Riot & HenrikDev.",
+    "Affichage d'une pastille colorée lumineuse distincte à gauche de chaque joueur appartenant au même groupe (Groupe A cyan, Groupe B ambre, Groupe C fuchsia, etc.).",
+    "Harmonisation visuelle complète fidèle à Tracker.gg pour League of Legends et Valorant.",
+  ],
+});
+
+CHANGELOG_BY_LANG.en.unshift({
+  version: "v1.12.55",
+  date: "2026-08-30",
+  title: "Premade Party Color Indicators in Valorant & LoL",
+  items: [
+    "Automatic premade party/squad detection in matches via Riot & HenrikDev API party_id.",
+    "Distinct glowing color pastilles on the left of each player in the same party (Group A cyan, Group B amber, Group C fuchsia, etc.).",
+    "Complete esports visual parity matching Tracker.gg across Valorant and League of Legends scoreboards.",
+  ],
+});
+
+CHANGELOG_BY_LANG.es.unshift({
+  version: "v1.12.55",
+  date: "2026-08-30",
+  title: "Indicadores de Grupo (Premade) en Valorant y LoL",
+  items: [
+    "Pastillas de colores distintivos para jugadores en el mismo grupo/escuadrón.",
+  ],
+});
+
+CHANGELOG_BY_LANG.de.unshift({
+  version: "v1.12.55",
+  date: "2026-08-30",
+  title: "Premade-Gruppen-Farbindikatoren in Valorant & LoL",
+  items: [
+    "Farbige Indikatoren für Spieler in derselben Premade-Gruppe.",
+  ],
+});
+
+CHANGELOG_BY_LANG.fr.unshift({
   version: "v1.12.54",
   date: "2026-08-30",
   title: "Priorisation des Jeux Réels sur Discord & Lanyard",

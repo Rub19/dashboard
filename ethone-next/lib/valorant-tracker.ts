@@ -331,6 +331,7 @@ export function convertHenrikMatchToValorantMatch(
       team: p.team === "Red" ? "Red" : "Blue",
       character: agentName,
       isMe,
+      party_id: p.party_id || p.partyId || (p.inParty ? `party-${p.team}` : undefined),
       currenttier_patched: rankLabel,
       assets: {
         agent: {

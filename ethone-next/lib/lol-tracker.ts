@@ -42,6 +42,7 @@ export interface LolPlayer {
   character: string;
   level: number;
   position?: string;
+  party_id?: string;
   spells: LolSpellAsset[];
   items: LolItemAsset[];
   rune?: LolRuneAsset;
@@ -432,6 +433,7 @@ export async function fetchLolMatchesDirect(
           character: p.championName,
           level: p.champLevel || 1,
           position: p.teamPosition || p.individualPosition || "",
+          party_id: p.party_id || p.partyId || (p.premadeId ? String(p.premadeId) : undefined),
           spells,
           items,
           stats: {

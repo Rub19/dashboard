@@ -27,6 +27,7 @@ import {
   getLolSpellIcon,
   getChampionDefaultItems,
 } from "@/lib/lol-tracker";
+import { computePartyMap } from "@/lib/party-helper";
 import { cn } from "@/lib/utils";
 
 interface LolMatchRowProps {
@@ -42,6 +43,7 @@ export default function LolMatchRow({ match, index }: LolMatchRowProps) {
   const isWin = meta?.result?.toLowerCase() === "victory";
 
   const players = match.scoreboard?.players || [];
+  const partyMap = useMemo(() => computePartyMap(players), [players]);
   const me: LolPlayer | undefined =
     players.find((p) => p.isMe) || players[0];
 
@@ -521,6 +523,8 @@ export default function LolMatchRow({ match, index }: LolMatchRowProps) {
                       }
                       const pTrinket = p.items?.find((it) => it && (it.id ?? 0) === 3340) || pDefaultItems[pDefaultItems.length - 1];
 
+                      const pParty = partyMap.getParty(p, pi);
+
                       return (
                         <tr
                           key={pi}
@@ -531,8 +535,27 @@ export default function LolMatchRow({ match, index }: LolMatchRowProps) {
                               : "hover:bg-white/[0.02] text-zinc-300"
                           )}
                         >
-                          {/* Champion & Player Info */}
-                          <td className="py-2.5 pl-2 flex items-center gap-2.5">
+                          {/* Champion & Player Info + Party Indicator */}
+                          <td className="py-2.5 pl-2 flex items-center gap-2">
+                            {/* Party indicator pastille */}
+                            <div
+                              className="w-2.5 flex items-center justify-center shrink-0 cursor-default"
+                              title={pParty ? `${pParty.partyName} (${pParty.size} joueurs en groupe)` : "Joueur Solo"}
+                            >
+                              {pParty ? (
+                                <span
+                                  className={cn(
+                                    "h-2 w-2 rounded-full ring-2 transition-all shrink-0 animate-pulse",
+                                    pParty.color.dot,
+                                    pParty.color.ring,
+                                    pParty.color.glow
+                                  )}
+                                />
+                              ) : (
+                                <span className="h-1.5 w-1.5 rounded-full bg-zinc-700/40" />
+                              )}
+                            </div>
+
                             <div className="relative h-8 w-8 shrink-0 overflow-hidden rounded-xl border border-white/10 bg-black">
                               <img
                                 src={getLolChampionIcon(p.character)}
@@ -548,14 +571,21 @@ export default function LolMatchRow({ match, index }: LolMatchRowProps) {
                                 <span className="font-bold text-white truncate max-w-[120px]">{p.name}</span>
                                 <span className="text-[10px] text-zinc-500 font-mono">#{p.tag}</span>
                               </div>
-                              <span
-                                className={cn(
-                                  "text-[9px] font-extrabold uppercase",
-                                  p.team === "Blue" ? "text-cyan-400" : "text-rose-400"
+                              <div className="flex items-center gap-1.5">
+                                <span
+                                  className={cn(
+                                    "text-[9px] font-extrabold uppercase",
+                                    p.team === "Blue" ? "text-cyan-400" : "text-rose-400"
+                                  )}
+                                >
+                                  {p.team} Side
+                                </span>
+                                {pParty && (
+                                  <span className={cn("text-[8px] font-bold px-1 rounded-sm border", pParty.color.bg, pParty.color.text, pParty.color.border)}>
+                                    {pParty.partyName}
+                                  </span>
                                 )}
-                              >
-                                {p.team} Side
-                              </span>
+                              </div>
                             </div>
                           </td>
 

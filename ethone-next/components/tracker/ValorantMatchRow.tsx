@@ -24,6 +24,8 @@ import {
   calculateMatchRankBadge,
   getMatchHighlightBadges,
 } from "@/lib/valorant-tracker";
+import { getValorantRankStyle } from "@/components/RiotGamingCard";
+import { computePartyMap } from "@/lib/party-helper";
 import { cn } from "@/lib/utils";
 
 interface ValorantMatchRowProps {
@@ -34,6 +36,9 @@ interface ValorantMatchRowProps {
 export default function ValorantMatchRow({ match, index }: ValorantMatchRowProps) {
   const [expanded, setExpanded] = useState(false);
   const [activeTab, setActiveTab] = useState<"scoreboard" | "performance" | "economy">("scoreboard");
+
+  const players = match.scoreboard?.players || [];
+  const partyMap = computePartyMap(players);
 
   const meta = match.metadata;
   const isWin =
@@ -60,7 +65,6 @@ export default function ValorantMatchRow({ match, index }: ValorantMatchRowProps
   const teamScore = meta.score.team ?? (isWin ? 5 : 1);
   const opponentScore = meta.score.opponent ?? (isWin ? 1 : 5);
 
-  const players = match.scoreboard?.players || [];
   const teamAPlayers = players.filter((p) => p.team === "Blue" || p.team === "Team A");
   const teamBPlayers = players.filter((p) => p.team === "Red" || p.team === "Team B");
 
@@ -313,6 +317,7 @@ export default function ValorantMatchRow({ match, index }: ValorantMatchRowProps
                           : Number((p.stats.kills / p.stats.deaths).toFixed(2));
                       const pDiff = p.stats.kills - p.stats.deaths;
                       const pIcon = getAgentIcon(p.character, p.assets?.agent?.small);
+                      const pParty = partyMap.getParty(p, pi);
 
                       return (
                         <tr
@@ -324,8 +329,27 @@ export default function ValorantMatchRow({ match, index }: ValorantMatchRowProps
                               : "hover:bg-white/[0.02] text-zinc-300"
                           )}
                         >
-                          {/* Player / Agent Avatar + Name */}
-                          <td className="py-2.5 pl-2 flex items-center gap-2.5">
+                          {/* Player / Agent Avatar + Name + Party Indicator */}
+                          <td className="py-2.5 pl-2 flex items-center gap-2">
+                            {/* Party indicator pastille with distinct party color */}
+                            <div
+                              className="w-2.5 flex items-center justify-center shrink-0 cursor-default"
+                              title={pParty ? `${pParty.partyName} (${pParty.size} joueurs en groupe)` : "Joueur Solo"}
+                            >
+                              {pParty ? (
+                                <span
+                                  className={cn(
+                                    "h-2 w-2 rounded-full ring-2 transition-all shrink-0 animate-pulse",
+                                    pParty.color.dot,
+                                    pParty.color.ring,
+                                    pParty.color.glow
+                                  )}
+                                />
+                              ) : (
+                                <span className="h-1.5 w-1.5 rounded-full bg-zinc-700/40" />
+                              )}
+                            </div>
+
                             <div className="relative h-8 w-8 shrink-0 overflow-hidden rounded-xl border border-white/10 bg-black">
                               <img
                                 src={pIcon}
@@ -345,21 +369,31 @@ export default function ValorantMatchRow({ match, index }: ValorantMatchRowProps
                                   #{p.tag}
                                 </span>
                               </div>
-                              <span
-                                className={cn(
-                                  "text-[9px] font-black uppercase tracking-wider",
-                                  p.team === "Red" ? "text-rose-400" : "text-emerald-400"
+                              <div className="flex items-center gap-1.5">
+                                <span
+                                  className={cn(
+                                    "text-[9px] font-black uppercase tracking-wider",
+                                    p.team === "Red" ? "text-rose-400" : "text-emerald-400"
+                                  )}
+                                >
+                                  {p.team}
+                                </span>
+                                {pParty && (
+                                  <span className={cn("text-[8px] font-bold px-1 rounded-sm border", pParty.color.bg, pParty.color.text, pParty.color.border)}>
+                                    {pParty.partyName}
+                                  </span>
                                 )}
-                              >
-                                {p.team}
-                              </span>
+                              </div>
                             </div>
                           </td>
 
                           {/* Rank Badge */}
                           <td className="py-2.5 text-center">
-                            <span className="inline-flex items-center rounded-md bg-white/5 border border-white/10 px-2 py-0.5 text-[10px] font-bold text-zinc-300">
-                              {p.currenttier_patched || "Platinum II"}
+                            <span className={cn(
+                              "inline-flex items-center rounded-md border px-2 py-0.5 text-[10px] font-bold shadow-xs",
+                              getValorantRankStyle(p.currenttier_patched)
+                            )}>
+                              {p.currenttier_patched || "Ascendant 1"}
                             </span>
                           </td>
 

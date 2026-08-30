@@ -265,6 +265,7 @@ export function useBrain(mailClient?: BrainMailClient) {
     // Check if user is asking for action execution
     const lower = promptText.toLowerCase();
     let actionPlan: ActionExecution | undefined = undefined;
+    let pendingNoteTitle: string | null = null;
 
     if (
       lower.includes("crée une note") ||
@@ -276,19 +277,13 @@ export function useBrain(mailClient?: BrainMailClient) {
       const topic = promptText
         .replace(/^(peux-tu|tu peux|stp|s'il te plaît|s'il te plait|merci de)?\s*(créer|crée|ajouter|ajoute|faire|fais)\s*(moi)?\s*(une|la)?\s*note\s*(sur|pour|concernant|:)?/i, "")
         .trim();
-      const noteTitle = topic || "Nouvelle note Brain";
-      try {
-        await notes.create({
-          title: noteTitle,
-          body: `## ${noteTitle}\n\nNote créée par Brain IA le ${new Date().toLocaleDateString("fr-FR")} à ${new Date().toLocaleTimeString("fr-FR", { hour: "2-digit", minute: "2-digit" })}.\n\n- `,
-        });
-      } catch {}
+      pendingNoteTitle = topic || "Nouvelle note Brain";
       actionPlan = {
         id: `act-${Date.now()}`,
         type: "note",
-        step: "done",
-        title: `Note créée : "${noteTitle}"`,
-        detail: "Enregistrée automatiquement dans votre espace Notes.",
+        step: "running",
+        title: `Note créée : "${pendingNoteTitle}"`,
+        detail: "Génération et enregistrement du contenu Markdown...",
       };
     } else if (
       lower.includes("crée une tâche") ||
@@ -326,12 +321,24 @@ export function useBrain(mailClient?: BrainMailClient) {
         messages: currentMessages.map((m) => ({ role: m.role, content: m.content })),
         modelId: selectedModel,
         systemPrompt:
-          "Tu es Brain, l'assistant IA intégré à ETHONE OS. Réponds de façon vivante, intelligente, naturelle et proactive en français. Réponds directement et librement à ce que demande l'utilisateur.",
+          "Tu es Brain, l'assistant IA intégré à ETHONE OS. Réponds avec un Markdown riche, soigné et bien structuré (titres, listes à puces, citations, cases à cocher, gras). Lorsque l'utilisateur te demande de créer une note, synthétise et rédige le contenu complet de la note en Markdown.",
       });
 
       const content = aiResponse.content;
       const providerName = aiResponse.provider;
       const modelName = aiResponse.model || selectedModel;
+
+      // If this was a note creation prompt, save the full generated markdown content to Notes
+      if (pendingNoteTitle) {
+        try {
+          await notes.create({
+            title: pendingNoteTitle,
+            body: content,
+          });
+        } catch (nErr) {
+          console.warn("Error creating note from AI response:", nErr);
+        }
+      }
 
     const durationMs = Date.now() - startTime;
     

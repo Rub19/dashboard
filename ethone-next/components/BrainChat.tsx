@@ -28,6 +28,7 @@ import { useSettings } from "@/components/SettingsProvider";
 import BrainComposer from "./brain/BrainComposer";
 import BrainActionCard from "./brain/BrainActionCard";
 import BrainVoiceOverlay from "./brain/BrainVoiceOverlay";
+import MarkdownContent from "./MarkdownContent";
 import { cn } from "@/lib/utils";
 
 interface BrainChatProps {
@@ -384,7 +385,11 @@ export default function BrainChat({
           )}
 
           {/* Text Content */}
-          <div className="whitespace-pre-wrap">{m.content}</div>
+          {isUser ? (
+            <div className="whitespace-pre-wrap">{m.content}</div>
+          ) : (
+            <MarkdownContent content={m.content} />
+          )}
 
           {/* Action Card if triggered */}
           {m.actionExecution && (

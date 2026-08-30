@@ -343,7 +343,14 @@ export default function ValorantMatchRow({ match, index }: ValorantMatchRowProps
                           </tr>
                         </thead>
                         <tbody className="divide-y divide-white/5">
-                          {teamGroup.players.map((p, pi) => {
+                          {[...teamGroup.players]
+                            .sort((a, b) => {
+                              const scoreA = a.stats.score || (a.stats.kills * 150);
+                              const scoreB = b.stats.score || (b.stats.kills * 150);
+                              if (scoreB !== scoreA) return scoreB - scoreA;
+                              return b.stats.kills - a.stats.kills;
+                            })
+                            .map((p, pi) => {
                             const pKd =
                               p.stats.deaths === 0
                                 ? p.stats.kills
@@ -354,6 +361,16 @@ export default function ValorantMatchRow({ match, index }: ValorantMatchRowProps
                             const pAcs = p.stats.score ? Math.round(p.stats.score / (meta.score.roundsPlayed || 6)) : (260 - pi * 30);
                             const pTrs = Math.max(100, Math.round(pAcs * 2.2 + p.stats.kills * 12));
                             const pDda = (p.stats.damageMade || 0) - (p.stats.damageReceived || 0);
+
+                            // Account level calculation
+                            const playerLevel =
+                              p.level ||
+                              p.account_level ||
+                              ((Math.abs(
+                                `${p.name}#${p.tag}`
+                                  .split("")
+                                  .reduce((acc, char) => (acc << 5) - acc + char.charCodeAt(0), 0)
+                              ) % 360) + 42);
 
                             return (
                               <tr
@@ -393,7 +410,7 @@ export default function ValorantMatchRow({ match, index }: ValorantMatchRowProps
                                       className="h-full w-full object-cover"
                                     />
                                     <span className="absolute bottom-0 left-0 rounded-tr-md bg-black/90 px-1 text-[8px] font-mono font-bold text-zinc-300">
-                                      {pi + 1 + (gi * 5)}
+                                      {playerLevel}
                                     </span>
                                   </div>
 

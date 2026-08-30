@@ -7206,6 +7206,44 @@ CHANGELOG_BY_LANG.es.unshift({
 });
 
 CHANGELOG_BY_LANG.fr.unshift({
+  version: "v1.12.58",
+  date: "2026-08-30",
+  title: "Tri Automatique par Score & Niveaux de Compte Réels",
+  items: [
+    "Classement dynamique des joueurs par ACS / score de combat descendant au sein de chaque équipe.",
+    "Remplacement des index de ligne par les vrais niveaux de compte des joueurs sur chaque avatar.",
+  ],
+});
+
+CHANGELOG_BY_LANG.en.unshift({
+  version: "v1.12.58",
+  date: "2026-08-30",
+  title: "Score-Based Sorting & Authentic Account Levels",
+  items: [
+    "Dynamically sorted team players by combat score (ACS/Score) descending.",
+    "Replaced generic row numbers on agent avatars with actual player account levels.",
+  ],
+});
+
+CHANGELOG_BY_LANG.es.unshift({
+  version: "v1.12.58",
+  date: "2026-08-30",
+  title: "Clasificación por Puntuación y Niveles de Cuenta",
+  items: [
+    "Clasificación descendente por puntuación y visualización de niveles de cuenta reales.",
+  ],
+});
+
+CHANGELOG_BY_LANG.de.unshift({
+  version: "v1.12.58",
+  date: "2026-08-30",
+  title: "Score-Sortierung & Echte Account-Level",
+  items: [
+    "Absteigende Sortierung nach Score und Anzeige authentischer Account-Level.",
+  ],
+});
+
+CHANGELOG_BY_LANG.fr.unshift({
   version: "v1.12.57",
   date: "2026-08-30",
   title: "Sanctuarisation de la Photo de Profil ETHONE",

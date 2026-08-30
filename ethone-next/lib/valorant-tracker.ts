@@ -16,6 +16,8 @@ export interface ValorantPlayer {
   tag: string;
   team: "Red" | "Blue" | string;
   character: string;
+  level?: number;
+  account_level?: number;
   currenttier_patched?: string;
   party_id?: string;
   inParty?: boolean;
@@ -330,6 +332,8 @@ export function convertHenrikMatchToValorantMatch(
       tag: p.tag || "",
       team: p.team === "Red" ? "Red" : "Blue",
       character: agentName,
+      level: p.level || p.account_level || undefined,
+      account_level: p.account_level || p.level || undefined,
       isMe,
       party_id: p.party_id || p.partyId || (p.inParty ? `party-${p.team}` : undefined),
       currenttier_patched: rankLabel,

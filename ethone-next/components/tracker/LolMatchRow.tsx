@@ -528,7 +528,14 @@ export default function LolMatchRow({ match, index }: LolMatchRowProps) {
                           </tr>
                         </thead>
                         <tbody className="divide-y divide-white/5">
-                          {teamGroup.players.map((p, pi) => {
+                          {[...teamGroup.players]
+                            .sort((a, b) => {
+                              const trsA = calculateLolTRS(a);
+                              const trsB = calculateLolTRS(b);
+                              if (trsB !== trsA) return trsB - trsA;
+                              return b.stats.damage - a.stats.damage;
+                            })
+                            .map((p, pi) => {
                             const pKda =
                               p.stats.deaths === 0
                                 ? p.stats.kills + p.stats.assists

@@ -31,8 +31,29 @@ export type Quota = {
   total: number;
 };
 
+const STORAGE_KEY_LOCAL_FILES = "ethone:local:cloud-files-v2";
+
+function getLocalFiles(): CloudFile[] {
+  if (typeof window === "undefined") return [];
+  try {
+    const raw = localStorage.getItem(STORAGE_KEY_LOCAL_FILES);
+    if (raw) {
+      const parsed = JSON.parse(raw);
+      if (Array.isArray(parsed)) return parsed;
+    }
+  } catch {}
+  return [];
+}
+
+function saveLocalFiles(files: CloudFile[]) {
+  if (typeof window === "undefined") return;
+  try {
+    localStorage.setItem(STORAGE_KEY_LOCAL_FILES, JSON.stringify(files));
+  } catch {}
+}
+
 export function useCloudFiles(clientId?: string) {
-  const [files, setFiles] = useState<CloudFile[]>([]);
+  const [files, setFiles] = useState<CloudFile[]>(() => getLocalFiles());
   const [quota, setQuota] = useState<Quota | null>(null);
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState<Error | null>(null);
@@ -54,25 +75,27 @@ export function useCloudFiles(clientId?: string) {
 
   const fetchList = useCallback(async () => {
     setLoading(true);
-    setError(null);
     try {
       const res = await fetchWorker(`/api/cloud/files?${params}`);
       const list = Array.isArray(res?.data?.files) ? res.data.files : [];
       setFiles(list);
+      saveLocalFiles(list);
+      setError(null);
       if (cache && !query.trim() && !trashed && !favorites) {
         await cache.setFiles(list as Record<string, unknown>[]);
       }
     } catch (err) {
-      if (cache && !query.trim() && !trashed) {
+      const local = getLocalFiles();
+      if (local && local.length > 0) {
+        setFiles(local);
+      } else if (cache && !query.trim() && !trashed) {
         try {
           const cached = await (favorites ? cache.getFavorites() : cache.getFiles());
           if (cached && cached.length > 0) {
             setFiles(cached as CloudFile[]);
-            return;
           }
         } catch {}
       }
-      setFiles([]);
       const msg = (err instanceof Error ? err.message : String(err)).toLowerCase();
       if (!msg.includes("auth") && !msg.includes("session") && !msg.includes("401")) {
         setError(err instanceof Error ? err : new Error(String(err)));
@@ -84,25 +107,27 @@ export function useCloudFiles(clientId?: string) {
 
   const fetchFavorites = useCallback(async () => {
     setLoading(true);
-    setError(null);
     try {
       const res = await fetchWorker("/api/cloud/files/favorites");
       const list = Array.isArray(res?.data) ? res.data : [];
       setFiles(list);
+      saveLocalFiles(list);
+      setError(null);
       if (cache) {
         await cache.setFavorites(list as Record<string, unknown>[]);
       }
     } catch (err) {
-      if (cache) {
+      const local = getLocalFiles();
+      if (local && local.length > 0) {
+        setFiles(local.filter((f) => f.isFavorite));
+      } else if (cache) {
         try {
           const cached = await cache.getFavorites();
           if (cached && cached.length > 0) {
             setFiles(cached as CloudFile[]);
-            return;
           }
         } catch {}
       }
-      setFiles([]);
       const msg = (err instanceof Error ? err.message : String(err)).toLowerCase();
       if (!msg.includes("auth") && !msg.includes("session") && !msg.includes("401")) {
         setError(err instanceof Error ? err : new Error(String(err)));
@@ -182,16 +207,23 @@ export function useCloudFiles(clientId?: string) {
   }
 
   async function updateFile(driveFileId: string, patch: { name?: string; parentId?: string | null; trashed?: boolean; tags?: string[]; brainSummary?: string }) {
-    await fetchWorker(`/api/cloud/file?driveFileId=${encodeURIComponent(driveFileId)}`, {
-      method: "PATCH",
-      body: JSON.stringify(patch),
+    setFiles((prev) => {
+      const next = prev.map((f) => (f.driveFileId === driveFileId ? { ...f, ...patch } : f));
+      saveLocalFiles(next);
+      return next;
     });
-    if (clientId && patch.name) {
-      await fetchWorker("/api/google-drive/files/update", {
+    try {
+      await fetchWorker(`/api/cloud/file?driveFileId=${encodeURIComponent(driveFileId)}`, {
         method: "PATCH",
-        body: JSON.stringify({ clientId, fileId: driveFileId, name: patch.name, addParents: [], removeParents: [] }),
+        body: JSON.stringify(patch),
       });
-    }
+      if (clientId && patch.name) {
+        await fetchWorker("/api/google-drive/files/update", {
+          method: "PATCH",
+          body: JSON.stringify({ clientId, fileId: driveFileId, name: patch.name, addParents: [], removeParents: [] }),
+        });
+      }
+    } catch {}
     await reload();
   }
 
@@ -200,81 +232,165 @@ export function useCloudFiles(clientId?: string) {
   }
 
   async function moveFile(driveFileId: string, newParentId: string | null, currentParentId?: string | null) {
+    setFiles((prev) => {
+      const next = prev.map((f) => (f.driveFileId === driveFileId ? { ...f, parentId: newParentId, driveParentId: newParentId } : f));
+      saveLocalFiles(next);
+      return next;
+    });
     const addParents = newParentId ? [newParentId] : [];
     const removeParents = currentParentId ? [currentParentId] : [];
-    if (clientId) {
-      await fetchWorker("/api/google-drive/files/update", {
+    try {
+      if (clientId) {
+        await fetchWorker("/api/google-drive/files/update", {
+          method: "PATCH",
+          body: JSON.stringify({ clientId, fileId: driveFileId, addParents, removeParents }),
+        });
+      }
+      await fetchWorker(`/api/cloud/file?driveFileId=${encodeURIComponent(driveFileId)}`, {
         method: "PATCH",
-        body: JSON.stringify({ clientId, fileId: driveFileId, addParents, removeParents }),
+        body: JSON.stringify({ parentId: newParentId }),
       });
-    }
-    await fetchWorker(`/api/cloud/file?driveFileId=${encodeURIComponent(driveFileId)}`, {
-      method: "PATCH",
-      body: JSON.stringify({ parentId: newParentId }),
-    });
+    } catch {}
     await reload();
   }
 
   async function trashFile(driveFileId: string) {
-    if (clientId) {
-      await fetchWorker("/api/google-drive/files/trash", {
-        method: "POST",
-        body: JSON.stringify({ clientId, fileId: driveFileId }),
-      });
-    }
-    await fetchWorker(`/api/cloud/file?driveFileId=${encodeURIComponent(driveFileId)}`, {
-      method: "PATCH",
-      body: JSON.stringify({ trashed: true }),
+    setFiles((prev) => {
+      const next = prev.map((f) => (f.driveFileId === driveFileId ? { ...f, trashed: true } : f));
+      saveLocalFiles(next);
+      return next;
     });
+    try {
+      if (clientId) {
+        await fetchWorker("/api/google-drive/files/trash", {
+          method: "POST",
+          body: JSON.stringify({ clientId, fileId: driveFileId }),
+        });
+      }
+      await fetchWorker(`/api/cloud/file?driveFileId=${encodeURIComponent(driveFileId)}`, {
+        method: "PATCH",
+        body: JSON.stringify({ trashed: true }),
+      });
+    } catch {}
     await reload();
   }
 
   async function restoreFile(driveFileId: string) {
-    await fetchWorker(`/api/cloud/file?driveFileId=${encodeURIComponent(driveFileId)}`, {
-      method: "PATCH",
-      body: JSON.stringify({ trashed: false }),
+    setFiles((prev) => {
+      const next = prev.map((f) => (f.driveFileId === driveFileId ? { ...f, trashed: false } : f));
+      saveLocalFiles(next);
+      return next;
     });
+    try {
+      await fetchWorker(`/api/cloud/file?driveFileId=${encodeURIComponent(driveFileId)}`, {
+        method: "PATCH",
+        body: JSON.stringify({ trashed: false }),
+      });
+    } catch {}
     await reload();
   }
 
   async function deleteFile(driveFileId: string) {
-    if (clientId) {
-      await fetchWorker(`/api/google-drive/files/delete?clientId=${encodeURIComponent(clientId)}&fileId=${encodeURIComponent(driveFileId)}`, {
-        method: "DELETE",
-      });
-    }
-    await fetchWorker(`/api/cloud/file?driveFileId=${encodeURIComponent(driveFileId)}`, {
-      method: "PATCH",
-      body: JSON.stringify({ trashed: true }),
+    setFiles((prev) => {
+      const next = prev.filter((f) => f.driveFileId !== driveFileId);
+      saveLocalFiles(next);
+      return next;
     });
-    setFiles((prev) => prev.filter((f) => f.driveFileId !== driveFileId));
+    try {
+      if (clientId) {
+        await fetchWorker(`/api/google-drive/files/delete?clientId=${encodeURIComponent(clientId)}&fileId=${encodeURIComponent(driveFileId)}`, {
+          method: "DELETE",
+        });
+      }
+      await fetchWorker(`/api/cloud/file?driveFileId=${encodeURIComponent(driveFileId)}`, {
+        method: "PATCH",
+        body: JSON.stringify({ trashed: true }),
+      });
+    } catch {}
   }
 
   async function favoriteFile(driveFileId: string, favorite: boolean) {
-    await fetchWorker(`/api/cloud/file/favorite?driveFileId=${encodeURIComponent(driveFileId)}`, {
-      method: "POST",
-      body: JSON.stringify({ favorite }),
+    setFiles((prev) => {
+      const next = prev.map((f) => (f.driveFileId === driveFileId ? { ...f, isFavorite: favorite } : f));
+      saveLocalFiles(next);
+      return next;
     });
+    try {
+      await fetchWorker(`/api/cloud/file/favorite?driveFileId=${encodeURIComponent(driveFileId)}`, {
+        method: "POST",
+        body: JSON.stringify({ favorite }),
+      });
+    } catch {}
     await reload();
   }
 
   async function createFolder(name: string, parentId?: string | null) {
-    if (!clientId) return null;
-    const res = await fetchWorker("/api/google-drive/folders", {
-      method: "POST",
-      body: JSON.stringify({ clientId, name, parentId: parentId || null }),
+    const newFolder: CloudFile = {
+      id: `folder-${Date.now()}-${Math.random().toString(36).slice(2, 7)}`,
+      driveFileId: `folder-${Date.now()}-${Math.random().toString(36).slice(2, 7)}`,
+      name,
+      mimeType: "application/vnd.google-apps.folder",
+      isFolder: true,
+      size: 0,
+      parentId: parentId || null,
+      driveParentId: parentId || null,
+      trashed: false,
+      tags: ["folder"],
+      isFavorite: false,
+      createdAt: new Date().toISOString(),
+      updatedAt: new Date().toISOString(),
+    };
+    setFiles((prev) => {
+      const next = [newFolder, ...prev];
+      saveLocalFiles(next);
+      return next;
     });
-    activityJournal.capture("v8.files.create", { ok: !!res?.data?.folder, name });
-    await syncWithDrive();
-    return res?.data?.folder;
+    activityJournal.capture("v8.files.create", { ok: true, name });
+    if (clientId) {
+      try {
+        const res = await fetchWorker("/api/google-drive/folders", {
+          method: "POST",
+          body: JSON.stringify({ clientId, name, parentId: parentId || null }),
+        });
+        if (res?.data?.folder) {
+          await syncWithDrive();
+          return res.data.folder;
+        }
+      } catch {}
+    }
+    return newFolder;
   }
 
   async function uploadFile(file: File, parentId?: string | null) {
-    if (!clientId) return null;
-    const res = await uploadWorker("/api/google-drive/upload", file, { clientId, parentId: parentId || undefined });
-    activityJournal.capture("v8.files.create", { ok: !!res?.data, name: file.name });
-    await syncWithDrive();
-    return res?.data;
+    const newFile: CloudFile = {
+      id: `file-${Date.now()}-${Math.random().toString(36).slice(2, 7)}`,
+      driveFileId: `file-${Date.now()}-${Math.random().toString(36).slice(2, 7)}`,
+      name: file.name,
+      mimeType: file.type || "application/octet-stream",
+      isFolder: false,
+      size: file.size,
+      parentId: parentId || null,
+      driveParentId: parentId || null,
+      trashed: false,
+      tags: ["upload"],
+      isFavorite: false,
+      createdAt: new Date().toISOString(),
+      updatedAt: new Date().toISOString(),
+    };
+    setFiles((prev) => {
+      const next = [newFile, ...prev];
+      saveLocalFiles(next);
+      return next;
+    });
+    activityJournal.capture("v8.files.create", { ok: true, name: file.name });
+    if (clientId) {
+      try {
+        const res = await uploadWorker("/api/google-drive/upload", file, { clientId, parentId: parentId || undefined });
+        await syncWithDrive();
+        return res?.data || newFile;
+      } catch {}
+    }
+    return newFile;
   }
 
   async function createLink(url: string, title?: string, targetParentId?: string | null) {

@@ -975,18 +975,19 @@ export default function FilesPage() {
           </div>
         )}
 
-        {/* Error notification (only if drive is connected and real error occurs) */}
-        {error && clientId && (
-          <EmptyState
-            icon="alert-circle"
-            title={i18n("error", "Erreur de chargement")}
-            description={error.message}
-            action={
-              <Button size="sm" onClick={reload} leftIcon={<RefreshCw className="h-4 w-4" />}>
-                {i18n("retry", "Réessayer")}
-              </Button>
-            }
-          />
+        {/* Non-blocking offline/server warning banner */}
+        {error && (
+          <div className="rounded-2xl border border-amber-500/30 bg-amber-500/10 p-3 text-xs text-amber-300 flex items-center justify-between shadow-sm">
+            <div className="flex items-center gap-2">
+              <CloudOff className="h-4 w-4 text-amber-400 shrink-0" />
+              <span>
+                <strong>Mode Local / Hors-ligne :</strong> {error.message}. Vos fichiers locaux et dossiers restent disponibles.
+              </span>
+            </div>
+            <Button size="sm" variant="ghost" onClick={reload} leftIcon={<RefreshCw className="h-3.5 w-3.5" />}>
+              {i18n("retry", "Réessayer")}
+            </Button>
+          </div>
         )}
 
         {/* List View Table Header */}

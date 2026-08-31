@@ -7206,6 +7206,46 @@ CHANGELOG_BY_LANG.es.unshift({
 });
 
 CHANGELOG_BY_LANG.fr.unshift({
+  version: "v1.15.1",
+  date: "2026-08-31",
+  title: "Gestionnaire de Fichiers : Résilience Hors-Ligne & Mode Local Persistant",
+  items: [
+    "Gestionnaire de fichiers autonome : persistance automatique dans le stockage local pour éviter tout blocage réseau.",
+    "Bannière d'alerte non-bloquante lors de l'indisponibilité du serveur ETHONE avec maintien de l'explorateur actif.",
+    "Création de dossiers, liens et gestion des favoris 100% opérationnelle en mode local et hors-ligne.",
+  ],
+});
+
+CHANGELOG_BY_LANG.en.unshift({
+  version: "v1.15.1",
+  date: "2026-08-31",
+  title: "Files Explorer: Offline Resilience & Persistent Local Storage",
+  items: [
+    "Autonomous file explorer with local storage persistence to prevent network blocking.",
+    "Non-blocking alert banner during remote server timeouts while preserving explorer features.",
+    "Local folder creation, links, and favorites management fully functional offline.",
+  ],
+});
+
+CHANGELOG_BY_LANG.es.unshift({
+  version: "v1.15.1",
+  date: "2026-08-31",
+  title: "Archivos: Resiliencia Fuera de Línea y Modo Local",
+  items: [
+    "Persistencia local de archivos para evitar bloqueos por fallos de conexión al servidor.",
+  ],
+});
+
+CHANGELOG_BY_LANG.de.unshift({
+  version: "v1.15.1",
+  date: "2026-08-31",
+  title: "Dateien: Offline-Resilienz & Lokaler Speicher",
+  items: [
+    "Lokale Dateispeicherung zur Vermeidung von Blockaden bei Serverausfällen.",
+  ],
+});
+
+CHANGELOG_BY_LANG.fr.unshift({
   version: "v1.15.0",
   date: "2026-08-31",
   title: "Intelligence Artificielle : Routage Automatique & Auto-Switching Spécialisé",

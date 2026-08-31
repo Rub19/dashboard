@@ -55,7 +55,13 @@ async function handleRequest(request, env, executionCtx) {
       }
       validateRequestShape(request, url, context.route);
       const edgeRate = await applyEdgeRateLimit(context);
-      if (!context.route.public) context.auth = await authenticateRequest(request, env);
+      if (!context.route.public) {
+        context.auth = await authenticateRequest(request, env);
+      } else if (request.headers.has("authorization")) {
+        try {
+          context.auth = await authenticateRequest(request, env);
+        } catch {}
+      }
       const userRate = await applyUserRateLimit(context);
       const routeResponse = await context.route.handler(context);
       if (routeResponse?.raw === true) {

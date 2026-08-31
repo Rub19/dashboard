@@ -15,7 +15,9 @@ export async function steamRoute({ env, url, route, auth }) {
   const allowed = action === "achievements" ? ["steamId", "appId"] : action === "owned-games" ? ["steamId", "limit"] : action === "recent-games" ? ["steamId", "count"] : ["steamId"];
   assertAllowedQuery(url, allowed);
   const rawIdentifier = queryText(url, "steamId", { pattern: PATTERNS.steamIdentifier, min: 2, max: 100 });
-  const steamId = await cachedLoad(`steam:resolve:${rawIdentifier.toLowerCase()}`, 86400, () => resolveSteamId(env, rawIdentifier, () => ownKey(env, auth))).then((result) => result.data);
+  const steamId = /^\d{17}$/.test(rawIdentifier)
+    ? rawIdentifier
+    : await cachedLoad(`steam:resolve:${rawIdentifier.toLowerCase()}`, 86400, () => resolveSteamId(env, rawIdentifier, () => ownKey(env, auth))).then((result) => result.data);
   let key;
   let ttl;
   let loader;

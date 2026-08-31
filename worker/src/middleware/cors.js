@@ -18,22 +18,20 @@ const HEADERS = Object.freeze([
 
 function isAllowedOrigin(origin, env) {
   if (!origin) return true;
-  try {
-    const url = new URL(origin);
-    const hostname = url.hostname.toLowerCase();
-    if (hostname === "localhost" || hostname === "127.0.0.1" || hostname === "[::1]") return true;
-    if (hostname === "ethone.dev" || hostname.endsWith(".ethone.dev")) return true;
-    if (hostname.endsWith(".pages.dev")) return true;
-    if (hostname.endsWith(".workers.dev")) return true;
-    if (hostname === "rub19.github.io") return true;
-  } catch {
-    return false;
-  }
   const origins = String(env.ALLOWED_ORIGINS || "https://ethone.dev")
     .split(",")
     .map((v) => v.trim())
     .filter(Boolean);
-  return origins.includes(origin);
+  if (origins.includes(origin)) return true;
+  try {
+    const url = new URL(origin);
+    const hostname = url.hostname.toLowerCase();
+    if (hostname === "localhost" || hostname === "127.0.0.1" || hostname === "[::1]") return true;
+    if (hostname.endsWith(".pages.dev") || hostname.endsWith(".workers.dev") || hostname === "rub19.github.io") return true;
+  } catch {
+    return false;
+  }
+  return false;
 }
 
 export function evaluateCors(request, env) {

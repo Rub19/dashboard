@@ -7206,6 +7206,46 @@ CHANGELOG_BY_LANG.es.unshift({
 });
 
 CHANGELOG_BY_LANG.fr.unshift({
+  version: "v1.17.3",
+  date: "2026-08-31",
+  title: "Cloudflare Build Fix & 100% Tests Worker Verts",
+  items: [
+    "Résolution des erreurs de build Cloudflare : support complet des Workspaces monorepo.",
+    "Correction des routes d'authentification Spotify et des règles CORS sur le Cloudflare Worker.",
+    "Passage de l'intégralité de la suite de tests Worker (156/156 tests validés avec succès).",
+  ],
+});
+
+CHANGELOG_BY_LANG.en.unshift({
+  version: "v1.17.3",
+  date: "2026-08-31",
+  title: "Cloudflare Build Fix & 100% Worker Tests Green",
+  items: [
+    "Fixed Cloudflare build pipelines: added monorepo workspace resolution.",
+    "Corrected Spotify OAuth authentication routes and CORS origin validation in Cloudflare Worker.",
+    "All 156/156 Worker test suites passing green.",
+  ],
+});
+
+CHANGELOG_BY_LANG.es.unshift({
+  version: "v1.17.3",
+  date: "2026-08-31",
+  title: "Corrección de Builds Cloudflare y 100% Tests de Worker en Verde",
+  items: [
+    "Resolución de dependencias monorepo y 156/156 tests del Worker validados.",
+  ],
+});
+
+CHANGELOG_BY_LANG.de.unshift({
+  version: "v1.17.3",
+  date: "2026-08-31",
+  title: "Cloudflare Build Fix & 100% Worker Tests Bestanden",
+  items: [
+    "Monorepo Workspace-Auflösung und 156/156 Worker-Tests erfolgreich validiert.",
+  ],
+});
+
+CHANGELOG_BY_LANG.fr.unshift({
   version: "v1.17.2",
   date: "2026-08-31",
   title: "Résilience Hors-Ligne & Disparition des Bannières d'Erreur",

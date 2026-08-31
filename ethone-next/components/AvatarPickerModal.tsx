@@ -562,12 +562,8 @@ export default function AvatarPickerModal({
               {filteredAvatars.map((item) => {
                 const isSelected = selectedUrl === item.url || avatarUrl === item.url;
                 return (
-                  <motion.div
+                  <div
                     key={item.id}
-                    layout
-                    initial={{ opacity: 0, scale: 0.95 }}
-                    animate={{ opacity: 1, scale: 1 }}
-                    transition={{ duration: 0.2 }}
                     onMouseEnter={() => setHoveredAvatar(item)}
                     onMouseLeave={() => setHoveredAvatar(null)}
                     onClick={() => {
@@ -575,7 +571,7 @@ export default function AvatarPickerModal({
                       handleApplyAvatar(item.url);
                     }}
                     className={cn(
-                      "group relative flex flex-col overflow-hidden rounded-2xl border p-2.5 transition-all cursor-pointer",
+                      "group relative flex flex-col overflow-hidden rounded-2xl border p-2.5 transition-all duration-150 cursor-pointer",
                       isSelected
                         ? "border-[var(--accent-primary)] bg-[var(--accent-primary)]/10 shadow-[0_0_24px_rgba(var(--accent-primary-rgb),0.25)] ring-2 ring-[var(--accent-primary)]/50"
                         : "border-white/10 bg-white/[0.02] hover:border-white/25 hover:bg-white/[0.06] hover:shadow-xl hover:-translate-y-0.5"
@@ -635,7 +631,7 @@ export default function AvatarPickerModal({
                         {item.source}
                       </span>
                     </div>
-                  </motion.div>
+                  </div>
                 );
               })}
             </div>

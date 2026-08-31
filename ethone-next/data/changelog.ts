@@ -7206,6 +7206,46 @@ CHANGELOG_BY_LANG.es.unshift({
 });
 
 CHANGELOG_BY_LANG.fr.unshift({
+  version: "v1.20.1",
+  date: "2026-08-31",
+  title: "Fluidité Catégories & Élimination Écran Noir sur Transitions",
+  items: [
+    "Suppression du flash d'écran noir lors du clic sur les catégories des Réglages et navigation entre sous-sections.",
+    "Optimisation de PageTransition avec ciblage de segment racine et transition popLayout ultra-fluide.",
+    "Filtrage instantané sans clignotement ni temps mort dans le Studio d'Avatars.",
+  ],
+});
+
+CHANGELOG_BY_LANG.en.unshift({
+  version: "v1.20.1",
+  date: "2026-08-31",
+  title: "Category Navigation Fluidity & Black Screen Elimination",
+  items: [
+    "Fixed black screen flicker when switching settings categories and navigating sub-sections.",
+    "Optimized PageTransition to key on root segments with seamless popLayout animations.",
+    "Instant lag-free filtering in the Avatar Studio.",
+  ],
+});
+
+CHANGELOG_BY_LANG.es.unshift({
+  version: "v1.20.1",
+  date: "2026-08-31",
+  title: "Fluidez de Navegación y Corrección de Pantalla Negra",
+  items: [
+    "Corrección del parpadeo de pantalla negra al cambiar de categoría en Ajustes.",
+  ],
+});
+
+CHANGELOG_BY_LANG.de.unshift({
+  version: "v1.20.1",
+  date: "2026-08-31",
+  title: "Flüssige Kategorienavigation & Beseitigung des schwarzen Bildschirms",
+  items: [
+    "Behebung des Flackerns beim Wechseln der Kategorien in den Einstellungen.",
+  ],
+});
+
+CHANGELOG_BY_LANG.fr.unshift({
   version: "v1.20.0",
   date: "2026-08-31",
   title: "Vrais Avatars Officiels Netflix, Crunchyroll & Gaming HD",

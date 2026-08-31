@@ -87,35 +87,36 @@ export function useItems(kind: "notes" | "tasks" | "events") {
       const userId = sessionData?.session?.user?.id;
 
       if (userId) {
-        const { data: dbRows, error: dbError } = await supabase
-          .from("ethone_items")
-          .select("*")
-          .eq("user_id", userId)
-          .eq("kind", kind === "notes" ? "note" : kind === "tasks" ? "task" : "event")
-          .order("updated_at", { ascending: false })
-          .catch(() => ({ data: null, error: true }));
+        try {
+          const { data: dbRows, error: dbError } = await supabase
+            .from("ethone_items")
+            .select("*")
+            .eq("user_id", userId)
+            .eq("kind", kind === "notes" ? "note" : kind === "tasks" ? "task" : "event")
+            .order("updated_at", { ascending: false });
 
-        if (!dbError && Array.isArray(dbRows)) {
-          const mapped: Item[] = dbRows.map((row) => ({
-            id: row.id,
-            title: row.title || "Sans titre",
-            body: row.body || "",
-            done: row.done === true,
-            startAt: row.start_at,
-            endAt: row.end_at,
-            data: row.data || {},
-            createdAt: row.created_at,
-            updatedAt: row.updated_at,
-          }));
-          setItems(mapped);
-          setIsOffline(false);
-          setError(null);
-          try {
-            localStorage.setItem(cacheKey, JSON.stringify(mapped));
-          } catch {}
-          setLoading(false);
-          return;
-        }
+          if (!dbError && Array.isArray(dbRows)) {
+            const mapped: Item[] = dbRows.map((row) => ({
+              id: row.id,
+              title: row.title || "Sans titre",
+              body: row.body || "",
+              done: row.done === true,
+              startAt: row.start_at,
+              endAt: row.end_at,
+              data: row.data || {},
+              createdAt: row.created_at,
+              updatedAt: row.updated_at,
+            }));
+            setItems(mapped);
+            setIsOffline(false);
+            setError(null);
+            try {
+              localStorage.setItem(cacheKey, JSON.stringify(mapped));
+            } catch {}
+            setLoading(false);
+            return;
+          }
+        } catch {}
       }
 
       // 2. Fallback to fetchWorker

@@ -191,7 +191,6 @@ const MAP: Record<string, Partial<Record<IconPack, string>>> = {
   "cloud-moon": { lucide: "cloud-moon", phosphor: "cloud-moon", tabler: "cloud-moon", heroicons: "cloud", radix: "moon" },
   "cloud-cog": { lucide: "cloud-cog", phosphor: "gear", tabler: "cloud-cog", heroicons: "cog", radix: "gear" },
   "cloud-sun": { lucide: "cloud-sun", phosphor: "cloud-sun", tabler: "cloud-sun", heroicons: "sun", radix: "sun" },
-  cloudSun: { lucide: "cloud-sun", phosphor: "cloud-sun", tabler: "cloud-sun", heroicons: "sun", radix: "sun" },
   snowflake: { lucide: "snowflake", phosphor: "snowflake", tabler: "snowflake", heroicons: "snowflake", radix: "component-1" },
   wind: { lucide: "wind", phosphor: "wind", tabler: "wind", heroicons: "arrow-path", radix: "dimensions" },
   droplets: { lucide: "droplets", phosphor: "drop", tabler: "droplet", heroicons: "beaker", radix: "drop" },
@@ -240,11 +239,7 @@ const MAP: Record<string, Partial<Record<IconPack, string>>> = {
   waves: { lucide: "waves", phosphor: "waves", tabler: "waves", heroicons: "sparkles", radix: "component-1" },
   clock: { lucide: "clock", phosphor: "clock", tabler: "clock", heroicons: "clock", radix: "counter-clockwise" },
   cpu: { lucide: "cpu", phosphor: "cpu", tabler: "cpu", heroicons: "cpu-chip", radix: "dashboard" },
-  "hard-drive": { lucide: "hard-drive", phosphor: "hard-drive", tabler: "device-floppy", heroicons: "server", radix: "archive" },
   "speaker-high": { lucide: "volume-2", phosphor: "speaker-high", tabler: "volume", heroicons: "speaker-wave", radix: "speaker-loud" },
-  "trash": { lucide: "trash-2", phosphor: "trash", tabler: "trash", heroicons: "trash", radix: "trash" },
-  "arrowsClockwise": { lucide: "refresh-cw", phosphor: "arrows-clockwise", tabler: "refresh", heroicons: "arrow-path", radix: "reload" },
-  "cloudSun": { lucide: "cloud-sun", phosphor: "cloud-sun", tabler: "cloud-sun", heroicons: "sun", radix: "sun" },
 };
 
 export function useIconName(name: string, pack: IconPack = "lucide") {

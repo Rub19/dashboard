@@ -7206,6 +7206,46 @@ CHANGELOG_BY_LANG.es.unshift({
 });
 
 CHANGELOG_BY_LANG.fr.unshift({
+  version: "v1.18.2",
+  date: "2026-08-31",
+  title: "Correction Typage TypeScript & Zéro Vulnérabilité",
+  items: [
+    "Correction des doublons d'icônes dans lib/icons.tsx ayant bloqué le build Cloudflare.",
+    "Résolution du typage de requête Supabase dans useItems.ts.",
+    "Mise à jour des lockfiles npm : 0 vulnérabilité, 0 dépréciation.",
+  ],
+});
+
+CHANGELOG_BY_LANG.en.unshift({
+  version: "v1.18.2",
+  date: "2026-08-31",
+  title: "TypeScript Typecheck Fix & Zero Vulnerabilities",
+  items: [
+    "Fixed duplicate object keys in lib/icons.tsx that caused Cloudflare build failure.",
+    "Fixed Supabase query builder typing in useItems.ts.",
+    "Updated npm lockfiles: 0 vulnerabilities, 0 deprecated warnings.",
+  ],
+});
+
+CHANGELOG_BY_LANG.es.unshift({
+  version: "v1.18.2",
+  date: "2026-08-31",
+  title: "Corrección de TypeScript y Cero Vulnerabilidades",
+  items: [
+    "Corrección de tipos TypeScript y 0 vulnerabilidades en lockfiles.",
+  ],
+});
+
+CHANGELOG_BY_LANG.de.unshift({
+  version: "v1.18.2",
+  date: "2026-08-31",
+  title: "TypeScript-Typkorrektur & Null Sicherheitslücken",
+  items: [
+    "Behebung von TypeScript-Typfehlern und saubere npm Lockfiles.",
+  ],
+});
+
+CHANGELOG_BY_LANG.fr.unshift({
   version: "v1.18.1",
   date: "2026-08-31",
   title: "Mise à Niveau Sécurité & Dépendances Modernes",

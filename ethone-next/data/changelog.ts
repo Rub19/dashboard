@@ -7206,6 +7206,46 @@ CHANGELOG_BY_LANG.es.unshift({
 });
 
 CHANGELOG_BY_LANG.fr.unshift({
+  version: "v1.18.1",
+  date: "2026-08-31",
+  title: "Mise à Niveau Sécurité & Dépendances Modernes",
+  items: [
+    "Mise à niveau de l'environnement d'exécution Node.js 22 LTS (.node-version & .nvmrc).",
+    "Nettoyage des dépendances dépréciées (passage à jsdom 26+ moderne, @types/node 22).",
+    "Sécurisation des pipelines d'installation npm et élimination des avertissements.",
+  ],
+});
+
+CHANGELOG_BY_LANG.en.unshift({
+  version: "v1.18.1",
+  date: "2026-08-31",
+  title: "Security & Modern Runtime Dependencies Upgrade",
+  items: [
+    "Configured Node.js 22 LTS runtime (.node-version & .nvmrc).",
+    "Purged deprecated packages (upgraded to modern jsdom 26+, @types/node 22).",
+    "Hardened npm install pipelines and eliminated legacy warnings.",
+  ],
+});
+
+CHANGELOG_BY_LANG.es.unshift({
+  version: "v1.18.1",
+  date: "2026-08-31",
+  title: "Actualización de Seguridad y Dependencias Modernas",
+  items: [
+    "Actualización a Node.js 22 LTS y modernización de dependencias.",
+  ],
+});
+
+CHANGELOG_BY_LANG.de.unshift({
+  version: "v1.18.1",
+  date: "2026-08-31",
+  title: "Sicherheits-Upgrade & Moderne Abhängigkeiten",
+  items: [
+    "Upgrade auf Node.js 22 LTS und Bereinigung veralteter Pakete.",
+  ],
+});
+
+CHANGELOG_BY_LANG.fr.unshift({
   version: "v1.18.0",
   date: "2026-08-31",
   title: "Synchronisation Instantanée Supabase & Multi-Appareils",

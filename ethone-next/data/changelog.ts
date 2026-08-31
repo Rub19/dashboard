@@ -7206,6 +7206,46 @@ CHANGELOG_BY_LANG.es.unshift({
 });
 
 CHANGELOG_BY_LANG.fr.unshift({
+  version: "v1.14.0",
+  date: "2026-08-31",
+  title: "Perfectionnement Majeur : Filtres Gaming par Map & Agent, Kanban & Diagnostic",
+  items: [
+    "Filtres multi-critères instantanés par Map et par Agent / Champion sur le Tracker Valorant et League of Legends.",
+    "Bascule Vue Liste ↔ Vue Kanban (Prioritaire, À faire, Terminées) sur la gestion des tâches.",
+    "Mode Performance & Économie d'énergie optimisé avec diagnostic dynamique en direct.",
+  ],
+});
+
+CHANGELOG_BY_LANG.en.unshift({
+  version: "v1.14.0",
+  date: "2026-08-31",
+  title: "Major Polish: Gaming Map & Agent Filters, Tasks Kanban & Live Diagnostics",
+  items: [
+    "Instant multi-criteria filtering by Map and Agent / Champion on Valorant and LoL trackers.",
+    "List View ↔ Kanban View switcher (Priority, Todo, Done) on Tasks management.",
+    "Optimized Performance & Battery Saver mode with live dynamic diagnostics.",
+  ],
+});
+
+CHANGELOG_BY_LANG.es.unshift({
+  version: "v1.14.0",
+  date: "2026-08-31",
+  title: "Perfeccionamiento Mayor: Filtros de Juegos, Kanban y Modo Rendimiento",
+  items: [
+    "Filtros por Mapa y Agente/Campeón en el Tracker, vista Kanban en Tareas y modo rendimiento.",
+  ],
+});
+
+CHANGELOG_BY_LANG.de.unshift({
+  version: "v1.14.0",
+  date: "2026-08-31",
+  title: "Großes Update: Gaming-Filter, Aufgaben-Kanban & Leistungsmodus",
+  items: [
+    "Karten- & Champion-Filter für Valorant/LoL Tracker, Kanban-Ansicht für Aufgaben und System-Diagnose.",
+  ],
+});
+
+CHANGELOG_BY_LANG.fr.unshift({
   version: "v1.13.0",
   date: "2026-08-31",
   title: "Mise à Niveau Majeure : Command Palette, Export Notes & Briefing Audio",

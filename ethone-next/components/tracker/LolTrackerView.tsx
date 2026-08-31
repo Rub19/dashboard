@@ -155,7 +155,28 @@ export default function LolTrackerView() {
     fetchMatches(true);
   };
 
-  const dayGroups = useMemo(() => groupLolMatchesByDate(matches), [matches]);
+  const [selectedChampion, setSelectedChampion] = useState<string>("all");
+
+  const availableChampions = useMemo(() => {
+    const set = new Set<string>();
+    matches.forEach((m) => {
+      const me = m.scoreboard?.players?.find((p) => p.isMe) || m.scoreboard?.players?.[0];
+      const champ = me?.championName || m.metadata?.championName;
+      if (champ) set.add(champ);
+    });
+    return Array.from(set);
+  }, [matches]);
+
+  const filteredMatches = useMemo(() => {
+    return matches.filter((m) => {
+      if (selectedChampion === "all") return true;
+      const me = m.scoreboard?.players?.find((p) => p.isMe) || m.scoreboard?.players?.[0];
+      const champ = me?.championName || m.metadata?.championName;
+      return champ === selectedChampion;
+    });
+  }, [matches, selectedChampion]);
+
+  const dayGroups = useMemo(() => groupLolMatchesByDate(filteredMatches), [filteredMatches]);
 
   // Global aggregate stats
   const totalCount = matches.length;
@@ -315,6 +336,42 @@ export default function LolTrackerView() {
             <span className="block mt-1 font-mono text-[10px] text-zinc-500">
               {avgGoldMatch} Gold/Match
             </span>
+          </div>
+        </div>
+      )}
+
+      {/* Quick Champion Filter */}
+      {matches.length > 0 && availableChampions.length > 1 && (
+        <div className="shrink-0 flex flex-wrap items-center gap-2 rounded-2xl border border-white/5 bg-[#0c1017]/60 p-2 backdrop-blur-xl">
+          <span className="text-[10px] font-bold uppercase tracking-wider text-zinc-500 px-2">Champion :</span>
+          <div className="flex items-center gap-1 overflow-x-auto os-scroll">
+            <button
+              type="button"
+              onClick={() => setSelectedChampion("all")}
+              className={cn(
+                "rounded-xl px-2.5 py-1 text-[11px] font-bold transition-all",
+                selectedChampion === "all"
+                  ? "bg-amber-500 text-black font-extrabold shadow-sm"
+                  : "bg-white/5 text-zinc-400 hover:bg-white/10 hover:text-white"
+              )}
+            >
+              Tous Champions
+            </button>
+            {availableChampions.map((champ) => (
+              <button
+                key={champ}
+                type="button"
+                onClick={() => setSelectedChampion(champ)}
+                className={cn(
+                  "rounded-xl px-2.5 py-1 text-[11px] font-bold transition-all",
+                  selectedChampion === champ
+                    ? "bg-amber-500 text-black font-extrabold shadow-sm"
+                    : "bg-white/5 text-zinc-400 hover:bg-white/10 hover:text-white"
+                )}
+              >
+                {champ}
+              </button>
+            ))}
           </div>
         </div>
       )}

@@ -163,7 +163,34 @@ export default function ValorantTrackerView() {
     fetchMatches(true);
   };
 
-  const dayGroups = useMemo(() => groupMatchesByDate(matches), [matches]);
+  const [selectedAgent, setSelectedAgent] = useState<string>("all");
+  const [selectedMap, setSelectedMap] = useState<string>("all");
+
+  const availableAgents = useMemo(() => {
+    const set = new Set<string>();
+    matches.forEach((m) => {
+      if (m.metadata?.agentName) set.add(m.metadata.agentName);
+    });
+    return Array.from(set);
+  }, [matches]);
+
+  const availableMaps = useMemo(() => {
+    const set = new Set<string>();
+    matches.forEach((m) => {
+      if (m.metadata?.mapName) set.add(m.metadata.mapName);
+    });
+    return Array.from(set);
+  }, [matches]);
+
+  const filteredMatches = useMemo(() => {
+    return matches.filter((m) => {
+      if (selectedAgent !== "all" && m.metadata?.agentName !== selectedAgent) return false;
+      if (selectedMap !== "all" && m.metadata?.mapName !== selectedMap) return false;
+      return true;
+    });
+  }, [matches, selectedAgent, selectedMap]);
+
+  const dayGroups = useMemo(() => groupMatchesByDate(filteredMatches), [filteredMatches]);
 
   const totalMatchesCount = matches.length;
   const totalWins = matches.filter(
@@ -315,6 +342,79 @@ export default function ValorantTrackerView() {
               </div>
             )}
           </div>
+        </div>
+      )}
+
+      {/* Quick Agent & Map Filters */}
+      {matches.length > 0 && (availableAgents.length > 1 || availableMaps.length > 1) && (
+        <div className="shrink-0 flex flex-wrap items-center gap-2 rounded-2xl border border-white/5 bg-[#0c0d14]/50 p-2 backdrop-blur-xl">
+          <span className="text-[10px] font-bold uppercase tracking-wider text-zinc-500 px-2">Filtres :</span>
+          
+          {/* Agent Filter */}
+          {availableAgents.length > 1 && (
+            <div className="flex items-center gap-1 overflow-x-auto os-scroll">
+              <button
+                type="button"
+                onClick={() => setSelectedAgent("all")}
+                className={cn(
+                  "rounded-xl px-2.5 py-1 text-[11px] font-bold transition-all",
+                  selectedAgent === "all"
+                    ? "bg-rose-500 text-white shadow-sm"
+                    : "bg-white/5 text-zinc-400 hover:bg-white/10 hover:text-white"
+                )}
+              >
+                Tous Agents
+              </button>
+              {availableAgents.map((agent) => (
+                <button
+                  key={agent}
+                  type="button"
+                  onClick={() => setSelectedAgent(agent)}
+                  className={cn(
+                    "rounded-xl px-2.5 py-1 text-[11px] font-bold transition-all",
+                    selectedAgent === agent
+                      ? "bg-rose-500 text-white shadow-sm"
+                      : "bg-white/5 text-zinc-400 hover:bg-white/10 hover:text-white"
+                  )}
+                >
+                  {agent}
+                </button>
+              ))}
+            </div>
+          )}
+
+          {/* Map Filter */}
+          {availableMaps.length > 1 && (
+            <div className="flex items-center gap-1 border-l border-white/10 pl-2 overflow-x-auto os-scroll">
+              <button
+                type="button"
+                onClick={() => setSelectedMap("all")}
+                className={cn(
+                  "rounded-xl px-2.5 py-1 text-[11px] font-bold transition-all",
+                  selectedMap === "all"
+                    ? "bg-cyan-500 text-black font-extrabold shadow-sm"
+                    : "bg-white/5 text-zinc-400 hover:bg-white/10 hover:text-white"
+                )}
+              >
+                Toutes Maps
+              </button>
+              {availableMaps.map((map) => (
+                <button
+                  key={map}
+                  type="button"
+                  onClick={() => setSelectedMap(map)}
+                  className={cn(
+                    "rounded-xl px-2.5 py-1 text-[11px] font-bold transition-all",
+                    selectedMap === map
+                      ? "bg-cyan-500 text-black font-extrabold shadow-sm"
+                      : "bg-white/5 text-zinc-400 hover:bg-white/10 hover:text-white"
+                  )}
+                >
+                  {map}
+                </button>
+              ))}
+            </div>
+          )}
         </div>
       )}
 

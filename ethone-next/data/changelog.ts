@@ -7206,6 +7206,46 @@ CHANGELOG_BY_LANG.es.unshift({
 });
 
 CHANGELOG_BY_LANG.fr.unshift({
+  version: "v1.18.3",
+  date: "2026-08-31",
+  title: "Synchronisation Parfaite Lockfile & npm ci Cloudflare",
+  items: [
+    "Alignement strict entre package.json et ethone-next/package-lock.json pour npm ci.",
+    "Validation du build Cloudflare Pages avec 0 erreur d'installation.",
+    "Export statique Next.js complet et optimisé.",
+  ],
+});
+
+CHANGELOG_BY_LANG.en.unshift({
+  version: "v1.18.3",
+  date: "2026-08-31",
+  title: "Perfect Lockfile Sync & Cloudflare npm ci Fix",
+  items: [
+    "Strict alignment between package.json and ethone-next/package-lock.json for npm ci.",
+    "Validated Cloudflare Pages clean build with 0 installation errors.",
+    "Full and optimized Next.js static export.",
+  ],
+});
+
+CHANGELOG_BY_LANG.es.unshift({
+  version: "v1.18.3",
+  date: "2026-08-31",
+  title: "Sincronización de Lockfile y Fix de Cloudflare npm ci",
+  items: [
+    "Alineación estricta de lockfile para npm ci en Cloudflare Pages.",
+  ],
+});
+
+CHANGELOG_BY_LANG.de.unshift({
+  version: "v1.18.3",
+  date: "2026-08-31",
+  title: "Perfekte Lockfile-Synchronisation & Cloudflare Fix",
+  items: [
+    "Exakte Lockfile-Ausrichtung für fehlerfreies Cloudflare npm ci.",
+  ],
+});
+
+CHANGELOG_BY_LANG.fr.unshift({
   version: "v1.18.2",
   date: "2026-08-31",
   title: "Correction Typage TypeScript & Zéro Vulnérabilité",

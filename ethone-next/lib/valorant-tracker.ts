@@ -124,10 +124,9 @@ export const VALORANT_QUEUES = [
   { id: "premier", label: "Premier" },
 ];
 
-export function getValorantTierName(tierNumber?: number, fallbackIndex = 0): string {
+export function getValorantTierName(tierNumber?: number): string {
   if (!tierNumber || tierNumber <= 2) {
-    const defaultRanks = ["Platinum II", "Gold III", "Diamond I", "Platinum I", "Silver III", "Gold II", "Diamond II", "Platinum III", "Gold I", "Diamond III"];
-    return defaultRanks[fallbackIndex % defaultRanks.length];
+    return "Unrated";
   }
   const tiers: Record<number, string> = {
     3: "Iron 1", 4: "Iron 2", 5: "Iron 3",
@@ -140,7 +139,7 @@ export function getValorantTierName(tierNumber?: number, fallbackIndex = 0): str
     24: "Immortal 1", 25: "Immortal 2", 26: "Immortal 3",
     27: "Radiant",
   };
-  return tiers[tierNumber] || "Platinum II";
+  return tiers[tierNumber] || "Unrated";
 }
 
 export function getAgentIcon(agentName?: string, fallback?: string): string {
@@ -271,6 +270,126 @@ export function groupMatchesByDate(matches: ValorantMatch[]): ValorantDayGroup[]
   return groups.sort((a, b) => b.rawDate.localeCompare(a.rawDate));
 }
 
+const rankCache = new Map<string, string>();
+
+export async function fetchPlayerRankWithKey(
+  name: string,
+  tag: string,
+  apiKey?: string | null,
+  affinity = "eu"
+): Promise<string> {
+  const cleanName = name.trim();
+  const cleanTag = tag.trim().replace(/^#/, "");
+  if (!cleanName || !cleanTag) return "Unrated";
+
+  const cacheKey = `ethone-valo-mmr:${cleanName.toLowerCase()}:${cleanTag.toLowerCase()}`;
+
+  // 1. In-memory cache
+  if (rankCache.has(cacheKey)) {
+    return rankCache.get(cacheKey)!;
+  }
+
+  // 2. LocalStorage cache (6 hours)
+  if (typeof window !== "undefined") {
+    try {
+      const cached = localStorage.getItem(cacheKey);
+      if (cached) {
+        const parsed = JSON.parse(cached);
+        if (Date.now() - parsed.timestamp < 6 * 60 * 60 * 1000 && parsed.rank) {
+          rankCache.set(cacheKey, parsed.rank);
+          return parsed.rank;
+        }
+      }
+    } catch {}
+  }
+
+  if (!apiKey) return "Unrated";
+
+  try {
+    const headers: Record<string, string> = { Authorization: apiKey };
+    const url = `https://api.henrikdev.xyz/valorant/v2/mmr/${encodeURIComponent(affinity)}/${encodeURIComponent(cleanName)}/${encodeURIComponent(cleanTag)}`;
+    const res = await fetch(url, { headers });
+    if (res.ok) {
+      const json = await res.json();
+      const currentData = json?.data?.current_data;
+      const rank =
+        currentData?.currenttierpatched ||
+        (currentData?.currenttier ? getValorantTierName(currentData.currenttier) : "Unrated");
+
+      if (rank && rank !== "0" && rank.toLowerCase() !== "unrated") {
+        rankCache.set(cacheKey, rank);
+        if (typeof window !== "undefined") {
+          try {
+            localStorage.setItem(cacheKey, JSON.stringify({ rank, timestamp: Date.now() }));
+          } catch {}
+        }
+        return rank;
+      }
+    }
+  } catch {}
+
+  return "Unrated";
+}
+
+export async function enrichMatchesWithRealRanks(
+  matches: ValorantMatch[],
+  apiKey?: string | null
+): Promise<ValorantMatch[]> {
+  if (!apiKey || matches.length === 0) return matches;
+
+  // Extract unique players needing ranks
+  const uniquePlayers = new Map<string, { name: string; tag: string }>();
+  matches.forEach((m) => {
+    (m.scoreboard?.players || []).forEach((p) => {
+      if (!p.currenttier_patched || p.currenttier_patched.toLowerCase() === "unrated") {
+        const key = `${p.name.toLowerCase()}#${p.tag.toLowerCase()}`;
+        if (!uniquePlayers.has(key)) {
+          uniquePlayers.set(key, { name: p.name, tag: p.tag });
+        }
+      }
+    });
+  });
+
+  if (uniquePlayers.size === 0) return matches;
+
+  // Fetch in concurrent batches of 4
+  const playerList = Array.from(uniquePlayers.values());
+  const batchSize = 4;
+  for (let i = 0; i < playerList.length; i += batchSize) {
+    const batch = playerList.slice(i, i + batchSize);
+    await Promise.all(
+      batch.map(async (p) => {
+        const rank = await fetchPlayerRankWithKey(p.name, p.tag, apiKey);
+        if (rank && rank.toLowerCase() !== "unrated") {
+          rankCache.set(`ethone-valo-mmr:${p.name.toLowerCase()}:${p.tag.toLowerCase()}`, rank);
+        }
+      })
+    );
+  }
+
+  // Clone matches with resolved ranks
+  return matches.map((m) => {
+    if (!m.scoreboard?.players) return m;
+    const players = m.scoreboard.players.map((p) => {
+      const cached = rankCache.get(`ethone-valo-mmr:${p.name.toLowerCase()}:${p.tag.toLowerCase()}`);
+      if (cached && cached.toLowerCase() !== "unrated") {
+        return {
+          ...p,
+          currenttier_patched: cached,
+        };
+      }
+      return p;
+    });
+    return {
+      ...m,
+      scoreboard: {
+        ...m.scoreboard,
+        players,
+      },
+    };
+  });
+}
+
 export function convertHenrikMatchToValorantMatch(
   rawMatch: any,
   cleanName: string,
@@ -325,7 +444,7 @@ export function convertHenrikMatchToValorantMatch(
     const rankLabel =
       p.currenttier_patched && p.currenttier_patched.toLowerCase() !== "unrated"
         ? p.currenttier_patched
-        : getValorantTierName(p.currenttier, allPlayers.indexOf(p));
+        : (p.currenttier && p.currenttier > 2 ? getValorantTierName(p.currenttier) : "Unrated");
 
     return {
       name: p.name || "",
@@ -429,7 +548,7 @@ export async function fetchValorantMatchesDirect(
   const json = await res.json();
   const rawMatches: any[] = Array.isArray(json?.data) ? json.data : [];
 
-  const matches = rawMatches
+  let matches = rawMatches
     .map((m) => convertHenrikMatchToValorantMatch(m, cleanName, cleanTag))
     .filter((m): m is ValorantMatch => Boolean(m))
     .filter((m) => {
@@ -452,6 +571,13 @@ export async function fetchValorantMatchesDirect(
       }
       return mMode.includes(mode.toLowerCase());
     });
+
+  // Enrich players with real competitive MMR ranks using the Henrik API key
+  if (apiKey && matches.length > 0) {
+    try {
+      matches = await enrichMatchesWithRealRanks(matches, apiKey);
+    } catch {}
+  }
 
   return matches;
 }

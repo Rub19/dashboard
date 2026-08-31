@@ -7206,6 +7206,48 @@ CHANGELOG_BY_LANG.es.unshift({
 });
 
 CHANGELOG_BY_LANG.fr.unshift({
+  version: "v1.20.2",
+  date: "2026-08-31",
+  title: "Résolution des Rangs Réels Valorant via Clé API HenrikDev",
+  items: [
+    "Suppression définitive des estimations de rangs aléatoires/fictifs dans le Scoreboard des matchs.",
+    "Intégration du module de résolution des véritables rangs compétitifs (MMR) pour chaque joueur via la clé API HenrikDev.",
+    "Ajout d'un panneau de configuration direct de la clé API Henrik dans la vue Valorant avec mise en cache optimisée (6h).",
+    "Calcul dynamique et authentique des rangs moyens d'équipe et de match.",
+  ],
+});
+
+CHANGELOG_BY_LANG.en.unshift({
+  version: "v1.20.2",
+  date: "2026-08-31",
+  title: "Authentic Valorant Player Ranks via HenrikDev API Key",
+  items: [
+    "Eliminated mock/random rank fallbacks in Valorant match scoreboards.",
+    "Added live competitive MMR rank enrichment for all players via HenrikDev API key.",
+    "Added direct Henrik API Key manager in Valorant Tracker view with 6h intelligent caching.",
+    "Accurate dynamic team and lobby average ranks.",
+  ],
+});
+
+CHANGELOG_BY_LANG.es.unshift({
+  version: "v1.20.2",
+  date: "2026-08-31",
+  title: "Rangos Reales de Valorant con Clave API HenrikDev",
+  items: [
+    "Integración de rangos competitivos reales para todos los jugadores mediante clave API.",
+  ],
+});
+
+CHANGELOG_BY_LANG.de.unshift({
+  version: "v1.20.2",
+  date: "2026-08-31",
+  title: "Echte Valorant-Ränge über HenrikDev API-Schlüssel",
+  items: [
+    "Abruf echter MMR-Ränge für alle Spieler über den HenrikDev API-Schlüssel.",
+  ],
+});
+
+CHANGELOG_BY_LANG.fr.unshift({
   version: "v1.20.1",
   date: "2026-08-31",
   title: "Fluidité Catégories & Élimination Écran Noir sur Transitions",

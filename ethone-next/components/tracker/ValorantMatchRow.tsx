@@ -68,6 +68,13 @@ export default function ValorantMatchRow({ match, index }: ValorantMatchRowProps
   const teamAPlayers = players.filter((p) => p.team === "Blue" || p.team === "Team A");
   const teamBPlayers = players.filter((p) => p.team === "Red" || p.team === "Team B");
 
+  const matchAvgRank = (() => {
+    const valid = players
+      .map((p) => p.currenttier_patched)
+      .filter((r): r is string => Boolean(r && r.toLowerCase() !== "unrated" && r.toLowerCase() !== "unranked"));
+    return valid.length > 0 ? (valid[Math.floor(valid.length / 2)] || valid[0]) : "Unranked";
+  })();
+
   return (
     <motion.div
       initial={{ opacity: 0, y: 10 }}
@@ -256,7 +263,7 @@ export default function ValorantMatchRow({ match, index }: ValorantMatchRowProps
                     </span>
                   </div>
                   <p className="text-[11px] text-zinc-500 mt-0.5">
-                    Durée: 8m 24s • Rang Moyen : <strong className="text-cyan-300 font-bold">Platinum II</strong>
+                    Durée: 8m 24s • Rang Moyen : <strong className="text-cyan-300 font-bold">{matchAvgRank}</strong>
                   </p>
                 </div>
               </div>
@@ -311,7 +318,10 @@ export default function ValorantMatchRow({ match, index }: ValorantMatchRowProps
                     headerBg: "bg-rose-950/20 text-rose-400",
                   },
                 ].map((teamGroup, gi) => {
-                  const avgRank = teamGroup.players[0]?.currenttier_patched || (teamGroup.isTeamA ? "Ascendant II" : "Diamond III");
+                  const rankedGroup = teamGroup.players
+                    .map((p) => p.currenttier_patched)
+                    .filter((r): r is string => Boolean(r && r.toLowerCase() !== "unrated" && r.toLowerCase() !== "unranked"));
+                  const avgRank = rankedGroup.length > 0 ? (rankedGroup[Math.floor(rankedGroup.length / 2)] || rankedGroup[0]) : "Unranked";
 
                   return (
                     <div key={gi} className="space-y-1.5 min-w-[800px]">

@@ -15,7 +15,10 @@ import {
   Clock,
   ChevronRight,
   User,
+  Key,
 } from "lucide-react";
+import Modal from "@/components/ui/Modal";
+import Button from "@/components/ui/Button";
 import { useSettings } from "@/components/SettingsProvider";
 import { useToast } from "@/components/ToastProvider";
 import { fetchWorker } from "@/lib/api";
@@ -235,6 +238,36 @@ export default function ValorantTrackerView() {
     return Math.round(sum / matches.length);
   }, [matches]);
 
+  const [apiKeyModalOpen, setApiKeyModalOpen] = useState(false);
+  const [apiKeyInput, setApiKeyInput] = useState(() => {
+    if (typeof window === "undefined") return "";
+    return (
+      localStorage.getItem("ethone:cred:riot:henrikApiKey") ||
+      localStorage.getItem("ethone:cred:riot:apiKey") ||
+      localStorage.getItem("HENRIK_API_KEY") ||
+      ""
+    );
+  });
+
+  const hasApiKey = Boolean(apiKeyInput.trim());
+
+  const handleSaveApiKey = (e: React.FormEvent) => {
+    e.preventDefault();
+    const cleanKey = apiKeyInput.trim();
+    if (typeof window !== "undefined") {
+      if (cleanKey) {
+        localStorage.setItem("ethone:cred:riot:henrikApiKey", cleanKey);
+        localStorage.setItem("ethone:cred:riot:apiKey", cleanKey);
+      } else {
+        localStorage.removeItem("ethone:cred:riot:henrikApiKey");
+        localStorage.removeItem("ethone:cred:riot:apiKey");
+      }
+    }
+    setApiKeyModalOpen(false);
+    success(cleanKey ? "Clé API Henrik enregistrée · Rangs réels activés" : "Clé API retirée");
+    fetchMatches(true);
+  };
+
   return (
     <div className="flex h-full min-h-0 w-full flex-col overflow-hidden space-y-4">
       {/* Top Search & Filter Bar */}
@@ -248,7 +281,7 @@ export default function ValorantTrackerView() {
                 type="text"
                 value={riotName}
                 onChange={(e) => setRiotName(e.target.value)}
-                placeholder="Nom Riot (ex: TenZ)"
+                placeholder="Nom Riot (ex: Rub19)"
                 className="w-full bg-transparent text-xs font-bold text-white placeholder-zinc-500 outline-none"
               />
             </div>
@@ -259,7 +292,7 @@ export default function ValorantTrackerView() {
                 type="text"
                 value={riotTag}
                 onChange={(e) => setRiotTag(e.target.value)}
-                placeholder="TAG (ex: 0001)"
+                placeholder="TAG (ex: boss)"
                 className="w-full bg-transparent font-mono text-xs font-bold text-white placeholder-zinc-500 outline-none"
               />
             </div>
@@ -282,10 +315,26 @@ export default function ValorantTrackerView() {
             </button>
           </div>
 
-          {/* Sync & Cache Indicator */}
-          <div className="flex items-center justify-between lg:justify-end gap-3 shrink-0">
+          {/* Sync & API Key Controls */}
+          <div className="flex items-center justify-between lg:justify-end gap-2.5 shrink-0">
+            {/* Henrik API Key Button */}
+            <button
+              type="button"
+              onClick={() => setApiKeyModalOpen(true)}
+              className={cn(
+                "flex items-center gap-1.5 rounded-xl border px-3 py-1.5 text-xs font-bold transition-all cursor-pointer",
+                hasApiKey
+                  ? "border-emerald-500/30 bg-emerald-500/10 text-emerald-300 hover:bg-emerald-500/20"
+                  : "border-amber-500/30 bg-amber-500/10 text-amber-300 hover:bg-amber-500/20"
+              )}
+              title="Configurer la clé API Henrik pour récupérer les rangs réels des joueurs"
+            >
+              <span className={cn("h-2 w-2 rounded-full", hasApiKey ? "bg-emerald-400 shadow-[0_0_8px_rgba(52,211,153,0.8)]" : "bg-amber-400 animate-pulse")} />
+              <span>{hasApiKey ? "Clé API Active" : "Clé API (Rangs Réels)"}</span>
+            </button>
+
             {lastSyncTime && (
-              <div className="flex items-center gap-1 text-[11px] text-zinc-400 font-medium">
+              <div className="hidden sm:flex items-center gap-1 text-[11px] text-zinc-400 font-medium">
                 <Clock className="h-3 w-3 text-zinc-500" />
                 <span>Mis en cache ({lastSyncTime.toLocaleTimeString([], { hour: "2-digit", minute: "2-digit" })})</span>
               </div>
@@ -481,6 +530,64 @@ export default function ValorantTrackerView() {
           previousGroup={dayGroups[activeReportIndex + 1] || null}
         />
       )}
+
+      {/* Henrik API Key Modal */}
+      <Modal
+        isOpen={apiKeyModalOpen}
+        onClose={() => setApiKeyModalOpen(false)}
+        title="Clé API HenrikDev (Rangs Valorant Réels)"
+        description="Configurez votre clé API Henrik pour récupérer les véritables rangs compétitifs (MMR) de tous les joueurs de vos parties sans estimation."
+        size="md"
+        hideFooter
+      >
+        <form onSubmit={handleSaveApiKey} className="space-y-4">
+          <div className="space-y-1.5">
+            <label className="block text-xs font-bold text-zinc-300">
+              Clé API Henrik (Authorization)
+            </label>
+            <div className="flex items-center gap-2 rounded-xl border border-white/15 bg-black/60 px-3 py-2 text-xs">
+              <Key className="h-4 w-4 text-amber-400 shrink-0" />
+              <input
+                type="text"
+                value={apiKeyInput}
+                onChange={(e) => setApiKeyInput(e.target.value)}
+                placeholder="ex: HDEV-xxxxxxxx-xxxx-xxxx-xxxx-xxxxxxxxxxxx"
+                className="w-full bg-transparent font-mono text-xs text-white placeholder-zinc-500 outline-none"
+              />
+            </div>
+            <p className="text-[11px] text-zinc-400 leading-relaxed mt-1">
+              Obtenez une clé API gratuite en 10 secondes sur{" "}
+              <a
+                href="https://henrikdev.xyz"
+                target="_blank"
+                rel="noreferrer"
+                className="text-cyan-400 underline hover:text-cyan-300 font-medium"
+              >
+                henrikdev.xyz
+              </a>{" "}
+              (permet jusqu&apos;à 30 requêtes/min pour charger le rang exact de chaque joueur de vos lobbies).
+            </p>
+          </div>
+
+          <div className="flex items-center justify-end gap-2 pt-2 border-t border-white/10">
+            <Button
+              type="button"
+              variant="secondary"
+              size="sm"
+              onClick={() => setApiKeyModalOpen(false)}
+            >
+              Annuler
+            </Button>
+            <Button
+              type="submit"
+              variant="primary"
+              size="sm"
+            >
+              Enregistrer et Synchroniser
+            </Button>
+          </div>
+        </form>
+      </Modal>
     </div>
   );
 }

@@ -7206,6 +7206,46 @@ CHANGELOG_BY_LANG.es.unshift({
 });
 
 CHANGELOG_BY_LANG.fr.unshift({
+  version: "v1.18.0",
+  date: "2026-08-31",
+  title: "Synchronisation Instantanée Supabase & Multi-Appareils",
+  items: [
+    "Enregistrement instantané dans le cloud Supabase avec latence d'affichage 0ms.",
+    "Canal Realtime Supabase & Broadcast multi-onglets : synchronisation en direct entre PC, Mac, tablettes et mobiles.",
+    "Persistance automatique et continue des Notes, Tâches, Espaces et Réglages.",
+  ],
+});
+
+CHANGELOG_BY_LANG.en.unshift({
+  version: "v1.18.0",
+  date: "2026-08-31",
+  title: "Instant Supabase Cloud Sync & Real-Time Multi-Device Access",
+  items: [
+    "Instant cloud writes to Supabase database with 0ms UI latency.",
+    "Supabase Realtime live subscriptions & BroadcastChannel across tabs and devices.",
+    "Continuous automated persistence of Notes, Tasks, Spaces, and Settings.",
+  ],
+});
+
+CHANGELOG_BY_LANG.es.unshift({
+  version: "v1.18.0",
+  date: "2026-08-31",
+  title: "Sincronización Instantánea Supabase y Acceso Multi-Dispositivo",
+  items: [
+    "Guardado instantáneo en Supabase y sincronización en tiempo real entre dispositivos.",
+  ],
+});
+
+CHANGELOG_BY_LANG.de.unshift({
+  version: "v1.18.0",
+  date: "2026-08-31",
+  title: "Sofortige Supabase-Synchronisation & Multi-Geräte-Echtzeit",
+  items: [
+    "Sofortige Supabase-Speicherung und Echtzeit-Synchronisation auf allen Geräten.",
+  ],
+});
+
+CHANGELOG_BY_LANG.fr.unshift({
   version: "v1.17.3",
   date: "2026-08-31",
   title: "Cloudflare Build Fix & 100% Tests Worker Verts",

@@ -7206,6 +7206,48 @@ CHANGELOG_BY_LANG.es.unshift({
 });
 
 CHANGELOG_BY_LANG.fr.unshift({
+  version: "v1.16.0",
+  date: "2026-08-31",
+  title: "Système d'Icônes Haute Définition & Audit Visuel Global",
+  items: [
+    "Audit exhaustif des 280 icônes de l'application avec passage en rendu vectoriel SVG natif haute fidélité.",
+    "Enrichissement du registre Lucide pour éliminer les polices web tierces au profit de tracés géométriques nets.",
+    "Refonte du logo et monogramme BrandMark d'ETHONE OS avec dégradé néon, lueur diffuse et reflets de verre.",
+    "Harmonisation de la barre latérale et du Dock avec des tracés d'icônes homogènes et modernes.",
+  ],
+});
+
+CHANGELOG_BY_LANG.en.unshift({
+  version: "v1.16.0",
+  date: "2026-08-31",
+  title: "High-Definition Icon System & Global Visual Audit",
+  items: [
+    "Comprehensive audit of all 280 app icons with native high-fidelity SVG vector rendering.",
+    "Expanded Lucide icon map to ensure razor-sharp geometric strokes across all views.",
+    "BrandMark and ETHONE OS monogram redesign with neon gradient, ambient glow, and glass highlights.",
+    "Refined Sidebar and Dock with unified modern icon strokes.",
+  ],
+});
+
+CHANGELOG_BY_LANG.es.unshift({
+  version: "v1.16.0",
+  date: "2026-08-31",
+  title: "Sistema de Iconos de Alta Definición y Auditoría Visual",
+  items: [
+    "Auditoría completa de iconos con renderizado vectorial nativo de máxima calidad.",
+  ],
+});
+
+CHANGELOG_BY_LANG.de.unshift({
+  version: "v1.16.0",
+  date: "2026-08-31",
+  title: "High-Definition Icon-System & Visuelles Audit",
+  items: [
+    "Umfassendes Icon-Audit mit nativer hochauflösender Vektorgrafik.",
+  ],
+});
+
+CHANGELOG_BY_LANG.fr.unshift({
   version: "v1.15.2",
   date: "2026-08-31",
   title: "Météo & UI : Badge de Mise à Jour Raffiné & Scrollbars Ultra-Fines",

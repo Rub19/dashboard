@@ -6,7 +6,7 @@ import { cloneElement, memo, useMemo, useRef, useCallback } from "react";
 import { usePathname, useRouter } from "next/navigation";
 import {
   Home,
-  BookOpen,
+  NotebookPen,
   CheckCircle2,
   CalendarDays,
   Folder,
@@ -16,7 +16,7 @@ import {
   CloudSun,
   Activity,
   Plug,
-  Boxes,
+  Blocks,
   BarChart3,
   Settings,
   PanelLeftClose,
@@ -65,7 +65,7 @@ const SHORTCUTS: Record<string, string> = {
 
 const APPS: AppItem[] = [
   { id: "home", href: "/", icon: Home },
-  { id: "notes", href: "/notes/", icon: BookOpen },
+  { id: "notes", href: "/notes/", icon: NotebookPen },
   { id: "tasks", href: "/tasks/", icon: CheckCircle2 },
   { id: "calendar", href: "/calendar/", icon: CalendarDays },
   { id: "files", href: "/files/", icon: Folder },
@@ -75,7 +75,7 @@ const APPS: AppItem[] = [
   { id: "weather", href: "/weather/", icon: CloudSun },
   { id: "activity", href: "/activity/", icon: Activity },
   { id: "connections", href: "/connections/", icon: Plug },
-  { id: "plugins", href: "/plugins/", icon: Boxes },
+  { id: "plugins", href: "/plugins/", icon: Blocks },
   { id: "admin", href: "/admin/", icon: BarChart3 },
   { id: "settings", href: "/settings/", icon: Settings },
 ];

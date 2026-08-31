@@ -7206,6 +7206,48 @@ CHANGELOG_BY_LANG.es.unshift({
 });
 
 CHANGELOG_BY_LANG.fr.unshift({
+  version: "v1.19.0",
+  date: "2026-08-31",
+  title: "Refonte Complète du Studio Avatars & Profils HD",
+  items: [
+    "Refonte esthétique intégrale de la Galerie d'Avatars de Profil en design Glassmorphism ultra-luxe.",
+    "Aperçu du profil en direct (Live Profile Preview) avec nom d'utilisateur et retour visuel immédiat.",
+    "Grille d'avatars enrichie : Netflix (Arcane, Squid Game, Edgerunners...), Crunchyroll (JJK, Solo Leveling, Demon Slayer...), Gaming & 3D Memojis.",
+    "Importation fluide par URL et par fichier local avec confirmation instantanée.",
+  ],
+});
+
+CHANGELOG_BY_LANG.en.unshift({
+  version: "v1.19.0",
+  date: "2026-08-31",
+  title: "Complete Studio Avatar & HD Profiles Rework",
+  items: [
+    "Full aesthetic overhaul of the Profile Avatar Gallery into a luxury Glassmorphic studio.",
+    "Live Profile Preview with real-time avatar switching and instant visual feedback.",
+    "Expanded curated collection: Netflix Originals, Crunchyroll & Major Anime, Gaming & 3D Memojis.",
+    "Streamlined image URL and local device upload with instant persistence.",
+  ],
+});
+
+CHANGELOG_BY_LANG.es.unshift({
+  version: "v1.19.0",
+  date: "2026-08-31",
+  title: "Rediseño Completo del Estudio de Avatares y Perfiles HD",
+  items: [
+    "Galería de avatares rediseñada con estilo premium, vista previa en vivo y avatares de anime y series.",
+  ],
+});
+
+CHANGELOG_BY_LANG.de.unshift({
+  version: "v1.19.0",
+  date: "2026-08-31",
+  title: "Komplettes Redesign des Avatar-Studios & HD-Profile",
+  items: [
+    "Komplettes Redesign der Avatar-Galerie mit Live-Vorschau und Premium-Avataren.",
+  ],
+});
+
+CHANGELOG_BY_LANG.fr.unshift({
   version: "v1.18.3",
   date: "2026-08-31",
   title: "Synchronisation Parfaite Lockfile & npm ci Cloudflare",

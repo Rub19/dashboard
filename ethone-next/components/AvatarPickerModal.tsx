@@ -442,14 +442,22 @@ export default function AvatarPickerModal({
     setApplying(true);
     try {
       localStorage.setItem("ethone_custom_avatar", urlToApply);
+      localStorage.setItem("ethone:custom:avatar", urlToApply);
       localStorage.setItem("ethone_user_avatar", urlToApply);
       await save({ avatar_url: urlToApply });
+      if (typeof window !== "undefined") {
+        window.dispatchEvent(new CustomEvent("ethone:identity:update", { detail: { avatar_url: urlToApply } }));
+      }
       if (onSelect) onSelect(urlToApply);
       success(i18n("avatarUpdated", "Photo de profil mise à jour instantanément !"));
       onClose();
     } catch {
       localStorage.setItem("ethone_custom_avatar", urlToApply);
+      localStorage.setItem("ethone:custom:avatar", urlToApply);
       localStorage.setItem("ethone_user_avatar", urlToApply);
+      if (typeof window !== "undefined") {
+        window.dispatchEvent(new CustomEvent("ethone:identity:update", { detail: { avatar_url: urlToApply } }));
+      }
       if (onSelect) onSelect(urlToApply);
       success(i18n("avatarUpdated", "Photo de profil appliquée en local"));
       onClose();

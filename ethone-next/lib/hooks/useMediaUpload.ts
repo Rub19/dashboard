@@ -13,11 +13,6 @@ export function useMediaUpload(ownerId?: string) {
   }
 
   async function upload(file: File, kind: "avatar" | "banner" = "avatar") {
-    if (!ownerId) {
-      const res = { ok: false, status: "unavailable", message: "Profil non authentifié.", data: null } as MediaUploadResult;
-      setResult(res);
-      return res;
-    }
     setUploading(true);
     setResult(null);
     const res = await uploadProfileMedia({ file, kind, ownerId });

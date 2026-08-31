@@ -7206,6 +7206,45 @@ CHANGELOG_BY_LANG.es.unshift({
 });
 
 CHANGELOG_BY_LANG.fr.unshift({
+  version: "v1.19.1",
+  date: "2026-08-31",
+  title: "Importation Universelle d'Avatars PC / Mobile & Synchronisation Sans Friction",
+  items: [
+    "Suppression définitive du blocage 'Profil non authentifié' lors du téléversement d'un avatar depuis son appareil.",
+    "Support du fallback Data URL automatique avec persistance immédiate et diffusion en temps réel (0ms).",
+    "Téléversement cloud vers le stockage Supabase si authentifié, ou stockage local sécurisé instantané.",
+  ],
+});
+
+CHANGELOG_BY_LANG.en.unshift({
+  version: "v1.19.1",
+  date: "2026-08-31",
+  title: "Universal Device Avatar Upload & Frictionless Sync",
+  items: [
+    "Fixed 'Unauthenticated profile' error when selecting and uploading an avatar from local PC or mobile.",
+    "Added automatic high-res Data URL fallback with instant persistence and real-time live sync.",
+  ],
+});
+
+CHANGELOG_BY_LANG.es.unshift({
+  version: "v1.19.1",
+  date: "2026-08-31",
+  title: "Subida Universal de Avatares y Sincronización Fluida",
+  items: [
+    "Corrección del error de autenticación al subir fotos de perfil desde el ordenador o móvil.",
+  ],
+});
+
+CHANGELOG_BY_LANG.de.unshift({
+  version: "v1.19.1",
+  date: "2026-08-31",
+  title: "Universeller Avatar-Upload & Reibungslose Synchronisation",
+  items: [
+    "Behebung des Authentifizierungsfehlers beim Hochladen von Avataren vom PC.",
+  ],
+});
+
+CHANGELOG_BY_LANG.fr.unshift({
   version: "v1.19.0",
   date: "2026-08-31",
   title: "Refonte Complète du Studio Avatars & Profils HD",

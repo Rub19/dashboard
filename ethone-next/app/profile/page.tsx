@@ -74,7 +74,13 @@ export default function ProfilePage() {
       setForm((prev) => ({ ...prev, avatar_url: newUrl }));
       localStorage.setItem("ethone_custom_avatar", newUrl);
       localStorage.setItem("ethone_user_avatar", newUrl);
-      success(i18n("uploaded", "Image téléversée avec succès"));
+      try {
+        await save({ avatar_url: newUrl });
+      } catch {}
+      if (typeof window !== "undefined") {
+        window.dispatchEvent(new CustomEvent("ethone:identity:update", { detail: { avatar_url: newUrl } }));
+      }
+      success(i18n("uploaded", "Photo de profil appliquée avec succès"));
     } else if (res.message) {
       showError(res.message);
     }

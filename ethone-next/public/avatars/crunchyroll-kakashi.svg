@@ -1,0 +1,17 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 500 500">
+  <rect width="500" height="500" rx="40" fill="#2B2D42"/>
+  <!-- Silver Spiky Gravity-Defying Hair -->
+  <path d="M 130 220 L 70 140 L 150 110 L 180 30 L 260 70 L 340 30 L 370 110 L 440 140 L 380 230 Z" fill="#CED4DA"/>
+  <path d="M 170 210 C 170 160, 330 160, 330 210 C 330 285, 290 340, 250 340 C 210 340, 170 285, 170 210 Z" fill="#FCEADE"/>
+  <!-- Leaf Village Forehead Protector tilted over left eye -->
+  <polygon points="140,165 360,185 355,235 135,215" fill="#141414"/>
+  <rect x="190" y="180" width="120" height="40" rx="6" fill="#ADB5BD" stroke="#495057" stroke-width="3"/>
+  <circle cx="250" cy="200" r="12" fill="none" stroke="#212529" stroke-width="4"/>
+  <!-- Left Eye: Red Sharingan visible peeking -->
+  <ellipse cx="220" cy="245" rx="14" ry="10" fill="#D90429"/>
+  <circle cx="220" cy="245" r="4" fill="#000000"/>
+  <!-- Right Eye: Relaxed calm black eye -->
+  <path d="M 270 245 Q 285 240 300 245" stroke="#141414" stroke-width="4" fill="none"/>
+  <!-- Dark Blue Mask covering lower face -->
+  <path d="M 160 260 L 340 260 L 330 360 L 170 360 Z" fill="#1D2D44"/>
+</svg>

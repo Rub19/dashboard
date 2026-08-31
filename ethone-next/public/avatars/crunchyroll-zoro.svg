@@ -1,0 +1,15 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 500 500">
+  <rect width="500" height="500" rx="40" fill="#081C15"/>
+  <!-- Dark Green Bandana / Hair -->
+  <path d="M 130 200 C 130 110, 370 110, 370 200 C 370 290, 330 340, 250 340 C 170 340, 130 290, 130 200 Z" fill="#1B4332"/>
+  <path d="M 175 210 C 175 160, 325 160, 325 210 C 325 285, 290 340, 250 340 C 210 340, 175 285, 175 210 Z" fill="#FCEADE"/>
+  <!-- Black Pirate Bandana tied around head -->
+  <polygon points="140,170 360,170 360,225 140,225" fill="#0B090A"/>
+  <!-- Piercing Sharp Grey Eye & Scar across left eye -->
+  <ellipse cx="215" cy="245" rx="14" ry="9" fill="#52B788"/>
+  <circle cx="215" cy="245" r="4" fill="#FFFFFF"/>
+  <!-- Left Eye Closed with Slash Scar -->
+  <line x1="285" y1="225" x2="285" y2="265" stroke="#740001" stroke-width="5"/>
+  <!-- Katana in Mouth -->
+  <rect x="120" y="285" width="260" height="14" rx="3" fill="#D8F3DC" stroke="#2D6A4F" stroke-width="4"/>
+</svg>

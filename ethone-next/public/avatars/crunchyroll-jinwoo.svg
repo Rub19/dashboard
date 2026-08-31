@@ -1,0 +1,22 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 500 500">
+  <defs>
+    <linearGradient id="jinwoo-bg" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" stop-color="#0B001A"/>
+      <stop offset="60%" stop-color="#240046"/>
+      <stop offset="100%" stop-color="#7B2CBF"/>
+    </linearGradient>
+  </defs>
+  <rect width="500" height="500" rx="40" fill="url(#jinwoo-bg)"/>
+  <!-- Jet Black Sleek Hair & Shadows -->
+  <path d="M 120 220 C 130 90, 370 90, 380 220 C 370 300, 330 350, 330 350 L 170 350 C 170 350, 130 300, 120 220 Z" fill="#0F1016"/>
+  <path d="M 175 210 C 185 150, 315 150, 325 210 C 325 285, 290 340, 250 340 C 210 340, 175 285, 175 210 Z" fill="#E2E8F0"/>
+  <!-- Sharp Korean Webtoon Hair Bangs -->
+  <polygon points="160,170 220,240 240,160 280,240 340,180 290,140 200,140" fill="#0F1016"/>
+  <!-- Glowing Monarch Purple Neon Eyes -->
+  <ellipse cx="215" cy="235" rx="18" ry="8" fill="#C77DFF"/>
+  <ellipse cx="215" cy="235" rx="8" ry="4" fill="#FFFFFF"/>
+  <ellipse cx="285" cy="235" rx="18" ry="8" fill="#C77DFF"/>
+  <ellipse cx="285" cy="235" rx="8" ry="4" fill="#FFFFFF"/>
+  <!-- Shadow Mist / Monarch Aura -->
+  <path d="M 100 500 C 150 420, 200 460, 250 430 C 300 460, 350 420, 400 500 Z" fill="#5A189A" opacity="0.8"/>
+</svg>

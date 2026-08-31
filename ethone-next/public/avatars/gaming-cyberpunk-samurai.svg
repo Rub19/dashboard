@@ -1,0 +1,13 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 500 500">
+  <rect width="500" height="500" rx="40" fill="#FEE440"/>
+  <!-- Cyberpunk Samurai Oni Demon Head -->
+  <polygon points="250,90 350,180 330,340 250,420 170,340 150,180" fill="#141414" stroke="#D90429" stroke-width="12"/>
+  <!-- Demon Horns & Glowing Cyan Eyes -->
+  <polygon points="190,140 140,70 180,180" fill="#D90429"/>
+  <polygon points="310,140 360,70 320,180" fill="#D90429"/>
+  <polygon points="190,240 235,250 225,270 185,260" fill="#00F0FF"/>
+  <polygon points="310,240 265,250 275,270 315,260" fill="#00F0FF"/>
+  <!-- Cyber Fangs -->
+  <polygon points="200,320 220,370 240,320" fill="#FFFFFF"/>
+  <polygon points="300,320 280,370 260,320" fill="#FFFFFF"/>
+</svg>

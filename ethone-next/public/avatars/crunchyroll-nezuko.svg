@@ -1,0 +1,17 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 500 500">
+  <rect width="500" height="500" rx="40" fill="#FFCCD5"/>
+  <!-- Long Black Hair with Orange Flame Tips -->
+  <path d="M 120 180 C 120 70, 380 70, 380 180 C 390 320, 420 460, 430 500 L 70 500 C 80 460, 110 320, 120 180 Z" fill="#1A181B"/>
+  <path d="M 170 200 C 170 140, 330 140, 330 200 C 330 290, 290 340, 250 340 C 210 340, 170 290, 170 200 Z" fill="#FFF0F3"/>
+  <!-- Soft Pink Demon Eyes -->
+  <ellipse cx="210" cy="230" rx="18" ry="14" fill="#FF758F"/>
+  <ellipse cx="210" cy="230" rx="6" ry="12" fill="#590D22"/>
+  <ellipse cx="290" cy="230" rx="18" ry="14" fill="#FF758F"/>
+  <ellipse cx="290" cy="230" rx="6" ry="12" fill="#590D22"/>
+  <!-- Bamboo Muzzle with Red Ribbon -->
+  <rect x="190" y="270" width="120" height="34" rx="12" fill="#588157" stroke="#3A5A40" stroke-width="4"/>
+  <line x1="100" y1="287" x2="190" y2="287" stroke="#E63946" stroke-width="6"/>
+  <line x1="310" y1="287" x2="400" y2="287" stroke="#E63946" stroke-width="6"/>
+  <!-- Pink Kimono Pattern -->
+  <path d="M 120 380 L 250 360 L 380 380 L 410 500 L 90 500 Z" fill="#FFB3C1"/>
+</svg>

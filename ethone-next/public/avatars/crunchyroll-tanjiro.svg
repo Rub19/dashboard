@@ -1,0 +1,27 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 500 500">
+  <defs>
+    <linearGradient id="tanjiro-bg" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" stop-color="#004B49"/>
+      <stop offset="100%" stop-color="#000000"/>
+    </linearGradient>
+  </defs>
+  <rect width="500" height="500" rx="40" fill="url(#tanjiro-bg)"/>
+  <!-- Green and Black Checkered Pattern Collar -->
+  <rect x="120" y="380" width="65" height="60" fill="#00A896"/>
+  <rect x="185" y="380" width="65" height="60" fill="#141414"/>
+  <rect x="250" y="380" width="65" height="60" fill="#00A896"/>
+  <rect x="315" y="380" width="65" height="60" fill="#141414"/>
+  <!-- Burgundy Back-swept Hair -->
+  <path d="M 130 200 C 130 90, 370 90, 370 200 C 370 300, 330 350, 250 350 C 170 350, 130 300, 130 200 Z" fill="#5E0B15"/>
+  <path d="M 175 210 C 175 160, 325 160, 325 210 C 325 285, 290 340, 250 340 C 210 340, 175 285, 175 210 Z" fill="#FCEADE"/>
+  <!-- Forehead Flame Scar -->
+  <path d="M 190 180 Q 210 190 200 215 Q 185 200 190 180 Z" fill="#8B0000"/>
+  <!-- Burgundy Eyes -->
+  <ellipse cx="215" cy="245" rx="16" ry="12" fill="#780000"/>
+  <circle cx="215" cy="245" r="5" fill="#FFFFFF"/>
+  <ellipse cx="285" cy="245" rx="16" ry="12" fill="#780000"/>
+  <circle cx="285" cy="245" r="5" fill="#FFFFFF"/>
+  <!-- Hanafuda Earring -->
+  <rect x="155" y="270" width="22" height="40" rx="3" fill="#FFFFFF" stroke="#000000" stroke-width="2"/>
+  <circle cx="166" cy="285" r="6" fill="#E63946"/>
+</svg>

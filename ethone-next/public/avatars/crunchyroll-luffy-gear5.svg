@@ -1,0 +1,21 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 500 500">
+  <defs>
+    <linearGradient id="nika-bg" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" stop-color="#E0AAFF"/>
+      <stop offset="50%" stop-color="#C77DFF"/>
+      <stop offset="100%" stop-color="#5A189A"/>
+    </linearGradient>
+  </defs>
+  <rect width="500" height="500" rx="40" fill="url(#nika-bg)"/>
+  <!-- Fluffy Cloud White Hair Gear 5 -->
+  <path d="M 120 220 C 80 160, 110 70, 200 60 C 250 30, 320 40, 360 90 C 420 120, 420 220, 380 260 C 400 340, 340 380, 290 360 C 230 380, 160 360, 130 310 C 90 280, 90 240, 120 220 Z" fill="#FFFFFF"/>
+  <path d="M 180 220 C 180 165, 320 165, 320 220 C 320 290, 285 330, 250 330 C 215 330, 180 290, 180 220 Z" fill="#FCEADE"/>
+  <!-- Iconic Looney Giant Joyful Smile -->
+  <path d="M 195 260 C 210 315, 290 315, 305 260 Z" fill="#D90429" stroke="#141414" stroke-width="4"/>
+  <path d="M 205 265 C 215 285, 285 285, 295 265 Z" fill="#FFFFFF"/>
+  <!-- Ruby Red Spiral Eyes -->
+  <circle cx="220" cy="225" r="14" fill="#D90429"/>
+  <circle cx="220" cy="225" r="5" fill="#FFC300"/>
+  <circle cx="280" cy="225" r="14" fill="#D90429"/>
+  <circle cx="280" cy="225" r="5" fill="#FFC300"/>
+</svg>

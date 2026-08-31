@@ -1,0 +1,23 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 500 500">
+  <defs>
+    <linearGradient id="csm-bg" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" stop-color="#FF5400"/>
+      <stop offset="100%" stop-color="#1B1B1E"/>
+    </linearGradient>
+  </defs>
+  <rect width="500" height="500" rx="40" fill="url(#csm-bg)"/>
+  <!-- Chainsaw Helmet Head -->
+  <path d="M 180 200 L 250 140 L 320 200 L 310 320 L 190 320 Z" fill="#D00000" stroke="#9D0208" stroke-width="6"/>
+  <!-- Long Metallic Chainsaw Blade protruding -->
+  <rect x="235" y="50" width="30" height="220" rx="4" fill="#DEE2E6" stroke="#495057" stroke-width="4"/>
+  <!-- Chainsaw Teeth -->
+  <polygon points="235,60 215,70 235,80" fill="#6C757D"/>
+  <polygon points="235,90 215,100 235,110" fill="#6C757D"/>
+  <polygon points="235,120 215,130 235,140" fill="#6C757D"/>
+  <polygon points="265,60 285,70 265,80" fill="#6C757D"/>
+  <polygon points="265,90 285,100 265,110" fill="#6C757D"/>
+  <polygon points="265,120 285,130 265,140" fill="#6C757D"/>
+  <!-- Sharp Teeth Jaw Grille -->
+  <path d="M 200 280 L 300 280 L 290 330 L 210 330 Z" fill="#212529"/>
+  <polygon points="210,280 220,305 230,280 240,305 250,280 260,305 270,280 280,305 290,280" fill="#F8F9FA"/>
+</svg>

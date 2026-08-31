@@ -1,0 +1,24 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 500 500">
+  <defs>
+    <linearGradient id="sukuna-bg" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" stop-color="#3D0000"/>
+      <stop offset="60%" stop-color="#800000"/>
+      <stop offset="100%" stop-color="#FF0000"/>
+    </linearGradient>
+  </defs>
+  <rect width="500" height="500" rx="40" fill="url(#sukuna-bg)"/>
+  <!-- Spiky Pink Hair -->
+  <path d="M 130 200 L 100 130 L 160 110 L 190 50 L 250 90 L 300 40 L 340 90 L 390 60 L 380 140 L 410 180 L 370 220 Z" fill="#E5989B"/>
+  <path d="M 170 200 C 170 140, 330 140, 330 200 C 330 290, 290 340, 250 340 C 210 340, 170 290, 170 200 Z" fill="#F8D7DA"/>
+  <!-- Cursed Red Eyes + 2 extra slits under eyes -->
+  <ellipse cx="215" cy="230" rx="16" ry="10" fill="#D90429"/>
+  <circle cx="215" cy="230" r="5" fill="#FFFFFF"/>
+  <ellipse cx="285" cy="230" rx="16" ry="10" fill="#D90429"/>
+  <circle cx="285" cy="230" r="5" fill="#FFFFFF"/>
+  <!-- Second Pair of Cursed Slit Eyes -->
+  <line x1="195" y1="255" x2="225" y2="255" stroke="#D90429" stroke-width="4"/>
+  <line x1="275" y1="255" x2="305" y2="255" stroke="#D90429" stroke-width="4"/>
+  <!-- Black Curse Markings on Forehead & Cheeks -->
+  <circle cx="250" cy="180" r="14" fill="#000000"/>
+  <path d="M 210 270 Q 250 285 290 270" stroke="#000000" stroke-width="6" fill="none"/>
+</svg>

@@ -1,0 +1,20 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 500 500">
+  <defs>
+    <linearGradient id="gojo-bg" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" stop-color="#03045E"/>
+      <stop offset="50%" stop-color="#0077B6"/>
+      <stop offset="100%" stop-color="#00B4D8"/>
+    </linearGradient>
+  </defs>
+  <rect width="500" height="500" rx="40" fill="url(#gojo-bg)"/>
+  <!-- Spiky White Hair -->
+  <path d="M 120 220 L 80 150 L 150 130 L 170 60 L 230 100 L 280 40 L 320 100 L 380 60 L 370 140 L 430 160 L 380 230 Z" fill="#F8F9FA"/>
+  <path d="M 170 210 C 170 150, 330 150, 330 210 C 330 300, 290 350, 250 350 C 210 350, 170 300, 170 210 Z" fill="#FCEADE"/>
+  <!-- Black Blindfold / Bandage -->
+  <polygon points="150,210 350,210 350,270 150,270" fill="#0B090A" rx="10"/>
+  <!-- Infinite Cyan Glow under blindfold -->
+  <circle cx="210" cy="240" r="12" fill="#00F0FF" opacity="0.9"/>
+  <circle cx="290" cy="240" r="12" fill="#00F0FF" opacity="0.9"/>
+  <!-- High Collar Jacket -->
+  <path d="M 140 370 L 250 340 L 360 370 L 400 500 L 100 500 Z" fill="#1D1E2C"/>
+</svg>

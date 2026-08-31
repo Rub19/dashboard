@@ -1,0 +1,22 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 500 500">
+  <defs>
+    <linearGradient id="jinx-bg" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" stop-color="#1F0429"/>
+      <stop offset="50%" stop-color="#4A0E4E"/>
+      <stop offset="100%" stop-color="#00F0FF"/>
+    </linearGradient>
+  </defs>
+  <rect width="500" height="500" rx="40" fill="url(#jinx-bg)"/>
+  <!-- Blue Braids Silhouette & Neon Eyes -->
+  <path d="M 120 180 C 130 90, 370 90, 380 180 C 400 280, 420 460, 430 500 L 70 500 C 80 460, 100 280, 120 180 Z" fill="#00D2FF"/>
+  <path d="M 170 210 C 180 140, 320 140, 330 210 C 330 290, 290 350, 250 350 C 210 350, 170 290, 170 210 Z" fill="#F8C3AF"/>
+  <!-- Jinx Bangs -->
+  <path d="M 160 160 Q 250 140 340 180 Q 280 230 250 250 Q 220 230 160 160 Z" fill="#0084FF"/>
+  <!-- Jinx Magenta Eyes -->
+  <ellipse cx="215" cy="245" rx="18" ry="12" fill="#FF007F"/>
+  <circle cx="215" cy="245" r="6" fill="#FFFFFF"/>
+  <ellipse cx="285" cy="245" rx="18" ry="12" fill="#FF007F"/>
+  <circle cx="285" cy="245" r="6" fill="#FFFFFF"/>
+  <!-- Cloud Tattoo -->
+  <path d="M 230 380 C 210 360, 190 390, 200 410 C 180 420, 200 450, 220 440 C 230 460, 260 450, 250 430 C 270 420, 260 380, 230 380 Z" fill="#00E5FF" opacity="0.9"/>
+</svg>

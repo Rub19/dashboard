@@ -24,12 +24,12 @@ import { useProfile } from "@/lib/hooks/useProfile";
 import { useUserIdentity } from "@/lib/hooks/useUserIdentity";
 import { cn } from "@/lib/utils";
 
-export type AvatarCategory = "all" | "netflix" | "crunchyroll" | "gaming" | "cyber" | "memoji";
+export type AvatarCategory = "all" | "netflix" | "crunchyroll" | "gaming";
 
 export type AvatarItem = {
   id: string;
   name: string;
-  category: "netflix" | "crunchyroll" | "gaming" | "cyber" | "memoji";
+  category: "netflix" | "crunchyroll" | "gaming";
   source: string;
   badgeColor: string;
   url: string;
@@ -38,52 +38,70 @@ export type AvatarItem = {
 
 export const PRESET_AVATARS: AvatarItem[] = [
   // ==========================================
-  // --- NETFLIX ORIGINALS & POPULAR SERIES ---
+  // --- NETFLIX PROFILES OFFICIELS ---
   // ==========================================
   {
-    id: "netflix-jinx",
-    name: "Jinx (Arcane)",
+    id: "netflix-classic-red",
+    name: "Smiley Rouge (Profil Classique)",
     category: "netflix",
-    source: "Netflix / Riot",
-    badgeColor: "bg-rose-500/20 text-rose-300 border-rose-500/30",
-    url: "https://images.unsplash.com/photo-1578632767115-351597cf2477?w=400&auto=format&fit=crop&q=85",
-    tags: ["arcane", "jinx", "lol", "netflix", "piltover", "zaun"],
+    source: "Netflix Profil Officiel",
+    badgeColor: "bg-red-500/20 text-red-300 border-red-500/30",
+    url: "/avatars/netflix-classic-red.svg",
+    tags: ["netflix", "classic", "smiley", "red", "avatar", "rouge"],
   },
   {
-    id: "netflix-vi",
-    name: "Vi (Arcane)",
+    id: "netflix-classic-blue",
+    name: "Smiley Bleu (Profil Classique)",
     category: "netflix",
-    source: "Netflix / Riot",
-    badgeColor: "bg-rose-500/20 text-rose-300 border-rose-500/30",
-    url: "https://images.unsplash.com/photo-1534447677768-be436bb09401?w=400&auto=format&fit=crop&q=85",
-    tags: ["arcane", "vi", "netflix", "riot", "brawler"],
+    source: "Netflix Profil Officiel",
+    badgeColor: "bg-blue-500/20 text-blue-300 border-blue-500/30",
+    url: "/avatars/netflix-classic-blue.svg",
+    tags: ["netflix", "classic", "smiley", "blue", "avatar", "bleu"],
   },
   {
-    id: "netflix-david",
-    name: "David Martinez (Edgerunners)",
+    id: "netflix-classic-yellow",
+    name: "Smiley Jaune (Profil Classique)",
     category: "netflix",
-    source: "Netflix / Trigger",
+    source: "Netflix Profil Officiel",
     badgeColor: "bg-amber-500/20 text-amber-300 border-amber-500/30",
-    url: "https://images.unsplash.com/photo-1563089145-599997674d42?w=400&auto=format&fit=crop&q=85",
-    tags: ["cyberpunk", "edgerunners", "david", "anime", "night city"],
+    url: "/avatars/netflix-classic-yellow.svg",
+    tags: ["netflix", "classic", "smiley", "yellow", "avatar", "jaune"],
   },
   {
-    id: "netflix-lucy",
-    name: "Lucy (Edgerunners)",
+    id: "netflix-classic-green",
+    name: "Smiley Vert (Profil Classique)",
     category: "netflix",
-    source: "Netflix / Trigger",
-    badgeColor: "bg-cyan-500/20 text-cyan-300 border-cyan-500/30",
-    url: "https://images.unsplash.com/photo-1509198397868-475647b2a1e5?w=400&auto=format&fit=crop&q=85",
-    tags: ["cyberpunk", "lucy", "edgerunners", "netrunner", "neon"],
+    source: "Netflix Profil Officiel",
+    badgeColor: "bg-emerald-500/20 text-emerald-300 border-emerald-500/30",
+    url: "/avatars/netflix-classic-green.svg",
+    tags: ["netflix", "classic", "smiley", "green", "avatar", "vert"],
   },
   {
-    id: "netflix-squid-guard",
-    name: "Gardien Masqué (Squid Game)",
+    id: "netflix-squid-guard-circle",
+    name: "Gardien Cercle (Squid Game)",
     category: "netflix",
     source: "Netflix Original",
     badgeColor: "bg-pink-500/20 text-pink-300 border-pink-500/30",
-    url: "https://images.unsplash.com/photo-1634896941598-b6b500a502a7?w=400&auto=format&fit=crop&q=85",
-    tags: ["squid game", "cercle", "triangle", "korea", "serie"],
+    url: "/avatars/netflix-squid-guard-circle.svg",
+    tags: ["squid game", "cercle", "pink soldier", "korea", "serie", "masque"],
+  },
+  {
+    id: "netflix-squid-guard-triangle",
+    name: "Gardien Triangle (Squid Game)",
+    category: "netflix",
+    source: "Netflix Original",
+    badgeColor: "bg-pink-500/20 text-pink-300 border-pink-500/30",
+    url: "/avatars/netflix-squid-guard-triangle.svg",
+    tags: ["squid game", "triangle", "soldat", "korea", "serie"],
+  },
+  {
+    id: "netflix-squid-guard-square",
+    name: "Superviseur Carré (Squid Game)",
+    category: "netflix",
+    source: "Netflix Original",
+    badgeColor: "bg-pink-500/20 text-pink-300 border-pink-500/30",
+    url: "/avatars/netflix-squid-guard-square.svg",
+    tags: ["squid game", "carre", "superviseur", "korea", "serie"],
   },
   {
     id: "netflix-frontman",
@@ -91,26 +109,53 @@ export const PRESET_AVATARS: AvatarItem[] = [
     category: "netflix",
     source: "Netflix Original",
     badgeColor: "bg-zinc-500/20 text-zinc-300 border-zinc-500/30",
-    url: "https://images.unsplash.com/photo-1518709268805-4e9042af9f23?w=400&auto=format&fit=crop&q=85",
-    tags: ["squid game", "front man", "boss", "masque"],
+    url: "/avatars/netflix-frontman.svg",
+    tags: ["squid game", "front man", "boss", "masque noir", "leader"],
+  },
+  {
+    id: "netflix-arcane-jinx",
+    name: "Jinx (Arcane Netflix)",
+    category: "netflix",
+    source: "Netflix / Riot Games",
+    badgeColor: "bg-cyan-500/20 text-cyan-300 border-cyan-500/30",
+    url: "/avatars/netflix-arcane-jinx.svg",
+    tags: ["arcane", "jinx", "lol", "netflix", "piltover", "zaun", "tresses"],
+  },
+  {
+    id: "netflix-arcane-vi",
+    name: "Vi (Arcane Netflix)",
+    category: "netflix",
+    source: "Netflix / Riot Games",
+    badgeColor: "bg-rose-500/20 text-rose-300 border-rose-500/30",
+    url: "/avatars/netflix-arcane-vi.svg",
+    tags: ["arcane", "vi", "netflix", "riot", "brawler", "tatouage"],
   },
   {
     id: "netflix-witcher",
-    name: "Geralt de Riv (The Witcher)",
+    name: "Médaillon Loup (The Witcher)",
     category: "netflix",
-    source: "Netflix",
-    badgeColor: "bg-emerald-500/20 text-emerald-300 border-emerald-500/30",
-    url: "https://images.unsplash.com/photo-1618005182384-a83a8bd57fbe?w=400&auto=format&fit=crop&q=85",
-    tags: ["witcher", "geralt", "loup blanc", "sorceleur", "fantasy"],
+    source: "Netflix Original",
+    badgeColor: "bg-zinc-500/20 text-zinc-300 border-zinc-500/30",
+    url: "/avatars/netflix-witcher.svg",
+    tags: ["witcher", "geralt", "loup blanc", "sorceleur", "medallion"],
   },
   {
-    id: "netflix-luffy-la",
-    name: "Luffy (One Piece Live Action)",
+    id: "netflix-stranger-demogorgon",
+    name: "Démogorgon (Stranger Things)",
     category: "netflix",
-    source: "Netflix Live Action",
+    source: "Netflix Original",
     badgeColor: "bg-red-500/20 text-red-300 border-red-500/30",
-    url: "https://images.unsplash.com/photo-1579783902614-a3fb3927b675?w=400&auto=format&fit=crop&q=85",
-    tags: ["one piece", "luffy", "chapeau de paille", "pirates"],
+    url: "/avatars/netflix-stranger-demogorgon.svg",
+    tags: ["stranger things", "demogorgon", "upside down", "monstre", "80s"],
+  },
+  {
+    id: "netflix-dali-mask",
+    name: "Masque de Dalí (La Casa de Papel)",
+    category: "netflix",
+    source: "Netflix Original",
+    badgeColor: "bg-red-500/20 text-red-300 border-red-500/30",
+    url: "/avatars/netflix-dali-mask.svg",
+    tags: ["casa de papel", "dali", "professeur", "masque", "braquage", "money heist"],
   },
   {
     id: "netflix-wednesday",
@@ -118,17 +163,8 @@ export const PRESET_AVATARS: AvatarItem[] = [
     category: "netflix",
     source: "Netflix Original",
     badgeColor: "bg-purple-500/20 text-purple-300 border-purple-500/30",
-    url: "https://images.unsplash.com/photo-1535713875002-d1d0cf377fde?w=400&auto=format&fit=crop&q=85",
-    tags: ["wednesday", "addams", "nevermore", "gothic"],
-  },
-  {
-    id: "netflix-hellfire",
-    name: "Hellfire Club (Stranger Things)",
-    category: "netflix",
-    source: "Netflix Original",
-    badgeColor: "bg-red-500/20 text-red-300 border-red-500/30",
-    url: "https://images.unsplash.com/photo-1607604276583-eef5d076aa5f?w=400&auto=format&fit=crop&q=85",
-    tags: ["stranger things", "hellfire", "eddie", "80s", "retro"],
+    url: "/avatars/netflix-wednesday.svg",
+    tags: ["wednesday", "addams", "nevermore", "gothic", "mercredi"],
   },
 
   // ==========================================
@@ -140,8 +176,8 @@ export const PRESET_AVATARS: AvatarItem[] = [
     category: "crunchyroll",
     source: "Crunchyroll / MAPPA",
     badgeColor: "bg-cyan-500/20 text-cyan-300 border-cyan-500/30",
-    url: "https://images.unsplash.com/photo-1542751371-adc38448a05e?w=400&auto=format&fit=crop&q=85",
-    tags: ["gojo", "jujutsu kaisen", "jjk", "infinité", "six eyes", "anime"],
+    url: "/avatars/crunchyroll-gojo.svg",
+    tags: ["gojo", "jujutsu kaisen", "jjk", "infinité", "six eyes", "bandeau"],
   },
   {
     id: "anime-sukuna",
@@ -149,8 +185,8 @@ export const PRESET_AVATARS: AvatarItem[] = [
     category: "crunchyroll",
     source: "Crunchyroll / MAPPA",
     badgeColor: "bg-red-500/20 text-red-300 border-red-500/30",
-    url: "https://images.unsplash.com/photo-1579783902614-a3fb3927b675?w=400&auto=format&fit=crop&q=85",
-    tags: ["sukuna", "jjk", "roi des fléaux", "jujutsu kaisen", "demon"],
+    url: "/avatars/crunchyroll-sukuna.svg",
+    tags: ["sukuna", "jjk", "roi des fléaux", "jujutsu kaisen", "demon", "tatouages"],
   },
   {
     id: "anime-jinwoo",
@@ -158,8 +194,8 @@ export const PRESET_AVATARS: AvatarItem[] = [
     category: "crunchyroll",
     source: "Crunchyroll / A-1",
     badgeColor: "bg-indigo-500/20 text-indigo-300 border-indigo-500/30",
-    url: "https://images.unsplash.com/photo-1563089145-599997674d42?w=400&auto=format&fit=crop&q=85",
-    tags: ["solo leveling", "jinwoo", "shadow monarch", "monarque", "arise"],
+    url: "/avatars/crunchyroll-jinwoo.svg",
+    tags: ["solo leveling", "jinwoo", "shadow monarch", "monarque", "arise", "yeux violets"],
   },
   {
     id: "anime-tanjiro",
@@ -167,8 +203,8 @@ export const PRESET_AVATARS: AvatarItem[] = [
     category: "crunchyroll",
     source: "Crunchyroll / ufotable",
     badgeColor: "bg-emerald-500/20 text-emerald-300 border-emerald-500/30",
-    url: "https://images.unsplash.com/photo-1534447677768-be436bb09401?w=400&auto=format&fit=crop&q=85",
-    tags: ["demon slayer", "kimetsu", "tanjiro", "souffle de l'eau", "sun"],
+    url: "/avatars/crunchyroll-tanjiro.svg",
+    tags: ["demon slayer", "kimetsu", "tanjiro", "hanafuda", "eau", "flammes"],
   },
   {
     id: "anime-nezuko",
@@ -176,26 +212,8 @@ export const PRESET_AVATARS: AvatarItem[] = [
     category: "crunchyroll",
     source: "Crunchyroll / ufotable",
     badgeColor: "bg-pink-500/20 text-pink-300 border-pink-500/30",
-    url: "https://images.unsplash.com/photo-1580489944761-15a19d654956?w=400&auto=format&fit=crop&q=85",
-    tags: ["demon slayer", "nezuko", "bambou", "kimetsu"],
-  },
-  {
-    id: "anime-rengoku",
-    name: "Kyojuro Rengoku (Demon Slayer)",
-    category: "crunchyroll",
-    source: "Crunchyroll / ufotable",
-    badgeColor: "bg-amber-500/20 text-amber-300 border-amber-500/30",
-    url: "https://images.unsplash.com/photo-1509198397868-475647b2a1e5?w=400&auto=format&fit=crop&q=85",
-    tags: ["demon slayer", "rengoku", "flammes", "hashira", "mugens train"],
-  },
-  {
-    id: "anime-levi",
-    name: "Capitaine Levi (Attack on Titan)",
-    category: "crunchyroll",
-    source: "Crunchyroll / MAPPA",
-    badgeColor: "bg-teal-500/20 text-teal-300 border-teal-500/30",
-    url: "https://images.unsplash.com/photo-1518709268805-4e9042af9f23?w=400&auto=format&fit=crop&q=85",
-    tags: ["levi", "snk", "aot", "ackerman", "bataillon d'exploration"],
+    url: "/avatars/crunchyroll-nezuko.svg",
+    tags: ["demon slayer", "nezuko", "bambou", "kimetsu", "demon"],
   },
   {
     id: "anime-denji",
@@ -203,8 +221,17 @@ export const PRESET_AVATARS: AvatarItem[] = [
     category: "crunchyroll",
     source: "Crunchyroll / MAPPA",
     badgeColor: "bg-orange-500/20 text-orange-300 border-orange-500/30",
-    url: "https://images.unsplash.com/photo-1618005182384-a83a8bd57fbe?w=400&auto=format&fit=crop&q=85",
+    url: "/avatars/crunchyroll-denji.svg",
     tags: ["chainsaw man", "denji", "pochita", "tronconneuse", "devil"],
+  },
+  {
+    id: "anime-gear5",
+    name: "Luffy Gear 5 Nika (One Piece)",
+    category: "crunchyroll",
+    source: "Crunchyroll / Toei",
+    badgeColor: "bg-purple-500/20 text-purple-300 border-purple-500/30",
+    url: "/avatars/crunchyroll-luffy-gear5.svg",
+    tags: ["luffy", "gear 5", "nika", "sun god", "one piece", "dieu du soleil"],
   },
   {
     id: "anime-zoro",
@@ -212,17 +239,8 @@ export const PRESET_AVATARS: AvatarItem[] = [
     category: "crunchyroll",
     source: "Crunchyroll / Toei",
     badgeColor: "bg-emerald-500/20 text-emerald-300 border-emerald-500/30",
-    url: "https://images.unsplash.com/photo-1578632767115-351597cf2477?w=400&auto=format&fit=crop&q=85",
-    tags: ["zoro", "one piece", "katana", "roi des enfers", "santoryu"],
-  },
-  {
-    id: "anime-gear5",
-    name: "Luffy Gear 5 Nika (One Piece)",
-    category: "crunchyroll",
-    source: "Crunchyroll / Toei",
-    badgeColor: "bg-sky-500/20 text-sky-300 border-sky-500/30",
-    url: "https://images.unsplash.com/photo-1607604276583-eef5d076aa5f?w=400&auto=format&fit=crop&q=85",
-    tags: ["luffy", "gear 5", "nika", "sun god", "one piece", "blanc"],
+    url: "/avatars/crunchyroll-zoro.svg",
+    tags: ["zoro", "one piece", "katana", "roi des enfers", "santoryu", "bandana"],
   },
   {
     id: "anime-kakashi",
@@ -230,146 +248,84 @@ export const PRESET_AVATARS: AvatarItem[] = [
     category: "crunchyroll",
     source: "Crunchyroll / Pierrot",
     badgeColor: "bg-blue-500/20 text-blue-300 border-blue-500/30",
-    url: "https://images.unsplash.com/photo-1634896941598-b6b500a502a7?w=400&auto=format&fit=crop&q=85",
-    tags: ["naruto", "kakashi", "sharingan", "ninja", "hokage"],
-  },
-  {
-    id: "anime-goku-ui",
-    name: "Goku Ultra Instinct (DBS)",
-    category: "crunchyroll",
-    source: "Toei Animation",
-    badgeColor: "bg-violet-500/20 text-violet-300 border-violet-500/30",
-    url: "https://images.unsplash.com/photo-1542751371-adc38448a05e?w=400&auto=format&fit=crop&q=85",
-    tags: ["goku", "dragon ball", "ultra instinct", "dbz", "saiyan"],
+    url: "/avatars/crunchyroll-kakashi.svg",
+    tags: ["naruto", "kakashi", "sharingan", "ninja", "hokage", "masque"],
   },
 
   // ==========================================
-  // --- GAMING & RIOT & STEAM ---
+  // --- GAMING & RIOT & STEAM OFFICIELS ---
   // ==========================================
   {
     id: "game-jett",
-    name: "Jett (Valorant)",
+    name: "Jett (Valorant Officiel)",
     category: "gaming",
-    source: "Riot Games",
+    source: "Riot Games Officiel",
     badgeColor: "bg-cyan-500/20 text-cyan-300 border-cyan-500/30",
-    url: "https://images.unsplash.com/photo-1578632767115-351597cf2477?w=400&auto=format&fit=crop&q=85",
+    url: "/avatars/riot-val-jett.png",
     tags: ["valorant", "jett", "duelist", "vent", "riot", "fps"],
   },
   {
-    id: "game-reyna",
-    name: "Reyna (Valorant)",
-    category: "gaming",
-    source: "Riot Games",
-    badgeColor: "bg-purple-500/20 text-purple-300 border-purple-500/30",
-    url: "https://images.unsplash.com/photo-1563089145-599997674d42?w=400&auto=format&fit=crop&q=85",
-    tags: ["valorant", "reyna", "empress", "violet", "riot"],
-  },
-  {
     id: "game-omen",
-    name: "Omen (Valorant)",
+    name: "Omen (Valorant Officiel)",
     category: "gaming",
-    source: "Riot Games",
+    source: "Riot Games Officiel",
     badgeColor: "bg-indigo-500/20 text-indigo-300 border-indigo-500/30",
-    url: "https://images.unsplash.com/photo-1579783902614-a3fb3927b675?w=400&auto=format&fit=crop&q=85",
+    url: "/avatars/riot-val-omen.png",
     tags: ["valorant", "omen", "ombre", "smoke", "dark", "riot"],
   },
   {
     id: "game-yasuo",
     name: "Yasuo (League of Legends)",
     category: "gaming",
-    source: "Riot Games",
+    source: "Riot Games Officiel",
     badgeColor: "bg-blue-500/20 text-blue-300 border-blue-500/30",
-    url: "https://images.unsplash.com/photo-1534447677768-be436bb09401?w=400&auto=format&fit=crop&q=85",
+    url: "/avatars/riot-lol-yasuo.png",
     tags: ["lol", "yasuo", "hasagi", "tempete", "league of legends"],
   },
   {
     id: "game-ahri",
-    name: "Ahri Spirit Blossom (LoL)",
+    name: "Ahri (League of Legends)",
     category: "gaming",
-    source: "Riot Games",
+    source: "Riot Games Officiel",
     badgeColor: "bg-pink-500/20 text-pink-300 border-pink-500/30",
-    url: "https://images.unsplash.com/photo-1580489944761-15a19d654956?w=400&auto=format&fit=crop&q=85",
-    tags: ["ahri", "lol", "renard", "spirit blossom", "riot"],
+    url: "/avatars/riot-lol-ahri.png",
+    tags: ["ahri", "lol", "renard", "spirit", "riot", "league of legends"],
   },
   {
-    id: "game-silverhand",
-    name: "Johnny Silverhand (Cyberpunk)",
+    id: "game-jinx-lol",
+    name: "Jinx (League of Legends)",
+    category: "gaming",
+    source: "Riot Games Officiel",
+    badgeColor: "bg-rose-500/20 text-rose-300 border-rose-500/30",
+    url: "/avatars/riot-lol-jinx.png",
+    tags: ["lol", "jinx", "pow-pow", "league of legends", "riot"],
+  },
+  {
+    id: "game-cyberpunk-samurai",
+    name: "Samurai Oni (Cyberpunk 2077)",
     category: "gaming",
     source: "CD Projekt Red",
     badgeColor: "bg-amber-500/20 text-amber-300 border-amber-500/30",
-    url: "https://images.unsplash.com/photo-1509198397868-475647b2a1e5?w=400&auto=format&fit=crop&q=85",
-    tags: ["cyberpunk 2077", "johnny silverhand", "samurai", "keanu"],
+    url: "/avatars/gaming-cyberpunk-samurai.svg",
+    tags: ["cyberpunk 2077", "samurai", "oni", "johnny silverhand", "demon"],
   },
   {
-    id: "game-ranni",
-    name: "Ranni la Sorcière (Elden Ring)",
+    id: "game-discord-clyde",
+    name: "Clyde Blurple (Discord)",
     category: "gaming",
-    source: "FromSoftware",
-    badgeColor: "bg-sky-500/20 text-sky-300 border-sky-500/30",
-    url: "https://images.unsplash.com/photo-1518709268805-4e9042af9f23?w=400&auto=format&fit=crop&q=85",
-    tags: ["elden ring", "ranni", "lune", "sorciere", "souls"],
-  },
-
-  // ==========================================
-  // --- CYBER & NÉON & ETHONE OS ---
-  // ==========================================
-  {
-    id: "cyber-synthwave",
-    name: "Synthwave Sunset Rider",
-    category: "cyber",
-    source: "ETHONE Studio",
-    badgeColor: "bg-fuchsia-500/20 text-fuchsia-300 border-fuchsia-500/30",
-    url: "https://images.unsplash.com/photo-1618005182384-a83a8bd57fbe?w=400&auto=format&fit=crop&q=85",
-    tags: ["synthwave", "neon", "retro", "80s", "violet", "ethone"],
-  },
-  {
-    id: "cyber-neural-core",
-    name: "Quantum Neural Core AI",
-    category: "cyber",
-    source: "ETHONE Studio",
-    badgeColor: "bg-cyan-500/20 text-cyan-300 border-cyan-500/30",
-    url: "https://images.unsplash.com/photo-1634896941598-b6b500a502a7?w=400&auto=format&fit=crop&q=85",
-    tags: ["ai", "brain", "neural", "quantum", "futuriste", "hologram"],
-  },
-  {
-    id: "cyber-astronaut",
-    name: "Cosmic Deep Space Astro",
-    category: "cyber",
-    source: "ETHONE Studio",
+    source: "Discord Officiel",
     badgeColor: "bg-indigo-500/20 text-indigo-300 border-indigo-500/30",
-    url: "https://images.unsplash.com/photo-1607604276583-eef5d076aa5f?w=400&auto=format&fit=crop&q=85",
-    tags: ["space", "cosmic", "galaxie", "astronaute", "etoiles"],
-  },
-
-  // ==========================================
-  // --- 3D MEMOJI & GLASS AESTHETIC ---
-  // ==========================================
-  {
-    id: "memoji-hoodie-purple",
-    name: "Cyber Hoodie 3D (Violet)",
-    category: "memoji",
-    source: "ETHONE 3D",
-    badgeColor: "bg-purple-500/20 text-purple-300 border-purple-500/30",
-    url: "https://images.unsplash.com/photo-1535713875002-d1d0cf377fde?w=400&auto=format&fit=crop&q=85",
-    tags: ["3d", "memoji", "hoodie", "portrait", "avatar"],
+    url: "/avatars/gaming-discord-blurple.svg",
+    tags: ["discord", "clyde", "blurple", "bot", "chat"],
   },
   {
-    id: "memoji-dj-neon",
-    name: "Music Beats 3D (Neon)",
-    category: "memoji",
-    source: "ETHONE 3D",
-    badgeColor: "bg-emerald-500/20 text-emerald-300 border-emerald-500/30",
-    url: "https://images.unsplash.com/photo-1570295999919-56ceb5ecca61?w=400&auto=format&fit=crop&q=85",
-    tags: ["3d", "audio", "casque", "dj", "beats"],
-  },
-  {
-    id: "memoji-glasses",
-    name: "Holo Glasses 3D",
-    category: "memoji",
-    source: "ETHONE 3D",
-    badgeColor: "bg-pink-500/20 text-pink-300 border-pink-500/30",
-    url: "https://images.unsplash.com/photo-1580489944761-15a19d654956?w=400&auto=format&fit=crop&q=85",
-    tags: ["3d", "lunettes", "stylish", "neon"],
+    id: "game-steam-crank",
+    name: "Piston Valve (Steam)",
+    category: "gaming",
+    source: "Valve Steam Officiel",
+    badgeColor: "bg-sky-500/20 text-sky-300 border-sky-500/30",
+    url: "/avatars/gaming-steam-retro.svg",
+    tags: ["steam", "valve", "piston", "gaming", "pc"],
   },
 ];
 
@@ -378,8 +334,6 @@ const CATEGORIES = [
   { id: "netflix", label: "Netflix", icon: Film },
   { id: "crunchyroll", label: "Crunchyroll & Anime", icon: Flame },
   { id: "gaming", label: "Gaming & Riot", icon: Gamepad2 },
-  { id: "cyber", label: "Cyber & Néon", icon: Tv },
-  { id: "memoji", label: "3D Memoji", icon: User },
 ] as const;
 
 export default function AvatarPickerModal({
@@ -426,7 +380,7 @@ export default function AvatarPickerModal({
     try {
       const a = document.createElement("a");
       a.href = avatar.url;
-      a.download = `ethone-avatar-${avatar.id}.jpg`;
+      a.download = `ethone-avatar-${avatar.id}.svg`;
       a.target = "_blank";
       document.body.appendChild(a);
       a.click();
@@ -530,7 +484,7 @@ export default function AvatarPickerModal({
                     Studio Avatars & Profil HD
                   </h2>
                   <span className="inline-flex items-center rounded-full bg-emerald-500/15 border border-emerald-500/30 px-2 py-0.5 text-[10px] font-semibold text-emerald-400">
-                    {PRESET_AVATARS.length} Avatars
+                    {PRESET_AVATARS.length} Avatars Officiels
                   </span>
                 </div>
                 <p className="text-xs text-zinc-400 mt-0.5 flex items-center gap-1.5">
@@ -556,8 +510,8 @@ export default function AvatarPickerModal({
               CATEGORY PILLS & SEARCH BAR
              ========================================= */}
           <div className="flex flex-col gap-3 border-b border-white/5 px-6 py-3 bg-black/40 sm:flex-row sm:items-center sm:justify-between">
-            {/* Category Pills */}
-            <div className="flex items-center gap-1.5 overflow-x-auto pb-1 sm:pb-0 scrollbar-none">
+            {/* Category Pills without ugly scrollbars */}
+            <div className="flex items-center gap-1.5 overflow-x-auto pb-1 sm:pb-0 [scrollbar-width:none] [-ms-overflow-style:none] [&::-webkit-scrollbar]:hidden">
               {CATEGORIES.map((cat) => {
                 const IconComp = cat.icon;
                 const isActive = activeCategory === cat.id;

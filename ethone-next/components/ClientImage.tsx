@@ -24,7 +24,7 @@ type ClientImageProps = {
 type ImageStatus = "idle" | "loading" | "ok" | "error";
 
 function isValidImageUrl(src?: string): src is string {
-  return typeof src === "string" && src.length > 0 && /^(https?:\/\/|data:image\/)\S+/.test(src);
+  return typeof src === "string" && src.length > 0 && /^(https?:\/\/|data:image\/|data:|blob:|\/)\S*/.test(src);
 }
 
 export function useClientImage(candidates: (string | undefined)[], timeoutMs = 8000) {

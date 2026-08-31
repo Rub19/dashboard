@@ -1,0 +1,22 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 500 500">
+  <defs>
+    <linearGradient id="vi-bg" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" stop-color="#2D0B14"/>
+      <stop offset="60%" stop-color="#781D32"/>
+      <stop offset="100%" stop-color="#E50914"/>
+    </linearGradient>
+  </defs>
+  <rect width="500" height="500" rx="40" fill="url(#vi-bg)"/>
+  <!-- Pink / Magenta Short Hair -->
+  <path d="M 130 200 C 140 100, 360 100, 370 200 C 370 270, 340 310, 340 310 L 150 310 C 150 310, 130 270, 130 200 Z" fill="#E6396B"/>
+  <path d="M 180 220 C 190 160, 310 160, 320 220 C 320 290, 280 340, 250 340 C 220 340, 180 290, 180 220 Z" fill="#F8C3AF"/>
+  <!-- Asymmetrical Punk Hair Side -->
+  <path d="M 140 160 Q 250 120 360 170 Q 300 240 280 230 Q 220 180 140 160 Z" fill="#B31E49"/>
+  <!-- Piercing Blue / Grey Eyes -->
+  <ellipse cx="220" cy="245" rx="16" ry="10" fill="#48CAE4"/>
+  <circle cx="220" cy="245" r="5" fill="#FFFFFF"/>
+  <ellipse cx="280" cy="245" rx="16" ry="10" fill="#48CAE4"/>
+  <circle cx="280" cy="245" r="5" fill="#FFFFFF"/>
+  <!-- Cheek Tattoo VI -->
+  <text x="290" y="285" font-family="sans-serif" font-weight="900" font-size="20" fill="#2B2D42">VI</text>
+</svg>

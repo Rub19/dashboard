@@ -1,0 +1,14 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 500 500">
+  <rect width="500" height="500" rx="40" fill="#E50914"/>
+  <!-- Red Hood -->
+  <path d="M 100 500 L 100 320 C 100 150, 160 80, 250 80 C 340 80, 400 150, 400 320 L 400 500 Z" fill="#9B0000"/>
+  <!-- Salvador Dali Mask -->
+  <path d="M 160 200 C 160 120, 340 120, 340 200 C 340 330, 290 410, 250 410 C 210 410, 160 330, 160 200 Z" fill="#EDE0D4" stroke="#D5BDAF" stroke-width="6"/>
+  <!-- Dali Wild Eyes -->
+  <ellipse cx="205" cy="220" rx="22" ry="16" fill="#141414"/>
+  <ellipse cx="295" cy="220" rx="22" ry="16" fill="#141414"/>
+  <circle cx="205" cy="220" r="7" fill="#FFFFFF"/>
+  <circle cx="295" cy="220" r="7" fill="#FFFFFF"/>
+  <!-- Iconic Pointy Mustaches Going Up -->
+  <path d="M 250 290 Q 200 280 160 210 Q 200 310 250 310 Q 300 310 340 210 Q 300 280 250 290 Z" fill="#141414"/>
+</svg>

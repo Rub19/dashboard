@@ -1,0 +1,12 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 500 500">
+  <rect width="500" height="500" rx="40" fill="#0A0B0E"/>
+  <path d="M 100 500 L 100 360 C 100 210, 170 120, 250 120 C 330 120, 400 210, 400 360 L 400 500 Z" fill="#1A1C23"/>
+  <polygon points="250,150 170,230 200,350 250,400 300,350 330,230" fill="#101115" stroke="#333742" stroke-width="6"/>
+  <polygon points="250,150 200,240 250,260 300,240" fill="#202229"/>
+  <polygon points="200,240 250,260 250,330 190,310" fill="#16181F"/>
+  <polygon points="300,240 250,260 250,330 310,310" fill="#282B34"/>
+  <polygon points="250,330 200,350 250,400 300,350" fill="#0C0D11"/>
+  <!-- Eyes slits -->
+  <polygon points="195,245 235,252 230,260 190,253" fill="#FFB703" opacity="0.85"/>
+  <polygon points="305,245 265,252 270,260 310,253" fill="#FFB703" opacity="0.85"/>
+</svg>

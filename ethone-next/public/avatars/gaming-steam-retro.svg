@@ -1,0 +1,15 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 500 500">
+  <defs>
+    <linearGradient id="steam-bg" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" stop-color="#171A21"/>
+      <stop offset="100%" stop-color="#1B2838"/>
+    </linearGradient>
+  </defs>
+  <rect width="500" height="500" rx="40" fill="url(#steam-bg)"/>
+  <!-- Steam Piston Crank Logo -->
+  <circle cx="340" cy="190" r="75" fill="none" stroke="#66C0F4" stroke-width="24"/>
+  <circle cx="340" cy="190" r="45" fill="#66C0F4"/>
+  <circle cx="160" cy="330" r="50" fill="none" stroke="#66C0F4" stroke-width="20"/>
+  <circle cx="160" cy="330" r="28" fill="#1B2838"/>
+  <polygon points="320,190 280,240 180,310 150,280 270,180" fill="#66C0F4"/>
+</svg>

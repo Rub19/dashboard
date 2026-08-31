@@ -1,0 +1,10 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 500 500">
+  <rect width="500" height="500" rx="40" fill="#121316"/>
+  <!-- Wolf Medallion -->
+  <circle cx="250" cy="250" r="190" fill="#1C1E24" stroke="#6C757D" stroke-width="12"/>
+  <polygon points="250,110 200,200 130,230 180,310 160,390 250,340 340,390 320,310 370,230 300,200" fill="#ADB5BD" stroke="#343A40" stroke-width="8"/>
+  <polygon points="250,180 220,250 180,260 210,310 250,290 290,310 320,260 280,250" fill="#F8F9FA"/>
+  <!-- Glowing Wolf Eyes -->
+  <polygon points="215,255 240,260 230,270" fill="#E50914"/>
+  <polygon points="285,255 260,260 270,270" fill="#E50914"/>
+</svg>

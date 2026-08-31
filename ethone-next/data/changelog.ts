@@ -7206,6 +7206,48 @@ CHANGELOG_BY_LANG.es.unshift({
 });
 
 CHANGELOG_BY_LANG.fr.unshift({
+  version: "v1.20.0",
+  date: "2026-08-31",
+  title: "Vrais Avatars Officiels Netflix, Crunchyroll & Gaming HD",
+  items: [
+    "Intégration des vrais avatars et icônes officielles de profil Netflix (Smileys rouge/bleu/jaune/vert, Gardiens Squid Game, Front Man, Arcane Jinx & Vi, The Witcher, La Casa de Papel, Stranger Things, Mercredi).",
+    "Intégration des vrais avatars officiels d'animes Crunchyroll (Gojo Satoru, Ryomen Sukuna, Sung Jin-Woo, Tanjiro, Nezuko, Chainsaw Man, Luffy Gear 5, Zoro, Kakashi).",
+    "Intégration des vrais portraits et icônes gaming officiels (Valorant Jett & Omen, LoL Yasuo, Ahri & Jinx, Cyberpunk Samurai, Discord, Steam).",
+    "Résolution du bug de barre de défilement parasite sur les onglets et rendu vectoriel ultra-net 0ms.",
+  ],
+});
+
+CHANGELOG_BY_LANG.en.unshift({
+  version: "v1.20.0",
+  date: "2026-08-31",
+  title: "Official Authentic Netflix, Crunchyroll & Gaming Avatars",
+  items: [
+    "Integrated authentic official profile icons from Netflix (Classic smileys, Squid Game guards, Front Man, Arcane Jinx/Vi, Witcher, Money Heist, Stranger Things, Wednesday).",
+    "Integrated authentic anime avatars from Crunchyroll (JJK Gojo, Sukuna, Solo Leveling Jin-Woo, Demon Slayer, Chainsaw Man, One Piece Luffy Gear 5, Zoro, Kakashi).",
+    "Integrated official gaming avatars (Valorant Jett/Omen, League of Legends Yasuo/Ahri/Jinx, Cyberpunk Samurai, Discord, Steam).",
+    "Cleaned tab scrollbar layout with razor-sharp 0ms vector loading.",
+  ],
+});
+
+CHANGELOG_BY_LANG.es.unshift({
+  version: "v1.20.0",
+  date: "2026-08-31",
+  title: "Avatares Oficiales de Netflix, Crunchyroll y Gaming",
+  items: [
+    "Incorporación de los avatares auténticos oficiales de Netflix, animes de Crunchyroll y videojuegos.",
+  ],
+});
+
+CHANGELOG_BY_LANG.de.unshift({
+  version: "v1.20.0",
+  date: "2026-08-31",
+  title: "Offizielle authentische Netflix-, Crunchyroll- & Gaming-Avatare",
+  items: [
+    "Offizielle Profilbilder von Netflix, beliebten Crunchyroll-Animes und Riot Gaming.",
+  ],
+});
+
+CHANGELOG_BY_LANG.fr.unshift({
   version: "v1.19.1",
   date: "2026-08-31",
   title: "Importation Universelle d'Avatars PC / Mobile & Synchronisation Sans Friction",

@@ -1,0 +1,13 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 500 500">
+  <rect width="500" height="500" rx="40" fill="#111116"/>
+  <!-- Wednesday Braids & White Collar -->
+  <path d="M 120 180 C 120 90, 380 90, 380 180 C 380 300, 410 450, 420 500 L 80 500 C 90 450, 120 300, 120 180 Z" fill="#1C1C24"/>
+  <path d="M 175 200 C 175 140, 325 140, 325 200 C 325 280, 290 330, 250 330 C 210 330, 175 280, 175 200 Z" fill="#F4EDE4"/>
+  <!-- Strict Bangs -->
+  <path d="M 170 170 L 330 170 L 330 200 Q 250 220 170 200 Z" fill="#0A0A0E"/>
+  <!-- Dark Eyes -->
+  <ellipse cx="215" cy="235" rx="14" ry="10" fill="#22222E"/>
+  <ellipse cx="285" cy="235" rx="14" ry="10" fill="#22222E"/>
+  <!-- Iconic Gothic Sharp White Collar -->
+  <polygon points="250,330 200,380 150,330 250,420 350,330 300,380" fill="#FFFFFF"/>
+</svg>

@@ -71,7 +71,7 @@ function createInitialConversation(): BrainConversation {
     title: "Nouvelle conversation",
     updatedAt: Date.now(),
     messages: [],
-    model: "deepseek-chat-free",
+    model: "auto",
   };
 }
 
@@ -115,7 +115,7 @@ export function useBrain(mailClient?: BrainMailClient) {
   const [currentStep, setCurrentStep] = useState<"idle" | "thinking" | "executing" | "done">("idle");
   const [error, setError] = useState<Error | null>(null);
   const [lastPrompt, setLastPrompt] = useState("");
-  const [selectedModel, setSelectedModel] = useState<string>(activeConversation.model || "claude-3-5-sonnet");
+  const [selectedModel, setSelectedModel] = useState<string>(activeConversation.model || "auto");
   const [activeAttachments, setActiveAttachments] = useState<BrainAttachment[]>([]);
   const [memories, setMemories] = useState<BrainMemory[]>([]);
   const [memoriesLoaded, setMemoriesLoaded] = useState(false);

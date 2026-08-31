@@ -19,6 +19,16 @@ export interface AIModel {
 
 export const AVAILABLE_MODELS: AIModel[] = [
   {
+    id: "auto",
+    openRouterModel: "auto",
+    name: "Routage Auto (Intelligent)",
+    provider: "ETHONE Smart Router",
+    badge: "Auto Switch",
+    badgeType: "reasoning",
+    description: "Bascule automatiquement vers le meilleur modèle selon le prompt (Code, Maths, Rédaction, Vitesse)",
+    speed: "fast",
+  },
+  {
     id: "deepseek-r1-free",
     openRouterModel: "deepseek/deepseek-r1:free",
     name: "DeepSeek R1 (Gratuit)",

@@ -7206,6 +7206,46 @@ CHANGELOG_BY_LANG.es.unshift({
 });
 
 CHANGELOG_BY_LANG.fr.unshift({
+  version: "v1.15.0",
+  date: "2026-08-31",
+  title: "Intelligence Artificielle : Routage Automatique & Auto-Switching Spécialisé",
+  items: [
+    "Routage Auto Intelligent pour Brain IA : détection contextuelle des prompts en temps réel.",
+    "Bascule automatique vers les meilleurs modèles selon le domaine : DeepSeek R1 / Qwen pour le code, les maths et la logique, Mistral 24B pour la rédaction en français, et Gemini 2.0 Flash pour la rapidité.",
+    "Indicateur visuel en direct du modèle activé dans les bulles de discussion.",
+  ],
+});
+
+CHANGELOG_BY_LANG.en.unshift({
+  version: "v1.15.0",
+  date: "2026-08-31",
+  title: "AI Smart Auto-Routing & Contextual Model Auto-Switching",
+  items: [
+    "Intelligent Auto-Routing for Brain AI: real-time contextual prompt detection.",
+    "Automatic switching to specialized models: DeepSeek R1 / Qwen for coding and reasoning, Mistral 24B for French writing, and Gemini 2.0 Flash for lightning speed.",
+    "Real-time visual badge indicating the active specialized model in chat bubbles.",
+  ],
+});
+
+CHANGELOG_BY_LANG.es.unshift({
+  version: "v1.15.0",
+  date: "2026-08-31",
+  title: "Enrutamiento Automático de IA y Conmutación de Modelos",
+  items: [
+    "Detección inteligente de prompts y cambio automático al mejor modelo de IA (código, redacción, velocidad).",
+  ],
+});
+
+CHANGELOG_BY_LANG.de.unshift({
+  version: "v1.15.0",
+  date: "2026-08-31",
+  title: "Intelligentes KI-Auto-Routing & Modell-Umschaltung",
+  items: [
+    "Automatische Erkennung von Prompts und Wechsel zum spezialisierten KI-Modell für Code, Text und Geschwindigkeit.",
+  ],
+});
+
+CHANGELOG_BY_LANG.fr.unshift({
   version: "v1.14.1",
   date: "2026-08-31",
   title: "Résolution Complète du Déploiement Cloudflare & Compatibilité Multi-Racines",

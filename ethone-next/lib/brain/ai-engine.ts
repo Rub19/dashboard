@@ -66,10 +66,51 @@ function getLocalCredentials() {
 }
 
 /**
+ * Smart Auto-Routing for ETHONE OS Brain AI
+ * Dynamically switches to the best model depending on prompt requirements
+ */
+export function resolveSmartModelId(promptText: string, requestedModelId: string = "auto"): string {
+  if (requestedModelId && requestedModelId !== "auto" && requestedModelId !== "default") {
+    return requestedModelId;
+  }
+
+  const clean = promptText.toLowerCase();
+
+  // 1. Code, Programming, Debugging & Tech Architecture
+  const codePatterns = [
+    "code", "fonction", "function", "const ", "let ", "def ", "class ", "import ",
+    "react", "typescript", "javascript", "python", "html", "css", "sql", "api",
+    "bug", "debug", "error", "erreur", "regex", "script", "composant", "component",
+    "nextjs", "tailwind", "bash", "shell", "powershell", "git", "json", "endpoint",
+    "algorithme", "algorithm", "async", "await", "loop", "boucle", "array", "tableau"
+  ];
+  if (codePatterns.some((p) => clean.includes(p)) || promptText.includes("```") || (promptText.includes("{") && promptText.includes("}"))) {
+    return "deepseek-r1-free"; // Best for coding & deep reasoning
+  }
+
+  // 2. Math, Logic, Demonstration & Deep Analysis
+  const mathPatterns = ["calcule", "calculer", "pourquoi", "démontre", "demontre", "preuve", "logique", "formule", "équation", "equation", "math"];
+  if (mathPatterns.some((p) => clean.includes(p))) {
+    return "deepseek-r1-free";
+  }
+
+  // 3. French Writing, Long-form essays, Notes, Synthesis
+  const writingPatterns = ["rédige", "redige", "lettre", "email", "mail", "article", "synthèse", "synthese", "résumé", "resume", "paragraphe", "histoire", "texte"];
+  if (writingPatterns.some((p) => clean.includes(p))) {
+    return "mistral-small-free"; // Best for natural French language
+  }
+
+  // 4. Default / General conversation -> Ultra-fast Gemini Flash / Llama 3.3
+  return "gemini-2-flash-free";
+}
+
+/**
  * Enhanced Autonomous AI Engine for ETHONE OS Brain
  */
 export async function askBrainAI(options: AIEngineOptions): Promise<AIEngineResponse> {
-  const { messages, modelId = "deepseek-chat-free", systemPrompt, temperature = 0.7 } = options;
+  const { messages, modelId = "auto", systemPrompt, temperature = 0.7 } = options;
+  const lastUserPrompt = messages.filter((m) => m.role === "user").slice(-1)[0]?.content || "";
+  const effectiveModelId = resolveSmartModelId(lastUserPrompt, modelId);
 
   const defaultSystem =
     "Tu es Brain, l'assistant IA autonome et ultra-intelligent intégré à ETHONE OS. Tu réponds toujours de manière fluide, détaillée, structurée, bienveillante et proactive en français. Tu maîtrises l'organisation, la rédaction de notes, la gestion des tâches, les fichiers, le code, l'analyse et la créativité.";
@@ -84,7 +125,7 @@ export async function askBrainAI(options: AIEngineOptions): Promise<AIEngineResp
   // 1. Google Gemini API (ultra-fast & top quality)
   if (creds.gemini) {
     try {
-      const geminiModel = modelId.includes("1.5") ? "gemini-1.5-flash" : "gemini-2.0-flash";
+      const geminiModel = effectiveModelId.includes("1.5") ? "gemini-1.5-flash" : "gemini-2.0-flash";
       const contents = messages.map((m) => ({
         role: m.role === "assistant" ? "model" : "user",
         parts: [{ text: m.content }],
@@ -114,7 +155,7 @@ export async function askBrainAI(options: AIEngineOptions): Promise<AIEngineResp
   // 2. Direct OpenRouter if user has key
   if (creds.openrouter) {
     try {
-      const targetModel = OPENROUTER_FREE_MODEL_MAP[modelId] || modelId;
+      const targetModel = OPENROUTER_FREE_MODEL_MAP[effectiveModelId] || effectiveModelId;
       const res = await fetch("https://openrouter.ai/api/v1/chat/completions", {
         method: "POST",
         headers: {
@@ -134,7 +175,7 @@ export async function askBrainAI(options: AIEngineOptions): Promise<AIEngineResp
         const json = await res.json();
         const content = json.choices?.[0]?.message?.content;
         if (content && content.trim().length > 0) {
-          return { content: content.trim(), provider: "openrouter", model: json.model || modelId };
+          return { content: content.trim(), provider: "openrouter", model: json.model || effectiveModelId };
         }
       }
     } catch {}
@@ -201,7 +242,7 @@ export async function askBrainAI(options: AIEngineOptions): Promise<AIEngineResp
           "Content-Type": "application/json",
         },
         body: JSON.stringify({
-          model: modelId.includes("r1") ? "deepseek-reasoner" : "deepseek-chat",
+          model: effectiveModelId.includes("r1") ? "deepseek-reasoner" : "deepseek-chat",
           messages: fullMessages,
           temperature,
         }),
@@ -210,7 +251,7 @@ export async function askBrainAI(options: AIEngineOptions): Promise<AIEngineResp
         const json = await res.json();
         const content = json.choices?.[0]?.message?.content;
         if (content && content.trim().length > 0) {
-          return { content: content.trim(), provider: "deepseek", model: modelId };
+          return { content: content.trim(), provider: "deepseek", model: effectiveModelId };
         }
       }
     } catch {}
@@ -222,7 +263,7 @@ export async function askBrainAI(options: AIEngineOptions): Promise<AIEngineResp
       method: "POST",
       body: JSON.stringify({
         messages: fullMessages,
-        model: modelId,
+        model: effectiveModelId,
       }),
     });
     const content =
@@ -231,13 +272,19 @@ export async function askBrainAI(options: AIEngineOptions): Promise<AIEngineResp
       return {
         content: content.trim(),
         provider: workerRes?.provider || "cloudflare-worker",
-        model: workerRes?.model || modelId,
+        model: workerRes?.model || effectiveModelId,
       };
     }
   } catch {}
 
   // 7. Free Public AI Network (Pollinations Text API)
-  for (const polModel of POLLINATIONS_MODELS) {
+  const preferredPollinations = effectiveModelId.includes("r1") || effectiveModelId.includes("qwen")
+    ? ["deepseek", "qwen", "openai", "mistral"]
+    : effectiveModelId.includes("mistral")
+    ? ["mistral", "deepseek", "openai"]
+    : POLLINATIONS_MODELS;
+
+  for (const polModel of preferredPollinations) {
     try {
       const controller = new AbortController();
       const timer = setTimeout(() => controller.abort(), 7000);

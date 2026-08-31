@@ -1,6 +1,6 @@
 {
   "name": "dashboard-workspace",
-  "version": "1.14.0",
+  "version": "1.15.0",
   "private": true,
   "scripts": {
     "dev": "npm --prefix ethone-next run dev",

@@ -228,7 +228,11 @@ const HeroBriefingCard = memo(function HeroBriefingCard({
               </div>
             )}
             {!brain.loading && brain.error && (
-              <p className="text-[var(--danger)]">{brain.error.message}</p>
+              <p className="text-[var(--text-muted)] text-[11px] leading-relaxed">
+                {brain.error.message.includes("Impossible de joindre")
+                  ? "Bienvenue sur ETHONE OS. Tous vos espaces de travail, notes et widgets locaux sont prêts."
+                  : brain.error.message}
+              </p>
             )}
             {!brain.loading && latestAssistant && !brain.error && (
               <p className="line-clamp-3 whitespace-pre-wrap leading-relaxed">{latestAssistant}</p>

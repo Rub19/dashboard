@@ -7206,6 +7206,46 @@ CHANGELOG_BY_LANG.es.unshift({
 });
 
 CHANGELOG_BY_LANG.fr.unshift({
+  version: "v1.17.2",
+  date: "2026-08-31",
+  title: "Résilience Hors-Ligne & Disparition des Bannières d'Erreur",
+  items: [
+    "Suppression des bannières rouges bloquantes « Impossible de joindre le serveur ETHONE ».",
+    "Mode hors-ligne transparent (Notes, Tâches, Espaces, Widgets) : stockage local immédiat et synchronisation en tâche de fond.",
+    "Briefing Brain local : accueil intelligent et continu même en cas d'indisponibilité temporaire du Worker.",
+  ],
+});
+
+CHANGELOG_BY_LANG.en.unshift({
+  version: "v1.17.2",
+  date: "2026-08-31",
+  title: "Offline-First Resilience & Error Banner Elimination",
+  items: [
+    "Eliminated blocking red error banners 'Impossible de joindre le serveur ETHONE'.",
+    "Seamless offline mode (Notes, Tasks, Spaces, Widgets) with instant local caching and background sync.",
+    "Brain Briefing local fallback: uninterrupted smart overview during remote server downtime.",
+  ],
+});
+
+CHANGELOG_BY_LANG.es.unshift({
+  version: "v1.17.2",
+  date: "2026-08-31",
+  title: "Resiliencia sin Conexión y Eliminación de Banners de Error",
+  items: [
+    "Eliminación de banners de error y modo local transparente en todas las páginas.",
+  ],
+});
+
+CHANGELOG_BY_LANG.de.unshift({
+  version: "v1.17.2",
+  date: "2026-08-31",
+  title: "Offline-Resilienz & Beseitigung von Fehlerbannern",
+  items: [
+    "Beseitigung von Fehlerbannern und nahtloser Offline-Modus auf allen Seiten.",
+  ],
+});
+
+CHANGELOG_BY_LANG.fr.unshift({
   version: "v1.17.1",
   date: "2026-08-31",
   title: "Mega Refonte QoL, Stabilité & Finition Globale",

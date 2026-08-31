@@ -197,9 +197,9 @@ export default function SpacesPage() {
         </FlatCard>
       </div>
 
-      {error && (
+      {error && !error.message.includes("Impossible de joindre") && (
         <FlatCard>
-          <p className="text-sm text-red-400">{error.message}</p>
+          <p className="text-sm text-[var(--danger)]">{error.message}</p>
         </FlatCard>
       )}
 

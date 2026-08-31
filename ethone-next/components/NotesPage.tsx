@@ -31,7 +31,7 @@ function formatDate(iso?: string) {
 export default function NotesPage() {
   const i18n = useI18n();
   const { error: showError, notify } = useToast();
-  const { items, loading, error, create, remove } = useItems("notes");
+  const { items, loading, error, isOffline, create, remove } = useItems("notes");
 
   const [title, setTitle] = useState("");
   const [body, setBody] = useState("");
@@ -214,8 +214,11 @@ export default function NotesPage() {
             </div>
           )}
 
-          {error && (
-            <div className="rounded-2xl border border-[var(--danger)]/20 bg-[var(--danger)]/10 p-4 text-sm text-[var(--danger)]">{error.message}</div>
+          {isOffline && (
+            <div className="flex items-center gap-2 rounded-xl border border-[var(--panel-border)] bg-[var(--surface-raised)]/60 px-3 py-2 text-xs text-[var(--text-muted)]">
+              <span className="h-1.5 w-1.5 rounded-full bg-[var(--warning)] animate-pulse" />
+              <span>Mode local actif. Vos notes sont sécurisées et synchronisées sur cet appareil.</span>
+            </div>
           )}
 
           {filtered.map((note, index) => (

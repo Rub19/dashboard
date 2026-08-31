@@ -7206,6 +7206,46 @@ CHANGELOG_BY_LANG.es.unshift({
 });
 
 CHANGELOG_BY_LANG.fr.unshift({
+  version: "v1.14.1",
+  date: "2026-08-31",
+  title: "Résolution Complète du Déploiement Cloudflare & Compatibilité Multi-Racines",
+  items: [
+    "Création du package racine workspace pour garantir la compatibilité absolue des builds Cloudflare Pages.",
+    "Résolution du contexte de secours pour useWindowManager lors du pré-rendu statique Next.js SSG.",
+    "Chemins d'accès résilients pour package.json et version.json dans next.config.ts.",
+  ],
+});
+
+CHANGELOG_BY_LANG.en.unshift({
+  version: "v1.14.1",
+  date: "2026-08-31",
+  title: "Cloudflare Pages Deployment Fix & Root Workspace Compatibility",
+  items: [
+    "Root workspace package.json added for multi-level Cloudflare Pages build compatibility.",
+    "Safe fallback for useWindowManager during Next.js SSG static prerendering.",
+    "Resilient path resolution for package.json and version.json in next.config.ts.",
+  ],
+});
+
+CHANGELOG_BY_LANG.es.unshift({
+  version: "v1.14.1",
+  date: "2026-08-31",
+  title: "Corrección de Despliegue en Cloudflare Pages",
+  items: [
+    "Compatibilidad total con Cloudflare Pages y resolución del contexto de ventanas.",
+  ],
+});
+
+CHANGELOG_BY_LANG.de.unshift({
+  version: "v1.14.1",
+  date: "2026-08-31",
+  title: "Cloudflare Pages Bereitstellungs-Fix",
+  items: [
+    "Vollständige Cloudflare Pages Kompatibilität und stabiler WindowManager-Fallback.",
+  ],
+});
+
+CHANGELOG_BY_LANG.fr.unshift({
   version: "v1.14.0",
   date: "2026-08-31",
   title: "Perfectionnement Majeur : Filtres Gaming par Map & Agent, Kanban & Diagnostic",

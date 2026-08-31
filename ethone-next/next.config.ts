@@ -1,8 +1,21 @@
 import type { NextConfig } from "next";
-import { writeFileSync, mkdirSync, readFileSync } from "fs";
+import { writeFileSync, mkdirSync, readFileSync, existsSync } from "fs";
 import { join, resolve } from "path";
 
-const packageVersion = JSON.parse(readFileSync(join(process.cwd(), "package.json"), "utf8")).version;
+let packageVersion = "1.14.0";
+try {
+  const pkgPath = existsSync(join(__dirname, "package.json"))
+    ? join(__dirname, "package.json")
+    : existsSync(join(process.cwd(), "package.json"))
+    ? join(process.cwd(), "package.json")
+    : join(process.cwd(), "ethone-next", "package.json");
+  if (existsSync(pkgPath)) {
+    packageVersion = JSON.parse(readFileSync(pkgPath, "utf8")).version || "1.14.0";
+  }
+} catch {
+  packageVersion = "1.14.0";
+}
+
 const commit =
   process.env.CF_PAGES_COMMIT_SHA ||
   process.env.VERCEL_GIT_COMMIT_SHA ||
@@ -10,12 +23,14 @@ const commit =
   null;
 const version = packageVersion || commit || Date.now().toString();
 
-const publicDir = join(process.cwd(), "public");
-mkdirSync(publicDir, { recursive: true });
-writeFileSync(
-  join(publicDir, "version.json"),
-  JSON.stringify({ version, commit, buildAt: new Date().toISOString() }, null, 2)
-);
+const publicDir = existsSync(join(__dirname, "public")) ? join(__dirname, "public") : join(process.cwd(), "public");
+try {
+  mkdirSync(publicDir, { recursive: true });
+  writeFileSync(
+    join(publicDir, "version.json"),
+    JSON.stringify({ version, commit, buildAt: new Date().toISOString() }, null, 2)
+  );
+} catch {}
 
 const nextConfig: NextConfig = {
   output: "export",
@@ -25,7 +40,7 @@ const nextConfig: NextConfig = {
   },
   trailingSlash: true,
   allowedDevOrigins: ["127.0.0.1"],
-  adapterPath: resolve("./scripts/build-adapter.js"),
+  adapterPath: resolve(__dirname, "./scripts/build-adapter.js"),
 };
 
 export default nextConfig;

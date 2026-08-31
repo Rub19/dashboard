@@ -161,7 +161,7 @@ export default function LolTrackerView() {
     const set = new Set<string>();
     matches.forEach((m) => {
       const me = m.scoreboard?.players?.find((p) => p.isMe) || m.scoreboard?.players?.[0];
-      const champ = me?.championName || m.metadata?.championName;
+      const champ = me?.character || m.metadata?.championName;
       if (champ) set.add(champ);
     });
     return Array.from(set);
@@ -171,7 +171,7 @@ export default function LolTrackerView() {
     return matches.filter((m) => {
       if (selectedChampion === "all") return true;
       const me = m.scoreboard?.players?.find((p) => p.isMe) || m.scoreboard?.players?.[0];
-      const champ = me?.championName || m.metadata?.championName;
+      const champ = me?.character || m.metadata?.championName;
       return champ === selectedChampion;
     });
   }, [matches, selectedChampion]);

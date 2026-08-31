@@ -1,0 +1,13 @@
+{
+  "name": "dashboard-workspace",
+  "version": "1.14.0",
+  "private": true,
+  "scripts": {
+    "dev": "npm --prefix ethone-next run dev",
+    "build": "npm --prefix ethone-next run build",
+    "start": "npm --prefix ethone-next run start",
+    "lint": "npm --prefix ethone-next run lint",
+    "test": "npm --prefix ethone-next run test",
+    "test:unit": "npm --prefix ethone-next run test:unit"
+  }
+}

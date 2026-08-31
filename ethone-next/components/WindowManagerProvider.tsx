@@ -135,8 +135,18 @@ export function WindowManagerProvider({ children }: { children: ReactNode }) {
   );
 }
 
+const FALLBACK_CONTEXT: WindowManagerContext = {
+  windows: [],
+  missionControl: false,
+  openWindow: () => {},
+  closeWindow: () => {},
+  focusWindow: () => {},
+  updateWindow: () => {},
+  toggleMissionControl: () => {},
+  setMissionControl: () => {},
+};
+
 export function useWindowManager() {
   const ctx = useContext(Context);
-  if (!ctx) throw new Error("useWindowManager requires WindowManagerProvider");
-  return ctx;
+  return ctx || FALLBACK_CONTEXT;
 }

@@ -7206,6 +7206,48 @@ CHANGELOG_BY_LANG.es.unshift({
 });
 
 CHANGELOG_BY_LANG.fr.unshift({
+  version: "v1.17.1",
+  date: "2026-08-31",
+  title: "Mega Refonte QoL, Stabilité & Finition Globale",
+  items: [
+    "Navigation Réglages 100% déterministe : indicateurs stables, détection scrollspy de précision et aucune réinitialisation d'état.",
+    "Élimination des flashs noirs : transitions de pages optimisées et persistantes avec support complet du Reduced Motion.",
+    "Design System & Micro-interactions : cohérence globale sur tous les champs de saisie, halos d'accentuation et boutons.",
+    "Performances 60 FPS : accélération matérielle ciblée, nettoyage des timers et gestion mémoire rigoureuse.",
+  ],
+});
+
+CHANGELOG_BY_LANG.en.unshift({
+  version: "v1.17.1",
+  date: "2026-08-31",
+  title: "Mega QoL, Stability & Polish Overhaul",
+  items: [
+    "100% deterministic Settings navigation: rock-solid active indicators, precision scrollspy, and zero automatic category resets.",
+    "Eliminated black flashes: snappy, persistent page transitions with native Reduced Motion support.",
+    "Design system & micro-interactions: unified input fields, accent glow, and robust button states.",
+    "60 FPS performance: targeted GPU acceleration, strict timer cleanup, and leak-free memory management.",
+  ],
+});
+
+CHANGELOG_BY_LANG.es.unshift({
+  version: "v1.17.1",
+  date: "2026-08-31",
+  title: "Gran Actualización de Calidad de Vida, Estabilidad y Acabado",
+  items: [
+    "Navegación determinista en Ajustes, eliminación de parpadeos negros y optimización a 60 FPS.",
+  ],
+});
+
+CHANGELOG_BY_LANG.de.unshift({
+  version: "v1.17.1",
+  date: "2026-08-31",
+  title: "Mega-Update für Stabilität, QoL & Politur",
+  items: [
+    "Deterministische Einstellungsnavigation, Beseitigung von Black-Flashes und 60 FPS Optimierung.",
+  ],
+});
+
+CHANGELOG_BY_LANG.fr.unshift({
   version: "v1.17.0",
   date: "2026-08-31",
   title: "Galerie d'Avatars HD : Netflix, Crunchyroll, Gaming & Téléchargement",

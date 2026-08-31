@@ -158,6 +158,14 @@ export function useSettingsNavigation({
     const container = containerRef.current;
     if (!container || categoryRefs.current.size === 0) return null;
 
+    // If reached bottom of scroll container, select the last visible category
+    if (container.scrollHeight - container.scrollTop - container.clientHeight < 40) {
+      const allEntries = Array.from(categoryRefs.current.entries()).filter(([, el]) => el.isConnected);
+      if (allEntries.length > 0) {
+        return allEntries[allEntries.length - 1][0];
+      }
+    }
+
     const containerRect = container.getBoundingClientRect();
     const focalTop = containerRect.top + 20;
     const focalBottom = containerRect.top + containerRect.height * 0.45;

@@ -1,7 +1,7 @@
 "use client";
 
 import { useCallback, useEffect, useRef } from "react";
-import { motion } from "framer-motion";
+import { motion, useReducedMotion } from "framer-motion";
 import { Icon } from "@/lib/icons";
 import { cn } from "@/lib/utils";
 import { useI18n } from "@/lib/hooks/useI18n";
@@ -86,6 +86,7 @@ export default function SettingsNavigation({
   className,
 }: SettingsNavigationProps) {
   const i18n = useI18n();
+  const shouldReduceMotion = useReducedMotion();
   const buttonsRef = useRef<(HTMLButtonElement | null)[]>([]);
 
   const activeIndex = CATEGORY_ORDER.findIndex((c) => c.id === active);
@@ -165,7 +166,7 @@ export default function SettingsNavigation({
           <motion.div
             layoutId="settings-nav-active-pill"
             className="absolute inset-0 rounded-2xl border border-[var(--accent-primary)]/25 bg-[var(--accent-primary)]/10 shadow-[0_0_16px_var(--glow-color)]"
-            transition={{ type: "spring", stiffness: 380, damping: 30 }}
+            transition={shouldReduceMotion ? { duration: 0 } : { type: "spring", stiffness: 380, damping: 30 }}
           />
         )}
 

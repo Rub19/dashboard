@@ -7206,6 +7206,44 @@ CHANGELOG_BY_LANG.es.unshift({
 });
 
 CHANGELOG_BY_LANG.fr.unshift({
+  version: "v1.15.2",
+  date: "2026-08-31",
+  title: "Météo & UI : Badge de Mise à Jour Raffiné & Scrollbars Ultra-Fines",
+  items: [
+    "Intégration d'un badge de statut discret et élégant pour la dernière mise à jour météo directement dans l'en-tête.",
+    "Remplacement des barres de défilement épaisses natives par des scrollbars ultra-fines glassmorphismes.",
+  ],
+});
+
+CHANGELOG_BY_LANG.en.unshift({
+  version: "v1.15.2",
+  date: "2026-08-31",
+  title: "Weather & UI: Refined Update Badge & Ultra-Sleek Scrollbars",
+  items: [
+    "Integrated a sleek, discreet update timestamp badge directly inside the Weather header card.",
+    "Replaced heavy native browser scrollbars with ultra-thin glassmorphic scrollbars.",
+  ],
+});
+
+CHANGELOG_BY_LANG.es.unshift({
+  version: "v1.15.2",
+  date: "2026-08-31",
+  title: "Clima y UI: Insignia de Actualización y Barras de Desplazamiento Finas",
+  items: [
+    "Mejora estética de la última actualización del clima y barras de desplazamiento elegantes.",
+  ],
+});
+
+CHANGELOG_BY_LANG.de.unshift({
+  version: "v1.15.2",
+  date: "2026-08-31",
+  title: "Wetter & UI: Update-Badge & Elegante Scrollleisten",
+  items: [
+    "Elegantes Wetter-Aktualisierungsbadge und moderne dünne Scrollleisten.",
+  ],
+});
+
+CHANGELOG_BY_LANG.fr.unshift({
   version: "v1.15.1",
   date: "2026-08-31",
   title: "Gestionnaire de Fichiers : Résilience Hors-Ligne & Mode Local Persistant",

@@ -333,15 +333,21 @@ export default function WeatherPage() {
   return (
     <div className="h-full min-h-0 w-full flex flex-col overflow-hidden p-4 sm:p-6">
       <div className="mx-auto flex h-full w-full max-w-7xl flex-col">
-        <Card variant="default" padding="md" className="mb-4">
+        <Card variant="default" padding="md" className="mb-3 shrink-0 backdrop-blur-2xl">
           <div className="flex flex-col gap-4 sm:flex-row sm:items-center sm:justify-between">
             <div className="flex items-start gap-3 sm:items-center">
-              <div className="flex h-9 w-9 shrink-0 items-center justify-center rounded-xl bg-[var(--accent-primary)]/10 text-[var(--accent-primary)]">
+              <div className="flex h-10 w-10 shrink-0 items-center justify-center rounded-2xl bg-[var(--accent-primary)]/10 text-[var(--accent-primary)] border border-[var(--accent-primary)]/20 shadow-sm">
                 <Icon pack="phosphor" name="cloudSun" className="h-5 w-5" />
               </div>
               <div>
-                <h1 className="text-lg font-semibold tracking-tight text-[var(--text-primary)]">{i18n("weather", "Météo")}</h1>
-                <p className="text-xs text-[var(--text-muted)]">{i18n("weatherDescription", "Météo actuelle et prévisions")}</p>
+                <div className="flex items-center gap-2.5">
+                  <h1 className="text-lg font-bold tracking-tight text-[var(--text-primary)]">{i18n("weather", "Météo")}</h1>
+                  <span className="inline-flex items-center gap-1.5 rounded-full border border-white/10 bg-white/[0.04] px-2.5 py-0.5 text-[10px] font-medium text-[var(--text-muted)]">
+                    <span className="h-1.5 w-1.5 rounded-full bg-emerald-400 animate-pulse" />
+                    <span>{i18n("lastUpdated", "Mis à jour")} : <strong className="text-[var(--text-primary)] font-semibold">{lastUpdatedText}</strong></span>
+                  </span>
+                </div>
+                <p className="text-xs text-[var(--text-muted)] mt-0.5">{i18n("weatherDescription", "Météo actuelle et prévisions en temps réel")}</p>
               </div>
             </div>
 
@@ -377,11 +383,7 @@ export default function WeatherPage() {
           </div>
         </Card>
 
-        <div className="text-[11px] text-[var(--text-muted)] sm:text-right">
-          {i18n("lastUpdated", "Dernière mise à jour")} : {lastUpdatedText}
-        </div>
-
-        <div className="min-h-0 w-full flex-1 overflow-y-auto os-scroll">
+        <div className="min-h-0 w-full flex-1 overflow-y-auto os-scroll pr-1">
           {error ? (
             <Card variant="status" className="mt-4">
               <div className="flex items-center gap-3 text-[var(--danger)]">

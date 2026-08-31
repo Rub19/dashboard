@@ -7206,6 +7206,48 @@ CHANGELOG_BY_LANG.es.unshift({
 });
 
 CHANGELOG_BY_LANG.fr.unshift({
+  version: "v1.17.0",
+  date: "2026-08-31",
+  title: "Galerie d'Avatars HD : Netflix, Crunchyroll, Gaming & Téléchargement",
+  items: [
+    "Nouvelle galerie d'avatars haute résolution intégrée dans le Profil et les Réglages.",
+    "Collections thématiques riches : Séries Netflix (Arcane, Squid Game, Edgerunners...), Crunchyroll & Anime (JJK, Solo Leveling, Demon Slayer...), Gaming & Riot (Valorant, LoL, Cyberpunk...).",
+    "Bouton de téléchargement direct d'avatar vers votre ordinateur en un clic.",
+    "Importation d'image locale et sélecteur d'URL personnalisé (Pinterest, Discord, Web).",
+  ],
+});
+
+CHANGELOG_BY_LANG.en.unshift({
+  version: "v1.17.0",
+  date: "2026-08-31",
+  title: "HD Avatar Picker Gallery: Netflix, Crunchyroll, Gaming & Downloader",
+  items: [
+    "New integrated high-definition avatar gallery in Profile & Settings.",
+    "Curated themed packs: Netflix (Arcane, Squid Game, Edgerunners...), Crunchyroll & Anime (JJK, Solo Leveling, Demon Slayer...), Gaming & Riot (Valorant, LoL, Cyberpunk...).",
+    "One-click direct avatar downloader to your local computer.",
+    "Custom Web URL grabber (Pinterest, Discord, Web) and local image uploader.",
+  ],
+});
+
+CHANGELOG_BY_LANG.es.unshift({
+  version: "v1.17.0",
+  date: "2026-08-31",
+  title: "Galería de Avatares HD: Netflix, Crunchyroll, Gaming y Descarga",
+  items: [
+    "Nueva galería de avatares HD con colecciones de Netflix, Crunchyroll, Gaming y descarga.",
+  ],
+});
+
+CHANGELOG_BY_LANG.de.unshift({
+  version: "v1.17.0",
+  date: "2026-08-31",
+  title: "HD Avatar-Galerie: Netflix, Crunchyroll, Gaming & Download",
+  items: [
+    "Neue HD-Avatar-Galerie mit Netflix, Crunchyroll, Gaming-Sammlungen und Download-Funktion.",
+  ],
+});
+
+CHANGELOG_BY_LANG.fr.unshift({
   version: "v1.16.1",
   date: "2026-08-31",
   title: "Fichiers & Audio : Affichage Interactif Garanti & Nettoyage Spotify 401",

@@ -14,7 +14,8 @@ import Image from "next/image";
 import Button from "@/components/ui/Button";
 import Input from "@/components/Input";
 import FormField from "@/components/FormField";
-
+import { Sparkles, Camera } from "lucide-react";
+import AvatarPickerModal from "@/components/AvatarPickerModal";
 import ClientImage from "@/components/ClientImage";
 
 export default function ProfilePage() {
@@ -28,6 +29,7 @@ export default function ProfilePage() {
     display_name: "",
     avatar_url: "",
   });
+  const [isPickerOpen, setIsPickerOpen] = useState(false);
   const publicProfile = usePublicProfile(form.username || profile?.username);
   const [saving, setSaving] = useState(false);
   const [saved, setSaved] = useState(false);
@@ -100,7 +102,11 @@ export default function ProfilePage() {
       <div className="min-h-0 w-full flex-1 overflow-y-auto os-scroll space-y-6">
       <FlatCard>
         <div className="flex flex-col gap-4 sm:flex-row sm:items-center">
-          <div className="relative h-16 w-16 shrink-0 overflow-hidden rounded-2xl border border-[var(--panel-border)] bg-[var(--accent)] text-2xl font-bold text-white flex items-center justify-center shadow-lg">
+          <div
+            className="group relative h-16 w-16 shrink-0 overflow-hidden rounded-2xl border border-[var(--panel-border)] bg-[var(--accent)] text-2xl font-bold text-white flex items-center justify-center shadow-lg cursor-pointer transition-transform hover:scale-105"
+            onClick={() => setIsPickerOpen(true)}
+            title="Changer d'avatar (Netflix, Crunchyroll, Gaming...)"
+          >
             {currentAvatar ? (
               <ClientImage
                 src={currentAvatar}
@@ -115,6 +121,9 @@ export default function ProfilePage() {
             ) : (
               <span>{profile?.display_name?.[0]?.toUpperCase() || user?.email?.[0]?.toUpperCase() || "R"}</span>
             )}
+            <div className="absolute inset-0 flex items-center justify-center bg-black/60 opacity-0 group-hover:opacity-100 transition-opacity">
+              <Camera className="h-5 w-5 text-white" />
+            </div>
           </div>
           <div className="min-w-0">
             <p className="break-words text-lg font-semibold">{form.display_name || profile?.display_name || user?.email || i18n("guest")}</p>
@@ -183,25 +192,44 @@ export default function ProfilePage() {
                 className="w-full"
               />
             </FormField>
-            <label className="mt-2 flex cursor-pointer items-center gap-2 rounded-[var(--panel-radius)] border border-[var(--panel-border)] bg-[var(--panel-bg)] px-3 py-2 text-sm transition-colors hover:border-[var(--accent)] backdrop-blur-[var(--panel-blur)]">
-              <Icon name="upload" className="h-4 w-4" />
-              {uploadingMedia ? i18n("loading") : i18n("uploadAvatar")}
-              <input
-                type="file"
-                accept="image/png,image/jpeg,image/webp"
-                className="hidden"
-                disabled={uploadingMedia}
-                onChange={(e) => {
-                  const file = e.target.files?.[0];
-                  if (file) handleAvatarUpload(file);
-                  e.target.value = "";
-                }}
-              />
-            </label>
+            
+            <div className="flex flex-wrap items-center gap-2 pt-1">
+              <Button
+                type="button"
+                variant="primary"
+                size="sm"
+                onClick={() => setIsPickerOpen(true)}
+                leftIcon={<Sparkles className="h-4 w-4" />}
+              >
+                Choisir un avatar (Netflix, Crunchyroll, Gaming...)
+              </Button>
+
+              <label className="flex cursor-pointer items-center gap-2 rounded-[var(--panel-radius)] border border-[var(--panel-border)] bg-[var(--panel-bg)] px-3 py-1.5 text-xs font-semibold transition-colors hover:border-[var(--accent)] backdrop-blur-[var(--panel-blur)] cursor-pointer">
+                <Icon name="upload" className="h-3.5 w-3.5" />
+                {uploadingMedia ? i18n("loading") : i18n("uploadAvatar")}
+                <input
+                  type="file"
+                  accept="image/png,image/jpeg,image/webp"
+                  className="hidden"
+                  disabled={uploadingMedia}
+                  onChange={(e) => {
+                    const file = e.target.files?.[0];
+                    if (file) handleAvatarUpload(file);
+                    e.target.value = "";
+                  }}
+                />
+              </label>
+            </div>
             {uploadResult?.message && !uploadResult?.ok && (
               <p className="text-xs text-red-400">{uploadResult.message}</p>
             )}
           </div>
+
+          <AvatarPickerModal
+            isOpen={isPickerOpen}
+            onClose={() => setIsPickerOpen(false)}
+            onSelect={(url) => setForm((prev) => ({ ...prev, avatar_url: url }))}
+          />
 
           <div className="flex flex-wrap items-center gap-3">
             <Button

@@ -1041,7 +1041,7 @@ export default function FilesPage() {
               ))}
             </>
           ) : filteredFiles.length === 0 ? (
-            error && clientId ? null : !clientId ? (
+            !clientId && !error && files.length === 0 ? (
               <div className="col-span-full">
                 <EmptyState
                   icon="cloud"

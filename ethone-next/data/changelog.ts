@@ -7206,6 +7206,44 @@ CHANGELOG_BY_LANG.es.unshift({
 });
 
 CHANGELOG_BY_LANG.fr.unshift({
+  version: "v1.16.1",
+  date: "2026-08-31",
+  title: "Fichiers & Audio : Affichage Interactif Garanti & Nettoyage Spotify 401",
+  items: [
+    "Gestionnaire de fichiers : affichage immédiat de la zone de dépôt et de création d'éléments même en cas d'indisponibilité distante.",
+    "Lecteur audio : arrêt des requêtes en boucle 401 et nettoyage automatique des jetons Spotify expirés.",
+  ],
+});
+
+CHANGELOG_BY_LANG.en.unshift({
+  version: "v1.16.1",
+  date: "2026-08-31",
+  title: "Files & Audio: Guaranteed Interactive View & Spotify 401 Clean Handling",
+  items: [
+    "Files manager: drop zone and action buttons always visible even during remote server downtime.",
+    "Audio player: eliminated 401 unauthorized polling loop by auto-purging expired Spotify tokens.",
+  ],
+});
+
+CHANGELOG_BY_LANG.es.unshift({
+  version: "v1.16.1",
+  date: "2026-08-31",
+  title: "Archivos y Audio: Vista Interactiva y Corrección Spotify 401",
+  items: [
+    "Mejora en la vista de archivos y eliminación de bucles de error 401 en Spotify.",
+  ],
+});
+
+CHANGELOG_BY_LANG.de.unshift({
+  version: "v1.16.1",
+  date: "2026-08-31",
+  title: "Dateien & Audio: Interaktive Ansicht & Spotify 401 Bereinigung",
+  items: [
+    "Verbesserte Dateiübersicht und Bereinigung abgelaufener Spotify-Tokens.",
+  ],
+});
+
+CHANGELOG_BY_LANG.fr.unshift({
   version: "v1.16.0",
   date: "2026-08-31",
   title: "Système d'Icônes Haute Définition & Audit Visuel Global",

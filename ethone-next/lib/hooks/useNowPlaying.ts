@@ -133,80 +133,88 @@ export function useNowPlaying(pollMs = 3000) {
             headers: { Authorization: `Bearer ${spotifyToken}` },
           });
 
-          if (spotifyRes.status === 204 || (spotifyRes.status === 200 && !spotifyRes.body)) {
-            spotifyRes = await fetch("https://api.spotify.com/v1/me/player", {
-              headers: { Authorization: `Bearer ${spotifyToken}` },
-            });
-          }
-
-          if (spotifyRes.status === 200) {
-            const spJson = (await spotifyRes.json()) as {
-              is_playing?: boolean;
-              progress_ms?: number;
-              item?: {
-                id?: string;
-                name?: string;
-                duration_ms?: number;
-                artists?: { name: string }[];
-                album?: { name: string; images?: { url: string }[] };
-              };
-            };
-
-            if (spJson?.item) {
-              const mapped: NowPlaying = {
-                id: spJson.item.id,
-                source: "spotify",
-                title: spJson.item.name,
-                artist: spJson.item.artists?.map((a) => a.name).join(", "),
-                album: spJson.item.album?.name,
-                cover: spJson.item.album?.images?.[0]?.url,
-                artworkUrl: spJson.item.album?.images?.[0]?.url,
-                covers: spJson.item.album?.images?.map((i) => i.url) || [],
-                progressMs: spJson.progress_ms,
-                durationMs: spJson.item.duration_ms,
-                isPlaying: Boolean(spJson.is_playing),
-                isSaved: false,
-              };
-              setData(mapped);
-              setError(null);
-              return;
+          if (spotifyRes.status === 401) {
+            // Token expired or revoked: clear stale tokens to prevent repeated 401 loops
+            localStorage.removeItem("ethone:token:spotify");
+            localStorage.removeItem("spotify_access_token");
+            localStorage.removeItem("ethone:cred:spotify:accessToken");
+            localStorage.removeItem("ethone:cred:spotify:token");
+          } else {
+            if (spotifyRes.status === 204 || (spotifyRes.status === 200 && !spotifyRes.body)) {
+              spotifyRes = await fetch("https://api.spotify.com/v1/me/player", {
+                headers: { Authorization: `Bearer ${spotifyToken}` },
+              });
             }
-          }
 
-          // Fallback to recently-played if currently idle
-          const recentRes = await fetch("https://api.spotify.com/v1/me/player/recently-played?limit=1", {
-            headers: { Authorization: `Bearer ${spotifyToken}` },
-          });
-          if (recentRes.ok) {
-            const rJson = (await recentRes.json()) as {
-              items?: Array<{
-                track?: {
+            if (spotifyRes.status === 200) {
+              const spJson = (await spotifyRes.json()) as {
+                is_playing?: boolean;
+                progress_ms?: number;
+                item?: {
                   id?: string;
                   name?: string;
                   duration_ms?: number;
                   artists?: { name: string }[];
                   album?: { name: string; images?: { url: string }[] };
                 };
-              }>;
-            };
-            const lastTrack = rJson?.items?.[0]?.track;
-            if (lastTrack) {
-              const mapped: NowPlaying = {
-                id: lastTrack.id,
-                source: "spotify",
-                title: lastTrack.name,
-                artist: lastTrack.artists?.map((a) => a.name).join(", "),
-                album: lastTrack.album?.name,
-                cover: lastTrack.album?.images?.[0]?.url,
-                artworkUrl: lastTrack.album?.images?.[0]?.url,
-                covers: lastTrack.album?.images?.map((i) => i.url) || [],
-                durationMs: lastTrack.duration_ms,
-                isPlaying: false,
-                isSaved: false,
               };
-              setData(mapped);
-              setError(null);
-              return;
+
+              if (spJson?.item) {
+                const mapped: NowPlaying = {
+                  id: spJson.item.id,
+                  source: "spotify",
+                  title: spJson.item.name,
+                  artist: spJson.item.artists?.map((a) => a.name).join(", "),
+                  album: spJson.item.album?.name,
+                  cover: spJson.item.album?.images?.[0]?.url,
+                  artworkUrl: spJson.item.album?.images?.[0]?.url,
+                  covers: spJson.item.album?.images?.map((i) => i.url) || [],
+                  progressMs: spJson.progress_ms,
+                  durationMs: spJson.item.duration_ms,
+                  isPlaying: Boolean(spJson.is_playing),
+                  isSaved: false,
+                };
+                setData(mapped);
+                setError(null);
+                return;
+              }
+            }
+
+            // Fallback to recently-played if currently idle
+            const recentRes = await fetch("https://api.spotify.com/v1/me/player/recently-played?limit=1", {
+              headers: { Authorization: `Bearer ${spotifyToken}` },
+            });
+            if (recentRes.ok) {
+              const rJson = (await recentRes.json()) as {
+                items?: Array<{
+                  track?: {
+                    id?: string;
+                    name?: string;
+                    duration_ms?: number;
+                    artists?: { name: string }[];
+                    album?: { name: string; images?: { url: string }[] };
+                  };
+                }>;
+              };
+              const lastTrack = rJson?.items?.[0]?.track;
+              if (lastTrack) {
+                const mapped: NowPlaying = {
+                  id: lastTrack.id,
+                  source: "spotify",
+                  title: lastTrack.name,
+                  artist: lastTrack.artists?.map((a) => a.name).join(", "),
+                  album: lastTrack.album?.name,
+                  cover: lastTrack.album?.images?.[0]?.url,
+                  artworkUrl: lastTrack.album?.images?.[0]?.url,
+                  covers: lastTrack.album?.images?.map((i) => i.url) || [],
+                  durationMs: lastTrack.duration_ms,
+                  isPlaying: false,
+                  isSaved: false,
+                };
+                setData(mapped);
+                setError(null);
+                return;
+              }
             }
           }
         } catch {

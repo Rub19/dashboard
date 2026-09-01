@@ -2,6 +2,15 @@
 
 Toutes les modifications notables de ce projet seront documentées dans ce fichier.
 
+## v1.20.17 — 2026-09-01
+
+**ETHONE — Nettoyage auto-liste anime et cadrage avatars**
+
+- Suppression des 34 avatars anime auto-générés (mauvais personnages / cadrage).
+- Conservation des avatars réels déjà en place.
+- Cadrage `object-top` pour les avatars anime afin de mieux centrer les visages.
+- Validation : `npm run build`, `npm run lint`.
+
 ## v1.20.16 — 2026-09-01
 
 **ETHONE — Avatars ronds et remplacement des icônes locales**

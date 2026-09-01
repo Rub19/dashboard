@@ -7206,6 +7206,58 @@ CHANGELOG_BY_LANG.es.unshift({
 });
 
 CHANGELOG_BY_LANG.fr.unshift({
+  version: "v1.20.17",
+  date: "2026-09-01",
+  title: "Nettoyage de l'auto-liste anime et cadrage des avatars",
+  items: [
+    "Suppression des 34 avatars anime auto-générés (pas les bons personnages, mauvais cadrage).",
+    "Conservation des animes déjà réels et bien cadrés (Gojo, Sukuna, Denji, Tanjiro, etc.).",
+    "Cadrage 'object-top' sur les avatars anime pour mieux centrer les visages.",
+    "Validation : build, lint.",
+    "Version affichée : v1.20.17.",
+  ],
+});
+
+CHANGELOG_BY_LANG.en.unshift({
+  version: "v1.20.17",
+  date: "2026-09-01",
+  title: "Cleaned auto anime list and avatar framing",
+  items: [
+    "Removed 34 auto-generated anime avatars (wrong characters, poor framing).",
+    "Kept already real and well-framed anime (Gojo, Sukuna, Denji, Tanjiro, etc.).",
+    "Added 'object-top' framing on anime avatars for better face centering.",
+    "Validation: build, lint.",
+    "Version badge: v1.20.17.",
+  ],
+});
+
+CHANGELOG_BY_LANG.es.unshift({
+  version: "v1.20.17",
+  date: "2026-09-01",
+  title: "Limpieza de auto-lista anime y encuadre de avatares",
+  items: [
+    "Eliminados 34 avatares anime auto-generados (personajes incorrectos, mal encuadre).",
+    "Conservados animes ya reales y bien encuadrados (Gojo, Sukuna, Denji, Tanjiro, etc.).",
+    "Añadido encuadre 'object-top' en avatares anime para centrar mejor los rostros.",
+    "Validación : build, lint.",
+    "Versión : v1.20.17.",
+  ],
+});
+
+CHANGELOG_BY_LANG.de.unshift({
+  version: "v1.20.17",
+  date: "2026-09-01",
+  title: "Auto-Anime-Liste bereinigt und Avatar-Rahmung",
+  items: [
+    "34 automatisch generierte Anime-Avatare entfernt (falsche Charaktere, schlecht gerahmt).",
+    "Bereits echte und gut gerahmte Anime beibehalten (Gojo, Sukuna, Denji, Tanjiro, etc.).",
+    "'object-top'-Rahmung für Anime-Avatare hinzugefügt, um Gesichter besser zu zentrieren.",
+    "Validierung: build, lint.",
+    "Version: v1.20.17.",
+  ],
+});
+
+CHANGELOG_BY_LANG.fr.unshift({
   version: "v1.20.16",
   date: "2026-09-01",
   title: "Avatars ronds et remplacement des icônes SVG locales",

@@ -7206,6 +7206,66 @@ CHANGELOG_BY_LANG.es.unshift({
 });
 
 CHANGELOG_BY_LANG.fr.unshift({
+  version: "v1.20.15",
+  date: "2026-09-01",
+  title: "Sélecteur d'avatars massif : Netflix, Prime, Crunchyroll, LoL & Valorant",
+  items: [
+    "Ajout de +200 icônes réelles dans le sélecteur d'avatars.",
+    "Gaming : tous les champions League of Legends + tous les agents Valorant (Riot).",
+    "Anime : personnages populaires via AniList (Naruto, MHA, Spy x Family...).",
+    "Netflix & Prime Video : affiches officielles de séries via TVmaze.",
+    "Nouvelle catégorie 'Prime Video' dans le filtre.",
+    "Validation : build, lint.",
+    "Version affichée : v1.20.15.",
+  ],
+});
+
+CHANGELOG_BY_LANG.en.unshift({
+  version: "v1.20.15",
+  date: "2026-09-01",
+  title: "Massive avatar picker: Netflix, Prime, Crunchyroll, LoL & Valorant",
+  items: [
+    "Added 200+ real icons to the avatar picker.",
+    "Gaming: all League of Legends champions + all Valorant agents (Riot).",
+    "Anime: popular characters via AniList (Naruto, MHA, Spy x Family...).",
+    "Netflix & Prime Video: official series posters via TVmaze.",
+    "New 'Prime Video' filter category.",
+    "Validation: build, lint.",
+    "Version badge: v1.20.15.",
+  ],
+});
+
+CHANGELOG_BY_LANG.es.unshift({
+  version: "v1.20.15",
+  date: "2026-09-01",
+  title: "Selector masivo de avatares: Netflix, Prime, Crunchyroll, LoL y Valorant",
+  items: [
+    "Más de 200 iconos reales añadidos al selector de avatares.",
+    "Gaming : todos los campeones de LoL y agentes de Valorant (Riot).",
+    "Anime : personajes populares vía AniList (Naruto, MHA, Spy x Family...).",
+    "Netflix y Prime Video : pósters oficiales vía TVmaze.",
+    "Nueva categoría 'Prime Video' en el filtro.",
+    "Validación : build, lint.",
+    "Versión : v1.20.15.",
+  ],
+});
+
+CHANGELOG_BY_LANG.de.unshift({
+  version: "v1.20.15",
+  date: "2026-09-01",
+  title: "Massive Avatar-Auswahl: Netflix, Prime, Crunchyroll, LoL & Valorant",
+  items: [
+    "Mehr als 200 echte Icons zum Avatar-Auswahl hinzugefügt.",
+    "Gaming: alle LoL-Champions + alle Valorant-Agenten (Riot).",
+    "Anime: beliebte Charaktere via AniList (Naruto, MHA, Spy x Family...).",
+    "Netflix & Prime Video: offizielle Serienposter via TVmaze.",
+    "Neue Filterkategorie 'Prime Video'.",
+    "Validierung: build, lint.",
+    "Version: v1.20.15.",
+  ],
+});
+
+CHANGELOG_BY_LANG.fr.unshift({
   version: "v1.20.14",
   date: "2026-09-01",
   title: "Avatars réels via AniList & TVmaze",

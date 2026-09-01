@@ -2,6 +2,17 @@
 
 Toutes les modifications notables de ce projet seront documentées dans ce fichier.
 
+## v1.20.15 — 2026-09-01
+
+**ETHONE — Sélecteur d'avatars massif**
+
+- Ajout de +200 icônes réelles (Netflix, Prime Video, Crunchyroll/anime, LoL, Valorant).
+- Gaming : tous les champions League of Legends + tous les agents Valorant.
+- Anime : personnages populaires via AniList.
+- Netflix & Prime Video : affiches officielles de séries via TVmaze.
+- Nouvelle catégorie `Prime Video` dans le filtre.
+- Validation : `npm run build`, `npm run lint`.
+
 ## v1.20.14 — 2026-09-01
 
 **ETHONE — Avatars réels via AniList & TVmaze**

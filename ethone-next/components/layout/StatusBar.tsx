@@ -96,11 +96,13 @@ function CloudSyncPill({
   online,
   errorSources,
   i18n,
+  isGuest,
 }: {
   status: SyncState;
   online: boolean;
   errorSources: string;
   i18n: (key: string, fallback?: string) => string;
+  isGuest: boolean;
 }) {
   const errorTitle = errorSources
     ? `${i18n("syncErrorSources", "Sources en erreur")} : ${errorSources
@@ -108,6 +110,16 @@ function CloudSyncPill({
         .map((k) => i18n(`syncSource.${k}`, k))
         .join(", ")}`
     : i18n("syncError", "La synchronisation a échoué");
+
+  if (isGuest && status === "syncing") {
+    return (
+      <StatusPill
+        icon={<CheckCircle2 className="h-3.5 w-3.5 text-[var(--text-muted)]" />}
+        value="Prêt"
+        tone="default"
+      />
+    );
+  }
 
   switch (status) {
     case "syncing":
@@ -263,7 +275,7 @@ export default function StatusBar() {
             }
           />
 
-          <CloudSyncPill status={syncStatus} online={online} errorSources={syncErrorSources} i18n={i18n} />
+          <CloudSyncPill status={syncStatus} online={online} errorSources={syncErrorSources} i18n={i18n} isGuest={sessionRole.id === "guest"} />
         </div>
 
         <div className="pointer-events-auto flex min-w-0 items-center gap-2 bg-transparent px-0 py-0">

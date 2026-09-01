@@ -2,6 +2,14 @@
 
 Toutes les modifications notables de ce projet seront documentées dans ce fichier.
 
+## v1.20.22 — 2026-09-01
+
+**ETHONE — Fix synchronisation infinie**
+
+- Timeout de 10s sur les sources `syncing` pour éviter le spinner infini.
+- `StatusBar` : affiche `Prêt` pour les invités au lieu de `Synchronisation...`.
+- Validation : `npm run build`, `npm run lint`.
+
 ## v1.20.21 — 2026-09-01
 
 **ETHONE Avatar Library 2.0 — Import Drive**

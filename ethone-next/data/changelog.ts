@@ -7206,6 +7206,54 @@ CHANGELOG_BY_LANG.es.unshift({
 });
 
 CHANGELOG_BY_LANG.fr.unshift({
+  version: "v1.20.22",
+  date: "2026-09-01",
+  title: "ETHONE — Fix synchronisation infinie",
+  items: [
+    "Timeout de 10s sur les sources 'syncing' pour éviter le spinner infini.",
+    "StatusBar : affiche 'Prêt' pour les invités au lieu de 'Synchronisation...'.",
+    "Validation : build, lint.",
+    "Version affichée : v1.20.22.",
+  ],
+});
+
+CHANGELOG_BY_LANG.en.unshift({
+  version: "v1.20.22",
+  date: "2026-09-01",
+  title: "ETHONE — Fix infinite sync spinner",
+  items: [
+    "10s timeout on 'syncing' sources to prevent infinite spinner.",
+    "StatusBar: show 'Prêt' for guests instead of 'Synchronisation...'.",
+    "Validation: build, lint.",
+    "Version badge: v1.20.22.",
+  ],
+});
+
+CHANGELOG_BY_LANG.es.unshift({
+  version: "v1.20.22",
+  date: "2026-09-01",
+  title: "ETHONE — Corrección del spinner de sync infinito",
+  items: [
+    "Timeout de 10s en fuentes 'syncing' para evitar el spinner infinito.",
+    "StatusBar: mostrar 'Prêt' para invitados en lugar de 'Synchronisation...'.",
+    "Validación : build, lint.",
+    "Versión : v1.20.22.",
+  ],
+});
+
+CHANGELOG_BY_LANG.de.unshift({
+  version: "v1.20.22",
+  date: "2026-09-01",
+  title: "ETHONE — Endloses Sync-Spinner behoben",
+  items: [
+    "10s-Timeout für 'syncing'-Quellen, um endloses Spinner zu verhindern.",
+    "StatusBar: 'Prêt' für Gäste anstelle von 'Synchronisation...' anzeigen.",
+    "Validierung: build, lint.",
+    "Version: v1.20.22.",
+  ],
+});
+
+CHANGELOG_BY_LANG.fr.unshift({
   version: "v1.20.21",
   date: "2026-09-01",
   title: "ETHONE Avatar Library 2.0 — Import Drive",

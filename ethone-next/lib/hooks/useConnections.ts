@@ -9,9 +9,10 @@ export function useConnections() {
     const initial = new Set<string>();
     if (typeof window !== "undefined") {
       ALL_PROVIDERS.forEach((p) => {
+        const token = localStorage.getItem(`ethone:token:${p}`);
         if (
           localStorage.getItem(`ethone:connected:${p}`) === "true" ||
-          Boolean(localStorage.getItem(`ethone:token:${p}`))
+          (token && token.trim().length > 0)
         ) {
           initial.add(p);
         }
@@ -25,9 +26,10 @@ export function useConnections() {
     const localConnected = new Set<string>();
     if (typeof window !== "undefined") {
       ALL_PROVIDERS.forEach((p) => {
+        const token = localStorage.getItem(`ethone:token:${p}`);
         if (
           localStorage.getItem(`ethone:connected:${p}`) === "true" ||
-          Boolean(localStorage.getItem(`ethone:token:${p}`))
+          (token && token.trim().length > 0)
         ) {
           localConnected.add(p);
         }

@@ -16,6 +16,7 @@ import {
   ChevronRight,
   User,
   Key,
+  ExternalLink,
 } from "lucide-react";
 import Modal from "@/components/ui/Modal";
 import Button from "@/components/ui/Button";
@@ -261,10 +262,15 @@ export default function ValorantTrackerView() {
       } else {
         localStorage.removeItem("ethone:cred:riot:henrikApiKey");
         localStorage.removeItem("ethone:cred:riot:apiKey");
+        localStorage.removeItem("HENRIK_API_KEY");
       }
     }
     setApiKeyModalOpen(false);
-    success(cleanKey ? "Clé API Henrik enregistrée · Rangs réels activés" : "Clé API retirée");
+    if (cleanKey) {
+      success("Clé API Henrik enregistrée · Rangs réels activés");
+    } else {
+      success("Clé API retirée · Mode standard");
+    }
     fetchMatches(true);
   };
 
@@ -556,14 +562,15 @@ export default function ValorantTrackerView() {
               />
             </div>
             <p className="text-[11px] text-zinc-400 leading-relaxed mt-1">
-              Obtenez une clé API gratuite en 10 secondes sur{" "}
+              Obtenez votre clé API gratuite sur{" "}
               <a
-                href="https://henrikdev.xyz"
+                href="https://api.henrikdev.xyz/dashboard/api-keys"
                 target="_blank"
                 rel="noreferrer"
-                className="text-cyan-400 underline hover:text-cyan-300 font-medium"
+                className="text-cyan-400 underline hover:text-cyan-300 font-medium inline-flex items-center gap-1"
               >
-                henrikdev.xyz
+                api.henrikdev.xyz/dashboard/api-keys
+                <ExternalLink className="h-3 w-3 inline" />
               </a>{" "}
               (permet jusqu&apos;à 30 requêtes/min pour charger le rang exact de chaque joueur de vos lobbies).
             </p>

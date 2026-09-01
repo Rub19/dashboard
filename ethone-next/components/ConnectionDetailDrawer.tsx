@@ -178,33 +178,57 @@ export default function ConnectionDetailDrawer({
     setSaving(true);
     hapticLightImpact();
     try {
+      let hasAnyPublicFilled = false;
       // Save public fields in Settings and localStorage
       if (publicFieldDefs.length > 0) {
         const patch: Record<string, string> = {};
         publicFieldDefs.forEach((f) => {
-          const v = publicValues[f.key as string] || "";
+          const v = (publicValues[f.key as string] || "").trim();
           patch[f.key as string] = v;
+          if (v) hasAnyPublicFilled = true;
           if (typeof window !== "undefined") {
-            localStorage.setItem(`ethone:pub:${integration.id}:${String(f.key)}`, v);
+            if (v) {
+              localStorage.setItem(`ethone:pub:${integration.id}:${String(f.key)}`, v);
+            } else {
+              localStorage.removeItem(`ethone:pub:${integration.id}:${String(f.key)}`);
+            }
           }
         });
         update(patch as never);
       }
 
+      let hasAnyCredFilled = false;
       // Save credential fields in provider-credentials & localStorage
       if (credFieldDefs.length > 0) {
         const payload: Record<string, string> = {};
         credFieldDefs.forEach((f) => {
           const v = (credValues[f.key as string] || "").trim();
           if (v) {
+            hasAnyCredFilled = true;
             payload[f.key as string] = v;
             if (typeof window !== "undefined") {
               localStorage.setItem(`ethone:cred:${integration.id}:${String(f.key)}`, v);
             }
+          } else {
+            if (typeof window !== "undefined") {
+              localStorage.removeItem(`ethone:cred:${integration.id}:${String(f.key)}`);
+            }
           }
         });
 
-        await credentials.save(integration.id, payload as never);
+        if (hasAnyCredFilled) {
+          await credentials.save(integration.id, payload as never);
+        } else {
+          await credentials.remove(integration.id);
+          if (typeof window !== "undefined") {
+            localStorage.removeItem(`ethone:connected:${integration.id}`);
+          }
+        }
+      }
+
+      if (!hasAnyPublicFilled && !hasAnyCredFilled) {
+        showError("Veuillez renseigner au moins une clé ou un identifiant valide pour enregistrer.");
+        return;
       }
 
       success("Identifiants enregistrés avec succès !");

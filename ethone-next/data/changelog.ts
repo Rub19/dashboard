@@ -7206,6 +7206,48 @@ CHANGELOG_BY_LANG.es.unshift({
 });
 
 CHANGELOG_BY_LANG.fr.unshift({
+  version: "v1.20.5",
+  date: "2026-09-01",
+  title: "Mise à Jour Clé API HenrikDev & Validation Stricte des Connexions",
+  items: [
+    "Mise à jour du lien d'obtention de clé API HenrikDev vers https://api.henrikdev.xyz/dashboard/api-keys avec accès direct.",
+    "Validation stricte des clés et identifiants : interdiction d'enregistrer une connexion vide ou sans clé valide.",
+    "Nettoyage automatique et déconnexion propre lorsqu'un champ d'identifiant est vidé.",
+    "Vérification de validité non-vide sur toutes les intégrations et les connexions OAuth/API.",
+  ],
+});
+
+CHANGELOG_BY_LANG.en.unshift({
+  version: "v1.20.5",
+  date: "2026-09-01",
+  title: "HenrikDev API Dashboard URL & Strict Connection Validation",
+  items: [
+    "Updated HenrikDev API key URL to https://api.henrikdev.xyz/dashboard/api-keys with direct link.",
+    "Strict validation on credentials: prevent saving empty or blank API keys and connections.",
+    "Clean disconnect and token purge when credentials are deleted.",
+    "Enhanced non-empty token checking across all provider integrations.",
+  ],
+});
+
+CHANGELOG_BY_LANG.es.unshift({
+  version: "v1.20.5",
+  date: "2026-09-01",
+  title: "Actualización URL HenrikDev y Validación de Conexiones",
+  items: [
+    "Actualización del enlace de clave API HenrikDev a api.henrikdev.xyz/dashboard/api-keys y validación estricta.",
+  ],
+});
+
+CHANGELOG_BY_LANG.de.unshift({
+  version: "v1.20.5",
+  date: "2026-09-01",
+  title: "HenrikDev API Dashboard Link & Verbindungsvalidierung",
+  items: [
+    "Aktualisierung des HenrikDev API Dashboard Links auf api.henrikdev.xyz/dashboard/api-keys und strikte Validierung.",
+  ],
+});
+
+CHANGELOG_BY_LANG.fr.unshift({
   version: "v1.20.4",
   date: "2026-09-01",
   title: "Cloisonnement Intégral Multi-Comptes & Multi-Profils",

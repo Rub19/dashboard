@@ -43,8 +43,11 @@ export function useProviderCredentials() {
         for (let i = 0; i < localStorage.length; i++) {
           const k = localStorage.key(i);
           if (k?.startsWith("ethone:cred:")) {
-            const parts = k.split(":");
-            if (parts[2]) map[parts[2]] = true;
+            const val = localStorage.getItem(k);
+            if (val && val.trim()) {
+              const parts = k.split(":");
+              if (parts[2]) map[parts[2]] = true;
+            }
           }
         }
       }
@@ -56,8 +59,11 @@ export function useProviderCredentials() {
         for (let i = 0; i < localStorage.length; i++) {
           const k = localStorage.key(i);
           if (k?.startsWith("ethone:cred:")) {
-            const parts = k.split(":");
-            if (parts[2]) map[parts[2]] = true;
+            const val = localStorage.getItem(k);
+            if (val && val.trim()) {
+              const parts = k.split(":");
+              if (parts[2]) map[parts[2]] = true;
+            }
           }
         }
       }
@@ -72,17 +78,31 @@ export function useProviderCredentials() {
   }, [load]);
 
   async function save(provider: string, credential: ProviderCredential) {
+    const cleanEntries = Object.entries(credential).filter(([, v]) =>
+      typeof v === "string" ? Boolean(v.trim()) : Boolean(v)
+    );
+
+    if (cleanEntries.length === 0) {
+      await remove(provider);
+      return { success: true };
+    }
+
+    const cleanCredential: Record<string, string> = {};
+    cleanEntries.forEach(([k, v]) => {
+      cleanCredential[k] = String(v).trim();
+    });
+
     // Save to localStorage immediately
     if (typeof window !== "undefined") {
-      Object.entries(credential).forEach(([k, v]) => {
-        if (v) localStorage.setItem(`ethone:cred:${provider}:${k}`, String(v));
+      Object.entries(cleanCredential).forEach(([k, v]) => {
+        localStorage.setItem(`ethone:cred:${provider}:${k}`, String(v));
       });
     }
 
     try {
       const res = await fetchWorker(`/api/provider-credentials?provider=${encodeURIComponent(provider)}`, {
         method: "POST",
-        body: JSON.stringify({ credential }),
+        body: JSON.stringify({ credential: cleanCredential }),
       });
       setConnected((c) => ({ ...c, [provider]: true }));
       return res?.data;
@@ -100,11 +120,16 @@ export function useProviderCredentials() {
         if (k?.startsWith(`ethone:cred:${provider}:`)) keysToRemove.push(k);
       }
       keysToRemove.forEach((k) => localStorage.removeItem(k));
+      localStorage.removeItem(`ethone:connected:${provider}`);
     }
     try {
       await fetchWorker(`/api/provider-credentials?provider=${encodeURIComponent(provider)}`, { method: "DELETE" });
     } catch {}
-    setConnected((c) => ({ ...c, [provider]: false }));
+    setConnected((c) => {
+      const next = { ...c };
+      delete next[provider];
+      return next;
+    });
   }
 
   return { connected, loading, save, remove, reload: load };

@@ -14,6 +14,7 @@ import { useToast } from "@/components/ToastProvider";
 import { useCommandPalette } from "@/components/CommandPaletteProvider";
 import ChangelogModal from "@/components/ChangelogModal";
 import AvatarPickerModal from "@/components/AvatarPickerModal";
+import { useIdentity } from "@/lib/identity";
 import {
   CHANGELOG,
   CHANGELOG_BY_LANG,
@@ -48,6 +49,7 @@ export default function UserProfileDropdown({ dataTestId = "user-profile-trigger
   const { signOut } = useAuth();
   const { displayName, avatarUrl, email, initials } = useUserIdentity();
   const { settings, update } = useSettings();
+  const { identity } = useIdentity();
 
   const isFocusRunning = focus.state.phase !== "idle";
   const currentStatus = isFocusRunning
@@ -100,15 +102,15 @@ export default function UserProfileDropdown({ dataTestId = "user-profile-trigger
     return CHANGELOG_BY_LANG[settings.language] || CHANGELOG;
   }, [settings.language]);
 
-  const VERSION_LABEL = "v1.20.19";
+  const VERSION_LABEL = "v1.20.20";
 
   const menuItems = [
     {
       id: "profile",
       label: "Mon Profil",
-      description: "Informations personnelles & compte",
+      description: "Identité, statut & personnalisation",
       icon: "user",
-      action: () => router.push("/settings?category=profile"),
+      action: () => router.push("/profile"),
     },
     {
       id: "settings",
@@ -245,10 +247,18 @@ export default function UserProfileDropdown({ dataTestId = "user-profile-trigger
                   <span className="truncate text-xs font-bold text-[var(--text-primary)]">
                     {displayName}
                   </span>
-                  <span className="rounded-full bg-[var(--success)]/15 px-1.5 py-0.2 text-[9px] font-bold text-[var(--success)]">
-                    ✓ Vérifié
-                  </span>
+                  {identity?.badge_ids?.includes("verified") && (
+                    <span className="rounded-full bg-[var(--success)]/15 px-1.5 py-0.2 text-[9px] font-bold text-[var(--success)]">
+                      ✓ Vérifié
+                    </span>
+                  )}
                 </div>
+
+                {identity?.bio && (
+                  <p className="truncate text-[10px] text-[var(--text-muted)]" title={identity.bio}>
+                    {identity.bio}
+                  </p>
+                )}
 
                 <button
                   type="button"

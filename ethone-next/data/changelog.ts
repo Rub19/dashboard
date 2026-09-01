@@ -7206,6 +7206,58 @@ CHANGELOG_BY_LANG.es.unshift({
 });
 
 CHANGELOG_BY_LANG.fr.unshift({
+  version: "v1.20.20",
+  date: "2026-09-01",
+  title: "ETHONE Identity — Profile header & menu",
+  items: [
+    "Nouveau composant ProfileHeader sur /profile (avatar, nom, bio, statut, badges).",
+    "Nouveau formulaire ProfileIdentityForm (bio + statut).",
+    "UserProfileDropdown branché sur useIdentity (bio, badge vérifié, lien /profile).",
+    "Validation : build, lint.",
+    "Version affichée : v1.20.20.",
+  ],
+});
+
+CHANGELOG_BY_LANG.en.unshift({
+  version: "v1.20.20",
+  date: "2026-09-01",
+  title: "ETHONE Identity — Profile header & menu",
+  items: [
+    "New ProfileHeader component on /profile (avatar, name, bio, status, badges).",
+    "New ProfileIdentityForm (bio + status).",
+    "UserProfileDropdown connected to useIdentity (bio, verified badge, /profile link).",
+    "Validation: build, lint.",
+    "Version badge: v1.20.20.",
+  ],
+});
+
+CHANGELOG_BY_LANG.es.unshift({
+  version: "v1.20.20",
+  date: "2026-09-01",
+  title: "ETHONE Identity — Header y menú de perfil",
+  items: [
+    "Nuevo componente ProfileHeader en /profile (avatar, nombre, bio, estado, badges).",
+    "Nuevo formulario ProfileIdentityForm (bio + estado).",
+    "UserProfileDropdown conectado a useIdentity (bio, badge verificado, enlace /profile).",
+    "Validación : build, lint.",
+    "Versión : v1.20.20.",
+  ],
+});
+
+CHANGELOG_BY_LANG.de.unshift({
+  version: "v1.20.20",
+  date: "2026-09-01",
+  title: "ETHONE Identity — Profil-Header & Menü",
+  items: [
+    "Neue ProfileHeader-Komponente auf /profile (Avatar, Name, Bio, Status, Badges).",
+    "Neues ProfileIdentityForm (Bio + Status).",
+    "UserProfileDropdown an useIdentity angebunden (Bio, verified Badge, /profile Link).",
+    "Validierung: build, lint.",
+    "Version: v1.20.20.",
+  ],
+});
+
+CHANGELOG_BY_LANG.fr.unshift({
   version: "v1.20.19",
   date: "2026-09-01",
   title: "ETHONE Identity — Hooks & API",

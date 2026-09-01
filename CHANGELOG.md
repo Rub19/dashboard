@@ -2,6 +2,15 @@
 
 Toutes les modifications notables de ce projet seront documentées dans ce fichier.
 
+## v1.20.20 — 2026-09-01
+
+**ETHONE Identity — Phase 3 : page profil & menu**
+
+- `ProfileHeader` sur `/profile` : avatar, nom, bio, statut, badges.
+- `ProfileIdentityForm` : édition bio + statut.
+- `UserProfileDropdown` branché sur `useIdentity` (bio, badge vérifié, lien vers `/profile`).
+- Validation : `npm run build`, `npm run lint`.
+
 ## v1.20.19 — 2026-09-01
 
 **ETHONE Identity — Phase 2 : Hooks & API**

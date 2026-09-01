@@ -17,6 +17,7 @@ import FormField from "@/components/FormField";
 import { Sparkles, Camera } from "lucide-react";
 import AvatarPickerModal from "@/components/AvatarPickerModal";
 import ClientImage from "@/components/ClientImage";
+import { ProfileHeader, ProfileIdentityForm } from "@/components/profile";
 
 export default function ProfilePage() {
   const i18n = useI18n();
@@ -113,6 +114,8 @@ export default function ProfilePage() {
       <h1 className="shrink-0 mb-4 text-2xl font-bold">{i18n("profileTitle")}</h1>
 
       <div className="min-h-0 w-full flex-1 overflow-y-auto os-scroll space-y-6">
+      <ProfileHeader />
+      <ProfileIdentityForm />
       <FlatCard>
         <div className="flex flex-col gap-4 sm:flex-row sm:items-center">
           <div

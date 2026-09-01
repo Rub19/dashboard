@@ -7206,6 +7206,62 @@ CHANGELOG_BY_LANG.es.unshift({
 });
 
 CHANGELOG_BY_LANG.fr.unshift({
+  version: "v1.20.19",
+  date: "2026-09-01",
+  title: "ETHONE Identity — Hooks & API",
+  items: [
+    "useIdentity : lecture/écriture de l'identité depuis ethone_public_profiles.",
+    "useIdentityAssets : liste filtrée des assets de la bibliothèque.",
+    "useIdentityFavorites : ajout/suppression/lecture des favoris.",
+    "useIdentityRecent : historique des derniers assets utilisés.",
+    "Validation : build, lint.",
+    "Version affichée : v1.20.19.",
+  ],
+});
+
+CHANGELOG_BY_LANG.en.unshift({
+  version: "v1.20.19",
+  date: "2026-09-01",
+  title: "ETHONE Identity — Hooks & API",
+  items: [
+    "useIdentity: read/write identity from ethone_public_profiles.",
+    "useIdentityAssets: filtered list of library assets.",
+    "useIdentityFavorites: add/remove/read favorites.",
+    "useIdentityRecent: history of last used assets.",
+    "Validation: build, lint.",
+    "Version badge: v1.20.19.",
+  ],
+});
+
+CHANGELOG_BY_LANG.es.unshift({
+  version: "v1.20.19",
+  date: "2026-09-01",
+  title: "ETHONE Identity — Hooks y API",
+  items: [
+    "useIdentity : lectura/escritura de la identidad desde ethone_public_profiles.",
+    "useIdentityAssets : lista filtrada de assets de la biblioteca.",
+    "useIdentityFavorites : añadir/eliminar/leer favoritos.",
+    "useIdentityRecent : historial de últimos assets usados.",
+    "Validación : build, lint.",
+    "Versión : v1.20.19.",
+  ],
+});
+
+CHANGELOG_BY_LANG.de.unshift({
+  version: "v1.20.19",
+  date: "2026-09-01",
+  title: "ETHONE Identity — Hooks & API",
+  items: [
+    "useIdentity: Identität aus ethone_public_profiles lesen/schreiben.",
+    "useIdentityAssets: gefilterte Liste der Bibliotheks-Assets.",
+    "useIdentityFavorites: Favoriten hinzufügen/entfernen/lesen.",
+    "useIdentityRecent: Verlauf der zuletzt genutzten Assets.",
+    "Validierung: build, lint.",
+    "Version: v1.20.19.",
+  ],
+});
+
+CHANGELOG_BY_LANG.fr.unshift({
   version: "v1.20.18",
   date: "2026-09-01",
   title: "Data model ETHONE Identity — Phase 1",

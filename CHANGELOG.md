@@ -2,6 +2,16 @@
 
 Toutes les modifications notables de ce projet seront documentées dans ce fichier.
 
+## v1.20.19 — 2026-09-01
+
+**ETHONE Identity — Phase 2 : Hooks & API**
+
+- `useIdentity` : lecture/écriture de l'identité via `ethone_public_profiles`.
+- `useIdentityAssets` : liste filtrée des assets.
+- `useIdentityFavorites` : gestion des favoris.
+- `useIdentityRecent` : historique des derniers assets.
+- Validation : `npm run build`, `npm run lint`.
+
 ## v1.20.18 — 2026-09-01
 
 **ETHONE Identity System — Phase 1 : data model**

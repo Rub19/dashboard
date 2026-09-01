@@ -60,7 +60,10 @@ export default function SortableWidget({
         initial={{ opacity: 0, y: 18, scale: 0.97 }}
         animate={{ opacity: 1, y: 0, scale: 1 }}
         transition={{ duration: 0.36, delay: index * 0.04, ease: EASE_OUT }}
-        className="flex h-full min-w-0 flex-col"
+        className={cn(
+          "flex h-full min-w-0 flex-col",
+          customizing && "pointer-events-none"
+        )}
       >
         {children}
       </motion.div>

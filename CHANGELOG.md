@@ -2,6 +2,15 @@
 
 Toutes les modifications notables de ce projet seront documentées dans ce fichier.
 
+## v1.20.11 — 2026-09-01
+
+**ETHONE — Drag & drop dashboard + persistance multi-PC**
+
+- Correction du drag-and-drop sur les widgets du home en mode personnalisation.
+- Cache `localStorage` par utilisateur pour le layout, fusionné avec Supabase.
+- Le layout desktop se synchronise entre PC via `desktop_layout`.
+- Validation : `npm run build`, `npm run lint`.
+
 ## v1.20.10 — 2026-09-01
 
 **ETHONE — Nom d'utilisateur par défaut & isolation des profils**

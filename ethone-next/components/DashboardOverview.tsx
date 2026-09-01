@@ -4,7 +4,7 @@ import { useCallback, useMemo, useState } from "react";
 import dynamic from "next/dynamic";
 import { motion } from "framer-motion";
 import { LayoutGrid } from "lucide-react";
-import { DndContext, type DragEndEvent, PointerSensor, useSensor, useSensors } from "@dnd-kit/core";
+import { DndContext, type DragEndEvent, closestCenter, PointerSensor, useSensor, useSensors } from "@dnd-kit/core";
 import { SortableContext, arrayMove, rectSortingStrategy } from "@dnd-kit/sortable";
 import { cn } from "@/lib/utils";
 import BentoCard from "@/components/BentoCard";
@@ -156,22 +156,32 @@ export default function DashboardOverview() {
     return sorted.length > 0 ? sorted : defaults;
   }, [layout, settings.homeHiddenSections, hour]);
 
+  const visibleWidgets = useMemo(
+    () => widgets.filter((w) => w.visible),
+    [widgets],
+  );
+  const visibleIds = useMemo(
+    () => visibleWidgets.map((w) => w.id),
+    [visibleWidgets],
+  );
+
   const handleDragEnd = useCallback(
     (event: DragEndEvent) => {
       const { active, over } = event;
       if (!over || active.id === over.id) return;
 
-      const visible = widgets.filter((w) => w.visible);
-      const oldIndex = visible.findIndex((w) => w.id === active.id);
-      const newIndex = visible.findIndex((w) => w.id === over.id);
+      const oldIndex = visibleWidgets.findIndex((w) => w.id === active.id);
+      const newIndex = visibleWidgets.findIndex((w) => w.id === over.id);
       if (oldIndex === -1 || newIndex === -1) return;
 
-      const newVisibleOrder = arrayMove(visible, oldIndex, newIndex);
+      const newVisibleOrder = arrayMove(visibleWidgets, oldIndex, newIndex);
       let visibleCursor = 0;
-      const next = widgets.map((w) => (w.visible ? newVisibleOrder[visibleCursor++] : w));
+      const next = widgets.map((w) =>
+        w.visible ? newVisibleOrder[visibleCursor++] : w,
+      );
       void updateLayout(next);
     },
-    [widgets, updateLayout]
+    [widgets, visibleWidgets, updateLayout]
   );
 
   const sections: SectionDef[] = useMemo(
@@ -417,9 +427,13 @@ export default function DashboardOverview() {
       {bentoLoading ? (
         <DashboardSkeleton />
       ) : (
-        <DndContext sensors={sensors} onDragEnd={handleDragEnd}>
+        <DndContext
+          sensors={sensors}
+          collisionDetection={closestCenter}
+          onDragEnd={handleDragEnd}
+        >
           <SortableContext
-            items={widgets.filter((w) => w.visible).map((w) => w.id)}
+            items={visibleIds}
             strategy={rectSortingStrategy}
           >
             <motion.div
@@ -429,20 +443,17 @@ export default function DashboardOverview() {
               data-home-grid
               className={cn("grid w-full h-auto auto-rows-fr grid-cols-12", densityGap)}
             >
-              {widgets.map(
-                (w, i) =>
-                  w.visible && (
-                    <SortableWidget
-                      key={w.id}
-                      id={w.id}
-                      index={i}
-                      customizing={customizing}
-                      className={WIDGET_COL_SPAN[w.id]}
-                    >
-                      {renderWidget(w.id)}
-                    </SortableWidget>
-                  )
-              )}
+              {visibleWidgets.map((w, i) => (
+                <SortableWidget
+                  key={w.id}
+                  id={w.id}
+                  index={i}
+                  customizing={customizing}
+                  className={WIDGET_COL_SPAN[w.id]}
+                >
+                  {renderWidget(w.id)}
+                </SortableWidget>
+              ))}
             </motion.div>
           </SortableContext>
         </DndContext>

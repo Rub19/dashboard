@@ -22,6 +22,70 @@ export type DesktopLayout = {
 
 type SyncStatus = "idle" | "syncing" | "error";
 
+const STORAGE_KEY_PREFIX = "ethone:desktop-layout:";
+
+function storageKey(userId: string) {
+  return `${STORAGE_KEY_PREFIX}${userId}`;
+}
+
+function readLocal(userId: string): DesktopLayout | null {
+  if (typeof window === "undefined") return null;
+  try {
+    const raw = localStorage.getItem(storageKey(userId));
+    if (!raw) return null;
+    const parsed = JSON.parse(raw) as unknown;
+    if (
+      parsed &&
+      typeof parsed === "object" &&
+      "widgets" in parsed &&
+      Array.isArray((parsed as Record<string, unknown>).widgets)
+    ) {
+      return parsed as DesktopLayout;
+    }
+  } catch {
+    // ignore corrupted cache
+  }
+  return null;
+}
+
+function writeLocal(userId: string, layout: DesktopLayout) {
+  if (typeof window === "undefined") return;
+  try {
+    localStorage.setItem(storageKey(userId), JSON.stringify(layout));
+  } catch {
+    // localStorage may be unavailable (private mode, quota, etc.)
+  }
+}
+
+function isRemoteNewer(
+  cached: DesktopLayout | null,
+  remote: DesktopLayout | null,
+): boolean {
+  if (!remote) return false;
+  if (!cached) return true;
+  const localTime = cached.updated_at
+    ? new Date(cached.updated_at).getTime()
+    : 0;
+  const remoteTime = remote.updated_at
+    ? new Date(remote.updated_at).getTime()
+    : 0;
+  if (Number.isNaN(remoteTime)) return true;
+  return remoteTime >= localTime;
+}
+
+function mergeLayouts(
+  cached: DesktopLayout | null,
+  remote: DesktopLayout | null,
+): DesktopLayout {
+  if (!cached && !remote) {
+    return { widgets: [], updated_at: new Date().toISOString() };
+  }
+  if (isRemoteNewer(cached, remote)) {
+    return remote!;
+  }
+  return cached || remote!;
+}
+
 export function useDesktopLayout() {
   const [layout, setLayout] = useState<DesktopLayout | null>(null);
   const [loading, setLoading] = useState(true);
@@ -40,6 +104,12 @@ export function useDesktopLayout() {
         return;
       }
 
+      const cached = readLocal(userId);
+      if (cached) {
+        setLayout(cached);
+        setLoading(false);
+      }
+
       const { data, error: fetchError } = await supabase
         .from("desktop_layout")
         .select("*")
@@ -50,11 +120,13 @@ export function useDesktopLayout() {
         throw fetchError;
       }
 
-      setLayout(
-        data
-          ? { id: data.id, widgets: data.widgets || [], updated_at: data.updated_at }
-          : { widgets: [], updated_at: new Date().toISOString() },
-      );
+      const remote: DesktopLayout | null = data
+        ? { id: data.id, widgets: data.widgets || [], updated_at: data.updated_at }
+        : null;
+
+      const next = mergeLayouts(cached, remote);
+      setLayout(next);
+      writeLocal(userId, next);
     } catch (err) {
       if (!isMissingSchemaError(err)) {
         setError(err instanceof Error ? err : new Error(String(err)));
@@ -92,10 +164,15 @@ export function useDesktopLayout() {
             (payload) => {
               if (payload.new && typeof payload.new === "object") {
                 const next = payload.new as Record<string, unknown>;
-                setLayout({
+                const remote: DesktopLayout = {
                   id: next.id ? String(next.id) : undefined,
                   widgets: Array.isArray(next.widgets) ? (next.widgets as WidgetLayout[]) : [],
                   updated_at: next.updated_at ? String(next.updated_at) : undefined,
+                };
+                setLayout((current) => {
+                  const chosen = mergeLayouts(current, remote);
+                  writeLocal(userId, chosen);
+                  return chosen;
                 });
               }
             },
@@ -121,6 +198,7 @@ export function useDesktopLayout() {
       setStatus("syncing");
       const next = { ...layout, widgets, updated_at: new Date().toISOString() };
       setLayout(next);
+      writeLocal(userId, next);
 
       try {
         const { error: upsertError } = await supabase

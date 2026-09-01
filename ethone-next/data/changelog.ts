@@ -7206,6 +7206,58 @@ CHANGELOG_BY_LANG.es.unshift({
 });
 
 CHANGELOG_BY_LANG.fr.unshift({
+  version: "v1.20.11",
+  date: "2026-09-01",
+  title: "Drag & drop dashboard + persistance multi-PC",
+  items: [
+    "Correction du drag-and-drop sur les widgets du home en mode personnalisation.",
+    "Ajout d'une cache localStorage par utilisateur pour le layout, avec fusion Supabase.",
+    "Le layout desktop est synchronisé entre PC via `desktop_layout`.",
+    "Validation : build, lint.",
+    "Version affichée : v1.20.11.",
+  ],
+});
+
+CHANGELOG_BY_LANG.en.unshift({
+  version: "v1.20.11",
+  date: "2026-09-01",
+  title: "Dashboard drag & drop + cross-device persistence",
+  items: [
+    "Fixed drag-and-drop for home widgets in customization mode.",
+    "Added per-user localStorage cache for layout, merged with Supabase.",
+    "Desktop layout syncs across devices via `desktop_layout`.",
+    "Validation: build, lint.",
+    "Version badge: v1.20.11.",
+  ],
+});
+
+CHANGELOG_BY_LANG.es.unshift({
+  version: "v1.20.11",
+  date: "2026-09-01",
+  title: "Drag & drop del dashboard + persistencia multi-PC",
+  items: [
+    "Corregido el arrastrar y soltar widgets del home en modo personalización.",
+    "Añadida caché localStorage por usuario para el layout, fusionada con Supabase.",
+    "El layout se sincroniza entre PCs vía `desktop_layout`.",
+    "Validación : build, lint.",
+    "Versión : v1.20.11.",
+  ],
+});
+
+CHANGELOG_BY_LANG.de.unshift({
+  version: "v1.20.11",
+  date: "2026-09-01",
+  title: "Dashboard Drag & Drop + geräteübergreifende Synchronisierung",
+  items: [
+    "Drag-and-Drop für Home-Widgets im Anpassungsmodus korrigiert.",
+    "Per-User localStorage-Cache für das Layout hinzugefügt, mit Supabase zusammengeführt.",
+    "Desktop-Layout wird über `desktop_layout` zwischen PCs synchronisiert.",
+    "Validierung: build, lint.",
+    "Version: v1.20.11.",
+  ],
+});
+
+CHANGELOG_BY_LANG.fr.unshift({
   version: "v1.20.10",
   date: "2026-09-01",
   title: "Nom d'utilisateur par défaut & isolation des profils",

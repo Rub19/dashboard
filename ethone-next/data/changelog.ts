@@ -7206,6 +7206,58 @@ CHANGELOG_BY_LANG.es.unshift({
 });
 
 CHANGELOG_BY_LANG.fr.unshift({
+  version: "v1.20.18",
+  date: "2026-09-01",
+  title: "Data model ETHONE Identity — Phase 1",
+  items: [
+    "Migration Supabase : champs profil étendus (avatar_id, frame, background, badges, accent, statut, bio).",
+    "Nouvelles tables : ethone_identity_assets, ethone_identity_favorites, ethone_identity_recent.",
+    "Types et constantes TypeScript pour l'ETHONE Identity System.",
+    "Validation : build, lint.",
+    "Version affichée : v1.20.18.",
+  ],
+});
+
+CHANGELOG_BY_LANG.en.unshift({
+  version: "v1.20.18",
+  date: "2026-09-01",
+  title: "ETHONE Identity data model — Phase 1",
+  items: [
+    "Supabase migration: extended profile fields (avatar_id, frame, background, badges, accent, status, bio).",
+    "New tables: ethone_identity_assets, ethone_identity_favorites, ethone_identity_recent.",
+    "TypeScript types and constants for the ETHONE Identity System.",
+    "Validation: build, lint.",
+    "Version badge: v1.20.18.",
+  ],
+});
+
+CHANGELOG_BY_LANG.es.unshift({
+  version: "v1.20.18",
+  date: "2026-09-01",
+  title: "Modelo de datos ETHONE Identity — Fase 1",
+  items: [
+    "Migración Supabase : campos de perfil extendidos (avatar_id, frame, background, badges, accent, estado, bio).",
+    "Nuevas tablas : ethone_identity_assets, ethone_identity_favorites, ethone_identity_recent.",
+    "Tipos y constantes TypeScript para el ETHONE Identity System.",
+    "Validación : build, lint.",
+    "Versión : v1.20.18.",
+  ],
+});
+
+CHANGELOG_BY_LANG.de.unshift({
+  version: "v1.20.18",
+  date: "2026-09-01",
+  title: "ETHONE Identity Datenmodell — Phase 1",
+  items: [
+    "Supabase-Migration: erweiterte Profilfelder (avatar_id, frame, background, badges, accent, status, bio).",
+    "Neue Tabellen: ethone_identity_assets, ethone_identity_favorites, ethone_identity_recent.",
+    "TypeScript-Typen und Konstanten für das ETHONE Identity System.",
+    "Validierung: build, lint.",
+    "Version: v1.20.18.",
+  ],
+});
+
+CHANGELOG_BY_LANG.fr.unshift({
   version: "v1.20.17",
   date: "2026-09-01",
   title: "Nettoyage de l'auto-liste anime et cadrage des avatars",

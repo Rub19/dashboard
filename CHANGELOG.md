@@ -2,6 +2,15 @@
 
 Toutes les modifications notables de ce projet seront documentées dans ce fichier.
 
+## v1.20.18 — 2026-09-01
+
+**ETHONE Identity System — Phase 1 : data model**
+
+- Migration Supabase étendant `ethone_public_profiles` (avatar, frame, background, badges, accent, statut, bio).
+- Nouvelles tables : `ethone_identity_assets`, `ethone_identity_favorites`, `ethone_identity_recent` (RLS inclus).
+- Types et constantes TypeScript sous `lib/identity/`.
+- Validation : `npm run build`, `npm run lint`.
+
 ## v1.20.17 — 2026-09-01
 
 **ETHONE — Nettoyage auto-liste anime et cadrage avatars**

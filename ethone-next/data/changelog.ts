@@ -7206,6 +7206,48 @@ CHANGELOG_BY_LANG.es.unshift({
 });
 
 CHANGELOG_BY_LANG.fr.unshift({
+  version: "v1.20.6",
+  date: "2026-09-01",
+  title: "Découplage Intégral Trackers Valorant & League of Legends",
+  items: [
+    "Fonctionnement 100% autonome et indépendant des trackers Valorant et League of Legends.",
+    "Si vous renseignez uniquement la clé HenrikDev (Valorant), le tracker Valorant fonctionne à plein régime sans impacter LoL.",
+    "Si vous renseignez uniquement la clé Riot Games (LoL), le tracker LoL fonctionne à plein régime sans impacter Valorant.",
+    "Ségrégation stricte des clés Henrik (HDEV-*) et Riot (RGAPI-*) sans écrasement mutuel.",
+  ],
+});
+
+CHANGELOG_BY_LANG.en.unshift({
+  version: "v1.20.6",
+  date: "2026-09-01",
+  title: "Independent Valorant & League of Legends Tracker Engines",
+  items: [
+    "100% autonomous operation for Valorant and League of Legends trackers.",
+    "Providing only HenrikDev key activates Valorant with full real ranks independently.",
+    "Providing only Riot Games key activates LoL tracker independently.",
+    "Strict separation between Henrik (HDEV-*) and Riot (RGAPI-*) API keys.",
+  ],
+});
+
+CHANGELOG_BY_LANG.es.unshift({
+  version: "v1.20.6",
+  date: "2026-09-01",
+  title: "Desacoplamiento Total Trackers Valorant y LoL",
+  items: [
+    "Funcionamiento 100% independiente de los trackers Valorant y League of Legends.",
+  ],
+});
+
+CHANGELOG_BY_LANG.de.unshift({
+  version: "v1.20.6",
+  date: "2026-09-01",
+  title: "Unabhängige Valorant & League of Legends Tracker",
+  items: [
+    "Vollständig unabhängiger Betrieb von Valorant und League of Legends Trackern.",
+  ],
+});
+
+CHANGELOG_BY_LANG.fr.unshift({
   version: "v1.20.5",
   date: "2026-09-01",
   title: "Mise à Jour Clé API HenrikDev & Validation Stricte des Connexions",

@@ -93,12 +93,17 @@ export default function ValorantTrackerView() {
       else setLoading(true);
       setErrorMsg(null);
 
-      const henrikApiKey =
+      let henrikApiKey =
         typeof window !== "undefined"
           ? localStorage.getItem("ethone:cred:riot:henrikApiKey") ||
-            localStorage.getItem("ethone:cred:riot:apiKey") ||
-            localStorage.getItem("ethone:cred:tracker:apiKey")
+            localStorage.getItem("ethone:cred:valorant:apiKey") ||
+            localStorage.getItem("ethone:cred:henrik:apiKey") ||
+            localStorage.getItem("HENRIK_API_KEY")
           : null;
+      if (!henrikApiKey && typeof window !== "undefined") {
+        const generic = localStorage.getItem("ethone:cred:riot:apiKey");
+        if (generic && generic.startsWith("HDEV-")) henrikApiKey = generic;
+      }
 
       try {
         let validMatches: ValorantMatch[] = [];
@@ -258,10 +263,8 @@ export default function ValorantTrackerView() {
     if (typeof window !== "undefined") {
       if (cleanKey) {
         localStorage.setItem("ethone:cred:riot:henrikApiKey", cleanKey);
-        localStorage.setItem("ethone:cred:riot:apiKey", cleanKey);
       } else {
         localStorage.removeItem("ethone:cred:riot:henrikApiKey");
-        localStorage.removeItem("ethone:cred:riot:apiKey");
         localStorage.removeItem("HENRIK_API_KEY");
       }
     }

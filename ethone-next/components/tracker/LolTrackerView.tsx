@@ -83,11 +83,17 @@ export default function LolTrackerView() {
       else setLoading(true);
       setErrorMsg(null);
 
-      const riotApiKey =
+      let riotApiKey =
         typeof window !== "undefined"
           ? localStorage.getItem("ethone:cred:riot:riotApiKey") ||
-            localStorage.getItem("ethone:cred:riot:apiKey")
+            localStorage.getItem("ethone:cred:lol:apiKey") ||
+            localStorage.getItem("ethone:cred:riotgames:apiKey") ||
+            localStorage.getItem("RIOT_API_KEY")
           : null;
+      if (!riotApiKey && typeof window !== "undefined") {
+        const generic = localStorage.getItem("ethone:cred:riot:apiKey");
+        if (generic && !generic.startsWith("HDEV-")) riotApiKey = generic;
+      }
 
       try {
         let validMatches: LolMatch[] = [];

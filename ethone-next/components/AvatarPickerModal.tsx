@@ -111,7 +111,7 @@ export const PRESET_AVATARS: AvatarItem[] = [
     name: "Mercredi Addams",
     series: "Wednesday S1",
     category: "netflix",
-    url: "https://images.unsplash.com/photo-1534528741775-53994a69daeb?w=300&h=300&fit=crop&crop=faces",
+    url: "https://static.tvmaze.com/uploads/images/original_untouched/432/1082139.jpg",
     tags: ["mercredi", "wednesday", "addams", "nevermore", "gothic", "netflix"],
   },
   {
@@ -119,7 +119,7 @@ export const PRESET_AVATARS: AvatarItem[] = [
     name: "Enid Sinclair",
     series: "Wednesday S1",
     category: "netflix",
-    url: "https://images.unsplash.com/photo-1517841905240-472988babdf9?w=300&h=300&fit=crop&crop=faces",
+    url: "https://static.tvmaze.com/uploads/images/original_untouched/440/1100599.jpg",
     tags: ["enid", "sinclair", "wednesday", "loup-garou", "blonde", "netflix"],
   },
   {
@@ -127,7 +127,7 @@ export const PRESET_AVATARS: AvatarItem[] = [
     name: "La Chose (Thing)",
     series: "Wednesday S1",
     category: "netflix",
-    url: "https://images.unsplash.com/photo-1579783902614-a3fb3927b675?w=300&h=300&fit=crop&crop=center",
+    url: "https://static.tvmaze.com/uploads/images/original_untouched/432/1082158.jpg",
     tags: ["la chose", "thing", "main", "addams", "wednesday", "netflix"],
   },
   {
@@ -135,7 +135,7 @@ export const PRESET_AVATARS: AvatarItem[] = [
     name: "Morticia Addams",
     series: "Wednesday S1",
     category: "netflix",
-    url: "https://images.unsplash.com/photo-1508214751196-bcfd4ca60f91?w=300&h=300&fit=crop&crop=faces",
+    url: "https://static.tvmaze.com/uploads/images/original_untouched/420/1051332.jpg",
     tags: ["morticia", "addams", "gothic", "wednesday", "netflix"],
   },
   {
@@ -143,7 +143,7 @@ export const PRESET_AVATARS: AvatarItem[] = [
     name: "Bianca Barclay",
     series: "Wednesday S1",
     category: "netflix",
-    url: "https://images.unsplash.com/photo-1531746020798-e6953c6e8e04?w=300&h=300&fit=crop&crop=faces",
+    url: "https://static.tvmaze.com/uploads/images/original_untouched/432/1080021.jpg",
     tags: ["bianca", "sirene", "nevermore", "wednesday", "netflix"],
   },
   {
@@ -151,7 +151,7 @@ export const PRESET_AVATARS: AvatarItem[] = [
     name: "Enid (Saison 2)",
     series: "Wednesday S2",
     category: "netflix",
-    url: "https://images.unsplash.com/photo-1524504388940-b1c1722653e1?w=300&h=300&fit=crop&crop=faces",
+    url: "https://static.tvmaze.com/uploads/images/original_untouched/440/1100599.jpg",
     tags: ["enid", "wednesday s2", "smile", "netflix"],
   },
   {
@@ -159,7 +159,7 @@ export const PRESET_AVATARS: AvatarItem[] = [
     name: "Gomez Addams",
     series: "Wednesday S2",
     category: "netflix",
-    url: "https://images.unsplash.com/photo-1507003211169-0a1dd7228f2d?w=300&h=300&fit=crop&crop=faces",
+    url: "https://static.tvmaze.com/uploads/images/original_untouched/431/1079637.jpg",
     tags: ["gomez", "addams", "moustache", "wednesday", "netflix"],
   },
 
@@ -203,7 +203,7 @@ export const PRESET_AVATARS: AvatarItem[] = [
     name: "Seong Gi-hun (456)",
     series: "Squid Game",
     category: "netflix",
-    url: "https://images.unsplash.com/photo-1500648767791-00dcc994a43e?w=300&h=300&fit=crop&crop=faces",
+    url: "https://static.tvmaze.com/uploads/images/original_untouched/572/1431002.jpg",
     tags: ["gi-hun", "456", "squid game", "joueur", "netflix"],
   },
   {
@@ -211,7 +211,7 @@ export const PRESET_AVATARS: AvatarItem[] = [
     name: "Kang Sae-byeok (067)",
     series: "Squid Game",
     category: "netflix",
-    url: "https://images.unsplash.com/photo-1544005313-94ddf0286df2?w=300&h=300&fit=crop&crop=faces",
+    url: "https://static.tvmaze.com/uploads/images/original_untouched/352/881327.jpg",
     tags: ["sae-byeok", "067", "squid game", "coree", "netflix"],
   },
 
@@ -223,7 +223,7 @@ export const PRESET_AVATARS: AvatarItem[] = [
     name: "Onze (Eleven)",
     series: "Stranger Things",
     category: "netflix",
-    url: "https://images.unsplash.com/photo-1494790108377-be9c29b29330?w=300&h=300&fit=crop&crop=faces",
+    url: "https://static.tvmaze.com/uploads/images/original_untouched/602/1506071.jpg",
     tags: ["eleven", "onze", "stranger things", "hawkins", "telekinesie", "netflix"],
   },
   {
@@ -231,7 +231,7 @@ export const PRESET_AVATARS: AvatarItem[] = [
     name: "Dustin Henderson",
     series: "Stranger Things",
     category: "netflix",
-    url: "https://images.unsplash.com/photo-1539571696357-5a69c17a67c6?w=300&h=300&fit=crop&crop=faces",
+    url: "https://static.tvmaze.com/uploads/images/original_untouched/602/1506079.jpg",
     tags: ["dustin", "stranger things", "casquette", "cerebro", "netflix"],
   },
   {
@@ -239,7 +239,7 @@ export const PRESET_AVATARS: AvatarItem[] = [
     name: "Steve Harrington",
     series: "Stranger Things",
     category: "netflix",
-    url: "https://images.unsplash.com/photo-1506794778202-cad84cf45f1d?w=300&h=300&fit=crop&crop=faces",
+    url: "https://static.tvmaze.com/uploads/images/original_untouched/602/1506068.jpg",
     tags: ["steve", "harrington", "scoops ahoy", "batte", "stranger things", "netflix"],
   },
   {
@@ -247,7 +247,7 @@ export const PRESET_AVATARS: AvatarItem[] = [
     name: "Eddie Munson",
     series: "Stranger Things",
     category: "netflix",
-    url: "https://images.unsplash.com/photo-1519085360753-af0119f7cbe7?w=300&h=300&fit=crop&crop=faces",
+    url: "https://static.tvmaze.com/uploads/images/original_untouched/595/1489169.jpg",
     tags: ["eddie", "munson", "hellfire", "metallica", "guitare", "netflix"],
   },
   {
@@ -267,7 +267,7 @@ export const PRESET_AVATARS: AvatarItem[] = [
     name: "David Martinez",
     series: "Cyberpunk: Edgerunners",
     category: "netflix",
-    url: "https://images.unsplash.com/photo-1566492031773-4f4e44671857?w=300&h=300&fit=crop&crop=faces",
+    url: "https://s4.anilist.co/file/anilistcdn/character/large/b284158-z1uGKC3IYVa1.png",
     tags: ["david", "martinez", "cyberpunk", "edgerunners", "sandevistan", "night city", "netflix"],
   },
   {
@@ -275,7 +275,7 @@ export const PRESET_AVATARS: AvatarItem[] = [
     name: "Lucy Kushinada",
     series: "Cyberpunk: Edgerunners",
     category: "netflix",
-    url: "https://images.unsplash.com/photo-1573496359142-b8d87734a5a2?w=300&h=300&fit=crop&crop=faces",
+    url: "https://s4.anilist.co/file/anilistcdn/character/large/b284157-cqYawN7XCNJx.jpg",
     tags: ["lucy", "netrunner", "cyberpunk", "lune", "edgerunners", "netflix"],
   },
   {
@@ -283,7 +283,7 @@ export const PRESET_AVATARS: AvatarItem[] = [
     name: "Rebecca",
     series: "Cyberpunk: Edgerunners",
     category: "netflix",
-    url: "https://images.unsplash.com/photo-1534528741775-53994a69daeb?w=300&h=300&fit=crop&crop=center",
+    url: "https://s4.anilist.co/file/anilistcdn/character/large/b284163-tt8smoAXl24x.jpg",
     tags: ["rebecca", "solo", "gunner", "cyberpunk", "edgerunners", "netflix"],
   },
 
@@ -347,7 +347,7 @@ export const PRESET_AVATARS: AvatarItem[] = [
     name: "Eren Yeager",
     series: "L'Attaque des Titans",
     category: "anime",
-    url: "https://images.unsplash.com/photo-1568602471122-7832951cc4c5?w=300&h=300&fit=crop&crop=faces",
+    url: "https://s4.anilist.co/file/anilistcdn/character/large/b40882-dsj7IP943WFF.jpg",
     tags: ["eren", "yeager", "attaque des titans", "aot", "snk", "titan assaillant", "crunchyroll"],
   },
   {
@@ -355,7 +355,7 @@ export const PRESET_AVATARS: AvatarItem[] = [
     name: "Mikasa Ackerman",
     series: "L'Attaque des Titans",
     category: "anime",
-    url: "https://images.unsplash.com/photo-1544005313-94ddf0286df2?w=300&h=300&fit=crop&crop=faces",
+    url: "https://s4.anilist.co/file/anilistcdn/character/large/b40881-F3gr1PkreDvj.png",
     tags: ["mikasa", "ackerman", "echarpe", "snk", "aot", "crunchyroll"],
   },
   {
@@ -363,7 +363,7 @@ export const PRESET_AVATARS: AvatarItem[] = [
     name: "Capitaine Levi Ackerman",
     series: "L'Attaque des Titans",
     category: "anime",
-    url: "https://images.unsplash.com/photo-1507003211169-0a1dd7228f2d?w=300&h=300&fit=crop&crop=faces",
+    url: "https://s4.anilist.co/file/anilistcdn/character/large/b45627-CR68RyZmddGG.png",
     tags: ["levi", "livai", "capitaine", "bataillon", "snk", "aot", "crunchyroll"],
   },
   {
@@ -371,7 +371,7 @@ export const PRESET_AVATARS: AvatarItem[] = [
     name: "Armin Arlert",
     series: "L'Attaque des Titans",
     category: "anime",
-    url: "https://images.unsplash.com/photo-1500648767791-00dcc994a43e?w=300&h=300&fit=crop&crop=faces",
+    url: "https://s4.anilist.co/file/anilistcdn/character/large/b46494-g7xYYuBtYPnO.png",
     tags: ["armin", "arlert", "titan colossal", "snk", "aot", "crunchyroll"],
   },
   {
@@ -379,7 +379,7 @@ export const PRESET_AVATARS: AvatarItem[] = [
     name: "Reiner Braun",
     series: "L'Attaque des Titans",
     category: "anime",
-    url: "https://images.unsplash.com/photo-1519085360753-af0119f7cbe7?w=300&h=300&fit=crop&crop=faces",
+    url: "https://s4.anilist.co/file/anilistcdn/character/large/b46484-P6A2GjNQn49F.png",
     tags: ["reiner", "braun", "titan cuirasse", "snk", "aot", "crunchyroll"],
   },
 
@@ -407,7 +407,7 @@ export const PRESET_AVATARS: AvatarItem[] = [
     name: "Yuji Itadori",
     series: "Jujutsu Kaisen",
     category: "anime",
-    url: "https://images.unsplash.com/photo-1534528741775-53994a69daeb?w=300&h=300&fit=crop&crop=faces",
+    url: "https://s4.anilist.co/file/anilistcdn/character/large/b127212-FVm2tD0erQ5B.png",
     tags: ["yuji", "itadori", "black flash", "jjk", "crunchyroll"],
   },
   {
@@ -415,7 +415,7 @@ export const PRESET_AVATARS: AvatarItem[] = [
     name: "Megumi Fushiguro",
     series: "Jujutsu Kaisen",
     category: "anime",
-    url: "https://images.unsplash.com/photo-1506794778202-cad84cf45f1d?w=300&h=300&fit=crop&crop=faces",
+    url: "https://s4.anilist.co/file/anilistcdn/character/large/b126635-L0y3I92JSUkN.png",
     tags: ["megumi", "fushiguro", "mahagora", "ombres", "jjk", "crunchyroll"],
   },
   {
@@ -423,7 +423,7 @@ export const PRESET_AVATARS: AvatarItem[] = [
     name: "Toji Fushiguro",
     series: "Jujutsu Kaisen",
     category: "anime",
-    url: "https://images.unsplash.com/photo-1500648767791-00dcc994a43e?w=300&h=300&fit=crop&crop=faces",
+    url: "https://s4.anilist.co/file/anilistcdn/character/large/b162722-btzdghBizxKS.jpg",
     tags: ["toji", "fushiguro", "tueur d'exorcistes", "inversion celeste", "jjk", "crunchyroll"],
   },
 
@@ -435,7 +435,7 @@ export const PRESET_AVATARS: AvatarItem[] = [
     name: "Makima",
     series: "Chainsaw Man",
     category: "anime",
-    url: "https://images.unsplash.com/photo-1534528741775-53994a69daeb?w=300&h=300&fit=crop&crop=faces",
+    url: "https://s4.anilist.co/file/anilistcdn/character/large/b137080-UHcynYNjb5ZU.png",
     tags: ["makima", "demon du controle", "csm", "chainsaw man", "crunchyroll"],
   },
   {
@@ -451,7 +451,7 @@ export const PRESET_AVATARS: AvatarItem[] = [
     name: "Power",
     series: "Chainsaw Man",
     category: "anime",
-    url: "https://images.unsplash.com/photo-1517841905240-472988babdf9?w=300&h=300&fit=crop&crop=faces",
+    url: "https://s4.anilist.co/file/anilistcdn/character/large/b137079-6yLEUYR3bmpr.png",
     tags: ["power", "demon sang", "cornes", "chainsaw man", "csm", "crunchyroll"],
   },
   {
@@ -459,7 +459,7 @@ export const PRESET_AVATARS: AvatarItem[] = [
     name: "Aki Hayakawa",
     series: "Chainsaw Man",
     category: "anime",
-    url: "https://images.unsplash.com/photo-1507003211169-0a1dd7228f2d?w=300&h=300&fit=crop&crop=faces",
+    url: "https://s4.anilist.co/file/anilistcdn/character/large/b137081-TSrUR3mUJL6r.png",
     tags: ["aki", "hayakawa", "kon", "renard", "chainsaw man", "crunchyroll"],
   },
 
@@ -487,7 +487,7 @@ export const PRESET_AVATARS: AvatarItem[] = [
     name: "Zenitsu Agatsuma",
     series: "Demon Slayer",
     category: "anime",
-    url: "https://images.unsplash.com/photo-1539571696357-5a69c17a67c6?w=300&h=300&fit=crop&crop=faces",
+    url: "https://s4.anilist.co/file/anilistcdn/character/large/b129131-FZrQ7lSlxmEr.png",
     tags: ["zenitsu", "foudre", "tonnerre", "demon slayer", "kny", "crunchyroll"],
   },
   {
@@ -495,7 +495,7 @@ export const PRESET_AVATARS: AvatarItem[] = [
     name: "Kyojuro Rengoku",
     series: "Demon Slayer",
     category: "anime",
-    url: "https://images.unsplash.com/photo-1519085360753-af0119f7cbe7?w=300&h=300&fit=crop&crop=faces",
+    url: "https://s4.anilist.co/file/anilistcdn/character/large/b129133-VlTPowwt68rJ.png",
     tags: ["rengoku", "flamme", "pilier", "umai", "demon slayer", "kny", "crunchyroll"],
   },
 
@@ -515,7 +515,7 @@ export const PRESET_AVATARS: AvatarItem[] = [
     name: "Cha Hae-In",
     series: "Solo Leveling",
     category: "anime",
-    url: "https://images.unsplash.com/photo-1544005313-94ddf0286df2?w=300&h=300&fit=crop&crop=faces",
+    url: "https://s4.anilist.co/file/anilistcdn/character/large/b138789-AhE8m0LWjE7E.png",
     tags: ["cha hae-in", "epee", "rang s", "chasseuse", "solo leveling", "crunchyroll"],
   },
 
@@ -543,7 +543,7 @@ export const PRESET_AVATARS: AvatarItem[] = [
     name: "Vinsmoke Sanji (Ifrit Jambe)",
     series: "One Piece",
     category: "anime",
-    url: "https://images.unsplash.com/photo-1506794778202-cad84cf45f1d?w=300&h=300&fit=crop&crop=faces",
+    url: "https://s4.anilist.co/file/anilistcdn/character/large/b305-6lisPmHtCnLT.png",
     tags: ["sanji", "ifrit jambe", "cuisinier", "one piece", "crunchyroll"],
   },
   {
@@ -551,7 +551,7 @@ export const PRESET_AVATARS: AvatarItem[] = [
     name: "Portgas D. Ace",
     series: "One Piece",
     category: "anime",
-    url: "https://images.unsplash.com/photo-1500648767791-00dcc994a43e?w=300&h=300&fit=crop&crop=faces",
+    url: "https://s4.anilist.co/file/anilistcdn/character/large/b2072-Lc6jEdsueJUK.jpg",
     tags: ["ace", "poing ardent", "feu", "mera mera", "one piece", "crunchyroll"],
   },
 

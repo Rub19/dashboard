@@ -7206,6 +7206,62 @@ CHANGELOG_BY_LANG.es.unshift({
 });
 
 CHANGELOG_BY_LANG.fr.unshift({
+  version: "v1.20.14",
+  date: "2026-09-01",
+  title: "Avatars réels via AniList & TVmaze",
+  items: [
+    "Remplacement des fausses images Unsplash dans le sélecteur d'avatars.",
+    "Netflix : portraits promotionnels et affiches officielles via TVmaze.",
+    "Anime/Crunchyroll : illustrations officielles de personnages via AniList.",
+    "Gaming : icônes officielles Riot Games (Valorant, League of Legends) conservées.",
+    "Validation : build, lint.",
+    "Version affichée : v1.20.14.",
+  ],
+});
+
+CHANGELOG_BY_LANG.en.unshift({
+  version: "v1.20.14",
+  date: "2026-09-01",
+  title: "Real avatars via AniList & TVmaze",
+  items: [
+    "Replaced fake Unsplash images in the avatar picker.",
+    "Netflix: official cast/promo images and posters via TVmaze.",
+    "Anime/Crunchyroll: official character artwork via AniList.",
+    "Gaming: kept official Riot Games icons (Valorant, League of Legends).",
+    "Validation: build, lint.",
+    "Version badge: v1.20.14.",
+  ],
+});
+
+CHANGELOG_BY_LANG.es.unshift({
+  version: "v1.20.14",
+  date: "2026-09-01",
+  title: "Avatares reales vía AniList y TVmaze",
+  items: [
+    "Reemplazo de imágenes falsas de Unsplash en el selector de avatares.",
+    "Netflix : imágenes promocionales y pósters oficiales vía TVmaze.",
+    "Anime/Crunchyroll : ilustraciones oficiales de personajes vía AniList.",
+    "Gaming : se mantienen iconos oficiales de Riot Games (Valorant, League of Legends).",
+    "Validación : build, lint.",
+    "Versión : v1.20.14.",
+  ],
+});
+
+CHANGELOG_BY_LANG.de.unshift({
+  version: "v1.20.14",
+  date: "2026-09-01",
+  title: "Echte Avatare via AniList & TVmaze",
+  items: [
+    "Fake Unsplash-Bilder im Avatar-Auswahl ersetzt.",
+    "Netflix: offizielle Promo-Bilder und Poster via TVmaze.",
+    "Anime/Crunchyroll: offizielle Charakter-Artworks via AniList.",
+    "Gaming: offizielle Riot Games-Icons (Valorant, League of Legends) beibehalten.",
+    "Validierung: build, lint.",
+    "Version: v1.20.14.",
+  ],
+});
+
+CHANGELOG_BY_LANG.fr.unshift({
   version: "v1.20.13",
   date: "2026-09-01",
   title: "Identifiant public : correction du fallback 'local'",

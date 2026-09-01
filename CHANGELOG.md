@@ -2,6 +2,16 @@
 
 Toutes les modifications notables de ce projet seront documentées dans ce fichier.
 
+## v1.20.14 — 2026-09-01
+
+**ETHONE — Avatars réels via AniList & TVmaze**
+
+- Remplacement des images factices Unsplash dans le sélecteur d'avatars.
+- Netflix : portraits et affiches officielles via TVmaze.
+- Anime/Crunchyroll : illustrations officielles de personnages via AniList.
+- Gaming : conservation des icônes officielles Riot Games.
+- Validation : `npm run build`, `npm run lint`.
+
 ## v1.20.13 — 2026-09-01
 
 **ETHONE — Identifiant public : correction du fallback "local"**

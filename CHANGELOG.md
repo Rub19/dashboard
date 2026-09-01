@@ -2,6 +2,17 @@
 
 Toutes les modifications notables de ce projet seront documentées dans ce fichier.
 
+## v1.20.21 — 2026-09-01
+
+**ETHONE Avatar Library 2.0 — Import Drive**
+
+- Import de 320 avatars Netflix depuis le Google Drive.
+- Copie dans `public/avatars/drive/` avec noms normalisés.
+- Génération du manifeste `DRIVE_AVATARS`.
+- Migration Supabase : colonnes `provider`, `source_type`, `franchise` sur `ethone_identity_assets`.
+- `useIdentityAssets` fallback sur le manifeste local.
+- Validation : `npm run build`, `npm run lint`.
+
 ## v1.20.20 — 2026-09-01
 
 **ETHONE Identity — Phase 3 : page profil & menu**

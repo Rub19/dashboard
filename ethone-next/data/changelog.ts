@@ -7206,6 +7206,66 @@ CHANGELOG_BY_LANG.es.unshift({
 });
 
 CHANGELOG_BY_LANG.fr.unshift({
+  version: "v1.20.21",
+  date: "2026-09-01",
+  title: "ETHONE Avatar Library 2.0 — Import Drive",
+  items: [
+    "Import de 320 avatars Netflix depuis le Google Drive.",
+    "Copie dans public/avatars/drive/ avec noms normalisés.",
+    "Génération du manifeste DRIVE_AVATARS.",
+    "Migration Supabase : colonnes provider/source_type/franchise sur ethone_identity_assets.",
+    "Fallback useIdentityAssets sur le manifeste local.",
+    "Validation : build, lint.",
+    "Version affichée : v1.20.21.",
+  ],
+});
+
+CHANGELOG_BY_LANG.en.unshift({
+  version: "v1.20.21",
+  date: "2026-09-01",
+  title: "ETHONE Avatar Library 2.0 — Drive Import",
+  items: [
+    "Imported 320 Netflix avatars from the Google Drive.",
+    "Copied to public/avatars/drive/ with sanitized names.",
+    "Generated DRIVE_AVATARS manifest.",
+    "Supabase migration: provider/source_type/franchise columns on ethone_identity_assets.",
+    "useIdentityAssets fallback to local manifest.",
+    "Validation: build, lint.",
+    "Version badge: v1.20.21.",
+  ],
+});
+
+CHANGELOG_BY_LANG.es.unshift({
+  version: "v1.20.21",
+  date: "2026-09-01",
+  title: "ETHONE Avatar Library 2.0 — Import Drive",
+  items: [
+    "Importación de 320 avatares de Netflix desde Google Drive.",
+    "Copiado en public/avatars/drive/ con nombres normalizados.",
+    "Generación del manifiesto DRIVE_AVATARS.",
+    "Migración Supabase : columnas provider/source_type/franchise en ethone_identity_assets.",
+    "Fallback de useIdentityAssets al manifiesto local.",
+    "Validación : build, lint.",
+    "Versión : v1.20.21.",
+  ],
+});
+
+CHANGELOG_BY_LANG.de.unshift({
+  version: "v1.20.21",
+  date: "2026-09-01",
+  title: "ETHONE Avatar Library 2.0 — Drive-Import",
+  items: [
+    "Import von 320 Netflix-Avataren aus Google Drive.",
+    "Kopiert nach public/avatars/drive/ mit bereinigten Namen.",
+    "DRIVE_AVATARS-Manifest generiert.",
+    "Supabase-Migration: Spalten provider/source_type/franchise in ethone_identity_assets.",
+    "useIdentityAssets Fallback auf lokales Manifest.",
+    "Validierung: build, lint.",
+    "Version: v1.20.21.",
+  ],
+});
+
+CHANGELOG_BY_LANG.fr.unshift({
   version: "v1.20.20",
   date: "2026-09-01",
   title: "ETHONE Identity — Profile header & menu",

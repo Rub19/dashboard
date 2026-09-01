@@ -7206,6 +7206,50 @@ CHANGELOG_BY_LANG.es.unshift({
 });
 
 CHANGELOG_BY_LANG.fr.unshift({
+  version: "v1.20.4",
+  date: "2026-09-01",
+  title: "Cloisonnement Intégral Multi-Comptes & Multi-Profils",
+  items: [
+    "Isolation stricte de l'intégralité des paramètres, thèmes, polices, accents et dispositions de Dock par compte (userId) et par profil.",
+    "Cloisonnement étanche des Notes, Tâches, Événements de Calendrier et Fichiers Cloud locaux.",
+    "Séparation des conversations Brain AI, préférences et mémoires par utilisateur.",
+    "Isolation des Espaces, Flux, Macros, Personas et Factures par compte et par profil actif.",
+    "Purge automatique des états locaux et rechargement instantané lors des connexions et déconnexions.",
+  ],
+});
+
+CHANGELOG_BY_LANG.en.unshift({
+  version: "v1.20.4",
+  date: "2026-09-01",
+  title: "Complete Multi-Account & Multi-Profile Data Isolation",
+  items: [
+    "Full isolation of settings, themes, fonts, accents, and dock layouts per account (userId) and profile.",
+    "Strict separation of Notes, Tasks, Calendar Events, and local Cloud Files.",
+    "Isolated Brain AI chat conversations and prompt memories per user.",
+    "Account-specific Spaces, Flows, Macros, Personas, and Bills.",
+    "Automatic cache clearing and instant reload on sign-in and sign-out.",
+  ],
+});
+
+CHANGELOG_BY_LANG.es.unshift({
+  version: "v1.20.4",
+  date: "2026-09-01",
+  title: "Aislamiento Total Multi-Cuenta y Multi-Perfil",
+  items: [
+    "Separación completa de configuraciones, notas, tareas, archivos y chats IA por usuario.",
+  ],
+});
+
+CHANGELOG_BY_LANG.de.unshift({
+  version: "v1.20.4",
+  date: "2026-09-01",
+  title: "Vollständige Datenisolation für Konten und Profile",
+  items: [
+    "Vollständige Trennung von Einstellungen, Notizen, Aufgaben, Dateien und KI-Chats nach Benutzer.",
+  ],
+});
+
+CHANGELOG_BY_LANG.fr.unshift({
   version: "v1.20.3",
   date: "2026-09-01",
   title: "Isolation Stricte Multi-Comptes & Correction de la Persistance de Nom",

@@ -3,6 +3,7 @@
 import { useCallback, useEffect, useState } from "react";
 import { fetchWorker } from "@/lib/api";
 import { useActiveProfile } from "@/components/SettingsProvider";
+import { supabase } from "@/lib/supabase";
 
 export type UserDataRecord = {
   id: string;
@@ -18,23 +19,44 @@ export type UserDataRecord = {
 };
 
 export function useUserData(kind: "space" | "flow" | "interaction" | "macro" | "persona" | "bill" | "plugin" | "flow_automation") {
-  const cacheKey = `ethone:userdata:${kind}`;
+  const [currentUserId, setCurrentUserId] = useState<string | undefined>(undefined);
+  const { active, loaded: profileLoaded } = useActiveProfile();
+
+  useEffect(() => {
+    supabase.auth.getSession().then(({ data }) => {
+      setCurrentUserId(data?.session?.user?.id);
+    });
+    const { data: authSub } = supabase.auth.onAuthStateChange((_event, session) => {
+      setCurrentUserId(session?.user?.id);
+    });
+    return () => {
+      authSub?.subscription?.unsubscribe();
+    };
+  }, []);
+
+  const cacheKey = currentUserId
+    ? `ethone:userdata:${currentUserId}:${active || "default"}:${kind}`
+    : `ethone:userdata:guest:${kind}`;
   
-  const [items, setItems] = useState<UserDataRecord[]>(() => {
-    if (typeof window === "undefined") return [];
+  const [items, setItems] = useState<UserDataRecord[]>([]);
+
+  useEffect(() => {
+    if (typeof window === "undefined") return;
     try {
       const stored = localStorage.getItem(cacheKey);
       if (stored) {
         const parsed = JSON.parse(stored);
-        if (Array.isArray(parsed)) return parsed;
+        if (Array.isArray(parsed)) {
+          setItems(parsed);
+          return;
+        }
       }
     } catch {}
-    return [];
-  });
+    setItems([]);
+  }, [cacheKey]);
 
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState<Error | null>(null);
-  const { active, loaded: profileLoaded } = useActiveProfile();
 
   const basePath = `/api/user-data/${kind}s`;
 

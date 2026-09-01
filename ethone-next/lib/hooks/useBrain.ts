@@ -22,6 +22,7 @@ import { askBrainAI } from "@/lib/brain/ai-engine";
 import { listBrainMemories, createBrainMemory, updateBrainMemory, removeBrainMemory, clearBrainMemories, type BrainMemory } from "@/lib/brain/memory";
 import { createBrainActionRegistry, type BrainMailClient } from "@/lib/brain/action-registry";
 import { createAutomationWatcher, sanitizeAutomationTrigger, type AutomationRule } from "@/lib/brain/automation";
+import { supabase } from "@/lib/supabase";
 
 export type BrainAttachment = {
   id: string;
@@ -50,27 +51,30 @@ export type BrainMessage = {
   durationMs?: number;
   fallback?: boolean;
   attachments?: BrainAttachment[];
+  actions?: ActionExecution[];
   actionExecution?: ActionExecution;
 };
 
 export type BrainConversation = {
   id: string;
   title: string;
-  updatedAt: number;
   messages: BrainMessage[];
-  favorite?: boolean;
+  createdAt: number;
+  updatedAt: number;
   model?: string;
+  favorite?: boolean;
 };
 
-const STORAGE_KEY_CONVERSATIONS = "ethone-brain-conversations-v2";
-const STORAGE_KEY_ACTIVE_CONV = "ethone-brain-active-conv-id";
+const STORAGE_KEY_CONVERSATIONS = "ethone:brain:conversations";
+const STORAGE_KEY_ACTIVE_CONV = "ethone:brain:active_conversation";
 
 function createInitialConversation(): BrainConversation {
   return {
-    id: `conv-${Date.now()}`,
-    title: "Nouvelle conversation",
-    updatedAt: Date.now(),
+    id: typeof crypto !== "undefined" && crypto.randomUUID ? crypto.randomUUID() : `conv-${Date.now()}`,
+    title: "Nouvelle discussion",
     messages: [],
+    createdAt: Date.now(),
+    updatedAt: Date.now(),
     model: "auto",
   };
 }
@@ -83,27 +87,54 @@ export function useBrain(mailClient?: BrainMailClient) {
   const events = useItems("events");
   const [preferences, setPreferences] = useState<BrainPreferences>(DEFAULT_BRAIN_PREFERENCES);
   
+  const [currentUserId, setCurrentUserId] = useState<string | undefined>(undefined);
+
+  useEffect(() => {
+    supabase.auth.getSession().then(({ data }) => {
+      setCurrentUserId(data?.session?.user?.id);
+    });
+    const { data: authSub } = supabase.auth.onAuthStateChange((_event, session) => {
+      setCurrentUserId(session?.user?.id);
+    });
+    return () => {
+      authSub?.subscription?.unsubscribe();
+    };
+  }, []);
+
+  const convStorageKey = currentUserId ? `ethone:brain:convs:${currentUserId}` : `ethone:brain:convs:guest`;
+  const activeConvStorageKey = currentUserId ? `ethone:brain:active_conv:${currentUserId}` : `ethone:brain:active_conv:guest`;
+
   // Conversations State
   const [conversations, setConversations] = useState<BrainConversation[]>(() => {
     if (typeof window === "undefined") return [createInitialConversation()];
-    try {
-      const saved = localStorage.getItem(STORAGE_KEY_CONVERSATIONS);
-      if (saved) {
-        const parsed = JSON.parse(saved);
-        if (Array.isArray(parsed) && parsed.length > 0) return parsed;
-      }
-    } catch {}
     return [createInitialConversation()];
   });
 
-  const [activeConvId, setActiveConvId] = useState<string>(() => {
-    if (typeof window === "undefined") return conversations[0]?.id || "default";
+  const [activeConvId, setActiveConvId] = useState<string>("default");
+
+  // Re-sync conversations when current user changes
+  useEffect(() => {
+    if (typeof window === "undefined") return;
     try {
-      const savedId = localStorage.getItem(STORAGE_KEY_ACTIVE_CONV);
-      if (savedId && conversations.some((c) => c.id === savedId)) return savedId;
+      const saved = localStorage.getItem(convStorageKey);
+      if (saved) {
+        const parsed = JSON.parse(saved);
+        if (Array.isArray(parsed) && parsed.length > 0) {
+          setConversations(parsed);
+          const savedId = localStorage.getItem(activeConvStorageKey);
+          if (savedId && parsed.some((c: BrainConversation) => c.id === savedId)) {
+            setActiveConvId(savedId);
+          } else {
+            setActiveConvId(parsed[0].id);
+          }
+          return;
+        }
+      }
     } catch {}
-    return conversations[0]?.id || "default";
-  });
+    const initial = [createInitialConversation()];
+    setConversations(initial);
+    setActiveConvId(initial[0].id);
+  }, [convStorageKey, activeConvStorageKey]);
 
   const activeConversation = useMemo(() => {
     return conversations.find((c) => c.id === activeConvId) || conversations[0] || createInitialConversation();
@@ -125,14 +156,14 @@ export function useBrain(mailClient?: BrainMailClient) {
   const automationsRef = useRef(preferences.automations);
   const brainCtx = useBrainContext();
 
-  // Save conversations to localStorage
+  // Save conversations to localStorage scoped to user
   useEffect(() => {
     if (typeof window === "undefined") return;
     try {
-      localStorage.setItem(STORAGE_KEY_CONVERSATIONS, JSON.stringify(conversations));
-      localStorage.setItem(STORAGE_KEY_ACTIVE_CONV, activeConvId);
+      localStorage.setItem(convStorageKey, JSON.stringify(conversations));
+      localStorage.setItem(activeConvStorageKey, activeConvId);
     } catch {}
-  }, [conversations, activeConvId]);
+  }, [conversations, activeConvId, convStorageKey, activeConvStorageKey]);
 
   useEffect(() => {
     automationsRef.current = preferences.automations;

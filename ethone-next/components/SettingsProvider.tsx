@@ -99,11 +99,26 @@ export default function SettingsProvider({
   children: React.ReactNode;
 }) {
   const { active, activeProfile, loaded, reload } = useProfiles();
-  const [settings, setSettings] = useState<Settings>(() => loadSettings());
+  const [currentUserId, setCurrentUserId] = useState<string | undefined>(undefined);
+  const [settings, setSettings] = useState<Settings>(() => loadSettings(undefined, undefined));
   const settingsRef = useRef(settings);
   useEffect(() => {
     settingsRef.current = settings;
   }, [settings]);
+
+  // Track authenticated user ID for multi-account isolation
+  useEffect(() => {
+    supabase.auth.getSession().then(({ data }) => {
+      setCurrentUserId(data?.session?.user?.id);
+    });
+    const { data: authSub } = supabase.auth.onAuthStateChange((_event, session) => {
+      const newUserId = session?.user?.id;
+      setCurrentUserId(newUserId);
+    });
+    return () => {
+      authSub?.subscription?.unsubscribe();
+    };
+  }, []);
 
   const CLOCK_SKEW_BUFFER_MS = 5000;
 
@@ -116,10 +131,10 @@ export default function SettingsProvider({
     if (!loaded) return;
 
     const profileId = active || undefined;
-    const defaultLocal = loadSettings();
-    const profileLocal = loadSettings(profileId);
-    const defaultWriteAt = getWriteAt();
-    const profileWriteAt = getWriteAt(profileId);
+    const defaultLocal = loadSettings(undefined, currentUserId);
+    const profileLocal = loadSettings(profileId, currentUserId);
+    const defaultWriteAt = getWriteAt(undefined, currentUserId);
+    const profileWriteAt = getWriteAt(profileId, currentUserId);
 
     let local = profileLocal;
     let localWriteAt = profileWriteAt;
@@ -133,8 +148,8 @@ export default function SettingsProvider({
         local = defaultLocal;
         localWriteAt = defaultWriteAt > 0 ? defaultWriteAt : Date.now();
         try {
-          saveSettings(defaultLocal, profileId);
-          setWriteAt(localWriteAt, profileId);
+          saveSettings(defaultLocal, profileId, currentUserId);
+          setWriteAt(localWriteAt, profileId, currentUserId);
         } catch {}
       } else if (defaultWriteAt > profileWriteAt && !deepEqual(defaultLocal, DEFAULTS)) {
         // Default key has a more recent write, use it as the source of truth.
@@ -151,13 +166,13 @@ export default function SettingsProvider({
     if (localWriteAt === 0 && !deepEqual(local, DEFAULTS)) {
       localWriteAt = Date.now();
       try {
-        setWriteAt(localWriteAt, profileId);
+        setWriteAt(localWriteAt, profileId, currentUserId);
       } catch {}
     }
 
     setSettings(local);
     useSyncStore.getState().setStatus("user_settings", "syncing");
-    loadSettingsAsync()
+    loadSettingsAsync(currentUserId)
       .then(({ settings: remote, updatedAt }) => {
         setSettings((prev) => {
           const remoteTs = updatedAt ? new Date(updatedAt).getTime() : 0;
@@ -173,7 +188,7 @@ export default function SettingsProvider({
       .catch(() => {
         useSyncStore.getState().setStatus("user_settings", "error");
       });
-  }, [loaded, active]);
+  }, [loaded, active, currentUserId]);
 
   useEffect(() => {
     let channel: ReturnType<typeof supabase.channel> | null = null;
@@ -366,7 +381,7 @@ export default function SettingsProvider({
       setSettings(next);
 
       try {
-        saveSettings(next, active || undefined);
+        saveSettings(next, active || undefined, currentUserId);
       } catch {
         // Local persistence failed; revert to the previous state immediately.
         settingsRef.current = prev;
@@ -384,14 +399,14 @@ export default function SettingsProvider({
         clearTimeout(saveTimeoutRef.current);
       }
       saveTimeoutRef.current = window.setTimeout(() => {
-        saveSettingsAsync(settingsRef.current, active || undefined)
+        saveSettingsAsync(settingsRef.current, active || undefined, currentUserId)
           .then(() => useSyncStore.getState().setStatus("user_settings", "idle"))
           .catch(() => {
             useSyncStore.getState().setStatus("user_settings", "error");
           });
       }, 400);
     },
-    [active]
+    [active, currentUserId]
   );
 
   const handleApplyPreset = useCallback(

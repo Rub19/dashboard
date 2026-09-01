@@ -31,12 +31,13 @@ export type Quota = {
   total: number;
 };
 
-const STORAGE_KEY_LOCAL_FILES = "ethone:local:cloud-files-v2";
+import { supabase } from "@/lib/supabase";
 
-function getLocalFiles(): CloudFile[] {
+function getLocalFiles(userId?: string): CloudFile[] {
   if (typeof window === "undefined") return [];
+  const key = userId ? `ethone:local:cloud-files-v2:${userId}` : "ethone:local:cloud-files-v2:guest";
   try {
-    const raw = localStorage.getItem(STORAGE_KEY_LOCAL_FILES);
+    const raw = localStorage.getItem(key);
     if (raw) {
       const parsed = JSON.parse(raw);
       if (Array.isArray(parsed)) return parsed;
@@ -45,15 +46,34 @@ function getLocalFiles(): CloudFile[] {
   return [];
 }
 
-function saveLocalFiles(files: CloudFile[]) {
+function saveLocalFiles(files: CloudFile[], userId?: string) {
   if (typeof window === "undefined") return;
+  const key = userId ? `ethone:local:cloud-files-v2:${userId}` : "ethone:local:cloud-files-v2:guest";
   try {
-    localStorage.setItem(STORAGE_KEY_LOCAL_FILES, JSON.stringify(files));
+    localStorage.setItem(key, JSON.stringify(files));
   } catch {}
 }
 
 export function useCloudFiles(clientId?: string) {
+  const [currentUserId, setCurrentUserId] = useState<string | undefined>(undefined);
+
+  useEffect(() => {
+    supabase.auth.getSession().then(({ data }) => {
+      setCurrentUserId(data?.session?.user?.id);
+    });
+    const { data: authSub } = supabase.auth.onAuthStateChange((_event, session) => {
+      setCurrentUserId(session?.user?.id);
+    });
+    return () => {
+      authSub?.subscription?.unsubscribe();
+    };
+  }, []);
+
   const [files, setFiles] = useState<CloudFile[]>(() => getLocalFiles());
+
+  useEffect(() => {
+    setFiles(getLocalFiles(currentUserId));
+  }, [currentUserId]);
   const [quota, setQuota] = useState<Quota | null>(null);
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState<Error | null>(null);

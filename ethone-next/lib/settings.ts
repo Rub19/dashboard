@@ -407,14 +407,17 @@ export const DEFAULTS: Settings = {
 const KEY = "ethone-settings-v1";
 const WRITE_AT_KEY = "ethone-settings-write-at";
 
-function writeAtKey(profileId?: string): string {
+function writeAtKey(profileId?: string, userId?: string): string {
+  if (userId) {
+    return profileId ? `${WRITE_AT_KEY}:${userId}:${profileId}` : `${WRITE_AT_KEY}:${userId}`;
+  }
   return profileId ? `${WRITE_AT_KEY}:${profileId}` : WRITE_AT_KEY;
 }
 
-export function getWriteAt(profileId?: string): number {
+export function getWriteAt(profileId?: string, userId?: string): number {
   if (typeof window === "undefined") return 0;
   try {
-    const raw = localStorage.getItem(writeAtKey(profileId));
+    const raw = localStorage.getItem(writeAtKey(profileId, userId));
     if (!raw) return 0;
     const n = parseInt(raw, 10);
     return Number.isNaN(n) ? 0 : n;
@@ -423,10 +426,10 @@ export function getWriteAt(profileId?: string): number {
   }
 }
 
-export function setWriteAt(ts: number, profileId?: string) {
+export function setWriteAt(ts: number, profileId?: string, userId?: string) {
   if (typeof window === "undefined") return;
   try {
-    localStorage.setItem(writeAtKey(profileId), String(ts));
+    localStorage.setItem(writeAtKey(profileId, userId), String(ts));
   } catch {}
 }
 
@@ -499,14 +502,17 @@ export function migrateSettings(raw: Partial<Settings>): Partial<Settings> {
   return next;
 }
 
-function localSettingsKey(profileId?: string): string {
+export function localSettingsKey(profileId?: string, userId?: string): string {
+  if (userId) {
+    return profileId ? `${KEY}:${userId}:${profileId}` : `${KEY}:${userId}`;
+  }
   return profileId ? `${KEY}:${profileId}` : KEY;
 }
 
-export function loadSettings(profileId?: string): Settings {
+export function loadSettings(profileId?: string, userId?: string): Settings {
   if (typeof window === "undefined") return DEFAULTS;
   try {
-    const raw = localStorage.getItem(localSettingsKey(profileId));
+    const raw = localStorage.getItem(localSettingsKey(profileId, userId));
     if (!raw) return DEFAULTS;
     const parsed = JSON.parse(raw);
     const migrated = migrateSettings(parsed);
@@ -516,19 +522,22 @@ export function loadSettings(profileId?: string): Settings {
   }
 }
 
-export function saveSettings(settings: Settings, profileId?: string) {
+export function saveSettings(settings: Settings, profileId?: string, userId?: string) {
   if (typeof window === "undefined") return;
-  const key = localSettingsKey(profileId);
+  const key = localSettingsKey(profileId, userId);
   localStorage.setItem(key, JSON.stringify(settings));
-  setWriteAt(Date.now(), profileId);
+  setWriteAt(Date.now(), profileId, userId);
 }
 
 export type RemoteSettings = { settings: Partial<Settings>; updatedAt?: string };
 
-export async function loadSettingsAsync(): Promise<RemoteSettings> {
+export async function loadSettingsAsync(userIdOverride?: string): Promise<RemoteSettings> {
   try {
-    const { data: sessionData } = await supabase.auth.getSession();
-    const userId = sessionData?.session?.user?.id;
+    let userId = userIdOverride;
+    if (!userId) {
+      const { data: sessionData } = await supabase.auth.getSession();
+      userId = sessionData?.session?.user?.id;
+    }
     if (!userId) return { settings: migrateSettings({}) };
 
     const { data, error } = await supabase
@@ -545,11 +554,17 @@ export async function loadSettingsAsync(): Promise<RemoteSettings> {
   }
 }
 
-export async function saveSettingsAsync(settings: Settings, profileId?: string): Promise<void> {
-  saveSettings(settings, profileId);
+export async function saveSettingsAsync(settings: Settings, profileId?: string, userIdOverride?: string): Promise<void> {
+  let userId = userIdOverride;
+  if (!userId) {
+    try {
+      const { data: sessionData } = await supabase.auth.getSession();
+      userId = sessionData?.session?.user?.id;
+    } catch {}
+  }
+
+  saveSettings(settings, profileId, userId);
   try {
-    const { data: sessionData } = await supabase.auth.getSession();
-    const userId = sessionData?.session?.user?.id;
     if (!userId) return;
 
     // Keep frequently-queried columns in sync with the settings JSONB payload.
@@ -571,7 +586,7 @@ export async function saveSettingsAsync(settings: Settings, profileId?: string):
       .maybeSingle();
 
     if (error) throw error;
-    if (data?.updated_at) setWriteAt(new Date(data.updated_at).getTime(), profileId);
+    if (data?.updated_at) setWriteAt(new Date(data.updated_at).getTime(), profileId, userId);
   } catch (err) {
     // localStorage already holds the fallback for offline scenarios.
     throw err;

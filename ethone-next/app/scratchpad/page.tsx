@@ -1,6 +1,6 @@
 "use client";
 
-import { useEffect, useState } from "react";
+import { useState } from "react";
 import { useI18n } from "@/lib/hooks/useI18n";
 import FlatCard from "@/components/FlatCard";
 import Modal from "@/components/ui/Modal";
@@ -8,42 +8,19 @@ import FormField from "@/components/FormField";
 import Textarea from "@/components/Textarea";
 import Button from "@/components/ui/Button";
 import { useHaptics } from "@/lib/hooks/useHaptics";
-import { getUserState, setUserState } from "@/lib/user-state";
+import { useUserState } from "@/lib/hooks/useUserState";
 
 type SaveStatus = "saved" | "saving" | "error";
 
 export default function ScratchpadPage() {
   const i18n = useI18n();
   const haptics = useHaptics();
-  const [note, setNote] = useState("");
+  const [note, setNote] = useUserState<string>("scratchpad", "");
   const [sheetOpen, setSheetOpen] = useState(false);
   const [status, setStatus] = useState<SaveStatus>("saved");
 
-  const charCount = note.length;
-  const wordCount = note.trim() ? note.trim().split(/\s+/).length : 0;
-
-  useEffect(() => {
-    const saved = typeof window !== "undefined" ? localStorage.getItem("ethone-scratchpad") : "";
-    if (saved) setNote(saved);
-    getUserState<string>("scratchpad", "").then((remote) => {
-      if (typeof remote === "string") setNote(remote);
-    });
-  }, []);
-
-  useEffect(() => {
-    if (typeof window !== "undefined") {
-      localStorage.setItem("ethone-scratchpad", note);
-    }
-
-    setStatus("saving");
-    const t = setTimeout(() => {
-      setUserState("scratchpad", note)
-        .then(() => setStatus("saved"))
-        .catch(() => setStatus("error"));
-    }, 700);
-
-    return () => clearTimeout(t);
-  }, [note]);
+  const charCount = (note || "").length;
+  const wordCount = (note || "").trim() ? (note || "").trim().split(/\s+/).length : 0;
 
   const statusLabel: Record<SaveStatus, string> = {
     saved: i18n("saved"),

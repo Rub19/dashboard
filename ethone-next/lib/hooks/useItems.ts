@@ -32,22 +32,49 @@ const DEFAULT_DEMO_ITEMS: Record<string, Item[]> = {
 };
 
 export function useItems(kind: "notes" | "tasks" | "events") {
-  const cacheKey = `ethone:items:${kind}`;
-  const broadcastChannelName = `ethone_sync_${kind}`;
+  const [currentUserId, setCurrentUserId] = useState<string | undefined>(undefined);
+
+  useEffect(() => {
+    supabase.auth.getSession().then(({ data }) => {
+      setCurrentUserId(data?.session?.user?.id);
+    });
+    const { data: authSub } = supabase.auth.onAuthStateChange((_event, session) => {
+      setCurrentUserId(session?.user?.id);
+    });
+    return () => {
+      authSub?.subscription?.unsubscribe();
+    };
+  }, []);
+
+  const cacheKey = currentUserId ? `ethone:items:${currentUserId}:${kind}` : `ethone:items:guest:${kind}`;
+  const broadcastChannelName = `ethone_sync_${kind}_${currentUserId || "guest"}`;
   const channelRef = useRef<BroadcastChannel | null>(null);
   const realtimeId = useId();
 
   const [items, setItems] = useState<Item[]>(() => {
     if (typeof window === "undefined") return DEFAULT_DEMO_ITEMS[kind] || [];
+    return DEFAULT_DEMO_ITEMS[kind] || [];
+  });
+
+  // Re-sync local cached items when active userId changes
+  useEffect(() => {
+    if (typeof window === "undefined") return;
     try {
       const stored = localStorage.getItem(cacheKey);
       if (stored) {
         const parsed = JSON.parse(stored);
-        if (Array.isArray(parsed) && parsed.length > 0) return parsed;
+        if (Array.isArray(parsed)) {
+          setItems(parsed);
+          return;
+        }
       }
     } catch {}
-    return DEFAULT_DEMO_ITEMS[kind] || [];
-  });
+    if (!currentUserId) {
+      setItems(DEFAULT_DEMO_ITEMS[kind] || []);
+    } else {
+      setItems([]);
+    }
+  }, [cacheKey, currentUserId, kind]);
 
   const [loading, setLoading] = useState(false);
   const [isOffline, setIsOffline] = useState(false);

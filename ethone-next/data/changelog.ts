@@ -7206,6 +7206,46 @@ CHANGELOG_BY_LANG.es.unshift({
 });
 
 CHANGELOG_BY_LANG.fr.unshift({
+  version: "v1.20.7",
+  date: "2026-09-01",
+  title: "Correction Badges Valorant & Suppression du Faux High KAST",
+  items: [
+    "Suppression définitive du badge 'High KAST' par défaut qui s'affichait arbitrairement sur tous les matchs.",
+    "Calcul authentique des distinctions de match (Flawless, K/D élevé, High Headshot %, Kills, High ACS).",
+    "Affichage épuré sans badges factices : si aucun exploit n'est réalisé, aucun badge erroné n'est affiché.",
+  ],
+});
+
+CHANGELOG_BY_LANG.en.unshift({
+  version: "v1.20.7",
+  date: "2026-09-01",
+  title: "Valorant Accolade Badges Fix & Fake High KAST Removal",
+  items: [
+    "Completely removed fallback 'High KAST' badge that appeared on every match regardless of stats.",
+    "Authentic highlight calculation based on verified kills, KD, HS%, ACS and zero-death games.",
+    "Clean row display: no false badges are shown when no accolade threshold is met.",
+  ],
+});
+
+CHANGELOG_BY_LANG.es.unshift({
+  version: "v1.20.7",
+  date: "2026-09-01",
+  title: "Corrección de Insignias Valorant y Eliminación de Falsos Badges",
+  items: [
+    "Eliminación de falsas insignias High KAST y cálculo verídico de estadísticas.",
+  ],
+});
+
+CHANGELOG_BY_LANG.de.unshift({
+  version: "v1.20.7",
+  date: "2026-09-01",
+  title: "Valorant Abzeichen-Korrektur & Entfernung falscher Badges",
+  items: [
+    "Entfernung fehlerhafter High KAST Abzeichen und echte Statistik-Berechnung.",
+  ],
+});
+
+CHANGELOG_BY_LANG.fr.unshift({
   version: "v1.20.6",
   date: "2026-09-01",
   title: "Découplage Intégral Trackers Valorant & League of Legends",

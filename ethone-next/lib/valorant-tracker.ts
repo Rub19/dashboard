@@ -181,19 +181,52 @@ export function calculateMatchRankBadge(match: ValorantMatch): { label: string; 
 
 export function getMatchHighlightBadges(match: ValorantMatch): string[] {
   const badges: string[] = [];
-  const kills = match.segments?.[0]?.stats?.kills?.value || 0;
-  const hs = match.segments?.[0]?.stats?.headshotsPercentage?.value || 0;
-  const acs = match.segments?.[0]?.stats?.scorePerRound?.value || 0;
+  const stats = match.segments?.[0]?.stats;
+  const kills = stats?.kills?.value || 0;
+  const deaths = stats?.deaths?.value || 0;
+  const hs = stats?.headshotsPercentage?.value || 0;
+  const acs = stats?.scorePerRound?.value || 0;
+  const kd = deaths > 0 ? Number((kills / deaths).toFixed(2)) : kills;
 
-  if (kills >= 25) badges.push("Ace");
-  else if (kills >= 15) badges.push("4k");
-  else if (kills >= 10) badges.push("3k");
+  const modeLower = (match.metadata?.modeName || "").toLowerCase();
+  const isSwiftplay = modeLower.includes("swift") || modeLower.includes("spike");
 
-  if (hs >= 35) badges.push("High KAST");
-  if (acs >= 350) badges.push("1v3 Clutch");
-  else if (kills >= 8 && badges.length < 2) badges.push("3k x2");
+  // Zero death flawless game
+  if (deaths === 0 && kills >= 3) {
+    badges.push("Flawless");
+  }
 
-  if (badges.length === 0) badges.push("High KAST");
+  // Kill thresholds adjusted by game mode duration
+  if (isSwiftplay) {
+    if (kills >= 12) badges.push("12+ Kills");
+    else if (kills >= 9) badges.push("9+ Kills");
+  } else {
+    if (kills >= 25) badges.push("25+ Kills");
+    else if (kills >= 20) badges.push("20+ Kills");
+  }
+
+  // High K/D performance (only if meaningful kills)
+  if (kd >= 2.5 && kills >= 4) {
+    badges.push(`KD ${kd.toFixed(1)}`);
+  } else if (kd >= 1.8 && kills >= 3) {
+    badges.push(`KD ${kd.toFixed(1)}`);
+  }
+
+  // Genuine high headshot percentage (32%+) with actual kills
+  if (hs >= 40 && kills >= 3) {
+    badges.push(`${hs}% HS`);
+  } else if (hs >= 32 && kills >= 3) {
+    badges.push(`${hs}% HS`);
+  }
+
+  // High Combat Score (ACS)
+  if (acs >= 350) {
+    badges.push(`${acs} ACS`);
+  } else if (acs >= 280) {
+    badges.push("High ACS");
+  }
+
+  // Return only authentic badges earned, or empty array if none
   return badges.slice(0, 3);
 }
 

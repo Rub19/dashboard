@@ -7206,6 +7206,58 @@ CHANGELOG_BY_LANG.es.unshift({
 });
 
 CHANGELOG_BY_LANG.fr.unshift({
+  version: "v1.20.16",
+  date: "2026-09-01",
+  title: "Avatars ronds et remplacement des icônes SVG locales",
+  items: [
+    "Remplacement des avatars SVG locaux par des images réelles (Gojo, Sukuna, Denji, Tanjiro, Nezuko, Jinwoo, Luffy, Zoro).",
+    "Remplacement des icônes Netflix génériques par des affiches officielles (TVMaze).",
+    "Forme ronde des tuiles d'avatars dans le sélecteur, style Crunchyroll / Netflix.",
+    "Validation : build, lint.",
+    "Version affichée : v1.20.16.",
+  ],
+});
+
+CHANGELOG_BY_LANG.en.unshift({
+  version: "v1.20.16",
+  date: "2026-09-01",
+  title: "Round avatars and local SVG icon replacement",
+  items: [
+    "Replaced local SVG avatars with real images (Gojo, Sukuna, Denji, Tanjiro, Nezuko, Jinwoo, Luffy, Zoro).",
+    "Replaced generic Netflix icons with official posters (TVMaze).",
+    "Made avatar tiles circular in the picker, Crunchyroll / Netflix style.",
+    "Validation: build, lint.",
+    "Version badge: v1.20.16.",
+  ],
+});
+
+CHANGELOG_BY_LANG.es.unshift({
+  version: "v1.20.16",
+  date: "2026-09-01",
+  title: "Avatares redondos y sustitución de iconos SVG locales",
+  items: [
+    "Avatares SVG locales reemplazados por imágenes reales (Gojo, Sukuna, Denji, Tanjiro, Nezuko, Jinwoo, Luffy, Zoro).",
+    "Iconos Netflix genéricos reemplazados por pósters oficiales (TVMaze).",
+    "Forma circular de las fichas de avatar en el selector, estilo Crunchyroll / Netflix.",
+    "Validación : build, lint.",
+    "Versión : v1.20.16.",
+  ],
+});
+
+CHANGELOG_BY_LANG.de.unshift({
+  version: "v1.20.16",
+  date: "2026-09-01",
+  title: "Runde Avatare und Ersatz lokaler SVG-Icons",
+  items: [
+    "Lokale SVG-Avatare durch echte Bilder ersetzt (Gojo, Sukuna, Denji, Tanjiro, Nezuko, Jinwoo, Luffy, Zoro).",
+    "Generische Netflix-Icons durch offizielle Poster ersetzt (TVMaze).",
+    "Avatar-Kacheln im Auswahl nun kreisrund, im Stil von Crunchyroll / Netflix.",
+    "Validierung: build, lint.",
+    "Version: v1.20.16.",
+  ],
+});
+
+CHANGELOG_BY_LANG.fr.unshift({
   version: "v1.20.15",
   date: "2026-09-01",
   title: "Sélecteur d'avatars massif : Netflix, Prime, Crunchyroll, LoL & Valorant",

@@ -2,6 +2,16 @@
 
 Toutes les modifications notables de ce projet seront documentées dans ce fichier.
 
+## v1.20.16 — 2026-09-01
+
+**ETHONE — Avatars ronds et remplacement des icônes locales**
+
+- Remplacement des 19 avatars SVG locaux par des images réelles (Crunchyroll/Netflix).
+- Anime : Gojo, Sukuna, Denji, Tanjiro, Nezuko, Jinwoo, Luffy, Zoro via AniList.
+- Netflix : affiches officielles de séries via TVmaze.
+- Forme ronde des tuiles d'avatars, style Crunchyroll / Netflix.
+- Validation : `npm run build`, `npm run lint`.
+
 ## v1.20.15 — 2026-09-01
 
 **ETHONE — Sélecteur d'avatars massif**

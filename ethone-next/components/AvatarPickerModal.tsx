@@ -2940,13 +2940,13 @@ export default function AvatarPickerModal({
                         onClick={() => setSelectedUrl(item.url)}
                         title={`${item.name} (${item.series})`}
                         className={cn(
-                          "group relative aspect-square rounded-[18px] sm:rounded-[20px] overflow-hidden cursor-pointer transition-all duration-150 p-0.5",
+                          "group relative aspect-square rounded-full overflow-hidden cursor-pointer transition-all duration-150 p-0.5",
                           isSelected
                             ? "ring-3 ring-amber-400 ring-offset-2 ring-offset-[#141414] scale-[1.03] shadow-[0_0_20px_rgba(251,191,36,0.35)]"
                             : "hover:scale-[1.05] hover:ring-2 hover:ring-white/40 ring-1 ring-white/10 bg-zinc-900"
                         )}
                       >
-                        <div className="relative h-full w-full overflow-hidden rounded-[16px] sm:rounded-[18px] bg-zinc-950">
+                        <div className="relative h-full w-full overflow-hidden rounded-full bg-zinc-950">
                           <ClientImage
                             src={item.url}
                             alt={item.name}

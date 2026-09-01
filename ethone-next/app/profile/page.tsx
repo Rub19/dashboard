@@ -49,14 +49,19 @@ export default function ProfilePage() {
     setSaving(true);
     setSaved(false);
     try {
-      if (form.avatar_url) {
-        localStorage.setItem("ethone_custom_avatar", form.avatar_url);
-        localStorage.setItem("ethone_user_avatar", form.avatar_url);
-      }
-      if (form.display_name) {
-        localStorage.setItem("ethone_user_name", form.display_name);
+      if (user?.id) {
+        if (form.avatar_url) {
+          localStorage.setItem(`ethone_custom_avatar:${user.id}`, form.avatar_url);
+          localStorage.setItem(`ethone_user_avatar:${user.id}`, form.avatar_url);
+        }
+        if (form.display_name) {
+          localStorage.setItem(`ethone_user_name:${user.id}`, form.display_name);
+        }
       }
       await save(form);
+      if (typeof window !== "undefined") {
+        window.dispatchEvent(new CustomEvent("ethone:identity:update", { detail: { display_name: form.display_name, avatar_url: form.avatar_url } }));
+      }
       setSaved(true);
       success(i18n("saved", "Profil enregistré avec succès"));
     } catch (err) {
@@ -72,8 +77,10 @@ export default function ProfilePage() {
     if (res.ok && res.data?.url) {
       const newUrl = res.data.url;
       setForm((prev) => ({ ...prev, avatar_url: newUrl }));
-      localStorage.setItem("ethone_custom_avatar", newUrl);
-      localStorage.setItem("ethone_user_avatar", newUrl);
+      if (user?.id) {
+        localStorage.setItem(`ethone_custom_avatar:${user.id}`, newUrl);
+        localStorage.setItem(`ethone_user_avatar:${user.id}`, newUrl);
+      }
       try {
         await save({ avatar_url: newUrl });
       } catch {}

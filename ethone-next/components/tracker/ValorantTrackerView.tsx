@@ -46,8 +46,8 @@ export default function ValorantTrackerView() {
   const { settings, update } = useSettings();
   const { success, error: showError } = useToast();
 
-  const [riotName, setRiotName] = useState(settings.liveTrackerRiotName || "Rub19");
-  const [riotTag, setRiotTag] = useState(settings.liveTrackerRiotTag || "boss");
+  const [riotName, setRiotName] = useState(settings.liveTrackerRiotName || "");
+  const [riotTag, setRiotTag] = useState(settings.liveTrackerRiotTag || "");
   const [selectedMode, setSelectedMode] = useState<string>("all");
 
   const [matches, setMatches] = useState<ValorantMatch[]>([]);

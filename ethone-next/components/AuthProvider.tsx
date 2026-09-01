@@ -260,12 +260,33 @@ export default function AuthProvider({ children }: { children: ReactNode }) {
   }
 
   async function signOut() {
+    const currentUserId = user?.id;
     try {
       await fetchWorker("/api/signout", { method: "POST" });
     } catch {
       // On continue la déconnexion locale même si le Worker est injoignable.
     }
     await supabase.auth.signOut();
+    if (typeof window !== "undefined") {
+      try {
+        localStorage.removeItem("ethone-remember-me");
+        localStorage.removeItem("ethone-remember-token");
+        localStorage.removeItem("ethone-remember-refresh");
+        localStorage.removeItem("ethone-remember-expires");
+        localStorage.removeItem("ethone-auth-type");
+        localStorage.removeItem("ethone_user_name");
+        localStorage.removeItem("ethone_user_avatar");
+        localStorage.removeItem("ethone_custom_avatar");
+        localStorage.removeItem("ethone:custom:avatar");
+        if (currentUserId) {
+          localStorage.removeItem(`ethone_user_name:${currentUserId}`);
+          localStorage.removeItem(`ethone_user_avatar:${currentUserId}`);
+          localStorage.removeItem(`ethone_custom_avatar:${currentUserId}`);
+          localStorage.removeItem(`ethone:custom:avatar:${currentUserId}`);
+        }
+        window.dispatchEvent(new CustomEvent("ethone:identity:update"));
+      } catch {}
+    }
     setSession(null);
     setUser(null);
   }

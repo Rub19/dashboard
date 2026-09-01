@@ -57,28 +57,33 @@ export default function PublicProfileProvider({ children }: { children: ReactNod
 
       // 2. Fetch Supabase User metadata
       const { data: userData } = await supabase.auth.getUser();
+      const currentUserId = userData?.user?.id;
       const meta = (userData?.user?.user_metadata || {}) as Record<string, unknown>;
 
       const resolvedAvatar =
         workerProfile?.avatar_url ||
         (typeof meta.custom_avatar_url === "string" ? meta.custom_avatar_url : undefined) ||
         (typeof meta.avatar_url === "string" ? meta.avatar_url : undefined) ||
-        (typeof window !== "undefined" ? localStorage.getItem("ethone_custom_avatar") || undefined : undefined);
+        (typeof window !== "undefined" && currentUserId
+          ? localStorage.getItem(`ethone_custom_avatar:${currentUserId}`) || undefined
+          : undefined);
 
       const resolvedName =
         workerProfile?.display_name ||
         (typeof meta.display_name === "string" ? meta.display_name : undefined) ||
         (typeof meta.custom_display_name === "string" ? meta.custom_display_name : undefined) ||
-        (typeof window !== "undefined" ? localStorage.getItem("ethone_user_name") || undefined : undefined) ||
-        "Rub";
+        (typeof window !== "undefined" && currentUserId
+          ? localStorage.getItem(`ethone_user_name:${currentUserId}`) || undefined
+          : undefined) ||
+        (userData?.user?.email ? userData.user.email.split("@")[0] : "Utilisateur");
 
       const resolvedUsername =
         workerProfile?.username ||
         (typeof meta.username === "string" ? meta.username : undefined) ||
-        (userData?.user?.email ? userData.user.email.split("@")[0] : "rub");
+        (userData?.user?.email ? userData.user.email.split("@")[0] : "utilisateur");
 
       const resolvedProfile: Profile = {
-        public_id: workerProfile?.public_id || userData?.user?.id || "local",
+        public_id: workerProfile?.public_id || currentUserId || "local",
         username: resolvedUsername,
         display_name: resolvedName,
         avatar_url: resolvedAvatar,
@@ -96,19 +101,21 @@ export default function PublicProfileProvider({ children }: { children: ReactNod
   const save = useCallback(async (input: Partial<Profile>) => {
     setError(null);
 
-    // 1. Immediate LocalStorage persistence
-    if (typeof window !== "undefined") {
-      try {
+    // 1. Immediate LocalStorage persistence with user scope
+    try {
+      const { data: userData } = await supabase.auth.getUser();
+      const currentUserId = userData?.user?.id;
+      if (typeof window !== "undefined" && currentUserId) {
         if (input.avatar_url) {
-          localStorage.setItem("ethone_custom_avatar", input.avatar_url);
-          localStorage.setItem("ethone:custom:avatar", input.avatar_url);
-          localStorage.setItem("ethone_user_avatar", input.avatar_url);
+          localStorage.setItem(`ethone_custom_avatar:${currentUserId}`, input.avatar_url);
+          localStorage.setItem(`ethone:custom:avatar:${currentUserId}`, input.avatar_url);
+          localStorage.setItem(`ethone_user_avatar:${currentUserId}`, input.avatar_url);
         }
         if (input.display_name) {
-          localStorage.setItem("ethone_user_name", input.display_name);
+          localStorage.setItem(`ethone_user_name:${currentUserId}`, input.display_name);
         }
-      } catch {}
-    }
+      }
+    } catch {}
 
     // 2. Supabase Auth user_metadata persistence
     try {

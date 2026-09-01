@@ -38,32 +38,45 @@ export function useUserIdentity(): UserIdentity {
   const [cachedName, setCachedName] = useState<string>("");
   const [cachedAvatar, setCachedAvatar] = useState<string>("");
 
+  const userId = user?.id;
+
   useEffect(() => {
     if (typeof window !== "undefined") {
       try {
         const updateFromStorage = () => {
-          const savedName = localStorage.getItem("ethone_user_name");
-          const savedAvatar =
-            localStorage.getItem("ethone_custom_avatar") ||
-            localStorage.getItem("ethone:custom:avatar") ||
-            localStorage.getItem("ethone_user_avatar");
+          if (!userId) {
+            setCachedName("");
+            setCachedAvatar("");
+            return;
+          }
 
-          if (savedName && savedName !== "Rubens Lespinasse") {
+          const savedName =
+            localStorage.getItem(`ethone_user_name:${userId}`) ||
+            (user?.email && user.email.includes("rub") ? localStorage.getItem("ethone_user_name") : null);
+
+          const savedAvatar =
+            localStorage.getItem(`ethone_custom_avatar:${userId}`) ||
+            localStorage.getItem(`ethone:custom:avatar:${userId}`) ||
+            (user?.email && user.email.includes("rub")
+              ? localStorage.getItem("ethone_custom_avatar") || localStorage.getItem("ethone:custom:avatar")
+              : null);
+
+          if (savedName) {
             setCachedName(savedName);
-          } else if (savedName === "Rubens Lespinasse") {
-            localStorage.setItem("ethone_user_name", "Rub");
-            setCachedName("Rub");
+          } else {
+            setCachedName("");
           }
 
           if (savedAvatar) {
             if (isExternalOAuthAvatar(savedAvatar)) {
-              localStorage.removeItem("ethone_user_avatar");
-              localStorage.removeItem("ethone_custom_avatar");
-              localStorage.removeItem("ethone:custom:avatar");
+              localStorage.removeItem(`ethone_custom_avatar:${userId}`);
+              localStorage.removeItem(`ethone:custom:avatar:${userId}`);
               setCachedAvatar("");
             } else {
               setCachedAvatar(savedAvatar);
             }
+          } else {
+            setCachedAvatar("");
           }
         };
 
@@ -79,25 +92,31 @@ export function useUserIdentity(): UserIdentity {
         // ignore storage restrictions
       }
     }
-  }, []);
+  }, [userId, user?.email]);
 
   const meta = useMemo(() => (user?.user_metadata || {}) as Record<string, unknown>, [user?.user_metadata]);
 
   const customFromMeta =
-    (typeof meta.custom_display_name === "string" ? meta.custom_display_name : undefined) ||
-    (typeof meta.display_name === "string" ? meta.display_name : undefined) ||
-    (typeof meta.username === "string" ? meta.username : undefined);
+    (typeof meta.custom_display_name === "string" && meta.custom_display_name.trim() ? meta.custom_display_name.trim() : undefined) ||
+    (typeof meta.display_name === "string" && meta.display_name.trim() ? meta.display_name.trim() : undefined) ||
+    (typeof meta.username === "string" && meta.username.trim() ? meta.username.trim() : undefined) ||
+    (typeof meta.full_name === "string" && meta.full_name.trim() ? meta.full_name.trim() : undefined) ||
+    (typeof meta.name === "string" && meta.name.trim() ? meta.name.trim() : undefined);
 
-  // Resolution of display name with priority on explicitly chosen profile/display_name ("Rub")
-  const displayName =
-    publicProfile?.display_name ||
-    publicProfile?.username ||
-    activeProfile?.name ||
-    customFromMeta ||
-    cachedName ||
-    (user?.email && (user.email.startsWith("rub19") || user.email.startsWith("rub")) ? "Rub" : undefined) ||
-    (user?.email ? user.email.split("@")[0] : "") ||
-    "Rub";
+  // Resolution of display name strictly isolated per user
+  const displayName = useMemo(() => {
+    if (!user) return "Invité";
+
+    return (
+      (publicProfile?.display_name && publicProfile.display_name.trim()) ||
+      (publicProfile?.username && publicProfile.username.trim()) ||
+      (activeProfile?.name && activeProfile.name.trim() !== "Default" && activeProfile.name.trim()) ||
+      customFromMeta ||
+      cachedName ||
+      (user?.email ? user.email.split("@")[0] : "") ||
+      "Utilisateur"
+    );
+  }, [user, publicProfile?.display_name, publicProfile?.username, activeProfile?.name, customFromMeta, cachedName]);
 
   // Resolution of avatar URL: custom user uploaded avatar on ETHONE only (strictly excluding Google & Discord avatars!)
   const candidateAvatars = [
@@ -112,31 +131,31 @@ export function useUserIdentity(): UserIdentity {
   const avatarUrl = candidateAvatars.find((url) => url && !isExternalOAuthAvatar(url)) || undefined;
 
   useEffect(() => {
-    if (typeof window !== "undefined") {
+    if (typeof window !== "undefined" && userId) {
       try {
-        if (displayName && displayName !== "Invité" && displayName !== "Utilisateur ETHONE") {
-          localStorage.setItem("ethone_user_name", displayName);
+        if (displayName && displayName !== "Invité" && displayName !== "Utilisateur") {
+          localStorage.setItem(`ethone_user_name:${userId}`, displayName);
         }
         if (avatarUrl && !isExternalOAuthAvatar(avatarUrl)) {
-          localStorage.setItem("ethone_user_avatar", avatarUrl);
-          localStorage.setItem("ethone_custom_avatar", avatarUrl);
+          localStorage.setItem(`ethone_custom_avatar:${userId}`, avatarUrl);
+          localStorage.setItem(`ethone_user_avatar:${userId}`, avatarUrl);
         }
       } catch {
         // ignore
       }
     }
-  }, [displayName, avatarUrl]);
+  }, [userId, displayName, avatarUrl]);
 
   const email = user?.email || "";
 
   const initials = useMemo(() => {
-    if (!displayName) return "R";
+    if (!displayName || displayName === "Invité") return "I";
     return displayName
       .split(/\s+/)
       .map((part) => part[0] || "")
       .join("")
       .slice(0, 2)
-      .toUpperCase();
+      .toUpperCase() || "U";
   }, [displayName]);
 
   return {

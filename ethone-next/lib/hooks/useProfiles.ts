@@ -3,6 +3,7 @@
 import { useCallback, useEffect, useMemo, useState } from "react";
 import { fetchWorker } from "@/lib/api";
 import { fetchWorkerCached } from "@/lib/hooks/useCachedFetch";
+import { supabase } from "@/lib/supabase";
 
 export type Profile = {
   id: string;
@@ -57,6 +58,19 @@ export function useProfiles() {
 
   useEffect(() => {
     fetchAll();
+    const handleAuthChange = () => fetchAll(true);
+    if (typeof window !== "undefined") {
+      window.addEventListener("ethone:identity:update", handleAuthChange);
+    }
+    const { data: authSub } = supabase.auth.onAuthStateChange(() => {
+      fetchAll(true);
+    });
+    return () => {
+      if (typeof window !== "undefined") {
+        window.removeEventListener("ethone:identity:update", handleAuthChange);
+      }
+      authSub?.subscription?.unsubscribe();
+    };
   }, [fetchAll]);
 
   async function create(input: Omit<Profile, "id" | "createdAt">) {

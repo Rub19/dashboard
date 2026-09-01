@@ -7206,6 +7206,48 @@ CHANGELOG_BY_LANG.es.unshift({
 });
 
 CHANGELOG_BY_LANG.fr.unshift({
+  version: "v1.20.3",
+  date: "2026-09-01",
+  title: "Isolation Stricte Multi-Comptes & Correction de la Persistance de Nom",
+  items: [
+    "Isolation complète des profils et identités locales par identifiant utilisateur unique (userId).",
+    "Suppression définitive des noms/avatars par défaut partagés entre différents utilisateurs d'un même navigateur.",
+    "Nettoyage intégral des tokens et de l'identité en cache lors de la déconnexion.",
+    "Réactivité instantanée des profils lors du changement de session ou de compte.",
+  ],
+});
+
+CHANGELOG_BY_LANG.en.unshift({
+  version: "v1.20.3",
+  date: "2026-09-01",
+  title: "Strict Multi-Account Isolation & Identity Cache Fix",
+  items: [
+    "Scoped all local identity and avatar storage to unique user IDs.",
+    "Eliminated shared default name fallbacks across different accounts.",
+    "Full token and identity cache cleanup on signOut.",
+    "Instant profile reactivity on auth state transitions.",
+  ],
+});
+
+CHANGELOG_BY_LANG.es.unshift({
+  version: "v1.20.3",
+  date: "2026-09-01",
+  title: "Aislamiento Estricto Multi-Cuentas & Corrección de Caché",
+  items: [
+    "Aislamiento de perfiles e identidades por ID de usuario.",
+  ],
+});
+
+CHANGELOG_BY_LANG.de.unshift({
+  version: "v1.20.3",
+  date: "2026-09-01",
+  title: "Strikte Mehrbenutzer-Isolation & Identitäts-Cache-Fix",
+  items: [
+    "Vollständige Trennung von Benutzeridentitäten und Profilen nach Benutzer-ID.",
+  ],
+});
+
+CHANGELOG_BY_LANG.fr.unshift({
   version: "v1.20.2",
   date: "2026-08-31",
   title: "Résolution des Rangs Réels Valorant via Clé API HenrikDev",

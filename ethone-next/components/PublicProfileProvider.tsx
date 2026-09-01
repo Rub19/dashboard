@@ -3,6 +3,7 @@
 import { createContext, useCallback, useContext, useEffect, useState, type ReactNode } from "react";
 import { fetchWorker } from "@/lib/api";
 import { supabase } from "@/lib/supabase";
+import { useAuth } from "@/components/AuthProvider";
 
 type Profile = {
   public_id?: string;
@@ -58,6 +59,7 @@ export function usePublicProfileContext() {
 }
 
 export default function PublicProfileProvider({ children }: { children: ReactNode }) {
+  const { user } = useAuth();
   const [profile, setProfile] = useState<Profile | null>(null);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<Error | null>(null);
@@ -66,6 +68,15 @@ export default function PublicProfileProvider({ children }: { children: ReactNod
     setLoading(true);
     setError(null);
     try {
+      const currentUserId = user?.id;
+      const currentUser = user;
+
+      if (!currentUserId) {
+        setProfile(null);
+        setLoading(false);
+        return;
+      }
+
       // 1. Try Cloudflare Worker endpoint
       let workerProfile: Profile | null = null;
       try {
@@ -77,10 +88,7 @@ export default function PublicProfileProvider({ children }: { children: ReactNod
         // Worker endpoint failed, fallback to Supabase
       }
 
-      // 2. Fetch Supabase User metadata
-      const { data: userData } = await supabase.auth.getUser();
-      const currentUserId = userData?.user?.id;
-      const meta = (userData?.user?.user_metadata || {}) as Record<string, unknown>;
+      const meta = (currentUser?.user_metadata || {}) as Record<string, unknown>;
 
       const resolvedAvatar =
         workerProfile?.avatar_url ||
@@ -94,7 +102,7 @@ export default function PublicProfileProvider({ children }: { children: ReactNod
         typeof window !== "undefined" && currentUserId
           ? localStorage.getItem(`ethone_user_name:${currentUserId}`)
           : undefined;
-      const emailPrefix = userData?.user?.email ? userData.user.email.split("@")[0] : undefined;
+      const emailPrefix = currentUser?.email ? currentUser.email.split("@")[0] : undefined;
 
       const resolvedName =
         firstNonGeneric(
@@ -115,7 +123,7 @@ export default function PublicProfileProvider({ children }: { children: ReactNod
         ) || "utilisateur";
 
       const resolvedProfile: Profile = {
-        public_id: workerProfile?.public_id || currentUserId || "local",
+        public_id: workerProfile?.public_id || currentUserId,
         username: resolvedUsername,
         display_name: resolvedName,
         avatar_url: resolvedAvatar,
@@ -128,16 +136,17 @@ export default function PublicProfileProvider({ children }: { children: ReactNod
     } finally {
       setLoading(false);
     }
-  }, []);
+  }, [user?.id, user?.email]);
 
   const save = useCallback(async (input: Partial<Profile>) => {
     setError(null);
 
+    const currentUserId = user?.id;
+    if (!currentUserId) return null;
+
     // 1. Immediate LocalStorage persistence with user scope
     try {
-      const { data: userData } = await supabase.auth.getUser();
-      const currentUserId = userData?.user?.id;
-      if (typeof window !== "undefined" && currentUserId) {
+      if (typeof window !== "undefined") {
         if (input.avatar_url) {
           localStorage.setItem(`ethone_custom_avatar:${currentUserId}`, input.avatar_url);
           localStorage.setItem(`ethone:custom:avatar:${currentUserId}`, input.avatar_url);
@@ -165,16 +174,13 @@ export default function PublicProfileProvider({ children }: { children: ReactNod
 
     // 3. Supabase profiles table upsert
     try {
-      const { data: userData } = await supabase.auth.getUser();
-      if (userData?.user?.id) {
-        await supabase.from("profiles").upsert({
-          id: userData.user.id,
-          username: input.username,
-          display_name: input.display_name,
-          avatar_url: input.avatar_url,
-          updated_at: new Date().toISOString(),
-        });
-      }
+      await supabase.from("profiles").upsert({
+        id: currentUserId,
+        username: input.username,
+        display_name: input.display_name,
+        avatar_url: input.avatar_url,
+        updated_at: new Date().toISOString(),
+      });
     } catch (dbErr) {
       console.warn("Supabase profiles table upsert error:", dbErr);
     }
@@ -199,7 +205,7 @@ export default function PublicProfileProvider({ children }: { children: ReactNod
     }
 
     return nextProfile;
-  }, [profile]);
+  }, [profile, user?.id]);
 
   useEffect(() => {
     load();

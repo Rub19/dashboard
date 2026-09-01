@@ -7206,6 +7206,54 @@ CHANGELOG_BY_LANG.es.unshift({
 });
 
 CHANGELOG_BY_LANG.fr.unshift({
+  version: "v1.20.13",
+  date: "2026-09-01",
+  title: "Identifiant public : correction du fallback 'local'",
+  items: [
+    "Le PublicProfileProvider attend l'utilisateur connecté avant de charger le profil.",
+    "Suppression du fallback 'local' sur l'identifiant public quand l'utilisateur est authentifié.",
+    "Validation : build, lint.",
+    "Version affichée : v1.20.13.",
+  ],
+});
+
+CHANGELOG_BY_LANG.en.unshift({
+  version: "v1.20.13",
+  date: "2026-09-01",
+  title: "Public id: fix 'local' fallback",
+  items: [
+    "PublicProfileProvider waits for authenticated user before loading profile.",
+    "Removed 'local' public id fallback when user is authenticated.",
+    "Validation: build, lint.",
+    "Version badge: v1.20.13.",
+  ],
+});
+
+CHANGELOG_BY_LANG.es.unshift({
+  version: "v1.20.13",
+  date: "2026-09-01",
+  title: "ID público : corregir fallback 'local'",
+  items: [
+    "PublicProfileProvider espera al usuario autenticado antes de cargar el perfil.",
+    "Eliminado el fallback 'local' del ID público cuando el usuario está autenticado.",
+    "Validación : build, lint.",
+    "Versión : v1.20.13.",
+  ],
+});
+
+CHANGELOG_BY_LANG.de.unshift({
+  version: "v1.20.13",
+  date: "2026-09-01",
+  title: "Öffentliche ID : 'local' Fallback korrigiert",
+  items: [
+    "PublicProfileProvider wartet auf authentifizierten Benutzer, bevor das Profil geladen wird.",
+    "Entfernung des 'local' Fallbacks für die öffentliche ID bei authentifiziertem Benutzer.",
+    "Validierung: build, lint.",
+    "Version: v1.20.13.",
+  ],
+});
+
+CHANGELOG_BY_LANG.fr.unshift({
   version: "v1.20.12",
   date: "2026-09-01",
   title: "Nom d'utilisateur : correction fallback 'Utilisateur' / 'Invité'",

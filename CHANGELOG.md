@@ -2,6 +2,14 @@
 
 Toutes les modifications notables de ce projet seront documentées dans ce fichier.
 
+## v1.20.13 — 2026-09-01
+
+**ETHONE — Identifiant public : correction du fallback "local"**
+
+- `PublicProfileProvider` attend l'utilisateur connecté avant de charger le profil.
+- Suppression du fallback `local` sur l'identifiant public quand l'utilisateur est authentifié.
+- Validation : `npm run build`, `npm run lint`.
+
 ## v1.20.12 — 2026-09-01
 
 **ETHONE — Nom d'utilisateur : correction fallback**

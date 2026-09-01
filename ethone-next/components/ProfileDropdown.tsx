@@ -28,6 +28,7 @@ import { useToast } from "@/components/ToastProvider";
 import { useTeam } from "@/lib/hooks/useTeam";
 import { useLocalStorage } from "@/lib/hooks/useLocalStorage";
 import { useTopbarDropdown } from "@/lib/hooks/useTopbarDropdown";
+import { useUserIdentity } from "@/lib/hooks/useUserIdentity";
 
 const WORKSPACES = [
   { id: "personal", icon: User, color: "text-[var(--accent-primary)]" },
@@ -105,7 +106,7 @@ export default function ProfileDropdown() {
   const [pending, setPending] = useState(false);
 
   const email = user?.email || i18n("guest");
-  const displayName = publicProfile?.display_name || activeProfile?.name || user?.email || i18n("guest");
+  const { displayName } = useUserIdentity();
   const avatarUrl = publicProfile?.avatar_url;
 
   useEffect(() => {

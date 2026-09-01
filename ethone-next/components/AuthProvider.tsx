@@ -240,14 +240,27 @@ export default function AuthProvider({ children }: { children: ReactNode }) {
   }
 
   async function signUp(email: string, password: string, username: string) {
+    const displayName = username.trim() || email.split("@")[0];
     const { data, error } = await supabase.auth.signUp({
       email,
       password,
-      options: { data: { username } },
+      options: { data: { username, display_name: displayName } },
     });
     if (data.session) {
       setSession(data.session);
       setUser(data.session.user);
+
+      // Seed the public profile row so the dashboard shows the real username, not a generic label.
+      try {
+        await supabase.from("profiles").upsert({
+          id: data.session.user.id,
+          username,
+          display_name: displayName,
+          updated_at: new Date().toISOString(),
+        });
+      } catch (dbErr) {
+        console.warn("ETHONE profile seed failed:", dbErr);
+      }
     }
     return { error: error ?? undefined, session: data.session ?? undefined };
   }

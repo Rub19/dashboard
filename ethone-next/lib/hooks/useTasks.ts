@@ -160,6 +160,9 @@ export function useTasks() {
   const update = useCallback(
     async (id: string, input: Partial<TaskInput>) => {
       setStatus("syncing");
+      const userId = await withUserId();
+      if (!userId) return null;
+
       const optimistic = { ...items.find((t) => t.id === id), ...input, id, updated_at: new Date().toISOString() } as Task;
       setItems((prev) => prev.map((t) => (t.id === id ? optimistic : t)));
 
@@ -168,6 +171,7 @@ export function useTasks() {
           .from("tasks")
           .update({ ...input, updated_at: new Date().toISOString() })
           .eq("id", id)
+          .eq("user_id", userId)
           .select()
           .single();
 
@@ -183,17 +187,20 @@ export function useTasks() {
         return null;
       }
     },
-    [items, load],
+    [items, load, withUserId],
   );
 
   const remove = useCallback(
     async (id: string) => {
       setStatus("syncing");
+      const userId = await withUserId();
+      if (!userId) return;
+
       const previous = [...items];
       setItems((prev) => prev.filter((t) => t.id !== id));
 
       try {
-        const { error: deleteError } = await supabase.from("tasks").delete().eq("id", id);
+        const { error: deleteError } = await supabase.from("tasks").delete().eq("id", id).eq("user_id", userId);
         if (deleteError) throw deleteError;
         setStatus("idle");
       } catch (err) {
@@ -202,7 +209,7 @@ export function useTasks() {
         setItems(previous);
       }
     },
-    [items],
+    [items, withUserId],
   );
 
   useEffect(() => {

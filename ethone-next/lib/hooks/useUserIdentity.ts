@@ -30,6 +30,21 @@ function isExternalOAuthAvatar(url?: string | null): boolean {
   );
 }
 
+const GENERIC_DISPLAY_NAMES = new Set([
+  "profil principal",
+  "profil",
+  "default",
+  "invité",
+  "utilisateur",
+]);
+
+function isGenericDisplayName(name?: string | null): boolean {
+  if (!name || typeof name !== "string") return true;
+  const trimmed = name.trim();
+  if (!trimmed) return true;
+  return GENERIC_DISPLAY_NAMES.has(trimmed.toLowerCase());
+}
+
 export function useUserIdentity(): UserIdentity {
   const { user } = useAuth();
   const { activeProfile } = useActiveProfile();
@@ -65,7 +80,7 @@ export function useUserIdentity(): UserIdentity {
             localStorage.getItem(`ethone:custom:avatar`) ||
             localStorage.getItem(`ethone_user_avatar`);
 
-          if (savedName && savedName.trim() && savedName !== "Invité") {
+          if (savedName && savedName.trim() && savedName !== "Invité" && !isGenericDisplayName(savedName)) {
             setCachedName(savedName.trim());
           } else {
             setCachedName("");
@@ -107,16 +122,13 @@ export function useUserIdentity(): UserIdentity {
 
   // Resolution of display name strictly isolated per user / profile
   const displayName = useMemo(() => {
-    const activeProfName = activeProfile?.name && activeProfile.name.trim() !== "Default" ? activeProfile.name.trim() : undefined;
-    const publicProfName = (publicProfile?.display_name && publicProfile.display_name.trim()) || (publicProfile?.username && publicProfile.username.trim());
+    const rawActiveName = activeProfile?.name?.trim();
+    const activeProfName = rawActiveName && !isGenericDisplayName(rawActiveName) ? rawActiveName : undefined;
+    const rawPublicName = (publicProfile?.display_name?.trim()) || (publicProfile?.username?.trim()) || undefined;
+    const publicProfName = rawPublicName && !isGenericDisplayName(rawPublicName) ? rawPublicName : undefined;
 
     if (!user) {
-      return (
-        activeProfName ||
-        cachedName ||
-        (publicProfName && publicProfName !== "Invité" ? publicProfName : undefined) ||
-        "Profil Principal"
-      );
+      return activeProfName || cachedName || publicProfName || "Invité";
     }
 
     return (
@@ -125,7 +137,7 @@ export function useUserIdentity(): UserIdentity {
       customFromMeta ||
       cachedName ||
       (user?.email ? user.email.split("@")[0] : "") ||
-      "Profil Principal"
+      "Utilisateur"
     );
   }, [user, publicProfile?.display_name, publicProfile?.username, activeProfile?.name, customFromMeta, cachedName]);
 

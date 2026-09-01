@@ -72,6 +72,7 @@ export default function PublicProfileProvider({ children }: { children: ReactNod
         workerProfile?.display_name ||
         (typeof meta.display_name === "string" ? meta.display_name : undefined) ||
         (typeof meta.custom_display_name === "string" ? meta.custom_display_name : undefined) ||
+        (typeof meta.username === "string" && meta.username.trim() ? meta.username.trim() : undefined) ||
         (typeof window !== "undefined" && currentUserId
           ? localStorage.getItem(`ethone_user_name:${currentUserId}`) || undefined
           : undefined) ||

@@ -2,6 +2,15 @@
 
 Toutes les modifications notables de ce projet seront documentées dans ce fichier.
 
+## v1.20.10 — 2026-09-01
+
+**ETHONE — Nom d'utilisateur par défaut & isolation des profils**
+
+- Suppression du fallback `Profil Principal` : affichage du vrai nom / username / email de l'utilisateur.
+- L'inscription ETHONE enregistre maintenant `display_name` et `username` dans le profil.
+- Filtrage `user_id` ajouté aux mises à jour / suppressions de tâches.
+- Validation : `npm run build`, `npm run lint`.
+
 ## v1.10.37 — 2026-08-27
 
 **ETHONE — Fix erreur de synchronisation des paramètres**

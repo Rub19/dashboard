@@ -7206,6 +7206,19 @@ CHANGELOG_BY_LANG.es.unshift({
 });
 
 CHANGELOG_BY_LANG.fr.unshift({
+  version: "v1.20.10",
+  date: "2026-09-01",
+  title: "Nom d'utilisateur par défaut & isolation des profils",
+  items: [
+    "Suppression du fallback 'Profil Principal' : chaque utilisateur voit son vrai nom / username / email.",
+    "Mise à jour de l'inscription pour enregistrer le display_name et username du compte ETHONE.",
+    "Filtrage user_id ajouté aux mises à jour et suppressions de tâches.",
+    "Validation : build, lint.",
+    "Version affichée : v1.20.10.",
+  ],
+});
+
+CHANGELOG_BY_LANG.fr.unshift({
   version: "v1.20.9",
   date: "2026-09-01",
   title: "Nouveau Sélecteur d'Avatar Style Netflix / Anime & Correction Profil",
@@ -7214,6 +7227,19 @@ CHANGELOG_BY_LANG.fr.unshift({
     "Véritables avatars HD officiels classés par séries : Arcane, Wednesday, Squid Game, Stranger Things, L'Attaque des Titans, Jujutsu Kaisen, Chainsaw Man, Demon Slayer, Solo Leveling, One Piece, Valorant, LoL.",
     "Bouton Aléatoire instantané et sélection fluide avec validation rapide.",
     "Correction de l'étiquette 'Invité' : résolution propre de votre nom et avatar sur tous les profils et sessions.",
+  ],
+});
+
+CHANGELOG_BY_LANG.en.unshift({
+  version: "v1.20.10",
+  date: "2026-09-01",
+  title: "Default username & profile isolation",
+  items: [
+    "Removed 'Profil Principal' fallback: each user sees their real name, username, or email.",
+    "Sign-up now records display_name and username for new ETHONE accounts.",
+    "Added user_id filter to task update/delete calls.",
+    "Validation: build, lint.",
+    "Version badge: v1.20.10.",
   ],
 });
 
@@ -7230,11 +7256,37 @@ CHANGELOG_BY_LANG.en.unshift({
 });
 
 CHANGELOG_BY_LANG.es.unshift({
+  version: "v1.20.10",
+  date: "2026-09-01",
+  title: "Nombre de usuario por defecto y aislamiento de perfiles",
+  items: [
+    "Se eliminó el fallback 'Profil Principal' : cada usuario ve su nombre, usuario o email real.",
+    "El registro guarda display_name y username para las nuevas cuentas ETHONE.",
+    "Filtro user_id añadido a actualización y eliminación de tareas.",
+    "Validación : build, lint.",
+    "Versión : v1.20.10.",
+  ],
+});
+
+CHANGELOG_BY_LANG.es.unshift({
   version: "v1.20.9",
   date: "2026-09-01",
   title: "Selector de Avatar Estilo Netflix y Anime HD",
   items: [
     "Diseño oficial estilo Netflix y Crunchyroll con avatares reales de series de anime y streaming.",
+  ],
+});
+
+CHANGELOG_BY_LANG.de.unshift({
+  version: "v1.20.10",
+  date: "2026-09-01",
+  title: "Standard-Benutzername & Profil-Isolierung",
+  items: [
+    "Fallback 'Profil Principal' entfernt : jeder Benutzer sieht seinen echten Namen, Benutzernamen oder E-Mail.",
+    "Registrierung speichert display_name und username für neue ETHONE-Konten.",
+    "user_id-Filter für Task-Update/Delete hinzugefügt.",
+    "Validierung: build, lint.",
+    "Version: v1.20.10.",
   ],
 });
 

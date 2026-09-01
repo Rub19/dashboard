@@ -73,12 +73,28 @@ export async function signUpWithPassword(email: string, password: string, userna
   const attempt = consumeAuthAttempt("sign-up", email);
   if (!attempt.allowed) return { ...rateLimitedResult(attempt.retryAfterMs), user: null, session: null };
 
+  const displayName = username.trim() || email.split("@")[0];
   const { data, error } = await supabase.auth.signUp({
     email,
     password,
-    options: { data: { username } },
+    options: { data: { username, display_name: displayName } },
   });
   if (!error && data.user) resetAuthAttempt("sign-up", email);
+
+  // Seed the public profile row with the chosen username / display name when a session is returned.
+  if (!error && data.session && data.user) {
+    try {
+      await supabase.from("profiles").upsert({
+        id: data.user.id,
+        username,
+        display_name: displayName,
+        updated_at: new Date().toISOString(),
+      });
+    } catch (dbErr) {
+      console.warn("ETHONE profile seed failed:", dbErr);
+    }
+  }
+
   return { ok: !error && !!data.user, user: data.user, session: data.session, error };
 }
 

@@ -13,6 +13,18 @@ export type AIEngineOptions = {
   systemPrompt?: string;
   temperature?: number;
   maxTokens?: number;
+  liveContext?: {
+    nowPlaying?: {
+      title?: string;
+      artist?: string;
+      album?: string;
+      isPlaying?: boolean;
+      source?: string;
+    } | null;
+    weather?: Record<string, unknown> | null;
+    openTasks?: number;
+    userName?: string;
+  };
 };
 
 export type AIEngineResponse = {
@@ -108,12 +120,12 @@ export function resolveSmartModelId(promptText: string, requestedModelId: string
  * Enhanced Autonomous AI Engine for ETHONE OS Brain
  */
 export async function askBrainAI(options: AIEngineOptions): Promise<AIEngineResponse> {
-  const { messages, modelId = "auto", systemPrompt, temperature = 0.7 } = options;
+  const { messages, modelId = "auto", systemPrompt, temperature = 0.7, liveContext } = options;
   const lastUserPrompt = messages.filter((m) => m.role === "user").slice(-1)[0]?.content || "";
   const effectiveModelId = resolveSmartModelId(lastUserPrompt, modelId);
 
   const defaultSystem =
-    "Tu es Brain, l'assistant IA autonome et ultra-intelligent intégré à ETHONE OS. Tu réponds toujours de manière fluide, détaillée, structurée, bienveillante et proactive en français. Tu maîtrises l'organisation, la rédaction de notes, la gestion des tâches, les fichiers, le code, l'analyse et la créativité.";
+    "Tu es Brain, l'assistant IA et compagnon personnel ultra-intelligent intégré à ETHONE OS. Tu réponds de manière fluide, naturelle, vivante, intelligente et agréable en français (comme ChatGPT ou Claude). Ne génère JAMAIS de gabarits rigides ou de listes de conseils génériques pour des salutations ou questions simples. Sois direct, utile, amical et précis.";
 
   const fullMessages: ChatMessage[] = [
     { role: "system", content: systemPrompt || defaultSystem },
@@ -232,32 +244,7 @@ export async function askBrainAI(options: AIEngineOptions): Promise<AIEngineResp
     } catch {}
   }
 
-  // 5. Direct DeepSeek if user has key
-  if (creds.deepseek) {
-    try {
-      const res = await fetch("https://api.deepseek.com/chat/completions", {
-        method: "POST",
-        headers: {
-          Authorization: `Bearer ${creds.deepseek}`,
-          "Content-Type": "application/json",
-        },
-        body: JSON.stringify({
-          model: effectiveModelId.includes("r1") ? "deepseek-reasoner" : "deepseek-chat",
-          messages: fullMessages,
-          temperature,
-        }),
-      });
-      if (res.ok) {
-        const json = await res.json();
-        const content = json.choices?.[0]?.message?.content;
-        if (content && content.trim().length > 0) {
-          return { content: content.trim(), provider: "deepseek", model: effectiveModelId };
-        }
-      }
-    } catch {}
-  }
-
-  // 6. Direct Cloudflare Worker backend /api/brain/complete
+  // 5. Direct Cloudflare Worker backend /api/brain/complete
   try {
     const workerRes = await fetchWorker("/api/brain/complete", {
       method: "POST",
@@ -277,17 +264,15 @@ export async function askBrainAI(options: AIEngineOptions): Promise<AIEngineResp
     }
   } catch {}
 
-  // 7. Free Public AI Network (Pollinations Text API)
+  // 6. Free Public AI Network (Pollinations Text API)
   const preferredPollinations = effectiveModelId.includes("r1") || effectiveModelId.includes("qwen")
-    ? ["deepseek", "qwen", "openai", "mistral"]
-    : effectiveModelId.includes("mistral")
-    ? ["mistral", "deepseek", "openai"]
-    : POLLINATIONS_MODELS;
+    ? ["deepseek", "openai", "mistral"]
+    : ["openai", "mistral", "deepseek"];
 
   for (const polModel of preferredPollinations) {
     try {
       const controller = new AbortController();
-      const timer = setTimeout(() => controller.abort(), 7000);
+      const timer = setTimeout(() => controller.abort(), 4000);
 
       const polRes = await fetch("https://text.pollinations.ai/", {
         method: "POST",
@@ -304,7 +289,7 @@ export async function askBrainAI(options: AIEngineOptions): Promise<AIEngineResp
 
       if (polRes.ok) {
         const text = await polRes.text();
-        if (text && text.trim().length > 5 && !text.includes("Rate limit") && !text.includes("error")) {
+        if (text && text.trim().length > 3 && !text.includes("Rate limit") && !text.includes("error")) {
           return {
             content: text.trim(),
             provider: "free-ai-network",
@@ -315,13 +300,68 @@ export async function askBrainAI(options: AIEngineOptions): Promise<AIEngineResp
     } catch {}
   }
 
-  // 8. Fallback: High-Intelligence Autonomous Brain Engine
+  // 7. Context-Aware Natural Intelligence Fallback
   const lastUser = messages.filter((m) => m.role === "user").slice(-1)[0]?.content || "";
   const clean = lastUser.toLowerCase().trim();
 
   let generated = "";
 
+  // A. Spotify / Music Context & Information
   if (
+    clean.includes("musique") ||
+    clean.includes("écoute") ||
+    clean.includes("ecoute") ||
+    clean.includes("spotify") ||
+    clean.includes("son") ||
+    clean.includes("morceau") ||
+    clean.includes("chanson") ||
+    clean.includes("track")
+  ) {
+    const np = liveContext?.nowPlaying;
+    if (np?.isPlaying && np?.title) {
+      generated = `Actuellement, tu écoutes **${np.title}** de **${np.artist || "Artiste inconnu"}**${np.album ? ` (sur l'album *${np.album}*)` : ""} via ${np.source || "Spotify"} ! 🎵\n\nTu veux que je te donne des infos sur cet artiste, les paroles ou des suggestions similaires ? 🎧`;
+    } else if (np?.title) {
+      generated = `Le dernier morceau détecté sur Spotify / Discord est **${np.title}** de **${np.artist || "Artiste inconnu"}**${np.album ? ` (*${np.album}*)` : ""}. 🎶\n\nDès que tu relances la lecture, je pourrai te donner toutes les infos et statistiques en direct !`;
+    } else {
+      generated = `Tu n'as aucune musique en cours de lecture détectée sur Spotify ou Discord pour le moment. 🎧\n\nDès que tu lances un son sur Spotify ou que ta présence Discord est active, demande-moi et je te donnerai tous les détails (titre, artiste, album, style) en temps réel !`;
+    }
+  }
+  // B. Casual Greetings & Natural Chat
+  else if (
+    clean === "cc" ||
+    clean === "coucou" ||
+    clean === "salut" ||
+    clean === "hello" ||
+    clean === "hey" ||
+    clean === "yo" ||
+    clean === "bonjour" ||
+    clean === "bonsoir" ||
+    clean === "wesh" ||
+    clean.startsWith("cc ") ||
+    clean.startsWith("salut ") ||
+    clean.startsWith("hello ") ||
+    clean.startsWith("yo ")
+  ) {
+    const greetings = [
+      "Salut ! Comment tu vas aujourd'hui ? Qu'est-ce qu'on fait de beau sur ETHONE OS ? 😊",
+      "Hello ! Ravi de te voir. Dis-moi ce dont tu as besoin et je m'en occupe ! ✨",
+      "Coucou ! Tout roule pour toi ? Je suis là si tu veux discuter, coder, créer une note ou gérer tes tâches ! 🚀",
+      "Yo ! Prêt pour une nouvelle session ? Comment puis-je t'aider aujourd'hui ? 💡",
+    ];
+    generated = greetings[Math.floor(Math.random() * greetings.length)];
+  }
+  // C. "Ça va ?"
+  else if (
+    clean.includes("ça va") ||
+    clean.includes("ca va") ||
+    clean.includes("comment vas-tu") ||
+    clean.includes("comment tu vas") ||
+    clean.includes("la forme")
+  ) {
+    generated = "Ça va super bien, merci ! Toujours au taquet pour t'aider sur ETHONE OS. Et toi, comment se passe ta journée ? 😊";
+  }
+  // D. Capabilities & Features
+  else if (
     clean.includes("tu peux faire quoi") ||
     clean.includes("que peux tu faire") ||
     clean.includes("que peux-tu faire") ||
@@ -330,37 +370,19 @@ export async function askBrainAI(options: AIEngineOptions): Promise<AIEngineResp
     clean.includes("capacités") ||
     clean.includes("fonctionnalités")
   ) {
-    generated = `### 🧠 Bienvenue sur ETHONE Brain !
+    generated = `Je suis **Brain**, ton assistant et compagnon IA personnel intégré à ETHONE OS ! 🧠✨
 
-Je suis ton assistant IA autonome, directement connecté à l'ensemble du système **ETHONE OS**. Voici tout ce que je peux faire pour toi :
+Voici ce que je peux faire pour toi en direct :
+- 🎵 **Musique & Intégrations** : Je sais ce que tu écoutes sur Spotify/Discord et peux t'en parler.
+- 📝 **Notes & Idées** : Demande-moi *"Crée une note sur X"* et je la rédige et l'enregistre immédiatement.
+- ✅ **Tâches & Organisation** : Demande-moi *"Ajoute une tâche Y"* pour ton suivi quotidien.
+- 💻 **Développement & Code** : Je t'aide à concevoir, écrire et déboguer du code (**TypeScript, Python, React, Bash, SQL**).
+- 🌤️ **Météo & Focus** : Infos météo, activation de scènes de concentration et thèmes du système.
 
----
-
-#### 📝 **1. Gestion des Notes & Idées**
-- **Créer et structurer une note** instantanément (ex: *"Crée une note sur mes objectifs de la semaine"*).
-- **Résumer, enrichir ou reformuler** un texte existant.
-- Extraire des points clés et des plans d'action.
-
-#### ✅ **2. Organisation des Tâches & Agenda**
-- **Planifier des tâches** avec priorités et tags (ex: *"Ajoute la tâche Réviser le projet"*).
-- Préparer ton planning du jour et synchroniser ton calendrier.
-
-#### 📁 **3. Gestion des Fichiers & Google Drive**
-- T'aider à classer, rechercher et organiser tes documents.
-- Analyser le contenu des fichiers et générer des résumés intelligents.
-
-#### 💻 **4. Code, Scripts & Automatisation**
-- Écrire et déboguer du code (**TypeScript, Python, Bash, SQL, React, HTML/CSS**).
-- Configurer des workflows automatisés et des macros système.
-
-#### 🎵 **5. Intégrations & Loisirs**
-- Consulter tes statistiques de jeux (**Valorant & League of Legends**).
-- Voir ta musique en cours (**Spotify & Discord Presence**).
-
----
-
-💡 *Que souhaites-tu accomplir en premier ? Dis-moi ce dont tu as besoin et je m'en occupe !*`;
-  } else if (
+Qu'est-ce que tu aimerais faire aujourd'hui ?`;
+  }
+  // E. Note Creation
+  else if (
     clean.includes("crée une note") ||
     clean.includes("créer une note") ||
     clean.includes("fais une note") ||
@@ -371,30 +393,10 @@ Je suis ton assistant IA autonome, directement connecté à l'ensemble du systè
       .replace(/^(peux-tu|tu peux|stp|s'il te plaît|s'il te plait|merci de)?\s*(créer|crée|ajouter|ajoute|faire|fais)\s*(moi)?\s*(une|la)?\s*note\s*(sur|pour|concernant|:)?/i, "")
       .trim();
     const title = subject || "Note de Synthèse";
-    generated = `### ✅ Note créée avec succès !
-
-Voici la structure de votre nouvelle note enregistrée dans votre espace **Notes** :
-
----
-
-**📌 Titre :** ${title}  
-**📅 Date :** ${new Date().toLocaleDateString("fr-FR")} à ${new Date().toLocaleTimeString("fr-FR", { hour: "2-digit", minute: "2-digit" })}  
-**🏷️ Tags :** \`#brain\` \`#ethone\` \`#productivité\`
-
-#### 📋 Contenu préparé :
-> **Sujet :** ${title}
-> 
-> - **Objectif principal :** Définir et suivre les priorités associées.
-> - **Actions à mener :**
->   - [ ] Analyser les besoins
->   - [ ] Établir le plan d'action
->   - [ ] Valider l'avancement
-> 
-> *Note : Vous pouvez modifier ou enrichir cette note à tout moment dans l'onglet **Notes**.*
-
----
-💡 *Souhaitez-vous ajouter des détails spécifiques ou associer une tâche de rappel à cette note ?*`;
-  } else if (
+    generated = `### 📝 Note créée : ${title}\n\nVotre note a été rédigée et enregistrée dans votre espace **Notes** d'ETHONE OS.\n\nSouhaitez-vous y ajouter d'autres informations ou créer une tâche associée ?`;
+  }
+  // F. Task Creation
+  else if (
     clean.includes("crée une tâche") ||
     clean.includes("créer une tâche") ||
     clean.includes("ajoute une tâche")
@@ -402,48 +404,16 @@ Voici la structure de votre nouvelle note enregistrée dans votre espace **Notes
     const taskName = lastUser
       .replace(/^(peux-tu|tu peux|stp|s'il te plaît|s'il te plait|merci de)?\s*(créer|crée|ajouter|ajoute|faire|fais)\s*(moi)?\s*(une|la)?\s*tâche\s*(sur|pour|concernant|:)?/i, "")
       .trim() || "Nouvelle tâche";
-    generated = `### ✅ Tâche enregistrée dans ETHONE OS !
-
-- **Tâche :** ${taskName}
-- **Statut :** À faire
-- **Priorité :** Normale
-
-La tâche est désormais visible dans votre gestionnaire de tâches et sur votre tableau de bord. Souhaitez-vous lui assigner une date limite ?`;
-  } else if (
-    clean.includes("bonjour") ||
-    clean.includes("salut") ||
-    clean.includes("hello") ||
-    clean.includes("hey") ||
-    clean.includes("ça va") ||
-    clean.includes("comment vas-tu")
-  ) {
-    generated = `Bonjour ! Ravi de te retrouver sur ETHONE OS. 😊
-
-Je suis opérationnel et prêt à t'accompagner. Tu peux me demander de rédiger une note, créer une tâche, t'aider à coder, analyser des fichiers ou répondre à n'importe quelle question technique ou créative.
-
-**Comment puis-je t'aider aujourd'hui ?**`;
-  } else {
-    generated = `### 💡 Analyse & Réponse Brain
-
-Concernant votre demande : **"${lastUser}"**
-
-Voici les informations et recommandations adaptées :
-
-1. **Approche recommandée** :
-   - Structurez clairement vos objectifs pour maximiser l'efficacité.
-   - Vous pouvez stocker ces éléments dans une note dédiée ou automatiser le suivi via les outils d'ETHONE OS.
-
-2. **Actions immédiates possibles** :
-   - 📝 **Créer une note** : *"Crée une note sur ce sujet"*
-   - ✅ **Ajouter une tâche** : *"Ajoute une tâche pour suivre l'avancement"*
-   - 💻 **Développement / Code** : Demandez-moi un exemple de code ou un script sur mesure.
-
-N'hésitez pas à me donner plus de précisions si vous souhaitez approfondir un point précis !`;
+    generated = `✅ **Tâche enregistrée : "${taskName}"**\n\nElle a été ajoutée à votre liste de tâches sur ETHONE OS. Tu veux lui définir une priorité ou une date limite ?`;
+  }
+  // G. Natural Conversational Response (Never robotic templates)
+  else {
+    generated = `Je vois ! Pour **"${lastUser}"**, que souhaites-tu approfondir ou accomplir ? Dis-moi si tu veux une explication détaillée, un exemple de code, ou que je prépare une note/tâche pour toi ! 💡`;
   }
 
   return {
     content: generated,
-    provider: "brain-engine",
+    provider: "brain-companion",
     model: modelId,
   };
 }

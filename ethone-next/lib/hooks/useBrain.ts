@@ -79,12 +79,15 @@ function createInitialConversation(): BrainConversation {
   };
 }
 
+import { useNowPlaying } from "./useNowPlaying";
+
 export function useBrain(mailClient?: BrainMailClient) {
   const router = useRouter();
   const { settings, update: updateSettings } = useSettings();
   const notes = useItems("notes");
   const tasks = useItems("tasks");
   const events = useItems("events");
+  const { nowPlaying } = useNowPlaying(3000);
   const [preferences, setPreferences] = useState<BrainPreferences>(DEFAULT_BRAIN_PREFERENCES);
   
   const [currentUserId, setCurrentUserId] = useState<string | undefined>(undefined);
@@ -400,12 +403,47 @@ export function useBrain(mailClient?: BrainMailClient) {
         ? settings.liveLmStudioUrl
         : undefined;
 
+    let liveContextPrompt = `Tu es Brain, l'assistant et compagnon IA personnel intégré à ETHONE OS.
+Tu t'exprimes en français de façon fluide, vivante, naturelle, agréable, moderne et directe (comme ChatGPT ou Claude).
+Ne génère JAMAIS de gabarits rigides de présentation (comme "Analyse & Réponse Brain", "Approche recommandée", "Actions immédiates possibles") pour des salutations, des questions directes ou des échanges normaux.
+
+Voici les informations EN DIRECT sur l'utilisateur et son système ETHONE OS :
+`;
+
+    if (nowPlaying?.isPlaying && nowPlaying?.title) {
+      liveContextPrompt += `- 🎵 Musique en cours d'écoute : "${nowPlaying.title}" par ${nowPlaying.artist || "Artiste inconnu"}${nowPlaying.album ? ` (Album: ${nowPlaying.album})` : ""} via ${nowPlaying.source || "Spotify"}.\n`;
+    } else if (nowPlaying?.title) {
+      liveContextPrompt += `- 🎵 Dernier morceau Spotify/Discord : "${nowPlaying.title}" par ${nowPlaying.artist || "Artiste inconnu"}.\n`;
+    } else {
+      liveContextPrompt += `- 🎵 Musique : Aucune musique en cours de lecture détectée sur Spotify ou Discord.\n`;
+    }
+
+    if (brainCtx?.context?.weather) {
+      const w = brainCtx.context.weather as Record<string, unknown>;
+      if (w.city || w.temp) {
+        liveContextPrompt += `- 🌤️ Météo : ${w.temp || w.temperature || ""}${w.unit || "°C"} à ${w.city || settings.liveWeatherCity || "localisation"} (${w.condition || w.description || ""}).\n`;
+      }
+    }
+
+    if (typeof brainCtx?.context?.openTasks === "number") {
+      liveContextPrompt += `- ✅ Tâches ouvertes : ${brainCtx.context.openTasks} tâche(s) en attente.\n`;
+    }
+
+    liveContextPrompt += `\nConsignes clés :
+- Si l'utilisateur te demande ce qu'il écoute (ex: "j'écoute quoi comme musique", "c'est quoi ce son", "qui chante", "des infos sur ma musique"), utilise les données ci-dessus pour lui répondre avec précision, passion et naturel sur le titre, l'artiste, l'album et des anecdotes/recommandations si pertinent !
+- Si l'utilisateur te salue (ex: "cc", "salut", "ça va"), réponds chaleureusement et naturellement comme un vrai assistant.
+- Si l'utilisateur te demande de créer une note ou une tâche, formule le contenu utilement en Markdown soigné.`;
+
     try {
       const aiResponse = await askBrainAI({
         messages: currentMessages.map((m) => ({ role: m.role, content: m.content })),
         modelId: selectedModel,
-        systemPrompt:
-          "Tu es Brain, l'assistant IA intégré à ETHONE OS. Réponds avec un Markdown riche, soigné et bien structuré (titres, listes à puces, citations, cases à cocher, gras). Lorsque l'utilisateur te demande de créer une note, synthétise et rédige le contenu complet de la note en Markdown.",
+        systemPrompt: liveContextPrompt,
+        liveContext: {
+          nowPlaying,
+          weather: brainCtx?.context?.weather ?? null,
+          openTasks: brainCtx?.context?.openTasks ?? 0,
+        },
       });
 
       const content = aiResponse.content;

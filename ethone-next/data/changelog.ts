@@ -7206,6 +7206,48 @@ CHANGELOG_BY_LANG.es.unshift({
 });
 
 CHANGELOG_BY_LANG.fr.unshift({
+  version: "v1.20.8",
+  date: "2026-09-01",
+  title: "Brain IA Fluide, Naturel & Intégration Spotify / Discord en Direct",
+  items: [
+    "Transformation de Brain en un vrai compagnon de discussion fluide, direct et naturel (zéro gabarit rigide).",
+    "Intégration Spotify / Discord en temps réel : Brain sait ce que vous écoutez et répond avec précision sur vos morceaux, artistes et albums.",
+    "Compréhension fluide des messages informels (salutations, questions décontractées, 'cc', 'ça va').",
+    "Routage IA optimisé et résilience ultra-rapide avec contexte vivant injecté dynamiquement.",
+  ],
+});
+
+CHANGELOG_BY_LANG.en.unshift({
+  version: "v1.20.8",
+  date: "2026-09-01",
+  title: "Fluid Conversational Brain AI & Live Spotify / Discord Integration",
+  items: [
+    "Transformed Brain into a truly natural, fluid companion with zero rigid boilerplate templates.",
+    "Real-time Spotify and Discord integration: Brain knows what you're listening to and shares track details effortlessly.",
+    "Smooth natural casual conversations and instant contextual understanding.",
+    "Optimized AI routing with live system context injection.",
+  ],
+});
+
+CHANGELOG_BY_LANG.es.unshift({
+  version: "v1.20.8",
+  date: "2026-09-01",
+  title: "Brain IA Conversacional Fluido e Integración Spotify en Vivo",
+  items: [
+    "Chatbot natural sin plantillas rígidas e integración en vivo con Spotify y Discord.",
+  ],
+});
+
+CHANGELOG_BY_LANG.de.unshift({
+  version: "v1.20.8",
+  date: "2026-09-01",
+  title: "Flüssiges Brain KI & Live Spotify/Discord Integration",
+  items: [
+    "Natürlicher KI-Chat ohne starre Vorlagen und direkte Spotify/Discord-Erkennung.",
+  ],
+});
+
+CHANGELOG_BY_LANG.fr.unshift({
   version: "v1.20.7",
   date: "2026-09-01",
   title: "Correction Badges Valorant & Suppression du Faux High KAST",

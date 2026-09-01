@@ -2,6 +2,13 @@
 
 Toutes les modifications notables de ce projet seront documentées dans ce fichier.
 
+## v1.20.12 — 2026-09-01
+
+**ETHONE — Nom d'utilisateur : correction fallback**
+
+- `useUserIdentity` et `PublicProfileProvider` privilégient `username` quand `display_name` est un nom générique (`Utilisateur`, `Invité`, `Profil principal`).
+- Validation : `npm run build`, `npm run lint`.
+
 ## v1.20.11 — 2026-09-01
 
 **ETHONE — Drag & drop dashboard + persistance multi-PC**

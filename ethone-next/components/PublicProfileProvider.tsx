@@ -20,6 +20,28 @@ type PublicProfileContextValue = {
   save: (input: Partial<Profile>) => Promise<Profile | null>;
 };
 
+const GENERIC_DISPLAY_NAMES = new Set([
+  "profil principal",
+  "profil",
+  "default",
+  "invité",
+  "utilisateur",
+  "user",
+]);
+
+function isGenericDisplayName(name?: unknown): boolean {
+  if (!name || typeof name !== "string") return true;
+  const trimmed = name.trim();
+  if (!trimmed) return true;
+  return GENERIC_DISPLAY_NAMES.has(trimmed.toLowerCase());
+}
+
+function firstNonGeneric(...names: Array<unknown>): string | undefined {
+  for (const name of names) {
+    if (!isGenericDisplayName(name)) return (name as string).trim();
+  }
+}
+
 const PublicProfileContext = createContext<PublicProfileContextValue | null>(null);
 
 const DEFAULT_PUBLIC_PROFILE_CONTEXT: PublicProfileContextValue = {
@@ -68,20 +90,29 @@ export default function PublicProfileProvider({ children }: { children: ReactNod
           ? localStorage.getItem(`ethone_custom_avatar:${currentUserId}`) || undefined
           : undefined);
 
+      const localName =
+        typeof window !== "undefined" && currentUserId
+          ? localStorage.getItem(`ethone_user_name:${currentUserId}`)
+          : undefined;
+      const emailPrefix = userData?.user?.email ? userData.user.email.split("@")[0] : undefined;
+
       const resolvedName =
-        workerProfile?.display_name ||
-        (typeof meta.display_name === "string" ? meta.display_name : undefined) ||
-        (typeof meta.custom_display_name === "string" ? meta.custom_display_name : undefined) ||
-        (typeof meta.username === "string" && meta.username.trim() ? meta.username.trim() : undefined) ||
-        (typeof window !== "undefined" && currentUserId
-          ? localStorage.getItem(`ethone_user_name:${currentUserId}`) || undefined
-          : undefined) ||
-        (userData?.user?.email ? userData.user.email.split("@")[0] : "Utilisateur");
+        firstNonGeneric(
+          workerProfile?.display_name,
+          meta.display_name,
+          meta.custom_display_name,
+          meta.username,
+          workerProfile?.username,
+          localName,
+          emailPrefix,
+        ) || "Utilisateur";
 
       const resolvedUsername =
-        workerProfile?.username ||
-        (typeof meta.username === "string" ? meta.username : undefined) ||
-        (userData?.user?.email ? userData.user.email.split("@")[0] : "utilisateur");
+        firstNonGeneric(
+          workerProfile?.username,
+          meta.username,
+          emailPrefix,
+        ) || "utilisateur";
 
       const resolvedProfile: Profile = {
         public_id: workerProfile?.public_id || currentUserId || "local",

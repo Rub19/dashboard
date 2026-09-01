@@ -38,11 +38,17 @@ const GENERIC_DISPLAY_NAMES = new Set([
   "utilisateur",
 ]);
 
-function isGenericDisplayName(name?: string | null): boolean {
+function isGenericDisplayName(name?: unknown): boolean {
   if (!name || typeof name !== "string") return true;
   const trimmed = name.trim();
   if (!trimmed) return true;
   return GENERIC_DISPLAY_NAMES.has(trimmed.toLowerCase());
+}
+
+function firstNonGeneric(...names: Array<unknown>): string | undefined {
+  for (const name of names) {
+    if (!isGenericDisplayName(name)) return (name as string).trim();
+  }
 }
 
 export function useUserIdentity(): UserIdentity {
@@ -113,19 +119,19 @@ export function useUserIdentity(): UserIdentity {
 
   const meta = useMemo(() => (user?.user_metadata || {}) as Record<string, unknown>, [user?.user_metadata]);
 
-  const customFromMeta =
-    (typeof meta.custom_display_name === "string" && meta.custom_display_name.trim() ? meta.custom_display_name.trim() : undefined) ||
-    (typeof meta.display_name === "string" && meta.display_name.trim() ? meta.display_name.trim() : undefined) ||
-    (typeof meta.username === "string" && meta.username.trim() ? meta.username.trim() : undefined) ||
-    (typeof meta.full_name === "string" && meta.full_name.trim() ? meta.full_name.trim() : undefined) ||
-    (typeof meta.name === "string" && meta.name.trim() ? meta.name.trim() : undefined);
+  const customFromMeta = firstNonGeneric(
+    meta.custom_display_name,
+    meta.display_name,
+    meta.username,
+    meta.full_name,
+    meta.name
+  );
 
   // Resolution of display name strictly isolated per user / profile
   const displayName = useMemo(() => {
-    const rawActiveName = activeProfile?.name?.trim();
-    const activeProfName = rawActiveName && !isGenericDisplayName(rawActiveName) ? rawActiveName : undefined;
-    const rawPublicName = (publicProfile?.display_name?.trim()) || (publicProfile?.username?.trim()) || undefined;
-    const publicProfName = rawPublicName && !isGenericDisplayName(rawPublicName) ? rawPublicName : undefined;
+    const activeProfName = firstNonGeneric(activeProfile?.name);
+    const publicProfName = firstNonGeneric(publicProfile?.display_name, publicProfile?.username);
+    const emailName = user?.email ? user.email.split("@")[0] : "";
 
     if (!user) {
       return activeProfName || cachedName || publicProfName || "Invité";
@@ -136,7 +142,7 @@ export function useUserIdentity(): UserIdentity {
       activeProfName ||
       customFromMeta ||
       cachedName ||
-      (user?.email ? user.email.split("@")[0] : "") ||
+      emailName ||
       "Utilisateur"
     );
   }, [user, publicProfile?.display_name, publicProfile?.username, activeProfile?.name, customFromMeta, cachedName]);

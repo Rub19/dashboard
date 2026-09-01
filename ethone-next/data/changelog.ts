@@ -7206,6 +7206,54 @@ CHANGELOG_BY_LANG.es.unshift({
 });
 
 CHANGELOG_BY_LANG.fr.unshift({
+  version: "v1.20.12",
+  date: "2026-09-01",
+  title: "Nom d'utilisateur : correction fallback 'Utilisateur' / 'Invité'",
+  items: [
+    "Résolution du nom de profil privilégie username quand display_name est générique.",
+    "Évite que 'Utilisateur', 'Invité', 'Profil principal' remplacent le vrai nom.",
+    "Validation : build, lint.",
+    "Version affichée : v1.20.12.",
+  ],
+});
+
+CHANGELOG_BY_LANG.en.unshift({
+  version: "v1.20.12",
+  date: "2026-09-01",
+  title: "Profile name : fix generic fallback",
+  items: [
+    "Profile name resolution now prefers username when display_name is generic.",
+    "Prevents 'Utilisateur', 'Invité', 'Profil principal' from overriding real names.",
+    "Validation: build, lint.",
+    "Version badge: v1.20.12.",
+  ],
+});
+
+CHANGELOG_BY_LANG.es.unshift({
+  version: "v1.20.12",
+  date: "2026-09-01",
+  title: "Nombre de usuario : corregir fallback genérico",
+  items: [
+    "La resolución del nombre de perfil prioriza el username si display_name es genérico.",
+    "Evita que 'Utilisateur', 'Invité' o 'Profil principal' reemplacen el nombre real.",
+    "Validación : build, lint.",
+    "Versión : v1.20.12.",
+  ],
+});
+
+CHANGELOG_BY_LANG.de.unshift({
+  version: "v1.20.12",
+  date: "2026-09-01",
+  title: "Benutzername : generischen Fallback korrigiert",
+  items: [
+    "Profilnamens-Auflösung bevorzugt username, wenn display_name generisch ist.",
+    "Verhindert, dass 'Utilisateur', 'Invité' oder 'Profil principal' den echten Namen überschreiben.",
+    "Validierung: build, lint.",
+    "Version: v1.20.12.",
+  ],
+});
+
+CHANGELOG_BY_LANG.fr.unshift({
   version: "v1.20.11",
   date: "2026-09-01",
   title: "Drag & drop dashboard + persistance multi-PC",

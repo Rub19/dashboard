@@ -5,16 +5,15 @@ import { motion, AnimatePresence } from "framer-motion";
 import {
   X,
   Search,
-  Download,
   Check,
   Sparkles,
   Upload,
   Link2,
-  Tv,
-  Gamepad2,
+  Shuffle,
   Flame,
-  User,
   Film,
+  Gamepad2,
+  Layers,
 } from "lucide-react";
 import ClientImage from "@/components/ClientImage";
 import Button from "@/components/ui/Button";
@@ -24,315 +23,647 @@ import { useProfile } from "@/lib/hooks/useProfile";
 import { useUserIdentity } from "@/lib/hooks/useUserIdentity";
 import { cn } from "@/lib/utils";
 
-export type AvatarCategory = "all" | "netflix" | "crunchyroll" | "gaming";
+export type AvatarCategory = "all" | "netflix" | "anime" | "gaming";
 
 export type AvatarItem = {
   id: string;
   name: string;
-  category: "netflix" | "crunchyroll" | "gaming";
-  source: string;
-  badgeColor: string;
+  series: string;
+  category: "netflix" | "anime" | "gaming";
   url: string;
   tags: string[];
 };
 
 export const PRESET_AVATARS: AvatarItem[] = [
   // ==========================================
-  // --- NETFLIX PROFILES OFFICIELS ---
+  // --- ARCANE: LEAGUE OF LEGENDS (NETFLIX) ---
+  // ==========================================
+  {
+    id: "arcane-jinx",
+    name: "Jinx",
+    series: "Arcane: League of Legends",
+    category: "netflix",
+    url: "https://ddragon.leagueoflegends.com/cdn/14.20.1/img/champion/Jinx.png",
+    tags: ["jinx", "arcane", "league of legends", "lol", "piltover", "zaun", "netflix"],
+  },
+  {
+    id: "arcane-vi",
+    name: "Vi",
+    series: "Arcane: League of Legends",
+    category: "netflix",
+    url: "https://ddragon.leagueoflegends.com/cdn/14.20.1/img/champion/Vi.png",
+    tags: ["vi", "arcane", "league of legends", "lol", "brawler", "netflix"],
+  },
+  {
+    id: "arcane-caitlyn",
+    name: "Caitlyn",
+    series: "Arcane: League of Legends",
+    category: "netflix",
+    url: "https://ddragon.leagueoflegends.com/cdn/14.20.1/img/champion/Caitlyn.png",
+    tags: ["caitlyn", "arcane", "sheriff", "piltover", "netflix"],
+  },
+  {
+    id: "arcane-ekko",
+    name: "Ekko",
+    series: "Arcane: League of Legends",
+    category: "netflix",
+    url: "https://ddragon.leagueoflegends.com/cdn/14.20.1/img/champion/Ekko.png",
+    tags: ["ekko", "arcane", "firelight", "zaun", "netflix"],
+  },
+  {
+    id: "arcane-viktor",
+    name: "Viktor",
+    series: "Arcane: League of Legends",
+    category: "netflix",
+    url: "https://ddragon.leagueoflegends.com/cdn/14.20.1/img/champion/Viktor.png",
+    tags: ["viktor", "arcane", "hexcore", "piltover", "netflix"],
+  },
+  {
+    id: "arcane-jayce",
+    name: "Jayce",
+    series: "Arcane: League of Legends",
+    category: "netflix",
+    url: "https://ddragon.leagueoflegends.com/cdn/14.20.1/img/champion/Jayce.png",
+    tags: ["jayce", "arcane", "hextech", "defender", "netflix"],
+  },
+  {
+    id: "arcane-warwick",
+    name: "Warwick / Vander",
+    series: "Arcane: League of Legends",
+    category: "netflix",
+    url: "https://ddragon.leagueoflegends.com/cdn/14.20.1/img/champion/Warwick.png",
+    tags: ["warwick", "vander", "arcane", "hound", "netflix"],
+  },
+  {
+    id: "arcane-heimerdinger",
+    name: "Heimerdinger & Poro",
+    series: "Arcane: League of Legends",
+    category: "netflix",
+    url: "https://ddragon.leagueoflegends.com/cdn/14.20.1/img/champion/Heimerdinger.png",
+    tags: ["heimerdinger", "poro", "arcane", "yordle", "netflix"],
+  },
+
+  // ==========================================
+  // --- WEDNESDAY (NETFLIX) ---
+  // ==========================================
+  {
+    id: "wednesday-portrait",
+    name: "Mercredi Addams",
+    series: "Wednesday S1",
+    category: "netflix",
+    url: "https://images.unsplash.com/photo-1534528741775-53994a69daeb?w=300&h=300&fit=crop&crop=faces",
+    tags: ["mercredi", "wednesday", "addams", "nevermore", "gothic", "netflix"],
+  },
+  {
+    id: "wednesday-enid",
+    name: "Enid Sinclair",
+    series: "Wednesday S1",
+    category: "netflix",
+    url: "https://images.unsplash.com/photo-1517841905240-472988babdf9?w=300&h=300&fit=crop&crop=faces",
+    tags: ["enid", "sinclair", "wednesday", "loup-garou", "blonde", "netflix"],
+  },
+  {
+    id: "wednesday-thing",
+    name: "La Chose (Thing)",
+    series: "Wednesday S1",
+    category: "netflix",
+    url: "https://images.unsplash.com/photo-1579783902614-a3fb3927b675?w=300&h=300&fit=crop&crop=center",
+    tags: ["la chose", "thing", "main", "addams", "wednesday", "netflix"],
+  },
+  {
+    id: "wednesday-morticia",
+    name: "Morticia Addams",
+    series: "Wednesday S1",
+    category: "netflix",
+    url: "https://images.unsplash.com/photo-1508214751196-bcfd4ca60f91?w=300&h=300&fit=crop&crop=faces",
+    tags: ["morticia", "addams", "gothic", "wednesday", "netflix"],
+  },
+  {
+    id: "wednesday-bianca",
+    name: "Bianca Barclay",
+    series: "Wednesday S1",
+    category: "netflix",
+    url: "https://images.unsplash.com/photo-1531746020798-e6953c6e8e04?w=300&h=300&fit=crop&crop=faces",
+    tags: ["bianca", "sirene", "nevermore", "wednesday", "netflix"],
+  },
+  {
+    id: "wednesday-s2-enid",
+    name: "Enid (Saison 2)",
+    series: "Wednesday S2",
+    category: "netflix",
+    url: "https://images.unsplash.com/photo-1524504388940-b1c1722653e1?w=300&h=300&fit=crop&crop=faces",
+    tags: ["enid", "wednesday s2", "smile", "netflix"],
+  },
+  {
+    id: "wednesday-s2-gomez",
+    name: "Gomez Addams",
+    series: "Wednesday S2",
+    category: "netflix",
+    url: "https://images.unsplash.com/photo-1507003211169-0a1dd7228f2d?w=300&h=300&fit=crop&crop=faces",
+    tags: ["gomez", "addams", "moustache", "wednesday", "netflix"],
+  },
+
+  // ==========================================
+  // --- SQUID GAME (NETFLIX) ---
+  // ==========================================
+  {
+    id: "squid-guard-circle",
+    name: "Gardien Cercle",
+    series: "Squid Game",
+    category: "netflix",
+    url: "/avatars/netflix-squid-guard-circle.svg",
+    tags: ["squid game", "cercle", "pink soldier", "masque", "korea", "netflix"],
+  },
+  {
+    id: "squid-guard-triangle",
+    name: "Gardien Triangle",
+    series: "Squid Game",
+    category: "netflix",
+    url: "/avatars/netflix-squid-guard-triangle.svg",
+    tags: ["squid game", "triangle", "soldat", "korea", "netflix"],
+  },
+  {
+    id: "squid-guard-square",
+    name: "Superviseur Carré",
+    series: "Squid Game",
+    category: "netflix",
+    url: "/avatars/netflix-squid-guard-square.svg",
+    tags: ["squid game", "carre", "superviseur", "korea", "netflix"],
+  },
+  {
+    id: "squid-frontman",
+    name: "Front Man (Le Leader)",
+    series: "Squid Game",
+    category: "netflix",
+    url: "/avatars/netflix-frontman.svg",
+    tags: ["squid game", "frontman", "masque noir", "boss", "netflix"],
+  },
+  {
+    id: "squid-gihun",
+    name: "Seong Gi-hun (456)",
+    series: "Squid Game",
+    category: "netflix",
+    url: "https://images.unsplash.com/photo-1500648767791-00dcc994a43e?w=300&h=300&fit=crop&crop=faces",
+    tags: ["gi-hun", "456", "squid game", "joueur", "netflix"],
+  },
+  {
+    id: "squid-saebyeok",
+    name: "Kang Sae-byeok (067)",
+    series: "Squid Game",
+    category: "netflix",
+    url: "https://images.unsplash.com/photo-1544005313-94ddf0286df2?w=300&h=300&fit=crop&crop=faces",
+    tags: ["sae-byeok", "067", "squid game", "coree", "netflix"],
+  },
+
+  // ==========================================
+  // --- STRANGER THINGS (NETFLIX) ---
+  // ==========================================
+  {
+    id: "st-eleven",
+    name: "Onze (Eleven)",
+    series: "Stranger Things",
+    category: "netflix",
+    url: "https://images.unsplash.com/photo-1494790108377-be9c29b29330?w=300&h=300&fit=crop&crop=faces",
+    tags: ["eleven", "onze", "stranger things", "hawkins", "telekinesie", "netflix"],
+  },
+  {
+    id: "st-dustin",
+    name: "Dustin Henderson",
+    series: "Stranger Things",
+    category: "netflix",
+    url: "https://images.unsplash.com/photo-1539571696357-5a69c17a67c6?w=300&h=300&fit=crop&crop=faces",
+    tags: ["dustin", "stranger things", "casquette", "cerebro", "netflix"],
+  },
+  {
+    id: "st-steve",
+    name: "Steve Harrington",
+    series: "Stranger Things",
+    category: "netflix",
+    url: "https://images.unsplash.com/photo-1506794778202-cad84cf45f1d?w=300&h=300&fit=crop&crop=faces",
+    tags: ["steve", "harrington", "scoops ahoy", "batte", "stranger things", "netflix"],
+  },
+  {
+    id: "st-eddie",
+    name: "Eddie Munson",
+    series: "Stranger Things",
+    category: "netflix",
+    url: "https://images.unsplash.com/photo-1519085360753-af0119f7cbe7?w=300&h=300&fit=crop&crop=faces",
+    tags: ["eddie", "munson", "hellfire", "metallica", "guitare", "netflix"],
+  },
+  {
+    id: "st-demogorgon",
+    name: "Démogorgon",
+    series: "Stranger Things",
+    category: "netflix",
+    url: "/avatars/netflix-stranger-demogorgon.svg",
+    tags: ["demogorgon", "stranger things", "upside down", "monstre", "netflix"],
+  },
+
+  // ==========================================
+  // --- CYBERPUNK: EDGERUNNERS (NETFLIX) ---
+  // ==========================================
+  {
+    id: "cyberpunk-david",
+    name: "David Martinez",
+    series: "Cyberpunk: Edgerunners",
+    category: "netflix",
+    url: "https://images.unsplash.com/photo-1566492031773-4f4e44671857?w=300&h=300&fit=crop&crop=faces",
+    tags: ["david", "martinez", "cyberpunk", "edgerunners", "sandevistan", "night city", "netflix"],
+  },
+  {
+    id: "cyberpunk-lucy",
+    name: "Lucy Kushinada",
+    series: "Cyberpunk: Edgerunners",
+    category: "netflix",
+    url: "https://images.unsplash.com/photo-1573496359142-b8d87734a5a2?w=300&h=300&fit=crop&crop=faces",
+    tags: ["lucy", "netrunner", "cyberpunk", "lune", "edgerunners", "netflix"],
+  },
+  {
+    id: "cyberpunk-rebecca",
+    name: "Rebecca",
+    series: "Cyberpunk: Edgerunners",
+    category: "netflix",
+    url: "https://images.unsplash.com/photo-1534528741775-53994a69daeb?w=300&h=300&fit=crop&crop=center",
+    tags: ["rebecca", "solo", "gunner", "cyberpunk", "edgerunners", "netflix"],
+  },
+
+  // ==========================================
+  // --- NETFLIX CLASSIC SMILEYS ---
   // ==========================================
   {
     id: "netflix-classic-red",
-    name: "Smiley Rouge (Profil Classique)",
+    name: "Smiley Rouge Classique",
+    series: "Netflix Classic Collection",
     category: "netflix",
-    source: "Netflix Profil Officiel",
-    badgeColor: "bg-red-500/20 text-red-300 border-red-500/30",
     url: "/avatars/netflix-classic-red.svg",
-    tags: ["netflix", "classic", "smiley", "red", "avatar", "rouge"],
+    tags: ["netflix", "classic", "smiley", "red", "rouge"],
   },
   {
     id: "netflix-classic-blue",
-    name: "Smiley Bleu (Profil Classique)",
+    name: "Smiley Bleu Classique",
+    series: "Netflix Classic Collection",
     category: "netflix",
-    source: "Netflix Profil Officiel",
-    badgeColor: "bg-blue-500/20 text-blue-300 border-blue-500/30",
     url: "/avatars/netflix-classic-blue.svg",
-    tags: ["netflix", "classic", "smiley", "blue", "avatar", "bleu"],
+    tags: ["netflix", "classic", "smiley", "blue", "bleu"],
   },
   {
     id: "netflix-classic-yellow",
-    name: "Smiley Jaune (Profil Classique)",
+    name: "Smiley Jaune Classique",
+    series: "Netflix Classic Collection",
     category: "netflix",
-    source: "Netflix Profil Officiel",
-    badgeColor: "bg-amber-500/20 text-amber-300 border-amber-500/30",
     url: "/avatars/netflix-classic-yellow.svg",
-    tags: ["netflix", "classic", "smiley", "yellow", "avatar", "jaune"],
+    tags: ["netflix", "classic", "smiley", "yellow", "jaune"],
   },
   {
     id: "netflix-classic-green",
-    name: "Smiley Vert (Profil Classique)",
+    name: "Smiley Vert Classique",
+    series: "Netflix Classic Collection",
     category: "netflix",
-    source: "Netflix Profil Officiel",
-    badgeColor: "bg-emerald-500/20 text-emerald-300 border-emerald-500/30",
     url: "/avatars/netflix-classic-green.svg",
-    tags: ["netflix", "classic", "smiley", "green", "avatar", "vert"],
-  },
-  {
-    id: "netflix-squid-guard-circle",
-    name: "Gardien Cercle (Squid Game)",
-    category: "netflix",
-    source: "Netflix Original",
-    badgeColor: "bg-pink-500/20 text-pink-300 border-pink-500/30",
-    url: "/avatars/netflix-squid-guard-circle.svg",
-    tags: ["squid game", "cercle", "pink soldier", "korea", "serie", "masque"],
-  },
-  {
-    id: "netflix-squid-guard-triangle",
-    name: "Gardien Triangle (Squid Game)",
-    category: "netflix",
-    source: "Netflix Original",
-    badgeColor: "bg-pink-500/20 text-pink-300 border-pink-500/30",
-    url: "/avatars/netflix-squid-guard-triangle.svg",
-    tags: ["squid game", "triangle", "soldat", "korea", "serie"],
-  },
-  {
-    id: "netflix-squid-guard-square",
-    name: "Superviseur Carré (Squid Game)",
-    category: "netflix",
-    source: "Netflix Original",
-    badgeColor: "bg-pink-500/20 text-pink-300 border-pink-500/30",
-    url: "/avatars/netflix-squid-guard-square.svg",
-    tags: ["squid game", "carre", "superviseur", "korea", "serie"],
-  },
-  {
-    id: "netflix-frontman",
-    name: "Front Man (Squid Game)",
-    category: "netflix",
-    source: "Netflix Original",
-    badgeColor: "bg-zinc-500/20 text-zinc-300 border-zinc-500/30",
-    url: "/avatars/netflix-frontman.svg",
-    tags: ["squid game", "front man", "boss", "masque noir", "leader"],
-  },
-  {
-    id: "netflix-arcane-jinx",
-    name: "Jinx (Arcane Netflix)",
-    category: "netflix",
-    source: "Netflix / Riot Games",
-    badgeColor: "bg-cyan-500/20 text-cyan-300 border-cyan-500/30",
-    url: "/avatars/netflix-arcane-jinx.svg",
-    tags: ["arcane", "jinx", "lol", "netflix", "piltover", "zaun", "tresses"],
-  },
-  {
-    id: "netflix-arcane-vi",
-    name: "Vi (Arcane Netflix)",
-    category: "netflix",
-    source: "Netflix / Riot Games",
-    badgeColor: "bg-rose-500/20 text-rose-300 border-rose-500/30",
-    url: "/avatars/netflix-arcane-vi.svg",
-    tags: ["arcane", "vi", "netflix", "riot", "brawler", "tatouage"],
-  },
-  {
-    id: "netflix-witcher",
-    name: "Médaillon Loup (The Witcher)",
-    category: "netflix",
-    source: "Netflix Original",
-    badgeColor: "bg-zinc-500/20 text-zinc-300 border-zinc-500/30",
-    url: "/avatars/netflix-witcher.svg",
-    tags: ["witcher", "geralt", "loup blanc", "sorceleur", "medallion"],
-  },
-  {
-    id: "netflix-stranger-demogorgon",
-    name: "Démogorgon (Stranger Things)",
-    category: "netflix",
-    source: "Netflix Original",
-    badgeColor: "bg-red-500/20 text-red-300 border-red-500/30",
-    url: "/avatars/netflix-stranger-demogorgon.svg",
-    tags: ["stranger things", "demogorgon", "upside down", "monstre", "80s"],
+    tags: ["netflix", "classic", "smiley", "green", "vert"],
   },
   {
     id: "netflix-dali-mask",
-    name: "Masque de Dalí (La Casa de Papel)",
+    name: "Masque de Dalí",
+    series: "La Casa de Papel",
     category: "netflix",
-    source: "Netflix Original",
-    badgeColor: "bg-red-500/20 text-red-300 border-red-500/30",
     url: "/avatars/netflix-dali-mask.svg",
     tags: ["casa de papel", "dali", "professeur", "masque", "braquage", "money heist"],
   },
   {
-    id: "netflix-wednesday",
-    name: "Mercredi Addams (Wednesday)",
+    id: "netflix-witcher",
+    name: "Médaillon Loup Blanc",
+    series: "The Witcher",
     category: "netflix",
-    source: "Netflix Original",
-    badgeColor: "bg-purple-500/20 text-purple-300 border-purple-500/30",
-    url: "/avatars/netflix-wednesday.svg",
-    tags: ["wednesday", "addams", "nevermore", "gothic", "mercredi"],
+    url: "/avatars/netflix-witcher.svg",
+    tags: ["witcher", "geralt", "loup", "sorceleur", "netflix"],
   },
 
   // ==========================================
-  // --- CRUNCHYROLL & ANIME MAJEURS ---
+  // --- L'ATTAQUE DES TITANS (CRUNCHYROLL) ---
   // ==========================================
   {
-    id: "anime-gojo",
-    name: "Satoru Gojo (Jujutsu Kaisen)",
-    category: "crunchyroll",
-    source: "Crunchyroll / MAPPA",
-    badgeColor: "bg-cyan-500/20 text-cyan-300 border-cyan-500/30",
+    id: "aot-eren",
+    name: "Eren Yeager",
+    series: "L'Attaque des Titans",
+    category: "anime",
+    url: "https://images.unsplash.com/photo-1568602471122-7832951cc4c5?w=300&h=300&fit=crop&crop=faces",
+    tags: ["eren", "yeager", "attaque des titans", "aot", "snk", "titan assaillant", "crunchyroll"],
+  },
+  {
+    id: "aot-mikasa",
+    name: "Mikasa Ackerman",
+    series: "L'Attaque des Titans",
+    category: "anime",
+    url: "https://images.unsplash.com/photo-1544005313-94ddf0286df2?w=300&h=300&fit=crop&crop=faces",
+    tags: ["mikasa", "ackerman", "echarpe", "snk", "aot", "crunchyroll"],
+  },
+  {
+    id: "aot-levi",
+    name: "Capitaine Levi Ackerman",
+    series: "L'Attaque des Titans",
+    category: "anime",
+    url: "https://images.unsplash.com/photo-1507003211169-0a1dd7228f2d?w=300&h=300&fit=crop&crop=faces",
+    tags: ["levi", "livai", "capitaine", "bataillon", "snk", "aot", "crunchyroll"],
+  },
+  {
+    id: "aot-armin",
+    name: "Armin Arlert",
+    series: "L'Attaque des Titans",
+    category: "anime",
+    url: "https://images.unsplash.com/photo-1500648767791-00dcc994a43e?w=300&h=300&fit=crop&crop=faces",
+    tags: ["armin", "arlert", "titan colossal", "snk", "aot", "crunchyroll"],
+  },
+  {
+    id: "aot-reiner",
+    name: "Reiner Braun",
+    series: "L'Attaque des Titans",
+    category: "anime",
+    url: "https://images.unsplash.com/photo-1519085360753-af0119f7cbe7?w=300&h=300&fit=crop&crop=faces",
+    tags: ["reiner", "braun", "titan cuirasse", "snk", "aot", "crunchyroll"],
+  },
+
+  // ==========================================
+  // --- JUJUTSU KAISEN (CRUNCHYROLL) ---
+  // ==========================================
+  {
+    id: "jjk-gojo",
+    name: "Satoru Gojo",
+    series: "Jujutsu Kaisen",
+    category: "anime",
     url: "/avatars/crunchyroll-gojo.svg",
-    tags: ["gojo", "jujutsu kaisen", "jjk", "infinité", "six eyes", "bandeau"],
+    tags: ["gojo", "satoru", "jujutsu kaisen", "jjk", "six eyes", "infini", "bandeau", "crunchyroll"],
   },
   {
-    id: "anime-sukuna",
-    name: "Ryomen Sukuna (JJK)",
-    category: "crunchyroll",
-    source: "Crunchyroll / MAPPA",
-    badgeColor: "bg-red-500/20 text-red-300 border-red-500/30",
+    id: "jjk-sukuna",
+    name: "Ryomen Sukuna",
+    series: "Jujutsu Kaisen",
+    category: "anime",
     url: "/avatars/crunchyroll-sukuna.svg",
-    tags: ["sukuna", "jjk", "roi des fléaux", "jujutsu kaisen", "demon", "tatouages"],
+    tags: ["sukuna", "ryomen", "roi des fleaux", "jjk", "jujutsu kaisen", "crunchyroll"],
   },
   {
-    id: "anime-jinwoo",
-    name: "Sung Jin-Woo (Solo Leveling)",
-    category: "crunchyroll",
-    source: "Crunchyroll / A-1",
-    badgeColor: "bg-indigo-500/20 text-indigo-300 border-indigo-500/30",
-    url: "/avatars/crunchyroll-jinwoo.svg",
-    tags: ["solo leveling", "jinwoo", "shadow monarch", "monarque", "arise", "yeux violets"],
+    id: "jjk-yuji",
+    name: "Yuji Itadori",
+    series: "Jujutsu Kaisen",
+    category: "anime",
+    url: "https://images.unsplash.com/photo-1534528741775-53994a69daeb?w=300&h=300&fit=crop&crop=faces",
+    tags: ["yuji", "itadori", "black flash", "jjk", "crunchyroll"],
   },
   {
-    id: "anime-tanjiro",
-    name: "Tanjiro Kamado (Demon Slayer)",
-    category: "crunchyroll",
-    source: "Crunchyroll / ufotable",
-    badgeColor: "bg-emerald-500/20 text-emerald-300 border-emerald-500/30",
-    url: "/avatars/crunchyroll-tanjiro.svg",
-    tags: ["demon slayer", "kimetsu", "tanjiro", "hanafuda", "eau", "flammes"],
+    id: "jjk-megumi",
+    name: "Megumi Fushiguro",
+    series: "Jujutsu Kaisen",
+    category: "anime",
+    url: "https://images.unsplash.com/photo-1506794778202-cad84cf45f1d?w=300&h=300&fit=crop&crop=faces",
+    tags: ["megumi", "fushiguro", "mahagora", "ombres", "jjk", "crunchyroll"],
   },
   {
-    id: "anime-nezuko",
-    name: "Nezuko Kamado (Demon Slayer)",
-    category: "crunchyroll",
-    source: "Crunchyroll / ufotable",
-    badgeColor: "bg-pink-500/20 text-pink-300 border-pink-500/30",
-    url: "/avatars/crunchyroll-nezuko.svg",
-    tags: ["demon slayer", "nezuko", "bambou", "kimetsu", "demon"],
-  },
-  {
-    id: "anime-denji",
-    name: "Chainsaw Man (Denji)",
-    category: "crunchyroll",
-    source: "Crunchyroll / MAPPA",
-    badgeColor: "bg-orange-500/20 text-orange-300 border-orange-500/30",
-    url: "/avatars/crunchyroll-denji.svg",
-    tags: ["chainsaw man", "denji", "pochita", "tronconneuse", "devil"],
-  },
-  {
-    id: "anime-gear5",
-    name: "Luffy Gear 5 Nika (One Piece)",
-    category: "crunchyroll",
-    source: "Crunchyroll / Toei",
-    badgeColor: "bg-purple-500/20 text-purple-300 border-purple-500/30",
-    url: "/avatars/crunchyroll-luffy-gear5.svg",
-    tags: ["luffy", "gear 5", "nika", "sun god", "one piece", "dieu du soleil"],
-  },
-  {
-    id: "anime-zoro",
-    name: "Roronoa Zoro (One Piece)",
-    category: "crunchyroll",
-    source: "Crunchyroll / Toei",
-    badgeColor: "bg-emerald-500/20 text-emerald-300 border-emerald-500/30",
-    url: "/avatars/crunchyroll-zoro.svg",
-    tags: ["zoro", "one piece", "katana", "roi des enfers", "santoryu", "bandana"],
-  },
-  {
-    id: "anime-kakashi",
-    name: "Kakashi Hatake (Naruto)",
-    category: "crunchyroll",
-    source: "Crunchyroll / Pierrot",
-    badgeColor: "bg-blue-500/20 text-blue-300 border-blue-500/30",
-    url: "/avatars/crunchyroll-kakashi.svg",
-    tags: ["naruto", "kakashi", "sharingan", "ninja", "hokage", "masque"],
+    id: "jjk-toji",
+    name: "Toji Fushiguro",
+    series: "Jujutsu Kaisen",
+    category: "anime",
+    url: "https://images.unsplash.com/photo-1500648767791-00dcc994a43e?w=300&h=300&fit=crop&crop=faces",
+    tags: ["toji", "fushiguro", "tueur d'exorcistes", "inversion celeste", "jjk", "crunchyroll"],
   },
 
   // ==========================================
-  // --- GAMING & RIOT & STEAM OFFICIELS ---
+  // --- CHAINSAW MAN (CRUNCHYROLL) ---
   // ==========================================
   {
-    id: "game-jett",
-    name: "Jett (Valorant Officiel)",
-    category: "gaming",
-    source: "Riot Games Officiel",
-    badgeColor: "bg-cyan-500/20 text-cyan-300 border-cyan-500/30",
-    url: "/avatars/riot-val-jett.png",
-    tags: ["valorant", "jett", "duelist", "vent", "riot", "fps"],
+    id: "csm-makima",
+    name: "Makima",
+    series: "Chainsaw Man",
+    category: "anime",
+    url: "https://images.unsplash.com/photo-1534528741775-53994a69daeb?w=300&h=300&fit=crop&crop=faces",
+    tags: ["makima", "demon du controle", "csm", "chainsaw man", "crunchyroll"],
   },
   {
-    id: "game-omen",
-    name: "Omen (Valorant Officiel)",
-    category: "gaming",
-    source: "Riot Games Officiel",
-    badgeColor: "bg-indigo-500/20 text-indigo-300 border-indigo-500/30",
-    url: "/avatars/riot-val-omen.png",
-    tags: ["valorant", "omen", "ombre", "smoke", "dark", "riot"],
+    id: "csm-denji",
+    name: "Denji",
+    series: "Chainsaw Man",
+    category: "anime",
+    url: "/avatars/crunchyroll-denji.svg",
+    tags: ["denji", "pochita", "tronconneuse", "chainsaw man", "csm", "crunchyroll"],
   },
   {
-    id: "game-yasuo",
-    name: "Yasuo (League of Legends)",
-    category: "gaming",
-    source: "Riot Games Officiel",
-    badgeColor: "bg-blue-500/20 text-blue-300 border-blue-500/30",
-    url: "/avatars/riot-lol-yasuo.png",
-    tags: ["lol", "yasuo", "hasagi", "tempete", "league of legends"],
+    id: "csm-power",
+    name: "Power",
+    series: "Chainsaw Man",
+    category: "anime",
+    url: "https://images.unsplash.com/photo-1517841905240-472988babdf9?w=300&h=300&fit=crop&crop=faces",
+    tags: ["power", "demon sang", "cornes", "chainsaw man", "csm", "crunchyroll"],
   },
   {
-    id: "game-ahri",
-    name: "Ahri (League of Legends)",
-    category: "gaming",
-    source: "Riot Games Officiel",
-    badgeColor: "bg-pink-500/20 text-pink-300 border-pink-500/30",
-    url: "/avatars/riot-lol-ahri.png",
-    tags: ["ahri", "lol", "renard", "spirit", "riot", "league of legends"],
+    id: "csm-aki",
+    name: "Aki Hayakawa",
+    series: "Chainsaw Man",
+    category: "anime",
+    url: "https://images.unsplash.com/photo-1507003211169-0a1dd7228f2d?w=300&h=300&fit=crop&crop=faces",
+    tags: ["aki", "hayakawa", "kon", "renard", "chainsaw man", "crunchyroll"],
+  },
+
+  // ==========================================
+  // --- DEMON SLAYER (KIMETSU NO YAIBA) ---
+  // ==========================================
+  {
+    id: "kny-tanjiro",
+    name: "Tanjiro Kamado",
+    series: "Demon Slayer",
+    category: "anime",
+    url: "/avatars/crunchyroll-tanjiro.svg",
+    tags: ["tanjiro", "kamado", "souffle de l'eau", "soleil", "demon slayer", "kny", "crunchyroll"],
   },
   {
-    id: "game-jinx-lol",
-    name: "Jinx (League of Legends)",
-    category: "gaming",
-    source: "Riot Games Officiel",
-    badgeColor: "bg-rose-500/20 text-rose-300 border-rose-500/30",
-    url: "/avatars/riot-lol-jinx.png",
-    tags: ["lol", "jinx", "pow-pow", "league of legends", "riot"],
+    id: "kny-nezuko",
+    name: "Nezuko Kamado",
+    series: "Demon Slayer",
+    category: "anime",
+    url: "/avatars/crunchyroll-nezuko.svg",
+    tags: ["nezuko", "kamado", "bambou", "demon slayer", "kny", "crunchyroll"],
   },
   {
-    id: "game-cyberpunk-samurai",
-    name: "Samurai Oni (Cyberpunk 2077)",
-    category: "gaming",
-    source: "CD Projekt Red",
-    badgeColor: "bg-amber-500/20 text-amber-300 border-amber-500/30",
-    url: "/avatars/gaming-cyberpunk-samurai.svg",
-    tags: ["cyberpunk 2077", "samurai", "oni", "johnny silverhand", "demon"],
+    id: "kny-zenitsu",
+    name: "Zenitsu Agatsuma",
+    series: "Demon Slayer",
+    category: "anime",
+    url: "https://images.unsplash.com/photo-1539571696357-5a69c17a67c6?w=300&h=300&fit=crop&crop=faces",
+    tags: ["zenitsu", "foudre", "tonnerre", "demon slayer", "kny", "crunchyroll"],
   },
   {
-    id: "game-discord-clyde",
-    name: "Clyde Blurple (Discord)",
-    category: "gaming",
-    source: "Discord Officiel",
-    badgeColor: "bg-indigo-500/20 text-indigo-300 border-indigo-500/30",
-    url: "/avatars/gaming-discord-blurple.svg",
-    tags: ["discord", "clyde", "blurple", "bot", "chat"],
+    id: "kny-rengoku",
+    name: "Kyojuro Rengoku",
+    series: "Demon Slayer",
+    category: "anime",
+    url: "https://images.unsplash.com/photo-1519085360753-af0119f7cbe7?w=300&h=300&fit=crop&crop=faces",
+    tags: ["rengoku", "flamme", "pilier", "umai", "demon slayer", "kny", "crunchyroll"],
+  },
+
+  // ==========================================
+  // --- SOLO LEVELING (CRUNCHYROLL) ---
+  // ==========================================
+  {
+    id: "sl-jinwoo",
+    name: "Sung Jin-Woo (Shadow Monarch)",
+    series: "Solo Leveling",
+    category: "anime",
+    url: "/avatars/crunchyroll-jinwoo.svg",
+    tags: ["sung jin-woo", "jinwoo", "shadow monarch", "arise", "monarque", "solo leveling", "crunchyroll"],
   },
   {
-    id: "game-steam-crank",
-    name: "Piston Valve (Steam)",
+    id: "sl-cha",
+    name: "Cha Hae-In",
+    series: "Solo Leveling",
+    category: "anime",
+    url: "https://images.unsplash.com/photo-1544005313-94ddf0286df2?w=300&h=300&fit=crop&crop=faces",
+    tags: ["cha hae-in", "epee", "rang s", "chasseuse", "solo leveling", "crunchyroll"],
+  },
+
+  // ==========================================
+  // --- ONE PIECE (ANIME) ---
+  // ==========================================
+  {
+    id: "op-luffy-g5",
+    name: "Monkey D. Luffy (Gear 5)",
+    series: "One Piece",
+    category: "anime",
+    url: "/avatars/crunchyroll-luffy-gear5.svg",
+    tags: ["luffy", "gear 5", "nika", "one piece", "chapeau de paille", "soleil", "crunchyroll"],
+  },
+  {
+    id: "op-zoro",
+    name: "Roronoa Zoro (Enma)",
+    series: "One Piece",
+    category: "anime",
+    url: "/avatars/crunchyroll-zoro.svg",
+    tags: ["zoro", "santoryu", "enma", "epee", "one piece", "crunchyroll"],
+  },
+  {
+    id: "op-sanji",
+    name: "Vinsmoke Sanji (Ifrit Jambe)",
+    series: "One Piece",
+    category: "anime",
+    url: "https://images.unsplash.com/photo-1506794778202-cad84cf45f1d?w=300&h=300&fit=crop&crop=faces",
+    tags: ["sanji", "ifrit jambe", "cuisinier", "one piece", "crunchyroll"],
+  },
+  {
+    id: "op-ace",
+    name: "Portgas D. Ace",
+    series: "One Piece",
+    category: "anime",
+    url: "https://images.unsplash.com/photo-1500648767791-00dcc994a43e?w=300&h=300&fit=crop&crop=faces",
+    tags: ["ace", "poing ardent", "feu", "mera mera", "one piece", "crunchyroll"],
+  },
+
+  // ==========================================
+  // --- VALORANT AGENTS (RIOT GAMES) ---
+  // ==========================================
+  {
+    id: "val-jett",
+    name: "Jett (Wind Duelist)",
+    series: "Valorant Agents",
     category: "gaming",
-    source: "Valve Steam Officiel",
-    badgeColor: "bg-sky-500/20 text-sky-300 border-sky-500/30",
-    url: "/avatars/gaming-steam-retro.svg",
-    tags: ["steam", "valve", "piston", "gaming", "pc"],
+    url: "https://media.valorant-api.com/agents/add6443a-41bd-e378-6169-1589f0169f48/displayicon.png",
+    tags: ["jett", "valorant", "duelist", "korea", "riot games", "vent"],
+  },
+  {
+    id: "val-reyna",
+    name: "Reyna (Empress)",
+    series: "Valorant Agents",
+    category: "gaming",
+    url: "https://media.valorant-api.com/agents/a3bfb853-43b2-7238-a4f1-ad90e9e46bcc/displayicon.png",
+    tags: ["reyna", "valorant", "duelist", "mexico", "empress", "riot"],
+  },
+  {
+    id: "val-omen",
+    name: "Omen (Shadow Controller)",
+    series: "Valorant Agents",
+    category: "gaming",
+    url: "https://media.valorant-api.com/agents/8e253930-4c05-31dd-1b6c-96852549c227/displayicon.png",
+    tags: ["omen", "valorant", "controller", "ombre", "teleport", "riot"],
+  },
+  {
+    id: "val-iso",
+    name: "Iso (Shield Duelist)",
+    series: "Valorant Agents",
+    category: "gaming",
+    url: "https://media.valorant-api.com/agents/0e38b510-41a8-5780-5e8f-568b2a4f2d6c/displayicon.png",
+    tags: ["iso", "valorant", "duelist", "china", "bouclier", "riot"],
+  },
+  {
+    id: "val-clove",
+    name: "Clove (Immortal Controller)",
+    series: "Valorant Agents",
+    category: "gaming",
+    url: "https://media.valorant-api.com/agents/1dbf2edd-4729-0984-3115-ffb5dd0939b2/displayicon.png",
+    tags: ["clove", "valorant", "controller", "papillon", "ecosse", "riot"],
+  },
+  {
+    id: "val-viper",
+    name: "Viper (Toxin Controller)",
+    series: "Valorant Agents",
+    category: "gaming",
+    url: "https://media.valorant-api.com/agents/707eab51-47e6-8070-f402-6e3e7705e364/displayicon.png",
+    tags: ["viper", "valorant", "controller", "poison", "toxine", "riot"],
+  },
+  {
+    id: "val-chamber",
+    name: "Chamber (Tour de Force)",
+    series: "Valorant Agents",
+    category: "gaming",
+    url: "https://media.valorant-api.com/agents/22697a3d-4588-802e-9eaf-fc84e608e4e4/displayicon.png",
+    tags: ["chamber", "valorant", "sentinel", "france", "sniper", "elegance", "riot"],
+  },
+  {
+    id: "val-phoenix",
+    name: "Phoenix (Fire Duelist)",
+    series: "Valorant Agents",
+    category: "gaming",
+    url: "https://media.valorant-api.com/agents/eb93336a-449b-9c1b-0a54-a891f7921d69/displayicon.png",
+    tags: ["phoenix", "valorant", "duelist", "uk", "feu", "riot"],
+  },
+
+  // ==========================================
+  // --- LEAGUE OF LEGENDS (RIOT GAMES) ---
+  // ==========================================
+  {
+    id: "lol-ahri",
+    name: "Ahri (Renard à Neuf Queues)",
+    series: "League of Legends",
+    category: "gaming",
+    url: "https://ddragon.leagueoflegends.com/cdn/14.20.1/img/champion/Ahri.png",
+    tags: ["ahri", "lol", "kda", "mage", "ionia", "renard", "riot games"],
+  },
+  {
+    id: "lol-yasuo",
+    name: "Yasuo (Le Disgracié)",
+    series: "League of Legends",
+    category: "gaming",
+    url: "https://ddragon.leagueoflegends.com/cdn/14.20.1/img/champion/Yasuo.png",
+    tags: ["yasuo", "hasagi", "vent", "epee", "lol", "riot"],
+  },
+  {
+    id: "lol-zed",
+    name: "Zed (Maître des Ombres)",
+    series: "League of Legends",
+    category: "gaming",
+    url: "https://ddragon.leagueoflegends.com/cdn/14.20.1/img/champion/Zed.png",
+    tags: ["zed", "assassin", "ombres", "ninja", "lol", "riot"],
+  },
+  {
+    id: "lol-akali",
+    name: "Akali (Assassin Rebelle)",
+    series: "League of Legends",
+    category: "gaming",
+    url: "https://ddragon.leagueoflegends.com/cdn/14.20.1/img/champion/Akali.png",
+    tags: ["akali", "kda", "ninja", "kunai", "lol", "riot"],
   },
 ];
 
 const CATEGORIES = [
-  { id: "all", label: "Tous", icon: Sparkles },
+  { id: "all", label: "Tous", icon: Layers },
   { id: "netflix", label: "Netflix", icon: Film },
-  { id: "crunchyroll", label: "Crunchyroll & Anime", icon: Flame },
+  { id: "anime", label: "Crunchyroll & Anime", icon: Flame },
   { id: "gaming", label: "Gaming & Riot", icon: Gamepad2 },
 ] as const;
 
@@ -352,67 +683,71 @@ export default function AvatarPickerModal({
 
   const [activeCategory, setActiveCategory] = useState<AvatarCategory>("all");
   const [searchQuery, setSearchQuery] = useState("");
-  const [hoveredAvatar, setHoveredAvatar] = useState<AvatarItem | null>(null);
-  const [selectedUrl, setSelectedUrl] = useState<string>(avatarUrl || "");
+  const [selectedUrl, setSelectedUrl] = useState<string>(avatarUrl || PRESET_AVATARS[0].url);
   const [customUrl, setCustomUrl] = useState("");
   const [applying, setApplying] = useState(false);
+  const [showCustomInput, setShowCustomInput] = useState(false);
   const fileInputRef = useRef<HTMLInputElement>(null);
 
-  // Active or hovered preview url
-  const previewUrl = hoveredAvatar?.url || selectedUrl || avatarUrl || PRESET_AVATARS[0].url;
-  const previewName = hoveredAvatar?.name || (selectedUrl === avatarUrl ? displayName : "Avatar sélectionné");
-
-  const filteredAvatars = useMemo(() => {
-    return PRESET_AVATARS.filter((item) => {
+  const groupedSeries = useMemo(() => {
+    const q = searchQuery.toLowerCase().trim();
+    const filtered = PRESET_AVATARS.filter((item) => {
       const matchCat = activeCategory === "all" || item.category === activeCategory;
-      const q = searchQuery.toLowerCase().trim();
       const matchSearch =
         !q ||
         item.name.toLowerCase().includes(q) ||
-        item.source.toLowerCase().includes(q) ||
+        item.series.toLowerCase().includes(q) ||
         item.tags.some((t) => t.toLowerCase().includes(q));
       return matchCat && matchSearch;
     });
+
+    const groupsMap = new Map<string, AvatarItem[]>();
+    filtered.forEach((item) => {
+      const list = groupsMap.get(item.series) || [];
+      list.push(item);
+      groupsMap.set(item.series, list);
+    });
+
+    return Array.from(groupsMap.entries()).map(([seriesName, avatars]) => ({
+      seriesName,
+      avatars,
+      count: avatars.length,
+    }));
   }, [activeCategory, searchQuery]);
 
-  function handleDownload(e: React.MouseEvent, avatar: AvatarItem) {
-    e.stopPropagation();
-    try {
-      const a = document.createElement("a");
-      a.href = avatar.url;
-      a.download = `ethone-avatar-${avatar.id}.svg`;
-      a.target = "_blank";
-      document.body.appendChild(a);
-      a.click();
-      document.body.removeChild(a);
-      success(i18n("downloadStarted", `Téléchargement de ${avatar.name} démarré`));
-    } catch {
-      window.open(avatar.url, "_blank");
+  function handlePickRandom() {
+    const all = PRESET_AVATARS;
+    const random = all[Math.floor(Math.random() * all.length)];
+    if (random) {
+      setSelectedUrl(random.url);
+      success(`Avatar aléatoire sélectionné : ${random.name} (${random.series})`);
     }
   }
 
-  async function handleApplyAvatar(urlToApply: string) {
-    if (!urlToApply) return;
+  async function handleConfirmSelection() {
+    if (!selectedUrl) return;
     setApplying(true);
     try {
-      localStorage.setItem("ethone_custom_avatar", urlToApply);
-      localStorage.setItem("ethone:custom:avatar", urlToApply);
-      localStorage.setItem("ethone_user_avatar", urlToApply);
-      await save({ avatar_url: urlToApply });
       if (typeof window !== "undefined") {
-        window.dispatchEvent(new CustomEvent("ethone:identity:update", { detail: { avatar_url: urlToApply } }));
+        localStorage.setItem("ethone_custom_avatar", selectedUrl);
+        localStorage.setItem("ethone:custom:avatar", selectedUrl);
+        localStorage.setItem("ethone_user_avatar", selectedUrl);
       }
-      if (onSelect) onSelect(urlToApply);
+      await save({ avatar_url: selectedUrl });
+      if (typeof window !== "undefined") {
+        window.dispatchEvent(new CustomEvent("ethone:identity:update", { detail: { avatar_url: selectedUrl } }));
+      }
+      if (onSelect) onSelect(selectedUrl);
       success(i18n("avatarUpdated", "Photo de profil mise à jour instantanément !"));
       onClose();
     } catch {
-      localStorage.setItem("ethone_custom_avatar", urlToApply);
-      localStorage.setItem("ethone:custom:avatar", urlToApply);
-      localStorage.setItem("ethone_user_avatar", urlToApply);
       if (typeof window !== "undefined") {
-        window.dispatchEvent(new CustomEvent("ethone:identity:update", { detail: { avatar_url: urlToApply } }));
+        localStorage.setItem("ethone_custom_avatar", selectedUrl);
+        localStorage.setItem("ethone:custom:avatar", selectedUrl);
+        localStorage.setItem("ethone_user_avatar", selectedUrl);
+        window.dispatchEvent(new CustomEvent("ethone:identity:update", { detail: { avatar_url: selectedUrl } }));
       }
-      if (onSelect) onSelect(urlToApply);
+      if (onSelect) onSelect(selectedUrl);
       success(i18n("avatarUpdated", "Photo de profil appliquée en local"));
       onClose();
     } finally {
@@ -425,7 +760,7 @@ export default function AvatarPickerModal({
     const url = customUrl.trim();
     if (!url) return;
     setSelectedUrl(url);
-    handleApplyAvatar(url);
+    success("Image personnalisée chargée ! Cliquez sur 'Valider' pour appliquer.");
   }
 
   function handleFileUpload(e: React.ChangeEvent<HTMLInputElement>) {
@@ -440,7 +775,7 @@ export default function AvatarPickerModal({
       const result = ev.target?.result as string;
       if (result) {
         setSelectedUrl(result);
-        handleApplyAvatar(result);
+        success("Fichier importé avec succès ! Cliquez sur 'Valider' pour appliquer.");
       }
     };
     reader.readAsDataURL(file);
@@ -448,256 +783,215 @@ export default function AvatarPickerModal({
 
   if (!isOpen) return null;
 
+  const totalCount = PRESET_AVATARS.length;
+
   return (
     <AnimatePresence>
-      <div className="fixed inset-0 z-[var(--z-modal)] flex items-center justify-center p-3 sm:p-6 backdrop-blur-2xl bg-black/80">
+      <div className="fixed inset-0 z-[var(--z-modal)] flex items-center justify-center p-2 sm:p-4 md:p-6 backdrop-blur-2xl bg-black/85">
         <motion.div
-          initial={{ opacity: 0, scale: 0.94, y: 20 }}
+          initial={{ opacity: 0, scale: 0.95, y: 15 }}
           animate={{ opacity: 1, scale: 1, y: 0 }}
-          exit={{ opacity: 0, scale: 0.94, y: 20 }}
-          transition={{ duration: 0.22, ease: [0.16, 1, 0.3, 1] }}
-          className="relative flex h-[90vh] max-h-[860px] w-full max-w-5xl flex-col overflow-hidden rounded-[28px] border border-white/10 bg-[#0c0d12]/95 shadow-[0_32px_96px_-12px_rgba(0,0,0,0.8)] backdrop-blur-3xl text-white"
+          exit={{ opacity: 0, scale: 0.95, y: 15 }}
+          transition={{ duration: 0.2, ease: [0.16, 1, 0.3, 1] }}
+          className="relative flex h-[92vh] max-h-[880px] w-full max-w-4xl flex-col overflow-hidden rounded-[24px] border border-white/10 bg-[#141414] shadow-[0_32px_96px_-12px_rgba(0,0,0,0.9)] text-white"
         >
-          {/* Top Glow Decorator */}
-          <div className="pointer-events-none absolute -top-32 left-1/2 -translate-x-1/2 h-64 w-[600px] rounded-full bg-[var(--accent-primary)]/15 blur-[120px]" />
+          <div className="relative px-6 sm:px-8 pt-6 pb-4 border-b border-white/5 bg-[#181818]/80">
+            <button
+              onClick={onClose}
+              className="absolute right-5 top-5 flex h-9 w-9 items-center justify-center rounded-full bg-white/5 text-zinc-400 hover:bg-white/15 hover:text-white transition-all cursor-pointer"
+              aria-label="Fermer"
+            >
+              <X className="h-5 w-5" />
+            </button>
 
-          {/* =========================================
-              HEADER : TITLE & LIVE PROFILE PREVIEW
-             ========================================= */}
-          <div className="relative flex items-center justify-between border-b border-white/10 px-6 py-4.5 bg-white/[0.02]">
-            <div className="flex items-center gap-4">
-              {/* Dynamic Live Profile Avatar Orb */}
-              <div className="relative group flex h-13 w-13 shrink-0 items-center justify-center rounded-2xl p-0.5 bg-gradient-to-br from-white/20 via-white/5 to-transparent border border-white/15 shadow-xl overflow-hidden">
-                <ClientImage
-                  src={previewUrl}
-                  alt="Aperçu"
-                  width={56}
-                  height={56}
-                  className="h-full w-full rounded-[14px] object-cover transition-transform duration-300 group-hover:scale-110"
+            <h2 className="text-xl sm:text-2xl font-serif font-black tracking-tight text-white">
+              Choisis ton avatar
+            </h2>
+            <p className="text-xs sm:text-sm text-zinc-400 mt-1 font-sans">
+              Une icône parmi des centaines de personnages officiels (Netflix, Crunchyroll, Gaming)
+            </p>
+
+            <div className="mt-4 flex flex-col sm:flex-row items-stretch sm:items-center gap-2.5">
+              <div className="relative flex-1">
+                <Search className="absolute left-3.5 top-1/2 h-4 w-4 -translate-y-1/2 text-zinc-500" />
+                <input
+                  type="text"
+                  value={searchQuery}
+                  onChange={(e) => setSearchQuery(e.target.value)}
+                  placeholder="Rechercher un personnage ou une série..."
+                  className="w-full rounded-xl border border-white/10 bg-black/40 py-2.5 pl-10 pr-8 text-xs sm:text-sm text-white placeholder-zinc-500 outline-none focus:border-[var(--accent-primary)] focus:bg-black/60 transition-all font-sans"
                 />
-                <div className="absolute inset-0 rounded-[14px] ring-1 ring-inset ring-white/20 pointer-events-none" />
+                {searchQuery && (
+                  <button
+                    onClick={() => setSearchQuery("")}
+                    className="absolute right-3 top-1/2 -translate-y-1/2 text-zinc-500 hover:text-white cursor-pointer"
+                  >
+                    <X className="h-4 w-4" />
+                  </button>
+                )}
               </div>
 
-              <div>
-                <div className="flex items-center gap-2">
-                  <h2 className="text-base sm:text-lg font-bold tracking-tight text-white flex items-center gap-2">
-                    Studio Avatars & Profil HD
-                  </h2>
-                  <span className="inline-flex items-center rounded-full bg-emerald-500/15 border border-emerald-500/30 px-2 py-0.5 text-[10px] font-semibold text-emerald-400">
-                    {PRESET_AVATARS.length} Avatars Officiels
-                  </span>
-                </div>
-                <p className="text-xs text-zinc-400 mt-0.5 flex items-center gap-1.5">
-                  <span>Aperçu : <strong className="text-zinc-200">{previewName}</strong></span>
-                  <span className="text-zinc-600">•</span>
-                  <span>Cliquez pour appliquer instantanément</span>
-                </p>
-              </div>
-            </div>
-
-            <div className="flex items-center gap-2">
               <button
-                onClick={onClose}
-                className="flex h-9 w-9 items-center justify-center rounded-xl bg-white/5 text-zinc-400 border border-white/10 transition-all hover:bg-white/10 hover:text-white cursor-pointer"
-                aria-label="Fermer"
+                onClick={handlePickRandom}
+                className="flex shrink-0 items-center justify-center gap-2 rounded-xl border border-white/10 bg-white/5 px-4 py-2.5 text-xs font-semibold text-zinc-200 hover:bg-white/10 hover:text-white transition-all cursor-pointer"
               >
-                <X className="h-5 w-5" />
+                <Shuffle className="h-3.5 w-3.5" />
+                <span>Aléatoire</span>
+              </button>
+
+              <button
+                onClick={() => setShowCustomInput(!showCustomInput)}
+                className="flex shrink-0 items-center justify-center gap-2 rounded-xl border border-white/10 bg-white/5 px-4 py-2.5 text-xs font-semibold text-zinc-200 hover:bg-white/10 hover:text-white transition-all cursor-pointer"
+              >
+                <Upload className="h-3.5 w-3.5" />
+                <span>Image perso</span>
               </button>
             </div>
-          </div>
 
-          {/* =========================================
-              CATEGORY PILLS & SEARCH BAR
-             ========================================= */}
-          <div className="flex flex-col gap-3 border-b border-white/5 px-6 py-3 bg-black/40 sm:flex-row sm:items-center sm:justify-between">
-            {/* Category Pills without ugly scrollbars */}
-            <div className="flex items-center gap-1.5 overflow-x-auto pb-1 sm:pb-0 [scrollbar-width:none] [-ms-overflow-style:none] [&::-webkit-scrollbar]:hidden">
+            <div className="mt-3 flex items-center gap-1.5 overflow-x-auto pb-1 [scrollbar-width:none] [-ms-overflow-style:none] [&::-webkit-scrollbar]:hidden">
               {CATEGORIES.map((cat) => {
-                const IconComp = cat.icon;
+                const Icon = cat.icon;
                 const isActive = activeCategory === cat.id;
                 return (
                   <button
                     key={cat.id}
                     onClick={() => setActiveCategory(cat.id as AvatarCategory)}
                     className={cn(
-                      "flex shrink-0 items-center gap-2 rounded-xl px-3.5 py-1.5 text-xs font-semibold transition-all cursor-pointer border",
+                      "flex shrink-0 items-center gap-1.5 rounded-lg px-3 py-1 text-xs font-medium transition-all cursor-pointer border",
                       isActive
-                        ? "bg-white text-black border-white shadow-lg shadow-white/10 font-bold"
-                        : "bg-white/[0.04] border-white/5 text-zinc-400 hover:bg-white/10 hover:text-white hover:border-white/15"
+                        ? "bg-white text-black border-white font-bold shadow-md"
+                        : "bg-white/[0.03] border-white/5 text-zinc-400 hover:bg-white/10 hover:text-white"
                     )}
                   >
-                    <IconComp className="h-3.5 w-3.5" />
+                    <Icon className="h-3 w-3" />
                     <span>{cat.label}</span>
                   </button>
                 );
               })}
             </div>
 
-            {/* Search input */}
-            <div className="relative w-full sm:w-64 shrink-0">
-              <Search className="absolute left-3.5 top-1/2 h-3.5 w-3.5 -translate-y-1/2 text-zinc-500" />
-              <input
-                type="text"
-                value={searchQuery}
-                onChange={(e) => setSearchQuery(e.target.value)}
-                placeholder="Rechercher personnage, série, jeu..."
-                className="w-full rounded-xl border border-white/10 bg-white/[0.03] py-2 pl-9 pr-8 text-xs text-white placeholder-zinc-500 outline-none focus:border-[var(--accent-primary)] focus:bg-white/[0.06] transition-all"
-              />
-              {searchQuery && (
-                <button
-                  onClick={() => setSearchQuery("")}
-                  className="absolute right-2.5 top-1/2 -translate-y-1/2 text-zinc-500 hover:text-white cursor-pointer"
+            {showCustomInput && (
+              <motion.div
+                initial={{ opacity: 0, height: 0 }}
+                animate={{ opacity: 1, height: "auto" }}
+                exit={{ opacity: 0, height: 0 }}
+                className="mt-3 p-3 rounded-xl border border-white/10 bg-black/50 flex flex-col sm:flex-row gap-2 items-center"
+              >
+                <form onSubmit={handleCustomUrlSubmit} className="flex flex-1 items-center gap-2 w-full">
+                  <div className="relative flex-1">
+                    <Link2 className="absolute left-3 top-1/2 h-3.5 w-3.5 -translate-y-1/2 text-zinc-500" />
+                    <input
+                      type="url"
+                      value={customUrl}
+                      onChange={(e) => setCustomUrl(e.target.value)}
+                      placeholder="Coller l'URL directe d'une image (Discord, Pinterest, Web)..."
+                      className="w-full rounded-lg border border-white/10 bg-white/5 py-1.5 pl-8 pr-2 text-xs text-white placeholder-zinc-500 outline-none focus:border-[var(--accent-primary)]"
+                    />
+                  </div>
+                  <Button type="submit" size="sm" variant="secondary" className="h-8 px-3 text-xs shrink-0 cursor-pointer">
+                    Charger
+                  </Button>
+                </form>
+                <input ref={fileInputRef} type="file" accept="image/*" className="hidden" onChange={handleFileUpload} />
+                <Button
+                  type="button"
+                  size="sm"
+                  variant="ghost"
+                  className="h-8 px-3 text-xs text-zinc-300 hover:text-white border border-white/10 shrink-0 cursor-pointer"
+                  onClick={() => fileInputRef.current?.click()}
                 >
-                  <X className="h-3.5 w-3.5" />
-                </button>
-              )}
-            </div>
+                  <Upload className="h-3 w-3 mr-1.5" />
+                  Depuis mon PC
+                </Button>
+              </motion.div>
+            )}
           </div>
 
-          {/* =========================================
-              MAIN AVATAR GRID (LUXURY TILES)
-             ========================================= */}
-          <div className="min-h-0 flex-1 overflow-y-auto p-6 scrollbar-thin scrollbar-thumb-white/10 hover:scrollbar-thumb-white/20">
-            <div className="grid grid-cols-2 gap-4 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-5">
-              {filteredAvatars.map((item) => {
-                const isSelected = selectedUrl === item.url || avatarUrl === item.url;
-                return (
-                  <div
-                    key={item.id}
-                    onMouseEnter={() => setHoveredAvatar(item)}
-                    onMouseLeave={() => setHoveredAvatar(null)}
-                    onClick={() => {
-                      setSelectedUrl(item.url);
-                      handleApplyAvatar(item.url);
-                    }}
-                    className={cn(
-                      "group relative flex flex-col overflow-hidden rounded-2xl border p-2.5 transition-all duration-150 cursor-pointer",
-                      isSelected
-                        ? "border-[var(--accent-primary)] bg-[var(--accent-primary)]/10 shadow-[0_0_24px_rgba(var(--accent-primary-rgb),0.25)] ring-2 ring-[var(--accent-primary)]/50"
-                        : "border-white/10 bg-white/[0.02] hover:border-white/25 hover:bg-white/[0.06] hover:shadow-xl hover:-translate-y-0.5"
-                    )}
-                  >
-                    {/* Image Box */}
-                    <div className="relative aspect-square w-full overflow-hidden rounded-[14px] bg-zinc-950 shadow-inner">
-                      <ClientImage
-                        src={item.url}
-                        alt={item.name}
-                        width={240}
-                        height={240}
-                        className="h-full w-full object-cover transition-transform duration-500 ease-out group-hover:scale-108"
-                      />
-
-                      {/* Franchise Micro Badge */}
-                      <div className="absolute top-2 left-2 pointer-events-none">
-                        <span className={cn("inline-flex items-center rounded-md px-1.5 py-0.5 text-[9px] font-bold uppercase tracking-wider backdrop-blur-md border shadow-md", item.badgeColor)}>
-                          {item.category === "netflix" ? "Netflix" : item.category === "crunchyroll" ? "Anime" : item.category === "gaming" ? "Gaming" : item.category === "memoji" ? "3D" : "Cyber"}
-                        </span>
-                      </div>
-
-                      {/* Download Quick Button */}
-                      <button
-                        onClick={(e) => handleDownload(e, item)}
-                        title="Télécharger l'avatar HD"
-                        className="absolute right-2 top-2 flex h-7 w-7 items-center justify-center rounded-lg bg-black/70 text-zinc-300 backdrop-blur-md opacity-0 group-hover:opacity-100 transition-all hover:bg-white hover:text-black hover:scale-110 shadow-lg cursor-pointer z-10"
-                      >
-                        <Download className="h-3.5 w-3.5" />
-                      </button>
-
-                      {/* Selected Glow Checkmark */}
-                      {isSelected && (
-                        <div className="absolute inset-0 flex items-center justify-center bg-black/40 backdrop-blur-[2px]">
-                          <div className="flex h-10 w-10 items-center justify-center rounded-full bg-[var(--accent-primary)] text-white shadow-lg ring-4 ring-white/20 animate-pulse">
-                            <Check className="h-5 w-5 stroke-[3]" />
-                          </div>
-                        </div>
-                      )}
-
-                      {/* Hover Overlay Button */}
-                      {!isSelected && (
-                        <div className="absolute inset-0 flex items-end justify-center p-2.5 opacity-0 group-hover:opacity-100 transition-opacity bg-gradient-to-t from-black/80 via-black/20 to-transparent pointer-events-none">
-                          <div className="w-full py-1.5 rounded-lg bg-white text-black text-[11px] font-bold text-center shadow-md">
-                            Appliquer
-                          </div>
-                        </div>
-                      )}
-                    </div>
-
-                    {/* Metadata */}
-                    <div className="mt-2.5 px-1 flex flex-col">
-                      <h4 className="truncate text-xs font-bold text-zinc-100 group-hover:text-white transition-colors">
-                        {item.name}
-                      </h4>
-                      <span className="truncate text-[10px] text-zinc-400 mt-0.5">
-                        {item.source}
-                      </span>
-                    </div>
-                  </div>
-                );
-              })}
-            </div>
-
-            {filteredAvatars.length === 0 && (
-              <div className="flex min-h-[260px] flex-col items-center justify-center text-center p-8">
-                <div className="flex h-14 w-14 items-center justify-center rounded-2xl bg-white/5 border border-white/10 mb-3 text-zinc-400">
-                  <Search className="h-6 w-6" />
+          <div className="min-h-0 flex-1 overflow-y-auto px-6 sm:px-8 py-6 space-y-7 scrollbar-thin scrollbar-thumb-white/10 hover:scrollbar-thumb-white/20">
+            {groupedSeries.map(({ seriesName, avatars, count }) => (
+              <div key={seriesName} className="space-y-3">
+                <div className="flex items-center justify-between">
+                  <h3 className="text-xs sm:text-sm font-bold uppercase tracking-wider text-zinc-300 font-sans">
+                    {seriesName}
+                  </h3>
+                  <span className="text-xs font-semibold text-zinc-500">
+                    {count}
+                  </span>
                 </div>
-                <p className="text-sm font-bold text-white">Aucun avatar trouvé pour &quot;{searchQuery}&quot;</p>
-                <p className="text-xs text-zinc-400 mt-1 max-w-sm">
-                  Essayez avec un autre mot-clé ou collez directement l&apos;URL de votre image ci-dessous.
-                </p>
+
+                <div className="grid grid-cols-4 sm:grid-cols-5 md:grid-cols-6 lg:grid-cols-7 gap-3 sm:gap-4">
+                  {avatars.map((item) => {
+                    const isSelected = selectedUrl === item.url;
+                    return (
+                      <div
+                        key={item.id}
+                        onClick={() => setSelectedUrl(item.url)}
+                        title={`${item.name} (${item.series})`}
+                        className={cn(
+                          "group relative aspect-square rounded-[18px] sm:rounded-[20px] overflow-hidden cursor-pointer transition-all duration-150 p-0.5",
+                          isSelected
+                            ? "ring-3 ring-amber-400 ring-offset-2 ring-offset-[#141414] scale-[1.03] shadow-[0_0_20px_rgba(251,191,36,0.35)]"
+                            : "hover:scale-[1.05] hover:ring-2 hover:ring-white/40 ring-1 ring-white/10 bg-zinc-900"
+                        )}
+                      >
+                        <div className="relative h-full w-full overflow-hidden rounded-[16px] sm:rounded-[18px] bg-zinc-950">
+                          <ClientImage
+                            src={item.url}
+                            alt={item.name}
+                            width={160}
+                            height={160}
+                            className="h-full w-full object-cover transition-transform duration-300 group-hover:scale-110"
+                          />
+
+                          {isSelected && (
+                            <div className="absolute inset-0 flex items-center justify-center bg-black/25">
+                              <div className="flex h-7 w-7 items-center justify-center rounded-full bg-amber-400 text-black shadow-lg ring-2 ring-white/30">
+                                <Check className="h-4 w-4 stroke-[3]" />
+                              </div>
+                            </div>
+                          )}
+                        </div>
+                      </div>
+                    );
+                  })}
+                </div>
+              </div>
+            ))}
+
+            {groupedSeries.length === 0 && (
+              <div className="flex min-h-[220px] flex-col items-center justify-center text-center p-8">
+                <Search className="h-8 w-8 text-zinc-500 mb-2" />
+                <p className="text-sm font-bold text-white">Aucun personnage trouvé pour &quot;{searchQuery}&quot;</p>
+                <p className="text-xs text-zinc-400 mt-1">Essayez un autre mot-clé ou collez une URL d&apos;image personnalisée.</p>
               </div>
             )}
           </div>
 
-          {/* =========================================
-              FOOTER: CUSTOM URL & PC/MOBILE UPLOAD
-             ========================================= */}
-          <div className="border-t border-white/10 bg-black/60 p-4 sm:px-6">
-            <div className="flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-between">
-              {/* Custom Image URL Form */}
-              <form onSubmit={handleCustomUrlSubmit} className="flex flex-1 items-center gap-2">
-                <div className="relative flex-1">
-                  <Link2 className="absolute left-3.5 top-1/2 h-4 w-4 -translate-y-1/2 text-zinc-400" />
-                  <input
-                    type="url"
-                    value={customUrl}
-                    onChange={(e) => setCustomUrl(e.target.value)}
-                    placeholder="Coller l'URL d'une image (Netflix, Crunchyroll, Pinterest, Discord, Imgur...)"
-                    className="w-full rounded-xl border border-white/10 bg-white/[0.04] py-2.5 pl-10 pr-3 text-xs text-white placeholder-zinc-500 outline-none focus:border-[var(--accent-primary)] focus:bg-white/[0.08] transition-all"
-                  />
-                </div>
-                <Button
-                  type="submit"
-                  size="sm"
-                  variant="primary"
-                  className="shrink-0 h-9.5 px-4 font-semibold cursor-pointer"
-                  disabled={!customUrl.trim() || applying}
-                  leftIcon={<Sparkles className="h-3.5 w-3.5" />}
-                >
-                  Appliquer l&apos;URL
-                </Button>
-              </form>
+          <div className="flex items-center justify-between border-t border-white/5 bg-[#181818] px-6 sm:px-8 py-4">
+            <div className="flex items-center gap-3">
+              <span className="text-xs font-semibold text-zinc-400">
+                {totalCount} icônes disponibles
+              </span>
+            </div>
 
-              {/* Upload Custom File */}
-              <div className="flex items-center gap-2 shrink-0">
-                <input
-                  ref={fileInputRef}
-                  type="file"
-                  accept="image/*"
-                  className="hidden"
-                  onChange={handleFileUpload}
-                />
-                <Button
-                  type="button"
-                  size="sm"
-                  variant="secondary"
-                  className="h-9.5 px-4 font-semibold bg-white/5 border-white/10 hover:bg-white/10 text-white cursor-pointer"
-                  onClick={() => fileInputRef.current?.click()}
-                  leftIcon={<Upload className="h-3.5 w-3.5" />}
-                >
-                  Importer depuis l&apos;appareil
-                </Button>
-              </div>
+            <div className="flex items-center gap-2.5">
+              <button
+                type="button"
+                onClick={onClose}
+                className="rounded-xl border border-white/10 bg-white/5 px-5 py-2.5 text-xs sm:text-sm font-bold text-zinc-300 hover:bg-white/10 hover:text-white transition-all cursor-pointer"
+              >
+                Annuler
+              </button>
+
+              <button
+                type="button"
+                onClick={handleConfirmSelection}
+                disabled={applying}
+                className="flex items-center gap-2 rounded-xl bg-amber-400 hover:bg-amber-300 text-black px-6 py-2.5 text-xs sm:text-sm font-black shadow-lg transition-all hover:scale-[1.02] cursor-pointer disabled:opacity-50"
+              >
+                <Check className="h-4 w-4 stroke-[3]" />
+                <span>Valider</span>
+              </button>
             </div>
           </div>
         </motion.div>

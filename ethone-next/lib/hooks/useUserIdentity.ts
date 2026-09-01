@@ -39,34 +39,40 @@ export function useUserIdentity(): UserIdentity {
   const [cachedAvatar, setCachedAvatar] = useState<string>("");
 
   const userId = user?.id;
+  const effectiveUserId = userId || "local";
 
   useEffect(() => {
     if (typeof window !== "undefined") {
       try {
         const updateFromStorage = () => {
-          if (!userId) {
-            setCachedName("");
-            setCachedAvatar("");
-            return;
-          }
-
-          const savedName = localStorage.getItem(`ethone_user_name:${userId}`);
+          const savedName =
+            (userId ? localStorage.getItem(`ethone_user_name:${userId}`) : null) ||
+            localStorage.getItem(`ethone_user_name:local`) ||
+            localStorage.getItem(`ethone_user_name:guest`) ||
+            localStorage.getItem(`ethone:user_name`) ||
+            localStorage.getItem(`ethone:user:name`);
 
           const savedAvatar =
-            localStorage.getItem(`ethone_custom_avatar:${userId}`) ||
-            localStorage.getItem(`ethone:custom:avatar:${userId}`) ||
-            localStorage.getItem(`ethone_user_avatar:${userId}`);
+            (userId
+              ? localStorage.getItem(`ethone_custom_avatar:${userId}`) ||
+                localStorage.getItem(`ethone:custom:avatar:${userId}`) ||
+                localStorage.getItem(`ethone_user_avatar:${userId}`)
+              : null) ||
+            localStorage.getItem(`ethone_custom_avatar:local`) ||
+            localStorage.getItem(`ethone:custom:avatar:local`) ||
+            localStorage.getItem(`ethone_user_avatar:local`) ||
+            localStorage.getItem(`ethone_custom_avatar`) ||
+            localStorage.getItem(`ethone:custom:avatar`) ||
+            localStorage.getItem(`ethone_user_avatar`);
 
-          if (savedName) {
-            setCachedName(savedName);
+          if (savedName && savedName.trim() && savedName !== "Invité") {
+            setCachedName(savedName.trim());
           } else {
             setCachedName("");
           }
 
           if (savedAvatar) {
             if (isExternalOAuthAvatar(savedAvatar)) {
-              localStorage.removeItem(`ethone_custom_avatar:${userId}`);
-              localStorage.removeItem(`ethone:custom:avatar:${userId}`);
               setCachedAvatar("");
             } else {
               setCachedAvatar(savedAvatar);
@@ -99,18 +105,27 @@ export function useUserIdentity(): UserIdentity {
     (typeof meta.full_name === "string" && meta.full_name.trim() ? meta.full_name.trim() : undefined) ||
     (typeof meta.name === "string" && meta.name.trim() ? meta.name.trim() : undefined);
 
-  // Resolution of display name strictly isolated per user
+  // Resolution of display name strictly isolated per user / profile
   const displayName = useMemo(() => {
-    if (!user) return "Invité";
+    const activeProfName = activeProfile?.name && activeProfile.name.trim() !== "Default" ? activeProfile.name.trim() : undefined;
+    const publicProfName = (publicProfile?.display_name && publicProfile.display_name.trim()) || (publicProfile?.username && publicProfile.username.trim());
+
+    if (!user) {
+      return (
+        activeProfName ||
+        cachedName ||
+        (publicProfName && publicProfName !== "Invité" ? publicProfName : undefined) ||
+        "Profil Principal"
+      );
+    }
 
     return (
-      (publicProfile?.display_name && publicProfile.display_name.trim()) ||
-      (publicProfile?.username && publicProfile.username.trim()) ||
-      (activeProfile?.name && activeProfile.name.trim() !== "Default" && activeProfile.name.trim()) ||
+      publicProfName ||
+      activeProfName ||
       customFromMeta ||
       cachedName ||
       (user?.email ? user.email.split("@")[0] : "") ||
-      "Utilisateur"
+      "Profil Principal"
     );
   }, [user, publicProfile?.display_name, publicProfile?.username, activeProfile?.name, customFromMeta, cachedName]);
 
@@ -127,31 +142,34 @@ export function useUserIdentity(): UserIdentity {
   const avatarUrl = candidateAvatars.find((url) => url && !isExternalOAuthAvatar(url)) || undefined;
 
   useEffect(() => {
-    if (typeof window !== "undefined" && userId) {
+    if (typeof window !== "undefined") {
       try {
         if (displayName && displayName !== "Invité" && displayName !== "Utilisateur") {
-          localStorage.setItem(`ethone_user_name:${userId}`, displayName);
+          localStorage.setItem(`ethone_user_name:${effectiveUserId}`, displayName);
+          localStorage.setItem(`ethone:user_name`, displayName);
         }
         if (avatarUrl && !isExternalOAuthAvatar(avatarUrl)) {
-          localStorage.setItem(`ethone_custom_avatar:${userId}`, avatarUrl);
-          localStorage.setItem(`ethone_user_avatar:${userId}`, avatarUrl);
+          localStorage.setItem(`ethone_custom_avatar:${effectiveUserId}`, avatarUrl);
+          localStorage.setItem(`ethone_user_avatar:${effectiveUserId}`, avatarUrl);
+          localStorage.setItem(`ethone_custom_avatar`, avatarUrl);
+          localStorage.setItem(`ethone_user_avatar`, avatarUrl);
         }
       } catch {
         // ignore
       }
     }
-  }, [userId, displayName, avatarUrl]);
+  }, [effectiveUserId, displayName, avatarUrl]);
 
   const email = user?.email || "";
 
   const initials = useMemo(() => {
-    if (!displayName || displayName === "Invité") return "I";
+    if (!displayName || displayName === "Invité") return "P";
     return displayName
       .split(/\s+/)
       .map((part) => part[0] || "")
       .join("")
       .slice(0, 2)
-      .toUpperCase() || "U";
+      .toUpperCase() || "P";
   }, [displayName]);
 
   return {

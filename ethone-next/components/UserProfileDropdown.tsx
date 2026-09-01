@@ -13,6 +13,7 @@ import { useI18n } from "@/lib/hooks/useI18n";
 import { useToast } from "@/components/ToastProvider";
 import { useCommandPalette } from "@/components/CommandPaletteProvider";
 import ChangelogModal from "@/components/ChangelogModal";
+import AvatarPickerModal from "@/components/AvatarPickerModal";
 import {
   CHANGELOG,
   CHANGELOG_BY_LANG,
@@ -40,6 +41,7 @@ export default function UserProfileDropdown({ dataTestId = "user-profile-trigger
 
   const [open, setOpen] = useState(false);
   const [isChangelogOpen, setIsChangelogOpen] = useState(false);
+  const [isAvatarPickerOpen, setIsAvatarPickerOpen] = useState(false);
   const [copied, setCopied] = useState(false);
   const [confirmSignOut, setConfirmSignOut] = useState(false);
 
@@ -98,7 +100,7 @@ export default function UserProfileDropdown({ dataTestId = "user-profile-trigger
     return CHANGELOG_BY_LANG[settings.language] || CHANGELOG;
   }, [settings.language]);
 
-  const VERSION_LABEL = "v1.20.8";
+  const VERSION_LABEL = "v1.20.9";
 
   const menuItems = [
     {
@@ -213,7 +215,15 @@ export default function UserProfileDropdown({ dataTestId = "user-profile-trigger
           <div className="flex w-full flex-col gap-3 select-none">
             {/* User Header Profile */}
             <div className="flex items-center gap-3 rounded-xl border border-[var(--panel-border)]/70 bg-[#121319] p-2.5 shadow-xs">
-              <div className="relative flex h-11 w-11 shrink-0 items-center justify-center">
+              <button
+                type="button"
+                onClick={() => {
+                  setOpen(false);
+                  setIsAvatarPickerOpen(true);
+                }}
+                className="relative group flex h-11 w-11 shrink-0 items-center justify-center cursor-pointer rounded-xl overflow-hidden ring-1 ring-white/10 hover:ring-amber-400 transition-all"
+                title="Changer d'avatar (Netflix, Crunchyroll, Gaming...)"
+              >
                 <div className="flex h-full w-full items-center justify-center overflow-hidden rounded-xl bg-[var(--accent-primary)]/20 text-[var(--accent-primary)] font-bold text-sm">
                   {avatarUrl ? (
                     <ClientImage
@@ -221,14 +231,14 @@ export default function UserProfileDropdown({ dataTestId = "user-profile-trigger
                       alt=""
                       width={44}
                       height={44}
-                      className="h-full w-full object-cover"
+                      className="h-full w-full object-cover transition-transform group-hover:scale-110"
                       fallback={<span>{initials}</span>}
                     />
                   ) : (
                     <span>{initials}</span>
                   )}
                 </div>
-              </div>
+              </button>
 
               <div className="flex min-w-0 flex-1 flex-col gap-0.5">
                 <div className="flex items-center gap-1.5 flex-wrap">
@@ -240,16 +250,16 @@ export default function UserProfileDropdown({ dataTestId = "user-profile-trigger
                   </span>
                 </div>
 
-                {email && (
-                  <button
-                    type="button"
-                    onClick={copyEmail}
-                    className="flex items-center gap-1 text-[11px] text-[var(--text-muted)] hover:text-[var(--text-primary)] transition-colors cursor-pointer"
-                  >
-                    <span className="truncate max-w-[170px]">{email}</span>
-                    <Icon name={copied ? "check" : "copy"} className="h-3 w-3" />
-                  </button>
-                )}
+                <button
+                  type="button"
+                  onClick={() => {
+                    setOpen(false);
+                    setIsAvatarPickerOpen(true);
+                  }}
+                  className="text-left text-[10px] font-semibold text-amber-400 hover:text-amber-300 transition-colors cursor-pointer"
+                >
+                  Changer d&apos;avatar (Netflix, Anime...)
+                </button>
               </div>
             </div>
 
@@ -391,6 +401,11 @@ export default function UserProfileDropdown({ dataTestId = "user-profile-trigger
         onClose={() => setIsChangelogOpen(false)}
         entries={changelog}
         versionLabel={VERSION_LABEL}
+      />
+
+      <AvatarPickerModal
+        isOpen={isAvatarPickerOpen}
+        onClose={() => setIsAvatarPickerOpen(false)}
       />
     </>
   );

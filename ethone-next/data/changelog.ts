@@ -7206,6 +7206,48 @@ CHANGELOG_BY_LANG.es.unshift({
 });
 
 CHANGELOG_BY_LANG.fr.unshift({
+  version: "v1.20.9",
+  date: "2026-09-01",
+  title: "Nouveau Sélecteur d'Avatar Style Netflix / Anime & Correction Profil",
+  items: [
+    "Refonte complète de l'interface 'Choisis ton avatar' inspirée de Netflix et Crunchyroll.",
+    "Véritables avatars HD officiels classés par séries : Arcane, Wednesday, Squid Game, Stranger Things, L'Attaque des Titans, Jujutsu Kaisen, Chainsaw Man, Demon Slayer, Solo Leveling, One Piece, Valorant, LoL.",
+    "Bouton Aléatoire instantané et sélection fluide avec validation rapide.",
+    "Correction de l'étiquette 'Invité' : résolution propre de votre nom et avatar sur tous les profils et sessions.",
+  ],
+});
+
+CHANGELOG_BY_LANG.en.unshift({
+  version: "v1.20.9",
+  date: "2026-09-01",
+  title: "Netflix & Anime Style Avatar Studio & Profile Identity Fix",
+  items: [
+    "Complete redesign of 'Choisis ton avatar' modal inspired by Netflix and Crunchyroll UI.",
+    "Real official character avatars categorized by series (Arcane, Wednesday, AOT, JJK, Chainsaw Man, Demon Slayer, Solo Leveling, One Piece, Valorant, LoL).",
+    "Instant Random avatar picker button and smooth selection ring.",
+    "Fixed 'Invité' (Guest) label and restored proper name/avatar isolation across profiles.",
+  ],
+});
+
+CHANGELOG_BY_LANG.es.unshift({
+  version: "v1.20.9",
+  date: "2026-09-01",
+  title: "Selector de Avatar Estilo Netflix y Anime HD",
+  items: [
+    "Diseño oficial estilo Netflix y Crunchyroll con avatares reales de series de anime y streaming.",
+  ],
+});
+
+CHANGELOG_BY_LANG.de.unshift({
+  version: "v1.20.9",
+  date: "2026-09-01",
+  title: "Netflix & Anime Avatar-Auswahl & Profil-Korrektur",
+  items: [
+    "Offizielles Netflix & Crunchyroll Design mit echten Serien- und Anime-Profilbildern.",
+  ],
+});
+
+CHANGELOG_BY_LANG.fr.unshift({
   version: "v1.20.8",
   date: "2026-09-01",
   title: "Brain IA Fluide, Naturel & Intégration Spotify / Discord en Direct",

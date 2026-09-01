@@ -50,16 +50,12 @@ export function useUserIdentity(): UserIdentity {
             return;
           }
 
-          const savedName =
-            localStorage.getItem(`ethone_user_name:${userId}`) ||
-            (user?.email && user.email.includes("rub") ? localStorage.getItem("ethone_user_name") : null);
+          const savedName = localStorage.getItem(`ethone_user_name:${userId}`);
 
           const savedAvatar =
             localStorage.getItem(`ethone_custom_avatar:${userId}`) ||
             localStorage.getItem(`ethone:custom:avatar:${userId}`) ||
-            (user?.email && user.email.includes("rub")
-              ? localStorage.getItem("ethone_custom_avatar") || localStorage.getItem("ethone:custom:avatar")
-              : null);
+            localStorage.getItem(`ethone_user_avatar:${userId}`);
 
           if (savedName) {
             setCachedName(savedName);

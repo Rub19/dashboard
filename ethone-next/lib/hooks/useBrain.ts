@@ -215,6 +215,22 @@ export function useBrain(mailClient?: BrainMailClient) {
         if (setting === "density") updateSettings({ densityMode: value as never });
       },
       navigate: (route) => router.push(`/${route === "home" ? "" : route}`),
+      startFocus: (preset) => {
+        if (typeof window !== "undefined") {
+          window.dispatchEvent(new CustomEvent("v8:start-focus", { detail: { preset } }));
+        }
+      },
+      stopFocus: () => {
+        if (typeof window !== "undefined") {
+          window.dispatchEvent(new CustomEvent("v8:stop-focus"));
+        }
+      },
+      selectTheme: (themeId) => {
+        updateSettings({ theme: themeId as never });
+      },
+      selectAccent: (accentId) => {
+        updateSettings({ accentColor: accentId as never });
+      },
       mailClient,
     });
   }, [preferences.permissions, notes, tasks, events, router, updateSettings, mailClient]);

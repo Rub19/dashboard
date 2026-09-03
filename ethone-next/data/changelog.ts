@@ -21144,4 +21144,39 @@ CHANGELOG_BY_LANG.en.unshift({
   ],
 });
 
+
+CHANGELOG_BY_LANG.fr.unshift({
+  version: "v1.20.28",
+  date: "2026-09-03",
+  title: "ETHONE Brain 2.0 — Centre d'Intelligence Contextuel & Mémoire Personnelle",
+  items: [
+    "Refonte complète d'ETHONE Brain en véritable centre d'intelligence personnel contextuel et proactif.",
+    "Bandeau d'état Brain en direct : 'Brain is ready' avec modèle actif, provider, latence réseau et badges contextuels.",
+    "Context Engine 2.0 : prise en compte en temps réel de la navigation, du Workspace actif, du Focus Timer, des fichiers et de la météo.",
+    "Système de Transparence & Explicabilité ('Pourquoi Brain a utilisé cette information ?').",
+    "Centre de Mémoire Structurée (BrainMemoryPanel) : recherche, filtres thématiques, ajout, édition et suppression sécurisée avec confirmation.",
+    "Résilience Offline : persistance primaire Supabase avec bascule transparente vers localStorage chiffré.",
+    "Pipeline d'Actions étendu : navigation, lancement/arrêt de Focus (Pomodoro, Deep Work, Sprint), changement de thème et d'accent, téléversement de fichiers et rédaction de mails.",
+    "Intégration directe avec le Command Center : transmission automatique et exécution immédiate des requêtes /brain/?q=...",
+    "Bumping de version vers v1.20.28.",
+  ],
+});
+
+CHANGELOG_BY_LANG.en.unshift({
+  version: "v1.20.28",
+  date: "2026-09-03",
+  title: "ETHONE Brain 2.0 — Contextual Intelligence Core & Personal Memory",
+  items: [
+    "Comprehensive overhaul of ETHONE Brain into a proactive, contextual OS intelligence hub.",
+    "Live Brain Status Bar: 'Brain is ready' with active AI model, provider badge, latency metrics, and real-time context pills.",
+    "Context Engine 2.0: real-time awareness of active route, workspace profile, Focus timer, music playback, and local weather.",
+    "Explainability & Transparency engine ('Why did Brain use this context?').",
+    "Structured Memory Center (BrainMemoryPanel): full-text search, category filters, memory creation, inline editing, and confirmed deletion.",
+    "Offline Resilience: primary Supabase synchronization paired with seamless encrypted localStorage fallback.",
+    "Expanded Action Pipeline: direct execution of navigation, Focus timer (Pomodoro, Deep, Sprint), Theme Engine 3.0 presets, file upload trigger, and email drafts.",
+    "Deep Command Center integration: auto-execution of queries routed through /brain/?q=...",
+    "Version bump to v1.20.28.",
+  ],
+});
+
 export const CHANGELOG = CHANGELOG_BY_LANG.fr;

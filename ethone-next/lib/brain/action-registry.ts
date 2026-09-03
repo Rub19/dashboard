@@ -55,6 +55,10 @@ export function createBrainActionRegistry(options: {
   createEvent: (input: { title: string; date: string }) => Promise<unknown>;
   changeSetting: (setting: string, value: string) => Promise<unknown>;
   navigate: (route: string) => void;
+  startFocus?: (preset: string) => void;
+  stopFocus?: () => void;
+  selectTheme?: (themeId: string) => void;
+  selectAccent?: (accentId: string) => void;
   mailClient?: BrainMailClient;
 }) {
   const definitions = new Map<string, BrainActionDefinition>();
@@ -168,6 +172,108 @@ export function createBrainActionRegistry(options: {
     async (p) => {
       options.navigate(String(p.route));
       return outcome(true, "Navigation effectuée.");
+    }
+  );
+
+  add(
+    "focus.start",
+    "Lancer une session Focus",
+    "Démarre un chronomètre de concentration.",
+    null,
+    false,
+    { preset: "pomodoro|deep|sprint" },
+    async (p) => {
+      const preset = ["pomodoro", "deep", "sprint"].includes(String(p.preset)) ? String(p.preset) : "pomodoro";
+      if (options.startFocus) {
+        options.startFocus(preset);
+        return outcome(true, `Session Focus (${preset}) démarrée.`);
+      }
+      options.navigate("focus");
+      return outcome(true, "Page Focus ouverte.");
+    }
+  );
+
+  add(
+    "focus.stop",
+    "Arrêter la session Focus",
+    "Stoppe le chronomètre Focus actif.",
+    null,
+    false,
+    {},
+    async () => {
+      if (options.stopFocus) {
+        options.stopFocus();
+        return outcome(true, "Session Focus arrêtée.");
+      }
+      return outcome(true, "Focus arrêté.");
+    }
+  );
+
+  add(
+    "theme.switch",
+    "Changer de thème",
+    "Bascule vers un thème visuel du Theme Engine 3.0.",
+    "settings",
+    false,
+    { themeId: "string" },
+    async (p) => {
+      const themeId = clean(p.themeId, "obsidian", 40);
+      if (options.selectTheme) {
+        options.selectTheme(themeId);
+        return outcome(true, `Thème "${themeId}" appliqué.`);
+      }
+      await options.changeSetting("theme", themeId);
+      return outcome(true, `Thème "${themeId}" sélectionné.`);
+    }
+  );
+
+  add(
+    "accent.switch",
+    "Changer de couleur d'accent",
+    "Modifie la couleur d'accent universelle.",
+    "settings",
+    false,
+    { accentId: "string" },
+    async (p) => {
+      const accentId = clean(p.accentId, "violet", 40);
+      if (options.selectAccent) {
+        options.selectAccent(accentId);
+        return outcome(true, `Accent "${accentId}" appliqué.`);
+      }
+      await options.changeSetting("accentColor", accentId);
+      return outcome(true, `Accent "${accentId}" sélectionné.`);
+    }
+  );
+
+  add(
+    "files.upload",
+    "Téléverser un fichier",
+    "Ouvre la boîte de dialogue d'importation de documents.",
+    null,
+    false,
+    {},
+    async () => {
+      options.navigate("files");
+      if (typeof window !== "undefined") {
+        window.dispatchEvent(new CustomEvent("v8:trigger-upload"));
+      }
+      return outcome(true, "Explorateur de fichiers prêt pour téléversement.");
+    }
+  );
+
+  add(
+    "mail.compose",
+    "Rédiger un nouvel email",
+    "Ouvre l'éditeur de courrier sortant.",
+    "mail",
+    false,
+    {},
+    async () => {
+      options.navigate("mail");
+      if (typeof window !== "undefined") {
+        window.dispatchEvent(new CustomEvent("v8:compose-mail"));
+      }
+      return outcome(true, "Boîte de rédaction d'email ouverte.");
     }
   );
 

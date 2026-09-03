@@ -28,6 +28,7 @@ import { useSettings } from "@/components/SettingsProvider";
 import BrainComposer from "./brain/BrainComposer";
 import BrainActionCard from "./brain/BrainActionCard";
 import BrainVoiceOverlay from "./brain/BrainVoiceOverlay";
+import { BrainStatusBar } from "./brain/BrainStatusBar";
 import MarkdownContent from "./MarkdownContent";
 import { cn } from "@/lib/utils";
 
@@ -221,6 +222,15 @@ export default function BrainChat({
           )}
         </div>
       </header>
+
+      {/* Brain 2.0 Live Intelligence Status Bar */}
+      <div className="px-4 pt-3 max-w-4xl mx-auto w-full">
+        <BrainStatusBar
+          model={brain.selectedModel || "Auto (Smart Router)"}
+          loading={brain.loading}
+          context={brain.context}
+        />
+      </div>
 
       {/* Messages Scroll Area */}
       <div

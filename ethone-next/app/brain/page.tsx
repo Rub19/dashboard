@@ -10,6 +10,7 @@ import BrainSidebar from "@/components/brain/BrainSidebar";
 import BrainContextDrawer from "@/components/brain/BrainContextDrawer";
 import BrainChat from "@/components/BrainChat";
 import BrainBriefingPanel from "@/components/BrainBriefingPanel";
+import BrainMemoryPanel from "@/components/brain/BrainMemoryPanel";
 import { Icon } from "@/lib/icons";
 import { cn } from "@/lib/utils";
 
@@ -64,6 +65,18 @@ export default function BrainPage() {
       unregister("brain-status");
     }
   }, [brain.loading, setBrain, register, unregister]);
+
+  // Handle Command Center / External Query Dispatch (?q=...)
+  useEffect(() => {
+    if (typeof window === "undefined") return;
+    const params = new URLSearchParams(window.location.search);
+    const q = params.get("q");
+    if (q && q.trim()) {
+      brain.send(q.trim());
+      // Clean query parameter from URL without reload
+      window.history.replaceState({}, "", window.location.pathname);
+    }
+  }, []);
 
   return (
     <div className="flex h-full min-h-0 w-full overflow-hidden bg-transparent">
@@ -152,49 +165,7 @@ export default function BrainPage() {
           )}
 
           {activeView === "memory" && (
-            <div className="h-full overflow-y-auto os-scroll p-6 max-w-4xl mx-auto space-y-4">
-              <div className="flex items-center justify-between border-b border-[var(--panel-border)] pb-3">
-                <div>
-                  <h3 className="text-base font-bold text-[var(--text-primary)]">
-                    Mémoire à long terme Brain
-                  </h3>
-                  <p className="text-xs text-[var(--text-muted)]">
-                    Souvenirs et préférences enregistrés automatiquement ou manuellement
-                  </p>
-                </div>
-                <button
-                  type="button"
-                  onClick={() => brain.clearSensitiveMemory()}
-                  className="rounded-xl border border-[var(--danger)]/30 bg-[var(--danger)]/10 px-3 py-1.5 text-xs font-semibold text-[var(--danger)] hover:bg-[var(--danger)]/20 transition-all"
-                >
-                  Effacer les données sensibles
-                </button>
-              </div>
-
-              <div className="grid grid-cols-1 gap-3 sm:grid-cols-2">
-                {brain.recentMemory.map((m) => (
-                  <div
-                    key={m.id}
-                    className="rounded-2xl border border-[var(--panel-border)] bg-[var(--surface-raised)]/60 p-4 space-y-1.5"
-                  >
-                    <div className="flex items-center justify-between">
-                      <span className="text-[10px] font-bold uppercase tracking-wider text-[var(--accent-primary)]">
-                        {m.category}
-                      </span>
-                      <span className="text-[10px] text-[var(--text-muted)]">{m.id}</span>
-                    </div>
-                    <p className="text-xs text-[var(--text-primary)]">
-                      {typeof m.content === "string" ? m.content : JSON.stringify(m.content)}
-                    </p>
-                  </div>
-                ))}
-                {brain.recentMemory.length === 0 && (
-                  <p className="col-span-full py-8 text-center text-xs text-[var(--text-muted)]">
-                    Aucun souvenir enregistré pour le moment.
-                  </p>
-                )}
-              </div>
-            </div>
+            <BrainMemoryPanel />
           )}
 
           {activeView === "automations" && (

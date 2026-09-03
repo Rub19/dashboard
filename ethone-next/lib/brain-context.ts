@@ -38,6 +38,12 @@ export type BrainContext = {
   openTasks?: number;
   todayEvents?: number;
   focusMinutes?: number;
+  focusActive?: boolean;
+  focusPreset?: string;
+  workspace?: string;
+  workspaceTitle?: string;
+  recentFilesCount?: number;
+  unreadMails?: number;
   unread?: number;
   [key: string]: unknown;
 };
@@ -238,3 +244,39 @@ export function filterContextForRoute(route: string, context: BrainContext): Bra
 
   return next;
 }
+
+/**
+ * Generates transparent, human-readable rationales explaining why Brain used this context.
+ */
+export function getBrainContextExplanation(context?: BrainContext): string[] {
+  if (!context) return ["Contexte global ETHONE OS par défaut."];
+  const explanations: string[] = [];
+
+  if (context.route) {
+    explanations.push(`Page actuelle : ${context.route} (adaptation aux éléments affichés).`);
+  }
+  if (context.workspaceTitle || context.workspace) {
+    explanations.push(`Espace de travail actif : ${context.workspaceTitle || context.workspace}.`);
+  }
+  if (context.focusActive) {
+    explanations.push(`Session Focus en cours (${context.focusPreset || "standard"}) : priorité aux réponses concises.`);
+  }
+  if (context.nowPlaying?.title) {
+    explanations.push(`Musique en cours d'écoute : ${context.nowPlaying.title} par ${context.nowPlaying.artist}.`);
+  }
+  if (context.weather?.condition) {
+    explanations.push(`Météo locale : ${context.weather.condition} (${context.weather.temp}°C).`);
+  }
+  if (context.openTasks !== undefined && context.openTasks > 0) {
+    explanations.push(`${context.openTasks} tâche(s) en attente dans votre todo-list.`);
+  }
+  if (context.todayEvents !== undefined && context.todayEvents > 0) {
+    explanations.push(`${context.todayEvents} événement(s) prévus aujourd'hui à l'agenda.`);
+  }
+  if (context.unreadMails !== undefined && context.unreadMails > 0) {
+    explanations.push(`${context.unreadMails} email(s) non lu(s) dans votre boîte de réception.`);
+  }
+
+  return explanations.length > 0 ? explanations : ["Aucun signal contextuel externe actif."];
+}
+

@@ -6,6 +6,38 @@ export type ChangelogEntry = {
 };
 
 
+const v12040_fr: ChangelogEntry = {
+  version: "v1.20.40",
+  date: "2026-09-03",
+  title: "ETHONE Profile & Personalization 2.0 — Identité Numérique & Moteur de Personnalisation",
+  items: [
+    "Profile 2.0 : refonte complète du centre d'identité et de personnalisation de l'utilisateur.",
+    "Hero Profile 2026 : bannière aura dynamique, avatar interactif avec cadres cosmétiques, indicateur de présence en direct et sélecteur d'espace de travail.",
+    "Avatar Cropper 2.0 : outil de recadrage interactif sur canvas avec zoom (+/-), déplacement par glisser-déposer, ratio 1:1 circulaire et compression optimisée.",
+    "Statut de Présence & Messages Personnalisés : statuts système (En ligne, Focus Deep Work, Gaming, Occupé, DND) + messages émojis personnalisés et synchronisation automatique avec Focus OS.",
+    "Moteur de Personnalisation Central : sélection des centres d'intérêt explicites, réglage de la densité d'affichage (Compact, Équilibré, Confortable) et inférences cognitives Brain avec score de confiance (%).",
+    "Transparence Algorithmique & Confidentialité : explications détaillées des choix Brain et contrôle granularisé des signaux d'apprentissage.",
+    "Gouvernance des Données & Sécurité : export complet des données personnelles au format JSON et réinitialisation sécurisée de la personnalisation sans perte de fichiers.",
+    "Command Center : raccourcis rapides pour le changement de statut, la gestion d'avatar et les réglages de personnalisation.",
+  ],
+};
+
+const v12040_en: ChangelogEntry = {
+  version: "v1.20.40",
+  date: "2026-09-03",
+  title: "ETHONE Profile & Personalization 2.0 — Digital Identity & Personalization Engine",
+  items: [
+    "Profile 2.0: complete transformation of user identity, avatar, preferences, and personalization into a unified hub.",
+    "Hero Profile 2026: dynamic theme-colored aura gradient, interactive avatar container with cosmetic frames, live presence indicator, and workspace switcher.",
+    "Avatar Cropper 2.0: canvas-based interactive cropper supporting zoom (+/-), pan/drag repositioning, 1:1 circular mask, and quality-optimized export.",
+    "Presence & Custom Status: system presence modes (Online, Focus Deep Work, Gaming, Busy, DND) + custom status messages with emojis and auto-sync with Focus OS.",
+    "Centralized Personalization Engine: explicit interest pills, interface density selector (Compact, Balanced, Comfortable), and Brain inferred preferences with confidence scores (%).",
+    "Algorithmic Transparency & Privacy: explicit explanations of Brain inference signals and granular privacy learning toggles.",
+    "Data Governance & Security: full personal data export in JSON format and safe personalization reset without account or file loss.",
+    "Command Center: instant shortcuts for presence status changes, avatar customization, and personalization settings.",
+  ],
+};
+
 const v12039_fr: ChangelogEntry = {
   version: "v1.20.39",
   date: "2026-09-03",

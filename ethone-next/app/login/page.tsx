@@ -20,6 +20,7 @@ import LanguageSwitcher from "@/components/LanguageSwitcher";
 import Switch from "@/components/Switch";
 import GoogleIcon from "@/components/icons/GoogleIcon";
 import GithubIcon from "@/components/icons/GithubIcon";
+import DiscordIcon from "@/components/DiscordIcon";
 import { triggerHaptic } from "@/lib/haptics";
 import AuthInputField from "@/components/auth/AuthInputField";
 import OtpCodeInput from "@/components/auth/OtpCodeInput";
@@ -261,7 +262,7 @@ export default function LoginPage() {
     }
   };
 
-  const handleOAuth = async (provider: "google" | "github") => {
+  const handleOAuth = async (provider: "google" | "github" | "discord") => {
     setOauthLoading(provider);
     setAuthState("loading");
     setError(null);
@@ -867,33 +868,47 @@ export default function LoginPage() {
                   <div className="flex-1 border-t border-white/10" />
                 </div>
 
-                <div className="grid grid-cols-2 gap-3">
+                <div className="grid grid-cols-3 gap-2 sm:gap-3">
                   <button
                     type="button"
                     onClick={() => handleOAuth("google")}
                     disabled={isLoading || isSuccess}
-                    className="flex h-11 items-center justify-center gap-2.5 rounded-2xl border border-white/10 bg-white/[0.035] px-4 text-xs font-medium text-white transition-all duration-150 hover:bg-white/[0.07] hover:border-white/20 active:scale-[0.98] disabled:opacity-50 cursor-pointer"
+                    className="flex h-11 items-center justify-center gap-2 rounded-2xl border border-white/10 bg-white/[0.035] px-2.5 text-xs font-medium text-white transition-all duration-150 hover:bg-white/[0.07] hover:border-white/20 active:scale-[0.98] disabled:opacity-50 cursor-pointer"
                   >
                     {oauthLoading === "google" ? (
                       <Loader2 className="h-4 w-4 animate-spin" />
                     ) : (
-                      <GoogleIcon className="h-4 w-4" />
+                      <GoogleIcon className="h-4 w-4 shrink-0" />
                     )}
-                    <span>Google</span>
+                    <span className="truncate">Google</span>
                   </button>
 
                   <button
                     type="button"
                     onClick={() => handleOAuth("github")}
                     disabled={isLoading || isSuccess}
-                    className="flex h-11 items-center justify-center gap-2.5 rounded-2xl border border-white/10 bg-white/[0.035] px-4 text-xs font-medium text-white transition-all duration-150 hover:bg-white/[0.07] hover:border-white/20 active:scale-[0.98] disabled:opacity-50 cursor-pointer"
+                    className="flex h-11 items-center justify-center gap-2 rounded-2xl border border-white/10 bg-white/[0.035] px-2.5 text-xs font-medium text-white transition-all duration-150 hover:bg-white/[0.07] hover:border-white/20 active:scale-[0.98] disabled:opacity-50 cursor-pointer"
                   >
                     {oauthLoading === "github" ? (
                       <Loader2 className="h-4 w-4 animate-spin" />
                     ) : (
-                      <GithubIcon className="h-4 w-4 text-white" />
+                      <GithubIcon className="h-4 w-4 text-white shrink-0" />
                     )}
-                    <span>GitHub</span>
+                    <span className="truncate">GitHub</span>
+                  </button>
+
+                  <button
+                    type="button"
+                    onClick={() => handleOAuth("discord")}
+                    disabled={isLoading || isSuccess}
+                    className="flex h-11 items-center justify-center gap-2 rounded-2xl border border-white/10 bg-white/[0.035] px-2.5 text-xs font-medium text-white transition-all duration-150 hover:bg-[#5865F2]/20 hover:border-[#5865F2]/50 hover:text-[#5865F2] active:scale-[0.98] disabled:opacity-50 cursor-pointer"
+                  >
+                    {oauthLoading === "discord" ? (
+                      <Loader2 className="h-4 w-4 animate-spin" />
+                    ) : (
+                      <DiscordIcon className="h-4 w-4 shrink-0 text-[#5865F2]" />
+                    )}
+                    <span className="truncate">Discord</span>
                   </button>
                 </div>
 

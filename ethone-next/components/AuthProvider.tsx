@@ -26,7 +26,7 @@ type AuthContextValue = {
     type?: "email" | "magiclink" | "recovery"
   ) => Promise<{ error?: Error }>;
   signInPassword: (email: string, password: string) => Promise<{ error?: Error }>;
-  signInWithOAuth: (provider: "google" | "github") => Promise<{ error?: Error; url?: string | null }>;
+  signInWithOAuth: (provider: "google" | "github" | "discord") => Promise<{ error?: Error; url?: string | null }>;
   signUp: (email: string, password: string, username: string) => Promise<{ error?: Error; session?: Session }>;
   resetPassword: (email: string) => Promise<{ error?: Error }>;
   refreshSession: () => Promise<void>;
@@ -229,11 +229,12 @@ export default function AuthProvider({ children }: { children: ReactNode }) {
     return { error: error ?? undefined };
   }
 
-  async function signInWithOAuth(provider: "google" | "github") {
+  async function signInWithOAuth(provider: "google" | "github" | "discord") {
     const { data, error } = await supabase.auth.signInWithOAuth({
       provider,
       options: {
         redirectTo: typeof window !== "undefined" ? `${window.location.origin}/` : undefined,
+        scopes: provider === "discord" ? "identify email guilds" : undefined,
       },
     });
     return { error: error ?? undefined, url: data?.url };

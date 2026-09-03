@@ -32,6 +32,7 @@ import { ADMIN_EMAIL } from "@/lib/admin";
 import { useSyncStore } from "@/lib/stores/sync";
 import { cn } from "@/lib/utils";
 import BrandMark from "@/components/BrandMark";
+import DiscordIcon from "@/components/DiscordIcon";
 import {
   AnimatedSidebar,
   AnimatedSidebarContent,
@@ -48,7 +49,7 @@ import {
 type AppItem = {
   id: string;
   href: string;
-  icon: LucideIcon;
+  icon: LucideIcon | React.ComponentType<{ className?: string; strokeWidth?: number }>;
 };
 
 const SHORTCUTS: Record<string, string> = {
@@ -61,6 +62,7 @@ const SHORTCUTS: Record<string, string> = {
   brain: "⌘7",
   focus: "⌘8",
   weather: "⌘9",
+  discord: "⌘D",
 };
 
 const APPS: AppItem[] = [
@@ -75,6 +77,7 @@ const APPS: AppItem[] = [
   { id: "weather", href: "/weather/", icon: CloudSun },
   { id: "activity", href: "/activity/", icon: Activity },
   { id: "connections", href: "/connections/", icon: Plug },
+  { id: "discord", href: "/discord/", icon: DiscordIcon },
   { id: "plugins", href: "/plugins/", icon: Blocks },
   { id: "admin", href: "/admin/", icon: BarChart3 },
   { id: "settings", href: "/settings/", icon: Settings },

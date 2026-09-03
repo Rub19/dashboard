@@ -15,6 +15,7 @@ export const NAVIGATION_ITEMS: NavigationItem[] = [
   { id: "activity", label: "activity", icon: "activity", actionId: "v8.activity.open", href: "/activity/" },
   { id: "interactions", label: "interactions", icon: "interactions", actionId: "v8.interactions.open", href: "/interactions/" },
   { id: "connections", label: "connections", icon: "connections", actionId: "v8.connections.open", href: "/connections/" },
+  { id: "discord", label: "discord", icon: "discord", actionId: "v8.discord.open", href: "/discord/" },
   { id: "plugins", label: "plugins", icon: "plugins", actionId: "v8.plugins.open", href: "/plugins/" },
   { id: "spaces", label: "spaces", icon: "spaces", actionId: "v8.spaces.open", href: "/spaces/" },
   { id: "flows", label: "flowsTitle", icon: "flows", actionId: "v8.flows.open", href: "/flows/" },

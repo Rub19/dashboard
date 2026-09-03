@@ -1,6 +1,6 @@
 "use client";
 
-import { useCallback, useState } from "react";
+import { useCallback, useState, useEffect, useMemo } from "react";
 import ClientImage from "@/components/ClientImage";
 import Link from "next/link";
 import { User, Key, Camera, Eye, EyeOff, Sparkles } from "lucide-react";
@@ -59,20 +59,58 @@ export default function UserProfileCard({
     }
   }, [onChangePassword]);
 
+  const [frameId, setFrameId] = useState("none");
+  const [badgeId, setBadgeId] = useState("verified");
+
+  useEffect(() => {
+    if (typeof window !== "undefined") {
+      const updateCosmetics = () => {
+        try {
+          const f = localStorage.getItem("ethone_user_frame");
+          const b = localStorage.getItem("ethone_user_badge");
+          if (f) setFrameId(f);
+          if (b) setBadgeId(b);
+        } catch {}
+      };
+      updateCosmetics();
+      window.addEventListener("ethone:identity:update", updateCosmetics);
+      return () => window.removeEventListener("ethone:identity:update", updateCosmetics);
+    }
+  }, []);
+
+  const activeFrameClass = useMemo(() => {
+    switch (frameId) {
+      case "ethone-glow":
+        return "ring-2 ring-emerald-400 shadow-[0_0_15px_rgba(16,185,129,0.5)]";
+      case "neon-cyan":
+        return "ring-2 ring-cyan-400 shadow-[0_0_18px_rgba(6,182,212,0.6)]";
+      case "gold-vip":
+        return "ring-2 ring-amber-400 shadow-[0_0_18px_rgba(251,191,36,0.6)]";
+      case "aurora-borealis":
+        return "ring-2 ring-purple-500 shadow-[0_0_18px_rgba(168,85,247,0.5)]";
+      case "glass-frost":
+        return "ring-2 ring-white/50 shadow-[0_0_12px_rgba(255,255,255,0.25)]";
+      case "flame-ember":
+        return "ring-2 ring-orange-500 shadow-[0_0_18px_rgba(249,115,22,0.6)]";
+      default:
+        return "border border-[var(--text-primary)]/[0.08]";
+    }
+  }, [frameId]);
+
   return (
     <>
       <div className="relative overflow-hidden rounded-2xl border border-[var(--panel-border)] bg-[var(--panel-bg)] p-4">
         <div className="flex items-start gap-4">
           {/* Avatar with click-to-change gallery */}
           <div className="relative shrink-0 group cursor-pointer" onClick={() => setIsAvatarPickerOpen(true)} title="Changer l'avatar (Netflix, Crunchyroll, Gaming...)">
-            <div className="flex h-14 w-14 items-center justify-center overflow-hidden rounded-xl border border-[var(--text-primary)]/[0.08] bg-[var(--panel-bg)] shadow-md transition-transform group-hover:scale-105">
+            <div className={cn("flex h-14 w-14 items-center justify-center overflow-hidden rounded-xl bg-[var(--panel-bg)] shadow-md transition-all group-hover:scale-105", activeFrameClass)}>
               {avatarUrl ? (
                 <ClientImage
                   src={avatarUrl}
                   alt={displayName}
                   width={56}
                   height={56}
-                  className="h-full w-full object-cover"
+                  className="h-full w-full object-cover object-top"
                   fallback={<User className="h-6 w-6 text-[var(--text-muted)]" />}
                 />
               ) : (
@@ -95,10 +133,10 @@ export default function UserProfileCard({
           <div className="min-w-0 flex-1">
             <div className="flex flex-wrap items-center gap-2">
               <h3 className="truncate text-base font-bold text-[var(--text-primary)]">{displayName}</h3>
-              {/* Session badge */}
-              <div className="inline-flex items-center gap-1.5 rounded-full border border-[var(--accent-primary)]/30 bg-[var(--accent-primary)]/10 px-2 py-0.5">
-                <span className="h-1.5 w-1.5 rounded-full bg-[var(--accent-primary)]" />
-                <span className="text-[10px] font-medium text-[var(--accent-primary)]">{i18n("sessionVerified", "Session")}</span>
+              {/* Active Badge */}
+              <div className="inline-flex items-center gap-1.5 rounded-full border border-emerald-500/30 bg-emerald-500/10 px-2 py-0.5 text-emerald-400">
+                <span className="h-1.5 w-1.5 rounded-full bg-emerald-400" />
+                <span className="text-[10px] font-semibold">{badgeId === "founder" ? "Founder" : badgeId === "developer" ? "Developer" : badgeId === "brain-master" ? "Brain Master" : badgeId === "power-user" ? "Power User" : "Vérifié"}</span>
               </div>
               {/* Status badge */}
               <div className={cn("inline-flex items-center gap-1.5 rounded-full border border-[var(--panel-border)] px-2 py-0.5", statusConfig.bg, statusConfig.text)}>

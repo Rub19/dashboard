@@ -7206,6 +7206,34 @@ CHANGELOG_BY_LANG.es.unshift({
 });
 
 CHANGELOG_BY_LANG.fr.unshift({
+  version: "v1.20.24",
+  date: "2026-09-03",
+  title: "ETHONE — Rework Complet de la Bibliothèque d'Avatars Authentiques",
+  items: [
+    "Refonte complète de l'Avatar Picker standard Netflix / Crunchyroll (350+ vrais avatars vérifiés).",
+    "Collections authentiques par franchises : Stranger Things, Arcane, Wednesday, Jujutsu Kaisen, One Piece, Chainsaw Man, Solo Leveling, Riot Gaming, ETHONE Originals.",
+    "Écosystème de Cosmétiques de Profil : Cadres d'avatar animés, Arrière-plans de carte et Badges de statut.",
+    "Intégration Maître Google Drive et pipeline d'import intelligent avec détection de doublons et contrôle de résolution.",
+    "Carousels horizontaux tactiles fluides avec Favoris, Récents et sélection Aléatoire instantanée.",
+    "Version affichée : v1.20.24.",
+  ],
+});
+
+CHANGELOG_BY_LANG.en.unshift({
+  version: "v1.20.24",
+  date: "2026-09-03",
+  title: "ETHONE — Complete Authentic Avatar Library Rework",
+  items: [
+    "Complete rework of the Avatar Picker to streaming platform standard (350+ verified authentic avatars).",
+    "Authentic franchise collections: Stranger Things, Arcane, Wednesday, Jujutsu Kaisen, One Piece, Chainsaw Man, Solo Leveling, Riot Gaming, ETHONE Originals.",
+    "Profile Cosmetics Ecosystem: Animated avatar frames, profile card backgrounds, and status badges.",
+    "Master Google Drive integration with smart duplicate detection and resolution quality control.",
+    "Touch-optimized horizontal carousels with Favorites, Recents, and instant Random pick.",
+    "Displayed version: v1.20.24.",
+  ],
+});
+
+CHANGELOG_BY_LANG.fr.unshift({
   version: "v1.20.23",
   date: "2026-09-03",
   title: "ETHONE — Correction Définitive Synchronisation & Résolution Identité",

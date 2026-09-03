@@ -21338,4 +21338,33 @@ CHANGELOG_BY_LANG.en.unshift({
   ],
 });
 
+
+CHANGELOG_BY_LANG.fr.unshift({
+  version: "v1.20.34",
+  date: "2026-09-03",
+  title: "ETHONE Connections 2.0 — Universal Integration Center",
+  items: [
+    "Transformation complète de la page Connections en un véritable Centre d'Intégration Universel 2.0.",
+    "Bandeau de santé globale (Integration Health) : comptage en direct des services connectés et en erreur, avec filtrage instantané.",
+    "Hub d'écosystème Brain proactif : suggestions intelligentes d'intégrations prioritaires selon l'usage et les espaces de travail.",
+    "Registre étendu des capacités et widgets associés (lib/connection-capabilities.ts) : mapping précis des permissions, flux de données et widgets dépendants pour chaque intégration.",
+    "Intégration approfondie avec le Command Center (Ctrl+K) : raccourcis pour ouvrir les connexions, lancer un test de diagnostic global et connecter rapidement Spotify, Discord, GitHub, Google Calendar ou Drive.",
+    "Bumping de version vers v1.20.34.",
+  ],
+});
+
+CHANGELOG_BY_LANG.en.unshift({
+  version: "v1.20.34",
+  date: "2026-09-03",
+  title: "ETHONE Connections 2.0 — Universal Integration Center",
+  items: [
+    "Full transformation of the Connections page into an intelligent Universal Integration Center 2.0.",
+    "Integration Health overview bar: real-time counters for connected and errored services with 1-click status filtering.",
+    "Proactive Brain Ecosystem Hub: contextual next-step recommendations based on active workspaces and usage.",
+    "Extended capabilities & associated widgets registry (lib/connection-capabilities.ts): granular permissions, data flows, and dependent widgets mapping.",
+    "Deep Command Center integration (Ctrl+K): instant commands to open connections, run global health diagnostics, or connect Spotify, Discord, GitHub, Calendar, and Drive.",
+    "Version bump to v1.20.34.",
+  ],
+});
+
 export const CHANGELOG = CHANGELOG_BY_LANG.fr;

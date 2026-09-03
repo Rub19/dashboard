@@ -100,12 +100,27 @@ export default function IntegrationsSettings() {
     [configuredMap]
   );
 
+  const healthCounts = useMemo(() => {
+    let connectedCount = 0;
+    let errorCount = 0;
+    INTEGRATIONS.forEach((i) => {
+      if (health[i.id]?.status === "error") {
+        errorCount++;
+      } else if (configuredMap[i.id]) {
+        connectedCount++;
+      }
+    });
+    return { connectedCount, errorCount };
+  }, [configuredMap, health]);
+
   const filtered = useMemo(() => {
     const q = search.trim().toLowerCase();
     let list = INTEGRATIONS;
 
     if (filter === "connected") {
       list = list.filter((i) => configuredMap[i.id]);
+    } else if (filter === "error") {
+      list = list.filter((i) => health[i.id]?.status === "error");
     } else if (filter !== "all") {
       list = list.filter((i) => i.category === filter);
     }
@@ -136,6 +151,14 @@ export default function IntegrationsSettings() {
     },
     [settings, clientIds, credentials.connected, connected]
   );
+
+  useEffect(() => {
+    const handleTestAllEvent = () => {
+      void testAll();
+    };
+    window.addEventListener("v8:test-all-connections", handleTestAllEvent);
+    return () => window.removeEventListener("v8:test-all-connections", handleTestAllEvent);
+  }, []);
 
   const testAll = useCallback(async () => {
     setTestingAll(true);
@@ -319,6 +342,7 @@ export default function IntegrationsSettings() {
             connectedCount={myConnections.length}
             totalCount={INTEGRATIONS.length}
             configuredMap={configuredMap}
+            onConnectPrompt={(id) => setSearch(id)}
           />
 
           {/* Active Connections Carousel */}
@@ -335,7 +359,42 @@ export default function IntegrationsSettings() {
 
           {/* Filter Toolbar */}
           <div className="flex items-center justify-between gap-3">
-            <CategoryTabs active={filter} onChange={setFilter} />
+            <div className="flex items-center justify-between gap-3 w-full flex-wrap">
+              <CategoryTabs active={filter} onChange={setFilter} />
+              <div className="flex items-center gap-2">
+                <button
+                  type="button"
+                  onClick={() => setFilter(filter === "connected" ? "all" : "connected")}
+                  className={cn(
+                    "flex items-center gap-1.5 rounded-xl border px-3 py-1.5 text-xs font-bold transition-all cursor-pointer",
+                    filter === "connected"
+                      ? "border-emerald-500 bg-emerald-500/20 text-emerald-300"
+                      : "border-emerald-500/30 bg-emerald-500/10 text-emerald-400 hover:bg-emerald-500/20"
+                  )}
+                  title="Afficher uniquement les services connectés"
+                >
+                  <span className="h-2 w-2 rounded-full bg-emerald-400 animate-pulse" />
+                  <span>{healthCounts.connectedCount} Connectés</span>
+                </button>
+
+                {healthCounts.errorCount > 0 && (
+                  <button
+                    type="button"
+                    onClick={() => setFilter(filter === "error" ? "all" : "error")}
+                    className={cn(
+                      "flex items-center gap-1.5 rounded-xl border px-3 py-1.5 text-xs font-bold transition-all cursor-pointer",
+                      filter === "error"
+                        ? "border-rose-500 bg-rose-500/20 text-rose-300"
+                        : "border-rose-500/30 bg-rose-500/10 text-rose-400 hover:bg-rose-500/20"
+                    )}
+                    title="Afficher les services nécessitant une attention"
+                  >
+                    <span className="h-2 w-2 rounded-full bg-rose-400" />
+                    <span>{healthCounts.errorCount} En erreur</span>
+                  </button>
+                )}
+              </div>
+            </div>
           </div>
 
 

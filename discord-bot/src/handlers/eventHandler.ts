@@ -28,6 +28,7 @@ import { handleVoiceStateUpdate } from '../modules/logs/events/voiceLogs.js';
 import { handleGuildUpdate } from '../modules/logs/events/serverLogs.js';
 import { antiNukeService } from '../modules/security/services/antiNukeService.js';
 import { raidDetectionService } from '../modules/antiRaid/services/raidDetectionService.js';
+import { autoModService } from '../modules/automod/services/autoModService.js';
 
 export function registerEvents(client: Client): void {
   // Base Events
@@ -38,16 +39,20 @@ export function registerEvents(client: Client): void {
   client.on(Events.GuildMemberRemove, (member) => onGuildMemberRemove(member));
 
   // Logs : Messages
-  client.on(Events.MessageDelete, (message) => handleMessageDelete(message));
+  client.on(Events.MessageDelete, (message) => {
+    handleMessageDelete(message);
+    autoModService.handleMessageDelete(message);
+  });
   client.on(Events.MessageBulkDelete, (messages, channel) =>
     handleMessageDeleteBulk(messages, channel)
   );
   client.on(Events.MessageUpdate, (oldMsg, newMsg) => handleMessageUpdate(oldMsg, newMsg));
 
   // Logs & Sécurité : Membres
-  client.on(Events.GuildMemberUpdate, (oldMember, newMember) =>
-    handleGuildMemberUpdate(oldMember, newMember)
-  );
+  client.on(Events.GuildMemberUpdate, (oldMember, newMember) => {
+    handleGuildMemberUpdate(oldMember, newMember);
+    autoModService.handleMemberProfile(newMember);
+  });
   client.on(Events.GuildBanAdd, (ban) => {
     handleGuildBanAdd(ban);
     antiNukeService.handleBanAdd(ban.guild);

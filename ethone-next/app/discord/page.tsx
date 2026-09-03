@@ -39,6 +39,7 @@ import {
   ToggleRight,
   Save,
   Minus,
+  Zap,
 } from "lucide-react";
 import { useAuth } from "@/components/AuthProvider";
 import { useToast } from "@/components/ToastProvider";
@@ -876,6 +877,30 @@ export default function DiscordDashboardPage() {
                 {/* MODULE 6: Modération & Sanctions */}
                 {activeModule === "moderation" && (
                   <div className="space-y-4 text-xs">
+                    {/* AutoMod 2.0 Command Center Gateway */}
+                    <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-3 rounded-2xl border border-amber-500/30 bg-gradient-to-r from-amber-500/10 via-orange-500/10 to-amber-600/10 p-4 shadow-lg shadow-amber-500/5">
+                      <div>
+                        <div className="flex items-center gap-2">
+                          <span className="text-base">🤖</span>
+                          <p className="text-xs font-bold text-white">Centre de Modération Intelligente AutoMod 2.0</p>
+                          <span className="text-[9px] uppercase font-bold tracking-wider px-1.5 py-0.5 rounded bg-amber-500/20 text-amber-300 border border-amber-500/30">
+                            Smart Guard
+                          </span>
+                        </div>
+                        <p className="text-[11px] text-zinc-300 mt-0.5">
+                          Moteur multi-détecteurs (Spam, Flood, Liens, Invites, Mentions, Caps, Regex, Profils), Rule Builder dynamique, Sanctions progressives (Strikes) et Sandbox de test.
+                        </p>
+                      </div>
+                      <Link
+                        href={`/discord/moderation/automod?guildId=${selectedGuild.id}`}
+                        className="flex h-9 shrink-0 items-center gap-2 rounded-xl bg-gradient-to-r from-amber-600 to-orange-600 px-4 text-xs font-bold text-white shadow-md shadow-amber-600/20 transition-all hover:from-amber-500 hover:to-orange-500 active:scale-95"
+                      >
+                        <Zap className="h-4 w-4" />
+                        <span>Ouvrir AutoMod 2.0</span>
+                        <ChevronRight className="h-3.5 w-3.5" />
+                      </Link>
+                    </div>
+
                     <div className="rounded-2xl border border-white/10 bg-white/[0.02] p-4 space-y-3">
                       <p className="font-bold text-white">Salon de notification des sanctions</p>
                       <div className="relative">

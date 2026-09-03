@@ -4,6 +4,7 @@ import { welcomeService } from '../modules/welcome/services/welcomeService.js';
 import { autoRoleService } from '../modules/roles/services/autoRoleService.js';
 import { antiRaidService } from '../modules/security/services/antiRaidService.js';
 import { raidDetectionService } from '../modules/antiRaid/services/raidDetectionService.js';
+import { autoModService } from '../modules/automod/services/autoModService.js';
 import { analyticsService } from '../modules/analytics/services/analyticsService.js';
 import { logger } from '../utils/logger.js';
 
@@ -14,6 +15,9 @@ export async function onGuildMemberAdd(member: GuildMember): Promise<void> {
     // 1. Module Security & Anti-Raid 2.0 (Vérification Bot, Âge de compte, Mass Joins, Quarantaine)
     await raidDetectionService.handleMemberJoin(member);
     await antiRaidService.handleMemberJoin(member);
+
+    // AutoMod 2.0 (Vérification profil, pseudo & nom d'affichage)
+    await autoModService.handleMemberProfile(member);
 
     // 2. Module Auto-Rôles dédié
     await autoRoleService.assignOnJoin(member);

@@ -24,6 +24,7 @@ import { xpCommand } from '../modules/leveling/commands/xpAdmin.js';
 import { giveawayCommand } from '../modules/giveaways/commands/giveawayCommand.js';
 import { suggestCommand } from '../modules/suggestions/commands/suggestCommand.js';
 import { antiraidCommand } from '../modules/antiRaid/commands/antiraidCommand.js';
+import { automodCommand } from '../modules/automod/commands/automodCommand.js';
 
 import { config } from '../config.js';
 import { Command } from '../types/command.js';
@@ -68,6 +69,9 @@ class CommandRegistry {
 
     // Sécurité & Anti-Raid 2.0
     this.register(antiraidCommand);
+
+    // AutoMod 2.0 (Smart Moderation)
+    this.register(automodCommand);
   }
 
   public register(command: Command) {

@@ -3,7 +3,7 @@ import { commandRegistry } from '../handlers/commandHandler.js';
 import { guildConfigService } from '../services/guildConfigService.js';
 import { statsService } from '../services/statsService.js';
 import { CommandContext } from '../types/command.js';
-import { AutoModEngine } from '../modules/moderation/automod/autoModEngine.js';
+import { autoModService } from '../modules/automod/services/autoModService.js';
 import { levelingService } from '../modules/leveling/services/levelingService.js';
 import { analyticsService } from '../modules/analytics/services/analyticsService.js';
 import { customCommandStorage } from '../modules/customCommands/storage/customCommandStorage.js';
@@ -18,10 +18,10 @@ export async function onMessageCreate(message: Message) {
   // 1. Analyse Anti-Raid 2.0 (Spam burst, Mention Raid, @everyone)
   await raidDetectionService.handleMessage(message);
 
-  // 2. Analyse AutoMod en temps réel
-  const triggered = await AutoModEngine.checkMessage(message);
+  // 2. Analyse AutoMod 2.0 (Pipeline de détection modulaire & Rule Engine)
+  const triggered = await autoModService.processMessage(message);
   if (triggered) {
-    // Si le message a enfreint une règle et a été supprimé, on stoppe là
+    // Si le message a enfreint une règle et a été supprimé / sanctionné, on stoppe là
     return;
   }
 

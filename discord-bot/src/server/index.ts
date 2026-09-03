@@ -18,6 +18,7 @@ import { createLogRouter } from './routes/logRoutes.js';
 import { createRoleRouter } from './routes/roleRoutes.js';
 import { createSecurityRouter } from './routes/securityRoutes.js';
 import { createAntiRaidRouter } from './routes/antiRaidRoutes.js';
+import { createAutoModRouter } from './routes/autoModRoutes.js';
 import { createLevelingRouter } from './routes/levelingRoutes.js';
 import { createGiveawayRouter } from './routes/giveawayRoutes.js';
 import { createAnalyticsRouter } from './routes/analyticsRoutes.js';
@@ -85,6 +86,12 @@ export function startWebServer(client: Client): http.Server {
     authMiddleware,
     createGuildAuthMiddleware(client),
     createAntiRaidRouter(client)
+  );
+  app.use(
+    '/api/guilds/:guildId/automod',
+    authMiddleware,
+    createGuildAuthMiddleware(client),
+    createAutoModRouter(client)
   );
   app.use(
     '/api/guilds/:guildId/leveling',

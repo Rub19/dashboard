@@ -3,6 +3,7 @@ import { raidConfigService } from './raidConfigService.js';
 import { raidActionService } from './raidActionService.js';
 import { raidCache } from './raidCache.js';
 import { raidRiskEngine } from './raidRiskEngine.js';
+import { securityEventBus } from '../../automod/services/securityEventBus.js';
 import { logger } from '../../../utils/logger.js';
 
 interface RaidModeState {
@@ -21,6 +22,11 @@ class RaidModeService {
   constructor() {
     this.autoExitTimer = setInterval(() => this.checkAutoExits(), 30000);
     this.autoExitTimer.unref();
+
+    // Écouter les violations critiques venant d'AutoMod
+    securityEventBus.onAutoModHighRisk((e) => {
+      this.markSuspiciousActivity(e.guildId);
+    });
   }
 
   public isRaidModeActive(guildId: string): boolean {
@@ -67,6 +73,9 @@ class RaidModeService {
       await raidActionService.executeLockdown(guild, `Raid Mode activé : ${reason}`);
     }
 
+    // Informer AutoMod 2.0 via le bus d'événements de sécurité
+    securityEventBus.emitRaidModeChanged({ guildId, active: true, reason });
+
     return true;
   }
 
@@ -82,6 +91,9 @@ class RaidModeService {
 
     // Restaurer les canaux si verrouillés
     await raidActionService.releaseLockdown(guild);
+
+    // Informer AutoMod 2.0 via le bus d'événements de sécurité
+    securityEventBus.emitRaidModeChanged({ guildId, active: false });
 
     return true;
   }

@@ -11,6 +11,7 @@ import MailThreadList from "@/components/mail/MailThreadList";
 import MailDetailView from "@/components/mail/MailDetailView";
 import ComposeMailModal, { type ComposeState } from "@/components/mail/ComposeMailModal";
 import MailOnboarding from "@/components/mail/MailOnboarding";
+import { cn } from "@/lib/utils";
 
 function formatMailDate(iso: string) {
   try {
@@ -507,51 +508,58 @@ export default function MailPage() {
 
   return (
     <div className="flex h-full min-h-0 w-full gap-3 overflow-hidden p-2 select-none">
-      {/* 1. Sidebar */}
-      <MailSidebar
-        active={folder as MailFolder}
-        onChange={handleFolderChange}
-        counts={counts}
-        unread={unread}
-        onCompose={() => openCompose("new")}
-        canCompose={aliases.length > 0}
-        aliases={aliases}
-        labels={labels}
-        activeLabel={activeLabel}
-        onSelectLabel={handleSelectLabel}
-        createAlias={createAlias}
-        updateAlias={updateAlias}
-      />
+      {/* 1. Sidebar (Desktop / Tablet wide) */}
+      <div className="hidden lg:flex h-full">
+        <MailSidebar
+          active={folder as MailFolder}
+          onChange={handleFolderChange}
+          counts={counts}
+          unread={unread}
+          onCompose={() => openCompose("new")}
+          canCompose={aliases.length > 0}
+          aliases={aliases}
+          labels={labels}
+          activeLabel={activeLabel}
+          onSelectLabel={handleSelectLabel}
+          createAlias={createAlias}
+          updateAlias={updateAlias}
+        />
+      </div>
 
-      {/* 2. Mail Thread List */}
-      <MailThreadList
-        title={activeLabel ? `Étiquette : ${activeLabel}` : i18n(folder, folder)}
-        grouped={groupedFolderMessages}
-        activeThreadId={activeThreadId}
-        loading={loading}
-        search={search}
-        onSearch={setSearch}
-        onSelect={openThread}
-        onToggleStar={handleToggleStar}
-        onToggleRead={handleToggleReadMsg}
-        onArchive={handleArchiveMsg}
-        onTrash={handleTrashMsg}
-        onBulkAction={handleBulkAction}
-      />
+      {/* 2. Mail Thread List (Full on mobile if no active thread, side on desktop) */}
+      <div className={cn("h-full flex-1 flex-col", activeThread ? "hidden md:flex md:max-w-xs lg:max-w-sm" : "flex")}>
+        <MailThreadList
+          title={activeLabel ? `Étiquette : ${activeLabel}` : i18n(folder, folder)}
+          grouped={groupedFolderMessages}
+          activeThreadId={activeThreadId}
+          loading={loading}
+          search={search}
+          onSearch={setSearch}
+          onSelect={openThread}
+          onToggleStar={handleToggleStar}
+          onToggleRead={handleToggleReadMsg}
+          onArchive={handleArchiveMsg}
+          onTrash={handleTrashMsg}
+          onBulkAction={handleBulkAction}
+        />
+      </div>
 
-      {/* 3. Reading Pane */}
-      <MailDetailView
-        thread={activeThread}
-        onReply={() => openCompose("reply")}
-        onReplyAll={() => openCompose("replyAll")}
-        onForward={() => openCompose("forward")}
-        onArchive={handleArchive}
-        onTrash={handleTrash}
-        onSpam={handleSpam}
-        onToggleRead={handleToggleRead}
-        onToggleStar={handleToggleStarThread}
-        onQuickReplySend={handleQuickReplySend}
-      />
+      {/* 3. Reading Pane (Full on mobile if active thread, side on desktop) */}
+      <div className={cn("h-full flex-1 flex-col", activeThread ? "flex" : "hidden md:flex")}>
+        <MailDetailView
+          thread={activeThread}
+          onBack={closeThread}
+          onReply={() => openCompose("reply")}
+          onReplyAll={() => openCompose("replyAll")}
+          onForward={() => openCompose("forward")}
+          onArchive={handleArchive}
+          onTrash={handleTrash}
+          onSpam={handleSpam}
+          onToggleRead={handleToggleRead}
+          onToggleStar={handleToggleStarThread}
+          onQuickReplySend={handleQuickReplySend}
+        />
+      </div>
 
       {/* 4. Modern Composer */}
       <ComposeMailModal

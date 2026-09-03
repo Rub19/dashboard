@@ -68,13 +68,10 @@ export default function FocusTimer2026({
 
       {/* Main Circular Timer */}
       <div
-        className="relative mx-auto flex items-center justify-center"
-        style={{ width: size, height: size }}
+        className="relative mx-auto flex items-center justify-center w-[min(72vw,320px)] h-[min(72vw,320px)] max-w-[320px] max-h-[320px]"
       >
         <svg
-          className="-rotate-90"
-          width={size}
-          height={size}
+          className="-rotate-90 w-full h-full"
           viewBox={`0 0 ${radius * 2} ${radius * 2}`}
         >
           <defs>

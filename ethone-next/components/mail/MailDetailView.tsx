@@ -25,6 +25,7 @@ import {
   Image as ImageIcon,
   ChevronDown,
   ChevronUp,
+  ChevronLeft,
   Sparkles,
 } from "lucide-react";
 import { useI18n } from "@/lib/hooks/useI18n";
@@ -93,6 +94,7 @@ function getAttachmentIcon(mime: string, filename: string) {
 
 type MailDetailViewProps = {
   thread: MailMessage[] | null;
+  onBack?: () => void;
   onReply: () => void;
   onReplyAll?: () => void;
   onForward: () => void;
@@ -139,6 +141,7 @@ function AttachmentCard({ attachment }: { attachment: MailAttachment }) {
 
 export default function MailDetailView({
   thread,
+  onBack,
   onReply,
   onReplyAll,
   onForward,
@@ -157,7 +160,13 @@ export default function MailDetailView({
   const [expandedMessages, setExpandedMessages] = useState<Record<string, boolean>>({});
 
   useEffect(() => {
-    endRef.current?.scrollIntoView({ behavior: "smooth" });
+    if (thread && thread.length > 0) {
+      const initial: Record<string, boolean> = {};
+      thread.forEach((msg, index) => {
+        initial[msg.id] = index === thread.length - 1;
+      });
+      setExpandedMessages(initial);
+    }
   }, [thread]);
 
   const first = thread?.[0];
@@ -260,6 +269,17 @@ export default function MailDetailView({
       {/* Top Action Toolbar */}
       <div className="flex items-center justify-between border-b border-[var(--panel-border)]/[0.1] px-4 py-2.5 select-none bg-[var(--panel-bg)]/[0.3]">
         <div className="flex items-center gap-1.5">
+          {onBack && (
+            <button
+              type="button"
+              onClick={onBack}
+              className="md:hidden flex h-8 w-8 items-center justify-center rounded-xl border border-[var(--panel-border)] bg-[var(--surface-raised)] text-[var(--text-primary)] hover:bg-[var(--surface-hover)]"
+              aria-label="Retour à la boîte de réception"
+            >
+              <ChevronLeft className="h-4 w-4" />
+            </button>
+          )}
+
           <Button
             type="button"
             variant="ghost"

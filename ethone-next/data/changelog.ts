@@ -7206,6 +7206,36 @@ CHANGELOG_BY_LANG.es.unshift({
 });
 
 CHANGELOG_BY_LANG.fr.unshift({
+  version: "v1.20.25",
+  date: "2026-09-03",
+  title: "ETHONE — Refonte Complète Mobile & Tablet Responsive 2.0 (Web Only)",
+  items: [
+    "Nouvelle barre de navigation tactile mobile avec accès direct à Home, Brain, Focus, Activity, Files.",
+    "Tiroir tactile 'Plus' (Bottom Sheet) avec recherche et grille des applications secondaires (Notes, Tasks, Calendar, Mail, Plugins, Settings, Profile).",
+    "Adaptation intelligente Tablette Web (640px-1023px) : sidebar en rail compact rétractable, grilles adaptatives.",
+    "Gestion moderne du viewport dynamique (dvh) et safe areas (pt-safe, pb-safe) sur Safari iOS et Chrome Android.",
+    "Structure adaptative master-detail pour Mail, Brain chat avec input persistant, Focus circulaire responsive et Marketplace tactile.",
+    "Zéro modification des projets natifs iOS/Android et zéro régression sur Desktop.",
+    "Version affichée : v1.20.25.",
+  ],
+});
+
+CHANGELOG_BY_LANG.en.unshift({
+  version: "v1.20.25",
+  date: "2026-09-03",
+  title: "ETHONE — Mobile & Tablet Responsive 2.0 Complete Rework (Web Only)",
+  items: [
+    "New touch-first mobile bottom navigation bar with direct access to Home, Brain, Focus, Activity, Files.",
+    "Touch 'More' bottom sheet drawer with quick search and comprehensive app grid (Notes, Tasks, Calendar, Mail, Plugins, Settings, Profile).",
+    "Intelligent Tablet Web adaptation (640px-1023px): collapsible compact rail sidebar and adaptive multi-column grids.",
+    "Modern dynamic viewport support (dvh) and safe-area insets (pt-safe, pb-safe) for iPhone Safari and Android Chrome.",
+    "Adaptive master-detail layout for Mail, sticky Brain chat input, responsive circular Focus timer, and touch-optimized Marketplace.",
+    "Zero modifications to native iOS/Android directories and zero desktop regressions.",
+    "Displayed version: v1.20.25.",
+  ],
+});
+
+CHANGELOG_BY_LANG.fr.unshift({
   version: "v1.20.24",
   date: "2026-09-03",
   title: "ETHONE — Rework Complet de la Bibliothèque d'Avatars Authentiques",

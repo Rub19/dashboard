@@ -68,7 +68,7 @@ export default function Shell({ children }: { children: ReactNode }) {
                 <main
                   data-v8-main
                   id="main-content"
-                  className="relative z-0 min-h-0 min-w-0 flex-1 flex flex-col overflow-hidden bg-transparent pb-[env(safe-area-inset-bottom)]"
+                  className="relative z-0 min-h-0 min-w-0 flex-1 flex flex-col overflow-hidden bg-transparent pb-[calc(env(safe-area-inset-bottom)+5rem)] md:pb-0"
                   tabIndex={-1}
                 >
                   <ActivityJournalProvider>

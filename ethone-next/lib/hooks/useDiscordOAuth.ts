@@ -15,6 +15,7 @@ export type DiscordGuild = {
   id: string;
   name: string;
   owner: boolean;
+  permissions?: string;
   icon?: string;
   iconUrl: string;
 };
@@ -101,10 +102,11 @@ export function useDiscordOAuth() {
           if (guildsRes && guildsRes.ok) {
             const rawGuilds = await guildsRes.json();
             guilds = Array.isArray(rawGuilds)
-              ? rawGuilds.map((g: { id: string; name: string; owner?: boolean; icon?: string }) => ({
+              ? rawGuilds.map((g: { id: string; name: string; owner?: boolean; permissions?: string; icon?: string }) => ({
                   id: g.id,
                   name: g.name,
                   owner: !!g.owner,
+                  permissions: String(g.permissions || ""),
                   iconUrl: g.icon ? `https://cdn.discordapp.com/icons/${g.id}/${g.icon}.png?size=64` : "",
                 }))
               : [];

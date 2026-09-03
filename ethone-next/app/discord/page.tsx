@@ -140,6 +140,23 @@ const MODULES: BotModule[] = [
   },
 ];
 
+// Discord Permissions:
+// ADMINISTRATOR = 0x8 (bit 3)
+// MANAGE_GUILD = 0x20 (bit 5 - permission de gérer le serveur et inviter des bots)
+function canManageGuild(guild: DiscordGuild): boolean {
+  if (guild.owner) return true;
+  if (!guild.permissions) return false;
+  try {
+    const perms = BigInt(guild.permissions);
+    const admin = BigInt(8);
+    const manageGuild = BigInt(32);
+    return (perms & admin) === admin || (perms & manageGuild) === manageGuild;
+  } catch {
+    const num = Number(guild.permissions);
+    return (num & 8) === 8 || (num & 32) === 32;
+  }
+}
+
 export default function DiscordDashboardPage() {
   const router = useRouter();
   const { user, session } = useAuth();
@@ -149,9 +166,10 @@ export default function DiscordDashboardPage() {
   const [selectedGuild, setSelectedGuild] = useState<DiscordGuild | null>(null);
   const [activeModule, setActiveModule] = useState<ModuleType>("security");
   const [searchQuery, setSearchQuery] = useState("");
+  const [onlyManageable, setOnlyManageable] = useState(true);
 
-  // Demo fallback guilds if no Discord account connected yet
-  const displayGuilds: DiscordGuild[] = useMemo(() => {
+  // All joined guilds from Discord
+  const allGuilds: DiscordGuild[] = useMemo(() => {
     if (profile?.guilds && profile.guilds.length > 0) {
       return profile.guilds;
     }
@@ -165,6 +183,14 @@ export default function DiscordDashboardPage() {
       },
     ];
   }, [profile?.guilds]);
+
+  // Filter only servers where user is OWNER or has MANAGE_GUILD / ADMIN permission!
+  const displayGuilds: DiscordGuild[] = useMemo(() => {
+    if (!onlyManageable) return allGuilds;
+    const manageable = allGuilds.filter((g) => canManageGuild(g));
+    // If user has no servers with admin role yet, fallback to show what's available
+    return manageable.length > 0 ? manageable : allGuilds;
+  }, [allGuilds, onlyManageable]);
 
   const filteredGuilds = useMemo(() => {
     if (!searchQuery.trim()) return displayGuilds;
@@ -268,13 +294,39 @@ export default function DiscordDashboardPage() {
           {/* Left Column: Server Selector (4 cols) */}
           <div className="lg:col-span-4 space-y-4">
             <div className="rounded-3xl border border-white/10 bg-white/[0.02] p-5 backdrop-blur-xl">
-              <div className="mb-4 flex items-center justify-between">
-                <h2 className="text-sm font-bold uppercase tracking-wider text-zinc-300">
-                  Vos Serveurs
-                </h2>
-                <span className="rounded-lg bg-white/[0.06] px-2 py-0.5 text-[11px] font-semibold text-zinc-400">
-                  {displayGuilds.length}
+              <div className="mb-3 flex items-center justify-between">
+                <div>
+                  <h2 className="text-sm font-bold uppercase tracking-wider text-zinc-300">
+                    Vos Serveurs
+                  </h2>
+                  <p className="text-[11px] text-zinc-500">
+                    {onlyManageable ? "Gérables (Admin / Owner)" : "Tous vos serveurs"}
+                  </p>
+                </div>
+                <span className="rounded-lg bg-emerald-500/15 border border-emerald-500/30 px-2 py-0.5 text-[11px] font-semibold text-emerald-400">
+                  {filteredGuilds.length}
                 </span>
+              </div>
+
+              {/* Filter Toggle: Only Manageable vs All */}
+              <div className="mb-3 flex items-center justify-between rounded-xl bg-white/[0.03] px-3 py-2 text-xs border border-white/5">
+                <span className="text-[11px] text-zinc-300 font-medium">Filtre Admin / Owner</span>
+                <button
+                  type="button"
+                  onClick={() => setOnlyManageable((v) => !v)}
+                  className={cn(
+                    "relative inline-flex h-5 w-9 shrink-0 cursor-pointer rounded-full border-2 border-transparent transition-colors duration-200 ease-in-out",
+                    onlyManageable ? "bg-emerald-500" : "bg-zinc-700"
+                  )}
+                  title={onlyManageable ? "Afficher uniquement les serveurs gérables" : "Afficher tous les serveurs"}
+                >
+                  <span
+                    className={cn(
+                      "pointer-events-none inline-block h-4 w-4 transform rounded-full bg-white shadow ring-0 transition duration-200 ease-in-out",
+                      onlyManageable ? "translate-x-4" : "translate-x-0"
+                    )}
+                  />
+                </button>
               </div>
 
               {/* Search server */}
@@ -282,7 +334,7 @@ export default function DiscordDashboardPage() {
                 <Search className="absolute left-3 top-1/2 h-3.5 w-3.5 -translate-y-1/2 text-zinc-500" />
                 <input
                   type="text"
-                  placeholder="Rechercher un serveur..."
+                  placeholder="Rechercher parmi vos serveurs..."
                   value={searchQuery}
                   onChange={(e) => setSearchQuery(e.target.value)}
                   className="h-9 w-full rounded-xl border border-white/10 bg-white/[0.03] pl-9 pr-3 text-xs text-white placeholder-zinc-500 outline-none transition-colors focus:border-emerald-500/50"
@@ -291,61 +343,95 @@ export default function DiscordDashboardPage() {
 
               {/* Guilds List */}
               <div className="space-y-2 max-h-[420px] overflow-y-auto pr-1">
-                {filteredGuilds.map((guild) => {
-                  const isSelected = selectedGuild?.id === guild.id;
-                  const initials = guild.name
-                    .split(" ")
-                    .map((n) => n[0])
-                    .join("")
-                    .slice(0, 2)
-                    .toUpperCase();
-
-                  return (
+                {filteredGuilds.length === 0 ? (
+                  <div className="py-8 text-center text-xs text-zinc-400">
+                    <p className="font-semibold text-zinc-300">Aucun serveur gérable trouvé</p>
+                    <p className="mt-1 text-zinc-500 text-[11px]">
+                      Vous devez être Propriétaire ou posséder la permission "Gérer le serveur" sur Discord.
+                    </p>
                     <button
-                      key={guild.id}
-                      onClick={() => setSelectedGuild(guild)}
-                      className={cn(
-                        "flex w-full items-center gap-3 rounded-2xl border p-3 text-left transition-all duration-150 cursor-pointer",
-                        isSelected
-                          ? "border-[#5865F2]/50 bg-[#5865F2]/15 shadow-md shadow-[#5865F2]/10"
-                          : "border-white/5 bg-white/[0.02] hover:border-white/15 hover:bg-white/[0.04]"
-                      )}
+                      onClick={() => setOnlyManageable(false)}
+                      className="mt-3 text-xs text-emerald-400 underline cursor-pointer"
                     >
-                      <div className="relative flex h-11 w-11 shrink-0 items-center justify-center overflow-hidden rounded-xl border border-white/10 bg-gradient-to-br from-zinc-800 to-zinc-900 font-bold text-xs text-white shadow-inner">
-                        {guild.iconUrl ? (
-                          <img
-                            src={guild.iconUrl}
-                            alt={guild.name}
-                            className="h-full w-full object-cover"
-                          />
-                        ) : (
-                          <span>{initials}</span>
-                        )}
-                        {guild.owner && (
-                          <span
-                            title="Propriétaire du serveur"
-                            className="absolute -top-1 -right-1 flex h-4 w-4 items-center justify-center rounded-full bg-amber-500 text-zinc-950 shadow"
-                          >
-                            <Crown className="h-2.5 w-2.5" />
-                          </span>
-                        )}
-                      </div>
-
-                      <div className="min-w-0 flex-1">
-                        <p className="truncate text-xs font-semibold text-white">
-                          {guild.name}
-                        </p>
-                        <p className="text-[10px] text-zinc-400">
-                          ID: {guild.id.slice(0, 8)}...
-                        </p>
-                      </div>
-
-                      <div className="flex shrink-0 items-center">
-                        <span className="h-2 w-2 rounded-full bg-emerald-400" />
-                      </div>
+                      Afficher tous les serveurs ({allGuilds.length})
                     </button>
-                  );
-                })}
+                  </div>
+                ) : (
+                  filteredGuilds.map((guild) => {
+                    const isSelected = selectedGuild?.id === guild.id;
+                    const isOwner = guild.owner;
+                    const isManager = canManageGuild(guild);
+                    const initials = guild.name
+                      .split(" ")
+                      .map((n) => n[0])
+                      .join("")
+                      .slice(0, 2)
+                      .toUpperCase();
+
+                    return (
+                      <button
+                        key={guild.id}
+                        onClick={() => setSelectedGuild(guild)}
+                        className={cn(
+                          "flex w-full items-center gap-3 rounded-2xl border p-3 text-left transition-all duration-150 cursor-pointer",
+                          isSelected
+                            ? "border-[#5865F2]/50 bg-[#5865F2]/15 shadow-md shadow-[#5865F2]/10"
+                            : "border-white/5 bg-white/[0.02] hover:border-white/15 hover:bg-white/[0.04]"
+                        )}
+                      >
+                        <div className="relative flex h-11 w-11 shrink-0 items-center justify-center overflow-hidden rounded-xl border border-white/10 bg-gradient-to-br from-zinc-800 to-zinc-900 font-bold text-xs text-white shadow-inner">
+                          {guild.iconUrl ? (
+                            <img
+                              src={guild.iconUrl}
+                              alt={guild.name}
+                              className="h-full w-full object-cover"
+                            />
+                          ) : (
+                            <span>{initials}</span>
+                          )}
+                          {isOwner && (
+                            <span
+                              title="Propriétaire du serveur"
+                              className="absolute -top-1 -right-1 flex h-4 w-4 items-center justify-center rounded-full bg-amber-500 text-zinc-950 shadow"
+                            >
+                              <Crown className="h-2.5 w-2.5" />
+                            </span>
+                          )}
+                        </div>
+
+                        <div className="min-w-0 flex-1">
+                          <p className="truncate text-xs font-semibold text-white">
+                            {guild.name}
+                          </p>
+                          <div className="flex items-center gap-1.5 mt-0.5">
+                            {isOwner ? (
+                              <span className="inline-flex items-center gap-1 rounded bg-amber-500/15 border border-amber-500/30 px-1.5 py-0.5 text-[9px] font-semibold text-amber-300">
+                                <Crown className="h-2.5 w-2.5" />
+                                Propriétaire
+                              </span>
+                            ) : isManager ? (
+                              <span className="inline-flex items-center gap-1 rounded bg-emerald-500/15 border border-emerald-500/30 px-1.5 py-0.5 text-[9px] font-semibold text-emerald-300">
+                                <ShieldCheck className="h-2.5 w-2.5" />
+                                Gérer le serveur
+                              </span>
+                            ) : (
+                              <span className="text-[10px] text-zinc-500">Membre</span>
+                            )}
+                          </div>
+                        </div>
+
+                        <div className="flex shrink-0 items-center">
+                          <span
+                            className={cn(
+                              "h-2 w-2 rounded-full",
+                              isManager ? "bg-emerald-400" : "bg-zinc-600"
+                            )}
+                          />
+                        </div>
+                      </button>
+                    );
+                  })
+                )}
               </div>
 
               {/* Bot Invitation Card */}

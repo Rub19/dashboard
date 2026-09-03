@@ -153,10 +153,14 @@ function resolveThemeTuning(theme: string) {
   const resolved = resolvePremiumTheme(theme);
   const map: Record<PremiumTheme, keyof typeof THEME_TUNING> = {
     obsidian: "night",
+    midnight: "night",
     "cyber-neon": "night",
-    "solar-eclipse": "graphite",
-    "northern-aurora": "graphite",
-    "monochrome-studio": "day",
+    "purple-space": "night",
+    aurora: "graphite",
+    carbon: "graphite",
+    arctic: "day",
+    minimal: "day",
+    glass: "graphite",
   };
   return THEME_TUNING[map[resolved] ?? "night"];
 }

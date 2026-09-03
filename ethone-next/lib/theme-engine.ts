@@ -1,234 +1,201 @@
 /**
- * ETHONE Premium Theme Engine
+ * ETHONE Theme Engine 3.0
  *
- * Provides a single source of truth for the 5 premium themes, legacy theme
- * aliases, and a zero-JSX `applyTheme` helper that mutates the root element
- * directly for instant, zero-lag switching.
- *
- * Note on Worker KV sync: persisting the active theme across devices through
- * a Worker KV store requires a `kv_namespaces` binding in `worker/wrangler.jsonc`
- * and a dedicated Worker route. Until that binding is configured, the app uses
- * `localStorage` (via `saveSettings`) and Supabase (via `saveSettingsAsync`) as
- * the sync sources.
+ * Central engine for resolving themes, applying tokens dynamically to the root DOM,
+ * handling zero-flash startup, and supporting Dark/Light/Auto modes and custom themes.
  */
 
-export type PremiumTheme =
-  | "obsidian"
-  | "cyber-neon"
-  | "solar-eclipse"
-  | "northern-aurora"
-  | "monochrome-studio";
+import {
+  PRESET_THEMES,
+  PRESET_THEME_IDS,
+  UNIVERSAL_ACCENTS,
+  getContrastColor,
+  isValidHexColor,
+  validateThemePayload,
+  type PremiumThemeId,
+  type ThemeDefinition,
+  type AccentId,
+} from "./theme-tokens";
 
-export const PREMIUM_THEMES: PremiumTheme[] = [
-  "obsidian",
-  "cyber-neon",
-  "solar-eclipse",
-  "northern-aurora",
-  "monochrome-studio",
-];
-
-export type ThemeDefinition = {
-  label: string;
-  description: string;
-  bgMain: string;
-  bgSurface: string;
-  bgSidebar: string;
-  borderSubtle: string;
-  borderActive: string;
-  accentPrimary: string;
-  accentSecondary: string;
-  accentContrast: string;
-  glowColor: string;
-  textPrimary: string;
-  textMuted: string;
+export {
+  PRESET_THEMES,
+  PRESET_THEME_IDS,
+  UNIVERSAL_ACCENTS,
+  getContrastColor,
+  isValidHexColor,
+  validateThemePayload,
+  type PremiumThemeId,
+  type ThemeDefinition,
+  type AccentId,
 };
 
-export const THEME_DEFINITIONS: Record<PremiumTheme, ThemeDefinition> = {
-  obsidian: {
-    label: "Obsidienne",
-    description: "Fond profond, accents émeraude — calme et concentré.",
-    bgMain: "#08080A",
-    bgSurface: "#0F0F13",
-    bgSidebar: "#0C0C10",
-    borderSubtle: "rgba(255,255,255,0.06)",
-    borderActive: "rgba(16,185,129,0.35)",
-    accentPrimary: "#10B981",
-    accentSecondary: "#06B6D4",
-    accentContrast: "#0C0C10",
-    glowColor: "rgba(16,185,129,0.25)",
-    textPrimary: "#EDEDED",
-    textMuted: "#9CA3AF",
-  },
-  "cyber-neon": {
-    label: "Cyber Néon",
-    description: "Rose néon et cyan électrique, ambiance futuriste.",
-    bgMain: "#0A0814",
-    bgSurface: "rgba(255,255,255,0.04)",
-    bgSidebar: "#080612",
-    borderSubtle: "rgba(255,255,255,0.08)",
-    borderActive: "rgba(0,240,255,0.4)",
-    accentPrimary: "#F43F5E",
-    accentSecondary: "#00F0FF",
-    accentContrast: "#FFFFFF",
-    glowColor: "rgba(244,63,94,0.3)",
-    textPrimary: "#F0E9FF",
-    textMuted: "#A78BFA",
-  },
-  "solar-eclipse": {
-    label: "Éclipse Solaire",
-    description: "Ambre brûlant, contrastes chauds et intenses.",
-    bgMain: "#0C0B0A",
-    bgSurface: "#141311",
-    bgSidebar: "#100F0E",
-    borderSubtle: "rgba(255,255,255,0.05)",
-    borderActive: "rgba(217,119,6,0.4)",
-    accentPrimary: "#F59E0B",
-    accentSecondary: "#D97706",
-    accentContrast: "#0C0B0A",
-    glowColor: "rgba(245,158,11,0.25)",
-    textPrimary: "#F5F0E8",
-    textMuted: "#A89F91",
-  },
-  "northern-aurora": {
-    label: "Aurore Boréale",
-    description: "Teal et ciel polaire, fluide et apaisant.",
-    bgMain: "#060B11",
-    bgSurface: "#0D151B",
-    bgSidebar: "#090F14",
-    borderSubtle: "rgba(255,255,255,0.06)",
-    borderActive: "rgba(56,189,248,0.35)",
-    accentPrimary: "#2DD4BF",
-    accentSecondary: "#38BDF8",
-    accentContrast: "#060B11",
-    glowColor: "rgba(45,212,191,0.25)",
-    textPrimary: "#E0F2FE",
-    textMuted: "#94A3B8",
-  },
-  "monochrome-studio": {
-    label: "Monochrome Studio",
-    description: "Noir absolu, blanc pur, contraste maximal.",
-    bgMain: "#000000",
-    bgSurface: "#18181B",
-    bgSidebar: "#101012",
-    borderSubtle: "rgba(255,255,255,0.08)",
-    borderActive: "rgba(255,255,255,0.25)",
-    accentPrimary: "#FFFFFF",
-    accentSecondary: "#71717A",
-    accentContrast: "#000000",
-    glowColor: "rgba(255,255,255,0.15)",
-    textPrimary: "#FFFFFF",
-    textMuted: "#A1A1AA",
-  },
-};
+// Aliases for backwards compatibility
+export type PremiumTheme = PremiumThemeId;
+export const PREMIUM_THEMES = PRESET_THEME_IDS;
+export const THEME_DEFINITIONS = PRESET_THEMES;
 
-/** Legacy/old theme names mapped to the 5 premium IDs. */
-const LEGACY_THEME_MAP: Record<string, PremiumTheme> = {
+/** Map of legacy / alias names to current Theme IDs */
+const LEGACY_THEME_MAP: Record<string, PremiumThemeId> = {
   default: "obsidian",
   night: "obsidian",
-  graphite: "obsidian",
+  graphite: "carbon",
   obsidian: "obsidian",
   focus: "obsidian",
-  glass: "obsidian",
-  oled: "obsidian",
-  midnight: "obsidian",
+  oled: "midnight",
+  midnight: "midnight",
   cyberpunk: "cyber-neon",
-  aurora: "northern-aurora",
-  boreal: "northern-aurora",
-  emerald: "northern-aurora",
-  eclipse: "solar-eclipse",
-  day: "monochrome-studio",
-  minimal: "monochrome-studio",
+  "cyber-neon": "cyber-neon",
+  aurora: "aurora",
+  "northern-aurora": "aurora",
+  boreal: "aurora",
+  emerald: "aurora",
+  eclipse: "carbon",
+  "solar-eclipse": "carbon",
+  day: "arctic",
+  light: "arctic",
+  arctic: "arctic",
+  minimal: "minimal",
+  "monochrome-studio": "minimal",
+  glass: "glass",
+  "purple-space": "purple-space",
+  space: "purple-space",
+  carbon: "carbon",
 };
 
-/** Returns the matching premium ID for an old or new theme string. */
-export function resolveLegacyTheme(theme: string): PremiumTheme {
-  const id = String(theme || "").toLowerCase();
-  if (PREMIUM_THEMES.includes(id as PremiumTheme)) return id as PremiumTheme;
+export function resolveLegacyTheme(theme: string): PremiumThemeId {
+  const id = String(theme || "").toLowerCase().trim();
+  if (PRESET_THEME_IDS.includes(id as PremiumThemeId)) return id as PremiumThemeId;
   return LEGACY_THEME_MAP[id] ?? "obsidian";
 }
 
-/** Whether the OS reports a light color scheme preference. */
+/** Whether the OS currently requests a light color scheme */
 export function resolveAutoDark(): boolean {
   if (typeof window === "undefined") return false;
   return window.matchMedia?.("(prefers-color-scheme: light)")?.matches === true;
 }
 
-/** Resolve `auto` and legacy theme names to a premium theme ID. */
-export function resolvePremiumTheme(theme: string): PremiumTheme {
-  const raw = String(theme || "").toLowerCase();
-  if (raw === "auto") return resolveAutoDark() ? "monochrome-studio" : "obsidian";
+/** Resolve 'auto' and legacy aliases to a Theme ID */
+export function resolvePremiumTheme(theme: string): PremiumThemeId {
+  const raw = String(theme || "").toLowerCase().trim();
+  if (raw === "auto") return resolveAutoDark() ? "arctic" : "obsidian";
   return resolveLegacyTheme(raw);
 }
 
-export function resolveTheme(theme: string): { theme: PremiumTheme; dark: boolean } {
+export function resolveTheme(theme: string): { theme: PremiumThemeId; dark: boolean } {
   const resolved = resolvePremiumTheme(theme);
-  return { theme: resolved, dark: true };
+  const def = PRESET_THEMES[resolved];
+  return { theme: resolved, dark: def?.colorScheme !== "light" };
 }
 
-/** Mix two CSS color strings in the srgb color space. */
-function colorMix(a: string, b: string, pct = 50): string {
-  return `color-mix(in srgb, ${a} ${pct}%, ${b})`;
+/** Mix two CSS color strings in srgb */
+export function colorMix(a: string, b: string, pct = 50): string {
+  return "color-mix(in srgb, " + a + " " + pct + "%, " + b + ")";
 }
 
-/** Compute a black-or-white contrast color for an arbitrary accent hex. */
-export function getContrastColor(hex: string): "#000000" | "#FFFFFF" {
-  const normalized = hex.replace("#", "");
-  const r = parseInt(normalized.substring(0, 2), 16) || 0;
-  const g = parseInt(normalized.substring(2, 4), 16) || 0;
-  const b = parseInt(normalized.substring(4, 6), 16) || 0;
-  const yiq = (r * 299 + g * 587 + b * 114) / 1000;
-  return yiq >= 128 ? "#000000" : "#FFFFFF";
-}
-
-/** Apply a user-selected accent on top of a theme. */
+/** Apply universal or custom accent to the DOM root */
 export function applyAccent(root: HTMLElement, accent: string): void {
-  const soft = accent + "33";
-  const glow = `color-mix(in srgb, ${accent} 25%, transparent)`;
-  const secondary = `color-mix(in srgb, ${accent} 70%, white)`;
-  const borderActive = `color-mix(in srgb, ${accent} 35%, transparent)`;
-  root.style.setProperty("--accent", accent);
-  root.style.setProperty("--accent-primary", accent);
+  const safeAccent = isValidHexColor(accent) ? accent : "#8b5cf6";
+  const soft = safeAccent + "33";
+  const glow = colorMix(safeAccent, "transparent", 25);
+  const secondary = colorMix(safeAccent, "white", 70);
+  const borderActive = colorMix(safeAccent, "transparent", 40);
+  const contrast = getContrastColor(safeAccent);
+
+  root.style.setProperty("--accent", safeAccent);
+  root.style.setProperty("--accent-primary", safeAccent);
   root.style.setProperty("--accent-soft", soft);
   root.style.setProperty("--glow-color", glow);
-  root.style.setProperty("--accent-contrast", getContrastColor(accent));
+  root.style.setProperty("--accent-contrast", contrast);
   root.style.setProperty("--accent-secondary", secondary);
   root.style.setProperty("--border-active", borderActive);
 }
 
+export interface ApplyThemeOptions {
+  accent?: string;
+  customAccent?: string;
+  glassLevel?: "off" | "low" | "medium" | "high";
+  performanceMode?: "normal" | "low" | "quality" | "balanced" | "performance";
+  customThemes?: ThemeDefinition[];
+}
+
 /**
- * Apply a premium theme directly to `document.documentElement`.
- * Unknown IDs fall back to `obsidian`. No React re-render required.
+ * Apply a theme directly to document.documentElement without causing full React tree re-mounts.
  */
-export function applyTheme(themeId: PremiumTheme | string): void {
+export function applyTheme(themeId: string, options?: ApplyThemeOptions): void {
   if (typeof document === "undefined") return;
 
-  const resolved = resolvePremiumTheme(String(themeId || ""));
-  const def = THEME_DEFINITIONS[resolved];
-  if (!def) return;
-
   const root = document.documentElement;
+  const rawId = String(themeId || "").trim();
 
-  root.setAttribute("data-theme", resolved);
+  // 1. Check custom themes first
+  let def: ThemeDefinition | undefined;
+  if (options?.customThemes && options.customThemes.length > 0) {
+    def = options.customThemes.find((t) => t.id === rawId);
+  }
+
+  // 2. Fall back to preset themes
+  if (!def) {
+    const resolvedId = resolvePremiumTheme(rawId);
+    def = PRESET_THEMES[resolvedId] || PRESET_THEMES.obsidian;
+  }
+
+  const isLight = def.colorScheme === "light";
+
+  // Data attributes for Tailwind / CSS selectors
+  root.setAttribute("data-theme", def.id);
+  root.setAttribute("data-color-scheme", isLight ? "light" : "dark");
+  root.style.colorScheme = isLight ? "light" : "dark";
+
+  // Theme core background tokens
   root.style.setProperty("--bg-main", def.bgMain);
   root.style.setProperty("--bg-surface", def.bgSurface);
+  root.style.setProperty("--bg-surface-elevated", def.bgSurfaceElevated);
+  root.style.setProperty("--bg-surface-hover", def.bgSurfaceHover);
   root.style.setProperty("--bg-sidebar", def.bgSidebar);
-  root.style.setProperty("--bg-card", colorMix(def.bgSurface, def.bgSidebar, 35));
-  root.style.setProperty("--bg-input", "rgba(255, 255, 255, 0.05)");
-  root.style.setProperty("--bg-overlay", "rgba(0, 0, 0, 0.55)");
+  root.style.setProperty("--bg-card", def.bgCard);
+  root.style.setProperty("--bg-input", def.bgInput);
+  root.style.setProperty("--bg-overlay", isLight ? "rgba(0, 0, 0, 0.35)" : "rgba(0, 0, 0, 0.65)");
   root.style.setProperty("--bg-raised", def.bgSidebar);
+
+  // Border tokens
   root.style.setProperty("--border-subtle", def.borderSubtle);
   root.style.setProperty("--border-active", def.borderActive);
+  root.style.setProperty("--border-focus", def.borderFocus);
+
+  // Typography tokens
   root.style.setProperty("--text-primary", def.textPrimary);
-  root.style.setProperty("--text-secondary", colorMix(def.textPrimary, def.textMuted, 30));
+  root.style.setProperty("--text-secondary", def.textSecondary);
   root.style.setProperty("--text-muted", def.textMuted);
-  root.style.setProperty("--text-disabled", colorMix(def.textMuted, def.bgMain, 42));
-  root.style.setProperty("--text-inverse", def.bgMain);
+  root.style.setProperty("--text-disabled", def.textDisabled);
+  root.style.setProperty("--text-inverse", def.textInverse);
+
+  // Default accent from theme
   root.style.setProperty("--accent-primary", def.accentPrimary);
   root.style.setProperty("--accent-secondary", def.accentSecondary);
   root.style.setProperty("--accent-contrast", def.accentContrast);
   root.style.setProperty("--glow-color", def.glowColor);
 
-  // Keep the legacy token surface readable by the rest of the app.
+  // Glass levels configuration
+  const glassSetting = options?.glassLevel || def.glassDefault || "medium";
+  let blurPx = "20px";
+  let glassOpacity = "85%";
+
+  if (glassSetting === "off" || options?.performanceMode === "low" || options?.performanceMode === "performance") {
+    blurPx = "0px";
+    glassOpacity = "100%";
+  } else if (glassSetting === "low") {
+    blurPx = "10px";
+    glassOpacity = "92%";
+  } else if (glassSetting === "high") {
+    blurPx = "28px";
+    glassOpacity = "70%";
+  }
+
+  root.style.setProperty("--panel-blur", blurPx);
+  root.style.setProperty("--panel-bg", colorMix(def.bgSurface, "transparent", parseInt(glassOpacity, 10)));
+  root.style.setProperty("--panel-border", def.borderSubtle);
+
+  // Backward compatibility tokens for legacy views
   root.style.setProperty("--background", def.bgMain);
   root.style.setProperty("--foreground", def.textPrimary);
   root.style.setProperty("--surface", def.bgSurface);
@@ -237,12 +204,9 @@ export function applyTheme(themeId: PremiumTheme | string): void {
   root.style.setProperty("--muted", def.textMuted);
   root.style.setProperty("--accent", def.accentPrimary);
 
-  // v8 ambient canvas/text so the legacy v8 surfaces stay on-palette.
-  root.style.setProperty("--v8-canvas", def.bgMain);
-  root.style.setProperty("--v8-canvas-raised", def.bgSidebar);
-  root.style.setProperty("--v8-text", def.textPrimary);
-  root.style.setProperty("--v8-muted", def.textMuted);
-
-  // All current premium themes are dark; color-scheme follows the resolved theme.
-  root.style.colorScheme = "dark";
+  // Apply custom/override accent if provided
+  if (options?.accent) {
+    const activeAccent = options.accent === "custom" && options.customAccent ? options.customAccent : options.accent;
+    applyAccent(root, activeAccent);
+  }
 }

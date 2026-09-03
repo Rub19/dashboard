@@ -1,5 +1,11 @@
 import { supabase } from "./supabase";
-import { resolveLegacyTheme, PREMIUM_THEMES, type PremiumTheme } from "./theme-engine";
+import {
+  resolveLegacyTheme,
+  PREMIUM_THEMES,
+  type PremiumTheme,
+  type ThemeDefinition,
+  type AccentId,
+} from "./theme-engine";
 
 export type BrainPermissions = {
   notes: boolean;
@@ -25,7 +31,8 @@ export type BrainMemoryCategories = {
   goals: boolean;
 };
 
-export type ThemeMode = PremiumTheme | "auto";
+export type ThemeMode = PremiumTheme | "auto" | string;
+export type AccentColor = AccentId;
 
 export type DensityMode =
   | "spacious"
@@ -147,8 +154,11 @@ export type Settings = {
   dynamicIslandVisible: boolean;
   dockPosition: string;
   wallpaperUrl: string | null;
-  accentColor: "violet" | "mint" | "sky" | "amber" | "rose" | "teal" | "coral" | "custom";
+  accentColor: AccentColor | "violet" | "mint" | "sky" | "amber" | "rose" | "teal" | "coral" | "custom" | string;
   customAccent: string;
+  colorScheme: "dark" | "light" | "auto";
+  glassLevel: "off" | "low" | "medium" | "high";
+  customThemes: ThemeDefinition[];
   reducedMotion: boolean;
   haptics: boolean;
   lowData: boolean;
@@ -351,6 +361,9 @@ export const DEFAULTS: Settings = {
   wallpaperUrl: null,
   accentColor: "violet",
   customAccent: "#8b5cf6",
+  colorScheme: "dark",
+  glassLevel: "medium",
+  customThemes: [],
   reducedMotion: false,
   haptics: true,
   lowData: false,

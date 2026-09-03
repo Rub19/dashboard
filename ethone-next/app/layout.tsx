@@ -78,7 +78,15 @@ export default function RootLayout({
     <html
       lang="fr"
       className={`${inter.variable} ${jetbrainsMono.variable} h-full max-h-dvh overflow-hidden antialiased`}
+      suppressHydrationWarning
     >
+      <head>
+        <script
+          dangerouslySetInnerHTML={{
+            __html: `(function(){try{var s=localStorage.getItem('ethone_settings_v8')||localStorage.getItem('dashboard_settings');var theme='obsidian';var accent='#8b5cf6';if(s){var p=JSON.parse(s);if(p.theme)theme=p.theme;if(p.accentColor==='custom'&&p.customAccent)accent=p.customAccent;else if(p.accentColor){var m={violet:'#8b5cf6',blue:'#3b82f6',cyan:'#06b6d4',pink:'#ec4899',red:'#ef4444',orange:'#f97316',green:'#10b981',mint:'#34d399',amber:'#f59e0b',sky:'#38bdf8',teal:'#14b8a6',rose:'#f43f5e'};if(m[p.accentColor])accent=m[p.accentColor];}}var isLight=theme==='arctic'||(theme==='auto'&&window.matchMedia&&window.matchMedia('(prefers-color-scheme: light)').matches);var root=document.documentElement;root.setAttribute('data-theme',theme);root.setAttribute('data-color-scheme',isLight?'light':'dark');root.style.colorScheme=isLight?'light':'dark';root.style.setProperty('--accent',accent);root.style.setProperty('--accent-primary',accent);}catch(e){}})();`,
+          }}
+        />
+      </head>
       <body className="h-dvh max-h-dvh overflow-hidden bg-[var(--background)] text-[var(--foreground)]">
         <AuthProvider>
           <PublicProfileProvider>

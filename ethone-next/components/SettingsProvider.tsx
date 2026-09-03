@@ -17,20 +17,18 @@ import {
   resolveTheme,
 } from "@/lib/theme-engine";
 
-/** Backwards-compatible theme color reference used by a few consumers. */
-export const THEMES: Record<ThemeMode, { background: string; foreground: string; accent: string }> = Object.fromEntries(
-  [
-    ...PREMIUM_THEMES.map((id) => [
-      id,
-      {
-        background: THEME_DEFINITIONS[id].bgMain,
-        foreground: THEME_DEFINITIONS[id].textPrimary,
-        accent: THEME_DEFINITIONS[id].accentPrimary,
-      },
-    ]),
-    ["auto" as ThemeMode, { background: "#08080a", foreground: "#ededed", accent: "#10b981" }],
-  ]
-) as Record<ThemeMode, { background: string; foreground: string; accent: string }>;
+/** Backwards-compatible theme color reference used by consumers. */
+export const THEMES: Record<string, { background: string; foreground: string; accent: string }> = Object.fromEntries([
+  ...Object.values(THEME_DEFINITIONS).map((def) => [
+    def.id,
+    {
+      background: def.bgMain,
+      foreground: def.textPrimary,
+      accent: def.accentPrimary,
+    },
+  ]),
+  ["auto", { background: "#08080a", foreground: "#ededed", accent: "#8b5cf6" }],
+]);
 
 const DENSITY_PRESETS = {
   spacious: { fontScale: 1.05, lineHeight: 1.65, cardPadding: 28, sectionGap: 30, controlHeight: 44, panelWidth: 400, iconSize: 21, rowHeight: 58, tableRowHeight: 52, widgetScale: 1.06, toolbarHeight: 58 },
@@ -61,6 +59,12 @@ const UNIT: Record<string, string> = {
 
 export const ACCENTS: Record<string, string> = {
   violet: "#8b5cf6",
+  blue: "#3b82f6",
+  cyan: "#06b6d4",
+  pink: "#ec4899",
+  red: "#ef4444",
+  orange: "#f97316",
+  green: "#10b981",
   mint: "#34d399",
   sky: "#38bdf8",
   amber: "#f59e0b",
@@ -252,13 +256,17 @@ export default function SettingsProvider({
     }
 
     // Apply the premium theme engine directly to the root for zero-lag switching.
-    applyTheme(settings.theme);
+    applyTheme(settings.theme, {
+      accent: settings.accentColor,
+      customAccent: settings.customAccent,
+      glassLevel: settings.glassLevel,
+      performanceMode: settings.performanceMode,
+      customThemes: settings.customThemes,
+    });
 
     const resolved = resolveTheme(settings.theme);
-    const def = THEME_DEFINITIONS[resolved.theme];
-
-    // All premium themes are dark; the resolved theme is the source of truth.
-    const isDark = true;
+    const def = THEME_DEFINITIONS[resolved.theme] || THEME_DEFINITIONS.obsidian;
+    const isDark = def.colorScheme !== "light";
 
     // Derive the legacy app tokens from the resolved premium theme.
     root.style.setProperty("--background", def.bgMain);

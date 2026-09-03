@@ -12,6 +12,7 @@ import { ACCENTS } from "@/components/SettingsProvider";
 import { type Settings, DEFAULTS } from "@/lib/settings";
 import BentoCard from "@/components/ui/BentoCard";
 import PremiumThemePicker from "./PremiumThemePicker";
+import ThemeStudio from "./ThemeStudio";
 import Switch from "@/components/Switch";
 import Select from "@/components/ui/Select";
 import Slider from "@/components/ui/Slider";
@@ -168,14 +169,14 @@ export default function AppearanceSettings() {
 
   return (
     <div className="grid grid-cols-1 gap-4 md:grid-cols-2">
-      {/* Card 1 : Thème & Accent */}
-      <BentoCard title="Thème & Accent" icon="palette" className="md:col-span-2">
-        <div className="space-y-5">
-          <div>
-            <h3 className="mb-2 text-xs font-semibold text-[var(--text-secondary)]">{i18n("theme")}</h3>
-            <PremiumThemePicker value={currentTheme} onChange={(theme) => handleChange("theme", theme)} />
-          </div>
+      {/* Card 1 : Studio Thèmes & Accents */}
+      <BentoCard title="Studio de Thèmes & Accents (Engine 3.0)" icon="palette" className="md:col-span-2">
+        <ThemeStudio />
+      </BentoCard>
 
+      {/* Card 2 : Icônes & Typographie */}
+      <BentoCard title="Icônes & Style" icon="sparkles" className="md:col-span-2">
+        <div className="space-y-5">
           <SettingsRow label="Pack d'icônes" description="Set d'icônes utilisé dans l'interface.">
             <div className="flex items-center gap-1 rounded-xl border border-[var(--text-primary)]/[0.08] bg-[var(--text-primary)]/[0.03] p-1">
               {PACKS.map((pack) => {

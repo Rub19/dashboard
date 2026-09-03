@@ -21076,4 +21076,37 @@ CHANGELOG_BY_LANG.de.unshift({
   ],
 });
 
+
+CHANGELOG_BY_LANG.fr.unshift({
+  version: "v1.20.26",
+  date: "2026-09-03",
+  title: "ETHONE Theme Engine 3.0 — Architecture Complète de Thèmes & Personnalisation Visuelle",
+  items: [
+    "Refonte complète du Theme Engine d'ETHONE Web en version 3.0.",
+    "9 Thèmes Prédéfinis Haute Fidélité : ETHONE Dark (Obsidian), Midnight OLED (vrai #000000), Aurora Boreal, Purple Space, Arctic Light (Thème clair givré), Carbon Graphite, Cyber Neon, Minimal Studio et Liquid Glass.",
+    "Palette de 12 Couleurs d'Accent Universelles + Sélecteur Hexadécimal personnalisé avec propagation instantanée à l'ensemble des composants (Dynamic Island, Dock, Bento Cards, Brain, Focus).",
+    "Constructeur de Thème Custom : personnalisation complète des fonds, surfaces, barres latérales, accents et niveaux de verre.",
+    "Import & Export JSON sécurisé avec validation de schéma en temps réel.",
+    "Mode Prévisualisation dynamique avec bannière de confirmation et restauration immédiate (Rollback).",
+    "Architecture Zero-Flash au démarrage via script de pré-hydratation synchrone dans le <head>.",
+    "Bumping de version vers v1.20.26.",
+  ],
+});
+
+CHANGELOG_BY_LANG.en.unshift({
+  version: "v1.20.26",
+  date: "2026-09-03",
+  title: "ETHONE Theme Engine 3.0 — Complete Visual Customization Architecture",
+  items: [
+    "Full refactor of the ETHONE Web Theme Engine to version 3.0.",
+    "9 Curated Premium Themes: ETHONE Dark (Obsidian), Midnight OLED, Aurora Boreal, Purple Space, Arctic Light, Carbon Graphite, Cyber Neon, Minimal Studio, and Liquid Glass.",
+    "Universal Accent Colors (12 presets + Custom Hex Picker) with instant live propagation across all OS components.",
+    "Custom Theme Builder: personalize main background, surfaces, sidebar, accents, and glass tiers.",
+    "Secure JSON Theme Import/Export with payload validation.",
+    "Dynamic Theme Preview mode with live confirmation banner and rollback safety.",
+    "Zero-flash pre-hydration architecture preventing white or dark flicker on reload.",
+    "Version bump to v1.20.26.",
+  ],
+});
+
 export const CHANGELOG = CHANGELOG_BY_LANG.fr;

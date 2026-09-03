@@ -60,15 +60,53 @@ export function UploadQueueProvider({ children }: { children: React.ReactNode })
     if (!uploader) return;
     const id = next.id;
     updateItem(id, { status: "uploading", progress: 0 });
+
+    if (typeof window !== "undefined") {
+      window.dispatchEvent(
+        new CustomEvent("ethone:island-upload-start", {
+          detail: { id, fileName: next.file.name },
+        })
+      );
+    }
+
     uploader(next.file)
-      .then(() => updateItem(id, { status: "completed", progress: 100 }))
-      .catch((err) =>
+      .then(() => {
+        updateItem(id, { status: "completed", progress: 100 });
+        if (typeof window !== "undefined") {
+          window.dispatchEvent(
+            new CustomEvent("ethone:new-notification", {
+              detail: {
+                title: "Fichier importé",
+                message: `${next.file.name} a été importé avec succès`,
+                category: "files",
+                priority: "normal",
+                source: "ETHONE Files",
+                action: { label: "Ouvrir", route: "files" },
+              },
+            })
+          );
+        }
+      })
+      .catch((err) => {
         updateItem(id, {
           status: "error",
           progress: 0,
           error: err instanceof Error ? err.message : "Upload failed",
-        })
-      )
+        });
+        if (typeof window !== "undefined") {
+          window.dispatchEvent(
+            new CustomEvent("ethone:new-notification", {
+              detail: {
+                title: "Échec de l'importation",
+                message: `Erreur lors de l'import de ${next.file.name}`,
+                category: "files",
+                priority: "important",
+                source: "ETHONE Files",
+              },
+            })
+          );
+        }
+      })
       .finally(() => setTimeout(() => startNext(), 0));
   }
 

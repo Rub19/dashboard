@@ -41,12 +41,40 @@ export default function NotificationBridge() {
       }
     }
 
+    function handleUploadIsland(e: Event) {
+      const customEvent = e as CustomEvent<{ id: string; fileName: string; percent?: number }>;
+      const d = customEvent.detail;
+      if (!d) return;
+
+      register({
+        id: "upload-status",
+        type: "upload",
+        priority: 3,
+        duration: 4500,
+        content: {
+          title: "Importation",
+          subtitle: d.fileName,
+        },
+      });
+    }
+
+    function handleGenericNotification(e: Event) {
+      const customEvent = e as CustomEvent<any>;
+      if (customEvent.detail) {
+        add(customEvent.detail);
+      }
+    }
+
     window.addEventListener("ethone:island-notification", handleIslandNotification);
+    window.addEventListener("ethone:island-upload-start", handleUploadIsland);
+    window.addEventListener("ethone:new-notification", handleGenericNotification);
     window.addEventListener("v8:stop-focus", handleFocusEnd);
     window.addEventListener("v8:focus-completed", handleFocusEnd);
 
     return () => {
       window.removeEventListener("ethone:island-notification", handleIslandNotification);
+      window.removeEventListener("ethone:island-upload-start", handleUploadIsland);
+      window.removeEventListener("ethone:new-notification", handleGenericNotification);
       window.removeEventListener("v8:stop-focus", handleFocusEnd);
       window.removeEventListener("v8:focus-completed", handleFocusEnd);
     };

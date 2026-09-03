@@ -21212,4 +21212,37 @@ CHANGELOG_BY_LANG.en.unshift({
   ],
 });
 
+
+CHANGELOG_BY_LANG.fr.unshift({
+  version: "v1.20.30",
+  date: "2026-09-03",
+  title: "ETHONE Files 2.0 — Personal Cloud & Intelligent File Manager",
+  items: [
+    "Refonte complète d'ETHONE Files en un véritable Personal Cloud interactif et intelligent.",
+    "Navigation latérale enrichie (8 volets) : Accueil, Mes Fichiers, Récents, Favoris, Partagés, Workspaces, Google Drive et Corbeille.",
+    "Quick Inspector latéral (FileInspector) avec prévisualisation instantanée, métadonnées complètes et actions intelligentes ETHONE Brain (résumé IA, explication de document).",
+    "Jauges de stockage réelles sans fausses données : calcul précis du stockage local/cloud ETHONE et quota Google Drive authentique.",
+    "Moteur d'Upload 2.0 : glisser-déposer plein écran (drag & drop), file d'attente multi-fichiers, projection de progression dans la Dynamic Island et notifications directes.",
+    "Actions par lot (Bulk Actions) avec barre flottante de sélection : téléchargement groupé, mise en favori et corbeille confirmée.",
+    "Intégration Command Center avec commandes rapides : 'Téléverser un Fichier', 'Créer un Nouveau Dossier', 'Voir mes Favoris'.",
+    "Bumping de version vers v1.20.30.",
+  ],
+});
+
+CHANGELOG_BY_LANG.en.unshift({
+  version: "v1.20.30",
+  date: "2026-09-03",
+  title: "ETHONE Files 2.0 — Personal Cloud & Intelligent File Manager",
+  items: [
+    "Complete overhaul of ETHONE Files into an interactive, intelligent Personal Cloud.",
+    "8-section navigation sidebar: Home overview, My Files tree, Recent, Favorites, Shared, Workspaces, Google Drive, and Trash.",
+    "Quick File Inspector pane with real-time preview, metadata breakdown, and direct ETHONE Brain actions (AI summary, document explanation).",
+    "Authentic storage telemetry without mock data: accurate ETHONE storage aggregation and real Google Drive quota synchronization.",
+    "Upload Engine 2.0: full-screen drag & drop overlay, multi-file queue, progress tracking in Dynamic Island, and completion notifications.",
+    "Floating Bulk Actions toolbar: batch download, favorite, and confirmed move to trash.",
+    "Global Command Center integration: 'Upload File', 'Create New Folder', 'View Favorite Files'.",
+    "Version bump to v1.20.30.",
+  ],
+});
+
 export const CHANGELOG = CHANGELOG_BY_LANG.fr;

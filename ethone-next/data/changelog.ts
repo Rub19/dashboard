@@ -21305,4 +21305,37 @@ CHANGELOG_BY_LANG.en.unshift({
   ],
 });
 
+
+CHANGELOG_BY_LANG.fr.unshift({
+  version: "v1.20.33",
+  date: "2026-09-03",
+  title: "ETHONE Widget System 2.0 — Next-Gen Widget Platform",
+  items: [
+    "Transformation du système de widgets en une plateforme de widgets 2.0 moderne, extensible et hautement personnalisable.",
+    "Création du registre centralisé des widgets (lib/widget-registry.ts) avec déclarations de manifestes claires, permissions, catégories, tailles supportées et scores d'affinité Brain.",
+    "Composant conteneur universel (WidgetContainer) avec gestion d'erreurs isolée (ErrorBoundary), menu contextuel d'options (⋯), rafraîchissement réactif et indicateur de flux realtime.",
+    "Catalogue et sélecteur de widgets 2.0 (WidgetPickerModal) avec recherche instantanée, filtrage par catégories, affichage des scores Brain et installation en un clic.",
+    "Boîte de dialogue de configuration dédiée (WidgetConfigModal) pour ajuster les paramètres spécifiques de chaque widget.",
+    "Épinglage des widgets (Pin) pour les immuniser contre les réagencements automatiques de Brain.",
+    "Nouvelles commandes dédiées dans le Command Center (Ctrl+K) : Ajouter un Widget, Organiser les Widgets, Verrouiller les Widgets.",
+    "Bumping de version vers v1.20.33.",
+  ],
+});
+
+CHANGELOG_BY_LANG.en.unshift({
+  version: "v1.20.33",
+  date: "2026-09-03",
+  title: "ETHONE Widget System 2.0 — Next-Gen Widget Platform",
+  items: [
+    "Transformation of the widget system into a modern, extensible and highly customizable Next-Gen Widget Platform 2.0.",
+    "Centralized Widget Registry (lib/widget-registry.ts) declaring manifests, permissions, categories, supported sizes, and Brain affinity scores.",
+    "Universal WidgetContainer component with isolated ErrorBoundary, context options menu (⋯), reactive refresh, and realtime indicator.",
+    "Next-Gen Widget Picker (WidgetPickerModal) with instant search, category filtering, Brain match scores, and 1-click addition.",
+    "Dedicated configuration dialog (WidgetConfigModal) to adjust widget-specific settings.",
+    "Widget pinning support to protect favorite cards from Brain automatic layout optimization.",
+    "Integrated Command Center actions (Ctrl+K): Add Widget, Organize Widgets, Lock/Unlock Widgets.",
+    "Version bump to v1.20.33.",
+  ],
+});
+
 export const CHANGELOG = CHANGELOG_BY_LANG.fr;

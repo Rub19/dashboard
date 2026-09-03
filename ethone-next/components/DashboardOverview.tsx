@@ -1,6 +1,6 @@
 "use client";
 
-import { useCallback, useMemo, useState } from "react";
+import { useCallback, useEffect, useMemo, useState } from "react";
 import dynamic from "next/dynamic";
 import { useRouter } from "next/navigation";
 import { motion } from "framer-motion";
@@ -12,12 +12,10 @@ import {
   CheckCircle2,
   Timer,
   Brain,
-  Upload,
-  Mail,
   Lock,
   Unlock,
   RotateCcw,
-  Zap,
+  Plus,
 } from "lucide-react";
 import {
   DndContext,
@@ -50,6 +48,11 @@ import { Icon } from "@/lib/icons";
 import PullToRefresh from "@/components/PullToRefresh";
 import DashboardSkeleton from "@/components/DashboardSkeleton";
 import SortableWidget from "@/components/SortableWidget";
+
+import WidgetContainer from "@/components/widgets/WidgetContainer";
+import WidgetPickerModal from "@/components/widgets/WidgetPickerModal";
+import WidgetConfigModal from "@/components/widgets/WidgetConfigModal";
+import { getWidgetManifest, type WidgetSize } from "@/lib/widget-registry";
 
 const LiveBentoGrid = dynamic(() => import("@/components/LiveBentoGrid"));
 const BillsWidget = dynamic(() => import("@/components/BillsWidget"));
@@ -124,7 +127,12 @@ export default function DashboardOverview() {
   const bentoLoading = false;
   const focus = useFocus();
   const [customizing, setCustomizing] = useState(false);
+  const [pickerOpen, setPickerOpen] = useState(false);
+  const [configModal, setConfigModal] = useState<{ open: boolean; widgetId: string } | null>(null);
   const [layoutLocked, setLayoutLocked] = useLocalStorage<boolean>("ethone-home-layout-locked", false);
+  const [pinnedWidgets, setPinnedWidgets] = useLocalStorage<string[]>("ethone-pinned-widgets", []);
+  const [favoriteWidgets, setFavoriteWidgets] = useLocalStorage<string[]>("ethone-favorite-widgets", []);
+  const [widgetConfigs, setWidgetConfigs] = useLocalStorage<Record<string, Record<string, unknown>>>("ethone-widget-configs", {});
   const [activeSpace] = useLocalStorage<string>("ethone-active-workspace", "personal");
   const { layout, update: updateLayout } = useDesktopLayout();
   const hour = useMemo(() => new Date().getHours(), []);
@@ -132,6 +140,30 @@ export default function DashboardOverview() {
   const sensors = useSensors(
     useSensor(PointerSensor, { activationConstraint: { distance: 5 } })
   );
+
+  // Command Center listeners for widget actions
+  useEffect(() => {
+    function handleOpenPicker() {
+      setPickerOpen(true);
+    }
+    function handleToggleCustomizeEvent() {
+      setCustomizing((v) => !v);
+    }
+    function handleToggleLockEvent() {
+      setLayoutLocked((v) => !v);
+      success("Verrouillage du layout modifié");
+    }
+
+    window.addEventListener("v8:open-widget-picker", handleOpenPicker);
+    window.addEventListener("v8:toggle-customize-home", handleToggleCustomizeEvent);
+    window.addEventListener("v8:toggle-lock-layout", handleToggleLockEvent);
+
+    return () => {
+      window.removeEventListener("v8:open-widget-picker", handleOpenPicker);
+      window.removeEventListener("v8:toggle-customize-home", handleToggleCustomizeEvent);
+      window.removeEventListener("v8:toggle-lock-layout", handleToggleLockEvent);
+    };
+  }, [setLayoutLocked, success]);
 
   const widgets = useMemo<WidgetLayout[]>(() => {
     const hidden = new Set(settings.homeHiddenSections || []);
@@ -208,21 +240,13 @@ export default function DashboardOverview() {
   const sections: SectionDef[] = useMemo(
     () =>
       widgets.map((w) => {
-        const meta: Record<string, { label: string; icon: string }> = {
-          hero: { label: i18n("home", "Accueil"), icon: "sun" },
-          system: { label: i18n("system", "Contrôle Système"), icon: "sliders-horizontal" },
-          daystream: { label: i18n("daystream", "Fil du jour"), icon: "calendar" },
-          productivity: { label: i18n("productivityAndRhythm", "Productivité"), icon: "zap" },
-          recent: { label: i18n("recent", "Récents"), icon: "history" },
-          brain: { label: i18n("brain", "Brain"), icon: "brain" },
-          bills: { label: i18n("billsTitle", "Factures & Dépenses"), icon: "bills" },
-          live: { label: i18n("live", "Direct 3D & Tracker"), icon: "radio" },
-          connections: { label: i18n("services", "Services"), icon: "plug" },
-        };
-        const info = meta[w.id] ?? { label: w.id, icon: "square" };
+        const meta = getWidgetManifest(w.id);
+        const info = meta
+          ? { label: meta.name, icon: meta.icon }
+          : { label: w.id, icon: "square" };
         return { id: w.id, ...info };
       }),
-    [widgets, i18n]
+    [widgets]
   );
 
   const maxWClass = useMemo(() => {
@@ -280,10 +304,17 @@ export default function DashboardOverview() {
   const handleOptimizeWithBrain = useCallback(() => {
     const period = getDayPeriod(hour);
     const scores = WIDGET_PRIORITY_SCORES[period];
-    const optimized = [...widgets].sort((a, b) => (scores[b.id] ?? 0) - (scores[a.id] ?? 0));
+    const pinnedSet = new Set(pinnedWidgets);
+
+    // Keep pinned widgets in place, sort unpinned
+    const unpinned = widgets.filter((w) => !pinnedSet.has(w.id));
+    const sortedUnpinned = [...unpinned].sort((a, b) => (scores[b.id] ?? 0) - (scores[a.id] ?? 0));
+
+    let cursor = 0;
+    const optimized = widgets.map((w) => (pinnedSet.has(w.id) ? w : sortedUnpinned[cursor++]));
     void updateLayout(optimized);
-    success("Disposition optimisée par Brain selon le contexte actuel");
-  }, [widgets, hour, updateLayout, success]);
+    success("Disposition optimisée par Brain selon vos priorités");
+  }, [widgets, hour, pinnedWidgets, updateLayout, success]);
 
   const handleResetLayout = useCallback(() => {
     void updateLayout(DEFAULT_WIDGETS);
@@ -309,9 +340,54 @@ export default function DashboardOverview() {
     [widgets, updateLayout, settings.homeHiddenSections, updateSettings]
   );
 
+  const handleAddWidget = useCallback(
+    (id: string) => {
+      const exists = widgets.find((w) => w.id === id);
+      if (exists) {
+        const next = widgets.map((w) => (w.id === id ? { ...w, visible: true } : w));
+        void updateLayout(next);
+      } else {
+        const next = [...widgets, { id, x: 0, y: widgets.length, w: 6, h: 1, visible: true }];
+        void updateLayout(next);
+      }
+      const currentHidden = new Set(settings.homeHiddenSections || []);
+      currentHidden.delete(id);
+      updateSettings({ homeHiddenSections: Array.from(currentHidden) });
+      success("Widget ajouté avec succès");
+    },
+    [widgets, updateLayout, settings.homeHiddenSections, updateSettings, success]
+  );
+
+  const handleTogglePin = useCallback(
+    (id: string) => {
+      const isPinned = pinnedWidgets.includes(id);
+      const next = isPinned ? pinnedWidgets.filter((w) => w !== id) : [...pinnedWidgets, id];
+      setPinnedWidgets(next);
+      success(isPinned ? "Widget désépinglé" : "Widget épinglé (protégé du réagencement)");
+    },
+    [pinnedWidgets, setPinnedWidgets, success]
+  );
+
+  const handleToggleFavorite = useCallback(
+    (id: string) => {
+      const isFav = favoriteWidgets.includes(id);
+      const next = isFav ? favoriteWidgets.filter((w) => w !== id) : [...favoriteWidgets, id];
+      setFavoriteWidgets(next);
+      success(isFav ? "Retiré des favoris" : "Ajouté aux favoris");
+    },
+    [favoriteWidgets, setFavoriteWidgets, success]
+  );
+
+  const handleSaveWidgetConfig = useCallback(
+    (id: string, newConfig: Record<string, unknown>) => {
+      setWidgetConfigs((prev) => ({ ...prev, [id]: newConfig }));
+      success("Configuration enregistrée");
+    },
+    [setWidgetConfigs, success]
+  );
+
   const visibleSet = useMemo(() => new Set(widgets.filter((w) => w.visible).map((w) => w.id)), [widgets]);
 
-  // Greeting & Date format
   const dynamicGreeting = useMemo(() => {
     if (hour >= 5 && hour < 12) return "Bonjour";
     if (hour >= 12 && hour < 18) return "Bon après-midi";
@@ -332,7 +408,7 @@ export default function DashboardOverview() {
     }
   }, [today, settings.language]);
 
-  function renderWidget(id: string) {
+  function renderWidgetContent(id: string) {
     switch (id) {
       case "hero":
         return (
@@ -433,8 +509,18 @@ export default function DashboardOverview() {
               </p>
             </div>
 
-            {/* Quick Actions & Search */}
+            {/* Quick Actions & Controls */}
             <div className="flex items-center gap-2 flex-wrap">
+              <button
+                type="button"
+                onClick={() => setPickerOpen(true)}
+                className="flex h-9 items-center gap-1.5 rounded-2xl bg-[var(--accent-primary)] px-3 text-xs font-bold text-[var(--accent-contrast)] hover:opacity-90 active:scale-95 transition-all cursor-pointer shadow-xs"
+                title="Ajouter un widget"
+              >
+                <Plus className="h-3.5 w-3.5" />
+                <span>Ajouter</span>
+              </button>
+
               <button
                 type="button"
                 onClick={() => window.dispatchEvent(new CustomEvent("v8:open-command-palette"))}
@@ -514,7 +600,7 @@ export default function DashboardOverview() {
               <div className="mt-2">
                 <span className="text-xs font-semibold text-[var(--text-primary)] truncate">
                   {focus?.state?.phase && focus.state.phase !== "idle"
-                    ? `Session en cours (${focus.state.phase})`
+                    ? "Session en cours (" + focus.state.phase + ")"
                     : "Prêt à démarrer"}
                 </span>
               </div>
@@ -540,11 +626,11 @@ export default function DashboardOverview() {
           {/* 3. Customization & Brain Optimization Panel */}
           {customizing && (
             <BentoCard
-              title={i18n("customizeDashboard", "Organiser l'accueil")}
+              title={i18n("customizeDashboard", "Organiser les widgets (System 2.0)")}
               icon="sliders-horizontal"
               className="shrink-0"
               action={
-                <div className="flex items-center gap-1.5">
+                <div className="flex items-center gap-1.5 flex-wrap">
                   <button
                     type="button"
                     onClick={() => setLayoutLocked(!layoutLocked)}
@@ -639,7 +725,18 @@ export default function DashboardOverview() {
                       className={cn(WIDGET_COL_SPAN[w.id] || "col-span-12", homeCardClass)}
                       customizing={customizing && !layoutLocked}
                     >
-                      {renderWidget(w.id)}
+                      <WidgetContainer
+                        id={w.id}
+                        pinned={pinnedWidgets.includes(w.id)}
+                        favorite={favoriteWidgets.includes(w.id)}
+                        onPin={() => handleTogglePin(w.id)}
+                        onFavorite={() => handleToggleFavorite(w.id)}
+                        onConfigure={() => setConfigModal({ open: true, widgetId: w.id })}
+                        onHide={() => toggleSection(w.id)}
+                        onRefresh={() => handleRefresh()}
+                      >
+                        {renderWidgetContent(w.id)}
+                      </WidgetContainer>
                     </SortableWidget>
                   ))}
                 </motion.div>
@@ -648,6 +745,25 @@ export default function DashboardOverview() {
           )}
         </div>
       </PullToRefresh>
+
+      {/* Widget Picker Modal */}
+      <WidgetPickerModal
+        isOpen={pickerOpen}
+        onClose={() => setPickerOpen(false)}
+        activeWidgetIds={visibleIds}
+        onAddWidget={handleAddWidget}
+      />
+
+      {/* Widget Configuration Modal */}
+      {configModal && (
+        <WidgetConfigModal
+          isOpen={configModal.open}
+          onClose={() => setConfigModal(null)}
+          widgetId={configModal.widgetId}
+          currentConfig={widgetConfigs[configModal.widgetId]}
+          onSaveConfig={(cfg) => handleSaveWidgetConfig(configModal.widgetId, cfg)}
+        />
+      )}
     </div>
   );
 }

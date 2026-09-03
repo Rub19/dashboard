@@ -21390,4 +21390,31 @@ CHANGELOG_BY_LANG.en.unshift({
   ],
 });
 
+
+CHANGELOG_BY_LANG.fr.unshift({
+  version: "v1.20.36",
+  date: "2026-09-03",
+  title: "ETHONE Activity 2.0 — Universal Activity Timeline & Brain Intelligence",
+  items: [
+    "Refonte complète de la page Activity en un centre universel chronologique temps réel (Activity 2.0).",
+    "Bannière de synthèse d'activité prompte par Brain avec flux direct en temps réel et signal de productivité transparent (score/100).",
+    "Fiche détaillée d'activité modale pour inspecter chaque événement avec liens directs rapides vers les modules concernés (Tâches, Notes, Calendrier, Fichiers, Brain, Connexions).",
+    "Commandes rapides intégrées au Command Center (Ctrl+K) pour afficher l'activité et filtrer par domaine (Développement, Productivité, Gaming, Média).",
+    "Bumping de version vers v1.20.36.",
+  ],
+});
+
+CHANGELOG_BY_LANG.en.unshift({
+  version: "v1.20.36",
+  date: "2026-09-03",
+  title: "ETHONE Activity 2.0 — Universal Activity Timeline & Brain Intelligence",
+  items: [
+    "Full overhaul of the Activity page into a real-time Universal Activity Timeline (Activity 2.0).",
+    "Proactive Brain Activity Briefing banner featuring live activity stream indicator and transparent productivity signal (score/100).",
+    "Activity Detail Modal with deep link shortcuts to associated modules (Tasks, Notes, Calendar, Files, Brain, Connections).",
+    "Integrated Command Center actions (Ctrl+K) to inspect recent activity and filter by domain (Development, Productivity, Gaming, Media).",
+    "Version bump to v1.20.36.",
+  ],
+});
+
 export const CHANGELOG = CHANGELOG_BY_LANG.fr;

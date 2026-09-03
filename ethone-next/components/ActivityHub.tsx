@@ -1,8 +1,9 @@
 "use client";
 
 import { useEffect, useMemo, useRef, useState } from "react";
+import { useRouter, useSearchParams } from "next/navigation";
 import { motion, AnimatePresence } from "framer-motion";
-import { Activity, Flame, TrendingUp, CheckCircle2, RefreshCw, Loader2, AlertCircle, Download, Trash2, FileJson, FileSpreadsheet, Lightbulb, BarChart2 } from "lucide-react";
+import { Activity, Flame, TrendingUp, Sparkles, ExternalLink, CheckCircle2, RefreshCw, Loader2, AlertCircle, Download, Trash2, FileJson, FileSpreadsheet, Lightbulb, BarChart2 } from "lucide-react";
 import { useItems } from "@/lib/hooks/useItems";
 import { useCloudFiles } from "@/lib/hooks/useCloudFiles";
 import { useActivityJournal } from "@/lib/hooks/useActivityJournal";
@@ -196,10 +197,12 @@ function TimelineItem({
   event,
   mounted,
   i18n,
+  onSelect,
 }: {
   event: ActivityEntry;
   mounted: boolean;
   i18n: (key: string, ...args: unknown[]) => string;
+  onSelect?: (event: ActivityEntry) => void;
 }) {
   const meta = CATEGORY_META[event.category] || CATEGORY_META.system;
   const tone = event.tone || event.category;
@@ -207,7 +210,10 @@ function TimelineItem({
   const date = new Date(event.timestamp);
 
   return (
-    <div className="relative flex gap-3">
+    <div
+      onClick={() => onSelect?.(event)}
+      className="group relative flex gap-3 cursor-pointer rounded-xl p-1 transition-colors hover:bg-white/[0.03]"
+    >
       <div className="relative flex flex-col items-center">
         <span className={`flex h-9 w-9 shrink-0 items-center justify-center rounded-lg border ${meta.bg} ${meta.border}`}>
           <Icon name={event.icon || "activity"} className={`h-4 w-4 ${meta.color}`} />
@@ -308,7 +314,18 @@ export default function ActivityHub() {
   const [exportOpen, setExportOpen] = useState(false);
   const [clearOpen, setClearOpen] = useState(false);
   const [exportFormat, setExportFormat] = useState<"csv" | "json">("csv");
+  const [selectedEvent, setSelectedEvent] = useState<ActivityEntry | null>(null);
+  const [activeWorkspace, setActiveWorkspace] = useState<string>("all");
   const searchRef = useRef<HTMLInputElement>(null);
+  const router = useRouter();
+  const searchParams = useSearchParams();
+
+  useEffect(() => {
+    const cat = searchParams?.get("cat");
+    if (cat) setActiveChips([cat]);
+    const q = searchParams?.get("q");
+    if (q) setQuery(q);
+  }, [searchParams]);
 
   useEffect(() => {
     setMounted(true);
@@ -1008,6 +1025,79 @@ export default function ActivityHub() {
             {filteredEntries.length} {i18n("eventsToExport", "événements à exporter")}
           </div>
         </div>
+      </Modal>
+
+      {/* Activity Event Detail Modal */}
+      <Modal
+        isOpen={!!selectedEvent}
+        onClose={() => setSelectedEvent(null)}
+        title={selectedEvent?.title || "Détails de l'activité"}
+        description="Fiche détaillée de l'événement et actions associées"
+        size="md"
+        hideFooter
+      >
+        {selectedEvent && (
+          <div className="space-y-4 p-1 text-xs">
+            <div className="flex items-start gap-3 rounded-2xl border border-[var(--panel-border)] bg-[var(--surface-raised)]/50 p-4">
+              <div className="flex h-10 w-10 shrink-0 items-center justify-center rounded-xl bg-[var(--accent-primary)]/15 border border-[var(--accent-primary)]/30 text-[var(--accent-primary)]">
+                <Icon name={selectedEvent.icon || "activity"} className="h-5 w-5" />
+              </div>
+              <div className="min-w-0 flex-1 space-y-1">
+                <h4 className="font-bold text-sm text-[var(--text-primary)]">
+                  {selectedEvent.title}
+                </h4>
+                <p className="text-[11px] text-[var(--text-muted)] leading-relaxed">
+                  {selectedEvent.description}
+                </p>
+                <div className="pt-2 flex flex-wrap items-center gap-2 font-mono text-[10px] text-[var(--text-muted)]">
+                  <span className="rounded bg-white/5 px-2 py-0.5">
+                    {formatLocalDate(new Date(selectedEvent.timestamp), mounted)}
+                  </span>
+                  <span className="rounded bg-white/5 px-2 py-0.5">
+                    {formatLocalTime(selectedEvent.timestamp, mounted)}
+                  </span>
+                  <span className="rounded bg-[var(--accent-primary)]/10 text-[var(--accent-primary)] px-2 py-0.5 font-bold uppercase">
+                    {selectedEvent.category}
+                  </span>
+                </div>
+              </div>
+            </div>
+
+            {/* Deep Link Quick Actions */}
+            <div className="flex flex-wrap items-center gap-2 pt-2 border-t border-[var(--panel-border)]/50">
+              {/task/i.test(selectedEvent.category + selectedEvent.source) && (
+                <Button size="sm" variant="secondary" onClick={() => { setSelectedEvent(null); router.push("/tasks"); }}>
+                  Ouvrir les Tâches
+                </Button>
+              )}
+              {/note/i.test(selectedEvent.category + selectedEvent.source) && (
+                <Button size="sm" variant="secondary" onClick={() => { setSelectedEvent(null); router.push("/notes"); }}>
+                  Ouvrir les Notes
+                </Button>
+              )}
+              {/calendar|event/i.test(selectedEvent.category + selectedEvent.source) && (
+                <Button size="sm" variant="secondary" onClick={() => { setSelectedEvent(null); router.push("/calendar"); }}>
+                  Ouvrir le Calendrier
+                </Button>
+              )}
+              {/file|drive/i.test(selectedEvent.category + selectedEvent.source) && (
+                <Button size="sm" variant="secondary" onClick={() => { setSelectedEvent(null); router.push("/files"); }}>
+                  Ouvrir les Fichiers
+                </Button>
+              )}
+              {selectedEvent.category === "brain" && (
+                <Button size="sm" variant="secondary" onClick={() => { setSelectedEvent(null); router.push("/brain"); }}>
+                  Consulter ETHONE Brain
+                </Button>
+              )}
+              {/discord|spotify|github|steam/i.test(selectedEvent.source) && (
+                <Button size="sm" variant="secondary" onClick={() => { setSelectedEvent(null); router.push("/connections"); }}>
+                  Gérer la connexion
+                </Button>
+              )}
+            </div>
+          </div>
+        )}
       </Modal>
 
       {/* Clear modal */}

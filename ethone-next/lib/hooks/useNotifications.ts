@@ -47,6 +47,14 @@ export type Notification = {
   source?: string;
   icon?: string;
   data?: Record<string, unknown>;
+  action?: {
+    label: string;
+    route?: string;
+    url?: string;
+    onClick?: () => void;
+  };
+  deferred?: boolean;
+  groupKey?: string;
   createdAt: string;
   timestamp: number;
 };
@@ -100,6 +108,9 @@ function migrate(item: Partial<Notification> & { snoozed?: boolean }): Notificat
     source: item.source,
     icon: item.icon,
     data: item.data,
+    action: item.action,
+    deferred: !!item.deferred,
+    groupKey: item.groupKey || item.source || item.category,
     createdAt: item.createdAt || new Date().toISOString(),
     timestamp,
   };
@@ -312,6 +323,80 @@ export type NotificationInput = Partial<Omit<Notification, "id">> & {
   category: NotificationCategory;
 };
 
+export function isQuietHours(): boolean {
+  if (typeof window === "undefined") return false;
+  try {
+    const raw = localStorage.getItem("ethone:quiet_hours");
+    if (!raw) return false;
+    const { enabled, start = "22:00", end = "08:00" } = JSON.parse(raw);
+    if (!enabled) return false;
+    const now = new Date();
+    const currentMins = now.getHours() * 60 + now.getMinutes();
+    const [sH, sM] = (start || "22:00").split(":").map(Number);
+    const [eH, eM] = (end || "08:00").split(":").map(Number);
+    const startMins = sH * 60 + sM;
+    const endMins = eH * 60 + eM;
+    if (startMins < endMins) {
+      return currentMins >= startMins && currentMins < endMins;
+    }
+    return currentMins >= startMins || currentMins < endMins;
+  } catch {
+    return false;
+  }
+}
+
+export type NotificationGroup = {
+  isGroup: true;
+  groupKey: string;
+  source?: string;
+  category: NotificationCategory;
+  count: number;
+  unreadCount: number;
+  latest: Notification;
+  items: Notification[];
+};
+
+export type NotificationListItem = Notification | NotificationGroup;
+
+export function groupNotifications(items: Notification[]): NotificationListItem[] {
+  const result: NotificationListItem[] = [];
+  const groups = new Map<string, Notification[]>();
+
+  for (const item of items) {
+    const key = item.groupKey || item.source || item.category;
+    if (!groups.has(key)) {
+      groups.set(key, []);
+    }
+    groups.get(key)!.push(item);
+  }
+
+  const processedKeys = new Set<string>();
+  for (const item of items) {
+    const key = item.groupKey || item.source || item.category;
+    if (processedKeys.has(key)) continue;
+
+    const list = groups.get(key) || [];
+    if (list.length > 1 && (item.source || ["mail", "integration", "activity", "system"].includes(item.category))) {
+      processedKeys.add(key);
+      const unread = list.filter((n) => !n.read).length;
+      result.push({
+        isGroup: true,
+        groupKey: key,
+        source: item.source || key,
+        category: item.category,
+        count: list.length,
+        unreadCount: unread,
+        latest: list[0],
+        items: list,
+      });
+    } else {
+      result.push(item);
+    }
+  }
+
+  return result;
+}
+
 export function useNotifications() {
   const [items, setItems] = useState<Notification[]>(() => getGlobalItems());
   const [muted, setMutedState] = useState<Set<NotificationCategory>>(() => globalMuted);
@@ -372,6 +457,8 @@ export function useNotifications() {
     () => activeItems.filter((n) => !n.read && (n.priority === "critical" || n.priority === "important")).length,
     [activeItems]
   );
+
+
 
   const add = useCallback(
     (input: NotificationInput) => {
@@ -504,9 +591,22 @@ export function useNotifications() {
 
   const getCategories = useCallback(() => DEFAULT_CATEGORIES, []);
 
+  const groupedItems = useMemo(() => groupNotifications(activeItems), [activeItems]);
+
+  const focusDigest = useMemo(() => activeItems.filter((n) => n.deferred), [activeItems]);
+
+  const clearFocusDigest = useCallback(() => {
+    const current = getGlobalItems();
+    const next = current.map((n) => (n.deferred ? { ...n, deferred: false } : n));
+    setGlobalItems(next, true);
+  }, []);
+
   return {
     items,
     activeItems,
+    groupedItems,
+    focusDigest,
+    clearFocusDigest,
     unreadCount,
     importantCount,
     add,

@@ -21179,4 +21179,37 @@ CHANGELOG_BY_LANG.en.unshift({
   ],
 });
 
+
+CHANGELOG_BY_LANG.fr.unshift({
+  version: "v1.20.29",
+  date: "2026-09-03",
+  title: "ETHONE Notifications & Toasts 2.0 — Système d'Alertes Intelligent & Contextuel",
+  items: [
+    "Refonte complète de l'expérience Notifications et Toasts d'ETHONE Web en un système d'exploitation unifié.",
+    "Routeur de Priorité Intelligent : routage automatique selon 4 niveaux (low, normal, important, critical) entre Centre, Toasts et Dynamic Island.",
+    "Intégration du Focus Mode & Focus Digest : suspension des alertes non critiques pendant les sessions de travail et récapitulatif synthétique à la fin de la session.",
+    "Support des Heures Calmes (Quiet Hours) personnalisables avec filtrage strict.",
+    "Regroupement Intelligent (Smart Grouping) : fusion des notifications consécutives d'une même source (GitHub, Discord, Mail, Fichiers, Marketplace) en cartes dépliables.",
+    "Actions directes intégrées : boutons d'action 1-clic sur les cartes de notification et les Toasts (Ouvrir le fichier, Voir le mail, Tout voir).",
+    "Centre de notifications enrichi : onglets thématiques (Toutes, Non lues, Brain, Intégrations, Système), recherche en temps réel et purge sélective.",
+    "Bumping de version vers v1.20.29.",
+  ],
+});
+
+CHANGELOG_BY_LANG.en.unshift({
+  version: "v1.20.29",
+  date: "2026-09-03",
+  title: "ETHONE Notifications & Toasts 2.0 — Intelligent Contextual Notification System",
+  items: [
+    "Complete overhaul of ETHONE Web Notifications & Toasts into a unified operating system hub.",
+    "Intelligent Priority Router: automatic distribution across 4 priority tiers (low, normal, important, critical) to Center, Toasts, and Dynamic Island.",
+    "Focus Mode Integration & Focus Digest: mutes secondary alerts during focus sessions and compiles an end-of-session digest banner.",
+    "Customizable Quiet Hours window suppressing non-essential interruptions.",
+    "Smart Grouping: consecutive notifications from identical sources (GitHub, Discord, Mail, Files, Marketplace) collapse into expandable group cards.",
+    "Interactive Direct Actions: 1-click action triggers in notification items and rich toasts (Open file, View email, Review all).",
+    "Modernized Notification Center: category filter tabs (All, Unread, Brain, Integrations, System), real-time search, and batch mark as read.",
+    "Version bump to v1.20.29.",
+  ],
+});
+
 export const CHANGELOG = CHANGELOG_BY_LANG.fr;

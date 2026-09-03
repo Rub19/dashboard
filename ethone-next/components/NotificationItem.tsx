@@ -357,6 +357,23 @@ export default function NotificationItem({
               {n.category || "Système"}
             </span>
           )}
+          {n.action && (
+            <button
+              type="button"
+              onClick={(e) => {
+                e.stopPropagation();
+                if (n.action?.onClick) n.action.onClick();
+                else if (n.action?.route) {
+                  window.location.href = n.action.route === "home" ? "/" : `/${n.action.route}/`;
+                } else if (n.action?.url) {
+                  window.open(n.action.url, "_blank");
+                }
+              }}
+              className="rounded-xl border border-[var(--accent-primary)]/40 bg-[var(--accent-primary)]/15 px-3 py-1 text-[11px] font-bold text-[var(--accent-primary)] hover:bg-[var(--accent-primary)]/25 transition-all active:scale-95 shadow-xs"
+            >
+              {n.action.label}
+            </button>
+          )}
         </div>
 
         {n.data?.url || n.data?.route ? (

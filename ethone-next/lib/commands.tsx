@@ -248,8 +248,9 @@ export function useCommandItems(setOpen: (v: boolean) => void): CommandItem[] {
 
       // 3. Actions Rapides Fichiers & Mail & Brain
       { id: "action-upload-file", label: "Téléverser un Fichier", subtitle: "Ajouter un document au stockage", category: "Actions Rapides", icon: <Icon name="upload" />, contexts: ["/files/"], contextPriority: 95, keywords: ["upload", "importer", "televerser", "ajouter fichier", "drop"], action: () => { navigate("/files/"); window.dispatchEvent(new CustomEvent("v8:trigger-upload")); } },
-      { id: "action-compose-mail", label: "Rédiger un Email", subtitle: "Nouveau message sortant", category: "Actions Rapides", icon: <Icon name="mail" />, contexts: ["/mail/"], contextPriority: 95, keywords: ["compose", "nouveau mail", "ecrire mail", "envoyer email", "rediger"], action: () => { navigate("/mail/"); window.dispatchEvent(new CustomEvent("v8:compose-mail")); } },
       { id: "action-new-brain-chat", label: "Nouvelle Conversation Brain", subtitle: "Démarrer un fil de discussion vierge", category: "Brain", icon: <Icon name="brain" />, contexts: ["/brain/"], contextPriority: 95, keywords: ["new chat", "nouvelle conversation", "reset brain", "clear chat"], action: () => { navigate("/brain/"); window.dispatchEvent(new CustomEvent("v8:new-brain-chat")); } },
+      { id: "action-open-notifications", label: "Ouvrir les Notifications", subtitle: "Consulter le centre de notifications", category: "Actions Rapides", icon: <Icon name="bell" />, shortcut: "N", keywords: ["notifications", "alertes", "messages", "centre de notifications", "non lues"], action: openNotificationCenter },
+      { id: "action-mark-notifications-read", label: "Marquer toutes les notifications comme lues", subtitle: "Acquitter les alertes", category: "Actions Rapides", icon: <Icon name="check" />, keywords: ["marquer tout lu", "read all", "clear unread", "acquitter notifications"], action: () => { window.dispatchEvent(new CustomEvent("v8:mark-all-notifications-read")); } },
 
       // 4. Thèmes Haute Fidélité (Theme Engine 3.0)
       ...PRESET_THEME_IDS.map((themeId) => {

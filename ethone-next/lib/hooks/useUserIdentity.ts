@@ -31,11 +31,8 @@ function isExternalOAuthAvatar(url?: string | null): boolean {
 }
 
 const GENERIC_DISPLAY_NAMES = new Set([
-  "profil principal",
-  "profil",
-  "default",
   "invité",
-  "utilisateur",
+  "guest",
 ]);
 
 function isGenericDisplayName(name?: unknown): boolean {
@@ -86,7 +83,7 @@ export function useUserIdentity(): UserIdentity {
             localStorage.getItem(`ethone:custom:avatar`) ||
             localStorage.getItem(`ethone_user_avatar`);
 
-          if (savedName && savedName.trim() && savedName !== "Invité" && !isGenericDisplayName(savedName)) {
+          if (savedName && savedName.trim() && savedName.toLowerCase() !== "invité" && savedName.toLowerCase() !== "guest") {
             setCachedName(savedName.trim());
           } else {
             setCachedName("");
@@ -129,22 +126,21 @@ export function useUserIdentity(): UserIdentity {
 
   // Resolution of display name strictly isolated per user / profile
   const displayName = useMemo(() => {
-    const activeProfName = firstNonGeneric(activeProfile?.name);
-    const publicProfName = firstNonGeneric(publicProfile?.display_name, publicProfile?.username);
+    const directSaved = cachedName && cachedName.trim() && cachedName.toLowerCase() !== "invité" && cachedName.toLowerCase() !== "guest" ? cachedName.trim() : "";
+    const publicProfName = publicProfile?.display_name || publicProfile?.username || "";
+    const activeProfName = activeProfile?.name && activeProfile.name.toLowerCase() !== "invité" && activeProfile.name.toLowerCase() !== "guest" ? activeProfile.name : "";
     const emailName = user?.email ? user.email.split("@")[0] : "";
+    const metaName = (customFromMeta as string) || "";
 
-    if (!user) {
-      return activeProfName || cachedName || publicProfName || "Invité";
-    }
-
-    return (
+    const candidate =
+      directSaved ||
       publicProfName ||
+      metaName ||
       activeProfName ||
-      customFromMeta ||
-      cachedName ||
       emailName ||
-      "Utilisateur"
-    );
+      "Personnel";
+
+    return candidate;
   }, [user, publicProfile?.display_name, publicProfile?.username, activeProfile?.name, customFromMeta, cachedName]);
 
   // Resolution of avatar URL: custom user uploaded avatar on ETHONE only (strictly excluding Google & Discord avatars!)

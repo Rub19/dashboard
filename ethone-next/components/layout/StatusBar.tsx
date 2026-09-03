@@ -80,7 +80,7 @@ function usePing() {
 
 function useSessionRole() {
   const { user } = useAuth();
-  if (!user) return { id: "guest" as const, label: "Invité", color: "text-[var(--text-muted)]" };
+  if (!user) return { id: "local" as const, label: "Session Locale", color: "text-[var(--text-muted)]" };
   const role =
     (user.user_metadata?.role as string | undefined) ||
     (user.app_metadata?.role as string | undefined) ||
@@ -207,7 +207,7 @@ export default function StatusBar() {
   const [menuOpen, setMenuOpen] = useState(false);
   const menuRef = useRef<HTMLDivElement>(null);
 
-  const userLabel = displayName || i18n("guest");
+  const userLabel = displayName || "Personnel";
   const sessionRole = useSessionRole();
 
   const syncStatus = useSyncStore((s) => s.status);
@@ -269,13 +269,13 @@ export default function StatusBar() {
             tone={
               sessionRole.id === "admin"
                 ? "warning"
-                : sessionRole.id === "guest"
+                : sessionRole.id === "local"
                 ? "default"
                 : "success"
             }
           />
 
-          <CloudSyncPill status={syncStatus} online={online} errorSources={syncErrorSources} i18n={i18n} isGuest={sessionRole.id === "guest"} />
+          <CloudSyncPill status={syncStatus} online={online} errorSources={syncErrorSources} i18n={i18n} isGuest={sessionRole.id === "local"} />
         </div>
 
         <div className="pointer-events-auto flex min-w-0 items-center gap-2 bg-transparent px-0 py-0">

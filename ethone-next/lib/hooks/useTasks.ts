@@ -133,7 +133,10 @@ export function useTasks() {
   const create = useCallback(
     async (input: TaskInput) => {
       const userId = await withUserId();
-      if (!userId) return null;
+      if (!userId) {
+        setStatus("idle");
+        return null;
+      }
 
       setStatus("syncing");
       try {
@@ -159,10 +162,13 @@ export function useTasks() {
 
   const update = useCallback(
     async (id: string, input: Partial<TaskInput>) => {
-      setStatus("syncing");
       const userId = await withUserId();
-      if (!userId) return null;
+      if (!userId) {
+        setStatus("idle");
+        return null;
+      }
 
+      setStatus("syncing");
       const optimistic = { ...items.find((t) => t.id === id), ...input, id, updated_at: new Date().toISOString() } as Task;
       setItems((prev) => prev.map((t) => (t.id === id ? optimistic : t)));
 
@@ -192,10 +198,13 @@ export function useTasks() {
 
   const remove = useCallback(
     async (id: string) => {
-      setStatus("syncing");
       const userId = await withUserId();
-      if (!userId) return;
+      if (!userId) {
+        setStatus("idle");
+        return;
+      }
 
+      setStatus("syncing");
       const previous = [...items];
       setItems((prev) => prev.filter((t) => t.id !== id));
 

@@ -7206,6 +7206,30 @@ CHANGELOG_BY_LANG.es.unshift({
 });
 
 CHANGELOG_BY_LANG.fr.unshift({
+  version: "v1.20.23",
+  date: "2026-09-03",
+  title: "ETHONE — Correction Définitive Synchronisation & Résolution Identité",
+  items: [
+    "Suppression définitive du spinner infini : auto-résolution et correction des hooks (pomodoro, tâches, layout).",
+    "Correction complète du libellé 'Invité' : priorité au profil actif 'Personnel', nom personnalisé et persistance locale.",
+    "Fallback sécurisé des profils locaux pour éviter toute désynchronisation hors-ligne ou initiale.",
+    "Version affichée : v1.20.23.",
+  ],
+});
+
+CHANGELOG_BY_LANG.en.unshift({
+  version: "v1.20.23",
+  date: "2026-09-03",
+  title: "ETHONE — Final Sync Spinner Fix & Identity Resolution",
+  items: [
+    "Fixed infinite sync loop by correcting unreturned sync states in Pomodoro and tasks hooks.",
+    "Eliminated 'Invité' fallback, properly displaying active profile name ('Personnel') and custom display names.",
+    "Added robust local profile fallback ensuring seamless offline operation.",
+    "Displayed version: v1.20.23.",
+  ],
+});
+
+CHANGELOG_BY_LANG.fr.unshift({
   version: "v1.20.22",
   date: "2026-09-01",
   title: "ETHONE — Fix synchronisation infinie",

@@ -29,13 +29,47 @@ function mapProfile(p: Record<string, unknown>): Profile {
   };
 }
 
+const DEFAULT_LOCAL_PROFILES: Profile[] = [
+  {
+    id: "personal",
+    name: "Personnel",
+    type: "personal",
+    accent: "emerald",
+    workspace: "personal",
+    widgets: ["tasks", "brain", "focus", "weather"],
+    integrations: [],
+    createdAt: new Date().toISOString(),
+  },
+];
+
 export function useProfiles() {
-  const [profiles, setProfiles] = useState<Profile[]>([]);
-  const [active, setActive] = useState<string>("");
+  const [profiles, setProfiles] = useState<Profile[]>(() => {
+    if (typeof window !== "undefined") {
+      try {
+        const saved = localStorage.getItem("ethone_local_profiles");
+        if (saved) {
+          const parsed = JSON.parse(saved);
+          if (Array.isArray(parsed) && parsed.length > 0) return parsed;
+        }
+      } catch {}
+    }
+    return DEFAULT_LOCAL_PROFILES;
+  });
+
+  const [active, setActive] = useState<string>(() => {
+    if (typeof window !== "undefined") {
+      try {
+        const savedActive = localStorage.getItem("ethone_active_profile_id");
+        if (savedActive) return savedActive;
+      } catch {}
+    }
+    return "personal";
+  });
+
   const [loaded, setLoaded] = useState(false);
 
   const activeProfile = useMemo(
-    () => profiles.find((p) => p.id === active) || null,
+    () => profiles.find((p) => p.id === active) || profiles[0] || DEFAULT_LOCAL_PROFILES[0],
     [profiles, active]
   );
 
@@ -44,13 +78,22 @@ export function useProfiles() {
       const res = force
         ? await fetchWorker("/api/profiles")
         : await fetchWorkerCached("/api/profiles");
-      const list = Array.isArray(res?.data?.list) ? res.data.list.map(mapProfile) : [];
-      const activeEntry = res?.data?.active ? mapProfile(res.data.active) : list[0] || null;
+      const list = Array.isArray(res?.data?.list) && res.data.list.length > 0
+        ? res.data.list.map(mapProfile)
+        : DEFAULT_LOCAL_PROFILES;
+      const activeEntry = res?.data?.active ? mapProfile(res.data.active) : list[0] || DEFAULT_LOCAL_PROFILES[0];
       setProfiles(list);
-      setActive(activeEntry?.id || "");
+      setActive(activeEntry?.id || list[0]?.id || "personal");
+      if (typeof window !== "undefined") {
+        try {
+          localStorage.setItem("ethone_local_profiles", JSON.stringify(list));
+          localStorage.setItem("ethone_active_profile_id", activeEntry?.id || list[0]?.id || "personal");
+        } catch {}
+      }
     } catch {
-      setProfiles([]);
-      setActive("");
+      // Retain existing local profiles or default
+      setProfiles((prev) => (prev.length > 0 ? prev : DEFAULT_LOCAL_PROFILES));
+      setActive((prev) => prev || "personal");
     } finally {
       setLoaded(true);
     }

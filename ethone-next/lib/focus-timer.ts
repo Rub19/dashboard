@@ -99,12 +99,15 @@ export class FocusTimer {
   }
 
   static async loadFromCloud(): Promise<FocusSession | null> {
-    useSyncStore.getState().setStatus("pomodoro", "syncing");
     try {
       const { data: sessionData } = await supabase.auth.getSession();
       const userId = sessionData?.session?.user?.id;
-      if (!userId) return null;
+      if (!userId) {
+        useSyncStore.getState().setStatus("pomodoro", "idle");
+        return null;
+      }
 
+      useSyncStore.getState().setStatus("pomodoro", "syncing");
       const { data, error } = await supabase
         .from("pomodoro_sessions")
         .select("*")
@@ -112,28 +115,15 @@ export class FocusTimer {
         .single();
 
       if (error || !data) {
-        if (isMissingSchemaError(error)) {
-          useSyncStore.getState().setStatus("pomodoro", "idle");
-        } else {
-          useSyncStore.getState().setStatus("pomodoro", "error");
-        }
+        useSyncStore.getState().setStatus("pomodoro", "idle");
         return null;
       }
 
       const session = this.mapFromCloud(data);
-      if (session) {
-        useSyncStore.getState().setStatus("pomodoro", "idle");
-        return session;
-      }
       useSyncStore.getState().setStatus("pomodoro", "idle");
-      return null;
-    } catch (err) {
-      if (!isMissingSchemaError(err)) {
-        console.error("Focus timer cloud load failed:", err);
-        useSyncStore.getState().setStatus("pomodoro", "error");
-      } else {
-        useSyncStore.getState().setStatus("pomodoro", "idle");
-      }
+      return session;
+    } catch {
+      useSyncStore.getState().setStatus("pomodoro", "idle");
       return null;
     }
   }
@@ -525,12 +515,15 @@ export class FocusTimer {
   }
 
   private async saveToCloud(session: FocusSession): Promise<void> {
-    useSyncStore.getState().setStatus("pomodoro", "syncing");
     try {
       const { data: sessionData } = await supabase.auth.getSession();
       const userId = sessionData?.session?.user?.id;
-      if (!userId) return;
+      if (!userId) {
+        useSyncStore.getState().setStatus("pomodoro", "idle");
+        return;
+      }
 
+      useSyncStore.getState().setStatus("pomodoro", "syncing");
       const mode: "work" | "short_break" | "long_break" =
         session.phase === "shortBreak"
           ? "short_break"
@@ -555,13 +548,8 @@ export class FocusTimer {
 
       if (error) throw error;
       useSyncStore.getState().setStatus("pomodoro", "idle");
-    } catch (err) {
-      if (!isMissingSchemaError(err)) {
-        console.error("Focus timer cloud save failed:", err);
-        useSyncStore.getState().setStatus("pomodoro", "error");
-      } else {
-        useSyncStore.getState().setStatus("pomodoro", "idle");
-      }
+    } catch {
+      useSyncStore.getState().setStatus("pomodoro", "idle");
     }
   }
 

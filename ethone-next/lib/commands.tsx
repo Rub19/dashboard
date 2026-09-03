@@ -13,6 +13,13 @@ import { PLUGINS } from "@/lib/plugins";
 import { Icon } from "@/lib/icons";
 import { useFocus } from "@/components/FocusProvider";
 import { activityJournal } from "@/lib/activity-journal";
+import { transitionTheme } from "@/lib/theme-transition";
+import {
+  PRESET_THEMES,
+  PRESET_THEME_IDS,
+  UNIVERSAL_ACCENTS,
+  type PremiumThemeId,
+} from "@/lib/theme-engine";
 
 export type CommandItem = {
   id: string;
@@ -20,11 +27,18 @@ export type CommandItem = {
   category: string;
   icon?: React.ReactNode;
   shortcut?: string;
+  subtitle?: string;
+  keywords?: string[];
+  aliases?: string[];
+  contexts?: string[];
+  contextPriority?: number;
+  isSensitive?: boolean;
+  requiresOnline?: boolean;
+  badge?: string;
   action: () => void;
 };
 
 const LANGUAGES = ["fr", "en", "es", "de"];
-const ACCENTS = ["violet", "mint", "sky", "amber", "rose", "teal", "coral"];
 const DOCK_SCALES = [20, 50, 80];
 const AURAS = ["classic", "boreal", "cyberpunk", "eclipse", "emerald", "mineral"];
 const WALLPAPERS: Settings["wallpaper"][] = ["none", "aurora", "nebula", "mesh", "noise", "grain", "mineral"];
@@ -83,10 +97,6 @@ export function useCommandItems(setOpen: (v: boolean) => void): CommandItem[] {
     update({ dockRadius: next });
   }, [settings.dockRadius, update]);
 
-  const cycleAccent = useCallback(() => {
-    update({ accentColor: cycle(ACCENTS, settings.accentColor) as Settings["accentColor"] });
-  }, [settings, update]);
-
   const cycleLanguage = useCallback(() => {
     update({ language: cycle(LANGUAGES, settings.language) });
   }, [settings, update]);
@@ -119,13 +129,10 @@ export function useCommandItems(setOpen: (v: boolean) => void): CommandItem[] {
   const startFocus = useCallback(
     (preset: string) => {
       start(preset);
-      if (["pomodoro", "deep", "sprint", "quick"].includes(preset)) {
-        update({ focusPreset: preset });
-      }
       setOpen(false);
       router.push("/focus/");
     },
-    [start, update, setOpen, router]
+    [start, setOpen, router]
   );
 
   const stopFocus = useCallback(() => {
@@ -179,237 +186,128 @@ export function useCommandItems(setOpen: (v: boolean) => void): CommandItem[] {
     const url = URL.createObjectURL(blob);
     const a = document.createElement("a");
     a.href = url;
-    a.download = `ethone-settings-${new Date().toISOString().slice(0, 10)}.json`;
+    a.download = "ethone-settings.json";
     a.click();
     URL.revokeObjectURL(url);
     setOpen(false);
   }, [settings, setOpen]);
 
-  const importPresets = useCallback(() => {
-    const input = document.createElement("input");
-    input.type = "file";
-    input.accept = ".json,application/json";
-    input.onchange = async (e) => {
-      const file = (e.target as HTMLInputElement).files?.[0];
-      if (!file) return;
-      try {
-        const text = await file.text();
-        const parsed = JSON.parse(text);
-        if (parsed && typeof parsed === "object") {
-          update(parsed as Partial<Settings>);
-        }
-      } catch {
-        /* invalid import ignored */
-      }
+  const selectTheme = useCallback(
+    (themeId: string) => {
+      transitionTheme(themeId, (id) => update({ theme: id }), {
+        accentColor: settings.accentColor,
+        customAccent: settings.customAccent,
+        glassLevel: settings.glassLevel,
+        performanceMode: settings.performanceMode,
+        customThemes: settings.customThemes,
+        reducedMotion: settings.reducedMotion,
+      });
       setOpen(false);
-    };
-    input.click();
-  }, [update, setOpen]);
-
-  const macroCommands: CommandItem[] = useMemo(
-    () =>
-      macros.map((m) => {
-        const data = m.data as { action?: string; href?: string; setting?: string };
-        return {
-          id: `macro-${m.id}`,
-          label: m.label,
-          category: "Macros",
-          icon: <Icon name="workflow" className="h-4 w-4" />,
-          action: () => {
-            if (data.action === "navigate" && data.href) navigate(data.href);
-            if (data.action === "toggle" && data.setting) {
-              if (data.setting === "brainEnabled") update({ brainEnabled: !settings.brainEnabled });
-              if (data.setting === "darkMode") update({ darkMode: !settings.darkMode });
-            }
-          },
-        };
-      }),
-    [macros, navigate, settings.brainEnabled, settings.darkMode, update]
+    },
+    [settings, update, setOpen]
   );
 
-  return useMemo<CommandItem[]>(() => {
-    const navigateCmd = (id: string, label: string, href: string, icon: string, shortcut?: string, category = "Navigation"): CommandItem => ({
-      id,
-      label,
-      category,
-      icon: <IconPlaceholder name={icon} />,
-      shortcut,
-      action: () => navigate(href),
-    });
+  const selectAccent = useCallback(
+    (accentId: string) => {
+      update({ accentColor: accentId as typeof settings.accentColor });
+      transitionTheme(settings.theme, () => {}, {
+        accentColor: accentId,
+        glassLevel: settings.glassLevel,
+        performanceMode: settings.performanceMode,
+        customThemes: settings.customThemes,
+        reducedMotion: settings.reducedMotion,
+      });
+      setOpen(false);
+    },
+    [settings, update, setOpen]
+  );
 
-    const openCmd = (id: string, label: string, href: string, icon: string, category: string): CommandItem => ({
-      id,
-      label,
-      category,
-      icon: <IconPlaceholder name={icon} />,
-      action: () => open(href, label),
-    });
+  return useMemo(() => {
+    const base: CommandItem[] = [
+      // 1. Navigation Principale
+      { id: "nav-home", label: "Aller à l'Accueil", subtitle: "Tableau de bord principal", category: "Navigation", icon: <Icon name="home" />, shortcut: "H", keywords: ["home", "accueil", "dashboard", "bento", "tableau de bord"], action: () => navigate("/") },
+      { id: "nav-brain", label: "Ouvrir ETHONE Brain", subtitle: "Assistant IA central et raisonnement", category: "Brain", icon: <Icon name="brain" />, shortcut: "B", contexts: ["/brain/", "/notes/"], contextPriority: 90, keywords: ["brain", "ia", "assistant", "chat", "llm", "intelligence", "ask brain"], action: () => navigate("/brain/") },
+      { id: "nav-focus", label: "Ouvrir le Mode Focus", subtitle: "Session de travail et chronomètre", category: "Focus", icon: <Icon name="timer" />, shortcut: "F", contexts: ["/focus/"], contextPriority: 90, keywords: ["focus", "pomodoro", "timer", "chrono", "travail", "concentration", "deep work"], action: () => navigate("/focus/") },
+      { id: "nav-files", label: "Ouvrir les Fichiers", subtitle: "Explorateur de documents et drive", category: "Navigation", icon: <Icon name="folder" />, contexts: ["/files/"], contextPriority: 90, keywords: ["files", "fichiers", "documents", "drive", "upload", "stockage", "pdf"], action: () => navigate("/files/") },
+      { id: "nav-mail", label: "Ouvrir ETHONE Mail", subtitle: "Boîte de réception unifiée", category: "Navigation", icon: <Icon name="mail" />, contexts: ["/mail/"], contextPriority: 90, keywords: ["mail", "email", "inbox", "messages", "courriel", "boite"], action: () => navigate("/mail/") },
+      { id: "nav-marketplace", label: "Ouvrir le Marketplace", subtitle: "Extensions, widgets et thèmes", category: "Marketplace", icon: <Icon name="sparkles" />, keywords: ["marketplace", "store", "plugins", "extensions", "addons", "widgets", "themes"], action: () => navigate("/plugins/") },
+      { id: "nav-activity", label: "Journal d'Activité", subtitle: "Historique et analytics système", category: "Navigation", icon: <Icon name="activity" />, keywords: ["activity", "activite", "historique", "logs", "analytics"], action: () => navigate("/activity/") },
+      { id: "nav-connections", label: "Gérer les Connexions", subtitle: "Comptes tiers liés et intégrations", category: "Intégrations", icon: <Icon name="link" />, keywords: ["connections", "connexions", "integrations", "spotify", "github", "discord", "steam"], action: () => navigate("/connections/") },
+      { id: "nav-settings", label: "Ouvrir les Réglages", subtitle: "Préférences globales du système", category: "Réglages", icon: <Icon name="settings" />, shortcut: ",", contexts: ["/settings/"], contextPriority: 90, keywords: ["settings", "reglages", "parametres", "preferences", "config", "options"], action: () => navigate("/settings/") },
+      { id: "nav-profile", label: "Mon Profil Public", subtitle: "Gérer mon avatar et ma biographie", category: "Navigation", icon: <Icon name="user" />, keywords: ["profile", "profil", "avatar", "compte", "moi", "bio"], action: () => navigate("/profile/") },
+      { id: "nav-tasks", label: "Voir mes Tâches", subtitle: "Gestionnaire de tâches et todo-list", category: "Navigation", icon: <Icon name="check" />, keywords: ["tasks", "taches", "todo", "actions", "list"], action: () => navigate("/tasks/") },
+      { id: "nav-notes", label: "Voir mes Notes", subtitle: "Prise de notes et synthèses", category: "Navigation", icon: <Icon name="file-text" />, keywords: ["notes", "scratchpad", "ecriture", "bloc-notes"], action: () => navigate("/notes/") },
+      { id: "nav-calendar", label: "Ouvrir le Calendrier", subtitle: "Événements et plannings", category: "Navigation", icon: <Icon name="calendar" />, keywords: ["calendar", "calendrier", "agenda", "planning", "events"], action: () => navigate("/calendar/") },
+      { id: "nav-weather", label: "Météo en direct", subtitle: "Prévisions et conditions locales", category: "Navigation", icon: <Icon name="cloud" />, keywords: ["weather", "meteo", "temperature", "pluie", "soleil"], action: () => navigate("/weather/") },
 
-    return [
-      // Navigation
-      navigateCmd("home.open", "Accueil", "/", "home", "H"),
-      navigateCmd("brain.open", "Brain (Assistant IA)", "/brain/", "brain", "B"),
-      navigateCmd("focus.open", "Focus Mode", "/focus/", "focus", "F"),
-      navigateCmd("notes.open", "Notes", "/notes/", "notebook-pen", "N"),
-      navigateCmd("tasks.open", "Tâches", "/tasks/", "circle-check", "T"),
-      navigateCmd("mail.open", "Mail", "/mail/", "mail", "M"),
-      navigateCmd("settings.open", "Réglages", "/settings/", "settings", "S"),
-      navigateCmd("calendar.open", "Agenda", "/calendar/", "calendar-days"),
-      navigateCmd("files.open", "Fichiers", "/files/", "folder"),
-      navigateCmd("activity.open", "Activity Hub", "/activity/", "activity"),
-      navigateCmd("connections.open", "Connexions", "/connections/", "plug"),
-      navigateCmd("spaces.open", "Spaces", "/spaces/", "layout-grid"),
-      navigateCmd("flows.open", "Flows", "/flows/", "workflow"),
-      { id: "mission.open", label: "Mission Control", category: "Système", icon: <IconPlaceholder name="layout-dashboard" />, action: () => { toggleMissionControl(); setOpen(false); } },
-      navigateCmd("interactions.open", "Interactions", "/interactions/", "flame"),
-      navigateCmd("team.open", "Équipe", "/team/", "users"),
-      navigateCmd("changelog.open", "Notes de version", "/changelog/", "badge-check"),
-      navigateCmd("profiles.open", "Changer de profil", "/profile-selection/", "layout-grid"),
-      navigateCmd("security.open", "Sécurité", "/security/", "shield-check"),
-      navigateCmd("marketplace.open", "Marketplace", "/connections/", "store"),
-      navigateCmd("widgets.open", "Widgets", "/", "panels-top-left"),
-      navigateCmd("bills.open", "Factures", "/bills/", "receipt", undefined, "Facturation"),
-      navigateCmd("rss.open", "Flux RSS", "/rss/", "rss", undefined, "RSS"),
-      navigateCmd("scratchpad.open", "Brouillon rapide", "/scratchpad/", "sticky-note", undefined, "Scratchpad"),
-      navigateCmd("matches.open", "Matchs", "/matches/", "trophy", undefined, "Matchs"),
-      navigateCmd("drop.open", "Drops", "/drop/", "upload", undefined, "Drops"),
-      navigateCmd("system.open", "Système", "/system/", "monitor", undefined, "Système"),
-      navigateCmd("weather.open", "Météo", "/weather/", "cloud-sun", undefined, "Météo"),
-      navigateCmd("macros.open", "Macros", "/macros/", "workflow", undefined, "Macros"),
-      navigateCmd("plugins.open", "Plugins", "/plugins/", "plug", undefined, "Plugins"),
+      // 2. Actions Focus Timer
+      { id: "focus-pomodoro-25", label: "Lancer un Pomodoro (25 min)", subtitle: "25 min concentration + 5 min pause", category: "Focus", icon: <Icon name="timer" />, contexts: ["/focus/"], contextPriority: 95, keywords: ["pomodoro", "start pomodoro", "lance un pomodoro", "focus 25", "travail 25"], action: () => startFocus("pomodoro") },
+      { id: "focus-deep-45", label: "Lancer un Deep Work (45 min)", subtitle: "45 min de travail intensif sans interruption", category: "Focus", icon: <Icon name="timer" />, contexts: ["/focus/"], contextPriority: 95, keywords: ["deep work", "focus 45", "lance deep work", "travail 45", "immersion"], action: () => startFocus("deep") },
+      { id: "focus-sprint-15", label: "Lancer un Sprint Court (15 min)", subtitle: "15 min d'exécution rapide", category: "Focus", icon: <Icon name="timer" />, contexts: ["/focus/"], contextPriority: 95, keywords: ["sprint", "focus 15", "rapide", "quick focus"], action: () => startFocus("sprint") },
+      { id: "focus-stop", label: "Arrêter la Session Focus", subtitle: "Stopper le chronomètre en cours", category: "Focus", icon: <Icon name="x" />, contexts: ["/focus/"], contextPriority: 95, keywords: ["stop focus", "arreter focus", "quitter focus", "finir focus"], action: stopFocus },
 
-      // Créer
-      { id: "notes.new", label: "Nouvelle note", category: "Créer", icon: <IconPlaceholder name="file-plus-2" />, action: () => navigate("/notes/") },
-      { id: "tasks.new", label: "Nouvelle tâche", category: "Créer", icon: <IconPlaceholder name="list-plus" />, action: () => navigate("/tasks/") },
-      { id: "calendar.new", label: "Nouvel événement", category: "Créer", icon: <IconPlaceholder name="calendar-plus" />, action: () => navigate("/calendar/") },
-      { id: "files.new-link", label: "Ajouter un lien", category: "Créer", icon: <IconPlaceholder name="link-2" />, action: () => navigate("/files/?add=link") },
-      { id: "brain.ask", label: "Poser une question à Brain", category: "Créer", icon: <IconPlaceholder name="sparkles" />, action: () => navigate("/brain/") },
-      { id: "mail.compose", label: "Nouveau mail", category: "Créer", icon: <IconPlaceholder name="mail-plus" />, action: () => navigate("/mail/") },
-      { id: "files.upload", label: "Uploader un fichier", category: "Créer", icon: <IconPlaceholder name="upload" />, action: () => navigate("/files/") },
-      { id: "new-interaction", label: "Nouvelle interaction", category: "Créer", icon: <IconPlaceholder name="interactions" />, action: () => navigate("/interactions/") },
-      { id: "billing.new", label: "Nouvelle facture", category: "Créer", icon: <IconPlaceholder name="receipt" />, action: () => navigate("/bills/") },
-      { id: "drop.create", label: "Créer un drop", category: "Créer", icon: <IconPlaceholder name="share-2" />, action: () => navigate("/drop/") },
+      // 3. Actions Rapides Fichiers & Mail & Brain
+      { id: "action-upload-file", label: "Téléverser un Fichier", subtitle: "Ajouter un document au stockage", category: "Actions Rapides", icon: <Icon name="upload" />, contexts: ["/files/"], contextPriority: 95, keywords: ["upload", "importer", "televerser", "ajouter fichier", "drop"], action: () => { navigate("/files/"); window.dispatchEvent(new CustomEvent("v8:trigger-upload")); } },
+      { id: "action-compose-mail", label: "Rédiger un Email", subtitle: "Nouveau message sortant", category: "Actions Rapides", icon: <Icon name="mail" />, contexts: ["/mail/"], contextPriority: 95, keywords: ["compose", "nouveau mail", "ecrire mail", "envoyer email", "rediger"], action: () => { navigate("/mail/"); window.dispatchEvent(new CustomEvent("v8:compose-mail")); } },
+      { id: "action-new-brain-chat", label: "Nouvelle Conversation Brain", subtitle: "Démarrer un fil de discussion vierge", category: "Brain", icon: <Icon name="brain" />, contexts: ["/brain/"], contextPriority: 95, keywords: ["new chat", "nouvelle conversation", "reset brain", "clear chat"], action: () => { navigate("/brain/"); window.dispatchEvent(new CustomEvent("v8:new-brain-chat")); } },
 
-      // Fenêtres
-      { id: "open-notes", label: "Notes (fenêtre)", category: "Fenêtres", icon: <IconPlaceholder name="app-window" />, action: () => open("/notes/", "Notes") },
-      { id: "open-tasks", label: "Tâches (fenêtre)", category: "Fenêtres", icon: <IconPlaceholder name="app-window" />, action: () => open("/tasks/", "Tâches") },
-      { id: "open-mail", label: "Mail (fenêtre)", category: "Fenêtres", icon: <IconPlaceholder name="app-window" />, action: () => open("/mail/", "Mail") },
-      { id: "open-bills", label: "Factures (fenêtre)", category: "Fenêtres", icon: <IconPlaceholder name="app-window" />, action: () => open("/bills/", "Factures") },
+      // 4. Thèmes Haute Fidélité (Theme Engine 3.0)
+      ...PRESET_THEME_IDS.map((themeId) => {
+        const def = PRESET_THEMES[themeId];
+        return {
+          id: `theme-${themeId}`,
+          label: `Thème : ${def.label}`,
+          subtitle: def.description,
+          category: "Thèmes & Apparence",
+          icon: <Icon name="palette" />,
+          keywords: ["theme", "palette", themeId, def.label.toLowerCase(), "sombre", "clair", "oled", "cyber", "glass"],
+          action: () => selectTheme(themeId),
+        };
+      }),
 
-      // Spaces
-      { id: "space.personal", label: "Espace Personnel", category: "Spaces", icon: <IconPlaceholder name="user-round" />, action: () => activateSpace("personal") },
-      { id: "space.focus", label: "Espace Focus", category: "Spaces", icon: <IconPlaceholder name="focus" />, action: () => activateSpace("focus") },
-      { id: "space.studio", label: "Espace Studio", category: "Spaces", icon: <IconPlaceholder name="sparkles" />, action: () => activateSpace("studio") },
+      // 5. Couleurs d'Accent Universelles
+      ...UNIVERSAL_ACCENTS.map((acc) => ({
+        id: `accent-${acc.id}`,
+        label: `Accent : ${acc.label}`,
+        subtitle: `Changer la couleur d'accent en ${acc.label} (${acc.hex})`,
+        category: "Thèmes & Apparence",
+        icon: <span className="h-3 w-3 rounded-full" style={{ backgroundColor: acc.hex }} />,
+        keywords: ["accent", "couleur", acc.id, acc.label.toLowerCase(), "color", "tint"],
+        action: () => selectAccent(acc.id),
+      })),
 
-      // Presets
-      { id: "preset.productivity", label: "Preset Productivité", category: "Presets", icon: <IconPlaceholder name="circle-check" />, action: () => applyPreset("productivity") },
-      { id: "preset.focus", label: "Preset Focus", category: "Presets", icon: <IconPlaceholder name="focus" />, action: () => applyPreset("focus") },
-      { id: "preset.gaming", label: "Preset Gaming", category: "Presets", icon: <IconPlaceholder name="gamepad-2" />, action: () => applyPreset("gaming") },
-      { id: "preset.creative", label: "Preset Créatif", category: "Presets", icon: <IconPlaceholder name="sparkles" />, action: () => applyPreset("creative") },
-      { id: "preset.minimal", label: "Preset Minimal", category: "Presets", icon: <IconPlaceholder name="minimize-2" />, action: () => applyPreset("minimal") },
-      { id: "preset.developer", label: "Preset Développement", category: "Presets", icon: <IconPlaceholder name="code" />, action: () => applyPreset("developer") },
-      { id: "presets.export", label: "Exporter les réglages", category: "Presets", icon: <IconPlaceholder name="download" />, action: exportPresets },
-      { id: "presets.import", label: "Importer les réglages", category: "Presets", icon: <IconPlaceholder name="upload" />, action: importPresets },
+      // 6. Réglages Sub-sections
+      { id: "settings-appearance", label: "Réglages d'Apparence & Thèmes", subtitle: "Thèmes, studio de personnalisation, icônes et polices", category: "Réglages", icon: <Icon name="palette" />, keywords: ["appearance", "apparence", "themes", "icones", "studio"], action: () => navigate("/settings/appearance/") },
+      { id: "settings-security", label: "Sécurité & Authentification", subtitle: "Mots de passe, 2FA et clés Passkeys", category: "Réglages", icon: <Icon name="lock" />, keywords: ["security", "securite", "password", "mot de passe", "2fa", "passkey"], action: () => navigate("/settings/security/") },
+      { id: "settings-notifications", label: "Préférences des Notifications", subtitle: "Sons, push, emails et alertes", category: "Réglages", icon: <Icon name="bell" />, keywords: ["notifications", "alertes", "sons", "volume", "push"], action: () => navigate("/settings/notifications/") },
+      { id: "settings-dock", label: "Personnalisation du Dock", subtitle: "Alignement, taille, effet verre et auto-masquage", category: "Réglages", icon: <Icon name="layout" />, keywords: ["dock", "barre", "alignement", "taille", "verre"], action: () => navigate("/settings/dock/") },
 
-      // Réglages
-      { id: "density.automatic", label: "Densité automatique", category: "Réglages", icon: <IconPlaceholder name="wand-sparkles" />, action: () => setDensity("automatic") },
-      { id: "density.spacious", label: "Densité spacieuse", category: "Réglages", icon: <IconPlaceholder name="maximize-2" />, action: () => setDensity("spacious") },
-      { id: "density.comfortable", label: "Densité confortable", category: "Réglages", icon: <IconPlaceholder name="panel-top" />, action: () => setDensity("comfortable") },
-      { id: "density.compact", label: "Densité compacte", category: "Réglages", icon: <IconPlaceholder name="rows-3" />, action: () => setDensity("compact") },
-      { id: "density.ultra", label: "Densité ultra-compacte", category: "Réglages", icon: <IconPlaceholder name="list-collapse" />, action: () => setDensity("ultra") },
-      { id: "density.custom", label: "Densité personnalisée", category: "Réglages", icon: <IconPlaceholder name="sliders-horizontal" />, action: () => setDensity("custom") },
-      { id: "theme.toggle", label: settings.darkMode ? "Passer en mode clair" : "Passer en mode sombre", category: "Réglages", icon: <IconPlaceholder name={settings.darkMode ? "sun" : "moon"} />, action: () => update({ darkMode: !settings.darkMode }) },
-      { id: "appearance.cycle", label: "Changer l'accent de couleur", category: "Réglages", icon: <IconPlaceholder name="palette" />, action: cycleAccent },
-      { id: "locale.cycle", label: "Changer de langue", category: "Réglages", icon: <IconPlaceholder name="languages" />, action: cycleLanguage },
-      { id: "dock.scale", label: "Taille du Dock", category: "Réglages", icon: <IconPlaceholder name="dock" />, action: cycleDockScale },
-      { id: "sidebar.toggle", label: "Basculer la barre latérale", category: "Réglages", icon: <IconPlaceholder name="panel-left" />, action: () => update({ sidebarVisible: !settings.sidebarVisible }) },
-      { id: "sound.toggle", label: settings.masterVolume ? "Couper le son" : "Activer le son", category: "Réglages", icon: <IconPlaceholder name="volume-2" />, action: () => update({ masterVolume: !settings.masterVolume }) },
-      { id: "dock.edit", label: "Personnaliser le Dock", category: "Réglages", icon: <IconPlaceholder name="sliders-horizontal" />, action: () => navigate("/settings/") },
-      { id: "aura.cycle", label: "Cycle Aura", category: "Réglages", icon: <IconPlaceholder name="sparkles" />, action: cycleAura },
-      { id: "wallpaper.cycle", label: "Cycle fond d'écran", category: "Réglages", icon: <IconPlaceholder name="image" />, action: cycleWallpaper },
-      { id: "session.cycle", label: "Cycle mode de session", category: "Réglages", icon: <IconPlaceholder name="coffee" />, action: cycleSessionMode },
-      { id: "aura.toggle", label: "Basculer l'aura", category: "Réglages", icon: <IconPlaceholder name="moon-star" />, action: toggleAura },
-      { id: "dock.toggle", label: "Basculer le Dock", category: "Réglages", icon: <IconPlaceholder name="dock" />, action: toggleDock },
-      { id: "statusbar.toggle", label: "Basculer la barre de statut", category: "Réglages", icon: <IconPlaceholder name="activity" />, action: toggleStatusBar },
+      // 7. Intégrations Directes
+      { id: "plugin-spotify", label: "Ouvrir Spotify", subtitle: "Lecteur musical et playlists", category: "Intégrations", icon: <Icon name="music" />, requiresOnline: true, keywords: ["spotify", "musique", "player", "playlist", "audio"], action: () => open("/plugins/spotify/", "Spotify") },
+      { id: "plugin-github", label: "Ouvrir GitHub", subtitle: "Dépôts, pull requests et notifications", category: "Intégrations", icon: <Icon name="code" />, requiresOnline: true, keywords: ["github", "git", "repos", "pr", "issues", "commits"], action: () => open("/plugins/github/", "GitHub") },
+      { id: "plugin-discord", label: "Ouvrir Discord", subtitle: "Statut de présence et communautés", category: "Intégrations", icon: <Icon name="message-circle" />, requiresOnline: true, keywords: ["discord", "chat", "presence", "serveur"], action: () => open("/plugins/discord/", "Discord") },
+      { id: "plugin-steam", label: "Ouvrir Steam", subtitle: "Bibliothèque de jeux et succès", category: "Intégrations", icon: <Icon name="gamepad" />, requiresOnline: true, keywords: ["steam", "jeux", "gaming", "valve"], action: () => open("/plugins/steam/", "Steam") },
 
-      // Brain
-      { id: "brain.memory.toggle", label: "Basculer la mémoire Brain", category: "Brain", icon: <IconPlaceholder name="bookmark-check" />, action: toggleBrainMemory },
-      { id: "brain.toggle", label: "Basculer Brain", category: "Brain", icon: <IconPlaceholder name="brain" />, action: toggleBrain },
-
-      // Navigation / mode
-      { id: "zen.toggle", label: "Mode Zen", category: "Navigation", icon: <IconPlaceholder name="minimize-2" />, action: toggleZen },
-
-      // Focus
-      { id: "focus.pomodoro", label: "Démarrer Pomodoro (25 min)", category: "Focus", icon: <IconPlaceholder name="timer" />, shortcut: "P", action: () => startFocus("pomodoro") },
-      { id: "focus.deep", label: "Démarrer Deep Work (50 min)", category: "Focus", icon: <IconPlaceholder name="brain" />, action: () => startFocus("deep") },
-      { id: "focus.sprint", label: "Démarrer Sprint (10 min)", category: "Focus", icon: <IconPlaceholder name="zap" />, action: () => startFocus("sprint") },
-      { id: "focus.quick", label: "Focus rapide (15 min)", category: "Focus", icon: <IconPlaceholder name="timer" />, action: () => startFocus("quick") },
-      { id: "focus.shortBreak", label: "Pause courte", category: "Focus", icon: <IconPlaceholder name="coffee" />, action: () => startFocus("shortBreak") },
-      { id: "focus.longBreak", label: "Pause longue", category: "Focus", icon: <IconPlaceholder name="armchair" />, action: () => startFocus("longBreak") },
-      { id: "focus.stop", label: "Arrêter le Focus", category: "Focus", icon: <IconPlaceholder name="square" />, action: stopFocus },
-
-      // Ambiance
-      { id: "ambience.rain", label: "Ambiance : Pluie", category: "Ambiance", icon: <IconPlaceholder name="cloud-rain" />, action: () => update({ soundPack: "apple-inspired", soundEffects: true, masterVolume: true }) },
-      { id: "ambience.pink", label: "Ambiance : Bruit rose", category: "Ambiance", icon: <IconPlaceholder name="sparkles" />, action: () => update({ soundPack: "minimal", soundEffects: true, masterVolume: true }) },
-      { id: "ambience.stop", label: "Arrêter l'ambiance", category: "Ambiance", icon: <IconPlaceholder name="volume-x" />, action: () => update({ soundEffects: false }) },
-
-      // Système
-      { id: "sync.refresh", label: "Synchroniser maintenant", category: "Système", icon: <IconPlaceholder name="cloud-cog" />, action: () => window.location.reload() },
-      { id: "notifications.open", label: "Centre de notifications", category: "Système", icon: <IconPlaceholder name="bell" />, action: openNotificationCenter },
-      { id: "activity.sync", label: "Sync activité", category: "Système", icon: <IconPlaceholder name="refresh-cw" />, action: syncActivity },
-      { id: "cache.clear", label: "Vider le cache et rafraîchir", category: "Système", icon: <IconPlaceholder name="trash" />, action: () => { try { localStorage.removeItem("ethone-dashboard-cache"); } catch {} window.location.reload(); } },
-      { id: "network.refresh", label: "Rafraîchir le réseau", category: "Système", icon: <IconPlaceholder name="wifi" />, action: refreshNetwork },
-
-      // Compte
-      { id: "signout", label: "Se déconnecter", category: "Compte", icon: <IconPlaceholder name="logout" />, action: () => signOut().then(() => navigate("/login")) },
-
-      // Facturation
-      { id: "billing.pay", label: "Payer une facture", category: "Facturation", icon: <IconPlaceholder name="credit-card" />, action: () => navigate("/bills/") },
-
-      // Mail
-      { id: "mail.rules", label: "Règles mail", category: "Mail", icon: <IconPlaceholder name="list" />, action: () => navigate("/mail/") },
-      { id: "mail.templates", label: "Modèles mail", category: "Mail", icon: <IconPlaceholder name="file-text" />, action: () => navigate("/mail/") },
-
-      // Plugins
-      ...PLUGINS.map((p) => openCmd(`plugin.${p.id}`, p.label, p.route, p.icon, "Plugins")),
-
-      // Macros (dynamic)
-      ...macroCommands,
+      // 8. Actions Système & Sensibles
+      { id: "sys-notifications", label: "Afficher le Centre de Notifications", subtitle: "Voir les alertes récentes", category: "Système", icon: <Icon name="bell" />, shortcut: "N", keywords: ["notifications", "centre", "alertes"], action: openNotificationCenter },
+      { id: "sys-sync", label: "Forcer la Synchronisation", subtitle: "Synchroniser le journal d'activité avec le cloud", category: "Système", icon: <Icon name="refresh" />, requiresOnline: true, keywords: ["sync", "synchronisation", "cloud", "journal", "actualiser"], action: syncActivity },
+      { id: "sys-reload", label: "Recharger l'Application", subtitle: "Rafraîchissement complet du navigateur", category: "Système", icon: <Icon name="refresh" />, shortcut: "R", keywords: ["reload", "refresh", "recharger", "actualiser"], action: refreshNetwork },
+      { id: "sys-export-settings", label: "Exporter mes Préférences (JSON)", subtitle: "Télécharger un backup complet de vos réglages", category: "Système", icon: <Icon name="download" />, keywords: ["export", "backup", "sauvegarde", "json"], action: exportPresets },
+      { id: "sys-signout", label: "Se Déconnecter", subtitle: "Fermer la session actuelle en toute sécurité", category: "Compte", icon: <Icon name="log-out" />, isSensitive: true, keywords: ["logout", "signout", "deconnexion", "quitter", "fermer session"], action: () => signOut() },
     ];
+
+    return base;
   }, [
-    settings,
     navigate,
     open,
-    applyPreset,
-    setDensity,
-    cycleAccent,
-    cycleLanguage,
-    cycleDockScale,
-    cycleAura,
-    cycleWallpaper,
-    cycleSessionMode,
-    toggleBrainMemory,
-    toggleBrain,
-    toggleAura,
-    toggleDock,
-    toggleZen,
-    toggleStatusBar,
     startFocus,
     stopFocus,
-    activateSpace,
-    toggleMissionControl,
-    setOpen,
-    update,
-    signOut,
+    selectTheme,
+    selectAccent,
     openNotificationCenter,
     syncActivity,
     refreshNetwork,
     exportPresets,
-    importPresets,
-    macroCommands,
+    signOut,
   ]);
-}
-
-function IconPlaceholder({ name }: { name: string }) {
-  return <Icon name={name} className="h-4 w-4" />;
 }

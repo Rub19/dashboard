@@ -6,6 +6,9 @@ export type SearchableCommandItem = CommandItem & {
   aliases?: string[];
   contexts?: string[];
   contextPriority?: number;
+  isSensitive?: boolean;
+  requiresOnline?: boolean;
+  badge?: string;
 };
 
 export type CommandSearchContext = {
@@ -16,16 +19,17 @@ export type CommandSearchContext = {
   recent?: Set<string>;
   frequency?: Record<string, number>;
   categoryFilter?: string;
+  isOnline?: boolean;
 };
 
 const MAX_FREQUENCY_BONUS = 30;
-const CONTEXT_BONUS_QUERY = 18;
-const CONTEXT_BONUS_EMPTY = 80;
+const CONTEXT_BONUS_QUERY = 25;
+const CONTEXT_BONUS_EMPTY = 90;
 
 export const COMMAND_HISTORY_KEY = "ethone:v8-command-history";
-const MAX_RECENT = 6;
-const MAX_PINNED = 8;
-const SAFE_ID = /^[a-z0-9.-]{1,48}$/;
+const MAX_RECENT = 8;
+const MAX_PINNED = 10;
+const SAFE_ID = /^[a-z0-9.-]{1,64}$/;
 const MAX_FREQUENCY = 1_000_000;
 
 export function normalizeSearch(value: string): string {
@@ -36,6 +40,29 @@ export function normalizeSearch(value: string): string {
     .replace(/[^a-z0-9]+/g, " ")
     .trim();
 }
+
+/** French & English natural verbs to action categories / keywords */
+const INTENT_VERBS: Record<string, string[]> = {
+  lance: ["focus", "timer", "pomodoro", "start"],
+  start: ["focus", "timer", "pomodoro"],
+  demarre: ["focus", "timer", "pomodoro"],
+  ouvre: ["navigation", "open", "go"],
+  open: ["navigation", "open", "go"],
+  va: ["navigation", "go"],
+  go: ["navigation", "go"],
+  cherche: ["search", "find", "files", "marketplace"],
+  find: ["search", "find", "files", "marketplace"],
+  search: ["search", "find", "files", "marketplace"],
+  mets: ["theme", "appearance", "accent", "mode"],
+  set: ["theme", "appearance", "accent", "mode"],
+  change: ["theme", "appearance", "accent", "mode"],
+  switch: ["theme", "appearance", "accent", "mode"],
+  active: ["theme", "toggle", "enable"],
+  ecris: ["mail", "compose", "note", "brain"],
+  compose: ["mail", "compose"],
+  ask: ["brain", "chat", "ai"],
+  demande: ["brain", "chat", "ai"],
+};
 
 function subsequenceScore(query: string, candidate: string): number {
   if (!query) return 0;
@@ -100,13 +127,24 @@ export function commandScore(
       score = 10;
     }
   } else if (haystack === normalizedQuery) {
-    score = 240;
+    score = 260;
   } else if (haystack.startsWith(normalizedQuery)) {
-    score = 210 - (haystack.length - normalizedQuery.length) * 0.1;
+    score = 220 - (haystack.length - normalizedQuery.length) * 0.1;
   } else if (haystack.includes(normalizedQuery)) {
-    score = 170 - haystack.indexOf(normalizedQuery) * 0.2;
+    score = 180 - haystack.indexOf(normalizedQuery) * 0.2;
   } else {
     score = subsequenceScore(normalizedQuery, haystack);
+  }
+
+  // NLP intent extraction boost
+  if (normalizedQuery && score >= 0) {
+    const firstWord = normalizedQuery.split(" ")[0];
+    if (INTENT_VERBS[firstWord]) {
+      const relatedKeywords = INTENT_VERBS[firstWord];
+      if (relatedKeywords.some((kw) => haystack.includes(kw))) {
+        score += 35;
+      }
+    }
   }
 
   if (score < 0) return score;
@@ -117,18 +155,18 @@ export function commandScore(
 
   if (command.contexts?.some((ctx) => contextTags.has(ctx) || ctx === context.routeCategory)) {
     score += normalizedQuery
-      ? Math.min(CONTEXT_BONUS_QUERY, (command.contextPriority ?? 40) * 0.15)
+      ? Math.min(CONTEXT_BONUS_QUERY, (command.contextPriority ?? 40) * 0.2)
       : (command.contextPriority ?? 40);
   }
 
-  if (context.pinned?.has(command.id)) score += 24;
-  if (context.recent?.has(command.id)) score += 12;
+  if (context.pinned?.has(command.id)) score += 30;
+  if (context.recent?.has(command.id)) score += 15;
 
   const freq = Number.isFinite(context.frequency?.[command.id])
     ? (context.frequency![command.id] as number)
     : 0;
   if (freq > 0) {
-    score += Math.min(MAX_FREQUENCY_BONUS, Math.log2(freq + 1) * 6);
+    score += Math.min(MAX_FREQUENCY_BONUS, Math.log2(freq + 1) * 7);
   }
 
   return score;

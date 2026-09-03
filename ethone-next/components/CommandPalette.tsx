@@ -1,501 +1,472 @@
 "use client";
 
 import { memo, useCallback, useEffect, useId, useMemo, useRef, useState } from "react";
-import { usePathname } from "next/navigation";
-import { motion, useReducedMotion } from "framer-motion";
+import { usePathname, useRouter } from "next/navigation";
+import { motion, AnimatePresence, useReducedMotion } from "framer-motion";
 import { createPortal } from "react-dom";
-
-import { useRouter } from "next/navigation";
-import { useItems } from "@/lib/hooks/useItems";
-import { useTasks } from "@/lib/hooks/useTasks";
-import SearchInput from "@/components/ui/SearchInput";
+import {
+  Search,
+  X,
+  Pin,
+  Sparkles,
+  Command,
+  ArrowRight,
+  Clock,
+  Star,
+  AlertTriangle,
+  CornerDownLeft,
+  ChevronRight,
+  Brain,
+} from "lucide-react";
 import { useCommandPalette } from "@/components/CommandPaletteProvider";
-import { useSettings, useActiveProfile } from "@/components/SettingsProvider";
+import { useSettings } from "@/components/SettingsProvider";
 import { useI18n } from "@/lib/hooks/useI18n";
 import { useCommandItems, type CommandItem } from "@/lib/commands";
-import { searchCommands, createCommandHistory, type SearchableCommandItem } from "@/lib/command-search";
-import { Icon } from "@/lib/icons";
-import { EASE_OUT } from "@/lib/ease";
-import { useTouchCapable } from "@/lib/hooks/use-touch-capable";
+import {
+  searchCommands,
+  createCommandHistory,
+  type SearchableCommandItem,
+} from "@/lib/command-search";
 import { cn } from "@/lib/utils";
+import { useTouchCapable } from "@/lib/hooks/use-touch-capable";
 
-const SECTION_ORDER = ["Notes & Tâches", "Navigation", "Actions Rapides", "Intégrations", "Thèmes & Apparence"];
-
-const SECTION_MAP: Record<string, string> = {
-  "Notes & Tâches": "Notes & Tâches",
-  Navigation: "Navigation",
-  Créer: "Actions Rapides",
-  Fenêtres: "Actions Rapides",
-  Spaces: "Actions Rapides",
-  Focus: "Actions Rapides",
-  Brain: "Actions Rapides",
-  Système: "Actions Rapides",
-  Compte: "Actions Rapides",
-  Presets: "Actions Rapides",
-  Ambiance: "Thèmes & Apparence",
-  Réglages: "Thèmes & Apparence",
-  Plugins: "Intégrations",
-  RSS: "Intégrations",
-  Scratchpad: "Intégrations",
-  Matchs: "Intégrations",
-  Drops: "Intégrations",
-  Météo: "Intégrations",
-  Macros: "Intégrations",
-  Facturation: "Intégrations",
-  Mail: "Intégrations",
-};
-
-const ROUTE_CATEGORIES: Record<string, string> = {
-  "/bills/": "Facturation",
-  "/rss/": "RSS",
-  "/scratchpad/": "Scratchpad",
-  "/matches/": "Matchs",
-  "/drop/": "Drops",
-  "/system/": "Système",
-  "/weather/": "Météo",
-  "/plugins/": "Plugins",
-  "/macros/": "Macros",
-  "/mail/": "Mail",
-  "/focus/": "Focus",
-  "/brain/": "Brain",
-  "/notes/": "Navigation",
-  "/tasks/": "Navigation",
-  "/calendar/": "Navigation",
-  "/files/": "Navigation",
-  "/activity/": "Navigation",
-  "/interactions/": "Navigation",
-  "/connections/": "Plugins",
-  "/spaces/": "Spaces",
-  "/flows/": "Navigation",
-  "/team/": "Navigation",
-  "/settings/": "Réglages",
-  "/security/": "Compte",
-  "/profile-selection/": "Compte",
-  "/changelog/": "Navigation",
-  "/": "Navigation",
-};
-
-function getRouteCategory(path: string): string | null {
-  for (const [route, category] of Object.entries(ROUTE_CATEGORIES)) {
-    if (path.startsWith(route)) return category;
-  }
-  return null;
-}
-
-function getSection(category: string) {
-  return SECTION_MAP[category] ?? "Actions Rapides";
-}
-
-const CommandItemRow = memo(function CommandItemRow({
-  cmd,
-  activeIndex,
-  isActive,
-  hasIcons,
-  uid,
-  setIndex,
-  run,
-  togglePin,
-  isPinned,
-  pinTitle,
-  unpinTitle,
-}: {
-  cmd: CommandItem;
-  activeIndex: number;
-  isActive: boolean;
-  hasIcons: boolean;
-  uid: string;
-  setIndex: (i: number) => void;
-  run: (cmd: CommandItem) => void;
-  togglePin: (cmd: CommandItem, e: React.MouseEvent<HTMLElement>) => void;
-  isPinned: boolean;
-  pinTitle: string;
-  unpinTitle: string;
-}) {
-  const shortcut = cmd.shortcut ? `⌘${cmd.shortcut.toUpperCase()}` : null;
-  return (
-    <div
-      id={`${uid}-opt-${activeIndex}`}
-      role="option"
-      aria-selected={isActive}
-      data-index={activeIndex}
-      onMouseEnter={() => setIndex(activeIndex)}
-      onClick={() => run(cmd)}
-      tabIndex={-1}
-      className={cn(
-        "relative isolate flex w-full items-center rounded-md text-left text-sm transition-colors duration-100 ease-out outline-0 focus:outline-0 focus-visible:outline-0",
-        isActive ? "bg-[var(--text-primary)]/[0.08] text-[var(--accent)]" : "text-[var(--text-muted)] hover:bg-[var(--text-primary)]/[0.04]"
-      )}
-    >
-      <div className="relative z-10 flex flex-1 items-center gap-3 px-2 py-2">
-        {cmd.icon ? (
-          <span className="h-4 w-4 shrink-0">{cmd.icon}</span>
-        ) : hasIcons ? (
-          <span className="h-4 w-4 shrink-0" />
-        ) : null}
-        <span className="flex-1 truncate">{cmd.label}</span>
-        <span className="flex shrink-0 items-center gap-2">
-          {cmd.category && (
-            <span
-              className={cn(
-                "text-[10px]",
-                isActive ? "text-[var(--text-muted)]" : "text-[var(--text-muted)]/70"
-              )}
-            >
-              {cmd.category}
-            </span>
-          )}
-          {shortcut && (
-            <kbd className="rounded border border-[var(--panel-border)] bg-[var(--background)] px-1.5 py-0.5 text-[10px] text-[var(--text-muted)]">
-              {shortcut}
-            </kbd>
-          )}
-        </span>
-      </div>
-      <button
-        type="button"
-        tabIndex={-1}
-        onClick={(e) => {
-          e.stopPropagation();
-          togglePin(cmd, e as unknown as React.MouseEvent<HTMLElement>);
-        }}
-        className={cn(
-          "relative z-10 shrink-0 rounded p-1 transition-colors outline-0 focus:outline-0 focus-visible:outline-0",
-          isActive
-            ? "text-[var(--accent-primary)] hover:bg-[var(--accent-primary)]/10"
-            : "text-[var(--text-muted)] hover:bg-[var(--surface)]"
-        )}
-        aria-label={isPinned ? unpinTitle : pinTitle}
-        title={isPinned ? unpinTitle : pinTitle}
-      >
-        <Icon pack="phosphor" name={isPinned ? "pin-off" : "pin"} className="h-3.5 w-3.5" />
-      </button>
-    </div>
-  );
-});
+const CATEGORY_CHIPS = [
+  { id: "all", label: "Tous" },
+  { id: "Actions Rapides", label: "Actions" },
+  { id: "Navigation", label: "Pages" },
+  { id: "Focus", label: "Focus" },
+  { id: "Thèmes & Apparence", label: "Thèmes" },
+  { id: "Intégrations", label: "Intégrations" },
+  { id: "Réglages", label: "Réglages" },
+  { id: "Brain", label: "Brain" },
+];
 
 export default function CommandPalette() {
-  const i18n = useI18n();
-  const { settings, update } = useSettings();
-  const { activeProfile } = useActiveProfile();
-  const pathname = usePathname() ?? "/";
   const { open, setOpen } = useCommandPalette();
+  const pathname = usePathname();
+  const router = useRouter();
+  const i18n = useI18n();
+  const isTouch = useTouchCapable();
+  const prefersReduced = useReducedMotion();
 
   const [query, setQuery] = useState("");
-  const [index, setIndex] = useState(0);
+  const [activeCategory, setActiveCategory] = useState("all");
+  const [activeIndex, setActiveIndex] = useState(0);
   const [mounted, setMounted] = useState(false);
+  const [sensitivePrompt, setSensitivePrompt] = useState<CommandItem | null>(null);
 
   const inputRef = useRef<HTMLInputElement>(null);
+  const listRef = useRef<HTMLDivElement>(null);
+  const historyRef = useRef(createCommandHistory());
 
-  const commandHistory = useMemo(() => createCommandHistory(), []);
-  const [frequency, setFrequency] = useState(() => commandHistory.frequency());
-
-  const COMMANDS = useCommandItems(setOpen);
-  const routeCategory = useMemo(() => getRouteCategory(pathname), [pathname]);
-  const space = activeProfile?.workspace ?? "personal";
-  const pinned = useMemo(() => new Set(settings.pinnedCommands || []), [settings.pinnedCommands]);
-  const recent = useMemo(() => new Set(settings.commandHistory || []), [settings.commandHistory]);
-
-  const uid = useId();
-  const reduce = useReducedMotion();
-  const canTouch = useTouchCapable();
-
-  useEffect(() => setMounted(true), []);
-
-  const context = useMemo(
-    () => ({ route: pathname, routeCategory, space, pinned, recent, frequency }),
-    [pathname, routeCategory, space, pinned, recent, frequency]
-  );
-
-  const router = useRouter();
-  const { items: noteItems } = useItems("notes");
-  const { items: taskItems } = useTasks();
-
-  const userContentCommands = useMemo<CommandItem[]>(() => {
-    if (!query.trim()) return [];
-    const q = query.toLowerCase().trim();
-
-    const matchedNotes: CommandItem[] = noteItems
-      .filter((n) => (n.title && n.title.toLowerCase().includes(q)) || (n.body && n.body.toLowerCase().includes(q)))
-      .slice(0, 4)
-      .map((n) => ({
-        id: `note-item-${n.id}`,
-        label: `Note : ${n.title || "Sans titre"}`,
-        category: "Notes & Tâches",
-        icon: <Icon name="notebook-pen" className="h-4 w-4 text-emerald-400" />,
-        action: () => {
-          router.push(`/notes/?id=${n.id}`);
-          setOpen(false);
-        },
-      }));
-
-    const matchedTasks: CommandItem[] = taskItems
-      .filter((t) => (t.title && t.title.toLowerCase().includes(q)) || (t.description && t.description.toLowerCase().includes(q)))
-      .slice(0, 4)
-      .map((t) => ({
-        id: `task-item-${t.id}`,
-        label: `Tâche : ${t.title}`,
-        category: "Notes & Tâches",
-        icon: <Icon name={t.is_completed ? "check-circle" : "circle"} className="h-4 w-4 text-sky-400" />,
-        action: () => {
-          router.push(`/tasks/`);
-          setOpen(false);
-        },
-      }));
-
-    return [...matchedNotes, ...matchedTasks];
-  }, [noteItems, taskItems, query, router, setOpen]);
-
-  const filtered = useMemo<CommandItem[]>(() => {
-    const base = searchCommands(COMMANDS as unknown as SearchableCommandItem[], query.trim(), context) as CommandItem[];
-    return [...userContentCommands, ...base];
-  }, [COMMANDS, query, context, userContentCommands]);
+  const allCommands = useCommandItems(setOpen);
 
   useEffect(() => {
-    if (!open || !filtered.length) return;
-    const el = document.getElementById(`${uid}-opt-${index}`);
-    if (el) el.scrollIntoView({ block: "nearest", behavior: reduce ? "auto" : "smooth" });
-  }, [index, open, filtered.length, uid, reduce]);
-
-  const sections = useMemo(() => {
-    const groups: Record<string, CommandItem[]> = {};
-    for (const cmd of filtered) {
-      const section = getSection(cmd.category);
-      (groups[section] ??= []).push(cmd);
-    }
-    return SECTION_ORDER.filter((s) => groups[s]?.length).map((s) => ({ title: s, items: groups[s] }));
-  }, [filtered]);
-
-  const run = useCallback(
-    (cmd: CommandItem) => {
-      cmd.action();
-      const history = [cmd.id, ...(settings.commandHistory || []).filter((id) => id !== cmd.id)].slice(0, 10);
-      update({ commandHistory: history });
-      commandHistory.record(cmd.id);
-      setFrequency(commandHistory.frequency());
-      setOpen(false);
-      setQuery("");
-      setIndex(0);
-    },
-    [settings.commandHistory, update, commandHistory, setOpen]
-  );
-
-  const togglePin = useCallback(
-    (cmd: CommandItem, e: React.MouseEvent<HTMLElement>) => {
-      e.stopPropagation();
-      const next = pinned.has(cmd.id)
-        ? (settings.pinnedCommands || []).filter((id) => id !== cmd.id)
-        : [...(settings.pinnedCommands || []), cmd.id];
-      update({ pinnedCommands: next });
-      commandHistory.togglePin(cmd.id);
-      setFrequency(commandHistory.frequency());
-    },
-    [pinned, settings.pinnedCommands, update, commandHistory]
-  );
-
-  const updateQuery = useCallback((value: string) => {
-    setQuery(value);
-    setIndex(0);
+    setMounted(true);
   }, []);
 
+  // Global Keyboard Shortcut: Ctrl+K / Cmd+K
   useEffect(() => {
-    const onKey = (e: KeyboardEvent) => {
-      if ((e.metaKey || e.ctrlKey) && e.key.toLowerCase() === "k") {
+    const handleKeyDown = (e: KeyboardEvent) => {
+      if ((e.ctrlKey || e.metaKey) && e.key.toLowerCase() === "k") {
         e.preventDefault();
         setOpen(!open);
-        return;
-      }
-      if (e.key === "Escape" && open) {
-        e.preventDefault();
-        setOpen(false);
       }
     };
-    window.addEventListener("keydown", onKey);
-    return () => window.removeEventListener("keydown", onKey);
+    window.addEventListener("keydown", handleKeyDown);
+    return () => window.removeEventListener("keydown", handleKeyDown);
   }, [open, setOpen]);
 
+  // Reset state when opening
   useEffect(() => {
     if (open) {
-      updateQuery("");
-      requestAnimationFrame(() => inputRef.current?.focus());
+      setQuery("");
+      setActiveCategory("all");
+      setActiveIndex(0);
+      setSensitivePrompt(null);
+      setTimeout(() => inputRef.current?.focus(), 50);
     }
-  }, [open, updateQuery]);
-
-  useEffect(() => {
-    if (!open) return;
-    const root = document.documentElement;
-    const previousRootOverflow = root.style.overflow;
-    const previousBodyOverflow = document.body.style.overflow;
-    root.style.overflow = "hidden";
-    document.body.style.overflow = "hidden";
-    return () => {
-      root.style.overflow = previousRootOverflow;
-      document.body.style.overflow = previousBodyOverflow;
-    };
   }, [open]);
 
-  const onKeyDown = (e: React.KeyboardEvent) => {
-    const count = filtered.length;
-    if (count === 0) return;
+  // Search Context
+  const searchContext = useMemo(() => {
+    const hist = historyRef.current;
+    return {
+      route: pathname,
+      pinned: new Set(hist.pinned()),
+      recent: new Set(hist.recent()),
+      frequency: hist.frequency(),
+      categoryFilter: activeCategory === "all" ? "" : activeCategory,
+    };
+  }, [pathname, activeCategory, open]);
 
-    if (e.key === "ArrowDown" || (e.key === "Tab" && !e.shiftKey)) {
-      e.preventDefault();
-      setIndex((i) => (i + 1) % count);
-    } else if (e.key === "ArrowUp" || (e.key === "Tab" && e.shiftKey)) {
-      e.preventDefault();
-      setIndex((i) => (i - 1 + count) % count);
-    } else if (e.key === "Home") {
-      e.preventDefault();
-      setIndex(0);
-    } else if (e.key === "End") {
-      e.preventDefault();
-      setIndex(count - 1);
-    } else if (e.key === "PageDown") {
-      e.preventDefault();
-      setIndex((i) => Math.min(count - 1, i + 5));
-    } else if (e.key === "PageUp") {
-      e.preventDefault();
-      setIndex((i) => Math.max(0, i - 5));
-    } else if (e.key === "Enter" && filtered[index]) {
-      e.preventDefault();
-      run(filtered[index]);
+  // Filtered & Ranked commands
+  const filteredCommands = useMemo(() => {
+    return searchCommands(allCommands as SearchableCommandItem[], query, searchContext, 40);
+  }, [allCommands, query, searchContext]);
+
+  // Grouped commands
+  const pinnedIds = useMemo(() => new Set(historyRef.current.pinned()), [open]);
+  const recentIds = useMemo(() => new Set(historyRef.current.recent()), [open]);
+
+  // Handle execution
+  const executeCommand = useCallback(
+    (cmd: CommandItem) => {
+      if (cmd.isSensitive) {
+        setSensitivePrompt(cmd);
+        return;
+      }
+      historyRef.current.record(cmd.id);
+      cmd.action();
+      setOpen(false);
+    },
+    [setOpen]
+  );
+
+  const confirmSensitive = () => {
+    if (sensitivePrompt) {
+      historyRef.current.record(sensitivePrompt.id);
+      sensitivePrompt.action();
+      setSensitivePrompt(null);
+      setOpen(false);
     }
   };
 
-  const hasIcons = useMemo(() => filtered.some((it) => it.icon), [filtered]);
+  const togglePin = useCallback(
+    (id: string, e?: React.MouseEvent) => {
+      e?.stopPropagation();
+      historyRef.current.togglePin(id);
+      // Force re-render
+      setActiveIndex((prev) => prev);
+    },
+    []
+  );
+
+  // Keyboard Navigation inside Palette
+  useEffect(() => {
+    if (!open || sensitivePrompt) return;
+
+    const handleKey = (e: KeyboardEvent) => {
+      if (e.key === "Escape") {
+        e.preventDefault();
+        setOpen(false);
+      } else if (e.key === "ArrowDown") {
+        e.preventDefault();
+        setActiveIndex((prev) => (prev + 1 < filteredCommands.length ? prev + 1 : 0));
+      } else if (e.key === "ArrowUp") {
+        e.preventDefault();
+        setActiveIndex((prev) => (prev - 1 >= 0 ? prev - 1 : filteredCommands.length - 1));
+      } else if (e.key === "Enter") {
+        e.preventDefault();
+        if (query.trim().startsWith("ask ") || query.trim().startsWith("demande ")) {
+          // Ask brain direct query
+          const q = query.replace(/^(ask|demande)s+/i, "").trim();
+          router.push(`/brain/?q=${encodeURIComponent(q)}`);
+          setOpen(false);
+          return;
+        }
+        const active = filteredCommands[activeIndex];
+        if (active) executeCommand(active);
+      } else if (e.key === "Tab") {
+        e.preventDefault();
+        const currentCatIdx = CATEGORY_CHIPS.findIndex((c) => c.id === activeCategory);
+        const nextCat = CATEGORY_CHIPS[(currentCatIdx + 1) % CATEGORY_CHIPS.length];
+        setActiveCategory(nextCat.id);
+        setActiveIndex(0);
+      }
+    };
+
+    window.addEventListener("keydown", handleKey);
+    return () => window.removeEventListener("keydown", handleKey);
+  }, [open, sensitivePrompt, filteredCommands, activeIndex, activeCategory, query, router, executeCommand, setOpen]);
+
+  // Auto scroll active item into view
+  useEffect(() => {
+    if (!listRef.current) return;
+    const activeEl = listRef.current.querySelector(`[data-index="${activeIndex}"]`) as HTMLElement | null;
+    if (activeEl) {
+      activeEl.scrollIntoView({ block: "nearest" });
+    }
+  }, [activeIndex]);
 
   if (!mounted) return null;
 
-  let flatIndex = 0;
-
   return createPortal(
-    <div
-      aria-hidden={!open}
-      inert={!open}
-      className={cn(
-        "fixed inset-0 z-[var(--z-modal)]",
-        open ? "pointer-events-auto" : "pointer-events-none",
-      )}
-    >
-      <motion.button
-        type="button"
-        aria-label={i18n("closeCommandPalette", "Close command palette")}
-        initial={false}
-        animate={{ opacity: open ? 1 : 0 }}
-        transition={{ duration: open ? 0.22 : 0.16, ease: EASE_OUT }}
-        onClick={() => setOpen(false)}
-        className={cn(
-          "absolute inset-0 bg-[var(--background)]/5 [backdrop-filter:blur(12px)_saturate(140%)] [-webkit-backdrop-filter:blur(12px)_saturate(140%)]",
-          open ? "pointer-events-auto" : "pointer-events-none",
-        )}
-      />
+    <AnimatePresence>
+      {open && (
+        <div className="fixed inset-0 z-[100] flex items-end sm:items-center justify-center p-0 sm:p-4 select-none">
+          {/* Backdrop */}
+          <motion.div
+            initial={{ opacity: 0 }}
+            animate={{ opacity: 1 }}
+            exit={{ opacity: 0 }}
+            transition={{ duration: prefersReduced ? 0 : 0.15 }}
+            onClick={() => setOpen(false)}
+            className="fixed inset-0 bg-[var(--bg-overlay)] backdrop-blur-md"
+          />
 
-      <div className="pointer-events-none absolute inset-0 flex items-start justify-center p-4 pt-[18vh]">
-        <motion.div
-          role="dialog"
-          aria-modal="true"
-          aria-label="Command palette"
-          initial={false}
-          animate={{
-            opacity: open ? 1 : 0,
-            y: open || reduce ? 0 : -8,
-            scale: open || reduce ? 1 : 0.98,
-          }}
-          transition={{ duration: reduce ? 0.12 : (open ? 0.24 : 0.18), ease: EASE_OUT }}
-          onKeyDown={onKeyDown}
-          className={cn(
-            "w-full max-w-xl overflow-hidden rounded-2xl border border-[var(--panel-border)] bg-[var(--surface-raised)] shadow-2xl will-change-transform",
-            open ? "pointer-events-auto" : "pointer-events-none",
-          )}
-        >
-          <div className="flex items-center gap-3 border-b border-[var(--text-primary)]/[0.06] px-4">
-            <SearchInput
-              ref={inputRef}
-              value={query}
-              onChange={(e) => updateQuery(e.target.value)}
-              placeholder={i18n("search")}
-              tabIndex={open ? 0 : -1}
-              role="combobox"
-              style={{ outline: "none" }}
-              aria-expanded={open}
-              aria-controls={`${uid}-list`}
-              aria-activedescendant={
-                filtered.length > 0 ? `${uid}-opt-${index}` : undefined
-              }
-              aria-autocomplete="list"
-              shortcut="ESC"
-              inputSize="large"
-              inputClassName={canTouch ? "text-base" : ""}
-              className="min-w-0 flex-1"
-            />
-          </div>
-
-          <div
-            id={`${uid}-list`}
-            role="listbox"
-            aria-label="Commands"
-            className="max-h-[54vh] overflow-y-auto overscroll-contain p-2 [-ms-overflow-style:none] [scrollbar-width:none] [&::-webkit-scrollbar]:hidden"
-            style={{ scrollPaddingBlock: "8px" }}
+          {/* Dialog Body */}
+          <motion.div
+            initial={isTouch ? { y: "100%" } : { opacity: 0, scale: 0.96, y: -10 }}
+            animate={isTouch ? { y: 0 } : { opacity: 1, scale: 1, y: 0 }}
+            exit={isTouch ? { y: "100%" } : { opacity: 0, scale: 0.96, y: -10 }}
+            transition={{ duration: prefersReduced ? 0 : 0.2, ease: [0.16, 1, 0.3, 1] }}
+            className={cn(
+              "relative flex flex-col w-full max-w-2xl overflow-hidden border border-[var(--panel-border)] shadow-2xl backdrop-blur-2xl",
+              isTouch
+                ? "rounded-t-3xl max-h-[88dvh] bg-[var(--bg-surface)] pb-[env(safe-area-inset-bottom)]"
+                : "rounded-3xl max-h-[640px] bg-[var(--panel-bg)]"
+            )}
           >
-            {filtered.length === 0 ? (
-              <div className="p-8 text-center text-sm text-[var(--text-muted)]">
-                {i18n("noResults")}
+            {/* Mobile Sheet Handle */}
+            {isTouch && (
+              <div className="flex justify-center pt-3 pb-1">
+                <div className="h-1.5 w-12 rounded-full bg-[var(--text-muted)]/30" />
+              </div>
+            )}
+
+            {/* Header / Search Input */}
+            <div className="relative flex items-center border-b border-[var(--panel-border)]/60 px-4 py-3.5 gap-3">
+              <Search className="h-5 w-5 text-[var(--accent-primary)] shrink-0" />
+              <input
+                ref={inputRef}
+                type="text"
+                value={query}
+                onChange={(e) => {
+                  setQuery(e.target.value);
+                  setActiveIndex(0);
+                }}
+                placeholder="Rechercher une page, action, focus, thème ou demander à Brain..."
+                className="flex-1 bg-transparent text-sm font-medium text-[var(--text-primary)] placeholder-[var(--text-muted)] focus:outline-none"
+              />
+              {query && (
+                <button
+                  type="button"
+                  onClick={() => {
+                    setQuery("");
+                    inputRef.current?.focus();
+                  }}
+                  className="p-1 rounded-lg hover:bg-[var(--surface-hover)] text-[var(--text-muted)] hover:text-[var(--text-primary)]"
+                >
+                  <X className="h-4 w-4" />
+                </button>
+              )}
+              <kbd className="hidden sm:inline-flex items-center gap-1 rounded-lg border border-[var(--panel-border)] bg-[var(--surface-raised)]/60 px-2 py-1 font-mono text-[10px] text-[var(--text-muted)]">
+                ESC
+              </kbd>
+            </div>
+
+            {/* Category Filter Chips */}
+            <div className="flex items-center gap-1.5 overflow-x-auto px-4 py-2 border-b border-[var(--panel-border)]/40 no-scrollbar">
+              {CATEGORY_CHIPS.map((chip) => {
+                const active = activeCategory === chip.id;
+                return (
+                  <button
+                    key={chip.id}
+                    type="button"
+                    onClick={() => {
+                      setActiveCategory(chip.id);
+                      setActiveIndex(0);
+                    }}
+                    className={cn(
+                      "rounded-xl px-3 py-1 text-xs font-semibold whitespace-nowrap transition-all touch-manipulation",
+                      active
+                        ? "bg-[var(--accent-primary)] text-[var(--accent-contrast)] shadow-sm"
+                        : "border border-[var(--panel-border)]/40 bg-[var(--surface-raised)]/30 text-[var(--text-muted)] hover:text-[var(--text-primary)] hover:bg-[var(--surface-hover)]"
+                    )}
+                  >
+                    {chip.label}
+                  </button>
+                );
+              })}
+            </div>
+
+            {/* Sensitive Action Modal Prompt */}
+            {sensitivePrompt ? (
+              <div className="p-6 space-y-4 text-center">
+                <div className="mx-auto flex h-12 w-12 items-center justify-center rounded-2xl bg-amber-500/20 text-amber-400">
+                  <AlertTriangle className="h-6 w-6" />
+                </div>
+                <div>
+                  <h4 className="text-base font-bold text-[var(--text-primary)]">
+                    Confirmer l'action sensible
+                  </h4>
+                  <p className="text-xs text-[var(--text-muted)] mt-1">
+                    Êtes-vous sûr de vouloir exécuter : <strong className="text-[var(--text-primary)]">{sensitivePrompt.label}</strong> ?
+                  </p>
+                </div>
+                <div className="flex items-center justify-center gap-3 pt-2">
+                  <button
+                    type="button"
+                    onClick={() => setSensitivePrompt(null)}
+                    className="rounded-xl border border-[var(--panel-border)] px-4 py-2 text-xs font-semibold text-[var(--text-primary)] hover:bg-[var(--surface-hover)]"
+                  >
+                    Annuler
+                  </button>
+                  <button
+                    type="button"
+                    onClick={confirmSensitive}
+                    className="rounded-xl bg-rose-500 px-4 py-2 text-xs font-semibold text-white shadow-md hover:bg-rose-600"
+                  >
+                    Confirmer
+                  </button>
+                </div>
               </div>
             ) : (
-              sections.map((section) => (
-                <div key={section.title} className="mb-1 last:mb-0">
+              /* Results List */
+              <div
+                ref={listRef}
+                className="flex-1 overflow-y-auto px-2 py-2 space-y-1 divide-y divide-transparent no-scrollbar max-h-[380px] sm:max-h-[440px]"
+              >
+                {/* Ask Brain Dynamic Card */}
+                {query.trim().length > 1 && (
                   <div
-                    aria-hidden
-                    className="px-2 py-1.5 text-[10px] font-semibold uppercase tracking-wider text-[var(--text-muted)]"
+                    onClick={() => {
+                      router.push(`/brain/?q=${encodeURIComponent(query.trim())}`);
+                      setOpen(false);
+                    }}
+                    className="group mx-2 mb-2 flex items-center justify-between gap-3 rounded-2xl border border-[var(--accent-primary)]/40 bg-[var(--accent-primary)]/10 p-3.5 transition-all cursor-pointer hover:bg-[var(--accent-primary)]/20"
                   >
-                    {section.title}
+                    <div className="flex items-center gap-3">
+                      <div className="flex h-9 w-9 items-center justify-center rounded-xl bg-[var(--accent-primary)] text-[var(--accent-contrast)] shadow-md">
+                        <Brain className="h-5 w-5" />
+                      </div>
+                      <div>
+                        <p className="text-xs font-bold text-[var(--text-primary)]">
+                          Demander à ETHONE Brain
+                        </p>
+                        <p className="text-[11px] text-[var(--accent-primary)] font-medium line-clamp-1">
+                          "{query}"
+                        </p>
+                      </div>
+                    </div>
+                    <ArrowRight className="h-4 w-4 text-[var(--accent-primary)] group-hover:translate-x-1 transition-transform" />
                   </div>
-                  {section.items.map((cmd) => {
-                    const activeIndex = flatIndex++;
-                    const isActive = activeIndex === index;
+                )}
+
+                {filteredCommands.length === 0 ? (
+                  <div className="py-12 text-center space-y-2">
+                    <Command className="mx-auto h-8 w-8 text-[var(--text-muted)] opacity-40" />
+                    <p className="text-xs font-medium text-[var(--text-muted)]">
+                      Aucun résultat trouvé pour "{query}"
+                    </p>
+                  </div>
+                ) : (
+                  filteredCommands.map((cmd, idx) => {
+                    const isSelected = activeIndex === idx;
+                    const isPinned = pinnedIds.has(cmd.id);
+                    const isRecent = recentIds.has(cmd.id);
 
                     return (
-                      <CommandItemRow
+                      <div
                         key={cmd.id}
-                        cmd={cmd}
-                        activeIndex={activeIndex}
-                        isActive={isActive}
-                        hasIcons={hasIcons}
-                        uid={uid}
-                        setIndex={setIndex}
-                        run={run}
-                        togglePin={togglePin}
-                        isPinned={pinned.has(cmd.id)}
-                        pinTitle={i18n("pin")}
-                        unpinTitle={i18n("unpin")}
-                      />
-                    );
-                  })}
-                </div>
-              ))
-            )}
-          </div>
+                        data-index={idx}
+                        onClick={() => executeCommand(cmd)}
+                        onMouseEnter={() => setActiveIndex(idx)}
+                        className={cn(
+                          "group relative flex items-center justify-between gap-3 rounded-2xl px-3.5 py-2.5 transition-all cursor-pointer",
+                          isSelected
+                            ? "bg-[var(--surface-hover)] border border-[var(--accent-primary)]/30 shadow-md"
+                            : "hover:bg-[var(--surface-raised)]/40 border border-transparent"
+                        )}
+                      >
+                        <div className="flex items-center gap-3 min-w-0">
+                          {/* Icon Container */}
+                          <div
+                            className={cn(
+                              "flex h-8 w-8 shrink-0 items-center justify-center rounded-xl border text-sm transition-all",
+                              isSelected
+                                ? "border-[var(--accent-primary)]/60 bg-[var(--accent-primary)]/15 text-[var(--accent-primary)] shadow-sm"
+                                : "border-[var(--panel-border)]/60 bg-[var(--surface-raised)]/60 text-[var(--text-muted)]"
+                            )}
+                          >
+                            {cmd.icon || <Sparkles className="h-4 w-4" />}
+                          </div>
 
-          <div className="flex flex-wrap items-center justify-between gap-2 border-t border-[var(--text-primary)]/[0.06] px-4 py-2.5 text-[10px] text-[var(--text-muted)]">
-            <div className="flex items-center gap-3">
-              <span className="flex items-center gap-1">
-                <kbd className="rounded border border-[var(--panel-border)] bg-[var(--background)] px-1.5 py-0.5">Esc</kbd>
-                <span>{i18n("close")}</span>
-              </span>
-              <span className="flex items-center gap-1">
-                <kbd className="rounded border border-[var(--panel-border)] bg-[var(--background)] px-1.5 py-0.5">↑</kbd>
-                <kbd className="rounded border border-[var(--panel-border)] bg-[var(--background)] px-1.5 py-0.5">↓</kbd>
-                <span>{i18n("spotlightNav")}</span>
-              </span>
-              <span className="flex items-center gap-1">
-                <kbd className="rounded border border-[var(--panel-border)] bg-[var(--background)] px-1.5 py-0.5">Enter</kbd>
-                <span>{i18n("openHere")}</span>
+                          {/* Info Text */}
+                          <div className="min-w-0 flex-1">
+                            <div className="flex items-center gap-2">
+                              <span className="text-xs font-bold text-[var(--text-primary)] truncate">
+                                {cmd.label}
+                              </span>
+                              {isPinned && (
+                                <span className="rounded-md bg-amber-500/20 px-1 py-0.2 text-[9px] font-bold text-amber-400">
+                                  Favori
+                                </span>
+                              )}
+                              {isRecent && !isPinned && (
+                                <span className="rounded-md bg-zinc-700/40 px-1 py-0.2 text-[9px] font-medium text-zinc-300">
+                                  Récent
+                                </span>
+                              )}
+                              {cmd.badge && (
+                                <span className="rounded-md bg-[var(--accent-primary)]/20 px-1 py-0.2 text-[9px] font-bold text-[var(--accent-primary)]">
+                                  {cmd.badge}
+                                </span>
+                              )}
+                            </div>
+                            {cmd.subtitle && (
+                              <p className="text-[11px] text-[var(--text-muted)] truncate mt-0.5">
+                                {cmd.subtitle}
+                              </p>
+                            )}
+                          </div>
+                        </div>
+
+                        {/* Right Actions & Shortcuts */}
+                        <div className="flex items-center gap-2 shrink-0">
+                          <button
+                            type="button"
+                            onClick={(e) => togglePin(cmd.id, e)}
+                            className={cn(
+                              "p-1 rounded-lg transition-all",
+                              isPinned
+                                ? "text-amber-400 bg-amber-400/10"
+                                : "text-[var(--text-muted)] hover:text-[var(--text-primary)] opacity-0 group-hover:opacity-100"
+                            )}
+                            title={isPinned ? "Retirer des favoris" : "Épingler en favori"}
+                          >
+                            <Star className="h-3.5 w-3.5" fill={isPinned ? "currentColor" : "none"} />
+                          </button>
+
+                          {cmd.shortcut && (
+                            <kbd className="hidden sm:inline-flex items-center rounded-md border border-[var(--panel-border)]/80 bg-[var(--surface-raised)]/60 px-1.5 py-0.5 font-mono text-[10px] text-[var(--text-muted)]">
+                              {cmd.shortcut}
+                            </kbd>
+                          )}
+
+                          {isSelected && (
+                            <CornerDownLeft className="h-3.5 w-3.5 text-[var(--accent-primary)]" />
+                          )}
+                        </div>
+                      </div>
+                    );
+                  })
+                )}
+              </div>
+            )}
+
+            {/* Footer Navigation Hints */}
+            <div className="hidden sm:flex items-center justify-between border-t border-[var(--panel-border)]/60 px-4 py-2.5 text-[11px] text-[var(--text-muted)]">
+              <div className="flex items-center gap-4">
+                <span className="flex items-center gap-1">
+                  <kbd className="rounded border border-[var(--panel-border)] bg-[var(--surface-raised)] px-1 font-mono text-[9px]">↑↓</kbd> Naviguer
+                </span>
+                <span className="flex items-center gap-1">
+                  <kbd className="rounded border border-[var(--panel-border)] bg-[var(--surface-raised)] px-1 font-mono text-[9px]">↵</kbd> Exécuter
+                </span>
+                <span className="flex items-center gap-1">
+                  <kbd className="rounded border border-[var(--panel-border)] bg-[var(--surface-raised)] px-1 font-mono text-[9px]">TAB</kbd> Catégories
+                </span>
+              </div>
+              <span className="font-semibold text-[var(--accent-primary)]">
+                ETHONE Command Center
               </span>
             </div>
-          </div>
-        </motion.div>
-      </div>
-    </div>,
-    document.body,
-    uid,
+          </motion.div>
+        </div>
+      )}
+    </AnimatePresence>,
+    document.body
   );
 }

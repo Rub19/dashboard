@@ -21109,4 +21109,39 @@ CHANGELOG_BY_LANG.en.unshift({
   ],
 });
 
+
+CHANGELOG_BY_LANG.fr.unshift({
+  version: "v1.20.27",
+  date: "2026-09-03",
+  title: "ETHONE Command Center 3.0 — Centre de Commande Universel & Palette Globale",
+  items: [
+    "Refonte complète du Command Center d'ETHONE Web accessible via Ctrl+K / ⌘+K ou trigger tactile.",
+    "Moteur de recherche universel multi-domaines : Pages, Focus Timer, Fichiers, Mail, Marketplace, Thèmes (9 thèmes + 12 accents), Réglages et Intégrations.",
+    "Intégration native avec ETHONE Brain : recherche et transmission instantanée de requêtes en langage naturel ('Demander à Brain').",
+    "Compréhension des verbes d'intention en langage naturel ('lance un pomodoro', 'mets le thème oled', 'ouvre spotify', 'cherche mon fichier').",
+    "Recherche contextuelle intelligente : priorisation dynamique selon la route active (/files, /focus, /settings, /mail).",
+    "Gestion des Favoris (épinglage de commandes) et Historique récent pondéré par fréquence d'utilisation.",
+    "Protection des actions sensibles (Déconnexion, Reset) avec invite modale de confirmation intégrée.",
+    "Interface responsive : palette centrée sur Desktop/Tablet et Bottom Sheet tactile sur Mobile avec support safe-area.",
+    "Bumping de version vers v1.20.27.",
+  ],
+});
+
+CHANGELOG_BY_LANG.en.unshift({
+  version: "v1.20.27",
+  date: "2026-09-03",
+  title: "ETHONE Command Center 3.0 — Universal Command Palette & Global Hub",
+  items: [
+    "Complete refactor of the ETHONE Web Command Center accessible via Ctrl+K / ⌘+K and tactile triggers.",
+    "Multi-domain universal search: Navigation, Focus Timer, Files, Mail, Marketplace, Themes (9 themes + 12 accents), Settings, and Integrations.",
+    "Native ETHONE Brain natural language query routing ('Ask Brain').",
+    "Intent-based natural language phrasing support ('start pomodoro', 'set oled theme', 'open spotify', 'find document').",
+    "Context-aware ranking boosting commands relevant to the active page (/files, /focus, /settings, /mail).",
+    "Pinned Favorites & Frequency-weighted Recent History.",
+    "Protected sensitive operations (Sign out, Reset) with embedded confirmation prompt.",
+    "Responsive design: centered floating modal on Desktop/Tablet and touch Bottom Sheet on Mobile with safe-area support.",
+    "Version bump to v1.20.27.",
+  ],
+});
+
 export const CHANGELOG = CHANGELOG_BY_LANG.fr;

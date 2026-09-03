@@ -1,7 +1,7 @@
 "use client";
 
-import { useState, useEffect, useRef } from "react";
-import { motion, AnimatePresence } from "framer-motion";
+import { useState } from "react";
+import { motion } from "framer-motion";
 import {
   Check,
   CheckCheck,
@@ -21,11 +21,19 @@ import {
   ExternalLink,
   ChevronDown,
   ChevronUp,
+  ArrowLeft,
 } from "lucide-react";
 import { useNotifications, type Notification, type SnoozeDuration } from "@/lib/hooks/useNotifications";
 import { useI18n } from "@/lib/hooks/useI18n";
 import { useToast } from "@/components/ToastProvider";
 import { cn } from "@/lib/utils";
+import {
+  AnimatedDropdown,
+  AnimatedDropdownTrigger,
+  AnimatedDropdownContent,
+  AnimatedDropdownItem,
+  AnimatedDropdownSeparator,
+} from "@/components/ui/AnimatedDropdown";
 
 const SNOOZE_OPTIONS: SnoozeDuration[] = ["10m", "1h", "tonight", "tomorrow"];
 
@@ -88,22 +96,9 @@ export default function NotificationItem({
     unmuteCategory,
   } = useNotifications();
 
-  const [menuOpen, setMenuOpen] = useState(false);
-  const [snoozeOpen, setSnoozeOpen] = useState(false);
+  const [snoozeExpanded, setSnoozeExpanded] = useState(false);
   const [expanded, setExpanded] = useState(false);
-  const menuRef = useRef<HTMLDivElement>(null);
 
-  useEffect(() => {
-    if (!menuOpen) return;
-    function onPointerDown(e: PointerEvent) {
-      if (!menuRef.current?.contains(e.target as Node)) {
-        setMenuOpen(false);
-        setSnoozeOpen(false);
-      }
-    }
-    document.addEventListener("pointerdown", onPointerDown);
-    return () => document.removeEventListener("pointerdown", onPointerDown);
-  }, [menuOpen]);
 
   const isCritical = n.priority === "critical";
   const isImportant = n.priority === "important";
@@ -119,40 +114,6 @@ export default function NotificationItem({
     e.stopPropagation();
     archive(n.id);
     success("Notification archivée");
-  }
-
-  function handleImportant(e: React.MouseEvent) {
-    e.stopPropagation();
-    markImportant(n.id);
-    setMenuOpen(false);
-    success("Marqué comme important");
-  }
-
-  function handleDelete(e: React.MouseEvent) {
-    e.stopPropagation();
-    remove(n.id);
-    setMenuOpen(false);
-    success("Notification supprimée");
-  }
-
-  function handleMute(e: React.MouseEvent) {
-    e.stopPropagation();
-    if (isMuted(n.category)) {
-      unmuteCategory(n.category);
-      success("Notifications rétablies pour cette catégorie");
-    } else {
-      muteCategory(n.category);
-      success("Catégorie mise en sourdine");
-    }
-    setMenuOpen(false);
-  }
-
-  function handleSnooze(e: React.MouseEvent, duration: SnoozeDuration) {
-    e.stopPropagation();
-    snooze(n.id, duration);
-    setMenuOpen(false);
-    setSnoozeOpen(false);
-    success(`Rappel dans ${SNOOZE_KEYS[duration]}`);
   }
 
   return (
@@ -240,91 +201,96 @@ export default function NotificationItem({
 
           <button
             type="button"
-            onClick={handleDelete}
+            onClick={(e) => {
+              e.stopPropagation();
+              remove(n.id);
+              success("Notification supprimée");
+            }}
             className="flex h-7 w-7 items-center justify-center rounded-lg border border-[var(--panel-border)] bg-[var(--surface-raised)] text-[var(--text-muted)] hover:text-rose-400 hover:border-rose-500/40 transition-all active:scale-95 cursor-pointer shadow-xs"
             title="Supprimer la notification"
           >
             <Trash2 className="h-3.5 w-3.5" />
           </button>
 
-          <div ref={menuRef} className="relative">
-            <button
-              type="button"
-              onClick={(e) => {
-                e.stopPropagation();
-                setMenuOpen((v) => !v);
-                setSnoozeOpen(false);
-              }}
-              className="flex h-7 w-7 items-center justify-center rounded-lg border border-[var(--panel-border)] bg-[var(--surface-raised)] text-[var(--text-muted)] hover:text-white hover:border-[var(--accent-primary)]/40 transition-all active:scale-95 cursor-pointer shadow-xs"
-              title="Plus d'actions"
+          <div onClick={(e) => e.stopPropagation()}>
+            <AnimatedDropdown modal={false} onOpenChange={() => setSnoozeExpanded(false)}>
+            <AnimatedDropdownTrigger
+              className="h-7 w-7 p-0 rounded-lg border border-[var(--panel-border)] bg-[var(--surface-raised)] text-[var(--text-muted)] hover:text-white hover:border-[var(--accent-primary)]/40 shadow-xs"
             >
               <MoreHorizontal className="h-3.5 w-3.5" />
-            </button>
+            </AnimatedDropdownTrigger>
 
-            {menuOpen && (
-              <div
-                onClick={(e) => e.stopPropagation()}
-                className="absolute right-0 top-full z-[var(--z-dropdown)] mt-1.5 w-48 rounded-2xl border border-[var(--panel-border)] bg-[#0d0e12] p-1.5 shadow-2xl backdrop-blur-2xl text-xs space-y-0.5"
-              >
-                {snoozeOpen ? (
-                  <>
-                    <button
-                      type="button"
-                      onClick={() => setSnoozeOpen(false)}
-                      className="flex h-8 w-full items-center gap-2 rounded-xl px-2 text-[var(--text-muted)] hover:bg-white/5 cursor-pointer"
+
+            <AnimatedDropdownContent side="bottom" align="end" sideOffset={6}>
+              {!snoozeExpanded ? (
+                <>
+                  <AnimatedDropdownItem
+                    icon={<Clock className="h-3.5 w-3.5 text-[var(--accent-primary)]" />}
+                    onClick={() => setSnoozeExpanded(true)}
+                  >
+                    Mettre en veille…
+                  </AnimatedDropdownItem>
+                  <AnimatedDropdownItem
+                    icon={<Star className="h-3.5 w-3.5 text-amber-400" />}
+                    onClick={() => {
+                      markImportant(n.id);
+                      success("Marqué comme important");
+                    }}
+                  >
+                    Marquer comme important
+                  </AnimatedDropdownItem>
+                  <AnimatedDropdownItem
+                    icon={<BellOff className="h-3.5 w-3.5 text-sky-400" />}
+                    onClick={() => {
+                      if (isMuted(n.category)) {
+                        unmuteCategory(n.category);
+                        success("Notifications rétablies pour cette catégorie");
+                      } else {
+                        muteCategory(n.category);
+                        success("Catégorie mise en sourdine");
+                      }
+                    }}
+                  >
+                    {isMuted(n.category) ? "Rétablir la catégorie" : "Muter la catégorie"}
+                  </AnimatedDropdownItem>
+                  <AnimatedDropdownSeparator />
+                  <AnimatedDropdownItem
+                    icon={<Trash2 className="h-3.5 w-3.5" />}
+                    variant="danger"
+                    onClick={() => {
+                      remove(n.id);
+                      success("Notification supprimée");
+                    }}
+                  >
+                    Supprimer
+                  </AnimatedDropdownItem>
+                </>
+              ) : (
+                <>
+                  <AnimatedDropdownItem
+                    icon={<ArrowLeft className="h-3.5 w-3.5" />}
+                    onClick={() => setSnoozeExpanded(false)}
+                  >
+                    Retour
+                  </AnimatedDropdownItem>
+                  <AnimatedDropdownSeparator />
+                  {SNOOZE_OPTIONS.map((dur) => (
+                    <AnimatedDropdownItem
+                      key={dur}
+                      icon={<Clock className="h-3.5 w-3.5 text-[var(--accent-primary)]" />}
+                      onClick={() => {
+                        snooze(n.id, dur);
+                        setSnoozeExpanded(false);
+                        success(`Rappel dans ${SNOOZE_KEYS[dur]}`);
+                      }}
                     >
-                      <span>← Retour</span>
-                    </button>
-                    {SNOOZE_OPTIONS.map((dur) => (
-                      <button
-                        key={dur}
-                        type="button"
-                        onClick={(e) => handleSnooze(e, dur)}
-                        className="flex h-8 w-full items-center gap-2 rounded-xl px-2 text-white hover:bg-white/5 cursor-pointer"
-                      >
-                        <Clock className="h-3.5 w-3.5 text-[var(--accent-primary)]" />
-                        <span>{SNOOZE_KEYS[dur]}</span>
-                      </button>
-                    ))}
-                  </>
-                ) : (
-                  <>
-                    <button
-                      type="button"
-                      onClick={() => setSnoozeOpen(true)}
-                      className="flex h-8 w-full items-center gap-2 rounded-xl px-2 text-[var(--text-primary)] hover:bg-white/5 cursor-pointer"
-                    >
-                      <Clock className="h-3.5 w-3.5 text-[var(--accent-primary)]" />
-                      <span>Mettre en veille</span>
-                    </button>
-                    <button
-                      type="button"
-                      onClick={handleImportant}
-                      className="flex h-8 w-full items-center gap-2 rounded-xl px-2 text-[var(--text-primary)] hover:bg-white/5 cursor-pointer"
-                    >
-                      <Star className="h-3.5 w-3.5 text-amber-400" />
-                      <span>Marquer comme important</span>
-                    </button>
-                    <button
-                      type="button"
-                      onClick={handleMute}
-                      className="flex h-8 w-full items-center gap-2 rounded-xl px-2 text-[var(--text-primary)] hover:bg-white/5 cursor-pointer"
-                    >
-                      <BellOff className="h-3.5 w-3.5 text-sky-400" />
-                      <span>{isMuted(n.category) ? "Rétablir la catégorie" : "Muter la catégorie"}</span>
-                    </button>
-                    <button
-                      type="button"
-                      onClick={handleDelete}
-                      className="flex h-8 w-full items-center gap-2 rounded-xl px-2 text-rose-400 hover:bg-rose-500/15 cursor-pointer"
-                    >
-                      <Trash2 className="h-3.5 w-3.5" />
-                      <span>Supprimer</span>
-                    </button>
-                  </>
-                )}
-              </div>
-            )}
+                      {SNOOZE_KEYS[dur]}
+                    </AnimatedDropdownItem>
+                  ))}
+                </>
+              )}
+            </AnimatedDropdownContent>
+          </AnimatedDropdown>
           </div>
         </div>
       </div>

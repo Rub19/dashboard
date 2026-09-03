@@ -6,6 +6,32 @@ export type ChangelogEntry = {
 };
 
 
+const v12038_fr: ChangelogEntry = {
+  version: "v1.20.38",
+  date: "2026-09-03",
+  title: "AnimatedDropdown Rollout — Menus Fluides & Accessibles Partout",
+  items: [
+    "AnimatedDropdown intégré sur WidgetContainer : menu d'actions contextuel de chaque widget (Configurer, Actualiser, Épingler, Favoris, Masquer, Supprimer).",
+    "AnimatedDropdown intégré sur TrackerModeDropdown : sélecteur de mode de jeu Valorant & LoL avec badge d'accent dynamique et icône de sélection active.",
+    "AnimatedDropdown intégré sur NotificationItem : actions rapides sur chaque notification (Mise en veille, Marquer important, Sourdine catégorie, Supprimer).",
+    "AnimatedDropdown intégré sur FlowCard : menu d'actions rapides des automatisations et flux (Éditer, Dupliquer, Logs, Supprimer).",
+    "Composant AnimatedDropdown accessible (@base-ui/react/menu + framer-motion) avec survol animé partagé layoutId et support de navigation clavier.",
+  ],
+};
+
+const v12038_en: ChangelogEntry = {
+  version: "v1.20.38",
+  date: "2026-09-03",
+  title: "AnimatedDropdown Rollout — Fluid & Accessible Menus Across the OS",
+  items: [
+    "AnimatedDropdown on WidgetContainer: contextual action menu for every widget (Configure, Refresh, Pin, Favorite, Hide, Remove).",
+    "AnimatedDropdown on TrackerModeDropdown: game mode selector for Valorant & LoL with dynamic accent badge and check icon.",
+    "AnimatedDropdown on NotificationItem: quick actions on every notification (Snooze, Mark important, Mute category, Delete).",
+    "AnimatedDropdown on FlowCard: automation and flow actions menu (Edit, Duplicate, Logs, Delete).",
+    "Accessible AnimatedDropdown component (@base-ui/react/menu + framer-motion) with shared layoutId gliding hover highlight and keyboard navigation.",
+  ],
+};
+
 const v12037_fr: ChangelogEntry = {
   version: "v1.20.37",
   date: "2026-09-03",

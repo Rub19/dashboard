@@ -1,6 +1,5 @@
 "use client";
 
-import { useState, useRef, useEffect } from "react";
 import {
   Play,
   Pause,
@@ -12,6 +11,12 @@ import {
   Trash2,
 } from "lucide-react";
 import { Icon } from "@/lib/icons";
+import {
+  AnimatedDropdown,
+  AnimatedDropdownTrigger,
+  AnimatedDropdownContent,
+  AnimatedDropdownItem,
+} from "@/components/ui/AnimatedDropdown";
 
 type MenuAction = {
   label: string;
@@ -72,18 +77,6 @@ export default function FlowCard({
   rightAction,
   children,
 }: FlowCardProps) {
-  const [menuOpen, setMenuOpen] = useState(false);
-  const menuRef = useRef<HTMLDivElement>(null);
-
-  useEffect(() => {
-    if (!menuOpen) return;
-    function handleClick(e: MouseEvent) {
-      if (!menuRef.current?.contains(e.target as Node)) setMenuOpen(false);
-    }
-    document.addEventListener("mousedown", handleClick);
-    return () => document.removeEventListener("mousedown", handleClick);
-  }, [menuOpen]);
-
   const defaultMenu: MenuAction[] = [
     ...(onEdit ? [{ label: "Éditer", icon: "file-edit", onClick: onEdit }] : []),
     ...(onDuplicate ? [{ label: "Dupliquer", icon: "copy", onClick: onDuplicate }] : []),
@@ -126,39 +119,30 @@ export default function FlowCard({
           </div>
         </div>
 
-        <div className="relative" ref={menuRef}>
-          <button
-            type="button"
-            onClick={() => setMenuOpen((v) => !v)}
-            className="rounded-lg p-1.5 text-[var(--text-muted)] transition-colors hover:bg-[var(--text-primary)]/[0.04] hover:text-[var(--text-primary)]"
-            aria-label="Options"
-          >
-            <MoreVertical className="h-4 w-4" />
-          </button>
-          {menuOpen && (
-            <div className="absolute right-0 top-full z-20 mt-1 w-36 rounded-xl border border-white/10 bg-zinc-950/95 p-1 shadow-2xl shadow-black/80 backdrop-blur-md">
+        {actions.length > 0 && (
+          <AnimatedDropdown>
+            <AnimatedDropdownTrigger
+              className="h-8 w-8 p-0 rounded-lg bg-transparent text-[var(--text-muted)] hover:bg-[var(--text-primary)]/[0.04] hover:text-[var(--text-primary)] shadow-none"
+              aria-label="Options"
+            >
+              <MoreVertical className="h-4 w-4" />
+            </AnimatedDropdownTrigger>
+            <AnimatedDropdownContent side="bottom" align="end" sideOffset={4} className="min-w-[150px]">
               {actions.map((a, i) => (
-                <button
+                <AnimatedDropdownItem
                   key={i}
-                  type="button"
-                  onClick={() => {
-                    setMenuOpen(false);
-                    a.onClick();
-                  }}
-                  className={`flex w-full items-center gap-2 rounded-lg px-3 py-2 text-left text-xs transition-colors ${
-                    a.danger
-                      ? "text-[var(--danger)] hover:bg-[var(--danger)]/[0.08]"
-                      : "text-[var(--text-primary)] hover:bg-[var(--text-primary)]/[0.04] hover:text-[var(--text-primary)]"
-                  }`}
+                  icon={a.icon ? <Icon name={a.icon} className="h-3.5 w-3.5" /> : undefined}
+                  variant={a.danger ? "danger" : "default"}
+                  onClick={a.onClick}
                 >
-                  {a.icon && <Icon name={a.icon} className="h-3.5 w-3.5" />}
                   {a.label}
-                </button>
+                </AnimatedDropdownItem>
               ))}
-            </div>
-          )}
-        </div>
+            </AnimatedDropdownContent>
+          </AnimatedDropdown>
+        )}
       </div>
+
 
       <p className="mt-2 line-clamp-2 text-xs leading-relaxed text-[var(--text-muted)]">{description}</p>
 

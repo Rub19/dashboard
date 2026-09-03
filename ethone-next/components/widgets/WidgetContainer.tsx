@@ -1,11 +1,9 @@
 "use client";
 
-import React, { Component, useState, useTransition, type ReactNode } from "react";
+import React, { Component, useTransition, type ReactNode } from "react";
 import {
   MoreHorizontal,
   Settings,
-  Maximize2,
-  Minimize2,
   Pin,
   PinOff,
   Star,
@@ -17,6 +15,13 @@ import {
 import { cn } from "@/lib/utils";
 import { Icon } from "@/lib/icons";
 import { getWidgetManifest, type WidgetSize } from "@/lib/widget-registry";
+import {
+  AnimatedDropdown,
+  AnimatedDropdownTrigger,
+  AnimatedDropdownContent,
+  AnimatedDropdownItem,
+  AnimatedDropdownSeparator,
+} from "@/components/ui/AnimatedDropdown";
 
 interface ErrorBoundaryProps {
   children: ReactNode;
@@ -104,12 +109,10 @@ export default function WidgetContainer({
   className,
   children,
 }: WidgetContainerProps) {
-  const [menuOpen, setMenuOpen] = useState(false);
   const [isRefreshing, startTransition] = useTransition();
   const manifest = getWidgetManifest(id);
 
   const handleRefreshClick = () => {
-    setMenuOpen(false);
     startTransition(() => {
       onRefresh?.();
     });
@@ -148,109 +151,54 @@ export default function WidgetContainer({
         </div>
 
         {/* Quick Menu Trigger */}
-        <div className="relative">
-          <button
-            type="button"
-            onClick={() => setMenuOpen(!menuOpen)}
+        <AnimatedDropdown>
+          <AnimatedDropdownTrigger
             className="flex h-6 w-6 items-center justify-center rounded-lg text-[var(--text-muted)] hover:bg-white/5 hover:text-white transition-all cursor-pointer"
-            title="Options du widget"
             aria-label="Options du widget"
           >
             <MoreHorizontal className="h-3.5 w-3.5" />
-          </button>
+          </AnimatedDropdownTrigger>
 
-          {/* Context Dropdown Menu */}
-          {menuOpen && (
-            <>
-              <div
-                className="fixed inset-0 z-40"
-                onClick={() => setMenuOpen(false)}
-              />
-              <div className="absolute right-0 top-8 z-50 w-44 rounded-2xl border border-[var(--panel-border)] bg-[var(--surface-raised)]/95 p-1.5 shadow-2xl backdrop-blur-2xl text-xs space-y-0.5">
-                {manifest?.configurable && onConfigure && (
-                  <button
-                    type="button"
-                    onClick={() => {
-                      setMenuOpen(false);
-                      onConfigure();
-                    }}
-                    className="flex w-full items-center gap-2 rounded-xl px-2 py-1.5 text-left font-medium text-[var(--text-primary)] hover:bg-white/10 cursor-pointer"
-                  >
-                    <Settings className="h-3.5 w-3.5 text-[var(--accent-primary)]" />
-                    <span>Configurer</span>
-                  </button>
-                )}
+          <AnimatedDropdownContent side="bottom" align="end" sideOffset={4}>
+            {manifest?.configurable && onConfigure && (
+              <AnimatedDropdownItem icon={<Settings className="h-3.5 w-3.5 text-[var(--accent-primary)]" />} onClick={onConfigure}>
+                Configurer
+              </AnimatedDropdownItem>
+            )}
 
-                {onRefresh && (
-                  <button
-                    type="button"
-                    onClick={handleRefreshClick}
-                    className="flex w-full items-center gap-2 rounded-xl px-2 py-1.5 text-left font-medium text-[var(--text-primary)] hover:bg-white/10 cursor-pointer"
-                  >
-                    <RefreshCw className={cn("h-3.5 w-3.5", isRefreshing && "animate-spin text-[var(--accent-primary)]")} />
-                    <span>Actualiser</span>
-                  </button>
-                )}
+            {onRefresh && (
+              <AnimatedDropdownItem icon={<RefreshCw className={cn("h-3.5 w-3.5", isRefreshing && "animate-spin text-[var(--accent-primary)]")} />} onClick={handleRefreshClick}>
+                Actualiser
+              </AnimatedDropdownItem>
+            )}
 
-                {onPin && (
-                  <button
-                    type="button"
-                    onClick={() => {
-                      setMenuOpen(false);
-                      onPin();
-                    }}
-                    className="flex w-full items-center gap-2 rounded-xl px-2 py-1.5 text-left font-medium text-[var(--text-primary)] hover:bg-white/10 cursor-pointer"
-                  >
-                    {pinned ? <PinOff className="h-3.5 w-3.5" /> : <Pin className="h-3.5 w-3.5" />}
-                    <span>{pinned ? "Désépingler" : "Épingler"}</span>
-                  </button>
-                )}
+            {onPin && (
+              <AnimatedDropdownItem icon={pinned ? <PinOff className="h-3.5 w-3.5" /> : <Pin className="h-3.5 w-3.5" />} onClick={onPin}>
+                {pinned ? "Désépingler" : "Épingler"}
+              </AnimatedDropdownItem>
+            )}
 
-                {onFavorite && (
-                  <button
-                    type="button"
-                    onClick={() => {
-                      setMenuOpen(false);
-                      onFavorite();
-                    }}
-                    className="flex w-full items-center gap-2 rounded-xl px-2 py-1.5 text-left font-medium text-[var(--text-primary)] hover:bg-white/10 cursor-pointer"
-                  >
-                    <Star className={cn("h-3.5 w-3.5", favorite ? "text-amber-400 fill-amber-400" : "")} />
-                    <span>{favorite ? "Retirer des favoris" : "Favori"}</span>
-                  </button>
-                )}
+            {onFavorite && (
+              <AnimatedDropdownItem icon={<Star className={cn("h-3.5 w-3.5", favorite ? "text-amber-400 fill-amber-400" : "")} />} onClick={onFavorite}>
+                {favorite ? "Retirer des favoris" : "Favori"}
+              </AnimatedDropdownItem>
+            )}
 
-                {onHide && (
-                  <button
-                    type="button"
-                    onClick={() => {
-                      setMenuOpen(false);
-                      onHide();
-                    }}
-                    className="flex w-full items-center gap-2 rounded-xl px-2 py-1.5 text-left font-medium text-[var(--text-muted)] hover:bg-white/10 hover:text-white cursor-pointer"
-                  >
-                    <EyeOff className="h-3.5 w-3.5" />
-                    <span>Masquer</span>
-                  </button>
-                )}
+            {(onHide || onRemove) && <AnimatedDropdownSeparator />}
 
-                {onRemove && (
-                  <button
-                    type="button"
-                    onClick={() => {
-                      setMenuOpen(false);
-                      onRemove();
-                    }}
-                    className="flex w-full items-center gap-2 rounded-xl px-2 py-1.5 text-left font-medium text-rose-400 hover:bg-rose-500/10 cursor-pointer"
-                  >
-                    <Trash2 className="h-3.5 w-3.5" />
-                    <span>Retirer</span>
-                  </button>
-                )}
-              </div>
-            </>
-          )}
-        </div>
+            {onHide && (
+              <AnimatedDropdownItem icon={<EyeOff className="h-3.5 w-3.5" />} onClick={onHide}>
+                Masquer
+              </AnimatedDropdownItem>
+            )}
+
+            {onRemove && (
+              <AnimatedDropdownItem variant="danger" icon={<Trash2 className="h-3.5 w-3.5" />} onClick={onRemove}>
+                Retirer
+              </AnimatedDropdownItem>
+            )}
+          </AnimatedDropdownContent>
+        </AnimatedDropdown>
       </div>
 
       {/* Widget Body with Error Boundary */}

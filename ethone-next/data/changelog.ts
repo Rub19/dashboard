@@ -21367,4 +21367,27 @@ CHANGELOG_BY_LANG.en.unshift({
   ],
 });
 
+
+CHANGELOG_BY_LANG.fr.unshift({
+  version: "v1.20.35",
+  date: "2026-09-03",
+  title: "ETHONE Connections 2.0 — Advanced Permissions, Security & Disconnect Flow",
+  items: [
+    "Enrichissement du tiroir de détails (ConnectionDetailDrawer) avec affichage explicite des permissions accordées, garantie de chiffrement côté serveur et cartographie des widgets dépendants.",
+    "Ajout d'un flux de déconnexion sécurisé avec confirmation explicite évitant toute désactivation accidentelle.",
+    "Bumping de version vers v1.20.35.",
+  ],
+});
+
+CHANGELOG_BY_LANG.en.unshift({
+  version: "v1.20.35",
+  date: "2026-09-03",
+  title: "ETHONE Connections 2.0 — Advanced Permissions, Security & Disconnect Flow",
+  items: [
+    "Enhanced ConnectionDetailDrawer displaying granted permissions, server-side encryption guarantees, and dependent widgets mapping.",
+    "Added a secure disconnect confirmation flow preventing accidental service revoking.",
+    "Version bump to v1.20.35.",
+  ],
+});
+
 export const CHANGELOG = CHANGELOG_BY_LANG.fr;

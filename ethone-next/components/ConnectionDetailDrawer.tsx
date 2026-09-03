@@ -27,7 +27,8 @@ import { useI18n } from "@/lib/hooks/useI18n";
 import { useSettings } from "@/components/SettingsProvider";
 import { useToast } from "@/components/ToastProvider";
 import { useProviderCredentials } from "@/lib/hooks/useProviderCredentials";
-import { getCapabilities } from "@/lib/connection-capabilities";
+import { getCapabilities, getPermissions, getAssociatedWidgets } from "@/lib/connection-capabilities";
+import { ShieldCheck, LayoutGrid, AlertCircle } from "lucide-react";
 import { PUBLIC_FIELDS, CREDENTIAL_FIELDS } from "@/lib/connection-config";
 import type { Integration } from "@/lib/integrations";
 import type { IntegrationConfig } from "@/lib/integrations.config";
@@ -136,6 +137,9 @@ export default function ConnectionDetailDrawer({
   }, [isOpen, integration.id, settings]);
 
   const capabilities = useMemo(() => getCapabilities(integration.id), [integration.id]);
+  const permissions = useMemo(() => getPermissions(integration.id), [integration.id]);
+  const associatedWidgets = useMemo(() => getAssociatedWidgets(integration.id), [integration.id]);
+  const [confirmDisconnect, setConfirmDisconnect] = useState(false);
 
   const isConnected =
     status === "connected" ||
@@ -627,6 +631,47 @@ export default function ConnectionDetailDrawer({
                 </Section>
               )}
 
+              {/* Associated Widgets */}
+              {associatedWidgets.length > 0 && (
+                <Section title="Widgets utilisant cette connexion">
+                  <div className="flex flex-wrap gap-1.5">
+                    {associatedWidgets.map((w) => (
+                      <span
+                        key={w}
+                        className="inline-flex items-center gap-1.5 rounded-xl border border-[var(--panel-border)] bg-[var(--surface-raised)]/60 px-2.5 py-1 text-xs font-semibold text-[var(--text-primary)]"
+                      >
+                        <LayoutGrid className="h-3 w-3 text-[var(--accent-primary)]" />
+                        <span>Widget : {w.toUpperCase()}</span>
+                      </span>
+                    ))}
+                  </div>
+                </Section>
+              )}
+
+              {/* Permissions & Security */}
+              {permissions.length > 0 && (
+                <Section title="Permissions & Sécurité">
+                  <div className="space-y-2">
+                    <div className="flex flex-wrap gap-1.5">
+                      {permissions.map((p) => (
+                        <span
+                          key={p}
+                          className="rounded-lg bg-white/5 border border-white/10 px-2 py-0.5 font-mono text-[10px] text-zinc-300"
+                        >
+                          {p}
+                        </span>
+                      ))}
+                    </div>
+                    <div className="flex items-start gap-2 rounded-xl border border-emerald-500/20 bg-emerald-500/5 p-2.5 text-[11px] text-emerald-300">
+                      <ShieldCheck className="h-4 w-4 shrink-0 text-emerald-400 mt-0.5" />
+                      <p className="leading-relaxed">
+                        Chiffrement des jetons côté serveur. Aucune exposition de vos mots de passe ou secrets privés.
+                      </p>
+                    </div>
+                  </div>
+                </Section>
+              )}
+
               {/* Technical logs */}
               {logs && (
                 <Section title="Détails techniques">
@@ -661,18 +706,41 @@ export default function ConnectionDetailDrawer({
               </button>
 
               {isConnected ? (
-                <button
-                  type="button"
-                  onClick={() => {
-                    hapticLightImpact();
-                    onDisconnect();
-                    onClose();
-                  }}
-                  className="flex items-center gap-2 rounded-xl border border-rose-500/30 bg-rose-500/10 px-4 py-2.5 text-xs font-bold text-rose-300 hover:bg-rose-500/20 transition-all active:scale-95 cursor-pointer"
-                >
-                  <Unplug className="h-3.5 w-3.5" />
-                  <span>Déconnecter</span>
-                </button>
+                confirmDisconnect ? (
+                  <div className="flex items-center gap-2">
+                    <button
+                      type="button"
+                      onClick={() => setConfirmDisconnect(false)}
+                      className="rounded-xl border border-white/10 px-3 py-2 text-xs font-semibold text-zinc-400 hover:text-white cursor-pointer"
+                    >
+                      Annuler
+                    </button>
+                    <button
+                      type="button"
+                      onClick={() => {
+                        hapticLightImpact();
+                        setConfirmDisconnect(false);
+                        onDisconnect();
+                        onClose();
+                      }}
+                      className="rounded-xl bg-rose-600 px-3.5 py-2 text-xs font-bold text-white hover:bg-rose-500 active:scale-95 transition-all cursor-pointer shadow-md"
+                    >
+                      Confirmer la déconnexion
+                    </button>
+                  </div>
+                ) : (
+                  <button
+                    type="button"
+                    onClick={() => {
+                      hapticLightImpact();
+                      setConfirmDisconnect(true);
+                    }}
+                    className="flex items-center gap-2 rounded-xl border border-rose-500/30 bg-rose-500/10 px-4 py-2.5 text-xs font-bold text-rose-300 hover:bg-rose-500/20 transition-all active:scale-95 cursor-pointer"
+                  >
+                    <Unplug className="h-3.5 w-3.5" />
+                    <span>Déconnecter</span>
+                  </button>
+                )
               ) : (
                 <button
                   type="button"

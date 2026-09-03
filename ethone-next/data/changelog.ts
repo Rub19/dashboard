@@ -6,6 +6,38 @@ export type ChangelogEntry = {
 };
 
 
+const v12039_fr: ChangelogEntry = {
+  version: "v1.20.39",
+  date: "2026-09-03",
+  title: "ETHONE Marketplace Intelligence 2.0 — App Store Cognitif & Écosystème",
+  items: [
+    "Marketplace Intelligence 2.0 : refonte complète de la découverte et de l'installation d'extensions.",
+    "Catalogue unifié multi-types : Widgets 3D, Thèmes AMOLED/Minimal/Aurora, Layouts prédéfinis, Packs d'automatisation et Plugins Brain Labs.",
+    "Moteur de recommandation Brain : calcul dynamique de compatibilité (score 70-99%) basé sur le Workspace actif, l'heure, les services connectés et les sessions Focus.",
+    "Tiroir d'explication 'Why this?' : transparence totale sur les critères ayant mené à la recommandation avec recueil de feedback.",
+    "Recherche 2.0 avec détection d'intention en langage naturel ('setup gaming', 'coder', 'pomodoro focus', 'musique 3D').",
+    "Pipeline d'installation réel : simulation de grille 12 colonnes, audit des permissions au moindre privilège et résolution des dépendances manquantes.",
+    "Centre de gestion des extensions : gestion des modules installés, favoris, wishlist et centre de mises à jour avec rollback.",
+    "Intégration écosystème : synchronisation avec le Command Center (raccourcis de recherche), l'Activity Hub et le Theme Engine.",
+  ],
+};
+
+const v12039_en: ChangelogEntry = {
+  version: "v1.20.39",
+  date: "2026-09-03",
+  title: "ETHONE Marketplace Intelligence 2.0 — Cognitive App Store & Ecosystem",
+  items: [
+    "Marketplace Intelligence 2.0: complete overhaul of extension discovery, preview, and lifecycle management.",
+    "Unified multi-type registry: 3D Widgets, Themes (AMOLED, Minimal, Aurora), Workspace Layouts, Automation Routine Packs, and Brain Labs Plugins.",
+    "Brain Recommendation Engine: dynamic compatibility scoring (70-99%) based on active Workspace, time period, connected integrations, and Focus sessions.",
+    "'Why this?' explanation drawer: full algorithmic transparency showing criteria used for recommendations with feedback loop.",
+    "Search 2.0 with natural language intent detection ('gaming setup', 'coding', 'pomodoro focus', '3d music').",
+    "Real installation pipeline: interactive 12-column layout simulator, least-privilege permissions auditor, and dependency resolver.",
+    "Extension Management Center: installed modules, favorites, wishlist, and Updates Center with 1-click update all and rollback support.",
+    "Ecosystem integration: Command Center shortcuts, Activity Hub logs, and Theme Engine live transitions.",
+  ],
+};
+
 const v12038_fr: ChangelogEntry = {
   version: "v1.20.38",
   date: "2026-09-03",

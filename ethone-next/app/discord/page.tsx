@@ -599,6 +599,30 @@ export default function DiscordDashboardPage() {
                 {/* MODULE 1: Sécurité & Anti-Raid */}
                 {activeModule === "security" && (
                   <div className="space-y-4">
+                    {/* Anti-Raid 2.0 Command Center Gateway */}
+                    <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-3 rounded-2xl border border-red-500/30 bg-gradient-to-r from-red-500/10 via-rose-500/10 to-red-600/10 p-4 shadow-lg shadow-red-500/5">
+                      <div>
+                        <div className="flex items-center gap-2">
+                          <span className="text-base">🛡️</span>
+                          <p className="text-xs font-bold text-white">Centre de Sécurité Anti-Raid 2.0</p>
+                          <span className="text-[9px] uppercase font-bold tracking-wider px-1.5 py-0.5 rounded bg-red-500/20 text-red-300 border border-red-500/30">
+                            Live Guard
+                          </span>
+                        </div>
+                        <p className="text-[11px] text-zinc-300 mt-0.5">
+                          Calcul dynamique du Risk Score (0-100), Live Monitor, activation du Raid Mode d'urgence et dossiers d'investigation.
+                        </p>
+                      </div>
+                      <Link
+                        href={`/discord/security/anti-raid?guildId=${selectedGuild.id}`}
+                        className="flex h-9 shrink-0 items-center gap-2 rounded-xl bg-gradient-to-r from-red-600 to-rose-600 px-4 text-xs font-bold text-white shadow-md shadow-red-600/20 transition-all hover:from-red-500 hover:to-rose-500 active:scale-95"
+                      >
+                        <ShieldAlert className="h-4 w-4" />
+                        <span>Ouvrir Anti-Raid 2.0</span>
+                        <ChevronRight className="h-3.5 w-3.5" />
+                      </Link>
+                    </div>
+
                     <div className="flex items-center justify-between rounded-2xl border border-white/10 bg-white/[0.02] p-4">
                       <div>
                         <p className="text-xs font-bold text-white">Protection Anti-Raid automatique</p>

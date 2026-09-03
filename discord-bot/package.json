@@ -1,0 +1,48 @@
+{
+  "name": "discord-bot",
+  "version": "1.0.0",
+  "description": "Modern & secure Discord bot with unified slash and prefix command handling in TypeScript with Web Dashboard",
+  "main": "dist/index.js",
+  "type": "module",
+  "scripts": {
+    "dev": "bun --watch src/index.ts",
+    "start": "bun run src/index.ts",
+    "build": "bun build ./src/index.ts --outdir ./dist --target bun",
+    "build:web": "cd web && npm run build",
+    "dev:web": "cd web && npm run dev",
+    "node:dev": "tsx watch src/index.ts",
+    "node:build": "tsc",
+    "node:start": "node dist/index.js"
+  },
+  "keywords": [
+    "discord",
+    "discord.js",
+    "bot",
+    "typescript",
+    "dashboard"
+  ],
+  "author": "",
+  "license": "MIT",
+  "dependencies": {
+    "@napi-rs/canvas": "^1.0.8",
+    "cookie-parser": "^1.4.7",
+    "cors": "^2.8.5",
+    "discord.js": "^14.18.0",
+    "dotenv": "^16.4.7",
+    "express": "^4.21.2",
+    "jsonwebtoken": "^9.0.2",
+    "zod": "^3.24.2"
+  },
+  "devDependencies": {
+    "@types/cookie-parser": "^1.4.8",
+    "@types/cors": "^2.8.17",
+    "@types/express": "^5.0.0",
+    "@types/jsonwebtoken": "^9.0.9",
+    "@types/node": "^22.13.9",
+    "tsx": "^4.19.3",
+    "typescript": "^5.8.2"
+  },
+  "engines": {
+    "node": ">=20.0.0"
+  }
+}

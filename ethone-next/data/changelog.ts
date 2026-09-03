@@ -21276,4 +21276,33 @@ CHANGELOG_BY_LANG.en.unshift({
   ],
 });
 
+
+CHANGELOG_BY_LANG.fr.unshift({
+  version: "v1.20.32",
+  date: "2026-09-03",
+  title: "ETHONE Home 2026 — Intelligent Personal OS Home",
+  items: [
+    "Refonte complète de l'Accueil (Home 2026) en un véritable Personal OS contextuel et proactif.",
+    "Header d'accueil intelligent avec salutations dynamiques selon l'heure (Matin/Après-midi/Soir), date en direct, indicateur d'Espace de travail et accès rapide au Command Center (Ctrl+K).",
+    "Couche de priorité contextuelle ('Ce qui est important maintenant') : résumé en 4 cartes interactives (Calendrier, Tâches ouvertes, Focus Mode, ETHONE Brain) avec raccourcis directs.",
+    "Conservation intégrale de toutes les cartes 3D interactives (TiltCard) : Discord, Spotify, Trackers Riot Games (Valorant & LoL), Minecraft et Météo.",
+    "Organisation intelligente et réorganisation par glisser-déposer (DndKit) avec mode personnalisation, optimisation de la disposition assistée par Brain et verrouillage du layout.",
+    "Bumping de version vers v1.20.32.",
+  ],
+});
+
+CHANGELOG_BY_LANG.en.unshift({
+  version: "v1.20.32",
+  date: "2026-09-03",
+  title: "ETHONE Home 2026 — Intelligent Personal OS Home",
+  items: [
+    "Complete overhaul of ETHONE Home into an intelligent, contextual 2026 Personal Operating System.",
+    "Contextual smart header featuring dynamic time-of-day greeting (Morning/Afternoon/Evening), live calendar date, active Workspace indicator, and quick Command Center shortcut trigger (Ctrl+K).",
+    "Priority Layer ('What's important now'): 4-card interactive glance for today's Calendar events, pending Tasks, active Focus session, and ETHONE Brain proactive insights.",
+    "Full preservation of all 3D tilt cards: Discord & Spotify, Riot Games Trackers (Valorant & LoL), Minecraft, and Weather widgets.",
+    "Interactive DndKit drag-and-drop customization with Brain-assisted layout optimization and layout locking.",
+    "Version bump to v1.20.32.",
+  ],
+});
+
 export const CHANGELOG = CHANGELOG_BY_LANG.fr;

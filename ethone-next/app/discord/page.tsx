@@ -1,11 +1,10 @@
 "use client";
 
-import { useState, useMemo, useEffect } from "react";
+import { useState, useMemo, useEffect, useCallback } from "react";
 import Link from "next/link";
 import { useRouter } from "next/navigation";
 import { motion, AnimatePresence } from "framer-motion";
 import {
-  Shield,
   ShieldCheck,
   ShieldAlert,
   BarChart3,
@@ -26,20 +25,26 @@ import {
   Sparkles,
   Sliders,
   RefreshCw,
-  LogOut,
   Activity,
-  Layers,
-  Settings,
-  ChevronLeft,
-  Crown,
+  Plus,
+  Trash2,
   Lock,
+  Unlock,
+  Volume2,
+  Hash,
+  Send,
+  Crown,
+  Settings2,
+  Radio,
+  ToggleLeft,
+  ToggleRight,
+  Save,
 } from "lucide-react";
 import { useAuth } from "@/components/AuthProvider";
 import { useToast } from "@/components/ToastProvider";
 import { useI18n } from "@/lib/hooks/useI18n";
 import { useDiscordOAuth, type DiscordGuild } from "@/lib/hooks/useDiscordOAuth";
 import DiscordIcon from "@/components/DiscordIcon";
-import BrandMark from "@/components/BrandMark";
 import { cn } from "@/lib/utils";
 
 const BOT_CLIENT_ID = "1545139931154878464";
@@ -47,13 +52,13 @@ const BOT_INVITE_URL = `https://discord.com/oauth2/authorize?client_id=${BOT_CLI
 
 type ModuleType =
   | "security"
-  | "analytics"
   | "commands"
   | "suggestions"
   | "leveling"
   | "giveaways"
   | "moderation"
-  | "logs";
+  | "logs"
+  | "analytics";
 
 interface BotModule {
   id: ModuleType;
@@ -61,7 +66,6 @@ interface BotModule {
   description: string;
   icon: any;
   color: string;
-  bgGlow: string;
   badge: string;
 }
 
@@ -69,80 +73,70 @@ const MODULES: BotModule[] = [
   {
     id: "security",
     title: "Sécurité & Anti-Raid",
-    description: "Protection temps réel contre les raids, mass joins, spam abusif et détection de bots malveillants.",
+    description: "Protection contre les raids, mass joins, anti-spam et verrouillage d'urgence.",
     icon: ShieldCheck,
     color: "text-emerald-400",
-    bgGlow: "from-emerald-500/10 to-teal-500/5",
-    badge: "Actif",
-  },
-  {
-    id: "analytics",
-    title: "Analytics & Server Insights",
-    description: "Statistiques complètes d'activité, afflux de membres, salons les plus actifs et taux de rétention.",
-    icon: BarChart3,
-    color: "text-cyan-400",
-    bgGlow: "from-cyan-500/10 to-blue-500/5",
-    badge: "Temps réel",
+    badge: "Sécurité",
   },
   {
     id: "commands",
-    title: "Command Builder No-Code",
-    description: "Créez vos propres commandes Discord personnalisées avec embeds, variables dynamiques et cooldowns.",
+    title: "Command Builder",
+    description: "Créez vos commandes Discord personnalisées avec réponses textes et embeds.",
     icon: Code2,
     color: "text-indigo-400",
-    bgGlow: "from-indigo-500/10 to-purple-500/5",
-    badge: "Builder v2",
+    badge: "Custom",
   },
   {
     id: "suggestions",
-    title: "Suggestions & Feedback",
-    description: "Boîte à idées communautaire avec système de votes pour/contre, commentaires et suivi des statuts.",
+    title: "Boîte à Suggestions",
+    description: "Système de boîte à idées avec votes communautaires et statuts.",
     icon: Lightbulb,
     color: "text-amber-400",
-    bgGlow: "from-amber-500/10 to-yellow-500/5",
-    badge: "Interactif",
+    badge: "Communauté",
   },
   {
     id: "leveling",
-    title: "Leveling & XP Communautaire",
-    description: "Progression par messages, cartes de rang, leaderboard public et attribution automatique de rôles.",
+    title: "Leveling & Rôles XP",
+    description: "Gain d'expérience par messages et distribution automatique de rôles.",
     icon: Award,
     color: "text-fuchsia-400",
-    bgGlow: "from-fuchsia-500/10 to-pink-500/5",
-    badge: "Rôles auto",
+    badge: "Progression",
   },
   {
     id: "giveaways",
-    title: "Giveaways & Événements",
-    description: "Tirages au sort automatisés avec conditions d'entrée, rôles obligatoires, planification et reroll.",
+    title: "Tirages au sort",
+    description: "Création et gestion de concours avec sélection aléatoire de gagnants.",
     icon: Gift,
     color: "text-rose-400",
-    bgGlow: "from-rose-500/10 to-red-500/5",
-    badge: "Automatisé",
+    badge: "Événements",
   },
   {
     id: "moderation",
     title: "Modération & Sanctions",
-    description: "Gestion unifiée des avertissements, mutes, expulsions et bannissements avec historique par membre.",
+    description: "Réglages des avertissements, mutes, expulsions et bannissements.",
     icon: Hammer,
     color: "text-orange-400",
-    bgGlow: "from-orange-500/10 to-amber-500/5",
-    badge: "Logs complets",
+    badge: "Staff",
   },
   {
     id: "logs",
-    title: "Audit & Logs en Direct",
-    description: "Surveillance de chaque action serveur : messages supprimés, rôles modifiés, membres entrants.",
+    title: "Journal d'Audit",
+    description: "Configuration des salons de logs pour messages et événements serveurs.",
     icon: FileText,
     color: "text-blue-400",
-    bgGlow: "from-blue-500/10 to-indigo-500/5",
-    badge: "Live stream",
+    badge: "Surveillance",
+  },
+  {
+    id: "analytics",
+    title: "Vue d'Ensemble & Insights",
+    description: "Informations générales sur l'état du serveur et statistiques d'utilisation.",
+    icon: BarChart3,
+    color: "text-cyan-400",
+    badge: "Données",
   },
 ];
 
-// Discord Permissions:
-// ADMINISTRATOR = 0x8 (bit 3)
-// MANAGE_GUILD = 0x20 (bit 5 - permission de gérer le serveur et inviter des bots)
+// Vérification de permission : Propriétaire OU Administrateur (0x8) OU Gérer le serveur (0x20)
 function canManageGuild(guild: DiscordGuild): boolean {
   if (guild.owner) return true;
   if (!guild.permissions) return false;
@@ -157,6 +151,35 @@ function canManageGuild(guild: DiscordGuild): boolean {
   }
 }
 
+interface GuildSettings {
+  prefix: string;
+  antiRaidEnabled: boolean;
+  antiSpamEnabled: boolean;
+  mentionLimit: number;
+  emergencyLockdown: boolean;
+  modLogChannel: string;
+  suggestionChannel: string;
+  xpRate: number;
+  xpCooldown: number;
+  customCommands: Array<{ name: string; response: string; enabled: boolean }>;
+}
+
+const DEFAULT_SETTINGS: GuildSettings = {
+  prefix: "!",
+  antiRaidEnabled: true,
+  antiSpamEnabled: true,
+  mentionLimit: 5,
+  emergencyLockdown: false,
+  modLogChannel: "mod-logs",
+  suggestionChannel: "suggestions",
+  xpRate: 20,
+  xpCooldown: 60,
+  customCommands: [
+    { name: "regles", response: "Bienvenue sur le serveur ! Merci de respecter les membres et de ne pas spammer.", enabled: true },
+    { name: "site", response: "Découvrez notre plateforme sur https://ethone.dev", enabled: true },
+  ],
+};
+
 export default function DiscordDashboardPage() {
   const router = useRouter();
   const { user, session } = useAuth();
@@ -168,28 +191,15 @@ export default function DiscordDashboardPage() {
   const [searchQuery, setSearchQuery] = useState("");
   const [onlyManageable, setOnlyManageable] = useState(true);
 
-  // All joined guilds from Discord
+  // Serveurs de l'utilisateur
   const allGuilds: DiscordGuild[] = useMemo(() => {
-    if (profile?.guilds && profile.guilds.length > 0) {
-      return profile.guilds;
-    }
-    // Default preview server if demo
-    return [
-      {
-        id: "1128633164290596884",
-        name: "Serveur ETHONE Communauté",
-        owner: true,
-        iconUrl: "",
-      },
-    ];
+    return profile?.guilds || [];
   }, [profile?.guilds]);
 
-  // Filter only servers where user is OWNER or has MANAGE_GUILD / ADMIN permission!
+  // Filtrage : uniquement les serveurs où l'utilisateur est Admin / Owner
   const displayGuilds: DiscordGuild[] = useMemo(() => {
     if (!onlyManageable) return allGuilds;
-    const manageable = allGuilds.filter((g) => canManageGuild(g));
-    // If user has no servers with admin role yet, fallback to show what's available
-    return manageable.length > 0 ? manageable : allGuilds;
+    return allGuilds.filter((g) => canManageGuild(g));
   }, [allGuilds, onlyManageable]);
 
   const filteredGuilds = useMemo(() => {
@@ -198,480 +208,699 @@ export default function DiscordDashboardPage() {
     return displayGuilds.filter((g) => g.name.toLowerCase().includes(q));
   }, [displayGuilds, searchQuery]);
 
-  // Set default selected guild
+  // Sélection automatique du premier serveur valide
   useEffect(() => {
     if (!selectedGuild && displayGuilds.length > 0) {
       setSelectedGuild(displayGuilds[0]);
     }
   }, [displayGuilds, selectedGuild]);
 
+  // Paramètres réels du serveur sélectionné avec persistance locale par guildId
+  const [guildSettings, setGuildSettings] = useState<GuildSettings>(DEFAULT_SETTINGS);
+  const [isSaving, setIsSaving] = useState(false);
+
+  // Charger les paramètres du serveur sélectionné
+  useEffect(() => {
+    if (!selectedGuild) return;
+    try {
+      const saved = localStorage.getItem(`ethone:discord:settings:${selectedGuild.id}`);
+      if (saved) {
+        setGuildSettings(JSON.parse(saved));
+      } else {
+        setGuildSettings(DEFAULT_SETTINGS);
+      }
+    } catch {
+      setGuildSettings(DEFAULT_SETTINGS);
+    }
+  }, [selectedGuild]);
+
+  // Sauvegarder les paramètres pour ce serveur
+  const handleSaveSettings = useCallback(() => {
+    if (!selectedGuild) return;
+    setIsSaving(true);
+    try {
+      localStorage.setItem(`ethone:discord:settings:${selectedGuild.id}`, JSON.stringify(guildSettings));
+      success("Configuration enregistrée", `Réglages mis à jour pour "${selectedGuild.name}".`);
+    } catch (err) {
+      showError("Erreur de sauvegarde", "Impossible d'enregistrer les paramètres localement.");
+    } finally {
+      setIsSaving(false);
+    }
+  }, [selectedGuild, guildSettings, success, showError]);
+
+  // Gestion de création d'une nouvelle commande personnalisée
+  const [newCmdName, setNewCmdName] = useState("");
+  const [newCmdResponse, setNewCmdResponse] = useState("");
+
+  const handleAddCommand = () => {
+    if (!newCmdName.trim() || !newCmdResponse.trim()) {
+      showError("Champs incomplets", "Veuillez renseigner le nom et la réponse de la commande.");
+      return;
+    }
+    const cleanName = newCmdName.trim().replace(/^!/, "").toLowerCase();
+    setGuildSettings((prev) => ({
+      ...prev,
+      customCommands: [
+        ...prev.customCommands,
+        { name: cleanName, response: newCmdResponse.trim(), enabled: true },
+      ],
+    }));
+    setNewCmdName("");
+    setNewCmdResponse("");
+    success("Commande ajoutée", `La commande !${cleanName} a été enregistrée.`);
+  };
+
+  const handleDeleteCommand = (index: number) => {
+    setGuildSettings((prev) => ({
+      ...prev,
+      customCommands: prev.customCommands.filter((_, i) => i !== index),
+    }));
+    success("Commande supprimée", "La commande a été retirée du serveur.");
+  };
+
   const isAuthenticated = !!user || !!session;
 
   return (
-    <div className="relative min-h-screen w-full overflow-y-auto bg-[#07090d] text-white selection:bg-emerald-500/30 selection:text-emerald-200">
-      {/* Background Lighting Effects */}
-      <div className="pointer-events-none fixed -left-32 -top-32 h-[32rem] w-[32rem] rounded-full bg-emerald-500/[0.04] blur-[150px]" />
-      <div className="pointer-events-none fixed -right-32 top-1/3 h-[32rem] w-[32rem] rounded-full bg-[#5865F2]/[0.05] blur-[160px]" />
+    <div className="h-full min-h-0 w-full flex flex-col overflow-hidden bg-transparent">
+      {/* Scrollable Container with custom styling and padding for Dock */}
+      <div className="flex-1 overflow-y-auto os-scroll px-4 py-6 sm:px-6 lg:px-8 space-y-6 pb-36">
+        <div className="max-w-7xl mx-auto w-full space-y-6">
 
-      <div className="relative z-10 mx-auto max-w-7xl px-4 py-8 sm:px-6 lg:px-8">
-        {/* Top Header Banner */}
-        <div className="mb-8 flex flex-col gap-6 rounded-3xl border border-white/10 bg-white/[0.025] p-6 backdrop-blur-xl md:flex-row md:items-center md:justify-between lg:p-8">
-          <div className="flex items-center gap-4">
-            <div className="relative flex h-14 w-14 shrink-0 items-center justify-center rounded-2xl border border-[#5865F2]/30 bg-[#5865F2]/15 text-[#5865F2] shadow-lg shadow-[#5865F2]/10">
-              <DiscordIcon className="h-7 w-7" />
-              <span className="absolute -bottom-1 -right-1 flex h-4 w-4 items-center justify-center rounded-full border-2 border-[#07090d] bg-emerald-400">
-                <span className="h-1.5 w-1.5 rounded-full bg-white animate-pulse" />
-              </span>
-            </div>
-            <div>
-              <div className="flex items-center gap-2.5">
-                <h1 className="text-xl font-bold tracking-tight text-white sm:text-2xl">
-                  ETHONE Bot
-                </h1>
-                <span className="rounded-full border border-emerald-500/30 bg-emerald-500/10 px-2.5 py-0.5 text-[11px] font-semibold text-emerald-400">
-                  En ligne • v2.4
+          {/* Top Header Banner */}
+          <div className="flex flex-col gap-5 rounded-3xl border border-white/10 bg-white/[0.025] p-6 backdrop-blur-xl md:flex-row md:items-center md:justify-between">
+            <div className="flex items-center gap-4">
+              <div className="relative flex h-12 w-12 shrink-0 items-center justify-center rounded-2xl border border-[#5865F2]/30 bg-[#5865F2]/15 text-[#5865F2] shadow-md shadow-[#5865F2]/10">
+                <DiscordIcon className="h-6 w-6" />
+                <span className="absolute -bottom-1 -right-1 flex h-3.5 w-3.5 items-center justify-center rounded-full border-2 border-[#07090d] bg-emerald-400">
+                  <span className="h-1.5 w-1.5 rounded-full bg-white animate-pulse" />
                 </span>
               </div>
-              <p className="mt-1 text-xs text-zinc-400 sm:text-sm">
-                Centre de gestion centralisé et sécurisé pour vos serveurs Discord.
-              </p>
-            </div>
-          </div>
-
-          <div className="flex flex-wrap items-center gap-3">
-            <a
-              href={BOT_INVITE_URL}
-              target="_blank"
-              rel="noopener noreferrer"
-              className="flex h-10 items-center gap-2 rounded-xl bg-[#5865F2] px-4 text-xs font-semibold text-white shadow-lg shadow-[#5865F2]/20 transition-all hover:bg-[#4752C4] active:scale-95 cursor-pointer"
-            >
-              <DiscordIcon className="h-4 w-4" />
-              <span>Ajouter à mon serveur</span>
-              <ExternalLink className="h-3.5 w-3.5 opacity-70" />
-            </a>
-
-            {!isAuthenticated ? (
-              <button
-                onClick={() => router.push("/login")}
-                className="flex h-10 items-center gap-2 rounded-xl border border-white/10 bg-white/[0.05] px-4 text-xs font-medium text-white transition-all hover:bg-white/10 active:scale-95 cursor-pointer"
-              >
-                <span>Se connecter</span>
-                <ArrowRight className="h-3.5 w-3.5" />
-              </button>
-            ) : profile?.connected ? (
-              <div className="flex items-center gap-2 rounded-xl border border-white/10 bg-white/[0.03] px-3 py-1.5 text-xs text-zinc-300">
-                <div className="h-2 w-2 rounded-full bg-emerald-400" />
-                <span>Discord lié : <strong>{profile.user?.username || user?.email}</strong></span>
-              </div>
-            ) : (
-              <button
-                onClick={connect}
-                disabled={discordLoading}
-                className="flex h-10 items-center gap-2 rounded-xl border border-[#5865F2]/30 bg-[#5865F2]/10 px-4 text-xs font-medium text-[#7983F5] transition-all hover:bg-[#5865F2]/20 active:scale-95 cursor-pointer"
-              >
-                <DiscordIcon className="h-4 w-4" />
-                <span>Lier mon compte Discord</span>
-              </button>
-            )}
-          </div>
-        </div>
-
-        {/* Security & Multi-tenant Isolation Notice */}
-        <div className="mb-8 flex items-start gap-3 rounded-2xl border border-emerald-500/20 bg-emerald-500/[0.04] p-4 text-xs text-emerald-300 backdrop-blur-md">
-          <ShieldCheck className="h-5 w-5 shrink-0 text-emerald-400 mt-0.5" />
-          <div className="space-y-1 leading-relaxed">
-            <p className="font-semibold text-emerald-200">
-              Isolation Multi-Tenant Garantie
-            </p>
-            <p className="text-zinc-400">
-              Chaque serveur Discord dispose de sa propre base de configuration étanche. Seuls les membres possédant la permission Administrateur sur Discord peuvent consulter ou modifier les réglages de leur serveur.
-            </p>
-          </div>
-        </div>
-
-        {/* Main Grid: Server Selection & Active Dashboard */}
-        <div className="grid grid-cols-1 gap-8 lg:grid-cols-12">
-          {/* Left Column: Server Selector (4 cols) */}
-          <div className="lg:col-span-4 space-y-4">
-            <div className="rounded-3xl border border-white/10 bg-white/[0.02] p-5 backdrop-blur-xl">
-              <div className="mb-3 flex items-center justify-between">
-                <div>
-                  <h2 className="text-sm font-bold uppercase tracking-wider text-zinc-300">
-                    Vos Serveurs
-                  </h2>
-                  <p className="text-[11px] text-zinc-500">
-                    {onlyManageable ? "Gérables (Admin / Owner)" : "Tous vos serveurs"}
-                  </p>
+              <div>
+                <div className="flex items-center gap-2">
+                  <h1 className="text-xl font-bold tracking-tight text-white">
+                    ETHONE Bot
+                  </h1>
+                  <span className="rounded-full border border-emerald-500/30 bg-emerald-500/10 px-2 py-0.5 text-[10px] font-semibold text-emerald-400">
+                    En ligne • v2.4
+                  </span>
                 </div>
-                <span className="rounded-lg bg-emerald-500/15 border border-emerald-500/30 px-2 py-0.5 text-[11px] font-semibold text-emerald-400">
-                  {filteredGuilds.length}
-                </span>
+                <p className="mt-0.5 text-xs text-zinc-400">
+                  Gestion centralisée et sécurisée de vos serveurs Discord.
+                </p>
               </div>
+            </div>
 
-              {/* Filter Toggle: Only Manageable vs All */}
-              <div className="mb-3 flex items-center justify-between rounded-xl bg-white/[0.03] px-3 py-2 text-xs border border-white/5">
-                <span className="text-[11px] text-zinc-300 font-medium">Filtre Admin / Owner</span>
+            <div className="flex flex-wrap items-center gap-3">
+              <a
+                href={BOT_INVITE_URL}
+                target="_blank"
+                rel="noopener noreferrer"
+                className="flex h-9 items-center gap-2 rounded-xl bg-[#5865F2] px-3.5 text-xs font-semibold text-white shadow-md shadow-[#5865F2]/20 transition-all hover:bg-[#4752C4] active:scale-95 cursor-pointer"
+              >
+                <DiscordIcon className="h-3.5 w-3.5" />
+                <span>Ajouter à mon serveur</span>
+                <ExternalLink className="h-3 w-3 opacity-70" />
+              </a>
+
+              {!isAuthenticated ? (
                 <button
-                  type="button"
-                  onClick={() => setOnlyManageable((v) => !v)}
-                  className={cn(
-                    "relative inline-flex h-5 w-9 shrink-0 cursor-pointer rounded-full border-2 border-transparent transition-colors duration-200 ease-in-out",
-                    onlyManageable ? "bg-emerald-500" : "bg-zinc-700"
-                  )}
-                  title={onlyManageable ? "Afficher uniquement les serveurs gérables" : "Afficher tous les serveurs"}
+                  onClick={() => router.push("/login")}
+                  className="flex h-9 items-center gap-2 rounded-xl border border-white/10 bg-white/[0.05] px-3.5 text-xs font-medium text-white transition-all hover:bg-white/10 active:scale-95 cursor-pointer"
                 >
-                  <span
-                    className={cn(
-                      "pointer-events-none inline-block h-4 w-4 transform rounded-full bg-white shadow ring-0 transition duration-200 ease-in-out",
-                      onlyManageable ? "translate-x-4" : "translate-x-0"
-                    )}
-                  />
+                  <span>Se connecter</span>
+                  <ArrowRight className="h-3.5 w-3.5" />
                 </button>
-              </div>
-
-              {/* Search server */}
-              <div className="relative mb-3">
-                <Search className="absolute left-3 top-1/2 h-3.5 w-3.5 -translate-y-1/2 text-zinc-500" />
-                <input
-                  type="text"
-                  placeholder="Rechercher parmi vos serveurs..."
-                  value={searchQuery}
-                  onChange={(e) => setSearchQuery(e.target.value)}
-                  className="h-9 w-full rounded-xl border border-white/10 bg-white/[0.03] pl-9 pr-3 text-xs text-white placeholder-zinc-500 outline-none transition-colors focus:border-emerald-500/50"
-                />
-              </div>
-
-              {/* Guilds List */}
-              <div className="space-y-2 max-h-[420px] overflow-y-auto pr-1">
-                {filteredGuilds.length === 0 ? (
-                  <div className="py-8 text-center text-xs text-zinc-400">
-                    <p className="font-semibold text-zinc-300">Aucun serveur gérable trouvé</p>
-                    <p className="mt-1 text-zinc-500 text-[11px]">
-                      Vous devez être Propriétaire ou posséder la permission "Gérer le serveur" sur Discord.
-                    </p>
-                    <button
-                      onClick={() => setOnlyManageable(false)}
-                      className="mt-3 text-xs text-emerald-400 underline cursor-pointer"
-                    >
-                      Afficher tous les serveurs ({allGuilds.length})
-                    </button>
-                  </div>
-                ) : (
-                  filteredGuilds.map((guild) => {
-                    const isSelected = selectedGuild?.id === guild.id;
-                    const isOwner = guild.owner;
-                    const isManager = canManageGuild(guild);
-                    const initials = guild.name
-                      .split(" ")
-                      .map((n) => n[0])
-                      .join("")
-                      .slice(0, 2)
-                      .toUpperCase();
-
-                    return (
-                      <button
-                        key={guild.id}
-                        onClick={() => setSelectedGuild(guild)}
-                        className={cn(
-                          "flex w-full items-center gap-3 rounded-2xl border p-3 text-left transition-all duration-150 cursor-pointer",
-                          isSelected
-                            ? "border-[#5865F2]/50 bg-[#5865F2]/15 shadow-md shadow-[#5865F2]/10"
-                            : "border-white/5 bg-white/[0.02] hover:border-white/15 hover:bg-white/[0.04]"
-                        )}
-                      >
-                        <div className="relative flex h-11 w-11 shrink-0 items-center justify-center overflow-hidden rounded-xl border border-white/10 bg-gradient-to-br from-zinc-800 to-zinc-900 font-bold text-xs text-white shadow-inner">
-                          {guild.iconUrl ? (
-                            <img
-                              src={guild.iconUrl}
-                              alt={guild.name}
-                              className="h-full w-full object-cover"
-                            />
-                          ) : (
-                            <span>{initials}</span>
-                          )}
-                          {isOwner && (
-                            <span
-                              title="Propriétaire du serveur"
-                              className="absolute -top-1 -right-1 flex h-4 w-4 items-center justify-center rounded-full bg-amber-500 text-zinc-950 shadow"
-                            >
-                              <Crown className="h-2.5 w-2.5" />
-                            </span>
-                          )}
-                        </div>
-
-                        <div className="min-w-0 flex-1">
-                          <p className="truncate text-xs font-semibold text-white">
-                            {guild.name}
-                          </p>
-                          <div className="flex items-center gap-1.5 mt-0.5">
-                            {isOwner ? (
-                              <span className="inline-flex items-center gap-1 rounded bg-amber-500/15 border border-amber-500/30 px-1.5 py-0.5 text-[9px] font-semibold text-amber-300">
-                                <Crown className="h-2.5 w-2.5" />
-                                Propriétaire
-                              </span>
-                            ) : isManager ? (
-                              <span className="inline-flex items-center gap-1 rounded bg-emerald-500/15 border border-emerald-500/30 px-1.5 py-0.5 text-[9px] font-semibold text-emerald-300">
-                                <ShieldCheck className="h-2.5 w-2.5" />
-                                Gérer le serveur
-                              </span>
-                            ) : (
-                              <span className="text-[10px] text-zinc-500">Membre</span>
-                            )}
-                          </div>
-                        </div>
-
-                        <div className="flex shrink-0 items-center">
-                          <span
-                            className={cn(
-                              "h-2 w-2 rounded-full",
-                              isManager ? "bg-emerald-400" : "bg-zinc-600"
-                            )}
-                          />
-                        </div>
-                      </button>
-                    );
-                  })
-                )}
-              </div>
-
-              {/* Bot Invitation Card */}
-              <div className="mt-4 rounded-2xl border border-dashed border-white/10 bg-white/[0.015] p-4 text-center">
-                <p className="text-xs font-medium text-zinc-300">
-                  Un serveur n'apparaît pas ?
-                </p>
-                <p className="mt-1 text-[11px] text-zinc-500">
-                  Invitez le bot avec les permissions requises ou reconnectez votre compte Discord.
-                </p>
-                <a
-                  href={BOT_INVITE_URL}
-                  target="_blank"
-                  rel="noopener noreferrer"
-                  className="mt-3 inline-flex items-center gap-1.5 text-xs font-semibold text-[#7983F5] hover:underline"
+              ) : profile?.connected ? (
+                <div className="flex items-center gap-2 rounded-xl border border-white/10 bg-white/[0.03] px-3 py-1.5 text-xs text-zinc-300">
+                  <div className="h-2 w-2 rounded-full bg-emerald-400" />
+                  <span>Connecté : <strong>{profile.user?.username || user?.email}</strong></span>
+                </div>
+              ) : (
+                <button
+                  onClick={connect}
+                  disabled={discordLoading}
+                  className="flex h-9 items-center gap-2 rounded-xl border border-[#5865F2]/30 bg-[#5865F2]/10 px-3.5 text-xs font-medium text-[#7983F5] transition-all hover:bg-[#5865F2]/20 active:scale-95 cursor-pointer"
                 >
-                  <span>Inviter le bot</span>
-                  <ExternalLink className="h-3 w-3" />
-                </a>
-              </div>
+                  <DiscordIcon className="h-3.5 w-3.5" />
+                  <span>Lier mon compte Discord</span>
+                </button>
+              )}
             </div>
           </div>
 
-          {/* Right Column: Server Overview & Modules (8 cols) */}
-          <div className="lg:col-span-8 space-y-6">
-            {selectedGuild ? (
-              <>
-                {/* Active Server Card */}
-                <div className="flex flex-col gap-4 rounded-3xl border border-white/10 bg-gradient-to-r from-white/[0.03] to-white/[0.01] p-6 backdrop-blur-xl sm:flex-row sm:items-center sm:justify-between">
-                  <div className="flex items-center gap-4">
-                    <div className="flex h-14 w-14 shrink-0 items-center justify-center rounded-2xl border border-white/15 bg-zinc-800 font-bold text-lg text-white shadow-md">
-                      {selectedGuild.iconUrl ? (
-                        <img
-                          src={selectedGuild.iconUrl}
-                          alt={selectedGuild.name}
-                          className="h-full w-full rounded-2xl object-cover"
-                        />
-                      ) : (
-                        <span>
-                          {selectedGuild.name
-                            .split(" ")
-                            .map((n) => n[0])
-                            .join("")
-                            .slice(0, 2)
-                            .toUpperCase()}
-                        </span>
+          {/* Main Content Layout */}
+          <div className="grid grid-cols-1 gap-6 lg:grid-cols-12">
+            
+            {/* Left Column: Server Selector (4 cols) */}
+            <div className="lg:col-span-4 space-y-4">
+              <div className="rounded-3xl border border-white/10 bg-white/[0.02] p-5 backdrop-blur-xl">
+                <div className="mb-3 flex items-center justify-between">
+                  <div>
+                    <h2 className="text-sm font-bold uppercase tracking-wider text-zinc-300">
+                      Vos Serveurs
+                    </h2>
+                    <p className="text-[11px] text-zinc-500">
+                      {onlyManageable ? "Gérables (Admin / Owner)" : "Tous vos serveurs"}
+                    </p>
+                  </div>
+                  <span className="rounded-lg bg-emerald-500/15 border border-emerald-500/30 px-2 py-0.5 text-[11px] font-semibold text-emerald-400">
+                    {filteredGuilds.length}
+                  </span>
+                </div>
+
+                {/* Filter Toggle */}
+                <div className="mb-3 flex items-center justify-between rounded-xl bg-white/[0.03] px-3 py-2 text-xs border border-white/5">
+                  <span className="text-[11px] text-zinc-300 font-medium">Uniquement mes serveurs gérables</span>
+                  <button
+                    type="button"
+                    onClick={() => setOnlyManageable((v) => !v)}
+                    className={cn(
+                      "relative inline-flex h-5 w-9 shrink-0 cursor-pointer rounded-full border-2 border-transparent transition-colors duration-200 ease-in-out",
+                      onlyManageable ? "bg-emerald-500" : "bg-zinc-700"
+                    )}
+                    title={onlyManageable ? "Afficher uniquement les serveurs gérables" : "Afficher tous les serveurs"}
+                  >
+                    <span
+                      className={cn(
+                        "pointer-events-none inline-block h-4 w-4 transform rounded-full bg-white shadow ring-0 transition duration-200 ease-in-out",
+                        onlyManageable ? "translate-x-4" : "translate-x-0"
+                      )}
+                    />
+                  </button>
+                </div>
+
+                {/* Search server */}
+                <div className="relative mb-3">
+                  <Search className="absolute left-3 top-1/2 h-3.5 w-3.5 -translate-y-1/2 text-zinc-500" />
+                  <input
+                    type="text"
+                    placeholder="Rechercher parmi vos serveurs..."
+                    value={searchQuery}
+                    onChange={(e) => setSearchQuery(e.target.value)}
+                    className="h-9 w-full rounded-xl border border-white/10 bg-white/[0.03] pl-9 pr-3 text-xs text-white placeholder-zinc-500 outline-none transition-colors focus:border-emerald-500/50"
+                  />
+                </div>
+
+                {/* Guilds List */}
+                <div className="space-y-2 max-h-[380px] overflow-y-auto pr-1">
+                  {filteredGuilds.length === 0 ? (
+                    <div className="py-8 text-center text-xs text-zinc-400">
+                      <p className="font-semibold text-zinc-300">Aucun serveur trouvé</p>
+                      <p className="mt-1 text-zinc-500 text-[11px]">
+                        Vous devez posséder les droits Propriétaire ou Administrateur sur Discord.
+                      </p>
+                      {allGuilds.length > 0 && onlyManageable && (
+                        <button
+                          onClick={() => setOnlyManageable(false)}
+                          className="mt-3 text-xs text-emerald-400 underline cursor-pointer"
+                        >
+                          Afficher tous mes serveurs ({allGuilds.length})
+                        </button>
                       )}
                     </div>
-                    <div>
-                      <div className="flex items-center gap-2">
-                        <h2 className="text-lg font-bold text-white">
-                          {selectedGuild.name}
-                        </h2>
-                        {selectedGuild.owner && (
-                          <span className="flex items-center gap-1 rounded-md border border-amber-500/30 bg-amber-500/10 px-2 py-0.5 text-[10px] font-semibold text-amber-300">
-                            <Crown className="h-3 w-3" />
-                            Propriétaire
+                  ) : (
+                    filteredGuilds.map((guild) => {
+                      const isSelected = selectedGuild?.id === guild.id;
+                      const isOwner = guild.owner;
+                      const isManager = canManageGuild(guild);
+                      const initials = guild.name
+                        .split(" ")
+                        .map((n) => n[0])
+                        .join("")
+                        .slice(0, 2)
+                        .toUpperCase();
+
+                      return (
+                        <button
+                          key={guild.id}
+                          onClick={() => setSelectedGuild(guild)}
+                          className={cn(
+                            "flex w-full items-center gap-3 rounded-2xl border p-2.5 text-left transition-all duration-150 cursor-pointer",
+                            isSelected
+                              ? "border-[#5865F2]/50 bg-[#5865F2]/15 shadow-md shadow-[#5865F2]/10"
+                              : "border-white/5 bg-white/[0.02] hover:border-white/15 hover:bg-white/[0.04]"
+                          )}
+                        >
+                          <div className="relative flex h-10 w-10 shrink-0 items-center justify-center overflow-hidden rounded-xl border border-white/10 bg-gradient-to-br from-zinc-800 to-zinc-900 font-bold text-xs text-white shadow-inner">
+                            {guild.iconUrl ? (
+                              <img
+                                src={guild.iconUrl}
+                                alt={guild.name}
+                                className="h-full w-full object-cover"
+                              />
+                            ) : (
+                              <span>{initials}</span>
+                            )}
+                            {isOwner && (
+                              <span
+                                title="Propriétaire du serveur"
+                                className="absolute -top-1 -right-1 flex h-4 w-4 items-center justify-center rounded-full bg-amber-500 text-zinc-950 shadow"
+                              >
+                                <Crown className="h-2.5 w-2.5" />
+                              </span>
+                            )}
+                          </div>
+
+                          <div className="min-w-0 flex-1">
+                            <p className="truncate text-xs font-semibold text-white">
+                              {guild.name}
+                            </p>
+                            <div className="flex items-center gap-1.5 mt-0.5">
+                              {isOwner ? (
+                                <span className="inline-flex items-center gap-1 rounded bg-amber-500/15 border border-amber-500/30 px-1.5 py-0.5 text-[9px] font-semibold text-amber-300">
+                                  <Crown className="h-2.5 w-2.5" />
+                                  Propriétaire
+                                </span>
+                              ) : isManager ? (
+                                <span className="inline-flex items-center gap-1 rounded bg-emerald-500/15 border border-emerald-500/30 px-1.5 py-0.5 text-[9px] font-semibold text-emerald-300">
+                                  <ShieldCheck className="h-2.5 w-2.5" />
+                                  Gérer le serveur
+                                </span>
+                              ) : (
+                                <span className="text-[10px] text-zinc-500">Membre</span>
+                              )}
+                            </div>
+                          </div>
+
+                          <div className="flex shrink-0 items-center">
+                            <span
+                              className={cn(
+                                "h-2 w-2 rounded-full",
+                                isSelected ? "bg-emerald-400" : "bg-zinc-600"
+                              )}
+                            />
+                          </div>
+                        </button>
+                      );
+                    })
+                  )}
+                </div>
+
+                {/* Invite bot card */}
+                <div className="mt-4 rounded-2xl border border-dashed border-white/10 bg-white/[0.015] p-3 text-center">
+                  <p className="text-xs font-medium text-zinc-300">
+                    Ajouter le bot sur un nouveau serveur
+                  </p>
+                  <a
+                    href={BOT_INVITE_URL}
+                    target="_blank"
+                    rel="noopener noreferrer"
+                    className="mt-2 inline-flex items-center gap-1.5 text-xs font-semibold text-[#7983F5] hover:underline"
+                  >
+                    <span>Ouvrir l&apos;invitation Discord</span>
+                    <ExternalLink className="h-3 w-3" />
+                  </a>
+                </div>
+              </div>
+            </div>
+
+            {/* Right Column: Server Management & Active Configuration (8 cols) */}
+            <div className="lg:col-span-8 space-y-5">
+              {selectedGuild ? (
+                <>
+                  {/* Selected Server Banner */}
+                  <div className="flex flex-col gap-4 rounded-3xl border border-white/10 bg-gradient-to-r from-white/[0.03] to-white/[0.01] p-5 backdrop-blur-xl sm:flex-row sm:items-center sm:justify-between">
+                    <div className="flex items-center gap-3.5">
+                      <div className="flex h-12 w-12 shrink-0 items-center justify-center rounded-2xl border border-white/15 bg-zinc-800 font-bold text-sm text-white shadow-md">
+                        {selectedGuild.iconUrl ? (
+                          <img
+                            src={selectedGuild.iconUrl}
+                            alt={selectedGuild.name}
+                            className="h-full w-full rounded-2xl object-cover"
+                          />
+                        ) : (
+                          <span>
+                            {selectedGuild.name
+                              .split(" ")
+                              .map((n) => n[0])
+                              .join("")
+                              .slice(0, 2)
+                              .toUpperCase()}
                           </span>
                         )}
                       </div>
-                      <p className="text-xs text-zinc-400">
-                        Configuration active • ID: {selectedGuild.id}
-                      </p>
+                      <div>
+                        <div className="flex items-center gap-2">
+                          <h2 className="text-base font-bold text-white">
+                            {selectedGuild.name}
+                          </h2>
+                          {selectedGuild.owner && (
+                            <span className="flex items-center gap-1 rounded-md border border-amber-500/30 bg-amber-500/10 px-2 py-0.5 text-[10px] font-semibold text-amber-300">
+                              <Crown className="h-3 w-3" />
+                              Propriétaire
+                            </span>
+                          )}
+                        </div>
+                        <p className="text-xs text-zinc-400">
+                          ID Discord : <code className="text-zinc-300">{selectedGuild.id}</code>
+                        </p>
+                      </div>
+                    </div>
+
+                    <div className="flex items-center gap-2.5">
+                      <button
+                        onClick={handleSaveSettings}
+                        disabled={isSaving}
+                        className="flex h-9 items-center gap-2 rounded-xl bg-emerald-500 px-4 text-xs font-semibold text-white shadow-md shadow-emerald-500/20 transition-all hover:bg-emerald-600 active:scale-95 disabled:opacity-50 cursor-pointer"
+                      >
+                        <Save className="h-3.5 w-3.5" />
+                        <span>{isSaving ? "Sauvegarde..." : "Enregistrer les modifications"}</span>
+                      </button>
                     </div>
                   </div>
 
-                  <div className="flex items-center gap-2">
-                    <span className="inline-flex items-center gap-1.5 rounded-full border border-emerald-500/30 bg-emerald-500/10 px-3 py-1 text-xs font-semibold text-emerald-400">
-                      <span className="h-1.5 w-1.5 rounded-full bg-emerald-400 animate-pulse" />
-                      Bot Opérationnel
-                    </span>
-                  </div>
-                </div>
-
-                {/* Quick Server Metrics */}
-                <div className="grid grid-cols-2 gap-3 sm:grid-cols-4">
-                  <div className="rounded-2xl border border-white/10 bg-white/[0.02] p-4">
-                    <span className="text-[11px] font-medium text-zinc-400">Statut Sécurité</span>
-                    <p className="mt-1 text-base font-bold text-emerald-400">100% Sécurisé</p>
-                  </div>
-                  <div className="rounded-2xl border border-white/10 bg-white/[0.02] p-4">
-                    <span className="text-[11px] font-medium text-zinc-400">Anti-Raid</span>
-                    <p className="mt-1 text-base font-bold text-emerald-400">Activé</p>
-                  </div>
-                  <div className="rounded-2xl border border-white/10 bg-white/[0.02] p-4">
-                    <span className="text-[11px] font-medium text-zinc-400">Commandes Perso</span>
-                    <p className="mt-1 text-base font-bold text-indigo-400">7 actives</p>
-                  </div>
-                  <div className="rounded-2xl border border-white/10 bg-white/[0.02] p-4">
-                    <span className="text-[11px] font-medium text-zinc-400">Suggestions</span>
-                    <p className="mt-1 text-base font-bold text-amber-400">12 traitées</p>
-                  </div>
-                </div>
-
-                {/* Modules Grid */}
-                <div>
-                  <div className="mb-4 flex items-center justify-between">
-                    <h3 className="text-sm font-bold uppercase tracking-wider text-zinc-300">
-                      Modules du Serveur
-                    </h3>
-                    <span className="text-xs text-zinc-500">
-                      8 modules disponibles
-                    </span>
-                  </div>
-
-                  <div className="grid grid-cols-1 gap-4 sm:grid-cols-2">
+                  {/* Modules Horizontal Selector */}
+                  <div className="grid grid-cols-2 gap-2 sm:grid-cols-4">
                     {MODULES.map((mod) => {
                       const IconComponent = mod.icon;
                       const isCurrent = activeModule === mod.id;
 
                       return (
-                        <div
+                        <button
                           key={mod.id}
                           onClick={() => setActiveModule(mod.id)}
                           className={cn(
-                            "group relative flex flex-col justify-between rounded-3xl border p-5 transition-all duration-200 cursor-pointer overflow-hidden",
+                            "flex items-center gap-2.5 rounded-2xl border p-3 text-left transition-all duration-150 cursor-pointer",
                             isCurrent
-                              ? "border-emerald-500/40 bg-white/[0.04] shadow-lg shadow-emerald-500/5"
-                              : "border-white/10 bg-white/[0.02] hover:border-white/20 hover:bg-white/[0.035]"
+                              ? "border-emerald-500/40 bg-emerald-500/10 text-white shadow-md shadow-emerald-500/5"
+                              : "border-white/10 bg-white/[0.02] text-zinc-400 hover:border-white/20 hover:text-white"
                           )}
                         >
-                          <div className={cn("absolute inset-0 bg-gradient-to-br opacity-50 pointer-events-none", mod.bgGlow)} />
-
-                          <div className="relative z-10">
-                            <div className="flex items-center justify-between">
-                              <div className={cn("flex h-10 w-10 items-center justify-center rounded-xl bg-white/[0.06] border border-white/10", mod.color)}>
-                                <IconComponent className="h-5 w-5" />
-                              </div>
-                              <span className="rounded-full border border-white/10 bg-white/[0.04] px-2.5 py-0.5 text-[10px] font-semibold text-zinc-300">
-                                {mod.badge}
-                              </span>
-                            </div>
-
-                            <h4 className="mt-3 text-sm font-bold text-white group-hover:text-emerald-300 transition-colors">
-                              {mod.title}
-                            </h4>
-                            <p className="mt-1 text-xs text-zinc-400 line-clamp-2 leading-relaxed">
-                              {mod.description}
-                            </p>
-                          </div>
-
-                          <div className="relative z-10 mt-4 flex items-center justify-between border-t border-white/5 pt-3">
-                            <span className="text-[11px] font-semibold text-zinc-400 group-hover:text-white transition-colors">
-                              Configurer le module
-                            </span>
-                            <ChevronRight className="h-4 w-4 text-zinc-500 group-hover:translate-x-1 group-hover:text-emerald-400 transition-all" />
-                          </div>
-                        </div>
+                          <IconComponent className={cn("h-4 w-4 shrink-0", isCurrent ? "text-emerald-400" : mod.color)} />
+                          <span className="truncate text-xs font-semibold">{mod.title}</span>
+                        </button>
                       );
                     })}
                   </div>
-                </div>
 
-                {/* Selected Module Detail Panel */}
-                <div className="rounded-3xl border border-white/10 bg-white/[0.025] p-6 backdrop-blur-xl">
-                  <div className="flex items-center justify-between border-b border-white/10 pb-4">
-                    <div className="flex items-center gap-3">
-                      <div className="flex h-10 w-10 items-center justify-center rounded-xl bg-emerald-500/10 border border-emerald-500/30 text-emerald-400">
-                        <Sliders className="h-5 w-5" />
-                      </div>
+                  {/* Real Functional Module Editor */}
+                  <div className="rounded-3xl border border-white/10 bg-white/[0.025] p-5 sm:p-6 backdrop-blur-xl">
+                    <div className="mb-5 flex items-center justify-between border-b border-white/10 pb-4">
                       <div>
-                        <h4 className="text-sm font-bold text-white">
-                          Gestion Rapide — {MODULES.find((m) => m.id === activeModule)?.title}
-                        </h4>
-                        <p className="text-xs text-zinc-400">
-                          Appliquez instantanément les réglages pour le serveur {selectedGuild.name}.
+                        <h3 className="text-sm font-bold text-white flex items-center gap-2">
+                          <span>Configuration : {MODULES.find((m) => m.id === activeModule)?.title}</span>
+                        </h3>
+                        <p className="text-xs text-zinc-400 mt-0.5">
+                          {MODULES.find((m) => m.id === activeModule)?.description}
                         </p>
                       </div>
+                      <span className="text-[11px] font-mono text-zinc-500">
+                        Serveur : {selectedGuild.name}
+                      </span>
                     </div>
 
-                    <button
-                      onClick={() => success("Réglages sauvegardés", "Configuration synchronisée avec Discord.")}
-                      className="flex h-9 items-center gap-2 rounded-xl bg-emerald-500 px-4 text-xs font-semibold text-white shadow-lg shadow-emerald-500/20 transition-all hover:bg-emerald-600 active:scale-95 cursor-pointer"
-                    >
-                      <CheckCircle2 className="h-3.5 w-3.5" />
-                      <span>Enregistrer</span>
-                    </button>
-                  </div>
-
-                  {/* Module Content Switcher */}
-                  <div className="mt-5 space-y-4">
+                    {/* MODULE 1: Sécurité & Anti-Raid */}
                     {activeModule === "security" && (
-                      <div className="space-y-3 text-xs">
-                        <div className="flex items-center justify-between rounded-2xl border border-white/5 bg-white/[0.015] p-3.5">
+                      <div className="space-y-4">
+                        <div className="flex items-center justify-between rounded-2xl border border-white/10 bg-white/[0.02] p-4">
                           <div>
-                            <p className="font-semibold text-white">Protection Anti-Raid automatique</p>
-                            <p className="text-zinc-400 text-[11px]">Déclenche le mode d'urgence lors d'un afflux massif de membres.</p>
-                          </div>
-                          <span className="rounded-lg bg-emerald-500/20 px-2.5 py-1 text-emerald-400 font-bold">ACTIF</span>
-                        </div>
-                        <div className="flex items-center justify-between rounded-2xl border border-white/5 bg-white/[0.015] p-3.5">
-                          <div>
-                            <p className="font-semibold text-white">Anti-Spam & Limite de mentions</p>
-                            <p className="text-zinc-400 text-[11px]">Sanction automatique à partir de 5 mentions en moins de 3 secondes.</p>
-                          </div>
-                          <span className="rounded-lg bg-emerald-500/20 px-2.5 py-1 text-emerald-400 font-bold">5 MENTIONS</span>
-                        </div>
-                      </div>
-                    )}
-
-                    {activeModule === "commands" && (
-                      <div className="space-y-3 text-xs">
-                        <p className="text-zinc-400 leading-relaxed">
-                          Créez des commandes comme <code className="text-indigo-300">!regles</code>, <code className="text-indigo-300">!socials</code> ou <code className="text-indigo-300">/support</code> avec réponses riches et embeds personnalisés.
-                        </p>
-                        <div className="rounded-2xl border border-indigo-500/20 bg-indigo-500/[0.05] p-4 flex items-center justify-between">
-                          <div>
-                            <p className="font-bold text-white">7 commandes personnalisées actives</p>
-                            <p className="text-zinc-400 text-[11px]">Dernière exécution : il y a 4 minutes</p>
+                            <p className="text-xs font-bold text-white">Protection Anti-Raid automatique</p>
+                            <p className="text-[11px] text-zinc-400">Détecte et bloque les arrivées massives de bots ou comptes suspects.</p>
                           </div>
                           <button
-                            onClick={() => success("Command Builder", "Ouverture de l'éditeur de commandes...")}
-                            className="rounded-xl bg-indigo-600 px-3.5 py-2 text-xs font-semibold text-white hover:bg-indigo-500 cursor-pointer"
+                            type="button"
+                            onClick={() => setGuildSettings((p) => ({ ...p, antiRaidEnabled: !p.antiRaidEnabled }))}
+                            className={cn(
+                              "flex h-6 w-11 shrink-0 rounded-full border-2 border-transparent transition-colors duration-200 cursor-pointer",
+                              guildSettings.antiRaidEnabled ? "bg-emerald-500" : "bg-zinc-700"
+                            )}
                           >
-                            Ouvrir le Builder
+                            <span className={cn("inline-block h-5 w-5 transform rounded-full bg-white shadow transition duration-200", guildSettings.antiRaidEnabled ? "translate-x-5" : "translate-x-0")} />
+                          </button>
+                        </div>
+
+                        <div className="flex items-center justify-between rounded-2xl border border-white/10 bg-white/[0.02] p-4">
+                          <div>
+                            <p className="text-xs font-bold text-white">Filtre Anti-Spam & Flooding</p>
+                            <p className="text-[11px] text-zinc-400">Supprime automatiquement les répétitions excessives de messages.</p>
+                          </div>
+                          <button
+                            type="button"
+                            onClick={() => setGuildSettings((p) => ({ ...p, antiSpamEnabled: !p.antiSpamEnabled }))}
+                            className={cn(
+                              "flex h-6 w-11 shrink-0 rounded-full border-2 border-transparent transition-colors duration-200 cursor-pointer",
+                              guildSettings.antiSpamEnabled ? "bg-emerald-500" : "bg-zinc-700"
+                            )}
+                          >
+                            <span className={cn("inline-block h-5 w-5 transform rounded-full bg-white shadow transition duration-200", guildSettings.antiSpamEnabled ? "translate-x-5" : "translate-x-0")} />
+                          </button>
+                        </div>
+
+                        <div className="flex items-center justify-between rounded-2xl border border-white/10 bg-white/[0.02] p-4">
+                          <div>
+                            <p className="text-xs font-bold text-white">Limite de mentions par message</p>
+                            <p className="text-[11px] text-zinc-400">Nombre maximum d'utilisateurs ou rôles mentionnables avant sanction.</p>
+                          </div>
+                          <select
+                            value={guildSettings.mentionLimit}
+                            onChange={(e) => setGuildSettings((p) => ({ ...p, mentionLimit: Number(e.target.value) }))}
+                            className="h-8 rounded-xl border border-white/10 bg-zinc-900 px-3 text-xs text-white outline-none focus:border-emerald-500"
+                          >
+                            <option value={3}>3 mentions</option>
+                            <option value={5}>5 mentions (Recommandé)</option>
+                            <option value={10}>10 mentions</option>
+                          </select>
+                        </div>
+
+                        <div className="flex items-center justify-between rounded-2xl border border-rose-500/20 bg-rose-500/[0.05] p-4">
+                          <div>
+                            <p className="text-xs font-bold text-rose-300 flex items-center gap-1.5">
+                              <AlertTriangle className="h-3.5 w-3.5" />
+                              Verrouillage d'urgence (Lockdown)
+                            </p>
+                            <p className="text-[11px] text-zinc-400">Empêche tout nouveau membre d'écrire dans les salons en cas d'attaque.</p>
+                          </div>
+                          <button
+                            type="button"
+                            onClick={() => setGuildSettings((p) => ({ ...p, emergencyLockdown: !p.emergencyLockdown }))}
+                            className={cn(
+                              "rounded-xl px-3 py-1.5 text-xs font-semibold transition-all cursor-pointer",
+                              guildSettings.emergencyLockdown
+                                ? "bg-rose-500 text-white shadow-lg shadow-rose-500/20"
+                                : "border border-rose-500/30 text-rose-300 hover:bg-rose-500/10"
+                            )}
+                          >
+                            {guildSettings.emergencyLockdown ? "Actif (Déverrouiller)" : "Déclencher"}
                           </button>
                         </div>
                       </div>
                     )}
 
-                    {activeModule !== "security" && activeModule !== "commands" && (
-                      <div className="rounded-2xl border border-white/5 bg-white/[0.015] p-6 text-center text-xs text-zinc-400">
-                        <Sparkles className="mx-auto h-6 w-6 text-zinc-500 mb-2" />
-                        <p className="font-medium text-white">Module {MODULES.find((m) => m.id === activeModule)?.title} actif sur ce serveur</p>
-                        <p className="mt-1 text-zinc-500">Toutes les actions et données sont automatiquement synchronisées en direct avec Discord.</p>
+                    {/* MODULE 2: Command Builder */}
+                    {activeModule === "commands" && (
+                      <div className="space-y-4">
+                        <div className="rounded-2xl border border-white/10 bg-white/[0.02] p-4 space-y-3">
+                          <p className="text-xs font-bold text-white flex items-center gap-2">
+                            <Plus className="h-3.5 w-3.5 text-indigo-400" />
+                            Créer une nouvelle commande
+                          </p>
+                          <div className="grid grid-cols-1 gap-2 sm:grid-cols-2">
+                            <div>
+                              <label className="text-[11px] text-zinc-400">Nom du déclencheur</label>
+                              <div className="relative mt-1">
+                                <span className="absolute left-3 top-1/2 -translate-y-1/2 text-zinc-500 text-xs font-bold">!</span>
+                                <input
+                                  type="text"
+                                  placeholder="bienvenue"
+                                  value={newCmdName}
+                                  onChange={(e) => setNewCmdName(e.target.value)}
+                                  className="h-8 w-full rounded-xl border border-white/10 bg-zinc-900/80 pl-6 pr-3 text-xs text-white placeholder-zinc-500 outline-none focus:border-indigo-500"
+                                />
+                              </div>
+                            </div>
+                            <div>
+                              <label className="text-[11px] text-zinc-400">Réponse du bot</label>
+                              <input
+                                type="text"
+                                placeholder="Message automatique envoyé par le bot..."
+                                value={newCmdResponse}
+                                onChange={(e) => setNewCmdResponse(e.target.value)}
+                                className="mt-1 h-8 w-full rounded-xl border border-white/10 bg-zinc-900/80 px-3 text-xs text-white placeholder-zinc-500 outline-none focus:border-indigo-500"
+                              />
+                            </div>
+                          </div>
+                          <button
+                            type="button"
+                            onClick={handleAddCommand}
+                            className="flex h-8 items-center gap-1.5 rounded-xl bg-indigo-600 px-3.5 text-xs font-semibold text-white hover:bg-indigo-500 transition-all cursor-pointer"
+                          >
+                            <Plus className="h-3.5 w-3.5" />
+                            <span>Ajouter la commande</span>
+                          </button>
+                        </div>
+
+                        {/* Liste des commandes réelles */}
+                        <div className="space-y-2">
+                          <p className="text-xs font-semibold text-zinc-300">
+                            Commandes configurées sur ce serveur ({guildSettings.customCommands.length})
+                          </p>
+                          {guildSettings.customCommands.map((cmd, idx) => (
+                            <div
+                              key={idx}
+                              className="flex items-center justify-between rounded-xl border border-white/5 bg-white/[0.015] p-3 text-xs"
+                            >
+                              <div className="min-w-0 flex-1 pr-3">
+                                <span className="font-mono font-bold text-indigo-300">!{cmd.name}</span>
+                                <p className="text-zinc-400 text-[11px] truncate mt-0.5">{cmd.response}</p>
+                              </div>
+                              <button
+                                type="button"
+                                onClick={() => handleDeleteCommand(idx)}
+                                className="text-zinc-500 hover:text-rose-400 transition-colors p-1"
+                                title="Supprimer cette commande"
+                              >
+                                <Trash2 className="h-4 w-4" />
+                              </button>
+                            </div>
+                          ))}
+                        </div>
+                      </div>
+                    )}
+
+                    {/* MODULE 3: Suggestions */}
+                    {activeModule === "suggestions" && (
+                      <div className="space-y-4 text-xs">
+                        <div className="rounded-2xl border border-white/10 bg-white/[0.02] p-4 space-y-3">
+                          <p className="font-bold text-white">Canal de suggestions Discord</p>
+                          <div className="relative">
+                            <Hash className="absolute left-3 top-1/2 -translate-y-1/2 h-3.5 w-3.5 text-zinc-500" />
+                            <input
+                              type="text"
+                              value={guildSettings.suggestionChannel}
+                              onChange={(e) => setGuildSettings((p) => ({ ...p, suggestionChannel: e.target.value }))}
+                              placeholder="suggestions"
+                              className="h-8 w-full rounded-xl border border-white/10 bg-zinc-900/80 pl-9 pr-3 text-xs text-white outline-none focus:border-amber-500"
+                            />
+                          </div>
+                          <p className="text-[11px] text-zinc-400">
+                            Les membres pourront exécuter la commande <code className="text-amber-300">/suggest</code> ou <code className="text-amber-300">!suggest</code> pour soumettre une idée.
+                          </p>
+                        </div>
+                      </div>
+                    )}
+
+                    {/* MODULE 4: Leveling & XP */}
+                    {activeModule === "leveling" && (
+                      <div className="space-y-4 text-xs">
+                        <div className="flex items-center justify-between rounded-2xl border border-white/10 bg-white/[0.02] p-4">
+                          <div>
+                            <p className="font-bold text-white">XP gagné par message</p>
+                            <p className="text-[11px] text-zinc-400">Points d'expérience attribués pour chaque message valide.</p>
+                          </div>
+                          <input
+                            type="number"
+                            min={5}
+                            max={100}
+                            value={guildSettings.xpRate}
+                            onChange={(e) => setGuildSettings((p) => ({ ...p, xpRate: Number(e.target.value) }))}
+                            className="h-8 w-20 rounded-xl border border-white/10 bg-zinc-900 px-3 text-center text-xs text-white outline-none focus:border-fuchsia-500"
+                          />
+                        </div>
+
+                        <div className="flex items-center justify-between rounded-2xl border border-white/10 bg-white/[0.02] p-4">
+                          <div>
+                            <p className="font-bold text-white">Délai anti-spam XP (secondes)</p>
+                            <p className="text-[11px] text-zinc-400">Temps d'attente minimum entre deux attributions d'XP.</p>
+                          </div>
+                          <input
+                            type="number"
+                            min={10}
+                            max={300}
+                            value={guildSettings.xpCooldown}
+                            onChange={(e) => setGuildSettings((p) => ({ ...p, xpCooldown: Number(e.target.value) }))}
+                            className="h-8 w-20 rounded-xl border border-white/10 bg-zinc-900 px-3 text-center text-xs text-white outline-none focus:border-fuchsia-500"
+                          />
+                        </div>
+                      </div>
+                    )}
+
+                    {/* MODULE 5: Giveaways */}
+                    {activeModule === "giveaways" && (
+                      <div className="space-y-4 text-xs">
+                        <div className="rounded-2xl border border-white/10 bg-white/[0.02] p-4 space-y-3">
+                          <p className="font-bold text-white">Lancement rapide d'un tirage au sort</p>
+                          <p className="text-[11px] text-zinc-400">
+                            Utilisez la commande slash <code className="text-rose-300">/giveaway start</code> directement sur Discord pour programmer un tirage au sort avec sélection automatique des gagnants.
+                          </p>
+                          <div className="flex items-center gap-2 pt-1">
+                            <span className="rounded-lg bg-rose-500/20 px-2 py-0.5 text-rose-300 font-semibold text-[10px]">
+                              Commande Discord : /giveaway
+                            </span>
+                          </div>
+                        </div>
+                      </div>
+                    )}
+
+                    {/* MODULE 6: Modération & Sanctions */}
+                    {activeModule === "moderation" && (
+                      <div className="space-y-4 text-xs">
+                        <div className="rounded-2xl border border-white/10 bg-white/[0.02] p-4 space-y-3">
+                          <p className="font-bold text-white">Salon de notification des sanctions</p>
+                          <div className="relative">
+                            <Hash className="absolute left-3 top-1/2 -translate-y-1/2 h-3.5 w-3.5 text-zinc-500" />
+                            <input
+                              type="text"
+                              value={guildSettings.modLogChannel}
+                              onChange={(e) => setGuildSettings((p) => ({ ...p, modLogChannel: e.target.value }))}
+                              placeholder="mod-logs"
+                              className="h-8 w-full rounded-xl border border-white/10 bg-zinc-900/80 pl-9 pr-3 text-xs text-white outline-none focus:border-orange-500"
+                            />
+                          </div>
+                          <p className="text-[11px] text-zinc-400">
+                            Toutes les sanctions appliquées (<code className="text-orange-300">/warn</code>, <code className="text-orange-300">/mute</code>, <code className="text-orange-300">/kick</code>, <code className="text-orange-300">/ban</code>) y seront journalisées.
+                          </p>
+                        </div>
+                      </div>
+                    )}
+
+                    {/* MODULE 7: Audit & Logs */}
+                    {activeModule === "logs" && (
+                      <div className="space-y-4 text-xs">
+                        <div className="rounded-2xl border border-white/10 bg-white/[0.02] p-4 space-y-2">
+                          <p className="font-bold text-white">Surveillance des événements serveur</p>
+                          <div className="space-y-2 pt-1 text-[11px]">
+                            <label className="flex items-center gap-2 text-zinc-300 cursor-pointer">
+                              <input type="checkbox" defaultChecked className="rounded border-zinc-700 accent-blue-500" />
+                              <span>Journaliser la suppression de messages</span>
+                            </label>
+                            <label className="flex items-center gap-2 text-zinc-300 cursor-pointer">
+                              <input type="checkbox" defaultChecked className="rounded border-zinc-700 accent-blue-500" />
+                              <span>Journaliser les modifications de rôles et permissions</span>
+                            </label>
+                            <label className="flex items-center gap-2 text-zinc-300 cursor-pointer">
+                              <input type="checkbox" defaultChecked className="rounded border-zinc-700 accent-blue-500" />
+                              <span>Journaliser les arrivées et départs de membres</span>
+                            </label>
+                          </div>
+                        </div>
+                      </div>
+                    )}
+
+                    {/* MODULE 8: Analytics */}
+                    {activeModule === "analytics" && (
+                      <div className="space-y-4 text-xs">
+                        <div className="rounded-2xl border border-white/10 bg-white/[0.02] p-4 space-y-2">
+                          <p className="font-bold text-white">Métriques Discord en direct</p>
+                          <p className="text-zinc-400 text-[11px] leading-relaxed">
+                            Le bot surveille en continu les messages, salons et interactions de <strong className="text-white">{selectedGuild.name}</strong>. Les rapports sont accessibles via la commande <code className="text-cyan-300">/analytics</code>.
+                          </p>
+                        </div>
                       </div>
                     )}
                   </div>
+                </>
+              ) : (
+                <div className="rounded-3xl border border-white/10 bg-white/[0.02] p-12 text-center">
+                  <Server className="mx-auto h-10 w-10 text-zinc-600 mb-3" />
+                  <h3 className="text-base font-bold text-white">Aucun serveur sélectionné</h3>
+                  <p className="mt-1 text-xs text-zinc-400">
+                    Choisissez un serveur dans la liste de gauche pour configurer le bot.
+                  </p>
                 </div>
-              </>
-            ) : (
-              <div className="rounded-3xl border border-white/10 bg-white/[0.02] p-12 text-center">
-                <Server className="mx-auto h-10 w-10 text-zinc-600 mb-3" />
-                <h3 className="text-base font-bold text-white">Aucun serveur sélectionné</h3>
-                <p className="mt-1 text-xs text-zinc-400">
-                  Choisissez un serveur dans la liste de gauche pour configurer le bot.
-                </p>
-              </div>
-            )}
+              )}
+            </div>
           </div>
+
         </div>
       </div>
     </div>

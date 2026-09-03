@@ -49,9 +49,10 @@ export default function SettingsLayout({ initialSection }: { initialSection?: st
 
   const scrollToSearchResult = useCallback((result: { type: "section" | "field"; id: string; sectionId?: string }) => {
     const targetCategory = result.sectionId ? resolveCategory(result.sectionId) : resolveCategory(result.id);
+    form.setQuery("");
     navigateTo(targetCategory, "search");
     setShowSearchDropdown(false);
-  }, [navigateTo]);
+  }, [navigateTo, form]);
 
   const handleReset = useCallback(() => {
     setIsResetModalOpen(true);
@@ -322,6 +323,7 @@ export default function SettingsLayout({ initialSection }: { initialSection?: st
           </nav>
 
           <SettingsContent
+            activeCategory={activeCategory}
             contentRef={contentRef}
             registerCategoryRef={registerCategoryRef}
           />

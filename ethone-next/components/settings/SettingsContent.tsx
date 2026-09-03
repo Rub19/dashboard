@@ -634,10 +634,12 @@ function fieldKeys(fields: FieldDef[]): { key: string; path?: string }[] {
 }
 
 export default function SettingsContent({
+  activeCategory = "general",
   contentRef,
   onCategoryChange,
   registerCategoryRef,
 }: {
+  activeCategory?: string;
   contentRef?: React.RefObject<HTMLElement | null>;
   onCategoryChange?: (category: string) => void;
   registerCategoryRef?: (id: string, el: HTMLElement | null) => void;
@@ -1526,11 +1528,22 @@ export default function SettingsContent({
     );
   };
 
+  const isSearching = Boolean(form.query.trim());
+  const displayedCategories = useMemo(() => {
+    if (isSearching) return CATEGORY_ORDER;
+    const cat = CATEGORY_ORDER.find((c) => c.id === activeCategory);
+    return cat ? [cat] : [CATEGORY_ORDER[0]];
+  }, [isSearching, activeCategory]);
+
+  const activeCategoryDef = useMemo(() => {
+    return CATEGORY_ORDER.find((c) => c.id === activeCategory) || CATEGORY_ORDER[0];
+  }, [activeCategory]);
+
   return (
-    <div className="w-full space-y-8 pb-24">
-      {form.query.trim() && (
+    <div className="w-full space-y-6 pb-24">
+      {isSearching && (
         <div
-          className="flex items-center justify-between rounded-lg border border-[var(--text-primary)]/[0.06] bg-[var(--text-primary)]/[0.02] px-3 py-2 text-xs text-[var(--text-muted)]"
+          className="flex items-center justify-between rounded-xl border border-[var(--text-primary)]/[0.06] bg-[var(--text-primary)]/[0.02] px-3.5 py-2.5 text-xs text-[var(--text-muted)]"
           role="status"
           aria-live="polite"
         >
@@ -1542,7 +1555,26 @@ export default function SettingsContent({
           )}
         </div>
       )}
-      {CATEGORY_ORDER.map((category) => {
+
+      {!isSearching && activeCategoryDef && (
+        <div className="rounded-2xl border border-[var(--panel-border)] bg-[var(--panel-bg)]/80 p-4 sm:p-5 shadow-xs backdrop-blur-[var(--panel-blur)]">
+          <div className="flex items-center gap-3.5">
+            <div className="flex h-10 w-10 shrink-0 items-center justify-center rounded-xl bg-[var(--accent-primary)]/10 text-[var(--accent-primary)]">
+              <Icon name={activeCategoryDef.icon} className="h-5 w-5" />
+            </div>
+            <div className="min-w-0 flex-1">
+              <h2 className="text-base sm:text-lg font-bold text-[var(--text-primary)] truncate">
+                {activeCategoryDef.label}
+              </h2>
+              <p className="text-xs text-[var(--text-muted)] truncate">
+                {activeCategoryDef.description}
+              </p>
+            </div>
+          </div>
+        </div>
+      )}
+
+      {displayedCategories.map((category) => {
         const sections = sectionsByCategory.get(category.id) || [];
         if (sections.length === 0) return null;
 
@@ -1556,14 +1588,11 @@ export default function SettingsContent({
             }}
             className="space-y-4 transform-gpu"
           >
-            {category.id === "advanced" && (
-              <h2 className="sticky top-0 z-10 -mx-1 mb-2 flex items-center gap-2 rounded-[var(--panel-radius)] border border-[var(--text-primary)]/[0.06] bg-[var(--panel-bg)]/80 px-4 py-2 text-sm font-semibold text-[var(--text-primary)] backdrop-blur-[var(--panel-blur)]">
-                <Icon name={category.icon} className="h-4 w-4 text-[var(--accent)]" />
+            {isSearching && (
+              <h3 className="flex items-center gap-2 rounded-xl border border-[var(--panel-border)] bg-[var(--panel-bg)]/80 px-3.5 py-2 text-xs font-semibold text-[var(--text-primary)] backdrop-blur-[var(--panel-blur)]">
+                <Icon name={category.icon} className="h-4 w-4 text-[var(--accent-primary)]" />
                 {category.label}
-              </h2>
-            )}
-            {category.id !== "advanced" && (
-              <h2 className="sr-only">{category.label}</h2>
+              </h3>
             )}
             <div className="grid grid-cols-1 gap-4">
               <SettingsErrorBoundary categoryName={category.label}>

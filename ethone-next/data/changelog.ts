@@ -1,3 +1,35 @@
+const v12041_fr: ChangelogEntry = {
+  version: "v1.20.41",
+  date: "2026-09-03",
+  title: "ETHONE Settings & Profile 3.0 — Source de Vérité Unique & Navigation 100% Stable",
+  items: [
+    "Source de Vérité Utilisateur Unique : éradication définitive du bug où le nom de workspace 'Personnel' ou 'Rub' était affiché à la place de la véritable identité utilisateur.",
+    "Résolution d'Identité Sécurisée : hiérarchie stricte (sauvegardé > profil public > metadata > préfixe e-mail > 'Compte') et rejet des chaînes génériques.",
+    "Synchronisation Totale de l'Identité : propagation en temps réel du nom et de l'avatar sur la Navbar, le Dock, Dynamic Island, l'accueil Dashboard ('Bonjour, Rubens / ETHONE Tester'), Profile et Settings.",
+    "Settings 3.0 Navigation Stable : élimination de l'observateur de défilement instable qui recalculait la catégorie dominante ; la sélection de catégorie reste parfaitement figée.",
+    "Affichage par Catégorie Ciblée : présentation nette et aérée de la catégorie active avec bannière dédiée (icône, titre, description), sans empilement vertical infini.",
+    "Recherche Globale Intelligente : recherche en temps réel à travers tous les paramètres avec compteur de résultats et dropdown interactif avec saut direct vers la catégorie.",
+    "Deep-Linking & Routage /settings/[section] : chargement instantané de la bonne catégorie sans saut de défilement ni flash visuel.",
+    "Suppression des Espaces Vides : optimisation des hauteurs et conteneurs de scroll (dvh/flex) garantissant une ergonomie compacte et moderne sur desktop, tablette et mobile.",
+  ],
+};
+
+const v12041_en: ChangelogEntry = {
+  version: "v1.20.41",
+  date: "2026-09-03",
+  title: "ETHONE Settings & Profile 3.0 — Single Source of Truth & Rock-Solid Navigation",
+  items: [
+    "Single Source of Truth for Identity: definitive resolution of the bug where workspace string 'Personnel' or 'Rub' leaked into user display name.",
+    "Robust Identity Fallback: clean resolution hierarchy (directSaved > public profile > metadata > email prefix > 'Compte') rejecting generic workspace values.",
+    "Global Identity Synchronization: real-time propagation of display name and avatar across Navbar, Dock, Dynamic Island, Home Dashboard greeting, Profile, and Settings.",
+    "Settings 3.0 Stable Navigation: removed the jumpy scroll-spy observer; sidebar selection remains completely stable without flickering or jumping.",
+    "Category-Scoped View: focused, breathable rendering of the active category with header banner (icon, title, description), eliminating infinite vertical scrolling.",
+    "Interactive Search Everywhere: real-time search across all settings sections with live match count and instant navigation dropdown.",
+    "Deep-Linking & Routing /settings/[section]: immediate opening of target category with zero scroll jank or visual flashes.",
+    "Whitespace & Layout Shift Fix: refined scroll containers and responsive heights for a tight, premium feel on desktop, tablet, and mobile.",
+  ],
+};
+
 export type ChangelogEntry = {
   version: string;
   date: string;

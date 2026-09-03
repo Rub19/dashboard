@@ -39,6 +39,7 @@ import { useHomeData } from "@/lib/hooks/useDashboard";
 import { useLiveData } from "@/lib/hooks/useLiveData";
 import { useItems } from "@/lib/hooks/useItems";
 import { useSettings, useActiveProfile } from "@/components/SettingsProvider";
+import { useUserIdentity } from "@/lib/hooks/useUserIdentity";
 import { useI18n } from "@/lib/hooks/useI18n";
 import { useFocus } from "@/components/FocusProvider";
 import { useDesktopLayout, type WidgetLayout } from "@/lib/hooks/useDesktopLayout";
@@ -118,6 +119,7 @@ export default function DashboardOverview() {
   const { success } = useToast();
   const { settings, update: updateSettings } = useSettings();
   const { activeProfile } = useActiveProfile();
+  const { displayName } = useUserIdentity();
   const { greeting, dashboard, nowPlaying, loading, error } = useHomeData();
   const live = useLiveData();
   const tasksApi = useCloudTasks();
@@ -394,7 +396,7 @@ export default function DashboardOverview() {
     return "Bonsoir";
   }, [hour]);
 
-  const userName = activeProfile?.name || "Rub";
+  const userName = displayName;
 
   const formattedDate = useMemo(() => {
     try {

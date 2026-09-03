@@ -2,7 +2,6 @@
 
 import { useEffect, useMemo, useState } from "react";
 import { useAuth } from "@/components/AuthProvider";
-import { useActiveProfile } from "@/components/SettingsProvider";
 import { useProfile } from "@/lib/hooks/useProfile";
 
 export type UserIdentity = {
@@ -33,6 +32,14 @@ function isExternalOAuthAvatar(url?: string | null): boolean {
 const GENERIC_DISPLAY_NAMES = new Set([
   "invité",
   "guest",
+  "personnel",
+  "personal",
+  "compte",
+  "utilisateur",
+  "user",
+  "default",
+  "profil",
+  "profil principal",
 ]);
 
 function isGenericDisplayName(name?: unknown): boolean {
@@ -50,7 +57,6 @@ function firstNonGeneric(...names: Array<unknown>): string | undefined {
 
 export function useUserIdentity(): UserIdentity {
   const { user } = useAuth();
-  const { activeProfile } = useActiveProfile();
   const { profile: publicProfile } = useProfile();
 
   const [cachedName, setCachedName] = useState<string>("");
@@ -126,29 +132,31 @@ export function useUserIdentity(): UserIdentity {
 
   // Resolution of display name strictly isolated per user / profile
   const displayName = useMemo(() => {
-    const directSaved = cachedName && cachedName.trim() && cachedName.toLowerCase() !== "invité" && cachedName.toLowerCase() !== "guest" ? cachedName.trim() : "";
-    const publicProfName = publicProfile?.display_name || publicProfile?.username || "";
-    const activeProfName = activeProfile?.name && activeProfile.name.toLowerCase() !== "invité" && activeProfile.name.toLowerCase() !== "guest" ? activeProfile.name : "";
+    const directSaved = cachedName && !isGenericDisplayName(cachedName) ? cachedName.trim() : "";
+    const publicProfName = publicProfile?.display_name && !isGenericDisplayName(publicProfile.display_name)
+      ? publicProfile.display_name.trim()
+      : publicProfile?.username && !isGenericDisplayName(publicProfile.username)
+      ? publicProfile.username.trim()
+      : "";
+    const metaName = (customFromMeta as string) && !isGenericDisplayName(customFromMeta)
+      ? (customFromMeta as string).trim()
+      : "";
     const emailName = user?.email ? user.email.split("@")[0] : "";
-    const metaName = (customFromMeta as string) || "";
 
     const candidate =
       directSaved ||
       publicProfName ||
       metaName ||
-      activeProfName ||
       emailName ||
-      "Personnel";
+      "Compte";
 
     return candidate;
-  }, [user, publicProfile?.display_name, publicProfile?.username, activeProfile?.name, customFromMeta, cachedName]);
+  }, [user, publicProfile?.display_name, publicProfile?.username, customFromMeta, cachedName]);
 
   // Resolution of avatar URL: custom user uploaded avatar on ETHONE only (strictly excluding Google & Discord avatars!)
   const candidateAvatars = [
     typeof meta.custom_avatar_url === "string" ? meta.custom_avatar_url : undefined,
     publicProfile?.avatar_url,
-    (activeProfile as unknown as { avatar_url?: string; avatar?: string })?.avatar_url,
-    (activeProfile as unknown as { avatar_url?: string; avatar?: string })?.avatar,
     typeof meta.avatar_url === "string" ? meta.avatar_url : undefined,
     cachedAvatar,
   ];

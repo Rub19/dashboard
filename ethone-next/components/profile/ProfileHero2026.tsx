@@ -56,11 +56,11 @@ export default function ProfileHero2026({
 
   const [copied, setCopied] = useState(false);
 
-  const displayName = identity?.displayName || "Rub";
-  const username = fullIdentity?.username || "rub19";
+  const displayName = identity?.displayName || "Compte";
+  const username = fullIdentity?.username || (identity?.email ? identity.email.split("@")[0] : "utilisateur");
   const avatarUrl = identity?.avatarUrl;
-  const initials = identity?.initials || "R";
-  const bio = fullIdentity?.bio || "Architecte système & utilisateur avancé ETHONE OS.";
+  const initials = identity?.initials || displayName.slice(0, 2).toUpperCase();
+  const bio = fullIdentity?.bio || "";
   const frameId = fullIdentity?.avatar_frame_id;
   const activeFrame = PROFILE_FRAMES.find((f) => f.id === frameId);
 

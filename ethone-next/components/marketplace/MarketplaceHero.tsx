@@ -25,7 +25,7 @@ export default function MarketplaceHero({
   onViewBrainDrawer,
 }: MarketplaceHeroProps) {
   const identity = useUserIdentity();
-  const userName = identity?.displayName || "Rub";
+  const userName = identity?.displayName || "Compte";
 
   const topPick = recommendations[0];
 

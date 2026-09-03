@@ -5,6 +5,43 @@ export type ChangelogEntry = {
   items: string[];
 };
 
+
+const v12037_fr: ChangelogEntry = {
+  version: "v1.20.37",
+  date: "2026-09-03",
+  title: "Focus 2.0 — ETHONE Focus Engine & AnimatedDropdown",
+  items: [
+    "Focus Engine : tick drift-free basé sur timestamps, syncFromElapsed() au retour d'onglet.",
+    "FocusProvider : commandes Command Center via événement v8:focus-command (start/toggle/stop).",
+    "FocusPage : objectif Goal persisté dans le Focus Engine, onglet Historique, AnimatedDropdown de contrôles rapides.",
+    "FocusCompletionModal : modal de fin de session avec confetti, stats et bouton Démarrer une autre.",
+    "FocusHistoryView : historique localStorage avec filtres Aujourd'hui / 7 jours / 30 jours / Tout.",
+    "AnimatedDropdown : composant dropdown animé framer-motion + @base-ui/react intégré au dashboard.",
+    "5 commandes Focus dans le Command Center : Ouvrir Focus, Démarrer Pomodoro, Deep Work, Pause/Reprendre, Arrêter.",
+    "setGoal() et setTask() ajoutés au FocusTimer pour lier objectifs et tâches au moteur Focus.",
+    "Événement v8:focus-session-completed déclenché à chaque cycle terminé pour intégration Activity.",
+    "@base-ui/react installé en dépendance pour les menus accessibles.",
+  ],
+};
+
+const v12037_en: ChangelogEntry = {
+  version: "v1.20.37",
+  date: "2026-09-03",
+  title: "Focus 2.0 — ETHONE Focus Engine & AnimatedDropdown",
+  items: [
+    "Focus Engine: drift-free tick based on timestamps, syncFromElapsed() on tab visibility change.",
+    "FocusProvider: Command Center commands via v8:focus-command event (start/toggle/stop).",
+    "FocusPage: Goal input persisted in Focus Engine, History tab, AnimatedDropdown quick controls.",
+    "FocusCompletionModal: session completion modal with confetti, stats and Start Another button.",
+    "FocusHistoryView: localStorage history with Today / 7 days / 30 days / All filters.",
+    "AnimatedDropdown: animated dropdown component using framer-motion + @base-ui/react.",
+    "5 Focus commands in Command Center: Open Focus, Start Pomodoro, Deep Work, Pause/Resume, Stop.",
+    "setGoal() and setTask() added to FocusTimer to link goals and tasks to the Focus engine.",
+    "v8:focus-session-completed event dispatched on each completed cycle for Activity integration.",
+    "@base-ui/react installed as dependency for accessible menus.",
+  ],
+};
+
 const v375_fr: ChangelogEntry = {
   version: "v1.9.4",
   date: "2026-08-25",

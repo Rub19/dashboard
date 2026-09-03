@@ -17,6 +17,8 @@ type FocusContextValue = {
   skip: () => void;
   skipBreak: () => void;
   adjustTime: (deltaSeconds: number) => void;
+  setGoal: (goal: string) => void;
+  setTask: (taskId: string, taskTitle?: string) => void;
   format: (seconds?: number) => string;
 };
 
@@ -67,6 +69,30 @@ export function FocusProvider({ children }: { children: React.ReactNode }) {
   }, [state.phase, state.paused]);
 
   useEffect(() => {
+    if (typeof window === "undefined") return;
+    const handleFocusCommand = (e: Event) => {
+      const custom = e as CustomEvent<{ action: string; preset?: string }>;
+      if (!custom.detail) return;
+      const { action, preset } = custom.detail;
+      if (action === "start" && preset) {
+        focusTimer.start(preset);
+      } else if (action === "toggle") {
+        if (state.phase === "idle") {
+          focusTimer.start("pomodoro");
+        } else if (state.paused) {
+          focusTimer.resume();
+        } else {
+          focusTimer.pause();
+        }
+      } else if (action === "stop") {
+        focusTimer.stop();
+      }
+    };
+    window.addEventListener("v8:focus-command", handleFocusCommand);
+    return () => window.removeEventListener("v8:focus-command", handleFocusCommand);
+  }, [state.phase, state.paused]);
+
+  useEffect(() => {
     if (!canLiveActivity.current) return;
 
     if (state.phase !== "idle" && state.total > 0) {
@@ -94,6 +120,8 @@ export function FocusProvider({ children }: { children: React.ReactNode }) {
       skip: () => focusTimer.skipBreak(),
       skipBreak: () => focusTimer.skipBreak(),
       adjustTime: (deltaSeconds: number) => focusTimer.adjustTime(deltaSeconds),
+      setGoal: (goal: string) => focusTimer.setGoal(goal),
+      setTask: (taskId: string, taskTitle?: string) => focusTimer.setTask(taskId, taskTitle),
       format: (seconds?: number) => focusTimer.formatRemaining(seconds),
     }),
     [state]

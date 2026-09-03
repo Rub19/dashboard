@@ -40,6 +40,8 @@ export type FocusTimerState = {
   completedPomodoros: number;
   completedBreaks: number;
   totalFocusSeconds: number;
+  goal?: string;
+  taskId?: string;
   format: (seconds?: number) => string;
 };
 
@@ -69,19 +71,29 @@ export class FocusTimer {
       totalFocusSeconds: 0,
     });
     this.lastTick = Date.now();
+    if (typeof document !== "undefined") {
+      document.addEventListener("visibilitychange", () => {
+        if (document.visibilityState === "visible") {
+          this.syncFromElapsed();
+        }
+      });
+    }
   }
 
   private makeState(partial: Partial<FocusTimerState>): FocusTimerState {
+    const prev = this.state;
     return {
-      phase: partial.phase ?? this.state.phase,
-      remaining: partial.remaining ?? this.state.remaining,
-      total: partial.total ?? this.state.total,
-      paused: partial.paused ?? this.state.paused,
-      activePreset: partial.activePreset ?? this.state.activePreset,
-      cycle: partial.cycle ?? this.state.cycle,
-      completedPomodoros: partial.completedPomodoros ?? this.state.completedPomodoros,
-      completedBreaks: partial.completedBreaks ?? this.state.completedBreaks,
-      totalFocusSeconds: partial.totalFocusSeconds ?? this.state.totalFocusSeconds,
+      phase: partial.phase ?? (prev?.phase ?? "idle"),
+      remaining: partial.remaining ?? (prev?.remaining ?? 0),
+      total: partial.total ?? (prev?.total ?? 0),
+      paused: partial.paused ?? (prev?.paused ?? false),
+      activePreset: partial.activePreset ?? (prev?.activePreset ?? ""),
+      cycle: partial.cycle ?? (prev?.cycle ?? 1),
+      completedPomodoros: partial.completedPomodoros ?? (prev?.completedPomodoros ?? 0),
+      completedBreaks: partial.completedBreaks ?? (prev?.completedBreaks ?? 0),
+      totalFocusSeconds: partial.totalFocusSeconds ?? (prev?.totalFocusSeconds ?? 0),
+      goal: partial.goal !== undefined ? partial.goal : (prev?.goal),
+      taskId: partial.taskId !== undefined ? partial.taskId : (prev?.taskId),
       format: this.formatRemaining.bind(this),
     };
   }
@@ -327,6 +339,39 @@ export class FocusTimer {
     this.notify();
   }
 
+  setGoal(goal: string): void {
+    this.state = this.makeState({ ...this.state, goal });
+    this.persist();
+    this.notify();
+  }
+
+  setTask(taskId: string, taskTitle?: string): void {
+    this.state = this.makeState({
+      ...this.state,
+      taskId,
+      goal: taskTitle || this.state.goal,
+    });
+    this.persist();
+    this.notify();
+  }
+
+  syncFromElapsed(): void {
+    if (this.state.paused || this.state.phase === "idle") return;
+    const now = Date.now();
+    const elapsed = Math.max(0, Math.floor((now - this.lastTick) / 1000));
+    if (elapsed > 0) {
+      this.lastTick = now;
+      const remaining = Math.max(0, this.state.remaining - elapsed);
+      if (remaining <= 0) {
+        this.advance();
+      } else {
+        this.state = this.makeState({ ...this.state, remaining });
+        this.persist();
+        this.notify();
+      }
+    }
+  }
+
   adjustTime(deltaSeconds: number): void {
     const newRemaining = Math.max(60, this.state.remaining + deltaSeconds);
     const newTotal = Math.max(newRemaining, this.state.total + (deltaSeconds > 0 ? deltaSeconds : 0));
@@ -360,8 +405,10 @@ export class FocusTimer {
   }
 
   private tick(): void {
-    const remaining = this.state.remaining - 1;
-    this.lastTick = Date.now();
+    const now = Date.now();
+    const delta = Math.max(1, Math.round((now - this.lastTick) / 1000));
+    this.lastTick = now;
+    const remaining = Math.max(0, this.state.remaining - delta);
 
     if (remaining <= 0) {
       this.state = this.makeState({ ...this.state, remaining: 0 });
@@ -384,6 +431,25 @@ export class FocusTimer {
       const completedPomodoros = this.state.completedPomodoros + 1;
       const totalFocusSeconds = this.state.totalFocusSeconds + this.state.total;
       const isLongBreak = cycle % 4 === 0;
+
+      // Save to local focus history
+      if (typeof window !== "undefined") {
+        try {
+          const raw = localStorage.getItem("ethone-focus-history") || "[]";
+          const list = JSON.parse(raw);
+          list.unshift({
+            id: String(Date.now()),
+            duration: this.state.total,
+            preset: this.state.activePreset,
+            goal: this.state.goal,
+            completedAt: new Date().toISOString(),
+          });
+          localStorage.setItem("ethone-focus-history", JSON.stringify(list.slice(0, 100)));
+          window.dispatchEvent(new CustomEvent("v8:focus-session-completed", {
+            detail: { duration: this.state.total, goal: this.state.goal, preset: this.state.activePreset }
+          }));
+        } catch {}
+      }
 
       this.state = this.makeState({
         ...this.state,

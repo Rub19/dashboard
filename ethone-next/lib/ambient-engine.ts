@@ -161,6 +161,9 @@ function resolveThemeTuning(theme: string) {
     arctic: "day",
     minimal: "day",
     glass: "graphite",
+    forest: "graphite",
+    sunset: "night",
+    rose: "night",
   };
   return THEME_TUNING[map[resolved] ?? "night"];
 }

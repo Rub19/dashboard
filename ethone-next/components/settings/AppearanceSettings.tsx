@@ -13,6 +13,7 @@ import { type Settings, DEFAULTS } from "@/lib/settings";
 import BentoCard from "@/components/ui/BentoCard";
 import PremiumThemePicker from "./PremiumThemePicker";
 import ThemeStudio from "./ThemeStudio";
+import LiveThemePreview from "./LiveThemePreview";
 import Switch from "@/components/Switch";
 import Select from "@/components/ui/Select";
 import Slider from "@/components/ui/Slider";
@@ -173,6 +174,9 @@ export default function AppearanceSettings() {
       <BentoCard title="Studio de Thèmes & Accents (Engine 3.0)" icon="palette" className="md:col-span-2">
         <ThemeStudio />
       </BentoCard>
+
+      {/* Aperçu en direct du Theme Engine */}
+      <LiveThemePreview className="md:col-span-2" />
 
       {/* Card 2 : Icônes & Typographie */}
       <BentoCard title="Icônes & Style" icon="sparkles" className="md:col-span-2">

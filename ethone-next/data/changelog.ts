@@ -21245,4 +21245,35 @@ CHANGELOG_BY_LANG.en.unshift({
   ],
 });
 
+
+CHANGELOG_BY_LANG.fr.unshift({
+  version: "v1.20.31",
+  date: "2026-09-03",
+  title: "ETHONE Theme Engine 3.0 — Dynamic Visual System & Universal Tokens",
+  items: [
+    "Refonte complète du Theme Engine 3.0 avec hiérarchie de design tokens unifiée pour l'ensemble des pages et composants.",
+    "Extension de la bibliothèque de thèmes premium avec 12 presets : Obsidian Dark, Midnight OLED, Aurora, Purple Space, Arctic Frost, Carbon Graphite, Cyber Neon, Minimal Studio, Liquid Glass, Emerald Forest, Sunset Horizon et Velvet Rose.",
+    "Intégration d'un panneau d'aperçu direct en temps réel (LiveThemePreview) dans Paramètres > Apparence avec simulation de boutons, champs de saisie, cartes et statuts.",
+    "Thèmes de Workspaces automatiques : bascule contextuelle instantanée et fluide des couleurs et du thème lors du changement d'espace de travail (Personnel, Focus, Studio, Gaming, Développeur).",
+    "Calcul automatique de contraste dynamique par luminance : lisibilité absolue garantie sans texte blanc sur fond clair.",
+    "Script de pré-hydratation zéro flash blanc/noir ultra-rapide avant le rendu React.",
+    "Bumping de version vers v1.20.31.",
+  ],
+});
+
+CHANGELOG_BY_LANG.en.unshift({
+  version: "v1.20.31",
+  date: "2026-09-03",
+  title: "ETHONE Theme Engine 3.0 — Dynamic Visual System & Universal Tokens",
+  items: [
+    "Full overhaul of Theme Engine 3.0 with unified design token hierarchy covering all components and pages.",
+    "Expanded preset library to 12 curated themes: Obsidian Dark, Midnight OLED, Aurora, Purple Space, Arctic Frost, Carbon Graphite, Cyber Neon, Minimal Studio, Liquid Glass, Emerald Forest, Sunset Horizon, and Velvet Rose.",
+    "Integrated real-time interactive preview card (LiveThemePreview) in Settings > Appearance showcasing buttons, inputs, bento cards, and status tags.",
+    "Automatic Workspace Themes: contextual, smooth visual switching when entering distinct workspaces (Personal, Focus, Studio, Gaming, Developer).",
+    "Dynamic luminance contrast engine: guaranteed accessibility with no light text on bright accents.",
+    "Ultra-fast zero-flash pre-hydration script in <head> completely eliminating black or white flashes.",
+    "Version bump to v1.20.31.",
+  ],
+});
+
 export const CHANGELOG = CHANGELOG_BY_LANG.fr;

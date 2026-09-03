@@ -6,9 +6,18 @@ import { useI18n } from "@/lib/hooks/useI18n";
 import { useUserData, type UserDataRecord } from "@/lib/hooks/useUserData";
 import { useLocalStorage } from "@/lib/hooks/useLocalStorage";
 import { Icon } from "@/lib/icons";
-import { useToast } from "@/components/ToastProvider";
 import Input from "@/components/Input";
 import Button from "@/components/ui/Button";
+import { useToast } from "@/components/ToastProvider";
+import { useSettings } from "@/components/SettingsProvider";
+
+const WORKSPACE_THEMES: Record<string, { theme: string; accent: string }> = {
+  personal: { theme: "obsidian", accent: "violet" },
+  focus: { theme: "midnight", accent: "sky" },
+  studio: { theme: "rose", accent: "rose" },
+  gaming: { theme: "cyber-neon", accent: "red" },
+  developer: { theme: "obsidian", accent: "violet" },
+};
 
 const WIDGET_ICONS: Record<string, string> = {
   notes: "notebook-pen",
@@ -79,6 +88,7 @@ function getWorkspace(item: UserDataRecord, i18n: (k: string) => string) {
 
 export default function SpacesPage() {
   const i18n = useI18n();
+  const { update } = useSettings();
   const { success, error: showError } = useToast();
   const { items: spaces, loading, error, create, remove } = useUserData("space");
   const [name, setName] = useState("");
@@ -140,7 +150,13 @@ export default function SpacesPage() {
               <button
                 key={w.id}
                 type="button"
-                onClick={() => setActiveSpace(w.id)}
+                onClick={() => {
+                  setActiveSpace(w.id);
+                  const cfg = WORKSPACE_THEMES[w.id];
+                  if (cfg) {
+                    update({ theme: cfg.theme as any, accentColor: cfg.accent });
+                  }
+                }}
                 className={`relative rounded-[var(--panel-radius)] border p-3 text-left transition-colors duration-150 ${
                   isActive
                     ? `border-[var(--accent)] bg-[var(--accent)]/5 ring-1 ${w.accent.ring}`

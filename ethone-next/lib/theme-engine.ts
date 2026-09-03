@@ -60,6 +60,9 @@ const LEGACY_THEME_MAP: Record<string, PremiumThemeId> = {
   "purple-space": "purple-space",
   space: "purple-space",
   carbon: "carbon",
+  forest: "forest",
+  sunset: "sunset",
+  rose: "rose",
 };
 
 export function resolveLegacyTheme(theme: string): PremiumThemeId {

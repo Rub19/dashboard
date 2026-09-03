@@ -1,12 +1,12 @@
 "use client";
 
-import { useEffect, useRef, useState } from "react";
+import { Suspense, useEffect, useRef, useState } from "react";
 import { useSearchParams } from "next/navigation";
 import DashboardOverview from "@/components/DashboardOverview";
 import Modal from "@/components/ui/Modal";
 import confetti from "canvas-confetti";
 
-export default function DashboardPage() {
+function DashboardContent() {
   const searchParams = useSearchParams();
   const [open, setOpen] = useState(false);
   const hasThanked = useRef(false);
@@ -18,13 +18,15 @@ export default function DashboardPage() {
     hasThanked.current = true;
     setOpen(true);
 
-    confetti({
-      particleCount: 160,
-      spread: 90,
-      origin: { y: 0.55 },
-      zIndex: 100000,
-      colors: ["#10B981", "#06B6D4", "#F43F5E", "#F59E0B", "#FFFFFF"],
-    });
+    try {
+      confetti({
+        particleCount: 160,
+        spread: 90,
+        origin: { y: 0.55 },
+        zIndex: 100000,
+        colors: ["#10B981", "#06B6D4", "#F43F5E", "#F59E0B", "#FFFFFF"],
+      });
+    } catch {}
 
     window.history.replaceState(null, "", "/dashboard");
   }, [searchParams]);
@@ -48,5 +50,13 @@ export default function DashboardPage() {
         </p>
       </Modal>
     </>
+  );
+}
+
+export default function DashboardPage() {
+  return (
+    <Suspense fallback={<DashboardOverview />}>
+      <DashboardContent />
+    </Suspense>
   );
 }

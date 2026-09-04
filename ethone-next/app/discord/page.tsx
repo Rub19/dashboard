@@ -47,6 +47,7 @@ import {
   SkipBack,
   Disc,
   Ticket,
+  UserPlus,
 } from "lucide-react";
 import { useAuth } from "@/components/AuthProvider";
 import { useToast } from "@/components/ToastProvider";
@@ -71,6 +72,7 @@ type ModuleType =
   | "moderation"
   | "logs"
   | "music"
+  | "invites"
   | "analytics";
 
 interface BotModule {
@@ -162,6 +164,14 @@ const MODULES: BotModule[] = [
     icon: Music2,
     color: "text-violet-400",
     badge: "Live Audio",
+  },
+  {
+    id: "invites",
+    title: "Invites & Parrainages 2.0",
+    description: "Tracking précis des invitations Discord, détection des faux joins, scores de risque et récompenses.",
+    icon: UserPlus,
+    color: "text-amber-400",
+    badge: "Croissance",
   },
   {
     id: "analytics",
@@ -1416,6 +1426,57 @@ export default function DiscordDashboardPage() {
                             </button>
                           </div>
                         )}
+                      </div>
+                    </div>
+                  </div>
+                )}
+
+                {/* MODULE: Invites & Parrainages 2.0 */}
+                {activeModule === "invites" && (
+                  <div className="space-y-4 text-xs">
+                    {/* Invites & Referrals Gateway */}
+                    <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-3 rounded-2xl border border-amber-500/30 bg-gradient-to-r from-amber-500/10 via-orange-500/10 to-amber-600/10 p-4 shadow-lg shadow-amber-500/5">
+                      <div>
+                        <div className="flex items-center gap-2">
+                          <span className="text-base">🤝</span>
+                          <p className="text-xs font-bold text-white">Invite Tracker &amp; Referral Center 2.0</p>
+                          <span className="text-[9px] uppercase font-bold tracking-wider px-1.5 py-0.5 rounded bg-amber-500/20 text-amber-300 border border-amber-500/30">
+                            Croissance
+                          </span>
+                        </div>
+                        <p className="text-[11px] text-zinc-300 mt-0.5">
+                          Tracking précis des invitations Discord, calcul de diff par snapshot, détection des faux joins (Risk Score 0-100), campagnes avec objectifs et distribution sécurisée de rôles récompenses.
+                        </p>
+                      </div>
+                      <Link
+                        href={`/discord/invites?guildId=${selectedGuild.id}`}
+                        className="flex h-9 shrink-0 items-center gap-2 rounded-xl bg-gradient-to-r from-amber-600 to-orange-600 px-4 text-xs font-bold text-white shadow-md shadow-amber-600/20 transition-all hover:from-amber-500 hover:to-orange-500 active:scale-95 cursor-pointer"
+                      >
+                        <UserPlus className="h-4 w-4" />
+                        <span>Ouvrir Invites Center 2.0</span>
+                        <ChevronRight className="h-3.5 w-3.5" />
+                      </Link>
+                    </div>
+
+                    <div className="rounded-2xl border border-white/10 bg-white/[0.02] p-4 space-y-3">
+                      <p className="font-bold text-white">Fonctionnalités actives du tracker</p>
+                      <div className="grid grid-cols-1 sm:grid-cols-2 gap-2.5 text-[11px] text-zinc-400">
+                        <div className="flex items-center gap-2 rounded-xl border border-white/5 bg-white/[0.02] p-2.5">
+                          <span className="h-2 w-2 rounded-full bg-emerald-400 shrink-0" />
+                          <span>Snapshot en temps réel de toutes les invitations de la guilde</span>
+                        </div>
+                        <div className="flex items-center gap-2 rounded-xl border border-white/5 bg-white/[0.02] p-2.5">
+                          <span className="h-2 w-2 rounded-full bg-amber-400 shrink-0" />
+                          <span>Algorithme heuristique anti-triche (âge du compte, burst, churn)</span>
+                        </div>
+                        <div className="flex items-center gap-2 rounded-xl border border-white/5 bg-white/[0.02] p-2.5">
+                          <span className="h-2 w-2 rounded-full bg-blue-400 shrink-0" />
+                          <span>Suivi de la rétention des membres (24h, 3j, 7j, 30j)</span>
+                        </div>
+                        <div className="flex items-center gap-2 rounded-xl border border-white/5 bg-white/[0.02] p-2.5">
+                          <span className="h-2 w-2 rounded-full bg-purple-400 shrink-0" />
+                          <span>Attribution de rôles par paliers avec vérification de hiérarchie</span>
+                        </div>
                       </div>
                     </div>
                   </div>

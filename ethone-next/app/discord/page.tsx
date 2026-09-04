@@ -48,6 +48,7 @@ import {
   Disc,
   Ticket,
   UserPlus,
+  Archive,
 } from "lucide-react";
 import { useAuth } from "@/components/AuthProvider";
 import { useToast } from "@/components/ToastProvider";
@@ -74,6 +75,7 @@ type ModuleType =
   | "music"
   | "invites"
   | "voice"
+  | "backups"
   | "analytics";
 
 interface BotModule {
@@ -181,6 +183,14 @@ const MODULES: BotModule[] = [
     icon: Radio,
     color: "text-emerald-400",
     badge: "Vocal",
+  },
+  {
+    id: "backups",
+    title: "Sauvegardes & Disaster Recovery 2.0",
+    description: "Snapshots immuables, restauration sécurisée, comparateur diff et planification automatique.",
+    icon: Archive,
+    color: "text-indigo-400",
+    badge: "Recovery",
   },
   {
     id: "analytics",
@@ -1536,6 +1546,57 @@ export default function DiscordDashboardPage() {
                         <div className="flex items-center gap-2 rounded-xl border border-white/5 bg-white/[0.02] p-2.5">
                           <span className="h-2 w-2 rounded-full bg-amber-400 shrink-0" />
                           <span>Stratégies intelligentes de transfert de propriété</span>
+                        </div>
+                      </div>
+                    </div>
+                  </div>
+                )}
+
+                {/* MODULE: Server Backup & Disaster Recovery 2.0 */}
+                {activeModule === "backups" && (
+                  <div className="space-y-4 text-xs">
+                    {/* Backup Center Gateway */}
+                    <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-3 rounded-2xl border border-indigo-500/30 bg-gradient-to-r from-indigo-500/10 via-purple-500/10 to-indigo-600/10 p-4 shadow-lg shadow-indigo-500/5">
+                      <div>
+                        <div className="flex items-center gap-2">
+                          <span className="text-base">💾</span>
+                          <p className="text-xs font-bold text-white">Server Backup &amp; Disaster Recovery 2.0</p>
+                          <span className="text-[9px] uppercase font-bold tracking-wider px-1.5 py-0.5 rounded bg-indigo-500/20 text-indigo-300 border border-indigo-500/30">
+                            Time Machine
+                          </span>
+                        </div>
+                        <p className="text-[11px] text-zinc-300 mt-0.5">
+                          Sauvegardez l&apos;intégralité de la structure Discord et des modules ETHONE, comparez les versions et restaurez sélectivement avec rollback automatique.
+                        </p>
+                      </div>
+                      <Link
+                        href={`/discord/backups?guildId=${selectedGuild.id}`}
+                        className="flex h-9 shrink-0 items-center gap-2 rounded-xl bg-gradient-to-r from-indigo-600 to-purple-600 px-4 text-xs font-bold text-white shadow-md shadow-indigo-600/20 transition-all hover:from-indigo-500 hover:to-purple-500 active:scale-95 cursor-pointer"
+                      >
+                        <Archive className="h-4 w-4" />
+                        <span>Ouvrir Backup Center 2.0</span>
+                        <ChevronRight className="h-3.5 w-3.5" />
+                      </Link>
+                    </div>
+
+                    <div className="rounded-2xl border border-white/10 bg-white/[0.02] p-4 space-y-3">
+                      <p className="font-bold text-white">Garanties &amp; Protections de Secours</p>
+                      <div className="grid grid-cols-1 sm:grid-cols-2 gap-2.5 text-[11px] text-zinc-400">
+                        <div className="flex items-center gap-2 rounded-xl border border-white/5 bg-white/[0.02] p-2.5">
+                          <span className="h-2 w-2 rounded-full bg-emerald-400 shrink-0" />
+                          <span>Snapshots immuables certifiés SHA-256</span>
+                        </div>
+                        <div className="flex items-center gap-2 rounded-xl border border-white/5 bg-white/[0.02] p-2.5">
+                          <span className="h-2 w-2 rounded-full bg-indigo-400 shrink-0" />
+                          <span>Rollback automatique capturé avant toute restauration</span>
+                        </div>
+                        <div className="flex items-center gap-2 rounded-xl border border-white/5 bg-white/[0.02] p-2.5">
+                          <span className="h-2 w-2 rounded-full bg-amber-400 shrink-0" />
+                          <span>Comparateur visuel de diffs (Ajouté, Modifié, Supprimé)</span>
+                        </div>
+                        <div className="flex items-center gap-2 rounded-xl border border-white/5 bg-white/[0.02] p-2.5">
+                          <span className="h-2 w-2 rounded-full bg-rose-400 shrink-0" />
+                          <span>Sauvegardes protégées inviolables contre la purge</span>
                         </div>
                       </div>
                     </div>

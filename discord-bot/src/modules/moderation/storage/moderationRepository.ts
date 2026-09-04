@@ -12,6 +12,7 @@ import {
   ModerationSettingsSchema,
   StaffNote,
 } from '../types/case.js';
+import { ModerationReport, ModerationReportSchema } from '../types/report.js';
 import { logger } from '../../../utils/logger.js';
 
 class ModerationRepository {
@@ -20,6 +21,7 @@ class ModerationRepository {
   private evidencePath = path.resolve(process.cwd(), 'data', 'moderation_evidence.json');
   private settingsPath = path.resolve(process.cwd(), 'data', 'moderation_settings.json');
   private auditPath = path.resolve(process.cwd(), 'data', 'moderation_audit_logs.json');
+  private reportsPath = path.resolve(process.cwd(), 'data', 'moderation_reports.json');
 
   // En mémoire
   private cases = new Map<string, ModerationCase[]>(); // guildId -> cases
@@ -27,6 +29,7 @@ class ModerationRepository {
   private evidence = new Map<string, CaseEvidence[]>(); // caseId -> evidence
   private settings = new Map<string, ModerationSettings>(); // guildId -> settings
   private auditLogs = new Map<string, AuditLogEntry[]>(); // guildId -> auditLogs
+  private reports = new Map<string, ModerationReport[]>(); // guildId -> reports
 
   constructor() {
     this.ensureDirectory();
@@ -114,6 +117,32 @@ class ModerationRepository {
       }
     } catch (err) {
       logger.error('[ModerationRepository] Erreur chargement audit logs :', err);
+    }
+
+    // 6. Reports
+    try {
+      if (fs.existsSync(this.reportsPath)) {
+        const raw = fs.readFileSync(this.reportsPath, 'utf-8');
+        const obj = JSON.parse(raw);
+        for (const [guildId, list] of Object.entries(obj)) {
+          if (Array.isArray(list)) {
+            const parsed = list.map((item) => ModerationReportSchema.parse(item));
+            this.reports.set(guildId, parsed);
+          }
+        }
+      }
+    } catch (err) {
+      logger.error('[ModerationRepository] Erreur chargement reports :', err);
+    }
+  }
+
+  private saveReports(): void {
+    try {
+      this.ensureDirectory();
+      const obj = Object.fromEntries(this.reports.entries());
+      fs.writeFileSync(this.reportsPath, JSON.stringify(obj, null, 2), 'utf-8');
+    } catch (err) {
+      logger.error('[ModerationRepository] Erreur sauvegarde reports :', err);
     }
   }
 
@@ -399,6 +428,105 @@ class ModerationRepository {
     const list = this.auditLogs.get(guildId) || [];
     return list.slice(0, limit);
   }
+
+  // ==========================================
+  // REPORT METHODS
+  // ==========================================
+  public getReports(
+    guildId: string,
+    filters?: {
+      status?: string;
+      reportedUserId?: string;
+      reporterUserId?: string;
+      assignedId?: string;
+    }
+  ): ModerationReport[] {
+    const list = this.reports.get(guildId) || [];
+    let filtered = [...list];
+
+    if (filters?.status && filters.status !== 'ALL') {
+      filtered = filtered.filter((r) => r.status === filters.status);
+    }
+    if (filters?.reportedUserId) {
+      filtered = filtered.filter((r) => r.reportedUserId === filters.reportedUserId);
+    }
+    if (filters?.reporterUserId) {
+      filtered = filtered.filter((r) => r.reporterUserId === filters.reporterUserId);
+    }
+    if (filters?.assignedId) {
+      filtered = filtered.filter((r) => r.assignedModerator?.id === filters.assignedId);
+    }
+
+    return filtered.sort((a, b) => new Date(b.createdAt).getTime() - new Date(a.createdAt).getTime());
+  }
+
+  public getReportById(guildId: string, reportId: string): ModerationReport | undefined {
+    const list = this.reports.get(guildId) || [];
+    return list.find((r) => r.id === reportId);
+  }
+
+  public addReport(report: ModerationReport): ModerationReport {
+    const list = this.reports.get(report.guildId) || [];
+    list.unshift(report);
+    this.reports.set(report.guildId, list);
+    this.saveReports();
+    return report;
+  }
+
+  public updateReport(
+    guildId: string,
+    reportId: string,
+    updates: Partial<ModerationReport>
+  ): ModerationReport | null {
+    const list = this.reports.get(guildId) || [];
+    const index = list.findIndex((r) => r.id === reportId);
+    if (index === -1) return null;
+
+    const current = list[index];
+    const updated: ModerationReport = {
+      ...current,
+      ...updates,
+      updatedAt: new Date().toISOString(),
+    };
+
+    list[index] = updated;
+    this.reports.set(guildId, list);
+    this.saveReports();
+    return updated;
+  }
+
+  public getPendingReportsCount(guildId: string): number {
+    const list = this.reports.get(guildId) || [];
+    return list.filter((r) => r.status === 'NEW' || r.status === 'REVIEWING').length;
+  }
+
+  // ==========================================
+  // CASE ASSIGNMENT & RELATIONSHIPS
+  // ==========================================
+  public assignCase(
+    guildId: string,
+    caseNumber: number,
+    assignedTo?: { id: string; tag: string; team?: string }
+  ): ModerationCase | null {
+    return this.updateCase(guildId, caseNumber, { assignedTo });
+  }
+
+  public relateCase(
+    guildId: string,
+    caseNumber: number,
+    relationships: ModerationCase['relationships']
+  ): ModerationCase | null {
+    const existing = this.getCaseByNumber(guildId, caseNumber);
+    if (!existing) return null;
+
+    return this.updateCase(guildId, caseNumber, {
+      relationships: {
+        ...(existing.relationships || {}),
+        ...(relationships || {}),
+      },
+    });
+  }
 }
 
 export const moderationRepository = new ModerationRepository();
+

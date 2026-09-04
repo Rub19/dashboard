@@ -25,6 +25,18 @@ export function createModerationRouter(discordClient: Client) {
     }
   });
 
+  // RECHERCHE INSTANTANÉE MEMBRE (Username, Display Name, User ID, Mention, Case #)
+  router.get('/search', async (req: Request, res: Response): Promise<void> => {
+    const guildId = String(req.params.guildId);
+    const q = String(req.query.q || '');
+    try {
+      const results = await ModerationService.searchMembers(guildId, q);
+      res.json({ success: true, results });
+    } catch (err: any) {
+      res.status(500).json({ error: err.message || 'Erreur recherche membres' });
+    }
+  });
+
   // 2. LISTE DES CASES (FILTRABLE & PAGINÉE)
   router.get('/cases', async (req: Request, res: Response): Promise<void> => {
     const guildId = String(req.params.guildId);
@@ -175,6 +187,19 @@ export function createModerationRouter(discordClient: Client) {
       res.json({ success: true, profile });
     } catch (err: any) {
       res.status(500).json({ error: err.message || 'Erreur récupération fiche profil' });
+    }
+  });
+
+  // 6b. TIMELINE UNIFIÉE DE L'UTILISATEUR
+  router.get('/users/:userId/timeline', async (req: Request, res: Response): Promise<void> => {
+    const guildId = String(req.params.guildId);
+    const userId = String(req.params.userId);
+
+    try {
+      const timeline = ModerationService.getUserTimeline(guildId, userId);
+      res.json({ success: true, timeline });
+    } catch (err: any) {
+      res.status(500).json({ error: err.message || 'Erreur récupération timeline' });
     }
   });
 
@@ -375,6 +400,144 @@ export function createModerationRouter(discordClient: Client) {
     } catch (err: any) {
       res.status(500).json({ error: err.message || 'Erreur audit logs' });
     }
+  });
+
+  // 14. ASSIGNATION D'UNE CASE
+  router.post('/cases/:caseNumber/assign', async (req: Request, res: Response): Promise<void> => {
+    const guildId = String(req.params.guildId);
+    const caseNumber = Number(req.params.caseNumber);
+    const { assignedTo } = req.body;
+
+    if (isNaN(caseNumber)) {
+      res.status(400).json({ error: 'Numéro de case invalide' });
+      return;
+    }
+
+    const actorId = req.user ? req.user.id : 'web-dashboard';
+    const actorTag = req.user ? req.user.username : 'Web Dashboard';
+
+    const result = ModerationService.assignCase(guildId, caseNumber, assignedTo, {
+      id: actorId,
+      tag: actorTag,
+    });
+
+    if (!result.success) {
+      res.status(400).json({ error: result.error });
+      return;
+    }
+
+    res.json({ success: true, case: result.case });
+  });
+
+  // 15. RELIER UNE CASE À UN INCIDENT / TICKET / REPORT
+  router.post('/cases/:caseNumber/relate', async (req: Request, res: Response): Promise<void> => {
+    const guildId = String(req.params.guildId);
+    const caseNumber = Number(req.params.caseNumber);
+    const { relationships } = req.body;
+
+    if (isNaN(caseNumber)) {
+      res.status(400).json({ error: 'Numéro de case invalide' });
+      return;
+    }
+
+    const actorId = req.user ? req.user.id : 'web-dashboard';
+    const actorTag = req.user ? req.user.username : 'Web Dashboard';
+
+    const result = ModerationService.relateCase(guildId, caseNumber, relationships, {
+      id: actorId,
+      tag: actorTag,
+    });
+
+    if (!result.success) {
+      res.status(400).json({ error: result.error });
+      return;
+    }
+
+    res.json({ success: true, case: result.case });
+  });
+
+  // 16. REPORT CENTER (SIGNALEMENTS)
+  router.get('/reports', async (req: Request, res: Response): Promise<void> => {
+    const guildId = String(req.params.guildId);
+    const status = req.query.status ? String(req.query.status) : undefined;
+    const reportedUserId = req.query.reportedUserId ? String(req.query.reportedUserId) : undefined;
+    const assignedId = req.query.assignedId ? String(req.query.assignedId) : undefined;
+
+    try {
+      const reports = ModerationService.getReports(guildId, { status, reportedUserId, assignedId });
+      res.json({ success: true, reports });
+    } catch (err: any) {
+      res.status(500).json({ error: err.message || 'Erreur récupération signalements' });
+    }
+  });
+
+  router.post('/reports', async (req: Request, res: Response): Promise<void> => {
+    const guildId = String(req.params.guildId);
+    const actorId = req.user ? req.user.id : 'web-dashboard';
+    const actorTag = req.user ? req.user.username : 'Web Dashboard';
+
+    try {
+      const report = ModerationService.createReport({
+        guildId,
+        reportedUserId: String(req.body.reportedUserId),
+        reportedUserTag: req.body.reportedUserTag || 'Inconnu',
+        reporterUserId: req.body.reporterUserId || actorId,
+        reporterUserTag: req.body.reporterUserTag || actorTag,
+        reason: req.body.reason || 'Aucun motif renseigné',
+        category: req.body.category,
+        channelId: req.body.channelId,
+        messageId: req.body.messageId,
+        messageContent: req.body.messageContent,
+      });
+
+      res.json({ success: true, report });
+    } catch (err: any) {
+      res.status(400).json({ error: err.message || 'Erreur création signalement' });
+    }
+  });
+
+  router.patch('/reports/:reportId', async (req: Request, res: Response): Promise<void> => {
+    const guildId = String(req.params.guildId);
+    const reportId = String(req.params.reportId);
+    const { status, resolutionNotes, caseNumber } = req.body;
+
+    const actorId = req.user ? req.user.id : 'web-dashboard';
+    const actorTag = req.user ? req.user.username : 'Web Dashboard';
+
+    const updated = ModerationService.updateReportStatus(
+      guildId,
+      reportId,
+      status,
+      { id: actorId, tag: actorTag },
+      resolutionNotes,
+      caseNumber
+    );
+
+    if (!updated) {
+      res.status(404).json({ error: 'Signalement introuvable' });
+      return;
+    }
+
+    res.json({ success: true, report: updated });
+  });
+
+  router.post('/reports/:reportId/assign', async (req: Request, res: Response): Promise<void> => {
+    const guildId = String(req.params.guildId);
+    const reportId = String(req.params.reportId);
+    const { moderator } = req.body;
+
+    const actorId = req.user ? req.user.id : 'web-dashboard';
+    const actorTag = req.user ? req.user.username : 'Web Dashboard';
+
+    const mod = moderator || { id: actorId, tag: actorTag };
+    const updated = ModerationService.assignReport(guildId, reportId, mod);
+
+    if (!updated) {
+      res.status(404).json({ error: 'Signalement introuvable' });
+      return;
+    }
+
+    res.json({ success: true, report: updated });
   });
 
   return router;

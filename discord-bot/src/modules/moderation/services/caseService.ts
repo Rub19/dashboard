@@ -211,15 +211,35 @@ export class CaseService {
     const quarantines = allCases.filter((c) => c.action === 'QUARANTINE').length;
 
     const activeSanctions = allCases.filter((c) => c.status === 'ACTIVE');
+    const reports = moderationRepository.getReports(guildId, { reportedUserId: userId });
 
-    // Calcul du score de risque de modération (0-100)
-    let calculatedRisk = 0;
-    calculatedRisk += warnings * 10;
-    calculatedRisk += timeouts * 20;
-    calculatedRisk += kicks * 30;
-    calculatedRisk += bans * 50;
-    calculatedRisk += quarantines * 25;
-    calculatedRisk = Math.min(100, calculatedRisk);
+    // Calcul des incidents récents (dernières 48h et 7 jours)
+    const now = Date.now();
+    const casesLast7Days = allCases.filter(
+      (c) => now - new Date(c.createdAt).getTime() < 7 * 86400000
+    );
+    const casesLast48Hours = allCases.filter(
+      (c) => now - new Date(c.createdAt).getTime() < 2 * 86400000
+    );
+
+    // Calcul du score de risque décomposé (0-100)
+    const warningsScore = warnings * 10;
+    const sanctionsScore = timeouts * 20 + kicks * 30 + bans * 50 + quarantines * 25;
+    const autoModTriggers = allCases.filter((c) => c.source === 'AUTOMOD').length;
+    const autoModScore = autoModTriggers * 10;
+    const reportsScore = reports.length * 15;
+
+    let recidivismPenalty = 0;
+    if (casesLast7Days.length >= 2) recidivismPenalty += 20;
+    if (casesLast48Hours.length >= 2) recidivismPenalty += 25;
+
+    let accountAgePenalty = 0;
+    if (user?.createdAt && now - user.createdAt.getTime() < 7 * 86400000) {
+      accountAgePenalty = 15;
+    }
+
+    const rawRisk = warningsScore + sanctionsScore + autoModScore + reportsScore + recidivismPenalty + accountAgePenalty;
+    const calculatedRisk = Math.min(100, Math.max(0, rawRisk));
 
     let trustLevel: 'TRUSTED' | 'NORMAL' | 'SUSPICIOUS' | 'DANGEROUS' = 'NORMAL';
     if (calculatedRisk >= 75) trustLevel = 'DANGEROUS';
@@ -254,9 +274,144 @@ export class CaseService {
       },
       calculatedRiskScore: calculatedRisk,
       trustLevel,
+      riskBreakdown: {
+        sanctions: sanctionsScore,
+        warnings: warningsScore,
+        autoModTriggers: autoModScore,
+        reportsCount: reportsScore,
+        recidivismPenalty,
+      },
+      recentIncidentsCount: casesLast7Days.length,
+      reportsCount: reports.length,
       activeSanctions,
       timeline: allCases,
       notes,
     };
+  }
+
+  public static assignCase(
+    guildId: string,
+    caseNumber: number,
+    assignedTo: { id: string; tag: string; team?: string } | undefined,
+    actor: { id: string; tag: string }
+  ): { success: boolean; case?: ModerationCase; error?: string } {
+    const updated = moderationRepository.assignCase(guildId, caseNumber, assignedTo);
+    if (!updated) return { success: false, error: `Case #${caseNumber} introuvable.` };
+
+    moderationRepository.addAuditLog({
+      id: `AUDIT-${Date.now()}`,
+      guildId,
+      actorId: actor.id,
+      actorTag: actor.tag,
+      action: 'CASE_ASSIGN',
+      targetType: 'CASE',
+      targetId: updated.id,
+      details: assignedTo
+        ? `Case #${caseNumber} assignée à ${assignedTo.tag}${assignedTo.team ? ` (${assignedTo.team})` : ''}`
+        : `Case #${caseNumber} désassignée`,
+      timestamp: new Date().toISOString(),
+    });
+
+    return { success: true, case: updated };
+  }
+
+  public static relateCase(
+    guildId: string,
+    caseNumber: number,
+    relationships: ModerationCase['relationships'],
+    actor: { id: string; tag: string }
+  ): { success: boolean; case?: ModerationCase; error?: string } {
+    const updated = moderationRepository.relateCase(guildId, caseNumber, relationships);
+    if (!updated) return { success: false, error: `Case #${caseNumber} introuvable.` };
+
+    moderationRepository.addAuditLog({
+      id: `AUDIT-${Date.now()}`,
+      guildId,
+      actorId: actor.id,
+      actorTag: actor.tag,
+      action: 'CASE_RELATE',
+      targetType: 'CASE',
+      targetId: updated.id,
+      details: `Relations mises à jour pour Case #${caseNumber}`,
+      timestamp: new Date().toISOString(),
+    });
+
+    return { success: true, case: updated };
+  }
+
+  public static getUserTimeline(guildId: string, userId: string) {
+    const cases = moderationRepository.getUserCases(guildId, userId);
+    const notes = moderationRepository.getUserNotes(guildId, userId);
+    const reports = moderationRepository.getReports(guildId, { reportedUserId: userId });
+
+    const timelineItems: Array<{
+      id: string;
+      type: 'CASE' | 'NOTE' | 'REPORT';
+      category: 'MODERATION' | 'AUTOMOD' | 'SECURITY' | 'REPORTS' | 'NOTES';
+      title: string;
+      description: string;
+      timestamp: string;
+      author: { id: string; tag: string };
+      metadata?: any;
+    }> = [];
+
+    // Cases
+    for (const c of cases) {
+      let cat: 'MODERATION' | 'AUTOMOD' | 'SECURITY' = 'MODERATION';
+      if (c.source === 'AUTOMOD') cat = 'AUTOMOD';
+      else if (c.source === 'ANTI_RAID' || c.source === 'SECURITY') cat = 'SECURITY';
+
+      timelineItems.push({
+        id: `timeline-case-${c.id}`,
+        type: 'CASE',
+        category: cat,
+        title: `Case #${c.caseNumber} — ${c.action}`,
+        description: c.reason,
+        timestamp: c.createdAt,
+        author: { id: c.moderatorId, tag: c.moderatorTag },
+        metadata: {
+          caseNumber: c.caseNumber,
+          action: c.action,
+          status: c.status,
+          durationSeconds: c.durationSeconds,
+          relationships: c.relationships,
+        },
+      });
+    }
+
+    // Reports
+    for (const r of reports) {
+      timelineItems.push({
+        id: `timeline-report-${r.id}`,
+        type: 'REPORT',
+        category: 'REPORTS',
+        title: `Signalement ${r.id} (${r.status})`,
+        description: r.reason,
+        timestamp: r.createdAt,
+        author: { id: r.reporterUserId, tag: r.reporterUserTag },
+        metadata: {
+          reportId: r.id,
+          status: r.status,
+          category: r.category,
+        },
+      });
+    }
+
+    // Notes
+    for (const n of notes) {
+      timelineItems.push({
+        id: `timeline-note-${n.id}`,
+        type: 'NOTE',
+        category: 'NOTES',
+        title: `Note staff privée`,
+        description: n.content,
+        timestamp: n.createdAt,
+        author: { id: n.authorId, tag: n.authorTag },
+      });
+    }
+
+    return timelineItems.sort(
+      (a, b) => new Date(b.timestamp).getTime() - new Date(a.timestamp).getTime()
+    );
   }
 }

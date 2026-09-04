@@ -254,22 +254,52 @@ export default function ModerationCenterPage() {
 
   // Onglet principal
   const [activeTab, setActiveTab] = useState<
-    "cases" | "timeline" | "analytics" | "staff" | "settings"
+    "cases" | "workspace" | "timeline" | "analytics" | "staff" | "settings"
   >("cases");
 
   // Données
   const [cases, setCases] = useState<ModerationCase[]>([]);
   const [totalCasesCount, setTotalCasesCount] = useState(0);
-  const [stats, setStats] = useState<OverviewStats>({
+  const [stats, setStats] = useState<OverviewStats & { pendingReports?: number }>({
     totalCases: 0,
     casesToday: 0,
     activeSanctionsCount: 0,
     counts: { warnings: 0, timeouts: 0, kicks: 0, bans: 0, quarantines: 0 },
     sources: { manual: 0, automated: 0 },
+    pendingReports: 0,
   });
   const [isLoading, setIsLoading] = useState(false);
 
-  // Recherche & Filtres
+  // Recherche Rapide Membre (Staff Console)
+  const [memberSearchQuery, setMemberSearchQuery] = useState("");
+  const [memberSearchResults, setMemberSearchResults] = useState<any[]>([]);
+  const [isSearchingMember, setIsSearchingMember] = useState(false);
+
+  useEffect(() => {
+    if (!selectedGuild || !memberSearchQuery.trim()) {
+      setMemberSearchResults([]);
+      return;
+    }
+    const timer = setTimeout(async () => {
+      setIsSearchingMember(true);
+      try {
+        const res = await fetch(
+          `${BOT_API_URL}/api/guilds/${selectedGuild.id}/moderation/search?q=${encodeURIComponent(memberSearchQuery.trim())}`
+        );
+        if (res.ok) {
+          const data = await res.json();
+          setMemberSearchResults(data.results || []);
+        }
+      } catch {
+        setMemberSearchResults([]);
+      } finally {
+        setIsSearchingMember(false);
+      }
+    }, 300);
+    return () => clearTimeout(timer);
+  }, [selectedGuild, memberSearchQuery]);
+
+  // Recherche & Filtres Cases
   const [searchQuery, setSearchQuery] = useState("");
   const [filterAction, setFilterAction] = useState<string>("ALL");
   const [filterStatus, setFilterStatus] = useState<string>("ALL");
@@ -464,20 +494,20 @@ export default function ModerationCenterPage() {
               <div>
                 <div className="flex items-center gap-2">
                   <h1 className="text-base font-semibold tracking-tight text-white">
-                    Moderation Center 2.0
+                    Moderation Center 3.0
                   </h1>
                   <span className="text-[10px] uppercase font-bold tracking-wider px-2 py-0.5 rounded-full bg-orange-500/10 text-orange-300 border border-orange-500/30">
-                    Case System
+                    Staff Console
                   </span>
                 </div>
                 <p className="text-xs text-zinc-400">
-                  Historique centralisé, sanctions automatiques & manuelles, suivi des dossiers membres.
+                  Console d'investigation, recherche rapide, dossiers disciplinaires & sanctions coordonnées.
                 </p>
               </div>
             </div>
           </div>
 
-          {/* Actions Header (Sélecteur, Actualiser, Nouvelle Sanction) */}
+          {/* Actions Header (Sélecteur, Signalements, Actualiser, Nouvelle Sanction) */}
           <div className="flex items-center flex-wrap gap-2 w-full sm:w-auto justify-end">
             {manageableGuilds.length > 0 && (
               <div className="relative">
@@ -498,6 +528,15 @@ export default function ModerationCenterPage() {
                 <ChevronDown className="absolute right-2.5 top-1/2 -translate-y-1/2 h-3.5 w-3.5 text-zinc-400 pointer-events-none" />
               </div>
             )}
+
+            <Link
+              href={selectedGuild ? `/discord/moderation/reports?guildId=${selectedGuild.id}` : "/discord/moderation/reports"}
+              className="flex h-8 items-center gap-1.5 rounded-xl border border-amber-500/30 bg-amber-500/10 px-2.5 text-xs font-semibold text-amber-400 hover:bg-amber-500/20 transition-all active:scale-95"
+              title="Centre des signalements membres"
+            >
+              <AlertTriangle className="h-3.5 w-3.5" />
+              <span>Signalements ({(stats as any).pendingReports || 0})</span>
+            </Link>
 
             <button
               onClick={fetchOverview}
@@ -523,10 +562,11 @@ export default function ModerationCenterPage() {
         <div className="max-w-7xl mx-auto mt-3 flex items-center gap-1 overflow-x-auto pb-0.5 scrollbar-none">
           {[
             { id: "cases", label: `Cases & Dossiers (${totalCasesCount})`, icon: FileText },
-            { id: "timeline", label: "Timeline Chronologique", icon: Clock },
+            { id: "workspace", label: "My Moderation (Espace Staff)", icon: ShieldAlert },
+            { id: "timeline", label: "Activité Récente (Live Feed)", icon: Clock },
             { id: "analytics", label: "Statistiques & Tendances", icon: BarChart3 },
             { id: "staff", label: "Activité Staff & Protection Abus", icon: Users },
-            { id: "settings", label: "Rétention & Paramètres", icon: Settings },
+            { id: "settings", label: "Règles & Sanctions Progressives", icon: Settings },
           ].map((tab) => {
             const Icon = tab.icon;
             const isCurrent = activeTab === tab.id;
@@ -553,45 +593,121 @@ export default function ModerationCenterPage() {
       <main className="flex-1 min-h-0 overflow-y-auto pb-36 px-4 sm:px-6 py-6 scrollbar-thin scrollbar-thumb-white/10">
         <div className="max-w-7xl mx-auto space-y-6">
 
-          {/* OVERVIEW STATS CARDS */}
-          <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-6 gap-3">
-            <div className="rounded-2xl border border-white/10 bg-white/[0.02] p-3.5 backdrop-blur-md">
-              <span className="text-[11px] text-zinc-400 font-medium">Cases Aujourd'hui</span>
-              <p className="text-2xl font-bold text-white mt-1 font-mono">{stats.casesToday}</p>
-              <span className="text-[10px] text-zinc-500">{stats.totalCases} au total</span>
+          {/* 5 OVERVIEW KPI STATS CARDS */}
+          <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-5 gap-3">
+            <div className="rounded-2xl border border-white/10 bg-white/[0.02] p-4 backdrop-blur-md">
+              <span className="text-xs text-zinc-400 font-semibold block">Active cases</span>
+              <p className="text-2xl font-extrabold text-orange-400 mt-1 font-mono">{stats.activeSanctionsCount}</p>
+              <span className="text-[10px] text-zinc-500">Sanctions actives en cours</span>
             </div>
 
-            <div className="rounded-2xl border border-white/10 bg-white/[0.02] p-3.5 backdrop-blur-md">
-              <span className="text-[11px] text-zinc-400 font-medium">Sanctions Actives</span>
-              <p className="text-2xl font-bold text-orange-400 mt-1 font-mono">
-                {stats.activeSanctionsCount}
-              </p>
-              <span className="text-[10px] text-orange-400/80">En cours d'application</span>
+            <div className="rounded-2xl border border-white/10 bg-white/[0.02] p-4 backdrop-blur-md">
+              <span className="text-xs text-zinc-400 font-semibold block">Warnings today</span>
+              <p className="text-2xl font-extrabold text-amber-400 mt-1 font-mono">{stats.counts.warnings}</p>
+              <span className="text-[10px] text-zinc-500">Avertissements émis</span>
             </div>
 
-            <div className="rounded-2xl border border-white/10 bg-white/[0.02] p-3.5 backdrop-blur-md">
-              <span className="text-[11px] text-zinc-400 font-medium">Avertissements</span>
-              <p className="text-2xl font-bold text-amber-400 mt-1 font-mono">{stats.counts.warnings}</p>
-              <span className="text-[10px] text-zinc-500">Avis formels</span>
+            <div className="rounded-2xl border border-white/10 bg-white/[0.02] p-4 backdrop-blur-md">
+              <span className="text-xs text-zinc-400 font-semibold block">Timeouts today</span>
+              <p className="text-2xl font-extrabold text-orange-400 mt-1 font-mono">{stats.counts.timeouts}</p>
+              <span className="text-[10px] text-zinc-500">Membres temporairement exclus</span>
             </div>
 
-            <div className="rounded-2xl border border-white/10 bg-white/[0.02] p-3.5 backdrop-blur-md">
-              <span className="text-[11px] text-zinc-400 font-medium">Timeouts</span>
-              <p className="text-2xl font-bold text-orange-400 mt-1 font-mono">{stats.counts.timeouts}</p>
-              <span className="text-[10px] text-zinc-500">Exclusions tempo</span>
+            <div className="rounded-2xl border border-white/10 bg-white/[0.02] p-4 backdrop-blur-md">
+              <span className="text-xs text-zinc-400 font-semibold block">Bans today</span>
+              <p className="text-2xl font-extrabold text-red-400 mt-1 font-mono">{stats.counts.bans}</p>
+              <span className="text-[10px] text-zinc-500">Bannissements enregistrés</span>
             </div>
 
-            <div className="rounded-2xl border border-white/10 bg-white/[0.02] p-3.5 backdrop-blur-md">
-              <span className="text-[11px] text-zinc-400 font-medium">Expulsions (Kicks)</span>
-              <p className="text-2xl font-bold text-rose-400 mt-1 font-mono">{stats.counts.kicks}</p>
-              <span className="text-[10px] text-zinc-500">Membres éjectés</span>
+            <div className="rounded-2xl border border-white/10 bg-white/[0.02] p-4 backdrop-blur-md col-span-2 sm:col-span-1">
+              <span className="text-xs text-zinc-400 font-semibold block">Reports pending</span>
+              <p className="text-2xl font-extrabold text-blue-400 mt-1 font-mono">{(stats as any).pendingReports || 0}</p>
+              <span className="text-[10px] text-zinc-500">Signalements en attente</span>
+            </div>
+          </div>
+
+          {/* 🔎 FAST MEMBER SEARCH BAR */}
+          <div className="rounded-2xl border border-white/10 bg-slate-900/60 p-4 backdrop-blur-md space-y-3">
+            <div className="flex items-center justify-between">
+              <div className="flex items-center gap-2">
+                <Search className="w-4 h-4 text-orange-400" />
+                <span className="text-xs font-bold uppercase tracking-wider text-white">Recherche Membre (Staff Console)</span>
+              </div>
+              <span className="text-[11px] text-zinc-400 font-mono hidden sm:inline">
+                Username, Display name, User ID, Mention &lt;@ID&gt;, Case #
+              </span>
             </div>
 
-            <div className="rounded-2xl border border-white/10 bg-white/[0.02] p-3.5 backdrop-blur-md">
-              <span className="text-[11px] text-zinc-400 font-medium">Bannissements</span>
-              <p className="text-2xl font-bold text-red-400 mt-1 font-mono">{stats.counts.bans}</p>
-              <span className="text-[10px] text-zinc-500">Bans permanents</span>
+            <div className="relative">
+              <Search className="absolute left-3.5 top-1/2 -translate-y-1/2 h-4 w-4 text-zinc-400" />
+              <input
+                type="text"
+                value={memberSearchQuery}
+                onChange={(e) => setMemberSearchQuery(e.target.value)}
+                placeholder="Rechercher immédiatement un membre (@pseudo, 123456789, #1842)..."
+                className="h-10 w-full rounded-xl border border-white/10 bg-black/50 pl-10 pr-4 text-xs text-white placeholder-zinc-500 outline-none focus:border-orange-500 transition-colors"
+              />
+              {isSearchingMember && (
+                <div className="absolute right-3.5 top-1/2 -translate-y-1/2">
+                  <RefreshCw className="w-4 h-4 animate-spin text-orange-400" />
+                </div>
+              )}
             </div>
+
+            {/* RÉSULTATS RAPIDES RECHERCHE */}
+            {memberSearchResults.length > 0 && (
+              <div className="grid grid-cols-1 md:grid-cols-2 gap-3 pt-2">
+                {memberSearchResults.map((m) => (
+                  <div
+                    key={m.userId}
+                    className="p-3.5 rounded-xl bg-slate-800/60 border border-white/10 flex items-center justify-between gap-3 hover:border-white/20 transition-all"
+                  >
+                    <div className="flex items-center gap-3">
+                      {m.avatarUrl ? (
+                        <img src={m.avatarUrl} alt="Avatar" className="w-10 h-10 rounded-xl object-cover" />
+                      ) : (
+                        <div className="w-10 h-10 rounded-xl bg-white/10 flex items-center justify-center text-xs font-bold text-white">
+                          {m.username.substring(0, 2).toUpperCase()}
+                        </div>
+                      )}
+                      <div className="space-y-0.5">
+                        <div className="flex items-center gap-2">
+                          <span className="text-xs font-bold text-white">@{m.userTag || m.username}</span>
+                          <span
+                            className={cn(
+                              "text-[10px] font-bold px-1.5 py-0.5 rounded border",
+                              m.riskLevel === "DANGEROUS"
+                                ? "bg-red-500/20 text-red-400 border-red-500/30"
+                                : m.riskLevel === "SUSPICIOUS"
+                                ? "bg-orange-500/20 text-orange-400 border-orange-500/30"
+                                : "bg-emerald-500/20 text-emerald-400 border-emerald-500/30"
+                            )}
+                          >
+                            RISK: {m.riskLevel || "LOW"}
+                          </span>
+                        </div>
+                        <div className="text-[11px] text-zinc-400 flex items-center gap-2">
+                          <span>Cases: {m.casesCount}</span>
+                          <span>•</span>
+                          <span>Warns: {m.warningsCount}</span>
+                          <span>•</span>
+                          <span>Timeouts: {m.timeoutsCount}</span>
+                          <span>•</span>
+                          <span>Bans: {m.bansCount}</span>
+                        </div>
+                      </div>
+                    </div>
+
+                    <Link
+                      href={selectedGuild ? `/discord/moderation/users/${m.userId}?guildId=${selectedGuild.id}` : `/discord/moderation/users/${m.userId}`}
+                      className="px-3 py-1.5 rounded-xl bg-orange-600 hover:bg-orange-500 text-white text-xs font-bold transition-colors whitespace-nowrap"
+                    >
+                      Open moderation profile
+                    </Link>
+                  </div>
+                ))}
+              </div>
+            )}
           </div>
 
           {/* ======================================================== */}
@@ -806,6 +922,87 @@ export default function ModerationCenterPage() {
                     </table>
                   </div>
                 )}
+              </div>
+            </div>
+          )}
+
+          {/* ======================================================== */}
+          {/* ONGLET WORKSPACE: MY MODERATION (ESPACE STAFF)          */}
+          {/* ======================================================== */}
+          {activeTab === "workspace" && (
+            <div className="space-y-6 animate-in fade-in duration-200">
+              <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
+                <div className="p-4 rounded-2xl bg-orange-500/10 border border-orange-500/20 space-y-1">
+                  <span className="text-xs text-orange-300 font-semibold block">Dossiers Assignés</span>
+                  <p className="text-2xl font-bold text-white font-mono">
+                    {cases.filter((c: any) => c.assignedTo?.id === profile?.user?.id).length}
+                  </p>
+                  <span className="text-[10px] text-orange-300/80">Dossiers sous votre responsabilité</span>
+                </div>
+
+                <div className="p-4 rounded-2xl bg-blue-500/10 border border-blue-500/20 space-y-1">
+                  <span className="text-xs text-blue-300 font-semibold block">Signalements en Attente</span>
+                  <p className="text-2xl font-bold text-white font-mono">
+                    {(stats as any).pendingReports || 0}
+                  </p>
+                  <Link
+                    href={selectedGuild ? `/discord/moderation/reports?guildId=${selectedGuild.id}` : "/discord/moderation/reports"}
+                    className="text-[10px] text-blue-300 hover:underline flex items-center gap-1 font-semibold mt-1"
+                  >
+                    <span>Ouvrir la file des signalements</span>
+                    <ChevronRight className="w-3 h-3" />
+                  </Link>
+                </div>
+
+                <div className="p-4 rounded-2xl bg-amber-500/10 border border-amber-500/20 space-y-1">
+                  <span className="text-xs text-amber-300 font-semibold block">Membres Actuellement Exclus</span>
+                  <p className="text-2xl font-bold text-white font-mono">
+                    {cases.filter((c) => c.action === "TIMEOUT" && c.status === "ACTIVE").length}
+                  </p>
+                  <span className="text-[10px] text-amber-300/80">Exclusions actives temporaires</span>
+                </div>
+              </div>
+
+              {/* LISTE DES DOSSIERS RÉCENTS NÉCESSITANT UNE ATTENTION */}
+              <div className="rounded-2xl border border-white/10 bg-white/[0.02] p-5 backdrop-blur-md space-y-4">
+                <div className="flex items-center justify-between">
+                  <h3 className="text-xs font-bold uppercase tracking-wider text-white flex items-center gap-2">
+                    <ShieldAlert className="h-4 w-4 text-orange-400" />
+                    <span>Dossiers Récents Nécessitant une Attention Modérateur</span>
+                  </h3>
+                </div>
+
+                <div className="divide-y divide-white/5">
+                  {cases.slice(0, 6).map((c) => (
+                    <div key={c.id} className="py-3.5 flex flex-col sm:flex-row items-start sm:items-center justify-between gap-3">
+                      <div className="space-y-1">
+                        <div className="flex items-center gap-2">
+                          <span className="text-xs font-bold text-white font-mono">#{c.caseNumber}</span>
+                          <span className="text-[10px] font-bold px-1.5 py-0.5 rounded bg-white/10 text-white">
+                            {c.action}
+                          </span>
+                          <span className="text-xs font-semibold text-zinc-300">@{c.userTag}</span>
+                        </div>
+                        <p className="text-xs text-zinc-400">{c.reason}</p>
+                      </div>
+
+                      <div className="flex items-center gap-2">
+                        <Link
+                          href={`/discord/moderation/users/${c.userId}?guildId=${c.guildId}`}
+                          className="px-3 py-1.5 rounded-xl bg-white/5 hover:bg-white/10 text-xs font-semibold text-white transition-colors"
+                        >
+                          Profil Membre
+                        </Link>
+                        <Link
+                          href={`/discord/moderation/cases/${c.caseNumber}?guildId=${c.guildId}`}
+                          className="px-3 py-1.5 rounded-xl bg-orange-600 hover:bg-orange-500 text-xs font-semibold text-white transition-colors"
+                        >
+                          Dossier #{c.caseNumber}
+                        </Link>
+                      </div>
+                    </div>
+                  ))}
+                </div>
               </div>
             </div>
           )}

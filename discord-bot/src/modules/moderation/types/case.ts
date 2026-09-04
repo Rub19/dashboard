@@ -106,9 +106,45 @@ export const ModerationCaseSchema = z.object({
     .partial()
     .optional()
     .default({}),
+  assignedTo: z
+    .object({
+      id: z.string(),
+      tag: z.string(),
+      team: z.string().optional(),
+    })
+    .optional(),
+  relationships: z
+    .object({
+      autoModIncidentId: z.string().optional(),
+      antiRaidIncidentId: z.string().optional(),
+      ticketId: z.string().optional(),
+      reportId: z.string().optional(),
+      logId: z.string().optional(),
+      previousCaseNumbers: z.array(z.number()).optional(),
+    })
+    .partial()
+    .optional(),
 });
 
 export type ModerationCase = z.infer<typeof ModerationCaseSchema>;
+
+export const ProgressiveSanctionRuleSchema = z.object({
+  threshold: z.number(), // nombre d'infractions/warnings
+  action: CaseActionSchema,
+  durationSeconds: z.number().optional(),
+});
+
+export type ProgressiveSanctionRule = z.infer<typeof ProgressiveSanctionRuleSchema>;
+
+export const ReasonPresetSchema = z.object({
+  id: z.string(),
+  title: z.string(),
+  category: z.string(),
+  defaultDuration: z.number().optional(),
+  description: z.string().optional(),
+});
+
+export type ReasonPreset = z.infer<typeof ReasonPresetSchema>;
 
 export const ModerationSettingsSchema = z.object({
   guildId: z.string(),
@@ -127,6 +163,36 @@ export const ModerationSettingsSchema = z.object({
       maxKicksPerMinute: 15,
       maxTimeoutsPerMinute: 20,
     }),
+  progressiveSanctions: z
+    .object({
+      enabled: z.boolean().default(false),
+      ladder: z.array(ProgressiveSanctionRuleSchema).default([
+        { threshold: 2, action: 'TIMEOUT', durationSeconds: 3600 },
+        { threshold: 3, action: 'TIMEOUT', durationSeconds: 86400 },
+        { threshold: 4, action: 'KICK' },
+        { threshold: 5, action: 'BAN' },
+      ]),
+    })
+    .default({
+      enabled: false,
+      ladder: [
+        { threshold: 2, action: 'TIMEOUT', durationSeconds: 3600 },
+        { threshold: 3, action: 'TIMEOUT', durationSeconds: 86400 },
+        { threshold: 4, action: 'KICK' },
+        { threshold: 5, action: 'BAN' },
+      ],
+    }),
+  reasonLibrary: z
+    .array(ReasonPresetSchema)
+    .default([
+      { id: 'spam', title: 'Spam répétitif / Flood', category: 'Spam', defaultDuration: 3600 },
+      { id: 'harassment', title: 'Harcèlement ou propos injurieux', category: 'Harassment', defaultDuration: 86400 },
+      { id: 'nsfw', title: 'Contenu NSFW ou inapproprié', category: 'NSFW', defaultDuration: 86400 },
+      { id: 'advertising', title: 'Publicité non sollicitée (DM / Salons)', category: 'Advertising', defaultDuration: 86400 },
+      { id: 'scam', title: 'Tentative de phishing / Arnaque', category: 'Scam' },
+      { id: 'toxicity', title: 'Comportement toxique envers la communauté', category: 'Toxicity', defaultDuration: 7200 },
+      { id: 'raid', title: 'Participation à un raid', category: 'Raid' },
+    ]),
 });
 
 export type ModerationSettings = z.infer<typeof ModerationSettingsSchema>;
@@ -165,6 +231,15 @@ export interface UserModerationProfile {
   };
   calculatedRiskScore: number;
   trustLevel: 'TRUSTED' | 'NORMAL' | 'SUSPICIOUS' | 'DANGEROUS';
+  riskBreakdown: {
+    sanctions: number;
+    warnings: number;
+    autoModTriggers: number;
+    reportsCount: number;
+    recidivismPenalty: number;
+  };
+  recentIncidentsCount: number;
+  reportsCount?: number;
   activeSanctions: ModerationCase[];
   timeline: ModerationCase[];
   notes: StaffNote[];

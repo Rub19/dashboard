@@ -24,6 +24,10 @@ import { statsService } from '../services/statsService.js';
 import { CommandContext } from '../types/command.js';
 import { DiscordMusicPanel } from '../modules/music/ui/discordMusicPanel.js';
 import { WelcomeInteractionHandler } from '../modules/welcome/interactions/welcomeInteractionHandler.js';
+import { DiscordVoicePanel } from '../modules/voice/ui/discordVoicePanel.js';
+import { DiscordAiPanel } from '../modules/ai/ui/discordAiPanel.js';
+import { discordFormPanel } from '../modules/forms/ui/discordFormPanel.js';
+import { discordPollPanel } from '../modules/polls/ui/discordPollPanel.js';
 import { logger } from '../utils/logger.js';
 
 export async function onInteractionCreate(interaction: Interaction) {
@@ -52,6 +56,14 @@ export async function onInteractionCreate(interaction: Interaction) {
       await DiscordMusicPanel.handleButtonInteraction(interaction);
     } else if (interaction.customId.startsWith('welcome_')) {
       await WelcomeInteractionHandler.handleButton(interaction);
+    } else if (interaction.customId.startsWith('voice_')) {
+      await DiscordVoicePanel.handleButton(interaction);
+    } else if (interaction.customId.startsWith('ai_')) {
+      await DiscordAiPanel.handleButton(interaction);
+    } else if (interaction.customId.startsWith('form_')) {
+      await discordFormPanel.handleButton(interaction);
+    } else if (interaction.customId.startsWith('poll_')) {
+      await discordPollPanel.handleButton(interaction);
     }
     return;
   }
@@ -66,6 +78,10 @@ export async function onInteractionCreate(interaction: Interaction) {
       interaction.customId === 'modal_suggest_create'
     ) {
       await handleSuggestionModal(interaction);
+    } else if (interaction.customId.startsWith('modal_voice_')) {
+      await DiscordVoicePanel.handleModal(interaction);
+    } else if (interaction.customId.startsWith('form_modal_submit:')) {
+      await discordFormPanel.handleModalSubmit(interaction);
     }
     return;
   }

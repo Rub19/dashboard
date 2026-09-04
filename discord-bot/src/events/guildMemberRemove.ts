@@ -5,11 +5,15 @@ import { analyticsService } from '../modules/analytics/services/analyticsService
 import { raidDetectionService } from '../modules/antiRaid/services/raidDetectionService.js';
 import { logService } from '../modules/logs/services/logService.js';
 import { DiscordAuditAdapter } from '../modules/logs/services/discordAuditAdapter.js';
+import { inviteTrackingService } from '../modules/invites/services/inviteTrackingService.js';
 import { logger } from '../utils/logger.js';
 
 export async function onGuildMemberRemove(member: GuildMember | PartialGuildMember): Promise<void> {
   try {
     const config = guildConfigService.getConfig(member.guild.id);
+
+    // Invite Tracker : Enregistrement du départ
+    inviteTrackingService.handleMemberLeave(member.guild.id, member.id);
 
     // Anti-Raid 2.0 (Détection des vagues de départs)
     if ('guild' in member && member.guild) {

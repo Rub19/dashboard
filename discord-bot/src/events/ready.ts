@@ -5,6 +5,10 @@ import { ModerationService } from '../modules/moderation/services/moderationServ
 import { musicService } from '../modules/music/services/musicService.js';
 import { logService } from '../modules/logs/services/logService.js';
 import { ticketService } from '../modules/tickets/services/ticketService.js';
+import { inviteService } from '../modules/invites/services/inviteService.js';
+import { voiceService } from '../modules/voice/services/voiceService.js';
+import { backupService } from '../modules/backup/services/backupService.js';
+import { aiService } from '../modules/ai/services/aiService.js';
 import { logger } from '../utils/logger.js';
 
 export async function onReady(client: Client<true>) {
@@ -33,4 +37,16 @@ export async function onReady(client: Client<true>) {
 
   // Démarrage de Tickets Center 2.0
   ticketService.initialize(client);
+
+  // Démarrage de Invite Tracker & Referral 2.0
+  await inviteService.initialize(client);
+
+  // Démarrage de Voice Channels 2.0 (Récupération et réconciliation)
+  await voiceService.initialize(client);
+
+  // Démarrage de Server Backup & Restore 2.0
+  await backupService.initialize(client);
+
+  // Démarrage de AI Assistant 2.0
+  await aiService.initialize(client);
 }

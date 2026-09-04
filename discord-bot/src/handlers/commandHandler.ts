@@ -2,6 +2,9 @@ import { Collection, REST, Routes } from 'discord.js';
 import { helpCommand } from '../commands/general/help.js';
 import { pingCommand } from '../commands/general/ping.js';
 import { ticketCommand } from '../commands/general/ticket.js';
+import { askCommand } from '../commands/general/ask.js';
+import { summarizeCommand } from '../commands/general/summarize.js';
+import { formCommand } from '../commands/general/form.js';
 import { clearCommand } from '../commands/admin/clear.js';
 import { prefixCommand } from '../commands/admin/prefix.js';
 import { settingsCommand } from '../commands/admin/settings.js';
@@ -26,6 +29,7 @@ import { suggestCommand } from '../modules/suggestions/commands/suggestCommand.j
 import { antiraidCommand } from '../modules/antiRaid/commands/antiraidCommand.js';
 import { automodCommand } from '../modules/automod/commands/automodCommand.js';
 import { musicCommand } from '../commands/music/music.js';
+import { pollCommand } from '../modules/polls/commands/pollCommand.js';
 
 import { config } from '../config.js';
 import { Command } from '../types/command.js';
@@ -42,6 +46,9 @@ class CommandRegistry {
     this.register(helpCommand);
     this.register(settingsCommand);
     this.register(ticketCommand);
+    this.register(askCommand);
+    this.register(summarizeCommand);
+    this.register(formCommand);
 
     // Modération & Sanctions
     this.register(clearCommand);
@@ -76,6 +83,9 @@ class CommandRegistry {
 
     // Musique 2.0 (Music Center)
     this.register(musicCommand);
+
+    // Sondages & Votes 2.0 (Polls Center)
+    this.register(pollCommand);
   }
 
   public register(command: Command) {

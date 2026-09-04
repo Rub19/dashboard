@@ -7,11 +7,15 @@ import { raidDetectionService } from '../modules/antiRaid/services/raidDetection
 import { autoModService } from '../modules/automod/services/autoModService.js';
 import { analyticsService } from '../modules/analytics/services/analyticsService.js';
 import { logService } from '../modules/logs/services/logService.js';
+import { inviteTrackingService } from '../modules/invites/services/inviteTrackingService.js';
 import { logger } from '../utils/logger.js';
 
 export async function onGuildMemberAdd(member: GuildMember): Promise<void> {
   try {
     const config = guildConfigService.getConfig(member.guild.id);
+
+    // 0. Invite Tracking & Referral 2.0
+    await inviteTrackingService.handleMemberJoin(member);
 
     // 1. Module Security & Anti-Raid 2.0 (Vérification Bot, Âge de compte, Mass Joins, Quarantaine)
     await raidDetectionService.handleMemberJoin(member);

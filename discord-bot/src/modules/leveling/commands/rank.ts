@@ -28,7 +28,7 @@ export const rankCommand: Command = {
 
     const targetUser = ctx.isSlash
       ? (ctx.interaction as ChatInputCommandInteraction).options.getUser('membre') || ctx.author
-      : ctx.message?.mentions.users.first() || ctx.author;
+      : ctx.message?.mentions?.users?.first() || ctx.author;
 
     const config = levelingStorage.getConfig(guild.id);
     if (!config.enabled) {

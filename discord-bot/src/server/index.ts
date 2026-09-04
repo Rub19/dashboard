@@ -25,6 +25,12 @@ import { createAnalyticsRouter } from './routes/analyticsRoutes.js';
 import { createSuggestionRouter } from './routes/suggestionRoutes.js';
 import { createCustomCommandRouter } from './routes/customCommandRoutes.js';
 import { createMusicRouter } from './routes/musicRoutes.js';
+import { createInviteRouter } from './routes/inviteRoutes.js';
+import { createVoiceRouter } from './routes/voiceRoutes.js';
+import { createBackupRouter } from './routes/backupRoutes.js';
+import { createAiRouter } from './routes/aiRoutes.js';
+import { createFormRouter } from './routes/formRoutes.js';
+import { createPollRouter } from './routes/pollRoutes.js';
 import { authMiddleware } from './middleware/auth.js';
 import { createGuildAuthMiddleware } from './middleware/guildAuth.js';
 
@@ -129,6 +135,42 @@ export function startWebServer(client: Client): http.Server {
     authMiddleware,
     createGuildAuthMiddleware(client),
     createMusicRouter(client)
+  );
+  app.use(
+    '/api/guilds/:guildId/invites',
+    authMiddleware,
+    createGuildAuthMiddleware(client),
+    createInviteRouter(client)
+  );
+  app.use(
+    '/api/guilds/:guildId/voice',
+    authMiddleware,
+    createGuildAuthMiddleware(client),
+    createVoiceRouter(client)
+  );
+  app.use(
+    '/api/guilds/:guildId/backups',
+    authMiddleware,
+    createGuildAuthMiddleware(client),
+    createBackupRouter(client)
+  );
+  app.use(
+    '/api/guilds/:guildId/ai',
+    authMiddleware,
+    createGuildAuthMiddleware(client),
+    createAiRouter(client)
+  );
+  app.use(
+    '/api/guilds/:guildId/forms',
+    authMiddleware,
+    createGuildAuthMiddleware(client),
+    createFormRouter(client)
+  );
+  app.use(
+    '/api/guilds/:guildId/polls',
+    authMiddleware,
+    createGuildAuthMiddleware(client),
+    createPollRouter(client)
   );
 
   // Route de santé de l'API

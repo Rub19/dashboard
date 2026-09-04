@@ -9,6 +9,7 @@ import { analyticsService } from '../modules/analytics/services/analyticsService
 import { customCommandStorage } from '../modules/customCommands/storage/customCommandStorage.js';
 import { CustomCommandService } from '../modules/customCommands/services/customCommandService.js';
 import { raidDetectionService } from '../modules/antiRaid/services/raidDetectionService.js';
+import { aiService } from '../modules/ai/services/aiService.js';
 import { logger } from '../utils/logger.js';
 
 export async function onMessageCreate(message: Message) {
@@ -30,6 +31,10 @@ export async function onMessageCreate(message: Message) {
 
   // 3. Enregistrement Analytics
   analyticsService.recordMessage(message);
+
+  // 4. Traitement par l'Assistant IA 2.0 (si mentionné ou salon automatique)
+  const aiHandled = await aiService.handleMessage(message);
+  if (aiHandled) return;
 
   if (!message.content) return;
 

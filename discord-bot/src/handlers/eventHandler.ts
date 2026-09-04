@@ -30,6 +30,8 @@ import { handleGuildUpdate } from '../modules/logs/events/serverLogs.js';
 import { antiNukeService } from '../modules/security/services/antiNukeService.js';
 import { raidDetectionService } from '../modules/antiRaid/services/raidDetectionService.js';
 import { autoModService } from '../modules/automod/services/autoModService.js';
+import { inviteSnapshotService } from '../modules/invites/services/inviteSnapshotService.js';
+import { voiceService } from '../modules/voice/services/voiceService.js';
 
 export function registerEvents(client: Client): void {
   // Base Events
@@ -38,6 +40,10 @@ export function registerEvents(client: Client): void {
   client.on(Events.MessageCreate, (message) => onMessageCreate(message));
   client.on(Events.GuildMemberAdd, (member) => onGuildMemberAdd(member));
   client.on(Events.GuildMemberRemove, (member) => onGuildMemberRemove(member));
+
+  // Invite Tracker Events
+  client.on(Events.InviteCreate, (invite) => inviteSnapshotService.handleInviteCreate(invite));
+  client.on(Events.InviteDelete, (invite) => inviteSnapshotService.handleInviteDelete(invite));
 
   // Logs : Messages
   client.on(Events.MessageDelete, (message) => {
@@ -140,10 +146,11 @@ export function registerEvents(client: Client): void {
     }
   });
 
-  // Logs : Vocal
-  client.on(Events.VoiceStateUpdate, (oldState, newState) =>
-    handleVoiceStateUpdate(oldState, newState)
-  );
+  // Logs & Gestion Salons : Vocal
+  client.on(Events.VoiceStateUpdate, (oldState, newState) => {
+    handleVoiceStateUpdate(oldState, newState);
+    voiceService.handleVoiceStateUpdate(oldState, newState);
+  });
 
   // Logs : Serveur
   client.on(Events.GuildUpdate, (oldGuild, newGuild) => handleGuildUpdate(oldGuild, newGuild));

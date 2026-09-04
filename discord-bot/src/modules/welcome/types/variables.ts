@@ -9,6 +9,8 @@ export interface VariableContext {
   guildName: string;
   memberCount: number;
   channelId?: string;
+  serverOwner?: string;
+  accountAge?: string;
 }
 
 export interface AvailableVariable {
@@ -22,9 +24,11 @@ export const AVAILABLE_VARIABLES: AvailableVariable[] = [
   { key: '{username}', description: 'Nom d’utilisateur Discord', example: 'rub19' },
   { key: '{displayname}', description: 'Pseudo d’affichage ou surnom', example: 'Rub' },
   { key: '{userid}', description: 'Identifiant unique Discord du membre', example: '1128633164290596884' },
-  { key: '{server}', description: 'Nom du serveur Discord', example: 'Mon Serveur' },
+  { key: '{server}', description: 'Nom du serveur Discord', example: 'ETHONE Community' },
   { key: '{serverid}', description: 'Identifiant Discord du serveur', example: '1128633164290596884' },
   { key: '{membercount}', description: 'Nombre total de membres sur le serveur', example: '1 245' },
+  { key: '{serverowner}', description: 'Propriétaire du serveur', example: 'OwnerTag' },
   { key: '{channel}', description: 'Mention du salon de bienvenue', example: '#bienvenue' },
   { key: '{createdat}', description: 'Date de création du compte Discord', example: '03/09/2024' },
+  { key: '{accountage}', description: 'Âge du compte Discord', example: '12 jours' },
 ];

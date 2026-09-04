@@ -23,6 +23,7 @@ import { guildConfigService } from '../services/guildConfigService.js';
 import { statsService } from '../services/statsService.js';
 import { CommandContext } from '../types/command.js';
 import { DiscordMusicPanel } from '../modules/music/ui/discordMusicPanel.js';
+import { WelcomeInteractionHandler } from '../modules/welcome/interactions/welcomeInteractionHandler.js';
 import { logger } from '../utils/logger.js';
 
 export async function onInteractionCreate(interaction: Interaction) {
@@ -49,6 +50,8 @@ export async function onInteractionCreate(interaction: Interaction) {
       await handleSuggestionButton(interaction);
     } else if (interaction.customId.startsWith('music_')) {
       await DiscordMusicPanel.handleButtonInteraction(interaction);
+    } else if (interaction.customId.startsWith('welcome_')) {
+      await WelcomeInteractionHandler.handleButton(interaction);
     }
     return;
   }

@@ -74,11 +74,25 @@ export default function MailOnboarding({
       setError("Veuillez choisir un nom d'alias.");
       return;
     }
+    const targetAlias = `${safe}@ethone.dev`;
+    const existing = aliases.find((a) => a.alias?.toLowerCase() === targetAlias.toLowerCase());
+    if (existing) {
+      try {
+        await updateAlias(existing.id, {
+          display_name: displayName.trim() || undefined,
+          is_primary: true,
+        });
+      } catch {}
+      success("Votre adresse @ethone.dev est active !");
+      onComplete();
+      return;
+    }
+
     setLoading(true);
     setError(null);
     try {
       const created = await createAlias({
-        alias: `${safe}@ethone.dev`,
+        alias: targetAlias,
         display_name: displayName.trim() || undefined,
       });
       if (created?.id) {

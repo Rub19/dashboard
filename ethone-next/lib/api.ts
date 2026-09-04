@@ -83,19 +83,30 @@ export async function fetchWorker(
 ) {
   const token = await getToken();
   const headers = new Headers(options.headers);
-  headers.set("Content-Type", "application/json");
+  if (options.body && !headers.has("Content-Type")) {
+    headers.set("Content-Type", "application/json");
+  } else if (!headers.has("Content-Type") && options.method && options.method !== "GET" && options.method !== "HEAD") {
+    headers.set("Content-Type", "application/json");
+  }
   if (token) headers.set("Authorization", `Bearer ${token}`);
 
   if (typeof window !== "undefined") {
     try {
-      const riotKey = localStorage.getItem("ethone:cred:riot:riotApiKey") || localStorage.getItem("ethone:cred:riot:apiKey");
-      const henrikKey = localStorage.getItem("ethone:cred:riot:henrikApiKey") || localStorage.getItem("ethone:cred:valorant:apiKey");
-      const trackerKey = localStorage.getItem("ethone:cred:tracker:apiKey") || localStorage.getItem("ethone:cred:tracker-gg:apiKey");
-      const spotifyToken = localStorage.getItem("ethone:token:spotify") || localStorage.getItem("spotify_access_token");
-      if (riotKey && !headers.has("x-riot-api-key")) headers.set("x-riot-api-key", riotKey);
-      if (henrikKey && !headers.has("x-henrik-api-key")) headers.set("x-henrik-api-key", henrikKey);
-      if (trackerKey && !headers.has("x-tracker-api-key")) headers.set("x-tracker-api-key", trackerKey);
-      if (spotifyToken && !headers.has("x-spotify-token")) headers.set("x-spotify-token", spotifyToken);
+      const lowerPath = path.toLowerCase();
+      if (lowerPath.includes("/riot") || lowerPath.includes("/valorant")) {
+        const riotKey = localStorage.getItem("ethone:cred:riot:riotApiKey") || localStorage.getItem("ethone:cred:riot:apiKey");
+        const henrikKey = localStorage.getItem("ethone:cred:riot:henrikApiKey") || localStorage.getItem("ethone:cred:valorant:apiKey");
+        if (riotKey && !headers.has("x-riot-api-key")) headers.set("x-riot-api-key", riotKey);
+        if (henrikKey && !headers.has("x-henrik-api-key")) headers.set("x-henrik-api-key", henrikKey);
+      }
+      if (lowerPath.includes("/tracker")) {
+        const trackerKey = localStorage.getItem("ethone:cred:tracker:apiKey") || localStorage.getItem("ethone:cred:tracker-gg:apiKey");
+        if (trackerKey && !headers.has("x-tracker-api-key")) headers.set("x-tracker-api-key", trackerKey);
+      }
+      if (lowerPath.includes("/spotify")) {
+        const spotifyToken = localStorage.getItem("ethone:token:spotify") || localStorage.getItem("spotify_access_token");
+        if (spotifyToken && !headers.has("x-spotify-token")) headers.set("x-spotify-token", spotifyToken);
+      }
     } catch {}
   }
 

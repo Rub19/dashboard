@@ -13,7 +13,13 @@ const HEADERS = Object.freeze([
   "x-ethone-file-parent",
   "x-ethone-file-size",
   "x-ethone-upload-token",
-  "x-request-id"
+  "x-request-id",
+  "x-riot-api-key",
+  "x-henrik-api-key",
+  "x-tracker-api-key",
+  "x-spotify-token",
+  "x-ethone-theme",
+  "x-ethone-version"
 ]);
 
 function isAllowedOrigin(origin, env) {

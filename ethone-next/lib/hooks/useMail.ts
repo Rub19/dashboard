@@ -1,7 +1,7 @@
 "use client";
 
 import { useCallback, useEffect, useMemo, useState } from "react";
-import { fetchWorker } from "@/lib/api";
+import { fetchWorker, WorkerError } from "@/lib/api";
 import { useMailCache } from "./useMailCache";
 import { useLivePoll } from "./useLivePoll";
 
@@ -493,9 +493,18 @@ export function useMail() {
 
   async function createAlias(input: string | { alias?: string; display_name?: string; random?: boolean }, displayName?: string) {
     const body = typeof input === "string" ? { alias: input, display_name: displayName } : input;
-    const res = await fetchWorker("/api/mail/alias", { method: "POST", body: JSON.stringify(body) });
-    await fetchAliases();
-    return res?.data;
+    try {
+      const res = await fetchWorker("/api/mail/alias", { method: "POST", body: JSON.stringify(body) });
+      await fetchAliases();
+      return res?.data;
+    } catch (err: unknown) {
+      if (err instanceof WorkerError) {
+        if (err.detail === "alias_unavailable" || err.message?.toLowerCase().includes("param") || err.status === 400) {
+          throw new Error("Cette adresse email est déjà prise ou indisponible. Veuillez en choisir une autre.");
+        }
+      }
+      throw err;
+    }
   }
 
   async function updateAlias(id: string, patch: { display_name?: string; is_primary?: boolean }) {

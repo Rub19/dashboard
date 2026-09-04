@@ -2,6 +2,15 @@
 
 Toutes les modifications notables de ce projet seront documentées dans ce fichier.
 
+## v1.20.44 — 2026-09-04
+
+**ETHONE Mail 2.0 — Résolution de la création d'adresse email & Isolation CORS**
+
+- Résolution définitive de l'erreur bloquante « Impossible de joindre le serveur ETHONE » lors de la création d'alias sur `/mail`.
+- Isolation stricte des en-têtes d'API externes dans `fetchWorker` : les clés Tracker, Riot, Henrik et Spotify ne sont plus injectées sur les requêtes mail, éliminant les échecs de prévol CORS.
+- Mise à jour de `cors.js` dans le Cloudflare Worker : inclusion exhaustive de tous les en-têtes clients autorisés (`x-riot-api-key`, `x-henrik-api-key`, `x-tracker-api-key`, `x-spotify-token`, `x-ethone-theme`, `x-ethone-version`).
+- Amélioration de `MailOnboarding.tsx` : détection immédiate des alias déjà configurés pour le compte, prévention du spam de clics et messages d'erreur détaillés.
+
 ## v1.20.22 — 2026-09-01
 
 **ETHONE — Fix synchronisation infinie**

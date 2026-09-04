@@ -2,6 +2,7 @@ import { Colors, EmbedBuilder, Guild, GuildMember, Message, TextChannel } from '
 import { AutoModAction, AutoModConfig } from '../types/autoMod.js';
 import { StrikeService } from './strikeService.js';
 import { raidActionService } from '../../antiRaid/services/raidActionService.js';
+import { CaseService } from '../../moderation/services/caseService.js';
 import { logger } from '../../../utils/logger.js';
 
 export interface ActionExecutionContext {
@@ -123,6 +124,31 @@ export class ActionEngine {
           executed.push('LOCK_CHANNEL');
         }
       } catch {}
+    }
+
+    // Enregistrer chaque sanction disciplinaire dans le Case System du Moderation Center
+    for (const act of executed) {
+      if (['WARN', 'TIMEOUT', 'QUARANTINE', 'KICK', 'BAN'].includes(act)) {
+        try {
+          CaseService.createCase(message.client, {
+            guildId: guild.id,
+            userId: member.id,
+            userTag: member.user.tag,
+            moderatorId: 'AUTOMOD',
+            moderatorTag: 'AutoMod 2.0',
+            action: act as any,
+            reason,
+            durationSeconds: act === 'TIMEOUT' ? (customTimeoutSeconds || 300) : null,
+            source: 'AUTOMOD',
+            metadata: {
+              channelId: message.channelId,
+              channelName: 'name' in message.channel ? (message.channel as any).name : undefined,
+              messageId: message.id,
+              messageContent: message.content,
+            },
+          });
+        } catch {}
+      }
     }
 
     return { executed, newStrikesCount: activeStrikesCount };

@@ -8,6 +8,7 @@ import {
 } from 'discord.js';
 import { RaidAction } from '../types/antiRaid.js';
 import { raidConfigService } from './raidConfigService.js';
+import { CaseService } from '../../moderation/services/caseService.js';
 import { logger } from '../../../utils/logger.js';
 
 class RaidActionService {
@@ -78,6 +79,18 @@ class RaidActionService {
               this.quarantinedMembers.set(guild.id, set);
             }
             set.add(member.id);
+            try {
+              CaseService.createCase(member.client, {
+                guildId: guild.id,
+                userId: member.id,
+                userTag: member.user.tag,
+                moderatorId: 'ANTI_RAID',
+                moderatorTag: 'Anti-Raid 2.0',
+                action: 'QUARANTINE',
+                reason,
+                source: 'ANTI_RAID',
+              });
+            } catch {}
             return true;
           }
           break;
@@ -86,6 +99,19 @@ class RaidActionService {
         case 'TIMEOUT': {
           if (member.moderatable) {
             await member.timeout(15 * 60 * 1000, `[Anti-Raid] ${reason}`);
+            try {
+              CaseService.createCase(member.client, {
+                guildId: guild.id,
+                userId: member.id,
+                userTag: member.user.tag,
+                moderatorId: 'ANTI_RAID',
+                moderatorTag: 'Anti-Raid 2.0',
+                action: 'TIMEOUT',
+                reason,
+                durationSeconds: 15 * 60,
+                source: 'ANTI_RAID',
+              });
+            } catch {}
             return true;
           }
           break;
@@ -94,6 +120,18 @@ class RaidActionService {
         case 'KICK': {
           if (member.kickable) {
             await member.kick(`[Anti-Raid] ${reason}`);
+            try {
+              CaseService.createCase(member.client, {
+                guildId: guild.id,
+                userId: member.id,
+                userTag: member.user.tag,
+                moderatorId: 'ANTI_RAID',
+                moderatorTag: 'Anti-Raid 2.0',
+                action: 'KICK',
+                reason,
+                source: 'ANTI_RAID',
+              });
+            } catch {}
             return true;
           }
           break;
@@ -105,6 +143,18 @@ class RaidActionService {
               deleteMessageSeconds: 3600, // 1 hour of messages
               reason: `[Anti-Raid] ${reason}`,
             });
+            try {
+              CaseService.createCase(member.client, {
+                guildId: guild.id,
+                userId: member.id,
+                userTag: member.user.tag,
+                moderatorId: 'ANTI_RAID',
+                moderatorTag: 'Anti-Raid 2.0',
+                action: 'BAN',
+                reason,
+                source: 'ANTI_RAID',
+              });
+            } catch {}
             return true;
           }
           break;

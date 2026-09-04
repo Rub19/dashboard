@@ -17,6 +17,14 @@ export interface RaidModeEvent {
   reason?: string;
 }
 
+export interface StaffAbuseEvent {
+  guildId: string;
+  moderatorId: string;
+  moderatorTag: string;
+  details: string;
+  riskScore: number;
+}
+
 class SecurityEventBus extends EventEmitter {
   constructor() {
     super();
@@ -31,6 +39,12 @@ class SecurityEventBus extends EventEmitter {
     }
   }
 
+  // Émis lors d'une détection d'abus de modérateur
+  public emitStaffAbuse(event: StaffAbuseEvent): void {
+    logger.warn(`[SecurityEventBus] Staff abuse event for ${event.guildId}: ${event.details}`);
+    this.emit('STAFF_ABUSE', event);
+  }
+
   // Émis par Anti-Raid lors du basculement du Raid Mode
   public emitRaidModeChanged(event: RaidModeEvent): void {
     logger.info(`[SecurityEventBus] Raid Mode status changed for ${event.guildId}: ${event.active}`);
@@ -39,6 +53,10 @@ class SecurityEventBus extends EventEmitter {
 
   public onAutoModHighRisk(handler: (event: AutoModViolationEvent) => void): void {
     this.on('AUTOMOD_HIGH_RISK', handler);
+  }
+
+  public onStaffAbuse(handler: (event: StaffAbuseEvent) => void): void {
+    this.on('STAFF_ABUSE', handler);
   }
 
   public onRaidModeChanged(handler: (event: RaidModeEvent) => void): void {

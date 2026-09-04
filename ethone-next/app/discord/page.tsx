@@ -877,6 +877,30 @@ export default function DiscordDashboardPage() {
                 {/* MODULE 6: Modération & Sanctions */}
                 {activeModule === "moderation" && (
                   <div className="space-y-4 text-xs">
+                    {/* Moderation Center 2.0 / Case System Gateway */}
+                    <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-3 rounded-2xl border border-orange-500/30 bg-gradient-to-r from-orange-500/10 via-amber-500/10 to-orange-600/10 p-4 shadow-lg shadow-orange-500/5">
+                      <div>
+                        <div className="flex items-center gap-2">
+                          <span className="text-base">⚖️</span>
+                          <p className="text-xs font-bold text-white">Centre de Modération 2.0 & Case System</p>
+                          <span className="text-[9px] uppercase font-bold tracking-wider px-1.5 py-0.5 rounded bg-orange-500/20 text-orange-300 border border-orange-500/30">
+                            Case Tracker
+                          </span>
+                        </div>
+                        <p className="text-[11px] text-zinc-300 mt-0.5">
+                          Suivi centralisé des sanctions (Cases #1, #2...), annulation avec audit trail, scheduler d&apos;expiration, notes staff privées et protection anti-abus.
+                        </p>
+                      </div>
+                      <Link
+                        href={`/discord/moderation?guildId=${selectedGuild.id}`}
+                        className="flex h-9 shrink-0 items-center gap-2 rounded-xl bg-gradient-to-r from-orange-600 to-amber-600 px-4 text-xs font-bold text-white shadow-md shadow-orange-600/20 transition-all hover:from-orange-500 hover:to-amber-500 active:scale-95"
+                      >
+                        <Hammer className="h-4 w-4" />
+                        <span>Ouvrir Moderation 2.0</span>
+                        <ChevronRight className="h-3.5 w-3.5" />
+                      </Link>
+                    </div>
+
                     {/* AutoMod 2.0 Command Center Gateway */}
                     <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-3 rounded-2xl border border-amber-500/30 bg-gradient-to-r from-amber-500/10 via-orange-500/10 to-amber-600/10 p-4 shadow-lg shadow-amber-500/5">
                       <div>

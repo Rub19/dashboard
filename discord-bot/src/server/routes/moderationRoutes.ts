@@ -1,357 +1,380 @@
 import express, { Request, Response } from 'express';
-import { Client, ChannelType, PermissionFlagsBits, TextChannel } from 'discord.js';
-import { sanctionService } from '../../modules/moderation/sanctions/sanctionService.js';
-import { SanctionTypeSchema } from '../../modules/moderation/types/sanction.js';
-import { ModLogger } from '../../modules/moderation/logs/modLogger.js';
-import { checkHierarchy } from '../../modules/moderation/permissions/hierarchy.js';
+import { Client } from 'discord.js';
+import { ModerationService } from '../../modules/moderation/services/moderationService.js';
+import {
+  CaseActionSchema,
+  CaseSourceSchema,
+  CaseStatusSchema,
+  StandardReasonSchema,
+} from '../../modules/moderation/types/case.js';
 import { logger } from '../../utils/logger.js';
 
 export function createModerationRouter(discordClient: Client) {
+  ModerationService.initialize(discordClient);
   const router = express.Router({ mergeParams: true });
 
-  // 1. Vue d'ensemble (Stats & Récentes Sanctions)
+  // 1. STATISTIQUES & VUE D'ENSEMBLE
   router.get('/overview', async (req: Request, res: Response): Promise<void> => {
     const guildId = String(req.params.guildId);
-    const counts = sanctionService.getCounts(guildId);
-    const recentSanctions = sanctionService.getGuildSanctions(guildId, { limit: 15 });
-
-    res.json({
-      counts,
-      recentSanctions,
-    });
+    try {
+      const stats = ModerationService.getOverviewStats(guildId);
+      const recentCases = ModerationService.getCases(guildId, { limit: 10 });
+      res.json({ success: true, stats, recentCases: recentCases.cases });
+    } catch (err: any) {
+      res.status(500).json({ error: err.message || 'Erreur récupération statistiques modération' });
+    }
   });
 
-  // 2. Liste complète des sanctions (filtrable)
-  router.get('/sanctions', async (req: Request, res: Response): Promise<void> => {
+  // 2. LISTE DES CASES (FILTRABLE & PAGINÉE)
+  router.get('/cases', async (req: Request, res: Response): Promise<void> => {
     const guildId = String(req.params.guildId);
+    const action = req.query.action ? (String(req.query.action) as any) : undefined;
+    const status = req.query.status ? (String(req.query.status) as any) : undefined;
+    const source = req.query.source ? (String(req.query.source) as any) : undefined;
     const userId = req.query.userId ? String(req.query.userId) : undefined;
-    const type = req.query.type ? String(req.query.type) : undefined;
+    const moderatorId = req.query.moderatorId ? String(req.query.moderatorId) : undefined;
+    const search = req.query.search ? String(req.query.search) : undefined;
+    const limit = req.query.limit ? Number(req.query.limit) : 50;
+    const offset = req.query.offset ? Number(req.query.offset) : 0;
 
-    const sanctions = sanctionService.getGuildSanctions(guildId, { userId, type });
-    res.json({ sanctions });
+    try {
+      const result = ModerationService.getCases(guildId, {
+        action,
+        status,
+        source,
+        userId,
+        moderatorId,
+        search,
+        limit,
+        offset,
+      });
+      res.json({ success: true, ...result });
+    } catch (err: any) {
+      res.status(500).json({ error: err.message || 'Erreur récupération des cases' });
+    }
   });
 
-  // 3. Appliquer une sanction depuis le Web Dashboard (avec hiérarchie stricte)
-  router.post('/sanctions', async (req: Request, res: Response): Promise<void> => {
+  // 3. DÉTAILS D'UNE CASE UNIQUE
+  router.get('/cases/:caseNumber', async (req: Request, res: Response): Promise<void> => {
     const guildId = String(req.params.guildId);
-    const { userId, type, reason, durationSeconds } = req.body;
+    const caseNumber = Number(req.params.caseNumber);
 
-    const validSanctionType = SanctionTypeSchema.safeParse(type);
-    if (!validSanctionType.success) {
-      res.status(400).json({ error: 'Type de sanction invalide' });
+    if (isNaN(caseNumber)) {
+      res.status(400).json({ error: 'Numéro de case invalide' });
       return;
     }
+
+    try {
+      const modCase = ModerationService.getCaseByNumber(guildId, caseNumber);
+      if (!modCase) {
+        res.status(404).json({ error: `Case #${caseNumber} introuvable` });
+        return;
+      }
+
+      const evidence = ModerationService.getEvidence(modCase.id);
+      const notes = ModerationService.getCaseNotes(guildId, modCase.id);
+      const userCases = ModerationService.getCases(guildId, { userId: modCase.userId, limit: 10 });
+
+      res.json({
+        success: true,
+        case: modCase,
+        evidence,
+        notes,
+        relatedCases: userCases.cases.filter((c) => c.caseNumber !== caseNumber),
+      });
+    } catch (err: any) {
+      res.status(500).json({ error: err.message || 'Erreur récupération détail case' });
+    }
+  });
+
+  // 4. APPLIQUER UNE NOUVELLE SANCTION (CRÉATION DE CASE)
+  router.post('/cases', async (req: Request, res: Response): Promise<void> => {
+    const guildId = String(req.params.guildId);
+    const { userId, userTag, action, reason, standardCategory, durationSeconds, metadata } = req.body;
+
+    const actionValidation = CaseActionSchema.safeParse(action);
+    if (!actionValidation.success) {
+      res.status(400).json({ error: 'Action disciplinaire invalide' });
+      return;
+    }
+
+    if (!userId) {
+      res.status(400).json({ error: 'Identifiant utilisateur (userId) manquant' });
+      return;
+    }
+
+    const moderatorId = req.user ? req.user.id : 'web-dashboard';
+    const moderatorTag = req.user ? req.user.username : 'Web Dashboard';
+
+    try {
+      const result = await ModerationService.executeSanction({
+        guildId,
+        userId: String(userId),
+        userTag,
+        moderatorId,
+        moderatorTag,
+        action: actionValidation.data,
+        reason: reason || 'Aucun motif spécifié',
+        standardCategory: StandardReasonSchema.safeParse(standardCategory).success ? standardCategory : 'Other',
+        durationSeconds: durationSeconds ? Number(durationSeconds) : null,
+        source: 'MANUAL',
+        metadata,
+      });
+
+      if (!result.success) {
+        res.status(400).json({ error: result.error || 'Échec de la sanction' });
+        return;
+      }
+
+      res.json({ success: true, case: result.case });
+    } catch (err: any) {
+      res.status(500).json({ error: err.message || 'Erreur exécution de la sanction' });
+    }
+  });
+
+  // 5. RÉVOQUER / PARDONNER UNE SANCTION
+  router.post('/cases/:caseNumber/revert', async (req: Request, res: Response): Promise<void> => {
+    const guildId = String(req.params.guildId);
+    const caseNumber = Number(req.params.caseNumber);
+    const { reason = 'Pardon / Révocation manuelle' } = req.body;
+
+    if (isNaN(caseNumber)) {
+      res.status(400).json({ error: 'Numéro de case invalide' });
+      return;
+    }
+
+    const moderatorId = req.user ? req.user.id : 'web-dashboard';
+    const moderatorTag = req.user ? req.user.username : 'Web Dashboard';
+
+    try {
+      const result = ModerationService.revertCase(
+        guildId,
+        caseNumber,
+        { id: moderatorId, tag: moderatorTag },
+        reason
+      );
+
+      if (!result.success) {
+        res.status(400).json({ error: result.error || 'Échec de la révocation' });
+        return;
+      }
+
+      res.json({ success: true, case: result.case });
+    } catch (err: any) {
+      res.status(500).json({ error: err.message || 'Erreur révocation case' });
+    }
+  });
+
+  // 6. FICHE PROFIL MODÉRATION D'UN MEMBRE
+  router.get('/users/:userId/profile', async (req: Request, res: Response): Promise<void> => {
+    const guildId = String(req.params.guildId);
+    const userId = String(req.params.userId);
+
+    try {
+      const profile = await ModerationService.getUserProfile(guildId, userId);
+      res.json({ success: true, profile });
+    } catch (err: any) {
+      res.status(500).json({ error: err.message || 'Erreur récupération fiche profil' });
+    }
+  });
+
+  // 7. ANALYTICS & TENDANCES DE MODÉRATION
+  router.get('/analytics', async (req: Request, res: Response): Promise<void> => {
+    const guildId = String(req.params.guildId);
+    const days = req.query.days ? Number(req.query.days) : 7;
+
+    try {
+      const analytics = ModerationService.getPeriodTrends(guildId, days);
+      res.json({ success: true, analytics });
+    } catch (err: any) {
+      res.status(500).json({ error: err.message || 'Erreur récupération analytics' });
+    }
+  });
+
+  // 8. PERFORMANCE DU STAFF (ADMINISTRATIF)
+  router.get('/staff-performance', async (req: Request, res: Response): Promise<void> => {
+    const guildId = String(req.params.guildId);
+    try {
+      const performance = ModerationService.getStaffPerformance(guildId);
+      res.json({ success: true, performance });
+    } catch (err: any) {
+      res.status(500).json({ error: err.message || 'Erreur performance staff' });
+    }
+  });
+
+  // 9. GESTION DES BANS DISCORD
+  router.get('/bans', async (req: Request, res: Response): Promise<void> => {
+    const guildId = String(req.params.guildId);
+    const guild = discordClient.guilds.cache.get(guildId);
+    if (!guild) {
+      res.status(404).json({ error: 'Serveur introuvable' });
+      return;
+    }
+
+    try {
+      const bansCollection = await guild.bans.fetch({ limit: 100 });
+      const bans = Array.from(bansCollection.values()).map((b) => ({
+        userId: b.user.id,
+        userTag: b.user.tag,
+        username: b.user.username,
+        avatarUrl: b.user.displayAvatarURL(),
+        reason: b.reason || 'Aucun motif renseigné',
+      }));
+      res.json({ success: true, bans });
+    } catch (err: any) {
+      res.status(500).json({ error: err.message || 'Erreur récupération des bans' });
+    }
+  });
+
+  router.post('/unban', async (req: Request, res: Response): Promise<void> => {
+    const guildId = String(req.params.guildId);
+    const { userId, reason } = req.body;
 
     if (!userId) {
       res.status(400).json({ error: 'userId manquant' });
       return;
     }
 
-    const guild = discordClient.guilds.cache.get(guildId);
-    if (!guild) {
-      res.status(404).json({ error: 'Serveur introuvable' });
-      return;
-    }
+    const moderatorId = req.user ? req.user.id : 'web-dashboard';
+    const moderatorTag = req.user ? req.user.username : 'Web Dashboard';
 
     try {
-      const targetUser = await discordClient.users.fetch(userId).catch(() => null);
-      const userTag = targetUser?.tag || userId;
-      const moderatorTag = req.user ? req.user.username : 'Web Dashboard';
-      const moderatorId = req.user ? req.user.id : 'web-dashboard';
-
-      const targetMember = await guild.members.fetch(userId).catch(() => null);
-
-      if (targetMember) {
-        // Vérification de la hiérarchie pour les membres sur le serveur
-        if (!targetMember.manageable && type !== 'warn') {
-          res.status(403).json({
-            error: 'Le bot ne possède pas un rôle suffisant pour sanctionner ce membre.',
-          });
-          return;
-        }
-
-        if (type === 'timeout') {
-          const dur = (durationSeconds || 600) * 1000;
-          await targetMember.timeout(dur, reason || 'Sanction via Dashboard Web');
-        } else if (type === 'untimeout') {
-          await targetMember.timeout(null, reason || 'Levée de sanction via Dashboard');
-        } else if (type === 'kick') {
-          await targetMember.send({
-            content: `👢 Vous avez été expulsé du serveur **${guild.name}** depuis le Dashboard.\n**Raison :** ${reason}`,
-          }).catch(() => {});
-          await targetMember.kick(reason || 'Expulsion via Dashboard Web');
-        } else if (type === 'ban') {
-          await targetMember.send({
-            content: `🔨 Vous avez été banni du serveur **${guild.name}** depuis le Dashboard.\n**Raison :** ${reason}`,
-          }).catch(() => {});
-          await guild.bans.create(userId, { reason: reason || 'Bannissement via Dashboard Web' });
-        }
-      } else {
-        if (type === 'ban') {
-          await guild.bans.create(userId, { reason: reason || 'Bannissement ID via Dashboard Web' });
-        } else if (type === 'unban') {
-          await guild.bans.remove(userId, reason || 'Débannissement via Dashboard Web');
-        } else {
-          res.status(400).json({
-            error: 'Le membre n’est pas présent sur le serveur pour cette sanction.',
-          });
-          return;
-        }
-      }
-
-      // Enregistrement dans le service de persistance
-      const { sanction } = sanctionService.createSanction({
+      const result = await ModerationService.executeSanction({
         guildId,
-        userId,
-        userTag,
+        userId: String(userId),
         moderatorId,
         moderatorTag,
-        type: validSanctionType.data,
-        reason: reason || 'Action effectuée depuis le Dashboard Web',
-        durationSeconds: durationSeconds ?? null,
+        action: 'UNBAN',
+        reason: reason || 'Débannissement manuel via Dashboard',
+        source: 'MANUAL',
       });
 
-      // Journalisation Discord
-      await ModLogger.logSanction(guild, sanction);
-
-      res.json({ success: true, sanction });
-    } catch (err: any) {
-      logger.error('Erreur application sanction via web :', err);
-      res.status(500).json({ error: err.message || 'Échec de l’application de la sanction.' });
-    }
-  });
-
-  // 4. Révoquer une sanction
-  router.delete('/sanctions/:sanctionId', async (req: Request, res: Response): Promise<void> => {
-    const guildId = String(req.params.guildId);
-    const sanctionId = String(req.params.sanctionId);
-
-    const revoked = sanctionService.revokeSanction(guildId, sanctionId);
-    if (!revoked) {
-      res.status(404).json({ error: 'Sanction introuvable' });
-      return;
-    }
-
-    res.json({ success: true });
-  });
-
-  // 5. Configuration de Modération & AutoMod
-  router.get('/config', async (req: Request, res: Response): Promise<void> => {
-    const guildId = String(req.params.guildId);
-    const config = sanctionService.getConfig(guildId);
-    res.json({ config });
-  });
-
-  router.patch('/config', async (req: Request, res: Response): Promise<void> => {
-    const guildId = String(req.params.guildId);
-    try {
-      const updated = sanctionService.updateConfig(guildId, req.body);
-      res.json({ success: true, config: updated });
-    } catch (err: any) {
-      res.status(400).json({ error: err.message || 'Données de configuration invalides' });
-    }
-  });
-
-  // 6. Gestion des Utilisateurs : Liste des membres du serveur avec rôles et avatar
-  router.get('/members', async (req: Request, res: Response): Promise<void> => {
-    const guildId = String(req.params.guildId);
-    const guild = discordClient.guilds.cache.get(guildId);
-
-    if (!guild) {
-      res.json({ members: [] });
-      return;
-    }
-
-    try {
-      const fetched = await guild.members.fetch({ limit: 100 });
-      const members = fetched.map((m) => ({
-        id: m.id,
-        userTag: m.user.tag,
-        username: m.user.username,
-        nickname: m.nickname || null,
-        avatar: m.user.displayAvatarURL({ size: 64 }),
-        isBot: m.user.bot,
-        isOwner: m.id === guild.ownerId,
-        manageable: m.manageable,
-        isTimedOut: m.isCommunicationDisabled(),
-        roles: m.roles.cache
-          .filter((r) => r.id !== guild.id)
-          .map((r) => ({ id: r.id, name: r.name, color: r.hexColor }))
-          .slice(0, 5),
-      }));
-
-      res.json({ members });
-    } catch (err: any) {
-      res.status(500).json({ error: 'Impossible de récupérer les membres.' });
-    }
-  });
-
-  // 7. Modifier le surnom d'un membre depuis le web
-  router.post('/members/:memberId/nickname', async (req: Request, res: Response): Promise<void> => {
-    const guildId = String(req.params.guildId);
-    const memberId = String(req.params.memberId);
-    const { nickname } = req.body;
-
-    const guild = discordClient.guilds.cache.get(guildId);
-    if (!guild) {
-      res.status(404).json({ error: 'Serveur introuvable' });
-      return;
-    }
-
-    const member = await guild.members.fetch(memberId).catch(() => null);
-    if (!member || !member.manageable) {
-      res.status(403).json({ error: 'Permissions insuffisantes pour renommer ce membre.' });
-      return;
-    }
-
-    try {
-      await member.setNickname(nickname || null);
-      res.json({ success: true, nickname: member.nickname });
-    } catch (err: any) {
-      res.status(500).json({ error: err.message || 'Échec du changement de pseudo.' });
-    }
-  });
-
-  // 8. Gestion détaillée des Salons (Slowmode, Lock, Purge)
-  router.get('/channels-detail', async (req: Request, res: Response): Promise<void> => {
-    const guildId = String(req.params.guildId);
-    const guild = discordClient.guilds.cache.get(guildId);
-
-    if (!guild) {
-      res.json({ channels: [] });
-      return;
-    }
-
-    const channels = guild.channels.cache
-      .filter((c) => c.type === ChannelType.GuildText)
-      .map((c) => {
-        const tc = c as TextChannel;
-        const everyoneOverwrites = tc.permissionOverwrites.cache.get(guild.id);
-        const isLocked = everyoneOverwrites?.deny.has(PermissionFlagsBits.SendMessages) || false;
-
-        return {
-          id: tc.id,
-          name: tc.name,
-          slowmode: tc.rateLimitPerUser || 0,
-          isLocked,
-        };
-      });
-
-    res.json({ channels });
-  });
-
-  // 9. Régler le slowmode d'un salon depuis le web
-  router.post('/channels/:channelId/slowmode', async (req: Request, res: Response): Promise<void> => {
-    const guildId = String(req.params.guildId);
-    const channelId = String(req.params.channelId);
-    const { seconds } = req.body;
-
-    const guild = discordClient.guilds.cache.get(guildId);
-    const channel = guild?.channels.cache.get(channelId) as TextChannel | undefined;
-
-    if (!channel || channel.type !== ChannelType.GuildText) {
-      res.status(404).json({ error: 'Salon textuel introuvable.' });
-      return;
-    }
-
-    try {
-      await channel.setRateLimitPerUser(Number(seconds) || 0);
-      res.json({ success: true, slowmode: channel.rateLimitPerUser });
-    } catch (err: any) {
-      res.status(500).json({ error: err.message || 'Impossible de modifier le slowmode.' });
-    }
-  });
-
-  // 10. Verrouiller ou déverrouiller un salon depuis le web
-  router.post('/channels/:channelId/lock', async (req: Request, res: Response): Promise<void> => {
-    const guildId = String(req.params.guildId);
-    const channelId = String(req.params.channelId);
-    const { locked, reason } = req.body;
-
-    const guild = discordClient.guilds.cache.get(guildId);
-    const channel = guild?.channels.cache.get(channelId) as TextChannel | undefined;
-
-    if (!guild || !channel || channel.type !== ChannelType.GuildText) {
-      res.status(404).json({ error: 'Salon textuel introuvable.' });
-      return;
-    }
-
-    try {
-      await channel.permissionOverwrites.edit(guild.id, {
-        SendMessages: locked ? false : null,
-      });
-
-      if (locked) {
-        channel.send({
-          content: `🔒 **Salon Verrouillé** par un modérateur depuis le Dashboard Web.\n**Raison :** ${reason || 'Maintenance / Modération'}`,
-        }).catch(() => {});
-      } else {
-        channel.send({
-          content: '🔓 **Salon Déverrouillé** depuis le Dashboard Web.',
-        }).catch(() => {});
+      if (!result.success) {
+        res.status(400).json({ error: result.error });
+        return;
       }
 
-      res.json({ success: true, isLocked: locked });
+      res.json({ success: true, case: result.case });
     } catch (err: any) {
-      res.status(500).json({ error: err.message || 'Impossible de modifier le verrouillage.' });
+      res.status(500).json({ error: err.message || 'Erreur débannissement' });
     }
   });
 
-  // 11. Purger / Clear des messages d'un salon depuis le web
-  router.post('/channels/:channelId/clear', async (req: Request, res: Response): Promise<void> => {
+  // 10. PREUVES (EVIDENCE)
+  router.post('/cases/:caseNumber/evidence', async (req: Request, res: Response): Promise<void> => {
     const guildId = String(req.params.guildId);
-    const channelId = String(req.params.channelId);
-    const { amount } = req.body;
+    const caseNumber = Number(req.params.caseNumber);
+    const { type, url, content, messageId, channelId } = req.body;
 
-    const guild = discordClient.guilds.cache.get(guildId);
-    const channel = guild?.channels.cache.get(channelId) as TextChannel | undefined;
-
-    if (!channel || channel.type !== ChannelType.GuildText) {
-      res.status(404).json({ error: 'Salon textuel introuvable.' });
+    const modCase = ModerationService.getCaseByNumber(guildId, caseNumber);
+    if (!modCase) {
+      res.status(404).json({ error: 'Case introuvable' });
       return;
     }
 
-    const count = Math.min(Math.max(Number(amount) || 10, 1), 100);
+    const addedBy = req.user ? `${req.user.username} (${req.user.id})` : 'Web Dashboard';
 
     try {
-      const deleted = await channel.bulkDelete(count, true);
-      res.json({ success: true, deletedCount: deleted.size });
+      const evidence = ModerationService.addEvidence({
+        caseId: modCase.id,
+        type: type || 'NOTE',
+        url,
+        content,
+        messageId,
+        channelId,
+        addedBy,
+      });
+      res.json({ success: true, evidence });
     } catch (err: any) {
-      res.status(500).json({ error: err.message || 'Impossible de purger les messages.' });
+      res.status(500).json({ error: err.message || 'Erreur ajout preuve' });
     }
   });
 
-  // 12. Salons & Rôles simples pour selects
-  router.get('/channels', async (req: Request, res: Response): Promise<void> => {
+  router.delete('/cases/:caseNumber/evidence/:evidenceId', async (req: Request, res: Response): Promise<void> => {
     const guildId = String(req.params.guildId);
-    const guild = discordClient.guilds.cache.get(guildId);
+    const caseNumber = Number(req.params.caseNumber);
+    const evidenceId = String(req.params.evidenceId);
 
-    if (!guild) {
-      res.json({ channels: [] });
+    const modCase = ModerationService.getCaseByNumber(guildId, caseNumber);
+    if (!modCase) {
+      res.status(404).json({ error: 'Case introuvable' });
       return;
     }
 
-    const textChannels = guild.channels.cache
-      .filter((c) => c.type === ChannelType.GuildText)
-      .map((c) => ({ id: c.id, name: c.name }));
-
-    res.json({ channels: textChannels });
+    try {
+      const ok = ModerationService.deleteEvidence(modCase.id, evidenceId);
+      res.json({ success: ok });
+    } catch (err: any) {
+      res.status(500).json({ error: err.message || 'Erreur suppression preuve' });
+    }
   });
 
-  router.get('/roles', async (req: Request, res: Response): Promise<void> => {
+  // 11. NOTES STAFF
+  router.post('/cases/:caseNumber/notes', async (req: Request, res: Response): Promise<void> => {
     const guildId = String(req.params.guildId);
-    const guild = discordClient.guilds.cache.get(guildId);
+    const caseNumber = Number(req.params.caseNumber);
+    const { content } = req.body;
 
-    if (!guild) {
-      res.json({ roles: [] });
+    if (!content || typeof content !== 'string') {
+      res.status(400).json({ error: 'Contenu de note requis' });
       return;
     }
 
-    const roles = guild.roles.cache
-      .filter((r) => r.id !== guild.id)
-      .map((r) => ({ id: r.id, name: r.name, color: r.hexColor }));
+    const modCase = ModerationService.getCaseByNumber(guildId, caseNumber);
+    if (!modCase) {
+      res.status(404).json({ error: 'Case introuvable' });
+      return;
+    }
 
-    res.json({ roles });
+    const authorId = req.user ? req.user.id : 'web-dashboard';
+    const authorTag = req.user ? req.user.username : 'Web Dashboard';
+
+    try {
+      const note = ModerationService.addNote({
+        guildId,
+        userId: modCase.userId,
+        caseId: modCase.id,
+        authorId,
+        authorTag,
+        content,
+      });
+      res.json({ success: true, note });
+    } catch (err: any) {
+      res.status(500).json({ error: err.message || 'Erreur ajout note' });
+    }
+  });
+
+  // 12. CONFIGURATION DE MODÉRATION & RÉTENTION
+  router.get('/settings', async (req: Request, res: Response): Promise<void> => {
+    const guildId = String(req.params.guildId);
+    try {
+      const settings = ModerationService.getSettings(guildId);
+      res.json({ success: true, settings });
+    } catch (err: any) {
+      res.status(500).json({ error: err.message || 'Erreur récupération configuration' });
+    }
+  });
+
+  router.put('/settings', async (req: Request, res: Response): Promise<void> => {
+    const guildId = String(req.params.guildId);
+    try {
+      const updated = ModerationService.updateSettings(guildId, req.body);
+      res.json({ success: true, settings: updated });
+    } catch (err: any) {
+      res.status(500).json({ error: err.message || 'Erreur mise à jour configuration' });
+    }
+  });
+
+  // 13. AUDIT LOGS
+  router.get('/audit-logs', async (req: Request, res: Response): Promise<void> => {
+    const guildId = String(req.params.guildId);
+    const limit = req.query.limit ? Number(req.query.limit) : 50;
+    try {
+      const logs = ModerationService.getAuditLogs(guildId, limit);
+      res.json({ success: true, logs });
+    } catch (err: any) {
+      res.status(500).json({ error: err.message || 'Erreur audit logs' });
+    }
   });
 
   return router;

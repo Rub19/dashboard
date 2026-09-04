@@ -2,7 +2,10 @@ import {
   ChannelType,
   Guild,
   GuildMember,
+  TextChannel,
   VoiceChannel,
+  PermissionFlagsBits,
+  OverwriteResolvable,
 } from 'discord.js';
 import { VoiceHub, TemporaryVoiceRoom } from '../types/index.js';
 import { voiceRepository } from '../storage/voiceRepository.js';
@@ -22,27 +25,287 @@ export class TemporaryVoiceService {
   private static userCooldowns = new Map<string, number>();
 
   /**
-   * Main entry point when a user connects to a "Join to Create" Hub channel.
+   * Publishes or updates the permanent Creation Panel message in the specified text channel.
+   */
+  public static async publishCreationPanel(
+    guild: Guild,
+    textChannelId: string
+  ): Promise<{ success: boolean; messageId?: string; error?: string }> {
+    try {
+      const channel = guild.channels.cache.get(textChannelId);
+      if (!channel || !channel.isTextBased()) {
+        return { success: false, error: 'Salon textuel introuvable ou invalide.' };
+      }
+
+      const settings = voiceRepository.getSettings(guild.id);
+      const payload = DiscordVoicePanel.buildCreatePanel(settings);
+
+      let msg: any = null;
+      if (settings.creationPanelMessageId) {
+        try {
+          const existingMsg = await (channel as TextChannel).messages.fetch(settings.creationPanelMessageId).catch(() => null);
+          if (existingMsg) {
+            msg = await existingMsg.edit(payload);
+          }
+        } catch {
+          // If message fetch failed, we fall through to sending a new one
+        }
+      }
+
+      if (!msg) {
+        msg = await (channel as TextChannel).send(payload);
+      }
+
+      voiceRepository.updateSettings(guild.id, {
+        creationTextChannelId: textChannelId,
+        creationPanelMessageId: msg.id,
+      });
+
+      logger.info(`[TemporaryVoice] Panneau de création publié sur ${guild.name} (#${channel.name}) - Message ${msg.id}`);
+      return { success: true, messageId: msg.id };
+    } catch (err: any) {
+      logger.error(`[TemporaryVoice] Erreur publication panneau de création:`, err);
+      return { success: false, error: err.message };
+    }
+  }
+
+  /**
+   * Creates a personal voice room on behalf of a member (e.g. from Creation Panel or API).
+   */
+  public static async createPersonalVoiceRoom(
+    member: GuildMember,
+    customOptions?: {
+      name?: string;
+      limit?: number;
+      locked?: boolean;
+      hidden?: boolean;
+      bitrate?: number;
+    }
+  ): Promise<{ success: boolean; message?: string; channel?: VoiceChannel; room?: TemporaryVoiceRoom; alreadyExists?: boolean }> {
+    const guild = member.guild;
+    const settings = voiceRepository.getSettings(guild.id);
+
+    if (!settings.enabled) {
+      return { success: false, message: 'Le système de salons vocaux temporaires est actuellement désactivé sur ce serveur.' };
+    }
+
+    // 1. Anti-abuse: Check max rooms in guild
+    const activeRooms = voiceRepository.getRooms(guild.id);
+    if (activeRooms.length >= settings.maxRoomsPerGuild) {
+      return { success: false, message: `La limite maximale de salons vocaux sur le serveur (${settings.maxRoomsPerGuild}) est atteinte.` };
+    }
+
+    // 2. Anti-abuse: Check max rooms per user
+    const userRooms = voiceRepository.getRoomsByOwner(guild.id, member.id);
+    if (userRooms.length >= settings.maxRoomsPerUser) {
+      const existingChannel = guild.channels.cache.get(userRooms[0].id) as VoiceChannel | undefined;
+      return {
+        success: false,
+        message: `Vous possédez déjà un salon vocal actif (${userRooms[0].name}).`,
+        channel: existingChannel,
+        room: userRooms[0],
+        alreadyExists: true,
+      };
+    }
+
+    // 3. Cooldown check
+    const now = Date.now();
+    const lastCreated = this.userCooldowns.get(member.id) || 0;
+    const cooldownMs = (settings.creationCooldownSeconds || 15) * 1000;
+    if (now - lastCreated < cooldownMs) {
+      const waitSec = Math.ceil((cooldownMs - (now - lastCreated)) / 1000);
+      return { success: false, message: `Veuillez patienter encore ${waitSec}s avant de recréer un salon.` };
+    }
+
+    try {
+      // 4. Resolve user preferences
+      const userPrefs = voiceRepository.getUserPreferences(member.id);
+
+      const isLocked = customOptions?.locked !== undefined ? customOptions.locked : (userPrefs?.defaultLocked ?? false);
+      const isHidden = customOptions?.hidden !== undefined ? customOptions.hidden : (userPrefs?.defaultHidden ?? false);
+      const userLimit = customOptions?.limit !== undefined ? customOptions.limit : (userPrefs?.defaultLimit ?? 0);
+      const bitrate = customOptions?.bitrate || userPrefs?.defaultBitrate || settings.defaultBitrate || 64000;
+
+      // 5. Compute room name
+      let template = customOptions?.name || userPrefs?.defaultName || settings.defaultRoomNameTemplate || '🔊 Salon de {username}';
+      let roomName = template
+        .replace('{user}', member.user.username)
+        .replace('{username}', member.user.username)
+        .replace('{displayName}', member.displayName)
+        .replace('{server}', guild.name);
+
+      if (roomName.length > 100) roomName = roomName.substring(0, 100);
+
+      // 6. Overwrites
+      const overwrites: OverwriteResolvable[] = [];
+      if (guild.members.me) {
+        overwrites.push({
+          id: guild.members.me.id,
+          allow: [
+            PermissionFlagsBits.ViewChannel,
+            PermissionFlagsBits.Connect,
+            PermissionFlagsBits.Speak,
+            PermissionFlagsBits.ManageChannels,
+            PermissionFlagsBits.MoveMembers,
+            PermissionFlagsBits.MuteMembers,
+            PermissionFlagsBits.DeafenMembers,
+          ],
+        });
+      }
+
+      overwrites.push({
+        id: member.id,
+        allow: [
+          PermissionFlagsBits.ViewChannel,
+          PermissionFlagsBits.Connect,
+          PermissionFlagsBits.Speak,
+          PermissionFlagsBits.Stream,
+          PermissionFlagsBits.UseVAD,
+          PermissionFlagsBits.PrioritySpeaker,
+        ],
+      });
+
+      if (isLocked) {
+        overwrites.push({
+          id: guild.id,
+          allow: [PermissionFlagsBits.ViewChannel],
+          deny: [PermissionFlagsBits.Connect],
+        });
+      } else if (isHidden) {
+        overwrites.push({
+          id: guild.id,
+          deny: [PermissionFlagsBits.ViewChannel, PermissionFlagsBits.Connect],
+        });
+      } else {
+        overwrites.push({
+          id: guild.id,
+          allow: [PermissionFlagsBits.ViewChannel, PermissionFlagsBits.Connect, PermissionFlagsBits.Speak],
+        });
+      }
+
+      // 7. Create Discord Channel
+      const targetCategory = settings.roomCategory || settings.defaultCategoryId || undefined;
+      const createdChannel = await guild.channels.create({
+        name: roomName,
+        type: ChannelType.GuildVoice,
+        parent: targetCategory,
+        userLimit: Math.min(Math.max(userLimit, 0), 99),
+        bitrate: Math.min(Math.max(bitrate, 8000), 384000),
+        permissionOverwrites: overwrites,
+        reason: `ETHONE Personal Voice: Créé par ${member.user.tag}`,
+      });
+
+      this.userCooldowns.set(member.id, now);
+
+      // 8. Construct Entity
+      const isConnected = !!member.voice.channel;
+      const tempRoom: TemporaryVoiceRoom = {
+        id: createdChannel.id,
+        guildId: guild.id,
+        hubId: 'personal_voice_2',
+        hubName: 'Personal Voice Rooms 2.0',
+        name: roomName,
+        ownerId: member.id,
+        ownerTag: member.user.tag,
+        userLimit,
+        bitrate,
+        isLocked,
+        isHidden,
+        allowedUserIds: [],
+        blockedUserIds: [],
+        whitelist: [],
+        banlist: [],
+        textChannelId: createdChannel.id,
+        createdAt: new Date().toISOString(),
+        lastEmptyAt: isConnected ? null : new Date().toISOString(),
+        status: isConnected ? 'ACTIVE' : 'EMPTY_COUNTDOWN',
+        currentUsers: isConnected
+          ? [
+              {
+                id: member.id,
+                tag: member.user.tag,
+                avatar: member.user.displayAvatarURL(),
+                joinedAt: new Date().toISOString(),
+                isMuted: member.voice.selfMute || false,
+                isDeafened: member.voice.selfDeaf || false,
+                isStreaming: member.voice.streaming || false,
+              },
+            ]
+          : [],
+        peakUsers: isConnected ? 1 : 0,
+        totalSecondsActive: 0,
+      };
+
+      voiceRepository.saveRoom(tempRoom);
+
+      // 9. Move user if currently connected to a voice channel
+      if (isConnected) {
+        await member.voice.setChannel(createdChannel).catch((err) => {
+          logger.warn(`[TemporaryVoice] Impossible de déplacer l'utilisateur dans le salon:`, err);
+        });
+        VoiceSessionService.recordJoin(member, createdChannel.id, roomName, 'personal_voice_2');
+      } else {
+        // Start grace period countdown if user is not in voice
+        this.scheduleEmptyDeletion(guild, tempRoom.id, settings.emptyDeletionDelaySeconds || 60);
+      }
+
+      // 10. Record Timeline & Audit
+      voiceRepository.addTimelineEvent({
+        roomId: createdChannel.id,
+        guildId: guild.id,
+        type: 'ROOM_CREATED',
+        actorId: member.id,
+        actorTag: member.user.tag,
+        details: `Création via Panneau Personnel 2.0`,
+      });
+
+      logService.emit({
+        guildId: guild.id,
+        module: 'VOICE',
+        type: 'TEMPORARY_ROOM_CREATED',
+        actor: { id: member.id, tag: member.user.tag },
+        channel: { id: createdChannel.id, name: roomName, type: 'VOICE' },
+        reason: 'Création via Personal Voice Rooms 2.0',
+        metadata: { owner: member.user.tag, isLocked, isHidden, userLimit },
+      });
+
+      // 11. Send in-channel Voice Control Panel
+      if (settings.sendControlPanelInRoom) {
+        await DiscordVoicePanel.sendPanelMessage(createdChannel, tempRoom).catch(() => null);
+      }
+
+      await VoiceAutomationService.dispatch(guild, 'ROOM_CREATED', {
+        member,
+        channel: createdChannel,
+        roomName,
+        roomId: createdChannel.id,
+      });
+
+      logger.success(`[TemporaryVoice] Salon personnel "${roomName}" (${createdChannel.id}) créé pour ${member.user.tag}`);
+      return { success: true, channel: createdChannel, room: tempRoom };
+    } catch (err: any) {
+      logger.error(`[TemporaryVoice] Erreur création salon personnel:`, err);
+      return { success: false, message: `Erreur interne: ${err.message}` };
+    }
+  }
+
+  /**
+   * Entry point when user connects to a traditional "Join to Create" Hub channel.
    */
   public static async handleMemberJoinHub(member: GuildMember, hub: VoiceHub): Promise<VoiceChannel | null> {
     const guild = member.guild;
     const settings = voiceRepository.getSettings(guild.id);
     if (!settings.enabled || !hub.enabled) return null;
 
-    // 1. Anti-Abuse: Check max rooms in guild
     const activeRooms = voiceRepository.getRooms(guild.id);
     if (activeRooms.length >= settings.maxRoomsPerGuild) {
-      logger.warn(`[TemporaryVoice] Limite maximale de salons (${settings.maxRoomsPerGuild}) atteinte sur ${guild.name}`);
-      await member.send({ content: `⚠️ Le serveur a atteint la limite maximale de ${settings.maxRoomsPerGuild} salons temporaires.` }).catch(() => null);
-      await member.voice.disconnect('Limite maximale de salons atteinte').catch(() => null);
+      await member.send({ content: `⚠️ Le serveur a atteint la limite de ${settings.maxRoomsPerGuild} salons vocaux.` }).catch(() => null);
+      await member.voice.disconnect('Limite atteinte').catch(() => null);
       return null;
     }
 
-    // 2. Anti-Abuse: Check max rooms per user
     const userRooms = voiceRepository.getRoomsByOwner(guild.id, member.id);
     if (userRooms.length >= settings.maxRoomsPerUser) {
-      logger.warn(`[TemporaryVoice] Utilisateur ${member.user.tag} possède déjà un salon actif`);
-      // Move them to their existing room if available
       const existing = guild.channels.cache.get(userRooms[0].id) as VoiceChannel | undefined;
       if (existing) {
         await member.voice.setChannel(existing).catch(() => null);
@@ -50,40 +313,34 @@ export class TemporaryVoiceService {
       }
     }
 
-    // 3. Rate-Limit Cooldown
     const now = Date.now();
     const lastCreated = this.userCooldowns.get(member.id) || 0;
     const cooldownMs = settings.creationCooldownSeconds * 1000;
     if (now - lastCreated < cooldownMs) {
       const waitSec = Math.ceil((cooldownMs - (now - lastCreated)) / 1000);
-      logger.warn(`[TemporaryVoice] Cooldown actif pour ${member.user.tag} (${waitSec}s restantes)`);
-      await member.send({ content: `⏳ Merci de patienter encore ${waitSec}s avant de créer un nouveau salon vocal.` }).catch(() => null);
+      await member.send({ content: `⏳ Merci de patienter encore ${waitSec}s.` }).catch(() => null);
       await member.voice.disconnect('Cooldown actif').catch(() => null);
       return null;
     }
 
-    // 4. Role restrictions if hub accessMode === 'role_only'
     if (hub.accessMode === 'role_only' && hub.allowedRoles.length > 0) {
       const hasRole = hub.roleRequirementMode === 'all'
         ? hub.allowedRoles.every((rId) => member.roles.cache.has(rId))
         : hub.allowedRoles.some((rId) => member.roles.cache.has(rId));
 
       if (!hasRole && !member.permissions.has('Administrator')) {
-        logger.warn(`[TemporaryVoice] Accès refusé pour ${member.user.tag} sur le hub ${hub.name} (rôle requis)`);
-        await member.send({ content: `🔒 Vous ne possédez pas les rôles requis pour créer un salon dans **${hub.name}**.` }).catch(() => null);
+        await member.send({ content: `🔒 Rôles requis non possédés pour **${hub.name}**.` }).catch(() => null);
         await member.voice.disconnect('Rôle requis non possédé').catch(() => null);
         return null;
       }
     }
 
-    // 5. Excluded roles check
     if (hub.excludedRoles.some((rId) => member.roles.cache.has(rId))) {
       await member.voice.disconnect('Rôle exclu du hub').catch(() => null);
       return null;
     }
 
     try {
-      // 6. Compute room name
       let roomNumber = 1;
       if (hub.autoNumbering || hub.namingTemplate.includes('{number}')) {
         roomNumber = VoiceNumberPool.getNextAvailableNumber(guild.id, hub.id);
@@ -98,10 +355,8 @@ export class TemporaryVoiceService {
 
       if (roomName.length > 100) roomName = roomName.substring(0, 100);
 
-      // 7. Build permissions overwrites
       const overwrites = VoicePermissionService.buildInitialOverwrites(guild, hub, member);
 
-      // 8. Create channel in Discord
       const createdChannel = await guild.channels.create({
         name: roomName,
         type: ChannelType.GuildVoice,
@@ -114,7 +369,6 @@ export class TemporaryVoiceService {
 
       this.userCooldowns.set(member.id, now);
 
-      // 9. Save room entity in repository
       const tempRoom: TemporaryVoiceRoom = {
         id: createdChannel.id,
         guildId: guild.id,
@@ -129,6 +383,8 @@ export class TemporaryVoiceService {
         isHidden: hub.accessMode === 'invite_only',
         allowedUserIds: [],
         blockedUserIds: [],
+        whitelist: [],
+        banlist: [],
         createdAt: new Date().toISOString(),
         lastEmptyAt: null,
         status: 'ACTIVE',
@@ -148,12 +404,10 @@ export class TemporaryVoiceService {
       };
       voiceRepository.saveRoom(tempRoom);
 
-      // 10. Move member to created room
       await member.voice.setChannel(createdChannel).catch((err) => {
         logger.error(`[TemporaryVoice] Erreur lors du déplacement du membre:`, err);
       });
 
-      // 11. Record Session & Timeline
       VoiceSessionService.recordJoin(member, createdChannel.id, roomName, hub.id);
       voiceRepository.addTimelineEvent({
         roomId: createdChannel.id,
@@ -164,7 +418,6 @@ export class TemporaryVoiceService {
         details: `Création automatique via Hub "${hub.name}"`,
       });
 
-      // 12. Audit Log
       logService.emit({
         guildId: guild.id,
         module: 'VOICE',
@@ -175,7 +428,6 @@ export class TemporaryVoiceService {
         metadata: { hubId: hub.id, hubName: hub.name, owner: member.user.tag },
       });
 
-      // 13. Dispatch Automations
       await VoiceAutomationService.dispatch(guild, 'ROOM_CREATED', {
         member,
         channel: createdChannel,
@@ -183,7 +435,6 @@ export class TemporaryVoiceService {
         roomId: createdChannel.id,
       });
 
-      // 14. Optionally send in-channel Voice Control Panel
       if (settings.sendControlPanelInRoom) {
         await DiscordVoicePanel.sendPanelMessage(createdChannel, tempRoom).catch(() => null);
       }
@@ -203,7 +454,7 @@ export class TemporaryVoiceService {
     const room = voiceRepository.getRoomById(channel.id);
     if (!room || room.status === 'DELETED') return;
 
-    // 1. Cancel empty room deletion timer if active
+    // Cancel empty room deletion countdown if active
     if (this.deletionTimers.has(room.id)) {
       clearTimeout(this.deletionTimers.get(room.id)!);
       this.deletionTimers.delete(room.id);
@@ -213,7 +464,6 @@ export class TemporaryVoiceService {
     room.status = 'ACTIVE';
     room.lastEmptyAt = null;
 
-    // 2. Add to current users if not already present
     if (!room.currentUsers.some((u) => u.id === member.id)) {
       room.currentUsers.push({
         id: member.id,
@@ -228,7 +478,6 @@ export class TemporaryVoiceService {
       voiceRepository.saveRoom(room);
     }
 
-    // 3. Record Session & Timeline
     VoiceSessionService.recordJoin(member, room.id, room.name, room.hubId);
     voiceRepository.addTimelineEvent({
       roomId: room.id,
@@ -238,7 +487,6 @@ export class TemporaryVoiceService {
       actorTag: member.user.tag,
     });
 
-    // 4. Dispatch automation
     VoiceAutomationService.dispatch(member.guild, 'USER_JOIN', {
       member,
       channel,
@@ -266,7 +514,6 @@ export class TemporaryVoiceService {
     const guild = member.guild;
     const settings = voiceRepository.getSettings(guild.id);
 
-    // 1. Close session & remove from room users
     VoiceSessionService.recordLeave(member, channelId);
     room.currentUsers = room.currentUsers.filter((u) => u.id !== member.id);
     voiceRepository.saveRoom(room);
@@ -285,36 +532,15 @@ export class TemporaryVoiceService {
       roomId: room.id,
     });
 
-    // 2. Check if room is empty
+    // Check if room is empty
     if (room.currentUsers.length === 0) {
       room.lastEmptyAt = new Date().toISOString();
       const delaySeconds = settings.emptyDeletionDelaySeconds;
 
       if (delaySeconds <= 0) {
-        // Immediate deletion
         await this.deleteRoomChannel(guild, room.id, 'Salon temporaire vide (suppression immédiate)');
       } else {
-        // Grace period timer
-        room.status = 'EMPTY_COUNTDOWN';
-        voiceRepository.saveRoom(room);
-
-        logger.info(`[TemporaryVoice] Salon ${room.name} vide. Suppression programmée dans ${delaySeconds}s`);
-
-        if (this.deletionTimers.has(room.id)) {
-          clearTimeout(this.deletionTimers.get(room.id)!);
-        }
-
-        const timer = setTimeout(async () => {
-          this.deletionTimers.delete(room.id);
-          // Check if still empty
-          const fresh = voiceRepository.getRoomById(room.id);
-          if (fresh && fresh.currentUsers.length === 0 && fresh.status !== 'DELETED') {
-            await this.deleteRoomChannel(guild, room.id, `Salon vide depuis ${delaySeconds}s`);
-          }
-        }, delaySeconds * 1000);
-
-        this.deletionTimers.set(room.id, timer);
-
+        this.scheduleEmptyDeletion(guild, room.id, delaySeconds);
         await VoiceAutomationService.dispatch(guild, 'ROOM_EMPTY', {
           roomName: room.name,
           roomId: room.id,
@@ -323,7 +549,7 @@ export class TemporaryVoiceService {
       return;
     }
 
-    // 3. If member who left was the room owner, execute transfer strategy
+    // Owner leave transfer strategy
     if (member.id === room.ownerId) {
       const result = VoiceOwnershipService.handleOwnerLeave(
         room,
@@ -335,6 +561,33 @@ export class TemporaryVoiceService {
         await this.deleteRoomChannel(guild, room.id, 'Départ du propriétaire (stratégie DELETE_ROOM)');
       }
     }
+  }
+
+  /**
+   * Schedules an empty room deletion countdown.
+   */
+  private static scheduleEmptyDeletion(guild: Guild, roomId: string, delaySeconds: number): void {
+    const room = voiceRepository.getRoomById(roomId);
+    if (!room) return;
+
+    room.status = 'EMPTY_COUNTDOWN';
+    voiceRepository.saveRoom(room);
+
+    if (this.deletionTimers.has(roomId)) {
+      clearTimeout(this.deletionTimers.get(roomId)!);
+    }
+
+    logger.info(`[TemporaryVoice] Salon ${room.name} vide. Suppression programmée dans ${delaySeconds}s`);
+
+    const timer = setTimeout(async () => {
+      this.deletionTimers.delete(roomId);
+      const fresh = voiceRepository.getRoomById(roomId);
+      if (fresh && fresh.currentUsers.length === 0 && fresh.status !== 'DELETED') {
+        await this.deleteRoomChannel(guild, roomId, `Salon vide depuis ${delaySeconds}s`);
+      }
+    }, delaySeconds * 1000);
+
+    this.deletionTimers.set(roomId, timer);
   }
 
   /**
@@ -350,7 +603,6 @@ export class TemporaryVoiceService {
       const room = voiceRepository.getRoomById(roomId);
       const roomName = room?.name || 'Salon vocal';
 
-      // Delete on Discord
       const discordChannel = guild.channels.cache.get(roomId);
       if (discordChannel) {
         await discordChannel.delete(reason).catch((err) => {

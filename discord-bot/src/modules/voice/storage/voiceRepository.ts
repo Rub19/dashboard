@@ -7,6 +7,7 @@ import {
   VoiceTimelineEvent,
   VoiceTrackerSettings,
   VoiceOverviewKpis,
+  UserVoicePreferences,
 } from '../types/index.js';
 import { logger } from '../../../utils/logger.js';
 
@@ -20,6 +21,10 @@ export const DEFAULT_VOICE_SETTINGS: VoiceTrackerSettings = {
   maxRoomsPerUser: 1,
   creationCooldownSeconds: 15,
   panelChannelId: null,
+  creationTextChannelId: null,
+  creationPanelMessageId: null,
+  roomCategory: null,
+  defaultRoomNameTemplate: '🔊 Salon de {username}',
   sendControlPanelInRoom: true,
   automationsEnabled: true,
   automations: [
@@ -43,12 +48,14 @@ export class VoiceRepository {
   private sessionsPath = path.resolve(this.dataDir, 'voice_sessions.json');
   private settingsPath = path.resolve(this.dataDir, 'voice_settings.json');
   private timelinePath = path.resolve(this.dataDir, 'voice_timeline.json');
+  private prefsPath = path.resolve(this.dataDir, 'voice_user_prefs.json');
 
   private hubs: VoiceHub[] = [];
   private rooms: TemporaryVoiceRoom[] = [];
   private sessions: VoiceSession[] = [];
   private settings = new Map<string, VoiceTrackerSettings>();
   private timeline: VoiceTimelineEvent[] = [];
+  private userPreferences = new Map<string, UserVoicePreferences>();
 
   constructor() {
     this.ensureDir();
@@ -75,10 +82,14 @@ export class VoiceRepository {
       }
       if (fs.existsSync(this.settingsPath)) {
         const raw = JSON.parse(fs.readFileSync(this.settingsPath, 'utf8'));
-        Object.entries(raw).forEach(([gId, set]) => this.settings.set(gId, set as VoiceTrackerSettings));
+        Object.entries(raw).forEach(([gId, set]) => this.settings.set(gId, { ...DEFAULT_VOICE_SETTINGS, ...(set as any) }));
       }
       if (fs.existsSync(this.timelinePath)) {
         this.timeline = JSON.parse(fs.readFileSync(this.timelinePath, 'utf8'));
+      }
+      if (fs.existsSync(this.prefsPath)) {
+        const rawPrefs = JSON.parse(fs.readFileSync(this.prefsPath, 'utf8'));
+        Object.entries(rawPrefs).forEach(([uId, pref]) => this.userPreferences.set(uId, pref as UserVoicePreferences));
       }
     } catch (e) {
       logger.error('[VoiceRepository] Erreur lors du chargement des données:', e);
@@ -96,6 +107,10 @@ export class VoiceRepository {
       const setObj: Record<string, any> = {};
       this.settings.forEach((v, k) => (setObj[k] = v));
       fs.writeFileSync(this.settingsPath, JSON.stringify(setObj, null, 2), 'utf8');
+
+      const prefObj: Record<string, any> = {};
+      this.userPreferences.forEach((v, k) => (prefObj[k] = v));
+      fs.writeFileSync(this.prefsPath, JSON.stringify(prefObj, null, 2), 'utf8');
     } catch (e) {
       logger.error('[VoiceRepository] Erreur lors de la sauvegarde des données:', e);
     }
@@ -200,8 +215,10 @@ export class VoiceRepository {
           bitrate: 96000,
           isLocked: false,
           isHidden: false,
-          allowedUserIds: [],
+          allowedUserIds: ['usr_lucas', 'usr_sarah'],
           blockedUserIds: [],
+          whitelist: ['usr_lucas', 'usr_sarah'],
+          banlist: [],
           createdAt: new Date(now - 1000 * 60 * 45).toISOString(),
           lastEmptyAt: null,
           status: 'ACTIVE',
@@ -248,6 +265,8 @@ export class VoiceRepository {
           isHidden: false,
           allowedUserIds: ['usr_thomas'],
           blockedUserIds: ['usr_troll'],
+          whitelist: ['usr_thomas'],
+          banlist: ['usr_troll'],
           createdAt: new Date(now - 1000 * 60 * 90).toISOString(),
           lastEmptyAt: null,
           status: 'ACTIVE',
@@ -284,7 +303,7 @@ export class VoiceRepository {
           timestamp: new Date(now - 1000 * 60 * 45).toISOString(),
           actorId: 'usr_alex',
           actorTag: 'Alex#0001',
-          details: 'Création automatique via Join-to-Create (Gaming Hub)',
+          details: 'Création via Panneau Personnel (Gaming Hub)',
         },
         {
           id: 'tl_2',
@@ -351,45 +370,24 @@ export class VoiceRepository {
           leftAt: null,
           durationSeconds: 1500,
         },
-        {
-          id: 'sess_3',
-          guildId: demoGuild,
-          channelId: 'room_alex_gaming',
-          roomName: "🎮 Alex's Room #1",
-          hubId: 'hub_gaming',
-          userId: 'usr_sarah',
-          userTag: 'Sarah#5678',
-          joinedAt: new Date(now - 1000 * 60 * 12).toISOString(),
-          leftAt: null,
-          durationSeconds: 720,
-        },
-        {
-          id: 'sess_4',
-          guildId: demoGuild,
-          channelId: 'room_old_ranked',
-          roomName: '🏆 Ranked #1',
-          hubId: 'hub_ranked',
-          userId: 'usr_alex',
-          userTag: 'Alex#0001',
-          joinedAt: new Date(now - 1000 * 60 * 60 * 4).toISOString(),
-          leftAt: new Date(now - 1000 * 60 * 60 * 2).toISOString(),
-          durationSeconds: 7200,
-        },
-        {
-          id: 'sess_5',
-          guildId: demoGuild,
-          channelId: 'room_old_chill',
-          roomName: '💬 Salon Chill #2',
-          hubId: 'hub_chill',
-          userId: 'usr_david',
-          userTag: 'David#7777',
-          joinedAt: new Date(now - 1000 * 60 * 60 * 6).toISOString(),
-          leftAt: new Date(now - 1000 * 60 * 60 * 4).toISOString(),
-          durationSeconds: 7200,
-        },
       ];
 
-      this.settings.set(demoGuild, DEFAULT_VOICE_SETTINGS);
+      this.settings.set(demoGuild, {
+        ...DEFAULT_VOICE_SETTINGS,
+        creationTextChannelId: 'chan_voice_panel',
+        defaultRoomNameTemplate: '🎮 Salon de {username}',
+      });
+
+      this.userPreferences.set('usr_alex', {
+        userId: 'usr_alex',
+        defaultName: "🎮 Repaire d'Alex",
+        defaultLimit: 6,
+        defaultLocked: false,
+        defaultHidden: false,
+        defaultBitrate: 96000,
+        updatedAt: new Date().toISOString(),
+      });
+
       this.saveData();
     }
   }
@@ -443,6 +441,11 @@ export class VoiceRepository {
   }
 
   saveRoom(room: TemporaryVoiceRoom): TemporaryVoiceRoom {
+    if (!room.whitelist) room.whitelist = room.allowedUserIds || [];
+    if (!room.banlist) room.banlist = room.blockedUserIds || [];
+    if (!room.allowedUserIds) room.allowedUserIds = room.whitelist;
+    if (!room.blockedUserIds) room.blockedUserIds = room.banlist;
+
     const idx = this.rooms.findIndex((r) => r.id === room.id);
     if (idx >= 0) {
       this.rooms[idx] = room;
@@ -459,6 +462,107 @@ export class VoiceRepository {
       room.status = 'DELETED';
       this.saveData();
     }
+  }
+
+  // --- Whitelist & Banlist Management ---
+  addToWhitelist(roomId: string, userId: string, actorId: string = 'system', actorTag: string = 'ETHONE'): TemporaryVoiceRoom | null {
+    const room = this.getRoomById(roomId);
+    if (!room || room.status === 'DELETED') return null;
+
+    if (!room.allowedUserIds) room.allowedUserIds = [];
+    if (!room.whitelist) room.whitelist = [];
+    if (!room.blockedUserIds) room.blockedUserIds = [];
+    if (!room.banlist) room.banlist = [];
+
+    if (!room.allowedUserIds.includes(userId)) {
+      room.allowedUserIds.push(userId);
+    }
+    if (!room.whitelist.includes(userId)) {
+      room.whitelist.push(userId);
+    }
+
+    // Remove from banlist if present
+    room.blockedUserIds = room.blockedUserIds.filter((id) => id !== userId);
+    room.banlist = room.banlist.filter((id) => id !== userId);
+
+    this.saveRoom(room);
+    this.addTimelineEvent({
+      roomId: room.id,
+      guildId: room.guildId,
+      type: 'USER_WHITELISTED',
+      actorId,
+      actorTag,
+      targetId: userId,
+      details: `Ajouté à la liste blanche`,
+    });
+    return room;
+  }
+
+  removeFromWhitelist(roomId: string, userId: string): TemporaryVoiceRoom | null {
+    const room = this.getRoomById(roomId);
+    if (!room || room.status === 'DELETED') return null;
+
+    room.allowedUserIds = (room.allowedUserIds || []).filter((id) => id !== userId);
+    room.whitelist = (room.whitelist || []).filter((id) => id !== userId);
+    this.saveRoom(room);
+    return room;
+  }
+
+  addToBanlist(roomId: string, userId: string, actorId: string = 'system', actorTag: string = 'ETHONE'): TemporaryVoiceRoom | null {
+    const room = this.getRoomById(roomId);
+    if (!room || room.status === 'DELETED') return null;
+
+    if (!room.allowedUserIds) room.allowedUserIds = [];
+    if (!room.whitelist) room.whitelist = [];
+    if (!room.blockedUserIds) room.blockedUserIds = [];
+    if (!room.banlist) room.banlist = [];
+
+    if (!room.blockedUserIds.includes(userId)) {
+      room.blockedUserIds.push(userId);
+    }
+    if (!room.banlist.includes(userId)) {
+      room.banlist.push(userId);
+    }
+
+    // Remove from whitelist if present
+    room.allowedUserIds = room.allowedUserIds.filter((id) => id !== userId);
+    room.whitelist = room.whitelist.filter((id) => id !== userId);
+
+    this.saveRoom(room);
+    this.addTimelineEvent({
+      roomId: room.id,
+      guildId: room.guildId,
+      type: 'USER_BANNED',
+      actorId,
+      actorTag,
+      targetId: userId,
+      details: `Ajouté à la liste noire (banni du salon)`,
+    });
+    return room;
+  }
+
+  removeFromBanlist(roomId: string, userId: string): TemporaryVoiceRoom | null {
+    const room = this.getRoomById(roomId);
+    if (!room || room.status === 'DELETED') return null;
+
+    room.blockedUserIds = (room.blockedUserIds || []).filter((id) => id !== userId);
+    room.banlist = (room.banlist || []).filter((id) => id !== userId);
+    this.saveRoom(room);
+    return room;
+  }
+
+  // --- User Preferences ---
+  getUserPreferences(userId: string): UserVoicePreferences | undefined {
+    return this.userPreferences.get(userId);
+  }
+
+  saveUserPreferences(prefs: UserVoicePreferences): UserVoicePreferences {
+    this.userPreferences.set(prefs.userId, {
+      ...prefs,
+      updatedAt: new Date().toISOString(),
+    });
+    this.saveData();
+    return this.userPreferences.get(prefs.userId)!;
   }
 
   // --- Timeline ---
@@ -513,12 +617,13 @@ export class VoiceRepository {
       this.settings.set(guildId, { ...DEFAULT_VOICE_SETTINGS });
       this.saveData();
     }
-    return this.settings.get(guildId)!;
+    const current = this.settings.get(guildId)!;
+    return { ...DEFAULT_VOICE_SETTINGS, ...current };
   }
 
   updateSettings(guildId: string, newSettings: Partial<VoiceTrackerSettings>): VoiceTrackerSettings {
     const current = this.getSettings(guildId);
-    const updated = { ...current, ...newSettings };
+    const updated: VoiceTrackerSettings = { ...current, ...newSettings };
     this.settings.set(guildId, updated);
     this.saveData();
     return updated;

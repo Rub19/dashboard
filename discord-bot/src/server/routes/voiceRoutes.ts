@@ -1,5 +1,5 @@
 import { Router, Request, Response } from 'express';
-import { ChannelType, Client, PermissionFlagsBits, VoiceChannel } from 'discord.js';
+import { ChannelType, Client, PermissionFlagsBits, VoiceChannel, TextChannel } from 'discord.js';
 import { voiceRepository } from '../../modules/voice/storage/voiceRepository.js';
 import { VoicePermissionService } from '../../modules/voice/services/voicePermissionService.js';
 import { VoiceOwnershipService } from '../../modules/voice/services/voiceOwnershipService.js';
@@ -14,7 +14,7 @@ export function createVoiceRouter(client: Client): Router {
   // GET /api/guilds/:guildId/voice/overview
   router.get('/overview', (req: Request, res: Response) => {
     try {
-      const { guildId } = req.params;
+      const guildId = req.params.guildId as string;
       const data = voiceRepository.getOverview(guildId);
       res.json(data);
     } catch (err: any) {
@@ -23,10 +23,43 @@ export function createVoiceRouter(client: Client): Router {
     }
   });
 
+  // POST /api/guilds/:guildId/voice/panel/publish
+  router.post('/panel/publish', async (req: Request, res: Response) => {
+    try {
+      const guildId = req.params.guildId as string;
+      const guild = client.guilds.cache.get(guildId);
+      if (!guild) {
+        return res.status(404).json({ error: 'Serveur Discord introuvable ou bot non connecté' });
+      }
+
+      const settings = voiceRepository.getSettings(guildId);
+      const targetChannelId = (req.body.channelId || settings.creationTextChannelId || settings.panelChannelId) as string;
+
+      if (!targetChannelId) {
+        return res.status(400).json({ error: 'Veuillez spécifier un salon textuel pour le panneau de création.' });
+      }
+
+      const result = await TemporaryVoiceService.publishCreationPanel(guild, targetChannelId);
+      if (!result.success) {
+        return res.status(400).json({ error: result.error });
+      }
+
+      res.json({
+        success: true,
+        message: 'Panneau de création publié avec succès.',
+        channelId: targetChannelId,
+        messageId: result.messageId,
+      });
+    } catch (err: any) {
+      logger.error('Erreur voice/panel/publish :', err);
+      res.status(500).json({ error: err.message });
+    }
+  });
+
   // GET /api/guilds/:guildId/voice/hubs
   router.get('/hubs', (req: Request, res: Response) => {
     try {
-      const { guildId } = req.params;
+      const guildId = req.params.guildId as string;
       const hubs = voiceRepository.getHubs(guildId);
       res.json({ hubs });
     } catch (err: any) {
@@ -38,7 +71,7 @@ export function createVoiceRouter(client: Client): Router {
   // POST /api/guilds/:guildId/voice/hubs
   router.post('/hubs', async (req: Request, res: Response) => {
     try {
-      const { guildId } = req.params;
+      const guildId = req.params.guildId as string;
       const body = req.body;
 
       const newHub: VoiceHub = {
@@ -72,7 +105,8 @@ export function createVoiceRouter(client: Client): Router {
   // PUT /api/guilds/:guildId/voice/hubs/:id
   router.put('/hubs/:id', (req: Request, res: Response) => {
     try {
-      const { guildId, id } = req.params;
+      const guildId = req.params.guildId as string;
+      const id = req.params.id as string;
       const existing = voiceRepository.getHubById(id);
       if (!existing || existing.guildId !== guildId) {
         return res.status(404).json({ error: 'Hub introuvable' });
@@ -95,7 +129,8 @@ export function createVoiceRouter(client: Client): Router {
   // DELETE /api/guilds/:guildId/voice/hubs/:id
   router.delete('/hubs/:id', (req: Request, res: Response) => {
     try {
-      const { guildId, id } = req.params;
+      const guildId = req.params.guildId as string;
+      const id = req.params.id as string;
       const deleted = voiceRepository.deleteHub(guildId, id);
       res.json({ success: deleted });
     } catch (err: any) {
@@ -107,7 +142,7 @@ export function createVoiceRouter(client: Client): Router {
   // GET /api/guilds/:guildId/voice/rooms
   router.get('/rooms', (req: Request, res: Response) => {
     try {
-      const { guildId } = req.params;
+      const guildId = req.params.guildId as string;
       const rooms = voiceRepository.getRooms(guildId);
       res.json({ rooms });
     } catch (err: any) {
@@ -116,32 +151,106 @@ export function createVoiceRouter(client: Client): Router {
     }
   });
 
-  // GET /api/guilds/:guildId/voice/rooms/:roomId
-  router.get('/rooms/:roomId', (req: Request, res: Response) => {
+  // GET /api/guilds/:guildId/voice/rooms/:id/details
+  router.get('/rooms/:id/details', (req: Request, res: Response) => {
     try {
-      const { guildId, roomId } = req.params;
-      const room = voiceRepository.getRoomById(roomId);
+      const guildId = req.params.guildId as string;
+      const id = req.params.id as string;
+      const room = voiceRepository.getRoomById(id);
       if (!room || room.guildId !== guildId) {
         return res.status(404).json({ error: 'Salon introuvable' });
       }
 
-      const timeline = voiceRepository.getRoomTimeline(roomId);
-      res.json({ room, timeline });
+      const timeline = voiceRepository.getRoomTimeline(id);
+      res.json({
+        room,
+        timeline,
+        whitelist: room.allowedUserIds || room.whitelist || [],
+        banlist: room.blockedUserIds || room.banlist || [],
+        currentUsers: room.currentUsers || [],
+      });
     } catch (err: any) {
-      logger.error('Erreur voice/room detail :', err);
+      logger.error('Erreur voice/rooms/:id/details :', err);
       res.status(500).json({ error: err.message });
     }
   });
 
-  // POST /api/guilds/:guildId/voice/rooms/:roomId/action
-  router.post('/rooms/:roomId/action', async (req: Request, res: Response) => {
+  // PUT /api/guilds/:guildId/voice/rooms/:id/whitelist
+  router.put('/rooms/:id/whitelist', async (req: Request, res: Response) => {
     try {
-      const { guildId, roomId } = req.params;
+      const guildId = req.params.guildId as string;
+      const id = req.params.id as string;
+      const { userId, action } = req.body;
+      if (!userId) return res.status(400).json({ error: 'userId requis' });
+
+      const room = voiceRepository.getRoomById(id);
+      if (!room || room.guildId !== guildId) return res.status(404).json({ error: 'Salon introuvable' });
+
+      const guild = client.guilds.cache.get(guildId);
+      const discordChannel = guild?.channels.cache.get(id) as VoiceChannel | undefined;
+
+      if (action === 'remove') {
+        voiceRepository.removeFromWhitelist(id, userId);
+        if (discordChannel) {
+          await VoicePermissionService.setUserAccess(discordChannel, userId, 'reset');
+        }
+      } else {
+        voiceRepository.addToWhitelist(id, userId, 'dashboard_admin', 'Dashboard Admin');
+        if (discordChannel) {
+          await VoicePermissionService.setUserAccess(discordChannel, userId, 'allow');
+        }
+      }
+
+      res.json({ success: true, whitelist: room.allowedUserIds || room.whitelist || [] });
+    } catch (err: any) {
+      logger.error('Erreur voice/rooms/:id/whitelist :', err);
+      res.status(500).json({ error: err.message });
+    }
+  });
+
+  // PUT /api/guilds/:guildId/voice/rooms/:id/banlist
+  router.put('/rooms/:id/banlist', async (req: Request, res: Response) => {
+    try {
+      const guildId = req.params.guildId as string;
+      const id = req.params.id as string;
+      const { userId, action } = req.body;
+      if (!userId) return res.status(400).json({ error: 'userId requis' });
+
+      const room = voiceRepository.getRoomById(id);
+      if (!room || room.guildId !== guildId) return res.status(404).json({ error: 'Salon introuvable' });
+
+      const guild = client.guilds.cache.get(guildId);
+      const discordChannel = guild?.channels.cache.get(id) as VoiceChannel | undefined;
+
+      if (action === 'remove') {
+        voiceRepository.removeFromBanlist(id, userId);
+        if (discordChannel) {
+          await VoicePermissionService.setUserAccess(discordChannel, userId, 'reset');
+        }
+      } else {
+        voiceRepository.addToBanlist(id, userId, 'dashboard_admin', 'Dashboard Admin');
+        if (discordChannel) {
+          await VoicePermissionService.setUserAccess(discordChannel, userId, 'block');
+        }
+      }
+
+      res.json({ success: true, banlist: room.blockedUserIds || room.banlist || [] });
+    } catch (err: any) {
+      logger.error('Erreur voice/rooms/:id/banlist :', err);
+      res.status(500).json({ error: err.message });
+    }
+  });
+
+  // POST /api/guilds/:guildId/voice/rooms/:id/action
+  router.post('/rooms/:id/action', async (req: Request, res: Response) => {
+    try {
+      const guildId = req.params.guildId as string;
+      const roomId = req.params.id as string;
       const { action, value, targetUserId } = req.body;
 
       const room = voiceRepository.getRoomById(roomId);
       if (!room || room.guildId !== guildId || room.status === 'DELETED') {
-        return res.status(404).json({ error: 'Salon introuvable ou supprimé' });
+        return res.status(404).json({ error: 'Salon introuvable ou déjà supprimé' });
       }
 
       const guild = client.guilds.cache.get(guildId);
@@ -149,8 +258,8 @@ export function createVoiceRouter(client: Client): Router {
 
       switch (action) {
         case 'rename': {
-          if (!value || typeof value !== 'string') return res.status(400).json({ error: 'Nom invalide' });
-          room.name = value.substring(0, 100);
+          if (!value || typeof value !== 'string') return res.status(400).json({ error: 'Nouveau nom requis' });
+          room.name = value.trim();
           voiceRepository.saveRoom(room);
           if (discordChannel) await discordChannel.setName(room.name).catch(() => null);
           voiceRepository.addTimelineEvent({
@@ -159,7 +268,7 @@ export function createVoiceRouter(client: Client): Router {
             type: 'ROOM_RENAMED',
             actorId: 'dashboard_admin',
             actorTag: 'Dashboard Admin',
-            details: `Renommé en "${room.name}"`,
+            details: `Nouveau nom: "${room.name}"`,
           });
           break;
         }
@@ -239,11 +348,8 @@ export function createVoiceRouter(client: Client): Router {
 
         case 'kick': {
           if (!targetUserId) return res.status(400).json({ error: 'Membre cible requis' });
-          if (guild) {
-            const member = await guild.members.fetch(targetUserId).catch(() => null);
-            if (member && member.voice.channelId === roomId) {
-              await member.voice.disconnect('Expulsé via le Dashboard').catch(() => null);
-            }
+          if (discordChannel) {
+            await VoicePermissionService.kickMember(discordChannel, targetUserId, 'Expulsé via le Dashboard');
           }
           voiceRepository.addTimelineEvent({
             roomId,
@@ -252,6 +358,24 @@ export function createVoiceRouter(client: Client): Router {
             actorId: 'dashboard_admin',
             actorTag: 'Dashboard Admin',
             targetId: targetUserId,
+          });
+          break;
+        }
+
+        case 'mute': {
+          if (!targetUserId) return res.status(400).json({ error: 'Membre cible requis' });
+          const shouldMute = value !== false;
+          if (discordChannel) {
+            await VoicePermissionService.muteMember(discordChannel, targetUserId, shouldMute);
+          }
+          voiceRepository.addTimelineEvent({
+            roomId,
+            guildId,
+            type: 'USER_MUTED',
+            actorId: 'dashboard_admin',
+            actorTag: 'Dashboard Admin',
+            targetId: targetUserId,
+            details: shouldMute ? 'Rendu muet' : 'Démuté',
           });
           break;
         }
@@ -268,7 +392,8 @@ export function createVoiceRouter(client: Client): Router {
           break;
         }
 
-        case 'delete': {
+        case 'delete':
+        case 'cleanup': {
           if (guild) {
             await TemporaryVoiceService.deleteRoomChannel(guild, roomId, 'Suppression manuelle via le Dashboard');
           } else {
@@ -291,7 +416,7 @@ export function createVoiceRouter(client: Client): Router {
   // GET /api/guilds/:guildId/voice/sessions
   router.get('/sessions', (req: Request, res: Response) => {
     try {
-      const { guildId } = req.params;
+      const guildId = req.params.guildId as string;
       const sessions = voiceRepository.getSessions(guildId);
       res.json({ sessions });
     } catch (err: any) {
@@ -303,18 +428,16 @@ export function createVoiceRouter(client: Client): Router {
   // GET /api/guilds/:guildId/voice/analytics
   router.get('/analytics', (req: Request, res: Response) => {
     try {
-      const { guildId } = req.params;
+      const guildId = req.params.guildId as string;
       const sessions = voiceRepository.getSessions(guildId);
       const activeRooms = voiceRepository.getRooms(guildId);
 
-      // Aggregate peak hours (0 to 23)
       const hoursHeatmap = new Array(24).fill(0);
       sessions.forEach((s) => {
         const hour = new Date(s.joinedAt).getHours();
         hoursHeatmap[hour] += 1;
       });
 
-      // Top Hubs
       const hubUsage = new Map<string, number>();
       sessions.forEach((s) => {
         hubUsage.set(s.hubId, (hubUsage.get(s.hubId) || 0) + (s.durationSeconds || 0));
@@ -345,7 +468,7 @@ export function createVoiceRouter(client: Client): Router {
   // GET /api/guilds/:guildId/voice/settings
   router.get('/settings', (req: Request, res: Response) => {
     try {
-      const { guildId } = req.params;
+      const guildId = req.params.guildId as string;
       const settings = voiceRepository.getSettings(guildId);
       res.json({ settings });
     } catch (err: any) {
@@ -357,83 +480,38 @@ export function createVoiceRouter(client: Client): Router {
   // PUT /api/guilds/:guildId/voice/settings
   router.put('/settings', (req: Request, res: Response) => {
     try {
-      const { guildId } = req.params;
+      const guildId = req.params.guildId as string;
       const updated = voiceRepository.updateSettings(guildId, req.body);
       res.json({ settings: updated });
     } catch (err: any) {
-      logger.error('Erreur modification voice/settings :', err);
+      logger.error('Erreur update voice/settings :', err);
       res.status(500).json({ error: err.message });
     }
   });
 
-  // POST /api/guilds/:guildId/voice/setup (One-Click Setup Wizard)
-  router.post('/setup', async (req: Request, res: Response) => {
+  // GET /api/guilds/:guildId/voice/preferences/:userId
+  router.get('/preferences/:userId', (req: Request, res: Response) => {
     try {
-      const { guildId } = req.params;
-      const { categoryName = '🔊 SALONS VOCAUX', hubName = '➕ Créer un salon', template = "🎮 {username}'s Room" } = req.body;
+      const userId = req.params.userId as string;
+      const prefs = voiceRepository.getUserPreferences(userId);
+      res.json({ preferences: prefs || null });
+    } catch (err: any) {
+      logger.error('Erreur voice/preferences :', err);
+      res.status(500).json({ error: err.message });
+    }
+  });
 
-      const guild = client.guilds.cache.get(guildId);
-      let categoryId: string | null = null;
-      let channelId: string = 'trigger_' + Date.now().toString(36);
-
-      if (guild && guild.members.me?.permissions.has(PermissionFlagsBits.ManageChannels)) {
-        // Create Category on Discord
-        const category = await guild.channels.create({
-          name: categoryName,
-          type: ChannelType.GuildCategory,
-        });
-        categoryId = category.id;
-
-        // Create Trigger Voice Channel
-        const triggerChannel = await guild.channels.create({
-          name: hubName,
-          type: ChannelType.GuildVoice,
-          parent: category.id,
-        });
-        channelId = triggerChannel.id;
-      }
-
-      // Save Hub
-      const newHub: VoiceHub = {
-        id: 'hub_wizard_' + Date.now().toString(36),
-        guildId,
-        name: hubName.replace('➕ ', '') + ' Hub',
-        categoryId,
-        channelId,
-        type: 'voice',
-        namingTemplate: template,
-        userLimit: 5,
-        bitrate: 64000,
-        region: null,
-        allowedRoles: [],
-        excludedRoles: [],
-        roleRequirementMode: 'any',
-        accessMode: 'public',
-        autoNumbering: true,
-        enabled: true,
-        createdAt: new Date().toISOString(),
-      };
-      voiceRepository.saveHub(newHub);
-
-      res.status(201).json({
-        success: true,
-        hub: newHub,
-        message: 'Configuration automatique terminée avec succès !',
+  // PUT /api/guilds/:guildId/voice/preferences/:userId
+  router.put('/preferences/:userId', (req: Request, res: Response) => {
+    try {
+      const userId = req.params.userId as string;
+      const saved = voiceRepository.saveUserPreferences({
+        userId,
+        ...req.body,
       });
+      res.json({ preferences: saved });
     } catch (err: any) {
-      logger.error('Erreur voice/setup :', err);
-      res.status(500).json({ error: err.message });
-    }
-  });
-
-  // GET /api/guilds/:guildId/voice/users/:userId
-  router.get('/users/:userId', (req: Request, res: Response) => {
-    try {
-      const { guildId, userId } = req.params;
-      const profile = VoiceSessionService.getUserVoiceProfile(guildId, userId);
-      res.json({ profile });
-    } catch (err: any) {
-      logger.error('Erreur voice/users/:userId :', err);
+      logger.error('Erreur save voice/preferences :', err);
       res.status(500).json({ error: err.message });
     }
   });

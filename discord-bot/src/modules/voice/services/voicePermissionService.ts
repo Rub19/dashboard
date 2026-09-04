@@ -11,7 +11,7 @@ import { logger } from '../../../utils/logger.js';
 export class VoicePermissionService {
   public static buildInitialOverwrites(
     guild: Guild,
-    hub: VoiceHub,
+    hub: VoiceHub | { accessMode: string; allowedRoles: string[]; excludedRoles: string[] },
     owner: GuildMember
   ): OverwriteResolvable[] {
     const overwrites: OverwriteResolvable[] = [];
@@ -116,13 +116,59 @@ export class VoicePermissionService {
       } else if (mode === 'block') {
         await channel.permissionOverwrites.edit(targetUserId, {
           Connect: false,
+          ViewChannel: false,
         });
+        // Disconnect user if currently in channel
+        const member = channel.members.get(targetUserId);
+        if (member) {
+          await member.voice.disconnect('Banni du salon vocal').catch(() => null);
+        }
       } else {
         await channel.permissionOverwrites.delete(targetUserId);
       }
       return true;
     } catch (err) {
       logger.error('[VoicePermission] Erreur setUserAccess pour ' + targetUserId + ':', err);
+      return false;
+    }
+  }
+
+  public static async applyWhitelist(channel: VoiceChannel, whitelistUserIds: string[]): Promise<void> {
+    for (const userId of whitelistUserIds) {
+      await this.setUserAccess(channel, userId, 'allow');
+    }
+  }
+
+  public static async applyBanlist(channel: VoiceChannel, banlistUserIds: string[]): Promise<void> {
+    for (const userId of banlistUserIds) {
+      await this.setUserAccess(channel, userId, 'block');
+    }
+  }
+
+  public static async kickMember(channel: VoiceChannel, memberId: string, reason: string = 'Expulsé par le propriétaire'): Promise<boolean> {
+    try {
+      const member = channel.members.get(memberId);
+      if (member) {
+        await member.voice.disconnect(reason);
+        return true;
+      }
+      return false;
+    } catch (err) {
+      logger.error(`[VoicePermission] Erreur expulsion ${memberId}:`, err);
+      return false;
+    }
+  }
+
+  public static async muteMember(channel: VoiceChannel, memberId: string, mute: boolean): Promise<boolean> {
+    try {
+      const member = channel.members.get(memberId);
+      if (member) {
+        await member.voice.setMute(mute, 'Mute par le propriétaire du salon');
+        return true;
+      }
+      return false;
+    } catch (err) {
+      logger.error(`[VoicePermission] Erreur mute ${memberId}:`, err);
       return false;
     }
   }

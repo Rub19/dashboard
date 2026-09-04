@@ -34,8 +34,14 @@ export interface TemporaryVoiceRoom {
   bitrate: number;
   isLocked: boolean;
   isHidden: boolean;
-  allowedUserIds: string[];
-  blockedUserIds: string[];
+  allowedUserIds: string[]; // Whitelisted users
+  blockedUserIds: string[]; // Banlisted users
+  whitelist?: string[];
+  banlist?: string[];
+  textChannelId?: string | null;
+  controlPanelMessageId?: string | null;
+  region?: string | null;
+  allowedRoles?: string[];
   createdAt: string;
   lastEmptyAt?: string | null;
   status: RoomStatus;
@@ -50,6 +56,16 @@ export interface TemporaryVoiceRoom {
   }>;
   peakUsers: number;
   totalSecondsActive: number;
+}
+
+export interface UserVoicePreferences {
+  userId: string;
+  defaultName?: string;
+  defaultLimit?: number;
+  defaultLocked?: boolean;
+  defaultHidden?: boolean;
+  defaultBitrate?: number;
+  updatedAt: string;
 }
 
 export interface VoiceSession {
@@ -80,6 +96,9 @@ export interface VoiceTimelineEvent {
     | 'ROOM_UNHIDDEN'
     | 'USER_KICKED'
     | 'USER_BANNED'
+    | 'USER_WHITELISTED'
+    | 'USER_UNWHITELISTED'
+    | 'USER_MUTED'
     | 'LIMIT_CHANGED'
     | 'ROOM_RENAMED'
     | 'ROOM_DELETED';
@@ -112,6 +131,10 @@ export interface VoiceTrackerSettings {
   maxRoomsPerUser: number;
   creationCooldownSeconds: number;
   panelChannelId?: string | null;
+  creationTextChannelId?: string | null;
+  creationPanelMessageId?: string | null;
+  roomCategory?: string | null;
+  defaultRoomNameTemplate?: string;
   sendControlPanelInRoom: boolean;
   automationsEnabled: boolean;
   automations: VoiceAutomationRule[];

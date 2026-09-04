@@ -33,11 +33,13 @@ import { logger } from '../utils/logger.js';
 
 export async function onInteractionCreate(interaction: Interaction) {
   // 1. Gestion des composants d'interaction (Boutons, Menus déroulants, Modals)
-  if (interaction.isStringSelectMenu()) {
-    if (interaction.customId === 'settings_select_category') {
+  if (interaction.isAnySelectMenu()) {
+    if (interaction.customId === 'settings_select_category' && interaction.isStringSelectMenu()) {
       await handleSettingsSelectMenu(interaction);
-    } else if (interaction.customId.startsWith('role_select:')) {
+    } else if (interaction.customId.startsWith('role_select:') && interaction.isStringSelectMenu()) {
       await handleRoleSelect(interaction);
+    } else if (interaction.customId.startsWith('voice_')) {
+      await DiscordVoicePanel.handleSelectMenu(interaction);
     }
     return;
   }

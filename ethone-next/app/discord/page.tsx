@@ -53,6 +53,7 @@ import {
   Vote,
   Tag,
   Clock,
+  Calendar,
 } from "lucide-react";
 import { useAuth } from "@/components/AuthProvider";
 import { useToast } from "@/components/ToastProvider";
@@ -84,7 +85,8 @@ type ModuleType =
   | "forms"
   | "polls"
   | "roles"
-  | "analytics";
+  | "analytics"
+  | "events";
 
 interface BotModule {
   id: ModuleType;
@@ -239,6 +241,14 @@ const MODULES: BotModule[] = [
     icon: BarChart3,
     color: "text-cyan-400",
     badge: "Données",
+  },
+  {
+    id: "events",
+    title: "Événements & Calendrier 2.0",
+    description: "Planification d'événements, calendrier interactif, gestion des RSVP, jauges et rappels automatiques Discord.",
+    icon: Calendar,
+    color: "text-indigo-400",
+    badge: "Événements",
   },
 ];
 
@@ -2080,6 +2090,82 @@ export default function DiscordDashboardPage() {
                       >
                         <Clock className="h-3.5 w-3.5 text-amber-400" />
                         <span>Heatmap d'Affluence</span>
+                      </Link>
+                    </div>
+                  </div>
+                )}
+
+                {/* MODULE: Events & Calendar 2.0 */}
+                {activeModule === "events" && (
+                  <div className="space-y-4 text-xs">
+                    {/* Events Gateway */}
+                    <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-3 rounded-2xl border border-indigo-500/30 bg-gradient-to-r from-indigo-500/10 via-purple-500/10 to-cyan-600/10 p-4 shadow-lg shadow-indigo-500/5">
+                      <div>
+                        <div className="flex items-center gap-2">
+                          <span className="text-base">🗓️</span>
+                          <p className="text-xs font-bold text-white">Events &amp; Calendar 2.0</p>
+                          <span className="text-[9px] uppercase font-bold tracking-wider px-1.5 py-0.5 rounded bg-indigo-500/20 text-indigo-300 border border-indigo-500/30">
+                            Communauté &amp; Compétition
+                          </span>
+                        </div>
+                        <p className="text-[11px] text-zinc-300 mt-0.5">
+                          Planifiez vos soirées gaming, tournois et réunions avec calendrier interactif (Mois, Semaine, Agenda), gestion des inscriptions (Going, Maybe, Waitlist), pointages et rappels automatiques.
+                        </p>
+                      </div>
+                      <Link
+                        href={`/discord/events?guildId=${selectedGuild.id}`}
+                        className="flex h-9 shrink-0 items-center gap-2 rounded-xl bg-gradient-to-r from-indigo-600 to-purple-600 px-4 text-xs font-bold text-white shadow-md shadow-indigo-600/20 transition-all hover:from-indigo-500 hover:to-purple-500 active:scale-95 cursor-pointer"
+                      >
+                        <Calendar className="h-4 w-4" />
+                        <span>Ouvrir Events Center</span>
+                        <ChevronRight className="h-3.5 w-3.5" />
+                      </Link>
+                    </div>
+
+                    <div className="grid grid-cols-2 sm:grid-cols-4 gap-3">
+                      <div className="rounded-xl border border-white/10 bg-white/[0.02] p-3">
+                        <p className="text-[10px] text-zinc-400 font-medium uppercase tracking-wider">Affichage</p>
+                        <p className="text-lg font-bold text-indigo-400 mt-1">Calendrier Interactif</p>
+                        <p className="text-[10px] text-zinc-400 mt-0.5">Vues Mois, Semaine, Jour &amp; Agenda</p>
+                      </div>
+                      <div className="rounded-xl border border-white/10 bg-white/[0.02] p-3">
+                        <p className="text-[10px] text-zinc-400 font-medium uppercase tracking-wider">Inscriptions</p>
+                        <p className="text-lg font-bold text-purple-400 mt-1">RSVP &amp; Waitlist</p>
+                        <p className="text-[10px] text-zinc-400 mt-0.5">Jauges &amp; promotion automatique</p>
+                      </div>
+                      <div className="rounded-xl border border-white/10 bg-white/[0.02] p-3">
+                        <p className="text-[10px] text-zinc-400 font-medium uppercase tracking-wider">Discord</p>
+                        <p className="text-lg font-bold text-cyan-400 mt-1">Embeds &amp; Boutons</p>
+                        <p className="text-[10px] text-zinc-400 mt-0.5">Pointage vocal &amp; slash /event</p>
+                      </div>
+                      <div className="rounded-xl border border-white/10 bg-white/[0.02] p-3">
+                        <p className="text-[10px] text-zinc-400 font-medium uppercase tracking-wider">Export</p>
+                        <p className="text-lg font-bold text-emerald-400 mt-1">iCal (.ics)</p>
+                        <p className="text-[10px] text-zinc-400 mt-0.5">Synchro Google / Apple Calendar</p>
+                      </div>
+                    </div>
+
+                    <div className="flex flex-wrap gap-2 pt-1">
+                      <Link
+                        href={`/discord/events?guildId=${selectedGuild.id}`}
+                        className="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-lg border border-white/10 bg-zinc-900/80 hover:bg-zinc-800 text-zinc-200 text-xs transition-all"
+                      >
+                        <Calendar className="h-3.5 w-3.5 text-indigo-400" />
+                        <span>Tous les Événements</span>
+                      </Link>
+                      <Link
+                        href={`/discord/calendar?guildId=${selectedGuild.id}`}
+                        className="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-lg border border-white/10 bg-zinc-900/80 hover:bg-zinc-800 text-zinc-200 text-xs transition-all"
+                      >
+                        <Calendar className="h-3.5 w-3.5 text-cyan-400" />
+                        <span>Vue Calendrier</span>
+                      </Link>
+                      <Link
+                        href={`/discord/events/create?guildId=${selectedGuild.id}`}
+                        className="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-lg border border-white/10 bg-zinc-900/80 hover:bg-zinc-800 text-zinc-200 text-xs transition-all"
+                      >
+                        <Plus className="h-3.5 w-3.5 text-purple-400" />
+                        <span>Créer un Événement</span>
                       </Link>
                     </div>
                   </div>

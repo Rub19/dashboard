@@ -30,6 +30,7 @@ import { antiraidCommand } from '../modules/antiRaid/commands/antiraidCommand.js
 import { automodCommand } from '../modules/automod/commands/automodCommand.js';
 import { musicCommand } from '../commands/music/music.js';
 import { pollCommand } from '../modules/polls/commands/pollCommand.js';
+import { eventCommand } from '../modules/events/eventsCommand.js';
 
 import { config } from '../config.js';
 import { Command } from '../types/command.js';
@@ -86,6 +87,9 @@ class CommandRegistry {
 
     // Sondages & Votes 2.0 (Polls Center)
     this.register(pollCommand);
+
+    // Événements & Calendrier 2.0 (Events Center)
+    this.register(eventCommand);
   }
 
   public register(command: Command) {

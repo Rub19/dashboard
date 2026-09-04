@@ -31,6 +31,10 @@ import { createBackupRouter } from './routes/backupRoutes.js';
 import { createAiRouter } from './routes/aiRoutes.js';
 import { createFormRouter } from './routes/formRoutes.js';
 import { createPollRouter } from './routes/pollRoutes.js';
+import { createEventRouter } from './routes/events.js';
+import { createCalendarRouter } from './routes/calendar.js';
+import { eventsSchedulerService } from '../modules/events/eventsSchedulerService.js';
+import { eventsAutomationService } from '../modules/events/eventsAutomationService.js';
 import { authMiddleware } from './middleware/auth.js';
 import { createGuildAuthMiddleware } from './middleware/guildAuth.js';
 
@@ -172,6 +176,22 @@ export function startWebServer(client: Client): http.Server {
     createGuildAuthMiddleware(client),
     createPollRouter(client)
   );
+  app.use(
+    '/api/guilds/:guildId/events',
+    authMiddleware,
+    createGuildAuthMiddleware(client),
+    createEventRouter(client)
+  );
+  app.use(
+    '/api/guilds/:guildId/calendar',
+    authMiddleware,
+    createGuildAuthMiddleware(client),
+    createCalendarRouter(client)
+  );
+
+  // Initialisation des services de fond Événements 2.0
+  eventsSchedulerService.initialize(client);
+  eventsAutomationService.initialize(client);
 
   // Route de santé de l'API
   app.get('/api/health', (req: Request, res: Response) => {

@@ -28,6 +28,7 @@ import { DiscordVoicePanel } from '../modules/voice/ui/discordVoicePanel.js';
 import { DiscordAiPanel } from '../modules/ai/ui/discordAiPanel.js';
 import { discordFormPanel } from '../modules/forms/ui/discordFormPanel.js';
 import { discordPollPanel } from '../modules/polls/ui/discordPollPanel.js';
+import { handleEventButton } from '../modules/events/eventsInteractionHandler.js';
 import { logger } from '../utils/logger.js';
 
 export async function onInteractionCreate(interaction: Interaction) {
@@ -64,6 +65,8 @@ export async function onInteractionCreate(interaction: Interaction) {
       await discordFormPanel.handleButton(interaction);
     } else if (interaction.customId.startsWith('poll_')) {
       await discordPollPanel.handleButton(interaction);
+    } else if (interaction.customId.startsWith('event_')) {
+      await handleEventButton(interaction);
     }
     return;
   }

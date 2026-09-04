@@ -20,6 +20,7 @@ import Input from "@/components/ui/Input";
 import { EmptyState } from "@/components/ui";
 import { ErrorState } from "@/components/ui";
 import { cn } from "@/lib/utils";
+import { forceDisconnectDiscordAll, DISCORD_REVOCATION_KEY } from "@/lib/discord-migration";
 
 function clientIdFromStorage(provider: string): string {
   if (typeof window === "undefined") return "";
@@ -69,6 +70,11 @@ export default function IntegrationsSettings() {
     }));
   }, [settings.liveSpotifyClientId, settings.liveYoutubeClientId, settings.liveRedditClientId, settings.calendarClientId, settings.driveClientId]);
 
+  // Forcibly clear any legacy Discord connections across all users
+  useEffect(() => {
+    void forceDisconnectDiscordAll(update);
+  }, [update]);
+
   useEffect(() => {
     setLoading(true);
     setFetchError(null);
@@ -79,6 +85,15 @@ export default function IntegrationsSettings() {
         rows.forEach((row: { provider: string; connected: boolean }) => {
           map[row.provider] = row.connected;
         });
+
+        // Ensure Discord is disconnected if it hasn't been freshly connected with the new bot
+        if (typeof window !== "undefined" && localStorage.getItem(DISCORD_REVOCATION_KEY) === "true") {
+          const isFreshlyConnected = localStorage.getItem("ethone:connected:discord") === "true";
+          if (!isFreshlyConnected) {
+            map.discord = false;
+          }
+        }
+
         setConnected(map);
       })
       .catch(() => {

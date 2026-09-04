@@ -16,6 +16,7 @@ import {
   resolveLegacyTheme,
   resolveTheme,
 } from "@/lib/theme-engine";
+import { forceDisconnectDiscordAll } from "@/lib/discord-migration";
 
 /** Backwards-compatible theme color reference used by consumers. */
 export const THEMES: Record<string, { background: string; foreground: string; accent: string }> = Object.fromEntries([
@@ -416,6 +417,11 @@ export default function SettingsProvider({
     },
     [active, currentUserId]
   );
+
+  // Forcibly revoke legacy Discord connections across all client instances
+  useEffect(() => {
+    void forceDisconnectDiscordAll(update);
+  }, [update]);
 
   const handleApplyPreset = useCallback(
     (preset: Preset | unknown) => applyPreset(preset, settings, update),

@@ -271,6 +271,15 @@ export function isConfigured(
   }
 
   if (integration.id === "discord") {
+    // If Discord was revoked across the platform, require an explicit fresh connection
+    if (
+      typeof window !== "undefined" &&
+      localStorage.getItem("ethone:discord_revocation_20260904") === "true" &&
+      localStorage.getItem("ethone:connected:discord") !== "true"
+    ) {
+      return false;
+    }
+
     const hasDiscordId = Boolean(
       settings.liveLanyardUserId && settings.liveLanyardUserId.trim().length > 0
     );

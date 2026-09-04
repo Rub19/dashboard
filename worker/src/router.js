@@ -74,7 +74,7 @@ import { profileRoute } from "./routes/profile.js";
 import { profilesRoute } from "./routes/profiles.js";
 import { adminStatsRoute } from "./routes/admin.js";
 import itemsRoute from "./routes/items.js";
-import { connectionsListRoute } from "./routes/connections.js";
+import { connectionsListRoute, connectionsDisconnectRoute } from "./routes/connections.js";
 import { providerCredentialsRoute } from "./routes/provider-credentials.js";
 import {
   mailAliasRoute, mailAliasUpdateRoute, mailBulkActionRoute, mailContactsRoute, mailDraftsRoute, mailInboxRoute,
@@ -389,6 +389,7 @@ export const ROUTES = Object.freeze([
 
   // Connections
   route("connections.list", "/api/connections", connectionsListRoute, { public: true, service: "sync", rateLimit: "edge" }),
+  route("connections.disconnect", "/api/connections/disconnect", connectionsDisconnectRoute, { method: "POST", public: true, service: "sync", rateLimit: "standard" }),
   route("provider-credentials", "/api/provider-credentials", providerCredentialsRoute, { service: "sync" }),
   route("provider-credentials.post", "/api/provider-credentials", providerCredentialsRoute, { method: "POST", service: "sync", rateLimit: "strict" }),
   route("provider-credentials.delete", "/api/provider-credentials", providerCredentialsRoute, { method: "DELETE", service: "sync", rateLimit: "strict" }),

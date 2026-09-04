@@ -49,6 +49,7 @@ import {
   Ticket,
   UserPlus,
   Archive,
+  Bot,
 } from "lucide-react";
 import { useAuth } from "@/components/AuthProvider";
 import { useToast } from "@/components/ToastProvider";
@@ -76,6 +77,7 @@ type ModuleType =
   | "invites"
   | "voice"
   | "backups"
+  | "ai"
   | "analytics";
 
 interface BotModule {
@@ -191,6 +193,14 @@ const MODULES: BotModule[] = [
     icon: Archive,
     color: "text-indigo-400",
     badge: "Recovery",
+  },
+  {
+    id: "ai",
+    title: "AI Assistant 2.0",
+    description: "Assistant IA Discord intelligent, base RAG sémantique, builder de personnalité et outils support.",
+    icon: Bot,
+    color: "text-violet-400",
+    badge: "GenAI",
   },
   {
     id: "analytics",
@@ -1597,6 +1607,57 @@ export default function DiscordDashboardPage() {
                         <div className="flex items-center gap-2 rounded-xl border border-white/5 bg-white/[0.02] p-2.5">
                           <span className="h-2 w-2 rounded-full bg-rose-400 shrink-0" />
                           <span>Sauvegardes protégées inviolables contre la purge</span>
+                        </div>
+                      </div>
+                    </div>
+                  </div>
+                )}
+
+                {/* MODULE: AI Assistant 2.0 */}
+                {activeModule === "ai" && (
+                  <div className="space-y-4 text-xs">
+                    {/* AI Center Gateway */}
+                    <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-3 rounded-2xl border border-violet-500/30 bg-gradient-to-r from-violet-500/10 via-purple-500/10 to-violet-600/10 p-4 shadow-lg shadow-violet-500/5">
+                      <div>
+                        <div className="flex items-center gap-2">
+                          <span className="text-base">🤖</span>
+                          <p className="text-xs font-bold text-white">ETHONE AI Assistant 2.0 &amp; Knowledge Hub</p>
+                          <span className="text-[9px] uppercase font-bold tracking-wider px-1.5 py-0.5 rounded bg-violet-500/20 text-violet-300 border border-violet-500/30">
+                            GenAI Engine
+                          </span>
+                        </div>
+                        <p className="text-[11px] text-zinc-300 mt-0.5">
+                          Assistant IA Discord intelligent, base de connaissances RAG sémantique, builder de personnalités à 5 curseurs, permissions de salons et handoff de tickets de support.
+                        </p>
+                      </div>
+                      <Link
+                        href={`/discord/ai?guildId=${selectedGuild.id}`}
+                        className="flex h-9 shrink-0 items-center gap-2 rounded-xl bg-gradient-to-r from-violet-600 to-purple-600 px-4 text-xs font-bold text-white shadow-md shadow-violet-600/20 transition-all hover:from-violet-500 hover:to-purple-500 active:scale-95 cursor-pointer"
+                      >
+                        <Bot className="h-4 w-4" />
+                        <span>Ouvrir AI Center 2.0</span>
+                        <ChevronRight className="h-3.5 w-3.5" />
+                      </Link>
+                    </div>
+
+                    <div className="rounded-2xl border border-white/10 bg-white/[0.02] p-4 space-y-3">
+                      <p className="font-bold text-white">Fonctionnalités IA Disponibles</p>
+                      <div className="grid grid-cols-1 sm:grid-cols-2 gap-2.5 text-[11px] text-zinc-400">
+                        <div className="flex items-center gap-2 rounded-xl border border-white/5 bg-white/[0.02] p-2.5">
+                          <span className="h-2 w-2 rounded-full bg-violet-400 shrink-0" />
+                          <span>RAG sémantique (sources globales, par salon ou restreintes aux rôles)</span>
+                        </div>
+                        <div className="flex items-center gap-2 rounded-xl border border-white/5 bg-white/[0.02] p-2.5">
+                          <span className="h-2 w-2 rounded-full bg-emerald-400 shrink-0" />
+                          <span>Bouclier de sécurité anti-jailbreak &amp; prompt injection strict</span>
+                        </div>
+                        <div className="flex items-center gap-2 rounded-xl border border-white/5 bg-white/[0.02] p-2.5">
+                          <span className="h-2 w-2 rounded-full bg-cyan-400 shrink-0" />
+                          <span>Commandes slash /ask et /summarize natives avec boutons d&apos;action</span>
+                        </div>
+                        <div className="flex items-center gap-2 rounded-xl border border-white/5 bg-white/[0.02] p-2.5">
+                          <span className="h-2 w-2 rounded-full bg-amber-400 shrink-0" />
+                          <span>Intégration Helpdesk &amp; escalade en ticket privé pour le staff</span>
                         </div>
                       </div>
                     </div>

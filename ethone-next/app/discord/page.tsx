@@ -40,6 +40,12 @@ import {
   Save,
   Minus,
   Zap,
+  Music2,
+  Play,
+  Pause,
+  SkipForward,
+  SkipBack,
+  Disc,
 } from "lucide-react";
 import { useAuth } from "@/components/AuthProvider";
 import { useToast } from "@/components/ToastProvider";
@@ -59,6 +65,7 @@ type ModuleType =
   | "giveaways"
   | "moderation"
   | "logs"
+  | "music"
   | "analytics";
 
 interface BotModule {
@@ -126,6 +133,14 @@ const MODULES: BotModule[] = [
     icon: FileText,
     color: "text-blue-400",
     badge: "Surveillance",
+  },
+  {
+    id: "music",
+    title: "Lecteur Musique 2.0",
+    description: "Contrôle en direct de la musique vocale, queue, playlists et mode DJ.",
+    icon: Music2,
+    color: "text-violet-400",
+    badge: "Live Audio",
   },
   {
     id: "analytics",
@@ -279,6 +294,60 @@ export default function DiscordDashboardPage() {
       customCommands: prev.customCommands.filter((_, i) => i !== index),
     }));
     success("Commande supprimée", "La commande a été retirée du serveur.");
+  };
+
+  // --- Live Music Center 2.0 State ---
+  const [liveMusicState, setLiveMusicState] = useState<any>(null);
+
+  const fetchLiveMusic = useCallback(async () => {
+    if (!selectedGuild) return;
+    try {
+      const res = await fetch(`http://localhost:3001/api/guilds/${selectedGuild.id}/music/state`);
+      if (res.ok) {
+        const data = await res.json();
+        setLiveMusicState(data.state);
+      }
+    } catch {
+      // Offline fallback
+    }
+  }, [selectedGuild]);
+
+  useEffect(() => {
+    fetchLiveMusic();
+    const interval = setInterval(fetchLiveMusic, 3000);
+    return () => clearInterval(interval);
+  }, [fetchLiveMusic]);
+
+  const handleMusicPlayPause = async () => {
+    if (!selectedGuild || !liveMusicState) return;
+    const isPlaying = liveMusicState.status === "PLAYING";
+    const action = isPlaying ? "pause" : "resume";
+    try {
+      await fetch(`http://localhost:3001/api/guilds/${selectedGuild.id}/music/${action}`, { method: "POST" });
+      fetchLiveMusic();
+    } catch {
+      showError("Action impossible", "Erreur lors de la mise en pause/reprise.");
+    }
+  };
+
+  const handleMusicSkip = async () => {
+    if (!selectedGuild) return;
+    try {
+      await fetch(`http://localhost:3001/api/guilds/${selectedGuild.id}/music/skip`, { method: "POST" });
+      fetchLiveMusic();
+    } catch {
+      showError("Action impossible", "Erreur lors du passage de piste.");
+    }
+  };
+
+  const handleMusicPrev = async () => {
+    if (!selectedGuild) return;
+    try {
+      await fetch(`http://localhost:3001/api/guilds/${selectedGuild.id}/music/previous`, { method: "POST" });
+      fetchLiveMusic();
+    } catch {
+      showError("Action impossible", "Erreur lors du retour en arrière.");
+    }
   };
 
   const isAuthenticated = !!user || !!session;
@@ -555,6 +624,106 @@ export default function DiscordDashboardPage() {
                     <span>{isSaving ? "Sauvegarde..." : "Enregistrer les modifications"}</span>
                   </button>
                 </div>
+              </div>
+
+              {/* DISCORD HOME NOW PLAYING LIVE CARD */}
+              <div className="rounded-3xl border border-white/10 bg-gradient-to-r from-violet-500/[0.08] via-indigo-500/[0.05] to-black/40 p-4 sm:p-5 backdrop-blur-xl shadow-xl">
+                {liveMusicState?.currentTrack ? (
+                  <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4">
+                    <div className="flex items-center gap-3.5 min-w-0">
+                      <div className="relative h-14 w-14 shrink-0 rounded-2xl overflow-hidden border border-white/15 bg-zinc-900 shadow-md">
+                        <img
+                          src={liveMusicState.currentTrack.thumbnail}
+                          alt={liveMusicState.currentTrack.title}
+                          className="h-full w-full object-cover"
+                        />
+                        {liveMusicState.status === "PLAYING" && (
+                          <span className="absolute bottom-1 right-1 flex h-2.5 w-2.5 rounded-full bg-emerald-400">
+                            <span className="h-full w-full rounded-full bg-emerald-400 animate-ping opacity-75" />
+                          </span>
+                        )}
+                      </div>
+                      <div className="min-w-0 space-y-0.5">
+                        <div className="flex items-center gap-2">
+                          <span className="text-[10px] font-bold uppercase tracking-wider px-1.5 py-0.5 rounded bg-violet-500/20 text-violet-300 border border-violet-500/30">
+                            Now Playing
+                          </span>
+                          {liveMusicState.voiceChannel && (
+                            <span className="text-[10px] text-zinc-400 truncate">
+                              🔊 {liveMusicState.voiceChannel.name}
+                            </span>
+                          )}
+                        </div>
+                        <h4 className="text-sm font-bold text-white truncate">
+                          {liveMusicState.currentTrack.title}
+                        </h4>
+                        <p className="text-xs text-zinc-400 truncate">
+                          {liveMusicState.currentTrack.artist} • Demandé par {liveMusicState.currentTrack.requestedBy.tag}
+                        </p>
+                      </div>
+                    </div>
+
+                    <div className="flex items-center gap-3 self-end sm:self-center shrink-0">
+                      {/* Quick Mini Controls */}
+                      <div className="flex items-center gap-1.5 bg-black/40 border border-white/10 p-1 rounded-xl">
+                        <button
+                          onClick={handleMusicPrev}
+                          className="flex h-7 w-7 items-center justify-center rounded-lg text-zinc-400 hover:text-white hover:bg-white/10 transition-all cursor-pointer"
+                          title="Précédent"
+                        >
+                          <SkipBack className="h-3.5 w-3.5" />
+                        </button>
+                        <button
+                          onClick={handleMusicPlayPause}
+                          className="flex h-7 w-7 items-center justify-center rounded-lg bg-violet-600 text-white hover:bg-violet-500 transition-all cursor-pointer"
+                          title={liveMusicState.status === "PLAYING" ? "Pause" : "Play"}
+                        >
+                          {liveMusicState.status === "PLAYING" ? <Pause className="h-3.5 w-3.5 fill-white" /> : <Play className="h-3.5 w-3.5 fill-white ml-0.5" />}
+                        </button>
+                        <button
+                          onClick={handleMusicSkip}
+                          className="flex h-7 w-7 items-center justify-center rounded-lg text-zinc-400 hover:text-white hover:bg-white/10 transition-all cursor-pointer"
+                          title="Suivant"
+                        >
+                          <SkipForward className="h-3.5 w-3.5" />
+                        </button>
+                      </div>
+
+                      <span className="text-[11px] font-mono text-zinc-400 hidden md:inline">
+                        Queue: {liveMusicState.queueLength}
+                      </span>
+
+                      <Link
+                        href={`/discord/music?guildId=${selectedGuild.id}`}
+                        className="flex h-9 items-center gap-1.5 rounded-xl bg-violet-600 px-3.5 text-xs font-bold text-white shadow-md shadow-violet-600/20 hover:bg-violet-500 transition-all active:scale-95 cursor-pointer"
+                      >
+                        <Music2 className="h-3.5 w-3.5" />
+                        <span>Ouvrir Music Center</span>
+                        <ChevronRight className="h-3.5 w-3.5" />
+                      </Link>
+                    </div>
+                  </div>
+                ) : (
+                  <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-3">
+                    <div className="flex items-center gap-3">
+                      <div className="flex h-11 w-11 shrink-0 items-center justify-center rounded-2xl border border-white/10 bg-white/5 text-violet-400">
+                        <Music2 className="h-5 w-5" />
+                      </div>
+                      <div>
+                        <p className="text-xs font-bold text-white">Lecteur Musique Discord 2.0</p>
+                        <p className="text-[11px] text-zinc-400">Aucune musique en cours • Lancez la musique dans vos salons vocaux.</p>
+                      </div>
+                    </div>
+                    <Link
+                      href={`/discord/music?guildId=${selectedGuild.id}`}
+                      className="flex h-8 items-center gap-1.5 rounded-xl border border-violet-500/30 bg-violet-500/10 px-3 text-xs font-semibold text-violet-300 hover:bg-violet-500/20 transition-all cursor-pointer"
+                    >
+                      <Music2 className="h-3.5 w-3.5" />
+                      <span>Ouvrir Music Center</span>
+                      <ChevronRight className="h-3.5 w-3.5" />
+                    </Link>
+                  </div>
+                )}
               </div>
 
               {/* Modules Selector Strip */}
@@ -962,6 +1131,67 @@ export default function DiscordDashboardPage() {
                           <input type="checkbox" defaultChecked className="rounded border-zinc-700 accent-blue-500" />
                           <span>Journaliser les arrivées et départs de membres</span>
                         </label>
+                      </div>
+                    </div>
+                  </div>
+                )}
+
+                {/* MODULE: Lecteur Musique 2.0 */}
+                {activeModule === "music" && (
+                  <div className="space-y-4 text-xs">
+                    {/* Music Center Gateway */}
+                    <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-3 rounded-2xl border border-violet-500/30 bg-gradient-to-r from-violet-500/10 via-indigo-500/10 to-violet-600/10 p-4 shadow-lg shadow-violet-500/5">
+                      <div>
+                        <div className="flex items-center gap-2">
+                          <span className="text-base">🎵</span>
+                          <p className="text-xs font-bold text-white">Centre de Contrôle Musical ETHONE 2.0</p>
+                          <span className="text-[9px] uppercase font-bold tracking-wider px-1.5 py-0.5 rounded bg-violet-500/20 text-violet-300 border border-violet-500/30">
+                            Live Stream
+                          </span>
+                        </div>
+                        <p className="text-[11px] text-zinc-300 mt-0.5">
+                          Lecteur audio synchronisé en direct, file d&apos;attente drag & drop, recherche multi-sources, playlists, favoris et mode DJ.
+                        </p>
+                      </div>
+                      <Link
+                        href={`/discord/music?guildId=${selectedGuild.id}`}
+                        className="flex h-9 shrink-0 items-center gap-2 rounded-xl bg-gradient-to-r from-violet-600 to-indigo-600 px-4 text-xs font-bold text-white shadow-md shadow-violet-600/20 transition-all hover:from-violet-500 hover:to-indigo-500 active:scale-95 cursor-pointer"
+                      >
+                        <Music2 className="h-4 w-4" />
+                        <span>Ouvrir Music Center</span>
+                        <ChevronRight className="h-3.5 w-3.5" />
+                      </Link>
+                    </div>
+
+                    <div className="rounded-2xl border border-white/10 bg-white/[0.02] p-4 space-y-3">
+                      <p className="font-bold text-white">État du lecteur audio</p>
+                      <div className="flex items-center justify-between text-xs pt-1">
+                        <div className="space-y-0.5">
+                          <p className="font-semibold text-white">
+                            {liveMusicState?.currentTrack ? liveMusicState.currentTrack.title : "Aucune musique en cours"}
+                          </p>
+                          <p className="text-[11px] text-zinc-400">
+                            {liveMusicState?.currentTrack
+                              ? `${liveMusicState.currentTrack.artist} • File: ${liveMusicState.queueLength} titres`
+                              : "Utilisez la commande /music play ou le Music Center pour écouter."}
+                          </p>
+                        </div>
+                        {liveMusicState?.currentTrack && (
+                          <div className="flex items-center gap-1 bg-black/40 border border-white/10 p-1 rounded-xl">
+                            <button
+                              onClick={handleMusicPlayPause}
+                              className="flex h-7 w-7 items-center justify-center rounded-lg bg-violet-600 text-white hover:bg-violet-500 cursor-pointer"
+                            >
+                              {liveMusicState.status === "PLAYING" ? <Pause className="h-3.5 w-3.5 fill-white" /> : <Play className="h-3.5 w-3.5 fill-white ml-0.5" />}
+                            </button>
+                            <button
+                              onClick={handleMusicSkip}
+                              className="flex h-7 w-7 items-center justify-center rounded-lg text-zinc-400 hover:text-white hover:bg-white/10 cursor-pointer"
+                            >
+                              <SkipForward className="h-3.5 w-3.5" />
+                            </button>
+                          </div>
+                        )}
                       </div>
                     </div>
                   </div>

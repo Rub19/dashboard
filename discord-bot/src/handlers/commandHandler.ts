@@ -25,6 +25,7 @@ import { giveawayCommand } from '../modules/giveaways/commands/giveawayCommand.j
 import { suggestCommand } from '../modules/suggestions/commands/suggestCommand.js';
 import { antiraidCommand } from '../modules/antiRaid/commands/antiraidCommand.js';
 import { automodCommand } from '../modules/automod/commands/automodCommand.js';
+import { musicCommand } from '../commands/music/music.js';
 
 import { config } from '../config.js';
 import { Command } from '../types/command.js';
@@ -72,6 +73,9 @@ class CommandRegistry {
 
     // AutoMod 2.0 (Smart Moderation)
     this.register(automodCommand);
+
+    // Musique 2.0 (Music Center)
+    this.register(musicCommand);
   }
 
   public register(command: Command) {

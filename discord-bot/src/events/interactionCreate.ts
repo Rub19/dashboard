@@ -22,6 +22,7 @@ import { CustomCommandService } from '../modules/customCommands/services/customC
 import { guildConfigService } from '../services/guildConfigService.js';
 import { statsService } from '../services/statsService.js';
 import { CommandContext } from '../types/command.js';
+import { DiscordMusicPanel } from '../modules/music/ui/discordMusicPanel.js';
 import { logger } from '../utils/logger.js';
 
 export async function onInteractionCreate(interaction: Interaction) {
@@ -46,6 +47,8 @@ export async function onInteractionCreate(interaction: Interaction) {
       await handleGiveawayButton(interaction);
     } else if (interaction.customId.startsWith('sugg_')) {
       await handleSuggestionButton(interaction);
+    } else if (interaction.customId.startsWith('music_')) {
+      await DiscordMusicPanel.handleButtonInteraction(interaction);
     }
     return;
   }

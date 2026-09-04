@@ -24,6 +24,7 @@ import { createGiveawayRouter } from './routes/giveawayRoutes.js';
 import { createAnalyticsRouter } from './routes/analyticsRoutes.js';
 import { createSuggestionRouter } from './routes/suggestionRoutes.js';
 import { createCustomCommandRouter } from './routes/customCommandRoutes.js';
+import { createMusicRouter } from './routes/musicRoutes.js';
 import { authMiddleware } from './middleware/auth.js';
 import { createGuildAuthMiddleware } from './middleware/guildAuth.js';
 
@@ -122,6 +123,12 @@ export function startWebServer(client: Client): http.Server {
     authMiddleware,
     createGuildAuthMiddleware(client),
     createCustomCommandRouter(client)
+  );
+  app.use(
+    '/api/guilds/:guildId/music',
+    authMiddleware,
+    createGuildAuthMiddleware(client),
+    createMusicRouter(client)
   );
 
   // Route de santé de l'API

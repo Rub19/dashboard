@@ -1,6 +1,7 @@
 "use client";
 
 import { useMemo } from "react";
+import { useRouter } from "next/navigation";
 import { motion } from "framer-motion";
 import { Icon } from "@/lib/icons";
 import { useSettings } from "@/components/SettingsProvider";
@@ -14,6 +15,7 @@ interface SettingsOverviewProps {
 }
 
 export default function SettingsOverview({ onNavigate }: SettingsOverviewProps) {
+  const router = useRouter();
   const i18n = useI18n();
   const { settings } = useSettings();
   const { ambientSound, playAmbient, stopAmbient } = useSound();
@@ -21,6 +23,14 @@ export default function SettingsOverview({ onNavigate }: SettingsOverviewProps) 
   const userStatus = USER_STATUS_CONFIG[settings.status] || USER_STATUS_CONFIG.online;
 
   const quickActions = [
+    {
+      id: "discord-onboarding",
+      label: "Onboarding Discord Bot",
+      desc: "Revoir l'introduction interactive 2.0",
+      icon: "sparkles",
+      color: "#5865F2",
+      onClick: () => router.push("/discord?onboarding=true"),
+    },
     {
       id: "appearance",
       label: "Personnaliser l'apparence",
@@ -233,7 +243,7 @@ export default function SettingsOverview({ onNavigate }: SettingsOverviewProps) 
             <button
               key={action.id}
               type="button"
-              onClick={() => onNavigate(action.id)}
+              onClick={() => ("onClick" in action && action.onClick ? action.onClick() : onNavigate(action.id))}
               className="group flex items-start gap-3.5 rounded-2xl border border-[var(--panel-border)] bg-[var(--panel-bg)] p-4 text-left transition-all hover:border-[var(--accent-primary)]/40 hover:bg-[var(--surface-hover)]/30 hover:shadow-md"
             >
               <div

@@ -54,6 +54,8 @@ import { useI18n } from "@/lib/hooks/useI18n";
 import { useDiscordOAuth, type DiscordGuild } from "@/lib/hooks/useDiscordOAuth";
 import DiscordIcon from "@/components/DiscordIcon";
 import { cn } from "@/lib/utils";
+import { useDiscordOnboarding } from "@/lib/hooks/useDiscordOnboarding";
+import DiscordOnboardingModal from "@/components/discord/onboarding/DiscordOnboardingModal";
 
 const BOT_CLIENT_ID = "1545139931154878464";
 const BOT_INVITE_URL = `https://discord.com/oauth2/authorize?client_id=${BOT_CLIENT_ID}&permissions=8&scope=bot%20applications.commands`;
@@ -220,6 +222,15 @@ export default function DiscordDashboardPage() {
   const { user, session } = useAuth();
   const { success, error: showError } = useToast();
   const { profile, loading: discordLoading, connect } = useDiscordOAuth();
+  const {
+    isOpen: isOnboardingOpen,
+    currentStep: onboardingStep,
+    setCurrentStep: setOnboardingStep,
+    openOnboarding,
+    closeOnboarding,
+    completeOnboarding,
+    prefersReducedMotion,
+  } = useDiscordOnboarding();
 
   const [selectedGuild, setSelectedGuild] = useState<DiscordGuild | null>(null);
   const [activeModule, setActiveModule] = useState<ModuleType>("security");
@@ -399,6 +410,24 @@ export default function DiscordDashboardPage() {
           </div>
 
           <div className="flex flex-wrap items-center gap-2.5">
+            <button
+              onClick={() => openOnboarding(0)}
+              className="flex h-9 items-center gap-2 rounded-xl border border-indigo-500/30 bg-indigo-500/10 px-3.5 text-xs font-medium text-indigo-300 transition-all hover:bg-indigo-500/20 active:scale-95 cursor-pointer"
+              title="Revoir l'introduction d'ETHONE Bot"
+            >
+              <Sparkles className="h-3.5 w-3.5 text-indigo-400" />
+              <span>Découvrir le Bot</span>
+            </button>
+
+            <Link
+              href="/discord/setup"
+              className="flex h-9 items-center gap-2 rounded-xl border border-emerald-500/30 bg-emerald-500/10 px-3.5 text-xs font-medium text-emerald-300 transition-all hover:bg-emerald-500/20 active:scale-95"
+              title="Lancer le setup assisté du serveur"
+            >
+              <Sliders className="h-3.5 w-3.5 text-emerald-400" />
+              <span>Setup Assisté</span>
+            </Link>
+
             <a
               href={BOT_INVITE_URL}
               target="_blank"
@@ -1418,6 +1447,15 @@ export default function DiscordDashboardPage() {
           )}
         </main>
       </div>
+
+      <DiscordOnboardingModal
+        isOpen={isOnboardingOpen}
+        currentStep={onboardingStep}
+        onStepChange={setOnboardingStep}
+        onClose={closeOnboarding}
+        onComplete={completeOnboarding}
+        prefersReducedMotion={prefersReducedMotion}
+      />
     </div>
   );
 }

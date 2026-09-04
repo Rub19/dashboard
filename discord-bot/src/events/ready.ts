@@ -3,6 +3,7 @@ import { commandRegistry } from '../handlers/commandHandler.js';
 import { giveawayScheduler } from '../modules/giveaways/services/giveawayScheduler.js';
 import { ModerationService } from '../modules/moderation/services/moderationService.js';
 import { musicService } from '../modules/music/services/musicService.js';
+import { logService } from '../modules/logs/services/logService.js';
 import { logger } from '../utils/logger.js';
 
 export async function onReady(client: Client<true>) {
@@ -25,4 +26,7 @@ export async function onReady(client: Client<true>) {
 
   // Démarrage de Music Center 2.0
   musicService.initialize(client);
+
+  // Démarrage de Logs & Audit Center 2.0
+  logService.initialize(client);
 }

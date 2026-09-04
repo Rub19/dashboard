@@ -20,6 +20,7 @@ import { raidActionService } from './raidActionService.js';
 import { raidModeService } from './raidModeService.js';
 import { raidIncidentService } from './raidIncidentService.js';
 import { raidAlertService } from './raidAlertService.js';
+import { logService } from '../../logs/services/logService.js';
 import { logger } from '../../../utils/logger.js';
 
 class RaidDetectionService {
@@ -164,6 +165,20 @@ class RaidDetectionService {
         actionsExecuted: executedActions,
         triggerSignals: risk.activeSignals,
         involvedMembers: recentMembers,
+      });
+
+      logService.raid(guild.id, 'JOIN_RAID', {
+        actor: { id: 'ANTI_RAID', tag: 'Anti-Raid Engine', isBot: true },
+        target: { id: guild.id, type: 'SERVER', name: guild.name },
+        reason: `${joinsInWindow} arrivées en ${config.joinRaid.timeWindowSeconds}s (Score: ${risk.score}/100)`,
+        incidentId: incident.id,
+        metadata: {
+          threatLevel: risk.threatLevel,
+          riskScore: risk.score,
+          executedActions,
+          signals: risk.activeSignals,
+          isCritical: true,
+        },
       });
 
       // Envoyer l'alerte

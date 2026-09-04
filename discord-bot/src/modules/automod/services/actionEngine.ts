@@ -3,6 +3,7 @@ import { AutoModAction, AutoModConfig } from '../types/autoMod.js';
 import { StrikeService } from './strikeService.js';
 import { raidActionService } from '../../antiRaid/services/raidActionService.js';
 import { CaseService } from '../../moderation/services/caseService.js';
+import { logService } from '../../logs/services/logService.js';
 import { logger } from '../../../utils/logger.js';
 
 export interface ActionExecutionContext {
@@ -150,6 +151,18 @@ export class ActionEngine {
         } catch {}
       }
     }
+
+    logService.automod(guild.id, 'AUTOMOD_TRIGGER', {
+      actor: { id: 'AUTOMOD', tag: 'AutoMod 2.0', isBot: true },
+      target: { id: member.id, type: 'USER', name: member.user.tag, tag: member.user.tag },
+      channel: { id: message.channelId, name: 'name' in message.channel ? (message.channel as any).name : 'salon' },
+      reason,
+      metadata: {
+        executedActions: executed,
+        strikesCount: activeStrikesCount,
+        messageContent: message.content ? message.content.slice(0, 200) : undefined,
+      },
+    });
 
     return { executed, newStrikesCount: activeStrikesCount };
   }

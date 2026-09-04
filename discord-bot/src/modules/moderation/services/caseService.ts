@@ -10,6 +10,7 @@ import {
 import { moderationRepository } from '../storage/moderationRepository.js';
 import { ModerationLogger } from './moderationLogger.js';
 import { StaffAbuseDetector } from './staffAbuseDetector.js';
+import { logService } from '../../logs/services/logService.js';
 
 export class CaseService {
   public static createCase(
@@ -74,6 +75,19 @@ export class CaseService {
       targetId: modCase.id,
       details: `Création de la Case #${modCase.caseNumber} (${params.action}) sur ${params.userTag} (${params.userId})`,
       timestamp: new Date().toISOString(),
+    });
+
+    logService.moderation(params.guildId, `CASE_CREATE_${params.action}`, {
+      actor: { id: params.moderatorId, tag: params.moderatorTag },
+      target: { id: params.userId, type: 'USER', name: params.userTag, tag: params.userTag },
+      reason: params.reason,
+      caseId: modCase.caseNumber,
+      metadata: {
+        caseNumber: modCase.caseNumber,
+        action: params.action,
+        durationSeconds: params.durationSeconds,
+        source: params.source,
+      },
     });
 
     return modCase;
@@ -154,6 +168,18 @@ export class CaseService {
       targetId: updated.id,
       details: `Révocation de la Case #${caseNumber} (${updated.action}) : ${revertReason}`,
       timestamp: new Date().toISOString(),
+    });
+
+    logService.moderation(guildId, 'CASE_REVOKE', {
+      actor: { id: revertedBy.id, tag: revertedBy.tag },
+      target: { id: updated.userId, type: 'USER', name: updated.userTag, tag: updated.userTag },
+      reason: revertReason,
+      caseId: updated.caseNumber,
+      metadata: {
+        caseNumber: updated.caseNumber,
+        originalAction: updated.action,
+        revertReason,
+      },
     });
 
     return { success: true, case: updated };

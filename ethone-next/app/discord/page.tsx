@@ -1116,20 +1116,44 @@ export default function DiscordDashboardPage() {
                 {/* MODULE 7: Audit & Logs */}
                 {activeModule === "logs" && (
                   <div className="space-y-4 text-xs">
+                    {/* Audit Center 2.0 Gateway */}
+                    <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-3 rounded-2xl border border-blue-500/30 bg-gradient-to-r from-blue-500/10 via-indigo-500/10 to-blue-600/10 p-4 shadow-lg shadow-blue-500/5">
+                      <div>
+                        <div className="flex items-center gap-2">
+                          <span className="text-base">📜</span>
+                          <p className="text-xs font-bold text-white">Audit Center 2.0 & Traçabilité Temps Réel</p>
+                          <span className="text-[9px] uppercase font-bold tracking-wider px-1.5 py-0.5 rounded bg-blue-500/20 text-blue-300 border border-blue-500/30">
+                            Audit Engine
+                          </span>
+                        </div>
+                        <p className="text-[11px] text-zinc-300 mt-0.5">
+                          Moteur de traçabilité temps réel, mode enquête (&plusmn;15 min), diffs avant/après, corrélation des sanctions (Cases &amp; Raids), routage multi-salons Discord et exports CSV/JSON.
+                        </p>
+                      </div>
+                      <Link
+                        href={`/discord/logs?guildId=${selectedGuild.id}`}
+                        className="flex h-9 shrink-0 items-center gap-2 rounded-xl bg-gradient-to-r from-blue-600 to-indigo-600 px-4 text-xs font-bold text-white shadow-md shadow-blue-600/20 transition-all hover:from-blue-500 hover:to-indigo-500 active:scale-95"
+                      >
+                        <FileText className="h-4 w-4" />
+                        <span>Ouvrir Audit Center 2.0</span>
+                        <ChevronRight className="h-3.5 w-3.5" />
+                      </Link>
+                    </div>
+
                     <div className="rounded-2xl border border-white/10 bg-white/[0.02] p-4 space-y-2">
                       <p className="font-bold text-white">Surveillance des événements serveur</p>
                       <div className="space-y-2.5 pt-1 text-[11px]">
                         <label className="flex items-center gap-2 text-zinc-300 cursor-pointer">
                           <input type="checkbox" defaultChecked className="rounded border-zinc-700 accent-blue-500" />
-                          <span>Journaliser la suppression de messages</span>
+                          <span>Journaliser la suppression et modification de messages</span>
                         </label>
                         <label className="flex items-center gap-2 text-zinc-300 cursor-pointer">
                           <input type="checkbox" defaultChecked className="rounded border-zinc-700 accent-blue-500" />
-                          <span>Journaliser les modifications de rôles et permissions</span>
+                          <span>Journaliser les modifications de rôles, permissions et salons</span>
                         </label>
                         <label className="flex items-center gap-2 text-zinc-300 cursor-pointer">
                           <input type="checkbox" defaultChecked className="rounded border-zinc-700 accent-blue-500" />
-                          <span>Journaliser les arrivées et départs de membres</span>
+                          <span>Journaliser les arrivées, départs, bans et timeouts</span>
                         </label>
                       </div>
                     </div>

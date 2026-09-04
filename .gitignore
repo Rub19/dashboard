@@ -74,7 +74,9 @@ coverage/
 trace.zip
 
 # Logs and crash dumps
-logs/
+/logs/
+!**/app/**/logs/
+!**/src/**/logs/
 *.log
 *.mcp.log
 mcp-logs/

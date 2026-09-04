@@ -140,6 +140,23 @@ async function runTests() {
   const activeRooms = voiceRepository.getRooms(demoGuild);
   assert(!activeRooms.some((r) => r.id === testRoom.id), 'Deleted room excluded from active rooms query');
 
+  // 11. Slash Command /voice Verification
+  const { voiceCommand } = await import('../src/modules/voice/commands/voiceCommand.js');
+  const { commandRegistry } = await import('../src/handlers/commandHandler.js');
+  assert(voiceCommand.name === 'voice', 'voiceCommand name is voice');
+  assert(voiceCommand.aliases?.includes('vocal') === true, 'voiceCommand includes alias vocal');
+  assert(voiceCommand.aliases?.includes('room') === true, 'voiceCommand includes alias room');
+  const registeredCmd = commandRegistry.getCommand('voice');
+  assert(registeredCmd !== undefined, 'voiceCommand registered in commandRegistry');
+  const registeredAlias = commandRegistry.getCommand('vocal');
+  assert(registeredAlias !== undefined, 'voiceCommand reachable via alias vocal');
+  const subcommands = (voiceCommand.slashData as any).toJSON().options;
+  const subNames = subcommands.map((s: any) => s.name);
+  assert(subNames.includes('create'), 'voiceCommand has subcommand create');
+  assert(subNames.includes('delete'), 'voiceCommand has subcommand delete');
+  assert(subNames.includes('info'), 'voiceCommand has subcommand info');
+  assert(subNames.includes('panel'), 'voiceCommand has subcommand panel');
+
   console.log(`\n========================================`);
   console.log(`Results: ${passed} passed, ${failed} failed`);
   console.log(`========================================\n`);

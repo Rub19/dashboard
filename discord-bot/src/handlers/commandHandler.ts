@@ -31,6 +31,7 @@ import { automodCommand } from '../modules/automod/commands/automodCommand.js';
 import { musicCommand } from '../commands/music/music.js';
 import { pollCommand } from '../modules/polls/commands/pollCommand.js';
 import { eventCommand } from '../modules/events/eventsCommand.js';
+import { voiceCommand } from '../modules/voice/commands/voiceCommand.js';
 
 import { config } from '../config.js';
 import { Command } from '../types/command.js';
@@ -90,6 +91,9 @@ class CommandRegistry {
 
     // Événements & Calendrier 2.0 (Events Center)
     this.register(eventCommand);
+
+    // Salons Vocaux 2.0 (Voice Center)
+    this.register(voiceCommand);
   }
 
   public register(command: Command) {

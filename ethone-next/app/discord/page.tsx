@@ -51,6 +51,8 @@ import {
   Archive,
   Bot,
   Vote,
+  Tag,
+  Clock,
 } from "lucide-react";
 import { useAuth } from "@/components/AuthProvider";
 import { useToast } from "@/components/ToastProvider";
@@ -81,6 +83,7 @@ type ModuleType =
   | "ai"
   | "forms"
   | "polls"
+  | "roles"
   | "analytics";
 
 interface BotModule {
@@ -220,6 +223,14 @@ const MODULES: BotModule[] = [
     icon: Vote,
     color: "text-indigo-400",
     badge: "Démocratie",
+  },
+  {
+    id: "roles",
+    title: "Reaction Roles & Auto-Roles 2.0",
+    description: "Panneaux de sélection de rôles par boutons et menus déroulants, join-roles et rôles temporaires.",
+    icon: Tag,
+    color: "text-pink-400",
+    badge: "Rôles",
   },
   {
     id: "analytics",
@@ -982,169 +993,306 @@ export default function DiscordDashboardPage() {
                   </div>
                 )}
 
-                {/* MODULE 2: Command Builder */}
+                {/* MODULE 2: Command Builder 2.0 */}
                 {activeModule === "commands" && (
-                  <div className="space-y-4">
-                    <div className="rounded-2xl border border-white/10 bg-white/[0.02] p-4 space-y-3">
-                      <p className="text-xs font-bold text-white flex items-center gap-2">
-                        <Plus className="h-3.5 w-3.5 text-indigo-400" />
-                        Créer une nouvelle commande
-                      </p>
-                      <div className="grid grid-cols-1 gap-2.5 sm:grid-cols-2">
-                        <div>
-                          <label className="text-[11px] text-zinc-400">Nom du déclencheur</label>
-                          <div className="relative mt-1">
-                            <span className="absolute left-3 top-1/2 -translate-y-1/2 text-zinc-500 text-xs font-bold">!</span>
-                            <input
-                              type="text"
-                              placeholder="bienvenue"
-                              value={newCmdName}
-                              onChange={(e) => setNewCmdName(e.target.value)}
-                              className="h-9 w-full rounded-xl border border-white/10 bg-zinc-900/80 pl-6 pr-3 text-xs text-white placeholder-zinc-500 outline-none focus:border-indigo-500"
-                            />
-                          </div>
+                  <div className="space-y-4 text-xs">
+                    {/* Command Studio Gateway */}
+                    <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-3 rounded-2xl border border-indigo-500/30 bg-gradient-to-r from-indigo-500/10 via-purple-500/10 to-indigo-600/10 p-4 shadow-lg shadow-indigo-500/5">
+                      <div>
+                        <div className="flex items-center gap-2">
+                          <span className="text-base">⚙️</span>
+                          <p className="text-xs font-bold text-white">Command Studio & Builder 2.0</p>
+                          <span className="text-[9px] uppercase font-bold tracking-wider px-1.5 py-0.5 rounded bg-indigo-500/20 text-indigo-300 border border-indigo-500/30">
+                            No-Code Studio
+                          </span>
                         </div>
-                        <div>
-                          <label className="text-[11px] text-zinc-400">Réponse du bot</label>
-                          <input
-                            type="text"
-                            placeholder="Message automatique envoyé par le bot..."
-                            value={newCmdResponse}
-                            onChange={(e) => setNewCmdResponse(e.target.value)}
-                            className="mt-1 h-9 w-full rounded-xl border border-white/10 bg-zinc-900/80 px-3 text-xs text-white placeholder-zinc-500 outline-none focus:border-indigo-500"
-                          />
-                        </div>
+                        <p className="text-[11px] text-zinc-300 mt-0.5">
+                          Créez des commandes Slash (/) et Préfixe (!) sur-mesure, générez des embeds Discord riches, intégrez des variables dynamiques ({'{user}'}, {'{server}'}) et testez en direct dans le simulateur.
+                        </p>
                       </div>
-                      <button
-                        type="button"
-                        onClick={handleAddCommand}
-                        className="flex h-8 items-center gap-1.5 rounded-xl bg-indigo-600 px-3.5 text-xs font-semibold text-white hover:bg-indigo-500 transition-all cursor-pointer"
+                      <Link
+                        href={`/discord/commands?guildId=${selectedGuild.id}`}
+                        className="flex h-9 shrink-0 items-center gap-2 rounded-xl bg-gradient-to-r from-indigo-600 to-purple-600 px-4 text-xs font-bold text-white shadow-md shadow-indigo-600/20 transition-all hover:from-indigo-500 hover:to-purple-500 active:scale-95 cursor-pointer"
                       >
-                        <Plus className="h-3.5 w-3.5" />
-                        <span>Ajouter la commande</span>
-                      </button>
+                        <Code2 className="h-4 w-4" />
+                        <span>Ouvrir Command Studio</span>
+                        <ChevronRight className="h-3.5 w-3.5" />
+                      </Link>
                     </div>
 
-                    {/* Liste des commandes réelles */}
-                    <div className="space-y-2">
-                      <p className="text-xs font-semibold text-zinc-300">
-                        Commandes configurées sur ce serveur ({guildSettings.customCommands.length})
-                      </p>
-                      {guildSettings.customCommands.map((cmd, idx) => (
-                        <div
-                          key={idx}
-                          className="flex items-center justify-between rounded-xl border border-white/5 bg-white/[0.015] p-3 text-xs"
-                        >
-                          <div className="min-w-0 flex-1 pr-3">
-                            <span className="font-mono font-bold text-indigo-300">!{cmd.name}</span>
-                            <p className="text-zinc-400 text-[11px] truncate mt-0.5">{cmd.response}</p>
-                          </div>
-                          <button
-                            type="button"
-                            onClick={() => handleDeleteCommand(idx)}
-                            className="text-zinc-500 hover:text-rose-400 transition-colors p-1 cursor-pointer"
-                            title="Supprimer cette commande"
-                          >
-                            <Trash2 className="h-4 w-4" />
-                          </button>
-                        </div>
-                      ))}
+                    <div className="grid grid-cols-2 sm:grid-cols-4 gap-3">
+                      <div className="rounded-xl border border-white/10 bg-white/[0.02] p-3">
+                        <p className="text-[10px] text-zinc-400 font-medium uppercase tracking-wider">Catalogue</p>
+                        <p className="text-lg font-bold text-indigo-400 mt-1">Slash & Préfixe</p>
+                        <p className="text-[10px] text-zinc-400 mt-0.5">Activation / désactivation en 1 clic</p>
+                      </div>
+                      <div className="rounded-xl border border-white/10 bg-white/[0.02] p-3">
+                        <p className="text-[10px] text-zinc-400 font-medium uppercase tracking-wider">Embed Studio</p>
+                        <p className="text-lg font-bold text-purple-400 mt-1">Live Discord Render</p>
+                        <p className="text-[10px] text-zinc-400 mt-0.5">Bordures, footers & boutons</p>
+                      </div>
+                      <div className="rounded-xl border border-white/10 bg-white/[0.02] p-3">
+                        <p className="text-[10px] text-zinc-400 font-medium uppercase tracking-wider">Dynamique</p>
+                        <p className="text-lg font-bold text-cyan-400 mt-1">Variables Live</p>
+                        <p className="text-[10px] text-zinc-400 mt-0.5">{'{user}'}, {'{server}'}, {'{time}'}</p>
+                      </div>
+                      <div className="rounded-xl border border-white/10 bg-white/[0.02] p-3">
+                        <p className="text-[10px] text-zinc-400 font-medium uppercase tracking-wider">Testing</p>
+                        <p className="text-lg font-bold text-emerald-400 mt-1">Simulateur Terminal</p>
+                        <p className="text-[10px] text-zinc-400 mt-0.5">Test immédiat sans bot</p>
+                      </div>
+                    </div>
+
+                    <div className="flex flex-wrap gap-2 pt-1">
+                      <Link
+                        href={`/discord/commands?guildId=${selectedGuild.id}&tab=catalog`}
+                        className="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-lg border border-white/10 bg-zinc-900/80 hover:bg-zinc-800 text-zinc-200 text-xs transition-all"
+                      >
+                        <Sliders className="h-3.5 w-3.5 text-indigo-400" />
+                        <span>Catalogue des Commandes</span>
+                      </Link>
+                      <Link
+                        href={`/discord/commands?guildId=${selectedGuild.id}&tab=builder`}
+                        className="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-lg border border-white/10 bg-zinc-900/80 hover:bg-zinc-800 text-zinc-200 text-xs transition-all"
+                      >
+                        <Plus className="h-3.5 w-3.5 text-purple-400" />
+                        <span>Créer une Commande No-Code</span>
+                      </Link>
+                      <Link
+                        href={`/discord/commands?guildId=${selectedGuild.id}&tab=simulator`}
+                        className="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-lg border border-white/10 bg-zinc-900/80 hover:bg-zinc-800 text-zinc-200 text-xs transition-all"
+                      >
+                        <Sparkles className="h-3.5 w-3.5 text-emerald-400" />
+                        <span>Simulateur Discord Live</span>
+                      </Link>
                     </div>
                   </div>
                 )}
 
-                {/* MODULE 3: Suggestions */}
+                {/* MODULE 3: Suggestions & Feedback 2.0 */}
                 {activeModule === "suggestions" && (
                   <div className="space-y-4 text-xs">
-                    <div className="rounded-2xl border border-white/10 bg-white/[0.02] p-4 space-y-3">
-                      <p className="font-bold text-white">Canal de suggestions Discord</p>
-                      <div className="relative">
-                        <Hash className="absolute left-3 top-1/2 -translate-y-1/2 h-3.5 w-3.5 text-zinc-500" />
-                        <input
-                          type="text"
-                          value={guildSettings.suggestionChannel}
-                          onChange={(e) => setGuildSettings((p) => ({ ...p, suggestionChannel: e.target.value }))}
-                          placeholder="suggestions"
-                          className="h-9 w-full rounded-xl border border-white/10 bg-zinc-900/80 pl-9 pr-3 text-xs text-white outline-none focus:border-amber-500"
-                        />
+                    {/* Suggestions Gateway */}
+                    <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-3 rounded-2xl border border-amber-500/30 bg-gradient-to-r from-amber-500/10 via-orange-500/10 to-amber-600/10 p-4 shadow-lg shadow-amber-500/5">
+                      <div>
+                        <div className="flex items-center gap-2">
+                          <span className="text-base">💡</span>
+                          <p className="text-xs font-bold text-white">Boîte à Suggestions 2.0 & Feedback</p>
+                          <span className="text-[9px] uppercase font-bold tracking-wider px-1.5 py-0.5 rounded bg-amber-500/20 text-amber-300 border border-amber-500/30">
+                            Kanban & Décisions
+                          </span>
+                        </div>
+                        <p className="text-[11px] text-zinc-300 mt-0.5">
+                          Collectez les idées des membres, organisez les votes communautaires (👍 / 👎), traitez les propositions sur un tableau Kanban et publiez les décisions officielles du Staff.
+                        </p>
                       </div>
-                      <p className="text-[11px] text-zinc-400">
-                        Les membres pourront exécuter la commande <code className="text-amber-300">/suggest</code> sur Discord pour soumettre une proposition soumise aux votes.
-                      </p>
+                      <Link
+                        href={`/discord/suggestions?guildId=${selectedGuild.id}`}
+                        className="flex h-9 shrink-0 items-center gap-2 rounded-xl bg-gradient-to-r from-amber-600 to-orange-600 px-4 text-xs font-bold text-white shadow-md shadow-amber-600/20 transition-all hover:from-amber-500 hover:to-orange-500 active:scale-95 cursor-pointer"
+                      >
+                        <Lightbulb className="h-4 w-4" />
+                        <span>Ouvrir Suggestions Center</span>
+                        <ChevronRight className="h-3.5 w-3.5" />
+                      </Link>
+                    </div>
+
+                    <div className="grid grid-cols-2 sm:grid-cols-4 gap-3">
+                      <div className="rounded-xl border border-white/10 bg-white/[0.02] p-3">
+                        <p className="text-[10px] text-zinc-400 font-medium uppercase tracking-wider">Traitement</p>
+                        <p className="text-lg font-bold text-amber-400 mt-1">Kanban Staff</p>
+                        <p className="text-[10px] text-zinc-400 mt-0.5">En Attente / Approuvée / Rejetée</p>
+                      </div>
+                      <div className="rounded-xl border border-white/10 bg-white/[0.02] p-3">
+                        <p className="text-[10px] text-zinc-400 font-medium uppercase tracking-wider">Communauté</p>
+                        <p className="text-lg font-bold text-emerald-400 mt-1">Votes Discord</p>
+                        <p className="text-[10px] text-zinc-400 mt-0.5">Boutons interactifs 👍 👎</p>
+                      </div>
+                      <div className="rounded-xl border border-white/10 bg-white/[0.02] p-3">
+                        <p className="text-[10px] text-zinc-400 font-medium uppercase tracking-wider">Réponses</p>
+                        <p className="text-lg font-bold text-cyan-400 mt-1">Avis Officiel</p>
+                        <p className="text-[10px] text-zinc-400 mt-0.5">Mise à jour directe de l'embed</p>
+                      </div>
+                      <div className="rounded-xl border border-white/10 bg-white/[0.02] p-3">
+                        <p className="text-[10px] text-zinc-400 font-medium uppercase tracking-wider">Protection</p>
+                        <p className="text-lg font-bold text-purple-400 mt-1">Anti-Doublon</p>
+                        <p className="text-[10px] text-zinc-400 mt-0.5">Filtres et cooldown par membre</p>
+                      </div>
+                    </div>
+
+                    <div className="flex flex-wrap gap-2 pt-1">
+                      <Link
+                        href={`/discord/suggestions?guildId=${selectedGuild.id}&tab=kanban`}
+                        className="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-lg border border-white/10 bg-zinc-900/80 hover:bg-zinc-800 text-zinc-200 text-xs transition-all"
+                      >
+                        <Sliders className="h-3.5 w-3.5 text-amber-400" />
+                        <span>Tableau Kanban des Idées</span>
+                      </Link>
+                      <Link
+                        href={`/discord/suggestions?guildId=${selectedGuild.id}&tab=response_studio`}
+                        className="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-lg border border-white/10 bg-zinc-900/80 hover:bg-zinc-800 text-zinc-200 text-xs transition-all"
+                      >
+                        <Send className="h-3.5 w-3.5 text-orange-400" />
+                        <span>Modération & Réponses Staff</span>
+                      </Link>
+                      <Link
+                        href={`/discord/suggestions?guildId=${selectedGuild.id}&tab=hall_of_fame`}
+                        className="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-lg border border-white/10 bg-zinc-900/80 hover:bg-zinc-800 text-zinc-200 text-xs transition-all"
+                      >
+                        <Crown className="h-3.5 w-3.5 text-yellow-400" />
+                        <span>Top Idées (Hall of Fame)</span>
+                      </Link>
                     </div>
                   </div>
                 )}
 
-                {/* MODULE 4: Leveling & XP (MODERN STEPPERS - NO CRUDE INPUTS) */}
+                {/* MODULE 4: Leveling & XP 2.0 */}
                 {activeModule === "leveling" && (
                   <div className="space-y-4 text-xs">
-                    <div className="flex items-center justify-between rounded-2xl border border-white/10 bg-white/[0.02] p-4">
+                    {/* Leveling Gateway */}
+                    <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-3 rounded-2xl border border-fuchsia-500/30 bg-gradient-to-r from-fuchsia-500/10 via-purple-500/10 to-fuchsia-600/10 p-4 shadow-lg shadow-fuchsia-500/5">
                       <div>
-                        <p className="font-bold text-white">XP gagné par message</p>
-                        <p className="text-[11px] text-zinc-400">Points d'expérience attribués pour chaque message valide.</p>
+                        <div className="flex items-center gap-2">
+                          <span className="text-base">⚡</span>
+                          <p className="text-xs font-bold text-white">Leveling & Rôles XP Center 2.0</p>
+                          <span className="text-[9px] uppercase font-bold tracking-wider px-1.5 py-0.5 rounded bg-fuchsia-500/20 text-fuchsia-300 border border-fuchsia-500/30">
+                            Progression & Ranking
+                          </span>
+                        </div>
+                        <p className="text-[11px] text-zinc-300 mt-0.5">
+                          Stimulez l'activité de votre serveur : classement interactif, designer de cartes de profil Discord (/rank), attribution automatique de rôles par paliers et bonus pour Nitro Boosters.
+                        </p>
                       </div>
-                      <div className="flex items-center gap-1.5 rounded-xl bg-white/[0.04] p-1 border border-white/10">
-                        <button
-                          type="button"
-                          onClick={() => setGuildSettings((p) => ({ ...p, xpRate: Math.max(5, p.xpRate - 5) }))}
-                          className="flex h-7 w-7 items-center justify-center rounded-lg bg-white/5 text-zinc-300 hover:bg-white/10 hover:text-white transition-all cursor-pointer"
-                        >
-                          <Minus className="h-3.5 w-3.5" />
-                        </button>
-                        <span className="w-16 text-center text-xs font-bold text-fuchsia-400 font-mono">
-                          {guildSettings.xpRate} XP
-                        </span>
-                        <button
-                          type="button"
-                          onClick={() => setGuildSettings((p) => ({ ...p, xpRate: Math.min(100, p.xpRate + 5) }))}
-                          className="flex h-7 w-7 items-center justify-center rounded-lg bg-white/5 text-zinc-300 hover:bg-white/10 hover:text-white transition-all cursor-pointer"
-                        >
-                          <Plus className="h-3.5 w-3.5" />
-                        </button>
+                      <Link
+                        href={`/discord/leveling?guildId=${selectedGuild.id}`}
+                        className="flex h-9 shrink-0 items-center gap-2 rounded-xl bg-gradient-to-r from-fuchsia-600 to-purple-600 px-4 text-xs font-bold text-white shadow-md shadow-fuchsia-600/20 transition-all hover:from-fuchsia-500 hover:to-purple-500 active:scale-95 cursor-pointer"
+                      >
+                        <Award className="h-4 w-4" />
+                        <span>Ouvrir Leveling Center</span>
+                        <ChevronRight className="h-3.5 w-3.5" />
+                      </Link>
+                    </div>
+
+                    <div className="grid grid-cols-2 sm:grid-cols-4 gap-3">
+                      <div className="rounded-xl border border-white/10 bg-white/[0.02] p-3">
+                        <p className="text-[10px] text-zinc-400 font-medium uppercase tracking-wider">Leaderboard</p>
+                        <p className="text-lg font-bold text-fuchsia-400 mt-1">Top 100 Live</p>
+                        <p className="text-[10px] text-zinc-400 mt-0.5">Trophées, barres d'XP & ranks</p>
+                      </div>
+                      <div className="rounded-xl border border-white/10 bg-white/[0.02] p-3">
+                        <p className="text-[10px] text-zinc-400 font-medium uppercase tracking-wider">Rank Card</p>
+                        <p className="text-lg font-bold text-purple-400 mt-1">Card Studio Live</p>
+                        <p className="text-[10px] text-zinc-400 mt-0.5">Bannières, couleurs & thèmes</p>
+                      </div>
+                      <div className="rounded-xl border border-white/10 bg-white/[0.02] p-3">
+                        <p className="text-[10px] text-zinc-400 font-medium uppercase tracking-wider">Paliers</p>
+                        <p className="text-lg font-bold text-amber-400 mt-1">Rôles Récompenses</p>
+                        <p className="text-[10px] text-zinc-400 mt-0.5">Déblocage auto par niveau</p>
+                      </div>
+                      <div className="rounded-xl border border-white/10 bg-white/[0.02] p-3">
+                        <p className="text-[10px] text-zinc-400 font-medium uppercase tracking-wider">Multiplicateurs</p>
+                        <p className="text-lg font-bold text-cyan-400 mt-1">Vocal & Boosters</p>
+                        <p className="text-[10px] text-zinc-400 mt-0.5">Gains en vocal et bonus x1.5</p>
                       </div>
                     </div>
 
-                    <div className="flex items-center justify-between rounded-2xl border border-white/10 bg-white/[0.02] p-4">
-                      <div>
-                        <p className="font-bold text-white">Délai anti-spam XP</p>
-                        <p className="text-[11px] text-zinc-400">Temps d'attente minimum entre deux attributions d'XP.</p>
-                      </div>
-                      <div className="flex items-center gap-1.5 rounded-xl bg-white/[0.04] p-1 border border-white/10">
-                        <button
-                          type="button"
-                          onClick={() => setGuildSettings((p) => ({ ...p, xpCooldown: Math.max(10, p.xpCooldown - 10) }))}
-                          className="flex h-7 w-7 items-center justify-center rounded-lg bg-white/5 text-zinc-300 hover:bg-white/10 hover:text-white transition-all cursor-pointer"
-                        >
-                          <Minus className="h-3.5 w-3.5" />
-                        </button>
-                        <span className="w-16 text-center text-xs font-bold text-fuchsia-400 font-mono">
-                          {guildSettings.xpCooldown}s
-                        </span>
-                        <button
-                          type="button"
-                          onClick={() => setGuildSettings((p) => ({ ...p, xpCooldown: Math.min(300, p.xpCooldown + 10) }))}
-                          className="flex h-7 w-7 items-center justify-center rounded-lg bg-white/5 text-zinc-300 hover:bg-white/10 hover:text-white transition-all cursor-pointer"
-                        >
-                          <Plus className="h-3.5 w-3.5" />
-                        </button>
-                      </div>
+                    <div className="flex flex-wrap gap-2 pt-1">
+                      <Link
+                        href={`/discord/leveling?guildId=${selectedGuild.id}&tab=leaderboard`}
+                        className="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-lg border border-white/10 bg-zinc-900/80 hover:bg-zinc-800 text-zinc-200 text-xs transition-all"
+                      >
+                        <Crown className="h-3.5 w-3.5 text-fuchsia-400" />
+                        <span>Classement & Leaderboard</span>
+                      </Link>
+                      <Link
+                        href={`/discord/leveling?guildId=${selectedGuild.id}&tab=card_designer`}
+                        className="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-lg border border-white/10 bg-zinc-900/80 hover:bg-zinc-800 text-zinc-200 text-xs transition-all"
+                      >
+                        <Sparkles className="h-3.5 w-3.5 text-purple-400" />
+                        <span>Rank Card Designer</span>
+                      </Link>
+                      <Link
+                        href={`/discord/leveling?guildId=${selectedGuild.id}&tab=rewards`}
+                        className="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-lg border border-white/10 bg-zinc-900/80 hover:bg-zinc-800 text-zinc-200 text-xs transition-all"
+                      >
+                        <Award className="h-3.5 w-3.5 text-amber-400" />
+                        <span>Gérer les Rôles Récompenses</span>
+                      </Link>
                     </div>
                   </div>
                 )}
 
-                {/* MODULE 5: Giveaways */}
+                {/* MODULE 5: Giveaways & Concours 2.0 */}
                 {activeModule === "giveaways" && (
                   <div className="space-y-4 text-xs">
-                    <div className="rounded-2xl border border-white/10 bg-white/[0.02] p-4 space-y-3">
-                      <p className="font-bold text-white">Lancement de tirages au sort</p>
-                      <p className="text-[11px] text-zinc-400">
-                        Utilisez la commande slash <code className="text-rose-300">/giveaway start</code> directement sur Discord pour programmer un tirage au sort avec sélection automatique des gagnants.
-                      </p>
-                      <div className="flex items-center gap-2 pt-1">
-                        <span className="rounded-lg bg-rose-500/20 px-2 py-0.5 text-rose-300 font-semibold text-[10px]">
-                          Commande Discord : /giveaway
-                        </span>
+                    {/* Giveaways Gateway */}
+                    <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-3 rounded-2xl border border-rose-500/30 bg-gradient-to-r from-rose-500/10 via-amber-500/10 to-rose-600/10 p-4 shadow-lg shadow-rose-500/5">
+                      <div>
+                        <div className="flex items-center gap-2">
+                          <span className="text-base">🎉</span>
+                          <p className="text-xs font-bold text-white">Giveaways & Tirages au Sort 2.0</p>
+                          <span className="text-[9px] uppercase font-bold tracking-wider px-1.5 py-0.5 rounded bg-rose-500/20 text-rose-300 border border-rose-500/30">
+                            Disaster Free & Fair Play
+                          </span>
+                        </div>
+                        <p className="text-[11px] text-zinc-300 mt-0.5">
+                          Pilotez vos concours Discord : création assistée, restrictions de rôles et d'ancienneté, tirage cryptographique impartial (SHA-256 CSPRNG) et système de Reroll en un clic.
+                        </p>
                       </div>
+                      <Link
+                        href={`/discord/giveaways?guildId=${selectedGuild.id}`}
+                        className="flex h-9 shrink-0 items-center gap-2 rounded-xl bg-gradient-to-r from-rose-600 to-amber-600 px-4 text-xs font-bold text-white shadow-md shadow-rose-600/20 transition-all hover:from-rose-500 hover:to-amber-500 active:scale-95 cursor-pointer"
+                      >
+                        <Gift className="h-4 w-4" />
+                        <span>Ouvrir Giveaways Center</span>
+                        <ChevronRight className="h-3.5 w-3.5" />
+                      </Link>
+                    </div>
+
+                    <div className="grid grid-cols-2 sm:grid-cols-4 gap-3">
+                      <div className="rounded-xl border border-white/10 bg-white/[0.02] p-3">
+                        <p className="text-[10px] text-zinc-400 font-medium uppercase tracking-wider">Concours</p>
+                        <p className="text-lg font-bold text-rose-400 mt-1">Live Discord</p>
+                        <p className="text-[10px] text-zinc-400 mt-0.5">Comptes à rebours & embeds</p>
+                      </div>
+                      <div className="rounded-xl border border-white/10 bg-white/[0.02] p-3">
+                        <p className="text-[10px] text-zinc-400 font-medium uppercase tracking-wider">Impartialité</p>
+                        <p className="text-lg font-bold text-cyan-400 mt-1">SHA-256 CSPRNG</p>
+                        <p className="text-[10px] text-zinc-400 mt-0.5">Graines vérifiables sans triche</p>
+                      </div>
+                      <div className="rounded-xl border border-white/10 bg-white/[0.02] p-3">
+                        <p className="text-[10px] text-zinc-400 font-medium uppercase tracking-wider">Conditions</p>
+                        <p className="text-lg font-bold text-amber-400 mt-1">Rôles & Bonus</p>
+                        <p className="text-[10px] text-zinc-400 mt-0.5">Chances + pour Boosters</p>
+                      </div>
+                      <div className="rounded-xl border border-white/10 bg-white/[0.02] p-3">
+                        <p className="text-[10px] text-zinc-400 font-medium uppercase tracking-wider">Gestion</p>
+                        <p className="text-lg font-bold text-emerald-400 mt-1">Reroll 1-Clic</p>
+                        <p className="text-[10px] text-zinc-400 mt-0.5">Redistribution immédiate</p>
+                      </div>
+                    </div>
+
+                    <div className="flex flex-wrap gap-2 pt-1">
+                      <Link
+                        href={`/discord/giveaways?guildId=${selectedGuild.id}&tab=create`}
+                        className="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-lg border border-white/10 bg-zinc-900/80 hover:bg-zinc-800 text-zinc-200 text-xs transition-all"
+                      >
+                        <Plus className="h-3.5 w-3.5 text-rose-400" />
+                        <span>Lancer un Nouveau Concours</span>
+                      </Link>
+                      <Link
+                        href={`/discord/giveaways?guildId=${selectedGuild.id}&tab=active`}
+                        className="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-lg border border-white/10 bg-zinc-900/80 hover:bg-zinc-800 text-zinc-200 text-xs transition-all"
+                      >
+                        <Gift className="h-3.5 w-3.5 text-amber-400" />
+                        <span>Concours en Cours</span>
+                      </Link>
+                      <Link
+                        href={`/discord/giveaways?guildId=${selectedGuild.id}&tab=history`}
+                        className="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-lg border border-white/10 bg-zinc-900/80 hover:bg-zinc-800 text-zinc-200 text-xs transition-all"
+                      >
+                        <RefreshCw className="h-3.5 w-3.5 text-emerald-400" />
+                        <span>Historique des Gagnants & Reroll</span>
+                      </Link>
                     </div>
                   </div>
                 )}
@@ -1785,14 +1933,154 @@ export default function DiscordDashboardPage() {
                   </div>
                 )}
 
-                {/* MODULE 8: Analytics */}
+                {/* MODULE: Reaction Roles & Auto-Roles 2.0 */}
+                {activeModule === "roles" && (
+                  <div className="space-y-4 text-xs">
+                    {/* Roles Center Gateway */}
+                    <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-3 rounded-2xl border border-pink-500/30 bg-gradient-to-r from-pink-500/10 via-purple-500/10 to-pink-600/10 p-4 shadow-lg shadow-pink-500/5">
+                      <div>
+                        <div className="flex items-center gap-2">
+                          <span className="text-base">🎭</span>
+                          <p className="text-xs font-bold text-white">Reaction Roles & Auto-Roles 2.0</p>
+                          <span className="text-[9px] uppercase font-bold tracking-wider px-1.5 py-0.5 rounded bg-pink-500/20 text-pink-300 border border-pink-500/30">
+                            Role Engine
+                          </span>
+                        </div>
+                        <p className="text-[11px] text-zinc-300 mt-0.5">
+                          Panneaux de sélection de rôles par boutons cliquables et menus déroulants Discord, attribution automatique à l'arrivée (Join-Roles), rôles temporaires avec expiration et audit de hiérarchie.
+                        </p>
+                      </div>
+                      <Link
+                        href={`/discord/roles?guildId=${selectedGuild.id}`}
+                        className="flex h-9 shrink-0 items-center gap-2 rounded-xl bg-gradient-to-r from-pink-600 to-purple-600 px-4 text-xs font-bold text-white shadow-md shadow-pink-600/20 transition-all hover:from-pink-500 hover:to-purple-500 active:scale-95 cursor-pointer"
+                      >
+                        <Tag className="h-4 w-4" />
+                        <span>Ouvrir Roles Center 2.0</span>
+                        <ChevronRight className="h-3.5 w-3.5" />
+                      </Link>
+                    </div>
+
+                    <div className="grid grid-cols-2 sm:grid-cols-4 gap-3">
+                      <div className="rounded-xl border border-white/10 bg-white/[0.02] p-3">
+                        <p className="text-[10px] text-zinc-400 font-medium uppercase tracking-wider">Panneaux</p>
+                        <p className="text-lg font-bold text-pink-400 mt-1">Boutons & Menus</p>
+                        <p className="text-[10px] text-zinc-400 mt-0.5">Composants natifs Discord</p>
+                      </div>
+                      <div className="rounded-xl border border-white/10 bg-white/[0.02] p-3">
+                        <p className="text-[10px] text-zinc-400 font-medium uppercase tracking-wider">Sélection</p>
+                        <p className="text-lg font-bold text-purple-400 mt-1">Unique ou Multiple</p>
+                        <p className="text-[10px] text-zinc-400 mt-0.5">Règles d'exclusivité de groupe</p>
+                      </div>
+                      <div className="rounded-xl border border-white/10 bg-white/[0.02] p-3">
+                        <p className="text-[10px] text-zinc-400 font-medium uppercase tracking-wider">Accueil</p>
+                        <p className="text-lg font-bold text-amber-400 mt-1">Join-Roles Auto</p>
+                        <p className="text-[10px] text-zinc-400 mt-0.5">Immédiat ou différé X minutes</p>
+                      </div>
+                      <div className="rounded-xl border border-white/10 bg-white/[0.02] p-3">
+                        <p className="text-[10px] text-zinc-400 font-medium uppercase tracking-wider">Sécurité</p>
+                        <p className="text-lg font-bold text-emerald-400 mt-1">Hiérarchie Bot</p>
+                        <p className="text-[10px] text-zinc-400 mt-0.5">Prévention anti-escalade 403</p>
+                      </div>
+                    </div>
+
+                    <div className="flex flex-wrap gap-2 pt-1">
+                      <Link
+                        href={`/discord/roles?guildId=${selectedGuild.id}&tab=panels`}
+                        className="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-lg border border-white/10 bg-zinc-900/80 hover:bg-zinc-800 text-zinc-200 text-xs transition-all"
+                      >
+                        <Sliders className="h-3.5 w-3.5 text-pink-400" />
+                        <span>Panneaux de Rôles Actifs</span>
+                      </Link>
+                      <Link
+                        href={`/discord/roles?guildId=${selectedGuild.id}&tab=builder`}
+                        className="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-lg border border-white/10 bg-zinc-900/80 hover:bg-zinc-800 text-zinc-200 text-xs transition-all"
+                      >
+                        <Plus className="h-3.5 w-3.5 text-purple-400" />
+                        <span>Créer un Panneau Discord</span>
+                      </Link>
+                      <Link
+                        href={`/discord/roles?guildId=${selectedGuild.id}&tab=join_roles`}
+                        className="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-lg border border-white/10 bg-zinc-900/80 hover:bg-zinc-800 text-zinc-200 text-xs transition-all"
+                      >
+                        <Users className="h-3.5 w-3.5 text-amber-400" />
+                        <span>Configurer les Join-Roles</span>
+                      </Link>
+                    </div>
+                  </div>
+                )}
+
+                {/* MODULE 8: Analytics & Insights 2.0 */}
                 {activeModule === "analytics" && (
                   <div className="space-y-4 text-xs">
-                    <div className="rounded-2xl border border-white/10 bg-white/[0.02] p-4 space-y-2">
-                      <p className="font-bold text-white">Métriques Discord en direct</p>
-                      <p className="text-zinc-400 text-[11px] leading-relaxed">
-                        Le bot surveille en continu les messages, salons et interactions de <strong className="text-white">{selectedGuild.name}</strong>. Les rapports sont accessibles via la commande <code className="text-cyan-300">/analytics</code>.
-                      </p>
+                    {/* Analytics Gateway */}
+                    <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-3 rounded-2xl border border-cyan-500/30 bg-gradient-to-r from-cyan-500/10 via-blue-500/10 to-cyan-600/10 p-4 shadow-lg shadow-cyan-500/5">
+                      <div>
+                        <div className="flex items-center gap-2">
+                          <span className="text-base">📊</span>
+                          <p className="text-xs font-bold text-white">Analytics & Server Insights 2.0</p>
+                          <span className="text-[9px] uppercase font-bold tracking-wider px-1.5 py-0.5 rounded bg-cyan-500/20 text-cyan-300 border border-cyan-500/30">
+                            Data Engine
+                          </span>
+                        </div>
+                        <p className="text-[11px] text-zinc-300 mt-0.5">
+                          Surveillez la santé de votre serveur en temps réel : volume de messages, flux d'arrivées et départs, heatmaps horaires d'affluence, rétention et classement des membres les plus actifs.
+                        </p>
+                      </div>
+                      <Link
+                        href={`/discord/analytics?guildId=${selectedGuild.id}`}
+                        className="flex h-9 shrink-0 items-center gap-2 rounded-xl bg-gradient-to-r from-cyan-600 to-blue-600 px-4 text-xs font-bold text-white shadow-md shadow-cyan-600/20 transition-all hover:from-cyan-500 hover:to-blue-500 active:scale-95 cursor-pointer"
+                      >
+                        <BarChart3 className="h-4 w-4" />
+                        <span>Ouvrir Analytics Center</span>
+                        <ChevronRight className="h-3.5 w-3.5" />
+                      </Link>
+                    </div>
+
+                    <div className="grid grid-cols-2 sm:grid-cols-4 gap-3">
+                      <div className="rounded-xl border border-white/10 bg-white/[0.02] p-3">
+                        <p className="text-[10px] text-zinc-400 font-medium uppercase tracking-wider">Activité</p>
+                        <p className="text-lg font-bold text-cyan-400 mt-1">Messages 14j</p>
+                        <p className="text-[10px] text-zinc-400 mt-0.5">Graphiques & répartitions médias</p>
+                      </div>
+                      <div className="rounded-xl border border-white/10 bg-white/[0.02] p-3">
+                        <p className="text-[10px] text-zinc-400 font-medium uppercase tracking-wider">Croissance</p>
+                        <p className="text-lg font-bold text-emerald-400 mt-1">Flux Membres</p>
+                        <p className="text-[10px] text-zinc-400 mt-0.5">Arrivées nettes & taux de rétention</p>
+                      </div>
+                      <div className="rounded-xl border border-white/10 bg-white/[0.02] p-3">
+                        <p className="text-[10px] text-zinc-400 font-medium uppercase tracking-wider">Créneaux</p>
+                        <p className="text-lg font-bold text-amber-400 mt-1">Heatmap 24h/7j</p>
+                        <p className="text-[10px] text-zinc-400 mt-0.5">Pics d'affluence pour annonces</p>
+                      </div>
+                      <div className="rounded-xl border border-white/10 bg-white/[0.02] p-3">
+                        <p className="text-[10px] text-zinc-400 font-medium uppercase tracking-wider">Salons</p>
+                        <p className="text-lg font-bold text-purple-400 mt-1">Part de Voix</p>
+                        <p className="text-[10px] text-zinc-400 mt-0.5">Salons textuels & heures vocales</p>
+                      </div>
+                    </div>
+
+                    <div className="flex flex-wrap gap-2 pt-1">
+                      <Link
+                        href={`/discord/analytics?guildId=${selectedGuild.id}&tab=messages`}
+                        className="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-lg border border-white/10 bg-zinc-900/80 hover:bg-zinc-800 text-zinc-200 text-xs transition-all"
+                      >
+                        <BarChart3 className="h-3.5 w-3.5 text-cyan-400" />
+                        <span>Activité des Messages</span>
+                      </Link>
+                      <Link
+                        href={`/discord/analytics?guildId=${selectedGuild.id}&tab=growth`}
+                        className="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-lg border border-white/10 bg-zinc-900/80 hover:bg-zinc-800 text-zinc-200 text-xs transition-all"
+                      >
+                        <Users className="h-3.5 w-3.5 text-emerald-400" />
+                        <span>Croissance & Rétention</span>
+                      </Link>
+                      <Link
+                        href={`/discord/analytics?guildId=${selectedGuild.id}&tab=heatmap`}
+                        className="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-lg border border-white/10 bg-zinc-900/80 hover:bg-zinc-800 text-zinc-200 text-xs transition-all"
+                      >
+                        <Clock className="h-3.5 w-3.5 text-amber-400" />
+                        <span>Heatmap d'Affluence</span>
+                      </Link>
                     </div>
                   </div>
                 )}

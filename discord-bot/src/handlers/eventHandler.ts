@@ -1,4 +1,5 @@
-import { Client, Events } from 'discord.js';
+import { Client, Events, AuditLogEvent } from 'discord.js';
+import { logService } from '../modules/logs/services/logService.js';
 import { onInteractionCreate } from '../events/interactionCreate.js';
 import { onMessageCreate } from '../events/messageCreate.js';
 import { onReady } from '../events/ready.js';
@@ -87,9 +88,56 @@ export function registerEvents(client: Client): void {
   });
   client.on(Events.ChannelUpdate, (oldChan, newChan) => handleChannelUpdate(oldChan, newChan));
 
-  // Audit Logs (Mass ban/kick, webhooks)
+  // Audit Logs (Mass ban/kick, webhooks, bots)
   client.on(Events.GuildAuditLogEntryCreate, (entry, guild) => {
     raidDetectionService.handleAuditLog(guild, entry);
+
+    if (
+      entry.action === AuditLogEvent.WebhookCreate ||
+      entry.action === AuditLogEvent.WebhookDelete ||
+      entry.action === AuditLogEvent.WebhookUpdate
+    ) {
+      const type =
+        entry.action === AuditLogEvent.WebhookCreate
+          ? 'WEBHOOK_CREATE'
+          : entry.action === AuditLogEvent.WebhookDelete
+          ? 'WEBHOOK_DELETE'
+          : 'WEBHOOK_UPDATE';
+
+      logService.emit({
+        guildId: guild.id,
+        module: 'WEBHOOKS',
+        type,
+        actor: {
+          id: entry.executorId || 'unknown',
+          tag: entry.executor?.tag || 'Inconnu',
+          avatar: entry.executor?.displayAvatarURL(),
+        },
+        target: {
+          id: entry.targetId || 'webhook',
+          type: 'WEBHOOK',
+          name: `Webhook ${entry.targetId || ''}`,
+        },
+        reason: entry.reason || 'Action sur un Webhook',
+      });
+    } else if (entry.action === AuditLogEvent.BotAdd) {
+      logService.emit({
+        guildId: guild.id,
+        module: 'BOTS',
+        type: 'BOT_ADD',
+        actor: {
+          id: entry.executorId || 'unknown',
+          tag: entry.executor?.tag || 'Inconnu',
+          avatar: entry.executor?.displayAvatarURL(),
+        },
+        target: {
+          id: entry.targetId || 'bot',
+          type: 'USER',
+          name: `Bot ${entry.targetId || ''}`,
+        },
+        reason: entry.reason || "Ajout d'un bot sur le serveur",
+      });
+    }
   });
 
   // Logs : Vocal

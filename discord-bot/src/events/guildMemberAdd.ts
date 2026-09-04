@@ -6,6 +6,7 @@ import { antiRaidService } from '../modules/security/services/antiRaidService.js
 import { raidDetectionService } from '../modules/antiRaid/services/raidDetectionService.js';
 import { autoModService } from '../modules/automod/services/autoModService.js';
 import { analyticsService } from '../modules/analytics/services/analyticsService.js';
+import { logService } from '../modules/logs/services/logService.js';
 import { logger } from '../utils/logger.js';
 
 export async function onGuildMemberAdd(member: GuildMember): Promise<void> {
@@ -27,6 +28,32 @@ export async function onGuildMemberAdd(member: GuildMember): Promise<void> {
 
     // 4. Analytics
     analyticsService.recordJoin(member.guild.id, member.id);
+
+    // 5. Audit Center 2.0 Log
+    logService.emit({
+      guildId: member.guild.id,
+      module: 'MEMBERS',
+      type: 'MEMBER_JOIN',
+      actor: {
+        id: member.id,
+        tag: member.user.tag,
+        username: member.user.username,
+        avatar: member.user.displayAvatarURL(),
+        isBot: member.user.bot,
+      },
+      target: {
+        id: member.id,
+        type: 'USER',
+        name: member.user.tag,
+        tag: member.user.tag,
+        avatar: member.user.displayAvatarURL(),
+      },
+      reason: `Arrivée du membre sur le serveur (Compte créé <t:${Math.floor(member.user.createdTimestamp / 1000)}:R>)`,
+      metadata: {
+        accountCreatedAt: member.user.createdAt.toISOString(),
+        isBot: member.user.bot,
+      },
+    });
 
     // 2. Module Logs d'Arrivée
     if (config.modules.logging) {

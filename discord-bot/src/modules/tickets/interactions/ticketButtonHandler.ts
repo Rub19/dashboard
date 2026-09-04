@@ -11,6 +11,7 @@ import {
 } from 'discord.js';
 import { ticketService } from '../services/ticketService.js';
 import { TranscriptService } from '../services/transcriptService.js';
+import { TicketPriority } from '../types/ticket.js';
 import { logger } from '../../../utils/logger.js';
 
 export async function handleTicketButton(interaction: ButtonInteraction): Promise<void> {
@@ -68,7 +69,11 @@ export async function handleTicketButton(interaction: ButtonInteraction): Promis
   if (customId.startsWith('ticket_claim:')) {
     const ticketId = customId.split(':')[1];
     try {
-      await ticketService.claimTicket(ticketId, interaction.user);
+      await ticketService.claimTicket(guild.id, ticketId, {
+        id: interaction.user.id,
+        tag: interaction.user.tag,
+        avatar: interaction.user.displayAvatarURL(),
+      });
 
       // Met à jour les boutons du message
       const updatedButtons = new ActionRowBuilder<ButtonBuilder>().addComponents(
@@ -79,15 +84,22 @@ export async function handleTicketButton(interaction: ButtonInteraction): Promis
           .setStyle(ButtonStyle.Success),
         new ButtonBuilder()
           .setCustomId(`ticket_close:${ticketId}`)
-          .setLabel('Fermer le ticket')
+          .setLabel('Fermer')
           .setEmoji('🔒')
-          .setStyle(ButtonStyle.Danger)
+          .setStyle(ButtonStyle.Danger),
+        new ButtonBuilder()
+          .setCustomId(`ticket_priority:${ticketId}`)
+          .setLabel('Priorité')
+          .setEmoji('📌')
+          .setStyle(ButtonStyle.Secondary),
+        new ButtonBuilder()
+          .setCustomId(`ticket_transcript:${ticketId}`)
+          .setLabel('Transcript')
+          .setEmoji('📄')
+          .setStyle(ButtonStyle.Secondary)
       );
 
       await interaction.update({ components: [updatedButtons] });
-      await interaction.followUp({
-        content: `🎯 **${interaction.user}** a pris en charge ce ticket.`,
-      });
     } catch (err: any) {
       await interaction.reply({ content: `❌ ${err.message}`, ephemeral: true });
     }
@@ -98,25 +110,35 @@ export async function handleTicketButton(interaction: ButtonInteraction): Promis
   if (customId.startsWith('ticket_unclaim:')) {
     const ticketId = customId.split(':')[1];
     try {
-      await ticketService.unclaimTicket(ticketId);
+      await ticketService.unclaimTicket(guild.id, ticketId, {
+        id: interaction.user.id,
+        tag: interaction.user.tag,
+      });
 
       const updatedButtons = new ActionRowBuilder<ButtonBuilder>().addComponents(
         new ButtonBuilder()
           .setCustomId(`ticket_claim:${ticketId}`)
           .setLabel('Prendre en charge (Claim)')
-          .setEmoji('🎯')
-          .setStyle(ButtonStyle.Secondary),
+          .setEmoji('👤')
+          .setStyle(ButtonStyle.Primary),
         new ButtonBuilder()
           .setCustomId(`ticket_close:${ticketId}`)
-          .setLabel('Fermer le ticket')
+          .setLabel('Fermer')
           .setEmoji('🔒')
-          .setStyle(ButtonStyle.Danger)
+          .setStyle(ButtonStyle.Danger),
+        new ButtonBuilder()
+          .setCustomId(`ticket_priority:${ticketId}`)
+          .setLabel('Priorité')
+          .setEmoji('📌')
+          .setStyle(ButtonStyle.Secondary),
+        new ButtonBuilder()
+          .setCustomId(`ticket_transcript:${ticketId}`)
+          .setLabel('Transcript')
+          .setEmoji('📄')
+          .setStyle(ButtonStyle.Secondary)
       );
 
       await interaction.update({ components: [updatedButtons] });
-      await interaction.followUp({
-        content: `🔄 La prise en charge de ce ticket a été libérée.`,
-      });
     } catch (err: any) {
       await interaction.reply({ content: `❌ ${err.message}`, ephemeral: true });
     }
@@ -128,7 +150,12 @@ export async function handleTicketButton(interaction: ButtonInteraction): Promis
     const ticketId = customId.split(':')[1];
     await interaction.deferReply();
     try {
-      await ticketService.closeTicket(ticketId, interaction.user, guild);
+      await ticketService.closeTicket(
+        guild,
+        ticketId,
+        { id: interaction.user.id, tag: interaction.user.tag },
+        'Fermé depuis les contrôles Discord'
+      );
       await interaction.deleteReply().catch(() => {});
     } catch (err: any) {
       await interaction.editReply({ content: `❌ ${err.message}` });
@@ -136,15 +163,34 @@ export async function handleTicketButton(interaction: ButtonInteraction): Promis
     return;
   }
 
-  // 5. Réouverture du ticket
-  if (customId.startsWith('ticket_reopen:')) {
+  // 5. Modification cyclique de priorité
+  if (customId.startsWith('ticket_priority:')) {
     const ticketId = customId.split(':')[1];
-    await interaction.deferReply({ ephemeral: true });
+    const ticket = ticketService.getTicketById(guild.id, ticketId);
+    if (!ticket) {
+      await interaction.reply({ content: '❌ Ticket introuvable.', ephemeral: true });
+      return;
+    }
+
+    const priorityCycle: Record<TicketPriority, TicketPriority> = {
+      LOW: 'NORMAL',
+      NORMAL: 'HIGH',
+      HIGH: 'URGENT',
+      URGENT: 'LOW',
+    };
+
+    const newPriority = priorityCycle[ticket.priority] || 'NORMAL';
     try {
-      await ticketService.reopenTicket(ticketId, interaction.user, guild);
-      await interaction.editReply({ content: '✅ Le ticket a été rouvert avec succès.' });
+      await ticketService.updatePriority(guild.id, ticketId, newPriority, {
+        id: interaction.user.id,
+        tag: interaction.user.tag,
+      });
+
+      await interaction.reply({
+        content: `📌 **Priorité mise à jour :** \`${ticket.priority}\` ➔ \`${newPriority}\``,
+      });
     } catch (err: any) {
-      await interaction.editReply({ content: `❌ ${err.message}` });
+      await interaction.reply({ content: `❌ ${err.message}`, ephemeral: true });
     }
     return;
   }
@@ -154,7 +200,7 @@ export async function handleTicketButton(interaction: ButtonInteraction): Promis
     const ticketId = customId.split(':')[1];
     await interaction.deferReply();
     try {
-      const ticket = ticketService.getGuildTickets(guild.id).find((t) => t.id === ticketId);
+      const ticket = ticketService.getTicketById(guild.id, ticketId);
       if (!ticket) throw new Error('Ticket introuvable.');
 
       const { filePath } = await TranscriptService.generateTranscript(
@@ -170,49 +216,6 @@ export async function handleTicketButton(interaction: ButtonInteraction): Promis
     } catch (err: any) {
       await interaction.editReply({ content: `❌ ${err.message}` });
     }
-    return;
-  }
-
-  // 7. Demande de suppression avec confirmation
-  if (customId.startsWith('ticket_delete:')) {
-    const ticketId = customId.split(':')[1];
-    const confirmRow = new ActionRowBuilder<ButtonBuilder>().addComponents(
-      new ButtonBuilder()
-        .setCustomId(`ticket_delete_confirm:${ticketId}`)
-        .setLabel('Confirmer la suppression définitive')
-        .setEmoji('⚠️')
-        .setStyle(ButtonStyle.Danger),
-      new ButtonBuilder()
-        .setCustomId(`ticket_delete_cancel:${ticketId}`)
-        .setLabel('Annuler')
-        .setStyle(ButtonStyle.Secondary)
-    );
-
-    await interaction.reply({
-      content: '⚠️ **Êtes-vous sûr de vouloir supprimer définitivement ce salon de ticket ?**\nCette action est irréversible (un transcript sera archivé).',
-      components: [confirmRow],
-    });
-    return;
-  }
-
-  // 8. Confirmation de suppression
-  if (customId.startsWith('ticket_delete_confirm:')) {
-    const ticketId = customId.split(':')[1];
-    await interaction.reply({ content: '🗑️ Suppression du ticket en cours...' });
-    try {
-      await ticketService.deleteTicket(ticketId, interaction.user, guild);
-    } catch (err) {
-      logger.error('Erreur suppression ticket :', err);
-    }
-    return;
-  }
-
-  // 9. Annulation de suppression
-  if (customId.startsWith('ticket_delete_cancel:')) {
-    await interaction.update({
-      content: '✅ Suppression annulée.',
-      components: [],
-    });
     return;
   }
 }

@@ -11,6 +11,7 @@ import {
   TextChannel,
 } from 'discord.js';
 import { ticketService } from '../../modules/tickets/services/ticketService.js';
+import { TicketPriority, TicketStatus } from '../../modules/tickets/types/ticket.js';
 import { logger } from '../../utils/logger.js';
 
 export function createTicketRouter(discordClient: Client) {
@@ -18,19 +19,285 @@ export function createTicketRouter(discordClient: Client) {
 
   // 1. Vue d'ensemble & Stats
   router.get('/overview', async (req: Request, res: Response): Promise<void> => {
-    const guildId = String(req.params.guildId);
-    const overview = ticketService.getOverview(guildId);
-    res.json(overview);
+    try {
+      const guildId = String(req.params.guildId);
+      const overview = ticketService.getOverview(guildId);
+      res.json(overview);
+    } catch (err: any) {
+      res.status(500).json({ error: err.message || 'Erreur lors de la récupération des stats' });
+    }
   });
 
-  // 2. Liste des tickets
-  router.get('/list', async (req: Request, res: Response): Promise<void> => {
-    const guildId = String(req.params.guildId);
-    const tickets = ticketService.getGuildTickets(guildId);
-    res.json({ tickets });
+  // 2. Liste des tickets avec filtres, recherche et pagination
+  const handleGetTickets = async (req: Request, res: Response): Promise<void> => {
+    try {
+      const guildId = String(req.params.guildId);
+      const {
+        status,
+        priority,
+        categoryId,
+        teamId,
+        staffId,
+        userId,
+        tag,
+        search,
+        period,
+        limit,
+        offset,
+      } = req.query;
+
+      const result = ticketService.getTickets(guildId, {
+        status: status ? (String(status) as any) : undefined,
+        priority: priority ? (String(priority) as any) : undefined,
+        categoryId: categoryId ? String(categoryId) : undefined,
+        teamId: teamId ? String(teamId) : undefined,
+        staffId: staffId ? String(staffId) : undefined,
+        userId: userId ? String(userId) : undefined,
+        tag: tag ? String(tag) : undefined,
+        search: search ? String(search) : undefined,
+        period: period ? (String(period) as any) : undefined,
+        limit: limit ? parseInt(String(limit), 10) : 50,
+        offset: offset ? parseInt(String(offset), 10) : 0,
+      });
+
+      res.json(result);
+    } catch (err: any) {
+      res.status(500).json({ error: err.message || 'Erreur lors de la récupération des tickets' });
+    }
+  };
+
+  router.get('/tickets', handleGetTickets);
+  router.get('/list', handleGetTickets);
+
+  // 3. Détail d'un ticket
+  router.get('/tickets/:ticketId', async (req: Request, res: Response): Promise<void> => {
+    try {
+      const guildId = String(req.params.guildId);
+      const ticketId = String(req.params.ticketId);
+      const ticket = ticketService.getTicketById(guildId, ticketId);
+      if (!ticket) {
+        res.status(404).json({ error: 'Ticket introuvable' });
+        return;
+      }
+      res.json({ ticket });
+    } catch (err: any) {
+      res.status(500).json({ error: err.message });
+    }
   });
 
-  // 3. Catégories
+  // 4. Actions sur un Ticket
+  // Claim
+  router.post('/tickets/:ticketId/claim', async (req: Request, res: Response): Promise<void> => {
+    try {
+      const guildId = String(req.params.guildId);
+      const ticketId = String(req.params.ticketId);
+      const { staffId, staffTag, staffAvatar } = req.body;
+      if (!staffId || !staffTag) {
+        res.status(400).json({ error: 'staffId et staffTag sont requis.' });
+        return;
+      }
+      const ticket = await ticketService.claimTicket(guildId, ticketId, {
+        id: staffId,
+        tag: staffTag,
+        avatar: staffAvatar,
+      });
+      res.json({ success: true, ticket });
+    } catch (err: any) {
+      res.status(400).json({ error: err.message });
+    }
+  });
+
+  // Unclaim
+  router.post('/tickets/:ticketId/unclaim', async (req: Request, res: Response): Promise<void> => {
+    try {
+      const guildId = String(req.params.guildId);
+      const ticketId = String(req.params.ticketId);
+      const { staffId, staffTag } = req.body;
+      const ticket = await ticketService.unclaimTicket(guildId, ticketId, {
+        id: staffId || 'staff',
+        tag: staffTag || 'Staff',
+      });
+      res.json({ success: true, ticket });
+    } catch (err: any) {
+      res.status(400).json({ error: err.message });
+    }
+  });
+
+  // Transfer
+  router.post('/tickets/:ticketId/transfer', async (req: Request, res: Response): Promise<void> => {
+    try {
+      const guildId = String(req.params.guildId);
+      const ticketId = String(req.params.ticketId);
+      const { target, performedBy } = req.body;
+      const ticket = await ticketService.transferTicket(
+        guildId,
+        ticketId,
+        target || {},
+        performedBy || { id: 'staff', tag: 'Staff' }
+      );
+      res.json({ success: true, ticket });
+    } catch (err: any) {
+      res.status(400).json({ error: err.message });
+    }
+  });
+
+  // Update Priority
+  router.post('/tickets/:ticketId/priority', async (req: Request, res: Response): Promise<void> => {
+    try {
+      const guildId = String(req.params.guildId);
+      const ticketId = String(req.params.ticketId);
+      const { priority, performedBy } = req.body;
+      const ticket = await ticketService.updatePriority(
+        guildId,
+        ticketId,
+        priority as TicketPriority,
+        performedBy || { id: 'staff', tag: 'Staff' }
+      );
+      res.json({ success: true, ticket });
+    } catch (err: any) {
+      res.status(400).json({ error: err.message });
+    }
+  });
+
+  // Update Status
+  router.post('/tickets/:ticketId/status', async (req: Request, res: Response): Promise<void> => {
+    try {
+      const guildId = String(req.params.guildId);
+      const ticketId = String(req.params.ticketId);
+      const { status, performedBy } = req.body;
+      const ticket = await ticketService.updateStatus(
+        guildId,
+        ticketId,
+        status as TicketStatus,
+        performedBy || { id: 'staff', tag: 'Staff' }
+      );
+      res.json({ success: true, ticket });
+    } catch (err: any) {
+      res.status(400).json({ error: err.message });
+    }
+  });
+
+  // Update Tags
+  router.post('/tickets/:ticketId/tags', async (req: Request, res: Response): Promise<void> => {
+    try {
+      const guildId = String(req.params.guildId);
+      const ticketId = String(req.params.ticketId);
+      const { tags, performedBy } = req.body;
+      const ticket = await ticketService.updateTags(
+        guildId,
+        ticketId,
+        Array.isArray(tags) ? tags : [],
+        performedBy || { id: 'staff', tag: 'Staff' }
+      );
+      res.json({ success: true, ticket });
+    } catch (err: any) {
+      res.status(400).json({ error: err.message });
+    }
+  });
+
+  // Notes Internes
+  router.post('/tickets/:ticketId/notes', async (req: Request, res: Response): Promise<void> => {
+    try {
+      const guildId = String(req.params.guildId);
+      const ticketId = String(req.params.ticketId);
+      const { content, author } = req.body;
+      if (!content || !content.trim()) {
+        res.status(400).json({ error: 'Le contenu de la note est requis.' });
+        return;
+      }
+      const ticket = await ticketService.addInternalNote(
+        guildId,
+        ticketId,
+        content.trim(),
+        author || { id: 'staff', tag: 'Staff' }
+      );
+      res.json({ success: true, ticket });
+    } catch (err: any) {
+      res.status(400).json({ error: err.message });
+    }
+  });
+
+  // Close Ticket
+  router.post('/tickets/:ticketId/close', async (req: Request, res: Response): Promise<void> => {
+    try {
+      const guildId = String(req.params.guildId);
+      const ticketId = String(req.params.ticketId);
+      const { closedBy, reason } = req.body;
+
+      const guild = discordClient.guilds.cache.get(guildId);
+      if (!guild) {
+        res.status(404).json({ error: 'Serveur Discord introuvable' });
+        return;
+      }
+
+      const ticket = await ticketService.closeTicket(
+        guild,
+        ticketId,
+        closedBy || { id: 'dashboard', tag: 'Dashboard' },
+        reason || 'Résolu via Dashboard'
+      );
+      res.json({ success: true, ticket });
+    } catch (err: any) {
+      res.status(400).json({ error: err.message });
+    }
+  });
+
+  // Reopen Ticket
+  router.post('/tickets/:ticketId/reopen', async (req: Request, res: Response): Promise<void> => {
+    try {
+      const guildId = String(req.params.guildId);
+      const ticketId = String(req.params.ticketId);
+      const { reopenedBy } = req.body;
+
+      const guild = discordClient.guilds.cache.get(guildId);
+      if (!guild) {
+        res.status(404).json({ error: 'Serveur Discord introuvable' });
+        return;
+      }
+
+      const ticket = await ticketService.reopenTicket(
+        guild,
+        ticketId,
+        reopenedBy || { id: 'dashboard', tag: 'Dashboard' }
+      );
+      res.json({ success: true, ticket });
+    } catch (err: any) {
+      res.status(400).json({ error: err.message });
+    }
+  });
+
+  // Link Moderation Case
+  router.post('/tickets/:ticketId/link-case', async (req: Request, res: Response): Promise<void> => {
+    try {
+      const guildId = String(req.params.guildId);
+      const ticketId = String(req.params.ticketId);
+      const { caseId, staffUser } = req.body;
+      const ticket = ticketService.linkCase(
+        guildId,
+        ticketId,
+        caseId,
+        staffUser || { id: 'staff', tag: 'Staff' }
+      );
+      res.json({ success: true, ticket });
+    } catch (err: any) {
+      res.status(400).json({ error: err.message });
+    }
+  });
+
+  // Submit Rating
+  router.post('/tickets/:ticketId/rate', async (req: Request, res: Response): Promise<void> => {
+    try {
+      const guildId = String(req.params.guildId);
+      const ticketId = String(req.params.ticketId);
+      const { score, comment } = req.body;
+      const ticket = ticketService.submitRating(guildId, ticketId, Number(score) || 5, comment);
+      res.json({ success: true, ticket });
+    } catch (err: any) {
+      res.status(400).json({ error: err.message });
+    }
+  });
+
+  // 5. Catégories
   router.get('/categories', async (req: Request, res: Response): Promise<void> => {
     const guildId = String(req.params.guildId);
     const categories = ticketService.getCategories(guildId);
@@ -40,8 +307,9 @@ export function createTicketRouter(discordClient: Client) {
   router.post('/categories', async (req: Request, res: Response): Promise<void> => {
     const guildId = String(req.params.guildId);
     try {
-      const saved = ticketService.saveCategory(guildId, req.body);
-      res.json({ success: true, category: saved });
+      const categoryData = { ...req.body, guildId };
+      ticketService.saveCategory(categoryData);
+      res.json({ success: true, category: categoryData });
     } catch (err: any) {
       res.status(400).json({ error: err.message || 'Données invalides' });
     }
@@ -54,7 +322,7 @@ export function createTicketRouter(discordClient: Client) {
     res.json({ success: deleted });
   });
 
-  // 4. Panels
+  // 6. Panels
   router.get('/panels', async (req: Request, res: Response): Promise<void> => {
     const guildId = String(req.params.guildId);
     const panels = ticketService.getPanels(guildId);
@@ -64,14 +332,22 @@ export function createTicketRouter(discordClient: Client) {
   router.post('/panels', async (req: Request, res: Response): Promise<void> => {
     const guildId = String(req.params.guildId);
     try {
-      const saved = ticketService.savePanel(guildId, req.body);
-      res.json({ success: true, panel: saved });
+      const panelData = { ...req.body, guildId };
+      ticketService.savePanel(panelData);
+      res.json({ success: true, panel: panelData });
     } catch (err: any) {
       res.status(400).json({ error: err.message || 'Données invalides' });
     }
   });
 
-  // 5. Publier un Panel dans un salon Discord
+  router.delete('/panels/:panelId', async (req: Request, res: Response): Promise<void> => {
+    const guildId = String(req.params.guildId);
+    const panelId = String(req.params.panelId);
+    const deleted = ticketService.deletePanel(guildId, panelId);
+    res.json({ success: deleted });
+  });
+
+  // Publier un Panel dans un salon Discord
   router.post('/panels/:panelId/publish', async (req: Request, res: Response): Promise<void> => {
     const guildId = String(req.params.guildId);
     const panelId = String(req.params.panelId);
@@ -114,14 +390,13 @@ export function createTicketRouter(discordClient: Client) {
 
       const allCategories = ticketService.getCategories(guildId);
       const selectedCats =
-        panel.categoryIds.length > 0
+        panel.categoryIds && panel.categoryIds.length > 0
           ? allCategories.filter((c) => panel.categoryIds.includes(c.id))
           : allCategories;
 
       const buttonsRow = new ActionRowBuilder<ButtonBuilder>();
 
       if (selectedCats.length === 1) {
-        // Bouton unique
         const cat = selectedCats[0];
         buttonsRow.addComponents(
           new ButtonBuilder()
@@ -131,7 +406,6 @@ export function createTicketRouter(discordClient: Client) {
             .setStyle(ButtonStyle.Primary)
         );
       } else {
-        // Plusieurs boutons (jusqu'à 5 boutons par ligne)
         for (const cat of selectedCats.slice(0, 5)) {
           buttonsRow.addComponents(
             new ButtonBuilder()
@@ -148,8 +422,7 @@ export function createTicketRouter(discordClient: Client) {
         components: [buttonsRow],
       });
 
-      // Mettre à jour le panel avec le messageId et channelId
-      ticketService.savePanel(guildId, {
+      ticketService.savePanel({
         ...panel,
         channelId: channel.id,
         messageId: sent.id,
@@ -162,38 +435,117 @@ export function createTicketRouter(discordClient: Client) {
     }
   });
 
-  // 6. Configuration globale des tickets
+  // 7. Équipes de Staff
+  router.get('/teams', async (req: Request, res: Response): Promise<void> => {
+    const guildId = String(req.params.guildId);
+    const teams = ticketService.getTeams(guildId);
+    res.json({ teams });
+  });
+
+  router.post('/teams', async (req: Request, res: Response): Promise<void> => {
+    const guildId = String(req.params.guildId);
+    try {
+      const teamData = { ...req.body, guildId };
+      ticketService.saveTeam(teamData);
+      res.json({ success: true, team: teamData });
+    } catch (err: any) {
+      res.status(400).json({ error: err.message || 'Données invalides' });
+    }
+  });
+
+  router.delete('/teams/:teamId', async (req: Request, res: Response): Promise<void> => {
+    const guildId = String(req.params.guildId);
+    const teamId = String(req.params.teamId);
+    const deleted = ticketService.deleteTeam(guildId, teamId);
+    res.json({ success: deleted });
+  });
+
+  // 8. Règles d'Automatisation
+  router.get('/automations', async (req: Request, res: Response): Promise<void> => {
+    const guildId = String(req.params.guildId);
+    const automations = ticketService.getAutomations(guildId);
+    res.json({ automations });
+  });
+
+  router.post('/automations', async (req: Request, res: Response): Promise<void> => {
+    const guildId = String(req.params.guildId);
+    try {
+      const ruleData = { ...req.body, guildId };
+      ticketService.saveAutomation(ruleData);
+      res.json({ success: true, automation: ruleData });
+    } catch (err: any) {
+      res.status(400).json({ error: err.message || 'Données invalides' });
+    }
+  });
+
+  router.delete('/automations/:ruleId', async (req: Request, res: Response): Promise<void> => {
+    const guildId = String(req.params.guildId);
+    const ruleId = String(req.params.ruleId);
+    const deleted = ticketService.deleteAutomation(guildId, ruleId);
+    res.json({ success: deleted });
+  });
+
+  // 9. Analytics & Staff Leaderboard
+  router.get('/analytics', async (req: Request, res: Response): Promise<void> => {
+    try {
+      const guildId = String(req.params.guildId);
+      const analytics = ticketService.getStaffAnalytics(guildId);
+      res.json({ analytics });
+    } catch (err: any) {
+      res.status(500).json({ error: err.message });
+    }
+  });
+
+  // 10. Configuration globale des tickets
   router.get('/config', async (req: Request, res: Response): Promise<void> => {
     const guildId = String(req.params.guildId);
     const config = ticketService.getConfig(guildId);
     res.json({ config });
   });
 
-  router.patch('/config', async (req: Request, res: Response): Promise<void> => {
+  const handleUpdateConfig = async (req: Request, res: Response): Promise<void> => {
     const guildId = String(req.params.guildId);
     try {
-      const updated = ticketService.updateConfig(guildId, req.body);
+      const current = ticketService.getConfig(guildId);
+      const updated = { ...current, ...req.body, guildId };
+      ticketService.saveConfig(guildId, updated);
       res.json({ success: true, config: updated });
     } catch (err: any) {
       res.status(400).json({ error: err.message || 'Données invalides' });
     }
-  });
+  };
 
-  // 7. Téléchargement d'un transcript HTML
+  router.patch('/config', handleUpdateConfig);
+  router.put('/config', handleUpdateConfig);
+
+  // 11. Téléchargement d'un transcript
   router.get('/transcripts/:ticketId/download', async (req: Request, res: Response): Promise<void> => {
+    const guildId = String(req.params.guildId);
     const ticketId = String(req.params.ticketId);
-    const filePath = path.resolve(process.cwd(), 'data', 'transcripts', `transcript-${ticketId}.html`);
+    const ticket = ticketService.getTicketById(guildId, ticketId);
 
-    if (!fs.existsSync(filePath)) {
-      res.status(404).send('Transcript introuvable.');
+    if (ticket && ticket.transcriptPath && fs.existsSync(ticket.transcriptPath)) {
+      res.setHeader('Content-Type', 'text/html; charset=utf-8');
+      res.sendFile(ticket.transcriptPath);
       return;
     }
 
-    res.setHeader('Content-Type', 'text/html; charset=utf-8');
-    res.sendFile(filePath);
+    // Fallback recherche globale
+    const transcriptsDir = path.resolve(process.cwd(), 'data', 'transcripts');
+    if (fs.existsSync(transcriptsDir)) {
+      const files = fs.readdirSync(transcriptsDir);
+      const match = files.find((f) => f.includes(ticketId) && f.endsWith('.html'));
+      if (match) {
+        res.setHeader('Content-Type', 'text/html; charset=utf-8');
+        res.sendFile(path.join(transcriptsDir, match));
+        return;
+      }
+    }
+
+    res.status(404).send('Transcript introuvable pour ce ticket.');
   });
 
-  // 8. Catégories Discord du serveur (pour regrouper les salons)
+  // 12. Catégories Discord du serveur
   router.get('/discord-categories', async (req: Request, res: Response): Promise<void> => {
     const guildId = String(req.params.guildId);
     const guild = discordClient.guilds.cache.get(guildId);

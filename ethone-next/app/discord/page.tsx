@@ -46,6 +46,7 @@ import {
   SkipForward,
   SkipBack,
   Disc,
+  Ticket,
 } from "lucide-react";
 import { useAuth } from "@/components/AuthProvider";
 import { useToast } from "@/components/ToastProvider";
@@ -63,6 +64,7 @@ type ModuleType =
   | "suggestions"
   | "leveling"
   | "giveaways"
+  | "tickets"
   | "moderation"
   | "logs"
   | "music"
@@ -117,6 +119,14 @@ const MODULES: BotModule[] = [
     icon: Gift,
     color: "text-rose-400",
     badge: "Événements",
+  },
+  {
+    id: "tickets",
+    title: "Tickets Center 2.0",
+    description: "Helpdesk professionnel, formulaires, équipes de staff, transcripts et statistiques.",
+    icon: Ticket,
+    color: "text-emerald-400",
+    badge: "Helpdesk",
   },
   {
     id: "moderation",
@@ -1039,6 +1049,82 @@ export default function DiscordDashboardPage() {
                           Commande Discord : /giveaway
                         </span>
                       </div>
+                    </div>
+                  </div>
+                )}
+
+                {/* MODULE: Tickets Center 2.0 */}
+                {activeModule === "tickets" && (
+                  <div className="space-y-4 text-xs">
+                    {/* Tickets Center 2.0 Gateway */}
+                    <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-3 rounded-2xl border border-emerald-500/30 bg-gradient-to-r from-emerald-500/10 via-teal-500/10 to-emerald-600/10 p-4 shadow-lg shadow-emerald-500/5">
+                      <div>
+                        <div className="flex items-center gap-2">
+                          <span className="text-base">🎫</span>
+                          <p className="text-xs font-bold text-white">Tickets Center 2.0 & Helpdesk</p>
+                          <span className="text-[9px] uppercase font-bold tracking-wider px-1.5 py-0.5 rounded bg-emerald-500/20 text-emerald-300 border border-emerald-500/30">
+                            Enterprise Support
+                          </span>
+                        </div>
+                        <p className="text-[11px] text-zinc-300 mt-0.5">
+                          Helpdesk complet multi-catégories, formulaires avec questions dynamiques, équipes de staff, assignation/transfert, transcripts HTML/TXT/JSON et liaisons avec les Dossiers de Modération.
+                        </p>
+                      </div>
+                      <Link
+                        href={`/discord/tickets?guildId=${selectedGuild.id}`}
+                        className="flex h-9 shrink-0 items-center gap-2 rounded-xl bg-gradient-to-r from-emerald-600 to-teal-600 px-4 text-xs font-bold text-white shadow-md shadow-emerald-600/20 transition-all hover:from-emerald-500 hover:to-teal-500 active:scale-95 cursor-pointer"
+                      >
+                        <Ticket className="h-4 w-4" />
+                        <span>Ouvrir Tickets Center</span>
+                        <ChevronRight className="h-3.5 w-3.5" />
+                      </Link>
+                    </div>
+
+                    <div className="grid grid-cols-2 sm:grid-cols-4 gap-3">
+                      <div className="rounded-xl border border-white/10 bg-white/[0.02] p-3">
+                        <p className="text-[10px] text-zinc-400 font-medium uppercase tracking-wider">Helpdesk</p>
+                        <p className="text-lg font-bold text-emerald-400 mt-1">Multi-Équipes</p>
+                        <p className="text-[10px] text-zinc-400 mt-0.5">Support, Mod & Facturation</p>
+                      </div>
+                      <div className="rounded-xl border border-white/10 bg-white/[0.02] p-3">
+                        <p className="text-[10px] text-zinc-400 font-medium uppercase tracking-wider">Formulaires</p>
+                        <p className="text-lg font-bold text-teal-400 mt-1">Modals Discord</p>
+                        <p className="text-[10px] text-zinc-400 mt-0.5">Champs configurables</p>
+                      </div>
+                      <div className="rounded-xl border border-white/10 bg-white/[0.02] p-3">
+                        <p className="text-[10px] text-zinc-400 font-medium uppercase tracking-wider">Archivage</p>
+                        <p className="text-lg font-bold text-indigo-400 mt-1">Transcripts</p>
+                        <p className="text-[10px] text-zinc-400 mt-0.5">HTML, TXT & JSON</p>
+                      </div>
+                      <div className="rounded-xl border border-white/10 bg-white/[0.02] p-3">
+                        <p className="text-[10px] text-zinc-400 font-medium uppercase tracking-wider">Audit & Qualité</p>
+                        <p className="text-lg font-bold text-amber-400 mt-1">Notes & CSAT</p>
+                        <p className="text-[10px] text-zinc-400 mt-0.5">Avis membres (1-5★)</p>
+                      </div>
+                    </div>
+
+                    <div className="flex flex-wrap gap-2 pt-1">
+                      <Link
+                        href={`/discord/tickets?guildId=${selectedGuild.id}&tab=panels`}
+                        className="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-lg border border-white/10 bg-zinc-900/80 hover:bg-zinc-800 text-zinc-200 text-xs transition-all"
+                      >
+                        <Sliders className="h-3.5 w-3.5 text-emerald-400" />
+                        <span>Créer un Panneau Discord</span>
+                      </Link>
+                      <Link
+                        href={`/discord/tickets?guildId=${selectedGuild.id}&tab=categories`}
+                        className="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-lg border border-white/10 bg-zinc-900/80 hover:bg-zinc-800 text-zinc-200 text-xs transition-all"
+                      >
+                        <Settings2 className="h-3.5 w-3.5 text-teal-400" />
+                        <span>Gérer les Catégories</span>
+                      </Link>
+                      <Link
+                        href={`/discord/tickets?guildId=${selectedGuild.id}&tab=transcripts`}
+                        className="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-lg border border-white/10 bg-zinc-900/80 hover:bg-zinc-800 text-zinc-200 text-xs transition-all"
+                      >
+                        <FileText className="h-3.5 w-3.5 text-indigo-400" />
+                        <span>Historique des Transcripts</span>
+                      </Link>
                     </div>
                   </div>
                 )}

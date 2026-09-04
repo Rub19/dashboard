@@ -5,6 +5,7 @@ import {
   ButtonBuilder,
   ButtonStyle,
   ChannelType,
+  Client,
   EmbedBuilder,
   Guild,
   GuildMember,
@@ -12,326 +13,86 @@ import {
   TextChannel,
   User,
 } from 'discord.js';
-import { Ticket, TicketSchema } from '../types/ticket.js';
-import { TicketCategory, TicketCategorySchema } from '../types/category.js';
-import {
-  TicketGlobalConfig,
-  TicketGlobalConfigSchema,
-  TicketPanel,
-  TicketPanelSchema,
-} from '../types/panel.js';
-import { TicketLogger } from '../logs/ticketLogger.js';
+import { Ticket, TicketPriority, TicketStatus } from '../types/ticket.js';
+import { TicketCategory } from '../types/category.js';
+import { TicketGlobalConfig, TicketPanel } from '../types/panel.js';
+import { TicketTeam } from '../types/team.js';
+import { TicketAutomationRule } from '../types/automation.js';
+import { ticketRepository, TicketQueryOptions } from '../storage/ticketRepository.js';
 import { TranscriptService } from './transcriptService.js';
-import { guildConfigService } from '../../../services/guildConfigService.js';
+import { TicketAutomationEngine } from './ticketAutomationEngine.js';
+import { TicketScheduler } from './ticketScheduler.js';
+import { logService } from '../../logs/services/logService.js';
 import { logger } from '../../../utils/logger.js';
 
 class TicketService {
-  private ticketsPath = path.resolve(process.cwd(), 'data', 'tickets.json');
-  private categoriesPath = path.resolve(process.cwd(), 'data', 'ticket_categories.json');
-  private panelsPath = path.resolve(process.cwd(), 'data', 'ticket_panels.json');
-  private configsPath = path.resolve(process.cwd(), 'data', 'ticket_configs.json');
-
-  private tickets: Ticket[] = [];
-  private categories = new Map<string, TicketCategory[]>(); // guildId -> categories
-  private panels = new Map<string, TicketPanel[]>(); // guildId -> panels
-  private configs = new Map<string, TicketGlobalConfig>(); // guildId -> config
-
+  private discordClient: Client | null = null;
   // Verrou anti-double clic
   private creatingUsers = new Set<string>();
 
-  constructor() {
-    this.ensureDirectory();
-    this.loadData();
+  public initialize(client: Client): void {
+    this.discordClient = client;
+    TicketScheduler.start(client);
+    logger.info('[TicketService] Tickets Center 2.0 Engine initialisé.');
   }
 
-  private ensureDirectory() {
-    const dir = path.dirname(this.ticketsPath);
-    if (!fs.existsSync(dir)) {
-      fs.mkdirSync(dir, { recursive: true });
-    }
-  }
+  // --- Création de Ticket ---
 
-  private loadData() {
-    // 1. Tickets
-    try {
-      if (fs.existsSync(this.ticketsPath)) {
-        this.tickets = JSON.parse(fs.readFileSync(this.ticketsPath, 'utf-8'));
-      }
-    } catch (e) {
-      logger.error('Erreur chargement tickets.json :', e);
-    }
-
-    // 2. Catégories
-    try {
-      if (fs.existsSync(this.categoriesPath)) {
-        const parsed = JSON.parse(fs.readFileSync(this.categoriesPath, 'utf-8'));
-        for (const [gid, cats] of Object.entries(parsed)) {
-          this.categories.set(gid, cats as TicketCategory[]);
-        }
-      }
-    } catch (e) {
-      logger.error('Erreur chargement ticket_categories.json :', e);
-    }
-
-    // 3. Panels
-    try {
-      if (fs.existsSync(this.panelsPath)) {
-        const parsed = JSON.parse(fs.readFileSync(this.panelsPath, 'utf-8'));
-        for (const [gid, pnl] of Object.entries(parsed)) {
-          this.panels.set(gid, pnl as TicketPanel[]);
-        }
-      }
-    } catch (e) {
-      logger.error('Erreur chargement ticket_panels.json :', e);
-    }
-
-    // 4. Configs
-    try {
-      if (fs.existsSync(this.configsPath)) {
-        const parsed = JSON.parse(fs.readFileSync(this.configsPath, 'utf-8'));
-        for (const [gid, cfg] of Object.entries(parsed)) {
-          this.configs.set(gid, cfg as TicketGlobalConfig);
-        }
-      }
-    } catch (e) {
-      logger.error('Erreur chargement ticket_configs.json :', e);
-    }
-  }
-
-  private saveTickets() {
-    fs.writeFileSync(this.ticketsPath, JSON.stringify(this.tickets, null, 2), 'utf-8');
-  }
-
-  private saveCategories() {
-    const obj = Object.fromEntries(this.categories.entries());
-    fs.writeFileSync(this.categoriesPath, JSON.stringify(obj, null, 2), 'utf-8');
-  }
-
-  private savePanels() {
-    const obj = Object.fromEntries(this.panels.entries());
-    fs.writeFileSync(this.panelsPath, JSON.stringify(obj, null, 2), 'utf-8');
-  }
-
-  private saveConfigs() {
-    const obj = Object.fromEntries(this.configs.entries());
-    fs.writeFileSync(this.configsPath, JSON.stringify(obj, null, 2), 'utf-8');
-  }
-
-  // ==========================================
-  // Gestion Config & Catégories
-  // ==========================================
-  public getConfig(guildId: string): TicketGlobalConfig {
-    let conf = this.configs.get(guildId);
-    if (!conf) {
-      conf = TicketGlobalConfigSchema.parse({});
-      this.configs.set(guildId, conf);
-      this.saveConfigs();
-    }
-    return conf;
-  }
-
-  public updateConfig(guildId: string, update: Partial<TicketGlobalConfig>): TicketGlobalConfig {
-    const current = this.getConfig(guildId);
-    const valid = TicketGlobalConfigSchema.parse({ ...current, ...update });
-    this.configs.set(guildId, valid);
-    this.saveConfigs();
-    return valid;
-  }
-
-  public getCategories(guildId: string): TicketCategory[] {
-    let cats = this.categories.get(guildId);
-    if (!cats || cats.length === 0) {
-      // Catégories par défaut
-      cats = [
-        {
-          id: 'support_general',
-          guildId,
-          name: 'Support Général',
-          emoji: '🎫',
-          description: 'Questions, aide générale et assistance technique.',
-          color: '#5865F2',
-          discordCategoryId: null,
-          supportRoleIds: [],
-          formFields: [
-            {
-              id: 'subject',
-              label: 'Objet de votre demande',
-              placeholder: 'Ex: Question sur les rôles',
-              style: 'short',
-              required: true,
-            },
-            {
-              id: 'description',
-              label: 'Description détaillée',
-              placeholder: 'Expliquez précisément votre problème...',
-              style: 'paragraph',
-              required: true,
-            },
-          ],
-          welcomeMessage:
-            'Bonjour {user} ! Merci d’avoir contacté l’assistance.\nUn membre du support va prendre en charge votre demande sous peu.',
-        },
-        {
-          id: 'bug_report',
-          guildId,
-          name: 'Signalement de Bug',
-          emoji: '🐛',
-          description: 'Rapport d’erreur ou dysfonctionnement.',
-          color: '#F59E0B',
-          discordCategoryId: null,
-          supportRoleIds: [],
-          formFields: [
-            {
-              id: 'bug_summary',
-              label: 'Résumé du bug',
-              placeholder: 'Que s’est-il passé ?',
-              style: 'short',
-              required: true,
-            },
-          ],
-          welcomeMessage:
-            'Bonjour {user} ! Merci de nous signaler ce problème. Décrivez les étapes pour le reproduire.',
-        },
-        {
-          id: 'billing_purchases',
-          guildId,
-          name: 'Facturation & Achats',
-          emoji: '💰',
-          description: 'Questions relatives aux commandes et paiements.',
-          color: '#10B981',
-          discordCategoryId: null,
-          supportRoleIds: [],
-          formFields: [
-            {
-              id: 'order_id',
-              label: 'Numéro de commande ou transaction',
-              placeholder: 'Ex: #CMD-1234',
-              style: 'short',
-              required: false,
-            },
-          ],
-          welcomeMessage:
-            'Bonjour {user} ! Un responsable de la facturation va vérifier votre dossier sous peu.',
-        },
-      ];
-      this.categories.set(guildId, cats);
-      this.saveCategories();
-    }
-    return cats;
-  }
-
-  public saveCategory(guildId: string, categoryData: Partial<TicketCategory>): TicketCategory {
-    const cats = this.getCategories(guildId);
-    const id = categoryData.id || `cat_${Date.now()}`;
-    const valid = TicketCategorySchema.parse({
-      ...categoryData,
-      id,
-      guildId,
-    });
-
-    const index = cats.findIndex((c) => c.id === id);
-    if (index >= 0) {
-      cats[index] = valid;
-    } else {
-      cats.push(valid);
-    }
-
-    this.categories.set(guildId, cats);
-    this.saveCategories();
-    return valid;
-  }
-
-  public deleteCategory(guildId: string, categoryId: string): boolean {
-    const cats = this.getCategories(guildId);
-    const filtered = cats.filter((c) => c.id !== categoryId);
-    if (filtered.length !== cats.length) {
-      this.categories.set(guildId, filtered);
-      this.saveCategories();
-      return true;
-    }
-    return false;
-  }
-
-  // ==========================================
-  // Gestion des Panels
-  // ==========================================
-  public getPanels(guildId: string): TicketPanel[] {
-    let list = this.panels.get(guildId);
-    if (!list) {
-      list = [];
-      this.panels.set(guildId, list);
-    }
-    return list;
-  }
-
-  public savePanel(guildId: string, panelData: Partial<TicketPanel>): TicketPanel {
-    const list = this.getPanels(guildId);
-    const id = panelData.id || `panel_${Date.now()}`;
-    const valid = TicketPanelSchema.parse({
-      ...panelData,
-      id,
-      guildId,
-    });
-
-    const index = list.findIndex((p) => p.id === id);
-    if (index >= 0) {
-      list[index] = valid;
-    } else {
-      list.push(valid);
-    }
-
-    this.panels.set(guildId, list);
-    this.savePanels();
-    return valid;
-  }
-
-  // ==========================================
-  // Cycle de Vie : Création de Ticket
-  // ==========================================
   public async createTicket(
     guild: Guild,
     user: User,
     categoryId: string,
-    answers: Record<string, string> = {}
+    formAnswers: Record<string, any> = {}
   ): Promise<Ticket> {
-    const lockKey = `${guild.id}:${user.id}`;
+    const lockKey = `${guild.id}-${user.id}`;
     if (this.creatingUsers.has(lockKey)) {
-      throw new Error('Un ticket est déjà en cours de création.');
+      throw new Error('Une création de ticket est déjà en cours pour votre compte.');
     }
     this.creatingUsers.add(lockKey);
 
     try {
-      const config = this.getConfig(guild.id);
-      const userOpenTickets = this.tickets.filter(
-        (t) => t.guildId === guild.id && t.userId === user.id && t.status !== 'closed'
-      );
+      const config = ticketRepository.getConfig(guild.id);
+      if (!config.enabled) {
+        throw new Error('Le système de tickets est temporairement désactivé sur ce serveur.');
+      }
 
-      if (userOpenTickets.length >= config.maxOpenTicketsPerUser) {
+      const category = ticketRepository.getCategories(guild.id).find((c) => c.id === categoryId);
+      if (!category) {
+        throw new Error('Catégorie de ticket introuvable.');
+      }
+
+      // Vérification anti-doublon et limite de tickets ouverts
+      const openUserTickets = ticketRepository
+        .getTickets(guild.id, { userId: user.id })
+        .tickets.filter((t) => t.status !== 'CLOSED' && t.status !== 'RESOLVED');
+
+      const maxAllowed = category.maxTicketsPerUser ?? config.maxOpenTicketsPerUser ?? 1;
+      if (openUserTickets.length >= maxAllowed) {
         throw new Error(
-          `Vous avez déjà ${userOpenTickets.length} ticket(s) ouvert(s). Fermez vos anciens tickets avant d’en créer un nouveau.`
+          `Vous avez déjà ${openUserTickets.length} ticket(s) ouvert(s). Veuillez fermer vos demandes en cours.`
         );
       }
 
-      const category = this.getCategories(guild.id).find((c) => c.id === categoryId);
-      const catName = category ? category.name : 'Support';
-      const catColor = category?.color || '#5865F2';
+      // Génération de l'identifiant séquentiel / unique
+      const totalTickets = ticketRepository.getOverview(guild.id).totalTickets + 1;
+      const ticketId = `TICKET-${totalTickets.toString().padStart(4, '0')}`;
 
-      // Numéro de ticket
-      const ticketNum = Math.floor(1000 + Math.random() * 9000);
-      const ticketId = `TICKET-${ticketNum}`;
+      // Détermination du nom de salon
+      const cleanUsername = user.username.toLowerCase().replace(/[^a-z0-9]/g, '');
+      const channelName = (config.namingFormat || 'ticket-{username}')
+        .replace('{username}', cleanUsername)
+        .replace('{id}', totalTickets.toString())
+        .replace('{ticketId}', ticketId)
+        .slice(0, 32);
 
-      // Nom du salon
-      const cleanUsername = user.username.toLowerCase().replace(/[^a-z0-9]/g, '').slice(0, 15);
-      const channelName = `ticket-${cleanUsername}`;
-
-      // Overwrites permissions Discord
+      // Calcul des permissions du salon
       const permissionOverwrites: any[] = [
         {
-          id: guild.id, // @everyone
+          id: guild.roles.everyone.id,
           deny: [PermissionFlagsBits.ViewChannel],
         },
         {
-          id: user.id, // Auteur
+          id: user.id,
           allow: [
             PermissionFlagsBits.ViewChannel,
             PermissionFlagsBits.SendMessages,
@@ -341,106 +102,140 @@ class TicketService {
           ],
         },
         {
-          id: guild.members.me!.id, // Bot
+          id: guild.members.me!.id,
           allow: [
             PermissionFlagsBits.ViewChannel,
             PermissionFlagsBits.SendMessages,
             PermissionFlagsBits.ManageChannels,
-            PermissionFlagsBits.ManageMessages,
+            PermissionFlagsBits.EmbedLinks,
             PermissionFlagsBits.AttachFiles,
+            PermissionFlagsBits.ReadMessageHistory,
           ],
         },
       ];
 
-      // Ajout des rôles support de la catégorie
-      if (category?.supportRoleIds) {
+      // Ajout des rôles staff configurés
+      if (category.supportRoleIds && category.supportRoleIds.length > 0) {
         for (const roleId of category.supportRoleIds) {
-          if (guild.roles.cache.has(roleId)) {
-            permissionOverwrites.push({
-              id: roleId,
-              allow: [
-                PermissionFlagsBits.ViewChannel,
-                PermissionFlagsBits.SendMessages,
-                PermissionFlagsBits.AttachFiles,
-                PermissionFlagsBits.ReadMessageHistory,
-              ],
-            });
+          permissionOverwrites.push({
+            id: roleId,
+            allow: [
+              PermissionFlagsBits.ViewChannel,
+              PermissionFlagsBits.SendMessages,
+              PermissionFlagsBits.AttachFiles,
+              PermissionFlagsBits.EmbedLinks,
+              PermissionFlagsBits.ReadMessageHistory,
+            ],
+          });
+        }
+      }
+
+      // Ajout des rôles d'équipe si une équipe est assignée
+      if (category.assignedTeamId) {
+        const team = ticketRepository.getTeams(guild.id).find((t) => t.id === category.assignedTeamId);
+        if (team && team.roleIds) {
+          for (const roleId of team.roleIds) {
+            if (!permissionOverwrites.some((po) => po.id === roleId)) {
+              permissionOverwrites.push({
+                id: roleId,
+                allow: [
+                  PermissionFlagsBits.ViewChannel,
+                  PermissionFlagsBits.SendMessages,
+                  PermissionFlagsBits.AttachFiles,
+                  PermissionFlagsBits.EmbedLinks,
+                  PermissionFlagsBits.ReadMessageHistory,
+                ],
+              });
+            }
           }
         }
       }
 
-      // Création du salon textuel
+      // Création du salon Discord
+      const parentId = category.discordCategoryId || undefined;
       const channel = await guild.channels.create({
-        name: channelName,
+        name: `🎫・${channelName}`,
         type: ChannelType.GuildText,
-        parent: category?.discordCategoryId || undefined,
+        parent: parentId,
         permissionOverwrites,
+        topic: `Ticket ${ticketId} • Demandeur : ${user.tag} (${user.id}) • Catégorie : ${category.name}`,
       });
 
-      // Enregistrement
-      const ticket: Ticket = {
+      const now = new Date().toISOString();
+
+      // Création de l'objet Ticket
+      let ticket: Ticket = {
         id: ticketId,
         guildId: guild.id,
         channelId: channel.id,
         userId: user.id,
         userTag: user.tag,
-        categoryId,
-        categoryName: catName,
-        status: 'open',
+        userAvatar: user.displayAvatarURL(),
+        categoryId: category.id,
+        categoryName: category.name,
+        priority: category.defaultPriority || 'NORMAL',
+        status: 'OPEN',
         claimedBy: null,
-        answers,
-        createdAt: new Date().toISOString(),
+        assignedTeamId: category.assignedTeamId || null,
+        tags: [],
+        answers: formAnswers,
+        notes: [],
+        activityTimeline: [
+          {
+            id: `act-${Date.now()}`,
+            type: 'CREATED',
+            actorTag: user.tag,
+            description: `Création du ticket dans la catégorie ${category.name}`,
+            timestamp: now,
+          },
+        ],
+        relatedCaseId: null,
+        rating: null,
+        createdAt: now,
+        updatedAt: now,
+        lastActivityAt: now,
         closedAt: null,
         closedBy: null,
+        closeReason: null,
         transcriptPath: null,
+        transcriptUrl: null,
       };
 
-      this.tickets.unshift(ticket);
-      this.saveTickets();
+      // Sauvegarde
+      ticketRepository.saveTicket(ticket);
 
-      // Envoi de l'embed de bienvenue dans le ticket
-      const embed = new EmbedBuilder()
-        .setColor(catColor as `#${string}`)
-        .setTitle(`${category?.emoji || '🎫'} ${catName} • #${ticketId}`)
-        .setDescription(
-          `Bonjour ${user} ! Merci d’avoir ouvert ce ticket.\nDécrivez précisément votre demande, notre équipe va vous prendre en charge sous peu.`
-        )
-        .addFields([
-          { name: 'Créateur', value: `${user.tag} (${user.id})`, inline: true },
-          { name: 'Prise en charge', value: '*Non assigné*', inline: true },
-        ]);
+      // Envoi du message de bienvenue et panel de contrôles
+      await this.sendTicketChannelPanel(channel, ticket, category, user);
 
-      // Si des réponses de formulaires existent, les afficher
-      for (const [key, val] of Object.entries(answers)) {
-        if (val) {
-          embed.addFields([{ name: key, value: val.slice(0, 1024), inline: false }]);
-        }
-      }
+      // Exécution des règles d'automatisation
+      ticket = await TicketAutomationEngine.executeTrigger(this.discordClient, 'TICKET_CREATED', ticket);
 
-      embed.setFooter({ text: 'ETHONE Support System' }).setTimestamp();
-
-      // Boutons interactifs du ticket
-      const buttons = new ActionRowBuilder<ButtonBuilder>().addComponents(
-        new ButtonBuilder()
-          .setCustomId(`ticket_claim:${ticketId}`)
-          .setLabel('Prendre en charge (Claim)')
-          .setEmoji('🎯')
-          .setStyle(ButtonStyle.Secondary),
-        new ButtonBuilder()
-          .setCustomId(`ticket_close:${ticketId}`)
-          .setLabel('Fermer le ticket')
-          .setEmoji('🔒')
-          .setStyle(ButtonStyle.Danger)
-      );
-
-      await channel.send({ content: `${user}`, embeds: [embed], components: [buttons] });
-
-      // Journalisation
-      await TicketLogger.logEvent(guild, config.logChannelId, '🎫 Nouveau Ticket Créé', '#10B981', [
-        { name: 'Ticket', value: `#${channel.name} (${ticketId})`, inline: true },
-        { name: 'Membre', value: `${user.tag} (${user.id})`, inline: true },
-        { name: 'Catégorie', value: catName, inline: true },
-      ]);
+      // Journalisation dans l'Audit Center 2.0
+      logService.emit({
+        guildId: guild.id,
+        module: 'SYSTEM',
+        type: 'TICKET_CREATE',
+        actor: {
+          id: user.id,
+          tag: user.tag,
+          avatar: user.displayAvatarURL(),
+        },
+        target: {
+          id: channel.id,
+          type: 'CHANNEL',
+          name: channel.name,
+        },
+        channel: {
+          id: channel.id,
+          name: channel.name,
+        },
+        reason: `Ouverture du ticket ${ticket.id} (${category.name})`,
+        metadata: {
+          ticketId: ticket.id,
+          categoryId: category.id,
+          priority: ticket.priority,
+        },
+      });
 
       return ticket;
     } finally {
@@ -448,170 +243,485 @@ class TicketService {
     }
   }
 
-  // ==========================================
-  // Prise en Charge (Claim / Unclaim)
-  // ==========================================
-  public async claimTicket(ticketId: string, moderator: User): Promise<Ticket> {
-    const ticket = this.tickets.find((t) => t.id === ticketId);
+  // --- Envoi du panel interactif dans le salon Discord ---
+
+  private async sendTicketChannelPanel(
+    channel: TextChannel,
+    ticket: Ticket,
+    category: TicketCategory,
+    user: User
+  ): Promise<void> {
+    const welcomeTemplate =
+      category.welcomeMessage ||
+      'Bonjour {user} ! Merci d’avoir contacté l’équipe d’assistance.\nUn membre du support va prendre en charge votre demande #{ticketId} sous peu.';
+
+    const renderedWelcome = welcomeTemplate
+      .replace('{user}', `<@${user.id}>`)
+      .replace('{username}', user.username)
+      .replace('{ticketId}', ticket.id)
+      .replace('{category}', category.name)
+      .replace('{team}', category.assignedTeamId || 'Support')
+      .replace('{server}', channel.guild.name);
+
+    const embed = new EmbedBuilder()
+      .setColor(category.color as `#${string}` || '#5865F2')
+      .setTitle(`${category.emoji} ${ticket.id} • ${category.name}`)
+      .setDescription(renderedWelcome)
+      .addFields(
+        { name: '👤 Demandeur', value: `<@${user.id}> (${user.tag})`, inline: true },
+        { name: '🚦 Priorité', value: `\`${ticket.priority}\``, inline: true },
+        { name: '📌 Statut', value: `\`${ticket.status}\``, inline: true }
+      );
+
+    // Form answers si disponibles
+    if (ticket.answers && Object.keys(ticket.answers).length > 0) {
+      const answersText = Object.entries(ticket.answers)
+        .map(([k, v]) => `**${k}** : ${v}`)
+        .join('\n');
+      embed.addFields({
+        name: '📋 Réponses au formulaire',
+        value: answersText.slice(0, 1024),
+        inline: false,
+      });
+    }
+
+    embed.setFooter({
+      text: `ETHONE Helpdesk 2.0 • Utilisez les boutons ci-dessous pour gérer ce ticket.`,
+    });
+
+    const row1 = new ActionRowBuilder<ButtonBuilder>().addComponents(
+      new ButtonBuilder()
+        .setCustomId(`ticket_close:${ticket.id}`)
+        .setLabel('Fermer')
+        .setEmoji('🔒')
+        .setStyle(ButtonStyle.Danger),
+      new ButtonBuilder()
+        .setCustomId(`ticket_claim:${ticket.id}`)
+        .setLabel('Prendre en charge')
+        .setEmoji('👤')
+        .setStyle(ButtonStyle.Primary),
+      new ButtonBuilder()
+        .setCustomId(`ticket_priority:${ticket.id}`)
+        .setLabel('Priorité')
+        .setEmoji('📌')
+        .setStyle(ButtonStyle.Secondary),
+      new ButtonBuilder()
+        .setCustomId(`ticket_transcript:${ticket.id}`)
+        .setLabel('Transcript')
+        .setEmoji('📄')
+        .setStyle(ButtonStyle.Secondary)
+    );
+
+    await channel.send({
+      content: `<@${user.id}>`,
+      embeds: [embed],
+      components: [row1],
+    });
+  }
+
+  // --- Gestion du Cycle de Vie ---
+
+  public async claimTicket(
+    guildId: string,
+    ticketId: string,
+    staffUser: { id: string; tag: string; avatar?: string | null }
+  ): Promise<Ticket> {
+    const ticket = ticketRepository.getTicketById(guildId, ticketId);
     if (!ticket) throw new Error('Ticket introuvable.');
 
-    ticket.claimedBy = {
-      id: moderator.id,
-      tag: moderator.tag,
-    };
-    ticket.status = 'claimed';
-    this.saveTickets();
+    ticket.claimedBy = staffUser;
+    ticket.status = 'WAITING_USER';
+    ticket.updatedAt = new Date().toISOString();
+    ticket.lastActivityAt = new Date().toISOString();
+    ticket.activityTimeline.unshift({
+      id: `act-${Date.now()}`,
+      type: 'CLAIMED',
+      actorTag: staffUser.tag,
+      description: `Prise en charge du ticket par ${staffUser.tag}`,
+      timestamp: new Date().toISOString(),
+    });
+
+    ticketRepository.saveTicket(ticket);
+
+    // Notification Discord dans le salon
+    if (this.discordClient) {
+      try {
+        const guild = this.discordClient.guilds.cache.get(guildId);
+        const channel = guild?.channels.cache.get(ticket.channelId) as TextChannel | undefined;
+        if (channel) {
+          await channel.send({
+            embeds: [
+              new EmbedBuilder()
+                .setColor(0x3b82f6)
+                .setDescription(`🙋 **${staffUser.tag}** a pris en charge ce ticket.`),
+            ],
+          });
+        }
+      } catch {}
+    }
+
+    logService.emit({
+      guildId,
+      module: 'SYSTEM',
+      type: 'TICKET_CLAIM',
+      actor: { id: staffUser.id, tag: staffUser.tag },
+      target: { id: ticket.id, type: 'CASE', name: ticket.id },
+      reason: `Prise en charge par ${staffUser.tag}`,
+    });
 
     return ticket;
   }
 
-  public async unclaimTicket(ticketId: string): Promise<Ticket> {
-    const ticket = this.tickets.find((t) => t.id === ticketId);
+  public async unclaimTicket(
+    guildId: string,
+    ticketId: string,
+    staffUser: { id: string; tag: string }
+  ): Promise<Ticket> {
+    const ticket = ticketRepository.getTicketById(guildId, ticketId);
     if (!ticket) throw new Error('Ticket introuvable.');
 
     ticket.claimedBy = null;
-    ticket.status = 'open';
-    this.saveTickets();
+    ticket.status = 'OPEN';
+    ticket.updatedAt = new Date().toISOString();
+    ticket.activityTimeline.unshift({
+      id: `act-${Date.now()}`,
+      type: 'UNCLAIMED',
+      actorTag: staffUser.tag,
+      description: `Abandon de la prise en charge par ${staffUser.tag}`,
+      timestamp: new Date().toISOString(),
+    });
 
+    ticketRepository.saveTicket(ticket);
     return ticket;
   }
 
-  // ==========================================
-  // Fermeture / Réouverture / Suppression
-  // ==========================================
-  public async closeTicket(ticketId: string, moderator: User, guild: Guild): Promise<Ticket> {
-    const ticket = this.tickets.find((t) => t.id === ticketId);
+  public async transferTicket(
+    guildId: string,
+    ticketId: string,
+    target: { staffId?: string; staffTag?: string; teamId?: string },
+    performedBy: { id: string; tag: string }
+  ): Promise<Ticket> {
+    const ticket = ticketRepository.getTicketById(guildId, ticketId);
     if (!ticket) throw new Error('Ticket introuvable.');
 
-    ticket.status = 'closed';
-    ticket.closedAt = new Date().toISOString();
-    ticket.closedBy = { id: moderator.id, tag: moderator.tag };
-    this.saveTickets();
-
-    // Bloquer l'envoi de messages pour le créateur
-    const channel = guild.channels.cache.get(ticket.channelId) as TextChannel | undefined;
-    if (channel) {
-      await channel.permissionOverwrites.edit(ticket.userId, {
-        SendMessages: false,
-      });
-
-      const closeEmbed = new EmbedBuilder()
-        .setColor('#EF4444')
-        .setTitle('🔒 Ticket Fermé')
-        .setDescription(
-          `Ce ticket a été fermé par **${moderator.tag}**.\nVous pouvez consulter le transcript ou le supprimer définitivement ci-dessous.`
-        )
-        .setTimestamp();
-
-      const actionButtons = new ActionRowBuilder<ButtonBuilder>().addComponents(
-        new ButtonBuilder()
-          .setCustomId(`ticket_transcript:${ticketId}`)
-          .setLabel('Générer Transcript')
-          .setEmoji('📄')
-          .setStyle(ButtonStyle.Secondary),
-        new ButtonBuilder()
-          .setCustomId(`ticket_reopen:${ticketId}`)
-          .setLabel('Rouvrir le ticket')
-          .setEmoji('🔓')
-          .setStyle(ButtonStyle.Success),
-        new ButtonBuilder()
-          .setCustomId(`ticket_delete:${ticketId}`)
-          .setLabel('Supprimer le ticket')
-          .setEmoji('🗑️')
-          .setStyle(ButtonStyle.Danger)
-      );
-
-      await channel.send({ embeds: [closeEmbed], components: [actionButtons] });
+    if (target.teamId) {
+      ticket.assignedTeamId = target.teamId;
+    }
+    if (target.staffId && target.staffTag) {
+      ticket.claimedBy = { id: target.staffId, tag: target.staffTag };
+      ticket.status = 'WAITING_USER';
     }
 
-    const config = this.getConfig(guild.id);
-    await TicketLogger.logEvent(guild, config.logChannelId, '🔒 Ticket Fermé', '#EF4444', [
-      { name: 'Ticket', value: `#${ticket.id}`, inline: true },
-      { name: 'Fermé par', value: `${moderator.tag}`, inline: true },
-    ]);
+    ticket.updatedAt = new Date().toISOString();
+    ticket.activityTimeline.unshift({
+      id: `act-${Date.now()}`,
+      type: 'TRANSFERRED',
+      actorTag: performedBy.tag,
+      description: `Transfert du ticket vers ${target.staffTag || target.teamId}`,
+      timestamp: new Date().toISOString(),
+    });
 
+    ticketRepository.saveTicket(ticket);
     return ticket;
   }
 
-  public async reopenTicket(ticketId: string, moderator: User, guild: Guild): Promise<Ticket> {
-    const ticket = this.tickets.find((t) => t.id === ticketId);
+  public async updatePriority(
+    guildId: string,
+    ticketId: string,
+    priority: TicketPriority,
+    performedBy: { id: string; tag: string }
+  ): Promise<Ticket> {
+    const ticket = ticketRepository.getTicketById(guildId, ticketId);
     if (!ticket) throw new Error('Ticket introuvable.');
 
-    ticket.status = ticket.claimedBy ? 'claimed' : 'open';
-    ticket.closedAt = null;
-    ticket.closedBy = null;
-    this.saveTickets();
+    const oldPriority = ticket.priority;
+    ticket.priority = priority;
+    ticket.updatedAt = new Date().toISOString();
+    ticket.activityTimeline.unshift({
+      id: `act-${Date.now()}`,
+      type: 'PRIORITY_CHANGED',
+      actorTag: performedBy.tag,
+      description: `Priorité modifiée : ${oldPriority} ➔ ${priority}`,
+      timestamp: new Date().toISOString(),
+    });
 
-    const channel = guild.channels.cache.get(ticket.channelId) as TextChannel | undefined;
-    if (channel) {
-      await channel.permissionOverwrites.edit(ticket.userId, {
-        SendMessages: true,
-      });
+    ticketRepository.saveTicket(ticket);
+    return ticket;
+  }
 
-      const reopenEmbed = new EmbedBuilder()
-        .setColor('#10B981')
-        .setTitle('🔓 Ticket Rouvert')
-        .setDescription(`Le ticket a été rouvert par **${moderator.tag}**.`);
+  public async updateStatus(
+    guildId: string,
+    ticketId: string,
+    status: TicketStatus,
+    performedBy: { id: string; tag: string }
+  ): Promise<Ticket> {
+    const ticket = ticketRepository.getTicketById(guildId, ticketId);
+    if (!ticket) throw new Error('Ticket introuvable.');
 
-      await channel.send({ embeds: [reopenEmbed] });
+    ticket.status = status;
+    ticket.updatedAt = new Date().toISOString();
+    ticket.activityTimeline.unshift({
+      id: `act-${Date.now()}`,
+      type: 'STATUS_CHANGED',
+      actorTag: performedBy.tag,
+      description: `Statut changé en ${status}`,
+      timestamp: new Date().toISOString(),
+    });
+
+    ticketRepository.saveTicket(ticket);
+    return ticket;
+  }
+
+  public async updateTags(
+    guildId: string,
+    ticketId: string,
+    tags: string[],
+    performedBy: { id: string; tag: string }
+  ): Promise<Ticket> {
+    const ticket = ticketRepository.getTicketById(guildId, ticketId);
+    if (!ticket) throw new Error('Ticket introuvable.');
+
+    ticket.tags = tags;
+    ticket.updatedAt = new Date().toISOString();
+    ticketRepository.saveTicket(ticket);
+    return ticket;
+  }
+
+  public async addInternalNote(
+    guildId: string,
+    ticketId: string,
+    content: string,
+    author: { id: string; tag: string; avatar?: string | null }
+  ): Promise<Ticket> {
+    const ticket = ticketRepository.getTicketById(guildId, ticketId);
+    if (!ticket) throw new Error('Ticket introuvable.');
+
+    const note = {
+      id: `note-${Date.now()}`,
+      authorId: author.id,
+      authorTag: author.tag,
+      authorAvatar: author.avatar,
+      content,
+      createdAt: new Date().toISOString(),
+    };
+
+    ticket.notes.unshift(note);
+    ticket.updatedAt = new Date().toISOString();
+    ticket.activityTimeline.unshift({
+      id: `act-${Date.now()}`,
+      type: 'NOTE_ADDED',
+      actorTag: author.tag,
+      description: `Ajout d’une note interne privée`,
+      timestamp: new Date().toISOString(),
+    });
+
+    ticketRepository.saveTicket(ticket);
+    return ticket;
+  }
+
+  public async closeTicket(
+    guild: Guild,
+    ticketId: string,
+    closedBy: { id: string; tag: string },
+    reason: string = 'Résolu'
+  ): Promise<Ticket> {
+    const ticket = ticketRepository.getTicketById(guild.id, ticketId);
+    if (!ticket) throw new Error('Ticket introuvable.');
+
+    if (ticket.status === 'CLOSED') {
+      throw new Error('Ce ticket est déjà fermé.');
     }
 
-    return ticket;
-  }
-
-  public async deleteTicket(ticketId: string, moderator: User, guild: Guild): Promise<void> {
-    const ticket = this.tickets.find((t) => t.id === ticketId);
-    if (!ticket) throw new Error('Ticket introuvable.');
-
     const channel = guild.channels.cache.get(ticket.channelId) as TextChannel | undefined;
+
+    // Génération du transcript
+    let transcriptPath: string | null = null;
     if (channel) {
-      // Générer le transcript automatiquement avant suppression
       try {
-        await TranscriptService.generateTranscript(channel, ticket);
-      } catch {}
-
-      await channel.delete('Suppression du ticket par un modérateur');
-    }
-
-    const config = this.getConfig(guild.id);
-    await TicketLogger.logEvent(guild, config.logChannelId, '🗑️ Ticket Supprimé', '#94A3B8', [
-      { name: 'Ticket ID', value: `#${ticket.id}`, inline: true },
-      { name: 'Supprimé par', value: `${moderator.tag}`, inline: true },
-    ]);
-  }
-
-  // ==========================================
-  // Données pour le Dashboard Web
-  // ==========================================
-  public getGuildTickets(guildId: string): Ticket[] {
-    return this.tickets.filter((t) => t.guildId === guildId);
-  }
-
-  public getOverview(guildId: string) {
-    const list = this.getGuildTickets(guildId);
-    const openCount = list.filter((t) => t.status !== 'closed').length;
-    const closedCount = list.filter((t) => t.status === 'closed').length;
-
-    // Staff stats
-    const staffMap = new Map<string, number>();
-    for (const t of list) {
-      if (t.claimedBy) {
-        staffMap.set(t.claimedBy.tag, (staffMap.get(t.claimedBy.tag) || 0) + 1);
+        const trans = await TranscriptService.generateTranscript(channel, ticket);
+        transcriptPath = trans.filePath;
+      } catch (err) {
+        logger.error(`Erreur génération transcript pour ${ticket.id}:`, err);
       }
     }
 
-    const staffLeaderboard = Array.from(staffMap.entries())
-      .map(([name, count]) => ({ name, count }))
-      .sort((a, b) => b.count - a.count)
-      .slice(0, 5);
+    const now = new Date().toISOString();
+    ticket.status = 'CLOSED';
+    ticket.closedAt = now;
+    ticket.closedBy = closedBy;
+    ticket.closeReason = reason;
+    ticket.transcriptPath = transcriptPath;
+    ticket.updatedAt = now;
+    ticket.activityTimeline.unshift({
+      id: `act-${Date.now()}`,
+      type: 'CLOSED',
+      actorTag: closedBy.tag,
+      description: `Fermeture du ticket : ${reason}`,
+      timestamp: now,
+    });
 
-    return {
-      totalCount: list.length,
-      openCount,
-      closedCount,
-      recentTickets: list.slice(0, 15),
-      staffLeaderboard,
+    ticketRepository.saveTicket(ticket);
+
+    // Audit Center Log
+    logService.emit({
+      guildId: guild.id,
+      module: 'SYSTEM',
+      type: 'TICKET_CLOSE',
+      actor: { id: closedBy.id, tag: closedBy.tag },
+      target: { id: ticket.id, type: 'CASE', name: ticket.id },
+      reason: `Fermeture ticket ${ticket.id} (${reason})`,
+    });
+
+    // Envoi de la notification et demande d'avis
+    if (channel) {
+      try {
+        const embed = new EmbedBuilder()
+          .setColor(0xef4444)
+          .setTitle(`🔒 Ticket Fermé • ${ticket.id}`)
+          .setDescription(`Ce ticket a été clôturé par **${closedBy.tag}**.\n**Motif** : ${reason}`)
+          .setFooter({ text: 'Le salon sera supprimé automatiquement dans 5 secondes.' });
+
+        await channel.send({ embeds: [embed] });
+
+        // Suppression différée du salon Discord (5 secondes pour laisser lire)
+        setTimeout(() => {
+          channel.delete(`Fermeture ticket ${ticket.id} par ${closedBy.tag}`).catch(() => {});
+        }, 5000);
+      } catch {}
+    }
+
+    return ticket;
+  }
+
+  public async reopenTicket(
+    guild: Guild,
+    ticketId: string,
+    reopenedBy: { id: string; tag: string }
+  ): Promise<Ticket> {
+    const ticket = ticketRepository.getTicketById(guild.id, ticketId);
+    if (!ticket) throw new Error('Ticket introuvable.');
+
+    ticket.status = 'OPEN';
+    ticket.closedAt = null;
+    ticket.closedBy = null;
+    ticket.closeReason = null;
+    ticket.updatedAt = new Date().toISOString();
+    ticket.activityTimeline.unshift({
+      id: `act-${Date.now()}`,
+      type: 'REOPENED',
+      actorTag: reopenedBy.tag,
+      description: `Réouverture du ticket par ${reopenedBy.tag}`,
+      timestamp: new Date().toISOString(),
+    });
+
+    ticketRepository.saveTicket(ticket);
+    return ticket;
+  }
+
+  public submitRating(guildId: string, ticketId: string, score: number, comment?: string): Ticket {
+    const ticket = ticketRepository.getTicketById(guildId, ticketId);
+    if (!ticket) throw new Error('Ticket introuvable.');
+
+    ticket.rating = {
+      score: Math.max(1, Math.min(5, score)),
+      comment,
+      ratedAt: new Date().toISOString(),
     };
+
+    ticketRepository.saveTicket(ticket);
+    return ticket;
+  }
+
+  public linkCase(guildId: string, ticketId: string, caseId: number | string, staffUser: { id: string; tag: string }): Ticket {
+    const ticket = ticketRepository.getTicketById(guildId, ticketId);
+    if (!ticket) throw new Error('Ticket introuvable.');
+
+    ticket.relatedCaseId = caseId;
+    ticket.updatedAt = new Date().toISOString();
+    ticket.activityTimeline.unshift({
+      id: `act-${Date.now()}`,
+      type: 'CASE_LINKED',
+      actorTag: staffUser.tag,
+      description: `Liaison avec le Dossier de Modération Case #${caseId}`,
+      timestamp: new Date().toISOString(),
+    });
+
+    ticketRepository.saveTicket(ticket);
+    return ticket;
+  }
+
+  // --- Helpers Déportés vers Repository ---
+
+  public getOverview(guildId: string) {
+    return ticketRepository.getOverview(guildId);
+  }
+
+  public getTickets(guildId: string, options: TicketQueryOptions = {}) {
+    return ticketRepository.getTickets(guildId, options);
+  }
+
+  public getTicketById(guildId: string, ticketId: string) {
+    return ticketRepository.getTicketById(guildId, ticketId);
+  }
+
+  public getCategories(guildId: string) {
+    return ticketRepository.getCategories(guildId);
+  }
+
+  public saveCategory(category: TicketCategory) {
+    ticketRepository.saveCategory(category);
+  }
+
+  public deleteCategory(guildId: string, categoryId: string) {
+    return ticketRepository.deleteCategory(guildId, categoryId);
+  }
+
+  public getPanels(guildId: string) {
+    return ticketRepository.getPanels(guildId);
+  }
+
+  public savePanel(panel: TicketPanel) {
+    ticketRepository.savePanel(panel);
+  }
+
+  public deletePanel(guildId: string, panelId: string) {
+    return ticketRepository.deletePanel(guildId, panelId);
+  }
+
+  public getTeams(guildId: string) {
+    return ticketRepository.getTeams(guildId);
+  }
+
+  public saveTeam(team: TicketTeam) {
+    ticketRepository.saveTeam(team);
+  }
+
+  public deleteTeam(guildId: string, teamId: string) {
+    return ticketRepository.deleteTeam(guildId, teamId);
+  }
+
+  public getAutomations(guildId: string) {
+    return ticketRepository.getAutomations(guildId);
+  }
+
+  public saveAutomation(rule: TicketAutomationRule) {
+    ticketRepository.saveAutomation(rule);
+  }
+
+  public deleteAutomation(guildId: string, ruleId: string) {
+    return ticketRepository.deleteAutomation(guildId, ruleId);
+  }
+
+  public getConfig(guildId: string) {
+    return ticketRepository.getConfig(guildId);
+  }
+
+  public saveConfig(guildId: string, cfg: TicketGlobalConfig) {
+    ticketRepository.saveConfig(guildId, cfg);
+  }
+
+  public getStaffAnalytics(guildId: string) {
+    return ticketRepository.getStaffAnalytics(guildId);
   }
 }
 

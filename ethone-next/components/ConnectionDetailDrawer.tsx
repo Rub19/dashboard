@@ -22,6 +22,7 @@ import {
   Key,
   Radio,
   CheckCircle2,
+  Bot,
 } from "lucide-react";
 import { useI18n } from "@/lib/hooks/useI18n";
 import { useSettings } from "@/components/SettingsProvider";
@@ -96,7 +97,7 @@ export default function ConnectionDetailDrawer({
   const [saving, setSaving] = useState(false);
   const [showPassword, setShowPassword] = useState<Record<string, boolean>>({});
   const [copied, setCopied] = useState<string | null>(null);
-  const [discordMode, setDiscordMode] = useState<"lanyard" | "oauth">("lanyard");
+  const [discordMode, setDiscordMode] = useState<"oauth" | "lanyard">("oauth");
   const [mounted, setMounted] = useState(false);
 
   useEffect(() => {
@@ -340,6 +341,18 @@ export default function ConnectionDetailDrawer({
                   <div className="grid grid-cols-2 gap-2">
                     <button
                       type="button"
+                      onClick={() => setDiscordMode("oauth")}
+                      className={cn(
+                        "rounded-xl py-2 px-3 text-xs font-bold transition-all border text-center cursor-pointer",
+                        discordMode === "oauth"
+                          ? "bg-indigo-600 border-indigo-400 text-white shadow-md"
+                          : "bg-white/5 border-white/10 text-zinc-400 hover:text-white"
+                      )}
+                    >
+                      Bot Discord 2.0 (Page Bot)
+                    </button>
+                    <button
+                      type="button"
                       onClick={() => setDiscordMode("lanyard")}
                       className={cn(
                         "rounded-xl py-2 px-3 text-xs font-bold transition-all border text-center cursor-pointer",
@@ -350,23 +363,11 @@ export default function ConnectionDetailDrawer({
                     >
                       Lanyard (ID Discord)
                     </button>
-                    <button
-                      type="button"
-                      onClick={() => setDiscordMode("oauth")}
-                      className={cn(
-                        "rounded-xl py-2 px-3 text-xs font-bold transition-all border text-center cursor-pointer",
-                        discordMode === "oauth"
-                          ? "bg-indigo-600 border-indigo-400 text-white shadow-md"
-                          : "bg-white/5 border-white/10 text-zinc-400 hover:text-white"
-                      )}
-                    >
-                      OAuth2 (Officiel)
-                    </button>
                   </div>
                   <p className="text-[11px] text-zinc-400 leading-relaxed">
-                    {discordMode === "lanyard"
-                      ? "Synchronisation temps réel de votre statut, musique Spotify et jeu en cours via Lanyard sans permission invasive."
-                      : "Connexion officielle Discord pour accéder à votre profil complet et serveurs."}
+                    {discordMode === "oauth"
+                      ? "Connexion officielle avec le même Bot Discord que sur la page Bot (/discord) pour gérer vos serveurs et profil."
+                      : "Synchronisation temps réel de votre statut, musique Spotify et jeu en cours via Lanyard sans permission invasive."}
                   </p>
                 </div>
               )}
@@ -533,7 +534,7 @@ export default function ConnectionDetailDrawer({
                           <span>Bot Discord Officiel Configuré</span>
                         </p>
                         <p className="text-[11px] text-zinc-400 mt-0.5">
-                          ID de l&apos;application : <code className="text-indigo-300 font-mono">1539597090232078376</code>
+                          ID de l&apos;application : <code className="text-indigo-300 font-mono">1545139931154878464</code>
                         </p>
                       </div>
                       <a
@@ -553,11 +554,11 @@ export default function ConnectionDetailDrawer({
                       </label>
                       <input
                         type="text"
-                        value={credValues.clientId || "1539597090232078376"}
+                        value={credValues.clientId || "1545139931154878464"}
                         onChange={(e) =>
                           setCredValues((p) => ({ ...p, clientId: e.target.value }))
                         }
-                        placeholder="Ex: 1539597090232078376"
+                        placeholder="Ex: 1545139931154878464"
                         className="w-full rounded-xl border border-[var(--panel-border)] bg-[var(--surface-sunken)] px-3.5 py-2 text-xs font-mono text-[var(--text-primary)] placeholder-[var(--text-muted)] focus:border-indigo-500 focus:outline-none"
                       />
                     </div>
@@ -566,6 +567,25 @@ export default function ConnectionDetailDrawer({
                       <p className="text-[11px] text-indigo-200 leading-relaxed">
                         💡 Cliquez sur <strong>« Connecter »</strong> ci-dessous pour ouvrir directement la page d&apos;autorisation Discord et lier votre compte en 1 clic.
                       </p>
+                    </div>
+
+                    <div className="flex flex-col gap-2 pt-1">
+                      <a
+                        href="https://discord.com/oauth2/authorize?client_id=1545139931154878464&permissions=8&scope=bot%20applications.commands"
+                        target="_blank"
+                        rel="noopener noreferrer"
+                        className="inline-flex w-full items-center justify-center gap-2 rounded-xl bg-[#5865F2] px-3.5 py-2.5 text-xs font-semibold text-white shadow-md shadow-[#5865F2]/20 transition-all hover:bg-[#4752C4] active:scale-98"
+                      >
+                        <ExternalLink className="h-4 w-4" />
+                        <span>Inviter le Bot sur mon serveur Discord</span>
+                      </a>
+                      <a
+                        href="/discord"
+                        className="inline-flex w-full items-center justify-center gap-2 rounded-xl border border-indigo-500/40 bg-indigo-600/20 px-3.5 py-2.5 text-xs font-semibold text-indigo-200 transition-all hover:bg-indigo-600/35 hover:text-white hover:border-indigo-400/60"
+                      >
+                        <Bot className="h-4 w-4 text-indigo-400" />
+                        <span>Ouvrir le Dashboard Discord Bot 2.0</span>
+                      </a>
                     </div>
                   </div>
                 </Section>
@@ -764,7 +784,7 @@ export default function ConnectionDetailDrawer({
                         const discordClientId =
                           (credValues.clientId && !credValues.clientId.includes("@")
                             ? credValues.clientId.trim()
-                            : "") || "1539597090232078376";
+                            : "") || "1545139931154878464";
 
                         if (typeof window !== "undefined") {
                           localStorage.setItem("ethone:clientId:discord", discordClientId);

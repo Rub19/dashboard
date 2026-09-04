@@ -26,6 +26,11 @@ interface ProfileHero2026Props {
   presenceStatus: PresenceStatus;
   customStatus?: CustomStatus;
   activeWorkspace: string;
+  previewDisplayName?: string;
+  previewUsername?: string;
+  previewBio?: string;
+  previewAvatarFrameId?: string;
+  previewAvatarUrl?: string;
   onOpenAvatarPicker: () => void;
   onOpenStatusPicker: () => void;
   onSwitchWorkspace: (workspace: string) => void;
@@ -45,6 +50,11 @@ export default function ProfileHero2026({
   presenceStatus,
   customStatus,
   activeWorkspace,
+  previewDisplayName,
+  previewUsername,
+  previewBio,
+  previewAvatarFrameId,
+  previewAvatarUrl,
   onOpenAvatarPicker,
   onOpenStatusPicker,
   onSwitchWorkspace,
@@ -56,12 +66,25 @@ export default function ProfileHero2026({
 
   const [copied, setCopied] = useState(false);
 
-  const displayName = identity?.displayName || "Compte";
-  const username = fullIdentity?.username || (identity?.email ? identity.email.split("@")[0] : "utilisateur");
-  const avatarUrl = identity?.avatarUrl;
-  const initials = identity?.initials || displayName.slice(0, 2).toUpperCase();
-  const bio = fullIdentity?.bio || "";
-  const frameId = fullIdentity?.avatar_frame_id;
+  const displayName = previewDisplayName || identity?.displayName || "Compte";
+  const username =
+    previewUsername ||
+    fullIdentity?.username ||
+    (typeof window !== "undefined" ? localStorage.getItem("ethone:user:username") || localStorage.getItem("ethone_user_username:local") : "") ||
+    (identity?.email ? identity.email.split("@")[0] : "utilisateur");
+  const avatarUrl = previewAvatarUrl || identity?.avatarUrl;
+  const initials = identity?.initials || (displayName ? displayName.slice(0, 2).toUpperCase() : "ET");
+  const bio =
+    previewBio !== undefined && previewBio !== ""
+      ? previewBio
+      : fullIdentity?.bio ||
+        (typeof window !== "undefined" ? localStorage.getItem("ethone:user:bio") || localStorage.getItem("ethone_user_bio:local") : "") ||
+        "";
+  const frameId =
+    previewAvatarFrameId !== undefined && previewAvatarFrameId !== ""
+      ? previewAvatarFrameId
+      : fullIdentity?.avatar_frame_id ||
+        (typeof window !== "undefined" ? localStorage.getItem("ethone:user:frame") || localStorage.getItem("ethone_user_frame:local") : "");
   const activeFrame = PROFILE_FRAMES.find((f) => f.id === frameId);
 
   const statusInfo = PRESENCE_CONFIG[presenceStatus] || PRESENCE_CONFIG.online;

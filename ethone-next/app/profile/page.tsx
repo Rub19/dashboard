@@ -18,6 +18,7 @@ import {
 import { useAuth } from "@/components/AuthProvider";
 import { useToast } from "@/components/ToastProvider";
 import { useProfile } from "@/lib/hooks/useProfile";
+import { useUserIdentity } from "@/lib/hooks/useUserIdentity";
 import { useIdentity, PROFILE_FRAMES } from "@/lib/identity";
 import { useLocalStorage } from "@/lib/hooks/useLocalStorage";
 import { usePersonalizationStore } from "@/lib/personalization/personalization-store";
@@ -36,6 +37,7 @@ export default function ProfilePage() {
   const { success, error: toastError } = useToast();
   const { profile, save: saveCoreProfile } = useProfile();
   const { identity, save: saveIdentity } = useIdentity();
+  const userIdentity = useUserIdentity();
 
   const [activeWorkspace, setActiveWorkspace] = useLocalStorage<string>(
     "ethone-active-workspace",
@@ -71,22 +73,78 @@ export default function ProfilePage() {
 
   const fileInputRef = useRef<HTMLInputElement | null>(null);
 
-  // Form state
-  const [form, setForm] = useState({
-    displayName: "",
-    username: "",
-    bio: "",
-    avatarFrameId: "",
+  // Track user edits so background/async updates don't clobber active typing
+  const userEditedRef = useRef<Record<string, boolean>>({});
+
+  // Form state initialized immediately with local storage to avoid blank flickers
+  const [form, setForm] = useState(() => {
+    if (typeof window === "undefined") {
+      return { displayName: "", username: "", bio: "", avatarFrameId: "" };
+    }
+    const currentUserId = user?.id || "local";
+    const localName =
+      (user?.id ? localStorage.getItem(`ethone_user_name:${user.id}`) : null) ||
+      localStorage.getItem("ethone_user_name:local") ||
+      localStorage.getItem("ethone:user_name") ||
+      localStorage.getItem("ethone:user:name") ||
+      "";
+    const localUsername =
+      (user?.id ? localStorage.getItem(`ethone_user_username:${user.id}`) : null) ||
+      localStorage.getItem("ethone_user_username:local") ||
+      localStorage.getItem("ethone:user:username") ||
+      "";
+    const localBio =
+      (user?.id ? localStorage.getItem(`ethone_user_bio:${user.id}`) : null) ||
+      localStorage.getItem("ethone_user_bio:local") ||
+      localStorage.getItem("ethone:user:bio") ||
+      "";
+    const localFrame =
+      (user?.id ? localStorage.getItem(`ethone_user_frame:${user.id}`) : null) ||
+      localStorage.getItem("ethone_user_frame:local") ||
+      localStorage.getItem("ethone:user:frame") ||
+      "";
+
+    return {
+      displayName: localName,
+      username: localUsername,
+      bio: localBio,
+      avatarFrameId: localFrame,
+    };
   });
 
+  // Sync only fields that the user hasn't explicitly edited
   useEffect(() => {
-    setForm({
-      displayName: identity?.display_name || profile?.display_name || "",
-      username: identity?.username || profile?.username || "",
-      bio: identity?.bio || "",
-      avatarFrameId: identity?.avatar_frame_id || "",
+    setForm((prev) => {
+      const nextDisplayName = !userEditedRef.current.displayName
+        ? (identity?.display_name || profile?.display_name || (userIdentity.displayName !== "Compte" ? userIdentity.displayName : "") || prev.displayName || "")
+        : prev.displayName;
+      const nextUsername = !userEditedRef.current.username
+        ? (identity?.username || profile?.username || prev.username || "")
+        : prev.username;
+      const nextBio = !userEditedRef.current.bio
+        ? (identity?.bio || prev.bio || "")
+        : prev.bio;
+      const nextFrame = !userEditedRef.current.avatarFrameId
+        ? (identity?.avatar_frame_id || prev.avatarFrameId || "")
+        : prev.avatarFrameId;
+
+      if (
+        nextDisplayName === prev.displayName &&
+        nextUsername === prev.username &&
+        nextBio === prev.bio &&
+        nextFrame === prev.avatarFrameId
+      ) {
+        return prev;
+      }
+
+      return {
+        displayName: nextDisplayName,
+        username: nextUsername,
+        bio: nextBio,
+        avatarFrameId: nextFrame,
+      };
     });
-  }, [identity, profile]);
+  }, [identity, profile, userIdentity.displayName]);
 
   // Handle file select for avatar
   const handleFileSelect = (e: React.ChangeEvent<HTMLInputElement>) => {
@@ -116,40 +174,31 @@ export default function ProfilePage() {
     e.target.value = "";
   };
 
-  // When crop is finished
-  const handleCropComplete = async (croppedDataUrl: string) => {
-    if (user?.id) {
-      localStorage.setItem(`ethone_custom_avatar:${user.id}`, croppedDataUrl);
-      localStorage.setItem(`ethone_user_avatar:${user.id}`, croppedDataUrl);
-    }
-
-    try {
-      await saveCoreProfile({ avatar_url: croppedDataUrl });
-      await saveIdentity({ avatar_url: croppedDataUrl });
-    } catch {}
-
+  // Helper to persist avatar across all local and remote stores
+  const persistAvatar = async (avatarUrl: string) => {
+    const effectiveId = user?.id || "local";
     if (typeof window !== "undefined") {
-      window.dispatchEvent(
-        new CustomEvent("ethone:identity:update", {
-          detail: { avatar_url: croppedDataUrl },
-        })
-      );
-    }
-
-    success("Nouvel avatar recadré et appliqué avec succès !");
-  };
-
-  // When picking from AvatarPickerModal catalog
-  const handleAvatarCatalogSelect = async (avatarUrl: string) => {
-    if (user?.id) {
-      localStorage.setItem(`ethone_custom_avatar:${user.id}`, avatarUrl);
-      localStorage.setItem(`ethone_user_avatar:${user.id}`, avatarUrl);
+      try {
+        localStorage.setItem(`ethone_custom_avatar:${effectiveId}`, avatarUrl);
+        localStorage.setItem(`ethone:custom:avatar:${effectiveId}`, avatarUrl);
+        localStorage.setItem(`ethone_user_avatar:${effectiveId}`, avatarUrl);
+        localStorage.setItem("ethone_custom_avatar:local", avatarUrl);
+        localStorage.setItem("ethone_custom_avatar", avatarUrl);
+        localStorage.setItem("ethone_user_avatar", avatarUrl);
+      } catch {}
     }
 
     try {
       await saveCoreProfile({ avatar_url: avatarUrl });
+    } catch (e) {
+      console.warn("saveCoreProfile avatar error:", e);
+    }
+
+    try {
       await saveIdentity({ avatar_url: avatarUrl });
-    } catch {}
+    } catch (e) {
+      console.warn("saveIdentity avatar error:", e);
+    }
 
     if (typeof window !== "undefined") {
       window.dispatchEvent(
@@ -157,8 +206,19 @@ export default function ProfilePage() {
           detail: { avatar_url: avatarUrl },
         })
       );
+      window.dispatchEvent(new Event("storage"));
     }
+  };
 
+  // When crop is finished
+  const handleCropComplete = async (croppedDataUrl: string) => {
+    await persistAvatar(croppedDataUrl);
+    success("Nouvel avatar recadré et appliqué avec succès !");
+  };
+
+  // When picking from AvatarPickerModal catalog
+  const handleAvatarCatalogSelect = async (avatarUrl: string) => {
+    await persistAvatar(avatarUrl);
     setIsAvatarPickerOpen(false);
     success("Avatar sélectionné appliqué avec succès !");
   };
@@ -167,31 +227,84 @@ export default function ProfilePage() {
   const handleSaveIdentity = async () => {
     setSaving(true);
     try {
-      if (user?.id && form.displayName) {
-        localStorage.setItem(`ethone_user_name:${user.id}`, form.displayName);
+      const effectiveId = user?.id || "local";
+      const currentAvatar =
+        userIdentity.avatarUrl ||
+        profile?.avatar_url ||
+        identity?.avatar_url ||
+        (typeof window !== "undefined"
+          ? (user?.id ? localStorage.getItem(`ethone_custom_avatar:${user.id}`) : null) ||
+            localStorage.getItem("ethone_custom_avatar:local") ||
+            localStorage.getItem("ethone_custom_avatar") ||
+            ""
+          : "");
+
+      // 1. Immediate LocalStorage writes for all keys
+      if (typeof window !== "undefined") {
+        try {
+          if (form.displayName) {
+            localStorage.setItem(`ethone_user_name:${effectiveId}`, form.displayName);
+            localStorage.setItem("ethone:user_name", form.displayName);
+            localStorage.setItem("ethone_user_name:local", form.displayName);
+          }
+          if (form.username) {
+            localStorage.setItem(`ethone_user_username:${effectiveId}`, form.username);
+            localStorage.setItem("ethone:user:username", form.username);
+            localStorage.setItem("ethone_user_username:local", form.username);
+          }
+          if (form.bio !== undefined) {
+            localStorage.setItem(`ethone_user_bio:${effectiveId}`, form.bio);
+            localStorage.setItem("ethone:user:bio", form.bio);
+            localStorage.setItem("ethone_user_bio:local", form.bio);
+          }
+          if (form.avatarFrameId !== undefined) {
+            localStorage.setItem(`ethone_user_frame:${effectiveId}`, form.avatarFrameId);
+            localStorage.setItem("ethone:user:frame", form.avatarFrameId);
+            localStorage.setItem("ethone_user_frame:local", form.avatarFrameId);
+          }
+          if (currentAvatar) {
+            localStorage.setItem(`ethone_custom_avatar:${effectiveId}`, currentAvatar);
+            localStorage.setItem(`ethone:custom:avatar:${effectiveId}`, currentAvatar);
+            localStorage.setItem(`ethone_user_avatar:${effectiveId}`, currentAvatar);
+            localStorage.setItem("ethone_custom_avatar:local", currentAvatar);
+            localStorage.setItem("ethone_custom_avatar", currentAvatar);
+          }
+        } catch {}
       }
 
+      // 2. Persist to core profile (Cloudflare Worker, Supabase Auth user_metadata, Supabase profiles table)
       await saveCoreProfile({
         display_name: form.displayName,
         username: form.username,
+        ...(currentAvatar ? { avatar_url: currentAvatar } : {}),
       });
 
+      // 3. Persist to identity (Supabase ethone_public_profiles via UPSERT)
       await saveIdentity({
         display_name: form.displayName,
         username: form.username,
         bio: form.bio,
         avatar_frame_id: form.avatarFrameId,
+        ...(currentAvatar ? { avatar_url: currentAvatar } : {}),
       });
 
+      // 4. Mark user edits as saved
+      userEditedRef.current = {};
+
+      // 5. Broadcast across window and storage events
       if (typeof window !== "undefined") {
         window.dispatchEvent(
           new CustomEvent("ethone:identity:update", {
             detail: {
               display_name: form.displayName,
               username: form.username,
+              bio: form.bio,
+              avatar_frame_id: form.avatarFrameId,
+              avatar_url: currentAvatar,
             },
           })
         );
+        window.dispatchEvent(new Event("storage"));
       }
 
       success("Modifications du profil enregistrées !");
@@ -234,6 +347,10 @@ export default function ProfilePage() {
           presenceStatus={preferences.presenceStatus}
           customStatus={preferences.customStatus}
           activeWorkspace={activeWorkspace}
+          previewDisplayName={form.displayName}
+          previewUsername={form.username}
+          previewBio={form.bio}
+          previewAvatarFrameId={form.avatarFrameId}
           onOpenAvatarPicker={() => setIsAvatarPickerOpen(true)}
           onOpenStatusPicker={() => setIsStatusPickerOpen(true)}
           onSwitchWorkspace={(ws) => setActiveWorkspace(ws)}
@@ -317,7 +434,10 @@ export default function ProfilePage() {
                     <button
                       key={frame.id}
                       type="button"
-                      onClick={() => setForm((prev) => ({ ...prev, avatarFrameId: frame.id }))}
+                      onClick={() => {
+                        userEditedRef.current.avatarFrameId = true;
+                        setForm((prev) => ({ ...prev, avatarFrameId: frame.id }));
+                      }}
                       className={cn(
                         "rounded-2xl border p-2.5 text-center transition-all cursor-pointer",
                         form.avatarFrameId === frame.id
@@ -351,7 +471,10 @@ export default function ProfilePage() {
                   <input
                     type="text"
                     value={form.displayName}
-                    onChange={(e) => setForm({ ...form, displayName: e.target.value })}
+                    onChange={(e) => {
+                      userEditedRef.current.displayName = true;
+                      setForm((prev) => ({ ...prev, displayName: e.target.value }));
+                    }}
                     placeholder="Votre nom ou pseudonyme"
                     className="w-full rounded-2xl border border-[var(--panel-border)] bg-[var(--surface-raised)] px-3.5 py-2.5 text-xs text-[var(--text-primary)] focus:border-[var(--accent-primary)] focus:outline-none"
                   />
@@ -364,7 +487,13 @@ export default function ProfilePage() {
                   <input
                     type="text"
                     value={form.username}
-                    onChange={(e) => setForm({ ...form, username: e.target.value.toLowerCase().replace(/[^a-z0-9_]/g, "") })}
+                    onChange={(e) => {
+                      userEditedRef.current.username = true;
+                      setForm((prev) => ({
+                        ...prev,
+                        username: e.target.value.toLowerCase().replace(/[^a-z0-9_]/g, ""),
+                      }));
+                    }}
                     placeholder="nom_utilisateur"
                     className="w-full rounded-2xl border border-[var(--panel-border)] bg-[var(--surface-raised)] px-3.5 py-2.5 text-xs text-[var(--text-primary)] focus:border-[var(--accent-primary)] focus:outline-none font-mono"
                   />
@@ -377,7 +506,10 @@ export default function ProfilePage() {
                 </label>
                 <textarea
                   value={form.bio}
-                  onChange={(e) => setForm({ ...form, bio: e.target.value })}
+                  onChange={(e) => {
+                    userEditedRef.current.bio = true;
+                    setForm((prev) => ({ ...prev, bio: e.target.value }));
+                  }}
                   placeholder="Décrivez votre activité ou votre philosophie de travail..."
                   rows={3}
                   className="w-full rounded-2xl border border-[var(--panel-border)] bg-[var(--surface-raised)] px-3.5 py-2.5 text-xs text-[var(--text-primary)] focus:border-[var(--accent-primary)] focus:outline-none resize-none leading-relaxed"

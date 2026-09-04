@@ -141,56 +141,67 @@ export default function PublicProfileProvider({ children }: { children: ReactNod
   const save = useCallback(async (input: Partial<Profile>) => {
     setError(null);
 
-    const currentUserId = user?.id;
-    if (!currentUserId) return null;
+    const currentUserId = user?.id || "local";
 
-    // 1. Immediate LocalStorage persistence with user scope
+    // 1. Immediate LocalStorage persistence with user and global scope
     try {
       if (typeof window !== "undefined") {
         if (input.avatar_url) {
           localStorage.setItem(`ethone_custom_avatar:${currentUserId}`, input.avatar_url);
           localStorage.setItem(`ethone:custom:avatar:${currentUserId}`, input.avatar_url);
           localStorage.setItem(`ethone_user_avatar:${currentUserId}`, input.avatar_url);
+          localStorage.setItem("ethone_custom_avatar:local", input.avatar_url);
+          localStorage.setItem("ethone_custom_avatar", input.avatar_url);
         }
         if (input.display_name) {
           localStorage.setItem(`ethone_user_name:${currentUserId}`, input.display_name);
+          localStorage.setItem("ethone:user_name", input.display_name);
+          localStorage.setItem("ethone_user_name:local", input.display_name);
+        }
+        if (input.username) {
+          localStorage.setItem(`ethone_user_username:${currentUserId}`, input.username);
+          localStorage.setItem("ethone:user:username", input.username);
+          localStorage.setItem("ethone_user_username:local", input.username);
         }
       }
     } catch {}
 
     // 2. Supabase Auth user_metadata persistence
-    try {
-      await supabase.auth.updateUser({
-        data: {
-          custom_avatar_url: input.avatar_url,
-          avatar_url: input.avatar_url,
-          display_name: input.display_name,
+    if (user?.id) {
+      try {
+        await supabase.auth.updateUser({
+          data: {
+            custom_avatar_url: input.avatar_url,
+            avatar_url: input.avatar_url,
+            display_name: input.display_name,
+            custom_display_name: input.display_name,
+            username: input.username,
+          },
+        });
+      } catch (authErr) {
+        console.warn("Supabase auth updateUser error:", authErr);
+      }
+
+      // 3. Supabase profiles table upsert
+      try {
+        await supabase.from("profiles").upsert({
+          id: user.id,
           username: input.username,
-        },
-      });
-    } catch (authErr) {
-      console.warn("Supabase auth updateUser error:", authErr);
-    }
+          display_name: input.display_name,
+          avatar_url: input.avatar_url,
+          updated_at: new Date().toISOString(),
+        });
+      } catch (dbErr) {
+        console.warn("Supabase profiles table upsert error:", dbErr);
+      }
 
-    // 3. Supabase profiles table upsert
-    try {
-      await supabase.from("profiles").upsert({
-        id: currentUserId,
-        username: input.username,
-        display_name: input.display_name,
-        avatar_url: input.avatar_url,
-        updated_at: new Date().toISOString(),
-      });
-    } catch (dbErr) {
-      console.warn("Supabase profiles table upsert error:", dbErr);
-    }
-
-    // 4. Cloudflare Worker sync
-    try {
-      const method = profile ? "PATCH" : "POST";
-      await fetchWorker("/api/profile", { method, body: JSON.stringify(input) });
-    } catch (workerErr) {
-      console.warn("Worker /api/profile sync error:", workerErr);
+      // 4. Cloudflare Worker sync
+      try {
+        const method = profile ? "PATCH" : "POST";
+        await fetchWorker("/api/profile", { method, body: JSON.stringify(input) });
+      } catch (workerErr) {
+        console.warn("Worker /api/profile sync error:", workerErr);
+      }
     }
 
     // 5. Update state and broadcast update to all hooks & components

@@ -43,7 +43,7 @@ import { useToast } from "@/components/ToastProvider";
 import { useDiscordOAuth, type DiscordGuild } from "@/lib/hooks/useDiscordOAuth";
 import { cn } from "@/lib/utils";
 
-const BOT_API_URL = process.env.NEXT_PUBLIC_DISCORD_BOT_API || "http://localhost:3001";
+const BOT_API_URL = process.env.NEXT_PUBLIC_DISCORD_BOT_API || "";
 
 const STANDARD_REASONS = [
   "Spam répétitif / Flood",
@@ -139,33 +139,40 @@ export default function UserModerationProfileClient() {
     if (!selectedGuild || !targetUserId) return;
     setIsLoading(true);
     try {
-      // 1. Profil
-      const profRes = await fetch(
-        `${BOT_API_URL}/api/guilds/${selectedGuild.id}/moderation/users/${targetUserId}/profile`
-      );
-      if (profRes.ok) {
-        const pData = await profRes.json();
-        if (pData.profile) setUserProfile(pData.profile);
-      }
+      if (BOT_API_URL) {
+      try {
+        // 1. Profil
+        const profRes = await fetch(
+          `${BOT_API_URL}/api/guilds/${selectedGuild.id}/moderation/users/${targetUserId}/profile`
+        );
+        if (profRes.ok) {
+          const pData = await profRes.json();
+          if (pData.profile) setUserProfile(pData.profile);
+        }
 
-      // 2. Timeline unifiée
-      const timeRes = await fetch(
-        `${BOT_API_URL}/api/guilds/${selectedGuild.id}/moderation/users/${targetUserId}/timeline`
-      );
-      if (timeRes.ok) {
-        const tData = await timeRes.json();
-        if (tData.timeline) setTimeline(tData.timeline);
-      }
+        // 2. Timeline unifiée
+        const timeRes = await fetch(
+          `${BOT_API_URL}/api/guilds/${selectedGuild.id}/moderation/users/${targetUserId}/timeline`
+        );
+        if (timeRes.ok) {
+          const tData = await timeRes.json();
+          if (tData.timeline) setTimeline(tData.timeline);
+        }
 
-      // 3. Reports
-      const repRes = await fetch(
-        `${BOT_API_URL}/api/guilds/${selectedGuild.id}/moderation/reports?reportedUserId=${targetUserId}`
-      );
-      if (repRes.ok) {
-        const rData = await repRes.json();
-        if (rData.reports) setReports(rData.reports);
+        // 3. Reports
+        const repRes = await fetch(
+          `${BOT_API_URL}/api/guilds/${selectedGuild.id}/moderation/reports?reportedUserId=${targetUserId}`
+        );
+        if (repRes.ok) {
+          const rData = await repRes.json();
+          if (rData.reports) setReports(rData.reports);
+        }
+        setIsLoading(false);
+        return;
+      } catch {
+        // Offline fallback mock
       }
-    } catch {
+    }
       // Offline fallback mock
       setUserProfile({
         userId: targetUserId,

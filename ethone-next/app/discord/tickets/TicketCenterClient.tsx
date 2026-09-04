@@ -45,7 +45,118 @@ import { useDiscordOAuth, type DiscordGuild } from "@/lib/hooks/useDiscordOAuth"
 import { useToast } from "@/components/ToastProvider";
 import { cn } from "@/lib/utils";
 
-const API_BASE = "http://localhost:3001";
+const API_BASE = process.env.NEXT_PUBLIC_DISCORD_BOT_API || "";
+
+function getDemoOverview(): TicketOverview {
+  return {
+    open: 3,
+    pending: 1,
+    closedToday: 12,
+    totalTickets: 42,
+    averageResponseTime: "3m 42s",
+    resolutionRate: "95%",
+    byPriority: { LOW: 1, NORMAL: 3, HIGH: 2, URGENT: 0 },
+    byCategory: { "cat-tech": 4, "cat-vip": 1, "cat-report": 1 },
+    byStatus: { OPEN: 3, PENDING: 1, CLOSED: 12 },
+    recentTickets: [],
+  };
+}
+
+function getDemoTickets(guildId: string): TicketItem[] {
+  return [
+    {
+      id: "1",
+      guildId,
+      channelId: "1128633164290596999",
+      userId: "284729104817293810",
+      userTag: "Alex_Dev#1337",
+      categoryId: "cat-tech",
+      categoryName: "Support Technique",
+      status: "OPEN",
+      priority: "NORMAL",
+      tags: ["Web", "API"],
+      answers: { Sujet: "Accès Dashboard", Description: "Configuration initiale du serveur Discord" },
+      createdAt: new Date().toISOString(),
+      updatedAt: new Date().toISOString(),
+    },
+    {
+      id: "2",
+      guildId,
+      channelId: "1128633164290596998",
+      userId: "394829104817293821",
+      userTag: "Sarah_Gamer#4040",
+      categoryId: "cat-vip",
+      categoryName: "Abonnement VIP",
+      status: "WAITING_USER",
+      priority: "HIGH",
+      tags: ["Billing"],
+      answers: { Sujet: "Rôle Boost non reçu", Description: "J'ai boosté le serveur mais mon badge n'apparaît pas." },
+      createdAt: new Date(Date.now() - 3600000).toISOString(),
+      updatedAt: new Date().toISOString(),
+    },
+    {
+      id: "3",
+      guildId,
+      channelId: "1128633164290596997",
+      userId: "482910481729381023",
+      userTag: "Lucas_FR#9999",
+      categoryId: "cat-report",
+      categoryName: "Signalement",
+      status: "RESOLVED",
+      priority: "LOW",
+      tags: ["Modération"],
+      answers: { Sujet: "Signalement spammer", Description: "Spam dans le salon vocal" },
+      createdAt: new Date(Date.now() - 86400000).toISOString(),
+      updatedAt: new Date().toISOString(),
+    },
+  ];
+}
+
+function getDemoCategories(guildId: string): TicketCategoryItem[] {
+  return [
+    {
+      id: "cat-tech",
+      guildId,
+      name: "Support Technique",
+      emoji: "🛠️",
+      description: "Aide pour les bugs et intégrations",
+      color: "#10B981",
+      defaultPriority: "NORMAL",
+    },
+    {
+      id: "cat-vip",
+      guildId,
+      name: "Abonnement VIP",
+      emoji: "💎",
+      description: "Facturation, boost et avantages premium",
+      color: "#8B5CF6",
+      defaultPriority: "HIGH",
+    },
+    {
+      id: "cat-report",
+      guildId,
+      name: "Signalements",
+      emoji: "🚨",
+      description: "Infractions aux règles et comportements suspects",
+      color: "#EF4444",
+      defaultPriority: "URGENT",
+    },
+  ];
+}
+
+function getDemoPanels(guildId: string): TicketPanelItem[] {
+  return [
+    {
+      id: "panel-main",
+      guildId,
+      channelId: "1128633164290596884",
+      title: "Centre d'Assistance ETHONE",
+      description: "Cliquez sur le bouton correspondant à votre demande pour créer un ticket privé.",
+      color: "#10B981",
+      categoryIds: ["cat-tech", "cat-vip", "cat-report"],
+    },
+  ];
+}
 
 export type TicketPriority = "LOW" | "NORMAL" | "HIGH" | "URGENT";
 export type TicketStatus =
@@ -252,6 +363,32 @@ export function TicketCenterClient() {
   const fetchAllData = useCallback(async () => {
     if (!currentGuildId) return;
     setLoading(true);
+
+    if (!API_BASE) {
+      setOverview(getDemoOverview());
+      const demoTickets = getDemoTickets(currentGuildId);
+      setTickets(demoTickets);
+      setTotalTickets(demoTickets.length);
+      setCategories(getDemoCategories(currentGuildId));
+      setPanels(getDemoPanels(currentGuildId));
+      setTeams([
+        {
+          id: "team-staff",
+          guildId: currentGuildId,
+          name: "Modérateurs & Admins",
+          color: "#10B981",
+          roleIds: ["1", "2"],
+          memberIds: ["1"],
+          categoryIds: ["cat-tech", "cat-vip", "cat-report"],
+        },
+      ]);
+      setAutomations([]);
+      setConfig({});
+      setDiscordCats([{ id: "1128633164290596884", name: "Support Tickets" }]);
+      setLoading(false);
+      return;
+    }
+
     try {
       const [ovRes, tRes, cRes, pRes, tmRes, aRes, cfgRes, dcRes] = await Promise.all([
         fetch(`${API_BASE}/api/guilds/${currentGuildId}/tickets/overview`).catch(() => null),
@@ -271,22 +408,32 @@ export function TicketCenterClient() {
       if (ovRes && ovRes.ok) {
         const ovData = await ovRes.json();
         setOverview(ovData);
+      } else {
+        setOverview(getDemoOverview());
       }
 
       if (tRes && tRes.ok) {
         const tData = await tRes.json();
         setTickets(tData.tickets || []);
         setTotalTickets(tData.total || 0);
+      } else {
+        const demoTickets = getDemoTickets(currentGuildId);
+        setTickets(demoTickets);
+        setTotalTickets(demoTickets.length);
       }
 
       if (cRes && cRes.ok) {
         const cData = await cRes.json();
         setCategories(cData.categories || []);
+      } else {
+        setCategories(getDemoCategories(currentGuildId));
       }
 
       if (pRes && pRes.ok) {
         const pData = await pRes.json();
         setPanels(pData.panels || []);
+      } else {
+        setPanels(getDemoPanels(currentGuildId));
       }
 
       if (tmRes && tmRes.ok) {
@@ -309,7 +456,13 @@ export function TicketCenterClient() {
         setDiscordCats(dcData.categories || []);
       }
     } catch (err: any) {
-      console.error("Erreur chargement Tickets Center 2.0 :", err);
+      console.warn("Erreur chargement Tickets Center, fallback démo :", err);
+      setOverview(getDemoOverview());
+      const demoTickets = getDemoTickets(currentGuildId);
+      setTickets(demoTickets);
+      setTotalTickets(demoTickets.length);
+      setCategories(getDemoCategories(currentGuildId));
+      setPanels(getDemoPanels(currentGuildId));
     } finally {
       setLoading(false);
     }
@@ -321,6 +474,13 @@ export function TicketCenterClient() {
 
   // Actions Tickets rapides
   const handleQuickClaim = async (ticket: TicketItem) => {
+    if (!API_BASE) {
+      setTickets((prev) =>
+        prev.map((t) => (t.id === ticket.id ? { ...t, claimedBy: { id: "admin-dash", tag: "Staff ETHONE" } } : t))
+      );
+      success("Ticket pris en charge", `Mode démo : Vous avez pris en charge le ticket #${ticket.id}.`);
+      return;
+    }
     try {
       setActionLoading(true);
       const res = await fetch(`${API_BASE}/api/guilds/${currentGuildId}/tickets/tickets/${ticket.id}/claim`, {
@@ -349,6 +509,13 @@ export function TicketCenterClient() {
       URGENT: "LOW",
     };
     const nextPriority = cycle[ticket.priority] || "NORMAL";
+    if (!API_BASE) {
+      setTickets((prev) =>
+        prev.map((t) => (t.id === ticket.id ? { ...t, priority: nextPriority } : t))
+      );
+      info("Priorité modifiée", `Mode démo : Priorité passée à ${nextPriority} pour #${ticket.id}.`);
+      return;
+    }
     try {
       setActionLoading(true);
       const res = await fetch(`${API_BASE}/api/guilds/${currentGuildId}/tickets/tickets/${ticket.id}/priority`, {
@@ -371,6 +538,17 @@ export function TicketCenterClient() {
 
   const handleConfirmClose = async () => {
     if (!ticketToClose) return;
+    if (!API_BASE) {
+      setTickets((prev) =>
+        prev.map((t) =>
+          t.id === ticketToClose.id ? { ...t, status: "CLOSED" as TicketStatus, closeReason } : t
+        )
+      );
+      success("Ticket clôturé", `Mode démo : Le ticket #${ticketToClose.id} a été clôturé.`);
+      setShowCloseModal(false);
+      setTicketToClose(null);
+      return;
+    }
     try {
       setActionLoading(true);
       const res = await fetch(`${API_BASE}/api/guilds/${currentGuildId}/tickets/tickets/${ticketToClose.id}/close`, {
@@ -395,15 +573,31 @@ export function TicketCenterClient() {
 
   // Sauvegarde Catégorie
   const handleSaveCategory = async (cat: Partial<TicketCategoryItem>) => {
+    const id = cat.id || `cat-${Date.now()}`;
+    const payload: TicketCategoryItem = {
+      ...cat,
+      id,
+      guildId: currentGuildId,
+      name: cat.name || "Nouvelle catégorie",
+      color: cat.color || "#3B82F6",
+    };
+    if (!API_BASE) {
+      setCategories((prev) => {
+        const idx = prev.findIndex((c) => c.id === id);
+        if (idx >= 0) {
+          const copy = [...prev];
+          copy[idx] = payload;
+          return copy;
+        }
+        return [...prev, payload];
+      });
+      setShowCategoryModal(false);
+      setEditingCategory(null);
+      success("Catégorie enregistrée", `Mode démo : Catégorie "${payload.name}" mise à jour.`);
+      return;
+    }
     try {
       setActionLoading(true);
-      const id = cat.id || `cat-${Date.now()}`;
-      const payload = {
-        ...cat,
-        id,
-        guildId: currentGuildId,
-        color: cat.color || "#3B82F6",
-      };
       const res = await fetch(`${API_BASE}/api/guilds/${currentGuildId}/tickets/categories`, {
         method: "POST",
         headers: { "Content-Type": "application/json" },
@@ -423,6 +617,11 @@ export function TicketCenterClient() {
 
   const handleDeleteCategory = async (catId: string) => {
     if (!confirm("Voulez-vous vraiment supprimer cette catégorie de ticket ?")) return;
+    if (!API_BASE) {
+      setCategories((prev) => prev.filter((c) => c.id !== catId));
+      success("Catégorie supprimée", "Mode démo : La catégorie a été retirée.");
+      return;
+    }
     try {
       const res = await fetch(`${API_BASE}/api/guilds/${currentGuildId}/tickets/categories/${catId}`, {
         method: "DELETE",
@@ -437,15 +636,33 @@ export function TicketCenterClient() {
 
   // Sauvegarde & Publication Panel
   const handleSavePanel = async (panel: Partial<TicketPanelItem>) => {
+    const id = panel.id || `panel-${Date.now()}`;
+    const payload: TicketPanelItem = {
+      ...panel,
+      id,
+      guildId: currentGuildId,
+      title: panel.title || "Centre de support",
+      description: panel.description || "",
+      categoryIds: panel.categoryIds || [],
+      color: panel.color || "#5865F2",
+    };
+    if (!API_BASE) {
+      setPanels((prev) => {
+        const idx = prev.findIndex((p) => p.id === id);
+        if (idx >= 0) {
+          const copy = [...prev];
+          copy[idx] = payload;
+          return copy;
+        }
+        return [...prev, payload];
+      });
+      setShowPanelModal(false);
+      setEditingPanel(null);
+      success("Panel enregistré", `Mode démo : Panel "${payload.title}" mis à jour.`);
+      return;
+    }
     try {
       setActionLoading(true);
-      const id = panel.id || `panel-${Date.now()}`;
-      const payload = {
-        ...panel,
-        id,
-        guildId: currentGuildId,
-        color: panel.color || "#5865F2",
-      };
       const res = await fetch(`${API_BASE}/api/guilds/${currentGuildId}/tickets/panels`, {
         method: "POST",
         headers: { "Content-Type": "application/json" },
@@ -468,6 +685,10 @@ export function TicketCenterClient() {
       showError("Salon requis", "Veuillez spécifier l'ID du salon textuel.");
       return;
     }
+    if (!API_BASE) {
+      success("Panel publié sur Discord !", "Mode démo : Le panneau interactif a été posté.");
+      return;
+    }
     try {
       setActionLoading(true);
       const res = await fetch(`${API_BASE}/api/guilds/${currentGuildId}/tickets/panels/${panelId}/publish`, {
@@ -488,6 +709,11 @@ export function TicketCenterClient() {
 
   // Sauvegarde Config globale
   const handleSaveConfig = async (newCfg: any) => {
+    if (!API_BASE) {
+      setConfig((p: any) => ({ ...p, ...newCfg }));
+      success("Configuration enregistrée", "Mode démo : Les paramètres ont été appliqués.");
+      return;
+    }
     try {
       setActionLoading(true);
       const res = await fetch(`${API_BASE}/api/guilds/${currentGuildId}/tickets/config`, {

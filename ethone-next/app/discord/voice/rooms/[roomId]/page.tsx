@@ -9,7 +9,12 @@ export const metadata: Metadata = {
 export const dynamic = "force-static";
 
 export function generateStaticParams() {
-  return [{ roomId: "demo" }, { roomId: "active-1" }];
+  return [
+    { roomId: "demo" },
+    { roomId: "active-1" },
+    { roomId: "room_chill_lounge" },
+    { roomId: "room_alex_gaming" },
+  ];
 }
 
 export default async function VoiceRoomDetailPage({

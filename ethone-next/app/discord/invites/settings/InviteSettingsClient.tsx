@@ -16,7 +16,7 @@ import {
 } from "lucide-react";
 import { useToast } from "@/components/ToastProvider";
 
-const API_BASE = "http://localhost:3001";
+const API_BASE = process.env.NEXT_PUBLIC_DISCORD_BOT_API || "";
 
 export default function InviteSettingsClient() {
   const searchParams = useSearchParams();
@@ -41,6 +41,10 @@ export default function InviteSettingsClient() {
 
   const fetchSettings = async () => {
     setLoading(true);
+    if (!API_BASE) {
+      setLoading(false);
+      return;
+    }
     try {
       const res = await fetch(`${API_BASE}/api/guilds/${guildId}/invites/settings`);
       if (res.ok) {
@@ -69,6 +73,10 @@ export default function InviteSettingsClient() {
   }, [guildId]);
 
   const handleSave = async () => {
+    if (!API_BASE) {
+      success("Paramètres enregistrés", "Mode démo : La configuration d'Invite Tracker a été mise à jour.");
+      return;
+    }
     setSaving(true);
     try {
       const res = await fetch(`${API_BASE}/api/guilds/${guildId}/invites/settings`, {
@@ -109,6 +117,10 @@ export default function InviteSettingsClient() {
   };
 
   const handleExport = (format: "csv" | "json") => {
+    if (!API_BASE) {
+      success("Export prêt", `Mode démo : Export ${format.toUpperCase()} simulé.`);
+      return;
+    }
     window.open(`${API_BASE}/api/guilds/${guildId}/invites/export?format=${format}`, "_blank");
   };
 

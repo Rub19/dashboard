@@ -31,7 +31,49 @@ import {
 import { useToast } from "@/components/ToastProvider";
 import { cn } from "@/lib/utils";
 
-const API_BASE = "http://localhost:3001";
+const API_BASE = process.env.NEXT_PUBLIC_DISCORD_BOT_API || "";
+
+function getDemoTicket(ticketId: string, guildId: string) {
+  return {
+    id: ticketId,
+    guildId,
+    channelId: "1128633164290596999",
+    userId: "284729104817293810",
+    userTag: "Alex_Dev#1337",
+    userAvatar: null,
+    categoryId: "cat-1",
+    categoryName: "Support Technique",
+    status: "OPEN",
+    priority: "NORMAL",
+    tags: ["Demo", "Support"],
+    claimedBy: null,
+    answers: {
+      "Sujet de la demande": "Configuration et test de l'environnement ETHONE",
+      "Description détaillée": "Démonstration du système de tickets temps réel ETHONE OS.",
+      "Priorité ressentie": "Normale",
+    },
+    notes: [
+      {
+        id: "note-1",
+        authorId: "admin-1",
+        authorTag: "Staff ETHONE",
+        content: "Ticket de démonstration initialisé.",
+        createdAt: new Date().toISOString(),
+      },
+    ],
+    activityTimeline: [
+      {
+        id: "act-1",
+        type: "CREATED",
+        actorTag: "Alex_Dev#1337",
+        description: "Ouverture du ticket",
+        timestamp: new Date().toISOString(),
+      },
+    ],
+    createdAt: new Date().toISOString(),
+    updatedAt: new Date().toISOString(),
+  };
+}
 
 export default function TicketDetailClient() {
   const params = useParams();
@@ -62,15 +104,21 @@ export default function TicketDetailClient() {
   // Chargement du ticket
   const fetchTicket = useCallback(async () => {
     setLoading(true);
+    if (!API_BASE) {
+      setTicket(getDemoTicket(ticketId, guildId));
+      setLoading(false);
+      return;
+    }
     try {
       const res = await fetch(`${API_BASE}/api/guilds/${guildId}/tickets/tickets/${ticketId}`);
       if (!res.ok) {
         throw new Error("Ticket introuvable");
       }
       const data = await res.json();
-      setTicket(data.ticket);
+      setTicket(data.ticket || getDemoTicket(ticketId, guildId));
     } catch (err: any) {
-      console.error("Erreur chargement ticket :", err);
+      console.warn("API non joignable, fallback démo :", err);
+      setTicket(getDemoTicket(ticketId, guildId));
     } finally {
       setLoading(false);
     }
@@ -82,6 +130,11 @@ export default function TicketDetailClient() {
 
   // Actions
   const handleClaim = async () => {
+    if (!API_BASE) {
+      setTicket((prev: any) => (prev ? { ...prev, claimedBy: { id: "admin-dash", tag: "Staff ETHONE" } } : prev));
+      success("Ticket pris en charge", "Mode démo : Vous êtes désormais assigné à ce ticket.");
+      return;
+    }
     try {
       setActionLoading(true);
       const res = await fetch(`${API_BASE}/api/guilds/${guildId}/tickets/tickets/${ticketId}/claim`, {
@@ -103,6 +156,11 @@ export default function TicketDetailClient() {
   };
 
   const handleUnclaim = async () => {
+    if (!API_BASE) {
+      setTicket((prev: any) => (prev ? { ...prev, claimedBy: null } : prev));
+      info("Prise en charge abandonnée", "Mode démo : Le ticket est de nouveau ouvert à tous.");
+      return;
+    }
     try {
       setActionLoading(true);
       const res = await fetch(`${API_BASE}/api/guilds/${guildId}/tickets/tickets/${ticketId}/unclaim`, {
@@ -126,6 +184,19 @@ export default function TicketDetailClient() {
   const handleAddNote = async (e: React.FormEvent) => {
     e.preventDefault();
     if (!noteContent.trim()) return;
+    if (!API_BASE) {
+      const newNote = {
+        id: `note-${Date.now()}`,
+        content: noteContent.trim(),
+        authorId: "admin-dash",
+        authorTag: "Staff ETHONE",
+        createdAt: new Date().toISOString(),
+      };
+      setTicket((prev: any) => (prev ? { ...prev, notes: [...(prev.notes || []), newNote] } : prev));
+      setNoteContent("");
+      success("Note ajoutée", "Mode démo : Note enregistrée.");
+      return;
+    }
     try {
       setActionLoading(true);
       const res = await fetch(`${API_BASE}/api/guilds/${guildId}/tickets/tickets/${ticketId}/notes`, {
@@ -148,6 +219,12 @@ export default function TicketDetailClient() {
   };
 
   const handleCloseTicket = async () => {
+    if (!API_BASE) {
+      setTicket((prev: any) => (prev ? { ...prev, status: "CLOSED", closeReason } : prev));
+      setShowCloseModal(false);
+      success("Ticket clôturé", "Mode démo : Le ticket a été fermé avec succès.");
+      return;
+    }
     try {
       setActionLoading(true);
       const res = await fetch(`${API_BASE}/api/guilds/${guildId}/tickets/tickets/${ticketId}/close`, {
@@ -170,6 +247,11 @@ export default function TicketDetailClient() {
   };
 
   const handleReopenTicket = async () => {
+    if (!API_BASE) {
+      setTicket((prev: any) => (prev ? { ...prev, status: "OPEN" } : prev));
+      success("Ticket réouvert", "Mode démo : Le ticket a été rouvert avec succès.");
+      return;
+    }
     try {
       setActionLoading(true);
       const res = await fetch(`${API_BASE}/api/guilds/${guildId}/tickets/tickets/${ticketId}/reopen`, {
@@ -191,6 +273,12 @@ export default function TicketDetailClient() {
 
   const handleLinkCase = async () => {
     if (!caseIdToLink.trim()) return;
+    if (!API_BASE) {
+      setTicket((prev: any) => (prev ? { ...prev, relatedCaseId: caseIdToLink.trim() } : prev));
+      setShowLinkCaseModal(false);
+      success("Cas de modération lié", `Mode démo : Liaison effectuée avec le Dossier #${caseIdToLink}.`);
+      return;
+    }
     try {
       setActionLoading(true);
       const res = await fetch(`${API_BASE}/api/guilds/${guildId}/tickets/tickets/${ticketId}/link-case`, {
@@ -213,6 +301,10 @@ export default function TicketDetailClient() {
   };
 
   const handlePriorityChange = async (newPriority: string) => {
+    if (!API_BASE) {
+      setTicket((prev: any) => (prev ? { ...prev, priority: newPriority } : prev));
+      return;
+    }
     try {
       setActionLoading(true);
       const res = await fetch(`${API_BASE}/api/guilds/${guildId}/tickets/tickets/${ticketId}/priority`, {
@@ -233,6 +325,10 @@ export default function TicketDetailClient() {
   };
 
   const handleStatusChange = async (newStatus: string) => {
+    if (!API_BASE) {
+      setTicket((prev: any) => (prev ? { ...prev, status: newStatus } : prev));
+      return;
+    }
     try {
       setActionLoading(true);
       const res = await fetch(`${API_BASE}/api/guilds/${guildId}/tickets/tickets/${ticketId}/status`, {
@@ -356,8 +452,14 @@ export default function TicketDetailClient() {
 
           {/* Transcript Download */}
           <a
-            href={`${API_BASE}/api/guilds/${guildId}/tickets/transcripts/${ticket.id}/download`}
-            target="_blank"
+            href={API_BASE ? `${API_BASE}/api/guilds/${guildId}/tickets/transcripts/${ticket.id}/download` : "#"}
+            onClick={(e) => {
+              if (!API_BASE) {
+                e.preventDefault();
+                info("Mode Démo", "Transcript simulé prêt.");
+              }
+            }}
+            target={API_BASE ? "_blank" : undefined}
             rel="noopener noreferrer"
             className="flex h-9 items-center gap-1.5 rounded-xl border border-white/10 bg-white/5 px-3 text-xs font-medium text-zinc-300 hover:text-white hover:bg-white/10 transition-all"
           >

@@ -148,7 +148,7 @@ interface OverviewStats {
   };
 }
 
-const BOT_API_URL = process.env.NEXT_PUBLIC_DISCORD_BOT_API || "http://localhost:3001";
+const BOT_API_URL = process.env.NEXT_PUBLIC_DISCORD_BOT_API || "";
 
 const ACTION_CONFIG: Record<
   CaseAction,
@@ -328,33 +328,35 @@ export default function ModerationCenterPage() {
   const fetchOverview = useCallback(async () => {
     if (!selectedGuild) return;
     setIsLoading(true);
-    try {
-      // 1. Overview stats
-      const ovRes = await fetch(`${BOT_API_URL}/api/guilds/${selectedGuild.id}/moderation/overview`);
-      if (ovRes.ok) {
-        const data = await ovRes.json();
-        if (data.stats) setStats(data.stats);
-      }
-
-      // 2. Cases avec filtres
-      let url = `${BOT_API_URL}/api/guilds/${selectedGuild.id}/moderation/cases?limit=100`;
-      if (filterAction !== "ALL") url += `&action=${filterAction}`;
-      if (filterStatus !== "ALL") url += `&status=${filterStatus}`;
-      if (filterSource !== "ALL") url += `&source=${filterSource}`;
-      if (searchQuery.trim()) url += `&search=${encodeURIComponent(searchQuery.trim())}`;
-
-      const casesRes = await fetch(url);
-      if (casesRes.ok) {
-        const data = await casesRes.json();
-        if (data.cases) {
-          setCases(data.cases);
-          setTotalCasesCount(data.total || data.cases.length);
+    if (BOT_API_URL) {
+      try {
+        // 1. Overview stats
+        const ovRes = await fetch(`${BOT_API_URL}/api/guilds/${selectedGuild.id}/moderation/overview`);
+        if (ovRes.ok) {
+          const data = await ovRes.json();
+          if (data.stats) setStats(data.stats);
         }
+
+        // 2. Cases avec filtres
+        let url = `${BOT_API_URL}/api/guilds/${selectedGuild.id}/moderation/cases?limit=100`;
+        if (filterAction !== "ALL") url += `&action=${filterAction}`;
+        if (filterStatus !== "ALL") url += `&status=${filterStatus}`;
+        if (filterSource !== "ALL") url += `&source=${filterSource}`;
+        if (searchQuery.trim()) url += `&search=${encodeURIComponent(searchQuery.trim())}`;
+
+        const casesRes = await fetch(url);
+        if (casesRes.ok) {
+          const data = await casesRes.json();
+          if (data.cases) {
+            setCases(data.cases);
+            setTotalCasesCount(data.total || data.cases.length);
+            setIsLoading(false);
+            return;
+          }
+        }
+      } catch {
+        // Offline fallback
       }
-    } catch {
-      // Offline fallback
-    } finally {
-      setIsLoading(false);
     }
   }, [selectedGuild, filterAction, filterStatus, filterSource, searchQuery]);
 

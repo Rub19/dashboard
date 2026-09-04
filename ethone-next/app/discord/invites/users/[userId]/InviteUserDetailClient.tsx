@@ -20,7 +20,7 @@ import {
 } from "lucide-react";
 import { useToast } from "@/components/ToastProvider";
 
-const API_BASE = "http://localhost:3001";
+const API_BASE = process.env.NEXT_PUBLIC_DISCORD_BOT_API || "";
 
 export default function InviteUserDetailClient() {
   const params = useParams();
@@ -36,6 +36,56 @@ export default function InviteUserDetailClient() {
 
   const fetchData = async () => {
     setLoading(true);
+    if (!API_BASE) {
+      setProfile({
+        rank: 1,
+        userId,
+        userTag: "Alex#0001",
+        totalInvites: 184,
+        validInvites: 162,
+        leftMembers: 14,
+        suspiciousInvites: 8,
+        retentionRate: 91,
+        rewardsEarned: 3,
+      });
+      setReferrals([
+        {
+          id: "ref_1",
+          invitedUserId: "usr_lucas",
+          invitedUserTag: "Lucas#1234",
+          inviteCode: "ethone-dev",
+          joinedAt: new Date(Date.now() - 1000 * 60 * 60 * 3).toISOString(),
+          accountAgeDays: 120,
+          status: "VALID",
+          riskScore: 5,
+          riskLevel: "Safe",
+        },
+        {
+          id: "ref_2",
+          invitedUserId: "usr_emma",
+          invitedUserTag: "Emma#5678",
+          inviteCode: "ethone-dev",
+          joinedAt: new Date(Date.now() - 1000 * 60 * 60 * 24 * 2).toISOString(),
+          accountAgeDays: 350,
+          status: "VALID",
+          riskScore: 2,
+          riskLevel: "Safe",
+        },
+        {
+          id: "ref_3",
+          invitedUserId: "usr_ghost",
+          invitedUserTag: "GhostLeaver#7777",
+          inviteCode: "ethone-dev",
+          joinedAt: new Date(Date.now() - 1000 * 60 * 60 * 24 * 5).toISOString(),
+          accountAgeDays: 45,
+          status: "LEFT",
+          riskScore: 18,
+          riskLevel: "Safe",
+        },
+      ]);
+      setLoading(false);
+      return;
+    }
     try {
       const res = await fetch(`${API_BASE}/api/guilds/${guildId}/invites/users/${userId}`);
       if (res.ok) {

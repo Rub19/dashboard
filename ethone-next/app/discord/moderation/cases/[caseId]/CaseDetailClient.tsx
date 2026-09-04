@@ -72,7 +72,7 @@ interface ModerationCaseDetail {
   };
 }
 
-const BOT_API_URL = process.env.NEXT_PUBLIC_DISCORD_BOT_API || "http://localhost:3001";
+const BOT_API_URL = process.env.NEXT_PUBLIC_DISCORD_BOT_API || "";
 
 export default function CaseDetailClient() {
   const params = useParams<{ caseId: string }>();
@@ -92,6 +92,7 @@ export default function CaseDetailClient() {
   const [isAddingNote, setIsAddingNote] = useState(false);
 
   // New Evidence
+  const [newEvidenceType, setNewEvidenceType] = useState<"IMAGE" | "LINK" | "TEXT">("TEXT");
   const [newEvidenceUrl, setNewEvidenceUrl] = useState("");
   const [newEvidenceContent, setNewEvidenceContent] = useState("");
   const [isAddingEvidence, setIsAddingEvidence] = useState(false);
@@ -105,19 +106,23 @@ export default function CaseDetailClient() {
     if (!guildId || !caseNumber) return;
     setIsLoading(true);
     try {
-      const res = await fetch(`${BOT_API_URL}/api/guilds/${guildId}/moderation/cases/${caseNumber}`);
-      if (res.ok) {
-        const data = await res.json();
-        if (data.case) {
-          setModCase(data.case);
-          setEvidence(data.evidence || []);
-          setNotes(data.notes || []);
-          setRelatedCases(data.relatedCases || []);
-          return;
+      if (BOT_API_URL) {
+      try {
+        const res = await fetch(`${BOT_API_URL}/api/guilds/${guildId}/moderation/cases/${caseNumber}`);
+        if (res.ok) {
+          const data = await res.json();
+          if (data.case) {
+            setModCase(data.case);
+            setEvidence(data.evidence || []);
+            setNotes(data.notes || []);
+            setRelatedCases(data.relatedCases || []);
+            return;
+          }
         }
+      } catch {
+        // Fallback
       }
-      throw new Error("Case introuvable");
-    } catch {
+    }
       // Fallback display
       setModCase({
         id: `CASE-${guildId}-${caseNumber}`,

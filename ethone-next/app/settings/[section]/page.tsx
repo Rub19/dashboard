@@ -15,6 +15,7 @@ const SETTINGS_SECTIONS = [
   "workspace",
   "language",
   "connections",
+  "integrations",
   "privacy",
   "security",
   "sync",

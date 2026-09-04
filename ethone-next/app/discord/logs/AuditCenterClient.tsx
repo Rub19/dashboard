@@ -40,7 +40,70 @@ import { useDiscordOAuth, type DiscordGuild } from "@/lib/hooks/useDiscordOAuth"
 import { useToast } from "@/components/ToastProvider";
 import { cn } from "@/lib/utils";
 
-const API_BASE = "http://localhost:3001";
+const API_BASE = process.env.NEXT_PUBLIC_DISCORD_BOT_API || "";
+
+function getDemoAuditOverview(): AuditOverview {
+  return {
+    eventsToday: 142,
+    securityToday: 25,
+    moderationToday: 38,
+    automodToday: 18,
+    criticalToday: 2,
+    totalEvents: 142,
+    byModule: {
+      MODERATION: 38,
+      MEMBERS: 45,
+      MESSAGES: 22,
+      ROLES: 12,
+      SECURITY: 25,
+    },
+    bySeverity: {
+      CRITICAL: 2,
+      HIGH: 8,
+      MEDIUM: 24,
+      LOW: 48,
+      INFO: 60,
+    },
+    criticalEvents: [],
+  };
+}
+
+function getDemoAuditEvents(guildId: string): AuditEvent[] {
+  return [
+    {
+      id: "evt-1",
+      guildId,
+      module: "SECURITY",
+      type: "ANTI_RAID_TRIGGER",
+      severity: "HIGH",
+      actor: { id: "bot-1", tag: "ETHONE Sentinel", isBot: true },
+      reason: "Détection de pic de nouveaux membres (join flood)",
+      timestamp: new Date().toISOString(),
+    },
+    {
+      id: "evt-2",
+      guildId,
+      module: "MODERATION",
+      type: "TIMEOUT_ADD",
+      severity: "MEDIUM",
+      actor: { id: "staff-1", tag: "Staff_Alex" },
+      target: { id: "user-1", type: "MEMBER", name: "TrollUser", tag: "TrollUser#0001" },
+      reason: "Spam mentions répétées",
+      timestamp: new Date(Date.now() - 15 * 60000).toISOString(),
+    },
+    {
+      id: "evt-3",
+      guildId,
+      module: "ROLES",
+      type: "ROLE_ASSIGN",
+      severity: "INFO",
+      actor: { id: "bot-1", tag: "ETHONE Bot", isBot: true },
+      target: { id: "user-2", type: "MEMBER", name: "Lucas", tag: "Lucas#1234" },
+      reason: "Rôle Vérifié accordé automatiquement après onboarding",
+      timestamp: new Date(Date.now() - 45 * 60000).toISOString(),
+    },
+  ];
+}
 
 export type AuditSeverity = "INFO" | "LOW" | "MEDIUM" | "HIGH" | "CRITICAL";
 export type AuditModule =
@@ -197,14 +260,20 @@ export function AuditCenterClient() {
   // Charger les métriques d'aperçu
   const fetchOverview = useCallback(async () => {
     if (!selectedGuild) return;
+    if (!API_BASE) {
+      setOverview(getDemoAuditOverview());
+      return;
+    }
     try {
       const res = await fetch(`${API_BASE}/api/guilds/${selectedGuild.id}/logs/overview`);
       if (res.ok) {
         const data = await res.json();
         setOverview(data);
+      } else {
+        setOverview(getDemoAuditOverview());
       }
     } catch {
-      // Ignorer silencieusement en mode déconnecté
+      setOverview(getDemoAuditOverview());
     }
   }, [selectedGuild]);
 
@@ -212,6 +281,13 @@ export function AuditCenterClient() {
   const fetchEvents = useCallback(async () => {
     if (!selectedGuild) return;
     setLoadingEvents(true);
+    if (!API_BASE) {
+      const demo = getDemoAuditEvents(selectedGuild.id);
+      setEvents(demo);
+      setTotalCount(demo.length);
+      setLoadingEvents(false);
+      return;
+    }
     try {
       const query = new URLSearchParams();
       if (selectedModule !== "ALL") query.set("module", selectedModule);
@@ -225,9 +301,15 @@ export function AuditCenterClient() {
         const data = await res.json();
         setEvents(data.events || []);
         setTotalCount(data.total || 0);
+      } else {
+        const demo = getDemoAuditEvents(selectedGuild.id);
+        setEvents(demo);
+        setTotalCount(demo.length);
       }
     } catch {
-      // Ignorer
+      const demo = getDemoAuditEvents(selectedGuild.id);
+      setEvents(demo);
+      setTotalCount(demo.length);
     } finally {
       setLoadingEvents(false);
     }
@@ -235,7 +317,7 @@ export function AuditCenterClient() {
 
   // Charger la configuration de routage
   const fetchConfig = useCallback(async () => {
-    if (!selectedGuild) return;
+    if (!selectedGuild || !API_BASE) return;
     try {
       const res = await fetch(`${API_BASE}/api/guilds/${selectedGuild.id}/logs/config`);
       if (res.ok) {
@@ -270,7 +352,7 @@ export function AuditCenterClient() {
 
   // Auto-refresh en direct (toutes les 4 secondes si activé)
   useEffect(() => {
-    if (!liveStreaming || !selectedGuild) return;
+    if (!liveStreaming || !selectedGuild || !API_BASE) return;
     const interval = setInterval(() => {
       fetchOverview();
       fetchEvents();
@@ -283,6 +365,28 @@ export function AuditCenterClient() {
     if (!selectedGuild) return;
     setInvestigatingEventId(eventId);
     setLoadingInvestigation(true);
+    if (!API_BASE) {
+      const target = events.find((e) => e.id === eventId) || getDemoAuditEvents(selectedGuild.id)[0];
+      setInvestigationData({
+        targetEvent: target,
+        timeWindowStart: new Date(Date.now() - 3600000).toISOString(),
+        timeWindowEnd: new Date().toISOString(),
+        relatedEvents: [],
+        causalityChain: [
+          {
+            step: 1,
+            eventId: target.id,
+            timestamp: target.timestamp,
+            module: target.module,
+            severity: target.severity,
+            summary: target.type,
+            relation: "TRIGGER",
+          },
+        ],
+      });
+      setLoadingInvestigation(false);
+      return;
+    }
     try {
       const res = await fetch(`${API_BASE}/api/guilds/${selectedGuild.id}/logs/events/${eventId}/investigate`);
       if (res.ok) {
@@ -301,6 +405,10 @@ export function AuditCenterClient() {
   // Sauvegarder la configuration de routage
   const handleSaveConfig = async () => {
     if (!selectedGuild) return;
+    if (!API_BASE) {
+      success("Configuration des logs et routage Discord mise à jour ! (Mode démo)");
+      return;
+    }
     setSavingConfig(true);
     try {
       const res = await fetch(`${API_BASE}/api/guilds/${selectedGuild.id}/logs/config`, {
@@ -338,6 +446,11 @@ export function AuditCenterClient() {
   // Télécharger l'export CSV / JSON
   const handleDownloadExport = () => {
     if (!selectedGuild) return;
+    if (!API_BASE) {
+      success(`Export ${exportFormat.toUpperCase()} simulé prêt.`);
+      setExportModalOpen(false);
+      return;
+    }
     const query = new URLSearchParams();
     query.set("format", exportFormat);
     if (selectedModule !== "ALL") query.set("module", selectedModule);

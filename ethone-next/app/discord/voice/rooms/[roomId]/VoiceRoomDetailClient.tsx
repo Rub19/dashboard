@@ -77,7 +77,7 @@ interface TemporaryRoomDetail {
   totalSecondsActive: number;
 }
 
-const BOT_API_URL = process.env.NEXT_PUBLIC_DISCORD_BOT_API || "http://localhost:3001";
+const BOT_API_URL = process.env.NEXT_PUBLIC_DISCORD_BOT_API || "";
 
 export default function VoiceRoomDetailClient({ roomId }: { roomId: string }) {
   const router = useRouter();
@@ -102,16 +102,18 @@ export default function VoiceRoomDetailClient({ roomId }: { roomId: string }) {
 
   // Fetch room data
   const fetchData = useCallback(async () => {
-    try {
-      const res = await fetch(`${BOT_API_URL}/api/guilds/${guildId}/voice/rooms/${roomId}/details`);
-      if (res.ok) {
-        const data = await res.json();
-        setRoom(data.room);
-        setTimeline(data.timeline || []);
-        return;
+    if (BOT_API_URL) {
+      try {
+        const res = await fetch(`${BOT_API_URL}/api/guilds/${guildId}/voice/rooms/${roomId}/details`);
+        if (res.ok) {
+          const data = await res.json();
+          setRoom(data.room);
+          setTimeline(data.timeline || []);
+          return;
+        }
+      } catch {
+        // Fallback
       }
-    } catch {
-      // Fallback
     }
 
     // Demo fallback state

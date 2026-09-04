@@ -4,6 +4,7 @@ import { useState } from "react";
 import { motion, AnimatePresence } from "framer-motion";
 import { Brain, Sparkles, Plus, Check, Loader2, TrendingUp, AlertCircle, DollarSign, Wallet, X, Zap } from "lucide-react";
 import { BILL_BRANDS, detectBrandMeta } from "@/lib/bills-brands";
+import { Icon } from "@/lib/icons";
 import { addBill, type Bill, toISODate } from "@/lib/bills-manager";
 import { useToast } from "@/components/ToastProvider";
 import { cn } from "@/lib/utils";
@@ -41,30 +42,23 @@ export default function BrainFinanceAssistant({ bills, onRefresh, selectedDate }
   const totalYearly = totalMonthly * 12;
   const unpaidCount = bills.filter((b) => !b.paid).length;
 
-  const popularPicks = [
-    { key: "chatgpt", label: "ChatGPT Plus", amount: 20, currency: "$", logo: BILL_BRANDS.chatgpt?.logo || "https://cdn.simpleicons.org/openai/ffffff" },
-    { key: "spotify", label: "Spotify", amount: 10.99, currency: "€", logo: BILL_BRANDS.spotify?.logo || "https://cdn.simpleicons.org/spotify/1DB954" },
-    { key: "netflix", label: "Netflix", amount: 13.49, currency: "€", logo: BILL_BRANDS.netflix?.logo || "https://cdn.simpleicons.org/netflix/E50914" },
-    { key: "youtube", label: "YouTube Premium", amount: 12.99, currency: "€", logo: BILL_BRANDS.youtube?.logo || "https://cdn.simpleicons.org/youtube/FF0000" },
-    { key: "prime", label: "Amazon Prime", amount: 6.99, currency: "€", logo: BILL_BRANDS.prime?.logo || "https://cdn.simpleicons.org/amazonprime/00A8E1" },
-    { key: "disney", label: "Disney+", amount: 8.99, currency: "€", logo: BILL_BRANDS.disney?.logo || "https://cdn.simpleicons.org/disney/113CCF" },
-    { key: "applemusic", label: "Apple Music", amount: 10.99, currency: "€", logo: BILL_BRANDS.applemusic?.logo || "https://cdn.simpleicons.org/applemusic/FC3C44" },
-    { key: "apple", label: "iCloud 200 Go", amount: 2.99, currency: "€", logo: BILL_BRANDS.apple?.logo || "https://cdn.simpleicons.org/apple/ffffff" },
-    { key: "github", label: "GitHub Copilot", amount: 10, currency: "$", logo: BILL_BRANDS.github?.logo || "https://cdn.simpleicons.org/github/ffffff" },
-    { key: "discord", label: "Discord Nitro", amount: 9.99, currency: "€", logo: BILL_BRANDS.discord?.logo || "https://cdn.simpleicons.org/discord/ffffff" },
-    { key: "claude", label: "Claude Pro", amount: 20, currency: "$", logo: BILL_BRANDS.claude?.logo || "https://cdn.simpleicons.org/anthropic/ffffff" },
-    { key: "midjourney", label: "Midjourney", amount: 10, currency: "$", logo: BILL_BRANDS.midjourney?.logo || "https://cdn.simpleicons.org/midjourney/ffffff" },
-    { key: "cursor", label: "Cursor AI", amount: 20, currency: "$", logo: BILL_BRANDS.cursor?.logo || "https://cdn.simpleicons.org/cursor/ffffff" },
-    { key: "perplexity", label: "Perplexity Pro", amount: 20, currency: "$", logo: BILL_BRANDS.perplexity?.logo || "https://cdn.simpleicons.org/perplexity/22B8CD" },
-    { key: "playstation", label: "PlayStation Plus", amount: 8.99, currency: "€", logo: BILL_BRANDS.playstation?.logo || "https://cdn.simpleicons.org/playstation/003791" },
-    { key: "xbox", label: "Xbox Game Pass", amount: 14.99, currency: "€", logo: BILL_BRANDS.xbox?.logo || "https://cdn.simpleicons.org/xbox/107C10" },
-    { key: "free", label: "Freebox Pop", amount: 39.99, currency: "€", logo: BILL_BRANDS.free?.logo || "https://cdn.simpleicons.org/free/CC0000" },
-    { key: "adobe", label: "Adobe Cloud", amount: 24.99, currency: "€", logo: BILL_BRANDS.adobe?.logo || "https://cdn.simpleicons.org/adobe/FF0000" },
-    { key: "notion", label: "Notion Plus", amount: 10, currency: "€", logo: BILL_BRANDS.notion?.logo || "https://cdn.simpleicons.org/notion/ffffff" },
-    { key: "canal", label: "Canal+", amount: 22.99, currency: "€", logo: BILL_BRANDS.canal?.logo || "https://cdn.simpleicons.org/canalplus/ffffff" },
-    { key: "deezer", label: "Deezer", amount: 11.99, currency: "€", logo: BILL_BRANDS.deezer?.logo || "https://cdn.simpleicons.org/deezer/A238FF" },
-    { key: "crunchyroll", label: "Crunchyroll", amount: 6.49, currency: "€", logo: BILL_BRANDS.crunchyroll?.logo || "https://cdn.simpleicons.org/crunchyroll/F47521" },
+  const popularKeys = [
+    "chatgpt", "spotify", "netflix", "youtube", "prime", "disney", "applemusic", "apple",
+    "github", "discord", "claude", "midjourney", "cursor", "perplexity", "playstation",
+    "xbox", "free", "adobe", "notion", "canal", "deezer", "crunchyroll",
   ];
+
+  const popularPicks = popularKeys.map((key) => {
+    const brand = BILL_BRANDS[key];
+    return {
+      key,
+      label: brand?.name || key,
+      amount: brand?.defaultAmount || 10,
+      currency: brand?.currency || "€",
+      logo: brand?.logo || "",
+      icon: brand?.icon || "receipt",
+    };
+  });
 
   const handleQuickAddPopular = (brandKey: string) => {
     const brand = BILL_BRANDS[brandKey];
@@ -186,13 +180,25 @@ Donne-moi un bilan financier express en 3 puces : (1) Total estimé par mois et 
               onClick={() => handleQuickAddPopular(pick.key)}
               className="group flex shrink-0 items-center gap-2 rounded-xl border border-white/10 bg-white/5 px-2.5 py-1.5 text-xs text-white hover:border-purple-500/40 hover:bg-purple-500/10 transition-all active:scale-95 cursor-pointer shadow-xs"
             >
-              <img
-                src={pick.logo}
-                alt=""
-                className="h-3.5 w-3.5 object-contain opacity-90 group-hover:scale-110 transition-transform"
-                onError={(e) => {
-                  (e.target as HTMLElement).style.display = "none";
-                }}
+              {pick.logo ? (
+                <img
+                  src={pick.logo}
+                  alt=""
+                  className="h-3.5 w-3.5 object-contain opacity-90 group-hover:scale-110 transition-transform"
+                  onError={(e) => {
+                    const target = e.target as HTMLElement;
+                    target.style.display = "none";
+                    const fallback = target.nextElementSibling as HTMLElement;
+                    if (fallback) fallback.style.display = "block";
+                  }}
+                />
+              ) : null}
+              <Icon
+                name={pick.icon || "receipt"}
+                className={cn(
+                  "h-3.5 w-3.5 text-white opacity-90 group-hover:scale-110 transition-transform",
+                  pick.logo ? "hidden" : "block"
+                )}
               />
               <span className="font-medium text-[11px]">{pick.label}</span>
               <span className="text-[10px] font-mono font-bold text-zinc-400">

@@ -64,7 +64,7 @@ const DEFAULT_SETTINGS: VoiceSettings = {
   notifyOnRoomCreation: false,
 };
 
-const BOT_API_URL = process.env.NEXT_PUBLIC_DISCORD_BOT_API || "http://localhost:3001";
+const BOT_API_URL = process.env.NEXT_PUBLIC_DISCORD_BOT_API || "";
 
 export default function VoiceSettingsClient() {
   const searchParams = useSearchParams();
@@ -76,15 +76,17 @@ export default function VoiceSettingsClient() {
   const [isSaving, setIsSaving] = useState(false);
 
   const fetchSettings = useCallback(async () => {
-    try {
-      const res = await fetch(`${BOT_API_URL}/api/guilds/${guildId}/voice/settings`);
-      if (res.ok) {
-        const data = await res.json();
-        setSettings({ ...DEFAULT_SETTINGS, ...(data.settings || {}) });
-        return;
+    if (BOT_API_URL) {
+      try {
+        const res = await fetch(`${BOT_API_URL}/api/guilds/${guildId}/voice/settings`);
+        if (res.ok) {
+          const data = await res.json();
+          setSettings({ ...DEFAULT_SETTINGS, ...(data.settings || {}) });
+          return;
+        }
+      } catch {
+        // Fallback
       }
-    } catch {
-      // Fallback
     }
   }, [guildId]);
 

@@ -323,7 +323,7 @@ const THREAT_COLORS: Record<ThreatLevel, { text: string; bg: string; border: str
   },
 };
 
-const BOT_API_URL = process.env.NEXT_PUBLIC_DISCORD_BOT_API || "http://localhost:3001";
+const BOT_API_URL = process.env.NEXT_PUBLIC_DISCORD_BOT_API || "";
 
 export default function AntiRaidDashboardPage() {
   const router = useRouter();
@@ -508,9 +508,10 @@ export default function AntiRaidDashboardPage() {
 
   // Polling automatique des métriques live toutes les 4 secondes
   useEffect(() => {
-    fetchLiveStatus();
     fetchConfig();
     fetchIncidents();
+    if (!BOT_API_URL) return;
+    fetchLiveStatus();
 
     const interval = setInterval(fetchLiveStatus, 4000);
     return () => clearInterval(interval);
@@ -519,6 +520,10 @@ export default function AntiRaidDashboardPage() {
   // Sauvegarde de la configuration
   const handleSaveConfig = async () => {
     if (!selectedGuild) return;
+    if (!BOT_API_URL) {
+      success("Configuration anti-raid enregistrée ! (Mode démo)");
+      return;
+    }
     setIsSaving(true);
     try {
       const res = await fetch(`${BOT_API_URL}/api/guilds/${selectedGuild.id}/anti-raid/config`, {

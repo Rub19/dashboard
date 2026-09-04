@@ -25,7 +25,7 @@ import { useToast } from "@/components/ToastProvider";
 import { useDiscordOAuth, type DiscordGuild } from "@/lib/hooks/useDiscordOAuth";
 import { cn } from "@/lib/utils";
 
-const BOT_API_URL = process.env.NEXT_PUBLIC_DISCORD_BOT_API || "http://localhost:3001";
+const BOT_API_URL = process.env.NEXT_PUBLIC_DISCORD_BOT_API || "";
 
 interface ModerationReport {
   id: string;
@@ -112,14 +112,23 @@ export default function ReportsCenterClient() {
     if (!selectedGuild) return;
     setIsLoading(true);
     try {
-      let url = `${BOT_API_URL}/api/guilds/${selectedGuild.id}/moderation/reports`;
-      if (selectedStatus !== "ALL") url += `?status=${selectedStatus}`;
-      const res = await fetch(url);
-      if (res.ok) {
-        const data = await res.json();
-        if (data.reports) setReports(data.reports);
+      if (BOT_API_URL) {
+      try {
+        let url = `${BOT_API_URL}/api/guilds/${selectedGuild.id}/moderation/reports`;
+        if (selectedStatus !== "ALL") url += `?status=${selectedStatus}`;
+        const res = await fetch(url);
+        if (res.ok) {
+          const data = await res.json();
+          if (data.reports) {
+            setReports(data.reports);
+            setIsLoading(false);
+            return;
+          }
+        }
+      } catch {
+        // Offline fallback
       }
-    } catch {
+    }
       // Offline fallback
       setReports([
         {

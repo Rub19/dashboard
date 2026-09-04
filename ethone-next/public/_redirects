@@ -1,0 +1,9 @@
+# Cloudflare Pages SPA Rewrites & Dynamic Route Fallbacks
+/boost/* /boost/index.html 200
+/browser/* /browser/index.html 200
+/discord/voice/rooms/* /discord/voice/rooms/demo/index.html 200
+/discord/tickets/* /discord/tickets/index.html 200
+/discord/invites/users/* /discord/invites/index.html 200
+/discord/moderation/cases/* /discord/moderation/index.html 200
+/discord/moderation/users/* /discord/moderation/index.html 200
+/settings/* /settings/general/index.html 200

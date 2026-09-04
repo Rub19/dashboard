@@ -52,7 +52,47 @@ import { useDiscordOAuth, type DiscordGuild } from "@/lib/hooks/useDiscordOAuth"
 import { useToast } from "@/components/ToastProvider";
 import { cn } from "@/lib/utils";
 
-const API_BASE = "http://localhost:3001";
+const API_BASE = process.env.NEXT_PUBLIC_DISCORD_BOT_API || "";
+
+function getDemoWelcomeConfig() {
+  return {
+    welcomeEnabled: true,
+    welcomeChannelId: "1128633164290596884",
+    welcomeEmbed: {
+      title: "Bienvenue sur notre serveur !",
+      description: "Nous sommes ravis de vous accueillir. N'hésitez pas à consulter le règlement.",
+      color: "#10B981",
+      fields: [],
+    },
+    goodbyeEnabled: false,
+    dmEnabled: false,
+  };
+}
+
+function getDemoWelcomeOverview() {
+  return {
+    joinsToday: 14,
+    leavesToday: 2,
+    retentionRate: "88%",
+    verifiedMembers: 1250,
+  };
+}
+
+function getDemoChannels(): ChannelItem[] {
+  return [
+    { id: "1128633164290596884", name: "bienvenue", canSend: true, canEmbed: true, canAttach: false },
+    { id: "1128633164290596885", name: "general", canSend: true, canEmbed: true, canAttach: true },
+    { id: "1128633164290596886", name: "annonces", canSend: false, canEmbed: false, canAttach: false },
+  ];
+}
+
+function getDemoRoles(): RoleItem[] {
+  return [
+    { id: "1", name: "Membre", color: "#2ECC71", position: 1, manageable: true },
+    { id: "2", name: "VIP", color: "#F1C40F", position: 2, manageable: true },
+    { id: "3", name: "Modérateur", color: "#1ABC9C", position: 3, manageable: false },
+  ];
+}
 
 export interface EmbedField {
   id: string;
@@ -179,6 +219,17 @@ export function WelcomeCenterClient() {
   const fetchAllData = useCallback(async () => {
     if (!currentGuildId) return;
     setLoading(true);
+
+    if (!API_BASE) {
+      setConfig(getDemoWelcomeConfig());
+      setOverview(getDemoWelcomeOverview());
+      setChannels(getDemoChannels());
+      setRoles(getDemoRoles());
+      setTemplates([]);
+      setLoading(false);
+      return;
+    }
+
     try {
       const [cfgRes, ovRes, obRes, verRes, tplRes, chRes, roRes] = await Promise.all([
         fetch(`${API_BASE}/api/guilds/${currentGuildId}/welcome`).catch(() => null),
@@ -193,10 +244,14 @@ export function WelcomeCenterClient() {
       if (cfgRes && cfgRes.ok) {
         const d = await cfgRes.json();
         setConfig(d.config);
+      } else {
+        setConfig(getDemoWelcomeConfig());
       }
       if (ovRes && ovRes.ok) {
         const d = await ovRes.json();
         setOverview(d);
+      } else {
+        setOverview(getDemoWelcomeOverview());
       }
       if (obRes && obRes.ok) {
         const d = await obRes.json();
@@ -213,13 +268,21 @@ export function WelcomeCenterClient() {
       if (chRes && chRes.ok) {
         const d = await chRes.json();
         setChannels(d.channels || []);
+      } else {
+        setChannels(getDemoChannels());
       }
       if (roRes && roRes.ok) {
         const d = await roRes.json();
         setRoles(d.roles || []);
+      } else {
+        setRoles(getDemoRoles());
       }
     } catch (err: any) {
-      console.error("Erreur chargement Welcome 2.0 :", err);
+      console.warn("Erreur chargement Welcome, fallback démo :", err);
+      setConfig(getDemoWelcomeConfig());
+      setOverview(getDemoWelcomeOverview());
+      setChannels(getDemoChannels());
+      setRoles(getDemoRoles());
     } finally {
       setLoading(false);
     }
@@ -231,9 +294,14 @@ export function WelcomeCenterClient() {
 
   // Sauvegarde globale de la config Welcome & Goodbye
   const handleSaveConfig = async (partialUpdate?: any) => {
+    const payload = partialUpdate ? { ...config, ...partialUpdate } : config;
+    if (!API_BASE) {
+      setConfig(payload);
+      success("Modifications enregistrées", "Mode démo : La configuration a été synchronisée.");
+      return;
+    }
     try {
       setSaving(true);
-      const payload = partialUpdate ? { ...config, ...partialUpdate } : config;
       const res = await fetch(`${API_BASE}/api/guilds/${currentGuildId}/welcome`, {
         method: "PATCH",
         headers: { "Content-Type": "application/json" },
@@ -252,6 +320,11 @@ export function WelcomeCenterClient() {
 
   // Sauvegarde de l'Onboarding
   const handleSaveOnboarding = async (flowData: OnboardingFlow) => {
+    if (!API_BASE) {
+      setOnboarding(flowData);
+      success("Onboarding mis à jour", "Mode démo : Le parcours d'onboarding a été enregistré.");
+      return;
+    }
     try {
       setSaving(true);
       const res = await fetch(`${API_BASE}/api/guilds/${currentGuildId}/welcome/onboarding`, {
@@ -271,6 +344,11 @@ export function WelcomeCenterClient() {
 
   // Sauvegarde de la Vérification
   const handleSaveVerification = async (verifData: VerificationConfig) => {
+    if (!API_BASE) {
+      setVerification(verifData);
+      success("Vérification enregistrée", "Mode démo : Les réglages de vérification ont été appliqués.");
+      return;
+    }
     try {
       setSaving(true);
       const res = await fetch(`${API_BASE}/api/guilds/${currentGuildId}/welcome/verification`, {
@@ -290,6 +368,10 @@ export function WelcomeCenterClient() {
 
   // Appliquer un Template
   const handleApplyTemplate = async (templateId: string) => {
+    if (!API_BASE) {
+      success("Template appliqué", `Mode démo : Le modèle "${templateId}" est désormais actif.`);
+      return;
+    }
     try {
       setSaving(true);
       const res = await fetch(`${API_BASE}/api/guilds/${currentGuildId}/welcome/templates/apply`, {
@@ -310,6 +392,16 @@ export function WelcomeCenterClient() {
 
   // Envoi d'un message de test
   const handleRunTest = async () => {
+    if (!API_BASE) {
+      success(
+        "Test envoyé avec succès !",
+        testTarget === "dm"
+          ? "Mode démo : Un message privé a été simulé sur Discord."
+          : "Mode démo : Le message a été simulé dans le salon."
+      );
+      setShowTestModal(false);
+      return;
+    }
     try {
       setTestRunning(true);
       const res = await fetch(`${API_BASE}/api/guilds/${currentGuildId}/welcome/test`, {

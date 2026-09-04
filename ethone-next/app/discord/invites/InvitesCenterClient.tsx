@@ -36,7 +36,7 @@ import {
 import { useDiscordOAuth, type DiscordGuild } from "@/lib/hooks/useDiscordOAuth";
 import { useToast } from "@/components/ToastProvider";
 
-const API_BASE = "http://localhost:3001";
+const API_BASE = process.env.NEXT_PUBLIC_DISCORD_BOT_API || "";
 
 export default function InvitesCenterClient() {
   const searchParams = useSearchParams();
@@ -77,6 +77,58 @@ export default function InvitesCenterClient() {
 
   const fetchAllData = useCallback(async () => {
     setLoading(true);
+    if (!API_BASE) {
+      setOverview({
+        kpis: {
+          totalInvites: 1284,
+          validInvites: 932,
+          fakeJoins: 142,
+          leftMembers: 92,
+          retainedMembers: 840,
+          retentionRate: 73,
+          conversionRate: 72,
+          joinsToday: 24,
+          joinsThisWeek: 168,
+          topInviter: { userId: "usr_alex", tag: "Alex#0001", invites: 184 },
+        },
+        funnel: {
+          invitationsTracked: 2000,
+          totalJoins: 1284,
+          validJoins: 1102,
+          retainedMembers: 932,
+          rewardedMembers: 147,
+        },
+      });
+      setLeaderboard([
+        { rank: 1, userId: "usr_alex", tag: "Alex#0001", total: 184, valid: 162, left: 14, fake: 8, retentionRate: 91, rewardsCount: 3 },
+        { rank: 2, userId: "usr_emma", tag: "Emma_Music#2026", total: 142, valid: 120, left: 18, fake: 4, retentionRate: 85, rewardsCount: 2 },
+        { rank: 3, userId: "usr_lucas", tag: "Lucas_FR#9999", total: 98, valid: 81, left: 12, fake: 5, retentionRate: 83, rewardsCount: 1 },
+      ]);
+      setLinks([
+        { code: "ethone-dev", inviterTag: "ETHONE Sentinel", uses: 412, maxUses: 0, expiresAt: null, channelName: "bienvenue", isVanity: true },
+        { code: "alex-gaming", inviterTag: "Alex#0001", uses: 184, maxUses: 250, expiresAt: new Date(Date.now() + 1000 * 60 * 60 * 24 * 7).toISOString(), channelName: "général", isVanity: false },
+      ]);
+      setRewards([
+        { id: "rew_1", name: "Rôle Supporter Actif", requiredValidInvites: 5, roleName: "Supporter", xpAmount: 250, rewardBadge: "🥉 Supporter", enabled: true },
+        { id: "rew_2", name: "Rôle VIP Argent", requiredValidInvites: 15, roleName: "VIP Argent", xpAmount: 600, rewardBadge: "🥈 VIP", enabled: true },
+        { id: "rew_3", name: "Rôle VIP Ambassadeur", requiredValidInvites: 30, roleName: "Ambassadeur VIP", xpAmount: 1500, rewardBadge: "👑 Ambassadeur", enabled: true },
+      ]);
+      setCampaigns([
+        {
+          id: "camp_1",
+          name: "Campagne de Croissance Printemps 2026",
+          description: "Aidez la communauté à grandir et débloquez le rôle exclusif Ambassadeur ainsi que 1,000 XP.",
+          startDate: new Date(Date.now() - 1000 * 60 * 60 * 24 * 10).toISOString(),
+          endDate: new Date(Date.now() + 1000 * 60 * 60 * 24 * 20).toISOString(),
+          inviteTarget: 500,
+          currentInvites: 184,
+          rewards: ["Rôle @Ambassadeur", "1,000 XP"],
+          status: "ACTIVE",
+        },
+      ]);
+      setLoading(false);
+      return;
+    }
     try {
       // 1. Overview
       const ovRes = await fetch(`${API_BASE}/api/guilds/${currentGuildId}/invites/overview`).catch(() => null);
@@ -182,6 +234,13 @@ export default function InvitesCenterClient() {
 
   const handleSyncDiscord = async () => {
     setSyncing(true);
+    if (!API_BASE) {
+      setTimeout(() => {
+        setSyncing(false);
+        success("Synchronisation effectuée", "Mode démo : Les invitations Discord sont à jour.");
+      }, 400);
+      return;
+    }
     try {
       const res = await fetch(`${API_BASE}/api/guilds/${currentGuildId}/invites/sync`, { method: "POST" });
       if (res.ok) {
@@ -198,6 +257,22 @@ export default function InvitesCenterClient() {
   const handleCreateReward = async () => {
     if (!newRewardName.trim()) {
       showError("Nom requis", "Veuillez donner un nom à la récompense.");
+      return;
+    }
+    if (!API_BASE) {
+      const newRew = {
+        id: `rew_${Date.now()}`,
+        name: newRewardName,
+        requiredValidInvites: newRewardInvites,
+        roleName: newRewardRole,
+        xpAmount: newRewardXp,
+        rewardBadge: "✨ Palier Démo",
+        enabled: true,
+      };
+      setRewards((prev) => [...prev, newRew]);
+      success("Récompense créée", `Mode démo : Palier ${newRewardInvites} invitations ajouté.`);
+      setShowRewardModal(false);
+      setNewRewardName("");
       return;
     }
     try {
@@ -224,6 +299,11 @@ export default function InvitesCenterClient() {
   };
 
   const handleDeleteReward = async (id: string) => {
+    if (!API_BASE) {
+      setRewards((prev) => prev.filter((r) => r.id !== id));
+      success("Récompense supprimée", "Mode démo : Le palier a été retiré.");
+      return;
+    }
     try {
       await fetch(`${API_BASE}/api/guilds/${currentGuildId}/invites/rewards/${id}`, { method: "DELETE" });
       success("Récompense supprimée", "Le palier de parrainage a été retiré.");

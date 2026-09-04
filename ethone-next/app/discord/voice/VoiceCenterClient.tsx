@@ -111,7 +111,7 @@ interface VoiceOverviewData {
   activeRooms: TemporaryRoom[];
 }
 
-const BOT_API_URL = process.env.NEXT_PUBLIC_DISCORD_BOT_API || "http://localhost:3001";
+const BOT_API_URL = process.env.NEXT_PUBLIC_DISCORD_BOT_API || "";
 
 export default function VoiceCenterClient() {
   const searchParams = useSearchParams();
@@ -138,15 +138,17 @@ export default function VoiceCenterClient() {
 
   // Fetch Voice Overview
   const fetchOverview = useCallback(async () => {
-    try {
-      const res = await fetch(`${BOT_API_URL}/api/guilds/${guildId}/voice/overview`);
-      if (res.ok) {
-        const json = await res.json();
-        setData(json);
-        return;
+    if (BOT_API_URL) {
+      try {
+        const res = await fetch(`${BOT_API_URL}/api/guilds/${guildId}/voice/overview`);
+        if (res.ok) {
+          const json = await res.json();
+          setData(json);
+          return;
+        }
+      } catch {
+        // Fallback below
       }
-    } catch {
-      // Fallback below
     }
 
     // Default Seed Data Fallback

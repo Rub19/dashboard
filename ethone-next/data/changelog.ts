@@ -1,3 +1,27 @@
+const v12045_fr: ChangelogEntry = {
+  version: "v1.20.45",
+  date: "2026-09-04",
+  title: "ETHONE Platform Audit — Correction TypeScript Modules Discord & Stabilité Build",
+  items: [
+    "Correction TypeScript AuditCenterClient : remplacement de target.createdAt par target.timestamp et target.summary par target.type conformément à l'interface AuditEvent.",
+    "Correction TypeScript TicketCenterClient : ajout des champs obligatoires byPriority, byCategory, byStatus, recentTickets dans getDemoOverview ; suppression des propriétés inconnues buttonStyle/buttonText/buttonEmoji ; correction de members → memberIds et ajout de categoryIds dans le démo équipe ; protection explicite description || \"\" dans handleSavePanel.",
+    "Correction TypeScript WelcomeCenterClient : getDemoChannels retourne désormais les champs canEmbed et canAttach requis par ChannelItem ; getDemoRoles retourne color en string hex et les champs position/manageable requis par RoleItem.",
+    "Build propre : tsc --noEmit retourne zéro erreur sur l'ensemble du projet après ces corrections.",
+  ],
+};
+
+const v12045_en: ChangelogEntry = {
+  version: "v1.20.45",
+  date: "2026-09-04",
+  title: "ETHONE Platform Audit — TypeScript Fixes Across Discord Modules & Build Stability",
+  items: [
+    "AuditCenterClient TypeScript fix: replaced target.createdAt with target.timestamp and target.summary with target.type to match the AuditEvent interface.",
+    "TicketCenterClient TypeScript fix: added required fields byPriority, byCategory, byStatus, recentTickets to getDemoOverview; removed unknown properties buttonStyle/buttonText/buttonEmoji; fixed members → memberIds and added categoryIds to demo team; added explicit description || '' guard in handleSavePanel.",
+    "WelcomeCenterClient TypeScript fix: getDemoChannels now returns required canEmbed and canAttach fields for ChannelItem; getDemoRoles now returns color as hex string and adds required position/manageable fields for RoleItem.",
+    "Clean build: tsc --noEmit reports zero errors across the entire project after these fixes.",
+  ],
+};
+
 const v12044_fr: ChangelogEntry = {
   version: "v1.20.44",
   date: "2026-09-04",
@@ -21651,5 +21675,8 @@ CHANGELOG_BY_LANG.en.unshift({
     "Version bump to v1.20.36.",
   ],
 });
+
+CHANGELOG_BY_LANG.fr.unshift(v12045_fr);
+CHANGELOG_BY_LANG.en.unshift(v12045_en);
 
 export const CHANGELOG = CHANGELOG_BY_LANG.fr;

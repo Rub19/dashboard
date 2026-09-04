@@ -105,7 +105,7 @@ interface MusicStats {
   topRequesters: Array<{ userId: string; userTag: string; count: number }>;
 }
 
-const BOT_API_URL = process.env.NEXT_PUBLIC_DISCORD_BOT_API || "http://localhost:3001";
+const BOT_API_URL = process.env.NEXT_PUBLIC_DISCORD_BOT_API || "";
 
 export default function MusicCenterClient() {
   const searchParams = useSearchParams();
@@ -141,7 +141,10 @@ export default function MusicCenterClient() {
 
   // Fetch Music State
   const fetchState = useCallback(async () => {
-    if (!guildId) return;
+    if (!guildId || !BOT_API_URL) {
+      setLoading(false);
+      return;
+    }
     try {
       const res = await fetch(`${BOT_API_URL}/api/guilds/${guildId}/music/state`);
       if (res.ok) {
@@ -152,7 +155,7 @@ export default function MusicCenterClient() {
         }
       }
     } catch (err) {
-      console.error("Erreur chargement state musique :", err);
+      console.warn("Erreur chargement state musique :", err);
     } finally {
       setLoading(false);
     }
@@ -160,6 +163,10 @@ export default function MusicCenterClient() {
 
   // Polling state every 3 seconds for live sync
   useEffect(() => {
+    if (!BOT_API_URL) {
+      setLoading(false);
+      return;
+    }
     fetchState();
     const interval = setInterval(fetchState, 3000);
     return () => clearInterval(interval);
@@ -179,7 +186,7 @@ export default function MusicCenterClient() {
 
   // Load ancillary tab data
   useEffect(() => {
-    if (!guildId) return;
+    if (!guildId || !BOT_API_URL) return;
 
     if (activeTab === "playlists") {
       fetch(`${BOT_API_URL}/api/guilds/${guildId}/music/playlists`)

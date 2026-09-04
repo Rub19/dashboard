@@ -212,12 +212,17 @@ export default function CalendarBillingPanel({ date, bills, onChange }: Calendar
                         alt=""
                         className="h-5 w-5 object-contain"
                         onError={(e) => {
-                          (e.target as HTMLElement).style.display = "none";
+                          const target = e.target as HTMLElement;
+                          target.style.display = "none";
+                          const fallback = target.nextElementSibling as HTMLElement;
+                          if (fallback) fallback.style.display = "block";
                         }}
                       />
-                    ) : (
-                      <Icon name={brand.icon} className="h-5 w-5 text-white" />
-                    )}
+                    ) : null}
+                    <Icon
+                      name={brand.icon || "receipt"}
+                      className={cn("h-5 w-5 text-white", brand.logo ? "hidden" : "block")}
+                    />
                   </div>
 
                   <div className="min-w-0 flex-1">

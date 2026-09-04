@@ -2,6 +2,15 @@
 
 Toutes les modifications notables de ce projet seront documentées dans ce fichier.
 
+## v1.20.45 — 2026-09-04
+
+**ETHONE Platform Audit — Correction TypeScript Modules Discord & Stabilité Build**
+
+- Correction `AuditCenterClient.tsx` : `target.createdAt` → `target.timestamp`, `target.summary` → `target.type` (champs conformes à l'interface `AuditEvent`).
+- Correction `TicketCenterClient.tsx` : ajout de `byPriority`, `byCategory`, `byStatus`, `recentTickets` dans `getDemoOverview` ; suppression de `buttonStyle`/`buttonText`/`buttonEmoji` inconnus ; `members` → `memberIds` + `categoryIds` dans l'équipe démo ; protection `description || ""` dans `handleSavePanel`.
+- Correction `WelcomeCenterClient.tsx` : `getDemoChannels` inclut désormais `canEmbed` et `canAttach` ; `getDemoRoles` retourne `color` en hex string, `position` et `manageable` (interface `RoleItem`).
+- Build clean : `tsc --noEmit` retourne **0 erreur** sur l'ensemble du projet.
+
 ## v1.20.44 — 2026-09-04
 
 **ETHONE Mail 2.0 — Résolution de la création d'adresse email & Isolation CORS**

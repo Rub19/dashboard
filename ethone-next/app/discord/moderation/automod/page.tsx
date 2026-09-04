@@ -374,7 +374,7 @@ const RISK_BADGES: Record<
   },
 };
 
-const BOT_API_URL = process.env.NEXT_PUBLIC_DISCORD_BOT_API || "http://localhost:3001";
+const BOT_API_URL = process.env.NEXT_PUBLIC_DISCORD_BOT_API || "";
 
 const ALL_ACTIONS: { id: AutoModAction; label: string; desc: string; icon: any }[] = [
   { id: "DELETE", label: "Supprimer", desc: "Supprime le message enfreignant", icon: Trash2 },
@@ -477,58 +477,61 @@ export default function AutoModCommandCenterPage() {
   const fetchAllData = useCallback(async () => {
     if (!selectedGuild) return;
     setIsLoading(true);
-    try {
-      // 1. Overview
-      const ovRes = await fetch(`${BOT_API_URL}/api/guilds/${selectedGuild.id}/automod/overview`);
-      if (ovRes.ok) {
-        const ovData = await ovRes.json();
-        setOverviewMetrics({
-          avgRiskScore: ovData.avgRiskScore || 10,
-          riskLevel: ovData.riskLevel || "SAFE",
-          rulesCount: ovData.rulesCount || 0,
-          actionsCount: ovData.actionsCount || 0,
-          strikesCount: ovData.strikesCount || 0,
-          detectionsCount: ovData.detectionsCount || 0,
-        });
-      }
-
-      // 2. Config
-      const cfgRes = await fetch(`${BOT_API_URL}/api/guilds/${selectedGuild.id}/automod/config`);
-      if (cfgRes.ok) {
-        const cfgData = await cfgRes.json();
-        if (cfgData.config) {
-          setConfig(cfgData.config);
-        }
-      }
-
-      // 3. Rules
-      const rulesRes = await fetch(`${BOT_API_URL}/api/guilds/${selectedGuild.id}/automod/rules`);
-      if (rulesRes.ok) {
-        const rulesData = await rulesRes.json();
-        if (rulesData.rules) {
-          setRules(rulesData.rules);
-        }
-      }
-
-      // 4. Incidents
-      const incRes = await fetch(`${BOT_API_URL}/api/guilds/${selectedGuild.id}/automod/incidents?limit=25`);
-      if (incRes.ok) {
-        const incData = await incRes.json();
-        if (incData.incidents) {
-          setIncidents(incData.incidents);
-        }
-      }
-    } catch {
-      // Fallback localStorage si bot local ou offline
+    if (BOT_API_URL) {
       try {
-        const savedCfg = localStorage.getItem(`ethone:automod:cfg:${selectedGuild.id}`);
-        if (savedCfg) setConfig(JSON.parse(savedCfg));
-        const savedRules = localStorage.getItem(`ethone:automod:rules:${selectedGuild.id}`);
-        if (savedRules) setRules(JSON.parse(savedRules));
-      } catch {}
-    } finally {
-      setIsLoading(false);
+        // 1. Overview
+        const ovRes = await fetch(`${BOT_API_URL}/api/guilds/${selectedGuild.id}/automod/overview`);
+        if (ovRes.ok) {
+          const ovData = await ovRes.json();
+          setOverviewMetrics({
+            avgRiskScore: ovData.avgRiskScore || 10,
+            riskLevel: ovData.riskLevel || "SAFE",
+            rulesCount: ovData.rulesCount || 0,
+            actionsCount: ovData.actionsCount || 0,
+            strikesCount: ovData.strikesCount || 0,
+            detectionsCount: ovData.detectionsCount || 0,
+          });
+        }
+
+        // 2. Config
+        const cfgRes = await fetch(`${BOT_API_URL}/api/guilds/${selectedGuild.id}/automod/config`);
+        if (cfgRes.ok) {
+          const cfgData = await cfgRes.json();
+          if (cfgData.config) {
+            setConfig(cfgData.config);
+          }
+        }
+
+        // 3. Rules
+        const rulesRes = await fetch(`${BOT_API_URL}/api/guilds/${selectedGuild.id}/automod/rules`);
+        if (rulesRes.ok) {
+          const rulesData = await rulesRes.json();
+          if (rulesData.rules) {
+            setRules(rulesData.rules);
+          }
+        }
+
+        // 4. Incidents
+        const incRes = await fetch(`${BOT_API_URL}/api/guilds/${selectedGuild.id}/automod/incidents?limit=25`);
+        if (incRes.ok) {
+          const incData = await incRes.json();
+          if (incData.incidents) {
+            setIncidents(incData.incidents);
+          }
+        }
+        setIsLoading(false);
+        return;
+      } catch {
+        // Fallback localStorage si bot local ou offline
+      }
     }
+    try {
+      const savedCfg = localStorage.getItem(`ethone:automod:cfg:${selectedGuild.id}`);
+      if (savedCfg) setConfig(JSON.parse(savedCfg));
+      const savedRules = localStorage.getItem(`ethone:automod:rules:${selectedGuild.id}`);
+      if (savedRules) setRules(JSON.parse(savedRules));
+    } catch {}
+    setIsLoading(false);
   }, [selectedGuild]);
 
   useEffect(() => {
@@ -538,6 +541,13 @@ export default function AutoModCommandCenterPage() {
   // Sauvegarder la configuration
   const handleSaveConfig = async () => {
     if (!selectedGuild) return;
+    if (!BOT_API_URL) {
+      try {
+        localStorage.setItem(`ethone:automod:cfg:${selectedGuild.id}`, JSON.stringify(config));
+      } catch {}
+      success("AutoMod mis à jour", "Mode démo : Les configurations ont été enregistrées localement.");
+      return;
+    }
     setIsSaving(true);
     try {
       const res = await fetch(`${BOT_API_URL}/api/guilds/${selectedGuild.id}/automod/config`, {

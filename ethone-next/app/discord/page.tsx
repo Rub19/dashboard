@@ -299,7 +299,7 @@ const DEFAULT_SETTINGS: GuildSettings = {
 export default function DiscordDashboardPage() {
   const router = useRouter();
   const { user, session } = useAuth();
-  const { success, error: showError } = useToast();
+  const { success, info, error: showError } = useToast();
   const { profile, loading: discordLoading, connect } = useDiscordOAuth();
   const {
     isOpen: isOnboardingOpen,
@@ -405,13 +405,20 @@ export default function DiscordDashboardPage() {
     success("Commande supprimée", "La commande a été retirée du serveur.");
   };
 
+  const BOT_API_URL = process.env.NEXT_PUBLIC_DISCORD_BOT_API || "";
+
   // --- Live Music Center 2.0 State ---
-  const [liveMusicState, setLiveMusicState] = useState<any>(null);
+  const [liveMusicState, setLiveMusicState] = useState<any>({
+    status: "IDLE",
+    currentTrack: null,
+    queue: [],
+    volume: 80,
+  });
 
   const fetchLiveMusic = useCallback(async () => {
-    if (!selectedGuild) return;
+    if (!selectedGuild || !BOT_API_URL) return;
     try {
-      const res = await fetch(`http://localhost:3001/api/guilds/${selectedGuild.id}/music/state`);
+      const res = await fetch(`${BOT_API_URL}/api/guilds/${selectedGuild.id}/music/state`);
       if (res.ok) {
         const data = await res.json();
         setLiveMusicState(data.state);
@@ -419,20 +426,28 @@ export default function DiscordDashboardPage() {
     } catch {
       // Offline fallback
     }
-  }, [selectedGuild]);
+  }, [selectedGuild, BOT_API_URL]);
 
   useEffect(() => {
+    if (!BOT_API_URL) return;
     fetchLiveMusic();
     const interval = setInterval(fetchLiveMusic, 3000);
     return () => clearInterval(interval);
-  }, [fetchLiveMusic]);
+  }, [fetchLiveMusic, BOT_API_URL]);
 
   const handleMusicPlayPause = async () => {
-    if (!selectedGuild || !liveMusicState) return;
-    const isPlaying = liveMusicState.status === "PLAYING";
+    if (!selectedGuild) return;
+    if (!BOT_API_URL) {
+      setLiveMusicState((prev: any) => ({
+        ...prev,
+        status: prev?.status === "PLAYING" ? "PAUSED" : "PLAYING",
+      }));
+      return;
+    }
+    const isPlaying = liveMusicState?.status === "PLAYING";
     const action = isPlaying ? "pause" : "resume";
     try {
-      await fetch(`http://localhost:3001/api/guilds/${selectedGuild.id}/music/${action}`, { method: "POST" });
+      await fetch(`${BOT_API_URL}/api/guilds/${selectedGuild.id}/music/${action}`, { method: "POST" });
       fetchLiveMusic();
     } catch {
       showError("Action impossible", "Erreur lors de la mise en pause/reprise.");
@@ -441,8 +456,12 @@ export default function DiscordDashboardPage() {
 
   const handleMusicSkip = async () => {
     if (!selectedGuild) return;
+    if (!BOT_API_URL) {
+      info("Musique", "Mode démo : Piste suivante simulée.");
+      return;
+    }
     try {
-      await fetch(`http://localhost:3001/api/guilds/${selectedGuild.id}/music/skip`, { method: "POST" });
+      await fetch(`${BOT_API_URL}/api/guilds/${selectedGuild.id}/music/skip`, { method: "POST" });
       fetchLiveMusic();
     } catch {
       showError("Action impossible", "Erreur lors du passage de piste.");
@@ -451,8 +470,12 @@ export default function DiscordDashboardPage() {
 
   const handleMusicPrev = async () => {
     if (!selectedGuild) return;
+    if (!BOT_API_URL) {
+      info("Musique", "Mode démo : Piste précédente simulée.");
+      return;
+    }
     try {
-      await fetch(`http://localhost:3001/api/guilds/${selectedGuild.id}/music/previous`, { method: "POST" });
+      await fetch(`${BOT_API_URL}/api/guilds/${selectedGuild.id}/music/previous`, { method: "POST" });
       fetchLiveMusic();
     } catch {
       showError("Action impossible", "Erreur lors du retour en arrière.");

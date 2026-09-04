@@ -78,6 +78,7 @@ type ModuleType =
   | "voice"
   | "backups"
   | "ai"
+  | "forms"
   | "analytics";
 
 interface BotModule {
@@ -201,6 +202,14 @@ const MODULES: BotModule[] = [
     icon: Bot,
     color: "text-violet-400",
     badge: "GenAI",
+  },
+  {
+    id: "forms",
+    title: "Forms & Applications 2.0",
+    description: "Form Builder no-code, candidatures staff, logique conditionnelle, scoring et review.",
+    icon: FileText,
+    color: "text-cyan-400",
+    badge: "Recrutement",
   },
   {
     id: "analytics",
@@ -1658,6 +1667,57 @@ export default function DiscordDashboardPage() {
                         <div className="flex items-center gap-2 rounded-xl border border-white/5 bg-white/[0.02] p-2.5">
                           <span className="h-2 w-2 rounded-full bg-amber-400 shrink-0" />
                           <span>Intégration Helpdesk &amp; escalade en ticket privé pour le staff</span>
+                        </div>
+                      </div>
+                    </div>
+                  </div>
+                )}
+
+                {/* MODULE: Forms & Applications 2.0 */}
+                {activeModule === "forms" && (
+                  <div className="space-y-4 text-xs">
+                    {/* Forms Center Gateway */}
+                    <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-3 rounded-2xl border border-indigo-500/30 bg-gradient-to-r from-indigo-500/10 via-cyan-500/10 to-indigo-600/10 p-4 shadow-lg shadow-indigo-500/5">
+                      <div>
+                        <div className="flex items-center gap-2">
+                          <span className="text-base">📝</span>
+                          <p className="text-xs font-bold text-white">Forms &amp; Applications 2.0 — No-Code Builder</p>
+                          <span className="text-[9px] uppercase font-bold tracking-wider px-1.5 py-0.5 rounded bg-indigo-500/20 text-indigo-300 border border-indigo-500/30">
+                            Recrutement &amp; Staff
+                          </span>
+                        </div>
+                        <p className="text-[11px] text-zinc-300 mt-0.5">
+                          Créez des formulaires glisser-déposer sur-mesure (candidatures staff, whitelist, partenariats, feedbacks), publiez-les sur Discord et traitez les candidatures avec review privée et scoring.
+                        </p>
+                      </div>
+                      <Link
+                        href={`/discord/forms?guildId=${selectedGuild.id}`}
+                        className="flex h-9 shrink-0 items-center gap-2 rounded-xl bg-gradient-to-r from-indigo-600 to-cyan-600 px-4 text-xs font-bold text-white shadow-md shadow-indigo-600/20 transition-all hover:from-indigo-500 hover:to-cyan-500 active:scale-95 cursor-pointer"
+                      >
+                        <FileText className="h-4 w-4" />
+                        <span>Ouvrir Forms Center 2.0</span>
+                        <ChevronRight className="h-3.5 w-3.5" />
+                      </Link>
+                    </div>
+
+                    <div className="rounded-2xl border border-white/10 bg-white/[0.02] p-4 space-y-3">
+                      <p className="font-bold text-white">Fonctionnalités Clés du Form Builder</p>
+                      <div className="grid grid-cols-1 sm:grid-cols-2 gap-2.5 text-[11px] text-zinc-400">
+                        <div className="flex items-center gap-2 rounded-xl border border-white/5 bg-white/[0.02] p-2.5">
+                          <span className="h-2 w-2 rounded-full bg-indigo-400 shrink-0" />
+                          <span>Builder drag &amp; drop 20 types de champs (Texte, Rôles, Fichiers, Étoiles)</span>
+                        </div>
+                        <div className="flex items-center gap-2 rounded-xl border border-white/5 bg-white/[0.02] p-2.5">
+                          <span className="h-2 w-2 rounded-full bg-cyan-400 shrink-0" />
+                          <span>Moteur de logique conditionnelle dynamique et étapes multi-steps</span>
+                        </div>
+                        <div className="flex items-center gap-2 rounded-xl border border-white/5 bg-white/[0.02] p-2.5">
+                          <span className="h-2 w-2 rounded-full bg-emerald-400 shrink-0" />
+                          <span>Panneau Discord interactif (Bouton d&apos;application + Modal natif)</span>
+                        </div>
+                        <div className="flex items-center gap-2 rounded-xl border border-white/5 bg-white/[0.02] p-2.5">
+                          <span className="h-2 w-2 rounded-full bg-amber-400 shrink-0" />
+                          <span>Review staff privée, attribution de rôles automatique et scoring pondéré</span>
                         </div>
                       </div>
                     </div>

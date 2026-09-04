@@ -73,6 +73,7 @@ type ModuleType =
   | "logs"
   | "music"
   | "invites"
+  | "voice"
   | "analytics";
 
 interface BotModule {
@@ -172,6 +173,14 @@ const MODULES: BotModule[] = [
     icon: UserPlus,
     color: "text-amber-400",
     badge: "Croissance",
+  },
+  {
+    id: "voice",
+    title: "Salons Vocaux 2.0",
+    description: "Join-to-Create, salons temporaires automatiques, hubs et contrôle Discord.",
+    icon: Radio,
+    color: "text-emerald-400",
+    badge: "Vocal",
   },
   {
     id: "analytics",
@@ -1476,6 +1485,57 @@ export default function DiscordDashboardPage() {
                         <div className="flex items-center gap-2 rounded-xl border border-white/5 bg-white/[0.02] p-2.5">
                           <span className="h-2 w-2 rounded-full bg-purple-400 shrink-0" />
                           <span>Attribution de rôles par paliers avec vérification de hiérarchie</span>
+                        </div>
+                      </div>
+                    </div>
+                  </div>
+                )}
+
+                {/* MODULE: Salons Vocaux 2.0 */}
+                {activeModule === "voice" && (
+                  <div className="space-y-4 text-xs">
+                    {/* Voice Center Gateway */}
+                    <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-3 rounded-2xl border border-emerald-500/30 bg-gradient-to-r from-emerald-500/10 via-teal-500/10 to-emerald-600/10 p-4 shadow-lg shadow-emerald-500/5">
+                      <div>
+                        <div className="flex items-center gap-2">
+                          <span className="text-base">🎙️</span>
+                          <p className="text-xs font-bold text-white">Voice Channels 2.0 &amp; Hubs Temporaires</p>
+                          <span className="text-[9px] uppercase font-bold tracking-wider px-1.5 py-0.5 rounded bg-emerald-500/20 text-emerald-300 border border-emerald-500/30">
+                            Join-to-Create
+                          </span>
+                        </div>
+                        <p className="text-[11px] text-zinc-300 mt-0.5">
+                          Salons vocaux temporaires automatiques, hubs multiples (Gaming, Chill, Ranked, VIP), panneaux de contrôle Discord, transfert d&apos;ownership et règles d&apos;automatisation.
+                        </p>
+                      </div>
+                      <Link
+                        href={`/discord/voice?guildId=${selectedGuild.id}`}
+                        className="flex h-9 shrink-0 items-center gap-2 rounded-xl bg-gradient-to-r from-emerald-600 to-teal-600 px-4 text-xs font-bold text-white shadow-md shadow-emerald-600/20 transition-all hover:from-emerald-500 hover:to-teal-500 active:scale-95 cursor-pointer"
+                      >
+                        <Radio className="h-4 w-4" />
+                        <span>Ouvrir Voice Center 2.0</span>
+                        <ChevronRight className="h-3.5 w-3.5" />
+                      </Link>
+                    </div>
+
+                    <div className="rounded-2xl border border-white/10 bg-white/[0.02] p-4 space-y-3">
+                      <p className="font-bold text-white">Fonctionnalités vocales actives</p>
+                      <div className="grid grid-cols-1 sm:grid-cols-2 gap-2.5 text-[11px] text-zinc-400">
+                        <div className="flex items-center gap-2 rounded-xl border border-white/5 bg-white/[0.02] p-2.5">
+                          <span className="h-2 w-2 rounded-full bg-emerald-400 shrink-0" />
+                          <span>Création instantanée dès la connexion à un salon Hub</span>
+                        </div>
+                        <div className="flex items-center gap-2 rounded-xl border border-white/5 bg-white/[0.02] p-2.5">
+                          <span className="h-2 w-2 rounded-full bg-cyan-400 shrink-0" />
+                          <span>Suppression automatique avec délai de grâce anti-accidents</span>
+                        </div>
+                        <div className="flex items-center gap-2 rounded-xl border border-white/5 bg-white/[0.02] p-2.5">
+                          <span className="h-2 w-2 rounded-full bg-purple-400 shrink-0" />
+                          <span>Panneau de contrôle intégré dans Discord (Renommer, Lock, Limite)</span>
+                        </div>
+                        <div className="flex items-center gap-2 rounded-xl border border-white/5 bg-white/[0.02] p-2.5">
+                          <span className="h-2 w-2 rounded-full bg-amber-400 shrink-0" />
+                          <span>Stratégies intelligentes de transfert de propriété</span>
                         </div>
                       </div>
                     </div>

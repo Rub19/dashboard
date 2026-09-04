@@ -6,6 +6,8 @@ import { useRouter } from "next/navigation";
 import {
   ShieldCheck,
   ShieldAlert,
+  Shield,
+  Key,
   BarChart3,
   Code2,
   Lightbulb,
@@ -86,7 +88,8 @@ type ModuleType =
   | "polls"
   | "roles"
   | "analytics"
-  | "events";
+  | "events"
+  | "server";
 
 interface BotModule {
   id: ModuleType;
@@ -249,6 +252,14 @@ const MODULES: BotModule[] = [
     icon: Calendar,
     color: "text-indigo-400",
     badge: "Événements",
+  },
+  {
+    id: "server",
+    title: "Server Management Center 2.0",
+    description: "Centre de gestion globale : diagnostics santé, score de sécurité, membres, salons, rôles, permissions et emojis.",
+    icon: Server,
+    color: "text-blue-400",
+    badge: "Contrôle",
   },
 ];
 
@@ -2189,6 +2200,88 @@ export default function DiscordDashboardPage() {
                       >
                         <Plus className="h-3.5 w-3.5 text-purple-400" />
                         <span>Créer un Événement</span>
+                      </Link>
+                    </div>
+                  </div>
+                )}
+
+                {/* MODULE 20: Server Management Center 2.0 */}
+                {activeModule === "server" && (
+                  <div className="space-y-4">
+                    <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-3 rounded-2xl border border-blue-500/30 bg-gradient-to-r from-blue-500/10 via-indigo-500/10 to-purple-500/10 p-4 shadow-lg shadow-blue-500/5">
+                      <div>
+                        <div className="flex items-center gap-2">
+                          <span className="text-base">🏠</span>
+                          <p className="text-xs font-bold text-white">Server Management Center 2.0</p>
+                          <span className="text-[9px] uppercase font-bold tracking-wider px-1.5 py-0.5 rounded bg-blue-500/20 text-blue-300 border border-blue-500/30">
+                            Centre Global
+                          </span>
+                        </div>
+                        <p className="text-[11px] text-zinc-300 mt-0.5">
+                          Contrôle intégral : diagnostic santé, score de sécurité, membres, salons, rôles, permission debugger et emojis.
+                        </p>
+                      </div>
+                      <Link
+                        href={`/discord/server?guildId=${selectedGuild.id}`}
+                        className="flex h-9 shrink-0 items-center gap-2 rounded-xl bg-gradient-to-r from-blue-600 to-indigo-600 px-4 text-xs font-bold text-white shadow-md shadow-blue-600/20 transition-all hover:from-blue-500 hover:to-indigo-500 active:scale-95"
+                      >
+                        <Server className="h-4 w-4" />
+                        <span>Ouvrir Server Center</span>
+                        <ChevronRight className="h-3.5 w-3.5" />
+                      </Link>
+                    </div>
+
+                    <div className="grid grid-cols-2 sm:grid-cols-4 gap-3">
+                      <div className="rounded-xl border border-white/10 bg-white/[0.02] p-3">
+                        <p className="text-[10px] text-zinc-400 font-medium uppercase tracking-wider">Sécurité</p>
+                        <p className="text-lg font-bold text-emerald-400 mt-1">Score 0-100</p>
+                        <p className="text-[10px] text-zinc-400 mt-0.5">Évaluation transparente</p>
+                      </div>
+                      <div className="rounded-xl border border-white/10 bg-white/[0.02] p-3">
+                        <p className="text-[10px] text-zinc-400 font-medium uppercase tracking-wider">Membres</p>
+                        <p className="text-lg font-bold text-indigo-400 mt-1">Profil &amp; Risk</p>
+                        <p className="text-[10px] text-zinc-400 mt-0.5">Timeout, Kick &amp; Ban</p>
+                      </div>
+                      <div className="rounded-xl border border-white/10 bg-white/[0.02] p-3">
+                        <p className="text-[10px] text-zinc-400 font-medium uppercase tracking-wider">Salons &amp; Rôles</p>
+                        <p className="text-lg font-bold text-purple-400 mt-1">Arborescence</p>
+                        <p className="text-[10px] text-zinc-400 mt-0.5">Hiérarchie &amp; Plafond Bot</p>
+                      </div>
+                      <div className="rounded-xl border border-white/10 bg-white/[0.02] p-3">
+                        <p className="text-[10px] text-zinc-400 font-medium uppercase tracking-wider">Permissions</p>
+                        <p className="text-lg font-bold text-amber-400 mt-1">Debugger</p>
+                        <p className="text-[10px] text-zinc-400 mt-0.5">Résolution pas à pas</p>
+                      </div>
+                    </div>
+
+                    <div className="flex flex-wrap gap-2 pt-1">
+                      <Link
+                        href={`/discord/server/members?guildId=${selectedGuild.id}`}
+                        className="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-lg border border-white/10 bg-zinc-900/80 hover:bg-zinc-800 text-zinc-200 text-xs transition-all"
+                      >
+                        <Users className="h-3.5 w-3.5 text-indigo-400" />
+                        <span>Membres</span>
+                      </Link>
+                      <Link
+                        href={`/discord/server/channels?guildId=${selectedGuild.id}`}
+                        className="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-lg border border-white/10 bg-zinc-900/80 hover:bg-zinc-800 text-zinc-200 text-xs transition-all"
+                      >
+                        <Hash className="h-3.5 w-3.5 text-cyan-400" />
+                        <span>Salons</span>
+                      </Link>
+                      <Link
+                        href={`/discord/server/roles?guildId=${selectedGuild.id}`}
+                        className="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-lg border border-white/10 bg-zinc-900/80 hover:bg-zinc-800 text-zinc-200 text-xs transition-all"
+                      >
+                        <Shield className="h-3.5 w-3.5 text-purple-400" />
+                        <span>Rôles</span>
+                      </Link>
+                      <Link
+                        href={`/discord/server/permissions?guildId=${selectedGuild.id}`}
+                        className="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-lg border border-white/10 bg-zinc-900/80 hover:bg-zinc-800 text-zinc-200 text-xs transition-all"
+                      >
+                        <Key className="h-3.5 w-3.5 text-amber-400" />
+                        <span>Permissions &amp; Debugger</span>
                       </Link>
                     </div>
                   </div>

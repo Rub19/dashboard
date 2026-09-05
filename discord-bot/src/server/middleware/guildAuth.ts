@@ -1,5 +1,6 @@
 import { NextFunction, Request, Response } from 'express';
 import { Client, Guild, PermissionsBitField } from 'discord.js';
+import { config } from '../../config.js';
 
 interface CachedUserGuilds {
   timestamp: number;
@@ -47,8 +48,12 @@ export function createGuildAuthMiddleware(discordClient: Client) {
       return;
     }
 
-    // Bypass pour le mode test local
-    if (req.user.id === 'dev-admin-user') {
+    // Bypass pour le mode test local ou le Bot Owner autorisé
+    if (req.user.id === 'dev-admin-user' || req.user.id === config.botOwnerId) {
+      if (req.user.id === config.botOwnerId && !discordClient.guilds.cache.has(guildId)) {
+        res.status(404).json({ error: 'Le bot ETHONE n\'est pas installé sur ce serveur Discord.' });
+        return;
+      }
       next();
       return;
     }

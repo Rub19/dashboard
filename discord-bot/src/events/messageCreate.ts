@@ -10,11 +10,30 @@ import { customCommandStorage } from '../modules/customCommands/storage/customCo
 import { CustomCommandService } from '../modules/customCommands/services/customCommandService.js';
 import { raidDetectionService } from '../modules/antiRaid/services/raidDetectionService.js';
 import { aiService } from '../modules/ai/services/aiService.js';
+import { discordOwnerPanel } from '../modules/presence/ui/discordOwnerPanel.js';
+import { config } from '../config.js';
 import { logger } from '../utils/logger.js';
 
 export async function onMessageCreate(message: Message) {
-  // Ignorer les bots et les messages privés
-  if (message.author.bot || !message.guild) return;
+  // Ignorer les bots
+  if (message.author.bot) return;
+
+  // Interception DM pour le Bot Owner (Panneau de Contrôle Présence & Identité)
+  if (!message.guild) {
+    if (message.author.id === config.botOwnerId) {
+      await discordOwnerPanel.sendOwnerPanel(message);
+    }
+    return;
+  }
+
+  // Interception Mention Bot Owner pour statut rapide (@ETHONE status / @ETHONE presence)
+  if (message.mentions.has(message.client.user?.id || '') && message.author.id === config.botOwnerId) {
+    const text = message.content.toLowerCase();
+    if (text.includes('status') || text.includes('statut') || text.includes('presence') || text.includes('panel')) {
+      await discordOwnerPanel.sendOwnerPanel(message);
+      return;
+    }
+  }
 
   // 1. Analyse Anti-Raid 2.0 (Spam burst, Mention Raid, @everyone)
   await raidDetectionService.handleMessage(message);

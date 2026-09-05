@@ -401,6 +401,14 @@ export default function BotControlClient({ initialTab = "overview" }: BotControl
           </div>
 
           <div className="flex items-center gap-3">
+            <Link
+              href="/discord/bot/presence"
+              className="flex items-center gap-2 px-3.5 py-1.5 rounded-lg bg-indigo-500/15 hover:bg-indigo-500/25 border border-indigo-500/30 text-indigo-300 text-xs font-semibold tracking-wide transition-all shadow-lg shadow-indigo-950/40 active:scale-95"
+            >
+              <Radio className="w-3.5 h-3.5 text-indigo-400" />
+              <span>Présence & Identité 2.0</span>
+            </Link>
+
             <button
               onClick={() => handleRunDiagnostics()}
               disabled={runningDiagnostics}

@@ -13,6 +13,7 @@ const envSchema = z.object({
   PORT: z.coerce.number().optional().default(3001),
   DEV_GUILD_ID: z.string().optional(),
   DEFAULT_PREFIX: z.string().min(1).default('!'),
+  BOT_OWNER_ID: z.string().optional().default('825124006209388616'),
 });
 
 const parsed = envSchema.safeParse(process.env);
@@ -32,4 +33,5 @@ export const config = {
   port: parsed.data.PORT,
   devGuildId: parsed.data.DEV_GUILD_ID || null,
   defaultPrefix: parsed.data.DEFAULT_PREFIX,
+  botOwnerId: parsed.data.BOT_OWNER_ID || '825124006209388616',
 };

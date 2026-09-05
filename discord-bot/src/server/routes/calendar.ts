@@ -1,6 +1,6 @@
 import { Router, Request, Response } from 'express';
 import { Client } from 'discord.js';
-import { eventRepository } from '../modules/events/eventsRepository.js';
+import { eventRepository } from '../../modules/events/eventsRepository.js';
 
 export function createCalendarRouter(client?: Client): Router {
   const router = Router({ mergeParams: true });

@@ -1,10 +1,10 @@
 import { Router, Request, Response } from 'express';
 import { Client } from 'discord.js';
-import { eventRepository } from '../modules/events/eventsRepository.js';
-import { EventService } from '../modules/events/eventsService.js';
-import { EventRSVPService } from '../modules/events/eventsRsvpService.js';
-import { EventsCheckinService } from '../modules/events/eventsCheckinService.js';
-import { RSVPStatus, AttendanceStatus } from '../modules/events/eventsTypes.js';
+import { eventRepository } from '../../modules/events/eventsRepository.js';
+import { EventService } from '../../modules/events/eventsService.js';
+import { EventRSVPService } from '../../modules/events/eventsRsvpService.js';
+import { EventsCheckinService } from '../../modules/events/eventsCheckinService.js';
+import { RSVPStatus, AttendanceStatus } from '../../modules/events/eventsTypes.js';
 
 export function createEventRouter(client?: Client): Router {
   const router = Router({ mergeParams: true });

@@ -1,4 +1,4 @@
-import { Client, ActivityType, PresenceData } from 'discord.js';
+import { Client, ActivityType, PresenceData, Events } from 'discord.js';
 import {
   BotActivity,
   BotPresenceState,
@@ -65,17 +65,17 @@ export class PresenceService {
     this.currentState.gatewayConnected = client.isReady();
 
     // Hook gateway ready/reconnect to re-apply presence safely
-    client.on('ready', () => {
+    client.on(Events.ClientReady, () => {
       this.currentState.gatewayConnected = true;
       this.applyToGateway(this.currentState.status, this.currentState.activity);
     });
 
-    client.on('shardResume', () => {
+    client.on(Events.ShardResume, () => {
       this.currentState.gatewayConnected = true;
       this.applyToGateway(this.currentState.status, this.currentState.activity);
     });
 
-    client.on('shardDisconnect', () => {
+    client.on(Events.ShardDisconnect, () => {
       this.currentState.gatewayConnected = false;
     });
 

@@ -32,8 +32,60 @@ import { raidDetectionService } from '../modules/antiRaid/services/raidDetection
 import { autoModService } from '../modules/automod/services/autoModService.js';
 import { inviteSnapshotService } from '../modules/invites/services/inviteSnapshotService.js';
 import { voiceService } from '../modules/voice/services/voiceService.js';
+import { healthStatusService } from '../services/resilience/healthStatusService.js';
+import { logger } from '../utils/logger.js';
+
+let isEventsRegistered = false;
 
 export function registerEvents(client: Client): void {
+  if (isEventsRegistered) {
+    logger.warn('[EventHandler] Events already registered. Skipping duplicate registration.');
+    return;
+  }
+  isEventsRegistered = true;
+
+  // Gateway Lifecycle & Resilience Events
+  client.on(Events.ShardDisconnect, (event, shardId) => {
+    logger.error(`[Gateway] Shard ${shardId} disconnected: ${event?.reason || 'Unknown reason'}`);
+    healthStatusService.setSubsystemState('gateway', 'DOWN', 0, 'Gateway Shard disconnected');
+    healthStatusService.recordIncident({
+      service: 'Discord Gateway',
+      incident: `Shard ${shardId} Disconnected`,
+      severity: 'CRITICAL',
+      status: 'RECOVERING',
+      impact: 'Bot offline from Gateway',
+      recoveryType: 'AUTOMATIC',
+      retriesCount: 1,
+      result: 'Awaiting automatic reconnect',
+    });
+  });
+
+  client.on(Events.ShardReconnecting, (shardId) => {
+    logger.warn(`[Gateway] Shard ${shardId} reconnecting...`);
+    healthStatusService.setSubsystemState('gateway', 'DEGRADED', 0, 'Reconnecting');
+    healthStatusService.setSystemState('RECOVERING', `Gateway shard ${shardId} reconnecting...`);
+  });
+
+  client.on(Events.ShardResume, (shardId, replayedEvents) => {
+    logger.success(`[Gateway] Shard ${shardId} resumed successfully (${replayedEvents} replayed events)`);
+    healthStatusService.setSubsystemState('gateway', 'UP', client.ws.ping || 15);
+    healthStatusService.setSystemState('HEALTHY', 'Gateway connection resumed');
+  });
+
+  client.on(Events.Error, (err) => {
+    logger.error('[Discord Client Error]:', err);
+    healthStatusService.recordIncident({
+      service: 'Discord Gateway',
+      incident: err.message || 'Client Socket Error',
+      severity: 'WARNING',
+      status: 'INVESTIGATING',
+      impact: 'Transient network failure',
+      recoveryType: 'AUTOMATIC',
+      retriesCount: 1,
+      result: 'Handled by client',
+    });
+  });
+
   // Base Events
   client.once(Events.ClientReady, (c) => onReady(c));
   client.on(Events.InteractionCreate, (interaction) => onInteractionCreate(interaction));

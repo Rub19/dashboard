@@ -32,12 +32,24 @@ export class BackupRepository {
   }
 
   private loadFromDisk(): void {
+    // Nettoyer les fichiers temporaires orphelins (.tmp) d'un crash antérieur
+    try {
+      if (fs.existsSync(`${this.backupsFile}.tmp`)) fs.unlinkSync(`${this.backupsFile}.tmp`);
+      if (fs.existsSync(`${this.settingsFile}.tmp`)) fs.unlinkSync(`${this.settingsFile}.tmp`);
+      if (fs.existsSync(`${this.jobsFile}.tmp`)) fs.unlinkSync(`${this.jobsFile}.tmp`);
+    } catch {}
+
     try {
       if (fs.existsSync(this.backupsFile)) {
         const raw = fs.readFileSync(this.backupsFile, 'utf-8');
         const list = JSON.parse(raw) as BackupSnapshot[];
         this.backupsCache.clear();
         for (const item of list) {
+          // Détection d'un crash pendant la capture : ne jamais laisser un backup incomplet en succès
+          if ((item.status as any) === 'CREATING' || (item.status as any) === 'IN_PROGRESS') {
+            item.status = 'FAILED';
+            item.description = `${item.description || ''} [Interrompu par crash inattendu]`;
+          }
           const arr = this.backupsCache.get(item.guildId) || [];
           arr.push(item);
           this.backupsCache.set(item.guildId, arr);
@@ -60,6 +72,11 @@ export class BackupRepository {
         const list = JSON.parse(raw) as RestoreJob[];
         this.jobsCache.clear();
         for (const j of list) {
+          // Détection d'une restauration interrompue par crash
+          if (j.status === 'in_progress') {
+            j.status = 'failed';
+            j.error = 'Processus interrompu pendant la restauration. État sécurisé.';
+          }
           const arr = this.jobsCache.get(j.guildId) || [];
           arr.push(j);
           this.jobsCache.set(j.guildId, arr);
@@ -76,12 +93,17 @@ export class BackupRepository {
     for (const arr of this.backupsCache.values()) {
       all.push(...arr);
     }
-    fs.writeFileSync(this.backupsFile, JSON.stringify(all, null, 2), 'utf-8');
+    // Écriture atomique avec fichier .tmp et renommage OS
+    const tmpFile = `${this.backupsFile}.tmp`;
+    fs.writeFileSync(tmpFile, JSON.stringify(all, null, 2), 'utf-8');
+    fs.renameSync(tmpFile, this.backupsFile);
   }
 
   private persistSettings(): void {
     const all = Array.from(this.settingsCache.values());
-    fs.writeFileSync(this.settingsFile, JSON.stringify(all, null, 2), 'utf-8');
+    const tmpFile = `${this.settingsFile}.tmp`;
+    fs.writeFileSync(tmpFile, JSON.stringify(all, null, 2), 'utf-8');
+    fs.renameSync(tmpFile, this.settingsFile);
   }
 
   private persistJobs(): void {
@@ -89,7 +111,9 @@ export class BackupRepository {
     for (const arr of this.jobsCache.values()) {
       all.push(...arr);
     }
-    fs.writeFileSync(this.jobsFile, JSON.stringify(all, null, 2), 'utf-8');
+    const tmpFile = `${this.jobsFile}.tmp`;
+    fs.writeFileSync(tmpFile, JSON.stringify(all, null, 2), 'utf-8');
+    fs.renameSync(tmpFile, this.jobsFile);
   }
 
   public getAll(guildId: string): BackupSnapshot[] {

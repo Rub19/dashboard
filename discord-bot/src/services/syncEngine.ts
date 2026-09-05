@@ -1,6 +1,7 @@
 import { Response } from 'express';
 import { logger } from '../utils/logger.js';
 import { config } from '../config.js';
+import { eventDeduplicationService } from './resilience/eventDeduplicationService.js';
 
 export type SyncSource = 'DASHBOARD' | 'DISCORD_COMMAND' | 'DISCORD_EVENT' | 'BOT' | 'OWNER' | 'SYSTEM';
 export type MutationStatus = 'REQUESTED' | 'SYNCING' | 'CONFIRMED' | 'FAILED' | 'TIMEOUT' | 'PARTIAL';
@@ -331,6 +332,17 @@ export class DiscordSyncEngine {
     result?: any;
     error?: string;
   }> {
+    if (eventDeduplicationService.isDuplicate(mutation.id)) {
+      logger.info(`[SyncEngine] Mutation ${mutation.id} duplicate detected. Returning idempotent confirmation.`);
+      return {
+        success: true,
+        status: 'CONFIRMED',
+        version: this.getVersion(mutation.guildId, mutation.module),
+        mutationId: mutation.id,
+        result: { deduplicated: true },
+      };
+    }
+
     const version = this.incrementVersion(mutation.guildId, mutation.module);
 
     const auditEntry: SyncAuditEntry = {

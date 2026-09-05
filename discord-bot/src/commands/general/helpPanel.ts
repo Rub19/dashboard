@@ -83,7 +83,7 @@ export const HELP_CATEGORIES: HelpCategoryMeta[] = [
     emoji: '🎧',
     color: 0x10b981, // Vert Émeraude
     description: "Lecteur musical haute fidélité et salons vocaux temporaires personnalisés",
-    commandNames: ['music', 'voice'],
+    commandNames: ['music', 'play', 'skip', 'pause', 'resume', 'stop', 'queue', 'nowplaying', 'voice'],
   },
   {
     id: 'support',

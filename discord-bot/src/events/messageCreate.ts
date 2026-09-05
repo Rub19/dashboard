@@ -1,7 +1,8 @@
-import { Message } from 'discord.js';
+import { Message, PermissionFlagsBits } from 'discord.js';
 import { commandRegistry } from '../handlers/commandHandler.js';
 import { guildConfigService } from '../services/guildConfigService.js';
 import { statsService } from '../services/statsService.js';
+import { cooldownService } from '../services/cooldownService.js';
 import { CommandContext } from '../types/command.js';
 import { autoModService } from '../modules/automod/services/autoModService.js';
 import { levelingService } from '../modules/leveling/services/levelingService.js';
@@ -104,6 +105,32 @@ export async function onMessageCreate(message: Message) {
 
   if (!command) return;
 
+  // Vérification du cooldown anti-spam
+  const isStaffOrAdmin = Boolean(
+    message.member?.permissions.has(PermissionFlagsBits.ManageGuild) ||
+    message.member?.permissions.has(PermissionFlagsBits.Administrator)
+  );
+  const cooldownDuration = guildConfig.commandCooldown || 0;
+  const { onCooldown, remainingSeconds } = cooldownService.checkAndApply(
+    message.guildId || 'dm',
+    message.author.id,
+    command.name,
+    cooldownDuration,
+    isStaffOrAdmin
+  );
+
+  if (onCooldown) {
+    try {
+      const cooldownMsg = await message.reply(
+        `⏳ **Anti-Spam** : Veuillez patienter encore **${remainingSeconds}s** avant de réutiliser la commande \`${prefix}${command.name}\`.`
+      );
+      setTimeout(() => cooldownMsg.delete().catch(() => null), 3000);
+    } catch {
+      // Ignorer si permissions manquantes
+    }
+    return;
+  }
+
   const context = new CommandContext({
     message,
     args,
@@ -119,6 +146,11 @@ export async function onMessageCreate(message: Message) {
       'prefix'
     );
     await command.execute(context);
+
+    // Suppression automatique du message de commande si l'option est activée
+    if (guildConfig.autoDeleteCommands && message.deletable) {
+      setTimeout(() => message.delete().catch(() => null), 2000);
+    }
   } catch (error) {
     logger.error(`Erreur lors de l'exécution de la commande préfixe ${prefix}${command.name} :`, error);
     try {

@@ -31,6 +31,15 @@ import { suggestCommand } from '../modules/suggestions/commands/suggestCommand.j
 import { antiraidCommand } from '../modules/antiRaid/commands/antiraidCommand.js';
 import { automodCommand } from '../modules/automod/commands/automodCommand.js';
 import { musicCommand } from '../commands/music/music.js';
+import {
+  playCommand,
+  skipCommand,
+  pauseCommand,
+  resumeCommand,
+  stopCommand,
+  queueCommand,
+  nowPlayingCommand,
+} from '../commands/music/musicShortcuts.js';
 import { pollCommand } from '../modules/polls/commands/pollCommand.js';
 import { eventCommand } from '../modules/events/eventsCommand.js';
 import { voiceCommand } from '../modules/voice/commands/voiceCommand.js';
@@ -87,8 +96,15 @@ class CommandRegistry {
     // AutoMod 2.0 (Smart Moderation)
     this.register(automodCommand);
 
-    // Musique 2.0 (Music Center)
+    // Musique 2.0 (Music Center & Shortcuts)
     this.register(musicCommand);
+    this.register(playCommand);
+    this.register(skipCommand);
+    this.register(pauseCommand);
+    this.register(resumeCommand);
+    this.register(stopCommand);
+    this.register(queueCommand);
+    this.register(nowPlayingCommand);
 
     // Sondages & Votes 2.0 (Polls Center)
     this.register(pollCommand);

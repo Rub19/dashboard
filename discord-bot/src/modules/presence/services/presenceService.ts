@@ -82,6 +82,34 @@ export class PresenceService {
     if (client.isReady()) {
       this.applyToGateway(this.currentState.status, this.currentState.activity);
     }
+
+    this.startAutoRotation(60);
+  }
+
+  private rotationPresets: BotActivity[] = [
+    { type: 'Playing', name: '/help • ethone.dev' },
+    { type: 'Listening', name: '/play • Musique Hi-Fi' },
+    { type: 'Watching', name: '{guildCount} serveur(s) • Protection 2.0' },
+    { type: 'Competing', name: '/ask • Assistant IA' },
+    { type: 'Playing', name: 'Ping: {ping} • v2.4.0' },
+  ];
+  private currentPresetIndex = 0;
+  private rotationTimer?: NodeJS.Timeout;
+
+  public startAutoRotation(intervalSeconds = 60): void {
+    if (this.rotationTimer) return;
+    this.rotationTimer = setInterval(() => {
+      if (!this.client || !this.client.isReady()) return;
+      // Ne pas écraser une présence manuelle récente de l'owner (moins de 5 minutes)
+      if (this.currentState.source === 'manual' && Date.now() - new Date(this.currentState.updatedAt).getTime() < 300000) {
+        return;
+      }
+      this.currentPresetIndex = (this.currentPresetIndex + 1) % this.rotationPresets.length;
+      const nextActivity = this.rotationPresets[this.currentPresetIndex];
+      this.applyToGateway(this.currentState.status, nextActivity);
+      this.currentState.activity = { ...nextActivity };
+      this.rotationsExecutedCount++;
+    }, intervalSeconds * 1000);
   }
 
   /**

@@ -5,6 +5,8 @@ import {
   handleSettingsModal,
   handleSettingsSelectMenu,
 } from '../handlers/settingsInteractionHandler.js';
+import { cooldownService } from '../services/cooldownService.js';
+import { buildPingMessage } from '../commands/general/ping.js';
 import { handleTicketButton } from '../modules/tickets/interactions/ticketButtonHandler.js';
 import { handleTicketModal } from '../modules/tickets/interactions/ticketModalHandler.js';
 import {
@@ -63,7 +65,13 @@ export async function onInteractionCreate(interaction: Interaction) {
   }
 
   if (interaction.isButton()) {
-    if (interaction.customId.startsWith('settings_') || interaction.customId.startsWith('set_lang_')) {
+    if (interaction.customId === 'ping_retest') {
+      const gConf = guildConfigService.getConfig(interaction.guildId);
+      const start = Date.now();
+      const latency = Math.max(1, Date.now() - start);
+      const payload = buildPingMessage(interaction.client, gConf, latency);
+      await interaction.update(payload);
+    } else if (interaction.customId.startsWith('settings_') || interaction.customId.startsWith('set_lang_')) {
       await handleSettingsButton(interaction);
     } else if (interaction.customId.startsWith('help_btn_')) {
       await HelpPanel.handleButton(interaction);
@@ -113,6 +121,47 @@ export async function onInteractionCreate(interaction: Interaction) {
     return;
   }
 
+  // 1.5 Gestion de l'Autocomplétion intelligente
+  if (interaction.isAutocomplete()) {
+    const focused = interaction.options.getFocused(true);
+    const query = (focused.value || '').toLowerCase().trim();
+
+    if (interaction.commandName === 'help' && focused.name === 'commande') {
+      const allCommands = commandRegistry.getAllCommands();
+      const filtered = allCommands
+        .filter((c) => c.name.toLowerCase().includes(query) || (c.aliases && c.aliases.some((a) => a.toLowerCase().includes(query))))
+        .slice(0, 25)
+        .map((c) => ({
+          name: `/${c.name} — ${c.description || 'Commande'}`.slice(0, 100),
+          value: c.name,
+        }));
+      await interaction.respond(filtered).catch(() => null);
+      return;
+    }
+
+    if ((interaction.commandName === 'music' || interaction.commandName === 'play') && focused.name === 'recherche') {
+      const suggestions = [
+        'Lo-Fi Hip Hop Beats to relax/study',
+        'Synthwave 80s Retro Chill',
+        'Phonk Gym Gaming Mix 2026',
+        'Chillhop Music Lounge',
+        'Acoustic Guitar Cozy Songs',
+        'Deep House Club Mix',
+        'Cyberpunk Electro Bass Boosted',
+        'Piano Instrumental Relaxing',
+      ];
+      const filtered = suggestions
+        .filter((s) => !query || s.toLowerCase().includes(query))
+        .slice(0, 25)
+        .map((s) => ({ name: s, value: s }));
+      await interaction.respond(filtered).catch(() => null);
+      return;
+    }
+
+    await interaction.respond([]).catch(() => null);
+    return;
+  }
+
   // 2. Gestion des Slash Commands
   if (!interaction.isChatInputCommand()) return;
 
@@ -142,6 +191,28 @@ export async function onInteractionCreate(interaction: Interaction) {
     logger.warn(`Commande Slash introuvable : ${interaction.commandName}`);
     await interaction.reply({
       content: '❌ Cette commande n\'est plus disponible.',
+      ephemeral: true,
+    });
+    return;
+  }
+
+  // Cooldown Anti-Spam
+  const isStaffOrAdmin = Boolean(
+    (interaction.memberPermissions && interaction.memberPermissions.has('ManageGuild')) ||
+    (interaction.memberPermissions && interaction.memberPermissions.has('Administrator'))
+  );
+  const cooldownDuration = guildConfig.commandCooldown || 0;
+  const { onCooldown, remainingSeconds } = cooldownService.checkAndApply(
+    interaction.guildId || 'dm',
+    interaction.user.id,
+    command.name,
+    cooldownDuration,
+    isStaffOrAdmin
+  );
+
+  if (onCooldown) {
+    await interaction.reply({
+      content: `⏳ **Anti-Spam** : Veuillez patienter encore **${remainingSeconds}s** avant de réutiliser la commande \`/${command.name}\`.`,
       ephemeral: true,
     });
     return;

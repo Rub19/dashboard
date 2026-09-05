@@ -1,69 +1,55 @@
 import { SlashCommandBuilder } from 'discord.js';
-import { commandRegistry } from '../../handlers/commandHandler.js';
 import { Command, CommandContext } from '../../types/command.js';
+import { HelpPanel, HELP_CATEGORIES } from './helpPanel.js';
 
 export const helpCommand: Command = {
   name: 'help',
-  description: 'Affiche la liste des commandes disponibles',
+  description: 'Affiche le centre d\'aide interactif et le catalogue des commandes',
   category: 'Général',
   aliases: ['aide', 'h'],
   slashData: new SlashCommandBuilder()
     .setName('help')
-    .setDescription('Affiche la liste des commandes disponibles'),
+    .setDescription('Affiche le centre d\'aide interactif et le catalogue des commandes')
+    .addStringOption((opt) =>
+      opt
+        .setName('module')
+        .setDescription('Ouvrir directement la page d\'un module spécifique')
+        .setRequired(false)
+        .addChoices(
+          { name: '🏠 Accueil (Vue d\'ensemble)', value: 'home' },
+          ...HELP_CATEGORIES.map((c) => ({
+            name: `${c.emoji} ${c.name}`.slice(0, 100),
+            value: c.id,
+          }))
+        )
+    ),
   execute: async (ctx: CommandContext) => {
-    const commands = commandRegistry.getAllCommands();
-    const conf = ctx.guildConfig;
-    const currentPrefix = conf.prefix;
+    const rawChoice =
+      (ctx.isSlash && ctx.interaction ? ctx.interaction.options.getString('module') : null) ||
+      (ctx.args[0]?.toLowerCase()) ||
+      'home';
 
-    const embed = ctx
-      .createEmbed('default')
-      .setTitle(`📚 Commandes — ${conf.botName}`)
-      .setDescription('Voici les commandes actuellement disponibles sur ce serveur :');
+    const matchedCategory = HELP_CATEGORIES.find(
+      (c) => c.id === rawChoice || c.name.toLowerCase().includes(rawChoice)
+    );
 
-    // Regrouper par catégorie
-    const categories = new Map<string, Command[]>();
-    for (const cmd of commands) {
-      const cat = cmd.category || 'Général';
-      if (!categories.has(cat)) categories.set(cat, []);
-      categories.get(cat)!.push(cmd);
-    }
+    const categoryKey = rawChoice === 'home' ? 'home' : matchedCategory ? matchedCategory.id : 'home';
 
-    for (const [category, list] of categories.entries()) {
-      let currentChunk = '';
-      const chunks: string[] = [];
+    const { commandRegistry } = await import('../../handlers/commandHandler.js');
 
-      for (const cmd of list) {
-        const callSyntax =
-          conf.prefixCommandsEnabled && conf.slashCommandsEnabled
-            ? `**\`/${cmd.name}\`** • \`${currentPrefix}${cmd.name}\``
-            : conf.prefixCommandsEnabled
-            ? `**\`${currentPrefix}${cmd.name}\`**`
-            : `**\`/${cmd.name}\`**`;
-
-        const line = `• ${callSyntax} — ${cmd.description}\n`;
-        if (currentChunk.length + line.length > 950) {
-          chunks.push(currentChunk.trim());
-          currentChunk = line;
-        } else {
-          currentChunk += line;
-        }
-      }
-      if (currentChunk.trim()) {
-        chunks.push(currentChunk.trim());
-      }
-
-      chunks.forEach((chunk, idx) => {
-        const fieldName =
-          chunks.length > 1 ? `📁 ${category} (${idx + 1}/${chunks.length})` : `📁 ${category}`;
-        embed.addFields({ name: fieldName, value: chunk });
-      });
-    }
-
-    embed.setFooter({
-      text: `${conf.botName} • Préfixe actuel : ${currentPrefix} • Demandé par ${ctx.author.username}`,
-      iconURL: ctx.author.displayAvatarURL(),
+    const view = HelpPanel.buildView({
+      categoryKey,
+      guildConfig: ctx.guildConfig,
+      requesterTag: ctx.author.username,
+      requesterAvatarUrl: ctx.author.displayAvatarURL(),
+      botAvatarUrl: ctx.client.user?.displayAvatarURL(),
+      commands: commandRegistry.getAllCommands(),
     });
 
-    await ctx.reply({ embeds: [embed] });
+    await ctx.reply({
+      embeds: view.embeds,
+      components: view.components,
+    });
   },
 };
+

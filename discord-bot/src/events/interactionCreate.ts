@@ -30,6 +30,7 @@ import { discordFormPanel } from '../modules/forms/ui/discordFormPanel.js';
 import { discordPollPanel } from '../modules/polls/ui/discordPollPanel.js';
 import { handleEventButton } from '../modules/events/eventsInteractionHandler.js';
 import { discordOwnerPanel } from '../modules/presence/ui/discordOwnerPanel.js';
+import { HelpPanel } from '../commands/general/helpPanel.js';
 import { syncEngine } from '../services/syncEngine.js';
 import { logger } from '../utils/logger.js';
 
@@ -51,6 +52,8 @@ export async function onInteractionCreate(interaction: Interaction) {
   if (interaction.isAnySelectMenu()) {
     if (interaction.customId === 'settings_select_category' && interaction.isStringSelectMenu()) {
       await handleSettingsSelectMenu(interaction);
+    } else if (interaction.customId === 'help_select_category' && interaction.isStringSelectMenu()) {
+      await HelpPanel.handleSelectMenu(interaction);
     } else if (interaction.customId.startsWith('role_select:') && interaction.isStringSelectMenu()) {
       await handleRoleSelect(interaction);
     } else if (interaction.customId.startsWith('voice_')) {
@@ -62,6 +65,8 @@ export async function onInteractionCreate(interaction: Interaction) {
   if (interaction.isButton()) {
     if (interaction.customId.startsWith('settings_')) {
       await handleSettingsButton(interaction);
+    } else if (interaction.customId.startsWith('help_btn_')) {
+      await HelpPanel.handleButton(interaction);
     } else if (interaction.customId.startsWith('ticket_')) {
       await handleTicketButton(interaction);
     } else if (interaction.customId.startsWith('role_btn:')) {

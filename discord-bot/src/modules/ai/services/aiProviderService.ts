@@ -25,12 +25,17 @@ export class AIProviderService {
 
     const openrouterKey = process.env.OPENROUTER_API_KEY || '';
     const openaiKey = process.env.OPENAI_API_KEY || '';
+    const groqKey = process.env.GROQ_API_KEY || '';
 
-    // Si une clé OpenRouter ou OpenAI est présente et configurée, on l'appelle
+    // 1. OpenRouter Provider
     if (settings.provider === 'OPENROUTER' && openrouterKey) {
       try {
+        const controller = new AbortController();
+        const timeout = setTimeout(() => controller.abort(), 15000);
+
         const response = await fetch('https://openrouter.ai/api/v1/chat/completions', {
           method: 'POST',
+          signal: controller.signal,
           headers: {
             Authorization: `Bearer ${openrouterKey}`,
             'Content-Type': 'application/json',
@@ -41,10 +46,12 @@ export class AIProviderService {
               { role: 'system', content: `${systemPrompt}\n\n${knowledgeContext}` },
               ...messages.map((m) => ({ role: m.role, content: m.content })),
             ],
-            temperature: settings.personality.sliders.creativity / 100,
+            temperature: (settings.personality.sliders.creativity || 50) / 100,
             max_tokens: 800,
           }),
         });
+
+        clearTimeout(timeout);
 
         if (response.ok) {
           const data = (await response.json()) as any;
@@ -54,12 +61,107 @@ export class AIProviderService {
               text,
               sourcesUsed: [],
               tokensUsed: data.usage?.total_tokens || 150,
-              model: settings.model,
+              model: settings.model || 'openrouter-model',
             };
           }
+        } else {
+          const errText = await response.text().catch(() => '');
+          logger.warn(`[AIProviderService] OpenRouter a retourné le code ${response.status}: ${errText}`);
         }
       } catch (err) {
         logger.warn('[AIProviderService] Échec appel OpenRouter, bascule sur Builtin Engine :', err);
+      }
+    }
+
+    // 2. OpenAI Provider
+    if (settings.provider === 'OPENAI' && openaiKey) {
+      try {
+        const controller = new AbortController();
+        const timeout = setTimeout(() => controller.abort(), 15000);
+
+        const response = await fetch('https://api.openai.com/v1/chat/completions', {
+          method: 'POST',
+          signal: controller.signal,
+          headers: {
+            Authorization: `Bearer ${openaiKey}`,
+            'Content-Type': 'application/json',
+          },
+          body: JSON.stringify({
+            model: settings.model || 'gpt-4o-mini',
+            messages: [
+              { role: 'system', content: `${systemPrompt}\n\n${knowledgeContext}` },
+              ...messages.map((m) => ({ role: m.role, content: m.content })),
+            ],
+            temperature: (settings.personality.sliders.creativity || 50) / 100,
+            max_tokens: 800,
+          }),
+        });
+
+        clearTimeout(timeout);
+
+        if (response.ok) {
+          const data = (await response.json()) as any;
+          const text = data.choices?.[0]?.message?.content || '';
+          if (text) {
+            return {
+              text,
+              sourcesUsed: [],
+              tokensUsed: data.usage?.total_tokens || 150,
+              model: settings.model || 'gpt-4o-mini',
+            };
+          }
+        } else {
+          const errText = await response.text().catch(() => '');
+          logger.warn(`[AIProviderService] OpenAI a retourné le code ${response.status}: ${errText}`);
+        }
+      } catch (err) {
+        logger.warn('[AIProviderService] Échec appel OpenAI, bascule sur Builtin Engine :', err);
+      }
+    }
+
+    // 3. Groq Provider
+    if (settings.provider === 'GROQ' && groqKey) {
+      try {
+        const controller = new AbortController();
+        const timeout = setTimeout(() => controller.abort(), 15000);
+
+        const response = await fetch('https://api.groq.com/openai/v1/chat/completions', {
+          method: 'POST',
+          signal: controller.signal,
+          headers: {
+            Authorization: `Bearer ${groqKey}`,
+            'Content-Type': 'application/json',
+          },
+          body: JSON.stringify({
+            model: settings.model || 'llama-3.3-70b-versatile',
+            messages: [
+              { role: 'system', content: `${systemPrompt}\n\n${knowledgeContext}` },
+              ...messages.map((m) => ({ role: m.role, content: m.content })),
+            ],
+            temperature: (settings.personality.sliders.creativity || 50) / 100,
+            max_tokens: 800,
+          }),
+        });
+
+        clearTimeout(timeout);
+
+        if (response.ok) {
+          const data = (await response.json()) as any;
+          const text = data.choices?.[0]?.message?.content || '';
+          if (text) {
+            return {
+              text,
+              sourcesUsed: [],
+              tokensUsed: data.usage?.total_tokens || 150,
+              model: settings.model || 'groq-llama',
+            };
+          }
+        } else {
+          const errText = await response.text().catch(() => '');
+          logger.warn(`[AIProviderService] Groq a retourné le code ${response.status}: ${errText}`);
+        }
+      } catch (err) {
+        logger.warn('[AIProviderService] Échec appel Groq, bascule sur Builtin Engine :', err);
       }
     }
 
@@ -112,18 +214,26 @@ export class AIProviderService {
       }
     }
     // 4. Détection de questions sur le support ou les tickets
-    else if (queryLower.includes('ticket') || queryLower.includes('support') || queryLower.includes('aide') || queryLower.includes('problème') || queryLower.includes('probleme') || queryLower.includes('modérateur') || queryLower.includes('contact')) {
+    else if (queryLower.includes('ticket') || queryLower.includes('support') || queryLower.includes('problème') || queryLower.includes('probleme') || queryLower.includes('modérateur') || queryLower.includes('contact')) {
       if (knowledgeContext.includes('FAQ Support & Tickets')) {
         sourcesUsed.push('FAQ Support & Tickets');
       }
       answer = `Pour toute demande d'assistance personnalisée ou pour signaler un comportement, vous pouvez **ouvrir un ticket de support** :\n\n- Rendez-vous dans le salon **#support**\n- Ou cliquez sur le bouton **"🎫 Ouvrir un Ticket"** situé juste en bas de ce message !\n\nNotre équipe de modération vous répondra dans les plus brefs délais.`;
     }
-    // 5. Réponse générique / Connaissances trouvées
+    // 5. Détection de questions sur les commandes ou l'aide globale
+    else if (queryLower.includes('commande') || queryLower.includes('help') || queryLower.includes('aide') || queryLower.includes('que peux-tu faire') || queryLower.includes('fonctionnalité')) {
+      answer = `Voici les fonctionnalités et commandes principales disponibles sur le serveur :\n\n- \`/ask <question>\` : Me poser n'importe quelle question\n- \`/help\` : Afficher le catalogue complet des commandes\n- \`/rank\` & \`/leaderboard\` : Suivre votre niveau d'activité et XP\n- \`/ticket\` : Ouvrir un salon d'assistance avec l'équipe\n- \`/suggest\` : Soumettre une suggestion pour le serveur\n- \`/poll\` : Consulter et voter aux sondages en cours\n\nSi vous avez besoin d'une aide particulière, tapez votre question avec \`/ask\` !`;
+    }
+    // 6. Détection de questions sur l'XP ou les niveaux
+    else if (queryLower.includes('xp') || queryLower.includes('niveau') || queryLower.includes('level') || queryLower.includes('classement')) {
+      answer = `Le système d'expérience récompense votre activité sur le serveur :\n\n- Vous gagnez de l'**XP** en participant aux discussions textuelles et vocales\n- Tapez \`/rank\` pour voir votre carte de progression personnelle\n- Tapez \`/leaderboard\` pour voir les membres les plus actifs !`;
+    }
+    // 7. Réponse générique / Connaissances trouvées
     else if (knowledgeContext.length > 50) {
       sourcesUsed.push('Base de connaissances du serveur');
       answer = `D'après nos documents internes :\n\n${knowledgeContext.split('\n').filter((l) => l.trim() && !l.startsWith('###') && !l.startsWith('---')).slice(0, 4).join('\n')}\n\nN'hésitez pas à ouvrir un ticket si vous avez besoin de précisions supplémentaires !`;
     }
-    // 6. Si strict et aucune information
+    // 8. Si strict et aucune information
     else if (isStrict) {
       answer = `Je ne dispose pas de suffisamment d'informations vérifiées dans la base de connaissances du serveur pour répondre précisément à cette question. N'hésitez pas à demander de l'aide à un modérateur ou à ouvrir un ticket de support !`;
     } else {

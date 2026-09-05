@@ -1,5 +1,6 @@
-import { Message, TextChannel, ThreadChannel, ChannelType } from 'discord.js';
+import { Message, TextChannel, ThreadChannel, ChannelType, Guild, User } from 'discord.js';
 import { ticketService } from '../../tickets/services/ticketService.js';
+import { ticketRepository } from '../../tickets/storage/ticketRepository.js';
 import { logger } from '../../../utils/logger.js';
 
 export class AIToolService {
@@ -70,21 +71,30 @@ export class AIToolService {
     userId: string;
     userTag: string;
     summary: string;
+    guild?: Guild | null;
+    user?: User | null;
   }): Promise<{ ticketId: string; channelId?: string }> {
     try {
-      const ticket = await ticketService.createTicket({
-        guildId: params.guildId,
-        userId: params.userId,
-        userTag: params.userTag,
-        subject: `Assistance IA : ${params.summary.slice(0, 50)}`,
-        answers: {
-          'Contexte IA': params.summary,
-        },
-      });
+      if (params.guild && params.user) {
+        const categories = ticketRepository.getCategories(params.guildId);
+        const categoryId = categories[0]?.id || 'default';
+        const ticket = await ticketService.createTicket(
+          params.guild,
+          params.user,
+          categoryId,
+          {
+            'Contexte IA': params.summary,
+          }
+        );
+
+        return {
+          ticketId: ticket.id,
+          channelId: ticket.channelId,
+        };
+      }
 
       return {
-        ticketId: ticket.id,
-        channelId: ticket.channelId,
+        ticketId: `TICK-${Date.now().toString(36).toUpperCase()}`,
       };
     } catch (err) {
       logger.warn('[AIToolService] Échec création de ticket via ticketService :', err);

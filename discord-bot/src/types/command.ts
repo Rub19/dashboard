@@ -77,6 +77,36 @@ export class CommandContext {
     }
   }
 
+  public get user(): User {
+    return this.author;
+  }
+
+  public get guildId(): string | null {
+    return this.guild?.id ?? this.interaction?.guildId ?? this.message?.guildId ?? null;
+  }
+
+  public get channelId(): string | null {
+    return this.channel?.id ?? this.interaction?.channelId ?? this.message?.channelId ?? null;
+  }
+
+  public get options() {
+    if (this.interaction) {
+      return this.interaction.options;
+    }
+    return {
+      getString: (name: string, required = false) => this.args[0] ?? null,
+      getInteger: (name: string, required = false) => {
+        const val = parseInt(this.args[0] ?? '', 10);
+        return isNaN(val) ? null : val;
+      },
+      getBoolean: (name: string, required = false) => null,
+      getUser: (name: string, required = false) => null,
+      getMember: (name: string, required = false) => null,
+      getChannel: (name: string, required = false) => null,
+      getRole: (name: string, required = false) => null,
+    } as any;
+  }
+
   /**
    * Crée un EmbedBuilder pré-configuré avec les couleurs et le nom personnalisé du serveur
    */
@@ -113,9 +143,11 @@ export class CommandContext {
   /**
    * Diffère la réponse (utile si le traitement prend plus de 3 secondes)
    */
-  public async deferReply(ephemeral = false): Promise<void> {
+  public async deferReply(options?: boolean | { ephemeral?: boolean }): Promise<void> {
     if (this.deferred) return;
     this.deferred = true;
+
+    const ephemeral = typeof options === 'boolean' ? options : (options?.ephemeral ?? false);
 
     if (this.isSlash && this.interaction) {
       await this.interaction.deferReply({ ephemeral });

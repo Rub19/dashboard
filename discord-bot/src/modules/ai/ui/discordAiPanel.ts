@@ -122,6 +122,8 @@ export class DiscordAiPanel {
             userId: interaction.user.id,
             userTag: interaction.user.tag,
             summary: `Ticket ouvert suite à une conversation avec l'assistant IA`,
+            guild: interaction.guild,
+            user: interaction.user,
           });
           await interaction.editReply({
             content: `🎫 Votre ticket de support a été créé avec succès (**#${result.ticketId}**). L'équipe de modération a été notifiée !`,

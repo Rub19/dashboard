@@ -1,9 +1,9 @@
 import { Router, Request, Response } from 'express';
 import { Client } from 'discord.js';
-import { formRepository } from '../storage/formRepository.js';
-import { formService } from '../services/formService.js';
-import { discordFormPanel } from '../ui/discordFormPanel.js';
-import { DiscordFormSchema } from '../types/index.js';
+import { formRepository } from '../../modules/forms/storage/formRepository.js';
+import { formService } from '../../modules/forms/services/formService.js';
+import { discordFormPanel } from '../../modules/forms/ui/discordFormPanel.js';
+import { DiscordFormSchema } from '../../modules/forms/types/index.js';
 
 export function createFormRouter(client: Client): Router {
   const router = Router({ mergeParams: true });

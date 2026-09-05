@@ -42,6 +42,7 @@ import { eventsSchedulerService } from '../modules/events/eventsSchedulerService
 import { eventsAutomationService } from '../modules/events/eventsAutomationService.js';
 import { authMiddleware } from './middleware/auth.js';
 import { createGuildAuthMiddleware } from './middleware/guildAuth.js';
+import { rateLimit } from './middleware/antiAbuseMiddleware.js';
 
 export function startWebServer(client: Client): http.Server {
   const app = express();
@@ -55,6 +56,9 @@ export function startWebServer(client: Client): http.Server {
   );
   app.use(cookieParser());
   app.use(express.json());
+
+  // Protection volumétrique globale (Rate limit baseline 120 req/min par IP/User)
+  app.use('/api', rateLimit('READ', { customLimit: 120, customWindowMs: 60000 }));
 
   // Enregistrement des routes API
   app.use('/api/auth', authRouter);

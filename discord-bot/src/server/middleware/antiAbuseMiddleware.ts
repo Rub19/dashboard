@@ -77,7 +77,7 @@ export function rateLimit(
 /**
  * Express Middleware for Idempotency Key validation and caching
  */
-export function idempotent(options: { scopePrefix?: string; ttlMs?: number } = {}) {
+export function idempotent(options: { scopePrefix?: string; ttlMs?: number; ttlSeconds?: number } = {}) {
   return async (req: Request, res: Response, next: NextFunction): Promise<void> => {
     const rawKey =
       (req.headers['idempotency-key'] as string) ||
@@ -93,29 +93,35 @@ export function idempotent(options: { scopePrefix?: string; ttlMs?: number } = {
     const scope = options.scopePrefix ? `${options.scopePrefix}:${guildId}` : guildId;
     const existing = idempotencyService.getRecord(rawKey, scope);
 
-    if (existing) {
-      if (existing.state === 'COMPLETED') {
+    if (existing && existing.state === 'COMPLETED') {
+      res.setHeader('X-Idempotent-Replay', 'true');
+      res.setHeader('X-Idempotent-Key', rawKey);
+      res.status(existing.statusCode || 200).json(existing.responsePayload);
+      return;
+    }
+
+    const pendingCheck = idempotencyService.markPending(rawKey, scope);
+    if (pendingCheck.inFlight) {
+      // Request coalescing: wait for leader promise
+      try {
+        const leaderResult = await pendingCheck.promise;
         res.setHeader('X-Idempotent-Replay', 'true');
         res.setHeader('X-Idempotent-Key', rawKey);
-        res.status(existing.statusCode || 200).json(existing.responsePayload);
+        res.status(leaderResult.statusCode || 200).json(leaderResult.payload);
         return;
-      }
-
-      if (existing.state === 'PENDING') {
-        res.status(409).json({
-          success: false,
-          error: 'Une requête identique avec cette clé d\'idempotence est actuellement en cours de traitement.',
-          idempotencyKey: rawKey,
-        });
+      } catch (err: any) {
+        res.status(500).json({ success: false, error: err.message || 'Erreur requête initiale' });
         return;
       }
     }
 
-    // Intercept response to store result in IdempotencyService
+    // Leader request: intercept response to store result in IdempotencyService
     const originalJson = res.json.bind(res);
     res.json = function (body: any) {
       if (res.statusCode >= 200 && res.statusCode < 300) {
         idempotencyService.storeResponse(rawKey, body, res.statusCode, scope);
+      } else {
+        idempotencyService.storeError(rawKey, body, scope);
       }
       return originalJson(body);
     };
@@ -127,7 +133,14 @@ export function idempotent(options: { scopePrefix?: string; ttlMs?: number } = {
 /**
  * Express Middleware for Guild Operation Lock (Mutual exclusion)
  */
-export function guildLock(action: string, ttlMs = 45000) {
+export function guildLock(
+  action: string,
+  options?: number | { ttlMs?: number; ttlSeconds?: number }
+) {
+  const ttlMs = typeof options === 'number'
+    ? options
+    : (options?.ttlMs ?? (options?.ttlSeconds ? options.ttlSeconds * 1000 : 45000));
+
   return (req: Request, res: Response, next: NextFunction): void => {
     const guildId = (req.params.guildId as string) || (req.body?.guildId as string);
     if (!guildId) {

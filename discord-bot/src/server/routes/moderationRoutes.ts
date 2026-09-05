@@ -8,6 +8,7 @@ import {
   StandardReasonSchema,
 } from '../../modules/moderation/types/case.js';
 import { logger } from '../../utils/logger.js';
+import { rateLimit, idempotent, guildLock } from '../middleware/antiAbuseMiddleware.js';
 
 export function createModerationRouter(discordClient: Client) {
   ModerationService.initialize(discordClient);
@@ -100,52 +101,63 @@ export function createModerationRouter(discordClient: Client) {
   });
 
   // 4. APPLIQUER UNE NOUVELLE SANCTION (CRÉATION DE CASE)
-  router.post('/cases', async (req: Request, res: Response): Promise<void> => {
-    const guildId = String(req.params.guildId);
-    const { userId, userTag, action, reason, standardCategory, durationSeconds, metadata } = req.body;
+  router.post(
+    '/cases',
+    rateLimit('SENSITIVE', { byGuild: true, actionName: 'moderation_execute' }),
+    idempotent(),
+    guildLock('MODERATION'),
+    async (req: Request, res: Response): Promise<void> => {
+      const guildId = String(req.params.guildId);
+      const { userId, userTag, action, reason, standardCategory, durationSeconds, metadata } = req.body;
 
-    const actionValidation = CaseActionSchema.safeParse(action);
-    if (!actionValidation.success) {
-      res.status(400).json({ error: 'Action disciplinaire invalide' });
-      return;
-    }
-
-    if (!userId) {
-      res.status(400).json({ error: 'Identifiant utilisateur (userId) manquant' });
-      return;
-    }
-
-    const moderatorId = req.user ? req.user.id : 'web-dashboard';
-    const moderatorTag = req.user ? req.user.username : 'Web Dashboard';
-
-    try {
-      const result = await ModerationService.executeSanction({
-        guildId,
-        userId: String(userId),
-        userTag,
-        moderatorId,
-        moderatorTag,
-        action: actionValidation.data,
-        reason: reason || 'Aucun motif spécifié',
-        standardCategory: StandardReasonSchema.safeParse(standardCategory).success ? standardCategory : 'Other',
-        durationSeconds: durationSeconds ? Number(durationSeconds) : null,
-        source: 'MANUAL',
-        metadata,
-      });
-
-      if (!result.success) {
-        res.status(400).json({ error: result.error || 'Échec de la sanction' });
+      const actionValidation = CaseActionSchema.safeParse(action);
+      if (!actionValidation.success) {
+        res.status(400).json({ error: 'Action disciplinaire invalide' });
         return;
       }
 
-      res.json({ success: true, case: result.case });
-    } catch (err: any) {
-      res.status(500).json({ error: err.message || 'Erreur exécution de la sanction' });
+      if (!userId) {
+        res.status(400).json({ error: 'Identifiant utilisateur (userId) manquant' });
+        return;
+      }
+
+      const moderatorId = req.user ? req.user.id : 'web-dashboard';
+      const moderatorTag = req.user ? req.user.username : 'Web Dashboard';
+
+      try {
+        const result = await ModerationService.executeSanction({
+          guildId,
+          userId: String(userId),
+          userTag,
+          moderatorId,
+          moderatorTag,
+          action: actionValidation.data,
+          reason: reason || 'Aucun motif spécifié',
+          standardCategory: StandardReasonSchema.safeParse(standardCategory).success ? standardCategory : 'Other',
+          durationSeconds: durationSeconds ? Number(durationSeconds) : null,
+          source: 'MANUAL',
+          metadata,
+        });
+
+        if (!result.success) {
+          res.status(400).json({ error: result.error || 'Échec de la sanction' });
+          return;
+        }
+
+        res.json({ success: true, case: result.case });
+      } catch (err: any) {
+        res.status(500).json({ error: err.message || 'Erreur exécution de la sanction' });
+      }
     }
-  });
+  );
 
   // 5. RÉVOQUER / PARDONNER UNE SANCTION
-  router.post('/cases/:caseNumber/revert', async (req: Request, res: Response): Promise<void> => {
+  router.post(
+    '/cases/:caseNumber/revert',
+    rateLimit('SENSITIVE', { byGuild: true, actionName: 'moderation_revert' }),
+    idempotent(),
+    guildLock('MODERATION'),
+    async (req: Request, res: Response): Promise<void> => {
     const guildId = String(req.params.guildId);
     const caseNumber = Number(req.params.caseNumber);
     const { reason = 'Pardon / Révocation manuelle' } = req.body;

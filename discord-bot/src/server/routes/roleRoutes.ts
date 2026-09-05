@@ -3,47 +3,62 @@ import { Client } from 'discord.js';
 import { autoRoleService } from '../../modules/roles/services/autoRoleService.js';
 import { rolePanelService } from '../../modules/roles/services/rolePanelService.js';
 import { logger } from '../../utils/logger.js';
+import { rateLimit, idempotent } from '../middleware/antiAbuseMiddleware.js';
 
 export function createRoleRouter(discordClient: Client) {
   const router = express.Router({ mergeParams: true });
 
   // 1. Configuration des Auto-Rôles à l'arrivée
-  router.get('/autorole', async (req: Request, res: Response): Promise<void> => {
+  router.get('/autorole', rateLimit('READ'), async (req: Request, res: Response): Promise<void> => {
     const guildId = String(req.params.guildId);
     const config = autoRoleService.getConfig(guildId);
     res.json({ config });
   });
 
-  router.patch('/autorole', async (req: Request, res: Response): Promise<void> => {
-    const guildId = String(req.params.guildId);
-    try {
-      const updated = autoRoleService.updateConfig(guildId, req.body);
-      res.json({ success: true, config: updated });
-    } catch (err: any) {
-      res.status(400).json({ error: err.message || 'Données invalides' });
+  router.patch(
+    '/autorole',
+    rateLimit('CONFIG', { byGuild: true, actionName: 'autorole_config_update' }),
+    idempotent(),
+    async (req: Request, res: Response): Promise<void> => {
+      const guildId = String(req.params.guildId);
+      try {
+        const updated = autoRoleService.updateConfig(guildId, req.body);
+        res.json({ success: true, config: updated });
+      } catch (err: any) {
+        res.status(400).json({ error: err.message || 'Données invalides' });
+      }
     }
-  });
+  );
 
   // 2. Liste des Role Panels
-  router.get('/panels', async (req: Request, res: Response): Promise<void> => {
+  router.get('/panels', rateLimit('READ'), async (req: Request, res: Response): Promise<void> => {
     const guildId = String(req.params.guildId);
     const panels = rolePanelService.getPanels(guildId);
     res.json({ panels });
   });
 
   // 3. Créer ou modifier un Role Panel
-  router.post('/panels', async (req: Request, res: Response): Promise<void> => {
-    const guildId = String(req.params.guildId);
-    try {
-      const saved = rolePanelService.savePanel(guildId, req.body);
-      res.json({ success: true, panel: saved });
-    } catch (err: any) {
-      res.status(400).json({ error: err.message || 'Données de panel invalides' });
+  router.post(
+    '/panels',
+    rateLimit('CONFIG', { byGuild: true, actionName: 'role_panel_save' }),
+    idempotent(),
+    async (req: Request, res: Response): Promise<void> => {
+      const guildId = String(req.params.guildId);
+      try {
+        const saved = rolePanelService.savePanel(guildId, req.body);
+        res.json({ success: true, panel: saved });
+      } catch (err: any) {
+        res.status(400).json({ error: err.message || 'Données de panel invalides' });
+      }
     }
-  });
+  );
 
   // 4. Publier un Role Panel sur Discord
-  router.post('/panels/:panelId/publish', async (req: Request, res: Response): Promise<void> => {
+  router.post(
+    '/panels/:panelId/publish',
+    rateLimit('SENSITIVE', { byGuild: true, actionName: 'role_panel_publish' }),
+    idempotent(),
+    async (req: Request, res: Response): Promise<void> => {
     const guildId = String(req.params.guildId);
     const panelId = String(req.params.panelId);
     const { channelId } = req.body;

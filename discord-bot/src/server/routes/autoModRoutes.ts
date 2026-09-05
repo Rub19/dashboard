@@ -6,6 +6,7 @@ import { RuleTesterService } from '../../modules/automod/services/ruleTesterServ
 import { StrikeService } from '../../modules/automod/services/strikeService.js';
 import { AutoModIncidentService } from '../../modules/automod/services/autoModIncidentService.js';
 import { AutoModRiskEngine } from '../../modules/automod/services/autoModRiskEngine.js';
+import { rateLimit, idempotent, guildLock } from '../middleware/antiAbuseMiddleware.js';
 
 export function createAutoModRouter(discordClient: Client) {
   const router = express.Router({ mergeParams: true });
@@ -59,19 +60,24 @@ export function createAutoModRouter(discordClient: Client) {
     }
   });
 
-  router.put('/config', async (req: Request, res: Response): Promise<void> => {
-    const guildId = String(req.params.guildId);
-    try {
-      const parsed = AutoModConfigSchema.partial().parse(req.body);
-      const updated = autoModRepository.updateConfig(guildId, parsed);
-      res.json({ success: true, config: updated });
-    } catch (err: any) {
-      res.status(400).json({ error: err.message || 'Configuration AutoMod invalide' });
+  router.put(
+    '/config',
+    rateLimit('CONFIG', { byGuild: true, actionName: 'automod_config_update' }),
+    idempotent(),
+    async (req: Request, res: Response): Promise<void> => {
+      const guildId = String(req.params.guildId);
+      try {
+        const parsed = AutoModConfigSchema.partial().parse(req.body);
+        const updated = autoModRepository.updateConfig(guildId, parsed);
+        res.json({ success: true, config: updated });
+      } catch (err: any) {
+        res.status(400).json({ error: err.message || 'Configuration AutoMod invalide' });
+      }
     }
-  });
+  );
 
   // 3. RÈGLES PERSONNALISÉES (CUSTOM RULES CRUD)
-  router.get('/rules', async (req: Request, res: Response): Promise<void> => {
+  router.get('/rules', rateLimit('READ'), async (req: Request, res: Response): Promise<void> => {
     const guildId = String(req.params.guildId);
     try {
       const rules = autoModRepository.getRules(guildId);
@@ -81,46 +87,65 @@ export function createAutoModRouter(discordClient: Client) {
     }
   });
 
-  router.post('/rules', async (req: Request, res: Response): Promise<void> => {
-    const guildId = String(req.params.guildId);
-    try {
-      const id = req.body.id || `RULE-${Date.now().toString().slice(-5)}`;
-      const rule = CustomRuleSchema.parse({ ...req.body, id });
-      const created = autoModRepository.addRule(guildId, rule);
-      res.json({ success: true, rule: created });
-    } catch (err: any) {
-      res.status(400).json({ error: err.message || 'Données de règle invalides' });
-    }
-  });
-
-  router.put('/rules/:ruleId', async (req: Request, res: Response): Promise<void> => {
-    const guildId = String(req.params.guildId);
-    const ruleId = String(req.params.ruleId);
-    try {
-      const updated = autoModRepository.updateRule(guildId, ruleId, req.body);
-      if (!updated) {
-        res.status(404).json({ error: 'Règle introuvable' });
-        return;
+  router.post(
+    '/rules',
+    rateLimit('CONFIG', { byGuild: true, actionName: 'automod_rule_create' }),
+    idempotent(),
+    async (req: Request, res: Response): Promise<void> => {
+      const guildId = String(req.params.guildId);
+      try {
+        const id = req.body.id || `RULE-${Date.now().toString().slice(-5)}`;
+        const rule = CustomRuleSchema.parse({ ...req.body, id });
+        const created = autoModRepository.addRule(guildId, rule);
+        res.json({ success: true, rule: created });
+      } catch (err: any) {
+        res.status(400).json({ error: err.message || 'Données de règle invalides' });
       }
-      res.json({ success: true, rule: updated });
-    } catch (err: any) {
-      res.status(400).json({ error: err.message || 'Mise à jour de la règle invalide' });
     }
-  });
+  );
 
-  router.delete('/rules/:ruleId', async (req: Request, res: Response): Promise<void> => {
-    const guildId = String(req.params.guildId);
-    const ruleId = String(req.params.ruleId);
-    try {
-      const deleted = autoModRepository.deleteRule(guildId, ruleId);
-      res.json({ success: deleted });
-    } catch (err: any) {
-      res.status(500).json({ error: err.message || 'Erreur suppression de la règle' });
+  router.put(
+    '/rules/:ruleId',
+    rateLimit('CONFIG', { byGuild: true, actionName: 'automod_rule_update' }),
+    idempotent(),
+    async (req: Request, res: Response): Promise<void> => {
+      const guildId = String(req.params.guildId);
+      const ruleId = String(req.params.ruleId);
+      try {
+        const updated = autoModRepository.updateRule(guildId, ruleId, req.body);
+        if (!updated) {
+          res.status(404).json({ error: 'Règle introuvable' });
+          return;
+        }
+        res.json({ success: true, rule: updated });
+      } catch (err: any) {
+        res.status(400).json({ error: err.message || 'Mise à jour de la règle invalide' });
+      }
     }
-  });
+  );
+
+  router.delete(
+    '/rules/:ruleId',
+    rateLimit('CONFIG', { byGuild: true, actionName: 'automod_rule_delete' }),
+    idempotent(),
+    async (req: Request, res: Response): Promise<void> => {
+      const guildId = String(req.params.guildId);
+      const ruleId = String(req.params.ruleId);
+      try {
+        const deleted = autoModRepository.deleteRule(guildId, ruleId);
+        res.json({ success: deleted });
+      } catch (err: any) {
+        res.status(500).json({ error: err.message || 'Erreur suppression de la règle' });
+      }
+    }
+  );
 
   // 4. TEST DE RÈGLE / SANDBOX SANS SANCTIONS
-  router.post('/test-rule', async (req: Request, res: Response): Promise<void> => {
+  router.post(
+    '/test-rule',
+    rateLimit('EXPENSIVE', { byGuild: true, actionName: 'automod_rule_test' }),
+    idempotent(),
+    async (req: Request, res: Response): Promise<void> => {
     const guildId = String(req.params.guildId);
     const { messageContent, userId, channelId } = req.body;
 

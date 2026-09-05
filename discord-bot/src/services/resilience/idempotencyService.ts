@@ -111,6 +111,7 @@ export class IdempotencyService {
       inFlightResolver = resolve;
       inFlightRejecter = reject;
     });
+    inFlightPromise.catch(() => {});
 
     const record: IdempotencyRecord<T> = {
       key,
@@ -161,18 +162,73 @@ export class IdempotencyService {
   }
 
   /**
+   * Marks an operation as pending for HTTP middleware and sets up promise coalescing
+   */
+  public markPending(key: string, scope?: string): { inFlight: boolean; promise: Promise<any> } {
+    const compositeKey = this.getCompositeKey(key, scope);
+    const existing = this.records.get(compositeKey);
+    if (existing && existing.state === 'PENDING' && existing.inFlightPromise) {
+      return { inFlight: true, promise: existing.inFlightPromise };
+    }
+
+    let inFlightResolver!: (value: any) => void;
+    let inFlightRejecter!: (reason: any) => void;
+    const inFlightPromise = new Promise<any>((resolve, reject) => {
+      inFlightResolver = resolve;
+      inFlightRejecter = reject;
+    });
+    inFlightPromise.catch(() => {});
+
+    (inFlightPromise as any).resolve = inFlightResolver;
+    (inFlightPromise as any).reject = inFlightRejecter;
+
+    this.records.set(compositeKey, {
+      key,
+      scope,
+      state: 'PENDING',
+      createdAt: Date.now(),
+      inFlightPromise,
+    });
+
+    return { inFlight: false, promise: inFlightPromise };
+  }
+
+  /**
    * Stores pre-computed HTTP response for an idempotency key
    */
   public storeResponse(key: string, payload: any, statusCode = 200, scope?: string): void {
     const compositeKey = this.getCompositeKey(key, scope);
+    const existing = this.records.get(compositeKey);
+    if (existing && existing.inFlightPromise && (existing.inFlightPromise as any).resolve) {
+      (existing.inFlightPromise as any).resolve({ payload, statusCode });
+    }
     this.records.set(compositeKey, {
       key,
       scope,
       state: 'COMPLETED',
-      createdAt: Date.now(),
+      createdAt: existing?.createdAt || Date.now(),
       completedAt: Date.now(),
       responsePayload: payload,
       statusCode,
+    });
+  }
+
+  /**
+   * Stores error response for an idempotency key
+   */
+  public storeError(key: string, error: any, scope?: string): void {
+    const compositeKey = this.getCompositeKey(key, scope);
+    const existing = this.records.get(compositeKey);
+    if (existing && existing.inFlightPromise && (existing.inFlightPromise as any).reject) {
+      (existing.inFlightPromise as any).reject(error);
+    }
+    this.records.set(compositeKey, {
+      key,
+      scope,
+      state: 'FAILED',
+      createdAt: existing?.createdAt || Date.now(),
+      completedAt: Date.now(),
+      error: error?.message || String(error),
     });
   }
 

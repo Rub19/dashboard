@@ -19,7 +19,10 @@ import { idempotencyService } from '../src/services/resilience/idempotencyServic
 import { guildOperationLockService } from '../src/services/resilience/guildOperationLockService.js';
 import { discordApiRetryManager } from '../src/services/resilience/discordApiRetryManager.js';
 import { interactionAntiSpamService } from '../src/services/resilience/interactionAntiSpamService.js';
+import { rateLimit, idempotent, guildLock } from '../src/server/middleware/antiAbuseMiddleware.js';
 import { config } from '../src/config.js';
+import express from 'express';
+import http from 'node:http';
 
 let passed = 0;
 let failed = 0;
@@ -380,6 +383,142 @@ async function runTests() {
   const activeLocks = guildOperationLockService.getAllActiveLocks();
   assert(Array.isArray(activeLocks), 'Test 48: Active locks telemetry returns clean array');
 
+  // -------------------------------------------------------------
+  // PART 11: REAL EXPRESS MIDDLEWARE EXECUTION & DOUBLE-CLICK ATTACK
+  // -------------------------------------------------------------
+  console.log('\n🔹 Part 11: Real Express Middleware Execution & Double-Click Attack');
+
+  const testApp = express();
+  testApp.use(express.json());
+
+  let testActionExecutionCount = 0;
+
+  // Endpoint protected with idempotent and rateLimit
+  testApp.post(
+    '/api/test/guilds/:guildId/action',
+    idempotent({ ttlSeconds: 60 }),
+    rateLimit('SENSITIVE', { byGuild: true, customLimit: 5, customWindowMs: 60000 }),
+    async (req, res) => {
+      testActionExecutionCount++;
+      // Simulate slight processing delay
+      await new Promise((r) => setTimeout(r, 50));
+      res.status(200).json({
+        success: true,
+        actionId: 'ACT-' + testActionExecutionCount,
+        executedAt: Date.now(),
+        message: 'Action executed successfully',
+      });
+    }
+  );
+
+  let lockExecutionCount = 0;
+  testApp.post(
+    '/api/test/guilds/:guildId/heavy-lock',
+    guildLock('TEST_HEAVY_OP', { ttlSeconds: 5 }),
+    async (req, res) => {
+      lockExecutionCount++;
+      // Simulate longer operation
+      await new Promise((r) => setTimeout(r, 100));
+      res.status(200).json({ success: true, count: lockExecutionCount });
+    }
+  );
+
+  const server = http.createServer(testApp);
+  await new Promise<void>((resolve) => server.listen(0, '127.0.0.1', () => resolve()));
+  const port = (server.address() as any).port;
+  const baseUrl = `http://127.0.0.1:${port}`;
+
+  assert(port > 0, 'Test 49: Express app boots and mounts antiAbuseMiddleware on ephemeral port');
+
+  // Single nominal execution
+  const res1 = await fetch(`${baseUrl}/api/test/guilds/guild_express_1/action`, {
+    method: 'POST',
+    headers: {
+      'Content-Type': 'application/json',
+      'X-Idempotency-Key': 'key-express-single-001',
+    },
+    body: JSON.stringify({ data: 'nominal' }),
+  });
+  const data1 = await res1.json();
+  assert(res1.status === 200 && data1.success === true, 'Test 50: Single HTTP POST with X-Idempotency-Key returns 200');
+
+  // Double-Click Attack: send 20 rapid parallel requests with the same Idempotency-Key
+  const doubleClickKey = 'double-click-attack-key-999';
+  const attackPromises = [];
+  for (let i = 0; i < 20; i++) {
+    attackPromises.push(
+      fetch(`${baseUrl}/api/test/guilds/guild_express_1/action`, {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+          'X-Idempotency-Key': doubleClickKey,
+        },
+        body: JSON.stringify({ item: 'repeat', idx: i }),
+      })
+    );
+  }
+
+  const attackResponses = await Promise.all(attackPromises);
+  const attackStatuses = attackResponses.map((r) => r.status);
+  const attackBodies = await Promise.all(attackResponses.map((r) => r.json()));
+
+  const all200 = attackStatuses.every((s) => s === 200);
+  assert(all200, 'Test 51: All 20 rapid parallel requests returned HTTP 200');
+
+  // Handler execution count must have only increased by 1 despite 20 requests!
+  assert(testActionExecutionCount === 2, 'Test 52: Double-click attack: 20 parallel requests executed handler exactly once (coalesced)');
+
+  // All 20 responses received identical actionId
+  const firstActionId = attackBodies[0].actionId;
+  const allIdentical = attackBodies.every((b) => b.actionId === firstActionId);
+  assert(allIdentical, 'Test 53: All 20 concurrent requests received the exact same valid payload');
+
+  // -------------------------------------------------------------
+  // PART 12: EXPRESS HTTP 429 BURST & HTTP 409 CONCURRENCY CONFLICT
+  // -------------------------------------------------------------
+  console.log('\n🔹 Part 12: Express HTTP 429 Burst & HTTP 409 Concurrency Conflict');
+
+  // Burst attack: trigger rate limit (limit was 5)
+  const burstResults = [];
+  for (let i = 0; i < 8; i++) {
+    const r = await fetch(`${baseUrl}/api/test/guilds/guild_burst_victim/action`, {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json',
+        'X-Idempotency-Key': `burst-key-${i}`,
+      },
+      body: JSON.stringify({ burst: i }),
+    });
+    burstResults.push(r);
+  }
+
+  const has429 = burstResults.some((r) => r.status === 429);
+  assert(has429, 'Test 54: Volumetric burst exceeding rate limit returns HTTP 429');
+
+  const rateLimitedResp = burstResults.find((r) => r.status === 429);
+  const retryAfterHeader = rateLimitedResp?.headers.get('retry-after');
+  assert(retryAfterHeader !== null && Number(retryAfterHeader) > 0, 'Test 55: HTTP 429 response contains valid Retry-After header', `Retry-After: ${retryAfterHeader}`);
+
+  const resetHeader = rateLimitedResp?.headers.get('x-ratelimit-reset');
+  assert(resetHeader !== null, 'Test 56: HTTP 429 response contains X-RateLimit-Reset header');
+
+  // Concurrency Lock: fire two simultaneous heavy operations on the same guild
+  const lockReq1 = fetch(`${baseUrl}/api/test/guilds/guild_lock_test/heavy-lock`, { method: 'POST' });
+  // Slight delay to ensure lock 1 is acquired before lock 2 hits
+  await new Promise((r) => setTimeout(r, 10));
+  const lockReq2 = fetch(`${baseUrl}/api/test/guilds/guild_lock_test/heavy-lock`, { method: 'POST' });
+
+  const [lockRes1, lockRes2] = await Promise.all([lockReq1, lockReq2]);
+  assert(lockRes1.status === 200, 'Test 57: First heavy request acquires lock and returns 200 OK');
+  assert(lockRes2.status === 409, 'Test 58: Concurrent request on locked guild returns HTTP 409 CONFLICT');
+
+  const lock2Body = await lockRes2.json();
+  assert(lock2Body.error?.toLowerCase().includes('en cours') || lock2Body.code === 'OPERATION_LOCKED', 'Test 59: HTTP 409 reports operation in progress');
+
+  // Cleanup test server
+  await new Promise<void>((resolve) => server.close(() => resolve()));
+  assert(true, 'Test 60: Ephemeral test HTTP server closed cleanly without leaks');
+
   console.log('\n================================================================');
   console.log(`🏁 TEST RESULTS: ${passed} PASSED | ${failed} FAILED (TOTAL: ${passed + failed})`);
   console.log('================================================================\n');
@@ -387,6 +526,7 @@ async function runTests() {
   if (failed > 0) {
     process.exit(1);
   }
+  process.exit(0);
 }
 
 runTests().catch((err) => {

@@ -6,12 +6,13 @@ import { PREBUILT_TEMPLATES } from '../../modules/welcome/types/templates.js';
 import { WelcomeCardGenerator } from '../../modules/welcome/images/welcomeCardGenerator.js';
 import { VariableContext } from '../../modules/welcome/types/variables.js';
 import { logger } from '../../utils/logger.js';
+import { rateLimit, idempotent, guildLock } from '../middleware/antiAbuseMiddleware.js';
 
 export function createWelcomeRouter(discordClient: Client) {
   const router = express.Router({ mergeParams: true });
 
   // 1. Récupérer la configuration Welcome & Goodbye
-  router.get('/', async (req: Request, res: Response): Promise<void> => {
+  router.get('/', rateLimit('READ'), async (req: Request, res: Response): Promise<void> => {
     const guildId = String(req.params.guildId);
     const config = welcomeService.getConfig(guildId);
     res.json({ config });
@@ -28,8 +29,8 @@ export function createWelcomeRouter(discordClient: Client) {
     }
   };
 
-  router.patch('/', handleUpdateConfig);
-  router.put('/', handleUpdateConfig);
+  router.patch('/', rateLimit('CONFIG', { byGuild: true }), idempotent(), handleUpdateConfig);
+  router.put('/', rateLimit('CONFIG', { byGuild: true }), idempotent(), handleUpdateConfig);
 
   // 3. Vue d'ensemble, métriques & Funnel
   router.get('/overview', async (req: Request, res: Response): Promise<void> => {
@@ -43,7 +44,11 @@ export function createWelcomeRouter(discordClient: Client) {
   });
 
   // 4. Envoyer un message de test réel sur Discord (en salon ou en MP)
-  router.post('/test', async (req: Request, res: Response): Promise<void> => {
+  router.post(
+    '/test',
+    rateLimit('SENSITIVE', { byGuild: true, actionName: 'welcome_test_send' }),
+    idempotent(),
+    async (req: Request, res: Response): Promise<void> => {
     const guildId = String(req.params.guildId);
     const { type, target } = req.body; // type: 'welcome' | 'goodbye', target: 'channel' | 'dm'
 

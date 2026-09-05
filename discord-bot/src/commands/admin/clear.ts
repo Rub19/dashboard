@@ -50,7 +50,10 @@ export const clearCommand: Command = {
     }
 
     let amount = 10;
-    if (ctx.args.length > 0) {
+    if (ctx.isSlash && ctx.interaction) {
+      const slash = ctx.interaction as any;
+      amount = slash.options?.getInteger('nombre') ?? 10;
+    } else if (ctx.args.length > 0) {
       const parsed = parseInt(ctx.args[0], 10);
       if (!isNaN(parsed) && parsed >= 1 && parsed <= 100) {
         amount = parsed;

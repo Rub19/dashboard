@@ -147,7 +147,8 @@ export class CommandContext {
     if (this.deferred) return;
     this.deferred = true;
 
-    const ephemeral = typeof options === 'boolean' ? options : (options?.ephemeral ?? false);
+    const defaultEphemeral = this.guildConfig?.responseVisibility === 'EPHEMERAL';
+    const ephemeral = typeof options === 'boolean' ? options : (options?.ephemeral ?? defaultEphemeral);
 
     if (this.isSlash && this.interaction) {
       await this.interaction.deferReply({ ephemeral });
@@ -164,7 +165,17 @@ export class CommandContext {
       if (this.interaction.deferred || this.interaction.replied) {
         await this.interaction.editReply(content as string | MessagePayload | InteractionEditReplyOptions);
       } else {
-        await this.interaction.reply(content as InteractionReplyOptions);
+        const defaultEphemeral = this.guildConfig?.responseVisibility === 'EPHEMERAL';
+        let payload: any;
+        if (typeof content === 'string') {
+          payload = { content, ephemeral: defaultEphemeral };
+        } else {
+          payload = {
+            ephemeral: (content as any).ephemeral !== undefined ? (content as any).ephemeral : defaultEphemeral,
+            ...content,
+          };
+        }
+        await this.interaction.reply(payload as InteractionReplyOptions);
       }
     } else if (this.message) {
       if (this.repliedMessage) {

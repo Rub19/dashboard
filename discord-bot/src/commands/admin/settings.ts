@@ -47,10 +47,21 @@ export function buildSettingsMessage(guildConfig: GuildConfig, memberName?: stri
         inline: false,
       },
       {
-        name: '🌐 Général',
+        name: '🌐 Général & Langue',
         value:
           `• **Langue :** \`${guildConfig.language.toUpperCase()}\`\n` +
           `• **Fuseau horaire :** \`${guildConfig.timezone}\``,
+        inline: true,
+      },
+      {
+        name: '🔒 Confidentialité & Personnalité',
+        value:
+          `• **Visibilité des réponses :** ${
+            guildConfig.responseVisibility === 'EPHEMERAL'
+              ? '🔒 **Privé (Éphémère)** *(visible uniquement par l\'utilisateur)*'
+              : '👁️ **Public** *(visible par tout le salon)*'
+          }\n` +
+          `• **Personnalité / Ton :** \`${guildConfig.botPersonality || 'FRIENDLY'}\``,
         inline: false,
       }
     )
@@ -64,6 +75,16 @@ export function buildSettingsMessage(guildConfig: GuildConfig, memberName?: stri
     .setCustomId('settings_select_category')
     .setPlaceholder('Sélectionnez une catégorie à modifier...')
     .addOptions(
+      new StringSelectMenuOptionBuilder()
+        .setLabel('Confidentialité des Réponses (Public / Privé)')
+        .setDescription('Choisir si les réponses aux commandes sont visibles par tous ou privées')
+        .setValue('edit_privacy')
+        .setEmoji('🔒'),
+      new StringSelectMenuOptionBuilder()
+        .setLabel('Personnalité & Style du Bot')
+        .setDescription('Changer le ton de réponse : Amical, Professionnel, Fun, Concis, Cyber')
+        .setValue('edit_personality')
+        .setEmoji('🎭'),
       new StringSelectMenuOptionBuilder()
         .setLabel('Modifier les Couleurs (HEX)')
         .setDescription('Personnaliser la couleur principale, secondaire, succès et erreur')
@@ -93,6 +114,11 @@ export function buildSettingsMessage(guildConfig: GuildConfig, memberName?: stri
 
   // Rangée de boutons pour les bascules rapides (Toggles)
   const buttonsRow = new ActionRowBuilder<ButtonBuilder>().addComponents(
+    new ButtonBuilder()
+      .setCustomId('settings_toggle_privacy')
+      .setLabel(guildConfig.responseVisibility === 'EPHEMERAL' ? 'Réponses Privées' : 'Réponses Publiques')
+      .setStyle(guildConfig.responseVisibility === 'EPHEMERAL' ? ButtonStyle.Primary : ButtonStyle.Secondary)
+      .setEmoji(guildConfig.responseVisibility === 'EPHEMERAL' ? '🔒' : '👁️'),
     new ButtonBuilder()
       .setCustomId('settings_toggle_prefix')
       .setLabel(guildConfig.prefixCommandsEnabled ? 'Désactiver Préfixe' : 'Activer Préfixe')

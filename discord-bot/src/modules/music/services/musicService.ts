@@ -59,7 +59,15 @@ class MusicService {
       // Vérifier si le bot est déjà connecté dans un salon
       const state = player.getState();
       if (!state.voiceChannel) {
-        // En mode dashboard, se connecter au premier salon vocal disponible
+        // Si la requête provient d'un membre Discord mais qu'il n'est dans aucun salon vocal
+        if (member) {
+          return {
+            success: false,
+            error: 'Vous devez impérativement être connecté dans un salon vocal pour lancer la musique.',
+          };
+        }
+
+        // En mode dashboard externe sans membre explicite, chercher un salon vocal accessible
         const defaultVoice = guild.channels.cache.find(
           (c) => c.isVoiceBased() && c.permissionsFor(guild.members.me!)?.has('Connect')
         );
@@ -68,7 +76,7 @@ class MusicService {
         } else {
           return {
             success: false,
-            error: 'Veuillez rejoindre un salon vocal ou spécifier un salon pour lancer la lecture.',
+            error: 'Aucun salon vocal disponible ou accessible pour lancer la lecture.',
           };
         }
       }

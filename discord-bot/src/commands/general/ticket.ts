@@ -11,7 +11,14 @@ export const ticketCommand: Command = {
   category: 'Support',
   slashData: new SlashCommandBuilder()
     .setName('ticket')
-    .setDescription('Ouvre un ticket d’assistance privé'),
+    .setDescription('Ouvre un ticket d’assistance privé auprès de l\'équipe')
+    .addStringOption((opt) =>
+      opt
+        .setName('sujet')
+        .setDescription('Motif ou description de votre demande')
+        .setRequired(false)
+        .setMaxLength(100)
+    ),
 
   async execute(ctx: CommandContext): Promise<void> {
     if (!ctx.guild) {
@@ -41,6 +48,11 @@ export const ticketCommand: Command = {
       });
       return;
     }
+
+    const subject =
+      (ctx.isSlash && ctx.interaction ? (ctx.interaction as any).options?.getString('sujet') : null) ||
+      ctx.args.join(' ') ||
+      null;
 
     try {
       // Création du salon privé
@@ -75,7 +87,9 @@ export const ticketCommand: Command = {
         .createEmbed('default')
         .setTitle(`🎫 Ticket Support • ${ctx.author.username}`)
         .setDescription(
-          `Bonjour ${ctx.author} ! Un membre de l'équipe va vous assister sous peu.\nDécrivez précisément votre demande ci-dessous.`
+          `Bonjour ${ctx.author} ! Un membre de l'équipe d'assistance va vous répondre sous peu.\n\n` +
+          (subject ? `📌 **Motif :** *${subject}*\n\n` : '') +
+          `Veuillez détailler votre situation ou question ci-dessous.`
         );
 
       await ticketChannel.send({ content: `${ctx.author}`, embeds: [ticketEmbed] });

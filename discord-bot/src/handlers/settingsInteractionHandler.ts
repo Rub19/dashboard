@@ -12,6 +12,7 @@ import {
 import { buildSettingsMessage } from '../commands/admin/settings.js';
 import { guildConfigService } from '../services/guildConfigService.js';
 import { HexColorRegex } from '../types/guildConfig.js';
+import { aiRepository } from '../modules/ai/storage/aiRepository.js';
 import { logger } from '../utils/logger.js';
 
 export async function handleSettingsSelectMenu(interaction: StringSelectMenuInteraction): Promise<void> {
@@ -26,7 +27,46 @@ export async function handleSettingsSelectMenu(interaction: StringSelectMenuInte
   const selected = interaction.values[0];
   const conf = guildConfigService.getConfig(interaction.guildId);
 
-  if (selected === 'edit_colors') {
+  if (selected === 'edit_privacy') {
+    const nextVis = conf.responseVisibility === 'EPHEMERAL' ? 'PUBLIC' : 'EPHEMERAL';
+    const updated = guildConfigService.updateConfig(interaction.guildId, {
+      responseVisibility: nextVis,
+    });
+    const messagePayload = buildSettingsMessage(updated);
+    await interaction.update(messagePayload);
+    return;
+  } else if (selected === 'edit_personality') {
+    const personalities = ['FRIENDLY', 'PROFESSIONAL', 'HUMOROUS', 'CONCISE', 'CYBER'] as const;
+    const currentIdx = personalities.indexOf((conf.botPersonality as any) || 'FRIENDLY');
+    const nextPersonality = personalities[(currentIdx + 1) % personalities.length];
+
+    const updated = guildConfigService.updateConfig(interaction.guildId, {
+      botPersonality: nextPersonality,
+    });
+
+    try {
+      const toneMap: Record<string, any> = {
+        FRIENDLY: 'FRIENDLY',
+        PROFESSIONAL: 'PROFESSIONAL',
+        HUMOROUS: 'FUNNY',
+        CONCISE: 'CONCISE',
+        CYBER: 'CUSTOM',
+      };
+      const aiSettings = aiRepository.getSettings(interaction.guildId);
+      aiRepository.saveSettings(interaction.guildId, {
+        persona: {
+          ...aiSettings.persona,
+          tone: toneMap[nextPersonality] || 'FRIENDLY',
+        },
+      });
+    } catch (e) {
+      logger.warn('Failed to sync AI settings personality:', e);
+    }
+
+    const messagePayload = buildSettingsMessage(updated);
+    await interaction.update(messagePayload);
+    return;
+  } else if (selected === 'edit_colors') {
     const modal = new ModalBuilder()
       .setCustomId('modal_settings_colors')
       .setTitle('🎨 Couleurs du Bot (Format HEX)');
@@ -179,7 +219,14 @@ export async function handleSettingsButton(interaction: ButtonInteraction): Prom
   const guildId = interaction.guildId;
   const current = guildConfigService.getConfig(guildId);
 
-  if (interaction.customId === 'settings_toggle_prefix') {
+  if (interaction.customId === 'settings_toggle_privacy') {
+    const nextVis = current.responseVisibility === 'EPHEMERAL' ? 'PUBLIC' : 'EPHEMERAL';
+    const updated = guildConfigService.updateConfig(guildId, {
+      responseVisibility: nextVis,
+    });
+    const messagePayload = buildSettingsMessage(updated);
+    await interaction.update(messagePayload);
+  } else if (interaction.customId === 'settings_toggle_prefix') {
     const updated = guildConfigService.updateConfig(guildId, {
       prefixCommandsEnabled: !current.prefixCommandsEnabled,
     });

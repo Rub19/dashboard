@@ -23,8 +23,8 @@ export const askCommand: Command = {
     )
     .addBooleanOption((opt) =>
       opt
-        .setName('private')
-        .setDescription('Répondre de manière éphémère (visible uniquement par vous)')
+        .setName('prive')
+        .setDescription('Répondre de manière privée / éphémère (visible uniquement par vous)')
         .setRequired(false)
     ),
   execute: async (ctx: CommandContext) => {
@@ -43,9 +43,13 @@ export const askCommand: Command = {
       }
 
       const isPrivate =
-        (ctx.interaction ? ctx.interaction.options.getBoolean('private') : false) || false;
+        (ctx.interaction ? (ctx.interaction.options.getBoolean('prive') ?? ctx.interaction.options.getBoolean('private')) : null);
 
-      await ctx.deferReply({ ephemeral: isPrivate });
+      if (isPrivate !== null && isPrivate !== undefined) {
+        await ctx.deferReply({ ephemeral: isPrivate });
+      } else {
+        await ctx.deferReply();
+      }
 
       const guildId = ctx.guild?.id || ctx.interaction?.guildId || ctx.guildConfig.guildId || '123456789012345678';
       const settings = aiRepository.getSettings(guildId);

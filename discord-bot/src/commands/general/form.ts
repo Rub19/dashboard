@@ -32,8 +32,8 @@ export const formCommand: Command = {
         )
         .addChannelOption((opt) =>
           opt
-            .setName('channel')
-            .setDescription('Salon de destination')
+            .setName('salon')
+            .setDescription('Salon textuel de destination')
             .addChannelTypes(ChannelType.GuildText)
             .setRequired(false)
         )
@@ -97,7 +97,7 @@ export const formCommand: Command = {
     if (subcommand === 'panel') {
       let targetChannel: any = ctx.channel;
       if (ctx.isSlash && ctx.interaction) {
-        targetChannel = ctx.interaction.options.getChannel('channel') || ctx.channel;
+        targetChannel = ctx.interaction.options.getChannel('salon') || ctx.interaction.options.getChannel('channel') || ctx.channel;
       }
 
       if (!targetChannel || !targetChannel.isTextBased() || !('send' in targetChannel)) {

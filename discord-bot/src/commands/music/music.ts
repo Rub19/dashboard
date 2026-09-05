@@ -105,6 +105,32 @@ export const musicCommand: Command = {
       queryArg = ctx.args.slice(1).join(' ');
     }
 
+    // Vérification stricte du salon vocal pour les actions de lecture et de contrôle
+    const voiceRequiredSubcommands = [
+      'play', 'p', 'pause', 'resume', 'skip', 's', 'previous', 'prev',
+      'stop', 'volume', 'vol', 'seek', 'shuffle', 'loop', 'remove', 'clear'
+    ];
+
+    if (voiceRequiredSubcommands.includes(subcommand)) {
+      const userVoice = member.voice?.channel;
+      if (!userVoice) {
+        await replyError(
+          ctx,
+          '❌ **Salon vocal requis** : Vous devez impérativement être connecté dans un salon vocal pour lancer ou contrôler la musique !'
+        );
+        return;
+      }
+
+      const botVoice = guild.members.me?.voice?.channel;
+      if (botVoice && botVoice.id !== userVoice.id) {
+        await replyError(
+          ctx,
+          `❌ **Salon vocal différent** : Vous devez être dans le même salon vocal que le bot (<#${botVoice.id}>) pour contrôler la musique.`
+        );
+        return;
+      }
+    }
+
     switch (subcommand) {
       case 'play':
       case 'p': {

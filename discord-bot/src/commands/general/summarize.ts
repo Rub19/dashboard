@@ -9,11 +9,11 @@ export const summarizeCommand: Command = {
   aliases: ['resume', 'recap'],
   slashData: new SlashCommandBuilder()
     .setName('summarize')
-    .setDescription('Résume les derniers messages du salon')
+    .setDescription('Résume les derniers messages échangés dans le salon')
     .addIntegerOption((opt) =>
       opt
-        .setName('count')
-        .setDescription('Nombre de messages récents à analyser (10 à 50)')
+        .setName('nombre')
+        .setDescription('Nombre de messages récents à analyser (5 à 50)')
         .setMinValue(5)
         .setMaxValue(50)
         .setRequired(false)
@@ -21,7 +21,7 @@ export const summarizeCommand: Command = {
   execute: async (ctx: CommandContext) => {
     try {
       const count =
-        (ctx.isSlash && ctx.interaction ? ctx.interaction.options.getInteger('count') : null) ||
+        (ctx.isSlash && ctx.interaction ? (ctx.interaction.options.getInteger('nombre') || ctx.interaction.options.getInteger('count')) : null) ||
         (ctx.args[0] ? parseInt(ctx.args[0], 10) : null) ||
         20;
 

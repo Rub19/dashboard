@@ -144,6 +144,27 @@ export class DiscordMusicPanel {
     const member = interaction.member && 'voice' in interaction.member ? (interaction.member as any) : null;
     if (!guild) return;
 
+    // Vérification du salon vocal pour les boutons de contrôle musical
+    if (customId !== 'music_queue') {
+      const userVoice = member?.voice?.channel;
+      if (!userVoice) {
+        await interaction.reply({
+          content: '❌ **Salon vocal requis** : Vous devez impérativement être connecté dans un salon vocal pour utiliser les contrôles musicaux.',
+          ephemeral: true,
+        });
+        return;
+      }
+
+      const botVoice = guild.members.me?.voice?.channel;
+      if (botVoice && botVoice.id !== userVoice.id) {
+        await interaction.reply({
+          content: `❌ **Salon vocal différent** : Vous devez être dans le même salon vocal que le bot (<#${botVoice.id}>) pour contrôler la musique.`,
+          ephemeral: true,
+        });
+        return;
+      }
+    }
+
     await interaction.deferUpdate().catch(() => {});
 
     switch (customId) {

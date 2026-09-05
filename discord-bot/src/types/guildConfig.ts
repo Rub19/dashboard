@@ -55,6 +55,10 @@ export const GuildConfigSchema = z.object({
   // Général
   language: z.enum(['fr', 'en']).default('fr'),
   timezone: z.string().default('Europe/Paris'),
+
+  // Confidentialité & Personnalisation
+  responseVisibility: z.enum(['PUBLIC', 'EPHEMERAL']).default('PUBLIC'),
+  botPersonality: z.enum(['FRIENDLY', 'PROFESSIONAL', 'HUMOROUS', 'CONCISE', 'CYBER']).default('FRIENDLY'),
 });
 
 export type GuildConfig = z.infer<typeof GuildConfigSchema>;
@@ -94,6 +98,8 @@ export const defaultGuildConfig: Omit<GuildConfig, 'guildId'> = {
   },
   language: 'fr',
   timezone: 'Europe/Paris',
+  responseVisibility: 'PUBLIC',
+  botPersonality: 'FRIENDLY',
 };
 
 /**

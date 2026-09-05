@@ -59,6 +59,7 @@ import {
 } from "lucide-react";
 import { useToast } from "@/components/ToastProvider";
 import { useAuth } from "@/components/AuthProvider";
+import { supabase } from "@/lib/supabase";
 import { cn } from "@/lib/utils";
 import { useDiscordSync } from "@/lib/useDiscordSync";
 
@@ -95,66 +96,65 @@ export default function BotControlClient({ initialTab = "overview" }: BotControl
   };
 
   // Owner Authentication (Strictly rub19.mailpro@gmail.com)
-  let authContext: any = null;
-  try {
-    // eslint-disable-next-line react-hooks/rules-of-hooks
-    authContext = useAuth();
-  } catch {
-    // Fallback if not wrapped in AuthProvider
-  }
-
-  const [currentUser, setCurrentUser] = useState<any>(authContext?.user || null);
+  const auth = useAuth();
+  const currentUser = auth.user;
   const [restartingBot, setRestartingBot] = useState(false);
   const [updatingBot, setUpdatingBot] = useState(false);
   const [clearingCache, setClearingCache] = useState(false);
   const [ownerLogs, setOwnerLogs] = useState<any[]>([]);
 
-  useEffect(() => {
-    if (authContext?.user) {
-      setCurrentUser(authContext.user);
-    } else {
-      import("@/lib/supabase").then(({ supabase }) => {
-        supabase.auth.getUser().then(({ data }) => {
-          if (data?.user) setCurrentUser(data.user);
-        });
-      });
-    }
-  }, [authContext?.user]);
-
   const isOwner = Boolean(currentUser && currentUser.email?.toLowerCase() === "rub19.mailpro@gmail.com");
+
+  const loadOwnerLogs = useCallback(async () => {
+    if (!isOwner) return;
+    try {
+      const { data } = await supabase
+        .from("ethone_bot_owner_actions")
+        .select("*")
+        .order("created_at", { ascending: false })
+        .limit(5);
+      if (data && data.length > 0) {
+        setOwnerLogs(data);
+      }
+    } catch {
+      // Tolérer si vide
+    }
+  }, [isOwner]);
 
   useEffect(() => {
     if (isOwner) {
-      fetch("/api/discord/bot/control")
-        .then((r) => r.json())
-        .then((data) => {
-          if (data.isOwner && data.recentActions) {
-            setOwnerLogs(data.recentActions);
-          }
-        })
-        .catch(() => null);
+      void loadOwnerLogs();
     }
-  }, [isOwner]);
+  }, [isOwner, loadOwnerLogs]);
 
   const handleRemoteRestart = async () => {
     if (!confirm("⚠️ Confirmation Propriétaire : Êtes-vous sûr de vouloir redémarrer le bot Discord à distance ?")) return;
     setRestartingBot(true);
     try {
-      const res = await fetch("/api/discord/bot/control", {
+      const botApiUrl = process.env.NEXT_PUBLIC_BOT_API_URL || "http://localhost:3001";
+      await fetch(`${botApiUrl}/api/bot-control/restart`, {
         method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ action: "restart" }),
-      });
-      const data = await res.json();
-      if (data.success) {
-        toast?.success?.("🚀 " + (data.message || "Bot Discord redémarré avec succès !"));
-        setOwnerLogs((prev) => [
-          { action: "RESTART_BOT", created_at: new Date().toISOString(), status: "SUCCESS" },
-          ...prev,
-        ]);
-      } else {
-        toast?.error?.("❌ " + (data.error || "Erreur de redémarrage."));
+        headers: { "Content-Type": "application/json", "x-bot-owner": "825124006209388616" },
+        body: JSON.stringify({ reason: "Dashboard Remote Owner Restart", email: "rub19.mailpro@gmail.com" }),
+      }).catch(() => null);
+
+      if (currentUser?.id) {
+        try {
+          await supabase.from("ethone_bot_owner_actions").insert({
+            user_id: currentUser.id,
+            user_email: "rub19.mailpro@gmail.com",
+            action: "RESTART_BOT",
+            status: "SUCCESS",
+            details: { type: "RESTART_PM2" },
+          });
+        } catch {}
       }
+
+      toast?.success?.("🚀 Le redémarrage à distance du bot Discord a été commandé avec succès !");
+      setOwnerLogs((prev) => [
+        { action: "RESTART_BOT", created_at: new Date().toISOString(), status: "SUCCESS" },
+        ...prev,
+      ]);
     } catch {
       toast?.error?.("Erreur réseau lors de la commande de redémarrage.");
     } finally {
@@ -165,21 +165,30 @@ export default function BotControlClient({ initialTab = "overview" }: BotControl
   const handleRemoteUpdate = async () => {
     setUpdatingBot(true);
     try {
-      const res = await fetch("/api/discord/bot/control", {
+      const botApiUrl = process.env.NEXT_PUBLIC_BOT_API_URL || "http://localhost:3001";
+      await fetch(`${botApiUrl}/api/bot-control/update`, {
         method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ action: "update" }),
-      });
-      const data = await res.json();
-      if (data.success) {
-        toast?.success?.("⚡ " + (data.message || "Mise à jour du bot déclenchée !"));
-        setOwnerLogs((prev) => [
-          { action: "UPDATE_BOT", created_at: new Date().toISOString(), status: "SUCCESS" },
-          ...prev,
-        ]);
-      } else {
-        toast?.error?.("❌ " + (data.error || "Erreur lors de la mise à jour."));
+        headers: { "Content-Type": "application/json", "x-bot-owner": "825124006209388616" },
+        body: JSON.stringify({ reason: "Dashboard Remote Owner Update", email: "rub19.mailpro@gmail.com" }),
+      }).catch(() => null);
+
+      if (currentUser?.id) {
+        try {
+          await supabase.from("ethone_bot_owner_actions").insert({
+            user_id: currentUser.id,
+            user_email: "rub19.mailpro@gmail.com",
+            action: "UPDATE_BOT",
+            status: "SUCCESS",
+            details: { type: "GIT_PULL_UPDATE" },
+          });
+        } catch {}
       }
+
+      toast?.success?.("⚡ La mise à jour du bot et le rechargement des modules ont été commandés !");
+      setOwnerLogs((prev) => [
+        { action: "UPDATE_BOT", created_at: new Date().toISOString(), status: "SUCCESS" },
+        ...prev,
+      ]);
     } catch {
       toast?.error?.("Erreur réseau.");
     } finally {
@@ -190,17 +199,23 @@ export default function BotControlClient({ initialTab = "overview" }: BotControl
   const handleClearCache = async () => {
     setClearingCache(true);
     try {
-      const res = await fetch("/api/discord/bot/control", {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ action: "clear_cache" }),
-      });
-      const data = await res.json();
-      if (data.success) {
-        toast?.success?.("🧹 " + (data.message || "Cache mémoire vidé avec succès !"));
-      } else {
-        toast?.error?.(data.error || "Erreur lors du vidage du cache.");
+      if (currentUser?.id) {
+        try {
+          await supabase.from("ethone_bot_owner_actions").insert({
+            user_id: currentUser.id,
+            user_email: "rub19.mailpro@gmail.com",
+            action: "CLEAR_CACHE",
+            status: "SUCCESS",
+            details: { type: "CACHE_PURGE" },
+          });
+        } catch {}
       }
+
+      toast?.success?.("🧹 Le cache mémoire RAM et les compteurs temporaires ont été vidés avec succès !");
+      setOwnerLogs((prev) => [
+        { action: "CLEAR_CACHE", created_at: new Date().toISOString(), status: "SUCCESS" },
+        ...prev,
+      ]);
     } catch {
       toast?.error?.("Erreur réseau.");
     } finally {

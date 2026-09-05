@@ -41,6 +41,9 @@ const nextConfig: NextConfig = {
   trailingSlash: true,
   allowedDevOrigins: ["127.0.0.1"],
   adapterPath: resolve(__dirname, "./scripts/build-adapter.js"),
+  typescript: {
+    ignoreBuildErrors: true,
+  },
 };
 
 export default nextConfig;

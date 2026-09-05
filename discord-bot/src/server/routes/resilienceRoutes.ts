@@ -8,6 +8,9 @@ import { healthStatusService } from '../../services/resilience/healthStatusServi
 import { circuitBreakerRegistry } from '../../services/resilience/circuitBreakerService.js';
 import { reconciliationEngine } from '../../services/resilience/reconciliationEngine.js';
 import { startupRecoveryService } from '../../services/resilience/startupRecoveryService.js';
+import { rateLimiterService } from '../../services/resilience/rateLimiterService.js';
+import { guildOperationLockService } from '../../services/resilience/guildOperationLockService.js';
+import { idempotencyService } from '../../services/resilience/idempotencyService.js';
 
 export function createResilienceRouter(): Router {
   const router = Router();
@@ -64,6 +67,28 @@ export function createResilienceRouter(): Router {
     circuitBreakerRegistry.resetAll();
     healthStatusService.setSystemState('HEALTHY', 'All circuits reset to nominal');
     res.json({ success: true, message: 'Circuits rétablis et santé déclarée HEALTHY.' });
+  });
+
+  // 7. GET /api/resilience/rate-limits - Métriques du rate limiter
+  router.get('/rate-limits', (req: Request, res: Response) => {
+    res.json({ success: true, data: rateLimiterService.getStats() });
+  });
+
+  // 8. GET /api/resilience/abuse-logs - Journal d'audit des dépassements et abus
+  router.get('/abuse-logs', (req: Request, res: Response) => {
+    const limit = parseInt(req.query.limit as string) || 100;
+    const guildId = req.query.guildId as string | undefined;
+    res.json({ success: true, data: rateLimiterService.getAbuseLogs(guildId, limit) });
+  });
+
+  // 9. GET /api/resilience/locks - Verrous d'opérations lourdes actifs
+  router.get('/locks', (req: Request, res: Response) => {
+    res.json({ success: true, data: guildOperationLockService.getAllActiveLocks() });
+  });
+
+  // 10. GET /api/resilience/idempotency - Statistiques du cache d'idempotence
+  router.get('/idempotency', (req: Request, res: Response) => {
+    res.json({ success: true, data: idempotencyService.getStats() });
   });
 
   return router;

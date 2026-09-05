@@ -3,6 +3,7 @@ import { Client } from 'discord.js';
 import { backupService } from '../../modules/backup/services/backupService.js';
 import { backupRepository } from '../../modules/backup/storage/backupRepository.js';
 import { logger } from '../../utils/logger.js';
+import { rateLimit, idempotent, guildLock } from '../middleware/antiAbuseMiddleware.js';
 
 export function createBackupRouter(client: Client): Router {
   const router = Router({ mergeParams: true });
@@ -39,7 +40,12 @@ export function createBackupRouter(client: Client): Router {
   });
 
   // 3. Création d'une sauvegarde
-  router.post('/', async (req: Request, res: Response) => {
+  router.post(
+    '/',
+    guildLock('BACKUP_CREATE', 60000),
+    rateLimit('SENSITIVE', { byGuild: true, actionName: 'backup_create' }),
+    idempotent({ scopePrefix: 'backup_create' }),
+    async (req: Request, res: Response) => {
     try {
       const { guildId } = req.params;
       const { name, description, type, isProtected, includedComponents } = req.body;
@@ -69,6 +75,40 @@ export function createBackupRouter(client: Client): Router {
       res.status(500).json({ error: err.message || 'Erreur lors de la création de la sauvegarde' });
     }
   });
+
+  // 3b. Import d'une sauvegarde (.ethone-backup.json)
+  router.post(
+    '/import',
+    guildLock('BACKUP_CREATE', 30000),
+    rateLimit('SENSITIVE', { byGuild: true, actionName: 'backup_import' }),
+    idempotent({ scopePrefix: 'backup_import' }),
+    async (req: Request, res: Response) => {
+      try {
+        const { guildId } = req.params;
+        const { payload, allowCrossGuildMigration } = req.body;
+
+        if (!payload || typeof payload !== 'object') {
+          return res.status(400).json({ error: 'Payload de sauvegarde requis' });
+        }
+
+        const user = (req as any).user || { id: 'admin', username: 'DashboardAdmin' };
+        const snapshot = await backupService.importBackup({
+          guildId,
+          rawPayload: payload,
+          allowCrossGuildMigration: Boolean(allowCrossGuildMigration),
+          importer: {
+            id: user.id,
+            tag: user.username,
+          },
+        });
+
+        res.status(201).json(snapshot);
+      } catch (err: any) {
+        logger.error('Erreur POST /backups/import :', err);
+        res.status(400).json({ error: err.message || 'Erreur lors de l\'importation' });
+      }
+    }
+  );
 
   // 4. Paramètres de planification & rétention
   router.get('/settings', (req: Request, res: Response) => {
@@ -239,7 +279,12 @@ export function createBackupRouter(client: Client): Router {
   });
 
   // 13. Exécution de la restauration
-  router.post('/:backupId/restore', async (req: Request, res: Response) => {
+  router.post(
+    '/:backupId/restore',
+    guildLock('BACKUP_RESTORE', 120000),
+    rateLimit('SENSITIVE', { byGuild: true, actionName: 'backup_restore' }),
+    idempotent({ scopePrefix: 'backup_restore' }),
+    async (req: Request, res: Response) => {
     try {
       const { guildId, backupId } = req.params;
       const { safetyLevel, mode, selectedComponents, confirmServerName } = req.body;

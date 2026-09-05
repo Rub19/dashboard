@@ -11,6 +11,7 @@ import { BotAiMonitorService } from '../../modules/botControl/services/botAiMoni
 import { BotIntegrationsService } from '../../modules/botControl/services/botIntegrationsService.js';
 import { BotSecurityAuditService } from '../../modules/botControl/services/botSecurityAuditService.js';
 import { BotConfigService } from '../../modules/botControl/services/botConfigService.js';
+import { rateLimit, idempotent } from '../middleware/antiAbuseMiddleware.js';
 
 export function createBotControlRouter(client: Client): Router {
   const router = Router();
@@ -213,31 +214,35 @@ export function createBotControlRouter(client: Client): Router {
   });
 
   // Diagnostics Suite Runner
-  router.post('/diagnostics/run', async (req: Request, res: Response) => {
-    try {
-      const suite = await diagnosticsService.runFullDiagnostics(client);
-      const passCount = suite.filter((s) => s.status === 'pass').length;
-      const warnCount = suite.filter((s) => s.status === 'warn').length;
-      const criticalCount = suite.filter((s) => s.status === 'critical').length;
+  router.post(
+    '/diagnostics/run',
+    rateLimit('EXPENSIVE', { actionName: 'bot_diagnostics' }),
+    async (req: Request, res: Response) => {
+      try {
+        const suite = await diagnosticsService.runFullDiagnostics(client);
+        const passCount = suite.filter((s) => s.status === 'pass').length;
+        const warnCount = suite.filter((s) => s.status === 'warn').length;
+        const criticalCount = suite.filter((s) => s.status === 'critical').length;
 
-      res.json({
-        success: true,
-        data: {
-          timestamp: new Date().toISOString(),
-          summary: {
-            total: suite.length,
-            pass: passCount,
-            warn: warnCount,
-            critical: criticalCount,
-            overallStatus: criticalCount > 0 ? 'CRITICAL' : warnCount > 0 ? 'WARN' : 'HEALTHY',
+        res.json({
+          success: true,
+          data: {
+            timestamp: new Date().toISOString(),
+            summary: {
+              total: suite.length,
+              pass: passCount,
+              warn: warnCount,
+              critical: criticalCount,
+              overallStatus: criticalCount > 0 ? 'CRITICAL' : warnCount > 0 ? 'WARN' : 'HEALTHY',
+            },
+            checks: suite,
           },
-          checks: suite,
-        },
-      });
-    } catch (err: any) {
-      res.status(500).json({ success: false, error: err.message });
+        });
+      } catch (err: any) {
+        res.status(500).json({ success: false, error: err.message });
+      }
     }
-  });
+  );
 
   // Bot Settings
   router.get('/settings', (req: Request, res: Response) => {
@@ -249,7 +254,11 @@ export function createBotControlRouter(client: Client): Router {
     }
   });
 
-  router.put('/settings', (req: Request, res: Response) => {
+  router.put(
+    '/settings',
+    rateLimit('CONFIG', { actionName: 'bot_settings' }),
+    idempotent({ scopePrefix: 'bot_settings' }),
+    (req: Request, res: Response) => {
     try {
       const updated = configService.updateSettings(req.body);
       res.json({ success: true, data: updated });

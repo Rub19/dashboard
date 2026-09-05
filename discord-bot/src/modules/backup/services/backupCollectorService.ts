@@ -157,11 +157,18 @@ export class BackupCollectorService {
           const overwrites: BackupPermissionOverwrite[] = [];
           if (includedComponents.includes('PERMISSIONS') && 'permissionOverwrites' in chan) {
             for (const ow of chan.permissionOverwrites.cache.values()) {
+              const allowStr = ow.allow?.bitfield !== undefined
+                ? ow.allow.bitfield.toString()
+                : (ow.allow !== undefined ? ow.allow.toString() : '0');
+              const denyStr = ow.deny?.bitfield !== undefined
+                ? ow.deny.bitfield.toString()
+                : (ow.deny !== undefined ? ow.deny.toString() : '0');
+
               overwrites.push({
                 id: ow.id,
                 type: ow.type === 0 ? 'role' : 'member',
-                allow: ow.allow.bitfield.toString(),
-                deny: ow.deny.bitfield.toString(),
+                allow: allowStr,
+                deny: denyStr,
               });
               permissionCount++;
             }
@@ -201,7 +208,7 @@ export class BackupCollectorService {
     // 4. Emojis
     onProgress('Collecting emojis...', 75);
     const emojis: BackupEmoji[] = [];
-    if (includedComponents.includes('EMOJIS') && guild) {
+    if (includedComponents.includes('EMOJIS') && guild?.emojis?.fetch) {
       const fetchedEmojis = await guild.emojis.fetch().catch(() => null);
       if (fetchedEmojis) {
         for (const emo of fetchedEmojis.values()) {

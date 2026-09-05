@@ -14,6 +14,8 @@ import {
 import { backupRepository } from '../storage/backupRepository.js';
 import { BackupCollectorService } from './backupCollectorService.js';
 import { BackupIntegrityService } from './backupIntegrityService.js';
+import { BackupDiffService } from './backupDiffService.js';
+import { discordApiRetryManager } from '../../../services/resilience/discordApiRetryManager.js';
 import { logger } from '../../../utils/logger.js';
 
 export class BackupRestoreService {
@@ -107,20 +109,23 @@ export class BackupRestoreService {
     // 2. Audit des Catégories & Salons
     if (selectedComponents.includes('CHANNELS') || selectedComponents.includes('CATEGORIES')) {
       const liveChannels = guild ? await guild.channels.fetch().catch(() => null) : null;
-      const chanList = liveChannels ? Array.from(liveChannels.values()) : [];
-      const liveChannelsMap = new Map(
-        chanList.filter((c: any) => c !== null).map((c: any) => [c.name.toLowerCase(), c])
-      );
+      const chanList = liveChannels ? Array.from(liveChannels.values()).filter(Boolean) : [];
 
-      // Catégories
       if (selectedComponents.includes('CATEGORIES')) {
+        const liveCatMap = new Map(
+          chanList
+            .filter((c: any) => c.type === ChannelType.GuildCategory)
+            .map((c: any) => [c.name.toLowerCase(), c])
+        );
+
         for (const bCat of backup.data.categories || []) {
-          const existing = liveChannelsMap.get(bCat.name.toLowerCase());
+          const existing = liveCatMap.get(bCat.name.toLowerCase());
           if (!existing) {
             actions.push({
               action: 'CREATE',
               type: 'CATEGORY',
               name: bCat.name,
+              details: `Catégorie à créer à la position ${bCat.position}`,
             });
             willCreate++;
           } else {
@@ -129,16 +134,22 @@ export class BackupRestoreService {
               type: 'CATEGORY',
               name: bCat.name,
               targetId: existing.id,
+              details: 'Synchronisation de la position et des permissions',
             });
             willModify++;
           }
         }
       }
 
-      // Salons
       if (selectedComponents.includes('CHANNELS')) {
+        const liveTextVoiceMap = new Map(
+          chanList
+            .filter((c: any) => c.type !== ChannelType.GuildCategory)
+            .map((c: any) => [c.name.toLowerCase(), c])
+        );
+
         for (const bChan of backup.data.channels || []) {
-          const existing = liveChannelsMap.get(bChan.name.toLowerCase());
+          const existing = liveTextVoiceMap.get(bChan.name.toLowerCase());
           if (!existing) {
             actions.push({
               action: 'CREATE',
@@ -222,7 +233,8 @@ export class BackupRestoreService {
   }
 
   /**
-   * Exécute un job de restauration sécurisé avec capture de rollback préalable
+   * Exécute un job de restauration sécurisé avec capture de rollback préalable,
+   * remapping complet des snowflakes Discord, retry manager anti-429 et réconciliation finale
    */
   public static async executeRestore(params: {
     client: Client;
@@ -243,10 +255,20 @@ export class BackupRestoreService {
       actorTag,
     } = params;
 
-    // 1. Vérification d'intégrité préalable
-    const integrity = BackupIntegrityService.verifySnapshot(backup);
-    if (!integrity.valid) {
-      throw new Error(`Échec d'intégrité du snapshot : ${integrity.reason}`);
+    // 1. Re-entry guard: Empêcher l'exécution simultanée d'un second restore sur la même guild
+    const recentJobs = backupRepository.getRecentJobs(guildId);
+    const activeJob = recentJobs.find(
+      (j) => j.status === 'PREPARING' || j.status === 'APPLYING' || j.status === 'VERIFYING'
+    );
+    if (activeJob) {
+      logger.warn(`[BackupRestore] Restauration déjà en cours pour ${guildId} (Job: ${activeJob.jobId}).`);
+      return activeJob;
+    }
+
+    // 2. Vérification rigoureuse d'intégrité préalable
+    const validation = BackupIntegrityService.validateForRestore(backup, guildId);
+    if (!validation.ready) {
+      throw new Error(`Restauration rejetée : ${validation.error}`);
     }
 
     const guild = client.guilds.cache.get(guildId) || null;
@@ -269,7 +291,7 @@ export class BackupRestoreService {
     backupRepository.saveJob(job);
 
     try {
-      // 2. Capture de Rollback automatique de l'état actuel du serveur
+      // 3. Capture de Rollback automatique de l'état actuel du serveur
       job.logs.push(`[${new Date().toLocaleTimeString()}] Capture automatique du Rollback snapshot...`);
       const rollbackSnapshot = await BackupCollectorService.createSnapshot({
         guild,
@@ -288,8 +310,47 @@ export class BackupRestoreService {
       job.currentStep = 'Application des modifications...';
       backupRepository.saveJob(job);
 
-      // 3. Application des Rôles
-      const roleIdMapping = new Map<string, string>(); // Ancien ID -> Nouveau ID
+      // Maps pour le remapping des anciens snowflakes vers les nouveaux/actuels
+      const roleIdMapping = new Map<string, string>();       // Ancien Role ID -> Actuel/Nouveau Role ID
+      const categoryIdMapping = new Map<string, string>();   // Ancien Category ID -> Actuel/Nouveau Category ID
+      const channelIdMapping = new Map<string, string>();    // Ancien Channel ID -> Actuel/Nouveau Channel ID
+
+      // 4. Catégories (Créées en premier pour que les salons puissent référencer leur parentId)
+      if (selectedComponents.includes('CATEGORIES') && guild) {
+        job.currentStep = 'Restauration des catégories...';
+        job.logs.push(`[${new Date().toLocaleTimeString()}] Restauration de ${backup.data.categories.length} catégories...`);
+
+        for (const bCat of backup.data.categories) {
+          try {
+            const existing = Array.from(guild.channels.cache.values()).find(
+              (c: any) => c.type === ChannelType.GuildCategory && c.name.toLowerCase() === bCat.name.toLowerCase()
+            );
+            if (existing) {
+              categoryIdMapping.set(bCat.id, existing.id);
+              job.logs.push(`- Catégorie synchronisée : ${bCat.name}`);
+            } else {
+              const created = await discordApiRetryManager.executeWithRetry(
+                () =>
+                  guild.channels.create({
+                    name: bCat.name,
+                    type: ChannelType.GuildCategory,
+                    position: bCat.position,
+                    reason: `ETHONE Restore: ${backup.name}`,
+                  }),
+                { operationName: `restore_create_category_${bCat.name}` }
+              );
+              categoryIdMapping.set(bCat.id, created.id);
+              job.logs.push(`- Catégorie créée : ${bCat.name}`);
+            }
+          } catch (err: any) {
+            job.errors.push(`Erreur catégorie ${bCat.name}: ${err.message}`);
+          }
+        }
+        job.progressPercent = 35;
+        backupRepository.saveJob(job);
+      }
+
+      // 5. Application des Rôles (Créés avant les salons afin que les permissions overwrites puissent les référencer)
       if (selectedComponents.includes('ROLES') && guild) {
         job.currentStep = 'Restauration des rôles...';
         job.logs.push(`[${new Date().toLocaleTimeString()}] Restauration de ${backup.data.roles.length} rôles...`);
@@ -298,34 +359,47 @@ export class BackupRestoreService {
         const botHighestRole = botMember?.roles.highest.position || 0;
 
         for (const bRole of backup.data.roles) {
-          if (bRole.isEveryone || bRole.managed) continue;
+          if (bRole.isEveryone) {
+            roleIdMapping.set(bRole.id, guild.id);
+            continue;
+          }
+          if (bRole.managed) continue;
 
           try {
-            const existing = guild.roles.cache.find(
-              (r) => r.name.toLowerCase() === bRole.name.toLowerCase()
+            const existing = Array.from(guild.roles.cache.values()).find(
+              (r: any) => r.name.toLowerCase() === bRole.name.toLowerCase()
             );
 
             if (existing) {
               if (existing.position < botHighestRole) {
-                await existing.edit({
-                  color: bRole.color,
-                  hoist: bRole.hoist,
-                  mentionable: bRole.mentionable,
-                }).catch(() => null);
+                await discordApiRetryManager.executeWithRetry(
+                  () =>
+                    existing.edit({
+                      color: bRole.color,
+                      hoist: bRole.hoist,
+                      mentionable: bRole.mentionable,
+                    }),
+                  { operationName: `restore_edit_role_${bRole.name}` }
+                ).catch(() => null);
                 roleIdMapping.set(bRole.id, existing.id);
                 job.logs.push(`- Rôle mis à jour : @${bRole.name}`);
               } else {
+                roleIdMapping.set(bRole.id, existing.id);
                 job.logs.push(`- Rôle ignoré (hiérarchie supérieure au bot) : @${bRole.name}`);
               }
             } else {
-              const created = await guild.roles.create({
-                name: bRole.name,
-                color: bRole.color,
-                hoist: bRole.hoist,
-                mentionable: bRole.mentionable,
-                permissions: BigInt(bRole.permissions || 0),
-                reason: `ETHONE Restore: ${backup.name}`,
-              });
+              const created = await discordApiRetryManager.executeWithRetry(
+                () =>
+                  guild.roles.create({
+                    name: bRole.name,
+                    color: bRole.color,
+                    hoist: bRole.hoist,
+                    mentionable: bRole.mentionable,
+                    permissions: BigInt(bRole.permissions || 0),
+                    reason: `ETHONE Restore: ${backup.name}`,
+                  }),
+                { operationName: `restore_create_role_${bRole.name}` }
+              );
               roleIdMapping.set(bRole.id, created.id);
               job.logs.push(`- Rôle créé : @${bRole.name}`);
             }
@@ -333,90 +407,123 @@ export class BackupRestoreService {
             job.errors.push(`Erreur rôle ${bRole.name}: ${err.message}`);
           }
         }
-        job.progressPercent = 45;
+        job.progressPercent = 55;
         backupRepository.saveJob(job);
       }
 
-      // 4. Catégories & Salons
-      const categoryIdMapping = new Map<string, string>();
-      if (selectedComponents.includes('CATEGORIES') && guild) {
-        job.currentStep = 'Restauration des catégories...';
-        for (const bCat of backup.data.categories) {
-          try {
-            const existing = guild.channels.cache.find(
-              (c) => c.type === ChannelType.GuildCategory && c.name.toLowerCase() === bCat.name.toLowerCase()
-            );
-            if (existing) {
-              categoryIdMapping.set(bCat.id, existing.id);
-            } else {
-              const created = await guild.channels.create({
-                name: bCat.name,
-                type: ChannelType.GuildCategory,
-                position: bCat.position,
-                reason: `ETHONE Restore: ${backup.name}`,
-              });
-              categoryIdMapping.set(bCat.id, created.id);
-              job.logs.push(`- Catégorie créée : ${bCat.name}`);
-            }
-          } catch (err: any) {
-            job.errors.push(`Erreur catégorie ${bCat.name}: ${err.message}`);
-          }
-        }
-        job.progressPercent = 65;
-        backupRepository.saveJob(job);
-      }
-
-      // Salons
+      // 6. Salons et Permission Overwrites avec ID Remapping
       if (selectedComponents.includes('CHANNELS') && guild) {
-        job.currentStep = 'Restauration des salons...';
+        job.currentStep = 'Restauration des salons et permissions...';
         for (const bChan of backup.data.channels) {
           try {
-            const existing = guild.channels.cache.find(
-              (c) => c.type !== ChannelType.GuildCategory && c.name.toLowerCase() === bChan.name.toLowerCase()
+            const existing = Array.from(guild.channels.cache.values()).find(
+              (c: any) => c.type !== ChannelType.GuildCategory && c.name.toLowerCase() === bChan.name.toLowerCase()
             );
 
             const parentId = bChan.parentId ? categoryIdMapping.get(bChan.parentId) || null : null;
 
+            // Mapper les permission overwrites avec le roleIdMapping
+            const mappedOverwrites: any[] = [];
+            if (selectedComponents.includes('PERMISSIONS') && Array.isArray(bChan.permissionOverwrites)) {
+              for (const ow of bChan.permissionOverwrites) {
+                let targetId = ow.id;
+                if (ow.type === 'role') {
+                  if (ow.id === backup.guildId) {
+                    targetId = guild.id; // @everyone
+                  } else if (roleIdMapping.has(ow.id)) {
+                    targetId = roleIdMapping.get(ow.id)!;
+                  }
+                }
+                mappedOverwrites.push({
+                  id: targetId,
+                  type: ow.type === 'role' ? 0 : 1,
+                  allow: BigInt(ow.allow || '0'),
+                  deny: BigInt(ow.deny || '0'),
+                });
+              }
+            }
+
             if (existing) {
+              channelIdMapping.set(bChan.id, existing.id);
               if (parentId && existing.parentId !== parentId) {
                 await existing.setParent(parentId).catch(() => null);
               }
+              if (mappedOverwrites.length > 0 && 'permissionOverwrites' in existing) {
+                await (existing as any).permissionOverwrites.set(mappedOverwrites).catch(() => null);
+              }
               job.logs.push(`- Salon synchronisé : #${bChan.name}`);
             } else {
-              const created = await guild.channels.create({
-                name: bChan.name,
-                type: bChan.type as any,
-                topic: bChan.topic || undefined,
-                nsfw: bChan.nsfw,
-                parent: parentId || undefined,
-                rateLimitPerUser: bChan.rateLimitPerUser,
-                bitrate: bChan.bitrate,
-                userLimit: bChan.userLimit,
-                reason: `ETHONE Restore: ${backup.name}`,
-              });
+              const created = await discordApiRetryManager.executeWithRetry(
+                () =>
+                  guild.channels.create({
+                    name: bChan.name,
+                    type: bChan.type as any,
+                    topic: bChan.topic || undefined,
+                    nsfw: bChan.nsfw,
+                    parent: parentId || undefined,
+                    permissionOverwrites: mappedOverwrites,
+                    rateLimitPerUser: bChan.rateLimitPerUser,
+                    bitrate: bChan.bitrate,
+                    userLimit: bChan.userLimit,
+                    reason: `ETHONE Restore: ${backup.name}`,
+                  }),
+                { operationName: `restore_create_channel_${bChan.name}` }
+              );
+              channelIdMapping.set(bChan.id, created.id);
               job.logs.push(`- Salon créé : #${bChan.name}`);
             }
           } catch (err: any) {
             job.errors.push(`Erreur salon ${bChan.name}: ${err.message}`);
           }
         }
-        job.progressPercent = 85;
+        job.progressPercent = 75;
         backupRepository.saveJob(job);
       }
 
-      // 5. Restauration de la Configuration ETHONE
+      // 7. Restauration de la Configuration ETHONE avec remapping des IDs
       if (selectedComponents.includes('ETHONE_CONFIG') && backup.data.ethoneConfig) {
         job.currentStep = 'Restauration des configurations ETHONE...';
-        this.restoreEthoneConfigs(guildId, backup.data.ethoneConfig);
-        job.logs.push(`- Configurations ETHONE réappliquées (${Object.keys(backup.data.ethoneConfig).length} modules)`);
+        const remappedConfigs = this.remapEthoneConfigs(
+          backup.data.ethoneConfig,
+          roleIdMapping,
+          channelIdMapping
+        );
+        this.restoreEthoneConfigs(guildId, remappedConfigs);
+        job.logs.push(`- Configurations ETHONE réappliquées (${Object.keys(remappedConfigs).length} modules remappés)`);
       }
 
-      // 6. Vérification Finale
-      job.currentStep = 'Vérification et finalisation...';
+      // 8. Réconciliation Post-Restore & Contrôle d'intégrité réel
+      job.currentStep = 'Vérification post-restauration & réconciliation tripartite...';
+      job.status = 'VERIFYING';
+      job.progressPercent = 90;
+      backupRepository.saveJob(job);
+
+      const liveCheck = await BackupCollectorService.createSnapshot({
+        guild,
+        guildId,
+        name: 'Post-Restore Verification',
+        type: 'FULL',
+        creator: { id: 'system', tag: 'ETHONE Post-Restore Auditor' },
+      });
+
+      const diffResult = BackupDiffService.compare(backup, liveCheck);
+      const remainingDivergences =
+        diffResult.summary.added + diffResult.summary.removed + diffResult.summary.modified;
+
+      if (remainingDivergences > 0) {
+        job.logs.push(
+          `[${new Date().toLocaleTimeString()}] Réconciliation : ${remainingDivergences} divergence(s) détectée(s) après restauration.`
+        );
+      } else {
+        job.logs.push(
+          `[${new Date().toLocaleTimeString()}] Réconciliation parfaite : 100% de la structure Discord est alignée sur le snapshot.`
+        );
+      }
+
       job.progressPercent = 100;
       job.status = job.errors.length > 0 ? 'PARTIAL' : 'COMPLETED';
       job.completedAt = new Date().toISOString();
-      job.logs.push(`[${new Date().toLocaleTimeString()}] Restauration terminée (${job.status})`);
+      job.logs.push(`[${new Date().toLocaleTimeString()}] Restauration terminée avec succès (${job.status})`);
       backupRepository.saveJob(job);
 
       return job;
@@ -426,6 +533,35 @@ export class BackupRestoreService {
       job.completedAt = new Date().toISOString();
       backupRepository.saveJob(job);
       throw fatalErr;
+    }
+  }
+
+  /**
+   * Remappe les IDs de salons et rôles dans les configurations ETHONE
+   */
+  private static remapEthoneConfigs(
+    configs: Record<string, any>,
+    roleIdMapping: Map<string, string>,
+    channelIdMapping: Map<string, string>
+  ): Record<string, any> {
+    let serialized = JSON.stringify(configs);
+
+    for (const [oldId, newId] of roleIdMapping.entries()) {
+      if (oldId !== newId) {
+        serialized = serialized.replaceAll(`"${oldId}"`, `"${newId}"`);
+      }
+    }
+
+    for (const [oldId, newId] of channelIdMapping.entries()) {
+      if (oldId !== newId) {
+        serialized = serialized.replaceAll(`"${oldId}"`, `"${newId}"`);
+      }
+    }
+
+    try {
+      return JSON.parse(serialized);
+    } catch {
+      return configs;
     }
   }
 
@@ -463,7 +599,6 @@ export class BackupRestoreService {
         }
 
         if (Array.isArray(existingData)) {
-          // Retire les éléments de cette guild et insère les restaurés
           const filtered = existingData.filter((item: any) => item.guildId !== guildId);
           if (Array.isArray(cfgValue)) {
             filtered.push(...cfgValue);

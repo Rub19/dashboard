@@ -13,9 +13,20 @@ import {
 import { ticketService } from '../../modules/tickets/services/ticketService.js';
 import { TicketPriority, TicketStatus } from '../../modules/tickets/types/ticket.js';
 import { logger } from '../../utils/logger.js';
+import { rateLimit, idempotent } from '../middleware/antiAbuseMiddleware.js';
 
 export function createTicketRouter(discordClient: Client) {
   const router = express.Router({ mergeParams: true });
+
+  // 🛡️ Anti-abuse: Rate limit and idempotent mutative operations (POST, PUT, PATCH, DELETE)
+  router.use((req: Request, res: Response, next: express.NextFunction) => {
+    if (['POST', 'PUT', 'PATCH', 'DELETE'].includes(req.method)) {
+      return rateLimit('CONFIG', { byGuild: true, actionName: 'ticket_mutation' })(req, res, () => {
+        return idempotent({ scopePrefix: 'ticket' })(req, res, next);
+      });
+    }
+    next();
+  });
 
   // 1. Vue d'ensemble & Stats
   router.get('/overview', async (req: Request, res: Response): Promise<void> => {

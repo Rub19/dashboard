@@ -6,6 +6,7 @@ import { PresenceSchedulerService } from '../../modules/presence/services/presen
 import { SmartPresenceEngine } from '../../modules/presence/services/smartPresenceEngine.js';
 import { BotIdentityService } from '../../modules/presence/services/botIdentityService.js';
 import { config } from '../../config.js';
+import { rateLimit, idempotent } from '../middleware/antiAbuseMiddleware.js';
 
 export function createPresenceRouter(client: Client): Router {
   const router = Router({ mergeParams: true });
@@ -44,7 +45,11 @@ export function createPresenceRouter(client: Client): Router {
   });
 
   // 2. POST /api/bot/presence (Mettre à jour la présence)
-  router.post('/', (req: Request, res: Response) => {
+  router.post(
+    '/',
+    rateLimit('CONFIG', { actionName: 'presence_update' }),
+    idempotent({ scopePrefix: 'presence' }),
+    (req: Request, res: Response) => {
     try {
       const { status, activity, reason, force } = req.body;
       if (!status || !activity || !activity.type || !activity.name) {

@@ -170,6 +170,39 @@ export class BackupService {
     return success;
   }
 
+  public async importBackup(params: {
+    guildId: string;
+    rawPayload: any;
+    allowCrossGuildMigration?: boolean;
+    importer: { id: string; tag: string };
+  }): Promise<BackupSnapshot> {
+    const integrity = BackupIntegrityService.verifySnapshot(params.rawPayload);
+    if (!integrity.valid) {
+      throw new Error(`Fichier de sauvegarde invalide : ${integrity.reason}`);
+    }
+
+    let snapshot = BackupIntegrityService.migrateSchema(params.rawPayload);
+
+    // Cross-guild check
+    if (snapshot.guildId !== params.guildId) {
+      if (!params.allowCrossGuildMigration) {
+        throw new Error(
+          `Ce fichier de sauvegarde appartient au serveur Discord "${snapshot.guildId}". Pour l'importer sur ce serveur ("${params.guildId}"), activez explicitement l'option de migration inter-serveur.`
+        );
+      }
+      // Re-bind to current guild and re-sign
+      snapshot.guildId = params.guildId;
+      snapshot.backupId = `BKP-${new Date().toISOString().replace(/[-:T]/g, '').slice(0, 14)}-IMP${Math.random().toString(36).substring(2, 5).toUpperCase()}`;
+      snapshot.name = `${snapshot.name} (Importé)`;
+      snapshot.createdBy = params.importer;
+      snapshot.checksum = BackupIntegrityService.computeChecksum(snapshot);
+    }
+
+    backupRepository.save(snapshot);
+    logger.info(`[BackupService] Sauvegarde importée avec succès : ${snapshot.backupId} pour ${params.guildId}`);
+    return snapshot;
+  }
+
   public async previewRestore(params: {
     guildId: string;
     backupId: string;

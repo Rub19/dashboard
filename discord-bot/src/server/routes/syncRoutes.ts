@@ -3,6 +3,7 @@ import { syncEngine, SyncMutation } from '../../services/syncEngine.js';
 import { reconciliationEngine } from '../../services/resilience/reconciliationEngine.js';
 import { config } from '../../config.js';
 import { authMiddleware } from '../middleware/auth.js';
+import { rateLimit, idempotent, guildLock } from '../middleware/antiAbuseMiddleware.js';
 
 export function createSyncRouter(): Router {
   const router = Router();
@@ -42,7 +43,12 @@ export function createSyncRouter(): Router {
   });
 
   // 4. POST /api/sync/mutate - Mutation synchronisée sécurisée avec versioning optimiste et correlationId
-  router.post('/mutate', authMiddleware, async (req: Request, res: Response): Promise<void> => {
+  router.post(
+    '/mutate',
+    authMiddleware,
+    rateLimit('CONFIG', { actionName: 'sync_mutate' }),
+    idempotent({ scopePrefix: 'sync_mutate' }),
+    async (req: Request, res: Response): Promise<void> => {
     try {
       const { guildId, module, path, value, previousValue, expectedVersion, correlationId } = req.body;
       if (!module || !path) {
@@ -122,37 +128,49 @@ export function createGuildSyncRouter(): Router {
   });
 
   // POST /api/guilds/:guildId/sync/reconcile-now - Déclenchement forcé immédiat
-  router.post('/reconcile-now', async (req: Request, res: Response) => {
-    const guildId = req.params.guildId as string;
-    try {
-      const report = await reconciliationEngine.reconcileGuild(guildId, true);
-      res.json({ success: true, data: report });
-    } catch (err: any) {
-      res.status(500).json({ success: false, error: err.message });
+  router.post(
+    '/reconcile-now',
+    guildLock('SYNC_RECONCILE', 45000),
+    rateLimit('SENSITIVE', { byGuild: true, actionName: 'sync_reconcile' }),
+    idempotent({ scopePrefix: 'sync_reconcile' }),
+    async (req: Request, res: Response) => {
+      const guildId = req.params.guildId as string;
+      try {
+        const report = await reconciliationEngine.reconcileGuild(guildId, true);
+        res.json({ success: true, data: report });
+      } catch (err: any) {
+        res.status(500).json({ success: false, error: err.message });
+      }
     }
-  });
+  );
 
   // POST /api/guilds/:guildId/sync/repair - Réparation sécurisée d'une anomalie
-  router.post('/repair', async (req: Request, res: Response) => {
-    const guildId = req.params.guildId as string;
-    const { module, action, resourceId, field } = req.body;
-    if (!module || !action) {
-      res.status(400).json({ success: false, error: 'Champs module et action obligatoires pour la réparation.' });
-      return;
-    }
+  router.post(
+    '/repair',
+    guildLock('SYNC_REPAIR', 30000),
+    rateLimit('SENSITIVE', { byGuild: true, actionName: 'sync_repair' }),
+    idempotent({ scopePrefix: 'sync_repair' }),
+    async (req: Request, res: Response) => {
+      const guildId = req.params.guildId as string;
+      const { module, action, resourceId, field } = req.body;
+      if (!module || !action) {
+        res.status(400).json({ success: false, error: 'Champs module et action obligatoires pour la réparation.' });
+        return;
+      }
 
-    try {
-      const result = await reconciliationEngine.executeRepair(guildId, {
-        module,
-        action,
-        resourceId,
-        field,
-      });
-      res.json(result);
-    } catch (err: any) {
-      res.status(500).json({ success: false, error: err.message });
+      try {
+        const result = await reconciliationEngine.executeRepair(guildId, {
+          module,
+          action,
+          resourceId,
+          field,
+        });
+        res.json(result);
+      } catch (err: any) {
+        res.status(500).json({ success: false, error: err.message });
+      }
     }
-  });
+  );
 
   // GET /api/guilds/:guildId/sync/health - États de santé par module
   router.get('/health', async (req: Request, res: Response) => {
@@ -175,7 +193,12 @@ export function createGuildSyncRouter(): Router {
   });
 
   // POST /api/guilds/:guildId/sync/mutate - Mutation cloisonnée au serveur
-  router.post('/mutate', async (req: Request, res: Response): Promise<void> => {
+  router.post(
+    '/mutate',
+    guildLock('SYNC_MUTATE', 10000),
+    rateLimit('CONFIG', { byGuild: true, actionName: 'sync_mutate' }),
+    idempotent({ scopePrefix: 'sync_mutate' }),
+    async (req: Request, res: Response): Promise<void> => {
     const guildId = req.params.guildId as string;
     const { module, path, value, previousValue, expectedVersion, correlationId } = req.body;
 

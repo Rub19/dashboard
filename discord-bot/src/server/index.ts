@@ -75,13 +75,13 @@ export function startWebServer(client: Client): http.Server {
   app.use(
     '/api/guilds/:guildId/tickets',
     authMiddleware,
-    createGuildAuthMiddleware(client),
+    createGuildAuthMiddleware(client, { allowBotOwnerOverride: false }),
     createTicketRouter(client)
   );
   app.use(
     '/api/guilds/:guildId/logs',
     authMiddleware,
-    createGuildAuthMiddleware(client),
+    createGuildAuthMiddleware(client, { allowBotOwnerOverride: false }),
     createLogRouter(client)
   );
   app.use(
@@ -159,7 +159,7 @@ export function startWebServer(client: Client): http.Server {
   app.use(
     '/api/guilds/:guildId/backups',
     authMiddleware,
-    createGuildAuthMiddleware(client),
+    createGuildAuthMiddleware(client, { allowBotOwnerOverride: false }),
     createBackupRouter(client)
   );
   app.use(

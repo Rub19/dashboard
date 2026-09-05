@@ -208,11 +208,29 @@ export class DiscordSyncEngine {
    */
   public broadcast(event: SyncEvent): void {
     for (const client of this.clients.values()) {
-      // Si l'événement cible une guilde spécifique, seuls les clients de cette guilde
-      // OU les clients globaux (Bot Owner) reçoivent l'événement.
+      // 1. Si l'événement cible un serveur spécifique (guildId défini) :
+      // - Si le client est connecté sur un flux de serveur (client.guildId) :
+      //   il ne doit le recevoir QUE SI client.guildId === event.guildId.
+      // - Si le client est connecté sur le flux global (pas de client.guildId) :
+      //   il ne doit le recevoir QUE S'IL est explicitement isOwner (Bot Owner).
       if (event.guildId) {
-        if (client.guildId && client.guildId !== event.guildId) {
-          continue; // Isolation stricte : ne pas faire fuiter vers une autre guilde
+        if (client.guildId) {
+          if (client.guildId !== event.guildId) {
+            continue; // Isolation stricte inter-serveurs
+          }
+        } else {
+          if (!client.isOwner) {
+            continue; // Les clients globaux non-owner ne reçoivent pas les flux privés
+          }
+        }
+      }
+
+      // 2. Si l'événement est global (sans guildId) :
+      // - Les clients de serveur (client.guildId) ne reçoivent que les battements de cœur HEARTBEAT
+      //   ou événements publics système, pas les mutations globales internes.
+      if (!event.guildId && client.guildId && !client.isOwner) {
+        if (event.type !== 'HEARTBEAT') {
+          continue;
         }
       }
 

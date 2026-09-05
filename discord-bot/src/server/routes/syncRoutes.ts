@@ -1,20 +1,28 @@
 import { Router, Request, Response } from 'express';
 import { syncEngine, SyncMutation } from '../../services/syncEngine.js';
 import { config } from '../../config.js';
+import { authMiddleware } from '../middleware/auth.js';
 
 export function createSyncRouter(): Router {
   const router = Router();
 
-  // 1. GET /api/sync/stream - Flux SSE global / Bot Owner
-  router.get('/stream', (req: Request, res: Response) => {
+  // 1. GET /api/sync/stream - Flux SSE global réservé EXCLUSIVEMENT au Bot Owner
+  router.get('/stream', authMiddleware, (req: Request, res: Response): void => {
+    if (!req.user || req.user.id !== config.botOwnerId) {
+      res.status(403).json({ error: 'Accès interdit. Le flux SSE global est réservé au propriétaire du bot.' });
+      return;
+    }
     const clientId = `sse_global_${Date.now()}_${Math.random().toString(36).substring(2, 7)}`;
-    const userId = (req as any).user?.id || (req.query.userId as string);
-    syncEngine.registerClient(clientId, res, undefined, userId);
+    syncEngine.registerClient(clientId, res, undefined, req.user.id);
   });
 
-  // 2. GET /api/sync/audit - Historique d'audit des mutations
-  router.get('/audit', (req: Request, res: Response) => {
+  // 2. GET /api/sync/audit - Historique d'audit des mutations (Global réservé au Bot Owner)
+  router.get('/audit', authMiddleware, (req: Request, res: Response): void => {
     const guildId = req.query.guildId as string | undefined;
+    if (!guildId && req.user?.id !== config.botOwnerId) {
+      res.status(403).json({ error: 'Accès interdit. L\'audit global est réservé au propriétaire du bot.' });
+      return;
+    }
     const limit = parseInt(req.query.limit as string) || 50;
     const history = syncEngine.getAuditHistory(guildId, limit);
     res.json({ success: true, data: history });
@@ -32,8 +40,8 @@ export function createSyncRouter(): Router {
     });
   });
 
-  // 4. POST /api/sync/mutate - Mutation générique synchronisée
-  router.post('/mutate', async (req: Request, res: Response) => {
+  // 4. POST /api/sync/mutate - Mutation synchronisée sécurisée
+  router.post('/mutate', authMiddleware, async (req: Request, res: Response): Promise<void> => {
     try {
       const { guildId, module, path, value, previousValue } = req.body;
       if (!module || !path) {
@@ -41,7 +49,13 @@ export function createSyncRouter(): Router {
         return;
       }
 
-      const userId = (req as any).user?.id || config.botOwnerId;
+      // Si aucune guildId (mutation globale), seul le Bot Owner peut exécuter
+      if (!guildId && req.user?.id !== config.botOwnerId) {
+        res.status(403).json({ success: false, error: 'Mutations globales réservées au propriétaire du bot.' });
+        return;
+      }
+
+      const userId = req.user?.id || 'unknown';
       const mutation: SyncMutation = {
         id: `mut_${Date.now()}_${Math.random().toString(36).substring(2, 7)}`,
         guildId,
@@ -56,7 +70,6 @@ export function createSyncRouter(): Router {
 
       // Exécution de la mutation avec broadcast temps réel automatique
       const result = await syncEngine.submitMutation(mutation, async (val) => {
-        // Retourne la valeur appliquée (ou l'exécution spécifique du service)
         return { applied: true, value: val, executedAt: new Date().toISOString() };
       });
 

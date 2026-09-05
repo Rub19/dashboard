@@ -15,6 +15,7 @@
  */
 
 import express from 'express';
+import jwt from 'jsonwebtoken';
 import { createServer } from 'node:http';
 import { syncEngine, SyncMutation } from '../src/services/syncEngine.js';
 import { PresenceService } from '../src/modules/presence/services/presenceService.js';
@@ -326,15 +327,31 @@ async function runFullSyncQA() {
   assert(statusRes.success === true, 'GET /api/sync/status returns status ok');
   assert(statusRes.data.ownerId === OWNER_ID, 'GET /api/sync/status confirms bot owner');
 
+  const ownerToken = jwt.sign(
+    {
+      id: OWNER_ID,
+      username: 'EthoneOwner',
+      discriminator: '0000',
+      avatar: null,
+      accessToken: 'discord_token_owner',
+    },
+    config.jwtSecret
+  );
+
   // Test /api/sync/audit
-  const auditRes = await fetch(`${baseUrl}/api/sync/audit`).then((r) => r.json() as any);
+  const auditRes = await fetch(`${baseUrl}/api/sync/audit`, {
+    headers: { Authorization: `Bearer ${ownerToken}` },
+  }).then((r) => r.json() as any);
   assert(auditRes.success === true && Array.isArray(auditRes.data), 'GET /api/sync/audit returns audit records array');
   assert(auditRes.data.length > 0, `Audit records recorded (${auditRes.data.length} entries)`);
 
   // Test /api/sync/mutate
   const mutateHttpRes = await fetch(`${baseUrl}/api/sync/mutate`, {
     method: 'POST',
-    headers: { 'Content-Type': 'application/json' },
+    headers: {
+      'Content-Type': 'application/json',
+      Authorization: `Bearer ${ownerToken}`,
+    },
     body: JSON.stringify({
       guildId: GUILD_A,
       module: 'general',

@@ -35,7 +35,15 @@ export async function fetchUserGuilds(accessToken: string, userId: string) {
   return guilds;
 }
 
-export function createGuildAuthMiddleware(discordClient: Client) {
+export interface GuildAuthOptions {
+  allowBotOwnerOverride?: boolean;
+  requireOwner?: boolean;
+}
+
+export function createGuildAuthMiddleware(
+  discordClient: Client,
+  options: GuildAuthOptions = { allowBotOwnerOverride: true }
+) {
   return async (req: Request, res: Response, next: NextFunction): Promise<void> => {
     const guildId = req.params.guildId;
     if (!guildId) {
@@ -48,9 +56,10 @@ export function createGuildAuthMiddleware(discordClient: Client) {
       return;
     }
 
-    // Bypass pour le mode test local ou le Bot Owner autorisé
-    if (req.user.id === 'dev-admin-user' || req.user.id === config.botOwnerId) {
-      if (req.user.id === config.botOwnerId && !discordClient.guilds.cache.has(guildId)) {
+    // Bot Owner Override UNIQUEMENT si explicitement autorisé par la route (ex: config bot / presence)
+    // Interdit pour les données privées des utilisateurs (Backups, Tickets, Logs)
+    if (options.allowBotOwnerOverride && req.user.id === config.botOwnerId) {
+      if (!discordClient.guilds.cache.has(guildId)) {
         res.status(404).json({ error: 'Le bot ETHONE n\'est pas installé sur ce serveur Discord.' });
         return;
       }
@@ -60,11 +69,25 @@ export function createGuildAuthMiddleware(discordClient: Client) {
 
     try {
       // 1. Récupérer les guilds de l'utilisateur avec ses permissions
-      const userGuilds = await fetchUserGuilds(req.user.accessToken, req.user.id);
+      let userGuilds: CachedUserGuilds['guilds'];
+      if (process.env.NODE_ENV === 'test' && (req.user as any)._testGuilds) {
+        userGuilds = (req.user as any)._testGuilds;
+      } else {
+        userGuilds = await fetchUserGuilds(req.user.accessToken, req.user.id);
+      }
+
       const targetGuild = userGuilds.find((g) => g.id === guildId);
 
       if (!targetGuild) {
         res.status(403).json({ error: 'Vous ne faites pas partie de ce serveur Discord.' });
+        return;
+      }
+
+      // Si l'action requiert expressément d'être le propriétaire du serveur
+      if (options.requireOwner && !targetGuild.owner) {
+        res.status(403).json({
+          error: 'Action strictement réservée au propriétaire du serveur Discord.',
+        });
         return;
       }
 

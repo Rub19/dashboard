@@ -20,8 +20,10 @@ export function createGuildRouter(client: Client): express.Router {
     }
 
     try {
-      // Mode de test local dev
-      if (req.user.id === 'dev-admin-user') {
+      let userGuilds;
+      if (process.env.NODE_ENV === 'test' && (req.user as any)._testGuilds) {
+        userGuilds = (req.user as any)._testGuilds;
+      } else if (process.env.ALLOW_DEV_AUTH_BYPASS === 'true' && req.user.id === 'dev-admin-user') {
         const botGuilds = client.guilds.cache.map((g) => ({
           id: g.id,
           name: g.name,
@@ -33,9 +35,9 @@ export function createGuildRouter(client: Client): express.Router {
         }));
         res.json({ guilds: botGuilds });
         return;
+      } else {
+        userGuilds = await fetchUserGuilds(req.user.accessToken, req.user.id);
       }
-
-      const userGuilds = await fetchUserGuilds(req.user.accessToken, req.user.id);
 
       // Filtrer les serveurs où l'utilisateur a ManageGuild ou Administrator
       const manageableGuilds = userGuilds

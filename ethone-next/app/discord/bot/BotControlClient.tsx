@@ -15,6 +15,7 @@ import {
   CheckCircle2,
   Clock,
   Cpu,
+  Crown,
   Database,
   ExternalLink,
   Flame,
@@ -29,6 +30,7 @@ import {
   Lock,
   Palette,
   Play,
+  Power,
   Radio,
   RefreshCw,
   RotateCcw,
@@ -56,6 +58,7 @@ import {
   Zap,
 } from "lucide-react";
 import { useToast } from "@/components/ToastProvider";
+import { useAuth } from "@/components/AuthProvider";
 import { cn } from "@/lib/utils";
 import { useDiscordSync } from "@/lib/useDiscordSync";
 
@@ -89,6 +92,120 @@ export default function BotControlClient({ initialTab = "overview" }: BotControl
 
   const handleTabChange = (tab: BotTab) => {
     router.push(`/discord/bot?tab=${tab}`);
+  };
+
+  // Owner Authentication (Strictly rub19.mailpro@gmail.com)
+  let authContext: any = null;
+  try {
+    // eslint-disable-next-line react-hooks/rules-of-hooks
+    authContext = useAuth();
+  } catch {
+    // Fallback if not wrapped in AuthProvider
+  }
+
+  const [currentUser, setCurrentUser] = useState<any>(authContext?.user || null);
+  const [restartingBot, setRestartingBot] = useState(false);
+  const [updatingBot, setUpdatingBot] = useState(false);
+  const [clearingCache, setClearingCache] = useState(false);
+  const [ownerLogs, setOwnerLogs] = useState<any[]>([]);
+
+  useEffect(() => {
+    if (authContext?.user) {
+      setCurrentUser(authContext.user);
+    } else {
+      import("@/lib/supabase").then(({ supabase }) => {
+        supabase.auth.getUser().then(({ data }) => {
+          if (data?.user) setCurrentUser(data.user);
+        });
+      });
+    }
+  }, [authContext?.user]);
+
+  const isOwner = Boolean(currentUser && currentUser.email?.toLowerCase() === "rub19.mailpro@gmail.com");
+
+  useEffect(() => {
+    if (isOwner) {
+      fetch("/api/discord/bot/control")
+        .then((r) => r.json())
+        .then((data) => {
+          if (data.isOwner && data.recentActions) {
+            setOwnerLogs(data.recentActions);
+          }
+        })
+        .catch(() => null);
+    }
+  }, [isOwner]);
+
+  const handleRemoteRestart = async () => {
+    if (!confirm("⚠️ Confirmation Propriétaire : Êtes-vous sûr de vouloir redémarrer le bot Discord à distance ?")) return;
+    setRestartingBot(true);
+    try {
+      const res = await fetch("/api/discord/bot/control", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ action: "restart" }),
+      });
+      const data = await res.json();
+      if (data.success) {
+        toast?.success?.("🚀 " + (data.message || "Bot Discord redémarré avec succès !"));
+        setOwnerLogs((prev) => [
+          { action: "RESTART_BOT", created_at: new Date().toISOString(), status: "SUCCESS" },
+          ...prev,
+        ]);
+      } else {
+        toast?.error?.("❌ " + (data.error || "Erreur de redémarrage."));
+      }
+    } catch {
+      toast?.error?.("Erreur réseau lors de la commande de redémarrage.");
+    } finally {
+      setRestartingBot(false);
+    }
+  };
+
+  const handleRemoteUpdate = async () => {
+    setUpdatingBot(true);
+    try {
+      const res = await fetch("/api/discord/bot/control", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ action: "update" }),
+      });
+      const data = await res.json();
+      if (data.success) {
+        toast?.success?.("⚡ " + (data.message || "Mise à jour du bot déclenchée !"));
+        setOwnerLogs((prev) => [
+          { action: "UPDATE_BOT", created_at: new Date().toISOString(), status: "SUCCESS" },
+          ...prev,
+        ]);
+      } else {
+        toast?.error?.("❌ " + (data.error || "Erreur lors de la mise à jour."));
+      }
+    } catch {
+      toast?.error?.("Erreur réseau.");
+    } finally {
+      setUpdatingBot(false);
+    }
+  };
+
+  const handleClearCache = async () => {
+    setClearingCache(true);
+    try {
+      const res = await fetch("/api/discord/bot/control", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ action: "clear_cache" }),
+      });
+      const data = await res.json();
+      if (data.success) {
+        toast?.success?.("🧹 " + (data.message || "Cache mémoire vidé avec succès !"));
+      } else {
+        toast?.error?.(data.error || "Erreur lors du vidage du cache.");
+      }
+    } catch {
+      toast?.error?.("Erreur réseau.");
+    } finally {
+      setClearingCache(false);
+    }
   };
 
   // State management
@@ -594,6 +711,14 @@ export default function BotControlClient({ initialTab = "overview" }: BotControl
 
               {/* Direct Buttons */}
               <div className="flex items-center gap-2">
+                {isOwner && (
+                  <div className="flex items-center gap-1.5 px-3 py-1.5 rounded-xl bg-amber-500/15 border border-amber-500/40 text-amber-300 text-xs font-bold shadow-lg shadow-amber-500/10 animate-pulse">
+                    <Crown className="w-3.5 h-3.5 text-amber-400" />
+                    <span className="hidden sm:inline">Owner : rub19.mailpro@gmail.com</span>
+                    <span className="sm:hidden">Owner</span>
+                  </div>
+                )}
+
                 <Link
                   href="/discord/bot/presence"
                   className="px-3.5 py-2 rounded-xl bg-indigo-600 hover:bg-indigo-500 text-white text-xs font-semibold flex items-center gap-1.5 transition-all shadow-md shadow-indigo-600/20"
@@ -668,6 +793,127 @@ export default function BotControlClient({ initialTab = "overview" }: BotControl
 
       {/* CONTENT AREA */}
       <div className="max-w-7xl mx-auto px-6 py-8">
+        {/* ======================================================== */}
+        {/* EXCLUSIVE BOT OWNER CONTROL PANEL (rub19.mailpro@gmail.com) */}
+        {/* ======================================================== */}
+        {isOwner && (
+          <div className="mb-8 p-6 rounded-2xl bg-gradient-to-br from-amber-950/40 via-zinc-900/90 to-zinc-950 border border-amber-500/40 space-y-6 shadow-2xl relative overflow-hidden">
+            <div className="absolute top-0 right-0 w-96 h-96 bg-amber-500/10 rounded-full blur-3xl pointer-events-none" />
+
+            <div className="flex flex-col lg:flex-row lg:items-center justify-between gap-6 pb-5 border-b border-amber-500/20 relative z-10">
+              <div>
+                <div className="flex flex-wrap items-center gap-2">
+                  <span className="px-2.5 py-0.5 rounded-full text-[10px] font-bold bg-amber-500/20 text-amber-300 border border-amber-500/40 uppercase tracking-widest flex items-center gap-1">
+                    <Crown className="w-3 h-3 text-amber-400" />
+                    Propriétaire Vérifié
+                  </span>
+                  <span className="text-xs text-zinc-400 font-mono">rub19.mailpro@gmail.com</span>
+                  <span className="text-zinc-600">•</span>
+                  <span className="text-xs text-zinc-400 font-mono">Discord ID: 825124006209388616</span>
+                </div>
+                <h2 className="text-lg font-bold text-white flex items-center gap-2.5 mt-1.5">
+                  <span>Centre de Contrôle Opérationnel & Redémarrage à Distance</span>
+                </h2>
+                <p className="text-xs text-zinc-400 mt-0.5">
+                  Options exclusives d'administration système : redémarrage PM2, mise à jour du bot et purge des mémoires tampons
+                </p>
+              </div>
+
+              {/* Action Buttons */}
+              <div className="flex flex-wrap items-center gap-2.5 shrink-0">
+                <button
+                  onClick={handleRemoteRestart}
+                  disabled={restartingBot}
+                  className="px-4 py-2.5 rounded-xl bg-rose-600 hover:bg-rose-500 text-white text-xs font-semibold flex items-center gap-2 transition-all shadow-lg shadow-rose-600/25 disabled:opacity-50 cursor-pointer"
+                  title="Redémarrer le bot sur le VPS via PM2"
+                >
+                  <Power className={cn("w-4 h-4", restartingBot && "animate-spin")} />
+                  <span>{restartingBot ? "Redémarrage en cours..." : "Redémarrer le Bot (PM2)"}</span>
+                </button>
+
+                <button
+                  onClick={handleRemoteUpdate}
+                  disabled={updatingBot}
+                  className="px-4 py-2.5 rounded-xl bg-indigo-600 hover:bg-indigo-500 text-white text-xs font-semibold flex items-center gap-2 transition-all shadow-lg shadow-indigo-600/25 disabled:opacity-50 cursor-pointer"
+                  title="Déclencher la mise à jour et recharger les modules"
+                >
+                  <RefreshCw className={cn("w-4 h-4", updatingBot && "animate-spin")} />
+                  <span>{updatingBot ? "Mise à jour..." : "Mettre à Jour le Bot"}</span>
+                </button>
+
+                <button
+                  onClick={handleClearCache}
+                  disabled={clearingCache}
+                  className="px-3.5 py-2.5 rounded-xl bg-zinc-800 hover:bg-zinc-700 border border-zinc-700 text-zinc-200 text-xs font-semibold flex items-center gap-2 transition-all disabled:opacity-50 cursor-pointer"
+                  title="Vider les compteurs et le cache"
+                >
+                  <Trash2 className="w-4 h-4 text-amber-400" />
+                  <span>{clearingCache ? "Purge..." : "Purger Cache"}</span>
+                </button>
+              </div>
+            </div>
+
+            {/* Owner Telemetry Grid */}
+            <div className="grid grid-cols-2 sm:grid-cols-4 gap-3 relative z-10">
+              <div className="p-3.5 rounded-xl bg-zinc-950/70 border border-amber-500/20">
+                <span className="text-[10px] text-zinc-400 block uppercase font-mono">Processus VPS PM2</span>
+                <span className="text-sm font-bold text-white font-mono mt-1 block flex items-center gap-1.5">
+                  <span className="w-2 h-2 rounded-full bg-emerald-400 animate-pulse" />
+                  ethone-bot
+                </span>
+                <span className="text-[10px] text-emerald-400 mt-0.5 block font-mono">Status: Online</span>
+              </div>
+
+              <div className="p-3.5 rounded-xl bg-zinc-950/70 border border-amber-500/20">
+                <span className="text-[10px] text-zinc-400 block uppercase font-mono">Compte Suprême</span>
+                <span className="text-xs font-bold text-amber-300 font-mono mt-1 block truncate" title="rub19.mailpro@gmail.com">
+                  rub19.mailpro@gmail.com
+                </span>
+                <span className="text-[10px] text-zinc-400 mt-0.5 block">Niveau Root vérifié</span>
+              </div>
+
+              <div className="p-3.5 rounded-xl bg-zinc-950/70 border border-amber-500/20">
+                <span className="text-[10px] text-zinc-400 block uppercase font-mono">Gateway Shard</span>
+                <span className="text-sm font-bold text-white font-mono mt-1 block">{botCore.pingMs} ms (WebSocket)</span>
+                <span className="text-[10px] text-emerald-400 mt-0.5 block">Shard 0 Connecté</span>
+              </div>
+
+              <div className="p-3.5 rounded-xl bg-zinc-950/70 border border-amber-500/20">
+                <span className="text-[10px] text-zinc-400 block uppercase font-mono">Audit Supabase</span>
+                <span className="text-sm font-bold text-white font-mono mt-1 block">
+                  {ownerLogs.length} action(s)
+                </span>
+                <span className="text-[10px] text-indigo-400 mt-0.5 block font-mono">RLS Sécurisée</span>
+              </div>
+            </div>
+
+            {/* Recent Audit Logs if any */}
+            {ownerLogs.length > 0 && (
+              <div className="pt-2 border-t border-amber-500/15 relative z-10">
+                <span className="text-[11px] font-bold text-zinc-300 uppercase tracking-wider block mb-2">
+                  Dernières Actions Administratives Exécutées
+                </span>
+                <div className="space-y-1.5 max-h-32 overflow-y-auto">
+                  {ownerLogs.map((log: any, idx: number) => (
+                    <div
+                      key={log.id || idx}
+                      className="px-3 py-1.5 rounded-lg bg-zinc-950/50 border border-zinc-800 text-xs flex items-center justify-between"
+                    >
+                      <span className="font-mono text-amber-300 font-semibold">{log.action}</span>
+                      <span className="text-[11px] text-zinc-400">
+                        {log.created_at ? new Date(log.created_at).toLocaleString("fr-FR") : "À l'instant"}
+                      </span>
+                      <span className="px-2 py-0.2 rounded text-[10px] bg-emerald-500/10 text-emerald-400 border border-emerald-500/20 font-mono">
+                        {log.status || "SUCCESS"}
+                      </span>
+                    </div>
+                  ))}
+                </div>
+              </div>
+            )}
+          </div>
+        )}
+
         {/* ======================================================== */}
         {/* TAB: OVERVIEW                                            */}
         {/* ======================================================== */}

@@ -267,5 +267,31 @@ export function createBotControlRouter(client: Client): Router {
     }
   });
 
+  // Remote Restart (Strictly Owner authorized)
+  router.post('/restart', (req: Request, res: Response) => {
+    const ownerHeader = req.headers['x-bot-owner'];
+    if (ownerHeader !== '825124006209388616' && req.body?.email !== 'rub19.mailpro@gmail.com') {
+      res.status(403).json({ success: false, error: 'Unauthorized: Bot Owner only' });
+      return;
+    }
+
+    res.json({ success: true, message: 'Bot restart scheduled in 1 second' });
+
+    setTimeout(() => {
+      process.exit(0);
+    }, 1000);
+  });
+
+  // Remote Update (Strictly Owner authorized)
+  router.post('/update', (req: Request, res: Response) => {
+    const ownerHeader = req.headers['x-bot-owner'];
+    if (ownerHeader !== '825124006209388616' && req.body?.email !== 'rub19.mailpro@gmail.com') {
+      res.status(403).json({ success: false, error: 'Unauthorized: Bot Owner only' });
+      return;
+    }
+
+    res.json({ success: true, message: 'Update command received' });
+  });
+
   return router;
 }

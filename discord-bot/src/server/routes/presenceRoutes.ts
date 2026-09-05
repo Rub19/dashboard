@@ -132,7 +132,7 @@ export function createPresenceRouter(client: Client): Router {
   // 8. POST /api/bot/presence/profiles/:id/apply
   router.post('/profiles/:id/apply', (req: Request, res: Response) => {
     try {
-      const { id } = req.params;
+      const id = req.params.id as string;
       const actor = req.user?.username || (req.user?.id === config.botOwnerId ? 'Bot Owner' : 'Staff');
       const applied = schedulerService.applyProfile(id, actor);
       if (!applied) {
@@ -172,7 +172,7 @@ export function createPresenceRouter(client: Client): Router {
   // 10. POST /api/bot/presence/servers/:guildId
   router.post('/servers/:guildId', (req: Request, res: Response) => {
     try {
-      const { guildId } = req.params;
+      const guildId = req.params.guildId as string;
       const { profileId } = req.body;
       guildPreferences.set(guildId, profileId || 'prof_community');
       res.json({ success: true, guildId, preferredProfileId: profileId });

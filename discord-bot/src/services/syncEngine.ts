@@ -4,7 +4,7 @@ import { config } from '../config.js';
 import { eventDeduplicationService } from './resilience/eventDeduplicationService.js';
 
 export type SyncSource = 'DASHBOARD' | 'DISCORD_COMMAND' | 'DISCORD_EVENT' | 'BOT' | 'OWNER' | 'SYSTEM';
-export type MutationStatus = 'REQUESTED' | 'SYNCING' | 'CONFIRMED' | 'FAILED' | 'TIMEOUT' | 'PARTIAL';
+export type MutationStatus = 'REQUESTED' | 'SYNCING' | 'CONFIRMED' | 'FAILED' | 'TIMEOUT' | 'PARTIAL' | 'CONFLICT';
 export type SyncEventType =
   | 'CONFIG_UPDATED'
   | 'DISCORD_EVENT'
@@ -21,6 +21,7 @@ export interface SyncEvent {
   source: SyncSource;
   actorId?: string;
   originId?: string; // For anti-loop protection
+  correlationId?: string; // End-to-end trace ID across multi-layer pipelines
   version: number;
   timestamp: number;
   payload: any;
@@ -37,6 +38,8 @@ export interface SyncMutation {
   actorId?: string;
   timestamp: number;
   version?: number;
+  expectedVersion?: number; // Optimistic locking
+  correlationId?: string; // Tracing ID
 }
 
 export interface SyncAuditEntry {
@@ -51,6 +54,7 @@ export interface SyncAuditEntry {
   previousValue: any;
   newValue: any;
   status: MutationStatus;
+  correlationId?: string;
   error?: string;
 }
 
@@ -69,6 +73,8 @@ export class DiscordSyncEngine {
   private clients: Map<string, SSEClient> = new Map();
   private auditHistory: SyncAuditEntry[] = [];
   private versionMatrix: Map<string, number> = new Map(); // key: `${guildId || 'global'}:${module}`
+  private lastDiscordEventTimestamps: Map<string, number> = new Map(); // key: `${guildId || 'global'}:${module}`
+  private heartbeatInterval: NodeJS.Timeout | null = null;
   private pendingMutations: Map<string, { mutation: SyncMutation; timer: NodeJS.Timeout; resolve: (res: any) => void }> = new Map();
   private rapidChangeQueues: Map<
     string,
@@ -126,6 +132,18 @@ export class DiscordSyncEngine {
    */
   public getVersion(guildId: string | undefined, module: string): number {
     return this.versionMatrix.get(this.getVersionKey(guildId, module)) || 1;
+  }
+
+  /**
+   * Définit explicitement une version (utile pour reset / tests / synchronisation)
+   */
+  public setVersion(guildId: string | undefined, module: string, version: number): void {
+    this.versionMatrix.set(this.getVersionKey(guildId, module), version);
+  }
+
+  public resetVersions(): void {
+    this.versionMatrix.clear();
+    this.lastDiscordEventTimestamps.clear();
   }
 
   /**
@@ -248,7 +266,8 @@ export class DiscordSyncEngine {
     guildId?: string,
     source: SyncSource = 'DISCORD_EVENT',
     actorId?: string,
-    originId?: string
+    originId?: string,
+    correlationId?: string
   ): SyncEvent {
     const version = this.incrementVersion(guildId, payload?.module || 'system');
     const event: SyncEvent = {
@@ -258,6 +277,7 @@ export class DiscordSyncEngine {
       source,
       actorId,
       originId,
+      correlationId,
       version,
       timestamp: Date.now(),
       payload,
@@ -265,6 +285,42 @@ export class DiscordSyncEngine {
 
     this.broadcast(event);
     return event;
+  }
+
+  /**
+   * Traitement sécurisé des événements Discord avec protection contre les événements désordonnés
+   */
+  public handleDiscordEvent(eventData: {
+    id: string;
+    guildId?: string;
+    module?: string;
+    timestamp: number;
+    payload: any;
+    correlationId?: string;
+  }): { accepted: boolean; reason?: string; event?: SyncEvent } {
+    const key = this.getVersionKey(eventData.guildId, eventData.module || 'system');
+    const lastTimestamp = this.lastDiscordEventTimestamps.get(key) || 0;
+
+    // Protection out-of-order: si un événement arrive avec un horodatage antérieur, on le rejette
+    if (eventData.timestamp < lastTimestamp) {
+      logger.warn(
+        `[SyncEngine] Out-of-order Discord event ignored for ${key}: received ${eventData.timestamp} but latest is ${lastTimestamp}`
+      );
+      return { accepted: false, reason: 'OUT_OF_ORDER' };
+    }
+
+    this.lastDiscordEventTimestamps.set(key, eventData.timestamp);
+    const syncEvent = this.emit(
+      'DISCORD_EVENT',
+      eventData.payload,
+      eventData.guildId,
+      'DISCORD_EVENT',
+      undefined,
+      eventData.id,
+      eventData.correlationId
+    );
+
+    return { accepted: true, event: syncEvent };
   }
 
   /**
@@ -283,6 +339,21 @@ export class DiscordSyncEngine {
     error?: string;
   }> {
     const key = this.getVersionKey(mutation.guildId, mutation.module);
+    const currentVersion = this.getVersion(mutation.guildId, mutation.module);
+
+    // Contrôle de concurrence optimiste (Optimistic Concurrency Control)
+    if (mutation.expectedVersion !== undefined && mutation.expectedVersion < currentVersion) {
+      logger.warn(
+        `[SyncEngine] Conflit de version détecté sur mutation ${mutation.id} (${key}): version attendue ${mutation.expectedVersion}, version actuelle ${currentVersion}`
+      );
+      return {
+        success: false,
+        status: 'CONFLICT',
+        version: currentVersion,
+        mutationId: mutation.id,
+        error: `Conflit de version: la ressource a été modifiée ailleurs (version soumise: ${mutation.expectedVersion}, version actuelle: ${currentVersion}).`,
+      };
+    }
 
     return new Promise((resolve) => {
       let queue = this.rapidChangeQueues.get(key);
@@ -357,6 +428,7 @@ export class DiscordSyncEngine {
       previousValue: mutation.previousValue,
       newValue: mutation.value,
       status: 'SYNCING',
+      correlationId: mutation.correlationId,
     };
 
     try {
@@ -366,7 +438,7 @@ export class DiscordSyncEngine {
       auditEntry.status = 'CONFIRMED';
       this.recordAudit(auditEntry);
 
-      // 2. Notification temps réel aux clients avec tag originId anti-boucle
+      // 2. Notification temps réel aux clients avec tag originId anti-boucle et correlationId
       this.broadcast({
         id: `conf_${Date.now()}`,
         type: 'MUTATION_CONFIRMED',
@@ -374,6 +446,7 @@ export class DiscordSyncEngine {
         source: mutation.source,
         actorId: mutation.actorId,
         originId: mutation.id, // Permet au dashboard appelant de savoir que c'est son propre changement
+        correlationId: mutation.correlationId,
         version,
         timestamp: Date.now(),
         payload: {

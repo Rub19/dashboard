@@ -56,6 +56,9 @@ import {
   Tag,
   Clock,
   Calendar,
+  Layers,
+  Terminal,
+  Cpu,
 } from "lucide-react";
 import { useAuth } from "@/components/AuthProvider";
 import { useToast } from "@/components/ToastProvider";
@@ -89,7 +92,8 @@ type ModuleType =
   | "roles"
   | "analytics"
   | "events"
-  | "server";
+  | "server"
+  | "bot";
 
 interface BotModule {
   id: ModuleType;
@@ -259,7 +263,15 @@ const MODULES: BotModule[] = [
     description: "Centre de gestion globale : diagnostics santé, score de sécurité, membres, salons, rôles, permissions et emojis.",
     icon: Server,
     color: "text-blue-400",
-    badge: "Contrôle",
+    badge: "Serveur",
+  },
+  {
+    id: "bot",
+    title: "Bot Control Center 2.0",
+    description: "Console centrale du bot : télémétrie temps réel, santé des 22 modules, commandes, bus d'événements, diagnostics et intelligence.",
+    icon: Bot,
+    color: "text-emerald-400",
+    badge: "Bot Core",
   },
 ];
 
@@ -2282,6 +2294,88 @@ export default function DiscordDashboardPage() {
                       >
                         <Key className="h-3.5 w-3.5 text-amber-400" />
                         <span>Permissions &amp; Debugger</span>
+                      </Link>
+                    </div>
+                  </div>
+                )}
+
+                {/* MODULE 21: Bot Control Center 2.0 */}
+                {activeModule === "bot" && (
+                  <div className="space-y-4">
+                    <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-3 rounded-2xl border border-emerald-500/30 bg-gradient-to-r from-emerald-500/10 via-cyan-500/10 to-indigo-500/10 p-4 shadow-lg shadow-emerald-500/5">
+                      <div>
+                        <div className="flex items-center gap-2">
+                          <span className="text-base">🤖</span>
+                          <p className="text-xs font-bold text-white">Bot Control Center &amp; Intelligence 2.0</p>
+                          <span className="text-[9px] uppercase font-bold tracking-wider px-1.5 py-0.5 rounded bg-emerald-500/20 text-emerald-300 border border-emerald-500/30">
+                            Observabilité &amp; Contrôle
+                          </span>
+                        </div>
+                        <p className="text-[11px] text-zinc-300 mt-0.5">
+                          Surveillance intégrale du bot : monitoring V8 CPU/RAM, 22 modules, débit temps réel, diagnostic 17 points, erreurs dédoublonnées et tokens IA.
+                        </p>
+                      </div>
+                      <Link
+                        href="/discord/bot"
+                        className="flex h-9 shrink-0 items-center gap-2 rounded-xl bg-gradient-to-r from-emerald-600 to-teal-600 px-4 text-xs font-bold text-white shadow-md shadow-emerald-600/20 transition-all hover:from-emerald-500 hover:to-teal-500 active:scale-95"
+                      >
+                        <Bot className="h-4 w-4" />
+                        <span>Ouvrir Bot Center</span>
+                        <ChevronRight className="h-3.5 w-3.5" />
+                      </Link>
+                    </div>
+
+                    <div className="grid grid-cols-2 sm:grid-cols-4 gap-3">
+                      <div className="rounded-xl border border-white/10 bg-white/[0.02] p-3">
+                        <p className="text-[10px] text-zinc-400 font-medium uppercase tracking-wider">État Global</p>
+                        <p className="text-lg font-bold text-emerald-400 mt-1">Opérationnel</p>
+                        <p className="text-[10px] text-zinc-400 mt-0.5">9 sous-systèmes sains</p>
+                      </div>
+                      <div className="rounded-xl border border-white/10 bg-white/[0.02] p-3">
+                        <p className="text-[10px] text-zinc-400 font-medium uppercase tracking-wider">Télémétrie</p>
+                        <p className="text-lg font-bold text-cyan-400 mt-1">V8 &amp; Latence</p>
+                        <p className="text-[10px] text-zinc-400 mt-0.5">Percentiles P50/P95/P99</p>
+                      </div>
+                      <div className="rounded-xl border border-white/10 bg-white/[0.02] p-3">
+                        <p className="text-[10px] text-zinc-400 font-medium uppercase tracking-wider">Modules Actifs</p>
+                        <p className="text-lg font-bold text-purple-400 mt-1">22 Modules</p>
+                        <p className="text-[10px] text-zinc-400 mt-0.5">Santé &amp; dépendances</p>
+                      </div>
+                      <div className="rounded-xl border border-white/10 bg-white/[0.02] p-3">
+                        <p className="text-[10px] text-zinc-400 font-medium uppercase tracking-wider">Auto-Diagnostic</p>
+                        <p className="text-lg font-bold text-amber-400 mt-1">17 Tests</p>
+                        <p className="text-[10px] text-zinc-400 mt-0.5">Contrôle interne complet</p>
+                      </div>
+                    </div>
+
+                    <div className="flex flex-wrap gap-2 pt-1">
+                      <Link
+                        href="/discord/bot?tab=modules"
+                        className="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-lg border border-white/10 bg-zinc-900/80 hover:bg-zinc-800 text-zinc-200 text-xs transition-all"
+                      >
+                        <Layers className="h-3.5 w-3.5 text-indigo-400" />
+                        <span>Modules (22)</span>
+                      </Link>
+                      <Link
+                        href="/discord/bot?tab=commands"
+                        className="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-lg border border-white/10 bg-zinc-900/80 hover:bg-zinc-800 text-zinc-200 text-xs transition-all"
+                      >
+                        <Terminal className="h-3.5 w-3.5 text-cyan-400" />
+                        <span>Commandes</span>
+                      </Link>
+                      <Link
+                        href="/discord/bot?tab=performance"
+                        className="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-lg border border-white/10 bg-zinc-900/80 hover:bg-zinc-800 text-zinc-200 text-xs transition-all"
+                      >
+                        <BarChart3 className="h-3.5 w-3.5 text-emerald-400" />
+                        <span>Performances</span>
+                      </Link>
+                      <Link
+                        href="/discord/bot?tab=diagnostics"
+                        className="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-lg border border-white/10 bg-zinc-900/80 hover:bg-zinc-800 text-zinc-200 text-xs transition-all"
+                      >
+                        <Cpu className="h-3.5 w-3.5 text-amber-400" />
+                        <span>Diagnostics (17 Tests)</span>
                       </Link>
                     </div>
                   </div>

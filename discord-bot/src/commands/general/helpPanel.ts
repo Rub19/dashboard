@@ -107,7 +107,7 @@ export const HELP_CATEGORIES: HelpCategoryMeta[] = [
     emoji: '⚡',
     color: 0x3b82f6, // Bleu Royal
     description: "Commandes générales, vérification de latence et aide du serveur",
-    commandNames: ['help', 'ping'],
+    commandNames: ['bot', 'help', 'ping'],
   },
 ];
 

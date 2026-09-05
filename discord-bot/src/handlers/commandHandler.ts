@@ -1,6 +1,7 @@
 import { Collection, REST, Routes } from 'discord.js';
 import { helpCommand } from '../commands/general/help.js';
 import { pingCommand } from '../commands/general/ping.js';
+import { botCommand } from '../commands/general/bot.js';
 import { ticketCommand } from '../commands/general/ticket.js';
 import { askCommand } from '../commands/general/ask.js';
 import { summarizeCommand } from '../commands/general/summarize.js';
@@ -43,6 +44,7 @@ class CommandRegistry {
 
   constructor() {
     // Utilitaires
+    this.register(botCommand);
     this.register(pingCommand);
     this.register(prefixCommand);
     this.register(helpCommand);

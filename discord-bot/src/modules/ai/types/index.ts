@@ -99,6 +99,10 @@ export interface AISettings {
   provider: 'OPENROUTER' | 'OPENAI' | 'GROQ' | 'CLOUDFLARE' | 'BUILTIN';
   model: string;
   dailyBudgetTokens: number;
+  dedicatedChannelId?: string;
+  allowImageGeneration?: boolean;
+  bannedWords?: string[];
+  thonMood?: 'SAGE' | 'GAMER_SARCASTIQUE' | 'PROTECTEUR' | 'CYBERPUNK' | 'CUSTOM';
   publishedVersion: number;
   lastPublishedAt: string;
 }

@@ -63,6 +63,10 @@ export const GuildConfigSchema = z.object({
   musicDefaultVolume: z.number().min(0).max(100).default(80),
   themePreset: z.enum(['DEFAULT', 'CYBERPUNK', 'EMERALD', 'SUNSET', 'DARK']).default('DEFAULT'),
   autoDeleteCommands: z.boolean().default(false),
+  adminRoles: z.array(z.string()).default([]),
+  modRoles: z.array(z.string()).default([]),
+  vipRoles: z.array(z.string()).default([]),
+  activePreset: z.string().default('PRESET_BALANCED'),
 });
 
 export type GuildConfig = z.infer<typeof GuildConfigSchema>;
@@ -108,6 +112,10 @@ export const defaultGuildConfig: Omit<GuildConfig, 'guildId'> = {
   musicDefaultVolume: 80,
   themePreset: 'DEFAULT',
   autoDeleteCommands: false,
+  adminRoles: [],
+  modRoles: [],
+  vipRoles: [],
+  activePreset: 'PRESET_BALANCED',
 };
 
 /**

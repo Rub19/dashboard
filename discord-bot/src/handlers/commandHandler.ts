@@ -6,9 +6,12 @@ import { ticketCommand } from '../commands/general/ticket.js';
 import { askCommand } from '../commands/general/ask.js';
 import { summarizeCommand } from '../commands/general/summarize.js';
 import { formCommand } from '../commands/general/form.js';
+import { imagineCommand } from '../commands/general/imagineCommand.js';
 import { clearCommand } from '../commands/admin/clear.js';
 import { prefixCommand } from '../commands/admin/prefix.js';
 import { settingsCommand } from '../commands/admin/settings.js';
+import { permissionsCommand } from '../commands/admin/permissionsCommand.js';
+import { aiSetupCommand } from '../commands/admin/aiSetupCommand.js';
 import { languageCommand } from '../commands/general/language.js';
 
 // Module Modération
@@ -59,9 +62,12 @@ class CommandRegistry {
     this.register(prefixCommand);
     this.register(helpCommand);
     this.register(settingsCommand);
+    this.register(permissionsCommand);
+    this.register(aiSetupCommand);
     this.register(languageCommand);
     this.register(ticketCommand);
     this.register(askCommand);
+    this.register(imagineCommand);
     this.register(summarizeCommand);
     this.register(formCommand);
 

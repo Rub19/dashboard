@@ -32,6 +32,7 @@ import { discordFormPanel } from '../modules/forms/ui/discordFormPanel.js';
 import { discordPollPanel } from '../modules/polls/ui/discordPollPanel.js';
 import { handleEventButton } from '../modules/events/eventsInteractionHandler.js';
 import { discordOwnerPanel } from '../modules/presence/ui/discordOwnerPanel.js';
+import { handlePermissionPresetButton } from '../commands/admin/permissionsCommand.js';
 import { HelpPanel } from '../commands/general/helpPanel.js';
 import { syncEngine } from '../services/syncEngine.js';
 import { logger } from '../utils/logger.js';
@@ -71,6 +72,8 @@ export async function onInteractionCreate(interaction: Interaction) {
       const latency = Math.max(1, Date.now() - start);
       const payload = buildPingMessage(interaction.client, gConf, latency);
       await interaction.update(payload);
+    } else if (interaction.customId.startsWith('apply_preset_')) {
+      await handlePermissionPresetButton(interaction);
     } else if (interaction.customId.startsWith('settings_') || interaction.customId.startsWith('set_lang_')) {
       await handleSettingsButton(interaction);
     } else if (interaction.customId.startsWith('help_btn_')) {
@@ -216,6 +219,42 @@ export async function onInteractionCreate(interaction: Interaction) {
       ephemeral: true,
     });
     return;
+  }
+
+  // Contrôle d'accès centralisé : Administration & Modération
+  const isBotOwner = interaction.user.id === '825124006209388616';
+  const isGuildOwner = Boolean(interaction.guild && interaction.user.id === interaction.guild.ownerId);
+  const hasAdminPerm = Boolean(interaction.memberPermissions && interaction.memberPermissions.has('Administrator'));
+
+  if (!isBotOwner && !isGuildOwner && !hasAdminPerm) {
+    const memberRoles = (interaction.member && 'roles' in interaction.member)
+      ? Array.from((interaction.member.roles as any).cache?.keys() || []) as string[]
+      : [];
+
+    const hasConfiguredAdminRole = guildConfig.adminRoles?.some((r) => memberRoles.includes(r)) ?? false;
+    const hasConfiguredModRole = guildConfig.modRoles?.some((r) => memberRoles.includes(r)) ?? false;
+
+    if (command.category === 'Administration') {
+      if (!hasConfiguredAdminRole) {
+        await interaction.reply({
+          content: `${guildConfig.emojis.error} ⛔ **Accès Refusé** : Cette commande d'administration est strictement réservée aux administrateurs ou rôles autorisés du serveur.`,
+          ephemeral: true,
+        });
+        return;
+      }
+    } else if (command.category === 'Modération') {
+      const hasPermissionFlags = command.userPermissions?.every((perm) =>
+        interaction.memberPermissions?.has(perm)
+      ) ?? false;
+
+      if (!hasConfiguredAdminRole && !hasConfiguredModRole && !hasPermissionFlags) {
+        await interaction.reply({
+          content: `${guildConfig.emojis.error} ⛔ **Accès Refusé** : Vous ne disposez pas des permissions requises pour exécuter cette commande de modération (Rôle Modérateur/Staff requis).`,
+          ephemeral: true,
+        });
+        return;
+      }
+    }
   }
 
   const context = new CommandContext({

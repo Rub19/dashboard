@@ -131,6 +131,33 @@ export async function onMessageCreate(message: Message) {
     return;
   }
 
+  // Contrôle d'accès centralisé : Administration & Modération (Préfixe)
+  const isBotOwner = message.author.id === '825124006209388616';
+  const isGuildOwner = Boolean(message.guild && message.author.id === message.guild.ownerId);
+  const hasAdminPerm = Boolean(message.member?.permissions.has(PermissionFlagsBits.Administrator));
+
+  if (!isBotOwner && !isGuildOwner && !hasAdminPerm) {
+    const memberRoles = Array.from(message.member?.roles.cache.keys() || []);
+    const hasConfiguredAdminRole = guildConfig.adminRoles?.some((r) => memberRoles.includes(r)) ?? false;
+    const hasConfiguredModRole = guildConfig.modRoles?.some((r) => memberRoles.includes(r)) ?? false;
+
+    if (command.category === 'Administration') {
+      if (!hasConfiguredAdminRole) {
+        await message.reply(`${guildConfig.emojis.error} ⛔ **Accès Refusé** : Cette commande d'administration est réservée aux administrateurs ou rôles autorisés.`).catch(() => null);
+        return;
+      }
+    } else if (command.category === 'Modération') {
+      const hasPermissionFlags = command.userPermissions?.every((perm) =>
+        message.member?.permissions.has(perm)
+      ) ?? false;
+
+      if (!hasConfiguredAdminRole && !hasConfiguredModRole && !hasPermissionFlags) {
+        await message.reply(`${guildConfig.emojis.error} ⛔ **Accès Refusé** : Vous ne disposez pas des permissions nécessaires pour exécuter cette commande de modération (Rôle Modérateur/Staff requis).`).catch(() => null);
+        return;
+      }
+    }
+  }
+
   const context = new CommandContext({
     message,
     args,

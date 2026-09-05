@@ -14,6 +14,7 @@ import { AIProviderService } from './aiProviderService.js';
 import { AIToolService } from './aiToolService.js';
 import { DiscordAiPanel } from '../ui/discordAiPanel.js';
 import { logService } from '../../logs/services/logService.js';
+import { AIImageService } from './aiImageService.js';
 import { logger } from '../../../utils/logger.js';
 
 export class AIService {
@@ -34,28 +35,34 @@ export class AIService {
     const settings = aiRepository.getSettings(guildId);
     if (!settings.enabled) return false;
 
-    // 1. Détermination du mode de réponse pour ce salon (Hiérarchie : Channel -> Category -> Global)
+    // Détection du salon IA dédié public (où tous les membres peuvent échanger)
+    const isDedicatedChannel = Boolean(
+      settings.dedicatedChannelId && message.channelId === settings.dedicatedChannelId
+    );
+
+    // 1. Détermination du mode de réponse pour ce salon (Hiérarchie : Salon Dédié -> Channel -> Category -> Global)
     let channelRule = settings.channelRules[message.channelId];
     if (!channelRule && message.channel.isTextBased() && 'parentId' in message.channel && message.channel.parentId) {
       channelRule = settings.channelRules[message.channel.parentId];
     }
 
     const mode = channelRule ? channelRule.mode : settings.defaultMode;
-    if (mode === 'DISABLED') return false;
+    if (!isDedicatedChannel && mode === 'DISABLED') return false;
 
-    // Vérification des rôles autorisés / bloqués
+    // Vérification des rôles autorisés / bloqués (Dans le salon dédié, accès public par défaut)
     const memberRoles = Array.from(message.member?.roles.cache.keys() || []);
     if (settings.blockedRoleIds.some((r) => memberRoles.includes(r))) return false;
-    if (settings.allowedRoleIds.length > 0 && !settings.allowedRoleIds.some((r) => memberRoles.includes(r))) {
+    if (!isDedicatedChannel && settings.allowedRoleIds.length > 0 && !settings.allowedRoleIds.some((r) => memberRoles.includes(r))) {
       return false;
     }
 
-    // Vérification de la condition de déclenchement
+    // Condition de déclenchement
     const isBotMentioned = this.client?.user ? message.mentions.has(this.client.user) : false;
     const isThread = message.channel.isThread();
 
     let shouldRespond = false;
-    if (mode === 'AUTOMATIC') shouldRespond = true;
+    if (isDedicatedChannel) shouldRespond = true;
+    else if (mode === 'AUTOMATIC') shouldRespond = true;
     else if (mode === 'MENTION_ONLY' && isBotMentioned) shouldRespond = true;
     else if (mode === 'HYBRID' && (isBotMentioned || isThread)) shouldRespond = true;
 
@@ -68,13 +75,40 @@ export class AIService {
     }
     if (!promptText) return false;
 
-    // 2. Vérification de Sécurité (Anti-Injection & Jailbreak)
-    const safetyCheck = AISafetyService.inspectPrompt(promptText);
+    // 2. Vérification de Sécurité (Anti-Injection, Jailbreak & Mots Bannis AutoMod)
+    const safetyCheck = AISafetyService.inspectPrompt(promptText, settings.bannedWords);
     if (safetyCheck.flagged) {
-      await message.reply({
-        content: '⚠️ Désolé, cette demande ne respecte pas les consignes de sécurité de l\'assistant.',
-      });
+      if (safetyCheck.bannedWordDetected) {
+        await message.reply({
+          content: `🚫 **AutoMod** : Votre message a été bloqué car il contient un terme interdit (\`${safetyCheck.bannedWordDetected}\`).`,
+        });
+      } else {
+        await message.reply({
+          content: '⚠️ Désolé, cette demande ne respecte pas les consignes de sécurité et directives de l\'assistant.',
+        });
+      }
       return true;
+    }
+
+    // 2.5 Détection automatique de demande de génération d'image
+    const imagePattern = /^(g[ée]n[èe]re|dessine|cr[ée][ée]|fais|draw|imagine|generate|create)\s+(une?\s+)?image\s+(de\s+|d'|du\s+|des\s+)?/i;
+    if (imagePattern.test(promptText) && settings.allowImageGeneration !== false) {
+      const cleanImagePrompt = promptText.replace(imagePattern, '').trim();
+      if (cleanImagePrompt.length >= 3) {
+        if ('sendTyping' in message.channel) {
+          await message.channel.sendTyping().catch(() => {});
+        }
+        const imgResult = await AIImageService.generateImage({ prompt: cleanImagePrompt });
+        if (imgResult.success && imgResult.imageUrl) {
+          const embed = AIImageService.buildImageEmbed({
+            prompt: imgResult.revisedPrompt || cleanImagePrompt,
+            imageUrl: imgResult.imageUrl,
+            authorTag: message.author.username,
+          });
+          await message.reply({ embeds: [embed] });
+          return true;
+        }
+      }
     }
 
     // 3. Indicateur de frappe
@@ -111,10 +145,13 @@ export class AIService {
         knowledgeContext: knowledge.contextText,
       });
 
+      // 6.5 Filtrage hermétique DLP & Caviardage des secrets avant diffusion
+      const sanitizedText = AISafetyService.sanitizeOutput(completion.text, settings.bannedWords);
+
       AIMemoryService.appendMessage(
         conversation,
         'assistant',
-        completion.text,
+        sanitizedText,
         completion.sourcesUsed,
         settings.memory.contextLength
       );
@@ -122,7 +159,7 @@ export class AIService {
       // 7. Construction et envoi de la réponse Discord
       const embed = DiscordAiPanel.buildResponseEmbed({
         settings,
-        answer: completion.text,
+        answer: sanitizedText,
         sourcesUsed: completion.sourcesUsed,
         userTag: message.author.username,
       });

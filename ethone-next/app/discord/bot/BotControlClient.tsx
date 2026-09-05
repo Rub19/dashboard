@@ -335,6 +335,44 @@ export default function BotControlClient({ initialTab = "overview" }: BotControl
     ragSources: 3,
   });
 
+  // Dedicated AI Channel, Humeur du Thon & Banned Words State
+  const [dedicatedAiChannel, setDedicatedAiChannel] = useState("salon-ia-general");
+  const [dedicatedAiChannelEnabled, setDedicatedAiChannelEnabled] = useState(true);
+  const [thonMood, setThonMood] = useState<"SAGE" | "GAMER_SARCASTIQUE" | "PROTECTEUR" | "CYBERPUNK" | "CUSTOM">("SAGE");
+  const [allowImageGen, setAllowImageGen] = useState(true);
+  const [bannedWordsList, setBannedWordsList] = useState<string[]>(["nsfw", "scam", "doxx", "leak", "nitro-free"]);
+  const [newBannedWordInput, setNewBannedWordInput] = useState("");
+
+  // Role Permissions & Presets State
+  const [activeRolePreset, setActiveRolePreset] = useState<string>("PRESET_BALANCED");
+  const [detectedRolesList] = useState<any[]>([
+    { id: "1", name: "👑 Fondateur / Owner", color: "#f59e0b", category: "OWNER", members: 1, recommendation: "Contrôle Total Suprême (Toutes les permissions)", badge: "👑 OWNER" },
+    { id: "2", name: "🛡️ Administrateur", color: "#ef4444", category: "ADMIN", members: 3, recommendation: "Administration Complète (Config bot, modération & sécurité)", badge: "🛡️ ADMIN" },
+    { id: "3", name: "⚔️ Modérateur / Staff", color: "#3b82f6", category: "MODERATOR", members: 6, recommendation: "Modération Standard (Sanctions, timeouts, clear)", badge: "⚔️ MOD" },
+    { id: "4", name: "💎 Server Booster / VIP", color: "#ec4899", category: "VIP", members: 12, recommendation: "Avantages VIP (Priorité musique & quotas IA étendus)", badge: "💎 VIP" },
+    { id: "5", name: "👥 @everyone (Membres)", color: "#9ca3af", category: "MEMBER", members: 48, recommendation: "Accès Membre (Commandes publiques & salon IA dédié)", badge: "👥 PUBLIC" },
+  ]);
+
+  const handleAddBannedWord = () => {
+    if (!newBannedWordInput.trim()) return;
+    const word = newBannedWordInput.trim().toLowerCase();
+    if (!bannedWordsList.includes(word)) {
+      setBannedWordsList((prev) => [...prev, word]);
+      toast?.success?.(`Mot banni "${word}" ajouté à l'AutoMod.`);
+    }
+    setNewBannedWordInput("");
+  };
+
+  const handleRemoveBannedWord = (word: string) => {
+    setBannedWordsList((prev) => prev.filter((w) => w !== word));
+    toast?.info?.(`Mot banni "${word}" retiré.`);
+  };
+
+  const handleApplyRolePreset = (presetId: string, label: string) => {
+    setActiveRolePreset(presetId);
+    toast?.success?.(`Préset "${label}" appliqué avec succès.`);
+  };
+
   // Performance & RAM State
   const [perfMetrics, setPerfMetrics] = useState({
     heapUsedMb: 48.2,
@@ -443,6 +481,9 @@ export default function BotControlClient({ initialTab = "overview" }: BotControl
     { name: "/giveaway", desc: "Organise un tirage au sort automatique avec inscription bouton", cat: "Communauté", perm: "Gérer les événements" },
     { name: "/poll question:...", desc: "Lance un sondage communautaire interactif en direct", cat: "Communauté", perm: "Tous" },
     { name: "/form open id:...", desc: "Ouvre un formulaire de candidature dynamique modal", cat: "Support", perm: "Tous" },
+    { name: "/imagine prompt:... [style:...] [ratio:...]", desc: "Génération d'images haute fidélité via IA sécurisée (Flux/Pollinations)", cat: "Intelligence Artificielle", perm: "Tous" },
+    { name: "/ai-setup [salon:channel] [humeur:...] [images:bool] [bannir_mot:...]", desc: "Configuration du salon IA dédié, humeur du Thon, génération d'images et mots interdits", cat: "Administration", perm: "Administrateur" },
+    { name: "/permissions [action:analyser|preset_strict|preset_equilibre|preset_communaute]", desc: "Analyse multilingue des rôles et configuration des permissions en 1 clic", cat: "Administration", perm: "Administrateur" },
   ], []);
 
   const filteredCommands = useMemo(() => {
@@ -1664,6 +1705,115 @@ export default function BotControlClient({ initialTab = "overview" }: BotControl
                   />
                 </button>
               </div>
+
+              {/* SECTION: GESTIONNAIRE DES RÔLES & PERMISSIONS MULTILINGUE */}
+              <div className="p-5 rounded-xl bg-zinc-950/70 border border-zinc-800 space-y-4">
+                <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3 pb-3 border-b border-zinc-800/80">
+                  <div>
+                    <h4 className="text-xs font-bold text-white flex items-center gap-2">
+                      <ShieldCheck className="w-4 h-4 text-indigo-400" />
+                      Rôles du Serveur & Permissions d'Administration
+                    </h4>
+                    <p className="text-[11px] text-zinc-400">
+                      Détection multilingue automatique (FR, EN, ES, DE) et attribution des privilèges avec présets 1-clic
+                    </p>
+                  </div>
+                  <span className="px-2.5 py-1 rounded-full text-[10px] font-mono font-semibold bg-indigo-500/10 text-indigo-400 border border-indigo-500/20">
+                    Préset actif : {activeRolePreset === "PRESET_STRICT" ? "Strict & Sécurisé" : activeRolePreset === "PRESET_BALANCED" ? "Équilibré (Recommandé)" : "Communautaire"}
+                  </span>
+                </div>
+
+                {/* 1-Click Preset Selection */}
+                <div className="space-y-2">
+                  <span className="text-[11px] font-semibold text-zinc-300 block">
+                    Appliquer un Préset Rapide en 1-Clic :
+                  </span>
+                  <div className="grid grid-cols-1 sm:grid-cols-3 gap-2.5">
+                    {[
+                      {
+                        id: "PRESET_STRICT",
+                        name: "🛡️ Strict & Sécurisé",
+                        desc: "Seuls Owner & Admins accèdent à la modération et aux réglages critiques",
+                        badge: "Haute Sécurité",
+                      },
+                      {
+                        id: "PRESET_BALANCED",
+                        name: "⚖️ Équilibré (Recommandé)",
+                        desc: "Admins = contrôle total. Modérateurs = sanctions et gestion des messages",
+                        badge: "Standard",
+                      },
+                      {
+                        id: "PRESET_COMMUNITY",
+                        name: "🌐 Communautaire",
+                        desc: "Modération collaborative, accès souple pour VIPs et animateurs",
+                        badge: "Flexible",
+                      },
+                    ].map((preset) => (
+                      <button
+                        key={preset.id}
+                        onClick={() => handleApplyRolePreset(preset.id, preset.name)}
+                        className={cn(
+                          "p-3 rounded-xl text-left border transition-all space-y-1.5",
+                          activeRolePreset === preset.id
+                            ? "bg-indigo-950/40 border-indigo-500/60 shadow-md shadow-indigo-500/10"
+                            : "bg-zinc-900/60 border-zinc-800/80 hover:bg-zinc-900 hover:border-zinc-700"
+                        )}
+                      >
+                        <div className="flex items-center justify-between">
+                          <span className="text-xs font-bold text-white">{preset.name}</span>
+                          <span className="text-[9px] px-1.5 py-0.5 rounded bg-zinc-800 text-zinc-400 font-mono">
+                            {preset.badge}
+                          </span>
+                        </div>
+                        <p className="text-[10px] text-zinc-400 leading-relaxed">{preset.desc}</p>
+                      </button>
+                    ))}
+                  </div>
+                </div>
+
+                {/* Detected Roles List with AI recommendations */}
+                <div className="space-y-2 pt-2">
+                  <span className="text-[11px] font-semibold text-zinc-300 block">
+                    Rôles Détectés & Recommandations Intelligentes :
+                  </span>
+                  <div className="divide-y divide-zinc-800/60 border border-zinc-800/80 rounded-xl overflow-hidden bg-zinc-900/40">
+                    {detectedRolesList.map((role) => (
+                      <div key={role.id} className="p-3 flex flex-col sm:flex-row sm:items-center justify-between gap-2.5 hover:bg-zinc-900/70 transition-colors">
+                        <div className="flex items-center gap-3">
+                          <span className="w-3 h-3 rounded-full shrink-0 border border-black/30 shadow-sm" style={{ backgroundColor: role.color }} />
+                          <div>
+                            <div className="flex items-center gap-2">
+                              <span className="text-xs font-bold text-white">{role.name}</span>
+                              <span className="text-[10px] font-mono px-1.5 py-0.5 rounded bg-zinc-800 text-zinc-300 border border-zinc-700/50">
+                                {role.badge}
+                              </span>
+                            </div>
+                            <span className="text-[10px] text-zinc-400 block mt-0.5">
+                              {role.recommendation}
+                            </span>
+                          </div>
+                        </div>
+                        <div className="flex items-center gap-2 self-end sm:self-center shrink-0">
+                          <span className="text-[10px] text-zinc-400 font-mono">
+                            {role.members} membre{role.members > 1 ? "s" : ""}
+                          </span>
+                          <span className="text-[10px] px-2 py-0.5 rounded bg-emerald-500/10 text-emerald-400 border border-emerald-500/20 font-semibold">
+                            Synchronisé
+                          </span>
+                        </div>
+                      </div>
+                    ))}
+                  </div>
+                </div>
+
+                {/* Security Note */}
+                <div className="p-3 rounded-xl bg-indigo-950/20 border border-indigo-900/30 flex items-start gap-2.5">
+                  <Lock className="w-3.5 h-3.5 text-indigo-400 mt-0.5 shrink-0" />
+                  <p className="text-[10px] text-zinc-400 leading-relaxed">
+                    <strong className="text-zinc-200">Verrouillage de Sécurité :</strong> Les commandes de modération (<code className="text-indigo-300">/ban</code>, <code className="text-indigo-300">/kick</code>, <code className="text-indigo-300">/clear</code>, <code className="text-indigo-300">/timeout</code>, etc.) sont hermétiquement bloquées pour tous les membres sans les permissions requises. Le créateur du bot et le propriétaire du serveur disposent d'un bypass automatique.
+                  </p>
+                </div>
+              </div>
             </div>
           </div>
         )}
@@ -1764,6 +1914,191 @@ export default function BotControlClient({ initialTab = "overview" }: BotControl
                   <p className="text-[11px] text-zinc-400">
                     Index contextuel fournissant les informations vérifiées du serveur (règlement, tickets, rôles VIP) pour des réponses ultra-précises sans hallucination.
                   </p>
+                </div>
+              </div>
+
+              {/* SECTION: SALON IA DÉDIÉ & GÉNÉRATION D'IMAGES */}
+              <div className="p-5 rounded-xl bg-zinc-950/70 border border-zinc-800 space-y-4">
+                <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3 pb-3 border-b border-zinc-800/80">
+                  <div>
+                    <h4 className="text-xs font-bold text-white flex items-center gap-2">
+                      <Terminal className="w-4 h-4 text-purple-400" />
+                      Salon Public Dédié pour l'IA
+                    </h4>
+                    <p className="text-[11px] text-zinc-400">
+                      Permet à tous les membres d'échanger naturellement avec le bot sans préfixe ni mention
+                    </p>
+                  </div>
+                  <div className="flex items-center gap-3">
+                    <span className="text-[11px] text-zinc-400 font-mono">
+                      {dedicatedAiChannelEnabled ? "🟢 Salon Actif" : "⚪ Désactivé"}
+                    </span>
+                    <button
+                      onClick={() => {
+                        setDedicatedAiChannelEnabled((v) => !v);
+                        toast?.success?.(
+                          !dedicatedAiChannelEnabled
+                            ? "Salon IA public activé !"
+                            : "Salon IA public désactivé."
+                        );
+                      }}
+                      className={cn(
+                        "w-10 h-5 rounded-full transition-colors relative p-0.5",
+                        dedicatedAiChannelEnabled ? "bg-purple-600" : "bg-zinc-800"
+                      )}
+                    >
+                      <span
+                        className={cn(
+                          "block w-4 h-4 rounded-full bg-white transition-transform",
+                          dedicatedAiChannelEnabled ? "translate-x-5" : "translate-x-0"
+                        )}
+                      />
+                    </button>
+                  </div>
+                </div>
+
+                <div className="grid grid-cols-1 sm:grid-cols-2 gap-4 pt-1">
+                  <div>
+                    <label className="text-[11px] font-semibold text-zinc-300 block mb-1.5">
+                      Canal Textuel Dédié
+                    </label>
+                    <input
+                      type="text"
+                      value={dedicatedAiChannel}
+                      onChange={(e) => setDedicatedAiChannel(e.target.value)}
+                      placeholder="#salon-ia-general"
+                      className="w-full px-3 py-2 rounded-xl bg-zinc-900 border border-zinc-800 text-white text-xs font-mono focus:outline-none focus:border-purple-500"
+                    />
+                    <span className="text-[10px] text-zinc-400 mt-1 block">
+                      Les membres peuvent converser librement et demander des images directement ici.
+                    </span>
+                  </div>
+
+                  <div className="flex items-center justify-between p-3 rounded-xl bg-zinc-900/60 border border-zinc-800/80">
+                    <div>
+                      <span className="text-xs font-bold text-white block">Génération d'images (/imagine)</span>
+                      <span className="text-[10px] text-zinc-400">
+                        Modèle Flux haute fidélité avec protection ToS
+                      </span>
+                    </div>
+                    <button
+                      onClick={() => {
+                        setAllowImageGen((v) => !v);
+                        toast?.info?.(!allowImageGen ? "Génération d'images activée" : "Génération d'images désactivée");
+                      }}
+                      className={cn(
+                        "w-10 h-5 rounded-full transition-colors relative p-0.5",
+                        allowImageGen ? "bg-emerald-600" : "bg-zinc-800"
+                      )}
+                    >
+                      <span
+                        className={cn(
+                          "block w-4 h-4 rounded-full bg-white transition-transform",
+                          allowImageGen ? "translate-x-5" : "translate-x-0"
+                        )}
+                      />
+                    </button>
+                  </div>
+                </div>
+              </div>
+
+              {/* SECTION: HUMEUR DU THON */}
+              <div className="p-5 rounded-xl bg-zinc-950/70 border border-zinc-800 space-y-4">
+                <div>
+                  <h4 className="text-xs font-bold text-white flex items-center gap-2">
+                    <Sparkles className="w-4 h-4 text-amber-400" />
+                    Humeur & Tempérament du Thon
+                  </h4>
+                  <p className="text-[11px] text-zinc-400">
+                    Choisissez la personnalité qui régit les réponses de l'IA sur le serveur
+                  </p>
+                </div>
+
+                <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-3">
+                  {[
+                    { id: "SAGE", name: "🐟 Sage & Bienveillant", desc: "Calme, poli, ultra-pédagogue et posé", color: "from-blue-500/20 to-indigo-500/20 border-blue-500/30" },
+                    { id: "GAMER_SARCASTIQUE", name: "🦈 Gamer Sarcastique", desc: "Humour piquant, pop-culture et esprit vif", color: "from-purple-500/20 to-pink-500/20 border-purple-500/30" },
+                    { id: "PROTECTEUR", name: "🛡️ Protecteur & Sérieux", desc: "Vigilant, axé sécurité et respect des règles", color: "from-emerald-500/20 to-teal-500/20 border-emerald-500/30" },
+                    { id: "CYBERPUNK", name: "⚡ Cyberpunk Futuriste", desc: "High-tech, style néon 2077 et réponses punchy", color: "from-amber-500/20 to-rose-500/20 border-amber-500/30" },
+                  ].map((moodItem) => (
+                    <button
+                      key={moodItem.id}
+                      onClick={() => {
+                        setThonMood(moodItem.id as any);
+                        toast?.success?.(`Humeur du Thon définie sur : ${moodItem.name}`);
+                      }}
+                      className={cn(
+                        "p-3 rounded-xl text-left border transition-all relative overflow-hidden",
+                        thonMood === moodItem.id
+                          ? `bg-gradient-to-br ${moodItem.color} border-indigo-500 shadow-md`
+                          : "bg-zinc-900/60 border-zinc-800/80 hover:bg-zinc-900"
+                      )}
+                    >
+                      <span className="text-xs font-bold text-white block">{moodItem.name}</span>
+                      <span className="text-[10px] text-zinc-400 mt-1 block leading-relaxed">{moodItem.desc}</span>
+                      {thonMood === moodItem.id && (
+                        <span className="absolute top-2 right-2 w-2 h-2 rounded-full bg-emerald-400" />
+                      )}
+                    </button>
+                  ))}
+                </div>
+              </div>
+
+              {/* SECTION: SÉCURITÉ DLP & MOTS BANNIS AUTOMOD */}
+              <div className="p-5 rounded-xl bg-zinc-950/70 border border-zinc-800 space-y-4">
+                <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3 pb-3 border-b border-zinc-800/80">
+                  <div>
+                    <h4 className="text-xs font-bold text-white flex items-center gap-2">
+                      <ShieldAlert className="w-4 h-4 text-rose-400" />
+                      Mots Bannis Personnalisés & Bouclier DLP
+                    </h4>
+                    <p className="text-[11px] text-zinc-400">
+                      Filtrage en temps réel des prompts et des réponses par l'AutoMod et protection des secrets (Discord ToS)
+                    </p>
+                  </div>
+                  <span className="px-2.5 py-1 rounded-full text-[10px] font-mono font-semibold bg-emerald-500/10 text-emerald-400 border border-emerald-500/20 flex items-center gap-1.5">
+                    <Lock className="w-3 h-3" />
+                    DLP Anti-Leak Actif
+                  </span>
+                </div>
+
+                {/* Form to add word */}
+                <div className="flex gap-2">
+                  <input
+                    type="text"
+                    value={newBannedWordInput}
+                    onChange={(e) => setNewBannedWordInput(e.target.value)}
+                    onKeyDown={(e) => e.key === "Enter" && handleAddBannedWord()}
+                    placeholder="Ajouter un mot ou expression bannie..."
+                    className="flex-1 px-3 py-2 rounded-xl bg-zinc-900 border border-zinc-800 text-white text-xs focus:outline-none focus:border-rose-500"
+                  />
+                  <button
+                    onClick={handleAddBannedWord}
+                    className="px-4 py-2 rounded-xl bg-rose-600 hover:bg-rose-500 text-white text-xs font-semibold transition-all"
+                  >
+                    Bannir le mot
+                  </button>
+                </div>
+
+                {/* List of active banned words */}
+                <div className="flex flex-wrap gap-1.5 pt-1">
+                  {bannedWordsList.map((word) => (
+                    <span
+                      key={word}
+                      className="px-2.5 py-1 rounded-lg bg-zinc-900 border border-zinc-800 text-zinc-300 text-[11px] flex items-center gap-1.5 font-mono"
+                    >
+                      <span>{word}</span>
+                      <button
+                        onClick={() => handleRemoveBannedWord(word)}
+                        className="text-zinc-400 hover:text-rose-400 transition-colors"
+                      >
+                        <X className="w-3 h-3" />
+                      </button>
+                    </span>
+                  ))}
+                  {bannedWordsList.length === 0 && (
+                    <span className="text-[11px] text-zinc-400 italic">Aucun mot banni configuré</span>
+                  )}
                 </div>
               </div>
             </div>

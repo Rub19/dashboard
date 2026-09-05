@@ -9,6 +9,7 @@ import { formCommand } from '../commands/general/form.js';
 import { clearCommand } from '../commands/admin/clear.js';
 import { prefixCommand } from '../commands/admin/prefix.js';
 import { settingsCommand } from '../commands/admin/settings.js';
+import { languageCommand } from '../commands/general/language.js';
 
 // Module Modération
 import { warnCommand } from '../modules/moderation/commands/warn.js';
@@ -49,6 +50,7 @@ class CommandRegistry {
     this.register(prefixCommand);
     this.register(helpCommand);
     this.register(settingsCommand);
+    this.register(languageCommand);
     this.register(ticketCommand);
     this.register(askCommand);
     this.register(summarizeCommand);

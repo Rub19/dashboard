@@ -63,7 +63,7 @@ export async function onInteractionCreate(interaction: Interaction) {
   }
 
   if (interaction.isButton()) {
-    if (interaction.customId.startsWith('settings_')) {
+    if (interaction.customId.startsWith('settings_') || interaction.customId.startsWith('set_lang_')) {
       await handleSettingsButton(interaction);
     } else if (interaction.customId.startsWith('help_btn_')) {
       await HelpPanel.handleButton(interaction);

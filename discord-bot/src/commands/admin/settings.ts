@@ -28,6 +28,7 @@ export function buildSettingsMessage(guildConfig: GuildConfig, memberName?: stri
         name: '🎨 Apparence & Couleurs',
         value:
           `• **Nom affiché :** \`${guildConfig.botName}\`\n` +
+          `• **Thème Prédéfini :** \`${guildConfig.themePreset || 'DEFAULT'}\`\n` +
           `• **Couleur Principale :** \`${guildConfig.primaryColor}\`\n` +
           `• **Couleur Secondaire :** \`${guildConfig.secondaryColor}\`\n` +
           `• **Succès / Erreur :** \`${guildConfig.successColor}\` / \`${guildConfig.errorColor}\`\n` +
@@ -35,7 +36,7 @@ export function buildSettingsMessage(guildConfig: GuildConfig, memberName?: stri
         inline: false,
       },
       {
-        name: '⌨️ Commandes & Préfixe',
+        name: '⌨️ Commandes & Anti-Spam',
         value:
           `• **Préfixe textuel :** \`${guildConfig.prefix}\`\n` +
           `• **Commandes Préfixes (\`${guildConfig.prefix}\`) :** ${
@@ -43,15 +44,28 @@ export function buildSettingsMessage(guildConfig: GuildConfig, memberName?: stri
           }\n` +
           `• **Slash Commands (\`/\`) :** ${
             guildConfig.slashCommandsEnabled ? '🟢 **Activées**' : '🔴 **Désactivées**'
-          }`,
+          }\n` +
+          `• **Cooldown Anti-Spam :** \`${guildConfig.commandCooldown || 0}s\`\n` +
+          `• **Suppression auto commandes :** ${guildConfig.autoDeleteCommands ? '🟢 **Oui**' : '🔴 **Non**'}`,
         inline: false,
       },
       {
-        name: '🌐 Général & Langue',
+        name: '🌐 Langue & Audio',
         value:
-          `• **Langue :** \`${guildConfig.language.toUpperCase()}\`\n` +
+          `• **Langue :** ${
+            guildConfig.language === 'fr'
+              ? '🇫🇷 Français (`FR`)'
+              : guildConfig.language === 'en'
+              ? '🇬🇧 English (`EN`)'
+              : guildConfig.language === 'es'
+              ? '🇪🇸 Español (`ES`)'
+              : guildConfig.language === 'de'
+              ? '🇩🇪 Deutsch (`DE`)'
+              : '🇫🇷 Français'
+          }\n` +
+          `• **Volume Musique par Défaut :** \`${guildConfig.musicDefaultVolume ?? 80}%\`\n` +
           `• **Fuseau horaire :** \`${guildConfig.timezone}\``,
-        inline: true,
+        inline: false,
       },
       {
         name: '🔒 Confidentialité & Personnalité',
@@ -76,6 +90,16 @@ export function buildSettingsMessage(guildConfig: GuildConfig, memberName?: stri
     .setPlaceholder('Sélectionnez une catégorie à modifier...')
     .addOptions(
       new StringSelectMenuOptionBuilder()
+        .setLabel('Langue du Bot (FR / EN / ES / DE)')
+        .setDescription('Changer la langue du serveur (Français, English, Español, Deutsch)')
+        .setValue('edit_language')
+        .setEmoji('🌐'),
+      new StringSelectMenuOptionBuilder()
+        .setLabel('Thème Graphique (Presets Couleurs)')
+        .setDescription('Basculer entre Cyber Neon, Emerald, Crimson, Sunset, Amethyst ou Défaut')
+        .setValue('edit_theme')
+        .setEmoji('🎨'),
+      new StringSelectMenuOptionBuilder()
         .setLabel('Confidentialité des Réponses (Public / Privé)')
         .setDescription('Choisir si les réponses aux commandes sont visibles par tous ou privées')
         .setValue('edit_privacy')
@@ -86,10 +110,15 @@ export function buildSettingsMessage(guildConfig: GuildConfig, memberName?: stri
         .setValue('edit_personality')
         .setEmoji('🎭'),
       new StringSelectMenuOptionBuilder()
-        .setLabel('Modifier les Couleurs (HEX)')
-        .setDescription('Personnaliser la couleur principale, secondaire, succès et erreur')
+        .setLabel('Options Audio & Cooldown')
+        .setDescription('Ajuster le volume par défaut de la musique et le délai anti-spam')
+        .setValue('edit_audio')
+        .setEmoji('🎛️'),
+      new StringSelectMenuOptionBuilder()
+        .setLabel('Personnaliser les Couleurs (HEX)')
+        .setDescription('Personnaliser manuellement la couleur principale, secondaire, succès et erreur')
         .setValue('edit_colors')
-        .setEmoji('🎨'),
+        .setEmoji('🖌️'),
       new StringSelectMenuOptionBuilder()
         .setLabel('Modifier le Nom du Bot')
         .setDescription('Changer le nom affiché dans les embeds et messages')
@@ -106,10 +135,10 @@ export function buildSettingsMessage(guildConfig: GuildConfig, memberName?: stri
         .setValue('edit_emojis')
         .setEmoji('😀'),
       new StringSelectMenuOptionBuilder()
-        .setLabel('Modifier la Langue & Fuseau')
-        .setDescription('Changer la langue (FR/EN) et le fuseau horaire')
-        .setValue('edit_general')
-        .setEmoji('🌐')
+        .setLabel('Suppression Auto des Commandes')
+        .setDescription('Activer ou désactiver la suppression automatique des commandes invoquées')
+        .setValue('toggle_autodelete')
+        .setEmoji('🧹')
     );
 
   // Rangée de boutons pour les bascules rapides (Toggles)

@@ -27,6 +27,7 @@ import {
   Layers,
   ListRestart,
   Lock,
+  Palette,
   Play,
   Radio,
   RefreshCw,
@@ -182,6 +183,11 @@ export default function BotControlClient({ initialTab = "overview" }: BotControl
     enableSlash: true,
     enablePrefix: true,
     autoReconnect: true,
+    language: "fr" as "fr" | "en" | "es" | "de",
+    themePreset: "DEFAULT" as "DEFAULT" | "CYBER_NEON" | "EMERALD" | "CRIMSON" | "SUNSET" | "AMETHYST",
+    commandCooldown: 0,
+    musicDefaultVolume: 80,
+    autoDeleteCommands: false,
   });
   const [savingSettings, setSavingSettings] = useState(false);
 
@@ -283,6 +289,7 @@ export default function BotControlClient({ initialTab = "overview" }: BotControl
     { name: "/help", desc: "Affiche le catalogue interactif et multi-pages du serveur", cat: "Général", perm: "Tous" },
     { name: "/ping", desc: "Vérifie la latence de communication du bot", cat: "Général", perm: "Tous" },
     { name: "/settings", desc: "Panneau de personnalisation du serveur, couleurs et confidentialité", cat: "Administration", perm: "Gérer le serveur" },
+    { name: "/language [langue:fr|en|es|de]", desc: "Définit ou consulte la langue du bot (Français, English, Español, Deutsch)", cat: "Administration", perm: "Gérer le serveur" },
     { name: "/prefix [nouveau:...]", desc: "Consulte ou modifie le préfixe textuel pour ce serveur", cat: "Administration", perm: "Gérer le serveur" },
     { name: "/music play recherche:...", desc: "Joue une musique (salon vocal obligatoire)", cat: "Musique", perm: "Tous / DJ" },
     { name: "/music panel", desc: "Affiche le panneau de contrôle musical interactif avec boutons", cat: "Musique", perm: "Tous / DJ" },
@@ -1216,6 +1223,179 @@ export default function BotControlClient({ initialTab = "overview" }: BotControl
                   </div>
                   <span className="text-[10px] text-zinc-400 block">Utilisable en complément des commandes Slash (ex: {botSettings.defaultPrefix}help)</span>
                 </div>
+              </div>
+
+              {/* Multilingual Support (4 Languages) */}
+              <div className="p-5 rounded-xl bg-zinc-950/60 border border-zinc-800/80 space-y-4">
+                <div className="flex items-center justify-between">
+                  <div>
+                    <h4 className="text-xs font-bold text-white uppercase tracking-wider flex items-center gap-2">
+                      <Globe className="w-4 h-4 text-cyan-400" />
+                      Langue Officielle & Internationalisation (i18n)
+                    </h4>
+                    <p className="text-[11px] text-zinc-400 mt-0.5">
+                      Définit la langue utilisée par le bot pour les embeds, messages d'aide, réglages et réponses IA
+                    </p>
+                  </div>
+                  <span className="px-2.5 py-1 rounded-full text-xs font-mono font-semibold bg-cyan-500/10 text-cyan-300 border border-cyan-500/20">
+                    {botSettings.language.toUpperCase()}
+                  </span>
+                </div>
+
+                <div className="grid grid-cols-2 sm:grid-cols-4 gap-3 pt-1">
+                  {[
+                    { id: "fr", label: "Français", flag: "🇫🇷", desc: "Configuration française native" },
+                    { id: "en", label: "English", flag: "🇬🇧", desc: "International English support" },
+                    { id: "es", label: "Español", flag: "🇪🇸", desc: "Soporte completo en español" },
+                    { id: "de", label: "Deutsch", flag: "🇩🇪", desc: "Deutsche Lokalisierung" },
+                  ].map((lang) => {
+                    const isSelected = botSettings.language === lang.id;
+                    return (
+                      <div
+                        key={lang.id}
+                        onClick={() => setBotSettings((s) => ({ ...s, language: lang.id as any }))}
+                        className={cn(
+                          "p-3.5 rounded-xl border cursor-pointer transition-all space-y-1.5",
+                          isSelected
+                            ? "bg-cyan-500/10 border-cyan-500 text-white"
+                            : "bg-zinc-900/40 border-zinc-800 hover:border-zinc-700 text-zinc-400"
+                        )}
+                      >
+                        <div className="flex items-center gap-2 font-bold text-xs">
+                          <span className="text-xl">{lang.flag}</span>
+                          <span>{lang.label}</span>
+                          {isSelected && <CheckCircle2 className="w-3.5 h-3.5 text-cyan-400 ml-auto" />}
+                        </div>
+                        <p className="text-[10px] text-zinc-400 leading-tight">{lang.desc}</p>
+                      </div>
+                    );
+                  })}
+                </div>
+              </div>
+
+              {/* Graphic Theme Presets */}
+              <div className="p-5 rounded-xl bg-zinc-950/60 border border-zinc-800/80 space-y-4">
+                <div>
+                  <h4 className="text-xs font-bold text-white uppercase tracking-wider flex items-center gap-2">
+                    <Palette className="w-4 h-4 text-pink-400" />
+                    Thèmes Graphiques & Palettes de Couleurs
+                  </h4>
+                  <p className="text-[11px] text-zinc-400 mt-0.5">
+                    Harmonise automatiquement la couleur principale et secondaire de tous les embeds Discord
+                  </p>
+                </div>
+
+                <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-6 gap-2.5 pt-1">
+                  {[
+                    { id: "DEFAULT", name: "Discord Blurple", hex: "#5865F2", secondary: "#4752C4" },
+                    { id: "CYBER_NEON", name: "Cyber Neon", hex: "#00F0FF", secondary: "#7000FF" },
+                    { id: "EMERALD", name: "Emerald Green", hex: "#10B981", secondary: "#047857" },
+                    { id: "CRIMSON", name: "Crimson Red", hex: "#EF4444", secondary: "#B91C1C" },
+                    { id: "SUNSET", name: "Sunset Gold", hex: "#F59E0B", secondary: "#D97706" },
+                    { id: "AMETHYST", name: "Amethyst Violet", hex: "#8B5CF6", secondary: "#6D28D9" },
+                  ].map((theme) => {
+                    const isSelected = botSettings.themePreset === theme.id;
+                    return (
+                      <div
+                        key={theme.id}
+                        onClick={() => setBotSettings((s) => ({ ...s, themePreset: theme.id as any }))}
+                        className={cn(
+                          "p-3 rounded-xl border cursor-pointer transition-all space-y-2 text-center",
+                          isSelected
+                            ? "bg-zinc-800/90 border-pink-500 shadow-md shadow-pink-500/10 text-white"
+                            : "bg-zinc-900/40 border-zinc-800 hover:border-zinc-700 text-zinc-400"
+                        )}
+                      >
+                        <div className="flex items-center justify-center gap-1.5">
+                          <span className="w-3.5 h-3.5 rounded-full border border-black/30" style={{ backgroundColor: theme.hex }} />
+                          <span className="w-2.5 h-2.5 rounded-full border border-black/30" style={{ backgroundColor: theme.secondary }} />
+                        </div>
+                        <div>
+                          <span className="text-xs font-bold block">{theme.name}</span>
+                          <span className="text-[10px] font-mono text-zinc-400 block">{theme.hex}</span>
+                        </div>
+                      </div>
+                    );
+                  })}
+                </div>
+              </div>
+
+              {/* Audio & Anti-Spam Sliders */}
+              <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                <div className="p-5 rounded-xl bg-zinc-950/60 border border-zinc-800/80 space-y-3">
+                  <div className="flex items-center justify-between">
+                    <label className="text-xs font-bold text-white flex items-center gap-2">
+                      <Volume2 className="w-4 h-4 text-emerald-400" />
+                      Volume Musique par Défaut
+                    </label>
+                    <span className="font-mono text-xs font-bold text-emerald-400 px-2 py-0.5 rounded bg-emerald-500/10 border border-emerald-500/20">
+                      {botSettings.musicDefaultVolume}%
+                    </span>
+                  </div>
+                  <input
+                    type="range"
+                    min={10}
+                    max={100}
+                    step={5}
+                    value={botSettings.musicDefaultVolume}
+                    onChange={(e) => setBotSettings((s) => ({ ...s, musicDefaultVolume: Number(e.target.value) }))}
+                    className="w-full accent-emerald-500 cursor-pointer"
+                  />
+                  <p className="text-[10px] text-zinc-400">
+                    Volume initial appliqué à chaque nouvelle piste audio jouée avec /music play
+                  </p>
+                </div>
+
+                <div className="p-5 rounded-xl bg-zinc-950/60 border border-zinc-800/80 space-y-3">
+                  <div className="flex items-center justify-between">
+                    <label className="text-xs font-bold text-white flex items-center gap-2">
+                      <Timer className="w-4 h-4 text-amber-400" />
+                      Cooldown Anti-Spam Commandes
+                    </label>
+                    <span className="font-mono text-xs font-bold text-amber-400 px-2 py-0.5 rounded bg-amber-500/10 border border-amber-500/20">
+                      {botSettings.commandCooldown}s
+                    </span>
+                  </div>
+                  <input
+                    type="range"
+                    min={0}
+                    max={15}
+                    step={1}
+                    value={botSettings.commandCooldown}
+                    onChange={(e) => setBotSettings((s) => ({ ...s, commandCooldown: Number(e.target.value) }))}
+                    className="w-full accent-amber-500 cursor-pointer"
+                  />
+                  <p className="text-[10px] text-zinc-400">
+                    Délai d'attente imposé aux utilisateurs entre 2 commandes consécutives (0 = désactivé)
+                  </p>
+                </div>
+              </div>
+
+              {/* Auto-Delete Invoked Commands Toggle */}
+              <div className="p-4 rounded-xl bg-zinc-950/60 border border-zinc-800/80 flex items-center justify-between gap-4">
+                <div>
+                  <div className="text-xs font-bold text-white flex items-center gap-1.5">
+                    <Trash2 className="w-3.5 h-3.5 text-rose-400" />
+                    Suppression Automatique des Invocations
+                  </div>
+                  <p className="text-[11px] text-zinc-400 mt-0.5">
+                    Supprime automatiquement le message texte de l'utilisateur après l'exécution de la commande (mode préfixe) pour garder les salons propres
+                  </p>
+                </div>
+                <button
+                  onClick={() => setBotSettings((s) => ({ ...s, autoDeleteCommands: !s.autoDeleteCommands }))}
+                  className={cn(
+                    "w-12 h-6 rounded-full transition-colors relative p-0.5",
+                    botSettings.autoDeleteCommands ? "bg-rose-500" : "bg-zinc-800"
+                  )}
+                >
+                  <span
+                    className={cn(
+                      "block w-5 h-5 rounded-full bg-white transition-transform",
+                      botSettings.autoDeleteCommands ? "translate-x-6" : "translate-x-0"
+                    )}
+                  />
+                </button>
               </div>
             </div>
           </div>

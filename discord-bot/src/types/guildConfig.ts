@@ -52,13 +52,17 @@ export const GuildConfigSchema = z.object({
   // Modules activables
   modules: GuildModulesSchema.default({}),
 
-  // Général
-  language: z.enum(['fr', 'en']).default('fr'),
+  // Général & Langue
+  language: z.enum(['fr', 'en', 'es', 'de']).default('fr'),
   timezone: z.string().default('Europe/Paris'),
 
   // Confidentialité & Personnalisation
   responseVisibility: z.enum(['PUBLIC', 'EPHEMERAL']).default('PUBLIC'),
   botPersonality: z.enum(['FRIENDLY', 'PROFESSIONAL', 'HUMOROUS', 'CONCISE', 'CYBER']).default('FRIENDLY'),
+  commandCooldown: z.number().min(0).max(60).default(0),
+  musicDefaultVolume: z.number().min(0).max(100).default(80),
+  themePreset: z.enum(['DEFAULT', 'CYBERPUNK', 'EMERALD', 'SUNSET', 'DARK']).default('DEFAULT'),
+  autoDeleteCommands: z.boolean().default(false),
 });
 
 export type GuildConfig = z.infer<typeof GuildConfigSchema>;
@@ -100,6 +104,10 @@ export const defaultGuildConfig: Omit<GuildConfig, 'guildId'> = {
   timezone: 'Europe/Paris',
   responseVisibility: 'PUBLIC',
   botPersonality: 'FRIENDLY',
+  commandCooldown: 0,
+  musicDefaultVolume: 80,
+  themePreset: 'DEFAULT',
+  autoDeleteCommands: false,
 };
 
 /**

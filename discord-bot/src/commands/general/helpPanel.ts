@@ -99,7 +99,7 @@ export const HELP_CATEGORIES: HelpCategoryMeta[] = [
     emoji: '⚙️',
     color: 0x6366f1, // Indigo
     description: "Configuration globale du serveur, gestion des préfixes et activation des modules",
-    commandNames: ['settings', 'prefix'],
+    commandNames: ['settings', 'prefix', 'language'],
   },
   {
     id: 'general',

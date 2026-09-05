@@ -36,6 +36,7 @@ import { createCalendarRouter } from './routes/calendar.js';
 import { createServerRouter } from './routes/serverRoutes.js';
 import { createBotControlRouter } from './routes/botControlRoutes.js';
 import { createPresenceRouter } from './routes/presenceRoutes.js';
+import { createSyncRouter, createGuildSyncRouter } from './routes/syncRoutes.js';
 import { eventsSchedulerService } from '../modules/events/eventsSchedulerService.js';
 import { eventsAutomationService } from '../modules/events/eventsAutomationService.js';
 import { authMiddleware } from './middleware/auth.js';
@@ -216,6 +217,16 @@ export function startWebServer(client: Client): http.Server {
     authMiddleware,
     createGuildAuthMiddleware(client),
     createPresenceRouter(client)
+  );
+  app.use(
+    '/api/sync',
+    createSyncRouter()
+  );
+  app.use(
+    '/api/guilds/:guildId/sync',
+    authMiddleware,
+    createGuildAuthMiddleware(client),
+    createGuildSyncRouter()
   );
 
   // Initialisation des services de fond Événements 2.0

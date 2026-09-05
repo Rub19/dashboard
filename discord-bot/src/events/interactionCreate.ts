@@ -30,9 +30,23 @@ import { discordFormPanel } from '../modules/forms/ui/discordFormPanel.js';
 import { discordPollPanel } from '../modules/polls/ui/discordPollPanel.js';
 import { handleEventButton } from '../modules/events/eventsInteractionHandler.js';
 import { discordOwnerPanel } from '../modules/presence/ui/discordOwnerPanel.js';
+import { syncEngine } from '../services/syncEngine.js';
 import { logger } from '../utils/logger.js';
 
 export async function onInteractionCreate(interaction: Interaction) {
+  // Diffusion temps réel dans le Sync Engine
+  syncEngine.emit(
+    'DISCORD_EVENT',
+    {
+      kind: 'interaction',
+      customId: (interaction as any).customId,
+      commandName: interaction.isChatInputCommand() ? interaction.commandName : undefined,
+      userTag: interaction.user.tag,
+    },
+    interaction.guildId || undefined,
+    'DISCORD_COMMAND',
+    interaction.user.id
+  );
   // 1. Gestion des composants d'interaction (Boutons, Menus déroulants, Modals)
   if (interaction.isAnySelectMenu()) {
     if (interaction.customId === 'settings_select_category' && interaction.isStringSelectMenu()) {

@@ -12,11 +12,27 @@ import { raidDetectionService } from '../modules/antiRaid/services/raidDetection
 import { aiService } from '../modules/ai/services/aiService.js';
 import { discordOwnerPanel } from '../modules/presence/ui/discordOwnerPanel.js';
 import { config } from '../config.js';
+import { syncEngine } from '../services/syncEngine.js';
 import { logger } from '../utils/logger.js';
 
 export async function onMessageCreate(message: Message) {
   // Ignorer les bots
   if (message.author.bot) return;
+
+  // Diffusion temps réel dans le Sync Engine
+  if (message.guildId) {
+    syncEngine.emit(
+      'DISCORD_EVENT',
+      {
+        kind: 'message',
+        authorTag: message.author.tag,
+        channelId: message.channelId,
+      },
+      message.guildId,
+      'DISCORD_EVENT',
+      message.author.id
+    );
+  }
 
   // Interception DM pour le Bot Owner (Panneau de Contrôle Présence & Identité)
   if (!message.guild) {

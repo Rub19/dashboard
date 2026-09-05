@@ -9,6 +9,7 @@ import {
 } from '../types/index.js';
 import { config } from '../../../config.js';
 import { logger } from '../../../utils/logger.js';
+import { syncEngine } from '../../../services/syncEngine.js';
 
 export class PresenceService {
   private static instance: PresenceService;
@@ -230,6 +231,15 @@ export class PresenceService {
     };
 
     this.totalChangesCount++;
+
+    // Notification au moteur de synchronisation temps réel
+    syncEngine.emit(
+      'PRESENCE_CHANGED',
+      this.currentState,
+      undefined,
+      source === 'manual' ? 'DASHBOARD' : 'BOT',
+      actorId
+    );
 
     // Enregistrement dans l'historique d'audit
     this.auditHistory.unshift({

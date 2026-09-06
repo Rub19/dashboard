@@ -51,13 +51,13 @@ const CATEGORY_STYLE: Record<
   string,
   { icon: string; border: string; bg: string; text: string }
 > = {
-  media: { icon: "text-indigo-400", border: "border-indigo-500/30", bg: "bg-indigo-500/15", text: "text-indigo-300" },
-  social: { icon: "text-pink-400", border: "border-pink-500/30", bg: "bg-pink-500/15", text: "text-pink-300" },
-  productivity: { icon: "text-amber-400", border: "border-amber-500/30", bg: "bg-amber-500/15", text: "text-amber-300" },
-  gaming: { icon: "text-emerald-400", border: "border-emerald-500/30", bg: "bg-emerald-500/15", text: "text-emerald-300" },
-  development: { icon: "text-cyan-400", border: "border-cyan-500/30", bg: "bg-cyan-500/15", text: "text-cyan-300" },
-  info: { icon: "text-sky-400", border: "border-sky-500/30", bg: "bg-sky-500/15", text: "text-sky-300" },
-  other: { icon: "text-zinc-400", border: "border-zinc-500/30", bg: "bg-zinc-500/15", text: "text-zinc-300" },
+  media: { icon: "text-[var(--accent-primary)]", border: "border-[var(--panel-border)]/60 hover:border-[var(--accent-primary)]/40", bg: "bg-[var(--surface-raised)]/50", text: "text-[var(--text-primary)]" },
+  social: { icon: "text-[var(--accent-primary)]", border: "border-[var(--panel-border)]/60 hover:border-[var(--accent-primary)]/40", bg: "bg-[var(--surface-raised)]/50", text: "text-[var(--text-primary)]" },
+  productivity: { icon: "text-[var(--accent-primary)]", border: "border-[var(--panel-border)]/60 hover:border-[var(--accent-primary)]/40", bg: "bg-[var(--surface-raised)]/50", text: "text-[var(--text-primary)]" },
+  gaming: { icon: "text-[var(--accent-primary)]", border: "border-[var(--panel-border)]/60 hover:border-[var(--accent-primary)]/40", bg: "bg-[var(--surface-raised)]/50", text: "text-[var(--text-primary)]" },
+  development: { icon: "text-[var(--accent-primary)]", border: "border-[var(--panel-border)]/60 hover:border-[var(--accent-primary)]/40", bg: "bg-[var(--surface-raised)]/50", text: "text-[var(--text-primary)]" },
+  info: { icon: "text-[var(--accent-primary)]", border: "border-[var(--panel-border)]/60 hover:border-[var(--accent-primary)]/40", bg: "bg-[var(--surface-raised)]/50", text: "text-[var(--text-primary)]" },
+  other: { icon: "text-[var(--text-muted)]", border: "border-[var(--panel-border)]/60 hover:border-[var(--panel-border)]", bg: "bg-[var(--surface-raised)]/50", text: "text-[var(--text-primary)]" },
 };
 
 const CATEGORY_ORDER = ["media", "social", "productivity", "gaming", "development", "info", "other"];
@@ -65,9 +65,9 @@ const CATEGORY_ORDER = ["media", "social", "productivity", "gaming", "developmen
 function statusTone(status: LiveRecord["status"]) {
   switch (status) {
     case "connected":
-      return { dot: "bg-[var(--success)]", ring: "ring-[var(--success)]/40" };
+      return { dot: "bg-[var(--accent-primary)]", ring: "ring-[var(--accent-primary)]/40" };
     case "loading":
-      return { dot: "bg-[var(--info)] animate-pulse", ring: "ring-[var(--info)]/40" };
+      return { dot: "bg-[var(--accent-primary)] animate-pulse", ring: "ring-[var(--accent-primary)]/40" };
     default:
       return { dot: "bg-[var(--text-muted)]/50", ring: "ring-[var(--text-muted)]/20" };
   }

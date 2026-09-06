@@ -3,10 +3,10 @@
 import Badge, { type BadgeVariant } from "@/components/ui/Badge";
 
 const VARIANT_MAP: Record<string, BadgeVariant> = {
-  oauth: "primary",
-  api: "info",
-  api_key: "info",
-  webhook: "warning",
+  oauth: "muted",
+  api: "muted",
+  api_key: "muted",
+  webhook: "muted",
   local: "muted",
   feed: "muted",
   restricted: "warning",

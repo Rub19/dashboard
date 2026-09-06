@@ -450,7 +450,7 @@ export default function ConnectionDetailDrawer({
                               <Key className="h-3.5 w-3.5 text-[var(--accent-primary)]" />
                               <span>{i18n(f.label, f.label)}</span>
                               {hasLocal && (
-                                <span className="inline-flex items-center gap-1 rounded bg-emerald-500/15 px-1.5 py-0.2 font-mono text-[9px] font-bold text-emerald-400">
+                                <span className="inline-flex items-center gap-1 rounded bg-[var(--accent-primary)]/15 px-1.5 py-0.2 font-mono text-[9px] font-bold text-[var(--accent-primary)]">
                                   <CheckCircle2 className="h-2.5 w-2.5" /> Enregistrée
                                 </span>
                               )}
@@ -488,7 +488,7 @@ export default function ConnectionDetailDrawer({
                                   title="Copier"
                                 >
                                   {copied === f.key ? (
-                                    <Check className="h-3.5 w-3.5 text-emerald-400" />
+                                    <Check className="h-3.5 w-3.5 text-[var(--accent-primary)]" />
                                   ) : (
                                     <Copy className="h-3.5 w-3.5" />
                                   )}
@@ -514,7 +514,7 @@ export default function ConnectionDetailDrawer({
                     <button
                       type="submit"
                       disabled={saving}
-                      className="mt-2 flex w-full items-center justify-center gap-2 rounded-xl bg-emerald-600 px-4 py-3 text-xs font-bold text-white shadow-lg shadow-emerald-600/30 transition hover:bg-emerald-500 active:scale-98 disabled:opacity-50 cursor-pointer"
+                      className="mt-2 flex w-full items-center justify-center gap-2 rounded-xl bg-[var(--accent-primary)] px-4 py-3 text-xs font-bold text-[var(--accent-contrast)] shadow-lg shadow-[var(--glow-color)] transition hover:opacity-90 active:scale-98 disabled:opacity-50 cursor-pointer"
                     >
                       {saving ? <Loader2 className="h-4 w-4 animate-spin" /> : <Save className="h-4 w-4" />}
                       <span>{saving ? "Enregistrement..." : "Enregistrer les identifiants"}</span>
@@ -530,7 +530,7 @@ export default function ConnectionDetailDrawer({
                     <div className="flex items-center justify-between">
                       <div>
                         <p className="text-xs font-bold text-white flex items-center gap-1.5">
-                          <CheckCircle2 className="h-4 w-4 text-emerald-400" />
+                          <CheckCircle2 className="h-4 w-4 text-[var(--accent-primary)]" />
                           <span>Bot Discord Officiel Configuré</span>
                         </p>
                         <p className="text-[11px] text-zinc-400 mt-0.5">
@@ -601,9 +601,9 @@ export default function ConnectionDetailDrawer({
                         className={cn(
                           "h-2 w-2 rounded-full",
                           status === "connected"
-                            ? "bg-emerald-400"
+                            ? "bg-[var(--accent-primary)]"
                             : status === "error"
-                            ? "bg-rose-500"
+                            ? "bg-[var(--danger)]"
                             : "bg-zinc-500"
                         )}
                       />
@@ -627,7 +627,7 @@ export default function ConnectionDetailDrawer({
 
                   <div className="rounded-xl border border-[var(--panel-border)] bg-[var(--surface-raised)]/40 p-3">
                     <span className="text-[10px] text-[var(--text-muted)]">Intégration Brain</span>
-                    <span className="mt-1 block font-semibold text-emerald-400">
+                    <span className="mt-1 block font-semibold text-[var(--accent-primary)]">
                       Active
                     </span>
                   </div>
@@ -682,8 +682,8 @@ export default function ConnectionDetailDrawer({
                         </span>
                       ))}
                     </div>
-                    <div className="flex items-start gap-2 rounded-xl border border-emerald-500/20 bg-emerald-500/5 p-2.5 text-[11px] text-emerald-300">
-                      <ShieldCheck className="h-4 w-4 shrink-0 text-emerald-400 mt-0.5" />
+                    <div className="flex items-start gap-2 rounded-xl border border-[var(--accent-primary)]/20 bg-[var(--accent-primary)]/5 p-2.5 text-[11px] text-[var(--text-muted)]">
+                      <ShieldCheck className="h-4 w-4 shrink-0 text-[var(--accent-primary)] mt-0.5" />
                       <p className="leading-relaxed">
                         Chiffrement des jetons côté serveur. Aucune exposition de vos mots de passe ou secrets privés.
                       </p>

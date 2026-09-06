@@ -98,10 +98,10 @@ function SpotifyCompact({
           className={cn(
             "h-6 w-6 shrink-0 rounded-lg object-cover bg-[var(--surface-raised)] transition-all duration-200",
             isPlaying
-              ? "ring-1 ring-emerald-500/60 shadow-[0_0_8px_rgba(16,185,129,0.35)]"
+              ? "ring-1 ring-[var(--accent-primary)]/60 shadow-[0_0_8px_var(--glow-color)]"
               : "ring-1 ring-white/10"
           )}
-          iconClassName="h-3.5 w-3.5 text-emerald-400"
+          iconClassName="h-3.5 w-3.5 text-[var(--accent-primary)]"
           loading="eager"
           priority
           timeoutMs={8000}
@@ -122,8 +122,8 @@ function SpotifyCompact({
         barWidth={2}
         gap={1.5}
         minHeight={0.25}
-        className="h-3.5 w-5 shrink-0 opacity-95 drop-shadow-[0_0_4px_rgba(16,185,129,0.4)]"
-        color="#10b981"
+        className="h-3.5 w-5 shrink-0 opacity-95 drop-shadow-[0_0_4px_var(--glow-color)]"
+        color="var(--accent-primary)"
         seed={trackTitle}
       />
     </div>
@@ -151,10 +151,10 @@ function IslandBubble({
       ? "bg-[var(--text-primary)]/[0.12] text-[var(--text-primary)] ring-1 ring-[var(--text-primary)]/20 shadow-[0_0_12px_var(--glow-color)]"
       : "bg-[var(--text-primary)]/[0.05] text-[var(--text-muted)] hover:bg-[var(--text-primary)]/[0.1] hover:text-[var(--text-primary)]",
     view === "spotify" && !active && "text-[var(--accent-primary)] hover:text-[var(--accent-primary)]",
-    view === "pomodoro" && !active && "text-[var(--accent)]",
-    view === "brain" && !active && "text-[var(--info)] hover:text-[var(--info)]",
-    view === "sync" && !active && "text-[var(--info)] hover:text-[var(--info)]",
-    view === "upload" && !active && "text-[var(--info)] hover:text-[var(--info)]",
+    view === "pomodoro" && !active && "text-[var(--accent-primary)] hover:text-[var(--accent-primary)]",
+    view === "brain" && !active && "text-[var(--accent-primary)] hover:text-[var(--accent-primary)]",
+    view === "sync" && !active && "text-[var(--accent-primary)] hover:text-[var(--accent-primary)]",
+    view === "upload" && !active && "text-[var(--accent-primary)] hover:text-[var(--accent-primary)]",
     view === "mail" && !active && "text-[var(--accent-primary)] hover:text-[var(--accent-primary)]",
   );
 

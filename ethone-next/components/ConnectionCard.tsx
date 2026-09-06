@@ -160,7 +160,7 @@ export default function ConnectionCard({
               className={cn(
                 "inline-flex shrink-0 items-center gap-1 rounded-full px-2 py-0.5 text-[10px] font-semibold border",
                 isConnected
-                  ? "border-[var(--success)]/30 bg-[var(--success)]/10 text-[var(--success)]"
+                  ? "border-[var(--accent-primary)]/30 bg-[var(--accent-primary)]/10 text-[var(--accent-primary)]"
                   : health?.status === "error"
                   ? "border-[var(--danger)]/30 bg-[var(--danger)]/10 text-[var(--danger)]"
                   : "border-[var(--panel-border)] bg-[var(--surface-raised)]/80 text-[var(--text-muted)]"
@@ -170,7 +170,7 @@ export default function ConnectionCard({
                 className={cn(
                   "h-1.5 w-1.5 rounded-full",
                   isConnected
-                    ? "bg-[var(--success)] animate-pulse"
+                    ? "bg-[var(--accent-primary)] animate-pulse"
                     : health?.status === "error"
                     ? "bg-[var(--danger)]"
                     : "bg-[var(--text-muted)]"
@@ -190,7 +190,7 @@ export default function ConnectionCard({
                 ⚡ {health.ms} ms
               </span>
             ) : isConnected ? (
-              <span className="text-[10px] text-[var(--success)] font-medium">✓ Opérationnel</span>
+              <span className="text-[10px] text-[var(--accent-primary)] font-medium">✓ Opérationnel</span>
             ) : (
               <span className="text-[10px] text-[var(--text-muted)]">Non configuré</span>
             )}

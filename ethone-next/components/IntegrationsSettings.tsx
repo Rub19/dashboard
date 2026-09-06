@@ -428,12 +428,12 @@ export default function IntegrationsSettings() {
                   className={cn(
                     "flex items-center gap-1.5 rounded-xl border px-3 py-1.5 text-xs font-bold transition-all cursor-pointer",
                     filter === "connected"
-                      ? "border-emerald-500 bg-emerald-500/20 text-emerald-300"
-                      : "border-emerald-500/30 bg-emerald-500/10 text-emerald-400 hover:bg-emerald-500/20"
+                      ? "border-[var(--accent-primary)] bg-[var(--accent-primary)]/20 text-[var(--accent-primary)]"
+                      : "border-[var(--accent-primary)]/30 bg-[var(--accent-primary)]/10 text-[var(--accent-primary)] hover:bg-[var(--accent-primary)]/20"
                   )}
                   title="Afficher uniquement les services connectés"
                 >
-                  <span className="h-2 w-2 rounded-full bg-emerald-400 animate-pulse" />
+                  <span className="h-2 w-2 rounded-full bg-[var(--accent-primary)] animate-pulse" />
                   <span>{healthCounts.connectedCount} Connectés</span>
                 </button>
 
@@ -444,12 +444,12 @@ export default function IntegrationsSettings() {
                     className={cn(
                       "flex items-center gap-1.5 rounded-xl border px-3 py-1.5 text-xs font-bold transition-all cursor-pointer",
                       filter === "error"
-                        ? "border-rose-500 bg-rose-500/20 text-rose-300"
-                        : "border-rose-500/30 bg-rose-500/10 text-rose-400 hover:bg-rose-500/20"
+                        ? "border-[var(--danger)] bg-[var(--danger)]/20 text-[var(--danger)]"
+                        : "border-[var(--danger)]/30 bg-[var(--danger)]/10 text-[var(--danger)] hover:bg-[var(--danger)]/20"
                     )}
                     title="Afficher les services nécessitant une attention"
                   >
-                    <span className="h-2 w-2 rounded-full bg-rose-400" />
+                    <span className="h-2 w-2 rounded-full bg-[var(--danger)]" />
                     <span>{healthCounts.errorCount} En erreur</span>
                   </button>
                 )}

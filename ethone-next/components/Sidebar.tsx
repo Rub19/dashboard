@@ -206,7 +206,7 @@ const SidebarProfile = memo(function SidebarProfile({ collapsed }: { collapsed: 
         ) : (
           <span className="font-bold text-xs">{initials}</span>
         )}
-        <span className="absolute -bottom-0.5 -right-0.5 h-2.5 w-2.5 rounded-full border-2 border-[var(--background)] bg-emerald-400" aria-hidden="true" />
+        <span className="absolute -bottom-0.5 -right-0.5 h-2.5 w-2.5 rounded-full border-2 border-[var(--background)] bg-[var(--accent-primary)]" aria-hidden="true" />
       </div>
       <motion.span
         initial={false}

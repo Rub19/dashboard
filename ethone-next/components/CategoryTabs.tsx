@@ -76,7 +76,7 @@ export default function CategoryTabs({
             {isActive && (
               <motion.div
                 layoutId="activeCategoryPill"
-                className="absolute inset-0 rounded-xl border border-[var(--accent-primary)]/40 bg-[var(--accent-primary)]/15 shadow-[0_0_15px_rgba(20,184,166,0.15)]"
+                className="absolute inset-0 rounded-xl border border-[var(--accent-primary)]/40 bg-[var(--accent-primary)]/15 shadow-[0_0_15px_var(--glow-color)]"
                 transition={{
                   type: "spring",
                   stiffness: 400,

@@ -231,16 +231,16 @@ const SocialDiscordCard = memo(function SocialDiscordCard({
     }
     if (hasAnyConnection) {
       return {
-        badgeColor: "bg-emerald-400",
+        badgeColor: "bg-[var(--accent-primary)]",
         badgeLabel: i18n("connected", "Connecté"),
-        badgeTone: "border-emerald-500/30 bg-emerald-500/10 text-emerald-400",
+        badgeTone: "border-[var(--accent-primary)]/30 bg-[var(--accent-primary)]/10 text-[var(--accent-primary)]",
       };
     }
     if (loading) {
       return {
-        badgeColor: "bg-sky-400",
+        badgeColor: "bg-[var(--accent-primary)]",
         badgeLabel: i18n("loading", "Chargement"),
-        badgeTone: "border-sky-500/30 bg-sky-500/10 text-sky-300",
+        badgeTone: "border-[var(--accent-primary)]/30 bg-[var(--accent-primary)]/10 text-[var(--accent-primary)]",
       };
     }
     return { badgeColor: color, badgeLabel: label, badgeTone: statusTone(status) };
@@ -322,7 +322,7 @@ const SocialDiscordCard = memo(function SocialDiscordCard({
             aria-hidden="true"
           />
           <div
-            className="pointer-events-none absolute -right-16 -top-16 h-48 w-48 rounded-full bg-emerald-500/10 blur-3xl"
+            className="pointer-events-none absolute -right-16 -top-16 h-48 w-48 rounded-full bg-[var(--accent-primary)]/10 blur-3xl"
             aria-hidden="true"
           />
         </>
@@ -356,7 +356,7 @@ const SocialDiscordCard = memo(function SocialDiscordCard({
             {loading && hasAnyConnection ? (
               <Loader2 className="h-6 w-6 animate-spin text-zinc-400" />
             ) : hasAnyConnection ? (
-              <Radio className="h-6 w-6 text-emerald-400 animate-pulse" />
+              <Radio className="h-6 w-6 text-[var(--accent-primary)] animate-pulse" />
             ) : (
               <RadioOff className="h-6 w-6 text-zinc-500" />
             )}
@@ -469,7 +469,7 @@ const SocialDiscordCard = memo(function SocialDiscordCard({
                 height={42}
                 className="h-10 w-10 shrink-0 rounded-lg shadow-md border border-white/10"
                 fallback={
-                  <div className="flex h-10 w-10 shrink-0 items-center justify-center rounded-lg bg-emerald-500/15 text-emerald-400">
+                  <div className="flex h-10 w-10 shrink-0 items-center justify-center rounded-lg bg-[var(--accent-primary)]/15 text-[var(--accent-primary)]">
                     <Music className="h-4 w-4" />
                   </div>
                 }
@@ -486,7 +486,7 @@ const SocialDiscordCard = memo(function SocialDiscordCard({
               <div className="flex flex-col gap-1.5 relative z-10 pt-0.5">
                 <div className="h-1 w-full overflow-hidden rounded-full bg-white/[0.1]">
                   <div
-                    className="h-full rounded-full bg-gradient-to-r from-emerald-400 to-green-500 transition-all duration-300"
+                    className="h-full rounded-full bg-[var(--accent-primary)] transition-all duration-300"
                     style={{ width: `${progressPct}%` }}
                   />
                 </div>

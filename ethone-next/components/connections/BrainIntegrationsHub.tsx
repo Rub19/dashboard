@@ -115,19 +115,19 @@ export default function BrainIntegrationsHub({
 
       {/* Proactive Brain Suggestion Card */}
       {brainSuggestion.id !== "all-set" && (
-        <div className="flex items-center justify-between gap-3 rounded-2xl border border-purple-500/30 bg-purple-500/10 p-3 text-xs">
+        <div className="flex items-center justify-between gap-3 rounded-2xl border border-[var(--accent-primary)]/30 bg-[var(--accent-primary)]/10 p-3 text-xs">
           <div className="flex items-center gap-2.5">
-            <Sparkles className="h-4 w-4 text-purple-400 shrink-0" />
+            <Sparkles className="h-4 w-4 text-[var(--accent-primary)] shrink-0" />
             <div>
-              <span className="font-bold text-purple-200">{brainSuggestion.title} : </span>
-              <span className="text-zinc-300">{brainSuggestion.desc}</span>
+              <span className="font-bold text-[var(--text-primary)]">{brainSuggestion.title} : </span>
+              <span className="text-[var(--text-muted)]">{brainSuggestion.desc}</span>
             </div>
           </div>
           {onConnectPrompt && (
             <button
               type="button"
               onClick={() => onConnectPrompt(brainSuggestion.id)}
-              className="flex items-center gap-1 shrink-0 rounded-xl bg-purple-600 px-3 py-1.5 text-xs font-bold text-white hover:bg-purple-500 transition-all cursor-pointer shadow-xs"
+              className="flex items-center gap-1 shrink-0 rounded-xl bg-[var(--accent-primary)] px-3 py-1.5 text-xs font-bold text-[var(--accent-contrast)] hover:opacity-90 transition-all cursor-pointer shadow-xs"
             >
               <span>Connecter</span>
               <ArrowRight className="h-3 w-3" />

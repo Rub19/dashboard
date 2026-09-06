@@ -50,7 +50,13 @@ export function startWebServer(client: Client): http.Server {
   // Middleware de sécurité et parsing
   app.use(
     cors({
-      origin: [config.dashboardUrl, 'http://localhost:5173', 'http://localhost:3000'],
+      origin: [
+        config.dashboardUrl,
+        'https://ethone.dev',
+        'https://www.ethone.dev',
+        'http://localhost:5173',
+        'http://localhost:3000',
+      ],
       credentials: true,
     })
   );
@@ -279,7 +285,7 @@ export function startWebServer(client: Client): http.Server {
   }
 
   const server = app.listen(config.port, () => {
-    logger.success(`Serveur Web Dashboard actif sur : http://localhost:${config.port}`);
+    logger.success(`Serveur API Bot en ligne sur le port ${config.port} (Dashboard : ${config.dashboardUrl})`);
   });
 
   return server;

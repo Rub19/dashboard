@@ -7,6 +7,7 @@ import {
   InteractionEditReplyOptions,
   InteractionReplyOptions,
   Message,
+  MessageFlags,
   MessagePayload,
   MessageReplyOptions,
   PermissionsBitField,
@@ -148,10 +149,14 @@ export class CommandContext {
     this.deferred = true;
 
     const defaultEphemeral = this.guildConfig?.responseVisibility === 'EPHEMERAL';
-    const ephemeral = typeof options === 'boolean' ? options : (options?.ephemeral ?? defaultEphemeral);
+    const isEphemeral = typeof options === 'boolean' ? options : (options?.ephemeral ?? defaultEphemeral);
 
     if (this.isSlash && this.interaction) {
-      await this.interaction.deferReply({ ephemeral });
+      if (isEphemeral) {
+        await this.interaction.deferReply({ flags: MessageFlags.Ephemeral });
+      } else {
+        await this.interaction.deferReply();
+      }
     } else if (this.message && this.channel && 'sendTyping' in this.channel) {
       await this.channel.sendTyping();
     }
@@ -168,11 +173,17 @@ export class CommandContext {
         const defaultEphemeral = this.guildConfig?.responseVisibility === 'EPHEMERAL';
         let payload: any;
         if (typeof content === 'string') {
-          payload = { content, ephemeral: defaultEphemeral };
-        } else {
           payload = {
-            ephemeral: (content as any).ephemeral !== undefined ? (content as any).ephemeral : defaultEphemeral,
-            ...content,
+            content,
+            ...(defaultEphemeral ? { flags: MessageFlags.Ephemeral } : {}),
+          };
+        } else {
+          const raw = { ...content } as any;
+          const isEphemeral = raw.ephemeral !== undefined ? Boolean(raw.ephemeral) : defaultEphemeral;
+          delete raw.ephemeral;
+          payload = {
+            ...raw,
+            ...(isEphemeral ? { flags: (raw.flags || 0) | MessageFlags.Ephemeral } : {}),
           };
         }
         await this.interaction.reply(payload as InteractionReplyOptions);

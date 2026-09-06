@@ -122,28 +122,25 @@ export class HealthStatusService {
     const list = Array.from(this.subsystems.values());
     const downCount = list.filter((s) => s.state === 'DOWN').length;
     const degradedCount = list.filter((s) => s.state === 'DEGRADED').length;
-    const unknownCount = list.filter((s) => s.state === 'UNKNOWN').length;
+    const gatewaySub = this.subsystems.get('gateway');
 
     const oldState = this.currentState;
 
-    if (this.subsystems.get('gateway')?.state === 'DOWN') {
+    if (gatewaySub?.state === 'DOWN') {
       this.currentState = 'OFFLINE';
       this.statusMessage = 'Discord Gateway connection interrupted';
-    } else if (downCount > 1) {
+    } else if (downCount > 0) {
       this.currentState = 'PARTIAL_OUTAGE';
-      this.statusMessage = `${downCount} critical subsystems are offline`;
-    } else if (downCount === 1) {
-      this.currentState = 'PARTIAL_OUTAGE';
-      this.statusMessage = `Subsystem outage detected`;
-    } else if (degradedCount > 0) {
+      this.statusMessage = `${downCount} subsystem outage detected`;
+    } else if (gatewaySub?.state === 'DEGRADED' || degradedCount > 0) {
       this.currentState = 'DEGRADED';
       this.statusMessage = 'System operating with degraded performance';
-    } else if (unknownCount > 0 && this.currentState !== 'HEALTHY') {
-      this.currentState = 'UNKNOWN';
-      this.statusMessage = 'Verification required';
-    } else {
+    } else if (gatewaySub?.state === 'UP') {
       this.currentState = 'HEALTHY';
       this.statusMessage = 'All systems nominal and synchronized';
+    } else {
+      this.currentState = 'UNKNOWN';
+      this.statusMessage = 'Verification required';
     }
 
     if (oldState !== this.currentState) {
@@ -153,9 +150,13 @@ export class HealthStatusService {
   }
 
   public setSystemState(state: SystemHealthState, message?: string): void {
+    const oldState = this.currentState;
     this.currentState = state;
     if (message) this.statusMessage = message;
     this.stateChangeTime = Date.now();
+    if (oldState !== this.currentState) {
+      logger.info(`[HealthStatusService] System state transitioned: ${oldState} -> ${this.currentState} (${this.statusMessage})`);
+    }
   }
 
   public recordIncident(incident: Omit<IncidentRecord, 'id' | 'startTime'>): IncidentRecord {

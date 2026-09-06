@@ -614,7 +614,7 @@ export const AnimatedSidebarMenu = forwardRef<
       ref={forwardedRef as React.Ref<HTMLElement>}
       as="ul"
       inset={0}
-      pillClassName="rounded-2xl bg-[var(--text-primary)]/[0.04] border border-[var(--accent-primary)]/[0.12] shadow-[0_0_15px_var(--glow-color)]"
+      pillClassName="rounded-2xl bg-[var(--text-primary)]/[0.04] border border-[var(--accent-primary)]/[0.12] shadow-[0_0_15px_color-mix(in_srgb,var(--accent-primary)_20%,transparent)]"
       pillContainerClassName="inset-y-0.5"
       data-slot="sidebar-menu"
       className={cn("flex w-full min-w-0 list-none flex-col gap-1.5", className)}
@@ -857,7 +857,7 @@ export function AnimatedSidebarMenuButton({
           initial={{ opacity: 0 }}
           animate={{ opacity: 1 }}
           transition={context.reduce ? { duration: 0 } : { duration: 0.18, ease: EASE_OUT }}
-          className="absolute inset-0 rounded-2xl border border-[var(--accent-primary)]/20 bg-[var(--accent-primary)]/10 shadow-[0_0_15px_var(--glow-color)]"
+          className="absolute inset-0 rounded-2xl border border-[var(--accent-primary)]/25 bg-[var(--accent-primary)]/10 shadow-[0_0_15px_color-mix(in_srgb,var(--accent-primary)_25%,transparent)]"
         />
       ) : null}
       {icon ? (

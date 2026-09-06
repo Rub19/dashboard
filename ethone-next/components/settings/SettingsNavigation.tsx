@@ -165,7 +165,7 @@ export default function SettingsNavigation({
         {isActive && (
           <motion.div
             layoutId="settings-nav-active-pill"
-            className="absolute inset-0 rounded-2xl border border-[var(--accent-primary)]/25 bg-[var(--accent-primary)]/10 shadow-[0_0_16px_var(--glow-color)]"
+            className="absolute inset-0 rounded-2xl border border-[var(--accent-primary)]/25 bg-[var(--accent-primary)]/10 shadow-[0_0_16px_color-mix(in_srgb,var(--accent-primary)_25%,transparent)]"
             transition={shouldReduceMotion ? { duration: 0 } : { type: "spring", stiffness: 380, damping: 30 }}
           />
         )}

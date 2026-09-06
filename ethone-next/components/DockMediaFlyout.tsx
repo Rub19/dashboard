@@ -21,6 +21,7 @@ import VolumeSlider from "@/components/VolumeSlider";
 import { sendSpotifyCommand } from "@/lib/spotify-client";
 import MediaProgress from "@/components/MediaProgress";
 import SafeImage from "@/components/SafeImage";
+import ServiceIcon from "@/components/ServiceIcon";
 
 export type DockMediaFlyoutProps = {
   nowPlaying: NowPlaying | null;
@@ -238,29 +239,35 @@ export default function DockMediaFlyout({ nowPlaying, clientId }: DockMediaFlyou
         className="group/media relative flex h-10 w-10 cursor-pointer flex-col items-center justify-center rounded-xl transition-all duration-200 ease-out hover:bg-white/[0.08] hover:scale-115 active:scale-95"
       >
         <div className={`relative flex items-center justify-center overflow-hidden rounded-lg transition-all ${
-          isPlaying && hasTrack ? "ring-1 ring-emerald-500/70 shadow-[0_0_8px_rgba(16,185,129,0.3)]" : "ring-1 ring-white/10"
+          isPlaying && hasTrack ? "ring-1 ring-[var(--accent-primary)]/70 shadow-[0_0_8px_var(--glow-color)]" : "ring-1 ring-white/10"
         }`}>
-          <SafeImage
-            candidates={hasTrack ? coverCandidates : undefined}
-            alt={title}
-            size={48}
-            className="h-5.5 w-5.5 rounded-lg object-cover transition-transform group-hover/media:scale-105"
-            iconClassName="h-3.5 w-3.5"
-            loading="eager"
-            priority
-            crossOrigin="anonymous"
-          />
+          {hasTrack && coverCandidates.length > 0 ? (
+            <SafeImage
+              candidates={coverCandidates}
+              alt={title}
+              size={48}
+              className="h-5.5 w-5.5 rounded-lg object-cover transition-transform group-hover/media:scale-105"
+              iconClassName="h-3.5 w-3.5"
+              loading="eager"
+              priority
+              crossOrigin="anonymous"
+            />
+          ) : (
+            <div className="flex h-5.5 w-5.5 items-center justify-center rounded-lg bg-black/40">
+              <ServiceIcon id="spotify" icon="music" className="h-4 w-4" colored />
+            </div>
+          )}
         </div>
 
         {isPlaying && hasTrack && (
           <span className="absolute -bottom-0.5 flex h-1.5 items-end gap-0.5" aria-hidden="true">
-            <span className="h-1 w-0.5 animate-pulse rounded-full bg-emerald-400" />
+            <span className="h-1 w-0.5 animate-pulse rounded-full bg-[var(--accent-primary)]" />
             <span
-              className="h-2 w-0.5 animate-pulse rounded-full bg-emerald-400"
+              className="h-2 w-0.5 animate-pulse rounded-full bg-[var(--accent-primary)]"
               style={{ animationDelay: "100ms" }}
             />
             <span
-              className="h-1 w-0.5 animate-pulse rounded-full bg-emerald-400"
+              className="h-1 w-0.5 animate-pulse rounded-full bg-[var(--accent-primary)]"
               style={{ animationDelay: "200ms" }}
             />
           </span>
@@ -284,41 +291,45 @@ export default function DockMediaFlyout({ nowPlaying, clientId }: DockMediaFlyou
           >
             {!hasTrack ? (
               <div className="flex items-center gap-3">
-                <SafeImage
-                  className="h-12 w-12 shrink-0 rounded-xl border border-white/10 bg-[var(--text-primary)]/[0.05]"
-                  iconClassName="h-5 w-5"
-                  crossOrigin="anonymous"
-                />
+                <div className="flex h-12 w-12 shrink-0 items-center justify-center rounded-xl border border-white/10 bg-[var(--surface-raised)] shadow-md">
+                  <ServiceIcon id="spotify" icon="music" className="h-7 w-7" colored />
+                </div>
                 <div className="min-w-0 flex-1">
-                  <h4 className="truncate text-xs font-bold text-[var(--text-primary)]">{i18n("noLive")}</h4>
+                  <h4 className="truncate text-xs font-bold text-[var(--text-primary)]">Spotify</h4>
                   <p className="truncate text-[11px] text-[var(--text-muted)]">
-                    {hasClientId ? i18n("spotifyNoPlayback") : i18n("spotifyNotConfigured")}
+                    {hasClientId ? i18n("spotifyNoPlayback", "En attente de lecture") : i18n("spotifyNotConfigured", "Non configuré")}
                   </p>
                 </div>
                 <button
                   type="button"
                   onClick={() => router.push("/settings?category=integrations&service=spotify")}
-                  className="shrink-0 rounded-lg bg-[var(--accent-primary)]/10 px-2.5 py-1 text-[11px] font-medium text-[var(--accent-primary)] transition hover:bg-[var(--accent-primary)]/20"
+                  className="shrink-0 rounded-lg bg-[var(--accent-primary)]/10 px-2.5 py-1 text-[11px] font-medium text-[var(--accent-primary)] transition hover:bg-[var(--accent-primary)]/20 cursor-pointer"
                 >
-                  {hasClientId ? i18n("reconnect") : i18n("configure")}
+                  {hasClientId ? i18n("reconnect", "Gérer") : i18n("configure", "Connecter")}
                 </button>
               </div>
             ) : (
               <div className="flex flex-col gap-3">
                 <div className="flex items-center gap-3">
-                  <SafeImage
-                    candidates={coverCandidates}
-                    alt={title}
-                    size={96}
-                    className="h-12 w-12 shrink-0 rounded-xl border border-white/10 object-cover shadow-md"
-                    iconClassName="h-6 w-6"
-                    loading="eager"
-                    priority
-                    crossOrigin="anonymous"
-                  />
+                  {coverCandidates.length > 0 ? (
+                    <SafeImage
+                      candidates={coverCandidates}
+                      alt={title}
+                      size={96}
+                      className="h-12 w-12 shrink-0 rounded-xl border border-white/10 object-cover shadow-md"
+                      iconClassName="h-6 w-6"
+                      loading="eager"
+                      priority
+                      crossOrigin="anonymous"
+                    />
+                  ) : (
+                    <div className="flex h-12 w-12 shrink-0 items-center justify-center rounded-xl border border-white/10 bg-[var(--surface-raised)] shadow-md">
+                      <ServiceIcon id="spotify" icon="music" className="h-7 w-7" colored />
+                    </div>
+                  )}
                   <div className="min-w-0 flex-1">
-                    <h4 className="truncate text-xs font-bold text-[var(--text-primary)]">{title || "—"}</h4>
-                    <p className="truncate text-[11px] text-[var(--text-primary)]">{artist || "—"}</p>
+                    <h4 className="truncate text-xs font-bold text-[var(--text-primary)]">{title || "Spotify"}</h4>
+                    <p className="truncate text-[11px] text-[var(--text-primary)]">{artist || "Prêt"}</p>
                     {album && <p className="truncate text-[10px] text-[var(--text-muted)]">{album}</p>}
                   </div>
                   <button

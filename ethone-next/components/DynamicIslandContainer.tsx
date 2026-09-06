@@ -10,6 +10,7 @@ import { Icon, type IconPack } from "@/lib/icons";
 
 import LiveMediaProgress from "@/components/LiveMediaProgress";
 import AudioVisualizer from "@/components/AudioVisualizer";
+import ServiceIcon from "@/components/ServiceIcon";
 import { DynamicIsland, DynamicIslandView } from "@/components/ui/DynamicIsland";
 import { useNowPlaying } from "@/lib/hooks/useNowPlaying";
 import { useFocus } from "@/components/FocusProvider";
@@ -87,26 +88,33 @@ function SpotifyCompact({
   isPlaying?: boolean;
 }) {
   const trackTitle = title || fallback;
+  const hasCover = coverCandidates.some((c) => !!c);
 
   return (
     <div className="flex h-10 min-w-[130px] max-w-[260px] items-center gap-2.5 px-0.5 select-none">
-      <div className="relative shrink-0">
-        <SafeImage
-          candidates={coverCandidates}
-          alt={trackTitle}
-          size={24}
-          className={cn(
-            "h-6 w-6 shrink-0 rounded-lg object-cover bg-[var(--surface-raised)] transition-all duration-200",
-            isPlaying
-              ? "ring-1 ring-[var(--accent-primary)]/60 shadow-[0_0_8px_var(--glow-color)]"
-              : "ring-1 ring-white/10"
-          )}
-          iconClassName="h-3.5 w-3.5 text-[var(--accent-primary)]"
-          loading="eager"
-          priority
-          timeoutMs={8000}
-          crossOrigin="anonymous"
-        />
+      <div className="relative shrink-0 flex items-center justify-center">
+        {hasCover ? (
+          <SafeImage
+            candidates={coverCandidates}
+            alt={trackTitle}
+            size={24}
+            className={cn(
+              "h-6 w-6 shrink-0 rounded-lg object-cover bg-[var(--surface-raised)] transition-all duration-200",
+              isPlaying
+                ? "ring-1 ring-[var(--accent-primary)]/60 shadow-[0_0_8px_var(--glow-color)]"
+                : "ring-1 ring-white/10"
+            )}
+            iconClassName="h-3.5 w-3.5 text-[var(--accent-primary)]"
+            loading="eager"
+            priority
+            timeoutMs={8000}
+            crossOrigin="anonymous"
+          />
+        ) : (
+          <div className="flex h-6 w-6 items-center justify-center rounded-lg bg-[var(--surface-raised)] ring-1 ring-white/10">
+            <ServiceIcon id="spotify" icon="music" className="h-3.5 w-3.5" colored />
+          </div>
+        )}
       </div>
       <div className="min-w-0 flex-1 truncate text-xs font-semibold tracking-tight text-white flex items-center gap-1.5" title={artist ? `${trackTitle} • ${artist}` : trackTitle}>
         <span className="truncate">{trackTitle}</span>
@@ -129,6 +137,7 @@ function SpotifyCompact({
     </div>
   );
 }
+
 
 function IslandBubble({
   view,
@@ -281,9 +290,12 @@ export default function DynamicIslandContainer() {
   const isSpotifyConnected =
     typeof window !== "undefined" &&
     (localStorage.getItem("ethone:connected:spotify") === "true" ||
-      Boolean(localStorage.getItem("ethone:token:spotify")));
+      Boolean(localStorage.getItem("ethone:token:spotify")) ||
+      Boolean(settings?.liveSpotifyClientId) ||
+      Boolean(localStorage.getItem("ethone:clientId:spotify")) ||
+      settings?.liveNowPlayingSource === "spotify");
 
-  const spotifyActive = !!nowPlaying?.title || !!nowPlaying?.isPlaying || isSpotifyConnected;
+  const spotifyActive = true;
   const pomodoroActive = focus.state.phase !== "idle";
   const brainActive = isThinking;
   const syncActive = syncing || pendingCount > 0;
@@ -304,9 +316,12 @@ export default function DynamicIslandContainer() {
     if (syncActive) register({ id: "sync", type: "sync" } as IslandEvent);
     else unregister("sync");
 
-    if (spotifyActive) register({ id: "spotify", type: "spotify" } as IslandEvent);
-    else unregister("spotify");
-  }, [brainActive, pomodoroActive, syncActive, spotifyActive, uploadActive, npLoading, register, unregister]);
+    register({
+      id: "spotify",
+      type: "spotify",
+      priority: nowPlaying?.isPlaying ? 4 : 1,
+    } as IslandEvent);
+  }, [brainActive, pomodoroActive, syncActive, nowPlaying?.isPlaying, uploadActive, npLoading, register, unregister]);
 
   // Sync selected view with the top of the queue.
   useEffect(() => {
@@ -353,7 +368,11 @@ export default function DynamicIslandContainer() {
   }, []);
 
   const toggleExpanded = useCallback(() => {
-    if (!selectedView) return;
+    if (!selectedView) {
+      setSelectedView("spotify");
+      setMode("EXPANDED");
+      return;
+    }
     setMode((m) => (m === "COMPACT" ? "EXPANDED" : "COMPACT"));
   }, [selectedView]);
 
@@ -743,11 +762,11 @@ export default function DynamicIslandContainer() {
 
                 {/* Sub-Header: Source Badge & Live Time */}
                 <div className="flex items-center justify-between gap-2">
-                  <div className="flex items-center gap-1.5 rounded-full border border-emerald-500/30 bg-emerald-500/10 px-2.5 py-1 text-[10px] font-bold text-emerald-400 shadow-xs">
-                    <span className={cn("h-1.5 w-1.5 rounded-full bg-emerald-400", nowPlaying?.isPlaying && "animate-pulse")} />
+                  <div className="flex items-center gap-1.5 rounded-full border border-[var(--accent-primary)]/30 bg-[var(--accent-primary)]/10 px-2.5 py-1 text-[10px] font-bold text-[var(--accent-primary)] shadow-xs">
+                    <span className={cn("h-1.5 w-1.5 rounded-full bg-[var(--accent-primary)]", nowPlaying?.isPlaying && "animate-pulse")} />
                     <span>{nowPlaying?.source || "Spotify"}</span>
-                    <span className="text-emerald-500/50">•</span>
-                    <span className="font-normal opacity-90">{nowPlaying?.isPlaying ? "Lecture en cours" : "En pause"}</span>
+                    <span className="text-[var(--accent-primary)]/50">•</span>
+                    <span className="font-normal opacity-90">{nowPlaying?.isPlaying ? "Lecture en cours" : isSpotifyConnected ? "Connecté" : "Prêt"}</span>
                   </div>
 
                   <IslandLiveClock />
@@ -763,34 +782,40 @@ export default function DynamicIslandContainer() {
                     transition={{ duration: 0.2, ease: EASE_OUT }}
                     className="relative flex items-center gap-3.5 rounded-2xl border border-white/5 bg-white/[0.03] p-2.5 backdrop-blur-md"
                   >
-                    <div className="relative shrink-0">
-                      <SafeImage
-                        candidates={[nowPlaying?.cover, nowPlaying?.artworkUrl, ...(nowPlaying?.covers || [])]}
-                        alt={nowPlaying?.title || "Spotify"}
-                        size={68}
-                        className="h-[68px] w-[68px] rounded-xl object-cover shadow-lg ring-1 ring-white/15"
-                        iconClassName="h-6 w-6 text-emerald-400"
-                        loading="eager"
-                        priority
-                        timeoutMs={8000}
-                        crossOrigin="anonymous"
-                      />
+                    <div className="relative shrink-0 flex items-center justify-center">
+                      {(nowPlaying?.cover || nowPlaying?.artworkUrl || (nowPlaying?.covers && nowPlaying.covers.length > 0)) ? (
+                        <SafeImage
+                          candidates={[nowPlaying?.cover, nowPlaying?.artworkUrl, ...(nowPlaying?.covers || [])]}
+                          alt={nowPlaying?.title || "Spotify"}
+                          size={68}
+                          className="h-[68px] w-[68px] rounded-xl object-cover shadow-lg ring-1 ring-white/15"
+                          iconClassName="h-6 w-6 text-[var(--accent-primary)]"
+                          loading="eager"
+                          priority
+                          timeoutMs={8000}
+                          crossOrigin="anonymous"
+                        />
+                      ) : (
+                        <div className="flex h-[68px] w-[68px] items-center justify-center rounded-xl bg-[var(--surface-raised)] ring-1 ring-white/15 shadow-lg">
+                          <ServiceIcon id="spotify" icon="music" className="h-9 w-9" colored />
+                        </div>
+                      )}
                       {nowPlaying?.isPlaying && (
-                        <div className="absolute -bottom-1 -right-1 flex h-4 w-4 items-center justify-center rounded-full bg-black/80 border border-emerald-500/40 shadow-xs">
-                          <span className="h-2 w-2 rounded-full bg-emerald-400 animate-ping" />
+                        <div className="absolute -bottom-1 -right-1 flex h-4 w-4 items-center justify-center rounded-full bg-black/80 border border-[var(--accent-primary)]/40 shadow-xs">
+                          <span className="h-2 w-2 rounded-full bg-[var(--accent-primary)] animate-ping" />
                         </div>
                       )}
                     </div>
 
                     <div className="flex min-w-0 flex-1 flex-col justify-center gap-0.5">
                       <p className="line-clamp-1 text-sm font-bold tracking-tight text-white" title={nowPlaying?.title}>
-                        {nowPlaying?.title || "Aucun titre"}
+                        {nowPlaying?.title || "Spotify"}
                       </p>
                       <p className="truncate text-xs font-medium text-zinc-300" title={nowPlaying?.artist}>
-                        {nowPlaying?.artist || i18n("spotifyPlaying")}
+                        {nowPlaying?.artist || (isSpotifyConnected ? "Connecté • Prêt pour la lecture" : "Prêt • Cliquez pour connecter")}
                       </p>
-                      <p className="truncate text-[10px] font-semibold text-emerald-400/90" title={nowPlaying?.album}>
-                        {nowPlaying?.album || "Spotify"}
+                      <p className="truncate text-[10px] font-semibold text-[var(--accent-primary)]/90" title={nowPlaying?.album}>
+                        {nowPlaying?.album || "Spotify Music"}
                       </p>
                     </div>
 
@@ -815,13 +840,13 @@ export default function DynamicIslandContainer() {
                 {/* Animated Audio Equalizer */}
                 <div className="py-0.5">
                   <AudioVisualizer
-                    seed={nowPlaying?.id || nowPlaying?.title || ""}
+                    seed={nowPlaying?.id || nowPlaying?.title || "spotify"}
                     isPlaying={!!nowPlaying?.isPlaying}
                     bars={24}
                     barWidth={2}
                     gap={2}
-                    className="h-3.5 opacity-90"
-                    color="#10b981"
+                    className="h-3.5 opacity-90 drop-shadow-[0_0_6px_var(--glow-color)]"
+                    color="var(--accent-primary)"
                   />
                 </div>
 
@@ -860,7 +885,7 @@ export default function DynamicIslandContainer() {
                     type="button"
                     onClick={togglePlay}
                     disabled={pendingSpotify}
-                    className="flex h-11 w-11 items-center justify-center rounded-full bg-emerald-500 text-black font-bold shadow-lg shadow-emerald-500/30 transition-all duration-150 hover:scale-105 hover:bg-emerald-400 active:scale-95 disabled:opacity-40 cursor-pointer"
+                    className="flex h-11 w-11 items-center justify-center rounded-full bg-[var(--accent-primary)] text-[var(--accent-contrast)] font-bold shadow-lg shadow-[var(--accent-primary)]/30 transition-all duration-150 hover:scale-105 hover:bg-[var(--accent-hover)] active:scale-95 disabled:opacity-40 cursor-pointer"
                     aria-label={nowPlaying?.isPlaying ? i18n("pause") : i18n("play")}
                     title={nowPlaying?.isPlaying ? "Mettre en pause" : "Lire"}
                   >

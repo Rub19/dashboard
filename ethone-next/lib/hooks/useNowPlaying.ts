@@ -193,7 +193,11 @@ export function useNowPlaying(pollMs = 3000) {
         localStorage.getItem("ethone:cred:spotify:token");
 
       const isSpotifyConnected =
-        localStorage.getItem("ethone:connected:spotify") === "true" || Boolean(spotifyToken);
+        localStorage.getItem("ethone:connected:spotify") === "true" ||
+        Boolean(spotifyToken) ||
+        Boolean(settings.liveSpotifyClientId) ||
+        Boolean(localStorage.getItem("ethone:clientId:spotify")) ||
+        settings.liveNowPlayingSource === "spotify";
 
       const resolvedSpotifyClientId =
         settings.liveSpotifyClientId ||
@@ -381,7 +385,7 @@ export function useNowPlaying(pollMs = 3000) {
         }
       }
 
-      // 4. If Spotify is connected but completely idle
+      // 4. Default Spotify standby state if no live stream is broadcasting
       if (isSpotifyConnected) {
         setData({
           source: "spotify",
@@ -390,7 +394,12 @@ export function useNowPlaying(pollMs = 3000) {
           isPlaying: false,
         });
       } else {
-        setData(null);
+        setData({
+          source: "spotify",
+          title: "Spotify",
+          artist: "Prêt • Cliquez pour connecter",
+          isPlaying: false,
+        });
       }
     } catch (err) {
       setError(err instanceof Error ? err : new Error(String(err)));

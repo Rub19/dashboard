@@ -103,21 +103,21 @@ function Dock() {
   const isSpotifyConnected =
     typeof window !== "undefined" &&
     (localStorage.getItem("ethone:connected:spotify") === "true" ||
-      Boolean(localStorage.getItem("ethone:token:spotify")));
+      Boolean(localStorage.getItem("ethone:token:spotify")) ||
+      Boolean(settings.liveSpotifyClientId) ||
+      Boolean(localStorage.getItem("ethone:clientId:spotify")) ||
+      settings.liveNowPlayingSource === "spotify");
 
   const spotifyNow = useMemo<NowPlaying | null>(() => {
     if (nowPlaying) {
       return nowPlaying;
     }
-    if (isSpotifyConnected) {
-      return {
-        source: "spotify",
-        title: "Spotify",
-        artist: "Prêt pour la lecture",
-        isPlaying: false,
-      };
-    }
-    return null;
+    return {
+      source: "spotify",
+      title: "Spotify",
+      artist: isSpotifyConnected ? "Prêt pour la lecture" : "Non connecté",
+      isPlaying: false,
+    };
   }, [nowPlaying, isSpotifyConnected]);
 
   useEffect(() => {

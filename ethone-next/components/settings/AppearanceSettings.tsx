@@ -19,6 +19,7 @@ import Select from "@/components/ui/Select";
 import Slider from "@/components/ui/Slider";
 
 const ACCENT_COLORS = [
+  { id: "dyno", label: "Rose Dyno" },
   { id: "violet", label: "Violet" },
   { id: "mint", label: "Menthe" },
   { id: "sky", label: "Ciel" },

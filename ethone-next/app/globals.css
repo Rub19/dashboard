@@ -2,28 +2,28 @@
 @import "./liquid-glass.css";
 
 :root {
-  /* Premium theme engine semantic defaults (Violet default accent) */
-  --bg-main: #08080a;
-  --bg-surface: #0f0f13;
-  --bg-sidebar: #0c0c10;
-  --border-subtle: rgba(255, 255, 255, 0.06);
-  --border-active: rgba(139, 92, 246, 0.35);
-  --accent-primary: #8b5cf6;
-  --accent-secondary: #a78bfa;
+  /* Premium theme engine semantic defaults (Dyno Rose default accent) */
+  --bg-main: #0E1015;
+  --bg-surface: #14171F;
+  --bg-sidebar: #0E1015;
+  --border-subtle: rgba(255, 255, 255, 0.07);
+  --border-active: rgba(193, 35, 79, 0.45);
+  --accent-primary: #C1234F;
+  --accent-secondary: #E03365;
   --accent-contrast: #ffffff;
-  --glow-color: rgba(139, 92, 246, 0.25);
-  --text-primary: #ededed;
-  --text-muted: #9ca3af;
+  --glow-color: rgba(193, 35, 79, 0.25);
+  --text-primary: #F3F4F6;
+  --text-muted: #8B949E;
 
   /* Legacy app aliases */
-  --background: #08080a;
-  --foreground: #ededed;
-  --surface: #0f0f13;
-  --surface-raised: #1a1a1e;
-  --border: #27272a;
-  --muted: #9ca3af;
-  --accent: #8b5cf6;
-  --accent-soft: rgba(139, 92, 246, 0.2);
+  --background: #0E1015;
+  --foreground: #F3F4F6;
+  --surface: #14171F;
+  --surface-raised: #1B1F2A;
+  --border: rgba(255, 255, 255, 0.07);
+  --muted: #8B949E;
+  --accent: #C1234F;
+  --accent-soft: rgba(193, 35, 79, 0.2);
 
   --card-radius: 1rem;
   --dock-radius: 1rem;
@@ -240,6 +240,41 @@ html[data-space="studio"] {
 }
 
 /* Premium theme engine: CSS fallbacks when applyTheme has not yet run (SSR/initial paint) */
+html[data-theme="dyno-rose"] {
+  color-scheme: dark;
+  --bg-main: #0E1015;
+  --bg-surface: #14171F;
+  --bg-surface-elevated: #1B1F2A;
+  --bg-surface-hover: #232836;
+  --bg-sidebar: #0E1015;
+  --bg-card: #13161E;
+  --bg-input: rgba(255, 255, 255, 0.035);
+  --border-subtle: rgba(255, 255, 255, 0.07);
+  --border-active: rgba(193, 35, 79, 0.45);
+  --border-focus: #C1234F;
+  --accent-primary: #C1234F;
+  --accent-secondary: #E03365;
+  --accent-contrast: #ffffff;
+  --glow-color: rgba(193, 35, 79, 0.25);
+  --text-primary: #F3F4F6;
+  --text-secondary: #D1D5DB;
+  --text-muted: #8B949E;
+  --text-disabled: #484F58;
+  --text-inverse: #0E1015;
+  --background: #0E1015;
+  --foreground: #F3F4F6;
+  --surface: #14171F;
+  --surface-raised: #1B1F2A;
+  --border: rgba(255, 255, 255, 0.07);
+  --muted: #8B949E;
+  --accent: #C1234F;
+  --accent-soft: rgba(193, 35, 79, 0.2);
+  --v8-canvas: #0E1015;
+  --v8-canvas-raised: #0E1015;
+  --v8-text: #F3F4F6;
+  --v8-muted: #8B949E;
+}
+
 html[data-theme="obsidian"] {
   color-scheme: dark;
   --bg-main: #08080a;

@@ -152,6 +152,7 @@ function focusIsActive(state: AmbientState, context: string) {
 function resolveThemeTuning(theme: string) {
   const resolved = resolvePremiumTheme(theme);
   const map: Record<PremiumTheme, keyof typeof THEME_TUNING> = {
+    "dyno-rose": "night",
     obsidian: "night",
     midnight: "night",
     "cyber-neon": "night",

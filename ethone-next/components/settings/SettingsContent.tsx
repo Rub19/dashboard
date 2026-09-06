@@ -58,6 +58,7 @@ import PrivacySecuritySettings from "./PrivacySecuritySettings";
 import { CATEGORY_ORDER, sectionCategory } from "./SettingsNavigation";
 
 const THEMES = [
+  { id: "dyno-rose", label: "Dyno Rose" },
   { id: "obsidian", label: "Obsidienne" },
   { id: "cyber-neon", label: "Cyber Néon" },
   { id: "solar-eclipse", label: "Éclipse Solaire" },

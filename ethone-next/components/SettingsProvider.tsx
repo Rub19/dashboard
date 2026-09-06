@@ -28,7 +28,7 @@ export const THEMES: Record<string, { background: string; foreground: string; ac
       accent: def.accentPrimary,
     },
   ]),
-  ["auto", { background: "#08080a", foreground: "#ededed", accent: "#8b5cf6" }],
+  ["auto", { background: "#0E1015", foreground: "#F3F4F6", accent: "#C1234F" }],
 ]);
 
 const DENSITY_PRESETS = {
@@ -59,6 +59,7 @@ const UNIT: Record<string, string> = {
 };
 
 export const ACCENTS: Record<string, string> = {
+  dyno: "#C1234F",
   violet: "#8b5cf6",
   blue: "#3b82f6",
   cyan: "#06b6d4",

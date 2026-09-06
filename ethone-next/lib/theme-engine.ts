@@ -36,7 +36,12 @@ export const THEME_DEFINITIONS = PRESET_THEMES;
 
 /** Map of legacy / alias names to current Theme IDs */
 const LEGACY_THEME_MAP: Record<string, PremiumThemeId> = {
-  default: "obsidian",
+  default: "dyno-rose",
+  dyno: "dyno-rose",
+  "dyno-rose": "dyno-rose",
+  "dyno-night": "dyno-rose",
+  crimson: "dyno-rose",
+  "crimson-night": "dyno-rose",
   night: "obsidian",
   graphite: "carbon",
   obsidian: "obsidian",
@@ -68,7 +73,7 @@ const LEGACY_THEME_MAP: Record<string, PremiumThemeId> = {
 export function resolveLegacyTheme(theme: string): PremiumThemeId {
   const id = String(theme || "").toLowerCase().trim();
   if (PRESET_THEME_IDS.includes(id as PremiumThemeId)) return id as PremiumThemeId;
-  return LEGACY_THEME_MAP[id] ?? "obsidian";
+  return LEGACY_THEME_MAP[id] ?? "dyno-rose";
 }
 
 /** Whether the OS currently requests a light color scheme */
@@ -80,7 +85,7 @@ export function resolveAutoDark(): boolean {
 /** Resolve 'auto' and legacy aliases to a Theme ID */
 export function resolvePremiumTheme(theme: string): PremiumThemeId {
   const raw = String(theme || "").toLowerCase().trim();
-  if (raw === "auto") return resolveAutoDark() ? "arctic" : "obsidian";
+  if (raw === "auto") return resolveAutoDark() ? "arctic" : "dyno-rose";
   return resolveLegacyTheme(raw);
 }
 
@@ -97,7 +102,7 @@ export function colorMix(a: string, b: string, pct = 50): string {
 
 /** Apply universal or custom accent to the DOM root */
 export function applyAccent(root: HTMLElement, accent: string): void {
-  const safeAccent = isValidHexColor(accent) ? accent : "#8b5cf6";
+  const safeAccent = isValidHexColor(accent) ? accent : "#C1234F";
   const soft = safeAccent + "33";
   const glow = colorMix(safeAccent, "transparent", 25);
   const secondary = colorMix(safeAccent, "white", 70);
@@ -139,7 +144,7 @@ export function applyTheme(themeId: string, options?: ApplyThemeOptions): void {
   // 2. Fall back to preset themes
   if (!def) {
     const resolvedId = resolvePremiumTheme(rawId);
-    def = PRESET_THEMES[resolvedId] || PRESET_THEMES.obsidian;
+    def = PRESET_THEMES[resolvedId] || PRESET_THEMES["dyno-rose"] || PRESET_THEMES.obsidian;
   }
 
   const isLight = def.colorScheme === "light";

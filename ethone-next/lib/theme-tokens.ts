@@ -9,7 +9,8 @@
 export type ThemeCategory = "dark" | "light" | "oled" | "vibrant" | "glass";
 
 export type PremiumThemeId =
-  | "obsidian"        // ETHONE Dark (Default)
+  | "dyno-rose"       // Dyno Rose (Default)
+  | "obsidian"        // ETHONE Dark
   | "midnight"        // Pure OLED Black
   | "aurora"          // Polar Teal & Sky
   | "purple-space"    // Cosmic Indigo Nebula
@@ -23,6 +24,7 @@ export type PremiumThemeId =
   | "rose";           // Velvet Rose
 
 export const PRESET_THEME_IDS: PremiumThemeId[] = [
+  "dyno-rose",
   "obsidian",
   "midnight",
   "aurora",
@@ -68,6 +70,34 @@ export interface ThemeDefinition {
 }
 
 export const PRESET_THEMES: Record<PremiumThemeId, ThemeDefinition> = {
+  "dyno-rose": {
+    id: "dyno-rose",
+    label: "Dyno Rose",
+    description: "Identité visuelle inspirée de Dyno : noir profond #0E1015, accents rouge/rose #C1234F et contrastes chirurgicaux.",
+    category: "dark",
+    colorScheme: "dark",
+    bgMain: "#0E1015",
+    bgSurface: "#14171F",
+    bgSurfaceElevated: "#1B1F2A",
+    bgSurfaceHover: "#232836",
+    bgSidebar: "#0E1015",
+    bgCard: "#13161E",
+    bgInput: "rgba(255, 255, 255, 0.035)",
+    borderSubtle: "rgba(255, 255, 255, 0.07)",
+    borderActive: "rgba(193, 35, 79, 0.45)",
+    borderFocus: "#C1234F",
+    accentPrimary: "#C1234F",
+    accentSecondary: "#E03365",
+    accentContrast: "#ffffff",
+    glowColor: "rgba(193, 35, 79, 0.25)",
+    textPrimary: "#F3F4F6",
+    textSecondary: "#D1D5DB",
+    textMuted: "#8B949E",
+    textDisabled: "#484F58",
+    textInverse: "#0E1015",
+    glassDefault: "medium",
+    panelBlur: "20px",
+  },
   obsidian: {
     id: "obsidian",
     label: "ETHONE Dark",
@@ -407,6 +437,7 @@ export const PRESET_THEMES: Record<PremiumThemeId, ThemeDefinition> = {
 };
 
 export const UNIVERSAL_ACCENTS = [
+  { id: "dyno", label: "Rose Dyno", hex: "#C1234F" },
   { id: "violet", label: "Violet ETHONE", hex: "#8b5cf6" },
   { id: "blue", label: "Bleu Royal", hex: "#3b82f6" },
   { id: "cyan", label: "Cyan Électrique", hex: "#06b6d4" },

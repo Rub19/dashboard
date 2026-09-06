@@ -163,11 +163,11 @@ export default function ThemeStudio({ className }: ThemeStudioProps) {
     }
   };
 
-  // Reset to default Obsidian
+  // Reset to default Dyno Rose
   const handleResetToDefault = () => {
-    transitionTheme("obsidian", (id) => update({ theme: id, accentColor: "violet", customAccent: "#8b5cf6", glassLevel: "medium" }), {
-      accentColor: "violet",
-      customAccent: "#8b5cf6",
+    transitionTheme("dyno-rose", (id) => update({ theme: id, accentColor: "dyno", customAccent: "#C1234F", glassLevel: "medium" }), {
+      accentColor: "dyno",
+      customAccent: "#C1234F",
       glassLevel: "medium",
       performanceMode: "normal",
       reducedMotion: settings.reducedMotion,
@@ -214,9 +214,9 @@ export default function ThemeStudio({ className }: ThemeStudioProps) {
   const handleDeleteCustomTheme = (id: string, e: React.MouseEvent) => {
     e.stopPropagation();
     const updatedList = (settings.customThemes || []).filter((t) => t.id !== id);
-    const nextTheme = settings.theme === id ? "obsidian" : settings.theme;
+    const nextTheme = settings.theme === id ? "dyno-rose" : settings.theme;
     update({ customThemes: updatedList, theme: nextTheme });
-    if (settings.theme === id) handleSelectTheme("obsidian", true);
+    if (settings.theme === id) handleSelectTheme("dyno-rose", true);
     success("Thème personnalisé supprimé");
   };
 

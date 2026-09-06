@@ -332,7 +332,7 @@ export default function LoginPage() {
   }, [mode, otpStep, maskedEmail]);
 
   return (
-    <div className="relative flex min-h-dvh w-full overflow-hidden bg-[#07090d] text-white selection:bg-emerald-500/30 selection:text-emerald-200">
+    <div className="relative flex min-h-dvh w-full overflow-hidden bg-[var(--bg-main,#0E1015)] text-white selection:bg-[var(--accent-primary,#C1234F)]/30 selection:text-white">
       {/* Top right language switcher */}
       <div className="absolute right-4 top-4 z-40 sm:right-6 sm:top-6">
         <LanguageSwitcher />
@@ -341,8 +341,8 @@ export default function LoginPage() {
       {/* Left side: Premium OS Hero Presentation (Desktop only) */}
       <div className="relative hidden w-1/2 flex-col justify-between overflow-hidden p-10 lg:flex xl:p-14 select-none">
         {/* Subtle Ambient Radial Lighting */}
-        <div className="pointer-events-none absolute -left-20 -top-20 h-[36rem] w-[36rem] rounded-full bg-emerald-500/[0.04] blur-[140px]" />
-        <div className="pointer-events-none absolute -bottom-20 -right-20 h-[36rem] w-[36rem] rounded-full bg-cyan-500/[0.04] blur-[140px]" />
+        <div className="pointer-events-none absolute -left-20 -top-20 h-[36rem] w-[36rem] rounded-full bg-[var(--accent-primary,#C1234F)]/[0.04] blur-[140px]" />
+        <div className="pointer-events-none absolute -bottom-20 -right-20 h-[36rem] w-[36rem] rounded-full bg-[var(--accent-secondary,#E03365)]/[0.03] blur-[140px]" />
 
         {/* Brand Header */}
         <div className="z-10 flex items-center gap-3">
@@ -351,7 +351,7 @@ export default function LoginPage() {
           </div>
           <div className="flex items-center gap-2">
             <span className="text-xl font-bold tracking-tight text-white font-mono">ETHONE</span>
-            <span className="rounded-lg border border-white/10 bg-white/[0.04] px-2 py-0.5 text-[10px] font-semibold uppercase tracking-wider text-emerald-400">
+            <span className="rounded-lg border border-white/10 bg-white/[0.04] px-2 py-0.5 text-[10px] font-semibold uppercase tracking-wider text-[var(--accent-primary,#C1234F)]">
               OS
             </span>
           </div>
@@ -360,13 +360,13 @@ export default function LoginPage() {
         {/* Main Hero Content */}
         <div className="z-10 max-w-lg space-y-4">
           <div className="inline-flex items-center gap-2 rounded-full border border-white/10 bg-white/[0.03] px-3.5 py-1 text-[11px] font-medium tracking-wide text-zinc-300 backdrop-blur-md">
-            <Sparkles className="h-3.5 w-3.5 text-emerald-400" />
+            <Sparkles className="h-3.5 w-3.5 text-[var(--accent-primary,#C1234F)]" />
             <span>Environnement personnel unifié</span>
           </div>
 
           <h1 className="text-4xl font-extrabold tracking-tight text-white sm:text-5xl xl:text-6xl leading-[1.1]">
             Votre espace, <br />
-            <span className="bg-gradient-to-r from-emerald-400 via-teal-300 to-cyan-400 bg-clip-text text-transparent">
+            <span className="bg-gradient-to-r from-[var(--accent-primary,#C1234F)] via-[#E03365] to-rose-400 bg-clip-text text-transparent">
               réinventé pour vous.
             </span>
           </h1>
@@ -392,14 +392,14 @@ export default function LoginPage() {
       <div className="relative flex flex-1 items-center justify-center p-4 sm:p-8 lg:w-1/2">
         <div className="relative w-full max-w-[440px]">
           {/* Card Ambient Glow */}
-          <div className="pointer-events-none absolute -inset-1 rounded-[2.5rem] bg-gradient-to-br from-emerald-500/10 via-transparent to-cyan-500/10 blur-xl" />
+          <div className="pointer-events-none absolute -inset-1 rounded-[2.5rem] bg-gradient-to-br from-[var(--accent-primary,#C1234F)]/15 via-transparent to-[var(--accent-secondary,#E03365)]/10 blur-xl" />
 
           {/* Main Glass Card */}
           <motion.div
             initial={reduced ? undefined : { opacity: 0, y: 16, scale: 0.98 }}
             animate={{ opacity: 1, y: 0, scale: 1 }}
             transition={{ duration: 0.3, ease: [0.16, 1, 0.3, 1] }}
-            className="relative overflow-hidden rounded-[2.25rem] border border-white/10 bg-[#0d1016]/90 p-6 sm:p-9 shadow-2xl backdrop-blur-2xl"
+            className="relative overflow-hidden rounded-[2.25rem] border border-white/10 bg-[var(--bg-card,#13161E)]/90 p-6 sm:p-9 shadow-2xl backdrop-blur-2xl"
           >
             {/* Top Card Icon & Title */}
             <div className="text-center space-y-3">
@@ -568,7 +568,7 @@ export default function LoginPage() {
                       <button
                         type="button"
                         onClick={() => router.push("/password-recovery")}
-                        className="text-xs text-zinc-400 hover:text-emerald-400 transition-colors"
+                        className="text-xs text-zinc-400 hover:text-[var(--accent-primary,#C1234F)] transition-colors"
                       >
                         Mot de passe oublié ?
                       </button>
@@ -581,7 +581,7 @@ export default function LoginPage() {
                         "mt-2 flex h-12 w-full items-center justify-center gap-2 rounded-2xl text-sm font-semibold text-white shadow-lg transition-all duration-150 active:scale-[0.98] cursor-pointer",
                         isSuccess
                           ? "bg-emerald-500 shadow-emerald-500/30"
-                          : "bg-gradient-to-r from-emerald-500 to-teal-500 hover:opacity-95 shadow-emerald-500/20",
+                          : "bg-[var(--accent-primary,#C1234F)] hover:brightness-110 shadow-[0_4px_20px_var(--glow-color,rgba(193,35,79,0.3))]",
                         isLoading && "opacity-80"
                       )}
                     >
@@ -644,7 +644,7 @@ export default function LoginPage() {
                       disabled={isLoading || isSuccess}
                       className={cn(
                         "mt-2 flex h-12 w-full items-center justify-center gap-2 rounded-2xl text-sm font-semibold text-white shadow-lg transition-all duration-150 active:scale-[0.98] cursor-pointer",
-                        "bg-gradient-to-r from-emerald-500 to-teal-500 hover:opacity-95 shadow-emerald-500/20",
+                        "bg-[var(--accent-primary,#C1234F)] hover:brightness-110 shadow-[0_4px_20px_var(--glow-color,rgba(193,35,79,0.3))]",
                         isLoading && "opacity-80"
                       )}
                     >
@@ -706,7 +706,7 @@ export default function LoginPage() {
                           "transition-colors cursor-pointer",
                           resendIn > 0
                             ? "text-zinc-500 cursor-not-allowed"
-                            : "text-emerald-400 hover:text-emerald-300 font-medium"
+                            : "text-[var(--accent-primary,#C1234F)] hover:brightness-110 font-medium"
                         )}
                       >
                         {resendIn > 0 ? `Renvoyer (${resendIn}s)` : "Renvoyer le code"}
@@ -721,7 +721,7 @@ export default function LoginPage() {
                         "mt-2 flex h-12 w-full items-center justify-center gap-2 rounded-2xl text-sm font-semibold text-white shadow-lg transition-all duration-150 active:scale-[0.98] cursor-pointer",
                         isSuccess
                           ? "bg-emerald-500 shadow-emerald-500/30"
-                          : "bg-gradient-to-r from-emerald-500 to-teal-500 hover:opacity-95 shadow-emerald-500/20",
+                          : "bg-[var(--accent-primary,#C1234F)] hover:brightness-110 shadow-[0_4px_20px_var(--glow-color,rgba(193,35,79,0.3))]",
                         (isLoading || code.length !== 6) && "opacity-60 cursor-not-allowed"
                       )}
                     >
@@ -831,7 +831,7 @@ export default function LoginPage() {
                         "mt-3 flex h-12 w-full items-center justify-center gap-2 rounded-2xl text-sm font-semibold text-white shadow-lg transition-all duration-150 active:scale-[0.98] cursor-pointer",
                         isSuccess
                           ? "bg-emerald-500 shadow-emerald-500/30"
-                          : "bg-gradient-to-r from-emerald-500 to-teal-500 hover:opacity-95 shadow-emerald-500/20",
+                          : "bg-[var(--accent-primary,#C1234F)] hover:brightness-110 shadow-[0_4px_20px_var(--glow-color,rgba(193,35,79,0.3))]",
                         isLoading && "opacity-80"
                       )}
                     >
@@ -919,7 +919,7 @@ export default function LoginPage() {
                     disabled={isLoading || isSuccess}
                     className="flex h-11 w-full items-center justify-center gap-2 rounded-2xl border border-white/10 bg-white/[0.03] px-4 text-xs font-medium text-zinc-300 transition-all duration-150 hover:bg-white/[0.06] hover:text-white active:scale-[0.98] disabled:opacity-50 cursor-pointer"
                   >
-                    <KeyRound className="h-4 w-4 text-emerald-400" />
+                    <KeyRound className="h-4 w-4 text-[var(--accent-primary,#C1234F)]" />
                     <span>Se connecter avec une clé de sécurité (Passkey)</span>
                   </button>
                 )}
@@ -936,7 +936,7 @@ export default function LoginPage() {
                     setModeAndReset("password");
                   }}
                   disabled={isLoading}
-                  className="text-emerald-400 hover:text-emerald-300 font-medium transition-colors cursor-pointer"
+                  className="text-[var(--accent-primary,#C1234F)] hover:brightness-110 font-medium transition-colors cursor-pointer"
                 >
                   Déjà un compte ? Se connecter
                 </button>
@@ -948,10 +948,10 @@ export default function LoginPage() {
                     setModeAndReset("register");
                   }}
                   disabled={isLoading}
-                  className="text-zinc-400 hover:text-emerald-400 transition-colors cursor-pointer"
+                  className="text-zinc-400 hover:text-[var(--accent-primary,#C1234F)] transition-colors cursor-pointer"
                 >
                   Pas encore de compte ?{" "}
-                  <span className="text-emerald-400 font-medium">Créer un compte</span>
+                  <span className="text-[var(--accent-primary,#C1234F)] font-medium">Créer un compte</span>
                 </button>
               )}
             </div>

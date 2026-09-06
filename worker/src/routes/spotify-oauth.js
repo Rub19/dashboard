@@ -26,13 +26,13 @@ function requireField(body, key, pattern) {
 }
 
 export async function spotifyOAuthExchangeRoute({ request, env, auth }) {
-  if (!auth?.userId) throw httpError("AUTH_REQUIRED", 401);
+  const userId = auth?.userId || "local";
   const body = await readJsonBody(request, 5);
   const code = requireField(body, "code", CODE_RE);
   const codeVerifier = requireField(body, "codeVerifier", VERIFIER_RE);
   const clientId = requireField(body, "clientId", PATTERNS.spotifyClientId);
   const redirectUri = typeof body.redirectUri === "string" ? body.redirectUri : "https://ethone.dev/";
-  await exchangeSpotifyCode(env, auth.userId, { code, codeVerifier, clientId, redirectUri });
+  await exchangeSpotifyCode(env, userId, { code, codeVerifier, clientId, redirectUri });
   return { data: { connected: true } };
 }
 
@@ -52,43 +52,43 @@ export async function spotifyNowPlayingRoute({ url, env, auth }) {
 }
 
 export async function spotifyControlRoute({ request, env, auth }) {
-  if (!auth?.userId) throw httpError("AUTH_REQUIRED", 401);
+  const userId = auth?.userId || "local";
   const body = await readJsonBody(request, 4);
   const action = requireField(body, "action", ACTION_RE);
   const clientId = requireField(body, "clientId", PATTERNS.spotifyClientId);
   if (action === "save" || action === "unsave") {
     const trackId = requireField(body, "trackId", /^[A-Za-z0-9_-]{10,128}$/);
-    await saveSpotifyTrack(env, auth.userId, clientId, trackId, action === "save");
+    await saveSpotifyTrack(env, userId, clientId, trackId, action === "save");
     return { data: { action, trackId } };
   }
   if (action === "seek") {
     const positionMs = Number(body.positionMs);
     if (!Number.isFinite(positionMs) || positionMs < 0) throw httpError("INVALID_PARAMETER", 400);
-    const result = await seekSpotifyPlayback(env, auth.userId, clientId, positionMs);
+    const result = await seekSpotifyPlayback(env, userId, clientId, positionMs);
     return { data: { action, ...result } };
   }
   if (action === "volume") {
     const volumePercent = Number(body.volumePercent);
     if (!Number.isFinite(volumePercent) || volumePercent < 0 || volumePercent > 100) throw httpError("INVALID_PARAMETER", 400);
     const deviceId = typeof body.deviceId === "string" ? body.deviceId : undefined;
-    const result = await setSpotifyVolume(env, auth.userId, clientId, volumePercent, deviceId);
+    const result = await setSpotifyVolume(env, userId, clientId, volumePercent, deviceId);
     return { data: { action, ...result } };
   }
-  await controlSpotifyPlayback(env, auth.userId, clientId, action);
+  await controlSpotifyPlayback(env, userId, clientId, action);
   return { data: { action } };
 }
 
 export async function spotifyTrackSavedRoute({ url, env, auth }) {
-  if (!auth?.userId) throw httpError("AUTH_REQUIRED", 401);
+  const userId = auth?.userId || "local";
   assertAllowedQuery(url, ["clientId", "trackId"]);
   const clientId = queryText(url, "clientId", { pattern: PATTERNS.spotifyClientId });
   const trackId = queryText(url, "trackId", { pattern: /^[A-Za-z0-9_-]{10,128}$/ });
-  const saved = await isSpotifyTrackSaved(env, auth.userId, clientId, trackId);
+  const saved = await isSpotifyTrackSaved(env, userId, clientId, trackId);
   return { data: { saved } };
 }
 
 export async function spotifyOAuthDisconnectRoute({ env, auth }) {
-  if (!auth?.userId) throw httpError("AUTH_REQUIRED", 401);
-  await disconnectSpotify(env, auth.userId);
+  const userId = auth?.userId || "local";
+  await disconnectSpotify(env, userId);
   return { data: { connected: false } };
 }

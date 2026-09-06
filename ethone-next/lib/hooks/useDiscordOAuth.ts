@@ -78,6 +78,37 @@ export function useDiscordOAuth() {
     setLoading(true);
     setError(null);
 
+    // 0. Check localStorage cached profile immediately
+    if (typeof window !== "undefined") {
+      try {
+        const cachedRaw = localStorage.getItem("ethone:discord:profile");
+        if (cachedRaw) {
+          const cached = JSON.parse(cachedRaw);
+          const u = cached.user || cached;
+          if (u?.id || cached.connected) {
+            setProfile({
+              connected: true,
+              mode: "oauth2",
+              user: u?.id ? {
+                id: u.id,
+                username: u.username || "",
+                globalName: u.globalName || u.global_name || u.username || "",
+                displayName: u.displayName || u.display_name || u.global_name || u.username || "",
+                avatarUrl: u.avatarUrl || u.avatar_url || (u.avatar ? `https://cdn.discordapp.com/avatars/${u.id}/${u.avatar}.png` : ""),
+                avatarUrlSmall: u.avatarUrlSmall || u.avatar_url || "",
+                bannerUrl: u.bannerUrl || u.banner_url || "",
+                email: u.email || "",
+                verified: !!u.verified,
+                premiumType: u.premiumType ?? u.premium_type ?? 0,
+              } : undefined,
+              guilds: Array.isArray(cached.guilds) ? cached.guilds : [],
+              syncedAt: cached.syncedAt || new Date().toISOString(),
+            });
+          }
+        }
+      } catch {}
+    }
+
     // 1. Direct client-side check if token exists in localStorage
     const localToken =
       typeof window !== "undefined"
@@ -136,6 +167,12 @@ export function useDiscordOAuth() {
           };
 
           setProfile(profileData);
+          try {
+            localStorage.setItem("ethone:discord:profile", JSON.stringify(profileData));
+            if (guilds.length > 0) {
+              localStorage.setItem("ethone:discord:guilds", JSON.stringify(guilds));
+            }
+          } catch {}
           setLoading(false);
           return;
         }
@@ -144,10 +181,26 @@ export function useDiscordOAuth() {
 
     try {
       const result = await fetchWorker("/api/discord/oauth/profile");
-      setProfile(result?.data || { connected: false });
+      if (result?.data && result.data.connected) {
+        setProfile(result.data);
+        try {
+          localStorage.setItem("ethone:discord:profile", JSON.stringify(result.data));
+          if (result.data.guilds?.length) {
+            localStorage.setItem("ethone:discord:guilds", JSON.stringify(result.data.guilds));
+          }
+        } catch {}
+      } else if (typeof window !== "undefined" && localStorage.getItem("ethone:connected:discord") === "true") {
+        setProfile((prev) => prev || { connected: true, mode: "oauth2" });
+      } else {
+        setProfile({ connected: false });
+      }
     } catch (err) {
-      setError(err instanceof Error ? err.message : String(err));
-      setProfile({ connected: false });
+      if (typeof window !== "undefined" && localStorage.getItem("ethone:connected:discord") === "true") {
+        setProfile((prev) => prev || { connected: true, mode: "oauth2" });
+      } else {
+        setError(err instanceof Error ? err.message : String(err));
+        setProfile({ connected: false });
+      }
     } finally {
       setLoading(false);
     }
@@ -181,6 +234,19 @@ export function useDiscordOAuth() {
 
   useEffect(() => {
     fetchProfile();
+    const handleUpdate = () => {
+      fetchProfile();
+    };
+    if (typeof window !== "undefined") {
+      window.addEventListener("v8:connection-updated", handleUpdate);
+      window.addEventListener("storage", handleUpdate);
+    }
+    return () => {
+      if (typeof window !== "undefined") {
+        window.removeEventListener("v8:connection-updated", handleUpdate);
+        window.removeEventListener("storage", handleUpdate);
+      }
+    };
   }, [fetchProfile]);
 
   return {

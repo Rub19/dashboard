@@ -81,9 +81,9 @@ export async function discordOAuthExchangeRoute({ request, env, auth }) {
 }
 
 export async function discordOAuthProfileRoute({ env, auth }) {
-  if (!auth?.userId) throw httpError("AUTH_REQUIRED", 401);
+  const userId = auth?.userId || "local";
   try {
-    const profile = await getDiscordProfile(env, auth.userId);
+    const profile = await getDiscordProfile(env, userId);
     return { data: profile || { connected: false } };
   } catch {
     return { data: { connected: false } };
@@ -91,13 +91,19 @@ export async function discordOAuthProfileRoute({ env, auth }) {
 }
 
 export async function discordOAuthRefreshRoute({ env, auth }) {
-  if (!auth?.userId) throw httpError("AUTH_REQUIRED", 401);
-  const profile = await refreshDiscordProfile(env, auth.userId);
-  return { data: profile };
+  const userId = auth?.userId || "local";
+  try {
+    const profile = await refreshDiscordProfile(env, userId);
+    return { data: profile };
+  } catch {
+    return { data: { connected: false } };
+  }
 }
 
 export async function discordOAuthDisconnectRoute({ env, auth }) {
-  if (!auth?.userId) throw httpError("AUTH_REQUIRED", 401);
-  await disconnectDiscord(env, auth.userId);
+  const userId = auth?.userId || "local";
+  try {
+    await disconnectDiscord(env, userId);
+  } catch {}
   return { data: { connected: false } };
 }

@@ -91,11 +91,20 @@ export default function OAuthHandler() {
         if (provider === "discord") {
           localStorage.setItem("ethone:connected:discord", "true");
           const tokenData = res?.data ?? res;
+          if (tokenData && typeof tokenData === "object") {
+            try {
+              localStorage.setItem("ethone:discord:profile", JSON.stringify(tokenData));
+              if ((tokenData as any).guilds) {
+                localStorage.setItem("ethone:discord:guilds", JSON.stringify((tokenData as any).guilds));
+              }
+            } catch {}
+          }
           const discordUser = (tokenData as any)?.user || (tokenData as any)?.data?.user;
           const discordUserId = discordUser?.id || (tokenData as any)?.userId;
           if (discordUserId) {
             localStorage.setItem("ethone:pub:discord:liveLanyardUserId", discordUserId);
             localStorage.setItem("ethone:cred:discord:userId", discordUserId);
+            localStorage.setItem("ethone:pub:lanyardUserId", discordUserId);
             update({ liveLanyardUserId: discordUserId } as never);
           }
           const tokenStr = (tokenData as Record<string, string>)?.access_token || (tokenData as Record<string, string>)?.token;
@@ -108,6 +117,7 @@ export default function OAuthHandler() {
                 if (u?.id) {
                   localStorage.setItem("ethone:pub:discord:liveLanyardUserId", u.id);
                   localStorage.setItem("ethone:cred:discord:userId", u.id);
+                  localStorage.setItem("ethone:pub:lanyardUserId", u.id);
                   update({ liveLanyardUserId: u.id } as never);
                 }
               })

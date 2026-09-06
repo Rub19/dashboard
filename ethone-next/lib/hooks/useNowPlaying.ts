@@ -201,7 +201,7 @@ export function useNowPlaying(pollMs = 3000) {
         localStorage.getItem("ethone:clientId:spotify") ||
         OAUTH_APP_CLIENT_IDS.spotify;
 
-      const discordId =
+      let discordId =
         (settings.liveNowPlayingSource === "lanyard" ? settings.liveNowPlayingIdentity : null) ||
         settings.liveLanyardUserId ||
         settings.liveNowPlayingIdentity ||
@@ -209,6 +209,60 @@ export function useNowPlaying(pollMs = 3000) {
         localStorage.getItem("ethone:pub:lanyardUserId") ||
         localStorage.getItem("ethone:cred:discord:userId") ||
         localStorage.getItem("ethone:clientId:discord");
+
+      if (!discordId) {
+        try {
+          const storedProf = localStorage.getItem("ethone:discord:profile");
+          if (storedProf) {
+            const p = JSON.parse(storedProf);
+            if (p?.user?.id) discordId = String(p.user.id);
+          }
+        } catch {}
+      }
+
+      // Helper for Lanyard Spotify live detection
+      const fetchLanyardTrack = async (id: string): Promise<NowPlaying | null> => {
+        try {
+          const lanyardRes = await fetch(`https://api.lanyard.rest/v1/users/${encodeURIComponent(id)}`);
+          if (lanyardRes.ok) {
+            const lJson = (await lanyardRes.json()) as {
+              data?: {
+                spotify?: {
+                  track_id?: string;
+                  song?: string;
+                  artist?: string;
+                  album?: string;
+                  album_art_url?: string;
+                  timestamps?: { start?: number; end?: number };
+                };
+              };
+            };
+            const sp = lJson?.data?.spotify;
+            if (sp && sp.song) {
+              const start = sp.timestamps?.start;
+              const end = sp.timestamps?.end;
+              return {
+                id: sp.track_id,
+                source: "spotify",
+                title: sp.song,
+                artist: sp.artist || "Spotify",
+                album: sp.album,
+                cover: sp.album_art_url,
+                artworkUrl: sp.album_art_url,
+                covers: sp.album_art_url ? [sp.album_art_url] : [],
+                progressMs: start ? Math.max(0, Date.now() - start) : undefined,
+                durationMs: start && end ? end - start : undefined,
+                isPlaying: true,
+                isSaved: false,
+              };
+            }
+          }
+        } catch {}
+        return null;
+      };
+
+      let activeTrack: NowPlaying | null = null;
+      let idleTrack: NowPlaying | null = null;
 
       // 1. Try Spotify Web API directly with token
       if (spotifyToken) {
@@ -238,14 +292,16 @@ export function useNowPlaying(pollMs = 3000) {
             if (spJson?.item) {
               const mapped = parseSpotifyItem(spJson.item, spJson.is_playing, spJson.progress_ms, spJson.device);
               if (mapped) {
-                setData(mapped);
-                setError(null);
-                return;
+                if (mapped.isPlaying) {
+                  activeTrack = mapped;
+                } else {
+                  idleTrack = mapped;
+                }
               }
             }
           }
 
-          if (spotifyRes.status === 204 || !spotifyRes.ok) {
+          if (!activeTrack && (spotifyRes.status === 204 || !spotifyRes.ok)) {
             // Check currently-playing directly
             const cpRes = await fetch("https://api.spotify.com/v1/me/player/currently-playing?additional_types=track,episode", {
               headers: { Authorization: `Bearer ${spotifyToken}` },
@@ -255,82 +311,59 @@ export function useNowPlaying(pollMs = 3000) {
               if (cpJson?.item) {
                 const mapped = parseSpotifyItem(cpJson.item, cpJson.is_playing, cpJson.progress_ms, cpJson.device);
                 if (mapped) {
-                  setData(mapped);
-                  setError(null);
-                  return;
+                  if (mapped.isPlaying) {
+                    activeTrack = mapped;
+                  } else if (!idleTrack) {
+                    idleTrack = mapped;
+                  }
                 }
               }
             }
           }
-        } catch {
-          // Direct browser fetch failed (e.g. adblocker, CORS) -> continue to server route
-        }
 
-        // Fallback to recently-played if currently idle
-        try {
-          const recentRes = await fetch("https://api.spotify.com/v1/me/player/recently-played?limit=1", {
-            headers: { Authorization: `Bearer ${spotifyToken}` },
-          });
-          if (recentRes.ok) {
-            const rJson = (await recentRes.json().catch(() => null)) as any;
-            const lastTrack = rJson?.items?.[0]?.track;
-            if (lastTrack) {
-              const mapped = parseSpotifyItem(lastTrack, false, 0);
-              if (mapped) {
-                setData(mapped);
-                setError(null);
-                return;
+          // Fallback to recently-played if no track yet
+          if (!activeTrack && !idleTrack) {
+            try {
+              const recentRes = await fetch("https://api.spotify.com/v1/me/player/recently-played?limit=1", {
+                headers: { Authorization: `Bearer ${spotifyToken}` },
+              });
+              if (recentRes.ok) {
+                const rJson = (await recentRes.json().catch(() => null)) as any;
+                const lastTrack = rJson?.items?.[0]?.track;
+                if (lastTrack) {
+                  const mapped = parseSpotifyItem(lastTrack, false, 0);
+                  if (mapped) idleTrack = mapped;
+                }
               }
-            }
+            } catch {}
           }
-        } catch {}
+        } catch {
+          // Direct browser fetch failed (e.g. adblocker, CORS) -> continue to next sources
+        }
       }
 
-      // 2. Try Discord Lanyard presence for active Spotify playback
-      if (discordId) {
-        try {
-          const lanyardRes = await fetch(`https://api.lanyard.rest/v1/users/${encodeURIComponent(discordId)}`);
-          if (lanyardRes.ok) {
-            const lJson = (await lanyardRes.json()) as {
-              data?: {
-                spotify?: {
-                  track_id?: string;
-                  song?: string;
-                  artist?: string;
-                  album?: string;
-                  album_art_url?: string;
-                  timestamps?: { start?: number; end?: number };
-                };
-                listening_to_spotify?: boolean;
-              };
-            };
+      // If direct Spotify API already found an actively playing song, return it
+      if (activeTrack && activeTrack.isPlaying) {
+        setData(activeTrack);
+        setError(null);
+        return;
+      }
 
-            const sp = lJson?.data?.spotify;
-            if (sp && sp.song) {
-              const start = sp.timestamps?.start;
-              const end = sp.timestamps?.end;
-              const mapped: NowPlaying = {
-                id: sp.track_id,
-                source: "spotify",
-                title: sp.song,
-                artist: sp.artist,
-                album: sp.album,
-                cover: sp.album_art_url,
-                artworkUrl: sp.album_art_url,
-                covers: sp.album_art_url ? [sp.album_art_url] : [],
-                progressMs: start ? Math.max(0, Date.now() - start) : undefined,
-                durationMs: start && end ? end - start : undefined,
-                isPlaying: true,
-                isSaved: false,
-              };
-              setData(mapped);
-              setError(null);
-              return;
-            }
-          }
-        } catch {
-          // Fall through
+      // 2. Try Discord Lanyard presence for active Spotify playback (or as live playing override)
+      if (discordId) {
+        const lanyardTrack = await fetchLanyardTrack(discordId);
+        if (lanyardTrack && lanyardTrack.isPlaying) {
+          setData(lanyardTrack);
+          setError(null);
+          return;
         }
+      }
+
+      // If we had a paused/recent track from Spotify Web API, show it
+      if (idleTrack) {
+        setData(idleTrack);
+        setError(null);
+        return;
       }
 
       // 3. Try Worker now-playing endpoint
@@ -348,7 +381,7 @@ export function useNowPlaying(pollMs = 3000) {
         }
       }
 
-      // 4. If Spotify is connected but idle
+      // 4. If Spotify is connected but completely idle
       if (isSpotifyConnected) {
         setData({
           source: "spotify",
@@ -397,12 +430,14 @@ export function useNowPlaying(pollMs = 3000) {
     window.addEventListener("focus", onVisible);
     window.addEventListener("v8:connection-updated", onConnectionUpdate);
     window.addEventListener("v8:nowplaying-updated", onConnectionUpdate);
+    window.addEventListener("storage", onConnectionUpdate);
 
     return () => {
       document.removeEventListener("visibilitychange", onVisible);
       window.removeEventListener("focus", onVisible);
       window.removeEventListener("v8:connection-updated", onConnectionUpdate);
       window.removeEventListener("v8:nowplaying-updated", onConnectionUpdate);
+      window.removeEventListener("storage", onConnectionUpdate);
     };
   }, [fetchLiveTrack]);
 

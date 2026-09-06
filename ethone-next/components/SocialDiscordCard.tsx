@@ -81,20 +81,54 @@ const SocialDiscordCard = memo(function SocialDiscordCard({
   const { profile: oauthProfile } = useDiscordOAuth();
   const [localLanyard, setLocalLanyard] = useState<LanyardPresence | null>(null);
 
+  const [storedProfile, setStoredProfile] = useState<{ user?: any; connected?: boolean } | null>(() => {
+    if (typeof window === "undefined") return null;
+    try {
+      const raw = localStorage.getItem("ethone:discord:profile");
+      return raw ? JSON.parse(raw) : null;
+    } catch {
+      return null;
+    }
+  });
+
+  useEffect(() => {
+    if (oauthProfile) setStoredProfile(oauthProfile);
+  }, [oauthProfile]);
+
   const handleConnectIntegrations = useCallback(() => {
     router.push("/settings?category=integrations");
   }, [router]);
 
-  const isOAuth = Boolean(oauthProfile?.connected);
-  const oauthUserId = oauthProfile?.user?.id;
+  const storedUserId = useMemo(() => {
+    if (typeof window === "undefined") return null;
+    return (
+      localStorage.getItem("ethone:pub:discord:liveLanyardUserId") ||
+      localStorage.getItem("ethone:cred:discord:userId") ||
+      localStorage.getItem("ethone:pub:lanyardUserId") ||
+      storedProfile?.user?.id ||
+      null
+    );
+  }, [storedProfile?.user?.id]);
+
+  const storedConnected = useMemo(() => {
+    if (typeof window === "undefined") return false;
+    return (
+      localStorage.getItem("ethone:connected:discord") === "true" ||
+      Boolean(localStorage.getItem("ethone:token:discord"))
+    );
+  }, []);
+
+  const isOAuth = Boolean(oauthProfile?.connected || storedProfile?.connected || storedConnected);
+  const oauthUserId = oauthProfile?.user?.id || storedUserId || undefined;
 
   useEffect(() => {
-    if (isOAuth && oauthUserId && !settings.liveLanyardUserId) {
-      update({ liveLanyardUserId: oauthUserId });
+    const targetId = oauthUserId || storedUserId;
+    if ((isOAuth || storedConnected) && targetId && !settings.liveLanyardUserId) {
+      update({ liveLanyardUserId: targetId });
     }
-  }, [isOAuth, oauthUserId, settings.liveLanyardUserId, update]);
+  }, [isOAuth, storedConnected, oauthUserId, storedUserId, settings.liveLanyardUserId, update]);
 
-  const effectiveUserId = lanyard?.userId || settings.liveLanyardUserId || oauthUserId;
+  const effectiveUserId = lanyard?.userId || settings.liveLanyardUserId || oauthUserId || storedUserId || undefined;
 
   useEffect(() => {
     if (lanyard) return;
@@ -140,23 +174,36 @@ const SocialDiscordCard = memo(function SocialDiscordCard({
 
   const effectiveLanyard = lanyard || localLanyard;
 
-  const userId = effectiveLanyard?.userId || oauthProfile?.user?.id;
-  const avatarHash = effectiveLanyard?.avatarHash;
-  const discriminator = effectiveLanyard?.discriminator;
-  const avatarUrl = effectiveLanyard?.avatarUrl || oauthProfile?.user?.avatarUrl;
-  const username = effectiveLanyard?.username || oauthProfile?.user?.username;
+  const oauthUserAny = oauthProfile?.user as any;
+  const storedUserAny = storedProfile?.user as any;
+
+  const userId = effectiveLanyard?.userId || oauthProfile?.user?.id || storedUserId;
+  const avatarHash = effectiveLanyard?.avatarHash || oauthUserAny?.avatar || storedUserAny?.avatar;
+  const discriminator = effectiveLanyard?.discriminator || oauthUserAny?.discriminator || storedUserAny?.discriminator;
+  const avatarUrl = effectiveLanyard?.avatarUrl || oauthProfile?.user?.avatarUrl || storedUserAny?.avatarUrl;
+  const username = effectiveLanyard?.username || oauthProfile?.user?.username || storedUserAny?.username;
   const displayName =
     effectiveLanyard?.displayName ||
     effectiveLanyard?.username ||
     oauthProfile?.user?.displayName ||
+    oauthProfile?.user?.globalName ||
     oauthProfile?.user?.username ||
+    storedUserAny?.displayName ||
+    storedUserAny?.global_name ||
+    storedUserAny?.username ||
     "Discord";
 
   const primaryAvatar = useMemo(() => {
     if (avatarUrl) return avatarUrl;
     if (avatarHash && userId) {
-      const ext = avatarHash.startsWith("a_") ? "gif" : "png";
+      const ext = String(avatarHash).startsWith("a_") ? "gif" : "png";
       return `https://cdn.discordapp.com/avatars/${userId}/${avatarHash}.${ext}?size=256`;
+    }
+    if (userId) {
+      try {
+        const defaultIndex = Number((BigInt(userId) >> BigInt(22)) % BigInt(6));
+        return `https://cdn.discordapp.com/embed/avatars/${defaultIndex}.png`;
+      } catch {}
     }
     return "";
   }, [avatarHash, userId, avatarUrl]);
@@ -166,17 +213,17 @@ const SocialDiscordCard = memo(function SocialDiscordCard({
   const color = statusColor(status);
   const label = statusLabel(status);
 
-  const isLanyardConfigured = Boolean(settings.liveLanyardUserId);
+  const isLanyardConfigured = Boolean(settings.liveLanyardUserId || storedUserId);
   const isNowPlayingSourceConfigured =
     settings.liveNowPlayingSource === "lanyard"
-      ? Boolean(settings.liveLanyardUserId)
+      ? Boolean(settings.liveLanyardUserId || storedUserId)
       : settings.liveNowPlayingSource === "lastfm"
         ? Boolean(settings.liveLastfmUsername)
         : Boolean(settings.liveSpotifyClientId);
 
   const hasAnyConnection = isLanyardConfigured || isNowPlayingSourceConfigured || isOAuth;
   const hasLanyard = Boolean(effectiveLanyard?.userId || effectiveLanyard?.username);
-  const hasOAuth = isOAuth;
+  const hasOAuth = Boolean(isOAuth || storedUserId || storedProfile?.user?.id);
 
   const { badgeColor, badgeLabel, badgeTone } = useMemo(() => {
     if (hasLanyard) {

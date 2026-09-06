@@ -66,6 +66,7 @@ export default function OAuthHandler() {
           const tokenData = res?.data ?? res;
           if (tokenData && typeof tokenData === "object") {
             const accessToken = (tokenData as Record<string, string>).access_token || (tokenData as Record<string, string>).token;
+            const refreshToken = (tokenData as Record<string, string>).refresh_token;
             if (accessToken) {
               localStorage.setItem(`ethone:token:${provider}`, accessToken);
               if (provider === "spotify") {
@@ -73,6 +74,13 @@ export default function OAuthHandler() {
                 localStorage.setItem("ethone:connected:spotify", "true");
               }
               setField(provider, "accessToken", accessToken);
+            }
+            if (refreshToken) {
+              localStorage.setItem(`ethone:refresh_token:${provider}`, refreshToken);
+              if (provider === "spotify") {
+                localStorage.setItem("spotify_refresh_token", refreshToken);
+                localStorage.setItem("ethone:cred:spotify:refreshToken", refreshToken);
+              }
             }
           }
         } catch {}

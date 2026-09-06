@@ -177,7 +177,7 @@ async function fetchTrackImages(env, accessToken, trackId) {
 
 export async function getSpotifyNowPlaying(env, userId, clientId) {
   const accessToken = await validAccessToken(env, userId, clientId);
-  const response = await requestExternal(new URL("/v1/me/player/currently-playing", API_ORIGIN), {
+  let response = await requestExternal(new URL("/v1/me/player?additional_types=track,episode", API_ORIGIN), {
     env,
     expectedOrigin: API_ORIGIN,
     service: "spotify",
@@ -186,6 +186,17 @@ export async function getSpotifyNowPlaying(env, userId, clientId) {
     retries: 1,
     maxBytes: 256 * 1024
   });
+  if (!response?.data?.item) {
+    response = await requestExternal(new URL("/v1/me/player/currently-playing?additional_types=track,episode", API_ORIGIN), {
+      env,
+      expectedOrigin: API_ORIGIN,
+      service: "spotify",
+      dedupeKey: `now-playing:${userId}`,
+      headers: { authorization: `Bearer ${accessToken}` },
+      retries: 1,
+      maxBytes: 256 * 1024
+    });
+  }
   const normalized = normalizeTrack(response.data);
   const track = normalized.track;
   if (track && track.covers.length === 0) {

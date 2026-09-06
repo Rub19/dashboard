@@ -458,16 +458,24 @@ export async function pingIntegration(
           // Also check currently playing
           let playingInfo = "En attente de lecture";
           try {
-            const playerRes = await fetch("https://api.spotify.com/v1/me/player/currently-playing", {
+            let playerRes = await fetch("https://api.spotify.com/v1/me/player?additional_types=track,episode", {
               headers: { Authorization: `Bearer ${spotifyToken}` },
             });
+            if (playerRes.status === 204 || !playerRes.ok) {
+              playerRes = await fetch("https://api.spotify.com/v1/me/player/currently-playing?additional_types=track,episode", {
+                headers: { Authorization: `Bearer ${spotifyToken}` },
+              });
+            }
             if (playerRes.status === 200) {
               const current = (await playerRes.json()) as {
                 is_playing?: boolean;
-                item?: { name?: string; artists?: { name: string }[] };
+                item?: { name?: string; artists?: { name: string }[]; show?: { name?: string } };
               };
               if (current?.item) {
-                playingInfo = `Lecture en cours : ${current.item.name} - ${current.item.artists?.map((a) => a.name).join(", ")}`;
+                const artists = Array.isArray(current.item.artists)
+                  ? current.item.artists.map((a) => a.name).join(", ")
+                  : current.item.show?.name || "";
+                playingInfo = `Lecture en cours : ${current.item.name}${artists ? ` - ${artists}` : ""}`;
               }
             }
           } catch {}

@@ -1,3 +1,31 @@
+const v12051_fr: ChangelogEntry = {
+  version: "v1.20.51",
+  date: "2026-09-06",
+  title: "ETHONE Music Engine — Détection Spotify Haute Fidélité, Auto-Refresh PKCE & Résolution Lanyard",
+  items: [
+    "Détection Spotify Multi-Couches : interrogation immédiate de /v1/me/player avec support complet des types additionnels (?additional_types=track,episode) pour la musique et les podcasts.",
+    "Auto-Refresh PKCE Silencieux : rafraîchissement transparent du jeton Spotify en arrière-plan dès expiration (401) via refresh_token sans aucune déconnexion.",
+    "Sauvegarde Automatique des Refresh Tokens : persistance du jeton de rafraîchissement dans localStorage (ethone:refresh_token:spotify) dès l'autorisation OAuth.",
+    "Résolution Immédiate Discord Lanyard : réconciliation directe de l'identifiant Discord (liveLanyardUserId) permettant d'afficher instantanément le morceau joué sur l'application Spotify Desktop ou Mobile sans latence.",
+    "Fallback Dynamique Récemment Joué (/recently-played) : fin de l'état bloqué « Connecté • Prêt pour la lecture » sans pochette — conservation du dernier morceau et de sa pochette en cas de pause.",
+    "Prise en Charge des Contrôles de Lecture & Volume : synchronisation directe du volume et du statut de lecture dans la Dynamic Island et le widget média.",
+  ],
+};
+
+const v12051_en: ChangelogEntry = {
+  version: "v1.20.51",
+  date: "2026-09-06",
+  title: "ETHONE Music Engine — High-Fidelity Spotify Detection, PKCE Auto-Refresh & Lanyard Resolution",
+  items: [
+    "Multi-Layer Spotify Detection: immediate /v1/me/player querying with full ?additional_types=track,episode support covering songs and podcast episodes.",
+    "Seamless PKCE Auto-Refresh: transparent token refresh via refresh_token upon 401 expiration without dropping connection.",
+    "Persistent Refresh Token Storage: automatic preservation of Spotify refresh_token in localStorage upon OAuth callback.",
+    "Immediate Discord Lanyard Resolution: direct ID linkage (liveLanyardUserId) detecting active Spotify Desktop/Mobile playback with 0ms delay.",
+    "Dynamic Recently-Played Fallback: eliminated blank 'Ready for playback' placeholder — smoothly retains last track title, artist and album artwork when paused.",
+    "Hardware Playback & Volume Control: real-time volume and track state synchronization in Dynamic Island and Media widgets.",
+  ],
+};
+
 const v12050_fr: ChangelogEntry = {
   version: "v1.20.50",
   date: "2026-09-06",
@@ -21813,6 +21841,7 @@ CHANGELOG_BY_LANG.en.unshift({
 });
 
 CHANGELOG_BY_LANG.fr.unshift(
+  v12051_fr,
   v12050_fr,
   v12049_fr,
   v12048_fr,
@@ -21821,6 +21850,7 @@ CHANGELOG_BY_LANG.fr.unshift(
   v12045_fr
 );
 CHANGELOG_BY_LANG.en.unshift(
+  v12051_en,
   v12050_en,
   v12049_en,
   v12048_en,

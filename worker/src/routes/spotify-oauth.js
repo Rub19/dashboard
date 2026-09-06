@@ -37,11 +37,18 @@ export async function spotifyOAuthExchangeRoute({ request, env, auth }) {
 }
 
 export async function spotifyNowPlayingRoute({ url, env, auth }) {
-  if (!auth?.userId) throw httpError("AUTH_REQUIRED", 401);
   assertAllowedQuery(url, ["clientId"]);
   const clientId = queryText(url, "clientId", { pattern: PATTERNS.spotifyClientId });
-  const track = await getSpotifyNowPlaying(env, auth.userId, clientId);
-  return { data: track };
+  const userId = auth?.userId || "local";
+  try {
+    const track = await getSpotifyNowPlaying(env, userId, clientId);
+    return { data: track };
+  } catch (err) {
+    if (!auth?.userId) {
+      return { data: { playing: false, track: null } };
+    }
+    throw err;
+  }
 }
 
 export async function spotifyControlRoute({ request, env, auth }) {

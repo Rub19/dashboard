@@ -1,3 +1,139 @@
+const v12050_fr: ChangelogEntry = {
+  version: "v1.20.50",
+  date: "2026-09-06",
+  title: "ETHONE OS & Identity Engine — Résolution Nom Profil, OAuth Discord Serveur & Thème Dyno Rose",
+  items: [
+    "Résolution Immédiate du Nom de Profil : élimination définitive du mot générique « Compte » dans la barre d'état inférieure (StatusBar) et le menu utilisateur (UserProfileDropdown) au profit du vrai pseudonyme (Rub).",
+    "Hook useUserIdentity Synchrone : lecture prioritaire et sans scintillement des objets d'identité complète (ethone:identity:current, ethone:identity:local, @username, profils locaux) dès le cycle initial.",
+    "Protection Anti-Pollution de Stockage : interdiction absolue d'enregistrer des termes par défaut (« Compte », « Invité », etc.) dans localStorage pour préserver l'intégrité de l'identité.",
+    "Route Serveur Discord OAuth Dédiée (/api/discord/exchange) : échange de code d'autorisation Discord de serveur à serveur sur Next.js sans aucun blocage CORS de navigateur.",
+    "Support Multi-Session Worker : prise en compte des sessions locales et invitées sans rejet 401 AUTH_REQUIRED dans le Cloudflare Worker.",
+    "Synchronisation Réactive des Connexions : émission instantanée des événements v8:connection-updated et v8:refresh-connections garantissant que Discord reste marqué « Connecté » sur /connections.",
+    "Nouveau Thème Dyno Rose : intégration d'une identité visuelle inspirée de Dyno avec fond ultra-sombre (#0E1015), en-tête immersif, et accents roses/rouges vifs (#C1234F).",
+  ],
+};
+
+const v12050_en: ChangelogEntry = {
+  version: "v1.20.50",
+  date: "2026-09-06",
+  title: "ETHONE OS & Identity Engine — Profile Name Display Fix, Server Discord OAuth & Dyno Rose Theme",
+  items: [
+    "Immediate Profile Name Resolution: eradicated the generic 'Compte' fallback across the bottom status bar and user profile dropdown in favor of the real display name (Rub).",
+    "Synchronous useUserIdentity Hook: prioritized, flicker-free retrieval of full identity objects (ethone:identity:current, ethone:identity:local, @username, local profiles) upon initial mount.",
+    "Storage Pollution Prevention: strictly prevented generic fallback words ('Compte', 'Guest', etc.) from being written back to user storage keys.",
+    "Dedicated Server-Side Discord OAuth Route (/api/discord/exchange): server-to-server authorization code exchange bypassing browser CORS blocks completely.",
+    "Worker Local Session Support: guest and local browser sessions no longer encounter 401 AUTH_REQUIRED during Discord account linking.",
+    "Reactive Connections Sync: instant broadcast of v8:connection-updated and v8:refresh-connections events keeping Discord marked as 'Connecté' on /connections.",
+    "Dyno Rose Theme Preset: added new high-contrast dark theme inspired by Dyno with pitch-black base (#0E1015), immersive header, and vibrant rose/red accents (#C1234F).",
+  ],
+};
+
+const v12049_fr: ChangelogEntry = {
+  version: "v1.20.49",
+  date: "2026-09-06",
+  title: "Discord Music Engine 2.0 & Salons IA — Streaming Audio Haute Résolution, DLP & Commandes Propriétaire",
+  items: [
+    "Refonte du Moteur Musical Discord : intégration complète de play-dl et libsodium-wrappers pour un streaming audio fluide, sans latence ni coupure depuis YouTube et SoundCloud.",
+    "Souscription Vocale Fiabilisée : attente explicite du statut VoiceConnectionStatus.Ready et synchronisation robuste de l'AudioPlayer avec les salons vocaux.",
+    "Commandes Musicales Étendues : panneau interactif et commandes slash complètes (/play, /skip, /stop, /queue, /pause, /resume, /volume, /np).",
+    "Salons de Discussion IA Dédiés : configuration de salons réservés à l'assistance IA avec injection de contexte et streaming des réponses.",
+    "Protection Anti-Fuite DLP (Data Loss Prevention) : détection et caviardage automatique des tokens Discord, clés API et informations confidentielles dans les interactions IA.",
+    "Personnalités & Humeurs Adaptatives : ajout de modes de personnalité configurables pour le bot (dont le mode décontracté « thon »).",
+    "Contrôles Propriétaire Exclusifs : panneau de maintenance critique réservé exclusivement au créateur (rub19.mailpro@gmail.com) avec vérification Supabase RLS pour redémarrer PM2 et auditer en direct.",
+  ],
+};
+
+const v12049_en: ChangelogEntry = {
+  version: "v1.20.49",
+  date: "2026-09-06",
+  title: "Discord Music Engine 2.0 & AI Channels — Hi-Fi Audio Streaming, DLP Guard & Owner Controls",
+  items: [
+    "Discord Music Engine Overhaul: full integration of play-dl and libsodium-wrappers delivering smooth, zero-latency audio streaming from YouTube and SoundCloud.",
+    "Rock-Solid Voice Subscription: explicit VoiceConnectionStatus.Ready handshake and reliable AudioPlayer dispatch pipeline.",
+    "Complete Music Command Suite: interactive playback panel and slash commands (/play, /skip, /stop, /queue, /pause, /resume, /volume, /np).",
+    "Dedicated AI Chat Channels: isolated AI interaction rooms with prompt context preservation and responsive completions.",
+    "DLP Anti-Leak Security: automated real-time redaction of Discord bot tokens, API keys, and sensitive credentials in AI chat.",
+    "Adaptive Bot Personalities: customizable bot conversation moods including the relaxed 'thon' persona.",
+    "Exclusive Owner Controls: hardened system management commands reserved strictly for rub19.mailpro@gmail.com backed by Supabase RLS.",
+  ],
+};
+
+const v12048_fr: ChangelogEntry = {
+  version: "v1.20.48",
+  date: "2026-09-05",
+  title: "Discord Bot QoL & Internationalisation — Bot Control Center, Support Multilingue (/language) & /help 2.0",
+  items: [
+    "Centre de Contrôle Web Bot (/discord/bot) : télémétrie en temps réel, métriques CPU/RAM, journal d'événements et diagnostics instantanés depuis le dashboard ethone.dev.",
+    "Commande Slash /bot : accès direct depuis Discord vers les modules Web et l'état opérationnel du bot.",
+    "Système Multilingue Universel (/language) : bascule fluide entre Français, Anglais, Espagnol et Allemand avec traductions intégrales de tous les embeds et interactions.",
+    "Refonte Visuelle de la Commande /help : interface multi-pages dynamique avec menu déroulant par catégorie (Musique, Modération, IA, Utilitaires, Système) et boutons d'action rapide.",
+    "Qualité de Vie (QoL) : autocomplétion intelligente des morceaux et commandes, gestion affinée des cooldowns et calcul du ping WebSocket en temps réel.",
+  ],
+};
+
+const v12048_en: ChangelogEntry = {
+  version: "v1.20.48",
+  date: "2026-09-05",
+  title: "Discord Bot QoL & Internationalization — Bot Control Center, Multi-Language (/language) & Interactive /help 2.0",
+  items: [
+    "Web Bot Control Center (/discord/bot): real-time telemetry, live CPU/RAM metrics, event stream, and health diagnostics on ethone.dev.",
+    "Discord /bot Command: direct bridge from Discord chat into web dashboard modules and live status.",
+    "Universal Multi-Language Engine (/language): seamless switching across French, English, Spanish, and German with comprehensive translations for all embeds.",
+    "Interactive /help 2.0 Overhaul: dynamic multi-page modal layout with categorical select menu (Music, Moderation, AI, Utility, System) and quick action buttons.",
+    "Quality of Life Overhaul: smart command and track autocompletion, fine-tuned cooldowns, and live WebSocket latency ping indicator.",
+  ],
+};
+
+const v12047_fr: ChangelogEntry = {
+  version: "v1.20.47",
+  date: "2026-09-05",
+  title: "Disaster Recovery & Architecture Résiliente — Circuit Breaker, Déduplication, Anti-IDOR & SyncEngine 2.0",
+  items: [
+    "Disaster Recovery & Résilience 2.0 : implémentation d'un disjoncteur (Circuit Breaker) protégeant le bot contre les cascades d'erreurs en cas de panne de l'API Discord.",
+    "Déduplication Intelligente des Événements : élimination des exécutions redondantes et traitement idempotent des interactions utilisateur.",
+    "Sécurité Multi-Serveurs & Anti-IDOR : isolation cryptographique et logique stricte des données par serveur avec contrôle strict des frontières de confidentialité.",
+    "Moteur de Synchronisation Bidirectionnelle (SyncEngine 2.0) : synchronisation instantanée et réconciliation des rôles, permissions et salons entre Discord et ETHONE Dashboard.",
+    "Protection Anti-Abus & Rate Limits : limitation automatique du débit sur les commandes lourdes de modération, d'AutoMod et de gestion des membres.",
+  ],
+};
+
+const v12047_en: ChangelogEntry = {
+  version: "v1.20.47",
+  date: "2026-09-05",
+  title: "Disaster Recovery & Resilient Architecture — Circuit Breaker, Deduplication, Anti-IDOR & SyncEngine 2.0",
+  items: [
+    "Disaster Recovery & Resilience 2.0: implemented proactive Circuit Breaker service preventing process crashes during Discord API outages.",
+    "Smart Event Deduplication: idempotency layer filtering redundant gateway events and duplicate user button taps.",
+    "Multi-Tenant Isolation & Anti-IDOR: strict cryptographic separation of guild data and rigorous execution authorization checks.",
+    "Bidirectional SyncEngine 2.0: live state reconciliation for roles, permissions, channels, and members between Discord and ETHONE Dashboard.",
+    "Anti-Abuse Rate Limiting: built-in traffic throttling protecting sensitive moderation, AutoMod, and role assignment endpoints.",
+  ],
+};
+
+const v12046_fr: ChangelogEntry = {
+  version: "v1.20.46",
+  date: "2026-09-05",
+  title: "Discord Server Management & Présence — Centre de Présence 2.0, Diagnostics Serveurs & Formulaires",
+  items: [
+    "Bot Presence & Identity Center 2.0 : gestion dynamique des activités du bot (Playing, Streaming, Listening, Watching, Competing) et planification de rotation de statuts.",
+    "Centre de Gestion des Serveurs 2.0 : diagnostics d'intégrité du serveur, débogueur visuel de permissions et audit logs détaillés.",
+    "Formulaires Interactifs Automatisés : module complet de formulaires (recrutements, partenariats, candidatures staff) avec réceptions et alertes en direct sur le dashboard.",
+    "Gestionnaire d'Événements Communautaires : création, planification et suivi des tournois et soirées communautaires Discord avec notifications automatisées.",
+  ],
+};
+
+const v12046_en: ChangelogEntry = {
+  version: "v1.20.46",
+  date: "2026-09-05",
+  title: "Discord Server Management & Presence — Presence Center 2.0, Server Diagnostics & Forms Engine",
+  items: [
+    "Bot Presence & Identity Center 2.0: dynamic activity customization (Playing, Streaming, Listening, Watching, Competing) with automated schedule rotations.",
+    "Server Management Center 2.0: in-depth guild health diagnostics, visual permission debugger, and structured audit logs.",
+    "Interactive Custom Forms Engine: customizable application and recruitment forms with dashboard submission inbox and notifications.",
+    "Community Events Manager: scheduled community game nights, tournament planning, and automated Discord event alerts.",
+  ],
+};
+
 const v12045_fr: ChangelogEntry = {
   version: "v1.20.45",
   date: "2026-09-04",
@@ -21676,7 +21812,21 @@ CHANGELOG_BY_LANG.en.unshift({
   ],
 });
 
-CHANGELOG_BY_LANG.fr.unshift(v12045_fr);
-CHANGELOG_BY_LANG.en.unshift(v12045_en);
+CHANGELOG_BY_LANG.fr.unshift(
+  v12050_fr,
+  v12049_fr,
+  v12048_fr,
+  v12047_fr,
+  v12046_fr,
+  v12045_fr
+);
+CHANGELOG_BY_LANG.en.unshift(
+  v12050_en,
+  v12049_en,
+  v12048_en,
+  v12047_en,
+  v12046_en,
+  v12045_en
+);
 
 export const CHANGELOG = CHANGELOG_BY_LANG.fr;

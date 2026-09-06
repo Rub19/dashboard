@@ -90,11 +90,9 @@ export class GuildMusicPlayer {
     try {
       this.currentVoiceChannel = { id: channel.id, name: channel.name };
 
-      const existing = getVoiceConnection(this.guildId);
-      if (existing && existing.state.status !== VoiceConnectionStatus.Destroyed) {
-        this.connection = existing;
-      } else {
-        this.connection = joinVoiceChannel({
+      let connection = getVoiceConnection(this.guildId);
+      if (!connection || connection.state.status === VoiceConnectionStatus.Destroyed) {
+        connection = joinVoiceChannel({
           channelId: channel.id,
           guildId: this.guildId,
           adapterCreator: channel.guild.voiceAdapterCreator,
@@ -102,18 +100,18 @@ export class GuildMusicPlayer {
           selfMute: false,
         });
 
-        this.connection.on(VoiceConnectionStatus.Disconnected, async () => {
+        connection.on(VoiceConnectionStatus.Disconnected, async () => {
           try {
             await Promise.race([
-              entersState(this.connection!, VoiceConnectionStatus.Signalling, 5_000),
-              entersState(this.connection!, VoiceConnectionStatus.Connecting, 5_000),
+              entersState(connection!, VoiceConnectionStatus.Signalling, 5_000),
+              entersState(connection!, VoiceConnectionStatus.Connecting, 5_000),
             ]);
           } catch {
             this.disconnect();
           }
         });
 
-        this.connection.on(VoiceConnectionStatus.Destroyed, () => {
+        connection.on(VoiceConnectionStatus.Destroyed, () => {
           this.connection = null;
           this.status = 'IDLE';
           this.currentVoiceChannel = null;
@@ -121,7 +119,21 @@ export class GuildMusicPlayer {
         });
       }
 
+      this.connection = connection;
       this.initPlayer();
+
+      // Wait for VoiceConnection to reach Ready state to ensure UDP audio socket is open
+      try {
+        await entersState(this.connection, VoiceConnectionStatus.Ready, 15_000);
+      } catch (readyErr) {
+        logger.warn(`[MusicPlayer] Attente connexion Ready expirée (guild ${this.guildId}) :`, readyErr);
+      }
+
+      // Re-subscribe player whenever connecting or channel changes
+      if (this.connection && this.player) {
+        this.connection.subscribe(this.player);
+      }
+
       this.cancelDisconnectTimer();
       this.emitState();
       return true;
@@ -132,45 +144,45 @@ export class GuildMusicPlayer {
   }
 
   private initPlayer(): void {
-    if (this.player) return;
+    if (!this.player) {
+      this.player = createAudioPlayer({
+        behaviors: {
+          noSubscriber: NoSubscriberBehavior.Play,
+        },
+      });
 
-    this.player = createAudioPlayer({
-      behaviors: {
-        noSubscriber: NoSubscriberBehavior.Play,
-      },
-    });
+      this.player.on(AudioPlayerStatus.Playing, () => {
+        this.status = 'PLAYING';
+        this.playbackStartTime = Date.now();
+        this.cancelDisconnectTimer();
+        this.emitState();
+      });
 
-    this.player.on(AudioPlayerStatus.Playing, () => {
-      this.status = 'PLAYING';
-      this.playbackStartTime = Date.now();
-      this.cancelDisconnectTimer();
-      this.emitState();
-    });
+      this.player.on(AudioPlayerStatus.Paused, () => {
+        this.status = 'PAUSED';
+        if (this.playbackStartTime) {
+          this.pausedAtPosition += Math.floor((Date.now() - this.playbackStartTime) / 1000);
+          this.playbackStartTime = null;
+        }
+        this.emitState();
+      });
 
-    this.player.on(AudioPlayerStatus.Paused, () => {
-      this.status = 'PAUSED';
-      if (this.playbackStartTime) {
-        this.pausedAtPosition += Math.floor((Date.now() - this.playbackStartTime) / 1000);
-        this.playbackStartTime = null;
-      }
-      this.emitState();
-    });
+      this.player.on(AudioPlayerStatus.Buffering, () => {
+        this.status = 'BUFFERING';
+        this.emitState();
+      });
 
-    this.player.on(AudioPlayerStatus.Buffering, () => {
-      this.status = 'BUFFERING';
-      this.emitState();
-    });
+      this.player.on(AudioPlayerStatus.Idle, () => {
+        this.handleTrackEnd();
+      });
 
-    this.player.on(AudioPlayerStatus.Idle, () => {
-      this.handleTrackEnd();
-    });
+      this.player.on('error', (err) => {
+        logger.error(`Erreur AudioPlayer guild ${this.guildId} :`, err);
+        this.handleTrackEnd();
+      });
+    }
 
-    this.player.on('error', (err) => {
-      logger.error(`Erreur AudioPlayer guild ${this.guildId} :`, err);
-      this.handleTrackEnd();
-    });
-
-    if (this.connection) {
+    if (this.connection && this.player) {
       this.connection.subscribe(this.player);
     }
   }
@@ -182,18 +194,36 @@ export class GuildMusicPlayer {
       this.pausedAtPosition = 0;
       this.playbackStartTime = null;
 
-      try {
-        const resource = await musicProviderManager.createAudioResource(track);
-        if (resource && this.player) {
-          if (resource.volume) {
-            resource.volume.setVolume(this.muted ? 0 : this.volume / 100);
+      // Ensure voice connection is ready and player is subscribed
+      if (this.connection) {
+        if (this.connection.state.status !== VoiceConnectionStatus.Ready) {
+          try {
+            await entersState(this.connection, VoiceConnectionStatus.Ready, 10_000);
+          } catch (readyErr) {
+            logger.warn(`[MusicPlayer] Attente connexion Ready avant lecture expirée :`, readyErr);
           }
-          this.player.play(resource);
         }
-      } catch (audioErr) {
-        logger.warn(`[MusicPlayer] Audio stream playback notice :`, audioErr);
+        if (this.player) {
+          this.connection.subscribe(this.player);
+        }
       }
 
+      const resource = await musicProviderManager.createAudioResource(track);
+      if (!resource || !this.player) {
+        logger.error(`[MusicPlayer] Impossible de créer la ressource audio pour "${track.title}"`);
+        this.handleTrackEnd();
+        return false;
+      }
+
+      if (resource.volume) {
+        resource.volume.setVolume(this.muted ? 0 : this.volume / 100);
+      }
+
+      resource.playStream.on('error', (streamErr) => {
+        logger.error(`[MusicPlayer] Erreur flux playStream pour "${track.title}" :`, streamErr);
+      });
+
+      this.player.play(resource);
       musicPersistence.addHistory(this.guildId, track);
       this.status = 'PLAYING';
       this.playbackStartTime = Date.now();

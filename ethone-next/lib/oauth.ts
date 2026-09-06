@@ -182,13 +182,35 @@ export async function exchangeCode(
     }
   }
 
-  // 2. Direct token exchange for Discord
+  // 2. Token exchange for Discord
   if (provider === "discord") {
     const clientSecret =
       (typeof token === "string" ? token : token?.clientSecret) ||
       (typeof window !== "undefined" ? localStorage.getItem("ethone:cred:discord:clientSecret") : null) ||
       "9MiLY0V9XQ36CTiQHFK4n1hQigmSRO3w";
 
+    // 2a. Internal Next.js server route (server-to-server, bypasses browser CORS & handles local sessions)
+    try {
+      const internalRes = await fetch("/api/discord/exchange", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({
+          code,
+          clientId,
+          redirectUri: REDIRECT_URI,
+          clientSecret,
+        }),
+      });
+
+      if (internalRes.ok) {
+        const internalData = await internalRes.json();
+        if (internalData?.ok && internalData?.data) {
+          return internalData;
+        }
+      }
+    } catch {}
+
+    // 2b. Direct browser fetch fallback (if same origin or permitted)
     if (clientSecret) {
       try {
         const bodyParams = new URLSearchParams({

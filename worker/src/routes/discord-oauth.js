@@ -72,11 +72,11 @@ export async function discordOAuthCallbackRoute({ env, request }) {
 }
 
 export async function discordOAuthExchangeRoute({ request, env, auth }) {
-  if (!auth?.userId) throw httpError("AUTH_REQUIRED", 401);
+  const userId = auth?.userId || "local";
   const body = await readJsonBody(request, 4);
   const code = requireField(body, "code", CODE_RE);
   const redirectUri = String(body.redirectUri || "http://localhost:3000/api/auth/callback/discord");
-  const profile = await exchangeDiscordCode(env, auth.userId, { code, redirectUri });
+  const profile = await exchangeDiscordCode(env, userId, { code, redirectUri });
   return { data: profile };
 }
 

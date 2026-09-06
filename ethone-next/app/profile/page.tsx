@@ -116,7 +116,7 @@ export default function ProfilePage() {
   useEffect(() => {
     setForm((prev) => {
       const nextDisplayName = !userEditedRef.current.displayName
-        ? (identity?.display_name || profile?.display_name || (userIdentity.displayName !== "Compte" ? userIdentity.displayName : "") || prev.displayName || "")
+        ? (identity?.display_name || profile?.display_name || (userIdentity.displayName && userIdentity.displayName !== "Compte" && userIdentity.displayName !== "Personnel" ? userIdentity.displayName : "") || prev.displayName || "")
         : prev.displayName;
       const nextUsername = !userEditedRef.current.username
         ? (identity?.username || profile?.username || prev.username || "")

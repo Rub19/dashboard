@@ -123,6 +123,13 @@ function saveLocalIdentity(identity: EthoneIdentity, userId?: string | null) {
       localStorage.setItem("ethone:user:frame", identity.avatar_frame_id);
       localStorage.setItem("ethone_user_frame:local", identity.avatar_frame_id);
     }
+
+    window.dispatchEvent(
+      new CustomEvent("ethone:identity:update", {
+        detail: identity,
+      })
+    );
+    window.dispatchEvent(new Event("storage"));
   } catch {}
 }
 

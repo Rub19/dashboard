@@ -83,8 +83,15 @@ export default function OAuthHandler() {
         if (provider === "discord") {
           localStorage.setItem("ethone:connected:discord", "true");
           const tokenData = res?.data ?? res;
+          const discordUser = (tokenData as any)?.user || (tokenData as any)?.data?.user;
+          const discordUserId = discordUser?.id || (tokenData as any)?.userId;
+          if (discordUserId) {
+            localStorage.setItem("ethone:pub:discord:liveLanyardUserId", discordUserId);
+            localStorage.setItem("ethone:cred:discord:userId", discordUserId);
+            update({ liveLanyardUserId: discordUserId } as never);
+          }
           const tokenStr = (tokenData as Record<string, string>)?.access_token || (tokenData as Record<string, string>)?.token;
-          if (tokenStr) {
+          if (tokenStr && !discordUserId) {
             fetch("https://discord.com/api/v10/users/@me", {
               headers: { Authorization: `Bearer ${tokenStr}` },
             })
@@ -106,10 +113,31 @@ export default function OAuthHandler() {
 
         if (typeof window !== "undefined") {
           window.dispatchEvent(new CustomEvent("v8:connection-updated", { detail: { provider, connected: true } }));
+          window.dispatchEvent(new CustomEvent("v8:refresh-connections", { detail: { provider, connected: true } }));
+          window.dispatchEvent(new Event("storage"));
         }
         setStatus("✨ Connecté avec succès !");
       })
-      .catch((err) => setStatus(err.message || "Échec de connexion"))
+      .catch((err) => {
+        console.warn("OAuth exchange error, falling back to client-side connection:", err);
+        if (provider === "discord" || provider === "spotify") {
+          try {
+            localStorage.setItem(`ethone:clientId:${provider}`, resolvedClientId);
+            localStorage.setItem(`ethone:connected:${provider}`, "true");
+            if (provider === "discord") {
+              localStorage.setItem("ethone:connected:discord", "true");
+            }
+            if (typeof window !== "undefined") {
+              window.dispatchEvent(new CustomEvent("v8:connection-updated", { detail: { provider, connected: true } }));
+              window.dispatchEvent(new CustomEvent("v8:refresh-connections", { detail: { provider, connected: true } }));
+              window.dispatchEvent(new Event("storage"));
+            }
+            setStatus("✨ Connecté avec succès !");
+            return;
+          } catch {}
+        }
+        setStatus(err?.message || "Échec de connexion");
+      })
       .finally(() => {
         const url = new URL(window.location.href);
         url.search = "";

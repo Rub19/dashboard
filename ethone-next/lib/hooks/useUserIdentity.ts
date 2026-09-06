@@ -55,69 +55,157 @@ function firstNonGeneric(...names: Array<unknown>): string | undefined {
   }
 }
 
+export function resolveStoredDisplayName(userId?: string | null): string {
+  if (typeof window === "undefined") return "";
+  const effectiveId = userId || "local";
+
+  // 1. Try parsed identity objects (authoritative full identity)
+  const identityKeys = [
+    `ethone:identity:${effectiveId}`,
+    "ethone:identity:current",
+    "ethone:identity:local",
+  ];
+  for (const k of identityKeys) {
+    try {
+      const raw = localStorage.getItem(k);
+      if (raw) {
+        const parsed = JSON.parse(raw);
+        if (parsed && typeof parsed === "object") {
+          const dn = parsed.display_name || parsed.displayName;
+          if (dn && !isGenericDisplayName(dn)) return String(dn).trim();
+          const un = parsed.username;
+          if (un && !isGenericDisplayName(un)) return String(un).trim();
+        }
+      }
+    } catch {}
+  }
+
+  // 2. Try direct individual keys
+  const directKeys = [
+    userId ? `ethone_user_name:${userId}` : null,
+    userId ? `ethone_user_username:${userId}` : null,
+    "ethone_user_name:local",
+    "ethone_user_username:local",
+    "ethone:user_name",
+    "ethone:user:name",
+    "ethone:user:username",
+    "ethone_user_name:guest",
+    "ethone_active_profile_name",
+  ];
+  for (const k of directKeys) {
+    if (!k) continue;
+    try {
+      const val = localStorage.getItem(k);
+      if (val && !isGenericDisplayName(val)) return val.trim();
+    } catch {}
+  }
+
+  // 3. Try ethone_local_profiles
+  try {
+    const rawProfiles = localStorage.getItem("ethone_local_profiles");
+    if (rawProfiles) {
+      const parsed = JSON.parse(rawProfiles);
+      if (Array.isArray(parsed) && parsed.length > 0) {
+        const activeId = localStorage.getItem("ethone_active_profile_id");
+        const profile = (parsed as Array<{ id?: string; display_name?: string; displayName?: string; name?: string }>).find((p) => p.id === activeId) || parsed[0];
+        const name = profile?.display_name || profile?.displayName || profile?.name;
+        if (name && !isGenericDisplayName(name)) return String(name).trim();
+      }
+    }
+  } catch {}
+
+  return "";
+}
+
+export function resolveStoredAvatar(userId?: string | null): string {
+  if (typeof window === "undefined") return "";
+  const effectiveId = userId || "local";
+
+  // 1. Try parsed identity objects
+  const identityKeys = [
+    `ethone:identity:${effectiveId}`,
+    "ethone:identity:current",
+    "ethone:identity:local",
+  ];
+  for (const k of identityKeys) {
+    try {
+      const raw = localStorage.getItem(k);
+      if (raw) {
+        const parsed = JSON.parse(raw);
+        if (parsed && typeof parsed === "object") {
+          const av = parsed.avatar_url || parsed.avatarUrl;
+          if (av && !isExternalOAuthAvatar(av)) return String(av).trim();
+        }
+      }
+    } catch {}
+  }
+
+  // 2. Try direct individual keys
+  const directKeys = [
+    userId ? `ethone_custom_avatar:${userId}` : null,
+    userId ? `ethone:custom:avatar:${userId}` : null,
+    userId ? `ethone_user_avatar:${userId}` : null,
+    "ethone_custom_avatar:local",
+    "ethone:custom:avatar:local",
+    "ethone_user_avatar:local",
+    "ethone_custom_avatar",
+    "ethone:custom:avatar",
+    "ethone_user_avatar",
+  ];
+  for (const k of directKeys) {
+    if (!k) continue;
+    try {
+      const val = localStorage.getItem(k);
+      if (val && !isExternalOAuthAvatar(val)) return val.trim();
+    } catch {}
+  }
+
+  return "";
+}
+
 export function useUserIdentity(): UserIdentity {
   const { user } = useAuth();
   const { profile: publicProfile } = useProfile();
 
-  const [cachedName, setCachedName] = useState<string>("");
-  const [cachedAvatar, setCachedAvatar] = useState<string>("");
-
   const userId = user?.id;
   const effectiveUserId = userId || "local";
 
+  const [cachedName, setCachedName] = useState<string>(() => resolveStoredDisplayName(userId));
+  const [cachedAvatar, setCachedAvatar] = useState<string>(() => resolveStoredAvatar(userId));
+
   useEffect(() => {
-    if (typeof window !== "undefined") {
+    if (typeof window === "undefined") return;
+
+    const updateFromStorage = (e?: Event) => {
       try {
-        const updateFromStorage = () => {
-          const savedName =
-            (userId ? localStorage.getItem(`ethone_user_name:${userId}`) : null) ||
-            localStorage.getItem(`ethone_user_name:local`) ||
-            localStorage.getItem(`ethone_user_name:guest`) ||
-            localStorage.getItem(`ethone:user_name`) ||
-            localStorage.getItem(`ethone:user:name`);
-
-          const savedAvatar =
-            (userId
-              ? localStorage.getItem(`ethone_custom_avatar:${userId}`) ||
-                localStorage.getItem(`ethone:custom:avatar:${userId}`) ||
-                localStorage.getItem(`ethone_user_avatar:${userId}`)
-              : null) ||
-            localStorage.getItem(`ethone_custom_avatar:local`) ||
-            localStorage.getItem(`ethone:custom:avatar:local`) ||
-            localStorage.getItem(`ethone_user_avatar:local`) ||
-            localStorage.getItem(`ethone_custom_avatar`) ||
-            localStorage.getItem(`ethone:custom:avatar`) ||
-            localStorage.getItem(`ethone_user_avatar`);
-
-          if (savedName && savedName.trim() && savedName.toLowerCase() !== "invité" && savedName.toLowerCase() !== "guest") {
-            setCachedName(savedName.trim());
-          } else {
-            setCachedName("");
+        if (e && (e as CustomEvent).detail) {
+          const d = (e as CustomEvent).detail;
+          const detailName = d.display_name || d.displayName || d.username;
+          if (detailName && !isGenericDisplayName(detailName)) {
+            setCachedName(String(detailName).trim());
           }
-
-          if (savedAvatar) {
-            if (isExternalOAuthAvatar(savedAvatar)) {
-              setCachedAvatar("");
-            } else {
-              setCachedAvatar(savedAvatar);
-            }
-          } else {
-            setCachedAvatar("");
+          const detailAvatar = d.avatar_url || d.avatarUrl;
+          if (detailAvatar && !isExternalOAuthAvatar(detailAvatar)) {
+            setCachedAvatar(String(detailAvatar).trim());
           }
-        };
+        }
 
-        updateFromStorage();
-        window.addEventListener("ethone:identity:update", updateFromStorage);
-        window.addEventListener("storage", updateFromStorage);
+        const name = resolveStoredDisplayName(userId);
+        if (name) setCachedName(name);
 
-        return () => {
-          window.removeEventListener("ethone:identity:update", updateFromStorage);
-          window.removeEventListener("storage", updateFromStorage);
-        };
-      } catch {
-        // ignore storage restrictions
-      }
-    }
+        const avatar = resolveStoredAvatar(userId);
+        if (avatar) setCachedAvatar(avatar);
+      } catch {}
+    };
+
+    updateFromStorage();
+    window.addEventListener("ethone:identity:update", updateFromStorage);
+    window.addEventListener("storage", updateFromStorage);
+
+    return () => {
+      window.removeEventListener("ethone:identity:update", updateFromStorage);
+      window.removeEventListener("storage", updateFromStorage);
+    };
   }, [userId, user?.email]);
 
   const meta = useMemo(() => (user?.user_metadata || {}) as Record<string, unknown>, [user?.user_metadata]);
@@ -148,7 +236,7 @@ export function useUserIdentity(): UserIdentity {
       publicProfName ||
       metaName ||
       emailName ||
-      "Compte";
+      "Personnel";
 
     return candidate;
   }, [user, publicProfile?.display_name, publicProfile?.username, customFromMeta, cachedName]);
@@ -166,7 +254,7 @@ export function useUserIdentity(): UserIdentity {
   useEffect(() => {
     if (typeof window !== "undefined") {
       try {
-        if (displayName && displayName !== "Invité" && displayName !== "Utilisateur") {
+        if (displayName && !isGenericDisplayName(displayName)) {
           localStorage.setItem(`ethone_user_name:${effectiveUserId}`, displayName);
           localStorage.setItem(`ethone:user_name`, displayName);
         }

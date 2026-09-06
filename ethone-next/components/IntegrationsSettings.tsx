@@ -86,18 +86,33 @@ export default function IntegrationsSettings() {
           map[row.provider] = row.connected;
         });
 
-        // Ensure Discord is disconnected if it hasn't been freshly connected with the new bot
-        if (typeof window !== "undefined" && localStorage.getItem(DISCORD_REVOCATION_KEY) === "true") {
-          const isFreshlyConnected = localStorage.getItem("ethone:connected:discord") === "true";
-          if (!isFreshlyConnected) {
-            map.discord = false;
+        // Ensure connections saved locally are preserved and authoritative for client-side integrations
+        if (typeof window !== "undefined") {
+          INTEGRATIONS.forEach((i) => {
+            if (localStorage.getItem(`ethone:connected:${i.id}`) === "true") {
+              map[i.id] = true;
+            }
+          });
+          if (localStorage.getItem(DISCORD_REVOCATION_KEY) === "true") {
+            const isFreshlyConnected = localStorage.getItem("ethone:connected:discord") === "true";
+            if (!isFreshlyConnected) {
+              map.discord = false;
+            }
           }
         }
 
         setConnected(map);
       })
       .catch(() => {
-        setConnected({});
+        const map: Record<string, boolean> = {};
+        if (typeof window !== "undefined") {
+          INTEGRATIONS.forEach((i) => {
+            if (localStorage.getItem(`ethone:connected:${i.id}`) === "true") {
+              map[i.id] = true;
+            }
+          });
+        }
+        setConnected(map);
       })
       .finally(() => setLoading(false));
   }, [i18n]);
@@ -171,8 +186,38 @@ export default function IntegrationsSettings() {
     const handleTestAllEvent = () => {
       void testAll();
     };
+    const handleConnectionUpdated = (e: Event) => {
+      const detail = (e as CustomEvent)?.detail;
+      if (detail?.provider) {
+        setConnected((prev) => ({
+          ...prev,
+          [detail.provider]: detail.connected !== false,
+        }));
+      }
+      if (typeof window !== "undefined") {
+        setConnected((prev) => {
+          const next = { ...prev };
+          INTEGRATIONS.forEach((i) => {
+            if (localStorage.getItem(`ethone:connected:${i.id}`) === "true") {
+              next[i.id] = true;
+            }
+          });
+          return next;
+        });
+      }
+    };
+
     window.addEventListener("v8:test-all-connections", handleTestAllEvent);
-    return () => window.removeEventListener("v8:test-all-connections", handleTestAllEvent);
+    window.addEventListener("v8:connection-updated", handleConnectionUpdated);
+    window.addEventListener("v8:refresh-connections", handleConnectionUpdated);
+    window.addEventListener("storage", handleConnectionUpdated);
+
+    return () => {
+      window.removeEventListener("v8:test-all-connections", handleTestAllEvent);
+      window.removeEventListener("v8:connection-updated", handleConnectionUpdated);
+      window.removeEventListener("v8:refresh-connections", handleConnectionUpdated);
+      window.removeEventListener("storage", handleConnectionUpdated);
+    };
   }, []);
 
   const testAll = useCallback(async () => {

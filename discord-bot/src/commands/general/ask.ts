@@ -82,11 +82,12 @@ export const askCommand: Command = {
         ctx.guild?.name || 'Serveur Discord'
       );
 
-      const completion = await AIProviderService.generate({
+      const completion = await AIProviderService.generateWithIntent({
         settings,
-        systemPrompt,
+        baseSystemPrompt: systemPrompt,
         messages: [{ role: 'user', content: question.trim(), timestamp: new Date().toISOString() }],
         knowledgeContext: knowledge.contextText,
+        history: [],
       });
 
       const embed = DiscordAiPanel.buildResponseEmbed({
@@ -96,7 +97,10 @@ export const askCommand: Command = {
         userTag: ctx.author?.username || ctx.interaction?.user?.username || 'Membre',
       });
 
-      const actionRow = DiscordAiPanel.buildActionRow(`cmd-${Date.now()}`);
+      const actionRow = DiscordAiPanel.buildActionsForIntent(
+        `cmd-${Date.now()}`,
+        completion.intent ?? 'informational'
+      );
 
       await ctx.editReply({
         embeds: [embed],

@@ -9,6 +9,7 @@ import { AISettings } from '../types/index.js';
 import { aiRepository } from '../storage/aiRepository.js';
 import { AIToolService } from '../services/aiToolService.js';
 import { logger } from '../../../utils/logger.js';
+import type { IntentCategory } from '../services/intentTypes.js';
 
 export class DiscordAiPanel {
   /**
@@ -47,31 +48,119 @@ export class DiscordAiPanel {
   }
 
   /**
-   * Construit les boutons d'actions et de feedback sous la réponse
+   * Construit les boutons selon l'intent détecté.
+   *
+   * Prompt #18 §17-20 :
+   * - Aucune action par défaut systématique.
+   * - Message de conversation courte : pas de boutons support.
+   * - Support : ouvrir ticket + diagnostiquer.
+   * - Action : confirmer/annuler.
+   * - Search : ouvrir / voir plus.
+   */
+  public static buildActionsForIntent(
+    messageId: string,
+    intent: IntentCategory = 'informational'
+  ): ActionRowBuilder<ButtonBuilder> {
+    const row = new ActionRowBuilder<ButtonBuilder>();
+
+    const add = (...buttons: ButtonBuilder[]) => {
+      row.addComponents(...buttons);
+      return row;
+    };
+
+    switch (intent) {
+      case 'conversation':
+      case 'humor':
+      case 'short_reply':
+        return add(
+          new ButtonBuilder()
+            .setCustomId(`ai_helpful:${messageId}`)
+            .setLabel('Utile')
+            .setEmoji('👍')
+            .setStyle(ButtonStyle.Secondary),
+          new ButtonBuilder()
+            .setCustomId(`ai_unhelpful:${messageId}`)
+            .setLabel('Pas utile')
+            .setEmoji('👎')
+            .setStyle(ButtonStyle.Secondary)
+        );
+      case 'informational':
+      case 'ethone_info':
+        return add(
+          new ButtonBuilder()
+            .setCustomId(`ai_helpful:${messageId}`)
+            .setLabel('Utile')
+            .setEmoji('👍')
+            .setStyle(ButtonStyle.Secondary),
+          new ButtonBuilder()
+            .setCustomId(`ai_unhelpful:${messageId}`)
+            .setLabel('Pas utile')
+            .setEmoji('👎')
+            .setStyle(ButtonStyle.Secondary),
+          new ButtonBuilder()
+            .setCustomId(`ai_summarize:${messageId}`)
+            .setLabel('Résumer')
+            .setEmoji('📝')
+            .setStyle(ButtonStyle.Secondary)
+        );
+      case 'support':
+        return add(
+          new ButtonBuilder()
+            .setCustomId(`ai_ticket:${messageId}`)
+            .setLabel('Ouvrir un Ticket')
+            .setEmoji('🎫')
+            .setStyle(ButtonStyle.Primary),
+          new ButtonBuilder()
+            .setCustomId(`ai_diagnose:${messageId}`)
+            .setLabel('Diagnostiquer')
+            .setEmoji('🔧')
+            .setStyle(ButtonStyle.Secondary)
+        );
+      case 'action':
+        return add(
+          new ButtonBuilder()
+            .setCustomId(`ai_confirm_action:${messageId}`)
+            .setLabel('Confirmer')
+            .setEmoji('✅')
+            .setStyle(ButtonStyle.Success),
+          new ButtonBuilder()
+            .setCustomId(`ai_cancel_action:${messageId}`)
+            .setLabel('Annuler')
+            .setEmoji('❌')
+            .setStyle(ButtonStyle.Secondary)
+        );
+      case 'search':
+        return add(
+          new ButtonBuilder()
+            .setCustomId(`ai_open_result:${messageId}`)
+            .setLabel('Ouvrir')
+            .setEmoji('📂')
+            .setStyle(ButtonStyle.Primary),
+          new ButtonBuilder()
+            .setCustomId(`ai_summarize:${messageId}`)
+            .setLabel('Voir plus')
+            .setEmoji('➡️')
+            .setStyle(ButtonStyle.Secondary)
+        );
+      case 'clarification':
+      default:
+        return add(
+          new ButtonBuilder()
+            .setCustomId(`ai_helpful:${messageId}`)
+            .setLabel('Utile')
+            .setEmoji('👍')
+            .setStyle(ButtonStyle.Secondary)
+        );
+    }
+  }
+
+  /**
+   * Compatibilité rétroactive avec le code existant.
+   * Le project peut toujours appeler `buildActionRow()` si besoin, mais le flux
+   * moderne passe par `buildActionsForIntent()`.
    */
   public static buildActionRow(messageId: string): ActionRowBuilder<ButtonBuilder> {
-    return new ActionRowBuilder<ButtonBuilder>().addComponents(
-      new ButtonBuilder()
-        .setCustomId(`ai_helpful:${messageId}`)
-        .setLabel('Utile')
-        .setEmoji('👍')
-        .setStyle(ButtonStyle.Secondary),
-      new ButtonBuilder()
-        .setCustomId(`ai_unhelpful:${messageId}`)
-        .setLabel('Pas utile')
-        .setEmoji('👎')
-        .setStyle(ButtonStyle.Secondary),
-      new ButtonBuilder()
-        .setCustomId(`ai_ticket:${messageId}`)
-        .setLabel('Ouvrir un Ticket')
-        .setEmoji('🎫')
-        .setStyle(ButtonStyle.Primary),
-      new ButtonBuilder()
-        .setCustomId(`ai_summarize:${messageId}`)
-        .setLabel('Résumer')
-        .setEmoji('📝')
-        .setStyle(ButtonStyle.Secondary)
-    );
+    return this.buildActionsForIntent(messageId, 'informational');
   }
 
   /**

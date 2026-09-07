@@ -1,5 +1,7 @@
 import { AIMessage, AISettings } from '../types/index.js';
 import { logger } from '../../../utils/logger.js';
+import type { IntentResult } from './intentTypes.js';
+import { detectIntent, pickShortReply } from './intentDetector.js';
 
 export interface GenerateCompletionParams {
   settings: AISettings;
@@ -8,16 +10,35 @@ export interface GenerateCompletionParams {
   knowledgeContext?: string;
 }
 
+export interface GenerateWithIntentParams {
+  settings: AISettings;
+  baseSystemPrompt: string;
+  messages: AIMessage[];
+  knowledgeContext?: string;
+  history?: Array<{ role: 'user' | 'assistant'; content: string }>;
+  /** Active le fallback LLM (Gemini Flash / Llama 8B) si la confiance regex est basse */
+  llmClassifier?: (text: string, lang: 'fr' | 'en' | 'es' | 'de') => Promise<{ intent: IntentResult['intent']; confidence: number } | null>;
+}
+
 export interface AICompletionResult {
   text: string;
   sourcesUsed: string[];
   tokensUsed: number;
   model: string;
+  /** Intent détecté (Prompt #18 §34 — réponse structurée) */
+  intent?: IntentResult['intent'];
+  /** Confiance 0..1 */
+  intentConfidence?: number;
+  /** Actions contextuelles à proposer (Prompt #18 §21) */
+  suggestedActions?: string[];
 }
 
 export class AIProviderService {
   /**
-   * Génère une complétion via le provider configuré ou le moteur contextuel interne
+   * Génère une complétion via le provider configuré ou le moteur contextuel interne.
+   *
+   * DEPRECATED : préférer `generateWithIntent()` (Prompt #18). Conservé pour
+   * rétrocompatibilité avec les call-sites existants (tests playground, etc.).
    */
   public static async generate(params: GenerateCompletionParams): Promise<AICompletionResult> {
     const { settings, systemPrompt, messages, knowledgeContext = '' } = params;
@@ -233,11 +254,13 @@ export class AIProviderService {
       sourcesUsed.push('Base de connaissances du serveur');
       answer = `D'après nos documents internes :\n\n${knowledgeContext.split('\n').filter((l) => l.trim() && !l.startsWith('###') && !l.startsWith('---')).slice(0, 4).join('\n')}\n\nN'hésitez pas à ouvrir un ticket si vous avez besoin de précisions supplémentaires !`;
     }
-    // 8. Si strict et aucune information
+    // 8. Si strict et aucune information — message court, pas de template générique
     else if (isStrict) {
-      answer = `Je ne dispose pas de suffisamment d'informations vérifiées dans la base de connaissances du serveur pour répondre précisément à cette question. N'hésitez pas à demander de l'aide à un modérateur ou à ouvrir un ticket de support !`;
-    } else {
-      answer = `Je suis là pour vous aider ! Pourriez-vous préciser votre question ? Je peux notamment vous renseigner sur le fonctionnement du serveur, les grades disponibles, les règles à respecter ou vous mettre en relation avec le support.`;
+      answer = `Je n'ai pas d'information vérifiée sur ce sujet dans la base du serveur. Tu peux préciser ta question ou ouvrir un ticket si tu veux qu'un modérateur t'aide.`;
+    }
+    // 9. Cas par défaut — fallback court non-support (Prompt #18 §5, §25)
+    else {
+      answer = `Hmm, je ne suis pas sûr de bien saisir. Tu peux reformuler ou préciser ce que tu attends ?`;
     }
 
     return {
@@ -246,5 +269,125 @@ export class AIProviderService {
       tokensUsed: Math.ceil(answer.length / 4) + 40,
       model: 'builtin-ethone-v2',
     };
+  }
+
+  /**
+   * Prompt #18 — Génération contextuelle avec détection d'intention préalable.
+   *
+   * Flow :
+   *   1. `detectIntent()` (regex + LLM fallback si activé) sur le dernier message user
+   *   2. Si intent trivial (conversation/humor/short_reply) + confiance haute :
+   *      → utilise `pickShortReply()` au lieu d'appeler le LLM
+   *   3. Sinon : enrichit le system prompt avec les consignes d'intent, appelle le LLM,
+   *      puis renvoie la réponse structurée { text, intent, confidence, suggestedActions }
+   *
+   * Avantages :
+   *   - Pas de réponse générique support pour "comment tu vas ?"
+   *   - Pas d'appel LLM inutile pour les salutations (économise tokens)
+   *   - Contexte multi-tour respecté via `history`
+   *   - Le système ne prétend jamais avoir effectué une action (Prompt #18 §30)
+   */
+  public static async generateWithIntent(
+    params: GenerateWithIntentParams
+  ): Promise<AICompletionResult> {
+    const { settings, baseSystemPrompt, messages, knowledgeContext = '', history, llmClassifier } = params;
+    const lastUserMessage = messages.filter((m) => m.role === 'user').slice(-1)[0]?.content || '';
+
+    // 1. Détection d'intent (hybride regex + LLM)
+    const detected = await detectIntent(
+      lastUserMessage,
+      history || messages
+        .filter((m) => m.role !== 'system')
+        .map((m) => ({ role: m.role as 'user' | 'assistant', content: m.content })),
+      { enabled: !!llmClassifier, classify: llmClassifier }
+    );
+
+    // 2. Fast-track : intents triviaux avec confiance haute → réponse courte locale
+    const TRIVIAL_INTENTS = ['conversation', 'humor', 'short_reply'] as const;
+    if (
+      (TRIVIAL_INTENTS as readonly string[]).includes(detected.intent) &&
+      detected.confidence >= 0.8
+    ) {
+      const shortText = pickShortReply(detected.intent, detected.language);
+      if (shortText) {
+        return {
+          text: shortText,
+          sourcesUsed: [],
+          tokensUsed: Math.ceil(shortText.length / 4),
+          model: 'builtin-ethent-v3',
+          intent: detected.intent,
+          intentConfidence: detected.confidence,
+          suggestedActions: [],
+        };
+      }
+    }
+
+    // 3. Enrichir le system prompt avec la conscience d'intent (Prompt #18 §6)
+    const intentAwareSystemPrompt =
+      `${baseSystemPrompt}\n\n` +
+      `### CONSCIENCE D'INTENTION (Prompt #18)\n` +
+      `- Intent détecté : ${detected.intent}\n` +
+      `- Confiance : ${detected.confidence.toFixed(2)}\n` +
+      `- Langue détectée : ${detected.language}\n` +
+      (detected.entities.serviceHint
+        ? `- Service évoqué : ${detected.entities.serviceHint}\n`
+        : '') +
+      (detected.entities.actionVerb
+        ? `- Verbe d'action : ${detected.entities.actionVerb}\n`
+        : '') +
+      `\n` +
+      `Règles strictes selon l'intent :\n` +
+      `- conversation / humor / short_reply : réponse COURTE et naturelle (1-2 phrases max). ` +
+      `Ne JAMAIS proposer une liste de fonctionnalités, de boutons support, ou un template générique d'aide.\n` +
+      `- informational / ethone_info : réponse informative concise. Embed léger possible.\n` +
+      `- support : empathie + actions concrètes (diagnostic, handoff ticket).\n` +
+      `- action : confirme ce que tu vas faire et DEMANDE confirmation avant d'exécuter. ` +
+      `Ne prétends JAMAIS avoir effectué une action (Prompt #18 §30).\n` +
+      `- search : annonce que tu cherches et donne les résultats.\n` +
+      `- clarification : demande une précision COURTE et pertinente.\n`;
+
+    // 4. Délègue au moteur existant (qui gère les providers externes + builtin)
+    const completion = await AIProviderService.generate({
+      settings,
+      systemPrompt: intentAwareSystemPrompt,
+      messages,
+      knowledgeContext,
+    });
+
+    // 5. Actions contextuelles (Prompt #18 §21)
+    const suggestedActions = this.actionsForIntent(detected.intent);
+
+    return {
+      ...completion,
+      intent: detected.intent,
+      intentConfidence: detected.confidence,
+      suggestedActions,
+    };
+  }
+
+  /**
+   * Actions contextuelles proposées par intent (Prompt #18 §21, §38).
+   * Ces actions sont consommées par `DiscordAiPanel.buildActionsForIntent()`.
+   */
+  public static actionsForIntent(intent: IntentResult['intent']): string[] {
+    switch (intent) {
+      case 'conversation':
+      case 'humor':
+      case 'short_reply':
+        return ['feedback_helpful', 'feedback_unhelpful'];
+      case 'informational':
+      case 'ethone_info':
+        return ['feedback_helpful', 'feedback_unhelpful', 'summarize'];
+      case 'support':
+        return ['feedback_helpful', 'feedback_unhelpful', 'open_ticket', 'diagnose'];
+      case 'action':
+        return ['confirm_action', 'cancel_action'];
+      case 'search':
+        return ['open_result', 'feedback_helpful', 'feedback_unhelpful'];
+      case 'clarification':
+        return [];
+      default:
+        return ['feedback_helpful', 'feedback_unhelpful'];
+    }
   }
 }

@@ -2,6 +2,16 @@
 
 Toutes les modifications notables de ce projet seront documentées dans ce fichier.
 
+## v1.20.46 — 2026-09-07
+
+**ETHONE AI — Correction du routage d'intention / support par défaut**
+
+- Correction du flux `/ask` : le bot passe désormais par le détecteur d'intention avant la génération, ce qui évite de traiter des messages de conversation comme des demandes de support.
+- Ajout du fallback `generateWithIntent()` dans le service IA Discord pour distinguer `conversation`, `informational`, `ethone_info`, `support`, `action`, `search` et `clarification`.
+- Les boutons d'action sont maintenant générés selon l'intent détecté ; les messages de conversation ne proposent plus de ticket support par défaut.
+- Traductions et réponses courtes ajoutées pour les langues FR, EN, ES et DE dans le détecteur d'intention.
+- Validation ciblée : build TypeScript du module IA Discord vérifié après intégration du nouveau flux.
+
 ## v1.20.45 — 2026-09-04
 
 **ETHONE Platform Audit — Correction TypeScript Modules Discord & Stabilité Build**

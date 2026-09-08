@@ -1,3 +1,12 @@
+const v12059_fr: ChangelogEntry = {
+  version: "v1.20.59",
+  date: "2026-09-09",
+  title: "Correctif : les Boutons Redevenaient Verts Malgré le Thème Dyno Rose",
+  items: [
+    "Correctif confirmé et reproduit : la couleur d'accent (\"Vert Émeraude\" par exemple) est un réglage séparé du thème lui-même. Changer de thème (via le sélecteur de Réglages, l'icône palette de la barre du haut, ou la palette de commandes Cmd+K) mettait bien à jour le thème affiché, mais laissait l'ancienne couleur d'accent inchangée — donc si elle avait un jour été réglée sur vert, tous les boutons/badges restaient verts même en sélectionnant Dyno Rose. Chaque sélecteur de thème réinitialise désormais l'accent sur la couleur propre au thème choisi.",
+  ],
+};
+
 const v12058_fr: ChangelogEntry = {
   version: "v1.20.58",
   date: "2026-09-09",
@@ -85,6 +94,15 @@ const v12052_fr: ChangelogEntry = {
     "Dynamic Island : correction d'un bug de priorité qui empêchait Spotify de jamais s'afficher, systématiquement évincé par la synchronisation d'arrière-plan.",
     "Commande /help du Bot Discord : la liste des commandes est désormais générée dynamiquement depuis les commandes réellement enregistrées (fin des commandes fantômes et des commandes manquantes), et affiche la vraie syntaxe des commandes à sous-commandes (ex. /automod status).",
     "Audit de l'enregistrement des commandes slash Discord : architecture confirmée saine, aucune dérive entre le code et les commandes déployées.",
+  ],
+};
+
+const v12059_en: ChangelogEntry = {
+  version: "v1.20.59",
+  date: "2026-09-09",
+  title: "Fix: Buttons Kept Turning Green Despite the Dyno Rose Theme",
+  items: [
+    "Confirmed and reproduced fix: the accent color (e.g. \"Vert Émeraude\"/Emerald Green) is a setting separate from the theme itself. Switching themes (via the Settings picker, the palette icon in the top bar, or the Cmd+K command palette) correctly updated the displayed theme but left the old accent color untouched — so if it had ever been set to green, every button/badge stayed green even after picking Dyno Rose. Every theme switcher now resets the accent to that theme's own color.",
   ],
 };
 
@@ -178,6 +196,15 @@ const v12052_en: ChangelogEntry = {
   ],
 };
 
+const v12059_es: ChangelogEntry = {
+  version: "v1.20.59",
+  date: "2026-09-09",
+  title: "Corrección: los Botones Volvían a Ponerse Verdes a Pesar del Tema Dyno Rose",
+  items: [
+    "Corrección confirmada y reproducida: el color de acento (por ejemplo \"Verde Esmeralda\") es un ajuste independiente del tema en sí. Cambiar de tema (desde el selector de Ajustes, el icono de paleta de la barra superior, o la paleta de comandos Cmd+K) actualizaba correctamente el tema mostrado, pero dejaba el color de acento anterior sin cambiar — así que si alguna vez se había puesto en verde, todos los botones/insignias seguían en verde aunque se eligiera Dyno Rose. Cada selector de tema ahora restablece el acento al color propio de ese tema.",
+  ],
+};
+
 const v12058_es: ChangelogEntry = {
   version: "v1.20.58",
   date: "2026-09-09",
@@ -265,6 +292,15 @@ const v12052_es: ChangelogEntry = {
     "Dynamic Island: corregido un error de prioridad que impedía que Spotify apareciera, siempre desplazado por la sincronización en segundo plano.",
     "Comando /help del Bot de Discord: la lista de comandos ahora se genera dinámicamente desde los comandos realmente registrados (fin de comandos fantasma o ausentes), mostrando la sintaxis real de los comandos con subcomandos.",
     "Auditoría del registro de comandos slash de Discord: arquitectura confirmada como sólida, sin desviación entre el código y los comandos desplegados.",
+  ],
+};
+
+const v12059_de: ChangelogEntry = {
+  version: "v1.20.59",
+  date: "2026-09-09",
+  title: "Fix: Buttons Wurden Trotz Dyno-Rose-Theme Immer Wieder Grün",
+  items: [
+    "Bestätigter und reproduzierter Fix: die Akzentfarbe (z. B. Smaragdgrün) ist eine vom Theme selbst getrennte Einstellung. Ein Themenwechsel (über die Auswahl in den Einstellungen, das Paletten-Symbol in der oberen Leiste oder die Cmd+K-Befehlspalette) aktualisierte zwar korrekt das angezeigte Theme, ließ aber die alte Akzentfarbe unverändert — war sie also einmal auf Grün gestellt, blieben alle Buttons/Badges grün, selbst nach Auswahl von Dyno Rose. Jeder Themenwechsler setzt die Akzentfarbe jetzt auf die zum gewählten Theme passende Farbe zurück.",
   ],
 };
 
@@ -22253,5 +22289,10 @@ CHANGELOG_BY_LANG.fr.unshift(v12058_fr);
 CHANGELOG_BY_LANG.en.unshift(v12058_en);
 CHANGELOG_BY_LANG.es.unshift(v12058_es);
 CHANGELOG_BY_LANG.de.unshift(v12058_de);
+
+CHANGELOG_BY_LANG.fr.unshift(v12059_fr);
+CHANGELOG_BY_LANG.en.unshift(v12059_en);
+CHANGELOG_BY_LANG.es.unshift(v12059_es);
+CHANGELOG_BY_LANG.de.unshift(v12059_de);
 
 export const CHANGELOG = CHANGELOG_BY_LANG.fr;

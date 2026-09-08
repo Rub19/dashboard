@@ -194,9 +194,15 @@ export function useCommandItems(setOpen: (v: boolean) => void): CommandItem[] {
 
   const selectTheme = useCallback(
     (themeId: string) => {
-      transitionTheme(themeId, (id) => update({ theme: id }), {
-        accentColor: settings.accentColor,
-        customAccent: settings.customAccent,
+      // Reset the accent to the newly picked theme's own design — otherwise a
+      // separately-stored accentColor (e.g. a prior "Vert Émeraude" pick)
+      // keeps overriding every theme selected here, even though the command
+      // palette / settings correctly show the new theme's name.
+      const themeDef = PRESET_THEMES[themeId as PremiumThemeId] || settings.customThemes?.find((t) => t.id === themeId);
+      const themeAccent = themeDef?.accentPrimary || settings.customAccent;
+      transitionTheme(themeId, (id) => update({ theme: id, accentColor: "custom", customAccent: themeAccent }), {
+        accentColor: "custom",
+        customAccent: themeAccent,
         glassLevel: settings.glassLevel,
         performanceMode: settings.performanceMode,
         customThemes: settings.customThemes,

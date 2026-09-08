@@ -85,24 +85,43 @@ export default function ThemeStudio({ className }: ThemeStudioProps) {
   const currentAccent = previewAccent ?? settings.accentColor;
 
   // Handle Theme Selection / Preview
+  //
+  // Picking a curated theme card here is expected to apply that theme's
+  // complete, cohesive look — background AND accent together. Previously this
+  // forwarded the user's existing `accentColor`/`customAccent` unchanged, so a
+  // separately-stored accent (e.g. a "Vert Émeraude" pick from the "Couleurs
+  // d'accent" tab, or a stale/legacy value) silently kept overriding every
+  // theme's own accent forever: Settings would correctly show e.g. "Thème :
+  // Dyno Rose" while every accent-colored control (buttons, badges, pills)
+  // stayed whatever color the old accentColor resolved to. Resetting the
+  // accent to the newly selected theme's own `accentPrimary` here keeps the
+  // "Thèmes" grid and the rendered UI in sync; users who want a different
+  // accent than the theme's default can still repick one afterward in the
+  // "Couleurs d'accent" tab.
   const handleSelectTheme = (themeId: string, applyImmediate = true) => {
+    const themeDef = PRESET_THEMES[themeId as PremiumThemeId] || settings.customThemes?.find((t) => t.id === themeId);
+    const themeAccent = themeDef?.accentPrimary || settings.customAccent;
     if (applyImmediate) {
       setPreviewThemeId(null);
-      transitionTheme(themeId, (id) => update({ theme: id }), {
-        accentColor: settings.accentColor,
-        customAccent: settings.customAccent,
-        glassLevel: settings.glassLevel,
-        performanceMode: settings.performanceMode,
-        customThemes: settings.customThemes,
-        reducedMotion: settings.reducedMotion,
-      });
+      transitionTheme(
+        themeId,
+        (id) => update({ theme: id, accentColor: "custom", customAccent: themeAccent }),
+        {
+          accentColor: "custom",
+          customAccent: themeAccent,
+          glassLevel: settings.glassLevel,
+          performanceMode: settings.performanceMode,
+          customThemes: settings.customThemes,
+          reducedMotion: settings.reducedMotion,
+        }
+      );
       const themeLabel = PRESET_THEMES[themeId as PremiumThemeId]?.label || settings.customThemes?.find((t) => t.id === themeId)?.label || themeId;
       success(`Thème "${themeLabel}" appliqué`);
     } else {
       setPreviewThemeId(themeId);
       transitionTheme(themeId, () => {}, {
-        accentColor: settings.accentColor,
-        customAccent: settings.customAccent,
+        accentColor: "custom",
+        customAccent: themeAccent,
         glassLevel: settings.glassLevel,
         performanceMode: settings.performanceMode,
         customThemes: settings.customThemes,
@@ -154,11 +173,23 @@ export default function ThemeStudio({ className }: ThemeStudioProps) {
   };
 
   // Confirm preview
+  //
+  // The preview itself (handleSelectTheme with applyImmediate=false) already
+  // paints the DOM with the previewed theme's own accent, but its onChange is
+  // a no-op so `settings.accentColor` never persists that. Previously this
+  // only saved `theme`, leaving the old (possibly stale/mismatched) accent in
+  // settings — the next re-render or refresh would then re-apply that stale
+  // accent over the just-confirmed theme. Persist the same accent the preview
+  // showed so confirming actually locks in what the user saw.
   const handleApplyPreview = () => {
     if (previewThemeId) {
-      update({ theme: previewThemeId });
+      const themeDef = PRESET_THEMES[previewThemeId as PremiumThemeId] || settings.customThemes?.find((t) => t.id === previewThemeId);
+      const themeAccent = themeDef?.accentPrimary || settings.customAccent;
+      update({ theme: previewThemeId, accentColor: "custom", customAccent: themeAccent });
       setPreviewThemeId(null);
       originalThemeRef.current.theme = previewThemeId;
+      originalThemeRef.current.accentColor = "custom";
+      originalThemeRef.current.customAccent = themeAccent;
       success("Thème confirmé et enregistré");
     }
   };

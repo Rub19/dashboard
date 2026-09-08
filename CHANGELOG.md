@@ -2,6 +2,16 @@
 
 Toutes les modifications notables de ce projet seront documentées dans ce fichier.
 
+## v1.20.59 — 2026-09-09
+
+**Correctif confirmé et reproduit : les boutons redevenaient verts malgré le thème Dyno Rose**
+
+- **Root cause** : `settings.accentColor`/`settings.customAccent` est un réglage indépendant de `settings.theme`. Tout ce qui peint réellement `--accent-primary` (`SettingsProvider.tsx:280-281`, `HtmlLang.tsx:63-65`) le résout uniquement depuis `accentColor` (`ACCENTS[settings.accentColor] || def.accentPrimary`) — jamais depuis le thème sélectionné. Les trois sélecteurs de thème de l'app (`ThemeStudio.tsx`'s `handleSelectTheme`/`handleApplyPreview` dans Réglages, `TopBar.tsx`'s `ThemeToggle` dans la barre du haut, `lib/commands.tsx`'s `selectTheme` dans la palette de commandes Cmd+K) mettaient à jour `theme` mais transmettaient l'ancien `accentColor` inchangé — donc une fois `accentColor` réglé sur `"green"` (Vert Émeraude, `#10b981`), sélectionner Dyno Rose n'importe où laissait tous les `var(--accent-primary)` (boutons Connecter, pastilles Connecté, onglets actifs) coincés en vert.
+- **Reproduit directement** : seedé `localStorage["ethone-settings-v1"] = {theme:"dyno-rose", accentColor:"green", customAccent:"#10b981"}`, rechargé, confirmé `getComputedStyle(document.documentElement)` donnant `--accent-primary = #10b981` avec `data-theme="dyno-rose"` simultanément.
+- **Correctif** : les trois sélecteurs de thème réinitialisent désormais `accentColor`/`customAccent` sur la couleur propre au thème choisi au moment du changement, au lieu de transmettre l'ancienne valeur. Le sélecteur de couleur d'accent indépendant (`handleSelectAccent`) n'est pas touché — toujours possible de personnaliser l'accent après coup.
+- **Bugs latents similaires repérés, non corrigés (hors scope)** : `PremiumThemePicker.tsx`/`ThemePicker.tsx` ont le même bug mais sont du code mort (jamais rendus) ; `theme-engine.ts`'s `applyTheme()` passe des ids d'accent à `applyAccent()` qui n'accepte que des hex réels (masqué car corrigé un instant après par `SettingsProvider`) ; `useBrain.ts`'s Brain IA a le même pattern non corrigé ; `ProfileSync.tsx` écrase `accentColor` depuis `activeProfile.accent` ; `app/layout.tsx`'s script de boot pré-hydratation lit des clés localStorage mortes (`ethone_settings_v8`/`dashboard_settings`, plus rien ne les écrit) — inerte mais faux, sans lien avec ce bug précis.
+- Validation : `tsc --noEmit` (0 erreur), `npm run build`, `eslint` (0 nouvelle erreur), `npm run test:unit` (13/13, 61/61).
+
 ## v1.20.58 — 2026-09-09
 
 **Correctif critique : Discord affichait "Non connecté" malgré une connexion réussie**

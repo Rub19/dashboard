@@ -85,7 +85,14 @@ function ThemeToggle() {
     <Tooltip label={`Thème : ${themeLabel}`} position="bottom">
       <button
         type="button"
-        onClick={() => update({ theme: next })}
+        onClick={() =>
+          // Cycling the theme here must also reset the accent to the new
+          // theme's own design, or a separately-stored accentColor (e.g. a
+          // "Vert Émeraude" pick from Settings) keeps overriding every theme
+          // this button cycles to, even though the tooltip correctly names
+          // the new theme.
+          update({ theme: next, accentColor: "custom", customAccent: THEME_DEFINITIONS[next]?.accentPrimary || settings.customAccent })
+        }
         className="inline-flex h-9 w-9 items-center justify-center rounded-xl border border-[var(--panel-border)]/70 bg-[var(--surface-raised)]/60 text-[var(--text-muted)] hover:border-[var(--accent-primary)]/40 hover:bg-[var(--surface-hover)] hover:text-[var(--text-primary)] transition-all active:scale-95 cursor-pointer shadow-sm"
         aria-label="Changer de thème"
       >

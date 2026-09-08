@@ -3,6 +3,7 @@ import { Command, CommandContext } from '../../types/command.js';
 import { musicService } from '../../modules/music/services/musicService.js';
 import { DiscordMusicPanel } from '../../modules/music/ui/discordMusicPanel.js';
 import { RepeatMode } from '../../modules/music/types/music.js';
+import { formatString, getTranslation } from '../../utils/i18n.js';
 
 const replyError = (ctx: CommandContext, msg: string) =>
   ctx.reply({ embeds: [ctx.createEmbed('error').setDescription(msg)] });
@@ -112,12 +113,10 @@ export const musicCommand: Command = {
     ];
 
     if (voiceRequiredSubcommands.includes(subcommand)) {
+      const t = getTranslation(ctx.guildConfig.language);
       const userVoice = member.voice?.channel;
       if (!userVoice) {
-        await replyError(
-          ctx,
-          '❌ **Salon vocal requis** : Vous devez impérativement être connecté dans un salon vocal pour lancer ou contrôler la musique !'
-        );
+        await replyError(ctx, t.voice_required);
         return;
       }
 
@@ -125,7 +124,7 @@ export const musicCommand: Command = {
       if (botVoice && botVoice.id !== userVoice.id) {
         await replyError(
           ctx,
-          `❌ **Salon vocal différent** : Vous devez être dans le même salon vocal que le bot (<#${botVoice.id}>) pour contrôler la musique.`
+          formatString(t.voice_different, { channel: `<#${botVoice.id}>` })
         );
         return;
       }

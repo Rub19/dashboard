@@ -212,7 +212,7 @@ export default function TasksPage() {
 
       {/* KPI Cards Grid */}
       <div className="grid grid-cols-2 gap-3 sm:grid-cols-4 shrink-0">
-        <div className="flex items-center justify-between rounded-2xl border border-white/10 bg-[#0c0d14]/80 p-3.5 backdrop-blur-xl">
+        <div className="flex items-center justify-between rounded-2xl border border-white/10 bg-[var(--bg-surface-elevated)]/80 p-3.5 backdrop-blur-xl">
           <div>
             <p className="text-[10px] font-bold uppercase tracking-wider text-zinc-400">Total Tâches</p>
             <p className="text-xl font-bold text-white mt-0.5">{stats.total}</p>
@@ -256,7 +256,7 @@ export default function TasksPage() {
       {/* Quick Add Bar */}
       <form
         onSubmit={handleQuickAdd}
-        className="flex flex-col gap-2 rounded-2xl border border-white/15 bg-[#0c0d14]/90 p-2.5 backdrop-blur-2xl shadow-xl sm:flex-row sm:items-center shrink-0"
+        className="flex flex-col gap-2 rounded-2xl border border-white/15 bg-[var(--bg-surface-elevated)]/90 p-2.5 backdrop-blur-2xl shadow-xl sm:flex-row sm:items-center shrink-0"
       >
         <div className="relative flex-1">
           <input
@@ -276,7 +276,7 @@ export default function TasksPage() {
             className="rounded-xl border border-white/10 bg-white/5 px-2.5 py-1.5 font-mono text-xs text-zinc-300 outline-none cursor-pointer hover:bg-white/10"
           >
             {CATEGORIES.filter((c) => c !== "Tous").map((c) => (
-              <option key={c} value={c} className="bg-[#0c0d14] text-white">
+              <option key={c} value={c} className="bg-[var(--bg-surface-elevated)] text-white">
                 {c}
               </option>
             ))}
@@ -288,10 +288,10 @@ export default function TasksPage() {
             onChange={(e) => setNewPriority(e.target.value as TaskPriority)}
             className="rounded-xl border border-white/10 bg-white/5 px-2.5 py-1.5 font-mono text-xs text-zinc-300 outline-none cursor-pointer hover:bg-white/10"
           >
-            <option value="low" className="bg-[#0c0d14] text-white">Basse</option>
-            <option value="medium" className="bg-[#0c0d14] text-white">Moyenne</option>
-            <option value="high" className="bg-[#0c0d14] text-white">Haute</option>
-            <option value="urgent" className="bg-[#0c0d14] text-white">Urgente</option>
+            <option value="low" className="bg-[var(--bg-surface-elevated)] text-white">Basse</option>
+            <option value="medium" className="bg-[var(--bg-surface-elevated)] text-white">Moyenne</option>
+            <option value="high" className="bg-[var(--bg-surface-elevated)] text-white">Haute</option>
+            <option value="urgent" className="bg-[var(--bg-surface-elevated)] text-white">Urgente</option>
           </select>
 
           {/* Submit */}
@@ -362,7 +362,7 @@ export default function TasksPage() {
                   initial={{ opacity: 0, scale: 0.96 }}
                   animate={{ opacity: 1, scale: 1 }}
                   exit={{ opacity: 0, scale: 0.96 }}
-                  className="flex flex-col items-center justify-center rounded-3xl border border-white/10 bg-[#0c0d14]/50 p-12 text-center backdrop-blur-2xl"
+                  className="flex flex-col items-center justify-center rounded-3xl border border-white/10 bg-[var(--bg-surface-elevated)]/50 p-12 text-center backdrop-blur-2xl"
                 >
                   <div className="flex h-14 w-14 items-center justify-center rounded-2xl border border-white/10 bg-white/5 text-zinc-400 mb-3">
                     <CheckCircle2 className="h-7 w-7" />

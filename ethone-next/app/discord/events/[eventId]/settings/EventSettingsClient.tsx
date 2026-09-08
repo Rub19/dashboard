@@ -50,7 +50,7 @@ export default function EventSettingsClient() {
   };
 
   return (
-    <div className="min-h-screen bg-[#090A0F] text-slate-100 pb-20 selection:bg-indigo-500/30">
+    <div className="min-h-screen bg-[var(--bg-main)] text-slate-100 pb-20 selection:bg-indigo-500/30">
       {/* Glow */}
       <div className="fixed inset-0 pointer-events-none overflow-hidden">
         <div className="absolute top-10 right-1/3 w-[600px] h-[600px] bg-indigo-600/10 rounded-full blur-[140px]" />
@@ -228,7 +228,7 @@ export default function EventSettingsClient() {
         {/* Modal Confirm Cancel */}
         {showCancelModal && (
           <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/80 backdrop-blur-md">
-            <div className="w-full max-w-md p-6 rounded-2xl bg-[#13151f] border border-white/10 shadow-2xl space-y-4">
+            <div className="w-full max-w-md p-6 rounded-2xl bg-[var(--bg-surface-elevated)] border border-white/10 shadow-2xl space-y-4">
               <h3 className="text-base font-bold text-white">Confirmer l'annulation ?</h3>
               <p className="text-xs text-slate-400">
                 Êtes-vous sûr de vouloir annuler cet événement ? Les participants inscrits recevront une notification sur Discord.

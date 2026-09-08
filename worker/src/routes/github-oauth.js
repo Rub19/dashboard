@@ -25,11 +25,10 @@ function requireField(body, key, pattern) {
 
 export async function githubOAuthExchangeRoute({ request, env, auth }) {
   if (!auth?.userId) throw httpError("AUTH_REQUIRED", 401);
-  const body = await readJsonBody(request, 3);
+  const body = await readJsonBody(request, 2);
   const code = requireField(body, "code", CODE_RE);
   const clientId = requireField(body, "clientId", PATTERNS.githubClientId);
-  const clientSecret = body.clientSecret ? String(body.clientSecret) : undefined;
-  await exchangeGithubCode(env, auth.userId, { code, clientId, clientSecret });
+  await exchangeGithubCode(env, auth.userId, { code, clientId });
   return { data: { connected: true } };
 }
 

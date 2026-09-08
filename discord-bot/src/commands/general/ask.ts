@@ -6,6 +6,7 @@ import { AIKnowledgeService } from '../../modules/ai/services/aiKnowledgeService
 import { AIProviderService } from '../../modules/ai/services/aiProviderService.js';
 import { DiscordAiPanel } from '../../modules/ai/ui/discordAiPanel.js';
 import { logger } from '../../utils/logger.js';
+import { getTranslation } from '../../utils/i18n.js';
 
 export const askCommand: Command = {
   name: 'ask',
@@ -55,8 +56,9 @@ export const askCommand: Command = {
       const settings = aiRepository.getSettings(guildId);
 
       if (!settings.enabled) {
+        const t = getTranslation(ctx.guildConfig.language);
         await ctx.editReply({
-          content: "L'assistant IA est actuellement désactivé sur ce serveur par les administrateurs.",
+          content: t.ask_disabled,
         });
         return;
       }

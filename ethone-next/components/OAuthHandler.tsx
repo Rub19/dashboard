@@ -137,23 +137,11 @@ export default function OAuthHandler() {
         setStatus("✨ Connecté avec succès !");
       })
       .catch((err) => {
-        console.warn("OAuth exchange error, falling back to client-side connection:", err);
-        if (provider === "discord" || provider === "spotify") {
-          try {
-            localStorage.setItem(`ethone:clientId:${provider}`, resolvedClientId);
-            localStorage.setItem(`ethone:connected:${provider}`, "true");
-            if (provider === "discord") {
-              localStorage.setItem("ethone:connected:discord", "true");
-            }
-            if (typeof window !== "undefined") {
-              window.dispatchEvent(new CustomEvent("v8:connection-updated", { detail: { provider, connected: true } }));
-              window.dispatchEvent(new CustomEvent("v8:refresh-connections", { detail: { provider, connected: true } }));
-              window.dispatchEvent(new Event("storage"));
-            }
-            setStatus("✨ Connecté avec succès !");
-            return;
-          } catch {}
-        }
+        // The exchange genuinely failed (bad code, revoked app, Worker error, etc.).
+        // Do not mark the provider as "connected" here: that previously papered
+        // over real failures (including the now-removed insecure client-side
+        // fallbacks) and made the UI lie about the actual connection state.
+        console.warn("OAuth exchange error:", err);
         setStatus(err?.message || "Échec de connexion");
       })
       .finally(() => {

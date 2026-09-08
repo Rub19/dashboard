@@ -3,12 +3,14 @@ import {
   ButtonBuilder,
   ButtonInteraction,
   ButtonStyle,
-  EmbedBuilder,
   Guild,
   MessageCreateOptions,
 } from 'discord.js';
 import { GuildMusicState } from '../types/music.js';
 import { musicService } from '../services/musicService.js';
+import { guildConfigService } from '../../../services/guildConfigService.js';
+import { formatString, getTranslation } from '../../../utils/i18n.js';
+import { baseEmbed } from '../../../utils/embeds.js';
 
 export class DiscordMusicPanel {
   public static createProgressBar(currentSec: number, totalSec: number, length: number = 14): string {
@@ -27,11 +29,10 @@ export class DiscordMusicPanel {
   }
 
   public static buildPanelMessage(state: GuildMusicState): MessageCreateOptions {
-    const embed = new EmbedBuilder();
+    let embed;
 
     if (!state.currentTrack) {
-      embed
-        .setColor(0x5865f2)
+      embed = baseEmbed('primary', { footerText: 'ETHONE Music Center 2.0 • Audio Engine' })
         .setTitle('🎵 ETHONE Music Player')
         .setDescription(
           '**Aucune musique en cours de lecture.**\n\nUtilisez `/music play <titre/lien>` ou le **Music Center ETHONE** pour lancer un morceau.'
@@ -39,17 +40,16 @@ export class DiscordMusicPanel {
         .addFields(
           { name: '🔊 Salon Vocal', value: state.voiceChannel ? `<#${state.voiceChannel.id}>` : 'Déconnecté', inline: true },
           { name: '📜 File d\'attente', value: `${state.queueLength} titres`, inline: true }
-        )
-        .setFooter({ text: 'ETHONE Music Center 2.0 • Audio Engine' })
-        .setTimestamp();
+        );
     } else {
       const track = state.currentTrack;
       const progress = this.createProgressBar(state.position, state.duration, 14);
       const currentTime = this.formatTime(state.position);
       const totalTime = this.formatTime(state.duration);
 
-      embed
-        .setColor(state.status === 'PLAYING' ? 0x10b981 : 0xf59e0b)
+      embed = baseEmbed(state.status === 'PLAYING' ? 'success' : 'warning', {
+        footerText: 'ETHONE Music Center 2.0 • Contrôlez la musique en direct',
+      })
         .setTitle(`${state.status === 'PLAYING' ? '▶️' : '⏸️'} ${track.title}`)
         .setURL(track.url && track.url.startsWith('http') ? track.url : 'https://ethone.dev')
         .setDescription(
@@ -64,9 +64,7 @@ export class DiscordMusicPanel {
           { name: '📜 File d\'attente', value: `${state.queueLength} titre(s) en attente`, inline: true },
           { name: '🔀 Aléatoire', value: state.shuffle ? 'Actif' : 'Désactivé', inline: true },
           { name: '📍 Salon Vocal', value: state.voiceChannel ? `<#${state.voiceChannel.id}>` : 'Inconnu', inline: true }
-        )
-        .setFooter({ text: 'ETHONE Music Center 2.0 • Contrôlez la musique en direct' })
-        .setTimestamp();
+        );
 
       if (track.thumbnail) {
         embed.setThumbnail(track.thumbnail);
@@ -146,10 +144,11 @@ export class DiscordMusicPanel {
 
     // Vérification du salon vocal pour les boutons de contrôle musical
     if (customId !== 'music_queue') {
+      const t = getTranslation(guildConfigService.getConfig(guild.id).language);
       const userVoice = member?.voice?.channel;
       if (!userVoice) {
         await interaction.reply({
-          content: '❌ **Salon vocal requis** : Vous devez impérativement être connecté dans un salon vocal pour utiliser les contrôles musicaux.',
+          content: t.voice_required,
           ephemeral: true,
         });
         return;
@@ -158,7 +157,7 @@ export class DiscordMusicPanel {
       const botVoice = guild.members.me?.voice?.channel;
       if (botVoice && botVoice.id !== userVoice.id) {
         await interaction.reply({
-          content: `❌ **Salon vocal différent** : Vous devez être dans le même salon vocal que le bot (<#${botVoice.id}>) pour contrôler la musique.`,
+          content: formatString(t.voice_different, { channel: `<#${botVoice.id}>` }),
           ephemeral: true,
         });
         return;

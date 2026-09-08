@@ -214,7 +214,7 @@ export default function DiscordCalendarClient() {
   const monthLabel = currentDate.toLocaleDateString("fr-FR", { month: "long", year: "numeric" });
 
   return (
-    <div className="min-h-screen bg-[#090A0F] text-slate-100 pb-20 selection:bg-indigo-500/30">
+    <div className="min-h-screen bg-[var(--bg-main)] text-slate-100 pb-20 selection:bg-indigo-500/30">
       {/* Glow Effects */}
       <div className="fixed inset-0 pointer-events-none overflow-hidden">
         <div className="absolute top-10 left-1/3 w-[600px] h-[600px] bg-indigo-600/10 rounded-full blur-[140px]" />
@@ -462,7 +462,7 @@ export default function DiscordCalendarClient() {
                 initial={{ opacity: 0, scale: 0.95 }}
                 animate={{ opacity: 1, scale: 1 }}
                 exit={{ opacity: 0, scale: 0.95 }}
-                className="relative w-full max-w-lg rounded-2xl bg-[#0e111a] border border-white/15 p-6 shadow-2xl"
+                className="relative w-full max-w-lg rounded-2xl bg-[var(--bg-surface-elevated)] border border-white/15 p-6 shadow-2xl"
               >
                 <button
                   onClick={() => setActiveModalEvent(null)}

@@ -1,6 +1,6 @@
 import { SlashCommandBuilder } from 'discord.js';
 import { Command, CommandContext } from '../../types/command.js';
-import { HelpPanel, HELP_CATEGORIES } from './helpPanel.js';
+import { HelpPanel, HELP_CATEGORIES, getCommandSubcommandNames } from './helpPanel.js';
 
 export const helpCommand: Command = {
   name: 'help',
@@ -53,6 +53,22 @@ export const helpCommand: Command = {
           permissionsText = `\`${cmd.userPermissions.join(', ')}\``;
         }
 
+        // La commande peut n'être exécutable qu'au travers de sous-commandes
+        // (ex: /automod status) : dans ce cas, afficher un exemple nu comme
+        // `/automod` serait trompeur puisqu'il ne s'exécute pas tel quel.
+        const subcommands = getCommandSubcommandNames(cmd);
+        const maxShown = 5;
+        const examplesText =
+          subcommands.length > 0
+            ? subcommands
+                .slice(0, maxShown)
+                .map((s) => `• \`/${cmd.name} ${s}\``)
+                .join('\n') +
+              (subcommands.length > maxShown
+                ? `\n• *...(+${subcommands.length - maxShown} autres sous-commandes)*`
+                : '')
+            : `• \`/${cmd.name}\`\n• \`${prefix}${cmd.name}\``;
+
         const embed = ctx
           .createEmbed('info')
           .setTitle(`📖 Fiche Commande • \`${prefix}${cmd.name}\` & \`/${cmd.name}\``)
@@ -75,7 +91,7 @@ export const helpCommand: Command = {
             },
             {
               name: '💡 Exemples d\'invocation',
-              value: `• \`/${cmd.name}\`\n• \`${prefix}${cmd.name}\``,
+              value: examplesText,
               inline: false,
             }
           )

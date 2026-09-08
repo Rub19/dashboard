@@ -9,7 +9,7 @@ export const dynamic = "force-static";
 
 export default function BotPerformancePage() {
   return (
-    <Suspense fallback={<div className="min-h-screen bg-[#07090E]" />}>
+    <Suspense fallback={<div className="min-h-screen bg-[var(--bg-main)]" />}>
       <BotControlClient initialTab="performance" />
     </Suspense>
   );

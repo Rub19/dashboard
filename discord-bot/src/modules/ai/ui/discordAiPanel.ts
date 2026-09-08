@@ -9,6 +9,7 @@ import { AISettings } from '../types/index.js';
 import { aiRepository } from '../storage/aiRepository.js';
 import { AIToolService } from '../services/aiToolService.js';
 import { logger } from '../../../utils/logger.js';
+import { baseEmbed } from '../../../utils/embeds.js';
 import type { IntentCategory } from '../services/intentTypes.js';
 
 export class DiscordAiPanel {
@@ -24,17 +25,14 @@ export class DiscordAiPanel {
     const { settings, answer, sourcesUsed, userTag } = params;
     const personality = settings.personality;
 
-    const embed = new EmbedBuilder()
-      .setColor(0x6366f1) // Indigo ETHONE
+    const embed = baseEmbed('primary', {
+      footerText: `Demandé par ${userTag} • ETHONE AI 2.0`,
+    })
       .setAuthor({
         name: personality.name,
         iconURL: personality.avatarUrl || 'https://cdn.discordapp.com/embed/avatars/0.png',
       })
-      .setDescription(answer)
-      .setFooter({
-        text: `Demandé par ${userTag} • ETHONE AI 2.0`,
-      })
-      .setTimestamp();
+      .setDescription(answer);
 
     if (settings.showSources !== 'NEVER' && sourcesUsed.length > 0) {
       embed.addFields({

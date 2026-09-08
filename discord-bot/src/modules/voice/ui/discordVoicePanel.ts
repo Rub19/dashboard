@@ -3,7 +3,6 @@ import {
   ButtonBuilder,
   ButtonInteraction,
   ButtonStyle,
-  EmbedBuilder,
   ModalBuilder,
   ModalSubmitInteraction,
   TextInputBuilder,
@@ -19,14 +18,14 @@ import { VoiceOwnershipService } from '../services/voiceOwnershipService.js';
 import { VoicePermissionService } from '../services/voicePermissionService.js';
 import { TemporaryVoiceService } from '../services/temporaryVoiceService.js';
 import { logger } from '../../../utils/logger.js';
+import { baseEmbed } from '../../../utils/embeds.js';
 
 export class DiscordVoicePanel {
   /**
    * Generates the permanent Creation Panel embed & buttons for the dedicated text channel.
    */
   public static buildCreatePanel(settings?: VoiceTrackerSettings) {
-    const embed = new EmbedBuilder()
-      .setColor(0x6366f1) // Indigo ETHONE
+    const embed = baseEmbed('primary', { footerText: 'ETHONE Voice Engine 2.0 • 100% interactif, 0 commande requise' })
       .setTitle('🎛️ Salons Vocaux Personnalisés 2.0')
       .setDescription(
         'Créez et contrôlez instantanément votre propre salon vocal temporaire !\n\n' +
@@ -47,9 +46,7 @@ export class DiscordVoicePanel {
           value: 'Configurez votre nom par défaut et votre limite une seule fois, ils seront réutilisés à chaque création.',
           inline: true,
         }
-      )
-      .setFooter({ text: 'ETHONE Voice Engine 2.0 • 100% interactif, 0 commande requise' })
-      .setTimestamp();
+      );
 
     const row = new ActionRowBuilder<ButtonBuilder>().addComponents(
       new ButtonBuilder()
@@ -76,8 +73,9 @@ export class DiscordVoicePanel {
    * Generates the in-channel Room Control Panel embed & action rows.
    */
   public static buildControlPanel(room: TemporaryVoiceRoom) {
-    const embed = new EmbedBuilder()
-      .setColor(room.isLocked ? 0xef4444 : 0x10b981)
+    const embed = baseEmbed(room.isLocked ? 'error' : 'success', {
+      footerText: 'ETHONE Personal Voice • Réservé au propriétaire & admins',
+    })
       .setTitle(`🎙️ Panneau de Contrôle — ${room.name}`)
       .setDescription('Gérez votre salon temporaire sans aucune commande. Tous les boutons ci-dessous sont instantanés.')
       .addFields(
@@ -98,9 +96,7 @@ export class DiscordVoicePanel {
           value: `${Math.round((room.bitrate || 64000) / 1000)} kbps`,
           inline: true,
         }
-      )
-      .setFooter({ text: 'ETHONE Personal Voice • Réservé au propriétaire & admins' })
-      .setTimestamp();
+      );
 
     // Row 1: Basic quick controls (Lock, Hide, Rename, Limit, Delete)
     const row1 = new ActionRowBuilder<ButtonBuilder>().addComponents(
@@ -271,8 +267,7 @@ export class DiscordVoicePanel {
     }
 
     if (customId === 'voice_help') {
-      const helpEmbed = new EmbedBuilder()
-        .setColor(0x3b82f6)
+      const helpEmbed = baseEmbed('info', { footerText: 'ETHONE Discord Suite' })
         .setTitle('📖 Comment fonctionne les Salons Personnalisés 2.0 ?')
         .setDescription(
           '**1. Création simple et instantanée**\n' +
@@ -289,8 +284,7 @@ export class DiscordVoicePanel {
           '• 👑 **Transférer** : cédez la gestion du salon à un autre membre.\n\n' +
           '**4. Nettoyage intelligent**\n' +
           'Dès que le salon est vide, un compte à rebours de sécurité se déclenche. Si personne ne revient, le salon est automatiquement supprimé.'
-        )
-        .setFooter({ text: 'ETHONE Discord Suite' });
+        );
 
       await interaction.reply({ embeds: [helpEmbed], ephemeral: true });
       return;

@@ -316,10 +316,16 @@ export default function DynamicIslandContainer() {
     if (syncActive) register({ id: "sync", type: "sync" } as IslandEvent);
     else unregister("sync");
 
+    // Spotify is always registered (standby placeholder when idle/disconnected),
+    // but must never rank below the passive background chores (sync, upload)
+    // or it never becomes the queue's "top" view and silently never shows in
+    // the compact pill. Idle keeps its natural ISLAND_VIEW_PRIORITY (4, same
+    // as before); an actively playing track is bumped above brain/pomodoro so
+    // real playback reliably takes over the compact slot.
     register({
       id: "spotify",
       type: "spotify",
-      priority: nowPlaying?.isPlaying ? 4 : 1,
+      priority: nowPlaying?.isPlaying ? 6 : 4,
     } as IslandEvent);
   }, [brainActive, pomodoroActive, syncActive, nowPlaying?.isPlaying, uploadActive, npLoading, register, unregister]);
 

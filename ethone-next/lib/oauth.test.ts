@@ -35,8 +35,11 @@ describe("oauth", () => {
   });
 
   it("covers all expected providers", () => {
+    // Twitch is intentionally excluded: the Worker only implements a
+    // client-credentials (app access token) flow for Twitch, not an
+    // authorization-code exchange, so it must not appear here (see oauth.ts).
     expect(Object.keys(PROVIDERS).sort()).toEqual([
-      "discord", "github", "google-calendar", "google-drive", "notion", "reddit", "spotify", "todoist", "twitch", "youtube",
+      "discord", "github", "google-calendar", "google-drive", "notion", "reddit", "spotify", "todoist", "youtube",
     ]);
   });
 });

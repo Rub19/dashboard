@@ -2,6 +2,23 @@
 
 Toutes les modifications notables de ce projet seront documentées dans ce fichier.
 
+## v1.20.52 — 2026-09-08
+
+**Sécurité & fiabilité des connexions — correctif critique OAuth Discord, audit complet des intégrations & synchronisation bot**
+
+- **Correctif de sécurité critique (Discord OAuth)** : suppression d'un secret client OAuth codé en dur et exposé côté navigateur (`ethone-next/lib/oauth.ts` et l'ancienne route `app/api/discord/exchange`, supprimée) ; Discord passe désormais exclusivement par le relais Worker sécurisé (`worker/src/routes/discord-oauth.js`), identique à toutes les autres connexions. Le secret exposé a été régénéré côté Discord Developer Portal et mis à jour sur le Worker et le VPS du bot.
+- **Audit de sécurité étendu (GitHub, Notion, Todoist)** : correction de la même faille — une valeur `clientSecret` envoyée depuis le corps de requête pouvait écraser le secret serveur légitime dans `worker/src/routes/*-oauth.js` et `worker/src/services/*-oauth-client.js`.
+- **Google Calendar** : correction du chemin de test de connexion (`lib/connection-config.ts`), qui interrogeait une route inexistante et échouait systématiquement.
+- **Spotify** : suppression de l'échange direct navigateur → Spotify qui contournait le Worker et ne persistait jamais le jeton côté serveur ; l'état de connexion réel est maintenant fiable.
+- **Twitch** : suppression d'un parcours OAuth mort (`/api/twitch/oauth/exchange` n'a jamais existé côté Worker) qui ne pouvait jamais aboutir.
+- **Reddit** : route serveur validée comme correcte, mais le secret `REDDIT_CLIENT_SECRET` n'est pas encore configuré côté Worker — connexion bloquée en attendant que l'utilisateur crée l'app OAuth et configure le secret.
+- **Fiabilité de l'état des connexions** : une connexion en échec (Discord, Spotify) ne s'affiche plus faussement comme « Connecté » (`components/OAuthHandler.tsx`).
+- **Synchronisation bidirectionnelle Bot Discord ↔ ETHONE** : correction de cinq routes erronées sur `/discord/moderation/automod` (toggle, smart mode, incidents, profil, strikes), de la variable d'environnement incorrecte du Bot Control Center (`BotControlClient.tsx`), et d'un stub du moteur de synchronisation générique (`discord-bot/src/server/routes/syncRoutes.ts`) qui confirmait des mutations automod sans jamais les persister.
+- **Dynamic Island** : correction de la priorité de la file d'affichage (`DynamicIslandContainer.tsx`) qui empêchait Spotify de s'afficher, systématiquement évincé par la synchronisation d'arrière-plan.
+- **Commande `/help` du bot Discord** : génération dynamique de la liste des commandes depuis le registre réel (`helpPanel.ts`, `help.ts`) — fin des commandes fantômes et des trois commandes manquantes (`imagine`, `permissions`, `ai-setup`) ; affichage de la vraie syntaxe pour les commandes à sous-commandes.
+- **Audit de l'enregistrement des commandes slash Discord** : architecture confirmée saine (source unique entre chargement et déploiement), aucune correction nécessaire.
+- Validation : `tsc --noEmit`, `eslint`, `npm run build` et `npm run test:unit` (60/61, un échec pré-existant sans rapport) côté `ethone-next` ; suite complète du Worker (156/156) ; suites QA du bot Discord (`test_full_sync_qa.ts` 42/42, `test_source_of_truth_reconciliation.ts` 40/40).
+
 ## v1.20.46 — 2026-09-07
 
 **ETHONE AI — Correction du routage d'intention / support par défaut**

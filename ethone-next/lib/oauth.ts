@@ -60,7 +60,6 @@ export const OAUTH_APP_CLIENT_IDS: Record<string, string> = {
   "google-drive": GOOGLE_CLIENT_ID,
   youtube: GOOGLE_CLIENT_ID,
   reddit: "",
-  twitch: "",
 };
 
 export function oauthClientId(provider: string): string {
@@ -113,11 +112,14 @@ export const PROVIDERS: Record<string, { authUrl: string; exchangePath: string; 
     exchangePath: "/api/reddit/oauth/exchange",
     scopes: "identity history",
   },
-  twitch: {
-    authUrl: "https://id.twitch.tv/oauth2/authorize",
-    exchangePath: "/api/twitch/oauth/exchange",
-    scopes: "user:read:email user:read:follows",
-  },
+  // Twitch is intentionally not an authorization-code OAuth provider here: the
+  // Worker only implements a client-credentials (app access token) flow for
+  // Twitch, driven by the Client ID/Secret entered in the connection's BYOK
+  // credential form (see connection-config.ts CREDENTIAL_FIELDS.twitch and
+  // worker/src/routes/twitch.js). There is no "/api/twitch/oauth/exchange"
+  // route on the Worker, so Twitch must not appear in PROVIDERS: doing so
+  // would send the user through a real Twitch consent redirect that can
+  // never complete.
 };
 
 export function buildAuthUrl(provider: string, clientId: string, state?: object, codeChallenge?: string) {
@@ -153,89 +155,18 @@ export async function exchangeCode(
   const cfg = PROVIDERS[provider];
   if (!cfg) throw new Error("Unknown provider: " + provider);
 
-  // 1. Direct PKCE exchange for Spotify
-  if (provider === "spotify") {
-    const codeVerifier = typeof token === "object" ? token.codeVerifier : undefined;
-    if (codeVerifier) {
-      try {
-        const bodyParams = new URLSearchParams({
-          grant_type: "authorization_code",
-          code,
-          redirect_uri: REDIRECT_URI,
-          client_id: clientId,
-          code_verifier: codeVerifier,
-        });
+  // Spotify uses PKCE (no client secret needed), but the code exchange still
+  // goes through the Worker rather than being fetched directly from the
+  // browser: the Worker is what persists the resulting access/refresh tokens
+  // server-side (for now-playing/control routes and token refresh). A direct
+  // browser-to-Spotify exchange would leave the Worker with no stored token
+  // at all, so every subsequent Spotify API call would fail with
+  // AUTH_REQUIRED even though the UI shows "connected".
 
-        const directRes = await fetch("https://accounts.spotify.com/api/token", {
-          method: "POST",
-          headers: {
-            "Content-Type": "application/x-www-form-urlencoded",
-          },
-          body: bodyParams.toString(),
-        });
-
-        if (directRes.ok) {
-          const directData = await directRes.json();
-          return { ok: true, data: directData };
-        }
-      } catch {}
-    }
-  }
-
-  // 2. Token exchange for Discord
-  if (provider === "discord") {
-    const clientSecret =
-      (typeof token === "string" ? token : token?.clientSecret) ||
-      (typeof window !== "undefined" ? localStorage.getItem("ethone:cred:discord:clientSecret") : null) ||
-      "9MiLY0V9XQ36CTiQHFK4n1hQigmSRO3w";
-
-    // 2a. Internal Next.js server route (server-to-server, bypasses browser CORS & handles local sessions)
-    try {
-      const internalRes = await fetch("/api/discord/exchange", {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({
-          code,
-          clientId,
-          redirectUri: REDIRECT_URI,
-          clientSecret,
-        }),
-      });
-
-      if (internalRes.ok) {
-        const internalData = await internalRes.json();
-        if (internalData?.ok && internalData?.data) {
-          return internalData;
-        }
-      }
-    } catch {}
-
-    // 2b. Direct browser fetch fallback (if same origin or permitted)
-    if (clientSecret) {
-      try {
-        const bodyParams = new URLSearchParams({
-          grant_type: "authorization_code",
-          code,
-          redirect_uri: REDIRECT_URI,
-          client_id: clientId,
-          client_secret: clientSecret,
-        });
-
-        const directRes = await fetch("https://discord.com/api/v10/oauth2/token", {
-          method: "POST",
-          headers: {
-            "Content-Type": "application/x-www-form-urlencoded",
-          },
-          body: bodyParams.toString(),
-        });
-
-        if (directRes.ok) {
-          const directData = await directRes.json();
-          return { ok: true, data: directData };
-        }
-      } catch {}
-    }
-  }
+  // Discord is a confidential OAuth client: the token exchange must happen
+  // server-side, with the client secret held only in the Worker's own
+  // environment (never sent to or read from the browser). It uses the same
+  // generic Worker exchange path as every other provider below.
 
   const body: Record<string, string> = { code, clientId, redirectUri: REDIRECT_URI };
   if (token) {

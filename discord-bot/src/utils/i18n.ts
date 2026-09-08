@@ -20,6 +20,9 @@ export interface TranslationDictionary {
   clear_success: string;
   ticket_created: string;
   ticket_welcome: string;
+  access_denied_admin: string;
+  access_denied_mod: string;
+  cooldown_wait: string;
 }
 
 const translations: Record<SupportedLanguage, TranslationDictionary> = {
@@ -43,6 +46,9 @@ const translations: Record<SupportedLanguage, TranslationDictionary> = {
     clear_success: '✅ **{count}** message(s) supprimé(s) avec succès.',
     ticket_created: '✅ Votre ticket d\'assistance a été créé avec succès : {channel}',
     ticket_welcome: 'Bonjour {user} ! Un membre de l\'équipe d\'assistance va vous assister sous peu.',
+    access_denied_admin: '⛔ **Accès Refusé** : Cette commande d\'administration est réservée aux administrateurs ou rôles autorisés.',
+    access_denied_mod: '⛔ **Accès Refusé** : Vous ne disposez pas des permissions nécessaires pour exécuter cette commande de modération (Rôle Modérateur/Staff requis).',
+    cooldown_wait: '⏳ **Anti-Spam** : Veuillez patienter encore **{seconds}s** avant de réutiliser la commande `{command}`.',
   },
   en: {
     lang_name: 'English',
@@ -64,6 +70,9 @@ const translations: Record<SupportedLanguage, TranslationDictionary> = {
     clear_success: '✅ Successfully deleted **{count}** message(s).',
     ticket_created: '✅ Your support ticket has been created successfully: {channel}',
     ticket_welcome: 'Hello {user}! A staff member will assist you shortly. Please describe your request below.',
+    access_denied_admin: '⛔ **Access Denied**: This administration command is reserved for administrators or authorized roles.',
+    access_denied_mod: '⛔ **Access Denied**: You do not have the required permissions to execute this moderation command (Moderator/Staff role required).',
+    cooldown_wait: '⏳ **Anti-Spam**: Please wait **{seconds}s** before reusing the `{command}` command.',
   },
   es: {
     lang_name: 'Español',
@@ -85,6 +94,9 @@ const translations: Record<SupportedLanguage, TranslationDictionary> = {
     clear_success: '✅ Se han eliminado **{count}** mensaje(s) correctamente.',
     ticket_created: '✅ Tu ticket de soporte ha sido creado con éxito: {channel}',
     ticket_welcome: '¡Hola {user}! Un miembro del equipo te atenderá en breve. Describe tu consulta abajo.',
+    access_denied_admin: '⛔ **Acceso Denegado**: Este comando de administración está reservado para administradores o roles autorizados.',
+    access_denied_mod: '⛔ **Acceso Denegado**: No tienes los permisos necesarios para ejecutar este comando de moderación (Rol de Moderador/Staff requerido).',
+    cooldown_wait: '⏳ **Anti-Spam**: Espera **{seconds}s** antes de volver a usar el comando `{command}`.',
   },
   de: {
     lang_name: 'Deutsch',
@@ -106,6 +118,9 @@ const translations: Record<SupportedLanguage, TranslationDictionary> = {
     clear_success: '✅ **{count}** Nachricht(en) erfolgreich gelöscht.',
     ticket_created: '✅ Dein Support-Ticket wurde erfolgreich erstellt: {channel}',
     ticket_welcome: 'Hallo {user}! Ein Teammitglied wird dir in Kürze behilflich sein. Bitte beschreibe dein Anliegen.',
+    access_denied_admin: '⛔ **Zugriff verweigert**: Dieser Administrationsbefehl ist Administratoren oder autorisierten Rollen vorbehalten.',
+    access_denied_mod: '⛔ **Zugriff verweigert**: Du besitzt nicht die erforderlichen Berechtigungen, um diesen Moderationsbefehl auszuführen (Moderator-/Staff-Rolle erforderlich).',
+    cooldown_wait: '⏳ **Anti-Spam**: Bitte warte noch **{seconds}s**, bevor du den Befehl `{command}` erneut verwendest.',
   },
 };
 

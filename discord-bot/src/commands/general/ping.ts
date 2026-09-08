@@ -1,6 +1,7 @@
-import { ActionRowBuilder, ButtonBuilder, ButtonStyle, Client, EmbedBuilder, SlashCommandBuilder } from 'discord.js';
+import { ActionRowBuilder, ButtonBuilder, ButtonStyle, Client, SlashCommandBuilder } from 'discord.js';
 import { Command, CommandContext } from '../../types/command.js';
-import { GuildConfig, resolveHexColor } from '../../types/guildConfig.js';
+import { GuildConfig } from '../../types/guildConfig.js';
+import { baseEmbed } from '../../utils/embeds.js';
 
 function formatUptime(uptimeMs: number): string {
   const seconds = Math.floor((uptimeMs / 1000) % 60);
@@ -26,8 +27,11 @@ export function buildPingMessage(client: Client, guildConfig: GuildConfig, apiLa
   const heapUsedMb = (memUsage.heapUsed / 1024 / 1024).toFixed(1);
   const uptimeStr = formatUptime(client.uptime || 0);
 
-  const embed = new EmbedBuilder()
-    .setColor(wsPing < 150 ? resolveHexColor(guildConfig.successColor || '#57F287') : 0xed4245)
+  const embed = baseEmbed(wsPing < 150 ? 'success' : 'error', {
+    color: (wsPing < 150 ? guildConfig.successColor : guildConfig.errorColor) || null,
+    footerText: `${guildConfig.botName} • Diagnostic temps réel`,
+    footerIconURL: client.user?.displayAvatarURL(),
+  })
     .setTitle('🏓 Télémétrie Réseau & Diagnostic')
     .setDescription(
       `Connexion active avec les serveurs Discord Gateway.\n` +
@@ -65,10 +69,6 @@ export function buildPingMessage(client: Client, guildConfig: GuildConfig, apiLa
         inline: true,
       }
     )
-    .setFooter({
-      text: `${guildConfig.botName} • Diagnostic temps réel`,
-      iconURL: client.user?.displayAvatarURL(),
-    })
     .setTimestamp();
 
   const row = new ActionRowBuilder<ButtonBuilder>().addComponents(

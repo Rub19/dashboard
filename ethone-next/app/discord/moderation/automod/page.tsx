@@ -512,7 +512,7 @@ export default function AutoModCommandCenterPage() {
         }
 
         // 4. Incidents
-        const incRes = await fetch(`${BOT_API_URL}/api/guilds/${selectedGuild.id}/automod/incidents?limit=25`);
+        const incRes = await fetch(`${BOT_API_URL}/api/guilds/${selectedGuild.id}/automod/history?limit=25`);
         if (incRes.ok) {
           const incData = await incRes.json();
           if (incData.incidents) {
@@ -571,17 +571,30 @@ export default function AutoModCommandCenterPage() {
   };
 
   // Toggle Global AutoMod
+  // NB : il n'existe pas d'endpoint dédié POST /automod/toggle côté bot — la config
+  // (enabled/smartMode/...) est un objet unique persisté via PUT /automod/config
+  // (voir discord-bot/src/server/routes/autoModRoutes.ts). On envoie donc un PATCH
+  // partiel sur cet endpoint, qui est le seul réellement câblé sur autoModRepository.
   const handleToggleGlobal = async () => {
     const nextState = !config.enabled;
     setConfig((prev) => ({ ...prev, enabled: nextState }));
-    if (selectedGuild) {
+    if (selectedGuild && BOT_API_URL) {
       try {
-        await fetch(`${BOT_API_URL}/api/guilds/${selectedGuild.id}/automod/toggle`, {
-          method: "POST",
+        const res = await fetch(`${BOT_API_URL}/api/guilds/${selectedGuild.id}/automod/config`, {
+          method: "PUT",
           headers: { "Content-Type": "application/json" },
           body: JSON.stringify({ enabled: nextState }),
         });
-      } catch {}
+        if (!res.ok) {
+          setConfig((prev) => ({ ...prev, enabled: !nextState }));
+          showError("Erreur", "Impossible de synchroniser l'état AutoMod avec le bot.");
+          return;
+        }
+      } catch {
+        setConfig((prev) => ({ ...prev, enabled: !nextState }));
+        showError("Erreur", "Impossible de synchroniser l'état AutoMod avec le bot.");
+        return;
+      }
     }
     success(nextState ? "AutoMod activé" : "AutoMod désactivé", `La protection globale est désormais ${nextState ? "en fonction" : "en pause"}.`);
   };
@@ -590,14 +603,23 @@ export default function AutoModCommandCenterPage() {
   const handleToggleSmartMode = async () => {
     const nextState = !config.smartMode;
     setConfig((prev) => ({ ...prev, smartMode: nextState }));
-    if (selectedGuild) {
+    if (selectedGuild && BOT_API_URL) {
       try {
-        await fetch(`${BOT_API_URL}/api/guilds/${selectedGuild.id}/automod/smart-mode`, {
-          method: "POST",
+        const res = await fetch(`${BOT_API_URL}/api/guilds/${selectedGuild.id}/automod/config`, {
+          method: "PUT",
           headers: { "Content-Type": "application/json" },
           body: JSON.stringify({ smartMode: nextState }),
         });
-      } catch {}
+        if (!res.ok) {
+          setConfig((prev) => ({ ...prev, smartMode: !nextState }));
+          showError("Erreur", "Impossible de synchroniser le Smart Mode avec le bot.");
+          return;
+        }
+      } catch {
+        setConfig((prev) => ({ ...prev, smartMode: !nextState }));
+        showError("Erreur", "Impossible de synchroniser le Smart Mode avec le bot.");
+        return;
+      }
     }
     success(nextState ? "Smart Mode activé" : "Smart Mode standard", nextState ? "La sensibilité s'ajuste automatiquement aux alertes Anti-Raid." : "Sensibilité fixe appliquée.");
   };
@@ -668,20 +690,57 @@ export default function AutoModCommandCenterPage() {
   };
 
   // Inspecter un profil utilisateur
+  // NB : le backend expose GET /automod/users/:userId/profile (compteurs/trustLevel,
+  // pas le format UserModerationProfile attendu ici) et GET /automod/strikes/:userId
+  // (liste des strikes actifs) — on combine les deux réponses réelles avec l'historique
+  // d'incidents déjà chargé pour reconstruire la forme attendue par l'UI.
   const handleInspectUser = async (userId: string) => {
     if (!selectedGuild || !userId) return;
     setInspectedUserId(userId);
     setIsLoadingProfile(true);
     try {
-      const res = await fetch(`${BOT_API_URL}/api/guilds/${selectedGuild.id}/automod/incidents/user/${userId}/profile`);
-      if (res.ok) {
-        const data = await res.json();
-        if (data.profile) {
-          setInspectedProfile(data.profile);
-          return;
-        }
+      const [strikesRes, profileRes] = await Promise.all([
+        fetch(`${BOT_API_URL}/api/guilds/${selectedGuild.id}/automod/strikes/${userId}`),
+        fetch(`${BOT_API_URL}/api/guilds/${selectedGuild.id}/automod/users/${userId}/profile`),
+      ]);
+
+      if (!strikesRes.ok || !profileRes.ok) {
+        throw new Error("Profil indisponible");
       }
-      throw new Error("Profil indisponible");
+
+      const strikesData = await strikesRes.json();
+      const profileData = await profileRes.json();
+      const activeStrikes: UserStrikeRecord[] = strikesData.strikes || [];
+      const backendRecentIncidents: AutoModIncident[] = profileData.profile?.recentDetections || [];
+      const localIncidents = incidents.filter((i) => i.userId === userId);
+      const recentIncidents = localIncidents.length > 0 ? localIncidents : backendRecentIncidents;
+      const currentCalculatedRisk =
+        recentIncidents.length > 0
+          ? Math.round(
+              recentIncidents.reduce((sum, i) => sum + (i.totalRiskScore || 0), 0) / recentIncidents.length
+            )
+          : activeStrikes.length * 15;
+
+      setInspectedProfile({
+        userId,
+        activeStrikesCount: activeStrikes.length,
+        activeStrikes,
+        strikeHistory: activeStrikes,
+        incidentCount: backendRecentIncidents.length || localIncidents.length,
+        recentIncidents,
+        currentCalculatedRisk,
+        riskLevel:
+          currentCalculatedRisk >= 75
+            ? "CRITICAL"
+            : currentCalculatedRisk >= 55
+            ? "HIGH"
+            : currentCalculatedRisk >= 30
+            ? "MEDIUM"
+            : currentCalculatedRisk > 0
+            ? "LOW"
+            : "SAFE",
+      });
+      return;
     } catch {
       // Profil de secours
       const userIncidents = incidents.filter((i) => i.userId === userId);
@@ -715,9 +774,12 @@ export default function AutoModCommandCenterPage() {
   const handleClearUserStrikes = async (userId: string) => {
     if (!selectedGuild) return;
     try {
-      await fetch(`${BOT_API_URL}/api/guilds/${selectedGuild.id}/automod/strikes/user/${userId}`, {
-        method: "DELETE",
+      const res = await fetch(`${BOT_API_URL}/api/guilds/${selectedGuild.id}/automod/strikes/clear`, {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ userId }),
       });
+      if (!res.ok) throw new Error("Échec de la révocation");
       success("Strikes révoqués", `Tous les strikes actifs de ${userId} ont été effacés.`);
       handleInspectUser(userId);
     } catch {
@@ -810,7 +872,7 @@ export default function AutoModCommandCenterPage() {
   };
 
   return (
-    <div className="h-full min-h-0 flex flex-col overflow-hidden bg-[#07080A] text-zinc-100 font-sans">
+    <div className="h-full min-h-0 flex flex-col overflow-hidden bg-[var(--bg-main)] text-zinc-100 font-sans">
       {/* HEADER FIXE */}
       <header className="shrink-0 border-b border-white/[0.08] bg-black/40 backdrop-blur-xl px-4 sm:px-6 py-3.5 z-20">
         <div className="max-w-7xl mx-auto flex flex-col sm:flex-row items-start sm:items-center justify-between gap-3">
@@ -2443,7 +2505,7 @@ export default function AutoModCommandCenterPage() {
       {/* ======================================================== */}
       {inspectedUserId && (
         <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/70 backdrop-blur-sm animate-in fade-in">
-          <div className="w-full max-w-xl rounded-2xl border border-white/10 bg-[#0C0D12] p-6 shadow-2xl space-y-5">
+          <div className="w-full max-w-xl rounded-2xl border border-white/10 bg-[var(--bg-surface-elevated)] p-6 shadow-2xl space-y-5">
             <div className="flex items-center justify-between border-b border-white/10 pb-3">
               <div className="flex items-center gap-2.5">
                 <Users className="h-5 w-5 text-amber-400" />

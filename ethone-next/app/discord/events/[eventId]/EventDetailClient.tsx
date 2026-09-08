@@ -165,7 +165,7 @@ export default function EventDetailClient() {
     : 100;
 
   return (
-    <div className="min-h-screen bg-[#090A0F] text-slate-100 pb-20 selection:bg-indigo-500/30">
+    <div className="min-h-screen bg-[var(--bg-main)] text-slate-100 pb-20 selection:bg-indigo-500/30">
       {/* Background glow */}
       <div className="fixed inset-0 pointer-events-none overflow-hidden">
         <div className="absolute top-0 left-1/3 w-[700px] h-[700px] bg-indigo-600/10 rounded-full blur-[160px]" />

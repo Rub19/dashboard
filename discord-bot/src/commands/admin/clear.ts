@@ -5,6 +5,7 @@ import {
   User,
 } from 'discord.js';
 import { Command, CommandContext } from '../../types/command.js';
+import { formatString, getTranslation } from '../../utils/i18n.js';
 
 export const clearCommand: Command = {
   name: 'clear',
@@ -106,11 +107,10 @@ export const clearCommand: Command = {
       } else {
         // Suppression standard de masse
         const deleted = await channel.bulkDelete(amount, true);
+        const t = getTranslation(config.language);
         const embed = ctx
           .createEmbed('success')
-          .setDescription(
-            `${config.emojis.success || '✅'} **${deleted.size}** message(s) supprimé(s) avec succès.`
-          );
+          .setDescription(formatString(t.clear_success, { count: deleted.size }));
         await ctx.reply({ embeds: [embed], ephemeral: true });
       }
     } catch {

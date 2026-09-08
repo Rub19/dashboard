@@ -15,6 +15,7 @@ import { discordOwnerPanel } from '../modules/presence/ui/discordOwnerPanel.js';
 import { config } from '../config.js';
 import { syncEngine } from '../services/syncEngine.js';
 import { logger } from '../utils/logger.js';
+import { formatString, getTranslation } from '../utils/i18n.js';
 
 export async function onMessageCreate(message: Message) {
   // Ignorer les bots
@@ -121,8 +122,12 @@ export async function onMessageCreate(message: Message) {
 
   if (onCooldown) {
     try {
+      const tCooldown = getTranslation(guildConfig.language);
       const cooldownMsg = await message.reply(
-        `⏳ **Anti-Spam** : Veuillez patienter encore **${remainingSeconds}s** avant de réutiliser la commande \`${prefix}${command.name}\`.`
+        formatString(tCooldown.cooldown_wait, {
+          seconds: remainingSeconds,
+          command: `${prefix}${command.name}`,
+        })
       );
       setTimeout(() => cooldownMsg.delete().catch(() => null), 3000);
     } catch {
@@ -141,9 +146,11 @@ export async function onMessageCreate(message: Message) {
     const hasConfiguredAdminRole = guildConfig.adminRoles?.some((r) => memberRoles.includes(r)) ?? false;
     const hasConfiguredModRole = guildConfig.modRoles?.some((r) => memberRoles.includes(r)) ?? false;
 
+    const tAccess = getTranslation(guildConfig.language);
+
     if (command.category === 'Administration') {
       if (!hasConfiguredAdminRole) {
-        await message.reply(`${guildConfig.emojis.error} ⛔ **Accès Refusé** : Cette commande d'administration est réservée aux administrateurs ou rôles autorisés.`).catch(() => null);
+        await message.reply(`${guildConfig.emojis.error} ${tAccess.access_denied_admin}`).catch(() => null);
         return;
       }
     } else if (command.category === 'Modération') {
@@ -152,7 +159,7 @@ export async function onMessageCreate(message: Message) {
       ) ?? false;
 
       if (!hasConfiguredAdminRole && !hasConfiguredModRole && !hasPermissionFlags) {
-        await message.reply(`${guildConfig.emojis.error} ⛔ **Accès Refusé** : Vous ne disposez pas des permissions nécessaires pour exécuter cette commande de modération (Rôle Modérateur/Staff requis).`).catch(() => null);
+        await message.reply(`${guildConfig.emojis.error} ${tAccess.access_denied_mod}`).catch(() => null);
         return;
       }
     }

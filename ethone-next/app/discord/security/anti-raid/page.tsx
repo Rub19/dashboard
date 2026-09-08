@@ -658,9 +658,9 @@ export default function AntiRaidDashboardPage() {
   const threat = THREAT_COLORS[metrics.threatLevel] || THREAT_COLORS.SAFE;
 
   return (
-    <div className="h-full min-h-0 w-full flex flex-col overflow-hidden bg-[#0A0D14] text-white">
+    <div className="h-full min-h-0 w-full flex flex-col overflow-hidden bg-[var(--bg-main)] text-white">
       {/* 1. TOP HEADER BAR */}
-      <div className="shrink-0 border-b border-white/10 bg-[#0F1420]/80 backdrop-blur-md px-4 sm:px-6 py-3.5 flex flex-wrap items-center justify-between gap-3 z-20">
+      <div className="shrink-0 border-b border-white/10 bg-[var(--bg-surface-elevated)]/80 backdrop-blur-md px-4 sm:px-6 py-3.5 flex flex-wrap items-center justify-between gap-3 z-20">
         <div className="flex items-center gap-3">
           <Link
             href="/discord"
@@ -698,7 +698,7 @@ export default function AntiRaidDashboardPage() {
                 className="appearance-none bg-white/[0.04] border border-white/10 rounded-xl px-3 py-1.5 pr-8 text-xs font-medium text-white/90 focus:outline-none focus:border-red-500/50 hover:bg-white/[0.07] transition-all cursor-pointer"
               >
                 {manageableGuilds.map((g) => (
-                  <option key={g.id} value={g.id} className="bg-[#0F1420] text-white">
+                  <option key={g.id} value={g.id} className="bg-[var(--bg-surface-elevated)] text-white">
                     {g.name}
                   </option>
                 ))}
@@ -1661,7 +1661,7 @@ export default function AntiRaidDashboardPage() {
       {/* 3. INVESTIGATION MODAL */}
       {selectedIncident && (
         <div className="fixed inset-0 z-50 bg-black/80 backdrop-blur-md flex items-center justify-center p-4 sm:p-6 animate-fadeIn">
-          <div className="w-full max-w-2xl bg-[#0F1420] border border-white/10 rounded-2xl p-6 shadow-2xl space-y-4 max-h-[85vh] overflow-y-auto os-scroll">
+          <div className="w-full max-w-2xl bg-[var(--bg-surface-elevated)] border border-white/10 rounded-2xl p-6 shadow-2xl space-y-4 max-h-[85vh] overflow-y-auto os-scroll">
             <div className="flex items-center justify-between pb-3 border-b border-white/10">
               <div className="flex items-center gap-2.5">
                 <div className="w-8 h-8 rounded-lg bg-red-500/20 text-red-400 flex items-center justify-center font-mono font-bold text-sm">
@@ -1749,7 +1749,7 @@ export default function AntiRaidDashboardPage() {
       {/* 4. CONFIRMATION MODAL */}
       {confirmModal.open && (
         <div className="fixed inset-0 z-50 bg-black/80 backdrop-blur-md flex items-center justify-center p-4 animate-fadeIn">
-          <div className="w-full max-w-md bg-[#0F1420] border border-white/10 rounded-2xl p-6 shadow-2xl space-y-4">
+          <div className="w-full max-w-md bg-[var(--bg-surface-elevated)] border border-white/10 rounded-2xl p-6 shadow-2xl space-y-4">
             <h3 className="text-base font-bold text-white">{confirmModal.title}</h3>
             <p className="text-xs text-white/60">{confirmModal.description}</p>
             <div className="flex items-center justify-end gap-2 pt-2">

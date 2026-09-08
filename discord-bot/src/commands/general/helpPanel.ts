@@ -1,5 +1,6 @@
 import {
   ActionRowBuilder,
+  ApplicationCommandOptionType,
   ButtonBuilder,
   ButtonInteraction,
   ButtonStyle,
@@ -13,6 +14,7 @@ import { GuildConfig } from '../../types/guildConfig.js';
 import { guildConfigService } from '../../services/guildConfigService.js';
 import { config } from '../../config.js';
 import { logger } from '../../utils/logger.js';
+import { BRAND_COLORS } from '../../utils/embeds.js';
 
 export interface HelpCategoryMeta {
   id: string;
@@ -30,7 +32,7 @@ export const HELP_CATEGORIES: HelpCategoryMeta[] = [
     emoji: '🤖',
     color: 0x8b5cf6, // Violet vibrant
     description: "Assistant IA 2.0, réponses intelligentes du serveur et résumés de salon",
-    commandNames: ['ask', 'summarize'],
+    commandNames: ['ask', 'summarize', 'imagine'],
   },
   {
     id: 'moderation',
@@ -99,7 +101,7 @@ export const HELP_CATEGORIES: HelpCategoryMeta[] = [
     emoji: '⚙️',
     color: 0x6366f1, // Indigo
     description: "Configuration globale du serveur, gestion des préfixes et activation des modules",
-    commandNames: ['settings', 'prefix', 'language'],
+    commandNames: ['settings', 'prefix', 'language', 'permissions', 'ai-setup'],
   },
   {
     id: 'general',
@@ -110,6 +112,75 @@ export const HELP_CATEGORIES: HelpCategoryMeta[] = [
     commandNames: ['bot', 'help', 'ping'],
   },
 ];
+
+/**
+ * Retourne les noms de sous-commandes réellement déclarées dans le SlashData
+ * d'une commande (source de vérité = la définition slash elle-même, pas une
+ * liste maintenue à la main). Permet à /help de ne jamais afficher une syntaxe
+ * du type `/automod` alors que la commande ne s'exécute qu'avec une sous-commande
+ * (ex : `/automod status`).
+ */
+export function getCommandSubcommandNames(cmd: Command): string[] {
+  if (!cmd.slashData) return [];
+
+  let json: { options?: Array<{ name: string; type: number }> };
+  try {
+    json = (cmd.slashData as { toJSON: () => typeof json }).toJSON();
+  } catch {
+    return [];
+  }
+
+  const options = json.options || [];
+  return options
+    .filter((opt) => opt.type === ApplicationCommandOptionType.Subcommand)
+    .map((opt) => opt.name);
+}
+
+/**
+ * Construit un texte de syntaxe fidèle à la réalité : si la commande exige une
+ * sous-commande, on liste les sous-commandes valides plutôt que la commande nue.
+ */
+export function buildCommandSyntax(
+  cmd: Command,
+  prefix: string,
+  includePrefixAlias: boolean
+): string {
+  const subcommands = getCommandSubcommandNames(cmd);
+
+  if (subcommands.length === 0) {
+    return includePrefixAlias
+      ? `\`/${cmd.name}\` ou \`${prefix}${cmd.name}\``
+      : `\`/${cmd.name}\``;
+  }
+
+  const maxShown = 4;
+  const shown = subcommands.slice(0, maxShown).map((s) => `\`/${cmd.name} ${s}\``);
+  const remaining = subcommands.length - maxShown;
+  return remaining > 0 ? `${shown.join(', ')} *(+${remaining} autres)*` : shown.join(', ');
+}
+
+/**
+ * Résout la liste réelle des commandes appartenant à une catégorie du /help :
+ * on part toujours de `allCommands` (le registre effectif) et on ne garde que
+ * les commandes dont le nom apparaît dans `cat.commandNames` — une commande
+ * retirée du registre ne peut donc jamais s'afficher (pas de "fantôme").
+ * Pour la catégorie "general", on rattache aussi toute commande enregistrée
+ * qui n'aurait été oubliée dans aucune catégorie, pour ne jamais la perdre.
+ */
+export function resolveCategoryCommands(cat: HelpCategoryMeta, allCommands: Command[]): Command[] {
+  const wanted = new Set(cat.commandNames.map((n) => n.toLowerCase()));
+
+  if (cat.id === 'general') {
+    const categorized = new Set(
+      HELP_CATEGORIES.flatMap((c) => c.commandNames.map((n) => n.toLowerCase()))
+    );
+    return allCommands.filter(
+      (cmd) => wanted.has(cmd.name.toLowerCase()) || !categorized.has(cmd.name.toLowerCase())
+    );
+  }
+
+  return allCommands.filter((cmd) => wanted.has(cmd.name.toLowerCase()));
+}
 
 export class HelpPanel {
   /**
@@ -144,7 +215,7 @@ export class HelpPanel {
     // 1. PAGE D'ACCUEIL (VUE D'ENSEMBLE)
     if (isHome) {
       embed
-        .setColor(0x5865f2) // Discord Blurple vibrant
+        .setColor(BRAND_COLORS.primary) // Couleur de marque ETHONE
         .setAuthor({
           name: `${guildConfig.botName} • Centre d'Aide & Documentation`,
           iconURL: botAvatarUrl,
@@ -177,7 +248,7 @@ export class HelpPanel {
             name: `📂 Modules du Serveur (1/2)`,
             value: HELP_CATEGORIES.slice(0, 5)
               .map((cat) => {
-                const cmdCount = cat.commandNames.length;
+                const cmdCount = resolveCategoryCommands(cat, allCommands).length;
                 return `${cat.emoji} **${cat.name}** (\`${cmdCount} cmd${cmdCount > 1 ? 's' : ''}\`)\n└ *${cat.description}*`;
               })
               .join('\n\n'),
@@ -187,7 +258,7 @@ export class HelpPanel {
             name: `📂 Modules du Serveur (2/2)`,
             value: HELP_CATEGORIES.slice(5)
               .map((cat) => {
-                const cmdCount = cat.commandNames.length;
+                const cmdCount = resolveCategoryCommands(cat, allCommands).length;
                 return `${cat.emoji} **${cat.name}** (\`${cmdCount} cmd${cmdCount > 1 ? 's' : ''}\`)\n└ *${cat.description}*`;
               })
               .join('\n\n'),
@@ -203,9 +274,7 @@ export class HelpPanel {
       // 2. PAGE DE CATÉGORIE SPÉCIFIQUE
       const currentCatIndex = HELP_CATEGORIES.findIndex((c) => c.id === categoryKey);
       const cat = currentCatIndex >= 0 ? HELP_CATEGORIES[currentCatIndex] : HELP_CATEGORIES[0];
-      const categoryCommands = allCommands.filter((cmd) =>
-        cat.commandNames.includes(cmd.name.toLowerCase())
-      );
+      const categoryCommands = resolveCategoryCommands(cat, allCommands);
 
       embed
         .setColor(cat.color)
@@ -229,9 +298,7 @@ export class HelpPanel {
           const isStaff = cmd.userPermissions && cmd.userPermissions.length > 0;
           const badge = isStaff ? '`🔒 Staff / Admin`' : '`👥 Tous les membres`';
 
-          const syntaxText = guildConfig.prefixCommandsEnabled
-            ? `\`/${cmd.name}\` ou \`${prefix}${cmd.name}\``
-            : `\`/${cmd.name}\``;
+          const syntaxText = buildCommandSyntax(cmd, prefix, guildConfig.prefixCommandsEnabled);
 
           const aliasesText =
             cmd.aliases && cmd.aliases.length > 0
@@ -266,7 +333,7 @@ export class HelpPanel {
         .setDefault(isHome),
       ...HELP_CATEGORIES.map((c) =>
         new StringSelectMenuOptionBuilder()
-          .setLabel(`${c.name} (${c.commandNames.length})`)
+          .setLabel(`${c.name} (${resolveCategoryCommands(c, allCommands).length})`)
           .setEmoji(c.emoji)
           .setValue(c.id)
           .setDescription(`${c.description.slice(0, 48)}...`)

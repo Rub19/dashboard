@@ -2,7 +2,6 @@ import {
   ActionRowBuilder,
   ButtonBuilder,
   ButtonStyle,
-  EmbedBuilder,
   PermissionFlagsBits,
   SlashCommandBuilder,
   StringSelectMenuBuilder,
@@ -10,14 +9,17 @@ import {
 } from 'discord.js';
 import { guildConfigService } from '../../services/guildConfigService.js';
 import { Command, CommandContext } from '../../types/command.js';
-import { GuildConfig, resolveHexColor } from '../../types/guildConfig.js';
+import { GuildConfig } from '../../types/guildConfig.js';
+import { baseEmbed } from '../../utils/embeds.js';
 
 /**
  * Construit l'embed et les composants pour la vue principale des paramètres
  */
 export function buildSettingsMessage(guildConfig: GuildConfig, memberName?: string) {
-  const embed = new EmbedBuilder()
-    .setColor(resolveHexColor(guildConfig.primaryColor))
+  const embed = baseEmbed('primary', {
+    color: guildConfig.primaryColor,
+    footerText: `${guildConfig.botName} • Utilisez le menu ci-dessous pour modifier`,
+  })
     .setTitle(`${guildConfig.emojis.settings} Configuration du Serveur`)
     .setDescription(
       `Personnalisez le comportement, les couleurs et les commandes de **${guildConfig.botName}** sur ce serveur.\n` +
@@ -78,11 +80,7 @@ export function buildSettingsMessage(guildConfig: GuildConfig, memberName?: stri
           `• **Personnalité / Ton :** \`${guildConfig.botPersonality || 'FRIENDLY'}\``,
         inline: false,
       }
-    )
-    .setFooter({
-      text: `${guildConfig.botName} • Utilisez le menu ci-dessous pour modifier`,
-    })
-    .setTimestamp();
+    );
 
   // Menu déroulant de sélection d'actions
   const selectMenu = new StringSelectMenuBuilder()

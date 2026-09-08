@@ -1,3 +1,75 @@
+const v12052_fr: ChangelogEntry = {
+  version: "v1.20.52",
+  date: "2026-09-08",
+  title: "Sécurité & Fiabilité des Connexions — Correctif Critique OAuth Discord, Audit Complet des Intégrations & Synchronisation Bot",
+  items: [
+    "Correctif de Sécurité Critique (Discord OAuth) : suppression d'un secret client codé en dur et exposé côté navigateur, remplacé par le passage exclusif par le relais Worker sécurisé — identique à toutes les autres connexions.",
+    "Audit de Sécurité Étendu (GitHub, Notion, Todoist) : correction de la même faille potentielle permettant à une valeur envoyée par le navigateur d'écraser le secret serveur légitime.",
+    "Google Calendar : correction du bouton de test de connexion qui interrogeait une route inexistante et échouait systématiquement.",
+    "Spotify : le jeton d'accès est désormais correctement persisté côté serveur au lieu d'un échange direct navigateur → Spotify qui ne synchronisait jamais l'état réel de la connexion.",
+    "Twitch : suppression d'un parcours OAuth mort qui ne pouvait jamais aboutir (route de destination inexistante).",
+    "Fiabilité de l'État des Connexions : une connexion en échec ne s'affiche plus faussement comme « Connecté » sur la page Connexions.",
+    "Synchronisation Bidirectionnelle Bot Discord ↔ ETHONE : correction de cinq routes erronées sur la page Automod du dashboard, de la variable d'environnement du Bot Control Center, et d'un simulateur de synchronisation qui confirmait des changements jamais réellement enregistrés.",
+    "Dynamic Island : correction d'un bug de priorité qui empêchait Spotify de jamais s'afficher, systématiquement évincé par la synchronisation d'arrière-plan.",
+    "Commande /help du Bot Discord : la liste des commandes est désormais générée dynamiquement depuis les commandes réellement enregistrées (fin des commandes fantômes et des commandes manquantes), et affiche la vraie syntaxe des commandes à sous-commandes (ex. /automod status).",
+    "Audit de l'enregistrement des commandes slash Discord : architecture confirmée saine, aucune dérive entre le code et les commandes déployées.",
+  ],
+};
+
+const v12052_en: ChangelogEntry = {
+  version: "v1.20.52",
+  date: "2026-09-08",
+  title: "Connection Security & Reliability — Critical Discord OAuth Fix, Full Integration Audit & Bot Sync",
+  items: [
+    "Critical Security Fix (Discord OAuth): removed a hardcoded client secret exposed in browser-side code, replaced with the same secure Worker-only exchange path used by every other connection.",
+    "Extended Security Audit (GitHub, Notion, Todoist): fixed the same class of vulnerability that allowed a browser-supplied value to override the legitimate server-side secret.",
+    "Google Calendar: fixed the connection test button, which was querying a nonexistent route and always failing.",
+    "Spotify: access tokens are now correctly persisted server-side instead of a direct browser-to-Spotify exchange that never synced the real connection state.",
+    "Twitch: removed a dead OAuth path that could never succeed (its exchange route didn't exist).",
+    "Connection State Reliability: a failed connection no longer falsely displays as 'Connected' on the Connections page.",
+    "Bidirectional Discord Bot ↔ ETHONE Sync: fixed five mismatched routes on the dashboard's Automod page, the Bot Control Center's environment variable, and a sync stub that confirmed changes it never actually persisted.",
+    "Dynamic Island: fixed a priority bug that kept Spotify from ever appearing, perpetually starved out by background sync activity.",
+    "Discord Bot /help Command: the command list is now generated dynamically from the actually registered commands (no more phantom or missing commands), and shows the real syntax for commands with subcommands (e.g. /automod status).",
+    "Discord Slash Command Registration Audit: architecture confirmed sound, no drift between code and deployed commands.",
+  ],
+};
+
+const v12052_es: ChangelogEntry = {
+  version: "v1.20.52",
+  date: "2026-09-08",
+  title: "Seguridad y Fiabilidad de las Conexiones — Corrección Crítica de OAuth Discord, Auditoría Completa e Integraciones",
+  items: [
+    "Corrección de Seguridad Crítica (Discord OAuth): eliminado un secreto de cliente codificado y expuesto en el navegador, sustituido por el mismo canal seguro del Worker que usan el resto de conexiones.",
+    "Auditoría de Seguridad Ampliada (GitHub, Notion, Todoist): corregida la misma vulnerabilidad que permitía que un valor enviado desde el navegador sobrescribiera el secreto legítimo del servidor.",
+    "Google Calendar: corregido el botón de prueba de conexión, que consultaba una ruta inexistente y siempre fallaba.",
+    "Spotify: el token de acceso ahora se guarda correctamente en el servidor en lugar de un intercambio directo navegador-Spotify que nunca sincronizaba el estado real de la conexión.",
+    "Twitch: eliminada una ruta OAuth inservible que nunca podía completarse.",
+    "Fiabilidad del Estado de Conexión: una conexión fallida ya no se muestra falsamente como 'Conectado' en la página de Conexiones.",
+    "Sincronización Bidireccional Bot Discord ↔ ETHONE: corregidas cinco rutas incorrectas en la página de Automod, la variable de entorno del Bot Control Center, y un simulador de sincronización que confirmaba cambios nunca realmente guardados.",
+    "Dynamic Island: corregido un error de prioridad que impedía que Spotify apareciera, siempre desplazado por la sincronización en segundo plano.",
+    "Comando /help del Bot de Discord: la lista de comandos ahora se genera dinámicamente desde los comandos realmente registrados (fin de comandos fantasma o ausentes), mostrando la sintaxis real de los comandos con subcomandos.",
+    "Auditoría del registro de comandos slash de Discord: arquitectura confirmada como sólida, sin desviación entre el código y los comandos desplegados.",
+  ],
+};
+
+const v12052_de: ChangelogEntry = {
+  version: "v1.20.52",
+  date: "2026-09-08",
+  title: "Verbindungssicherheit & Zuverlässigkeit — Kritischer Discord-OAuth-Fix, Vollständiges Integrations-Audit & Bot-Synchronisierung",
+  items: [
+    "Kritischer Sicherheitsfix (Discord OAuth): ein im Browser-Code fest codiertes und offengelegtes Client-Geheimnis entfernt, ersetzt durch denselben sicheren Worker-Austauschpfad wie bei allen anderen Verbindungen.",
+    "Erweitertes Sicherheitsaudit (GitHub, Notion, Todoist): dieselbe Schwachstelle behoben, durch die ein vom Browser gesendeter Wert das echte serverseitige Geheimnis überschreiben konnte.",
+    "Google Calendar: den Verbindungstest-Button korrigiert, der eine nicht existierende Route abfragte und immer fehlschlug.",
+    "Spotify: das Zugriffstoken wird jetzt korrekt serverseitig gespeichert statt eines direkten Browser-zu-Spotify-Austauschs, der den echten Verbindungsstatus nie synchronisierte.",
+    "Twitch: einen toten OAuth-Pfad entfernt, der nie erfolgreich sein konnte.",
+    "Zuverlässigkeit des Verbindungsstatus: eine fehlgeschlagene Verbindung wird nicht mehr fälschlicherweise als 'Verbunden' auf der Verbindungsseite angezeigt.",
+    "Bidirektionale Discord-Bot-↔-ETHONE-Synchronisierung: fünf falsch zugeordnete Routen auf der Automod-Seite, die Umgebungsvariable des Bot Control Centers und einen Sync-Stub behoben, der Änderungen bestätigte, die nie tatsächlich gespeichert wurden.",
+    "Dynamic Island: einen Prioritätsfehler behoben, der verhinderte, dass Spotify jemals angezeigt wurde, da es dauerhaft von der Hintergrundsynchronisierung verdrängt wurde.",
+    "Discord-Bot /help-Befehl: die Befehlsliste wird jetzt dynamisch aus den tatsächlich registrierten Befehlen erzeugt (keine Phantom- oder fehlenden Befehle mehr) und zeigt die echte Syntax für Befehle mit Unterbefehlen.",
+    "Audit der Discord-Slash-Befehlsregistrierung: Architektur als solide bestätigt, keine Abweichung zwischen Code und bereitgestellten Befehlen.",
+  ],
+};
+
 const v12051_fr: ChangelogEntry = {
   version: "v1.20.51",
   date: "2026-09-06",
@@ -21858,5 +21930,10 @@ CHANGELOG_BY_LANG.en.unshift(
   v12046_en,
   v12045_en
 );
+
+CHANGELOG_BY_LANG.fr.unshift(v12052_fr);
+CHANGELOG_BY_LANG.en.unshift(v12052_en);
+CHANGELOG_BY_LANG.es.unshift(v12052_es);
+CHANGELOG_BY_LANG.de.unshift(v12052_de);
 
 export const CHANGELOG = CHANGELOG_BY_LANG.fr;

@@ -1,7 +1,6 @@
 import {
   SlashCommandBuilder,
   PermissionFlagsBits,
-  EmbedBuilder,
   ActionRowBuilder,
   ButtonBuilder,
   ButtonStyle,
@@ -10,6 +9,7 @@ import {
 import { Command, CommandContext } from '../../types/command.js';
 import { RolePermissionService } from '../../modules/roles/services/rolePermissionService.js';
 import { guildConfigService } from '../../services/guildConfigService.js';
+import { successEmbed as buildSuccessEmbed, baseEmbed } from '../../utils/embeds.js';
 
 export const permissionsCommand: Command = {
   name: 'permissions',
@@ -57,8 +57,9 @@ export const permissionsCommand: Command = {
           activePreset: selected.id,
         });
 
-        const successEmbed = new EmbedBuilder()
-          .setColor(0x10b981) // Émeraude
+        const successEmbed = buildSuccessEmbed({
+          footerText: `Configuré par ${ctx.author.tag} • ETHONE Permissions 2.0`,
+        })
           .setTitle(`✅ Préset de Permissions Appliqué : ${selected.name}`)
           .setDescription(`${selected.description}\n\nTous les contrôles de modération et d'administration ont été mis à jour instantanément.`)
           .addFields(
@@ -77,9 +78,7 @@ export const permissionsCommand: Command = {
               value: selected.vipRoles.length > 0 ? selected.vipRoles.map((id) => `<@&${id}>`).join(' ') : '*Aucun rôle détecté*',
               inline: true,
             }
-          )
-          .setFooter({ text: `Configuré par ${ctx.author.tag} • ETHONE Permissions 2.0` })
-          .setTimestamp();
+          );
 
         await ctx.reply({ embeds: [successEmbed] });
         return;
@@ -101,8 +100,9 @@ export const permissionsCommand: Command = {
       .map((r) => `${categoryEmojis[r.detectedCategory]} <@&${r.roleId}> → **${r.recommendationLabel}** *(Confiance: ${r.confidence})*`)
       .join('\n');
 
-    const embed = new EmbedBuilder()
-      .setColor(0x6366f1) // Indigo ETHONE
+    const embed = baseEmbed('primary', {
+      footerText: 'Cliquez sur un bouton ci-dessous pour appliquer un préset en 1 clic.',
+    })
       .setTitle('🛡️ Gestionnaire de Rôles & Recommandations Automatiques')
       .setDescription(
         `L'intelligence de détection multilingue (FR, EN, ES, DE) a analysé les **${detectedRoles.length} rôles** du serveur.\n\n` +
@@ -125,11 +125,7 @@ export const permissionsCommand: Command = {
           value: 'Staff élargi et privilèges VIP.',
           inline: true,
         }
-      )
-      .setFooter({
-        text: 'Cliquez sur un bouton ci-dessous pour appliquer un préset en 1 clic.',
-      })
-      .setTimestamp();
+      );
 
     const row = new ActionRowBuilder<ButtonBuilder>().addComponents(
       new ButtonBuilder()
@@ -191,8 +187,7 @@ export async function handlePermissionPresetButton(interaction: ButtonInteractio
     activePreset: selected.id,
   });
 
-  const successEmbed = new EmbedBuilder()
-    .setColor(0x10b981)
+  const successEmbed = buildSuccessEmbed()
     .setTitle(`✅ Préset de Permissions Appliqué : ${selected.name}`)
     .setDescription(`${selected.description}\n\nConfiguration sauvegardée avec succès.`)
     .addFields(

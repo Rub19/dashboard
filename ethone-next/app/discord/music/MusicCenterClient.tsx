@@ -505,7 +505,7 @@ export default function MusicCenterClient() {
   const isFav = currentTrack ? favorites.some((f) => f.id === currentTrack.id || f.url === currentTrack.url) : false;
 
   return (
-    <div className="h-full min-h-0 flex flex-col overflow-hidden bg-[#07080A] text-zinc-100 font-sans">
+    <div className="h-full min-h-0 flex flex-col overflow-hidden bg-[var(--bg-main)] text-zinc-100 font-sans">
       {/* TOP HEADER */}
       <header className="shrink-0 border-b border-white/[0.08] bg-black/40 backdrop-blur-xl px-4 sm:px-6 py-3.5 z-20">
         <div className="max-w-7xl mx-auto flex items-center justify-between">
@@ -1300,7 +1300,7 @@ export default function MusicCenterClient() {
       {/* NEW PLAYLIST MODAL */}
       {isNewPlaylistOpen && (
         <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/70 backdrop-blur-sm">
-          <div className="w-full max-w-md rounded-2xl border border-white/10 bg-[#0C0D12] p-6 shadow-2xl space-y-4">
+          <div className="w-full max-w-md rounded-2xl border border-white/10 bg-[var(--bg-surface-elevated)] p-6 shadow-2xl space-y-4">
             <div className="flex items-center justify-between border-b border-white/10 pb-3">
               <h3 className="text-sm font-bold text-white">Créer une nouvelle Playlist</h3>
               <button onClick={() => setIsNewPlaylistOpen(false)} className="text-zinc-400 hover:text-white cursor-pointer">
@@ -1346,7 +1346,7 @@ export default function MusicCenterClient() {
       {/* CLEAR QUEUE CONFIRM MODAL */}
       {isClearConfirmOpen && (
         <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/70 backdrop-blur-sm">
-          <div className="w-full max-w-sm rounded-2xl border border-white/10 bg-[#0C0D12] p-5 shadow-2xl space-y-3">
+          <div className="w-full max-w-sm rounded-2xl border border-white/10 bg-[var(--bg-surface-elevated)] p-5 shadow-2xl space-y-3">
             <h3 className="text-sm font-bold text-white">Vider la file d'attente ?</h3>
             <p className="text-xs text-zinc-400">
               Tous les titres en attente seront supprimés. La musique actuellement en cours continuera de jouer.

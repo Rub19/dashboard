@@ -9,8 +9,8 @@ const API_ORIGIN = "https://api.github.com";
 const REDIRECT_URI = "https://ethone.dev/";
 const USER_AGENT = "ETHONE-Worker";
 
-export async function exchangeGithubCode(env, userId, { code, clientId, clientSecret }) {
-  const secret = clientSecret ? clientSecret : requireSecret(env, "GITHUB_CLIENT_SECRET");
+export async function exchangeGithubCode(env, userId, { code, clientId }) {
+  const secret = requireSecret(env, "GITHUB_CLIENT_SECRET");
   const response = await requestExternal(new URL("/login/oauth/access_token", TOKEN_ORIGIN), {
     env,
     expectedOrigin: TOKEN_ORIGIN,

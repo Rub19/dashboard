@@ -11,7 +11,9 @@ const APPROVED_SERVICE_ROLE_REFERENCES = new Set([
   "supabase/migrations/202607140002_public_profile_directory.sql",
   "supabase/migrations/202607260001_user_provider_credentials.sql",
   "supabase/migrations/202607270001_user_oauth_tokens.sql",
-  "supabase/migrations/202608150003_ai_usage_logs.sql"
+  "supabase/migrations/202608150003_ai_usage_logs.sql",
+  "discord-bot/src/modules/ai/services/aiSafetyService.ts",
+  "discord-bot/tests/test_security_isolation.ts"
 ]);
 const APPROVED_WORKER_REFERENCES = new Set(["ethone-next/lib/api.ts", "ethone-next/lib/supabase.ts"]);
 

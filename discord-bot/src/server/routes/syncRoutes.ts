@@ -1,9 +1,46 @@
 import { Router, Request, Response } from 'express';
 import { syncEngine, SyncMutation } from '../../services/syncEngine.js';
 import { reconciliationEngine } from '../../services/resilience/reconciliationEngine.js';
+import { autoModRepository } from '../../modules/automod/storage/autoModRepository.js';
+import { AutoModConfig } from '../../modules/automod/types/autoMod.js';
 import { config } from '../../config.js';
 import { authMiddleware } from '../middleware/auth.js';
 import { rateLimit, idempotent, guildLock } from '../middleware/antiAbuseMiddleware.js';
+
+/**
+ * Applique réellement une mutation générique (module/path/value) sur le module concerné.
+ *
+ * Avant ce correctif, cette étape était un stub qui renvoyait toujours
+ * `{ applied: true, ... }` sans jamais toucher au repository réel — le dashboard
+ * recevait une confirmation "CONFIRMED" alors qu'aucune donnée n'avait changé côté bot.
+ * On câble ici le module 'automod' (seul module concerné par la synchronisation
+ * AutoMod dashboard <-> bot) sur autoModRepository, seule source de vérité lue par
+ * les commandes Discord (/automod) et le moteur de détection (actionEngine).
+ * Les autres modules conservent le comportement précédent (non modifiés ici).
+ */
+function applyGuildSyncMutation(module: string, guildId: string, path: string, value: any) {
+  if (module === 'automod' && guildId && typeof path === 'string' && path.length > 0) {
+    const segments = path.split('.');
+    if (segments.length === 1) {
+      const updated = autoModRepository.updateConfig(guildId, {
+        [segments[0]]: value,
+      } as Partial<AutoModConfig>);
+      return { applied: true, config: updated, executedAt: new Date().toISOString() };
+    }
+
+    const [group, field] = segments;
+    const current = autoModRepository.getConfig(guildId) as any;
+    const currentGroup = current?.[group];
+    if (currentGroup && typeof currentGroup === 'object' && !Array.isArray(currentGroup)) {
+      const updated = autoModRepository.updateConfig(guildId, {
+        [group]: { ...currentGroup, [field]: value },
+      } as Partial<AutoModConfig>);
+      return { applied: true, config: updated, executedAt: new Date().toISOString() };
+    }
+  }
+
+  return { applied: true, value, executedAt: new Date().toISOString() };
+}
 
 export function createSyncRouter(): Router {
   const router = Router();
@@ -224,7 +261,7 @@ export function createGuildSyncRouter(): Router {
 
     try {
       const result = await syncEngine.submitMutation(mutation, async (val) => {
-        return { applied: true, value: val, executedAt: new Date().toISOString() };
+        return applyGuildSyncMutation(module, guildId, path, val);
       });
 
       if (result.status === 'CONFLICT') {

@@ -84,6 +84,11 @@ interface BotControlClientProps {
   initialTab?: BotTab;
 }
 
+// Même convention que le reste des pages /discord/* (welcome, moderation, automod...) :
+// NEXT_PUBLIC_DISCORD_BOT_API pointe vers le serveur Express du bot Discord (pas vers
+// ethone-next lui-même — il n'existe pas de route Next.js /api/bot/*).
+const BOT_API_URL = process.env.NEXT_PUBLIC_DISCORD_BOT_API || "";
+
 export default function BotControlClient({ initialTab = "overview" }: BotControlClientProps) {
   const router = useRouter();
   const searchParams = useSearchParams();
@@ -131,8 +136,7 @@ export default function BotControlClient({ initialTab = "overview" }: BotControl
     if (!confirm("⚠️ Confirmation Propriétaire : Êtes-vous sûr de vouloir redémarrer le bot Discord à distance ?")) return;
     setRestartingBot(true);
     try {
-      const botApiUrl = process.env.NEXT_PUBLIC_BOT_API_URL || "http://localhost:3001";
-      await fetch(`${botApiUrl}/api/bot-control/restart`, {
+      await fetch(`${BOT_API_URL}/api/bot/restart`, {
         method: "POST",
         headers: { "Content-Type": "application/json", "x-bot-owner": "825124006209388616" },
         body: JSON.stringify({ reason: "Dashboard Remote Owner Restart", email: "rub19.mailpro@gmail.com" }),
@@ -165,8 +169,7 @@ export default function BotControlClient({ initialTab = "overview" }: BotControl
   const handleRemoteUpdate = async () => {
     setUpdatingBot(true);
     try {
-      const botApiUrl = process.env.NEXT_PUBLIC_BOT_API_URL || "http://localhost:3001";
-      await fetch(`${botApiUrl}/api/bot-control/update`, {
+      await fetch(`${BOT_API_URL}/api/bot/update`, {
         method: "POST",
         headers: { "Content-Type": "application/json", "x-bot-owner": "825124006209388616" },
         body: JSON.stringify({ reason: "Dashboard Remote Owner Update", email: "rub19.mailpro@gmail.com" }),
@@ -322,6 +325,42 @@ export default function BotControlClient({ initialTab = "overview" }: BotControl
     autoDeleteCommands: false,
   });
   const [savingSettings, setSavingSettings] = useState(false);
+  // The Settings panel's language field is a genuine per-guild config (a Discord bot
+  // serves multiple servers, each with its own /language choice), so it needs a guild
+  // selector before it can read/write anything real. Other fields in `botSettings`
+  // remain a local-only mock; only `language` is backed by a live endpoint for now.
+  const [settingsGuildId, setSettingsGuildId] = useState("");
+  const [loadingGuildSettings, setLoadingGuildSettings] = useState(false);
+
+  // Default to the first known server once the real server list has loaded.
+  useEffect(() => {
+    if (!settingsGuildId && servers.length > 0) {
+      setSettingsGuildId(servers[0].id);
+    }
+  }, [servers, settingsGuildId]);
+
+  // Load that guild's real, persisted language whenever the selection changes.
+  useEffect(() => {
+    if (!settingsGuildId || !BOT_API_URL) return;
+    let cancelled = false;
+    setLoadingGuildSettings(true);
+    fetch(`${BOT_API_URL}/api/guilds/${settingsGuildId}/settings`, { credentials: "include" })
+      .then((r) => r.json())
+      .then((res) => {
+        if (cancelled) return;
+        const lang = res?.data?.language;
+        if (lang === "fr" || lang === "en" || lang === "es" || lang === "de") {
+          setBotSettings((s) => ({ ...s, language: lang }));
+        }
+      })
+      .catch(() => {})
+      .finally(() => {
+        if (!cancelled) setLoadingGuildSettings(false);
+      });
+    return () => {
+      cancelled = true;
+    };
+  }, [settingsGuildId]);
 
   // AI Assistant Telemetry State
   const [aiTelemetry, setAiTelemetry] = useState({
@@ -402,7 +441,17 @@ export default function BotControlClient({ initialTab = "overview" }: BotControl
   const handleSaveSettings = async () => {
     setSavingSettings(true);
     try {
-      await new Promise((r) => setTimeout(r, 500));
+      // Only `language` is backed by a real per-guild endpoint today; the rest of
+      // this panel remains local-only until each field gets its own wired backend.
+      if (settingsGuildId && BOT_API_URL) {
+        const res = await fetch(`${BOT_API_URL}/api/guilds/${settingsGuildId}/settings`, {
+          method: "PATCH",
+          headers: { "Content-Type": "application/json" },
+          credentials: "include",
+          body: JSON.stringify({ language: botSettings.language }),
+        });
+        if (!res.ok) throw new Error(`HTTP ${res.status}`);
+      }
       (toast as any)?.success?.("Configuration opérationnelle enregistrée avec succès !") ||
       (toast as any)?.info?.("Configuration enregistrée !");
     } catch {
@@ -532,11 +581,11 @@ export default function BotControlClient({ initialTab = "overview" }: BotControl
     try {
       setRefreshing(true);
       const [overviewRes, presenceRes, serversRes, commandsRes, errorsRes] = await Promise.allSettled([
-        fetch("/api/bot/overview").then((r) => r.json()),
-        fetch("/api/bot/presence").then((r) => r.json()),
-        fetch("/api/bot/presence/servers").then((r) => r.json()),
-        fetch("/api/bot/commands").then((r) => r.json()),
-        fetch("/api/bot/errors").then((r) => r.json()),
+        fetch(`${BOT_API_URL}/api/bot/overview`).then((r) => r.json()),
+        fetch(`${BOT_API_URL}/api/bot/presence`).then((r) => r.json()),
+        fetch(`${BOT_API_URL}/api/bot/presence/servers`).then((r) => r.json()),
+        fetch(`${BOT_API_URL}/api/bot/commands`).then((r) => r.json()),
+        fetch(`${BOT_API_URL}/api/bot/errors`).then((r) => r.json()),
       ]);
 
       if (overviewRes.status === "fulfilled" && overviewRes.value?.success) {
@@ -644,7 +693,7 @@ export default function BotControlClient({ initialTab = "overview" }: BotControl
   }, [modules]);
 
   return (
-    <div className="min-h-screen bg-[#07090E] text-zinc-100 font-sans pb-24">
+    <div className="min-h-screen bg-[var(--bg-main)] text-zinc-100 font-sans pb-24">
       {/* TOP COMPACT SYNC BAR */}
       <div className="border-b border-zinc-800/60 bg-zinc-950/40 px-6 py-2">
         <div className="max-w-7xl mx-auto flex flex-wrap items-center justify-between gap-3 text-xs">
@@ -1325,6 +1374,31 @@ export default function BotControlClient({ initialTab = "overview" }: BotControl
                   <Check className={cn("w-4 h-4", savingSettings && "animate-spin")} />
                   <span>{savingSettings ? "Enregistrement..." : "Enregistrer les modifications"}</span>
                 </button>
+              </div>
+
+              {/* Server selector — the language field below is per-guild and reads/writes
+                  the real bot config for whichever server is selected here. */}
+              <div className="p-4 rounded-xl bg-zinc-950/60 border border-zinc-800/80 flex flex-col sm:flex-row sm:items-center gap-3">
+                <div className="flex items-center gap-1.5 text-xs font-bold text-white shrink-0">
+                  <Server className="w-3.5 h-3.5 text-indigo-400" />
+                  Serveur concerné
+                </div>
+                <select
+                  value={settingsGuildId}
+                  onChange={(e) => setSettingsGuildId(e.target.value)}
+                  disabled={servers.length === 0}
+                  className="flex-1 bg-zinc-900 border border-zinc-800 rounded-lg px-3 py-2 text-xs text-white focus:outline-none focus:border-indigo-500 disabled:opacity-50"
+                >
+                  {servers.length === 0 && <option value="">Aucun serveur détecté</option>}
+                  {servers.map((s) => (
+                    <option key={s.id} value={s.id}>
+                      {s.name}
+                    </option>
+                  ))}
+                </select>
+                {loadingGuildSettings && (
+                  <span className="text-[10px] text-zinc-500 shrink-0">Chargement…</span>
+                )}
               </div>
 
               {/* Maintenance & Core Toggles */}

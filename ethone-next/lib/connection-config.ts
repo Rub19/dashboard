@@ -339,7 +339,7 @@ export function buildPingRequest(
       return { path: `/api/reddit/activity?clientId=${q(clientId)}` };
     case "google-calendar":
       if (!clientId) return null;
-      return { path: `/api/calendar/events?clientId=${q(clientId)}` };
+      return { path: `/api/google-calendar/events?clientId=${q(clientId)}` };
     case "google-drive":
       if (!clientId) return null;
       return { path: `/api/google-drive/files?clientId=${q(clientId)}` };

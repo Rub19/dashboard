@@ -475,7 +475,7 @@ export default function ModerationCenterPage() {
   };
 
   return (
-    <div className="h-full min-h-0 flex flex-col overflow-hidden bg-[#07080A] text-zinc-100 font-sans">
+    <div className="h-full min-h-0 flex flex-col overflow-hidden bg-[var(--bg-main)] text-zinc-100 font-sans">
       {/* HEADER FIXE */}
       <header className="shrink-0 border-b border-white/[0.08] bg-black/40 backdrop-blur-xl px-4 sm:px-6 py-3.5 z-20">
         <div className="max-w-7xl mx-auto flex flex-col sm:flex-row items-start sm:items-center justify-between gap-3">
@@ -1026,7 +1026,7 @@ export default function ModerationCenterPage() {
                     const Icon = conf.icon;
                     return (
                       <div key={c.id} className="relative group">
-                        <div className="absolute -left-[27px] top-1.5 h-3.5 w-3.5 rounded-full border-2 border-[#07080A] bg-orange-500 group-hover:scale-125 transition-transform" />
+                        <div className="absolute -left-[27px] top-1.5 h-3.5 w-3.5 rounded-full border-2 border-[var(--bg-main)] bg-orange-500 group-hover:scale-125 transition-transform" />
                         <div className="rounded-xl border border-white/5 bg-white/[0.01] p-3.5 hover:border-white/10 transition-all flex flex-col sm:flex-row items-start sm:items-center justify-between gap-3">
                           <div className="space-y-1">
                             <div className="flex items-center gap-2 flex-wrap">
@@ -1208,7 +1208,7 @@ export default function ModerationCenterPage() {
       {/* ======================================================== */}
       {isNewSanctionOpen && (
         <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/70 backdrop-blur-sm animate-in fade-in">
-          <div className="w-full max-w-lg rounded-2xl border border-white/10 bg-[#0C0D12] p-6 shadow-2xl space-y-4">
+          <div className="w-full max-w-lg rounded-2xl border border-white/10 bg-[var(--bg-surface-elevated)] p-6 shadow-2xl space-y-4">
             <div className="flex items-center justify-between border-b border-white/10 pb-3">
               <div className="flex items-center gap-2">
                 <Plus className="h-4 w-4 text-orange-400" />
@@ -1322,7 +1322,7 @@ export default function ModerationCenterPage() {
       {/* ======================================================== */}
       {revertingCase && (
         <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/70 backdrop-blur-sm animate-in fade-in">
-          <div className="w-full max-w-md rounded-2xl border border-white/10 bg-[#0C0D12] p-6 shadow-2xl space-y-4">
+          <div className="w-full max-w-md rounded-2xl border border-white/10 bg-[var(--bg-surface-elevated)] p-6 shadow-2xl space-y-4">
             <div className="flex items-center justify-between border-b border-white/10 pb-3">
               <div className="flex items-center gap-2">
                 <RotateCcw className="h-4 w-4 text-orange-400" />
@@ -1379,7 +1379,7 @@ export default function ModerationCenterPage() {
       {/* ======================================================== */}
       {inspectedUserId && (
         <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/70 backdrop-blur-sm animate-in fade-in">
-          <div className="w-full max-w-xl rounded-2xl border border-white/10 bg-[#0C0D12] p-6 shadow-2xl space-y-5">
+          <div className="w-full max-w-xl rounded-2xl border border-white/10 bg-[var(--bg-surface-elevated)] p-6 shadow-2xl space-y-5">
             <div className="flex items-center justify-between border-b border-white/10 pb-3">
               <div className="flex items-center gap-2.5">
                 <Users className="h-5 w-5 text-orange-400" />

@@ -3,6 +3,7 @@ import { Sanction } from '../types/sanction.js';
 import { sanctionService } from '../sanctions/sanctionService.js';
 import { guildConfigService } from '../../../services/guildConfigService.js';
 import { logger } from '../../../utils/logger.js';
+import { baseEmbed } from '../../../utils/embeds.js';
 
 export class ModLogger {
   private static getLogChannel(guild: Guild): TextChannel | null {
@@ -109,8 +110,7 @@ export class ModLogger {
 
       const guildConfig = guildConfigService.getConfig(guild.id);
 
-      const embed = new EmbedBuilder()
-        .setColor('#EC4899') // Rose néon AutoMod
+      const embed = baseEmbed('warning', { footerText: `${guildConfig.botName} AutoMod Protection` })
         .setTitle(`🤖 AutoMod • Règle déclenchée : ${ruleName}`)
         .addFields([
           { name: 'Membre', value: `**${user.tag}** (${user.id})`, inline: true },
@@ -125,10 +125,6 @@ export class ModLogger {
           },
         ]);
       }
-
-      embed
-        .setFooter({ text: `${guildConfig.botName} AutoMod Protection` })
-        .setTimestamp();
 
       await channel.send({ embeds: [embed] });
     } catch (err) {

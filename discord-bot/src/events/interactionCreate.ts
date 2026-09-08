@@ -36,6 +36,7 @@ import { handlePermissionPresetButton } from '../commands/admin/permissionsComma
 import { HelpPanel } from '../commands/general/helpPanel.js';
 import { syncEngine } from '../services/syncEngine.js';
 import { logger } from '../utils/logger.js';
+import { formatString, getTranslation } from '../utils/i18n.js';
 
 export async function onInteractionCreate(interaction: Interaction) {
   // Diffusion temps réel dans le Sync Engine
@@ -214,8 +215,12 @@ export async function onInteractionCreate(interaction: Interaction) {
   );
 
   if (onCooldown) {
+    const tCooldown = getTranslation(guildConfig.language);
     await interaction.reply({
-      content: `⏳ **Anti-Spam** : Veuillez patienter encore **${remainingSeconds}s** avant de réutiliser la commande \`/${command.name}\`.`,
+      content: formatString(tCooldown.cooldown_wait, {
+        seconds: remainingSeconds,
+        command: `/${command.name}`,
+      }),
       ephemeral: true,
     });
     return;
@@ -234,10 +239,12 @@ export async function onInteractionCreate(interaction: Interaction) {
     const hasConfiguredAdminRole = guildConfig.adminRoles?.some((r) => memberRoles.includes(r)) ?? false;
     const hasConfiguredModRole = guildConfig.modRoles?.some((r) => memberRoles.includes(r)) ?? false;
 
+    const tAccess = getTranslation(guildConfig.language);
+
     if (command.category === 'Administration') {
       if (!hasConfiguredAdminRole) {
         await interaction.reply({
-          content: `${guildConfig.emojis.error} ⛔ **Accès Refusé** : Cette commande d'administration est strictement réservée aux administrateurs ou rôles autorisés du serveur.`,
+          content: `${guildConfig.emojis.error} ${tAccess.access_denied_admin}`,
           ephemeral: true,
         });
         return;
@@ -249,7 +256,7 @@ export async function onInteractionCreate(interaction: Interaction) {
 
       if (!hasConfiguredAdminRole && !hasConfiguredModRole && !hasPermissionFlags) {
         await interaction.reply({
-          content: `${guildConfig.emojis.error} ⛔ **Accès Refusé** : Vous ne disposez pas des permissions requises pour exécuter cette commande de modération (Rôle Modérateur/Staff requis).`,
+          content: `${guildConfig.emojis.error} ${tAccess.access_denied_mod}`,
           ephemeral: true,
         });
         return;

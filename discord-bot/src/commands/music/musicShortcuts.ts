@@ -2,6 +2,7 @@ import { SlashCommandBuilder } from 'discord.js';
 import { Command, CommandContext } from '../../types/command.js';
 import { musicService } from '../../modules/music/services/musicService.js';
 import { DiscordMusicPanel } from '../../modules/music/ui/discordMusicPanel.js';
+import { formatString, getTranslation } from '../../utils/i18n.js';
 
 const replyError = (ctx: CommandContext, msg: string) =>
   ctx.reply({ embeds: [ctx.createEmbed('error').setDescription(msg)], ephemeral: true });
@@ -12,19 +13,17 @@ const replyInfo = (ctx: CommandContext, msg: string) =>
 
 function checkVoice(ctx: CommandContext): boolean {
   if (!ctx.guild || !ctx.member) return false;
+  const t = getTranslation(ctx.guildConfig.language);
   const userVoice = ctx.member.voice?.channel;
   if (!userVoice) {
-    replyError(
-      ctx,
-      '❌ **Salon vocal requis** : Vous devez être connecté dans un salon vocal pour utiliser les commandes musicales !'
-    );
+    replyError(ctx, t.voice_required);
     return false;
   }
   const botVoice = ctx.guild.members.me?.voice?.channel;
   if (botVoice && botVoice.id !== userVoice.id) {
     replyError(
       ctx,
-      `❌ **Salon vocal différent** : Vous devez être dans le même salon vocal que le bot (<#${botVoice.id}>).`
+      formatString(t.voice_different, { channel: `<#${botVoice.id}>` })
     );
     return false;
   }

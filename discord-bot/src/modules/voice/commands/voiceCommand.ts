@@ -3,13 +3,13 @@ import {
   ActionRowBuilder,
   ButtonBuilder,
   ButtonStyle,
-  EmbedBuilder,
   PermissionsBitField,
 } from 'discord.js';
 import { Command, CommandContext } from '../../../types/command.js';
 import { TemporaryVoiceService } from '../services/temporaryVoiceService.js';
 import { voiceRepository } from '../storage/voiceRepository.js';
 import { DiscordVoicePanel } from '../ui/discordVoicePanel.js';
+import { baseEmbed, successEmbed } from '../../../utils/embeds.js';
 
 export const voiceCommand: Command = {
   name: 'voice',
@@ -136,17 +136,14 @@ export const voiceCommand: Command = {
         return;
       }
 
-      const embed = new EmbedBuilder()
-        .setColor(0x10b981) // Emerald
+      const embed = successEmbed({ footerText: 'ETHONE Voice Engine 2.0 • 100% interactif' })
         .setTitle('🎉 Votre Salon Vocal est prêt !')
         .setDescription(
           `Votre salon **${result.channel.name}** a été créé avec succès dans <#${result.channel.id}>.\n\n` +
           `**📍 Retrouvez le Panneau de Contrôle :**\n` +
           `Toutes les commandes et options (verrouillage, whitelist, banlist, limite, expulsion) se trouvent **directement dans le chat textuel de votre salon vocal** !\n\n` +
           `*(Le salon sera automatiquement supprimé une fois que tout le monde l'aura quitté).*`
-        )
-        .setFooter({ text: 'ETHONE Voice Engine 2.0 • 100% interactif' })
-        .setTimestamp();
+        );
 
       await ctx.reply({
         embeds: [embed],
@@ -189,8 +186,7 @@ export const voiceCommand: Command = {
       }
 
       const room = userRooms[0];
-      const embed = new EmbedBuilder()
-        .setColor(room.isLocked ? 0xef4444 : 0x10b981)
+      const embed = baseEmbed(room.isLocked ? 'error' : 'success', { footerText: 'ETHONE Voice Engine 2.0' })
         .setTitle(`🎙️ Statut de votre salon : ${room.name}`)
         .setDescription(`Salon : <#${room.id}>`)
         .addFields(
@@ -200,9 +196,7 @@ export const voiceCommand: Command = {
           { name: '⛔ Banlist', value: `${(room.blockedUserIds || room.banlist || []).length} membres`, inline: true },
           { name: '🎧 Qualité audio', value: `${Math.round(room.bitrate / 1000)} kbps`, inline: true },
           { name: '⏱️ Statut', value: room.status === 'EMPTY_COUNTDOWN' ? '⏳ Nettoyage en cours' : '🟢 Actif', inline: true }
-        )
-        .setFooter({ text: 'ETHONE Voice Engine 2.0' })
-        .setTimestamp();
+        );
 
       await ctx.reply({ embeds: [embed], ephemeral: true });
       return;

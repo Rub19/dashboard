@@ -21,7 +21,7 @@ const PatchSettingsSchema = z.object({
     .optional(),
   prefixCommandsEnabled: z.boolean().optional(),
   slashCommandsEnabled: z.boolean().optional(),
-  language: z.enum(['fr', 'en']).optional(),
+  language: z.enum(['fr', 'en', 'es', 'de']).optional(),
   timezone: z.string().optional(),
   emojis: z
     .object({

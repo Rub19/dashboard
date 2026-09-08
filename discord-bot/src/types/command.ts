@@ -18,7 +18,8 @@ import {
   User,
 } from 'discord.js';
 import { guildConfigService } from '../services/guildConfigService.js';
-import { GuildConfig, resolveHexColor } from './guildConfig.js';
+import { GuildConfig } from './guildConfig.js';
+import { baseEmbed, EmbedTone } from '../utils/embeds.js';
 
 export type UnifiedReplyOptions =
   | string
@@ -113,32 +114,36 @@ export class CommandContext {
    */
   public createEmbed(type: 'default' | 'secondary' | 'success' | 'error' | 'info' = 'default'): EmbedBuilder {
     let hexColor: string;
+    let tone: EmbedTone;
     switch (type) {
       case 'secondary':
         hexColor = this.guildConfig.secondaryColor;
+        tone = 'secondary';
         break;
       case 'success':
         hexColor = this.guildConfig.successColor;
+        tone = 'success';
         break;
       case 'error':
         hexColor = this.guildConfig.errorColor;
+        tone = 'error';
         break;
       case 'info':
         hexColor = this.guildConfig.infoColor;
+        tone = 'info';
         break;
       case 'default':
       default:
         hexColor = this.guildConfig.primaryColor;
+        tone = 'primary';
         break;
     }
 
-    return new EmbedBuilder()
-      .setColor(resolveHexColor(hexColor))
-      .setFooter({
-        text: `${this.guildConfig.botName} • Demandé par ${this.author.username}`,
-        iconURL: this.author.displayAvatarURL(),
-      })
-      .setTimestamp();
+    return baseEmbed(tone, {
+      color: hexColor,
+      footerText: `${this.guildConfig.botName} • Demandé par ${this.author.username}`,
+      footerIconURL: this.author.displayAvatarURL(),
+    });
   }
 
   /**

@@ -2,6 +2,12 @@
 
 import { useState, useEffect, useRef, useCallback } from "react";
 
+// Le SSE stream et l'endpoint de mutation sont servis par le serveur Express du bot
+// Discord, pas par ethone-next (il n'existe pas de route Next.js /api/sync/* ni
+// /api/guilds/:id/sync/*). Même convention que les autres pages /discord/* (automod,
+// welcome, moderation...) : NEXT_PUBLIC_DISCORD_BOT_API pointe vers ce serveur.
+const BOT_API_URL = process.env.NEXT_PUBLIC_DISCORD_BOT_API || "";
+
 export type SyncConnectionState = "connected" | "connecting" | "disconnected" | "syncing";
 
 export interface SyncEventData {
@@ -49,7 +55,9 @@ export function useDiscordSync({
       setIsSyncing(true);
 
       try {
-        const endpoint = guildId ? `/api/sync/mutate` : `/api/sync/mutate`;
+        const endpoint = guildId
+          ? `${BOT_API_URL}/api/guilds/${guildId}/sync/mutate`
+          : `${BOT_API_URL}/api/sync/mutate`;
         const res = await fetch(endpoint, {
           method: "POST",
           headers: { "Content-Type": "application/json" },
@@ -95,8 +103,8 @@ export function useDiscordSync({
       setConnectionState("connecting");
 
       const sseUrl = guildId
-        ? `/api/guilds/${guildId}/sync/stream`
-        : `/api/sync/stream`;
+        ? `${BOT_API_URL}/api/guilds/${guildId}/sync/stream`
+        : `${BOT_API_URL}/api/sync/stream`;
 
       try {
         const es = new EventSource(sseUrl);

@@ -246,7 +246,7 @@ export default function CaseDetailClient() {
 
   if (isLoading) {
     return (
-      <div className="h-full flex items-center justify-center bg-[#07080A] text-zinc-400">
+      <div className="h-full flex items-center justify-center bg-[var(--bg-main)] text-zinc-400">
         <RefreshCw className="h-6 w-6 animate-spin text-orange-400" />
       </div>
     );
@@ -254,7 +254,7 @@ export default function CaseDetailClient() {
 
   if (!modCase) {
     return (
-      <div className="h-full flex flex-col items-center justify-center bg-[#07080A] text-zinc-400 gap-3">
+      <div className="h-full flex flex-col items-center justify-center bg-[var(--bg-main)] text-zinc-400 gap-3">
         <AlertCircle className="h-8 w-8 text-rose-500" />
         <p>Dossier introuvable ou inexistant.</p>
         <Link
@@ -268,7 +268,7 @@ export default function CaseDetailClient() {
   }
 
   return (
-    <div className="h-full min-h-0 flex flex-col overflow-hidden bg-[#07080A] text-zinc-100 font-sans">
+    <div className="h-full min-h-0 flex flex-col overflow-hidden bg-[var(--bg-main)] text-zinc-100 font-sans">
       {/* HEADER */}
       <header className="shrink-0 border-b border-white/[0.08] bg-black/40 backdrop-blur-xl px-4 sm:px-6 py-3.5 z-20">
         <div className="max-w-6xl mx-auto flex items-center justify-between">
@@ -536,7 +536,7 @@ export default function CaseDetailClient() {
       {/* MODAL RÉVOCATION */}
       {isRevertOpen && (
         <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/70 backdrop-blur-sm animate-in fade-in">
-          <div className="w-full max-w-md rounded-2xl border border-white/10 bg-[#0C0D12] p-6 shadow-2xl space-y-4">
+          <div className="w-full max-w-md rounded-2xl border border-white/10 bg-[var(--bg-surface-elevated)] p-6 shadow-2xl space-y-4">
             <div className="flex items-center justify-between border-b border-white/10 pb-3">
               <h3 className="text-sm font-bold text-white">Révoquer la Case #{modCase.caseNumber}</h3>
               <button onClick={() => setIsRevertOpen(false)} className="text-zinc-400 hover:text-white cursor-pointer">

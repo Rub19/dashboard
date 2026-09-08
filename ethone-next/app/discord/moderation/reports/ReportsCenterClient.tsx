@@ -259,7 +259,7 @@ export default function ReportsCenterClient() {
   }, [reports, searchQuery]);
 
   return (
-    <div className="min-h-screen bg-[#07090E] text-slate-200 pb-36 font-sans">
+    <div className="min-h-screen bg-[var(--bg-main)] text-slate-200 pb-36 font-sans">
       {/* HEADER NAVIGATION */}
       <div className="border-b border-white/5 bg-slate-900/40 backdrop-blur-xl sticky top-0 z-30 px-6 py-4">
         <div className="max-w-7xl mx-auto flex flex-col md:flex-row items-start md:items-center justify-between gap-4">

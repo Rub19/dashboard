@@ -4,6 +4,7 @@ import { CaseService } from './caseService.js';
 import { moderationRepository } from '../storage/moderationRepository.js';
 import { checkHierarchy } from '../permissions/hierarchy.js';
 import { logger } from '../../../utils/logger.js';
+import { baseEmbed } from '../../../utils/embeds.js';
 
 export interface ExecuteSanctionParams {
   guildId: string;
@@ -83,15 +84,16 @@ export class SanctionService {
         case 'WARN': {
           // Avertissement : envoi en MP si possible
           if (targetMember) {
-            const warnEmbed = new EmbedBuilder()
-              .setColor(Colors.Yellow)
+            const warnEmbed = baseEmbed('default', {
+              color: Colors.Yellow,
+              footerText: `ETHONE Moderation Center 2.0`,
+            })
               .setTitle(`⚠️ Avertissement — ${guild.name}`)
               .setDescription(`Vous avez reçu un avertissement sur le serveur **${guild.name}**.`)
               .addFields(
                 { name: 'Motif', value: params.reason || 'Non spécifié', inline: false },
                 { name: 'Modérateur', value: params.moderatorTag, inline: true }
-              )
-              .setTimestamp();
+              );
             await targetMember.send({ embeds: [warnEmbed] }).catch(() => {});
           }
           break;
@@ -110,11 +112,12 @@ export class SanctionService {
           if (!targetMember) {
             return { success: false, error: 'Le membre doit être présent sur le serveur pour être expulsé.' };
           }
-          const kickEmbed = new EmbedBuilder()
-            .setColor(Colors.Orange)
+          const kickEmbed = baseEmbed('default', {
+            color: Colors.Orange,
+            footerText: `ETHONE Moderation Center 2.0`,
+          })
             .setTitle(`👢 Expulsion — ${guild.name}`)
-            .setDescription(`Vous avez été expulsé du serveur **${guild.name}**.\n**Motif :** ${params.reason}`)
-            .setTimestamp();
+            .setDescription(`Vous avez été expulsé du serveur **${guild.name}**.\n**Motif :** ${params.reason}`);
           await targetMember.send({ embeds: [kickEmbed] }).catch(() => {});
           await targetMember.kick(`${params.moderatorTag}: ${params.reason}`);
           break;
@@ -122,11 +125,12 @@ export class SanctionService {
 
         case 'BAN': {
           if (targetMember) {
-            const banEmbed = new EmbedBuilder()
-              .setColor(Colors.Red)
+            const banEmbed = baseEmbed('default', {
+              color: Colors.Red,
+              footerText: `ETHONE Moderation Center 2.0`,
+            })
               .setTitle(`🔨 Bannissement — ${guild.name}`)
-              .setDescription(`Vous avez été banni du serveur **${guild.name}**.\n**Motif :** ${params.reason}`)
-              .setTimestamp();
+              .setDescription(`Vous avez été banni du serveur **${guild.name}**.\n**Motif :** ${params.reason}`);
             await targetMember.send({ embeds: [banEmbed] }).catch(() => {});
           }
           await guild.bans.create(params.userId, {

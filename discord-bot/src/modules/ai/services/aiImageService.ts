@@ -1,5 +1,6 @@
 import { EmbedBuilder } from 'discord.js';
 import { logger } from '../../../utils/logger.js';
+import { baseEmbed } from '../../../utils/embeds.js';
 
 export interface ImageGenerationResult {
   success: boolean;
@@ -86,14 +87,11 @@ export class AIImageService {
     imageUrl: string;
     authorTag: string;
   }): EmbedBuilder {
-    return new EmbedBuilder()
-      .setColor(0x8b5cf6) // Violet vibrant IA
+    return baseEmbed('primary', {
+      footerText: `Demandé par ${params.authorTag} • Modèle Flux • Conforme ToS Discord`,
+    })
       .setTitle('🎨 Image Générée par ETHONE AI')
       .setDescription(`**Prompt :** *« ${params.prompt} »*`)
-      .setImage(params.imageUrl)
-      .setFooter({
-        text: `Demandé par ${params.authorTag} • Modèle Flux • Conforme ToS Discord`,
-      })
-      .setTimestamp();
+      .setImage(params.imageUrl);
   }
 }

@@ -2,6 +2,7 @@ import { Client, EmbedBuilder, Colors, TextChannel } from 'discord.js';
 import { ModerationCase } from '../types/case.js';
 import { moderationRepository } from '../storage/moderationRepository.js';
 import { logger } from '../../../utils/logger.js';
+import { successEmbed } from '../../../utils/embeds.js';
 
 export class ModerationLogger {
   public static async logCase(discordClient: Client, modCase: ModerationCase): Promise<void> {
@@ -73,8 +74,7 @@ export class ModerationLogger {
       const channel = guild.channels.cache.get(settings.logChannelId);
       if (!channel || !channel.isTextBased()) return;
 
-      const embed = new EmbedBuilder()
-        .setColor(Colors.Green)
+      const embed = successEmbed({ footerText: `Case #${modCase.caseNumber} • Révocation` })
         .setTitle(`↩️ Révocation — Case #${modCase.caseNumber} (${modCase.action})`)
         .setDescription(
           `La sanction sur <@${modCase.userId}> a été annulée/révoquée par **${revertedBy}**.`
@@ -82,9 +82,7 @@ export class ModerationLogger {
         .addFields(
           { name: 'Motif initial', value: modCase.reason, inline: true },
           { name: 'Motif de révocation', value: revertReason || 'Aucun motif spécifié', inline: true }
-        )
-        .setFooter({ text: `Case #${modCase.caseNumber} • Révocation` })
-        .setTimestamp();
+        );
 
       await (channel as TextChannel).send({ embeds: [embed] });
     } catch (err) {

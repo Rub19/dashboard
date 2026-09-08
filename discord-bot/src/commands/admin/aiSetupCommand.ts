@@ -1,11 +1,11 @@
 import {
   SlashCommandBuilder,
   PermissionFlagsBits,
-  EmbedBuilder,
   ChannelType,
 } from 'discord.js';
 import { Command, CommandContext } from '../../types/command.js';
 import { aiRepository } from '../../modules/ai/storage/aiRepository.js';
+import { successEmbed } from '../../utils/embeds.js';
 
 export const aiSetupCommand: Command = {
   name: 'ai-setup',
@@ -124,8 +124,9 @@ export const aiSetupCommand: Command = {
         CUSTOM: '🎨 Personnalisé',
       };
 
-      const embed = new EmbedBuilder()
-        .setColor(0x10b981) // Émeraude succès
+      const embed = successEmbed({
+        footerText: `Configuration par ${ctx.author.tag} • Conforme ToS Discord`,
+      })
         .setTitle('⚙️ Configuration ETHONE AI & Salon Dédié')
         .setDescription(
           updated
@@ -163,11 +164,7 @@ export const aiSetupCommand: Command = {
                 : '*Aucun mot banni spécifique configuré*',
             inline: false,
           }
-        )
-        .setFooter({
-          text: `Configuration par ${ctx.author.tag} • Conforme ToS Discord`,
-        })
-        .setTimestamp();
+        );
 
       await ctx.reply({ embeds: [embed] });
     } else {

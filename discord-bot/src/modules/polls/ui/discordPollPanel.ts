@@ -11,6 +11,7 @@ import { pollRepository } from '../storage/pollRepository.js';
 import { pollVotingService } from '../services/pollVotingService.js';
 import { pollResultService } from '../services/pollResultService.js';
 import { logger } from '../../../utils/logger.js';
+import { baseEmbed } from '../../../utils/embeds.js';
 
 export class DiscordPollPanel {
   private client: Client | null = null;
@@ -112,7 +113,7 @@ export class DiscordPollPanel {
 
     const poll = pollRepository.getPollById(interaction.guildId, pollId);
     if (!poll) {
-      await interaction.reply({ content: '❌ Ce sondage n\'existe plus ou a été supprimé.', ephemeral: true });
+      await interaction.reply({ embeds: [baseEmbed('error').setDescription('❌ Ce sondage n\'existe plus ou a été supprimé.')], ephemeral: true });
       return;
     }
 
@@ -158,7 +159,7 @@ export class DiscordPollPanel {
 
       if (!result.success) {
         await interaction.reply({
-          content: `❌ **Erreur de vote :** ${result.error}`,
+          embeds: [baseEmbed('error').setDescription(`❌ **Erreur de vote :** ${result.error}`)],
           ephemeral: true,
         });
         return;

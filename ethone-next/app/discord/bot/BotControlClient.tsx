@@ -817,7 +817,7 @@ export default function BotControlClient({ initialTab = "overview" }: BotControl
               {/* Direct Buttons */}
               <div className="flex items-center gap-2">
                 {isOwner && (
-                  <div className="flex items-center gap-1.5 px-3 py-1.5 rounded-xl bg-amber-500/15 border border-amber-500/40 text-amber-300 text-xs font-bold shadow-lg shadow-amber-500/10 animate-pulse">
+                  <div className="flex items-center gap-1.5 px-3 py-1.5 rounded-xl bg-amber-500/15 border border-amber-500/40 text-amber-300 text-xs font-bold shadow-lg shadow-amber-500/10">
                     <Crown className="w-3.5 h-3.5 text-amber-400" />
                     <span className="hidden sm:inline">Owner : rub19.mailpro@gmail.com</span>
                     <span className="sm:hidden">Owner</span>
@@ -963,7 +963,7 @@ export default function BotControlClient({ initialTab = "overview" }: BotControl
               <div className="p-3.5 rounded-xl bg-zinc-950/70 border border-amber-500/20">
                 <span className="text-[10px] text-zinc-400 block uppercase font-mono">Processus VPS PM2</span>
                 <span className="text-sm font-bold text-white font-mono mt-1 block flex items-center gap-1.5">
-                  <span className="w-2 h-2 rounded-full bg-emerald-400 animate-pulse" />
+                  <span className="w-2 h-2 rounded-full bg-emerald-400 shadow-[0_0_5px_rgba(52,211,153,0.8)]" />
                   ethone-bot
                 </span>
                 <span className="text-[10px] text-emerald-400 mt-0.5 block font-mono">Status: Online</span>

@@ -33,7 +33,7 @@ export const rankCommand: Command = {
     const config = levelingStorage.getConfig(guild.id);
     if (!config.enabled) {
       await ctx.reply({
-        content: '⚠️ Le système de niveaux est actuellement désactivé sur ce serveur.',
+        embeds: [ctx.createEmbed('error').setDescription('⚠️ Le système de niveaux est actuellement désactivé sur ce serveur.')],
         ephemeral: true,
       });
       return;

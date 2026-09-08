@@ -17,6 +17,7 @@ import {
   PieChart,
   Percent,
   Sparkles,
+  Lightbulb,
 } from "lucide-react";
 
 export default function EventAnalyticsClient() {
@@ -197,8 +198,9 @@ export default function EventAnalyticsClient() {
               </div>
             </div>
 
-            <div className="p-4 rounded-xl bg-black/40 border border-white/5 mt-6 text-xs text-slate-400">
-              💡 <strong>Insight Automatique</strong> : Le rappel envoyé à <strong>J-1</strong> a converti 4 hésitants en inscrits fermes.
+            <div className="flex items-start gap-2 p-4 rounded-xl bg-black/40 border border-white/5 mt-6 text-xs text-slate-400">
+              <Lightbulb className="h-3.5 w-3.5 shrink-0 mt-0.5 text-slate-300" />
+              <span><strong>Insight Automatique</strong> : Le rappel envoyé à <strong>J-1</strong> a converti 4 hésitants en inscrits fermes.</span>
             </div>
           </div>
         </div>

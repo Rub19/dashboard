@@ -319,7 +319,7 @@ export default function AiCenterClient() {
               onClick={handlePublish}
               className={`px-4 py-2 rounded-xl text-xs font-semibold flex items-center gap-2 shadow-lg transition-all ${
                 !isPublished
-                  ? "bg-indigo-600 hover:bg-indigo-500 text-white shadow-indigo-600/25 animate-pulse"
+                  ? "bg-indigo-600 hover:bg-indigo-500 text-white shadow-indigo-600/25"
                   : "bg-neutral-800 hover:bg-neutral-700 text-neutral-300"
               }`}
             >

@@ -7,6 +7,7 @@ import { AIProviderService } from '../../modules/ai/services/aiProviderService.j
 import { DiscordAiPanel } from '../../modules/ai/ui/discordAiPanel.js';
 import { logger } from '../../utils/logger.js';
 import { getTranslation } from '../../utils/i18n.js';
+import { baseEmbed } from '../../utils/embeds.js';
 
 export const askCommand: Command = {
   name: 'ask',
@@ -37,7 +38,7 @@ export const askCommand: Command = {
 
       if (!question || !question.trim()) {
         await ctx.reply({
-          content: '❌ Veuillez préciser votre question. Exemple : `/ask question:Comment obtenir le rôle VIP ?`',
+          embeds: [baseEmbed('error').setDescription('❌ Veuillez préciser votre question. Exemple : `/ask question:Comment obtenir le rôle VIP ?`')],
           ephemeral: true,
         });
         return;
@@ -58,7 +59,7 @@ export const askCommand: Command = {
       if (!settings.enabled) {
         const t = getTranslation(ctx.guildConfig.language);
         await ctx.editReply({
-          content: t.ask_disabled,
+          embeds: [baseEmbed('error').setDescription(t.ask_disabled)],
         });
         return;
       }
@@ -66,7 +67,7 @@ export const askCommand: Command = {
       const safetyCheck = AISafetyService.inspectPrompt(question.trim());
       if (safetyCheck.flagged) {
         await ctx.editReply({
-          content: '⚠️ Cette question ne respecte pas les consignes de sécurité de l\'assistant.',
+          embeds: [baseEmbed('warning').setDescription('⚠️ Cette question ne respecte pas les consignes de sécurité de l\'assistant.')],
         });
         return;
       }
@@ -122,9 +123,9 @@ export const askCommand: Command = {
       logger.error('[askCommand] Erreur lors de l\'exécution de /ask :', error);
       const errorMsg = `❌ Une erreur est survenue lors du traitement par l'assistant IA.`;
       if (ctx.interaction?.deferred || ctx.interaction?.replied) {
-        await ctx.editReply({ content: errorMsg }).catch(() => {});
+        await ctx.editReply({ embeds: [baseEmbed('error').setDescription(errorMsg)] }).catch(() => {});
       } else {
-        await ctx.reply({ content: errorMsg, ephemeral: true }).catch(() => {});
+        await ctx.reply({ embeds: [baseEmbed('error').setDescription(errorMsg)], ephemeral: true }).catch(() => {});
       }
     }
   },

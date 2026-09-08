@@ -9,6 +9,7 @@ import {
 import { SuggestionVoteService } from '../services/suggestionVoteService.js';
 import { SuggestionCommentService } from '../services/suggestionCommentService.js';
 import { SuggestionService } from '../services/suggestionService.js';
+import { baseEmbed } from '../../../utils/embeds.js';
 
 export async function handleSuggestionButton(interaction: ButtonInteraction): Promise<void> {
   const customId = interaction.customId;
@@ -17,41 +18,48 @@ export async function handleSuggestionButton(interaction: ButtonInteraction): Pr
     const id = customId.split(':')[1];
     const { suggestion, action } = SuggestionVoteService.handleVote(id, interaction.user.id, 'up');
     if (!suggestion) {
-      await interaction.reply({ content: '❌ Suggestion introuvable.', ephemeral: true });
+      await interaction.reply({ embeds: [baseEmbed('error').setDescription('❌ Suggestion introuvable.')], ephemeral: true });
       return;
     }
+    // Différer immédiatement : la mise à jour du message de suggestion ci-dessous édite un
+    // message via l'API Discord et peut dépasser la fenêtre de 3s de l'interaction
+    // ("Unknown interaction" / 10062) si on ne le fait pas.
+    await interaction.deferReply({ ephemeral: true });
     await SuggestionService.updateDiscordMessage(interaction.client, id);
-    await interaction.reply({
-      content:
+    await interaction.editReply({
+      embeds: [baseEmbed(action === 'removed' ? 'info' : 'success').setDescription(
         action === 'removed'
           ? '↩️ Votre vote positif a été retiré.'
-          : '👍 Votre vote positif a été pris en compte !',
-      ephemeral: true,
+          : '👍 Votre vote positif a été pris en compte !'
+      )],
     });
   } else if (customId.startsWith('sugg_down:')) {
     const id = customId.split(':')[1];
     const { suggestion, action } = SuggestionVoteService.handleVote(id, interaction.user.id, 'down');
     if (!suggestion) {
-      await interaction.reply({ content: '❌ Suggestion introuvable.', ephemeral: true });
+      await interaction.reply({ embeds: [baseEmbed('error').setDescription('❌ Suggestion introuvable.')], ephemeral: true });
       return;
     }
+    await interaction.deferReply({ ephemeral: true });
     await SuggestionService.updateDiscordMessage(interaction.client, id);
-    await interaction.reply({
-      content:
+    await interaction.editReply({
+      embeds: [baseEmbed(action === 'removed' ? 'info' : 'success').setDescription(
         action === 'removed'
           ? '↩️ Votre vote négatif a été retiré.'
-          : '👎 Votre vote négatif a été pris en compte !',
-      ephemeral: true,
+          : '👎 Votre vote négatif a été pris en compte !'
+      )],
     });
   } else if (customId.startsWith('sugg_follow:')) {
     const id = customId.split(':')[1];
+    await interaction.deferReply({ ephemeral: true });
     const { isFollowing } = SuggestionCommentService.toggleFollow(id, interaction.user.id);
     await SuggestionService.updateDiscordMessage(interaction.client, id);
-    await interaction.reply({
-      content: isFollowing
-        ? '🔔 Vous suivez maintenant cette suggestion. Vous recevrez une notification lors de chaque mise à jour !'
-        : '🔕 Vous ne suivez plus cette suggestion.',
-      ephemeral: true,
+    await interaction.editReply({
+      embeds: [baseEmbed(isFollowing ? 'success' : 'info').setDescription(
+        isFollowing
+          ? '🔔 Vous suivez maintenant cette suggestion. Vous recevrez une notification lors de chaque mise à jour !'
+          : '🔕 Vous ne suivez plus cette suggestion.'
+      )],
     });
   } else if (customId.startsWith('sugg_comment:')) {
     const id = customId.split(':')[1];
@@ -81,6 +89,11 @@ export async function handleSuggestionModal(interaction: ModalSubmitInteraction)
 
     const isStaff = interaction.memberPermissions?.has('ManageGuild') || false;
 
+    // Différer immédiatement : l'enregistrement du commentaire + la mise à jour du message de
+    // suggestion ci-dessous peuvent dépasser la fenêtre de 3s de l'interaction
+    // ("Unknown interaction" / 10062) si on ne le fait pas.
+    await interaction.deferReply({ ephemeral: true });
+
     SuggestionCommentService.addComment(id, {
       userId: interaction.user.id,
       userTag: interaction.user.tag,
@@ -91,9 +104,8 @@ export async function handleSuggestionModal(interaction: ModalSubmitInteraction)
 
     await SuggestionService.updateDiscordMessage(interaction.client, id);
 
-    await interaction.reply({
-      content: '💬 Votre commentaire a bien été ajouté !',
-      ephemeral: true,
+    await interaction.editReply({
+      embeds: [baseEmbed('success').setDescription('💬 Votre commentaire a bien été ajouté !')],
     });
   } else if (customId === 'modal_suggest_create') {
     const title = interaction.fields.getTextInputValue('sugg_title');
@@ -101,6 +113,10 @@ export async function handleSuggestionModal(interaction: ModalSubmitInteraction)
     const category = interaction.fields.getTextInputValue('sugg_category') || 'Général';
 
     if (!interaction.guildId) return;
+
+    // Différer immédiatement : la création + publication de la suggestion ci-dessous peut
+    // dépasser la fenêtre de 3s de l'interaction ("Unknown interaction" / 10062).
+    await interaction.deferReply({ ephemeral: true });
 
     try {
       const suggestion = await SuggestionService.createSuggestion(interaction.client, {
@@ -113,14 +129,12 @@ export async function handleSuggestionModal(interaction: ModalSubmitInteraction)
         category,
       });
 
-      await interaction.reply({
-        content: `✅ Votre suggestion **#${suggestion.numericId}** a bien été soumise et publiée dans le salon dédié !`,
-        ephemeral: true,
+      await interaction.editReply({
+        embeds: [baseEmbed('success').setDescription(`✅ Votre suggestion **#${suggestion.numericId}** a bien été soumise et publiée dans le salon dédié !`)],
       });
     } catch (err: any) {
-      await interaction.reply({
-        content: `❌ Erreur : ${err.message}`,
-        ephemeral: true,
+      await interaction.editReply({
+        embeds: [baseEmbed('error').setDescription(`❌ Erreur : ${err.message}`)],
       });
     }
   }

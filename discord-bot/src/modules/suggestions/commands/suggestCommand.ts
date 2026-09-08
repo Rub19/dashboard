@@ -33,7 +33,7 @@ export const suggestCommand: Command = {
   async execute(ctx: CommandContext): Promise<void> {
     if (!ctx.isSlash) {
       await ctx.reply({
-        content: 'Veuillez utiliser la commande Slash `/suggest` pour proposer une idée.',
+        embeds: [ctx.createEmbed('error').setDescription('Veuillez utiliser la commande Slash `/suggest` pour proposer une idée.')],
         ephemeral: true,
       });
       return;
@@ -46,7 +46,7 @@ export const suggestCommand: Command = {
     const config = suggestionStorage.getConfig(guild.id);
     if (!config.enabled) {
       await ctx.reply({
-        content: '❌ Le système de suggestions est actuellement désactivé sur ce serveur.',
+        embeds: [ctx.createEmbed('error').setDescription('❌ Le système de suggestions est actuellement désactivé sur ce serveur.')],
         ephemeral: true,
       });
       return;
@@ -54,7 +54,7 @@ export const suggestCommand: Command = {
 
     if (!config.channelId) {
       await ctx.reply({
-        content: "❌ Aucun salon de suggestions n'a été configuré par les administrateurs.",
+        embeds: [ctx.createEmbed('error').setDescription("❌ Aucun salon de suggestions n'a été configuré par les administrateurs.")],
         ephemeral: true,
       });
       return;
@@ -80,11 +80,11 @@ export const suggestCommand: Command = {
         });
 
         await ctx.reply({
-          content: `✅ Votre suggestion **#${suggestion.numericId}** a bien été publiée dans <#${config.channelId}> !`,
+          embeds: [ctx.createEmbed('success').setDescription(`✅ Votre suggestion **#${suggestion.numericId}** a bien été publiée dans <#${config.channelId}> !`)],
           ephemeral: true,
         });
       } catch (err: any) {
-        await ctx.reply({ content: `❌ Erreur : ${err.message}`, ephemeral: true });
+        await ctx.reply({ embeds: [ctx.createEmbed('error').setDescription(`❌ Erreur : ${err.message}`)], ephemeral: true });
       }
       return;
     }

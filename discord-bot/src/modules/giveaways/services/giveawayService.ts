@@ -16,6 +16,7 @@ import { xpWriteBuffer } from '../../leveling/storage/xpWriteBuffer.js';
 import { logService } from '../../logs/services/logService.js';
 import { giveawayScheduler } from './giveawayScheduler.js';
 import { logger } from '../../../utils/logger.js';
+import { baseEmbed } from '../../../utils/embeds.js';
 
 class GiveawayService {
   /**
@@ -269,7 +270,7 @@ class GiveawayService {
     const giveaway = giveawayStorage.getById(giveawayId);
     if (!giveaway || giveaway.status !== 'active') {
       await interaction.reply({
-        content: '❌ Ce giveaway n’est plus actif.',
+        embeds: [baseEmbed('error').setDescription('❌ Ce giveaway n’est plus actif.')],
         ephemeral: true,
       });
       return;
@@ -282,10 +283,13 @@ class GiveawayService {
     const isAlready = giveaway.participants.some((p) => p.userId === member.id);
     if (isAlready) {
       giveawayStorage.removeParticipant(giveawayId, member.id);
+      // Différer immédiatement : la mise à jour du message du giveaway ci-dessous édite un
+      // message via l'API Discord et peut dépasser la fenêtre de 3s de l'interaction
+      // ("Unknown interaction" / 10062) si on ne le fait pas.
+      await interaction.deferReply({ ephemeral: true });
       await this.updateMessage(interaction.client, giveawayId);
-      await interaction.reply({
-        content: '👋 Vous ne participez plus à ce giveaway.',
-        ephemeral: true,
+      await interaction.editReply({
+        embeds: [baseEmbed('info').setDescription('👋 Vous ne participez plus à ce giveaway.')],
       });
       return;
     }
@@ -294,11 +298,15 @@ class GiveawayService {
     const eligibility = this.checkEligibility(member, giveaway.requirements);
     if (!eligibility.eligible) {
       await interaction.reply({
-        content: `⛔ **Participation refusée :**\n${eligibility.reason}`,
+        embeds: [baseEmbed('error').setDescription(`⛔ **Participation refusée :**\n${eligibility.reason}`)],
         ephemeral: true,
       });
       return;
     }
+
+    // Différer immédiatement : l'enregistrement + la mise à jour du message du giveaway ci-dessous
+    // peuvent dépasser la fenêtre de 3s de l'interaction ("Unknown interaction" / 10062).
+    await interaction.deferReply({ ephemeral: true });
 
     // Enregistrement
     giveawayStorage.addParticipant(giveawayId, {
@@ -311,9 +319,8 @@ class GiveawayService {
 
     await this.updateMessage(interaction.client, giveawayId);
 
-    await interaction.reply({
-      content: '🎉 **Félicitations !** Votre participation au tirage au sort a bien été enregistrée.',
-      ephemeral: true,
+    await interaction.editReply({
+      embeds: [baseEmbed('success').setDescription('🎉 **Félicitations !** Votre participation au tirage au sort a bien été enregistrée.')],
     });
   }
 

@@ -1,3 +1,18 @@
+const v12054_fr: ChangelogEntry = {
+  version: "v1.20.54",
+  date: "2026-09-08",
+  title: "Mode God du Bot Owner, Panneau /settings Repensé & Fin du Look « Démo IA »",
+  items: [
+    "Bot Discord — Mode « God » pour le Bot Owner : immunité totale contre toute sanction (warn/ban/kick/timeout), sur tous les serveurs — commandes manuelles, AutoMod automatique et Anti-Raid automatique (y compris un second moteur Anti-Raid/Anti-Nuke historique retrouvé et protégé au passage).",
+    "Bot Discord — Correctif du crash « Unknown interaction » sur /warn (et toute la classe de bug identique sur /ban, /kick, /timeout et les autres commandes de modération) : la réponse était envoyée après des opérations trop lentes (recherche du membre, journal de modération, message privé), dépassant la fenêtre de 3 secondes de Discord — ce qui poussait les modérateurs à relancer la commande et avertissait la cible deux fois par erreur.",
+    "Bot Discord — Panneau /settings repensé : les catégories Langue, Thème, Personnalité et Confidentialité affichent désormais un embed dédié avec les choix disponibles et des boutons de sélection directe, au lieu de faire défiler silencieusement les valeurs ou d'ouvrir une fenêtre de saisie.",
+    "Bot Discord — Nouvelle commande /status : le Bot Owner peut changer le statut Discord global (en ligne / inactif / ne pas déranger / invisible) et l'activité affichée (joue à / en direct sur / écoute / regarde / participe à) directement depuis Discord — synchronisé en temps réel avec le panneau de présence déjà existant sur le dashboard (Bot → Présence & Activité).",
+    "Bot Discord — Traduction (FR/EN/ES/DE) branchée sur les commandes de modération, de musique et le panneau /settings. Les modules tickets/formulaires/sondages/événements/giveaways/suggestions/niveaux/automod/anti-raid restent en français pour le moment (chantier de traduction non terminé, à poursuivre).",
+    "Bot Discord — Plus de 150 réponses en texte brut converties en embeds propres et cohérents à travers la quasi-totalité des modules (modération, musique, tickets, formulaires, sondages, giveaways, suggestions, niveaux, automod, anti-raid, vocal, événements, IA).",
+    "Dashboard — Suite du nettoyage « ça fait démo IA » sur les pages d'administration Discord (modération, tickets, vocal, événements, bot, sécurité, logs, sondages, invitations, formulaires, suggestions) : suppression des pastilles clignotantes restantes et de quelques emojis redondants remplacés par de vraies icônes.",
+  ],
+};
+
 const v12053_fr: ChangelogEntry = {
   version: "v1.20.53",
   date: "2026-09-08",
@@ -28,6 +43,21 @@ const v12052_fr: ChangelogEntry = {
     "Dynamic Island : correction d'un bug de priorité qui empêchait Spotify de jamais s'afficher, systématiquement évincé par la synchronisation d'arrière-plan.",
     "Commande /help du Bot Discord : la liste des commandes est désormais générée dynamiquement depuis les commandes réellement enregistrées (fin des commandes fantômes et des commandes manquantes), et affiche la vraie syntaxe des commandes à sous-commandes (ex. /automod status).",
     "Audit de l'enregistrement des commandes slash Discord : architecture confirmée saine, aucune dérive entre le code et les commandes déployées.",
+  ],
+};
+
+const v12054_en: ChangelogEntry = {
+  version: "v1.20.54",
+  date: "2026-09-08",
+  title: "Bot Owner God Mode, Reworked /settings Panel & the End of the \"AI Demo\" Look",
+  items: [
+    "Discord Bot — Bot Owner \"God Mode\": total immunity from any sanction (warn/ban/kick/timeout), across every server — manual commands, automatic AutoMod, and automatic Anti-Raid (including a second, older Anti-Raid/Anti-Nuke engine found and protected along the way).",
+    "Discord Bot — Fixed the \"Unknown interaction\" crash on /warn (and the identical bug class on /ban, /kick, /timeout, and other moderation commands): the reply was sent after slow work (member lookup, moderation log, DM) that blew past Discord's 3-second window — leading moderators to rerun the command and accidentally warn the target twice.",
+    "Discord Bot — Reworked the /settings panel: the Language, Theme, Personality, and Privacy categories now show a dedicated embed with the available choices and direct-selection buttons, instead of silently cycling through values or popping open a text-input form.",
+    "Discord Bot — New /status command: the Bot Owner can change the bot's global Discord status (online / idle / do not disturb / invisible) and displayed activity (playing / streaming / listening to / watching / competing in) directly from Discord — synced in real time with the existing dashboard presence panel (Bot → Presence & Activity).",
+    "Discord Bot — Translation (FR/EN/ES/DE) wired into moderation commands, music commands, and the /settings panel. Tickets/forms/polls/events/giveaways/suggestions/leveling/automod/anti-raid remain French-only for now (translation work still in progress).",
+    "Discord Bot — Over 150 plain-text replies converted into clean, consistent embeds across nearly every module (moderation, music, tickets, forms, polls, giveaways, suggestions, leveling, automod, anti-raid, voice, events, AI).",
+    "Dashboard — Continued the \"looks like an AI demo\" cleanup on the Discord admin pages (moderation, tickets, voice, events, bot, security, logs, polls, invites, forms, suggestions): removed the remaining blinking status dots and a few redundant emoji swapped for real icons.",
   ],
 };
 
@@ -64,6 +94,21 @@ const v12052_en: ChangelogEntry = {
   ],
 };
 
+const v12054_es: ChangelogEntry = {
+  version: "v1.20.54",
+  date: "2026-09-08",
+  title: "Modo Dios del Bot Owner, Panel /settings Rediseñado y el Fin del Aspecto « Demo IA »",
+  items: [
+    "Bot de Discord — Modo « Dios » para el Bot Owner: inmunidad total ante cualquier sanción (warn/ban/kick/timeout), en todos los servidores — comandos manuales, AutoMod automático y Anti-Raid automático (incluido un segundo motor Anti-Raid/Anti-Nuke más antiguo encontrado y protegido de paso).",
+    "Bot de Discord — Corregido el fallo « Unknown interaction » en /warn (y la misma clase de error en /ban, /kick, /timeout y otros comandos de moderación): la respuesta se enviaba después de operaciones lentas (búsqueda del miembro, registro de moderación, MP), superando la ventana de 3 segundos de Discord — lo que llevaba a los moderadores a repetir el comando y avisar a la persona objetivo dos veces por error.",
+    "Bot de Discord — Panel /settings rediseñado: las categorías Idioma, Tema, Personalidad y Privacidad ahora muestran un embed dedicado con las opciones disponibles y botones de selección directa, en lugar de recorrer valores en silencio o abrir un formulario de texto.",
+    "Bot de Discord — Nuevo comando /status: el Bot Owner puede cambiar el estado global de Discord (en línea / ausente / no molestar / invisible) y la actividad mostrada (jugando a / en directo en / escuchando / viendo / compitiendo en) directamente desde Discord — sincronizado en tiempo real con el panel de presencia ya existente en el dashboard (Bot → Presencia y Actividad).",
+    "Bot de Discord — Traducción (FR/EN/ES/DE) conectada a los comandos de moderación, de música y al panel /settings. Los módulos de tickets/formularios/encuestas/eventos/sorteos/sugerencias/niveles/automod/anti-raid siguen solo en francés por ahora (trabajo de traducción aún en curso).",
+    "Bot de Discord — Más de 150 respuestas en texto plano convertidas en embeds limpios y coherentes en casi todos los módulos (moderación, música, tickets, formularios, encuestas, sorteos, sugerencias, niveles, automod, anti-raid, voz, eventos, IA).",
+    "Dashboard — Continuación de la limpieza « parece una demo de IA » en las páginas de administración de Discord (moderación, tickets, voz, eventos, bot, seguridad, registros, encuestas, invitaciones, formularios, sugerencias): eliminadas las últimas pastillas parpadeantes y algunos emojis redundantes sustituidos por iconos reales.",
+  ],
+};
+
 const v12053_es: ChangelogEntry = {
   version: "v1.20.53",
   date: "2026-09-08",
@@ -94,6 +139,21 @@ const v12052_es: ChangelogEntry = {
     "Dynamic Island: corregido un error de prioridad que impedía que Spotify apareciera, siempre desplazado por la sincronización en segundo plano.",
     "Comando /help del Bot de Discord: la lista de comandos ahora se genera dinámicamente desde los comandos realmente registrados (fin de comandos fantasma o ausentes), mostrando la sintaxis real de los comandos con subcomandos.",
     "Auditoría del registro de comandos slash de Discord: arquitectura confirmada como sólida, sin desviación entre el código y los comandos desplegados.",
+  ],
+};
+
+const v12054_de: ChangelogEntry = {
+  version: "v1.20.54",
+  date: "2026-09-08",
+  title: "God Mode für den Bot Owner, überarbeitetes /settings-Panel & Schluss mit dem „KI-Demo“-Look",
+  items: [
+    "Discord-Bot — „God Mode“ für den Bot Owner: vollständige Immunität gegen jede Sanktion (warn/ban/kick/timeout), auf allen Servern — manuelle Befehle, automatisches AutoMod und automatisches Anti-Raid (einschließlich einer zweiten, älteren Anti-Raid-/Anti-Nuke-Engine, die dabei gefunden und ebenfalls abgesichert wurde).",
+    "Discord-Bot — Den „Unknown interaction“-Absturz bei /warn behoben (sowie dieselbe Fehlerklasse bei /ban, /kick, /timeout und anderen Moderationsbefehlen): die Antwort wurde erst nach langsamen Vorgängen (Mitgliedersuche, Moderationsprotokoll, DM) gesendet und überschritt damit Discords 3-Sekunden-Fenster — Moderatoren führten den Befehl daraufhin erneut aus und verwarnten das Ziel versehentlich doppelt.",
+    "Discord-Bot — /settings-Panel überarbeitet: die Kategorien Sprache, Theme, Persönlichkeit und Privatsphäre zeigen jetzt ein eigenes Embed mit den verfügbaren Optionen und direkten Auswahl-Buttons, statt stillschweigend durch Werte zu blättern oder ein Texteingabefenster zu öffnen.",
+    "Discord-Bot — Neuer Befehl /status: der Bot Owner kann den globalen Discord-Status des Bots (online / abwesend / nicht stören / unsichtbar) und die angezeigte Aktivität (spielt / streamt / hört / schaut / nimmt teil an) direkt in Discord ändern — in Echtzeit synchronisiert mit dem bereits bestehenden Präsenz-Panel im Dashboard (Bot → Präsenz & Aktivität).",
+    "Discord-Bot — Übersetzung (FR/EN/ES/DE) an die Moderationsbefehle, die Musikbefehle und das /settings-Panel angebunden. Tickets/Formulare/Umfragen/Events/Gewinnspiele/Vorschläge/Levelsystem/AutoMod/Anti-Raid bleiben vorerst nur auf Französisch (Übersetzungsarbeit noch nicht abgeschlossen).",
+    "Discord-Bot — Über 150 reine Text-Antworten in saubere, einheitliche Embeds umgewandelt, quer durch nahezu alle Module (Moderation, Musik, Tickets, Formulare, Umfragen, Gewinnspiele, Vorschläge, Levelsystem, AutoMod, Anti-Raid, Voice, Events, KI).",
+    "Dashboard — Fortsetzung des „wirkt wie eine KI-Demo“-Aufräumens auf den Discord-Admin-Seiten (Moderation, Tickets, Voice, Events, Bot, Sicherheit, Logs, Umfragen, Einladungen, Formulare, Vorschläge): verbleibende blinkende Status-Punkte entfernt und einige redundante Emojis durch echte Icons ersetzt.",
   ],
 };
 
@@ -22000,5 +22060,10 @@ CHANGELOG_BY_LANG.fr.unshift(v12053_fr);
 CHANGELOG_BY_LANG.en.unshift(v12053_en);
 CHANGELOG_BY_LANG.es.unshift(v12053_es);
 CHANGELOG_BY_LANG.de.unshift(v12053_de);
+
+CHANGELOG_BY_LANG.fr.unshift(v12054_fr);
+CHANGELOG_BY_LANG.en.unshift(v12054_en);
+CHANGELOG_BY_LANG.es.unshift(v12054_es);
+CHANGELOG_BY_LANG.de.unshift(v12054_de);
 
 export const CHANGELOG = CHANGELOG_BY_LANG.fr;

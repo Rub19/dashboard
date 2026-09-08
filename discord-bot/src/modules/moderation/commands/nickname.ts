@@ -1,6 +1,7 @@
 import { SlashCommandBuilder, PermissionFlagsBits } from 'discord.js';
 import { Command, CommandContext } from '../../../types/command.js';
 import { checkHierarchy } from '../permissions/hierarchy.js';
+import { formatString, getTranslation } from '../../../utils/i18n.js';
 
 export const nicknameCommand: Command = {
   name: 'nickname',
@@ -16,12 +17,14 @@ export const nicknameCommand: Command = {
     .setDefaultMemberPermissions(PermissionFlagsBits.ManageNicknames),
 
   async execute(ctx: CommandContext): Promise<void> {
+    const conf = ctx.guildConfig;
+    const t = getTranslation(conf.language);
+
     if (!ctx.guild || !ctx.member) {
-      await ctx.reply({ content: 'Cette commande ne peut être exécutée que sur un serveur.' });
+      await ctx.reply({ embeds: [ctx.createEmbed('error').setDescription(t.guild_only_command)] });
       return;
     }
 
-    const conf = ctx.guildConfig;
     let targetId: string | undefined;
     let newNick: string | null = null;
 
@@ -36,31 +39,35 @@ export const nicknameCommand: Command = {
     }
 
     if (!targetId) {
-      await ctx.reply({ content: `${conf.emojis.error} Utilisation : \`${ctx.prefix}nickname @membre [nouveau_nom]\`` });
+      await ctx.reply({ embeds: [ctx.createEmbed('error').setDescription(formatString(t.mod_usage, { emoji: conf.emojis.error, usage: `${ctx.prefix}nickname @membre [nouveau_nom]` }))] });
       return;
     }
 
+    await ctx.deferReply();
+
     const targetMember = await ctx.guild.members.fetch(targetId).catch(() => null);
     if (!targetMember) {
-      await ctx.reply({ content: `${conf.emojis.error} Membre introuvable.` });
+      await ctx.reply({ embeds: [ctx.createEmbed('error').setDescription(t.mod_member_not_found)] });
       return;
     }
 
     const check = checkHierarchy(ctx.member, targetMember, ctx.guild.members.me!);
     if (!check.allowed) {
-      await ctx.reply({ content: `${conf.emojis.error} ${check.reason}` });
+      await ctx.reply({ embeds: [ctx.createEmbed('error').setDescription(`${conf.emojis.error} ${check.reason}`)] });
       return;
     }
 
     try {
       await targetMember.setNickname(newNick);
       if (newNick) {
-        await ctx.reply({ content: `✅ Le surnom de ${targetMember} a été modifié en **${newNick}**.` });
+        const embed = ctx.createEmbed('success').setDescription(formatString(t.nickname_changed, { target: targetMember.toString(), nick: newNick }));
+        await ctx.reply({ embeds: [embed] });
       } else {
-        await ctx.reply({ content: `✅ Le surnom de ${targetMember} a été réinitialisé.` });
+        const embed = ctx.createEmbed('success').setDescription(formatString(t.nickname_reset, { target: targetMember.toString() }));
+        await ctx.reply({ embeds: [embed] });
       }
     } catch {
-      await ctx.reply({ content: `${conf.emojis.error} Impossible de modifier le surnom de ce membre.` });
+      await ctx.reply({ embeds: [ctx.createEmbed('error').setDescription(t.nickname_fail)] });
     }
   },
 };

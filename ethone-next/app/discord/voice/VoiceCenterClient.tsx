@@ -350,7 +350,7 @@ export default function VoiceCenterClient() {
       <div className="flex flex-col lg:flex-row lg:items-center lg:justify-between gap-4">
         <div>
           <div className="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-emerald-500/10 border border-emerald-500/20 text-emerald-400 text-xs font-semibold mb-2">
-            <Radio className="h-3.5 w-3.5 animate-pulse" />
+            <Radio className="h-3.5 w-3.5" />
             <span>Personal Voice Rooms 2.0 • 100% Interactif</span>
           </div>
           <h1 className="text-3xl font-black tracking-tight text-white flex items-center gap-3">
@@ -399,7 +399,7 @@ export default function VoiceCenterClient() {
           <div className="mt-3 flex items-baseline gap-2">
             <span className="text-3xl font-black text-white">{data?.kpis.activeVoiceChannelsCount || 0}</span>
             <span className="text-xs text-emerald-400 font-semibold flex items-center gap-0.5">
-              <span className="h-1.5 w-1.5 rounded-full bg-emerald-400 animate-ping inline-block mr-1" />
+              <span className="h-1.5 w-1.5 rounded-full bg-emerald-400 shadow-[0_0_5px_rgba(52,211,153,0.8)] inline-block mr-1" />
               En direct
             </span>
           </div>

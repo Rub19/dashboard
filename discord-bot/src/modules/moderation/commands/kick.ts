@@ -3,6 +3,7 @@ import { Command, CommandContext } from '../../../types/command.js';
 import { checkHierarchy } from '../permissions/hierarchy.js';
 import { sanctionService } from '../sanctions/sanctionService.js';
 import { ModLogger } from '../logs/modLogger.js';
+import { formatString, getTranslation } from '../../../utils/i18n.js';
 
 export const kickCommand: Command = {
   name: 'kick',
@@ -17,12 +18,19 @@ export const kickCommand: Command = {
     .setDefaultMemberPermissions(PermissionFlagsBits.KickMembers),
 
   async execute(ctx: CommandContext): Promise<void> {
+    const conf = ctx.guildConfig;
+    const t = getTranslation(conf.language);
+
     if (!ctx.guild || !ctx.member) {
-      await ctx.reply({ content: 'Cette commande ne peut être exécutée que sur un serveur.' });
+      await ctx.reply({ embeds: [ctx.createEmbed('error').setDescription(t.guild_only_command)] });
       return;
     }
 
-    const conf = ctx.guildConfig;
+    // Différer immédiatement : le fetch membre + le DM + le log de modération ci-dessous
+    // peuvent dépasser la fenêtre de 3s de Discord et invalider le token d'interaction
+    // ("Unknown interaction" / 10062) si on ne le fait pas.
+    await ctx.deferReply();
+
     let targetId: string | undefined;
     let reason = 'Expulsion par un modérateur';
 
@@ -37,26 +45,26 @@ export const kickCommand: Command = {
     }
 
     if (!targetId) {
-      await ctx.reply({ content: `${conf.emojis.error} Utilisation : \`${ctx.prefix}kick @membre [raison]\`` });
+      await ctx.reply({ embeds: [ctx.createEmbed('error').setDescription(formatString(t.mod_usage, { emoji: conf.emojis.error, usage: `${ctx.prefix}kick @membre [raison]` }))] });
       return;
     }
 
     const targetMember = await ctx.guild.members.fetch(targetId).catch(() => null);
     if (!targetMember) {
-      await ctx.reply({ content: `${conf.emojis.error} Membre introuvable sur ce serveur.` });
+      await ctx.reply({ embeds: [ctx.createEmbed('error').setDescription(t.mod_member_not_found)] });
       return;
     }
 
     const check = checkHierarchy(ctx.member, targetMember, ctx.guild.members.me!);
     if (!check.allowed) {
-      await ctx.reply({ content: `${conf.emojis.error} ${check.reason}` });
+      await ctx.reply({ embeds: [ctx.createEmbed('error').setDescription(`${conf.emojis.error} ${check.reason}`)] });
       return;
     }
 
     try {
       // Message MP préventif
       await targetMember.send({
-        content: `👢 Vous avez été expulsé du serveur **${ctx.guild.name}**.\n**Raison :** ${reason}`,
+        content: formatString(t.kick_dm, { guild: ctx.guild.name, reason }),
       }).catch(() => {});
 
       await targetMember.kick(reason);
@@ -75,16 +83,12 @@ export const kickCommand: Command = {
 
       const embed = ctx
         .createEmbed('info')
-        .setTitle(`👢 Expulsion • #${sanction.id}`)
-        .setDescription(
-          `Le membre **${targetMember.user.tag}** a été expulsé avec succès.\n\n` +
-          `**Raison :** ${reason}\n` +
-          `**Modérateur :** ${ctx.author}`
-        );
+        .setTitle(formatString(t.kick_title, { id: sanction.id }))
+        .setDescription(formatString(t.kick_desc, { userTag: targetMember.user.tag, reason, moderator: ctx.author.toString() }));
 
       await ctx.reply({ embeds: [embed] });
     } catch {
-      await ctx.reply({ content: `${conf.emojis.error} Échec de l'expulsion.` });
+      await ctx.reply({ embeds: [ctx.createEmbed('error').setDescription(t.kick_fail)] });
     }
   },
 };

@@ -46,7 +46,7 @@ export const antiraidCommand: Command = {
 
   async execute(ctx: CommandContext): Promise<void> {
     if (!ctx.guild) {
-      await ctx.reply({ content: 'Cette commande est réservée aux serveurs.', ephemeral: true });
+      await ctx.reply({ embeds: [ctx.createEmbed('error').setDescription('Cette commande est réservée aux serveurs.')], ephemeral: true });
       return;
     }
 
@@ -124,6 +124,10 @@ export const antiraidCommand: Command = {
         activate = ctx.args[1]?.toLowerCase() === 'on' || ctx.args[1]?.toLowerCase() === 'true';
       }
 
+      // Différer immédiatement : l'activation/désactivation du Raid Mode peut itérer sur les
+      // salons du serveur et dépasser la fenêtre de 3s de Discord ("Unknown interaction" / 10062).
+      await ctx.deferReply();
+
       if (activate) {
         await raidModeService.activateRaidMode(
           ctx.guild,
@@ -131,12 +135,12 @@ export const antiraidCommand: Command = {
           ctx.author.tag
         );
         await ctx.reply({
-          content: '🚨 **Raid Mode ACTIVÉ !** Les protections d’urgence sont en place.',
+          embeds: [ctx.createEmbed('error').setDescription('🚨 **Raid Mode ACTIVÉ !** Les protections d’urgence sont en place.')],
         });
       } else {
         await raidModeService.deactivateRaidMode(ctx.guild, ctx.author.tag);
         await ctx.reply({
-          content: '🔓 **Raid Mode DÉSACTIVÉ.** Retour à la configuration standard.',
+          embeds: [ctx.createEmbed('success').setDescription('🔓 **Raid Mode DÉSACTIVÉ.** Retour à la configuration standard.')],
         });
       }
       return;
@@ -151,25 +155,29 @@ export const antiraidCommand: Command = {
         activate = ctx.args[1]?.toLowerCase() === 'on' || ctx.args[1]?.toLowerCase() === 'true';
       }
 
+      // Différer immédiatement : le (dé)verrouillage itère sur tous les salons textuels du
+      // serveur et peut dépasser la fenêtre de 3s de Discord ("Unknown interaction" / 10062).
+      await ctx.deferReply();
+
       if (activate) {
         const count = await raidActionService.executeLockdown(
           ctx.guild,
           `Lockdown d’urgence par ${ctx.author.tag}`
         );
         await ctx.reply({
-          content: `🔒 **Lockdown ACTIVÉ !** ${count} salon(s) textuel(s) verrouillé(s).`,
+          embeds: [ctx.createEmbed('error').setDescription(`🔒 **Lockdown ACTIVÉ !** ${count} salon(s) textuel(s) verrouillé(s).`)],
         });
       } else {
         const count = await raidActionService.releaseLockdown(ctx.guild);
         await ctx.reply({
-          content: `🔓 **Lockdown LEVÉ !** ${count} salon(s) déverrouillé(s).`,
+          embeds: [ctx.createEmbed('success').setDescription(`🔓 **Lockdown LEVÉ !** ${count} salon(s) déverrouillé(s).`)],
         });
       }
       return;
     }
 
     await ctx.reply({
-      content: 'Usage : `/antiraid status`, `/antiraid raidmode <activer>`, `/antiraid lockdown <activer>`',
+      embeds: [ctx.createEmbed('info').setDescription('Usage : `/antiraid status`, `/antiraid raidmode <activer>`, `/antiraid lockdown <activer>`')],
       ephemeral: true,
     });
   },

@@ -478,7 +478,7 @@ export default function FormsCenterClient() {
                       <span
                         className={cn(
                           "h-1.5 w-1.5 rounded-full",
-                          isPublished && "bg-emerald-400 animate-pulse",
+                          isPublished && "bg-emerald-400 shadow-[0_0_5px_rgba(52,211,153,0.8)]",
                           isDraft && "bg-amber-400",
                           isClosed && "bg-zinc-400"
                         )}
@@ -578,7 +578,7 @@ export default function FormsCenterClient() {
           <div className="w-full max-w-2xl rounded-3xl border border-white/10 bg-zinc-950 p-6 shadow-2xl space-y-4">
             <div className="flex items-center justify-between border-b border-white/10 pb-3">
               <div className="flex items-center gap-2">
-                <span className="text-xl">✨</span>
+                <Sparkles className="h-5 w-5 text-amber-400" />
                 <div>
                   <h3 className="text-base font-bold text-white">Bibliothèque de Templates Prêts à l&apos;Emploi</h3>
                   <p className="text-xs text-zinc-400">Sélectionnez un modèle pour générer instantanément vos sections et champs.</p>

@@ -3,6 +3,7 @@ import { Command, CommandContext } from '../../../types/command.js';
 import { checkHierarchy } from '../permissions/hierarchy.js';
 import { sanctionService } from '../sanctions/sanctionService.js';
 import { ModLogger } from '../logs/modLogger.js';
+import { formatString, getTranslation } from '../../../utils/i18n.js';
 
 function parseDuration(input: string): number | null {
   const match = input.match(/^(\d+)(s|m|h|d)?$/i);
@@ -35,12 +36,19 @@ export const timeoutCommand: Command = {
     .setDefaultMemberPermissions(PermissionFlagsBits.ModerateMembers),
 
   async execute(ctx: CommandContext): Promise<void> {
+    const conf = ctx.guildConfig;
+    const t = getTranslation(conf.language);
+
     if (!ctx.guild || !ctx.member) {
-      await ctx.reply({ content: 'Cette commande ne peut être exécutée que sur un serveur.' });
+      await ctx.reply({ embeds: [ctx.createEmbed('error').setDescription(t.guild_only_command)] });
       return;
     }
 
-    const conf = ctx.guildConfig;
+    // Différer immédiatement : le fetch membre + le log de modération ci-dessous peuvent
+    // dépasser la fenêtre de 3s de Discord et invalider le token d'interaction
+    // ("Unknown interaction" / 10062) si on ne le fait pas.
+    await ctx.deferReply();
+
     let targetId: string | undefined;
     let durationStr = '10m';
     let reason = 'Comportement inapproprié';
@@ -58,26 +66,26 @@ export const timeoutCommand: Command = {
     }
 
     if (!targetId) {
-      await ctx.reply({ content: `${conf.emojis.error} Utilisation : \`${ctx.prefix}timeout @membre [durée] [raison]\`` });
+      await ctx.reply({ embeds: [ctx.createEmbed('error').setDescription(formatString(t.mod_usage, { emoji: conf.emojis.error, usage: `${ctx.prefix}timeout @membre [durée] [raison]` }))] });
       return;
     }
 
     const seconds = parseDuration(durationStr);
     if (!seconds || seconds <= 0 || seconds > 28 * 86400) {
-      await ctx.reply({ content: `${conf.emojis.error} Durée invalide (maximum 28 jours, ex: 10m, 2h, 1d).` });
+      await ctx.reply({ embeds: [ctx.createEmbed('error').setDescription(t.timeout_invalid_duration)] });
       return;
     }
 
     const targetMember = await ctx.guild.members.fetch(targetId).catch(() => null);
     if (!targetMember) {
-      await ctx.reply({ content: `${conf.emojis.error} Membre introuvable.` });
+      await ctx.reply({ embeds: [ctx.createEmbed('error').setDescription(t.mod_member_not_found)] });
       return;
     }
 
     // Hiérarchie
     const check = checkHierarchy(ctx.member, targetMember, ctx.guild.members.me!);
     if (!check.allowed) {
-      await ctx.reply({ content: `${conf.emojis.error} ${check.reason}` });
+      await ctx.reply({ embeds: [ctx.createEmbed('error').setDescription(`${conf.emojis.error} ${check.reason}`)] });
       return;
     }
 
@@ -99,16 +107,14 @@ export const timeoutCommand: Command = {
 
       const embed = ctx
         .createEmbed('info')
-        .setTitle(`🔇 Mise en Sourdine • #${sanction.id}`)
+        .setTitle(formatString(t.timeout_title, { id: sanction.id }))
         .setDescription(
-          `Le membre ${targetMember} a été mis en sourdine pour **${durationStr}**.\n\n` +
-          `**Raison :** ${reason}\n` +
-          `**Modérateur :** ${ctx.author}`
+          formatString(t.timeout_desc, { target: targetMember.toString(), duration: durationStr, reason, moderator: ctx.author.toString() })
         );
 
       await ctx.reply({ embeds: [embed] });
     } catch {
-      await ctx.reply({ content: `${conf.emojis.error} Échec de la mise en sourdine.` });
+      await ctx.reply({ embeds: [ctx.createEmbed('error').setDescription(t.timeout_fail)] });
     }
   },
 };

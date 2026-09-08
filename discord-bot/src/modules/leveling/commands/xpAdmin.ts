@@ -61,7 +61,7 @@ export const xpCommand: Command = {
 
   async execute(ctx: CommandContext): Promise<void> {
     if (!ctx.isSlash) {
-      await ctx.reply({ content: 'Cette commande doit être exécutée via Slash Command.', ephemeral: true });
+      await ctx.reply({ embeds: [ctx.createEmbed('error').setDescription('Cette commande doit être exécutée via Slash Command.')], ephemeral: true });
       return;
     }
 
@@ -83,7 +83,7 @@ export const xpCommand: Command = {
       xpWriteBuffer.flushNow();
 
       await ctx.reply({
-        content: `✅ **+${amount.toLocaleString()} XP** ajoutés à <@${targetUser.id}>. Nouveau total : **${user.totalXp.toLocaleString()} XP** (Niveau ${user.level}).`,
+        embeds: [ctx.createEmbed('success').setDescription(`✅ **+${amount.toLocaleString()} XP** ajoutés à <@${targetUser.id}>. Nouveau total : **${user.totalXp.toLocaleString()} XP** (Niveau ${user.level}).`)],
       });
     } else if (sub === 'remove') {
       user.totalXp = Math.max(0, user.totalXp - amount);
@@ -92,7 +92,7 @@ export const xpCommand: Command = {
       xpWriteBuffer.flushNow();
 
       await ctx.reply({
-        content: `✅ **-${amount.toLocaleString()} XP** retirés à <@${targetUser.id}>. Nouveau total : **${user.totalXp.toLocaleString()} XP** (Niveau ${user.level}).`,
+        embeds: [ctx.createEmbed('success').setDescription(`✅ **-${amount.toLocaleString()} XP** retirés à <@${targetUser.id}>. Nouveau total : **${user.totalXp.toLocaleString()} XP** (Niveau ${user.level}).`)],
       });
     } else if (sub === 'set') {
       user.totalXp = Math.max(0, amount);
@@ -101,12 +101,12 @@ export const xpCommand: Command = {
       xpWriteBuffer.flushNow();
 
       await ctx.reply({
-        content: `✅ XP de <@${targetUser.id}> défini à **${user.totalXp.toLocaleString()} XP** (Niveau ${user.level}).`,
+        embeds: [ctx.createEmbed('success').setDescription(`✅ XP de <@${targetUser.id}> défini à **${user.totalXp.toLocaleString()} XP** (Niveau ${user.level}).`)],
       });
     } else if (sub === 'reset') {
       xpWriteBuffer.resetUser(guild.id, targetUser.id);
       await ctx.reply({
-        content: `🗑️ L'expérience et les niveaux de <@${targetUser.id}> ont été réinitialisés avec succès.`,
+        embeds: [ctx.createEmbed('success').setDescription(`🗑️ L'expérience et les niveaux de <@${targetUser.id}> ont été réinitialisés avec succès.`)],
       });
     }
 

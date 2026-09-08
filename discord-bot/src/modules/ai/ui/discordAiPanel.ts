@@ -183,7 +183,7 @@ export class DiscordAiPanel {
           });
         }
         await interaction.reply({
-          content: 'Merci pour votre retour positif ! 👍',
+          embeds: [baseEmbed('success').setDescription('Merci pour votre retour positif ! 👍')],
           ephemeral: true,
         });
       } else if (action === 'ai_unhelpful') {
@@ -198,7 +198,7 @@ export class DiscordAiPanel {
           });
         }
         await interaction.reply({
-          content: 'Merci pour votre retour. Nous améliorons continuellement nos réponses ! 👎',
+          embeds: [baseEmbed('info').setDescription('Merci pour votre retour. Nous améliorons continuellement nos réponses ! 👎')],
           ephemeral: true,
         });
       } else if (action === 'ai_ticket') {
@@ -213,7 +213,7 @@ export class DiscordAiPanel {
             user: interaction.user,
           });
           await interaction.editReply({
-            content: `🎫 Votre ticket de support a été créé avec succès (**#${result.ticketId}**). L'équipe de modération a été notifiée !`,
+            embeds: [baseEmbed('success').setDescription(`🎫 Votre ticket de support a été créé avec succès (**#${result.ticketId}**). L'équipe de modération a été notifiée !`)],
           });
         }
       } else if (action === 'ai_summarize') {
@@ -226,16 +226,16 @@ export class DiscordAiPanel {
               .reverse()
               .map((m) => ({ author: m.author.username, content: m.content }));
             const summary = AIToolService.summarizeMessages(list);
-            await interaction.editReply({ content: summary });
+            await interaction.editReply({ embeds: [baseEmbed('info').setTitle('📝 Résumé du salon').setDescription(summary.slice(0, 4096))] });
             return;
           }
         }
-        await interaction.editReply({ content: 'Impossible de récupérer les messages pour le résumé.' });
+        await interaction.editReply({ embeds: [baseEmbed('error').setDescription('Impossible de récupérer les messages pour le résumé.')] });
       }
     } catch (err: any) {
       logger.error('[DiscordAiPanel] Erreur traitement interaction bouton :', err);
       if (!interaction.replied && !interaction.deferred) {
-        await interaction.reply({ content: 'Une erreur est survenue lors de cette action.', ephemeral: true }).catch(() => {});
+        await interaction.reply({ embeds: [baseEmbed('error').setDescription('Une erreur est survenue lors de cette action.')], ephemeral: true }).catch(() => {});
       }
     }
   }

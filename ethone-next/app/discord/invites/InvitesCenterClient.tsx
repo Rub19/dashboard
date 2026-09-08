@@ -32,6 +32,7 @@ import {
   Filter,
   Check,
   Radio,
+  Lightbulb,
 } from "lucide-react";
 import { useDiscordOAuth, type DiscordGuild } from "@/lib/hooks/useDiscordOAuth";
 import { useToast } from "@/components/ToastProvider";
@@ -510,7 +511,7 @@ export default function InvitesCenterClient() {
           <div>
             <div className="flex items-center justify-between mb-3">
               <h3 className="text-xs font-bold uppercase tracking-wider text-zinc-400 flex items-center gap-2">
-                <Radio className="w-3.5 h-3.5 text-emerald-400 animate-pulse" />
+                <Radio className="w-3.5 h-3.5 text-emerald-400" />
                 <span>Activité Parrainage Direct</span>
               </h3>
               <span className="text-[10px] text-zinc-500">Temps réel</span>
@@ -932,8 +933,9 @@ export default function InvitesCenterClient() {
                 </div>
               </div>
 
-              <div className="p-3.5 rounded-2xl bg-pink-950/20 border border-pink-500/20 text-xs text-pink-300 mt-4">
-                💡 Les invitations directes générées par vos membres présentent un taux de rétention supérieur de +24% par rapport aux liens publics.
+              <div className="flex items-start gap-2 p-3.5 rounded-2xl bg-pink-950/20 border border-pink-500/20 text-xs text-pink-300 mt-4">
+                <Lightbulb className="h-3.5 w-3.5 shrink-0 mt-0.5" />
+                <span>Les invitations directes générées par vos membres présentent un taux de rétention supérieur de +24% par rapport aux liens publics.</span>
               </div>
             </div>
           </div>

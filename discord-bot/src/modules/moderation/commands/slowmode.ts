@@ -1,5 +1,6 @@
 import { SlashCommandBuilder, PermissionFlagsBits, TextChannel } from 'discord.js';
 import { Command, CommandContext } from '../../../types/command.js';
+import { formatString, getTranslation } from '../../../utils/i18n.js';
 
 export const slowmodeCommand: Command = {
   name: 'slowmode',
@@ -20,9 +21,10 @@ export const slowmodeCommand: Command = {
     .setDefaultMemberPermissions(PermissionFlagsBits.ManageChannels),
 
   async execute(ctx: CommandContext): Promise<void> {
+    const t = getTranslation(ctx.guildConfig.language);
     const channel = ctx.channel as TextChannel;
     if (!channel || !('setRateLimitPerUser' in channel)) {
-      await ctx.reply({ content: 'Le mode lent n’est pas disponible dans ce salon.' });
+      await ctx.reply({ embeds: [ctx.createEmbed('error').setDescription(t.slowmode_unavailable)] });
       return;
     }
 
@@ -32,20 +34,22 @@ export const slowmodeCommand: Command = {
     } else {
       seconds = parseInt(ctx.args[0] || '0', 10);
       if (isNaN(seconds) || seconds < 0 || seconds > 21600) {
-        await ctx.reply({ content: 'Veuillez spécifier un nombre de secondes entre 0 et 21600.' });
+        await ctx.reply({ embeds: [ctx.createEmbed('error').setDescription(t.slowmode_invalid)] });
         return;
       }
     }
 
+    await ctx.deferReply();
+
     try {
       await channel.setRateLimitPerUser(seconds);
       if (seconds === 0) {
-        await ctx.reply({ content: `✅ Le mode lent a été **désactivé** dans ce salon.` });
+        await ctx.reply({ embeds: [ctx.createEmbed('success').setDescription(t.slowmode_disabled)] });
       } else {
-        await ctx.reply({ content: `⏱️ Mode lent configuré à **${seconds} seconde(s)** par message dans ce salon.` });
+        await ctx.reply({ embeds: [ctx.createEmbed('success').setDescription(formatString(t.slowmode_set, { seconds }))] });
       }
     } catch {
-      await ctx.reply({ content: `❌ Impossible de modifier le mode lent.` });
+      await ctx.reply({ embeds: [ctx.createEmbed('error').setDescription(t.slowmode_fail)] });
     }
   },
 };

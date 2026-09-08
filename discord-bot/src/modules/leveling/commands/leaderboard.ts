@@ -17,7 +17,7 @@ export const leaderboardCommand: Command = {
     const config = levelingStorage.getConfig(guild.id);
     if (!config.enabled) {
       await ctx.reply({
-        content: '⚠️ Le système de niveaux est actuellement désactivé sur ce serveur.',
+        embeds: [ctx.createEmbed('error').setDescription('⚠️ Le système de niveaux est actuellement désactivé sur ce serveur.')],
         ephemeral: true,
       });
       return;
@@ -27,7 +27,7 @@ export const leaderboardCommand: Command = {
 
     if (topUsers.length === 0) {
       await ctx.reply({
-        content: '📜 Aucun membre n’a encore acquis d’expérience sur ce serveur.',
+        embeds: [ctx.createEmbed('info').setDescription('📜 Aucun membre n’a encore acquis d’expérience sur ce serveur.')],
         ephemeral: true,
       });
       return;

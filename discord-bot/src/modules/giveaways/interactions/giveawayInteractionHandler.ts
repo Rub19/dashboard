@@ -1,6 +1,7 @@
 import { ButtonInteraction } from 'discord.js';
 import { giveawayService } from '../services/giveawayService.js';
 import { giveawayStorage } from '../storage/giveawayStorage.js';
+import { baseEmbed } from '../../../utils/embeds.js';
 
 export async function handleGiveawayButton(interaction: ButtonInteraction): Promise<void> {
   const customId = interaction.customId;
@@ -14,7 +15,7 @@ export async function handleGiveawayButton(interaction: ButtonInteraction): Prom
 
     if (!giveaway || giveaway.status !== 'ended') {
       await interaction.reply({
-        content: '❌ Ce tirage au sort n’est pas éligible à une réclamation.',
+        embeds: [baseEmbed('error').setDescription('❌ Ce tirage au sort n’est pas éligible à une réclamation.')],
         ephemeral: true,
       });
       return;
@@ -22,7 +23,7 @@ export async function handleGiveawayButton(interaction: ButtonInteraction): Prom
 
     if (!giveaway.winnerIds.includes(interaction.user.id)) {
       await interaction.reply({
-        content: '⛔ Vous ne faites pas partie des gagnants sélectionnés pour ce lot.',
+        embeds: [baseEmbed('error').setDescription('⛔ Vous ne faites pas partie des gagnants sélectionnés pour ce lot.')],
         ephemeral: true,
       });
       return;
@@ -30,7 +31,7 @@ export async function handleGiveawayButton(interaction: ButtonInteraction): Prom
 
     if (giveaway.claimedWinnerIds.includes(interaction.user.id)) {
       await interaction.reply({
-        content: '✅ Vous avez déjà confirmé la réclamation de votre récompense.',
+        embeds: [baseEmbed('info').setDescription('✅ Vous avez déjà confirmé la réclamation de votre récompense.')],
         ephemeral: true,
       });
       return;
@@ -40,7 +41,7 @@ export async function handleGiveawayButton(interaction: ButtonInteraction): Prom
     giveawayStorage.update(giveaway.id, { claimedWinnerIds: giveaway.claimedWinnerIds });
 
     await interaction.reply({
-      content: '🎉 **Réclamation confirmée !** Les organisateurs ont été notifiés de votre confirmation.',
+      embeds: [baseEmbed('success').setDescription('🎉 **Réclamation confirmée !** Les organisateurs ont été notifiés de votre confirmation.')],
       ephemeral: true,
     });
   }

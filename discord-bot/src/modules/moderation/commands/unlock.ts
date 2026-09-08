@@ -1,5 +1,6 @@
 import { SlashCommandBuilder, PermissionFlagsBits, TextChannel } from 'discord.js';
 import { Command, CommandContext } from '../../../types/command.js';
+import { getTranslation } from '../../../utils/i18n.js';
 
 export const unlockCommand: Command = {
   name: 'unlock',
@@ -12,16 +13,20 @@ export const unlockCommand: Command = {
     .setDefaultMemberPermissions(PermissionFlagsBits.ManageChannels),
 
   async execute(ctx: CommandContext): Promise<void> {
+    const t = getTranslation(ctx.guildConfig.language);
+
     if (!ctx.guild) {
-      await ctx.reply({ content: 'Cette commande ne peut être exécutée que sur un serveur.' });
+      await ctx.reply({ embeds: [ctx.createEmbed('error').setDescription(t.guild_only_command)] });
       return;
     }
 
     const channel = ctx.channel as TextChannel;
     if (!channel || !('permissionOverwrites' in channel)) {
-      await ctx.reply({ content: 'Impossible de déverrouiller ce salon.' });
+      await ctx.reply({ embeds: [ctx.createEmbed('error').setDescription(t.unlock_no_channel)] });
       return;
     }
+
+    await ctx.deferReply();
 
     try {
       await channel.permissionOverwrites.edit(ctx.guild.id, {
@@ -30,12 +35,12 @@ export const unlockCommand: Command = {
 
       const embed = ctx
         .createEmbed('success')
-        .setTitle('🔓 Salon Déverrouillé')
-        .setDescription('Ce salon est à nouveau ouvert à la discussion.');
+        .setTitle(t.unlock_title)
+        .setDescription(t.unlock_desc);
 
       await ctx.reply({ embeds: [embed] });
     } catch {
-      await ctx.reply({ content: '❌ Impossible de déverrouiller le salon.' });
+      await ctx.reply({ embeds: [ctx.createEmbed('error').setDescription(t.unlock_fail)] });
     }
   },
 };

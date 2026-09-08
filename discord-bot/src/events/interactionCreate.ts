@@ -33,6 +33,7 @@ import { discordPollPanel } from '../modules/polls/ui/discordPollPanel.js';
 import { handleEventButton } from '../modules/events/eventsInteractionHandler.js';
 import { discordOwnerPanel } from '../modules/presence/ui/discordOwnerPanel.js';
 import { handlePermissionPresetButton } from '../commands/admin/permissionsCommand.js';
+import { baseEmbed } from '../utils/embeds.js';
 import { HelpPanel } from '../commands/general/helpPanel.js';
 import { syncEngine } from '../services/syncEngine.js';
 import { logger } from '../utils/logger.js';
@@ -176,7 +177,7 @@ export async function onInteractionCreate(interaction: Interaction) {
   // Vérifier si les slash commands sont désactivées sur ce serveur (sauf /settings qui reste toujours accessible aux admins)
   if (!guildConfig.slashCommandsEnabled && interaction.commandName !== 'settings') {
     await interaction.reply({
-      content: `${guildConfig.emojis.error} Les commandes Slash sont actuellement **désactivées** sur ce serveur par les administrateurs.`,
+      embeds: [baseEmbed('error').setDescription(`${guildConfig.emojis.error} Les commandes Slash sont actuellement **désactivées** sur ce serveur par les administrateurs.`)],
       ephemeral: true,
     });
     return;
@@ -194,7 +195,7 @@ export async function onInteractionCreate(interaction: Interaction) {
     }
     logger.warn(`Commande Slash introuvable : ${interaction.commandName}`);
     await interaction.reply({
-      content: '❌ Cette commande n\'est plus disponible.',
+      embeds: [baseEmbed('error').setDescription('❌ Cette commande n\'est plus disponible.')],
       ephemeral: true,
     });
     return;
@@ -244,7 +245,7 @@ export async function onInteractionCreate(interaction: Interaction) {
     if (command.category === 'Administration') {
       if (!hasConfiguredAdminRole) {
         await interaction.reply({
-          content: `${guildConfig.emojis.error} ${tAccess.access_denied_admin}`,
+          embeds: [baseEmbed('error').setDescription(`${guildConfig.emojis.error} ${tAccess.access_denied_admin}`)],
           ephemeral: true,
         });
         return;
@@ -256,7 +257,7 @@ export async function onInteractionCreate(interaction: Interaction) {
 
       if (!hasConfiguredAdminRole && !hasConfiguredModRole && !hasPermissionFlags) {
         await interaction.reply({
-          content: `${guildConfig.emojis.error} ${tAccess.access_denied_mod}`,
+          embeds: [baseEmbed('error').setDescription(`${guildConfig.emojis.error} ${tAccess.access_denied_mod}`)],
           ephemeral: true,
         });
         return;
@@ -287,9 +288,9 @@ export async function onInteractionCreate(interaction: Interaction) {
 
     const errorMessage = `${guildConfig.emojis.error} Une erreur interne est survenue lors de l'exécution de la commande.`;
     if (interaction.deferred || interaction.replied) {
-      await interaction.editReply({ content: errorMessage });
+      await interaction.editReply({ embeds: [baseEmbed('error').setDescription(errorMessage)] });
     } else {
-      await interaction.reply({ content: errorMessage, ephemeral: true });
+      await interaction.reply({ embeds: [baseEmbed('error').setDescription(errorMessage)], ephemeral: true });
     }
   }
 }

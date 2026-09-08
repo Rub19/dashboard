@@ -36,7 +36,7 @@ export const languageCommand: Command = {
 
   execute: async (ctx: CommandContext) => {
     if (!ctx.guild) {
-      await ctx.reply({ content: '❌ Cette commande doit être exécutée dans un serveur.', ephemeral: true });
+      await ctx.reply({ embeds: [ctx.createEmbed('error').setDescription('❌ Cette commande doit être exécutée dans un serveur.')], ephemeral: true });
       return;
     }
 
@@ -94,7 +94,7 @@ export const languageCommand: Command = {
 
     // Vérifier les permissions en mode préfixe
     if (!ctx.isSlash && ctx.member && !ctx.member.permissions.has(PermissionFlagsBits.ManageGuild)) {
-      await ctx.reply({ content: tCurrent.no_permission, ephemeral: true });
+      await ctx.reply({ embeds: [ctx.createEmbed('error').setDescription(tCurrent.no_permission)], ephemeral: true });
       return;
     }
 
@@ -102,7 +102,7 @@ export const languageCommand: Command = {
     const validLangs: SupportedLanguage[] = ['fr', 'en', 'es', 'de'];
     if (!validLangs.includes(targetLang as any)) {
       await ctx.reply({
-        content: `❌ Langue invalide : \`${targetLang}\`. Choisissez parmi : \`fr\` (Français), \`en\` (English), \`es\` (Español), \`de\` (Deutsch).`,
+        embeds: [ctx.createEmbed('error').setDescription(`❌ Langue invalide : \`${targetLang}\`. Choisissez parmi : \`fr\` (Français), \`en\` (English), \`es\` (Español), \`de\` (Deutsch).`)],
         ephemeral: true,
       });
       return;

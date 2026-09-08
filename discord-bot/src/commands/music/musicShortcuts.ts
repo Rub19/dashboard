@@ -47,19 +47,25 @@ export const playCommand: Command = {
     ),
   execute: async (ctx: CommandContext) => {
     if (!checkVoice(ctx)) return;
+    const t = getTranslation(ctx.guildConfig.language);
     const query =
       (ctx.isSlash && ctx.interaction
         ? (ctx.interaction as any).options?.getString('recherche')
         : ctx.args.join(' ')) || '';
 
     if (!query.trim()) {
-      await replyError(ctx, '❌ Veuillez spécifier un titre ou un lien à écouter.');
+      await replyError(ctx, t.music_no_query);
       return;
     }
 
+    // Différer immédiatement : la recherche/résolution du morceau (providers YouTube/Spotify/
+    // SoundCloud) peut dépasser la fenêtre de 3s de Discord et invalider le token d'interaction
+    // ("Unknown interaction" / 10062) si on ne le fait pas.
+    await ctx.deferReply();
+
     const res = await musicService.play(ctx.guild!, ctx.member!, query);
     if (!res.success || !res.track) {
-      await replyError(ctx, res.error || 'Impossible de charger cette musique.');
+      await replyError(ctx, res.error || t.music_play_failed);
       return;
     }
 
@@ -67,21 +73,15 @@ export const playCommand: Command = {
     if (res.queuePosition === 0) {
       const embed = ctx
         .createEmbed('success')
-        .setTitle('▶️ Lecture en cours')
-        .setDescription(
-          `**[${track.title}](${track.url})**\nArtiste : \`${track.artist}\` • Durée : \`${DiscordMusicPanel.formatTime(
-            track.duration
-          )}\``
-        )
+        .setTitle(t.music_now_playing_title)
+        .setDescription(formatString(t.music_now_playing_desc, { title: track.title, url: track.url, artist: track.artist, duration: DiscordMusicPanel.formatTime(track.duration) }))
         .setThumbnail(track.thumbnail);
       await ctx.reply({ embeds: [embed] });
     } else {
       const embed = ctx
         .createEmbed('info')
-        .setTitle('➕ Ajouté à la file d\'attente')
-        .setDescription(
-          `**[${track.title}](${track.url})**\nPosition dans la file : **#${res.queuePosition}**`
-        )
+        .setTitle(t.music_added_queue_title)
+        .setDescription(formatString(t.music_added_queue_desc, { title: track.title, url: track.url, position: res.queuePosition ?? 0 }))
         .setThumbnail(track.thumbnail);
       await ctx.reply({ embeds: [embed] });
     }
@@ -98,11 +98,17 @@ export const skipCommand: Command = {
     .setDescription('Passe à la musique suivante dans la file d\'attente'),
   execute: async (ctx: CommandContext) => {
     if (!checkVoice(ctx)) return;
+    const t = getTranslation(ctx.guildConfig.language);
+    await ctx.deferReply();
     const res = await musicService.skip(ctx.guild!.id, ctx.member!);
     if (res.success) {
-      await replySuccess(ctx, '⏭️ Titre passé ! Passage au morceau suivant.');
+      if (res.nextTrack) {
+        await replySuccess(ctx, formatString(t.music_skipped, { title: res.nextTrack.title }));
+      } else {
+        await replyInfo(ctx, t.music_queue_end);
+      }
     } else {
-      await replyError(ctx, res.error || 'Impossible de passer ce titre.');
+      await replyError(ctx, res.error || t.music_skip_failed);
     }
   },
 };
@@ -116,11 +122,12 @@ export const pauseCommand: Command = {
     .setDescription('Met en pause la lecture de la musique actuelle'),
   execute: async (ctx: CommandContext) => {
     if (!checkVoice(ctx)) return;
+    const t = getTranslation(ctx.guildConfig.language);
     const res = musicService.pause(ctx.guild!.id, ctx.member!);
     if (res.success) {
-      await replySuccess(ctx, '⏸️ La lecture est en pause.');
+      await replySuccess(ctx, t.music_paused);
     } else {
-      await replyError(ctx, res.error || 'Impossible de mettre en pause.');
+      await replyError(ctx, res.error || t.music_pause_failed);
     }
   },
 };
@@ -135,11 +142,12 @@ export const resumeCommand: Command = {
     .setDescription('Reprend la lecture de la musique mise en pause'),
   execute: async (ctx: CommandContext) => {
     if (!checkVoice(ctx)) return;
+    const t = getTranslation(ctx.guildConfig.language);
     const res = musicService.resume(ctx.guild!.id, ctx.member!);
     if (res.success) {
-      await replySuccess(ctx, '▶️ La lecture a repris.');
+      await replySuccess(ctx, t.music_resumed);
     } else {
-      await replyError(ctx, res.error || 'Impossible de reprendre la lecture.');
+      await replyError(ctx, res.error || t.music_resume_failed);
     }
   },
 };
@@ -154,11 +162,12 @@ export const stopCommand: Command = {
     .setDescription('Arrête la musique, vide la file et quitte le salon vocal'),
   execute: async (ctx: CommandContext) => {
     if (!checkVoice(ctx)) return;
+    const t = getTranslation(ctx.guildConfig.language);
     const res = musicService.stop(ctx.guild!.id, ctx.member!);
     if (res.success) {
-      await replySuccess(ctx, '⏹️ Lecture arrêtée et salon vocal quitté.');
+      await replySuccess(ctx, t.music_stopped);
     } else {
-      await replyError(ctx, res.error || 'Impossible d\'arrêter la lecture.');
+      await replyError(ctx, res.error || t.music_stop_failed);
     }
   },
 };

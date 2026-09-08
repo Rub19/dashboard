@@ -15,6 +15,7 @@ import { DiscordForm, FormField, FormAnswer } from '../types/index.js';
 import { formRepository } from '../storage/formRepository.js';
 import { formService } from '../services/formService.js';
 import { logger } from '../../../utils/logger.js';
+import { baseEmbed } from '../../../utils/embeds.js';
 
 export class DiscordFormPanel {
   private client: Client | null = null;
@@ -121,7 +122,7 @@ export class DiscordFormPanel {
     const form = formRepository.getFormById(interaction.guildId, formId);
     if (!form) {
       await interaction.reply({
-        content: '❌ Ce formulaire n\'existe plus ou a été désactivé.',
+        embeds: [baseEmbed('error').setDescription('❌ Ce formulaire n\'existe plus ou a été désactivé.')],
         ephemeral: true,
       });
       return;
@@ -129,7 +130,7 @@ export class DiscordFormPanel {
 
     if (form.status !== 'PUBLISHED') {
       await interaction.reply({
-        content: '⚠️ Ce formulaire est actuellement fermé aux nouvelles réponses.',
+        embeds: [baseEmbed('warning').setDescription('⚠️ Ce formulaire est actuellement fermé aux nouvelles réponses.')],
         ephemeral: true,
       });
       return;
@@ -155,7 +156,7 @@ export class DiscordFormPanel {
     );
 
     await interaction.reply({
-      content: `📝 **${form.title}**\n\nCe formulaire comportant plusieurs étapes et des options avancées, veuillez le remplir directement sur l'interface sécurisée ETHONE :`,
+      embeds: [baseEmbed('info').setTitle(`📝 ${form.title}`).setDescription(`Ce formulaire comportant plusieurs étapes et des options avancées, veuillez le remplir directement sur l'interface sécurisée ETHONE :`)],
       components: [row],
       ephemeral: true,
     });
@@ -172,7 +173,7 @@ export class DiscordFormPanel {
 
     const form = formRepository.getFormById(interaction.guildId, formId);
     if (!form) {
-      await interaction.editReply({ content: '❌ Formulaire introuvable.' });
+      await interaction.editReply({ embeds: [baseEmbed('error').setDescription('❌ Formulaire introuvable.')] });
       return;
     }
 
@@ -207,7 +208,7 @@ export class DiscordFormPanel {
     });
 
     if (!result.success) {
-      await interaction.editReply({ content: `❌ **Erreur de soumission :** ${result.error}` });
+      await interaction.editReply({ embeds: [baseEmbed('error').setDescription(`❌ **Erreur de soumission :** ${result.error}`)] });
       return;
     }
 

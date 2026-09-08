@@ -144,7 +144,7 @@ export default function SetupWizardClient() {
           </Link>
 
           <div className="flex items-center gap-2">
-            <span className="w-2 h-2 rounded-full bg-emerald-400 animate-pulse" />
+            <span className="w-2 h-2 rounded-full bg-emerald-400 shadow-[0_0_5px_rgba(52,211,153,0.8)]" />
             <span className="text-xs font-mono text-zinc-400 font-medium">SETUP ASSISTÉ 2.0</span>
           </div>
         </div>

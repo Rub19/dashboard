@@ -3,6 +3,7 @@ import { Command, CommandContext } from '../../../types/command.js';
 import { checkHierarchy } from '../permissions/hierarchy.js';
 import { sanctionService } from '../sanctions/sanctionService.js';
 import { ModLogger } from '../logs/modLogger.js';
+import { formatString, getTranslation } from '../../../utils/i18n.js';
 
 export const banCommand: Command = {
   name: 'ban',
@@ -25,12 +26,19 @@ export const banCommand: Command = {
     .setDefaultMemberPermissions(PermissionFlagsBits.BanMembers),
 
   async execute(ctx: CommandContext): Promise<void> {
+    const conf = ctx.guildConfig;
+    const t = getTranslation(conf.language);
+
     if (!ctx.guild || !ctx.member) {
-      await ctx.reply({ content: 'Cette commande ne peut être exécutée que sur un serveur.' });
+      await ctx.reply({ embeds: [ctx.createEmbed('error').setDescription(t.guild_only_command)] });
       return;
     }
 
-    const conf = ctx.guildConfig;
+    // Différer immédiatement : le fetch membre/utilisateur + le DM + le log de modération
+    // ci-dessous peuvent dépasser la fenêtre de 3s de Discord et invalider le token
+    // d'interaction ("Unknown interaction" / 10062) si on ne le fait pas.
+    await ctx.deferReply();
+
     let targetId: string | undefined;
     let reason = 'Bannissement par un modérateur';
     let deleteDays = 0;
@@ -47,7 +55,7 @@ export const banCommand: Command = {
     }
 
     if (!targetId) {
-      await ctx.reply({ content: `${conf.emojis.error} Utilisation : \`${ctx.prefix}ban @utilisateur [raison]\`` });
+      await ctx.reply({ embeds: [ctx.createEmbed('error').setDescription(formatString(t.mod_usage, { emoji: conf.emojis.error, usage: `${ctx.prefix}ban @utilisateur [raison]` }))] });
       return;
     }
 
@@ -56,12 +64,12 @@ export const banCommand: Command = {
     if (targetMember) {
       const check = checkHierarchy(ctx.member, targetMember, ctx.guild.members.me!);
       if (!check.allowed) {
-        await ctx.reply({ content: `${conf.emojis.error} ${check.reason}` });
+        await ctx.reply({ embeds: [ctx.createEmbed('error').setDescription(`${conf.emojis.error} ${check.reason}`)] });
         return;
       }
 
       await targetMember.send({
-        content: `🔨 Vous avez été banni du serveur **${ctx.guild.name}**.\n**Raison :** ${reason}`,
+        content: formatString(t.ban_dm, { guild: ctx.guild.name, reason }),
       }).catch(() => {});
     }
 
@@ -88,16 +96,12 @@ export const banCommand: Command = {
 
       const embed = ctx
         .createEmbed('error')
-        .setTitle(`🔨 Bannissement • #${sanction.id}`)
-        .setDescription(
-          `L'utilisateur **${userTag}** a été banni avec succès.\n\n` +
-          `**Raison :** ${reason}\n` +
-          `**Modérateur :** ${ctx.author}`
-        );
+        .setTitle(formatString(t.ban_title, { id: sanction.id }))
+        .setDescription(formatString(t.ban_desc, { userTag, reason, moderator: ctx.author.toString() }));
 
       await ctx.reply({ embeds: [embed] });
     } catch {
-      await ctx.reply({ content: `${conf.emojis.error} Impossible de bannir cet utilisateur.` });
+      await ctx.reply({ embeds: [ctx.createEmbed('error').setDescription(t.ban_fail)] });
     }
   },
 };

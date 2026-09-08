@@ -86,7 +86,7 @@ export const giveawayCommand: Command = {
   async execute(ctx: CommandContext): Promise<void> {
     if (!ctx.isSlash) {
       await ctx.reply({
-        content: 'Cette commande doit être exécutée via Slash Command.',
+        embeds: [ctx.createEmbed('error').setDescription('Cette commande doit être exécutée via Slash Command.')],
         ephemeral: true,
       });
       return;
@@ -106,7 +106,7 @@ export const giveawayCommand: Command = {
 
       if (!targetChannel || targetChannel.type !== ChannelType.GuildText) {
         await ctx.reply({
-          content: '❌ Veuillez spécifier un salon textuel valide.',
+          embeds: [ctx.createEmbed('error').setDescription('❌ Veuillez spécifier un salon textuel valide.')],
           ephemeral: true,
         });
         return;
@@ -125,7 +125,7 @@ export const giveawayCommand: Command = {
       });
 
       await ctx.reply({
-        content: `✅ Giveaway pour **${prize}** lancé avec succès dans <#${gw.channelId}> ! (ID: \`${gw.id}\`)`,
+        embeds: [ctx.createEmbed('success').setDescription(`✅ Giveaway pour **${prize}** lancé avec succès dans <#${gw.channelId}> ! (ID: \`${gw.id}\`)`)],
         ephemeral: true,
       });
     } else if (sub === 'end') {
@@ -133,7 +133,7 @@ export const giveawayCommand: Command = {
       const gw = giveawayStorage.getById(id);
 
       if (!gw || gw.guildId !== guild.id) {
-        await ctx.reply({ content: '❌ Giveaway introuvable sur ce serveur.', ephemeral: true });
+        await ctx.reply({ embeds: [ctx.createEmbed('error').setDescription('❌ Giveaway introuvable sur ce serveur.')], ephemeral: true });
         return;
       }
 
@@ -141,9 +141,9 @@ export const giveawayCommand: Command = {
       const winners = await giveawayService.endGiveawayManual(id, interaction.client);
 
       await ctx.reply({
-        content: `🎉 Giveaway terminé avec succès ! Gagnant(s) : ${
+        embeds: [ctx.createEmbed('success').setDescription(`🎉 Giveaway terminé avec succès ! Gagnant(s) : ${
           winners.length > 0 ? winners.map((w) => `<@${w}>`).join(', ') : 'Aucun participant éligible.'
-        }`,
+        }`)],
         ephemeral: true,
       });
     } else if (sub === 'reroll') {
@@ -152,7 +152,7 @@ export const giveawayCommand: Command = {
       const gw = giveawayStorage.getById(id);
 
       if (!gw || gw.guildId !== guild.id) {
-        await ctx.reply({ content: '❌ Giveaway introuvable sur ce serveur.', ephemeral: true });
+        await ctx.reply({ embeds: [ctx.createEmbed('error').setDescription('❌ Giveaway introuvable sur ce serveur.')], ephemeral: true });
         return;
       }
 
@@ -160,9 +160,9 @@ export const giveawayCommand: Command = {
       const newWinners = await giveawayService.reroll(id, interaction.client, count);
 
       await ctx.reply({
-        content: `🎲 Reroll effectué ! Nouveau(x) gagnant(s) : ${
+        embeds: [ctx.createEmbed('success').setDescription(`🎲 Reroll effectué ! Nouveau(x) gagnant(s) : ${
           newWinners.length > 0 ? newWinners.map((w) => `<@${w}>`).join(', ') : 'Aucun autre participant disponible.'
-        }`,
+        }`)],
         ephemeral: true,
       });
     } else if (sub === 'cancel') {
@@ -170,18 +170,21 @@ export const giveawayCommand: Command = {
       const gw = giveawayStorage.getById(id);
 
       if (!gw || gw.guildId !== guild.id) {
-        await ctx.reply({ content: '❌ Giveaway introuvable sur ce serveur.', ephemeral: true });
+        await ctx.reply({ embeds: [ctx.createEmbed('error').setDescription('❌ Giveaway introuvable sur ce serveur.')], ephemeral: true });
         return;
       }
 
+      // Différer immédiatement : l'annulation ci-dessous notifie/édite le message du giveaway et
+      // peut dépasser la fenêtre de 3s de Discord ("Unknown interaction" / 10062) si on ne le fait pas.
+      await ctx.deferReply(true);
       await giveawayService.cancelGiveaway(id, interaction.client);
-      await ctx.reply({ content: '❌ Le giveaway a été annulé avec succès.', ephemeral: true });
+      await ctx.reply({ embeds: [ctx.createEmbed('success').setDescription('❌ Le giveaway a été annulé avec succès.')], ephemeral: true });
     } else if (sub === 'list') {
       const list = giveawayStorage.getForGuild(guild.id).filter((g) => g.status === 'active');
 
       if (list.length === 0) {
         await ctx.reply({
-          content: 'ℹ️ Aucun giveaway n’est actuellement actif sur ce serveur.',
+          embeds: [ctx.createEmbed('info').setDescription('ℹ️ Aucun giveaway n’est actuellement actif sur ce serveur.')],
           ephemeral: true,
         });
         return;

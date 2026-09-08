@@ -953,7 +953,7 @@ export default function AutoModCommandCenterPage() {
                   : "border-red-500/30 bg-red-500/10 text-red-300 hover:bg-red-500/20"
               )}
             >
-              <div className={cn("h-2 w-2 rounded-full", config.enabled ? "bg-emerald-400 animate-pulse" : "bg-red-500")} />
+              <div className={cn("h-2 w-2 rounded-full", config.enabled ? "bg-emerald-400 shadow-[0_0_5px_rgba(52,211,153,0.8)]" : "bg-red-500")} />
               <span>{config.enabled ? "Actif" : "En pause"}</span>
             </button>
 

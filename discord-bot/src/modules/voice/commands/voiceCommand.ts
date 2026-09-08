@@ -62,7 +62,7 @@ export const voiceCommand: Command = {
 
   execute: async (ctx: CommandContext) => {
     if (!ctx.guild || !ctx.member) {
-      await ctx.reply({ content: '❌ Cette commande doit être exécutée dans un serveur Discord.', ephemeral: true });
+      await ctx.reply({ embeds: [baseEmbed('error').setDescription('❌ Cette commande doit être exécutée dans un serveur Discord.')], ephemeral: true });
       return;
     }
 
@@ -94,8 +94,8 @@ export const voiceCommand: Command = {
         );
 
         await ctx.reply({
-          content: `⚠️ Vous possédez déjà un salon vocal actif : <#${existing.id}> (**${existing.name}**) !\n` +
-            `👉 Vous ne pouvez posséder qu'un seul salon actif à la fois. Supprimez-le ou rejoignez-le directement.`,
+          embeds: [baseEmbed('warning').setDescription(`⚠️ Vous possédez déjà un salon vocal actif : <#${existing.id}> (**${existing.name}**) !\n` +
+            `👉 Vous ne pouvez posséder qu'un seul salon actif à la fois. Supprimez-le ou rejoignez-le directement.`)],
           components: [row],
           ephemeral: true,
         });
@@ -130,7 +130,7 @@ export const voiceCommand: Command = {
 
       if (!result.success || !result.channel) {
         await ctx.reply({
-          content: result.message || '❌ Impossible de créer le salon vocal actuellement.',
+          embeds: [baseEmbed('error').setDescription(result.message || '❌ Impossible de créer le salon vocal actuellement.')],
           ephemeral: true,
         });
         return;
@@ -157,7 +157,7 @@ export const voiceCommand: Command = {
       const userRooms = voiceRepository.getRoomsByOwner(guild.id, member.id);
       if (userRooms.length === 0) {
         await ctx.reply({
-          content: '❌ Vous ne possédez aucun salon vocal temporaire actif à supprimer.',
+          embeds: [baseEmbed('error').setDescription('❌ Vous ne possédez aucun salon vocal temporaire actif à supprimer.')],
           ephemeral: true,
         });
         return;
@@ -168,7 +168,7 @@ export const voiceCommand: Command = {
       await TemporaryVoiceService.deleteRoomChannel(guild, room.id, `Supprimé par ${member.user.tag} via /voice delete`);
 
       await ctx.reply({
-        content: `🗑️ Votre salon vocal **${room.name}** a été fermé et supprimé avec succès.`,
+        embeds: [baseEmbed('success').setDescription(`🗑️ Votre salon vocal **${room.name}** a été fermé et supprimé avec succès.`)],
         ephemeral: true,
       });
       return;
@@ -179,7 +179,7 @@ export const voiceCommand: Command = {
       const userRooms = voiceRepository.getRoomsByOwner(guild.id, member.id);
       if (userRooms.length === 0) {
         await ctx.reply({
-          content: 'ℹ️ Vous ne possédez aucun salon vocal temporaire actif actuellement.\nUtilisez `/voice create` pour en ouvrir un en 1 seconde !',
+          embeds: [baseEmbed('info').setDescription('ℹ️ Vous ne possédez aucun salon vocal temporaire actif actuellement.\nUtilisez `/voice create` pour en ouvrir un en 1 seconde !')],
           ephemeral: true,
         });
         return;
@@ -209,7 +209,7 @@ export const voiceCommand: Command = {
         !member.permissions.has(PermissionsBitField.Flags.Administrator)
       ) {
         await ctx.reply({
-          content: '🔒 Vous devez posséder la permission **Gérer les salons** pour publier le panneau de création permanent.',
+          embeds: [baseEmbed('error').setDescription('🔒 Vous devez posséder la permission **Gérer les salons** pour publier le panneau de création permanent.')],
           ephemeral: true,
         });
         return;
@@ -217,7 +217,7 @@ export const voiceCommand: Command = {
 
       const channel = ctx.channel;
       if (!channel || !channel.isTextBased()) {
-        await ctx.reply({ content: '❌ Ce canal n’est pas un salon textuel valide.', ephemeral: true });
+        await ctx.reply({ embeds: [baseEmbed('error').setDescription('❌ Ce canal n’est pas un salon textuel valide.')], ephemeral: true });
         return;
       }
 
@@ -225,12 +225,12 @@ export const voiceCommand: Command = {
       const res = await TemporaryVoiceService.publishCreationPanel(guild, channel.id);
 
       if (!res.success) {
-        await ctx.reply({ content: `❌ Erreur lors de la publication : ${res.error}`, ephemeral: true });
+        await ctx.reply({ embeds: [baseEmbed('error').setDescription(`❌ Erreur lors de la publication : ${res.error}`)], ephemeral: true });
         return;
       }
 
       await ctx.reply({
-        content: `✅ Le **Panneau Permanent de Création Voice 2.0** a été publié avec succès dans <#${channel.id}> !`,
+        embeds: [baseEmbed('success').setDescription(`✅ Le **Panneau Permanent de Création Voice 2.0** a été publié avec succès dans <#${channel.id}> !`)],
         ephemeral: true,
       });
       return;

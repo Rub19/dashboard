@@ -520,7 +520,7 @@ export default function MusicCenterClient() {
               <div className="flex items-center gap-2">
                 <h1 className="text-base font-bold text-white flex items-center gap-2">
                   <span>Music Center 2.0</span>
-                  <span className="flex h-2 w-2 rounded-full bg-violet-400 animate-pulse" />
+                  <span className="flex h-2 w-2 rounded-full bg-violet-400 shadow-[0_0_5px_rgba(167,139,250,0.8)]" />
                 </h1>
                 <span
                   className={cn(
@@ -593,7 +593,7 @@ export default function MusicCenterClient() {
                 )}
                 {isPlaying && (
                   <div className="absolute top-2.5 right-2.5 flex items-center gap-1 bg-black/70 backdrop-blur-md px-2 py-1 rounded-lg text-[10px] font-bold text-emerald-400 border border-emerald-500/30">
-                    <span className="h-1.5 w-1.5 rounded-full bg-emerald-400 animate-ping" />
+                    <span className="h-1.5 w-1.5 rounded-full bg-emerald-400 shadow-[0_0_5px_rgba(52,211,153,0.8)]" />
                     EN COURS
                   </div>
                 )}

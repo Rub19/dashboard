@@ -468,7 +468,7 @@ export function AuditCenterClient() {
   const getSeverityBadge = (severity: AuditSeverity) => {
     switch (severity) {
       case "CRITICAL":
-        return "bg-rose-500/20 text-rose-300 border-rose-500/40 shadow-rose-500/20 shadow-sm animate-pulse";
+        return "bg-rose-500/20 text-rose-300 border-rose-500/40 shadow-[0_0_10px_rgba(244,63,94,0.25)]";
       case "HIGH":
         return "bg-orange-500/20 text-orange-300 border-orange-500/30";
       case "MEDIUM":
@@ -552,10 +552,7 @@ export function AuditCenterClient() {
             >
               {liveStreaming ? (
                 <>
-                  <span className="relative flex h-2 w-2">
-                    <span className="absolute inline-flex h-full w-full animate-ping rounded-full bg-emerald-400 opacity-75" />
-                    <span className="relative inline-flex h-2 w-2 rounded-full bg-emerald-500" />
-                  </span>
+                  <span className="relative inline-flex h-2 w-2 rounded-full bg-emerald-500 shadow-[0_0_5px_rgba(52,211,153,0.8)]" />
                   <span>Flux Live</span>
                 </>
               ) : (
@@ -641,7 +638,7 @@ export function AuditCenterClient() {
               <AlertOctagon
                 className={cn(
                   "h-4 w-4",
-                  (overview?.criticalToday ?? 0) > 0 ? "text-rose-400 animate-pulse" : "text-zinc-500"
+                  (overview?.criticalToday ?? 0) > 0 ? "text-rose-400" : "text-zinc-500"
                 )}
               />
             </div>
@@ -953,7 +950,7 @@ export function AuditCenterClient() {
           <div className="space-y-4">
             <div className="rounded-2xl border border-rose-500/30 bg-gradient-to-r from-rose-950/20 via-red-900/10 to-rose-950/30 p-4">
               <div className="flex items-center gap-2">
-                <AlertOctagon className="h-5 w-5 text-rose-400 animate-pulse" />
+                <AlertOctagon className="h-5 w-5 text-rose-400" />
                 <h3 className="font-bold text-white text-sm">Centre de Commandement des Menaces Critiques</h3>
               </div>
               <p className="text-xs text-zinc-400 mt-1">

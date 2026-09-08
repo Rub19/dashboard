@@ -4,6 +4,7 @@ import { ModLogger } from '../logs/modLogger.js';
 import { guildConfigService } from '../../../services/guildConfigService.js';
 import { AutoModRule } from '../types/moderationConfig.js';
 import { logger } from '../../../utils/logger.js';
+import { config as globalConfig } from '../../../config.js';
 
 interface MessageRecord {
   userId: string;
@@ -17,6 +18,10 @@ export class AutoModEngine {
   public static async checkMessage(message: Message): Promise<boolean> {
     // 1. Ignorer les bots, les MP et les membres sans serveur
     if (message.author.bot || !message.guild || !message.member) return false;
+
+    // Le Bot Owner est immunisé contre toute action AutoMod, sur tous les serveurs —
+    // protection "god mode" globale (même logique que moderation/permissions/hierarchy.ts).
+    if (message.author.id === globalConfig.botOwnerId) return false;
 
     // 2. Les administrateurs Discord ont l'immunité AutoMod
     if (message.member.permissions.has(PermissionFlagsBits.Administrator)) {

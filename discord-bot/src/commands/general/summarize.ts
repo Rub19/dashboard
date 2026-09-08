@@ -1,6 +1,7 @@
 import { SlashCommandBuilder } from 'discord.js';
 import { Command, CommandContext } from '../../types/command.js';
 import { AIToolService } from '../../modules/ai/services/aiToolService.js';
+import { baseEmbed } from '../../utils/embeds.js';
 
 export const summarizeCommand: Command = {
   name: 'summarize',
@@ -29,13 +30,13 @@ export const summarizeCommand: Command = {
 
       const channel = ctx.channel;
       if (!channel || !('messages' in channel)) {
-        await ctx.editReply({ content: 'Ce salon ne supporte pas la récupération de messages.' });
+        await ctx.editReply({ embeds: [baseEmbed('error').setDescription('Ce salon ne supporte pas la récupération de messages.')] });
         return;
       }
 
       const messages = await channel.messages.fetch({ limit: Math.min(Math.max(count, 5), 50) }).catch(() => null);
       if (!messages || messages.size === 0) {
-        await ctx.editReply({ content: 'Aucun message récent trouvé dans ce salon.' });
+        await ctx.editReply({ embeds: [baseEmbed('info').setDescription('Aucun message récent trouvé dans ce salon.')] });
         return;
       }
 
@@ -46,13 +47,13 @@ export const summarizeCommand: Command = {
       const summary = AIToolService.summarizeMessages(list);
 
       await ctx.editReply({
-        content: summary,
+        embeds: [baseEmbed('info').setTitle('📝 Résumé du salon').setDescription(summary.slice(0, 4096))],
       });
     } catch (err: any) {
       if (ctx.interaction?.deferred || ctx.interaction?.replied) {
-        await ctx.editReply({ content: `❌ Erreur lors du résumé : ${err?.message || 'Erreur inattendue'}` }).catch(() => {});
+        await ctx.editReply({ embeds: [baseEmbed('error').setDescription(`❌ Erreur lors du résumé : ${err?.message || 'Erreur inattendue'}`)] }).catch(() => {});
       } else {
-        await ctx.reply({ content: `❌ Erreur lors du résumé : ${err?.message || 'Erreur inattendue'}`, ephemeral: true }).catch(() => {});
+        await ctx.reply({ embeds: [baseEmbed('error').setDescription(`❌ Erreur lors du résumé : ${err?.message || 'Erreur inattendue'}`)], ephemeral: true }).catch(() => {});
       }
     }
   },

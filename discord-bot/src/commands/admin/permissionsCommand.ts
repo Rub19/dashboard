@@ -9,7 +9,7 @@ import {
 import { Command, CommandContext } from '../../types/command.js';
 import { RolePermissionService } from '../../modules/roles/services/rolePermissionService.js';
 import { guildConfigService } from '../../services/guildConfigService.js';
-import { successEmbed as buildSuccessEmbed, baseEmbed } from '../../utils/embeds.js';
+import { successEmbed as buildSuccessEmbed, baseEmbed, errorEmbed } from '../../utils/embeds.js';
 
 export const permissionsCommand: Command = {
   name: 'permissions',
@@ -35,7 +35,7 @@ export const permissionsCommand: Command = {
 
   async execute(ctx: CommandContext): Promise<void> {
     if (!ctx.guildId || !ctx.guild) {
-      await ctx.reply({ content: 'Cette commande ne peut être exécutée que sur un serveur.' });
+      await ctx.reply({ embeds: [errorEmbed().setDescription('Cette commande ne peut être exécutée que sur un serveur.')] });
       return;
     }
 
@@ -161,7 +161,7 @@ export async function handlePermissionPresetButton(interaction: ButtonInteractio
     interaction.user.id !== interaction.guild.ownerId
   ) {
     await interaction.reply({
-      content: '⛔ Seuls les administrateurs du serveur peuvent modifier les présets de permissions.',
+      embeds: [errorEmbed().setDescription('⛔ Seuls les administrateurs du serveur peuvent modifier les présets de permissions.')],
       ephemeral: true,
     });
     return;

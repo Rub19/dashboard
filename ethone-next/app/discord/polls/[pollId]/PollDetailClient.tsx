@@ -191,7 +191,7 @@ export default function PollDetailClient() {
                       : "bg-zinc-800 text-zinc-400 border border-zinc-700"
                   )}
                 >
-                  <span className="h-1.5 w-1.5 rounded-full bg-current animate-pulse" />
+                  <span className="h-1.5 w-1.5 rounded-full bg-current shadow-[0_0_5px_currentColor]" />
                   {pollStatus === "ACTIVE" ? "En cours" : pollStatus === "PAUSED" ? "En pause" : "Clôturé"}
                 </span>
               </div>

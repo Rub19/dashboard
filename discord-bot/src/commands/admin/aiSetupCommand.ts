@@ -5,7 +5,7 @@ import {
 } from 'discord.js';
 import { Command, CommandContext } from '../../types/command.js';
 import { aiRepository } from '../../modules/ai/storage/aiRepository.js';
-import { successEmbed } from '../../utils/embeds.js';
+import { successEmbed, errorEmbed, infoEmbed } from '../../utils/embeds.js';
 
 export const aiSetupCommand: Command = {
   name: 'ai-setup',
@@ -57,7 +57,7 @@ export const aiSetupCommand: Command = {
 
   async execute(ctx: CommandContext): Promise<void> {
     if (!ctx.guildId || !ctx.guild) {
-      await ctx.reply({ content: 'Cette commande ne peut être exécutée que sur un serveur.' });
+      await ctx.reply({ embeds: [errorEmbed().setDescription('Cette commande ne peut être exécutée que sur un serveur.')] });
       return;
     }
 
@@ -169,7 +169,7 @@ export const aiSetupCommand: Command = {
       await ctx.reply({ embeds: [embed] });
     } else {
       await ctx.reply({
-        content: 'Utilisez la commande Slash `/ai-setup` pour configurer le salon dédié, l\'humeur et les mots bannis.',
+        embeds: [infoEmbed().setDescription('Utilisez la commande Slash `/ai-setup` pour configurer le salon dédié, l\'humeur et les mots bannis.')],
       });
     }
   },

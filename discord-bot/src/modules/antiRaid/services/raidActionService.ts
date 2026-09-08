@@ -10,6 +10,7 @@ import { RaidAction } from '../types/antiRaid.js';
 import { raidConfigService } from './raidConfigService.js';
 import { CaseService } from '../../moderation/services/caseService.js';
 import { logger } from '../../../utils/logger.js';
+import { config as globalConfig } from '../../../config.js';
 
 class RaidActionService {
   // GuildId -> Set of channelIds modified during lockdown
@@ -61,6 +62,12 @@ class RaidActionService {
   ): Promise<boolean> {
     const guild = member.guild;
     const config = raidConfigService.getConfig(guild.id);
+
+    // Le Bot Owner est immunisé contre toute action Anti-Raid, sur tous les serveurs —
+    // protection "god mode" globale (même logique que moderation/permissions/hierarchy.ts).
+    if (member.id === globalConfig.botOwnerId) {
+      return false;
+    }
 
     // Vérifier whitelist utilisateur
     if (config.whitelist.trustedUserIds.includes(member.id)) {

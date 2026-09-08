@@ -289,7 +289,7 @@ export default function PollsCenterClient() {
               <span className="text-xs text-zinc-500">configurés</span>
             </div>
             <div className="mt-2 flex items-center gap-1.5 text-xs text-indigo-400">
-              <span className="h-1.5 w-1.5 rounded-full bg-emerald-400 animate-pulse" />
+              <span className="h-1.5 w-1.5 rounded-full bg-emerald-400 shadow-[0_0_5px_rgba(52,211,153,0.8)]" />
               {kpis.active} actifs actuellement
             </div>
           </div>
@@ -464,7 +464,7 @@ export default function PollsCenterClient() {
                       <div>
                         {poll.status === "ACTIVE" && (
                           <span className="inline-flex items-center gap-1.5 rounded-full bg-emerald-500/10 border border-emerald-500/30 px-2.5 py-0.5 text-[11px] font-semibold text-emerald-400">
-                            <span className="h-1.5 w-1.5 rounded-full bg-emerald-400 animate-pulse" />
+                            <span className="h-1.5 w-1.5 rounded-full bg-emerald-400 shadow-[0_0_5px_rgba(52,211,153,0.8)]" />
                             En cours
                           </span>
                         )}

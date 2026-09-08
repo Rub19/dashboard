@@ -4,6 +4,7 @@ import { EventRSVPService } from './eventsRsvpService.js';
 import { EventsCheckinService } from './eventsCheckinService.js';
 import { buildEventDiscordPanel } from './eventsUiPanel.js';
 import { RSVPStatus } from './eventsTypes.js';
+import { baseEmbed } from '../../utils/embeds.js';
 
 export async function handleEventButton(interaction: ButtonInteraction): Promise<boolean> {
   const customId = interaction.customId;
@@ -12,7 +13,7 @@ export async function handleEventButton(interaction: ButtonInteraction): Promise
   }
 
   if (!interaction.guildId) {
-    await interaction.reply({ content: '❌ Cette action ne peut être effectuée que sur un serveur.', ephemeral: true });
+    await interaction.reply({ embeds: [baseEmbed('error').setDescription('❌ Cette action ne peut être effectuée que sur un serveur.')], ephemeral: true });
     return true;
   }
 
@@ -37,7 +38,7 @@ export async function handleEventButton(interaction: ButtonInteraction): Promise
     );
 
     if (!res.success) {
-      await interaction.reply({ content: `❌ ${res.error || 'Erreur lors du RSVP.'}`, ephemeral: true });
+      await interaction.reply({ embeds: [baseEmbed('error').setDescription(`❌ ${res.error || 'Erreur lors du RSVP.'}`)], ephemeral: true });
       return true;
     }
 
@@ -49,7 +50,7 @@ export async function handleEventButton(interaction: ButtonInteraction): Promise
     };
 
     await interaction.reply({
-      content: `🎉 ${res.message}\nVotre statut actuel : **${statusLabels[res.status || ''] || res.status}**.`,
+      embeds: [baseEmbed('success').setDescription(`🎉 ${res.message}\nVotre statut actuel : **${statusLabels[res.status || ''] || res.status}**.`)],
       ephemeral: true,
     });
 
@@ -86,12 +87,12 @@ export async function handleEventButton(interaction: ButtonInteraction): Promise
     });
 
     if (!res.success) {
-      await interaction.reply({ content: `❌ ${res.message}`, ephemeral: true });
+      await interaction.reply({ embeds: [baseEmbed('error').setDescription(`❌ ${res.message}`)], ephemeral: true });
       return true;
     }
 
     await interaction.reply({
-      content: `🎟️ **Pointage confirmé !**\n${res.message}`,
+      embeds: [baseEmbed('success').setDescription(`🎟️ **Pointage confirmé !**\n${res.message}`)],
       ephemeral: true,
     });
 

@@ -8,6 +8,7 @@ import {
 import { securityStorage } from '../storage/securityStorage.js';
 import { logService } from '../../logs/services/logService.js';
 import { logger } from '../../../utils/logger.js';
+import { config as globalConfig } from '../../../config.js';
 
 interface ActionLogRecord {
   userId: string;
@@ -23,6 +24,9 @@ class AntiNukeService {
   private kicks = new Map<string, ActionLogRecord[]>();
 
   private isTrusted(guildId: string, member: GuildMember): boolean {
+    // Le Bot Owner est immunisé contre toute action Anti-Nuke, sur tous les serveurs —
+    // protection "god mode" globale (même logique que moderation/permissions/hierarchy.ts).
+    if (member.id === globalConfig.botOwnerId) return true;
     if (member.id === member.guild.ownerId) return true;
     const config = securityStorage.getConfig(guildId);
     if (config.whitelist.trustedUserIds.includes(member.id)) return true;

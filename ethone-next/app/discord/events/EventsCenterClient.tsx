@@ -210,7 +210,7 @@ export default function EventsCenterClient() {
                 Discord Hub • Module Natif
               </span>
               <span className="inline-flex items-center gap-1.5 px-2.5 py-0.5 rounded-full text-xs font-medium bg-emerald-500/10 text-emerald-400 border border-emerald-500/20">
-                <span className="w-1.5 h-1.5 rounded-full bg-emerald-400 animate-pulse" />
+                <span className="w-1.5 h-1.5 rounded-full bg-emerald-400 shadow-[0_0_5px_rgba(52,211,153,0.8)]" />
                 Bot Synchronisé
               </span>
             </div>
@@ -416,8 +416,8 @@ export default function EventsCenterClient() {
                       </span>
 
                       {isLive ? (
-                        <span className="px-2.5 py-1 rounded-lg text-xs font-bold uppercase tracking-wider bg-red-500/90 text-white flex items-center gap-1.5 animate-pulse">
-                          <span className="w-2 h-2 rounded-full bg-white" />
+                        <span className="px-2.5 py-1 rounded-lg text-xs font-bold uppercase tracking-wider bg-red-500/90 text-white flex items-center gap-1.5 shadow-[0_0_10px_rgba(244,63,94,0.5)]">
+                          <span className="w-2 h-2 rounded-full bg-white shadow-[0_0_4px_rgba(255,255,255,0.9)]" />
                           En Direct
                         </span>
                       ) : isPast ? (

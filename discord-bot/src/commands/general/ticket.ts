@@ -4,6 +4,7 @@ import {
   ChannelType,
 } from 'discord.js';
 import { Command, CommandContext } from '../../types/command.js';
+import { formatString, getTranslation } from '../../utils/i18n.js';
 
 export const ticketCommand: Command = {
   name: 'ticket',
@@ -21,8 +22,10 @@ export const ticketCommand: Command = {
     ),
 
   async execute(ctx: CommandContext): Promise<void> {
+    const t = getTranslation(ctx.guildConfig.language);
+
     if (!ctx.guild) {
-      await ctx.reply({ content: 'Cette commande ne peut être utilisée que sur un serveur.' });
+      await ctx.reply({ embeds: [ctx.createEmbed('error').setDescription(t.guild_only_command)] });
       return;
     }
 
@@ -31,7 +34,7 @@ export const ticketCommand: Command = {
     // Vérifier si le module Tickets est activé
     if (!config.modules.tickets) {
       await ctx.reply({
-        content: `${config.emojis.error || '❌'} Le module **Tickets** est désactivé sur ce serveur. Activez-le depuis le dashboard web.`,
+        embeds: [ctx.createEmbed('error').setDescription(`${config.emojis.error || '❌'} Le module **Tickets** est désactivé sur ce serveur. Activez-le depuis le dashboard web.`)],
         ephemeral: true,
       });
       return;
@@ -43,7 +46,7 @@ export const ticketCommand: Command = {
 
     if (existingTicket) {
       await ctx.reply({
-        content: `${config.emojis.info || 'ℹ️'} Vous avez déjà un ticket ouvert dans ${existingTicket}.`,
+        embeds: [ctx.createEmbed('info').setDescription(`${config.emojis.info || 'ℹ️'} Vous avez déjà un ticket ouvert dans ${existingTicket}.`)],
         ephemeral: true,
       });
       return;
@@ -53,6 +56,10 @@ export const ticketCommand: Command = {
       (ctx.isSlash && ctx.interaction ? (ctx.interaction as any).options?.getString('sujet') : null) ||
       ctx.args.join(' ') ||
       null;
+
+    // Différer immédiatement : la création du salon privé ci-dessous peut dépasser la fenêtre de
+    // 3s de Discord et invalider le token d'interaction ("Unknown interaction" / 10062).
+    await ctx.deferReply({ ephemeral: true });
 
     try {
       // Création du salon privé
@@ -87,7 +94,7 @@ export const ticketCommand: Command = {
         .createEmbed('default')
         .setTitle(`🎫 Ticket Support • ${ctx.author.username}`)
         .setDescription(
-          `Bonjour ${ctx.author} ! Un membre de l'équipe d'assistance va vous répondre sous peu.\n\n` +
+          `${formatString(t.ticket_welcome, { user: ctx.author.toString() })}\n\n` +
           (subject ? `📌 **Motif :** *${subject}*\n\n` : '') +
           `Veuillez détailler votre situation ou question ci-dessous.`
         );
@@ -95,12 +102,12 @@ export const ticketCommand: Command = {
       await ticketChannel.send({ content: `${ctx.author}`, embeds: [ticketEmbed] });
 
       await ctx.reply({
-        content: `${config.emojis.success || '✅'} Votre ticket a été créé avec succès : ${ticketChannel}`,
+        embeds: [ctx.createEmbed('success').setDescription(formatString(t.ticket_created, { channel: ticketChannel.toString() }))],
         ephemeral: true,
       });
     } catch {
       await ctx.reply({
-        content: `${config.emojis.error || '❌'} Impossible de créer le ticket (vérifiez que le bot a la permission de gérer les salons).`,
+        embeds: [ctx.createEmbed('error').setDescription(`${config.emojis.error || '❌'} Impossible de créer le ticket (vérifiez que le bot a la permission de gérer les salons).`)],
         ephemeral: true,
       });
     }

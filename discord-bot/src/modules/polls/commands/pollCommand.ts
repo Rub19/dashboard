@@ -59,7 +59,7 @@ export const pollCommand: Command = {
   execute: async (ctx: CommandContext) => {
     const guildId = ctx.guild?.id;
     if (!guildId) {
-      await ctx.reply({ content: '❌ Commande réservée aux serveurs Discord.', ephemeral: true });
+      await ctx.reply({ embeds: [ctx.createEmbed('error').setDescription('❌ Commande réservée aux serveurs Discord.')], ephemeral: true });
       return;
     }
 
@@ -74,11 +74,16 @@ export const pollCommand: Command = {
       pollId = ctx.args[1] || '';
     }
 
+    // Différer immédiatement : la publication du panneau et la clôture d'un sondage (subcommandes
+    // "panel"/"end" ci-dessous) peuvent dépasser la fenêtre de 3s de Discord et invalider le token
+    // d'interaction ("Unknown interaction" / 10062) si on ne le fait pas.
+    await ctx.deferReply();
+
     if (subcommand === 'list') {
       const polls = pollRepository.getPolls(guildId);
       if (polls.length === 0) {
         await ctx.reply({
-          content: 'ℹ️ Aucun sondage configuré sur ce serveur. Créez-en un depuis le dashboard ETHONE !',
+          embeds: [ctx.createEmbed('info').setDescription('ℹ️ Aucun sondage configuré sur ce serveur. Créez-en un depuis le dashboard ETHONE !')],
           ephemeral: true,
         });
         return;
@@ -103,7 +108,7 @@ export const pollCommand: Command = {
 
     if (!pollId) {
       await ctx.reply({
-        content: '❌ ID de sondage manquant. Exemple : `!poll results <id>` ou `!poll panel <id>`',
+        embeds: [ctx.createEmbed('error').setDescription('❌ ID de sondage manquant. Exemple : `!poll results <id>` ou `!poll panel <id>`')],
         ephemeral: true,
       });
       return;
@@ -112,7 +117,7 @@ export const pollCommand: Command = {
     const poll = pollRepository.getPollById(guildId, pollId);
     if (!poll) {
       await ctx.reply({
-        content: `❌ Sondage avec l'ID \`${pollId}\` introuvable sur ce serveur.`,
+        embeds: [ctx.createEmbed('error').setDescription(`❌ Sondage avec l'ID \`${pollId}\` introuvable sur ce serveur.`)],
         ephemeral: true,
       });
       return;
@@ -125,7 +130,7 @@ export const pollCommand: Command = {
       }
 
       if (!channel || !channel.isTextBased() || !('send' in channel)) {
-        await ctx.reply({ content: '❌ Salon textuel invalide.', ephemeral: true });
+        await ctx.reply({ embeds: [ctx.createEmbed('error').setDescription('❌ Salon textuel invalide.')], ephemeral: true });
         return;
       }
 
@@ -134,7 +139,7 @@ export const pollCommand: Command = {
 
       await (channel as any).send({ embeds: [embed], components: rows });
       await ctx.reply({
-        content: `✅ Panneau de vote pour **${poll.title}** publié avec succès dans <#${channel.id}>.`,
+        embeds: [ctx.createEmbed('success').setDescription(`✅ Panneau de vote pour **${poll.title}** publié avec succès dans <#${channel.id}>.`)],
         ephemeral: true,
       });
       return;
@@ -143,12 +148,12 @@ export const pollCommand: Command = {
     if (subcommand === 'end') {
       const result = await pollService.endPoll(guildId, pollId, ctx.client);
       if (!result.success) {
-        await ctx.reply({ content: `❌ Erreur : ${result.error}`, ephemeral: true });
+        await ctx.reply({ embeds: [ctx.createEmbed('error').setDescription(`❌ Erreur : ${result.error}`)], ephemeral: true });
         return;
       }
 
       await ctx.reply({
-        content: `🏁 Le sondage **${poll.title}** a été clôturé avec succès. Les résultats finaux ont été consolidés et les automatisations déclenchées.`,
+        embeds: [ctx.createEmbed('success').setDescription(`🏁 Le sondage **${poll.title}** a été clôturé avec succès. Les résultats finaux ont été consolidés et les automatisations déclenchées.`)],
         ephemeral: true,
       });
       return;
@@ -157,7 +162,7 @@ export const pollCommand: Command = {
     if (subcommand === 'results') {
       const results = pollResultService.calculateResults(guildId, pollId);
       if (!results) {
-        await ctx.reply({ content: '❌ Impossible de calculer les résultats.', ephemeral: true });
+        await ctx.reply({ embeds: [ctx.createEmbed('error').setDescription('❌ Impossible de calculer les résultats.')], ephemeral: true });
         return;
       }
 

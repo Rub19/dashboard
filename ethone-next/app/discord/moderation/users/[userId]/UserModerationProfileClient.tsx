@@ -375,7 +375,7 @@ export default function UserModerationProfileClient() {
           {/* SÉLECTEUR GUILD & STATUT ACTUEL */}
           <div className="flex items-center gap-3">
             <div className={cn("px-3 py-1.5 rounded-xl border flex items-center gap-2 text-xs font-medium", currentStatus.bg, currentStatus.color, "border-current/20")}>
-              <span className={cn("w-2 h-2 rounded-full animate-pulse", currentStatus.dot)} />
+              <span className={cn("w-2 h-2 rounded-full shadow-[0_0_5px_currentColor]", currentStatus.dot)} />
               <span>Statut : {currentStatus.label}</span>
             </div>
 

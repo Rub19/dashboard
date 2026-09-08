@@ -16,6 +16,7 @@ import { DiscordAiPanel } from '../ui/discordAiPanel.js';
 import { logService } from '../../logs/services/logService.js';
 import { AIImageService } from './aiImageService.js';
 import { logger } from '../../../utils/logger.js';
+import { baseEmbed } from '../../../utils/embeds.js';
 
 export class AIService {
   private client: Client | null = null;
@@ -80,11 +81,11 @@ export class AIService {
     if (safetyCheck.flagged) {
       if (safetyCheck.bannedWordDetected) {
         await message.reply({
-          content: `🚫 **AutoMod** : Votre message a été bloqué car il contient un terme interdit (\`${safetyCheck.bannedWordDetected}\`).`,
+          embeds: [baseEmbed('error').setDescription(`🚫 **AutoMod** : Votre message a été bloqué car il contient un terme interdit (\`${safetyCheck.bannedWordDetected}\`).`)],
         });
       } else {
         await message.reply({
-          content: '⚠️ Désolé, cette demande ne respecte pas les consignes de sécurité et directives de l\'assistant.',
+          embeds: [baseEmbed('warning').setDescription('⚠️ Désolé, cette demande ne respecte pas les consignes de sécurité et directives de l\'assistant.')],
         });
       }
       return true;
@@ -208,7 +209,7 @@ export class AIService {
     } catch (err: any) {
       logger.error('[AIService] Erreur génération réponse IA :', err);
       await message.reply({
-        content: "L'assistant IA est temporairement indisponible. Veuillez réessayer dans un instant.",
+        embeds: [baseEmbed('error').setDescription("L'assistant IA est temporairement indisponible. Veuillez réessayer dans un instant.")],
       }).catch(() => {});
       return false;
     }

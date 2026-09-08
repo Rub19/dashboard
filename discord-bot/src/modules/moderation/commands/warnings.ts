@@ -1,6 +1,7 @@
 import { SlashCommandBuilder, PermissionFlagsBits } from 'discord.js';
 import { Command, CommandContext } from '../../../types/command.js';
 import { sanctionService } from '../sanctions/sanctionService.js';
+import { formatString, getTranslation } from '../../../utils/i18n.js';
 
 export const warningsCommand: Command = {
   name: 'warnings',
@@ -15,12 +16,14 @@ export const warningsCommand: Command = {
     .setDefaultMemberPermissions(PermissionFlagsBits.ModerateMembers),
 
   async execute(ctx: CommandContext): Promise<void> {
+    const conf = ctx.guildConfig;
+    const t = getTranslation(conf.language);
+
     if (!ctx.guild) {
-      await ctx.reply({ content: 'Cette commande ne peut être exécutée que sur un serveur.' });
+      await ctx.reply({ embeds: [ctx.createEmbed('error').setDescription(t.guild_only_command)] });
       return;
     }
 
-    const conf = ctx.guildConfig;
     let targetId: string | undefined;
 
     if (ctx.isSlash && ctx.interaction) {
@@ -30,9 +33,13 @@ export const warningsCommand: Command = {
     }
 
     if (!targetId) {
-      await ctx.reply({ content: `${conf.emojis.error} Utilisation : \`${ctx.prefix}warnings @membre\`` });
+      await ctx.reply({ embeds: [ctx.createEmbed('error').setDescription(formatString(t.mod_usage, { emoji: conf.emojis.error, usage: `${ctx.prefix}warnings @membre` }))] });
       return;
     }
+
+    // Différer immédiatement : le fetch de l'utilisateur ci-dessous peut dépasser la fenêtre
+    // de 3s de Discord et invalider le token d'interaction ("Unknown interaction" / 10062).
+    await ctx.deferReply();
 
     const sanctions = sanctionService.getUserSanctions(ctx.guild.id, targetId);
     const targetUser = await ctx.client.users.fetch(targetId).catch(() => null);
@@ -41,16 +48,16 @@ export const warningsCommand: Command = {
     if (sanctions.length === 0) {
       const emptyEmbed = ctx
         .createEmbed('success')
-        .setTitle(`🛡️ Historique • ${targetName}`)
-        .setDescription('Ce membre ne possède aucun avertissement ou sanction enregistrée.');
+        .setTitle(formatString(t.warnings_empty_title, { target: targetName }))
+        .setDescription(t.warnings_empty_desc);
       await ctx.reply({ embeds: [emptyEmbed] });
       return;
     }
 
     const embed = ctx
       .createEmbed('default')
-      .setTitle(`🛡️ Historique Disciplinaire • ${targetName}`)
-      .setDescription(`Total : **${sanctions.length}** sanction(s) enregistrée(s)\n────────────────────`);
+      .setTitle(formatString(t.warnings_title, { target: targetName }))
+      .setDescription(formatString(t.warnings_total, { count: sanctions.length }));
 
     // Afficher les 10 sanctions les plus récentes
     for (const s of sanctions.slice(0, 10)) {
@@ -69,7 +76,7 @@ export const warningsCommand: Command = {
       embed.addFields([
         {
           name: `${typeLabel} • #${s.id}`,
-          value: `**Raison :** ${s.reason}\n**Par :** ${s.moderatorTag} • *${dateStr}*`,
+          value: formatString(t.warnings_field_value, { reason: s.reason, moderator: s.moderatorTag, date: dateStr }),
           inline: false,
         },
       ]);

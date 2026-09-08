@@ -1,6 +1,7 @@
 import { ModalSubmitInteraction } from 'discord.js';
 import { ticketService } from '../services/ticketService.js';
 import { logger } from '../../../utils/logger.js';
+import { baseEmbed } from '../../../utils/embeds.js';
 
 export async function handleTicketModal(interaction: ModalSubmitInteraction): Promise<void> {
   const customId = interaction.customId;
@@ -28,11 +29,11 @@ export async function handleTicketModal(interaction: ModalSubmitInteraction): Pr
     try {
       const ticket = await ticketService.createTicket(guild, interaction.user, categoryId, answers);
       await interaction.editReply({
-        content: `✅ Votre ticket a été créé : <#${ticket.channelId}>`,
+        embeds: [baseEmbed('success').setDescription(`✅ Votre ticket a été créé : <#${ticket.channelId}>`)],
       });
     } catch (err: any) {
       await interaction.editReply({
-        content: `⚠️ ${err.message || 'Impossible d’ouvrir le ticket.'}`,
+        embeds: [baseEmbed('warning').setDescription(`⚠️ ${err.message || 'Impossible d’ouvrir le ticket.'}`)],
       });
     }
     return;

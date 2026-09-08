@@ -532,8 +532,8 @@ export default function DiscordDashboardPage() {
           <div className="flex items-center gap-3.5">
             <div className="relative flex h-11 w-11 shrink-0 items-center justify-center rounded-2xl border border-[#5865F2]/30 bg-[#5865F2]/15 text-[#5865F2] shadow-sm">
               <DiscordIcon className="h-6 w-6" />
-              <span className="absolute -bottom-1 -right-1 flex h-3.5 w-3.5 items-center justify-center rounded-full border-2 border-[var(--bg-main)] bg-emerald-400">
-                <span className="h-1.5 w-1.5 rounded-full bg-white animate-pulse" />
+              <span className="absolute -bottom-1 -right-1 flex h-3.5 w-3.5 items-center justify-center rounded-full border-2 border-[var(--bg-main)] bg-emerald-400 shadow-[0_0_6px_rgba(52,211,153,0.8)]">
+                <span className="h-1.5 w-1.5 rounded-full bg-white" />
               </span>
             </div>
             <div>
@@ -851,9 +851,7 @@ export default function DiscordDashboardPage() {
                           className="h-full w-full object-cover"
                         />
                         {liveMusicState.status === "PLAYING" && (
-                          <span className="absolute bottom-1 right-1 flex h-2.5 w-2.5 rounded-full bg-emerald-400">
-                            <span className="h-full w-full rounded-full bg-emerald-400 animate-ping opacity-75" />
-                          </span>
+                          <span className="absolute bottom-1 right-1 flex h-2.5 w-2.5 rounded-full bg-emerald-400 shadow-[0_0_6px_rgba(52,211,153,0.9)] ring-2 ring-black/40" />
                         )}
                       </div>
                       <div className="min-w-0 space-y-0.5">

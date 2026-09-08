@@ -3,6 +3,7 @@ import { Command, CommandContext } from '../../../types/command.js';
 import { checkHierarchy } from '../permissions/hierarchy.js';
 import { sanctionService } from '../sanctions/sanctionService.js';
 import { ModLogger } from '../logs/modLogger.js';
+import { formatString, getTranslation } from '../../../utils/i18n.js';
 
 export const warnCommand: Command = {
   name: 'warn',
@@ -17,16 +18,24 @@ export const warnCommand: Command = {
     .setDefaultMemberPermissions(PermissionFlagsBits.ModerateMembers),
 
   async execute(ctx: CommandContext): Promise<void> {
+    const conf = ctx.guildConfig;
+    const t = getTranslation(conf.language);
+
     if (!ctx.guild || !ctx.member) {
-      await ctx.reply({ content: 'Cette commande ne peut être exécutée que sur un serveur.' });
+      await ctx.reply({ embeds: [ctx.createEmbed('error').setDescription(t.guild_only_command)] });
       return;
     }
 
-    const conf = ctx.guildConfig;
     if (!conf.modules.moderation) {
-      await ctx.reply({ content: `${conf.emojis.error} Le module Modération est désactivé sur ce serveur.` });
+      await ctx.reply({ embeds: [ctx.createEmbed('error').setDescription(formatString(t.mod_module_disabled, { emoji: conf.emojis.error }))] });
       return;
     }
+
+    // Discord invalide le token d'interaction après 3s : différer la réponse tout de suite,
+    // avant les opérations lentes ci-dessous (fetch membre, log de modération, DM), pour éviter
+    // un crash "Unknown interaction" (10062) qui empêchait toute confirmation de s'afficher —
+    // ce qui poussait les modérateurs à relancer la commande et à avertir la cible deux fois.
+    await ctx.deferReply();
 
     // Récupération de la cible
     let targetId: string | undefined;
@@ -44,20 +53,20 @@ export const warnCommand: Command = {
     }
 
     if (!targetId) {
-      await ctx.reply({ content: `${conf.emojis.error} Utilisation : \`${ctx.prefix}warn @membre [raison]\`` });
+      await ctx.reply({ embeds: [ctx.createEmbed('error').setDescription(formatString(t.mod_usage, { emoji: conf.emojis.error, usage: `${ctx.prefix}warn @membre [raison]` }))] });
       return;
     }
 
     const targetMember = await ctx.guild.members.fetch(targetId).catch(() => null);
     if (!targetMember) {
-      await ctx.reply({ content: `${conf.emojis.error} Membre introuvable sur ce serveur.` });
+      await ctx.reply({ embeds: [ctx.createEmbed('error').setDescription(t.mod_member_not_found)] });
       return;
     }
 
     // Hiérarchie
     const check = checkHierarchy(ctx.member, targetMember, ctx.guild.members.me!);
     if (!check.allowed) {
-      await ctx.reply({ content: `${conf.emojis.error} ${check.reason}` });
+      await ctx.reply({ embeds: [ctx.createEmbed('error').setDescription(`${conf.emojis.error} ${check.reason}`)] });
       return;
     }
 
@@ -77,25 +86,23 @@ export const warnCommand: Command = {
 
     // Tentative de notification en MP
     await targetMember.send({
-      content: `⚠️ Vous avez reçu un avertissement sur **${ctx.guild.name}** pour la raison suivante : *${reason}*.`,
+      content: formatString(t.warn_dm, { guild: ctx.guild.name, reason }),
     }).catch(() => {});
 
     // Réponse
     const embed = ctx
       .createEmbed('info')
-      .setTitle(`⚠️ Avertissement • #${sanction.id}`)
+      .setTitle(formatString(t.warn_title, { id: sanction.id }))
       .setDescription(
-        `Le membre ${targetMember} a été averti avec succès.\n\n` +
-        `**Raison :** ${reason}\n` +
-        `**Modérateur :** ${ctx.author}`
+        formatString(t.warn_desc, { target: targetMember.toString(), reason, moderator: ctx.author.toString() })
       );
 
     // Auto-escalade
     if (escalationTriggered && escalationAction) {
       embed.addFields([
         {
-          name: '🚨 Sanction Automatique Déclenchée',
-          value: `Seuil d’avertissements atteint : action d’escalade requise (\`${escalationAction}\`).`,
+          name: t.warn_escalation_field_name,
+          value: formatString(t.warn_escalation_field_value, { action: escalationAction }),
         },
       ]);
     }

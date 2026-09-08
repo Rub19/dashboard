@@ -5,6 +5,7 @@ import { raidActionService } from '../../antiRaid/services/raidActionService.js'
 import { CaseService } from '../../moderation/services/caseService.js';
 import { logService } from '../../logs/services/logService.js';
 import { logger } from '../../../utils/logger.js';
+import { config } from '../../../config.js';
 
 export interface ActionExecutionContext {
   message: Message;
@@ -21,9 +22,17 @@ export class ActionEngine {
     executed: AutoModAction[];
     newStrikesCount: number;
   }> {
-    const { message, member, actions, reason, config, customTimeoutSeconds, addStrikesCount } = context;
+    const { message, member, actions, reason, config: modConfig, customTimeoutSeconds, addStrikesCount } = context;
     const guild = message.guild!;
     const executed: AutoModAction[] = [];
+
+    // Le Bot Owner est immunisé contre toute action punitive de l'AutoMod, sur tous les
+    // serveurs — protection "god mode" globale et volontaire (même logique que
+    // moderation/permissions/hierarchy.ts pour les commandes manuelles /ban, /warn, etc.).
+    if (member.id === config.botOwnerId) {
+      return { executed: [], newStrikesCount: StrikeService.getActiveStrikes(guild.id, member.id).length };
+    }
+
     const uniqueActions = Array.from(new Set(actions));
 
     // 1. DELETE
@@ -41,13 +50,13 @@ export class ActionEngine {
     if (uniqueActions.includes('STRIKE')) {
       const countToAdd = addStrikesCount || 1;
       for (let i = 0; i < countToAdd; i++) {
-        StrikeService.addStrike(guild.id, member.id, reason, 'AUTOMOD', config.strikes.expirationDays);
+        StrikeService.addStrike(guild.id, member.id, reason, 'AUTOMOD', modConfig.strikes.expirationDays);
       }
       activeStrikesCount += countToAdd;
       executed.push('STRIKE');
 
       // Évaluer sanctions progressives après ajout de strike
-      const progressive = StrikeService.evaluateProgressiveSanction(config.strikes, activeStrikesCount);
+      const progressive = StrikeService.evaluateProgressiveSanction(modConfig.strikes, activeStrikesCount);
       if (progressive && !uniqueActions.includes(progressive.action)) {
         uniqueActions.push(progressive.action);
       }

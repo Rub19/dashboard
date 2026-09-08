@@ -21,7 +21,7 @@ export const prefixCommand: Command = {
     .setDefaultMemberPermissions(PermissionFlagsBits.ManageGuild),
   execute: async (ctx: CommandContext) => {
     if (!ctx.guild) {
-      await ctx.reply({ content: '❌ Cette commande doit être exécutée dans un serveur.' });
+      await ctx.reply({ embeds: [ctx.createEmbed('error').setDescription('❌ Cette commande doit être exécutée dans un serveur.')] });
       return;
     }
 
@@ -48,7 +48,7 @@ export const prefixCommand: Command = {
     if (!ctx.isSlash && ctx.member) {
       if (!ctx.member.permissions.has(PermissionFlagsBits.ManageGuild)) {
         await ctx.reply({
-          content: `${conf.emojis.error} Vous devez avoir la permission \`Gérer le serveur\` pour modifier le préfixe.`,
+          embeds: [ctx.createEmbed('error').setDescription(`${conf.emojis.error} Vous devez avoir la permission \`Gérer le serveur\` pour modifier le préfixe.`)],
         });
         return;
       }
@@ -56,7 +56,7 @@ export const prefixCommand: Command = {
 
     if (newPrefix.length > 5 || /\s/.test(newPrefix)) {
       await ctx.reply({
-        content: `${conf.emojis.error} Le préfixe ne doit pas comporter d'espaces et faire maximum 5 caractères.`,
+        embeds: [ctx.createEmbed('error').setDescription(`${conf.emojis.error} Le préfixe ne doit pas comporter d'espaces et faire maximum 5 caractères.`)],
       });
       return;
     }

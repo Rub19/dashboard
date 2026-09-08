@@ -1,4 +1,5 @@
 import { GuildMember } from 'discord.js';
+import { config } from '../../../config.js';
 
 export interface HierarchyCheckResult {
   allowed: boolean;
@@ -14,6 +15,16 @@ export function checkHierarchy(
   target: GuildMember,
   botMember: GuildMember
 ): HierarchyCheckResult {
+  // 0. Le Bot Owner est immunisé contre toute sanction, sur absolument tous les serveurs —
+  // qu'il soit propriétaire du serveur ou non. Cette immunité est globale et volontaire
+  // (protection "god mode"), distincte de la vérification de hiérarchie de rôles ci-dessous.
+  if (target.id === config.botOwnerId) {
+    return {
+      allowed: false,
+      reason: 'Cette personne est le propriétaire du bot : elle est immunisée contre toute sanction.',
+    };
+  }
+
   // 1. On ne peut pas se sanctionner soi-même
   if (moderator.id === target.id) {
     return {

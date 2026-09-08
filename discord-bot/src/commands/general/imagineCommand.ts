@@ -2,6 +2,7 @@ import { SlashCommandBuilder } from 'discord.js';
 import { Command, CommandContext } from '../../types/command.js';
 import { AIImageService } from '../../modules/ai/services/aiImageService.js';
 import { aiRepository } from '../../modules/ai/storage/aiRepository.js';
+import { baseEmbed } from '../../utils/embeds.js';
 
 export const imagineCommand: Command = {
   name: 'imagine',
@@ -25,7 +26,7 @@ export const imagineCommand: Command = {
 
     if (!prompt || prompt.trim().length < 3) {
       await ctx.reply({
-        content: '❌ Veuillez fournir une description d\'image valide (au moins 3 caractères).\n*Exemple : `/imagine un astronaute explorant une forêt de néon cyberpunk`*',
+        embeds: [baseEmbed('error').setDescription('❌ Veuillez fournir une description d\'image valide (au moins 3 caractères).\n*Exemple : `/imagine un astronaute explorant une forêt de néon cyberpunk`*')],
         ephemeral: true,
       });
       return;
@@ -36,7 +37,7 @@ export const imagineCommand: Command = {
       const settings = aiRepository.getSettings(ctx.guildId);
       if (settings.allowImageGeneration === false) {
         await ctx.reply({
-          content: '⚠️ La génération d\'images par IA a été désactivée par les administrateurs de ce serveur.',
+          embeds: [baseEmbed('warning').setDescription('⚠️ La génération d\'images par IA a été désactivée par les administrateurs de ce serveur.')],
           ephemeral: true,
         });
         return;
@@ -49,7 +50,7 @@ export const imagineCommand: Command = {
 
     if (!result.success || !result.imageUrl) {
       await ctx.reply({
-        content: `❌ ${result.error || 'Une erreur est survenue lors de la génération de l\'image.'}`,
+        embeds: [baseEmbed('error').setDescription(`❌ ${result.error || 'Une erreur est survenue lors de la génération de l\'image.'}`)],
       });
       return;
     }

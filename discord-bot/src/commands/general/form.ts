@@ -50,7 +50,7 @@ export const formCommand: Command = {
   execute: async (ctx: CommandContext) => {
     const guildId = ctx.guild?.id;
     if (!guildId) {
-      await ctx.reply({ content: '❌ Commande réservée aux serveurs Discord.', ephemeral: true });
+      await ctx.reply({ embeds: [ctx.createEmbed('error').setDescription('❌ Commande réservée aux serveurs Discord.')], ephemeral: true });
       return;
     }
 
@@ -67,7 +67,7 @@ export const formCommand: Command = {
 
     if (!formId) {
       await ctx.reply({
-        content: '❌ Usage : `!form open <id>`, `!form panel <id>`, ou `!form stats <id>`',
+        embeds: [ctx.createEmbed('error').setDescription('❌ Usage : `!form open <id>`, `!form panel <id>`, ou `!form stats <id>`')],
       });
       return;
     }
@@ -75,7 +75,7 @@ export const formCommand: Command = {
     const form = formRepository.getFormById(guildId, formId);
     if (!form) {
       await ctx.reply({
-        content: `❌ Formulaire avec l'identifiant \`${formId}\` introuvable.`,
+        embeds: [ctx.createEmbed('error').setDescription(`❌ Formulaire avec l'identifiant \`${formId}\` introuvable.`)],
         ephemeral: true,
       });
       return;
@@ -87,7 +87,7 @@ export const formCommand: Command = {
         await ctx.interaction.showModal(modal);
       } else {
         await ctx.reply({
-          content: `📝 **${form.title}**\n\nCe formulaire est disponible sur le portail Web ETHONE :\nhttps://ethone.dev/discord/forms/${form.id}?guildId=${form.guildId}`,
+          embeds: [ctx.createEmbed('info').setTitle(`📝 ${form.title}`).setDescription(`Ce formulaire est disponible sur le portail Web ETHONE :\nhttps://ethone.dev/discord/forms/${form.id}?guildId=${form.guildId}`)],
           ephemeral: true,
         });
       }
@@ -101,16 +101,20 @@ export const formCommand: Command = {
       }
 
       if (!targetChannel || !targetChannel.isTextBased() || !('send' in targetChannel)) {
-        await ctx.reply({ content: '❌ Salon textuel invalide.', ephemeral: true });
+        await ctx.reply({ embeds: [ctx.createEmbed('error').setDescription('❌ Salon textuel invalide.')], ephemeral: true });
         return;
       }
+
+      // Différer immédiatement : la publication du panneau dans le salon cible ci-dessous peut
+      // dépasser la fenêtre de 3s de Discord ("Unknown interaction" / 10062) si on ne le fait pas.
+      await ctx.deferReply({ ephemeral: true });
 
       const embed = discordFormPanel.buildPanelEmbed(form);
       const row = discordFormPanel.buildPanelActionRow(form);
 
       await targetChannel.send({ embeds: [embed], components: [row] });
       await ctx.reply({
-        content: `✅ Panneau interactif pour **${form.title}** publié avec succès dans <#${targetChannel.id}>.`,
+        embeds: [ctx.createEmbed('success').setDescription(`✅ Panneau interactif pour **${form.title}** publié avec succès dans <#${targetChannel.id}>.`)],
         ephemeral: true,
       });
       return;
@@ -127,17 +131,19 @@ export const formCommand: Command = {
           ? Math.round(responses.reduce((acc, r) => acc + r.score, 0) / responses.length)
           : 0;
 
-      await ctx.reply({
-        content:
-          `📊 **Statistiques — ${form.title}**\n\n` +
-          `• **Total réponses :** ${responses.length}\n` +
-          `• **En attente de review :** ${pending}\n` +
-          `• **Approuvées :** ${approved}\n` +
-          `• **Rejetées :** ${rejected}\n` +
-          `• **Score moyen :** ${avgScore}/100\n` +
-          `• **Statut du formulaire :** \`${form.status}\``,
-        ephemeral: true,
-      });
+      const statsEmbed = ctx
+        .createEmbed('default')
+        .setTitle(`📊 Statistiques — ${form.title}`)
+        .addFields(
+          { name: 'Total réponses', value: `${responses.length}`, inline: true },
+          { name: 'En attente de review', value: `${pending}`, inline: true },
+          { name: 'Approuvées', value: `${approved}`, inline: true },
+          { name: 'Rejetées', value: `${rejected}`, inline: true },
+          { name: 'Score moyen', value: `${avgScore}/100`, inline: true },
+          { name: 'Statut du formulaire', value: `\`${form.status}\``, inline: true }
+        );
+
+      await ctx.reply({ embeds: [statsEmbed], ephemeral: true });
     }
   },
 };

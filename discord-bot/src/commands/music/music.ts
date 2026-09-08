@@ -85,8 +85,10 @@ export const musicCommand: Command = {
   execute: async (ctx: CommandContext) => {
     const guild = ctx.guild;
     const member = ctx.member;
+    const t = getTranslation(ctx.guildConfig.language);
+
     if (!guild || !member) {
-      await replyError(ctx, 'Cette commande doit être exécutée dans un serveur Discord.');
+      await replyError(ctx, t.guild_only_command);
       return;
     }
 
@@ -113,7 +115,6 @@ export const musicCommand: Command = {
     ];
 
     if (voiceRequiredSubcommands.includes(subcommand)) {
-      const t = getTranslation(ctx.guildConfig.language);
       const userVoice = member.voice?.channel;
       if (!userVoice) {
         await replyError(ctx, t.voice_required);
@@ -130,17 +131,22 @@ export const musicCommand: Command = {
       }
     }
 
+    // Différer immédiatement : la recherche/lecture d'une piste (providers YouTube/Spotify/SoundCloud)
+    // et les autres opérations du lecteur peuvent dépasser la fenêtre de 3s de Discord et invalider
+    // le token d'interaction ("Unknown interaction" / 10062) si on ne le fait pas.
+    await ctx.deferReply();
+
     switch (subcommand) {
       case 'play':
       case 'p': {
         if (!queryArg.trim()) {
-          await replyError(ctx, 'Veuillez spécifier un titre ou un lien à jouer.');
+          await replyError(ctx, t.music_no_query);
           return;
         }
 
         const res = await musicService.play(guild, member, queryArg);
         if (!res.success) {
-          await replyError(ctx, res.error || 'Impossible de lancer cette musique.');
+          await replyError(ctx, res.error || t.music_play_failed);
           return;
         }
 
@@ -148,15 +154,15 @@ export const musicCommand: Command = {
         if (res.queuePosition === 0) {
           const embed = ctx
             .createEmbed('success')
-            .setTitle('▶️ Lecture en cours')
-            .setDescription(`**[${track.title}](${track.url})**\nArtiste : ${track.artist}\nDurée : ${DiscordMusicPanel.formatTime(track.duration)}`)
+            .setTitle(t.music_now_playing_title)
+            .setDescription(formatString(t.music_now_playing_desc, { title: track.title, url: track.url, artist: track.artist, duration: DiscordMusicPanel.formatTime(track.duration) }))
             .setThumbnail(track.thumbnail);
           await ctx.reply({ embeds: [embed] });
         } else {
           const embed = ctx
             .createEmbed('info')
-            .setTitle('➕ Ajouté à la file d\'attente')
-            .setDescription(`**[${track.title}](${track.url})**\nPosition dans la file : **#${res.queuePosition}**`)
+            .setTitle(t.music_added_queue_title)
+            .setDescription(formatString(t.music_added_queue_desc, { title: track.title, url: track.url, position: res.queuePosition ?? 0 }))
             .setThumbnail(track.thumbnail);
           await ctx.reply({ embeds: [embed] });
         }
@@ -166,9 +172,9 @@ export const musicCommand: Command = {
       case 'pause': {
         const res = musicService.pause(guild.id, member);
         if (res.success) {
-          await replySuccess(ctx, 'La lecture est désormais en pause ⏸️.');
+          await replySuccess(ctx, t.music_paused);
         } else {
-          await replyError(ctx, res.error || 'Impossible de mettre en pause.');
+          await replyError(ctx, res.error || t.music_pause_failed);
         }
         break;
       }
@@ -176,9 +182,9 @@ export const musicCommand: Command = {
       case 'resume': {
         const res = musicService.resume(guild.id, member);
         if (res.success) {
-          await replySuccess(ctx, 'Lecture reprise ▶️.');
+          await replySuccess(ctx, t.music_resumed);
         } else {
-          await replyError(ctx, res.error || 'Impossible de reprendre la lecture.');
+          await replyError(ctx, res.error || t.music_resume_failed);
         }
         break;
       }
@@ -188,12 +194,12 @@ export const musicCommand: Command = {
         const res = await musicService.skip(guild.id, member);
         if (res.success) {
           if (res.nextTrack) {
-            await replySuccess(ctx, `Piste suivante : **${res.nextTrack.title}** ⏭️.`);
+            await replySuccess(ctx, formatString(t.music_skipped, { title: res.nextTrack.title }));
           } else {
-            await replyInfo(ctx, 'Fin de la file d\'attente. Lecture arrêtée.');
+            await replyInfo(ctx, t.music_queue_end);
           }
         } else {
-          await replyError(ctx, res.error || 'Impossible de passer à la suivante.');
+          await replyError(ctx, res.error || t.music_skip_failed);
         }
         break;
       }
@@ -202,9 +208,9 @@ export const musicCommand: Command = {
       case 'prev': {
         const res = await musicService.previous(guild.id, member);
         if (res.success && res.prevTrack) {
-          await replySuccess(ctx, `Retour au titre : **${res.prevTrack.title}** ⏮️.`);
+          await replySuccess(ctx, formatString(t.music_previous, { title: res.prevTrack.title }));
         } else {
-          await replyError(ctx, res.error || 'Aucune musique précédente dans l\'historique.');
+          await replyError(ctx, res.error || t.music_no_previous);
         }
         break;
       }
@@ -212,9 +218,9 @@ export const musicCommand: Command = {
       case 'stop': {
         const res = musicService.stop(guild.id, member);
         if (res.success) {
-          await replySuccess(ctx, 'Lecture arrêtée et file d\'attente réinitialisée ⏹️.');
+          await replySuccess(ctx, t.music_stopped);
         } else {
-          await replyError(ctx, res.error || 'Impossible d\'arrêter la lecture.');
+          await replyError(ctx, res.error || t.music_stop_failed);
         }
         break;
       }
@@ -224,14 +230,14 @@ export const musicCommand: Command = {
         const vol = parseInt(queryArg, 10);
         if (isNaN(vol) || vol < 0 || vol > 100) {
           const state = musicService.getState(guild.id);
-          await replyInfo(ctx, `Le volume actuel est de **${state.volume}%**.`);
+          await replyInfo(ctx, formatString(t.music_current_volume, { volume: state.volume }));
           return;
         }
         const res = musicService.setVolume(guild.id, vol, member);
         if (res.success) {
-          await replySuccess(ctx, `Volume réglé sur **${vol}%** 🔊.`);
+          await replySuccess(ctx, formatString(t.music_volume_set, { volume: vol }));
         } else {
-          await replyError(ctx, res.error || 'Impossible de modifier le volume.');
+          await replyError(ctx, res.error || t.music_volume_failed);
         }
         break;
       }
@@ -239,14 +245,14 @@ export const musicCommand: Command = {
       case 'seek': {
         const sec = parseInt(queryArg, 10);
         if (isNaN(sec) || sec < 0) {
-          await replyError(ctx, 'Veuillez spécifier un temps valide en secondes.');
+          await replyError(ctx, t.music_seek_invalid);
           return;
         }
         const res = musicService.seek(guild.id, sec, member);
         if (res.success) {
-          await replySuccess(ctx, `Position déplacée à **${DiscordMusicPanel.formatTime(sec)}** ⏩.`);
+          await replySuccess(ctx, formatString(t.music_seek_set, { time: DiscordMusicPanel.formatTime(sec) }));
         } else {
-          await replyError(ctx, res.error || 'Impossible de déplacer la position.');
+          await replyError(ctx, res.error || t.music_seek_failed);
         }
         break;
       }
@@ -254,9 +260,9 @@ export const musicCommand: Command = {
       case 'shuffle': {
         const res = musicService.shuffle(guild.id, member);
         if (res.success) {
-          await replySuccess(ctx, 'File d\'attente mélangée aléatoirement 🔀 !');
+          await replySuccess(ctx, t.music_shuffled);
         } else {
-          await replyError(ctx, res.error || 'Impossible de mélanger la file.');
+          await replyError(ctx, res.error || t.music_shuffle_failed);
         }
         break;
       }
@@ -265,9 +271,9 @@ export const musicCommand: Command = {
         const mode = (queryArg.toUpperCase() as RepeatMode) || 'OFF';
         const res = musicService.setRepeatMode(guild.id, mode, member);
         if (res.success) {
-          await replySuccess(ctx, `Mode de répétition défini sur : **${mode}** 🔁.`);
+          await replySuccess(ctx, formatString(t.music_loop_set, { mode }));
         } else {
-          await replyError(ctx, res.error || 'Mode invalide.');
+          await replyError(ctx, res.error || t.music_loop_invalid);
         }
         break;
       }
@@ -275,14 +281,14 @@ export const musicCommand: Command = {
       case 'remove': {
         const pos = parseInt(queryArg, 10);
         if (isNaN(pos) || pos < 1) {
-          await replyError(ctx, 'Veuillez spécifier la position du titre à retirer (ex: 1).');
+          await replyError(ctx, t.music_remove_invalid);
           return;
         }
         const res = musicService.removeFromQueue(guild.id, pos - 1, member);
         if (res.success && res.removed) {
-          await replySuccess(ctx, `Titre retiré : **${res.removed.title}**.`);
+          await replySuccess(ctx, formatString(t.music_removed, { title: res.removed.title }));
         } else {
-          await replyError(ctx, res.error || 'Position invalide dans la file.');
+          await replyError(ctx, res.error || t.music_remove_invalid_position);
         }
         break;
       }
@@ -290,9 +296,9 @@ export const musicCommand: Command = {
       case 'clear': {
         const res = musicService.clearQueue(guild.id, member);
         if (res.success) {
-          await replySuccess(ctx, 'La file d\'attente a été vidée 🧹.');
+          await replySuccess(ctx, t.music_queue_cleared);
         } else {
-          await replyError(ctx, res.error || 'Impossible de vider la file.');
+          await replyError(ctx, res.error || t.music_queue_clear_failed);
         }
         break;
       }

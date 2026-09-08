@@ -10,6 +10,7 @@ import { VerificationService } from '../services/verificationService.js';
 import { OnboardingService } from '../services/onboardingService.js';
 import { welcomeRepository } from '../storage/welcomeRepository.js';
 import { logger } from '../../../utils/logger.js';
+import { baseEmbed } from '../../../utils/embeds.js';
 
 export class WelcomeInteractionHandler {
   public static async handleButton(interaction: ButtonInteraction): Promise<void> {
@@ -78,10 +79,15 @@ export class WelcomeInteractionHandler {
         detail: 'Règlement accepté par le membre.',
       });
 
+      // Différer immédiatement : la vérification automatique ci-dessous peut modifier les rôles
+      // du membre via l'API Discord et dépasser la fenêtre de 3s de l'interaction
+      // ("Unknown interaction" / 10062) si on ne le fait pas.
+      await interaction.deferReply({ ephemeral: true });
+
       // Si vérification active, on vérifie automatiquement
       const verifRes = await VerificationService.verifyMember(member);
 
-      await interaction.reply({
+      await interaction.editReply({
         embeds: [
           new EmbedBuilder()
             .setColor(0x10b981)
@@ -92,7 +98,6 @@ export class WelcomeInteractionHandler {
                 : 'Merci d’avoir accepté le règlement du serveur. Bienvenue parmi nous !'
             ),
         ],
-        ephemeral: true,
       });
       return;
     }
@@ -119,7 +124,7 @@ export class WelcomeInteractionHandler {
         });
       } catch (err: any) {
         await interaction.editReply({
-          content: `❌ ${err.message || 'Impossible d’attribuer ce rôle.'}`,
+          embeds: [baseEmbed('error').setDescription(`❌ ${err.message || 'Impossible d’attribuer ce rôle.'}`)],
         });
       }
       return;
@@ -129,7 +134,7 @@ export class WelcomeInteractionHandler {
     if (customId.startsWith('welcome_channel:')) {
       const channelId = customId.split(':')[1];
       await interaction.reply({
-        content: `📍 Rendez-vous dans le salon <#${channelId}> !`,
+        embeds: [baseEmbed('info').setDescription(`📍 Rendez-vous dans le salon <#${channelId}> !`)],
         ephemeral: true,
       });
       return;

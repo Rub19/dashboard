@@ -40,7 +40,7 @@ export const automodCommand: Command = {
 
   async execute(ctx: CommandContext): Promise<void> {
     if (!ctx.guild) {
-      await ctx.reply({ content: 'Cette commande est réservée aux serveurs.', ephemeral: true });
+      await ctx.reply({ embeds: [ctx.createEmbed('error').setDescription('Cette commande est réservée aux serveurs.')], ephemeral: true });
       return;
     }
 
@@ -118,7 +118,7 @@ export const automodCommand: Command = {
       }
 
       if (!testMsg) {
-        await ctx.reply({ content: 'Veuillez préciser le message de test.', ephemeral: true });
+        await ctx.reply({ embeds: [ctx.createEmbed('error').setDescription('Veuillez préciser le message de test.')], ephemeral: true });
         return;
       }
 
@@ -183,17 +183,17 @@ export const automodCommand: Command = {
 
       autoModRepository.updateConfig(guildId, { smartMode: active });
       await ctx.reply({
-        content: `🧠 **Smart Mode ${active ? 'ACTIVÉ' : 'DÉSACTIVÉ'} !** ${
+        embeds: [ctx.createEmbed('success').setDescription(`🧠 **Smart Mode ${active ? 'ACTIVÉ' : 'DÉSACTIVÉ'} !** ${
           active
             ? 'Les seuils s’ajusteront automatiquement en cas d’attaque et selon le flux d’événements.'
             : 'Seuils statiques normaux appliqués.'
-        }`,
+        }`)],
       });
       return;
     }
 
     await ctx.reply({
-      content: 'Usage : `/automod status`, `/automod test <message>`, `/automod smartmode <activer>`',
+      embeds: [ctx.createEmbed('info').setDescription('Usage : `/automod status`, `/automod test <message>`, `/automod smartmode <activer>`')],
       ephemeral: true,
     });
   },

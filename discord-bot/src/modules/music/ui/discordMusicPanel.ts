@@ -148,7 +148,7 @@ export class DiscordMusicPanel {
       const userVoice = member?.voice?.channel;
       if (!userVoice) {
         await interaction.reply({
-          content: t.voice_required,
+          embeds: [baseEmbed('error').setDescription(t.voice_required)],
           ephemeral: true,
         });
         return;
@@ -157,7 +157,7 @@ export class DiscordMusicPanel {
       const botVoice = guild.members.me?.voice?.channel;
       if (botVoice && botVoice.id !== userVoice.id) {
         await interaction.reply({
-          content: formatString(t.voice_different, { channel: `<#${botVoice.id}>` }),
+          embeds: [baseEmbed('error').setDescription(formatString(t.voice_different, { channel: `<#${botVoice.id}>` }))],
           ephemeral: true,
         });
         return;

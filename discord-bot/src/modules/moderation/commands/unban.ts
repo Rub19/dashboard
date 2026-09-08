@@ -2,6 +2,7 @@ import { SlashCommandBuilder, PermissionFlagsBits } from 'discord.js';
 import { Command, CommandContext } from '../../../types/command.js';
 import { sanctionService } from '../sanctions/sanctionService.js';
 import { ModLogger } from '../logs/modLogger.js';
+import { formatString, getTranslation } from '../../../utils/i18n.js';
 
 export const unbanCommand: Command = {
   name: 'unban',
@@ -16,12 +17,19 @@ export const unbanCommand: Command = {
     .setDefaultMemberPermissions(PermissionFlagsBits.BanMembers),
 
   async execute(ctx: CommandContext): Promise<void> {
+    const conf = ctx.guildConfig;
+    const t = getTranslation(conf.language);
+
     if (!ctx.guild) {
-      await ctx.reply({ content: 'Cette commande ne peut être exécutée que sur un serveur.' });
+      await ctx.reply({ embeds: [ctx.createEmbed('error').setDescription(t.guild_only_command)] });
       return;
     }
 
-    const conf = ctx.guildConfig;
+    // Différer immédiatement : la vérification du ban + le log de modération ci-dessous
+    // peuvent dépasser la fenêtre de 3s de Discord et invalider le token d'interaction
+    // ("Unknown interaction" / 10062) si on ne le fait pas.
+    await ctx.deferReply();
+
     let targetId: string | undefined;
     let reason = 'Révocation de sanction par un modérateur';
 
@@ -36,14 +44,14 @@ export const unbanCommand: Command = {
     }
 
     if (!targetId || !/^\d{17,20}$/.test(targetId)) {
-      await ctx.reply({ content: `${conf.emojis.error} Veuillez fournir un identifiant Discord valide (ex: \`${ctx.prefix}unban 123456789012345678\`).` });
+      await ctx.reply({ embeds: [ctx.createEmbed('error').setDescription(formatString(t.unban_invalid_id, { example: `${ctx.prefix}unban 123456789012345678` }))] });
       return;
     }
 
     try {
       const banInfo = await ctx.guild.bans.fetch(targetId).catch(() => null);
       if (!banInfo) {
-        await ctx.reply({ content: `${conf.emojis.error} Cet utilisateur n’est pas banni sur ce serveur.` });
+        await ctx.reply({ embeds: [ctx.createEmbed('error').setDescription(t.unban_not_banned)] });
         return;
       }
 
@@ -63,12 +71,12 @@ export const unbanCommand: Command = {
 
       const embed = ctx
         .createEmbed('success')
-        .setTitle(`🔓 Débannissement • #${sanction.id}`)
-        .setDescription(`L'utilisateur **${banInfo.user.tag}** a été débanni avec succès.`);
+        .setTitle(formatString(t.unban_title, { id: sanction.id }))
+        .setDescription(formatString(t.unban_desc, { userTag: banInfo.user.tag }));
 
       await ctx.reply({ embeds: [embed] });
     } catch {
-      await ctx.reply({ content: `${conf.emojis.error} Échec du débannissement.` });
+      await ctx.reply({ embeds: [ctx.createEmbed('error').setDescription(t.unban_fail)] });
     }
   },
 };

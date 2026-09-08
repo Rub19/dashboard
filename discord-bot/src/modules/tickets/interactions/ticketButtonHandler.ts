@@ -13,6 +13,7 @@ import { ticketService } from '../services/ticketService.js';
 import { TranscriptService } from '../services/transcriptService.js';
 import { TicketPriority } from '../types/ticket.js';
 import { logger } from '../../../utils/logger.js';
+import { baseEmbed } from '../../../utils/embeds.js';
 
 export async function handleTicketButton(interaction: ButtonInteraction): Promise<void> {
   const customId = interaction.customId;
@@ -25,7 +26,7 @@ export async function handleTicketButton(interaction: ButtonInteraction): Promis
     const category = ticketService.getCategories(guild.id).find((c) => c.id === categoryId);
 
     if (!category) {
-      await interaction.reply({ content: '❌ Catégorie introuvable.', ephemeral: true });
+      await interaction.reply({ embeds: [baseEmbed('error').setDescription('❌ Catégorie introuvable.')], ephemeral: true });
       return;
     }
 
@@ -55,11 +56,11 @@ export async function handleTicketButton(interaction: ButtonInteraction): Promis
     try {
       const ticket = await ticketService.createTicket(guild, interaction.user, categoryId);
       await interaction.editReply({
-        content: `✅ Votre ticket a été créé : <#${ticket.channelId}>`,
+        embeds: [baseEmbed('success').setDescription(`✅ Votre ticket a été créé : <#${ticket.channelId}>`)],
       });
     } catch (err: any) {
       await interaction.editReply({
-        content: `⚠️ ${err.message || 'Impossible d’ouvrir le ticket.'}`,
+        embeds: [baseEmbed('warning').setDescription(`⚠️ ${err.message || 'Impossible d’ouvrir le ticket.'}`)],
       });
     }
     return;
@@ -101,7 +102,7 @@ export async function handleTicketButton(interaction: ButtonInteraction): Promis
 
       await interaction.update({ components: [updatedButtons] });
     } catch (err: any) {
-      await interaction.reply({ content: `❌ ${err.message}`, ephemeral: true });
+      await interaction.reply({ embeds: [baseEmbed('error').setDescription(`❌ ${err.message}`)], ephemeral: true });
     }
     return;
   }
@@ -140,7 +141,7 @@ export async function handleTicketButton(interaction: ButtonInteraction): Promis
 
       await interaction.update({ components: [updatedButtons] });
     } catch (err: any) {
-      await interaction.reply({ content: `❌ ${err.message}`, ephemeral: true });
+      await interaction.reply({ embeds: [baseEmbed('error').setDescription(`❌ ${err.message}`)], ephemeral: true });
     }
     return;
   }
@@ -158,7 +159,7 @@ export async function handleTicketButton(interaction: ButtonInteraction): Promis
       );
       await interaction.deleteReply().catch(() => {});
     } catch (err: any) {
-      await interaction.editReply({ content: `❌ ${err.message}` });
+      await interaction.editReply({ embeds: [baseEmbed('error').setDescription(`❌ ${err.message}`)] });
     }
     return;
   }
@@ -168,7 +169,7 @@ export async function handleTicketButton(interaction: ButtonInteraction): Promis
     const ticketId = customId.split(':')[1];
     const ticket = ticketService.getTicketById(guild.id, ticketId);
     if (!ticket) {
-      await interaction.reply({ content: '❌ Ticket introuvable.', ephemeral: true });
+      await interaction.reply({ embeds: [baseEmbed('error').setDescription('❌ Ticket introuvable.')], ephemeral: true });
       return;
     }
 
@@ -187,10 +188,10 @@ export async function handleTicketButton(interaction: ButtonInteraction): Promis
       });
 
       await interaction.reply({
-        content: `📌 **Priorité mise à jour :** \`${ticket.priority}\` ➔ \`${newPriority}\``,
+        embeds: [baseEmbed('info').setDescription(`📌 **Priorité mise à jour :** \`${ticket.priority}\` ➔ \`${newPriority}\``)],
       });
     } catch (err: any) {
-      await interaction.reply({ content: `❌ ${err.message}`, ephemeral: true });
+      await interaction.reply({ embeds: [baseEmbed('error').setDescription(`❌ ${err.message}`)], ephemeral: true });
     }
     return;
   }
@@ -210,11 +211,11 @@ export async function handleTicketButton(interaction: ButtonInteraction): Promis
       const attachment = new AttachmentBuilder(filePath, { name: `transcript-${ticketId}.html` });
 
       await interaction.editReply({
-        content: '📄 **Voici la transcription complète de ce ticket :**',
+        embeds: [baseEmbed('info').setDescription('📄 **Voici la transcription complète de ce ticket :**')],
         files: [attachment],
       });
     } catch (err: any) {
-      await interaction.editReply({ content: `❌ ${err.message}` });
+      await interaction.editReply({ embeds: [baseEmbed('error').setDescription(`❌ ${err.message}`)] });
     }
     return;
   }

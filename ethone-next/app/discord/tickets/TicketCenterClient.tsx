@@ -735,7 +735,7 @@ export function TicketCenterClient() {
   const getPriorityBadge = (p: TicketPriority) => {
     switch (p) {
       case "URGENT":
-        return "bg-rose-500/20 text-rose-300 border-rose-500/40 animate-pulse";
+        return "bg-rose-500/20 text-rose-300 border-rose-500/40 shadow-[0_0_10px_rgba(244,63,94,0.25)]";
       case "HIGH":
         return "bg-amber-500/20 text-amber-300 border-amber-500/40";
       case "NORMAL":
@@ -1079,7 +1079,7 @@ export function TicketCenterClient() {
                       <td className="py-3 px-4">
                         {t.claimedBy ? (
                           <div className="flex items-center gap-1.5">
-                            <span className="h-2 w-2 rounded-full bg-emerald-400 animate-pulse" />
+                            <span className="h-2 w-2 rounded-full bg-emerald-400 shadow-[0_0_5px_rgba(52,211,153,0.8)]" />
                             <span className="font-medium text-emerald-300">{t.claimedBy.tag}</span>
                           </div>
                         ) : (

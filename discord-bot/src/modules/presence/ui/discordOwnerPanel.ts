@@ -14,6 +14,7 @@ import { ActivityRotationEngine } from '../services/activityRotationEngine.js';
 import { PresenceSchedulerService } from '../services/presenceSchedulerService.js';
 import { SmartPresenceEngine } from '../services/smartPresenceEngine.js';
 import { logger } from '../../../utils/logger.js';
+import { baseEmbed } from '../../../utils/embeds.js';
 
 export class DiscordOwnerPanel {
   private static instance: DiscordOwnerPanel;
@@ -133,7 +134,7 @@ export class DiscordOwnerPanel {
   public async handleButton(interaction: ButtonInteraction): Promise<void> {
     if (interaction.user.id !== config.botOwnerId) {
       await interaction.reply({
-        content: '⛔ Accès refusé : Cette action est réservée au Bot Owner autorisé.',
+        embeds: [baseEmbed('error').setDescription('⛔ Accès refusé : Cette action est réservée au Bot Owner autorisé.')],
         ephemeral: true,
       });
       return;

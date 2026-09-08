@@ -783,7 +783,7 @@ export default function AntiRaidDashboardPage() {
                   className={cn(
                     "px-5 py-2.5 rounded-xl font-bold text-sm tracking-wide shadow-lg transition-all flex items-center justify-center gap-2",
                     metrics.raidModeActive
-                      ? "bg-amber-500 hover:bg-amber-400 text-black shadow-amber-500/30 animate-pulse"
+                      ? "bg-amber-500 hover:bg-amber-400 text-black shadow-amber-500/30"
                       : "bg-gradient-to-r from-red-600 via-rose-600 to-red-700 hover:from-red-500 hover:to-rose-500 text-white shadow-red-600/30"
                   )}
                 >
@@ -902,7 +902,7 @@ export default function AntiRaidDashboardPage() {
         <div className="rounded-2xl border border-white/10 bg-white/[0.02] p-4 sm:p-5 backdrop-blur-xl">
           <div className="flex items-center justify-between mb-4">
             <div className="flex items-center gap-2">
-              <div className="w-2 h-2 rounded-full bg-emerald-400 animate-ping" />
+              <div className="w-2 h-2 rounded-full bg-emerald-400 shadow-[0_0_5px_rgba(52,211,153,0.8)]" />
               <h3 className="text-sm font-semibold text-white tracking-wide">Live Security Activity</h3>
               <span className="text-xs text-white/40">(Fenêtre glissante 60s)</span>
             </div>

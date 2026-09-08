@@ -11,6 +11,7 @@ import { CommandVariableEngine, VariableContext } from './commandVariableEngine.
 import { CommandConditionEngine } from './commandConditionEngine.js';
 import { CommandActionExecutor } from './commandActionExecutor.js';
 import { logger } from '../../../utils/logger.js';
+import { baseEmbed } from '../../../utils/embeds.js';
 
 // Per-user cooldown cache: key = `${commandId}:${userId}`
 const cooldownCache = new Map<string, number>();
@@ -39,14 +40,14 @@ export class CustomCommandService {
     // Permission check
     const permError = this.checkPermissions(cmd, member);
     if (permError) {
-      await interaction.reply({ content: permError, ephemeral: true });
+      await interaction.reply({ embeds: [baseEmbed('error').setDescription(permError)], ephemeral: true });
       return;
     }
 
     // Cooldown check
     const cdError = this.checkCooldown(cmd, interaction.user.id);
     if (cdError) {
-      await interaction.reply({ content: cdError, ephemeral: true });
+      await interaction.reply({ embeds: [baseEmbed('warning').setDescription(cdError)], ephemeral: true });
       return;
     }
 
@@ -80,7 +81,7 @@ export class CustomCommandService {
 
     if (!replied) {
       await interaction
-        .reply({ content: '✅ Commande exécutée.', ephemeral: true })
+        .reply({ embeds: [baseEmbed('success').setDescription('✅ Commande exécutée.')], ephemeral: true })
         .catch(() => null);
     }
 

@@ -2,6 +2,15 @@
 
 Toutes les modifications notables de ce projet seront documentées dans ce fichier.
 
+## v1.20.62 — 2026-09-09
+
+**Correctif important : le Bot Control Center affichait des modules factices**
+
+- **Root cause** : `discord-bot/src/modules/botControl/services/botModuleRegistryService.ts` était un catalogue statique en mémoire, **global** (pas par serveur), de 22 "modules" avec des métadonnées entièrement fabriquées (`uptimeSeconds` toujours figé à 3 jours, `errorCount24h` jamais réellement incrémenté, `memoryWeightMb: Math.random()`, versions inventées ne correspondant pas au `1.0.0` réel du package). Son `toggleModule()` ne faisait que basculer une entrée en mémoire — jamais d'appel à `guildConfigService.updateConfig()`, donc aucun effet réel, et étant global plutôt que par serveur, un toggle aurait affiché le même état pour tous les serveurs à la fois. Exposé via `GET/POST /api/bot/modules`, mais le dashboard (`BotControlClient.tsx`) n'appelait même pas cette route : son propre state "modules" était un DEUXIÈME tableau statique local, jamais branché sur aucune API, sans handler de toggle du tout.
+- **Correctif** : suppression du registre fictif et de ses routes (`botControlRoutes.ts`, `botControl/types/index.ts` — `BotModuleInfo` retiré) plutôt que de le conserver en lecture seule (rien d'autre n'en dépendait, en garder un affichage aurait nécessité un nouveau panneau de diagnostic non demandé). `BotControlClient.tsx` branché sur la vraie API par serveur déjà existante et fonctionnelle (`GET/PATCH /api/guilds/:guildId/modules`, backée par `guildConfigService`) — exactement le même système que la commande Discord `/module` ajoutée cette session : les deux lisent/écrivent désormais le même état réel (`data/guild_configs.json`).
+- **Autres services `botControl/services/*.ts` audités et trouvés partiellement/entièrement fictifs, non corrigés (hors scope, réécriture backend complète nécessaire)** : `botTelemetryService.ts` (santé toujours "opérationnelle"), `botDiagnosticsService.ts` (15 des 17 checks sont des `status: 'pass'` fixes), `botCommandStatsService.ts`, `botEventBusService.ts`, `botJobSchedulerService.ts` (jobs simulés par un `sleep(60ms)`), `botErrorIncidentService.ts` (2 faux incidents seedés au démarrage), `botAiMonitorService.ts`, `botIntegrationsService.ts` (test de connexion simulé), `botSecurityAuditService.ts` (score toujours 98) — `botConfigService.ts` est honnête (store réel, juste non persisté sur disque).
+- Validation : `tsc --noEmit` (0 erreur), `npm run node:build`, `test_bot_control_v2.ts` (40/40) côté `discord-bot` ; `tsc --noEmit`, `npm run lint` (0 nouvelle erreur), `npm run build` côté `ethone-next`.
+
 ## v1.20.61 — 2026-09-09
 
 **Correctif `/ask` (questions simples ignorées) & Mode Test God Mode**

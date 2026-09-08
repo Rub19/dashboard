@@ -1,7 +1,6 @@
 import { Router, Request, Response } from 'express';
 import { Client } from 'discord.js';
 import { BotTelemetryService } from '../../modules/botControl/services/botTelemetryService.js';
-import { BotModuleRegistryService } from '../../modules/botControl/services/botModuleRegistryService.js';
 import { BotCommandStatsService } from '../../modules/botControl/services/botCommandStatsService.js';
 import { BotEventBusService } from '../../modules/botControl/services/botEventBusService.js';
 import { BotJobSchedulerService } from '../../modules/botControl/services/botJobSchedulerService.js';
@@ -17,7 +16,6 @@ import { rateLimit, idempotent } from '../middleware/antiAbuseMiddleware.js';
 export function createBotControlRouter(client: Client): Router {
   const router = Router();
   const telemetryService = BotTelemetryService.getInstance();
-  const moduleRegistry = BotModuleRegistryService.getInstance();
   const commandStats = BotCommandStatsService.getInstance();
   const eventBus = BotEventBusService.getInstance();
   const jobScheduler = BotJobSchedulerService.getInstance();
@@ -61,26 +59,13 @@ export function createBotControlRouter(client: Client): Router {
     }
   });
 
-  // Modules Center
-  router.get('/modules', (req: Request, res: Response) => {
-    try {
-      const modules = moduleRegistry.getAllModules();
-      res.json({ success: true, data: modules });
-    } catch (err: any) {
-      res.status(500).json({ success: false, error: err.message });
-    }
-  });
-
-  router.post('/modules/:moduleId/toggle', (req: Request, res: Response) => {
-    try {
-      const moduleId = requireStringParam(req.params.moduleId, 'moduleId');
-      const { enabled } = req.body;
-      const updated = moduleRegistry.toggleModule(moduleId, Boolean(enabled));
-      res.json({ success: true, data: updated });
-    } catch (err: any) {
-      res.status(400).json({ success: false, error: err.message });
-    }
-  });
+  // NOTE: This router used to expose GET /modules and POST /modules/:moduleId/toggle
+  // backed by a hardcoded, in-memory, global (not per-guild) BotModuleRegistryService —
+  // fabricated uptime/error/memory stats and a toggle that never touched real bot
+  // behavior (guildConfigService). It has been removed: the real, guild-scoped module
+  // toggle system lives in moduleRoutes.ts (GET/PATCH /api/guilds/:guildId/modules...),
+  // which is genuinely backed by guildConfigService and shared with the /module Discord
+  // command. The dashboard now calls that API directly instead of this one.
 
   // Command Center
   router.get('/commands', (req: Request, res: Response) => {

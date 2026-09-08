@@ -1,5 +1,4 @@
 import { BotTelemetryService } from '../src/modules/botControl/services/botTelemetryService.js';
-import { BotModuleRegistryService } from '../src/modules/botControl/services/botModuleRegistryService.js';
 import { BotCommandStatsService } from '../src/modules/botControl/services/botCommandStatsService.js';
 import { BotEventBusService } from '../src/modules/botControl/services/botEventBusService.js';
 import { BotJobSchedulerService } from '../src/modules/botControl/services/botJobSchedulerService.js';
@@ -47,23 +46,10 @@ async function runTests() {
   assert(globalStatus.status === 'operational', 'Global status computes operational by default');
   assert(globalStatus.activeModulesCount === 22, 'Active modules count is 22');
 
-  // 2. BotModuleRegistryService Tests
-  console.log('\n--- 2. Testing BotModuleRegistryService ---');
-  const registry = BotModuleRegistryService.getInstance();
-  const allModules = registry.getAllModules();
-  assert(allModules.length === 22, `All 22 bot modules are registered (found: ${allModules.length})`);
-
-  const voiceMod = registry.getModule('voice');
-  assert(voiceMod !== undefined && voiceMod.category === 'Voice', 'Voice module is registered with correct metadata');
-  assert(voiceMod?.dependencies.includes('logs'), 'Voice module has required logs dependency');
-
-  const toggled = registry.toggleModule('music', false);
-  assert(toggled.enabled === false && toggled.status === 'disabled', 'Module toggle off sets status to disabled');
-  registry.toggleModule('music', true); // restore
-
-  registry.recordModuleError('automod', 'Spam regex parse timeout');
-  const automodMod = registry.getModule('automod');
-  assert(automodMod?.errorCount24h! > 0, 'Module error count is incremented on error event');
+  // 2. (Removed) BotModuleRegistryService was a hardcoded, in-memory, global module
+  // toggle with fabricated stats and zero effect on real bot behavior. It has been
+  // deleted in favor of the real, guild-scoped module system in moduleRoutes.ts
+  // (backed by guildConfigService, shared with the /module Discord command).
 
   // 3. BotCommandStatsService Tests
   console.log('\n--- 3. Testing BotCommandStatsService ---');
@@ -167,7 +153,6 @@ async function runTests() {
   const routesToTest = [
     '/overview',
     '/telemetry',
-    '/modules',
     '/commands',
     '/events',
     '/jobs',

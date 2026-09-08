@@ -8,6 +8,7 @@ import {
   AlertCircle,
   AlertTriangle,
   ArrowRight,
+  Award,
   BarChart3,
   Bot,
   Calendar,
@@ -19,6 +20,7 @@ import {
   Database,
   ExternalLink,
   Flame,
+  Gamepad2,
   Globe,
   HardDrive,
   Headphones,
@@ -28,12 +30,14 @@ import {
   Layers,
   ListRestart,
   Lock,
+  Music,
   Palette,
   Play,
   Power,
   Radio,
   RefreshCw,
   RotateCcw,
+  Scroll,
   Search,
   Server,
   Settings,
@@ -43,12 +47,14 @@ import {
   Sliders,
   Sparkles,
   Terminal,
+  Ticket,
   Timer,
   Trash2,
   Tv,
   Trophy,
   Upload,
   User,
+  UserPlus,
   Users,
   Video,
   Volume2,
@@ -83,6 +89,18 @@ export type BotTab =
 interface BotControlClientProps {
   initialTab?: BotTab;
 }
+
+// Maps the `icon` string returned by GET /api/guilds/:guildId/modules (moduleRoutes.ts'
+// AVAILABLE_MODULES catalog) to an actual lucide component.
+const MODULE_ICONS: Record<string, any> = {
+  Shield,
+  UserPlus,
+  Scroll,
+  Award,
+  Ticket,
+  Gamepad2,
+  Music,
+};
 
 // Même convention que le reste des pages /discord/* (welcome, moderation, automod...) :
 // NEXT_PUBLIC_DISCORD_BOT_API pointe vers le serveur Express du bot Discord (pas vers
@@ -230,7 +248,6 @@ export default function BotControlClient({ initialTab = "overview" }: BotControl
   const [loading, setLoading] = useState(true);
   const [refreshing, setRefreshing] = useState(false);
   const [searchQuery, setSearchQuery] = useState("");
-  const [categoryFilter, setCategoryFilter] = useState("all");
 
   // Real Bot Core Telemetry
   const [botCore, setBotCore] = useState<any>({
@@ -259,25 +276,12 @@ export default function BotControlClient({ initialTab = "overview" }: BotControl
     { id: "scheduler", name: "Gestionnaire de Tâches", status: "operational", latency: "0ms" },
   ]);
 
-  // Real Modules
-  const [modules, setModules] = useState<any[]>([
-    { id: "welcome", name: "Welcome & Onboarding Suite", category: "Engagement", enabled: true, commandCount: 3, description: "Messages d'accueil, auto-rôles et cartes de bienvenue." },
-    { id: "moderation", name: "Moderation Suite", category: "Security", enabled: true, commandCount: 12, description: "Warn, mute, kick, softban, ban et casiers." },
-    { id: "automod", name: "AutoMod Rule Engine", category: "Security", enabled: true, commandCount: 5, description: "Filtres anti-spam, mentions massives et tokens." },
-    { id: "tickets", name: "Support Ticket System 2.0", category: "Support", enabled: true, commandCount: 6, description: "Tickets catégorisés, retranscriptions HTML et assignation staff." },
-    { id: "logs", name: "Enterprise Audit Logging", category: "Observability", enabled: true, commandCount: 2, description: "Souscription exhaustive aux logs d'audit et diffs JSON." },
-    { id: "music", name: "High-Fidelity Music Engine", category: "Entertainment", enabled: true, commandCount: 10, description: "Lecteur audio haute fidélité avec queue et contrôles DJ." },
-    { id: "leveling", name: "XP & Leveling System", category: "Engagement", enabled: true, commandCount: 4, description: "Rank cards personnalisées et rôles de récompense." },
-    { id: "giveaways", name: "Giveaways & Contests", category: "Engagement", enabled: true, commandCount: 4, description: "Concours à boutons et tirage cryptographique CSPRNG." },
-    { id: "suggestions", name: "Community Suggestions Hub", category: "Engagement", enabled: true, commandCount: 3, description: "Boîte à idées avec votes communautaires." },
-    { id: "invites", name: "Invite Tracker & Vanities", category: "Engagement", enabled: true, commandCount: 3, description: "Traçage temps réel des invitations et leaderboards." },
-    { id: "voice", name: "Personal Voice Rooms 2.0", category: "Voice", enabled: true, commandCount: 4, description: "Salons vocaux temporaires avec panneau interactif." },
-    { id: "forms", name: "Interactive Forms & Applications", category: "Automation", enabled: true, commandCount: 3, description: "Formulaires modals de candidatures." },
-    { id: "polls", name: "Live Polls & Voting", category: "Engagement", enabled: true, commandCount: 2, description: "Sondages interactifs temps réel avec graphiques." },
-    { id: "events", name: "Event & Calendar Engine", category: "Management", enabled: true, commandCount: 4, description: "Planification et notifications d'événements Discord." },
-    { id: "ai", name: "AI Assistant & Context", category: "Automation", enabled: true, commandCount: 2, description: "Intelligence artificielle intégrée et répondeur contextuel." },
-    { id: "presence", name: "Bot Presence & Identity 2.0", category: "Core", enabled: true, commandCount: 1, description: "Contrôle global du statut, rotation d'activités et identité." },
-  ]);
+  // Real per-guild Modules — fetched from GET /api/guilds/:guildId/modules, which reads
+  // guildConfig.modules (guildConfigService). This is the exact same state the /module
+  // Discord slash command reads and writes, so toggles here and on Discord stay in sync.
+  const [modules, setModules] = useState<any[]>([]);
+  const [modulesLoading, setModulesLoading] = useState(false);
+  const [togglingModuleId, setTogglingModuleId] = useState<string | null>(null);
 
   // Real Commands
   const [commands, setCommands] = useState<any[]>([]);
@@ -361,6 +365,61 @@ export default function BotControlClient({ initialTab = "overview" }: BotControl
       cancelled = true;
     };
   }, [settingsGuildId]);
+
+  // Load the real per-guild module toggles (GET /api/guilds/:guildId/modules) whenever
+  // the selected server changes.
+  const loadModules = useCallback(async () => {
+    if (!settingsGuildId || !BOT_API_URL) {
+      setModules([]);
+      return;
+    }
+    setModulesLoading(true);
+    try {
+      const res = await fetch(`${BOT_API_URL}/api/guilds/${settingsGuildId}/modules`, {
+        credentials: "include",
+      });
+      const data = await res.json();
+      if (Array.isArray(data?.modules)) {
+        setModules(data.modules);
+      }
+    } catch {
+      // Mode tolérant
+    } finally {
+      setModulesLoading(false);
+    }
+  }, [settingsGuildId]);
+
+  useEffect(() => {
+    loadModules();
+  }, [loadModules]);
+
+  // Toggle a module for the selected guild — writes straight to guildConfigService via
+  // PATCH /api/guilds/:guildId/modules/:moduleId, the exact same state the /module
+  // Discord slash command reads and updates. Optimistic update with rollback on failure.
+  const handleToggleModule = async (moduleId: string, nextEnabled: boolean) => {
+    if (!settingsGuildId || !BOT_API_URL) return;
+    const previousModules = modules;
+    setTogglingModuleId(moduleId);
+    setModules((prev) => prev.map((m) => (m.id === moduleId ? { ...m, enabled: nextEnabled } : m)));
+    try {
+      const res = await fetch(`${BOT_API_URL}/api/guilds/${settingsGuildId}/modules/${moduleId}`, {
+        method: "PATCH",
+        headers: { "Content-Type": "application/json" },
+        credentials: "include",
+        body: JSON.stringify({ enabled: nextEnabled }),
+      });
+      const data = await res.json().catch(() => null);
+      if (!res.ok || data?.success === false) {
+        throw new Error(data?.error || `HTTP ${res.status}`);
+      }
+      toast?.success?.(`Module ${nextEnabled ? "activé" : "désactivé"} avec succès.`);
+    } catch (err: any) {
+      setModules(previousModules);
+      toast?.error?.(err?.message || "Erreur lors de la mise à jour du module.");
+    } finally {
+      setTogglingModuleId(null);
+    }
+  };
 
   // AI Assistant Telemetry State
   const [aiTelemetry, setAiTelemetry] = useState({
@@ -676,21 +735,14 @@ export default function BotControlClient({ initialTab = "overview" }: BotControl
 
   const currentCfg = statusConfig[botCore.status as keyof typeof statusConfig] || statusConfig.online;
 
-  // Filter modules
+  // Filter modules (search only — the real per-guild module list has no "category"
+  // grouping, unlike the old fabricated 22-module catalog it replaced)
   const filteredModules = useMemo(() => {
-    return modules.filter((m) => {
-      const matchSearch =
-        m.name.toLowerCase().includes(searchQuery.toLowerCase()) ||
-        m.description.toLowerCase().includes(searchQuery.toLowerCase());
-      const matchCategory = categoryFilter === "all" || m.category === categoryFilter;
-      return matchSearch && matchCategory;
-    });
-  }, [modules, searchQuery, categoryFilter]);
-
-  const categories = useMemo(() => {
-    const cats = new Set(modules.map((m) => m.category));
-    return ["all", ...Array.from(cats)];
-  }, [modules]);
+    const q = searchQuery.toLowerCase();
+    return modules.filter(
+      (m) => m.name.toLowerCase().includes(q) || m.description.toLowerCase().includes(q)
+    );
+  }, [modules, searchQuery]);
 
   return (
     <div className="min-h-screen bg-[var(--bg-main)] text-zinc-100 font-sans pb-24">
@@ -1121,7 +1173,7 @@ export default function BotControlClient({ initialTab = "overview" }: BotControl
               </div>
             </div>
 
-            {/* Modules Grid */}
+            {/* Modules Grid — real per-guild toggles, same data as /module on Discord */}
             <div className="p-6 rounded-2xl bg-zinc-900/60 border border-zinc-800 space-y-4">
               <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4">
                 <div>
@@ -1130,12 +1182,25 @@ export default function BotControlClient({ initialTab = "overview" }: BotControl
                     Modules du Bot Discord ({modules.length})
                   </h3>
                   <p className="text-xs text-zinc-400">
-                    Chaque module est relié au bot et persistant dans la base de données
+                    État réel par serveur, identique à la commande Discord <code className="text-zinc-300">/module</code>
                   </p>
                 </div>
 
-                {/* Filter and Search */}
+                {/* Guild selector + search */}
                 <div className="flex items-center gap-2.5">
+                  <select
+                    value={settingsGuildId}
+                    onChange={(e) => setSettingsGuildId(e.target.value)}
+                    disabled={servers.length === 0}
+                    className="px-3 py-1.5 rounded-lg bg-zinc-950 border border-zinc-800 text-xs text-zinc-300 focus:outline-none focus:border-indigo-500 disabled:opacity-50"
+                  >
+                    {servers.length === 0 && <option value="">Aucun serveur détecté</option>}
+                    {servers.map((s) => (
+                      <option key={s.id} value={s.id}>
+                        {s.name}
+                      </option>
+                    ))}
+                  </select>
                   <div className="relative">
                     <Search className="w-3.5 h-3.5 absolute left-3 top-2.5 text-zinc-500" />
                     <input
@@ -1146,44 +1211,59 @@ export default function BotControlClient({ initialTab = "overview" }: BotControl
                       className="pl-8 pr-3 py-1.5 rounded-lg bg-zinc-950 border border-zinc-800 text-xs text-white placeholder-zinc-500 focus:outline-none focus:border-indigo-500 w-40"
                     />
                   </div>
-
-                  <select
-                    value={categoryFilter}
-                    onChange={(e) => setCategoryFilter(e.target.value)}
-                    className="px-3 py-1.5 rounded-lg bg-zinc-950 border border-zinc-800 text-xs text-zinc-300 focus:outline-none focus:border-indigo-500"
-                  >
-                    {categories.map((c) => (
-                      <option key={c} value={c}>
-                        {c === "all" ? "Toutes catégories" : c}
-                      </option>
-                    ))}
-                  </select>
                 </div>
               </div>
 
-              <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-3 pt-2">
-                {filteredModules.map((m) => (
-                  <div
-                    key={m.id}
-                    className="p-4 rounded-xl bg-zinc-950/60 border border-zinc-800/80 hover:border-zinc-700 transition-all flex flex-col justify-between gap-3"
-                  >
-                    <div>
-                      <div className="flex items-center justify-between gap-2 mb-1.5">
-                        <span className="text-xs font-bold text-white truncate">{m.name}</span>
-                        <span className="px-1.5 py-0.2 rounded text-[10px] font-semibold bg-emerald-500/10 text-emerald-400 border border-emerald-500/20 shrink-0">
-                          Actif
-                        </span>
+              {!settingsGuildId ? (
+                <p className="text-xs text-zinc-500 italic pt-2">Sélectionnez un serveur pour voir ses modules.</p>
+              ) : modulesLoading && modules.length === 0 ? (
+                <p className="text-xs text-zinc-500 italic pt-2">Chargement des modules…</p>
+              ) : (
+                <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-3 pt-2">
+                  {filteredModules.map((m) => {
+                    const ModIcon = MODULE_ICONS[m.icon] || Layers;
+                    const disabled = m.available === false || togglingModuleId === m.id;
+                    return (
+                      <div
+                        key={m.id}
+                        className="p-4 rounded-xl bg-zinc-950/60 border border-zinc-800/80 hover:border-zinc-700 transition-all flex flex-col justify-between gap-3"
+                      >
+                        <div>
+                          <div className="flex items-center justify-between gap-2 mb-1.5">
+                            <span className="text-xs font-bold text-white truncate flex items-center gap-1.5">
+                              <ModIcon className="w-3.5 h-3.5 text-indigo-400 shrink-0" />
+                              {m.name}
+                            </span>
+                            {m.available === false ? (
+                              <span className="px-1.5 py-0.2 rounded text-[10px] font-semibold bg-zinc-700/40 text-zinc-400 border border-zinc-600/30 shrink-0">
+                                Bientôt disponible
+                              </span>
+                            ) : (
+                              <button
+                                onClick={() => handleToggleModule(m.id, !m.enabled)}
+                                disabled={disabled}
+                                title={m.enabled ? "Désactiver ce module" : "Activer ce module"}
+                                className={cn(
+                                  "w-9 h-5 rounded-full transition-colors relative p-0.5 shrink-0 disabled:opacity-50",
+                                  m.enabled ? "bg-emerald-500" : "bg-zinc-700"
+                                )}
+                              >
+                                <span
+                                  className={cn(
+                                    "block w-4 h-4 rounded-full bg-white transition-transform",
+                                    m.enabled ? "translate-x-4" : "translate-x-0"
+                                  )}
+                                />
+                              </button>
+                            )}
+                          </div>
+                          <p className="text-[11px] text-zinc-400 line-clamp-2">{m.description}</p>
+                        </div>
                       </div>
-                      <p className="text-[11px] text-zinc-400 line-clamp-2">{m.description}</p>
-                    </div>
-
-                    <div className="pt-2 border-t border-zinc-900 flex items-center justify-between text-[11px]">
-                      <span className="text-zinc-500 font-mono">{m.commandCount} commandes</span>
-                      <span className="text-indigo-400 font-medium">{m.category}</span>
-                    </div>
-                  </div>
-                ))}
-              </div>
+                    );
+                  })}
+                </div>
+              )}
             </div>
           </div>
         )}
@@ -1330,23 +1410,77 @@ export default function BotControlClient({ initialTab = "overview" }: BotControl
         {/* ======================================================== */}
         {activeTab === "modules" && (
           <div className="p-6 rounded-2xl bg-zinc-900/60 border border-zinc-800 space-y-4">
-            <h3 className="text-sm font-bold text-white flex items-center gap-2">
-              <Layers className="w-4 h-4 text-indigo-400" />
-              Catalogue Exhaustif des Modules ({modules.length})
-            </h3>
-            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-3">
-              {modules.map((m) => (
-                <div key={m.id} className="p-4 rounded-xl bg-zinc-950/60 border border-zinc-800/80 space-y-2">
-                  <div className="flex items-center justify-between">
-                    <span className="text-xs font-bold text-white">{m.name}</span>
-                    <span className="px-1.5 py-0.2 rounded text-[10px] bg-emerald-500/10 text-emerald-400 border border-emerald-500/20">
-                      Actif
-                    </span>
-                  </div>
-                  <p className="text-[11px] text-zinc-400">{m.description}</p>
-                </div>
-              ))}
+            <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4">
+              <div>
+                <h3 className="text-sm font-bold text-white flex items-center gap-2">
+                  <Layers className="w-4 h-4 text-indigo-400" />
+                  Modules du Serveur ({modules.length})
+                </h3>
+                <p className="text-xs text-zinc-400">
+                  Activez/désactivez les modules pour un serveur — identique à la commande Discord{" "}
+                  <code className="text-zinc-300">/module</code>
+                </p>
+              </div>
+              <select
+                value={settingsGuildId}
+                onChange={(e) => setSettingsGuildId(e.target.value)}
+                disabled={servers.length === 0}
+                className="px-3 py-1.5 rounded-lg bg-zinc-950 border border-zinc-800 text-xs text-zinc-300 focus:outline-none focus:border-indigo-500 disabled:opacity-50"
+              >
+                {servers.length === 0 && <option value="">Aucun serveur détecté</option>}
+                {servers.map((s) => (
+                  <option key={s.id} value={s.id}>
+                    {s.name}
+                  </option>
+                ))}
+              </select>
             </div>
+
+            {!settingsGuildId ? (
+              <p className="text-xs text-zinc-500 italic">Sélectionnez un serveur pour voir ses modules.</p>
+            ) : modulesLoading && modules.length === 0 ? (
+              <p className="text-xs text-zinc-500 italic">Chargement des modules…</p>
+            ) : (
+              <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-3">
+                {modules.map((m) => {
+                  const ModIcon = MODULE_ICONS[m.icon] || Layers;
+                  const disabled = m.available === false || togglingModuleId === m.id;
+                  return (
+                    <div key={m.id} className="p-4 rounded-xl bg-zinc-950/60 border border-zinc-800/80 space-y-2">
+                      <div className="flex items-center justify-between gap-2">
+                        <span className="text-xs font-bold text-white flex items-center gap-1.5">
+                          <ModIcon className="w-3.5 h-3.5 text-indigo-400 shrink-0" />
+                          {m.name}
+                        </span>
+                        {m.available === false ? (
+                          <span className="px-1.5 py-0.2 rounded text-[10px] bg-zinc-700/40 text-zinc-400 border border-zinc-600/30 shrink-0">
+                            Bientôt disponible
+                          </span>
+                        ) : (
+                          <button
+                            onClick={() => handleToggleModule(m.id, !m.enabled)}
+                            disabled={disabled}
+                            title={m.enabled ? "Désactiver ce module" : "Activer ce module"}
+                            className={cn(
+                              "w-9 h-5 rounded-full transition-colors relative p-0.5 shrink-0 disabled:opacity-50",
+                              m.enabled ? "bg-emerald-500" : "bg-zinc-700"
+                            )}
+                          >
+                            <span
+                              className={cn(
+                                "block w-4 h-4 rounded-full bg-white transition-transform",
+                                m.enabled ? "translate-x-4" : "translate-x-0"
+                              )}
+                            />
+                          </button>
+                        )}
+                      </div>
+                      <p className="text-[11px] text-zinc-400">{m.description}</p>
+                    </div>
+                  );
+                })}
+              </div>
+            )}
           </div>
         )}
 

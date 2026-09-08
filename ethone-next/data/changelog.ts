@@ -1,3 +1,12 @@
+const v12062_fr: ChangelogEntry = {
+  version: "v1.20.62",
+  date: "2026-09-09",
+  title: "Correctif : le Bot Control Center Affichait des Modules Factices",
+  items: [
+    "Correctif important : la section « Modules » du Bot Control Center (catégorie Bot du dashboard) affichait un catalogue entièrement fictif — statuts toujours « opérationnel », uptime figé à 3 jours, utilisation mémoire tirée au hasard à chaque redémarrage — et activer/désactiver un module ne changeait strictement rien au comportement réel du bot. Cette section est désormais branchée sur les vrais modules par serveur (Modération, Accueil, Logs, Rôles Automatiques, Tickets, Fun, Musique) — exactement les mêmes que la commande Discord /module : basculer un module sur le dashboard ou via /module change désormais le même réglage réel, dans un sens comme dans l'autre.",
+  ],
+};
+
 const v12061_fr: ChangelogEntry = {
   version: "v1.20.61",
   date: "2026-09-09",
@@ -113,6 +122,15 @@ const v12052_fr: ChangelogEntry = {
     "Dynamic Island : correction d'un bug de priorité qui empêchait Spotify de jamais s'afficher, systématiquement évincé par la synchronisation d'arrière-plan.",
     "Commande /help du Bot Discord : la liste des commandes est désormais générée dynamiquement depuis les commandes réellement enregistrées (fin des commandes fantômes et des commandes manquantes), et affiche la vraie syntaxe des commandes à sous-commandes (ex. /automod status).",
     "Audit de l'enregistrement des commandes slash Discord : architecture confirmée saine, aucune dérive entre le code et les commandes déployées.",
+  ],
+};
+
+const v12062_en: ChangelogEntry = {
+  version: "v1.20.62",
+  date: "2026-09-09",
+  title: "Fix: Bot Control Center Showed Fake Modules",
+  items: [
+    "Important fix: the \"Modules\" section of the Bot Control Center (dashboard's Bot category) displayed an entirely fictional catalog — statuses always \"operational\", uptime frozen at 3 days, memory usage randomly generated on every restart — and toggling a module changed absolutely nothing about the bot's real behavior. This section is now wired to the real per-server modules (Moderation, Welcome, Logging, Auto Roles, Tickets, Fun, Music) — the exact same ones as the /module Discord command: toggling a module on the dashboard or via /module now changes the same real setting, in either direction.",
   ],
 };
 
@@ -234,6 +252,15 @@ const v12052_en: ChangelogEntry = {
   ],
 };
 
+const v12062_es: ChangelogEntry = {
+  version: "v1.20.62",
+  date: "2026-09-09",
+  title: "Corrección: el Bot Control Center Mostraba Módulos Ficticios",
+  items: [
+    "Corrección importante: la sección « Módulos » del Bot Control Center (categoría Bot del dashboard) mostraba un catálogo totalmente ficticio — estados siempre « operativo », tiempo de actividad fijo en 3 días, uso de memoria generado al azar en cada reinicio — y activar/desactivar un módulo no cambiaba absolutamente nada en el comportamiento real del bot. Esta sección ahora está conectada a los módulos reales por servidor (Moderación, Bienvenida, Registros, Roles Automáticos, Tickets, Diversión, Música) — exactamente los mismos que el comando de Discord /module: cambiar un módulo en el dashboard o vía /module ahora modifica el mismo ajuste real, en ambos sentidos.",
+  ],
+};
+
 const v12061_es: ChangelogEntry = {
   version: "v1.20.61",
   date: "2026-09-09",
@@ -349,6 +376,15 @@ const v12052_es: ChangelogEntry = {
     "Dynamic Island: corregido un error de prioridad que impedía que Spotify apareciera, siempre desplazado por la sincronización en segundo plano.",
     "Comando /help del Bot de Discord: la lista de comandos ahora se genera dinámicamente desde los comandos realmente registrados (fin de comandos fantasma o ausentes), mostrando la sintaxis real de los comandos con subcomandos.",
     "Auditoría del registro de comandos slash de Discord: arquitectura confirmada como sólida, sin desviación entre el código y los comandos desplegados.",
+  ],
+};
+
+const v12062_de: ChangelogEntry = {
+  version: "v1.20.62",
+  date: "2026-09-09",
+  title: "Fix: Bot Control Center Zeigte Fiktive Module An",
+  items: [
+    "Wichtiger Fix: der Bereich Module im Bot Control Center (Bot-Kategorie des Dashboards) zeigte einen komplett erfundenen Katalog — Status immer betriebsbereit, Betriebszeit fest auf 3 Tage, Speicherverbrauch bei jedem Neustart zufällig generiert — und ein Modul zu aktivieren/deaktivieren änderte am tatsächlichen Verhalten des Bots absolut nichts. Dieser Bereich ist jetzt mit den echten Modulen pro Server verbunden (Moderation, Begrüßung, Protokolle, Auto-Rollen, Tickets, Fun, Musik) — genau denselben wie beim Discord-Befehl /module: ein Modul im Dashboard oder über /module umzuschalten ändert nun dieselbe echte Einstellung, in beide Richtungen.",
   ],
 };
 
@@ -22380,5 +22416,10 @@ CHANGELOG_BY_LANG.fr.unshift(v12061_fr);
 CHANGELOG_BY_LANG.en.unshift(v12061_en);
 CHANGELOG_BY_LANG.es.unshift(v12061_es);
 CHANGELOG_BY_LANG.de.unshift(v12061_de);
+
+CHANGELOG_BY_LANG.fr.unshift(v12062_fr);
+CHANGELOG_BY_LANG.en.unshift(v12062_en);
+CHANGELOG_BY_LANG.es.unshift(v12062_es);
+CHANGELOG_BY_LANG.de.unshift(v12062_de);
 
 export const CHANGELOG = CHANGELOG_BY_LANG.fr;

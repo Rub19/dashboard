@@ -59,23 +59,6 @@ export interface BotTelemetrySnapshot {
   shardsCount: number;
 }
 
-export interface BotModuleInfo {
-  id: string;
-  name: string;
-  category: string;
-  version: string;
-  enabled: boolean;
-  status: 'healthy' | 'degraded' | 'disabled' | 'error';
-  description: string;
-  dependencies: string[];
-  commandCount: number;
-  eventCount: number;
-  uptimeSeconds: number;
-  errorCount24h: number;
-  memoryWeightMb: number;
-  lastError?: string;
-}
-
 export interface BotCommandStat {
   name: string;
   category: string;

@@ -59,7 +59,10 @@ export class DiscordOwnerPanel {
           inline: true,
         },
         { name: 'Source', value: `\`${current.source}\``, inline: true },
-        { name: 'Dernière Maj', value: `<t:${Math.floor(new Date(current.updatedAt).getTime() / 1000)}:R>`, inline: true }
+        { name: 'Dernière Maj', value: `<t:${Math.floor(new Date(current.updatedAt).getTime() / 1000)}:R>`, inline: true },
+        ...(current.activity.state
+          ? [{ name: 'Ligne 2 (state)', value: current.activity.state, inline: true }]
+          : [])
       )
       .setFooter({ text: `Bot Owner Authentifié : ${config.botOwnerId}` })
       .setTimestamp();

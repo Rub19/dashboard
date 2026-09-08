@@ -74,6 +74,22 @@ export default function OAuthHandler() {
                 localStorage.setItem("ethone:connected:spotify", "true");
               }
               setField(provider, "accessToken", accessToken);
+            } else if (provider === "spotify") {
+              // The Worker now exchanges and persists the Spotify access/refresh
+              // tokens entirely server-side (they're never returned to the
+              // browser) — every /api/spotify/* route re-derives them from that
+              // stored pair. Any access/refresh token still cached locally at
+              // this point is a leftover from a PREVIOUS connection and is no
+              // longer valid for the account that was just (re)linked: leaving
+              // it behind would make useNowPlaying try it first, get a 401,
+              // fail to refresh it (its matching refresh token is equally
+              // stale), and only then fall back to the Worker route — so purge
+              // it now instead of waiting for that to happen on the next poll.
+              localStorage.removeItem("ethone:token:spotify");
+              localStorage.removeItem("spotify_access_token");
+              localStorage.removeItem("ethone:cred:spotify:accessToken");
+              localStorage.removeItem("ethone:cred:spotify:token");
+              localStorage.setItem("ethone:connected:spotify", "true");
             }
             if (refreshToken) {
               localStorage.setItem(`ethone:refresh_token:${provider}`, refreshToken);
@@ -81,6 +97,10 @@ export default function OAuthHandler() {
                 localStorage.setItem("spotify_refresh_token", refreshToken);
                 localStorage.setItem("ethone:cred:spotify:refreshToken", refreshToken);
               }
+            } else if (provider === "spotify") {
+              localStorage.removeItem("ethone:refresh_token:spotify");
+              localStorage.removeItem("spotify_refresh_token");
+              localStorage.removeItem("ethone:cred:spotify:refreshToken");
             }
           }
         } catch {}

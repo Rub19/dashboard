@@ -20,7 +20,7 @@ import Input from "@/components/ui/Input";
 import { EmptyState } from "@/components/ui";
 import { ErrorState } from "@/components/ui";
 import { cn } from "@/lib/utils";
-import { forceDisconnectDiscordAll, DISCORD_REVOCATION_KEY } from "@/lib/discord-migration";
+import { DISCORD_REVOCATION_KEY } from "@/lib/discord-migration";
 
 function clientIdFromStorage(provider: string): string {
   if (typeof window === "undefined") return "";
@@ -69,11 +69,6 @@ export default function IntegrationsSettings() {
       "google-drive": settings.driveClientId || clientIdFromStorage("google-drive") || prev["google-drive"] || "",
     }));
   }, [settings.liveSpotifyClientId, settings.liveYoutubeClientId, settings.liveRedditClientId, settings.calendarClientId, settings.driveClientId]);
-
-  // Forcibly clear any legacy Discord connections across all users
-  useEffect(() => {
-    void forceDisconnectDiscordAll(update);
-  }, [update]);
 
   useEffect(() => {
     setLoading(true);
@@ -252,6 +247,7 @@ export default function IntegrationsSettings() {
       if (typeof window !== "undefined") {
         localStorage.removeItem(`ethone:connected:${id}`);
         localStorage.removeItem(`ethone:token:${id}`);
+        localStorage.removeItem(`ethone:refresh_token:${id}`);
         localStorage.removeItem(`ethone:clientId:${id}`);
         localStorage.removeItem(`ethone:pub:${id}`);
         localStorage.removeItem(`ethone:cred:${id}`);
@@ -260,6 +256,14 @@ export default function IntegrationsSettings() {
             localStorage.removeItem(key);
           }
         });
+        // Spotify additionally persists a few legacy, unprefixed key names
+        // (predating the `ethone:` namespace) that the generic removals above
+        // don't match. Leaving them behind resurrects a stale, invalid access
+        // token on the very next reload/reconnect.
+        if (id === "spotify") {
+          localStorage.removeItem("spotify_access_token");
+          localStorage.removeItem("spotify_refresh_token");
+        }
       }
 
       // 2. Remove credentials

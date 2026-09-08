@@ -6,6 +6,13 @@ export interface BotActivity {
   type: DiscordActivityType;
   name: string;
   url?: string;
+  /**
+   * Deuxième ligne de la présence (ex: "12 serveurs • 340 membres"). Supporte les mêmes
+   * variables dynamiques que `name`. Note : c'est le seul champ additionnel qu'un compte BOT
+   * peut définir sur la Gateway Discord — `details`/`assets`/`party`/`buttons` (Rich Presence
+   * complète avec image et bouton "Join") ne sont accessibles qu'aux vrais clients de jeu
+   * connectés en local via le Game SDK/RPC, pas aux bots.
+   */
   state?: string;
 }
 

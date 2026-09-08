@@ -60,6 +60,13 @@ export const statusCommand: Command = {
         .setName('url')
         .setDescription('URL Twitch/YouTube (uniquement si activité = En direct sur)')
         .setRequired(false)
+    )
+    .addStringOption((opt) =>
+      opt
+        .setName('ligne2')
+        .setDescription('Deuxième ligne de la présence (ex : {guildCount} serveurs • {userCount} membres)')
+        .setRequired(false)
+        .setMaxLength(128)
     ),
 
   execute: async (ctx: CommandContext) => {
@@ -78,17 +85,19 @@ export const statusCommand: Command = {
     let activityType: DiscordActivityType | null = null;
     let activityText: string | null = null;
     let streamUrl: string | undefined;
+    let state: string | null = null;
 
     if (ctx.isSlash && ctx.interaction) {
       status = (ctx.interaction.options.getString('etat') as DiscordStatus | null) || null;
       activityType = (ctx.interaction.options.getString('activite') as DiscordActivityType | null) || null;
       activityText = ctx.interaction.options.getString('texte');
       streamUrl = ctx.interaction.options.getString('url') || undefined;
+      state = ctx.interaction.options.getString('ligne2');
     }
 
     // Aucun paramètre fourni : affiche simplement le panneau interactif existant
     // (état actuel + boutons rapides), sans rien modifier.
-    if (!status && !activityType && !activityText) {
+    if (!status && !activityType && !activityText && !state) {
       const embed = discordOwnerPanel.buildPanelEmbed();
       const components = discordOwnerPanel.buildActionRows() as any;
       await ctx.reply({ embeds: [embed], components, ephemeral: true });
@@ -101,6 +110,7 @@ export const statusCommand: Command = {
         type: activityType || current.activity.type,
         name: activityText ?? current.activity.name,
         url: streamUrl,
+        state: state ?? current.activity.state,
       },
       ctx.author.username,
       ctx.author.id,

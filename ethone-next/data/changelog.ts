@@ -1,3 +1,15 @@
+const v12055_fr: ChangelogEntry = {
+  version: "v1.20.55",
+  date: "2026-09-08",
+  title: "Correctif Critique de Connexion Discord/Spotify, Pages Légales & Présence Enrichie",
+  items: [
+    "Correctif critique : la connexion Discord (page Connexions et Bot Discord) s'auto-révoquait juste après une connexion réussie à cause d'une migration ponctuelle restée active à chaque démarrage de l'application, qui supprimait le jeton fraîchement enregistré côté serveur. Corrigé — se connecter à Discord reste maintenant connecté après rafraîchissement.",
+    "Correctif : Spotify qui cessait de fonctionner dans le Dock/Dynamic Island après un rafraîchissement de page (fonctionnait uniquement juste après une déconnexion/reconnexion manuelle) — des jetons obsolètes n'étaient jamais nettoyés en mémoire locale, provoquant des échecs de rafraîchissement silencieux.",
+    "Ajout des pages Conditions d'utilisation (/terms) et Politique de confidentialité (/privacy), accessibles publiquement sans connexion — nécessaires à la vérification de l'application ETHONE Bot par Discord.",
+    "Bot Discord : la présence globale (/status) peut désormais afficher une deuxième ligne de texte personnalisée (ex. « 12 serveurs • 340 membres »), en plus du texte principal — avec les mêmes variables dynamiques ({guildCount}, {ping}, etc.).",
+  ],
+};
+
 const v12054_fr: ChangelogEntry = {
   version: "v1.20.54",
   date: "2026-09-08",
@@ -43,6 +55,18 @@ const v12052_fr: ChangelogEntry = {
     "Dynamic Island : correction d'un bug de priorité qui empêchait Spotify de jamais s'afficher, systématiquement évincé par la synchronisation d'arrière-plan.",
     "Commande /help du Bot Discord : la liste des commandes est désormais générée dynamiquement depuis les commandes réellement enregistrées (fin des commandes fantômes et des commandes manquantes), et affiche la vraie syntaxe des commandes à sous-commandes (ex. /automod status).",
     "Audit de l'enregistrement des commandes slash Discord : architecture confirmée saine, aucune dérive entre le code et les commandes déployées.",
+  ],
+};
+
+const v12055_en: ChangelogEntry = {
+  version: "v1.20.55",
+  date: "2026-09-08",
+  title: "Critical Discord/Spotify Connection Fix, Legal Pages & Richer Presence",
+  items: [
+    "Critical fix: the Discord connection (Connections page and Bot Discord page) was self-revoking right after a successful connect, caused by a one-time migration that stayed active on every app boot and deleted the freshly-saved server-side token. Fixed — connecting to Discord now stays connected after a refresh.",
+    "Fixed: Spotify stopping in the Dock/Dynamic Island after a page refresh (only worked right after a manual disconnect/reconnect) — stale tokens were never cleared from local storage, causing silent refresh failures.",
+    "Added Terms of Service (/terms) and Privacy Policy (/privacy) pages, publicly accessible without login — required for Discord's ETHONE Bot app verification.",
+    "Discord Bot: the global presence (/status) can now show a custom second line of text (e.g. \"12 servers • 340 members\") in addition to the main text — supporting the same dynamic variables ({guildCount}, {ping}, etc.).",
   ],
 };
 
@@ -94,6 +118,18 @@ const v12052_en: ChangelogEntry = {
   ],
 };
 
+const v12055_es: ChangelogEntry = {
+  version: "v1.20.55",
+  date: "2026-09-08",
+  title: "Corrección Crítica de Conexión Discord/Spotify, Páginas Legales y Presencia Enriquecida",
+  items: [
+    "Corrección crítica: la conexión de Discord (página Conexiones y página Bot Discord) se auto-revocaba justo después de conectarse con éxito, causado por una migración puntual que seguía activa en cada arranque de la app y eliminaba el token recién guardado en el servidor. Corregido — conectar Discord ahora se mantiene conectado tras recargar.",
+    "Corregido: Spotify dejaba de funcionar en el Dock/Dynamic Island tras recargar la página (solo funcionaba justo después de desconectar/reconectar manualmente) — tokens obsoletos nunca se limpiaban del almacenamiento local, provocando fallos silenciosos al refrescar.",
+    "Añadidas las páginas de Términos de Servicio (/terms) y Política de Privacidad (/privacy), accesibles públicamente sin iniciar sesión — necesarias para la verificación de la app ETHONE Bot por parte de Discord.",
+    "Bot de Discord: la presencia global (/status) ahora puede mostrar una segunda línea de texto personalizada (ej. «12 servidores • 340 miembros»), además del texto principal — con las mismas variables dinámicas ({guildCount}, {ping}, etc.).",
+  ],
+};
+
 const v12054_es: ChangelogEntry = {
   version: "v1.20.54",
   date: "2026-09-08",
@@ -139,6 +175,18 @@ const v12052_es: ChangelogEntry = {
     "Dynamic Island: corregido un error de prioridad que impedía que Spotify apareciera, siempre desplazado por la sincronización en segundo plano.",
     "Comando /help del Bot de Discord: la lista de comandos ahora se genera dinámicamente desde los comandos realmente registrados (fin de comandos fantasma o ausentes), mostrando la sintaxis real de los comandos con subcomandos.",
     "Auditoría del registro de comandos slash de Discord: arquitectura confirmada como sólida, sin desviación entre el código y los comandos desplegados.",
+  ],
+};
+
+const v12055_de: ChangelogEntry = {
+  version: "v1.20.55",
+  date: "2026-09-08",
+  title: "Kritischer Discord/Spotify-Verbindungsfix, Rechtsseiten & erweiterte Präsenz",
+  items: [
+    "Kritischer Fix: die Discord-Verbindung (Verbindungen-Seite und Bot-Discord-Seite) hob sich direkt nach einer erfolgreichen Verbindung selbst wieder auf, verursacht durch eine einmalige Migration, die bei jedem App-Start aktiv blieb und das gerade serverseitig gespeicherte Token löschte. Behoben — eine Discord-Verbindung bleibt nach einem Neuladen jetzt bestehen.",
+    "Behoben: Spotify hörte nach einem Neuladen der Seite im Dock/Dynamic Island auf zu funktionieren (funktionierte nur direkt nach manuellem Trennen und erneutem Verbinden) — veraltete Tokens wurden nie aus dem lokalen Speicher entfernt, was stille Aktualisierungsfehler verursachte.",
+    "Neue Seiten Nutzungsbedingungen (/terms) und Datenschutzerklärung (/privacy) hinzugefügt, öffentlich zugänglich ohne Anmeldung — erforderlich für die Discord-Verifizierung der ETHONE-Bot-App.",
+    "Discord-Bot: die globale Präsenz (/status) kann jetzt zusätzlich zum Haupttext eine zweite, individuell wählbare Textzeile anzeigen (z. B. 12 Server, 340 Mitglieder), mit denselben dynamischen Variablen ({guildCount}, {ping} usw.).",
   ],
 };
 
@@ -22065,5 +22113,10 @@ CHANGELOG_BY_LANG.fr.unshift(v12054_fr);
 CHANGELOG_BY_LANG.en.unshift(v12054_en);
 CHANGELOG_BY_LANG.es.unshift(v12054_es);
 CHANGELOG_BY_LANG.de.unshift(v12054_de);
+
+CHANGELOG_BY_LANG.fr.unshift(v12055_fr);
+CHANGELOG_BY_LANG.en.unshift(v12055_en);
+CHANGELOG_BY_LANG.es.unshift(v12055_es);
+CHANGELOG_BY_LANG.de.unshift(v12055_de);
 
 export const CHANGELOG = CHANGELOG_BY_LANG.fr;

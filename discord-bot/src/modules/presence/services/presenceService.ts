@@ -184,6 +184,7 @@ export class PresenceService {
 
     try {
       const resolvedName = this.parseDynamicVariables(activity.name);
+      const resolvedState = activity.state ? this.parseDynamicVariables(activity.state) : undefined;
       const activityType = this.mapActivityType(activity.type);
 
       const presenceData: PresenceData = {
@@ -193,6 +194,11 @@ export class PresenceService {
             name: resolvedName || 'ETHONE',
             type: activityType,
             url: activity.type === 'Streaming' ? activity.url : undefined,
+            // `state` (2e ligne) : seul champ additionnel exposé par discord.js pour la
+            // présence d'un COMPTE BOT — contrairement à un vrai client de jeu connecté en RPC,
+            // un bot n'a pas accès à `details`/`assets`/`party`/`buttons` (Rich Presence complète),
+            // qui restent une fonctionnalité du Game SDK côté client, pas de la Gateway pour les bots.
+            state: resolvedState,
           },
         ],
       };

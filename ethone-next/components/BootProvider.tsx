@@ -42,7 +42,7 @@ export function useBoot() {
   return useContext(BootContext);
 }
 
-const PUBLIC_ROUTES = ["/login", "/password-recovery", "/reset-password"];
+const PUBLIC_ROUTES = ["/login", "/password-recovery", "/reset-password", "/terms", "/privacy"];
 
 const BOOT_TIMEOUT_MS = 8_000;
 const BOOT_MIN_DURATION_MS = 600;

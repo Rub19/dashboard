@@ -284,62 +284,77 @@ export function useNowPlaying(pollMs = 3000) {
                 headers: { Authorization: `Bearer ${spotifyToken}` },
               });
             } else {
+              // Refresh failed too (no valid refresh token, or it was itself
+              // revoked/expired) — clear every local Spotify token key so we
+              // stop retrying a doomed refresh on every poll and fall through
+              // cleanly to the Worker-backed now-playing route below, which
+              // holds its own server-side token independent of this browser.
               localStorage.removeItem("ethone:token:spotify");
               localStorage.removeItem("spotify_access_token");
               localStorage.removeItem("ethone:cred:spotify:accessToken");
               localStorage.removeItem("ethone:cred:spotify:token");
+              localStorage.removeItem("ethone:refresh_token:spotify");
+              localStorage.removeItem("spotify_refresh_token");
+              localStorage.removeItem("ethone:cred:spotify:refreshToken");
+              spotifyToken = null;
             }
           }
 
-          if (spotifyRes.status === 200) {
-            const spJson = (await spotifyRes.json().catch(() => null)) as any;
-            if (spJson?.item) {
-              const mapped = parseSpotifyItem(spJson.item, spJson.is_playing, spJson.progress_ms, spJson.device);
-              if (mapped) {
-                if (mapped.isPlaying) {
-                  activeTrack = mapped;
-                } else {
-                  idleTrack = mapped;
-                }
-              }
-            }
-          }
-
-          if (!activeTrack && (spotifyRes.status === 204 || !spotifyRes.ok)) {
-            // Check currently-playing directly
-            const cpRes = await fetch("https://api.spotify.com/v1/me/player/currently-playing?additional_types=track,episode", {
-              headers: { Authorization: `Bearer ${spotifyToken}` },
-            });
-            if (cpRes.status === 200) {
-              const cpJson = (await cpRes.json().catch(() => null)) as any;
-              if (cpJson?.item) {
-                const mapped = parseSpotifyItem(cpJson.item, cpJson.is_playing, cpJson.progress_ms, cpJson.device);
+          // If the refresh above failed, spotifyToken is now null and every
+          // request above would 401 again for nothing — skip straight to the
+          // Worker-backed fallback (step 3) instead of hammering Spotify with
+          // guaranteed-failing requests using a `Bearer null` header.
+          if (spotifyToken) {
+            if (spotifyRes.status === 200) {
+              const spJson = (await spotifyRes.json().catch(() => null)) as any;
+              if (spJson?.item) {
+                const mapped = parseSpotifyItem(spJson.item, spJson.is_playing, spJson.progress_ms, spJson.device);
                 if (mapped) {
                   if (mapped.isPlaying) {
                     activeTrack = mapped;
-                  } else if (!idleTrack) {
+                  } else {
                     idleTrack = mapped;
                   }
                 }
               }
             }
-          }
 
-          // Fallback to recently-played if no track yet
-          if (!activeTrack && !idleTrack) {
-            try {
-              const recentRes = await fetch("https://api.spotify.com/v1/me/player/recently-played?limit=1", {
+            if (!activeTrack && (spotifyRes.status === 204 || !spotifyRes.ok)) {
+              // Check currently-playing directly
+              const cpRes = await fetch("https://api.spotify.com/v1/me/player/currently-playing?additional_types=track,episode", {
                 headers: { Authorization: `Bearer ${spotifyToken}` },
               });
-              if (recentRes.ok) {
-                const rJson = (await recentRes.json().catch(() => null)) as any;
-                const lastTrack = rJson?.items?.[0]?.track;
-                if (lastTrack) {
-                  const mapped = parseSpotifyItem(lastTrack, false, 0);
-                  if (mapped) idleTrack = mapped;
+              if (cpRes.status === 200) {
+                const cpJson = (await cpRes.json().catch(() => null)) as any;
+                if (cpJson?.item) {
+                  const mapped = parseSpotifyItem(cpJson.item, cpJson.is_playing, cpJson.progress_ms, cpJson.device);
+                  if (mapped) {
+                    if (mapped.isPlaying) {
+                      activeTrack = mapped;
+                    } else if (!idleTrack) {
+                      idleTrack = mapped;
+                    }
+                  }
                 }
               }
-            } catch {}
+            }
+
+            // Fallback to recently-played if no track yet
+            if (!activeTrack && !idleTrack) {
+              try {
+                const recentRes = await fetch("https://api.spotify.com/v1/me/player/recently-played?limit=1", {
+                  headers: { Authorization: `Bearer ${spotifyToken}` },
+                });
+                if (recentRes.ok) {
+                  const rJson = (await recentRes.json().catch(() => null)) as any;
+                  const lastTrack = rJson?.items?.[0]?.track;
+                  if (lastTrack) {
+                    const mapped = parseSpotifyItem(lastTrack, false, 0);
+                    if (mapped) idleTrack = mapped;
+                  }
+                }
+              } catch {}
+            }
           }
         } catch {
           // Direct browser fetch failed (e.g. adblocker, CORS) -> continue to next sources

@@ -10,15 +10,18 @@ import { SuggestionVoteService } from '../services/suggestionVoteService.js';
 import { SuggestionCommentService } from '../services/suggestionCommentService.js';
 import { SuggestionService } from '../services/suggestionService.js';
 import { baseEmbed } from '../../../utils/embeds.js';
+import { guildConfigService } from '../../../services/guildConfigService.js';
+import { formatString, getTranslation } from '../../../utils/i18n.js';
 
 export async function handleSuggestionButton(interaction: ButtonInteraction): Promise<void> {
   const customId = interaction.customId;
+  const t = getTranslation(interaction.guildId ? guildConfigService.getConfig(interaction.guildId).language : 'fr');
 
   if (customId.startsWith('sugg_up:')) {
     const id = customId.split(':')[1];
     const { suggestion, action } = SuggestionVoteService.handleVote(id, interaction.user.id, 'up');
     if (!suggestion) {
-      await interaction.reply({ embeds: [baseEmbed('error').setDescription('❌ Suggestion introuvable.')], ephemeral: true });
+      await interaction.reply({ embeds: [baseEmbed('error').setDescription(t.suggest_not_found)], ephemeral: true });
       return;
     }
     // Différer immédiatement : la mise à jour du message de suggestion ci-dessous édite un
@@ -29,15 +32,15 @@ export async function handleSuggestionButton(interaction: ButtonInteraction): Pr
     await interaction.editReply({
       embeds: [baseEmbed(action === 'removed' ? 'info' : 'success').setDescription(
         action === 'removed'
-          ? '↩️ Votre vote positif a été retiré.'
-          : '👍 Votre vote positif a été pris en compte !'
+          ? t.suggest_upvote_removed
+          : t.suggest_upvote_added
       )],
     });
   } else if (customId.startsWith('sugg_down:')) {
     const id = customId.split(':')[1];
     const { suggestion, action } = SuggestionVoteService.handleVote(id, interaction.user.id, 'down');
     if (!suggestion) {
-      await interaction.reply({ embeds: [baseEmbed('error').setDescription('❌ Suggestion introuvable.')], ephemeral: true });
+      await interaction.reply({ embeds: [baseEmbed('error').setDescription(t.suggest_not_found)], ephemeral: true });
       return;
     }
     await interaction.deferReply({ ephemeral: true });
@@ -45,8 +48,8 @@ export async function handleSuggestionButton(interaction: ButtonInteraction): Pr
     await interaction.editReply({
       embeds: [baseEmbed(action === 'removed' ? 'info' : 'success').setDescription(
         action === 'removed'
-          ? '↩️ Votre vote négatif a été retiré.'
-          : '👎 Votre vote négatif a été pris en compte !'
+          ? t.suggest_downvote_removed
+          : t.suggest_downvote_added
       )],
     });
   } else if (customId.startsWith('sugg_follow:')) {
@@ -57,21 +60,21 @@ export async function handleSuggestionButton(interaction: ButtonInteraction): Pr
     await interaction.editReply({
       embeds: [baseEmbed(isFollowing ? 'success' : 'info').setDescription(
         isFollowing
-          ? '🔔 Vous suivez maintenant cette suggestion. Vous recevrez une notification lors de chaque mise à jour !'
-          : '🔕 Vous ne suivez plus cette suggestion.'
+          ? t.suggest_follow_on
+          : t.suggest_follow_off
       )],
     });
   } else if (customId.startsWith('sugg_comment:')) {
     const id = customId.split(':')[1];
     const modal = new ModalBuilder()
       .setCustomId(`modal_sugg_comment:${id}`)
-      .setTitle('Ajouter un commentaire');
+      .setTitle(t.suggest_comment_modal_title);
 
     const input = new TextInputBuilder()
       .setCustomId('comment_content')
-      .setLabel('Votre commentaire / retour constructif')
+      .setLabel(t.suggest_comment_input_label)
       .setStyle(TextInputStyle.Paragraph)
-      .setPlaceholder('Partagez votre avis sur cette idée...')
+      .setPlaceholder(t.suggest_comment_input_placeholder)
       .setRequired(true)
       .setMaxLength(1000);
 
@@ -82,6 +85,7 @@ export async function handleSuggestionButton(interaction: ButtonInteraction): Pr
 
 export async function handleSuggestionModal(interaction: ModalSubmitInteraction): Promise<void> {
   const customId = interaction.customId;
+  const t = getTranslation(interaction.guildId ? guildConfigService.getConfig(interaction.guildId).language : 'fr');
 
   if (customId.startsWith('modal_sugg_comment:')) {
     const id = customId.split(':')[1];
@@ -105,12 +109,12 @@ export async function handleSuggestionModal(interaction: ModalSubmitInteraction)
     await SuggestionService.updateDiscordMessage(interaction.client, id);
 
     await interaction.editReply({
-      embeds: [baseEmbed('success').setDescription('💬 Votre commentaire a bien été ajouté !')],
+      embeds: [baseEmbed('success').setDescription(t.suggest_comment_added)],
     });
   } else if (customId === 'modal_suggest_create') {
     const title = interaction.fields.getTextInputValue('sugg_title');
     const description = interaction.fields.getTextInputValue('sugg_description');
-    const category = interaction.fields.getTextInputValue('sugg_category') || 'Général';
+    const category = interaction.fields.getTextInputValue('sugg_category') || t.suggest_default_category;
 
     if (!interaction.guildId) return;
 
@@ -130,11 +134,11 @@ export async function handleSuggestionModal(interaction: ModalSubmitInteraction)
       });
 
       await interaction.editReply({
-        embeds: [baseEmbed('success').setDescription(`✅ Votre suggestion **#${suggestion.numericId}** a bien été soumise et publiée dans le salon dédié !`)],
+        embeds: [baseEmbed('success').setDescription(formatString(t.suggest_submitted_success, { numericId: suggestion.numericId }))],
       });
     } catch (err: any) {
       await interaction.editReply({
-        embeds: [baseEmbed('error').setDescription(`❌ Erreur : ${err.message}`)],
+        embeds: [baseEmbed('error').setDescription(formatString(t.suggest_generic_error, { error: err.message }))],
       });
     }
   }

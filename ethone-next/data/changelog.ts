@@ -1,3 +1,12 @@
+const v12060_fr: ChangelogEntry = {
+  version: "v1.20.60",
+  date: "2026-09-09",
+  title: "Traduction Complète du Bot Discord (FR/EN/ES/DE)",
+  items: [
+    "Bot Discord : le chantier de traduction est terminé — événements, giveaways, suggestions, niveaux/XP, AutoMod et Anti-Raid sont désormais traduits dans la langue configurée du serveur (fr/en/es/de), en plus de la modération, la musique et /settings déjà faites. Changer la langue du serveur change désormais réellement l'affichage de (quasiment) tout le bot, comme attendu depuis le début.",
+  ],
+};
+
 const v12059_fr: ChangelogEntry = {
   version: "v1.20.59",
   date: "2026-09-09",
@@ -94,6 +103,15 @@ const v12052_fr: ChangelogEntry = {
     "Dynamic Island : correction d'un bug de priorité qui empêchait Spotify de jamais s'afficher, systématiquement évincé par la synchronisation d'arrière-plan.",
     "Commande /help du Bot Discord : la liste des commandes est désormais générée dynamiquement depuis les commandes réellement enregistrées (fin des commandes fantômes et des commandes manquantes), et affiche la vraie syntaxe des commandes à sous-commandes (ex. /automod status).",
     "Audit de l'enregistrement des commandes slash Discord : architecture confirmée saine, aucune dérive entre le code et les commandes déployées.",
+  ],
+};
+
+const v12060_en: ChangelogEntry = {
+  version: "v1.20.60",
+  date: "2026-09-09",
+  title: "Full Discord Bot Translation (FR/EN/ES/DE)",
+  items: [
+    "Discord Bot: the translation effort is complete — events, giveaways, suggestions, leveling/XP, AutoMod, and Anti-Raid are now translated into the server's configured language (fr/en/es/de), on top of moderation, music, and /settings from earlier. Changing the server's language now genuinely changes (almost) the entire bot's display, as expected from the start.",
   ],
 };
 
@@ -196,6 +214,15 @@ const v12052_en: ChangelogEntry = {
   ],
 };
 
+const v12060_es: ChangelogEntry = {
+  version: "v1.20.60",
+  date: "2026-09-09",
+  title: "Traducción Completa del Bot de Discord (FR/EN/ES/DE)",
+  items: [
+    "Bot de Discord: el trabajo de traducción está terminado — eventos, sorteos, sugerencias, niveles/XP, AutoMod y Anti-Raid ahora están traducidos al idioma configurado del servidor (fr/en/es/de), además de moderación, música y /settings ya hechos antes. Cambiar el idioma del servidor ahora realmente cambia (casi) todo lo que muestra el bot, como se esperaba desde el principio.",
+  ],
+};
+
 const v12059_es: ChangelogEntry = {
   version: "v1.20.59",
   date: "2026-09-09",
@@ -292,6 +319,15 @@ const v12052_es: ChangelogEntry = {
     "Dynamic Island: corregido un error de prioridad que impedía que Spotify apareciera, siempre desplazado por la sincronización en segundo plano.",
     "Comando /help del Bot de Discord: la lista de comandos ahora se genera dinámicamente desde los comandos realmente registrados (fin de comandos fantasma o ausentes), mostrando la sintaxis real de los comandos con subcomandos.",
     "Auditoría del registro de comandos slash de Discord: arquitectura confirmada como sólida, sin desviación entre el código y los comandos desplegados.",
+  ],
+};
+
+const v12060_de: ChangelogEntry = {
+  version: "v1.20.60",
+  date: "2026-09-09",
+  title: "Vollständige Übersetzung des Discord-Bots (FR/EN/ES/DE)",
+  items: [
+    "Discord-Bot: die Übersetzungsarbeit ist abgeschlossen — Events, Gewinnspiele, Vorschläge, Levelsystem/XP, AutoMod und Anti-Raid sind jetzt in die konfigurierte Serversprache (fr/en/es/de) übersetzt, zusätzlich zu Moderation, Musik und /settings von zuvor. Ein Wechsel der Serversprache ändert jetzt tatsächlich (fast) die gesamte Anzeige des Bots, wie von Anfang an erwartet.",
   ],
 };
 
@@ -22294,5 +22330,10 @@ CHANGELOG_BY_LANG.fr.unshift(v12059_fr);
 CHANGELOG_BY_LANG.en.unshift(v12059_en);
 CHANGELOG_BY_LANG.es.unshift(v12059_es);
 CHANGELOG_BY_LANG.de.unshift(v12059_de);
+
+CHANGELOG_BY_LANG.fr.unshift(v12060_fr);
+CHANGELOG_BY_LANG.en.unshift(v12060_en);
+CHANGELOG_BY_LANG.es.unshift(v12060_es);
+CHANGELOG_BY_LANG.de.unshift(v12060_de);
 
 export const CHANGELOG = CHANGELOG_BY_LANG.fr;

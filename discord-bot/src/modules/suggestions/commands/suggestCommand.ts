@@ -9,6 +9,7 @@ import {
 import { Command, CommandContext } from '../../../types/command.js';
 import { SuggestionService } from '../services/suggestionService.js';
 import { suggestionStorage } from '../storage/suggestionStorage.js';
+import { formatString, getTranslation } from '../../../utils/i18n.js';
 
 export const suggestCommand: Command = {
   name: 'suggest',
@@ -31,9 +32,11 @@ export const suggestCommand: Command = {
     ),
 
   async execute(ctx: CommandContext): Promise<void> {
+    const t = getTranslation(ctx.guildConfig.language);
+
     if (!ctx.isSlash) {
       await ctx.reply({
-        embeds: [ctx.createEmbed('error').setDescription('Veuillez utiliser la commande Slash `/suggest` pour proposer une idée.')],
+        embeds: [ctx.createEmbed('error').setDescription(t.suggest_slash_only)],
         ephemeral: true,
       });
       return;
@@ -46,7 +49,7 @@ export const suggestCommand: Command = {
     const config = suggestionStorage.getConfig(guild.id);
     if (!config.enabled) {
       await ctx.reply({
-        embeds: [ctx.createEmbed('error').setDescription('❌ Le système de suggestions est actuellement désactivé sur ce serveur.')],
+        embeds: [ctx.createEmbed('error').setDescription(t.suggest_module_disabled)],
         ephemeral: true,
       });
       return;
@@ -54,7 +57,7 @@ export const suggestCommand: Command = {
 
     if (!config.channelId) {
       await ctx.reply({
-        embeds: [ctx.createEmbed('error').setDescription("❌ Aucun salon de suggestions n'a été configuré par les administrateurs.")],
+        embeds: [ctx.createEmbed('error').setDescription(t.suggest_no_channel_configured)],
         ephemeral: true,
       });
       return;
@@ -76,15 +79,15 @@ export const suggestCommand: Command = {
           authorAvatarUrl: ctx.author.displayAvatarURL(),
           title: titleOption,
           description: descOption,
-          category: catOption || 'Général',
+          category: catOption || t.suggest_default_category,
         });
 
         await ctx.reply({
-          embeds: [ctx.createEmbed('success').setDescription(`✅ Votre suggestion **#${suggestion.numericId}** a bien été publiée dans <#${config.channelId}> !`)],
+          embeds: [ctx.createEmbed('success').setDescription(formatString(t.suggest_published_success, { numericId: suggestion.numericId, channelId: config.channelId }))],
           ephemeral: true,
         });
       } catch (err: any) {
-        await ctx.reply({ embeds: [ctx.createEmbed('error').setDescription(`❌ Erreur : ${err.message}`)], ephemeral: true });
+        await ctx.reply({ embeds: [ctx.createEmbed('error').setDescription(formatString(t.suggest_generic_error, { error: err.message }))], ephemeral: true });
       }
       return;
     }
@@ -92,29 +95,29 @@ export const suggestCommand: Command = {
     // Sinon, on ouvre le modal interactif
     const modal = new ModalBuilder()
       .setCustomId('modal_suggest_create')
-      .setTitle('Proposer une Suggestion');
+      .setTitle(t.suggest_modal_title);
 
     const titleInput = new TextInputBuilder()
       .setCustomId('sugg_title')
-      .setLabel('Titre de votre idée')
+      .setLabel(t.suggest_modal_title_label)
       .setStyle(TextInputStyle.Short)
-      .setPlaceholder('Ex: Ajouter un salon dédié au gaming...')
+      .setPlaceholder(t.suggest_modal_title_placeholder)
       .setRequired(true)
       .setMaxLength(100);
 
     const descInput = new TextInputBuilder()
       .setCustomId('sugg_description')
-      .setLabel('Description détaillée')
+      .setLabel(t.suggest_modal_desc_label)
       .setStyle(TextInputStyle.Paragraph)
-      .setPlaceholder('Expliquez pourquoi cette idée serait utile et comment elle fonctionnerait...')
+      .setPlaceholder(t.suggest_modal_desc_placeholder)
       .setRequired(true)
       .setMaxLength(1500);
 
     const catInput = new TextInputBuilder()
       .setCustomId('sugg_category')
-      .setLabel('Catégorie (optionnel)')
+      .setLabel(t.suggest_modal_category_label)
       .setStyle(TextInputStyle.Short)
-      .setPlaceholder('Ex: Général, Serveur, Bot, Événements...')
+      .setPlaceholder(t.suggest_modal_category_placeholder)
       .setRequired(false)
       .setMaxLength(50);
 

@@ -6,67 +6,75 @@ import {
   MessageCreateOptions,
 } from 'discord.js';
 import { DiscordEvent } from './eventsTypes.js';
+import { formatString, getTranslation, SupportedLanguage } from '../../utils/i18n.js';
 
-export function buildEventDiscordPanel(event: DiscordEvent, dashboardBaseUrl: string = 'https://ethone.app'): MessageCreateOptions {
+export function buildEventDiscordPanel(
+  event: DiscordEvent,
+  language: SupportedLanguage = 'fr',
+  dashboardBaseUrl: string = 'https://ethone.app'
+): MessageCreateOptions {
+  const t = getTranslation(language);
   const startUnix = Math.floor(new Date(event.startDate).getTime() / 1000);
   const endUnix = Math.floor(new Date(event.endDate).getTime() / 1000);
 
   // Status badge & color
   let color = 0x5865f2; // Blurple
-  let statusText = '🗓️ Planifié';
+  let statusText = t.events_status_scheduled;
   if (event.status === 'LIVE') {
     color = 0x22c55e; // Green
-    statusText = '🔴 EN DIRECT';
+    statusText = t.events_status_live;
   } else if (event.status === 'COMPLETED') {
     color = 0x64748b; // Slate
-    statusText = '✅ Terminé';
+    statusText = t.events_status_completed;
   } else if (event.status === 'CANCELLED') {
     color = 0xef4444; // Red
-    statusText = '❌ Annulé';
+    statusText = t.events_status_cancelled;
   }
 
   // Location display
-  let locationLabel = 'Non spécifié';
+  let locationLabel = t.events_location_unspecified;
   if (event.location.type === 'VOICE') {
-    locationLabel = event.location.channelName ? `🔊 ${event.location.channelName}` : (event.location.channelId ? `<#${event.location.channelId}>` : 'Canal Vocal');
+    locationLabel = event.location.channelName ? `🔊 ${event.location.channelName}` : (event.location.channelId ? `<#${event.location.channelId}>` : t.events_location_voice_default);
   } else if (event.location.type === 'STAGE') {
-    locationLabel = event.location.channelName ? `🎭 ${event.location.channelName}` : (event.location.channelId ? `<#${event.location.channelId}>` : 'Conférence Scène');
+    locationLabel = event.location.channelName ? `🎭 ${event.location.channelName}` : (event.location.channelId ? `<#${event.location.channelId}>` : t.events_location_stage_default);
   } else if (event.location.type === 'TEXT') {
-    locationLabel = event.location.channelName ? `💬 ${event.location.channelName}` : (event.location.channelId ? `<#${event.location.channelId}>` : 'Salon Textuel');
+    locationLabel = event.location.channelName ? `💬 ${event.location.channelName}` : (event.location.channelId ? `<#${event.location.channelId}>` : t.events_location_text_default);
   } else if (event.location.type === 'EXTERNAL') {
-    locationLabel = `🌐 ${event.location.details || 'Lien Externe'}${event.location.externalUrl ? ` (${event.location.externalUrl})` : ''}`;
+    locationLabel = `🌐 ${event.location.details || t.events_location_external_default}${event.location.externalUrl ? ` (${event.location.externalUrl})` : ''}`;
   }
 
   // Capacity display
   const maxCap = !event.capacity.unlimited && event.capacity.maxParticipants > 0 ? event.capacity.maxParticipants : null;
   const isFull = maxCap ? event.stats.goingCount >= maxCap : false;
   const capacityStr = maxCap
-    ? `${event.stats.goingCount} / ${maxCap} ${isFull ? '🔴 (Complet)' : '🟢'}`
-    : `${event.stats.goingCount} participant(s)`;
+    ? `${event.stats.goingCount} / ${maxCap} ${isFull ? t.events_capacity_full_suffix : '🟢'}`
+    : formatString(t.events_participants_suffix, { count: event.stats.goingCount });
 
   const embed = new EmbedBuilder()
     .setTitle(`${event.emoji ? `${event.emoji} ` : ''}${event.title}`)
-    .setDescription(event.description || '*Aucune description fournie.*')
+    .setDescription(event.description || t.events_panel_no_description)
     .setColor(color)
     .addFields(
       {
-        name: '📅 Date & Heure',
-        value: `<t:${startUnix}:F>\n<t:${startUnix}:R>\nFin : <t:${endUnix}:t>`,
+        name: t.events_panel_field_datetime,
+        value: formatString(t.events_panel_datetime_value, { start: startUnix, end: endUnix }),
         inline: true,
       },
       {
-        name: '📍 Lieu',
+        name: t.events_panel_field_location,
         value: locationLabel,
         inline: true,
       },
       {
-        name: '👥 Statut & Inscriptions',
-        value: `**Statut :** ${statusText}\n**Confirmés :** ${capacityStr}\n**Peut-être :** ${event.stats.maybeCount}${event.stats.waitlistCount ? `\n**File d'attente :** ${event.stats.waitlistCount}` : ''}`,
+        name: t.events_panel_field_status,
+        value:
+          formatString(t.events_panel_status_value, { statusText, capacityStr, maybeCount: event.stats.maybeCount }) +
+          (event.stats.waitlistCount ? formatString(t.events_panel_waitlist_line, { count: event.stats.waitlistCount }) : ''),
         inline: false,
       }
     )
     .setFooter({
-      text: `ETHONE Events 2.0 • ID: ${event.id}`,
+      text: formatString(t.events_panel_footer, { id: event.id }),
       iconURL: 'https://ethone.app/favicon.ico',
     })
     .setTimestamp(new Date(event.startDate));
@@ -80,8 +88,8 @@ export function buildEventDiscordPanel(event: DiscordEvent, dashboardBaseUrl: st
   const isCancelledOrDone = event.status === 'CANCELLED' || event.status === 'COMPLETED';
 
   const goingLabel = isFull && event.capacity.waitlistEnabled
-    ? `File d'attente (${event.stats.waitlistCount})`
-    : `Participer (${event.stats.goingCount})`;
+    ? formatString(t.events_btn_waitlist_label, { count: event.stats.waitlistCount })
+    : formatString(t.events_btn_going_label, { count: event.stats.goingCount });
 
   const row1 = new ActionRowBuilder<ButtonBuilder>().addComponents(
     new ButtonBuilder()
@@ -93,14 +101,14 @@ export function buildEventDiscordPanel(event: DiscordEvent, dashboardBaseUrl: st
 
     new ButtonBuilder()
       .setCustomId(`event_rsvp:${event.id}:MAYBE`)
-      .setLabel(`Peut-être (${event.stats.maybeCount})`)
+      .setLabel(formatString(t.events_btn_maybe_label, { count: event.stats.maybeCount }))
       .setStyle(ButtonStyle.Secondary)
       .setEmoji('🤔')
       .setDisabled(isCancelledOrDone),
 
     new ButtonBuilder()
       .setCustomId(`event_rsvp:${event.id}:NOT_GOING`)
-      .setLabel('Ne participe pas')
+      .setLabel(t.events_btn_not_going_label)
       .setStyle(ButtonStyle.Danger)
       .setEmoji('❌')
       .setDisabled(isCancelledOrDone)
@@ -109,13 +117,13 @@ export function buildEventDiscordPanel(event: DiscordEvent, dashboardBaseUrl: st
   const row2 = new ActionRowBuilder<ButtonBuilder>().addComponents(
     new ButtonBuilder()
       .setCustomId(`event_checkin:${event.id}`)
-      .setLabel('Pointage / Check-in')
+      .setLabel(t.events_btn_checkin_label)
       .setStyle(ButtonStyle.Primary)
       .setEmoji('🎟️')
       .setDisabled(isCancelledOrDone),
 
     new ButtonBuilder()
-      .setLabel('Détails & Calendrier')
+      .setLabel(t.events_btn_details_label)
       .setStyle(ButtonStyle.Link)
       .setURL(`${dashboardBaseUrl.replace(/\/$/, '')}/discord/events/${event.id}`)
       .setEmoji('🌐')

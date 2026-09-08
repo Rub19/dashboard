@@ -8,6 +8,7 @@ import { Command, CommandContext } from '../../../types/command.js';
 import { raidDetectionService } from '../services/raidDetectionService.js';
 import { raidModeService } from '../services/raidModeService.js';
 import { raidActionService } from '../services/raidActionService.js';
+import { formatString, getTranslation } from '../../../utils/i18n.js';
 
 export const antiraidCommand: Command = {
   name: 'antiraid',
@@ -45,8 +46,10 @@ export const antiraidCommand: Command = {
     ),
 
   async execute(ctx: CommandContext): Promise<void> {
+    const t = getTranslation(ctx.guildConfig.language);
+
     if (!ctx.guild) {
-      await ctx.reply({ embeds: [ctx.createEmbed('error').setDescription('Cette commande est réservée aux serveurs.')], ephemeral: true });
+      await ctx.reply({ embeds: [ctx.createEmbed('error').setDescription(t.guild_only_command)], ephemeral: true });
       return;
     }
 
@@ -72,43 +75,43 @@ export const antiraidCommand: Command = {
       };
 
       const embed = new EmbedBuilder()
-        .setTitle(`🛡️ Centre Anti-Raid 2.0 — ${ctx.guild.name}`)
+        .setTitle(formatString(t.antiraid_status_title, { guildName: ctx.guild.name }))
         .setColor(levelColors[metrics.threatLevel] || 0x3b82f6)
         .addFields(
           {
-            name: '📊 Risk Score',
+            name: t.antiraid_field_risk_score,
             value: `**${metrics.currentRiskScore}/100** (\`${metrics.threatLevel}\`)`,
             inline: true,
           },
           {
-            name: '🚨 Raid Mode',
-            value: metrics.raidModeActive ? '🔥 **ACTIVÉ**' : '🟢 Normal',
+            name: t.antiraid_field_raidmode,
+            value: metrics.raidModeActive ? t.antiraid_raidmode_active : t.antiraid_raidmode_normal,
             inline: true,
           },
           {
-            name: '🔒 Verrouillage (Lockdown)',
+            name: t.antiraid_field_lockdown,
             value: metrics.lockdownActive
-              ? `🔴 Actif (${metrics.lockedChannelsCount} salons)`
-              : '🟢 Inactif',
+              ? formatString(t.antiraid_lockdown_active, { count: metrics.lockedChannelsCount })
+              : t.antiraid_lockdown_inactive,
             inline: true,
           },
           {
-            name: '📥 Arrivées (60s)',
-            value: `${metrics.joinsPerMinute} joins`,
+            name: t.antiraid_field_joins,
+            value: formatString(t.antiraid_joins_value, { count: metrics.joinsPerMinute }),
             inline: true,
           },
           {
-            name: '💬 Messages (60s)',
-            value: `${metrics.messagesPerMinute} msgs`,
+            name: t.antiraid_field_messages,
+            value: formatString(t.antiraid_messages_value, { count: metrics.messagesPerMinute }),
             inline: true,
           },
           {
-            name: '🔔 Mentions (60s)',
-            value: `${metrics.mentionsPerMinute} mentions`,
+            name: t.antiraid_field_mentions,
+            value: formatString(t.antiraid_mentions_value, { count: metrics.mentionsPerMinute }),
             inline: true,
           }
         )
-        .setFooter({ text: 'ETHONE Anti-Raid Engine 2.0 • Dashboard Web disponible' })
+        .setFooter({ text: t.antiraid_status_footer })
         .setTimestamp();
 
       await ctx.reply({ embeds: [embed] });
@@ -131,16 +134,16 @@ export const antiraidCommand: Command = {
       if (activate) {
         await raidModeService.activateRaidMode(
           ctx.guild,
-          `Déclenché par ${ctx.author.tag}`,
+          formatString(t.antiraid_raidmode_reason, { tag: ctx.author.tag }),
           ctx.author.tag
         );
         await ctx.reply({
-          embeds: [ctx.createEmbed('error').setDescription('🚨 **Raid Mode ACTIVÉ !** Les protections d’urgence sont en place.')],
+          embeds: [ctx.createEmbed('error').setDescription(t.antiraid_raidmode_on_success)],
         });
       } else {
         await raidModeService.deactivateRaidMode(ctx.guild, ctx.author.tag);
         await ctx.reply({
-          embeds: [ctx.createEmbed('success').setDescription('🔓 **Raid Mode DÉSACTIVÉ.** Retour à la configuration standard.')],
+          embeds: [ctx.createEmbed('success').setDescription(t.antiraid_raidmode_off_success)],
         });
       }
       return;
@@ -162,22 +165,22 @@ export const antiraidCommand: Command = {
       if (activate) {
         const count = await raidActionService.executeLockdown(
           ctx.guild,
-          `Lockdown d’urgence par ${ctx.author.tag}`
+          formatString(t.antiraid_lockdown_reason, { tag: ctx.author.tag })
         );
         await ctx.reply({
-          embeds: [ctx.createEmbed('error').setDescription(`🔒 **Lockdown ACTIVÉ !** ${count} salon(s) textuel(s) verrouillé(s).`)],
+          embeds: [ctx.createEmbed('error').setDescription(formatString(t.antiraid_lockdown_on_success, { count }))],
         });
       } else {
         const count = await raidActionService.releaseLockdown(ctx.guild);
         await ctx.reply({
-          embeds: [ctx.createEmbed('success').setDescription(`🔓 **Lockdown LEVÉ !** ${count} salon(s) déverrouillé(s).`)],
+          embeds: [ctx.createEmbed('success').setDescription(formatString(t.antiraid_lockdown_off_success, { count }))],
         });
       }
       return;
     }
 
     await ctx.reply({
-      embeds: [ctx.createEmbed('info').setDescription('Usage : `/antiraid status`, `/antiraid raidmode <activer>`, `/antiraid lockdown <activer>`')],
+      embeds: [ctx.createEmbed('info').setDescription(t.antiraid_usage_fallback)],
       ephemeral: true,
     });
   },

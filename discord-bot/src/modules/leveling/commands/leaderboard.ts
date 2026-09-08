@@ -1,6 +1,7 @@
 import { EmbedBuilder, SlashCommandBuilder } from 'discord.js';
 import { Command, CommandContext } from '../../../types/command.js';
 import { levelingStorage } from '../storage/levelingStorage.js';
+import { formatString, getTranslation } from '../../../utils/i18n.js';
 
 export const leaderboardCommand: Command = {
   name: 'leaderboard',
@@ -11,13 +12,14 @@ export const leaderboardCommand: Command = {
     .setDescription('Affiche le classement des membres les plus actifs du serveur.'),
 
   async execute(ctx: CommandContext): Promise<void> {
+    const t = getTranslation(ctx.guildConfig.language);
     const guild = ctx.guild;
     if (!guild) return;
 
     const config = levelingStorage.getConfig(guild.id);
     if (!config.enabled) {
       await ctx.reply({
-        embeds: [ctx.createEmbed('error').setDescription('⚠️ Le système de niveaux est actuellement désactivé sur ce serveur.')],
+        embeds: [ctx.createEmbed('error').setDescription(t.leveling_module_disabled)],
         ephemeral: true,
       });
       return;
@@ -27,7 +29,7 @@ export const leaderboardCommand: Command = {
 
     if (topUsers.length === 0) {
       await ctx.reply({
-        embeds: [ctx.createEmbed('info').setDescription('📜 Aucun membre n’a encore acquis d’expérience sur ce serveur.')],
+        embeds: [ctx.createEmbed('info').setDescription(t.leveling_leaderboard_empty)],
         ephemeral: true,
       });
       return;
@@ -37,14 +39,14 @@ export const leaderboardCommand: Command = {
 
     const lines = topUsers.map((user, idx) => {
       const medal = medals[idx] || `**#${idx + 1}**`;
-      return `${medal} <@${user.userId}> — **Niveau ${user.level}** (\`${user.totalXp.toLocaleString()} XP\`)`;
+      return formatString(t.leveling_leaderboard_line, { medal, userId: user.userId, level: user.level, xp: user.totalXp.toLocaleString() });
     });
 
     const embed = new EmbedBuilder()
       .setColor('#F59E0B')
-      .setTitle(`🏆 Classement d'Activité • ${guild.name}`)
+      .setTitle(formatString(t.leveling_leaderboard_title, { guildName: guild.name }))
       .setDescription(lines.join('\n\n'))
-      .setFooter({ text: 'Consultez le classement complet sur le Dashboard Web' })
+      .setFooter({ text: t.leveling_leaderboard_footer })
       .setTimestamp();
 
     await ctx.reply({ embeds: [embed] });

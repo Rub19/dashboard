@@ -7,6 +7,7 @@ import { Command, CommandContext } from '../../../types/command.js';
 import { xpWriteBuffer } from '../storage/xpWriteBuffer.js';
 import { LevelCalculator } from '../services/levelCalculator.js';
 import { levelingStorage } from '../storage/levelingStorage.js';
+import { formatString, getTranslation } from '../../../utils/i18n.js';
 
 export const rankCommand: Command = {
   name: 'rank',
@@ -23,6 +24,7 @@ export const rankCommand: Command = {
     ),
 
   async execute(ctx: CommandContext): Promise<void> {
+    const t = getTranslation(ctx.guildConfig.language);
     const guild = ctx.guild;
     if (!guild) return;
 
@@ -33,7 +35,7 @@ export const rankCommand: Command = {
     const config = levelingStorage.getConfig(guild.id);
     if (!config.enabled) {
       await ctx.reply({
-        embeds: [ctx.createEmbed('error').setDescription('⚠️ Le système de niveaux est actuellement désactivé sur ce serveur.')],
+        embeds: [ctx.createEmbed('error').setDescription(t.leveling_module_disabled)],
         ephemeral: true,
       });
       return;
@@ -48,21 +50,27 @@ export const rankCommand: Command = {
     const embed = new EmbedBuilder()
       .setColor('#6366F1')
       .setAuthor({
-        name: `Progression de ${targetUser.username}`,
+        name: formatString(t.leveling_rank_author, { username: targetUser.username }),
         iconURL: targetUser.displayAvatarURL(),
       })
       .setThumbnail(targetUser.displayAvatarURL())
       .addFields(
-        { name: '🏆 Rang', value: `#${userRank}`, inline: true },
-        { name: '⭐ Niveau', value: `${progress.level}`, inline: true },
-        { name: '💬 Messages', value: `${userData.messagesCount.toLocaleString()}`, inline: true },
+        { name: t.leveling_field_rank, value: `#${userRank}`, inline: true },
+        { name: t.leveling_field_level, value: `${progress.level}`, inline: true },
+        { name: t.leveling_field_messages, value: `${userData.messagesCount.toLocaleString()}`, inline: true },
         {
-          name: '📊 Progression vers le Niveau Suivant',
-          value: `\`${progressBar}\` **${progress.progressPercentage}%**\n\`${progress.currentLevelXp.toLocaleString()} / ${progress.nextLevelXp.toLocaleString()} XP\` (Total : ${userData.totalXp.toLocaleString()} XP)`,
+          name: t.leveling_field_progress,
+          value: formatString(t.leveling_progress_value, {
+            bar: progressBar,
+            percent: progress.progressPercentage,
+            cur: progress.currentLevelXp.toLocaleString(),
+            next: progress.nextLevelXp.toLocaleString(),
+            total: userData.totalXp.toLocaleString(),
+          }),
           inline: false,
         }
       )
-      .setFooter({ text: `${guild.name} • Système de Progression` })
+      .setFooter({ text: formatString(t.leveling_rank_footer, { guildName: guild.name }) })
       .setTimestamp();
 
     await ctx.reply({ embeds: [embed] });

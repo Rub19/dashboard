@@ -12,68 +12,77 @@ import { Suggestion, SuggestionStatus } from '../types/suggestion.js';
 import { suggestionStorage } from '../storage/suggestionStorage.js';
 import { logService } from '../../logs/services/logService.js';
 import { logger } from '../../../utils/logger.js';
+import { guildConfigService } from '../../../services/guildConfigService.js';
+import { formatString, getTranslation, SupportedLanguage } from '../../../utils/i18n.js';
 
 export class SuggestionService {
   /**
    * Retourne la couleur et le libellé associé au statut
    */
-  public static getStatusMeta(status: SuggestionStatus): {
+  public static getStatusMeta(
+    status: SuggestionStatus,
+    language: SupportedLanguage = 'fr'
+  ): {
     label: string;
     emoji: string;
     color: `#${string}`;
   } {
+    const t = getTranslation(language);
     switch (status) {
       case 'pending':
-        return { label: 'En attente', emoji: '🟡', color: '#FBBF24' };
+        return { label: t.suggest_status_pending, emoji: '🟡', color: '#FBBF24' };
       case 'under_review':
-        return { label: "En cours d'étude", emoji: '🔵', color: '#3B82F6' };
+        return { label: t.suggest_status_under_review, emoji: '🔵', color: '#3B82F6' };
       case 'planned':
-        return { label: 'Planifiée', emoji: '🟣', color: '#8B5CF6' };
+        return { label: t.suggest_status_planned, emoji: '🟣', color: '#8B5CF6' };
       case 'accepted':
-        return { label: 'Acceptée', emoji: '🟢', color: '#10B981' };
+        return { label: t.suggest_status_accepted, emoji: '🟢', color: '#10B981' };
       case 'in_progress':
-        return { label: 'En développement', emoji: '🚧', color: '#F59E0B' };
+        return { label: t.suggest_status_in_progress, emoji: '🚧', color: '#F59E0B' };
       case 'completed':
-        return { label: 'Réalisée', emoji: '✅', color: '#059669' };
+        return { label: t.suggest_status_completed, emoji: '✅', color: '#059669' };
       case 'rejected':
-        return { label: 'Refusée', emoji: '🔴', color: '#EF4444' };
+        return { label: t.suggest_status_rejected, emoji: '🔴', color: '#EF4444' };
       case 'duplicate':
-        return { label: 'Doublon', emoji: '⚫', color: '#6B7280' };
+        return { label: t.suggest_status_duplicate, emoji: '⚫', color: '#6B7280' };
       case 'on_hold':
-        return { label: 'En pause', emoji: '🟠', color: '#EA580C' };
+        return { label: t.suggest_status_on_hold, emoji: '🟠', color: '#EA580C' };
     }
   }
 
   /**
    * Construit l'embed Discord représentatif de la suggestion
    */
-  public static buildEmbed(suggestion: Suggestion): EmbedBuilder {
-    const meta = this.getStatusMeta(suggestion.status);
+  public static buildEmbed(suggestion: Suggestion, language: SupportedLanguage = 'fr'): EmbedBuilder {
+    const t = getTranslation(language);
+    const meta = this.getStatusMeta(suggestion.status, language);
 
     const embed = new EmbedBuilder()
       .setColor(meta.color)
       .setAuthor({
-        name: `Suggestion #${suggestion.numericId} • Par ${suggestion.authorTag}`,
+        name: formatString(t.suggest_embed_author, { numericId: suggestion.numericId, authorTag: suggestion.authorTag }),
         iconURL: suggestion.authorAvatarUrl || undefined,
       })
       .setTitle(suggestion.title)
       .setDescription(suggestion.description)
       .addFields([
         {
-          name: 'Statut',
+          name: t.suggest_field_status,
           value: `${meta.emoji} **${meta.label}**`,
           inline: true,
         },
         {
-          name: 'Catégorie',
+          name: t.suggest_field_category,
           value: `📁 ${suggestion.category}`,
           inline: true,
         },
         {
-          name: 'Score',
-          value: `👍 ${suggestion.upvotesCount}  •  👎 ${suggestion.downvotesCount}  (Score: **${
-            suggestion.score >= 0 ? `+${suggestion.score}` : suggestion.score
-          }**)`,
+          name: t.suggest_field_score,
+          value: formatString(t.suggest_score_value, {
+            up: suggestion.upvotesCount,
+            down: suggestion.downvotesCount,
+            score: suggestion.score >= 0 ? `+${suggestion.score}` : suggestion.score,
+          }),
           inline: true,
         },
       ]);
@@ -81,7 +90,7 @@ export class SuggestionService {
     if (suggestion.staffResponse) {
       embed.addFields([
         {
-          name: `💬 Réponse du Staff (${suggestion.staffResponderTag || 'Modérateur'})`,
+          name: formatString(t.suggest_staff_response_field, { responderTag: suggestion.staffResponderTag || t.suggest_default_moderator }),
           value: suggestion.staffResponse,
           inline: false,
         },
@@ -91,15 +100,15 @@ export class SuggestionService {
     if (suggestion.duplicateOfId) {
       embed.addFields([
         {
-          name: '🔗 Doublon',
-          value: `Cette suggestion a été marquée comme doublon de la suggestion #${suggestion.duplicateOfId}.`,
+          name: `🔗 ${t.suggest_status_duplicate}`,
+          value: formatString(t.suggest_duplicate_field_value, { dupId: suggestion.duplicateOfId }),
           inline: false,
         },
       ]);
     }
 
     embed
-      .setFooter({ text: `ID: ${suggestion.id} • ${suggestion.comments.length} commentaire(s)` })
+      .setFooter({ text: formatString(t.suggest_embed_footer, { id: suggestion.id, count: suggestion.comments.length }) })
       .setTimestamp(new Date(suggestion.createdAt));
 
     return embed;
@@ -108,7 +117,8 @@ export class SuggestionService {
   /**
    * Construit la rangée de boutons Discord
    */
-  public static buildActionRow(suggestion: Suggestion): ActionRowBuilder<ButtonBuilder> {
+  public static buildActionRow(suggestion: Suggestion, language: SupportedLanguage = 'fr'): ActionRowBuilder<ButtonBuilder> {
+    const t = getTranslation(language);
     return new ActionRowBuilder<ButtonBuilder>().addComponents(
       new ButtonBuilder()
         .setCustomId(`sugg_up:${suggestion.id}`)
@@ -120,11 +130,11 @@ export class SuggestionService {
         .setStyle(ButtonStyle.Danger),
       new ButtonBuilder()
         .setCustomId(`sugg_comment:${suggestion.id}`)
-        .setLabel(`💬 Commenter (${suggestion.comments.length})`)
+        .setLabel(formatString(t.suggest_btn_comment, { count: suggestion.comments.length }))
         .setStyle(ButtonStyle.Secondary),
       new ButtonBuilder()
         .setCustomId(`sugg_follow:${suggestion.id}`)
-        .setLabel(`🔔 Suivre (${suggestion.followerIds.length})`)
+        .setLabel(formatString(t.suggest_btn_follow, { count: suggestion.followerIds.length }))
         .setStyle(ButtonStyle.Secondary)
     );
   }
@@ -145,9 +155,12 @@ export class SuggestionService {
       tags?: string[];
     }
   ): Promise<Suggestion> {
+    const language = guildConfigService.getConfig(data.guildId).language;
+    const t = getTranslation(language);
+
     const config = suggestionStorage.getConfig(data.guildId);
     if (!config.channelId) {
-      throw new Error("Aucun salon de suggestions n'est configuré sur ce serveur.");
+      throw new Error(t.suggest_no_channel_error);
     }
 
     const suggestion = suggestionStorage.create({
@@ -158,15 +171,15 @@ export class SuggestionService {
       authorAvatarUrl: data.authorAvatarUrl || null,
       title: data.title,
       description: data.description,
-      category: data.category || 'Général',
+      category: data.category || t.suggest_default_category,
       tags: data.tags || [],
     });
 
     try {
       const channel = client.channels.cache.get(config.channelId) as TextChannel | undefined;
       if (channel && channel.type === ChannelType.GuildText) {
-        const embed = this.buildEmbed(suggestion);
-        const row = this.buildActionRow(suggestion);
+        const embed = this.buildEmbed(suggestion, language);
+        const row = this.buildActionRow(suggestion, language);
         const message = await channel.send({ embeds: [embed], components: [row] });
 
         suggestion.messageId = message.id;
@@ -175,7 +188,7 @@ export class SuggestionService {
         if (config.autoThread) {
           try {
             const thread = await message.startThread({
-              name: `Discussion #${suggestion.numericId} : ${suggestion.title.substring(0, 50)}`,
+              name: formatString(t.suggest_thread_name, { numericId: suggestion.numericId, title: suggestion.title.substring(0, 50) }),
               autoArchiveDuration: ThreadAutoArchiveDuration.OneWeek,
             });
             suggestion.threadId = thread.id;
@@ -222,12 +235,13 @@ export class SuggestionService {
     if (!suggestion || !suggestion.messageId) return;
 
     try {
+      const language = guildConfigService.getConfig(suggestion.guildId).language;
       const channel = client.channels.cache.get(suggestion.channelId) as TextChannel | undefined;
       if (channel) {
         const message = await channel.messages.fetch(suggestion.messageId).catch(() => null);
         if (message) {
-          const embed = this.buildEmbed(suggestion);
-          const row = this.buildActionRow(suggestion);
+          const embed = this.buildEmbed(suggestion, language);
+          const row = this.buildActionRow(suggestion, language);
           await message.edit({ embeds: [embed], components: [row] });
         }
       }
@@ -249,7 +263,9 @@ export class SuggestionService {
     const suggestion = suggestionStorage.getById(suggestionId);
     if (!suggestion) return null;
 
-    const meta = this.getStatusMeta(newStatus);
+    const language = guildConfigService.getConfig(suggestion.guildId).language;
+    const t = getTranslation(language);
+    const meta = this.getStatusMeta(newStatus, language);
     const history = [...suggestion.history];
     history.push({
       timestamp: new Date().toISOString(),
@@ -278,10 +294,13 @@ export class SuggestionService {
           const user = await client.users.fetch(followerId).catch(() => null);
           if (user) {
             await user.send({
-              content: `🔔 **Mise à jour de la suggestion #${updated.numericId}**\n` +
-                `Titre : **${updated.title}**\n` +
-                `Nouveau statut : ${meta.emoji} **${meta.label}**\n` +
-                (staffResponse ? `Réponse officielle : *"${staffResponse}"*\n` : ''),
+              content: formatString(t.suggest_dm_update, {
+                numericId: updated.numericId,
+                title: updated.title,
+                emoji: meta.emoji,
+                label: meta.label,
+                responseLine: staffResponse ? formatString(t.suggest_dm_response_line, { response: staffResponse }) : '',
+              }),
             });
           }
         } catch {

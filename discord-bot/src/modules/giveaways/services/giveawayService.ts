@@ -17,6 +17,8 @@ import { logService } from '../../logs/services/logService.js';
 import { giveawayScheduler } from './giveawayScheduler.js';
 import { logger } from '../../../utils/logger.js';
 import { baseEmbed } from '../../../utils/embeds.js';
+import { guildConfigService } from '../../../services/guildConfigService.js';
+import { formatString, getTranslation, SupportedLanguage } from '../../../utils/i18n.js';
 
 class GiveawayService {
   /**
@@ -40,13 +42,15 @@ class GiveawayService {
       claimTimeoutHours?: number;
     }
   ): Promise<Giveaway> {
+    const language = guildConfigService.getConfig(data.guildId).language;
+    const t = getTranslation(language);
     const endsAt = new Date(Date.now() + data.durationMinutes * 60 * 1000).toISOString();
 
     const giveaway = giveawayStorage.create({
       guildId: data.guildId,
       channelId: data.channelId,
       prize: data.prize,
-      description: data.description || 'Cliquez sur le bouton ci-dessous pour participer au tirage au sort !',
+      description: data.description || t.giveaway_default_description,
       winnerCount: data.winnerCount,
       rewardRoleId: data.rewardRoleId || null,
       bannerUrl: data.bannerUrl || null,
@@ -69,8 +73,8 @@ class GiveawayService {
     try {
       const channel = client.channels.cache.get(data.channelId) as TextChannel | undefined;
       if (channel && channel.type === ChannelType.GuildText) {
-        const embed = this.buildGiveawayEmbed(giveaway);
-        const row = this.buildActionRow(giveaway);
+        const embed = this.buildGiveawayEmbed(giveaway, language);
+        const row = this.buildActionRow(giveaway, language);
         const message = await channel.send({ embeds: [embed], components: [row] });
 
         giveaway.messageId = message.id;
@@ -109,7 +113,8 @@ class GiveawayService {
   /**
    * Construit l'embed visuel du giveaway Discord
    */
-  public buildGiveawayEmbed(giveaway: Giveaway): EmbedBuilder {
+  public buildGiveawayEmbed(giveaway: Giveaway, language: SupportedLanguage = 'fr'): EmbedBuilder {
+    const t = getTranslation(language);
     const endTimestamp = Math.floor(new Date(giveaway.endsAt).getTime() / 1000);
     const isEnded = giveaway.status === 'ended';
     const isCancelled = giveaway.status === 'cancelled';
@@ -117,51 +122,53 @@ class GiveawayService {
     const embed = new EmbedBuilder();
 
     if (isEnded) {
+      const winnersStr =
+        giveaway.winnerIds.length > 0
+          ? giveaway.winnerIds.map((id) => `<@${id}>`).join(', ')
+          : `*${t.giveaway_no_eligible_participant}*`;
       embed
         .setColor('#10B981')
-        .setTitle(`🎉 GIVEAWAY TERMINÉ : ${giveaway.prize}`)
+        .setTitle(formatString(t.giveaway_embed_ended_title, { prize: giveaway.prize }))
         .setDescription(
-          `Ce tirage au sort est désormais clôturé.\n\n` +
-            `🏆 **Gagnant(s) :** ${
-              giveaway.winnerIds.length > 0
-                ? giveaway.winnerIds.map((id) => `<@${id}>`).join(', ')
-                : '*Aucun participant éligible.*'
-            }\n\n` +
-            `🎁 **Lot remporté :** ${giveaway.prize}\n` +
-            `👥 **Participants au total :** \`${giveaway.participants.length}\`\n` +
-            `👤 **Organisé par :** <@${giveaway.hostedById}>`
+          formatString(t.giveaway_embed_ended_desc, {
+            winners: winnersStr,
+            prize: giveaway.prize,
+            count: giveaway.participants.length,
+            hostId: giveaway.hostedById,
+          })
         );
     } else if (isCancelled) {
       embed
         .setColor('#EF4444')
-        .setTitle(`❌ GIVEAWAY ANNULÉ : ${giveaway.prize}`)
-        .setDescription(`Ce giveaway a été annulé par un administrateur.`);
+        .setTitle(formatString(t.giveaway_embed_cancelled_title, { prize: giveaway.prize }))
+        .setDescription(t.giveaway_embed_cancelled_desc);
     } else {
       let reqText = '';
       const req = giveaway.requirements;
       if (req.requiredRoleIds.length > 0) {
-        reqText += `\n• Rôle(s) requis : ${req.requiredRoleIds.map((id) => `<@&${id}>`).join(' ')}`;
+        reqText += formatString(t.giveaway_req_roles_required, { roles: req.requiredRoleIds.map((id) => `<@&${id}>`).join(' ') });
       }
       if (req.excludedRoleIds.length > 0) {
-        reqText += `\n• Rôle(s) interdit(s) : ${req.excludedRoleIds.map((id) => `<@&${id}>`).join(' ')}`;
+        reqText += formatString(t.giveaway_req_roles_excluded, { roles: req.excludedRoleIds.map((id) => `<@&${id}>`).join(' ') });
       }
       if (req.minAccountAgeDays > 0) {
-        reqText += `\n• Âge de compte minimum : \`${req.minAccountAgeDays} jour(s)\``;
+        reqText += formatString(t.giveaway_req_min_age, { days: req.minAccountAgeDays });
       }
       if (req.minLevel > 0) {
-        reqText += `\n• Niveau XP minimum : \`Niveau ${req.minLevel}\``;
+        reqText += formatString(t.giveaway_req_min_level, { level: req.minLevel });
       }
 
       embed
         .setColor('#6366F1')
-        .setTitle(`🎁 GIVEAWAY : ${giveaway.prize}`)
+        .setTitle(formatString(t.giveaway_embed_active_title, { prize: giveaway.prize }))
         .setDescription(
-          `${giveaway.description}\n\n` +
-            `🏆 **Gagnants :** \`${giveaway.winnerCount}\`\n` +
-            `⏰ **Fin :** <t:${endTimestamp}:R> (<t:${endTimestamp}:f>)\n` +
-            `👤 **Organisé par :** <@${giveaway.hostedById}>\n` +
-            `👥 **Participants :** \`${giveaway.participants.length}\`` +
-            (reqText ? `\n\n🛡️ **Conditions d'accès :**${reqText}` : '')
+          formatString(t.giveaway_embed_active_desc, {
+            description: giveaway.description,
+            winnerCount: giveaway.winnerCount,
+            endTimestamp,
+            hostId: giveaway.hostedById,
+            participantsCount: giveaway.participants.length,
+          }) + (reqText ? t.giveaway_req_prefix + reqText : '')
         );
     }
 
@@ -176,13 +183,14 @@ class GiveawayService {
   /**
    * Construit la ligne de boutons d'action
    */
-  public buildActionRow(giveaway: Giveaway): ActionRowBuilder<ButtonBuilder> {
+  public buildActionRow(giveaway: Giveaway, language: SupportedLanguage = 'fr'): ActionRowBuilder<ButtonBuilder> {
+    const t = getTranslation(language);
     const isEnded = giveaway.status === 'ended';
     const isCancelled = giveaway.status === 'cancelled';
 
     const enterButton = new ButtonBuilder()
       .setCustomId(`giveaway_enter:${giveaway.id}`)
-      .setLabel(`🎉 Participer (${giveaway.participants.length})`)
+      .setLabel(formatString(t.giveaway_btn_enter, { count: giveaway.participants.length }))
       .setStyle(ButtonStyle.Primary)
       .setDisabled(isEnded || isCancelled);
 
@@ -191,7 +199,7 @@ class GiveawayService {
     if (isEnded && giveaway.requireClaim) {
       const claimButton = new ButtonBuilder()
         .setCustomId(`giveaway_claim:${giveaway.id}`)
-        .setLabel('🎁 Réclamer mon lot')
+        .setLabel(t.giveaway_btn_claim)
         .setStyle(ButtonStyle.Success);
       row.addComponents(claimButton);
     }
@@ -204,15 +212,18 @@ class GiveawayService {
    */
   public checkEligibility(
     member: GuildMember,
-    req: GiveawayRequirements
+    req: GiveawayRequirements,
+    language: SupportedLanguage = 'fr'
   ): { eligible: boolean; reason?: string } {
+    const t = getTranslation(language);
+
     // 1. Rôles interdits
     if (req.excludedRoleIds.length > 0) {
       const hasExcluded = member.roles.cache.some((r) => req.excludedRoleIds.includes(r.id));
       if (hasExcluded) {
         return {
           eligible: false,
-          reason: 'Vous possédez un rôle exclu du tirage au sort.',
+          reason: t.giveaway_elig_excluded_role,
         };
       }
     }
@@ -224,7 +235,7 @@ class GiveawayService {
         if (!hasAll) {
           return {
             eligible: false,
-            reason: 'Vous ne possédez pas tous les rôles obligatoires pour participer.',
+            reason: t.giveaway_elig_missing_all_roles,
           };
         }
       } else {
@@ -232,7 +243,7 @@ class GiveawayService {
         if (!hasAny) {
           return {
             eligible: false,
-            reason: 'Vous ne possédez aucun des rôles requis pour participer.',
+            reason: t.giveaway_elig_missing_any_role,
           };
         }
       }
@@ -244,7 +255,7 @@ class GiveawayService {
       if (accountAgeDays < req.minAccountAgeDays) {
         return {
           eligible: false,
-          reason: `Votre compte Discord doit avoir au moins ${req.minAccountAgeDays} jour(s) d'ancienneté.`,
+          reason: formatString(t.giveaway_elig_min_age, { days: req.minAccountAgeDays }),
         };
       }
     }
@@ -255,7 +266,7 @@ class GiveawayService {
       if (userLevel < req.minLevel) {
         return {
           eligible: false,
-          reason: `Vous devez avoir atteint au minimum le **Niveau ${req.minLevel}** (Niveau actuel : ${userLevel}).`,
+          reason: formatString(t.giveaway_elig_min_level, { level: req.minLevel, userLevel }),
         };
       }
     }
@@ -267,10 +278,13 @@ class GiveawayService {
    * Gère le clic sur le bouton Participer
    */
   public async handleParticipation(interaction: ButtonInteraction, giveawayId: string): Promise<void> {
+    const language = interaction.guildId ? guildConfigService.getConfig(interaction.guildId).language : 'fr';
+    const t = getTranslation(language);
+
     const giveaway = giveawayStorage.getById(giveawayId);
     if (!giveaway || giveaway.status !== 'active') {
       await interaction.reply({
-        embeds: [baseEmbed('error').setDescription('❌ Ce giveaway n’est plus actif.')],
+        embeds: [baseEmbed('error').setDescription(t.giveaway_not_active)],
         ephemeral: true,
       });
       return;
@@ -289,16 +303,16 @@ class GiveawayService {
       await interaction.deferReply({ ephemeral: true });
       await this.updateMessage(interaction.client, giveawayId);
       await interaction.editReply({
-        embeds: [baseEmbed('info').setDescription('👋 Vous ne participez plus à ce giveaway.')],
+        embeds: [baseEmbed('info').setDescription(t.giveaway_left)],
       });
       return;
     }
 
     // Vérification d'éligibilité
-    const eligibility = this.checkEligibility(member, giveaway.requirements);
+    const eligibility = this.checkEligibility(member, giveaway.requirements, language);
     if (!eligibility.eligible) {
       await interaction.reply({
-        embeds: [baseEmbed('error').setDescription(`⛔ **Participation refusée :**\n${eligibility.reason}`)],
+        embeds: [baseEmbed('error').setDescription(formatString(t.giveaway_participation_denied, { reason: eligibility.reason || '' }))],
         ephemeral: true,
       });
       return;
@@ -320,7 +334,7 @@ class GiveawayService {
     await this.updateMessage(interaction.client, giveawayId);
 
     await interaction.editReply({
-      embeds: [baseEmbed('success').setDescription('🎉 **Félicitations !** Votre participation au tirage au sort a bien été enregistrée.')],
+      embeds: [baseEmbed('success').setDescription(t.giveaway_join_success)],
     });
   }
 
@@ -332,12 +346,13 @@ class GiveawayService {
     if (!giveaway || !giveaway.messageId) return;
 
     try {
+      const language = guildConfigService.getConfig(giveaway.guildId).language;
       const channel = client.channels.cache.get(giveaway.channelId) as TextChannel | undefined;
       if (channel) {
         const message = await channel.messages.fetch(giveaway.messageId).catch(() => null);
         if (message) {
-          const embed = this.buildGiveawayEmbed(giveaway);
-          const row = this.buildActionRow(giveaway);
+          const embed = this.buildGiveawayEmbed(giveaway, language);
+          const row = this.buildActionRow(giveaway, language);
           await message.edit({ embeds: [embed], components: [row] });
         }
       }
@@ -356,6 +371,9 @@ class GiveawayService {
     const guild = client.guilds.cache.get(giveaway.guildId);
     if (!guild) return [];
 
+    const language = guildConfigService.getConfig(giveaway.guildId).language;
+    const t = getTranslation(language);
+
     // Participants éligibles actuels
     const winnersNeeded = count || giveaway.winnerCount;
     const pool = giveaway.participants.filter(
@@ -367,7 +385,7 @@ class GiveawayService {
     for (const p of pool) {
       const member = await guild.members.fetch(p.userId).catch(() => null);
       if (member) {
-        const elig = this.checkEligibility(member, giveaway.requirements);
+        const elig = this.checkEligibility(member, giveaway.requirements, language);
         if (elig.eligible) {
           validCandidateIds.push(p.userId);
         }
@@ -413,11 +431,11 @@ class GiveawayService {
       if (selectedWinners.length > 0) {
         const mentions = selectedWinners.map((id) => `<@${id}>`).join(' ');
         await channel.send({
-          content: `🎉 Félicitations ${mentions} ! Vous avez remporté le giveaway pour **${giveaway.prize}** ! 🎁`,
+          content: formatString(t.giveaway_announce_winners, { mentions, prize: giveaway.prize }),
         }).catch(() => {});
       } else {
         await channel.send({
-          content: `⚠️ Aucun gagnant n'a pu être sélectionné pour le giveaway **${giveaway.prize}** (aucun participant éligible).`,
+          content: formatString(t.giveaway_announce_no_winner, { prize: giveaway.prize }),
         }).catch(() => {});
       }
     }
@@ -444,7 +462,7 @@ class GiveawayService {
       const m = await guild.members.fetch(wId).catch(() => null);
       if (m) {
         await m.send({
-          content: `🎉 **Félicitations !** Vous avez remporté le giveaway **${giveaway.prize}** sur le serveur **${guild.name}** !`,
+          content: formatString(t.giveaway_dm_winner, { prize: giveaway.prize, guildName: guild.name }),
         }).catch(() => {});
       }
     }

@@ -2,6 +2,14 @@
 
 Toutes les modifications notables de ce projet seront documentées dans ce fichier.
 
+## v1.20.60 — 2026-09-09
+
+**Traduction complète du bot Discord (FR/EN/ES/DE)**
+
+- Le chantier de traduction ouvert dans les versions précédentes est terminé : `modules/events/{eventsCommand,eventsInteractionHandler,eventsUiPanel}.ts` (~50 clés, `buildEventDiscordPanel` prend désormais un paramètre `language` propagé sur ses 3 points d'appel), `modules/giveaways/{commands/giveawayCommand,interactions/giveawayInteractionHandler,services/giveawayService}.ts` (43 clés), `modules/suggestions/{commands/suggestCommand,interactions/suggestionInteractionHandler,services/suggestionService}.ts` (49 clés), `modules/leveling/commands/{rank,leaderboard,xpAdmin}.ts` (16 clés), `modules/antiRaid/commands/antiraidCommand.ts` (22 clés), et `modules/automod/commands/automodCommand.ts` (~57 clés, y compris la nouvelle sous-commande `toggle`).
+- Laissé volontairement non traduit (cohérent avec le reste du bot) : les descriptions de `SlashCommandBuilder` (métadonnées d'enregistrement Discord, jamais traduites nulle part dans le code existant), les entrées `logService.log(...)` (journal d'audit interne, pas un affichage Discord), et les messages retournés par `eventsRsvpService`/`eventsCheckinService` (partagés avec la route API du dashboard `ethone-next`, hors du périmètre autorisé pour ce chantier).
+- Validation : `tsc --noEmit` (0 erreur, vérifié après chaque module), `npm run node:build`, suites QA `test_full_sync_qa.ts` (42/42) et `test_source_of_truth_reconciliation.ts` (40/40).
+
 ## v1.20.59 — 2026-09-09
 
 **Correctif confirmé et reproduit : les boutons redevenaient verts malgré le thème Dyno Rose**

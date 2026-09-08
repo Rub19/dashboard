@@ -8,6 +8,7 @@ import { Command, CommandContext } from '../../../types/command.js';
 import { autoModRepository } from '../storage/autoModRepository.js';
 import { RuleTesterService } from '../services/ruleTesterService.js';
 import { AutoModRiskEngine } from '../services/autoModRiskEngine.js';
+import { formatString, getTranslation } from '../../../utils/i18n.js';
 
 export const automodCommand: Command = {
   name: 'automod',
@@ -67,8 +68,10 @@ export const automodCommand: Command = {
     ),
 
   async execute(ctx: CommandContext): Promise<void> {
+    const t = getTranslation(ctx.guildConfig.language);
+
     if (!ctx.guild) {
-      await ctx.reply({ embeds: [ctx.createEmbed('error').setDescription('Cette commande est réservée aux serveurs.')], ephemeral: true });
+      await ctx.reply({ embeds: [ctx.createEmbed('error').setDescription(t.guild_only_command)], ephemeral: true });
       return;
     }
 
@@ -94,54 +97,54 @@ export const automodCommand: Command = {
       const riskLevel = AutoModRiskEngine.getRiskLevel(avgRisk);
 
       const embed = new EmbedBuilder()
-        .setTitle(`🤖 AutoMod 2.0 — ${ctx.guild.name}`)
+        .setTitle(formatString(t.automod_status_title, { guildName: ctx.guild.name }))
         .setColor(config.enabled ? 0x10b981 : 0x6b7280)
         .addFields(
           {
-            name: '🛡️ Protection',
-            value: config.enabled ? '🟢 **ACTIVE**' : '⚪ Désactivée',
+            name: t.automod_status_field_protection,
+            value: config.enabled ? t.automod_status_active : t.automod_status_inactive,
             inline: true,
           },
           {
-            name: '🧠 Smart Mode',
-            value: config.smartMode ? '✨ **Activé**' : '⚪ Standard',
+            name: t.automod_status_field_smartmode,
+            value: config.smartMode ? t.automod_smartmode_on : t.automod_smartmode_standard,
             inline: true,
           },
           {
-            name: '📊 Niveau de Risque',
+            name: t.automod_status_field_risk,
             value: `\`${riskLevel}\` (~${avgRisk}/100)`,
             inline: true,
           },
           {
-            name: '📋 Règles Personnalisées',
-            value: `**${rules.length}** règle(s)`,
+            name: t.automod_status_field_rules,
+            value: formatString(t.automod_status_rules_value, { count: rules.length }),
             inline: true,
           },
           {
-            name: '⚡ Détecteurs',
+            name: t.automod_status_field_detectors,
             value: [
-              ['💬 Anti-Spam', config.spam.enabled],
-              ['🌊 Anti-Flood', config.flood.enabled],
-              ['🔗 Liens', config.links.enabled],
-              ["✉️ Invitations", config.invites.enabled],
-              ['📢 Mentions', config.mentions.enabled],
-              ['👻 Ghost Ping', config.ghostPing.enabled],
-              ['🔠 CAPS', config.caps.enabled],
-              ['🚫 Mots Interdits', config.keywords.enabled],
-              ['🧩 Regex', config.regex.enabled],
-              ['👤 Profils', config.profiles.enabled],
+              [t.automod_detector_spam, config.spam.enabled],
+              [t.automod_detector_flood, config.flood.enabled],
+              [t.automod_detector_links, config.links.enabled],
+              [t.automod_detector_invites, config.invites.enabled],
+              [t.automod_detector_mentions, config.mentions.enabled],
+              [t.automod_detector_ghostping, config.ghostPing.enabled],
+              [t.automod_detector_caps, config.caps.enabled],
+              [t.automod_detector_keywords, config.keywords.enabled],
+              [t.automod_detector_regex, config.regex.enabled],
+              [t.automod_detector_profiles, config.profiles.enabled],
             ]
               .map(([name, on]) => `${on ? '🟢' : '⚪'} ${name}`)
               .join('\n'),
             inline: true,
           },
           {
-            name: '⚠️ Échelle de Strikes',
-            value: `${config.strikes.progressiveSteps.length} paliers configurés`,
+            name: t.automod_status_field_strikes,
+            value: formatString(t.automod_status_strikes_value, { count: config.strikes.progressiveSteps.length }),
             inline: true,
           }
         )
-        .setFooter({ text: 'ETHONE Smart Moderation • Dashboard disponible sur /discord/moderation/automod' })
+        .setFooter({ text: t.automod_status_footer })
         .setTimestamp();
 
       await ctx.reply({ embeds: [embed] });
@@ -159,7 +162,7 @@ export const automodCommand: Command = {
       }
 
       if (!testMsg) {
-        await ctx.reply({ embeds: [ctx.createEmbed('error').setDescription('Veuillez préciser le message de test.')], ephemeral: true });
+        await ctx.reply({ embeds: [ctx.createEmbed('error').setDescription(t.automod_test_missing_message)], ephemeral: true });
         return;
       }
 
@@ -171,41 +174,41 @@ export const automodCommand: Command = {
       });
 
       const embed = new EmbedBuilder()
-        .setTitle('🧪 AutoMod Sandbox — Test de Règle')
+        .setTitle(t.automod_test_title)
         .setColor(result.totalRiskScore > 40 ? 0xef4444 : 0x10b981)
         .addFields(
           {
-            name: '📝 Message Testé',
+            name: t.automod_test_field_message,
             value: `\`\`\`${testMsg.slice(0, 300)}\`\`\``,
             inline: false,
           },
           {
-            name: '📊 Risk Score Simulé',
-            value: `**${result.totalRiskScore}/100** (\`${result.riskLevel}\`)`,
+            name: t.automod_test_field_score,
+            value: formatString(t.automod_test_score_value, { score: result.totalRiskScore, level: result.riskLevel }),
             inline: true,
           },
           {
-            name: '⚡ Actions Simulées',
-            value: result.actionsToExecute.length > 0 ? result.actionsToExecute.map((a) => `\`${a}\``).join(', ') : 'Aucune action',
+            name: t.automod_test_field_actions,
+            value: result.actionsToExecute.length > 0 ? result.actionsToExecute.map((a) => `\`${a}\``).join(', ') : t.automod_test_no_action,
             inline: true,
           },
           {
-            name: '⚠️ Strikes Ajoutés',
+            name: t.automod_test_field_strikes_added,
             value: `+${result.wouldAddStrikes}`,
             inline: true,
           },
           {
-            name: '🔍 Détecteurs Déclenchés',
-            value: result.matchedDetectors.length > 0 ? result.matchedDetectors.join(', ') : 'Aucun',
+            name: t.automod_test_field_detectors_triggered,
+            value: result.matchedDetectors.length > 0 ? result.matchedDetectors.join(', ') : t.automod_test_detectors_none,
             inline: true,
           },
           {
-            name: '📋 Règles Personnalisées',
-            value: result.matchedCustomRules.length > 0 ? result.matchedCustomRules.join(', ') : 'Aucune',
+            name: t.automod_status_field_rules,
+            value: result.matchedCustomRules.length > 0 ? result.matchedCustomRules.join(', ') : t.automod_test_rules_none,
             inline: true,
           }
         )
-        .setFooter({ text: 'Simulation bac à sable : Aucune sanction n’a été appliquée' })
+        .setFooter({ text: t.automod_test_footer })
         .setTimestamp();
 
       await ctx.reply({ embeds: [embed] });
@@ -224,11 +227,7 @@ export const automodCommand: Command = {
 
       autoModRepository.updateConfig(guildId, { smartMode: active });
       await ctx.reply({
-        embeds: [ctx.createEmbed('success').setDescription(`🧠 **Smart Mode ${active ? 'ACTIVÉ' : 'DÉSACTIVÉ'} !** ${
-          active
-            ? 'Les seuils s’ajusteront automatiquement en cas d’attaque et selon le flux d’événements.'
-            : 'Seuils statiques normaux appliqués.'
-        }`)],
+        embeds: [ctx.createEmbed('success').setDescription(active ? t.automod_smartmode_toggle_on : t.automod_smartmode_toggle_off)],
       });
       return;
     }
@@ -247,24 +246,24 @@ export const automodCommand: Command = {
       }
 
       const moduleLabels: Record<string, string> = {
-        all: 'AutoMod (moteur entier)',
-        spam: 'Anti-Spam',
-        flood: 'Anti-Flood',
-        links: 'Filtre de Liens',
-        invites: "Filtre d'Invitations",
-        mentions: 'Anti-Mention Spam',
-        ghostPing: 'Anti-Ghost Ping',
-        caps: 'Anti-CAPS LOCK',
-        keywords: 'Mots Interdits',
-        regex: 'Règles Regex',
-        profiles: 'Filtre de Profils',
-        strikes: 'Strikes & Sanctions Progressives',
+        all: t.automod_toggle_label_all,
+        spam: t.automod_toggle_label_spam,
+        flood: t.automod_toggle_label_flood,
+        links: t.automod_toggle_label_links,
+        invites: t.automod_toggle_label_invites,
+        mentions: t.automod_toggle_label_mentions,
+        ghostPing: t.automod_toggle_label_ghostping,
+        caps: t.automod_toggle_label_caps,
+        keywords: t.automod_toggle_label_keywords,
+        regex: t.automod_toggle_label_regex,
+        profiles: t.automod_toggle_label_profiles,
+        strikes: t.automod_toggle_label_strikes,
       };
 
       const label = moduleLabels[moduleKey];
       if (!label) {
         await ctx.reply({
-          embeds: [ctx.createEmbed('error').setDescription(`❌ Module inconnu : \`${moduleKey}\`.`)],
+          embeds: [ctx.createEmbed('error').setDescription(formatString(t.automod_toggle_unknown_module, { module: moduleKey }))],
           ephemeral: true,
         });
         return;
@@ -287,10 +286,11 @@ export const automodCommand: Command = {
       await ctx.reply({
         embeds: [
           ctx.createEmbed('success').setDescription(
-            `${active ? '🟢' : '⚪'} **${label}** ${active ? 'activé' : 'désactivé'}.` +
-              (moduleKey !== 'all' && !config.enabled
-                ? '\n⚠️ Note : le moteur AutoMod global est actuellement désactivé (`/automod toggle module:all activer:True` pour le réactiver) — ce réglage ne prendra effet qu\'une fois AutoMod réactivé.'
-                : '')
+            formatString(t.automod_toggle_success, {
+              emoji: active ? '🟢' : '⚪',
+              label,
+              state: active ? t.automod_toggle_state_on : t.automod_toggle_state_off,
+            }) + (moduleKey !== 'all' && !config.enabled ? t.automod_toggle_disabled_note : '')
           ),
         ],
       });
@@ -298,7 +298,7 @@ export const automodCommand: Command = {
     }
 
     await ctx.reply({
-      embeds: [ctx.createEmbed('info').setDescription('Usage : `/automod status`, `/automod test <message>`, `/automod smartmode <activer>`, `/automod toggle <module> <activer>`')],
+      embeds: [ctx.createEmbed('info').setDescription(t.automod_usage_fallback)],
       ephemeral: true,
     });
   },

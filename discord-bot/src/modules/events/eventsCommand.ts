@@ -10,6 +10,7 @@ import { EventRSVPService } from './eventsRsvpService.js';
 import { EventsCheckinService } from './eventsCheckinService.js';
 import { buildEventDiscordPanel } from './eventsUiPanel.js';
 import { RSVPStatus } from './eventsTypes.js';
+import { formatString, getTranslation } from '../../utils/i18n.js';
 
 export const eventCommand: Command = {
   name: 'event',
@@ -88,8 +89,10 @@ export const eventCommand: Command = {
     ),
 
   async execute(ctx: CommandContext): Promise<void> {
+    const t = getTranslation(ctx.guildConfig.language);
+
     if (!ctx.guild) {
-      await ctx.reply({ embeds: [ctx.createEmbed('error').setDescription('❌ Cette commande ne peut être utilisée que sur un serveur Discord.')], ephemeral: true });
+      await ctx.reply({ embeds: [ctx.createEmbed('error').setDescription(t.guild_only_command)], ephemeral: true });
       return;
     }
 
@@ -109,27 +112,27 @@ export const eventCommand: Command = {
 
       if (upcoming.length === 0) {
         const embed = ctx.createEmbed('info')
-          .setTitle('🗓️ Aucun événement prévu')
-          .setDescription('Il n’y a aucun événement planifié pour le moment.\nUtilisez le dashboard ETHONE pour en programmer un !');
+          .setTitle(t.events_list_empty_title)
+          .setDescription(t.events_list_empty_desc);
         await ctx.reply({ embeds: [embed] });
         return;
       }
 
       const embed = ctx.createEmbed('default')
-        .setTitle(`🗓️ Événements à venir • ${ctx.guild.name}`)
-        .setDescription(`Voici les **${upcoming.length}** prochains événements :`);
+        .setTitle(formatString(t.events_list_title, { guildName: ctx.guild.name }))
+        .setDescription(formatString(t.events_list_desc, { count: upcoming.length }));
 
       for (const ev of upcoming.slice(0, 5)) {
         const startUnix = Math.floor(new Date(ev.startDate).getTime() / 1000);
         const capStr = !ev.capacity.unlimited && ev.capacity.maxParticipants > 0
           ? `${ev.stats.goingCount}/${ev.capacity.maxParticipants}`
-          : `${ev.stats.goingCount} participants`;
+          : formatString(t.events_participants_suffix, { count: ev.stats.goingCount });
 
         const locationStr = ev.location.channelName ? `🔊 ${ev.location.channelName}` : ev.location.type;
 
         embed.addFields({
           name: `${ev.emoji || '📅'} ${ev.title} (\`${ev.id}\`)`,
-          value: `📅 <t:${startUnix}:F> (<t:${startUnix}:R>)\n👥 **${capStr}** • 📍 ${locationStr}\nStatut : \`${ev.status}\``,
+          value: formatString(t.events_list_field_value, { start: startUnix, capStr, locationStr, status: ev.status }),
           inline: false,
         });
       }
@@ -142,17 +145,17 @@ export const eventCommand: Command = {
     if (subcommand === 'info') {
       const eventId = ctx.getString('event_id', 1);
       if (!eventId) {
-        await ctx.reply({ embeds: [ctx.createEmbed('error').setDescription('❌ Veuillez fournir un identifiant d’événement valide.')], ephemeral: true });
+        await ctx.reply({ embeds: [ctx.createEmbed('error').setDescription(t.events_missing_id)], ephemeral: true });
         return;
       }
 
       const event = eventRepository.getEventById(guildId, eventId);
       if (!event) {
-        await ctx.reply({ embeds: [ctx.createEmbed('error').setDescription(`❌ Événement avec l’identifiant \`${eventId}\` introuvable.`)], ephemeral: true });
+        await ctx.reply({ embeds: [ctx.createEmbed('error').setDescription(formatString(t.events_not_found, { id: eventId }))], ephemeral: true });
         return;
       }
 
-      const panel = buildEventDiscordPanel(event);
+      const panel = buildEventDiscordPanel(event, ctx.guildConfig.language);
       await ctx.reply(panel);
       return;
     }
@@ -163,7 +166,7 @@ export const eventCommand: Command = {
       let statusStr = (ctx.getString('status', 2) || '').toUpperCase() as RSVPStatus;
 
       if (!eventId || !statusStr) {
-        await ctx.reply({ embeds: [ctx.createEmbed('error').setDescription('❌ Utilisation : `/event rsvp event_id:<id> status:<GOING|MAYBE|NOT_GOING>`')], ephemeral: true });
+        await ctx.reply({ embeds: [ctx.createEmbed('error').setDescription(t.events_rsvp_usage)], ephemeral: true });
         return;
       }
 
@@ -180,13 +183,13 @@ export const eventCommand: Command = {
       );
 
       if (!res.success) {
-        await ctx.reply({ embeds: [ctx.createEmbed('error').setDescription(`❌ ${res.error || 'Erreur lors du RSVP.'}`)], ephemeral: true });
+        await ctx.reply({ embeds: [ctx.createEmbed('error').setDescription(formatString(t.events_generic_error_prefix, { error: res.error || t.events_rsvp_error_fallback }))], ephemeral: true });
         return;
       }
 
       const embed = ctx.createEmbed('success')
-        .setTitle('✅ Inscription mise à jour !')
-        .setDescription(`Votre statut pour l'événement **${eventId}** est maintenant : **${res.status}**.\n${res.message}`);
+        .setTitle(t.events_rsvp_success_title)
+        .setDescription(formatString(t.events_rsvp_success_desc, { eventId, status: res.status || '', message: res.message || '' }));
 
       await ctx.reply({ embeds: [embed], ephemeral: true });
       return;
@@ -196,7 +199,7 @@ export const eventCommand: Command = {
     if (subcommand === 'checkin') {
       const eventId = ctx.getString('event_id', 1);
       if (!eventId) {
-        await ctx.reply({ embeds: [ctx.createEmbed('error').setDescription('❌ Utilisation : `/event checkin event_id:<id>`')], ephemeral: true });
+        await ctx.reply({ embeds: [ctx.createEmbed('error').setDescription(t.events_checkin_usage)], ephemeral: true });
         return;
       }
 
@@ -211,13 +214,13 @@ export const eventCommand: Command = {
       });
 
       if (!res.success) {
-        await ctx.reply({ embeds: [ctx.createEmbed('error').setDescription(`❌ ${res.message}`)], ephemeral: true });
+        await ctx.reply({ embeds: [ctx.createEmbed('error').setDescription(formatString(t.events_generic_error_prefix, { error: res.message }))], ephemeral: true });
         return;
       }
 
       const embed = ctx.createEmbed('success')
-        .setTitle('🎟️ Présence validée !')
-        .setDescription(`Votre présence à l'événement a bien été confirmée.\nMerci de participer !`);
+        .setTitle(t.events_checkin_success_title)
+        .setDescription(t.events_checkin_success_desc);
 
       await ctx.reply({ embeds: [embed], ephemeral: true });
       return;
@@ -226,19 +229,19 @@ export const eventCommand: Command = {
     // 5. SUBCOMMAND: POST
     if (subcommand === 'post') {
       if (ctx.member && !ctx.member.permissions.has(PermissionsBitField.Flags.ManageEvents) && !ctx.member.permissions.has(PermissionsBitField.Flags.Administrator)) {
-        await ctx.reply({ embeds: [ctx.createEmbed('error').setDescription('❌ Vous devez avoir la permission `Gérer les événements` pour publier ce panneau.')], ephemeral: true });
+        await ctx.reply({ embeds: [ctx.createEmbed('error').setDescription(t.events_post_permission_denied)], ephemeral: true });
         return;
       }
 
       const eventId = ctx.getString('event_id', 1);
       if (!eventId) {
-        await ctx.reply({ embeds: [ctx.createEmbed('error').setDescription('❌ Veuillez fournir un ID d’événement.')], ephemeral: true });
+        await ctx.reply({ embeds: [ctx.createEmbed('error').setDescription(t.events_missing_id)], ephemeral: true });
         return;
       }
 
       const event = eventRepository.getEventById(guildId, eventId);
       if (!event) {
-        await ctx.reply({ embeds: [ctx.createEmbed('error').setDescription(`❌ Événement \`${eventId}\` introuvable.`)], ephemeral: true });
+        await ctx.reply({ embeds: [ctx.createEmbed('error').setDescription(formatString(t.events_not_found, { id: eventId }))], ephemeral: true });
         return;
       }
 
@@ -251,7 +254,7 @@ export const eventCommand: Command = {
       }
 
       if (!targetChannel || !('send' in targetChannel)) {
-        await ctx.reply({ embeds: [ctx.createEmbed('error').setDescription('❌ Salon textuel introuvable.')], ephemeral: true });
+        await ctx.reply({ embeds: [ctx.createEmbed('error').setDescription(t.events_channel_not_found)], ephemeral: true });
         return;
       }
 
@@ -259,17 +262,17 @@ export const eventCommand: Command = {
       // dépasser la fenêtre de 3s de Discord ("Unknown interaction" / 10062) si on ne le fait pas.
       await ctx.deferReply({ ephemeral: true });
 
-      const panel = buildEventDiscordPanel(event);
+      const panel = buildEventDiscordPanel(event, ctx.guildConfig.language);
       const sentMsg = await (targetChannel as TextChannel).send(panel);
 
       event.discordPanelChannelId = targetChannel.id;
       event.discordPanelMessageId = sentMsg.id;
       eventRepository.saveEvent(event);
 
-      await ctx.reply({ embeds: [ctx.createEmbed('success').setDescription(`✅ Panneau de l'événement publié dans <#${targetChannel.id}> !`)], ephemeral: true });
+      await ctx.reply({ embeds: [ctx.createEmbed('success').setDescription(formatString(t.events_post_success, { channelId: targetChannel.id }))], ephemeral: true });
       return;
     }
 
-    await ctx.reply({ embeds: [ctx.createEmbed('error').setDescription('❌ Sous-commande inconnue. Utilisez `/event list` ou `/event info`.')], ephemeral: true });
+    await ctx.reply({ embeds: [ctx.createEmbed('error').setDescription(t.events_unknown_subcommand)], ephemeral: true });
   },
 };

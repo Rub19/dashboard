@@ -5,6 +5,8 @@ import { EventsCheckinService } from './eventsCheckinService.js';
 import { buildEventDiscordPanel } from './eventsUiPanel.js';
 import { RSVPStatus } from './eventsTypes.js';
 import { baseEmbed } from '../../utils/embeds.js';
+import { guildConfigService } from '../../services/guildConfigService.js';
+import { formatString, getTranslation } from '../../utils/i18n.js';
 
 export async function handleEventButton(interaction: ButtonInteraction): Promise<boolean> {
   const customId = interaction.customId;
@@ -18,6 +20,7 @@ export async function handleEventButton(interaction: ButtonInteraction): Promise
   }
 
   const guildId = interaction.guildId;
+  const t = getTranslation(guildConfigService.getConfig(guildId).language);
 
   // 1. RSVP: event_rsvp:{eventId}:{status}
   if (customId.startsWith('event_rsvp:')) {
@@ -38,19 +41,19 @@ export async function handleEventButton(interaction: ButtonInteraction): Promise
     );
 
     if (!res.success) {
-      await interaction.reply({ embeds: [baseEmbed('error').setDescription(`❌ ${res.error || 'Erreur lors du RSVP.'}`)], ephemeral: true });
+      await interaction.reply({ embeds: [baseEmbed('error').setDescription(formatString(t.events_generic_error_prefix, { error: res.error || t.events_rsvp_error_fallback }))], ephemeral: true });
       return true;
     }
 
     const statusLabels: Record<string, string> = {
-      GOING: '✅ Confirmé (Going)',
-      MAYBE: '🤔 Peut-être (Maybe)',
-      NOT_GOING: '❌ Non participant',
-      WAITLIST: '⏳ En liste d’attente',
+      GOING: t.events_rsvp_status_going,
+      MAYBE: t.events_rsvp_status_maybe,
+      NOT_GOING: t.events_rsvp_status_notgoing,
+      WAITLIST: t.events_rsvp_status_waitlist,
     };
 
     await interaction.reply({
-      embeds: [baseEmbed('success').setDescription(`🎉 ${res.message}\nVotre statut actuel : **${statusLabels[res.status || ''] || res.status}**.`)],
+      embeds: [baseEmbed('success').setDescription(formatString(t.events_rsvp_button_success, { message: res.message || '', statusLabel: statusLabels[res.status || ''] || res.status || '' }))],
       ephemeral: true,
     });
 
@@ -58,7 +61,7 @@ export async function handleEventButton(interaction: ButtonInteraction): Promise
     try {
       const updatedEvent = eventRepository.getEventById(guildId, eventId);
       if (updatedEvent && interaction.message.editable) {
-        const freshPanel = buildEventDiscordPanel(updatedEvent);
+        const freshPanel = buildEventDiscordPanel(updatedEvent, guildConfigService.getConfig(guildId).language);
         await interaction.message.edit({
           embeds: freshPanel.embeds,
           components: freshPanel.components,
@@ -87,12 +90,12 @@ export async function handleEventButton(interaction: ButtonInteraction): Promise
     });
 
     if (!res.success) {
-      await interaction.reply({ embeds: [baseEmbed('error').setDescription(`❌ ${res.message}`)], ephemeral: true });
+      await interaction.reply({ embeds: [baseEmbed('error').setDescription(formatString(t.events_generic_error_prefix, { error: res.message }))], ephemeral: true });
       return true;
     }
 
     await interaction.reply({
-      embeds: [baseEmbed('success').setDescription(`🎟️ **Pointage confirmé !**\n${res.message}`)],
+      embeds: [baseEmbed('success').setDescription(formatString(t.events_checkin_button_success, { message: res.message }))],
       ephemeral: true,
     });
 

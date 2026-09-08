@@ -2,9 +2,12 @@ import { ButtonInteraction } from 'discord.js';
 import { giveawayService } from '../services/giveawayService.js';
 import { giveawayStorage } from '../storage/giveawayStorage.js';
 import { baseEmbed } from '../../../utils/embeds.js';
+import { guildConfigService } from '../../../services/guildConfigService.js';
+import { getTranslation } from '../../../utils/i18n.js';
 
 export async function handleGiveawayButton(interaction: ButtonInteraction): Promise<void> {
   const customId = interaction.customId;
+  const t = getTranslation(interaction.guildId ? guildConfigService.getConfig(interaction.guildId).language : 'fr');
 
   if (customId.startsWith('giveaway_enter:')) {
     const giveawayId = customId.split(':')[1];
@@ -15,7 +18,7 @@ export async function handleGiveawayButton(interaction: ButtonInteraction): Prom
 
     if (!giveaway || giveaway.status !== 'ended') {
       await interaction.reply({
-        embeds: [baseEmbed('error').setDescription('❌ Ce tirage au sort n’est pas éligible à une réclamation.')],
+        embeds: [baseEmbed('error').setDescription(t.giveaway_claim_not_eligible)],
         ephemeral: true,
       });
       return;
@@ -23,7 +26,7 @@ export async function handleGiveawayButton(interaction: ButtonInteraction): Prom
 
     if (!giveaway.winnerIds.includes(interaction.user.id)) {
       await interaction.reply({
-        embeds: [baseEmbed('error').setDescription('⛔ Vous ne faites pas partie des gagnants sélectionnés pour ce lot.')],
+        embeds: [baseEmbed('error').setDescription(t.giveaway_claim_not_winner)],
         ephemeral: true,
       });
       return;
@@ -31,7 +34,7 @@ export async function handleGiveawayButton(interaction: ButtonInteraction): Prom
 
     if (giveaway.claimedWinnerIds.includes(interaction.user.id)) {
       await interaction.reply({
-        embeds: [baseEmbed('info').setDescription('✅ Vous avez déjà confirmé la réclamation de votre récompense.')],
+        embeds: [baseEmbed('info').setDescription(t.giveaway_claim_already_done)],
         ephemeral: true,
       });
       return;
@@ -41,7 +44,7 @@ export async function handleGiveawayButton(interaction: ButtonInteraction): Prom
     giveawayStorage.update(giveaway.id, { claimedWinnerIds: giveaway.claimedWinnerIds });
 
     await interaction.reply({
-      embeds: [baseEmbed('success').setDescription('🎉 **Réclamation confirmée !** Les organisateurs ont été notifiés de votre confirmation.')],
+      embeds: [baseEmbed('success').setDescription(t.giveaway_claim_success)],
       ephemeral: true,
     });
   }

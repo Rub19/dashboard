@@ -326,6 +326,254 @@ export interface TranslationDictionary {
   form_submit_error: string;
   form_submitted_title: string;
   form_submitted_desc: string;
+
+  // Automod
+  automod_status_title: string;
+  automod_status_field_protection: string;
+  automod_status_active: string;
+  automod_status_inactive: string;
+  automod_status_field_smartmode: string;
+  automod_smartmode_on: string;
+  automod_smartmode_standard: string;
+  automod_status_field_risk: string;
+  automod_status_field_rules: string;
+  automod_status_rules_value: string;
+  automod_status_field_detectors: string;
+  automod_detector_spam: string;
+  automod_detector_flood: string;
+  automod_detector_links: string;
+  automod_detector_invites: string;
+  automod_detector_mentions: string;
+  automod_detector_ghostping: string;
+  automod_detector_caps: string;
+  automod_detector_keywords: string;
+  automod_detector_regex: string;
+  automod_detector_profiles: string;
+  automod_status_field_strikes: string;
+  automod_status_strikes_value: string;
+  automod_status_footer: string;
+  automod_test_missing_message: string;
+  automod_test_title: string;
+  automod_test_field_message: string;
+  automod_test_field_score: string;
+  automod_test_score_value: string;
+  automod_test_field_actions: string;
+  automod_test_no_action: string;
+  automod_test_field_strikes_added: string;
+  automod_test_field_detectors_triggered: string;
+  automod_test_detectors_none: string;
+  automod_test_rules_none: string;
+  automod_test_footer: string;
+  automod_smartmode_toggle_on: string;
+  automod_smartmode_toggle_off: string;
+  automod_toggle_label_all: string;
+  automod_toggle_label_spam: string;
+  automod_toggle_label_flood: string;
+  automod_toggle_label_links: string;
+  automod_toggle_label_invites: string;
+  automod_toggle_label_mentions: string;
+  automod_toggle_label_ghostping: string;
+  automod_toggle_label_caps: string;
+  automod_toggle_label_keywords: string;
+  automod_toggle_label_regex: string;
+  automod_toggle_label_profiles: string;
+  automod_toggle_label_strikes: string;
+  automod_toggle_unknown_module: string;
+  automod_toggle_state_on: string;
+  automod_toggle_state_off: string;
+  automod_toggle_success: string;
+  automod_toggle_disabled_note: string;
+  automod_usage_fallback: string;
+
+  // Events
+  events_list_empty_title: string;
+  events_list_empty_desc: string;
+  events_list_title: string;
+  events_list_desc: string;
+  events_list_field_value: string;
+  events_participants_suffix: string;
+  events_missing_id: string;
+  events_not_found: string;
+  events_rsvp_usage: string;
+  events_generic_error_prefix: string;
+  events_rsvp_error_fallback: string;
+  events_rsvp_success_title: string;
+  events_rsvp_success_desc: string;
+  events_checkin_usage: string;
+  events_checkin_success_title: string;
+  events_checkin_success_desc: string;
+  events_post_permission_denied: string;
+  events_channel_not_found: string;
+  events_post_success: string;
+  events_unknown_subcommand: string;
+  events_rsvp_status_going: string;
+  events_rsvp_status_maybe: string;
+  events_rsvp_status_notgoing: string;
+  events_rsvp_status_waitlist: string;
+  events_rsvp_button_success: string;
+  events_checkin_button_success: string;
+  events_status_scheduled: string;
+  events_status_live: string;
+  events_status_completed: string;
+  events_status_cancelled: string;
+  events_location_unspecified: string;
+  events_location_voice_default: string;
+  events_location_stage_default: string;
+  events_location_text_default: string;
+  events_location_external_default: string;
+  events_capacity_full_suffix: string;
+  events_panel_field_datetime: string;
+  events_panel_field_location: string;
+  events_panel_field_status: string;
+  events_panel_datetime_value: string;
+  events_panel_status_value: string;
+  events_panel_waitlist_line: string;
+  events_panel_footer: string;
+  events_panel_no_description: string;
+  events_btn_waitlist_label: string;
+  events_btn_going_label: string;
+  events_btn_maybe_label: string;
+  events_btn_not_going_label: string;
+  events_btn_checkin_label: string;
+  events_btn_details_label: string;
+
+  // Giveaways
+  giveaway_slash_only: string;
+  giveaway_invalid_channel: string;
+  giveaway_start_success: string;
+  giveaway_not_found: string;
+  giveaway_end_success: string;
+  giveaway_no_eligible_participant: string;
+  giveaway_reroll_success: string;
+  giveaway_no_other_participant: string;
+  giveaway_cancel_success: string;
+  giveaway_list_empty: string;
+  giveaway_list_title: string;
+  giveaway_list_item: string;
+  giveaway_list_footer: string;
+  giveaway_claim_not_eligible: string;
+  giveaway_claim_not_winner: string;
+  giveaway_claim_already_done: string;
+  giveaway_claim_success: string;
+  giveaway_default_description: string;
+  giveaway_embed_ended_title: string;
+  giveaway_embed_ended_desc: string;
+  giveaway_embed_cancelled_title: string;
+  giveaway_embed_cancelled_desc: string;
+  giveaway_embed_active_title: string;
+  giveaway_embed_active_desc: string;
+  giveaway_req_roles_required: string;
+  giveaway_req_roles_excluded: string;
+  giveaway_req_min_age: string;
+  giveaway_req_min_level: string;
+  giveaway_req_prefix: string;
+  giveaway_btn_enter: string;
+  giveaway_btn_claim: string;
+  giveaway_elig_excluded_role: string;
+  giveaway_elig_missing_all_roles: string;
+  giveaway_elig_missing_any_role: string;
+  giveaway_elig_min_age: string;
+  giveaway_elig_min_level: string;
+  giveaway_not_active: string;
+  giveaway_left: string;
+  giveaway_participation_denied: string;
+  giveaway_join_success: string;
+  giveaway_announce_winners: string;
+  giveaway_announce_no_winner: string;
+  giveaway_dm_winner: string;
+
+  // Suggestions
+  suggest_slash_only: string;
+  suggest_module_disabled: string;
+  suggest_no_channel_configured: string;
+  suggest_published_success: string;
+  suggest_generic_error: string;
+  suggest_modal_title: string;
+  suggest_modal_title_label: string;
+  suggest_modal_title_placeholder: string;
+  suggest_modal_desc_label: string;
+  suggest_modal_desc_placeholder: string;
+  suggest_modal_category_label: string;
+  suggest_modal_category_placeholder: string;
+  suggest_not_found: string;
+  suggest_upvote_removed: string;
+  suggest_upvote_added: string;
+  suggest_downvote_removed: string;
+  suggest_downvote_added: string;
+  suggest_follow_on: string;
+  suggest_follow_off: string;
+  suggest_comment_modal_title: string;
+  suggest_comment_input_label: string;
+  suggest_comment_input_placeholder: string;
+  suggest_comment_added: string;
+  suggest_submitted_success: string;
+  suggest_default_category: string;
+  suggest_status_pending: string;
+  suggest_status_under_review: string;
+  suggest_status_planned: string;
+  suggest_status_accepted: string;
+  suggest_status_in_progress: string;
+  suggest_status_completed: string;
+  suggest_status_rejected: string;
+  suggest_status_duplicate: string;
+  suggest_status_on_hold: string;
+  suggest_embed_author: string;
+  suggest_field_status: string;
+  suggest_field_category: string;
+  suggest_field_score: string;
+  suggest_score_value: string;
+  suggest_staff_response_field: string;
+  suggest_default_moderator: string;
+  suggest_duplicate_field_value: string;
+  suggest_embed_footer: string;
+  suggest_btn_comment: string;
+  suggest_btn_follow: string;
+  suggest_no_channel_error: string;
+  suggest_thread_name: string;
+  suggest_dm_update: string;
+  suggest_dm_response_line: string;
+
+  // Leveling
+  leveling_module_disabled: string;
+  leveling_rank_author: string;
+  leveling_field_rank: string;
+  leveling_field_level: string;
+  leveling_field_messages: string;
+  leveling_field_progress: string;
+  leveling_progress_value: string;
+  leveling_rank_footer: string;
+  leveling_leaderboard_empty: string;
+  leveling_leaderboard_title: string;
+  leveling_leaderboard_line: string;
+  leveling_leaderboard_footer: string;
+  leveling_xp_add_success: string;
+  leveling_xp_remove_success: string;
+  leveling_xp_set_success: string;
+  leveling_xp_reset_success: string;
+
+  // Anti-Raid
+  antiraid_status_title: string;
+  antiraid_field_risk_score: string;
+  antiraid_field_raidmode: string;
+  antiraid_raidmode_active: string;
+  antiraid_raidmode_normal: string;
+  antiraid_field_lockdown: string;
+  antiraid_lockdown_active: string;
+  antiraid_lockdown_inactive: string;
+  antiraid_field_joins: string;
+  antiraid_joins_value: string;
+  antiraid_field_messages: string;
+  antiraid_messages_value: string;
+  antiraid_field_mentions: string;
+  antiraid_mentions_value: string;
+  antiraid_status_footer: string;
+  antiraid_raidmode_reason: string;
+  antiraid_lockdown_reason: string;
+  antiraid_raidmode_on_success: string;
+  antiraid_raidmode_off_success: string;
+  antiraid_lockdown_on_success: string;
+  antiraid_lockdown_off_success: string;
+  antiraid_usage_fallback: string;
 }
 
 const translations: Record<SupportedLanguage, TranslationDictionary> = {
@@ -648,6 +896,248 @@ const translations: Record<SupportedLanguage, TranslationDictionary> = {
     form_submit_error: '❌ **Erreur de soumission :** {error}',
     form_submitted_title: '✅ Candidature envoyée avec succès',
     form_submitted_desc: 'Votre réponse pour **{title}** a bien été enregistrée.\n\n🆔 **Numéro de suivi :** `#{id}`\n📊 **Statut initial :** En attente d\'examen par le staff\n\n*Vous recevrez une notification privée dès qu\'une décision sera prise.*',
+
+    automod_status_title: '🤖 AutoMod 2.0 — {guildName}',
+    automod_status_field_protection: '🛡️ Protection',
+    automod_status_active: '🟢 **ACTIVE**',
+    automod_status_inactive: '⚪ Désactivée',
+    automod_status_field_smartmode: '🧠 Smart Mode',
+    automod_smartmode_on: '✨ **Activé**',
+    automod_smartmode_standard: '⚪ Standard',
+    automod_status_field_risk: '📊 Niveau de Risque',
+    automod_status_field_rules: '📋 Règles Personnalisées',
+    automod_status_rules_value: '**{count}** règle(s)',
+    automod_status_field_detectors: '⚡ Détecteurs',
+    automod_detector_spam: '💬 Anti-Spam',
+    automod_detector_flood: '🌊 Anti-Flood',
+    automod_detector_links: '🔗 Liens',
+    automod_detector_invites: '✉️ Invitations',
+    automod_detector_mentions: '📢 Mentions',
+    automod_detector_ghostping: '👻 Ghost Ping',
+    automod_detector_caps: '🔠 CAPS',
+    automod_detector_keywords: '🚫 Mots Interdits',
+    automod_detector_regex: '🧩 Regex',
+    automod_detector_profiles: '👤 Profils',
+    automod_status_field_strikes: '⚠️ Échelle de Strikes',
+    automod_status_strikes_value: '{count} paliers configurés',
+    automod_status_footer: 'ETHONE Smart Moderation • Dashboard disponible sur /discord/moderation/automod',
+    automod_test_missing_message: '❌ Veuillez préciser le message de test.',
+    automod_test_title: '🧪 AutoMod Sandbox — Test de Règle',
+    automod_test_field_message: '📝 Message Testé',
+    automod_test_field_score: '📊 Risk Score Simulé',
+    automod_test_score_value: '**{score}/100** (`{level}`)',
+    automod_test_field_actions: '⚡ Actions Simulées',
+    automod_test_no_action: 'Aucune action',
+    automod_test_field_strikes_added: '⚠️ Strikes Ajoutés',
+    automod_test_field_detectors_triggered: '🔍 Détecteurs Déclenchés',
+    automod_test_detectors_none: 'Aucun',
+    automod_test_rules_none: 'Aucune',
+    automod_test_footer: 'Simulation bac à sable : Aucune sanction n\'a été appliquée',
+    automod_smartmode_toggle_on: '🧠 **Smart Mode ACTIVÉ !** Les seuils s\'ajusteront automatiquement en cas d\'attaque et selon le flux d\'événements.',
+    automod_smartmode_toggle_off: '🧠 **Smart Mode DÉSACTIVÉ !** Seuils statiques normaux appliqués.',
+    automod_toggle_label_all: 'AutoMod (moteur entier)',
+    automod_toggle_label_spam: 'Anti-Spam',
+    automod_toggle_label_flood: 'Anti-Flood',
+    automod_toggle_label_links: 'Filtre de Liens',
+    automod_toggle_label_invites: 'Filtre d\'Invitations',
+    automod_toggle_label_mentions: 'Anti-Mention Spam',
+    automod_toggle_label_ghostping: 'Anti-Ghost Ping',
+    automod_toggle_label_caps: 'Anti-CAPS LOCK',
+    automod_toggle_label_keywords: 'Mots Interdits',
+    automod_toggle_label_regex: 'Règles Regex',
+    automod_toggle_label_profiles: 'Filtre de Profils',
+    automod_toggle_label_strikes: 'Strikes & Sanctions Progressives',
+    automod_toggle_unknown_module: '❌ Module inconnu : `{module}`.',
+    automod_toggle_state_on: 'activé',
+    automod_toggle_state_off: 'désactivé',
+    automod_toggle_success: '{emoji} **{label}** {state}.',
+    automod_toggle_disabled_note: '\n⚠️ Note : le moteur AutoMod global est actuellement désactivé (`/automod toggle module:all activer:True` pour le réactiver) — ce réglage ne prendra effet qu\'une fois AutoMod réactivé.',
+    automod_usage_fallback: 'Usage : `/automod status`, `/automod test <message>`, `/automod smartmode <activer>`, `/automod toggle <module> <activer>`',
+
+    events_list_empty_title: '🗓️ Aucun événement prévu',
+    events_list_empty_desc: 'Il n\'y a aucun événement planifié pour le moment.\nUtilisez le dashboard ETHONE pour en programmer un !',
+    events_list_title: '🗓️ Événements à venir • {guildName}',
+    events_list_desc: 'Voici les **{count}** prochains événements :',
+    events_list_field_value: '📅 <t:{start}:F> (<t:{start}:R>)\n👥 **{capStr}** • 📍 {locationStr}\nStatut : `{status}`',
+    events_participants_suffix: '{count} participant(s)',
+    events_missing_id: '❌ Veuillez fournir un identifiant d\'événement valide.',
+    events_not_found: '❌ Événement `{id}` introuvable.',
+    events_rsvp_usage: '❌ Utilisation : `/event rsvp event_id:<id> status:<GOING|MAYBE|NOT_GOING>`',
+    events_generic_error_prefix: '❌ {error}',
+    events_rsvp_error_fallback: 'Erreur lors du RSVP.',
+    events_rsvp_success_title: '✅ Inscription mise à jour !',
+    events_rsvp_success_desc: 'Votre statut pour l\'événement **{eventId}** est maintenant : **{status}**.\n{message}',
+    events_checkin_usage: '❌ Utilisation : `/event checkin event_id:<id>`',
+    events_checkin_success_title: '🎟️ Présence validée !',
+    events_checkin_success_desc: 'Votre présence à l\'événement a bien été confirmée.\nMerci de participer !',
+    events_post_permission_denied: '❌ Vous devez avoir la permission `Gérer les événements` pour publier ce panneau.',
+    events_channel_not_found: '❌ Salon textuel introuvable.',
+    events_post_success: '✅ Panneau de l\'événement publié dans <#{channelId}> !',
+    events_unknown_subcommand: '❌ Sous-commande inconnue. Utilisez `/event list` ou `/event info`.',
+    events_rsvp_status_going: '✅ Confirmé (Going)',
+    events_rsvp_status_maybe: '🤔 Peut-être (Maybe)',
+    events_rsvp_status_notgoing: '❌ Non participant',
+    events_rsvp_status_waitlist: '⏳ En liste d\'attente',
+    events_rsvp_button_success: '🎉 {message}\nVotre statut actuel : **{statusLabel}**.',
+    events_checkin_button_success: '🎟️ **Pointage confirmé !**\n{message}',
+    events_status_scheduled: '🗓️ Planifié',
+    events_status_live: '🔴 EN DIRECT',
+    events_status_completed: '✅ Terminé',
+    events_status_cancelled: '❌ Annulé',
+    events_location_unspecified: 'Non spécifié',
+    events_location_voice_default: 'Canal Vocal',
+    events_location_stage_default: 'Conférence Scène',
+    events_location_text_default: 'Salon Textuel',
+    events_location_external_default: 'Lien Externe',
+    events_capacity_full_suffix: '🔴 (Complet)',
+    events_panel_field_datetime: '📅 Date & Heure',
+    events_panel_field_location: '📍 Lieu',
+    events_panel_field_status: '👥 Statut & Inscriptions',
+    events_panel_datetime_value: '<t:{start}:F>\n<t:{start}:R>\nFin : <t:{end}:t>',
+    events_panel_status_value: '**Statut :** {statusText}\n**Confirmés :** {capacityStr}\n**Peut-être :** {maybeCount}',
+    events_panel_waitlist_line: '\n**File d\'attente :** {count}',
+    events_panel_footer: 'ETHONE Events 2.0 • ID: {id}',
+    events_panel_no_description: '*Aucune description fournie.*',
+    events_btn_waitlist_label: 'File d\'attente ({count})',
+    events_btn_going_label: 'Participer ({count})',
+    events_btn_maybe_label: 'Peut-être ({count})',
+    events_btn_not_going_label: 'Ne participe pas',
+    events_btn_checkin_label: 'Pointage / Check-in',
+    events_btn_details_label: 'Détails & Calendrier',
+
+    giveaway_slash_only: 'Cette commande doit être exécutée via Slash Command.',
+    giveaway_invalid_channel: '❌ Veuillez spécifier un salon textuel valide.',
+    giveaway_start_success: '✅ Giveaway pour **{prize}** lancé avec succès dans <#{channelId}> ! (ID: `{id}`)',
+    giveaway_not_found: '❌ Giveaway introuvable sur ce serveur.',
+    giveaway_end_success: '🎉 Giveaway terminé avec succès ! Gagnant(s) : {winners}',
+    giveaway_no_eligible_participant: 'Aucun participant éligible.',
+    giveaway_reroll_success: '🎲 Reroll effectué ! Nouveau(x) gagnant(s) : {winners}',
+    giveaway_no_other_participant: 'Aucun autre participant disponible.',
+    giveaway_cancel_success: '❌ Le giveaway a été annulé avec succès.',
+    giveaway_list_empty: 'ℹ️ Aucun giveaway n\'est actuellement actif sur ce serveur.',
+    giveaway_list_title: '🎁 Giveaways Actifs • {guildName}',
+    giveaway_list_item: '• **{prize}** (<#{channelId}>) — `{count}` participants — Fin : <t:{end}:R>\n  ID: `{id}`',
+    giveaway_list_footer: 'Pour terminer un giveaway : /giveaway end <id>',
+    giveaway_claim_not_eligible: '❌ Ce tirage au sort n\'est pas éligible à une réclamation.',
+    giveaway_claim_not_winner: '⛔ Vous ne faites pas partie des gagnants sélectionnés pour ce lot.',
+    giveaway_claim_already_done: '✅ Vous avez déjà confirmé la réclamation de votre récompense.',
+    giveaway_claim_success: '🎉 **Réclamation confirmée !** Les organisateurs ont été notifiés de votre confirmation.',
+    giveaway_default_description: 'Cliquez sur le bouton ci-dessous pour participer au tirage au sort !',
+    giveaway_embed_ended_title: '🎉 GIVEAWAY TERMINÉ : {prize}',
+    giveaway_embed_ended_desc: 'Ce tirage au sort est désormais clôturé.\n\n🏆 **Gagnant(s) :** {winners}\n\n🎁 **Lot remporté :** {prize}\n👥 **Participants au total :** `{count}`\n👤 **Organisé par :** <@{hostId}>',
+    giveaway_embed_cancelled_title: '❌ GIVEAWAY ANNULÉ : {prize}',
+    giveaway_embed_cancelled_desc: 'Ce giveaway a été annulé par un administrateur.',
+    giveaway_embed_active_title: '🎁 GIVEAWAY : {prize}',
+    giveaway_embed_active_desc: '{description}\n\n🏆 **Gagnants :** `{winnerCount}`\n⏰ **Fin :** <t:{endTimestamp}:R> (<t:{endTimestamp}:f>)\n👤 **Organisé par :** <@{hostId}>\n👥 **Participants :** `{participantsCount}`',
+    giveaway_req_roles_required: '\n• Rôle(s) requis : {roles}',
+    giveaway_req_roles_excluded: '\n• Rôle(s) interdit(s) : {roles}',
+    giveaway_req_min_age: '\n• Âge de compte minimum : `{days} jour(s)`',
+    giveaway_req_min_level: '\n• Niveau XP minimum : `Niveau {level}`',
+    giveaway_req_prefix: '\n\n🛡️ **Conditions d\'accès :**',
+    giveaway_btn_enter: '🎉 Participer ({count})',
+    giveaway_btn_claim: '🎁 Réclamer mon lot',
+    giveaway_elig_excluded_role: 'Vous possédez un rôle exclu du tirage au sort.',
+    giveaway_elig_missing_all_roles: 'Vous ne possédez pas tous les rôles obligatoires pour participer.',
+    giveaway_elig_missing_any_role: 'Vous ne possédez aucun des rôles requis pour participer.',
+    giveaway_elig_min_age: 'Votre compte Discord doit avoir au moins {days} jour(s) d\'ancienneté.',
+    giveaway_elig_min_level: 'Vous devez avoir atteint au minimum le **Niveau {level}** (Niveau actuel : {userLevel}).',
+    giveaway_not_active: '❌ Ce giveaway n\'est plus actif.',
+    giveaway_left: '👋 Vous ne participez plus à ce giveaway.',
+    giveaway_participation_denied: '⛔ **Participation refusée :**\n{reason}',
+    giveaway_join_success: '🎉 **Félicitations !** Votre participation au tirage au sort a bien été enregistrée.',
+    giveaway_announce_winners: '🎉 Félicitations {mentions} ! Vous avez remporté le giveaway pour **{prize}** ! 🎁',
+    giveaway_announce_no_winner: '⚠️ Aucun gagnant n\'a pu être sélectionné pour le giveaway **{prize}** (aucun participant éligible).',
+    giveaway_dm_winner: '🎉 **Félicitations !** Vous avez remporté le giveaway **{prize}** sur le serveur **{guildName}** !',
+
+    suggest_slash_only: 'Veuillez utiliser la commande Slash `/suggest` pour proposer une idée.',
+    suggest_module_disabled: '❌ Le système de suggestions est actuellement désactivé sur ce serveur.',
+    suggest_no_channel_configured: '❌ Aucun salon de suggestions n\'a été configuré par les administrateurs.',
+    suggest_published_success: '✅ Votre suggestion **#{numericId}** a bien été publiée dans <#{channelId}> !',
+    suggest_generic_error: '❌ Erreur : {error}',
+    suggest_modal_title: 'Proposer une Suggestion',
+    suggest_modal_title_label: 'Titre de votre idée',
+    suggest_modal_title_placeholder: 'Ex: Ajouter un salon dédié au gaming...',
+    suggest_modal_desc_label: 'Description détaillée',
+    suggest_modal_desc_placeholder: 'Expliquez pourquoi cette idée serait utile et comment elle fonctionnerait...',
+    suggest_modal_category_label: 'Catégorie (optionnel)',
+    suggest_modal_category_placeholder: 'Ex: Général, Serveur, Bot, Événements...',
+    suggest_not_found: '❌ Suggestion introuvable.',
+    suggest_upvote_removed: '↩️ Votre vote positif a été retiré.',
+    suggest_upvote_added: '👍 Votre vote positif a été pris en compte !',
+    suggest_downvote_removed: '↩️ Votre vote négatif a été retiré.',
+    suggest_downvote_added: '👎 Votre vote négatif a été pris en compte !',
+    suggest_follow_on: '🔔 Vous suivez maintenant cette suggestion. Vous recevrez une notification lors de chaque mise à jour !',
+    suggest_follow_off: '🔕 Vous ne suivez plus cette suggestion.',
+    suggest_comment_modal_title: 'Ajouter un commentaire',
+    suggest_comment_input_label: 'Votre commentaire / retour constructif',
+    suggest_comment_input_placeholder: 'Partagez votre avis sur cette idée...',
+    suggest_comment_added: '💬 Votre commentaire a bien été ajouté !',
+    suggest_submitted_success: '✅ Votre suggestion **#{numericId}** a bien été soumise et publiée dans le salon dédié !',
+    suggest_default_category: 'Général',
+    suggest_status_pending: 'En attente',
+    suggest_status_under_review: 'En cours d\'étude',
+    suggest_status_planned: 'Planifiée',
+    suggest_status_accepted: 'Acceptée',
+    suggest_status_in_progress: 'En développement',
+    suggest_status_completed: 'Réalisée',
+    suggest_status_rejected: 'Refusée',
+    suggest_status_duplicate: 'Doublon',
+    suggest_status_on_hold: 'En pause',
+    suggest_embed_author: 'Suggestion #{numericId} • Par {authorTag}',
+    suggest_field_status: 'Statut',
+    suggest_field_category: 'Catégorie',
+    suggest_field_score: 'Score',
+    suggest_score_value: '👍 {up}  •  👎 {down}  (Score: **{score}**)',
+    suggest_staff_response_field: '💬 Réponse du Staff ({responderTag})',
+    suggest_default_moderator: 'Modérateur',
+    suggest_duplicate_field_value: 'Cette suggestion a été marquée comme doublon de la suggestion #{dupId}.',
+    suggest_embed_footer: 'ID: {id} • {count} commentaire(s)',
+    suggest_btn_comment: '💬 Commenter ({count})',
+    suggest_btn_follow: '🔔 Suivre ({count})',
+    suggest_no_channel_error: 'Aucun salon de suggestions n\'est configuré sur ce serveur.',
+    suggest_thread_name: 'Discussion #{numericId} : {title}',
+    suggest_dm_update: '🔔 **Mise à jour de la suggestion #{numericId}**\nTitre : **{title}**\nNouveau statut : {emoji} **{label}**\n{responseLine}',
+    suggest_dm_response_line: 'Réponse officielle : *"{response}"*\n',
+
+    leveling_module_disabled: '⚠️ Le système de niveaux est actuellement désactivé sur ce serveur.',
+    leveling_rank_author: 'Progression de {username}',
+    leveling_field_rank: '🏆 Rang',
+    leveling_field_level: '⭐ Niveau',
+    leveling_field_messages: '💬 Messages',
+    leveling_field_progress: '📊 Progression vers le Niveau Suivant',
+    leveling_progress_value: '`{bar}` **{percent}%**\n`{cur} / {next} XP` (Total : {total} XP)',
+    leveling_rank_footer: '{guildName} • Système de Progression',
+    leveling_leaderboard_empty: '📜 Aucun membre n\'a encore acquis d\'expérience sur ce serveur.',
+    leveling_leaderboard_title: '🏆 Classement d\'Activité • {guildName}',
+    leveling_leaderboard_line: '{medal} <@{userId}> — **Niveau {level}** (`{xp} XP`)',
+    leveling_leaderboard_footer: 'Consultez le classement complet sur le Dashboard Web',
+    leveling_xp_add_success: '✅ **+{amount} XP** ajoutés à <@{userId}>. Nouveau total : **{total} XP** (Niveau {level}).',
+    leveling_xp_remove_success: '✅ **-{amount} XP** retirés à <@{userId}>. Nouveau total : **{total} XP** (Niveau {level}).',
+    leveling_xp_set_success: '✅ XP de <@{userId}> défini à **{total} XP** (Niveau {level}).',
+    leveling_xp_reset_success: '🗑️ L\'expérience et les niveaux de <@{userId}> ont été réinitialisés avec succès.',
+
+    antiraid_status_title: '🛡️ Centre Anti-Raid 2.0 — {guildName}',
+    antiraid_field_risk_score: '📊 Risk Score',
+    antiraid_field_raidmode: '🚨 Raid Mode',
+    antiraid_raidmode_active: '🔥 **ACTIVÉ**',
+    antiraid_raidmode_normal: '🟢 Normal',
+    antiraid_field_lockdown: '🔒 Verrouillage (Lockdown)',
+    antiraid_lockdown_active: '🔴 Actif ({count} salons)',
+    antiraid_lockdown_inactive: '🟢 Inactif',
+    antiraid_field_joins: '📥 Arrivées (60s)',
+    antiraid_joins_value: '{count} joins',
+    antiraid_field_messages: '💬 Messages (60s)',
+    antiraid_messages_value: '{count} msgs',
+    antiraid_field_mentions: '🔔 Mentions (60s)',
+    antiraid_mentions_value: '{count} mentions',
+    antiraid_status_footer: 'ETHONE Anti-Raid Engine 2.0 • Dashboard Web disponible',
+    antiraid_raidmode_reason: 'Déclenché par {tag}',
+    antiraid_lockdown_reason: 'Lockdown d\'urgence par {tag}',
+    antiraid_raidmode_on_success: '🚨 **Raid Mode ACTIVÉ !** Les protections d\'urgence sont en place.',
+    antiraid_raidmode_off_success: '🔓 **Raid Mode DÉSACTIVÉ.** Retour à la configuration standard.',
+    antiraid_lockdown_on_success: '🔒 **Lockdown ACTIVÉ !** {count} salon(s) textuel(s) verrouillé(s).',
+    antiraid_lockdown_off_success: '🔓 **Lockdown LEVÉ !** {count} salon(s) déverrouillé(s).',
+    antiraid_usage_fallback: 'Usage : `/antiraid status`, `/antiraid raidmode <activer>`, `/antiraid lockdown <activer>`',
   },
   en: {
     lang_name: 'English',
@@ -968,6 +1458,248 @@ const translations: Record<SupportedLanguage, TranslationDictionary> = {
     form_submit_error: '❌ **Submission Error:** {error}',
     form_submitted_title: '✅ Application Submitted Successfully',
     form_submitted_desc: 'Your response for **{title}** has been recorded.\n\n🆔 **Tracking number:** `#{id}`\n📊 **Initial status:** Awaiting staff review\n\n*You will receive a private notification as soon as a decision is made.*',
+
+    automod_status_title: '🤖 AutoMod 2.0 — {guildName}',
+    automod_status_field_protection: '🛡️ Protection',
+    automod_status_active: '🟢 **ACTIVE**',
+    automod_status_inactive: '⚪ Disabled',
+    automod_status_field_smartmode: '🧠 Smart Mode',
+    automod_smartmode_on: '✨ **Enabled**',
+    automod_smartmode_standard: '⚪ Standard',
+    automod_status_field_risk: '📊 Risk Level',
+    automod_status_field_rules: '📋 Custom Rules',
+    automod_status_rules_value: '**{count}** rule(s)',
+    automod_status_field_detectors: '⚡ Detectors',
+    automod_detector_spam: '💬 Anti-Spam',
+    automod_detector_flood: '🌊 Anti-Flood',
+    automod_detector_links: '🔗 Links',
+    automod_detector_invites: '✉️ Invites',
+    automod_detector_mentions: '📢 Mentions',
+    automod_detector_ghostping: '👻 Ghost Ping',
+    automod_detector_caps: '🔠 CAPS',
+    automod_detector_keywords: '🚫 Banned Words',
+    automod_detector_regex: '🧩 Regex',
+    automod_detector_profiles: '👤 Profiles',
+    automod_status_field_strikes: '⚠️ Strike Scale',
+    automod_status_strikes_value: '{count} tier(s) configured',
+    automod_status_footer: 'ETHONE Smart Moderation • Dashboard available at /discord/moderation/automod',
+    automod_test_missing_message: '❌ Please provide the test message.',
+    automod_test_title: '🧪 AutoMod Sandbox — Rule Test',
+    automod_test_field_message: '📝 Tested Message',
+    automod_test_field_score: '📊 Simulated Risk Score',
+    automod_test_score_value: '**{score}/100** (`{level}`)',
+    automod_test_field_actions: '⚡ Simulated Actions',
+    automod_test_no_action: 'No action',
+    automod_test_field_strikes_added: '⚠️ Strikes Added',
+    automod_test_field_detectors_triggered: '🔍 Triggered Detectors',
+    automod_test_detectors_none: 'None',
+    automod_test_rules_none: 'None',
+    automod_test_footer: 'Sandbox simulation: No sanction was applied',
+    automod_smartmode_toggle_on: '🧠 **Smart Mode ENABLED!** Thresholds will now adjust automatically during attacks based on the event flow.',
+    automod_smartmode_toggle_off: '🧠 **Smart Mode DISABLED!** Standard static thresholds applied.',
+    automod_toggle_label_all: 'AutoMod (entire engine)',
+    automod_toggle_label_spam: 'Anti-Spam',
+    automod_toggle_label_flood: 'Anti-Flood',
+    automod_toggle_label_links: 'Link Filter',
+    automod_toggle_label_invites: 'Invite Filter',
+    automod_toggle_label_mentions: 'Anti-Mention Spam',
+    automod_toggle_label_ghostping: 'Anti-Ghost Ping',
+    automod_toggle_label_caps: 'Anti-CAPS LOCK',
+    automod_toggle_label_keywords: 'Banned Words',
+    automod_toggle_label_regex: 'Regex Rules',
+    automod_toggle_label_profiles: 'Profile Filter',
+    automod_toggle_label_strikes: 'Strikes & Progressive Sanctions',
+    automod_toggle_unknown_module: '❌ Unknown module: `{module}`.',
+    automod_toggle_state_on: 'enabled',
+    automod_toggle_state_off: 'disabled',
+    automod_toggle_success: '{emoji} **{label}** {state}.',
+    automod_toggle_disabled_note: '\n⚠️ Note: the global AutoMod engine is currently disabled (`/automod toggle module:all activer:True` to re-enable it) — this setting will only take effect once AutoMod is back on.',
+    automod_usage_fallback: 'Usage: `/automod status`, `/automod test <message>`, `/automod smartmode <activer>`, `/automod toggle <module> <activer>`',
+
+    events_list_empty_title: '🗓️ No Upcoming Events',
+    events_list_empty_desc: 'There are no events scheduled right now.\nUse the ETHONE dashboard to plan one!',
+    events_list_title: '🗓️ Upcoming Events • {guildName}',
+    events_list_desc: 'Here are the next **{count}** events:',
+    events_list_field_value: '📅 <t:{start}:F> (<t:{start}:R>)\n👥 **{capStr}** • 📍 {locationStr}\nStatus: `{status}`',
+    events_participants_suffix: '{count} participant(s)',
+    events_missing_id: '❌ Please provide a valid event ID.',
+    events_not_found: '❌ Event `{id}` not found.',
+    events_rsvp_usage: '❌ Usage: `/event rsvp event_id:<id> status:<GOING|MAYBE|NOT_GOING>`',
+    events_generic_error_prefix: '❌ {error}',
+    events_rsvp_error_fallback: 'RSVP error.',
+    events_rsvp_success_title: '✅ RSVP Updated!',
+    events_rsvp_success_desc: 'Your status for event **{eventId}** is now: **{status}**.\n{message}',
+    events_checkin_usage: '❌ Usage: `/event checkin event_id:<id>`',
+    events_checkin_success_title: '🎟️ Attendance Confirmed!',
+    events_checkin_success_desc: 'Your attendance for the event has been confirmed.\nThanks for joining!',
+    events_post_permission_denied: '❌ You need the `Manage Events` permission to publish this panel.',
+    events_channel_not_found: '❌ Text channel not found.',
+    events_post_success: '✅ Event panel published in <#{channelId}>!',
+    events_unknown_subcommand: '❌ Unknown subcommand. Use `/event list` or `/event info`.',
+    events_rsvp_status_going: '✅ Confirmed (Going)',
+    events_rsvp_status_maybe: '🤔 Maybe',
+    events_rsvp_status_notgoing: '❌ Not Going',
+    events_rsvp_status_waitlist: '⏳ Waitlisted',
+    events_rsvp_button_success: '🎉 {message}\nYour current status: **{statusLabel}**.',
+    events_checkin_button_success: '🎟️ **Check-in Confirmed!**\n{message}',
+    events_status_scheduled: '🗓️ Scheduled',
+    events_status_live: '🔴 LIVE',
+    events_status_completed: '✅ Completed',
+    events_status_cancelled: '❌ Cancelled',
+    events_location_unspecified: 'Not specified',
+    events_location_voice_default: 'Voice Channel',
+    events_location_stage_default: 'Stage Channel',
+    events_location_text_default: 'Text Channel',
+    events_location_external_default: 'External Link',
+    events_capacity_full_suffix: '🔴 (Full)',
+    events_panel_field_datetime: '📅 Date & Time',
+    events_panel_field_location: '📍 Location',
+    events_panel_field_status: '👥 Status & Signups',
+    events_panel_datetime_value: '<t:{start}:F>\n<t:{start}:R>\nEnds: <t:{end}:t>',
+    events_panel_status_value: '**Status:** {statusText}\n**Confirmed:** {capacityStr}\n**Maybe:** {maybeCount}',
+    events_panel_waitlist_line: '\n**Waitlist:** {count}',
+    events_panel_footer: 'ETHONE Events 2.0 • ID: {id}',
+    events_panel_no_description: '*No description provided.*',
+    events_btn_waitlist_label: 'Waitlist ({count})',
+    events_btn_going_label: 'Going ({count})',
+    events_btn_maybe_label: 'Maybe ({count})',
+    events_btn_not_going_label: 'Not Going',
+    events_btn_checkin_label: 'Check-in',
+    events_btn_details_label: 'Details & Calendar',
+
+    giveaway_slash_only: 'This command must be run as a Slash Command.',
+    giveaway_invalid_channel: '❌ Please specify a valid text channel.',
+    giveaway_start_success: '✅ Giveaway for **{prize}** successfully started in <#{channelId}>! (ID: `{id}`)',
+    giveaway_not_found: '❌ Giveaway not found on this server.',
+    giveaway_end_success: '🎉 Giveaway ended successfully! Winner(s): {winners}',
+    giveaway_no_eligible_participant: 'No eligible participants.',
+    giveaway_reroll_success: '🎲 Reroll complete! New winner(s): {winners}',
+    giveaway_no_other_participant: 'No other participants available.',
+    giveaway_cancel_success: '❌ The giveaway was successfully cancelled.',
+    giveaway_list_empty: 'ℹ️ No giveaway is currently active on this server.',
+    giveaway_list_title: '🎁 Active Giveaways • {guildName}',
+    giveaway_list_item: '• **{prize}** (<#{channelId}>) — `{count}` entries — Ends: <t:{end}:R>\n  ID: `{id}`',
+    giveaway_list_footer: 'To end a giveaway: /giveaway end <id>',
+    giveaway_claim_not_eligible: '❌ This giveaway is not eligible for a claim.',
+    giveaway_claim_not_winner: '⛔ You are not among the selected winners for this prize.',
+    giveaway_claim_already_done: '✅ You have already confirmed your prize claim.',
+    giveaway_claim_success: '🎉 **Claim confirmed!** The hosts have been notified of your confirmation.',
+    giveaway_default_description: 'Click the button below to enter the giveaway!',
+    giveaway_embed_ended_title: '🎉 GIVEAWAY ENDED: {prize}',
+    giveaway_embed_ended_desc: 'This giveaway is now closed.\n\n🏆 **Winner(s):** {winners}\n\n🎁 **Prize won:** {prize}\n👥 **Total participants:** `{count}`\n👤 **Hosted by:** <@{hostId}>',
+    giveaway_embed_cancelled_title: '❌ GIVEAWAY CANCELLED: {prize}',
+    giveaway_embed_cancelled_desc: 'This giveaway was cancelled by an administrator.',
+    giveaway_embed_active_title: '🎁 GIVEAWAY: {prize}',
+    giveaway_embed_active_desc: '{description}\n\n🏆 **Winners:** `{winnerCount}`\n⏰ **Ends:** <t:{endTimestamp}:R> (<t:{endTimestamp}:f>)\n👤 **Hosted by:** <@{hostId}>\n👥 **Participants:** `{participantsCount}`',
+    giveaway_req_roles_required: '\n• Required role(s): {roles}',
+    giveaway_req_roles_excluded: '\n• Excluded role(s): {roles}',
+    giveaway_req_min_age: '\n• Minimum account age: `{days} day(s)`',
+    giveaway_req_min_level: '\n• Minimum XP level: `Level {level}`',
+    giveaway_req_prefix: '\n\n🛡️ **Entry Requirements:**',
+    giveaway_btn_enter: '🎉 Enter ({count})',
+    giveaway_btn_claim: '🎁 Claim My Prize',
+    giveaway_elig_excluded_role: 'You have a role excluded from this giveaway.',
+    giveaway_elig_missing_all_roles: 'You do not have all the required roles to enter.',
+    giveaway_elig_missing_any_role: 'You do not have any of the required roles to enter.',
+    giveaway_elig_min_age: 'Your Discord account must be at least {days} day(s) old.',
+    giveaway_elig_min_level: 'You must have reached at least **Level {level}** (current level: {userLevel}).',
+    giveaway_not_active: '❌ This giveaway is no longer active.',
+    giveaway_left: '👋 You are no longer entered in this giveaway.',
+    giveaway_participation_denied: '⛔ **Entry denied:**\n{reason}',
+    giveaway_join_success: '🎉 **Congratulations!** Your entry into the giveaway has been recorded.',
+    giveaway_announce_winners: '🎉 Congratulations {mentions}! You won the giveaway for **{prize}**! 🎁',
+    giveaway_announce_no_winner: '⚠️ No winner could be selected for the **{prize}** giveaway (no eligible participants).',
+    giveaway_dm_winner: '🎉 **Congratulations!** You won the **{prize}** giveaway on **{guildName}**!',
+
+    suggest_slash_only: 'Please use the `/suggest` Slash Command to submit an idea.',
+    suggest_module_disabled: '❌ The suggestions system is currently disabled on this server.',
+    suggest_no_channel_configured: '❌ No suggestions channel has been configured by the administrators.',
+    suggest_published_success: '✅ Your suggestion **#{numericId}** was published in <#{channelId}>!',
+    suggest_generic_error: '❌ Error: {error}',
+    suggest_modal_title: 'Submit a Suggestion',
+    suggest_modal_title_label: 'Title of your idea',
+    suggest_modal_title_placeholder: 'E.g.: Add a dedicated gaming channel...',
+    suggest_modal_desc_label: 'Detailed description',
+    suggest_modal_desc_placeholder: 'Explain why this idea would be useful and how it would work...',
+    suggest_modal_category_label: 'Category (optional)',
+    suggest_modal_category_placeholder: 'E.g.: General, Server, Bot, Events...',
+    suggest_not_found: '❌ Suggestion not found.',
+    suggest_upvote_removed: '↩️ Your upvote has been removed.',
+    suggest_upvote_added: '👍 Your upvote has been counted!',
+    suggest_downvote_removed: '↩️ Your downvote has been removed.',
+    suggest_downvote_added: '👎 Your downvote has been counted!',
+    suggest_follow_on: '🔔 You are now following this suggestion. You will get notified on every update!',
+    suggest_follow_off: '🔕 You are no longer following this suggestion.',
+    suggest_comment_modal_title: 'Add a Comment',
+    suggest_comment_input_label: 'Your comment / constructive feedback',
+    suggest_comment_input_placeholder: 'Share your thoughts on this idea...',
+    suggest_comment_added: '💬 Your comment has been added!',
+    suggest_submitted_success: '✅ Your suggestion **#{numericId}** was submitted and published in the dedicated channel!',
+    suggest_default_category: 'General',
+    suggest_status_pending: 'Pending',
+    suggest_status_under_review: 'Under Review',
+    suggest_status_planned: 'Planned',
+    suggest_status_accepted: 'Accepted',
+    suggest_status_in_progress: 'In Progress',
+    suggest_status_completed: 'Completed',
+    suggest_status_rejected: 'Rejected',
+    suggest_status_duplicate: 'Duplicate',
+    suggest_status_on_hold: 'On Hold',
+    suggest_embed_author: 'Suggestion #{numericId} • By {authorTag}',
+    suggest_field_status: 'Status',
+    suggest_field_category: 'Category',
+    suggest_field_score: 'Score',
+    suggest_score_value: '👍 {up}  •  👎 {down}  (Score: **{score}**)',
+    suggest_staff_response_field: '💬 Staff Response ({responderTag})',
+    suggest_default_moderator: 'Moderator',
+    suggest_duplicate_field_value: 'This suggestion was marked as a duplicate of suggestion #{dupId}.',
+    suggest_embed_footer: 'ID: {id} • {count} comment(s)',
+    suggest_btn_comment: '💬 Comment ({count})',
+    suggest_btn_follow: '🔔 Follow ({count})',
+    suggest_no_channel_error: 'No suggestions channel is configured on this server.',
+    suggest_thread_name: 'Discussion #{numericId}: {title}',
+    suggest_dm_update: '🔔 **Suggestion #{numericId} Update**\nTitle: **{title}**\nNew status: {emoji} **{label}**\n{responseLine}',
+    suggest_dm_response_line: 'Official response: *"{response}"*\n',
+
+    leveling_module_disabled: '⚠️ The leveling system is currently disabled on this server.',
+    leveling_rank_author: '{username}\'s Progress',
+    leveling_field_rank: '🏆 Rank',
+    leveling_field_level: '⭐ Level',
+    leveling_field_messages: '💬 Messages',
+    leveling_field_progress: '📊 Progress to Next Level',
+    leveling_progress_value: '`{bar}` **{percent}%**\n`{cur} / {next} XP` (Total: {total} XP)',
+    leveling_rank_footer: '{guildName} • Leveling System',
+    leveling_leaderboard_empty: '📜 No member has earned any experience on this server yet.',
+    leveling_leaderboard_title: '🏆 Activity Leaderboard • {guildName}',
+    leveling_leaderboard_line: '{medal} <@{userId}> — **Level {level}** (`{xp} XP`)',
+    leveling_leaderboard_footer: 'View the full leaderboard on the Web Dashboard',
+    leveling_xp_add_success: '✅ **+{amount} XP** added to <@{userId}>. New total: **{total} XP** (Level {level}).',
+    leveling_xp_remove_success: '✅ **-{amount} XP** removed from <@{userId}>. New total: **{total} XP** (Level {level}).',
+    leveling_xp_set_success: '✅ XP for <@{userId}> set to **{total} XP** (Level {level}).',
+    leveling_xp_reset_success: '🗑️ The experience and levels of <@{userId}> have been successfully reset.',
+
+    antiraid_status_title: '🛡️ Anti-Raid Center 2.0 — {guildName}',
+    antiraid_field_risk_score: '📊 Risk Score',
+    antiraid_field_raidmode: '🚨 Raid Mode',
+    antiraid_raidmode_active: '🔥 **ACTIVE**',
+    antiraid_raidmode_normal: '🟢 Normal',
+    antiraid_field_lockdown: '🔒 Lockdown',
+    antiraid_lockdown_active: '🔴 Active ({count} channels)',
+    antiraid_lockdown_inactive: '🟢 Inactive',
+    antiraid_field_joins: '📥 Joins (60s)',
+    antiraid_joins_value: '{count} joins',
+    antiraid_field_messages: '💬 Messages (60s)',
+    antiraid_messages_value: '{count} msgs',
+    antiraid_field_mentions: '🔔 Mentions (60s)',
+    antiraid_mentions_value: '{count} mentions',
+    antiraid_status_footer: 'ETHONE Anti-Raid Engine 2.0 • Web Dashboard available',
+    antiraid_raidmode_reason: 'Triggered by {tag}',
+    antiraid_lockdown_reason: 'Emergency lockdown by {tag}',
+    antiraid_raidmode_on_success: '🚨 **Raid Mode ACTIVATED!** Emergency protections are now in place.',
+    antiraid_raidmode_off_success: '🔓 **Raid Mode DEACTIVATED.** Back to standard configuration.',
+    antiraid_lockdown_on_success: '🔒 **Lockdown ACTIVATED!** {count} text channel(s) locked.',
+    antiraid_lockdown_off_success: '🔓 **Lockdown LIFTED!** {count} channel(s) unlocked.',
+    antiraid_usage_fallback: 'Usage: `/antiraid status`, `/antiraid raidmode <activer>`, `/antiraid lockdown <activer>`',
   },
   es: {
     lang_name: 'Español',
@@ -1288,6 +2020,248 @@ const translations: Record<SupportedLanguage, TranslationDictionary> = {
     form_submit_error: '❌ **Error de envío:** {error}',
     form_submitted_title: '✅ Solicitud Enviada con Éxito',
     form_submitted_desc: 'Tu respuesta para **{title}** ha sido registrada.\n\n🆔 **Número de seguimiento:** `#{id}`\n📊 **Estado inicial:** Pendiente de revisión por el staff\n\n*Recibirás una notificación privada en cuanto se tome una decisión.*',
+
+    automod_status_title: '🤖 AutoMod 2.0 — {guildName}',
+    automod_status_field_protection: '🛡️ Protección',
+    automod_status_active: '🟢 **ACTIVA**',
+    automod_status_inactive: '⚪ Desactivada',
+    automod_status_field_smartmode: '🧠 Modo Inteligente',
+    automod_smartmode_on: '✨ **Activado**',
+    automod_smartmode_standard: '⚪ Estándar',
+    automod_status_field_risk: '📊 Nivel de Riesgo',
+    automod_status_field_rules: '📋 Reglas Personalizadas',
+    automod_status_rules_value: '**{count}** regla(s)',
+    automod_status_field_detectors: '⚡ Detectores',
+    automod_detector_spam: '💬 Anti-Spam',
+    automod_detector_flood: '🌊 Anti-Flood',
+    automod_detector_links: '🔗 Enlaces',
+    automod_detector_invites: '✉️ Invitaciones',
+    automod_detector_mentions: '📢 Menciones',
+    automod_detector_ghostping: '👻 Ghost Ping',
+    automod_detector_caps: '🔠 MAYÚSCULAS',
+    automod_detector_keywords: '🚫 Palabras Prohibidas',
+    automod_detector_regex: '🧩 Regex',
+    automod_detector_profiles: '👤 Perfiles',
+    automod_status_field_strikes: '⚠️ Escala de Strikes',
+    automod_status_strikes_value: '{count} nivel(es) configurado(s)',
+    automod_status_footer: 'ETHONE Smart Moderation • Panel disponible en /discord/moderation/automod',
+    automod_test_missing_message: '❌ Por favor indica el mensaje de prueba.',
+    automod_test_title: '🧪 AutoMod Sandbox — Prueba de Regla',
+    automod_test_field_message: '📝 Mensaje Probado',
+    automod_test_field_score: '📊 Puntuación de Riesgo Simulada',
+    automod_test_score_value: '**{score}/100** (`{level}`)',
+    automod_test_field_actions: '⚡ Acciones Simuladas',
+    automod_test_no_action: 'Ninguna acción',
+    automod_test_field_strikes_added: '⚠️ Strikes Añadidos',
+    automod_test_field_detectors_triggered: '🔍 Detectores Activados',
+    automod_test_detectors_none: 'Ninguno',
+    automod_test_rules_none: 'Ninguna',
+    automod_test_footer: 'Simulación en sandbox: No se aplicó ninguna sanción',
+    automod_smartmode_toggle_on: '🧠 **¡Modo Inteligente ACTIVADO!** Los umbrales se ajustarán automáticamente durante un ataque según el flujo de eventos.',
+    automod_smartmode_toggle_off: '🧠 **¡Modo Inteligente DESACTIVADO!** Se aplican los umbrales estáticos normales.',
+    automod_toggle_label_all: 'AutoMod (motor completo)',
+    automod_toggle_label_spam: 'Anti-Spam',
+    automod_toggle_label_flood: 'Anti-Flood',
+    automod_toggle_label_links: 'Filtro de Enlaces',
+    automod_toggle_label_invites: 'Filtro de Invitaciones',
+    automod_toggle_label_mentions: 'Anti-Spam de Menciones',
+    automod_toggle_label_ghostping: 'Anti-Ghost Ping',
+    automod_toggle_label_caps: 'Anti-MAYÚSCULAS',
+    automod_toggle_label_keywords: 'Palabras Prohibidas',
+    automod_toggle_label_regex: 'Reglas Regex',
+    automod_toggle_label_profiles: 'Filtro de Perfiles',
+    automod_toggle_label_strikes: 'Strikes y Sanciones Progresivas',
+    automod_toggle_unknown_module: '❌ Módulo desconocido: `{module}`.',
+    automod_toggle_state_on: 'activado',
+    automod_toggle_state_off: 'desactivado',
+    automod_toggle_success: '{emoji} **{label}** {state}.',
+    automod_toggle_disabled_note: '\n⚠️ Nota: el motor global de AutoMod está actualmente desactivado (`/automod toggle module:all activer:True` para reactivarlo) — este ajuste solo tendrá efecto cuando AutoMod vuelva a estar activo.',
+    automod_usage_fallback: 'Uso: `/automod status`, `/automod test <message>`, `/automod smartmode <activer>`, `/automod toggle <module> <activer>`',
+
+    events_list_empty_title: '🗓️ Sin Eventos Próximos',
+    events_list_empty_desc: 'No hay eventos programados por el momento.\n¡Usa el panel ETHONE para crear uno!',
+    events_list_title: '🗓️ Próximos Eventos • {guildName}',
+    events_list_desc: 'Aquí tienes los próximos **{count}** eventos:',
+    events_list_field_value: '📅 <t:{start}:F> (<t:{start}:R>)\n👥 **{capStr}** • 📍 {locationStr}\nEstado: `{status}`',
+    events_participants_suffix: '{count} participante(s)',
+    events_missing_id: '❌ Proporciona un identificador de evento válido.',
+    events_not_found: '❌ Evento `{id}` no encontrado.',
+    events_rsvp_usage: '❌ Uso: `/event rsvp event_id:<id> status:<GOING|MAYBE|NOT_GOING>`',
+    events_generic_error_prefix: '❌ {error}',
+    events_rsvp_error_fallback: 'Error al procesar el RSVP.',
+    events_rsvp_success_title: '✅ ¡Inscripción actualizada!',
+    events_rsvp_success_desc: 'Tu estado para el evento **{eventId}** ahora es: **{status}**.\n{message}',
+    events_checkin_usage: '❌ Uso: `/event checkin event_id:<id>`',
+    events_checkin_success_title: '🎟️ ¡Asistencia confirmada!',
+    events_checkin_success_desc: 'Tu asistencia al evento ha sido confirmada.\n¡Gracias por participar!',
+    events_post_permission_denied: '❌ Necesitas el permiso `Gestionar Eventos` para publicar este panel.',
+    events_channel_not_found: '❌ Canal de texto no encontrado.',
+    events_post_success: '✅ ¡Panel del evento publicado en <#{channelId}>!',
+    events_unknown_subcommand: '❌ Subcomando desconocido. Usa `/event list` o `/event info`.',
+    events_rsvp_status_going: '✅ Confirmado (Going)',
+    events_rsvp_status_maybe: '🤔 Tal vez (Maybe)',
+    events_rsvp_status_notgoing: '❌ No participa',
+    events_rsvp_status_waitlist: '⏳ En lista de espera',
+    events_rsvp_button_success: '🎉 {message}\nTu estado actual: **{statusLabel}**.',
+    events_checkin_button_success: '🎟️ **¡Check-in confirmado!**\n{message}',
+    events_status_scheduled: '🗓️ Programado',
+    events_status_live: '🔴 EN DIRECTO',
+    events_status_completed: '✅ Finalizado',
+    events_status_cancelled: '❌ Cancelado',
+    events_location_unspecified: 'No especificado',
+    events_location_voice_default: 'Canal de Voz',
+    events_location_stage_default: 'Canal de Escenario',
+    events_location_text_default: 'Canal de Texto',
+    events_location_external_default: 'Enlace Externo',
+    events_capacity_full_suffix: '🔴 (Completo)',
+    events_panel_field_datetime: '📅 Fecha y Hora',
+    events_panel_field_location: '📍 Lugar',
+    events_panel_field_status: '👥 Estado e Inscripciones',
+    events_panel_datetime_value: '<t:{start}:F>\n<t:{start}:R>\nFinaliza: <t:{end}:t>',
+    events_panel_status_value: '**Estado:** {statusText}\n**Confirmados:** {capacityStr}\n**Tal vez:** {maybeCount}',
+    events_panel_waitlist_line: '\n**Lista de espera:** {count}',
+    events_panel_footer: 'ETHONE Events 2.0 • ID: {id}',
+    events_panel_no_description: '*Sin descripción proporcionada.*',
+    events_btn_waitlist_label: 'Lista de espera ({count})',
+    events_btn_going_label: 'Participar ({count})',
+    events_btn_maybe_label: 'Tal vez ({count})',
+    events_btn_not_going_label: 'No participa',
+    events_btn_checkin_label: 'Check-in',
+    events_btn_details_label: 'Detalles y Calendario',
+
+    giveaway_slash_only: 'Este comando debe ejecutarse como Slash Command.',
+    giveaway_invalid_channel: '❌ Por favor especifica un canal de texto válido.',
+    giveaway_start_success: '✅ ¡Sorteo para **{prize}** iniciado con éxito en <#{channelId}>! (ID: `{id}`)',
+    giveaway_not_found: '❌ Sorteo no encontrado en este servidor.',
+    giveaway_end_success: '🎉 ¡Sorteo finalizado con éxito! Ganador(es): {winners}',
+    giveaway_no_eligible_participant: 'Ningún participante elegible.',
+    giveaway_reroll_success: '🎲 ¡Reroll completado! Nuevo(s) ganador(es): {winners}',
+    giveaway_no_other_participant: 'No hay más participantes disponibles.',
+    giveaway_cancel_success: '❌ El sorteo ha sido cancelado con éxito.',
+    giveaway_list_empty: 'ℹ️ No hay ningún sorteo activo actualmente en este servidor.',
+    giveaway_list_title: '🎁 Sorteos Activos • {guildName}',
+    giveaway_list_item: '• **{prize}** (<#{channelId}>) — `{count}` participantes — Fin: <t:{end}:R>\n  ID: `{id}`',
+    giveaway_list_footer: 'Para finalizar un sorteo: /giveaway end <id>',
+    giveaway_claim_not_eligible: '❌ Este sorteo no es elegible para reclamar el premio.',
+    giveaway_claim_not_winner: '⛔ No estás entre los ganadores seleccionados para este premio.',
+    giveaway_claim_already_done: '✅ Ya has confirmado la reclamación de tu premio.',
+    giveaway_claim_success: '🎉 **¡Reclamación confirmada!** Los organizadores han sido notificados de tu confirmación.',
+    giveaway_default_description: '¡Haz clic en el botón de abajo para participar en el sorteo!',
+    giveaway_embed_ended_title: '🎉 SORTEO FINALIZADO: {prize}',
+    giveaway_embed_ended_desc: 'Este sorteo ya está cerrado.\n\n🏆 **Ganador(es):** {winners}\n\n🎁 **Premio ganado:** {prize}\n👥 **Total de participantes:** `{count}`\n👤 **Organizado por:** <@{hostId}>',
+    giveaway_embed_cancelled_title: '❌ SORTEO CANCELADO: {prize}',
+    giveaway_embed_cancelled_desc: 'Este sorteo fue cancelado por un administrador.',
+    giveaway_embed_active_title: '🎁 SORTEO: {prize}',
+    giveaway_embed_active_desc: '{description}\n\n🏆 **Ganadores:** `{winnerCount}`\n⏰ **Finaliza:** <t:{endTimestamp}:R> (<t:{endTimestamp}:f>)\n👤 **Organizado por:** <@{hostId}>\n👥 **Participantes:** `{participantsCount}`',
+    giveaway_req_roles_required: '\n• Rol(es) requerido(s): {roles}',
+    giveaway_req_roles_excluded: '\n• Rol(es) excluido(s): {roles}',
+    giveaway_req_min_age: '\n• Antigüedad mínima de la cuenta: `{days} día(s)`',
+    giveaway_req_min_level: '\n• Nivel XP mínimo: `Nivel {level}`',
+    giveaway_req_prefix: '\n\n🛡️ **Condiciones de participación:**',
+    giveaway_btn_enter: '🎉 Participar ({count})',
+    giveaway_btn_claim: '🎁 Reclamar mi Premio',
+    giveaway_elig_excluded_role: 'Tienes un rol excluido de este sorteo.',
+    giveaway_elig_missing_all_roles: 'No tienes todos los roles obligatorios para participar.',
+    giveaway_elig_missing_any_role: 'No tienes ninguno de los roles requeridos para participar.',
+    giveaway_elig_min_age: 'Tu cuenta de Discord debe tener al menos {days} día(s) de antigüedad.',
+    giveaway_elig_min_level: 'Debes haber alcanzado al menos el **Nivel {level}** (nivel actual: {userLevel}).',
+    giveaway_not_active: '❌ Este sorteo ya no está activo.',
+    giveaway_left: '👋 Ya no participas en este sorteo.',
+    giveaway_participation_denied: '⛔ **Participación rechazada:**\n{reason}',
+    giveaway_join_success: '🎉 **¡Felicidades!** Tu participación en el sorteo ha sido registrada.',
+    giveaway_announce_winners: '🎉 ¡Felicidades {mentions}! ¡Has ganado el sorteo de **{prize}**! 🎁',
+    giveaway_announce_no_winner: '⚠️ No se pudo seleccionar ningún ganador para el sorteo **{prize}** (ningún participante elegible).',
+    giveaway_dm_winner: '🎉 **¡Felicidades!** ¡Has ganado el sorteo **{prize}** en **{guildName}**!',
+
+    suggest_slash_only: 'Usa el comando Slash `/suggest` para proponer una idea.',
+    suggest_module_disabled: '❌ El sistema de sugerencias está actualmente desactivado en este servidor.',
+    suggest_no_channel_configured: '❌ Los administradores no han configurado ningún canal de sugerencias.',
+    suggest_published_success: '✅ ¡Tu sugerencia **#{numericId}** se publicó en <#{channelId}>!',
+    suggest_generic_error: '❌ Error: {error}',
+    suggest_modal_title: 'Proponer una Sugerencia',
+    suggest_modal_title_label: 'Título de tu idea',
+    suggest_modal_title_placeholder: 'Ej: Añadir un canal dedicado al gaming...',
+    suggest_modal_desc_label: 'Descripción detallada',
+    suggest_modal_desc_placeholder: 'Explica por qué esta idea sería útil y cómo funcionaría...',
+    suggest_modal_category_label: 'Categoría (opcional)',
+    suggest_modal_category_placeholder: 'Ej: General, Servidor, Bot, Eventos...',
+    suggest_not_found: '❌ Sugerencia no encontrada.',
+    suggest_upvote_removed: '↩️ Tu voto positivo ha sido retirado.',
+    suggest_upvote_added: '👍 ¡Tu voto positivo ha sido registrado!',
+    suggest_downvote_removed: '↩️ Tu voto negativo ha sido retirado.',
+    suggest_downvote_added: '👎 ¡Tu voto negativo ha sido registrado!',
+    suggest_follow_on: '🔔 Ahora sigues esta sugerencia. ¡Recibirás una notificación con cada actualización!',
+    suggest_follow_off: '🔕 Ya no sigues esta sugerencia.',
+    suggest_comment_modal_title: 'Añadir un comentario',
+    suggest_comment_input_label: 'Tu comentario / feedback constructivo',
+    suggest_comment_input_placeholder: 'Comparte tu opinión sobre esta idea...',
+    suggest_comment_added: '💬 ¡Tu comentario ha sido añadido!',
+    suggest_submitted_success: '✅ ¡Tu sugerencia **#{numericId}** fue enviada y publicada en el canal correspondiente!',
+    suggest_default_category: 'General',
+    suggest_status_pending: 'Pendiente',
+    suggest_status_under_review: 'En revisión',
+    suggest_status_planned: 'Planificada',
+    suggest_status_accepted: 'Aceptada',
+    suggest_status_in_progress: 'En desarrollo',
+    suggest_status_completed: 'Realizada',
+    suggest_status_rejected: 'Rechazada',
+    suggest_status_duplicate: 'Duplicado',
+    suggest_status_on_hold: 'En pausa',
+    suggest_embed_author: 'Sugerencia #{numericId} • Por {authorTag}',
+    suggest_field_status: 'Estado',
+    suggest_field_category: 'Categoría',
+    suggest_field_score: 'Puntuación',
+    suggest_score_value: '👍 {up}  •  👎 {down}  (Puntuación: **{score}**)',
+    suggest_staff_response_field: '💬 Respuesta del Staff ({responderTag})',
+    suggest_default_moderator: 'Moderador',
+    suggest_duplicate_field_value: 'Esta sugerencia fue marcada como duplicado de la sugerencia #{dupId}.',
+    suggest_embed_footer: 'ID: {id} • {count} comentario(s)',
+    suggest_btn_comment: '💬 Comentar ({count})',
+    suggest_btn_follow: '🔔 Seguir ({count})',
+    suggest_no_channel_error: 'No hay ningún canal de sugerencias configurado en este servidor.',
+    suggest_thread_name: 'Debate #{numericId}: {title}',
+    suggest_dm_update: '🔔 **Actualización de la sugerencia #{numericId}**\nTítulo: **{title}**\nNuevo estado: {emoji} **{label}**\n{responseLine}',
+    suggest_dm_response_line: 'Respuesta oficial: *"{response}"*\n',
+
+    leveling_module_disabled: '⚠️ El sistema de niveles está actualmente desactivado en este servidor.',
+    leveling_rank_author: 'Progreso de {username}',
+    leveling_field_rank: '🏆 Rango',
+    leveling_field_level: '⭐ Nivel',
+    leveling_field_messages: '💬 Mensajes',
+    leveling_field_progress: '📊 Progreso hacia el Siguiente Nivel',
+    leveling_progress_value: '`{bar}` **{percent}%**\n`{cur} / {next} XP` (Total: {total} XP)',
+    leveling_rank_footer: '{guildName} • Sistema de Progresión',
+    leveling_leaderboard_empty: '📜 Ningún miembro ha ganado experiencia todavía en este servidor.',
+    leveling_leaderboard_title: '🏆 Clasificación de Actividad • {guildName}',
+    leveling_leaderboard_line: '{medal} <@{userId}> — **Nivel {level}** (`{xp} XP`)',
+    leveling_leaderboard_footer: 'Consulta la clasificación completa en el Panel Web',
+    leveling_xp_add_success: '✅ **+{amount} XP** añadidos a <@{userId}>. Nuevo total: **{total} XP** (Nivel {level}).',
+    leveling_xp_remove_success: '✅ **-{amount} XP** retirados a <@{userId}>. Nuevo total: **{total} XP** (Nivel {level}).',
+    leveling_xp_set_success: '✅ XP de <@{userId}> establecido en **{total} XP** (Nivel {level}).',
+    leveling_xp_reset_success: '🗑️ La experiencia y los niveles de <@{userId}> se han reiniciado con éxito.',
+
+    antiraid_status_title: '🛡️ Centro Anti-Raid 2.0 — {guildName}',
+    antiraid_field_risk_score: '📊 Risk Score',
+    antiraid_field_raidmode: '🚨 Raid Mode',
+    antiraid_raidmode_active: '🔥 **ACTIVADO**',
+    antiraid_raidmode_normal: '🟢 Normal',
+    antiraid_field_lockdown: '🔒 Bloqueo (Lockdown)',
+    antiraid_lockdown_active: '🔴 Activo ({count} canales)',
+    antiraid_lockdown_inactive: '🟢 Inactivo',
+    antiraid_field_joins: '📥 Entradas (60s)',
+    antiraid_joins_value: '{count} entradas',
+    antiraid_field_messages: '💬 Mensajes (60s)',
+    antiraid_messages_value: '{count} msgs',
+    antiraid_field_mentions: '🔔 Menciones (60s)',
+    antiraid_mentions_value: '{count} menciones',
+    antiraid_status_footer: 'ETHONE Anti-Raid Engine 2.0 • Panel Web disponible',
+    antiraid_raidmode_reason: 'Activado por {tag}',
+    antiraid_lockdown_reason: 'Bloqueo de emergencia por {tag}',
+    antiraid_raidmode_on_success: '🚨 **¡Raid Mode ACTIVADO!** Las protecciones de emergencia ya están en marcha.',
+    antiraid_raidmode_off_success: '🔓 **Raid Mode DESACTIVADO.** Vuelta a la configuración estándar.',
+    antiraid_lockdown_on_success: '🔒 **¡Bloqueo ACTIVADO!** {count} canal(es) de texto bloqueado(s).',
+    antiraid_lockdown_off_success: '🔓 **¡Bloqueo LEVANTADO!** {count} canal(es) desbloqueado(s).',
+    antiraid_usage_fallback: 'Uso: `/antiraid status`, `/antiraid raidmode <activer>`, `/antiraid lockdown <activer>`',
   },
   de: {
     lang_name: 'Deutsch',
@@ -1608,6 +2582,248 @@ const translations: Record<SupportedLanguage, TranslationDictionary> = {
     form_submit_error: '❌ **Übermittlungsfehler:** {error}',
     form_submitted_title: '✅ Bewerbung erfolgreich eingereicht',
     form_submitted_desc: 'Deine Antwort für **{title}** wurde gespeichert.\n\n🆔 **Vorgangsnummer:** `#{id}`\n📊 **Anfangsstatus:** Wird vom Team geprüft\n\n*Du erhältst eine private Benachrichtigung, sobald eine Entscheidung getroffen wurde.*',
+
+    automod_status_title: '🤖 AutoMod 2.0 — {guildName}',
+    automod_status_field_protection: '🛡️ Schutz',
+    automod_status_active: '🟢 **AKTIV**',
+    automod_status_inactive: '⚪ Deaktiviert',
+    automod_status_field_smartmode: '🧠 Smart-Modus',
+    automod_smartmode_on: '✨ **Aktiviert**',
+    automod_smartmode_standard: '⚪ Standard',
+    automod_status_field_risk: '📊 Risikostufe',
+    automod_status_field_rules: '📋 Eigene Regeln',
+    automod_status_rules_value: '**{count}** Regel(n)',
+    automod_status_field_detectors: '⚡ Detektoren',
+    automod_detector_spam: '💬 Anti-Spam',
+    automod_detector_flood: '🌊 Anti-Flood',
+    automod_detector_links: '🔗 Links',
+    automod_detector_invites: '✉️ Einladungen',
+    automod_detector_mentions: '📢 Erwähnungen',
+    automod_detector_ghostping: '👻 Ghost Ping',
+    automod_detector_caps: '🔠 GROSSSCHREIBUNG',
+    automod_detector_keywords: '🚫 Verbotene Wörter',
+    automod_detector_regex: '🧩 Regex',
+    automod_detector_profiles: '👤 Profile',
+    automod_status_field_strikes: '⚠️ Strike-Skala',
+    automod_status_strikes_value: '{count} konfigurierte Stufe(n)',
+    automod_status_footer: 'ETHONE Smart Moderation • Dashboard verfügbar unter /discord/moderation/automod',
+    automod_test_missing_message: '❌ Bitte gib die Testnachricht an.',
+    automod_test_title: '🧪 AutoMod Sandbox — Regeltest',
+    automod_test_field_message: '📝 Getestete Nachricht',
+    automod_test_field_score: '📊 Simulierter Risk Score',
+    automod_test_score_value: '**{score}/100** (`{level}`)',
+    automod_test_field_actions: '⚡ Simulierte Aktionen',
+    automod_test_no_action: 'Keine Aktion',
+    automod_test_field_strikes_added: '⚠️ Hinzugefügte Strikes',
+    automod_test_field_detectors_triggered: '🔍 Ausgelöste Detektoren',
+    automod_test_detectors_none: 'Keine',
+    automod_test_rules_none: 'Keine',
+    automod_test_footer: 'Sandbox-Simulation: Es wurde keine Sanktion angewendet',
+    automod_smartmode_toggle_on: '🧠 **Smart-Modus AKTIVIERT!** Die Schwellenwerte passen sich bei Angriffen automatisch an den Ereignisfluss an.',
+    automod_smartmode_toggle_off: '🧠 **Smart-Modus DEAKTIVIERT!** Es gelten die normalen statischen Schwellenwerte.',
+    automod_toggle_label_all: 'AutoMod (gesamte Engine)',
+    automod_toggle_label_spam: 'Anti-Spam',
+    automod_toggle_label_flood: 'Anti-Flood',
+    automod_toggle_label_links: 'Link-Filter',
+    automod_toggle_label_invites: 'Einladungs-Filter',
+    automod_toggle_label_mentions: 'Anti-Erwähnungs-Spam',
+    automod_toggle_label_ghostping: 'Anti-Ghost-Ping',
+    automod_toggle_label_caps: 'Anti-GROSSSCHREIBUNG',
+    automod_toggle_label_keywords: 'Verbotene Wörter',
+    automod_toggle_label_regex: 'Regex-Regeln',
+    automod_toggle_label_profiles: 'Profil-Filter',
+    automod_toggle_label_strikes: 'Strikes & progressive Sanktionen',
+    automod_toggle_unknown_module: '❌ Unbekanntes Modul: `{module}`.',
+    automod_toggle_state_on: 'aktiviert',
+    automod_toggle_state_off: 'deaktiviert',
+    automod_toggle_success: '{emoji} **{label}** {state}.',
+    automod_toggle_disabled_note: '\n⚠️ Hinweis: Die globale AutoMod-Engine ist derzeit deaktiviert (`/automod toggle module:all activer:True` zum Reaktivieren) — diese Einstellung wirkt sich erst aus, sobald AutoMod wieder aktiv ist.',
+    automod_usage_fallback: 'Verwendung: `/automod status`, `/automod test <message>`, `/automod smartmode <activer>`, `/automod toggle <module> <activer>`',
+
+    events_list_empty_title: '🗓️ Keine anstehenden Events',
+    events_list_empty_desc: 'Derzeit sind keine Events geplant.\nNutze das ETHONE-Dashboard, um eines zu planen!',
+    events_list_title: '🗓️ Anstehende Events • {guildName}',
+    events_list_desc: 'Hier sind die nächsten **{count}** Events:',
+    events_list_field_value: '📅 <t:{start}:F> (<t:{start}:R>)\n👥 **{capStr}** • 📍 {locationStr}\nStatus: `{status}`',
+    events_participants_suffix: '{count} Teilnehmer',
+    events_missing_id: '❌ Bitte gib eine gültige Event-ID an.',
+    events_not_found: '❌ Event `{id}` nicht gefunden.',
+    events_rsvp_usage: '❌ Verwendung: `/event rsvp event_id:<id> status:<GOING|MAYBE|NOT_GOING>`',
+    events_generic_error_prefix: '❌ {error}',
+    events_rsvp_error_fallback: 'Fehler bei der RSVP-Verarbeitung.',
+    events_rsvp_success_title: '✅ Anmeldung aktualisiert!',
+    events_rsvp_success_desc: 'Dein Status für das Event **{eventId}** ist jetzt: **{status}**.\n{message}',
+    events_checkin_usage: '❌ Verwendung: `/event checkin event_id:<id>`',
+    events_checkin_success_title: '🎟️ Anwesenheit bestätigt!',
+    events_checkin_success_desc: 'Deine Anwesenheit beim Event wurde bestätigt.\nDanke fürs Mitmachen!',
+    events_post_permission_denied: '❌ Du benötigst die Berechtigung `Events verwalten`, um dieses Panel zu veröffentlichen.',
+    events_channel_not_found: '❌ Textkanal nicht gefunden.',
+    events_post_success: '✅ Event-Panel in <#{channelId}> veröffentlicht!',
+    events_unknown_subcommand: '❌ Unbekannter Unterbefehl. Verwende `/event list` oder `/event info`.',
+    events_rsvp_status_going: '✅ Bestätigt (Going)',
+    events_rsvp_status_maybe: '🤔 Vielleicht (Maybe)',
+    events_rsvp_status_notgoing: '❌ Nimmt nicht teil',
+    events_rsvp_status_waitlist: '⏳ Auf der Warteliste',
+    events_rsvp_button_success: '🎉 {message}\nDein aktueller Status: **{statusLabel}**.',
+    events_checkin_button_success: '🎟️ **Check-in bestätigt!**\n{message}',
+    events_status_scheduled: '🗓️ Geplant',
+    events_status_live: '🔴 LIVE',
+    events_status_completed: '✅ Beendet',
+    events_status_cancelled: '❌ Abgesagt',
+    events_location_unspecified: 'Nicht angegeben',
+    events_location_voice_default: 'Sprachkanal',
+    events_location_stage_default: 'Bühnenkanal',
+    events_location_text_default: 'Textkanal',
+    events_location_external_default: 'Externer Link',
+    events_capacity_full_suffix: '🔴 (Voll)',
+    events_panel_field_datetime: '📅 Datum & Uhrzeit',
+    events_panel_field_location: '📍 Ort',
+    events_panel_field_status: '👥 Status & Anmeldungen',
+    events_panel_datetime_value: '<t:{start}:F>\n<t:{start}:R>\nEnde: <t:{end}:t>',
+    events_panel_status_value: '**Status:** {statusText}\n**Bestätigt:** {capacityStr}\n**Vielleicht:** {maybeCount}',
+    events_panel_waitlist_line: '\n**Warteliste:** {count}',
+    events_panel_footer: 'ETHONE Events 2.0 • ID: {id}',
+    events_panel_no_description: '*Keine Beschreibung angegeben.*',
+    events_btn_waitlist_label: 'Warteliste ({count})',
+    events_btn_going_label: 'Teilnehmen ({count})',
+    events_btn_maybe_label: 'Vielleicht ({count})',
+    events_btn_not_going_label: 'Nimmt nicht teil',
+    events_btn_checkin_label: 'Check-in',
+    events_btn_details_label: 'Details & Kalender',
+
+    giveaway_slash_only: 'Dieser Befehl muss als Slash Command ausgeführt werden.',
+    giveaway_invalid_channel: '❌ Bitte gib einen gültigen Textkanal an.',
+    giveaway_start_success: '✅ Gewinnspiel für **{prize}** erfolgreich gestartet in <#{channelId}>! (ID: `{id}`)',
+    giveaway_not_found: '❌ Gewinnspiel auf diesem Server nicht gefunden.',
+    giveaway_end_success: '🎉 Gewinnspiel erfolgreich beendet! Gewinner: {winners}',
+    giveaway_no_eligible_participant: 'Keine berechtigten Teilnehmer.',
+    giveaway_reroll_success: '🎲 Reroll abgeschlossen! Neue(r) Gewinner: {winners}',
+    giveaway_no_other_participant: 'Keine weiteren Teilnehmer verfügbar.',
+    giveaway_cancel_success: '❌ Das Gewinnspiel wurde erfolgreich abgebrochen.',
+    giveaway_list_empty: 'ℹ️ Auf diesem Server ist derzeit kein Gewinnspiel aktiv.',
+    giveaway_list_title: '🎁 Aktive Gewinnspiele • {guildName}',
+    giveaway_list_item: '• **{prize}** (<#{channelId}>) — `{count}` Teilnehmer — Ende: <t:{end}:R>\n  ID: `{id}`',
+    giveaway_list_footer: 'Um ein Gewinnspiel zu beenden: /giveaway end <id>',
+    giveaway_claim_not_eligible: '❌ Dieses Gewinnspiel ist nicht zur Abholung berechtigt.',
+    giveaway_claim_not_winner: '⛔ Du gehörst nicht zu den ausgewählten Gewinnern für diesen Preis.',
+    giveaway_claim_already_done: '✅ Du hast deinen Gewinn bereits bestätigt.',
+    giveaway_claim_success: '🎉 **Abholung bestätigt!** Die Organisatoren wurden über deine Bestätigung informiert.',
+    giveaway_default_description: 'Klicke auf den Button unten, um am Gewinnspiel teilzunehmen!',
+    giveaway_embed_ended_title: '🎉 GEWINNSPIEL BEENDET: {prize}',
+    giveaway_embed_ended_desc: 'Dieses Gewinnspiel ist jetzt beendet.\n\n🏆 **Gewinner:** {winners}\n\n🎁 **Gewonnener Preis:** {prize}\n👥 **Teilnehmer insgesamt:** `{count}`\n👤 **Veranstaltet von:** <@{hostId}>',
+    giveaway_embed_cancelled_title: '❌ GEWINNSPIEL ABGEBROCHEN: {prize}',
+    giveaway_embed_cancelled_desc: 'Dieses Gewinnspiel wurde von einem Administrator abgebrochen.',
+    giveaway_embed_active_title: '🎁 GEWINNSPIEL: {prize}',
+    giveaway_embed_active_desc: '{description}\n\n🏆 **Gewinner:** `{winnerCount}`\n⏰ **Ende:** <t:{endTimestamp}:R> (<t:{endTimestamp}:f>)\n👤 **Veranstaltet von:** <@{hostId}>\n👥 **Teilnehmer:** `{participantsCount}`',
+    giveaway_req_roles_required: '\n• Erforderliche Rolle(n): {roles}',
+    giveaway_req_roles_excluded: '\n• Ausgeschlossene Rolle(n): {roles}',
+    giveaway_req_min_age: '\n• Mindest-Kontoalter: `{days} Tag(e)`',
+    giveaway_req_min_level: '\n• Mindest-XP-Level: `Level {level}`',
+    giveaway_req_prefix: '\n\n🛡️ **Teilnahmebedingungen:**',
+    giveaway_btn_enter: '🎉 Teilnehmen ({count})',
+    giveaway_btn_claim: '🎁 Meinen Preis abholen',
+    giveaway_elig_excluded_role: 'Du hast eine vom Gewinnspiel ausgeschlossene Rolle.',
+    giveaway_elig_missing_all_roles: 'Du hast nicht alle erforderlichen Rollen, um teilzunehmen.',
+    giveaway_elig_missing_any_role: 'Du hast keine der erforderlichen Rollen, um teilzunehmen.',
+    giveaway_elig_min_age: 'Dein Discord-Konto muss mindestens {days} Tag(e) alt sein.',
+    giveaway_elig_min_level: 'Du musst mindestens **Level {level}** erreicht haben (aktuelles Level: {userLevel}).',
+    giveaway_not_active: '❌ Dieses Gewinnspiel ist nicht mehr aktiv.',
+    giveaway_left: '👋 Du nimmst nicht mehr an diesem Gewinnspiel teil.',
+    giveaway_participation_denied: '⛔ **Teilnahme abgelehnt:**\n{reason}',
+    giveaway_join_success: '🎉 **Glückwunsch!** Deine Teilnahme am Gewinnspiel wurde registriert.',
+    giveaway_announce_winners: '🎉 Glückwunsch {mentions}! Du hast das Gewinnspiel für **{prize}** gewonnen! 🎁',
+    giveaway_announce_no_winner: '⚠️ Für das Gewinnspiel **{prize}** konnte kein Gewinner ausgewählt werden (keine berechtigten Teilnehmer).',
+    giveaway_dm_winner: '🎉 **Glückwunsch!** Du hast das Gewinnspiel **{prize}** auf **{guildName}** gewonnen!',
+
+    suggest_slash_only: 'Bitte nutze den Slash-Befehl `/suggest`, um eine Idee einzureichen.',
+    suggest_module_disabled: '❌ Das Vorschlagssystem ist auf diesem Server derzeit deaktiviert.',
+    suggest_no_channel_configured: '❌ Es wurde kein Vorschlagskanal von den Administratoren eingerichtet.',
+    suggest_published_success: '✅ Dein Vorschlag **#{numericId}** wurde erfolgreich in <#{channelId}> veröffentlicht!',
+    suggest_generic_error: '❌ Fehler: {error}',
+    suggest_modal_title: 'Einen Vorschlag einreichen',
+    suggest_modal_title_label: 'Titel deiner Idee',
+    suggest_modal_title_placeholder: 'Z. B.: Einen eigenen Gaming-Kanal hinzufügen...',
+    suggest_modal_desc_label: 'Ausführliche Beschreibung',
+    suggest_modal_desc_placeholder: 'Erkläre, warum diese Idee nützlich wäre und wie sie funktionieren würde...',
+    suggest_modal_category_label: 'Kategorie (optional)',
+    suggest_modal_category_placeholder: 'Z. B.: Allgemein, Server, Bot, Events...',
+    suggest_not_found: '❌ Vorschlag nicht gefunden.',
+    suggest_upvote_removed: '↩️ Dein Upvote wurde entfernt.',
+    suggest_upvote_added: '👍 Dein Upvote wurde gezählt!',
+    suggest_downvote_removed: '↩️ Dein Downvote wurde entfernt.',
+    suggest_downvote_added: '👎 Dein Downvote wurde gezählt!',
+    suggest_follow_on: '🔔 Du folgst diesem Vorschlag jetzt. Du wirst bei jedem Update benachrichtigt!',
+    suggest_follow_off: '🔕 Du folgst diesem Vorschlag nicht mehr.',
+    suggest_comment_modal_title: 'Kommentar hinzufügen',
+    suggest_comment_input_label: 'Dein Kommentar / konstruktives Feedback',
+    suggest_comment_input_placeholder: 'Teile deine Meinung zu dieser Idee...',
+    suggest_comment_added: '💬 Dein Kommentar wurde hinzugefügt!',
+    suggest_submitted_success: '✅ Dein Vorschlag **#{numericId}** wurde eingereicht und im dafür vorgesehenen Kanal veröffentlicht!',
+    suggest_default_category: 'Allgemein',
+    suggest_status_pending: 'Ausstehend',
+    suggest_status_under_review: 'In Prüfung',
+    suggest_status_planned: 'Geplant',
+    suggest_status_accepted: 'Angenommen',
+    suggest_status_in_progress: 'In Bearbeitung',
+    suggest_status_completed: 'Umgesetzt',
+    suggest_status_rejected: 'Abgelehnt',
+    suggest_status_duplicate: 'Duplikat',
+    suggest_status_on_hold: 'Pausiert',
+    suggest_embed_author: 'Vorschlag #{numericId} • Von {authorTag}',
+    suggest_field_status: 'Status',
+    suggest_field_category: 'Kategorie',
+    suggest_field_score: 'Punktzahl',
+    suggest_score_value: '👍 {up}  •  👎 {down}  (Punktzahl: **{score}**)',
+    suggest_staff_response_field: '💬 Antwort des Teams ({responderTag})',
+    suggest_default_moderator: 'Moderator',
+    suggest_duplicate_field_value: 'Dieser Vorschlag wurde als Duplikat von Vorschlag #{dupId} markiert.',
+    suggest_embed_footer: 'ID: {id} • {count} Kommentar(e)',
+    suggest_btn_comment: '💬 Kommentieren ({count})',
+    suggest_btn_follow: '🔔 Folgen ({count})',
+    suggest_no_channel_error: 'Auf diesem Server ist kein Vorschlagskanal konfiguriert.',
+    suggest_thread_name: 'Diskussion #{numericId}: {title}',
+    suggest_dm_update: '🔔 **Update zu Vorschlag #{numericId}**\nTitel: **{title}**\nNeuer Status: {emoji} **{label}**\n{responseLine}',
+    suggest_dm_response_line: 'Offizielle Antwort: *"{response}"*\n',
+
+    leveling_module_disabled: '⚠️ Das Levelsystem ist auf diesem Server derzeit deaktiviert.',
+    leveling_rank_author: 'Fortschritt von {username}',
+    leveling_field_rank: '🏆 Rang',
+    leveling_field_level: '⭐ Level',
+    leveling_field_messages: '💬 Nachrichten',
+    leveling_field_progress: '📊 Fortschritt zum nächsten Level',
+    leveling_progress_value: '`{bar}` **{percent}%**\n`{cur} / {next} XP` (Gesamt: {total} XP)',
+    leveling_rank_footer: '{guildName} • Levelsystem',
+    leveling_leaderboard_empty: '📜 Auf diesem Server hat noch niemand Erfahrung gesammelt.',
+    leveling_leaderboard_title: '🏆 Aktivitäts-Bestenliste • {guildName}',
+    leveling_leaderboard_line: '{medal} <@{userId}> — **Level {level}** (`{xp} XP`)',
+    leveling_leaderboard_footer: 'Die vollständige Bestenliste findest du im Web-Dashboard',
+    leveling_xp_add_success: '✅ **+{amount} XP** zu <@{userId}> hinzugefügt. Neuer Gesamtwert: **{total} XP** (Level {level}).',
+    leveling_xp_remove_success: '✅ **-{amount} XP** von <@{userId}> entfernt. Neuer Gesamtwert: **{total} XP** (Level {level}).',
+    leveling_xp_set_success: '✅ XP von <@{userId}> auf **{total} XP** gesetzt (Level {level}).',
+    leveling_xp_reset_success: '🗑️ Erfahrung und Level von <@{userId}> wurden erfolgreich zurückgesetzt.',
+
+    antiraid_status_title: '🛡️ Anti-Raid-Zentrale 2.0 — {guildName}',
+    antiraid_field_risk_score: '📊 Risk Score',
+    antiraid_field_raidmode: '🚨 Raid Mode',
+    antiraid_raidmode_active: '🔥 **AKTIVIERT**',
+    antiraid_raidmode_normal: '🟢 Normal',
+    antiraid_field_lockdown: '🔒 Sperrung (Lockdown)',
+    antiraid_lockdown_active: '🔴 Aktiv ({count} Kanäle)',
+    antiraid_lockdown_inactive: '🟢 Inaktiv',
+    antiraid_field_joins: '📥 Beitritte (60s)',
+    antiraid_joins_value: '{count} Beitritte',
+    antiraid_field_messages: '💬 Nachrichten (60s)',
+    antiraid_messages_value: '{count} Nachrichten',
+    antiraid_field_mentions: '🔔 Erwähnungen (60s)',
+    antiraid_mentions_value: '{count} Erwähnungen',
+    antiraid_status_footer: 'ETHONE Anti-Raid Engine 2.0 • Web-Dashboard verfügbar',
+    antiraid_raidmode_reason: 'Ausgelöst von {tag}',
+    antiraid_lockdown_reason: 'Notfall-Lockdown von {tag}',
+    antiraid_raidmode_on_success: '🚨 **Raid Mode AKTIVIERT!** Notfallschutzmaßnahmen sind jetzt aktiv.',
+    antiraid_raidmode_off_success: '🔓 **Raid Mode DEAKTIVIERT.** Zurück zur Standardkonfiguration.',
+    antiraid_lockdown_on_success: '🔒 **Lockdown AKTIVIERT!** {count} Textkanal/Textkanäle gesperrt.',
+    antiraid_lockdown_off_success: '🔓 **Lockdown AUFGEHOBEN!** {count} Kanal/Kanäle entsperrt.',
+    antiraid_usage_fallback: 'Verwendung: `/antiraid status`, `/antiraid raidmode <activer>`, `/antiraid lockdown <activer>`',
   },
 };
 

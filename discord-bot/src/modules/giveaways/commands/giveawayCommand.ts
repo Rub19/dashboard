@@ -8,6 +8,7 @@ import {
 import { Command, CommandContext } from '../../../types/command.js';
 import { giveawayService } from '../services/giveawayService.js';
 import { giveawayStorage } from '../storage/giveawayStorage.js';
+import { formatString, getTranslation } from '../../../utils/i18n.js';
 
 export const giveawayCommand: Command = {
   name: 'giveaway',
@@ -84,9 +85,11 @@ export const giveawayCommand: Command = {
     ),
 
   async execute(ctx: CommandContext): Promise<void> {
+    const t = getTranslation(ctx.guildConfig.language);
+
     if (!ctx.isSlash) {
       await ctx.reply({
-        embeds: [ctx.createEmbed('error').setDescription('Cette commande doit être exécutée via Slash Command.')],
+        embeds: [ctx.createEmbed('error').setDescription(t.giveaway_slash_only)],
         ephemeral: true,
       });
       return;
@@ -106,7 +109,7 @@ export const giveawayCommand: Command = {
 
       if (!targetChannel || targetChannel.type !== ChannelType.GuildText) {
         await ctx.reply({
-          embeds: [ctx.createEmbed('error').setDescription('❌ Veuillez spécifier un salon textuel valide.')],
+          embeds: [ctx.createEmbed('error').setDescription(t.giveaway_invalid_channel)],
           ephemeral: true,
         });
         return;
@@ -125,7 +128,7 @@ export const giveawayCommand: Command = {
       });
 
       await ctx.reply({
-        embeds: [ctx.createEmbed('success').setDescription(`✅ Giveaway pour **${prize}** lancé avec succès dans <#${gw.channelId}> ! (ID: \`${gw.id}\`)`)],
+        embeds: [ctx.createEmbed('success').setDescription(formatString(t.giveaway_start_success, { prize, channelId: gw.channelId, id: gw.id }))],
         ephemeral: true,
       });
     } else if (sub === 'end') {
@@ -133,7 +136,7 @@ export const giveawayCommand: Command = {
       const gw = giveawayStorage.getById(id);
 
       if (!gw || gw.guildId !== guild.id) {
-        await ctx.reply({ embeds: [ctx.createEmbed('error').setDescription('❌ Giveaway introuvable sur ce serveur.')], ephemeral: true });
+        await ctx.reply({ embeds: [ctx.createEmbed('error').setDescription(t.giveaway_not_found)], ephemeral: true });
         return;
       }
 
@@ -141,9 +144,9 @@ export const giveawayCommand: Command = {
       const winners = await giveawayService.endGiveawayManual(id, interaction.client);
 
       await ctx.reply({
-        embeds: [ctx.createEmbed('success').setDescription(`🎉 Giveaway terminé avec succès ! Gagnant(s) : ${
-          winners.length > 0 ? winners.map((w) => `<@${w}>`).join(', ') : 'Aucun participant éligible.'
-        }`)],
+        embeds: [ctx.createEmbed('success').setDescription(formatString(t.giveaway_end_success, {
+          winners: winners.length > 0 ? winners.map((w) => `<@${w}>`).join(', ') : t.giveaway_no_eligible_participant,
+        }))],
         ephemeral: true,
       });
     } else if (sub === 'reroll') {
@@ -152,7 +155,7 @@ export const giveawayCommand: Command = {
       const gw = giveawayStorage.getById(id);
 
       if (!gw || gw.guildId !== guild.id) {
-        await ctx.reply({ embeds: [ctx.createEmbed('error').setDescription('❌ Giveaway introuvable sur ce serveur.')], ephemeral: true });
+        await ctx.reply({ embeds: [ctx.createEmbed('error').setDescription(t.giveaway_not_found)], ephemeral: true });
         return;
       }
 
@@ -160,9 +163,9 @@ export const giveawayCommand: Command = {
       const newWinners = await giveawayService.reroll(id, interaction.client, count);
 
       await ctx.reply({
-        embeds: [ctx.createEmbed('success').setDescription(`🎲 Reroll effectué ! Nouveau(x) gagnant(s) : ${
-          newWinners.length > 0 ? newWinners.map((w) => `<@${w}>`).join(', ') : 'Aucun autre participant disponible.'
-        }`)],
+        embeds: [ctx.createEmbed('success').setDescription(formatString(t.giveaway_reroll_success, {
+          winners: newWinners.length > 0 ? newWinners.map((w) => `<@${w}>`).join(', ') : t.giveaway_no_other_participant,
+        }))],
         ephemeral: true,
       });
     } else if (sub === 'cancel') {
@@ -170,7 +173,7 @@ export const giveawayCommand: Command = {
       const gw = giveawayStorage.getById(id);
 
       if (!gw || gw.guildId !== guild.id) {
-        await ctx.reply({ embeds: [ctx.createEmbed('error').setDescription('❌ Giveaway introuvable sur ce serveur.')], ephemeral: true });
+        await ctx.reply({ embeds: [ctx.createEmbed('error').setDescription(t.giveaway_not_found)], ephemeral: true });
         return;
       }
 
@@ -178,13 +181,13 @@ export const giveawayCommand: Command = {
       // peut dépasser la fenêtre de 3s de Discord ("Unknown interaction" / 10062) si on ne le fait pas.
       await ctx.deferReply(true);
       await giveawayService.cancelGiveaway(id, interaction.client);
-      await ctx.reply({ embeds: [ctx.createEmbed('success').setDescription('❌ Le giveaway a été annulé avec succès.')], ephemeral: true });
+      await ctx.reply({ embeds: [ctx.createEmbed('success').setDescription(t.giveaway_cancel_success)], ephemeral: true });
     } else if (sub === 'list') {
       const list = giveawayStorage.getForGuild(guild.id).filter((g) => g.status === 'active');
 
       if (list.length === 0) {
         await ctx.reply({
-          embeds: [ctx.createEmbed('info').setDescription('ℹ️ Aucun giveaway n’est actuellement actif sur ce serveur.')],
+          embeds: [ctx.createEmbed('info').setDescription(t.giveaway_list_empty)],
           ephemeral: true,
         });
         return;
@@ -192,18 +195,21 @@ export const giveawayCommand: Command = {
 
       const embed = new EmbedBuilder()
         .setColor('#6366F1')
-        .setTitle(`🎁 Giveaways Actifs • ${guild.name}`)
+        .setTitle(formatString(t.giveaway_list_title, { guildName: guild.name }))
         .setDescription(
           list
-            .map(
-              (g) =>
-                `• **${g.prize}** (<#${g.channelId}>) — \`${g.participants.length}\` participants — Fin : <t:${Math.floor(
-                  new Date(g.endsAt).getTime() / 1000
-                )}:R>\n  ID: \`${g.id}\``
+            .map((g) =>
+              formatString(t.giveaway_list_item, {
+                prize: g.prize,
+                channelId: g.channelId,
+                count: g.participants.length,
+                end: Math.floor(new Date(g.endsAt).getTime() / 1000),
+                id: g.id,
+              })
             )
             .join('\n\n')
         )
-        .setFooter({ text: 'Pour terminer un giveaway : /giveaway end <id>' });
+        .setFooter({ text: t.giveaway_list_footer });
 
       await ctx.reply({ embeds: [embed], ephemeral: true });
     }

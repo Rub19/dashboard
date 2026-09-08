@@ -47,7 +47,7 @@ export class ReferralRewardService {
                     module: 'MEMBERS',
                     type: 'ROLE_UPDATE',
                     actor: { id: botMember.id, tag: botMember.user.tag },
-                    target: { id: member.id, name: member.user.tag },
+                    target: { id: member.id, type: 'USER', name: member.user.tag },
                     reason: `Récompense d'invitation : palier ${rule.requiredValidInvites} atteint (${rule.name})`,
                     metadata: { roleId: role.id, roleName: role.name, invites: eligibleInvites },
                   });

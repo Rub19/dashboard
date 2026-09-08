@@ -87,10 +87,21 @@ export default function SettingsLayout({ initialSection }: { initialSection?: st
     }
   }, [notify, showError, update]);
 
-  const handleSave = useCallback(() => {
+  const handleSave = useCallback(async () => {
     try {
-      form.saveExplicit();
-      notify.sync();
+      const results = await form.saveExplicit();
+      const failed = results.filter((r) => !r.ok);
+      if (failed.length > 0) {
+        showError(
+          "Certaines modifications de compte n'ont pas pu être enregistrées",
+          failed.map((f) => f.field).join(", ")
+        );
+      }
+      if (results.some((r) => r.ok && r.message === "confirm")) {
+        notify.sync("Email de confirmation envoyé", "Vérifiez votre boîte de réception pour confirmer le changement.");
+      } else {
+        notify.sync();
+      }
     } catch (err) {
       showError(String(err));
     }
@@ -354,10 +365,21 @@ export default function SettingsLayout({ initialSection }: { initialSection?: st
                 variant="primary"
                 size="sm"
                 leftIcon={<Save className="h-3.5 w-3.5" />}
-                onClick={() => {
+                onClick={async () => {
                   try {
-                    form.saveExplicit();
-                    notify.sync();
+                    const results = await form.saveExplicit();
+                    const failed = results.filter((r) => !r.ok);
+                    if (failed.length > 0) {
+                      showError(
+                        "Certaines modifications de compte n'ont pas pu être enregistrées",
+                        failed.map((f) => f.field).join(", ")
+                      );
+                    }
+                    if (results.some((r) => r.ok && r.message === "confirm")) {
+                      notify.sync("Email de confirmation envoyé", "Vérifiez votre boîte de réception pour confirmer le changement.");
+                    } else {
+                      notify.sync();
+                    }
                   } catch (err) {
                     showError(String(err));
                   }

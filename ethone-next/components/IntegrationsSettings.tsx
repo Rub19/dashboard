@@ -433,7 +433,7 @@ export default function IntegrationsSettings() {
                   )}
                   title="Afficher uniquement les services connectés"
                 >
-                  <span className="h-2 w-2 rounded-full bg-[var(--accent-primary)] animate-pulse" />
+                  <span className="h-2 w-2 rounded-full bg-[var(--accent-primary)] shadow-[0_0_5px_var(--glow-color)]" />
                   <span>{healthCounts.connectedCount} Connectés</span>
                 </button>
 

@@ -285,7 +285,7 @@ export default function StatusBar() {
               onClick={() => (isMinimized ? openLive() : closeLive())}
               className="flex items-center gap-1.5 rounded-lg border border-[var(--accent-primary)]/30 bg-[var(--accent-primary)]/10 px-2.5 py-1 text-xs font-medium text-[var(--accent-primary)] transition-all hover:bg-[var(--accent-primary)]/20"
             >
-              <Radio className="h-3.5 w-3.5 animate-pulse text-[var(--accent-primary)]" />
+              <Radio className="h-3.5 w-3.5 text-[var(--accent-primary)]" />
               <span>{isMinimized ? i18n("liveMinimized") || "Live réduit" : i18n("liveActive") || "Live actif"}</span>
             </button>
           ) : (

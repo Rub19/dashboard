@@ -402,8 +402,18 @@ class MusicProviderManager {
       }
     }
 
-    // 2. Direct playable stream attempt if URL is http
-    if (track.url && track.url.startsWith('http')) {
+    // 2. Direct playable stream attempt — ONLY if the URL is an actual direct audio
+    // file/stream (mp3/wav/ogg/etc. or a known Icecast stream). Feeding a webpage URL
+    // (e.g. a soundcloud.com/spotify.com track page returned when the real provider's
+    // getStream() failed above) straight into ffmpeg produces no usable audio: ffmpeg
+    // receives HTML, not a media stream, so the resource "succeeds" (no thrown error)
+    // while producing silence — exactly the "Now Playing looks correct but no sound"
+    // symptom. Only take this shortcut for URLs that are provably real audio.
+    const isDirectAudioUrl =
+      !!track.url &&
+      (/^https?:\/\/.*\.(mp3|wav|ogg|m4a|aac|flac)(\?.*)?$/i.test(track.url) ||
+        /^https?:\/\/.*somafm\.com/i.test(track.url));
+    if (isDirectAudioUrl) {
       try {
         return createAudioResource(track.url, { inputType: StreamType.Arbitrary });
       } catch (directErr) {

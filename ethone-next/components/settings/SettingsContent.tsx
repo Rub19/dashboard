@@ -7,6 +7,7 @@ import { useSound } from "@/lib/sound";
 import { Icon } from "@/lib/icons";
 import { DEFAULTS, USER_STATUS_CONFIG } from "@/lib/settings";
 import { subscribePush, unsubscribePush } from "@/lib/push";
+import { useSyncStore } from "@/lib/stores/sync";
 import {
   BUILT_IN_PRESETS,
   applyPreset,
@@ -489,6 +490,60 @@ function PresetsPanel() {
           className="hidden"
         />
       </div>
+    </div>
+  );
+}
+
+function SyncStatusCard() {
+  const status = useSyncStore((s) => s.status);
+  const errorSources = useSyncStore((s) =>
+    Object.entries(s.sources)
+      .filter(([, v]) => v === "error")
+      .map(([k]) => k)
+  );
+
+  const config = {
+    idle: { label: "Synchronisé", tone: "success" as const, icon: "check" },
+    syncing: { label: "Synchronisation...", tone: "info" as const, icon: "arrows-clockwise" },
+    offline: { label: "Hors ligne", tone: "warning" as const, icon: "wifi-off" },
+    error: { label: "Erreur de synchronisation", tone: "error" as const, icon: "warning" },
+  }[status];
+
+  const toneClass = {
+    success: "bg-[var(--success)]/20 text-[var(--success)]",
+    info: "bg-[var(--info)]/20 text-[var(--info)]",
+    warning: "bg-[var(--warning)]/20 text-[var(--warning)]",
+    error: "bg-[var(--danger)]/20 text-[var(--danger)]",
+  }[config.tone];
+
+  const iconWrapClass = {
+    success: "bg-[var(--success)]/10 text-[var(--success)]",
+    info: "bg-[var(--info)]/10 text-[var(--info)]",
+    warning: "bg-[var(--warning)]/10 text-[var(--warning)]",
+    error: "bg-[var(--danger)]/10 text-[var(--danger)]",
+  }[config.tone];
+
+  return (
+    <div className="rounded-2xl border border-[var(--panel-border)] bg-[var(--panel-bg)] p-5 flex flex-col gap-4">
+      <div className="flex items-center justify-between">
+        <div className="flex items-center gap-3">
+          <div className={`h-10 w-10 rounded-xl flex items-center justify-center ${iconWrapClass}`}>
+            <Icon name="arrows-clockwise" className={`h-5 w-5 ${status === "syncing" ? "animate-spin" : ""}`} />
+          </div>
+          <div>
+            <h4 className="text-sm font-bold text-[var(--text-primary)]">Supabase Cloud Sync</h4>
+            <p className="text-xs text-[var(--text-muted)]">
+              {errorSources.length > 0 ? `En échec : ${errorSources.join(", ")}` : "Base de données temps réel connectée"}
+            </p>
+          </div>
+        </div>
+        <span className={`rounded-full px-2.5 py-1 text-xs font-bold ${toneClass}`}>
+          {config.label}
+        </span>
+      </div>
+      <p className="text-xs text-[var(--text-muted)]">
+        Toutes vos notes, tâches, fichiers et préférences sont sauvegardés automatiquement et synchronisés instantanément sur tous vos appareils.
+      </p>
     </div>
   );
 }
@@ -977,8 +1032,16 @@ export default function SettingsContent({
         key: "otpRequired",
         label: i18n("otpRequired"),
         type: "custom",
-        defaultValue: true,
-        render: (value) => <SwitchControl checked={Boolean(value)} onChange={() => {}} />,
+        defaultValue: false,
+        description: i18n("otpRequiredComingSoon", "Bientôt disponible — l'authentification à deux facteurs n'est pas encore prise en charge."),
+        render: () => (
+          <div className="flex items-center gap-2">
+            <SwitchControl checked={false} onChange={() => {}} disabled aria-label={i18n("otpRequired")} />
+            <span className="rounded-full border border-[var(--panel-border)] bg-[var(--surface-raised)] px-2 py-0.5 text-[10px] font-semibold uppercase tracking-wide text-[var(--text-muted)]">
+              {i18n("comingSoon", "Bientôt")}
+            </span>
+          </div>
+        ),
         keywords: ["sécurité", "otp", "2fa"],
       },
     ],
@@ -1269,27 +1332,7 @@ export default function SettingsContent({
         category: "sync",
         keywords: ["sync", "synchronisation", "cloud", "supabase", "état"],
         fields: [],
-        children: (
-          <div className="rounded-2xl border border-[var(--panel-border)] bg-[var(--panel-bg)] p-5 flex flex-col gap-4">
-            <div className="flex items-center justify-between">
-              <div className="flex items-center gap-3">
-                <div className="h-10 w-10 rounded-xl bg-[var(--success)]/10 text-[var(--success)] flex items-center justify-center">
-                  <Icon name="arrows-clockwise" className="h-5 w-5" />
-                </div>
-                <div>
-                  <h4 className="text-sm font-bold text-[var(--text-primary)]">Supabase Cloud Sync</h4>
-                  <p className="text-xs text-[var(--text-muted)]">Base de données temps réel connectée</p>
-                </div>
-              </div>
-              <span className="rounded-full bg-[var(--success)]/20 px-2.5 py-1 text-xs font-bold text-[var(--success)]">
-                🟢 Synchronisé
-              </span>
-            </div>
-            <p className="text-xs text-[var(--text-muted)]">
-              Toutes vos notes, tâches, fichiers et préférences sont sauvegardés automatiquement et synchronisés instantanément sur tous vos appareils.
-            </p>
-          </div>
-        ),
+        children: <SyncStatusCard />,
       },
       {
         id: "storage",

@@ -4,6 +4,7 @@ import { formRepository } from '../../modules/forms/storage/formRepository.js';
 import { formService } from '../../modules/forms/services/formService.js';
 import { discordFormPanel } from '../../modules/forms/ui/discordFormPanel.js';
 import { DiscordFormSchema } from '../../modules/forms/types/index.js';
+import { requireStringParam } from '../utils/params.js';
 
 export function createFormRouter(client: Client): Router {
   const router = Router({ mergeParams: true });
@@ -11,7 +12,7 @@ export function createFormRouter(client: Client): Router {
 
   // GET /api/guilds/:guildId/forms/overview
   router.get('/overview', (req: Request, res: Response) => {
-    const { guildId } = req.params;
+    const guildId = requireStringParam(req.params.guildId, 'guildId');
     const stats = formRepository.getOverviewStats(guildId);
     const forms = formRepository.getForms(guildId);
     const recentResponses = formRepository.getResponses(guildId).slice(0, 5);
@@ -26,7 +27,7 @@ export function createFormRouter(client: Client): Router {
 
   // GET /api/guilds/:guildId/forms
   router.get('/', (req: Request, res: Response) => {
-    const { guildId } = req.params;
+    const guildId = requireStringParam(req.params.guildId, 'guildId');
     const { status, search, category } = req.query;
 
     let forms = formRepository.getForms(guildId);
@@ -46,7 +47,7 @@ export function createFormRouter(client: Client): Router {
 
   // POST /api/guilds/:guildId/forms
   router.post('/', (req: Request, res: Response) => {
-    const { guildId } = req.params;
+    const guildId = requireStringParam(req.params.guildId, 'guildId');
     const body = req.body || {};
 
     const newForm = {
@@ -105,7 +106,8 @@ export function createFormRouter(client: Client): Router {
 
   // GET /api/guilds/:guildId/forms/:formId
   router.get('/:formId', (req: Request, res: Response) => {
-    const { guildId, formId } = req.params;
+    const guildId = requireStringParam(req.params.guildId, 'guildId');
+    const formId = requireStringParam(req.params.formId, 'formId');
     const form = formRepository.getFormById(guildId, formId);
     if (!form) {
       return res.status(404).json({ success: false, error: 'Formulaire introuvable' });
@@ -115,7 +117,8 @@ export function createFormRouter(client: Client): Router {
 
   // PUT /api/guilds/:guildId/forms/:formId
   router.put('/:formId', (req: Request, res: Response) => {
-    const { guildId, formId } = req.params;
+    const guildId = requireStringParam(req.params.guildId, 'guildId');
+    const formId = requireStringParam(req.params.formId, 'formId');
     const existing = formRepository.getFormById(guildId, formId);
     if (!existing) {
       return res.status(404).json({ success: false, error: 'Formulaire introuvable' });
@@ -137,7 +140,8 @@ export function createFormRouter(client: Client): Router {
 
   // POST /api/guilds/:guildId/forms/:formId/publish
   router.post('/:formId/publish', (req: Request, res: Response) => {
-    const { guildId, formId } = req.params;
+    const guildId = requireStringParam(req.params.guildId, 'guildId');
+    const formId = requireStringParam(req.params.formId, 'formId');
     const published = formService.publishForm(guildId, formId);
     if (!published) {
       return res.status(404).json({ success: false, error: 'Formulaire introuvable' });
@@ -147,7 +151,8 @@ export function createFormRouter(client: Client): Router {
 
   // DELETE /api/guilds/:guildId/forms/:formId
   router.delete('/:formId', (req: Request, res: Response) => {
-    const { guildId, formId } = req.params;
+    const guildId = requireStringParam(req.params.guildId, 'guildId');
+    const formId = requireStringParam(req.params.formId, 'formId');
     const deleted = formRepository.deleteForm(guildId, formId);
     if (!deleted) {
       return res.status(404).json({ success: false, error: 'Formulaire introuvable' });
@@ -157,7 +162,8 @@ export function createFormRouter(client: Client): Router {
 
   // POST /api/guilds/:guildId/forms/:formId/duplicate
   router.post('/:formId/duplicate', (req: Request, res: Response) => {
-    const { guildId, formId } = req.params;
+    const guildId = requireStringParam(req.params.guildId, 'guildId');
+    const formId = requireStringParam(req.params.formId, 'formId');
     const dup = formRepository.duplicateForm(guildId, formId, req.body?.title);
     if (!dup) {
       return res.status(404).json({ success: false, error: 'Formulaire introuvable' });
@@ -167,7 +173,8 @@ export function createFormRouter(client: Client): Router {
 
   // GET /api/guilds/:guildId/forms/:formId/responses
   router.get('/:formId/responses', (req: Request, res: Response) => {
-    const { guildId, formId } = req.params;
+    const guildId = requireStringParam(req.params.guildId, 'guildId');
+    const formId = requireStringParam(req.params.formId, 'formId');
     const { status, search, reviewerId } = req.query;
 
     let responses = formRepository.getResponses(guildId, formId);
@@ -189,7 +196,8 @@ export function createFormRouter(client: Client): Router {
 
   // GET /api/guilds/:guildId/forms/:formId/responses/:responseId
   router.get('/:formId/responses/:responseId', (req: Request, res: Response) => {
-    const { guildId, responseId } = req.params;
+    const guildId = requireStringParam(req.params.guildId, 'guildId');
+    const responseId = requireStringParam(req.params.responseId, 'responseId');
     const response = formRepository.getResponseById(guildId, responseId);
     if (!response) {
       return res.status(404).json({ success: false, error: 'Réponse introuvable' });
@@ -199,7 +207,8 @@ export function createFormRouter(client: Client): Router {
 
   // POST /api/guilds/:guildId/forms/:formId/responses/:responseId/review
   router.post('/:formId/responses/:responseId/review', async (req: Request, res: Response) => {
-    const { guildId, responseId } = req.params;
+    const guildId = requireStringParam(req.params.guildId, 'guildId');
+    const responseId = requireStringParam(req.params.responseId, 'responseId');
     const { reviewerId, reviewerTag, status, decisionReason, noteContent } = req.body;
 
     const result = await formService.reviewResponse({
@@ -220,7 +229,8 @@ export function createFormRouter(client: Client): Router {
 
   // POST /api/guilds/:guildId/forms/:formId/responses/:responseId/notes
   router.post('/:formId/responses/:responseId/notes', (req: Request, res: Response) => {
-    const { guildId, responseId } = req.params;
+    const guildId = requireStringParam(req.params.guildId, 'guildId');
+    const responseId = requireStringParam(req.params.responseId, 'responseId');
     const { authorId, authorTag, content } = req.body;
 
     if (!content || !content.trim()) {
@@ -243,7 +253,8 @@ export function createFormRouter(client: Client): Router {
 
   // PATCH /api/guilds/:guildId/forms/:formId/responses/:responseId/assign
   router.patch('/:formId/responses/:responseId/assign', (req: Request, res: Response) => {
-    const { guildId, responseId } = req.params;
+    const guildId = requireStringParam(req.params.guildId, 'guildId');
+    const responseId = requireStringParam(req.params.responseId, 'responseId');
     const { reviewerId, reviewerTag } = req.body;
 
     const updated = formService.assignReviewer({
@@ -261,7 +272,8 @@ export function createFormRouter(client: Client): Router {
 
   // POST /api/guilds/:guildId/forms/:formId/submit
   router.post('/:formId/submit', async (req: Request, res: Response) => {
-    const { guildId, formId } = req.params;
+    const guildId = requireStringParam(req.params.guildId, 'guildId');
+    const formId = requireStringParam(req.params.formId, 'formId');
     const { userId, userTag, userAvatar, answers, metadata } = req.body;
 
     const result = await formService.submitResponse({
@@ -282,7 +294,8 @@ export function createFormRouter(client: Client): Router {
 
   // POST /api/guilds/:guildId/forms/:formId/panel/publish
   router.post('/:formId/panel/publish', async (req: Request, res: Response) => {
-    const { guildId, formId } = req.params;
+    const guildId = requireStringParam(req.params.guildId, 'guildId');
+    const formId = requireStringParam(req.params.formId, 'formId');
     const { channelId } = req.body;
     const form = formRepository.getFormById(guildId, formId);
 
@@ -317,7 +330,8 @@ export function createFormRouter(client: Client): Router {
 
   // GET /api/guilds/:guildId/forms/:formId/export
   router.get('/:formId/export', (req: Request, res: Response) => {
-    const { guildId, formId } = req.params;
+    const guildId = requireStringParam(req.params.guildId, 'guildId');
+    const formId = requireStringParam(req.params.formId, 'formId');
     const format = req.query.format === 'csv' ? 'csv' : 'json';
 
     const data = formService.exportResponses(guildId, formId, format);

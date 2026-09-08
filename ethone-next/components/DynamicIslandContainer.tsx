@@ -295,7 +295,7 @@ export default function DynamicIslandContainer() {
       Boolean(localStorage.getItem("ethone:clientId:spotify")) ||
       settings?.liveNowPlayingSource === "spotify");
 
-  const spotifyActive = true;
+  const spotifyActive = settings.islandShowSpotify;
   const pomodoroActive = focus.state.phase !== "idle";
   const brainActive = isThinking;
   const syncActive = syncing || pendingCount > 0;
@@ -310,7 +310,7 @@ export default function DynamicIslandContainer() {
     if (pomodoroActive) register({ id: "pomodoro", type: "pomodoro" } as IslandEvent);
     else unregister("pomodoro");
 
-    if (uploadActive) register({ id: "upload", type: "upload" } as IslandEvent);
+    if (uploadActive && settings.islandShowUploads) register({ id: "upload", type: "upload" } as IslandEvent);
     else unregister("upload");
 
     if (syncActive) register({ id: "sync", type: "sync" } as IslandEvent);
@@ -322,12 +322,16 @@ export default function DynamicIslandContainer() {
     // the compact pill. Idle keeps its natural ISLAND_VIEW_PRIORITY (4, same
     // as before); an actively playing track is bumped above brain/pomodoro so
     // real playback reliably takes over the compact slot.
-    register({
-      id: "spotify",
-      type: "spotify",
-      priority: nowPlaying?.isPlaying ? 6 : 4,
-    } as IslandEvent);
-  }, [brainActive, pomodoroActive, syncActive, nowPlaying?.isPlaying, uploadActive, npLoading, register, unregister]);
+    if (settings.islandShowSpotify) {
+      register({
+        id: "spotify",
+        type: "spotify",
+        priority: nowPlaying?.isPlaying ? 6 : 4,
+      } as IslandEvent);
+    } else {
+      unregister("spotify");
+    }
+  }, [brainActive, pomodoroActive, syncActive, nowPlaying?.isPlaying, uploadActive, npLoading, register, unregister, settings.islandShowSpotify, settings.islandShowUploads]);
 
   // Sync selected view with the top of the queue.
   useEffect(() => {

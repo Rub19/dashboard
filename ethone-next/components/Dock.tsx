@@ -348,8 +348,7 @@ function Dock() {
                     className="absolute right-1.5 top-1.5 flex h-2 w-2 items-center justify-center"
                     aria-hidden="true"
                   >
-                    <span className="absolute inline-flex h-full w-full animate-ping rounded-full bg-rose-500 opacity-75" />
-                    <span className="relative inline-flex h-2 w-2 rounded-full bg-rose-500 ring-2 ring-[#080c14]" />
+                    <span className="relative inline-flex h-2 w-2 rounded-full bg-rose-500 ring-2 ring-[#080c14] shadow-[0_0_6px_rgba(244,63,94,0.7)]" />
                   </span>
                 )}
               </button>

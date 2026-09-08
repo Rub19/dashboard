@@ -122,7 +122,7 @@ export class DiscordPollPanel {
       const firstQ = results.questionsResults[0];
 
       const lines = firstQ?.options.map(
-        (o) => `${o.emoji || '🔹'} **${o.label}**\n${'█'.repeat(Math.round(o.percentage / 10))}${'░'.repeat(10 - Math.round(o.percentage / 10))} **${o.percentage}%** (${o.votesCount} votes)`
+        (o: any) => `${o.emoji || '🔹'} **${o.label}**\n${'█'.repeat(Math.round(o.percentage / 10))}${'░'.repeat(10 - Math.round(o.percentage / 10))} **${o.percentage}%** (${o.votesCount} votes)`
       ).join('\n\n');
 
       const resultsEmbed = new EmbedBuilder()

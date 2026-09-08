@@ -445,7 +445,7 @@ export class BackupRestoreService {
 
             if (existing) {
               channelIdMapping.set(bChan.id, existing.id);
-              if (parentId && existing.parentId !== parentId) {
+              if (parentId && existing.parentId !== parentId && 'setParent' in existing) {
                 await existing.setParent(parentId).catch(() => null);
               }
               if (mappedOverwrites.length > 0 && 'permissionOverwrites' in existing) {

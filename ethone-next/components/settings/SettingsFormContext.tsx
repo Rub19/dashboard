@@ -2,6 +2,9 @@
 
 import { createContext, useCallback, useContext, useMemo, useState } from "react";
 import { useSettings } from "@/components/SettingsProvider";
+import { useProfile } from "@/lib/hooks/useProfile";
+import { updatePassword } from "@/lib/auth";
+import { supabase } from "@/lib/supabase";
 import { DEFAULTS, type Settings } from "@/lib/settings";
 import { getValueByPath, setValueByPath } from "@/lib/object-path";
 
@@ -25,6 +28,8 @@ type HistoryEntry = {
   items: HistoryItem[];
 };
 
+export type AccountSaveResult = { field: "username" | "email" | "password"; ok: boolean; message?: string };
+
 type SettingsFormState = {
   query: string;
   setQuery: (q: string) => void;
@@ -32,7 +37,7 @@ type SettingsFormState = {
   setShowAdvanced: (v: boolean) => void;
   draft: Draft;
   setExplicit: (key: string, value: unknown) => void;
-  saveExplicit: () => void;
+  saveExplicit: () => Promise<AccountSaveResult[]>;
   cancelExplicit: () => void;
   resetToDefault: (key: string, path?: string, defaultValue?: unknown) => void;
   clearExplicitKey: (key: string) => void;
@@ -72,6 +77,7 @@ function makeId() {
 
 export function SettingsFormProvider({ children }: { children: React.ReactNode }) {
   const { settings, update } = useSettings();
+  const { save: saveProfile } = useProfile();
   const [query, setQuery] = useState("");
   const [showAdvanced, setShowAdvanced] = useState(false);
   const [draft, setDraft] = useState<Draft>({});
@@ -196,17 +202,62 @@ export function SettingsFormProvider({ children }: { children: React.ReactNode }
     });
   }, []);
 
-  const saveExplicit = useCallback(() => {
+  const saveExplicit = useCallback(async () => {
     setIsSaving(true);
+    const results: AccountSaveResult[] = [];
+
+    // Account identity fields are not part of the local Settings blob — route them
+    // to the real Supabase Auth / profile APIs instead of silently no-oping.
+    const accountKeys = new Set(["accountUsername", "accountEmail", "accountPassword"]);
     const known = Object.fromEntries(
-      Object.entries(draft).filter(([key]) => key !== "accountPassword")
+      Object.entries(draft).filter(([key]) => !accountKeys.has(key))
     );
+
+    if ("accountUsername" in draft) {
+      const username = String(draft.accountUsername ?? "").trim();
+      if (username) {
+        try {
+          await saveProfile({ username });
+          results.push({ field: "username", ok: true });
+        } catch (err) {
+          results.push({ field: "username", ok: false, message: err instanceof Error ? err.message : String(err) });
+        }
+      }
+    }
+
+    if ("accountEmail" in draft) {
+      const email = String(draft.accountEmail ?? "").trim();
+      if (email) {
+        try {
+          const { error } = await supabase.auth.updateUser({ email });
+          if (error) throw error;
+          results.push({ field: "email", ok: true, message: "confirm" });
+        } catch (err) {
+          results.push({ field: "email", ok: false, message: err instanceof Error ? err.message : String(err) });
+        }
+      }
+    }
+
+    if ("accountPassword" in draft) {
+      const password = String(draft.accountPassword ?? "");
+      if (password) {
+        try {
+          const res = await updatePassword(password);
+          if (!res.ok) throw (res.error instanceof Error ? res.error : new Error(String(res.error ?? "password update failed")));
+          results.push({ field: "password", ok: true });
+        } catch (err) {
+          results.push({ field: "password", ok: false, message: err instanceof Error ? err.message : String(err) });
+        }
+      }
+    }
+
     if (Object.keys(known).length > 0) {
       update(known as Partial<Settings>);
     }
     setDraft({});
     window.setTimeout(() => setIsSaving(false), 600);
-  }, [draft, update]);
+    return results;
+  }, [draft, update, saveProfile]);
 
   const cancelExplicit = useCallback(() => {
     setDraft({});

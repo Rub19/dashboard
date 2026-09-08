@@ -161,8 +161,9 @@ type SoundContextValue = {
   play: (sound: SoundType, pack?: string) => void;
   enabled: boolean;
   playAction: (action: string) => void;
-  playAmbient: (type: SoundAmbient) => void;
+  playAmbient: (type: SoundAmbient, volumePercent?: number) => void;
   stopAmbient: () => void;
+  setAmbientVolume: (volumePercent: number) => void;
   downloadWav: (type: SoundType, pack?: string) => Promise<boolean>;
   ambientSound: SoundAmbient;
 };
@@ -173,6 +174,7 @@ const SoundContext = createContext<SoundContextValue>({
   playAction: () => {},
   playAmbient: () => {},
   stopAmbient: () => {},
+  setAmbientVolume: () => {},
   downloadWav: async () => false,
   ambientSound: "none",
 });
@@ -578,6 +580,8 @@ type AmbientState = {
   gain: GainNode;
   filter: BiquadFilterNode | null;
   nodes: AudioScheduledSourceNode[];
+  /** Per-track volume multiplier (0-1), set independently from the master volume. */
+  volumeScale: number;
 };
 
 function createAmbientBuffer(ctx: BaseAudioContext, type: SoundAmbient): AudioBuffer {
@@ -1043,7 +1047,7 @@ export function SoundProvider({ children }: { children: ReactNode }) {
   }, []);
 
   const startAmbience = useCallback(
-    (type: SoundAmbient) => {
+    (type: SoundAmbient, volumeScale?: number) => {
       const ctx = audioRef.current;
       const output = outputGainRef.current;
       if (!ctx || !output || type === "none") return;
@@ -1059,15 +1063,19 @@ export function SoundProvider({ children }: { children: ReactNode }) {
         return;
       }
 
-      const target = (type === "drone" ? 0.35 : 0.45) * master;
-
       if (ambientRef.current?.type === type) {
+        const scale = volumeScale ?? ambientRef.current.volumeScale;
+        ambientRef.current.volumeScale = scale;
+        const target = (type === "drone" ? 0.35 : 0.45) * master * scale;
         const now = ctx.currentTime;
         ambientRef.current.gain.gain.cancelScheduledValues(now);
         ambientRef.current.gain.gain.setValueAtTime(ambientRef.current.gain.gain.value, now);
         ambientRef.current.gain.gain.linearRampToValueAtTime(target, now + 0.1);
         return;
       }
+
+      const scale = volumeScale ?? 1;
+      const target = (type === "drone" ? 0.35 : 0.45) * master * scale;
 
       stopAmbience();
 
@@ -1103,7 +1111,7 @@ export function SoundProvider({ children }: { children: ReactNode }) {
       filter.frequency.value = filterFreq[type] ?? 1800;
       filter.Q.value = 0.7;
 
-      const state: AmbientState = { type, source: null, gain: ambientGain, filter, nodes: [] };
+      const state: AmbientState = { type, source: null, gain: ambientGain, filter, nodes: [], volumeScale: scale };
 
       if (type === "drone") {
         const droneMix = ctx.createGain();
@@ -1219,6 +1227,18 @@ export function SoundProvider({ children }: { children: ReactNode }) {
           : null;
 
         scheduleSound(ctx, output, type, pack, ctx.currentTime, master, categoryVolume, pan);
+
+        // Briefly duck the ambient soundscape so notification tones stay audible.
+        if (category === "notifications" && settings.notificationDucking && ambientRef.current) {
+          const ambient = ambientRef.current;
+          const now = ctx.currentTime;
+          const restingTarget =
+            ((ambient.type === "drone" ? 0.35 : 0.45) * master) * ambient.volumeScale;
+          ambient.gain.gain.cancelScheduledValues(now);
+          ambient.gain.gain.setValueAtTime(ambient.gain.gain.value, now);
+          ambient.gain.gain.linearRampToValueAtTime(restingTarget * 0.35, now + 0.08);
+          ambient.gain.gain.linearRampToValueAtTime(restingTarget, now + 0.9);
+        }
       } catch {
         // Ignorer silencieusement une erreur audio isolée.
       }
@@ -1236,7 +1256,7 @@ export function SoundProvider({ children }: { children: ReactNode }) {
   );
 
   const playAmbient = useCallback(
-    (type: SoundAmbient) => {
+    (type: SoundAmbient, volumePercent?: number) => {
       try {
         if (type === "none") {
           stopAmbience();
@@ -1254,7 +1274,8 @@ export function SoundProvider({ children }: { children: ReactNode }) {
         } else {
           update({ ambientSound: type });
         }
-        startAmbience(type);
+        const scale = volumePercent !== undefined ? Math.max(0, Math.min(100, volumePercent)) / 100 : undefined;
+        startAmbience(type, scale);
       } catch {
         // Ignorer silencieusement une erreur audio isolée.
       }
@@ -1266,6 +1287,21 @@ export function SoundProvider({ children }: { children: ReactNode }) {
     stopAmbience();
     update({ ambientSound: "none" });
   }, [stopAmbience, update]);
+
+  /** Live-adjusts the currently playing ambient track's volume (0-100), without restarting it. */
+  const setAmbientVolume = useCallback((volumePercent: number) => {
+    const ambient = ambientRef.current;
+    const ctx = audioRef.current;
+    if (!ambient || !ctx) return;
+    const scale = Math.max(0, Math.min(100, volumePercent)) / 100;
+    ambient.volumeScale = scale;
+    const master = settingsRef.current.masterVolume ? (settingsRef.current.soundVolume ?? 50) / 100 : 0;
+    const target = (ambient.type === "drone" ? 0.35 : 0.45) * master * scale;
+    const now = ctx.currentTime;
+    ambient.gain.gain.cancelScheduledValues(now);
+    ambient.gain.gain.setValueAtTime(ambient.gain.gain.value, now);
+    ambient.gain.gain.linearRampToValueAtTime(target, now + 0.08);
+  }, []);
 
   useEffect(() => {
     const soundsOn =
@@ -1324,10 +1360,11 @@ export function SoundProvider({ children }: { children: ReactNode }) {
       playAction,
       playAmbient,
       stopAmbient,
+      setAmbientVolume,
       downloadWav,
       ambientSound: settings.ambientSound,
     }),
-    [play, enabled, playAction, playAmbient, stopAmbient, settings.ambientSound]
+    [play, enabled, playAction, playAmbient, stopAmbient, setAmbientVolume, settings.ambientSound]
   );
 
   return <SoundContext.Provider value={value}>{children}</SoundContext.Provider>;

@@ -73,9 +73,9 @@ export class BackupRepository {
         this.jobsCache.clear();
         for (const j of list) {
           // Détection d'une restauration interrompue par crash
-          if (j.status === 'in_progress') {
-            j.status = 'failed';
-            j.error = 'Processus interrompu pendant la restauration. État sécurisé.';
+          if (j.status === 'APPLYING' || j.status === 'PREPARING' || j.status === 'SCANNING' || j.status === 'VERIFYING' || j.status === 'QUEUED') {
+            j.status = 'FAILED';
+            j.errors = [...j.errors, 'Processus interrompu pendant la restauration. État sécurisé.'];
           }
           const arr = this.jobsCache.get(j.guildId) || [];
           arr.push(j);

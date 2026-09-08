@@ -81,7 +81,7 @@ export const aiSetupCommand: Command = {
         // S'assurer que le salon a une règle ACTIVE
         currentSettings.channelRules[channel.id] = {
           channelId: channel.id,
-          channelName: 'name' in channel ? channel.name : 'ai-channel',
+          channelName: ('name' in channel ? channel.name : null) || 'ai-channel',
           isCategory: false,
           mode: 'AUTOMATIC',
           knowledgeSourceIds: [],

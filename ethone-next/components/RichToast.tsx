@@ -154,10 +154,7 @@ export default function RichToast({
         <div className="min-w-0 flex-1 pt-0.5">
           <div className="flex items-center justify-between gap-2">
             <div className="flex items-center gap-1.5 min-w-0">
-              <span className="relative flex h-2 w-2">
-                <span className={cn("absolute inline-flex h-full w-full animate-ping rounded-full opacity-75", cfg.dotBg)} />
-                <span className={cn("relative inline-flex h-2 w-2 rounded-full", cfg.dotBg)} />
-              </span>
+              <span className={cn("relative inline-flex h-2 w-2 rounded-full shadow-[0_0_5px_var(--glow-color)]", cfg.dotBg)} />
               <p className={cn("text-xs font-bold leading-tight truncate", cfg.titleColor)}>
                 {title}
               </p>

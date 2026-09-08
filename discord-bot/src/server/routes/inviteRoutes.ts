@@ -3,6 +3,7 @@ import { Client } from 'discord.js';
 import { inviteRepository } from '../../modules/invites/storage/inviteRepository.js';
 import { inviteSnapshotService } from '../../modules/invites/services/inviteSnapshotService.js';
 import { logger } from '../../utils/logger.js';
+import { requireStringParam } from '../utils/params.js';
 
 export function createInviteRouter(client: Client): Router {
   const router = Router({ mergeParams: true });
@@ -10,7 +11,7 @@ export function createInviteRouter(client: Client): Router {
   // GET /api/guilds/:guildId/invites/overview
   router.get('/overview', (req: Request, res: Response) => {
     try {
-      const { guildId } = req.params;
+      const guildId = requireStringParam(req.params.guildId, 'guildId');
       const referrals = inviteRepository.getAllReferrals(guildId);
       const now = Date.now();
 
@@ -68,7 +69,7 @@ export function createInviteRouter(client: Client): Router {
   // GET /api/guilds/:guildId/invites/leaderboard
   router.get('/leaderboard', (req: Request, res: Response) => {
     try {
-      const { guildId } = req.params;
+      const guildId = requireStringParam(req.params.guildId, 'guildId');
       const period = (req.query.period as string) || 'all';
       const search = (req.query.search as string) || '';
 
@@ -89,7 +90,8 @@ export function createInviteRouter(client: Client): Router {
   // GET /api/guilds/:guildId/invites/users/:userId
   router.get('/users/:userId', (req: Request, res: Response) => {
     try {
-      const { guildId, userId } = req.params;
+      const guildId = requireStringParam(req.params.guildId, 'guildId');
+      const userId = requireStringParam(req.params.userId, 'userId');
       const leaderboard = inviteRepository.getLeaderboard(guildId, 'all');
       const userEntry = leaderboard.find((u) => u.userId === userId);
       const userReferrals = inviteRepository.getReferralsByUser(guildId, userId);
@@ -117,7 +119,7 @@ export function createInviteRouter(client: Client): Router {
   // GET /api/guilds/:guildId/invites/links
   router.get('/links', async (req: Request, res: Response) => {
     try {
-      const { guildId } = req.params;
+      const guildId = requireStringParam(req.params.guildId, 'guildId');
       const guild = client.guilds.cache.get(guildId);
       if (!guild) {
         return res.status(404).json({ error: 'Serveur introuvable' });
@@ -146,7 +148,7 @@ export function createInviteRouter(client: Client): Router {
   // GET /api/guilds/:guildId/invites/rewards
   router.get('/rewards', (req: Request, res: Response) => {
     try {
-      const { guildId } = req.params;
+      const guildId = requireStringParam(req.params.guildId, 'guildId');
       const rewards = inviteRepository.getRewards(guildId);
       res.json({ rewards });
     } catch (err: any) {
@@ -157,7 +159,7 @@ export function createInviteRouter(client: Client): Router {
   // POST /api/guilds/:guildId/invites/rewards
   router.post('/rewards', (req: Request, res: Response) => {
     try {
-      const { guildId } = req.params;
+      const guildId = requireStringParam(req.params.guildId, 'guildId');
       const { name, requiredValidInvites, roleId, roleName, xpAmount, message } = req.body;
 
       const reward = inviteRepository.saveReward({
@@ -182,7 +184,8 @@ export function createInviteRouter(client: Client): Router {
   // DELETE /api/guilds/:guildId/invites/rewards/:rewardId
   router.delete('/rewards/:rewardId', (req: Request, res: Response) => {
     try {
-      const { guildId, rewardId } = req.params;
+      const guildId = requireStringParam(req.params.guildId, 'guildId');
+      const rewardId = requireStringParam(req.params.rewardId, 'rewardId');
       const deleted = inviteRepository.deleteReward(guildId, rewardId);
       res.json({ success: deleted });
     } catch (err: any) {
@@ -193,7 +196,7 @@ export function createInviteRouter(client: Client): Router {
   // GET /api/guilds/:guildId/invites/campaigns
   router.get('/campaigns', (req: Request, res: Response) => {
     try {
-      const { guildId } = req.params;
+      const guildId = requireStringParam(req.params.guildId, 'guildId');
       const campaigns = inviteRepository.getCampaigns(guildId);
       res.json({ campaigns });
     } catch (err: any) {
@@ -204,7 +207,7 @@ export function createInviteRouter(client: Client): Router {
   // POST /api/guilds/:guildId/invites/campaigns
   router.post('/campaigns', (req: Request, res: Response) => {
     try {
-      const { guildId } = req.params;
+      const guildId = requireStringParam(req.params.guildId, 'guildId');
       const { name, description, startDate, endDate, inviteTarget, rewards } = req.body;
 
       const campaign = inviteRepository.saveCampaign({
@@ -231,7 +234,7 @@ export function createInviteRouter(client: Client): Router {
   // GET /api/guilds/:guildId/invites/settings
   router.get('/settings', (req: Request, res: Response) => {
     try {
-      const { guildId } = req.params;
+      const guildId = requireStringParam(req.params.guildId, 'guildId');
       const settings = inviteRepository.getSettings(guildId);
       res.json({ settings });
     } catch (err: any) {
@@ -242,7 +245,7 @@ export function createInviteRouter(client: Client): Router {
   // PUT /api/guilds/:guildId/invites/settings
   router.put('/settings', (req: Request, res: Response) => {
     try {
-      const { guildId } = req.params;
+      const guildId = requireStringParam(req.params.guildId, 'guildId');
       const updated = inviteRepository.updateSettings(guildId, req.body);
       res.json({ success: true, settings: updated });
     } catch (err: any) {
@@ -253,7 +256,7 @@ export function createInviteRouter(client: Client): Router {
   // POST /api/guilds/:guildId/invites/sync
   router.post('/sync', async (req: Request, res: Response) => {
     try {
-      const { guildId } = req.params;
+      const guildId = requireStringParam(req.params.guildId, 'guildId');
       const guild = client.guilds.cache.get(guildId);
       if (guild) {
         await inviteSnapshotService.primeGuildSnapshots(guild);
@@ -267,7 +270,7 @@ export function createInviteRouter(client: Client): Router {
   // GET /api/guilds/:guildId/invites/export
   router.get('/export', (req: Request, res: Response) => {
     try {
-      const { guildId } = req.params;
+      const guildId = requireStringParam(req.params.guildId, 'guildId');
       const format = (req.query.format as string) || 'json';
       const referrals = inviteRepository.getAllReferrals(guildId);
 

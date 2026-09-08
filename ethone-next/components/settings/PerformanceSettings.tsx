@@ -1,28 +1,96 @@
 "use client";
 
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { Icon } from "@/lib/icons";
 import { useSettings } from "@/components/SettingsProvider";
+import { useSound } from "@/lib/sound";
 import { useI18n } from "@/lib/hooks/useI18n";
 import { cn } from "@/lib/utils";
+
+function formatBytes(bytes: number): string {
+  if (!Number.isFinite(bytes) || bytes <= 0) return "0 Ko";
+  if (bytes < 1024 * 1024) return `${(bytes / 1024).toFixed(1)} Ko`;
+  return `${(bytes / 1024 / 1024).toFixed(1)} Mo`;
+}
+
+/** Measures the real browser refresh rate by averaging a short run of animation frame deltas. */
+function useMeasuredRefreshRate() {
+  const [fps, setFps] = useState<number | null>(null);
+  useEffect(() => {
+    if (typeof window === "undefined" || typeof requestAnimationFrame === "undefined") return;
+    let raf = 0;
+    let frames = 0;
+    let start = 0;
+    const samples: number[] = [];
+    let last = 0;
+    const tick = (t: number) => {
+      if (!start) start = t;
+      if (last) samples.push(t - last);
+      last = t;
+      frames++;
+      if (t - start < 500 && frames < 40) {
+        raf = requestAnimationFrame(tick);
+      } else if (samples.length > 0) {
+        const avgDelta = samples.reduce((a, b) => a + b, 0) / samples.length;
+        setFps(Math.round(1000 / avgDelta));
+      }
+    };
+    raf = requestAnimationFrame(tick);
+    return () => cancelAnimationFrame(raf);
+  }, []);
+  return fps;
+}
+
+function useLocalStorageUsage() {
+  const [bytes, setBytes] = useState<number | null>(null);
+  useEffect(() => {
+    try {
+      let total = 0;
+      for (let i = 0; i < localStorage.length; i++) {
+        const key = localStorage.key(i);
+        if (!key) continue;
+        total += key.length + (localStorage.getItem(key)?.length ?? 0);
+      }
+      setBytes(total * 2); // UTF-16 code units are 2 bytes each
+    } catch {
+      setBytes(null);
+    }
+  }, []);
+  return bytes;
+}
 
 export default function PerformanceSettings() {
   const i18n = useI18n();
   const { settings, update } = useSettings();
+  const { enabled: audioEnabled } = useSound();
   const [clearingCache, setClearingCache] = useState(false);
   const [cacheCleared, setCacheCleared] = useState(false);
+  const measuredFps = useMeasuredRefreshRate();
+  const localStorageBytes = useLocalStorageUsage();
+  const [heapUsed, setHeapUsed] = useState<string | null>(null);
+
+  useEffect(() => {
+    const perf = typeof performance !== "undefined" ? (performance as Performance & { memory?: { usedJSHeapSize?: number } }) : undefined;
+    const used = perf?.memory?.usedJSHeapSize;
+    setHeapUsed(used !== undefined ? formatBytes(used) : null);
+  }, []);
 
   const handleClearCache = () => {
     setClearingCache(true);
-    setTimeout(() => {
+    (async () => {
       try {
-        localStorage.removeItem("ethone-cache");
         sessionStorage.clear();
+      } catch {}
+      try {
+        if (typeof window !== "undefined" && "caches" in window) {
+          const keys = await caches.keys();
+          await Promise.all(keys.map((k) => caches.delete(k)));
+        }
       } catch {}
       setClearingCache(false);
       setCacheCleared(true);
       setTimeout(() => setCacheCleared(false), 3000);
-    }, 600);
+    })();
   };
 
   return (
@@ -34,8 +102,8 @@ export default function PerformanceSettings() {
             <span className="text-[11px] font-medium text-[var(--text-muted)]">Mémoire UI</span>
             <Icon name="cpu" className="h-4 w-4 text-[var(--accent-primary)]" />
           </div>
-          <p className="mt-2 text-base font-bold text-[var(--text-primary)]">~28 Mo</p>
-          <span className="text-[10px] text-[var(--success)]">Fluide & optimisé</span>
+          <p className="mt-2 text-base font-bold text-[var(--text-primary)]">{heapUsed ?? "N/A"}</p>
+          <span className="text-[10px] text-[var(--text-muted)]">{heapUsed ? "Heap JS utilisé" : "Non disponible sur ce navigateur"}</span>
         </div>
 
         <div className="flex flex-col rounded-2xl border border-[var(--panel-border)] bg-[var(--panel-bg)] p-4">
@@ -43,8 +111,8 @@ export default function PerformanceSettings() {
             <span className="text-[11px] font-medium text-[var(--text-muted)]">Rendu Écran</span>
             <Icon name="monitor" className="h-4 w-4 text-[var(--info)]" />
           </div>
-          <p className="mt-2 text-base font-bold text-[var(--text-primary)]">60 / 120 FPS</p>
-          <span className="text-[10px] text-[var(--text-muted)]">Ressorts physiques</span>
+          <p className="mt-2 text-base font-bold text-[var(--text-primary)]">{measuredFps ? `~${measuredFps} FPS` : "Mesure..."}</p>
+          <span className="text-[10px] text-[var(--text-muted)]">Fréquence d&apos;affichage mesurée</span>
         </div>
 
         <div className="flex flex-col rounded-2xl border border-[var(--panel-border)] bg-[var(--panel-bg)] p-4">
@@ -52,17 +120,17 @@ export default function PerformanceSettings() {
             <span className="text-[11px] font-medium text-[var(--text-muted)]">Audio Web API</span>
             <Icon name="speaker-high" className="h-4 w-4 text-[var(--accent-secondary)]" />
           </div>
-          <p className="mt-2 text-base font-bold text-[var(--text-primary)]">Prêt</p>
-          <span className="text-[10px] text-[var(--text-muted)]">Synthétiseur actif</span>
+          <p className="mt-2 text-base font-bold text-[var(--text-primary)]">{audioEnabled ? "Actif" : "Désactivé"}</p>
+          <span className="text-[10px] text-[var(--text-muted)]">{audioEnabled ? "Synthétiseur disponible" : "Sons désactivés dans les réglages"}</span>
         </div>
 
         <div className="flex flex-col rounded-2xl border border-[var(--panel-border)] bg-[var(--panel-bg)] p-4">
           <div className="flex items-center justify-between">
-            <span className="text-[11px] font-medium text-[var(--text-muted)]">Cache Local</span>
+            <span className="text-[11px] font-medium text-[var(--text-muted)]">Stockage local</span>
             <Icon name="hard-drive" className="h-4 w-4 text-[var(--warning)]" />
           </div>
-          <p className="mt-2 text-base font-bold text-[var(--text-primary)]">~1.4 Mo</p>
-          <span className="text-[10px] text-[var(--text-muted)]">IndexedDB + Storage</span>
+          <p className="mt-2 text-base font-bold text-[var(--text-primary)]">{localStorageBytes !== null ? formatBytes(localStorageBytes) : "N/A"}</p>
+          <span className="text-[10px] text-[var(--text-muted)]">localStorage utilisé</span>
         </div>
       </div>
 

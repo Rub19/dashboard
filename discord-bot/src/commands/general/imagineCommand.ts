@@ -43,7 +43,7 @@ export const imagineCommand: Command = {
       }
     }
 
-    await ctx.defer();
+    await ctx.deferReply();
 
     const result = await AIImageService.generateImage({ prompt });
 

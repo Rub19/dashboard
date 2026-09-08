@@ -220,7 +220,13 @@ export class GuildMusicPlayer {
       }
 
       resource.playStream.on('error', (streamErr) => {
-        logger.error(`[MusicPlayer] Erreur flux playStream pour "${track.title}" :`, streamErr);
+        logger.error(`[MusicPlayer] Erreur flux playStream pour "${track.title}" (guild ${this.guildId}) :`, streamErr);
+        // The resource itself never threw (createAudioResource succeeds synchronously even
+        // when the underlying stream is unusable, e.g. a missing/broken ffmpeg binary or a
+        // dead upstream URL) — without this, playback silently hangs on the errored track
+        // forever while the UI keeps reporting "PLAYING". Recover by skipping to the next
+        // track (or going IDLE) so a stream failure is never silent.
+        this.handleTrackEnd();
       });
 
       this.player.play(resource);

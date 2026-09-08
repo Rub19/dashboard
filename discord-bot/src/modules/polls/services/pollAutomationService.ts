@@ -51,17 +51,16 @@ export class PollAutomationService {
             }
 
             case 'CREATE_TICKET': {
-              if (action.ticketCategoryId) {
+              if (action.ticketCategoryId && this.client) {
                 try {
-                  const ticket = await ticketService.createTicket({
-                    guildId: poll.guildId,
-                    userId: poll.creatorId,
-                    userTag: poll.creatorTag,
-                    categoryId: action.ticketCategoryId,
-                    source: 'PANEL',
-                    initialMessage: `🗳️ **Sondage terminé : ${poll.title}**\nRésultats finaux disponibles. Gagnant : ${results.winningOption?.label || 'N/A'}.`,
-                  });
-                  executedActions.push(`Ticket support de suivi créé : #${ticket.number}`);
+                  const guild = await this.client.guilds.fetch(poll.guildId);
+                  const user = await this.client.users.fetch(poll.creatorId);
+                  const formAnswers: Record<string, any> = {
+                    pollTitle: poll.title,
+                    winningOption: results.winningOption?.label || 'N/A',
+                  };
+                  const ticket = await ticketService.createTicket(guild, user, action.ticketCategoryId, formAnswers);
+                  executedActions.push(`Ticket support de suivi créé : #${ticket.id}`);
                 } catch (ticketErr) {
                   logger.warn('Impossible de créer le ticket via poll automation :', ticketErr);
                 }

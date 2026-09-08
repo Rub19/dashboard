@@ -3,6 +3,7 @@ import { Client } from 'discord.js';
 import { aiService } from '../../modules/ai/services/aiService.js';
 import { aiRepository } from '../../modules/ai/storage/aiRepository.js';
 import { logger } from '../../utils/logger.js';
+import { requireStringParam } from '../utils/params.js';
 
 export function createAiRouter(client: Client): Router {
   const router = Router({ mergeParams: true });
@@ -10,7 +11,7 @@ export function createAiRouter(client: Client): Router {
   // 1. Vue d'ensemble & KPIs
   router.get('/overview', (req: Request, res: Response) => {
     try {
-      const { guildId } = req.params;
+      const guildId = requireStringParam(req.params.guildId, 'guildId');
       const overview = aiService.getOverview(guildId);
       res.json(overview);
     } catch (err: any) {
@@ -22,7 +23,7 @@ export function createAiRouter(client: Client): Router {
   // 2. Personnalité de l'IA
   router.get('/personality', (req: Request, res: Response) => {
     try {
-      const { guildId } = req.params;
+      const guildId = requireStringParam(req.params.guildId, 'guildId');
       const settings = aiRepository.getSettings(guildId);
       res.json(settings.personality);
     } catch (err: any) {
@@ -33,7 +34,7 @@ export function createAiRouter(client: Client): Router {
 
   router.put('/personality', (req: Request, res: Response) => {
     try {
-      const { guildId } = req.params;
+      const guildId = requireStringParam(req.params.guildId, 'guildId');
       const updated = aiService.updatePersonality(guildId, req.body);
       res.json(updated.personality);
     } catch (err: any) {
@@ -45,7 +46,7 @@ export function createAiRouter(client: Client): Router {
   // 3. Salons & Overrides
   router.get('/channels', (req: Request, res: Response) => {
     try {
-      const { guildId } = req.params;
+      const guildId = requireStringParam(req.params.guildId, 'guildId');
       const settings = aiRepository.getSettings(guildId);
       res.json({
         defaultMode: settings.defaultMode,
@@ -61,7 +62,7 @@ export function createAiRouter(client: Client): Router {
 
   router.put('/channels', (req: Request, res: Response) => {
     try {
-      const { guildId } = req.params;
+      const guildId = requireStringParam(req.params.guildId, 'guildId');
       const { rule } = req.body;
       if (!rule || !rule.channelId) {
         return res.status(400).json({ error: 'Règle de salon invalide' });
@@ -77,7 +78,7 @@ export function createAiRouter(client: Client): Router {
   // 4. Base de connaissances (RAG)
   router.get('/knowledge', (req: Request, res: Response) => {
     try {
-      const { guildId } = req.params;
+      const guildId = requireStringParam(req.params.guildId, 'guildId');
       const sources = aiRepository.getKnowledgeSources(guildId);
       res.json({ sources, total: sources.length });
     } catch (err: any) {
@@ -88,7 +89,7 @@ export function createAiRouter(client: Client): Router {
 
   router.post('/knowledge', (req: Request, res: Response) => {
     try {
-      const { guildId } = req.params;
+      const guildId = requireStringParam(req.params.guildId, 'guildId');
       const { title, type, content, scope, allowedChannelIds, allowedRoleIds } = req.body;
 
       if (!title || !content) {
@@ -118,7 +119,8 @@ export function createAiRouter(client: Client): Router {
 
   router.delete('/knowledge/:id', (req: Request, res: Response) => {
     try {
-      const { guildId, id } = req.params;
+      const guildId = requireStringParam(req.params.guildId, 'guildId');
+      const id = requireStringParam(req.params.id, 'id');
       const success = aiRepository.deleteKnowledgeSource(guildId, id);
       if (!success) {
         return res.status(404).json({ error: 'Source introuvable' });
@@ -133,7 +135,7 @@ export function createAiRouter(client: Client): Router {
   // 5. Outils & Permissions
   router.get('/tools', (req: Request, res: Response) => {
     try {
-      const { guildId } = req.params;
+      const guildId = requireStringParam(req.params.guildId, 'guildId');
       const settings = aiRepository.getSettings(guildId);
       res.json(settings.tools);
     } catch (err: any) {
@@ -144,7 +146,7 @@ export function createAiRouter(client: Client): Router {
 
   router.put('/tools', (req: Request, res: Response) => {
     try {
-      const { guildId } = req.params;
+      const guildId = requireStringParam(req.params.guildId, 'guildId');
       const updated = aiService.updateTools(guildId, req.body);
       res.json(updated.tools);
     } catch (err: any) {
@@ -156,7 +158,7 @@ export function createAiRouter(client: Client): Router {
   // 6. Mémoire & Confidentialité
   router.get('/memory', (req: Request, res: Response) => {
     try {
-      const { guildId } = req.params;
+      const guildId = requireStringParam(req.params.guildId, 'guildId');
       const settings = aiRepository.getSettings(guildId);
       res.json(settings.memory);
     } catch (err: any) {
@@ -167,7 +169,8 @@ export function createAiRouter(client: Client): Router {
 
   router.delete('/memory/user/:userId', (req: Request, res: Response) => {
     try {
-      const { guildId, userId } = req.params;
+      const guildId = requireStringParam(req.params.guildId, 'guildId');
+      const userId = requireStringParam(req.params.userId, 'userId');
       const removed = aiRepository.forgetUserData(guildId, userId);
       res.json({ success: true, removedCount: removed });
     } catch (err: any) {
@@ -179,7 +182,7 @@ export function createAiRouter(client: Client): Router {
   // 7. Analytics & Feedback
   router.get('/analytics', (req: Request, res: Response) => {
     try {
-      const { guildId } = req.params;
+      const guildId = requireStringParam(req.params.guildId, 'guildId');
       const analytics = aiRepository.getAnalytics(guildId);
       res.json(analytics);
     } catch (err: any) {
@@ -191,7 +194,7 @@ export function createAiRouter(client: Client): Router {
   // 8. Playground de Test
   router.post('/test', async (req: Request, res: Response) => {
     try {
-      const { guildId } = req.params;
+      const guildId = requireStringParam(req.params.guildId, 'guildId');
       const { query } = req.body;
       if (!query || typeof query !== 'string') {
         return res.status(400).json({ error: 'La requête est requise' });
@@ -207,7 +210,7 @@ export function createAiRouter(client: Client): Router {
   // 9. Publication de la version Draft
   router.post('/publish', (req: Request, res: Response) => {
     try {
-      const { guildId } = req.params;
+      const guildId = requireStringParam(req.params.guildId, 'guildId');
       const published = aiService.publishDraft(guildId);
       res.json(published);
     } catch (err: any) {

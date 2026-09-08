@@ -170,7 +170,7 @@ export default function ConnectionCard({
                 className={cn(
                   "h-1.5 w-1.5 rounded-full",
                   isConnected
-                    ? "bg-[var(--accent-primary)] animate-pulse"
+                    ? "bg-[var(--accent-primary)] shadow-[0_0_5px_var(--glow-color)]"
                     : health?.status === "error"
                     ? "bg-[var(--danger)]"
                     : "bg-[var(--text-muted)]"

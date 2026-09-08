@@ -139,7 +139,7 @@ export default function WidgetContainer({
           </span>
           {manifest?.realtime && (
             <span
-              className="h-1.5 w-1.5 rounded-full bg-emerald-400 animate-pulse shrink-0"
+              className="h-1.5 w-1.5 shrink-0 rounded-full bg-emerald-400 shadow-[0_0_5px_rgba(52,211,153,0.7)]"
               title="Flux en temps réel actif"
             />
           )}

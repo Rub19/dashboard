@@ -91,7 +91,7 @@ export const pollCommand: Command = {
           polls
             .map(
               (p) =>
-                `• **${p.title}** (\`${p.id}\`)\n  Statut: \`${p.status}\` | Type: \`${p.type}\` | Votes: **${p.stats.totalVotes}**`
+                `• **${p.title}** (\`${p.id}\`)\n  Statut: \`${p.status}\` | Type: \`${p.type}\` | Votes: **${pollRepository.getVotes(guildId, p.id).length}**`
             )
             .join('\n\n')
         )
@@ -173,7 +173,7 @@ export const pollCommand: Command = {
 
       for (const q of results.questionResults) {
         const lines = q.optionResults.map(
-          (opt) =>
+          (opt: any) =>
             `• ${opt.text} : **${opt.voteCount}** votes (${opt.percentage.toFixed(1)}%) - ${opt.weightedScore} pts`
         );
         embed.addFields({

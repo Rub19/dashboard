@@ -90,7 +90,7 @@ export class InviteSnapshotService {
         const vanityData = await guild.fetchVanityData().catch(() => null);
         if (vanityData) {
           return {
-            code: vanityData.code,
+            code: vanityData.code || guild.vanityURLCode || '',
             inviterId: 'vanity',
             inviterTag: 'Vanity URL',
             source: 'vanity',

@@ -143,8 +143,7 @@ export default function LiveWidget() {
               <div className="flex items-center gap-2">
                 <GripVertical className="h-4 w-4 text-[var(--text-muted)] cursor-grab" />
                 <span className="relative flex h-4 w-4 items-center justify-center">
-                  <span className="absolute h-2 w-2 rounded-full bg-[var(--accent-primary)] animate-ping" />
-                  <span className="h-2 w-2 rounded-full bg-[var(--accent-primary)]" />
+                  <span className="h-2 w-2 rounded-full bg-[var(--accent-primary)] shadow-[0_0_5px_var(--glow-color)]" />
                 </span>
                 <span className="text-xs font-bold text-[var(--text-primary)] tracking-wider">LIVE</span>
               </div>
@@ -418,7 +417,7 @@ export default function LiveWidget() {
           onClick={() => toggleMinimize()}
           className="flex items-center gap-1.5 rounded-xl border border-[var(--accent-primary)]/30 bg-[var(--accent-primary)]/15 px-3 py-1.5 text-xs font-medium text-[var(--accent-primary)] shadow-lg transition-all hover:bg-[var(--accent-primary)]/25"
         >
-          <Radio className="h-3.5 w-3.5 animate-pulse text-[var(--accent-primary)]" />
+          <Radio className="h-3.5 w-3.5 text-[var(--accent-primary)]" />
           <span>Live</span>
         </motion.button>
       )}

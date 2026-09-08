@@ -21,7 +21,7 @@ export default function DynamicIslandSettings() {
       {/* Live Interactive Simulator */}
       <div className="relative flex flex-col items-center justify-center overflow-hidden rounded-2xl border border-[var(--panel-border)] bg-gradient-to-b from-[var(--surface-raised)]/60 to-[var(--bg-main)] p-8 shadow-inner">
         <div className="absolute left-4 top-4 flex items-center gap-2">
-          <span className="flex h-2 w-2 rounded-full bg-[var(--accent-primary)] animate-pulse" />
+          <span className="flex h-2 w-2 rounded-full bg-[var(--accent-primary)] shadow-[0_0_5px_var(--glow-color)]" />
           <span className="text-[11px] font-semibold text-[var(--text-muted)] uppercase tracking-wider">
             Simulateur en direct
           </span>
@@ -192,7 +192,8 @@ export default function DynamicIslandSettings() {
             </div>
             <input
               type="checkbox"
-              defaultChecked
+              checked={settings.islandShowSpotify}
+              onChange={(e) => update({ islandShowSpotify: e.target.checked })}
               className="h-5 w-5 rounded accent-[var(--accent-primary)]"
             />
           </label>
@@ -208,7 +209,8 @@ export default function DynamicIslandSettings() {
             </div>
             <input
               type="checkbox"
-              defaultChecked
+              checked={settings.islandShowNotifications}
+              onChange={(e) => update({ islandShowNotifications: e.target.checked })}
               className="h-5 w-5 rounded accent-[var(--accent-primary)]"
             />
           </label>
@@ -224,7 +226,8 @@ export default function DynamicIslandSettings() {
             </div>
             <input
               type="checkbox"
-              defaultChecked
+              checked={settings.islandShowUploads}
+              onChange={(e) => update({ islandShowUploads: e.target.checked })}
               className="h-5 w-5 rounded accent-[var(--accent-primary)]"
             />
           </label>

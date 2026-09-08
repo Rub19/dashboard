@@ -5,6 +5,7 @@ import { useNotifications } from "@/lib/hooks/useNotifications";
 import { useDynamicIslandQueue } from "@/lib/hooks/useDynamicIslandQueue";
 import { useToast } from "@/components/ToastProvider";
 import { useI18n } from "@/lib/hooks/useI18n";
+import { useSettings } from "@/components/SettingsProvider";
 import { fetchWorker } from "@/lib/api";
 
 export default function NotificationBridge() {
@@ -12,13 +13,14 @@ export default function NotificationBridge() {
   const { register } = useDynamicIslandQueue();
   const { info } = useToast();
   const i18n = useI18n();
+  const { settings } = useSettings();
 
   // Listen for Island notification events
   useEffect(() => {
     function handleIslandNotification(e: Event) {
       const customEvent = e as CustomEvent<{ id: string; title: string; message?: string; priority?: string }>;
       const notif = customEvent.detail;
-      if (!notif) return;
+      if (!notif || !settings.islandShowNotifications) return;
 
       register({
         id: notif.id || `notif-${Date.now()}`,
@@ -78,7 +80,7 @@ export default function NotificationBridge() {
       window.removeEventListener("v8:stop-focus", handleFocusEnd);
       window.removeEventListener("v8:focus-completed", handleFocusEnd);
     };
-  }, [register, focusDigest, info]);
+  }, [register, focusDigest, info, settings.islandShowNotifications]);
 
   useEffect(() => {
     let mounted = true;

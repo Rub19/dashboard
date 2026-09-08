@@ -17,12 +17,14 @@ type AriaProps = {
 export function SwitchControl({
   checked,
   onChange,
+  disabled,
   ...aria
 }: {
   checked: boolean;
   onChange: (v: boolean) => void;
+  disabled?: boolean;
 } & AriaProps) {
-  return <Switch checked={checked} onChange={onChange} labels={false} size="md" {...aria} />;
+  return <Switch checked={checked} onChange={onChange} disabled={disabled} labels={false} size="md" {...aria} />;
 }
 
 export function RangeControl({

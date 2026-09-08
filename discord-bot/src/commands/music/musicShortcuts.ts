@@ -98,7 +98,7 @@ export const skipCommand: Command = {
     .setDescription('Passe à la musique suivante dans la file d\'attente'),
   execute: async (ctx: CommandContext) => {
     if (!checkVoice(ctx)) return;
-    const res = musicService.skip(ctx.guild!.id, ctx.member!);
+    const res = await musicService.skip(ctx.guild!.id, ctx.member!);
     if (res.success) {
       await replySuccess(ctx, '⏭️ Titre passé ! Passage au morceau suivant.');
     } else {
@@ -173,7 +173,7 @@ export const queueCommand: Command = {
     .setDescription('Affiche la liste des morceaux dans la file d\'attente musicale'),
   execute: async (ctx: CommandContext) => {
     if (!ctx.guild) return;
-    const q = musicService.getQueue(ctx.guild.id);
+    const q = musicService.getPlayer(ctx.guild.id, false)?.getState();
     if (!q || !q.currentTrack) {
       await replyInfo(ctx, 'Aucune musique n\'est actuellement en cours de lecture.');
       return;
@@ -182,16 +182,16 @@ export const queueCommand: Command = {
     const current = q.currentTrack;
     let desc = `**En cours :** [${current.title}](${current.url}) \`[${DiscordMusicPanel.formatTime(current.duration)}]\`\n\n`;
 
-    if (q.tracks.length === 0) {
+    if (q.queue.length === 0) {
       desc += '*La file d\'attente est vide. Ajoutez des titres avec `/play <titre>` !*';
     } else {
-      desc += `**À suivre (${q.tracks.length}) :**\n`;
-      const nextTracks = q.tracks.slice(0, 10);
+      desc += `**À suivre (${q.queue.length}) :**\n`;
+      const nextTracks = q.queue.slice(0, 10);
       nextTracks.forEach((t, i) => {
         desc += `\`${i + 1}.\` [${t.title}](${t.url}) — \`${DiscordMusicPanel.formatTime(t.duration)}\`\n`;
       });
-      if (q.tracks.length > 10) {
-        desc += `\n*... et ${q.tracks.length - 10} autre(s) morceau(x)*`;
+      if (q.queue.length > 10) {
+        desc += `\n*... et ${q.queue.length - 10} autre(s) morceau(x)*`;
       }
     }
 
@@ -215,14 +215,14 @@ export const nowPlayingCommand: Command = {
     .setDescription('Affiche des détails et la barre de progression du titre en cours'),
   execute: async (ctx: CommandContext) => {
     if (!ctx.guild) return;
-    const q = musicService.getQueue(ctx.guild.id);
+    const q = musicService.getPlayer(ctx.guild.id, false)?.getState();
     if (!q || !q.currentTrack) {
       await replyInfo(ctx, 'Aucune musique n\'est actuellement en cours de lecture.');
       return;
     }
 
     const track = q.currentTrack;
-    const progress = q.playbackPosition || 0;
+    const progress = q.position || 0;
     const total = track.duration || 180;
     const percent = Math.min(1, Math.max(0, progress / total));
     const totalBars = 16;

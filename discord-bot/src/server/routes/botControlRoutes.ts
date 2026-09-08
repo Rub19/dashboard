@@ -8,6 +8,7 @@ import { BotJobSchedulerService } from '../../modules/botControl/services/botJob
 import { BotErrorIncidentService } from '../../modules/botControl/services/botErrorIncidentService.js';
 import { BotDiagnosticsService } from '../../modules/botControl/services/botDiagnosticsService.js';
 import { BotAiMonitorService } from '../../modules/botControl/services/botAiMonitorService.js';
+import { requireStringParam } from '../utils/params.js';
 import { BotIntegrationsService } from '../../modules/botControl/services/botIntegrationsService.js';
 import { BotSecurityAuditService } from '../../modules/botControl/services/botSecurityAuditService.js';
 import { BotConfigService } from '../../modules/botControl/services/botConfigService.js';
@@ -72,7 +73,7 @@ export function createBotControlRouter(client: Client): Router {
 
   router.post('/modules/:moduleId/toggle', (req: Request, res: Response) => {
     try {
-      const { moduleId } = req.params;
+      const moduleId = requireStringParam(req.params.moduleId, 'moduleId');
       const { enabled } = req.body;
       const updated = moduleRegistry.toggleModule(moduleId, Boolean(enabled));
       res.json({ success: true, data: updated });
@@ -113,7 +114,7 @@ export function createBotControlRouter(client: Client): Router {
 
   router.post('/jobs/:jobId/run', async (req: Request, res: Response) => {
     try {
-      const { jobId } = req.params;
+      const jobId = requireStringParam(req.params.jobId, 'jobId');
       const job = await jobScheduler.runJob(jobId);
       res.json({ success: true, data: job });
     } catch (err: any) {
@@ -134,7 +135,7 @@ export function createBotControlRouter(client: Client): Router {
 
   router.post('/errors/:fingerprint/resolve', (req: Request, res: Response) => {
     try {
-      const { fingerprint } = req.params;
+      const fingerprint = requireStringParam(req.params.fingerprint, 'fingerprint');
       const success = errorIncidents.resolveFingerprint(fingerprint);
       res.json({ success, data: { fingerprint, resolved: success } });
     } catch (err: any) {
@@ -195,7 +196,7 @@ export function createBotControlRouter(client: Client): Router {
 
   router.post('/integrations/:id/test', async (req: Request, res: Response) => {
     try {
-      const { id } = req.params;
+      const id = requireStringParam(req.params.id, 'id');
       const tested = await integrationsService.testIntegration(id);
       res.json({ success: true, data: tested });
     } catch (err: any) {

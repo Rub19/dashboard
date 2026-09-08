@@ -263,7 +263,7 @@ export default function ProfileDropdown() {
                 </div>
               </div>
               <span className="flex shrink-0 items-center gap-1 rounded-lg border border-[var(--accent-primary)] bg-[var(--accent-primary)] px-2 py-0.5 text-[10px] font-semibold text-[var(--accent-primary)]">
-                <span className="h-1.5 w-1.5 rounded-full bg-[var(--accent-primary)] animate-pulse" />
+                <span className="h-1.5 w-1.5 rounded-full bg-[var(--accent-primary)]" />
                 {i18n("active") || "Actif"}
               </span>
             </div>

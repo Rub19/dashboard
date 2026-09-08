@@ -1,4 +1,4 @@
-import { SlashCommandBuilder } from 'discord.js';
+import { SlashCommandBuilder, ActionRowBuilder, ButtonBuilder, ButtonStyle } from 'discord.js';
 import { Command, CommandContext } from '../../types/command.js';
 import { HelpPanel, HELP_CATEGORIES, getCommandSubcommandNames } from './helpPanel.js';
 
@@ -101,7 +101,6 @@ export const helpCommand: Command = {
           })
           .setTimestamp();
 
-        const { ActionRowBuilder, ButtonBuilder, ButtonStyle } = await import('discord.js');
         const row = new ActionRowBuilder<ButtonBuilder>().addComponents(
           new ButtonBuilder()
             .setCustomId('help_btn_home')

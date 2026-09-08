@@ -40,8 +40,8 @@ export async function handleSettingsSelectMenu(interaction: StringSelectMenuInte
     try {
       const aiSettings = aiRepository.getSettings(interaction.guildId);
       aiRepository.saveSettings(interaction.guildId, {
-        persona: {
-          ...aiSettings.persona,
+        personality: {
+          ...aiSettings.personality,
           language: nextLang,
           replyInUserLanguage: true,
         },
@@ -54,13 +54,14 @@ export async function handleSettingsSelectMenu(interaction: StringSelectMenuInte
     await interaction.update(messagePayload);
     return;
   } else if (selected === 'edit_theme') {
-    const presets = [
+    // Noms alignés sur GuildConfigSchema.themePreset (src/types/guildConfig.ts) :
+    // seuls 'DEFAULT' | 'CYBERPUNK' | 'EMERALD' | 'SUNSET' | 'DARK' sont des valeurs valides.
+    const presets: { name: 'DEFAULT' | 'CYBERPUNK' | 'EMERALD' | 'SUNSET' | 'DARK'; primary: string; secondary: string }[] = [
       { name: 'DEFAULT', primary: '#5865F2', secondary: '#4752C4' },
-      { name: 'CYBER_NEON', primary: '#00F0FF', secondary: '#7000FF' },
+      { name: 'CYBERPUNK', primary: '#00F0FF', secondary: '#7000FF' },
       { name: 'EMERALD', primary: '#10B981', secondary: '#047857' },
-      { name: 'CRIMSON', primary: '#EF4444', secondary: '#B91C1C' },
       { name: 'SUNSET', primary: '#F59E0B', secondary: '#D97706' },
-      { name: 'AMETHYST', primary: '#8B5CF6', secondary: '#6D28D9' },
+      { name: 'DARK', primary: '#1F2937', secondary: '#111827' },
     ];
     const currentIdx = presets.findIndex((p) => p.name === conf.themePreset);
     const nextPreset = presets[(currentIdx + 1) % presets.length];
@@ -134,8 +135,8 @@ export async function handleSettingsSelectMenu(interaction: StringSelectMenuInte
       };
       const aiSettings = aiRepository.getSettings(interaction.guildId);
       aiRepository.saveSettings(interaction.guildId, {
-        persona: {
-          ...aiSettings.persona,
+        personality: {
+          ...aiSettings.personality,
           tone: toneMap[nextPersonality] || 'FRIENDLY',
         },
       });
@@ -306,8 +307,8 @@ export async function handleSettingsButton(interaction: ButtonInteraction): Prom
       try {
         const aiSettings = aiRepository.getSettings(guildId);
         aiRepository.saveSettings(guildId, {
-          persona: {
-            ...aiSettings.persona,
+          personality: {
+            ...aiSettings.personality,
             language: targetLang,
             replyInUserLanguage: true,
           },
@@ -478,8 +479,8 @@ export async function handleSettingsModal(interaction: ModalSubmitInteraction): 
       try {
         const aiSettings = aiRepository.getSettings(guildId);
         aiRepository.saveSettings(guildId, {
-          persona: {
-            ...aiSettings.persona,
+          personality: {
+            ...aiSettings.personality,
             language,
             replyInUserLanguage: true,
           },

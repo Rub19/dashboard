@@ -59,7 +59,7 @@ export default function MyConnectionsRow({
               <div className="min-w-0 text-left">
                 <div className="flex items-center gap-1.5">
                   <p className="truncate text-xs font-bold text-[var(--text-primary)]">{integration.name}</p>
-                  <span className="h-1.5 w-1.5 rounded-full bg-[var(--accent-primary)] animate-pulse" />
+                  <span className="h-1.5 w-1.5 rounded-full bg-[var(--accent-primary)] shadow-[0_0_5px_var(--glow-color)]" />
                 </div>
                 <div className="flex items-center gap-1.5 mt-0.5">
                   <span className="text-[10px] text-[var(--accent-primary)] font-medium">Connecté</span>

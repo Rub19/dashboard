@@ -662,6 +662,27 @@ export default function ThemeStudio({ className }: ThemeStudioProps) {
                 />
               </div>
 
+              <div>
+                <label className="text-xs font-semibold text-[var(--text-primary)]">Schéma de couleurs</label>
+                <div className="mt-1 flex items-center gap-1.5 rounded-xl border border-[var(--panel-border)] bg-[var(--surface-raised)] p-1">
+                  {(["dark", "light"] as const).map((scheme) => (
+                    <button
+                      key={scheme}
+                      type="button"
+                      onClick={() => setCustomColorScheme(scheme)}
+                      className={cn(
+                        "flex-1 rounded-lg px-3 py-1.5 text-xs font-semibold transition-all",
+                        customColorScheme === scheme
+                          ? "bg-[var(--accent-primary)] text-[var(--accent-contrast)] shadow-sm"
+                          : "text-[var(--text-muted)] hover:text-[var(--text-primary)]"
+                      )}
+                    >
+                      {scheme === "dark" ? "Sombre" : "Clair"}
+                    </button>
+                  ))}
+                </div>
+              </div>
+
               <div className="grid grid-cols-2 gap-3">
                 <div>
                   <label className="text-xs font-semibold text-[var(--text-primary)]">Fond Principal</label>

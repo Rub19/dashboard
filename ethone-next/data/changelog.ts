@@ -1,3 +1,18 @@
+const v12053_fr: ChangelogEntry = {
+  version: "v1.20.53",
+  date: "2026-09-08",
+  title: "Fiabilité Audio du Bot, 155 Correctifs TypeScript & Refonte des Réglages",
+  items: [
+    "Bot Musical : correction du bug « aucun son » sur /play — un mécanisme de repli envoyait par erreur l'URL de la page (SoundCloud/Spotify) directement à ffmpeg au lieu d'un vrai flux audio, produisant un silence total sans aucune erreur visible ; une erreur de flux non gérée bloquait aussi la lecture indéfiniment sur « En cours ». Les deux sont corrigés, avec reprise automatique (passage au morceau suivant) en cas d'échec.",
+    "Commande /queue : correction du crash (« Une erreur interne est survenue ») causé par un appel à une méthode inexistante (musicService.getQueue), désormais remplacé par le véritable état du lecteur.",
+    "155 erreurs TypeScript pré-existantes corrigées dans le Bot Discord — au-delà du typage, plusieurs vrais bugs métier corrigés au passage : /skip qui ne vérifiait jamais son résultat faute d'un await manquant, la synchronisation langue ↔ IA cassée par un renommage de champ interne, les thèmes visuels du bot qui échouaient systématiquement à cause d'une liste de presets obsolète, la détection de restauration de sauvegarde interrompue qui ne se déclenchait jamais après un redémarrage, le formulaire de création de sondage envoyant un format de données obsolète, et la création automatique de tickets cassée par une signature de fonction erronée.",
+    "Réglages : audit complet de chaque section — plusieurs contrôles qui n'avaient aucun effet réel sont désormais connectés (atténuation du son sur notification, volume par ambiance sonore, bascule clair/sombre du créateur de thème personnalisé, badge de synchronisation reflétant l'état réel, sauvegarde du compte (email / mot de passe / pseudo), diagnostics de performance basés sur de vraies mesures, nettoyage de cache réellement fonctionnel, et les 3 interrupteurs de la Dynamic Island qui ne faisaient rien).",
+    "Interface : suppression des pastilles de statut clignotantes en continu (« Connecté », « Live », mises à jour, badges de synchronisation…) partout sur le site, remplacées par un traitement plus sobre et premium — l'animation reste réservée aux vrais états transitoires (chargement, lecture en cours, alerte).",
+    "Cohérence Visuelle : près de 47 couleurs codées en dur remplacées par les jetons de thème dynamiques sur une quarantaine de fichiers, correction d'une lueur verte codée en dur visible avec le thème Dyno Rose, et début d'harmonisation visuelle des embeds du bot Discord.",
+    "Bot Discord : les messages de cooldown et d'accès refusé (admin/modérateur) sont désormais traduits dans la langue configurée du serveur (fr/en/es/de) au lieu du français uniquement.",
+  ],
+};
+
 const v12052_fr: ChangelogEntry = {
   version: "v1.20.52",
   date: "2026-09-08",
@@ -13,6 +28,21 @@ const v12052_fr: ChangelogEntry = {
     "Dynamic Island : correction d'un bug de priorité qui empêchait Spotify de jamais s'afficher, systématiquement évincé par la synchronisation d'arrière-plan.",
     "Commande /help du Bot Discord : la liste des commandes est désormais générée dynamiquement depuis les commandes réellement enregistrées (fin des commandes fantômes et des commandes manquantes), et affiche la vraie syntaxe des commandes à sous-commandes (ex. /automod status).",
     "Audit de l'enregistrement des commandes slash Discord : architecture confirmée saine, aucune dérive entre le code et les commandes déployées.",
+  ],
+};
+
+const v12053_en: ChangelogEntry = {
+  version: "v1.20.53",
+  date: "2026-09-08",
+  title: "Bot Audio Reliability, 155 TypeScript Fixes & Settings Overhaul",
+  items: [
+    "Music Bot: fixed the \"no sound\" bug on /play — a fallback path was mistakenly feeding the SoundCloud/Spotify page URL straight into ffmpeg instead of a real audio stream, producing total silence with no visible error; an unhandled stream error also left playback stuck indefinitely on \"Now Playing\". Both fixed, with automatic recovery (skip to next track) on failure.",
+    "/queue command: fixed the crash (\"An internal error occurred\") caused by a call to a nonexistent method (musicService.getQueue), now replaced with the real player state.",
+    "155 pre-existing TypeScript errors fixed in the Discord Bot — beyond typing, several real bugs were fixed along the way: /skip never checking its result due to a missing await, language↔AI sync broken by an internal field rename, the bot's visual theme presets always failing due to a stale preset list, interrupted backup-restore detection that never triggered after a restart, the poll creation form sending an outdated data shape, and automatic ticket creation broken by a mismatched function signature.",
+    "Settings: full audit of every section — several controls that had zero real effect are now wired up (notification ducking, per-soundscape volume, the custom Theme Studio's dark/light toggle, a sync badge reflecting real status, account save (email / password / username), performance diagnostics based on real measurements, actually-functional cache clearing, and the 3 Dynamic Island toggles that did nothing).",
+    "UI: removed continuously blinking status dots (\"Connected\", \"Live\", update badges, sync pills…) sitewide, replaced with a calmer, more premium treatment — animation is now reserved for genuine transient states (loading, now playing, alerts).",
+    "Visual Consistency: nearly 47 hardcoded colors replaced with dynamic theme tokens across roughly 40 files, fixed a hardcoded green glow visible under the Dyno Rose theme, and started harmonizing the Discord bot's embed visuals.",
+    "Discord Bot: cooldown and access-denied (admin/mod) messages are now translated into the server's configured language (fr/en/es/de) instead of always French.",
   ],
 };
 
@@ -34,6 +64,21 @@ const v12052_en: ChangelogEntry = {
   ],
 };
 
+const v12053_es: ChangelogEntry = {
+  version: "v1.20.53",
+  date: "2026-09-08",
+  title: "Fiabilidad de Audio del Bot, 155 Correcciones TypeScript y Rediseño de Ajustes",
+  items: [
+    "Bot de Música: corregido el bug de « sin sonido » en /play — una ruta de respaldo enviaba por error la URL de la página (SoundCloud/Spotify) directamente a ffmpeg en lugar de un flujo de audio real, provocando silencio total sin ningún error visible; un error de flujo no gestionado también dejaba la reproducción bloqueada indefinidamente en « Reproduciendo ». Ambos corregidos, con recuperación automática (saltar a la siguiente canción) en caso de fallo.",
+    "Comando /queue: corregido el fallo (« Se produjo un error interno ») causado por una llamada a un método inexistente (musicService.getQueue), ahora sustituido por el estado real del reproductor.",
+    "155 errores de TypeScript preexistentes corregidos en el Bot de Discord — más allá del tipado, se corrigieron varios errores reales de lógica: /skip que nunca comprobaba su resultado por falta de un await, la sincronización idioma ↔ IA rota por un renombrado de campo interno, los temas visuales del bot que fallaban siempre por una lista de presets obsoleta, la detección de restauración de copia interrumpida que nunca se activaba tras un reinicio, el formulario de creación de encuestas enviando un formato de datos obsoleto, y la creación automática de tickets rota por una firma de función incorrecta.",
+    "Ajustes: auditoría completa de cada sección — varios controles que no tenían ningún efecto real ahora están conectados (atenuación de sonido en notificaciones, volumen por ambiente sonoro, interruptor claro/oscuro del creador de temas personalizados, insignia de sincronización reflejando el estado real, guardado de cuenta (email / contraseña / nombre de usuario), diagnósticos de rendimiento basados en mediciones reales, limpieza de caché realmente funcional, y los 3 interruptores de Dynamic Island que no hacían nada).",
+    "Interfaz: eliminadas las pastillas de estado parpadeando continuamente (« Conectado », « Live », insignias de actualización/sincronización…) en todo el sitio, sustituidas por un tratamiento más sobrio y premium — la animación ahora se reserva para estados transitorios reales (carga, reproducción en curso, alerta).",
+    "Coherencia Visual: cerca de 47 colores codificados sustituidos por tokens de tema dinámicos en unos 40 archivos, corregido un resplandor verde codificado visible con el tema Dyno Rose, e iniciada la armonización visual de los embeds del bot de Discord.",
+    "Bot de Discord: los mensajes de cooldown y acceso denegado (admin/moderador) ahora se traducen al idioma configurado del servidor (fr/en/es/de) en lugar de siempre en francés.",
+  ],
+};
+
 const v12052_es: ChangelogEntry = {
   version: "v1.20.52",
   date: "2026-09-08",
@@ -49,6 +94,21 @@ const v12052_es: ChangelogEntry = {
     "Dynamic Island: corregido un error de prioridad que impedía que Spotify apareciera, siempre desplazado por la sincronización en segundo plano.",
     "Comando /help del Bot de Discord: la lista de comandos ahora se genera dinámicamente desde los comandos realmente registrados (fin de comandos fantasma o ausentes), mostrando la sintaxis real de los comandos con subcomandos.",
     "Auditoría del registro de comandos slash de Discord: arquitectura confirmada como sólida, sin desviación entre el código y los comandos desplegados.",
+  ],
+};
+
+const v12053_de: ChangelogEntry = {
+  version: "v1.20.53",
+  date: "2026-09-08",
+  title: "Bot-Audio-Zuverlässigkeit, 155 TypeScript-Korrekturen & Einstellungen-Überarbeitung",
+  items: [
+    "Musik-Bot: den „Kein Ton“-Fehler bei /play behoben — ein Fallback-Pfad leitete versehentlich die Seiten-URL (SoundCloud/Spotify) direkt an ffmpeg weiter statt eines echten Audio-Streams, was zu völliger Stille ohne sichtbaren Fehler führte; ein unbehandelter Stream-Fehler ließ die Wiedergabe zudem endlos auf „Läuft gerade“ hängen. Beides behoben, mit automatischer Wiederherstellung (Wechsel zum nächsten Titel) bei einem Fehlschlag.",
+    "/queue-Befehl: den Absturz („Ein interner Fehler ist aufgetreten“) behoben, verursacht durch den Aufruf einer nicht existierenden Methode (musicService.getQueue), jetzt ersetzt durch den echten Player-Status.",
+    "155 bereits bestehende TypeScript-Fehler im Discord-Bot behoben — über die Typisierung hinaus wurden dabei mehrere echte Logikfehler korrigiert: /skip prüfte sein Ergebnis nie wegen eines fehlenden await, die Sprache↔KI-Synchronisierung war durch eine interne Feldumbenennung defekt, die visuellen Bot-Themes schlugen wegen einer veralteten Preset-Liste immer fehl, die Erkennung einer unterbrochenen Backup-Wiederherstellung löste nach einem Neustart nie aus, das Umfrage-Erstellungsformular sendete ein veraltetes Datenformat, und die automatische Ticket-Erstellung war durch eine falsche Funktionssignatur defekt.",
+    "Einstellungen: vollständiges Audit jedes Abschnitts — mehrere Steuerelemente ohne jede reale Wirkung sind jetzt angebunden (Benachrichtigungs-Ducking, Lautstärke pro Klanglandschaft, Hell/Dunkel-Umschalter des benutzerdefinierten Theme Studios, ein Sync-Badge mit echtem Status, Konto-Speichern (E-Mail / Passwort / Benutzername), Performance-Diagnosen auf Basis echter Messungen, tatsächlich funktionierendes Cache-Leeren, sowie die 3 Dynamic-Island-Schalter, die nichts bewirkten).",
+    "Oberfläche: durchgehend blinkende Status-Punkte („Verbunden“, „Live“, Update-/Sync-Badges…) seitenweit entfernt und durch eine ruhigere, hochwertigere Darstellung ersetzt — Animation ist nun echten, vorübergehenden Zuständen vorbehalten (Laden, aktuelle Wiedergabe, Warnung).",
+    "Visuelle Konsistenz: knapp 47 fest codierte Farben durch dynamische Theme-Tokens in rund 40 Dateien ersetzt, ein fest codiertes grünes Leuchten behoben, das unter dem Dyno-Rose-Theme sichtbar war, und mit der visuellen Vereinheitlichung der Discord-Bot-Embeds begonnen.",
+    "Discord-Bot: Cooldown- und Zugriff-verweigert-Nachrichten (Admin/Mod) werden jetzt in der konfigurierten Serversprache (fr/en/es/de) übersetzt statt immer auf Französisch.",
   ],
 };
 
@@ -21935,5 +21995,10 @@ CHANGELOG_BY_LANG.fr.unshift(v12052_fr);
 CHANGELOG_BY_LANG.en.unshift(v12052_en);
 CHANGELOG_BY_LANG.es.unshift(v12052_es);
 CHANGELOG_BY_LANG.de.unshift(v12052_de);
+
+CHANGELOG_BY_LANG.fr.unshift(v12053_fr);
+CHANGELOG_BY_LANG.en.unshift(v12053_en);
+CHANGELOG_BY_LANG.es.unshift(v12053_es);
+CHANGELOG_BY_LANG.de.unshift(v12053_de);
 
 export const CHANGELOG = CHANGELOG_BY_LANG.fr;

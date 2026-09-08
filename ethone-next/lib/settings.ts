@@ -141,6 +141,7 @@ export type Settings = {
   soundVolumes: Record<SoundVolumeCategory, number>;
   ambientSound: SoundAmbient;
   mediaDucking: boolean;
+  notificationDucking: boolean;
   notifications: boolean;
   mailNotifications: boolean;
   trackerNotifications: boolean;
@@ -152,6 +153,9 @@ export type Settings = {
   liveOverlay: boolean;
   language: string;
   dynamicIslandVisible: boolean;
+  islandShowSpotify: boolean;
+  islandShowNotifications: boolean;
+  islandShowUploads: boolean;
   dockPosition: string;
   wallpaperUrl: string | null;
   accentColor: AccentColor | "violet" | "mint" | "sky" | "amber" | "rose" | "teal" | "coral" | "custom" | string;
@@ -326,6 +330,7 @@ export const DEFAULTS: Settings = {
   },
   ambientSound: "none",
   mediaDucking: true,
+  notificationDucking: true,
   notifications: true,
   mailNotifications: true,
   trackerNotifications: false,
@@ -357,6 +362,9 @@ export const DEFAULTS: Settings = {
   liveOverlay: true,
   language: "fr",
   dynamicIslandVisible: false,
+  islandShowSpotify: true,
+  islandShowNotifications: true,
+  islandShowUploads: true,
   dockPosition: "bottom",
   wallpaperUrl: null,
   accentColor: "dyno",

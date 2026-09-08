@@ -19,10 +19,10 @@ export default function LiveFreshness({ updatedAt }: { updatedAt?: Date | string
 
   return (
     <span className="v8-live-freshness inline-flex shrink-0 items-center gap-2 whitespace-nowrap text-[11px] font-mono text-[var(--text-muted)]">
-      <span className="v8-live-pulse-dot relative flex h-2 w-2">
-        <span className="absolute inline-flex h-full w-full animate-ping rounded-full bg-[var(--accent)] opacity-75" aria-hidden="true" />
-        <span className="relative inline-flex h-2 w-2 rounded-full bg-[var(--accent)]" aria-hidden="true" />
-      </span>
+      <span
+        className="v8-live-pulse-dot relative inline-flex h-2 w-2 rounded-full bg-[var(--accent)] shadow-[0_0_5px_var(--glow-color)]"
+        aria-hidden="true"
+      />
       {label}
     </span>
   );

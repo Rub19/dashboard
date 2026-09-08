@@ -195,7 +195,7 @@ export class BackupCollectorService {
               parentId: chan.parentId,
               parentName: chan.parent?.name || null,
               position: chan.position,
-              rateLimitPerUser: 'rateLimitPerUser' in chan ? chan.rateLimitPerUser : undefined,
+              rateLimitPerUser: 'rateLimitPerUser' in chan ? (chan.rateLimitPerUser ?? undefined) : undefined,
               bitrate: 'bitrate' in chan ? chan.bitrate : undefined,
               userLimit: 'userLimit' in chan ? chan.userLimit : undefined,
               permissionOverwrites: overwrites,

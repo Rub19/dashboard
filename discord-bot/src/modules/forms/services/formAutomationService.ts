@@ -74,18 +74,18 @@ export class FormAutomationService {
             }
 
             case 'CREATE_TICKET': {
-              if (action.ticketCategoryId) {
+              if (action.ticketCategoryId && this.client) {
                 try {
-                  const ticket = await ticketService.createTicket({
-                    guildId: form.guildId,
-                    userId: response.userId,
-                    userTag: response.userTag,
-                    userAvatar: response.userAvatar,
-                    categoryId: action.ticketCategoryId,
-                    source: 'PANEL',
-                    initialMessage: `📋 **Candidature / Formulaire : ${form.title}**\nSoumis par ${response.userTag} (Score : ${response.score}/100).\nStatut : ${response.status}`,
-                  });
-                  executedActionSummaries.push(`Ticket support créé : #${ticket.number}`);
+                  const guild = await this.client.guilds.fetch(form.guildId);
+                  const user = await this.client.users.fetch(response.userId);
+                  const formAnswers: Record<string, any> = {
+                    formTitle: form.title,
+                    score: response.score,
+                    status: response.status,
+                    responses: Object.fromEntries(response.answers.map((a) => [a.fieldLabel, a.value])),
+                  };
+                  const ticket = await ticketService.createTicket(guild, user, action.ticketCategoryId, formAnswers);
+                  executedActionSummaries.push(`Ticket support créé : #${ticket.id}`);
                 } catch (ticketErr) {
                   logger.warn('Impossible de créer le ticket via l\'automation form :', ticketErr);
                 }

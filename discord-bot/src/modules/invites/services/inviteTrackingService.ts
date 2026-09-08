@@ -62,7 +62,7 @@ export class InviteTrackingService {
         module: 'MEMBERS',
         type: risk.suspicious ? 'SECURITY_ALERT' : 'MEMBER_JOIN',
         actor: { id: inviterId, tag: inviterTag },
-        target: { id: member.id, name: member.user.tag, avatar: member.user.displayAvatarURL() },
+        target: { id: member.id, type: 'USER', name: member.user.tag, avatar: member.user.displayAvatarURL() },
         reason: risk.suspicious
           ? `Invitation suspecte détectée (Score: ${risk.riskScore}/100) : ${risk.reason}`
           : `Membre invité via le code ${inviteCode} par ${inviterTag}`,
@@ -98,7 +98,7 @@ export class InviteTrackingService {
               .setColor('#F43F5E')
               .setTitle('⚠️ Invitation Suspecte Interceptée')
               .setDescription(
-                `**${member.user.tag}** a rejoint avec le code ``${inviteCode}`` (Inviteur: <@${inviterId}>).`
+                `**${member.user.tag}** a rejoint avec le code \`\`${inviteCode}\`\` (Inviteur: <@${inviterId}>).`
               )
               .addFields([
                 { name: 'Risk Score', value: `**${risk.riskScore} / 100** (${risk.riskLevel})`, inline: true },

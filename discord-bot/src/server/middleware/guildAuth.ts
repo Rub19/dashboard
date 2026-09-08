@@ -1,8 +1,9 @@
 import { NextFunction, Request, Response } from 'express';
 import { Client, Guild, PermissionsBitField } from 'discord.js';
 import { config } from '../../config.js';
+import { firstString } from '../utils/params.js';
 
-interface CachedUserGuilds {
+export interface CachedUserGuilds {
   timestamp: number;
   guilds: Array<{
     id: string;
@@ -45,7 +46,7 @@ export function createGuildAuthMiddleware(
   options: GuildAuthOptions = { allowBotOwnerOverride: true }
 ) {
   return async (req: Request, res: Response, next: NextFunction): Promise<void> => {
-    const guildId = req.params.guildId;
+    const guildId = firstString(req.params.guildId);
     if (!guildId) {
       res.status(400).json({ error: 'guildId manquant' });
       return;

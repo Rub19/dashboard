@@ -119,8 +119,8 @@ export const languageCommand: Command = {
     try {
       const aiSettings = aiRepository.getSettings(guildId);
       aiRepository.saveSettings(guildId, {
-        persona: {
-          ...aiSettings.persona,
+        personality: {
+          ...aiSettings.personality,
           language: selectedLang,
           replyInUserLanguage: true,
         },

@@ -3,7 +3,8 @@ import express, { Request, Response } from 'express';
 import { guildConfigService } from '../../services/guildConfigService.js';
 import { statsService } from '../../services/statsService.js';
 import { authMiddleware } from '../middleware/auth.js';
-import { createGuildAuthMiddleware, fetchUserGuilds } from '../middleware/guildAuth.js';
+import { createGuildAuthMiddleware, fetchUserGuilds, CachedUserGuilds } from '../middleware/guildAuth.js';
+import { requireStringParam } from '../utils/params.js';
 
 export function createGuildRouter(client: Client): express.Router {
   const router = express.Router();
@@ -20,7 +21,7 @@ export function createGuildRouter(client: Client): express.Router {
     }
 
     try {
-      let userGuilds;
+      let userGuilds: CachedUserGuilds['guilds'];
       if (process.env.NODE_ENV === 'test' && (req.user as any)._testGuilds) {
         userGuilds = (req.user as any)._testGuilds;
       } else if (process.env.ALLOW_DEV_AUTH_BYPASS === 'true' && req.user.id === 'dev-admin-user') {
@@ -71,7 +72,7 @@ export function createGuildRouter(client: Client): express.Router {
    * Récupère les vraies statistiques, métriques et aperçu du serveur
    */
   router.get('/:guildId/overview', authMiddleware, guildAuth, (req: Request, res: Response) => {
-    const guildId = String(req.params.guildId);
+    const guildId = requireStringParam(req.params.guildId, 'guildId');
     const botGuild = client.guilds.cache.get(guildId);
     const config = guildConfigService.getConfig(guildId);
     const stats = statsService.getGuildStats(guildId);

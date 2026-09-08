@@ -3,6 +3,7 @@ import { Client } from 'discord.js';
 import { backupService } from '../../modules/backup/services/backupService.js';
 import { backupRepository } from '../../modules/backup/storage/backupRepository.js';
 import { logger } from '../../utils/logger.js';
+import { requireStringParam } from '../utils/params.js';
 import { rateLimit, idempotent, guildLock } from '../middleware/antiAbuseMiddleware.js';
 
 export function createBackupRouter(client: Client): Router {
@@ -11,7 +12,7 @@ export function createBackupRouter(client: Client): Router {
   // 1. Vue d'ensemble & KPIs
   router.get('/overview', (req: Request, res: Response) => {
     try {
-      const { guildId } = req.params;
+      const guildId = requireStringParam(req.params.guildId, 'guildId');
       const overview = backupService.getOverview(guildId);
       res.json(overview);
     } catch (err: any) {
@@ -23,7 +24,7 @@ export function createBackupRouter(client: Client): Router {
   // 2. Liste des sauvegardes avec filtres
   router.get('/', (req: Request, res: Response) => {
     try {
-      const { guildId } = req.params;
+      const guildId = requireStringParam(req.params.guildId, 'guildId');
       const { type, status, search } = req.query;
 
       const backups = backupService.listBackups(guildId, {
@@ -47,7 +48,7 @@ export function createBackupRouter(client: Client): Router {
     idempotent({ scopePrefix: 'backup_create' }),
     async (req: Request, res: Response) => {
     try {
-      const { guildId } = req.params;
+      const guildId = requireStringParam(req.params.guildId, 'guildId');
       const { name, description, type, isProtected, includedComponents } = req.body;
 
       if (!name || typeof name !== 'string') {
@@ -84,7 +85,7 @@ export function createBackupRouter(client: Client): Router {
     idempotent({ scopePrefix: 'backup_import' }),
     async (req: Request, res: Response) => {
       try {
-        const { guildId } = req.params;
+        const guildId = requireStringParam(req.params.guildId, 'guildId');
         const { payload, allowCrossGuildMigration } = req.body;
 
         if (!payload || typeof payload !== 'object') {
@@ -113,7 +114,7 @@ export function createBackupRouter(client: Client): Router {
   // 4. Paramètres de planification & rétention
   router.get('/settings', (req: Request, res: Response) => {
     try {
-      const { guildId } = req.params;
+      const guildId = requireStringParam(req.params.guildId, 'guildId');
       const settings = backupRepository.getSettings(guildId);
       res.json(settings);
     } catch (err: any) {
@@ -124,7 +125,7 @@ export function createBackupRouter(client: Client): Router {
 
   router.put('/settings', (req: Request, res: Response) => {
     try {
-      const { guildId } = req.params;
+      const guildId = requireStringParam(req.params.guildId, 'guildId');
       const updated = backupRepository.saveSettings(guildId, req.body);
       res.json(updated);
     } catch (err: any) {
@@ -136,7 +137,7 @@ export function createBackupRouter(client: Client): Router {
   // 5. Comparaison de deux sauvegardes (ou snapshot vs live)
   router.post('/compare', async (req: Request, res: Response) => {
     try {
-      const { guildId } = req.params;
+      const guildId = requireStringParam(req.params.guildId, 'guildId');
       const { backupAId, backupBId } = req.body;
 
       if (!backupAId || !backupBId) {
@@ -154,7 +155,8 @@ export function createBackupRouter(client: Client): Router {
   // 6. Suivi d'un job de restauration
   router.get('/jobs/:jobId', (req: Request, res: Response) => {
     try {
-      const { guildId, jobId } = req.params;
+      const guildId = requireStringParam(req.params.guildId, 'guildId');
+      const jobId = requireStringParam(req.params.jobId, 'jobId');
       const job = backupService.getJob(guildId, jobId);
       if (!job) {
         return res.status(404).json({ error: 'Job introuvable' });
@@ -169,7 +171,8 @@ export function createBackupRouter(client: Client): Router {
   // 7. Détail d'une sauvegarde spécifique & vérification d'intégrité
   router.get('/:backupId', (req: Request, res: Response) => {
     try {
-      const { guildId, backupId } = req.params;
+      const guildId = requireStringParam(req.params.guildId, 'guildId');
+      const backupId = requireStringParam(req.params.backupId, 'backupId');
       const result = backupService.getBackup(guildId, backupId);
       if (!result.snapshot) {
         return res.status(404).json({ error: 'Sauvegarde introuvable' });
@@ -184,7 +187,8 @@ export function createBackupRouter(client: Client): Router {
   // 8. Test / Dry-Run d'une sauvegarde
   router.post('/:backupId/test', (req: Request, res: Response) => {
     try {
-      const { guildId, backupId } = req.params;
+      const guildId = requireStringParam(req.params.guildId, 'guildId');
+      const backupId = requireStringParam(req.params.backupId, 'backupId');
       const testResult = backupService.testBackup(guildId, backupId);
       res.json(testResult);
     } catch (err: any) {
@@ -196,7 +200,8 @@ export function createBackupRouter(client: Client): Router {
   // 9. Téléchargement du fichier de sauvegarde (.ethone-backup / JSON)
   router.get('/:backupId/download', (req: Request, res: Response) => {
     try {
-      const { guildId, backupId } = req.params;
+      const guildId = requireStringParam(req.params.guildId, 'guildId');
+      const backupId = requireStringParam(req.params.backupId, 'backupId');
       const result = backupService.getBackup(guildId, backupId);
       if (!result.snapshot) {
         return res.status(404).json({ error: 'Sauvegarde introuvable' });
@@ -215,7 +220,8 @@ export function createBackupRouter(client: Client): Router {
   // 10. Basculer la protection d'un snapshot
   router.patch('/:backupId/protect', (req: Request, res: Response) => {
     try {
-      const { guildId, backupId } = req.params;
+      const guildId = requireStringParam(req.params.guildId, 'guildId');
+      const backupId = requireStringParam(req.params.backupId, 'backupId');
       const { isProtected } = req.body;
       const user = (req as any).user || { id: 'admin', username: 'DashboardAdmin' };
 
@@ -238,7 +244,8 @@ export function createBackupRouter(client: Client): Router {
   // 11. Suppression d'une sauvegarde
   router.delete('/:backupId', (req: Request, res: Response) => {
     try {
-      const { guildId, backupId } = req.params;
+      const guildId = requireStringParam(req.params.guildId, 'guildId');
+      const backupId = requireStringParam(req.params.backupId, 'backupId');
       const user = (req as any).user || { id: 'admin', username: 'DashboardAdmin' };
 
       const ok = backupService.deleteBackup(guildId, backupId, {
@@ -260,7 +267,8 @@ export function createBackupRouter(client: Client): Router {
   // 12. Prévisualisation de la restauration
   router.post('/:backupId/preview-restore', async (req: Request, res: Response) => {
     try {
-      const { guildId, backupId } = req.params;
+      const guildId = requireStringParam(req.params.guildId, 'guildId');
+      const backupId = requireStringParam(req.params.backupId, 'backupId');
       const { safetyLevel, mode, selectedComponents } = req.body;
 
       const plan = await backupService.previewRestore({
@@ -286,7 +294,8 @@ export function createBackupRouter(client: Client): Router {
     idempotent({ scopePrefix: 'backup_restore' }),
     async (req: Request, res: Response) => {
     try {
-      const { guildId, backupId } = req.params;
+      const guildId = requireStringParam(req.params.guildId, 'guildId');
+      const backupId = requireStringParam(req.params.backupId, 'backupId');
       const { safetyLevel, mode, selectedComponents, confirmServerName } = req.body;
 
       // Protection supplémentaire pour le mode destructif

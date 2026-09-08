@@ -48,7 +48,7 @@ export const SOUNDSCAPE_PRESETS = [
 export default function SoundscapeMixer() {
   const i18n = useI18n();
   const { settings, update } = useSettings();
-  const { ambientSound, playAmbient, stopAmbient } = useSound();
+  const { ambientSound, playAmbient, stopAmbient, setAmbientVolume } = useSound();
 
   const [activeLayers, setActiveLayers] = useState<Record<string, number>>(() => {
     if (ambientSound && ambientSound !== "none") {
@@ -57,7 +57,6 @@ export default function SoundscapeMixer() {
     return {};
   });
 
-  const [masterVolume, setMasterVolume] = useState(80);
   const [activeTab, setActiveTab] = useState<"all" | "weather" | "nature" | "ambient" | "focus">("all");
 
   const filteredSoundscapes = useMemo(() => {
@@ -81,7 +80,7 @@ export default function SoundscapeMixer() {
           }
         } else {
           next[id] = 70;
-          playAmbient(id);
+          playAmbient(id, 70);
           update({ ambientSound: id });
         }
         return next;
@@ -90,12 +89,20 @@ export default function SoundscapeMixer() {
     [playAmbient, stopAmbient, update]
   );
 
-  const setLayerVolume = useCallback((id: string, vol: number) => {
-    setActiveLayers((prev) => ({
-      ...prev,
-      [id]: vol,
-    }));
-  }, []);
+  const setLayerVolume = useCallback(
+    (id: string, vol: number) => {
+      setActiveLayers((prev) => ({
+        ...prev,
+        [id]: vol,
+      }));
+      // The audio engine only ever plays one ambient track at a time (the last one
+      // toggled on), so only that track's slider can move real audio — adjust it live.
+      if (id === ambientSound) {
+        setAmbientVolume(vol);
+      }
+    },
+    [ambientSound, setAmbientVolume]
+  );
 
   const applyPreset = useCallback(
     (preset: typeof SOUNDSCAPE_PRESETS[0]) => {
@@ -193,12 +200,12 @@ export default function SoundscapeMixer() {
             type="range"
             min="0"
             max="100"
-            value={masterVolume}
-            onChange={(e) => setMasterVolume(Number(e.target.value))}
+            value={settings.soundVolume}
+            onChange={(e) => update({ soundVolume: Number(e.target.value) })}
             className="h-1.5 flex-1 cursor-pointer appearance-none rounded-full bg-[var(--surface-raised)] accent-[var(--accent-primary)]"
           />
           <span className="w-9 text-right text-xs font-mono tabular-nums text-[var(--text-primary)]">
-            {masterVolume}%
+            {settings.soundVolume}%
           </span>
         </div>
       </div>
@@ -375,7 +382,8 @@ export default function SoundscapeMixer() {
             </div>
             <input
               type="checkbox"
-              defaultChecked
+              checked={settings.notificationDucking}
+              onChange={(e) => update({ notificationDucking: e.target.checked })}
               className="h-4 w-4 rounded accent-[var(--accent-primary)]"
             />
           </label>

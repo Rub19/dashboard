@@ -64,11 +64,8 @@ export default function VersionUpdateToast() {
               <div className="flex items-center gap-3.5 sm:gap-4">
                 {/* Left Icon Badge with Pulse Aura */}
                 <div className="relative flex h-11 w-11 shrink-0 items-center justify-center rounded-2xl border border-[var(--accent-primary)]/40 bg-[var(--accent-primary)]/15 text-[var(--accent-primary)] shadow-[0_0_20px_var(--glow-color)]">
-                  <ArrowUpCircle className="h-5 w-5 animate-pulse" />
-                  <span className="absolute -bottom-1 -right-1 flex h-3 w-3">
-                    <span className="absolute inline-flex h-full w-full animate-ping rounded-full bg-[var(--accent-primary)] opacity-75" />
-                    <span className="relative inline-flex h-3 w-3 rounded-full bg-[var(--accent-primary)]" />
-                  </span>
+                  <ArrowUpCircle className="h-5 w-5" />
+                  <span className="absolute -bottom-1 -right-1 h-3 w-3 rounded-full bg-[var(--accent-primary)] shadow-[0_0_6px_var(--glow-color)]" />
                 </div>
 
                 {/* Text Description & Version Badge */}

@@ -6,6 +6,7 @@ import { pollVotingService } from '../../modules/polls/services/pollVotingServic
 import { pollResultService } from '../../modules/polls/services/pollResultService.js';
 import { discordPollPanel } from '../../modules/polls/ui/discordPollPanel.js';
 import { DiscordPoll } from '../../modules/polls/types/index.js';
+import { requireStringParam } from '../utils/params.js';
 
 export function createPollRouter(client: Client): Router {
   const router = Router({ mergeParams: true });
@@ -13,7 +14,7 @@ export function createPollRouter(client: Client): Router {
 
   // GET /api/guilds/:guildId/polls/overview
   router.get('/overview', (req: Request, res: Response) => {
-    const { guildId } = req.params;
+    const guildId = requireStringParam(req.params.guildId, 'guildId');
     const stats = pollRepository.getOverviewStats(guildId);
     const polls = pollRepository.getPolls(guildId);
     const recentVotes = pollRepository.getVotes(guildId).slice(0, 8);
@@ -28,7 +29,7 @@ export function createPollRouter(client: Client): Router {
 
   // GET /api/guilds/:guildId/polls
   router.get('/', (req: Request, res: Response) => {
-    const { guildId } = req.params;
+    const guildId = requireStringParam(req.params.guildId, 'guildId');
     const { status, type, search } = req.query;
 
     let polls = pollRepository.getPolls(guildId);
@@ -50,60 +51,67 @@ export function createPollRouter(client: Client): Router {
 
   // POST /api/guilds/:guildId/polls
   router.post('/', (req: Request, res: Response) => {
-    const { guildId } = req.params;
+    const guildId = requireStringParam(req.params.guildId, 'guildId');
     const body = req.body || {};
+    const user = (req as any).user || { id: 'admin', username: 'DashboardAdmin' };
 
     const newPoll: DiscordPoll = {
       id: body.id || `poll-${Date.now().toString(36)}`,
       guildId,
       title: body.title || 'Nouveau Sondage',
       description: body.description || '',
+      category: body.category || 'Communauté',
       type: body.type || 'SINGLE_CHOICE',
       status: 'DRAFT',
-      visibility: body.visibility || 'ALWAYS_VISIBLE',
+      creatorId: body.creatorId || user.id,
+      creatorTag: body.creatorTag || user.username,
+      resultsVisibility: body.resultsVisibility || 'LIVE',
       anonymity: body.anonymity || 'PUBLIC',
-      allowVoteModification: body.allowVoteModification ?? true,
+      allowVoteChange: body.allowVoteModification ?? true,
+      allowVoteRetract: body.allowVoteRetract ?? false,
       questions: body.questions || [
         {
           id: 'q1',
           title: 'Quelle est votre option préférée ?',
+          description: '',
+          type: body.type || 'SINGLE_CHOICE',
           required: true,
-          minChoices: 1,
-          maxChoices: 1,
+          minSelections: 1,
+          maxSelections: 1,
+          order: 0,
           options: [
-            { id: 'opt-1', text: 'Option A', emoji: '🟢', pointsWeight: 1, color: '#10b981' },
-            { id: 'opt-2', text: 'Option B', emoji: '🔵', pointsWeight: 1, color: '#3b82f6' },
+            { id: 'opt-1', label: 'Option A', description: '', emoji: '🟢', imageUrl: '', color: '#10b981', weight: 1, votesCount: 0, points: 0 },
+            { id: 'opt-2', label: 'Option B', description: '', emoji: '🔵', imageUrl: '', color: '#3b82f6', weight: 1, votesCount: 0, points: 0 },
           ],
         },
       ],
       eligibility: body.eligibility || {
-        roleCondition: 'ANY',
-        requiredRoleIds: [],
+        allowedRoleIds: [],
         forbiddenRoleIds: [],
         minAccountAgeDays: 0,
         minGuildMembershipDays: 0,
-        whitelistUserIds: [],
-        roleWeights: [],
+        specificUserIds: [],
+        logicGate: 'ANY',
       },
+      roleWeights: body.roleWeights || [],
       quorum: body.quorum || {
         enabled: false,
-        minVoters: 0,
-        percentageMajorityNeeded: 50,
+        minParticipantsCount: 0,
+        minParticipationPercentage: 0,
+        approvalThresholdPercentage: 50,
       },
       panelConfig: body.panelConfig || {
         channelId: '',
         embedTitle: `📊 ${body.title || 'Sondage Officiel'}`,
         embedDescription: 'Participez au vote ci-dessous en cliquant sur les options proposées.',
         embedColor: '#6366f1',
-        showLiveResults: true,
-        buttonStyle: 'PRIMARY',
+        thumbnailUrl: '',
+        imageUrl: '',
+        footerText: 'ETHONE Polls & Decisions 2.0',
+        buttonText: 'Voter',
+        showLiveResultsButton: true,
       },
       automations: body.automations || [],
-      stats: {
-        totalVotes: 0,
-        uniqueVoters: 0,
-        lastVoteAt: null,
-      },
       createdAt: new Date().toISOString(),
       updatedAt: new Date().toISOString(),
     };
@@ -118,7 +126,8 @@ export function createPollRouter(client: Client): Router {
 
   // GET /api/guilds/:guildId/polls/:pollId
   router.get('/:pollId', (req: Request, res: Response) => {
-    const { guildId, pollId } = req.params;
+    const guildId = requireStringParam(req.params.guildId, 'guildId');
+    const pollId = requireStringParam(req.params.pollId, 'pollId');
     const poll = pollRepository.getPollById(guildId, pollId);
 
     if (!poll) {
@@ -130,7 +139,8 @@ export function createPollRouter(client: Client): Router {
 
   // PUT /api/guilds/:guildId/polls/:pollId
   router.put('/:pollId', (req: Request, res: Response) => {
-    const { guildId, pollId } = req.params;
+    const guildId = requireStringParam(req.params.guildId, 'guildId');
+    const pollId = requireStringParam(req.params.pollId, 'pollId');
     const existing = pollRepository.getPollById(guildId, pollId);
 
     if (!existing) {
@@ -151,7 +161,8 @@ export function createPollRouter(client: Client): Router {
 
   // DELETE /api/guilds/:guildId/polls/:pollId
   router.delete('/:pollId', (req: Request, res: Response) => {
-    const { guildId, pollId } = req.params;
+    const guildId = requireStringParam(req.params.guildId, 'guildId');
+    const pollId = requireStringParam(req.params.pollId, 'pollId');
     const deleted = pollRepository.deletePoll(guildId, pollId);
 
     if (!deleted) {
@@ -163,7 +174,8 @@ export function createPollRouter(client: Client): Router {
 
   // POST /api/guilds/:guildId/polls/:pollId/publish
   router.post('/:pollId/publish', (req: Request, res: Response) => {
-    const { guildId, pollId } = req.params;
+    const guildId = requireStringParam(req.params.guildId, 'guildId');
+    const pollId = requireStringParam(req.params.pollId, 'pollId');
     const result = pollService.publishPoll(guildId, pollId);
     if (!result.success) {
       return res.status(400).json(result);
@@ -173,7 +185,8 @@ export function createPollRouter(client: Client): Router {
 
   // POST /api/guilds/:guildId/polls/:pollId/pause
   router.post('/:pollId/pause', (req: Request, res: Response) => {
-    const { guildId, pollId } = req.params;
+    const guildId = requireStringParam(req.params.guildId, 'guildId');
+    const pollId = requireStringParam(req.params.pollId, 'pollId');
     const result = pollService.pausePoll(guildId, pollId);
     if (!result.success) {
       return res.status(400).json(result);
@@ -183,7 +196,8 @@ export function createPollRouter(client: Client): Router {
 
   // POST /api/guilds/:guildId/polls/:pollId/resume
   router.post('/:pollId/resume', (req: Request, res: Response) => {
-    const { guildId, pollId } = req.params;
+    const guildId = requireStringParam(req.params.guildId, 'guildId');
+    const pollId = requireStringParam(req.params.pollId, 'pollId');
     const result = pollService.resumePoll(guildId, pollId);
     if (!result.success) {
       return res.status(400).json(result);
@@ -193,7 +207,8 @@ export function createPollRouter(client: Client): Router {
 
   // POST /api/guilds/:guildId/polls/:pollId/end
   router.post('/:pollId/end', async (req: Request, res: Response) => {
-    const { guildId, pollId } = req.params;
+    const guildId = requireStringParam(req.params.guildId, 'guildId');
+    const pollId = requireStringParam(req.params.pollId, 'pollId');
     const result = await pollService.endPoll(guildId, pollId, client);
     if (!result.success) {
       return res.status(400).json(result);
@@ -203,7 +218,8 @@ export function createPollRouter(client: Client): Router {
 
   // POST /api/guilds/:guildId/polls/:pollId/extend
   router.post('/:pollId/extend', (req: Request, res: Response) => {
-    const { guildId, pollId } = req.params;
+    const guildId = requireStringParam(req.params.guildId, 'guildId');
+    const pollId = requireStringParam(req.params.pollId, 'pollId');
     const { additionalHours } = req.body;
     const result = pollService.extendPoll(guildId, pollId, Number(additionalHours || 24));
     if (!result.success) {
@@ -214,7 +230,8 @@ export function createPollRouter(client: Client): Router {
 
   // POST /api/guilds/:guildId/polls/:pollId/duplicate
   router.post('/:pollId/duplicate', (req: Request, res: Response) => {
-    const { guildId, pollId } = req.params;
+    const guildId = requireStringParam(req.params.guildId, 'guildId');
+    const pollId = requireStringParam(req.params.pollId, 'pollId');
     const result = pollService.duplicatePoll(guildId, pollId);
     if (!result.success) {
       return res.status(400).json(result);
@@ -224,7 +241,8 @@ export function createPollRouter(client: Client): Router {
 
   // GET /api/guilds/:guildId/polls/:pollId/results
   router.get('/:pollId/results', (req: Request, res: Response) => {
-    const { guildId, pollId } = req.params;
+    const guildId = requireStringParam(req.params.guildId, 'guildId');
+    const pollId = requireStringParam(req.params.pollId, 'pollId');
     const results = pollResultService.calculateResults(guildId, pollId);
     if (!results) {
       return res.status(404).json({ success: false, error: 'Résultats non disponibles.' });
@@ -234,7 +252,8 @@ export function createPollRouter(client: Client): Router {
 
   // GET /api/guilds/:guildId/polls/:pollId/votes
   router.get('/:pollId/votes', (req: Request, res: Response) => {
-    const { guildId, pollId } = req.params;
+    const guildId = requireStringParam(req.params.guildId, 'guildId');
+    const pollId = requireStringParam(req.params.pollId, 'pollId');
     const poll = pollRepository.getPollById(guildId, pollId);
     if (!poll) {
       return res.status(404).json({ success: false, error: 'Sondage introuvable.' });
@@ -248,13 +267,13 @@ export function createPollRouter(client: Client): Router {
         ...v,
         userId: `anon-${i + 1}`,
         userTag: `Participant #${i + 1}`,
-        userAvatar: undefined,
+        userAvatar: '',
       }));
     } else if (poll.anonymity === 'ANONYMOUS') {
       votes = votes.map((v) => ({
         ...v,
         userTag: 'Votant Anonyme',
-        userAvatar: undefined,
+        userAvatar: '',
       }));
     }
 
@@ -263,7 +282,8 @@ export function createPollRouter(client: Client): Router {
 
   // POST /api/guilds/:guildId/polls/:pollId/vote (Web Submission)
   router.post('/:pollId/vote', (req: Request, res: Response) => {
-    const { guildId, pollId } = req.params;
+    const guildId = requireStringParam(req.params.guildId, 'guildId');
+    const pollId = requireStringParam(req.params.pollId, 'pollId');
     const { userId, userTag, userAvatar, userRoles, selections, satisfactionScore, rankingOrder } = req.body;
 
     if (!userId) {
@@ -293,7 +313,8 @@ export function createPollRouter(client: Client): Router {
 
   // GET /api/guilds/:guildId/polls/:pollId/export/csv
   router.get('/:pollId/export/csv', (req: Request, res: Response) => {
-    const { guildId, pollId } = req.params;
+    const guildId = requireStringParam(req.params.guildId, 'guildId');
+    const pollId = requireStringParam(req.params.pollId, 'pollId');
     const csv = pollService.exportVotesToCsv(guildId, pollId);
     res.setHeader('Content-Type', 'text/csv');
     res.setHeader('Content-Disposition', `attachment; filename=poll-${pollId}-votes.csv`);
@@ -302,7 +323,8 @@ export function createPollRouter(client: Client): Router {
 
   // GET /api/guilds/:guildId/polls/:pollId/export/json
   router.get('/:pollId/export/json', (req: Request, res: Response) => {
-    const { guildId, pollId } = req.params;
+    const guildId = requireStringParam(req.params.guildId, 'guildId');
+    const pollId = requireStringParam(req.params.pollId, 'pollId');
     const json = pollService.exportVotesToJson(guildId, pollId);
     res.setHeader('Content-Type', 'application/json');
     res.setHeader('Content-Disposition', `attachment; filename=poll-${pollId}-votes.json`);
@@ -311,7 +333,8 @@ export function createPollRouter(client: Client): Router {
 
   // POST /api/guilds/:guildId/polls/:pollId/panel/deploy
   router.post('/:pollId/panel/deploy', async (req: Request, res: Response) => {
-    const { guildId, pollId } = req.params;
+    const guildId = requireStringParam(req.params.guildId, 'guildId');
+    const pollId = requireStringParam(req.params.pollId, 'pollId');
     const { channelId } = req.body;
 
     const poll = pollRepository.getPollById(guildId, pollId);

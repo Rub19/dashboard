@@ -21,7 +21,7 @@ export class PollResultService {
     if (typeof pollOrGuildId === 'string') {
       const guildId = pollOrGuildId;
       const pollId = typeof pollIdOrMemberCount === 'string' ? pollIdOrMemberCount : '';
-      poll = pollRepository.getPollById(guildId, pollId);
+      poll = pollRepository.getPollById(guildId, pollId) ?? undefined;
       serverMemberCount = typeof pollIdOrMemberCount === 'number' ? pollIdOrMemberCount : serverMemberCountParam;
     } else {
       poll = pollOrGuildId;
@@ -101,7 +101,7 @@ export class PollResultService {
         if (poll.type === 'APPROVAL' || poll.type === 'YES_NO') {
           const firstQ = questionsResults[0];
           const approveOpt = firstQ?.options.find(
-            (o) => o.optionId === 'opt-approve' || o.label.toLowerCase().includes('oui') || o.label.toLowerCase().includes('approuv')
+            (o: any) => o.optionId === 'opt-approve' || o.label.toLowerCase().includes('oui') || o.label.toLowerCase().includes('approuv')
           );
           approvalPercentage = approveOpt ? approveOpt.percentage : 0;
 

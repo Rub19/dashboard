@@ -107,6 +107,13 @@ export const warnCommand: Command = {
       ]);
     }
 
+    // Mode test (Bot Owner qui s'auto-cible) : un avertissement n'a aucun effet
+    // punitif réel (pas de mute/kick/ban), donc rien à sauter ici — juste un
+    // rappel visuel que c'est un auto-test.
+    if (check.dryRun) {
+      embed.addFields([{ name: '🧪 Mode Test (God Mode)', value: 'Auto-ciblage détecté : ceci est un aperçu, sans conséquence réelle.' }]);
+    }
+
     await ctx.reply({ embeds: [embed] });
   },
 };

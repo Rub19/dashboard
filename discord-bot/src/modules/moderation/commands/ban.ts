@@ -61,12 +61,14 @@ export const banCommand: Command = {
 
     // Si le membre est présent sur le serveur, vérification de la hiérarchie
     const targetMember = await ctx.guild.members.fetch(targetId).catch(() => null);
+    let dryRun = false;
     if (targetMember) {
       const check = checkHierarchy(ctx.member, targetMember, ctx.guild.members.me!);
       if (!check.allowed) {
         await ctx.reply({ embeds: [ctx.createEmbed('error').setDescription(`${conf.emojis.error} ${check.reason}`)] });
         return;
       }
+      dryRun = Boolean(check.dryRun);
 
       await targetMember.send({
         content: formatString(t.ban_dm, { guild: ctx.guild.name, reason }),
@@ -77,10 +79,14 @@ export const banCommand: Command = {
       const targetUser = await ctx.client.users.fetch(targetId).catch(() => null);
       const userTag = targetUser?.tag || targetId;
 
-      await ctx.guild.bans.create(targetId, {
-        reason,
-        deleteMessageSeconds: deleteDays * 86400,
-      });
+      // Mode test (Bot Owner qui s'auto-cible) : on simule tout (log, DM, embed)
+      // SANS jamais bannir réellement — voir HierarchyCheckResult.dryRun.
+      if (!dryRun) {
+        await ctx.guild.bans.create(targetId, {
+          reason,
+          deleteMessageSeconds: deleteDays * 86400,
+        });
+      }
 
       const { sanction } = sanctionService.createSanction({
         guildId: ctx.guild.id,
@@ -97,7 +103,10 @@ export const banCommand: Command = {
       const embed = ctx
         .createEmbed('error')
         .setTitle(formatString(t.ban_title, { id: sanction.id }))
-        .setDescription(formatString(t.ban_desc, { userTag, reason, moderator: ctx.author.toString() }));
+        .setDescription(
+          formatString(t.ban_desc, { userTag, reason, moderator: ctx.author.toString() }) +
+            (dryRun ? '\n\n🧪 **Mode test (God Mode)** : aucun bannissement réel n\'a été appliqué.' : '')
+        );
 
       await ctx.reply({ embeds: [embed] });
     } catch {

@@ -67,7 +67,11 @@ export const kickCommand: Command = {
         content: formatString(t.kick_dm, { guild: ctx.guild.name, reason }),
       }).catch(() => {});
 
-      await targetMember.kick(reason);
+      // Mode test (Bot Owner qui s'auto-cible) : on simule tout SANS jamais
+      // expulser réellement — voir HierarchyCheckResult.dryRun.
+      if (!check.dryRun) {
+        await targetMember.kick(reason);
+      }
 
       const { sanction } = sanctionService.createSanction({
         guildId: ctx.guild.id,
@@ -84,7 +88,10 @@ export const kickCommand: Command = {
       const embed = ctx
         .createEmbed('info')
         .setTitle(formatString(t.kick_title, { id: sanction.id }))
-        .setDescription(formatString(t.kick_desc, { userTag: targetMember.user.tag, reason, moderator: ctx.author.toString() }));
+        .setDescription(
+          formatString(t.kick_desc, { userTag: targetMember.user.tag, reason, moderator: ctx.author.toString() }) +
+            (check.dryRun ? '\n\n🧪 **Mode test (God Mode)** : aucune expulsion réelle n\'a été appliquée.' : '')
+        );
 
       await ctx.reply({ embeds: [embed] });
     } catch {

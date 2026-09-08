@@ -1,3 +1,13 @@
+const v12061_fr: ChangelogEntry = {
+  version: "v1.20.61",
+  date: "2026-09-09",
+  title: "Correctif /ask (questions simples ignorées) & Mode Test God Mode",
+  items: [
+    "Bot Discord — /ask : les questions simples sans point d'interrogation (« combien font 1+1 », « quand », « qui est »...) ne déclenchaient aucun intent reconnu et tombaient sur une réponse générique « je ne comprends pas » sans jamais consulter l'IA. Détection élargie pour couvrir ces formulations courantes.",
+    "Bot Discord — Mode Test pour le Bot Owner : /warn, /ban, /kick et /timeout peuvent désormais être exécutées sur soi-même (uniquement par le Bot Owner, God Mode actif) pour prévisualiser le rendu exact (log, DM, embed) sans jamais appliquer la sanction réelle — pratique pour tester sans risquer de s'auto-exclure de son propre serveur.",
+  ],
+};
+
 const v12060_fr: ChangelogEntry = {
   version: "v1.20.60",
   date: "2026-09-09",
@@ -103,6 +113,16 @@ const v12052_fr: ChangelogEntry = {
     "Dynamic Island : correction d'un bug de priorité qui empêchait Spotify de jamais s'afficher, systématiquement évincé par la synchronisation d'arrière-plan.",
     "Commande /help du Bot Discord : la liste des commandes est désormais générée dynamiquement depuis les commandes réellement enregistrées (fin des commandes fantômes et des commandes manquantes), et affiche la vraie syntaxe des commandes à sous-commandes (ex. /automod status).",
     "Audit de l'enregistrement des commandes slash Discord : architecture confirmée saine, aucune dérive entre le code et les commandes déployées.",
+  ],
+};
+
+const v12061_en: ChangelogEntry = {
+  version: "v1.20.61",
+  date: "2026-09-09",
+  title: "/ask Fix (Simple Questions Ignored) & God Mode Test Mode",
+  items: [
+    "Discord Bot — /ask: simple questions without a trailing question mark (\"how much is 1+1\", \"when\", \"who is\"...) matched no recognized intent and fell back to a generic \"I don't understand\" reply without ever consulting the AI. Detection broadened to cover these common phrasings.",
+    "Discord Bot — Test Mode for the Bot Owner: /warn, /ban, /kick, and /timeout can now be run on yourself (Bot Owner only, God Mode active) to preview the exact result (log, DM, embed) without ever applying the real sanction — handy for testing without risking locking yourself out of your own server.",
   ],
 };
 
@@ -214,6 +234,16 @@ const v12052_en: ChangelogEntry = {
   ],
 };
 
+const v12061_es: ChangelogEntry = {
+  version: "v1.20.61",
+  date: "2026-09-09",
+  title: "Corrección de /ask (Preguntas Simples Ignoradas) y Modo de Prueba God Mode",
+  items: [
+    "Bot de Discord — /ask: las preguntas simples sin signo de interrogación final (« cuánto es 1+1 », « cuándo », « quién es »...) no coincidían con ningún intent reconocido y caían en una respuesta genérica « no entiendo » sin consultar nunca a la IA. Detección ampliada para cubrir estas formulaciones habituales.",
+    "Bot de Discord — Modo de prueba para el Bot Owner: /warn, /ban, /kick y /timeout ahora se pueden ejecutar sobre uno mismo (solo el Bot Owner, con God Mode activo) para previsualizar el resultado exacto (registro, MD, embed) sin aplicar nunca la sanción real — útil para probar sin arriesgarse a quedar excluido del propio servidor.",
+  ],
+};
+
 const v12060_es: ChangelogEntry = {
   version: "v1.20.60",
   date: "2026-09-09",
@@ -319,6 +349,16 @@ const v12052_es: ChangelogEntry = {
     "Dynamic Island: corregido un error de prioridad que impedía que Spotify apareciera, siempre desplazado por la sincronización en segundo plano.",
     "Comando /help del Bot de Discord: la lista de comandos ahora se genera dinámicamente desde los comandos realmente registrados (fin de comandos fantasma o ausentes), mostrando la sintaxis real de los comandos con subcomandos.",
     "Auditoría del registro de comandos slash de Discord: arquitectura confirmada como sólida, sin desviación entre el código y los comandos desplegados.",
+  ],
+};
+
+const v12061_de: ChangelogEntry = {
+  version: "v1.20.61",
+  date: "2026-09-09",
+  title: "Fix für /ask (Einfache Fragen Wurden Ignoriert) & God-Mode-Testmodus",
+  items: [
+    "Discord-Bot — /ask: einfache Fragen ohne abschließendes Fragezeichen (wie viel ist 1+1, wann, wer ist...) trafen auf keine erkannte Absicht und führten zu einer generischen Antwort ich verstehe nicht, ohne jemals die KI zu befragen. Die Erkennung wurde erweitert, um diese gängigen Formulierungen abzudecken.",
+    "Discord-Bot — Testmodus für den Bot Owner: /warn, /ban, /kick und /timeout können jetzt an sich selbst ausgeführt werden (nur Bot Owner, bei aktivem God Mode), um das genaue Ergebnis (Log, DM, Embed) zu testen, ohne die Sanktion tatsächlich anzuwenden — praktisch zum Testen, ohne sich versehentlich vom eigenen Server auszuschließen.",
   ],
 };
 
@@ -22335,5 +22375,10 @@ CHANGELOG_BY_LANG.fr.unshift(v12060_fr);
 CHANGELOG_BY_LANG.en.unshift(v12060_en);
 CHANGELOG_BY_LANG.es.unshift(v12060_es);
 CHANGELOG_BY_LANG.de.unshift(v12060_de);
+
+CHANGELOG_BY_LANG.fr.unshift(v12061_fr);
+CHANGELOG_BY_LANG.en.unshift(v12061_en);
+CHANGELOG_BY_LANG.es.unshift(v12061_es);
+CHANGELOG_BY_LANG.de.unshift(v12061_de);
 
 export const CHANGELOG = CHANGELOG_BY_LANG.fr;

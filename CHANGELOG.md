@@ -2,6 +2,14 @@
 
 Toutes les modifications notables de ce projet seront documentées dans ce fichier.
 
+## v1.20.61 — 2026-09-09
+
+**Correctif `/ask` (questions simples ignorées) & Mode Test God Mode**
+
+- **`/ask`** : `discord-bot/src/modules/ai/services/intentDetector.ts`'s `INTENT_PATTERNS.informational` ne matchait aucun mot interrogatif de tête de phrase sans point d'interrogation final (« combien font 1+1 », « quand est-ce que », « qui est X »). Un message ne matchant AUCUN pattern retombait sur l'intent par défaut `'clarification'` — qui est dans `FAST_TRACK_INTENTS` (jamais de LLM) — d'où une réponse générique « je ne comprends pas » au lieu d'une vraie réponse. Ajout de patterns pour `combien/quand/qui est/où/pourquoi/quel` (+ équivalents EN/ES/DE) et pour les expressions arithmétiques simples (`\d\s*[+\-*/x×÷]\s*\d`).
+- **Mode Test God Mode** : `checkHierarchy()` (`modules/moderation/permissions/hierarchy.ts`) bloquait catégoriquement toute auto-cible (règle « on ne peut pas se sanctionner soi-même »), y compris pour le Bot Owner voulant juste prévisualiser le rendu d'une commande. Nouvelle règle prioritaire : si le modérateur ET la cible sont le Bot Owner (avec God Mode actif), retourne `{allowed: true, dryRun: true}` — `/warn`, `/ban`, `/kick`, `/timeout` sautent alors l'appel Discord réellement punitif (`bans.create`/`kick`/`timeout`) tout en exécutant normalement le log, le DM et l'embed de confirmation, avec une mention explicite « Mode Test (God Mode) ».
+- Validation : `tsc --noEmit` (0 erreur), `npm run node:build`, suite QA `test_full_sync_qa.ts` (42/42) côté `discord-bot` ; `tsc --noEmit` côté `ethone-next`.
+
 ## v1.20.60 — 2026-09-09
 
 **Traduction complète du bot Discord (FR/EN/ES/DE)**

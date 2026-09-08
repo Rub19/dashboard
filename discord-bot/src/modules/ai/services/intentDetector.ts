@@ -190,6 +190,19 @@ const INTENT_PATTERNS: IntentPattern[] = [
       /\?$/, // se termine par un point d'interrogation
       /\b(comment (ça marche|ça fonctionne|faire)|how does|how to|how can)\b/i,
       /\b(explique|explain|décris|describe|dis-moi|teach me|apprends-moi)\b/i,
+      // Mots interrogatifs en tête de phrase sans point d'interrogation final
+      // (ex: "combien font 1+1", "quand est-ce que", "qui est", "how much is") —
+      // sans ces patterns, ces messages ne matchaient AUCUN intent et tombaient
+      // par défaut sur 'clarification' (fast-track, jamais de LLM), donnant une
+      // réponse générique "je ne comprends pas" au lieu d'une vraie réponse.
+      /^(combien|combien de|how much|how many|cuánto|cuántos|cuántas|wie viel|wie viele)\b/i,
+      /^(quand|when|cuándo|wann)\b/i,
+      /^(qui|who|quién|wer)\s+(est|is|es|ist)\b/i,
+      /^(où|where|dónde|wo)\b/i,
+      /^(pourquoi|why|por qué|warum)\b/i,
+      /^(quel|quelle|quels|quelles|which|cuál|welche|welcher)\b/i,
+      // Expressions arithmétiques simples ("1+1", "10 * 5", "combien fait 2+2")
+      /\d\s*[+\-*/x×÷]\s*\d/,
     ],
   },
 ];

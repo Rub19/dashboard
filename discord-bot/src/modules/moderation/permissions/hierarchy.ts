@@ -4,6 +4,14 @@ import { ownerImmunityService } from '../../../services/ownerImmunityService.js'
 export interface HierarchyCheckResult {
   allowed: boolean;
   reason?: string;
+  /**
+   * True quand le Bot Owner s'auto-cible avec le God Mode toujours actif : la
+   * commande doit s'exécuter en mode test (log, DM, embed identiques à une
+   * vraie sanction) SANS jamais appeler la véritable action Discord punitive
+   * (timeout/ban/kick réels) — pratique pour prévisualiser le rendu d'une
+   * commande sans jamais risquer de s'auto-exclure de son propre serveur.
+   */
+  dryRun?: boolean;
 }
 
 /**
@@ -15,6 +23,15 @@ export function checkHierarchy(
   target: GuildMember,
   botMember: GuildMember
 ): HierarchyCheckResult {
+  // 0bis. Le Bot Owner qui s'auto-cible (avec le God Mode actif) passe en mode test :
+  // autorisé, mais la commande appelante doit sauter l'action Discord réelle et se
+  // contenter de simuler (log + DM + embed) — voir `dryRun` ci-dessus. Cette règle
+  // est vérifiée AVANT l'immunité générale (0) et l'anti-auto-sanction (1) ci-dessous,
+  // qui bloqueraient sinon ce cas précis.
+  if (moderator.id === target.id && ownerImmunityService.isOwnerImmune(moderator.id)) {
+    return { allowed: true, dryRun: true };
+  }
+
   // 0. Le Bot Owner est immunisé contre toute sanction, sur absolument tous les serveurs —
   // qu'il soit propriétaire du serveur ou non. Cette immunité est globale et volontaire
   // (protection "god mode"), distincte de la vérification de hiérarchie de rôles ci-dessous.

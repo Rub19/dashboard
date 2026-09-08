@@ -90,7 +90,13 @@ export const timeoutCommand: Command = {
     }
 
     try {
-      await targetMember.timeout(seconds * 1000, reason);
+      // Mode test (Bot Owner qui s'auto-cible) : on simule tout SANS jamais
+      // appliquer de vraie sourdine — voir HierarchyCheckResult.dryRun. Aussi
+      // pratique ici car le propriétaire a souvent un rôle trop haut pour être
+      // réellement "moderatable" par le bot de toute façon.
+      if (!check.dryRun) {
+        await targetMember.timeout(seconds * 1000, reason);
+      }
 
       const { sanction } = sanctionService.createSanction({
         guildId: ctx.guild.id,
@@ -109,7 +115,8 @@ export const timeoutCommand: Command = {
         .createEmbed('info')
         .setTitle(formatString(t.timeout_title, { id: sanction.id }))
         .setDescription(
-          formatString(t.timeout_desc, { target: targetMember.toString(), duration: durationStr, reason, moderator: ctx.author.toString() })
+          formatString(t.timeout_desc, { target: targetMember.toString(), duration: durationStr, reason, moderator: ctx.author.toString() }) +
+            (check.dryRun ? '\n\n🧪 **Mode test (God Mode)** : aucune sourdine réelle n\'a été appliquée.' : '')
         );
 
       await ctx.reply({ embeds: [embed] });

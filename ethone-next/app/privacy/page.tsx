@@ -5,7 +5,7 @@ export const metadata = {
 
 export default function PrivacyPage() {
   return (
-    <div className="min-h-screen w-full bg-black text-zinc-200">
+    <div className="h-full w-full overflow-y-auto bg-black text-zinc-200">
       <div className="mx-auto w-full max-w-3xl px-6 py-16">
         <a href="/" className="text-sm text-zinc-500 hover:text-zinc-300 transition-colors">
           ← Retour à ETHONE

@@ -39,7 +39,8 @@ export default function FocusStatsAndGoals({
         </div>
 
         <span className="flex items-center gap-1 rounded-full bg-amber-500/15 px-2 py-0.5 text-[10px] font-bold text-amber-400">
-          🔥 Série : {streakDays} jours
+          <Icon name="flame" className="h-3 w-3" />
+          Série : {streakDays} jours
         </span>
       </div>
 

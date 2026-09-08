@@ -10,7 +10,7 @@ export default function Screen1Architecture() {
       {/* Header */}
       <div className="text-center mb-6">
         <div className="inline-flex items-center gap-1.5 px-3 py-1 rounded-full bg-teal-500/10 border border-teal-500/20 text-teal-400 text-xs font-medium mb-3">
-          <Radio className="w-3 h-3 text-teal-400 animate-pulse" />
+          <Radio className="w-3 h-3 text-teal-400" />
           <span>ARCHITECTURE UNIFIÉE</span>
         </div>
         <h3 className="text-2xl sm:text-3xl font-bold text-white tracking-tight mb-2">
@@ -43,12 +43,12 @@ export default function Screen1Architecture() {
           {/* Node 2: ETHONE Bot Core (Center) */}
           <div className="flex flex-col items-center text-center p-4 rounded-xl bg-gradient-to-b from-indigo-950/40 to-zinc-950/90 border border-indigo-500/40 shadow-lg shadow-indigo-500/10 relative">
             <div className="absolute -top-2.5 px-2.5 py-0.5 rounded-full bg-emerald-500/20 border border-emerald-500/40 text-emerald-300 text-[10px] font-medium flex items-center gap-1">
-              <span className="w-1.5 h-1.5 rounded-full bg-emerald-400 animate-ping"></span>
+              <span className="w-1.5 h-1.5 rounded-full bg-emerald-400 shadow-[0_0_5px_var(--glow-color)]"></span>
               <span>Online (18ms)</span>
             </div>
 
             <div className="w-12 h-12 rounded-xl bg-gradient-to-tr from-indigo-600 to-teal-500 flex items-center justify-center text-white mb-3 shadow-md">
-              <Cpu className="w-6 h-6 animate-pulse" />
+              <Cpu className="w-6 h-6" />
             </div>
             <h4 className="text-sm font-semibold text-white mb-1">ETHONE Bot Engine</h4>
             <p className="text-xs text-zinc-400">Microservice WebSocket</p>

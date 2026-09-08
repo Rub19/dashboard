@@ -38,7 +38,7 @@ interface ProfileHero2026Props {
 
 const PRESENCE_CONFIG: Record<PresenceStatus, { label: string; dot: string; glow: string }> = {
   online: { label: "En ligne", dot: "bg-emerald-500", glow: "shadow-emerald-500/50" },
-  focus: { label: "Deep Work (Focus)", dot: "bg-purple-500 animate-pulse", glow: "shadow-purple-500/50" },
+  focus: { label: "Deep Work (Focus)", dot: "bg-purple-500", glow: "shadow-purple-500/50" },
   gaming: { label: "En jeu (Gaming)", dot: "bg-rose-500", glow: "shadow-rose-500/50" },
   busy: { label: "Occupé", dot: "bg-amber-500", glow: "shadow-amber-500/50" },
   dnd: { label: "Ne pas déranger", dot: "bg-red-500", glow: "shadow-red-500/50" },
@@ -100,7 +100,6 @@ export default function ProfileHero2026({
     <div className="relative overflow-hidden rounded-3xl border border-[var(--panel-border)]/80 bg-gradient-to-b from-[var(--surface-raised)]/90 via-[var(--panel-bg)]/80 to-[var(--surface-raised)]/60 p-5 sm:p-7 shadow-lg backdrop-blur-xl">
       {/* Dynamic Background Aura */}
       <div className="absolute -right-16 -top-16 h-64 w-64 rounded-full bg-[var(--accent-primary)]/15 blur-3xl pointer-events-none" />
-      <div className="absolute left-1/3 -top-24 h-48 w-48 rounded-full bg-purple-500/10 blur-3xl pointer-events-none" />
 
       <div className="relative z-10 flex flex-col md:flex-row md:items-center justify-between gap-6">
         {/* Left: Avatar with Frame + Presence + Details */}

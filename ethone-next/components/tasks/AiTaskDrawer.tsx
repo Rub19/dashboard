@@ -139,8 +139,9 @@ export default function AiTaskDrawer({ isOpen, onClose, onAddTasks }: AiTaskDraw
 
             {/* Presets Grid */}
             <div className="space-y-2.5">
-              <p className="text-xs font-bold uppercase tracking-wider text-zinc-400">
-                ⚡ Suggestions instantanées
+              <p className="flex items-center gap-1.5 text-xs font-bold uppercase tracking-wider text-zinc-400">
+                <Zap className="h-3.5 w-3.5" />
+                Suggestions instantanées
               </p>
               <div className="grid grid-cols-1 gap-2.5 sm:grid-cols-2">
                 {PRESET_TASK_PACKS.map((pack) => (
@@ -169,8 +170,9 @@ export default function AiTaskDrawer({ isOpen, onClose, onAddTasks }: AiTaskDraw
             {previewTasks.length > 0 && (
               <div className="space-y-3 rounded-2xl border border-purple-500/20 bg-purple-500/5 p-4 animate-in fade-in zoom-in-95 duration-200">
                 <div className="flex items-center justify-between">
-                  <span className="text-xs font-bold text-purple-300">
-                    📋 Tâches générées ({selectedIndices.size} / {previewTasks.length} sélectionnées)
+                  <span className="flex items-center gap-1.5 text-xs font-bold text-purple-300">
+                    <ListPlus className="h-3.5 w-3.5" />
+                    Tâches générées ({selectedIndices.size} / {previewTasks.length} sélectionnées)
                   </span>
                   <button
                     type="button"

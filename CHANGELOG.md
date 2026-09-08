@@ -2,6 +2,16 @@
 
 Toutes les modifications notables de ce projet seront documentées dans ce fichier.
 
+## v1.20.63 — 2026-09-09
+
+**Fin du nettoyage "look démo IA" sur le reste du dashboard**
+
+- Suite et fin des passes précédentes (shell principal, `components/settings/**`, `app/discord/**`) : suppression des `animate-ping`/`animate-pulse` décoratifs restants sur ~30 fichiers — `app/login`, `app/interactions`, `app/plugins`, `app/boost/BoostClient.tsx`, `components/{NotesPage,WeatherPage,SocialDiscordCard,OfflineIndicator,SystemControlCard,GamingCard,BrainChat}.tsx`, `components/{marketplace,focus,profile,connections,tasks,brain,tracker}/**`, et les 9 fichiers du carrousel d'onboarding Discord (`components/discord/onboarding/**`, distinct de `app/discord/**` déjà fait) — remplacés par un point statique + `box-shadow` via `--glow-color`, ou simplement retirés quand purement décoratifs (icônes de badge, bouton "turbo" toujours actif, swatch sélectionné).
+- Quelques emojis redondants juxtaposés à une icône déjà présente remplacés par de vraies icônes lucide déjà importées dans le même fichier (🧠→Brain déjà visible, ⚡→Zap/Sparkles, 📋→ListPlus, 🔥→Flame, ✓→Check).
+- Auras à double flou empilé réduites à une seule (`GamingCard.tsx`, `ProfileHero2026.tsx`).
+- Laissé intentionnellement en l'état : tous les indicateurs réellement transitoires (pastille de focus/réflexion/sync du Brain, visualiseur audio "en cours de lecture", anneau de minuteur Pomodoro, glisser-déposer de fichier actif, vérification de code OTP) — le pattern "pulse = événement réel en cours" reste utilisé à bon escient.
+- Validation : `tsc --noEmit` (0 erreur), `npm run lint` (0 nouvelle erreur), `npm run build`, `npm run test:unit` (13/13, 61/61).
+
 ## v1.20.62 — 2026-09-09
 
 **Correctif important : le Bot Control Center affichait des modules factices**

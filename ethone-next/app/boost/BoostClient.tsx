@@ -105,7 +105,7 @@ export default function BoostClient({ id }: BoostClientProps) {
             className={cn(
               "flex items-center gap-1.5 rounded-xl px-4 py-2 text-xs font-bold transition-all shadow-md cursor-pointer",
               turboActive
-                ? "bg-gradient-to-r from-orange-500 to-red-600 text-white shadow-orange-500/30 animate-pulse"
+                ? "bg-gradient-to-r from-orange-500 to-red-600 text-white shadow-orange-500/30"
                 : "bg-white/10 text-white hover:bg-white/15"
             )}
           >
@@ -151,8 +151,9 @@ export default function BoostClient({ id }: BoostClientProps) {
             <Gauge className="h-4 w-4 text-orange-400" />
           </div>
           <p className="text-2xl font-bold font-mono text-white mt-1">{fps} FPS</p>
-          <p className="text-[10px] text-zinc-400 mt-1">
-            {turboActive ? "⚡ Synchronisation Ultra-Low Latency" : "Fluidité standard"}
+          <p className="flex items-center gap-1 text-[10px] text-zinc-400 mt-1">
+            {turboActive && <Zap className="h-2.5 w-2.5 text-amber-400" />}
+            {turboActive ? "Synchronisation Ultra-Low Latency" : "Fluidité standard"}
           </p>
         </div>
 

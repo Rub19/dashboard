@@ -109,7 +109,7 @@ export default function DiscordOnboardingModal({
         {/* Top Header Bar */}
         <div className="relative z-10 flex items-center justify-between px-6 py-4 border-b border-zinc-800/80 bg-zinc-950/50">
           <div className="flex items-center gap-2">
-            <span className="w-2 h-2 rounded-full bg-indigo-500 animate-pulse" />
+            <span className="w-2 h-2 rounded-full bg-indigo-500 shadow-[0_0_5px_var(--glow-color)]" />
             <span className="text-xs font-semibold tracking-wider uppercase text-zinc-400">
               ETHONE BOT ONBOARDING
             </span>

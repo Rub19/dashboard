@@ -154,10 +154,6 @@ const GamingCard = memo(function GamingCard({
         className="pointer-events-none absolute -right-12 -top-12 h-44 w-44 rounded-full bg-emerald-500/10 blur-3xl transition-opacity group-hover:opacity-100"
         aria-hidden="true"
       />
-      <div
-        className="pointer-events-none absolute -left-12 -bottom-12 h-44 w-44 rounded-full bg-lime-500/10 blur-3xl transition-opacity group-hover:opacity-100"
-        aria-hidden="true"
-      />
 
       {/* Header: Title + Gaming Badge + Live Status */}
       <div className="relative z-10 flex shrink-0 items-center justify-between">

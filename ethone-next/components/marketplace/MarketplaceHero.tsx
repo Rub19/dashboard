@@ -62,7 +62,7 @@ export default function MarketplaceHero({
             </div>
             {updatesCount > 0 && (
               <div className="flex items-center gap-1.5 text-amber-400">
-                <span className="h-2 w-2 rounded-full bg-amber-400 animate-pulse" />
+                <span className="h-2 w-2 rounded-full bg-amber-400 shadow-[0_0_5px_var(--glow-color)]" />
                 <span>
                   <strong>{updatesCount}</strong> mise{updatesCount > 1 ? "s" : ""} à jour disponible{updatesCount > 1 ? "s" : ""}
                 </span>
@@ -81,7 +81,7 @@ export default function MarketplaceHero({
             <div className="flex items-center justify-between gap-2 mb-2.5">
               <span className="inline-flex items-center gap-1.5 rounded-lg border border-purple-500/40 bg-purple-900/40 px-2 py-0.5 text-[11px] font-bold text-purple-200">
                 <Brain className="h-3.5 w-3.5 text-purple-300" />
-                <span>🧠 {topPick.match.score}% Match Brain</span>
+                <span>{topPick.match.score}% Match Brain</span>
               </span>
 
               <button

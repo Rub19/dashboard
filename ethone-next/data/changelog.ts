@@ -1,3 +1,12 @@
+const v12063_fr: ChangelogEntry = {
+  version: "v1.20.63",
+  date: "2026-09-09",
+  title: "Fin du Nettoyage \"Look Démo IA\" sur le Reste du Dashboard",
+  items: [
+    "Dashboard : suppression des dernières pastilles clignotantes décoratives sur ~30 fichiers restants (connexion, notes, météo, marketplace, focus, brain, tracker, profil, système, boost, et l'ensemble du carrousel d'onboarding Discord) — remplacées par un point statique + lueur douce, comme sur le reste de l'app. Quelques emojis redondants à côté d'icônes déjà présentes remplacés par de vraies icônes (BrainChat, tâches IA, statistiques Focus). Les indicateurs réellement transitoires (chargement, lecture audio en cours, synchronisation réelle) sont conservés tels quels.",
+  ],
+};
+
 const v12062_fr: ChangelogEntry = {
   version: "v1.20.62",
   date: "2026-09-09",
@@ -122,6 +131,15 @@ const v12052_fr: ChangelogEntry = {
     "Dynamic Island : correction d'un bug de priorité qui empêchait Spotify de jamais s'afficher, systématiquement évincé par la synchronisation d'arrière-plan.",
     "Commande /help du Bot Discord : la liste des commandes est désormais générée dynamiquement depuis les commandes réellement enregistrées (fin des commandes fantômes et des commandes manquantes), et affiche la vraie syntaxe des commandes à sous-commandes (ex. /automod status).",
     "Audit de l'enregistrement des commandes slash Discord : architecture confirmée saine, aucune dérive entre le code et les commandes déployées.",
+  ],
+};
+
+const v12063_en: ChangelogEntry = {
+  version: "v1.20.63",
+  date: "2026-09-09",
+  title: "Finished the \"AI Demo Look\" Cleanup Across the Rest of the Dashboard",
+  items: [
+    "Dashboard: removed the remaining decorative blinking status dots across ~30 files (login, notes, weather, marketplace, focus, brain, tracker, profile, system, boost, and the entire Discord onboarding carousel) — replaced with a static dot + soft glow, matching the rest of the app. A few redundant emoji sitting next to an existing icon were swapped for real icons (BrainChat, AI task drawer, Focus stats). Genuinely transient indicators (loading, audio actually playing, real sync) were left untouched.",
   ],
 };
 
@@ -252,6 +270,15 @@ const v12052_en: ChangelogEntry = {
   ],
 };
 
+const v12063_es: ChangelogEntry = {
+  version: "v1.20.63",
+  date: "2026-09-09",
+  title: "Fin de la Limpieza \"Aspecto de Demo IA\" en el Resto del Dashboard",
+  items: [
+    "Dashboard: eliminadas las últimas pastillas de estado parpadeantes en ~30 archivos restantes (login, notas, clima, marketplace, focus, brain, tracker, perfil, sistema, boost, y todo el carrusel de onboarding de Discord) — sustituidas por un punto estático + brillo suave, igual que en el resto de la app. Algunos emojis redundantes junto a un icono ya existente se sustituyeron por iconos reales (BrainChat, panel de tareas IA, estadísticas de Focus). Los indicadores realmente transitorios (carga, audio realmente reproduciéndose, sincronización real) se dejaron intactos.",
+  ],
+};
+
 const v12062_es: ChangelogEntry = {
   version: "v1.20.62",
   date: "2026-09-09",
@@ -376,6 +403,15 @@ const v12052_es: ChangelogEntry = {
     "Dynamic Island: corregido un error de prioridad que impedía que Spotify apareciera, siempre desplazado por la sincronización en segundo plano.",
     "Comando /help del Bot de Discord: la lista de comandos ahora se genera dinámicamente desde los comandos realmente registrados (fin de comandos fantasma o ausentes), mostrando la sintaxis real de los comandos con subcomandos.",
     "Auditoría del registro de comandos slash de Discord: arquitectura confirmada como sólida, sin desviación entre el código y los comandos desplegados.",
+  ],
+};
+
+const v12063_de: ChangelogEntry = {
+  version: "v1.20.63",
+  date: "2026-09-09",
+  title: "Aufräumen des KI-Demo-Looks im Rest des Dashboards Abgeschlossen",
+  items: [
+    "Dashboard: die restlichen blinkenden Status-Punkte auf ~30 Dateien entfernt (Login, Notizen, Wetter, Marketplace, Focus, Brain, Tracker, Profil, System, Boost sowie das gesamte Discord-Onboarding-Karussell) — ersetzt durch einen statischen Punkt mit sanftem Leuchten, passend zum Rest der App. Einige überflüssige Emojis direkt neben einem bereits vorhandenen Icon wurden durch echte Icons ersetzt (BrainChat, KI-Aufgaben-Panel, Focus-Statistiken). Echte, vorübergehende Anzeigen (Laden, tatsächlich laufende Audiowiedergabe, echte Synchronisierung) blieben unverändert.",
   ],
 };
 
@@ -22421,5 +22457,10 @@ CHANGELOG_BY_LANG.fr.unshift(v12062_fr);
 CHANGELOG_BY_LANG.en.unshift(v12062_en);
 CHANGELOG_BY_LANG.es.unshift(v12062_es);
 CHANGELOG_BY_LANG.de.unshift(v12062_de);
+
+CHANGELOG_BY_LANG.fr.unshift(v12063_fr);
+CHANGELOG_BY_LANG.en.unshift(v12063_en);
+CHANGELOG_BY_LANG.es.unshift(v12063_es);
+CHANGELOG_BY_LANG.de.unshift(v12063_de);
 
 export const CHANGELOG = CHANGELOG_BY_LANG.fr;

@@ -9,7 +9,7 @@ export default function Screen5ControlCenter() {
       {/* Header */}
       <div className="text-center mb-6">
         <div className="inline-flex items-center gap-1.5 px-3 py-1 rounded-full bg-cyan-500/10 border border-cyan-500/20 text-cyan-400 text-xs font-medium mb-3">
-          <Activity className="w-3 h-3 text-cyan-400 animate-pulse" />
+          <Activity className="w-3 h-3 text-cyan-400" />
           <span>VUE D'ENSEMBLE UNIFIÉE</span>
         </div>
         <h3 className="text-2xl sm:text-3xl font-bold text-white tracking-tight mb-2">
@@ -86,7 +86,7 @@ export default function Screen5ControlCenter() {
 
         {/* Live sync pill */}
         <div className="mt-4 pt-3 border-t border-zinc-800 flex items-center justify-center gap-2 text-xs text-zinc-400">
-          <span className="w-2 h-2 rounded-full bg-emerald-400 animate-ping" />
+          <span className="w-2 h-2 rounded-full bg-emerald-400 shadow-[0_0_5px_var(--glow-color)]" />
           <span>Synchronisation continue avec le serveur Discord</span>
         </div>
       </div>

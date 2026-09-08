@@ -356,7 +356,7 @@ const SocialDiscordCard = memo(function SocialDiscordCard({
             {loading && hasAnyConnection ? (
               <Loader2 className="h-6 w-6 animate-spin text-zinc-400" />
             ) : hasAnyConnection ? (
-              <Radio className="h-6 w-6 text-[var(--accent-primary)] animate-pulse" />
+              <Radio className="h-6 w-6 text-[var(--accent-primary)]" />
             ) : (
               <RadioOff className="h-6 w-6 text-zinc-500" />
             )}

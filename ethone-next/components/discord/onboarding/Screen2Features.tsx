@@ -276,7 +276,7 @@ export default function Screen2Features() {
                     <Icon className="w-3.5 h-3.5" />
                   </div>
                   {isSelected && (
-                    <span className="w-1.5 h-1.5 rounded-full bg-indigo-400 animate-pulse" />
+                    <span className="w-1.5 h-1.5 rounded-full bg-indigo-400 shadow-[0_0_5px_var(--glow-color)]" />
                   )}
                 </div>
                 <div className="text-xs font-semibold text-white truncate w-full">{m.name}</div>
@@ -311,7 +311,7 @@ export default function Screen2Features() {
             <div className="text-[10px] font-mono text-zinc-500 uppercase tracking-wider mb-2 flex items-center justify-between">
               <span>APERÇU EN DIRECT</span>
               <span className="text-emerald-400 flex items-center gap-1 font-sans">
-                <span className="w-1.5 h-1.5 rounded-full bg-emerald-400 animate-ping"></span> Sync
+                <span className="w-1.5 h-1.5 rounded-full bg-emerald-400 shadow-[0_0_5px_var(--glow-color)]"></span> Sync
               </span>
             </div>
             {currentModule.preview}

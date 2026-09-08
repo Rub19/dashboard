@@ -127,7 +127,7 @@ const SystemControlCard = memo(function SystemControlCard({ className = "", scro
                   />
                   {active && (
                     <span
-                      className="absolute inset-0 rounded-xl border border-white/40 animate-pulse pointer-events-none"
+                      className="absolute inset-0 rounded-xl border border-white/40 pointer-events-none"
                       aria-hidden="true"
                     />
                   )}

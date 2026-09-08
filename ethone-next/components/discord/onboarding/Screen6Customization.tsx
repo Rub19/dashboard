@@ -22,7 +22,7 @@ export default function Screen6Customization() {
       {/* Header */}
       <div className="text-center mb-6">
         <div className="inline-flex items-center gap-1.5 px-3 py-1 rounded-full bg-fuchsia-500/10 border border-fuchsia-500/20 text-fuchsia-400 text-xs font-medium mb-3">
-          <Palette className="w-3 h-3 text-fuchsia-400 animate-pulse" />
+          <Palette className="w-3 h-3 text-fuchsia-400" />
           <span>PERSONNALISATION TOTALE</span>
         </div>
         <h3 className="text-2xl sm:text-3xl font-bold text-white tracking-tight mb-2">

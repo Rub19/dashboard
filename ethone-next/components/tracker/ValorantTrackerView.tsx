@@ -338,7 +338,7 @@ export default function ValorantTrackerView() {
               )}
               title="Configurer la clé API Henrik pour récupérer les rangs réels des joueurs"
             >
-              <span className={cn("h-2 w-2 rounded-full", hasApiKey ? "bg-emerald-400 shadow-[0_0_8px_rgba(52,211,153,0.8)]" : "bg-amber-400 animate-pulse")} />
+              <span className={cn("h-2 w-2 rounded-full", hasApiKey ? "bg-emerald-400 shadow-[0_0_8px_rgba(52,211,153,0.8)]" : "bg-amber-400 shadow-[0_0_8px_rgba(245,158,11,0.6)]")} />
               <span>{hasApiKey ? "Clé API Active" : "Clé API (Rangs Réels)"}</span>
             </button>
 

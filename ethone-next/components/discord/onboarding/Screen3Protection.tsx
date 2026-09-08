@@ -10,7 +10,7 @@ export default function Screen3Protection() {
       {/* Header */}
       <div className="text-center mb-6">
         <div className="inline-flex items-center gap-1.5 px-3 py-1 rounded-full bg-rose-500/10 border border-rose-500/20 text-rose-400 text-xs font-medium mb-3">
-          <ShieldAlert className="w-3 h-3 text-rose-400 animate-pulse" />
+          <ShieldAlert className="w-3 h-3 text-rose-400" />
           <span>SÉCURITÉ TEMPS RÉEL</span>
         </div>
         <h3 className="text-2xl sm:text-3xl font-bold text-white tracking-tight mb-2">
@@ -28,7 +28,7 @@ export default function Screen3Protection() {
           {/* Server Hub Icon with Shield */}
           <div className="relative flex items-center justify-center">
             <div className="w-24 h-24 rounded-full bg-gradient-to-tr from-indigo-900/40 via-purple-900/30 to-emerald-950/40 border border-indigo-500/30 flex items-center justify-center relative shadow-xl">
-              <div className="absolute inset-0 rounded-full border border-emerald-500/40 animate-ping opacity-30 pointer-events-none" />
+              <div className="absolute inset-0 rounded-full border border-emerald-500/40 opacity-30 pointer-events-none" />
               <DiscordIcon className="w-10 h-10 text-indigo-300" />
               <div className="absolute -bottom-1 -right-1 p-1.5 rounded-full bg-emerald-500 text-black shadow-md">
                 <ShieldCheck className="w-4 h-4" />

@@ -71,7 +71,7 @@ export default function BrainIntegrationsHub({
         {/* Left: Brain Title & Ecosystem Stats */}
         <div className="flex items-start gap-3.5 min-w-0">
           <div className="flex h-11 w-11 shrink-0 items-center justify-center rounded-2xl bg-[var(--accent-primary)]/15 border border-[var(--accent-primary)]/30 text-[var(--accent-primary)] shadow-sm">
-            <Icon name="brain" className="h-5 w-5 animate-pulse" />
+            <Icon name="brain" className="h-5 w-5" />
           </div>
           <div>
             <div className="flex items-center gap-2 flex-wrap">
@@ -103,7 +103,7 @@ export default function BrainIntegrationsHub({
               <span
                 className={cn(
                   "h-1.5 w-1.5 rounded-full",
-                  cap.active ? "bg-[var(--accent-primary)] animate-pulse" : "bg-[var(--text-muted)]"
+                  cap.active ? "bg-[var(--accent-primary)] shadow-[0_0_5px_var(--glow-color)]" : "bg-[var(--text-muted)]"
                 )}
               />
               <Icon name={cap.icon} className="h-3 w-3" />

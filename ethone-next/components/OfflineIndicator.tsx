@@ -53,7 +53,7 @@ export default function OfflineIndicator() {
   const config = {
     offline: {
       icon: <WifiOff className="h-3.5 w-3.5 shrink-0 text-amber-400" />,
-      dot: "bg-amber-400 shadow-[0_0_8px_rgba(245,158,11,0.6)] animate-pulse",
+      dot: "bg-amber-400 shadow-[0_0_8px_rgba(245,158,11,0.6)]",
       border: "border-amber-500/30",
       bg: "bg-[var(--surface-raised)]/95",
       text: "text-amber-300",

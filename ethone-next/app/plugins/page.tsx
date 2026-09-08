@@ -384,10 +384,10 @@ export default function PluginsPage() {
               aria-label="Trier par"
               className="rounded-xl border border-[var(--panel-border)] bg-[var(--surface-raised)] px-2.5 py-1 text-xs text-[var(--text-primary)] focus:border-[var(--accent-primary)] focus:outline-none cursor-pointer"
             >
-              <option value="recommended">🧠 Recommandé (Brain Match)</option>
-              <option value="popular">🔥 Plus populaires</option>
-              <option value="rating">★ Mieux notés</option>
-              <option value="newest">⚡ Récents</option>
+              <option value="recommended">Recommandé (Brain Match)</option>
+              <option value="popular">Plus populaires</option>
+              <option value="rating">Mieux notés</option>
+              <option value="newest">Récents</option>
             </select>
           </div>
         </div>

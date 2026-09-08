@@ -122,7 +122,7 @@ export default function MarketplaceItemModal({
           {brainMatch && (
             <div className="shrink-0 flex flex-col items-end">
               <span className="inline-flex items-center gap-1.5 rounded-xl border border-purple-500/40 bg-purple-950/40 px-2.5 py-1 text-xs font-bold text-purple-300 shadow-xs">
-                <span>🧠 {brainMatch.score}% Match Brain</span>
+                <span>{brainMatch.score}% Match Brain</span>
               </span>
               <span className="text-[10px] text-purple-300/80 mt-1">
                 {brainMatch.compatibilityText}
@@ -166,7 +166,7 @@ export default function MarketplaceItemModal({
               {/* Placed Target Widget */}
               <div
                 className={cn(
-                  "col-span-4 rounded-xl border-2 border-dashed border-[var(--accent-primary)] bg-[var(--accent-primary)]/10 flex flex-col items-center justify-center gap-1 text-[11px] font-bold text-[var(--accent-primary)] animate-pulse p-1 text-center"
+                  "col-span-4 rounded-xl border-2 border-dashed border-[var(--accent-primary)] bg-[var(--accent-primary)]/10 flex flex-col items-center justify-center gap-1 text-[11px] font-bold text-[var(--accent-primary)] p-1 text-center"
                 )}
               >
                 <Icon name={item.icon} className="h-4 w-4" />
@@ -206,8 +206,9 @@ export default function MarketplaceItemModal({
           </h3>
 
           {item.permissions.length === 0 ? (
-            <p className="text-xs text-emerald-400/90 font-medium">
-              ✓ Aucune permission spéciale requise. Ce module fonctionne en bac à sable isolé.
+            <p className="flex items-center gap-1.5 text-xs text-emerald-400/90 font-medium">
+              <Check className="h-3.5 w-3.5 shrink-0" />
+              Aucune permission spéciale requise. Ce module fonctionne en bac à sable isolé.
             </p>
           ) : (
             <div className="space-y-1.5">

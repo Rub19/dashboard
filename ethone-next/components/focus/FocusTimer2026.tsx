@@ -58,7 +58,7 @@ export default function FocusTimer2026({
           animate={{ opacity: 1, y: 0 }}
           className="mb-4 inline-flex items-center gap-2 rounded-full border border-[var(--panel-border)] bg-[var(--surface-raised)]/80 px-3.5 py-1 text-xs font-semibold text-[var(--text-primary)] shadow-sm backdrop-blur-md"
         >
-          <span className="h-2 w-2 rounded-full bg-[var(--accent-primary)] animate-pulse" />
+          <span className="h-2 w-2 rounded-full bg-[var(--accent-primary)] shadow-[0_0_5px_var(--glow-color)]" />
           <span className="text-[var(--text-muted)]">Focus sur :</span>
           <span className="font-bold text-[var(--accent-primary)] truncate max-w-[200px]">
             {activeTaskTitle}
@@ -124,7 +124,7 @@ export default function FocusTimer2026({
           <p
             className={cn(
               "text-5xl sm:text-6xl font-bold font-mono tracking-tight text-[var(--text-primary)] transition-all",
-              paused && "opacity-75 animate-pulse"
+              paused && "opacity-75"
             )}
           >
             {remaining}

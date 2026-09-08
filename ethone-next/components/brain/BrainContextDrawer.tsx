@@ -165,9 +165,10 @@ export default function BrainContextDrawer({
             ].map((cap) => (
               <span
                 key={cap}
-                className="rounded-lg border border-[var(--panel-border)] bg-[var(--surface-raised)]/30 px-2 py-1 text-[10px] font-medium text-[var(--text-muted)]"
+                className="inline-flex items-center gap-1 rounded-lg border border-[var(--panel-border)] bg-[var(--surface-raised)]/30 px-2 py-1 text-[10px] font-medium text-[var(--text-muted)]"
               >
-                ✓ {cap}
+                <Icon name="check" className="h-3 w-3" />
+                {cap}
               </span>
             ))}
           </div>

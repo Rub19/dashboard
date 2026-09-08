@@ -216,7 +216,7 @@ export default function NotesPage() {
 
           {isOffline && (
             <div className="flex items-center gap-2 rounded-xl border border-[var(--panel-border)] bg-[var(--surface-raised)]/60 px-3 py-2 text-xs text-[var(--text-muted)]">
-              <span className="h-1.5 w-1.5 rounded-full bg-[var(--warning)] animate-pulse" />
+              <span className="h-1.5 w-1.5 rounded-full bg-[var(--warning)] shadow-[0_0_5px_var(--glow-color)]" />
               <span>Mode local actif. Vos notes sont sécurisées et synchronisées sur cet appareil.</span>
             </div>
           )}

@@ -14,7 +14,7 @@ export default function Screen0Hero({ onNext, onSkip }: Screen0Props) {
     <div className="flex flex-col items-center text-center max-w-2xl mx-auto py-4 sm:py-8 px-4 animate-in fade-in zoom-in-95 duration-500">
       {/* Top Floating Badge */}
       <div className="inline-flex items-center gap-2 px-3 py-1.5 rounded-full bg-indigo-500/10 border border-indigo-500/30 text-indigo-400 text-xs font-medium tracking-wide mb-6 shadow-sm shadow-indigo-500/10">
-        <Sparkles className="w-3.5 h-3.5 animate-pulse text-indigo-400" />
+        <Sparkles className="w-3.5 h-3.5 text-indigo-400" />
         <span>EXPÉRIENCE SAAS DISCORD 2.0</span>
       </div>
 

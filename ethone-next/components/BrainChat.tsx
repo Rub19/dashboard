@@ -187,8 +187,15 @@ export default function BrainChat({
                 <span className="text-xs font-bold text-[var(--text-primary)]">
                   Brain Assistant
                 </span>
-                <span className="rounded-full bg-[var(--surface-raised)] px-2 py-0.5 text-[10px] font-semibold text-[var(--accent-primary)] border border-[var(--panel-border)]">
-                  {brain.selectedModel === "auto" ? "⚡ Auto (Intelligent)" : brain.selectedModel}
+                <span className="inline-flex items-center gap-1 rounded-full bg-[var(--surface-raised)] px-2 py-0.5 text-[10px] font-semibold text-[var(--accent-primary)] border border-[var(--panel-border)]">
+                  {brain.selectedModel === "auto" ? (
+                    <>
+                      <Sparkles className="h-2.5 w-2.5" />
+                      Auto (Intelligent)
+                    </>
+                  ) : (
+                    brain.selectedModel
+                  )}
                 </span>
               </div>
               <p className="text-[10px] text-[var(--text-muted)]">

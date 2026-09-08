@@ -72,7 +72,7 @@ export default function FocusCompletionModal({
                 <Icon name="check-circle" className="h-7 w-7" />
               </div>
               <h2 className="text-lg font-bold text-[var(--text-primary)]">
-                🎯 Session terminée !
+                Session terminée !
               </h2>
               {goal && (
                 <p className="mt-1 text-sm text-[var(--text-muted)] italic">

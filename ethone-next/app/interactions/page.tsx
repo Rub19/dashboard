@@ -343,7 +343,7 @@ export default function InteractionsPage() {
 
         <div className="flex items-center gap-2">
           <div className="flex items-center gap-1.5 rounded-xl border border-white/[0.08] bg-zinc-950/80 px-3 py-1.5 text-xs font-medium text-zinc-300">
-            <span className="h-2 w-2 animate-pulse rounded-full bg-[var(--accent-primary)]" />
+            <span className="h-2 w-2 rounded-full bg-[var(--accent-primary)] shadow-[0_0_5px_var(--glow-color)]" />
             <span>Télémétrie en direct</span>
           </div>
         </div>
@@ -382,7 +382,7 @@ export default function InteractionsPage() {
             value: loading ? "—" : `${stats.streak} Jours`,
             sub: stats.recordDate
               ? `Record : ${stats.maxCount} le ${stats.recordDate.toLocaleDateString(language, { month: "short", day: "numeric" })}`
-              : "Record personnel en cours 🔥",
+              : "Record personnel en cours",
             icon: Flame,
             color: "text-rose-400",
             subColor: "text-rose-400",
@@ -553,7 +553,7 @@ export default function InteractionsPage() {
               <Zap className="h-4 w-4 text-amber-400" />
               <h3 className="text-xs font-bold uppercase tracking-wider text-white">Journal en direct</h3>
             </div>
-            <span className="h-2 w-2 animate-ping rounded-full bg-[var(--accent-primary)]" />
+            <span className="h-2 w-2 rounded-full bg-[var(--accent-primary)] shadow-[0_0_5px_var(--glow-color)]" />
           </div>
 
           <div className="flex flex-col gap-2">

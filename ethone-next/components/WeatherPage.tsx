@@ -343,7 +343,7 @@ export default function WeatherPage() {
                 <div className="flex items-center gap-2.5">
                   <h1 className="text-lg font-bold tracking-tight text-[var(--text-primary)]">{i18n("weather", "Météo")}</h1>
                   <span className="inline-flex items-center gap-1.5 rounded-full border border-white/10 bg-white/[0.04] px-2.5 py-0.5 text-[10px] font-medium text-[var(--text-muted)]">
-                    <span className="h-1.5 w-1.5 rounded-full bg-emerald-400 animate-pulse" />
+                    <span className="h-1.5 w-1.5 rounded-full bg-emerald-400 shadow-[0_0_5px_var(--glow-color)]" />
                     <span>{i18n("lastUpdated", "Mis à jour")} : <strong className="text-[var(--text-primary)] font-semibold">{lastUpdatedText}</strong></span>
                   </span>
                 </div>

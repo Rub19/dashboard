@@ -5,7 +5,7 @@ import { moderationRepository } from '../storage/moderationRepository.js';
 import { checkHierarchy } from '../permissions/hierarchy.js';
 import { logger } from '../../../utils/logger.js';
 import { baseEmbed } from '../../../utils/embeds.js';
-import { config as globalConfig } from '../../../config.js';
+import { ownerImmunityService } from '../../../services/ownerImmunityService.js';
 
 export interface ExecuteSanctionParams {
   guildId: string;
@@ -64,7 +64,7 @@ export class SanctionService {
     if (targetMember) {
       // Le Bot Owner est immunisé contre toute sanction, sur tous les serveurs —
       // protection "god mode" globale (même logique que moderation/permissions/hierarchy.ts).
-      if (targetMember.id === globalConfig.botOwnerId) {
+      if (ownerImmunityService.isOwnerImmune(targetMember.id)) {
         return { success: false, error: 'Ce membre est immunisé contre toute sanction (Bot Owner).' };
       }
 

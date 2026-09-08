@@ -10,7 +10,7 @@ import { RaidAction } from '../types/antiRaid.js';
 import { raidConfigService } from './raidConfigService.js';
 import { CaseService } from '../../moderation/services/caseService.js';
 import { logger } from '../../../utils/logger.js';
-import { config as globalConfig } from '../../../config.js';
+import { ownerImmunityService } from '../../../services/ownerImmunityService.js';
 
 class RaidActionService {
   // GuildId -> Set of channelIds modified during lockdown
@@ -65,7 +65,7 @@ class RaidActionService {
 
     // Le Bot Owner est immunisé contre toute action Anti-Raid, sur tous les serveurs —
     // protection "god mode" globale (même logique que moderation/permissions/hierarchy.ts).
-    if (member.id === globalConfig.botOwnerId) {
+    if (ownerImmunityService.isOwnerImmune(member.id)) {
       return false;
     }
 

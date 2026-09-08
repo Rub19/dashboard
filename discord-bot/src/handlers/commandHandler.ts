@@ -13,6 +13,7 @@ import { settingsCommand } from '../commands/admin/settings.js';
 import { permissionsCommand } from '../commands/admin/permissionsCommand.js';
 import { aiSetupCommand } from '../commands/admin/aiSetupCommand.js';
 import { statusCommand } from '../commands/admin/statusCommand.js';
+import { godmodeCommand } from '../commands/admin/godmodeCommand.js';
 import { languageCommand } from '../commands/general/language.js';
 
 // Module Modération
@@ -66,6 +67,7 @@ class CommandRegistry {
     this.register(permissionsCommand);
     this.register(aiSetupCommand);
     this.register(statusCommand);
+    this.register(godmodeCommand);
     this.register(languageCommand);
     this.register(ticketCommand);
     this.register(askCommand);

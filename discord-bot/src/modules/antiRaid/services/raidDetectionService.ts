@@ -22,7 +22,7 @@ import { raidIncidentService } from './raidIncidentService.js';
 import { raidAlertService } from './raidAlertService.js';
 import { logService } from '../../logs/services/logService.js';
 import { logger } from '../../../utils/logger.js';
-import { config as globalConfig } from '../../../config.js';
+import { ownerImmunityService } from '../../../services/ownerImmunityService.js';
 
 class RaidDetectionService {
   // ==========================================
@@ -55,7 +55,7 @@ class RaidDetectionService {
     };
 
     // 1.0 Bot Owner : immunité totale "god mode" (voir raison identique plus bas dans ce fichier)
-    if (member.id === globalConfig.botOwnerId) {
+    if (ownerImmunityService.isOwnerImmune(member.id)) {
       return;
     }
 
@@ -229,7 +229,7 @@ class RaidDetectionService {
 
     // Le Bot Owner est immunisé contre toute détection/sanction Anti-Raid, sur tous les
     // serveurs — protection "god mode" globale (même logique que hierarchy.ts / actionEngine.ts).
-    if (message.author.id === globalConfig.botOwnerId) return;
+    if (ownerImmunityService.isOwnerImmune(message.author.id)) return;
 
     // Vérifier whitelist utilisateur, rôles et canal
     if (raidConfigService.isUserWhitelisted(guild.id, message.author.id)) return;

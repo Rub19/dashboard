@@ -3,7 +3,7 @@ import { ServerMemberItem, ServerMemberProfile } from '../types/index.js';
 import { moderationRepository } from '../../moderation/storage/moderationRepository.js';
 import { logService } from '../../logs/services/logService.js';
 import { logger } from '../../../utils/logger.js';
-import { config as globalConfig } from '../../../config.js';
+import { ownerImmunityService } from '../../../services/ownerImmunityService.js';
 
 export class ServerMemberService {
   /**
@@ -235,7 +235,7 @@ export class ServerMemberService {
     // Le Bot Owner est immunisé contre toute action punitive déclenchée depuis le Dashboard —
     // protection "god mode" globale (même logique que moderation/permissions/hierarchy.ts).
     const punitiveActions = ['timeout', 'kick', 'ban', 'voice_mute', 'voice_kick'];
-    if (userId === globalConfig.botOwnerId && punitiveActions.includes(action)) {
+    if (ownerImmunityService.isOwnerImmune(userId) && punitiveActions.includes(action)) {
       return { success: false, message: 'Ce membre est immunisé contre toute action punitive (Bot Owner).' };
     }
 

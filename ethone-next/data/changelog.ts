@@ -1,3 +1,12 @@
+const v12056_fr: ChangelogEntry = {
+  version: "v1.20.56",
+  date: "2026-09-08",
+  title: "Commande /godmode — Désactiver Temporairement le Mode God",
+  items: [
+    "Bot Discord : nouvelle commande /godmode (réservée au Bot Owner) pour désactiver temporairement l'immunité totale contre les sanctions — pratique pour tester une commande de modération sur soi-même. Aucune persistance : un redémarrage du bot réactive automatiquement l'immunité par sécurité.",
+  ],
+};
+
 const v12055_fr: ChangelogEntry = {
   version: "v1.20.55",
   date: "2026-09-08",
@@ -55,6 +64,15 @@ const v12052_fr: ChangelogEntry = {
     "Dynamic Island : correction d'un bug de priorité qui empêchait Spotify de jamais s'afficher, systématiquement évincé par la synchronisation d'arrière-plan.",
     "Commande /help du Bot Discord : la liste des commandes est désormais générée dynamiquement depuis les commandes réellement enregistrées (fin des commandes fantômes et des commandes manquantes), et affiche la vraie syntaxe des commandes à sous-commandes (ex. /automod status).",
     "Audit de l'enregistrement des commandes slash Discord : architecture confirmée saine, aucune dérive entre le code et les commandes déployées.",
+  ],
+};
+
+const v12056_en: ChangelogEntry = {
+  version: "v1.20.56",
+  date: "2026-09-08",
+  title: "/godmode Command — Temporarily Disable God Mode",
+  items: [
+    "Discord Bot: new /godmode command (Bot Owner only) to temporarily disable total sanction immunity — handy for testing a moderation command on yourself. No persistence: restarting the bot automatically re-enables the immunity for safety.",
   ],
 };
 
@@ -118,6 +136,15 @@ const v12052_en: ChangelogEntry = {
   ],
 };
 
+const v12056_es: ChangelogEntry = {
+  version: "v1.20.56",
+  date: "2026-09-08",
+  title: "Comando /godmode — Desactivar Temporalmente el Modo Dios",
+  items: [
+    "Bot de Discord: nuevo comando /godmode (solo para el Bot Owner) para desactivar temporalmente la inmunidad total ante sanciones — útil para probar un comando de moderación sobre uno mismo. Sin persistencia: reiniciar el bot reactiva automáticamente la inmunidad por seguridad.",
+  ],
+};
+
 const v12055_es: ChangelogEntry = {
   version: "v1.20.55",
   date: "2026-09-08",
@@ -175,6 +202,15 @@ const v12052_es: ChangelogEntry = {
     "Dynamic Island: corregido un error de prioridad que impedía que Spotify apareciera, siempre desplazado por la sincronización en segundo plano.",
     "Comando /help del Bot de Discord: la lista de comandos ahora se genera dinámicamente desde los comandos realmente registrados (fin de comandos fantasma o ausentes), mostrando la sintaxis real de los comandos con subcomandos.",
     "Auditoría del registro de comandos slash de Discord: arquitectura confirmada como sólida, sin desviación entre el código y los comandos desplegados.",
+  ],
+};
+
+const v12056_de: ChangelogEntry = {
+  version: "v1.20.56",
+  date: "2026-09-08",
+  title: "Befehl /godmode — God Mode vorübergehend deaktivieren",
+  items: [
+    "Discord-Bot: neuer Befehl /godmode (nur für den Bot Owner), um die vollständige Sanktions-Immunität vorübergehend zu deaktivieren — praktisch, um einen Moderationsbefehl an sich selbst zu testen. Keine Speicherung: ein Neustart des Bots aktiviert die Immunität aus Sicherheitsgründen automatisch wieder.",
   ],
 };
 
@@ -22118,5 +22154,10 @@ CHANGELOG_BY_LANG.fr.unshift(v12055_fr);
 CHANGELOG_BY_LANG.en.unshift(v12055_en);
 CHANGELOG_BY_LANG.es.unshift(v12055_es);
 CHANGELOG_BY_LANG.de.unshift(v12055_de);
+
+CHANGELOG_BY_LANG.fr.unshift(v12056_fr);
+CHANGELOG_BY_LANG.en.unshift(v12056_en);
+CHANGELOG_BY_LANG.es.unshift(v12056_es);
+CHANGELOG_BY_LANG.de.unshift(v12056_de);
 
 export const CHANGELOG = CHANGELOG_BY_LANG.fr;

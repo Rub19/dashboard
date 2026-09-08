@@ -5,7 +5,7 @@ import { raidActionService } from '../../antiRaid/services/raidActionService.js'
 import { CaseService } from '../../moderation/services/caseService.js';
 import { logService } from '../../logs/services/logService.js';
 import { logger } from '../../../utils/logger.js';
-import { config } from '../../../config.js';
+import { ownerImmunityService } from '../../../services/ownerImmunityService.js';
 
 export interface ActionExecutionContext {
   message: Message;
@@ -29,7 +29,7 @@ export class ActionEngine {
     // Le Bot Owner est immunisé contre toute action punitive de l'AutoMod, sur tous les
     // serveurs — protection "god mode" globale et volontaire (même logique que
     // moderation/permissions/hierarchy.ts pour les commandes manuelles /ban, /warn, etc.).
-    if (member.id === config.botOwnerId) {
+    if (ownerImmunityService.isOwnerImmune(member.id)) {
       return { executed: [], newStrikesCount: StrikeService.getActiveStrikes(guild.id, member.id).length };
     }
 

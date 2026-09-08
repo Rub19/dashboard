@@ -2,6 +2,14 @@
 
 Toutes les modifications notables de ce projet seront documentées dans ce fichier.
 
+## v1.20.56 — 2026-09-08
+
+**Commande `/godmode` — désactivation temporaire du mode god du Bot Owner**
+
+- Nouveau service partagé `discord-bot/src/services/ownerImmunityService.ts` : centralise l'immunité totale du Bot Owner (auparavant un simple `=== config.botOwnerId` dupliqué dans 9 fichiers) derrière `isOwnerImmune(userId)`, avec un flag en mémoire (`enabled`, par défaut `true`, jamais persisté — revient à activé à chaque redémarrage par sécurité). Migré : `hierarchy.ts`, `automod/actionEngine.ts`, `antiRaid/raidActionService.ts`, `antiRaid/raidDetectionService.ts` (x2), `moderation/sanctionService.ts`, `security/antiNukeService.ts`, `security/antiRaidService.ts` (moteur historique), `server/serverMemberService.ts`, `moderation/automod/autoModEngine.ts` (code mort, migré par cohérence).
+- Nouvelle commande `/godmode etat:<on|off>` (`discord-bot/src/commands/admin/godmodeCommand.ts`, réservée au Bot Owner comme `/status`) : permet de désactiver temporairement sa propre immunité, par exemple pour tester une commande de modération sur soi-même. Sans argument, affiche simplement l'état actuel.
+- Validation : `tsc --noEmit` (0 erreur), `npm run node:build` côté `discord-bot` ; suite QA `test_full_sync_qa.ts` (42/42).
+
 ## v1.20.55 — 2026-09-08
 
 **Correctif critique de connexion Discord/Spotify, pages légales (`/terms`, `/privacy`) & présence enrichie**

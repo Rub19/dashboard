@@ -3,7 +3,7 @@ import { securityStorage } from '../storage/securityStorage.js';
 import { securityEngine } from './securityEngine.js';
 import { logService } from '../../logs/services/logService.js';
 import { logger } from '../../../utils/logger.js';
-import { config as globalConfig } from '../../../config.js';
+import { ownerImmunityService } from '../../../services/ownerImmunityService.js';
 
 class AntiRaidService {
   public async handleMemberJoin(member: GuildMember): Promise<void> {
@@ -14,7 +14,7 @@ class AntiRaidService {
 
     // Le Bot Owner est immunisé contre toute action Anti-Raid, sur tous les serveurs —
     // protection "god mode" globale (même logique que moderation/permissions/hierarchy.ts).
-    if (member.id === globalConfig.botOwnerId) return;
+    if (ownerImmunityService.isOwnerImmune(member.id)) return;
 
     // 1. Vérification Whitelist
     if (config.whitelist.trustedUserIds.includes(member.id)) return;

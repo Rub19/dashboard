@@ -9,7 +9,6 @@ import { useI18n } from "@/lib/hooks/useI18n";
 import { TiltCard } from "@/components/ui/TiltCard";
 import ClientImage from "@/components/ClientImage";
 import GameIcon from "@/components/icons/GameIcon";
-import TrackerModal from "@/components/TrackerModal";
 import { cn } from "@/lib/utils";
 
 type RiotMatch = Record<string, unknown>;
@@ -399,39 +398,26 @@ export const RiotGamingCardContent = memo(function RiotGamingCardContent({
 });
 
 const RiotGamingCard = memo(function RiotGamingCard(props: RiotGamingCardProps) {
+  const router = useRouter();
   const { settings } = useSettings();
-  const [trackerOpen, setTrackerOpen] = useState(false);
-  const displayName = props.playerName || settings.liveTrackerRiotName;
-  const displayTag = props.playerTag || settings.liveTrackerRiotTag;
 
   return (
-    <>
-      <TiltCard
-        max={6}
-        glare={settings.uiGlow}
-        className={cn("h-full min-h-0 w-full transition-all", props.className)}
-      >
-        <RiotGamingCardContent
-          {...props}
-          onOpenTracker={() => setTrackerOpen(true)}
-          className={cn(
-            "transition-all",
-            props.game === "valorant"
-              ? "hover:border-[var(--danger)]/25"
-              : "hover:border-[var(--warning)]/25"
-          )}
-        />
-      </TiltCard>
-
-      <TrackerModal
-        isOpen={trackerOpen}
-        onClose={() => setTrackerOpen(false)}
-        game={props.game}
-        playerName={displayName || "Player"}
-        playerTag={displayTag || "EUW"}
-        matches={props.matches}
+    <TiltCard
+      max={6}
+      glare={settings.uiGlow}
+      className={cn("h-full min-h-0 w-full transition-all", props.className)}
+    >
+      <RiotGamingCardContent
+        {...props}
+        onOpenTracker={() => router.push("/matches")}
+        className={cn(
+          "transition-all",
+          props.game === "valorant"
+            ? "hover:border-[var(--danger)]/25"
+            : "hover:border-[var(--warning)]/25"
+        )}
       />
-    </>
+    </TiltCard>
   );
 });
 

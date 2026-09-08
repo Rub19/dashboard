@@ -16,6 +16,8 @@ import { formRepository } from '../storage/formRepository.js';
 import { formService } from '../services/formService.js';
 import { logger } from '../../../utils/logger.js';
 import { baseEmbed } from '../../../utils/embeds.js';
+import { guildConfigService } from '../../../services/guildConfigService.js';
+import { formatString, getTranslation } from '../../../utils/i18n.js';
 
 export class DiscordFormPanel {
   private client: Client | null = null;
@@ -28,13 +30,14 @@ export class DiscordFormPanel {
    * Build the Discord Embed for a Form Panel.
    */
   public buildPanelEmbed(form: DiscordForm): EmbedBuilder {
+    const t = getTranslation(guildConfigService.getConfig(form.guildId).language);
     const config = form.panelConfig;
     const embed = new EmbedBuilder()
       .setTitle(config.embedTitle || form.title)
       .setDescription(
         config.embedDescription ||
           (form.description ? `${form.description}\n\n` : '') +
-            `📋 **Catégorie :** ${form.category}\n⏱️ **Temps estimé :** ~3 minutes\n🔒 **Statut :** Ouvert`
+            formatString(t.form_panel_default_desc, { category: form.category })
       )
       .setColor((config.embedColor as any) || '#6366f1')
       .setFooter({
@@ -57,6 +60,7 @@ export class DiscordFormPanel {
    * Build Action Row button for the panel.
    */
   public buildPanelActionRow(form: DiscordForm): ActionRowBuilder<ButtonBuilder> {
+    const t = getTranslation(guildConfigService.getConfig(form.guildId).language);
     const config = form.panelConfig;
     let style = ButtonStyle.Primary;
     if (config.buttonStyle === 'SECONDARY') style = ButtonStyle.Secondary;
@@ -65,7 +69,7 @@ export class DiscordFormPanel {
 
     const button = new ButtonBuilder()
       .setCustomId(`form_open:${form.id}`)
-      .setLabel(config.buttonText || 'Postuler maintenant')
+      .setLabel(config.buttonText || t.form_btn_apply_now)
       .setStyle(style);
 
     if (config.buttonEmoji) {
@@ -119,10 +123,12 @@ export class DiscordFormPanel {
     const [action, formId] = interaction.customId.split(':');
     if (action !== 'form_open' || !formId || !interaction.guildId) return;
 
+    const t = getTranslation(guildConfigService.getConfig(interaction.guildId).language);
+
     const form = formRepository.getFormById(interaction.guildId, formId);
     if (!form) {
       await interaction.reply({
-        embeds: [baseEmbed('error').setDescription('❌ Ce formulaire n\'existe plus ou a été désactivé.')],
+        embeds: [baseEmbed('error').setDescription(t.form_deleted)],
         ephemeral: true,
       });
       return;
@@ -130,7 +136,7 @@ export class DiscordFormPanel {
 
     if (form.status !== 'PUBLISHED') {
       await interaction.reply({
-        embeds: [baseEmbed('warning').setDescription('⚠️ Ce formulaire est actuellement fermé aux nouvelles réponses.')],
+        embeds: [baseEmbed('warning').setDescription(t.form_closed)],
         ephemeral: true,
       });
       return;
@@ -149,14 +155,14 @@ export class DiscordFormPanel {
     const webUrl = `https://ethone.dev/discord/forms/${form.id}?guildId=${form.guildId}`;
     const row = new ActionRowBuilder<ButtonBuilder>().addComponents(
       new ButtonBuilder()
-        .setLabel('Ouvrir le Formulaire Web')
+        .setLabel(t.form_btn_open_web)
         .setStyle(ButtonStyle.Link)
         .setURL(webUrl)
         .setEmoji('🌐')
     );
 
     await interaction.reply({
-      embeds: [baseEmbed('info').setTitle(`📝 ${form.title}`).setDescription(`Ce formulaire comportant plusieurs étapes et des options avancées, veuillez le remplir directement sur l'interface sécurisée ETHONE :`)],
+      embeds: [baseEmbed('info').setTitle(`📝 ${form.title}`).setDescription(t.form_web_required_desc)],
       components: [row],
       ephemeral: true,
     });
@@ -169,11 +175,13 @@ export class DiscordFormPanel {
     const [action, formId] = interaction.customId.split(':');
     if (action !== 'form_modal_submit' || !formId || !interaction.guildId) return;
 
+    const t = getTranslation(guildConfigService.getConfig(interaction.guildId).language);
+
     await interaction.deferReply({ ephemeral: true });
 
     const form = formRepository.getFormById(interaction.guildId, formId);
     if (!form) {
-      await interaction.editReply({ embeds: [baseEmbed('error').setDescription('❌ Formulaire introuvable.')] });
+      await interaction.editReply({ embeds: [baseEmbed('error').setDescription(t.form_generic_not_found)] });
       return;
     }
 
@@ -208,17 +216,14 @@ export class DiscordFormPanel {
     });
 
     if (!result.success) {
-      await interaction.editReply({ embeds: [baseEmbed('error').setDescription(`❌ **Erreur de soumission :** ${result.error}`)] });
+      await interaction.editReply({ embeds: [baseEmbed('error').setDescription(formatString(t.form_submit_error, { error: result.error || '' }))] });
       return;
     }
 
     const embed = new EmbedBuilder()
-      .setTitle('✅ Candidature envoyée avec succès')
+      .setTitle(t.form_submitted_title)
       .setDescription(
-        `Votre réponse pour **${form.title}** a bien été enregistrée.\n\n` +
-          `🆔 **Numéro de suivi :** \`#${result.response?.id}\`\n` +
-          `📊 **Statut initial :** En attente d'examen par le staff\n\n` +
-          `*Vous recevrez une notification privée dès qu'une décision sera prise.*`
+        formatString(t.form_submitted_desc, { title: form.title, id: result.response?.id || '' })
       )
       .setColor('#10b981')
       .setFooter({ text: 'ETHONE Forms 2.0' })

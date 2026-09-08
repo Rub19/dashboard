@@ -9,6 +9,7 @@ import { pollRepository } from '../storage/pollRepository.js';
 import { pollService } from '../services/pollService.js';
 import { pollResultService } from '../services/pollResultService.js';
 import { discordPollPanel } from '../ui/discordPollPanel.js';
+import { formatString, getTranslation } from '../../../utils/i18n.js';
 
 export const pollCommand: Command = {
   name: 'poll',
@@ -57,9 +58,10 @@ export const pollCommand: Command = {
     ),
 
   execute: async (ctx: CommandContext) => {
+    const t = getTranslation(ctx.guildConfig.language);
     const guildId = ctx.guild?.id;
     if (!guildId) {
-      await ctx.reply({ embeds: [ctx.createEmbed('error').setDescription('❌ Commande réservée aux serveurs Discord.')], ephemeral: true });
+      await ctx.reply({ embeds: [ctx.createEmbed('error').setDescription(t.guild_only_command)], ephemeral: true });
       return;
     }
 
@@ -83,20 +85,25 @@ export const pollCommand: Command = {
       const polls = pollRepository.getPolls(guildId);
       if (polls.length === 0) {
         await ctx.reply({
-          embeds: [ctx.createEmbed('info').setDescription('ℹ️ Aucun sondage configuré sur ce serveur. Créez-en un depuis le dashboard ETHONE !')],
+          embeds: [ctx.createEmbed('info').setDescription(t.poll_list_empty)],
           ephemeral: true,
         });
         return;
       }
 
       const embed = new EmbedBuilder()
-        .setTitle('📊 Sondages & Votes ETHONE')
+        .setTitle(t.poll_list_title)
         .setColor(0x6366f1)
         .setDescription(
           polls
-            .map(
-              (p) =>
-                `• **${p.title}** (\`${p.id}\`)\n  Statut: \`${p.status}\` | Type: \`${p.type}\` | Votes: **${pollRepository.getVotes(guildId, p.id).length}**`
+            .map((p) =>
+              formatString(t.poll_list_item, {
+                title: p.title,
+                id: p.id,
+                status: p.status,
+                type: p.type,
+                count: pollRepository.getVotes(guildId, p.id).length,
+              })
             )
             .join('\n\n')
         )
@@ -108,7 +115,7 @@ export const pollCommand: Command = {
 
     if (!pollId) {
       await ctx.reply({
-        embeds: [ctx.createEmbed('error').setDescription('❌ ID de sondage manquant. Exemple : `!poll results <id>` ou `!poll panel <id>`')],
+        embeds: [ctx.createEmbed('error').setDescription(t.poll_missing_id)],
         ephemeral: true,
       });
       return;
@@ -117,7 +124,7 @@ export const pollCommand: Command = {
     const poll = pollRepository.getPollById(guildId, pollId);
     if (!poll) {
       await ctx.reply({
-        embeds: [ctx.createEmbed('error').setDescription(`❌ Sondage avec l'ID \`${pollId}\` introuvable sur ce serveur.`)],
+        embeds: [ctx.createEmbed('error').setDescription(formatString(t.poll_not_found, { id: pollId }))],
         ephemeral: true,
       });
       return;
@@ -130,7 +137,7 @@ export const pollCommand: Command = {
       }
 
       if (!channel || !channel.isTextBased() || !('send' in channel)) {
-        await ctx.reply({ embeds: [ctx.createEmbed('error').setDescription('❌ Salon textuel invalide.')], ephemeral: true });
+        await ctx.reply({ embeds: [ctx.createEmbed('error').setDescription(t.poll_invalid_channel)], ephemeral: true });
         return;
       }
 
@@ -139,7 +146,7 @@ export const pollCommand: Command = {
 
       await (channel as any).send({ embeds: [embed], components: rows });
       await ctx.reply({
-        embeds: [ctx.createEmbed('success').setDescription(`✅ Panneau de vote pour **${poll.title}** publié avec succès dans <#${channel.id}>.`)],
+        embeds: [ctx.createEmbed('success').setDescription(formatString(t.poll_panel_published, { title: poll.title, channel: `<#${channel.id}>` }))],
         ephemeral: true,
       });
       return;
@@ -148,12 +155,12 @@ export const pollCommand: Command = {
     if (subcommand === 'end') {
       const result = await pollService.endPoll(guildId, pollId, ctx.client);
       if (!result.success) {
-        await ctx.reply({ embeds: [ctx.createEmbed('error').setDescription(`❌ Erreur : ${result.error}`)], ephemeral: true });
+        await ctx.reply({ embeds: [ctx.createEmbed('error').setDescription(formatString(t.poll_end_error, { error: result.error || '' }))], ephemeral: true });
         return;
       }
 
       await ctx.reply({
-        embeds: [ctx.createEmbed('success').setDescription(`🏁 Le sondage **${poll.title}** a été clôturé avec succès. Les résultats finaux ont été consolidés et les automatisations déclenchées.`)],
+        embeds: [ctx.createEmbed('success').setDescription(formatString(t.poll_ended_success, { title: poll.title }))],
         ephemeral: true,
       });
       return;
@@ -162,18 +169,18 @@ export const pollCommand: Command = {
     if (subcommand === 'results') {
       const results = pollResultService.calculateResults(guildId, pollId);
       if (!results) {
-        await ctx.reply({ embeds: [ctx.createEmbed('error').setDescription('❌ Impossible de calculer les résultats.')], ephemeral: true });
+        await ctx.reply({ embeds: [ctx.createEmbed('error').setDescription(t.poll_results_calc_failed)], ephemeral: true });
         return;
       }
 
       const embed = new EmbedBuilder()
-        .setTitle(`📊 Résultats : ${poll.title}`)
-        .setDescription(poll.description || 'Statistiques de vote en temps réel')
+        .setTitle(formatString(t.poll_results_title, { title: poll.title }))
+        .setDescription(poll.description || t.poll_results_default_desc)
         .setColor(0x10b981)
         .addFields(
-          { name: '👥 Total Votants', value: `${results.totalVoters}`, inline: true },
-          { name: '⚖️ Poids Total', value: `${results.totalWeightedVotes}`, inline: true },
-          { name: '📌 Quorum', value: `${results.quorumStatus} (${results.quorumPercentage.toFixed(1)}%)`, inline: true }
+          { name: t.poll_field_total_voters, value: `${results.totalVoters}`, inline: true },
+          { name: t.poll_field_total_weight, value: `${results.totalWeightedVotes}`, inline: true },
+          { name: t.poll_field_quorum, value: `${results.quorumStatus} (${results.quorumPercentage.toFixed(1)}%)`, inline: true }
         );
 
       for (const q of results.questionResults) {
@@ -183,7 +190,7 @@ export const pollCommand: Command = {
         );
         embed.addFields({
           name: `❓ ${q.title}`,
-          value: lines.join('\n') || 'Aucun vote',
+          value: lines.join('\n') || t.poll_no_votes,
           inline: false,
         });
       }

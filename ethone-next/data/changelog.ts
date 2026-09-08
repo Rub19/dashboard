@@ -1,3 +1,15 @@
+const v12057_fr: ChangelogEntry = {
+  version: "v1.20.57",
+  date: "2026-09-09",
+  title: "Modules AutoMod & Bot Désactivables, Page Complète pour les Trackers Valo/LoL",
+  items: [
+    "Bot Discord : nouvelle commande /automod toggle pour activer/désactiver AutoMod dans son ensemble, ou un détecteur précis (anti-spam, anti-flood, liens, invitations, mentions, ghost ping, CAPS, mots interdits, regex, profils) — jusqu'ici ces réglages existaient mais rien ne permettait de les changer.",
+    "Bot Discord : /automod status affiche désormais l'état réel (activé/désactivé) de chaque détecteur individuellement.",
+    "Bot Discord : nouvelle commande /module pour activer/désactiver un module entier (Modération, Accueil, Logs, Rôles Automatiques, Tickets, Fun, Musique) sur un serveur.",
+    "Dashboard : les trackers Valorant/League of Legends s'ouvrent maintenant sur une vraie page complète (/matches) au lieu d'une fenêtre modale exiguë.",
+  ],
+};
+
 const v12056_fr: ChangelogEntry = {
   version: "v1.20.56",
   date: "2026-09-08",
@@ -64,6 +76,18 @@ const v12052_fr: ChangelogEntry = {
     "Dynamic Island : correction d'un bug de priorité qui empêchait Spotify de jamais s'afficher, systématiquement évincé par la synchronisation d'arrière-plan.",
     "Commande /help du Bot Discord : la liste des commandes est désormais générée dynamiquement depuis les commandes réellement enregistrées (fin des commandes fantômes et des commandes manquantes), et affiche la vraie syntaxe des commandes à sous-commandes (ex. /automod status).",
     "Audit de l'enregistrement des commandes slash Discord : architecture confirmée saine, aucune dérive entre le code et les commandes déployées.",
+  ],
+};
+
+const v12057_en: ChangelogEntry = {
+  version: "v1.20.57",
+  date: "2026-09-09",
+  title: "Disableable AutoMod & Bot Modules, Full Page for Valo/LoL Trackers",
+  items: [
+    "Discord Bot: new /automod toggle command to turn AutoMod on/off entirely, or a specific detector (anti-spam, anti-flood, links, invites, mentions, ghost ping, CAPS, banned words, regex, profiles) — these settings existed but nothing let you actually change them.",
+    "Discord Bot: /automod status now shows the real enabled/disabled state of each detector individually.",
+    "Discord Bot: new /module command to enable/disable an entire module (Moderation, Welcome, Logging, Auto Roles, Tickets, Fun, Music) on a server.",
+    "Dashboard: Valorant/League of Legends trackers now open on a real full page (/matches) instead of a cramped modal window.",
   ],
 };
 
@@ -136,6 +160,18 @@ const v12052_en: ChangelogEntry = {
   ],
 };
 
+const v12057_es: ChangelogEntry = {
+  version: "v1.20.57",
+  date: "2026-09-09",
+  title: "Módulos AutoMod y del Bot Desactivables, Página Completa para Trackers Valo/LoL",
+  items: [
+    "Bot de Discord: nuevo comando /automod toggle para activar/desactivar AutoMod por completo, o un detector concreto (anti-spam, anti-flood, enlaces, invitaciones, menciones, ghost ping, MAYÚSCULAS, palabras prohibidas, regex, perfiles) — estos ajustes existían pero nada permitía cambiarlos.",
+    "Bot de Discord: /automod status ahora muestra el estado real (activado/desactivado) de cada detector individualmente.",
+    "Bot de Discord: nuevo comando /module para activar/desactivar un módulo completo (Moderación, Bienvenida, Registros, Roles Automáticos, Tickets, Diversión, Música) en un servidor.",
+    "Dashboard: los trackers de Valorant/League of Legends ahora se abren en una página completa real (/matches) en lugar de una ventana modal reducida.",
+  ],
+};
+
 const v12056_es: ChangelogEntry = {
   version: "v1.20.56",
   date: "2026-09-08",
@@ -202,6 +238,18 @@ const v12052_es: ChangelogEntry = {
     "Dynamic Island: corregido un error de prioridad que impedía que Spotify apareciera, siempre desplazado por la sincronización en segundo plano.",
     "Comando /help del Bot de Discord: la lista de comandos ahora se genera dinámicamente desde los comandos realmente registrados (fin de comandos fantasma o ausentes), mostrando la sintaxis real de los comandos con subcomandos.",
     "Auditoría del registro de comandos slash de Discord: arquitectura confirmada como sólida, sin desviación entre el código y los comandos desplegados.",
+  ],
+};
+
+const v12057_de: ChangelogEntry = {
+  version: "v1.20.57",
+  date: "2026-09-09",
+  title: "Abschaltbare AutoMod- & Bot-Module, vollständige Seite für Valo/LoL-Tracker",
+  items: [
+    "Discord-Bot: neuer Befehl /automod toggle, um AutoMod komplett oder einen einzelnen Detektor (Anti-Spam, Anti-Flood, Links, Einladungen, Erwähnungen, Ghost Ping, GROSSSCHREIBUNG, verbotene Wörter, Regex, Profile) ein-/auszuschalten — diese Einstellungen gab es bereits, aber es gab keine Möglichkeit, sie zu ändern.",
+    "Discord-Bot: /automod status zeigt jetzt den tatsächlichen Status (aktiviert/deaktiviert) jedes einzelnen Detektors an.",
+    "Discord-Bot: neuer Befehl /module, um ein ganzes Modul (Moderation, Begrüßung, Protokolle, Auto-Rollen, Tickets, Fun, Musik) auf einem Server zu aktivieren/deaktivieren.",
+    "Dashboard: die Valorant/League-of-Legends-Tracker öffnen sich jetzt auf einer echten vollständigen Seite (/matches) statt in einem engen Modalfenster.",
   ],
 };
 
@@ -22159,5 +22207,10 @@ CHANGELOG_BY_LANG.fr.unshift(v12056_fr);
 CHANGELOG_BY_LANG.en.unshift(v12056_en);
 CHANGELOG_BY_LANG.es.unshift(v12056_es);
 CHANGELOG_BY_LANG.de.unshift(v12056_de);
+
+CHANGELOG_BY_LANG.fr.unshift(v12057_fr);
+CHANGELOG_BY_LANG.en.unshift(v12057_en);
+CHANGELOG_BY_LANG.es.unshift(v12057_es);
+CHANGELOG_BY_LANG.de.unshift(v12057_de);
 
 export const CHANGELOG = CHANGELOG_BY_LANG.fr;

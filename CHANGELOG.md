@@ -2,6 +2,16 @@
 
 Toutes les modifications notables de ce projet seront documentées dans ce fichier.
 
+## v1.20.57 — 2026-09-09
+
+**Modules AutoMod & bot désactivables, page complète pour les trackers Valo/LoL**
+
+- **`/automod toggle`** (`discord-bot/src/modules/automod/commands/automodCommand.ts`) : nouvelle sous-commande pour activer/désactiver le moteur AutoMod entier (`config.enabled`, champ déjà présent dans le schéma `AutoModConfigSchema` mais jamais exposé via une commande) ou un détecteur précis (`spam`, `flood`, `links`, `invites`, `mentions`, `ghostPing`, `caps`, `keywords`, `regex`, `profiles`, `strikes` — chacun avait déjà son propre `enabled` dans le schéma). Merge fait manuellement en repartant de l'objet détecteur existant (`{...currentDetector, enabled}`) plutôt que de laisser `autoModRepository.updateConfig()`'s merge superficiel réinitialiser silencieusement les autres réglages du détecteur (seuils, listes, actions) à leurs valeurs par défaut Zod.
+- **`/automod status`** : affiche désormais l'état réel activé/désactivé de chaque détecteur individuellement (auparavant une liste statique de noms sans indication d'état).
+- **Nouvelle commande `/module`** (`discord-bot/src/commands/admin/moduleCommand.ts`) : active/désactive un module entier du bot sur un serveur (`guildConfig.modules.{moderation,welcome,logging,autoRoles,tickets,fun,music}` — champs déjà dans `GuildModulesSchema` et déjà consultés par plusieurs commandes comme garde d'accès, mais sans aucune commande pour les modifier). Sans argument, affiche l'état de tous les modules.
+- **Trackers Valorant/LoL en page complète** : `RiotGamingCard.tsx` ouvrait `TrackerModal.tsx` (une fenêtre modale exiguë) alors qu'une vraie page dédiée (`app/matches/page.tsx`) existait déjà et rendait les mêmes composants (`ValorantTrackerView`, `LolTrackerView`). Redirigé vers la page existante, `TrackerModal.tsx` supprimé (plus aucun importeur).
+- Validation : `tsc --noEmit` (0 erreur), `npm run node:build`, suite QA `test_full_sync_qa.ts` (42/42) côté `discord-bot` ; `tsc --noEmit`, `npm run build`, `eslint` (0 nouvelle erreur), `npm run test:unit` (13/13, 61/61) côté `ethone-next`.
+
 ## v1.20.56 — 2026-09-08
 
 **Commande `/godmode` — désactivation temporaire du mode god du Bot Owner**

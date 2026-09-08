@@ -252,6 +252,80 @@ export interface TranslationDictionary {
   music_panel_inactive: string;
   music_panel_muted: string;
   music_panel_unknown: string;
+
+  // Tickets
+  ticket_module_disabled: string;
+  ticket_already_open: string;
+  ticket_channel_embed_title: string;
+  ticket_subject_label: string;
+  ticket_detail_prompt: string;
+  ticket_create_failed: string;
+  ticket_category_not_found: string;
+  ticket_open_failed_default: string;
+  ticket_btn_assigned_unclaim: string;
+  ticket_btn_close: string;
+  ticket_btn_priority: string;
+  ticket_btn_transcript: string;
+  ticket_btn_claim: string;
+  ticket_not_found: string;
+  ticket_priority_updated: string;
+  ticket_transcript_ready: string;
+
+  // Polls
+  poll_list_empty: string;
+  poll_list_title: string;
+  poll_list_item: string;
+  poll_missing_id: string;
+  poll_not_found: string;
+  poll_invalid_channel: string;
+  poll_panel_published: string;
+  poll_end_error: string;
+  poll_ended_success: string;
+  poll_results_calc_failed: string;
+  poll_results_title: string;
+  poll_results_default_desc: string;
+  poll_field_total_voters: string;
+  poll_field_total_weight: string;
+  poll_field_quorum: string;
+  poll_no_votes: string;
+  poll_panel_no_end_date: string;
+  poll_panel_footer_default: string;
+  poll_btn_view_results: string;
+  poll_btn_vote_web: string;
+  poll_deleted: string;
+  poll_live_results_title: string;
+  poll_no_votes_recorded: string;
+  poll_live_results_footer: string;
+  poll_vote_error: string;
+  poll_vote_success_title: string;
+  poll_vote_success_desc: string;
+  poll_visibility_public: string;
+  poll_visibility_anonymous: string;
+  poll_no_winner: string;
+  poll_announce_winner_template: string;
+
+  // Forms
+  form_usage: string;
+  form_not_found: string;
+  form_web_portal_desc: string;
+  form_panel_published: string;
+  form_stats_title: string;
+  form_field_total_responses: string;
+  form_field_pending: string;
+  form_field_approved: string;
+  form_field_rejected: string;
+  form_field_avg_score: string;
+  form_field_status: string;
+  form_panel_default_desc: string;
+  form_btn_apply_now: string;
+  form_deleted: string;
+  form_closed: string;
+  form_btn_open_web: string;
+  form_web_required_desc: string;
+  form_generic_not_found: string;
+  form_submit_error: string;
+  form_submitted_title: string;
+  form_submitted_desc: string;
 }
 
 const translations: Record<SupportedLanguage, TranslationDictionary> = {
@@ -503,6 +577,77 @@ const translations: Record<SupportedLanguage, TranslationDictionary> = {
     music_panel_inactive: 'Désactivé',
     music_panel_muted: 'Muet',
     music_panel_unknown: 'Inconnu',
+
+    ticket_module_disabled: '{emoji} Le module **Tickets** est désactivé sur ce serveur. Activez-le depuis le dashboard web.',
+    ticket_already_open: '{emoji} Vous avez déjà un ticket ouvert dans {channel}.',
+    ticket_channel_embed_title: '🎫 Ticket Support • {user}',
+    ticket_subject_label: '📌 **Motif :** *{subject}*',
+    ticket_detail_prompt: 'Veuillez détailler votre situation ou question ci-dessous.',
+    ticket_create_failed: '{emoji} Impossible de créer le ticket (vérifiez que le bot a la permission de gérer les salons).',
+    ticket_category_not_found: '❌ Catégorie introuvable.',
+    ticket_open_failed_default: 'Impossible d\'ouvrir le ticket.',
+    ticket_btn_assigned_unclaim: 'Assigné à @{user} (Unclaim)',
+    ticket_btn_close: 'Fermer',
+    ticket_btn_priority: 'Priorité',
+    ticket_btn_transcript: 'Transcript',
+    ticket_btn_claim: 'Prendre en charge (Claim)',
+    ticket_not_found: '❌ Ticket introuvable.',
+    ticket_priority_updated: '📌 **Priorité mise à jour :** `{old}` ➔ `{new}`',
+    ticket_transcript_ready: '📄 **Voici la transcription complète de ce ticket :**',
+
+    poll_list_empty: 'ℹ️ Aucun sondage configuré sur ce serveur. Créez-en un depuis le dashboard ETHONE !',
+    poll_list_title: '📊 Sondages & Votes ETHONE',
+    poll_list_item: '• **{title}** (`{id}`)\n  Statut : `{status}` | Type : `{type}` | Votes : **{count}**',
+    poll_missing_id: '❌ ID de sondage manquant. Exemple : `!poll results <id>` ou `!poll panel <id>`',
+    poll_not_found: '❌ Sondage avec l\'ID `{id}` introuvable sur ce serveur.',
+    poll_invalid_channel: '❌ Salon textuel invalide.',
+    poll_panel_published: '✅ Panneau de vote pour **{title}** publié avec succès dans {channel}.',
+    poll_end_error: '❌ Erreur : {error}',
+    poll_ended_success: '🏁 Le sondage **{title}** a été clôturé avec succès. Les résultats finaux ont été consolidés et les automatisations déclenchées.',
+    poll_results_calc_failed: '❌ Impossible de calculer les résultats.',
+    poll_results_title: '📊 Résultats : {title}',
+    poll_results_default_desc: 'Statistiques de vote en temps réel',
+    poll_field_total_voters: '👥 Total Votants',
+    poll_field_total_weight: '⚖️ Poids Total',
+    poll_field_quorum: '📌 Quorum',
+    poll_no_votes: 'Aucun vote',
+    poll_panel_no_end_date: 'Non définie',
+    poll_panel_footer_default: 'ETHONE Polls • Fin : {date}',
+    poll_btn_view_results: 'Voir les Résultats',
+    poll_btn_vote_web: 'Voter sur le Web',
+    poll_deleted: '❌ Ce sondage n\'existe plus ou a été supprimé.',
+    poll_live_results_title: '📊 Résultats en direct — {title}',
+    poll_no_votes_recorded: 'Aucun vote enregistré.',
+    poll_live_results_footer: 'Total participants : {count} • ETHONE Polls 2.0',
+    poll_vote_error: '❌ **Erreur de vote :** {error}',
+    poll_vote_success_title: '✅ Vote enregistré avec succès !',
+    poll_vote_success_desc: 'Votre vote pour **{label}** a bien été comptabilisé.\n\n⚖️ **Poids du vote :** {weight} point(s)\n🔒 **Confidentialité :** {visibility}\n\n*Merci pour votre participation à la vie du serveur !*',
+    poll_visibility_public: 'Public',
+    poll_visibility_anonymous: 'Anonyme',
+    poll_no_winner: 'Aucun gagnant',
+    poll_announce_winner_template: '🏆 **Résultats du sondage "{pollTitle}" !**\nLe choix gagnant est **{winner}** avec {votes} votes ({percent}%).',
+
+    form_usage: '❌ Usage : `!form open <id>`, `!form panel <id>`, ou `!form stats <id>`',
+    form_not_found: '❌ Formulaire avec l\'identifiant `{id}` introuvable.',
+    form_web_portal_desc: 'Ce formulaire est disponible sur le portail Web ETHONE :\n{url}',
+    form_panel_published: '✅ Panneau interactif pour **{title}** publié avec succès dans {channel}.',
+    form_stats_title: '📊 Statistiques — {title}',
+    form_field_total_responses: 'Total réponses',
+    form_field_pending: 'En attente de review',
+    form_field_approved: 'Approuvées',
+    form_field_rejected: 'Rejetées',
+    form_field_avg_score: 'Score moyen',
+    form_field_status: 'Statut du formulaire',
+    form_panel_default_desc: '📋 **Catégorie :** {category}\n⏱️ **Temps estimé :** ~3 minutes\n🔒 **Statut :** Ouvert',
+    form_btn_apply_now: 'Postuler maintenant',
+    form_deleted: '❌ Ce formulaire n\'existe plus ou a été désactivé.',
+    form_closed: '⚠️ Ce formulaire est actuellement fermé aux nouvelles réponses.',
+    form_btn_open_web: 'Ouvrir le Formulaire Web',
+    form_web_required_desc: 'Ce formulaire comportant plusieurs étapes et des options avancées, veuillez le remplir directement sur l\'interface sécurisée ETHONE :',
+    form_generic_not_found: '❌ Formulaire introuvable.',
+    form_submit_error: '❌ **Erreur de soumission :** {error}',
+    form_submitted_title: '✅ Candidature envoyée avec succès',
+    form_submitted_desc: 'Votre réponse pour **{title}** a bien été enregistrée.\n\n🆔 **Numéro de suivi :** `#{id}`\n📊 **Statut initial :** En attente d\'examen par le staff\n\n*Vous recevrez une notification privée dès qu\'une décision sera prise.*',
   },
   en: {
     lang_name: 'English',
@@ -752,6 +897,77 @@ const translations: Record<SupportedLanguage, TranslationDictionary> = {
     music_panel_inactive: 'Disabled',
     music_panel_muted: 'Muted',
     music_panel_unknown: 'Unknown',
+
+    ticket_module_disabled: '{emoji} The **Tickets** module is disabled on this server. Enable it from the web dashboard.',
+    ticket_already_open: '{emoji} You already have an open ticket in {channel}.',
+    ticket_channel_embed_title: '🎫 Support Ticket • {user}',
+    ticket_subject_label: '📌 **Reason:** *{subject}*',
+    ticket_detail_prompt: 'Please describe your situation or question in detail below.',
+    ticket_create_failed: '{emoji} Unable to create the ticket (make sure the bot has permission to manage channels).',
+    ticket_category_not_found: '❌ Category not found.',
+    ticket_open_failed_default: 'Unable to open the ticket.',
+    ticket_btn_assigned_unclaim: 'Assigned to @{user} (Unclaim)',
+    ticket_btn_close: 'Close',
+    ticket_btn_priority: 'Priority',
+    ticket_btn_transcript: 'Transcript',
+    ticket_btn_claim: 'Claim ticket',
+    ticket_not_found: '❌ Ticket not found.',
+    ticket_priority_updated: '📌 **Priority updated:** `{old}` ➔ `{new}`',
+    ticket_transcript_ready: '📄 **Here is the complete transcript of this ticket:**',
+
+    poll_list_empty: 'ℹ️ No polls configured on this server. Create one from the ETHONE dashboard!',
+    poll_list_title: '📊 ETHONE Polls & Votes',
+    poll_list_item: '• **{title}** (`{id}`)\n  Status: `{status}` | Type: `{type}` | Votes: **{count}**',
+    poll_missing_id: '❌ Missing poll ID. Example: `!poll results <id>` or `!poll panel <id>`',
+    poll_not_found: '❌ Poll with ID `{id}` not found on this server.',
+    poll_invalid_channel: '❌ Invalid text channel.',
+    poll_panel_published: '✅ Voting panel for **{title}** was successfully published in {channel}.',
+    poll_end_error: '❌ Error: {error}',
+    poll_ended_success: '🏁 The poll **{title}** has been closed successfully. Final results have been tallied and automations triggered.',
+    poll_results_calc_failed: '❌ Unable to calculate the results.',
+    poll_results_title: '📊 Results: {title}',
+    poll_results_default_desc: 'Real-time voting statistics',
+    poll_field_total_voters: '👥 Total Voters',
+    poll_field_total_weight: '⚖️ Total Weight',
+    poll_field_quorum: '📌 Quorum',
+    poll_no_votes: 'No votes',
+    poll_panel_no_end_date: 'Not set',
+    poll_panel_footer_default: 'ETHONE Polls • Ends: {date}',
+    poll_btn_view_results: 'View Results',
+    poll_btn_vote_web: 'Vote on the Web',
+    poll_deleted: '❌ This poll no longer exists or has been deleted.',
+    poll_live_results_title: '📊 Live Results — {title}',
+    poll_no_votes_recorded: 'No votes recorded.',
+    poll_live_results_footer: 'Total participants: {count} • ETHONE Polls 2.0',
+    poll_vote_error: '❌ **Voting Error:** {error}',
+    poll_vote_success_title: '✅ Vote Recorded Successfully!',
+    poll_vote_success_desc: 'Your vote for **{label}** has been recorded.\n\n⚖️ **Vote weight:** {weight} point(s)\n🔒 **Privacy:** {visibility}\n\n*Thank you for taking part in server life!*',
+    poll_visibility_public: 'Public',
+    poll_visibility_anonymous: 'Anonymous',
+    poll_no_winner: 'No winner',
+    poll_announce_winner_template: '🏆 **Results for the poll "{pollTitle}"!**\nThe winning choice is **{winner}** with {votes} votes ({percent}%).',
+
+    form_usage: '❌ Usage: `!form open <id>`, `!form panel <id>`, or `!form stats <id>`',
+    form_not_found: '❌ Form with ID `{id}` not found.',
+    form_web_portal_desc: 'This form is available on the ETHONE Web Portal:\n{url}',
+    form_panel_published: '✅ Interactive panel for **{title}** was successfully published in {channel}.',
+    form_stats_title: '📊 Statistics — {title}',
+    form_field_total_responses: 'Total Responses',
+    form_field_pending: 'Pending Review',
+    form_field_approved: 'Approved',
+    form_field_rejected: 'Rejected',
+    form_field_avg_score: 'Average Score',
+    form_field_status: 'Form Status',
+    form_panel_default_desc: '📋 **Category:** {category}\n⏱️ **Estimated time:** ~3 minutes\n🔒 **Status:** Open',
+    form_btn_apply_now: 'Apply Now',
+    form_deleted: '❌ This form no longer exists or has been disabled.',
+    form_closed: '⚠️ This form is currently closed to new responses.',
+    form_btn_open_web: 'Open Web Form',
+    form_web_required_desc: 'This form includes multiple steps and advanced options, please fill it out directly on the secure ETHONE interface:',
+    form_generic_not_found: '❌ Form not found.',
+    form_submit_error: '❌ **Submission Error:** {error}',
+    form_submitted_title: '✅ Application Submitted Successfully',
+    form_submitted_desc: 'Your response for **{title}** has been recorded.\n\n🆔 **Tracking number:** `#{id}`\n📊 **Initial status:** Awaiting staff review\n\n*You will receive a private notification as soon as a decision is made.*',
   },
   es: {
     lang_name: 'Español',
@@ -1001,6 +1217,77 @@ const translations: Record<SupportedLanguage, TranslationDictionary> = {
     music_panel_inactive: 'Desactivado',
     music_panel_muted: 'Silenciado',
     music_panel_unknown: 'Desconocido',
+
+    ticket_module_disabled: '{emoji} El módulo **Tickets** está desactivado en este servidor. Actívalo desde el panel web.',
+    ticket_already_open: '{emoji} Ya tienes un ticket abierto en {channel}.',
+    ticket_channel_embed_title: '🎫 Ticket de Soporte • {user}',
+    ticket_subject_label: '📌 **Motivo:** *{subject}*',
+    ticket_detail_prompt: 'Por favor, detalla tu situación o pregunta a continuación.',
+    ticket_create_failed: '{emoji} No se pudo crear el ticket (comprueba que el bot tenga permiso para gestionar canales).',
+    ticket_category_not_found: '❌ Categoría no encontrada.',
+    ticket_open_failed_default: 'No se pudo abrir el ticket.',
+    ticket_btn_assigned_unclaim: 'Asignado a @{user} (Liberar)',
+    ticket_btn_close: 'Cerrar',
+    ticket_btn_priority: 'Prioridad',
+    ticket_btn_transcript: 'Transcripción',
+    ticket_btn_claim: 'Asumir ticket (Claim)',
+    ticket_not_found: '❌ Ticket no encontrado.',
+    ticket_priority_updated: '📌 **Prioridad actualizada:** `{old}` ➔ `{new}`',
+    ticket_transcript_ready: '📄 **Aquí tienes la transcripción completa de este ticket:**',
+
+    poll_list_empty: 'ℹ️ No hay sondeos configurados en este servidor. ¡Crea uno desde el panel ETHONE!',
+    poll_list_title: '📊 Sondeos y Votaciones ETHONE',
+    poll_list_item: '• **{title}** (`{id}`)\n  Estado: `{status}` | Tipo: `{type}` | Votos: **{count}**',
+    poll_missing_id: '❌ Falta el ID del sondeo. Ejemplo: `!poll results <id>` o `!poll panel <id>`',
+    poll_not_found: '❌ No se encontró ningún sondeo con el ID `{id}` en este servidor.',
+    poll_invalid_channel: '❌ Canal de texto no válido.',
+    poll_panel_published: '✅ El panel de votación de **{title}** se publicó correctamente en {channel}.',
+    poll_end_error: '❌ Error: {error}',
+    poll_ended_success: '🏁 El sondeo **{title}** se cerró correctamente. Los resultados finales se consolidaron y se activaron las automatizaciones.',
+    poll_results_calc_failed: '❌ No se pudieron calcular los resultados.',
+    poll_results_title: '📊 Resultados: {title}',
+    poll_results_default_desc: 'Estadísticas de votación en tiempo real',
+    poll_field_total_voters: '👥 Total de Votantes',
+    poll_field_total_weight: '⚖️ Peso Total',
+    poll_field_quorum: '📌 Quórum',
+    poll_no_votes: 'Sin votos',
+    poll_panel_no_end_date: 'No definida',
+    poll_panel_footer_default: 'ETHONE Polls • Fin: {date}',
+    poll_btn_view_results: 'Ver Resultados',
+    poll_btn_vote_web: 'Votar en la Web',
+    poll_deleted: '❌ Este sondeo ya no existe o ha sido eliminado.',
+    poll_live_results_title: '📊 Resultados en Directo — {title}',
+    poll_no_votes_recorded: 'No hay votos registrados.',
+    poll_live_results_footer: 'Total de participantes: {count} • ETHONE Polls 2.0',
+    poll_vote_error: '❌ **Error de voto:** {error}',
+    poll_vote_success_title: '✅ ¡Voto Registrado con Éxito!',
+    poll_vote_success_desc: 'Tu voto por **{label}** ha sido registrado correctamente.\n\n⚖️ **Peso del voto:** {weight} punto(s)\n🔒 **Privacidad:** {visibility}\n\n*¡Gracias por participar en la vida del servidor!*',
+    poll_visibility_public: 'Público',
+    poll_visibility_anonymous: 'Anónimo',
+    poll_no_winner: 'Sin ganador',
+    poll_announce_winner_template: '🏆 **¡Resultados del sondeo "{pollTitle}"!**\nLa opción ganadora es **{winner}** con {votes} votos ({percent}%).',
+
+    form_usage: '❌ Uso: `!form open <id>`, `!form panel <id>`, o `!form stats <id>`',
+    form_not_found: '❌ No se encontró ningún formulario con el ID `{id}`.',
+    form_web_portal_desc: 'Este formulario está disponible en el portal web de ETHONE:\n{url}',
+    form_panel_published: '✅ El panel interactivo de **{title}** se publicó correctamente en {channel}.',
+    form_stats_title: '📊 Estadísticas — {title}',
+    form_field_total_responses: 'Total de Respuestas',
+    form_field_pending: 'Pendiente de revisión',
+    form_field_approved: 'Aprobadas',
+    form_field_rejected: 'Rechazadas',
+    form_field_avg_score: 'Puntuación media',
+    form_field_status: 'Estado del formulario',
+    form_panel_default_desc: '📋 **Categoría:** {category}\n⏱️ **Tiempo estimado:** ~3 minutos\n🔒 **Estado:** Abierto',
+    form_btn_apply_now: 'Postular ahora',
+    form_deleted: '❌ Este formulario ya no existe o ha sido desactivado.',
+    form_closed: '⚠️ Este formulario está actualmente cerrado a nuevas respuestas.',
+    form_btn_open_web: 'Abrir Formulario Web',
+    form_web_required_desc: 'Este formulario incluye varios pasos y opciones avanzadas; complétalo directamente en la interfaz segura de ETHONE:',
+    form_generic_not_found: '❌ Formulario no encontrado.',
+    form_submit_error: '❌ **Error de envío:** {error}',
+    form_submitted_title: '✅ Solicitud Enviada con Éxito',
+    form_submitted_desc: 'Tu respuesta para **{title}** ha sido registrada.\n\n🆔 **Número de seguimiento:** `#{id}`\n📊 **Estado inicial:** Pendiente de revisión por el staff\n\n*Recibirás una notificación privada en cuanto se tome una decisión.*',
   },
   de: {
     lang_name: 'Deutsch',
@@ -1250,6 +1537,77 @@ const translations: Record<SupportedLanguage, TranslationDictionary> = {
     music_panel_inactive: 'Deaktiviert',
     music_panel_muted: 'Stumm',
     music_panel_unknown: 'Unbekannt',
+
+    ticket_module_disabled: '{emoji} Das Modul **Tickets** ist auf diesem Server deaktiviert. Aktiviere es über das Web-Dashboard.',
+    ticket_already_open: '{emoji} Du hast bereits ein offenes Ticket in {channel}.',
+    ticket_channel_embed_title: '🎫 Support-Ticket • {user}',
+    ticket_subject_label: '📌 **Grund:** *{subject}*',
+    ticket_detail_prompt: 'Bitte schildere dein Anliegen oder deine Frage unten im Detail.',
+    ticket_create_failed: '{emoji} Ticket konnte nicht erstellt werden (stelle sicher, dass der Bot die Berechtigung zur Kanalverwaltung hat).',
+    ticket_category_not_found: '❌ Kategorie nicht gefunden.',
+    ticket_open_failed_default: 'Ticket konnte nicht geöffnet werden.',
+    ticket_btn_assigned_unclaim: 'Zugewiesen an @{user} (Freigeben)',
+    ticket_btn_close: 'Schließen',
+    ticket_btn_priority: 'Priorität',
+    ticket_btn_transcript: 'Transkript',
+    ticket_btn_claim: 'Übernehmen (Claim)',
+    ticket_not_found: '❌ Ticket nicht gefunden.',
+    ticket_priority_updated: '📌 **Priorität aktualisiert:** `{old}` ➔ `{new}`',
+    ticket_transcript_ready: '📄 **Hier ist das vollständige Transkript dieses Tickets:**',
+
+    poll_list_empty: 'ℹ️ Keine Umfragen auf diesem Server konfiguriert. Erstelle eine über das ETHONE-Dashboard!',
+    poll_list_title: '📊 ETHONE Umfragen & Abstimmungen',
+    poll_list_item: '• **{title}** (`{id}`)\n  Status: `{status}` | Typ: `{type}` | Stimmen: **{count}**',
+    poll_missing_id: '❌ Umfrage-ID fehlt. Beispiel: `!poll results <id>` oder `!poll panel <id>`',
+    poll_not_found: '❌ Umfrage mit der ID `{id}` wurde auf diesem Server nicht gefunden.',
+    poll_invalid_channel: '❌ Ungültiger Textkanal.',
+    poll_panel_published: '✅ Das Abstimmungs-Panel für **{title}** wurde erfolgreich in {channel} veröffentlicht.',
+    poll_end_error: '❌ Fehler: {error}',
+    poll_ended_success: '🏁 Die Umfrage **{title}** wurde erfolgreich beendet. Die Endergebnisse wurden zusammengefasst und die Automatisierungen ausgelöst.',
+    poll_results_calc_failed: '❌ Die Ergebnisse konnten nicht berechnet werden.',
+    poll_results_title: '📊 Ergebnisse: {title}',
+    poll_results_default_desc: 'Live-Abstimmungsstatistiken',
+    poll_field_total_voters: '👥 Gesamtzahl Wähler',
+    poll_field_total_weight: '⚖️ Gesamtgewicht',
+    poll_field_quorum: '📌 Quorum',
+    poll_no_votes: 'Keine Stimmen',
+    poll_panel_no_end_date: 'Nicht festgelegt',
+    poll_panel_footer_default: 'ETHONE Polls • Ende: {date}',
+    poll_btn_view_results: 'Ergebnisse ansehen',
+    poll_btn_vote_web: 'Im Web abstimmen',
+    poll_deleted: '❌ Diese Umfrage existiert nicht mehr oder wurde gelöscht.',
+    poll_live_results_title: '📊 Live-Ergebnisse — {title}',
+    poll_no_votes_recorded: 'Keine Stimmen erfasst.',
+    poll_live_results_footer: 'Teilnehmer gesamt: {count} • ETHONE Polls 2.0',
+    poll_vote_error: '❌ **Abstimmungsfehler:** {error}',
+    poll_vote_success_title: '✅ Stimme erfolgreich erfasst!',
+    poll_vote_success_desc: 'Deine Stimme für **{label}** wurde erfolgreich gezählt.\n\n⚖️ **Stimmgewicht:** {weight} Punkt(e)\n🔒 **Privatsphäre:** {visibility}\n\n*Danke für deine Teilnahme am Serverleben!*',
+    poll_visibility_public: 'Öffentlich',
+    poll_visibility_anonymous: 'Anonym',
+    poll_no_winner: 'Kein Gewinner',
+    poll_announce_winner_template: '🏆 **Ergebnisse der Umfrage "{pollTitle}"!**\nDie Gewinner-Option ist **{winner}** mit {votes} Stimmen ({percent}%).',
+
+    form_usage: '❌ Verwendung: `!form open <id>`, `!form panel <id>` oder `!form stats <id>`',
+    form_not_found: '❌ Formular mit der ID `{id}` wurde nicht gefunden.',
+    form_web_portal_desc: 'Dieses Formular ist im ETHONE-Webportal verfügbar:\n{url}',
+    form_panel_published: '✅ Das interaktive Panel für **{title}** wurde erfolgreich in {channel} veröffentlicht.',
+    form_stats_title: '📊 Statistiken — {title}',
+    form_field_total_responses: 'Antworten gesamt',
+    form_field_pending: 'Ausstehende Prüfung',
+    form_field_approved: 'Genehmigt',
+    form_field_rejected: 'Abgelehnt',
+    form_field_avg_score: 'Durchschnittliche Punktzahl',
+    form_field_status: 'Formularstatus',
+    form_panel_default_desc: '📋 **Kategorie:** {category}\n⏱️ **Geschätzte Zeit:** ~3 Minuten\n🔒 **Status:** Offen',
+    form_btn_apply_now: 'Jetzt bewerben',
+    form_deleted: '❌ Dieses Formular existiert nicht mehr oder wurde deaktiviert.',
+    form_closed: '⚠️ Dieses Formular ist derzeit für neue Antworten geschlossen.',
+    form_btn_open_web: 'Web-Formular öffnen',
+    form_web_required_desc: 'Dieses Formular umfasst mehrere Schritte und erweiterte Optionen — bitte fülle es direkt in der sicheren ETHONE-Oberfläche aus:',
+    form_generic_not_found: '❌ Formular nicht gefunden.',
+    form_submit_error: '❌ **Übermittlungsfehler:** {error}',
+    form_submitted_title: '✅ Bewerbung erfolgreich eingereicht',
+    form_submitted_desc: 'Deine Antwort für **{title}** wurde gespeichert.\n\n🆔 **Vorgangsnummer:** `#{id}`\n📊 **Anfangsstatus:** Wird vom Team geprüft\n\n*Du erhältst eine private Benachrichtigung, sobald eine Entscheidung getroffen wurde.*',
   },
 };
 

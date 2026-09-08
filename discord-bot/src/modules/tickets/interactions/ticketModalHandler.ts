@@ -2,11 +2,15 @@ import { ModalSubmitInteraction } from 'discord.js';
 import { ticketService } from '../services/ticketService.js';
 import { logger } from '../../../utils/logger.js';
 import { baseEmbed } from '../../../utils/embeds.js';
+import { guildConfigService } from '../../../services/guildConfigService.js';
+import { formatString, getTranslation } from '../../../utils/i18n.js';
 
 export async function handleTicketModal(interaction: ModalSubmitInteraction): Promise<void> {
   const customId = interaction.customId;
   const guild = interaction.guild;
   if (!guild) return;
+
+  const t = getTranslation(guildConfigService.getConfig(guild.id).language);
 
   // 1. Soumission d'un formulaire de création de ticket (modal_ticket_open:categoryId)
   if (customId.startsWith('modal_ticket_open:')) {
@@ -29,11 +33,11 @@ export async function handleTicketModal(interaction: ModalSubmitInteraction): Pr
     try {
       const ticket = await ticketService.createTicket(guild, interaction.user, categoryId, answers);
       await interaction.editReply({
-        embeds: [baseEmbed('success').setDescription(`✅ Votre ticket a été créé : <#${ticket.channelId}>`)],
+        embeds: [baseEmbed('success').setDescription(formatString(t.ticket_created, { channel: `<#${ticket.channelId}>` }))],
       });
     } catch (err: any) {
       await interaction.editReply({
-        embeds: [baseEmbed('warning').setDescription(`⚠️ ${err.message || 'Impossible d’ouvrir le ticket.'}`)],
+        embeds: [baseEmbed('warning').setDescription(`⚠️ ${err.message || t.ticket_open_failed_default}`)],
       });
     }
     return;

@@ -34,7 +34,7 @@ export const ticketCommand: Command = {
     // Vérifier si le module Tickets est activé
     if (!config.modules.tickets) {
       await ctx.reply({
-        embeds: [ctx.createEmbed('error').setDescription(`${config.emojis.error || '❌'} Le module **Tickets** est désactivé sur ce serveur. Activez-le depuis le dashboard web.`)],
+        embeds: [ctx.createEmbed('error').setDescription(formatString(t.ticket_module_disabled, { emoji: config.emojis.error || '❌' }))],
         ephemeral: true,
       });
       return;
@@ -46,7 +46,7 @@ export const ticketCommand: Command = {
 
     if (existingTicket) {
       await ctx.reply({
-        embeds: [ctx.createEmbed('info').setDescription(`${config.emojis.info || 'ℹ️'} Vous avez déjà un ticket ouvert dans ${existingTicket}.`)],
+        embeds: [ctx.createEmbed('info').setDescription(formatString(t.ticket_already_open, { emoji: config.emojis.info || 'ℹ️', channel: existingTicket.toString() }))],
         ephemeral: true,
       });
       return;
@@ -92,11 +92,11 @@ export const ticketCommand: Command = {
 
       const ticketEmbed = ctx
         .createEmbed('default')
-        .setTitle(`🎫 Ticket Support • ${ctx.author.username}`)
+        .setTitle(formatString(t.ticket_channel_embed_title, { user: ctx.author.username }))
         .setDescription(
           `${formatString(t.ticket_welcome, { user: ctx.author.toString() })}\n\n` +
-          (subject ? `📌 **Motif :** *${subject}*\n\n` : '') +
-          `Veuillez détailler votre situation ou question ci-dessous.`
+          (subject ? `${formatString(t.ticket_subject_label, { subject })}\n\n` : '') +
+          t.ticket_detail_prompt
         );
 
       await ticketChannel.send({ content: `${ctx.author}`, embeds: [ticketEmbed] });
@@ -107,7 +107,7 @@ export const ticketCommand: Command = {
       });
     } catch {
       await ctx.reply({
-        embeds: [ctx.createEmbed('error').setDescription(`${config.emojis.error || '❌'} Impossible de créer le ticket (vérifiez que le bot a la permission de gérer les salons).`)],
+        embeds: [ctx.createEmbed('error').setDescription(formatString(t.ticket_create_failed, { emoji: config.emojis.error || '❌' }))],
         ephemeral: true,
       });
     }

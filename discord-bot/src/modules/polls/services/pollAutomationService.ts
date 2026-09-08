@@ -2,6 +2,8 @@ import { Client } from 'discord.js';
 import { DiscordPoll, PollResultsSummary, AutomationTriggerPoll } from '../types/index.js';
 import { ticketService } from '../../tickets/services/ticketService.js';
 import { logger } from '../../../utils/logger.js';
+import { guildConfigService } from '../../../services/guildConfigService.js';
+import { getTranslation } from '../../../utils/i18n.js';
 
 export class PollAutomationService {
   private client: Client | null = null;
@@ -31,12 +33,11 @@ export class PollAutomationService {
               const targetChannelId = action.targetChannelId || poll.panelConfig.channelId;
               if (!targetChannelId) break;
 
-              const winnerText = results.winningOption?.label || 'Aucun gagnant';
+              const t = getTranslation(guildConfigService.getConfig(poll.guildId).language);
+              const winnerText = results.winningOption?.label || t.poll_no_winner;
               const votesText = String(results.winningOption?.votesCount || 0);
 
-              const template =
-                action.messageTemplate ||
-                '🏆 **Résultats du sondage "{pollTitle}" !**\nLe choix gagnant est **{winner}** avec {votes} votes ({percent}%).';
+              const template = action.messageTemplate || t.poll_announce_winner_template;
 
               const content = template
                 .replace(/\{pollTitle\}/g, poll.title)

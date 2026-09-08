@@ -6,6 +6,7 @@ import {
 import { Command, CommandContext } from '../../types/command.js';
 import { formRepository } from '../../modules/forms/storage/formRepository.js';
 import { discordFormPanel } from '../../modules/forms/ui/discordFormPanel.js';
+import { formatString, getTranslation } from '../../utils/i18n.js';
 
 export const formCommand: Command = {
   name: 'form',
@@ -48,9 +49,10 @@ export const formCommand: Command = {
     ),
 
   execute: async (ctx: CommandContext) => {
+    const t = getTranslation(ctx.guildConfig.language);
     const guildId = ctx.guild?.id;
     if (!guildId) {
-      await ctx.reply({ embeds: [ctx.createEmbed('error').setDescription('❌ Commande réservée aux serveurs Discord.')], ephemeral: true });
+      await ctx.reply({ embeds: [ctx.createEmbed('error').setDescription(t.guild_only_command)], ephemeral: true });
       return;
     }
 
@@ -67,7 +69,7 @@ export const formCommand: Command = {
 
     if (!formId) {
       await ctx.reply({
-        embeds: [ctx.createEmbed('error').setDescription('❌ Usage : `!form open <id>`, `!form panel <id>`, ou `!form stats <id>`')],
+        embeds: [ctx.createEmbed('error').setDescription(t.form_usage)],
       });
       return;
     }
@@ -75,7 +77,7 @@ export const formCommand: Command = {
     const form = formRepository.getFormById(guildId, formId);
     if (!form) {
       await ctx.reply({
-        embeds: [ctx.createEmbed('error').setDescription(`❌ Formulaire avec l'identifiant \`${formId}\` introuvable.`)],
+        embeds: [ctx.createEmbed('error').setDescription(formatString(t.form_not_found, { id: formId }))],
         ephemeral: true,
       });
       return;
@@ -87,7 +89,7 @@ export const formCommand: Command = {
         await ctx.interaction.showModal(modal);
       } else {
         await ctx.reply({
-          embeds: [ctx.createEmbed('info').setTitle(`📝 ${form.title}`).setDescription(`Ce formulaire est disponible sur le portail Web ETHONE :\nhttps://ethone.dev/discord/forms/${form.id}?guildId=${form.guildId}`)],
+          embeds: [ctx.createEmbed('info').setTitle(`📝 ${form.title}`).setDescription(formatString(t.form_web_portal_desc, { url: `https://ethone.dev/discord/forms/${form.id}?guildId=${form.guildId}` }))],
           ephemeral: true,
         });
       }
@@ -101,7 +103,7 @@ export const formCommand: Command = {
       }
 
       if (!targetChannel || !targetChannel.isTextBased() || !('send' in targetChannel)) {
-        await ctx.reply({ embeds: [ctx.createEmbed('error').setDescription('❌ Salon textuel invalide.')], ephemeral: true });
+        await ctx.reply({ embeds: [ctx.createEmbed('error').setDescription(t.poll_invalid_channel)], ephemeral: true });
         return;
       }
 
@@ -114,7 +116,7 @@ export const formCommand: Command = {
 
       await targetChannel.send({ embeds: [embed], components: [row] });
       await ctx.reply({
-        embeds: [ctx.createEmbed('success').setDescription(`✅ Panneau interactif pour **${form.title}** publié avec succès dans <#${targetChannel.id}>.`)],
+        embeds: [ctx.createEmbed('success').setDescription(formatString(t.form_panel_published, { title: form.title, channel: `<#${targetChannel.id}>` }))],
         ephemeral: true,
       });
       return;
@@ -133,14 +135,14 @@ export const formCommand: Command = {
 
       const statsEmbed = ctx
         .createEmbed('default')
-        .setTitle(`📊 Statistiques — ${form.title}`)
+        .setTitle(formatString(t.form_stats_title, { title: form.title }))
         .addFields(
-          { name: 'Total réponses', value: `${responses.length}`, inline: true },
-          { name: 'En attente de review', value: `${pending}`, inline: true },
-          { name: 'Approuvées', value: `${approved}`, inline: true },
-          { name: 'Rejetées', value: `${rejected}`, inline: true },
-          { name: 'Score moyen', value: `${avgScore}/100`, inline: true },
-          { name: 'Statut du formulaire', value: `\`${form.status}\``, inline: true }
+          { name: t.form_field_total_responses, value: `${responses.length}`, inline: true },
+          { name: t.form_field_pending, value: `${pending}`, inline: true },
+          { name: t.form_field_approved, value: `${approved}`, inline: true },
+          { name: t.form_field_rejected, value: `${rejected}`, inline: true },
+          { name: t.form_field_avg_score, value: `${avgScore}/100`, inline: true },
+          { name: t.form_field_status, value: `\`${form.status}\``, inline: true }
         );
 
       await ctx.reply({ embeds: [statsEmbed], ephemeral: true });

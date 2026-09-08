@@ -14,11 +14,15 @@ import { TranscriptService } from '../services/transcriptService.js';
 import { TicketPriority } from '../types/ticket.js';
 import { logger } from '../../../utils/logger.js';
 import { baseEmbed } from '../../../utils/embeds.js';
+import { guildConfigService } from '../../../services/guildConfigService.js';
+import { formatString, getTranslation } from '../../../utils/i18n.js';
 
 export async function handleTicketButton(interaction: ButtonInteraction): Promise<void> {
   const customId = interaction.customId;
   const guild = interaction.guild;
   if (!guild) return;
+
+  const t = getTranslation(guildConfigService.getConfig(guild.id).language);
 
   // 1. Création d'un ticket (ticket_open:categoryId)
   if (customId.startsWith('ticket_open:')) {
@@ -26,7 +30,7 @@ export async function handleTicketButton(interaction: ButtonInteraction): Promis
     const category = ticketService.getCategories(guild.id).find((c) => c.id === categoryId);
 
     if (!category) {
-      await interaction.reply({ embeds: [baseEmbed('error').setDescription('❌ Catégorie introuvable.')], ephemeral: true });
+      await interaction.reply({ embeds: [baseEmbed('error').setDescription(t.ticket_category_not_found)], ephemeral: true });
       return;
     }
 
@@ -56,11 +60,11 @@ export async function handleTicketButton(interaction: ButtonInteraction): Promis
     try {
       const ticket = await ticketService.createTicket(guild, interaction.user, categoryId);
       await interaction.editReply({
-        embeds: [baseEmbed('success').setDescription(`✅ Votre ticket a été créé : <#${ticket.channelId}>`)],
+        embeds: [baseEmbed('success').setDescription(formatString(t.ticket_created, { channel: `<#${ticket.channelId}>` }))],
       });
     } catch (err: any) {
       await interaction.editReply({
-        embeds: [baseEmbed('warning').setDescription(`⚠️ ${err.message || 'Impossible d’ouvrir le ticket.'}`)],
+        embeds: [baseEmbed('warning').setDescription(`⚠️ ${err.message || t.ticket_open_failed_default}`)],
       });
     }
     return;
@@ -80,22 +84,22 @@ export async function handleTicketButton(interaction: ButtonInteraction): Promis
       const updatedButtons = new ActionRowBuilder<ButtonBuilder>().addComponents(
         new ButtonBuilder()
           .setCustomId(`ticket_unclaim:${ticketId}`)
-          .setLabel(`Assigné à @${interaction.user.username} (Unclaim)`)
+          .setLabel(formatString(t.ticket_btn_assigned_unclaim, { user: interaction.user.username }))
           .setEmoji('👤')
           .setStyle(ButtonStyle.Success),
         new ButtonBuilder()
           .setCustomId(`ticket_close:${ticketId}`)
-          .setLabel('Fermer')
+          .setLabel(t.ticket_btn_close)
           .setEmoji('🔒')
           .setStyle(ButtonStyle.Danger),
         new ButtonBuilder()
           .setCustomId(`ticket_priority:${ticketId}`)
-          .setLabel('Priorité')
+          .setLabel(t.ticket_btn_priority)
           .setEmoji('📌')
           .setStyle(ButtonStyle.Secondary),
         new ButtonBuilder()
           .setCustomId(`ticket_transcript:${ticketId}`)
-          .setLabel('Transcript')
+          .setLabel(t.ticket_btn_transcript)
           .setEmoji('📄')
           .setStyle(ButtonStyle.Secondary)
       );
@@ -119,22 +123,22 @@ export async function handleTicketButton(interaction: ButtonInteraction): Promis
       const updatedButtons = new ActionRowBuilder<ButtonBuilder>().addComponents(
         new ButtonBuilder()
           .setCustomId(`ticket_claim:${ticketId}`)
-          .setLabel('Prendre en charge (Claim)')
+          .setLabel(t.ticket_btn_claim)
           .setEmoji('👤')
           .setStyle(ButtonStyle.Primary),
         new ButtonBuilder()
           .setCustomId(`ticket_close:${ticketId}`)
-          .setLabel('Fermer')
+          .setLabel(t.ticket_btn_close)
           .setEmoji('🔒')
           .setStyle(ButtonStyle.Danger),
         new ButtonBuilder()
           .setCustomId(`ticket_priority:${ticketId}`)
-          .setLabel('Priorité')
+          .setLabel(t.ticket_btn_priority)
           .setEmoji('📌')
           .setStyle(ButtonStyle.Secondary),
         new ButtonBuilder()
           .setCustomId(`ticket_transcript:${ticketId}`)
-          .setLabel('Transcript')
+          .setLabel(t.ticket_btn_transcript)
           .setEmoji('📄')
           .setStyle(ButtonStyle.Secondary)
       );
@@ -169,7 +173,7 @@ export async function handleTicketButton(interaction: ButtonInteraction): Promis
     const ticketId = customId.split(':')[1];
     const ticket = ticketService.getTicketById(guild.id, ticketId);
     if (!ticket) {
-      await interaction.reply({ embeds: [baseEmbed('error').setDescription('❌ Ticket introuvable.')], ephemeral: true });
+      await interaction.reply({ embeds: [baseEmbed('error').setDescription(t.ticket_not_found)], ephemeral: true });
       return;
     }
 
@@ -188,7 +192,7 @@ export async function handleTicketButton(interaction: ButtonInteraction): Promis
       });
 
       await interaction.reply({
-        embeds: [baseEmbed('info').setDescription(`📌 **Priorité mise à jour :** \`${ticket.priority}\` ➔ \`${newPriority}\``)],
+        embeds: [baseEmbed('info').setDescription(formatString(t.ticket_priority_updated, { old: ticket.priority, new: newPriority }))],
       });
     } catch (err: any) {
       await interaction.reply({ embeds: [baseEmbed('error').setDescription(`❌ ${err.message}`)], ephemeral: true });
@@ -211,7 +215,7 @@ export async function handleTicketButton(interaction: ButtonInteraction): Promis
       const attachment = new AttachmentBuilder(filePath, { name: `transcript-${ticketId}.html` });
 
       await interaction.editReply({
-        embeds: [baseEmbed('info').setDescription('📄 **Voici la transcription complète de ce ticket :**')],
+        embeds: [baseEmbed('info').setDescription(t.ticket_transcript_ready)],
         files: [attachment],
       });
     } catch (err: any) {

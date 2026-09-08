@@ -36,6 +36,34 @@ export const automodCommand: Command = {
         .addBooleanOption((opt) =>
           opt.setName('activer').setDescription('Activer (True) ou Désactiver (False)').setRequired(true)
         )
+    )
+    .addSubcommand((sub) =>
+      sub
+        .setName('toggle')
+        .setDescription("Active ou désactive AutoMod dans son ensemble, ou un détecteur précis (anti-spam, liens, etc.)")
+        .addStringOption((opt) =>
+          opt
+            .setName('module')
+            .setDescription('Quoi activer/désactiver')
+            .setRequired(true)
+            .addChoices(
+              { name: '🛡️ AutoMod (tout le moteur)', value: 'all' },
+              { name: '💬 Anti-Spam', value: 'spam' },
+              { name: '🌊 Anti-Flood (répétitions)', value: 'flood' },
+              { name: '🔗 Filtre de Liens', value: 'links' },
+              { name: '✉️ Filtre d\'Invitations Discord', value: 'invites' },
+              { name: '📢 Anti-Mention Spam', value: 'mentions' },
+              { name: '👻 Anti-Ghost Ping', value: 'ghostPing' },
+              { name: '🔠 Anti-CAPS LOCK', value: 'caps' },
+              { name: '🚫 Mots Interdits', value: 'keywords' },
+              { name: '🧩 Règles Regex Personnalisées', value: 'regex' },
+              { name: '👤 Filtre de Profils (pseudo/avatar)', value: 'profiles' },
+              { name: '⚠️ Strikes & Sanctions Progressives', value: 'strikes' }
+            )
+        )
+        .addBooleanOption((opt) =>
+          opt.setName('activer').setDescription('Activer (True) ou Désactiver (False)').setRequired(true)
+        )
     ),
 
   async execute(ctx: CommandContext): Promise<void> {
@@ -90,8 +118,21 @@ export const automodCommand: Command = {
             inline: true,
           },
           {
-            name: '⚡ Détecteurs Intégrés',
-            value: 'Spam, Flood, Links, Invites, Mentions, GhostPing, Caps, Mots, Regex',
+            name: '⚡ Détecteurs',
+            value: [
+              ['💬 Anti-Spam', config.spam.enabled],
+              ['🌊 Anti-Flood', config.flood.enabled],
+              ['🔗 Liens', config.links.enabled],
+              ["✉️ Invitations", config.invites.enabled],
+              ['📢 Mentions', config.mentions.enabled],
+              ['👻 Ghost Ping', config.ghostPing.enabled],
+              ['🔠 CAPS', config.caps.enabled],
+              ['🚫 Mots Interdits', config.keywords.enabled],
+              ['🧩 Regex', config.regex.enabled],
+              ['👤 Profils', config.profiles.enabled],
+            ]
+              .map(([name, on]) => `${on ? '🟢' : '⚪'} ${name}`)
+              .join('\n'),
             inline: true,
           },
           {
@@ -192,8 +233,72 @@ export const automodCommand: Command = {
       return;
     }
 
+    // 4. TOGGLE (moteur entier ou détecteur précis)
+    if (sub === 'toggle') {
+      let moduleKey = '';
+      let active = false;
+      if (isSlash) {
+        const interaction = ctx.interaction as ChatInputCommandInteraction;
+        moduleKey = interaction.options.getString('module', true);
+        active = interaction.options.getBoolean('activer', true);
+      } else {
+        moduleKey = ctx.args[1] || '';
+        active = ctx.args[2]?.toLowerCase() === 'on' || ctx.args[2]?.toLowerCase() === 'true';
+      }
+
+      const moduleLabels: Record<string, string> = {
+        all: 'AutoMod (moteur entier)',
+        spam: 'Anti-Spam',
+        flood: 'Anti-Flood',
+        links: 'Filtre de Liens',
+        invites: "Filtre d'Invitations",
+        mentions: 'Anti-Mention Spam',
+        ghostPing: 'Anti-Ghost Ping',
+        caps: 'Anti-CAPS LOCK',
+        keywords: 'Mots Interdits',
+        regex: 'Règles Regex',
+        profiles: 'Filtre de Profils',
+        strikes: 'Strikes & Sanctions Progressives',
+      };
+
+      const label = moduleLabels[moduleKey];
+      if (!label) {
+        await ctx.reply({
+          embeds: [ctx.createEmbed('error').setDescription(`❌ Module inconnu : \`${moduleKey}\`.`)],
+          ephemeral: true,
+        });
+        return;
+      }
+
+      // Toggle du moteur AutoMod entier (champ racine, pas un sous-objet détecteur)
+      if (moduleKey === 'all') {
+        autoModRepository.updateConfig(guildId, { enabled: active });
+      } else {
+        // Fusion superficielle dans updateConfig() : on doit repartir de l'objet
+        // détecteur EXISTANT et n'écraser que `enabled`, sinon Zod réinitialiserait
+        // silencieusement tous les autres réglages du détecteur (seuils, actions,
+        // listes blanches/noires...) à leurs valeurs par défaut.
+        const currentDetector = (config as Record<string, unknown>)[moduleKey] as Record<string, unknown> | undefined;
+        autoModRepository.updateConfig(guildId, {
+          [moduleKey]: { ...(currentDetector || {}), enabled: active },
+        } as Partial<typeof config>);
+      }
+
+      await ctx.reply({
+        embeds: [
+          ctx.createEmbed('success').setDescription(
+            `${active ? '🟢' : '⚪'} **${label}** ${active ? 'activé' : 'désactivé'}.` +
+              (moduleKey !== 'all' && !config.enabled
+                ? '\n⚠️ Note : le moteur AutoMod global est actuellement désactivé (`/automod toggle module:all activer:True` pour le réactiver) — ce réglage ne prendra effet qu\'une fois AutoMod réactivé.'
+                : '')
+          ),
+        ],
+      });
+      return;
+    }
+
     await ctx.reply({
-      embeds: [ctx.createEmbed('info').setDescription('Usage : `/automod status`, `/automod test <message>`, `/automod smartmode <activer>`')],
+      embeds: [ctx.createEmbed('info').setDescription('Usage : `/automod status`, `/automod test <message>`, `/automod smartmode <activer>`, `/automod toggle <module> <activer>`')],
       ephemeral: true,
     });
   },

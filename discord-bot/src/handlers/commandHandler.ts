@@ -158,18 +158,28 @@ class CommandRegistry {
     try {
       logger.info(`Déploiement de ${slashDataList.length} slash commands...`);
 
+      // Déploiement global TOUJOURS effectué : c'est ce qui alimente les vraies
+      // commandes visibles sur tous les serveurs de production (propagation Discord
+      // jusqu'à ~1h). Avant ce correctif, la présence de DEV_GUILD_ID désactivait
+      // complètement le déploiement global — les serveurs réels du bot restaient
+      // bloqués sur l'ancien jeu de commandes enregistré la dernière fois que
+      // DEV_GUILD_ID n'était pas défini, d'où des commandes manquantes ou obsolètes
+      // sur les serveurs de production.
+      await rest.put(
+        Routes.applicationCommands(config.clientId),
+        { body: slashDataList }
+      );
+      logger.success('Slash commands déployées globalement avec succès (tous les serveurs, propagation ~1h).');
+
+      // Déploiement additionnel, instantané, sur le serveur de dev le cas échéant
+      // (pratique pour itérer vite pendant le développement, sans attendre la
+      // propagation globale) — ne remplace jamais le déploiement global ci-dessus.
       if (config.devGuildId) {
         await rest.put(
           Routes.applicationGuildCommands(config.clientId, config.devGuildId),
           { body: slashDataList }
         );
-        logger.success(`Slash commands déployées instantanément sur la Guild : ${config.devGuildId}`);
-      } else {
-        await rest.put(
-          Routes.applicationCommands(config.clientId),
-          { body: slashDataList }
-        );
-        logger.success('Slash commands déployées globalement avec succès.');
+        logger.success(`Slash commands aussi déployées instantanément sur la Guild de dev : ${config.devGuildId}`);
       }
     } catch (error) {
       logger.error('Erreur lors du déploiement des slash commands :', error);

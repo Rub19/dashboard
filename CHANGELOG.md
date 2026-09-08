@@ -2,6 +2,15 @@
 
 Toutes les modifications notables de ce projet seront documentées dans ce fichier.
 
+## v1.20.58 — 2026-09-09
+
+**Correctif critique : Discord affichait "Non connecté" malgré une connexion réussie**
+
+- **Root cause** : `components/IntegrationsSettings.tsx`'s connection-status `useEffect` fetches `/api/connections` (le vrai statut serveur, source de vérité) puis appliquait un correctif client "si `ethone:discord_revocation_20260904` (flag de migration ponctuelle du 4 sept.) est `true` et `ethone:connected:discord` n'est pas exactement `true` à cet instant précis, forcer `map.discord = false`" — **écrasant** la réponse serveur même quand elle disait `connected: true`. Comme ce `useEffect` s'exécute en parallèle de `OAuthHandler.tsx`'s exchange OAuth (qui est ce qui écrit réellement `ethone:connected:discord = "true"`, de façon asynchrone et plus lente), une course était possible : le fetch de statut se résolvait avant que l'échange OAuth n'ait fini d'écrire le flag local, figeant `discord: false` dans le state React — et pour un utilisateur de longue date dont le flag de révocation du 4 sept. est resté définitivement à `true` en localStorage (rien ne l'efface jamais), ce correctif client se déclenchait à chaque nouvelle tentative de connexion.
+- **Correctif** : suppression de ce court-circuit client dans `IntegrationsSettings.tsx` — la réponse de `/api/connections` (et le flag additif `ethone:connected:*` déjà en place, qui lui ne fait qu'AJOUTER un `true`, jamais l'inverse) reste seule source de vérité. La migration qui justifiait historiquement ce garde-fou (`lib/discord-migration.ts`'s `forceDisconnectDiscordAll`) ne s'exécute plus depuis le correctif précédent (v1.20.55) — le garde-fou n'avait donc plus lieu d'être et n'était plus qu'un générateur de faux "déconnecté".
+- Le garde-fou équivalent dans `lib/connection-config.ts`'s `isConfigured()` a été audité et laissé en l'état : il n'entre en jeu qu'APRÈS le court-circuit précoce `if (oauthConnected[integration.id] === true) return true`, donc il n'écrase jamais une vraie connexion OAuth réussie — seulement le repli Lanyard-only, ce qui est correct.
+- Validation : `tsc --noEmit` (0 erreur), `npm run build`, `eslint` (0 nouvelle erreur), `npm run test:unit` (13/13, 61/61).
+
 ## v1.20.57 — 2026-09-09
 
 **Modules AutoMod & bot désactivables, page complète pour les trackers Valo/LoL**

@@ -1,3 +1,12 @@
+const v12058_fr: ChangelogEntry = {
+  version: "v1.20.58",
+  date: "2026-09-09",
+  title: "Correctif Critique : Discord Affichait « Non Connecté » Malgré une Connexion Réussie",
+  items: [
+    "Correctif critique : sur la page Connexions, un ancien indicateur de révocation (datant du correctif de sécurité du 4 septembre) forçait Discord à s'afficher comme « Non connecté » dès que la vérification locale s'exécutait avant que l'échange OAuth n'ait fini de s'enregistrer côté serveur — un problème de timing qui pouvait figer l'état sur « déconnecté » même juste après une connexion pourtant réussie. La réponse du serveur (source de vérité réelle) est désormais fiable sans être court-circuitée par cet ancien indicateur.",
+  ],
+};
+
 const v12057_fr: ChangelogEntry = {
   version: "v1.20.57",
   date: "2026-09-09",
@@ -76,6 +85,15 @@ const v12052_fr: ChangelogEntry = {
     "Dynamic Island : correction d'un bug de priorité qui empêchait Spotify de jamais s'afficher, systématiquement évincé par la synchronisation d'arrière-plan.",
     "Commande /help du Bot Discord : la liste des commandes est désormais générée dynamiquement depuis les commandes réellement enregistrées (fin des commandes fantômes et des commandes manquantes), et affiche la vraie syntaxe des commandes à sous-commandes (ex. /automod status).",
     "Audit de l'enregistrement des commandes slash Discord : architecture confirmée saine, aucune dérive entre le code et les commandes déployées.",
+  ],
+};
+
+const v12058_en: ChangelogEntry = {
+  version: "v1.20.58",
+  date: "2026-09-09",
+  title: "Critical Fix: Discord Showed \"Not Connected\" Despite a Successful Connection",
+  items: [
+    "Critical fix: on the Connections page, a leftover revocation flag (from the Sept 4 security fix) forced Discord to display as \"Not Connected\" whenever the local check ran before the OAuth exchange had finished saving server-side — a timing issue that could pin the state to \"disconnected\" even right after a genuinely successful connect. The server's response (the real source of truth) is now trusted without being overridden by that old flag.",
   ],
 };
 
@@ -160,6 +178,15 @@ const v12052_en: ChangelogEntry = {
   ],
 };
 
+const v12058_es: ChangelogEntry = {
+  version: "v1.20.58",
+  date: "2026-09-09",
+  title: "Corrección Crítica: Discord Mostraba « No Conectado » a Pesar de una Conexión Exitosa",
+  items: [
+    "Corrección crítica: en la página de Conexiones, un indicador de revocación obsoleto (del parche de seguridad del 4 de septiembre) forzaba a Discord a mostrarse como « No conectado » cuando la comprobación local se ejecutaba antes de que el intercambio OAuth terminara de guardarse en el servidor — un problema de sincronización que podía dejar fijo el estado en « desconectado » incluso justo después de una conexión realmente exitosa. La respuesta del servidor (la verdadera fuente de la verdad) ahora se respeta sin ser anulada por ese indicador antiguo.",
+  ],
+};
+
 const v12057_es: ChangelogEntry = {
   version: "v1.20.57",
   date: "2026-09-09",
@@ -238,6 +265,15 @@ const v12052_es: ChangelogEntry = {
     "Dynamic Island: corregido un error de prioridad que impedía que Spotify apareciera, siempre desplazado por la sincronización en segundo plano.",
     "Comando /help del Bot de Discord: la lista de comandos ahora se genera dinámicamente desde los comandos realmente registrados (fin de comandos fantasma o ausentes), mostrando la sintaxis real de los comandos con subcomandos.",
     "Auditoría del registro de comandos slash de Discord: arquitectura confirmada como sólida, sin desviación entre el código y los comandos desplegados.",
+  ],
+};
+
+const v12058_de: ChangelogEntry = {
+  version: "v1.20.58",
+  date: "2026-09-09",
+  title: "Kritischer Fix: Discord Zeigte Trotz Erfolgreicher Verbindung Nicht Verbunden an",
+  items: [
+    "Kritischer Fix: auf der Verbindungen-Seite erzwang eine veraltete Widerrufsmarkierung (aus dem Sicherheitsfix vom 4. September) die Anzeige Discord nicht verbunden, sobald die lokale Prüfung lief, bevor der OAuth-Austausch serverseitig fertig gespeichert war — ein Timing-Problem, das den Status auch direkt nach einer tatsächlich erfolgreichen Verbindung dauerhaft auf getrennt festnageln konnte. Die Antwort des Servers, die eigentliche Quelle der Wahrheit, wird jetzt vertrauensvoll übernommen, ohne von dieser alten Markierung überschrieben zu werden.",
   ],
 };
 
@@ -22212,5 +22248,10 @@ CHANGELOG_BY_LANG.fr.unshift(v12057_fr);
 CHANGELOG_BY_LANG.en.unshift(v12057_en);
 CHANGELOG_BY_LANG.es.unshift(v12057_es);
 CHANGELOG_BY_LANG.de.unshift(v12057_de);
+
+CHANGELOG_BY_LANG.fr.unshift(v12058_fr);
+CHANGELOG_BY_LANG.en.unshift(v12058_en);
+CHANGELOG_BY_LANG.es.unshift(v12058_es);
+CHANGELOG_BY_LANG.de.unshift(v12058_de);
 
 export const CHANGELOG = CHANGELOG_BY_LANG.fr;

@@ -57,7 +57,7 @@ export default function VersionUpdateToast() {
             role="status"
             aria-live="polite"
           >
-            <div className="relative overflow-hidden rounded-3xl border border-[var(--accent-primary)]/35 bg-[#0a0b0e] p-4 shadow-[0_20px_50px_rgba(0,0,0,0.85),0_0_35px_rgba(20,241,149,0.15)] backdrop-blur-3xl">
+            <div className="relative overflow-hidden rounded-3xl border border-[var(--accent-primary)]/35 bg-[#0a0b0e] p-4 shadow-[0_20px_50px_rgba(0,0,0,0.85),0_0_35px_var(--glow-color)] backdrop-blur-3xl">
               {/* Ambient Top Glow Line */}
               <div className="absolute inset-x-0 top-0 h-[1.5px] bg-gradient-to-r from-transparent via-[var(--accent-primary)]/80 to-transparent" />
 

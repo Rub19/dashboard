@@ -18,7 +18,7 @@ import {
   removeDevice,
   listUserDevices
 } from "../services/device-service.js";
-import { listSecurityEvents, getUserIdByEmail, listPasskeys } from "../services/security-identity-client.js";
+import { listSecurityEvents, getUserIdByEmail, listPasskeys, getDeviceBySession } from "../services/security-identity-client.js";
 import { generateTotpSecret, verifyTotp } from "../services/totp-service.js";
 
 const EMAIL_RE = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
@@ -106,6 +106,10 @@ export async function passkeyAuthenticateOptionsRoute({ request, env }) {
 export async function passkeyAuthenticateRoute({ request, env }) {
   const body = await readJsonBody(request, 1);
   const response = safeBody(body.response);
+  // Pre-auth (this IS the login step, there's no auth.userId yet) — key the
+  // brute-force guard on the WebAuthn credential id being presented, which
+  // is stable per authenticator and present on every attempt.
+  await applyAuthRateLimit({ request, env, route: { id: "passkey.authenticate" } }, response?.id || response?.rawId);
   const requestOrigin = request.headers.get("origin") || "";
 
   const result = await verifyAuthentication(env, requestOrigin, response);
@@ -149,12 +153,19 @@ export async function otpVerifyRoute({ request, env }) {
   const code = requireField(body, "code", CODE_RE, 6);
 
   const userAgent = request.headers.get("user-agent") || "";
-  const sessionId = null;
+  // A real session_id, shared by the device row and the minted token's
+  // session_id claim, is what lets a session actually be revoked later:
+  // middleware/auth.js's per-request revocation check looks up
+  // ethone_devices by (userId, session_id). Previously both were hardcoded
+  // null, so every OTP-issued token was unrevoke-able and every request
+  // created a fresh device row (getOrCreateDevice's session-based reuse
+  // never matched).
+  const sessionId = crypto.randomUUID();
   const device = await getOrCreateDevice(env, userId, sessionId, userAgent, "");
-  const result = await verifyOtp(env, userId, email, code, device.id);
+  const result = await verifyOtp(env, userId, email, code, device.id, sessionId);
   const rememberMe = Boolean(body.rememberMe);
   const tokenTtl = rememberMe ? 30 * 24 * 60 * 60 : 8 * 60 * 60;
-  const token = await signServiceToken(env, userId, null, tokenTtl);
+  const token = await signServiceToken(env, userId, sessionId, tokenTtl);
 
   return { data: { verified: true, deviceId: device.id, token, rememberMe } };
 }
@@ -183,12 +194,47 @@ export async function deviceTrustRoute({ request, env, auth }) {
   return { data: device };
 }
 
+// The device row for the session the CURRENT request is authenticated with
+// (not the target being acted on) — the anchor for "is this my own active
+// session?" checks below.
+async function currentSessionDeviceId(env, auth) {
+  if (!auth.sessionId) return null;
+  const device = await getDeviceBySession(env, auth.userId, auth.sessionId);
+  return device?.id ?? null;
+}
+
 export async function deviceRevokeRoute({ request, env, auth }) {
   if (!auth?.userId) throw httpError("AUTH_REQUIRED", 401);
-  const body = await readJsonBody(request, 1);
+  await applyAuthRateLimit({ request, env, route: { id: "device.revoke" } }, auth.userId);
+  const body = await readJsonBody(request, 2);
   const deviceId = requireField(body, "deviceId", UUID_RE, 36);
+  const confirmCurrent = body.confirmCurrent === true;
+
+  // Revoking the session you're issuing this very request from is allowed,
+  // but never silently: it must be an explicit, deliberate choice (the
+  // frontend shows a confirmation dialog before setting this flag), not an
+  // accidental click on the wrong row in a device list.
+  const currentDeviceId = await currentSessionDeviceId(env, auth);
+  if (currentDeviceId && deviceId === currentDeviceId && !confirmCurrent) {
+    throw httpError("CONFIRMATION_REQUIRED", 409, { detail: "confirmCurrent must be true to revoke your own active session" });
+  }
+
   const device = await revokeDevice(env, auth.userId, deviceId);
   return { data: device };
+}
+
+export async function deviceRevokeOthersRoute({ request, env, auth }) {
+  if (!auth?.userId) throw httpError("AUTH_REQUIRED", 401);
+  await applyAuthRateLimit({ request, env, route: { id: "device.revoke-others" } }, auth.userId);
+  const currentDeviceId = await currentSessionDeviceId(env, auth);
+  const devices = await listUserDevices(env, auth.userId);
+  const targets = devices.filter((d) => !d.revoked_at && d.id !== currentDeviceId);
+  const revokedDeviceIds = [];
+  for (const device of targets) {
+    await revokeDevice(env, auth.userId, device.id);
+    revokedDeviceIds.push(device.id);
+  }
+  return { data: { revokedCount: revokedDeviceIds.length, revokedDeviceIds } };
 }
 
 export async function deviceRemoveRoute({ request, env, auth }) {

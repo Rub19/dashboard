@@ -1,3 +1,14 @@
+const v12070_fr: ChangelogEntry = {
+  version: "v1.20.70",
+  date: "2026-09-09",
+  title: "Sécurité : Révocation de Session Réelle (Phase 1)",
+  items: [
+    "Bot/API — révoquer une session/un appareil bloque désormais réellement l'accès dès la requête suivante, au lieu de rester valide jusqu'à expiration naturelle du jeton (jusqu'à 30 jours). Nouvelle commande /api/auth/device/revoke-others (« déconnecter tous les autres appareils ») et /api/signout révoque désormais réellement la session en cours au lieu de ne rien faire.",
+    "Sécurité : révoquer sa propre session active exige désormais une confirmation explicite pour éviter toute déconnexion accidentelle.",
+    "Correctif : le limiteur anti-force-brute dédié aux tentatives de connexion (OTP, et désormais aussi les nouvelles routes de session) ne vérifiait jamais si la limite était atteinte en production — corrigé.",
+  ],
+};
+
 const v12069_fr: ChangelogEntry = {
   version: "v1.20.69",
   date: "2026-09-09",
@@ -193,6 +204,17 @@ const v12052_fr: ChangelogEntry = {
     "Dynamic Island : correction d'un bug de priorité qui empêchait Spotify de jamais s'afficher, systématiquement évincé par la synchronisation d'arrière-plan.",
     "Commande /help du Bot Discord : la liste des commandes est désormais générée dynamiquement depuis les commandes réellement enregistrées (fin des commandes fantômes et des commandes manquantes), et affiche la vraie syntaxe des commandes à sous-commandes (ex. /automod status).",
     "Audit de l'enregistrement des commandes slash Discord : architecture confirmée saine, aucune dérive entre le code et les commandes déployées.",
+  ],
+};
+
+const v12070_en: ChangelogEntry = {
+  version: "v1.20.70",
+  date: "2026-09-09",
+  title: "Security: Real Session Revocation (Phase 1)",
+  items: [
+    "API — revoking a session/device now actually blocks access starting from the very next request, instead of staying valid until the token naturally expires (up to 30 days). New /api/auth/device/revoke-others (\"sign out all other devices\") route, and /api/signout now actually revokes the current session instead of doing nothing.",
+    "Security: revoking your own active session now requires an explicit confirmation to prevent accidentally signing yourself out.",
+    "Fix: the dedicated brute-force limiter for login attempts (OTP, and now also the new session routes) never checked whether the limit was actually reached in production — fixed.",
   ],
 };
 
@@ -394,6 +416,17 @@ const v12052_en: ChangelogEntry = {
   ],
 };
 
+const v12070_es: ChangelogEntry = {
+  version: "v1.20.70",
+  date: "2026-09-09",
+  title: "Seguridad: Revocación Real de Sesión (Fase 1)",
+  items: [
+    "API — revocar una sesión/dispositivo ahora bloquea realmente el acceso desde la siguiente solicitud, en lugar de seguir siendo válida hasta que el token expire de forma natural (hasta 30 días). Nueva ruta /api/auth/device/revoke-others («cerrar sesión en todos los demás dispositivos»), y /api/signout ahora revoca realmente la sesión actual en lugar de no hacer nada.",
+    "Seguridad: revocar tu propia sesión activa ahora requiere una confirmación explícita para evitar cerrar sesión por accidente.",
+    "Corrección: el limitador anti-fuerza-bruta dedicado a los intentos de inicio de sesión (OTP, y ahora también las nuevas rutas de sesión) nunca comprobaba si se había alcanzado el límite en producción — corregido.",
+  ],
+};
+
 const v12069_es: ChangelogEntry = {
   version: "v1.20.69",
   date: "2026-09-09",
@@ -589,6 +622,17 @@ const v12052_es: ChangelogEntry = {
     "Dynamic Island: corregido un error de prioridad que impedía que Spotify apareciera, siempre desplazado por la sincronización en segundo plano.",
     "Comando /help del Bot de Discord: la lista de comandos ahora se genera dinámicamente desde los comandos realmente registrados (fin de comandos fantasma o ausentes), mostrando la sintaxis real de los comandos con subcomandos.",
     "Auditoría del registro de comandos slash de Discord: arquitectura confirmada como sólida, sin desviación entre el código y los comandos desplegados.",
+  ],
+};
+
+const v12070_de: ChangelogEntry = {
+  version: "v1.20.70",
+  date: "2026-09-09",
+  title: "Sicherheit: Echte Sitzungswiderrufung (Phase 1)",
+  items: [
+    "API — Das Widerrufen einer Sitzung/eines Geräts blockiert den Zugriff jetzt tatsächlich ab der nächsten Anfrage, statt bis zum natürlichen Ablauf des Tokens (bis zu 30 Tage) gültig zu bleiben. Neue Route /api/auth/device/revoke-others („Alle anderen Geräte abmelden“), und /api/signout widerruft jetzt tatsächlich die aktuelle Sitzung, statt nichts zu tun.",
+    "Sicherheit: Das Widerrufen der eigenen aktiven Sitzung erfordert jetzt eine ausdrückliche Bestätigung, um versehentliches Abmelden zu verhindern.",
+    "Fix: Der dedizierte Brute-Force-Begrenzer für Anmeldeversuche (OTP, und jetzt auch die neuen Sitzungsrouten) prüfte in Produktion nie, ob das Limit tatsächlich erreicht wurde — behoben.",
   ],
 };
 
@@ -22740,5 +22784,10 @@ CHANGELOG_BY_LANG.fr.unshift(v12069_fr);
 CHANGELOG_BY_LANG.en.unshift(v12069_en);
 CHANGELOG_BY_LANG.es.unshift(v12069_es);
 CHANGELOG_BY_LANG.de.unshift(v12069_de);
+
+CHANGELOG_BY_LANG.fr.unshift(v12070_fr);
+CHANGELOG_BY_LANG.en.unshift(v12070_en);
+CHANGELOG_BY_LANG.es.unshift(v12070_es);
+CHANGELOG_BY_LANG.de.unshift(v12070_de);
 
 export const CHANGELOG = CHANGELOG_BY_LANG.fr;

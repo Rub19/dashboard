@@ -73,9 +73,23 @@ export async function applyAuthRateLimit(context, identifier) {
   const now = Date.now();
   const policy = POLICIES.auth;
 
+  // Was previously `return await binding.limit({ key });` — the outcome's
+  // `.success` was never checked, so in production (where this binding is
+  // always present) this brute-force guard let every request through
+  // regardless of attempt count. The 5-attempts/5-min block only ever fired
+  // on the in-memory fallback below, i.e. never in prod. OTP send/verify
+  // were the only two callers when this was found; it now also protects the
+  // new session-revocation endpoints.
   const binding = context.env?.[policy.binding];
   if (binding && typeof binding.limit === "function") {
-    return await binding.limit({ key });
+    const outcome = await binding.limit({ key });
+    if (!outcome?.success) {
+      throw httpError("AUTH_RATE_LIMITED", 429, {
+        retryable: true,
+        headers: { "retry-after": String(policy.period), "x-ratelimit-policy": "auth" }
+      });
+    }
+    return Object.freeze({ policy: "auth", remaining: Number.isFinite(outcome.remaining) ? outcome.remaining : null });
   }
 
   const previous = authCounters.get(key);

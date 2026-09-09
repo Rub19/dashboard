@@ -257,7 +257,7 @@ export async function sendOtp(env, email, providedUserId, acceptLanguage = "fr",
   return { sent: true, userId: resolvedUserId, contact, expiresIn: OTP_TTL_MS, code: exposeCode ? code : undefined };
 }
 
-export async function verifyOtp(env, userId, email, code, deviceId) {
+export async function verifyOtp(env, userId, email, code, deviceId, sessionId = null) {
   const contact = safeEmail(email);
   const rawCode = String(code || "").toLowerCase().trim();
   if (!contact || !/^\d{6}$/.test(rawCode)) throw new Error("Invalid code format");
@@ -288,7 +288,10 @@ export async function verifyOtp(env, userId, email, code, deviceId) {
     metadata: { contact: contact.slice(0, 3) + "***" + contact.slice(contact.indexOf("@")) }
   });
 
-  const token = await signServiceToken(env, userId, null, 3600);
+  // The caller currently mints its own token with the same sessionId and
+  // ignores this one — kept in sync anyway so it's never a trap for a future
+  // caller that does use it.
+  const token = await signServiceToken(env, userId, sessionId, 3600);
   return { verified: true, userId, token };
 }
 

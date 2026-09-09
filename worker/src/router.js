@@ -109,6 +109,7 @@ import {
   deviceListRoute,
   deviceTrustRoute,
   deviceRevokeRoute,
+  deviceRevokeOthersRoute,
   deviceRemoveRoute,
   securityEventsRoute,
   totpSetupRoute,
@@ -252,6 +253,7 @@ export const ROUTES = Object.freeze([
   route("device.list", "/api/auth/devices", deviceListRoute, { service: "security", rateLimit: "standard" }),
   route("device.trust", "/api/auth/device/trust", deviceTrustRoute, { method: "POST", service: "security", rateLimit: "strict" }),
   route("device.revoke", "/api/auth/device/revoke", deviceRevokeRoute, { method: "POST", service: "security", rateLimit: "strict" }),
+  route("device.revoke-others", "/api/auth/device/revoke-others", deviceRevokeOthersRoute, { method: "POST", service: "security", rateLimit: "strict" }),
   route("device.remove", "/api/auth/device/remove", deviceRemoveRoute, { method: "POST", service: "security", rateLimit: "strict" }),
 
   // Security events

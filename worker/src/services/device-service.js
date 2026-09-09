@@ -1,4 +1,5 @@
 import { listDevices, getDeviceBySession, insertDevice, updateDevice, deleteDevice, insertSecurityEvent } from "./security-identity-client.js";
+import { invalidateSessionRevocationCache } from "../middleware/auth.js";
 
 const TRUST_TTL_MS = 30 * 24 * 60 * 60 * 1000;
 const DEVICE_TYPES = new Set(["desktop", "laptop", "mobile", "tablet", "unknown"]);
@@ -90,6 +91,8 @@ export async function trustDevice(env, userId, deviceId, trusted) {
 
 export async function revokeDevice(env, userId, deviceId) {
   const device = await updateDevice(env, userId, deviceId, { revokedAt: new Date().toISOString(), trusted: false });
+
+  if (device?.session_id) invalidateSessionRevocationCache(userId, device.session_id);
 
   await insertSecurityEvent(env, {
     userId,

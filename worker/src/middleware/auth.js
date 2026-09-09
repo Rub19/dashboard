@@ -1,10 +1,46 @@
 import { base64UrlBytes, decodeJwtPart } from "../utils/crypto.js";
 import { httpError } from "./errors.js";
+import { getDeviceBySession } from "../services/security-identity-client.js";
 
 const MAX_TOKEN_LENGTH = 8192;
 const CLOCK_SKEW_SECONDS = 60;
 const UUID = /^[0-9a-f]{8}-[0-9a-f]{4}-[1-8][0-9a-f]{3}-[89ab][0-9a-f]{3}-[0-9a-f]{12}$/i;
 const jwksCache = new Map();
+
+// Per-request session revocation check. JWTs are stateless — verifying the
+// signature only proves Supabase issued this token, not that the session it
+// belongs to is still meant to be trusted. `ethone_devices` doubles as the
+// app's session table (one row per session_id, see device-service.js); a
+// revoked row must block every subsequent request carrying that session_id,
+// including a *refreshed* access token, since Supabase keeps the same
+// session_id across a token refresh within one login. That's what makes
+// revocation actually immediate instead of "eventually, once the old token
+// expires." Results are cached briefly per isolate (same pattern as the JWKS
+// cache below) so this doesn't add a DB round-trip to every authenticated
+// request while still propagating a revocation within a few seconds.
+const REVOCATION_CACHE_TTL_MS = 5000;
+const revocationCache = new Map();
+
+async function isSessionRevoked(env, userId, sessionId) {
+  if (!sessionId) return false; // no session_id claim to check against (legacy/system tokens)
+  const cacheKey = `${userId}:${sessionId}`;
+  const cached = revocationCache.get(cacheKey);
+  if (cached && cached.expiresAt > Date.now()) return cached.revoked;
+
+  let revoked = false;
+  try {
+    const device = await getDeviceBySession(env, userId, sessionId);
+    revoked = Boolean(device?.revoked_at);
+  } catch {
+    // If the lookup itself fails (Supabase hiccup), fail open on this specific
+    // check rather than locking every authenticated user out of the app —
+    // JWT signature/expiry verification above already did the real gatekeeping.
+    revoked = false;
+  }
+
+  revocationCache.set(cacheKey, { revoked, expiresAt: Date.now() + REVOCATION_CACHE_TTL_MS });
+  return revoked;
+}
 
 function fetcher(env) {
   return typeof env?.__TEST_FETCH__ === "function" ? env.__TEST_FETCH__ : fetch;
@@ -159,9 +195,30 @@ export async function authenticateRequest(request, env) {
     ? await verifyHs256(input, signature, env.SUPABASE_JWT_SECRET)
     : await verifyAsymmetric(input, signature, header, env);
   if (!valid) throw httpError("AUTH_INVALID", 401);
-  return validateClaims(payload, env);
+  const auth = validateClaims(payload, env);
+  if (await isSessionRevoked(env, auth.userId, auth.sessionId)) {
+    throw httpError("SESSION_REVOKED", 401);
+  }
+  return auth;
 }
 
 export function clearJwksCache() {
   jwksCache.clear();
+}
+
+export function clearSessionRevocationCache() {
+  revocationCache.clear();
+}
+
+// Called by device-service.js right after a device/session is actually
+// revoked, so THIS isolate never serves a stale "not revoked" answer for it
+// out of the short-lived cache above — the guarantee becomes "the very next
+// request is blocked," not "blocked within REVOCATION_CACHE_TTL_MS." (A
+// revocation still take a moment to reach OTHER already-warm isolates in
+// other edge locations, same as the existing JWKS cache's propagation — but
+// a fresh isolate, and the isolate that served the revoke request itself,
+// are correct immediately.)
+export function invalidateSessionRevocationCache(userId, sessionId) {
+  if (!sessionId) return;
+  revocationCache.delete(`${userId}:${sessionId}`);
 }

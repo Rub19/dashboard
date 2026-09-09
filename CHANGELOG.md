@@ -2,6 +2,15 @@
 
 Toutes les modifications notables de ce projet seront documentées dans ce fichier.
 
+## v1.20.64 — 2026-09-09
+
+**Correctif : Discord restait "Non connecté" malgré une autorisation réussie**
+
+- **Root cause** : trouvée dans l'historique des migrations Supabase, pas dans le code applicatif. `worker/src/services/discord-oauth-client.js`'s `setDiscordDataRow()` écrit le profil Discord dans `ethone_user_data` avec `kind: 'discord'` à chaque callback OAuth réussi — et cet appel n'est PAS protégé par un try/catch (contrairement à `setOAuthToken()` juste au-dessus, qui ne fait que `console.warn` en cas d'échec). Or la contrainte `ethone_user_data_kind_check` en base ne permettait plus `'discord'` depuis le 23 août : `202608190002_ethone_user_data_discord.sql` (19 août) avait bien ajouté `'discord'` à la liste autorisée, mais `202608230001_ethone_user_data_kinds.sql` (23 août, `add macro and persona kinds`) a redéfini la contrainte avec une liste qui ne reprenait PAS `'discord'` (ni `'bill'`, ni `'plugin'`) — une régression de copier-coller entre migrations. Les migrations suivantes (`202608240001` "bills", `202608250001` "plugins") ont bien réintégré `'bill'` et `'plugin'`, mais personne n'a fait la même chose pour `'discord'`. Résultat : depuis le 23 août, `exchangeDiscordCode()` échoue avec un `check_violation` Postgres à chaque tentative — après avoir déjà écrit le token dans `user_oauth_tokens` (table différente, contrainte différente, non affectée) — et la whitelist applicative `KINDS` de `worker/src/routes/user-data.js` (`worker/src/routes/user-data.js:5`) autorise pourtant bien `'discord'`, créant un décalage silencieux entre validation applicative et contrainte DB.
+- **Correctif** : nouvelle migration `supabase/migrations/202609090001_ethone_user_data_kinds_restore_discord.sql` qui réaligne la contrainte sur exactement la liste `KINDS` du code (`space, flow, interaction, macro, persona, bill, plugin, discord`). En complément, `worker/src/services/connections-client.js`'s `listConnections()` (backend générique de la page Connexions) vérifie désormais aussi la présence d'un profil Discord dans `ethone_user_data` en secours, pour ne plus dépendre d'un seul point de défaillance si l'écriture dans `user_oauth_tokens` échouait un jour silencieusement pour une autre raison.
+- **Non fait dans cette passe** : appliquer la nouvelle migration sur la base Supabase de production — nécessite les identifiants du projet, à faire manuellement (SQL Editor Supabase, ou `supabase db push` en local avec le CLI lié au projet).
+- Validation : `worker` — `node --check src/index.js`, suite de tests complète (156/156) ; `ethone-next` — `tsc --noEmit` (0 erreur).
+
 ## v1.20.63 — 2026-09-09
 
 **Fin du nettoyage "look démo IA" sur le reste du dashboard**

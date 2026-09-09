@@ -65,14 +65,24 @@ export async function listConnections(env, userId) {
   if (!userId) return [];
 
   try {
-    const [oauthRows, credentialRows] = await Promise.all([
+    // Discord persiste son profil dans ethone_user_data (kind='discord') en plus
+    // du token dans user_oauth_tokens (voir setDiscordDataRow / discord-oauth-client.js).
+    // Si l'écriture dans user_oauth_tokens échoue silencieusement pour une raison
+    // quelconque (ex. contrainte CHECK désynchronisée entre migrations, comme ce fut
+    // le cas jusqu'au 09/09/2026 — voir 202609090001_ethone_user_data_kinds_restore_discord.sql)
+    // alors que ethone_user_data a bien été écrit, cette double lecture évite que la
+    // page Connexions affiche "Non connecté" alors que l'utilisateur a bel et bien
+    // autorisé l'app côté Discord.
+    const [oauthRows, credentialRows, discordProfileRows] = await Promise.all([
       supabaseRequest(env, `/rest/v1/user_oauth_tokens?owner_id=eq.${encodeURIComponent(userId)}&select=provider`).catch(() => []),
       supabaseRequest(env, `/rest/v1/user_provider_credentials?owner_id=eq.${encodeURIComponent(userId)}&select=provider`).catch(() => []),
+      supabaseRequest(env, `/rest/v1/ethone_user_data?user_id=eq.${encodeURIComponent(userId)}&kind=eq.discord&select=id&limit=1`).catch(() => []),
     ]);
 
     const connected = new Set();
     if (Array.isArray(oauthRows)) oauthRows.forEach((row) => connected.add(row.provider));
     if (Array.isArray(credentialRows)) credentialRows.forEach((row) => connected.add(row.provider));
+    if (Array.isArray(discordProfileRows) && discordProfileRows.length > 0) connected.add("discord");
 
     const providers = [...new Set([...PROVIDERS, ...connected])];
     return providers.map((provider) => ({

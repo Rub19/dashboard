@@ -1,3 +1,12 @@
+const v12064_fr: ChangelogEntry = {
+  version: "v1.20.64",
+  date: "2026-09-09",
+  title: "Correctif : Discord Restait « Non Connecté » Malgré une Autorisation Réussie",
+  items: [
+    "Correctif : sur la page Connexions, autoriser l'app côté Discord se terminait bien (écran de consentement validé), mais Discord restait affiché « Non connecté » — cause racine trouvée dans l'historique des migrations Supabase : une migration du 23 août avait accidentellement retiré 'discord' de la liste des types de profils autorisés en base, sans que personne ne le remarque ni ne le réintègre ensuite (les types 'bill' et 'plugin', touchés par la même régression, avaient bien été réintégrés). Chaque connexion Discord échouait donc silencieusement à s'enregistrer côté serveur. Migration corrective ajoutée, et la page Connexions vérifie désormais aussi le profil Discord enregistré en secours si le jeton OAuth lui-même ne s'est pas synchronisé.",
+  ],
+};
+
 const v12063_fr: ChangelogEntry = {
   version: "v1.20.63",
   date: "2026-09-09",
@@ -131,6 +140,15 @@ const v12052_fr: ChangelogEntry = {
     "Dynamic Island : correction d'un bug de priorité qui empêchait Spotify de jamais s'afficher, systématiquement évincé par la synchronisation d'arrière-plan.",
     "Commande /help du Bot Discord : la liste des commandes est désormais générée dynamiquement depuis les commandes réellement enregistrées (fin des commandes fantômes et des commandes manquantes), et affiche la vraie syntaxe des commandes à sous-commandes (ex. /automod status).",
     "Audit de l'enregistrement des commandes slash Discord : architecture confirmée saine, aucune dérive entre le code et les commandes déployées.",
+  ],
+};
+
+const v12064_en: ChangelogEntry = {
+  version: "v1.20.64",
+  date: "2026-09-09",
+  title: "Fix: Discord Stayed \"Not Connected\" After a Successful Authorization",
+  items: [
+    "Fix: on the Connections page, authorizing the app on Discord's side completed fine (consent screen approved), but Discord kept showing \"Not connected\" — root cause found in the Supabase migration history: an August 23rd migration had accidentally dropped 'discord' from the list of allowed profile types in the database, and nobody noticed or restored it afterwards (the 'bill' and 'plugin' types, hit by the same regression, had been restored). Every Discord connection was therefore silently failing to persist server-side. A corrective migration was added, and the Connections page now also checks the stored Discord profile as a fallback if the OAuth token itself failed to sync.",
   ],
 };
 
@@ -270,6 +288,15 @@ const v12052_en: ChangelogEntry = {
   ],
 };
 
+const v12064_es: ChangelogEntry = {
+  version: "v1.20.64",
+  date: "2026-09-09",
+  title: "Corrección: Discord Seguía en «No Conectado» Tras una Autorización Correcta",
+  items: [
+    "Corrección: en la página Conexiones, autorizar la app en Discord se completaba sin problemas (pantalla de consentimiento aceptada), pero Discord seguía mostrándose como «No conectado» — causa raíz encontrada en el historial de migraciones de Supabase: una migración del 23 de agosto había eliminado accidentalmente 'discord' de la lista de tipos de perfil permitidos en la base de datos, y nadie lo notó ni lo restauró después (los tipos 'bill' y 'plugin', afectados por la misma regresión, sí se habían restaurado). Cada conexión de Discord fallaba entonces silenciosamente al guardarse en el servidor. Se añadió una migración correctiva, y la página Conexiones ahora también revisa el perfil de Discord guardado como respaldo si el token OAuth en sí no llegó a sincronizarse.",
+  ],
+};
+
 const v12063_es: ChangelogEntry = {
   version: "v1.20.63",
   date: "2026-09-09",
@@ -403,6 +430,15 @@ const v12052_es: ChangelogEntry = {
     "Dynamic Island: corregido un error de prioridad que impedía que Spotify apareciera, siempre desplazado por la sincronización en segundo plano.",
     "Comando /help del Bot de Discord: la lista de comandos ahora se genera dinámicamente desde los comandos realmente registrados (fin de comandos fantasma o ausentes), mostrando la sintaxis real de los comandos con subcomandos.",
     "Auditoría del registro de comandos slash de Discord: arquitectura confirmada como sólida, sin desviación entre el código y los comandos desplegados.",
+  ],
+};
+
+const v12064_de: ChangelogEntry = {
+  version: "v1.20.64",
+  date: "2026-09-09",
+  title: "Fix: Discord Blieb Trotz Erfolgreicher Autorisierung auf „Nicht Verbunden“",
+  items: [
+    "Fix: Auf der Verbindungen-Seite lief die Autorisierung auf Discord-Seite problemlos durch (Zustimmungsbildschirm bestätigt), Discord zeigte aber weiterhin „Nicht verbunden“ an — die Ursache fand sich in der Supabase-Migrationshistorie: Eine Migration vom 23. August hatte 'discord' versehentlich aus der Liste erlaubter Profiltypen in der Datenbank entfernt, ohne dass es später jemand bemerkt oder wiederhergestellt hätte (die Typen 'bill' und 'plugin', von derselben Regression betroffen, waren wiederhergestellt worden). Jede Discord-Verbindung scheiterte dadurch still beim serverseitigen Speichern. Eine Korrektur-Migration wurde hinzugefügt, und die Verbindungen-Seite prüft nun zusätzlich das gespeicherte Discord-Profil als Rückfalloption, falls der OAuth-Token selbst nicht synchronisiert wurde.",
   ],
 };
 
@@ -22462,5 +22498,10 @@ CHANGELOG_BY_LANG.fr.unshift(v12063_fr);
 CHANGELOG_BY_LANG.en.unshift(v12063_en);
 CHANGELOG_BY_LANG.es.unshift(v12063_es);
 CHANGELOG_BY_LANG.de.unshift(v12063_de);
+
+CHANGELOG_BY_LANG.fr.unshift(v12064_fr);
+CHANGELOG_BY_LANG.en.unshift(v12064_en);
+CHANGELOG_BY_LANG.es.unshift(v12064_es);
+CHANGELOG_BY_LANG.de.unshift(v12064_de);
 
 export const CHANGELOG = CHANGELOG_BY_LANG.fr;

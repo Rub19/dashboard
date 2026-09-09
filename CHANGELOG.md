@@ -2,6 +2,21 @@
 
 Toutes les modifications notables de ce projet seront documentées dans ce fichier.
 
+## v1.20.73 — 2026-09-10
+
+**Security Center : vraies sessions, vraie double authentification (Phase 4 — Session & Account Security 2.0)**
+
+Cinquième lot du chantier, exécuté par un agent dédié, vérifié en local avant expédition. Construit entièrement sur les fondations déjà réelles et testées des Phases 0-3 (révocation de session appliquée par `middleware/auth.js`, TOTP fonctionnel, isolation cache/realtime).
+
+- **`lib/hooks/useSecurity.ts` étendu** : `decodeSessionIdFromAccessToken()` extrait la revendication `session_id` du jeton d'accès Supabase (le même que `middleware/auth.js`'s vérifie côté serveur) pour marquer chaque appareil de la liste comme « session actuelle » ou non — sans bibliothèque de décodage JWT ajoutée, même motif base64url déjà utilisé pour les tampons de clés d'accès. `revokeDevice()` envoie désormais `confirmCurrent` (contrat 409 `CONFIRMATION_REQUIRED` de la Phase 1) ; nouveau `revokeOtherDevices()` câblé sur `POST /api/auth/device/revoke-others` (Phase 1, jusqu'ici jamais utilisé côté client) ; nouveaux `totpSetup`/`totpVerify`/`totpDisable` câblés sur les routes TOTP réparées en Phase 3.
+- **`components/settings/SessionsManager.tsx`** (nouveau) : vraie liste de sessions (appareil, navigateur, dernière activité, badge « session actuelle »), boutons Déconnecter/Révoquer réels avec confirmation, action « Déconnecter tous les autres appareils » dans une zone de danger, flux de sécurité récent. Remplace les **deux lignes fictives codées en dur** (« iPhone 15 Pro · Safari Mobile », bouton « Déconnecter » sans gestionnaire `onClick`) précédemment affichées dans `PrivacySecuritySettings.tsx`.
+- **`components/settings/SecurityAuthManager.tsx`** (nouveau) : vrai flux TOTP (configuration avec secret + codes de secours copiables, vérification par code à 6 chiffres, désactivation — pas d'image QR, aucune librairie QR dans les dépendances du projet, secret affiché en texte copiable à la place) + gestion des clés d'accès portée depuis l'ancienne page `/security`. Remplace le bouton grisé « Bientôt » de `SettingsContent.tsx`.
+- **Doublon corrigé** : les sections `security` et `privacy` montaient auparavant le même composant `PrivacySecuritySettings`. `security` monte désormais `SecurityAuthManager`, une nouvelle section `sessions` (l'identifiant était déjà réservé dans `SettingsNavigation.tsx` sans rien derrière) monte `SessionsManager`, `privacy` ne garde que les vrais réglages de confidentialité.
+- **`/security` → redirection** : cette page séparée (jamais liée nulle part ailleurs dans l'app — la palette de commandes pointait déjà vers `/settings/security`) redirige désormais vers `/settings/security`, qui devient l'implémentation unique. Plus de risque de divergence entre deux surfaces de sécurité parallèles.
+- Nouveau test : `lib/hooks/useSecurity.test.ts` (8 tests — décodage JWT présent/absent/malformé, détection de session actuelle, charge utile `confirmCurrent`, `revokeOtherDevices`, les 3 appels TOTP).
+- Validation : `tsc --noEmit` (0 erreur), `npm run build`, `npm run lint` (0 erreur, 1161 warnings pré-existants), `npm run test:unit` (**14/14 suites, 69/69 tests** — 13→14 suites, 61→69 tests). Vérification visuelle via navigateur : rendu réel confirmé (aucune chaîne fixe), thème clair et mobile (375×812) vérifiés, redirection `/security` → `/settings/security` confirmée.
+- **Non traité dans cette passe (signalé par l'agent, hors périmètre)** : pas de route `GET` de statut TOTP côté Worker (l'interface le déduit d'un 409 `TOTP_ALREADY_ENABLED` au lieu d'un état préalable — fonctionnel mais un aller-retour de moins serait plus propre) ; pas de QR code (texte copiable à la place, aucune régression fonctionnelle) ; l'allowlist CORS du Worker n'inclut pas `localhost:3000`, empêchant un test de bout en bout complet en local contre le Worker réel depuis le serveur de dev (config Phase 0-3, hors périmètre de cette phase) ; nouvelles chaînes d'interface utilisant le motif de repli `i18n(clé, texte français)` déjà établi plutôt que d'ajouter des entrées dans les 5 dictionnaires de langue — à revoir si une passe i18n complète est voulue plus tard.
+
 ## v1.20.72 — 2026-09-10
 
 **Sécurité : TOTP (2FA) et passkeys réparés, CORS durci, cookies (Phase 3 — Session & Account Security 2.0)**

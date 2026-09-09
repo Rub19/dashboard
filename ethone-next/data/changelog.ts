@@ -1,3 +1,14 @@
+const v12073_fr: ChangelogEntry = {
+  version: "v1.20.73",
+  date: "2026-09-10",
+  title: "Security Center : Vraies Sessions, Vraie Double Authentification (Phase 4)",
+  items: [
+    "Réglages → Sécurité affiche désormais tes vraies sessions actives (appareil, navigateur, dernière activité, session actuelle clairement indiquée) au lieu de deux lignes fictives codées en dur (« iPhone 15 Pro · Safari Mobile ») dont le bouton « Déconnecter » ne faisait rien. Déconnecter une session ou un appareil fonctionne réellement désormais, avec confirmation obligatoire avant de te déconnecter toi-même par erreur, plus un bouton « Déconnecter tous les autres appareils ».",
+    "La double authentification (TOTP), réparée côté serveur la semaine dernière, a maintenant une vraie interface : configuration avec code secret et codes de secours, vérification par code à 6 chiffres, désactivation — au lieu du bouton grisé « Bientôt » qui ne menait nulle part.",
+    "La page /security (doublon jamais utilisé ailleurs dans l'app) redirige désormais vers Réglages → Sécurité, qui devient l'unique version — plus de risque que les deux affichent des informations différentes.",
+  ],
+};
+
 const v12072_fr: ChangelogEntry = {
   version: "v1.20.72",
   date: "2026-09-10",
@@ -227,6 +238,17 @@ const v12052_fr: ChangelogEntry = {
     "Dynamic Island : correction d'un bug de priorité qui empêchait Spotify de jamais s'afficher, systématiquement évincé par la synchronisation d'arrière-plan.",
     "Commande /help du Bot Discord : la liste des commandes est désormais générée dynamiquement depuis les commandes réellement enregistrées (fin des commandes fantômes et des commandes manquantes), et affiche la vraie syntaxe des commandes à sous-commandes (ex. /automod status).",
     "Audit de l'enregistrement des commandes slash Discord : architecture confirmée saine, aucune dérive entre le code et les commandes déployées.",
+  ],
+};
+
+const v12073_en: ChangelogEntry = {
+  version: "v1.20.73",
+  date: "2026-09-10",
+  title: "Security Center: Real Sessions, Real Two-Factor Auth (Phase 4)",
+  items: [
+    "Settings → Security now shows your real active sessions (device, browser, last activity, current session clearly marked) instead of two fake hardcoded rows (\"iPhone 15 Pro · Safari Mobile\") whose \"Sign out\" button did nothing. Signing out a session or device now actually works, with a required confirmation before you can accidentally sign yourself out, plus a \"sign out all other devices\" action.",
+    "Two-factor authentication (TOTP), fixed server-side last week, now has a real interface: setup with a secret and backup codes, verification via a 6-digit code, and disable — instead of the greyed-out \"Coming soon\" toggle that led nowhere.",
+    "The /security page (a duplicate never linked from anywhere else in the app) now redirects to Settings → Security, which becomes the single implementation — no more risk of the two showing different information.",
   ],
 };
 
@@ -462,6 +484,17 @@ const v12052_en: ChangelogEntry = {
   ],
 };
 
+const v12073_es: ChangelogEntry = {
+  version: "v1.20.73",
+  date: "2026-09-10",
+  title: "Centro de Seguridad: Sesiones Reales, Autenticación en Dos Pasos Real (Fase 4)",
+  items: [
+    "Ajustes → Seguridad ahora muestra tus sesiones activas reales (dispositivo, navegador, última actividad, sesión actual claramente marcada) en lugar de dos filas ficticias fijas (\"iPhone 15 Pro · Safari Mobile\") cuyo botón \"Cerrar sesión\" no hacía nada. Cerrar una sesión o dispositivo ahora funciona de verdad, con una confirmación obligatoria antes de poder cerrar tu propia sesión por accidente, más una acción \"Cerrar sesión en todos los demás dispositivos\".",
+    "La autenticación en dos pasos (TOTP), corregida en el servidor la semana pasada, ahora tiene una interfaz real: configuración con un secreto y códigos de respaldo, verificación mediante un código de 6 dígitos y desactivación — en lugar del interruptor gris \"Próximamente\" que no llevaba a ningún sitio.",
+    "La página /security (un duplicado que nada más en la app enlazaba) ahora redirige a Ajustes → Seguridad, que pasa a ser la única implementación — sin riesgo de que ambas muestren información distinta.",
+  ],
+};
+
 const v12072_es: ChangelogEntry = {
   version: "v1.20.72",
   date: "2026-09-10",
@@ -691,6 +724,17 @@ const v12052_es: ChangelogEntry = {
     "Dynamic Island: corregido un error de prioridad que impedía que Spotify apareciera, siempre desplazado por la sincronización en segundo plano.",
     "Comando /help del Bot de Discord: la lista de comandos ahora se genera dinámicamente desde los comandos realmente registrados (fin de comandos fantasma o ausentes), mostrando la sintaxis real de los comandos con subcomandos.",
     "Auditoría del registro de comandos slash de Discord: arquitectura confirmada como sólida, sin desviación entre el código y los comandos desplegados.",
+  ],
+};
+
+const v12073_de: ChangelogEntry = {
+  version: "v1.20.73",
+  date: "2026-09-10",
+  title: "Sicherheitszentrale: Echte Sitzungen, Echte Zwei-Faktor-Authentifizierung (Phase 4)",
+  items: [
+    "Einstellungen → Sicherheit zeigt jetzt deine echten aktiven Sitzungen (Gerät, Browser, letzte Aktivität, aktuelle Sitzung deutlich markiert) statt zweier fest codierter Fantasiezeilen („iPhone 15 Pro · Safari Mobile\"), deren „Abmelden“-Button nichts tat. Eine Sitzung oder ein Gerät abzumelden funktioniert jetzt tatsächlich, mit einer erforderlichen Bestätigung, bevor du dich versehentlich selbst abmeldest, plus einer Aktion „Alle anderen Geräte abmelden“.",
+    "Die letzte Woche serverseitig reparierte Zwei-Faktor-Authentifizierung (TOTP) hat jetzt eine echte Oberfläche: Einrichtung mit Geheimnis und Backup-Codes, Überprüfung per 6-stelligem Code, Deaktivierung — statt des ausgegrauten „Demnächst“-Schalters, der ins Leere führte.",
+    "Die Seite /security (ein Duplikat, das sonst nirgends in der App verlinkt war) leitet jetzt zu Einstellungen → Sicherheit weiter, die zur einzigen Implementierung wird — kein Risiko mehr, dass beide unterschiedliche Informationen anzeigen.",
   ],
 };
 
@@ -22891,5 +22935,10 @@ CHANGELOG_BY_LANG.fr.unshift(v12072_fr);
 CHANGELOG_BY_LANG.en.unshift(v12072_en);
 CHANGELOG_BY_LANG.es.unshift(v12072_es);
 CHANGELOG_BY_LANG.de.unshift(v12072_de);
+
+CHANGELOG_BY_LANG.fr.unshift(v12073_fr);
+CHANGELOG_BY_LANG.en.unshift(v12073_en);
+CHANGELOG_BY_LANG.es.unshift(v12073_es);
+CHANGELOG_BY_LANG.de.unshift(v12073_de);
 
 export const CHANGELOG = CHANGELOG_BY_LANG.fr;

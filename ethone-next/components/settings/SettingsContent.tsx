@@ -39,7 +39,6 @@ const IntegrationsSettings = dynamic(() => import("@/components/IntegrationsSett
 });
 import SettingsSection from "./SettingsSection";
 import SettingField, { type FieldDef } from "./SettingField";
-import { SwitchControl } from "./SettingControls";
 import { useSettingsForm } from "./SettingsFormContext";
 import SettingsErrorBoundary from "./primitives/SettingsErrorBoundary";
 import { useModifiedCount } from "./useModifiedCount";
@@ -56,6 +55,8 @@ import DockSettings from "./DockSettings";
 import ShortcutsSettings from "./ShortcutsSettings";
 import PerformanceSettings from "./PerformanceSettings";
 import PrivacySecuritySettings from "./PrivacySecuritySettings";
+import SecurityAuthManager from "./SecurityAuthManager";
+import SessionsManager from "./SessionsManager";
 import { CATEGORY_ORDER, sectionCategory } from "./SettingsNavigation";
 
 const THEMES = [
@@ -1028,22 +1029,6 @@ export default function SettingsContent({
   const securityFields: FieldDef[] = useMemo(
     () => [
       { key: "securityAlerts", label: i18n("securityAlerts"), type: "toggle", keywords: ["sécurité", "alertes"] },
-      {
-        key: "otpRequired",
-        label: i18n("otpRequired"),
-        type: "custom",
-        defaultValue: false,
-        description: i18n("otpRequiredComingSoon", "Bientôt disponible — l'authentification à deux facteurs n'est pas encore prise en charge."),
-        render: () => (
-          <div className="flex items-center gap-2">
-            <SwitchControl checked={false} onChange={() => {}} disabled aria-label={i18n("otpRequired")} />
-            <span className="rounded-full border border-[var(--panel-border)] bg-[var(--surface-raised)] px-2 py-0.5 text-[10px] font-semibold uppercase tracking-wide text-[var(--text-muted)]">
-              {i18n("comingSoon", "Bientôt")}
-            </span>
-          </div>
-        ),
-        keywords: ["sécurité", "otp", "2fa"],
-      },
     ],
     [i18n]
   );
@@ -1321,9 +1306,18 @@ export default function SettingsContent({
         label: i18n("security"),
         icon: "shield",
         category: "security",
-        keywords: ["sécurité", "2fa", "sessions", "mot de passe"],
+        keywords: ["sécurité", "2fa", "totp", "passkey", "mot de passe"],
         fields: securityFields,
-        children: <PrivacySecuritySettings />,
+        children: <SecurityAuthManager />,
+      },
+      {
+        id: "sessions",
+        label: i18n("sessionsTitle", "Sessions actives"),
+        icon: "monitor",
+        category: "security",
+        keywords: ["sessions", "appareils", "devices", "déconnecter", "révoquer"],
+        fields: [],
+        children: <SessionsManager />,
       },
       {
         id: "sync",

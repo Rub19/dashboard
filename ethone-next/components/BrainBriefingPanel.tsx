@@ -10,6 +10,7 @@ import { useSettings } from "@/components/SettingsProvider";
 import { useWorker } from "@/lib/hooks/useWorker";
 import { useFocus } from "@/components/FocusProvider";
 import { Icon } from "@/lib/icons";
+import { cn } from "@/lib/utils";
 
 type Section = "weather" | "agenda" | "tasks" | "mail" | "notifications" | "activity" | "nowPlaying";
 
@@ -130,15 +131,15 @@ const BrainBriefingPanel = memo(function BrainBriefingPanel({ _className = "", _
     setSynthesisDismissed(true);
   }, []);
 
-  const sections: { id: Section; label: string; icon: string; value: React.ReactNode }[] = useMemo(
+  const sections: { id: Section; label: string; icon: string; value: React.ReactNode; highlight: boolean }[] = useMemo(
     () => [
-      { id: "weather", label: i18n("weather"), icon: "cloud-sun", value: weatherLoading ? "-" : `${weather?.temperature ?? "-"}° — ${weather?.description ?? ""}` },
-      { id: "agenda", label: i18n("todayEvents"), icon: "calendar", value: todayEvents },
-      { id: "tasks", label: i18n("openTasks"), icon: "tasks", value: openTasks },
-      { id: "mail", label: i18n("unread"), icon: "mail", value: unreadCount || 0 },
-      { id: "notifications", label: i18n("important"), icon: "bell", value: importantCount || 0 },
-      { id: "activity", label: i18n("activity"), icon: "activity", value: recentActivity },
-      { id: "nowPlaying", label: i18n("nowPlaying"), icon: "music", value: nowPlaying?.title || i18n("none") },
+      { id: "weather", label: i18n("weather"), icon: "cloud-sun", value: weatherLoading ? "-" : `${weather?.temperature ?? "-"}° — ${weather?.description ?? ""}`, highlight: false },
+      { id: "agenda", label: i18n("todayEvents"), icon: "calendar", value: todayEvents, highlight: todayEvents > 0 },
+      { id: "tasks", label: i18n("openTasks"), icon: "tasks", value: openTasks, highlight: openTasks > 0 },
+      { id: "mail", label: i18n("unread"), icon: "mail", value: unreadCount || 0, highlight: (unreadCount || 0) > 0 },
+      { id: "notifications", label: i18n("important"), icon: "bell", value: importantCount || 0, highlight: (importantCount || 0) > 0 },
+      { id: "activity", label: i18n("activity"), icon: "activity", value: recentActivity, highlight: false },
+      { id: "nowPlaying", label: i18n("nowPlaying"), icon: "music", value: nowPlaying?.title || i18n("none"), highlight: Boolean(nowPlaying?.title) },
     ],
     [i18n, weatherLoading, weather, todayEvents, openTasks, unreadCount, importantCount, recentActivity, nowPlaying?.title]
   );
@@ -208,13 +209,25 @@ const BrainBriefingPanel = memo(function BrainBriefingPanel({ _className = "", _
           .map((s) => (
             <div
               key={s.id}
-              className="flex flex-col justify-between rounded-xl border border-[var(--text-primary)]/[0.06] bg-[var(--text-primary)]/[0.02] p-2.5 transition-colors hover:border-[var(--text-primary)]/10"
+              className={cn(
+                "flex flex-col justify-between rounded-xl border p-2.5 transition-colors",
+                s.highlight
+                  ? "border-[var(--accent-primary)]/25 bg-[var(--accent-primary)]/[0.06] hover:border-[var(--accent-primary)]/40"
+                  : "border-[var(--text-primary)]/[0.06] bg-[var(--text-primary)]/[0.02] hover:border-[var(--text-primary)]/10"
+              )}
             >
               <div className="flex items-center gap-1.5">
-                <Icon name={s.icon} className="h-3.5 w-3.5 text-[var(--accent)]" />
+                <Icon name={s.icon} className={cn("h-3.5 w-3.5", s.highlight ? "text-[var(--accent-primary)]" : "text-[var(--text-muted)]")} />
                 <span className="text-xs text-[var(--text-muted)] truncate">{s.label}</span>
               </div>
-              <p className="mt-1 truncate text-base font-bold text-[var(--text-primary)]">{s.value}</p>
+              <p
+                className={cn(
+                  "mt-1 truncate font-bold",
+                  s.highlight ? "text-lg text-[var(--text-primary)]" : "text-sm text-[var(--text-muted)]"
+                )}
+              >
+                {s.value}
+              </p>
             </div>
           ))}
       </div>

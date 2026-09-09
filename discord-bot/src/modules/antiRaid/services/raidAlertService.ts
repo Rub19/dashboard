@@ -3,6 +3,8 @@ import { RaidAction, ThreatLevel } from '../types/antiRaid.js';
 import { raidConfigService } from './raidConfigService.js';
 import { logService } from '../../logs/services/logService.js';
 import { logger } from '../../../utils/logger.js';
+import { guildConfigService } from '../../../services/guildConfigService.js';
+import { formatString, getTranslation } from '../../../utils/i18n.js';
 
 interface AlertParams {
   guild: Guild;
@@ -29,6 +31,7 @@ class RaidAlertService {
     const { guild, threatLevel, riskScore, title, reason, actionsTaken, signals, incidentId } =
       params;
     const config = raidConfigService.getConfig(guild.id);
+    const t = getTranslation(guildConfigService.getConfig(guild.id).language);
 
     // Déterminer la couleur selon le Threat Level
     let embedColor: number = Colors.Yellow;
@@ -36,24 +39,22 @@ class RaidAlertService {
     else if (threatLevel === 'DANGEROUS') embedColor = Colors.Red;
     else if (threatLevel === 'ELEVATED') embedColor = Colors.Orange;
 
-    const actionList = actionsTaken.map((a) => `✓ \`${a}\``).join('\n') || '✓ `LOG_EVENT`';
-    const signalsList = signals.map((s) => `• ${s}`).join('\n') || '• Aucune anomalie additionnelle';
+    const actionList = actionsTaken.map((a) => `✓ \`${a}\``).join('\n') || t.antiraid_alert_actions_none;
+    const signalsList = signals.map((s) => `• ${s}`).join('\n') || t.antiraid_alert_signals_none;
 
     const embed = new EmbedBuilder()
       .setTitle(`🛡️ ${title}`)
       .setColor(embedColor)
-      .setDescription(
-        `**Niveau de menace :** \`${threatLevel}\`\n**Risk Score :** \`${riskScore}/100\``
-      )
+      .setDescription(formatString(t.antiraid_alert_desc, { threatLevel, riskScore }))
       .addFields(
-        { name: '🚨 Cause du déclenchement', value: reason, inline: false },
-        { name: '📊 Signaux suspects détectés', value: signalsList, inline: false },
-        { name: '⚡ Actions de protection exécutées', value: actionList, inline: false }
+        { name: t.antiraid_alert_field_reason, value: reason, inline: false },
+        { name: t.antiraid_alert_field_signals, value: signalsList, inline: false },
+        { name: t.antiraid_alert_field_actions, value: actionList, inline: false }
       )
       .setTimestamp();
 
     if (incidentId) {
-      embed.setFooter({ text: `Incident ID : ${incidentId} • ETHONE Anti-Raid 2.0` });
+      embed.setFooter({ text: formatString(t.antiraid_alert_footer, { incidentId }) });
     }
 
     // 1. Envoyer dans le salon d'alerte configuré
@@ -65,7 +66,7 @@ class RaidAlertService {
             ? `<@&${config.alerts.mentionRoleId}> `
             : '';
           await (channel as TextChannel).send({
-            content: mention ? `${mention}🚨 **Alerte Sécurité Anti-Raid**` : undefined,
+            content: mention ? `${mention}${t.antiraid_alert_ping}` : undefined,
             embeds: [embed],
           });
         } catch (err) {

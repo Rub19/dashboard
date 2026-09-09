@@ -102,7 +102,7 @@ export default function UserProfileDropdown({ dataTestId = "user-profile-trigger
     return CHANGELOG_BY_LANG[settings.language] || CHANGELOG;
   }, [settings.language]);
 
-  const VERSION_LABEL = changelog[0]?.version || "v1.20.64";
+  const VERSION_LABEL = changelog[0]?.version || "v1.20.65";
 
   const menuItems = [
     {
@@ -212,8 +212,14 @@ export default function UserProfileDropdown({ dataTestId = "user-profile-trigger
           </button>
         </PopoverTrigger>
 
-        {/* User Popover Panel (100% FULL OPAQUE SOLID DARK) */}
-        <PopoverContent className="w-[340px] max-w-[calc(100vw-2rem)] overflow-hidden rounded-2xl border border-[var(--panel-border)] bg-[#0a0b0e] p-3.5 shadow-2xl z-[var(--z-dropdown)]">
+        {/* User Popover Panel — themed glass panel, matching every other popover
+            in the app (LanguageSwitcher, etc.). Was previously a hardcoded
+            bg-[#0a0b0e], which never changed with the active theme (stayed
+            near-black even on light themes like Arctic) and looked visibly
+            inconsistent next to other dropdowns using the real --panel-bg
+            token. Kept the opacity high (/95, same as LanguageSwitcher) so
+            it reads as solid, just themed instead of frozen black. */}
+        <PopoverContent className="w-[340px] max-w-[calc(100vw-2rem)] overflow-hidden rounded-2xl border border-[var(--panel-border)] bg-[var(--panel-bg)]/95 backdrop-blur-2xl p-3.5 shadow-2xl z-[var(--z-dropdown)]">
           <div className="flex w-full flex-col gap-3 select-none">
             {/* User Header Profile */}
             <div className="flex items-center gap-3 rounded-xl border border-[var(--panel-border)]/70 bg-[#121319] p-2.5 shadow-xs">

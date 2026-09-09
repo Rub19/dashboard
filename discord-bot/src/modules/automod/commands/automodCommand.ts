@@ -96,9 +96,37 @@ export const automodCommand: Command = {
       const avgRisk = incidents.length > 0 ? Math.round(recentRisk / Math.min(10, incidents.length)) : 10;
       const riskLevel = AutoModRiskEngine.getRiskLevel(avgRisk);
 
+      // Les détecteurs ont chacun leur propre flag `enabled`, indépendant de l'interrupteur
+      // général `config.enabled`. Un détecteur "on" alors que le moteur est "off" est une
+      // config valide (il s'activerait si on rallumait le moteur), mais afficher un simple
+      // 🟢 dans ce cas donne l'illusion trompeuse que la protection est active. On distingue
+      // donc "actif" (🟢, moteur ON) de "configuré mais non appliqué" (⚫, moteur OFF) tout
+      // en gardant ⚪ pour "désactivé" dans les deux cas — l'info de config individuelle n'est
+      // jamais perdue.
+      const detectorEntries: Array<[string, boolean]> = [
+        [t.automod_detector_spam, config.spam.enabled],
+        [t.automod_detector_flood, config.flood.enabled],
+        [t.automod_detector_links, config.links.enabled],
+        [t.automod_detector_invites, config.invites.enabled],
+        [t.automod_detector_mentions, config.mentions.enabled],
+        [t.automod_detector_ghostping, config.ghostPing.enabled],
+        [t.automod_detector_caps, config.caps.enabled],
+        [t.automod_detector_keywords, config.keywords.enabled],
+        [t.automod_detector_regex, config.regex.enabled],
+        [t.automod_detector_profiles, config.profiles.enabled],
+      ];
+      const renderDetector = ([name, on]: [string, boolean]) => {
+        if (!on) return `⚪ ${name}`;
+        return config.enabled ? `🟢 ${name}` : `⚫ ${name}`;
+      };
+      const half = Math.ceil(detectorEntries.length / 2);
+      const detectorsCol1 = detectorEntries.slice(0, half).map(renderDetector).join('\n');
+      const detectorsCol2 = detectorEntries.slice(half).map(renderDetector).join('\n');
+
       const embed = new EmbedBuilder()
         .setTitle(formatString(t.automod_status_title, { guildName: ctx.guild.name }))
         .setColor(config.enabled ? 0x10b981 : 0x6b7280)
+        .setThumbnail(ctx.guild.iconURL({ size: 128 }) ?? null)
         .addFields(
           {
             name: t.automod_status_field_protection,
@@ -121,31 +149,32 @@ export const automodCommand: Command = {
             inline: true,
           },
           {
-            name: t.automod_status_field_detectors,
-            value: [
-              [t.automod_detector_spam, config.spam.enabled],
-              [t.automod_detector_flood, config.flood.enabled],
-              [t.automod_detector_links, config.links.enabled],
-              [t.automod_detector_invites, config.invites.enabled],
-              [t.automod_detector_mentions, config.mentions.enabled],
-              [t.automod_detector_ghostping, config.ghostPing.enabled],
-              [t.automod_detector_caps, config.caps.enabled],
-              [t.automod_detector_keywords, config.keywords.enabled],
-              [t.automod_detector_regex, config.regex.enabled],
-              [t.automod_detector_profiles, config.profiles.enabled],
-            ]
-              .map(([name, on]) => `${on ? '🟢' : '⚪'} ${name}`)
-              .join('\n'),
-            inline: true,
-          },
-          {
             name: t.automod_status_field_strikes,
             value: formatString(t.automod_status_strikes_value, { count: config.strikes.progressiveSteps.length }),
             inline: true,
+          },
+          {
+            name: '​',
+            value: '​',
+            inline: true,
+          },
+          {
+            name: t.automod_status_field_detectors,
+            value: detectorsCol1,
+            inline: true,
+          },
+          {
+            name: '​',
+            value: detectorsCol2,
+            inline: true,
           }
-        )
-        .setFooter({ text: t.automod_status_footer })
-        .setTimestamp();
+        );
+
+      if (!config.enabled) {
+        embed.setDescription(t.automod_status_disabled_notice);
+      }
+
+      embed.setFooter({ text: t.automod_status_footer }).setTimestamp();
 
       await ctx.reply({ embeds: [embed] });
       return;

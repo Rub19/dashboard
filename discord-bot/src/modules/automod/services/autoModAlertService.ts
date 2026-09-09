@@ -2,6 +2,8 @@ import { Colors, EmbedBuilder, Guild, TextChannel } from 'discord.js';
 import { AutoModAction, AutoModConfig, AutoModRiskLevel } from '../types/autoMod.js';
 import { logService } from '../../logs/services/logService.js';
 import { logger } from '../../../utils/logger.js';
+import { guildConfigService } from '../../../services/guildConfigService.js';
+import { formatString, getTranslation } from '../../../utils/i18n.js';
 
 interface AlertParams {
   guild: Guild;
@@ -49,22 +51,24 @@ export class AutoModAlertService {
     else if (riskLevel === 'HIGH') color = Colors.Red;
     else if (riskLevel === 'MEDIUM') color = Colors.Orange;
 
+    const t = getTranslation(guildConfigService.getConfig(guild.id).language);
+
     const embed = new EmbedBuilder()
-      .setTitle(`🤖 Détection AutoMod 2.0 — ${ruleOrDetector}`)
+      .setTitle(formatString(t.automod_alert_title, { rule: ruleOrDetector }))
       .setColor(color)
       .addFields(
-        { name: '👤 Utilisateur', value: `**${userTag}** (<@${userId}>)`, inline: true },
-        { name: '💬 Salon', value: `<#${channelId}>`, inline: true },
-        { name: '📊 Risk Score', value: `\`${riskScore}/100\` (${riskLevel})`, inline: true },
-        { name: '⚡ Actions Appliquées', value: actionsTaken.map((a) => `\`${a}\``).join(', ') || '`LOG`', inline: true },
-        { name: '⚠️ Strikes Actifs', value: `\`${strikesCount}\``, inline: true }
+        { name: t.automod_alert_field_user, value: `**${userTag}** (<@${userId}>)`, inline: true },
+        { name: t.automod_alert_field_channel, value: `<#${channelId}>`, inline: true },
+        { name: t.automod_alert_field_risk, value: `\`${riskScore}/100\` (${riskLevel})`, inline: true },
+        { name: t.automod_alert_field_actions, value: actionsTaken.map((a) => `\`${a}\``).join(', ') || t.automod_alert_action_none, inline: true },
+        { name: t.automod_alert_field_strikes, value: `\`${strikesCount}\``, inline: true }
       )
-      .setFooter({ text: 'ETHONE Smart Moderation Engine' })
+      .setFooter({ text: t.automod_alert_footer })
       .setTimestamp();
 
     if (content) {
       const preview = content.length > 250 ? `${content.slice(0, 250)}...` : content;
-      embed.addFields({ name: '📝 Aperçu du message', value: `\`\`\`${preview}\`\`\``, inline: false });
+      embed.addFields({ name: t.automod_alert_field_preview, value: `\`\`\`${preview}\`\`\``, inline: false });
     }
 
     // 1. Envoi dans le salon d'alerte configuré

@@ -11,6 +11,7 @@ import { xpWriteBuffer } from '../storage/xpWriteBuffer.js';
 import { LevelCalculator } from './levelCalculator.js';
 import { logService } from '../../logs/services/logService.js';
 import { guildConfigService } from '../../../services/guildConfigService.js';
+import { formatString, getTranslation } from '../../../utils/i18n.js';
 import { logger } from '../../../utils/logger.js';
 
 class LevelingService {
@@ -175,6 +176,7 @@ class LevelingService {
 
     // 2. Formatage du message de notification
     if (config.levelUpChannelType !== 'disabled') {
+      const t = getTranslation(guildConfigService.getConfig(guild.id).language);
       let content = config.levelUpMessage
         .replace(/{user}/g, `<@${member.id}>`)
         .replace(/{username}/g, member.user.username)
@@ -183,12 +185,12 @@ class LevelingService {
         .replace(/{server}/g, guild.name);
 
       if (newlyGrantedRoles.length > 0) {
-        content += `\n🎁 **Rôle(s) débloqué(s) :** ${newlyGrantedRoles.map((r) => `\`@${r}\``).join(', ')}`;
+        content += `\n${formatString(t.leveling_levelup_roles_unlocked, { roles: newlyGrantedRoles.map((r) => `\`@${r}\``).join(', ') })}`;
       }
 
       const embed = new EmbedBuilder()
         .setColor('#F59E0B')
-        .setTitle('⭐ Progression de Niveau !')
+        .setTitle(t.leveling_levelup_title)
         .setDescription(content)
         .setThumbnail(member.user.displayAvatarURL());
 

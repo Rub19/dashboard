@@ -110,6 +110,7 @@ export function applyAccent(root: HTMLElement, accent: string): void {
   const contrast = getContrastColor(safeAccent);
 
   root.style.setProperty("--accent", safeAccent);
+  root.style.setProperty("--accent-color", safeAccent);
   root.style.setProperty("--accent-primary", safeAccent);
   root.style.setProperty("--accent-soft", soft);
   root.style.setProperty("--glow-color", glow);
@@ -178,6 +179,18 @@ export function applyTheme(themeId: string, options?: ApplyThemeOptions): void {
   root.style.setProperty("--text-inverse", def.textInverse);
 
   // Default accent from theme
+  // `--accent` is a legacy variable a handful of components still read via a
+  // `var(--accent-color, var(--accent, #10b981))` fallback chain (VolumeSlider,
+  // MediaProgress, ProfileDropdown, HeroBriefingCard, FocusTimerRing,
+  // CalendarGrid, CalendarInvoicesPage, NotesPage, ProductivityCards). Only
+  // applyAccent() (the manual custom-accent-color picker) used to keep it in
+  // sync — a plain theme switch here updated --accent-primary but left --accent
+  // frozen at whatever it was last set to (or its globals.css default), so
+  // those 9 components kept showing a stale/old accent (or the hardcoded
+  // #10b981 emerald fallback) after switching themes, while everything else
+  // correctly followed the new theme's color.
+  root.style.setProperty("--accent", def.accentPrimary);
+  root.style.setProperty("--accent-color", def.accentPrimary);
   root.style.setProperty("--accent-primary", def.accentPrimary);
   root.style.setProperty("--accent-secondary", def.accentSecondary);
   root.style.setProperty("--accent-contrast", def.accentContrast);

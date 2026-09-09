@@ -48,14 +48,11 @@ export const SOUNDSCAPE_PRESETS = [
 export default function SoundscapeMixer() {
   const i18n = useI18n();
   const { settings, update } = useSettings();
-  const { ambientSound, playAmbient, stopAmbient, setAmbientVolume } = useSound();
+  const { ambientLayers, playAmbientLayer, stopAmbientLayer, stopAmbient, setAmbientLayerVolume } = useSound();
 
-  const [activeLayers, setActiveLayers] = useState<Record<string, number>>(() => {
-    if (ambientSound && ambientSound !== "none") {
-      return { [ambientSound]: 75 };
-    }
-    return {};
-  });
+  // The mixer's own source of truth is the engine's live layer map, so the UI can
+  // never show a layer as "active" while no audio is actually playing for it.
+  const activeLayers = ambientLayers;
 
   const [activeTab, setActiveTab] = useState<"all" | "weather" | "nature" | "ambient" | "focus">("all");
 
@@ -66,57 +63,28 @@ export default function SoundscapeMixer() {
 
   const toggleLayer = useCallback(
     (id: SoundAmbient) => {
-      setActiveLayers((prev) => {
-        const next = { ...prev };
-        if (next[id] !== undefined) {
-          delete next[id];
-          const remainingKeys = Object.keys(next) as SoundAmbient[];
-          if (remainingKeys.length === 0) {
-            stopAmbient();
-            update({ ambientSound: "none" });
-          } else {
-            playAmbient(remainingKeys[0]);
-            update({ ambientSound: remainingKeys[0] });
-          }
-        } else {
-          next[id] = 70;
-          playAmbient(id, 70);
-          update({ ambientSound: id });
-        }
-        return next;
-      });
+      if (activeLayers[id] !== undefined) {
+        stopAmbientLayer(id);
+      } else {
+        playAmbientLayer(id, 70);
+      }
     },
-    [playAmbient, stopAmbient, update]
+    [activeLayers, playAmbientLayer, stopAmbientLayer]
   );
 
   const setLayerVolume = useCallback(
-    (id: string, vol: number) => {
-      setActiveLayers((prev) => ({
-        ...prev,
-        [id]: vol,
-      }));
-      // The audio engine only ever plays one ambient track at a time (the last one
-      // toggled on), so only that track's slider can move real audio — adjust it live.
-      if (id === ambientSound) {
-        setAmbientVolume(vol);
-      }
+    (id: SoundAmbient, vol: number) => {
+      setAmbientLayerVolume(id, vol);
     },
-    [ambientSound, setAmbientVolume]
+    [setAmbientLayerVolume]
   );
 
   const applyPreset = useCallback(
     (preset: typeof SOUNDSCAPE_PRESETS[0]) => {
-      const next: Record<string, number> = {};
-      preset.layers.forEach((l) => {
-        next[l.id] = l.vol;
-      });
-      setActiveLayers(next);
-      if (preset.layers[0]) {
-        playAmbient(preset.layers[0].id);
-        update({ ambientSound: preset.layers[0].id });
-      }
+      stopAmbient();
+      preset.layers.forEach((l) => playAmbientLayer(l.id, l.vol));
     },
-    [playAmbient, update]
+    [playAmbientLayer, stopAmbient]
   );
 
   const randomize = useCallback(() => {
@@ -125,17 +93,11 @@ export default function SoundscapeMixer() {
     const shuffled = [...candidates].sort(() => 0.5 - Math.random());
     const selected = shuffled.slice(0, count);
 
-    const next: Record<string, number> = {};
+    stopAmbient();
     selected.forEach((s, idx) => {
-      next[s.id] = idx === 0 ? 75 : 30 + Math.floor(Math.random() * 30);
+      playAmbientLayer(s.id, idx === 0 ? 75 : 30 + Math.floor(Math.random() * 30));
     });
-
-    setActiveLayers(next);
-    if (selected[0]) {
-      playAmbient(selected[0].id);
-      update({ ambientSound: selected[0].id });
-    }
-  }, [playAmbient, update]);
+  }, [playAmbientLayer, stopAmbient]);
 
   const isPlayingAny = Object.keys(activeLayers).length > 0;
 
@@ -178,11 +140,7 @@ export default function SoundscapeMixer() {
             {isPlayingAny && (
               <button
                 type="button"
-                onClick={() => {
-                  stopAmbient();
-                  setActiveLayers({});
-                  update({ ambientSound: "none" });
-                }}
+                onClick={() => stopAmbient()}
                 className="flex items-center gap-1.5 rounded-xl border border-[var(--danger)]/30 bg-[var(--danger)]/10 px-3 py-2 text-xs font-semibold text-[var(--danger)] hover:bg-[var(--danger)]/20 transition-all active:scale-95"
               >
                 <Icon name="x" className="h-3.5 w-3.5" />

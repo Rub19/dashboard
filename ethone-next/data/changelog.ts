@@ -1,3 +1,16 @@
+const v12065_fr: ChangelogEntry = {
+  version: "v1.20.65",
+  date: "2026-09-09",
+  title: "Correctif Critique du Thème (Boutons/Icônes Restaient Verts), Refonte Visuelle, Sons & Embeds Discord",
+  items: [
+    "Correctif critique confirmé : changer de thème ou d'accent laissait certains éléments (menu vocal Dynamic Island, menu profil, et 6 autres composants) bloqués sur l'ancienne couleur (souvent vert) au lieu de suivre le nouvel accent. Root cause : une variable CSS historique (--accent-color), lue par ces composants mais jamais définie nulle part dans le moteur de thème, retombait systématiquement sur une couleur verte codée en dur. Elle est désormais tenue à jour partout où le thème ou l'accent change.",
+    "Correctif : le menu profil (en haut à droite) avait un fond figé en noir codé en dur, ne suivant jamais le thème actif (visible même en thème clair) — remplacé par le même fond « verre » réactif que le reste des menus déroulants de l'app (sélecteur de langue, etc.).",
+    "Refonte visuelle du dashboard : accueil (cartes de priorité fusionnées avec vraie hiérarchie visuelle), Brain (mise en avant des statistiques non nulles), Connexions (champ de recherche unifié avec le reste de l'app), état vide générique repensé, et un vrai bug de thème corrigé sur /activity (panneaux restés noirs en thème clair).",
+    "Refonte des sons de l'interface et de l'ambiance sonore : mixeur de sons d'ambiance multi-couches désormais réellement multi-couches (avant, activer un 2e son remplaçait silencieusement le premier), réglage de volume individuel par ambiance qui ne faisait rien auparavant désormais fonctionnel, sons de clic adoucis, transitions entre ambiances plus douces, et le réglage « sons d'interface » des modes Focus/Zen/Nuit qui ne coupait pas vraiment les sons de clic corrigé.",
+    "Bot Discord — embeds repensés pour plus de clarté : /automod status n'affiche plus tous les détecteurs en vert quand la protection est désactivée dans son ensemble (nouvel indicateur « configuré mais pas appliqué »), les logs de modération et les messages privés de sanction étaient encore intégralement en français codé en dur malgré la traduction complète du reste du bot — désormais traduits (fr/en/es/de) comme le reste, avec une mise en page plus claire (avatar, mentions cliquables, champs réorganisés).",
+  ],
+};
+
 const v12064_fr: ChangelogEntry = {
   version: "v1.20.64",
   date: "2026-09-09",
@@ -140,6 +153,19 @@ const v12052_fr: ChangelogEntry = {
     "Dynamic Island : correction d'un bug de priorité qui empêchait Spotify de jamais s'afficher, systématiquement évincé par la synchronisation d'arrière-plan.",
     "Commande /help du Bot Discord : la liste des commandes est désormais générée dynamiquement depuis les commandes réellement enregistrées (fin des commandes fantômes et des commandes manquantes), et affiche la vraie syntaxe des commandes à sous-commandes (ex. /automod status).",
     "Audit de l'enregistrement des commandes slash Discord : architecture confirmée saine, aucune dérive entre le code et les commandes déployées.",
+  ],
+};
+
+const v12065_en: ChangelogEntry = {
+  version: "v1.20.65",
+  date: "2026-09-09",
+  title: "Critical Theme Fix (Buttons/Icons Kept Turning Green), Visual Rework, Sound & Discord Embeds",
+  items: [
+    "Confirmed critical fix: switching theme or accent color left some elements (Dynamic Island's Spotify panel, the profile menu, and 6 other components) stuck on the old color (often green) instead of following the new accent. Root cause: a legacy CSS variable (--accent-color), read by these components but never actually set anywhere in the theme engine, always fell back to a hardcoded green. It's now kept in sync everywhere theme/accent changes.",
+    "Fix: the profile menu (top right) had a hardcoded black background that never followed the active theme (visible even on light themes) — replaced with the same reactive glass background used by every other dropdown in the app (language switcher, etc.).",
+    "Dashboard visual rework: home (priority cards merged with real visual hierarchy), Brain (non-zero stats now highlighted), Connections (search field unified with the rest of the app), reworked generic empty state, and a real theming bug fixed on /activity (panels stayed black on light themes).",
+    "UI sound and ambient soundscape rework: the multi-layer ambient mixer is now actually multi-layer (previously, enabling a 2nd sound silently replaced the first), per-layer volume that used to do nothing now works, softer click sounds, smoother ambient crossfades, and the Focus/Zen/Night modes' \"UI sounds\" toggle that didn't actually mute click sounds is fixed.",
+    "Discord bot — reworked embeds for clarity: /automod status no longer shows every detector in green when protection is disabled as a whole (new \"configured but not enforced\" indicator), moderation logs and sanction DMs were still entirely hardcoded French despite the rest of the bot being fully translated — now translated (fr/en/es/de) like everything else, with a cleaner layout (avatar, clickable mentions, reorganized fields).",
   ],
 };
 
@@ -288,6 +314,19 @@ const v12052_en: ChangelogEntry = {
   ],
 };
 
+const v12065_es: ChangelogEntry = {
+  version: "v1.20.65",
+  date: "2026-09-09",
+  title: "Corrección Crítica de Tema (Botones/Iconos Seguían en Verde), Rediseño Visual, Sonido y Embeds de Discord",
+  items: [
+    "Corrección crítica confirmada: cambiar de tema o de color de acento dejaba algunos elementos (panel de Spotify de la Dynamic Island, el menú de perfil y otros 6 componentes) atascados en el color anterior (a menudo verde) en lugar de seguir el nuevo acento. Causa raíz: una variable CSS heredada (--accent-color), leída por estos componentes pero nunca definida en ningún lugar del motor de temas, siempre recurría a un verde codificado. Ahora se mantiene sincronizada en todos los cambios de tema/acento.",
+    "Corrección: el menú de perfil (arriba a la derecha) tenía un fondo negro fijo que nunca seguía el tema activo (visible incluso en temas claros) — sustituido por el mismo fondo de cristal reactivo que usan el resto de los menús desplegables de la app (selector de idioma, etc.).",
+    "Rediseño visual del dashboard: inicio (tarjetas de prioridad fusionadas con jerarquía visual real), Brain (estadísticas distintas de cero ahora destacadas), Conexiones (campo de búsqueda unificado con el resto de la app), estado vacío genérico rediseñado, y un fallo real de tema corregido en /activity (paneles que seguían en negro con temas claros).",
+    "Rediseño de sonidos de la interfaz y ambiente sonoro: el mezclador de ambientes multicapa ahora es realmente multicapa (antes, activar un 2º sonido reemplazaba silenciosamente al primero), el volumen individual por capa que antes no hacía nada ahora funciona, sonidos de clic más suaves, transiciones entre ambientes más fluidas, y el interruptor de \"sonidos de interfaz\" de los modos Focus/Zen/Noche que no silenciaba realmente los clics, corregido.",
+    "Bot de Discord — embeds rediseñados para mayor claridad: /automod status ya no muestra todos los detectores en verde cuando la protección está desactivada en su conjunto (nuevo indicador \"configurado pero no aplicado\"), los registros de moderación y los DM de sanción seguían totalmente en francés fijo pese a que el resto del bot ya estaba completamente traducido — ahora traducidos (fr/en/es/de) como el resto, con un diseño más claro (avatar, menciones clicables, campos reorganizados).",
+  ],
+};
+
 const v12064_es: ChangelogEntry = {
   version: "v1.20.64",
   date: "2026-09-09",
@@ -430,6 +469,19 @@ const v12052_es: ChangelogEntry = {
     "Dynamic Island: corregido un error de prioridad que impedía que Spotify apareciera, siempre desplazado por la sincronización en segundo plano.",
     "Comando /help del Bot de Discord: la lista de comandos ahora se genera dinámicamente desde los comandos realmente registrados (fin de comandos fantasma o ausentes), mostrando la sintaxis real de los comandos con subcomandos.",
     "Auditoría del registro de comandos slash de Discord: arquitectura confirmada como sólida, sin desviación entre el código y los comandos desplegados.",
+  ],
+};
+
+const v12065_de: ChangelogEntry = {
+  version: "v1.20.65",
+  date: "2026-09-09",
+  title: "Kritischer Theme-Fix (Buttons/Icons Blieben Grün), Visuelles Rework, Sound & Discord-Embeds",
+  items: [
+    "Bestätigter kritischer Fix: Ein Theme- oder Akzentfarbwechsel ließ manche Elemente (das Spotify-Panel der Dynamic Island, das Profilmenü und 6 weitere Komponenten) bei der alten Farbe (oft Grün) hängen, statt dem neuen Akzent zu folgen. Ursache: eine alte CSS-Variable (--accent-color), die von diesen Komponenten gelesen, aber von der Theme-Engine nirgends gesetzt wurde, fiel immer auf ein fest codiertes Grün zurück. Sie wird jetzt bei jedem Theme-/Akzentwechsel überall synchron gehalten.",
+    "Fix: Das Profilmenü (oben rechts) hatte einen fest codierten schwarzen Hintergrund, der dem aktiven Theme nie folgte (sichtbar sogar bei hellen Themes) — ersetzt durch denselben reaktiven Glas-Hintergrund wie jedes andere Dropdown der App (Sprachauswahl usw.).",
+    "Visuelles Rework des Dashboards: Startseite (Prioritätskarten zu echter visueller Hierarchie zusammengeführt), Brain (Statistiken ungleich null werden hervorgehoben), Verbindungen (Suchfeld an den Rest der App angeglichen), überarbeiteter generischer Leerzustand, und ein echter Theming-Fehler auf /activity behoben (Panels blieben bei hellen Themes schwarz).",
+    "Rework der UI-Sounds und Klangkulisse: Der mehrschichtige Ambient-Mixer ist jetzt wirklich mehrschichtig (vorher ersetzte das Aktivieren eines 2. Sounds stillschweigend den ersten), die bisher wirkungslose Lautstärke pro Ebene funktioniert jetzt, weichere Klick-Sounds, sanftere Übergänge zwischen Klanglandschaften, und der „UI-Sounds“-Schalter der Focus-/Zen-/Nacht-Modi, der Klick-Sounds nicht wirklich stummschaltete, ist behoben.",
+    "Discord-Bot — Embeds für mehr Klarheit überarbeitet: /automod status zeigt Detektoren nicht mehr alle grün an, wenn der Schutz insgesamt deaktiviert ist (neue Anzeige „konfiguriert, aber nicht aktiv“), Moderationsprotokolle und Sanktions-DMs waren trotz vollständig übersetztem restlichen Bot noch komplett fest auf Französisch — jetzt wie der Rest übersetzt (fr/en/es/de), mit klarerem Layout (Avatar, klickbare Erwähnungen, neu geordnete Felder).",
   ],
 };
 
@@ -22503,5 +22555,10 @@ CHANGELOG_BY_LANG.fr.unshift(v12064_fr);
 CHANGELOG_BY_LANG.en.unshift(v12064_en);
 CHANGELOG_BY_LANG.es.unshift(v12064_es);
 CHANGELOG_BY_LANG.de.unshift(v12064_de);
+
+CHANGELOG_BY_LANG.fr.unshift(v12065_fr);
+CHANGELOG_BY_LANG.en.unshift(v12065_en);
+CHANGELOG_BY_LANG.es.unshift(v12065_es);
+CHANGELOG_BY_LANG.de.unshift(v12065_de);
 
 export const CHANGELOG = CHANGELOG_BY_LANG.fr;

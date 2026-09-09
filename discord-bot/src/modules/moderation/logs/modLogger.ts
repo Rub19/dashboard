@@ -4,6 +4,7 @@ import { sanctionService } from '../sanctions/sanctionService.js';
 import { guildConfigService } from '../../../services/guildConfigService.js';
 import { logger } from '../../../utils/logger.js';
 import { baseEmbed } from '../../../utils/embeds.js';
+import { formatString, getTranslation } from '../../../utils/i18n.js';
 
 export class ModLogger {
   private static getLogChannel(guild: Guild): TextChannel | null {
@@ -33,60 +34,70 @@ export class ModLogger {
       }
 
       const guildConfig = guildConfigService.getConfig(guild.id);
+      const t = getTranslation(guildConfig.language);
 
       let color = guildConfig.primaryColor;
       let titleIcon = '🛡️';
-      let titleName = 'Sanction appliquée';
+      let titleName = t.modlog_type_default;
 
       switch (sanction.type) {
         case 'warn':
           color = '#F59E0B';
           titleIcon = '⚠️';
-          titleName = 'Avertissement';
+          titleName = t.modlog_type_warn;
           break;
         case 'timeout':
           color = '#8B5CF6';
           titleIcon = '🔇';
-          titleName = 'Mise en sourdine (Timeout)';
+          titleName = t.modlog_type_timeout;
           break;
         case 'untimeout':
           color = guildConfig.successColor;
           titleIcon = '🔊';
-          titleName = 'Fin de sourdine (Untimeout)';
+          titleName = t.modlog_type_untimeout;
           break;
         case 'kick':
           color = '#F97316';
           titleIcon = '👢';
-          titleName = 'Expulsion (Kick)';
+          titleName = t.modlog_type_kick;
           break;
         case 'ban':
           color = guildConfig.errorColor;
           titleIcon = '🔨';
-          titleName = 'Bannissement (Ban)';
+          titleName = t.modlog_type_ban;
           break;
         case 'unban':
           color = guildConfig.successColor;
           titleIcon = '🔓';
-          titleName = 'Débannissement (Unban)';
+          titleName = t.modlog_type_unban;
           break;
       }
+
+      // Avatar de la cible en thumbnail : repère visuel rapide dans un salon de logs
+      // qui défile vite. Best-effort — un échec de fetch ne doit jamais bloquer le log.
+      const targetAvatarUrl = await guild.client.users
+        .fetch(sanction.userId)
+        .then((u) => u.displayAvatarURL({ size: 128 }))
+        .catch(() => null);
+
+      const fields: { name: string; value: string; inline?: boolean }[] = [
+        { name: t.modlog_field_member, value: `<@${sanction.userId}>\n**${sanction.userTag}**\n\`${sanction.userId}\``, inline: true },
+        { name: t.modlog_field_moderator, value: `<@${sanction.moderatorId}>\n**${sanction.moderatorTag}**\n\`${sanction.moderatorId}\``, inline: true },
+      ];
+
+      if (sanction.durationSeconds) {
+        const mins = Math.floor(sanction.durationSeconds / 60);
+        fields.push({ name: t.modlog_field_duration, value: formatString(t.modlog_duration_value, { minutes: mins }), inline: true });
+      }
+
+      fields.push({ name: t.modlog_field_reason, value: sanction.reason || t.modlog_reason_none, inline: false });
 
       const embed = new EmbedBuilder()
         .setColor(color as `#${string}`)
         .setTitle(`${titleIcon} ${titleName} • #${sanction.id}`)
-        .addFields([
-          { name: 'Membre', value: `**${sanction.userTag}**\n\`${sanction.userId}\``, inline: true },
-          { name: 'Modérateur', value: `**${sanction.moderatorTag}**\n\`${sanction.moderatorId}\``, inline: true },
-          { name: 'Raison', value: sanction.reason || 'Aucune raison spécifiée', inline: false },
-        ]);
-
-      if (sanction.durationSeconds) {
-        const mins = Math.floor(sanction.durationSeconds / 60);
-        embed.addFields([{ name: 'Durée', value: `${mins} minute(s)`, inline: true }]);
-      }
-
-      embed
-        .setFooter({ text: `${guildConfig.botName} Modération` })
+        .setThumbnail(targetAvatarUrl)
+        .addFields(fields)
+        .setFooter({ text: formatString(t.modlog_footer, { botName: guildConfig.botName }) })
         .setTimestamp(new Date(sanction.timestamp));
 
       await channel.send({ embeds: [embed] });
@@ -109,18 +120,20 @@ export class ModLogger {
       }
 
       const guildConfig = guildConfigService.getConfig(guild.id);
+      const t = getTranslation(guildConfig.language);
 
-      const embed = baseEmbed('warning', { footerText: `${guildConfig.botName} AutoMod Protection` })
-        .setTitle(`🤖 AutoMod • Règle déclenchée : ${ruleName}`)
+      const embed = baseEmbed('warning', { footerText: formatString(t.modlog_automod_footer, { botName: guildConfig.botName }) })
+        .setTitle(formatString(t.modlog_automod_title, { ruleName }))
+        .setThumbnail(user.displayAvatarURL({ size: 128 }))
         .addFields([
-          { name: 'Membre', value: `**${user.tag}** (${user.id})`, inline: true },
-          { name: 'Action effectuée', value: `\`${actionTaken.toUpperCase()}\``, inline: true },
+          { name: t.modlog_automod_field_member, value: `<@${user.id}>\n**${user.tag}**\n\`${user.id}\``, inline: true },
+          { name: t.modlog_automod_field_action, value: `\`${actionTaken.toUpperCase()}\``, inline: true },
         ]);
 
       if (messageSnippet) {
         embed.addFields([
           {
-            name: 'Extrait du message',
+            name: t.modlog_automod_field_excerpt,
             value: messageSnippet.length > 500 ? messageSnippet.slice(0, 500) + '...' : messageSnippet,
           },
         ]);

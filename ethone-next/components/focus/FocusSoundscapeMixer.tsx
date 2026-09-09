@@ -1,6 +1,6 @@
 "use client";
 
-import { useState } from "react";
+import { useRef, useState } from "react";
 import { Icon } from "@/lib/icons";
 import { useSound, type SoundAmbient } from "@/lib/sound";
 import { cn } from "@/lib/utils";
@@ -20,39 +20,34 @@ const SOUNDSCAPES: { id: SoundAmbient; label: string; icon: string }[] = [
 ];
 
 export default function FocusSoundscapeMixer() {
-  const { ambientSound, playAmbient, stopAmbient } = useSound();
-  const [activeSounds, setActiveSounds] = useState<Record<string, number>>(() => {
-    return ambientSound && ambientSound !== "none" ? { [ambientSound]: 70 } : {};
-  });
+  const { ambientLayers, playAmbientLayer, stopAmbientLayer, stopAmbient, setAmbientLayerVolume } = useSound();
+  // The engine's live layer map is the single source of truth, so a sound only ever
+  // shows as active here when it's genuinely part of the audio mix.
+  const activeSounds = ambientLayers;
   const [masterMuted, setMasterMuted] = useState(false);
+  const mutedSnapshotRef = useRef<Partial<Record<SoundAmbient, number>>>({});
 
   const toggleSound = (id: SoundAmbient) => {
-    if (activeSounds[id]) {
-      const next = { ...activeSounds };
-      delete next[id];
-      setActiveSounds(next);
-      if (Object.keys(next).length === 0) {
-        stopAmbient();
-      } else {
-        const firstRemaining = Object.keys(next)[0] as SoundAmbient;
-        playAmbient(firstRemaining);
-      }
+    if (activeSounds[id] !== undefined) {
+      stopAmbientLayer(id);
     } else {
-      setActiveSounds((prev) => ({ ...prev, [id]: 70 }));
-      playAmbient(id);
+      playAmbientLayer(id, 70);
     }
   };
 
-  const handleVolumeChange = (id: string, vol: number) => {
-    setActiveSounds((prev) => ({ ...prev, [id]: vol }));
+  const handleVolumeChange = (id: SoundAmbient, vol: number) => {
+    setAmbientLayerVolume(id, vol);
   };
 
   const toggleMasterMute = () => {
     if (masterMuted) {
       setMasterMuted(false);
-      const first = Object.keys(activeSounds)[0] as SoundAmbient;
-      if (first) playAmbient(first);
+      (Object.entries(mutedSnapshotRef.current) as [SoundAmbient, number][]).forEach(([id, vol]) =>
+        playAmbientLayer(id, vol)
+      );
+      mutedSnapshotRef.current = {};
     } else {
+      mutedSnapshotRef.current = activeSounds;
       setMasterMuted(true);
       stopAmbient();
     }

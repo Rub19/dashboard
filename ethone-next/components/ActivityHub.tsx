@@ -164,7 +164,7 @@ function StatCard({ label, value, sub, icon, tone = "emerald" }: StatCardProps) 
 
   return (
     <div
-      className={`group bg-zinc-950/80 border border-[var(--text-primary)]/[0.08] backdrop-blur-xl p-4 rounded-2xl shadow-lg hover:border-white/15 transition-all ${toneRing}`}
+      className={`group v8-panel p-4 hover:border-[var(--accent-primary)]/25 transition-colors ${toneRing}`}
     >
       <div className="flex items-start justify-between gap-3">
         <div>
@@ -180,7 +180,7 @@ function StatCard({ label, value, sub, icon, tone = "emerald" }: StatCardProps) 
 
 function StatSkeleton() {
   return (
-    <div className="bg-zinc-950/80 border border-[var(--text-primary)]/[0.08] backdrop-blur-xl p-4 rounded-2xl shadow-lg animate-pulse">
+    <div className="v8-panel p-4 animate-pulse">
       <div className="flex items-start justify-between gap-3">
         <div className="w-full space-y-2">
           <div className="h-3 w-16 rounded bg-[var(--text-primary)]/[0.06]" />
@@ -744,7 +744,7 @@ export default function ActivityHub() {
       </Card>
 
       {/* Toolbar */}
-      <div className="bg-zinc-950/80 border border-[var(--text-primary)]/[0.08] backdrop-blur-xl rounded-2xl p-4 shadow-lg">
+      <div className="v8-panel p-4">
         <div className="flex flex-col gap-4 lg:flex-row lg:items-center lg:justify-between">
           <h2 className="text-sm font-semibold text-[var(--text-primary)]">{i18n("activityJournalEntries")}</h2>
 
@@ -839,7 +839,7 @@ export default function ActivityHub() {
       </div>
 
       {/* Timeline */}
-      <div className="bg-zinc-950/80 border border-[var(--text-primary)]/[0.08] backdrop-blur-xl rounded-2xl p-4 shadow-lg">
+      <div className="v8-panel p-4">
         {grouped.length === 0 ? (
           <div className="flex flex-col items-center justify-center py-10 text-center">
             <div className="mb-3 flex h-12 w-12 items-center justify-center rounded-2xl bg-[var(--text-primary)]/[0.04] text-[var(--text-muted)]">

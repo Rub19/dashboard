@@ -6,6 +6,8 @@ import { checkHierarchy } from '../permissions/hierarchy.js';
 import { logger } from '../../../utils/logger.js';
 import { baseEmbed } from '../../../utils/embeds.js';
 import { ownerImmunityService } from '../../../services/ownerImmunityService.js';
+import { guildConfigService } from '../../../services/guildConfigService.js';
+import { formatString, getTranslation } from '../../../utils/i18n.js';
 
 export interface ExecuteSanctionParams {
   guildId: string;
@@ -86,6 +88,7 @@ export class SanctionService {
     }
 
     // 3. Exécution technique de la sanction
+    const t = getTranslation(guildConfigService.getConfig(params.guildId).language);
     try {
       switch (params.action) {
         case 'WARN': {
@@ -93,13 +96,13 @@ export class SanctionService {
           if (targetMember) {
             const warnEmbed = baseEmbed('default', {
               color: Colors.Yellow,
-              footerText: `ETHONE Moderation Center 2.0`,
+              footerText: t.sanction_dm_footer,
             })
-              .setTitle(`⚠️ Avertissement — ${guild.name}`)
-              .setDescription(`Vous avez reçu un avertissement sur le serveur **${guild.name}**.`)
+              .setTitle(formatString(t.sanction_dm_warn_title, { guildName: guild.name }))
+              .setDescription(formatString(t.sanction_dm_warn_desc, { guildName: guild.name }))
               .addFields(
-                { name: 'Motif', value: params.reason || 'Non spécifié', inline: false },
-                { name: 'Modérateur', value: params.moderatorTag, inline: true }
+                { name: t.modlog_field_reason, value: params.reason || t.modlog_reason_none, inline: false },
+                { name: t.modlog_field_moderator, value: params.moderatorTag, inline: true }
               );
             await targetMember.send({ embeds: [warnEmbed] }).catch(() => {});
           }
@@ -121,10 +124,11 @@ export class SanctionService {
           }
           const kickEmbed = baseEmbed('default', {
             color: Colors.Orange,
-            footerText: `ETHONE Moderation Center 2.0`,
+            footerText: t.sanction_dm_footer,
           })
-            .setTitle(`👢 Expulsion — ${guild.name}`)
-            .setDescription(`Vous avez été expulsé du serveur **${guild.name}**.\n**Motif :** ${params.reason}`);
+            .setTitle(formatString(t.sanction_dm_kick_title, { guildName: guild.name }))
+            .setDescription(formatString(t.sanction_dm_kick_desc, { guildName: guild.name }))
+            .addFields({ name: t.modlog_field_reason, value: params.reason || t.modlog_reason_none, inline: false });
           await targetMember.send({ embeds: [kickEmbed] }).catch(() => {});
           await targetMember.kick(`${params.moderatorTag}: ${params.reason}`);
           break;
@@ -134,10 +138,11 @@ export class SanctionService {
           if (targetMember) {
             const banEmbed = baseEmbed('default', {
               color: Colors.Red,
-              footerText: `ETHONE Moderation Center 2.0`,
+              footerText: t.sanction_dm_footer,
             })
-              .setTitle(`🔨 Bannissement — ${guild.name}`)
-              .setDescription(`Vous avez été banni du serveur **${guild.name}**.\n**Motif :** ${params.reason}`);
+              .setTitle(formatString(t.sanction_dm_ban_title, { guildName: guild.name }))
+              .setDescription(formatString(t.sanction_dm_ban_desc, { guildName: guild.name }))
+              .addFields({ name: t.modlog_field_reason, value: params.reason || t.modlog_reason_none, inline: false });
             await targetMember.send({ embeds: [banEmbed] }).catch(() => {});
           }
           await guild.bans.create(params.userId, {

@@ -29,17 +29,16 @@ export class DiscordMusicPanel {
   }
 
   public static buildPanelMessage(state: GuildMusicState): MessageCreateOptions {
+    const t = getTranslation(guildConfigService.getConfig(state.guildId).language);
     let embed;
 
     if (!state.currentTrack) {
-      embed = baseEmbed('primary', { footerText: 'ETHONE Music Center 2.0 • Audio Engine' })
-        .setTitle('🎵 ETHONE Music Player')
-        .setDescription(
-          '**Aucune musique en cours de lecture.**\n\nUtilisez `/music play <titre/lien>` ou le **Music Center ETHONE** pour lancer un morceau.'
-        )
+      embed = baseEmbed('primary', { footerText: t.music_panel_footer_idle })
+        .setTitle(t.music_panel_title)
+        .setDescription(t.music_panel_idle_desc)
         .addFields(
-          { name: '🔊 Salon Vocal', value: state.voiceChannel ? `<#${state.voiceChannel.id}>` : 'Déconnecté', inline: true },
-          { name: '📜 File d\'attente', value: `${state.queueLength} titres`, inline: true }
+          { name: t.music_panel_field_voice_channel, value: state.voiceChannel ? `<#${state.voiceChannel.id}>` : t.music_panel_disconnected, inline: true },
+          { name: t.music_panel_field_queue, value: formatString(t.music_panel_queue_value, { count: state.queueLength }), inline: true }
         );
     } else {
       const track = state.currentTrack;
@@ -48,22 +47,22 @@ export class DiscordMusicPanel {
       const totalTime = this.formatTime(state.duration);
 
       embed = baseEmbed(state.status === 'PLAYING' ? 'success' : 'warning', {
-        footerText: 'ETHONE Music Center 2.0 • Contrôlez la musique en direct',
+        footerText: t.music_panel_footer_active,
       })
         .setTitle(`${state.status === 'PLAYING' ? '▶️' : '⏸️'} ${track.title}`)
         .setURL(track.url && track.url.startsWith('http') ? track.url : 'https://ethone.dev')
         .setDescription(
-          `**Artiste :** ${track.artist}\n` +
-          `**Source :** \`${track.source}\`\n\n` +
+          `**${t.music_panel_label_artist} :** ${track.artist}\n` +
+          `**${t.music_panel_label_source} :** \`${track.source}\`\n\n` +
           `\`${currentTime}\` ${progress} \`${totalTime}\``
         )
         .addFields(
-          { name: '👤 Demandé par', value: `${track.requestedBy.tag}`, inline: true },
-          { name: '🔊 Volume', value: `${state.muted ? '0% (Muet)' : `${state.volume}%`}`, inline: true },
-          { name: '🔁 Répétition', value: `\`${state.repeatMode}\``, inline: true },
-          { name: '📜 File d\'attente', value: `${state.queueLength} titre(s) en attente`, inline: true },
-          { name: '🔀 Aléatoire', value: state.shuffle ? 'Actif' : 'Désactivé', inline: true },
-          { name: '📍 Salon Vocal', value: state.voiceChannel ? `<#${state.voiceChannel.id}>` : 'Inconnu', inline: true }
+          { name: t.music_panel_field_requested_by, value: `${track.requestedBy.tag}`, inline: true },
+          { name: t.music_panel_field_volume, value: `${state.muted ? `0% (${t.music_panel_muted})` : `${state.volume}%`}`, inline: true },
+          { name: t.music_panel_field_repeat, value: `\`${state.repeatMode}\``, inline: true },
+          { name: t.music_panel_field_queue, value: formatString(t.music_panel_queue_value, { count: state.queueLength }), inline: true },
+          { name: t.music_panel_field_shuffle, value: state.shuffle ? t.music_panel_active : t.music_panel_inactive, inline: true },
+          { name: t.music_panel_field_voice, value: state.voiceChannel ? `<#${state.voiceChannel.id}>` : t.music_panel_unknown, inline: true }
         );
 
       if (track.thumbnail) {

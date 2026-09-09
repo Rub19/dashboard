@@ -550,79 +550,83 @@ export default function DashboardOverview() {
             </div>
           </header>
 
-          {/* 2. Priority Layer: What's Important Right Now */}
-          <div className="grid grid-cols-2 sm:grid-cols-4 gap-2.5">
+          {/* 2. Priority Layer: What's Important Right Now — one strip, not four duplicate cards */}
+          <div className="grid grid-cols-2 divide-x divide-y divide-[var(--panel-border)]/50 overflow-hidden rounded-2xl border border-[var(--panel-border)]/60 bg-[var(--surface-raised)]/40 shadow-xs sm:grid-cols-4 sm:divide-y-0">
             {/* Calendar summary */}
-            <div
+            <button
+              type="button"
               onClick={() => router.push("/calendar")}
-              className="group flex flex-col justify-between rounded-2xl border border-[var(--panel-border)]/60 bg-[var(--surface-raised)]/40 p-3.5 transition-all hover:border-[var(--accent-primary)]/40 hover:bg-[var(--surface-raised)]/70 cursor-pointer shadow-xs"
+              className="group flex items-center gap-3 p-3.5 text-left transition-colors hover:bg-[var(--surface-raised)]/70 cursor-pointer"
             >
-              <div className="flex items-center justify-between text-[var(--text-muted)] group-hover:text-[var(--text-primary)]">
-                <span className="text-[10px] font-bold uppercase tracking-wider">Calendrier</span>
-                <CalendarIcon className="h-3.5 w-3.5 text-[var(--accent-primary)]" />
+              <span className="flex h-9 w-9 shrink-0 items-center justify-center rounded-xl bg-[var(--accent-primary)]/15 text-[var(--accent-primary)]">
+                <CalendarIcon className="h-4 w-4" />
+              </span>
+              <div className="min-w-0">
+                <p className="text-[10px] font-bold uppercase tracking-wider text-[var(--text-muted)]">Calendrier</p>
+                <p className="truncate">
+                  <span className="font-mono text-lg font-bold leading-none text-[var(--text-primary)]">
+                    {todayEvents.length}
+                  </span>
+                  <span className="ml-1.5 text-xs text-[var(--text-muted)]">
+                    {todayEvents.length > 1 ? "événements" : "événement"}
+                  </span>
+                </p>
               </div>
-              <div className="mt-2">
-                <span className="font-mono text-base font-bold text-[var(--text-primary)]">
-                  {todayEvents.length}
-                </span>
-                <span className="ml-1.5 text-xs text-[var(--text-muted)]">
-                  {todayEvents.length > 1 ? "événements" : "événement"}
-                </span>
-              </div>
-            </div>
+            </button>
 
             {/* Tasks summary */}
-            <div
+            <button
+              type="button"
               onClick={() => router.push("/tasks")}
-              className="group flex flex-col justify-between rounded-2xl border border-[var(--panel-border)]/60 bg-[var(--surface-raised)]/40 p-3.5 transition-all hover:border-emerald-500/40 hover:bg-[var(--surface-raised)]/70 cursor-pointer shadow-xs"
+              className="group flex items-center gap-3 p-3.5 text-left transition-colors hover:bg-[var(--surface-raised)]/70 cursor-pointer"
             >
-              <div className="flex items-center justify-between text-[var(--text-muted)] group-hover:text-[var(--text-primary)]">
-                <span className="text-[10px] font-bold uppercase tracking-wider">Tâches</span>
-                <CheckCircle2 className="h-3.5 w-3.5 text-emerald-400" />
+              <span className="flex h-9 w-9 shrink-0 items-center justify-center rounded-xl bg-emerald-500/15 text-emerald-400">
+                <CheckCircle2 className="h-4 w-4" />
+              </span>
+              <div className="min-w-0">
+                <p className="text-[10px] font-bold uppercase tracking-wider text-[var(--text-muted)]">Tâches</p>
+                <p className="truncate">
+                  <span className="font-mono text-lg font-bold leading-none text-emerald-400">
+                    {openTasksCount}
+                  </span>
+                  <span className="ml-1.5 text-xs text-[var(--text-muted)]">en attente</span>
+                </p>
               </div>
-              <div className="mt-2">
-                <span className="font-mono text-base font-bold text-emerald-400">
-                  {openTasksCount}
-                </span>
-                <span className="ml-1.5 text-xs text-[var(--text-muted)]">
-                  {openTasksCount > 1 ? "en attente" : "en attente"}
-                </span>
-              </div>
-            </div>
+            </button>
 
             {/* Focus Session */}
-            <div
+            <button
+              type="button"
               onClick={() => router.push("/focus")}
-              className="group flex flex-col justify-between rounded-2xl border border-[var(--panel-border)]/60 bg-[var(--surface-raised)]/40 p-3.5 transition-all hover:border-sky-500/40 hover:bg-[var(--surface-raised)]/70 cursor-pointer shadow-xs"
+              className="group flex items-center gap-3 p-3.5 text-left transition-colors hover:bg-[var(--surface-raised)]/70 cursor-pointer"
             >
-              <div className="flex items-center justify-between text-[var(--text-muted)] group-hover:text-[var(--text-primary)]">
-                <span className="text-[10px] font-bold uppercase tracking-wider">Focus Mode</span>
-                <Timer className="h-3.5 w-3.5 text-sky-400" />
-              </div>
-              <div className="mt-2">
-                <span className="text-xs font-semibold text-[var(--text-primary)] truncate">
+              <span className="flex h-9 w-9 shrink-0 items-center justify-center rounded-xl bg-sky-500/15 text-sky-400">
+                <Timer className="h-4 w-4" />
+              </span>
+              <div className="min-w-0">
+                <p className="text-[10px] font-bold uppercase tracking-wider text-[var(--text-muted)]">Focus Mode</p>
+                <p className="truncate text-xs font-semibold text-[var(--text-primary)]">
                   {focus?.state?.phase && focus.state.phase !== "idle"
                     ? "Session en cours (" + focus.state.phase + ")"
                     : "Prêt à démarrer"}
-                </span>
+                </p>
               </div>
-            </div>
+            </button>
 
             {/* Brain Status */}
-            <div
+            <button
+              type="button"
               onClick={() => router.push("/brain")}
-              className="group flex flex-col justify-between rounded-2xl border border-[var(--panel-border)]/60 bg-[var(--surface-raised)]/40 p-3.5 transition-all hover:border-purple-500/40 hover:bg-[var(--surface-raised)]/70 cursor-pointer shadow-xs"
+              className="group flex items-center gap-3 p-3.5 text-left transition-colors hover:bg-[var(--surface-raised)]/70 cursor-pointer"
             >
-              <div className="flex items-center justify-between text-[var(--text-muted)] group-hover:text-[var(--text-primary)]">
-                <span className="text-[10px] font-bold uppercase tracking-wider">ETHONE Brain</span>
-                <Brain className="h-3.5 w-3.5 text-purple-400" />
+              <span className="flex h-9 w-9 shrink-0 items-center justify-center rounded-xl bg-purple-500/15 text-purple-400">
+                <Brain className="h-4 w-4" />
+              </span>
+              <div className="min-w-0">
+                <p className="text-[10px] font-bold uppercase tracking-wider text-[var(--text-muted)]">ETHONE Brain</p>
+                <p className="truncate text-xs font-semibold text-purple-300">Intelligence connectée</p>
               </div>
-              <div className="mt-2">
-                <span className="text-xs font-semibold text-purple-300 truncate">
-                  Intelligence connectée
-                </span>
-              </div>
-            </div>
+            </button>
           </div>
 
           {/* 3. Customization & Brain Optimization Panel */}

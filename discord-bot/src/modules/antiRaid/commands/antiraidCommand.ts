@@ -77,6 +77,7 @@ export const antiraidCommand: Command = {
       const embed = new EmbedBuilder()
         .setTitle(formatString(t.antiraid_status_title, { guildName: ctx.guild.name }))
         .setColor(levelColors[metrics.threatLevel] || 0x3b82f6)
+        .setThumbnail(ctx.guild.iconURL({ size: 128 }) ?? null)
         .addFields(
           {
             name: t.antiraid_field_risk_score,

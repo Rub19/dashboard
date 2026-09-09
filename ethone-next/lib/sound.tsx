@@ -7,6 +7,7 @@ import {
   useEffect,
   useMemo,
   useRef,
+  useState,
   type ReactNode,
 } from "react";
 import { useSettings } from "@/components/SettingsProvider";
@@ -161,11 +162,20 @@ type SoundContextValue = {
   play: (sound: SoundType, pack?: string) => void;
   enabled: boolean;
   playAction: (action: string) => void;
+  /** Legacy single-track API: replaces the whole ambient mix with just this layer. */
   playAmbient: (type: SoundAmbient, volumePercent?: number) => void;
   stopAmbient: () => void;
   setAmbientVolume: (volumePercent: number) => void;
   downloadWav: (type: SoundType, pack?: string) => Promise<boolean>;
   ambientSound: SoundAmbient;
+  /** Live volumes (0-100) of every soundscape layer currently playing, keyed by track id. */
+  ambientLayers: Partial<Record<SoundAmbient, number>>;
+  /** Adds or updates one soundscape layer without stopping whatever else is playing. */
+  playAmbientLayer: (type: SoundAmbient, volumePercent?: number) => void;
+  /** Removes one layer while leaving the rest of the mix playing. */
+  stopAmbientLayer: (type: SoundAmbient) => void;
+  /** Live-adjusts one layer's volume without restarting it. */
+  setAmbientLayerVolume: (type: SoundAmbient, volumePercent: number) => void;
 };
 
 const SoundContext = createContext<SoundContextValue>({
@@ -177,6 +187,10 @@ const SoundContext = createContext<SoundContextValue>({
   setAmbientVolume: () => {},
   downloadWav: async () => false,
   ambientSound: "none",
+  ambientLayers: {},
+  playAmbientLayer: () => {},
+  stopAmbientLayer: () => {},
+  setAmbientLayerVolume: () => {},
 });
 
 export const useSound = () => useContext(SoundContext);
@@ -189,6 +203,8 @@ type BaseTone = {
   duration: number;
   sweep: number;
   volume: number;
+  /** Gain ramp-in time in seconds. Defaults to 10ms when omitted. */
+  attack?: number;
 };
 
 type ToneRecipe = BaseTone & {
@@ -224,7 +240,9 @@ type PackProfile = {
 };
 
 const BASE_TONES: Record<SoundType, BaseTone> = {
-  click: { base: 540, type: "sine", duration: 0.05, sweep: 90, volume: 0.12 },
+  // A slightly slower attack (15ms vs. the 10ms default) takes the sharp instant-on
+  // edge off the click, so it reads as a soft tap rather than a harsh digital blip.
+  click: { base: 540, type: "sine", duration: 0.05, sweep: 90, volume: 0.12, attack: 0.015 },
   hover: { base: 1200, type: "sine", duration: 0.025, sweep: 0, volume: 0.045 },
   success: { base: 720, type: "sine", duration: 0.16, sweep: 280, volume: 0.13 },
   error: { base: 160, type: "sawtooth", duration: 0.22, sweep: -80, volume: 0.14 },
@@ -348,6 +366,7 @@ function buildPack(profile: PackProfile): PackConfig {
       duration: Math.max(0.01, base.duration * profile.durationScale),
       sweep: base.sweep * profile.sweepScale,
       volume: base.volume * profile.volumeScale,
+      attack: base.attack !== undefined ? Math.max(0.002, base.attack * profile.durationScale) : undefined,
       harmonic: profile.harmonic > 0 ? profile.harmonic : undefined,
       harmonicGain: profile.harmonic > 0 ? profile.harmonicGain : undefined,
       harmonicType: profile.harmonic > 0 ? profile.harmonicType : undefined,
@@ -424,9 +443,11 @@ function scheduleSound(
   const base = Math.max(40, recipe.base);
   const target = Math.max(40, recipe.base + recipe.sweep);
 
+  const attack = Math.max(0.002, recipe.attack ?? 0.01);
+
   const gain = ctx.createGain();
   gain.gain.setValueAtTime(0.0001, startTime);
-  gain.gain.exponentialRampToValueAtTime(peak, startTime + 0.01);
+  gain.gain.exponentialRampToValueAtTime(peak, startTime + attack);
   gain.gain.exponentialRampToValueAtTime(0.0001, end);
 
   let mixDest: AudioNode = dest;
@@ -457,7 +478,7 @@ function scheduleSound(
     if (hPeak > 0) {
       const hGain = ctx.createGain();
       hGain.gain.setValueAtTime(0.0001, startTime);
-      hGain.gain.exponentialRampToValueAtTime(hPeak, startTime + 0.01);
+      hGain.gain.exponentialRampToValueAtTime(hPeak, startTime + attack);
       hGain.gain.exponentialRampToValueAtTime(0.0001, end);
 
       const hOsc = ctx.createOscillator();
@@ -482,7 +503,7 @@ function scheduleSound(
     if (nPeak > 0) {
       const nGain = ctx.createGain();
       nGain.gain.setValueAtTime(0.0001, startTime);
-      nGain.gain.exponentialRampToValueAtTime(nPeak, startTime + 0.01);
+      nGain.gain.exponentialRampToValueAtTime(nPeak, startTime + attack);
       nGain.gain.exponentialRampToValueAtTime(0.0001, end);
 
       const noise = ctx.createBufferSource();
@@ -953,6 +974,32 @@ function renderNature(data: Float32Array, sampleRate: number): void {
   }
 }
 
+const AMBIENT_FILTER_FREQ: Record<SoundAmbient, number> = {
+  none: 1800,
+  rain: 2200,
+  storm: 1800,
+  drone: 550,
+  brown: 800,
+  white: 3500,
+  pink: 2800,
+  fireplace: 1400,
+  ocean: 1200,
+  wind: 2200,
+  blizzard: 2400,
+  forest: 3200,
+  cafe: 3500,
+  night: 2600,
+  train: 1800,
+  city: 1600,
+  library: 2800,
+  space: 900,
+  nature: 2800,
+};
+
+function ambientLayerTarget(type: SoundAmbient, master: number, scale: number): number {
+  return (type === "drone" ? 0.35 : 0.45) * master * scale;
+}
+
 function isMediaActive(): boolean {
   if (typeof navigator !== "undefined" && navigator.mediaSession?.playbackState === "playing") return true;
   if (typeof document === "undefined") return false;
@@ -968,24 +1015,41 @@ export function SoundProvider({ children }: { children: ReactNode }) {
   const { settings, update } = useSettings();
   const audioRef = useRef<AudioContext | null>(null);
   const outputGainRef = useRef<GainNode | null>(null);
-  const ambientRef = useRef<AmbientState | null>(null);
+  // Shared bus every ambient layer connects through. Ducking this one node fades the
+  // whole soundscape mix together, however many layers are actually playing.
+  const ambientBusRef = useRef<GainNode | null>(null);
+  const ambientLayersRef = useRef<Map<SoundAmbient, AmbientState>>(new Map());
   const lastPanRef = useRef<number | null>(null);
   const lastPlayedAtRef = useRef<Map<SoundType, number>>(new Map());
   const settingsRef = useRef(settings);
+  // Tracks the settings.ambientSound value the audio graph currently, actually
+  // reflects. Whenever this provider changes the graph itself and persists the
+  // label (single-track or multi-layer APIs alike), it stamps the new value here
+  // too, so the hydration effect below sees "already applied" and skips redoing
+  // (and potentially undoing, via its own exclusive replace) work that's already
+  // correct. Left `undefined` — never stamped as "applied" — whenever autoplay is
+  // still locked, so the effect keeps retrying once the first gesture unlocks it.
+  const lastAppliedAmbientRef = useRef<SoundAmbient | undefined>(undefined);
+  const [ambientLayers, setAmbientLayers] = useState<Partial<Record<SoundAmbient, number>>>({});
 
   useEffect(() => {
     settingsRef.current = settings;
   }, [settings]);
 
   const isUnlockedRef = useRef(false);
+  const [unlockTick, setUnlockTick] = useState(0);
 
   useEffect(() => {
     const unlock = () => {
+      if (isUnlockedRef.current) return;
       isUnlockedRef.current = true;
       const ctx = audioRef.current;
       if (ctx && ctx.state === "suspended") {
         ctx.resume().catch(() => {});
       }
+      // Bump so the ambient-hydration effect re-evaluates: autoplay is now allowed,
+      // so a soundscape restored from a previous session can actually start playing.
+      setUnlockTick((t) => t + 1);
     };
     window.addEventListener("pointerdown", unlock, { once: true, passive: true });
     window.addEventListener("keydown", unlock, { once: true, passive: true });
@@ -1017,18 +1081,35 @@ export function SoundProvider({ children }: { children: ReactNode }) {
     output.gain.value = 1;
     output.connect(ctx.destination);
     outputGainRef.current = output;
+
+    const bus = ctx.createGain();
+    bus.gain.value = 1;
+    bus.connect(output);
+    ambientBusRef.current = bus;
+
     return ctx;
   }, []);
 
-  const stopAmbience = useCallback(() => {
-    const ambient = ambientRef.current;
-    if (!ambient) return;
+  const syncAmbientLayers = useCallback(() => {
+    const next: Partial<Record<SoundAmbient, number>> = {};
+    ambientLayersRef.current.forEach((layer, type) => {
+      next[type] = Math.round(layer.volumeScale * 100);
+    });
+    setAmbientLayers(next);
+  }, []);
+
+  /** Fades out and tears down a single soundscape layer, leaving any others untouched. */
+  const stopLayer = useCallback((type: SoundAmbient) => {
+    const layer = ambientLayersRef.current.get(type);
+    if (!layer) return;
+    ambientLayersRef.current.delete(type);
     const ctx = audioRef.current;
-    if (ambient.gain && ctx) {
-      ambient.gain.gain.setValueAtTime(ambient.gain.gain.value, ctx.currentTime);
-      ambient.gain.gain.linearRampToValueAtTime(0.0001, ctx.currentTime + 0.4);
-    }
-    const { nodes, filter, gain } = ambient;
+    if (!ctx) return;
+    const now = ctx.currentTime;
+    layer.gain.gain.cancelScheduledValues(now);
+    layer.gain.gain.setValueAtTime(layer.gain.gain.value, now);
+    layer.gain.gain.linearRampToValueAtTime(0.0001, now + 0.6);
+    const { nodes, filter, gain } = layer;
     setTimeout(() => {
       nodes.forEach((node) => {
         try {
@@ -1042,76 +1123,69 @@ export function SoundProvider({ children }: { children: ReactNode }) {
       try {
         gain.disconnect();
       } catch {}
-    }, 450);
-    ambientRef.current = null;
+    }, 650);
   }, []);
 
-  const startAmbience = useCallback(
-    (type: SoundAmbient, volumeScale?: number) => {
-      const ctx = audioRef.current;
-      const output = outputGainRef.current;
-      if (!ctx || !output || type === "none") return;
+  const stopAllLayers = useCallback(() => {
+    Array.from(ambientLayersRef.current.keys()).forEach((type) => stopLayer(type));
+  }, [stopLayer]);
+
+  /**
+   * Starts (or, if already playing, live-retunes) one soundscape layer.
+   * `exclusive` stops every other layer first — used by the legacy single-track API
+   * so `playAmbient` keeps behaving like a straight track swap.
+   */
+  const startLayer = useCallback(
+    (type: SoundAmbient, volumeScale: number | undefined, exclusive: boolean) => {
+      if (type === "none") return;
+      const ctx = ensureContext();
+      const bus = ambientBusRef.current;
+      if (!ctx || !bus) return;
 
       if (ctx.state === "suspended") {
         if (!isUnlockedRef.current) return;
         ctx.resume().catch(() => {});
       }
 
+      if (exclusive) {
+        Array.from(ambientLayersRef.current.keys()).forEach((existingType) => {
+          if (existingType !== type) stopLayer(existingType);
+        });
+      }
+
       const master = settingsRef.current.masterVolume ? (settingsRef.current.soundVolume ?? 50) / 100 : 0;
       if (master <= 0) {
-        stopAmbience();
+        if (exclusive) stopAllLayers();
         return;
       }
 
-      if (ambientRef.current?.type === type) {
-        const scale = volumeScale ?? ambientRef.current.volumeScale;
-        ambientRef.current.volumeScale = scale;
-        const target = (type === "drone" ? 0.35 : 0.45) * master * scale;
-        const now = ctx.currentTime;
-        ambientRef.current.gain.gain.cancelScheduledValues(now);
-        ambientRef.current.gain.gain.setValueAtTime(ambientRef.current.gain.gain.value, now);
-        ambientRef.current.gain.gain.linearRampToValueAtTime(target, now + 0.1);
-        return;
-      }
-
-      const scale = volumeScale ?? 1;
-      const target = (type === "drone" ? 0.35 : 0.45) * master * scale;
-
-      stopAmbience();
-
+      const existing = ambientLayersRef.current.get(type);
+      const scale = volumeScale ?? existing?.volumeScale ?? 1;
+      const target = ambientLayerTarget(type, master, scale);
       const now = ctx.currentTime;
-      const ambientGain = ctx.createGain();
-      ambientGain.gain.setValueAtTime(0.0001, now);
-      ambientGain.gain.linearRampToValueAtTime(target, now + 1.2);
-      ambientGain.connect(output);
+
+      if (existing) {
+        existing.volumeScale = scale;
+        existing.gain.gain.cancelScheduledValues(now);
+        existing.gain.gain.setValueAtTime(existing.gain.gain.value, now);
+        existing.gain.gain.linearRampToValueAtTime(target, now + 0.15);
+        return;
+      }
+
+      const layerGain = ctx.createGain();
+      layerGain.gain.setValueAtTime(0.0001, now);
+      // Slow bloom-in rather than a snap-to-volume start, so a newly added layer
+      // settles into the mix instead of announcing itself.
+      layerGain.gain.linearRampToValueAtTime(target, now + 1.4);
+      layerGain.connect(bus);
 
       const filter = ctx.createBiquadFilter();
       filter.type = "lowpass";
-      const filterFreq: Record<SoundAmbient, number> = {
-        none: 1800,
-        rain: 2200,
-        storm: 1800,
-        drone: 550,
-        brown: 800,
-        white: 3500,
-        pink: 2800,
-        fireplace: 1400,
-        ocean: 1200,
-        wind: 2200,
-        blizzard: 2400,
-        forest: 3200,
-        cafe: 3500,
-        night: 2600,
-        train: 1800,
-        city: 1600,
-        library: 2800,
-        space: 900,
-        nature: 2800,
-      };
-      filter.frequency.value = filterFreq[type] ?? 1800;
+      filter.frequency.value = AMBIENT_FILTER_FREQ[type] ?? 1800;
       filter.Q.value = 0.7;
+      filter.connect(layerGain);
 
-      const state: AmbientState = { type, source: null, gain: ambientGain, filter, nodes: [], volumeScale: scale };
+      const state: AmbientState = { type, source: null, gain: layerGain, filter, nodes: [], volumeScale: scale };
 
       if (type === "drone") {
         const droneMix = ctx.createGain();
@@ -1155,20 +1229,30 @@ export function SoundProvider({ children }: { children: ReactNode }) {
         state.nodes.push(source);
       }
 
-      filter.connect(ambientGain);
-      ambientRef.current = state;
+      ambientLayersRef.current.set(type, state);
     },
-    [stopAmbience]
+    [ensureContext, stopLayer, stopAllLayers]
   );
 
+  // Hydrates (or clears) the persisted single-track setting into the audio graph.
+  // Skipped when the audio already reflects this value — because this provider's
+  // own multi-layer API just set it, or because a previous run of this very effect
+  // already applied it — and re-run after the first user gesture so a soundscape
+  // restored from a previous session actually resumes once autoplay is allowed,
+  // instead of silently staying muted until the user re-picks it.
   useEffect(() => {
+    if (settings.ambientSound === lastAppliedAmbientRef.current) return;
     if (settings.ambientSound === "none") {
-      stopAmbience();
+      stopAllLayers();
+      lastAppliedAmbientRef.current = "none";
     } else if (isUnlockedRef.current) {
-      ensureContext();
-      startAmbience(settings.ambientSound);
+      startLayer(settings.ambientSound, undefined, true);
+      lastAppliedAmbientRef.current = settings.ambientSound;
     }
-  }, [settings.ambientSound, startAmbience, stopAmbience, ensureContext]);
+    // Still locked: leave lastAppliedAmbientRef stale so this retries once
+    // `unlockTick` changes below.
+    syncAmbientLayers();
+  }, [settings.ambientSound, unlockTick, startLayer, stopAllLayers, syncAmbientLayers]);
 
   useEffect(() => {
     const interval = setInterval(() => {
@@ -1184,16 +1268,27 @@ export function SoundProvider({ children }: { children: ReactNode }) {
     return () => clearInterval(interval);
   }, [settings.mediaDucking]);
 
+  // Re-applies master/effects volume to every currently playing layer in place
+  // (ramping gain, never restarting the buffer) so toggling master volume doesn't
+  // re-trigger an audible restart of a looping soundscape.
   useEffect(() => {
-    if (settings.ambientSound === "none" || !isUnlockedRef.current) return;
-    ensureContext();
-    startAmbience(settings.ambientSound);
-  }, [settings.masterVolume, settings.soundVolume, startAmbience, settings.ambientSound, ensureContext]);
+    if (!isUnlockedRef.current || ambientLayersRef.current.size === 0) return;
+    const ctx = audioRef.current;
+    if (!ctx) return;
+    const master = settings.masterVolume ? (settings.soundVolume ?? 50) / 100 : 0;
+    const now = ctx.currentTime;
+    ambientLayersRef.current.forEach((layer) => {
+      const target = master > 0 ? ambientLayerTarget(layer.type, master, layer.volumeScale) : 0.0001;
+      layer.gain.gain.cancelScheduledValues(now);
+      layer.gain.gain.setValueAtTime(layer.gain.gain.value, now);
+      layer.gain.gain.linearRampToValueAtTime(target, now + 0.15);
+    });
+  }, [settings.masterVolume, settings.soundVolume]);
 
   const play = useCallback(
     (type: SoundType, packOverride?: string) => {
       try {
-        if (!settings.masterVolume || !settings.soundEffects) return;
+        if (!settings.masterVolume || !settings.soundEffects || !settings.uiSoundFeedback) return;
 
         const packId = packOverride ?? settings.soundPack;
         if (packId === "none" || packId === "silent") return;
@@ -1228,16 +1323,17 @@ export function SoundProvider({ children }: { children: ReactNode }) {
 
         scheduleSound(ctx, output, type, pack, ctx.currentTime, master, categoryVolume, pan);
 
-        // Briefly duck the ambient soundscape so notification tones stay audible.
-        if (category === "notifications" && settings.notificationDucking && ambientRef.current) {
-          const ambient = ambientRef.current;
-          const now = ctx.currentTime;
-          const restingTarget =
-            ((ambient.type === "drone" ? 0.35 : 0.45) * master) * ambient.volumeScale;
-          ambient.gain.gain.cancelScheduledValues(now);
-          ambient.gain.gain.setValueAtTime(ambient.gain.gain.value, now);
-          ambient.gain.gain.linearRampToValueAtTime(restingTarget * 0.35, now + 0.08);
-          ambient.gain.gain.linearRampToValueAtTime(restingTarget, now + 0.9);
+        // Briefly duck the whole ambient bus so a notification tone stays audible
+        // above rain, fireplace, or however many soundscape layers are mixed in.
+        if (category === "notifications" && settings.notificationDucking && ambientLayersRef.current.size > 0) {
+          const bus = ambientBusRef.current;
+          if (bus) {
+            const duckNow = ctx.currentTime;
+            bus.gain.cancelScheduledValues(duckNow);
+            bus.gain.setValueAtTime(bus.gain.value, duckNow);
+            bus.gain.linearRampToValueAtTime(0.35, duckNow + 0.08);
+            bus.gain.linearRampToValueAtTime(1, duckNow + 0.9);
+          }
         }
       } catch {
         // Ignorer silencieusement une erreur audio isolée.
@@ -1248,7 +1344,7 @@ export function SoundProvider({ children }: { children: ReactNode }) {
 
   const playAction = useCallback(
     (action: string) => {
-      if (!action || !settings.masterVolume || !settings.soundEffects) return;
+      if (!action || !settings.masterVolume || !settings.soundEffects || !settings.uiSoundFeedback) return;
       const type = soundTypeForAction(action);
       if (type) play(type);
     },
@@ -1259,8 +1355,10 @@ export function SoundProvider({ children }: { children: ReactNode }) {
     (type: SoundAmbient, volumePercent?: number) => {
       try {
         if (type === "none") {
-          stopAmbience();
+          stopAllLayers();
+          lastAppliedAmbientRef.current = "none";
           update({ ambientSound: "none" });
+          syncAmbientLayers();
           return;
         }
         const ctx = ensureContext();
@@ -1268,46 +1366,115 @@ export function SoundProvider({ children }: { children: ReactNode }) {
         if (ctx.state === "suspended") {
           void ctx.resume();
         }
+        const scale = volumePercent !== undefined ? Math.max(0, Math.min(100, volumePercent)) / 100 : undefined;
+        startLayer(type, scale, true);
+        lastAppliedAmbientRef.current = type;
         if (!settingsRef.current.masterVolume) {
           settingsRef.current = { ...settingsRef.current, masterVolume: true };
           update({ masterVolume: true, ambientSound: type });
         } else {
           update({ ambientSound: type });
         }
-        const scale = volumePercent !== undefined ? Math.max(0, Math.min(100, volumePercent)) / 100 : undefined;
-        startAmbience(type, scale);
+        syncAmbientLayers();
       } catch {
         // Ignorer silencieusement une erreur audio isolée.
       }
     },
-    [ensureContext, startAmbience, stopAmbience, update]
+    [ensureContext, startLayer, stopAllLayers, syncAmbientLayers, update]
   );
 
   const stopAmbient = useCallback(() => {
-    stopAmbience();
+    stopAllLayers();
+    lastAppliedAmbientRef.current = "none";
     update({ ambientSound: "none" });
-  }, [stopAmbience, update]);
+    syncAmbientLayers();
+  }, [stopAllLayers, syncAmbientLayers, update]);
 
-  /** Live-adjusts the currently playing ambient track's volume (0-100), without restarting it. */
-  const setAmbientVolume = useCallback((volumePercent: number) => {
-    const ambient = ambientRef.current;
-    const ctx = audioRef.current;
-    if (!ambient || !ctx) return;
-    const scale = Math.max(0, Math.min(100, volumePercent)) / 100;
-    ambient.volumeScale = scale;
-    const master = settingsRef.current.masterVolume ? (settingsRef.current.soundVolume ?? 50) / 100 : 0;
-    const target = (ambient.type === "drone" ? 0.35 : 0.45) * master * scale;
-    const now = ctx.currentTime;
-    ambient.gain.gain.cancelScheduledValues(now);
-    ambient.gain.gain.setValueAtTime(ambient.gain.gain.value, now);
-    ambient.gain.gain.linearRampToValueAtTime(target, now + 0.08);
-  }, []);
+  /** Live-adjusts the primary (settings.ambientSound) track's volume, without restarting it. */
+  const setAmbientVolume = useCallback(
+    (volumePercent: number) => {
+      const type = settingsRef.current.ambientSound;
+      const layer = type !== "none" ? ambientLayersRef.current.get(type) : undefined;
+      const ctx = audioRef.current;
+      if (!layer || !ctx) return;
+      const scale = Math.max(0, Math.min(100, volumePercent)) / 100;
+      layer.volumeScale = scale;
+      const master = settingsRef.current.masterVolume ? (settingsRef.current.soundVolume ?? 50) / 100 : 0;
+      const target = ambientLayerTarget(type, master, scale);
+      const now = ctx.currentTime;
+      layer.gain.gain.cancelScheduledValues(now);
+      layer.gain.gain.setValueAtTime(layer.gain.gain.value, now);
+      layer.gain.gain.linearRampToValueAtTime(target, now + 0.08);
+      syncAmbientLayers();
+    },
+    [syncAmbientLayers]
+  );
+
+  // True multi-layer mixer API: several soundscapes can genuinely play together
+  // (rain + night, storm + wind, ...) instead of one silently replacing another
+  // while the mixer UI shows both as "active".
+  const playAmbientLayer = useCallback(
+    (type: SoundAmbient, volumePercent?: number) => {
+      try {
+        if (type === "none") return;
+        const ctx = ensureContext();
+        if (!ctx) return;
+        if (ctx.state === "suspended") {
+          void ctx.resume();
+        }
+        const scale = volumePercent !== undefined ? Math.max(0, Math.min(100, volumePercent)) / 100 : undefined;
+        if (!settingsRef.current.masterVolume) {
+          settingsRef.current = { ...settingsRef.current, masterVolume: true };
+          update({ masterVolume: true });
+        }
+        startLayer(type, scale, false);
+        lastAppliedAmbientRef.current = type;
+        update({ ambientSound: type });
+        syncAmbientLayers();
+      } catch {
+        // Ignorer silencieusement une erreur audio isolée.
+      }
+    },
+    [ensureContext, startLayer, syncAmbientLayers, update]
+  );
+
+  const stopAmbientLayer = useCallback(
+    (type: SoundAmbient) => {
+      stopLayer(type);
+      const remaining = Array.from(ambientLayersRef.current.keys());
+      const currentPrimary = settingsRef.current.ambientSound;
+      const nextPrimary: SoundAmbient = remaining.includes(currentPrimary) ? currentPrimary : remaining[0] ?? "none";
+      lastAppliedAmbientRef.current = nextPrimary;
+      update({ ambientSound: nextPrimary });
+      syncAmbientLayers();
+    },
+    [stopLayer, syncAmbientLayers, update]
+  );
+
+  const setAmbientLayerVolume = useCallback(
+    (type: SoundAmbient, volumePercent: number) => {
+      const layer = ambientLayersRef.current.get(type);
+      const ctx = audioRef.current;
+      if (!layer || !ctx) return;
+      const scale = Math.max(0, Math.min(100, volumePercent)) / 100;
+      layer.volumeScale = scale;
+      const master = settingsRef.current.masterVolume ? (settingsRef.current.soundVolume ?? 50) / 100 : 0;
+      const target = ambientLayerTarget(type, master, scale);
+      const now = ctx.currentTime;
+      layer.gain.gain.cancelScheduledValues(now);
+      layer.gain.gain.setValueAtTime(layer.gain.gain.value, now);
+      layer.gain.gain.linearRampToValueAtTime(target, now + 0.08);
+      syncAmbientLayers();
+    },
+    [syncAmbientLayers]
+  );
 
   useEffect(() => {
     const soundsOn =
       settings.soundPack !== "none" &&
       settings.soundPack !== "silent" &&
       settings.soundEffects &&
+      settings.uiSoundFeedback &&
       settings.masterVolume;
     if (!soundsOn) return;
 
@@ -1345,12 +1512,20 @@ export function SoundProvider({ children }: { children: ReactNode }) {
         document.removeEventListener("mousemove", onMouseMove);
       }
     };
-  }, [settings.soundEffects, settings.soundPack, settings.soundSpatial, settings.masterVolume, play]);
+  }, [
+    settings.soundEffects,
+    settings.soundPack,
+    settings.soundSpatial,
+    settings.masterVolume,
+    settings.uiSoundFeedback,
+    play,
+  ]);
 
   const enabled =
     settings.soundPack !== "none" &&
     settings.soundPack !== "silent" &&
     settings.soundEffects &&
+    settings.uiSoundFeedback &&
     settings.masterVolume;
 
   const value = useMemo(
@@ -1363,8 +1538,24 @@ export function SoundProvider({ children }: { children: ReactNode }) {
       setAmbientVolume,
       downloadWav,
       ambientSound: settings.ambientSound,
+      ambientLayers,
+      playAmbientLayer,
+      stopAmbientLayer,
+      setAmbientLayerVolume,
     }),
-    [play, enabled, playAction, playAmbient, stopAmbient, setAmbientVolume, settings.ambientSound]
+    [
+      play,
+      enabled,
+      playAction,
+      playAmbient,
+      stopAmbient,
+      setAmbientVolume,
+      settings.ambientSound,
+      ambientLayers,
+      playAmbientLayer,
+      stopAmbientLayer,
+      setAmbientLayerVolume,
+    ]
   );
 
   return <SoundContext.Provider value={value}>{children}</SoundContext.Provider>;

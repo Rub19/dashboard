@@ -203,6 +203,34 @@ export interface TranslationDictionary {
   warnings_total: string;
   warnings_field_value: string;
 
+  // Moderation log channel embeds (ModLogger)
+  modlog_type_default: string;
+  modlog_type_warn: string;
+  modlog_type_timeout: string;
+  modlog_type_untimeout: string;
+  modlog_type_kick: string;
+  modlog_type_ban: string;
+  modlog_type_unban: string;
+  modlog_field_member: string;
+  modlog_field_moderator: string;
+  modlog_field_reason: string;
+  modlog_reason_none: string;
+  modlog_field_duration: string;
+  modlog_duration_value: string;
+  modlog_footer: string;
+  modlog_automod_title: string;
+  modlog_automod_field_member: string;
+  modlog_automod_field_action: string;
+  modlog_automod_field_excerpt: string;
+  modlog_automod_footer: string;
+  sanction_dm_footer: string;
+  sanction_dm_warn_title: string;
+  sanction_dm_warn_desc: string;
+  sanction_dm_kick_title: string;
+  sanction_dm_kick_desc: string;
+  sanction_dm_ban_title: string;
+  sanction_dm_ban_desc: string;
+
   // Music
   music_no_query: string;
   music_play_failed: string;
@@ -252,6 +280,9 @@ export interface TranslationDictionary {
   music_panel_inactive: string;
   music_panel_muted: string;
   music_panel_unknown: string;
+  music_panel_queue_value: string;
+  music_panel_label_artist: string;
+  music_panel_label_source: string;
 
   // Tickets
   ticket_module_disabled: string;
@@ -351,7 +382,17 @@ export interface TranslationDictionary {
   automod_detector_profiles: string;
   automod_status_field_strikes: string;
   automod_status_strikes_value: string;
+  automod_status_disabled_notice: string;
   automod_status_footer: string;
+  automod_alert_title: string;
+  automod_alert_field_user: string;
+  automod_alert_field_channel: string;
+  automod_alert_field_risk: string;
+  automod_alert_field_actions: string;
+  automod_alert_field_strikes: string;
+  automod_alert_field_preview: string;
+  automod_alert_action_none: string;
+  automod_alert_footer: string;
   automod_test_missing_message: string;
   automod_test_title: string;
   automod_test_field_message: string;
@@ -546,6 +587,8 @@ export interface TranslationDictionary {
   leveling_leaderboard_title: string;
   leveling_leaderboard_line: string;
   leveling_leaderboard_footer: string;
+  leveling_levelup_title: string;
+  leveling_levelup_roles_unlocked: string;
   leveling_xp_add_success: string;
   leveling_xp_remove_success: string;
   leveling_xp_set_success: string;
@@ -567,6 +610,14 @@ export interface TranslationDictionary {
   antiraid_field_mentions: string;
   antiraid_mentions_value: string;
   antiraid_status_footer: string;
+  antiraid_alert_desc: string;
+  antiraid_alert_field_reason: string;
+  antiraid_alert_field_signals: string;
+  antiraid_alert_field_actions: string;
+  antiraid_alert_signals_none: string;
+  antiraid_alert_actions_none: string;
+  antiraid_alert_footer: string;
+  antiraid_alert_ping: string;
   antiraid_raidmode_reason: string;
   antiraid_lockdown_reason: string;
   antiraid_raidmode_on_success: string;
@@ -777,6 +828,34 @@ const translations: Record<SupportedLanguage, TranslationDictionary> = {
     warnings_total: 'Total : **{count}** sanction(s) enregistrée(s)\n────────────────────',
     warnings_field_value: '**Raison :** {reason}\n**Par :** {moderator} • *{date}*',
 
+    // Moderation log channel embeds (ModLogger)
+    modlog_type_default: 'Sanction appliquée',
+    modlog_type_warn: 'Avertissement',
+    modlog_type_timeout: 'Mise en sourdine (Timeout)',
+    modlog_type_untimeout: 'Fin de sourdine (Untimeout)',
+    modlog_type_kick: 'Expulsion (Kick)',
+    modlog_type_ban: 'Bannissement (Ban)',
+    modlog_type_unban: 'Débannissement (Unban)',
+    modlog_field_member: '👤 Membre',
+    modlog_field_moderator: '🛡️ Modérateur',
+    modlog_field_reason: '📝 Raison',
+    modlog_reason_none: 'Aucune raison spécifiée',
+    modlog_field_duration: '⏱️ Durée',
+    modlog_duration_value: '{minutes} minute(s)',
+    modlog_footer: '{botName} • Modération',
+    modlog_automod_title: '🤖 AutoMod • Règle déclenchée : {ruleName}',
+    modlog_automod_field_member: '👤 Membre',
+    modlog_automod_field_action: '⚡ Action effectuée',
+    modlog_automod_field_excerpt: '💬 Extrait du message',
+    modlog_automod_footer: '{botName} • AutoMod Protection',
+    sanction_dm_footer: 'ETHONE Moderation Center 2.0',
+    sanction_dm_warn_title: '⚠️ Avertissement — {guildName}',
+    sanction_dm_warn_desc: 'Vous avez reçu un avertissement sur le serveur **{guildName}**.',
+    sanction_dm_kick_title: '👢 Expulsion — {guildName}',
+    sanction_dm_kick_desc: 'Vous avez été expulsé du serveur **{guildName}**.',
+    sanction_dm_ban_title: '🔨 Bannissement — {guildName}',
+    sanction_dm_ban_desc: 'Vous avez été banni du serveur **{guildName}**.',
+
     music_no_query: '❌ Veuillez spécifier un titre ou un lien à jouer.',
     music_play_failed: '❌ Impossible de lancer cette musique.',
     music_now_playing_title: '▶️ Lecture en cours',
@@ -825,6 +904,9 @@ const translations: Record<SupportedLanguage, TranslationDictionary> = {
     music_panel_inactive: 'Désactivé',
     music_panel_muted: 'Muet',
     music_panel_unknown: 'Inconnu',
+    music_panel_queue_value: '{count} titre(s) en attente',
+    music_panel_label_artist: 'Artiste',
+    music_panel_label_source: 'Source',
 
     ticket_module_disabled: '{emoji} Le module **Tickets** est désactivé sur ce serveur. Activez-le depuis le dashboard web.',
     ticket_already_open: '{emoji} Vous avez déjà un ticket ouvert dans {channel}.',
@@ -920,7 +1002,17 @@ const translations: Record<SupportedLanguage, TranslationDictionary> = {
     automod_detector_profiles: '👤 Profils',
     automod_status_field_strikes: '⚠️ Échelle de Strikes',
     automod_status_strikes_value: '{count} paliers configurés',
+    automod_status_disabled_notice: '⚫ La protection est **désactivée** : les détecteurs listés ci-dessous sont configurés mais **aucun n\'est actuellement appliqué**. Activez la protection avec `/automod toggle module:all activer:true`.',
     automod_status_footer: 'ETHONE Smart Moderation • Dashboard disponible sur /discord/moderation/automod',
+    automod_alert_title: '🤖 Détection AutoMod 2.0 — {rule}',
+    automod_alert_field_user: '👤 Utilisateur',
+    automod_alert_field_channel: '💬 Salon',
+    automod_alert_field_risk: '📊 Risk Score',
+    automod_alert_field_actions: '⚡ Actions Appliquées',
+    automod_alert_field_strikes: '⚠️ Strikes Actifs',
+    automod_alert_field_preview: '📝 Aperçu du message',
+    automod_alert_action_none: '`LOG`',
+    automod_alert_footer: 'ETHONE Smart Moderation Engine',
     automod_test_missing_message: '❌ Veuillez préciser le message de test.',
     automod_test_title: '🧪 AutoMod Sandbox — Test de Règle',
     automod_test_field_message: '📝 Message Testé',
@@ -1111,6 +1203,8 @@ const translations: Record<SupportedLanguage, TranslationDictionary> = {
     leveling_leaderboard_title: '🏆 Classement d\'Activité • {guildName}',
     leveling_leaderboard_line: '{medal} <@{userId}> — **Niveau {level}** (`{xp} XP`)',
     leveling_leaderboard_footer: 'Consultez le classement complet sur le Dashboard Web',
+    leveling_levelup_title: '⭐ Progression de Niveau !',
+    leveling_levelup_roles_unlocked: '🎁 **Rôle(s) débloqué(s) :** {roles}',
     leveling_xp_add_success: '✅ **+{amount} XP** ajoutés à <@{userId}>. Nouveau total : **{total} XP** (Niveau {level}).',
     leveling_xp_remove_success: '✅ **-{amount} XP** retirés à <@{userId}>. Nouveau total : **{total} XP** (Niveau {level}).',
     leveling_xp_set_success: '✅ XP de <@{userId}> défini à **{total} XP** (Niveau {level}).',
@@ -1131,6 +1225,14 @@ const translations: Record<SupportedLanguage, TranslationDictionary> = {
     antiraid_field_mentions: '🔔 Mentions (60s)',
     antiraid_mentions_value: '{count} mentions',
     antiraid_status_footer: 'ETHONE Anti-Raid Engine 2.0 • Dashboard Web disponible',
+    antiraid_alert_desc: '**Niveau de menace :** `{threatLevel}`\n**Risk Score :** `{riskScore}/100`',
+    antiraid_alert_field_reason: '🚨 Cause du déclenchement',
+    antiraid_alert_field_signals: '📊 Signaux suspects détectés',
+    antiraid_alert_field_actions: '⚡ Actions de protection exécutées',
+    antiraid_alert_signals_none: '• Aucune anomalie additionnelle',
+    antiraid_alert_actions_none: '✓ `LOG_EVENT`',
+    antiraid_alert_footer: 'Incident ID : {incidentId} • ETHONE Anti-Raid 2.0',
+    antiraid_alert_ping: '🚨 **Alerte Sécurité Anti-Raid**',
     antiraid_raidmode_reason: 'Déclenché par {tag}',
     antiraid_lockdown_reason: 'Lockdown d\'urgence par {tag}',
     antiraid_raidmode_on_success: '🚨 **Raid Mode ACTIVÉ !** Les protections d\'urgence sont en place.',
@@ -1339,6 +1441,34 @@ const translations: Record<SupportedLanguage, TranslationDictionary> = {
     warnings_total: 'Total: **{count}** sanction(s) recorded\n────────────────────',
     warnings_field_value: '**Reason:** {reason}\n**By:** {moderator} • *{date}*',
 
+    // Moderation log channel embeds (ModLogger)
+    modlog_type_default: 'Sanction applied',
+    modlog_type_warn: 'Warning',
+    modlog_type_timeout: 'Timeout',
+    modlog_type_untimeout: 'Timeout Removed',
+    modlog_type_kick: 'Kick',
+    modlog_type_ban: 'Ban',
+    modlog_type_unban: 'Unban',
+    modlog_field_member: '👤 Member',
+    modlog_field_moderator: '🛡️ Moderator',
+    modlog_field_reason: '📝 Reason',
+    modlog_reason_none: 'No reason specified',
+    modlog_field_duration: '⏱️ Duration',
+    modlog_duration_value: '{minutes} minute(s)',
+    modlog_footer: '{botName} • Moderation',
+    modlog_automod_title: '🤖 AutoMod • Rule triggered: {ruleName}',
+    modlog_automod_field_member: '👤 Member',
+    modlog_automod_field_action: '⚡ Action taken',
+    modlog_automod_field_excerpt: '💬 Message excerpt',
+    modlog_automod_footer: '{botName} • AutoMod Protection',
+    sanction_dm_footer: 'ETHONE Moderation Center 2.0',
+    sanction_dm_warn_title: '⚠️ Warning — {guildName}',
+    sanction_dm_warn_desc: 'You received a warning on the server **{guildName}**.',
+    sanction_dm_kick_title: '👢 Kick — {guildName}',
+    sanction_dm_kick_desc: 'You have been kicked from the server **{guildName}**.',
+    sanction_dm_ban_title: '🔨 Ban — {guildName}',
+    sanction_dm_ban_desc: 'You have been banned from the server **{guildName}**.',
+
     music_no_query: '❌ Please specify a title or link to play.',
     music_play_failed: '❌ Unable to play this track.',
     music_now_playing_title: '▶️ Now Playing',
@@ -1387,6 +1517,9 @@ const translations: Record<SupportedLanguage, TranslationDictionary> = {
     music_panel_inactive: 'Disabled',
     music_panel_muted: 'Muted',
     music_panel_unknown: 'Unknown',
+    music_panel_queue_value: '{count} track(s) queued',
+    music_panel_label_artist: 'Artist',
+    music_panel_label_source: 'Source',
 
     ticket_module_disabled: '{emoji} The **Tickets** module is disabled on this server. Enable it from the web dashboard.',
     ticket_already_open: '{emoji} You already have an open ticket in {channel}.',
@@ -1482,7 +1615,17 @@ const translations: Record<SupportedLanguage, TranslationDictionary> = {
     automod_detector_profiles: '👤 Profiles',
     automod_status_field_strikes: '⚠️ Strike Scale',
     automod_status_strikes_value: '{count} tier(s) configured',
+    automod_status_disabled_notice: '⚫ Protection is **disabled**: the detectors listed below are configured but **none are currently being enforced**. Enable protection with `/automod toggle module:all activer:true`.',
     automod_status_footer: 'ETHONE Smart Moderation • Dashboard available at /discord/moderation/automod',
+    automod_alert_title: '🤖 AutoMod 2.0 Detection — {rule}',
+    automod_alert_field_user: '👤 User',
+    automod_alert_field_channel: '💬 Channel',
+    automod_alert_field_risk: '📊 Risk Score',
+    automod_alert_field_actions: '⚡ Actions Applied',
+    automod_alert_field_strikes: '⚠️ Active Strikes',
+    automod_alert_field_preview: '📝 Message Preview',
+    automod_alert_action_none: '`LOG`',
+    automod_alert_footer: 'ETHONE Smart Moderation Engine',
     automod_test_missing_message: '❌ Please provide the test message.',
     automod_test_title: '🧪 AutoMod Sandbox — Rule Test',
     automod_test_field_message: '📝 Tested Message',
@@ -1673,6 +1816,8 @@ const translations: Record<SupportedLanguage, TranslationDictionary> = {
     leveling_leaderboard_title: '🏆 Activity Leaderboard • {guildName}',
     leveling_leaderboard_line: '{medal} <@{userId}> — **Level {level}** (`{xp} XP`)',
     leveling_leaderboard_footer: 'View the full leaderboard on the Web Dashboard',
+    leveling_levelup_title: '⭐ Level Up!',
+    leveling_levelup_roles_unlocked: '🎁 **Role(s) unlocked:** {roles}',
     leveling_xp_add_success: '✅ **+{amount} XP** added to <@{userId}>. New total: **{total} XP** (Level {level}).',
     leveling_xp_remove_success: '✅ **-{amount} XP** removed from <@{userId}>. New total: **{total} XP** (Level {level}).',
     leveling_xp_set_success: '✅ XP for <@{userId}> set to **{total} XP** (Level {level}).',
@@ -1693,6 +1838,14 @@ const translations: Record<SupportedLanguage, TranslationDictionary> = {
     antiraid_field_mentions: '🔔 Mentions (60s)',
     antiraid_mentions_value: '{count} mentions',
     antiraid_status_footer: 'ETHONE Anti-Raid Engine 2.0 • Web Dashboard available',
+    antiraid_alert_desc: '**Threat level:** `{threatLevel}`\n**Risk Score:** `{riskScore}/100`',
+    antiraid_alert_field_reason: '🚨 Trigger cause',
+    antiraid_alert_field_signals: '📊 Suspicious signals detected',
+    antiraid_alert_field_actions: '⚡ Protection actions executed',
+    antiraid_alert_signals_none: '• No additional anomaly',
+    antiraid_alert_actions_none: '✓ `LOG_EVENT`',
+    antiraid_alert_footer: 'Incident ID: {incidentId} • ETHONE Anti-Raid 2.0',
+    antiraid_alert_ping: '🚨 **Anti-Raid Security Alert**',
     antiraid_raidmode_reason: 'Triggered by {tag}',
     antiraid_lockdown_reason: 'Emergency lockdown by {tag}',
     antiraid_raidmode_on_success: '🚨 **Raid Mode ACTIVATED!** Emergency protections are now in place.',
@@ -1901,6 +2054,34 @@ const translations: Record<SupportedLanguage, TranslationDictionary> = {
     warnings_total: 'Total: **{count}** sanción(es) registrada(s)\n────────────────────',
     warnings_field_value: '**Razón:** {reason}\n**Por:** {moderator} • *{date}*',
 
+    // Moderation log channel embeds (ModLogger)
+    modlog_type_default: 'Sanción aplicada',
+    modlog_type_warn: 'Advertencia',
+    modlog_type_timeout: 'Silencio Temporal (Timeout)',
+    modlog_type_untimeout: 'Silencio Retirado (Untimeout)',
+    modlog_type_kick: 'Expulsión (Kick)',
+    modlog_type_ban: 'Baneo (Ban)',
+    modlog_type_unban: 'Desbaneo (Unban)',
+    modlog_field_member: '👤 Miembro',
+    modlog_field_moderator: '🛡️ Moderador',
+    modlog_field_reason: '📝 Razón',
+    modlog_reason_none: 'Ninguna razón especificada',
+    modlog_field_duration: '⏱️ Duración',
+    modlog_duration_value: '{minutes} minuto(s)',
+    modlog_footer: '{botName} • Moderación',
+    modlog_automod_title: '🤖 AutoMod • Regla activada: {ruleName}',
+    modlog_automod_field_member: '👤 Miembro',
+    modlog_automod_field_action: '⚡ Acción realizada',
+    modlog_automod_field_excerpt: '💬 Extracto del mensaje',
+    modlog_automod_footer: '{botName} • Protección AutoMod',
+    sanction_dm_footer: 'ETHONE Moderation Center 2.0',
+    sanction_dm_warn_title: '⚠️ Advertencia — {guildName}',
+    sanction_dm_warn_desc: 'Has recibido una advertencia en el servidor **{guildName}**.',
+    sanction_dm_kick_title: '👢 Expulsión — {guildName}',
+    sanction_dm_kick_desc: 'Has sido expulsado del servidor **{guildName}**.',
+    sanction_dm_ban_title: '🔨 Baneo — {guildName}',
+    sanction_dm_ban_desc: 'Has sido baneado del servidor **{guildName}**.',
+
     music_no_query: '❌ Especifica un título o enlace para reproducir.',
     music_play_failed: '❌ No se pudo reproducir esta música.',
     music_now_playing_title: '▶️ Reproduciendo Ahora',
@@ -1949,6 +2130,9 @@ const translations: Record<SupportedLanguage, TranslationDictionary> = {
     music_panel_inactive: 'Desactivado',
     music_panel_muted: 'Silenciado',
     music_panel_unknown: 'Desconocido',
+    music_panel_queue_value: '{count} canción(es) en cola',
+    music_panel_label_artist: 'Artista',
+    music_panel_label_source: 'Fuente',
 
     ticket_module_disabled: '{emoji} El módulo **Tickets** está desactivado en este servidor. Actívalo desde el panel web.',
     ticket_already_open: '{emoji} Ya tienes un ticket abierto en {channel}.',
@@ -2044,7 +2228,17 @@ const translations: Record<SupportedLanguage, TranslationDictionary> = {
     automod_detector_profiles: '👤 Perfiles',
     automod_status_field_strikes: '⚠️ Escala de Strikes',
     automod_status_strikes_value: '{count} nivel(es) configurado(s)',
+    automod_status_disabled_notice: '⚫ La protección está **desactivada**: los detectores listados abajo están configurados pero **ninguno se aplica actualmente**. Activa la protección con `/automod toggle module:all activer:true`.',
     automod_status_footer: 'ETHONE Smart Moderation • Panel disponible en /discord/moderation/automod',
+    automod_alert_title: '🤖 Detección AutoMod 2.0 — {rule}',
+    automod_alert_field_user: '👤 Usuario',
+    automod_alert_field_channel: '💬 Canal',
+    automod_alert_field_risk: '📊 Risk Score',
+    automod_alert_field_actions: '⚡ Acciones Aplicadas',
+    automod_alert_field_strikes: '⚠️ Strikes Activos',
+    automod_alert_field_preview: '📝 Vista previa del mensaje',
+    automod_alert_action_none: '`LOG`',
+    automod_alert_footer: 'ETHONE Smart Moderation Engine',
     automod_test_missing_message: '❌ Por favor indica el mensaje de prueba.',
     automod_test_title: '🧪 AutoMod Sandbox — Prueba de Regla',
     automod_test_field_message: '📝 Mensaje Probado',
@@ -2235,6 +2429,8 @@ const translations: Record<SupportedLanguage, TranslationDictionary> = {
     leveling_leaderboard_title: '🏆 Clasificación de Actividad • {guildName}',
     leveling_leaderboard_line: '{medal} <@{userId}> — **Nivel {level}** (`{xp} XP`)',
     leveling_leaderboard_footer: 'Consulta la clasificación completa en el Panel Web',
+    leveling_levelup_title: '⭐ ¡Subida de Nivel!',
+    leveling_levelup_roles_unlocked: '🎁 **Rol(es) desbloqueado(s):** {roles}',
     leveling_xp_add_success: '✅ **+{amount} XP** añadidos a <@{userId}>. Nuevo total: **{total} XP** (Nivel {level}).',
     leveling_xp_remove_success: '✅ **-{amount} XP** retirados a <@{userId}>. Nuevo total: **{total} XP** (Nivel {level}).',
     leveling_xp_set_success: '✅ XP de <@{userId}> establecido en **{total} XP** (Nivel {level}).',
@@ -2255,6 +2451,14 @@ const translations: Record<SupportedLanguage, TranslationDictionary> = {
     antiraid_field_mentions: '🔔 Menciones (60s)',
     antiraid_mentions_value: '{count} menciones',
     antiraid_status_footer: 'ETHONE Anti-Raid Engine 2.0 • Panel Web disponible',
+    antiraid_alert_desc: '**Nivel de amenaza:** `{threatLevel}`\n**Risk Score:** `{riskScore}/100`',
+    antiraid_alert_field_reason: '🚨 Causa de activación',
+    antiraid_alert_field_signals: '📊 Señales sospechosas detectadas',
+    antiraid_alert_field_actions: '⚡ Acciones de protección ejecutadas',
+    antiraid_alert_signals_none: '• Ninguna anomalía adicional',
+    antiraid_alert_actions_none: '✓ `LOG_EVENT`',
+    antiraid_alert_footer: 'ID de Incidente: {incidentId} • ETHONE Anti-Raid 2.0',
+    antiraid_alert_ping: '🚨 **Alerta de Seguridad Anti-Raid**',
     antiraid_raidmode_reason: 'Activado por {tag}',
     antiraid_lockdown_reason: 'Bloqueo de emergencia por {tag}',
     antiraid_raidmode_on_success: '🚨 **¡Raid Mode ACTIVADO!** Las protecciones de emergencia ya están en marcha.',
@@ -2463,6 +2667,34 @@ const translations: Record<SupportedLanguage, TranslationDictionary> = {
     warnings_total: 'Gesamt: **{count}** erfasste Sanktion(en)\n────────────────────',
     warnings_field_value: '**Grund:** {reason}\n**Von:** {moderator} • *{date}*',
 
+    // Moderation log channel embeds (ModLogger)
+    modlog_type_default: 'Sanktion verhängt',
+    modlog_type_warn: 'Verwarnung',
+    modlog_type_timeout: 'Auszeit (Timeout)',
+    modlog_type_untimeout: 'Auszeit Aufgehoben (Untimeout)',
+    modlog_type_kick: 'Kick',
+    modlog_type_ban: 'Bann',
+    modlog_type_unban: 'Entbannung (Unban)',
+    modlog_field_member: '👤 Mitglied',
+    modlog_field_moderator: '🛡️ Moderator',
+    modlog_field_reason: '📝 Grund',
+    modlog_reason_none: 'Kein Grund angegeben',
+    modlog_field_duration: '⏱️ Dauer',
+    modlog_duration_value: '{minutes} Minute(n)',
+    modlog_footer: '{botName} • Moderation',
+    modlog_automod_title: '🤖 AutoMod • Regel ausgelöst: {ruleName}',
+    modlog_automod_field_member: '👤 Mitglied',
+    modlog_automod_field_action: '⚡ Ausgeführte Aktion',
+    modlog_automod_field_excerpt: '💬 Nachrichtenausschnitt',
+    modlog_automod_footer: '{botName} • AutoMod-Schutz',
+    sanction_dm_footer: 'ETHONE Moderation Center 2.0',
+    sanction_dm_warn_title: '⚠️ Verwarnung — {guildName}',
+    sanction_dm_warn_desc: 'Du hast eine Verwarnung auf dem Server **{guildName}** erhalten.',
+    sanction_dm_kick_title: '👢 Kick — {guildName}',
+    sanction_dm_kick_desc: 'Du wurdest vom Server **{guildName}** gekickt.',
+    sanction_dm_ban_title: '🔨 Bann — {guildName}',
+    sanction_dm_ban_desc: 'Du wurdest vom Server **{guildName}** gebannt.',
+
     music_no_query: '❌ Bitte gib einen Titel oder Link zum Abspielen an.',
     music_play_failed: '❌ Dieser Titel konnte nicht abgespielt werden.',
     music_now_playing_title: '▶️ Läuft Gerade',
@@ -2511,6 +2743,9 @@ const translations: Record<SupportedLanguage, TranslationDictionary> = {
     music_panel_inactive: 'Deaktiviert',
     music_panel_muted: 'Stumm',
     music_panel_unknown: 'Unbekannt',
+    music_panel_queue_value: '{count} Titel in der Warteschlange',
+    music_panel_label_artist: 'Künstler',
+    music_panel_label_source: 'Quelle',
 
     ticket_module_disabled: '{emoji} Das Modul **Tickets** ist auf diesem Server deaktiviert. Aktiviere es über das Web-Dashboard.',
     ticket_already_open: '{emoji} Du hast bereits ein offenes Ticket in {channel}.',
@@ -2606,7 +2841,17 @@ const translations: Record<SupportedLanguage, TranslationDictionary> = {
     automod_detector_profiles: '👤 Profile',
     automod_status_field_strikes: '⚠️ Strike-Skala',
     automod_status_strikes_value: '{count} konfigurierte Stufe(n)',
+    automod_status_disabled_notice: '⚫ Der Schutz ist **deaktiviert**: Die unten aufgeführten Detektoren sind konfiguriert, werden aber **derzeit nicht angewendet**. Aktiviere den Schutz mit `/automod toggle module:all activer:true`.',
     automod_status_footer: 'ETHONE Smart Moderation • Dashboard verfügbar unter /discord/moderation/automod',
+    automod_alert_title: '🤖 AutoMod 2.0 Erkennung — {rule}',
+    automod_alert_field_user: '👤 Nutzer',
+    automod_alert_field_channel: '💬 Kanal',
+    automod_alert_field_risk: '📊 Risk Score',
+    automod_alert_field_actions: '⚡ Angewendete Aktionen',
+    automod_alert_field_strikes: '⚠️ Aktive Strikes',
+    automod_alert_field_preview: '📝 Nachrichtenvorschau',
+    automod_alert_action_none: '`LOG`',
+    automod_alert_footer: 'ETHONE Smart Moderation Engine',
     automod_test_missing_message: '❌ Bitte gib die Testnachricht an.',
     automod_test_title: '🧪 AutoMod Sandbox — Regeltest',
     automod_test_field_message: '📝 Getestete Nachricht',
@@ -2797,6 +3042,8 @@ const translations: Record<SupportedLanguage, TranslationDictionary> = {
     leveling_leaderboard_title: '🏆 Aktivitäts-Bestenliste • {guildName}',
     leveling_leaderboard_line: '{medal} <@{userId}> — **Level {level}** (`{xp} XP`)',
     leveling_leaderboard_footer: 'Die vollständige Bestenliste findest du im Web-Dashboard',
+    leveling_levelup_title: '⭐ Levelaufstieg!',
+    leveling_levelup_roles_unlocked: '🎁 **Freigeschaltete Rolle(n):** {roles}',
     leveling_xp_add_success: '✅ **+{amount} XP** zu <@{userId}> hinzugefügt. Neuer Gesamtwert: **{total} XP** (Level {level}).',
     leveling_xp_remove_success: '✅ **-{amount} XP** von <@{userId}> entfernt. Neuer Gesamtwert: **{total} XP** (Level {level}).',
     leveling_xp_set_success: '✅ XP von <@{userId}> auf **{total} XP** gesetzt (Level {level}).',
@@ -2817,6 +3064,14 @@ const translations: Record<SupportedLanguage, TranslationDictionary> = {
     antiraid_field_mentions: '🔔 Erwähnungen (60s)',
     antiraid_mentions_value: '{count} Erwähnungen',
     antiraid_status_footer: 'ETHONE Anti-Raid Engine 2.0 • Web-Dashboard verfügbar',
+    antiraid_alert_desc: '**Bedrohungsstufe:** `{threatLevel}`\n**Risk Score:** `{riskScore}/100`',
+    antiraid_alert_field_reason: '🚨 Auslösegrund',
+    antiraid_alert_field_signals: '📊 Erkannte verdächtige Signale',
+    antiraid_alert_field_actions: '⚡ Ausgeführte Schutzmaßnahmen',
+    antiraid_alert_signals_none: '• Keine zusätzliche Anomalie',
+    antiraid_alert_actions_none: '✓ `LOG_EVENT`',
+    antiraid_alert_footer: 'Vorfall-ID: {incidentId} • ETHONE Anti-Raid 2.0',
+    antiraid_alert_ping: '🚨 **Anti-Raid-Sicherheitswarnung**',
     antiraid_raidmode_reason: 'Ausgelöst von {tag}',
     antiraid_lockdown_reason: 'Notfall-Lockdown von {tag}',
     antiraid_raidmode_on_success: '🚨 **Raid Mode AKTIVIERT!** Notfallschutzmaßnahmen sind jetzt aktiv.',

@@ -1,3 +1,12 @@
+const v12074_fr: ChangelogEntry = {
+  version: "v1.20.74",
+  date: "2026-09-10",
+  title: "Sécurité : Passe d'Attaque IDOR/BOLA + Suite de Tests (Phase 5)",
+  items: [
+    "Passe d'attaque réelle avec deux comptes distincts sur le chantier « Sécurité des comptes & sessions » : impossible pour un utilisateur de révoquer, faire confiance, renommer ou supprimer une session, un appareil ou une clé d'accès appartenant à quelqu'un d'autre, même en devinant un identifiant réel. 17 nouveaux tests de sécurité automatisés (188 côté serveur au total désormais), plus des scénarios de bout en bout pour la révocation multi-onglets et le changement de compte.",
+  ],
+};
+
 const v12073_fr: ChangelogEntry = {
   version: "v1.20.73",
   date: "2026-09-10",
@@ -238,6 +247,15 @@ const v12052_fr: ChangelogEntry = {
     "Dynamic Island : correction d'un bug de priorité qui empêchait Spotify de jamais s'afficher, systématiquement évincé par la synchronisation d'arrière-plan.",
     "Commande /help du Bot Discord : la liste des commandes est désormais générée dynamiquement depuis les commandes réellement enregistrées (fin des commandes fantômes et des commandes manquantes), et affiche la vraie syntaxe des commandes à sous-commandes (ex. /automod status).",
     "Audit de l'enregistrement des commandes slash Discord : architecture confirmée saine, aucune dérive entre le code et les commandes déployées.",
+  ],
+};
+
+const v12074_en: ChangelogEntry = {
+  version: "v1.20.74",
+  date: "2026-09-10",
+  title: "Security: IDOR/BOLA Attack Pass + Test Suite (Phase 5)",
+  items: [
+    "Real attack pass with two distinct accounts on the \"Account & Session Security\" project: a user cannot revoke, trust, rename, or remove a session, device, or passkey belonging to someone else, even by guessing a real id. 17 new automated security tests (188 on the server side in total now), plus end-to-end scenarios for multi-tab revocation and account switching.",
   ],
 };
 
@@ -484,6 +502,15 @@ const v12052_en: ChangelogEntry = {
   ],
 };
 
+const v12074_es: ChangelogEntry = {
+  version: "v1.20.74",
+  date: "2026-09-10",
+  title: "Seguridad: Prueba de Ataque IDOR/BOLA + Suite de Tests (Fase 5)",
+  items: [
+    "Prueba de ataque real con dos cuentas distintas sobre el proyecto de «Seguridad de cuentas y sesiones»: un usuario no puede revocar, confiar, renombrar ni eliminar una sesión, dispositivo o passkey que pertenezca a otra persona, ni siquiera adivinando un id real. 17 nuevas pruebas de seguridad automatizadas (188 en el lado del servidor en total ahora), además de escenarios de extremo a extremo para la revocación multi-pestaña y el cambio de cuenta.",
+  ],
+};
+
 const v12073_es: ChangelogEntry = {
   version: "v1.20.73",
   date: "2026-09-10",
@@ -724,6 +751,15 @@ const v12052_es: ChangelogEntry = {
     "Dynamic Island: corregido un error de prioridad que impedía que Spotify apareciera, siempre desplazado por la sincronización en segundo plano.",
     "Comando /help del Bot de Discord: la lista de comandos ahora se genera dinámicamente desde los comandos realmente registrados (fin de comandos fantasma o ausentes), mostrando la sintaxis real de los comandos con subcomandos.",
     "Auditoría del registro de comandos slash de Discord: arquitectura confirmada como sólida, sin desviación entre el código y los comandos desplegados.",
+  ],
+};
+
+const v12074_de: ChangelogEntry = {
+  version: "v1.20.74",
+  date: "2026-09-10",
+  title: "Sicherheit: IDOR/BOLA-Angriffstest + Testsuite (Phase 5)",
+  items: [
+    "Echter Angriffstest mit zwei getrennten Konten im Projekt „Konto- & Sitzungssicherheit“: Ein Nutzer kann eine Sitzung, ein Gerät oder einen Passkey, der jemand anderem gehört, nicht widerrufen, vertrauen, umbenennen oder entfernen — selbst wenn eine echte ID erraten wird. 17 neue automatisierte Sicherheitstests (jetzt 188 serverseitig insgesamt), plus Ende-zu-Ende-Szenarien für Multi-Tab-Widerruf und Kontowechsel.",
   ],
 };
 
@@ -22940,5 +22976,10 @@ CHANGELOG_BY_LANG.fr.unshift(v12073_fr);
 CHANGELOG_BY_LANG.en.unshift(v12073_en);
 CHANGELOG_BY_LANG.es.unshift(v12073_es);
 CHANGELOG_BY_LANG.de.unshift(v12073_de);
+
+CHANGELOG_BY_LANG.fr.unshift(v12074_fr);
+CHANGELOG_BY_LANG.en.unshift(v12074_en);
+CHANGELOG_BY_LANG.es.unshift(v12074_es);
+CHANGELOG_BY_LANG.de.unshift(v12074_de);
 
 export const CHANGELOG = CHANGELOG_BY_LANG.fr;

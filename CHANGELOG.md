@@ -2,6 +2,23 @@
 
 Toutes les modifications notables de ce projet seront documentées dans ce fichier.
 
+## v1.20.74 — 2026-09-10
+
+**Sécurité : passe d'attaque IDOR/BOLA + suite de tests (Phase 5 — clôture du chantier Session & Account Security 2.0)**
+
+Sixième et dernier lot du chantier (Phases 0-4 déjà livrées et en ligne : faille critique + routes non authentifiées, révocation de session réelle, isolation cache/realtime, TOTP/passkeys/CORS, Security Center). Cette phase attaque réellement ce qui a été construit plutôt que de se contenter de le relire.
+
+- **13 tests IDOR/BOLA** (`worker/test/idor-bola.test.mjs`) avec deux identités distinctes réellement signées, exécutés via le routeur réel — pas juste une relecture de code : un utilisateur A ne peut pas révoquer/faire confiance/supprimer un appareil de B en devinant un identifiant réel, ne peut jamais recevoir les événements de sécurité de B (identifiant étranger explicitement rejeté en paramètre, pas ignoré silencieusement), ne peut pas renommer/révoquer une clé d'accès de B, TOTP ne lit/écrit jamais la ligne d'un autre utilisateur. Vérifié aussi bien sur l'état de la victime que sur la forme réelle du filtre envoyé à Supabase (pas seulement « le mock a renvoyé vide »).
+- **Comportement documenté explicitement** : un `session_id` qui ne correspond à aucun appareil connu n'est PAS traité comme révoqué (rien à révoquer) — comportement attendu, désormais fixé par un test plutôt que supposé implicitement.
+- **4 tests supplémentaires** (`worker/test/authorization-and-service-path.test.mjs`) : confirment que les écritures vers les tables verrouillées en Phase 1 utilisent toujours la clé de service du Worker, jamais un jeton d'appelant transmis (RLS Postgres elle-même reste impossible à vérifier sans une vraie instance Supabase — hors de portée de cette suite automatisée) ; couverture de la seule route admin existante (liste blanche d'emails, `requireRole` s'avère être du code mort jamais appelé — signalé, non modifié).
+- **Sondage sur 4 autres routes** (profils, données utilisateur, connexions, fichiers cloud) : aucune faille IDOR trouvée — toutes filtrent correctement par l'utilisateur authentifié.
+- **6 scénarios de bout en bout Playwright** (`ethone-next/e2e/session-security.spec.ts`) : révocation d'une autre session, déconnexion de tous les autres appareils, multi-onglets, changement de compte, session expirée/révoquée. Écrits et syntaxiquement valides, non exécutables dans cet environnement (nécessitent des identifiants de test réels) — un humain doit les relancer contre un déploiement réel.
+- **Deux découvertes architecturales importantes signalées (non corrigées dans cette passe)** :
+  1. Ni la connexion par mot de passe ni le code de vérification natif Supabase n'appellent jamais `POST /api/auth/device` — une connexion via ces parcours (les plus utilisés) ne crée aucune ligne de session traçable et échappe donc à la révocation par requête de la Phase 1 et au Security Center de la Phase 4.
+  2. Aucune redirection forcée vers `/login` trouvée quand une session devient invalide sur une page privée (seule la déconnexion explicite déclenche le rechargement dur de la Phase 2).
+- Validation : suite `worker` complète — **188/188** (171→188, +17) ; `ethone-next` — `tsc --noEmit`, `npm run build`, `npm run lint` (0 erreur), `npm run test:unit` (14/14, 69/69, inchangé — cette phase n'a touché que les tests E2E côté client).
+- **Bilan honnête sur les 26 points du cahier des charges initial** : la quasi-totalité est marquée Terminé après ces 5 phases ; RLS Postgres, fixation de session, comportement multi-onglets et résilience au redémarrage sont marqués Partiellement fait (protections structurelles en place, vérification complète hors de portée sans instance Supabase réelle ou exécution manuelle) ; les deux découvertes ci-dessus restent à traiter.
+
 ## v1.20.73 — 2026-09-10
 
 **Security Center : vraies sessions, vraie double authentification (Phase 4 — Session & Account Security 2.0)**

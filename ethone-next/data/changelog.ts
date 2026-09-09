@@ -1,3 +1,13 @@
+const v12069_fr: ChangelogEntry = {
+  version: "v1.20.69",
+  date: "2026-09-09",
+  title: "Correctif Critique de Sécurité : Suppression Massive Non Authentifiée",
+  items: [
+    "Correctif de sécurité critique (Phase 0 du chantier Sécurité des comptes & sessions) : la route /api/connections/disconnect acceptait un paramètre purgeAll qui, pour Discord, supprimait les jetons et identifiants Discord de TOUS les utilisateurs en base — sans aucune authentification requise. La route était marquée publique et le seul appelant de ce paramètre était un script de migration ponctuelle (4 septembre) déjà mort côté client. Le paramètre purgeAll est entièrement supprimé et la route exige désormais une session vérifiée.",
+    "Correctif de sécurité : trois routes de contrôle du bot Discord (redémarrage/mise à jour du bot, changement de pseudo/avatar du bot, journal de résilience) n'exigeaient aucune authentification du tout. Elles nécessitent désormais une connexion valide ET le statut de propriétaire du bot.",
+  ],
+};
+
 const v12068_fr: ChangelogEntry = {
   version: "v1.20.68",
   date: "2026-09-09",
@@ -183,6 +193,16 @@ const v12052_fr: ChangelogEntry = {
     "Dynamic Island : correction d'un bug de priorité qui empêchait Spotify de jamais s'afficher, systématiquement évincé par la synchronisation d'arrière-plan.",
     "Commande /help du Bot Discord : la liste des commandes est désormais générée dynamiquement depuis les commandes réellement enregistrées (fin des commandes fantômes et des commandes manquantes), et affiche la vraie syntaxe des commandes à sous-commandes (ex. /automod status).",
     "Audit de l'enregistrement des commandes slash Discord : architecture confirmée saine, aucune dérive entre le code et les commandes déployées.",
+  ],
+};
+
+const v12069_en: ChangelogEntry = {
+  version: "v1.20.69",
+  date: "2026-09-09",
+  title: "Critical Security Fix: Unauthenticated Mass Deletion",
+  items: [
+    "Critical security fix (Phase 0 of the Account & Session Security project): the /api/connections/disconnect route accepted a purgeAll parameter that, for Discord, deleted EVERY user's Discord tokens and credentials database-wide — with no authentication required at all. The route was marked public and the only caller of that parameter was a one-time migration script (Sept 4th) already dead on the client side. The purgeAll parameter has been removed entirely and the route now requires a verified session.",
+    "Security fix: three Discord bot control routes (bot restart/update, bot username/avatar change, resilience log) required no authentication whatsoever. They now require a valid login AND bot-owner status.",
   ],
 };
 
@@ -374,6 +394,16 @@ const v12052_en: ChangelogEntry = {
   ],
 };
 
+const v12069_es: ChangelogEntry = {
+  version: "v1.20.69",
+  date: "2026-09-09",
+  title: "Corrección Crítica de Seguridad: Eliminación Masiva Sin Autenticación",
+  items: [
+    "Corrección crítica de seguridad (Fase 0 del proyecto de Seguridad de cuentas y sesiones): la ruta /api/connections/disconnect aceptaba un parámetro purgeAll que, para Discord, eliminaba los tokens y credenciales de Discord de TODOS los usuarios en toda la base de datos — sin ninguna autenticación requerida. La ruta estaba marcada como pública y el único que llamaba a ese parámetro era un script de migración puntual (4 de septiembre) ya muerto en el lado del cliente. El parámetro purgeAll se ha eliminado por completo y la ruta ahora exige una sesión verificada.",
+    "Corrección de seguridad: tres rutas de control del bot de Discord (reinicio/actualización del bot, cambio de nombre/avatar del bot, registro de resiliencia) no requerían ninguna autenticación en absoluto. Ahora requieren un inicio de sesión válido Y el estado de propietario del bot.",
+  ],
+};
+
 const v12068_es: ChangelogEntry = {
   version: "v1.20.68",
   date: "2026-09-09",
@@ -559,6 +589,16 @@ const v12052_es: ChangelogEntry = {
     "Dynamic Island: corregido un error de prioridad que impedía que Spotify apareciera, siempre desplazado por la sincronización en segundo plano.",
     "Comando /help del Bot de Discord: la lista de comandos ahora se genera dinámicamente desde los comandos realmente registrados (fin de comandos fantasma o ausentes), mostrando la sintaxis real de los comandos con subcomandos.",
     "Auditoría del registro de comandos slash de Discord: arquitectura confirmada como sólida, sin desviación entre el código y los comandos desplegados.",
+  ],
+};
+
+const v12069_de: ChangelogEntry = {
+  version: "v1.20.69",
+  date: "2026-09-09",
+  title: "Kritischer Sicherheitsfix: Nicht Authentifizierte Massenlöschung",
+  items: [
+    "Kritischer Sicherheitsfix (Phase 0 des Projekts Konto- & Sitzungssicherheit): Die Route /api/connections/disconnect akzeptierte einen purgeAll-Parameter, der für Discord die Discord-Token und -Zugangsdaten JEDES Nutzers datenbankweit löschte — völlig ohne erforderliche Authentifizierung. Die Route war als öffentlich markiert, und der einzige Aufrufer dieses Parameters war ein einmaliges Migrationsskript (4. September), das clientseitig bereits tot war. Der purgeAll-Parameter wurde vollständig entfernt, die Route erfordert jetzt eine verifizierte Sitzung.",
+    "Sicherheitsfix: Drei Discord-Bot-Steuerungsrouten (Bot-Neustart/-Update, Bot-Benutzername-/Avatar-Änderung, Resilienz-Protokoll) erforderten überhaupt keine Authentifizierung. Sie benötigen jetzt eine gültige Anmeldung UND den Bot-Owner-Status.",
   ],
 };
 
@@ -22695,5 +22735,10 @@ CHANGELOG_BY_LANG.fr.unshift(v12068_fr);
 CHANGELOG_BY_LANG.en.unshift(v12068_en);
 CHANGELOG_BY_LANG.es.unshift(v12068_es);
 CHANGELOG_BY_LANG.de.unshift(v12068_de);
+
+CHANGELOG_BY_LANG.fr.unshift(v12069_fr);
+CHANGELOG_BY_LANG.en.unshift(v12069_en);
+CHANGELOG_BY_LANG.es.unshift(v12069_es);
+CHANGELOG_BY_LANG.de.unshift(v12069_de);
 
 export const CHANGELOG = CHANGELOG_BY_LANG.fr;

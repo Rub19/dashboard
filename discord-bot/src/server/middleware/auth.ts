@@ -60,3 +60,23 @@ export function authMiddleware(req: Request, res: Response, next: NextFunction):
     res.status(401).json({ error: 'Session invalide ou expirée.' });
   }
 }
+
+// Global bot-control endpoints (restart, update, presence/identity, resilience
+// diagnostics) are not guild-scoped, so guildAuth.ts's allowBotOwnerOverride
+// doesn't apply to them — they were mounted with no auth check at all, letting
+// any unauthenticated caller hit them (including POST /restart, /update,
+// /identity/username, /identity/avatar). authMiddleware alone isn't enough
+// either: it only proves *some* Discord user is logged into the dashboard,
+// not that they're the bot owner. Chain this after authMiddleware wherever
+// only the owner should be able to act.
+export function requireBotOwner(req: Request, res: Response, next: NextFunction): void {
+  if (!req.user) {
+    res.status(401).json({ error: 'Non authentifié. Veuillez vous connecter.' });
+    return;
+  }
+  if (req.user.id !== config.botOwnerId) {
+    res.status(403).json({ error: 'Réservé au propriétaire du bot.' });
+    return;
+  }
+  next();
+}

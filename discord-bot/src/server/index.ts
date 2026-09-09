@@ -40,7 +40,7 @@ import { createSyncRouter, createGuildSyncRouter } from './routes/syncRoutes.js'
 import { createResilienceRouter } from './routes/resilienceRoutes.js';
 import { eventsSchedulerService } from '../modules/events/eventsSchedulerService.js';
 import { eventsAutomationService } from '../modules/events/eventsAutomationService.js';
-import { authMiddleware } from './middleware/auth.js';
+import { authMiddleware, requireBotOwner } from './middleware/auth.js';
 import { createGuildAuthMiddleware } from './middleware/guildAuth.js';
 import { rateLimit } from './middleware/antiAbuseMiddleware.js';
 
@@ -211,6 +211,8 @@ export function startWebServer(client: Client): http.Server {
   );
   app.use(
     '/api/bot',
+    authMiddleware,
+    requireBotOwner,
     createBotControlRouter(client)
   );
   app.use(
@@ -221,6 +223,8 @@ export function startWebServer(client: Client): http.Server {
   );
   app.use(
     '/api/bot/presence',
+    authMiddleware,
+    requireBotOwner,
     createPresenceRouter(client)
   );
   app.use(
@@ -241,6 +245,8 @@ export function startWebServer(client: Client): http.Server {
   );
   app.use(
     '/api/resilience',
+    authMiddleware,
+    requireBotOwner,
     createResilienceRouter()
   );
 

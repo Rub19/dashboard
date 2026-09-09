@@ -97,18 +97,8 @@ export async function listConnections(env, userId) {
   }
 }
 
-export async function disconnectProvider(env, userId, provider, purgeAll = false) {
+export async function disconnectProvider(env, userId, provider) {
   try {
-    if (purgeAll && provider === "discord") {
-      // Forcibly purge all old Discord tokens & credentials across ALL users
-      await Promise.allSettled([
-        supabaseRequest(env, "/rest/v1/user_oauth_tokens?provider=eq.discord", { method: "DELETE" }),
-        supabaseRequest(env, "/rest/v1/user_provider_credentials?provider=eq.discord", { method: "DELETE" }),
-        supabaseRequest(env, "/rest/v1/user_data?key=eq.discord_profile", { method: "DELETE" }),
-      ]);
-      return { success: true, purgedAll: true };
-    }
-
     if (userId && provider) {
       await Promise.allSettled([
         supabaseRequest(env, `/rest/v1/user_oauth_tokens?owner_id=eq.${encodeURIComponent(userId)}&provider=eq.${encodeURIComponent(provider)}`, { method: "DELETE" }),

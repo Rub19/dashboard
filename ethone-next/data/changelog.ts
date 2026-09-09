@@ -1,3 +1,14 @@
+const v12066_fr: ChangelogEntry = {
+  version: "v1.20.66",
+  date: "2026-09-09",
+  title: "Correctif du Sélecteur d'Avatar (Affichage Cassé) & Appel Lanyard Erroné",
+  items: [
+    "Correctif : la fenêtre de sélection d'avatar (menu profil → « Changer d'avatar ») s'affichait de travers, mélangée avec le reste de la page au lieu de la recouvrir proprement — causé par un ancêtre animé (le menu déroulant du profil) qui piégeait involontairement la fenêtre plein écran dans ses propres limites. Elle s'affiche désormais via un portail direct vers la racine de la page, comme n'importe quelle fenêtre modale plein écran, peu importe où elle est ouverte.",
+    "Correctif : quelques avatars de la bibliothèque qui ne s'affichaient pas montrent désormais une pastille avec l'initiale du nom plutôt qu'une icône d'image cassée.",
+    "Correctif : la carte Discord (Dynamic Island / Dock) interrogeait par erreur l'API de présence Lanyard avec l'identifiant de l'application Discord d'ETHONE elle-même (un identifiant fixe et identique pour tout le monde) au lieu de ton propre identifiant Discord quand aucun n'est encore configuré — provoquant un échec réseau (404) à chaque actualisation. Ce mauvais identifiant de repli est retiré ; connecter réellement Discord (page Connexions) reste la façon d'activer cette source.",
+  ],
+};
+
 const v12065_fr: ChangelogEntry = {
   version: "v1.20.65",
   date: "2026-09-09",
@@ -153,6 +164,17 @@ const v12052_fr: ChangelogEntry = {
     "Dynamic Island : correction d'un bug de priorité qui empêchait Spotify de jamais s'afficher, systématiquement évincé par la synchronisation d'arrière-plan.",
     "Commande /help du Bot Discord : la liste des commandes est désormais générée dynamiquement depuis les commandes réellement enregistrées (fin des commandes fantômes et des commandes manquantes), et affiche la vraie syntaxe des commandes à sous-commandes (ex. /automod status).",
     "Audit de l'enregistrement des commandes slash Discord : architecture confirmée saine, aucune dérive entre le code et les commandes déployées.",
+  ],
+};
+
+const v12066_en: ChangelogEntry = {
+  version: "v1.20.66",
+  date: "2026-09-09",
+  title: "Avatar Picker Fix (Broken Layout) & Wrong Lanyard Call",
+  items: [
+    "Fix: the avatar picker (profile menu → \"Change avatar\") rendered squeezed and overlapping with the rest of the page instead of covering it cleanly — caused by an animated ancestor (the profile dropdown) unintentionally trapping the full-screen modal inside its own bounds. It now renders through a portal straight to the page root, like any proper full-screen modal, regardless of where it's opened from.",
+    "Fix: a few avatars in the library that failed to display now fall back to an initial-letter tile instead of a broken image icon.",
+    "Fix: the Discord card (Dynamic Island / Dock) was mistakenly querying the Lanyard presence API with ETHONE's own Discord app ID (a fixed value, the same for everyone) instead of your actual Discord ID when none was configured yet — causing a network failure (404) on every refresh. That bad fallback ID was removed; actually connecting Discord (Connections page) remains the way to enable this source.",
   ],
 };
 
@@ -314,6 +336,17 @@ const v12052_en: ChangelogEntry = {
   ],
 };
 
+const v12066_es: ChangelogEntry = {
+  version: "v1.20.66",
+  date: "2026-09-09",
+  title: "Corrección del Selector de Avatar (Diseño Roto) y Llamada Incorrecta a Lanyard",
+  items: [
+    "Corrección: el selector de avatar (menú de perfil → «Cambiar avatar») se mostraba comprimido y mezclado con el resto de la página en lugar de cubrirla correctamente — causado por un ancestro animado (el menú desplegable de perfil) que atrapaba sin querer la ventana de pantalla completa dentro de sus propios límites. Ahora se renderiza mediante un portal directo a la raíz de la página, como cualquier modal de pantalla completa, sin importar desde dónde se abra.",
+    "Corrección: algunos avatares de la biblioteca que no se mostraban ahora muestran una ficha con la inicial del nombre en vez de un icono de imagen rota.",
+    "Corrección: la tarjeta de Discord (Dynamic Island / Dock) consultaba por error la API de presencia de Lanyard con el ID de la propia app de Discord de ETHONE (un valor fijo, igual para todos) en lugar de tu ID de Discord real cuando aún no había ninguno configurado — provocando un fallo de red (404) en cada actualización. Se eliminó ese ID de respaldo incorrecto; conectar Discord de verdad (página Conexiones) sigue siendo la forma de activar esta fuente.",
+  ],
+};
+
 const v12065_es: ChangelogEntry = {
   version: "v1.20.65",
   date: "2026-09-09",
@@ -469,6 +502,17 @@ const v12052_es: ChangelogEntry = {
     "Dynamic Island: corregido un error de prioridad que impedía que Spotify apareciera, siempre desplazado por la sincronización en segundo plano.",
     "Comando /help del Bot de Discord: la lista de comandos ahora se genera dinámicamente desde los comandos realmente registrados (fin de comandos fantasma o ausentes), mostrando la sintaxis real de los comandos con subcomandos.",
     "Auditoría del registro de comandos slash de Discord: arquitectura confirmada como sólida, sin desviación entre el código y los comandos desplegados.",
+  ],
+};
+
+const v12066_de: ChangelogEntry = {
+  version: "v1.20.66",
+  date: "2026-09-09",
+  title: "Avatar-Auswahl-Fix (Kaputtes Layout) & Falscher Lanyard-Aufruf",
+  items: [
+    "Fix: Die Avatar-Auswahl (Profilmenü → „Avatar ändern“) wurde gequetscht und mit dem Rest der Seite vermischt angezeigt, statt sie sauber zu überdecken — verursacht durch ein animiertes Vorfahrenelement (das Profil-Dropdown), das das Vollbild-Modal ungewollt in seinen eigenen Grenzen gefangen hielt. Sie wird jetzt über ein Portal direkt zur Seitenwurzel gerendert, wie jedes richtige Vollbild-Modal, unabhängig davon, wo sie geöffnet wird.",
+    "Fix: Einige Avatare aus der Bibliothek, die nicht angezeigt wurden, zeigen jetzt eine Kachel mit dem Anfangsbuchstaben statt eines kaputten Bild-Symbols.",
+    "Fix: Die Discord-Karte (Dynamic Island / Dock) fragte fälschlicherweise die Lanyard-Präsenz-API mit ETHONEs eigener Discord-App-ID ab (ein fester Wert, für alle gleich) statt mit deiner tatsächlichen Discord-ID, wenn noch keine konfiguriert war — was bei jeder Aktualisierung zu einem Netzwerkfehler (404) führte. Dieser falsche Rückfallwert wurde entfernt; Discord tatsächlich zu verbinden (Verbindungen-Seite) bleibt der Weg, diese Quelle zu aktivieren.",
   ],
 };
 
@@ -22560,5 +22604,10 @@ CHANGELOG_BY_LANG.fr.unshift(v12065_fr);
 CHANGELOG_BY_LANG.en.unshift(v12065_en);
 CHANGELOG_BY_LANG.es.unshift(v12065_es);
 CHANGELOG_BY_LANG.de.unshift(v12065_de);
+
+CHANGELOG_BY_LANG.fr.unshift(v12066_fr);
+CHANGELOG_BY_LANG.en.unshift(v12066_en);
+CHANGELOG_BY_LANG.es.unshift(v12066_es);
+CHANGELOG_BY_LANG.de.unshift(v12066_de);
 
 export const CHANGELOG = CHANGELOG_BY_LANG.fr;

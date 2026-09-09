@@ -1,6 +1,7 @@
 "use client";
 
 import React, { useState, useMemo, useRef, useEffect } from "react";
+import { createPortal } from "react-dom";
 import {
   X,
   Search,
@@ -272,9 +273,17 @@ export default function AvatarPickerModal({
     reader.readAsDataURL(file);
   };
 
-  if (!isOpen) return null;
+  if (!isOpen || typeof document === "undefined") return null;
 
-  return (
+  // Rendered via a portal straight into <body>: this component is mounted deep
+  // inside UserProfileDropdown's animated Popover tree, and a `transform` (or
+  // `filter`/`backdrop-filter`) on any ancestor establishes a new containing
+  // block for `position: fixed` descendants in modern browsers — which trapped
+  // this "full-screen" modal inside the profile dropdown's small bounding box
+  // instead of covering the viewport, exactly the broken/overlapping layout
+  // reported by the user. Escaping to document.body via a portal sidesteps any
+  // ancestor stacking context entirely, regardless of where this is mounted.
+  return createPortal(
     <div className="fixed inset-0 z-[100] flex items-center justify-center p-3 sm:p-6 bg-black/80 backdrop-blur-md animate-in fade-in duration-200">
       <div
         className="relative flex h-[92vh] max-h-[920px] w-full max-w-5xl flex-col overflow-hidden rounded-2xl border border-[var(--panel-border)] bg-[#0b0c10] shadow-2xl"
@@ -617,7 +626,8 @@ export default function AvatarPickerModal({
           </div>
         </div>
       </div>
-    </div>
+    </div>,
+    document.body
   );
 }
 
@@ -702,14 +712,29 @@ function HorizontalAvatarRow({
               )}
               style={{ width: "112px" }}
             >
-              {/* Avatar Image */}
+              {/* Avatar Image — falls back to an initial-letter tile instead of a
+                  broken-image icon when the source 404s or fails to decode
+                  (some entries in the 320-image drive catalog can be flaky). */}
               <div className="relative h-20 w-20 overflow-hidden rounded-xl bg-black/80 shadow-inner">
                 <img
                   src={avatar.thumbnail_url || avatar.asset_url}
                   alt={avatar.name}
                   className="h-full w-full object-cover object-top transition-transform duration-200 group-hover/card:scale-105"
                   loading="lazy"
+                  onError={(e) => {
+                    const img = e.currentTarget;
+                    img.onerror = null;
+                    img.style.display = "none";
+                    const fallback = img.nextElementSibling as HTMLElement | null;
+                    if (fallback) fallback.style.display = "flex";
+                  }}
                 />
+                <div
+                  className="hidden h-full w-full items-center justify-center bg-[var(--accent-primary)]/15 text-lg font-bold text-[var(--accent-primary)]"
+                  aria-hidden="true"
+                >
+                  {avatar.name?.trim()?.[0]?.toUpperCase() || "?"}
+                </div>
 
                 {/* Favorite Heart Toggle */}
                 <button

@@ -205,14 +205,20 @@ export function useNowPlaying(pollMs = 3000) {
         localStorage.getItem("ethone:clientId:spotify") ||
         OAUTH_APP_CLIENT_IDS.spotify;
 
+      // Note: deliberately does NOT fall back to "ethone:clientId:discord" — that
+      // key holds ETHONE's own Discord OAuth app client ID (a fixed constant,
+      // the same for every user), not a Discord *user* ID. Using it here sent
+      // every visitor without a real Lanyard identity to
+      // https://api.lanyard.rest/v1/users/<ETHONE's app client id>, which
+      // 404s every single poll (Lanyard has no such user) instead of just
+      // skipping this source cleanly.
       let discordId =
         (settings.liveNowPlayingSource === "lanyard" ? settings.liveNowPlayingIdentity : null) ||
         settings.liveLanyardUserId ||
         settings.liveNowPlayingIdentity ||
         localStorage.getItem("ethone:pub:discord:liveLanyardUserId") ||
         localStorage.getItem("ethone:pub:lanyardUserId") ||
-        localStorage.getItem("ethone:cred:discord:userId") ||
-        localStorage.getItem("ethone:clientId:discord");
+        localStorage.getItem("ethone:cred:discord:userId");
 
       if (!discordId) {
         try {

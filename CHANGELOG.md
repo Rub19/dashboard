@@ -2,6 +2,16 @@
 
 Toutes les modifications notables de ce projet seront documentées dans ce fichier.
 
+## v1.20.66 — 2026-09-09
+
+**Correctif du sélecteur d'avatar (affichage cassé) & appel Lanyard erroné**
+
+- **Root cause du sélecteur d'avatar cassé** : `components/AvatarPickerModal.tsx` est monté comme enfant de `UserProfileDropdown.tsx`, à l'intérieur de son `Popover`/`motion.div` animé (`scale`/`opacity`). Un ancêtre avec `transform` (ou `filter`/`backdrop-filter`) établit un nouveau containing block pour ses descendants en `position: fixed` dans les navigateurs modernes — piégeant la modale "plein écran" (`fixed inset-0 z-[100]`) dans les limites réduites du menu déroulant du profil au lieu de recouvrir tout le viewport, exactement le rendu cassé/superposé rapporté. Corrigé en rendant la modale via `createPortal(..., document.body)`, qui échappe structurellement à n'importe quel contexte d'empilement ancêtre.
+- **Correctif associé** : les tuiles d'avatar (`<img>` sans `onError`) affichaient une icône d'image cassée silencieuse en cas d'échec de chargement — ajout d'un fallback avec l'initiale du nom sur un fond teinté par l'accent.
+- **Root cause Lanyard 404** : `lib/hooks/useNowPlaying.ts`'s résolution de `discordId` retombait en dernier recours sur `localStorage.getItem("ethone:clientId:discord")` — cette clé contient l'ID **de l'application** OAuth Discord d'ETHONE (une constante fixe, `1545139931154878464`, identique pour tout le monde), pas un ID utilisateur Discord. Ce mauvais repli envoyait chaque visiteur sans identité Lanyard réelle interroger `api.lanyard.rest/v1/users/1545139931154878464`, qui échoue en 404 à chaque poll. Repli retiré.
+- **Note (hors scope de ce correctif)** : l'utilisateur a également rapporté et confirmé par capture que sa session de connexion Supabase actuelle échoue à se renouveler (`grant_type=refresh_token` → 400), causant des 401 en cascade sur quasiment tous les endpoints Worker authentifiés (mail, profils, tâches, Spotify now-playing, etc.) — nécessite une déconnexion/reconnexion manuelle côté utilisateur, aucun changement de code possible pour un jeton déjà invalide côté serveur Supabase.
+- Validation : `tsc --noEmit` (0 erreur), `npm run build`, `npm run lint` (0 erreur, 1160 warnings pré-existants), `npm run test:unit` (13/13, 61/61).
+
 ## v1.20.65 — 2026-09-09
 
 **Correctif critique de thème (boutons/icônes restaient verts), refonte visuelle du dashboard, sons/ambiance, et embeds Discord**

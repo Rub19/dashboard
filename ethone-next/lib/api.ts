@@ -61,6 +61,18 @@ if (typeof window !== "undefined") {
   } catch {}
 }
 
+/**
+ * Drops the in-memory bearer token cache immediately. Without this, a signed-out
+ * user's token can keep being served to Worker calls for up to 60s (see the
+ * onAuthStateChange handler above), which is long enough to leak into a
+ * different account signing in on the same tab. Call this as part of sign-out
+ * cleanup, before any other user can start making requests.
+ */
+export function clearCachedToken(): void {
+  cachedToken = null;
+  cachedTokenExpires = 0;
+}
+
 export async function getToken(): Promise<string | null> {
   if (typeof window === "undefined") return null;
   const now = Date.now();

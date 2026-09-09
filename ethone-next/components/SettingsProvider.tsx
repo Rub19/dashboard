@@ -196,6 +196,8 @@ export default function SettingsProvider({
   }, [loaded, active, currentUserId]);
 
   useEffect(() => {
+    if (!currentUserId) return;
+
     let channel: ReturnType<typeof supabase.channel> | null = null;
 
     async function subscribe() {
@@ -245,7 +247,11 @@ export default function SettingsProvider({
         // Ignore cleanup errors for optional realtime channel.
       }
     };
-  }, [loaded]);
+    // currentUserId is included so an account switch on the same tab tears
+    // down the previous user's channel and re-subscribes under the new
+    // identity instead of silently continuing to listen with a stale userId
+    // closure (see useItems.ts for the reference pattern).
+  }, [loaded, currentUserId]);
 
   useEffect(() => {
     const root = document.documentElement;

@@ -91,6 +91,22 @@ export function useDesktopLayout() {
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<Error | null>(null);
   const [status, setStatus] = useState<SyncStatus>("idle");
+  const [currentUserId, setCurrentUserId] = useState<string | undefined>(undefined);
+
+  // Track the authenticated user id so the realtime subscription below can be
+  // torn down and re-established on account switch (see useItems.ts, which
+  // uses the same pattern).
+  useEffect(() => {
+    supabase.auth.getSession().then(({ data }) => {
+      setCurrentUserId(data?.session?.user?.id);
+    });
+    const { data: authSub } = supabase.auth.onAuthStateChange((_event, session) => {
+      setCurrentUserId(session?.user?.id);
+    });
+    return () => {
+      authSub?.subscription?.unsubscribe();
+    };
+  }, []);
 
   const load = useCallback(async () => {
     setLoading(true);
@@ -142,6 +158,7 @@ export function useDesktopLayout() {
 
   useEffect(() => {
     if (typeof window === "undefined") return;
+    if (!currentUserId) return;
 
     let channel: ReturnType<typeof supabase.channel> | null = null;
 
@@ -187,7 +204,7 @@ export function useDesktopLayout() {
     return () => {
       channel?.unsubscribe();
     };
-  }, []);
+  }, [currentUserId]);
 
   const update = useCallback(
     async (widgets: WidgetLayout[]) => {

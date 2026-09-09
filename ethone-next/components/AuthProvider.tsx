@@ -8,7 +8,8 @@ import {
   type ReactNode,
 } from "react";
 import { supabase } from "@/lib/supabase";
-import { fetchWorker } from "@/lib/api";
+import { fetchWorker, clearCachedToken } from "@/lib/api";
+import { clearFetchCache } from "@/lib/hooks/useCachedFetch";
 import { authLog } from "@/lib/auth-log";
 import { Session, User } from "@supabase/supabase-js";
 
@@ -42,6 +43,73 @@ export function useAuth() {
 }
 
 const SESSION_TIMEOUT_MS = 6_000;
+
+// IndexedDB databases used for offline/local caching (see lib/cloud-cache.ts
+// and lib/mail-cache.ts). Neither is scoped by user, so both must be wiped on
+// sign-out or the next account on this browser can read the previous user's
+// cached files/mail before its own data has loaded.
+const INDEXEDDB_DATABASES = ["ethone-cloud", "ethone-mail-cache"];
+
+// Exact, non-namespaced localStorage keys that must never survive a sign-out
+// because they either hold session material or leak identity/credentials
+// across accounts on the same browser.
+const SIGNOUT_EXACT_KEYS = [
+  "ethone-remember-me",
+  "ethone-remember-token",
+  "ethone-remember-refresh",
+  "ethone-remember-expires",
+  "ethone-auth-type",
+  "ethone_user_name",
+  "ethone_user_avatar",
+  "ethone_custom_avatar",
+  "ethone:custom:avatar",
+  // Bare, non-namespaced credential keys read/injected by lib/api.ts and
+  // various provider integrations.
+  "discord_token",
+  "github_token",
+  "spotify_access_token",
+  "spotify_refresh_token",
+  "RIOT_API_KEY",
+  "HENRIK_API_KEY",
+];
+
+// Prefixes for localStorage keys that are namespaced by guild/provider id
+// (not by ETHONE user id) and therefore leak the previous user's Discord
+// servers, automation config, and provider credentials into the next signed
+// in user unless swept on sign-out. This mirrors the bundle
+// IntegrationsSettings.tsx already clears when a user manually disconnects a
+// single provider (connected/token/refresh_token/clientId/pub/cred), applied
+// here to every provider at once.
+const SIGNOUT_KEY_PREFIXES = [
+  "ethone:discord:", // guilds, profile, userId, settings:{guildId}
+  "ethone:automod:", // cfg:{guildId}, rules:{guildId}
+  "ethone:anti-raid:", // {guildId}
+  "ethone:forms:", // {guildId}
+  "ethone:cred:", // per-provider credentials (riot, spotify, ai:*, ...)
+  "ethone:token:", // per-provider access tokens
+  "ethone:refresh_token:", // per-provider refresh tokens
+  "ethone:connected:", // per-provider "connected" flags
+  "ethone:clientId:", // per-provider OAuth client ids
+  "ethone:pub:", // public provider identifiers (e.g. Discord lanyard user id)
+  "ethone:oauth:", // transient OAuth/PKCE verifier state
+];
+
+function deleteIndexedDbSafely(name: string, timeoutMs = 2000) {
+  if (typeof indexedDB === "undefined") return;
+  try {
+    const request = indexedDB.deleteDatabase(name);
+    // Fire-and-forget: if another tab/connection is holding the DB open,
+    // onblocked fires but the delete stays pending. That's fine here — the
+    // hard reload that follows sign-out tears down every connection anyway,
+    // so we don't await this or block sign-out on it.
+    const timer = setTimeout(() => {}, timeoutMs);
+    request.onsuccess = () => clearTimeout(timer);
+    request.onerror = () => clearTimeout(timer);
+    request.onblocked = () => clearTimeout(timer);
+  } catch {
+    // IndexedDB unavailable (private mode, unsupported) — nothing to clean up.
+  }
+}
 
 export default function AuthProvider({ children }: { children: ReactNode }) {
   const [session, setSession] = useState<Session | null>(null);
@@ -315,23 +383,50 @@ export default function AuthProvider({ children }: { children: ReactNode }) {
 
   async function signOut() {
     const currentUserId = user?.id;
+
+    // Best-effort server-side revoke. Swallowed: the Worker being unreachable
+    // must not stop the local cleanup below.
     try {
       await fetchWorker("/api/signout", { method: "POST" });
     } catch {
       // On continue la déconnexion locale même si le Worker est injoignable.
     }
-    await supabase.auth.signOut();
+
+    // Best-effort Supabase sign-out. This must be wrapped: if it throws
+    // (e.g. offline), everything below — the cache/localStorage/IndexedDB
+    // cleanup and the hard reload — still has to run unconditionally, or a
+    // previous identity's data and subscriptions can keep leaking into
+    // whoever signs in next on this browser.
+    try {
+      await supabase.auth.signOut();
+    } catch (err) {
+      authLog("supabase.auth.signOut failed", err instanceof Error ? err.message : String(err));
+    }
+
+    // Drop the module-level bearer token cache immediately (lib/api.ts can
+    // otherwise keep serving this token to Worker calls for up to 60s).
+    try {
+      clearCachedToken();
+    } catch {}
+
+    // Drop the shared fetchWorker response cache (useCachedFetch.ts) so the
+    // next signed-in user never reads a GET response cached under this user.
+    try {
+      clearFetchCache();
+    } catch {}
+
     if (typeof window !== "undefined") {
       try {
-        localStorage.removeItem("ethone-remember-me");
-        localStorage.removeItem("ethone-remember-token");
-        localStorage.removeItem("ethone-remember-refresh");
-        localStorage.removeItem("ethone-remember-expires");
-        localStorage.removeItem("ethone-auth-type");
-        localStorage.removeItem("ethone_user_name");
-        localStorage.removeItem("ethone_user_avatar");
-        localStorage.removeItem("ethone_custom_avatar");
-        localStorage.removeItem("ethone:custom:avatar");
+        for (let i = localStorage.length - 1; i >= 0; i--) {
+          const key = localStorage.key(i);
+          if (!key) continue;
+          if (
+            SIGNOUT_EXACT_KEYS.includes(key) ||
+            SIGNOUT_KEY_PREFIXES.some((prefix) => key.startsWith(prefix))
+          ) {
+            localStorage.removeItem(key);
+          }
+        }
         if (currentUserId) {
           localStorage.removeItem(`ethone_user_name:${currentUserId}`);
           localStorage.removeItem(`ethone_user_avatar:${currentUserId}`);
@@ -340,9 +435,30 @@ export default function AuthProvider({ children }: { children: ReactNode }) {
         }
         window.dispatchEvent(new CustomEvent("ethone:identity:update"));
       } catch {}
+
+      // Unscoped IndexedDB caches (cloud files, mail) — never keyed by user,
+      // so they must be dropped here too. Fire-and-forget: see
+      // deleteIndexedDbSafely, the hard reload below covers the rest.
+      for (const dbName of INDEXEDDB_DATABASES) {
+        deleteIndexedDbSafely(dbName);
+      }
     }
+
     setSession(null);
     setUser(null);
+
+    // Hard reload — not a client-side route push. This is the primary fix:
+    // a fresh page load cannot have any stale closure (realtime
+    // subscription, in-memory cache, etc.) still holding the previous
+    // identity, which a same-page state clear alone cannot guarantee.
+    if (typeof window !== "undefined") {
+      try {
+        window.location.href = "/login";
+      } catch {
+        // Navigation API unavailable (e.g. non-browser test environment) —
+        // local state is already cleared above, nothing else to do.
+      }
+    }
   }
 
   return (

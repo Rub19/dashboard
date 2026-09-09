@@ -1,3 +1,14 @@
+const v12071_fr: ChangelogEntry = {
+  version: "v1.20.71",
+  date: "2026-09-09",
+  title: "Sécurité : Isolation Complète au Changement de Compte (Phase 2)",
+  items: [
+    "Se déconnecter recharge désormais réellement la page vers /login, en plus de vider le cache des requêtes, les jetons en mémoire, ~25 clés localStorage globales (Discord, AutoMod, Anti-Raid, formulaires, identifiants Riot/Spotify/GitHub...) et les 2 bases de données locales (fichiers, mail). Avant ce correctif, se déconnecter puis se reconnecter avec un autre compte dans le même onglet pouvait laisser apparaître les fichiers, mails, serveurs Discord ou identifiants de l'utilisateur précédent le temps que les nouvelles données arrivent.",
+    "Correctif : la déconnexion n'annulait plus le nettoyage local si le serveur était injoignable (hors ligne) — elle est désormais fiable même sans connexion.",
+    "Correctif : 3 abonnements temps réel (mise en page du bureau, réglages, tâches) ne se réabonnaient jamais après un changement de compte sans rechargement de page — ils suivent désormais le bon utilisateur.",
+  ],
+};
+
 const v12070_fr: ChangelogEntry = {
   version: "v1.20.70",
   date: "2026-09-09",
@@ -204,6 +215,17 @@ const v12052_fr: ChangelogEntry = {
     "Dynamic Island : correction d'un bug de priorité qui empêchait Spotify de jamais s'afficher, systématiquement évincé par la synchronisation d'arrière-plan.",
     "Commande /help du Bot Discord : la liste des commandes est désormais générée dynamiquement depuis les commandes réellement enregistrées (fin des commandes fantômes et des commandes manquantes), et affiche la vraie syntaxe des commandes à sous-commandes (ex. /automod status).",
     "Audit de l'enregistrement des commandes slash Discord : architecture confirmée saine, aucune dérive entre le code et les commandes déployées.",
+  ],
+};
+
+const v12071_en: ChangelogEntry = {
+  version: "v1.20.71",
+  date: "2026-09-09",
+  title: "Security: Full Account-Switch Isolation (Phase 2)",
+  items: [
+    "Signing out now actually hard-reloads the page to /login, on top of clearing the request cache, in-memory tokens, ~25 global localStorage keys (Discord, AutoMod, Anti-Raid, forms, Riot/Spotify/GitHub credentials...), and both local databases (files, mail). Before this fix, signing out and back in as a different account in the same tab could briefly show the previous user's files, mail, Discord servers, or credentials while new data loaded in.",
+    "Fix: sign-out no longer aborted local cleanup if the server was unreachable (offline) — it's now reliable even without a connection.",
+    "Fix: 3 realtime subscriptions (desktop layout, settings, tasks) never re-subscribed after an account switch without a page reload — they now correctly follow the current user.",
   ],
 };
 
@@ -416,6 +438,17 @@ const v12052_en: ChangelogEntry = {
   ],
 };
 
+const v12071_es: ChangelogEntry = {
+  version: "v1.20.71",
+  date: "2026-09-09",
+  title: "Seguridad: Aislamiento Completo al Cambiar de Cuenta (Fase 2)",
+  items: [
+    "Cerrar sesión ahora realmente recarga la página a /login, además de limpiar la caché de peticiones, los tokens en memoria, ~25 claves globales de localStorage (Discord, AutoMod, Anti-Raid, formularios, credenciales de Riot/Spotify/GitHub...) y las 2 bases de datos locales (archivos, correo). Antes de esta corrección, cerrar sesión y volver a entrar con otra cuenta en la misma pestaña podía mostrar brevemente los archivos, correos, servidores de Discord o credenciales del usuario anterior mientras cargaban los nuevos datos.",
+    "Corrección: cerrar sesión ya no cancelaba la limpieza local si el servidor no estaba disponible (sin conexión) — ahora es fiable incluso sin conexión.",
+    "Corrección: 3 suscripciones en tiempo real (diseño del escritorio, ajustes, tareas) nunca se volvían a suscribir tras un cambio de cuenta sin recargar la página — ahora siguen correctamente al usuario actual.",
+  ],
+};
+
 const v12070_es: ChangelogEntry = {
   version: "v1.20.70",
   date: "2026-09-09",
@@ -622,6 +655,17 @@ const v12052_es: ChangelogEntry = {
     "Dynamic Island: corregido un error de prioridad que impedía que Spotify apareciera, siempre desplazado por la sincronización en segundo plano.",
     "Comando /help del Bot de Discord: la lista de comandos ahora se genera dinámicamente desde los comandos realmente registrados (fin de comandos fantasma o ausentes), mostrando la sintaxis real de los comandos con subcomandos.",
     "Auditoría del registro de comandos slash de Discord: arquitectura confirmada como sólida, sin desviación entre el código y los comandos desplegados.",
+  ],
+};
+
+const v12071_de: ChangelogEntry = {
+  version: "v1.20.71",
+  date: "2026-09-09",
+  title: "Sicherheit: Vollständige Isolation beim Kontowechsel (Phase 2)",
+  items: [
+    "Abmelden lädt die Seite jetzt tatsächlich fest neu zu /login, zusätzlich zum Leeren des Anfragen-Caches, der Tokens im Speicher, ~25 globaler localStorage-Schlüssel (Discord, AutoMod, Anti-Raid, Formulare, Riot/Spotify/GitHub-Zugangsdaten ...) und beider lokaler Datenbanken (Dateien, Mail). Vor diesem Fix konnte das Abmelden und erneute Anmelden mit einem anderen Konto im selben Tab kurzzeitig die Dateien, E-Mails, Discord-Server oder Zugangsdaten des vorherigen Nutzers anzeigen, während neue Daten geladen wurden.",
+    "Fix: Das Abmelden brach die lokale Bereinigung nicht mehr ab, wenn der Server nicht erreichbar war (offline) — jetzt zuverlässig auch ohne Verbindung.",
+    "Fix: 3 Echtzeit-Abonnements (Desktop-Layout, Einstellungen, Aufgaben) abonnierten sich nach einem Kontowechsel ohne Seiten-Neuladen nie erneut — sie folgen jetzt korrekt dem aktuellen Nutzer.",
   ],
 };
 
@@ -22789,5 +22833,10 @@ CHANGELOG_BY_LANG.fr.unshift(v12070_fr);
 CHANGELOG_BY_LANG.en.unshift(v12070_en);
 CHANGELOG_BY_LANG.es.unshift(v12070_es);
 CHANGELOG_BY_LANG.de.unshift(v12070_de);
+
+CHANGELOG_BY_LANG.fr.unshift(v12071_fr);
+CHANGELOG_BY_LANG.en.unshift(v12071_en);
+CHANGELOG_BY_LANG.es.unshift(v12071_es);
+CHANGELOG_BY_LANG.de.unshift(v12071_de);
 
 export const CHANGELOG = CHANGELOG_BY_LANG.fr;

@@ -39,6 +39,23 @@ export function useTasks() {
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<Error | null>(null);
   const [status, setStatus] = useState<SyncStatus>("idle");
+  const [currentUserId, setCurrentUserId] = useState<string | undefined>(undefined);
+
+  // Track the authenticated user id: useId() below is stable for the life of
+  // the component instance and does NOT change on account switch, so without
+  // this the realtime effect would never re-subscribe under the new user
+  // (see useItems.ts for the reference pattern this mirrors).
+  useEffect(() => {
+    supabase.auth.getSession().then(({ data }) => {
+      setCurrentUserId(data?.session?.user?.id);
+    });
+    const { data: authSub } = supabase.auth.onAuthStateChange((_event, session) => {
+      setCurrentUserId(session?.user?.id);
+    });
+    return () => {
+      authSub?.subscription?.unsubscribe();
+    };
+  }, []);
 
   const load = useCallback(async () => {
     setLoading(true);
@@ -75,6 +92,7 @@ export function useTasks() {
 
   useEffect(() => {
     if (typeof window === "undefined") return;
+    if (!currentUserId) return;
 
     let channel: ReturnType<typeof supabase.channel> | null = null;
 
@@ -123,7 +141,7 @@ export function useTasks() {
     return () => {
       channel?.unsubscribe();
     };
-  }, [realtimeId]);
+  }, [realtimeId, currentUserId]);
 
   const withUserId = useCallback(async () => {
     const { data: sessionData } = await supabase.auth.getSession();

@@ -2,6 +2,22 @@
 
 Toutes les modifications notables de ce projet seront documentées dans ce fichier.
 
+## v1.20.71 — 2026-09-09
+
+**Sécurité : isolation complète au changement de compte (Phase 2 — Session & Account Security 2.0)**
+
+Troisième lot du chantier. Exécuté par un agent dédié sur la base d'une recherche exhaustive déjà menée (voir v1.20.65+ pour le contexte des phases précédentes), vérifié en local avant expédition.
+
+- **`AuthProvider.tsx`'s `signOut()`** : réécrit entièrement.
+  - Le `await supabase.auth.signOut()` est désormais dans son propre `try/catch` — auparavant, s'il levait une exception (ex. hors ligne), tout le nettoyage qui suit (localStorage, cache, IndexedDB) était sauté silencieusement.
+  - Vide immédiatement le jeton mis en cache en mémoire (`lib/api.ts`'s nouveau `clearCachedToken()` exporté — pouvait auparavant servir un jeton périmé jusqu'à 60s après déconnexion) et le cache de requêtes GET (`clearFetchCache()`, déjà existant mais jamais appelé nulle part).
+  - Balaie désormais ~25 clés/préfixes `localStorage` globaux non scopés par utilisateur (`ethone:discord:*`, `ethone:automod:*`, `ethone:anti-raid:*`, `ethone:forms:*`, `ethone:cred:*`, `ethone:token:*`, `ethone:refresh_token:*`, `ethone:connected:*`, `ethone:clientId:*`, `ethone:pub:*`, `ethone:oauth:*`, plus les identifiants bruts `discord_token`, `github_token`, `spotify_access_token`, `spotify_refresh_token`, `RIOT_API_KEY`, `HENRIK_API_KEY`) — auparavant seules 9 clés « se souvenir de moi »/identité étaient nettoyées, laissant les serveurs Discord, la configuration AutoMod et les identifiants de fournisseurs de l'ancien utilisateur visibles au suivant.
+  - Supprime les 2 bases IndexedDB non scopées par utilisateur (`ethone-cloud`, `ethone-mail-cache` — `lib/cloud-cache.ts`/`lib/mail-cache.ts`), jamais nettoyées auparavant.
+  - **Recharge désormais réellement la page vers `/login`** (`window.location.href`, pas une navigation client Next.js) au lieu de se contenter de vider l'état React en place — le correctif le plus déterminant : un rechargement complet ne peut par construction conserver aucune fermeture (closure) obsolète encore liée à l'ancienne identité (abonnements temps réel, caches en mémoire).
+- **3 abonnements Supabase Realtime corrigés** (`useDesktopLayout.ts`, `SettingsProvider.tsx`, `useTasks.ts`) : ne se réabonnaient jamais lors d'un changement de compte sans rechargement de page (tableau de dépendances de l'effet vide ou incomplet). Suivent désormais le motif déjà correct de `useItems.ts` — dépendent d'un identifiant utilisateur suivi en direct, ce qui force la résiliation puis le réabonnement du canal au changement d'identité.
+- **Non traité dans cette passe (signalé par l'agent, hors périmètre)** : `lib/auth.ts`'s propre `signOut()` (doublon mort, jamais appelé par le code applicatif — seulement par son propre test) ; quelques clés `localStorage` supplémentaires de préférence d'appareil (`ethone:quiet_hours`, profils locaux, favoris d'avatars) jugées plus proches de préférences d'appareil que de données de compte, à trancher séparément.
+- Validation : `tsc --noEmit` (0 erreur), `npm run build`, `npm run lint` (0 erreur, 1161 warnings — 1160 pré-existants + 1 nouveau attendu sur la règle `no-location-assign-relative-destination`, désactivée intentionnellement puisque `window.location.href` est exactement l'API demandée), `npm run test:unit` (13/13, 61/61).
+
 ## v1.20.70 — 2026-09-09
 
 **Sécurité : révocation de session réelle (Phase 1 — Session & Account Security 2.0)**

@@ -158,6 +158,48 @@ export async function deletePasskey(env, userId, passkeyId) {
   return true;
 }
 
+// TOTP (2FA) is stored as a single row per user in the generic
+// ethone_user_data table (kind='totp'), matching how every other row shape
+// in this file gets its own named functions rather than routes issuing raw
+// supabaseRequest calls inline.
+export async function getTotpRecord(env, userId) {
+  const response = await supabaseRequest(env, `/rest/v1/ethone_user_data?user_id=eq.${encodeURIComponent(userId)}&kind=eq.totp&select=*`);
+  return firstRow(response);
+}
+
+export async function insertTotpRecord(env, userId, data) {
+  const response = await supabaseRequest(env, "/rest/v1/ethone_user_data", {
+    method: "POST",
+    body: {
+      user_id: userId,
+      kind: "totp",
+      slug: "totp",
+      label: "",
+      data
+    },
+    headers: { Prefer: "return=representation" }
+  });
+  return firstRow(response);
+}
+
+// A real update (PATCH by id), unlike the route this replaces which POSTed
+// {id, data} with no Prefer: resolution=merge-duplicates header and no
+// actual PATCH — that conflicted on the primary key instead of updating the
+// existing row.
+export async function updateTotpRecord(env, userId, recordId, data) {
+  const response = await supabaseRequest(env, `/rest/v1/ethone_user_data?id=eq.${encodeURIComponent(recordId)}&user_id=eq.${encodeURIComponent(userId)}&kind=eq.totp`, {
+    method: "PATCH",
+    body: { data, updated_at: new Date().toISOString() },
+    headers: { Prefer: "return=representation" }
+  });
+  return firstRow(response);
+}
+
+export async function deleteTotpRecord(env, userId) {
+  await supabaseRequest(env, `/rest/v1/ethone_user_data?user_id=eq.${encodeURIComponent(userId)}&kind=eq.totp`, { method: "DELETE" });
+  return true;
+}
+
 export async function insertSecurityEvent(env, event) {
   const body = {
     user_id: event.userId,

@@ -29,6 +29,15 @@ function isAllowedOrigin(origin, env) {
     .map((v) => v.trim())
     .filter(Boolean);
   if (origins.includes(origin)) return true;
+
+  // localhost/127.0.0.1/[::1], *.pages.dev, *.workers.dev and the GitHub
+  // Pages host are dev/preview conveniences only. *.pages.dev and
+  // *.workers.dev in particular are shared Cloudflare suffixes anyone can
+  // register a subdomain under, so none of these may bypass the explicit
+  // ALLOWED_ORIGINS allowlist in production.
+  const isProduction = String(env.ENVIRONMENT || "production") === "production";
+  if (isProduction) return false;
+
   try {
     const url = new URL(origin);
     const hostname = url.hostname.toLowerCase();

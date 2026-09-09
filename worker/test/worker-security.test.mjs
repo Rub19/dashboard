@@ -40,6 +40,28 @@ test("CORS allows the production origin and rejects unknown origins", async () =
   assert.equal(unconfiguredAlias.status, 403);
 });
 
+test("CORS wildcard/localhost allowances only apply outside production", async () => {
+  // *.pages.dev and *.workers.dev are shared Cloudflare suffixes anyone can
+  // register a subdomain under — they, and localhost, must never bypass the
+  // explicit ALLOWED_ORIGINS allowlist once ENVIRONMENT is "production".
+  const productionEnv = testEnv({ ENVIRONMENT: "production" });
+  for (const origin of ["https://preview.pages.dev", "https://worker-preview.workers.dev", "http://localhost:3000", "http://127.0.0.1:3000", "https://rub19.github.io"]) {
+    const response = await invoke("/health", { auth: false, origin, env: productionEnv });
+    assert.equal(response.status, 403, `${origin} must be rejected in production`);
+    assert.equal((await payload(response)).error.code, "CORS_ORIGIN_DENIED");
+  }
+  // The explicit allowlist still passes in production.
+  const stillAllowed = await invoke("/health", { auth: false, origin: "https://ethone.dev", env: productionEnv });
+  assert.equal(stillAllowed.status, 200);
+
+  // Outside production (dev/preview), the same origins remain a convenience.
+  const developmentEnv = testEnv({ ENVIRONMENT: "development" });
+  for (const origin of ["https://preview.pages.dev", "https://worker-preview.workers.dev", "http://localhost:3000"]) {
+    const response = await invoke("/health", { auth: false, origin, env: developmentEnv });
+    assert.equal(response.status, 200, `${origin} should still be allowed in development`);
+  }
+});
+
 test("preflight accepts only allowlisted routes, methods and headers", async () => {
   const response = await invoke("/api/diagnostic", {
     auth: false,

@@ -60,12 +60,25 @@ export function resolveWebAuthnConfig(env, requestOrigin) {
   return { origin: "https://ethone.dev", rpId: "ethone.dev" };
 }
 
-export async function createRegistrationOptions(env, userId, email, name, deviceName) {
-  const config = resolveWebAuthnConfig(env);
+export async function createRegistrationOptions(env, requestOrigin, userId, email, name, deviceName) {
+  // Resolve against the actual request origin, the same way verifyRegistration
+  // does — resolving against origins[0] unconditionally meant registration
+  // options and verification disagreed on rpId for any origin other than the
+  // primary one (a preview deploy, localhost in dev), breaking registration.
+  const config = resolveWebAuthnConfig(env, requestOrigin);
   if (!config) throw new Error("Invalid WebAuthn configuration");
 
   const userDisplayName = name || email;
   const userID = new TextEncoder().encode(userId);
+
+  // Exclude the user's existing (non-revoked) passkeys so the authenticator
+  // itself refuses a duplicate registration, instead of only catching it
+  // after the fact in verifyRegistration's getPasskeyByCredential check.
+  const existingPasskeys = await listPasskeys(env, userId);
+  const excludeCredentials = existingPasskeys.map((p) => ({
+    id: p.credential_id,
+    transports: Array.isArray(p.metadata?.transports) ? p.metadata.transports : []
+  }));
 
   const options = await generateRegistrationOptions({
     rpName: RP_NAME,
@@ -73,6 +86,7 @@ export async function createRegistrationOptions(env, userId, email, name, device
     userName: email,
     userDisplayName,
     attestationType: "none",
+    excludeCredentials,
     authenticatorSelection: {
       residentKey: "preferred",
       userVerification: "preferred",
@@ -157,9 +171,12 @@ export async function createAuthenticationOptions(env, requestOrigin, userId) {
   let allowCredentials = [];
   if (userId) {
     const passkeys = await listPasskeys(env, userId);
+    // id must be the base64url credential id string, not a decoded buffer —
+    // generateAuthenticationOptions validates it with isoBase64URL.isBase64URL
+    // and throws on anything else (@simplewebauthn/server v13's WebAuthnCredential
+    // shape), which is what credential_id already is (bufferToBase64Url's output).
     allowCredentials = passkeys.map((p) => ({
-      id: base64UrlToBuffer(p.credential_id),
-      type: "public-key",
+      id: p.credential_id,
       transports: Array.isArray(p.metadata?.transports) ? p.metadata.transports : []
     }));
   }
@@ -206,9 +223,15 @@ export async function verifyAuthentication(env, requestOrigin, response) {
       expectedChallenge: challengeRow.challenge,
       expectedOrigin: config.origin,
       expectedRPID: config.rpId,
-      authenticator: {
-        credentialID: base64UrlToBuffer(passkey.credential_id),
-        credentialPublicKey: base64UrlToBuffer(passkey.public_key),
+      // Modern @simplewebauthn/server (v13, pinned in package.json) expects a
+      // top-level `credential: { id, publicKey, counter, transports }`, not
+      // the legacy nested `authenticator: {...}` shape — the same shape
+      // verifyRegistration already reads back out of registrationInfo.credential.
+      // The old shape here silently didn't match this version's API surface,
+      // which is why authentication has been broken.
+      credential: {
+        id: passkey.credential_id,
+        publicKey: base64UrlToBuffer(passkey.public_key),
         counter: Number(passkey.sign_count) || 0,
         transports: Array.isArray(passkey.metadata?.transports) ? passkey.metadata.transports : []
       },
@@ -220,9 +243,31 @@ export async function verifyAuthentication(env, requestOrigin, response) {
 
   if (!verification.verified) throw new Error("WebAuthn authentication not verified");
 
+  const previousCounter = Number(passkey.sign_count) || 0;
+  const newCounter = Number(verification.authenticationInfo?.newCounter) || 0;
+  // Anti-cloning signal: a legitimate authenticator's counter should strictly
+  // increase on every use. Some authenticators (notably many platform/synced
+  // passkeys, which this app's authenticatorSelection.authenticatorAttachment
+  // = "platform" specifically favors) always report 0 and never regress in a
+  // meaningful way, so we only flag when BOTH sides are non-zero — a real
+  // regression from a non-zero value is a much stronger signal than "still 0".
+  // We log-and-allow rather than reject-and-break-real-users: we can't fully
+  // rule out some authenticators legitimately plateauing or resetting their
+  // counter (e.g. after a backup/restore), and rejecting outright on a signal
+  // we're not 100% sure about risks locking a genuine user out of their own
+  // account, which is worse than a missed detection here.
+  if (previousCounter > 0 && newCounter > 0 && newCounter <= previousCounter) {
+    await insertSecurityEvent(env, {
+      userId,
+      kind: "passkey_counter_anomaly",
+      passkeyId: passkey.id,
+      metadata: { previousCounter, newCounter, credential_id: passkey.credential_id.slice(0, 8) + "..." }
+    });
+  }
+
   await markChallengeUsed(env, userId, challengeRow.id, new Date().toISOString());
   await updatePasskey(env, userId, passkey.id, {
-    signCount: verification.authenticationInfo?.newCounter || passkey.sign_count,
+    signCount: newCounter || passkey.sign_count,
     lastUsedAt: new Date().toISOString()
   });
 

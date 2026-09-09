@@ -18,7 +18,16 @@ import {
   removeDevice,
   listUserDevices
 } from "../services/device-service.js";
-import { listSecurityEvents, getUserIdByEmail, listPasskeys, getDeviceBySession } from "../services/security-identity-client.js";
+import {
+  listSecurityEvents,
+  getUserIdByEmail,
+  listPasskeys,
+  getDeviceBySession,
+  getTotpRecord,
+  insertTotpRecord,
+  updateTotpRecord,
+  deleteTotpRecord
+} from "../services/security-identity-client.js";
 import { generateTotpSecret, verifyTotp } from "../services/totp-service.js";
 
 const EMAIL_RE = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
@@ -70,8 +79,9 @@ export async function passkeyRegisterOptionsRoute({ request, env, auth }) {
   const email = requireField(body, "email", EMAIL_RE, 320);
   const name = fieldText(body, "name", NAME_RE, 120, "");
   const deviceName = fieldText(body, "deviceName", NAME_RE, 120, "");
+  const requestOrigin = request.headers.get("origin") || "";
 
-  const options = await createRegistrationOptions(env, auth.userId, email, name, deviceName);
+  const options = await createRegistrationOptions(env, requestOrigin, auth.userId, email, name, deviceName);
   return { data: options };
 }
 
@@ -269,29 +279,29 @@ export async function totpSetupRoute({ request, env, auth }) {
   const body = await readJsonBody(request, 1);
   const email = requireField(body, "email", EMAIL_RE, 320);
 
-  const existing = await supabaseRequest(env, `/rest/v1/ethone_user_data?user_id=eq.${encodeURIComponent(auth.userId)}&kind=eq.totp&select=*`);
-  if (Array.isArray(existing) && existing.length > 0 && existing[0].data?.verified) {
+  const existing = await getTotpRecord(env, auth.userId);
+  if (existing?.data?.verified) {
     throw httpError("TOTP_ALREADY_ENABLED", 409);
   }
 
-  const { secret, hashedSecret, otpauth, backupCodes } = await generateTotpSecret(auth.userId, email);
+  const { secret, otpauth, backupCodes, backupCodeHashes } = await generateTotpSecret(auth.userId, email);
+  // The real base32 secret is stored (not a hash of it): TOTP verification
+  // has to re-derive codes from this value on every check, which is only
+  // possible if the server can read it back verbatim — unlike a password,
+  // this is symmetric key material, so a one-way hash here would make
+  // verification permanently impossible. Backup codes are the opposite: the
+  // user redeems them by presenting the value itself, so only their hashes
+  // are persisted, same as ethone_otp_codes' code_hash pattern.
+  const data = { secret, verified: false, backup: backupCodeHashes };
 
-  await supabaseRequest(env, "/rest/v1/ethone_user_data", {
-    method: "POST",
-    body: JSON.stringify({
-      user_id: auth.userId,
-      kind: "totp",
-      slug: "totp",
-      data: {
-        secret: hashedSecret,
-        verified: false,
-        backup: backupCodes,
-      },
-      profile_id: null,
-      active: true,
-    }),
-    headers: { Prefer: "return=representation" },
-  });
+  if (existing) {
+    // Setup was re-run before a previous attempt was verified (e.g. the user
+    // abandoned the QR code step) — replace the pending secret in place
+    // instead of conflicting on the primary key with a second insert.
+    await updateTotpRecord(env, auth.userId, existing.id, data);
+  } else {
+    await insertTotpRecord(env, auth.userId, data);
+  }
 
   return { data: { secret, otpauth, backupCodes } };
 }
@@ -304,22 +314,14 @@ export async function totpVerifySetupRoute({ request, env, auth }) {
   const body = await readJsonBody(request, 1);
   const code = requireField(body, "code", /^\d{6}$/, 6);
 
-  const records = await supabaseRequest(env, `/rest/v1/ethone_user_data?user_id=eq.${encodeURIComponent(auth.userId)}&kind=eq.totp&select=*`);
-  const record = Array.isArray(records) ? records[0] : null;
+  const record = await getTotpRecord(env, auth.userId);
   if (!record || !record.data?.secret) throw httpError("TOTP_NOT_SETUP", 400);
 
   const pendingSecret = record.data.secret;
   const valid = await verifyTotp(pendingSecret, code);
   if (!valid) throw httpError("TOTP_INVALID", 401);
 
-  await supabaseRequest(env, "/rest/v1/ethone_user_data", {
-    method: "POST",
-    body: JSON.stringify({
-      id: record.id,
-      data: { ...record.data, verified: true },
-    }),
-    headers: { Prefer: "return=representation" },
-  });
+  await updateTotpRecord(env, auth.userId, record.id, { ...record.data, verified: true });
 
   return { data: { enabled: true } };
 }
@@ -329,6 +331,6 @@ export async function totpVerifySetupRoute({ request, env, auth }) {
  */
 export async function totpDisableRoute({ env, auth }) {
   if (!auth?.userId) throw httpError("AUTH_REQUIRED", 401);
-  await supabaseRequest(env, `/rest/v1/ethone_user_data?user_id=eq.${encodeURIComponent(auth.userId)}&kind=eq.totp`, { method: "DELETE" });
+  await deleteTotpRecord(env, auth.userId);
   return { data: { disabled: true } };
 }

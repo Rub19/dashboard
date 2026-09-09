@@ -18,10 +18,26 @@ export const supabase = createBrowserClient(supabaseUrl, supabaseAnonKey, {
   cookies: {
     getAll() {
       if (typeof document === "undefined") return [];
-      return document.cookie.split("; ").map((cookie) => {
-        const [name, ...rest] = cookie.split("=");
-        return { name, value: rest.join("=") || "" };
-      });
+      return document.cookie
+        .split("; ")
+        .filter(Boolean)
+        .map((cookie) => {
+          const [name, ...rest] = cookie.split("=");
+          const raw = rest.join("=") || "";
+          // setAll() encodeURIComponent()s the value on write, so it must be
+          // decoded on read too — otherwise any value containing %, = or ;
+          // round-trips lossy. A malformed/already-broken cookie (e.g. one
+          // written before this fix, or by something outside this client)
+          // shouldn't take down parsing of every other cookie, so decoding
+          // failures fall back to the raw value for that cookie only.
+          let value = raw;
+          try {
+            value = decodeURIComponent(raw);
+          } catch {
+            value = raw;
+          }
+          return { name, value };
+        });
     },
     setAll(cookiesToSet) {
       if (typeof document === "undefined") return;

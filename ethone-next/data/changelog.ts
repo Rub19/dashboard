@@ -1,3 +1,15 @@
+const v12072_fr: ChangelogEntry = {
+  version: "v1.20.72",
+  date: "2026-09-10",
+  title: "Sécurité : Double Authentification (TOTP) et Clés d'Accès Réparées (Phase 3)",
+  items: [
+    "Correctif critique : la double authentification (TOTP) était entièrement non fonctionnelle — le secret était haché avant d'être stocké puis réutilisé tel quel pour la vérification (mathématiquement impossible), une importation manquante faisait planter les 3 routes, et les codes de secours utilisaient un générateur aléatoire non sécurisé. Entièrement réparée et testée de bout en bout (activation → vérification → désactivation).",
+    "Correctif : les clés d'accès (passkeys, Face ID/Touch ID/Windows Hello) pouvaient échouer à l'enregistrement sur certaines URL, et la vérification lors de la connexion utilisait un format de données incompatible avec la librairie installée — les deux corrigés.",
+    "Sécurité : en production, les requêtes ne sont plus jamais acceptées depuis localhost ou un sous-domaine `.pages.dev`/`.workers.dev` générique (protections de développement désormais réservées aux environnements hors production).",
+    "Correctif mineur : un souci d'encodage pouvait corrompre une valeur de cookie de session contenant certains caractères spéciaux.",
+  ],
+};
+
 const v12071_fr: ChangelogEntry = {
   version: "v1.20.71",
   date: "2026-09-09",
@@ -215,6 +227,18 @@ const v12052_fr: ChangelogEntry = {
     "Dynamic Island : correction d'un bug de priorité qui empêchait Spotify de jamais s'afficher, systématiquement évincé par la synchronisation d'arrière-plan.",
     "Commande /help du Bot Discord : la liste des commandes est désormais générée dynamiquement depuis les commandes réellement enregistrées (fin des commandes fantômes et des commandes manquantes), et affiche la vraie syntaxe des commandes à sous-commandes (ex. /automod status).",
     "Audit de l'enregistrement des commandes slash Discord : architecture confirmée saine, aucune dérive entre le code et les commandes déployées.",
+  ],
+};
+
+const v12072_en: ChangelogEntry = {
+  version: "v1.20.72",
+  date: "2026-09-10",
+  title: "Security: Two-Factor Auth (TOTP) & Passkeys Fixed (Phase 3)",
+  items: [
+    "Critical fix: two-factor authentication (TOTP) was entirely non-functional — the secret was hashed before being stored then reused as-is for verification (mathematically impossible), a missing import crashed all 3 routes, and backup codes used a non-cryptographic random generator. Fully fixed and tested end to end (enable → verify → disable).",
+    "Fix: passkeys (Face ID/Touch ID/Windows Hello) could fail to register on certain URLs, and verification at login used a data shape incompatible with the installed library — both fixed.",
+    "Security: in production, requests are no longer ever accepted from localhost or a generic `.pages.dev`/`.workers.dev` subdomain (those development conveniences are now restricted to non-production environments).",
+    "Minor fix: an encoding issue could corrupt a session cookie value containing certain special characters.",
   ],
 };
 
@@ -438,6 +462,18 @@ const v12052_en: ChangelogEntry = {
   ],
 };
 
+const v12072_es: ChangelogEntry = {
+  version: "v1.20.72",
+  date: "2026-09-10",
+  title: "Seguridad: Autenticación en Dos Pasos (TOTP) y Passkeys Corregidas (Fase 3)",
+  items: [
+    "Corrección crítica: la autenticación en dos pasos (TOTP) era totalmente no funcional — el secreto se hasheaba antes de guardarse y luego se reutilizaba tal cual para la verificación (matemáticamente imposible), una importación faltante hacía fallar las 3 rutas, y los códigos de respaldo usaban un generador aleatorio no criptográfico. Corregida y probada por completo de extremo a extremo (activar → verificar → desactivar).",
+    "Corrección: las passkeys (Face ID/Touch ID/Windows Hello) podían fallar al registrarse en ciertas URL, y la verificación al iniciar sesión usaba un formato de datos incompatible con la librería instalada — ambas corregidas.",
+    "Seguridad: en producción ya no se aceptan nunca solicitudes desde localhost ni desde un subdominio genérico `.pages.dev`/`.workers.dev` (esas facilidades de desarrollo ahora se restringen a entornos que no son de producción).",
+    "Corrección menor: un problema de codificación podía corromper el valor de una cookie de sesión que contuviera ciertos caracteres especiales.",
+  ],
+};
+
 const v12071_es: ChangelogEntry = {
   version: "v1.20.71",
   date: "2026-09-09",
@@ -655,6 +691,18 @@ const v12052_es: ChangelogEntry = {
     "Dynamic Island: corregido un error de prioridad que impedía que Spotify apareciera, siempre desplazado por la sincronización en segundo plano.",
     "Comando /help del Bot de Discord: la lista de comandos ahora se genera dinámicamente desde los comandos realmente registrados (fin de comandos fantasma o ausentes), mostrando la sintaxis real de los comandos con subcomandos.",
     "Auditoría del registro de comandos slash de Discord: arquitectura confirmada como sólida, sin desviación entre el código y los comandos desplegados.",
+  ],
+};
+
+const v12072_de: ChangelogEntry = {
+  version: "v1.20.72",
+  date: "2026-09-10",
+  title: "Sicherheit: Zwei-Faktor-Authentifizierung (TOTP) & Passkeys Repariert (Phase 3)",
+  items: [
+    "Kritischer Fix: Die Zwei-Faktor-Authentifizierung (TOTP) funktionierte überhaupt nicht — das Geheimnis wurde vor dem Speichern gehasht und dann unverändert zur Überprüfung wiederverwendet (mathematisch unmöglich), ein fehlender Import ließ alle 3 Routen abstürzen, und Backup-Codes verwendeten einen nicht-kryptografischen Zufallsgenerator. Vollständig behoben und Ende-zu-Ende getestet (aktivieren → überprüfen → deaktivieren).",
+    "Fix: Passkeys (Face ID/Touch ID/Windows Hello) konnten auf bestimmten URLs bei der Registrierung fehlschlagen, und die Überprüfung beim Anmelden verwendete ein mit der installierten Bibliothek inkompatibles Datenformat — beides behoben.",
+    "Sicherheit: In der Produktion werden Anfragen von localhost oder einer generischen `.pages.dev`/`.workers.dev`-Subdomain nicht mehr akzeptiert (diese Entwicklungs-Erleichterungen sind jetzt auf Nicht-Produktionsumgebungen beschränkt).",
+    "Kleinerer Fix: Ein Kodierungsproblem konnte den Wert eines Sitzungs-Cookies mit bestimmten Sonderzeichen beschädigen.",
   ],
 };
 
@@ -22838,5 +22886,10 @@ CHANGELOG_BY_LANG.fr.unshift(v12071_fr);
 CHANGELOG_BY_LANG.en.unshift(v12071_en);
 CHANGELOG_BY_LANG.es.unshift(v12071_es);
 CHANGELOG_BY_LANG.de.unshift(v12071_de);
+
+CHANGELOG_BY_LANG.fr.unshift(v12072_fr);
+CHANGELOG_BY_LANG.en.unshift(v12072_en);
+CHANGELOG_BY_LANG.es.unshift(v12072_es);
+CHANGELOG_BY_LANG.de.unshift(v12072_de);
 
 export const CHANGELOG = CHANGELOG_BY_LANG.fr;

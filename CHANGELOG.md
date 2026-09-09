@@ -2,6 +2,34 @@
 
 Toutes les modifications notables de ce projet seront documentées dans ce fichier.
 
+## v1.20.72 — 2026-09-10
+
+**Sécurité : TOTP (2FA) et passkeys réparés, CORS durci, cookies (Phase 3 — Session & Account Security 2.0)**
+
+Quatrième lot du chantier, exécuté par un agent dédié, vérifié en local avant expédition.
+
+- **TOTP entièrement réparé — 5 bugs indépendants trouvés et corrigés** (un 5e au-delà des 4 déjà identifiés) :
+  1. `security-identity.js` utilisait `supabaseRequest` sans jamais l'importer → `ReferenceError` sur les 3 routes TOTP. Corrigé en ajoutant de vraies fonctions dédiées dans `security-identity-client.js` (`getTotpRecord`/`insertTotpRecord`/`updateTotpRecord`/`deleteTotpRecord`), cohérent avec le reste du fichier.
+  2. Le secret TOTP était haché avant stockage puis réutilisé tel quel comme clé HMAC pour la vérification — mathématiquement impossible de faire correspondre un code généré par une vraie application d'authentification. Le secret réel (base32) est désormais stocké.
+  3. **Bug supplémentaire découvert pendant la correction du #2** : même une fois le secret stocké correctement, `verifyTotp` encodait le texte base32 en UTF-8 au lieu de le décoder en octets bruts avant utilisation comme clé — un vrai code TOTP n'aurait toujours jamais correspondu. Décodage base32 ajouté.
+  4. Les codes de secours utilisaient `Math.random()` (non cryptographique) — remplacés par `crypto.getRandomValues` avec échantillonnage par rejet, stockés hachés (jamais en clair).
+  5. `totpVerifySetupRoute` faisait un POST au lieu d'un vrai PATCH pour « mettre à jour » — entrait en conflit avec la clé primaire au lieu de mettre à jour la ligne existante. Corrigé.
+  - Migration Supabase requise (voir message de suivi) : la contrainte `ethone_user_data_kind_check` n'a jamais autorisé `'totp'` — chaque écriture TOTP aurait échoué en base même une fois le code applicatif corrigé.
+  - Testé de bout en bout : activation → génération d'un vrai code RFC 6238 dans le test → vérification → désactivation, plus tolérance de fenêtre temporelle ±30s.
+- **Passkeys — 2 bugs corrigés, 1 bug adjacent trouvé en chemin** :
+  - L'enregistrement résolvait toujours la configuration RP sur la première origine autorisée au lieu de l'origine réelle de la requête — cassait l'enregistrement sur toute origine secondaire (aperçu, local). Corrigé.
+  - `excludeCredentials` n'était jamais rempli, ne bloquant pas les doublons au niveau de l'authentificateur. Corrigé.
+  - La vérification à la connexion utilisait un format de paramètre obsolète (`authenticator: {...}`) incompatible avec la version installée de `@simplewebauthn/server` (13.3.2, qui attend `credential: {...}`) — l'authentification par clé d'accès était probablement cassée en production. Corrigé, avec une régression volontairement reproduite puis re-corrigée pour prouver que le nouveau test la détecte réellement.
+  - **Bug adjacent découvert** : `allowCredentials` passait l'ID d'identifiant sous forme d'octets décodés au lieu d'une chaîne base64url — la librairie v13 rejette ce format, cassant les options d'authentification pour tout utilisateur ayant déjà une clé d'accès enregistrée. Corrigé au passage.
+  - Ajout d'une détection d'anomalie de compteur de signature (`passkey_counter_anomaly`, journalisée mais non bloquante — choix délibéré : les authentificateurs de plateforme/synchronisés dans le cloud, privilégiés par cette app, peuvent légitimement stagner à 0 ou réinitialiser après restauration).
+- **CORS durci** : les dérogations localhost/`.pages.dev`/`.workers.dev`/GitHub Pages (des suffixes Cloudflare partagés que n'importe qui peut enregistrer) sont désormais réservées aux environnements hors production — en production, seule la liste explicite `ALLOWED_ORIGINS` est acceptée.
+- **Cookies** : `getAll()` ne décodait pas ce que `setAll()` encode à l'écriture — toute valeur de cookie contenant `%`, `=` ou `;` se corrompait au round-trip. Corrigé, avec repli sécurisé par cookie individuel.
+- **Constante temps** : les comparaisons de code OTP et TOTP utilisaient `===`/`!==` (faille temporelle) — remplacées par une comparaison à temps constant. Biais de modulo dans la génération des chiffres du code OTP également corrigé (échantillonnage par rejet).
+- Nouveaux tests : `worker/test/totp.test.mjs`, `worker/test/webauthn.test.mjs`, extension CORS dans `worker/test/worker-security.test.mjs`.
+- Validation : suite `worker` complète — **171/171** (8 nouveaux tests) ; `ethone-next` — `tsc --noEmit`, `npm run build`, `npm run test:unit` (13/13, 61/61), tous verts.
+- **Non traité dans cette passe (signalé par l'agent, hors périmètre)** : la redemption des codes de secours TOTP n'est câblée nulle part (ils sont désormais correctement générés et hachés, mais aucun parcours de connexion ne les vérifie) — nécessiterait un chemin dédié dans une passe ultérieure. Aucune interface ne consomme encore les routes TOTP (cohérent avec le Security Center prévu en Phase 4).
+- **Important — action manuelle requise** : la migration `202609100001_ethone_user_data_kinds_totp.sql` doit être appliquée manuellement en base de production avant que TOTP ne fonctionne réellement (voir message de suivi).
+
 ## v1.20.71 — 2026-09-09
 
 **Sécurité : isolation complète au changement de compte (Phase 2 — Session & Account Security 2.0)**

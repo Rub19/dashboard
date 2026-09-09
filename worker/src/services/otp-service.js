@@ -1,6 +1,7 @@
 import { requestExternal } from "../utils/external-request.js";
 import { createOtpCode, getActiveOtpCode, consumeOtpCode, deleteExpiredOtpCodes, insertSecurityEvent, getUserIdByEmail } from "./security-identity-client.js";
 import { signServiceToken } from "../utils/jwt.js";
+import { timingSafeEqual } from "../utils/crypto.js";
 
 const OTP_TTL_MS = 10 * 60 * 1000;
 const MAX_ATTEMPTS = 5;
@@ -197,6 +198,27 @@ async function sendEmail(env, to, subject, { html, text, attachments } = {}) {
   return response.data;
 }
 
+// Largest multiple of 10 that fits in a byte (0-255): rejecting bytes at or
+// above this avoids modulo bias toward the low digits (`byte % 10` alone
+// makes 0-5 slightly more likely than 6-9, since 256 isn't a multiple of 10).
+const DIGIT_REJECT_THRESHOLD = 250;
+
+function randomDigits(length) {
+  const digits = new Uint8Array(length);
+  let filled = 0;
+  while (filled < length) {
+    const buffer = new Uint8Array(length - filled);
+    crypto.getRandomValues(buffer);
+    for (const byte of buffer) {
+      if (byte >= DIGIT_REJECT_THRESHOLD) continue;
+      digits[filled] = byte % 10;
+      filled += 1;
+      if (filled >= length) break;
+    }
+  }
+  return digits;
+}
+
 function hashCode(code) {
   return crypto.subtle.digest("SHA-256", new TextEncoder().encode(String(code).toLowerCase().trim()))
     .then((buffer) => btoa(String.fromCharCode(...new Uint8Array(buffer))));
@@ -220,9 +242,7 @@ export async function sendOtp(env, email, providedUserId, acceptLanguage = "fr",
     throw new Error("Too many attempts. Please wait before requesting a new code.");
   }
 
-  const codeDigits = new Uint8Array(6);
-  crypto.getRandomValues(codeDigits);
-  const code = Array.from(codeDigits, (b) => b % 10).join("");
+  const code = Array.from(randomDigits(6)).join("");
   const expiresAt = new Date(Date.now() + OTP_TTL_MS).toISOString();
   const codeHash = await hashCode(code);
 
@@ -274,7 +294,11 @@ export async function verifyOtp(env, userId, email, code, deviceId, sessionId = 
   }
 
   const codeHash = await hashCode(rawCode);
-  if (codeHash !== existing.code_hash) {
+  // Constant-time compare (length check, then XOR every byte with no early
+  // exit) to avoid leaking how many leading bytes of the hash matched via
+  // response timing.
+  const hashesMatch = timingSafeEqual(new TextEncoder().encode(codeHash), new TextEncoder().encode(String(existing.code_hash || "")));
+  if (!hashesMatch) {
     await consumeOtpCode(env, existing.id, { attempts });
     throw new Error("Invalid code");
   }

@@ -2,6 +2,23 @@
 
 Toutes les modifications notables de ce projet seront documentées dans ce fichier.
 
+## v1.20.68 — 2026-09-09
+
+**Correctif critique : course entre onglets invalidant la session (401 en cascade)**
+
+- **Root cause confirmée par capture console utilisateur** : `bvgifyzhpzkbrwdjrqsg.supabase.co/auth/v1/token?grant_type=refresh_token` → 400, suivi d'une cascade de 401 sur presque tous les endpoints Worker authentifiés (mail, profils, tâches, notes, événements, `provider-credentials`, `spotify/now-playing`...). `ethone-next/lib/supabase.ts` a `autoRefreshToken: false` (délibéré, la session Supabase "principale" est gérée via cookies). Mais `components/AuthProvider.tsx`'s mécanisme "Se souvenir de moi" gère SON PROPRE jeton de rafraîchissement en parallèle, stocké dans `localStorage` (`ethone-remember-refresh`) et appelle manuellement `supabase.auth.refreshSession({refresh_token: savedRefresh})` à chaque démarrage de l'app quand aucune session cookie n'est trouvée. Les jetons de rafraîchissement Supabase tournent à usage unique : si deux onglets du dashboard démarrent en même temps (ou un onglet redémarre pendant qu'un autre reste ouvert), les deux lisent la MÊME valeur `localStorage` et se disputent son utilisation — le premier appel réussit et fait tourner le jeton, le second échoue en 400 avec l'ancien jeton déjà consommé, ce qui peut (selon la configuration GoTrue du projet) révoquer toute la famille de jetons, invalidant même la session du premier onglet pourtant réussie.
+- **Correctif** : `restoreFromStorage()` est désormais sérialisée par un verrou inter-onglets (`navigator.locks.request('ethone-supabase-refresh', ...)`, Web Locks API, avec repli sans verrou si l'API n'est pas disponible). Une fois le verrou obtenu, le jeton est relu depuis `localStorage` (au cas où un autre onglet l'aurait déjà rafraîchi entre-temps) ; si encore valable plus d'une minute, la session courante est réutilisée directement sans nouvel appel réseau ; sinon un seul rafraîchissement réel est effectué, et sa nouvelle date d'expiration est correctement persistée (`ethone-remember-expires`, absent du code précédent — un oubli distinct qui aurait pu accélérer la fréquence de rafraîchissement).
+- Validation : `tsc --noEmit` (0 erreur), `npm run build`, `npm run lint` (0 erreur, 1160 warnings pré-existants), `npm run test:unit` (13/13, 61/61).
+
+## v1.20.67 — 2026-09-09
+
+**`/play` : vérification des permissions vocales avant de rejoindre + MP d'avertissement**
+
+- **Contexte** : après un audit approfondi du pipeline audio (intents, encodeur Opus, chiffrement, `MusicQueue`, retrieval du player entre `/play` et `/queue`) n'ayant trouvé aucun bug de code prouvable, et un log VPS confirmant une exécution de `/play` sans la moindre erreur (connexion vocale `Ready` atteinte, ressource audio créée, aucune erreur de flux), la piste la plus probable restante identifiée était une permission Discord manquante côté salon vocal — un cas qui ne produit aucune erreur JS (Discord jette simplement les paquets audio en silence côté serveur).
+- **Correctif défensif** : `discord-bot/src/commands/music/musicShortcuts.ts` — nouvelle fonction `checkVoicePermissions()` appelée par `/play` avant toute tentative de connexion : vérifie `PermissionFlagsBits.Connect` ET `PermissionFlagsBits.Speak` sur le salon vocal cible. Si l'une des deux manque, la commande échoue immédiatement avec un message clair dans le salon (au lieu de rejoindre silencieusement sans jamais produire de son) et envoie un MP à l'utilisateur avec le détail (nom du salon, permissions manquantes, quoi vérifier). Cible spécifiquement la classe de bug « aucune erreur, aucun son ».
+- Nouvelles clés i18n (fr/en/es/de) : `voice_missing_permission`, `voice_missing_permission_dm_title`, `voice_missing_permission_dm_desc`.
+- Validation : `tsc --noEmit` (0 erreur), `npm run node:build`, `test_full_sync_qa.ts` (42/42).
+
 ## v1.20.66 — 2026-09-09
 
 **Correctif du sélecteur d'avatar (affichage cassé) & appel Lanyard erroné**

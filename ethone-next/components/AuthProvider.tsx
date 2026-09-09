@@ -62,7 +62,9 @@ export default function AuthProvider({ children }: { children: ReactNode }) {
       }, SESSION_TIMEOUT_MS)
     );
 
-    async function restoreFromStorage() {
+    async function doRestoreFromStorage() {
+      // Re-read from storage: another tab may have already refreshed (and
+      // rotated) the token while we were waiting on the lock below.
       const savedToken = localStorage.getItem("ethone-remember-token");
       const savedRefresh = localStorage.getItem("ethone-remember-refresh");
       const expiresAt = Number(localStorage.getItem("ethone-remember-expires") || "0");
@@ -71,6 +73,18 @@ export default function AuthProvider({ children }: { children: ReactNode }) {
         setSession(null);
         setUser(null);
         return;
+      }
+
+      // Already fresh enough (another tab refreshed it just now) — use it
+      // directly instead of spending another refresh call on it.
+      if (expiresAt - Date.now() > 60_000) {
+        const { data } = await supabase.auth.getSession();
+        if (data.session) {
+          setSession(data.session);
+          setUser(data.session.user);
+          setError(null);
+          return;
+        }
       }
 
       if (savedRefresh) {
@@ -82,6 +96,10 @@ export default function AuthProvider({ children }: { children: ReactNode }) {
           authLog("Session restored");
           localStorage.setItem("ethone-remember-token", refreshData.session.access_token);
           localStorage.setItem("ethone-remember-refresh", refreshData.session.refresh_token);
+          const newExpiresAt = refreshData.session.expires_at
+            ? refreshData.session.expires_at * 1000
+            : Date.now() + 3_600_000;
+          localStorage.setItem("ethone-remember-expires", String(newExpiresAt));
           setSession(refreshData.session);
           setUser(refreshData.session.user);
           setError(null);
@@ -91,6 +109,28 @@ export default function AuthProvider({ children }: { children: ReactNode }) {
 
       setSession(null);
       setUser(null);
+    }
+
+    // Supabase refresh tokens rotate on every use: refreshing with the same
+    // token twice (e.g. two tabs of the dashboard open at once, both booting
+    // and independently reading the same "ethone-remember-refresh" value from
+    // localStorage) makes the SECOND call fail with a 400
+    // (invalid_grant/already used) — and on some GoTrue configurations that
+    // failure revokes the whole token family, invalidating the session the
+    // FIRST tab just successfully obtained too. That cascades into 401s on
+    // every authenticated Worker call (mail, profiles, tasks, Spotify
+    // now-playing, etc.) until the user manually signs out/in again.
+    // A cross-tab lock serializes the refresh so only one tab actually calls
+    // Supabase at a time; the rest wait, then re-read the (now rotated)
+    // token from storage instead of racing with a stale one.
+    async function restoreFromStorage() {
+      if (typeof navigator !== "undefined" && "locks" in navigator) {
+        await navigator.locks.request("ethone-supabase-refresh", { mode: "exclusive" }, doRestoreFromStorage);
+      } else {
+        // Browser without the Locks API: still far better than an unguarded
+        // race, even though it can't coordinate across separate tabs.
+        await doRestoreFromStorage();
+      }
     }
 
     try {

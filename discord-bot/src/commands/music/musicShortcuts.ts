@@ -1,4 +1,4 @@
-import { SlashCommandBuilder } from 'discord.js';
+import { EmbedBuilder, PermissionFlagsBits, SlashCommandBuilder, type VoiceBasedChannel } from 'discord.js';
 import { Command, CommandContext } from '../../types/command.js';
 import { musicService } from '../../modules/music/services/musicService.js';
 import { DiscordMusicPanel } from '../../modules/music/ui/discordMusicPanel.js';
@@ -30,6 +30,52 @@ function checkVoice(ctx: CommandContext): boolean {
   return true;
 }
 
+// Vérifie que le bot a bien Connexion + Parler dans le salon vocal de l'utilisateur
+// AVANT de tenter de rejoindre. Sans ce garde-fou, le bot rejoint silencieusement
+// un salon où il ne peut pas parler : /play répond "en cours de lecture" (le flux
+// audio se crée bien côté code) mais aucun son n'est jamais audible côté Discord,
+// et rien ne le signale — exactement la classe de bug "aucune erreur, aucun son"
+// qu'on cherchait. On échoue maintenant vite et clairement, avec un DM de secours
+// au cas où le message dans le salon passerait inaperçu.
+async function checkVoicePermissions(ctx: CommandContext, channel: VoiceBasedChannel): Promise<boolean> {
+  const t = getTranslation(ctx.guildConfig.language);
+  const botMember = ctx.guild!.members.me;
+  if (!botMember) return true;
+
+  const perms = channel.permissionsFor(botMember);
+  const missing: string[] = [];
+  if (!perms?.has(PermissionFlagsBits.Connect)) missing.push('Connexion');
+  if (!perms?.has(PermissionFlagsBits.Speak)) missing.push('Parler');
+
+  if (missing.length === 0) return true;
+
+  const permissionList = missing.join(', ');
+
+  await replyError(
+    ctx,
+    formatString(t.voice_missing_permission, { channel: `<#${channel.id}>`, permissions: permissionList })
+  );
+
+  try {
+    const dmEmbed = new EmbedBuilder()
+      .setColor(0xef4444)
+      .setTitle(t.voice_missing_permission_dm_title)
+      .setDescription(
+        formatString(t.voice_missing_permission_dm_desc, {
+          guild: ctx.guild!.name,
+          channel: channel.name,
+          permissions: permissionList,
+        })
+      )
+      .setTimestamp();
+    await ctx.author.send({ embeds: [dmEmbed] });
+  } catch {
+    // MPs fermés : on a déjà prévenu dans le salon, pas grave si le DM échoue.
+  }
+
+  return false;
+}
+
 export const playCommand: Command = {
   name: 'play',
   description: 'Joue une musique ou l\'ajoute à la file d\'attente (YouTube, Spotify, SoundCloud)',
@@ -47,6 +93,12 @@ export const playCommand: Command = {
     ),
   execute: async (ctx: CommandContext) => {
     if (!checkVoice(ctx)) return;
+
+    const voiceChannel = ctx.member!.voice.channel!;
+    // Seul le salon vocal de l'utilisateur importe ici : si le bot est déjà connecté
+    // ailleurs, checkVoice() a déjà bloqué la commande plus haut (salons différents).
+    if (!(await checkVoicePermissions(ctx, voiceChannel))) return;
+
     const t = getTranslation(ctx.guildConfig.language);
     const query =
       (ctx.isSlash && ctx.interaction

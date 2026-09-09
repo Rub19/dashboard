@@ -1,3 +1,22 @@
+const v12068_fr: ChangelogEntry = {
+  version: "v1.20.68",
+  date: "2026-09-09",
+  title: "Correctif Critique : Course entre Onglets Invalidant la Session (401 en Cascade)",
+  items: [
+    "Correctif critique confirmé par capture d'écran de la console : les jetons de session Supabase tournent à chaque utilisation (un jeton de rafraîchissement n'est valable qu'une fois). `AuthProvider.tsx` relit le jeton de rafraîchissement « Se souvenir de moi » stocké en local et l'utilise directement à chaque démarrage de l'application — si deux onglets du dashboard démarrent en même temps (ou un onglet redémarre pendant qu'un autre est encore ouvert), les deux lisent la même valeur et se disputent son utilisation : le premier réussit, le second échoue avec une erreur 400, ce qui peut invalider toute la session (y compris celle du premier onglet, pourtant réussie) selon la configuration du serveur d'authentification — provoquant une cascade d'erreurs 401 sur quasiment tous les appels au serveur (mail, profils, tâches, Spotify en cours de lecture...), jusqu'à une déconnexion/reconnexion manuelle.",
+    "Correctif : un verrou inter-onglets (Web Locks API) sérialise désormais cette opération — un seul onglet à la fois peut réellement demander le renouvellement, les autres attendent puis relisent le jeton déjà mis à jour au lieu d'utiliser une valeur périmée. Corrige directement le symptôme « Spotify ne fonctionne qu'après reconnexion mais plus après un rechargement de page ».",
+  ],
+};
+
+const v12067_fr: ChangelogEntry = {
+  version: "v1.20.67",
+  date: "2026-09-09",
+  title: "/play : Vérification des Permissions Vocales + MP d'Avertissement",
+  items: [
+    "Bot Discord — /play vérifie désormais que le bot a bien les permissions Se connecter ET Parler dans le salon vocal avant de le rejoindre. Sans ce garde-fou, le bot pouvait rejoindre un salon où il n'a pas le droit de parler sans que rien ne le signale : /play répondait normalement, mais aucun son n'était jamais audible — exactement la classe de bug « aucune erreur, aucun son » signalée. Si la permission manque, un message clair s'affiche dans le salon et un MP avec le détail est envoyé à la personne qui a lancé la commande.",
+  ],
+};
+
 const v12066_fr: ChangelogEntry = {
   version: "v1.20.66",
   date: "2026-09-09",
@@ -164,6 +183,25 @@ const v12052_fr: ChangelogEntry = {
     "Dynamic Island : correction d'un bug de priorité qui empêchait Spotify de jamais s'afficher, systématiquement évincé par la synchronisation d'arrière-plan.",
     "Commande /help du Bot Discord : la liste des commandes est désormais générée dynamiquement depuis les commandes réellement enregistrées (fin des commandes fantômes et des commandes manquantes), et affiche la vraie syntaxe des commandes à sous-commandes (ex. /automod status).",
     "Audit de l'enregistrement des commandes slash Discord : architecture confirmée saine, aucune dérive entre le code et les commandes déployées.",
+  ],
+};
+
+const v12068_en: ChangelogEntry = {
+  version: "v1.20.68",
+  date: "2026-09-09",
+  title: "Critical Fix: Cross-Tab Race Invalidating the Session (Cascading 401s)",
+  items: [
+    "Confirmed critical fix (via a console screenshot): Supabase session tokens rotate on every use (a refresh token is only valid once). AuthProvider.tsx reads the stored \"remember me\" refresh token and uses it directly on every app boot — if two dashboard tabs boot at the same time (or one reloads while another is still open), both read the same value and race to use it: the first succeeds, the second fails with a 400 error, which can invalidate the whole session (including the first tab's successful one) depending on the auth server's configuration — cascading into 401 errors on nearly every server call (mail, profiles, tasks, Spotify now-playing...) until a manual sign-out/sign-in.",
+    "Fix: a cross-tab lock (Web Locks API) now serializes this operation — only one tab at a time can actually request a refresh, the others wait and then re-read the already-updated token instead of using a stale value. Directly fixes the \"Spotify only works right after reconnecting but not after a page reload\" symptom.",
+  ],
+};
+
+const v12067_en: ChangelogEntry = {
+  version: "v1.20.67",
+  date: "2026-09-09",
+  title: "/play: Voice Permission Check + Warning DM",
+  items: [
+    "Discord bot — /play now checks that the bot actually has both Connect AND Speak permission in the voice channel before joining it. Without this guard, the bot could join a channel it isn't allowed to speak in with nothing to signal it: /play would reply normally, but no sound was ever audible — exactly the reported \"no error, no sound\" bug class. If the permission is missing, a clear message shows in the channel and a DM with details is sent to whoever ran the command.",
   ],
 };
 
@@ -336,6 +374,25 @@ const v12052_en: ChangelogEntry = {
   ],
 };
 
+const v12068_es: ChangelogEntry = {
+  version: "v1.20.68",
+  date: "2026-09-09",
+  title: "Corrección Crítica: Carrera Entre Pestañas que Invalidaba la Sesión (401 en Cascada)",
+  items: [
+    "Corrección crítica confirmada (mediante una captura de la consola): los tokens de sesión de Supabase rotan en cada uso (un token de renovación solo es válido una vez). AuthProvider.tsx lee el token de renovación «recordarme» guardado localmente y lo usa directamente en cada arranque de la app — si dos pestañas del dashboard arrancan al mismo tiempo (o una se recarga mientras otra sigue abierta), ambas leen el mismo valor y compiten por usarlo: la primera tiene éxito, la segunda falla con un error 400, lo que puede invalidar toda la sesión (incluida la de la primera pestaña, ya exitosa) según la configuración del servidor de autenticación — provocando una cascada de errores 401 en casi todas las llamadas al servidor (correo, perfiles, tareas, Spotify en reproducción...) hasta un cierre/inicio de sesión manual.",
+    "Corrección: un bloqueo entre pestañas (Web Locks API) ahora serializa esta operación — solo una pestaña a la vez puede pedir realmente la renovación, las demás esperan y luego releen el token ya actualizado en vez de usar un valor caducado. Corrige directamente el síntoma «Spotify solo funciona justo después de reconectar pero no tras recargar la página».",
+  ],
+};
+
+const v12067_es: ChangelogEntry = {
+  version: "v1.20.67",
+  date: "2026-09-09",
+  title: "/play: Verificación de Permisos de Voz + DM de Aviso",
+  items: [
+    "Bot de Discord — /play ahora comprueba que el bot tiene realmente los permisos Conectar Y Hablar en el canal de voz antes de unirse. Sin esta protección, el bot podía unirse a un canal donde no tiene permiso para hablar sin que nada lo indicara: /play respondía con normalidad, pero nunca se escuchaba ningún sonido — exactamente la clase de bug «sin error, sin sonido» reportada. Si falta el permiso, se muestra un mensaje claro en el canal y se envía un DM con los detalles a quien ejecutó el comando.",
+  ],
+};
+
 const v12066_es: ChangelogEntry = {
   version: "v1.20.66",
   date: "2026-09-09",
@@ -502,6 +559,25 @@ const v12052_es: ChangelogEntry = {
     "Dynamic Island: corregido un error de prioridad que impedía que Spotify apareciera, siempre desplazado por la sincronización en segundo plano.",
     "Comando /help del Bot de Discord: la lista de comandos ahora se genera dinámicamente desde los comandos realmente registrados (fin de comandos fantasma o ausentes), mostrando la sintaxis real de los comandos con subcomandos.",
     "Auditoría del registro de comandos slash de Discord: arquitectura confirmada como sólida, sin desviación entre el código y los comandos desplegados.",
+  ],
+};
+
+const v12068_de: ChangelogEntry = {
+  version: "v1.20.68",
+  date: "2026-09-09",
+  title: "Kritischer Fix: Tab-übergreifendes Rennen Ungültig Machte die Sitzung (Kaskadierende 401er)",
+  items: [
+    "Bestätigter kritischer Fix (durch einen Konsolen-Screenshot): Supabase-Sitzungstoken rotieren bei jeder Nutzung (ein Refresh-Token ist nur einmal gültig). AuthProvider.tsx liest das lokal gespeicherte „Angemeldet bleiben“-Refresh-Token und verwendet es bei jedem App-Start direkt — starten zwei Dashboard-Tabs gleichzeitig (oder lädt ein Tab neu, während ein anderer noch offen ist), lesen beide denselben Wert und konkurrieren um seine Nutzung: der erste gelingt, der zweite scheitert mit einem 400-Fehler, was je nach Konfiguration des Auth-Servers die gesamte Sitzung ungültig machen kann (einschließlich der bereits erfolgreichen des ersten Tabs) — das kaskadiert in 401-Fehler bei fast jedem Serveraufruf (Mail, Profile, Aufgaben, Spotify „läuft gerade“ ...), bis zu einer manuellen Ab-/Anmeldung.",
+    "Fix: Eine Tab-übergreifende Sperre (Web Locks API) serialisiert diese Operation jetzt — nur ein Tab kann gleichzeitig wirklich eine Erneuerung anfordern, die anderen warten und lesen dann das bereits aktualisierte Token, statt einen veralteten Wert zu verwenden. Behebt direkt das Symptom „Spotify funktioniert nur direkt nach dem erneuten Verbinden, aber nicht nach einem Neuladen der Seite“.",
+  ],
+};
+
+const v12067_de: ChangelogEntry = {
+  version: "v1.20.67",
+  date: "2026-09-09",
+  title: "/play: Sprachberechtigungsprüfung + Warn-DM",
+  items: [
+    "Discord-Bot — /play prüft jetzt vor dem Beitreten, ob der Bot im Sprachkanal wirklich sowohl Verbinden ALS AUCH Sprechen darf. Ohne diese Absicherung konnte der Bot einem Kanal beitreten, in dem er nicht sprechen darf, ohne dass irgendetwas darauf hinwies: /play antwortete normal, aber es war nie ein Ton zu hören — genau die gemeldete Fehlerklasse „kein Fehler, kein Ton“. Fehlt die Berechtigung, erscheint eine klare Meldung im Kanal und eine DM mit Details geht an die Person, die den Befehl ausgeführt hat.",
   ],
 };
 
@@ -22609,5 +22685,15 @@ CHANGELOG_BY_LANG.fr.unshift(v12066_fr);
 CHANGELOG_BY_LANG.en.unshift(v12066_en);
 CHANGELOG_BY_LANG.es.unshift(v12066_es);
 CHANGELOG_BY_LANG.de.unshift(v12066_de);
+
+CHANGELOG_BY_LANG.fr.unshift(v12067_fr);
+CHANGELOG_BY_LANG.en.unshift(v12067_en);
+CHANGELOG_BY_LANG.es.unshift(v12067_es);
+CHANGELOG_BY_LANG.de.unshift(v12067_de);
+
+CHANGELOG_BY_LANG.fr.unshift(v12068_fr);
+CHANGELOG_BY_LANG.en.unshift(v12068_en);
+CHANGELOG_BY_LANG.es.unshift(v12068_es);
+CHANGELOG_BY_LANG.de.unshift(v12068_de);
 
 export const CHANGELOG = CHANGELOG_BY_LANG.fr;

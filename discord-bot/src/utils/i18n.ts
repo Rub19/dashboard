@@ -7,6 +7,9 @@ export interface TranslationDictionary {
   lang_changed_desc: string;
   voice_required: string;
   voice_different: string;
+  voice_missing_permission: string;
+  voice_missing_permission_dm_title: string;
+  voice_missing_permission_dm_desc: string;
   bot_status_title: string;
   bot_status_desc: string;
   bot_info_desc: string;
@@ -635,6 +638,9 @@ const translations: Record<SupportedLanguage, TranslationDictionary> = {
     lang_changed_desc: 'Le bot répondra désormais en **Français** sur ce serveur.',
     voice_required: '❌ **Salon vocal requis** : Vous devez impérativement être connecté dans un salon vocal pour lancer ou contrôler la musique !',
     voice_different: '❌ **Salon vocal différent** : Vous devez être dans le même salon vocal que le bot ({channel}) pour contrôler la musique.',
+    voice_missing_permission: '❌ **Permission manquante** : Je n\'ai pas la permission de me connecter et/ou de parler dans {channel}. Un rôle du serveur me bloque probablement — vérifiez les permissions du salon ({permissions}). Un message privé vous a été envoyé avec le détail.',
+    voice_missing_permission_dm_title: '🔇 Je ne peux pas parler dans ce salon',
+    voice_missing_permission_dm_desc: 'Tu as demandé une musique dans **{guild}**, salon **{channel}**, mais il me manque la permission **{permissions}** dans ce salon vocal précis — je peux rejoindre mais rien ne sera audible. Demande à un modérateur de vérifier les permissions du salon (Paramètres du salon → Permissions → mon rôle doit avoir Se connecter et Parler).',
     bot_status_title: '📊 Statut Technique & Métriques',
     bot_status_desc: 'Tous les sous-systèmes du bot fonctionnent actuellement de manière optimale.',
     bot_info_desc: 'Bot tout-en-un de nouvelle génération propulsant le serveur avec intelligence artificielle, musique et modération.',
@@ -1248,6 +1254,9 @@ const translations: Record<SupportedLanguage, TranslationDictionary> = {
     lang_changed_desc: 'The bot will now respond in **English** on this server.',
     voice_required: '❌ **Voice Channel Required**: You must be connected to a voice channel to play or control music!',
     voice_different: '❌ **Different Voice Channel**: You must be in the same voice channel as the bot ({channel}) to control music.',
+    voice_missing_permission: '❌ **Missing Permission**: I don\'t have permission to connect and/or speak in {channel}. A server role is likely blocking me — check the channel permissions ({permissions}). A DM with details has been sent to you.',
+    voice_missing_permission_dm_title: '🔇 I can\'t speak in that channel',
+    voice_missing_permission_dm_desc: 'You requested music in **{guild}**, channel **{channel}**, but I\'m missing the **{permissions}** permission in that specific voice channel — I can join, but nothing will be audible. Ask a moderator to check the channel permissions (Channel Settings → Permissions → my role needs Connect and Speak).',
     bot_status_title: '📊 Technical Status & Metrics',
     bot_status_desc: 'All bot subsystems are currently operating at peak performance.',
     bot_info_desc: 'Next-generation all-in-one bot powering your server with AI, high-fidelity music, and smart moderation.',
@@ -1861,6 +1870,9 @@ const translations: Record<SupportedLanguage, TranslationDictionary> = {
     lang_changed_desc: 'El bot ahora responderá en **Español** en este servidor.',
     voice_required: '❌ **Canal de voz requerido**: ¡Debes estar conectado a un canal de voz para reproducir o controlar música!',
     voice_different: '❌ **Canal de voz diferente**: Debes estar en el mismo canal de voz que el bot ({channel}) para controlar la música.',
+    voice_missing_permission: '❌ **Permiso faltante**: No tengo permiso para conectarme y/o hablar en {channel}. Probablemente un rol del servidor me lo impide — revisa los permisos del canal ({permissions}). Te he enviado un DM con los detalles.',
+    voice_missing_permission_dm_title: '🔇 No puedo hablar en ese canal',
+    voice_missing_permission_dm_desc: 'Pediste música en **{guild}**, canal **{channel}**, pero me falta el permiso **{permissions}** en ese canal de voz concreto — puedo unirme, pero no se escuchará nada. Pide a un moderador que revise los permisos del canal (Configuración del canal → Permisos → mi rol necesita Conectar y Hablar).',
     bot_status_title: '📊 Estado Técnico y Métricas',
     bot_status_desc: 'Todos los subsistemas del bot están funcionando de manera óptima.',
     bot_info_desc: 'Bot todo-en-uno de última generación que potencia tu servidor con IA, música de alta fidelidad y moderación.',
@@ -2474,6 +2486,9 @@ const translations: Record<SupportedLanguage, TranslationDictionary> = {
     lang_changed_desc: 'Der Bot antwortet ab sofort auf **Deutsch** auf diesem Server.',
     voice_required: '❌ **Sprachkanal erforderlich**: Du musst mit einem Sprachkanal verbunden sein, um Musik abzuspielen oder zu steuern!',
     voice_different: '❌ **Anderer Sprachkanal**: Du musst im selben Sprachkanal wie der Bot ({channel}) sein, um die Musik zu steuern.',
+    voice_missing_permission: '❌ **Fehlende Berechtigung**: Mir fehlt die Berechtigung, {channel} beizutreten und/oder dort zu sprechen. Wahrscheinlich blockiert mich eine Serverrolle — überprüfe die Kanalberechtigungen ({permissions}). Ich habe dir eine DM mit Details geschickt.',
+    voice_missing_permission_dm_title: '🔇 Ich kann in diesem Kanal nicht sprechen',
+    voice_missing_permission_dm_desc: 'Du hast Musik in **{guild}**, Kanal **{channel}** angefordert, aber mir fehlt die Berechtigung **{permissions}** in genau diesem Sprachkanal — ich kann beitreten, aber es wird nichts hörbar sein. Bitte einen Moderator, die Kanalberechtigungen zu prüfen (Kanaleinstellungen → Berechtigungen → meine Rolle braucht Verbinden und Sprechen).',
     bot_status_title: '📊 Technischer Status & Metriken',
     bot_status_desc: 'Alle Subsysteme des Bots arbeiten derzeit einwandfrei.',
     bot_info_desc: 'All-in-One-Bot der nächsten Generation für Ihren Server mit KI, High-Fidelity-Musik und Moderation.',

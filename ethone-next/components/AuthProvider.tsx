@@ -94,6 +94,25 @@ const SIGNOUT_KEY_PREFIXES = [
   "ethone:oauth:", // transient OAuth/PKCE verifier state
 ];
 
+// Best-effort: register (or touch, if it already exists) an ethone_devices
+// row for the session that was just signed into. The Worker derives the
+// device's name/platform/browser from the request's own User-Agent header
+// when none is supplied, so an empty body is enough — see
+// worker/src/routes/security-identity.js's deviceUpsertRoute and
+// worker/src/services/device-service.js's getOrCreateDevice. Deliberately
+// swallows every failure: a user must never be blocked from signing in by
+// this bookkeeping call failing (offline, Worker hiccup, etc.) — the
+// consequence of a failure here is only that this one session won't show
+// up in the Security Center / won't be revocable until it succeeds on a
+// later request, not a broken sign-in.
+async function registerCurrentDevice() {
+  try {
+    await fetchWorker("/api/auth/device", { method: "POST", body: JSON.stringify({}) });
+  } catch (err) {
+    authLog("registerCurrentDevice failed", err instanceof Error ? err.message : String(err));
+  }
+}
+
 function deleteIndexedDbSafely(name: string, timeoutMs = 2000) {
   if (typeof indexedDB === "undefined") return;
   try {
@@ -246,6 +265,21 @@ export default function AuthProvider({ children }: { children: ReactNode }) {
         setSession(newSession);
         setUser(newSession?.user ?? null);
         setLoading(false);
+        // A real, revocable session needs an ethone_devices row: Phase 1's
+        // per-request revocation (middleware/auth.js) and the Phase 4
+        // Security Center both key off ethone_devices.session_id, matched
+        // against the access token's own session_id claim (which Supabase
+        // GoTrue sets on every session, not just ones the Worker mints).
+        // SIGNED_IN fires for every real sign-in path — password, native
+        // OTP, OAuth redirect, passkey-via-magiclink — so hooking it here
+        // once covers all of them instead of duplicating the call in each
+        // sign-in function. Idempotent: getOrCreateDevice reuses the
+        // existing row for this session_id if one is already there, so a
+        // duplicate SIGNED_IN firing (or a stray one on initial load) is
+        // harmless.
+        if (_event === "SIGNED_IN" && newSession) {
+          registerCurrentDevice();
+        }
       }
     );
 

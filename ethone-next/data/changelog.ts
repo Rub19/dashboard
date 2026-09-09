@@ -1,3 +1,12 @@
+const v12075_fr: ChangelogEntry = {
+  version: "v1.20.75",
+  date: "2026-09-10",
+  title: "Sécurité : Toutes les Connexions Sont Maintenant Traçables et Révocables",
+  items: [
+    "Correctif important découvert par la passe d'attaque de la semaine dernière : se connecter par mot de passe ou par code de vérification (les méthodes les plus utilisées) ne créait aucune session traçable — ces connexions étaient invisibles dans Réglages → Sécurité et impossibles à révoquer à distance. Corrigé : toute connexion, quelle que soit la méthode (mot de passe, code, Google/GitHub/Discord, clé d'accès), enregistre désormais réellement sa session — elle apparaît dans la liste des appareils et peut être déconnectée depuis n'importe quel autre appareil.",
+  ],
+};
+
 const v12074_fr: ChangelogEntry = {
   version: "v1.20.74",
   date: "2026-09-10",
@@ -247,6 +256,15 @@ const v12052_fr: ChangelogEntry = {
     "Dynamic Island : correction d'un bug de priorité qui empêchait Spotify de jamais s'afficher, systématiquement évincé par la synchronisation d'arrière-plan.",
     "Commande /help du Bot Discord : la liste des commandes est désormais générée dynamiquement depuis les commandes réellement enregistrées (fin des commandes fantômes et des commandes manquantes), et affiche la vraie syntaxe des commandes à sous-commandes (ex. /automod status).",
     "Audit de l'enregistrement des commandes slash Discord : architecture confirmée saine, aucune dérive entre le code et les commandes déployées.",
+  ],
+};
+
+const v12075_en: ChangelogEntry = {
+  version: "v1.20.75",
+  date: "2026-09-10",
+  title: "Security: Every Sign-In Is Now Tracked and Revocable",
+  items: [
+    "Important fix found by last week's attack pass: signing in with a password or a verification code (the most common methods) created no trackable session — these sign-ins were invisible in Settings → Security and couldn't be remotely revoked. Fixed: every sign-in, regardless of method (password, code, Google/GitHub/Discord, passkey), now actually registers its session — it shows up in the device list and can be signed out from any other device.",
   ],
 };
 
@@ -502,6 +520,15 @@ const v12052_en: ChangelogEntry = {
   ],
 };
 
+const v12075_es: ChangelogEntry = {
+  version: "v1.20.75",
+  date: "2026-09-10",
+  title: "Seguridad: Ahora Todo Inicio de Sesión Es Rastreable y Revocable",
+  items: [
+    "Corrección importante detectada por la prueba de ataque de la semana pasada: iniciar sesión con contraseña o con un código de verificación (los métodos más usados) no creaba ninguna sesión rastreable — esos inicios de sesión eran invisibles en Ajustes → Seguridad y no se podían revocar de forma remota. Corregido: cualquier inicio de sesión, sea cual sea el método (contraseña, código, Google/GitHub/Discord, passkey), registra ahora realmente su sesión — aparece en la lista de dispositivos y puede cerrarse desde cualquier otro dispositivo.",
+  ],
+};
+
 const v12074_es: ChangelogEntry = {
   version: "v1.20.74",
   date: "2026-09-10",
@@ -751,6 +778,15 @@ const v12052_es: ChangelogEntry = {
     "Dynamic Island: corregido un error de prioridad que impedía que Spotify apareciera, siempre desplazado por la sincronización en segundo plano.",
     "Comando /help del Bot de Discord: la lista de comandos ahora se genera dinámicamente desde los comandos realmente registrados (fin de comandos fantasma o ausentes), mostrando la sintaxis real de los comandos con subcomandos.",
     "Auditoría del registro de comandos slash de Discord: arquitectura confirmada como sólida, sin desviación entre el código y los comandos desplegados.",
+  ],
+};
+
+const v12075_de: ChangelogEntry = {
+  version: "v1.20.75",
+  date: "2026-09-10",
+  title: "Sicherheit: Jede Anmeldung Ist Jetzt Nachverfolgbar und Widerrufbar",
+  items: [
+    "Wichtiger Fix, gefunden durch den Angriffstest letzte Woche: Die Anmeldung mit Passwort oder Bestätigungscode (die gängigsten Methoden) erzeugte keine nachverfolgbare Sitzung — diese Anmeldungen waren in Einstellungen → Sicherheit unsichtbar und konnten nicht aus der Ferne widerrufen werden. Behoben: Jede Anmeldung, unabhängig von der Methode (Passwort, Code, Google/GitHub/Discord, Passkey), registriert jetzt tatsächlich ihre Sitzung — sie erscheint in der Geräteliste und kann von jedem anderen Gerät abgemeldet werden.",
   ],
 };
 
@@ -22981,5 +23017,10 @@ CHANGELOG_BY_LANG.fr.unshift(v12074_fr);
 CHANGELOG_BY_LANG.en.unshift(v12074_en);
 CHANGELOG_BY_LANG.es.unshift(v12074_es);
 CHANGELOG_BY_LANG.de.unshift(v12074_de);
+
+CHANGELOG_BY_LANG.fr.unshift(v12075_fr);
+CHANGELOG_BY_LANG.en.unshift(v12075_en);
+CHANGELOG_BY_LANG.es.unshift(v12075_es);
+CHANGELOG_BY_LANG.de.unshift(v12075_de);
 
 export const CHANGELOG = CHANGELOG_BY_LANG.fr;

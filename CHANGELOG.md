@@ -2,6 +2,20 @@
 
 Toutes les modifications notables de ce projet seront documentées dans ce fichier.
 
+## v1.20.75 — 2026-09-10
+
+**Sécurité : toutes les connexions sont maintenant traçables et révocables (clôture du 2e constat de la Phase 5)**
+
+Correctif ciblé pour la découverte la plus importante de la Phase 5 : ni la connexion par mot de passe (`AuthProvider.signInPassword`) ni la vérification OTP native Supabase (`AuthProvider.verifyOtp`) n'appelaient `POST /api/auth/device` — les sessions créées par ces parcours (les plus utilisés en pratique) n'avaient donc aucune ligne `ethone_devices` correspondante, les rendant invisibles au Security Center (Phase 4) et immunisées contre la révocation par requête (Phase 1).
+
+- **Root cause** : `useSecurity.ts`'s `upsertDevice()` existait déjà et fonctionnait, mais n'était appelé nulle part dans l'application.
+- **Correctif** : plutôt que de dupliquer un appel dans chaque fonction de connexion (mot de passe, OTP natif, OAuth, clé d'accès), un seul point d'accroche dans `AuthProvider.tsx`'s listener `onAuthStateChange` existant — sur l'événement `SIGNED_IN` (qui se déclenche pour **tous** les parcours de connexion réels), un nouvel appel best-effort à `POST /api/auth/device` enregistre la session courante. Le jeton d'accès Supabase natif porte déjà nativement une revendication `session_id` (indépendamment de si c'est le Worker qui a émis le jeton) — aucune donnée inventée, juste le branchement d'une route déjà existante et déjà correcte.
+- Idempotent par construction : `getOrCreateDevice()` réutilise la ligne existante pour ce `session_id` si elle existe déjà, donc un déclenchement en double de `SIGNED_IN` ne crée pas de doublon.
+- Échec silencieux volontaire : si cet appel échoue (hors ligne, Worker indisponible), la connexion de l'utilisateur n'est jamais bloquée — seule conséquence, cette session n'apparaîtra pas dans le Security Center tant que l'appel n'aura pas réussi sur une requête ultérieure.
+- Validation : `tsc --noEmit` (0 erreur), `npm run build`, `npm run lint` (0 erreur, 1161 warnings pré-existants), `npm run test:unit` (14/14, 69/69 — inchangé, ce correctif n'a pas de nouveau test dédié, signalé comme lacune de couverture mineure).
+
+La seconde découverte de la Phase 5 (aucune redirection forcée vers `/login` quand une session devient invalide sur une page privée) reste ouverte — non traitée dans ce correctif, à reprendre séparément.
+
 ## v1.20.74 — 2026-09-10
 
 **Sécurité : passe d'attaque IDOR/BOLA + suite de tests (Phase 5 — clôture du chantier Session & Account Security 2.0)**

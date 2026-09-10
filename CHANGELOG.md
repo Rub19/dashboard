@@ -2,6 +2,14 @@
 
 Toutes les modifications notables de ce projet seront documentées dans ce fichier.
 
+## v1.21.9 — 2026-09-10
+
+**Pages `/boost` & `/browser` : défilement**
+
+- `app/boost/BoostClient.tsx` + `app/browser/BrowserClient.tsx` : root `min-h-screen bg-gradient-to-b …` → `h-full overflow-y-auto os-scroll [overscroll-behavior:contain] bg-[var(--bg-main)]` — mêmes symptômes que les pages du bot (contenu tronqué en bas). Tuiles d'icône `bg-gradient-to-br from-X-500 to-Y-600 shadow-lg shadow-Y/20` → `bg-X-600 shadow-sm`.
+- Trouvé lors d'un audit statique de tous les `min-h-screen` du dossier `app/` (2 restants hors `/discord`).
+- Validation : `tsc` 0 erreur, `build` ✓.
+
 ## v1.21.8 — 2026-09-10
 
 **Bot Control Center & Présence : défilement**

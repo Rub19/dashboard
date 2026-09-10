@@ -68,11 +68,11 @@ export default function BoostClient({ id }: BoostClientProps) {
   };
 
   return (
-    <div className="min-h-screen bg-gradient-to-b from-zinc-950 via-zinc-900 to-black text-white p-4 sm:p-8 pb-32">
+    <div className="h-full overflow-y-auto os-scroll [overscroll-behavior:contain] bg-[var(--bg-main)] text-white p-4 sm:p-8 pb-32">
       {/* Top Banner */}
       <div className="mb-6 flex flex-col md:flex-row md:items-center justify-between gap-4 border-b border-white/10 pb-6">
         <div className="flex items-center gap-4">
-          <div className="flex h-12 w-12 items-center justify-center rounded-2xl bg-gradient-to-br from-amber-500 to-orange-600 shadow-lg shadow-orange-500/20">
+          <div className="flex h-12 w-12 items-center justify-center rounded-2xl bg-amber-600 shadow-sm">
             <Zap className="h-6 w-6 text-white" />
           </div>
           <div>

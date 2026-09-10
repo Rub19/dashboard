@@ -1,3 +1,13 @@
+const v12109_fr: ChangelogEntry = {
+  version: "v1.21.9",
+  date: "2026-09-10",
+  title: "Pages Boost & Navigateur : Défilement",
+  items: [
+    "Les pages /boost et /browser ne défilaient pas jusqu'en bas (root `min-h-screen` dans le `<main>` en `overflow-hidden` de la Shell). Root passé en `h-full overflow-y-auto`.",
+    "Fonds dégradés et tuiles d'icône aplatis au passage.",
+  ],
+};
+
 const v12108_fr: ChangelogEntry = {
   version: "v1.21.8",
   date: "2026-09-10",
@@ -626,6 +636,16 @@ const v12052_fr: ChangelogEntry = {
     "Dynamic Island : correction d'un bug de priorité qui empêchait Spotify de jamais s'afficher, systématiquement évincé par la synchronisation d'arrière-plan.",
     "Commande /help du Bot Discord : la liste des commandes est désormais générée dynamiquement depuis les commandes réellement enregistrées (fin des commandes fantômes et des commandes manquantes), et affiche la vraie syntaxe des commandes à sous-commandes (ex. /automod status).",
     "Audit de l'enregistrement des commandes slash Discord : architecture confirmée saine, aucune dérive entre le code et les commandes déployées.",
+  ],
+};
+
+const v12109_en: ChangelogEntry = {
+  version: "v1.21.9",
+  date: "2026-09-10",
+  title: "Boost & Browser Pages: Scroll",
+  items: [
+    "The /boost and /browser pages didn't scroll to the bottom (root `min-h-screen` inside the shell's `overflow-hidden` `<main>`). Root switched to `h-full overflow-y-auto`.",
+    "Flattened the gradient backgrounds and icon tiles along the way.",
   ],
 };
 
@@ -1260,6 +1280,16 @@ const v12052_en: ChangelogEntry = {
   ],
 };
 
+const v12109_es: ChangelogEntry = {
+  version: "v1.21.9",
+  date: "2026-09-10",
+  title: "Páginas Boost y Navegador: Scroll",
+  items: [
+    "Las páginas /boost y /browser no bajaban del todo (root `min-h-screen` dentro del `<main>` en `overflow-hidden` de la Shell). Root cambiado a `h-full overflow-y-auto`.",
+    "Fondos degradados y azulejos de icono aplanados de paso.",
+  ],
+};
+
 const v12108_es: ChangelogEntry = {
   version: "v1.21.8",
   date: "2026-09-10",
@@ -1888,6 +1918,16 @@ const v12052_es: ChangelogEntry = {
     "Dynamic Island: corregido un error de prioridad que impedía que Spotify apareciera, siempre desplazado por la sincronización en segundo plano.",
     "Comando /help del Bot de Discord: la lista de comandos ahora se genera dinámicamente desde los comandos realmente registrados (fin de comandos fantasma o ausentes), mostrando la sintaxis real de los comandos con subcomandos.",
     "Auditoría del registro de comandos slash de Discord: arquitectura confirmada como sólida, sin desviación entre el código y los comandos desplegados.",
+  ],
+};
+
+const v12109_de: ChangelogEntry = {
+  version: "v1.21.9",
+  date: "2026-09-10",
+  title: "Boost- & Browser-Seiten: Scroll",
+  items: [
+    "Die Seiten /boost und /browser scrollten nicht bis unten (root `min-h-screen` im `overflow-hidden`-`<main>` der Shell). Root auf `h-full overflow-y-auto` umgestellt.",
+    "Verlaufshintergruende und Icon-Kacheln nebenbei abgeflacht.",
   ],
 };
 
@@ -24635,5 +24675,9 @@ CHANGELOG_BY_LANG.fr.unshift(v12108_fr);
 CHANGELOG_BY_LANG.en.unshift(v12108_en);
 CHANGELOG_BY_LANG.es.unshift(v12108_es);
 CHANGELOG_BY_LANG.de.unshift(v12108_de);
+CHANGELOG_BY_LANG.fr.unshift(v12109_fr);
+CHANGELOG_BY_LANG.en.unshift(v12109_en);
+CHANGELOG_BY_LANG.es.unshift(v12109_es);
+CHANGELOG_BY_LANG.de.unshift(v12109_de);
 
 export const CHANGELOG = CHANGELOG_BY_LANG.fr;

@@ -100,6 +100,18 @@ export function colorMix(a: string, b: string, pct = 50): string {
   return "color-mix(in srgb, " + a + " " + pct + "%, " + b + ")";
 }
 
+/** Convert a hex color to an "r, g, b" triplet string for rgba()/color-mix() usages */
+function hexToRgbTriplet(hex: string): string {
+  const normalized = hex.replace("#", "").trim();
+  const full = normalized.length === 3
+    ? normalized.split("").map((c) => c + c).join("")
+    : normalized;
+  const r = parseInt(full.substring(0, 2), 16) || 0;
+  const g = parseInt(full.substring(2, 4), 16) || 0;
+  const b = parseInt(full.substring(4, 6), 16) || 0;
+  return `${r}, ${g}, ${b}`;
+}
+
 /** Apply universal or custom accent to the DOM root */
 export function applyAccent(root: HTMLElement, accent: string): void {
   const safeAccent = isValidHexColor(accent) ? accent : "#C1234F";
@@ -108,6 +120,16 @@ export function applyAccent(root: HTMLElement, accent: string): void {
   const secondary = colorMix(safeAccent, "white", 70);
   const borderActive = colorMix(safeAccent, "transparent", 40);
   const contrast = getContrastColor(safeAccent);
+  // --accent-hover / --accent-glow / --accent-muted / --accent-rgb are read by
+  // DynamicIslandContainer, CalendarGrid, FocusTimerRing and FloatingLiquidDock
+  // (via `var(--accent-glow, rgba(16, 185, 129, ...))`-style fallbacks or, for
+  // --accent-hover/--accent-rgb, with no fallback at all) but were never written
+  // by the theme engine, so they silently used the hardcoded emerald fallback
+  // (or resolved to nothing) regardless of theme/accent — same bug class as the
+  // --accent-color fix below.
+  const hover = colorMix(safeAccent, "white", 86);
+  const muted = colorMix(safeAccent, "transparent", 8);
+  const rgb = hexToRgbTriplet(safeAccent);
 
   root.style.setProperty("--accent", safeAccent);
   root.style.setProperty("--accent-color", safeAccent);
@@ -117,6 +139,10 @@ export function applyAccent(root: HTMLElement, accent: string): void {
   root.style.setProperty("--accent-contrast", contrast);
   root.style.setProperty("--accent-secondary", secondary);
   root.style.setProperty("--border-active", borderActive);
+  root.style.setProperty("--accent-hover", hover);
+  root.style.setProperty("--accent-glow", glow);
+  root.style.setProperty("--accent-muted", muted);
+  root.style.setProperty("--accent-rgb", rgb);
 }
 
 export interface ApplyThemeOptions {
@@ -195,6 +221,10 @@ export function applyTheme(themeId: string, options?: ApplyThemeOptions): void {
   root.style.setProperty("--accent-secondary", def.accentSecondary);
   root.style.setProperty("--accent-contrast", def.accentContrast);
   root.style.setProperty("--glow-color", def.glowColor);
+  root.style.setProperty("--accent-hover", colorMix(def.accentPrimary, "white", 86));
+  root.style.setProperty("--accent-glow", def.glowColor);
+  root.style.setProperty("--accent-muted", colorMix(def.accentPrimary, "transparent", 8));
+  root.style.setProperty("--accent-rgb", hexToRgbTriplet(def.accentPrimary));
 
   // Glass levels configuration
   const glassSetting = options?.glassLevel || def.glassDefault || "medium";
@@ -224,6 +254,15 @@ export function applyTheme(themeId: string, options?: ApplyThemeOptions): void {
   root.style.setProperty("--border", def.borderSubtle);
   root.style.setProperty("--muted", def.textMuted);
   root.style.setProperty("--accent", def.accentPrimary);
+  // --surface-hover / --surface-sunken / --surface-active (no "bg-" prefix) are
+  // read across dozens of components (Sidebar, TopBar, CommandPalette, Modal,
+  // BrainChat, the settings primitives, etc.) but that bare name was never
+  // written anywhere — only the "--bg-*" namespaced tokens above are. Without a
+  // fallback in any of those `var(--surface-hover)` usages, every hover/active/
+  // sunken background silently resolved to nothing (transparent) in every theme.
+  root.style.setProperty("--surface-hover", def.bgSurfaceHover);
+  root.style.setProperty("--surface-sunken", def.bgInput);
+  root.style.setProperty("--surface-active", def.bgSurfaceHover);
 
   // Apply custom/override accent if provided
   if (options?.accent) {

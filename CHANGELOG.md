@@ -2,6 +2,18 @@
 
 Toutes les modifications notables de ce projet seront documentées dans ce fichier.
 
+## v1.20.79 — 2026-09-10
+
+**Correctif : variables de couleur d'accent et de fond au survol jamais définies par le moteur de thème (audit parallèle)**
+
+Lancé en parallèle du chantier TOTP, un audit ciblé des variables CSS de thème (même classe de bug que le correctif `--accent-color` documenté plus tôt cette session) a trouvé deux bugs réels dans `ethone-next/lib/theme-engine.ts` :
+
+- **`--accent-hover`, `--accent-glow`, `--accent-muted`, `--accent-rgb`** : lues par `DynamicIslandContainer.tsx`, `CalendarGrid.tsx`, `FocusTimerRing.tsx` et `FloatingLiquidDock.tsx`, jamais écrites par `applyAccent()`/`applyTheme()`. Les deux avec un fallback codé en dur retombaient toujours sur le vert émeraude d'origine quel que soit le thème/l'accent choisi ; les deux sans fallback (`--accent-hover`, `--accent-rgb`) ne résolvaient à rien du tout.
+- **`--surface-hover`, `--surface-sunken`, `--surface-active`** (distinctes des `--bg-surface-hover` déjà correctement câblées) : lues sans aucun fallback dans des dizaines de composants dans toute l'app (barre latérale, barre du haut, palette de commandes, fenêtres modales, centre de notifications, assistant IA, tous les primitives de réglages...). Résultat concret : aucun retour visuel au survol/clic sur la quasi-totalité des éléments interactifs de l'app, dans tous les thèmes — pas juste une mauvaise couleur, une absence totale de feedback.
+- **Correctif** : les deux ajoutés à la racine dans `applyAccent()`/`applyTheme()`, en alias des tokens déjà calculés (`def.bgSurfaceHover`, `def.bgInput`, `def.accentPrimary`, `def.glowColor`) — même convention que les autres alias déjà présents dans ce bloc. S'applique immédiatement à tous les thèmes/accents existants.
+- Audité en parallèle du reste des changements de cette session ; vérifié indépendamment avant envoi (pas seulement le rapport de l'agent) : `tsc --noEmit` (0 erreur), `npm run lint` (0 erreur, 1161 warnings pré-existants inchangés), `npm run build`, `npm run test:unit` (14/14, 69/69).
+- Piste identifiée mais non corrigée dans cette passe (nécessite une revue design, pas une correction mécanique) : une vingtaine de couleurs hexadécimales codées en dur sur des fonds de cartes/modales dans ~18 fichiers, qui ne suivent pas le thème clair (`arctic`) ni les autres palettes.
+
 ## discord-bot — 2026-09-10
 
 **Correctifs d'embeds Discord (audit ciblé, ne touche pas ethone-next, pas de bump de version dédié à ce sous-projet)**

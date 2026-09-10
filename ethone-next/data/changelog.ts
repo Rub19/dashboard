@@ -1,3 +1,14 @@
+const v12079_fr: ChangelogEntry = {
+  version: "v1.20.79",
+  date: "2026-09-10",
+  title: "Correctif : Couleurs d'Accent et de Survol Invisibles dans Toute l'App",
+  items: [
+    "Même famille de bug que le correctif de la couleur d'accent d'il y a quelques jours, trouvée en poussant l'audit plus loin : 4 variables de couleur d'accent (survol, lueur, teinte discrète, triplet RVB) utilisées par l'îlot dynamique, le calendrier, le minuteur de concentration et le dock flottant n'étaient jamais définies par le moteur de thème — elles retombaient soit sur du vert codé en dur, soit sur rien du tout (lueur et survol invisibles).",
+    "Bug plus large encore : 3 variables de fond (survol, enfoncé, actif) lues par des dizaines de composants dans toute l'app — barre latérale, barre du haut, palette de commandes, fenêtres modales, assistant IA, tous les réglages — n'étaient définies nulle part. Résultat : aucun retour visuel au survol ou au clic sur ces éléments, dans n'importe quel thème.",
+    "Les deux corrigés à la racine dans le moteur de thème ; s'appliquent immédiatement à tous les thèmes et couleurs d'accent existants, sans rien à changer ailleurs.",
+  ],
+};
+
 const v12078_fr: ChangelogEntry = {
   version: "v1.20.78",
   date: "2026-09-10",
@@ -287,6 +298,17 @@ const v12052_fr: ChangelogEntry = {
     "Dynamic Island : correction d'un bug de priorité qui empêchait Spotify de jamais s'afficher, systématiquement évincé par la synchronisation d'arrière-plan.",
     "Commande /help du Bot Discord : la liste des commandes est désormais générée dynamiquement depuis les commandes réellement enregistrées (fin des commandes fantômes et des commandes manquantes), et affiche la vraie syntaxe des commandes à sous-commandes (ex. /automod status).",
     "Audit de l'enregistrement des commandes slash Discord : architecture confirmée saine, aucune dérive entre le code et les commandes déployées.",
+  ],
+};
+
+const v12079_en: ChangelogEntry = {
+  version: "v1.20.79",
+  date: "2026-09-10",
+  title: "Fix: Missing Accent and Hover Colors Across the App",
+  items: [
+    "Same bug family as the accent-color fix from a few days ago, found by pushing the audit further: 4 accent color variables (hover, glow, muted tint, RGB triplet) used by the Dynamic Island, the calendar, the focus timer ring, and the floating dock were never set by the theme engine — they either fell back to hardcoded green or rendered nothing at all (invisible glow and hover states).",
+    "Wider bug on top of that: 3 background variables (hover, sunken, active) read by dozens of components across the whole app — sidebar, top bar, command palette, modals, the AI assistant, all of Settings — were never defined anywhere. Result: zero visual feedback on hover or click for those elements, in every theme.",
+    "Both fixed at the root in the theme engine; applies immediately to every existing theme and accent color, nothing else to change.",
   ],
 };
 
@@ -582,6 +604,17 @@ const v12052_en: ChangelogEntry = {
   ],
 };
 
+const v12079_es: ChangelogEntry = {
+  version: "v1.20.79",
+  date: "2026-09-10",
+  title: "Corrección: Colores de Acento y Hover Invisibles en Toda la App",
+  items: [
+    "Misma familia de fallo que la corrección del color de acento de hace unos días, encontrada al profundizar en la auditoría: 4 variables de color de acento (hover, resplandor, tinte sutil, triplete RGB) usadas por la Isla Dinámica, el calendario, el temporizador de concentración y el dock flotante nunca eran definidas por el motor de temas — caían en verde fijo o en nada en absoluto (resplandor y hover invisibles).",
+    "Fallo más amplio encima de ese: 3 variables de fondo (hover, hundido, activo) leídas por decenas de componentes en toda la app — barra lateral, barra superior, paleta de comandos, ventanas modales, el asistente de IA, todos los ajustes — no estaban definidas en ningún sitio. Resultado: cero retroalimentación visual al pasar el cursor o hacer clic en esos elementos, en cualquier tema.",
+    "Ambos corregidos de raíz en el motor de temas; se aplica de inmediato a todos los temas y colores de acento existentes, sin nada más que cambiar.",
+  ],
+};
+
 const v12078_es: ChangelogEntry = {
   version: "v1.20.78",
   date: "2026-09-10",
@@ -871,6 +904,17 @@ const v12052_es: ChangelogEntry = {
     "Dynamic Island: corregido un error de prioridad que impedía que Spotify apareciera, siempre desplazado por la sincronización en segundo plano.",
     "Comando /help del Bot de Discord: la lista de comandos ahora se genera dinámicamente desde los comandos realmente registrados (fin de comandos fantasma o ausentes), mostrando la sintaxis real de los comandos con subcomandos.",
     "Auditoría del registro de comandos slash de Discord: arquitectura confirmada como sólida, sin desviación entre el código y los comandos desplegados.",
+  ],
+};
+
+const v12079_de: ChangelogEntry = {
+  version: "v1.20.79",
+  date: "2026-09-10",
+  title: "Fix: Fehlende Akzent- und Hover-Farben in der Gesamten App",
+  items: [
+    "Gleiche Fehlerfamilie wie der Akzentfarben-Fix von vor ein paar Tagen, gefunden durch eine tiefere Prüfung: 4 Akzentfarben-Variablen (Hover, Leuchten, dezente Tönung, RGB-Triplet), die von der Dynamic Island, dem Kalender, dem Fokus-Timer-Ring und dem schwebenden Dock verwendet werden, wurden von der Theme-Engine nie gesetzt — sie fielen entweder auf fest codiertes Grün zurück oder wurden komplett unsichtbar (kein Leuchten, kein Hover-Effekt).",
+    "Noch weiter reichender Fehler obendrauf: 3 Hintergrundvariablen (Hover, abgesenkt, aktiv), die von Dutzenden Komponenten in der gesamten App gelesen werden — Seitenleiste, obere Leiste, Befehlspalette, Modale, der KI-Assistent, sämtliche Einstellungen — waren nirgends definiert. Ergebnis: keinerlei visuelles Feedback bei Hover oder Klick auf diese Elemente, in jedem Theme.",
+    "Beide an der Wurzel in der Theme-Engine behoben; wirkt sofort auf jedes bestehende Theme und jede Akzentfarbe, sonst nichts zu ändern.",
   ],
 };
 
@@ -23159,5 +23203,9 @@ CHANGELOG_BY_LANG.fr.unshift(v12078_fr);
 CHANGELOG_BY_LANG.en.unshift(v12078_en);
 CHANGELOG_BY_LANG.es.unshift(v12078_es);
 CHANGELOG_BY_LANG.de.unshift(v12078_de);
+CHANGELOG_BY_LANG.fr.unshift(v12079_fr);
+CHANGELOG_BY_LANG.en.unshift(v12079_en);
+CHANGELOG_BY_LANG.es.unshift(v12079_es);
+CHANGELOG_BY_LANG.de.unshift(v12079_de);
 
 export const CHANGELOG = CHANGELOG_BY_LANG.fr;

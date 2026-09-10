@@ -52,29 +52,20 @@ export default function OfflineIndicator() {
 
   const config = {
     offline: {
-      icon: <WifiOff className="h-3.5 w-3.5 shrink-0 text-amber-400" />,
-      dot: "bg-amber-400 shadow-[0_0_8px_rgba(245,158,11,0.6)]",
-      border: "border-amber-500/30",
-      bg: "bg-[var(--surface-raised)]/95",
-      text: "text-amber-300",
+      icon: <WifiOff className="h-3.5 w-3.5 shrink-0 text-[var(--warning)]" />,
+      dot: "bg-[var(--warning)]",
       label: i18n("offline", "Vous êtes hors ligne. Certaines fonctionnalités sont indisponibles."),
       role: "alert" as const,
     },
     syncing: {
-      icon: <Loader2 className="h-3.5 w-3.5 shrink-0 animate-spin text-sky-400" />,
-      dot: "bg-sky-400 shadow-[0_0_8px_rgba(56,189,248,0.6)] animate-pulse",
-      border: "border-sky-500/30",
-      bg: "bg-[var(--surface-raised)]/95",
-      text: "text-sky-300",
+      icon: <Loader2 className="h-3.5 w-3.5 shrink-0 animate-spin text-[var(--info)]" />,
+      dot: "bg-[var(--info)] animate-pulse",
       label: i18n("syncing", "Synchronisation..."),
       role: "status" as const,
     },
     online: {
-      icon: <Wifi className="h-3.5 w-3.5 shrink-0 text-emerald-400" />,
-      dot: "bg-[var(--success)] shadow-[0_0_8px_rgba(52,211,153,0.6)]",
-      border: "border-[var(--success)]/30",
-      bg: "bg-[var(--surface-raised)]/95",
-      text: "text-emerald-300",
+      icon: <Wifi className="h-3.5 w-3.5 shrink-0 text-[var(--success)]" />,
+      dot: "bg-[var(--success)]",
       label: i18n("online", "En ligne"),
       role: "status" as const,
     },
@@ -86,11 +77,11 @@ export default function OfflineIndicator() {
       aria-live="polite"
     >
       <motion.div
-        initial={{ opacity: 0, y: -16, scale: 0.94 }}
+        initial={{ opacity: 0, y: -16, scale: 0.96 }}
         animate={{ opacity: 1, y: 0, scale: 1 }}
-        exit={{ opacity: 0, y: -12, scale: 0.96 }}
+        exit={{ opacity: 0, y: -12, scale: 0.97 }}
         transition={{ type: "spring", stiffness: 400, damping: 28 }}
-        className={`pointer-events-auto flex items-center gap-2 rounded-full border px-3.5 py-1.5 text-xs font-medium shadow-2xl backdrop-blur-xl transition-colors duration-300 ${config.border} ${config.bg} ${config.text}`}
+        className="v8-panel pointer-events-auto flex items-center gap-2 rounded-full px-3.5 py-1.5 text-xs font-medium text-[var(--text-primary)] shadow-lg"
         role={config.role}
       >
         {config.icon}

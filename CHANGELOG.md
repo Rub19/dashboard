@@ -2,6 +2,17 @@
 
 Toutes les modifications notables de ce projet seront documentées dans ce fichier.
 
+## v1.21.30 — 2026-09-11
+
+**Refonte visuelle « moins IA » : notifications + Mission Control** — présentationnel uniquement.
+
+- `components/RichToast.tsx` (toasts app-wide via `context/ToastContext.tsx`) : `VARIANT_CONFIG` réduit de ~11 champs par variante (`iconBox` glow, `glow` card-shadow, `dotBg` glow, `progressBar` gradient laser + glow, `badgeBg`…) à `{ color, defaultBadge }` — une seule CSS-var sémantique par variante (success/danger/warning/info/accent) portée par l'icône, le point et la barre. Carte `bg-[#0c0d14]/95 backdrop-blur-2xl` + per-variant glow → `v8-panel`. Badge dé-`font-mono`-isé, titre `text-white font-bold` → `text-[var(--text-primary)] font-semibold`, bouton d'action sans `hover:scale-105`. Barre de progression `bg-gradient-to-r from-… shadow-[0_0_8px]` → aplat `backgroundColor: cfg.color`.
+- `context/ToastContext.tsx` : `defaultIconFor()` — retrait des `text-emerald-400`/`text-rose-400`/`text-amber-400`/`text-cyan-400` codés en dur, les icônes héritent maintenant la couleur de variante du wrapper RichToast.
+- `components/VersionUpdateToast.tsx` : conteneur `rounded-3xl bg-[#0a0b0e] shadow-[…,0_0_35px_var(--glow-color)] backdrop-blur-3xl` → `v8-panel` ; ligne lumineuse `bg-gradient-to-r` supprimée ; aura icône `shadow-[0_0_20px]` + pastille `shadow-[0_0_6px]` retirées ; boutons sans `hover:scale-105` / `shadow-lg shadow-[var(--accent-primary)]/25` ; badge version dé-`font-mono`.
+- `components/OfflineIndicator.tsx` : points de statut `shadow-[0_0_8px_rgba(...)]` retirés, `text-amber-300`/`text-sky-300`/`text-emerald-300` (illisibles en thème clair) → tokens `--warning`/`--info`/`--success` + `text-[var(--text-primary)]`, conteneur → `v8-panel` (garde le `animate-pulse` sur syncing).
+- `components/MissionControl.tsx` (HUD plein écran F2, 546 lignes) : réécriture des classes sur tokens — `bg-[#080c14]/95 backdrop-blur-3xl rounded-3xl` → `v8-panel`, 2 blobs d'ambiance `blur-[100px]` supprimés, `STATUS_DOT` glows retirés, tous les `text-white*`/`bg-white/[0.0x]`/`border-white/*`/`bg-black/40` → tokens de thème, `font-black`/`font-mono` → `font-semibold`, `hover:scale-[1.02]`/`group-hover:scale-105` retirés.
+- Validation : `tsc` 0 erreur, `build` ✓, `test:unit` 73/73.
+
 ## v1.21.29 — 2026-09-11
 
 **Refonte visuelle « moins IA » : page Tâches** — présentationnel uniquement, aucune logique/donnée touchée.

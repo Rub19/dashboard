@@ -101,10 +101,10 @@ const WORKSPACES: Workspace[] = [
 ];
 
 const STATUS_DOT: Record<string, string> = {
-  connected: "bg-emerald-400 shadow-[0_0_8px_rgba(52,211,153,0.6)]",
-  loading: "bg-amber-400 shadow-[0_0_8px_rgba(251,191,36,0.6)]",
-  empty: "bg-zinc-500",
-  error: "bg-rose-500 shadow-[0_0_8px_rgba(244,63,94,0.6)]",
+  connected: "bg-[var(--success)]",
+  loading: "bg-[var(--warning)]",
+  empty: "bg-[var(--text-muted)]",
+  error: "bg-[var(--danger)]",
 };
 
 function SectionHeader({
@@ -118,12 +118,12 @@ function SectionHeader({
 }) {
   return (
     <div className="flex items-center gap-2.5 mb-3">
-      {IconComp && <IconComp className="h-4 w-4 text-[var(--accent-primary)]" />}
-      <h3 className="text-xs font-bold uppercase tracking-wider text-[var(--text-primary)]">
+      {IconComp && <IconComp className="h-4 w-4 text-[var(--text-muted)]" />}
+      <h3 className="text-xs font-medium uppercase tracking-wide text-[var(--text-primary)]">
         {title}
       </h3>
       {count !== undefined && (
-        <span className="flex h-5 min-w-[1.25rem] items-center justify-center rounded-full border border-white/10 bg-white/5 px-1.5 text-[10px] font-bold text-[var(--text-muted)]">
+        <span className="flex h-5 min-w-[1.25rem] items-center justify-center rounded-full bg-[var(--surface-2)] px-1.5 text-[10px] font-medium text-[var(--text-muted)]">
           {count}
         </span>
       )}
@@ -226,7 +226,7 @@ function MissionControlHUD() {
       animate={{ opacity: 1 }}
       exit={{ opacity: 0 }}
       transition={{ duration: 0.2, ease: "easeOut" }}
-      className="fixed inset-0 z-[var(--z-modal)] flex items-center justify-center p-3 sm:p-6 bg-black/80 backdrop-blur-2xl"
+      className="fixed inset-0 z-[var(--z-modal)] flex items-center justify-center p-3 sm:p-6 bg-black/60 backdrop-blur-sm"
     >
       <motion.div
         ref={dialogRef}
@@ -234,43 +234,39 @@ function MissionControlHUD() {
         animate={{ opacity: 1, scale: 1, y: 0 }}
         exit={{ opacity: 0, scale: 0.96, y: 12 }}
         transition={{ duration: 0.22, ease: [0.16, 1, 0.3, 1] }}
-        className="relative flex h-full max-h-[92vh] w-full max-w-7xl flex-col rounded-3xl border border-white/10 bg-[#080c14]/95 shadow-[0_25px_80px_rgba(0,0,0,0.85)] backdrop-blur-3xl overflow-hidden"
+        className="v8-panel relative flex h-full max-h-[92vh] w-full max-w-7xl flex-col overflow-hidden shadow-2xl"
       >
-        {/* Glow ambient background accents */}
-        <div className="pointer-events-none absolute -top-32 left-1/4 h-80 w-80 rounded-full bg-[var(--accent-primary)]/10 blur-[100px]" />
-        <div className="pointer-events-none absolute -bottom-32 right-1/4 h-80 w-80 rounded-full bg-sky-500/10 blur-[100px]" />
-
         {/* Top Header Row */}
-        <div className="relative z-10 flex flex-col gap-4 border-b border-white/10 bg-white/[0.02] p-5 sm:p-6">
+        <div className="relative z-10 flex flex-col gap-4 border-b border-[var(--panel-border)] p-5 sm:p-6">
           <div className="flex items-center justify-between gap-4">
             <div className="space-y-0.5">
               <div className="flex items-center gap-2">
-                <span className="text-[10px] font-bold uppercase tracking-widest text-[var(--accent-primary)]">
+                <span className="text-[10px] font-medium uppercase tracking-widest text-[var(--text-muted)]">
                   {i18n("missionNavigationSystem", "Navigation Système")}
                 </span>
-                <span className="text-white/20">•</span>
+                <span className="text-[var(--text-muted)]">•</span>
                 <span className="inline-flex items-center gap-1 rounded-md border border-[var(--accent-primary)]/30 bg-[var(--accent-primary)]/10 px-2 py-0.5 text-[10px] font-semibold text-[var(--accent-primary)]">
                   <Sparkles className="h-3 w-3" />
                   {activeWorkspace.name} ({activeWorkspace.flow})
                 </span>
               </div>
-              <h2 className="text-xl sm:text-2xl font-black tracking-tight text-white">
+              <h2 className="text-xl sm:text-2xl font-semibold tracking-tight text-[var(--text-primary)]">
                 Mission Control
               </h2>
             </div>
 
             {/* Quick Action Chips & Close Button */}
             <div className="flex items-center gap-2">
-              <span className="hidden sm:inline-flex items-center rounded-lg border border-white/10 bg-white/5 px-2 py-1 font-mono text-[11px] text-white/50 backdrop-blur-md">
+              <span className="hidden sm:inline-flex items-center rounded-lg border border-[var(--panel-border)] px-2 py-1 text-[11px] text-[var(--text-muted)]">
                 F2
               </span>
-              <span className="hidden sm:inline-flex items-center rounded-lg border border-white/10 bg-white/5 px-2 py-1 font-mono text-[11px] text-white/50 backdrop-blur-md">
+              <span className="hidden sm:inline-flex items-center rounded-lg border border-[var(--panel-border)] px-2 py-1 text-[11px] text-[var(--text-muted)]">
                 ESC
               </span>
               <button
                 type="button"
                 onClick={() => setMissionControl(false)}
-                className="flex h-9 w-9 items-center justify-center rounded-xl border border-white/10 bg-white/5 text-white/70 hover:bg-white/10 hover:text-white transition-all active:scale-95 cursor-pointer shadow-sm"
+                className="flex h-9 w-9 items-center justify-center rounded-xl text-[var(--text-muted)] hover:bg-[var(--surface-2)] hover:text-[var(--text-primary)] transition-colors active:scale-95 cursor-pointer"
                 aria-label="Fermer"
               >
                 <X className="h-4 w-4" />
@@ -280,7 +276,7 @@ function MissionControlHUD() {
 
           {/* Search Input Bar */}
           <div className="relative w-full">
-            <Search className="absolute left-3.5 top-1/2 -translate-y-1/2 h-4 w-4 text-white/40" />
+            <Search className="absolute left-3.5 top-1/2 -translate-y-1/2 h-4 w-4 text-[var(--text-muted)]" />
             <input
               ref={searchInputRef}
               type="text"
@@ -288,7 +284,7 @@ function MissionControlHUD() {
               onChange={(e) => setQuery(e.target.value)}
               placeholder="Rechercher une fenêtre, un espace, un dashboard..."
               autoFocus
-              className="w-full rounded-2xl border border-white/10 bg-black/40 py-2.5 pl-10 pr-4 text-xs sm:text-sm text-white placeholder-white/40 shadow-inner backdrop-blur-md focus:border-[var(--accent-primary)] focus:bg-black/60 focus:outline-none transition-all"
+              className="w-full rounded-xl border border-[var(--panel-border)] bg-[var(--surface-2)]/40 py-2.5 pl-10 pr-4 text-xs sm:text-sm text-[var(--text-primary)] placeholder:text-[var(--text-muted)] focus:border-[var(--accent-primary)] focus:outline-none transition-colors"
             />
           </div>
         </div>
@@ -312,34 +308,34 @@ function MissionControlHUD() {
                         className={cn(
                           "group relative flex flex-col justify-between rounded-2xl border p-4 text-left transition-all duration-200 cursor-pointer shadow-sm active:scale-98",
                           isActive
-                            ? "border-[var(--accent-primary)]/70 bg-[var(--accent-primary)]/10 shadow-[0_0_20px_rgba(0,0,0,0.4)]"
-                            : "border-white/10 bg-white/[0.03] hover:border-white/25 hover:bg-white/[0.06]"
+                            ? "border-[var(--accent-primary)]/40 bg-[var(--accent-primary)]/10"
+                            : "border-[var(--panel-border)] bg-[var(--surface-2)]/40 hover:bg-[var(--surface-2)]"
                         )}
                       >
                         <div className="flex items-start justify-between gap-2 mb-3">
                           <div className={cn(
-                            "flex h-10 w-10 items-center justify-center rounded-xl border shadow-xs transition-transform group-hover:scale-105",
+                            "flex h-10 w-10 items-center justify-center rounded-xl border transition-colors",
                             isActive
                               ? "border-[var(--accent-primary)]/50 bg-[var(--accent-primary)]/20 text-[var(--accent-primary)]"
-                              : "border-white/10 bg-white/5 text-white/70"
+                              : "bg-[var(--surface-2)] text-[var(--text-muted)]"
                           )}>
                             <Icon name={w.icon} className="h-5 w-5" />
                           </div>
                           {isActive && (
-                            <span className="rounded-full border border-[var(--accent-primary)]/40 bg-[var(--accent-primary)]/20 px-2 py-0.5 text-[9px] font-bold uppercase tracking-wider text-[var(--accent-primary)]">
+                            <span className="rounded-full border border-[var(--accent-primary)]/30 bg-[var(--accent-primary)]/15 px-2 py-0.5 text-[9px] font-medium uppercase tracking-wide text-[var(--accent-primary)]">
                               Actif
                             </span>
                           )}
                         </div>
 
                         <div>
-                          <span className="block text-[10px] font-bold uppercase tracking-wider text-white/40">
+                          <span className="block text-[10px] font-medium uppercase tracking-wide text-[var(--text-muted)]">
                             {w.flow}
                           </span>
-                          <span className="block text-sm font-bold text-white mt-0.5">
+                          <span className="block text-sm font-semibold text-[var(--text-primary)] mt-0.5">
                             {w.name}
                           </span>
-                          <p className="mt-1 text-xs text-white/50 line-clamp-2 leading-relaxed">
+                          <p className="mt-1 text-xs text-[var(--text-muted)] line-clamp-2 leading-relaxed">
                             {w.description}
                           </p>
                         </div>
@@ -364,28 +360,28 @@ function MissionControlHUD() {
                           "group flex flex-col justify-between rounded-2xl border p-4 text-left transition-all duration-200 cursor-pointer shadow-sm active:scale-98",
                           isActive
                             ? "border-[var(--accent-primary)]/60 bg-[var(--accent-primary)]/10"
-                            : "border-white/10 bg-white/[0.03] hover:border-white/25 hover:bg-white/[0.06]"
+                            : "border-[var(--panel-border)] bg-[var(--surface-2)]/40 hover:bg-[var(--surface-2)]"
                         )}
                       >
                         <div className="flex items-center gap-3 mb-3">
-                          <div className="flex h-9 w-9 items-center justify-center rounded-xl border border-white/10 bg-white/5 text-white/70">
+                          <div className="flex h-9 w-9 items-center justify-center rounded-xl border bg-[var(--surface-2)] text-[var(--text-muted)]">
                             <Icon name="workflow" className="h-4 w-4 text-[var(--accent-primary)]" />
                           </div>
                           <div>
-                            <span className="block text-[10px] font-semibold text-white/40 uppercase tracking-wider">
+                            <span className="block text-[10px] font-medium text-[var(--text-muted)] uppercase tracking-wide">
                               {w.name}
                             </span>
-                            <span className="block text-xs font-bold text-white">
+                            <span className="block text-xs font-semibold text-[var(--text-primary)]">
                               {w.flow}
                             </span>
                           </div>
                         </div>
 
-                        <div className="flex flex-wrap gap-1.5 pt-2 border-t border-white/5">
+                        <div className="flex flex-wrap gap-1.5 pt-2 border-t border-[var(--panel-border)]">
                           {w.steps.map((step, i) => (
                             <span
                               key={i}
-                              className="rounded-lg border border-white/10 bg-black/40 px-2 py-1 text-[10px] font-medium text-white/70"
+                              className="rounded-lg border border-[var(--panel-border)] bg-[var(--surface-2)]/50 px-2 py-1 text-[10px] font-medium text-[var(--text-muted)]"
                             >
                               {i + 1}. {step}
                             </span>
@@ -401,17 +397,17 @@ function MissionControlHUD() {
               <section>
                 <SectionHeader title="Fenêtres Ouvertes" count={windows.length} icon={Maximize2} />
                 {windows.length === 0 ? (
-                  <div className="flex flex-col items-center justify-center gap-3 rounded-2xl border border-dashed border-white/10 bg-white/[0.02] p-10 text-center text-white/40">
-                    <LayoutGrid className="h-9 w-9 opacity-40 text-white/50" />
+                  <div className="flex flex-col items-center justify-center gap-3 rounded-2xl border border-dashed border-[var(--panel-border)] p-10 text-center text-[var(--text-muted)]">
+                    <LayoutGrid className="h-9 w-9 opacity-60 text-[var(--text-muted)]" />
                     <div>
-                      <p className="text-sm font-semibold text-white/60">Aucune fenêtre ouverte</p>
-                      <p className="text-xs text-white/40 mt-0.5">
+                      <p className="text-sm font-medium text-[var(--text-primary)]">Aucune fenêtre ouverte</p>
+                      <p className="text-xs text-[var(--text-muted)] mt-0.5">
                         Cliquez sur une application dans la liste de droite pour l&apos;ouvrir.
                       </p>
                     </div>
                   </div>
                 ) : filteredWindows.length === 0 ? (
-                  <div className="flex flex-col items-center justify-center gap-2 rounded-2xl border border-white/10 bg-white/[0.02] p-8 text-center text-white/40">
+                  <div className="flex flex-col items-center justify-center gap-2 rounded-2xl border border-[var(--panel-border)] p-8 text-center text-[var(--text-muted)]">
                     <Search className="h-6 w-6 opacity-40" />
                     <p className="text-xs">Aucune fenêtre ne correspond à votre recherche.</p>
                   </div>
@@ -425,23 +421,23 @@ function MissionControlHUD() {
                             focusWindow(win.id);
                             setMissionControl(false);
                           }}
-                          className="flex aspect-video w-full flex-col justify-between rounded-2xl border border-white/10 bg-white/[0.03] p-3.5 text-left transition-all hover:border-[var(--accent-primary)]/60 hover:bg-white/[0.07] hover:scale-[1.02] active:scale-98 cursor-pointer shadow-lg backdrop-blur-md"
+                          className="flex aspect-video w-full flex-col justify-between rounded-2xl border border-[var(--panel-border)] bg-[var(--surface-2)]/40 p-3.5 text-left transition-colors hover:border-[var(--accent-primary)]/40 hover:bg-[var(--surface-2)] active:scale-98 cursor-pointer"
                         >
                           <div className="flex items-center gap-2.5 min-w-0 pr-6">
-                            <div className="flex h-8 w-8 shrink-0 items-center justify-center rounded-lg border border-white/10 bg-white/5 text-[var(--accent-primary)]">
+                            <div className="flex h-8 w-8 shrink-0 items-center justify-center rounded-lg bg-[var(--surface-2)] text-[var(--accent-primary)]">
                               <Icon name={routeIcon(win.route)} className="h-4 w-4" />
                             </div>
                             <div className="min-w-0 flex-1">
-                              <p className="truncate text-xs font-bold text-white">{win.title}</p>
-                              <p className="truncate text-[10px] text-white/40">{win.route}</p>
+                              <p className="truncate text-xs font-semibold text-[var(--text-primary)]">{win.title}</p>
+                              <p className="truncate text-[10px] text-[var(--text-muted)]">{win.route}</p>
                             </div>
                           </div>
 
                           {/* Mini Window Content Mockup */}
-                          <div className="h-14 w-full rounded-xl border border-white/5 bg-black/40 p-2 opacity-50 flex flex-col justify-around">
+                          <div className="h-14 w-full rounded-xl border border-[var(--panel-border)] bg-[var(--surface-2)]/40 p-2 opacity-60 flex flex-col justify-around">
                             <div className="h-1.5 w-1/3 rounded bg-[var(--accent-primary)]/40" />
-                            <div className="h-1.5 w-2/3 rounded bg-white/20" />
-                            <div className="h-1.5 w-1/2 rounded bg-white/10" />
+                            <div className="h-1.5 w-2/3 rounded bg-[var(--text-muted)]/40" />
+                            <div className="h-1.5 w-1/2 rounded bg-[var(--text-muted)]/20" />
                           </div>
                         </button>
 
@@ -452,7 +448,7 @@ function MissionControlHUD() {
                             e.stopPropagation();
                             closeWindow(win.id);
                           }}
-                          className="absolute right-2.5 top-2.5 z-10 flex h-6 w-6 items-center justify-center rounded-lg border border-white/10 bg-black/70 text-white/60 hover:bg-rose-500/20 hover:border-rose-500/40 hover:text-rose-400 transition-all opacity-0 group-hover:opacity-100 cursor-pointer shadow-sm"
+                          className="absolute right-2.5 top-2.5 z-10 flex h-6 w-6 items-center justify-center rounded-lg bg-[var(--panel-bg)] text-[var(--text-muted)] hover:bg-[var(--danger)]/15 hover:text-[var(--danger)] transition-colors opacity-0 group-hover:opacity-100 cursor-pointer"
                           title="Fermer la fenêtre"
                         >
                           <X className="h-3 w-3" />
@@ -481,28 +477,28 @@ function MissionControlHUD() {
                         className={cn(
                           "group flex w-full items-center gap-3 rounded-xl border p-2.5 text-left transition-all duration-150 cursor-pointer shadow-xs active:scale-98",
                           isCurrent
-                            ? "border-[var(--accent-primary)]/50 bg-[var(--accent-primary)]/10 text-white"
-                            : "border-white/5 bg-white/[0.02] hover:border-white/20 hover:bg-white/[0.06] text-white/70 hover:text-white"
+                            ? "border-[var(--accent-primary)]/40 bg-[var(--accent-primary)]/10 text-[var(--text-primary)]"
+                            : "border-transparent hover:bg-[var(--surface-2)]/60 text-[var(--text-muted)] hover:text-[var(--text-primary)]"
                         )}
                       >
                         <div className={cn(
                           "flex h-8 w-8 shrink-0 items-center justify-center rounded-lg border",
                           isCurrent
                             ? "border-[var(--accent-primary)]/40 bg-[var(--accent-primary)]/20 text-[var(--accent-primary)]"
-                            : "border-white/10 bg-white/5 text-white/60 group-hover:text-white"
+                            : "bg-[var(--surface-2)] text-[var(--text-muted)] group-hover:text-[var(--text-primary)]"
                         )}>
                           <Icon name={r.icon} className="h-4 w-4" />
                         </div>
 
                         <div className="min-w-0 flex-1">
-                          <span className="block text-xs font-bold truncate">{label}</span>
-                          <span className="block text-[10px] text-white/40 truncate">{r.route}</span>
+                          <span className="block text-xs font-medium truncate">{label}</span>
+                          <span className="block text-[10px] text-[var(--text-muted)] truncate">{r.route}</span>
                         </div>
 
                         {isCurrent ? (
                           <CheckCircle2 className="h-4 w-4 text-[var(--accent-primary)] shrink-0" />
                         ) : (
-                          <ChevronRight className="h-3.5 w-3.5 text-white/30 opacity-0 group-hover:opacity-100 transition-opacity shrink-0" />
+                          <ChevronRight className="h-3.5 w-3.5 text-[var(--text-muted)] opacity-0 group-hover:opacity-100 transition-opacity shrink-0" />
                         )}
                       </button>
                     );
@@ -519,18 +515,18 @@ function MissionControlHUD() {
                       key={record.id}
                       type="button"
                       onClick={() => navigateAndClose("/connections")}
-                      className="group flex w-full items-center gap-2.5 rounded-xl border border-white/5 bg-white/[0.02] p-2 text-left hover:border-white/20 hover:bg-white/[0.05] transition-all cursor-pointer"
+                      className="group flex w-full items-center gap-2.5 rounded-xl border border-transparent p-2 text-left hover:bg-[var(--surface-2)]/60 transition-colors cursor-pointer"
                     >
                       <span className={cn("h-2 w-2 shrink-0 rounded-full", STATUS_DOT[record.status] || "bg-zinc-500")} />
                       <div className="min-w-0 flex-1">
-                        <span className="block text-xs font-semibold text-white truncate">
+                        <span className="block text-xs font-medium text-[var(--text-primary)] truncate">
                           {record.title || record.label}
                         </span>
-                        <span className="block text-[10px] text-white/40 truncate">
+                        <span className="block text-[10px] text-[var(--text-muted)] truncate">
                           {record.subtitle || record.source}
                         </span>
                       </div>
-                      <ExternalLink className="h-3 w-3 text-white/30 opacity-0 group-hover:opacity-100 transition-opacity" />
+                      <ExternalLink className="h-3 w-3 text-[var(--text-muted)] opacity-0 group-hover:opacity-100 transition-opacity" />
                     </button>
                   ))}
                 </div>

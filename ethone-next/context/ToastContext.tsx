@@ -103,18 +103,20 @@ function DiscordAvatar({ avatarUrl }: { avatarUrl?: string }) {
 }
 
 function defaultIconFor(type: ToastType) {
+  // No colour class — the icon inherits the toast variant's semantic colour
+  // from RichToast's icon wrapper (`color: var(--…)`).
   switch (type) {
     case "success":
-      return <Icon name="check" pack="phosphor" className="h-5 w-5 text-emerald-400" />;
+      return <Icon name="check" pack="phosphor" className="h-5 w-5" />;
     case "error":
-      return <Icon name="x" pack="phosphor" className="h-5 w-5 text-rose-400" />;
+      return <Icon name="x" pack="phosphor" className="h-5 w-5" />;
     case "warning":
-      return <Icon name="warning" pack="phosphor" className="h-5 w-5 text-amber-400" />;
+      return <Icon name="warning" pack="phosphor" className="h-5 w-5" />;
     case "loading":
-      return <Icon name="loader-2" pack="phosphor" className="h-5 w-5 animate-spin text-[var(--accent-primary)]" />;
+      return <Icon name="loader-2" pack="phosphor" className="h-5 w-5 animate-spin" />;
     case "info":
     default:
-      return <Icon name="info" pack="phosphor" className="h-5 w-5 text-cyan-400" />;
+      return <Icon name="info" pack="phosphor" className="h-5 w-5" />;
   }
 }
 

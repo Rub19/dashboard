@@ -25683,4 +25683,61 @@ CHANGELOG_BY_LANG.en.unshift(v12129_en);
 CHANGELOG_BY_LANG.es.unshift(v12129_es);
 CHANGELOG_BY_LANG.de.unshift(v12129_de);
 
+const v12130_fr: ChangelogEntry = {
+  version: "v1.21.30",
+  date: "2026-09-11",
+  title: "Refonte visuelle : notifications et Mission Control",
+  items: [
+    "Toasts (RichToast, tout le systeme de notifications) : chaque variante avait sa boite d icone lumineuse, son halo de carte, son point clignotant et sa barre de progression en degrade laser. Tout a plat : une seule couleur semantique par variante (succes = success, erreur = danger, alerte = warning, info = info) pour l icone, le point et la barre ; panneau plat unifie ; badge sans police mono ; plus de fond #0c0d14 ni de flou.",
+    "Toast de mise a jour : plus de ligne lumineuse en haut, plus d aura sur l icone, plus de bouton qui grossit au survol ; panneau plat.",
+    "Indicateur hors-ligne / synchro : points de statut sans halo neon, couleurs via les tokens du theme (lisibles en clair).",
+    "Mission Control (le HUD plein ecran F2) : n utilisait quasiment aucun token de theme (texte blanc, fonds #080c14 / bg-white/[0.03], bordures blanches, blobs lumineux, backdrop-blur-3xl, hover:scale, font-black, font-mono). Reecrit entierement sur les tokens ; suppression des deux halos d ambiance et des effets de zoom au survol.",
+    "Purement presentationnel : aucune logique, donnee ni raccourci modifie.",
+  ],
+};
+
+const v12130_en: ChangelogEntry = {
+  version: "v1.21.30",
+  date: "2026-09-11",
+  title: "Visual overhaul: notifications and Mission Control",
+  items: [
+    "Toasts (RichToast, the whole notification system): each variant had a glowing icon box, a card halo, a pulsing dot and a laser-gradient progress bar. All flat now: one semantic colour per variant (success = success, error = danger, warning = warning, info = info) for the icon, dot and bar; one unified flat panel; badge without the mono font; no more #0c0d14 background or blur.",
+    "Update toast: no more glowing top line, no icon aura, no button that scales on hover; flat panel.",
+    "Offline / sync indicator: status dots without neon glow, colours via theme tokens (readable on light).",
+    "Mission Control (the full-screen F2 HUD): barely used any theme token (white text, #080c14 / bg-white/[0.03] surfaces, white borders, glow blobs, backdrop-blur-3xl, hover:scale, font-black, font-mono). Fully rewritten on tokens; removed the two ambience glow blobs and the hover-zoom effects.",
+    "Purely presentational: no logic, data or shortcut changed.",
+  ],
+};
+
+const v12130_es: ChangelogEntry = {
+  version: "v1.21.30",
+  date: "2026-09-11",
+  title: "Renovacion visual: notificaciones y Mission Control",
+  items: [
+    "Toasts (RichToast, todo el sistema de notificaciones): cada variante tenia su caja de icono luminosa, su halo de tarjeta, su punto parpadeante y su barra de progreso en degradado laser. Todo plano: un solo color semantico por variante (exito = success, error = danger, alerta = warning, info = info) para el icono, el punto y la barra; un panel plano unificado; insignia sin fuente mono; sin fondo #0c0d14 ni desenfoque.",
+    "Toast de actualizacion: sin linea luminosa superior, sin aura en el icono, sin boton que crece al pasar el raton; panel plano.",
+    "Indicador sin conexion / sincronizacion: puntos de estado sin halo neon, colores via tokens del tema (legibles en claro).",
+    "Mission Control (el HUD a pantalla completa F2): apenas usaba tokens de tema (texto blanco, superficies #080c14, bordes blancos, blobs luminosos, backdrop-blur-3xl, hover:scale, font-black, font-mono). Reescrito por completo sobre tokens; se quitaron los dos blobs de ambiente y los efectos de zoom.",
+    "Puramente presentacional: sin cambios de logica, datos ni atajos.",
+  ],
+};
+
+const v12130_de: ChangelogEntry = {
+  version: "v1.21.30",
+  date: "2026-09-11",
+  title: "Visuelle Ueberarbeitung: Benachrichtigungen und Mission Control",
+  items: [
+    "Toasts (RichToast, das gesamte Benachrichtigungssystem): jede Variante hatte eine leuchtende Icon-Box, einen Karten-Halo, einen pulsierenden Punkt und einen Fortschrittsbalken mit Laser-Verlauf. Jetzt alles flach: eine semantische Farbe pro Variante (Erfolg = success, Fehler = danger, Warnung = warning, Info = info) fuer Icon, Punkt und Balken; ein einheitliches flaches Panel; Badge ohne Mono-Schrift; kein #0c0d14-Hintergrund und keine Unschaerfe mehr.",
+    "Update-Toast: keine leuchtende obere Linie, keine Icon-Aura, kein Button der beim Hover waechst; flaches Panel.",
+    "Offline- / Sync-Anzeige: Status-Punkte ohne Neon-Halo, Farben ueber Themen-Tokens (auch hell lesbar).",
+    "Mission Control (das Vollbild-F2-HUD): nutzte kaum Themen-Tokens (weisser Text, #080c14-Flaechen, weisse Raender, Leucht-Blobs, backdrop-blur-3xl, hover:scale, font-black, font-mono). Komplett auf Tokens umgeschrieben; die zwei Ambiente-Blobs und die Hover-Zoom-Effekte entfernt.",
+    "Rein visuell: keine Aenderung an Logik, Daten oder Kuerzeln.",
+  ],
+};
+
+CHANGELOG_BY_LANG.fr.unshift(v12130_fr);
+CHANGELOG_BY_LANG.en.unshift(v12130_en);
+CHANGELOG_BY_LANG.es.unshift(v12130_es);
+CHANGELOG_BY_LANG.de.unshift(v12130_de);
+
 export const CHANGELOG = CHANGELOG_BY_LANG.fr;

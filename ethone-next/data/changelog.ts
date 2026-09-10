@@ -1,3 +1,14 @@
+const v12120_fr: ChangelogEntry = {
+  version: "v1.21.20",
+  date: "2026-09-10",
+  title: "Logs : Livraison par Webhook (style « gros bot »)",
+  items: [
+    "Les journaux sont maintenant envoyes via un webhook « ETHONE Logs » cree automatiquement dans chaque salon de logs : le nom affiche devient la categorie (Moderation, Vocal, Securite, Anti-Raid, Membres, Messages, Roles, Salons...) au lieu de « ETHONE Bot ».",
+    "Embeds retravailles : auteur = « Action — cible », description narrative avec mentions, champ « Raison », champ « Changements » (avant → apres), footer compact. Couleur discrete pour les logs INFO, barre coloree pour les evenements importants.",
+    "Repli automatique sur un message normal du bot si le webhook echoue ou si la permission Gerer les webhooks manque. Desactivable via `useWebhooks: false` (PATCH /config).",
+  ],
+};
+
 const v12119_fr: ChangelogEntry = {
   version: "v1.21.19",
   date: "2026-09-10",
@@ -748,6 +759,17 @@ const v12052_fr: ChangelogEntry = {
     "Dynamic Island : correction d'un bug de priorité qui empêchait Spotify de jamais s'afficher, systématiquement évincé par la synchronisation d'arrière-plan.",
     "Commande /help du Bot Discord : la liste des commandes est désormais générée dynamiquement depuis les commandes réellement enregistrées (fin des commandes fantômes et des commandes manquantes), et affiche la vraie syntaxe des commandes à sous-commandes (ex. /automod status).",
     "Audit de l'enregistrement des commandes slash Discord : architecture confirmée saine, aucune dérive entre le code et les commandes déployées.",
+  ],
+};
+
+const v12120_en: ChangelogEntry = {
+  version: "v1.21.20",
+  date: "2026-09-10",
+  title: "Logs: Webhook Delivery (big-bot style)",
+  items: [
+    "Logs are now sent through an auto-created ETHONE Logs webhook in each log channel: the displayed name becomes the category (Moderation, Voice, Security, Anti-Raid, Members, Messages, Roles, Channels...) instead of the bot name.",
+    "Reworked embeds: author line = action + target, narrative description with mentions, Reason field, Changes field (before then after), compact footer. Subtle colour for INFO logs, coloured bar for important events.",
+    "Falls back to a normal bot message if the webhook fails or the Manage Webhooks permission is missing. Disable with `useWebhooks: false` (PATCH /config).",
   ],
 };
 
@@ -1504,6 +1526,17 @@ const v12052_en: ChangelogEntry = {
   ],
 };
 
+const v12120_es: ChangelogEntry = {
+  version: "v1.21.20",
+  date: "2026-09-10",
+  title: "Logs: Entrega por Webhook (estilo « bot grande »)",
+  items: [
+    "Los registros se envian ahora por un webhook « ETHONE Logs » creado automaticamente en cada canal de logs: el nombre mostrado pasa a ser la categoria (Moderacion, Voz, Seguridad, Anti-Raid, Miembros, Mensajes, Roles, Canales...) en vez de « ETHONE Bot ».",
+    "Embeds rehechos: autor = « Accion — objetivo », descripcion narrativa con menciones, campo « Razon », campo « Cambios », footer compacto.",
+    "Fallback a un mensaje normal del bot si el webhook falla o falta el permiso Gestionar webhooks. Desactivable con `useWebhooks: false`.",
+  ],
+};
+
 const v12119_es: ChangelogEntry = {
   version: "v1.21.19",
   date: "2026-09-10",
@@ -2254,6 +2287,17 @@ const v12052_es: ChangelogEntry = {
     "Dynamic Island: corregido un error de prioridad que impedía que Spotify apareciera, siempre desplazado por la sincronización en segundo plano.",
     "Comando /help del Bot de Discord: la lista de comandos ahora se genera dinámicamente desde los comandos realmente registrados (fin de comandos fantasma o ausentes), mostrando la sintaxis real de los comandos con subcomandos.",
     "Auditoría del registro de comandos slash de Discord: arquitectura confirmada como sólida, sin desviación entre el código y los comandos desplegados.",
+  ],
+};
+
+const v12120_de: ChangelogEntry = {
+  version: "v1.21.20",
+  date: "2026-09-10",
+  title: "Logs: Webhook-Zustellung (Big-Bot-Stil)",
+  items: [
+    "Logs werden jetzt ueber einen automatisch erstellten ETHONE-Logs-Webhook in jedem Log-Kanal gesendet: der angezeigte Name wird zur Kategorie (Moderation, Voice, Sicherheit, Anti-Raid, Mitglieder, Nachrichten, Rollen, Kanaele...) statt ETHONE Bot.",
+    "Ueberarbeitete Embeds: Autor = Aktion — Ziel, narrative Beschreibung mit Erwaehnungen, Grund-Feld, Aenderungen-Feld, kompakter Footer.",
+    "Fallback auf eine normale Bot-Nachricht, wenn der Webhook fehlschlaegt oder die Berechtigung Webhooks verwalten fehlt. Abschaltbar mit `useWebhooks: false`.",
   ],
 };
 
@@ -25167,5 +25211,9 @@ CHANGELOG_BY_LANG.fr.unshift(v12119_fr);
 CHANGELOG_BY_LANG.en.unshift(v12119_en);
 CHANGELOG_BY_LANG.es.unshift(v12119_es);
 CHANGELOG_BY_LANG.de.unshift(v12119_de);
+CHANGELOG_BY_LANG.fr.unshift(v12120_fr);
+CHANGELOG_BY_LANG.en.unshift(v12120_en);
+CHANGELOG_BY_LANG.es.unshift(v12120_es);
+CHANGELOG_BY_LANG.de.unshift(v12120_de);
 
 export const CHANGELOG = CHANGELOG_BY_LANG.fr;

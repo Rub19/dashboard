@@ -102,6 +102,8 @@ export interface AuditNotificationRule {
 export interface AuditSettings {
   guildId: string;
   enabled: boolean;
+  /** Livrer les logs via un webhook (username = catégorie) plutôt que via le bot. Défaut : true. */
+  useWebhooks?: boolean;
   routing: AuditChannelRouting;
   retentionDays: number; // 7, 30, 90, 180, 365, 0 (forever)
   notificationRules: AuditNotificationRule[];

@@ -6,6 +6,7 @@ import { useDynamicIslandQueue } from "@/lib/hooks/useDynamicIslandQueue";
 import { useToast } from "@/components/ToastProvider";
 import { useI18n } from "@/lib/hooks/useI18n";
 import { useSettings } from "@/components/SettingsProvider";
+import { useAuth } from "@/components/AuthProvider";
 import { fetchWorker } from "@/lib/api";
 
 export default function NotificationBridge() {
@@ -14,6 +15,7 @@ export default function NotificationBridge() {
   const { info } = useToast();
   const i18n = useI18n();
   const { settings } = useSettings();
+  const { user } = useAuth();
 
   // Listen for Island notification events
   useEffect(() => {
@@ -83,6 +85,9 @@ export default function NotificationBridge() {
   }, [register, focusDigest, info, settings.islandShowNotifications]);
 
   useEffect(() => {
+    // No signed-in user (e.g. the login page): the mail endpoint would 401.
+    // Skip the request entirely rather than logging a console error.
+    if (!user) return;
     let mounted = true;
 
     async function load() {
@@ -129,7 +134,7 @@ export default function NotificationBridge() {
     return () => {
       mounted = false;
     };
-  }, [add, i18n]);
+  }, [user, add, i18n]);
 
   return null;
 }

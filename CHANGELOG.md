@@ -2,6 +2,15 @@
 
 Toutes les modifications notables de ce projet seront documentées dans ce fichier.
 
+## v1.20.90 — 2026-09-10
+
+**Erreurs console 401 sur la page de connexion — corrigées**
+
+- `SettingsProvider` monte `useProfiles()` pour toute l'app (login inclus) : son `useEffect` appelait `fetchAll()` sans condition → `GET /api/profiles` → 401 sur `/login`. Ajout d'un `supabase.auth.getSession()` : `fetchAll()` seulement si `data.session`, sinon `setLoaded(true)` avec les profils locaux par défaut. Le listener `onAuthStateChange` existant refait le fetch à la connexion (userId `null → id`).
+- `NotificationBridge` (monté dans `app/layout.tsx`, donc partout) : son `useEffect` faisait `GET /api/mail/notifications?unread=true&limit=20` au montage → 401 sur `/login`. Ajout de `const { user } = useAuth()` + `if (!user) return;` en tête d'effet, `user` ajouté aux deps.
+- Vérifié dans le navigateur : `/login` ne déclenche plus aucun appel vers `/api/profiles` ni `/api/mail/notifications` (0 requête, 0 erreur console). Une fois connecté, les deux se chargent normalement.
+- `tsc` 0 erreur, `build`, `test:unit` 14/14 69/69, `lint` inchangé (aucun nouveau warning).
+
 ## v1.20.89 — 2026-09-10
 
 **Nettoyage de code mort dans `ethone-next` (aucun changement de comportement)**

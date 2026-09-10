@@ -125,7 +125,18 @@ export function useProfiles() {
   const lastUserIdRef = useRef<string | null | undefined>(undefined);
 
   useEffect(() => {
-    fetchAll();
+    // Only hit /api/profiles when there's actually a session. On the login
+    // page (no session) this endpoint 401s — skip it and fall back to the
+    // local defaults; the auth listener below refetches once the user signs in.
+    let cancelled = false;
+    supabase.auth.getSession().then(({ data }) => {
+      if (cancelled) return;
+      if (data.session) {
+        fetchAll();
+      } else {
+        setLoaded(true);
+      }
+    });
     const handleAuthChange = () => fetchAll(true);
     if (typeof window !== "undefined") {
       window.addEventListener("ethone:identity:update", handleAuthChange);
@@ -143,6 +154,7 @@ export function useProfiles() {
       fetchAll(true);
     });
     return () => {
+      cancelled = true;
       if (typeof window !== "undefined") {
         window.removeEventListener("ethone:identity:update", handleAuthChange);
       }

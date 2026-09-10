@@ -1,3 +1,13 @@
+const v12090_fr: ChangelogEntry = {
+  version: "v1.20.90",
+  date: "2026-09-10",
+  title: "Page de Connexion : Fin des Erreurs 401 dans la Console",
+  items: [
+    "Sur la page de connexion (donc sans session), deux appels partaient quand meme vers l'API : la liste des profils et les notifications mail. Resultat : des erreurs 401 rouges dans la console du navigateur a chaque ouverture de la page, et deux requetes inutiles.",
+    "Corrige : ces deux appels ne se declenchent plus que lorsqu'une session existe reellement. Une fois connecte, tout se charge normalement comme avant.",
+  ],
+};
+
 const v12089_fr: ChangelogEntry = {
   version: "v1.20.89",
   date: "2026-09-10",
@@ -415,6 +425,16 @@ const v12052_fr: ChangelogEntry = {
     "Dynamic Island : correction d'un bug de priorité qui empêchait Spotify de jamais s'afficher, systématiquement évincé par la synchronisation d'arrière-plan.",
     "Commande /help du Bot Discord : la liste des commandes est désormais générée dynamiquement depuis les commandes réellement enregistrées (fin des commandes fantômes et des commandes manquantes), et affiche la vraie syntaxe des commandes à sous-commandes (ex. /automod status).",
     "Audit de l'enregistrement des commandes slash Discord : architecture confirmée saine, aucune dérive entre le code et les commandes déployées.",
+  ],
+};
+
+const v12090_en: ChangelogEntry = {
+  version: "v1.20.90",
+  date: "2026-09-10",
+  title: "Login Page: No More 401 Errors in the Console",
+  items: [
+    "On the login page (so, no session), two calls were still going out to the API: the profile list and the mail notifications. That produced red 401 errors in the browser console on every page load, plus two pointless requests.",
+    "Fixed: both calls now only fire when a session actually exists. Once signed in, everything loads normally as before.",
   ],
 };
 
@@ -838,6 +858,16 @@ const v12052_en: ChangelogEntry = {
   ],
 };
 
+const v12090_es: ChangelogEntry = {
+  version: "v1.20.90",
+  date: "2026-09-10",
+  title: "Pagina de Inicio de Sesion: Se Acabaron los Errores 401 en la Consola",
+  items: [
+    "En la pagina de inicio de sesion (es decir, sin sesion), dos llamadas seguian yendo a la API: la lista de perfiles y las notificaciones de correo. Esto generaba errores 401 rojos en la consola del navegador en cada carga, ademas de dos peticiones inutiles.",
+    "Corregido: ambas llamadas solo se lanzan cuando existe una sesion real. Una vez conectado, todo se carga con normalidad como antes.",
+  ],
+};
+
 const v12089_es: ChangelogEntry = {
   version: "v1.20.89",
   date: "2026-09-10",
@@ -1255,6 +1285,16 @@ const v12052_es: ChangelogEntry = {
     "Dynamic Island: corregido un error de prioridad que impedía que Spotify apareciera, siempre desplazado por la sincronización en segundo plano.",
     "Comando /help del Bot de Discord: la lista de comandos ahora se genera dinámicamente desde los comandos realmente registrados (fin de comandos fantasma o ausentes), mostrando la sintaxis real de los comandos con subcomandos.",
     "Auditoría del registro de comandos slash de Discord: arquitectura confirmada como sólida, sin desviación entre el código y los comandos desplegados.",
+  ],
+};
+
+const v12090_de: ChangelogEntry = {
+  version: "v1.20.90",
+  date: "2026-09-10",
+  title: "Anmeldeseite: Keine 401-Fehler mehr in der Konsole",
+  items: [
+    "Auf der Anmeldeseite (also ohne Sitzung) gingen trotzdem zwei Aufrufe an die API: die Profilliste und die Mail-Benachrichtigungen. Das erzeugte bei jedem Laden rote 401-Fehler in der Browser-Konsole und zwei ueberfluessige Anfragen.",
+    "Behoben: Beide Aufrufe starten jetzt nur noch, wenn tatsaechlich eine Sitzung besteht. Nach der Anmeldung laedt alles normal wie zuvor.",
   ],
 };
 
@@ -23715,5 +23755,9 @@ CHANGELOG_BY_LANG.fr.unshift(v12089_fr);
 CHANGELOG_BY_LANG.en.unshift(v12089_en);
 CHANGELOG_BY_LANG.es.unshift(v12089_es);
 CHANGELOG_BY_LANG.de.unshift(v12089_de);
+CHANGELOG_BY_LANG.fr.unshift(v12090_fr);
+CHANGELOG_BY_LANG.en.unshift(v12090_en);
+CHANGELOG_BY_LANG.es.unshift(v12090_es);
+CHANGELOG_BY_LANG.de.unshift(v12090_de);
 
 export const CHANGELOG = CHANGELOG_BY_LANG.fr;

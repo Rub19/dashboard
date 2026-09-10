@@ -2,6 +2,7 @@
 
 import { useCallback, useEffect, useMemo, useState } from "react";
 import { fetchWorker, WorkerError } from "@/lib/api";
+import { fetchWorkerCached } from "@/lib/hooks/useCachedFetch";
 import { useMailCache } from "./useMailCache";
 import { useLivePoll } from "./useLivePoll";
 
@@ -647,7 +648,11 @@ export function useMail() {
   }
 
   async function getNotifications({ limit = 20, unreadOnly = false }: { limit?: number; unreadOnly?: boolean } = {}) {
-    const res = await fetchWorker(`/api/mail/notifications?limit=${encodeURIComponent(limit)}&unread=${unreadOnly}`);
+    const res = (await fetchWorkerCached(
+      `/api/mail/notifications?limit=${encodeURIComponent(limit)}&unread=${unreadOnly}`,
+      {},
+      15000
+    )) as { data?: unknown } | null;
     return Array.isArray(res?.data) ? res.data : [];
   }
 

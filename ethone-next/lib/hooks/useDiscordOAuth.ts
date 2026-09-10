@@ -2,6 +2,7 @@
 
 import { useCallback, useEffect, useState } from "react";
 import { fetchWorker, WORKER_URL } from "@/lib/api";
+import { fetchWorkerCached } from "@/lib/hooks/useCachedFetch";
 import { supabase } from "@/lib/supabase";
 
 export type DiscordConnection = {
@@ -180,7 +181,12 @@ export function useDiscordOAuth() {
     }
 
     try {
-      const result = await fetchWorker("/api/discord/oauth/profile");
+      // ~27 components use this hook; on the dashboard several mount at once.
+      // fetchWorkerCached collapses the concurrent identical calls into one and
+      // holds the result for 30s (a Discord profile barely changes).
+      const result = (await fetchWorkerCached("/api/discord/oauth/profile", {}, 30000)) as
+        | { data?: DiscordProfile & { connected?: boolean; guilds?: unknown[] } }
+        | null;
       if (result?.data && result.data.connected) {
         setProfile(result.data);
         try {

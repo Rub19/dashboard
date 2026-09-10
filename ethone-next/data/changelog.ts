@@ -1,3 +1,15 @@
+const v12112_fr: ChangelogEntry = {
+  version: "v1.21.12",
+  date: "2026-09-10",
+  title: "Perf : 3 Hooks de Plus Passent par le Cache Partagé",
+  items: [
+    "`useDiscordOAuth` (27 composants l'utilisent !) : `/api/discord/oauth/profile` passe de `fetchWorker` direct à `fetchWorkerCached` (TTL 30 s). C'était la dernière source de 429 après v1.21.11.",
+    "`useConnections` : `/api/connections` → `fetchWorkerCached` (TTL 15 s).",
+    "`useMail` `getNotifications` : `/api/mail/notifications` → `fetchWorkerCached` (TTL 15 s).",
+    "Mesuré en prod : `ethone_items` 28→3 requêtes au chargement, erreurs 429 ~100→~0.",
+  ],
+};
+
 const v12111_fr: ChangelogEntry = {
   version: "v1.21.11",
   date: "2026-09-10",
@@ -660,6 +672,18 @@ const v12052_fr: ChangelogEntry = {
     "Dynamic Island : correction d'un bug de priorité qui empêchait Spotify de jamais s'afficher, systématiquement évincé par la synchronisation d'arrière-plan.",
     "Commande /help du Bot Discord : la liste des commandes est désormais générée dynamiquement depuis les commandes réellement enregistrées (fin des commandes fantômes et des commandes manquantes), et affiche la vraie syntaxe des commandes à sous-commandes (ex. /automod status).",
     "Audit de l'enregistrement des commandes slash Discord : architecture confirmée saine, aucune dérive entre le code et les commandes déployées.",
+  ],
+};
+
+const v12112_en: ChangelogEntry = {
+  version: "v1.21.12",
+  date: "2026-09-10",
+  title: "Perf: 3 More Hooks Through the Shared Cache",
+  items: [
+    "`useDiscordOAuth` (used by 27 components!): `/api/discord/oauth/profile` moves from bare `fetchWorker` to `fetchWorkerCached` (30s TTL). This was the last 429 source after v1.21.11.",
+    "`useConnections`: `/api/connections` → `fetchWorkerCached` (15s TTL).",
+    "`useMail` `getNotifications`: `/api/mail/notifications` → `fetchWorkerCached` (15s TTL).",
+    "Measured in prod: `ethone_items` 28→3 requests on load, 429 errors ~100→~0.",
   ],
 };
 
@@ -1328,6 +1352,18 @@ const v12052_en: ChangelogEntry = {
   ],
 };
 
+const v12112_es: ChangelogEntry = {
+  version: "v1.21.12",
+  date: "2026-09-10",
+  title: "Rendimiento: 3 Hooks Más por la Caché Compartida",
+  items: [
+    "`useDiscordOAuth` (¡lo usan 27 componentes!): `/api/discord/oauth/profile` pasa de `fetchWorker` directo a `fetchWorkerCached` (TTL 30 s). Era la última fuente de 429 tras v1.21.11.",
+    "`useConnections`: `/api/connections` → `fetchWorkerCached` (TTL 15 s).",
+    "`useMail` `getNotifications`: `/api/mail/notifications` → `fetchWorkerCached` (TTL 15 s).",
+    "Medido en prod: `ethone_items` 28→3 peticiones al cargar, errores 429 ~100→~0.",
+  ],
+};
+
 const v12111_es: ChangelogEntry = {
   version: "v1.21.11",
   date: "2026-09-10",
@@ -1990,6 +2026,18 @@ const v12052_es: ChangelogEntry = {
     "Dynamic Island: corregido un error de prioridad que impedía que Spotify apareciera, siempre desplazado por la sincronización en segundo plano.",
     "Comando /help del Bot de Discord: la lista de comandos ahora se genera dinámicamente desde los comandos realmente registrados (fin de comandos fantasma o ausentes), mostrando la sintaxis real de los comandos con subcomandos.",
     "Auditoría del registro de comandos slash de Discord: arquitectura confirmada como sólida, sin desviación entre el código y los comandos desplegados.",
+  ],
+};
+
+const v12112_de: ChangelogEntry = {
+  version: "v1.21.12",
+  date: "2026-09-10",
+  title: "Performance: 3 weitere Hooks ueber den gemeinsamen Cache",
+  items: [
+    "`useDiscordOAuth` (von 27 Komponenten genutzt!): `/api/discord/oauth/profile` wechselt von direktem `fetchWorker` zu `fetchWorkerCached` (30s TTL). War die letzte 429-Quelle nach v1.21.11.",
+    "`useConnections`: `/api/connections` → `fetchWorkerCached` (15s TTL).",
+    "`useMail` `getNotifications`: `/api/mail/notifications` → `fetchWorkerCached` (15s TTL).",
+    "In Produktion gemessen: `ethone_items` 28→3 Anfragen beim Laden, 429-Fehler ~100→~0.",
   ],
 };
 
@@ -24783,5 +24831,9 @@ CHANGELOG_BY_LANG.fr.unshift(v12111_fr);
 CHANGELOG_BY_LANG.en.unshift(v12111_en);
 CHANGELOG_BY_LANG.es.unshift(v12111_es);
 CHANGELOG_BY_LANG.de.unshift(v12111_de);
+CHANGELOG_BY_LANG.fr.unshift(v12112_fr);
+CHANGELOG_BY_LANG.en.unshift(v12112_en);
+CHANGELOG_BY_LANG.es.unshift(v12112_es);
+CHANGELOG_BY_LANG.de.unshift(v12112_de);
 
 export const CHANGELOG = CHANGELOG_BY_LANG.fr;

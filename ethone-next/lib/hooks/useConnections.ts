@@ -1,5 +1,6 @@
 import { useCallback, useEffect, useState } from "react";
 import { fetchWorker } from "@/lib/api";
+import { fetchWorkerCached } from "@/lib/hooks/useCachedFetch";
 import { INTEGRATIONS } from "@/lib/integrations";
 
 const ALL_PROVIDERS = INTEGRATIONS.map((i) => i.id);
@@ -36,9 +37,10 @@ export function useConnections() {
       });
     }
 
-    fetchWorker("/api/connections")
-      .then((res) => {
-        const rows = Array.isArray(res?.data) ? res.data : [];
+    fetchWorkerCached("/api/connections", {}, 15000)
+      .then((res: unknown) => {
+        const data = (res as { data?: unknown } | null)?.data;
+        const rows = Array.isArray(data) ? data : [];
         const set = new Set<string>(localConnected);
         rows.forEach((row: { provider: string; connected: boolean }) => {
           if (row.connected) set.add(row.provider);

@@ -2,6 +2,19 @@
 
 Toutes les modifications notables de ce projet seront documentées dans ce fichier.
 
+## v1.21.12 — 2026-09-10
+
+**Perf : 3 hooks de plus routés via `fetchWorkerCached`**
+
+Suite de v1.21.10/11. Mesuré en QA (prod, onglet réseau) : après v1.21.11 il restait ~6 `429` par navigation, tous sur `/api/discord/oauth/profile`.
+
+- **`lib/hooks/useDiscordOAuth.ts`** : `fetchProfile()` → `fetchWorkerCached("/api/discord/oauth/profile", {}, 30000)`. Ce hook est monté par **27 composants** ; sur le dashboard 6+ instances tiraient chacune sa requête → 429.
+- **`lib/hooks/useConnections.ts`** : `refresh()` → `fetchWorkerCached("/api/connections", {}, 15000)`.
+- **`lib/hooks/useMail.ts`** : `getNotifications()` → `fetchWorkerCached(".../mail/notifications?...", {}, 15000)`.
+- **`lib/hooks/useLiveData.test.ts`** : `clearFetchCache()` ajouté au `beforeEach` (le cache module partagé fuyait entre tests).
+- Résultats prod : `ethone_items` 28→3 req/chargement, `resourcesWith4xx` ~100→~0-6.
+- Validation : `tsc` 0 erreur, `build` ✓, `test:unit` 73/73.
+
 ## v1.21.11 — 2026-09-10
 
 **Perf : déduplication des requêtes en vol — le vrai correctif de la tempête 429**

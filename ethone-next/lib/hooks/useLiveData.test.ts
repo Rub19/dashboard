@@ -2,6 +2,7 @@ import React from "react";
 import { renderHook, waitFor } from "@testing-library/react";
 import { useLiveData } from "./useLiveData";
 import { fetchWorker } from "../api";
+import { clearFetchCache } from "./useCachedFetch";
 import SettingsProvider from "@/components/SettingsProvider";
 
 jest.mock("../api");
@@ -21,6 +22,7 @@ function allCalls() {
 describe("useLiveData", () => {
   beforeEach(() => {
     mockedFetchWorker.mockReset();
+    clearFetchCache();
     localStorage.setItem(
       SETTINGS_KEY,
       JSON.stringify({ liveLanyardUserId: "123456789", liveWeatherCity: "Paris" })

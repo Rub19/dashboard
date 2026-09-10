@@ -57,6 +57,7 @@ import { voiceCommand } from '../modules/voice/commands/voiceCommand.js';
 import { starboardCommand } from '../modules/starboard/commands/starboardCommand.js';
 import { stickyCommand } from '../modules/stickyMessages/commands/stickyCommand.js';
 import { reminderCommand } from '../modules/reminders/commands/reminderCommand.js';
+import { afkCommand } from '../modules/afk/commands/afkCommand.js';
 import { logsCommand } from '../modules/logs/commands/logsCommand.js';
 
 import { config } from '../config.js';
@@ -149,6 +150,9 @@ class CommandRegistry {
 
     // Reminders (« rappelle-moi » — rappels personnels programmés)
     this.register(reminderCommand);
+
+    // AFK (statut absent + notification sur mention)
+    this.register(afkCommand);
 
     // Journaux du serveur (routage par catégorie, verbosité, rétention)
     this.register(logsCommand);

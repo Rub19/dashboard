@@ -35,6 +35,7 @@ import { createStarboardRouter } from './routes/starboardRoutes.js';
 import { createStickyRouter } from './routes/stickyRoutes.js';
 import { createReminderRouter } from './routes/reminderRoutes.js';
 import { reminderService } from '../modules/reminders/services/reminderService.js';
+import { createAfkRouter } from './routes/afkRoutes.js';
 import { createEventRouter } from './routes/events.js';
 import { createCalendarRouter } from './routes/calendar.js';
 import { createServerRouter } from './routes/serverRoutes.js';
@@ -218,6 +219,12 @@ export function startWebServer(client: Client): http.Server {
     authMiddleware,
     createGuildAuthMiddleware(client),
     createReminderRouter(client)
+  );
+  app.use(
+    '/api/guilds/:guildId/afk',
+    authMiddleware,
+    createGuildAuthMiddleware(client),
+    createAfkRouter(client)
   );
   app.use(
     '/api/guilds/:guildId/calendar',

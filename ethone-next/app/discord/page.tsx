@@ -51,6 +51,7 @@ import {
   Cpu,
   Star,
   Pin,
+  Moon,
 } from "lucide-react";
 import { useAuth } from "@/components/AuthProvider";
 import { useToast } from "@/components/ToastProvider";
@@ -87,6 +88,7 @@ type ModuleType =
   | "starboard"
   | "sticky"
   | "reminders"
+  | "afk"
   | "bot";
 
 interface BotModule {
@@ -280,6 +282,14 @@ const MODULES: BotModule[] = [
     title: "Reminders",
     description: "« Rappelle-moi » : programme des rappels personnels que le bot t'envoie à l'échéance, ponctuels ou récurrents.",
     icon: Clock,
+    color: "text-zinc-400",
+    badge: "Utilitaires",
+  },
+  {
+    id: "afk",
+    title: "AFK",
+    description: "Statut absent : le bot prévient ceux qui te mentionnent et retire ton statut dès que tu reparles.",
+    icon: Moon,
     color: "text-zinc-400",
     badge: "Utilitaires",
   },
@@ -2416,6 +2426,39 @@ export default function DiscordDashboardPage() {
                         <li><code className="rounded bg-black/30 px-1">/reminder add</code> — délai (<code className="rounded bg-black/30 px-1">10m</code>, <code className="rounded bg-black/30 px-1">2h</code>, <code className="rounded bg-black/30 px-1">1d</code>, <code className="rounded bg-black/30 px-1">1h30m</code>) + message + récurrence</li>
                         <li><code className="rounded bg-black/30 px-1">/reminder list</code> — tes rappels en attente</li>
                         <li><code className="rounded bg-black/30 px-1">/reminder cancel &lt;id&gt;</code> — annuler</li>
+                      </ul>
+                    </div>
+                  </div>
+                )}
+
+                {activeModule === "afk" && (
+                  <div className="space-y-4 text-xs">
+                    <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-3 rounded-2xl border border-white/10 bg-white/[0.03] p-4">
+                      <div>
+                        <div className="flex items-center gap-2">
+                          <p className="text-xs font-bold text-white">AFK</p>
+                        </div>
+                        <p className="text-[11px] text-zinc-300 mt-0.5">
+                          <code className="rounded bg-black/30 px-1">/afk déjeuner</code> te marque absent. Le bot répond « X est AFK : déjeuner » à ceux qui te mentionnent, et retire ton statut dès que tu reparles (avec le décompte des mentions manquées).
+                        </p>
+                      </div>
+                      <Link
+                        href={`/discord/afk?guildId=${selectedGuild.id}`}
+                        className="flex h-9 shrink-0 items-center gap-2 rounded-xl bg-[#5865F2] px-4 text-xs font-semibold text-white transition-colors hover:bg-[#4752C4] active:scale-95 cursor-pointer"
+                      >
+                        <Moon className="h-4 w-4" />
+                        <span>Ouvrir AFK</span>
+                        <ChevronRight className="h-3.5 w-3.5" />
+                      </Link>
+                    </div>
+
+                    <div className="rounded-2xl border border-white/10 bg-white/[0.02] p-4 space-y-2">
+                      <p className="font-bold text-white">Réglages</p>
+                      <ul className="space-y-1 text-[11px] text-zinc-300">
+                        <li>Retirer le statut au premier message (on/off)</li>
+                        <li>Prévenir sur mention (on/off)</li>
+                        <li>Préfixer le pseudo avec <code className="rounded bg-black/30 px-1">[AFK]</code> (nécessite Gérer les pseudos)</li>
+                        <li>Auto-suppression des réponses du bot (0–60 s)</li>
                       </ul>
                     </div>
                   </div>

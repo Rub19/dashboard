@@ -2,6 +2,22 @@
 
 Toutes les modifications notables de ce projet seront documentées dans ce fichier.
 
+## v1.21.16 — 2026-09-10
+
+**Nouveau module bot : AFK**
+
+- **`discord-bot/src/modules/afk/`** (nouveau) :
+  - `types/afk.ts` — zod `AfkEntrySchema` (`guildId`, `userId`, `reason` ≤500, `since`, `mentionCount`, `previousNickname`) + `AfkConfigSchema` (`enabled`, `clearOnMessage`, `notifyOnMention`, `prefixNickname`, `autoDeleteSeconds` 0-60).
+  - `storage/afkStorage.ts` — JSON `data/afk_entries.json` + `data/afk_configs.json`, `bumpMention`, `clear`, `getOverview`.
+  - `services/afkService.ts` — `handleMessage()` : retour d'AFK de l'auteur (clear + « content de te revoir, X mentions » auto-suppr.) + notification pour chaque membre AFK mentionné (`allowedMentions: parse: []`). `setAfk()` gère le préfixe `[AFK] ` du pseudo (perm `ManageNicknames`, ≤32 car., restauré au retour). `humanDuration()`.
+  - `commands/afkCommand.ts` — `/afk [raison]`.
+- **Câblage** : `commandHandler.ts` (register), `events/messageCreate.ts` (`afkService.handleMessage` après sticky, avant l'anti-raid, fire-and-forget), `server/index.ts` (route `/api/guilds/:guildId/afk` — GET `/overview` `/config`, PUT `/config`, DELETE `/entries/:userId`).
+- **`discord-bot/test_afk_v1.ts`** (nouveau) : 17 assertions (config defaults/update/validation, entry set/get/bump/clear, isolation multi-guilde, overview) — 17/17.
+- **`ethone-next/app/discord/afk/`** (nouveau) : `page.tsx` + `AfkCenterClient.tsx` — 4 toggles + curseur auto-suppression, liste des membres AFK avec retrait, stats, mode hors-ligne.
+- **`ethone-next/app/discord/page.tsx`** : `ModuleType` `"afk"`, entrée `MODULES` (icône `Moon`), bloc `activeModule === "afk"`.
+- Validation : `discord-bot` `npm run node:build` ✓, `test_afk_v1` 17/17 ; `ethone-next` `tsc` 0 erreur, `build` ✓, `test:unit` 73/73.
+- ⚠️ Nécessite le redéploiement du bot sur le VPS.
+
 ## v1.21.15 — 2026-09-10
 
 **Nouveau module bot : Reminders (« rappelle-moi »)**

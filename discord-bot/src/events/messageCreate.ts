@@ -12,6 +12,7 @@ import { CustomCommandService } from '../modules/customCommands/services/customC
 import { raidDetectionService } from '../modules/antiRaid/services/raidDetectionService.js';
 import { aiService } from '../modules/ai/services/aiService.js';
 import { stickyService } from '../modules/stickyMessages/services/stickyService.js';
+import { afkService } from '../modules/afk/services/afkService.js';
 import { discordOwnerPanel } from '../modules/presence/ui/discordOwnerPanel.js';
 import { config } from '../config.js';
 import { syncEngine } from '../services/syncEngine.js';
@@ -56,6 +57,9 @@ export async function onMessageCreate(message: Message) {
 
   // Sticky Messages : repositionner le message épinglé du salon (anti-rebond interne).
   stickyService.handleMessage(message);
+
+  // AFK : retour d'absence de l'auteur + notification des membres AFK mentionnés.
+  afkService.handleMessage(message).catch(() => {});
 
   // 1. Analyse Anti-Raid 2.0 (Spam burst, Mention Raid, @everyone)
   await raidDetectionService.handleMessage(message);

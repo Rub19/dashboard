@@ -1,3 +1,15 @@
+const v12116_fr: ChangelogEntry = {
+  version: "v1.21.16",
+  date: "2026-09-10",
+  title: "Nouveau Module Bot : AFK",
+  items: [
+    "Nouveau module « AFK » : `/afk déjeuner` te marque absent. Quand on te mentionne, le bot répond « X est AFK : déjeuner (depuis …) ». Dès que tu reparles, ton statut est retiré avec le décompte des mentions manquées.",
+    "Réglages : retirer le statut au 1er message, prévenir sur mention, préfixer le pseudo `[AFK]` (restauré au retour), auto-suppression des réponses du bot (0–60 s).",
+    "Page dashboard `/discord/afk` : les 4 toggles + curseur, liste des membres actuellement AFK avec retrait manuel, stats.",
+    "Ajouté à la grille des modules du hub Discord (Utilitaires).",
+  ],
+};
+
 const v12115_fr: ChangelogEntry = {
   version: "v1.21.15",
   date: "2026-09-10",
@@ -704,6 +716,18 @@ const v12052_fr: ChangelogEntry = {
     "Dynamic Island : correction d'un bug de priorité qui empêchait Spotify de jamais s'afficher, systématiquement évincé par la synchronisation d'arrière-plan.",
     "Commande /help du Bot Discord : la liste des commandes est désormais générée dynamiquement depuis les commandes réellement enregistrées (fin des commandes fantômes et des commandes manquantes), et affiche la vraie syntaxe des commandes à sous-commandes (ex. /automod status).",
     "Audit de l'enregistrement des commandes slash Discord : architecture confirmée saine, aucune dérive entre le code et les commandes déployées.",
+  ],
+};
+
+const v12116_en: ChangelogEntry = {
+  version: "v1.21.16",
+  date: "2026-09-10",
+  title: "New Bot Module: AFK",
+  items: [
+    "New \"AFK\" module: `/afk lunch` marks you away. When mentioned, the bot replies \"X is AFK: lunch (since …)\". As soon as you talk again your status clears, with the count of mentions you missed.",
+    "Settings: clear on first message, notify on mention, prefix nickname with `[AFK]` (restored on return), auto-delete bot replies (0-60s).",
+    "`/discord/afk` dashboard page: the 4 toggles + slider, list of currently-AFK members with manual clear, stats.",
+    "Added to the Discord hub's module grid (Utilities).",
   ],
 };
 
@@ -1416,6 +1440,18 @@ const v12052_en: ChangelogEntry = {
   ],
 };
 
+const v12116_es: ChangelogEntry = {
+  version: "v1.21.16",
+  date: "2026-09-10",
+  title: "Nuevo Módulo del Bot: AFK",
+  items: [
+    "Nuevo módulo « AFK »: `/afk almuerzo` te marca ausente. Cuando te mencionan, el bot responde « X está AFK: almuerzo (desde …) ». En cuanto vuelves a hablar tu estado se quita, con el conteo de menciones perdidas.",
+    "Ajustes: quitar al 1er mensaje, avisar en mención, prefijar apodo con `[AFK]` (restaurado al volver), auto-borrado de respuestas del bot (0-60 s).",
+    "Página `/discord/afk`: los 4 toggles + slider, lista de miembros AFK con retirada manual, estadísticas.",
+    "Añadido a la cuadrícula de módulos del hub de Discord (Utilidades).",
+  ],
+};
+
 const v12115_es: ChangelogEntry = {
   version: "v1.21.15",
   date: "2026-09-10",
@@ -2122,6 +2158,18 @@ const v12052_es: ChangelogEntry = {
     "Dynamic Island: corregido un error de prioridad que impedía que Spotify apareciera, siempre desplazado por la sincronización en segundo plano.",
     "Comando /help del Bot de Discord: la lista de comandos ahora se genera dinámicamente desde los comandos realmente registrados (fin de comandos fantasma o ausentes), mostrando la sintaxis real de los comandos con subcomandos.",
     "Auditoría del registro de comandos slash de Discord: arquitectura confirmada como sólida, sin desviación entre el código y los comandos desplegados.",
+  ],
+};
+
+const v12116_de: ChangelogEntry = {
+  version: "v1.21.16",
+  date: "2026-09-10",
+  title: "Neues Bot-Modul: AFK",
+  items: [
+    "Neues Modul AFK: `/afk Mittagessen` markiert dich als abwesend. Bei Erwaehnung antwortet der Bot X ist AFK: Mittagessen (seit …). Sobald du wieder schreibst, wird dein Status entfernt — mit der Zahl der verpassten Erwaehnungen.",
+    "Einstellungen: beim 1. Nachricht entfernen, bei Erwaehnung benachrichtigen, Nickname mit `[AFK]` praefixen (bei Rueckkehr wiederhergestellt), Bot-Antworten automatisch loeschen (0-60s).",
+    "Dashboard-Seite `/discord/afk`: die 4 Toggles + Slider, Liste der aktuell abwesenden Mitglieder mit manuellem Entfernen, Statistiken.",
+    "Zum Modul-Raster des Discord-Hubs hinzugefuegt (Werkzeuge).",
   ],
 };
 
@@ -24975,5 +25023,9 @@ CHANGELOG_BY_LANG.fr.unshift(v12115_fr);
 CHANGELOG_BY_LANG.en.unshift(v12115_en);
 CHANGELOG_BY_LANG.es.unshift(v12115_es);
 CHANGELOG_BY_LANG.de.unshift(v12115_de);
+CHANGELOG_BY_LANG.fr.unshift(v12116_fr);
+CHANGELOG_BY_LANG.en.unshift(v12116_en);
+CHANGELOG_BY_LANG.es.unshift(v12116_es);
+CHANGELOG_BY_LANG.de.unshift(v12116_de);
 
 export const CHANGELOG = CHANGELOG_BY_LANG.fr;

@@ -1,3 +1,13 @@
+const v12114_fr: ChangelogEntry = {
+  version: "v1.21.14",
+  date: "2026-09-10",
+  title: "Perf : Supabase — user-state & identity partagés",
+  items: [
+    "`lib/user-state.ts` : `getUserState(cle)` fetchait la ligne entière `ethone_user_state` (un blob JSON) une fois par clé — ~19 SELECT identiques au chargement. Désormais 1 fetch de la ligne partagé (cache 3 s), les clés sont extraites du blob en mémoire.",
+    "`lib/identity/useIdentity.ts` (7 composants) : la lecture `ethone_public_profiles` passe par un fetch de ligne partagé (in-flight + cache 4 s). `invalidateIdentityCache()` sur `save()`.",
+  ],
+};
+
 const v12113_fr: ChangelogEntry = {
   version: "v1.21.13",
   date: "2026-09-10",
@@ -682,6 +692,16 @@ const v12052_fr: ChangelogEntry = {
     "Dynamic Island : correction d'un bug de priorité qui empêchait Spotify de jamais s'afficher, systématiquement évincé par la synchronisation d'arrière-plan.",
     "Commande /help du Bot Discord : la liste des commandes est désormais générée dynamiquement depuis les commandes réellement enregistrées (fin des commandes fantômes et des commandes manquantes), et affiche la vraie syntaxe des commandes à sous-commandes (ex. /automod status).",
     "Audit de l'enregistrement des commandes slash Discord : architecture confirmée saine, aucune dérive entre le code et les commandes déployées.",
+  ],
+};
+
+const v12114_en: ChangelogEntry = {
+  version: "v1.21.14",
+  date: "2026-09-10",
+  title: "Perf: Supabase — shared user-state & identity",
+  items: [
+    "`lib/user-state.ts`: `getUserState(key)` fetched the whole `ethone_user_state` row (a JSON blob) once per key — ~19 identical SELECTs on load. Now one shared row fetch (3s cache), keys extracted from the in-memory blob.",
+    "`lib/identity/useIdentity.ts` (7 components): the `ethone_public_profiles` read goes through a shared row fetch (in-flight + 4s cache). `invalidateIdentityCache()` on `save()`.",
   ],
 };
 
@@ -1372,6 +1392,16 @@ const v12052_en: ChangelogEntry = {
   ],
 };
 
+const v12114_es: ChangelogEntry = {
+  version: "v1.21.14",
+  date: "2026-09-10",
+  title: "Rendimiento: Supabase — user-state e identity compartidos",
+  items: [
+    "`lib/user-state.ts`: `getUserState(clave)` traía la fila entera `ethone_user_state` una vez por clave — ~19 SELECT idénticos al cargar. Ahora 1 fetch de fila compartido (caché 3 s).",
+    "`lib/identity/useIdentity.ts` (7 componentes): la lectura `ethone_public_profiles` pasa por un fetch de fila compartido (in-flight + caché 4 s).",
+  ],
+};
+
 const v12113_es: ChangelogEntry = {
   version: "v1.21.13",
   date: "2026-09-10",
@@ -2056,6 +2086,16 @@ const v12052_es: ChangelogEntry = {
     "Dynamic Island: corregido un error de prioridad que impedía que Spotify apareciera, siempre desplazado por la sincronización en segundo plano.",
     "Comando /help del Bot de Discord: la lista de comandos ahora se genera dinámicamente desde los comandos realmente registrados (fin de comandos fantasma o ausentes), mostrando la sintaxis real de los comandos con subcomandos.",
     "Auditoría del registro de comandos slash de Discord: arquitectura confirmada como sólida, sin desviación entre el código y los comandos desplegados.",
+  ],
+};
+
+const v12114_de: ChangelogEntry = {
+  version: "v1.21.14",
+  date: "2026-09-10",
+  title: "Performance: Supabase — geteiltes user-state & identity",
+  items: [
+    "`lib/user-state.ts`: `getUserState(key)` holte die ganze `ethone_user_state`-Zeile einmal pro Key — ~19 identische SELECTs beim Laden. Jetzt ein geteilter Zeilen-Fetch (3s-Cache).",
+    "`lib/identity/useIdentity.ts` (7 Komponenten): der `ethone_public_profiles`-Read laeuft ueber einen geteilten Zeilen-Fetch (In-Flight + 4s-Cache).",
   ],
 };
 
@@ -24879,5 +24919,9 @@ CHANGELOG_BY_LANG.fr.unshift(v12113_fr);
 CHANGELOG_BY_LANG.en.unshift(v12113_en);
 CHANGELOG_BY_LANG.es.unshift(v12113_es);
 CHANGELOG_BY_LANG.de.unshift(v12113_de);
+CHANGELOG_BY_LANG.fr.unshift(v12114_fr);
+CHANGELOG_BY_LANG.en.unshift(v12114_en);
+CHANGELOG_BY_LANG.es.unshift(v12114_es);
+CHANGELOG_BY_LANG.de.unshift(v12114_de);
 
 export const CHANGELOG = CHANGELOG_BY_LANG.fr;

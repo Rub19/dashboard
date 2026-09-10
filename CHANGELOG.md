@@ -2,6 +2,14 @@
 
 Toutes les modifications notables de ce projet seront documentées dans ce fichier.
 
+## v1.21.14 — 2026-09-10
+
+**Perf : Supabase — lectures `user-state` & `identity` partagées**
+
+- **`lib/user-state.ts`** : `getUserState(key)` faisait un `SELECT payload FROM ethone_user_state WHERE user_id=X` **par clé** (~19 SELECT identiques de la même ligne au chargement). Nouveau `loadPayload(userId)` : in-flight + cache 3 s de la ligne unique ; `getUserState`/`setUserState` extraient/fusionnent depuis le blob en mémoire. `invalidateUserStateCache()` exporté ; `setUserState` garde le cache cohérent.
+- **`lib/identity/useIdentity.ts`** (7 composants) : `loadIdentityRow(userId)` — in-flight + cache 4 s du `SELECT * FROM ethone_public_profiles`. `save()` appelle `invalidateIdentityCache()`.
+- Validation : `tsc` 0 erreur, `build` ✓, `test:unit` 73/73.
+
 ## v1.21.13 — 2026-09-10
 
 **Perf : now-playing & useHomeData routés via le cache partagé**

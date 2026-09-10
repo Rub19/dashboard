@@ -5,6 +5,40 @@ import { useAuth } from "@/components/AuthProvider";
 import { supabase } from "@/lib/supabase";
 import { EthoneIdentity, IdentityPresenceStatus } from "./types";
 
+// ~7 components call useIdentity() and each fetches the same ethone_public_profiles
+// row on mount. Share one fetch across concurrent callers + a short cache.
+let _identityRowInFlight: Promise<Record<string, unknown> | null> | null = null;
+let _identityRowCache: { at: number; userId: string; row: Record<string, unknown> | null } | null = null;
+const IDENTITY_ROW_TTL = 4000;
+
+async function loadIdentityRow(userId: string): Promise<Record<string, unknown> | null> {
+  if (_identityRowCache && _identityRowCache.userId === userId && Date.now() - _identityRowCache.at < IDENTITY_ROW_TTL) {
+    return _identityRowCache.row;
+  }
+  if (_identityRowInFlight) return _identityRowInFlight;
+  _identityRowInFlight = (async () => {
+    try {
+      const { data, error: err } = await supabase
+        .from("ethone_public_profiles")
+        .select("*")
+        .eq("user_id", userId)
+        .single();
+      if (err && err.code !== "PGRST116") throw err;
+      const row = (data ?? null) as Record<string, unknown> | null;
+      _identityRowCache = { at: Date.now(), userId, row };
+      return row;
+    } finally {
+      _identityRowInFlight = null;
+    }
+  })();
+  return _identityRowInFlight;
+}
+
+/** Drop the shared identity-row cache (call after save or on sign-out). */
+export function invalidateIdentityCache() {
+  _identityRowCache = null;
+}
+
 export type IdentityInput = Partial<
   Omit<EthoneIdentity, "user_id" | "public_id" | "updated_at">
 >;
@@ -155,13 +189,8 @@ export function useIdentity() {
 
     try {
       setError(null);
-      const { data, error: err } = await supabase
-        .from("ethone_public_profiles")
-        .select("*")
-        .eq("user_id", user.id)
-        .single();
+      const data = await loadIdentityRow(user.id);
 
-      if (err && err.code !== "PGRST116") throw err;
       if (data) {
         const fromDb = mapRow(data as unknown as IdentityRow);
         const merged: EthoneIdentity = {
@@ -211,6 +240,7 @@ export function useIdentity() {
       };
 
       // 1. Immediate local persistence
+      invalidateIdentityCache();
       saveLocalIdentity(next, user?.id);
       setIdentity(next);
 

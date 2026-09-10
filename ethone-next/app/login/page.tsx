@@ -333,8 +333,9 @@ export default function LoginPage() {
 
   return (
     <div className="relative flex min-h-dvh w-full overflow-hidden bg-[var(--bg-main,#0E1015)] text-white selection:bg-[var(--accent-primary,#C1234F)]/30 selection:text-white">
-      {/* Top right language switcher */}
-      <div className="absolute right-4 top-4 z-40 sm:right-6 sm:top-6">
+      {/* Language switcher — top-right on mobile, moved over the hero half on
+          desktop so it never sits on the login card's corner. */}
+      <div className="absolute right-4 top-4 z-50 sm:right-6 sm:top-6 lg:right-[calc(50%+1.5rem)]">
         <LanguageSwitcher />
       </div>
 

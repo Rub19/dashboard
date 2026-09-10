@@ -712,6 +712,40 @@ export default function AntiRaidDashboardPage() {
 
       {/* 2. SCROLLABLE CONTAINER (pb-36 clears bottom dock) */}
       <div className="flex-1 overflow-y-auto os-scroll px-4 sm:px-6 py-6 pb-36 space-y-6">
+        {/* 2.0 INTERRUPTEUR MAÎTRE */}
+        <div
+          className={cn(
+            "flex flex-col sm:flex-row sm:items-center justify-between gap-3 rounded-2xl border p-4 transition-colors",
+            settings.enabled ? "border-emerald-500/25 bg-emerald-500/[0.06]" : "border-white/10 bg-white/[0.02]"
+          )}
+        >
+          <div>
+            <p className="text-sm font-semibold text-white">Anti-Raid {settings.enabled ? "— actif" : "— désactivé"}</p>
+            <p className="text-xs text-white/50">
+              {settings.enabled
+                ? "Tous les détecteurs cochés ci-dessous sont appliqués (join raid, spam messages, mentions, bots…)."
+                : "Aucune détection ni sanction automatique. Les réglages sont conservés."}
+            </p>
+          </div>
+          <button
+            type="button"
+            role="switch"
+            aria-checked={settings.enabled}
+            onClick={() => setSettings((prev) => ({ ...prev, enabled: !prev.enabled }))}
+            className={cn(
+              "relative h-6 w-11 shrink-0 rounded-full transition-colors",
+              settings.enabled ? "bg-emerald-500" : "bg-white/20"
+            )}
+          >
+            <span
+              className={cn(
+                "absolute top-0.5 h-5 w-5 rounded-full bg-white transition-transform",
+                settings.enabled ? "translate-x-5" : "translate-x-0.5"
+              )}
+            />
+          </button>
+        </div>
+
         {/* 2.1 BANNER D'URGENCE & NIVEAU DE MENACE */}
         <div className="grid grid-cols-1 lg:grid-cols-3 gap-4">
           {/* Main Threat Level Gauge Card */}

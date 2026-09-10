@@ -1,3 +1,13 @@
+const v12121_fr: ChangelogEntry = {
+  version: "v1.21.21",
+  date: "2026-09-10",
+  title: "Anti-Raid : Interrupteur Maitre + Fix Selecteur de Langue (login)",
+  items: [
+    "Page Anti-Raid du dashboard : nouvel interrupteur maitre en haut (« Anti-Raid actif / desactive »). Il n'y avait que les toggles par detecteur — impossible de tout couper d'un coup. C'est ce qui timeout les gens qui spam `$w` dans Mudae : coupe l'interrupteur ou juste le detecteur « Message & Spam Raid ».",
+    "Page de login : le selecteur de langue (FR) chevauchait le coin de la carte de connexion sur ecran large (~1100-1280px). Deplace au-dessus de la moitie hero sur desktop.",
+  ],
+};
+
 const v12120_fr: ChangelogEntry = {
   version: "v1.21.20",
   date: "2026-09-10",
@@ -759,6 +769,16 @@ const v12052_fr: ChangelogEntry = {
     "Dynamic Island : correction d'un bug de priorité qui empêchait Spotify de jamais s'afficher, systématiquement évincé par la synchronisation d'arrière-plan.",
     "Commande /help du Bot Discord : la liste des commandes est désormais générée dynamiquement depuis les commandes réellement enregistrées (fin des commandes fantômes et des commandes manquantes), et affiche la vraie syntaxe des commandes à sous-commandes (ex. /automod status).",
     "Audit de l'enregistrement des commandes slash Discord : architecture confirmée saine, aucune dérive entre le code et les commandes déployées.",
+  ],
+};
+
+const v12121_en: ChangelogEntry = {
+  version: "v1.21.21",
+  date: "2026-09-10",
+  title: "Anti-Raid: Master Switch + Login Language Selector Fix",
+  items: [
+    "Anti-Raid dashboard page: new master switch at the top (Anti-Raid active / disabled). There were only per-detector toggles — no way to turn everything off at once. That is what times out people spamming `$w` in Mudae: flip the switch, or just the Message & Spam Raid detector.",
+    "Login page: the language selector (FR) overlapped the login card's corner on wide screens (~1100-1280px). Moved over the hero half on desktop.",
   ],
 };
 
@@ -1526,6 +1546,16 @@ const v12052_en: ChangelogEntry = {
   ],
 };
 
+const v12121_es: ChangelogEntry = {
+  version: "v1.21.21",
+  date: "2026-09-10",
+  title: "Anti-Raid: Interruptor Maestro + Fix Selector de Idioma (login)",
+  items: [
+    "Pagina Anti-Raid del panel: nuevo interruptor maestro arriba (Anti-Raid activo / desactivado). Solo habia toggles por detector.",
+    "Pagina de login: el selector de idioma (FR) se solapaba con la esquina de la tarjeta de inicio de sesion en pantallas anchas. Movido sobre la mitad hero en escritorio.",
+  ],
+};
+
 const v12120_es: ChangelogEntry = {
   version: "v1.21.20",
   date: "2026-09-10",
@@ -2287,6 +2317,16 @@ const v12052_es: ChangelogEntry = {
     "Dynamic Island: corregido un error de prioridad que impedía que Spotify apareciera, siempre desplazado por la sincronización en segundo plano.",
     "Comando /help del Bot de Discord: la lista de comandos ahora se genera dinámicamente desde los comandos realmente registrados (fin de comandos fantasma o ausentes), mostrando la sintaxis real de los comandos con subcomandos.",
     "Auditoría del registro de comandos slash de Discord: arquitectura confirmada como sólida, sin desviación entre el código y los comandos desplegados.",
+  ],
+};
+
+const v12121_de: ChangelogEntry = {
+  version: "v1.21.21",
+  date: "2026-09-10",
+  title: "Anti-Raid: Hauptschalter + Fix Sprachauswahl (Login)",
+  items: [
+    "Anti-Raid-Dashboard-Seite: neuer Hauptschalter oben (Anti-Raid aktiv / deaktiviert). Es gab nur Pro-Detektor-Schalter.",
+    "Login-Seite: die Sprachauswahl (FR) ueberlappte die Ecke der Login-Karte auf breiten Bildschirmen. Auf dem Desktop ueber die Hero-Haelfte verschoben.",
   ],
 };
 
@@ -25215,5 +25255,9 @@ CHANGELOG_BY_LANG.fr.unshift(v12120_fr);
 CHANGELOG_BY_LANG.en.unshift(v12120_en);
 CHANGELOG_BY_LANG.es.unshift(v12120_es);
 CHANGELOG_BY_LANG.de.unshift(v12120_de);
+CHANGELOG_BY_LANG.fr.unshift(v12121_fr);
+CHANGELOG_BY_LANG.en.unshift(v12121_en);
+CHANGELOG_BY_LANG.es.unshift(v12121_es);
+CHANGELOG_BY_LANG.de.unshift(v12121_de);
 
 export const CHANGELOG = CHANGELOG_BY_LANG.fr;

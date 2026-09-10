@@ -259,7 +259,7 @@ export default function SetupWizardClient() {
                         <div className="flex items-center gap-3">
                           {g.icon ? (
                             <img
-                              src={`https://cdn.discordapp.com/icons/${g.id}/${g.icon}.png?size=64`}
+                              src={`https://cdn.discordapp.com/icons/${g.id}/${g.icon}.${g.icon.startsWith("a_") ? "gif" : "png"}?size=160`}
                               alt={g.name}
                               className="w-10 h-10 rounded-xl object-cover"
                             />

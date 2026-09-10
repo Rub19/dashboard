@@ -57,7 +57,7 @@ export default function Avatar({ src, alt, fallback, size = "md", className }: A
           src={src}
           alt={alt || ""}
           fill
-          sizes="64px"
+          sizes="128px"
           className="object-cover"
           onError={() => setError(true)}
         />

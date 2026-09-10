@@ -94,7 +94,7 @@ export function useDiscordOAuth() {
                 username: u.username || "",
                 globalName: u.globalName || u.global_name || u.username || "",
                 displayName: u.displayName || u.display_name || u.global_name || u.username || "",
-                avatarUrl: u.avatarUrl || u.avatar_url || (u.avatar ? `https://cdn.discordapp.com/avatars/${u.id}/${u.avatar}.png` : ""),
+                avatarUrl: u.avatarUrl || u.avatar_url || (u.avatar ? `https://cdn.discordapp.com/avatars/${u.id}/${u.avatar}.${u.avatar.startsWith("a_") ? "gif" : "png"}?size=256` : ""),
                 avatarUrlSmall: u.avatarUrlSmall || u.avatar_url || "",
                 bannerUrl: u.bannerUrl || u.banner_url || "",
                 email: u.email || "",
@@ -138,7 +138,7 @@ export function useDiscordOAuth() {
                   name: g.name,
                   owner: !!g.owner,
                   permissions: String(g.permissions || ""),
-                  iconUrl: g.icon ? `https://cdn.discordapp.com/icons/${g.id}/${g.icon}.png?size=64` : "",
+                  iconUrl: g.icon ? `https://cdn.discordapp.com/icons/${g.id}/${g.icon}.${g.icon.startsWith("a_") ? "gif" : "png"}?size=256` : "",
                 }))
               : [];
           }
@@ -157,7 +157,7 @@ export function useDiscordOAuth() {
               displayName: u.global_name || u.username,
               avatarUrl,
               avatarUrlSmall: avatarUrl,
-              bannerUrl: u.banner ? `https://cdn.discordapp.com/banners/${u.id}/${u.banner}.png` : "",
+              bannerUrl: u.banner ? `https://cdn.discordapp.com/banners/${u.id}/${u.banner}.${u.banner.startsWith("a_") ? "gif" : "png"}?size=600` : "",
               email: u.email || "",
               verified: !!u.verified,
               premiumType: u.premium_type || 0,

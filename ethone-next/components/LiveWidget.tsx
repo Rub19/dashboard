@@ -39,7 +39,7 @@ export default function LiveWidget() {
     if (lanyard?.avatarUrl) return lanyard.avatarUrl;
     if (discordUserId && discordAvatarHash) {
       const ext = discordAvatarHash.startsWith("a_") ? "gif" : "png";
-      return `https://cdn.discordapp.com/avatars/${discordUserId}/${discordAvatarHash}.${ext}?size=128`;
+      return `https://cdn.discordapp.com/avatars/${discordUserId}/${discordAvatarHash}.${ext}?size=256`;
     }
     return null;
   }, [lanyard?.avatarUrl, discordUserId, discordAvatarHash]);

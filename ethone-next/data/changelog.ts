@@ -1,3 +1,16 @@
+const v12087_fr: ChangelogEntry = {
+  version: "v1.20.87",
+  date: "2026-09-10",
+  title: "Pages Taches / Fichiers / Mail : Etats de Chargement et d'Erreur + Icones Discord Plus Nettes",
+  items: [
+    "Taches : la page affichait l'etat « liste vide » pendant le chargement et en cas d'echec reseau (trompeur). Elle montre maintenant un squelette pendant le chargement, et une carte « Impossible de charger vos taches » avec un bouton « Reessayer » en cas d'erreur.",
+    "Fichiers : un echec de chargement etait totalement silencieux (on ne voyait que le cache local ou un dossier vide). Ajout d'un bandeau d'erreur avec « Reessayer » et d'une grille squelette pendant le premier chargement.",
+    "Mail : le bouton « Assistant IA » de la fenetre de redaction creait en fait une etiquette parasite nommee d'apres tout le corps du message, sans jamais ameliorer le texte. Il est desormais branche sur le vrai moteur IA (reecriture / correction du brouillon). Ajout aussi d'un bandeau d'erreur quand la boite mail ne charge pas.",
+    "Tableau de bord : en cas d'echec de rafraichissement, le message d'erreur technique brut est remplace par une explication claire (« certaines donnees peuvent dater de votre derniere session »).",
+    "Icones Discord plus nettes : les avatars et icones de serveurs etaient recuperes en 64-128 px et flous sur les ecrans haute resolution. Ils sont desormais charges en 256 px (les avatars et icones animes restent en GIF).",
+  ],
+};
+
 const v12086_fr: ChangelogEntry = {
   version: "v1.20.86",
   date: "2026-09-10",
@@ -378,6 +391,19 @@ const v12052_fr: ChangelogEntry = {
     "Dynamic Island : correction d'un bug de priorité qui empêchait Spotify de jamais s'afficher, systématiquement évincé par la synchronisation d'arrière-plan.",
     "Commande /help du Bot Discord : la liste des commandes est désormais générée dynamiquement depuis les commandes réellement enregistrées (fin des commandes fantômes et des commandes manquantes), et affiche la vraie syntaxe des commandes à sous-commandes (ex. /automod status).",
     "Audit de l'enregistrement des commandes slash Discord : architecture confirmée saine, aucune dérive entre le code et les commandes déployées.",
+  ],
+};
+
+const v12087_en: ChangelogEntry = {
+  version: "v1.20.87",
+  date: "2026-09-10",
+  title: "Tasks / Files / Mail Pages: Loading and Error States + Sharper Discord Icons",
+  items: [
+    "Tasks: the page showed its empty-list state while still loading and on a network failure (misleading). It now shows a skeleton while loading, and an error card with a Retry button when a load fails.",
+    "Files: a failed load was completely silent (you only saw the local cache or an empty folder). Added an error banner with Retry and a skeleton grid for the first load.",
+    "Mail: the compose window AI Assistant button was actually creating a junk label named after the whole message body and never improving the text. It is now wired to the real AI engine (rewrite / clean up the draft). Also added an error banner when the inbox fails to load.",
+    "Dashboard: on a failed refresh, the raw technical error text is replaced with a clear explanation (some data may be from your last session).",
+    "Sharper Discord icons: avatars and server icons were fetched at 64-128px and looked soft on high-resolution screens. They are now loaded at 256px (animated avatars and icons still served as GIF).",
   ],
 };
 
@@ -764,6 +790,19 @@ const v12052_en: ChangelogEntry = {
   ],
 };
 
+const v12087_es: ChangelogEntry = {
+  version: "v1.20.87",
+  date: "2026-09-10",
+  title: "Paginas Tareas / Archivos / Correo: Estados de Carga y Error + Iconos de Discord Mas Nitidos",
+  items: [
+    "Tareas: la pagina mostraba el estado de lista vacia mientras cargaba y ante un fallo de red (confuso). Ahora muestra un esqueleto durante la carga, y una tarjeta de error con boton Reintentar cuando la carga falla.",
+    "Archivos: un fallo de carga era totalmente silencioso (solo se veia la cache local o una carpeta vacia). Se anadio un aviso de error con Reintentar y una cuadricula esqueleto para la primera carga.",
+    "Correo: el boton Asistente IA de la ventana de redaccion en realidad creaba una etiqueta basura con el nombre de todo el cuerpo del mensaje y nunca mejoraba el texto. Ahora esta conectado al motor de IA real (reescribir / corregir el borrador). Tambien se anadio un aviso de error cuando la bandeja no carga.",
+    "Panel: ante un fallo de actualizacion, el texto de error tecnico se reemplaza por una explicacion clara (algunos datos pueden ser de tu ultima sesion).",
+    "Iconos de Discord mas nitidos: los avatares e iconos de servidores se descargaban a 64-128px y se veian borrosos en pantallas de alta resolucion. Ahora se cargan a 256px (los avatares e iconos animados siguen en GIF).",
+  ],
+};
+
 const v12086_es: ChangelogEntry = {
   version: "v1.20.86",
   date: "2026-09-10",
@@ -1144,6 +1183,19 @@ const v12052_es: ChangelogEntry = {
     "Dynamic Island: corregido un error de prioridad que impedía que Spotify apareciera, siempre desplazado por la sincronización en segundo plano.",
     "Comando /help del Bot de Discord: la lista de comandos ahora se genera dinámicamente desde los comandos realmente registrados (fin de comandos fantasma o ausentes), mostrando la sintaxis real de los comandos con subcomandos.",
     "Auditoría del registro de comandos slash de Discord: arquitectura confirmada como sólida, sin desviación entre el código y los comandos desplegados.",
+  ],
+};
+
+const v12087_de: ChangelogEntry = {
+  version: "v1.20.87",
+  date: "2026-09-10",
+  title: "Seiten Aufgaben / Dateien / Mail: Lade- und Fehlerzustaende + Schaerfere Discord-Symbole",
+  items: [
+    "Aufgaben: Die Seite zeigte den Leer-Zustand waehrend des Ladens und bei einem Netzwerkfehler (irrefuehrend). Jetzt erscheint ein Skelett waehrend des Ladens, und eine Fehlerkarte mit Wiederholen-Schaltflaeche, wenn das Laden fehlschlaegt.",
+    "Dateien: Ein fehlgeschlagenes Laden war voellig lautlos (sichtbar war nur der lokale Cache oder ein leerer Ordner). Ein Fehlerbanner mit Wiederholen und ein Skelettraster fuer den ersten Ladevorgang wurden hinzugefuegt.",
+    "Mail: Die Schaltflaeche KI-Assistent im Schreibfenster erstellte tatsaechlich ein Muell-Label mit dem gesamten Nachrichtentext als Namen und verbesserte den Text nie. Sie ist jetzt mit der echten KI-Engine verbunden (Entwurf umschreiben / bereinigen). Ausserdem wurde ein Fehlerbanner hinzugefuegt, wenn der Posteingang nicht laedt.",
+    "Dashboard: Bei einer fehlgeschlagenen Aktualisierung wird der technische Rohfehlertext durch eine klare Erklaerung ersetzt (einige Daten stammen moeglicherweise aus deiner letzten Sitzung).",
+    "Schaerfere Discord-Symbole: Avatare und Server-Symbole wurden mit 64-128px geladen und wirkten auf hochaufloesenden Bildschirmen unscharf. Sie werden jetzt mit 256px geladen (animierte Avatare und Symbole weiterhin als GIF).",
   ],
 };
 
@@ -23555,5 +23607,9 @@ CHANGELOG_BY_LANG.fr.unshift(v12086_fr);
 CHANGELOG_BY_LANG.en.unshift(v12086_en);
 CHANGELOG_BY_LANG.es.unshift(v12086_es);
 CHANGELOG_BY_LANG.de.unshift(v12086_de);
+CHANGELOG_BY_LANG.fr.unshift(v12087_fr);
+CHANGELOG_BY_LANG.en.unshift(v12087_en);
+CHANGELOG_BY_LANG.es.unshift(v12087_es);
+CHANGELOG_BY_LANG.de.unshift(v12087_de);
 
 export const CHANGELOG = CHANGELOG_BY_LANG.fr;

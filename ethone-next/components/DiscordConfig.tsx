@@ -49,7 +49,7 @@ function initials(name?: string) {
 function guildIconUrl(id?: string, icon?: string) {
   if (!id || !icon) return "";
   const ext = icon.startsWith("a_") ? "gif" : "png";
-  return `https://cdn.discordapp.com/icons/${encodeURIComponent(id)}/${encodeURIComponent(icon)}.${ext}?size=128`;
+  return `https://cdn.discordapp.com/icons/${encodeURIComponent(id)}/${encodeURIComponent(icon)}.${ext}?size=256`;
 }
 
 function GuildIcon({ guild }: { guild: DiscordGuild }) {

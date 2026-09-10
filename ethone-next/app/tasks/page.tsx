@@ -19,6 +19,8 @@ import {
   Brain,
   Calendar,
   Layers,
+  RefreshCw,
+  AlertTriangle,
 } from "lucide-react";
 import { useCloudTasks } from "@/lib/hooks/useCloudTasks";
 import { useToast } from "@/components/ToastProvider";
@@ -35,7 +37,7 @@ type ViewMode = "list" | "kanban";
 const CATEGORIES = ["Tous", "Général", "Dev", "Design", "Organisation", "Personnel", "Projet"];
 
 export default function TasksPage() {
-  const { items, loading, create, update, remove } = useCloudTasks();
+  const { items, loading, error, create, update, remove, reload } = useCloudTasks();
   const { notify, success, error: showError } = useToast();
 
   const [searchQuery, setSearchQuery] = useState("");
@@ -347,7 +349,34 @@ export default function TasksPage() {
 
       {/* Main View Area */}
       <div className="flex-1 min-h-0 overflow-hidden">
-        {viewMode === "kanban" ? (
+        {loading && items.length === 0 ? (
+          <div className="h-full space-y-2.5 overflow-hidden" aria-busy="true">
+            {Array.from({ length: 6 }).map((_, i) => (
+              <div
+                key={i}
+                className="h-16 animate-pulse rounded-2xl border border-white/10 bg-[var(--bg-surface-elevated)]/60"
+              />
+            ))}
+          </div>
+        ) : error && items.length === 0 ? (
+          <div className="flex flex-col items-center justify-center rounded-3xl border border-red-500/20 bg-red-500/5 p-12 text-center backdrop-blur-2xl">
+            <div className="flex h-14 w-14 items-center justify-center rounded-2xl border border-red-500/20 bg-red-500/10 text-red-300 mb-3">
+              <AlertTriangle className="h-7 w-7" />
+            </div>
+            <h3 className="text-base font-bold text-white">Impossible de charger vos tâches</h3>
+            <p className="text-xs text-zinc-400 max-w-sm mt-1">
+              Vérifiez votre connexion. Vos tâches se resynchroniseront automatiquement une fois de retour en ligne.
+            </p>
+            <button
+              type="button"
+              onClick={() => reload()}
+              className="mt-4 flex items-center gap-2 rounded-2xl bg-white/10 px-4 py-2 text-xs font-bold text-white transition-all hover:bg-white/15 active:scale-95 cursor-pointer"
+            >
+              <RefreshCw className="h-3.5 w-3.5" />
+              <span>Réessayer</span>
+            </button>
+          </div>
+        ) : viewMode === "kanban" ? (
           <TasksKanbanView
             tasks={filteredTasks as Task[]}
             onToggle={handleToggleTask}

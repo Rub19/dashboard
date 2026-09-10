@@ -701,8 +701,8 @@ export default function DashboardOverview() {
           )}
 
           {error && (
-            <div className="shrink-0 rounded-2xl border border-red-500/30 bg-red-500/10 p-4 text-sm text-red-400">
-              {error.message}
+            <div className="shrink-0 rounded-2xl border border-[var(--warning)]/30 bg-[var(--warning)]/10 p-4 text-sm text-[var(--text-muted)]">
+              Certaines données du tableau de bord n&apos;ont pas pu être actualisées. Les informations affichées peuvent dater de votre dernière session.
             </div>
           )}
 

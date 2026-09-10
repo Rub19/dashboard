@@ -2,6 +2,17 @@
 
 Toutes les modifications notables de ce projet seront documentées dans ce fichier.
 
+## v1.20.87 — 2026-09-10
+
+**Pages Tâches / Fichiers / Mail : états de chargement et d'erreur + icônes Discord plus nettes**
+
+- **`app/tasks/page.tsx`** : `useCloudTasks()` expose `loading` / `error` / `reload`, jamais utilisés. Pendant le chargement (et sur échec réseau) la page affichait son état « liste vide » — trompeur. Ajout : squelette 6 lignes pendant `loading && items.length === 0`, carte d'erreur « Impossible de charger vos tâches » + bouton « Réessayer » (`reload()`) sur `error && items.length === 0`. L'état vide réel ne s'affiche qu'une fois le chargement terminé.
+- **`app/files/page.tsx`** : `useCloudFiles().error` destructuré mais jamais rendu — un échec de `/api/cloud/files` était totalement silencieux. Ajout d'un bandeau d'erreur (avec « Réessayer » → `reload()`, précisant que les éléments visibles viennent du cache local) et d'une grille squelette 12 tuiles pendant le premier chargement, avant l'`EmptyState`.
+- **`app/mail/page.tsx`** — bug `handleAiAssist` : le bouton « Assistant IA » de la fenêtre de rédaction appelait `createLabel(body)` → créait une étiquette parasite nommée d'après tout le corps de l'e-mail à chaque clic, sans jamais améliorer le texte. Rebranché sur `askBrainAI()` (`lib/brain/ai-engine`) avec un prompt de réécriture d'e-mail. `createLabel` retiré du destructuring `useMail()`. Ajout aussi d'un bandeau d'erreur au-dessus de `MailThreadList` quand `error && !loading && messages.length === 0`.
+- **`components/DashboardOverview.tsx`** : sur échec de `useHomeData()`, le `error.message` brut était affiché dans une boîte rouge (anti-pattern « message d'erreur technique montré à l'utilisateur »). Remplacé par un panneau au token `--warning` avec une explication claire (« certaines données peuvent dater de votre dernière session »).
+- **Icônes Discord plus nettes** : avatars et icônes de serveurs récupérés en 64–128 px (flous sur écrans haute densité). Passés à 256 px — `lib/hooks/useDiscordOAuth.ts` (avatar + bannière + icône de guilde, avec détection `a_` → GIF), `components/DiscordConfig.tsx` (`?size=128` → `256`), `components/LiveWidget.tsx` (`?size=128` → `256`), `app/discord/setup/SetupWizardClient.tsx` (`?size=64` → `160` + GIF), `components/ui/Avatar.tsx` (`sizes="64px"` → `"128px"`).
+- Validation : `tsc` 0 erreur, `lint` 0 erreur (1152 warnings pré-existants), `build`, `test:unit` 14/14 69/69.
+
 ## v1.20.86 — 2026-09-10
 
 **Connexion par code : « ce code a expiré » sur un code neuf — corps de requête à 3 champs au lieu de 4**

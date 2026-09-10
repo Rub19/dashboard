@@ -11,6 +11,7 @@ import MailThreadList from "@/components/mail/MailThreadList";
 import MailDetailView from "@/components/mail/MailDetailView";
 import ComposeMailModal, { type ComposeState } from "@/components/mail/ComposeMailModal";
 import MailOnboarding from "@/components/mail/MailOnboarding";
+import { askBrainAI } from "@/lib/brain/ai-engine";
 import { cn } from "@/lib/utils";
 
 function formatMailDate(iso: string) {
@@ -35,13 +36,13 @@ export default function MailPage() {
     setSearch,
     unread,
     loading,
+    error,
     labels,
     getThread,
     sendMail,
     saveDraft,
     setFlags,
     moveMessages,
-    createLabel,
     bulkAction,
     aliases,
     aliasesLoading,
@@ -419,11 +420,16 @@ export default function MailPage() {
   }
 
   async function handleAiAssist(body: string) {
-    if (!activeThread?.length) return body;
+    if (!body.trim()) return body;
     try {
-      const res = await createLabel(body);
-      return res?.message || body;
+      const res = await askBrainAI({
+        systemPrompt:
+          "Tu es un assistant de rédaction d'e-mails. Réécris le brouillon fourni : corrige l'orthographe et la grammaire, clarifie la structure et le ton, sans inventer d'informations ni changer la langue. Réponds uniquement avec le texte réécrit du message, sans aucun commentaire.",
+        messages: [{ role: "user", content: body }],
+      });
+      return res?.content?.trim() || body;
     } catch {
+      toastError("L'assistant IA est momentanément indisponible.");
       return body;
     }
   }
@@ -528,6 +534,12 @@ export default function MailPage() {
 
       {/* 2. Mail Thread List (Full on mobile if no active thread, side on desktop) */}
       <div className={cn("h-full flex-1 flex-col", activeThread ? "hidden md:flex md:max-w-xs lg:max-w-sm" : "flex")}>
+        {error && !loading && messages.length === 0 && (
+          <div className="mb-2 flex items-center gap-2 rounded-xl border border-red-500/25 bg-red-500/10 px-3 py-2 text-xs text-red-300">
+            <span className="h-1.5 w-1.5 shrink-0 rounded-full bg-red-400" />
+            <span>Impossible de charger votre boîte mail. Vérifiez votre connexion puis réessayez.</span>
+          </div>
+        )}
         <MailThreadList
           title={activeLabel ? `Étiquette : ${activeLabel}` : i18n(folder, folder)}
           grouped={groupedFolderMessages}

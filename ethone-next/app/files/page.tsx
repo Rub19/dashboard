@@ -498,6 +498,22 @@ export default function FilesPage() {
 
         {/* Content Body */}
         <div className="flex-1 overflow-y-auto os-scroll p-4 space-y-6">
+          {error && (
+            <div className="flex flex-wrap items-center justify-between gap-3 rounded-2xl border border-red-500/25 bg-red-500/10 px-4 py-3 text-xs text-red-300">
+              <span className="flex items-center gap-2">
+                <Cloud className="h-4 w-4 shrink-0" />
+                Impossible de charger vos fichiers pour le moment. Les éléments affichés proviennent de votre cache local.
+              </span>
+              <button
+                type="button"
+                onClick={() => reload()}
+                className="shrink-0 rounded-lg border border-red-500/30 px-2.5 py-1 font-semibold transition-colors hover:bg-red-500/15 cursor-pointer"
+              >
+                Réessayer
+              </button>
+            </div>
+          )}
+
           {/* HOME VIEW: Executive Dashboard */}
           {activeSection === "home" && !query && (
             <div className="space-y-6">
@@ -663,6 +679,15 @@ export default function FilesPage() {
                       />
                     ))}
                   </div>
+                </div>
+              ) : loading && files.length === 0 ? (
+                <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-6 gap-3" aria-busy="true">
+                  {Array.from({ length: 12 }).map((_, i) => (
+                    <div
+                      key={i}
+                      className="aspect-[4/3] animate-pulse rounded-xl border border-[var(--panel-border)]/50 bg-[var(--surface-raised)]/40"
+                    />
+                  ))}
                 </div>
               ) : currentFolders.length === 0 ? (
                 <EmptyState

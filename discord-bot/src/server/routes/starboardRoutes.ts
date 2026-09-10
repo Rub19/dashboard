@@ -1,5 +1,5 @@
 import express, { Request, Response } from 'express';
-import { Client } from 'discord.js';
+import { ChannelType, Client, PermissionFlagsBits } from 'discord.js';
 import { starboardStorage } from '../../modules/starboard/storage/starboardStorage.js';
 import { StarboardConfigSchema } from '../../modules/starboard/types/starboard.js';
 
@@ -7,7 +7,7 @@ import { StarboardConfigSchema } from '../../modules/starboard/types/starboard.j
  * API Dashboard du module Starboard.
  * Montée derrière `authMiddleware` + `createGuildAuthMiddleware` (cf. server/index.ts).
  */
-export function createStarboardRouter(_discordClient: Client) {
+export function createStarboardRouter(discordClient: Client) {
   const router = express.Router({ mergeParams: true });
 
   // Vue d'ensemble + statistiques
@@ -39,6 +39,30 @@ export function createStarboardRouter(_discordClient: Client) {
   router.get('/entries', (req: Request, res: Response): void => {
     const guildId = String(req.params.guildId);
     res.json({ entries: starboardStorage.getGuildEntries(guildId) });
+  });
+
+  // Salons textuels du serveur + permissions du bot (pour le sélecteur du dashboard)
+  router.get('/channels', (req: Request, res: Response): void => {
+    const guildId = String(req.params.guildId);
+    const guild = discordClient.guilds.cache.get(guildId);
+    if (!guild) {
+      res.json({ channels: [] });
+      return;
+    }
+    const botMember = guild.members.me;
+    const channels = guild.channels.cache
+      .filter((c) => c.type === ChannelType.GuildText || c.type === ChannelType.GuildAnnouncement)
+      .map((c) => {
+        const perms = botMember && 'permissionsFor' in c ? c.permissionsFor(botMember) : null;
+        return {
+          id: c.id,
+          name: c.name,
+          canSend: perms?.has(PermissionFlagsBits.SendMessages) ?? false,
+          canEmbed: perms?.has(PermissionFlagsBits.EmbedLinks) ?? false,
+        };
+      })
+      .sort((a, b) => a.name.localeCompare(b.name));
+    res.json({ channels });
   });
 
   return router;

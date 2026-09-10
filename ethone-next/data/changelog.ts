@@ -1,3 +1,16 @@
+const v12088_fr: ChangelogEntry = {
+  version: "v1.20.88",
+  date: "2026-09-10",
+  title: "Nouveau Module Bot : Starboard (+ sa page dans le dashboard)",
+  items: [
+    "Nouveau module Discord : le Starboard. Quand un message atteint un seuil de reactions ⭐ (configurable), le bot le republie dans un salon dedie avec un embed maintenu a jour (compteur d'etoiles, image jointe, lien vers le message). Si le total redescend sous le seuil, l'entree est retiree (option).",
+    "Commande `/starboard` (permission Gerer le serveur) : setup, salon, seuil, emoji (unicode ou custom), options (auto-etoile de l'auteur, ignorer les bots, inclure les salons NSFW, retrait sous le seuil), ignorer un salon, activer/desactiver, status.",
+    "Page dashboard dediee (`/discord/starboard`, ajoutee a la grille des modules du hub Discord) : selecteur de serveur, choix du salon dans une liste (avec verification des permissions du bot), reglage de l'emoji et du seuil, interrupteurs pour chaque option, liste des salons ignores, statistiques et classement des messages les plus etoiles. Repli propre en mode demo si le serveur du bot n'est pas joignable.",
+    "Cote technique : premiere brique de reactions du bot (intent GuildMessageReactions + partials), decompte fiable qui recompte reellement les reacteurs a chaque changement (pas de derive apres redemarrage), garde-fous (le starboard lui-meme, les salons ignores et les messages du bot ne peuvent pas etre etoiles ; verification SendMessages + EmbedLinks avant publication).",
+    "A deployer sur le VPS : `git pull && npm install && npm run node:build && pm2 restart ethone-bot`.",
+  ],
+};
+
 const v12087_fr: ChangelogEntry = {
   version: "v1.20.87",
   date: "2026-09-10",
@@ -391,6 +404,19 @@ const v12052_fr: ChangelogEntry = {
     "Dynamic Island : correction d'un bug de priorité qui empêchait Spotify de jamais s'afficher, systématiquement évincé par la synchronisation d'arrière-plan.",
     "Commande /help du Bot Discord : la liste des commandes est désormais générée dynamiquement depuis les commandes réellement enregistrées (fin des commandes fantômes et des commandes manquantes), et affiche la vraie syntaxe des commandes à sous-commandes (ex. /automod status).",
     "Audit de l'enregistrement des commandes slash Discord : architecture confirmée saine, aucune dérive entre le code et les commandes déployées.",
+  ],
+};
+
+const v12088_en: ChangelogEntry = {
+  version: "v1.20.88",
+  date: "2026-09-10",
+  title: "New Bot Module: Starboard (+ its dashboard page)",
+  items: [
+    "New Discord module: the Starboard. When a message reaches a configurable ⭐ reaction threshold, the bot reposts it to a dedicated channel with a live-updating embed (star count, attached image, jump link). If the total drops back below the threshold, the entry is removed (opt-in).",
+    "/starboard command (Manage Guild): setup, channel, threshold, emoji (unicode or custom), options (author self-star, ignore bots, include NSFW channels, remove-below-threshold), ignore a channel, enable/disable, status.",
+    "Dedicated dashboard page (/discord/starboard, added to the Discord hub module grid): server selector, channel picker from a list (with bot-permission checks), emoji and threshold controls, a switch per option, ignored-channels list, stats and a leaderboard of the most-starred messages. Clean demo fallback when the bot server is unreachable.",
+    "Under the hood: the bot's first reaction infra (GuildMessageReactions intent + partials), reliable counting that actually re-counts reactors on every change (no drift across restarts), guardrails (the starboard itself, ignored channels and bot messages can't be starred; SendMessages + EmbedLinks checked before posting).",
+    "To deploy on the VPS: git pull && npm install && npm run node:build && pm2 restart ethone-bot.",
   ],
 };
 
@@ -790,6 +816,19 @@ const v12052_en: ChangelogEntry = {
   ],
 };
 
+const v12088_es: ChangelogEntry = {
+  version: "v1.20.88",
+  date: "2026-09-10",
+  title: "Nuevo Modulo del Bot: Starboard (+ su pagina en el panel)",
+  items: [
+    "Nuevo modulo de Discord: el Starboard. Cuando un mensaje alcanza un umbral configurable de reacciones ⭐, el bot lo vuelve a publicar en un canal dedicado con un embed que se mantiene actualizado (contador de estrellas, imagen adjunta, enlace al mensaje). Si el total baja del umbral, la entrada se elimina (opcional).",
+    "Comando /starboard (permiso Gestionar servidor): setup, canal, umbral, emoji (unicode o personalizado), opciones (auto-estrella del autor, ignorar bots, incluir canales NSFW, quitar bajo el umbral), ignorar un canal, activar/desactivar, status.",
+    "Pagina de panel dedicada (/discord/starboard, anadida a la cuadricula de modulos del hub de Discord): selector de servidor, eleccion del canal en una lista (con verificacion de permisos del bot), ajustes de emoji y umbral, un interruptor por opcion, lista de canales ignorados, estadisticas y clasificacion de los mensajes mas estrellados. Retorno limpio en modo demo si el servidor del bot no responde.",
+    "Parte tecnica: primera infraestructura de reacciones del bot (intent GuildMessageReactions + partials), recuento fiable que vuelve a contar realmente a los reaccionantes en cada cambio (sin deriva tras un reinicio), salvaguardas (el propio starboard, los canales ignorados y los mensajes del bot no se pueden estrellar; verificacion SendMessages + EmbedLinks antes de publicar).",
+    "Para desplegar en el VPS: git pull && npm install && npm run node:build && pm2 restart ethone-bot.",
+  ],
+};
+
 const v12087_es: ChangelogEntry = {
   version: "v1.20.87",
   date: "2026-09-10",
@@ -1183,6 +1222,19 @@ const v12052_es: ChangelogEntry = {
     "Dynamic Island: corregido un error de prioridad que impedía que Spotify apareciera, siempre desplazado por la sincronización en segundo plano.",
     "Comando /help del Bot de Discord: la lista de comandos ahora se genera dinámicamente desde los comandos realmente registrados (fin de comandos fantasma o ausentes), mostrando la sintaxis real de los comandos con subcomandos.",
     "Auditoría del registro de comandos slash de Discord: arquitectura confirmada como sólida, sin desviación entre el código y los comandos desplegados.",
+  ],
+};
+
+const v12088_de: ChangelogEntry = {
+  version: "v1.20.88",
+  date: "2026-09-10",
+  title: "Neues Bot-Modul: Starboard (+ eigene Dashboard-Seite)",
+  items: [
+    "Neues Discord-Modul: das Starboard. Erreicht eine Nachricht eine konfigurierbare Schwelle an ⭐-Reaktionen, postet der Bot sie in einen eigenen Kanal mit einem laufend aktualisierten Embed (Sternzahl, angehaengtes Bild, Sprunglink). Faellt die Summe wieder unter die Schwelle, wird der Eintrag entfernt (optional).",
+    "/starboard-Befehl (Recht Server verwalten): setup, Kanal, Schwelle, Emoji (Unicode oder benutzerdefiniert), Optionen (Selbst-Stern des Autors, Bots ignorieren, NSFW-Kanaele einbeziehen, unter Schwelle entfernen), Kanal ignorieren, aktivieren/deaktivieren, status.",
+    "Eigene Dashboard-Seite (/discord/starboard, zum Modulraster des Discord-Hubs hinzugefuegt): Serverauswahl, Kanalauswahl aus einer Liste (mit Pruefung der Bot-Rechte), Emoji- und Schwellenregler, ein Schalter je Option, Liste ignorierter Kanaele, Statistiken und eine Rangliste der meistbesternten Nachrichten. Sauberer Demo-Modus, wenn der Bot-Server nicht erreichbar ist.",
+    "Technisch: die erste Reaktions-Infrastruktur des Bots (Intent GuildMessageReactions + Partials), zuverlaessige Zaehlung, die bei jeder Aenderung wirklich neu zaehlt (keine Abweichung nach einem Neustart), Schutzmechanismen (das Starboard selbst, ignorierte Kanaele und Bot-Nachrichten koennen nicht besternt werden; SendMessages + EmbedLinks werden vor dem Posten geprueft).",
+    "Auf dem VPS bereitstellen: git pull && npm install && npm run node:build && pm2 restart ethone-bot.",
   ],
 };
 
@@ -23611,5 +23663,9 @@ CHANGELOG_BY_LANG.fr.unshift(v12087_fr);
 CHANGELOG_BY_LANG.en.unshift(v12087_en);
 CHANGELOG_BY_LANG.es.unshift(v12087_es);
 CHANGELOG_BY_LANG.de.unshift(v12087_de);
+CHANGELOG_BY_LANG.fr.unshift(v12088_fr);
+CHANGELOG_BY_LANG.en.unshift(v12088_en);
+CHANGELOG_BY_LANG.es.unshift(v12088_es);
+CHANGELOG_BY_LANG.de.unshift(v12088_de);
 
 export const CHANGELOG = CHANGELOG_BY_LANG.fr;

@@ -2,6 +2,15 @@
 
 Toutes les modifications notables de ce projet seront documentées dans ce fichier.
 
+## v1.20.88 — 2026-09-10
+
+**Starboard : page dashboard dédiée + entrée dans la grille des modules du hub Discord**
+
+- **`ethone-next/app/discord/starboard/`** (nouveau) — `page.tsx` + `StarboardCenterClient.tsx` : sélecteur de serveur (serveurs où l'utilisateur est admin/owner), chargement de `config` / `overview` / `entries` / `channels` depuis l'API du bot, formulaire de config (interrupteur activé, `<select>` de salon alimenté par `/channels` avec permissions `canSend`/`canEmbed`, champ emoji, slider de seuil 1–25, 4 interrupteurs d'options, liste de salons ignorés en toggles), tuiles de stats, classement des 10 messages les plus étoilés (lien `discord.com/channels/...`), bouton Sauvegarder → `PUT /config`. Repli « mode démo » propre quand `NEXT_PUBLIC_DISCORD_BOT_API` est vide ou le bot injoignable.
+- **`ethone-next/app/discord/page.tsx`** : `"starboard"` ajouté au type `ModuleType`, à la grille `MODULES` (icône `Star`, badge « Communauté ») et un panneau inline `activeModule === "starboard"` (carte passerelle vers `/discord/starboard?guildId=…` + guide de mise en route).
+- **`discord-bot/src/server/routes/starboardRoutes.ts`** : ajout de `GET /channels` (salons texte/annonce du serveur + permissions du bot) pour alimenter le `<select>` du dashboard.
+- Validation : `tsc` 0 erreur, `lint` 0 erreur, `build` (route `/discord/starboard` prérendue), `test:unit` 14/14 69/69 ; `npm run node:build` (bot) propre.
+
 ## discord-bot — 2026-09-10 (nouveau module : Starboard)
 
 **Le bot a désormais un Starboard — le « hall of fame » des messages les plus appréciés du serveur.**

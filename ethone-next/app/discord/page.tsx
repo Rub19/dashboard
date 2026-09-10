@@ -59,6 +59,7 @@ import {
   Layers,
   Terminal,
   Cpu,
+  Star,
 } from "lucide-react";
 import { useAuth } from "@/components/AuthProvider";
 import { useToast } from "@/components/ToastProvider";
@@ -93,6 +94,7 @@ type ModuleType =
   | "analytics"
   | "events"
   | "server"
+  | "starboard"
   | "bot";
 
 interface BotModule {
@@ -264,6 +266,14 @@ const MODULES: BotModule[] = [
     icon: Server,
     color: "text-blue-400",
     badge: "Serveur",
+  },
+  {
+    id: "starboard",
+    title: "Starboard",
+    description: "Le hall of fame des messages : republication automatique des messages les plus étoilés du serveur.",
+    icon: Star,
+    color: "text-amber-400",
+    badge: "Communauté",
   },
   {
     id: "bot",
@@ -2333,6 +2343,43 @@ export default function DiscordDashboardPage() {
                         <Key className="h-3.5 w-3.5 text-amber-400" />
                         <span>Permissions &amp; Debugger</span>
                       </Link>
+                    </div>
+                  </div>
+                )}
+
+                {/* MODULE: Starboard */}
+                {activeModule === "starboard" && (
+                  <div className="space-y-4 text-xs">
+                    <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-3 rounded-2xl border border-amber-500/30 bg-gradient-to-r from-amber-500/10 via-yellow-500/10 to-amber-600/10 p-4 shadow-lg shadow-amber-500/5">
+                      <div>
+                        <div className="flex items-center gap-2">
+                          <span className="text-base">⭐</span>
+                          <p className="text-xs font-bold text-white">Starboard — Hall of Fame</p>
+                          <span className="text-[9px] uppercase font-bold tracking-wider px-1.5 py-0.5 rounded bg-amber-500/20 text-amber-300 border border-amber-500/30">
+                            Communauté
+                          </span>
+                        </div>
+                        <p className="text-[11px] text-zinc-300 mt-0.5">
+                          Quand un message atteint un seuil de réactions ⭐, le bot le republie dans un salon dédié avec un embed maintenu à jour. Salon, emoji, seuil et options se règlent ici.
+                        </p>
+                      </div>
+                      <Link
+                        href={`/discord/starboard?guildId=${selectedGuild.id}`}
+                        className="flex h-9 shrink-0 items-center gap-2 rounded-xl bg-gradient-to-r from-amber-600 to-yellow-600 px-4 text-xs font-bold text-white shadow-md shadow-amber-600/20 transition-all hover:from-amber-500 hover:to-yellow-500 active:scale-95 cursor-pointer"
+                      >
+                        <Star className="h-4 w-4" />
+                        <span>Ouvrir le Starboard</span>
+                        <ChevronRight className="h-3.5 w-3.5" />
+                      </Link>
+                    </div>
+
+                    <div className="rounded-2xl border border-white/10 bg-white/[0.02] p-4 space-y-2">
+                      <p className="font-bold text-white">Mise en route</p>
+                      <ol className="list-decimal space-y-1 pl-4 text-[11px] text-zinc-300">
+                        <li>Ouvrez le Starboard et choisissez le salon de publication.</li>
+                        <li>Réglez l&apos;emoji (⭐ par défaut) et le seuil de réactions.</li>
+                        <li>Activez — ou lancez <code className="rounded bg-black/30 px-1">/starboard setup</code> directement sur Discord.</li>
+                      </ol>
                     </div>
                   </div>
                 )}

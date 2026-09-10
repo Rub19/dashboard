@@ -3,7 +3,7 @@
 import Link from "next/link";
 import dynamic from "next/dynamic";
 import { usePathname } from "next/navigation";
-import { memo } from "react";
+import { memo, useEffect, useRef, useState } from "react";
 import {
   Palette,
   Timer,
@@ -11,6 +11,7 @@ import {
   EyeOff,
   MessageSquare,
   ChevronRight,
+  Check,
 } from "lucide-react";
 import { useAnimatedSidebar } from "@/components/motion/animated-sidebar";
 import { useModKey } from "@/lib/hooks/useModKey";
@@ -80,28 +81,91 @@ function SidebarTopToggle() {
 function ThemeToggle() {
   const { settings, update } = useSettings();
   const resolved = resolvePremiumTheme(settings.theme);
-  const currentIndex = PREMIUM_THEMES.indexOf(resolved);
-  const next = PREMIUM_THEMES[(currentIndex + 1) % PREMIUM_THEMES.length];
   const themeLabel = THEME_DEFINITIONS[resolved]?.label ?? "Thème";
+  const [open, setOpen] = useState(false);
+  const ref = useRef<HTMLDivElement>(null);
+
+  useEffect(() => {
+    if (!open) return;
+    function onPointer(e: MouseEvent) {
+      if (ref.current && !ref.current.contains(e.target as Node)) setOpen(false);
+    }
+    function onKey(e: KeyboardEvent) {
+      if (e.key === "Escape") setOpen(false);
+    }
+    document.addEventListener("mousedown", onPointer);
+    document.addEventListener("keydown", onKey);
+    return () => {
+      document.removeEventListener("mousedown", onPointer);
+      document.removeEventListener("keydown", onKey);
+    };
+  }, [open]);
+
+  function pick(id: string) {
+    // Applying a theme must also reset the accent to that theme's own design,
+    // or a separately-stored accentColor keeps overriding it.
+    update({
+      theme: id,
+      accentColor: "custom",
+      customAccent: THEME_DEFINITIONS[id as keyof typeof THEME_DEFINITIONS]?.accentPrimary || settings.customAccent,
+    });
+    setOpen(false);
+  }
 
   return (
-    <Tooltip label={`Thème : ${themeLabel}`} position="bottom">
-      <button
-        type="button"
-        onClick={() =>
-          // Cycling the theme here must also reset the accent to the new
-          // theme's own design, or a separately-stored accentColor (e.g. a
-          // "Vert Émeraude" pick from Settings) keeps overriding every theme
-          // this button cycles to, even though the tooltip correctly names
-          // the new theme.
-          update({ theme: next, accentColor: "custom", customAccent: THEME_DEFINITIONS[next]?.accentPrimary || settings.customAccent })
-        }
-        className="inline-flex h-9 w-9 items-center justify-center rounded-xl border border-[var(--panel-border)]/70 bg-[var(--surface-raised)]/60 text-[var(--text-muted)] hover:border-[var(--accent-primary)]/40 hover:bg-[var(--surface-hover)] hover:text-[var(--text-primary)] transition-all active:scale-95 cursor-pointer shadow-sm"
-        aria-label="Changer de thème"
-      >
-        <Palette className="h-4 w-4" />
-      </button>
-    </Tooltip>
+    <div ref={ref} className="relative">
+      <Tooltip label={`Thème : ${themeLabel}`} position="bottom">
+        <button
+          type="button"
+          onClick={() => setOpen((v) => !v)}
+          aria-haspopup="menu"
+          aria-expanded={open}
+          className={cn(
+            "inline-flex h-9 w-9 items-center justify-center rounded-xl border transition-all active:scale-95 cursor-pointer shadow-sm",
+            open
+              ? "border-[var(--accent-primary)]/50 bg-[var(--surface-hover)] text-[var(--text-primary)]"
+              : "border-[var(--panel-border)]/70 bg-[var(--surface-raised)]/60 text-[var(--text-muted)] hover:border-[var(--accent-primary)]/40 hover:bg-[var(--surface-hover)] hover:text-[var(--text-primary)]"
+          )}
+          aria-label="Changer de thème"
+        >
+          <Palette className="h-4 w-4" />
+        </button>
+      </Tooltip>
+
+      {open && (
+        <div
+          role="menu"
+          className="absolute right-0 top-full z-50 mt-2 max-h-[70vh] w-56 overflow-y-auto os-scroll rounded-2xl border border-[var(--panel-border)] bg-[var(--panel-bg)] p-1.5 shadow-2xl backdrop-blur-2xl"
+        >
+          {PREMIUM_THEMES.map((id) => {
+            const def = THEME_DEFINITIONS[id];
+            const active = id === resolved;
+            return (
+              <button
+                key={id}
+                type="button"
+                role="menuitemradio"
+                aria-checked={active}
+                onClick={() => pick(id)}
+                className={cn(
+                  "flex w-full items-center gap-2.5 rounded-xl px-2.5 py-2 text-left text-xs font-medium transition-colors cursor-pointer",
+                  active
+                    ? "bg-[var(--accent-muted)] text-[var(--text-primary)]"
+                    : "text-[var(--text-muted)] hover:bg-[var(--surface-hover)] hover:text-[var(--text-primary)]"
+                )}
+              >
+                <span
+                  className="h-4 w-4 shrink-0 rounded-full border border-white/15"
+                  style={{ background: `linear-gradient(135deg, ${def?.accentPrimary ?? "#888"}, ${def?.accentSecondary ?? def?.accentPrimary ?? "#888"})` }}
+                />
+                <span className="min-w-0 flex-1 truncate">{def?.label ?? id}</span>
+                {active && <Check className="h-3.5 w-3.5 shrink-0 text-[var(--accent-primary)]" />}
+              </button>
+            );
+          })}
+        </div>
+      )}
+    </div>
   );
 }
 

@@ -1,3 +1,14 @@
+const v12104_fr: ChangelogEntry = {
+  version: "v1.21.4",
+  date: "2026-09-10",
+  title: "Sélecteur de Thème + Liste des Serveurs Discord",
+  items: [
+    "Sélecteur de thème (top bar) : le bouton palette faisait défiler les 13 thèmes un par un à chaque clic, sans vue d'ensemble ni choix direct. Il ouvre maintenant un menu avec tous les thèmes, pastille de couleur et coche sur le thème actif.",
+    "Liste « Vos Serveurs » (hub Discord) : le bouton « + Ajouter » s'affichait sur tous les serveurs, même ceux où le bot est déjà présent, quand l'API du bot était injoignable. On n'affiche plus « Ajouter » ni le grisé « bot absent » tant que la présence du bot n'est pas confirmée.",
+    "Note : l'état « Bot actif » dépend du redéploiement du bot sur le VPS (correctif cookie cross-domaine `SameSite=None`). Tant que le bot n'est pas redéployé, la liste reste neutre au lieu de mentir.",
+  ],
+};
+
 const v12103_fr: ChangelogEntry = {
   version: "v1.21.3",
   date: "2026-09-10",
@@ -571,6 +582,17 @@ const v12052_fr: ChangelogEntry = {
     "Dynamic Island : correction d'un bug de priorité qui empêchait Spotify de jamais s'afficher, systématiquement évincé par la synchronisation d'arrière-plan.",
     "Commande /help du Bot Discord : la liste des commandes est désormais générée dynamiquement depuis les commandes réellement enregistrées (fin des commandes fantômes et des commandes manquantes), et affiche la vraie syntaxe des commandes à sous-commandes (ex. /automod status).",
     "Audit de l'enregistrement des commandes slash Discord : architecture confirmée saine, aucune dérive entre le code et les commandes déployées.",
+  ],
+};
+
+const v12104_en: ChangelogEntry = {
+  version: "v1.21.4",
+  date: "2026-09-10",
+  title: "Theme Picker + Discord Server List",
+  items: [
+    "Theme picker (top bar): the palette button cycled through all 13 themes one click at a time, with no overview and no direct pick. It now opens a menu listing every theme, with a color swatch and a check on the active one.",
+    "\"Your Servers\" list (Discord hub): the \"+ Add\" button showed on every server — even ones the bot is already in — whenever the bot API was unreachable. We no longer show \"Add\" or the dimmed \"bot absent\" styling until the bot's presence is actually confirmed.",
+    "Note: the \"Bot active\" state depends on redeploying the bot on the VPS (cross-domain `SameSite=None` cookie fix). Until the bot is redeployed, the list stays neutral instead of lying.",
   ],
 };
 
@@ -1150,6 +1172,17 @@ const v12052_en: ChangelogEntry = {
   ],
 };
 
+const v12104_es: ChangelogEntry = {
+  version: "v1.21.4",
+  date: "2026-09-10",
+  title: "Selector de Tema + Lista de Servidores Discord",
+  items: [
+    "Selector de tema (barra superior): el botón de la paleta recorría los 13 temas uno por uno en cada clic, sin vista general ni elección directa. Ahora abre un menú con todos los temas, muestra de color y marca en el tema activo.",
+    "Lista « Tus Servidores » (hub Discord): el botón « + Añadir » aparecía en todos los servidores — incluso en los que el bot ya está — cuando la API del bot no respondía. Ya no se muestra « Añadir » ni el atenuado « bot ausente » hasta confirmar la presencia del bot.",
+    "Nota: el estado « Bot activo » depende de volver a desplegar el bot en el VPS (corrección de cookie cross-dominio `SameSite=None`). Hasta entonces, la lista se mantiene neutra en vez de mentir.",
+  ],
+};
+
 const v12103_es: ChangelogEntry = {
   version: "v1.21.3",
   date: "2026-09-10",
@@ -1723,6 +1756,17 @@ const v12052_es: ChangelogEntry = {
     "Dynamic Island: corregido un error de prioridad que impedía que Spotify apareciera, siempre desplazado por la sincronización en segundo plano.",
     "Comando /help del Bot de Discord: la lista de comandos ahora se genera dinámicamente desde los comandos realmente registrados (fin de comandos fantasma o ausentes), mostrando la sintaxis real de los comandos con subcomandos.",
     "Auditoría del registro de comandos slash de Discord: arquitectura confirmada como sólida, sin desviación entre el código y los comandos desplegados.",
+  ],
+};
+
+const v12104_de: ChangelogEntry = {
+  version: "v1.21.4",
+  date: "2026-09-10",
+  title: "Theme-Auswahl + Discord-Serverliste",
+  items: [
+    "Theme-Auswahl (obere Leiste): Die Paletten-Schaltflaeche wechselte pro Klick durch alle 13 Themes, ohne Uebersicht und ohne direkte Auswahl. Sie oeffnet jetzt ein Menue mit allen Themes, Farbpunkt und Haken beim aktiven Theme.",
+    "Liste Deine Server (Discord-Hub): Die Schaltflaeche + Hinzufuegen erschien bei jedem Server — auch bei denen, in denen der Bot schon ist — sobald die Bot-API nicht erreichbar war. Hinzufuegen und der abgeblendete Zustand Bot fehlt werden erst gezeigt, wenn die Anwesenheit des Bots bestaetigt ist.",
+    "Hinweis: Der Zustand Bot aktiv haengt vom erneuten Deployment des Bots auf dem VPS ab (Cross-Domain-Cookie-Fix SameSite=None). Bis dahin bleibt die Liste neutral, statt zu luegen.",
   ],
 };
 
@@ -24395,5 +24439,9 @@ CHANGELOG_BY_LANG.fr.unshift(v12103_fr);
 CHANGELOG_BY_LANG.en.unshift(v12103_en);
 CHANGELOG_BY_LANG.es.unshift(v12103_es);
 CHANGELOG_BY_LANG.de.unshift(v12103_de);
+CHANGELOG_BY_LANG.fr.unshift(v12104_fr);
+CHANGELOG_BY_LANG.en.unshift(v12104_en);
+CHANGELOG_BY_LANG.es.unshift(v12104_es);
+CHANGELOG_BY_LANG.de.unshift(v12104_de);
 
 export const CHANGELOG = CHANGELOG_BY_LANG.fr;

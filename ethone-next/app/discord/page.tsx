@@ -336,19 +336,30 @@ export default function DiscordDashboardPage() {
   const [searchQuery, setSearchQuery] = useState("");
   const [onlyManageable, setOnlyManageable] = useState(true);
   // IDs of the servers the bot is actually in — used to sort those first and
-  // show an "invite" affordance on the rest.
+  // show an "invite" affordance on the rest. `botPresenceKnown` stays false when
+  // the bot API is unreachable / not authenticated, so we don't wrongly label
+  // every server "à ajouter".
   const [botGuildIds, setBotGuildIds] = useState<Set<string>>(new Set());
+  const [botPresenceKnown, setBotPresenceKnown] = useState(false);
 
   useEffect(() => {
     const api = process.env.NEXT_PUBLIC_DISCORD_BOT_API || "";
     if (!api) return;
+    let cancelled = false;
     fetch(`${api}/api/bot/presence/servers`, { credentials: "include" })
-      .then((r) => r.json())
+      .then((r) => (r.ok ? r.json() : Promise.reject(new Error(String(r.status)))))
       .then((res) => {
+        if (cancelled) return;
         const list = Array.isArray(res?.data) ? res.data : [];
         setBotGuildIds(new Set(list.map((g: { guildId?: string; id?: string }) => String(g.guildId ?? g.id))));
+        setBotPresenceKnown(true);
       })
-      .catch(() => {});
+      .catch(() => {
+        if (!cancelled) setBotPresenceKnown(false);
+      });
+    return () => {
+      cancelled = true;
+    };
   }, []);
 
   // Serveurs réels de l'utilisateur (ZÉRO FAKE INFO)
@@ -724,6 +735,8 @@ export default function DiscordDashboardPage() {
                 const isOwner = guild.owner;
                 const isManager = canManageGuild(guild);
                 const hasBot = botGuildIds.has(guild.id);
+                // Only dim / flag rows once we actually know where the bot is.
+                const botAbsent = botPresenceKnown && !hasBot;
                 const initials = guild.name
                   .split(" ")
                   .map((n) => n[0])
@@ -738,9 +751,9 @@ export default function DiscordDashboardPage() {
                       "flex w-full items-stretch gap-1 rounded-2xl border transition-all duration-150",
                       isSelected
                         ? "border-[#5865F2]/50 bg-[#5865F2]/15 shadow-md shadow-[#5865F2]/10"
-                        : hasBot
-                        ? "border-white/10 bg-white/[0.03] hover:border-white/20 hover:bg-white/[0.05]"
-                        : "border-white/5 bg-white/[0.015] hover:border-white/12 hover:bg-white/[0.03]"
+                        : botAbsent
+                        ? "border-white/5 bg-white/[0.015] hover:border-white/12 hover:bg-white/[0.03]"
+                        : "border-white/10 bg-white/[0.03] hover:border-white/20 hover:bg-white/[0.05]"
                     )}
                   >
                     <button
@@ -749,7 +762,7 @@ export default function DiscordDashboardPage() {
                     >
                       <div className={cn(
                         "flex h-9 w-9 shrink-0 items-center justify-center overflow-hidden rounded-xl border bg-zinc-800 font-bold text-xs text-white shadow-inner",
-                        hasBot ? "border-emerald-500/40" : "border-white/10 opacity-70"
+                        hasBot ? "border-emerald-500/40" : botAbsent ? "border-white/10 opacity-70" : "border-white/10"
                       )}>
                         {guild.iconUrl ? (
                           <img src={guild.iconUrl} alt={guild.name} className="h-full w-full object-cover rounded-xl" />
@@ -759,7 +772,7 @@ export default function DiscordDashboardPage() {
                       </div>
 
                       <div className="min-w-0 flex-1">
-                        <p className={cn("truncate text-xs font-semibold", hasBot ? "text-white" : "text-zinc-300")}>
+                        <p className={cn("truncate text-xs font-semibold", botAbsent ? "text-zinc-300" : "text-white")}>
                           {guild.name}
                         </p>
                         <div className="flex items-center gap-1.5 mt-0.5">
@@ -789,7 +802,7 @@ export default function DiscordDashboardPage() {
                     <div className="flex shrink-0 items-center pr-2">
                       {hasBot ? (
                         <span className={cn("h-2 w-2 rounded-full", isSelected ? "bg-emerald-400" : "bg-emerald-500/40")} />
-                      ) : (
+                      ) : botPresenceKnown ? (
                         <a
                           href={`${BOT_INVITE_URL}&guild_id=${guild.id}`}
                           target="_blank"
@@ -801,7 +814,7 @@ export default function DiscordDashboardPage() {
                           <Plus className="h-3 w-3" />
                           Ajouter
                         </a>
-                      )}
+                      ) : null}
                     </div>
                   </div>
                 );

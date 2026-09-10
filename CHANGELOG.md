@@ -2,6 +2,15 @@
 
 Toutes les modifications notables de ce projet seront documentées dans ce fichier.
 
+## v1.21.4 — 2026-09-10
+
+**Sélecteur de thème (menu) + liste des serveurs Discord non trompeuse**
+
+- **`components/TopBar.tsx`** `ThemeToggle` : le bouton palette « cyclait » les 13 thèmes (1 par clic), sans vue d'ensemble ni choix direct → menu déroulant (`role="menu"`, fermeture au clic-dehors + Échap) listant tous les thèmes, pastille `linear-gradient(accentPrimary → accentSecondary)` + `Check` sur l'actif. `pick(id)` applique `theme` et réinitialise l'accent sur celui du thème.
+- **`app/discord/page.tsx`** : nouvel état `botPresenceKnown` (`false` tant que `GET /api/bot/presence/servers` n'a pas renvoyé `200`). `botAbsent = botPresenceKnown && !hasBot` remplace `!hasBot` pour le grisé (row / avatar / nom) et le bouton « + Ajouter » — fini le « Ajouter » affiché sur **tous** les serveurs quand l'API du bot est injoignable.
+- ⚠️ L'état « Bot actif » dépend du **redéploiement du bot sur le VPS** (correctif cookie `SameSite=None` cross-domaine, commit `f2febe89`, non déployé). Sans ça la requête vers l'API du bot renvoie 401 → liste neutre (au lieu de mentir).
+- Validation : `tsc` 0 erreur, `build` ✓, `test:unit` 14/14 69/69, `lint` 0 erreur.
+
 ## v1.21.3 — 2026-09-10
 
 **Trackers : support multi-jeux via tracker.gg + fix export Worker**

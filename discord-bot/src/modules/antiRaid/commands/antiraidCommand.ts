@@ -102,10 +102,17 @@ export const antiraidCommand: Command = {
         CRITICAL: 0x991b1b, // Rouge foncé — palier au-delà de error (menace confirmée)
       };
 
+      const raidCfg = raidConfigService.getConfig(guildId);
+
       const embed = new EmbedBuilder()
         .setTitle(formatString(t.antiraid_status_title, { guildName: ctx.guild.name }))
-        .setColor(levelColors[metrics.threatLevel] || BRAND_COLORS.info)
+        .setColor(raidCfg.enabled ? levelColors[metrics.threatLevel] || BRAND_COLORS.info : BRAND_COLORS.neutral)
         .setThumbnail(ctx.guild.iconURL({ size: 128 }) ?? null)
+        .setDescription(
+          raidCfg.enabled
+            ? `🛡️ **Anti-Raid : ACTIF**${raidCfg.botRaid.blockUnwhitelistedBots ? '' : ' · expulsion auto des bots désactivée'}`
+            : '⚪ **Anti-Raid : DÉSACTIVÉ** — aucune détection ni sanction automatique. `/antiraid toggle actif:True` pour réactiver.'
+        )
         .addFields(
           {
             name: t.antiraid_field_risk_score,

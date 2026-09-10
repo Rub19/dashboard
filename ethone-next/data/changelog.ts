@@ -1,3 +1,12 @@
+const v12122_fr: ChangelogEntry = {
+  version: "v1.21.22",
+  date: "2026-09-10",
+  title: "Anti-Raid : /antiraid status montre l'etat on/off",
+  items: [
+    "`/antiraid status` affichait Risk Score / Raid Mode / Lockdown mais pas si l'Anti-Raid etait active ou coupe — impossible de verifier apres un `/antiraid toggle`. Le status affiche maintenant en tete « Anti-Raid : ACTIF / DESACTIVE » (+ mention si l'expulsion auto des bots est coupee), avec la couleur d'embed en gris quand desactive.",
+  ],
+};
+
 const v12121_fr: ChangelogEntry = {
   version: "v1.21.21",
   date: "2026-09-10",
@@ -769,6 +778,15 @@ const v12052_fr: ChangelogEntry = {
     "Dynamic Island : correction d'un bug de priorité qui empêchait Spotify de jamais s'afficher, systématiquement évincé par la synchronisation d'arrière-plan.",
     "Commande /help du Bot Discord : la liste des commandes est désormais générée dynamiquement depuis les commandes réellement enregistrées (fin des commandes fantômes et des commandes manquantes), et affiche la vraie syntaxe des commandes à sous-commandes (ex. /automod status).",
     "Audit de l'enregistrement des commandes slash Discord : architecture confirmée saine, aucune dérive entre le code et les commandes déployées.",
+  ],
+};
+
+const v12122_en: ChangelogEntry = {
+  version: "v1.21.22",
+  date: "2026-09-10",
+  title: "Anti-Raid: /antiraid status now shows the on/off state",
+  items: [
+    "`/antiraid status` showed Risk Score / Raid Mode / Lockdown but not whether Anti-Raid was on or off — no way to check after a `/antiraid toggle`. Status now shows Anti-Raid: ACTIVE / DISABLED at the top (plus a note if bot auto-kick is off), with a grey embed when disabled.",
   ],
 };
 
@@ -1546,6 +1564,15 @@ const v12052_en: ChangelogEntry = {
   ],
 };
 
+const v12122_es: ChangelogEntry = {
+  version: "v1.21.22",
+  date: "2026-09-10",
+  title: "Anti-Raid: /antiraid status ahora muestra el estado on/off",
+  items: [
+    "`/antiraid status` mostraba Risk Score / Raid Mode / Lockdown pero no si Anti-Raid estaba activo o apagado. Ahora muestra Anti-Raid: ACTIVO / DESACTIVADO arriba, con embed gris cuando esta apagado.",
+  ],
+};
+
 const v12121_es: ChangelogEntry = {
   version: "v1.21.21",
   date: "2026-09-10",
@@ -2317,6 +2344,15 @@ const v12052_es: ChangelogEntry = {
     "Dynamic Island: corregido un error de prioridad que impedía que Spotify apareciera, siempre desplazado por la sincronización en segundo plano.",
     "Comando /help del Bot de Discord: la lista de comandos ahora se genera dinámicamente desde los comandos realmente registrados (fin de comandos fantasma o ausentes), mostrando la sintaxis real de los comandos con subcomandos.",
     "Auditoría del registro de comandos slash de Discord: arquitectura confirmada como sólida, sin desviación entre el código y los comandos desplegados.",
+  ],
+};
+
+const v12122_de: ChangelogEntry = {
+  version: "v1.21.22",
+  date: "2026-09-10",
+  title: "Anti-Raid: /antiraid status zeigt jetzt den An/Aus-Status",
+  items: [
+    "`/antiraid status` zeigte Risk Score / Raid Mode / Lockdown, aber nicht ob Anti-Raid an oder aus war. Der Status zeigt jetzt oben Anti-Raid: AKTIV / DEAKTIVIERT, mit grauem Embed wenn deaktiviert.",
   ],
 };
 
@@ -25259,5 +25295,9 @@ CHANGELOG_BY_LANG.fr.unshift(v12121_fr);
 CHANGELOG_BY_LANG.en.unshift(v12121_en);
 CHANGELOG_BY_LANG.es.unshift(v12121_es);
 CHANGELOG_BY_LANG.de.unshift(v12121_de);
+CHANGELOG_BY_LANG.fr.unshift(v12122_fr);
+CHANGELOG_BY_LANG.en.unshift(v12122_en);
+CHANGELOG_BY_LANG.es.unshift(v12122_es);
+CHANGELOG_BY_LANG.de.unshift(v12122_de);
 
 export const CHANGELOG = CHANGELOG_BY_LANG.fr;

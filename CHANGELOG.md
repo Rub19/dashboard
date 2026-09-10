@@ -2,6 +2,15 @@
 
 Toutes les modifications notables de ce projet seront documentées dans ce fichier.
 
+## discord-bot — 2026-09-10
+
+**Correctifs d'embeds Discord (audit ciblé, ne touche pas ethone-next, pas de bump de version dédié à ce sous-projet)**
+
+- `discordAiPanel.ts` : la réponse du panneau IA (`/ask`) n'était jamais tronquée avant `.setDescription()` — une réponse dépassant 4096 caractères (limite Discord) faisait échouer silencieusement tout l'envoi. Tronquée, comme le fait déjà le gestionnaire `ai_summarize` juste en dessous dans le même fichier.
+- `aiSetupCommand.ts` : la liste des mots bannis (`/ai-setup`) s'accumule sans limite entre appels successifs, puis était insérée telle quelle dans un champ d'embed plafonné à 1024 caractères — une liste assez longue faisait échouer toute la réponse de la commande. Nouvelle fonction `formatBannedWordsFieldValue()` qui tronque proprement avec un compteur "(+N autres)".
+- `guildMemberAdd.ts` : le pied de page (`.setFooter`) manquait sur l'embed de journal d'arrivée de membre, présent sur tous les embeds de journal similaires (`guildMemberRemove.ts`, `messageDelete.ts`) — incohérence visuelle corrigée.
+- Validation : `npm run node:build` (tsc) propre.
+
 ## v1.20.78 — 2026-09-10
 
 **Sécurité : vérification TOTP réelle à la connexion + codes de secours utilisables (clôture du chantier "Session & Account Security 2.0")**

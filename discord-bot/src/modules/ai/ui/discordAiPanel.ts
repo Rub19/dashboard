@@ -32,7 +32,11 @@ export class DiscordAiPanel {
         name: personality.name,
         iconURL: personality.avatarUrl || 'https://cdn.discordapp.com/embed/avatars/0.png',
       })
-      .setDescription(answer);
+      // La réponse du modèle n'est jamais garantie sous la limite de description d'un
+      // embed Discord (4096 caractères) — sans troncature, une réponse trop longue fait
+      // échouer silencieusement tout l'envoi (voir troncature équivalente sur le résumé
+      // de salon un peu plus bas dans ce même fichier, `ai_summarize`).
+      .setDescription(answer.length > 4096 ? `${answer.slice(0, 4093)}...` : answer);
 
     if (settings.showSources !== 'NEVER' && sourcesUsed.length > 0) {
       embed.addFields({

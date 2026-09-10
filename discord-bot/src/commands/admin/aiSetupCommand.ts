@@ -7,6 +7,33 @@ import { Command, CommandContext } from '../../types/command.js';
 import { aiRepository } from '../../modules/ai/storage/aiRepository.js';
 import { successEmbed, errorEmbed, infoEmbed } from '../../utils/embeds.js';
 
+// La valeur d'un champ d'embed Discord est plafonnée à 1024 caractères. La liste des
+// mots bannis s'accumule au fil des appels successifs de `/ai-setup mots_bannis:...`
+// (fusion sans limite dans `currentSettings.bannedWords`) : sans troncature ici, une
+// liste devenue longue dépasse la limite et fait échouer silencieusement tout l'envoi
+// de la commande (aucun message d'erreur visible, juste "l'interaction n'a pas répondu").
+function formatBannedWordsFieldValue(words: string[] | undefined): string {
+  if (!words || words.length === 0) {
+    return '*Aucun mot banni spécifique configuré*';
+  }
+
+  const maxLength = 1024;
+  let value = '';
+  let shown = 0;
+  for (const w of words) {
+    const chunk = `${shown > 0 ? ', ' : ''}\`${w}\``;
+    if (value.length + chunk.length > maxLength - 20) break;
+    value += chunk;
+    shown += 1;
+  }
+
+  if (shown < words.length) {
+    value += ` *(+${words.length - shown} autres)*`;
+  }
+
+  return value;
+}
+
 export const aiSetupCommand: Command = {
   name: 'ai-setup',
   description: 'Configure le salon public dédié à l\'IA, l\'humeur du Thon et les filtres de sécurité (Admin)',
@@ -158,10 +185,7 @@ export const aiSetupCommand: Command = {
           },
           {
             name: `🚫 Mots Bannis AutoMod (${(currentSettings.bannedWords || []).length})`,
-            value:
-              (currentSettings.bannedWords || []).length > 0
-                ? currentSettings.bannedWords!.map((w) => `\`${w}\``).join(', ')
-                : '*Aucun mot banni spécifique configuré*',
+            value: formatBannedWordsFieldValue(currentSettings.bannedWords),
             inline: false,
           }
         );

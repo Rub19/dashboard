@@ -80,6 +80,7 @@ export async function onGuildMemberAdd(member: GuildMember): Promise<void> {
             },
           ])
           .setThumbnail(member.user.displayAvatarURL())
+          .setFooter({ text: `${config.botName}` })
           .setTimestamp();
 
         await logChannel.send({ embeds: [logEmbed] });

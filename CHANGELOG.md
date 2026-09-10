@@ -2,6 +2,23 @@
 
 Toutes les modifications notables de ce projet seront documentées dans ce fichier.
 
+## discord-bot — 2026-09-10 (durcissement auth)
+
+Suite à une question sur le modèle de sécurité : **rien à corriger sur le fond** — chaque route `/api/guilds/:guildId/*` passe par `authMiddleware` + `createGuildAuthMiddleware`, qui vérifie en direct contre l'API Discord (avec le token OAuth de l'utilisateur) que celui-ci a **Administrateur / Gérer le serveur / est propriétaire** de CE serveur précis, sinon `403`. Côté ETHONE personnel, le Worker filtre tout sur `auth.userId` (extrait du JWT Supabase vérifié), jamais un id fourni par le client. Deux durcissements quand même :
+
+- **`src/server/routes/authRoutes.ts`** : le cookie de session `token` passait en `secure: false` + `sameSite: 'lax'`. Nouveau `TOKEN_COOKIE_OPTIONS` : `secure: true` + `sameSite: 'none'` dès que `DASHBOARD_URL` est en HTTPS (sinon `lax` pour le dev local). Appliqué aux deux points d'émission.
+- **`POST/GET /api/auth/dev-login`** émettait un cookie admin (`dev-admin-user`) **sans aucune auth ni garde**. Renvoie désormais `404` sauf si `ALLOW_DEV_AUTH_BYPASS=true`. (Rappel : cette variable ne doit jamais être définie en production — elle donne un bypass d'auth complet.)
+- Validation : `npm run node:build` (tsc) propre.
+
+## v1.20.99 — 2026-09-10
+
+**`events/[id]/participants` + `forms/[id]/responses` : branchées au bot**
+
+- `EventParticipantsClient.tsx` : `useSearchParams` (guildId) + `useDiscordOAuth`, `BOT_API_URL`, `mapParticipant`, `loadParticipants()` (`GET .../events/:id/participants`) + badge démo + Rafraîchir. `handleToggleAttendance` → `POST .../participants/:userId/checkin` (le décochage reste local, pas d'endpoint) ; `handlePromote` → `POST .../participants/rsvp {status:"GOING"}` ; `handleRemove` → `DELETE .../participants/:userId` (optimiste + rollback).
+- `FormResponsesClient.tsx` : `mapResponse`, `loadResponses()` (`GET .../forms/:id/responses`) + badge démo + Rafraîchir. `handleUpdateStatus` → `POST .../responses/:id/review {status, decisionReason, reviewerId}` (rollback si échec) ; `handleAddNote` → `POST .../responses/:id/notes {content, authorId}`.
+- En-têtes allégés (« Staff Desk » / « Centre de Réponses & Review Staff » → titres courts).
+- Validation : `tsc` 0 erreur, `build`, `test:unit` 14/14 69/69, `lint` 353.
+
 ## v1.20.98 — 2026-09-10
 
 **`/discord/events` + `/discord/calendar` : branchées au bot (fin des pages démo)**

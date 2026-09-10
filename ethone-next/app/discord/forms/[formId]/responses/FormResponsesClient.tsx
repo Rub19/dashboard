@@ -1,6 +1,6 @@
 "use client";
 
-import { useState, useMemo } from "react";
+import { useState, useMemo, useEffect, useCallback } from "react";
 import Link from "next/link";
 import { useParams, useSearchParams } from "next/navigation";
 import {
@@ -8,9 +8,34 @@ import {
   Download,
   ArrowLeft,
   Sliders,
+  RefreshCw,
 } from "lucide-react";
 import { useToast } from "@/components/ToastProvider";
+import { useDiscordOAuth } from "@/lib/hooks/useDiscordOAuth";
 import { cn } from "@/lib/utils";
+
+const BOT_API_URL = process.env.NEXT_PUBLIC_DISCORD_BOT_API || "";
+
+function mapResponse(raw: Record<string, unknown>): ResponseItem {
+  const r = raw as Record<string, any>;
+  return {
+    id: String(r.id ?? r.responseId ?? ""),
+    userId: String(r.userId ?? ""),
+    userTag: String(r.userTag ?? r.username ?? "Membre"),
+    userAvatar: String(r.userAvatar ?? r.avatarUrl ?? ""),
+    submittedAt: String(r.submittedAt ?? r.createdAt ?? new Date().toISOString()),
+    score: Number(r.score ?? 0),
+    scoreLabel: (r.scoreLabel ?? "Medium") as ResponseItem["scoreLabel"],
+    status: (r.status ?? "PENDING") as ResponseItem["status"],
+    assignedReviewerTag: r.assignedReviewerTag ?? undefined,
+    tags: Array.isArray(r.tags) ? r.tags.map(String) : [],
+    decisionReason: r.decisionReason ?? undefined,
+    accountAgeDays: Number(r.accountAgeDays ?? 0),
+    guildMemberDays: Number(r.guildMemberDays ?? 0),
+    answers: Array.isArray(r.answers) ? r.answers : [],
+    notes: Array.isArray(r.notes) ? r.notes : [],
+  };
+}
 
 interface InternalNote {
   id: string;
@@ -131,14 +156,46 @@ const DEMO_RESPONSES: ResponseItem[] = [
 export default function FormResponsesClient() {
   const params = useParams();
   const searchParams = useSearchParams();
+  const { profile } = useDiscordOAuth();
   const formId = (params?.formId as string) || "demo";
-  const rawGuildId = searchParams.get("guildId") || "123456789012345678";
-  const { success } = useToast();
+  const rawGuildId = searchParams.get("guildId") || profile?.guilds?.[0]?.id || "123456789012345678";
+  const { success, error: showError } = useToast();
 
   const [responses, setResponses] = useState<ResponseItem[]>(DEMO_RESPONSES);
+  const [isDemo, setIsDemo] = useState(true);
+  const [loading, setLoading] = useState(false);
   const [selectedStatus, setSelectedStatus] = useState<string>("ALL");
   const [searchQuery, setSearchQuery] = useState("");
   const [activeResponse, setActiveResponse] = useState<ResponseItem | null>(null);
+
+  const base = `${BOT_API_URL}/api/guilds/${rawGuildId}/forms/${formId}`;
+
+  const loadResponses = useCallback(async () => {
+    if (!BOT_API_URL || rawGuildId === "123456789012345678") {
+      setIsDemo(true);
+      return;
+    }
+    setLoading(true);
+    try {
+      const res = await fetch(`${base}/responses`, { credentials: "include" });
+      const data = await res.json().catch(() => null);
+      if (res.ok && Array.isArray(data?.responses)) {
+        setResponses(data.responses.map(mapResponse));
+        setIsDemo(false);
+      } else {
+        setIsDemo(true);
+      }
+    } catch {
+      setIsDemo(true);
+    } finally {
+      setLoading(false);
+    }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [rawGuildId, formId]);
+
+  useEffect(() => {
+    loadResponses();
+  }, [loadResponses]);
 
   // Review interaction state
   const [newNote, setNewNote] = useState("");
@@ -161,49 +218,65 @@ export default function FormResponsesClient() {
   }, [responses, selectedStatus, searchQuery]);
 
   // Review status update
-  const handleUpdateStatus = (
+  const handleUpdateStatus = async (
     newStatus: ResponseItem["status"],
     reason?: string
   ) => {
     if (!activeResponse) return;
-    const updated = responses.map((r) => {
-      if (r.id === activeResponse.id) {
-        return {
-          ...r,
-          status: newStatus,
-          decisionReason: reason || r.decisionReason,
-        };
-      }
-      return r;
-    });
-    setResponses(updated);
+    const rid = activeResponse.id;
+    const prevStatus = activeResponse.status;
+    setResponses((rs) => rs.map((r) => (r.id === rid ? { ...r, status: newStatus, decisionReason: reason || r.decisionReason } : r)));
     setActiveResponse((prev) => (prev ? { ...prev, status: newStatus, decisionReason: reason || prev.decisionReason } : null));
-    success(
-      "Statut mis à jour",
-      `La candidature de ${activeResponse.userTag} est passée à "${newStatus}".`
-    );
+
+    if (!isDemo && BOT_API_URL) {
+      try {
+        const res = await fetch(`${base}/responses/${rid}/review`, {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          credentials: "include",
+          body: JSON.stringify({
+            reviewerId: profile?.user?.id,
+            reviewerTag: profile?.user?.username,
+            status: newStatus,
+            decisionReason: reason,
+          }),
+        });
+        if (!res.ok) throw new Error();
+      } catch {
+        setResponses((rs) => rs.map((r) => (r.id === rid ? { ...r, status: prevStatus } : r)));
+        setActiveResponse((prev) => (prev ? { ...prev, status: prevStatus } : null));
+        showError("Impossible de mettre à jour le statut.");
+        return;
+      }
+    }
+    success("Statut mis à jour", `La candidature de ${activeResponse.userTag} est passée à "${newStatus}".`);
   };
 
   // Add internal note
-  const handleAddNote = () => {
+  const handleAddNote = async () => {
     if (!activeResponse || !newNote.trim()) return;
+    const rid = activeResponse.id;
+    const content = newNote.trim();
     const noteObj: InternalNote = {
       id: `n-${Date.now()}`,
-      authorTag: "Modérateur Actuel",
-      content: newNote.trim(),
+      authorTag: profile?.user?.username || "Modérateur",
+      content,
       createdAt: "À l'instant",
     };
-
-    const updated = responses.map((r) => {
-      if (r.id === activeResponse.id) {
-        return { ...r, notes: [...r.notes, noteObj] };
-      }
-      return r;
-    });
-
-    setResponses(updated);
+    setResponses((rs) => rs.map((r) => (r.id === rid ? { ...r, notes: [...r.notes, noteObj] } : r)));
     setActiveResponse((prev) => (prev ? { ...prev, notes: [...prev.notes, noteObj] } : null));
     setNewNote("");
+
+    if (!isDemo && BOT_API_URL) {
+      try {
+        await fetch(`${base}/responses/${rid}/notes`, {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          credentials: "include",
+          body: JSON.stringify({ authorId: profile?.user?.id, authorTag: profile?.user?.username, content }),
+        });
+      } catch {}
+    }
     success("Note ajoutée", "Commentaire privé enregistré dans l'historique staff.");
   };
 
@@ -261,18 +334,28 @@ export default function FormResponsesClient() {
           </Link>
           <div>
             <div className="flex items-center gap-2">
-              <h1 className="text-xl sm:text-2xl font-black text-white">Centre de Réponses &amp; Review Staff</h1>
-              <span className="text-[10px] font-bold uppercase tracking-wider px-2 py-0.5 rounded-full bg-cyan-500/20 text-cyan-300 border border-cyan-500/30">
-                Staff Desk
-              </span>
+              <h1 className="text-xl sm:text-2xl font-black text-white">Réponses &amp; review</h1>
+              {isDemo && (
+                <span className="text-[10px] font-semibold px-2 py-0.5 rounded-full bg-amber-500/10 text-amber-300 border border-amber-500/30">
+                  Démo
+                </span>
+              )}
             </div>
             <p className="text-xs text-zinc-400 mt-0.5">
-              Examinez les candidatures reçues, attribuez des reviewers et prenez les décisions finales.
+              Examinez les candidatures, prenez les décisions et gardez un historique staff.
             </p>
           </div>
         </div>
 
         <div className="flex items-center gap-2">
+          <button
+            onClick={loadResponses}
+            disabled={loading}
+            className="flex h-9 items-center justify-center rounded-xl border border-white/10 bg-white/5 px-2.5 text-zinc-400 hover:bg-white/10 hover:text-white transition-colors disabled:opacity-50"
+            title="Rafraîchir"
+          >
+            <RefreshCw className={cn("h-3.5 w-3.5", loading && "animate-spin")} />
+          </button>
           <button
             onClick={handleExportCSV}
             className="flex h-9 items-center gap-1.5 rounded-xl border border-white/10 bg-white/5 px-3 text-xs font-semibold text-zinc-300 hover:bg-white/10 hover:text-white transition-all cursor-pointer"

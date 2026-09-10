@@ -1,8 +1,8 @@
 "use client";
 
-import React, { useState, useMemo } from "react";
+import React, { useState, useMemo, useEffect, useCallback } from "react";
 import Link from "next/link";
-import { useParams } from "next/navigation";
+import { useParams, useSearchParams } from "next/navigation";
 import {
   Users,
   Search,
@@ -11,7 +11,28 @@ import {
   ArrowLeft,
   UserCheck,
   Trash2,
+  RefreshCw,
 } from "lucide-react";
+import { useDiscordOAuth } from "@/lib/hooks/useDiscordOAuth";
+
+const BOT_API_URL = process.env.NEXT_PUBLIC_DISCORD_BOT_API || "";
+
+function mapParticipant(raw: Record<string, unknown>): Participant {
+  const r = raw as Record<string, any>;
+  return {
+    id: String(r.id ?? r.userId ?? ""),
+    userId: String(r.userId ?? ""),
+    username: String(r.username ?? "Membre"),
+    displayName: String(r.displayName ?? r.username ?? "Membre"),
+    avatarUrl: String(r.avatarUrl ?? ""),
+    rsvp: (r.rsvp ?? "GOING") as Participant["rsvp"],
+    attendance: (r.attendance === "ATTENDED" || r.attendance === "NO_SHOW" ? r.attendance : "REGISTERED") as Participant["attendance"],
+    ticketNumber: String(r.ticketNumber ?? ""),
+    joinedAt: String(r.joinedAt ?? new Date().toISOString()),
+    checkedInAt: r.checkedInAt ?? undefined,
+    waitlistPosition: r.waitlistPosition ?? undefined,
+  };
+}
 
 interface Participant {
   id: string;
@@ -90,11 +111,45 @@ const INITIAL_PARTICIPANTS: Participant[] = [
 
 export default function EventParticipantsClient() {
   const params = useParams();
+  const searchParams = useSearchParams();
+  const { profile } = useDiscordOAuth();
   const eventId = (params?.eventId as string) || "evt-gaming-night";
+  const guildParam = searchParams.get("guildId") || profile?.guilds?.[0]?.id || "123456789012345678";
 
   const [participants, setParticipants] = useState<Participant[]>(INITIAL_PARTICIPANTS);
+  const [isDemo, setIsDemo] = useState(true);
+  const [loading, setLoading] = useState(false);
   const [filterRsvp, setFilterRsvp] = useState<string>("ALL");
   const [searchQuery, setSearchQuery] = useState("");
+
+  const base = `${BOT_API_URL}/api/guilds/${guildParam}/events/${eventId}`;
+
+  const loadParticipants = useCallback(async () => {
+    if (!BOT_API_URL || guildParam === "123456789012345678") {
+      setIsDemo(true);
+      return;
+    }
+    setLoading(true);
+    try {
+      const res = await fetch(`${base}/participants`, { credentials: "include" });
+      const data = await res.json().catch(() => null);
+      if (res.ok && Array.isArray(data?.participants)) {
+        setParticipants(data.participants.map(mapParticipant));
+        setIsDemo(false);
+      } else {
+        setIsDemo(true);
+      }
+    } catch {
+      setIsDemo(true);
+    } finally {
+      setLoading(false);
+    }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [guildParam, eventId]);
+
+  useEffect(() => {
+    loadParticipants();
+  }, [loadParticipants]);
 
   const filteredList = useMemo(() => {
     return participants.filter((p) => {
@@ -110,42 +165,57 @@ export default function EventParticipantsClient() {
     });
   }, [participants, searchQuery, filterRsvp]);
 
-  // Toggle Attendance
-  const handleToggleAttendance = (userId: string) => {
+  // Toggle Attendance — the bot only has a check-in action (no un-check-in),
+  // so switching back to "registered" stays local.
+  const handleToggleAttendance = async (userId: string) => {
+    const target = participants.find((p) => p.userId === userId);
+    const willAttend = target?.attendance !== "ATTENDED";
     setParticipants((prev) =>
-      prev.map((p) => {
-        if (p.userId === userId) {
-          const isAttended = p.attendance === "ATTENDED";
-          return {
-            ...p,
-            attendance: isAttended ? "REGISTERED" : "ATTENDED",
-            checkedInAt: isAttended ? undefined : new Date().toISOString(),
-          };
-        }
-        return p;
-      })
+      prev.map((p) =>
+        p.userId === userId
+          ? { ...p, attendance: willAttend ? "ATTENDED" : "REGISTERED", checkedInAt: willAttend ? new Date().toISOString() : undefined }
+          : p
+      )
     );
+    if (isDemo || !BOT_API_URL || !willAttend) return;
+    try {
+      await fetch(`${base}/participants/${userId}/checkin`, {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        credentials: "include",
+        body: JSON.stringify({ attendance: "ATTENDED", username: target?.username, method: "MANUAL_STAFF" }),
+      });
+    } catch {}
   };
 
-  // Promote from waitlist
-  const handlePromote = (userId: string) => {
+  // Promote from waitlist -> re-RSVP as GOING
+  const handlePromote = async (userId: string) => {
+    const target = participants.find((p) => p.userId === userId);
     setParticipants((prev) =>
-      prev.map((p) => {
-        if (p.userId === userId) {
-          return {
-            ...p,
-            rsvp: "GOING",
-            waitlistPosition: undefined,
-          };
-        }
-        return p;
-      })
+      prev.map((p) => (p.userId === userId ? { ...p, rsvp: "GOING", waitlistPosition: undefined } : p))
     );
+    if (isDemo || !BOT_API_URL) return;
+    try {
+      await fetch(`${base}/participants/rsvp`, {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        credentials: "include",
+        body: JSON.stringify({ userId, username: target?.username || "Membre", displayName: target?.displayName, status: "GOING" }),
+      });
+    } catch {}
   };
 
   // Delete participant
-  const handleRemove = (userId: string) => {
+  const handleRemove = async (userId: string) => {
+    const snapshot = participants;
     setParticipants((prev) => prev.filter((p) => p.userId !== userId));
+    if (isDemo || !BOT_API_URL) return;
+    try {
+      const res = await fetch(`${base}/participants/${userId}`, { method: "DELETE", credentials: "include" });
+      if (!res.ok) setParticipants(snapshot);
+    } catch {
+      setParticipants(snapshot);
+    }
   };
 
   // CSV Export
@@ -195,14 +265,27 @@ export default function EventParticipantsClient() {
             </div>
             <h1 className="text-2xl sm:text-3xl font-extrabold text-white flex items-center gap-3">
               <Users className="w-7 h-7 text-indigo-400" />
-              Gestion des Participants & Pointages
+              Participants
+              {isDemo && (
+                <span className="rounded-full border border-amber-500/30 bg-amber-500/10 px-2 py-0.5 text-[11px] font-semibold text-amber-300">
+                  Démo
+                </span>
+              )}
             </h1>
             <p className="text-xs text-slate-400 mt-1">
-              Consultez les inscrits, enregistrez les arrivées en direct et exportez la liste complète.
+              Consultez les inscrits, enregistrez les arrivées et exportez la liste.
             </p>
           </div>
 
           <div className="flex items-center gap-2 flex-wrap">
+            <button
+              onClick={loadParticipants}
+              disabled={loading}
+              className="inline-flex items-center justify-center px-2 py-2 rounded-xl bg-white/5 hover:bg-white/10 border border-white/10 text-slate-400 hover:text-white transition-colors disabled:opacity-50"
+              title="Rafraîchir"
+            >
+              <RefreshCw className={`w-3.5 h-3.5 ${loading ? "animate-spin" : ""}`} />
+            </button>
             <button
               onClick={handleExportCSV}
               className="inline-flex items-center gap-1.5 px-3 py-2 rounded-xl text-xs font-semibold bg-white/5 hover:bg-white/10 border border-white/10 text-slate-300 transition-colors"

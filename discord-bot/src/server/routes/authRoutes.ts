@@ -6,6 +6,18 @@ import { logger } from '../../utils/logger.js';
 
 export const authRouter = express.Router();
 
+// The session cookie must only travel over HTTPS in production. When the
+// dashboard is served over HTTPS we also send it cross-origin (Secure + None);
+// otherwise (local dev) Lax is enough and Secure would drop the cookie.
+const COOKIE_IS_HTTPS = !!config.dashboardUrl && config.dashboardUrl.startsWith('https');
+const TOKEN_COOKIE_OPTIONS = {
+  path: '/',
+  httpOnly: true,
+  secure: COOKIE_IS_HTTPS,
+  sameSite: (COOKIE_IS_HTTPS ? 'none' : 'lax') as 'none' | 'lax',
+  maxAge: 7 * 24 * 60 * 60 * 1000,
+};
+
 function getRedirectUri(req: Request): string {
   if (config.dashboardUrl && config.dashboardUrl.startsWith('http')) {
     return `${config.dashboardUrl}/api/auth/callback`;
@@ -45,18 +57,18 @@ const devUserPayload: DiscordUserPayload = {
 };
 
 /**
- * POST & GET /api/auth/dev-login (Accès immédiat sans friction)
+ * POST & GET /api/auth/dev-login — issues an admin session with NO OAuth.
+ * Gated behind ALLOW_DEV_AUTH_BYPASS so it can't be reached in production
+ * (where it would let anyone mint a `dev-admin-user` cookie).
  */
 authRouter.all('/dev-login', (req: Request, res: Response) => {
+  if (process.env.ALLOW_DEV_AUTH_BYPASS !== 'true') {
+    res.status(404).json({ error: 'Not found' });
+    return;
+  }
   const token = jwt.sign(devUserPayload, config.jwtSecret, { expiresIn: '7d' });
 
-  res.cookie('token', token, {
-    path: '/',
-    httpOnly: true,
-    secure: false,
-    sameSite: 'lax',
-    maxAge: 7 * 24 * 60 * 60 * 1000,
-  });
+  res.cookie('token', token, TOKEN_COOKIE_OPTIONS);
 
   if (req.method === 'POST') {
     res.json({ success: true, user: devUserPayload, token });
@@ -132,13 +144,7 @@ authRouter.get('/callback', async (req: Request, res: Response): Promise<void> =
 
     const token = jwt.sign(payload, config.jwtSecret, { expiresIn: '7d' });
 
-    res.cookie('token', token, {
-      path: '/',
-      httpOnly: true,
-      secure: false,
-      sameSite: 'lax',
-      maxAge: 7 * 24 * 60 * 60 * 1000,
-    });
+    res.cookie('token', token, TOKEN_COOKIE_OPTIONS);
 
     res.redirect('/');
   } catch (err) {

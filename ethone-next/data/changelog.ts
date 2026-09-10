@@ -1,3 +1,14 @@
+const v12099_fr: ChangelogEntry = {
+  version: "v1.20.99",
+  date: "2026-09-10",
+  title: "Pages Participants & Réponses de Formulaire : Branchées au Bot",
+  items: [
+    "Les 2 dernières pages en démo sont branchées. Participants d'un événement : liste réelle, pointage (check-in), promotion depuis la liste d'attente, retrait — tous câblés au bot.",
+    "Réponses d'un formulaire : liste réelle, changement de statut (accepter / refuser / en review…) via l'API de review du bot, notes internes staff enregistrées côté bot.",
+    "Badge « Démo » + bouton Rafraîchir sur les deux, mises à jour optimistes avec retour arrière.",
+  ],
+};
+
 const v12098_fr: ChangelogEntry = {
   version: "v1.20.98",
   date: "2026-09-10",
@@ -515,6 +526,17 @@ const v12052_fr: ChangelogEntry = {
     "Dynamic Island : correction d'un bug de priorité qui empêchait Spotify de jamais s'afficher, systématiquement évincé par la synchronisation d'arrière-plan.",
     "Commande /help du Bot Discord : la liste des commandes est désormais générée dynamiquement depuis les commandes réellement enregistrées (fin des commandes fantômes et des commandes manquantes), et affiche la vraie syntaxe des commandes à sous-commandes (ex. /automod status).",
     "Audit de l'enregistrement des commandes slash Discord : architecture confirmée saine, aucune dérive entre le code et les commandes déployées.",
+  ],
+};
+
+const v12099_en: ChangelogEntry = {
+  version: "v1.20.99",
+  date: "2026-09-10",
+  title: "Event Participants & Form Responses Pages: Wired to the Bot",
+  items: [
+    "The last 2 demo pages are wired. Event participants: real list, check-in, promote from waitlist, remove — all wired to the bot.",
+    "Form responses: real list, status change (approve / reject / reviewing…) via the bot's review API, staff internal notes saved bot-side.",
+    "\"Demo\" badge + Refresh button on both, optimistic updates that roll back.",
   ],
 };
 
@@ -1038,6 +1060,17 @@ const v12052_en: ChangelogEntry = {
   ],
 };
 
+const v12099_es: ChangelogEntry = {
+  version: "v1.20.99",
+  date: "2026-09-10",
+  title: "Paginas de Participantes y Respuestas de Formulario: Conectadas al Bot",
+  items: [
+    "Las 2 ultimas paginas en demo estan conectadas. Participantes de un evento: lista real, registro de asistencia, promocion desde la lista de espera, eliminacion — todo conectado al bot.",
+    "Respuestas de un formulario: lista real, cambio de estado (aceptar / rechazar / en revision…) mediante la API de revision del bot, notas internas del staff guardadas en el bot.",
+    "Distintivo \"Demo\" + boton Actualizar en ambas, actualizaciones optimistas que se revierten.",
+  ],
+};
+
 const v12098_es: ChangelogEntry = {
   version: "v1.20.98",
   date: "2026-09-10",
@@ -1555,6 +1588,17 @@ const v12052_es: ChangelogEntry = {
     "Dynamic Island: corregido un error de prioridad que impedía que Spotify apareciera, siempre desplazado por la sincronización en segundo plano.",
     "Comando /help del Bot de Discord: la lista de comandos ahora se genera dinámicamente desde los comandos realmente registrados (fin de comandos fantasma o ausentes), mostrando la sintaxis real de los comandos con subcomandos.",
     "Auditoría del registro de comandos slash de Discord: arquitectura confirmada como sólida, sin desviación entre el código y los comandos desplegados.",
+  ],
+};
+
+const v12099_de: ChangelogEntry = {
+  version: "v1.20.99",
+  date: "2026-09-10",
+  title: "Seiten Teilnehmer & Formular-Antworten: An den Bot angebunden",
+  items: [
+    "Die letzten 2 Demo-Seiten sind angebunden. Event-Teilnehmer: echte Liste, Check-in, Nachruecken von der Warteliste, Entfernen — alles mit dem Bot verdrahtet.",
+    "Formular-Antworten: echte Liste, Statuswechsel (annehmen / ablehnen / in Pruefung…) ueber die Review-API des Bots, interne Staff-Notizen bot-seitig gespeichert.",
+    "\"Demo\"-Abzeichen + Aktualisieren-Button auf beiden, optimistische Updates mit Rollback.",
   ],
 };
 
@@ -24151,5 +24195,9 @@ CHANGELOG_BY_LANG.fr.unshift(v12098_fr);
 CHANGELOG_BY_LANG.en.unshift(v12098_en);
 CHANGELOG_BY_LANG.es.unshift(v12098_es);
 CHANGELOG_BY_LANG.de.unshift(v12098_de);
+CHANGELOG_BY_LANG.fr.unshift(v12099_fr);
+CHANGELOG_BY_LANG.en.unshift(v12099_en);
+CHANGELOG_BY_LANG.es.unshift(v12099_es);
+CHANGELOG_BY_LANG.de.unshift(v12099_de);
 
 export const CHANGELOG = CHANGELOG_BY_LANG.fr;

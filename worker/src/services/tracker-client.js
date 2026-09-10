@@ -4,7 +4,7 @@ import { safePublicUrl, safeStats, safeText } from "../utils/normalize.js";
 
 const ORIGIN = "https://public-api.tracker.gg";
 
-async function getTrackerProfile(env, game, platform, identifier, apiKeyOverride) {
+export async function getTrackerProfile(env, game, platform, identifier, apiKeyOverride) {
   const apiKey = apiKeyOverride || requireSecret(env, "TRACKER_API_KEY");
   const path = `/v2/${game}/standard/profile/${encodeURIComponent(platform)}/${encodeURIComponent(identifier)}`;
   const response = await requestExternal(new URL(path, ORIGIN), {

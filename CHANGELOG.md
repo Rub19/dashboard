@@ -2,6 +2,20 @@
 
 Toutes les modifications notables de ce projet seront documentées dans ce fichier.
 
+## v1.21.3 — 2026-09-10
+
+**Trackers : support multi-jeux via tracker.gg + fix export Worker**
+
+- **`worker/src/services/tracker-client.js`** : `getTrackerProfile` / `getTrackerMatches` (fonctions génériques tracker.gg v2) passées de `async function` privées à `export async function` — elles n'étaient pas exportées, les nouvelles routes plantaient au chargement du module (`SyntaxError: does not provide an export named 'getTrackerProfile'`, 28 tests Worker KO). Après fix : `npm test` → 218/218.
+- **`worker/src/routes/tracker.js`** : `TRACKER_GAMES` (Set des slugs autorisés : csgo, division-2, splitgate, the-finals, xdefiant, marvel-rivals, rocket-league, bf2042, apex) + `readGameQuery(url)` (valide `game` / `platform` / `identifier`) + `trackerGameProfileRoute` + `trackerGameMatchesRoute`. Cache `cachedLoad` 120 s (profil) / 600 s (matchs), `ownKeyTracker` (header `x-tracker-api-key` ou credential provider `tracker`), fallback `{ available: false }` sur `AUTH_REQUIRED` / 5xx.
+- **`worker/src/router.js`** : `route("tracker.game-profile", "/api/stats/tracker-profile", …)` + `route("tracker.game-matches", "/api/stats/tracker-matches", …)` — `{ public: true, service: "tracker", rateLimit: "edge" }`.
+- **`ethone-next/lib/tracker-gg.ts`** (nouveau) : `TRACKER_GAMES` (CS2, The Finals, XDefiant, Splitgate, The Division 2, BF2042 — chacun avec plateformes + libellé d'identifiant), `fetchTrackerProfile` / `fetchTrackerMatches` (via `fetchWorker`, qui injecte déjà `x-tracker-api-key` sur les chemins `/tracker`), `overviewStats` (tuiles récap depuis le segment `overview`).
+- **`ethone-next/components/tracker/TrackerGgView.tsx`** (nouveau) : vue générique — sélecteur jeu/plateforme + champ identifiant, en-tête profil (avatar tracker.gg), tuiles récap, segments détaillés (`stats` rendus génériquement), historique des parties (victoire = liseré vert). Cache localStorage 15 min, états chargement / indisponible / clé manquante.
+- **`ethone-next/app/matches/page.tsx`** : onglet « Autres jeux » (`trackergg`) → `<TrackerGgView />`.
+- **`ethone-next/app/discord/bot/BotControlClient.tsx`** : en-tête resserré — commentaire `PREMIUM 2026 HUD HEADER` → `Header`, `min-w-0` sur les conteneurs d'identité, `whitespace-nowrap` sur le `<h1>`, barre de progression `bg-gradient-to-r from-indigo-500 to-purple-500` → `bg-[#5865F2]`.
+- ⚠️ **Rubens doit créer `TRACKER_API_KEY` sur tracker.gg et l'ajouter aux variables d'environnement du Worker** (Cloudflare) — ETHONE ne manipule jamais les secrets. Sans ça les routes renvoient `{ available: false }` (dégradé propre, pas d'erreur).
+- Validation : `worker` `npm test` 218/218, `node --check` OK ; `ethone-next` `tsc` 0 erreur, `build` ✓, `lint` 0 erreur.
+
 ## v1.21.2 — 2026-09-10
 
 **`/discord/calendar` : défilement + grille du mois sur écran étroit**

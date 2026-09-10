@@ -977,12 +977,12 @@ export default function BotControlClient({ initialTab = "overview" }: BotControl
         </div>
       </div>
 
-      {/* PREMIUM 2026 HUD HEADER */}
+      {/* Header */}
       <div className="border-b border-zinc-800/80 bg-zinc-950/70 backdrop-blur-md sticky top-0 z-30">
         <div className="max-w-7xl mx-auto px-6 py-5">
           <div className="flex flex-col lg:flex-row lg:items-center justify-between gap-6">
             {/* Left: Identity & Status */}
-            <div className="flex items-center gap-4">
+            <div className="flex items-center gap-4 min-w-0">
               <div className="relative shrink-0">
                 <img
                   src={botCore.avatarUrl}
@@ -1001,10 +1001,10 @@ export default function BotControlClient({ initialTab = "overview" }: BotControl
                 />
               </div>
 
-              <div>
-                <div className="flex items-center gap-2">
-                  <h1 className="text-xl font-bold tracking-tight text-white">{botCore.name}</h1>
-                  <span className="px-1.5 py-0.2 rounded text-[10px] font-bold bg-[#5865F2] text-white tracking-wide">
+              <div className="min-w-0">
+                <div className="flex flex-wrap items-center gap-2">
+                  <h1 className="text-xl font-bold tracking-tight text-white whitespace-nowrap">{botCore.name}</h1>
+                  <span className="px-1.5 py-0.5 rounded text-[10px] font-bold bg-[#5865F2] text-white tracking-wide">
                     BOT
                   </span>
                   <span className="text-xs text-zinc-400 font-mono">#{botCore.discriminator}</span>
@@ -2305,7 +2305,7 @@ export default function BotControlClient({ initialTab = "overview" }: BotControl
                 </div>
                 <div className="w-full h-3 rounded-full bg-zinc-900 overflow-hidden p-0.5">
                   <div
-                    className="h-full rounded-full bg-gradient-to-r from-indigo-500 to-purple-500 transition-all duration-500"
+                    className="h-full rounded-full bg-[#5865F2] transition-all duration-500"
                     style={{ width: `${(aiTelemetry.dailyTokens / aiTelemetry.maxTokens) * 100}%` }}
                   />
                 </div>

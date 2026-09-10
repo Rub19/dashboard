@@ -1,3 +1,15 @@
+const v12103_fr: ChangelogEntry = {
+  version: "v1.21.3",
+  date: "2026-09-10",
+  title: "Trackers : Support Multi-Jeux via tracker.gg",
+  items: [
+    "Nouvel onglet « Autres jeux » dans les Trackers : Counter-Strike 2, The Finals, XDefiant, Splitgate, The Division 2 et Battlefield 2042 — via l'API tracker.gg (sélecteur de jeu + plateforme + identifiant, profil, stats détaillées par segment, historique des parties).",
+    "Passe par le Worker ETHONE (routes `/api/stats/tracker-profile` et `/api/stats/tracker-matches`). Ta clé API tracker.gg perso est aussi acceptée (en-tête `x-tracker-api-key`, jamais stockée en clair côté client). Cache local 15 min.",
+    "Correctif Worker : les fonctions génériques `getTrackerProfile` / `getTrackerMatches` n'étaient pas exportées — les nouvelles routes plantaient au chargement. Corrigé (218 tests Worker au vert).",
+    "Bot Control Center : en-tête resserré (plus de titres « HUD » marketing, barre de progression aplatie, moins de dégradés).",
+  ],
+};
+
 const v12102_fr: ChangelogEntry = {
   version: "v1.21.2",
   date: "2026-09-10",
@@ -559,6 +571,18 @@ const v12052_fr: ChangelogEntry = {
     "Dynamic Island : correction d'un bug de priorité qui empêchait Spotify de jamais s'afficher, systématiquement évincé par la synchronisation d'arrière-plan.",
     "Commande /help du Bot Discord : la liste des commandes est désormais générée dynamiquement depuis les commandes réellement enregistrées (fin des commandes fantômes et des commandes manquantes), et affiche la vraie syntaxe des commandes à sous-commandes (ex. /automod status).",
     "Audit de l'enregistrement des commandes slash Discord : architecture confirmée saine, aucune dérive entre le code et les commandes déployées.",
+  ],
+};
+
+const v12103_en: ChangelogEntry = {
+  version: "v1.21.3",
+  date: "2026-09-10",
+  title: "Trackers: Multi-Game Support via tracker.gg",
+  items: [
+    "New \"Other games\" tab in Trackers: Counter-Strike 2, The Finals, XDefiant, Splitgate, The Division 2 and Battlefield 2042 — via the tracker.gg API (game + platform + identifier picker, profile, detailed per-segment stats, match history).",
+    "Goes through the ETHONE Worker (`/api/stats/tracker-profile` and `/api/stats/tracker-matches` routes). Your own tracker.gg API key is also accepted (`x-tracker-api-key` header, never stored in clear text client-side). 15-min local cache.",
+    "Worker fix: the generic `getTrackerProfile` / `getTrackerMatches` functions weren't exported — the new routes crashed on load. Fixed (218 Worker tests green).",
+    "Bot Control Center: tightened header (no more marketing \"HUD\" titles, flattened progress bar, fewer gradients).",
   ],
 };
 
@@ -1126,6 +1150,18 @@ const v12052_en: ChangelogEntry = {
   ],
 };
 
+const v12103_es: ChangelogEntry = {
+  version: "v1.21.3",
+  date: "2026-09-10",
+  title: "Trackers: Soporte Multi-Juego vía tracker.gg",
+  items: [
+    "Nueva pestaña « Otros juegos » en Trackers: Counter-Strike 2, The Finals, XDefiant, Splitgate, The Division 2 y Battlefield 2042 — vía la API de tracker.gg (selector de juego + plataforma + identificador, perfil, estadísticas detalladas por segmento, historial de partidas).",
+    "Pasa por el Worker ETHONE (rutas `/api/stats/tracker-profile` y `/api/stats/tracker-matches`). También se acepta tu propia clave API de tracker.gg (cabecera `x-tracker-api-key`, nunca almacenada en texto plano del lado cliente). Caché local de 15 min.",
+    "Corrección Worker: las funciones genéricas `getTrackerProfile` / `getTrackerMatches` no estaban exportadas — las nuevas rutas fallaban al cargar. Corregido (218 tests Worker en verde).",
+    "Bot Control Center: cabecera más compacta (sin títulos « HUD » de marketing, barra de progreso aplanada, menos degradados).",
+  ],
+};
+
 const v12102_es: ChangelogEntry = {
   version: "v1.21.2",
   date: "2026-09-10",
@@ -1687,6 +1723,18 @@ const v12052_es: ChangelogEntry = {
     "Dynamic Island: corregido un error de prioridad que impedía que Spotify apareciera, siempre desplazado por la sincronización en segundo plano.",
     "Comando /help del Bot de Discord: la lista de comandos ahora se genera dinámicamente desde los comandos realmente registrados (fin de comandos fantasma o ausentes), mostrando la sintaxis real de los comandos con subcomandos.",
     "Auditoría del registro de comandos slash de Discord: arquitectura confirmada como sólida, sin desviación entre el código y los comandos desplegados.",
+  ],
+};
+
+const v12103_de: ChangelogEntry = {
+  version: "v1.21.3",
+  date: "2026-09-10",
+  title: "Tracker: Multi-Game-Support via tracker.gg",
+  items: [
+    "Neuer Tab Andere Spiele in den Trackern: Counter-Strike 2, The Finals, XDefiant, Splitgate, The Division 2 und Battlefield 2042 — via tracker.gg-API (Auswahl von Spiel, Plattform und Kennung, Profil, detaillierte Statistiken pro Segment, Match-Verlauf).",
+    "Laeuft ueber den ETHONE-Worker (Routen `/api/stats/tracker-profile` und `/api/stats/tracker-matches`). Dein eigener tracker.gg-API-Schluessel wird ebenfalls akzeptiert (Header `x-tracker-api-key`, clientseitig nie im Klartext gespeichert). 15-Min-Cache lokal.",
+    "Worker-Fix: Die generischen Funktionen `getTrackerProfile` / `getTrackerMatches` waren nicht exportiert — die neuen Routen stuerzten beim Laden ab. Behoben (218 Worker-Tests gruen).",
+    "Bot Control Center: kompakterer Header (keine Marketing-HUD-Titel mehr, flachere Fortschrittsleiste, weniger Verlaeufe).",
   ],
 };
 
@@ -24343,5 +24391,9 @@ CHANGELOG_BY_LANG.fr.unshift(v12102_fr);
 CHANGELOG_BY_LANG.en.unshift(v12102_en);
 CHANGELOG_BY_LANG.es.unshift(v12102_es);
 CHANGELOG_BY_LANG.de.unshift(v12102_de);
+CHANGELOG_BY_LANG.fr.unshift(v12103_fr);
+CHANGELOG_BY_LANG.en.unshift(v12103_en);
+CHANGELOG_BY_LANG.es.unshift(v12103_es);
+CHANGELOG_BY_LANG.de.unshift(v12103_de);
 
 export const CHANGELOG = CHANGELOG_BY_LANG.fr;

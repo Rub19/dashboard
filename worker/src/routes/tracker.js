@@ -1,10 +1,28 @@
 import { assertAllowedQuery, PATTERNS, queryText } from "../middleware/validation.js";
-import { getTrackerApexProfile, getTrackerApexMatches } from "../services/tracker-client.js";
+import {
+  getTrackerApexProfile,
+  getTrackerApexMatches,
+  getTrackerProfile,
+  getTrackerMatches,
+} from "../services/tracker-client.js";
 import { getValorantProfile, getValorantMatches } from "../services/henrik-client.js";
 import { getLolProfile, getLolMatches, getTftMatches } from "../services/riot-client.js";
 import { getUserProviderCredential } from "../services/supabase-client.js";
 import { cachedLoad } from "../utils/cache.js";
 import { routeResult } from "../utils/response.js";
+
+// tracker.gg v2 game slugs we expose beyond the dedicated Valorant/LoL/Apex tabs.
+const TRACKER_GAMES = new Set([
+  "csgo", // Counter-Strike 2
+  "division-2",
+  "splitgate",
+  "the-finals",
+  "xdefiant",
+  "marvel-rivals",
+  "rocket-league",
+  "bf2042",
+  "apex",
+]);
 
 async function ownKeyTracker(env, auth, request) {
   const headerKey = request?.headers?.get?.("x-tracker-api-key") || request?.headers?.get?.("x-api-key");
@@ -114,4 +132,45 @@ export async function trackerApexMatchesRoute({ env, url, auth, request }) {
   const loader = async () => getTrackerApexMatches(env, platform, identifier, mode, await ownKeyTracker(env, auth, request));
   const result = await cachedLoad(`tracker:apex:matches:${platform}:${identifier.toLowerCase()}:${mode}`, 600, loader);
   return routeResult(result.data, { source: "tracker", cached: result.cached });
+}
+
+// --- Generic tracker.gg (CS2, R6/XDefiant, The Finals, Rocket League, …) -------
+
+function readGameQuery(url) {
+  const game = queryText(url, "game", { max: 24 });
+  if (!TRACKER_GAMES.has(game)) throw new Error(`Jeu non pris en charge: ${game}`);
+  const platform = queryText(url, "platform", { pattern: /^[a-z0-9_-]{2,16}$/i, max: 16 });
+  const identifier = queryText(url, "identifier", { pattern: PATTERNS.trackerIdentifier, max: 80 });
+  return { game, platform, identifier };
+}
+
+export async function trackerGameProfileRoute({ env, url, auth, request }) {
+  assertAllowedQuery(url, ["game", "platform", "identifier", "_t", "t", "force"]);
+  const { game, platform, identifier } = readGameQuery(url);
+  try {
+    const loader = async () => getTrackerProfile(env, game, platform, identifier, await ownKeyTracker(env, auth, request));
+    const result = await cachedLoad(`tracker:${game}:${platform}:${identifier.toLowerCase()}`, 120, loader);
+    return routeResult(result.data, { source: "tracker", cached: result.cached });
+  } catch (error) {
+    if (error?.code === "AUTH_REQUIRED" || (error?.status >= 500 && error?.status < 600)) {
+      return routeResult({ available: false }, { source: "tracker", cached: false });
+    }
+    throw error;
+  }
+}
+
+export async function trackerGameMatchesRoute({ env, url, auth, request }) {
+  assertAllowedQuery(url, ["game", "platform", "identifier", "mode", "_t", "t", "force"]);
+  const { game, platform, identifier } = readGameQuery(url);
+  const mode = queryText(url, "mode", { max: 32, required: false }) || "all";
+  try {
+    const loader = async () => getTrackerMatches(env, game, platform, identifier, mode, await ownKeyTracker(env, auth, request));
+    const result = await cachedLoad(`tracker:${game}:matches:${platform}:${identifier.toLowerCase()}:${mode}`, 600, loader);
+    return routeResult(result.data, { source: "tracker", cached: result.cached });
+  } catch (error) {
+    if (error?.code === "AUTH_REQUIRED" || (error?.status >= 500 && error?.status < 600)) {
+      return routeResult({ available: false, matches: [] }, { source: "tracker", cached: false });
+    }
+    throw error;
+  }
 }

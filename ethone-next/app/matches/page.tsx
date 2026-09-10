@@ -7,6 +7,7 @@ import LiquidSidebar from "@/components/LiquidSidebar";
 import ValorantTrackerView from "@/components/tracker/ValorantTrackerView";
 import LolTrackerView from "@/components/tracker/LolTrackerView";
 import TftTrackerView from "@/components/tracker/TftTrackerView";
+import TrackerGgView from "@/components/tracker/TrackerGgView";
 import { Icon } from "@/lib/icons";
 import { useI18n } from "@/lib/hooks/useI18n";
 import { useToast } from "@/components/ToastProvider";
@@ -22,6 +23,7 @@ const tabs = [
   { id: "lol", label: "League of Legends", icon: <Shield className="h-4 w-4" /> },
   { id: "tft", label: "Teamfight Tactics", icon: <Crown className="h-4 w-4" /> },
   { id: "apex", label: "Apex Legends", icon: <Gamepad2 className="h-4 w-4" /> },
+  { id: "trackergg", label: "Autres jeux", icon: <Gamepad2 className="h-4 w-4" /> },
 ];
 
 const APEX_PLATFORMS = ["origin", "xbl", "psn"] as const;
@@ -75,6 +77,8 @@ export default function MatchesPage() {
           <LolTrackerView />
         ) : tab === "tft" ? (
           <TftTrackerView />
+        ) : tab === "trackergg" ? (
+          <TrackerGgView />
         ) : (
           <div className="flex min-h-0 w-full flex-1 flex-col overflow-hidden space-y-4">
             <div className="shrink-0 space-y-4">

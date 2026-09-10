@@ -72,6 +72,9 @@ export async function insertDevice(env, device) {
       trusted: Boolean(device.trusted),
       passkey_enabled: Boolean(device.passkeyEnabled),
       session_id: safeText(device.sessionId, 120) || null,
+      // Set once, at session-creation time, from whether this user has TOTP
+      // enabled (see getOrCreateDevice) — not toggled here afterwards.
+      mfa_pending: Boolean(device.mfaPending),
       metadata: device.metadata && typeof device.metadata === "object" ? device.metadata : {}
     },
     headers: { Prefer: "return=representation" }
@@ -90,6 +93,7 @@ export async function updateDevice(env, userId, deviceId, patch) {
   if (patch.trusted !== undefined) body.trusted = Boolean(patch.trusted);
   if (patch.revokedAt !== undefined) body.revoked_at = patch.revokedAt;
   if (patch.passkeyEnabled !== undefined) body.passkey_enabled = Boolean(patch.passkeyEnabled);
+  if (patch.mfaPending !== undefined) body.mfa_pending = Boolean(patch.mfaPending);
   if (patch.metadata !== undefined) body.metadata = patch.metadata;
 
   const response = await supabaseRequest(env, `/rest/v1/ethone_devices?id=eq.${encodeURIComponent(deviceId)}&user_id=eq.${encodeURIComponent(userId)}`, {

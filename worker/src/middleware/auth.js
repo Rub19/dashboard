@@ -7,40 +7,59 @@ const CLOCK_SKEW_SECONDS = 60;
 const UUID = /^[0-9a-f]{8}-[0-9a-f]{4}-[1-8][0-9a-f]{3}-[89ab][0-9a-f]{3}-[0-9a-f]{12}$/i;
 const jwksCache = new Map();
 
-// Per-request session revocation check. JWTs are stateless — verifying the
-// signature only proves Supabase issued this token, not that the session it
-// belongs to is still meant to be trusted. `ethone_devices` doubles as the
-// app's session table (one row per session_id, see device-service.js); a
-// revoked row must block every subsequent request carrying that session_id,
-// including a *refreshed* access token, since Supabase keeps the same
-// session_id across a token refresh within one login. That's what makes
-// revocation actually immediate instead of "eventually, once the old token
-// expires." Results are cached briefly per isolate (same pattern as the JWKS
-// cache below) so this doesn't add a DB round-trip to every authenticated
-// request while still propagating a revocation within a few seconds.
+// Per-request session guard: two independent checks against the SAME
+// ethone_devices row (which doubles as the app's session table, one row per
+// session_id — see device-service.js), sharing one DB lookup and one
+// short-lived per-isolate cache.
+//
+// - revoked: JWTs are stateless — verifying the signature only proves
+//   Supabase issued this token, not that the session it belongs to is still
+//   meant to be trusted. A revoked row must block every subsequent request
+//   carrying that session_id, including a *refreshed* access token, since
+//   Supabase keeps the same session_id across a token refresh within one
+//   login. That's what makes revocation actually immediate instead of
+//   "eventually, once the old token expires."
+// - mfaPending: set on the device row at session-creation time when the
+//   signing-in user has TOTP enabled (see getOrCreateDevice/
+//   deviceUpsertRoute/otpVerifyRoute), cleared once totpChallengeRoute
+//   accepts a valid code or backup code for THIS session. While pending,
+//   authenticateRequest below rejects every route except the small
+//   MFA_EXEMPT_ROUTE_IDS set — a password/OAuth/passkey login already
+//   handed the browser a fully valid Supabase session before this app's own
+//   code ever runs, so a client-side-only "enter your code" screen would
+//   block nothing real; this is the actual enforcement point.
+//
+// Cached briefly per isolate (same pattern as the JWKS cache below) so this
+// doesn't add a DB round-trip to every authenticated request while still
+// propagating a revocation or a passed MFA challenge within a few seconds.
 const REVOCATION_CACHE_TTL_MS = 5000;
 const revocationCache = new Map();
 
-async function isSessionRevoked(env, userId, sessionId) {
-  if (!sessionId) return false; // no session_id claim to check against (legacy/system tokens)
+async function getSessionGuardState(env, userId, sessionId) {
+  if (!sessionId) return { revoked: false, mfaPending: false }; // no session_id claim to check against (legacy/system tokens)
   const cacheKey = `${userId}:${sessionId}`;
   const cached = revocationCache.get(cacheKey);
-  if (cached && cached.expiresAt > Date.now()) return cached.revoked;
+  if (cached && cached.expiresAt > Date.now()) return cached;
 
-  let revoked = false;
+  let state = { revoked: false, mfaPending: false };
   try {
     const device = await getDeviceBySession(env, userId, sessionId);
-    revoked = Boolean(device?.revoked_at);
+    state = { revoked: Boolean(device?.revoked_at), mfaPending: Boolean(device?.mfa_pending) };
   } catch {
     // If the lookup itself fails (Supabase hiccup), fail open on this specific
     // check rather than locking every authenticated user out of the app —
     // JWT signature/expiry verification above already did the real gatekeeping.
-    revoked = false;
   }
 
-  revocationCache.set(cacheKey, { revoked, expiresAt: Date.now() + REVOCATION_CACHE_TTL_MS });
-  return revoked;
+  revocationCache.set(cacheKey, { ...state, expiresAt: Date.now() + REVOCATION_CACHE_TTL_MS });
+  return state;
 }
+
+// Routes that must stay reachable for a session stuck in mfaPending, or the
+// user could never clear it (or sign out): the challenge route itself, and
+// sign-out. Every other authenticated route stays blocked with MFA_REQUIRED
+// until the challenge succeeds.
+const MFA_EXEMPT_ROUTE_IDS = new Set(["totp.challenge", "signout"]);
 
 function fetcher(env) {
   return typeof env?.__TEST_FETCH__ === "function" ? env.__TEST_FETCH__ : fetch;
@@ -181,7 +200,7 @@ export function requireRole(auth, ...allowed) {
   return auth;
 }
 
-export async function authenticateRequest(request, env) {
+export async function authenticateRequest(request, env, route) {
   const token = bearerToken(request);
   const segments = token.split(".");
   if (segments.length !== 3 || segments.some((segment) => !segment)) throw httpError("AUTH_INVALID", 401);
@@ -196,8 +215,12 @@ export async function authenticateRequest(request, env) {
     : await verifyAsymmetric(input, signature, header, env);
   if (!valid) throw httpError("AUTH_INVALID", 401);
   const auth = validateClaims(payload, env);
-  if (await isSessionRevoked(env, auth.userId, auth.sessionId)) {
+  const guard = await getSessionGuardState(env, auth.userId, auth.sessionId);
+  if (guard.revoked) {
     throw httpError("SESSION_REVOKED", 401);
+  }
+  if (guard.mfaPending && !MFA_EXEMPT_ROUTE_IDS.has(route?.id)) {
+    throw httpError("MFA_REQUIRED", 401);
   }
   return auth;
 }

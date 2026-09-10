@@ -1,3 +1,16 @@
+const v12078_fr: ChangelogEntry = {
+  version: "v1.20.78",
+  date: "2026-09-10",
+  title: "Sécurité : Le Code 2FA Bloque Vraiment la Connexion Maintenant",
+  items: [
+    "Correctif majeur découvert en creusant les codes de secours : la double authentification (TOTP) pouvait être « activée » dans Réglages → Sécurité, mais rien dans le parcours de connexion ne la vérifiait jamais — un mot de passe seul suffisait toujours à se connecter complètement, code 2FA ou pas.",
+    "Vraie vérification à la connexion, appliquée côté serveur (pas juste un écran d'interface) : une session créée pour un compte avec le 2FA activé est marquée « en attente » et l'API rejette désormais toute requête sur cette session tant qu'un code valide (ou un code de secours) n'a pas été présenté — y compris si quelqu'un récupère le jeton de session et l'utilise directement contre l'API en contournant l'interface. Nouvel écran /login/verify pour saisir le code.",
+    "Les codes de secours (générés depuis longtemps mais jamais utilisables) fonctionnent enfin : chacun est à usage unique et est invalidé dès qu'il sert.",
+    "Limite assumée et documentée : ce verrou couvre tout ce qui passe par le Worker (l'immense majorité de l'app — profils, mail, réglages, sécurité...). Une douzaine d'endroits qui lisent Supabase en direct (tâches, espaces, mémoire IA, favoris) n'y sont pas encore soumis — décidé ensemble pour livrer la protection principale rapidement plutôt que de repousser tout le chantier ; ça reste sur la liste.",
+    "8 nouveaux tests côté serveur couvrant le blocage, le code correct/incorrect, le code de secours à usage unique, et la limitation anti-force-brute dédiée.",
+  ],
+};
+
 const v12077_fr: ChangelogEntry = {
   version: "v1.20.77",
   date: "2026-09-10",
@@ -274,6 +287,19 @@ const v12052_fr: ChangelogEntry = {
     "Dynamic Island : correction d'un bug de priorité qui empêchait Spotify de jamais s'afficher, systématiquement évincé par la synchronisation d'arrière-plan.",
     "Commande /help du Bot Discord : la liste des commandes est désormais générée dynamiquement depuis les commandes réellement enregistrées (fin des commandes fantômes et des commandes manquantes), et affiche la vraie syntaxe des commandes à sous-commandes (ex. /automod status).",
     "Audit de l'enregistrement des commandes slash Discord : architecture confirmée saine, aucune dérive entre le code et les commandes déployées.",
+  ],
+};
+
+const v12078_en: ChangelogEntry = {
+  version: "v1.20.78",
+  date: "2026-09-10",
+  title: "Security: 2FA Codes Actually Block Sign-In Now",
+  items: [
+    "Major fix found while digging into backup codes: two-factor auth (TOTP) could be \"enabled\" in Settings → Security, but nothing in the sign-in flow ever checked it — a password alone was still enough to fully sign in, 2FA code or not.",
+    "Real login-time verification, enforced server-side (not just a UI screen): a session created for an account with 2FA enabled is now flagged pending, and the API rejects every request on that session until a valid code (or backup code) has been presented — including if someone grabs the session token and uses it directly against the API, bypassing the UI entirely. New /login/verify screen to enter the code.",
+    "Backup codes (generated a while ago but never actually redeemable) finally work: each is single-use and gets invalidated the moment it's used.",
+    "Known, documented limitation: this gate covers everything that goes through the Worker (the vast majority of the app — profiles, mail, settings, security...). About a dozen spots that read Supabase directly (tasks, spaces, AI memory, favorites) aren't covered by it yet — a deliberate trade-off to ship the main protection fast rather than delay the whole effort; it stays on the list.",
+    "8 new server-side tests covering the block, correct/incorrect codes, single-use backup code redemption, and the dedicated brute-force rate limiter.",
   ],
 };
 
@@ -556,6 +582,19 @@ const v12052_en: ChangelogEntry = {
   ],
 };
 
+const v12078_es: ChangelogEntry = {
+  version: "v1.20.78",
+  date: "2026-09-10",
+  title: "Seguridad: El Código 2FA Ahora Sí Bloquea el Inicio de Sesión",
+  items: [
+    "Corrección importante encontrada al investigar los códigos de respaldo: la autenticación en dos pasos (TOTP) se podía \"activar\" en Ajustes → Seguridad, pero nada en el flujo de inicio de sesión la verificaba jamás — una contraseña sola seguía bastando para iniciar sesión por completo, con o sin código 2FA.",
+    "Verificación real al iniciar sesión, aplicada en el servidor (no solo una pantalla de interfaz): una sesión creada para una cuenta con 2FA activado ahora se marca como pendiente, y la API rechaza toda solicitud en esa sesión hasta que se presente un código válido (o un código de respaldo) — incluso si alguien obtiene el token de sesión y lo usa directamente contra la API, sin pasar por la interfaz. Nueva pantalla /login/verify para introducir el código.",
+    "Los códigos de respaldo (generados desde hace tiempo pero nunca canjeables en realidad) por fin funcionan: cada uno es de un solo uso y se invalida en el momento en que se usa.",
+    "Limitación conocida y documentada: este bloqueo cubre todo lo que pasa por el Worker (la gran mayoría de la app — perfiles, correo, ajustes, seguridad...). Una docena de puntos que leen Supabase directamente (tareas, espacios, memoria de IA, favoritos) aún no están cubiertos — una decisión deliberada para entregar la protección principal rápido en vez de retrasar todo el proyecto; sigue en la lista.",
+    "8 pruebas nuevas del lado del servidor que cubren el bloqueo, códigos correctos/incorrectos, el canje de un solo uso de códigos de respaldo, y el limitador de fuerza bruta dedicado.",
+  ],
+};
+
 const v12077_es: ChangelogEntry = {
   version: "v1.20.77",
   date: "2026-09-10",
@@ -832,6 +871,19 @@ const v12052_es: ChangelogEntry = {
     "Dynamic Island: corregido un error de prioridad que impedía que Spotify apareciera, siempre desplazado por la sincronización en segundo plano.",
     "Comando /help del Bot de Discord: la lista de comandos ahora se genera dinámicamente desde los comandos realmente registrados (fin de comandos fantasma o ausentes), mostrando la sintaxis real de los comandos con subcomandos.",
     "Auditoría del registro de comandos slash de Discord: arquitectura confirmada como sólida, sin desviación entre el código y los comandos desplegados.",
+  ],
+};
+
+const v12078_de: ChangelogEntry = {
+  version: "v1.20.78",
+  date: "2026-09-10",
+  title: "Sicherheit: 2FA-Code Blockiert Jetzt Wirklich die Anmeldung",
+  items: [
+    "Wichtiger Fix, gefunden bei der Untersuchung der Backup-Codes: Die Zwei-Faktor-Authentifizierung (TOTP) ließ sich in Einstellungen → Sicherheit \"aktivieren\", aber nichts im Anmeldeablauf hat sie jemals geprüft — ein Passwort allein reichte weiterhin für eine vollständige Anmeldung, mit oder ohne 2FA-Code.",
+    "Echte Verifizierung beim Login, serverseitig durchgesetzt (nicht nur ein UI-Bildschirm): Eine Sitzung, die für ein Konto mit aktiviertem 2FA erstellt wird, ist jetzt als ausstehend markiert, und die API lehnt jede Anfrage in dieser Sitzung ab, bis ein gültiger Code (oder Backup-Code) vorgelegt wurde — auch wenn jemand das Sitzungstoken abgreift und direkt gegen die API verwendet, unter Umgehung der Oberfläche. Neuer Bildschirm /login/verify zur Code-Eingabe.",
+    "Die Backup-Codes (schon länger generiert, aber nie tatsächlich einlösbar) funktionieren endlich: Jeder ist nur einmal verwendbar und wird sofort nach Gebrauch ungültig.",
+    "Bekannte, dokumentierte Einschränkung: Diese Sperre deckt alles ab, was über den Worker läuft (der überwiegende Teil der App — Profile, Mail, Einstellungen, Sicherheit...). Etwa ein Dutzend Stellen, die Supabase direkt lesen (Aufgaben, Bereiche, KI-Gedächtnis, Favoriten), sind noch nicht abgedeckt — eine bewusste Entscheidung, den Hauptschutz schnell auszuliefern statt das ganze Vorhaben zu verzögern; bleibt auf der Liste.",
+    "8 neue serverseitige Tests, die die Sperre, richtige/falsche Codes, die einmalige Einlösung von Backup-Codes und den dedizierten Brute-Force-Ratenbegrenzer abdecken.",
   ],
 };
 
@@ -23103,5 +23155,9 @@ CHANGELOG_BY_LANG.fr.unshift(v12077_fr);
 CHANGELOG_BY_LANG.en.unshift(v12077_en);
 CHANGELOG_BY_LANG.es.unshift(v12077_es);
 CHANGELOG_BY_LANG.de.unshift(v12077_de);
+CHANGELOG_BY_LANG.fr.unshift(v12078_fr);
+CHANGELOG_BY_LANG.en.unshift(v12078_en);
+CHANGELOG_BY_LANG.es.unshift(v12078_es);
+CHANGELOG_BY_LANG.de.unshift(v12078_de);
 
 export const CHANGELOG = CHANGELOG_BY_LANG.fr;

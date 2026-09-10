@@ -16,7 +16,8 @@ import {
   trustDevice,
   revokeDevice,
   removeDevice,
-  listUserDevices
+  listUserDevices,
+  clearMfaPending
 } from "../services/device-service.js";
 import {
   listSecurityEvents,
@@ -26,9 +27,10 @@ import {
   getTotpRecord,
   insertTotpRecord,
   updateTotpRecord,
-  deleteTotpRecord
+  deleteTotpRecord,
+  insertSecurityEvent
 } from "../services/security-identity-client.js";
-import { generateTotpSecret, verifyTotp } from "../services/totp-service.js";
+import { generateTotpSecret, verifyTotp, verifyBackupCode } from "../services/totp-service.js";
 
 const EMAIL_RE = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
 const UUID_RE = /^[0-9a-f]{8}-[0-9a-f]{4}-[1-8][0-9a-f]{3}-[89ab][0-9a-f]{3}-[0-9a-f]{12}$/i;
@@ -171,7 +173,15 @@ export async function otpVerifyRoute({ request, env }) {
   // created a fresh device row (getOrCreateDevice's session-based reuse
   // never matched).
   const sessionId = crypto.randomUUID();
-  const device = await getOrCreateDevice(env, userId, sessionId, userAgent, "");
+  // Determined BEFORE the device row (= this session) is created, so the
+  // very first token this route ever hands back already belongs to a
+  // session already flagged pending — unlike the password/OAuth/passkey
+  // flows (see deviceUpsertRoute), there's no window here where a request
+  // could beat the flag being set, because the Worker mints this session's
+  // token itself instead of the client exchanging one directly with Supabase.
+  const totpRecord = await getTotpRecord(env, userId);
+  const mfaPending = Boolean(totpRecord?.data?.verified);
+  const device = await getOrCreateDevice(env, userId, sessionId, userAgent, "", mfaPending);
   const result = await verifyOtp(env, userId, email, code, device.id, sessionId);
   const rememberMe = Boolean(body.rememberMe);
   const tokenTtl = rememberMe ? 30 * 24 * 60 * 60 : 8 * 60 * 60;
@@ -185,7 +195,18 @@ export async function deviceUpsertRoute({ request, env, auth }) {
   const body = await readJsonBody(request, 2);
   const name = fieldText(body, "name", NAME_RE, 120, "");
   const { userAgent, sessionId } = deviceContext(request, auth);
-  const device = await getOrCreateDevice(env, auth.userId, sessionId, userAgent, name);
+  // Password, OAuth, and passkey logins never touch the Worker to obtain
+  // their session (Supabase hands it to the client directly) — this
+  // best-effort call from AuthProvider's SIGNED_IN handler is the earliest
+  // point the Worker learns about the session at all, so it's also where
+  // the mfa_pending flag has to be decided for those flows (see
+  // otpVerifyRoute for the one flow — native OTP — that doesn't need this,
+  // because the Worker mints that session's token itself). Only applies the
+  // very first time this session's row is created; getOrCreateDevice
+  // ignores the flag entirely on a repeat call for an existing row.
+  const totpRecord = await getTotpRecord(env, auth.userId);
+  const mfaPending = Boolean(totpRecord?.data?.verified);
+  const device = await getOrCreateDevice(env, auth.userId, sessionId, userAgent, name, mfaPending);
   return { data: device };
 }
 
@@ -333,4 +354,60 @@ export async function totpDisableRoute({ env, auth }) {
   if (!auth?.userId) throw httpError("AUTH_REQUIRED", 401);
   await deleteTotpRecord(env, auth.userId);
   return { data: { disabled: true } };
+}
+
+/**
+ * Login-time 2FA gate. Distinct from totpVerifySetupRoute (which only
+ * activates 2FA on an already-fully-authenticated session): this is the
+ * route a session stuck in mfa_pending is still allowed to call (see
+ * middleware/auth.js's MFA_EXEMPT_ROUTE_IDS) — the only thing that can
+ * clear it. Accepts either a 6-digit TOTP code or one single-use backup
+ * code, never both in the same request.
+ */
+export async function totpChallengeRoute({ request, env, auth }) {
+  if (!auth?.userId) throw httpError("AUTH_REQUIRED", 401);
+  await applyAuthRateLimit({ request, env, route: { id: "totp.challenge" } }, auth.userId);
+
+  const body = await readJsonBody(request, 1);
+  const hasCode = typeof body.code === "string" && body.code.length > 0;
+  const hasBackupCode = typeof body.backupCode === "string" && body.backupCode.length > 0;
+  if (hasCode === hasBackupCode) {
+    // Exactly one of the two must be provided — neither, or both, is a
+    // malformed request rather than "wrong code" (which is TOTP_INVALID).
+    throw httpError("INVALID_REQUEST", 400);
+  }
+
+  const record = await getTotpRecord(env, auth.userId);
+  if (!record || !record.data?.verified) throw httpError("TOTP_NOT_SETUP", 400);
+
+  let valid = false;
+  let updatedData = record.data;
+  if (hasCode) {
+    const code = requireField(body, "code", CODE_RE, 6);
+    valid = await verifyTotp(record.data.secret, code);
+  } else {
+    const backupCode = requireField(body, "backupCode", /^[0-9A-Za-z]{8}$/, 8);
+    const result = await verifyBackupCode(record.data.backup, backupCode);
+    valid = result.valid;
+    if (valid) updatedData = { ...record.data, backup: result.remainingHashes };
+  }
+
+  if (!valid) throw httpError("TOTP_INVALID", 401);
+
+  if (updatedData !== record.data) {
+    // Only happens on a backup-code redemption: persist the shrunk list so
+    // the same code can't be replayed.
+    await updateTotpRecord(env, auth.userId, record.id, updatedData);
+  }
+
+  const device = await clearMfaPending(env, auth.userId, auth.sessionId);
+
+  await insertSecurityEvent(env, {
+    userId: auth.userId,
+    kind: "mfa_verified",
+    deviceId: device?.id,
+    metadata: { method: hasCode ? "totp" : "backup_code" }
+  });
+
+  return { data: { verified: true } };
 }

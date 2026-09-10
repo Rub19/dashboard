@@ -4,6 +4,7 @@ const PUBLIC_MESSAGES = Object.freeze({
   AUTH_EXPIRED: "La session a expire.",
   AUTH_CONFIGURATION_ERROR: "Le service d'authentification est indisponible.",
   SESSION_REVOKED: "Cette session a ete revoquee.",
+  MFA_REQUIRED: "Verification a deux facteurs requise.",
   CONFIRMATION_REQUIRED: "Confirmation requise pour cette action.",
   AUTH_RATE_LIMITED: "Trop de tentatives. Reessayez plus tard.",
   FORBIDDEN: "Acces refuse.",

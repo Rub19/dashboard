@@ -2,6 +2,24 @@
 
 Toutes les modifications notables de ce projet seront documentées dans ce fichier.
 
+## v1.20.78 — 2026-09-10
+
+**Sécurité : vérification TOTP réelle à la connexion + codes de secours utilisables (clôture du chantier "Session & Account Security 2.0")**
+
+En creusant les codes de secours (générés/hachés correctement depuis Phase 3 mais sans aucun chemin de redemption), constat plus large : le TOTP n'avait **aucune application au moment de la connexion**. Il pouvait être "activé" dans Réglages → Sécurité (`totpVerifySetupRoute`), mais aucune route de connexion (mot de passe, OTP natif, OAuth, clé d'accès) ne vérifiait jamais ce statut — un mot de passe seul suffisait toujours à obtenir une session complète.
+
+- **Contrainte architecturale identifiée et validée avec l'utilisateur avant implémentation** : `supabase.auth.signInWithPassword`/`signInWithOAuth`/le flux passkey établissent une session Supabase complète et valide **directement côté client**, avant qu'aucun code applicatif ne s'exécute. Un simple écran "entre ton code" côté interface ne bloquerait donc rien de réel : le jeton valide existe déjà et reste utilisable directement contre l'API en contournant l'écran. Seule une vérification côté serveur, sur chaque requête, constitue une protection réelle. Discuté explicitement avec l'utilisateur (3 options : verrou Worker seul / verrou Worker + RLS Postgres / migration vers le MFA natif Supabase) — **verrou Worker seul retenu**, limite documentée ci-dessous.
+- **Mécanisme** (réutilise la primitive de révocation de session de Phase 1 plutôt que d'en construire une seconde) :
+  - Nouvelle colonne `ethone_devices.mfa_pending` (migration `202609100003`). Positionnée à la création de la ligne de session pour un utilisateur avec TOTP activé — dans `otpVerifyRoute` (le Worker mintant lui-même le jeton : zéro fenêtre de course) et dans `deviceUpsertRoute` (le point d'entrée pour mot de passe/OAuth/clé d'accès, où le Worker ne voit la session qu'après coup).
+  - `middleware/auth.js`'s `authenticateRequest()` — déjà étendu en Phase 1 pour vérifier les révocations — vérifie désormais aussi `mfa_pending` sur la même ligne, avec le même cache court par isolate, et rejette avec `401 MFA_REQUIRED` toute route hors `signout`/`totp.challenge`.
+  - Nouvelle route `POST /api/auth/totp/challenge` (distincte de `totpVerifySetupRoute`, qui ne fait qu'activer le 2FA) : accepte un code à 6 chiffres OU un code de secours, jamais les deux. Un code de secours valide est retiré de la liste stockée (usage unique), limitation anti-force-brute dédiée réutilisée.
+  - Bug de cache trouvé pendant la conception : créer une ligne `mfa_pending: true` n'invalidait pas le cache de garde de CE MÊME isolate — la toute première requête suivante pouvait lire une réponse "pas en attente" périmée. Corrigé (`getOrCreateDevice` invalide désormais le cache après toute insertion).
+  - Frontend : nouvel état `mfaPending` (tri-état `null`/`true`/`false`) sur `AuthProvider`, vérifié à chaque résolution de session (pas seulement `SIGNED_IN`, pour couvrir un rechargement de page pendant que le défi est en attente). `BootProvider` redirige vers le nouvel écran `/login/verify` tant que `mfaPending` n'est pas confirmé à `false`.
+- **Limite assumée et documentée, pas cachée** : ce verrou couvre tout ce qui passe par le Worker (l'immense majorité de l'app). ~12 fichiers lisent Supabase directement côté client (tâches, espaces, mémoire IA, favoris, profil public) sans passer par le Worker — une session `mfa_pending` garde un accès direct à ces tables tant que le défi n'est pas validé. Décision explicite de l'utilisateur pour livrer la protection principale rapidement plutôt que la version RLS/migration MFA native, plus lourde.
+- 8 nouveaux tests Worker (`worker/test/mfa-login-gate.test.mjs`) : blocage sur toute route sauf signout/challenge, code correct/incorrect, code de secours à usage unique, rejet requête malformée (ni code ni code de secours, ou les deux), marquage `mfa_pending` correct à la création de session (avec/sans TOTP activé), limitation anti-force-brute sur le défi lui-même.
+- Validation : `tsc --noEmit` (0 erreur), `npm run lint` (0 erreur sur les fichiers touchés), `npm run build`, `npm run test:unit` (14/14, 69/69), `worker` : 197/197 (189 existants + 8 nouveaux). Écran `/login/verify` vérifié visuellement dans le navigateur (mode code + mode code de secours).
+- **Migration Supabase à appliquer manuellement** : `supabase/migrations/202609100003_ethone_devices_mfa_pending.sql`.
+
 ## v1.20.77 — 2026-09-10
 
 **Correctif : tempête de requêtes réseau (jusqu'à 429 Too Many Requests) déclenchée par les rafraîchissements de session**

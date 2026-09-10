@@ -39,7 +39,14 @@ export function buildDeviceName(info) {
   return typePart;
 }
 
-export async function getOrCreateDevice(env, userId, sessionId, userAgent, requestedName) {
+// `mfaPending` is only meaningful the first time a session's device row is
+// created (i.e. at real login time): the caller is expected to have already
+// checked whether this user has TOTP enabled (see otpVerifyRoute and
+// deviceUpsertRoute) and pass that in. It's ignored for an existing session
+// — a repeat call must never re-arm or clear the flag mid-session, only the
+// TOTP challenge route (totpChallengeRoute, via clearMfaPending below) does
+// that.
+export async function getOrCreateDevice(env, userId, sessionId, userAgent, requestedName, mfaPending = false) {
   let device = sessionId ? await getDeviceBySession(env, userId, sessionId) : null;
 
   if (device) {
@@ -60,8 +67,18 @@ export async function getOrCreateDevice(env, userId, sessionId, userAgent, reque
     browser: parsed.browser,
     trusted: false,
     passkeyEnabled: false,
+    mfaPending: Boolean(mfaPending),
     metadata
   });
+
+  // This very request's own authenticateRequest() call already ran (and
+  // cached a "no device row yet" guard state) BEFORE this handler had a
+  // chance to create one — see middleware/auth.js's per-isolate
+  // REVOCATION_CACHE_TTL_MS cache. Without this, the isolate that just
+  // created a mfa_pending row would keep answering its own next request
+  // from that stale cache entry for up to 5s, silently skipping the gate
+  // it was just asked to arm.
+  if (sessionId) invalidateSessionRevocationCache(userId, sessionId);
 
   await insertSecurityEvent(env, {
     userId,
@@ -102,6 +119,25 @@ export async function revokeDevice(env, userId, deviceId) {
   });
 
   return device;
+}
+
+// Called once a login-time TOTP challenge (code or backup code) succeeds
+// for the CURRENT request's own session — see totpChallengeRoute. Mirrors
+// revokeDevice's own-cache-invalidation: clearing the DB flag alone would
+// leave this isolate serving a stale "still pending" answer out of
+// middleware/auth.js's short-lived guard cache for up to
+// REVOCATION_CACHE_TTL_MS, which would make the very next request from the
+// user who just passed the challenge fail with MFA_REQUIRED again.
+export async function clearMfaPending(env, userId, sessionId) {
+  if (!sessionId) return null;
+  const device = await getDeviceBySession(env, userId, sessionId);
+  if (!device || !device.mfa_pending) return device;
+  const updated = await updateDevice(env, userId, device.id, {
+    mfaPending: false,
+    lastVerifiedAt: new Date().toISOString()
+  });
+  invalidateSessionRevocationCache(userId, sessionId);
+  return updated;
 }
 
 export async function listUserDevices(env, userId) {

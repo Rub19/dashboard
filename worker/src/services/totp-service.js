@@ -133,3 +133,27 @@ export async function verifyTotp(secret, code) {
   return matched;
 }
 
+// Redeems one backup code against the set of hashes persisted for this user
+// (ethone_user_data.data.backup — see generateTotpSecret). Single-use: on a
+// match, the matched hash is removed from the returned list so the caller
+// persists the shrunk list and the same code can never be redeemed twice.
+// No early exit across candidates (mirrors verifyTotp's window loop above)
+// so the number of stored codes doesn't leak via response timing; the
+// per-candidate comparison itself is timing-safe.
+export async function verifyBackupCode(hashes, code) {
+  const list = Array.isArray(hashes) ? hashes : [];
+  if (!list.length) return { valid: false, remainingHashes: list };
+
+  const candidateHash = await hashBackupCode(code);
+  const candidateBytes = new TextEncoder().encode(candidateHash);
+  let matchIndex = -1;
+  for (let i = 0; i < list.length; i++) {
+    const storedBytes = new TextEncoder().encode(String(list[i] || ""));
+    if (matchIndex === -1 && timingSafeEqual(storedBytes, candidateBytes)) matchIndex = i;
+  }
+
+  if (matchIndex === -1) return { valid: false, remainingHashes: list };
+  const remainingHashes = list.slice(0, matchIndex).concat(list.slice(matchIndex + 1));
+  return { valid: true, remainingHashes };
+}
+

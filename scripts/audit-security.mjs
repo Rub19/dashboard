@@ -13,6 +13,7 @@ const APPROVED_SERVICE_ROLE_REFERENCES = new Set([
   "supabase/migrations/202607270001_user_oauth_tokens.sql",
   "supabase/migrations/202608150003_ai_usage_logs.sql",
   "supabase/migrations/202609090002_session_revocation_hardening.sql",
+  "supabase/migrations/202609100003_ethone_devices_mfa_pending.sql",
   "discord-bot/src/modules/ai/services/aiSafetyService.ts",
   "discord-bot/tests/test_security_isolation.ts",
   "worker/test/authorization-and-service-path.test.mjs"

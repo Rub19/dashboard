@@ -8,7 +8,7 @@ import {
   type ReactNode,
 } from "react";
 import { supabase } from "@/lib/supabase";
-import { fetchWorker, clearCachedToken } from "@/lib/api";
+import { fetchWorker, clearCachedToken, WorkerError } from "@/lib/api";
 import { clearFetchCache } from "@/lib/hooks/useCachedFetch";
 import { authLog } from "@/lib/auth-log";
 import { Session, User } from "@supabase/supabase-js";
@@ -19,6 +19,11 @@ type AuthContextValue = {
   loading: boolean;
   error: Error | null;
   isOnline: boolean;
+  // null = not yet determined (still checking, or no session at all — see
+  // syncMfaStatus below); true/false = a confirmed answer from the Worker.
+  // BootProvider treats null like "still booting" so the dashboard never
+  // flashes open before this is known one way or the other.
+  mfaPending: boolean | null;
   signInOtp: (email: string) => Promise<{ error?: Error }>;
   verifyOtp: (
     email: string,
@@ -32,6 +37,12 @@ type AuthContextValue = {
   resetPassword: (email: string) => Promise<{ error?: Error }>;
   refreshSession: () => Promise<void>;
   signOut: () => Promise<void>;
+  // Login-time 2FA gate (distinct from Settings → Security's setup/verify,
+  // which only activates TOTP on an already-fully-authenticated session).
+  // Submits exactly one of a 6-digit code or a backup code against
+  // POST /api/auth/totp/challenge; on success clears mfaPending so
+  // BootProvider lets the user into the app.
+  verifyMfaChallenge: (input: { code?: string; backupCode?: string }) => Promise<{ error?: Error }>;
 };
 
 const AuthContext = createContext<AuthContextValue | null>(null);
@@ -94,22 +105,35 @@ const SIGNOUT_KEY_PREFIXES = [
   "ethone:oauth:", // transient OAuth/PKCE verifier state
 ];
 
-// Best-effort: register (or touch, if it already exists) an ethone_devices
-// row for the session that was just signed into. The Worker derives the
-// device's name/platform/browser from the request's own User-Agent header
-// when none is supplied, so an empty body is enough — see
-// worker/src/routes/security-identity.js's deviceUpsertRoute and
-// worker/src/services/device-service.js's getOrCreateDevice. Deliberately
-// swallows every failure: a user must never be blocked from signing in by
-// this bookkeeping call failing (offline, Worker hiccup, etc.) — the
-// consequence of a failure here is only that this one session won't show
-// up in the Security Center / won't be revocable until it succeeds on a
-// later request, not a broken sign-in.
-async function registerCurrentDevice() {
+// Registers (or touches, if it already exists) an ethone_devices row for
+// the current session, AND doubles as the login-time 2FA status check: the
+// same call tells us whether this session is gated on a TOTP challenge.
+// The Worker derives the device's name/platform/browser from the request's
+// own User-Agent header when none is supplied, so an empty body is enough —
+// see worker/src/routes/security-identity.js's deviceUpsertRoute and
+// worker/src/services/device-service.js's getOrCreateDevice.
+//
+// Returns:
+//   true/false — a confirmed pending status, read either from a successful
+//     response's mfa_pending field, or (once a session is already flagged
+//     pending) from the 401 MFA_REQUIRED the Worker's own per-request gate
+//     throws before deviceUpsertRoute even runs — that rejection IS the
+//     answer "yes, still pending", not a failure to interpret.
+//   null — genuinely unknown (offline, Worker hiccup, any other error): the
+//     caller must leave whatever mfaPending value it already had alone
+//     rather than guessing, since this is also called on a session that
+//     doesn't require 2FA at all, where failing here must never block
+//     sign-in.
+async function syncMfaStatus(): Promise<boolean | null> {
   try {
-    await fetchWorker("/api/auth/device", { method: "POST", body: JSON.stringify({}) });
+    const res = (await fetchWorker("/api/auth/device", { method: "POST", body: JSON.stringify({}) })) as {
+      data?: { mfa_pending?: boolean };
+    } | null;
+    return Boolean(res?.data?.mfa_pending);
   } catch (err) {
-    authLog("registerCurrentDevice failed", err instanceof Error ? err.message : String(err));
+    if (err instanceof WorkerError && err.code === "MFA_REQUIRED") return true;
+    authLog("syncMfaStatus failed", err instanceof Error ? err.message : String(err));
+    return null;
   }
 }
 
@@ -136,6 +160,7 @@ export default function AuthProvider({ children }: { children: ReactNode }) {
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<Error | null>(null);
   const [isOnline, setIsOnline] = useState(true);
+  const [mfaPending, setMfaPending] = useState<boolean | null>(null);
 
   async function resolveSession() {
     authLog("resolveSession", "start");
@@ -254,6 +279,22 @@ export default function AuthProvider({ children }: { children: ReactNode }) {
     } finally {
       setLoading(false);
     }
+
+    // A session resolved here (fresh getSession(), or restored from the
+    // remember-me refresh token above) is exactly as real as one that
+    // arrives via SIGNED_IN below — most commonly this is a page reload
+    // while a 2FA challenge was still outstanding, which never fires
+    // SIGNED_IN at all. Re-reading via getSession() (cheap, local/cached,
+    // no network round trip beyond what resolveSession already did) rather
+    // than threading a return value through the nested restore functions
+    // above.
+    const { data: resolved } = await supabase.auth.getSession();
+    if (resolved.session) {
+      const pending = await syncMfaStatus();
+      if (pending !== null) setMfaPending(pending);
+    } else {
+      setMfaPending(null);
+    }
   }
 
   useEffect(() => {
@@ -278,7 +319,11 @@ export default function AuthProvider({ children }: { children: ReactNode }) {
         // duplicate SIGNED_IN firing (or a stray one on initial load) is
         // harmless.
         if (_event === "SIGNED_IN" && newSession) {
-          registerCurrentDevice();
+          syncMfaStatus().then((pending) => {
+            if (pending !== null) setMfaPending(pending);
+          });
+        } else if (_event === "SIGNED_OUT") {
+          setMfaPending(null);
         }
       }
     );
@@ -415,6 +460,19 @@ export default function AuthProvider({ children }: { children: ReactNode }) {
     return { error: error ?? undefined };
   }
 
+  async function verifyMfaChallenge(input: { code?: string; backupCode?: string }) {
+    try {
+      await fetchWorker("/api/auth/totp/challenge", { method: "POST", body: JSON.stringify(input) });
+      // The Worker already cleared mfa_pending on the device row (and its
+      // own guard cache) — this just reflects that locally so BootProvider
+      // lets the user into the app on its next check().
+      setMfaPending(false);
+      return {};
+    } catch (err) {
+      return { error: err instanceof Error ? err : new Error(String(err)) };
+    }
+  }
+
   async function signOut() {
     const currentUserId = user?.id;
 
@@ -480,6 +538,7 @@ export default function AuthProvider({ children }: { children: ReactNode }) {
 
     setSession(null);
     setUser(null);
+    setMfaPending(null);
 
     // Hard reload — not a client-side route push. This is the primary fix:
     // a fresh page load cannot have any stale closure (realtime
@@ -503,6 +562,7 @@ export default function AuthProvider({ children }: { children: ReactNode }) {
         loading,
         error,
         isOnline,
+        mfaPending,
         signInOtp,
         verifyOtp,
         signInPassword,
@@ -511,6 +571,7 @@ export default function AuthProvider({ children }: { children: ReactNode }) {
         resetPassword,
         refreshSession,
         signOut,
+        verifyMfaChallenge,
       }}
     >
       {children}

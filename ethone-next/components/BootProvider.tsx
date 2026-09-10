@@ -61,8 +61,15 @@ function resolvePublicRoute(pathname: string | null): boolean {
   return true;
 }
 
+const MFA_CHALLENGE_ROUTE = "/login/verify";
+
+function isMfaChallengeRoute(pathname: string | null): boolean {
+  if (!pathname) return false;
+  return pathname === MFA_CHALLENGE_ROUTE || pathname.startsWith(`${MFA_CHALLENGE_ROUTE}/`);
+}
+
 export default function BootProvider({ children }: { children: ReactNode }) {
-  const { session, loading: authLoading, error: authError, refreshSession } = useAuth();
+  const { session, loading: authLoading, error: authError, refreshSession, mfaPending } = useAuth();
   const { loaded: profileLoaded } = useActiveProfile();
   const pathname = usePathname();
   const router = useRouter();
@@ -111,6 +118,29 @@ export default function BootProvider({ children }: { children: ReactNode }) {
     }
 
     if (session) {
+      // A password/OAuth/passkey sign-in already handed the browser a
+      // fully valid Supabase session before any of this app's own code
+      // runs — mfaPending === null means "still checking whether this
+      // session needs a 2FA code" (see AuthProvider's syncMfaStatus), and
+      // must be treated like still-booting rather than "not pending", or
+      // the dashboard would flash open for a moment on every login before
+      // being yanked back to the challenge screen.
+      if (mfaPending === null) {
+        setState("booting");
+        return;
+      }
+      if (mfaPending) {
+        if (!isMfaChallengeRoute(pathname)) {
+          setState("recovering");
+          router.replace(MFA_CHALLENGE_ROUTE);
+          return;
+        }
+        // On the challenge screen itself: render it without waiting on
+        // profileLoaded (there's no dashboard to show yet) and without the
+        // authenticated <Shell> below.
+        setState("ready");
+        return;
+      }
       if (!profileLoaded) {
         setState("booting");
         return;
@@ -135,7 +165,7 @@ export default function BootProvider({ children }: { children: ReactNode }) {
       setState("recovering");
       router.replace("/login");
     }
-  }, [authLoading, authError, session, profileLoaded, publicRoute, router]);
+  }, [authLoading, authError, session, mfaPending, profileLoaded, publicRoute, pathname, router]);
 
   const retry = useCallback(() => {
     setError(null);

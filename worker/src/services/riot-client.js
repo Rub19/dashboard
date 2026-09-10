@@ -664,3 +664,134 @@ export async function getLolMatches(env, riotId, mode, apiKeyOverride) {
     });
   }));
 }
+
+// --- Teamfight Tactics ---------------------------------------------------------
+
+const TFT_QUEUE_NAMES = {
+  1090: "Normale",
+  1100: "Classée",
+  1130: "Hyper Roll",
+  1160: "Double Up",
+  1180: "Coup double",
+  6120: "Choncc's Treasure"
+};
+
+function tftQueueName(queueId) {
+  return TFT_QUEUE_NAMES[queueId] || "TFT";
+}
+
+async function getTftMatchIds(env, puuid, apiKey) {
+  const url = new URL(`/tft/match/v1/matches/by-puuid/${puuid}/ids`, RIOT_EUROPE);
+  url.searchParams.set("start", "0");
+  url.searchParams.set("count", "20");
+  try {
+    const response = await requestExternal(url, {
+      env,
+      expectedOrigin: RIOT_EUROPE,
+      service: "tracker",
+      dedupeKey: `riot:tft:matches_list:${puuid}`,
+      headers: { "X-Riot-Token": apiKey },
+      retries: 1
+    });
+    return Array.isArray(response.data) ? response.data : [];
+  } catch {
+    return [];
+  }
+}
+
+function normalizeTftParticipant(participant, puuid) {
+  const traits = (participant.traits || [])
+    .filter((trait) => Number(trait.tier_current) > 0)
+    .sort((a, b) => (b.tier_current - a.tier_current) || (b.num_units - a.num_units))
+    .map((trait) => Object.freeze({
+      name: safeText(String(trait.name || "").replace(/^Set\d+_/i, "")),
+      numUnits: Number(trait.num_units) || 0,
+      tierCurrent: Number(trait.tier_current) || 0,
+      tierTotal: Number(trait.tier_total) || 0,
+      style: Number(trait.style) || 0
+    }));
+
+  const units = (participant.units || [])
+    .map((unit) => Object.freeze({
+      characterId: safeText(unit.character_id),
+      name: safeText(unit.name || String(unit.character_id || "").replace(/^TFT\d+_/i, "")),
+      tier: Number(unit.tier) || 1,
+      rarity: Number(unit.rarity) || 0,
+      items: Array.isArray(unit.itemNames)
+        ? unit.itemNames.slice(0, 3).map((item) => safeText(String(item).replace(/^TFT_Item_/i, "")))
+        : []
+    }))
+    .sort((a, b) => (b.rarity - a.rarity) || (b.tier - a.tier));
+
+  return Object.freeze({
+    puuid: safeText(participant.puuid),
+    isMe: participant.puuid === puuid,
+    placement: Number(participant.placement) || 8,
+    level: Number(participant.level) || 1,
+    playersEliminated: Number(participant.players_eliminated) || 0,
+    damage: Number(participant.total_damage_to_players) || 0,
+    goldLeft: Number(participant.gold_left) || 0,
+    lastRound: Number(participant.last_round) || 0,
+    companionSpecies: safeText(participant.companion?.species),
+    traits,
+    units
+  });
+}
+
+export async function getTftMatches(env, riotId, apiKeyOverride) {
+  const apiKey = apiKeyOverride || requireSecret(env, "RIOT_API_KEY");
+  const [name, tag] = riotId.split("#");
+
+  const puuid = await getPuuid(env, name, tag, apiKey);
+  if (!puuid) return [];
+
+  const matchIds = await getTftMatchIds(env, puuid, apiKey);
+  if (matchIds.length === 0) return [];
+
+  const matches = await mapLimit(matchIds.slice(0, 20), 4, async (matchId) => {
+    try {
+      const response = await requestExternal(new URL(`/tft/match/v1/matches/${matchId}`, RIOT_EUROPE), {
+        env,
+        expectedOrigin: RIOT_EUROPE,
+        service: "tracker",
+        dedupeKey: `riot:tft:match:${matchId}`,
+        headers: { "X-Riot-Token": apiKey },
+        retries: 1
+      });
+      return response.data;
+    } catch {
+      return null;
+    }
+  });
+
+  const sorted = matches
+    .filter(Boolean)
+    .sort((a, b) => (b.info?.game_datetime || 0) - (a.info?.game_datetime || 0))
+    .slice(0, 20);
+
+  return Object.freeze(sorted.map((match) => {
+    const info = match.info || {};
+    const participants = (info.participants || []).map((p) => normalizeTftParticipant(p, puuid));
+    const me = participants.find((p) => p.isMe) || participants[0] || null;
+    participants.sort((a, b) => a.placement - b.placement);
+
+    return Object.freeze({
+      id: safeText(match.metadata?.match_id),
+      mode: safeText(tftQueueName(info.queue_id)),
+      setNumber: Number(info.tft_set_number) || 0,
+      playedAt: safeText(new Date(info.game_datetime || 0).toISOString()),
+      durationSeconds: Math.round(Number(info.game_length) || 0),
+      me: me ? Object.freeze({
+        placement: me.placement,
+        level: me.level,
+        playersEliminated: me.playersEliminated,
+        damage: me.damage,
+        goldLeft: me.goldLeft,
+        lastRound: me.lastRound,
+        traits: me.traits,
+        units: me.units
+      }) : null,
+      players: Object.freeze(participants)
+    });
+  }));
+}

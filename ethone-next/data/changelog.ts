@@ -1,3 +1,15 @@
+const v12094_fr: ChangelogEntry = {
+  version: "v1.20.94",
+  date: "2026-09-10",
+  title: "Nouveau Tracker : Teamfight Tactics",
+  items: [
+    "Nouvel onglet « Teamfight Tactics » dans /matches — même clé que League of Legends (l'API Riot), rien de plus à configurer.",
+    "Historique des 20 dernières parties : placement (1er → 8e, code couleur), niveau, éliminations, dégâts, or restant, durée. Clique une partie pour déplier le lobby complet des 8 joueurs avec leurs synergies et leur board.",
+    "Synergies affichées en pastilles colorées par palier (bronze / argent / or / prismatique), unités avec bordure de coût et étoiles. Ta ligne est surlignée en doré avec un badge « Vous ».",
+    "Stats en tête : nombre de parties, placement moyen, taux de Top 4, taux de Top 1.",
+  ],
+};
+
 const v12093_fr: ChangelogEntry = {
   version: "v1.20.93",
   date: "2026-09-10",
@@ -457,6 +469,18 @@ const v12052_fr: ChangelogEntry = {
     "Dynamic Island : correction d'un bug de priorité qui empêchait Spotify de jamais s'afficher, systématiquement évincé par la synchronisation d'arrière-plan.",
     "Commande /help du Bot Discord : la liste des commandes est désormais générée dynamiquement depuis les commandes réellement enregistrées (fin des commandes fantômes et des commandes manquantes), et affiche la vraie syntaxe des commandes à sous-commandes (ex. /automod status).",
     "Audit de l'enregistrement des commandes slash Discord : architecture confirmée saine, aucune dérive entre le code et les commandes déployées.",
+  ],
+};
+
+const v12094_en: ChangelogEntry = {
+  version: "v1.20.94",
+  date: "2026-09-10",
+  title: "New Tracker: Teamfight Tactics",
+  items: [
+    "New \"Teamfight Tactics\" tab in /matches — same key as League of Legends (the Riot API), nothing extra to set up.",
+    "Last 20 games: placement (1st → 8th, colour-coded), level, eliminations, damage, gold left, duration. Click a game to expand the full 8-player lobby with everyone's traits and board.",
+    "Traits shown as chips coloured by tier (bronze / silver / gold / prismatic), units with a cost border and star level. Your row is highlighted gold with a \"You\" badge.",
+    "Header stats: games played, average placement, Top 4 rate, Top 1 rate.",
   ],
 };
 
@@ -922,6 +946,18 @@ const v12052_en: ChangelogEntry = {
   ],
 };
 
+const v12094_es: ChangelogEntry = {
+  version: "v1.20.94",
+  date: "2026-09-10",
+  title: "Nuevo Tracker: Teamfight Tactics",
+  items: [
+    "Nueva pestana \"Teamfight Tactics\" en /matches — la misma clave que League of Legends (la API de Riot), nada mas que configurar.",
+    "Ultimas 20 partidas: puesto (1 → 8, con color), nivel, eliminaciones, dano, oro restante, duracion. Pulsa una partida para desplegar el lobby completo de 8 jugadores con sus sinergias y su tablero.",
+    "Sinergias en insignias por nivel (bronce / plata / oro / prismatico), unidades con borde de coste y estrellas. Tu fila se resalta en dorado con una insignia \"Tu\".",
+    "Estadisticas arriba: partidas, puesto medio, tasa de Top 4, tasa de Top 1.",
+  ],
+};
+
 const v12093_es: ChangelogEntry = {
   version: "v1.20.93",
   date: "2026-09-10",
@@ -1381,6 +1417,18 @@ const v12052_es: ChangelogEntry = {
     "Dynamic Island: corregido un error de prioridad que impedía que Spotify apareciera, siempre desplazado por la sincronización en segundo plano.",
     "Comando /help del Bot de Discord: la lista de comandos ahora se genera dinámicamente desde los comandos realmente registrados (fin de comandos fantasma o ausentes), mostrando la sintaxis real de los comandos con subcomandos.",
     "Auditoría del registro de comandos slash de Discord: arquitectura confirmada como sólida, sin desviación entre el código y los comandos desplegados.",
+  ],
+};
+
+const v12094_de: ChangelogEntry = {
+  version: "v1.20.94",
+  date: "2026-09-10",
+  title: "Neuer Tracker: Teamfight Tactics",
+  items: [
+    "Neuer Tab \"Teamfight Tactics\" in /matches — derselbe Schluessel wie League of Legends (die Riot-API), nichts weiter einzurichten.",
+    "Letzte 20 Partien: Platzierung (1. → 8., farbcodiert), Level, Eliminierungen, Schaden, verbleibendes Gold, Dauer. Klicke eine Partie an, um die komplette 8-Spieler-Lobby mit allen Synergien und Boards aufzuklappen.",
+    "Synergien als Chips nach Stufe gefaerbt (Bronze / Silber / Gold / Prismatisch), Einheiten mit Kosten-Rand und Sternstufe. Deine Zeile ist golden hervorgehoben mit einem \"Du\"-Abzeichen.",
+    "Statistiken oben: Partien, durchschnittliche Platzierung, Top-4-Quote, Top-1-Quote.",
   ],
 };
 
@@ -23899,5 +23947,9 @@ CHANGELOG_BY_LANG.fr.unshift(v12093_fr);
 CHANGELOG_BY_LANG.en.unshift(v12093_en);
 CHANGELOG_BY_LANG.es.unshift(v12093_es);
 CHANGELOG_BY_LANG.de.unshift(v12093_de);
+CHANGELOG_BY_LANG.fr.unshift(v12094_fr);
+CHANGELOG_BY_LANG.en.unshift(v12094_en);
+CHANGELOG_BY_LANG.es.unshift(v12094_es);
+CHANGELOG_BY_LANG.de.unshift(v12094_de);
 
 export const CHANGELOG = CHANGELOG_BY_LANG.fr;

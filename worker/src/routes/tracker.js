@@ -1,7 +1,7 @@
 import { assertAllowedQuery, PATTERNS, queryText } from "../middleware/validation.js";
 import { getTrackerApexProfile, getTrackerApexMatches } from "../services/tracker-client.js";
 import { getValorantProfile, getValorantMatches } from "../services/henrik-client.js";
-import { getLolProfile, getLolMatches } from "../services/riot-client.js";
+import { getLolProfile, getLolMatches, getTftMatches } from "../services/riot-client.js";
 import { getUserProviderCredential } from "../services/supabase-client.js";
 import { cachedLoad } from "../utils/cache.js";
 import { routeResult } from "../utils/response.js";
@@ -93,6 +93,16 @@ export async function trackerLolMatchesRoute({ env, url, auth, request }) {
   const riotId = `${name}#${tag}`;
   const loader = async () => getLolMatches(env, riotId, mode, await ownKeyRiot(env, auth, request));
   const result = await cachedLoad(`tracker:lol:matches:${name.toLowerCase()}:${tag.toLowerCase()}:${mode}`, 600, loader);
+  return routeResult(result.data, { source: "riot", cached: result.cached });
+}
+
+export async function trackerTftMatchesRoute({ env, url, auth, request }) {
+  assertAllowedQuery(url, ["name", "tag", "region", "_t", "t", "force"]);
+  const name = queryText(url, "name", { pattern: PATTERNS.playerName, max: 32 });
+  const tag = queryText(url, "tag", { pattern: PATTERNS.playerTag, max: 10 }).replace(/^#/, "");
+  const riotId = `${name}#${tag}`;
+  const loader = async () => getTftMatches(env, riotId, await ownKeyRiot(env, auth, request));
+  const result = await cachedLoad(`tracker:tft:matches:${name.toLowerCase()}:${tag.toLowerCase()}`, 600, loader);
   return routeResult(result.data, { source: "riot", cached: result.cached });
 }
 

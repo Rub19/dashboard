@@ -61,7 +61,7 @@ import { redditActivityRoute, redditOAuthDisconnectRoute, redditOAuthExchangeRou
 import { steamRoute } from "./routes/steam.js";
 import { supabaseRoute } from "./routes/supabase.js";
 import { todoistOAuthDisconnectRoute, todoistOAuthExchangeRoute, todoistTasksRoute } from "./routes/todoist-oauth.js";
-import { trackerLolRoute, trackerRoute, trackerValorantRoute, trackerValorantMatchesRoute, trackerLolMatchesRoute, trackerApexMatchesRoute } from "./routes/tracker.js";
+import { trackerLolRoute, trackerRoute, trackerValorantRoute, trackerValorantMatchesRoute, trackerLolMatchesRoute, trackerTftMatchesRoute, trackerApexMatchesRoute } from "./routes/tracker.js";
 import { twitchRoute } from "./routes/twitch.js";
 import { weatherRoute, geocodeRoute } from "./routes/weather.js";
 import { billsScanRoute } from "./routes/bills-scan.js";
@@ -151,6 +151,7 @@ export const ROUTES = Object.freeze([
   route("tracker.apex-matches", "/api/stats/apex-matches", trackerApexMatchesRoute, { public: true, service: "tracker", rateLimit: "edge" }),
   route("tracker.valorant-matches", "/api/stats/valorant-matches", trackerValorantMatchesRoute, { public: true, service: "tracker", rateLimit: "edge" }),
   route("tracker.lol-matches", "/api/stats/lol-matches", trackerLolMatchesRoute, { public: true, service: "tracker", rateLimit: "edge" }),
+  route("tracker.tft-matches", "/api/stats/tft-matches", trackerTftMatchesRoute, { public: true, service: "tracker", rateLimit: "edge" }),
   route("twitch.channel", "/api/twitch/channel", twitchRoute, { public: true, service: "twitch", rateLimit: "edge" }),
   route("lastfm.recent-tracks", "/api/lastfm/recent-tracks", lastFmRoute, { public: true, service: "lastfm", action: "recent-tracks", rateLimit: "edge" }),
   route("lastfm.top-artists", "/api/lastfm/top-artists", lastFmRoute, { public: true, service: "lastfm", action: "top-artists", rateLimit: "edge" }),

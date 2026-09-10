@@ -6,6 +6,7 @@ import FlatCard from "@/components/FlatCard";
 import LiquidSidebar from "@/components/LiquidSidebar";
 import ValorantTrackerView from "@/components/tracker/ValorantTrackerView";
 import LolTrackerView from "@/components/tracker/LolTrackerView";
+import TftTrackerView from "@/components/tracker/TftTrackerView";
 import { Icon } from "@/lib/icons";
 import { useI18n } from "@/lib/hooks/useI18n";
 import { useToast } from "@/components/ToastProvider";
@@ -14,11 +15,12 @@ import Input from "@/components/Input";
 import FormField from "@/components/FormField";
 import Button from "@/components/ui/Button";
 import { useSettings } from "@/components/SettingsProvider";
-import { Swords, Gamepad2, Shield } from "lucide-react";
+import { Swords, Gamepad2, Shield, Crown } from "lucide-react";
 
 const tabs = [
   { id: "valorant", label: "Valorant", icon: <Swords className="h-4 w-4" /> },
   { id: "lol", label: "League of Legends", icon: <Shield className="h-4 w-4" /> },
+  { id: "tft", label: "Teamfight Tactics", icon: <Crown className="h-4 w-4" /> },
   { id: "apex", label: "Apex Legends", icon: <Gamepad2 className="h-4 w-4" /> },
 ];
 
@@ -71,6 +73,8 @@ export default function MatchesPage() {
           <ValorantTrackerView />
         ) : tab === "lol" ? (
           <LolTrackerView />
+        ) : tab === "tft" ? (
+          <TftTrackerView />
         ) : (
           <div className="flex min-h-0 w-full flex-1 flex-col overflow-hidden space-y-4">
             <div className="shrink-0 space-y-4">

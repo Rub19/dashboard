@@ -2,6 +2,16 @@
 
 Toutes les modifications notables de ce projet seront documentées dans ce fichier.
 
+## v1.20.94 — 2026-09-10
+
+**Nouveau tracker : Teamfight Tactics**
+
+- **Worker** : `getTftMatches(env, riotId, apiKeyOverride)` dans `src/services/riot-client.js` (Riot TFT-Match-V1 : `getPuuid` réutilisé → `/tft/match/v1/matches/by-puuid/{puuid}/ids?count=20` → `mapLimit(ids, 4, /tft/match/v1/matches/{id})`, normalisation placement/level/traits/units/companion, 8 joueurs triés par placement). Route `trackerTftMatchesRoute` (`GET /api/stats/tft-matches?name=&tag=`, `public`, `rateLimit: edge`, `cachedLoad` 600 s) dans `src/routes/tracker.js` + enregistrée dans `src/router.js`. Clé perso via `ownKeyRiot` (même que LoL).
+- **`ethone-next/lib/tft-tracker.ts`** (nouveau) : types `TftMatch`/`TftPlayer`/`TftTrait`/`TftUnit`, `fetchTftMatchesDirect` (appel Riot direct avec la clé perso, batché 5×250 ms), helpers `tftPlacementColor` / `tftTraitStyleColor` / `tftUnitCostColor` / `getTftUnitIcon` (Community Dragon, best-effort + fallback texte).
+- **`components/tracker/TftTrackerView.tsx`** + **`TftMatchRow.tsx`** (nouveaux) : barre de recherche Riot ID, cache localStorage 15 min, fallback Worker, stats d'en-tête (parties / placement moyen / Top 4 / Top 1), liste de parties dépliables (lobby 8 joueurs, synergies en pastilles par palier, unités avec bordure de coût + étoiles), ligne « Vous » en doré.
+- **`app/matches/page.tsx`** : onglet « Teamfight Tactics » (icône `Crown`) entre LoL et Apex.
+- Validation : `worker` 218/218 + `node --check`, `tsc` 0 erreur, `build` (`/matches` prérendu), `test:unit` 14/14 69/69.
+
 ## v1.20.93 — 2026-09-10
 
 **Bot Control Center : onglet « Modules » vide**

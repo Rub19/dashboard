@@ -1,3 +1,14 @@
+const v12105_fr: ChangelogEntry = {
+  version: "v1.21.5",
+  date: "2026-09-10",
+  title: "Trackers : Diagnostic tracker.gg",
+  items: [
+    "Quand un tracker.gg est indisponible, le Worker renvoie maintenant une raison précise (`no_api_key`, `key_rejected`, `not_found`, `upstream`) au lieu d'un simple « indisponible ».",
+    "La page Trackers affiche un message clair : clé absente, clé sans accès à ce jeu (CS2 / Valorant sont souvent réservés sur une clé standard tracker.gg), profil introuvable, ou service en panne.",
+    "Un profil introuvable (404) ne fait plus planter la requête — carte « indisponible » propre.",
+  ],
+};
+
 const v12104_fr: ChangelogEntry = {
   version: "v1.21.4",
   date: "2026-09-10",
@@ -582,6 +593,17 @@ const v12052_fr: ChangelogEntry = {
     "Dynamic Island : correction d'un bug de priorité qui empêchait Spotify de jamais s'afficher, systématiquement évincé par la synchronisation d'arrière-plan.",
     "Commande /help du Bot Discord : la liste des commandes est désormais générée dynamiquement depuis les commandes réellement enregistrées (fin des commandes fantômes et des commandes manquantes), et affiche la vraie syntaxe des commandes à sous-commandes (ex. /automod status).",
     "Audit de l'enregistrement des commandes slash Discord : architecture confirmée saine, aucune dérive entre le code et les commandes déployées.",
+  ],
+};
+
+const v12105_en: ChangelogEntry = {
+  version: "v1.21.5",
+  date: "2026-09-10",
+  title: "Trackers: tracker.gg Diagnostics",
+  items: [
+    "When a tracker.gg lookup is unavailable, the Worker now returns a precise reason (`no_api_key`, `key_rejected`, `not_found`, `upstream`) instead of a bare \"unavailable\".",
+    "The Trackers page shows a clear message: missing key, key with no access to that game (CS2 / Valorant are often restricted on a standard tracker.gg key), profile not found, or service down.",
+    "A not-found profile (404) no longer throws — clean \"unavailable\" card.",
   ],
 };
 
@@ -1172,6 +1194,17 @@ const v12052_en: ChangelogEntry = {
   ],
 };
 
+const v12105_es: ChangelogEntry = {
+  version: "v1.21.5",
+  date: "2026-09-10",
+  title: "Trackers: Diagnóstico tracker.gg",
+  items: [
+    "Cuando una consulta tracker.gg no está disponible, el Worker devuelve ahora un motivo preciso (`no_api_key`, `key_rejected`, `not_found`, `upstream`) en vez de un simple « no disponible ».",
+    "La página Trackers muestra un mensaje claro: clave ausente, clave sin acceso a ese juego (CS2 / Valorant suelen estar restringidos en una clave estándar de tracker.gg), perfil no encontrado, o servicio caído.",
+    "Un perfil no encontrado (404) ya no rompe la petición — tarjeta « no disponible » limpia.",
+  ],
+};
+
 const v12104_es: ChangelogEntry = {
   version: "v1.21.4",
   date: "2026-09-10",
@@ -1756,6 +1789,17 @@ const v12052_es: ChangelogEntry = {
     "Dynamic Island: corregido un error de prioridad que impedía que Spotify apareciera, siempre desplazado por la sincronización en segundo plano.",
     "Comando /help del Bot de Discord: la lista de comandos ahora se genera dinámicamente desde los comandos realmente registrados (fin de comandos fantasma o ausentes), mostrando la sintaxis real de los comandos con subcomandos.",
     "Auditoría del registro de comandos slash de Discord: arquitectura confirmada como sólida, sin desviación entre el código y los comandos desplegados.",
+  ],
+};
+
+const v12105_de: ChangelogEntry = {
+  version: "v1.21.5",
+  date: "2026-09-10",
+  title: "Tracker: tracker.gg-Diagnose",
+  items: [
+    "Wenn eine tracker.gg-Abfrage nicht verfuegbar ist, gibt der Worker jetzt einen praezisen Grund zurueck (`no_api_key`, `key_rejected`, `not_found`, `upstream`) statt nur nicht verfuegbar.",
+    "Die Tracker-Seite zeigt eine klare Meldung: Schluessel fehlt, Schluessel ohne Zugriff auf dieses Spiel (CS2 / Valorant sind bei einem Standard-tracker.gg-Schluessel oft gesperrt), Profil nicht gefunden oder Dienst ausgefallen.",
+    "Ein nicht gefundenes Profil (404) laesst die Anfrage nicht mehr abstuerzen — saubere nicht-verfuegbar-Karte.",
   ],
 };
 
@@ -24443,5 +24487,9 @@ CHANGELOG_BY_LANG.fr.unshift(v12104_fr);
 CHANGELOG_BY_LANG.en.unshift(v12104_en);
 CHANGELOG_BY_LANG.es.unshift(v12104_es);
 CHANGELOG_BY_LANG.de.unshift(v12104_de);
+CHANGELOG_BY_LANG.fr.unshift(v12105_fr);
+CHANGELOG_BY_LANG.en.unshift(v12105_en);
+CHANGELOG_BY_LANG.es.unshift(v12105_es);
+CHANGELOG_BY_LANG.de.unshift(v12105_de);
 
 export const CHANGELOG = CHANGELOG_BY_LANG.fr;

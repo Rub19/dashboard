@@ -2,6 +2,15 @@
 
 Toutes les modifications notables de ce projet seront documentées dans ce fichier.
 
+## v1.21.5 — 2026-09-10
+
+**tracker.gg : raison d'indisponibilité exposée**
+
+- **`worker/src/routes/tracker.js`** : nouveau `trackerUnavailable(error, extra)` — mappe `SERVICE_NOT_CONFIGURED`/`AUTH_REQUIRED` → `no_api_key`, `PROVIDER_REQUEST_REJECTED` (400/401/403 upstream) → `key_rejected`, `PROVIDER_NOT_FOUND` (404) → `not_found`, `UPSTREAM_UNAVAILABLE`/`UPSTREAM_INVALID_RESPONSE`/5xx → `upstream`. Les deux routes renvoient `{ available: false, reason }` au lieu d'avaler l'erreur. Le 404 ne `throw` plus (carte propre).
+- **`ethone-next/lib/tracker-gg.ts`** : `TrackerUnavailableReason`, `reason` propagé dans `TrackerProfile`.
+- **`ethone-next/components/tracker/TrackerGgView.tsx`** : message ciblé par `reason` (clé absente / clé sans accès au jeu — CS2 & Valorant souvent réservés / profil introuvable / service en panne).
+- Validation : `worker` `npm test` 218/218 ; `ethone-next` `tsc` 0 erreur, `build` ✓, `test:unit` 69/69.
+
 ## v1.21.4 — 2026-09-10
 
 **Sélecteur de thème (menu) + liste des serveurs Discord non trompeuse**

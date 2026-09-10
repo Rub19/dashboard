@@ -79,10 +79,17 @@ export default function TrackerGgView() {
         setMatches(ms);
         setLastSync(new Date());
         if (!prof || prof.available === false) {
+          const reason = prof?.reason;
           setErrorMsg(
             !prof
               ? "Impossible de joindre le service tracker.gg pour le moment."
-              : "Profil introuvable, ou la clé API tracker.gg n'est pas configurée pour ce jeu."
+              : reason === "no_api_key"
+              ? "La clé API tracker.gg n'est pas configurée côté serveur."
+              : reason === "key_rejected"
+              ? `La clé API tracker.gg n'a pas accès à ${game.label} (tous les jeux ne sont pas ouverts sur une clé standard — CS2 et Valorant sont souvent réservés).`
+              : reason === "not_found"
+              ? "Profil introuvable — vérifie la plateforme et l'identifiant."
+              : "tracker.gg est indisponible pour le moment, réessaie plus tard."
           );
         } else {
           try {

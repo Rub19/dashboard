@@ -144,6 +144,24 @@ function readGameQuery(url) {
   return { game, platform, identifier };
 }
 
+// Map an upstream/tracker error to a graceful "unavailable" payload with a
+// machine-readable reason, so the dashboard can tell "no key" from "key rejected
+// for this title" from "profile not found" instead of a blank card.
+function trackerUnavailable(error, extra = {}) {
+  if (!error) return null;
+  const byCode = {
+    SERVICE_NOT_CONFIGURED: "no_api_key",
+    AUTH_REQUIRED: "no_api_key",
+    PROVIDER_REQUEST_REJECTED: "key_rejected",
+    PROVIDER_NOT_FOUND: "not_found",
+    UPSTREAM_UNAVAILABLE: "upstream",
+    UPSTREAM_INVALID_RESPONSE: "upstream",
+  };
+  const reason = byCode[error.code] || (error.status >= 500 && error.status < 600 ? "upstream" : null);
+  if (!reason) return null;
+  return { available: false, reason, ...extra };
+}
+
 export async function trackerGameProfileRoute({ env, url, auth, request }) {
   assertAllowedQuery(url, ["game", "platform", "identifier", "_t", "t", "force"]);
   const { game, platform, identifier } = readGameQuery(url);
@@ -152,9 +170,8 @@ export async function trackerGameProfileRoute({ env, url, auth, request }) {
     const result = await cachedLoad(`tracker:${game}:${platform}:${identifier.toLowerCase()}`, 120, loader);
     return routeResult(result.data, { source: "tracker", cached: result.cached });
   } catch (error) {
-    if (error?.code === "AUTH_REQUIRED" || (error?.status >= 500 && error?.status < 600)) {
-      return routeResult({ available: false }, { source: "tracker", cached: false });
-    }
+    const fallback = trackerUnavailable(error);
+    if (fallback) return routeResult(fallback, { source: "tracker", cached: false });
     throw error;
   }
 }
@@ -168,9 +185,8 @@ export async function trackerGameMatchesRoute({ env, url, auth, request }) {
     const result = await cachedLoad(`tracker:${game}:matches:${platform}:${identifier.toLowerCase()}:${mode}`, 600, loader);
     return routeResult(result.data, { source: "tracker", cached: result.cached });
   } catch (error) {
-    if (error?.code === "AUTH_REQUIRED" || (error?.status >= 500 && error?.status < 600)) {
-      return routeResult({ available: false, matches: [] }, { source: "tracker", cached: false });
-    }
+    const fallback = trackerUnavailable(error, { matches: [] });
+    if (fallback) return routeResult(fallback, { source: "tracker", cached: false });
     throw error;
   }
 }

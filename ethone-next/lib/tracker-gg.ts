@@ -15,8 +15,11 @@ export interface TrackerSegment {
   stats: TrackerStats;
 }
 
+export type TrackerUnavailableReason = "no_api_key" | "key_rejected" | "not_found" | "upstream";
+
 export interface TrackerProfile {
   available: boolean;
+  reason?: TrackerUnavailableReason;
   platform: string;
   identifier: string;
   handle: string;
@@ -100,7 +103,9 @@ export async function fetchTrackerProfile(game: string, platform: string, identi
   try {
     const res = await fetchWorker(`/api/stats/tracker-profile?${qs({ game, platform, identifier })}`);
     const d = res?.data ?? res;
-    if (!d || d.available === false) return { available: false, platform, identifier, handle: identifier, avatarUrl: null, segments: [] };
+    if (!d || d.available === false) {
+      return { available: false, reason: d?.reason, platform, identifier, handle: identifier, avatarUrl: null, segments: [] };
+    }
     return {
       available: true,
       platform: String(d.platform ?? platform),

@@ -1,3 +1,15 @@
+const v12126_fr: ChangelogEntry = {
+  version: "v1.21.26",
+  date: "2026-09-10",
+  title: "Nouveau Module Bot : Server Stats (salons compteurs)",
+  items: [
+    "Nouveau module Server Stats : un salon (vocal verrouille de preference) est renomme pour afficher une stat du serveur. Types : membres, humains, bots, en ligne, boosts, niveau de boost, roles, salons, membres d un role. Format personnalisable avec {count}.",
+    "Scheduler qui tick toutes les 5 min ; chaque serveur n est traite que si son intervalle (10-360 min, defaut 15) est ecoule. Respecte la limite Discord de 2 renommages / 10 min. Ne renomme que si la valeur a change.",
+    "Commandes : /serverstats add | remove | list | refresh | config.",
+    "Page dashboard /discord/server-stats : toggle + curseur d intervalle, formulaire d ajout (salon, type, format, role), liste des compteurs avec valeur actuelle, bouton Rafraichir maintenant.",
+  ],
+};
+
 const v12125_fr: ChangelogEntry = {
   version: "v1.21.25",
   date: "2026-09-10",
@@ -810,6 +822,18 @@ const v12052_fr: ChangelogEntry = {
     "Dynamic Island : correction d'un bug de priorité qui empêchait Spotify de jamais s'afficher, systématiquement évincé par la synchronisation d'arrière-plan.",
     "Commande /help du Bot Discord : la liste des commandes est désormais générée dynamiquement depuis les commandes réellement enregistrées (fin des commandes fantômes et des commandes manquantes), et affiche la vraie syntaxe des commandes à sous-commandes (ex. /automod status).",
     "Audit de l'enregistrement des commandes slash Discord : architecture confirmée saine, aucune dérive entre le code et les commandes déployées.",
+  ],
+};
+
+const v12126_en: ChangelogEntry = {
+  version: "v1.21.26",
+  date: "2026-09-10",
+  title: "New Bot Module: Server Stats (counter channels)",
+  items: [
+    "New Server Stats module: a channel (a locked voice channel ideally) is renamed to show a server stat. Types: members, humans, bots, online, boosts, boost tier, roles, channels, members of a role. Custom format with {count}.",
+    "Scheduler ticks every 5 min; a guild is only processed once its interval (10-360 min, default 15) has elapsed. Respects Discord's 2 renames / 10 min limit. Only renames when the value changed.",
+    "Commands: /serverstats add | remove | list | refresh | config.",
+    "/discord/server-stats dashboard page: toggle + interval slider, add form (channel, type, format, role), counter list with current value, Refresh now button.",
   ],
 };
 
@@ -1628,6 +1652,18 @@ const v12052_en: ChangelogEntry = {
   ],
 };
 
+const v12126_es: ChangelogEntry = {
+  version: "v1.21.26",
+  date: "2026-09-10",
+  title: "Nuevo Modulo del Bot: Server Stats (canales contador)",
+  items: [
+    "Nuevo modulo Server Stats: un canal (de voz bloqueado idealmente) se renombra para mostrar una estadistica del servidor. Tipos: miembros, humanos, bots, en linea, boosts, nivel de boost, roles, canales, miembros de un rol. Formato personalizable con {count}.",
+    "Scheduler cada 5 min; cada servidor solo se procesa cuando pasa su intervalo (10-360 min, por defecto 15). Respeta el limite de Discord de 2 renombrados / 10 min.",
+    "Comandos: /serverstats add | remove | list | refresh | config.",
+    "Pagina /discord/server-stats: toggle + slider de intervalo, formulario, lista de contadores, boton Refrescar ahora.",
+  ],
+};
+
 const v12125_es: ChangelogEntry = {
   version: "v1.21.25",
   date: "2026-09-10",
@@ -2440,6 +2476,18 @@ const v12052_es: ChangelogEntry = {
     "Dynamic Island: corregido un error de prioridad que impedía que Spotify apareciera, siempre desplazado por la sincronización en segundo plano.",
     "Comando /help del Bot de Discord: la lista de comandos ahora se genera dinámicamente desde los comandos realmente registrados (fin de comandos fantasma o ausentes), mostrando la sintaxis real de los comandos con subcomandos.",
     "Auditoría del registro de comandos slash de Discord: arquitectura confirmada como sólida, sin desviación entre el código y los comandos desplegados.",
+  ],
+};
+
+const v12126_de: ChangelogEntry = {
+  version: "v1.21.26",
+  date: "2026-09-10",
+  title: "Neues Bot-Modul: Server Stats (Zaehler-Kanaele)",
+  items: [
+    "Neues Server-Stats-Modul: ein Kanal (am besten ein gesperrter Sprachkanal) wird umbenannt, um eine Server-Statistik anzuzeigen. Typen: Mitglieder, Menschen, Bots, online, Boosts, Boost-Stufe, Rollen, Kanaele, Mitglieder einer Rolle. Anpassbares Format mit {count}.",
+    "Scheduler tickt alle 5 Min; ein Server wird nur verarbeitet, wenn sein Intervall (10-360 Min, Standard 15) abgelaufen ist. Beachtet Discords Limit von 2 Umbenennungen / 10 Min.",
+    "Befehle: /serverstats add | remove | list | refresh | config.",
+    "Dashboard-Seite /discord/server-stats: Toggle + Intervall-Slider, Formular, Zaehlerliste, Jetzt-aktualisieren-Button.",
   ],
 };
 
@@ -25439,5 +25487,9 @@ CHANGELOG_BY_LANG.fr.unshift(v12125_fr);
 CHANGELOG_BY_LANG.en.unshift(v12125_en);
 CHANGELOG_BY_LANG.es.unshift(v12125_es);
 CHANGELOG_BY_LANG.de.unshift(v12125_de);
+CHANGELOG_BY_LANG.fr.unshift(v12126_fr);
+CHANGELOG_BY_LANG.en.unshift(v12126_en);
+CHANGELOG_BY_LANG.es.unshift(v12126_es);
+CHANGELOG_BY_LANG.de.unshift(v12126_de);
 
 export const CHANGELOG = CHANGELOG_BY_LANG.fr;

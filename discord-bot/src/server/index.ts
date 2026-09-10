@@ -38,6 +38,8 @@ import { reminderService } from '../modules/reminders/services/reminderService.j
 import { createAfkRouter } from './routes/afkRoutes.js';
 import { createBirthdayRouter } from './routes/birthdayRoutes.js';
 import { createTagRouter } from './routes/tagRoutes.js';
+import { createServerStatsRouter } from './routes/serverStatsRoutes.js';
+import { serverStatsService } from '../modules/serverStats/services/serverStatsService.js';
 import { birthdayService } from '../modules/birthdays/services/birthdayService.js';
 import { createEventRouter } from './routes/events.js';
 import { createCalendarRouter } from './routes/calendar.js';
@@ -242,6 +244,12 @@ export function startWebServer(client: Client): http.Server {
     createTagRouter(client)
   );
   app.use(
+    '/api/guilds/:guildId/server-stats',
+    authMiddleware,
+    createGuildAuthMiddleware(client),
+    createServerStatsRouter(client)
+  );
+  app.use(
     '/api/guilds/:guildId/calendar',
     authMiddleware,
     createGuildAuthMiddleware(client),
@@ -303,6 +311,9 @@ export function startWebServer(client: Client): http.Server {
 
   // Scheduler des anniversaires (tick 15 min)
   birthdayService.initialize(client);
+
+  // Scheduler des salons compteurs (tick 5 min)
+  serverStatsService.initialize(client);
 
   // Route de santé de l'API
   app.get('/api/health', (req: Request, res: Response) => {

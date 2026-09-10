@@ -92,6 +92,7 @@ type ModuleType =
   | "afk"
   | "birthdays"
   | "tags"
+  | "serverstats"
   | "bot";
 
 interface BotModule {
@@ -309,6 +310,14 @@ const MODULES: BotModule[] = [
     title: "Tags",
     description: "Réponses réutilisables du serveur : FAQ, formats de candidature, liens récurrents, via /tag.",
     icon: Hash,
+    color: "text-zinc-400",
+    badge: "Utilitaires",
+  },
+  {
+    id: "serverstats",
+    title: "Server Stats",
+    description: "Salons compteurs : le nom d'un salon affiche le nombre de membres, de boosts, de membres en ligne…",
+    icon: BarChart3,
     color: "text-zinc-400",
     badge: "Utilitaires",
   },
@@ -2543,6 +2552,38 @@ export default function DiscordDashboardPage() {
                         <li><code className="rounded bg-black/30 px-1">/tag get &lt;nom&gt;</code> — affiche un tag</li>
                         <li><code className="rounded bg-black/30 px-1">/tag add | edit | remove</code> — [Gérer les messages]</li>
                         <li><code className="rounded bg-black/30 px-1">/tag list</code> · <code className="rounded bg-black/30 px-1">/tag info &lt;nom&gt;</code></li>
+                      </ul>
+                    </div>
+                  </div>
+                )}
+
+                {activeModule === "serverstats" && (
+                  <div className="space-y-4 text-xs">
+                    <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-3 rounded-2xl border border-white/10 bg-white/[0.03] p-4">
+                      <div>
+                        <div className="flex items-center gap-2">
+                          <p className="text-xs font-bold text-white">Server Stats</p>
+                        </div>
+                        <p className="text-[11px] text-zinc-300 mt-0.5">
+                          Transforme un salon (vocal verrouillé de préférence) en compteur : son nom affiche le nombre de membres, de boosts, de membres en ligne, etc. Renommé automatiquement toutes les 10-60 min (limite Discord).
+                        </p>
+                      </div>
+                      <Link
+                        href={`/discord/server-stats?guildId=${selectedGuild.id}`}
+                        className="flex h-9 shrink-0 items-center gap-2 rounded-xl bg-[#5865F2] px-4 text-xs font-semibold text-white transition-colors hover:bg-[#4752C4] active:scale-95 cursor-pointer"
+                      >
+                        <BarChart3 className="h-4 w-4" />
+                        <span>Ouvrir Server Stats</span>
+                        <ChevronRight className="h-3.5 w-3.5" />
+                      </Link>
+                    </div>
+
+                    <div className="rounded-2xl border border-white/10 bg-white/[0.02] p-4 space-y-2">
+                      <p className="font-bold text-white">Commandes</p>
+                      <ul className="space-y-1 text-[11px] text-zinc-300">
+                        <li><code className="rounded bg-black/30 px-1">/serverstats add &lt;salon&gt; &lt;type&gt; [format] [role]</code></li>
+                        <li><code className="rounded bg-black/30 px-1">/serverstats list | remove | refresh</code></li>
+                        <li><code className="rounded bg-black/30 px-1">/serverstats config</code> — actif on/off, intervalle</li>
                       </ul>
                     </div>
                   </div>

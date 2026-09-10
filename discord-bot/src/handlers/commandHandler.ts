@@ -60,6 +60,7 @@ import { reminderCommand } from '../modules/reminders/commands/reminderCommand.j
 import { afkCommand } from '../modules/afk/commands/afkCommand.js';
 import { birthdayCommand } from '../modules/birthdays/commands/birthdayCommand.js';
 import { tagCommand } from '../modules/tags/commands/tagCommand.js';
+import { serverStatsCommand } from '../modules/serverStats/commands/serverStatsCommand.js';
 import { logsCommand } from '../modules/logs/commands/logsCommand.js';
 
 import { config } from '../config.js';
@@ -161,6 +162,9 @@ class CommandRegistry {
 
     // Tags (réponses réutilisables du serveur)
     this.register(tagCommand);
+
+    // Server Stats (salons compteurs)
+    this.register(serverStatsCommand);
 
     // Journaux du serveur (routage par catégorie, verbosité, rétention)
     this.register(logsCommand);

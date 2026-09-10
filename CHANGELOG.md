@@ -2,6 +2,18 @@
 
 Toutes les modifications notables de ce projet seront documentées dans ce fichier.
 
+## v1.21.11 — 2026-09-10
+
+**Perf : déduplication des requêtes en vol — le vrai correctif de la tempête 429**
+
+- **`lib/hooks/useCachedFetch.ts`** : `fetchWorkerCached` avait un cache résultat 5 s mais **aucune dédup des requêtes en vol**. 6 `useLiveData` + 5 `useItems` (+ autres) montés dans le même tick manquaient tous le cache vide → chacun appelait `fetchWorker` → ~150 requêtes identiques au chargement d'une page → 429 de l'edge Worker (avec retries qui empiraient).
+  - Nouvelle `Map<string, Promise>` `inFlightGets` : les GET identiques concurrents attendent la même promesse. Entrée supprimée en `finally` (un échec ne bloque pas les retries).
+  - Le hook `useCachedFetch` passe désormais par `fetchWorkerCached(path, options, ttl)` au lieu d'un `fetchWorker(path, options)` direct → il bénéficie de la dédup + du cache partagé.
+  - `clearFetchCache()` (déconnexion) vide aussi `inFlightGets`.
+- **`lib/hooks/useCachedFetch.test.ts`** (nouveau) : 4 tests — dédup concurrente (3 appels → 1 fetch), cache TTL puis refetch après expiration, chemins distincts non dédupés, entrée en vol purgée après échec.
+- Complète v1.21.10 (`useItems` / `useProfiles` avaient leur propre dédup module ; celui-ci couvre **tout** ce qui passe par `fetchWorkerCached`, dont `useLiveData` et ses ~27 endpoints).
+- Validation : `tsc` 0 erreur, `build` ✓, `test:unit` 73/73.
+
 ## v1.21.10 — 2026-09-10
 
 **Perf : tempête de requêtes au chargement du dashboard + SW cache-poisoning**

@@ -11,6 +11,11 @@ type CacheEntry = {
 };
 
 const globalCache = new Map<string, CacheEntry>();
+// GET requests that are already on the wire, keyed like the cache. Without this
+// N components mounting in the same tick (the dashboard mounts ~6 useLiveData
+// and ~5 useItems consumers) each miss the empty cache and fire their own
+// identical request — a burst big enough to trip the Worker's edge 429.
+const inFlightGets = new Map<string, Promise<unknown>>();
 
 function cacheKey(path: string, options: RequestInit = {}): string {
   const method = (options.method || "GET").toUpperCase();
@@ -24,6 +29,7 @@ function isExpired(entry: CacheEntry, now = Date.now(), ttl?: number): boolean {
 
 export function clearFetchCache(): void {
   globalCache.clear();
+  inFlightGets.clear();
 }
 
 export function getFetchCacheKey(path: string, options?: RequestInit): string {
@@ -114,10 +120,12 @@ export function useCachedFetch<T>({
     let cancelled = false;
     setLoading(true);
 
-    fetchWorker(path, options)
+    // Route through fetchWorkerCached so concurrent hook instances for the same
+    // key share one in-flight request (and its result cache) instead of each
+    // firing its own fetchWorker.
+    fetchWorkerCached(path, options, ttl)
       .then((raw) => {
         if (cancelled) return;
-        globalCache.set(key, { data: raw, ts: Date.now(), ttl });
         const mapped = map ? map(raw) : (raw as T);
         const next = deepEqual(mapped, dataRef.current) ? dataRef.current : mapped;
         dataRef.current = next;
@@ -156,8 +164,19 @@ export async function fetchWorkerCached<T = unknown>(
     return cached.data as T;
   }
 
+  const pending = inFlightGets.get(key);
+  if (pending) return pending as Promise<T>;
+
   const hasOptions = options && (options.method || options.body || Object.keys(options).length > 0);
-  const data = (await (hasOptions ? fetchWorker(path, options) : fetchWorker(path))) as T;
-  globalCache.set(key, { data, ts: Date.now(), ttl });
-  return data;
+  const request = (async () => {
+    try {
+      const data = await (hasOptions ? fetchWorker(path, options) : fetchWorker(path));
+      globalCache.set(key, { data, ts: Date.now(), ttl });
+      return data;
+    } finally {
+      inFlightGets.delete(key);
+    }
+  })();
+  inFlightGets.set(key, request);
+  return request as Promise<T>;
 }

@@ -1,3 +1,15 @@
+const v12111_fr: ChangelogEntry = {
+  version: "v1.21.11",
+  date: "2026-09-10",
+  title: "Perf : Déduplication des Requêtes en Vol (fetchWorkerCached)",
+  items: [
+    "`fetchWorkerCached` avait un cache résultat de 5 s mais aucune déduplication des requêtes en vol : 6 composants `useLiveData` + 5 `useItems` montés dans le même tick manquaient tous le cache vide et lançaient chacun sa requête → ~150 requêtes identiques au chargement, 429 de l'edge Worker.",
+    "Ajout d'une `Map` d'`inFlight` : les GET identiques concurrents partagent une seule requête réseau (et son résultat). Le hook `useCachedFetch` passe aussi par `fetchWorkerCached` au lieu d'un `fetchWorker` direct.",
+    "`clearFetchCache()` (appelé à la déconnexion) vide aussi les requêtes en vol.",
+    "4 tests unitaires ajoutés (dédup concurrente, TTL, chemins distincts, retry après échec).",
+  ],
+};
+
 const v12110_fr: ChangelogEntry = {
   version: "v1.21.10",
   date: "2026-09-10",
@@ -648,6 +660,18 @@ const v12052_fr: ChangelogEntry = {
     "Dynamic Island : correction d'un bug de priorité qui empêchait Spotify de jamais s'afficher, systématiquement évincé par la synchronisation d'arrière-plan.",
     "Commande /help du Bot Discord : la liste des commandes est désormais générée dynamiquement depuis les commandes réellement enregistrées (fin des commandes fantômes et des commandes manquantes), et affiche la vraie syntaxe des commandes à sous-commandes (ex. /automod status).",
     "Audit de l'enregistrement des commandes slash Discord : architecture confirmée saine, aucune dérive entre le code et les commandes déployées.",
+  ],
+};
+
+const v12111_en: ChangelogEntry = {
+  version: "v1.21.11",
+  date: "2026-09-10",
+  title: "Perf: In-Flight Request Dedup (fetchWorkerCached)",
+  items: [
+    "`fetchWorkerCached` had a 5s result cache but no in-flight dedup: 6 `useLiveData` + 5 `useItems` consumers mounting in the same tick all missed the empty cache and each fired its own request → ~150 identical requests on load, tripping the Worker edge 429.",
+    "Added an in-flight `Map`: concurrent identical GETs share a single network request (and its result). The `useCachedFetch` hook now also routes through `fetchWorkerCached` instead of a bare `fetchWorker`.",
+    "`clearFetchCache()` (called on sign-out) now also clears in-flight requests.",
+    "4 unit tests added (concurrent dedup, TTL, distinct paths, retry-after-failure).",
   ],
 };
 
@@ -1304,6 +1328,18 @@ const v12052_en: ChangelogEntry = {
   ],
 };
 
+const v12111_es: ChangelogEntry = {
+  version: "v1.21.11",
+  date: "2026-09-10",
+  title: "Rendimiento: Deduplicación de Peticiones en Vuelo (fetchWorkerCached)",
+  items: [
+    "`fetchWorkerCached` tenía una caché de resultado de 5 s pero sin deduplicación en vuelo: 6 consumidores `useLiveData` + 5 `useItems` montados en el mismo tick fallaban todos la caché vacía y cada uno lanzaba su petición → ~150 peticiones idénticas al cargar, 429 del edge Worker.",
+    "Añadido un `Map` de peticiones en vuelo: los GET idénticos concurrentes comparten una sola petición de red (y su resultado). El hook `useCachedFetch` también pasa ahora por `fetchWorkerCached`.",
+    "`clearFetchCache()` (llamado al cerrar sesión) también limpia las peticiones en vuelo.",
+    "4 tests unitarios añadidos.",
+  ],
+};
+
 const v12110_es: ChangelogEntry = {
   version: "v1.21.10",
   date: "2026-09-10",
@@ -1954,6 +1990,18 @@ const v12052_es: ChangelogEntry = {
     "Dynamic Island: corregido un error de prioridad que impedía que Spotify apareciera, siempre desplazado por la sincronización en segundo plano.",
     "Comando /help del Bot de Discord: la lista de comandos ahora se genera dinámicamente desde los comandos realmente registrados (fin de comandos fantasma o ausentes), mostrando la sintaxis real de los comandos con subcomandos.",
     "Auditoría del registro de comandos slash de Discord: arquitectura confirmada como sólida, sin desviación entre el código y los comandos desplegados.",
+  ],
+};
+
+const v12111_de: ChangelogEntry = {
+  version: "v1.21.11",
+  date: "2026-09-10",
+  title: "Performance: In-Flight-Anfragen-Dedup (fetchWorkerCached)",
+  items: [
+    "`fetchWorkerCached` hatte einen 5s-Ergebnis-Cache, aber kein In-Flight-Dedup: 6 `useLiveData`- + 5 `useItems`-Konsumenten, die im selben Tick mounten, verfehlten alle den leeren Cache und feuerten jeweils eine eigene Anfrage → ~150 identische Anfragen beim Laden, Worker-Edge-429.",
+    "In-Flight-`Map` hinzugefuegt: gleichzeitige identische GETs teilen sich eine Netzanfrage (und deren Ergebnis). Der `useCachedFetch`-Hook laeuft jetzt ebenfalls ueber `fetchWorkerCached`.",
+    "`clearFetchCache()` (beim Abmelden aufgerufen) leert jetzt auch die In-Flight-Anfragen.",
+    "4 Unit-Tests hinzugefuegt.",
   ],
 };
 
@@ -24731,5 +24779,9 @@ CHANGELOG_BY_LANG.fr.unshift(v12110_fr);
 CHANGELOG_BY_LANG.en.unshift(v12110_en);
 CHANGELOG_BY_LANG.es.unshift(v12110_es);
 CHANGELOG_BY_LANG.de.unshift(v12110_de);
+CHANGELOG_BY_LANG.fr.unshift(v12111_fr);
+CHANGELOG_BY_LANG.en.unshift(v12111_en);
+CHANGELOG_BY_LANG.es.unshift(v12111_es);
+CHANGELOG_BY_LANG.de.unshift(v12111_de);
 
 export const CHANGELOG = CHANGELOG_BY_LANG.fr;

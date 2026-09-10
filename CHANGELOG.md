@@ -2,6 +2,14 @@
 
 Toutes les modifications notables de ce projet seront documentées dans ce fichier.
 
+## infra — 2026-09-10 (CI : worker + bot enfin testés automatiquement)
+
+Jusqu'ici la CI ne construisait que `ethone-next`. Le worker (218 tests) et le bot (`tsc`) n'étaient vérifiés qu'en local — une régression pouvait être poussée sans rien casser de visible.
+
+- **`.github/workflows/worker-ci.yml`** (nouveau) : sur un push/PR touchant `worker/**` → `npm ci` + `npm run check` (`node --check`) + `npm test` (`node --test`, 218 tests) + `wrangler deploy --dry-run` (non bloquant).
+- **`.github/workflows/bot-ci.yml`** (nouveau) : sur un push/PR touchant `discord-bot/**` (hors `web/`) → `npm ci` + `npm run node:build` (`tsc`).
+- `build-web.yml` inchangé.
+
 ## v1.20.95 — 2026-09-10
 
 **Pages Discord du dashboard : ménage visuel (« moins IA »)**

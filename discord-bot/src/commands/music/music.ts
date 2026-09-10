@@ -151,7 +151,19 @@ export const musicCommand: Command = {
         }
 
         const track = res.track!;
-        if (res.queuePosition === 0) {
+        if (res.playlistCount && res.playlistCount > 1) {
+          const embed = ctx
+            .createEmbed('success')
+            .setTitle('🎶 Playlist ajoutée')
+            .setDescription(
+              `**${res.playlistCount}** titres ajoutés à la file.\n` +
+                (res.queuePosition === 0
+                  ? `▶️ Lecture : [${track.title}](${track.url})`
+                  : `Prochain : [${track.title}](${track.url})`),
+            )
+            .setThumbnail(track.thumbnail);
+          await ctx.reply({ embeds: [embed] });
+        } else if (res.queuePosition === 0) {
           const embed = ctx
             .createEmbed('success')
             .setTitle(t.music_now_playing_title)

@@ -2,6 +2,16 @@
 
 Toutes les modifications notables de ce projet seront documentées dans ce fichier.
 
+## discord-bot — 2026-09-10 (musique : playlists YouTube + Spotify)
+
+**`/play` accepte désormais un lien de playlist / album.**
+
+- **Playlist YouTube** (`youtube.com/...&list=...`) : `yt-dlp --flat-playlist --dump-single-json` → toutes les vidéos (max 100) sont mises en file, la première démarre.
+- **Playlist / album Spotify** (`open.spotify.com/playlist/...` ou `/album/...`) : les titres sont lus via l'API Web Spotify (flux *client credentials* — pas de connexion utilisateur, juste un `client_id` + `client_secret` d'app), puis chaque titre est streamé depuis YouTube (`ytsearch1:<artiste> <titre>`), Spotify ne servant pas d'audio.
+- **`.env` du bot** — pour les playlists Spotify uniquement : `SPOTIFY_CLIENT_ID` et `SPOTIFY_CLIENT_SECRET`. **Ce sont des identifiants d'application, réutilise exactement les mêmes que le dashboard ETHONE** (Worker Cloudflare `SPOTIFY_CLIENT_SECRET` + le client id public de l'app Spotify), ou récupère-les sur developer.spotify.com/dashboard. Sans ces valeurs, un lien de playlist Spotify renvoie un message clair et les liens de piste unique continuent de marcher. Les playlists YouTube ne demandent rien de plus que `yt-dlp`.
+- Nouveau : `providers/playlistResolver.ts`, `musicProviderManager.resolveMany()`, embed « 🎶 Playlist ajoutée — N titres ».
+- Validation : `npm run node:build` (tsc) propre.
+
 ## discord-bot — 2026-09-10 (musique : streaming via yt-dlp, fin du son muet)
 
 **Le bot rejoignait le salon vocal mais restait muet sur `/play`.**

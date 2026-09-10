@@ -37,7 +37,7 @@ class MusicService {
     member: GuildMember | null,
     queryOrUrl: string,
     options?: { playNext?: boolean; channelId?: string }
-  ): Promise<{ success: boolean; track?: Track; queuePosition?: number; error?: string }> {
+  ): Promise<{ success: boolean; track?: Track; queuePosition?: number; playlistCount?: number; error?: string }> {
     // 1. Permissions
     const permCheck = MusicPermissionService.canExecuteAction(member, guild.id, 'PLAY');
     if (!permCheck.allowed) {
@@ -96,35 +96,53 @@ class MusicService {
       avatar: member?.user.displayAvatarURL?.() || null,
     };
 
-    const track = await musicProviderManager.resolve(queryOrUrl, requestedBy);
-    if (!track) {
+    // A playlist / album URL resolves to many tracks; anything else to one.
+    const tracks = await musicProviderManager.resolveMany(queryOrUrl, requestedBy);
+    if (tracks.length === 0) {
+      if (/open\.spotify\.com\/(?:[a-z-]+\/)?(?:playlist|album)\//i.test(queryOrUrl)) {
+        return {
+          success: false,
+          error:
+            "Lecture de playlists Spotify indisponible : SPOTIFY_CLIENT_ID / SPOTIFY_CLIENT_SECRET ne sont pas configurés côté bot (mêmes valeurs que le dashboard ETHONE).",
+        };
+      }
       return { success: false, error: 'Aucun titre correspondant trouvé.' };
     }
+    const track = tracks[0];
+    const isPlaylist = tracks.length > 1;
 
     const settings = musicPersistence.getSettings(guild.id);
     const state = player.getState();
 
-    // 4. Si rien ne joue actuellement, lecture directe
+    // 4. Premier titre : lecture directe si rien ne joue, sinon file d'attente.
+    let queuePosition: number;
     if (state.status === 'IDLE' && !state.currentTrack) {
       const started = await player.playTrack(track);
-      if (started) {
-        return { success: true, track, queuePosition: 0 };
-      }
-      return { success: false, error: 'Échec du lancement audio.' };
-    }
-
-    // 5. Sinon, ajout en file d'attente
-    if (options?.playNext) {
+      if (!started) return { success: false, error: 'Échec du lancement audio.' };
+      queuePosition = 0;
+    } else if (options?.playNext) {
       player.queue.addNext(track);
-      return { success: true, track, queuePosition: 1 };
+      queuePosition = 1;
+    } else {
+      const addRes = player.queue.add(track, settings.maxQueueSize, settings.allowDuplicates);
+      if (!addRes.success) return { success: false, error: addRes.error };
+      queuePosition = player.queue.size();
     }
 
-    const addRes = player.queue.add(track, settings.maxQueueSize, settings.allowDuplicates);
-    if (!addRes.success) {
-      return { success: false, error: addRes.error };
+    // 5. Reste de la playlist -> file d'attente (on s'arrête si elle est pleine).
+    let queuedFromPlaylist = 0;
+    for (let i = 1; i < tracks.length; i++) {
+      const addRes = player.queue.add(tracks[i], settings.maxQueueSize, settings.allowDuplicates);
+      if (!addRes.success) break;
+      queuedFromPlaylist += 1;
     }
 
-    return { success: true, track, queuePosition: player.queue.size() };
+    return {
+      success: true,
+      track,
+      queuePosition,
+      ...(isPlaylist ? { playlistCount: 1 + queuedFromPlaylist } : {}),
+    };
   }
 
   public pause(guildId: string, member: GuildMember | null): { success: boolean; error?: string } {

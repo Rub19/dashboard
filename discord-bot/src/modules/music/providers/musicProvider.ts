@@ -3,6 +3,7 @@ import play from 'play-dl';
 import { Track, TrackRequester } from '../types/music.js';
 import { logger } from '../../../utils/logger.js';
 import { createYtDlpStream } from './ytdlpStream.js';
+import { expandPlaylist, isPlaylistUrl } from './playlistResolver.js';
 
 /**
  * Single audio path for every "real" provider (Spotify bridge, YouTube,
@@ -379,6 +380,25 @@ class MusicProviderManager {
       requestedBy,
       addedAt: new Date().toISOString(),
     }));
+  }
+
+  /**
+   * A YouTube/Spotify playlist or album URL expands to all its tracks; any
+   * other query resolves to a single-element array (or []). The caller
+   * plays the first and queues the rest.
+   */
+  public async resolveMany(query: string, requestedBy: TrackRequester): Promise<Track[]> {
+    if (isPlaylistUrl(query)) {
+      const tracks = await expandPlaylist(query, requestedBy);
+      if (tracks.length > 0) return tracks;
+      // Expansion failed (yt-dlp / Spotify creds missing) — for a
+      // watch?v=...&list=... URL we can still play the single video.
+      const single = query.match(/[?&]v=([A-Za-z0-9_-]{6,})/);
+      if (single) return this.resolveMany(`https://www.youtube.com/watch?v=${single[1]}`, requestedBy);
+      return [];
+    }
+    const track = await this.resolve(query, requestedBy);
+    return track ? [track] : [];
   }
 
   public async resolve(query: string, requestedBy: TrackRequester): Promise<Track | null> {

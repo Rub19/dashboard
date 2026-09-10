@@ -14,6 +14,13 @@ const envSchema = z.object({
   DEV_GUILD_ID: z.string().optional(),
   DEFAULT_PREFIX: z.string().min(1).default('!'),
   BOT_OWNER_ID: z.string().optional().default('825124006209388616'),
+  // Optionnel — active la lecture des playlists / albums Spotify (`/play`
+  // avec un lien open.spotify.com/playlist|album). Sans ces deux valeurs,
+  // les liens Spotify de playlist sont ignorés (les liens de piste unique
+  // continuent de marcher via oEmbed). Client credentials d'une app
+  // Spotify Developer — https://developer.spotify.com/dashboard
+  SPOTIFY_CLIENT_ID: z.string().optional().default(''),
+  SPOTIFY_CLIENT_SECRET: z.string().optional().default(''),
 });
 
 const parsed = envSchema.safeParse(process.env);
@@ -34,4 +41,6 @@ export const config = {
   devGuildId: parsed.data.DEV_GUILD_ID || null,
   defaultPrefix: parsed.data.DEFAULT_PREFIX,
   botOwnerId: parsed.data.BOT_OWNER_ID || '825124006209388616',
+  spotifyClientId: parsed.data.SPOTIFY_CLIENT_ID,
+  spotifyClientSecret: parsed.data.SPOTIFY_CLIENT_SECRET,
 };

@@ -100,8 +100,32 @@ async function fetchLanyardDirect(userId?: string | null): Promise<ApiData | nul
   return null;
 }
 
+// Per-endpoint cache TTL. useLiveData mounts ~6-10 times and each polls on its
+// own 60s interval; without a real TTL those polls miss the 5s cache and each
+// fires a fresh request. These values reflect how fast the data actually moves.
+function ttlFor(path: string): number {
+  if (path.includes("/spotify/now-playing") || path.includes("/api/now-playing")) return 10_000;
+  if (path.includes("/lanyard/")) return 20_000;
+  if (path.includes("/weather")) return 300_000;
+  if (path.includes("/stats/") || path.includes("/matches")) return 120_000;
+  if (
+    path.includes("/github/") ||
+    path.includes("/steam/") ||
+    path.includes("/minecraft/") ||
+    path.includes("/lastfm/") ||
+    path.includes("/twitch/") ||
+    path.includes("/youtube/") ||
+    path.includes("/reddit/") ||
+    path.includes("/notion/") ||
+    path.includes("/google-")
+  ) {
+    return 180_000;
+  }
+  return 30_000;
+}
+
 async function fetchOptional(path: string): Promise<ApiData | null> {
-  const res = (await fetchWorkerCached(path)) as { data?: ApiData } | null;
+  const res = (await fetchWorkerCached(path, {}, ttlFor(path))) as { data?: ApiData } | null;
   return res?.data ?? null;
 }
 

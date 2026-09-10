@@ -1,3 +1,15 @@
+const v12125_fr: ChangelogEntry = {
+  version: "v1.21.25",
+  date: "2026-09-10",
+  title: "Nouveau Module Bot : Tags + Perf useLiveData",
+  items: [
+    "Nouveau module « Tags » : `/tag add faq <texte>` crée une réponse réutilisable, `/tag get faq` l'affiche (avec autocomplétion du nom). `/tag list | edit | remove | info`. 200 tags max / serveur, création réservée à « Gérer les messages ».",
+    "Page dashboard `/discord/tags` : éditeur (nom + contenu), liste avec compteur d'affichages, création/édition/suppression, stats.",
+    "Infra : le type `Command` du bot supporte désormais un handler `autocomplete` générique (dispatché dans `interactionCreate`).",
+    "Perf : `useLiveData` (~10 instances qui pollent toutes les 60 s) — chaque endpoint a maintenant un TTL de cache adapté (now-playing 10 s, lanyard 20 s, météo 5 min, trackers 2 min, github/steam/etc. 3 min) au lieu des 5 s par défaut. Les polls des différentes instances tombent presque tous en cache-hit.",
+  ],
+};
+
 const v12124_fr: ChangelogEntry = {
   version: "v1.21.24",
   date: "2026-09-10",
@@ -798,6 +810,18 @@ const v12052_fr: ChangelogEntry = {
     "Dynamic Island : correction d'un bug de priorité qui empêchait Spotify de jamais s'afficher, systématiquement évincé par la synchronisation d'arrière-plan.",
     "Commande /help du Bot Discord : la liste des commandes est désormais générée dynamiquement depuis les commandes réellement enregistrées (fin des commandes fantômes et des commandes manquantes), et affiche la vraie syntaxe des commandes à sous-commandes (ex. /automod status).",
     "Audit de l'enregistrement des commandes slash Discord : architecture confirmée saine, aucune dérive entre le code et les commandes déployées.",
+  ],
+};
+
+const v12125_en: ChangelogEntry = {
+  version: "v1.21.25",
+  date: "2026-09-10",
+  title: "New Bot Module: Tags + useLiveData Perf",
+  items: [
+    "New Tags module: /tag add faq <text> creates a reusable answer, /tag get faq shows it (with name autocomplete). /tag list, edit, remove, info. 200 tags/server max, creation gated to Manage Messages.",
+    "`/discord/tags` dashboard page: editor (name + content), list with a use counter, create/edit/delete, stats.",
+    "Infra: the bot's `Command` type now supports a generic `autocomplete` handler (dispatched in `interactionCreate`).",
+    "Perf: `useLiveData` (~10 instances all polling every 60s) — each endpoint now has a fitting cache TTL (now-playing 10s, lanyard 20s, weather 5min, trackers 2min, github/steam/etc. 3min) instead of the default 5s. The instances' polls mostly become cache hits.",
   ],
 };
 
@@ -1604,6 +1628,18 @@ const v12052_en: ChangelogEntry = {
   ],
 };
 
+const v12125_es: ChangelogEntry = {
+  version: "v1.21.25",
+  date: "2026-09-10",
+  title: "Nuevo Módulo del Bot: Tags + Rendimiento useLiveData",
+  items: [
+    "Nuevo módulo « Tags »: `/tag add faq <texto>` crea una respuesta reutilizable, `/tag get faq` la muestra (con autocompletado). `/tag list | edit | remove | info`. Máx 200 tags/servidor, creación reservada a Gestionar mensajes.",
+    "Página `/discord/tags`: editor, lista con contador de usos, crear/editar/eliminar, estadísticas.",
+    "Infra: el tipo `Command` del bot admite un handler `autocomplete` genérico.",
+    "Rendimiento: `useLiveData` — cada endpoint tiene ahora un TTL de caché adecuado en vez de los 5 s por defecto.",
+  ],
+};
+
 const v12124_es: ChangelogEntry = {
   version: "v1.21.24",
   date: "2026-09-10",
@@ -2404,6 +2440,18 @@ const v12052_es: ChangelogEntry = {
     "Dynamic Island: corregido un error de prioridad que impedía que Spotify apareciera, siempre desplazado por la sincronización en segundo plano.",
     "Comando /help del Bot de Discord: la lista de comandos ahora se genera dinámicamente desde los comandos realmente registrados (fin de comandos fantasma o ausentes), mostrando la sintaxis real de los comandos con subcomandos.",
     "Auditoría del registro de comandos slash de Discord: arquitectura confirmada como sólida, sin desviación entre el código y los comandos desplegados.",
+  ],
+};
+
+const v12125_de: ChangelogEntry = {
+  version: "v1.21.25",
+  date: "2026-09-10",
+  title: "Neues Bot-Modul: Tags + useLiveData-Performance",
+  items: [
+    "Neues Modul Tags: `/tag add faq <Text>` erstellt eine wiederverwendbare Antwort, `/tag get faq` zeigt sie (mit Namens-Autovervollstaendigung). `/tag list | edit | remove | info`. Max 200 Tags/Server, Erstellung nur mit Nachrichten verwalten.",
+    "Dashboard-Seite `/discord/tags`: Editor, Liste mit Nutzungszaehler, erstellen/bearbeiten/loeschen, Statistiken.",
+    "Infra: der `Command`-Typ des Bots unterstuetzt jetzt einen generischen `autocomplete`-Handler.",
+    "Performance: `useLiveData` — jeder Endpunkt hat jetzt einen passenden Cache-TTL statt der Standard-5s.",
   ],
 };
 
@@ -25387,5 +25435,9 @@ CHANGELOG_BY_LANG.fr.unshift(v12124_fr);
 CHANGELOG_BY_LANG.en.unshift(v12124_en);
 CHANGELOG_BY_LANG.es.unshift(v12124_es);
 CHANGELOG_BY_LANG.de.unshift(v12124_de);
+CHANGELOG_BY_LANG.fr.unshift(v12125_fr);
+CHANGELOG_BY_LANG.en.unshift(v12125_en);
+CHANGELOG_BY_LANG.es.unshift(v12125_es);
+CHANGELOG_BY_LANG.de.unshift(v12125_de);
 
 export const CHANGELOG = CHANGELOG_BY_LANG.fr;

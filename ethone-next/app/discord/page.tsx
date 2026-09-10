@@ -91,6 +91,7 @@ type ModuleType =
   | "reminders"
   | "afk"
   | "birthdays"
+  | "tags"
   | "bot";
 
 interface BotModule {
@@ -302,6 +303,14 @@ const MODULES: BotModule[] = [
     icon: Cake,
     color: "text-zinc-400",
     badge: "Communauté",
+  },
+  {
+    id: "tags",
+    title: "Tags",
+    description: "Réponses réutilisables du serveur : FAQ, formats de candidature, liens récurrents, via /tag.",
+    icon: Hash,
+    color: "text-zinc-400",
+    badge: "Utilitaires",
   },
   {
     id: "bot",
@@ -2502,6 +2511,38 @@ export default function DiscordDashboardPage() {
                         <li><code className="rounded bg-black/30 px-1">/birthday list</code> — anniversaires à venir</li>
                         <li><code className="rounded bg-black/30 px-1">/birthday remove</code></li>
                         <li><code className="rounded bg-black/30 px-1">/birthday config</code> — [Admin] salon, heure, rôle, message</li>
+                      </ul>
+                    </div>
+                  </div>
+                )}
+
+                {activeModule === "tags" && (
+                  <div className="space-y-4 text-xs">
+                    <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-3 rounded-2xl border border-white/10 bg-white/[0.03] p-4">
+                      <div>
+                        <div className="flex items-center gap-2">
+                          <p className="text-xs font-bold text-white">Tags</p>
+                        </div>
+                        <p className="text-[11px] text-zinc-300 mt-0.5">
+                          <code className="rounded bg-black/30 px-1">/tag add faq &lt;texte&gt;</code> crée une réponse réutilisable, <code className="rounded bg-black/30 px-1">/tag get faq</code> l&apos;affiche (avec autocomplétion). Idéal pour les FAQ, formats de candidature, liens récurrents.
+                        </p>
+                      </div>
+                      <Link
+                        href={`/discord/tags?guildId=${selectedGuild.id}`}
+                        className="flex h-9 shrink-0 items-center gap-2 rounded-xl bg-[#5865F2] px-4 text-xs font-semibold text-white transition-colors hover:bg-[#4752C4] active:scale-95 cursor-pointer"
+                      >
+                        <Hash className="h-4 w-4" />
+                        <span>Ouvrir Tags</span>
+                        <ChevronRight className="h-3.5 w-3.5" />
+                      </Link>
+                    </div>
+
+                    <div className="rounded-2xl border border-white/10 bg-white/[0.02] p-4 space-y-2">
+                      <p className="font-bold text-white">Commandes</p>
+                      <ul className="space-y-1 text-[11px] text-zinc-300">
+                        <li><code className="rounded bg-black/30 px-1">/tag get &lt;nom&gt;</code> — affiche un tag</li>
+                        <li><code className="rounded bg-black/30 px-1">/tag add | edit | remove</code> — [Gérer les messages]</li>
+                        <li><code className="rounded bg-black/30 px-1">/tag list</code> · <code className="rounded bg-black/30 px-1">/tag info &lt;nom&gt;</code></li>
                       </ul>
                     </div>
                   </div>

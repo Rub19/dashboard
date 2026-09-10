@@ -37,6 +37,7 @@ import { createReminderRouter } from './routes/reminderRoutes.js';
 import { reminderService } from '../modules/reminders/services/reminderService.js';
 import { createAfkRouter } from './routes/afkRoutes.js';
 import { createBirthdayRouter } from './routes/birthdayRoutes.js';
+import { createTagRouter } from './routes/tagRoutes.js';
 import { birthdayService } from '../modules/birthdays/services/birthdayService.js';
 import { createEventRouter } from './routes/events.js';
 import { createCalendarRouter } from './routes/calendar.js';
@@ -233,6 +234,12 @@ export function startWebServer(client: Client): http.Server {
     authMiddleware,
     createGuildAuthMiddleware(client),
     createBirthdayRouter(client)
+  );
+  app.use(
+    '/api/guilds/:guildId/tags',
+    authMiddleware,
+    createGuildAuthMiddleware(client),
+    createTagRouter(client)
   );
   app.use(
     '/api/guilds/:guildId/calendar',

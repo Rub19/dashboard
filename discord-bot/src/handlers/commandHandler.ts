@@ -59,6 +59,7 @@ import { stickyCommand } from '../modules/stickyMessages/commands/stickyCommand.
 import { reminderCommand } from '../modules/reminders/commands/reminderCommand.js';
 import { afkCommand } from '../modules/afk/commands/afkCommand.js';
 import { birthdayCommand } from '../modules/birthdays/commands/birthdayCommand.js';
+import { tagCommand } from '../modules/tags/commands/tagCommand.js';
 import { logsCommand } from '../modules/logs/commands/logsCommand.js';
 
 import { config } from '../config.js';
@@ -157,6 +158,9 @@ class CommandRegistry {
 
     // Birthdays (anniversaires + annonce quotidienne + rôle)
     this.register(birthdayCommand);
+
+    // Tags (réponses réutilisables du serveur)
+    this.register(tagCommand);
 
     // Journaux du serveur (routage par catégorie, verbosité, rétention)
     this.register(logsCommand);

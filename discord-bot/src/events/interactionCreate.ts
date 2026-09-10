@@ -164,6 +164,13 @@ export async function onInteractionCreate(interaction: Interaction) {
       return;
     }
 
+    // Fallback générique : une commande peut fournir son propre handler d'autocomplétion.
+    const acCmd = commandRegistry.getCommand(interaction.commandName);
+    if (acCmd?.autocomplete) {
+      await acCmd.autocomplete(interaction).catch(() => null);
+      return;
+    }
+
     await interaction.respond([]).catch(() => null);
     return;
   }

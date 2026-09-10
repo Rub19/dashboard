@@ -262,4 +262,6 @@ export interface Command {
     | SlashCommandSubcommandsOnlyBuilder
     | Omit<SlashCommandBuilder, 'addSubcommand' | 'addSubcommandGroup'>;
   execute: (ctx: CommandContext) => Promise<void>;
+  /** Optionnel : gère l'autocomplétion des options de cette commande. */
+  autocomplete?: (interaction: import('discord.js').AutocompleteInteraction) => Promise<void>;
 }

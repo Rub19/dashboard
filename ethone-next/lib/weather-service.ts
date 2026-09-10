@@ -124,7 +124,7 @@ export async function fetchWeatherSafe(city: string): Promise<WeatherData | null
   if (!cleanCity) return null;
 
   try {
-    const res = (await fetchWorkerCached(`/api/weather?city=${encodeURIComponent(cleanCity)}`)) as { data?: WeatherData } | null;
+    const res = (await fetchWorkerCached(`/api/weather?city=${encodeURIComponent(cleanCity)}`, {}, 300_000)) as { data?: WeatherData } | null;
     if (res?.data && typeof res.data.temperature === "number") {
       return res.data;
     }

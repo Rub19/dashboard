@@ -2,6 +2,16 @@
 
 Toutes les modifications notables de ce projet seront documentées dans ce fichier.
 
+## discord-bot — 2026-09-10 (musique : streaming via yt-dlp, fin du son muet)
+
+**Le bot rejoignait le salon vocal mais restait muet sur `/play`.**
+
+- **Cause** : `discord-bot/src/modules/music/providers/musicProvider.ts` faisait passer TOUT l'audio par `play.stream()` de **`play-dl@1.9.7`** — bibliothèque non maintenue depuis 2023. YouTube a changé son chiffrement de signature une dizaine de fois depuis, et sans cookie une requête depuis une IP de datacenter (le VPS) tombe sur le mur anti-bot. `play.stream()` renvoyait soit une erreur, soit un flux vide → « Now Playing » correct mais aucun son. Aggravé par le fallback SomaFM qui masquait l'échec (radio lofi random à la place de la chanson).
+- **Correctif** : nouveau module `providers/ytdlpStream.ts` — l'audio est récupéré par le binaire **`yt-dlp`** (`spawn`, `-f bestaudio -o -`), qui suit les changements de YouTube en 24-48 h et gère YouTube / SoundCloud / Bandcamp / ~1800 sites + `ytsearch1:<requête>`. Le flux est passé à ffmpeg (`ffmpeg-static`) via `createAudioResource(..., StreamType.Arbitrary)`. Les 3 `getStream()` (Spotify-bridge, YouTube, SoundCloud) utilisent ce chemin unique.
+- Bonus : une URL YouTube garde désormais sa vraie URL (yt-dlp lit l'audio de la vidéo réelle) au lieu d'être « bridgée » vers un résultat de recherche SoundCloud approximatif ; une recherche texte qui échoue sur SoundCloud bascule sur `ytsearch1:` (YouTube) au lieu de tomber sur SomaFM.
+- **À FAIRE sur le VPS** : installer le binaire — `sudo apt install yt-dlp` (ou `pipx install yt-dlp`). Fortement recommandé : exporter un `cookies.txt` d'une session YouTube connectée et définir `YT_DLP_COOKIES_FILE=/chemin/cookies.txt` (YouTube limite le trafic anonyme datacenter). Optionnel : `YT_DLP_PATH` si le binaire n'est pas dans le PATH.
+- Validation : `npm run node:build` (tsc) propre. Non testable ici (pas de salon vocal, pas de `yt-dlp`) — à confirmer par un `/play` réel après déploiement.
+
 ## v1.20.85 — 2026-09-10
 
 **Connexion par code : la page de login utilisait le flux OTP natif Supabase (lien magique, aucun code) au lieu de l'infra OTP ETHONE**

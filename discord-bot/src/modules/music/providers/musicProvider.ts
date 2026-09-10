@@ -2,6 +2,25 @@ import { AudioResource, createAudioResource, StreamType } from '@discordjs/voice
 import play from 'play-dl';
 import { Track, TrackRequester } from '../types/music.js';
 import { logger } from '../../../utils/logger.js';
+import { createYtDlpStream } from './ytdlpStream.js';
+
+/**
+ * Single audio path for every "real" provider (Spotify bridge, YouTube,
+ * SoundCloud): pull the bytes with yt-dlp, hand them to ffmpeg via
+ * @discordjs/voice. Replaces play.stream(), which no longer returns usable
+ * audio (see ytdlpStream.ts). Returns null if yt-dlp isn't installed or the
+ * extraction failed, so the caller can fall back.
+ */
+async function streamWithYtDlp(input: string, label: string): Promise<AudioResource | null> {
+  try {
+    const stream = await createYtDlpStream(input);
+    if (!stream) return null;
+    return createAudioResource(stream, { inputType: StreamType.Arbitrary });
+  } catch (err) {
+    logger.warn(`[${label}] yt-dlp stream error :`, err);
+    return null;
+  }
+}
 
 export interface IMusicProvider {
   name: string;
@@ -178,14 +197,7 @@ export class SpotifyBridgeProvider implements IMusicProvider {
   }
 
   public async getStream(track: Track): Promise<AudioResource | null> {
-    try {
-      await ensureSoundCloud();
-      const stream = await play.stream(track.url);
-      return createAudioResource(stream.stream, { inputType: stream.type });
-    } catch (err) {
-      logger.warn('[SpotifyBridgeProvider] Erreur streaming Spotify bridge :', err);
-      return null;
-    }
+    return streamWithYtDlp(track.url, 'SpotifyBridgeProvider');
   }
 }
 
@@ -221,27 +233,21 @@ export class YouTubeMusicProvider implements IMusicProvider {
         logger.warn('[YouTubeMusicProvider] video_basic_info notice :', infoErr);
       }
 
-      await ensureSoundCloud();
-      const scResults = await play.search(`${title} ${artist}`, {
-        source: { soundcloud: 'tracks' },
-        limit: 1,
-      });
-
-      if (scResults && scResults.length > 0) {
-        const sc = scResults[0];
-        return {
-          id: `yt-${Date.now().toString(36)}`,
-          title,
-          artist,
-          album: 'YouTube Music',
-          duration: sc.durationInSec || duration,
-          thumbnail,
-          url: sc.url,
-          source: 'YOUTUBE',
-          requestedBy,
-          addedAt: new Date().toISOString(),
-        };
-      }
+      // Keep the real YouTube URL — yt-dlp streams the actual video's audio
+      // directly now, so there's no reason to bridge to a SoundCloud search
+      // result (which was often a cover, a remix, or nothing).
+      return {
+        id: `yt-${Date.now().toString(36)}`,
+        title,
+        artist,
+        album: 'YouTube Music',
+        duration,
+        thumbnail,
+        url: query,
+        source: 'YOUTUBE',
+        requestedBy,
+        addedAt: new Date().toISOString(),
+      };
     } catch (err) {
       logger.warn('[YouTubeMusicProvider] Erreur résolution YouTube :', err);
     }
@@ -249,14 +255,7 @@ export class YouTubeMusicProvider implements IMusicProvider {
   }
 
   public async getStream(track: Track): Promise<AudioResource | null> {
-    try {
-      await ensureSoundCloud();
-      const stream = await play.stream(track.url);
-      return createAudioResource(stream.stream, { inputType: stream.type });
-    } catch (err) {
-      logger.warn('[YouTubeMusicProvider] Erreur stream YouTube :', err);
-      return null;
-    }
+    return streamWithYtDlp(track.url, 'YouTubeMusicProvider');
   }
 }
 
@@ -318,18 +317,30 @@ export class SoundCloudProvider implements IMusicProvider {
 
   public async resolveTrack(query: string, requestedBy: TrackRequester): Promise<Track | null> {
     const results = await this.search(query, requestedBy, 1);
-    return results.length > 0 ? results[0] : null;
+    if (results.length > 0) return results[0];
+
+    // SoundCloud search found nothing (or its free client id is dead) — hand
+    // the query to yt-dlp's YouTube search instead of dropping to the SomaFM
+    // fallback. yt-dlp resolves `ytsearch1:` and streams the top hit.
+    if (query.trim() && !query.startsWith('http')) {
+      return {
+        id: `yts-${Date.now().toString(36)}`,
+        title: query.trim(),
+        artist: 'YouTube',
+        album: 'Recherche',
+        duration: 0,
+        thumbnail: 'https://images.unsplash.com/photo-1511671782779-c97d3d27a1d4?w=500&auto=format&fit=crop&q=80',
+        url: `ytsearch1:${query.trim()}`,
+        source: 'YOUTUBE',
+        requestedBy,
+        addedAt: new Date().toISOString(),
+      };
+    }
+    return null;
   }
 
   public async getStream(track: Track): Promise<AudioResource | null> {
-    try {
-      await ensureSoundCloud();
-      const stream = await play.stream(track.url);
-      return createAudioResource(stream.stream, { inputType: stream.type });
-    } catch (err) {
-      logger.warn(`[SoundCloudProvider] Erreur lecture stream pour "${track.title}" :`, err);
-      return null;
-    }
+    return streamWithYtDlp(track.url, 'SoundCloudProvider');
   }
 }
 

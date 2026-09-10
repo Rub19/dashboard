@@ -31,7 +31,7 @@ export default function PollResultsClient() {
   const results = {
     pollId,
     title: isStaffPoll
-      ? "Décision Staff : Révision des Sanctions AutoMod 2.0"
+      ? "Décision Staff : Révision des Sanctions AutoMod"
       : "Sondage Communautaire : Soirée Jeux du Vendredi",
     status: "ACTIVE",
     totalVotes: isStaffPoll ? 11 : 128,
@@ -46,7 +46,7 @@ export default function PollResultsClient() {
       {
         id: "q1",
         title: isStaffPoll
-          ? "Approuvez-vous la mise en place du barème AutoMod 2.0 ?"
+          ? "Approuvez-vous la mise en place du barème AutoMod ?"
           : "À quel jeu souhaitez-vous jouer ce vendredi ?",
         totalVotes: isStaffPoll ? 11 : 128,
         options: isStaffPoll

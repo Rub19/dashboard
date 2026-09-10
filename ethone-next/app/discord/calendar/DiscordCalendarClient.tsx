@@ -175,7 +175,7 @@ export default function DiscordCalendarClient() {
     const icsLines = [
       "BEGIN:VCALENDAR",
       "VERSION:2.0",
-      "PRODID:-//ETHONE//Discord Events 2.0//FR",
+      "PRODID:-//ETHONE//Discord Events//FR",
       "CALSCALE:GREGORIAN",
     ];
 

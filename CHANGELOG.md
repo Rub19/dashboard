@@ -2,6 +2,15 @@
 
 Toutes les modifications notables de ce projet seront documentées dans ce fichier.
 
+## v1.20.95 — 2026-09-10
+
+**Pages Discord du dashboard : ménage visuel (« moins IA »)**
+
+- Script de transformation (`scratchpad/derice_*.js`, piloté par regex, patterns sûrs uniquement) sur `app/discord/**/*.tsx` (80 fichiers) :
+  - **`app/discord/page.tsx`** : les 21 cartes passerelle `bg-gradient-to-r from-{c}-500/10 via-{c}-500/10 to-{c}-600/10 ... shadow-lg shadow-{c}-500/5` → `border-white/10 bg-white/[0.03]` ; boutons `bg-gradient-to-r from-{c}-600 to-{c}-600 ... hover:from/to` → `bg-[#5865F2] ... hover:bg-[#4752C4]` ; suppression des `<span>` emoji `text-base` et des pastilles `text-[9px] uppercase ... bg-{c}-500/20` (« Live Guard », « Live Stream »…) ; `MODULES[].color` arc-en-ciel → `text-zinc-400`.
+  - **Tous** : ` 2.0` supprimé (112 occurrences — titres `metadata`, `<h1>`, labels, commentaires ; aucun `2.0` numérique dans ces fichiers) ; blocs d'icône `bg-gradient-to-br from-{c}-500/20 to-{c}-600/20 border border-{c}-500/30` → `bg-white/[0.04] border border-white/10 text-zinc-300` (5 en plus du hub).
+- Aucun changement de logique. Validation : `tsc` 0 erreur, `build`, `test:unit` 14/14 69/69, `lint` inchangé (355).
+
 ## v1.20.94 — 2026-09-10
 
 **Nouveau tracker : Teamfight Tactics**

@@ -114,7 +114,7 @@ export default function VoiceRoomDetailClient({ roomId }: { roomId: string }) {
       id: roomId,
       guildId,
       hubId: "personal_voice_2",
-      hubName: "Personal Voice Rooms 2.0",
+      hubName: "Personal Voice Rooms",
       name: "🎮 Salon de Test",
       ownerId: "usr_alex",
       ownerTag: "Alex#0001",
@@ -157,7 +157,7 @@ export default function VoiceRoomDetailClient({ roomId }: { roomId: string }) {
         timestamp: new Date(now - 1000 * 60 * 45).toISOString(),
         actorId: "usr_alex",
         actorTag: "Alex#0001",
-        details: "Création via Panneau de Création 2.0",
+        details: "Création via Panneau de Création",
       },
       {
         id: "tl_2",
@@ -326,7 +326,7 @@ export default function VoiceRoomDetailClient({ roomId }: { roomId: string }) {
             )}
           </div>
           <p className="text-xs text-zinc-400 mt-1">
-            Propriétaire : <span className="text-amber-400 font-semibold">{room.ownerTag}</span> • Hub : {room.hubName || "Personal Voice 2.0"} • Débit : {Math.round(room.bitrate / 1000)} kbps
+            Propriétaire : <span className="text-amber-400 font-semibold">{room.ownerTag}</span> • Hub : {room.hubName || "Personal Voice"} • Débit : {Math.round(room.bitrate / 1000)} kbps
           </p>
         </div>
 

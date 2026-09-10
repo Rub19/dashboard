@@ -514,7 +514,7 @@ export function AuditCenterClient() {
               <div>
                 <div className="flex items-center gap-2">
                   <h1 className="text-sm font-bold tracking-tight text-white sm:text-base">
-                    Audit Center 2.0
+                    Audit Center
                   </h1>
                   <span className="rounded-full border border-indigo-500/30 bg-indigo-500/10 px-2 py-0.5 text-[10px] font-semibold text-indigo-300">
                     Traçabilité Absolue
@@ -605,7 +605,7 @@ export function AuditCenterClient() {
 
           <div className="rounded-2xl border border-white/10 bg-zinc-900/60 p-4 backdrop-blur-xl">
             <div className="flex items-center justify-between">
-              <span className="text-xs text-zinc-400">AutoMod 2.0</span>
+              <span className="text-xs text-zinc-400">AutoMod</span>
               <Zap className="h-4 w-4 text-amber-400" />
             </div>
             <p className="mt-2 text-2xl font-extrabold tracking-tight text-amber-400 font-mono">
@@ -738,7 +738,7 @@ export function AuditCenterClient() {
                 >
                   <option value="ALL">Tous les modules</option>
                   <option value="SECURITY">Sécurité & Raids</option>
-                  <option value="AUTOMOD">AutoMod 2.0</option>
+                  <option value="AUTOMOD">AutoMod</option>
                   <option value="MODERATION">Modération (Cases)</option>
                   <option value="MEMBERS">Membres</option>
                   <option value="MESSAGES">Messages</option>
@@ -1150,7 +1150,7 @@ export function AuditCenterClient() {
 
                 {/* Salon AutoMod */}
                 <div className="rounded-xl border border-white/5 bg-white/[0.02] p-3 space-y-2">
-                  <span className="font-bold text-amber-400">Logs Détections AutoMod 2.0</span>
+                  <span className="font-bold text-amber-400">Logs Détections AutoMod</span>
                   <input
                     type="text"
                     value={configRouting.automodChannelId}

@@ -2,7 +2,7 @@ import { Suspense } from "react";
 import BotPresenceClient from "../BotPresenceClient";
 
 export const metadata = {
-  title: "Studio d'Identité — Bot Presence 2.0 — ETHONE",
+  title: "Studio d'Identité — Bot Presence — ETHONE",
   description: "Avatar, pseudonyme et gestion de l'identité visuelle du bot Discord",
 };
 

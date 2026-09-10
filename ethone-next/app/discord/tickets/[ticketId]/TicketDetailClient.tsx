@@ -593,7 +593,7 @@ export default function TicketDetailClient() {
             {ticket.relatedCaseId ? (
               <div className="space-y-2">
                 <p className="text-xs text-zinc-300">
-                  Ce ticket est rattaché à une sanction ou une enquête dans le Centre de Modération 2.0.
+                  Ce ticket est rattaché à une sanction ou une enquête dans le Centre de Modération.
                 </p>
                 <Link
                   href={`/discord/moderation/cases/${ticket.relatedCaseId}?guildId=${guildId}`}
@@ -743,7 +743,7 @@ export default function TicketDetailClient() {
           <div className="w-full max-w-md rounded-2xl border border-white/10 bg-zinc-950 p-6 space-y-4 shadow-2xl">
             <h3 className="text-sm font-bold text-white">Lier un Dossier de Modération</h3>
             <p className="text-xs text-zinc-400">
-              Rattachez ce ticket au Case System de Moderation Center 2.0 pour garder un suivi complet de la sanction.
+              Rattachez ce ticket au Case System de Moderation Center pour garder un suivi complet de la sanction.
             </p>
 
             <div className="space-y-1.5">

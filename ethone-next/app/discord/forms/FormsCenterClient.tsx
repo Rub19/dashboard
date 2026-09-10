@@ -287,7 +287,7 @@ export default function FormsCenterClient() {
             </div>
             <div>
               <h1 className="text-xl sm:text-2xl font-black tracking-tight text-white flex items-center gap-2">
-                <span>Forms &amp; Applications 2.0</span>
+                <span>Forms &amp; Applications</span>
                 <span className="text-[10px] font-bold uppercase tracking-wider px-2 py-0.5 rounded-full bg-indigo-500/20 text-indigo-300 border border-indigo-500/30">
                   No-Code Builder
                 </span>

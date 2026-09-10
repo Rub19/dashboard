@@ -180,7 +180,7 @@ export default function VoiceCenterClient() {
           id: "room_alex_gaming",
           guildId,
           hubId: "personal_voice_2",
-          hubName: "Personal Voice 2.0",
+          hubName: "Personal Voice",
           name: "🎮 Alex's Room #1",
           ownerId: "usr_alex",
           ownerTag: "Alex#0001",
@@ -219,7 +219,7 @@ export default function VoiceCenterClient() {
           id: "room_chill_lounge",
           guildId,
           hubId: "personal_voice_2",
-          hubName: "Personal Voice 2.0",
+          hubName: "Personal Voice",
           name: "💬 Salon de Marie #1",
           ownerId: "usr_marie",
           ownerTag: "Marie#9999",
@@ -337,7 +337,7 @@ export default function VoiceCenterClient() {
         <div>
           <div className="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-emerald-500/10 border border-emerald-500/20 text-emerald-400 text-xs font-semibold mb-2">
             <Radio className="h-3.5 w-3.5" />
-            <span>Personal Voice Rooms 2.0 • 100% Interactif</span>
+            <span>Personal Voice Rooms • 100% Interactif</span>
           </div>
           <h1 className="text-3xl font-black tracking-tight text-white flex items-center gap-3">
             <span>Salons Vocaux Personnalisés</span>
@@ -439,7 +439,7 @@ export default function VoiceCenterClient() {
         </div>
       </div>
 
-      {/* DISCORD PANEL DEPLOYER (Personal Voice Rooms 2.0 Banner) */}
+      {/* DISCORD PANEL DEPLOYER (Personal Voice Rooms Banner) */}
       <div className="rounded-2xl border border-indigo-500/30 bg-gradient-to-r from-indigo-950/40 via-zinc-900/80 to-zinc-900/80 p-6 backdrop-blur-xl shadow-xl shadow-indigo-950/20">
         <div className="flex flex-col lg:flex-row lg:items-center justify-between gap-6">
           <div className="space-y-2 max-w-2xl">
@@ -583,7 +583,7 @@ export default function VoiceCenterClient() {
                             {room.ownerTag}
                           </span>
                           <span>•</span>
-                          <span>{room.hubName || "Personal Voice 2.0"}</span>
+                          <span>{room.hubName || "Personal Voice"}</span>
                           <span>•</span>
                           <span>{Math.round((room.bitrate || 64000) / 1000)} kbps</span>
                         </div>

@@ -582,7 +582,7 @@ export default function BotPresenceClient({ initialTab = "overview" }: BotPresen
               href="/discord/bot"
               className="text-zinc-400 hover:text-white transition-colors flex items-center gap-1"
             >
-              <span>Centre de Contrôle 2.0</span>
+              <span>Centre de Contrôle</span>
               <ArrowRight className="w-3 h-3" />
             </Link>
           </div>

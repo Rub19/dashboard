@@ -928,7 +928,7 @@ export default function BotControlClient({ initialTab = "overview" }: BotControl
               <span>Accueil Discord</span>
             </Link>
             <span className="text-zinc-600">•</span>
-            <span className="text-zinc-300 font-medium">Bot Control Center 2.0</span>
+            <span className="text-zinc-300 font-medium">Bot Control Center</span>
           </div>
 
           <div className="flex items-center gap-3">
@@ -1051,7 +1051,7 @@ export default function BotControlClient({ initialTab = "overview" }: BotControl
                   className="px-3.5 py-2 rounded-xl bg-indigo-600 hover:bg-indigo-500 text-white text-xs font-semibold flex items-center gap-1.5 transition-all shadow-md shadow-indigo-600/20"
                 >
                   <Sparkles className="w-3.5 h-3.5" />
-                  <span>Présence 2.0</span>
+                  <span>Présence</span>
                 </Link>
 
                 <button
@@ -1465,7 +1465,7 @@ export default function BotControlClient({ initialTab = "overview" }: BotControl
               <Sparkles className="w-6 h-6" />
             </div>
             <div>
-              <h3 className="text-lg font-bold text-white">Bot Presence & Identity Center 2.0</h3>
+              <h3 className="text-lg font-bold text-white">Bot Presence & Identity Center</h3>
               <p className="text-xs text-zinc-400 max-w-md mx-auto mt-1">
                 Le module complet de gestion de la présence globale, rotation d'activités, profils prédéfinis et studio d'identité est disponible dans sa console dédiée.
               </p>
@@ -1474,7 +1474,7 @@ export default function BotControlClient({ initialTab = "overview" }: BotControl
               href="/discord/bot/presence"
               className="inline-flex items-center gap-2 px-6 py-2.5 rounded-xl bg-indigo-600 hover:bg-indigo-500 text-white font-semibold text-xs transition-all shadow-md"
             >
-              <span>Accéder au Centre de Présence 2.0</span>
+              <span>Accéder au Centre de Présence</span>
               <ArrowRight className="w-4 h-4" />
             </Link>
           </div>
@@ -2242,7 +2242,7 @@ export default function BotControlClient({ initialTab = "overview" }: BotControl
                 <div>
                   <h3 className="text-base font-bold text-white flex items-center gap-2">
                     <Bot className="w-5 h-5 text-purple-400" />
-                    Assistant IA 2.0 & Télémétrie des Tokens
+                    Assistant IA & Télémétrie des Tokens
                   </h3>
                   <p className="text-xs text-zinc-400">
                     Moteur de raisonnement contextuel avec RAG Knowledge Base et Safety Guardrail

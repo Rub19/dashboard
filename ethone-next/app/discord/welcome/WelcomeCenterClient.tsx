@@ -440,7 +440,7 @@ export function WelcomeCenterClient() {
           </div>
           <div>
             <div className="flex items-center gap-2">
-              <h1 className="text-xl font-bold tracking-tight text-white">Bienvenue & Onboarding 2.0</h1>
+              <h1 className="text-xl font-bold tracking-tight text-white">Bienvenue & Onboarding</h1>
               <span className="rounded-full border border-teal-500/30 bg-teal-500/10 px-2.5 py-0.5 text-[10px] font-semibold text-teal-300">
                 Experience Designer
               </span>

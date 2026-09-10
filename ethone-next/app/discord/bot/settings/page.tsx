@@ -2,7 +2,7 @@ import { Suspense } from "react";
 import BotControlClient from "../BotControlClient";
 
 export const metadata = {
-  title: "Configuration Opérationnelle — Bot Control Center 2.0 — ETHONE",
+  title: "Configuration Opérationnelle — Bot Control Center — ETHONE",
 };
 
 export const dynamic = "force-static";

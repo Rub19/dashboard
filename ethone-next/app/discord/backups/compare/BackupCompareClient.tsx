@@ -101,7 +101,7 @@ export default function BackupCompareClient() {
     {
       id: "diff-ethone-1",
       component: "ETHONE",
-      name: "Voice Channels 2.0 Hub",
+      name: "Voice Channels Hub",
       status: "ADDED",
       before: null,
       after: "Hub Gaming + Hub Chill actifs avec auto-suppression 30s",

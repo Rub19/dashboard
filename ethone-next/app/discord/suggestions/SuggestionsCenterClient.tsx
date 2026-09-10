@@ -242,7 +242,7 @@ export default function SuggestionsCenterClient() {
               </div>
               <div>
                 <h1 className="text-2xl font-bold text-white tracking-tight flex items-center gap-2">
-                  ETHONE Boîte à Suggestions 2.0
+                  ETHONE Boîte à Suggestions
                   <span className="px-2 py-0.5 rounded text-[11px] font-semibold bg-emerald-500/10 text-emerald-400 border border-emerald-500/20">
                     Boîte Ouverte v2.4
                   </span>

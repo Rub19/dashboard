@@ -1,7 +1,7 @@
 import RolesCenterClient from "./RolesCenterClient";
 
 export const metadata = {
-  title: "Reaction Roles & Auto-Roles 2.0 | ETHONE",
+  title: "Reaction Roles & Auto-Roles | ETHONE",
   description: "Panneaux de rôles par boutons, join-roles et temporisation.",
 };
 

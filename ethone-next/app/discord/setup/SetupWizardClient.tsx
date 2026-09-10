@@ -144,7 +144,7 @@ export default function SetupWizardClient() {
 
           <div className="flex items-center gap-2">
             <span className="w-2 h-2 rounded-full bg-emerald-400 shadow-[0_0_5px_rgba(52,211,153,0.8)]" />
-            <span className="text-xs font-mono text-zinc-400 font-medium">SETUP ASSISTÉ 2.0</span>
+            <span className="text-xs font-mono text-zinc-400 font-medium">SETUP ASSISTÉ</span>
           </div>
         </div>
 
@@ -574,7 +574,7 @@ export default function SetupWizardClient() {
                   className="p-3.5 rounded-2xl bg-zinc-950/80 border border-zinc-800 hover:border-teal-500/50 transition group"
                 >
                   <Sparkles className="w-5 h-5 text-teal-400 mb-2 group-hover:scale-110 transition" />
-                  <div className="text-xs font-bold text-white">Welcome 2.0</div>
+                  <div className="text-xs font-bold text-white">Welcome</div>
                   <div className="text-[10px] text-zinc-400">Cartes graphiques & rôles</div>
                 </Link>
               </div>

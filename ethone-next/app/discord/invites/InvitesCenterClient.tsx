@@ -335,7 +335,7 @@ export default function InvitesCenterClient() {
             <div>
               <div className="flex items-center gap-2">
                 <h1 className="text-xl sm:text-2xl font-black text-white tracking-tight">
-                  Invites & Referrals 2.0
+                  Invites & Referrals
                 </h1>
                 <span className="px-2 py-0.5 rounded-full bg-pink-500/10 text-pink-400 border border-pink-500/20 text-[10px] font-bold font-mono">
                   CROISSANCE

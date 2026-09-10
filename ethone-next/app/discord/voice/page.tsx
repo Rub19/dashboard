@@ -2,7 +2,7 @@ import type { Metadata } from "next";
 import VoiceCenterClient from "./VoiceCenterClient";
 
 export const metadata: Metadata = {
-  title: "Voice Channels 2.0 — ETHONE",
+  title: "Voice Channels — ETHONE",
   description: "Create, manage and automate your Discord voice experience.",
 };
 

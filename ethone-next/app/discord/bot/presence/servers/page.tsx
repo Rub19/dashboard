@@ -2,7 +2,7 @@ import { Suspense } from "react";
 import BotPresenceClient from "../BotPresenceClient";
 
 export const metadata = {
-  title: "Préférences Serveurs — Bot Presence 2.0 — ETHONE",
+  title: "Préférences Serveurs — Bot Presence — ETHONE",
   description: "Profils de présence préférés par serveur Discord installé",
 };
 

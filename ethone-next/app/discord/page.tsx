@@ -101,7 +101,7 @@ const MODULES: BotModule[] = [
     title: "Sécurité & Anti-Raid",
     description: "Protection contre les raids, mass joins, anti-spam et verrouillage d'urgence.",
     icon: ShieldCheck,
-    color: "text-emerald-400",
+    color: "text-zinc-400",
     badge: "Sécurité",
   },
   {
@@ -109,7 +109,7 @@ const MODULES: BotModule[] = [
     title: "Command Builder",
     description: "Créez vos commandes Discord personnalisées avec réponses textes et embeds.",
     icon: Code2,
-    color: "text-indigo-400",
+    color: "text-zinc-400",
     badge: "Custom",
   },
   {
@@ -117,7 +117,7 @@ const MODULES: BotModule[] = [
     title: "Boîte à Suggestions",
     description: "Système de boîte à idées avec votes communautaires et statuts.",
     icon: Lightbulb,
-    color: "text-amber-400",
+    color: "text-zinc-400",
     badge: "Communauté",
   },
   {
@@ -125,7 +125,7 @@ const MODULES: BotModule[] = [
     title: "Leveling & Rôles XP",
     description: "Gain d'expérience par messages et distribution automatique de rôles.",
     icon: Award,
-    color: "text-fuchsia-400",
+    color: "text-zinc-400",
     badge: "Progression",
   },
   {
@@ -133,23 +133,23 @@ const MODULES: BotModule[] = [
     title: "Tirages au sort",
     description: "Création et gestion de concours avec sélection aléatoire de gagnants.",
     icon: Gift,
-    color: "text-rose-400",
+    color: "text-zinc-400",
     badge: "Événements",
   },
   {
     id: "tickets",
-    title: "Tickets Center 2.0",
+    title: "Tickets Center",
     description: "Helpdesk professionnel, formulaires, équipes de staff, transcripts et statistiques.",
     icon: Ticket,
-    color: "text-emerald-400",
+    color: "text-zinc-400",
     badge: "Helpdesk",
   },
   {
     id: "welcome",
-    title: "Bienvenue & Onboarding 2.0",
+    title: "Bienvenue & Onboarding",
     description: "Messages d'accueil, embeds, cartes de bienvenue, auto-rôles, vérification et onboarding complet.",
     icon: Sparkles,
-    color: "text-teal-400",
+    color: "text-zinc-400",
     badge: "Onboarding",
   },
   {
@@ -157,7 +157,7 @@ const MODULES: BotModule[] = [
     title: "Modération & Sanctions",
     description: "Réglages des avertissements, mutes, expulsions et bannissements.",
     icon: Hammer,
-    color: "text-orange-400",
+    color: "text-zinc-400",
     badge: "Staff",
   },
   {
@@ -165,71 +165,71 @@ const MODULES: BotModule[] = [
     title: "Journal d'Audit",
     description: "Configuration des salons de logs pour messages et événements serveurs.",
     icon: FileText,
-    color: "text-blue-400",
+    color: "text-zinc-400",
     badge: "Surveillance",
   },
   {
     id: "music",
-    title: "Lecteur Musique 2.0",
+    title: "Lecteur Musique",
     description: "Contrôle en direct de la musique vocale, queue, playlists et mode DJ.",
     icon: Music2,
-    color: "text-violet-400",
+    color: "text-zinc-400",
     badge: "Live Audio",
   },
   {
     id: "invites",
-    title: "Invites & Parrainages 2.0",
+    title: "Invites & Parrainages",
     description: "Tracking précis des invitations Discord, détection des faux joins, scores de risque et récompenses.",
     icon: UserPlus,
-    color: "text-amber-400",
+    color: "text-zinc-400",
     badge: "Croissance",
   },
   {
     id: "voice",
-    title: "Salons Vocaux 2.0",
+    title: "Salons Vocaux",
     description: "Join-to-Create, salons temporaires automatiques, hubs et contrôle Discord.",
     icon: Radio,
-    color: "text-emerald-400",
+    color: "text-zinc-400",
     badge: "Vocal",
   },
   {
     id: "backups",
-    title: "Sauvegardes & Disaster Recovery 2.0",
+    title: "Sauvegardes & Disaster Recovery",
     description: "Snapshots immuables, restauration sécurisée, comparateur diff et planification automatique.",
     icon: Archive,
-    color: "text-indigo-400",
+    color: "text-zinc-400",
     badge: "Recovery",
   },
   {
     id: "ai",
-    title: "AI Assistant 2.0",
+    title: "AI Assistant",
     description: "Assistant IA Discord intelligent, base RAG sémantique, builder de personnalité et outils support.",
     icon: Bot,
-    color: "text-violet-400",
+    color: "text-zinc-400",
     badge: "GenAI",
   },
   {
     id: "forms",
-    title: "Forms & Applications 2.0",
+    title: "Forms & Applications",
     description: "Form Builder no-code, candidatures staff, logique conditionnelle, scoring et review.",
     icon: FileText,
-    color: "text-cyan-400",
+    color: "text-zinc-400",
     badge: "Recrutement",
   },
   {
     id: "polls",
-    title: "Sondages & Votes 2.0",
+    title: "Sondages & Votes",
     description: "Sondages démocratiques, votes pondérés par rôles, décisions staff, quorums et bulletins secrets.",
     icon: Vote,
-    color: "text-indigo-400",
+    color: "text-zinc-400",
     badge: "Démocratie",
   },
   {
     id: "roles",
-    title: "Reaction Roles & Auto-Roles 2.0",
+    title: "Reaction Roles & Auto-Roles",
     description: "Panneaux de sélection de rôles par boutons et menus déroulants, join-roles et rôles temporaires.",
     icon: Tag,
-    color: "text-pink-400",
+    color: "text-zinc-400",
     badge: "Rôles",
   },
   {
@@ -237,23 +237,23 @@ const MODULES: BotModule[] = [
     title: "Vue d'Ensemble & Insights",
     description: "Informations générales sur l'état du serveur et statistiques d'utilisation.",
     icon: BarChart3,
-    color: "text-cyan-400",
+    color: "text-zinc-400",
     badge: "Données",
   },
   {
     id: "events",
-    title: "Événements & Calendrier 2.0",
+    title: "Événements & Calendrier",
     description: "Planification d'événements, calendrier interactif, gestion des RSVP, jauges et rappels automatiques Discord.",
     icon: Calendar,
-    color: "text-indigo-400",
+    color: "text-zinc-400",
     badge: "Événements",
   },
   {
     id: "server",
-    title: "Server Management Center 2.0",
+    title: "Server Management Center",
     description: "Centre de gestion globale : diagnostics santé, score de sécurité, membres, salons, rôles, permissions et emojis.",
     icon: Server,
-    color: "text-blue-400",
+    color: "text-zinc-400",
     badge: "Serveur",
   },
   {
@@ -261,15 +261,15 @@ const MODULES: BotModule[] = [
     title: "Starboard",
     description: "Le hall of fame des messages : republication automatique des messages les plus étoilés du serveur.",
     icon: Star,
-    color: "text-amber-400",
+    color: "text-zinc-400",
     badge: "Communauté",
   },
   {
     id: "bot",
-    title: "Bot Control Center 2.0",
+    title: "Bot Control Center",
     description: "Console centrale du bot : télémétrie temps réel, santé des 22 modules, commandes, bus d'événements, diagnostics et intelligence.",
     icon: Bot,
-    color: "text-emerald-400",
+    color: "text-zinc-400",
     badge: "Bot Core",
   },
 ];
@@ -439,7 +439,7 @@ export default function DiscordDashboardPage() {
 
   const BOT_API_URL = process.env.NEXT_PUBLIC_DISCORD_BOT_API || "";
 
-  // --- Live Music Center 2.0 State ---
+  // --- Live Music Center State ---
   const [liveMusicState, setLiveMusicState] = useState<any>({
     status: "IDLE",
     currentTrack: null,
@@ -918,7 +918,7 @@ export default function DiscordDashboardPage() {
                         <Music2 className="h-5 w-5" />
                       </div>
                       <div>
-                        <p className="text-xs font-bold text-white">Lecteur Musique Discord 2.0</p>
+                        <p className="text-xs font-bold text-white">Lecteur Musique Discord</p>
                         <p className="text-[11px] text-zinc-400">Aucune musique en cours • Lancez la musique dans vos salons vocaux.</p>
                       </div>
                     </div>
@@ -977,15 +977,11 @@ export default function DiscordDashboardPage() {
                 {/* MODULE 1: Sécurité & Anti-Raid */}
                 {activeModule === "security" && (
                   <div className="space-y-4">
-                    {/* Anti-Raid 2.0 Command Center Gateway */}
-                    <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-3 rounded-2xl border border-red-500/30 bg-gradient-to-r from-red-500/10 via-rose-500/10 to-red-600/10 p-4 shadow-lg shadow-red-500/5">
+                    {/* Anti-Raid Command Center Gateway */}
+                    <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-3 rounded-2xl border border-white/10 bg-white/[0.03] p-4">
                       <div>
                         <div className="flex items-center gap-2">
-                          <span className="text-base">🛡️</span>
-                          <p className="text-xs font-bold text-white">Centre de Sécurité Anti-Raid 2.0</p>
-                          <span className="text-[9px] uppercase font-bold tracking-wider px-1.5 py-0.5 rounded bg-red-500/20 text-red-300 border border-red-500/30">
-                            Live Guard
-                          </span>
+                          <p className="text-xs font-bold text-white">Centre de Sécurité Anti-Raid</p>
                         </div>
                         <p className="text-[11px] text-zinc-300 mt-0.5">
                           Calcul dynamique du Risk Score (0-100), Live Monitor, activation du Raid Mode d'urgence et dossiers d'investigation.
@@ -993,10 +989,10 @@ export default function DiscordDashboardPage() {
                       </div>
                       <Link
                         href={`/discord/security/anti-raid?guildId=${selectedGuild.id}`}
-                        className="flex h-9 shrink-0 items-center gap-2 rounded-xl bg-gradient-to-r from-red-600 to-rose-600 px-4 text-xs font-bold text-white shadow-md shadow-red-600/20 transition-all hover:from-red-500 hover:to-rose-500 active:scale-95"
+                        className="flex h-9 shrink-0 items-center gap-2 rounded-xl bg-[#5865F2] px-4 text-xs font-semibold text-white transition-colors hover:bg-[#4752C4] active:scale-95"
                       >
                         <ShieldAlert className="h-4 w-4" />
-                        <span>Ouvrir Anti-Raid 2.0</span>
+                        <span>Ouvrir Anti-Raid</span>
                         <ChevronRight className="h-3.5 w-3.5" />
                       </Link>
                     </div>
@@ -1084,18 +1080,14 @@ export default function DiscordDashboardPage() {
                   </div>
                 )}
 
-                {/* MODULE 2: Command Builder 2.0 */}
+                {/* MODULE 2: Command Builder */}
                 {activeModule === "commands" && (
                   <div className="space-y-4 text-xs">
                     {/* Command Studio Gateway */}
-                    <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-3 rounded-2xl border border-indigo-500/30 bg-gradient-to-r from-indigo-500/10 via-purple-500/10 to-indigo-600/10 p-4 shadow-lg shadow-indigo-500/5">
+                    <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-3 rounded-2xl border border-white/10 bg-white/[0.03] p-4">
                       <div>
                         <div className="flex items-center gap-2">
-                          <span className="text-base">⚙️</span>
-                          <p className="text-xs font-bold text-white">Command Studio & Builder 2.0</p>
-                          <span className="text-[9px] uppercase font-bold tracking-wider px-1.5 py-0.5 rounded bg-indigo-500/20 text-indigo-300 border border-indigo-500/30">
-                            No-Code Studio
-                          </span>
+                          <p className="text-xs font-bold text-white">Command Studio & Builder</p>
                         </div>
                         <p className="text-[11px] text-zinc-300 mt-0.5">
                           Créez des commandes Slash (/) et Préfixe (!) sur-mesure, générez des embeds Discord riches, intégrez des variables dynamiques ({'{user}'}, {'{server}'}) et testez en direct dans le simulateur.
@@ -1103,7 +1095,7 @@ export default function DiscordDashboardPage() {
                       </div>
                       <Link
                         href={`/discord/commands?guildId=${selectedGuild.id}`}
-                        className="flex h-9 shrink-0 items-center gap-2 rounded-xl bg-gradient-to-r from-indigo-600 to-purple-600 px-4 text-xs font-bold text-white shadow-md shadow-indigo-600/20 transition-all hover:from-indigo-500 hover:to-purple-500 active:scale-95 cursor-pointer"
+                        className="flex h-9 shrink-0 items-center gap-2 rounded-xl bg-[#5865F2] px-4 text-xs font-semibold text-white transition-colors hover:bg-[#4752C4] active:scale-95 cursor-pointer"
                       >
                         <Code2 className="h-4 w-4" />
                         <span>Ouvrir Command Studio</span>
@@ -1160,18 +1152,14 @@ export default function DiscordDashboardPage() {
                   </div>
                 )}
 
-                {/* MODULE 3: Suggestions & Feedback 2.0 */}
+                {/* MODULE 3: Suggestions & Feedback */}
                 {activeModule === "suggestions" && (
                   <div className="space-y-4 text-xs">
                     {/* Suggestions Gateway */}
-                    <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-3 rounded-2xl border border-amber-500/30 bg-gradient-to-r from-amber-500/10 via-orange-500/10 to-amber-600/10 p-4 shadow-lg shadow-amber-500/5">
+                    <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-3 rounded-2xl border border-white/10 bg-white/[0.03] p-4">
                       <div>
                         <div className="flex items-center gap-2">
-                          <span className="text-base">💡</span>
-                          <p className="text-xs font-bold text-white">Boîte à Suggestions 2.0 & Feedback</p>
-                          <span className="text-[9px] uppercase font-bold tracking-wider px-1.5 py-0.5 rounded bg-amber-500/20 text-amber-300 border border-amber-500/30">
-                            Kanban & Décisions
-                          </span>
+                          <p className="text-xs font-bold text-white">Boîte à Suggestions & Feedback</p>
                         </div>
                         <p className="text-[11px] text-zinc-300 mt-0.5">
                           Collectez les idées des membres, organisez les votes communautaires (👍 / 👎), traitez les propositions sur un tableau Kanban et publiez les décisions officielles du Staff.
@@ -1179,7 +1167,7 @@ export default function DiscordDashboardPage() {
                       </div>
                       <Link
                         href={`/discord/suggestions?guildId=${selectedGuild.id}`}
-                        className="flex h-9 shrink-0 items-center gap-2 rounded-xl bg-gradient-to-r from-amber-600 to-orange-600 px-4 text-xs font-bold text-white shadow-md shadow-amber-600/20 transition-all hover:from-amber-500 hover:to-orange-500 active:scale-95 cursor-pointer"
+                        className="flex h-9 shrink-0 items-center gap-2 rounded-xl bg-[#5865F2] px-4 text-xs font-semibold text-white transition-colors hover:bg-[#4752C4] active:scale-95 cursor-pointer"
                       >
                         <Lightbulb className="h-4 w-4" />
                         <span>Ouvrir Suggestions Center</span>
@@ -1236,18 +1224,14 @@ export default function DiscordDashboardPage() {
                   </div>
                 )}
 
-                {/* MODULE 4: Leveling & XP 2.0 */}
+                {/* MODULE 4: Leveling & XP */}
                 {activeModule === "leveling" && (
                   <div className="space-y-4 text-xs">
                     {/* Leveling Gateway */}
-                    <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-3 rounded-2xl border border-fuchsia-500/30 bg-gradient-to-r from-fuchsia-500/10 via-purple-500/10 to-fuchsia-600/10 p-4 shadow-lg shadow-fuchsia-500/5">
+                    <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-3 rounded-2xl border border-white/10 bg-white/[0.03] p-4">
                       <div>
                         <div className="flex items-center gap-2">
-                          <span className="text-base">⚡</span>
-                          <p className="text-xs font-bold text-white">Leveling & Rôles XP Center 2.0</p>
-                          <span className="text-[9px] uppercase font-bold tracking-wider px-1.5 py-0.5 rounded bg-fuchsia-500/20 text-fuchsia-300 border border-fuchsia-500/30">
-                            Progression & Ranking
-                          </span>
+                          <p className="text-xs font-bold text-white">Leveling & Rôles XP Center</p>
                         </div>
                         <p className="text-[11px] text-zinc-300 mt-0.5">
                           Stimulez l'activité de votre serveur : classement interactif, designer de cartes de profil Discord (/rank), attribution automatique de rôles par paliers et bonus pour Nitro Boosters.
@@ -1255,7 +1239,7 @@ export default function DiscordDashboardPage() {
                       </div>
                       <Link
                         href={`/discord/leveling?guildId=${selectedGuild.id}`}
-                        className="flex h-9 shrink-0 items-center gap-2 rounded-xl bg-gradient-to-r from-fuchsia-600 to-purple-600 px-4 text-xs font-bold text-white shadow-md shadow-fuchsia-600/20 transition-all hover:from-fuchsia-500 hover:to-purple-500 active:scale-95 cursor-pointer"
+                        className="flex h-9 shrink-0 items-center gap-2 rounded-xl bg-[#5865F2] px-4 text-xs font-semibold text-white transition-colors hover:bg-[#4752C4] active:scale-95 cursor-pointer"
                       >
                         <Award className="h-4 w-4" />
                         <span>Ouvrir Leveling Center</span>
@@ -1312,18 +1296,14 @@ export default function DiscordDashboardPage() {
                   </div>
                 )}
 
-                {/* MODULE 5: Giveaways & Concours 2.0 */}
+                {/* MODULE 5: Giveaways & Concours */}
                 {activeModule === "giveaways" && (
                   <div className="space-y-4 text-xs">
                     {/* Giveaways Gateway */}
-                    <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-3 rounded-2xl border border-rose-500/30 bg-gradient-to-r from-rose-500/10 via-amber-500/10 to-rose-600/10 p-4 shadow-lg shadow-rose-500/5">
+                    <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-3 rounded-2xl border border-white/10 bg-white/[0.03] p-4">
                       <div>
                         <div className="flex items-center gap-2">
-                          <span className="text-base">🎉</span>
-                          <p className="text-xs font-bold text-white">Giveaways & Tirages au Sort 2.0</p>
-                          <span className="text-[9px] uppercase font-bold tracking-wider px-1.5 py-0.5 rounded bg-rose-500/20 text-rose-300 border border-rose-500/30">
-                            Disaster Free & Fair Play
-                          </span>
+                          <p className="text-xs font-bold text-white">Giveaways & Tirages au Sort</p>
                         </div>
                         <p className="text-[11px] text-zinc-300 mt-0.5">
                           Pilotez vos concours Discord : création assistée, restrictions de rôles et d'ancienneté, tirage cryptographique impartial (SHA-256 CSPRNG) et système de Reroll en un clic.
@@ -1331,7 +1311,7 @@ export default function DiscordDashboardPage() {
                       </div>
                       <Link
                         href={`/discord/giveaways?guildId=${selectedGuild.id}`}
-                        className="flex h-9 shrink-0 items-center gap-2 rounded-xl bg-gradient-to-r from-rose-600 to-amber-600 px-4 text-xs font-bold text-white shadow-md shadow-rose-600/20 transition-all hover:from-rose-500 hover:to-amber-500 active:scale-95 cursor-pointer"
+                        className="flex h-9 shrink-0 items-center gap-2 rounded-xl bg-[#5865F2] px-4 text-xs font-semibold text-white transition-colors hover:bg-[#4752C4] active:scale-95 cursor-pointer"
                       >
                         <Gift className="h-4 w-4" />
                         <span>Ouvrir Giveaways Center</span>
@@ -1388,18 +1368,14 @@ export default function DiscordDashboardPage() {
                   </div>
                 )}
 
-                {/* MODULE: Tickets Center 2.0 */}
+                {/* MODULE: Tickets Center */}
                 {activeModule === "tickets" && (
                   <div className="space-y-4 text-xs">
-                    {/* Tickets Center 2.0 Gateway */}
-                    <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-3 rounded-2xl border border-emerald-500/30 bg-gradient-to-r from-emerald-500/10 via-teal-500/10 to-emerald-600/10 p-4 shadow-lg shadow-emerald-500/5">
+                    {/* Tickets Center Gateway */}
+                    <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-3 rounded-2xl border border-white/10 bg-white/[0.03] p-4">
                       <div>
                         <div className="flex items-center gap-2">
-                          <span className="text-base">🎫</span>
-                          <p className="text-xs font-bold text-white">Tickets Center 2.0 & Helpdesk</p>
-                          <span className="text-[9px] uppercase font-bold tracking-wider px-1.5 py-0.5 rounded bg-emerald-500/20 text-emerald-300 border border-emerald-500/30">
-                            Enterprise Support
-                          </span>
+                          <p className="text-xs font-bold text-white">Tickets Center & Helpdesk</p>
                         </div>
                         <p className="text-[11px] text-zinc-300 mt-0.5">
                           Helpdesk complet multi-catégories, formulaires avec questions dynamiques, équipes de staff, assignation/transfert, transcripts HTML/TXT/JSON et liaisons avec les Dossiers de Modération.
@@ -1407,7 +1383,7 @@ export default function DiscordDashboardPage() {
                       </div>
                       <Link
                         href={`/discord/tickets?guildId=${selectedGuild.id}`}
-                        className="flex h-9 shrink-0 items-center gap-2 rounded-xl bg-gradient-to-r from-emerald-600 to-teal-600 px-4 text-xs font-bold text-white shadow-md shadow-emerald-600/20 transition-all hover:from-emerald-500 hover:to-teal-500 active:scale-95 cursor-pointer"
+                        className="flex h-9 shrink-0 items-center gap-2 rounded-xl bg-[#5865F2] px-4 text-xs font-semibold text-white transition-colors hover:bg-[#4752C4] active:scale-95 cursor-pointer"
                       >
                         <Ticket className="h-4 w-4" />
                         <span>Ouvrir Tickets Center</span>
@@ -1464,18 +1440,14 @@ export default function DiscordDashboardPage() {
                   </div>
                 )}
 
-                {/* MODULE: Welcome & Onboarding 2.0 */}
+                {/* MODULE: Welcome & Onboarding */}
                 {activeModule === "welcome" && (
                   <div className="space-y-4 text-xs">
                     {/* Welcome Center Gateway */}
-                    <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-3 rounded-2xl border border-teal-500/30 bg-gradient-to-r from-teal-500/10 via-emerald-500/10 to-teal-600/10 p-4 shadow-lg shadow-teal-500/5">
+                    <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-3 rounded-2xl border border-white/10 bg-white/[0.03] p-4">
                       <div>
                         <div className="flex items-center gap-2">
-                          <span className="text-base">👋</span>
-                          <p className="text-xs font-bold text-white">Bienvenue & Onboarding Center 2.0</p>
-                          <span className="text-[9px] uppercase font-bold tracking-wider px-1.5 py-0.5 rounded bg-teal-500/20 text-teal-300 border border-teal-500/30">
-                            Expérience Membres
-                          </span>
+                          <p className="text-xs font-bold text-white">Bienvenue & Onboarding Center</p>
                         </div>
                         <p className="text-[11px] text-zinc-300 mt-0.5">
                           Personnalisation complète sans coder : Message & Embed Builder avec Live Preview, boutons interactifs, cartes de bienvenue, DM Welcome, onboarding multi-étapes et entonnoir de conversion.
@@ -1483,7 +1455,7 @@ export default function DiscordDashboardPage() {
                       </div>
                       <Link
                         href={`/discord/welcome?guildId=${selectedGuild.id}`}
-                        className="flex h-9 shrink-0 items-center gap-2 rounded-xl bg-gradient-to-r from-teal-600 to-emerald-600 px-4 text-xs font-bold text-white shadow-md shadow-teal-600/20 transition-all hover:from-teal-500 hover:to-emerald-500 active:scale-95 cursor-pointer"
+                        className="flex h-9 shrink-0 items-center gap-2 rounded-xl bg-[#5865F2] px-4 text-xs font-semibold text-white transition-colors hover:bg-[#4752C4] active:scale-95 cursor-pointer"
                       >
                         <Sparkles className="h-4 w-4" />
                         <span>Ouvrir Welcome Center</span>
@@ -1543,15 +1515,11 @@ export default function DiscordDashboardPage() {
                 {/* MODULE 6: Modération & Sanctions */}
                 {activeModule === "moderation" && (
                   <div className="space-y-4 text-xs">
-                    {/* Moderation Center 2.0 / Case System Gateway */}
-                    <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-3 rounded-2xl border border-orange-500/30 bg-gradient-to-r from-orange-500/10 via-amber-500/10 to-orange-600/10 p-4 shadow-lg shadow-orange-500/5">
+                    {/* Moderation Center / Case System Gateway */}
+                    <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-3 rounded-2xl border border-white/10 bg-white/[0.03] p-4">
                       <div>
                         <div className="flex items-center gap-2">
-                          <span className="text-base">⚖️</span>
-                          <p className="text-xs font-bold text-white">Centre de Modération 2.0 & Case System</p>
-                          <span className="text-[9px] uppercase font-bold tracking-wider px-1.5 py-0.5 rounded bg-orange-500/20 text-orange-300 border border-orange-500/30">
-                            Case Tracker
-                          </span>
+                          <p className="text-xs font-bold text-white">Centre de Modération & Case System</p>
                         </div>
                         <p className="text-[11px] text-zinc-300 mt-0.5">
                           Suivi centralisé des sanctions (Cases #1, #2...), annulation avec audit trail, scheduler d&apos;expiration, notes staff privées et protection anti-abus.
@@ -1559,23 +1527,19 @@ export default function DiscordDashboardPage() {
                       </div>
                       <Link
                         href={`/discord/moderation?guildId=${selectedGuild.id}`}
-                        className="flex h-9 shrink-0 items-center gap-2 rounded-xl bg-gradient-to-r from-orange-600 to-amber-600 px-4 text-xs font-bold text-white shadow-md shadow-orange-600/20 transition-all hover:from-orange-500 hover:to-amber-500 active:scale-95"
+                        className="flex h-9 shrink-0 items-center gap-2 rounded-xl bg-[#5865F2] px-4 text-xs font-semibold text-white transition-colors hover:bg-[#4752C4] active:scale-95"
                       >
                         <Hammer className="h-4 w-4" />
-                        <span>Ouvrir Moderation 2.0</span>
+                        <span>Ouvrir Moderation</span>
                         <ChevronRight className="h-3.5 w-3.5" />
                       </Link>
                     </div>
 
-                    {/* AutoMod 2.0 Command Center Gateway */}
-                    <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-3 rounded-2xl border border-amber-500/30 bg-gradient-to-r from-amber-500/10 via-orange-500/10 to-amber-600/10 p-4 shadow-lg shadow-amber-500/5">
+                    {/* AutoMod Command Center Gateway */}
+                    <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-3 rounded-2xl border border-white/10 bg-white/[0.03] p-4">
                       <div>
                         <div className="flex items-center gap-2">
-                          <span className="text-base">🤖</span>
-                          <p className="text-xs font-bold text-white">Centre de Modération Intelligente AutoMod 2.0</p>
-                          <span className="text-[9px] uppercase font-bold tracking-wider px-1.5 py-0.5 rounded bg-amber-500/20 text-amber-300 border border-amber-500/30">
-                            Smart Guard
-                          </span>
+                          <p className="text-xs font-bold text-white">Centre de Modération Intelligente AutoMod</p>
                         </div>
                         <p className="text-[11px] text-zinc-300 mt-0.5">
                           Moteur multi-détecteurs (Spam, Flood, Liens, Invites, Mentions, Caps, Regex, Profils), Rule Builder dynamique, Sanctions progressives (Strikes) et Sandbox de test.
@@ -1583,10 +1547,10 @@ export default function DiscordDashboardPage() {
                       </div>
                       <Link
                         href={`/discord/moderation/automod?guildId=${selectedGuild.id}`}
-                        className="flex h-9 shrink-0 items-center gap-2 rounded-xl bg-gradient-to-r from-amber-600 to-orange-600 px-4 text-xs font-bold text-white shadow-md shadow-amber-600/20 transition-all hover:from-amber-500 hover:to-orange-500 active:scale-95"
+                        className="flex h-9 shrink-0 items-center gap-2 rounded-xl bg-[#5865F2] px-4 text-xs font-semibold text-white transition-colors hover:bg-[#4752C4] active:scale-95"
                       >
                         <Zap className="h-4 w-4" />
-                        <span>Ouvrir AutoMod 2.0</span>
+                        <span>Ouvrir AutoMod</span>
                         <ChevronRight className="h-3.5 w-3.5" />
                       </Link>
                     </div>
@@ -1613,15 +1577,11 @@ export default function DiscordDashboardPage() {
                 {/* MODULE 7: Audit & Logs */}
                 {activeModule === "logs" && (
                   <div className="space-y-4 text-xs">
-                    {/* Audit Center 2.0 Gateway */}
-                    <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-3 rounded-2xl border border-blue-500/30 bg-gradient-to-r from-blue-500/10 via-indigo-500/10 to-blue-600/10 p-4 shadow-lg shadow-blue-500/5">
+                    {/* Audit Center Gateway */}
+                    <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-3 rounded-2xl border border-white/10 bg-white/[0.03] p-4">
                       <div>
                         <div className="flex items-center gap-2">
-                          <span className="text-base">📜</span>
-                          <p className="text-xs font-bold text-white">Audit Center 2.0 & Traçabilité Temps Réel</p>
-                          <span className="text-[9px] uppercase font-bold tracking-wider px-1.5 py-0.5 rounded bg-blue-500/20 text-blue-300 border border-blue-500/30">
-                            Audit Engine
-                          </span>
+                          <p className="text-xs font-bold text-white">Audit Center & Traçabilité Temps Réel</p>
                         </div>
                         <p className="text-[11px] text-zinc-300 mt-0.5">
                           Moteur de traçabilité temps réel, mode enquête (&plusmn;15 min), diffs avant/après, corrélation des sanctions (Cases &amp; Raids), routage multi-salons Discord et exports CSV/JSON.
@@ -1629,10 +1589,10 @@ export default function DiscordDashboardPage() {
                       </div>
                       <Link
                         href={`/discord/logs?guildId=${selectedGuild.id}`}
-                        className="flex h-9 shrink-0 items-center gap-2 rounded-xl bg-gradient-to-r from-blue-600 to-indigo-600 px-4 text-xs font-bold text-white shadow-md shadow-blue-600/20 transition-all hover:from-blue-500 hover:to-indigo-500 active:scale-95"
+                        className="flex h-9 shrink-0 items-center gap-2 rounded-xl bg-[#5865F2] px-4 text-xs font-semibold text-white transition-colors hover:bg-[#4752C4] active:scale-95"
                       >
                         <FileText className="h-4 w-4" />
-                        <span>Ouvrir Audit Center 2.0</span>
+                        <span>Ouvrir Audit Center</span>
                         <ChevronRight className="h-3.5 w-3.5" />
                       </Link>
                     </div>
@@ -1657,18 +1617,14 @@ export default function DiscordDashboardPage() {
                   </div>
                 )}
 
-                {/* MODULE: Lecteur Musique 2.0 */}
+                {/* MODULE: Lecteur Musique */}
                 {activeModule === "music" && (
                   <div className="space-y-4 text-xs">
                     {/* Music Center Gateway */}
-                    <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-3 rounded-2xl border border-violet-500/30 bg-gradient-to-r from-violet-500/10 via-indigo-500/10 to-violet-600/10 p-4 shadow-lg shadow-violet-500/5">
+                    <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-3 rounded-2xl border border-white/10 bg-white/[0.03] p-4">
                       <div>
                         <div className="flex items-center gap-2">
-                          <span className="text-base">🎵</span>
-                          <p className="text-xs font-bold text-white">Centre de Contrôle Musical ETHONE 2.0</p>
-                          <span className="text-[9px] uppercase font-bold tracking-wider px-1.5 py-0.5 rounded bg-violet-500/20 text-violet-300 border border-violet-500/30">
-                            Live Stream
-                          </span>
+                          <p className="text-xs font-bold text-white">Centre de Contrôle Musical ETHONE</p>
                         </div>
                         <p className="text-[11px] text-zinc-300 mt-0.5">
                           Lecteur audio synchronisé en direct, file d&apos;attente drag & drop, recherche multi-sources, playlists, favoris et mode DJ.
@@ -1676,7 +1632,7 @@ export default function DiscordDashboardPage() {
                       </div>
                       <Link
                         href={`/discord/music?guildId=${selectedGuild.id}`}
-                        className="flex h-9 shrink-0 items-center gap-2 rounded-xl bg-gradient-to-r from-violet-600 to-indigo-600 px-4 text-xs font-bold text-white shadow-md shadow-violet-600/20 transition-all hover:from-violet-500 hover:to-indigo-500 active:scale-95 cursor-pointer"
+                        className="flex h-9 shrink-0 items-center gap-2 rounded-xl bg-[#5865F2] px-4 text-xs font-semibold text-white transition-colors hover:bg-[#4752C4] active:scale-95 cursor-pointer"
                       >
                         <Music2 className="h-4 w-4" />
                         <span>Ouvrir Music Center</span>
@@ -1718,18 +1674,14 @@ export default function DiscordDashboardPage() {
                   </div>
                 )}
 
-                {/* MODULE: Invites & Parrainages 2.0 */}
+                {/* MODULE: Invites & Parrainages */}
                 {activeModule === "invites" && (
                   <div className="space-y-4 text-xs">
                     {/* Invites & Referrals Gateway */}
-                    <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-3 rounded-2xl border border-amber-500/30 bg-gradient-to-r from-amber-500/10 via-orange-500/10 to-amber-600/10 p-4 shadow-lg shadow-amber-500/5">
+                    <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-3 rounded-2xl border border-white/10 bg-white/[0.03] p-4">
                       <div>
                         <div className="flex items-center gap-2">
-                          <span className="text-base">🤝</span>
-                          <p className="text-xs font-bold text-white">Invite Tracker &amp; Referral Center 2.0</p>
-                          <span className="text-[9px] uppercase font-bold tracking-wider px-1.5 py-0.5 rounded bg-amber-500/20 text-amber-300 border border-amber-500/30">
-                            Croissance
-                          </span>
+                          <p className="text-xs font-bold text-white">Invite Tracker &amp; Referral Center</p>
                         </div>
                         <p className="text-[11px] text-zinc-300 mt-0.5">
                           Tracking précis des invitations Discord, calcul de diff par snapshot, détection des faux joins (Risk Score 0-100), campagnes avec objectifs et distribution sécurisée de rôles récompenses.
@@ -1737,10 +1689,10 @@ export default function DiscordDashboardPage() {
                       </div>
                       <Link
                         href={`/discord/invites?guildId=${selectedGuild.id}`}
-                        className="flex h-9 shrink-0 items-center gap-2 rounded-xl bg-gradient-to-r from-amber-600 to-orange-600 px-4 text-xs font-bold text-white shadow-md shadow-amber-600/20 transition-all hover:from-amber-500 hover:to-orange-500 active:scale-95 cursor-pointer"
+                        className="flex h-9 shrink-0 items-center gap-2 rounded-xl bg-[#5865F2] px-4 text-xs font-semibold text-white transition-colors hover:bg-[#4752C4] active:scale-95 cursor-pointer"
                       >
                         <UserPlus className="h-4 w-4" />
-                        <span>Ouvrir Invites Center 2.0</span>
+                        <span>Ouvrir Invites Center</span>
                         <ChevronRight className="h-3.5 w-3.5" />
                       </Link>
                     </div>
@@ -1769,18 +1721,14 @@ export default function DiscordDashboardPage() {
                   </div>
                 )}
 
-                {/* MODULE: Salons Vocaux 2.0 */}
+                {/* MODULE: Salons Vocaux */}
                 {activeModule === "voice" && (
                   <div className="space-y-4 text-xs">
                     {/* Voice Center Gateway */}
-                    <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-3 rounded-2xl border border-emerald-500/30 bg-gradient-to-r from-emerald-500/10 via-teal-500/10 to-emerald-600/10 p-4 shadow-lg shadow-emerald-500/5">
+                    <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-3 rounded-2xl border border-white/10 bg-white/[0.03] p-4">
                       <div>
                         <div className="flex items-center gap-2">
-                          <span className="text-base">🎙️</span>
-                          <p className="text-xs font-bold text-white">Voice Channels 2.0 &amp; Hubs Temporaires</p>
-                          <span className="text-[9px] uppercase font-bold tracking-wider px-1.5 py-0.5 rounded bg-emerald-500/20 text-emerald-300 border border-emerald-500/30">
-                            Join-to-Create
-                          </span>
+                          <p className="text-xs font-bold text-white">Voice Channels &amp; Hubs Temporaires</p>
                         </div>
                         <p className="text-[11px] text-zinc-300 mt-0.5">
                           Salons vocaux temporaires automatiques, hubs multiples (Gaming, Chill, Ranked, VIP), panneaux de contrôle Discord, transfert d&apos;ownership et règles d&apos;automatisation.
@@ -1788,10 +1736,10 @@ export default function DiscordDashboardPage() {
                       </div>
                       <Link
                         href={`/discord/voice?guildId=${selectedGuild.id}`}
-                        className="flex h-9 shrink-0 items-center gap-2 rounded-xl bg-gradient-to-r from-emerald-600 to-teal-600 px-4 text-xs font-bold text-white shadow-md shadow-emerald-600/20 transition-all hover:from-emerald-500 hover:to-teal-500 active:scale-95 cursor-pointer"
+                        className="flex h-9 shrink-0 items-center gap-2 rounded-xl bg-[#5865F2] px-4 text-xs font-semibold text-white transition-colors hover:bg-[#4752C4] active:scale-95 cursor-pointer"
                       >
                         <Radio className="h-4 w-4" />
-                        <span>Ouvrir Voice Center 2.0</span>
+                        <span>Ouvrir Voice Center</span>
                         <ChevronRight className="h-3.5 w-3.5" />
                       </Link>
                     </div>
@@ -1820,18 +1768,14 @@ export default function DiscordDashboardPage() {
                   </div>
                 )}
 
-                {/* MODULE: Server Backup & Disaster Recovery 2.0 */}
+                {/* MODULE: Server Backup & Disaster Recovery */}
                 {activeModule === "backups" && (
                   <div className="space-y-4 text-xs">
                     {/* Backup Center Gateway */}
-                    <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-3 rounded-2xl border border-indigo-500/30 bg-gradient-to-r from-indigo-500/10 via-purple-500/10 to-indigo-600/10 p-4 shadow-lg shadow-indigo-500/5">
+                    <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-3 rounded-2xl border border-white/10 bg-white/[0.03] p-4">
                       <div>
                         <div className="flex items-center gap-2">
-                          <span className="text-base">💾</span>
-                          <p className="text-xs font-bold text-white">Server Backup &amp; Disaster Recovery 2.0</p>
-                          <span className="text-[9px] uppercase font-bold tracking-wider px-1.5 py-0.5 rounded bg-indigo-500/20 text-indigo-300 border border-indigo-500/30">
-                            Time Machine
-                          </span>
+                          <p className="text-xs font-bold text-white">Server Backup &amp; Disaster Recovery</p>
                         </div>
                         <p className="text-[11px] text-zinc-300 mt-0.5">
                           Sauvegardez l&apos;intégralité de la structure Discord et des modules ETHONE, comparez les versions et restaurez sélectivement avec rollback automatique.
@@ -1839,10 +1783,10 @@ export default function DiscordDashboardPage() {
                       </div>
                       <Link
                         href={`/discord/backups?guildId=${selectedGuild.id}`}
-                        className="flex h-9 shrink-0 items-center gap-2 rounded-xl bg-gradient-to-r from-indigo-600 to-purple-600 px-4 text-xs font-bold text-white shadow-md shadow-indigo-600/20 transition-all hover:from-indigo-500 hover:to-purple-500 active:scale-95 cursor-pointer"
+                        className="flex h-9 shrink-0 items-center gap-2 rounded-xl bg-[#5865F2] px-4 text-xs font-semibold text-white transition-colors hover:bg-[#4752C4] active:scale-95 cursor-pointer"
                       >
                         <Archive className="h-4 w-4" />
-                        <span>Ouvrir Backup Center 2.0</span>
+                        <span>Ouvrir Backup Center</span>
                         <ChevronRight className="h-3.5 w-3.5" />
                       </Link>
                     </div>
@@ -1871,18 +1815,14 @@ export default function DiscordDashboardPage() {
                   </div>
                 )}
 
-                {/* MODULE: AI Assistant 2.0 */}
+                {/* MODULE: AI Assistant */}
                 {activeModule === "ai" && (
                   <div className="space-y-4 text-xs">
                     {/* AI Center Gateway */}
-                    <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-3 rounded-2xl border border-violet-500/30 bg-gradient-to-r from-violet-500/10 via-purple-500/10 to-violet-600/10 p-4 shadow-lg shadow-violet-500/5">
+                    <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-3 rounded-2xl border border-white/10 bg-white/[0.03] p-4">
                       <div>
                         <div className="flex items-center gap-2">
-                          <span className="text-base">🤖</span>
-                          <p className="text-xs font-bold text-white">ETHONE AI Assistant 2.0 &amp; Knowledge Hub</p>
-                          <span className="text-[9px] uppercase font-bold tracking-wider px-1.5 py-0.5 rounded bg-violet-500/20 text-violet-300 border border-violet-500/30">
-                            GenAI Engine
-                          </span>
+                          <p className="text-xs font-bold text-white">ETHONE AI Assistant &amp; Knowledge Hub</p>
                         </div>
                         <p className="text-[11px] text-zinc-300 mt-0.5">
                           Assistant IA Discord intelligent, base de connaissances RAG sémantique, builder de personnalités à 5 curseurs, permissions de salons et handoff de tickets de support.
@@ -1890,10 +1830,10 @@ export default function DiscordDashboardPage() {
                       </div>
                       <Link
                         href={`/discord/ai?guildId=${selectedGuild.id}`}
-                        className="flex h-9 shrink-0 items-center gap-2 rounded-xl bg-gradient-to-r from-violet-600 to-purple-600 px-4 text-xs font-bold text-white shadow-md shadow-violet-600/20 transition-all hover:from-violet-500 hover:to-purple-500 active:scale-95 cursor-pointer"
+                        className="flex h-9 shrink-0 items-center gap-2 rounded-xl bg-[#5865F2] px-4 text-xs font-semibold text-white transition-colors hover:bg-[#4752C4] active:scale-95 cursor-pointer"
                       >
                         <Bot className="h-4 w-4" />
-                        <span>Ouvrir AI Center 2.0</span>
+                        <span>Ouvrir AI Center</span>
                         <ChevronRight className="h-3.5 w-3.5" />
                       </Link>
                     </div>
@@ -1922,18 +1862,14 @@ export default function DiscordDashboardPage() {
                   </div>
                 )}
 
-                {/* MODULE: Forms & Applications 2.0 */}
+                {/* MODULE: Forms & Applications */}
                 {activeModule === "forms" && (
                   <div className="space-y-4 text-xs">
                     {/* Forms Center Gateway */}
-                    <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-3 rounded-2xl border border-indigo-500/30 bg-gradient-to-r from-indigo-500/10 via-cyan-500/10 to-indigo-600/10 p-4 shadow-lg shadow-indigo-500/5">
+                    <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-3 rounded-2xl border border-white/10 bg-white/[0.03] p-4">
                       <div>
                         <div className="flex items-center gap-2">
-                          <span className="text-base">📝</span>
-                          <p className="text-xs font-bold text-white">Forms &amp; Applications 2.0 — No-Code Builder</p>
-                          <span className="text-[9px] uppercase font-bold tracking-wider px-1.5 py-0.5 rounded bg-indigo-500/20 text-indigo-300 border border-indigo-500/30">
-                            Recrutement &amp; Staff
-                          </span>
+                          <p className="text-xs font-bold text-white">Forms &amp; Applications — No-Code Builder</p>
                         </div>
                         <p className="text-[11px] text-zinc-300 mt-0.5">
                           Créez des formulaires glisser-déposer sur-mesure (candidatures staff, whitelist, partenariats, feedbacks), publiez-les sur Discord et traitez les candidatures avec review privée et scoring.
@@ -1941,10 +1877,10 @@ export default function DiscordDashboardPage() {
                       </div>
                       <Link
                         href={`/discord/forms?guildId=${selectedGuild.id}`}
-                        className="flex h-9 shrink-0 items-center gap-2 rounded-xl bg-gradient-to-r from-indigo-600 to-cyan-600 px-4 text-xs font-bold text-white shadow-md shadow-indigo-600/20 transition-all hover:from-indigo-500 hover:to-cyan-500 active:scale-95 cursor-pointer"
+                        className="flex h-9 shrink-0 items-center gap-2 rounded-xl bg-[#5865F2] px-4 text-xs font-semibold text-white transition-colors hover:bg-[#4752C4] active:scale-95 cursor-pointer"
                       >
                         <FileText className="h-4 w-4" />
-                        <span>Ouvrir Forms Center 2.0</span>
+                        <span>Ouvrir Forms Center</span>
                         <ChevronRight className="h-3.5 w-3.5" />
                       </Link>
                     </div>
@@ -1973,18 +1909,14 @@ export default function DiscordDashboardPage() {
                   </div>
                 )}
 
-                {/* MODULE: Polls & Voting 2.0 */}
+                {/* MODULE: Polls & Voting */}
                 {activeModule === "polls" && (
                   <div className="space-y-4 text-xs">
                     {/* Polls Center Gateway */}
-                    <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-3 rounded-2xl border border-indigo-500/30 bg-gradient-to-r from-indigo-500/10 via-purple-500/10 to-indigo-600/10 p-4 shadow-lg shadow-indigo-500/5">
+                    <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-3 rounded-2xl border border-white/10 bg-white/[0.03] p-4">
                       <div>
                         <div className="flex items-center gap-2">
-                          <span className="text-base">📊</span>
-                          <p className="text-xs font-bold text-white">Polls &amp; Voting Center 2.0</p>
-                          <span className="text-[9px] uppercase font-bold tracking-wider px-1.5 py-0.5 rounded bg-indigo-500/20 text-indigo-300 border border-indigo-500/30">
-                            Scrutins &amp; Décisions
-                          </span>
+                          <p className="text-xs font-bold text-white">Polls &amp; Voting Center</p>
                         </div>
                         <p className="text-[11px] text-zinc-300 mt-0.5">
                           Sondages démocratiques, consultations privées du staff, pondération des voix selon les rôles Discord, votes à bulletin secret et quorums d&apos;approbation.
@@ -1992,10 +1924,10 @@ export default function DiscordDashboardPage() {
                       </div>
                       <Link
                         href={`/discord/polls?guildId=${selectedGuild.id}`}
-                        className="flex h-9 shrink-0 items-center gap-2 rounded-xl bg-gradient-to-r from-indigo-600 to-purple-600 px-4 text-xs font-bold text-white shadow-md shadow-indigo-600/20 transition-all hover:from-indigo-500 hover:to-purple-500 active:scale-95 cursor-pointer"
+                        className="flex h-9 shrink-0 items-center gap-2 rounded-xl bg-[#5865F2] px-4 text-xs font-semibold text-white transition-colors hover:bg-[#4752C4] active:scale-95 cursor-pointer"
                       >
                         <Vote className="h-4 w-4" />
-                        <span>Ouvrir Polls Center 2.0</span>
+                        <span>Ouvrir Polls Center</span>
                         <ChevronRight className="h-3.5 w-3.5" />
                       </Link>
                     </div>
@@ -2024,18 +1956,14 @@ export default function DiscordDashboardPage() {
                   </div>
                 )}
 
-                {/* MODULE: Reaction Roles & Auto-Roles 2.0 */}
+                {/* MODULE: Reaction Roles & Auto-Roles */}
                 {activeModule === "roles" && (
                   <div className="space-y-4 text-xs">
                     {/* Roles Center Gateway */}
-                    <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-3 rounded-2xl border border-pink-500/30 bg-gradient-to-r from-pink-500/10 via-purple-500/10 to-pink-600/10 p-4 shadow-lg shadow-pink-500/5">
+                    <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-3 rounded-2xl border border-white/10 bg-white/[0.03] p-4">
                       <div>
                         <div className="flex items-center gap-2">
-                          <span className="text-base">🎭</span>
-                          <p className="text-xs font-bold text-white">Reaction Roles & Auto-Roles 2.0</p>
-                          <span className="text-[9px] uppercase font-bold tracking-wider px-1.5 py-0.5 rounded bg-pink-500/20 text-pink-300 border border-pink-500/30">
-                            Role Engine
-                          </span>
+                          <p className="text-xs font-bold text-white">Reaction Roles & Auto-Roles</p>
                         </div>
                         <p className="text-[11px] text-zinc-300 mt-0.5">
                           Panneaux de sélection de rôles par boutons cliquables et menus déroulants Discord, attribution automatique à l'arrivée (Join-Roles), rôles temporaires avec expiration et audit de hiérarchie.
@@ -2043,10 +1971,10 @@ export default function DiscordDashboardPage() {
                       </div>
                       <Link
                         href={`/discord/roles?guildId=${selectedGuild.id}`}
-                        className="flex h-9 shrink-0 items-center gap-2 rounded-xl bg-gradient-to-r from-pink-600 to-purple-600 px-4 text-xs font-bold text-white shadow-md shadow-pink-600/20 transition-all hover:from-pink-500 hover:to-purple-500 active:scale-95 cursor-pointer"
+                        className="flex h-9 shrink-0 items-center gap-2 rounded-xl bg-[#5865F2] px-4 text-xs font-semibold text-white transition-colors hover:bg-[#4752C4] active:scale-95 cursor-pointer"
                       >
                         <Tag className="h-4 w-4" />
-                        <span>Ouvrir Roles Center 2.0</span>
+                        <span>Ouvrir Roles Center</span>
                         <ChevronRight className="h-3.5 w-3.5" />
                       </Link>
                     </div>
@@ -2100,18 +2028,14 @@ export default function DiscordDashboardPage() {
                   </div>
                 )}
 
-                {/* MODULE 8: Analytics & Insights 2.0 */}
+                {/* MODULE 8: Analytics & Insights */}
                 {activeModule === "analytics" && (
                   <div className="space-y-4 text-xs">
                     {/* Analytics Gateway */}
-                    <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-3 rounded-2xl border border-cyan-500/30 bg-gradient-to-r from-cyan-500/10 via-blue-500/10 to-cyan-600/10 p-4 shadow-lg shadow-cyan-500/5">
+                    <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-3 rounded-2xl border border-white/10 bg-white/[0.03] p-4">
                       <div>
                         <div className="flex items-center gap-2">
-                          <span className="text-base">📊</span>
-                          <p className="text-xs font-bold text-white">Analytics & Server Insights 2.0</p>
-                          <span className="text-[9px] uppercase font-bold tracking-wider px-1.5 py-0.5 rounded bg-cyan-500/20 text-cyan-300 border border-cyan-500/30">
-                            Data Engine
-                          </span>
+                          <p className="text-xs font-bold text-white">Analytics & Server Insights</p>
                         </div>
                         <p className="text-[11px] text-zinc-300 mt-0.5">
                           Surveillez la santé de votre serveur en temps réel : volume de messages, flux d'arrivées et départs, heatmaps horaires d'affluence, rétention et classement des membres les plus actifs.
@@ -2119,7 +2043,7 @@ export default function DiscordDashboardPage() {
                       </div>
                       <Link
                         href={`/discord/analytics?guildId=${selectedGuild.id}`}
-                        className="flex h-9 shrink-0 items-center gap-2 rounded-xl bg-gradient-to-r from-cyan-600 to-blue-600 px-4 text-xs font-bold text-white shadow-md shadow-cyan-600/20 transition-all hover:from-cyan-500 hover:to-blue-500 active:scale-95 cursor-pointer"
+                        className="flex h-9 shrink-0 items-center gap-2 rounded-xl bg-[#5865F2] px-4 text-xs font-semibold text-white transition-colors hover:bg-[#4752C4] active:scale-95 cursor-pointer"
                       >
                         <BarChart3 className="h-4 w-4" />
                         <span>Ouvrir Analytics Center</span>
@@ -2176,18 +2100,14 @@ export default function DiscordDashboardPage() {
                   </div>
                 )}
 
-                {/* MODULE: Events & Calendar 2.0 */}
+                {/* MODULE: Events & Calendar */}
                 {activeModule === "events" && (
                   <div className="space-y-4 text-xs">
                     {/* Events Gateway */}
-                    <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-3 rounded-2xl border border-indigo-500/30 bg-gradient-to-r from-indigo-500/10 via-purple-500/10 to-cyan-600/10 p-4 shadow-lg shadow-indigo-500/5">
+                    <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-3 rounded-2xl border border-white/10 bg-white/[0.03] p-4">
                       <div>
                         <div className="flex items-center gap-2">
-                          <span className="text-base">🗓️</span>
-                          <p className="text-xs font-bold text-white">Events &amp; Calendar 2.0</p>
-                          <span className="text-[9px] uppercase font-bold tracking-wider px-1.5 py-0.5 rounded bg-indigo-500/20 text-indigo-300 border border-indigo-500/30">
-                            Communauté &amp; Compétition
-                          </span>
+                          <p className="text-xs font-bold text-white">Events &amp; Calendar</p>
                         </div>
                         <p className="text-[11px] text-zinc-300 mt-0.5">
                           Planifiez vos soirées gaming, tournois et réunions avec calendrier interactif (Mois, Semaine, Agenda), gestion des inscriptions (Going, Maybe, Waitlist), pointages et rappels automatiques.
@@ -2195,7 +2115,7 @@ export default function DiscordDashboardPage() {
                       </div>
                       <Link
                         href={`/discord/events?guildId=${selectedGuild.id}`}
-                        className="flex h-9 shrink-0 items-center gap-2 rounded-xl bg-gradient-to-r from-indigo-600 to-purple-600 px-4 text-xs font-bold text-white shadow-md shadow-indigo-600/20 transition-all hover:from-indigo-500 hover:to-purple-500 active:scale-95 cursor-pointer"
+                        className="flex h-9 shrink-0 items-center gap-2 rounded-xl bg-[#5865F2] px-4 text-xs font-semibold text-white transition-colors hover:bg-[#4752C4] active:scale-95 cursor-pointer"
                       >
                         <Calendar className="h-4 w-4" />
                         <span>Ouvrir Events Center</span>
@@ -2252,17 +2172,13 @@ export default function DiscordDashboardPage() {
                   </div>
                 )}
 
-                {/* MODULE 20: Server Management Center 2.0 */}
+                {/* MODULE 20: Server Management Center */}
                 {activeModule === "server" && (
                   <div className="space-y-4">
                     <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-3 rounded-2xl border border-blue-500/30 bg-gradient-to-r from-blue-500/10 via-indigo-500/10 to-purple-500/10 p-4 shadow-lg shadow-blue-500/5">
                       <div>
                         <div className="flex items-center gap-2">
-                          <span className="text-base">🏠</span>
-                          <p className="text-xs font-bold text-white">Server Management Center 2.0</p>
-                          <span className="text-[9px] uppercase font-bold tracking-wider px-1.5 py-0.5 rounded bg-blue-500/20 text-blue-300 border border-blue-500/30">
-                            Centre Global
-                          </span>
+                          <p className="text-xs font-bold text-white">Server Management Center</p>
                         </div>
                         <p className="text-[11px] text-zinc-300 mt-0.5">
                           Contrôle intégral : diagnostic santé, score de sécurité, membres, salons, rôles, permission debugger et emojis.
@@ -2270,7 +2186,7 @@ export default function DiscordDashboardPage() {
                       </div>
                       <Link
                         href={`/discord/server?guildId=${selectedGuild.id}`}
-                        className="flex h-9 shrink-0 items-center gap-2 rounded-xl bg-gradient-to-r from-blue-600 to-indigo-600 px-4 text-xs font-bold text-white shadow-md shadow-blue-600/20 transition-all hover:from-blue-500 hover:to-indigo-500 active:scale-95"
+                        className="flex h-9 shrink-0 items-center gap-2 rounded-xl bg-[#5865F2] px-4 text-xs font-semibold text-white transition-colors hover:bg-[#4752C4] active:scale-95"
                       >
                         <Server className="h-4 w-4" />
                         <span>Ouvrir Server Center</span>
@@ -2337,14 +2253,10 @@ export default function DiscordDashboardPage() {
                 {/* MODULE: Starboard */}
                 {activeModule === "starboard" && (
                   <div className="space-y-4 text-xs">
-                    <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-3 rounded-2xl border border-amber-500/30 bg-gradient-to-r from-amber-500/10 via-yellow-500/10 to-amber-600/10 p-4 shadow-lg shadow-amber-500/5">
+                    <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-3 rounded-2xl border border-white/10 bg-white/[0.03] p-4">
                       <div>
                         <div className="flex items-center gap-2">
-                          <span className="text-base">⭐</span>
                           <p className="text-xs font-bold text-white">Starboard — Hall of Fame</p>
-                          <span className="text-[9px] uppercase font-bold tracking-wider px-1.5 py-0.5 rounded bg-amber-500/20 text-amber-300 border border-amber-500/30">
-                            Communauté
-                          </span>
                         </div>
                         <p className="text-[11px] text-zinc-300 mt-0.5">
                           Quand un message atteint un seuil de réactions ⭐, le bot le republie dans un salon dédié avec un embed maintenu à jour. Salon, emoji, seuil et options se règlent ici.
@@ -2352,7 +2264,7 @@ export default function DiscordDashboardPage() {
                       </div>
                       <Link
                         href={`/discord/starboard?guildId=${selectedGuild.id}`}
-                        className="flex h-9 shrink-0 items-center gap-2 rounded-xl bg-gradient-to-r from-amber-600 to-yellow-600 px-4 text-xs font-bold text-white shadow-md shadow-amber-600/20 transition-all hover:from-amber-500 hover:to-yellow-500 active:scale-95 cursor-pointer"
+                        className="flex h-9 shrink-0 items-center gap-2 rounded-xl bg-[#5865F2] px-4 text-xs font-semibold text-white transition-colors hover:bg-[#4752C4] active:scale-95 cursor-pointer"
                       >
                         <Star className="h-4 w-4" />
                         <span>Ouvrir le Starboard</span>
@@ -2371,17 +2283,13 @@ export default function DiscordDashboardPage() {
                   </div>
                 )}
 
-                {/* MODULE 21: Bot Control Center 2.0 */}
+                {/* MODULE 21: Bot Control Center */}
                 {activeModule === "bot" && (
                   <div className="space-y-4">
                     <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-3 rounded-2xl border border-emerald-500/30 bg-gradient-to-r from-emerald-500/10 via-cyan-500/10 to-indigo-500/10 p-4 shadow-lg shadow-emerald-500/5">
                       <div>
                         <div className="flex items-center gap-2">
-                          <span className="text-base">🤖</span>
-                          <p className="text-xs font-bold text-white">Bot Control Center &amp; Intelligence 2.0</p>
-                          <span className="text-[9px] uppercase font-bold tracking-wider px-1.5 py-0.5 rounded bg-emerald-500/20 text-emerald-300 border border-emerald-500/30">
-                            Observabilité &amp; Contrôle
-                          </span>
+                          <p className="text-xs font-bold text-white">Bot Control Center &amp; Intelligence</p>
                         </div>
                         <p className="text-[11px] text-zinc-300 mt-0.5">
                           Surveillance intégrale du bot : monitoring V8 CPU/RAM, 22 modules, débit temps réel, diagnostic 17 points, erreurs dédoublonnées et tokens IA.
@@ -2389,7 +2297,7 @@ export default function DiscordDashboardPage() {
                       </div>
                       <Link
                         href="/discord/bot"
-                        className="flex h-9 shrink-0 items-center gap-2 rounded-xl bg-gradient-to-r from-emerald-600 to-teal-600 px-4 text-xs font-bold text-white shadow-md shadow-emerald-600/20 transition-all hover:from-emerald-500 hover:to-teal-500 active:scale-95"
+                        className="flex h-9 shrink-0 items-center gap-2 rounded-xl bg-[#5865F2] px-4 text-xs font-semibold text-white transition-colors hover:bg-[#4752C4] active:scale-95"
                       >
                         <Bot className="h-4 w-4" />
                         <span>Ouvrir Bot Center</span>

@@ -212,7 +212,7 @@ export default function BackupDetailClient() {
       ],
       ethone: [
         {
-          module: "Welcome & Onboarding 2.0",
+          module: "Welcome & Onboarding",
           status: "Actif",
           details: "Message embed + Carte Canvas personnalisée + Rôle Membre",
         },
@@ -222,17 +222,17 @@ export default function BackupDetailClient() {
           details: "AutoMod strict, Anti-Spam 5 msgs/3s, Auto-Sanctions actives",
         },
         {
-          module: "Voice Channels 2.0",
+          module: "Voice Channels",
           status: "Actif",
           details: "Join-to-Create Hub Gaming + Hub Chill, Rétention 30s",
         },
         {
-          module: "Invite Tracker 2.0",
+          module: "Invite Tracker",
           status: "Actif",
           details: "Anti-Cheat heuristique, Détection faux joins, 3 Paliers Rôles",
         },
         {
-          module: "Tickets Helpdesk 2.0",
+          module: "Tickets Helpdesk",
           status: "Actif",
           details: "3 Catégories (Support, Signalement, Partenariat)",
         },

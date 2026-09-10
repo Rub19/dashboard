@@ -36,7 +36,7 @@ import { useDiscordOAuth, type DiscordGuild } from "@/lib/hooks/useDiscordOAuth"
 import { cn } from "@/lib/utils";
 
 // ==========================================
-// TYPES MODERATION CENTER 2.0
+// TYPES MODERATION CENTER
 // ==========================================
 type CaseAction =
   | "WARN"
@@ -462,7 +462,7 @@ export default function ModerationCenterPage() {
             </Link>
 
             <div className="flex items-center gap-2.5">
-              <div className="flex h-9 w-9 items-center justify-center rounded-xl bg-gradient-to-br from-orange-500/20 to-amber-500/20 border border-orange-500/30 text-orange-400 shadow-inner">
+              <div className="flex h-9 w-9 items-center justify-center rounded-xl bg-white/[0.04] border border-white/10 text-zinc-300 shadow-inner">
                 <Shield className="h-5 w-5" />
               </div>
               <div>
@@ -738,8 +738,8 @@ export default function ModerationCenterPage() {
                   >
                     <option value="ALL">Toutes les sources</option>
                     <option value="MANUAL">Manuelle (Staff)</option>
-                    <option value="AUTOMOD">AutoMod 2.0</option>
-                    <option value="ANTI_RAID">Anti-Raid 2.0</option>
+                    <option value="AUTOMOD">AutoMod</option>
+                    <option value="ANTI_RAID">Anti-Raid</option>
                   </select>
                 </div>
               </div>

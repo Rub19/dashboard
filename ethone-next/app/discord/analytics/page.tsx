@@ -1,7 +1,7 @@
 import AnalyticsCenterClient from "./AnalyticsCenterClient";
 
 export const metadata = {
-  title: "Analytics & Server Insights 2.0 | ETHONE",
+  title: "Analytics & Server Insights | ETHONE",
   description: "Métriques d'activité en direct, heatmaps et rétention communautaire.",
 };
 

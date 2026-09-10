@@ -2,7 +2,7 @@ import { Suspense } from "react";
 import ServerManagementClient from "./ServerManagementClient";
 
 export const metadata = {
-  title: "Server Management Center 2.0 — ETHONE",
+  title: "Server Management Center — ETHONE",
   description: "Centre de gestion globale du serveur Discord",
 };
 

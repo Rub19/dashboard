@@ -46,7 +46,7 @@ import { useDiscordOAuth, type DiscordGuild } from "@/lib/hooks/useDiscordOAuth"
 import { cn } from "@/lib/utils";
 
 // ==========================================
-// TYPES AUTOMOD 2.0
+// TYPES AUTOMOD
 // ==========================================
 type AutoModRiskLevel = "SAFE" | "LOW" | "MEDIUM" | "HIGH" | "CRITICAL";
 
@@ -871,12 +871,12 @@ export default function AutoModCommandCenterPage() {
             </Link>
 
             <div className="flex items-center gap-2.5">
-              <div className="flex h-9 w-9 items-center justify-center rounded-xl bg-gradient-to-br from-amber-500/20 to-orange-500/20 border border-amber-500/30 text-amber-400 shadow-inner">
+              <div className="flex h-9 w-9 items-center justify-center rounded-xl bg-white/[0.04] border border-white/10 text-zinc-300 shadow-inner">
                 <Zap className="h-5 w-5" />
               </div>
               <div>
                 <div className="flex items-center gap-2">
-                  <h1 className="text-base font-semibold tracking-tight text-white">AutoMod 2.0</h1>
+                  <h1 className="text-base font-semibold tracking-tight text-white">AutoMod</h1>
                   <span className="text-[10px] uppercase font-bold tracking-wider px-2 py-0.5 rounded-full bg-amber-500/10 text-amber-300 border border-amber-500/30">
                     Smart Engine
                   </span>
@@ -1080,7 +1080,7 @@ export default function AutoModCommandCenterPage() {
                 </div>
               </div>
 
-              {/* BANNIÈRE PASSERELLE ANTI-RAID 2.0 */}
+              {/* BANNIÈRE PASSERELLE ANTI-RAID */}
               <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4 rounded-2xl border border-blue-500/20 bg-gradient-to-r from-blue-500/10 via-indigo-500/10 to-blue-600/10 p-4 shadow-lg shadow-blue-500/5">
                 <div className="flex items-start gap-3">
                   <div className="flex h-10 w-10 shrink-0 items-center justify-center rounded-xl bg-blue-500/20 border border-blue-500/30 text-blue-400">
@@ -1088,7 +1088,7 @@ export default function AutoModCommandCenterPage() {
                   </div>
                   <div>
                     <h3 className="text-xs font-bold text-white flex items-center gap-2">
-                      Synergie Bidirectionnelle avec le Centre Anti-Raid 2.0
+                      Synergie Bidirectionnelle avec le Centre Anti-Raid
                       <span className="text-[9px] uppercase font-mono px-1.5 py-0.5 rounded bg-blue-500/20 text-blue-300">
                         EventBus Connecté
                       </span>

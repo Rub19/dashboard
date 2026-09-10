@@ -130,7 +130,7 @@ export default function VoiceSettingsClient() {
           </Link>
           <h1 className="text-2xl font-black tracking-tight text-white flex items-center gap-2 mt-2">
             <Sliders className="h-6 w-6 text-emerald-400" />
-            <span>Configuration Personal Voice 2.0</span>
+            <span>Configuration Personal Voice</span>
           </h1>
           <p className="text-xs text-zinc-400 mt-1">
             Gérez le comportement des salons temporaires, canaux de création, délais de suppression et règles de gestion.
@@ -149,14 +149,14 @@ export default function VoiceSettingsClient() {
 
       {/* Grid Settings Sections */}
       <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
-        {/* Section 1: Salons Personnels 2.0 */}
+        {/* Section 1: Salons Personnels */}
         <div className="rounded-2xl border border-zinc-800/80 bg-zinc-900/60 p-6 space-y-5 backdrop-blur-xl">
           <div className="flex items-center gap-3">
             <div className="flex h-9 w-9 items-center justify-center rounded-xl bg-indigo-500/10 text-indigo-400">
               <Radio className="h-4 w-4" />
             </div>
             <div>
-              <h2 className="text-sm font-bold text-white">Panneau & Salons Personnels 2.0</h2>
+              <h2 className="text-sm font-bold text-white">Panneau & Salons Personnels</h2>
               <p className="text-xs text-zinc-400">Expérience sans commande avec boutons et modals Discord</p>
             </div>
           </div>

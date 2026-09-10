@@ -90,7 +90,7 @@ export default function BackupsCenterClient() {
     {
       id: "BKP-20260904-100000-PRE",
       name: "Pre-Rollout Auto-Snapshot",
-      description: "Capture automatique avant déploiement du module Voice Channels 2.0",
+      description: "Capture automatique avant déploiement du module Voice Channels",
       createdAt: "2026-09-04T08:00:00.000Z",
       createdBy: { tag: "ETHONE Bot#0000", id: "bot" },
       type: "PRE_CHANGE",
@@ -280,7 +280,7 @@ export default function BackupsCenterClient() {
               </div>
               <div>
                 <h1 className="text-2xl font-bold text-white tracking-tight flex items-center gap-2">
-                  Server Backup & Disaster Recovery 2.0
+                  Server Backup & Disaster Recovery
                   <span className="px-2 py-0.5 rounded text-[11px] font-semibold bg-emerald-500/10 text-emerald-400 border border-emerald-500/20">
                     Live Engine
                   </span>

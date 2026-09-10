@@ -1,7 +1,7 @@
 import GiveawaysCenterClient from "./GiveawaysCenterClient";
 
 export const metadata = {
-  title: "Giveaways & Tirages 2.0 | ETHONE",
+  title: "Giveaways & Tirages | ETHONE",
   description: "Concours automatisés, tirages cryptographiques et distribution équitable.",
 };
 

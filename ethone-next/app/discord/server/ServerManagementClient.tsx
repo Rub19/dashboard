@@ -434,7 +434,7 @@ export default function ServerManagementClient({
             description: "Protection contre les raids, mass joins et attaques automatisées activée.",
           },
           {
-            title: "AutoMod 2.0 actif",
+            title: "AutoMod actif",
             impact: 15,
             positive: true,
             description: "Filtre automatique de liens malveillants, spam et insultes activé.",
@@ -1374,7 +1374,7 @@ export default function ServerManagementClient({
                   )}
                 </div>
                 <p className="text-xs text-zinc-400 mt-0.5 line-clamp-1">
-                  {overview?.guild.description || "Centre de Contrôle Global Discord 2.0"}
+                  {overview?.guild.description || "Centre de Contrôle Global Discord"}
                 </p>
               </div>
             </div>
@@ -1629,7 +1629,7 @@ export default function ServerManagementClient({
                 </div>
 
                 <div className="flex items-center gap-4 py-2">
-                  <div className="flex h-16 w-16 items-center justify-center rounded-2xl bg-gradient-to-br from-emerald-500/20 to-teal-500/20 border border-emerald-500/30">
+                  <div className="flex h-16 w-16 items-center justify-center rounded-2xl bg-white/[0.04] border border-white/10">
                     <span className="text-2xl font-black text-emerald-400">{overview?.security.score || 0}%</span>
                   </div>
                   <div className="space-y-1">
@@ -3053,7 +3053,7 @@ export default function ServerManagementClient({
               <div>
                 <h3 className="text-sm font-bold text-white flex items-center gap-2">
                   <FileText className="h-4 w-4 text-indigo-400" />
-                  Journal d'Audit Connecté à Logs Center 2.0
+                  Journal d'Audit Connecté à Logs Center
                 </h3>
                 <p className="text-xs text-zinc-400 mt-0.5">
                   Traçabilité immuable de chaque événement, action staff et alerte de sécurité.

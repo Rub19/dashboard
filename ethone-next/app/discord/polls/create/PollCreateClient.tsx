@@ -819,7 +819,7 @@ export default function PollCreateClient() {
                   )}
 
                   <div className="text-[10px] text-zinc-500 border-t border-zinc-800/80 pt-2">
-                    ETHONE Polls & Voting 2.0 • Fin dans {durationHours}h
+                    ETHONE Polls & Voting • Fin dans {durationHours}h
                   </div>
                 </div>
 

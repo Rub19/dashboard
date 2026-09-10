@@ -188,7 +188,7 @@ export default function EventCreateClient() {
               </Link>
             </div>
             <h1 className="text-2xl sm:text-3xl font-extrabold text-white">
-              Assistant de Création d'Événement 2.0
+              Assistant de Création d'Événement
             </h1>
           </div>
 

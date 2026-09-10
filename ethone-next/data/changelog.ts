@@ -1,3 +1,15 @@
+const v12095_fr: ChangelogEntry = {
+  version: "v1.20.95",
+  date: "2026-09-10",
+  title: "Pages Discord : Un Ménage Visuel",
+  items: [
+    "Suppression des « 2.0 » partout (titres d'onglet, en-têtes, boutons) — 112 occurrences.",
+    "Hub /discord : les 21 cartes « passerelle » (dégradé arc-en-ciel + emoji + pastille « Live Guard » en majuscules + bouton dégradé) passent sur un fond neutre uni avec un bouton plat. Les icônes de modules perdent leur couleur individuelle au profit d'un ton unique.",
+    "En-têtes de pages : les blocs d'icône en dégradé coloré deviennent des blocs neutres discrets.",
+    "Aucun changement de fonctionnement — uniquement l'apparence, plus sobre.",
+  ],
+};
+
 const v12094_fr: ChangelogEntry = {
   version: "v1.20.94",
   date: "2026-09-10",
@@ -469,6 +481,18 @@ const v12052_fr: ChangelogEntry = {
     "Dynamic Island : correction d'un bug de priorité qui empêchait Spotify de jamais s'afficher, systématiquement évincé par la synchronisation d'arrière-plan.",
     "Commande /help du Bot Discord : la liste des commandes est désormais générée dynamiquement depuis les commandes réellement enregistrées (fin des commandes fantômes et des commandes manquantes), et affiche la vraie syntaxe des commandes à sous-commandes (ex. /automod status).",
     "Audit de l'enregistrement des commandes slash Discord : architecture confirmée saine, aucune dérive entre le code et les commandes déployées.",
+  ],
+};
+
+const v12095_en: ChangelogEntry = {
+  version: "v1.20.95",
+  date: "2026-09-10",
+  title: "Discord Pages: A Visual Cleanup",
+  items: [
+    "Dropped \"2.0\" everywhere (tab titles, headers, buttons) — 112 occurrences.",
+    "/discord hub: the 21 \"gateway\" cards (rainbow gradient + emoji + uppercase \"Live Guard\" pill + gradient button) move to a plain neutral surface with a flat button. Module icons lose their individual colour for one consistent tone.",
+    "Page headers: coloured gradient icon blocks become subtle neutral blocks.",
+    "No behaviour change — appearance only, more restrained.",
   ],
 };
 
@@ -946,6 +970,18 @@ const v12052_en: ChangelogEntry = {
   ],
 };
 
+const v12095_es: ChangelogEntry = {
+  version: "v1.20.95",
+  date: "2026-09-10",
+  title: "Paginas de Discord: Limpieza Visual",
+  items: [
+    "Se quito el \"2.0\" de todas partes (titulos de pestana, cabeceras, botones) — 112 casos.",
+    "Hub /discord: las 21 tarjetas \"puerta de enlace\" (degradado arcoiris + emoji + etiqueta \"Live Guard\" en mayusculas + boton degradado) pasan a una superficie neutra lisa con un boton plano. Los iconos de modulos pierden su color individual por un tono unico.",
+    "Cabeceras de pagina: los bloques de icono con degradado de color pasan a bloques neutros discretos.",
+    "Sin cambios de funcionamiento — solo la apariencia, mas sobria.",
+  ],
+};
+
 const v12094_es: ChangelogEntry = {
   version: "v1.20.94",
   date: "2026-09-10",
@@ -1417,6 +1453,18 @@ const v12052_es: ChangelogEntry = {
     "Dynamic Island: corregido un error de prioridad que impedía que Spotify apareciera, siempre desplazado por la sincronización en segundo plano.",
     "Comando /help del Bot de Discord: la lista de comandos ahora se genera dinámicamente desde los comandos realmente registrados (fin de comandos fantasma o ausentes), mostrando la sintaxis real de los comandos con subcomandos.",
     "Auditoría del registro de comandos slash de Discord: arquitectura confirmada como sólida, sin desviación entre el código y los comandos desplegados.",
+  ],
+};
+
+const v12095_de: ChangelogEntry = {
+  version: "v1.20.95",
+  date: "2026-09-10",
+  title: "Discord-Seiten: Optischer Feinschliff",
+  items: [
+    "\"2.0\" ueberall entfernt (Tab-Titel, Ueberschriften, Schaltflaechen) — 112 Stellen.",
+    "/discord-Hub: Die 21 \"Gateway\"-Karten (Regenbogen-Verlauf + Emoji + \"Live Guard\"-Pille in Grossbuchstaben + Verlaufs-Button) wechseln auf eine schlichte neutrale Flaeche mit flachem Button. Modul-Symbole verlieren ihre Einzelfarbe zugunsten eines einheitlichen Tons.",
+    "Seitenkoepfe: farbige Verlaufs-Symbolbloecke werden dezente neutrale Bloecke.",
+    "Keine Funktionsaenderung — nur die Optik, zurueckhaltender.",
   ],
 };
 
@@ -23951,5 +23999,9 @@ CHANGELOG_BY_LANG.fr.unshift(v12094_fr);
 CHANGELOG_BY_LANG.en.unshift(v12094_en);
 CHANGELOG_BY_LANG.es.unshift(v12094_es);
 CHANGELOG_BY_LANG.de.unshift(v12094_de);
+CHANGELOG_BY_LANG.fr.unshift(v12095_fr);
+CHANGELOG_BY_LANG.en.unshift(v12095_en);
+CHANGELOG_BY_LANG.es.unshift(v12095_es);
+CHANGELOG_BY_LANG.de.unshift(v12095_de);
 
 export const CHANGELOG = CHANGELOG_BY_LANG.fr;

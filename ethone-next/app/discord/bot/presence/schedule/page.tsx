@@ -2,7 +2,7 @@ import { Suspense } from "react";
 import BotPresenceClient from "../BotPresenceClient";
 
 export const metadata = {
-  title: "Horaires & Profils Prédéfinis — Bot Presence 2.0 — ETHONE",
+  title: "Horaires & Profils Prédéfinis — Bot Presence — ETHONE",
   description: "Planning automatique et profils 1-clic pour le bot Discord",
 };
 

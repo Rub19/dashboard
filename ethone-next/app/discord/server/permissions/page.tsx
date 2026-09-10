@@ -2,7 +2,7 @@ import { Suspense } from "react";
 import ServerManagementClient from "../ServerManagementClient";
 
 export const metadata = {
-  title: "Permissions & Debugger — Server Management Center 2.0 — ETHONE",
+  title: "Permissions & Debugger — Server Management Center — ETHONE",
 };
 
 export const dynamic = "force-static";

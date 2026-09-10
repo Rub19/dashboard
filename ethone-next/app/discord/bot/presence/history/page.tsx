@@ -2,7 +2,7 @@ import { Suspense } from "react";
 import BotPresenceClient from "../BotPresenceClient";
 
 export const metadata = {
-  title: "Journal d'Audit — Bot Presence 2.0 — ETHONE",
+  title: "Journal d'Audit — Bot Presence — ETHONE",
   description: "Historique des changements de présence et traçabilité Gateway",
 };
 

@@ -75,7 +75,7 @@ const DEMO_POLLS: PollSummary[] = [
   },
   {
     id: "staff-decision-01",
-    title: "Décision Staff : Révision des Sanctions AutoMod 2.0",
+    title: "Décision Staff : Révision des Sanctions AutoMod",
     description: "Vote confidentiel interne de l'équipe de modération pour valider le nouveau barème des avertissements et expulsions temporaires.",
     category: "Décisions Staff",
     type: "APPROVAL",
@@ -237,7 +237,7 @@ export default function PollsCenterClient() {
             Discord Center
           </Link>
           <ChevronRight className="h-3 w-3 text-zinc-600" />
-          <span className="text-zinc-200 font-medium">Sondages & Votes 2.0</span>
+          <span className="text-zinc-200 font-medium">Sondages & Votes</span>
         </div>
 
         {/* Header Hero Section */}
@@ -245,7 +245,7 @@ export default function PollsCenterClient() {
           <div>
             <div className="inline-flex items-center gap-2 rounded-full border border-indigo-500/30 bg-indigo-500/10 px-3 py-1 text-xs font-semibold text-indigo-400 mb-3">
               <Vote className="h-3.5 w-3.5" />
-              Sondages, Votes & Prise de Décision 2.0
+              Sondages, Votes & Prise de Décision
             </div>
             <h1 className="text-3xl font-extrabold tracking-tight text-white sm:text-4xl">
               Polls & Voting Center

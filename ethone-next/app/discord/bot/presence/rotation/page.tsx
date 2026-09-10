@@ -2,7 +2,7 @@ import { Suspense } from "react";
 import BotPresenceClient from "../BotPresenceClient";
 
 export const metadata = {
-  title: "Moteur de Rotation d'Activités — Bot Presence 2.0 — ETHONE",
+  title: "Moteur de Rotation d'Activités — Bot Presence — ETHONE",
   description: "Configuration de la rotation automatique des activités du bot Discord",
 };
 

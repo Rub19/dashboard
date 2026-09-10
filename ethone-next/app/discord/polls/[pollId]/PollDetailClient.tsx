@@ -55,7 +55,7 @@ export default function PollDetailClient() {
     id: pollId,
     title:
       pollId === "staff-decision-01"
-        ? "Décision Staff : Révision des Sanctions AutoMod 2.0"
+        ? "Décision Staff : Révision des Sanctions AutoMod"
         : "Sondage Communautaire : Soirée Jeux du Vendredi",
     description:
       "Consultation officielle pour organiser les activités du serveur et récompenser les participants.",
@@ -70,7 +70,7 @@ export default function PollDetailClient() {
         id: "q1",
         title:
           pollId === "staff-decision-01"
-            ? "Approuvez-vous la mise en place du barème AutoMod 2.0 ?"
+            ? "Approuvez-vous la mise en place du barème AutoMod ?"
             : "À quel jeu souhaitez-vous jouer ce vendredi ?",
         options:
           pollId === "staff-decision-01"

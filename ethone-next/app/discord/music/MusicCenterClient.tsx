@@ -511,7 +511,7 @@ export default function MusicCenterClient() {
             <div>
               <div className="flex items-center gap-2">
                 <h1 className="text-base font-bold text-white flex items-center gap-2">
-                  <span>Music Center 2.0</span>
+                  <span>Music Center</span>
                   <span className="flex h-2 w-2 rounded-full bg-violet-400 shadow-[0_0_5px_rgba(167,139,250,0.8)]" />
                 </h1>
                 <span

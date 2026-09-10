@@ -29,7 +29,7 @@ export default function PollSettingsClient() {
 
   const [title, setTitle] = useState(
     pollId === "staff-decision-01"
-      ? "Décision Staff : Révision des Sanctions AutoMod 2.0"
+      ? "Décision Staff : Révision des Sanctions AutoMod"
       : "Sondage Communautaire : Soirée Jeux du Vendredi"
   );
   const [description, setDescription] = useState(

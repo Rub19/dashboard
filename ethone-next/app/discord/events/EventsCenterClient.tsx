@@ -204,7 +204,7 @@ export default function EventsCenterClient() {
               </span>
             </div>
             <h1 className="text-3xl sm:text-4xl font-extrabold tracking-tight text-white flex items-center gap-3">
-              Événements & Calendrier 2.0
+              Événements & Calendrier
             </h1>
             <p className="text-slate-400 text-sm mt-1 max-w-2xl">
               Planifiez, automatisez et animez vos soirées gaming, tournois et réunions Discord avec synchronisation bot, alertes automatiques et gestion d’inscriptions en temps réel.

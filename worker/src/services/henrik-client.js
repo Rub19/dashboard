@@ -17,7 +17,7 @@ async function loadAgentCatalogue(env) {
         service: "tracker",
         dedupeKey: "valorant:agents:catalogue",
         retries: 1,
-        maxBytes: 4194304
+        maxBytes: 8388608
       });
       const agents = Array.isArray(response.data?.data) ? response.data.data : [];
       return Object.freeze(new Map(agents.map((agent) => {
@@ -120,7 +120,7 @@ export async function getValorantMatches(env, riotId, mode, apiKeyOverride) {
   const region = account.region || "eu";
   
   const matchesUrl = new URL(`/valorant/v3/matches/${region}/${encodeURIComponent(name)}/${encodeURIComponent(tag)}`, ORIGIN);
-  matchesUrl.searchParams.set("size", "25");
+  matchesUrl.searchParams.set("size", "40");
   if (mode && mode !== "all") {
     const slug = encodeURIComponent(mode);
     matchesUrl.searchParams.set("mode", slug);
@@ -134,10 +134,10 @@ export async function getValorantMatches(env, riotId, mode, apiKeyOverride) {
     env,
     expectedOrigin: ORIGIN,
     service: "tracker",
-    dedupeKey: `henrik:matches:${region}:${name.toLowerCase()}:${tag.toLowerCase()}:${mode || "all"}:25`,
+    dedupeKey: `henrik:matches:${region}:${name.toLowerCase()}:${tag.toLowerCase()}:${mode || "all"}:40`,
     headers,
     retries: 1,
-    maxBytes: 4194304
+    maxBytes: 8388608
   });
   
   const requestedMode = String(mode || "all").toLowerCase().replace(/[^a-z0-9]/g, "");

@@ -1,3 +1,13 @@
+const v12092_fr: ChangelogEntry = {
+  version: "v1.20.92",
+  date: "2026-09-10",
+  title: "Trackers : Plus de Matchs Chargés",
+  items: [
+    "League of Legends : la liste passe de 24 à 40 matchs (toujours récupérés en lots pour respecter la limite de l'API Riot).",
+    "Valorant : de 25 à 40 matchs (côté clé perso et côté serveur ETHONE).",
+  ],
+};
+
 const v12091_fr: ChangelogEntry = {
   version: "v1.20.91",
   date: "2026-09-10",
@@ -436,6 +446,16 @@ const v12052_fr: ChangelogEntry = {
     "Dynamic Island : correction d'un bug de priorité qui empêchait Spotify de jamais s'afficher, systématiquement évincé par la synchronisation d'arrière-plan.",
     "Commande /help du Bot Discord : la liste des commandes est désormais générée dynamiquement depuis les commandes réellement enregistrées (fin des commandes fantômes et des commandes manquantes), et affiche la vraie syntaxe des commandes à sous-commandes (ex. /automod status).",
     "Audit de l'enregistrement des commandes slash Discord : architecture confirmée saine, aucune dérive entre le code et les commandes déployées.",
+  ],
+};
+
+const v12092_en: ChangelogEntry = {
+  version: "v1.20.92",
+  date: "2026-09-10",
+  title: "Trackers: More Matches Loaded",
+  items: [
+    "League of Legends: the list goes from 24 to 40 matches (still fetched in batches to respect the Riot API rate limit).",
+    "Valorant: from 25 to 40 matches (both the personal-key path and the ETHONE server path).",
   ],
 };
 
@@ -880,6 +900,16 @@ const v12052_en: ChangelogEntry = {
   ],
 };
 
+const v12092_es: ChangelogEntry = {
+  version: "v1.20.92",
+  date: "2026-09-10",
+  title: "Trackers: Mas Partidas Cargadas",
+  items: [
+    "League of Legends: la lista pasa de 24 a 40 partidas (siguen obteniendose por lotes para respetar el limite de la API de Riot).",
+    "Valorant: de 25 a 40 partidas (tanto con clave personal como por el servidor de ETHONE).",
+  ],
+};
+
 const v12091_es: ChangelogEntry = {
   version: "v1.20.91",
   date: "2026-09-10",
@@ -1318,6 +1348,16 @@ const v12052_es: ChangelogEntry = {
     "Dynamic Island: corregido un error de prioridad que impedía que Spotify apareciera, siempre desplazado por la sincronización en segundo plano.",
     "Comando /help del Bot de Discord: la lista de comandos ahora se genera dinámicamente desde los comandos realmente registrados (fin de comandos fantasma o ausentes), mostrando la sintaxis real de los comandos con subcomandos.",
     "Auditoría del registro de comandos slash de Discord: arquitectura confirmada como sólida, sin desviación entre el código y los comandos desplegados.",
+  ],
+};
+
+const v12092_de: ChangelogEntry = {
+  version: "v1.20.92",
+  date: "2026-09-10",
+  title: "Tracker: Mehr geladene Matches",
+  items: [
+    "League of Legends: Die Liste steigt von 24 auf 40 Matches (weiterhin in Schueben geladen, um das Rate-Limit der Riot-API einzuhalten).",
+    "Valorant: von 25 auf 40 Matches (sowohl ueber den persoenlichen Schluessel als auch ueber den ETHONE-Server).",
   ],
 };
 
@@ -23807,5 +23847,9 @@ CHANGELOG_BY_LANG.fr.unshift(v12091_fr);
 CHANGELOG_BY_LANG.en.unshift(v12091_en);
 CHANGELOG_BY_LANG.es.unshift(v12091_es);
 CHANGELOG_BY_LANG.de.unshift(v12091_de);
+CHANGELOG_BY_LANG.fr.unshift(v12092_fr);
+CHANGELOG_BY_LANG.en.unshift(v12092_en);
+CHANGELOG_BY_LANG.es.unshift(v12092_es);
+CHANGELOG_BY_LANG.de.unshift(v12092_de);
 
 export const CHANGELOG = CHANGELOG_BY_LANG.fr;

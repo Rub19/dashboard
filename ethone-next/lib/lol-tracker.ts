@@ -380,7 +380,7 @@ export async function fetchLolMatchesDirect(
   // separate match-v5 call, and a personal Riot key is rate-limited — hence
   // the batching rather than one big Promise.all like before, which also
   // capped the visible history at 8).
-  const MATCH_LIMIT = 24;
+  const MATCH_LIMIT = 40;
   const BATCH_SIZE = 6;
   const BATCH_DELAY_MS = 250;
   const matchIdsUrl = `https://europe.api.riotgames.com/lol/match/v5/matches/by-puuid/${encodeURIComponent(puuid)}/ids?count=${MATCH_LIMIT}${queueParam}`;

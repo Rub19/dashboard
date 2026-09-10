@@ -2,6 +2,14 @@
 
 Toutes les modifications notables de ce projet seront documentées dans ce fichier.
 
+## v1.20.92 — 2026-09-10
+
+**Trackers : plus de matchs chargés**
+
+- `ethone-next/lib/lol-tracker.ts` : `MATCH_LIMIT` 24 → 40 (le batching `BATCH_SIZE=6` / `BATCH_DELAY_MS=250` reste en place pour la limite de débit du key Riot perso).
+- `ethone-next/lib/valorant-tracker.ts` + `worker/src/services/henrik-client.js` : `size` 25 → 40 sur `/valorant/v3/matches` ; `dedupeKey` du worker aligné (`…:40`), `maxBytes` de la requête matchs porté à 8 Mo.
+- Verif : `worker` 218/218, `node --check`, `tsc` 0 erreur, `build`, `test:unit` 14/14 69/69.
+
 ## v1.20.91 — 2026-09-10
 
 **Trackers : défilement bloqué, dock qui gêne, ligne « Vous » moche — corrigés**

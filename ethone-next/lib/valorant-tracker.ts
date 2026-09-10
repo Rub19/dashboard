@@ -573,7 +573,7 @@ export async function fetchValorantMatchesDirect(
 
   // Henrik v3 returns the most recent matches; `size` widens the window
   // (25 is the practical ceiling the endpoint honours with an API key).
-  const modeFilter = mode !== "all" ? `?filter=${encodeURIComponent(mode)}&size=25` : "?size=25";
+  const modeFilter = mode !== "all" ? `?filter=${encodeURIComponent(mode)}&size=40` : "?size=40";
   const url = `https://api.henrikdev.xyz/valorant/v3/matches/eu/${encodeURIComponent(cleanName)}/${encodeURIComponent(cleanTag)}${modeFilter}`;
 
   const res = await fetch(url, { headers });

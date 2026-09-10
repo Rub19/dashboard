@@ -2,6 +2,14 @@
 
 Toutes les modifications notables de ce projet seront documentées dans ce fichier.
 
+## v1.20.98 — 2026-09-10
+
+**`/discord/events` + `/discord/calendar` : branchées au bot (fin des pages démo)**
+
+- **`EventsCenterClient.tsx`** : ajout `useSearchParams` + `useDiscordOAuth` (aucun guildId auparavant), `BOT_API_URL`, `mapEvent(raw)` (le `DiscordEvent` du bot ≈ `EventItem`, passthrough défensif), `loadEvents()` (`GET /api/guilds/:id/events`), `isDemo` + badge + bouton Rafraîchir. `eventAction(id, path, method, body?)` → `handleQuickRSVP` = vrai `POST /:id/participants/rsvp` avec `{ userId, username, status: "GOING" }` depuis `profile.user` (optimiste + rollback) ; nouveaux boutons `handleDuplicateEvent` (`POST /:id/duplicate`) et `handleCancelEvent` (`DELETE /:id` → `EventService.cancelEvent`). Badges « Discord Hub • Module Natif » / « Bot Synchronisé » → `Événements` + `Synchronisé`/`Données de démonstration`.
+- **`DiscordCalendarClient.tsx`** : `mapCalendarEvent(raw)` (le bot renvoie `{start,end,color,location,stats,capacity}`), `loadEvents()` (`GET /api/guilds/:id/calendar`), `filteredEvents` lit l'état `events` au lieu de `DEMO_CALENDAR_EVENTS`, badge démo + Rafraîchir. Boutons « Créer » dégradé → `bg-[#5865F2]`.
+- Validation : `tsc` 0 erreur, `build`, `test:unit` 14/14 69/69, `lint` 353.
+
 ## v1.20.97 — 2026-09-10
 
 **`/discord/forms` : branchée au bot (même traitement que les sondages)**

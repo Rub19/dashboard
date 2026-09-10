@@ -1,3 +1,15 @@
+const v12098_fr: ChangelogEntry = {
+  version: "v1.20.98",
+  date: "2026-09-10",
+  title: "Pages Événements & Calendrier : Branchées au Bot",
+  items: [
+    "Les deux dernières pages en démo sont branchées : /discord/events et /discord/calendar chargent tes vrais événements depuis le bot quand un serveur est connecté ; mode démo (badge) sinon.",
+    "Événements : bouton « Participer » fait un vrai RSVP (avec ton compte Discord), + nouveaux boutons Dupliquer et Annuler. Le badge « Bot Synchronisé » (qui mentait en démo) devient « Synchronisé » / « Données de démonstration » selon le cas.",
+    "Calendrier : chargement des événements réels + bouton Rafraîchir. L'export iCal (.ics) marche sur les vraies données.",
+    "En-têtes allégés au passage (boutons plats, moins de badges marketing).",
+  ],
+};
+
 const v12097_fr: ChangelogEntry = {
   version: "v1.20.97",
   date: "2026-09-10",
@@ -503,6 +515,18 @@ const v12052_fr: ChangelogEntry = {
     "Dynamic Island : correction d'un bug de priorité qui empêchait Spotify de jamais s'afficher, systématiquement évincé par la synchronisation d'arrière-plan.",
     "Commande /help du Bot Discord : la liste des commandes est désormais générée dynamiquement depuis les commandes réellement enregistrées (fin des commandes fantômes et des commandes manquantes), et affiche la vraie syntaxe des commandes à sous-commandes (ex. /automod status).",
     "Audit de l'enregistrement des commandes slash Discord : architecture confirmée saine, aucune dérive entre le code et les commandes déployées.",
+  ],
+};
+
+const v12098_en: ChangelogEntry = {
+  version: "v1.20.98",
+  date: "2026-09-10",
+  title: "Events & Calendar Pages: Wired to the Bot",
+  items: [
+    "The last two demo pages are wired: /discord/events and /discord/calendar load your real events from the bot when a server is connected; demo mode (badge) otherwise.",
+    "Events: the \"Join\" button now does a real RSVP (with your Discord account), + new Duplicate and Cancel buttons. The \"Bot Synced\" badge (which lied in demo) becomes \"Synced\" / \"Demo data\" as appropriate.",
+    "Calendar: loads real events + a Refresh button. The iCal (.ics) export works on real data.",
+    "Headers trimmed along the way (flat buttons, fewer marketing badges).",
   ],
 };
 
@@ -1014,6 +1038,18 @@ const v12052_en: ChangelogEntry = {
   ],
 };
 
+const v12098_es: ChangelogEntry = {
+  version: "v1.20.98",
+  date: "2026-09-10",
+  title: "Paginas de Eventos y Calendario: Conectadas al Bot",
+  items: [
+    "Las dos ultimas paginas en demo estan conectadas: /discord/events y /discord/calendar cargan tus eventos reales desde el bot cuando hay un servidor conectado; modo demo (distintivo) si no.",
+    "Eventos: el boton \"Participar\" hace un RSVP real (con tu cuenta de Discord), + nuevos botones Duplicar y Cancelar. El distintivo \"Bot Sincronizado\" (que mentia en demo) pasa a \"Sincronizado\" / \"Datos de demostracion\" segun el caso.",
+    "Calendario: carga de eventos reales + boton Actualizar. La exportacion iCal (.ics) funciona con datos reales.",
+    "Cabeceras aligeradas de paso (botones planos, menos distintivos de marketing).",
+  ],
+};
+
 const v12097_es: ChangelogEntry = {
   version: "v1.20.97",
   date: "2026-09-10",
@@ -1519,6 +1555,18 @@ const v12052_es: ChangelogEntry = {
     "Dynamic Island: corregido un error de prioridad que impedía que Spotify apareciera, siempre desplazado por la sincronización en segundo plano.",
     "Comando /help del Bot de Discord: la lista de comandos ahora se genera dinámicamente desde los comandos realmente registrados (fin de comandos fantasma o ausentes), mostrando la sintaxis real de los comandos con subcomandos.",
     "Auditoría del registro de comandos slash de Discord: arquitectura confirmada como sólida, sin desviación entre el código y los comandos desplegados.",
+  ],
+};
+
+const v12098_de: ChangelogEntry = {
+  version: "v1.20.98",
+  date: "2026-09-10",
+  title: "Seiten Events & Kalender: An den Bot angebunden",
+  items: [
+    "Die letzten beiden Demo-Seiten sind angebunden: /discord/events und /discord/calendar laden deine echten Events vom Bot, wenn ein Server verbunden ist; sonst Demo-Modus (Abzeichen).",
+    "Events: Der \"Teilnehmen\"-Button macht jetzt ein echtes RSVP (mit deinem Discord-Konto), + neue Buttons Duplizieren und Absagen. Das Abzeichen \"Bot synchronisiert\" (das im Demo log) wird je nach Fall zu \"Synchronisiert\" / \"Demodaten\".",
+    "Kalender: laedt echte Events + Aktualisieren-Button. Der iCal-Export (.ics) funktioniert mit echten Daten.",
+    "Kopfzeilen nebenbei entschlackt (flache Buttons, weniger Marketing-Abzeichen).",
   ],
 };
 
@@ -24099,5 +24147,9 @@ CHANGELOG_BY_LANG.fr.unshift(v12097_fr);
 CHANGELOG_BY_LANG.en.unshift(v12097_en);
 CHANGELOG_BY_LANG.es.unshift(v12097_es);
 CHANGELOG_BY_LANG.de.unshift(v12097_de);
+CHANGELOG_BY_LANG.fr.unshift(v12098_fr);
+CHANGELOG_BY_LANG.en.unshift(v12098_en);
+CHANGELOG_BY_LANG.es.unshift(v12098_es);
+CHANGELOG_BY_LANG.de.unshift(v12098_de);
 
 export const CHANGELOG = CHANGELOG_BY_LANG.fr;

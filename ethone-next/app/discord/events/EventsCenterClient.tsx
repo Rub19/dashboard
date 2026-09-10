@@ -1,7 +1,8 @@
 "use client";
 
-import React, { useState, useMemo } from "react";
+import React, { useState, useMemo, useEffect, useCallback } from "react";
 import Link from "next/link";
+import { useSearchParams } from "next/navigation";
 import { motion, AnimatePresence } from "framer-motion";
 import {
   Calendar,
@@ -19,7 +20,49 @@ import {
   Ticket,
   Copy,
   Check,
+  CopyPlus,
+  X,
+  RefreshCw,
 } from "lucide-react";
+import { useDiscordOAuth } from "@/lib/hooks/useDiscordOAuth";
+import { useToast } from "@/components/ToastProvider";
+
+const BOT_API_URL = process.env.NEXT_PUBLIC_DISCORD_BOT_API || "";
+
+function mapEvent(raw: Record<string, unknown>): EventItem {
+  const r = raw as Record<string, any>;
+  return {
+    id: String(r.id ?? ""),
+    title: String(r.title ?? "Événement"),
+    description: String(r.description ?? ""),
+    category: (r.category ?? "COMMUNITY") as EventItem["category"],
+    status: (r.status ?? "SCHEDULED") as EventItem["status"],
+    startDate: String(r.startDate ?? r.startsAt ?? new Date().toISOString()),
+    endDate: String(r.endDate ?? r.endsAt ?? r.startDate ?? new Date().toISOString()),
+    location: {
+      type: (r.location?.type ?? "VOICE") as EventItem["location"]["type"],
+      channelName: r.location?.channelName ?? undefined,
+      details: r.location?.details ?? undefined,
+    },
+    capacity: {
+      unlimited: Boolean(r.capacity?.unlimited ?? true),
+      maxParticipants: Number(r.capacity?.maxParticipants ?? 0),
+      waitlistEnabled: Boolean(r.capacity?.waitlistEnabled ?? false),
+    },
+    stats: {
+      goingCount: Number(r.stats?.goingCount ?? 0),
+      maybeCount: Number(r.stats?.maybeCount ?? 0),
+      waitlistCount: Number(r.stats?.waitlistCount ?? 0),
+      attendedCount: Number(r.stats?.attendedCount ?? 0),
+    },
+    emoji: r.emoji ?? undefined,
+    imageUrl: r.imageUrl ?? undefined,
+    organizer: {
+      username: String(r.organizer?.username ?? "Staff"),
+      avatarUrl: r.organizer?.avatarUrl ?? undefined,
+    },
+  };
+}
 
 interface EventItem {
   id: string;
@@ -123,10 +166,62 @@ const TEMPLATES = [
 ];
 
 export default function EventsCenterClient() {
+  const searchParams = useSearchParams();
+  const { profile } = useDiscordOAuth();
+  const { success, error: showError } = useToast();
+  const guildParam =
+    searchParams.get("guildId") || profile?.guilds?.[0]?.id || "123456789012345678";
+
   const [events, setEvents] = useState<EventItem[]>(INITIAL_EVENTS);
+  const [isDemo, setIsDemo] = useState(true);
+  const [loading, setLoading] = useState(false);
   const [selectedFilter, setSelectedFilter] = useState<string>("ALL");
   const [searchQuery, setSearchQuery] = useState("");
   const [copiedId, setCopiedId] = useState<string | null>(null);
+
+  const loadEvents = useCallback(async () => {
+    if (!BOT_API_URL || !guildParam || guildParam === "123456789012345678") {
+      setIsDemo(true);
+      return;
+    }
+    setLoading(true);
+    try {
+      const res = await fetch(`${BOT_API_URL}/api/guilds/${guildParam}/events`, { credentials: "include" });
+      const data = await res.json().catch(() => null);
+      if (res.ok && Array.isArray(data?.events)) {
+        setEvents(data.events.map(mapEvent));
+        setIsDemo(false);
+      } else {
+        setIsDemo(true);
+      }
+    } catch {
+      setIsDemo(true);
+    } finally {
+      setLoading(false);
+    }
+  }, [guildParam]);
+
+  useEffect(() => {
+    loadEvents();
+  }, [loadEvents]);
+
+  const eventAction = useCallback(
+    async (eventId: string, path: string, method: "POST" | "DELETE" = "POST", body?: Record<string, unknown>): Promise<boolean> => {
+      if (isDemo || !BOT_API_URL) return true;
+      try {
+        const res = await fetch(`${BOT_API_URL}/api/guilds/${guildParam}/events/${eventId}${path}`, {
+          method,
+          headers: body ? { "Content-Type": "application/json" } : undefined,
+          credentials: "include",
+          body: body ? JSON.stringify(body) : undefined,
+        });
+        return res.ok;
+      } catch {
+        return false;
+      }
+    },
+    [isDemo, guildParam]
+  );
 
   // Filtered list
   const filteredEvents = useMemo(() => {
@@ -163,21 +258,51 @@ export default function EventsCenterClient() {
     setTimeout(() => setCopiedId(null), 2000);
   };
 
-  const handleQuickRSVP = (eventId: string) => {
+  const handleQuickRSVP = async (eventId: string) => {
     setEvents((prev) =>
-      prev.map((ev) => {
-        if (ev.id === eventId) {
-          return {
-            ...ev,
-            stats: {
-              ...ev.stats,
-              goingCount: ev.stats.goingCount + 1,
-            },
-          };
-        }
-        return ev;
-      })
+      prev.map((ev) => (ev.id === eventId ? { ...ev, stats: { ...ev.stats, goingCount: ev.stats.goingCount + 1 } } : ev))
     );
+    if (isDemo || !BOT_API_URL) return;
+    const u = profile?.user;
+    if (!u?.id) {
+      showError("Connecte ton compte Discord pour t'inscrire à un événement.");
+      return;
+    }
+    const ok = await eventAction(eventId, "/participants/rsvp", "POST", {
+      userId: u.id,
+      username: u.username || u.displayName || "Membre",
+      displayName: u.displayName || u.globalName || u.username,
+      avatarUrl: u.avatarUrl,
+      status: "GOING",
+    });
+    if (!ok) {
+      setEvents((prev) =>
+        prev.map((ev) => (ev.id === eventId ? { ...ev, stats: { ...ev.stats, goingCount: Math.max(0, ev.stats.goingCount - 1) } } : ev))
+      );
+      showError("Inscription impossible — réessaie.");
+    } else {
+      success("Inscription confirmée.");
+    }
+  };
+
+  const handleDuplicateEvent = async (event: EventItem) => {
+    const ok = await eventAction(event.id, "/duplicate");
+    if (!ok) return void showError("Impossible de dupliquer l'événement.");
+    success(`"${event.title}" dupliqué en brouillon.`);
+    if (!isDemo) loadEvents();
+  };
+
+  const handleCancelEvent = async (event: EventItem) => {
+    if (!confirm(`Annuler l'événement "${event.title}" ?`)) return;
+    const snapshot = events;
+    setEvents((prev) => prev.map((ev) => (ev.id === event.id ? { ...ev, status: "CANCELLED" } : ev)));
+    const ok = await eventAction(event.id, "", "DELETE");
+    if (!ok) {
+      setEvents(snapshot);
+      showError("Impossible d'annuler l'événement.");
+    } else {
+      success(`"${event.title}" annulé.`);
+    }
   };
 
   return (
@@ -196,18 +321,34 @@ export default function EventsCenterClient() {
             <div className="flex items-center gap-3 mb-2">
               <span className="inline-flex items-center gap-1.5 px-3 py-1 rounded-full text-xs font-semibold bg-indigo-500/10 text-indigo-400 border border-indigo-500/20">
                 <Calendar className="w-3.5 h-3.5" />
-                Discord Hub • Module Natif
+                Événements
               </span>
-              <span className="inline-flex items-center gap-1.5 px-2.5 py-0.5 rounded-full text-xs font-medium bg-emerald-500/10 text-emerald-400 border border-emerald-500/20">
-                <span className="w-1.5 h-1.5 rounded-full bg-emerald-400 shadow-[0_0_5px_rgba(52,211,153,0.8)]" />
-                Bot Synchronisé
-              </span>
+              {isDemo ? (
+                <span className="inline-flex items-center gap-1.5 px-2.5 py-0.5 rounded-full text-xs font-medium bg-amber-500/10 text-amber-300 border border-amber-500/30">
+                  Données de démonstration
+                </span>
+              ) : (
+                <span className="inline-flex items-center gap-1.5 px-2.5 py-0.5 rounded-full text-xs font-medium bg-emerald-500/10 text-emerald-400 border border-emerald-500/20">
+                  <span className="w-1.5 h-1.5 rounded-full bg-emerald-400" />
+                  Synchronisé
+                </span>
+              )}
+              <button
+                onClick={loadEvents}
+                disabled={loading}
+                className="inline-flex items-center justify-center rounded-lg border border-white/10 bg-white/5 p-1.5 text-zinc-400 transition-colors hover:text-white hover:bg-white/10 disabled:opacity-50"
+                title="Rafraîchir"
+              >
+                <RefreshCw className={`w-3.5 h-3.5 ${loading ? "animate-spin" : ""}`} />
+              </button>
             </div>
             <h1 className="text-3xl sm:text-4xl font-extrabold tracking-tight text-white flex items-center gap-3">
               Événements & Calendrier
             </h1>
             <p className="text-slate-400 text-sm mt-1 max-w-2xl">
-              Planifiez, automatisez et animez vos soirées gaming, tournois et réunions Discord avec synchronisation bot, alertes automatiques et gestion d’inscriptions en temps réel.
+              {isDemo
+                ? "Connecte un serveur pour planifier et gérer tes vrais événements Discord depuis ici."
+                : "Planifie tes soirées gaming, tournois et réunions — synchronisé avec le bot."}
             </p>
           </div>
 
@@ -502,6 +643,24 @@ export default function EventsCenterClient() {
                         >
                           {copiedId === event.id ? <Check className="w-3.5 h-3.5 text-emerald-400" /> : <Copy className="w-3.5 h-3.5" />}
                         </button>
+
+                        <button
+                          onClick={() => handleDuplicateEvent(event)}
+                          className="p-2 rounded-xl bg-white/5 hover:bg-white/10 text-slate-400 hover:text-white border border-white/10 transition-colors"
+                          title="Dupliquer"
+                        >
+                          <CopyPlus className="w-3.5 h-3.5" />
+                        </button>
+
+                        {event.status !== "CANCELLED" && event.status !== "COMPLETED" && (
+                          <button
+                            onClick={() => handleCancelEvent(event)}
+                            className="p-2 rounded-xl bg-white/5 hover:bg-rose-500/15 text-slate-400 hover:text-rose-400 border border-white/10 transition-colors"
+                            title="Annuler l'événement"
+                          >
+                            <X className="w-3.5 h-3.5" />
+                          </button>
+                        )}
                       </div>
                     </div>
                   </div>

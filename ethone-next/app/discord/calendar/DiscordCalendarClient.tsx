@@ -1,7 +1,8 @@
 "use client";
 
-import React, { useState, useMemo } from "react";
+import React, { useState, useMemo, useEffect, useCallback } from "react";
 import Link from "next/link";
+import { useSearchParams } from "next/navigation";
 import { motion, AnimatePresence } from "framer-motion";
 import {
   Calendar as CalendarIcon,
@@ -13,7 +14,29 @@ import {
   X,
   ExternalLink,
   Volume2,
+  RefreshCw,
 } from "lucide-react";
+import { useDiscordOAuth } from "@/lib/hooks/useDiscordOAuth";
+
+const BOT_API_URL = process.env.NEXT_PUBLIC_DISCORD_BOT_API || "";
+
+function mapCalendarEvent(raw: Record<string, unknown>): CalendarEvent {
+  const r = raw as Record<string, any>;
+  return {
+    id: String(r.id ?? ""),
+    title: String(r.title ?? "Événement"),
+    description: String(r.description ?? ""),
+    category: (r.category ?? "COMMUNITY") as CalendarEvent["category"],
+    status: (r.status === "CANCELLED" ? "COMPLETED" : r.status ?? "SCHEDULED") as CalendarEvent["status"],
+    startDate: String(r.start ?? r.startDate ?? new Date().toISOString()),
+    endDate: String(r.end ?? r.endDate ?? r.start ?? new Date().toISOString()),
+    color: String(r.color ?? "#5865F2"),
+    emoji: String(r.emoji ?? "📅"),
+    location: String(r.location ?? ""),
+    attendeesCount: Number(r.stats?.goingCount ?? r.attendeesCount ?? 0),
+    maxCapacity: r.capacity ?? r.maxCapacity ?? undefined,
+  };
+}
 
 interface CalendarEvent {
   id: string;
@@ -90,16 +113,49 @@ const DEMO_CALENDAR_EVENTS: CalendarEvent[] = [
 type ViewMode = "MONTH" | "WEEK" | "DAY" | "AGENDA";
 
 export default function DiscordCalendarClient() {
+  const searchParams = useSearchParams();
+  const { profile } = useDiscordOAuth();
+  const guildParam = searchParams.get("guildId") || profile?.guilds?.[0]?.id || "123456789012345678";
+
   const [currentDate, setCurrentDate] = useState(new Date());
   const [viewMode, setViewMode] = useState<ViewMode>("MONTH");
   const [selectedCategory, setSelectedCategory] = useState<string>("ALL");
   const [activeModalEvent, setActiveModalEvent] = useState<CalendarEvent | null>(null);
+  const [events, setEvents] = useState<CalendarEvent[]>(DEMO_CALENDAR_EVENTS);
+  const [isDemo, setIsDemo] = useState(true);
+  const [loading, setLoading] = useState(false);
+
+  const loadEvents = useCallback(async () => {
+    if (!BOT_API_URL || !guildParam || guildParam === "123456789012345678") {
+      setIsDemo(true);
+      return;
+    }
+    setLoading(true);
+    try {
+      const res = await fetch(`${BOT_API_URL}/api/guilds/${guildParam}/calendar`, { credentials: "include" });
+      const data = await res.json().catch(() => null);
+      if (res.ok && Array.isArray(data?.events)) {
+        setEvents(data.events.map(mapCalendarEvent));
+        setIsDemo(false);
+      } else {
+        setIsDemo(true);
+      }
+    } catch {
+      setIsDemo(true);
+    } finally {
+      setLoading(false);
+    }
+  }, [guildParam]);
+
+  useEffect(() => {
+    loadEvents();
+  }, [loadEvents]);
 
   // Filter events
   const filteredEvents = useMemo(() => {
-    if (selectedCategory === "ALL") return DEMO_CALENDAR_EVENTS;
-    return DEMO_CALENDAR_EVENTS.filter((e) => e.category === selectedCategory);
-  }, [selectedCategory]);
+    if (selectedCategory === "ALL") return events;
+    return events.filter((e) => e.category === selectedCategory);
+  }, [selectedCategory, events]);
 
   // Date Navigation
   const handlePrev = () => {
@@ -220,7 +276,12 @@ export default function DiscordCalendarClient() {
                 Événements Hub
               </Link>
               <span>/</span>
-              <span className="text-slate-400">Calendrier Interactif</span>
+              <span className="text-slate-400">Calendrier</span>
+              {isDemo && (
+                <span className="normal-case rounded-full border border-amber-500/30 bg-amber-500/10 px-2 py-0.5 text-[10px] font-semibold text-amber-300">
+                  Démo
+                </span>
+              )}
             </div>
             <h1 className="text-3xl font-extrabold text-white flex items-center gap-3 capitalize">
               {monthLabel}
@@ -229,6 +290,14 @@ export default function DiscordCalendarClient() {
 
           {/* Top Actions */}
           <div className="flex items-center gap-3 flex-wrap">
+            <button
+              onClick={loadEvents}
+              disabled={loading}
+              className="inline-flex items-center justify-center rounded-xl border border-white/10 bg-white/5 p-2 text-slate-400 transition-colors hover:text-white hover:bg-white/10 disabled:opacity-50"
+              title="Rafraîchir"
+            >
+              <RefreshCw className={`w-3.5 h-3.5 ${loading ? "animate-spin" : ""}`} />
+            </button>
             <button
               onClick={handleExportICS}
               className="inline-flex items-center gap-2 px-3.5 py-2 rounded-xl text-xs font-semibold bg-white/5 hover:bg-white/10 border border-white/10 text-slate-200 transition-colors"
@@ -239,7 +308,7 @@ export default function DiscordCalendarClient() {
 
             <Link
               href="/discord/events/create"
-              className="inline-flex items-center gap-2 px-4 py-2 rounded-xl text-xs font-semibold bg-gradient-to-r from-indigo-500 to-purple-600 hover:from-indigo-600 hover:to-purple-700 text-white shadow-md shadow-indigo-500/25 transition-all"
+              className="inline-flex items-center gap-2 px-4 py-2 rounded-xl text-xs font-semibold bg-[#5865F2] hover:bg-[#4752C4] text-white transition-colors"
             >
               <Plus className="w-3.5 h-3.5" />
               Créer un Événement

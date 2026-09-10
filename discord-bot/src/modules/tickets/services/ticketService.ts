@@ -24,6 +24,7 @@ import { TicketAutomationEngine } from './ticketAutomationEngine.js';
 import { TicketScheduler } from './ticketScheduler.js';
 import { logService } from '../../logs/services/logService.js';
 import { logger } from '../../../utils/logger.js';
+import { baseEmbed } from '../../../utils/embeds.js';
 
 class TicketService {
   private discordClient: Client | null = null;
@@ -285,9 +286,11 @@ class TicketService {
       });
     }
 
-    embed.setFooter({
-      text: `ETHONE Helpdesk 2.0 • Utilisez les boutons ci-dessous pour gérer ce ticket.`,
-    });
+    embed
+      .setFooter({
+        text: `ETHONE Helpdesk 2.0 • Utilisez les boutons ci-dessous pour gérer ce ticket.`,
+      })
+      .setTimestamp();
 
     const row1 = new ActionRowBuilder<ButtonBuilder>().addComponents(
       new ButtonBuilder()
@@ -350,11 +353,7 @@ class TicketService {
         const channel = guild?.channels.cache.get(ticket.channelId) as TextChannel | undefined;
         if (channel) {
           await channel.send({
-            embeds: [
-              new EmbedBuilder()
-                .setColor(0x3b82f6)
-                .setDescription(`🙋 **${staffUser.tag}** a pris en charge ce ticket.`),
-            ],
+            embeds: [baseEmbed('info').setDescription(`🙋 **${staffUser.tag}** a pris en charge ce ticket.`)],
           });
         }
       } catch {}
@@ -575,11 +574,9 @@ class TicketService {
     // Envoi de la notification et demande d'avis
     if (channel) {
       try {
-        const embed = new EmbedBuilder()
-          .setColor(0xef4444)
+        const embed = baseEmbed('error', { footerText: 'Le salon sera supprimé automatiquement dans 5 secondes.' })
           .setTitle(`🔒 Ticket Fermé • ${ticket.id}`)
-          .setDescription(`Ce ticket a été clôturé par **${closedBy.tag}**.\n**Motif** : ${reason}`)
-          .setFooter({ text: 'Le salon sera supprimé automatiquement dans 5 secondes.' });
+          .setDescription(`Ce ticket a été clôturé par **${closedBy.tag}**.\n**Motif** : ${reason}`);
 
         await channel.send({ embeds: [embed] });
 

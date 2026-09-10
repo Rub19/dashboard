@@ -119,7 +119,14 @@ class GiveawayService {
     const isEnded = giveaway.status === 'ended';
     const isCancelled = giveaway.status === 'cancelled';
 
-    const embed = new EmbedBuilder();
+    // Ton de marque ETHONE selon l'état du giveaway (succès/erreur/info) plutôt que des
+    // hex ad-hoc. Le timestamp reflète la date de fin (et non l'instant de rendu) : c'est
+    // un choix volontaire pour un giveaway (compte à rebours), conservé tel quel.
+    const tone = isEnded ? 'success' : isCancelled ? 'error' : 'info';
+    const embed = baseEmbed(tone, {
+      footerText: `ETHONE • ID: ${giveaway.id}`,
+      timestamp: new Date(giveaway.endsAt),
+    });
 
     if (isEnded) {
       const winnersStr =
@@ -127,7 +134,6 @@ class GiveawayService {
           ? giveaway.winnerIds.map((id) => `<@${id}>`).join(', ')
           : `*${t.giveaway_no_eligible_participant}*`;
       embed
-        .setColor('#10B981')
         .setTitle(formatString(t.giveaway_embed_ended_title, { prize: giveaway.prize }))
         .setDescription(
           formatString(t.giveaway_embed_ended_desc, {
@@ -139,7 +145,6 @@ class GiveawayService {
         );
     } else if (isCancelled) {
       embed
-        .setColor('#EF4444')
         .setTitle(formatString(t.giveaway_embed_cancelled_title, { prize: giveaway.prize }))
         .setDescription(t.giveaway_embed_cancelled_desc);
     } else {
@@ -159,7 +164,6 @@ class GiveawayService {
       }
 
       embed
-        .setColor('#6366F1')
         .setTitle(formatString(t.giveaway_embed_active_title, { prize: giveaway.prize }))
         .setDescription(
           formatString(t.giveaway_embed_active_desc, {
@@ -176,7 +180,6 @@ class GiveawayService {
       embed.setImage(giveaway.bannerUrl);
     }
 
-    embed.setFooter({ text: `ID: ${giveaway.id}` }).setTimestamp(new Date(giveaway.endsAt));
     return embed;
   }
 

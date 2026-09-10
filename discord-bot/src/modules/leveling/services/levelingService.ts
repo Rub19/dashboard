@@ -1,6 +1,5 @@
 import {
   ChannelType,
-  EmbedBuilder,
   GuildMember,
   Message,
   PermissionFlagsBits,
@@ -13,6 +12,7 @@ import { logService } from '../../logs/services/logService.js';
 import { guildConfigService } from '../../../services/guildConfigService.js';
 import { formatString, getTranslation } from '../../../utils/i18n.js';
 import { logger } from '../../../utils/logger.js';
+import { baseEmbed } from '../../../utils/embeds.js';
 
 class LevelingService {
   // Cooldowns en mémoire (clé: `${guildId}:${userId}` -> timestamp)
@@ -188,8 +188,9 @@ class LevelingService {
         content += `\n${formatString(t.leveling_levelup_roles_unlocked, { roles: newlyGrantedRoles.map((r) => `\`@${r}\``).join(', ') })}`;
       }
 
-      const embed = new EmbedBuilder()
-        .setColor('#F59E0B')
+      // Ton "warning" = ambre doré, accent de marque du module Niveaux (cohérent avec
+      // /rank et /leaderboard).
+      const embed = baseEmbed('warning')
         .setTitle(t.leveling_levelup_title)
         .setDescription(content)
         .setThumbnail(member.user.displayAvatarURL());

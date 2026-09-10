@@ -3,7 +3,6 @@ import {
   ButtonBuilder,
   ButtonInteraction,
   ButtonStyle,
-  EmbedBuilder,
   ModalActionRowComponentBuilder,
   ModalBuilder,
   ModalSubmitInteraction,
@@ -535,17 +534,14 @@ export async function handleSettingsButton(interaction: ButtonInteraction): Prom
       }
 
       const t = getTranslation(targetLang);
-      const embed = new EmbedBuilder()
-        .setColor(0x57f287)
+      const embed = baseEmbed('success', { footerText: `${updated.botName} • Multilingual Support 2.0` })
         .setTitle(`${t.lang_flag} ${t.lang_changed_title}`)
         .setDescription(t.lang_changed_desc)
         .addFields({
           name: '🌐 Language / Idioma / Sprache',
           value: `**${t.lang_flag} ${t.lang_name}** (\`${targetLang.toUpperCase()}\`)`,
           inline: true,
-        })
-        .setFooter({ text: `${updated.botName} • Multilingual Support 2.0` })
-        .setTimestamp();
+        });
 
       const buttonsRow = new ActionRowBuilder<ButtonBuilder>().addComponents(
         new ButtonBuilder()

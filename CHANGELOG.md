@@ -2,6 +2,16 @@
 
 Toutes les modifications notables de ce projet seront documentées dans ce fichier.
 
+## discord-bot — 2026-09-10 (refonte des embeds + MP de sanction)
+
+**Refonte de cohérence des embeds Discord + notifications MP de modération passées en embed**
+
+Ne touche pas `ethone-next` (pas de bump de version dédié). Vérifié : `npm run node:build` (tsc) propre.
+
+- **Notifications MP de sanction en embed** : `/warn`, `/ban`, `/kick` envoyaient à l'utilisateur sanctionné un simple message texte (`⚠️ Vous avez reçu un avertissement sur **X** pour la raison suivante : *test*.`). Passées en embed propre — titre avec icône, serveur, raison en champ, modérateur, pied de page, horodatage — via un nouveau helper `buildSanctionDmEmbed` (`discord-bot/src/modules/moderation/utils/sanctionDmEmbed.ts`) qui réutilise les clés i18n `sanction_dm_*` déjà traduites en fr/en/es/de et qui sont aussi utilisées par le pipeline de modération automatique (`services/sanctionService.ts`) — les deux chemins produisent désormais exactement le même rendu.
+- **Cohérence des embeds sur ~20 fichiers** (musique, réglages, anti-raid, automod, événements, formulaires, giveaways, niveaux, sondages, présence, rôles, tickets, accueil...) : remplacement des couleurs hexadécimales codées en dur et dispersées (`#6366f1`, `#8b5cf6`, `#10b981`, `0x3b82f6`...) par les tons de marque partagés (`baseEmbed('success' | 'error' | 'info' | 'warning' | 'neutral')`), pied de page + horodatage ajoutés là où les embeds frères en avaient et pas celui-ci, couleur de repli par défaut alignée sur le blurple Discord `#5865F2`. Nouveau ton `neutral` (gris ardoise, état désactivé/inactif) et `CommandContext.createEmbed` accepte désormais `warning` et `neutral`.
+- Incohérence corrigée dans l'accueil : l'embed de consultation du règlement était vert (ton « succès ») alors que c'est une simple consultation — passé en ton « info ».
+
 ## v1.20.80 — 2026-09-10
 
 **Correctifs backend : bugs de perte de données silencieuse (`safeText` mal appelé) + sémantique PostgREST (audit parallèle)**

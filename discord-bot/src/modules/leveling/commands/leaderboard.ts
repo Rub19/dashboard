@@ -1,4 +1,4 @@
-import { EmbedBuilder, SlashCommandBuilder } from 'discord.js';
+import { SlashCommandBuilder } from 'discord.js';
 import { Command, CommandContext } from '../../../types/command.js';
 import { levelingStorage } from '../storage/levelingStorage.js';
 import { formatString, getTranslation } from '../../../utils/i18n.js';
@@ -42,12 +42,14 @@ export const leaderboardCommand: Command = {
       return formatString(t.leveling_leaderboard_line, { medal, userId: user.userId, level: user.level, xp: user.totalXp.toLocaleString() });
     });
 
-    const embed = new EmbedBuilder()
-      .setColor('#F59E0B')
+    // Ton "warning" = ambre doré, couleur de marque du module Niveaux (cf. catégorie
+    // "leveling" dans helpPanel.ts) — pas un vrai avertissement, juste le ton le plus
+    // proche de l'accent ambré déjà établi pour ce module.
+    const embed = ctx
+      .createEmbed('warning')
       .setTitle(formatString(t.leveling_leaderboard_title, { guildName: guild.name }))
       .setDescription(lines.join('\n\n'))
-      .setFooter({ text: t.leveling_leaderboard_footer })
-      .setTimestamp();
+      .setFooter({ text: t.leveling_leaderboard_footer });
 
     await ctx.reply({ embeds: [embed] });
   },

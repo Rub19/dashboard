@@ -25,7 +25,7 @@ export class CommandActionExecutor {
     if (response.embed) {
       const e = response.embed;
       const embed = new EmbedBuilder()
-        .setColor((e.color || '#6366F1') as `#${string}`);
+        .setColor((e.color || '#5865F2') as `#${string}`);
 
       if (e.title) embed.setTitle(CommandVariableEngine.replace(e.title, ctx));
       if (e.description) embed.setDescription(CommandVariableEngine.replace(e.description, ctx));

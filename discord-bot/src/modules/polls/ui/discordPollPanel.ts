@@ -41,7 +41,7 @@ export class DiscordPollPanel {
                 .join('\n')
             : '')
       )
-      .setColor((config.embedColor as any) || '#8b5cf6')
+      .setColor((config.embedColor as any) || '#5865F2')
       .setFooter({
         text:
           config.footerText ||
@@ -136,12 +136,11 @@ export class DiscordPollPanel {
         (o: any) => `${o.emoji || '🔹'} **${o.label}**\n${'█'.repeat(Math.round(o.percentage / 10))}${'░'.repeat(10 - Math.round(o.percentage / 10))} **${o.percentage}%** (${o.votesCount} votes)`
       ).join('\n\n');
 
-      const resultsEmbed = new EmbedBuilder()
+      const resultsEmbed = baseEmbed('info', {
+        footerText: formatString(t.poll_live_results_footer, { count: results.uniqueParticipants }),
+      })
         .setTitle(formatString(t.poll_live_results_title, { title: poll.title }))
-        .setDescription(lines || t.poll_no_votes_recorded)
-        .setColor('#8b5cf6')
-        .setFooter({ text: formatString(t.poll_live_results_footer, { count: results.uniqueParticipants }) })
-        .setTimestamp();
+        .setDescription(lines || t.poll_no_votes_recorded);
 
       await interaction.reply({ embeds: [resultsEmbed], ephemeral: true });
       return;
@@ -176,7 +175,7 @@ export class DiscordPollPanel {
       }
 
       const chosenOpt = poll.questions[0]?.options.find((o) => o.id === optionId);
-      const confirmEmbed = new EmbedBuilder()
+      const confirmEmbed = baseEmbed('success', { footerText: 'ETHONE Polls 2.0' })
         .setTitle(t.poll_vote_success_title)
         .setDescription(
           formatString(t.poll_vote_success_desc, {
@@ -184,10 +183,7 @@ export class DiscordPollPanel {
             weight: result.vote?.weight || 1,
             visibility: poll.anonymity === 'PUBLIC' ? t.poll_visibility_public : t.poll_visibility_anonymous,
           })
-        )
-        .setColor('#10b981')
-        .setFooter({ text: 'ETHONE Polls 2.0' })
-        .setTimestamp();
+        );
 
       await interaction.reply({ embeds: [confirmEmbed], ephemeral: true });
     }

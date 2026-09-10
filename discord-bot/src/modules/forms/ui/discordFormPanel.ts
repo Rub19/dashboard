@@ -39,7 +39,7 @@ export class DiscordFormPanel {
           (form.description ? `${form.description}\n\n` : '') +
             formatString(t.form_panel_default_desc, { category: form.category })
       )
-      .setColor((config.embedColor as any) || '#6366f1')
+      .setColor((config.embedColor as any) || '#5865F2')
       .setFooter({
         text: config.footerText || 'ETHONE Application Center',
         iconURL: 'https://cdn.discordapp.com/embed/avatars/0.png',
@@ -220,14 +220,11 @@ export class DiscordFormPanel {
       return;
     }
 
-    const embed = new EmbedBuilder()
+    const embed = baseEmbed('success', { footerText: 'ETHONE Forms 2.0' })
       .setTitle(t.form_submitted_title)
       .setDescription(
         formatString(t.form_submitted_desc, { title: form.title, id: result.response?.id || '' })
-      )
-      .setColor('#10b981')
-      .setFooter({ text: 'ETHONE Forms 2.0' })
-      .setTimestamp();
+      );
 
     await interaction.editReply({ embeds: [embed] });
   }

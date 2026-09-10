@@ -2,7 +2,6 @@ import {
   SlashCommandBuilder,
   PermissionFlagsBits,
   ChannelType,
-  EmbedBuilder,
 } from 'discord.js';
 import { Command, CommandContext } from '../../../types/command.js';
 import { pollRepository } from '../storage/pollRepository.js';
@@ -91,9 +90,9 @@ export const pollCommand: Command = {
         return;
       }
 
-      const embed = new EmbedBuilder()
+      const embed = ctx
+        .createEmbed('info')
         .setTitle(t.poll_list_title)
-        .setColor(0x6366f1)
         .setDescription(
           polls
             .map((p) =>
@@ -173,10 +172,10 @@ export const pollCommand: Command = {
         return;
       }
 
-      const embed = new EmbedBuilder()
+      const embed = ctx
+        .createEmbed('success')
         .setTitle(formatString(t.poll_results_title, { title: poll.title }))
         .setDescription(poll.description || t.poll_results_default_desc)
-        .setColor(0x10b981)
         .addFields(
           { name: t.poll_field_total_voters, value: `${results.totalVoters}`, inline: true },
           { name: t.poll_field_total_weight, value: `${results.totalWeightedVotes}`, inline: true },

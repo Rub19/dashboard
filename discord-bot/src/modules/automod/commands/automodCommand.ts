@@ -1,6 +1,5 @@
 import {
   ChatInputCommandInteraction,
-  EmbedBuilder,
   PermissionFlagsBits,
   SlashCommandBuilder,
 } from 'discord.js';
@@ -123,9 +122,9 @@ export const automodCommand: Command = {
       const detectorsCol1 = detectorEntries.slice(0, half).map(renderDetector).join('\n');
       const detectorsCol2 = detectorEntries.slice(half).map(renderDetector).join('\n');
 
-      const embed = new EmbedBuilder()
+      const embed = ctx
+        .createEmbed(config.enabled ? 'success' : 'neutral')
         .setTitle(formatString(t.automod_status_title, { guildName: ctx.guild.name }))
-        .setColor(config.enabled ? 0x10b981 : 0x6b7280)
         .setThumbnail(ctx.guild.iconURL({ size: 128 }) ?? null)
         .addFields(
           {
@@ -202,9 +201,9 @@ export const automodCommand: Command = {
         channelId: ctx.channel?.id,
       });
 
-      const embed = new EmbedBuilder()
+      const embed = ctx
+        .createEmbed(result.totalRiskScore > 40 ? 'error' : 'success')
         .setTitle(t.automod_test_title)
-        .setColor(result.totalRiskScore > 40 ? 0xef4444 : 0x10b981)
         .addFields(
           {
             name: t.automod_test_field_message,

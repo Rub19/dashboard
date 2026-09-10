@@ -17,9 +17,18 @@ export const BRAND_COLORS = {
   error: 0xed4245, // = guildConfig.errorColor
   warning: 0xf59e0b, // Ambre — pas de champ dédié dans guildConfig, convention interne du bot
   info: 0x5865f2, // = guildConfig.infoColor
+  neutral: 0x6b7280, // Gris ardoise — état "désactivé / inactif", pas de champ dédié dans guildConfig
 } as const;
 
-export type EmbedTone = 'default' | 'primary' | 'secondary' | 'success' | 'error' | 'warning' | 'info';
+export type EmbedTone =
+  | 'default'
+  | 'primary'
+  | 'secondary'
+  | 'success'
+  | 'error'
+  | 'warning'
+  | 'info'
+  | 'neutral';
 
 export interface EmbedChromeOptions {
   /** Couleur explicite (hex `#RRGGBB` ou nombre). Prioritaire sur le ton. Utile pour
@@ -47,6 +56,8 @@ function toneColor(tone: EmbedTone): number {
       return BRAND_COLORS.warning;
     case 'info':
       return BRAND_COLORS.info;
+    case 'neutral':
+      return BRAND_COLORS.neutral;
     case 'secondary':
       return BRAND_COLORS.secondary;
     case 'primary':
@@ -115,4 +126,9 @@ export function warningEmbed(options: EmbedChromeOptions = {}): EmbedBuilder {
 /** Embed de ton "information" (identique à la couleur de marque par défaut). */
 export function infoEmbed(options: EmbedChromeOptions = {}): EmbedBuilder {
   return baseEmbed('info', options);
+}
+
+/** Embed de ton "neutre" (gris ardoise — état désactivé/inactif, ni succès ni erreur). */
+export function neutralEmbed(options: EmbedChromeOptions = {}): EmbedBuilder {
+  return baseEmbed('neutral', options);
 }

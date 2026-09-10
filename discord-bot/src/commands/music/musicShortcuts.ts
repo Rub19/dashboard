@@ -1,8 +1,9 @@
-import { EmbedBuilder, PermissionFlagsBits, SlashCommandBuilder, type VoiceBasedChannel } from 'discord.js';
+import { PermissionFlagsBits, SlashCommandBuilder, type VoiceBasedChannel } from 'discord.js';
 import { Command, CommandContext } from '../../types/command.js';
 import { musicService } from '../../modules/music/services/musicService.js';
 import { DiscordMusicPanel } from '../../modules/music/ui/discordMusicPanel.js';
 import { formatString, getTranslation } from '../../utils/i18n.js';
+import { errorEmbed } from '../../utils/embeds.js';
 
 const replyError = (ctx: CommandContext, msg: string) =>
   ctx.reply({ embeds: [ctx.createEmbed('error').setDescription(msg)], ephemeral: true });
@@ -57,8 +58,7 @@ async function checkVoicePermissions(ctx: CommandContext, channel: VoiceBasedCha
   );
 
   try {
-    const dmEmbed = new EmbedBuilder()
-      .setColor(0xef4444)
+    const dmEmbed = errorEmbed()
       .setTitle(t.voice_missing_permission_dm_title)
       .setDescription(
         formatString(t.voice_missing_permission_dm_desc, {
@@ -66,8 +66,7 @@ async function checkVoicePermissions(ctx: CommandContext, channel: VoiceBasedCha
           channel: channel.name,
           permissions: permissionList,
         })
-      )
-      .setTimestamp();
+      );
     await ctx.author.send({ embeds: [dmEmbed] });
   } catch {
     // MPs fermés : on a déjà prévenu dans le salon, pas grave si le DM échoue.

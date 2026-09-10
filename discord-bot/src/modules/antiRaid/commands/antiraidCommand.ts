@@ -9,6 +9,7 @@ import { raidDetectionService } from '../services/raidDetectionService.js';
 import { raidModeService } from '../services/raidModeService.js';
 import { raidActionService } from '../services/raidActionService.js';
 import { formatString, getTranslation } from '../../../utils/i18n.js';
+import { BRAND_COLORS } from '../../../utils/embeds.js';
 
 export const antiraidCommand: Command = {
   name: 'antiraid',
@@ -66,17 +67,21 @@ export const antiraidCommand: Command = {
 
     if (sub === 'status') {
       const metrics = raidDetectionService.getLiveMetrics(guildId);
+      // Échelle de menace à 5 paliers : les extrêmes (SAFE/DANGEROUS) et le palier
+      // intermédiaire (SUSPICIOUS) reprennent les tons de marque success/warning/error.
+      // ELEVATED et CRITICAL n'ont pas d'équivalent dans la palette à 5 tons — ce sont
+      // des nuances d'escalade dédiées (orange puis rouge foncé) entre warning et error.
       const levelColors: Record<string, number> = {
-        SAFE: 0x10b981,
-        SUSPICIOUS: 0xf59e0b,
-        ELEVATED: 0xf97316,
-        DANGEROUS: 0xef4444,
-        CRITICAL: 0x991b1b,
+        SAFE: BRAND_COLORS.success,
+        SUSPICIOUS: BRAND_COLORS.warning,
+        ELEVATED: 0xf97316, // Orange — palier d'escalade entre warning et error
+        DANGEROUS: BRAND_COLORS.error,
+        CRITICAL: 0x991b1b, // Rouge foncé — palier au-delà de error (menace confirmée)
       };
 
       const embed = new EmbedBuilder()
         .setTitle(formatString(t.antiraid_status_title, { guildName: ctx.guild.name }))
-        .setColor(levelColors[metrics.threatLevel] || 0x3b82f6)
+        .setColor(levelColors[metrics.threatLevel] || BRAND_COLORS.info)
         .setThumbnail(ctx.guild.iconURL({ size: 128 }) ?? null)
         .addFields(
           {

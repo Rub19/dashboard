@@ -1,6 +1,5 @@
 import {
   ChatInputCommandInteraction,
-  EmbedBuilder,
   SlashCommandBuilder,
 } from 'discord.js';
 import { Command, CommandContext } from '../../../types/command.js';
@@ -47,8 +46,10 @@ export const rankCommand: Command = {
     const userRank = leaderboard.findIndex((u) => u.userId === targetUser.id) + 1 || leaderboard.length + 1;
     const progressBar = LevelCalculator.renderProgressBar(progress.progressPercentage, 12);
 
-    const embed = new EmbedBuilder()
-      .setColor('#6366F1')
+    // Même ton "warning" (ambre) que /leaderboard : les deux commandes du module
+    // Niveaux partagent désormais le même accent de marque.
+    const embed = ctx
+      .createEmbed('warning')
       .setAuthor({
         name: formatString(t.leveling_rank_author, { username: targetUser.username }),
         iconURL: targetUser.displayAvatarURL(),
@@ -70,8 +71,7 @@ export const rankCommand: Command = {
           inline: false,
         }
       )
-      .setFooter({ text: formatString(t.leveling_rank_footer, { guildName: guild.name }) })
-      .setTimestamp();
+      .setFooter({ text: formatString(t.leveling_rank_footer, { guildName: guild.name }) });
 
     await ctx.reply({ embeds: [embed] });
   },

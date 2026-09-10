@@ -1,7 +1,6 @@
 import {
   ChannelType,
   ChatInputCommandInteraction,
-  EmbedBuilder,
   PermissionFlagsBits,
   SlashCommandBuilder,
 } from 'discord.js';
@@ -193,8 +192,8 @@ export const giveawayCommand: Command = {
         return;
       }
 
-      const embed = new EmbedBuilder()
-        .setColor('#6366F1')
+      const embed = ctx
+        .createEmbed('info')
         .setTitle(formatString(t.giveaway_list_title, { guildName: guild.name }))
         .setDescription(
           list

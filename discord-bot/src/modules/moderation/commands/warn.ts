@@ -4,6 +4,7 @@ import { checkHierarchy } from '../permissions/hierarchy.js';
 import { sanctionService } from '../sanctions/sanctionService.js';
 import { ModLogger } from '../logs/modLogger.js';
 import { formatString, getTranslation } from '../../../utils/i18n.js';
+import { buildSanctionDmEmbed } from '../utils/sanctionDmEmbed.js';
 
 export const warnCommand: Command = {
   name: 'warn',
@@ -84,9 +85,10 @@ export const warnCommand: Command = {
     // Envoi du log
     await ModLogger.logSanction(ctx.guild, sanction);
 
-    // Tentative de notification en MP
+    // Tentative de notification en MP (embed — même rendu que le pipeline
+    // automatique de sanctionService).
     await targetMember.send({
-      content: formatString(t.warn_dm, { guild: ctx.guild.name, reason }),
+      embeds: [buildSanctionDmEmbed('warn', t, { guildName: ctx.guild.name, reason, moderatorTag: ctx.author.tag })],
     }).catch(() => {});
 
     // Réponse

@@ -4,6 +4,7 @@ import { checkHierarchy } from '../permissions/hierarchy.js';
 import { sanctionService } from '../sanctions/sanctionService.js';
 import { ModLogger } from '../logs/modLogger.js';
 import { formatString, getTranslation } from '../../../utils/i18n.js';
+import { buildSanctionDmEmbed } from '../utils/sanctionDmEmbed.js';
 
 export const kickCommand: Command = {
   name: 'kick',
@@ -62,9 +63,9 @@ export const kickCommand: Command = {
     }
 
     try {
-      // Message MP préventif
+      // Message MP préventif (embed — même rendu que le pipeline automatique)
       await targetMember.send({
-        content: formatString(t.kick_dm, { guild: ctx.guild.name, reason }),
+        embeds: [buildSanctionDmEmbed('kick', t, { guildName: ctx.guild.name, reason, moderatorTag: ctx.author.tag })],
       }).catch(() => {});
 
       // Mode test (Bot Owner qui s'auto-cible) : on simule tout SANS jamais

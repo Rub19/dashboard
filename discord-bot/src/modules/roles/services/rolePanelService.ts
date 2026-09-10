@@ -226,7 +226,8 @@ class RolePanelService {
       .setColor((panel.color || '#5865F2') as `#${string}`)
       .setTitle(panel.title)
       .setDescription(panel.description || null)
-      .setFooter({ text: panel.footer || `${guild.name} • Système de Rôles` });
+      .setFooter({ text: panel.footer || `${guild.name} • Système de Rôles` })
+      .setTimestamp();
 
     if (panel.thumbnail) embed.setThumbnail(panel.thumbnail);
     if (panel.image) embed.setImage(panel.image);

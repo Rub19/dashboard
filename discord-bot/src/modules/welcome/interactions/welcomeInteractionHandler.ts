@@ -3,14 +3,13 @@ import {
   ButtonBuilder,
   ButtonInteraction,
   ButtonStyle,
-  EmbedBuilder,
   GuildMember,
 } from 'discord.js';
 import { VerificationService } from '../services/verificationService.js';
 import { OnboardingService } from '../services/onboardingService.js';
 import { welcomeRepository } from '../storage/welcomeRepository.js';
 import { logger } from '../../../utils/logger.js';
-import { baseEmbed } from '../../../utils/embeds.js';
+import { baseEmbed, successEmbed, errorEmbed, infoEmbed } from '../../../utils/embeds.js';
 
 export class WelcomeInteractionHandler {
   public static async handleButton(interaction: ButtonInteraction): Promise<void> {
@@ -22,13 +21,14 @@ export class WelcomeInteractionHandler {
     if (customId.startsWith('welcome_verify:')) {
       await interaction.deferReply({ ephemeral: true });
       const res = await VerificationService.verifyMember(member);
+      const verifyEmbed = res.success
+        ? successEmbed({ footerText: interaction.guild?.name || 'ETHONE Guard' })
+        : errorEmbed({ footerText: interaction.guild?.name || 'ETHONE Guard' });
       await interaction.editReply({
         embeds: [
-          new EmbedBuilder()
-            .setColor(res.success ? 0x10b981 : 0xef4444)
+          verifyEmbed
             .setTitle(res.success ? '✅ Vérification réussie !' : '❌ Échec de la vérification')
-            .setDescription(res.message)
-            .setFooter({ text: interaction.guild?.name || 'ETHONE Guard' }),
+            .setDescription(res.message),
         ],
       });
       return;
@@ -46,13 +46,13 @@ export class WelcomeInteractionHandler {
         '3. Pas de spam, autopromotion non autorisée ou liens suspects.',
       ];
 
-      const embed = new EmbedBuilder()
-        .setColor(0x10b981)
+      // Ton "info" : c'est une simple consultation du règlement, pas une confirmation de
+      // succès — le vert était utilisé ici par erreur (incohérence corrigée).
+      const embed = infoEmbed({ footerText: 'Cliquez sur le bouton ci-dessous pour accepter le règlement.' })
         .setTitle(`📜 Règlement de ${interaction.guild?.name}`)
         .setDescription(
           rulesList.map((r, i) => `**${i + 1}.** ${r.replace(/^\d+\.\s*/, '')}`).join('\n\n')
-        )
-        .setFooter({ text: 'Cliquez sur le bouton ci-dessous pour accepter le règlement.' });
+        );
 
       const row = new ActionRowBuilder<ButtonBuilder>().addComponents(
         new ButtonBuilder()
@@ -89,8 +89,7 @@ export class WelcomeInteractionHandler {
 
       await interaction.editReply({
         embeds: [
-          new EmbedBuilder()
-            .setColor(0x10b981)
+          successEmbed()
             .setTitle('✅ Règlement accepté avec succès !')
             .setDescription(
               verifRes.success
@@ -112,8 +111,7 @@ export class WelcomeInteractionHandler {
         const res = await OnboardingService.handleRoleSelection(member, roleId);
         await interaction.editReply({
           embeds: [
-            new EmbedBuilder()
-              .setColor(0x10b981)
+            successEmbed()
               .setTitle(res.added ? '🎭 Rôle attribué !' : '🎭 Rôle retiré')
               .setDescription(
                 res.added

@@ -14,7 +14,7 @@ import { ActivityRotationEngine } from '../services/activityRotationEngine.js';
 import { PresenceSchedulerService } from '../services/presenceSchedulerService.js';
 import { SmartPresenceEngine } from '../services/smartPresenceEngine.js';
 import { logger } from '../../../utils/logger.js';
-import { baseEmbed } from '../../../utils/embeds.js';
+import { baseEmbed, BRAND_COLORS } from '../../../utils/embeds.js';
 
 export class DiscordOwnerPanel {
   private static instance: DiscordOwnerPanel;
@@ -46,7 +46,7 @@ export class DiscordOwnerPanel {
       .setDescription(
         'Panneau de contrôle exclusif du **Bot Owner**. Toute modification s\'applique instantanément sur la Gateway Discord globale.'
       )
-      .setColor(current.status === 'dnd' ? 0xf43f5e : current.status === 'idle' ? 0xf59e0b : 0x10b981)
+      .setColor(current.status === 'dnd' ? BRAND_COLORS.error : current.status === 'idle' ? BRAND_COLORS.warning : BRAND_COLORS.success)
       .addFields(
         { name: 'Statut Actuel', value: statusEmoji, inline: true },
         { name: 'Activité', value: `${current.activity.type} **${current.activity.name}**`, inline: true },

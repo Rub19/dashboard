@@ -4,6 +4,7 @@ import { checkHierarchy } from '../permissions/hierarchy.js';
 import { sanctionService } from '../sanctions/sanctionService.js';
 import { ModLogger } from '../logs/modLogger.js';
 import { formatString, getTranslation } from '../../../utils/i18n.js';
+import { buildSanctionDmEmbed } from '../utils/sanctionDmEmbed.js';
 
 export const banCommand: Command = {
   name: 'ban',
@@ -71,7 +72,7 @@ export const banCommand: Command = {
       dryRun = Boolean(check.dryRun);
 
       await targetMember.send({
-        content: formatString(t.ban_dm, { guild: ctx.guild.name, reason }),
+        embeds: [buildSanctionDmEmbed('ban', t, { guildName: ctx.guild.name, reason, moderatorTag: ctx.author.tag })],
       }).catch(() => {});
     }
 

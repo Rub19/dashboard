@@ -19,7 +19,7 @@ import {
 } from 'discord.js';
 import { guildConfigService } from '../services/guildConfigService.js';
 import { GuildConfig } from './guildConfig.js';
-import { baseEmbed, EmbedTone } from '../utils/embeds.js';
+import { baseEmbed, BRAND_COLORS, EmbedTone } from '../utils/embeds.js';
 
 export type UnifiedReplyOptions =
   | string
@@ -110,10 +110,14 @@ export class CommandContext {
   }
 
   /**
-   * Crée un EmbedBuilder pré-configuré avec les couleurs et le nom personnalisé du serveur
+   * Crée un EmbedBuilder pré-configuré avec les couleurs et le nom personnalisé du serveur.
+   * `warning` et `neutral` n'ont pas de champ dédié dans `guildConfig` (pas personnalisables
+   * par serveur) : ils retombent sur la couleur de marque ETHONE fixe (cf. `BRAND_COLORS`).
    */
-  public createEmbed(type: 'default' | 'secondary' | 'success' | 'error' | 'info' = 'default'): EmbedBuilder {
-    let hexColor: string;
+  public createEmbed(
+    type: 'default' | 'secondary' | 'success' | 'error' | 'info' | 'warning' | 'neutral' = 'default'
+  ): EmbedBuilder {
+    let hexColor: string | number;
     let tone: EmbedTone;
     switch (type) {
       case 'secondary':
@@ -131,6 +135,14 @@ export class CommandContext {
       case 'info':
         hexColor = this.guildConfig.infoColor;
         tone = 'info';
+        break;
+      case 'warning':
+        hexColor = BRAND_COLORS.warning;
+        tone = 'warning';
+        break;
+      case 'neutral':
+        hexColor = BRAND_COLORS.neutral;
+        tone = 'neutral';
         break;
       case 'default':
       default:

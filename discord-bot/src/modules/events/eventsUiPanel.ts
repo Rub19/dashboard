@@ -7,6 +7,7 @@ import {
 } from 'discord.js';
 import { DiscordEvent } from './eventsTypes.js';
 import { formatString, getTranslation, SupportedLanguage } from '../../utils/i18n.js';
+import { BRAND_COLORS } from '../../utils/embeds.js';
 
 export function buildEventDiscordPanel(
   event: DiscordEvent,
@@ -17,17 +18,17 @@ export function buildEventDiscordPanel(
   const startUnix = Math.floor(new Date(event.startDate).getTime() / 1000);
   const endUnix = Math.floor(new Date(event.endDate).getTime() / 1000);
 
-  // Status badge & color
-  let color = 0x5865f2; // Blurple
+  // Status badge & color — tons de marque ETHONE partagés (cf. utils/embeds.ts)
+  let color: number = BRAND_COLORS.primary;
   let statusText = t.events_status_scheduled;
   if (event.status === 'LIVE') {
-    color = 0x22c55e; // Green
+    color = BRAND_COLORS.success;
     statusText = t.events_status_live;
   } else if (event.status === 'COMPLETED') {
-    color = 0x64748b; // Slate
+    color = BRAND_COLORS.neutral;
     statusText = t.events_status_completed;
   } else if (event.status === 'CANCELLED') {
-    color = 0xef4444; // Red
+    color = BRAND_COLORS.error;
     statusText = t.events_status_cancelled;
   }
 

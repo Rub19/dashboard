@@ -933,7 +933,7 @@ export default function BotControlClient({ initialTab = "overview" }: BotControl
   }, [modules, searchQuery]);
 
   return (
-    <div className="min-h-screen bg-[var(--bg-main)] text-zinc-100 font-sans pb-24">
+    <div className="h-full overflow-y-auto os-scroll [overscroll-behavior:contain] bg-[var(--bg-main)] text-zinc-100 font-sans pb-24">
       {/* TOP COMPACT SYNC BAR */}
       <div className="border-b border-zinc-800/60 bg-zinc-950/40 px-6 py-2">
         <div className="max-w-7xl mx-auto flex flex-wrap items-center justify-between gap-3 text-xs">

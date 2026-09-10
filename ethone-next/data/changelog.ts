@@ -1,3 +1,13 @@
+const v12108_fr: ChangelogEntry = {
+  version: "v1.21.8",
+  date: "2026-09-10",
+  title: "Bot Control Center & Présence : Défilement Corrigé",
+  items: [
+    "Les pages Bot Control Center et Présence du Bot ne défilaient pas jusqu'en bas (root `min-h-screen` dans le `<main>` en `overflow-hidden` de la Shell). Root passé en `h-full overflow-y-auto`.",
+    "Bannière de la page Présence : dégradé bleu/indigo/violet aplati.",
+  ],
+};
+
 const v12107_fr: ChangelogEntry = {
   version: "v1.21.7",
   date: "2026-09-10",
@@ -616,6 +626,16 @@ const v12052_fr: ChangelogEntry = {
     "Dynamic Island : correction d'un bug de priorité qui empêchait Spotify de jamais s'afficher, systématiquement évincé par la synchronisation d'arrière-plan.",
     "Commande /help du Bot Discord : la liste des commandes est désormais générée dynamiquement depuis les commandes réellement enregistrées (fin des commandes fantômes et des commandes manquantes), et affiche la vraie syntaxe des commandes à sous-commandes (ex. /automod status).",
     "Audit de l'enregistrement des commandes slash Discord : architecture confirmée saine, aucune dérive entre le code et les commandes déployées.",
+  ],
+};
+
+const v12108_en: ChangelogEntry = {
+  version: "v1.21.8",
+  date: "2026-09-10",
+  title: "Bot Control Center & Presence: Scroll Fixed",
+  items: [
+    "The Bot Control Center and Bot Presence pages didn't scroll to the bottom (root `min-h-screen` inside the shell's `overflow-hidden` `<main>`). Root switched to `h-full overflow-y-auto`.",
+    "Presence page banner: flattened the blue/indigo/purple gradient.",
   ],
 };
 
@@ -1240,6 +1260,16 @@ const v12052_en: ChangelogEntry = {
   ],
 };
 
+const v12108_es: ChangelogEntry = {
+  version: "v1.21.8",
+  date: "2026-09-10",
+  title: "Bot Control Center y Presencia: Scroll Corregido",
+  items: [
+    "Las páginas Bot Control Center y Presencia del Bot no bajaban del todo (root `min-h-screen` dentro del `<main>` en `overflow-hidden` de la Shell). Root cambiado a `h-full overflow-y-auto`.",
+    "Banner de la página Presencia: degradado azul/índigo/púrpura aplanado.",
+  ],
+};
+
 const v12107_es: ChangelogEntry = {
   version: "v1.21.7",
   date: "2026-09-10",
@@ -1858,6 +1888,16 @@ const v12052_es: ChangelogEntry = {
     "Dynamic Island: corregido un error de prioridad que impedía que Spotify apareciera, siempre desplazado por la sincronización en segundo plano.",
     "Comando /help del Bot de Discord: la lista de comandos ahora se genera dinámicamente desde los comandos realmente registrados (fin de comandos fantasma o ausentes), mostrando la sintaxis real de los comandos con subcomandos.",
     "Auditoría del registro de comandos slash de Discord: arquitectura confirmada como sólida, sin desviación entre el código y los comandos desplegados.",
+  ],
+};
+
+const v12108_de: ChangelogEntry = {
+  version: "v1.21.8",
+  date: "2026-09-10",
+  title: "Bot Control Center & Praesenz: Scroll behoben",
+  items: [
+    "Die Seiten Bot Control Center und Bot-Praesenz scrollten nicht bis unten (root `min-h-screen` im `overflow-hidden`-`<main>` der Shell). Root auf `h-full overflow-y-auto` umgestellt.",
+    "Banner der Praesenz-Seite: blau/indigo/violetter Verlauf abgeflacht.",
   ],
 };
 
@@ -24591,5 +24631,9 @@ CHANGELOG_BY_LANG.fr.unshift(v12107_fr);
 CHANGELOG_BY_LANG.en.unshift(v12107_en);
 CHANGELOG_BY_LANG.es.unshift(v12107_es);
 CHANGELOG_BY_LANG.de.unshift(v12107_de);
+CHANGELOG_BY_LANG.fr.unshift(v12108_fr);
+CHANGELOG_BY_LANG.en.unshift(v12108_en);
+CHANGELOG_BY_LANG.es.unshift(v12108_es);
+CHANGELOG_BY_LANG.de.unshift(v12108_de);
 
 export const CHANGELOG = CHANGELOG_BY_LANG.fr;

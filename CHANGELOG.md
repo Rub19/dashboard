@@ -2,6 +2,14 @@
 
 Toutes les modifications notables de ce projet seront documentées dans ce fichier.
 
+## v1.21.8 — 2026-09-10
+
+**Bot Control Center & Présence : défilement**
+
+- `app/discord/bot/BotControlClient.tsx` + `app/discord/bot/presence/BotPresenceClient.tsx` : root `min-h-screen bg-[var(--bg-main)] … pb-*` → `h-full overflow-y-auto os-scroll [overscroll-behavior:contain] …` — le `min-h-screen` dans le `<main>` `overflow-hidden` de la Shell empêchait d'atteindre le bas de ces deux pages.
+- `BotPresenceClient` : bannière `bg-gradient-to-r from-blue-950/40 via-indigo-950/30 to-purple-950/40` → `bg-white/[0.03]`.
+- Validation : `tsc` 0 erreur, `build` ✓.
+
 ## v1.21.7 — 2026-09-10
 
 **Nouveau module bot : Sticky Messages**

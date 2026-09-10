@@ -563,9 +563,9 @@ export default function BotPresenceClient({ initialTab = "overview" }: BotPresen
   };
 
   return (
-    <div className="min-h-screen bg-[var(--bg-main)] text-zinc-100 font-sans pb-20">
+    <div className="h-full overflow-y-auto os-scroll [overscroll-behavior:contain] bg-[var(--bg-main)] text-zinc-100 font-sans pb-20">
       {/* TOP NOTIFICATION / SCOPE BANNER */}
-      <div className="bg-gradient-to-r from-blue-950/40 via-indigo-950/30 to-purple-950/40 border-b border-indigo-500/20 px-6 py-2.5">
+      <div className="bg-white/[0.03] border-b border-indigo-500/20 px-6 py-2.5">
         <div className="max-w-7xl mx-auto flex flex-wrap items-center justify-between gap-3 text-xs">
           <div className="flex items-center gap-2 text-indigo-300">
             <Globe className="w-4 h-4 text-indigo-400 shrink-0" />

@@ -51,7 +51,9 @@ export default function LanguageSwitcher() {
         </button>
       </PopoverTrigger>
 
-      <PopoverContent className="w-52 max-w-[calc(100vw-2rem)] overflow-hidden rounded-2xl border border-[var(--panel-border)] bg-[var(--panel-bg)]/95 p-1.5 shadow-2xl backdrop-blur-2xl">
+      {/* Solid surface, not the translucent glass --panel-bg — same
+          readability fix as UserProfileDropdown's menu. */}
+      <PopoverContent className="w-52 max-w-[calc(100vw-2rem)] overflow-hidden rounded-2xl border border-[var(--panel-border)] bg-[var(--bg-surface-elevated)] p-1.5 shadow-2xl backdrop-blur-2xl">
         <div role="listbox" aria-label={i18n("language")} className="space-y-1">
           <div className="px-2.5 py-1.5 border-b border-[var(--panel-border)]/50">
             <span className="text-[10px] font-bold uppercase tracking-wider text-[var(--text-muted)]">

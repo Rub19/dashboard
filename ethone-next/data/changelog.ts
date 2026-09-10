@@ -1,3 +1,12 @@
+const v12084_fr: ChangelogEntry = {
+  version: "v1.20.84",
+  date: "2026-09-10",
+  title: "Menus Profil et Langue : Fond Plus Sombre, Texte Lisible",
+  items: [
+    "Le menu profil (en haut à droite) et le sélecteur de langue utilisaient le fond « verre » translucide de l'app à 95 % d'opacité — par-dessus le dashboard chargé, le texte était difficile à lire. Ils passent sur un fond opaque et solide (toujours adapté au thème). Le flou est conservé pour l'effet givré sur les bords.",
+  ],
+};
+
 const v12083_fr: ChangelogEntry = {
   version: "v1.20.83",
   date: "2026-09-10",
@@ -345,6 +354,15 @@ const v12052_fr: ChangelogEntry = {
     "Dynamic Island : correction d'un bug de priorité qui empêchait Spotify de jamais s'afficher, systématiquement évincé par la synchronisation d'arrière-plan.",
     "Commande /help du Bot Discord : la liste des commandes est désormais générée dynamiquement depuis les commandes réellement enregistrées (fin des commandes fantômes et des commandes manquantes), et affiche la vraie syntaxe des commandes à sous-commandes (ex. /automod status).",
     "Audit de l'enregistrement des commandes slash Discord : architecture confirmée saine, aucune dérive entre le code et les commandes déployées.",
+  ],
+};
+
+const v12084_en: ChangelogEntry = {
+  version: "v1.20.84",
+  date: "2026-09-10",
+  title: "Profile & Language Menus: Darker Background, Readable Text",
+  items: [
+    "The profile menu (top right) and the language switcher used the app's translucent \"glass\" background at 95% opacity — over the busy dashboard, the text was hard to read. They now use a solid, opaque background (still theme-aware). The blur is kept for the frosted edge effect.",
   ],
 };
 
@@ -698,6 +716,15 @@ const v12052_en: ChangelogEntry = {
   ],
 };
 
+const v12084_es: ChangelogEntry = {
+  version: "v1.20.84",
+  date: "2026-09-10",
+  title: "Menús de Perfil e Idioma: Fondo Más Oscuro, Texto Legible",
+  items: [
+    "El menú de perfil (arriba a la derecha) y el selector de idioma usaban el fondo «cristal» translúcido de la app al 95% de opacidad — sobre el dashboard cargado, el texto era difícil de leer. Ahora usan un fondo sólido y opaco (sigue adaptándose al tema). El desenfoque se mantiene para el efecto esmerilado en los bordes.",
+  ],
+};
+
 const v12083_es: ChangelogEntry = {
   version: "v1.20.83",
   date: "2026-09-10",
@@ -1045,6 +1072,15 @@ const v12052_es: ChangelogEntry = {
     "Dynamic Island: corregido un error de prioridad que impedía que Spotify apareciera, siempre desplazado por la sincronización en segundo plano.",
     "Comando /help del Bot de Discord: la lista de comandos ahora se genera dinámicamente desde los comandos realmente registrados (fin de comandos fantasma o ausentes), mostrando la sintaxis real de los comandos con subcomandos.",
     "Auditoría del registro de comandos slash de Discord: arquitectura confirmada como sólida, sin desviación entre el código y los comandos desplegados.",
+  ],
+};
+
+const v12084_de: ChangelogEntry = {
+  version: "v1.20.84",
+  date: "2026-09-10",
+  title: "Profil- und Sprachmenüs: Dunklerer Hintergrund, Lesbarer Text",
+  items: [
+    "Das Profilmenü (oben rechts) und die Sprachauswahl nutzten den durchscheinenden Glas-Hintergrund der App bei 95% Deckkraft — über dem vollen Dashboard war der Text schwer lesbar. Sie nutzen jetzt einen soliden, undurchsichtigen Hintergrund (weiterhin themenabhängig). Die Unschärfe bleibt für den Milchglas-Effekt an den Rändern erhalten.",
   ],
 };
 
@@ -23411,5 +23447,9 @@ CHANGELOG_BY_LANG.fr.unshift(v12083_fr);
 CHANGELOG_BY_LANG.en.unshift(v12083_en);
 CHANGELOG_BY_LANG.es.unshift(v12083_es);
 CHANGELOG_BY_LANG.de.unshift(v12083_de);
+CHANGELOG_BY_LANG.fr.unshift(v12084_fr);
+CHANGELOG_BY_LANG.en.unshift(v12084_en);
+CHANGELOG_BY_LANG.es.unshift(v12084_es);
+CHANGELOG_BY_LANG.de.unshift(v12084_de);
 
 export const CHANGELOG = CHANGELOG_BY_LANG.fr;

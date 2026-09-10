@@ -1,3 +1,13 @@
+const v12119_fr: ChangelogEntry = {
+  version: "v1.21.19",
+  date: "2026-09-10",
+  title: "Fix : Anti-Raid expulsait les bots invites par un admin",
+  items: [
+    "La protection Bot-Raid expulsait TOUT bot non whitelisté qui rejoignait, même invité par un admin (ex : Mudae réexpulsé en boucle). Elle lit maintenant le journal d'audit : un bot invité par le proprio / un Administrateur / « Gérer le serveur » (ou un rôle autorisé) n'est plus expulsé, juste signalé.",
+    "Nouvelles sous-commandes `/antiraid` : `toggle` (tout activer/désactiver), `botprotection` (expulsion auto des bots on/off), `trustbot <bot>` (whitelist un bot). Il n'y avait aucun moyen de tout couper depuis Discord.",
+  ],
+};
+
 const v12118_fr: ChangelogEntry = {
   version: "v1.21.18",
   date: "2026-09-10",
@@ -738,6 +748,16 @@ const v12052_fr: ChangelogEntry = {
     "Dynamic Island : correction d'un bug de priorité qui empêchait Spotify de jamais s'afficher, systématiquement évincé par la synchronisation d'arrière-plan.",
     "Commande /help du Bot Discord : la liste des commandes est désormais générée dynamiquement depuis les commandes réellement enregistrées (fin des commandes fantômes et des commandes manquantes), et affiche la vraie syntaxe des commandes à sous-commandes (ex. /automod status).",
     "Audit de l'enregistrement des commandes slash Discord : architecture confirmée saine, aucune dérive entre le code et les commandes déployées.",
+  ],
+};
+
+const v12119_en: ChangelogEntry = {
+  version: "v1.21.19",
+  date: "2026-09-10",
+  title: "Fix: Anti-Raid kicked admin-invited bots",
+  items: [
+    "Bot-Raid protection kicked EVERY non-whitelisted bot that joined, even ones invited by an admin (e.g. Mudae kicked on a loop). It now reads the audit log: a bot invited by the owner / an Administrator / Manage Server (or an allowed role) is no longer kicked, just flagged.",
+    "New `/antiraid` subcommands: `toggle` (enable/disable everything), `botprotection` (auto-kick bots on/off), `trustbot <bot>` (whitelist a bot). There was no way to fully turn it off from Discord.",
   ],
 };
 
@@ -1484,6 +1504,16 @@ const v12052_en: ChangelogEntry = {
   ],
 };
 
+const v12119_es: ChangelogEntry = {
+  version: "v1.21.19",
+  date: "2026-09-10",
+  title: "Fix: Anti-Raid expulsaba bots invitados por un admin",
+  items: [
+    "La protección Bot-Raid expulsaba TODO bot no autorizado que entraba, incluso invitado por un admin (ej: Mudae expulsado en bucle). Ahora lee el registro de auditoría: un bot invitado por el dueño / un Administrador / Gestionar servidor ya no se expulsa, solo se señala.",
+    "Nuevos subcomandos `/antiraid`: `toggle`, `botprotection`, `trustbot <bot>`.",
+  ],
+};
+
 const v12118_es: ChangelogEntry = {
   version: "v1.21.18",
   date: "2026-09-10",
@@ -2224,6 +2254,16 @@ const v12052_es: ChangelogEntry = {
     "Dynamic Island: corregido un error de prioridad que impedía que Spotify apareciera, siempre desplazado por la sincronización en segundo plano.",
     "Comando /help del Bot de Discord: la lista de comandos ahora se genera dinámicamente desde los comandos realmente registrados (fin de comandos fantasma o ausentes), mostrando la sintaxis real de los comandos con subcomandos.",
     "Auditoría del registro de comandos slash de Discord: arquitectura confirmada como sólida, sin desviación entre el código y los comandos desplegados.",
+  ],
+};
+
+const v12119_de: ChangelogEntry = {
+  version: "v1.21.19",
+  date: "2026-09-10",
+  title: "Fix: Anti-Raid kickte von Admins eingeladene Bots",
+  items: [
+    "Der Bot-Raid-Schutz kickte JEDEN nicht freigegebenen Bot, auch von einem Admin eingeladene (z. B. Mudae in Endlosschleife gekickt). Er liest jetzt das Audit-Log: ein vom Besitzer / einem Administrator / Server verwalten eingeladener Bot wird nicht mehr gekickt, nur gemeldet.",
+    "Neue `/antiraid`-Unterbefehle: `toggle`, `botprotection`, `trustbot <bot>`.",
   ],
 };
 
@@ -25123,5 +25163,9 @@ CHANGELOG_BY_LANG.fr.unshift(v12118_fr);
 CHANGELOG_BY_LANG.en.unshift(v12118_en);
 CHANGELOG_BY_LANG.es.unshift(v12118_es);
 CHANGELOG_BY_LANG.de.unshift(v12118_de);
+CHANGELOG_BY_LANG.fr.unshift(v12119_fr);
+CHANGELOG_BY_LANG.en.unshift(v12119_en);
+CHANGELOG_BY_LANG.es.unshift(v12119_es);
+CHANGELOG_BY_LANG.de.unshift(v12119_de);
 
 export const CHANGELOG = CHANGELOG_BY_LANG.fr;

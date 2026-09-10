@@ -1,10 +1,12 @@
 import crypto from 'crypto';
 import {
+  AuditLogEvent,
   Guild,
   GuildAuditLogsEntry,
   GuildChannel,
   GuildMember,
   Message,
+  PermissionFlagsBits,
   Role,
 } from 'discord.js';
 import {
@@ -25,6 +27,37 @@ import { logger } from '../../../utils/logger.js';
 import { ownerImmunityService } from '../../../services/ownerImmunityService.js';
 
 class RaidDetectionService {
+  /**
+   * Un bot ajouté par un admin/gérant du serveur n'est pas un raid. On lit le
+   * journal d'audit pour savoir qui l'a invité ; si cette personne est le
+   * propriétaire, un Administrateur, ou a "Gérer le serveur" / un rôle
+   * autorisé, on n'expulse pas (juste une alerte informative).
+   */
+  private async botInvitedByTrustedMember(
+    member: GuildMember,
+    allowedInviterRoleIds: string[]
+  ): Promise<boolean> {
+    const guild = member.guild;
+    if (!guild.members.me?.permissions.has(PermissionFlagsBits.ViewAuditLog)) return false;
+    try {
+      const logs = await guild.fetchAuditLogs({ type: AuditLogEvent.BotAdd, limit: 5 });
+      const entry = logs.entries.find((e) => e.target?.id === member.id);
+      const inviterId = entry?.executor?.id;
+      if (!inviterId) return false;
+      if (inviterId === guild.ownerId) return true;
+      const inviter = await guild.members.fetch(inviterId).catch(() => null);
+      if (!inviter) return false;
+      if (
+        inviter.permissions.has(PermissionFlagsBits.Administrator) ||
+        inviter.permissions.has(PermissionFlagsBits.ManageGuild)
+      ) {
+        return true;
+      }
+      return allowedInviterRoleIds.some((rid) => inviter.roles.cache.has(rid));
+    } catch {
+      return false;
+    }
+  }
   // ==========================================
   // 1. ÉVÉNEMENT : GUILD MEMBER JOIN
   // ==========================================
@@ -68,6 +101,18 @@ class RaidDetectionService {
     if (isBot && config.botRaid.enabled) {
       const isTrustedBot = raidConfigService.isBotWhitelisted(guild.id, member.id);
       if (!isTrustedBot && config.botRaid.blockUnwhitelistedBots) {
+        // Un bot invité par un admin/gérant n'est pas un raid : ne pas expulser.
+        const trustedInvite = await this.botInvitedByTrustedMember(
+          member,
+          config.botRaid.allowedInviterRoleIds
+        );
+        if (trustedInvite) {
+          memberInfo.actionTaken = 'MONITOR';
+          memberInfo.riskContributions.push('Bot non whitelisté (mais invité par un admin — toléré)');
+          raidCache.recordJoin(guild.id, memberInfo);
+          return;
+        }
+
         memberInfo.actionTaken = 'KICKED_UNTRUSTED_BOT';
         memberInfo.riskContributions.push('Bot non whitelisté');
 

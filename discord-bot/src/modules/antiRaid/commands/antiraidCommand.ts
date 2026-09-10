@@ -6,6 +6,7 @@ import {
 } from 'discord.js';
 import { Command, CommandContext } from '../../../types/command.js';
 import { raidDetectionService } from '../services/raidDetectionService.js';
+import { raidConfigService } from '../services/raidConfigService.js';
 import { raidModeService } from '../services/raidModeService.js';
 import { raidActionService } from '../services/raidActionService.js';
 import { formatString, getTranslation } from '../../../utils/i18n.js';
@@ -22,6 +23,28 @@ export const antiraidCommand: Command = {
     .setDefaultMemberPermissions(PermissionFlagsBits.Administrator)
     .addSubcommand((sub) =>
       sub.setName('status').setDescription('Affiche le statut actuel et le Risk Score du serveur')
+    )
+    .addSubcommand((sub) =>
+      sub
+        .setName('toggle')
+        .setDescription("Active ou désactive complètement l'Anti-Raid sur ce serveur")
+        .addBooleanOption((opt) =>
+          opt.setName('actif').setDescription('Activer (True) ou tout désactiver (False)').setRequired(true)
+        )
+    )
+    .addSubcommand((sub) =>
+      sub
+        .setName('botprotection')
+        .setDescription("Expulser automatiquement les bots non autorisés qui rejoignent")
+        .addBooleanOption((opt) =>
+          opt.setName('actif').setDescription('Activer (True) ou désactiver (False)').setRequired(true)
+        )
+    )
+    .addSubcommand((sub) =>
+      sub
+        .setName('trustbot')
+        .setDescription('Ajoute (ou retire) un bot de la liste des bots autorisés')
+        .addUserOption((opt) => opt.setName('bot').setDescription('Le bot à autoriser').setRequired(true))
     )
     .addSubcommand((sub) =>
       sub
@@ -121,6 +144,68 @@ export const antiraidCommand: Command = {
         .setTimestamp();
 
       await ctx.reply({ embeds: [embed] });
+      return;
+    }
+
+    if (sub === 'toggle') {
+      const active = (ctx.interaction as ChatInputCommandInteraction).options.getBoolean('actif', true);
+      raidConfigService.updateConfig(guildId, { enabled: active });
+      await ctx.reply({
+        embeds: [
+          ctx
+            .createEmbed(active ? 'success' : 'neutral')
+            .setDescription(
+              active
+                ? '🛡️ Anti-Raid **activé** sur ce serveur.'
+                : '⚪ Anti-Raid **entièrement désactivé** sur ce serveur (plus aucune détection ni expulsion automatique).'
+            ),
+        ],
+        ephemeral: true,
+      });
+      return;
+    }
+
+    if (sub === 'botprotection') {
+      const active = (ctx.interaction as ChatInputCommandInteraction).options.getBoolean('actif', true);
+      const current = raidConfigService.getConfig(guildId);
+      raidConfigService.updateConfig(guildId, {
+        botRaid: { ...current.botRaid, blockUnwhitelistedBots: active },
+      });
+      await ctx.reply({
+        embeds: [
+          ctx
+            .createEmbed(active ? 'success' : 'neutral')
+            .setDescription(
+              active
+                ? "🤖 Les bots non autorisés seront **expulsés** en rejoignant (sauf s'ils sont invités par un admin)."
+                : '🤖 Expulsion automatique des bots **désactivée**. Les bots peuvent rejoindre librement.'
+            ),
+        ],
+        ephemeral: true,
+      });
+      return;
+    }
+
+    if (sub === 'trustbot') {
+      const bot = (ctx.interaction as ChatInputCommandInteraction).options.getUser('bot', true);
+      const current = raidConfigService.getConfig(guildId);
+      const set = new Set(current.whitelist.trustedBotIds);
+      const added = !set.has(bot.id);
+      if (added) set.add(bot.id);
+      else set.delete(bot.id);
+      raidConfigService.updateWhitelist(guildId, { trustedBotIds: Array.from(set) });
+      await ctx.reply({
+        embeds: [
+          ctx
+            .createEmbed('success')
+            .setDescription(
+              added
+                ? `✅ **${bot.tag}** est maintenant un bot autorisé (ne sera plus expulsé).`
+                : `✅ **${bot.tag}** a été retiré des bots autorisés.`
+            ),
+        ],
+        ephemeral: true,
+      });
       return;
     }
 

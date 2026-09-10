@@ -2,6 +2,16 @@
 
 Toutes les modifications notables de ce projet seront documentées dans ce fichier.
 
+## v1.20.86 — 2026-09-10
+
+**Connexion par code : « ce code a expiré » sur un code neuf — corps de requête à 3 champs au lieu de 4**
+
+- **Bug racine** : `worker/src/routes/security-identity.js` `otpVerifyRoute` faisait `readJsonBody(request, 3)` — 3 champs max. Le front (`lib/auth.ts` `verifyOtp`) en envoie **4** : `userId`, `email`, `code`, `rememberMe`. `readJsonBody` rejetait avec `INVALID_REQUEST` 400, que `verifyOtpWorker` mappait en « code invalide ou expiré » et que `humanError` de la page login affichait comme « Ce code a expiré. Demandez-en un nouveau ». Ce parcours (flux OTP custom branché sur la page login en v1.20.85) n'avait jamais servi avant. → `readJsonBody(request, 4)`.
+- **Normalisation des erreurs** : `verifyOtp` (service) lance des `Error` bruts (« Code expired », « Invalid code », « No active verification code », « Too many attempts ») qui devenaient des 500 génériques. `otpVerifyRoute` les traduit désormais en `OTP_EXPIRED` 401 / `OTP_ALREADY_USED` 401 / `OTP_NOT_FOUND` 404 / `AUTH_RATE_LIMITED` 429 / `TOTP_INVALID` 401, tous enregistrés dans `errors.js` `PUBLIC_MESSAGES` (messages FR clairs). `lib/auth.ts` passe le message du Worker tel quel (sauf 404 → « aucun compte »).
+- **Bouton « Coller le code »** sous les cases (`components/auth/OtpCodeInput.tsx`) : lit le presse-papiers (`navigator.clipboard.readText`), extrait 6 chiffres, remplit. Masqué si l'API clipboard n'est pas dispo (le Ctrl+V dans le champ marche toujours).
+- **E-mail du code épuré** (`otp-service.js`) : logo 56px + wordmark espacé, séparateurs `1px`, compte/expiration en tableau 2 colonnes aligné à droite, ligne « Expire dans {minutes} minutes » (nouvelle clé i18n `validityHint` fr/en/es/de), chiffres séparés par des espaces au lieu de `letter-spacing` (se copient mieux).
+- Validation : `worker` 218/218 (3 nouveaux tests OTP verify), `tsc` 0 erreur, `lint` 0 erreur, `build`, `test:unit` 14/14 69/69.
+
 ## discord-bot — 2026-09-10 (musique : playlists YouTube + Spotify)
 
 **`/play` accepte désormais un lien de playlist / album.**

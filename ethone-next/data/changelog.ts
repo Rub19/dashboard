@@ -1,3 +1,15 @@
+const v12086_fr: ChangelogEntry = {
+  version: "v1.20.86",
+  date: "2026-09-10",
+  title: "Connexion par Code : « Code Expiré » sur un Code Neuf — Corrigé",
+  items: [
+    "Le vrai bug (jamais rencontré avant hier, ce parcours n'était pas branché) : la route de vérification limitait le corps de la requête à 3 champs, le front en envoie 4 (identifiant, e-mail, code, « rester connecté »). Chaque validation était rejetée en `400` et affichée comme « Ce code a expiré. Demandez-en un nouveau », même 10 secondes après réception.",
+    "Corrigé, plus : un code vraiment expiré / déjà utilisé / faux renvoie désormais un message précis (avant : erreur générique 500), et un bouton « Coller le code » apparaît sous les cases pour coller depuis le presse-papiers en un clic.",
+    "L'e-mail du code a été un peu épuré : logo plus discret, séparateurs fins, compte + expiration alignés proprement, mention « Expire dans 10 minutes », chiffres espacés (meilleure copie).",
+    "3 nouveaux tests serveur (corps à 4 champs accepté, mauvais code = 401 propre, code expiré = message clair).",
+  ],
+};
+
 const v12085_fr: ChangelogEntry = {
   version: "v1.20.85",
   date: "2026-09-10",
@@ -366,6 +378,18 @@ const v12052_fr: ChangelogEntry = {
     "Dynamic Island : correction d'un bug de priorité qui empêchait Spotify de jamais s'afficher, systématiquement évincé par la synchronisation d'arrière-plan.",
     "Commande /help du Bot Discord : la liste des commandes est désormais générée dynamiquement depuis les commandes réellement enregistrées (fin des commandes fantômes et des commandes manquantes), et affiche la vraie syntaxe des commandes à sous-commandes (ex. /automod status).",
     "Audit de l'enregistrement des commandes slash Discord : architecture confirmée saine, aucune dérive entre le code et les commandes déployées.",
+  ],
+};
+
+const v12086_en: ChangelogEntry = {
+  version: "v1.20.86",
+  date: "2026-09-10",
+  title: "Code Login: \"Code Expired\" on a Fresh Code — Fixed",
+  items: [
+    "The real bug (never hit before yesterday — this path wasn't wired up): the verify route capped the request body at 3 fields, the frontend sends 4 (userId, email, code, \"remember me\"). Every verification was rejected with a 400 and shown as \"This code has expired. Request a new one\" — even 10 seconds after it arrived.",
+    "Fixed, plus: a genuinely expired / already-used / wrong code now returns a precise message (before: a generic 500), and a \"Paste code\" button appears under the boxes to paste from the clipboard in one click.",
+    "The code email got a light cleanup: smaller logo, thin dividers, account + expiry aligned neatly, an \"Expires in 10 minutes\" line, spaced digits (copies better).",
+    "3 new server tests (4-field body accepted, wrong code = clean 401, expired code = clear message).",
   ],
 };
 
@@ -740,6 +764,18 @@ const v12052_en: ChangelogEntry = {
   ],
 };
 
+const v12086_es: ChangelogEntry = {
+  version: "v1.20.86",
+  date: "2026-09-10",
+  title: "Inicio con Código: «Código Caducado» en un Código Nuevo — Corregido",
+  items: [
+    "El fallo real (nunca visto antes de ayer — esta ruta no estaba conectada): la ruta de verificación limitaba el cuerpo de la petición a 3 campos, el frontend envía 4 (userId, email, código, «recordarme»). Cada verificación se rechazaba con un 400 y se mostraba como «Este código ha caducado. Solicita uno nuevo» — incluso 10 segundos después de recibirlo.",
+    "Corregido, y además: un código realmente caducado / ya usado / incorrecto ahora devuelve un mensaje preciso (antes: un 500 genérico), y aparece un botón «Pegar código» bajo las casillas para pegar del portapapeles con un clic.",
+    "El correo del código se ha depurado un poco: logo más discreto, separadores finos, cuenta + caducidad alineadas, una línea «Caduca en 10 minutos», dígitos espaciados (se copian mejor).",
+    "3 nuevas pruebas de servidor (cuerpo de 4 campos aceptado, código incorrecto = 401 limpio, código caducado = mensaje claro).",
+  ],
+};
+
 const v12085_es: ChangelogEntry = {
   version: "v1.20.85",
   date: "2026-09-10",
@@ -1108,6 +1144,18 @@ const v12052_es: ChangelogEntry = {
     "Dynamic Island: corregido un error de prioridad que impedía que Spotify apareciera, siempre desplazado por la sincronización en segundo plano.",
     "Comando /help del Bot de Discord: la lista de comandos ahora se genera dinámicamente desde los comandos realmente registrados (fin de comandos fantasma o ausentes), mostrando la sintaxis real de los comandos con subcomandos.",
     "Auditoría del registro de comandos slash de Discord: arquitectura confirmada como sólida, sin desviación entre el código y los comandos desplegados.",
+  ],
+};
+
+const v12086_de: ChangelogEntry = {
+  version: "v1.20.86",
+  date: "2026-09-10",
+  title: "Code-Login: „Code Abgelaufen\" bei Einem Frischen Code — Behoben",
+  items: [
+    "Der echte Fehler (vor gestern nie aufgetreten — dieser Pfad war nicht angeschlossen): Die Verifizierungsroute begrenzte den Request-Body auf 3 Felder, das Frontend sendet 4 (userId, E-Mail, Code, „Angemeldet bleiben\"). Jede Verifizierung wurde mit 400 abgelehnt und als „Dieser Code ist abgelaufen. Fordere einen neuen an\" angezeigt — auch 10 Sekunden nach Erhalt.",
+    "Behoben, und außerdem: Ein wirklich abgelaufener / bereits verwendeter / falscher Code gibt jetzt eine präzise Meldung zurück (vorher: ein generischer 500), und unter den Feldern erscheint ein „Code einfügen\"-Button zum Einfügen aus der Zwischenablage mit einem Klick.",
+    "Die Code-E-Mail wurde leicht aufgeräumt: kleineres Logo, dünne Trennlinien, Konto + Ablauf sauber ausgerichtet, eine Zeile „Läuft in 10 Minuten ab\", Ziffern mit Abstand (besser kopierbar).",
+    "3 neue Servertests (4-Feld-Body akzeptiert, falscher Code = sauberer 401, abgelaufener Code = klare Meldung).",
   ],
 };
 
@@ -23503,5 +23551,9 @@ CHANGELOG_BY_LANG.fr.unshift(v12085_fr);
 CHANGELOG_BY_LANG.en.unshift(v12085_en);
 CHANGELOG_BY_LANG.es.unshift(v12085_es);
 CHANGELOG_BY_LANG.de.unshift(v12085_de);
+CHANGELOG_BY_LANG.fr.unshift(v12086_fr);
+CHANGELOG_BY_LANG.en.unshift(v12086_en);
+CHANGELOG_BY_LANG.es.unshift(v12086_es);
+CHANGELOG_BY_LANG.de.unshift(v12086_de);
 
 export const CHANGELOG = CHANGELOG_BY_LANG.fr;

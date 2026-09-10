@@ -104,7 +104,24 @@ export default function OtpCodeInput({
   const isVerifying = state === "verifying" || state === "loading";
   const isSuccess = state === "success";
 
+  const pasteFromClipboard = useCallback(async () => {
+    if (disabled || isVerifying || isSuccess) return;
+    try {
+      const text = await navigator.clipboard.readText();
+      const digitsOnly = text.replace(/\D/g, "").slice(0, 6);
+      if (!digitsOnly) return;
+      const next = Array(6).fill("").map((_, i) => digitsOnly[i] ?? "");
+      update(next);
+      inputsRef.current[Math.min(digitsOnly.length, 5)]?.focus();
+    } catch {
+      // Clipboard read denied / unavailable — the field still accepts Ctrl+V.
+    }
+  }, [disabled, isVerifying, isSuccess, update]);
+
+  const canPaste = typeof navigator !== "undefined" && !!navigator.clipboard?.readText;
+
   return (
+    <div className="flex flex-col gap-2.5">
     <motion.div
       animate={error ? { x: [-3, 3, -2, 2, 0] } : {}}
       transition={{ duration: 0.25 }}
@@ -153,5 +170,19 @@ export default function OtpCodeInput({
         );
       })}
     </motion.div>
+    {canPaste && !isSuccess && (
+      <button
+        type="button"
+        onClick={pasteFromClipboard}
+        disabled={disabled || isVerifying}
+        className="self-center inline-flex items-center gap-1.5 rounded-lg px-2.5 py-1 text-[11px] font-medium text-white/45 transition-colors hover:bg-white/[0.04] hover:text-white/80 disabled:opacity-40"
+      >
+        <svg width="11" height="11" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.2" strokeLinecap="round" strokeLinejoin="round" aria-hidden="true">
+          <rect x="8" y="2" width="8" height="4" rx="1" /><path d="M16 4h2a2 2 0 0 1 2 2v14a2 2 0 0 1-2 2H6a2 2 0 0 1-2-2V6a2 2 0 0 1 2-2h2" />
+        </svg>
+        Coller le code
+      </button>
+    )}
+    </div>
   );
 }

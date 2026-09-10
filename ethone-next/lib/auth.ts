@@ -23,20 +23,17 @@ export async function sendOtp(email: string) {
       body: JSON.stringify({ email }),
     });
   } catch (err) {
-    // fetchWorker throws WorkerError on any non-2xx (e.g. 404 when the email
-    // has no account, 429 when rate limited server-side). Surface it as a
-    // clean {ok:false} so the login screen shows the message instead of
-    // hanging on "loading".
-    const status = err instanceof WorkerError ? err.status : 0;
-    const message =
-      status === 404
-        ? "Aucun compte ETHONE avec cet e-mail. Créez un compte pour continuer."
-        : status === 429
-        ? "Trop de demandes de code. Patientez quelques minutes."
-        : err instanceof Error
-        ? err.message
-        : "Impossible d'envoyer le code.";
-    return { ok: false as const, error: new Error(message) };
+    // fetchWorker throws WorkerError on any non-2xx. 404 = the email has no
+    // account (worth a specific hint); everything else already carries a
+    // human FR message from PUBLIC_MESSAGES.
+    if (err instanceof WorkerError) {
+      const message =
+        err.status === 404
+          ? "Aucun compte ETHONE avec cet e-mail. Créez un compte pour continuer."
+          : err.message;
+      return { ok: false as const, error: new Error(message) };
+    }
+    return { ok: false as const, error: new Error("Impossible d'envoyer le code — réessayez.") };
   }
   if (!res?.data?.sent) return { ok: false as const, error: new Error("Impossible d'envoyer le code.") };
   return { ok: true as const, userId: res.data.userId as string, expiresIn: res.data.expiresIn as number, code: res.data.code as string | undefined };
@@ -53,16 +50,13 @@ export async function verifyOtp(userId: string, email: string, code: string, rem
       body: JSON.stringify({ userId, email, code, rememberMe }),
     });
   } catch (err) {
-    const status = err instanceof WorkerError ? err.status : 0;
-    const message =
-      status === 401 || status === 400
-        ? "Code invalide ou expiré. Demandez-en un nouveau."
-        : status === 429
-        ? "Trop de tentatives. Patientez quelques minutes."
-        : err instanceof Error
-        ? err.message
-        : "Code invalide.";
-    return { ok: false as const, error: new Error(message) };
+    // WorkerError messages are already the human FR strings from
+    // PUBLIC_MESSAGES (OTP_EXPIRED, TOTP_INVALID, AUTH_RATE_LIMITED...) —
+    // pass them through; only synthesize for a network failure.
+    if (err instanceof WorkerError) {
+      return { ok: false as const, error: new Error(err.message) };
+    }
+    return { ok: false as const, error: new Error("Impossible de vérifier le code — réessayez.") };
   }
   if (!res?.data?.token) return { ok: false as const, error: new Error("Code invalide.") };
 

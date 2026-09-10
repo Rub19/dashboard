@@ -169,7 +169,10 @@ export async function otpSendRoute({ request, env }) {
 }
 
 export async function otpVerifyRoute({ request, env }) {
-  const body = await readJsonBody(request, 3);
+  // 4 fields: userId, email, code, rememberMe (the client always sends
+  // rememberMe). Was 3 — every verify from the login screen was rejected
+  // with INVALID_REQUEST 400, which the UI then showed as "code expired".
+  const body = await readJsonBody(request, 4);
   const userId = requireField(body, "userId", UUID_RE, 36);
   await applyAuthRateLimit({ request, env, route: { id: "otp.verify" } }, userId);
   const email = requireField(body, "email", EMAIL_RE, 320);
@@ -193,7 +196,20 @@ export async function otpVerifyRoute({ request, env }) {
   const totpRecord = await getTotpRecord(env, userId);
   const mfaPending = Boolean(totpRecord?.data?.verified);
   const device = await getOrCreateDevice(env, userId, sessionId, userAgent, "", mfaPending);
-  const result = await verifyOtp(env, userId, email, code, device.id, sessionId);
+  try {
+    await verifyOtp(env, userId, email, code, device.id, sessionId);
+  } catch (err) {
+    // verifyOtp throws plain Errors for the expected rejection cases — map
+    // them to real statuses so the login screen shows the right message
+    // (a wrong code is a 401, not a generic 500).
+    const message = err instanceof Error ? err.message : "";
+    if (/expired/i.test(message)) throw httpError("OTP_EXPIRED", 401);
+    if (/already used/i.test(message)) throw httpError("OTP_ALREADY_USED", 401);
+    if (/no active/i.test(message)) throw httpError("OTP_NOT_FOUND", 404);
+    if (/too many/i.test(message)) throw httpError("AUTH_RATE_LIMITED", 429, { retryable: true });
+    if (/invalid/i.test(message)) throw httpError("TOTP_INVALID", 401);
+    throw err;
+  }
   const rememberMe = Boolean(body.rememberMe);
   const tokenTtl = rememberMe ? 30 * 24 * 60 * 60 : 8 * 60 * 60;
   const token = await signServiceToken(env, userId, sessionId, tokenTtl);

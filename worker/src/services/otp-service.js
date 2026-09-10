@@ -15,6 +15,7 @@ const EMAIL_I18N = {
     intro: "Voici votre code de connexion pour accéder à <strong>ETHONE</strong>.",
     account: "Compte",
     codeLabel: "Code à six chiffres",
+    validityHint: "Expire dans {minutes} minutes",
     validUntil: "Valable jusqu'au",
     security: "Ne partagez ce code avec personne. Si vous n'êtes pas à l'origine de cette demande, ignorez cet email.",
     tagline: "ETHONE — votre dashboard personnel",
@@ -26,6 +27,7 @@ const EMAIL_I18N = {
     intro: "Here is your login code to access <strong>ETHONE</strong>.",
     account: "Account",
     codeLabel: "Six-digit code",
+    validityHint: "Expires in {minutes} minutes",
     validUntil: "Valid until",
     security: "Do not share this code with anyone. If you did not request it, you can ignore this email.",
     tagline: "ETHONE — your personal dashboard",
@@ -37,6 +39,7 @@ const EMAIL_I18N = {
     intro: "Aquí tienes tu código de acceso para entrar en <strong>ETHONE</strong>.",
     account: "Cuenta",
     codeLabel: "Código de seis dígitos",
+    validityHint: "Caduca en {minutes} minutos",
     validUntil: "Válido hasta",
     security: "No compartas este código con nadie. Si no fuiste tú quien lo solicitó, ignora este email.",
     tagline: "ETHONE — tu dashboard personal",
@@ -48,6 +51,7 @@ const EMAIL_I18N = {
     intro: "Hier ist dein Anmeldecode für <strong>ETHONE</strong>.",
     account: "Konto",
     codeLabel: "Sechsstelliger Code",
+    validityHint: "Läuft in {minutes} Minuten ab",
     validUntil: "Gültig bis",
     security: "Teile diesen Code mit niemandem. Wenn du ihn nicht angefordert hast, ignoriere diese E-Mail.",
     tagline: "ETHONE — dein persönliches Dashboard",
@@ -100,68 +104,73 @@ function maskContact(contact) {
 function buildOtpEmail(code, contact, expiresAt, locale, timezone) {
   const i18n = EMAIL_I18N[locale] || EMAIL_I18N.en;
   const expires = formatExpiresAt(expiresAt, locale, timezone);
+  const minutes = Math.round(OTP_TTL_MS / 60000);
   const masked = maskContact(contact);
+  const spacedCode = String(code).split("").join(" "); // thin space between digits (survives copy better than letter-spacing)
   const html = `<!DOCTYPE html>
 <html lang="${locale}">
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta name="color-scheme" content="dark">
   <title>${i18n.subject}</title>
 </head>
-<body style="margin:0; padding:0; background:#080a0d; color:#f4f7fa; font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',Roboto,Helvetica,Arial,sans-serif;">
-  <table role="presentation" width="100%" cellpadding="0" cellspacing="0" border="0" style="background:#080a0d; padding:24px 0;">
+<body style="margin:0; padding:0; background:#07080b; color:#f4f7fa; font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',Roboto,Helvetica,Arial,sans-serif;">
+  <table role="presentation" width="100%" cellpadding="0" cellspacing="0" border="0" style="background:#07080b; padding:32px 12px;">
     <tr>
       <td align="center">
-        <table role="presentation" width="100%" cellpadding="0" cellspacing="0" border="0" style="background:#14191f; border:1px solid #1f2937; border-radius:16px; max-width:520px; width:100%; padding:32px 24px;">
+        <table role="presentation" cellpadding="0" cellspacing="0" border="0" style="background:#111419; border:1px solid #232a35; border-radius:18px; max-width:480px; width:100%;">
           <tr>
-            <td align="center" style="padding-bottom:8px;">
-              <img src="https://ethone.dev/icons/ethone-icon-192.png" alt="ETHONE" width="64" height="64" style="display:block; margin:0 auto 12px; border-radius:15px;">
+            <td align="center" style="padding:34px 32px 22px;">
+              <img src="https://ethone.dev/icons/ethone-icon-192.png" alt="ETHONE" width="56" height="56" style="display:block; border-radius:14px;">
+              <div style="margin-top:12px; font-size:13px; font-weight:700; letter-spacing:3px; color:#8a929e;">ETHONE</div>
+            </td>
+          </tr>
+          <tr><td style="padding:0 32px;"><div style="height:1px; background:#1e242e;"></div></td></tr>
+          <tr>
+            <td style="padding:24px 32px 4px;">
+              <p style="margin:0 0 6px; color:#f4f7fa; font-size:16px; font-weight:600;">${i18n.greeting}</p>
+              <p style="margin:0; color:#98a1ad; font-size:14px; line-height:1.55;">${i18n.intro}</p>
             </td>
           </tr>
           <tr>
-            <td align="center" style="padding-bottom:16px;">
-              <h1 style="margin:0; font-size:24px; font-weight:700; color:#f4f7fa; letter-spacing:1px;">ETHONE</h1>
-            </td>
-          </tr>
-          <tr>
-            <td style="padding:16px 0 8px;">
-              <p style="margin:0 0 8px; color:#f4f7fa; font-size:16px; font-weight:500;">${i18n.greeting}</p>
-              <p style="margin:0; color:#9ca3af; font-size:14px; line-height:1.5;">${i18n.intro}</p>
-            </td>
-          </tr>
-          <tr>
-            <td align="center" style="padding:20px 0;">
-              <table role="presentation" width="100%" cellpadding="0" cellspacing="0" border="0" style="background:#0b1d1b; border:1px solid #7be5c3; border-radius:12px; padding:24px;">
+            <td style="padding:22px 32px;">
+              <table role="presentation" width="100%" cellpadding="0" cellspacing="0" border="0" style="background:#0d1512; border:1px solid #244039; border-radius:14px;">
                 <tr>
-                  <td align="center">
-                    <p style="margin:0 0 10px; color:#7be5c3; font-size:12px; font-weight:600; text-transform:uppercase; letter-spacing:1.5px;">${i18n.codeLabel}</p>
-                    <div style="font-size:38px; letter-spacing:12px; text-indent:12px; font-weight:700; color:#ffffff; font-family:ui-monospace,SFMono-Regular,Menlo,Monaco,Consolas,monospace;">${code}</div>
+                  <td align="center" style="padding:22px 16px;">
+                    <div style="color:#5fd0ab; font-size:11px; font-weight:700; text-transform:uppercase; letter-spacing:2px;">${i18n.codeLabel}</div>
+                    <div style="margin-top:10px; font-size:34px; font-weight:800; color:#ffffff; font-family:ui-monospace,SFMono-Regular,Menlo,Monaco,Consolas,monospace;">${spacedCode}</div>
+                    <div style="margin-top:10px; color:#6f7a86; font-size:12px;">${i18n.validityHint.replace("{minutes}", String(minutes))}</div>
                   </td>
                 </tr>
               </table>
             </td>
           </tr>
           <tr>
-            <td align="center" style="padding-bottom:16px;">
-              <p style="margin:0 0 4px; color:#9ca3af; font-size:13px;">${i18n.account} : <strong style="color:#f4f7fa;">${masked}</strong></p>
-              <p style="margin:0; color:#9ca3af; font-size:13px;">${i18n.validUntil} <strong style="color:#f4f7fa;">${expires}</strong></p>
-            </td>
-          </tr>
-          <tr>
-            <td style="padding:8px 0;">
-              <table role="presentation" width="100%" cellpadding="0" cellspacing="0" border="0" style="background:#1a1f2a; border:1px solid #2d3748; border-radius:10px; padding:16px;">
+            <td style="padding:0 32px 6px;">
+              <table role="presentation" width="100%" cellpadding="0" cellspacing="0" border="0" style="font-size:13px; color:#98a1ad;">
                 <tr>
-                  <td>
-                    <p style="margin:0; color:#9ca3af; font-size:13px; line-height:1.5;">${i18n.security}</p>
-                  </td>
+                  <td style="padding:5px 0;">${i18n.account}</td>
+                  <td align="right" style="padding:5px 0; color:#dfe4ea;">${masked}</td>
+                </tr>
+                <tr><td colspan="2"><div style="height:1px; background:#1a2029;"></div></td></tr>
+                <tr>
+                  <td style="padding:5px 0;">${i18n.validUntil}</td>
+                  <td align="right" style="padding:5px 0; color:#dfe4ea;">${expires}</td>
                 </tr>
               </table>
             </td>
           </tr>
           <tr>
-            <td align="center" style="padding-top:24px; border-top:1px solid #1f2937;">
-              <p style="margin:0 0 4px; color:#f4f7fa; font-size:13px; font-weight:500;">${i18n.tagline}</p>
-              <p style="margin:0; color:#6b7280; font-size:12px;">${i18n.signoff}</p>
+            <td style="padding:16px 32px 4px;">
+              <p style="margin:0; color:#7c8590; font-size:12px; line-height:1.55;">${i18n.security}</p>
+            </td>
+          </tr>
+          <tr>
+            <td align="center" style="padding:22px 32px 30px;">
+              <div style="height:1px; background:#1e242e; margin-bottom:18px;"></div>
+              <div style="color:#c3c9d1; font-size:12px; font-weight:600;">${i18n.tagline}</div>
+              <div style="margin-top:3px; color:#616a76; font-size:11px;">${i18n.signoff}</div>
             </td>
           </tr>
         </table>

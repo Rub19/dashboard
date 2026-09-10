@@ -69,6 +69,66 @@ test("otp send returns debug code in development when enabled", async () => {
   assert.equal(body.data.code.length, 6);
 });
 
+async function hashOtp(code) {
+  const digest = await crypto.subtle.digest("SHA-256", new TextEncoder().encode(String(code).toLowerCase().trim()));
+  return btoa(String.fromCharCode(...new Uint8Array(digest)));
+}
+
+function otpVerifyMock({ codeHash, usedAt = null, expiresAt = new Date(Date.now() + 600000).toISOString() }) {
+  return async (input, init) => {
+    const url = new URL(String(input));
+    if (url.hostname !== "project-ref.supabase.co") return new Response("not found", { status: 404 });
+    const method = init?.method || "GET";
+    if (url.pathname === "/rest/v1/ethone_otp_codes" && method === "GET") {
+      return json([{ id: "00000000-0000-4000-8000-000000000000", user_id: "4a8ad6a5-7f6e-4d41-9d07-28f6dca8719a", contact: "qa@ethone.dev", code_hash: codeHash, attempts: 0, expires_at: expiresAt, used_at: usedAt, created_at: new Date().toISOString() }]);
+    }
+    // Device row for the session getOrCreateDevice creates before verify runs.
+    if (url.pathname === "/rest/v1/ethone_devices") {
+      if (method === "POST" || method === "PATCH") {
+        return json([{ id: "11111111-1111-4111-8111-111111111111", user_id: "4a8ad6a5-7f6e-4d41-9d07-28f6dca8719a", session_id: "s", revoked_at: null, mfa_pending: false }]);
+      }
+      return json([]); // GET by session -> none yet
+    }
+    if (url.pathname.startsWith("/rest/v1/ethone_")) return json([]);
+    return json({});
+  };
+}
+
+test("otp verify accepts the 4-field body and returns a token for the right code", async () => {
+  const env = testEnv({ __TEST_FETCH__: otpVerifyMock({ codeHash: await hashOtp("123456") }) });
+  const headers = { "content-type": "application/json" };
+  const response = await invoke("/api/auth/otp/verify", {
+    auth: false, env, headers, method: "POST",
+    body: JSON.stringify({ userId: "4a8ad6a5-7f6e-4d41-9d07-28f6dca8719a", email: "qa@ethone.dev", code: "123456", rememberMe: true }),
+  });
+  assert.equal(response.status, 200);
+  const body = await payload(response);
+  assert.equal(body.data.verified, true);
+  assert.equal(typeof body.data.token, "string");
+});
+
+test("otp verify with a wrong code is a clean 401, not a 400/500", async () => {
+  const env = testEnv({ __TEST_FETCH__: otpVerifyMock({ codeHash: await hashOtp("123456") }) });
+  const headers = { "content-type": "application/json" };
+  const response = await invoke("/api/auth/otp/verify", {
+    auth: false, env, headers, method: "POST",
+    body: JSON.stringify({ userId: "4a8ad6a5-7f6e-4d41-9d07-28f6dca8719a", email: "qa@ethone.dev", code: "000000", rememberMe: false }),
+  });
+  assert.equal(response.status, 401);
+  assert.equal((await payload(response)).error.code, "TOTP_INVALID");
+});
+
+test("otp verify surfaces an expired code as OTP_EXPIRED, not a generic error", async () => {
+  const env = testEnv({ __TEST_FETCH__: otpVerifyMock({ codeHash: await hashOtp("123456"), expiresAt: new Date(Date.now() - 1000).toISOString() }) });
+  const headers = { "content-type": "application/json" };
+  const response = await invoke("/api/auth/otp/verify", {
+    auth: false, env, headers, method: "POST",
+    body: JSON.stringify({ userId: "4a8ad6a5-7f6e-4d41-9d07-28f6dca8719a", email: "qa@ethone.dev", code: "123456", rememberMe: false }),
+  });
+  assert.equal(response.status, 401);
+  assert.equal((await payload(response)).error.code, "OTP_EXPIRED");
+});
+
 test("OTP email locale follows the browser language, English for anything unsupported", () => {
   // Supported browser languages win, respecting the Accept-Language priority order.
   assert.equal(resolveEmailLocale("fr-FR,fr;q=0.9,en;q=0.8", "FR"), "fr");

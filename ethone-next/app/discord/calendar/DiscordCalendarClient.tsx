@@ -259,7 +259,7 @@ export default function DiscordCalendarClient() {
   const monthLabel = currentDate.toLocaleDateString("fr-FR", { month: "long", year: "numeric" });
 
   return (
-    <div className="min-h-screen bg-[var(--bg-main)] text-slate-100 pb-20 selection:bg-indigo-500/30">
+    <div className="h-full min-h-0 overflow-y-auto os-scroll bg-[var(--bg-main)] text-slate-100 pb-24 selection:bg-indigo-500/30 [overscroll-behavior:contain]">
       {/* Glow Effects */}
       <div className="fixed inset-0 pointer-events-none overflow-hidden">
         <div className="absolute top-10 left-1/3 w-[600px] h-[600px] bg-indigo-600/10 rounded-full blur-[140px]" />
@@ -384,9 +384,11 @@ export default function DiscordCalendarClient() {
           </div>
         </div>
 
-        {/* View 1: Month View */}
+        {/* View 1: Month View — the 7-col grid needs room; on narrow screens it
+            scrolls horizontally instead of crushing every cell to nothing. */}
         {viewMode === "MONTH" && (
-          <div className="rounded-2xl border border-white/10 bg-white/[0.01] backdrop-blur-xl overflow-hidden shadow-2xl">
+          <div className="rounded-2xl border border-white/10 bg-white/[0.01] backdrop-blur-xl overflow-x-auto os-scroll shadow-2xl">
+           <div className="min-w-[640px]">
             {/* Weekdays Header */}
             <div className="grid grid-cols-7 border-b border-white/10 bg-white/[0.03] text-center text-xs font-bold text-slate-400 py-3">
               {["Lun", "Mar", "Mer", "Jeu", "Ven", "Sam", "Dim"].map((d, i) => (
@@ -450,6 +452,7 @@ export default function DiscordCalendarClient() {
                 );
               })}
             </div>
+           </div>
           </div>
         )}
 
@@ -574,7 +577,7 @@ export default function DiscordCalendarClient() {
                 <div className="flex items-center gap-3">
                   <Link
                     href={`/discord/events/${activeModalEvent.id}`}
-                    className="flex-1 py-2.5 px-4 rounded-xl bg-gradient-to-r from-indigo-500 to-purple-600 hover:from-indigo-600 hover:to-purple-700 text-white text-xs font-semibold text-center shadow-lg shadow-indigo-500/25 transition-all"
+                    className="flex-1 py-2.5 px-4 rounded-xl bg-[#5865F2] hover:bg-[#4752C4] text-white text-xs font-semibold text-center transition-colors"
                   >
                     Voir la Page Complète de l'Événement
                   </Link>

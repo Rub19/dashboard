@@ -2,6 +2,15 @@
 
 Toutes les modifications notables de ce projet seront documentées dans ce fichier.
 
+## v1.21.2 — 2026-09-10
+
+**`/discord/calendar` : défilement + grille du mois sur écran étroit**
+
+- `DiscordCalendarClient.tsx` root : `min-h-screen … pb-20` → `h-full min-h-0 overflow-y-auto os-scroll … pb-24 [overscroll-behavior:contain]` — le `min-h-screen` dans le `<main>` en `overflow-hidden` de la Shell rendait la page inscrollable.
+- Vue Mois : la grille `grid-cols-7` `min-h-[120px]` s'écrasait sous ~640 px. Enveloppée dans `overflow-x-auto os-scroll` + un `<div className="min-w-[640px]">` → défilement horizontal au lieu de cases illisibles + pastilles qui débordent.
+- Bouton `bg-gradient-to-r from-indigo-500 to-purple-600` → `bg-[#5865F2]`.
+- Validation : `tsc` 0 erreur, `build`, `test:unit` 14/14 69/69, `lint` 353.
+
 ## v1.21.1 — 2026-09-10
 
 **Raccourcis clavier adaptés à la plateforme + liste des serveurs du hub Discord**

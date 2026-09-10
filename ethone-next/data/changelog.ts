@@ -1,3 +1,14 @@
+const v12102_fr: ChangelogEntry = {
+  version: "v1.21.2",
+  date: "2026-09-10",
+  title: "Calendrier Discord : Défilement + Grille du Mois sur Petit Écran",
+  items: [
+    "La page ne défilait pas jusqu’en bas (root `min-h-screen` dans un conteneur `overflow-hidden`). Root passé en `h-full overflow-y-auto`.",
+    "La grille du mois (7 colonnes) s’écrasait sur écran étroit — cases minuscules, pastilles d’événements qui débordaient. Elle défile maintenant horizontalement (`min-w-[640px]`) au lieu de se déformer.",
+    "Bouton dégradé indigo→violet aplati.",
+  ],
+};
+
 const v12101_fr: ChangelogEntry = {
   version: "v1.21.1",
   date: "2026-09-10",
@@ -548,6 +559,17 @@ const v12052_fr: ChangelogEntry = {
     "Dynamic Island : correction d'un bug de priorité qui empêchait Spotify de jamais s'afficher, systématiquement évincé par la synchronisation d'arrière-plan.",
     "Commande /help du Bot Discord : la liste des commandes est désormais générée dynamiquement depuis les commandes réellement enregistrées (fin des commandes fantômes et des commandes manquantes), et affiche la vraie syntaxe des commandes à sous-commandes (ex. /automod status).",
     "Audit de l'enregistrement des commandes slash Discord : architecture confirmée saine, aucune dérive entre le code et les commandes déployées.",
+  ],
+};
+
+const v12102_en: ChangelogEntry = {
+  version: "v1.21.2",
+  date: "2026-09-10",
+  title: "Discord Calendar: Scroll + Month Grid on Small Screens",
+  items: [
+    "The page didn’t scroll to the bottom (root `min-h-screen` inside an `overflow-hidden` container). Root switched to `h-full overflow-y-auto`.",
+    "The 7-column month grid crushed on narrow screens — tiny cells, overflowing event pills. It now scrolls horizontally (`min-w-[640px]`) instead of deforming.",
+    "Flattened the indigo→purple gradient button.",
   ],
 };
 
@@ -1104,6 +1126,17 @@ const v12052_en: ChangelogEntry = {
   ],
 };
 
+const v12102_es: ChangelogEntry = {
+  version: "v1.21.2",
+  date: "2026-09-10",
+  title: "Calendario de Discord: Desplazamiento + Cuadricula del Mes en Pantallas Pequenas",
+  items: [
+    "La pagina no se desplazaba hasta abajo (root `min-h-screen` dentro de un contenedor `overflow-hidden`). Root cambiado a `h-full overflow-y-auto`.",
+    "La cuadricula del mes (7 columnas) se aplastaba en pantallas estrechas — celdas diminutas, pildoras de eventos desbordadas. Ahora se desplaza horizontalmente (`min-w-[640px]`) en vez de deformarse.",
+    "Boton con degradado indigo→violeta aplanado.",
+  ],
+};
+
 const v12101_es: ChangelogEntry = {
   version: "v1.21.1",
   date: "2026-09-10",
@@ -1654,6 +1687,17 @@ const v12052_es: ChangelogEntry = {
     "Dynamic Island: corregido un error de prioridad que impedía que Spotify apareciera, siempre desplazado por la sincronización en segundo plano.",
     "Comando /help del Bot de Discord: la lista de comandos ahora se genera dinámicamente desde los comandos realmente registrados (fin de comandos fantasma o ausentes), mostrando la sintaxis real de los comandos con subcomandos.",
     "Auditoría del registro de comandos slash de Discord: arquitectura confirmada como sólida, sin desviación entre el código y los comandos desplegados.",
+  ],
+};
+
+const v12102_de: ChangelogEntry = {
+  version: "v1.21.2",
+  date: "2026-09-10",
+  title: "Discord-Kalender: Scrollen + Monatsraster auf kleinen Bildschirmen",
+  items: [
+    "Die Seite scrollte nicht bis unten (Root `min-h-screen` in einem `overflow-hidden`-Container). Root auf `h-full overflow-y-auto` umgestellt.",
+    "Das 7-Spalten-Monatsraster wurde auf schmalen Bildschirmen zerquetscht — winzige Zellen, ueberlaufende Event-Pillen. Es scrollt jetzt horizontal (`min-w-[640px]`) statt sich zu verformen.",
+    "Indigo→Violett-Verlaufsbutton abgeflacht.",
   ],
 };
 
@@ -24295,5 +24339,9 @@ CHANGELOG_BY_LANG.fr.unshift(v12101_fr);
 CHANGELOG_BY_LANG.en.unshift(v12101_en);
 CHANGELOG_BY_LANG.es.unshift(v12101_es);
 CHANGELOG_BY_LANG.de.unshift(v12101_de);
+CHANGELOG_BY_LANG.fr.unshift(v12102_fr);
+CHANGELOG_BY_LANG.en.unshift(v12102_en);
+CHANGELOG_BY_LANG.es.unshift(v12102_es);
+CHANGELOG_BY_LANG.de.unshift(v12102_de);
 
 export const CHANGELOG = CHANGELOG_BY_LANG.fr;

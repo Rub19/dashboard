@@ -2,6 +2,16 @@
 
 Toutes les modifications notables de ce projet seront documentées dans ce fichier.
 
+## v1.20.96 — 2026-09-10
+
+**`/discord/polls` : branchée au bot (fin de la démo)**
+
+- `app/discord/polls/PollsCenterClient.tsx` utilisait `DEMO_POLLS` en dur, jamais rafraîchi, avec `handleClosePoll` / `handleDuplicate` définis mais **appelés par aucun bouton**.
+- Ajout : `const BOT_API_URL`, `mapPoll(raw)` défensif, `loadPolls()` (`GET /api/guilds/:guildId/polls`, `credentials: include`) au montage + bouton Rafraîchir. `isDemo` bascule à `false` quand la liste réelle charge ; badge « Données de démonstration » sinon.
+- Handlers rebranchés via un helper `pollAction(poll, path, body?)` (`POST …/{id}/{path}`) : `handleTogglePause` → `pause` / `resume` ; `handleClosePoll` → `end` (**nouveau bouton** carré, masqué sur DRAFT/ENDED) ; `handleDuplicate` → `duplicate` (**nouveau bouton**) ; `handleDeployConfirm` → `panel/deploy` avec `{ channelId }`. Mises à jour optimistes avec rollback si `res.ok` est faux ; comportement local conservé en mode démo.
+- Bouton pause masqué sur les sondages `ENDED`.
+- Validation : `tsc` 0 erreur, `build`, `test:unit` 14/14 69/69, `lint` 353 (−2, les 2 handlers morts sont maintenant utilisés).
+
 ## infra — 2026-09-10 (CI : worker + bot enfin testés automatiquement)
 
 Jusqu'ici la CI ne construisait que `ethone-next`. Le worker (218 tests) et le bot (`tsc`) n'étaient vérifiés qu'en local — une régression pouvait être poussée sans rien casser de visible.

@@ -1,6 +1,6 @@
 "use client";
 
-import { useState, useMemo } from "react";
+import { useState, useMemo, useEffect, useCallback } from "react";
 import Link from "next/link";
 import { useSearchParams } from "next/navigation";
 import {
@@ -22,10 +22,38 @@ import {
   ShieldCheck,
   Send,
   Calendar,
+  Square,
+  CopyPlus,
+  RefreshCw,
 } from "lucide-react";
 import { useToast } from "@/components/ToastProvider";
 import { useDiscordOAuth } from "@/lib/hooks/useDiscordOAuth";
 import { cn } from "@/lib/utils";
+
+const BOT_API_URL = process.env.NEXT_PUBLIC_DISCORD_BOT_API || "";
+
+function mapPoll(raw: Record<string, unknown>): PollSummary {
+  const r = raw as Record<string, any>;
+  return {
+    id: String(r.id ?? r.pollId ?? ""),
+    title: String(r.title ?? "Sondage"),
+    description: String(r.description ?? ""),
+    category: String(r.category ?? "Communauté"),
+    type: (r.type ?? "SINGLE_CHOICE") as PollSummary["type"],
+    status: (r.status ?? "DRAFT") as PollSummary["status"],
+    anonymity: (r.anonymity ?? "PUBLIC") as PollSummary["anonymity"],
+    resultsVisibility: (r.resultsVisibility ?? "LIVE") as PollSummary["resultsVisibility"],
+    totalVotes: Number(r.totalVotes ?? r.stats?.totalVotes ?? 0),
+    uniqueVoters: Number(r.uniqueVoters ?? r.stats?.uniqueVoters ?? 0),
+    participationRate: Number(r.participationRate ?? r.stats?.participationRate ?? 0),
+    questionsCount: Number(r.questionsCount ?? (Array.isArray(r.questions) ? r.questions.length : 0)),
+    quorumMet: r.quorumMet ?? undefined,
+    quorumPercentage: r.quorumPercentage ?? undefined,
+    startsAt: r.startsAt ?? undefined,
+    endsAt: r.endsAt ?? undefined,
+    updatedAt: String(r.updatedAt ?? "récemment"),
+  };
+}
 
 export interface PollSummary {
   id: string;
@@ -132,6 +160,8 @@ export default function PollsCenterClient() {
   const guildParam = searchParams.get("guildId") || profile?.guilds?.[0]?.id || "123456789012345678";
 
   const [polls, setPolls] = useState<PollSummary[]>(DEMO_POLLS);
+  const [isDemo, setIsDemo] = useState(true);
+  const [loading, setLoading] = useState(false);
   const [searchQuery, setSearchQuery] = useState("");
   const [selectedStatus, setSelectedStatus] = useState<string>("ALL");
   const [selectedType, setSelectedType] = useState<string>("ALL");
@@ -172,53 +202,118 @@ export default function PollsCenterClient() {
     return { total, active, totalVotes, avgParticipation };
   }, [polls]);
 
+  const loadPolls = useCallback(async () => {
+    if (!BOT_API_URL || !guildParam || guildParam === "123456789012345678") {
+      setIsDemo(true);
+      return;
+    }
+    setLoading(true);
+    try {
+      const res = await fetch(`${BOT_API_URL}/api/guilds/${guildParam}/polls`, { credentials: "include" });
+      const data = await res.json().catch(() => null);
+      if (res.ok && Array.isArray(data?.polls)) {
+        setPolls(data.polls.map(mapPoll));
+        setIsDemo(false);
+      } else {
+        setIsDemo(true);
+      }
+    } catch {
+      setIsDemo(true);
+    } finally {
+      setLoading(false);
+    }
+  }, [guildParam]);
+
+  useEffect(() => {
+    loadPolls();
+  }, [loadPolls]);
+
+  // Fire a bot action for a poll; falls back to a local-only mutation in demo mode.
+  const pollAction = useCallback(
+    async (poll: PollSummary, path: string, body?: Record<string, unknown>): Promise<boolean> => {
+      if (isDemo || !BOT_API_URL) return true;
+      try {
+        const res = await fetch(`${BOT_API_URL}/api/guilds/${guildParam}/polls/${poll.id}/${path}`, {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          credentials: "include",
+          body: body ? JSON.stringify(body) : undefined,
+        });
+        return res.ok;
+      } catch {
+        return false;
+      }
+    },
+    [isDemo, guildParam]
+  );
+
   const handleCopyLink = (pollId: string) => {
     const url = `${window.location.origin}/discord/polls/${pollId}/vote?guildId=${guildParam}`;
     navigator.clipboard.writeText(url);
     showToast("Lien de vote copié dans le presse-papier !", "success");
   };
 
-  const handleTogglePause = (poll: PollSummary) => {
-    const newStatus = poll.status === "ACTIVE" ? "PAUSED" : "ACTIVE";
-    setPolls((prev) =>
-      prev.map((p) => (p.id === poll.id ? { ...p, status: newStatus } : p))
-    );
-    showToast(
-      newStatus === "ACTIVE"
-        ? `Sondage "${poll.title}" réactivé.`
-        : `Sondage "${poll.title}" mis en pause.`,
-      "info"
-    );
+  const handleTogglePause = async (poll: PollSummary) => {
+    const resume = poll.status !== "ACTIVE";
+    const newStatus = resume ? "ACTIVE" : "PAUSED";
+    setPolls((prev) => prev.map((p) => (p.id === poll.id ? { ...p, status: newStatus } : p)));
+    const ok = await pollAction(poll, resume ? "resume" : "pause");
+    if (!ok) {
+      setPolls((prev) => prev.map((p) => (p.id === poll.id ? { ...p, status: poll.status } : p)));
+      showToast("Action impossible — réessayez.", "error");
+      return;
+    }
+    showToast(resume ? `Sondage "${poll.title}" réactivé.` : `Sondage "${poll.title}" mis en pause.`, "info");
   };
 
-  const handleClosePoll = (poll: PollSummary) => {
-    setPolls((prev) =>
-      prev.map((p) => (p.id === poll.id ? { ...p, status: "ENDED" } : p))
-    );
-    showToast(`Sondage "${poll.title}" clôturé. Résultats consolidés !`, "success");
+  const handleClosePoll = async (poll: PollSummary) => {
+    setPolls((prev) => prev.map((p) => (p.id === poll.id ? { ...p, status: "ENDED" } : p)));
+    const ok = await pollAction(poll, "end");
+    if (!ok) {
+      setPolls((prev) => prev.map((p) => (p.id === poll.id ? { ...p, status: poll.status } : p)));
+      showToast("Impossible de clôturer le sondage.", "error");
+      return;
+    }
+    showToast(`Sondage "${poll.title}" clôturé.`, "success");
   };
 
-  const handleDuplicate = (poll: PollSummary) => {
-    const clone: PollSummary = {
-      ...poll,
-      id: `poll-${Date.now().toString(36)}`,
-      title: `${poll.title} (Copie)`,
-      status: "DRAFT",
-      totalVotes: 0,
-      uniqueVoters: 0,
-      participationRate: 0,
-      updatedAt: "À l'instant",
-    };
-    setPolls((prev) => [clone, ...prev]);
-    showToast(`Sondage dupliqué en brouillon !`, "success");
+  const handleDuplicate = async (poll: PollSummary) => {
+    if (isDemo || !BOT_API_URL) {
+      setPolls((prev) => [
+        {
+          ...poll,
+          id: `poll-${Date.now().toString(36)}`,
+          title: `${poll.title} (Copie)`,
+          status: "DRAFT",
+          totalVotes: 0,
+          uniqueVoters: 0,
+          participationRate: 0,
+          updatedAt: "À l'instant",
+        },
+        ...prev,
+      ]);
+      showToast("Sondage dupliqué en brouillon !", "success");
+      return;
+    }
+    const ok = await pollAction(poll, "duplicate");
+    if (!ok) {
+      showToast("Impossible de dupliquer le sondage.", "error");
+      return;
+    }
+    showToast("Sondage dupliqué en brouillon !", "success");
+    loadPolls();
   };
 
-  const handleDeployConfirm = () => {
+  const handleDeployConfirm = async () => {
     if (!deployModalPoll) return;
-    showToast(
-      `Panneau de vote déployé sur Discord avec succès (${targetChannelId || "#général"}) !`,
-      "success"
-    );
+    const ok = await pollAction(deployModalPoll, "panel/deploy", {
+      channelId: targetChannelId || undefined,
+    });
+    if (!ok) {
+      showToast("Échec du déploiement du panneau.", "error");
+      return;
+    }
+    showToast(`Panneau de vote déployé sur Discord (${targetChannelId || "#général"}).`, "success");
     setDeployModalPoll(null);
   };
 
@@ -243,23 +338,39 @@ export default function PollsCenterClient() {
         {/* Header Hero Section */}
         <div className="mb-8 flex flex-col justify-between gap-4 md:flex-row md:items-center">
           <div>
-            <div className="inline-flex items-center gap-2 rounded-full border border-indigo-500/30 bg-indigo-500/10 px-3 py-1 text-xs font-semibold text-indigo-400 mb-3">
-              <Vote className="h-3.5 w-3.5" />
-              Sondages, Votes & Prise de Décision
+            <div className="flex flex-wrap items-center gap-2 mb-3">
+              <div className="inline-flex items-center gap-2 rounded-full border border-indigo-500/30 bg-indigo-500/10 px-3 py-1 text-xs font-semibold text-indigo-400">
+                <Vote className="h-3.5 w-3.5" />
+                Sondages & Votes
+              </div>
+              {isDemo && (
+                <span className="inline-flex items-center gap-1 rounded-full border border-amber-500/30 bg-amber-500/10 px-2.5 py-1 text-[11px] font-semibold text-amber-300">
+                  Données de démonstration
+                </span>
+              )}
             </div>
             <h1 className="text-3xl font-extrabold tracking-tight text-white sm:text-4xl">
-              Polls & Voting Center
+              Sondages & Votes
             </h1>
             <p className="mt-1 text-sm text-zinc-400 max-w-2xl">
-              Créez des sondages démocratiques, des décisions d'équipe pondérées par les rôles Discord,
-              des votes à bulletin secret ou des notations de satisfaction en temps réel.
+              {isDemo
+                ? "Connecte un serveur (bouton Discord dans le hub) pour gérer tes vrais sondages depuis ici."
+                : "Crée, met en pause, clôture et déploie tes sondages Discord — synchronisé avec le bot."}
             </p>
           </div>
 
-          <div className="flex items-center gap-3">
+          <div className="flex items-center gap-2">
+            <button
+              onClick={loadPolls}
+              disabled={loading}
+              className="inline-flex items-center justify-center rounded-xl border border-zinc-800 bg-zinc-900 p-2.5 text-zinc-400 transition-colors hover:text-white hover:bg-zinc-800 disabled:opacity-50"
+              title="Rafraîchir"
+            >
+              <RefreshCw className={cn("h-4 w-4", loading && "animate-spin")} />
+            </button>
             <Link
               href={`/discord/polls/create?guildId=${guildParam}`}
-              className="inline-flex items-center gap-2 rounded-xl bg-gradient-to-r from-indigo-600 to-purple-600 px-4 py-2.5 text-sm font-semibold text-white shadow-lg shadow-indigo-500/25 transition-all hover:scale-[1.02] hover:brightness-110 active:scale-[0.98]"
+              className="inline-flex items-center gap-2 rounded-xl bg-[#5865F2] px-4 py-2.5 text-sm font-semibold text-white transition-colors hover:bg-[#4752C4]"
             >
               <Plus className="h-4 w-4" />
               Nouveau Sondage
@@ -563,16 +674,36 @@ export default function PollsCenterClient() {
                         <Send className="h-3.5 w-3.5" />
                       </button>
 
+                      {poll.status !== "ENDED" && (
+                        <button
+                          onClick={() => handleTogglePause(poll)}
+                          className="inline-flex items-center justify-center rounded-xl border border-zinc-800 bg-zinc-900 p-2 text-zinc-400 hover:text-amber-400 hover:bg-zinc-800"
+                          title={poll.status === "ACTIVE" ? "Mettre en pause" : "Reprendre"}
+                        >
+                          {poll.status === "ACTIVE" ? (
+                            <PauseCircle className="h-3.5 w-3.5" />
+                          ) : (
+                            <PlayCircle className="h-3.5 w-3.5" />
+                          )}
+                        </button>
+                      )}
+
+                      {poll.status !== "ENDED" && poll.status !== "DRAFT" && (
+                        <button
+                          onClick={() => handleClosePoll(poll)}
+                          className="inline-flex items-center justify-center rounded-xl border border-zinc-800 bg-zinc-900 p-2 text-zinc-400 hover:text-rose-400 hover:bg-zinc-800"
+                          title="Clôturer le sondage"
+                        >
+                          <Square className="h-3.5 w-3.5" />
+                        </button>
+                      )}
+
                       <button
-                        onClick={() => handleTogglePause(poll)}
-                        className="inline-flex items-center justify-center rounded-xl border border-zinc-800 bg-zinc-900 p-2 text-zinc-400 hover:text-amber-400 hover:bg-zinc-800"
-                        title={poll.status === "ACTIVE" ? "Mettre en pause" : "Reprendre"}
+                        onClick={() => handleDuplicate(poll)}
+                        className="inline-flex items-center justify-center rounded-xl border border-zinc-800 bg-zinc-900 p-2 text-zinc-400 hover:text-white hover:bg-zinc-800"
+                        title="Dupliquer en brouillon"
                       >
-                        {poll.status === "ACTIVE" ? (
-                          <PauseCircle className="h-3.5 w-3.5" />
-                        ) : (
-                          <PlayCircle className="h-3.5 w-3.5" />
-                        )}
+                        <CopyPlus className="h-3.5 w-3.5" />
                       </button>
                     </div>
                   </div>

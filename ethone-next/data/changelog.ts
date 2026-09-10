@@ -1,3 +1,14 @@
+const v12096_fr: ChangelogEntry = {
+  version: "v1.20.96",
+  date: "2026-09-10",
+  title: "Page Sondages : Branchée au Bot (Plus de Démo)",
+  items: [
+    "La page /discord/polls affichait des sondages fictifs codés en dur. Elle charge maintenant tes vrais sondages depuis le bot (`GET /api/guilds/:id/polls`) quand un serveur est connecté ; sinon elle reste en mode « Données de démonstration » (badge visible).",
+    "Boutons réellement câblés : pause / reprise (`/pause` `/resume`), clôture (`/end` — nouveau bouton), duplication en brouillon (`/duplicate` — nouveau bouton), déploiement du panneau sur Discord (`/panel/deploy`). Mises à jour optimistes avec retour arrière si l'action échoue.",
+    "Ajout d'un bouton Rafraîchir et retrait du bouton pause sur les sondages déjà clôturés.",
+  ],
+};
+
 const v12095_fr: ChangelogEntry = {
   version: "v1.20.95",
   date: "2026-09-10",
@@ -481,6 +492,17 @@ const v12052_fr: ChangelogEntry = {
     "Dynamic Island : correction d'un bug de priorité qui empêchait Spotify de jamais s'afficher, systématiquement évincé par la synchronisation d'arrière-plan.",
     "Commande /help du Bot Discord : la liste des commandes est désormais générée dynamiquement depuis les commandes réellement enregistrées (fin des commandes fantômes et des commandes manquantes), et affiche la vraie syntaxe des commandes à sous-commandes (ex. /automod status).",
     "Audit de l'enregistrement des commandes slash Discord : architecture confirmée saine, aucune dérive entre le code et les commandes déployées.",
+  ],
+};
+
+const v12096_en: ChangelogEntry = {
+  version: "v1.20.96",
+  date: "2026-09-10",
+  title: "Polls Page: Wired to the Bot (No More Demo)",
+  items: [
+    "The /discord/polls page showed hardcoded fake polls. It now loads your real polls from the bot (`GET /api/guilds/:id/polls`) when a server is connected; otherwise it stays in \"demo data\" mode (visible badge).",
+    "Buttons actually wired: pause / resume (`/pause` `/resume`), close (`/end` — new button), duplicate to draft (`/duplicate` — new button), deploy the panel to Discord (`/panel/deploy`). Optimistic updates that roll back if the action fails.",
+    "Added a Refresh button and hid the pause button on polls that are already closed.",
   ],
 };
 
@@ -970,6 +992,17 @@ const v12052_en: ChangelogEntry = {
   ],
 };
 
+const v12096_es: ChangelogEntry = {
+  version: "v1.20.96",
+  date: "2026-09-10",
+  title: "Pagina de Sondeos: Conectada al Bot (Sin Demo)",
+  items: [
+    "La pagina /discord/polls mostraba sondeos ficticios fijos. Ahora carga tus sondeos reales desde el bot (`GET /api/guilds/:id/polls`) cuando hay un servidor conectado; si no, se queda en modo \"datos de demostracion\" (con distintivo visible).",
+    "Botones realmente conectados: pausar / reanudar (`/pause` `/resume`), cerrar (`/end` — boton nuevo), duplicar como borrador (`/duplicate` — boton nuevo), desplegar el panel en Discord (`/panel/deploy`). Actualizaciones optimistas que se revierten si la accion falla.",
+    "Se anadio un boton Actualizar y se oculto el boton de pausa en los sondeos ya cerrados.",
+  ],
+};
+
 const v12095_es: ChangelogEntry = {
   version: "v1.20.95",
   date: "2026-09-10",
@@ -1453,6 +1486,17 @@ const v12052_es: ChangelogEntry = {
     "Dynamic Island: corregido un error de prioridad que impedía que Spotify apareciera, siempre desplazado por la sincronización en segundo plano.",
     "Comando /help del Bot de Discord: la lista de comandos ahora se genera dinámicamente desde los comandos realmente registrados (fin de comandos fantasma o ausentes), mostrando la sintaxis real de los comandos con subcomandos.",
     "Auditoría del registro de comandos slash de Discord: arquitectura confirmada como sólida, sin desviación entre el código y los comandos desplegados.",
+  ],
+};
+
+const v12096_de: ChangelogEntry = {
+  version: "v1.20.96",
+  date: "2026-09-10",
+  title: "Umfragen-Seite: An den Bot angebunden (keine Demo mehr)",
+  items: [
+    "Die Seite /discord/polls zeigte fest verdrahtete Fake-Umfragen. Sie laedt jetzt deine echten Umfragen vom Bot (`GET /api/guilds/:id/polls`), wenn ein Server verbunden ist; sonst bleibt sie im \"Demodaten\"-Modus (sichtbares Abzeichen).",
+    "Buttons echt verdrahtet: Pause / Fortsetzen (`/pause` `/resume`), Schliessen (`/end` — neuer Button), als Entwurf duplizieren (`/duplicate` — neuer Button), Panel auf Discord bereitstellen (`/panel/deploy`). Optimistische Updates mit Rollback bei Fehlschlag.",
+    "Aktualisieren-Button hinzugefuegt, Pause-Button bei bereits geschlossenen Umfragen ausgeblendet.",
   ],
 };
 
@@ -24003,5 +24047,9 @@ CHANGELOG_BY_LANG.fr.unshift(v12095_fr);
 CHANGELOG_BY_LANG.en.unshift(v12095_en);
 CHANGELOG_BY_LANG.es.unshift(v12095_es);
 CHANGELOG_BY_LANG.de.unshift(v12095_de);
+CHANGELOG_BY_LANG.fr.unshift(v12096_fr);
+CHANGELOG_BY_LANG.en.unshift(v12096_en);
+CHANGELOG_BY_LANG.es.unshift(v12096_es);
+CHANGELOG_BY_LANG.de.unshift(v12096_de);
 
 export const CHANGELOG = CHANGELOG_BY_LANG.fr;

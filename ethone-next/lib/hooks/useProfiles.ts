@@ -1,6 +1,6 @@
 "use client";
 
-import { useCallback, useEffect, useMemo, useState } from "react";
+import { useCallback, useEffect, useMemo, useRef, useState } from "react";
 import { fetchWorker } from "@/lib/api";
 import { fetchWorkerCached } from "@/lib/hooks/useCachedFetch";
 import { supabase } from "@/lib/supabase";
@@ -73,7 +73,17 @@ export function useProfiles() {
     [profiles, active]
   );
 
+  // In-flight guard: onAuthStateChange can fire several events back-to-back
+  // (INITIAL_SESSION, a TOKEN_REFRESHED retry burst, etc.) and each one used
+  // to trigger its own uncached, uncoalesced fetchAll(true) — a burst of
+  // concurrent /api/profiles calls with nothing to stop them piling up,
+  // which is exactly what ran the endpoint into a 429 in production. This
+  // collapses any overlapping calls into the one already in flight.
+  const inFlightRef = useRef<Promise<void> | null>(null);
+
   const fetchAll = useCallback(async (force = false) => {
+    if (inFlightRef.current) return inFlightRef.current;
+    const run = (async () => {
     try {
       const res = force
         ? await fetchWorker("/api/profiles")
@@ -97,7 +107,22 @@ export function useProfiles() {
     } finally {
       setLoaded(true);
     }
+    })();
+    inFlightRef.current = run;
+    try {
+      await run;
+    } finally {
+      inFlightRef.current = null;
+    }
   }, []);
+
+  // Tracks the signed-in user id so the auth-state listener below only
+  // force-refetches when the user actually changed (sign in / sign out /
+  // account switch) — not on every GoTrue event. TOKEN_REFRESHED and
+  // INITIAL_SESSION fire for the same user and carry no new profile data;
+  // re-fetching on those (previously unconditional) is what let a refresh
+  // retry burst turn into a /api/profiles request storm.
+  const lastUserIdRef = useRef<string | null | undefined>(undefined);
 
   useEffect(() => {
     fetchAll();
@@ -105,7 +130,16 @@ export function useProfiles() {
     if (typeof window !== "undefined") {
       window.addEventListener("ethone:identity:update", handleAuthChange);
     }
-    const { data: authSub } = supabase.auth.onAuthStateChange(() => {
+    const { data: authSub } = supabase.auth.onAuthStateChange((_event, session) => {
+      const userId = session?.user?.id ?? null;
+      if (lastUserIdRef.current === undefined) {
+        // First event since mount (typically INITIAL_SESSION): just record
+        // the user, the effect's own fetchAll() above already covers it.
+        lastUserIdRef.current = userId;
+        return;
+      }
+      if (userId === lastUserIdRef.current) return;
+      lastUserIdRef.current = userId;
       fetchAll(true);
     });
     return () => {

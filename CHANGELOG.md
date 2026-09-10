@@ -2,6 +2,17 @@
 
 Toutes les modifications notables de ce projet seront documentées dans ce fichier.
 
+## v1.20.77 — 2026-09-10
+
+**Correctif : tempête de requêtes réseau (jusqu'à 429 Too Many Requests) déclenchée par les rafraîchissements de session**
+
+Trouvé en analysant un dump de console navigateur envoyé par l'utilisateur en production : `/api/profiles` recevait des dizaines de requêtes en rafale en quelques secondes, jusqu'à ce que Cloudflare réponde `429 Too Many Requests`, suivi d'échecs réseau en cascade.
+
+- **Root cause** : `lib/hooks/useProfiles.ts`'s listener `supabase.auth.onAuthStateChange(() => fetchAll(true))` rechargeait **inconditionnellement** la liste des profils — via `fetchWorker` directement, en contournant totalement le cache de `fetchWorkerCached` — à **chaque** événement d'authentification émis par GoTrue, y compris `INITIAL_SESSION` et `TOKEN_REFRESHED` (un rafraîchissement de jeton en arrière-plan, invisible pour l'utilisateur, qui ne change ni l'utilisateur ni les données de profil). Un jeton de rafraîchissement invalide/expiré (visible dans le même dump : `POST .../auth/v1/token?grant_type=refresh_token` → `400`) peut déclencher plusieurs tentatives de récupération de session côté `supabase-js` (`_recoverAndRefresh`, typiquement sur chaque changement de visibilité d'onglet) — chacune émettant un événement, chacun déclenchant sa propre requête `/api/profiles` non mise en cache, sans aucune coalescence entre appels concurrents.
+- **Correctif** : (1) le listener ne redéclenche désormais un rechargement forcé que lorsque l'identifiant de l'utilisateur connecté **change réellement** (connexion, déconnexion, changement de compte) — comme le fait déjà chaque autre hook du projet qui écoute `onAuthStateChange` (`useBrain`, `useCloudFiles`, `useDesktopLayout`, `useItems`, `useTasks`, `useUserData`, `useUserState`) ; (2) un verrou d'appel en cours (`inFlightRef`) fusionne toute requête `fetchAll` qui chevaucherait une requête déjà en vol, au lieu de laisser les appels s'empiler.
+- Les autres hooks à `onAuthStateChange` de l'app ont été audités : tous appellent déjà uniquement `setCurrentUserId(session?.user?.id)`, ce qui ne déclenche pas de re-render (et donc pas de refetch en cascade) quand l'identifiant ne change pas — seul `useProfiles.ts` avait ce défaut.
+- Validation : `tsc --noEmit` (0 erreur), `npm run lint` (0 erreur, 1161 warnings pré-existants inchangés), `npm run build`, `npm run test:unit` (14/14, 69/69).
+
 ## v1.20.76 — 2026-09-10
 
 **Correctif : page restait bloquée au lieu de rediriger vers la connexion (dernière découverte du chantier Session & Account Security 2.0)**

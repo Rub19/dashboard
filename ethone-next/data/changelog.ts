@@ -1,3 +1,12 @@
+const v12077_fr: ChangelogEntry = {
+  version: "v1.20.77",
+  date: "2026-09-10",
+  title: "Correctif : Tempête de Requêtes Réseau (429) au Rafraîchissement de Session",
+  items: [
+    "Correctif de stabilité trouvé en analysant la console navigateur : chaque événement d'authentification (y compris un simple rafraîchissement de jeton en arrière-plan, invisible pour toi) déclenchait un rechargement complet et non mis en cache de la liste des profils, sans aucune protection contre les appels simultanés. En cas de rafraîchissement de jeton échoué ou répété, cela pouvait déclencher une rafale de dizaines de requêtes vers /api/profiles en quelques secondes, jusqu'à ce que le serveur réponde 429 (Trop de requêtes). Le rechargement ne se déclenche désormais que si l'utilisateur connecté change réellement (connexion, déconnexion, changement de compte), et les appels simultanés sont fusionnés en un seul au lieu de s'empiler.",
+  ],
+};
+
 const v12076_fr: ChangelogEntry = {
   version: "v1.20.76",
   date: "2026-09-10",
@@ -265,6 +274,15 @@ const v12052_fr: ChangelogEntry = {
     "Dynamic Island : correction d'un bug de priorité qui empêchait Spotify de jamais s'afficher, systématiquement évincé par la synchronisation d'arrière-plan.",
     "Commande /help du Bot Discord : la liste des commandes est désormais générée dynamiquement depuis les commandes réellement enregistrées (fin des commandes fantômes et des commandes manquantes), et affiche la vraie syntaxe des commandes à sous-commandes (ex. /automod status).",
     "Audit de l'enregistrement des commandes slash Discord : architecture confirmée saine, aucune dérive entre le code et les commandes déployées.",
+  ],
+};
+
+const v12077_en: ChangelogEntry = {
+  version: "v1.20.77",
+  date: "2026-09-10",
+  title: "Fix: Network Request Storm (429) on Session Refresh",
+  items: [
+    "Stability fix found while reviewing the browser console: every auth event (including a routine background token refresh you never see) triggered a full, uncached reload of your profile list with no protection against overlapping calls. A failed or repeated token refresh could trigger a burst of dozens of /api/profiles requests within seconds, until the server responded with 429 (Too Many Requests). Reloads now only fire when the signed-in user actually changes (sign in, sign out, account switch), and overlapping calls are merged into one instead of piling up.",
   ],
 };
 
@@ -538,6 +556,15 @@ const v12052_en: ChangelogEntry = {
   ],
 };
 
+const v12077_es: ChangelogEntry = {
+  version: "v1.20.77",
+  date: "2026-09-10",
+  title: "Corrección: Tormenta de Solicitudes de Red (429) al Renovar la Sesión",
+  items: [
+    "Corrección de estabilidad encontrada al revisar la consola del navegador: cada evento de autenticación (incluida una renovación de token en segundo plano que nunca ves) provocaba una recarga completa y sin caché de tu lista de perfiles, sin ninguna protección contra llamadas simultáneas. Una renovación de token fallida o repetida podía desencadenar una ráfaga de decenas de solicitudes a /api/profiles en pocos segundos, hasta que el servidor respondía con 429 (Demasiadas solicitudes). Las recargas ahora solo se activan cuando el usuario conectado cambia realmente (inicio de sesión, cierre de sesión, cambio de cuenta), y las llamadas simultáneas se combinan en una sola en lugar de acumularse.",
+  ],
+};
+
 const v12076_es: ChangelogEntry = {
   version: "v1.20.76",
   date: "2026-09-10",
@@ -805,6 +832,15 @@ const v12052_es: ChangelogEntry = {
     "Dynamic Island: corregido un error de prioridad que impedía que Spotify apareciera, siempre desplazado por la sincronización en segundo plano.",
     "Comando /help del Bot de Discord: la lista de comandos ahora se genera dinámicamente desde los comandos realmente registrados (fin de comandos fantasma o ausentes), mostrando la sintaxis real de los comandos con subcomandos.",
     "Auditoría del registro de comandos slash de Discord: arquitectura confirmada como sólida, sin desviación entre el código y los comandos desplegados.",
+  ],
+};
+
+const v12077_de: ChangelogEntry = {
+  version: "v1.20.77",
+  date: "2026-09-10",
+  title: "Fix: Netzwerk-Anfragensturm (429) bei Sitzungsaktualisierung",
+  items: [
+    "Stabilitätsfix, gefunden bei der Analyse der Browser-Konsole: Jedes Authentifizierungsereignis (einschließlich einer für dich unsichtbaren, routinemäßigen Hintergrund-Token-Aktualisierung) löste ein vollständiges, ungecachtes Neuladen deiner Profilliste aus, ohne jeglichen Schutz vor überlappenden Aufrufen. Eine fehlgeschlagene oder wiederholte Token-Aktualisierung konnte innerhalb weniger Sekunden einen Schwall von Dutzenden Anfragen an /api/profiles auslösen, bis der Server mit 429 (Zu viele Anfragen) antwortete. Neuladungen werden jetzt nur noch ausgelöst, wenn sich der angemeldete Benutzer tatsächlich ändert (Anmeldung, Abmeldung, Kontowechsel), und überlappende Aufrufe werden zu einem einzigen zusammengeführt, statt sich aufzustauen.",
   ],
 };
 
@@ -23063,5 +23099,9 @@ CHANGELOG_BY_LANG.fr.unshift(v12076_fr);
 CHANGELOG_BY_LANG.en.unshift(v12076_en);
 CHANGELOG_BY_LANG.es.unshift(v12076_es);
 CHANGELOG_BY_LANG.de.unshift(v12076_de);
+CHANGELOG_BY_LANG.fr.unshift(v12077_fr);
+CHANGELOG_BY_LANG.en.unshift(v12077_en);
+CHANGELOG_BY_LANG.es.unshift(v12077_es);
+CHANGELOG_BY_LANG.de.unshift(v12077_de);
 
 export const CHANGELOG = CHANGELOG_BY_LANG.fr;

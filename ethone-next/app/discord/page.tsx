@@ -50,6 +50,7 @@ import {
   Terminal,
   Cpu,
   Star,
+  Pin,
 } from "lucide-react";
 import { useAuth } from "@/components/AuthProvider";
 import { useToast } from "@/components/ToastProvider";
@@ -84,6 +85,7 @@ type ModuleType =
   | "events"
   | "server"
   | "starboard"
+  | "sticky"
   | "bot";
 
 interface BotModule {
@@ -261,6 +263,14 @@ const MODULES: BotModule[] = [
     title: "Starboard",
     description: "Le hall of fame des messages : republication automatique des messages les plus étoilés du serveur.",
     icon: Star,
+    color: "text-zinc-400",
+    badge: "Communauté",
+  },
+  {
+    id: "sticky",
+    title: "Sticky Messages",
+    description: "Garde un message important toujours visible en bas d'un salon : le bot le repositionne automatiquement.",
+    icon: Pin,
     color: "text-zinc-400",
     badge: "Communauté",
   },
@@ -2333,6 +2343,39 @@ export default function DiscordDashboardPage() {
                         <li>Réglez l&apos;emoji (⭐ par défaut) et le seuil de réactions.</li>
                         <li>Activez — ou lancez <code className="rounded bg-black/30 px-1">/starboard setup</code> directement sur Discord.</li>
                       </ol>
+                    </div>
+                  </div>
+                )}
+
+                {activeModule === "sticky" && (
+                  <div className="space-y-4 text-xs">
+                    <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-3 rounded-2xl border border-white/10 bg-white/[0.03] p-4">
+                      <div>
+                        <div className="flex items-center gap-2">
+                          <p className="text-xs font-bold text-white">Sticky Messages</p>
+                        </div>
+                        <p className="text-[11px] text-zinc-300 mt-0.5">
+                          Épingle un message en bas d&apos;un salon (règles, format d&apos;une candidature, lien utile…). Dès qu&apos;un membre écrit, le bot supprime l&apos;ancien et le republie tout en bas, avec un anti-rebond réglable.
+                        </p>
+                      </div>
+                      <Link
+                        href={`/discord/sticky?guildId=${selectedGuild.id}`}
+                        className="flex h-9 shrink-0 items-center gap-2 rounded-xl bg-[#5865F2] px-4 text-xs font-semibold text-white transition-colors hover:bg-[#4752C4] active:scale-95 cursor-pointer"
+                      >
+                        <Pin className="h-4 w-4" />
+                        <span>Ouvrir Sticky Messages</span>
+                        <ChevronRight className="h-3.5 w-3.5" />
+                      </Link>
+                    </div>
+
+                    <div className="rounded-2xl border border-white/10 bg-white/[0.02] p-4 space-y-2">
+                      <p className="font-bold text-white">Mise en route</p>
+                      <ol className="list-decimal space-y-1 pl-4 text-[11px] text-zinc-300">
+                        <li>Ouvrez Sticky Messages et choisissez un salon.</li>
+                        <li>Écrivez le contenu, choisissez texte ou embed, et le délai anti-rebond.</li>
+                        <li>Enregistrez — ou lancez <code className="rounded bg-black/30 px-1">/sticky set</code> directement sur Discord.</li>
+                      </ol>
+                      <p className="text-[11px] text-zinc-400">Le bot a besoin des permissions <strong>Envoyer des messages</strong> et <strong>Gérer les messages</strong> dans le salon.</p>
                     </div>
                   </div>
                 )}

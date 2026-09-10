@@ -11,6 +11,7 @@ import { customCommandStorage } from '../modules/customCommands/storage/customCo
 import { CustomCommandService } from '../modules/customCommands/services/customCommandService.js';
 import { raidDetectionService } from '../modules/antiRaid/services/raidDetectionService.js';
 import { aiService } from '../modules/ai/services/aiService.js';
+import { stickyService } from '../modules/stickyMessages/services/stickyService.js';
 import { discordOwnerPanel } from '../modules/presence/ui/discordOwnerPanel.js';
 import { config } from '../config.js';
 import { syncEngine } from '../services/syncEngine.js';
@@ -52,6 +53,9 @@ export async function onMessageCreate(message: Message) {
       return;
     }
   }
+
+  // Sticky Messages : repositionner le message épinglé du salon (anti-rebond interne).
+  stickyService.handleMessage(message);
 
   // 1. Analyse Anti-Raid 2.0 (Spam burst, Mention Raid, @everyone)
   await raidDetectionService.handleMessage(message);

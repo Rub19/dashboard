@@ -1,3 +1,15 @@
+const v12107_fr: ChangelogEntry = {
+  version: "v1.21.7",
+  date: "2026-09-10",
+  title: "Nouveau Module Bot : Sticky Messages",
+  items: [
+    "Nouveau module « Sticky Messages » : garde un message important toujours visible en bas d'un salon. Dès qu'un membre écrit, le bot supprime l'ancien et le republie tout en bas (anti-rebond réglable de 2 à 120 s).",
+    "Commande `/sticky` : `set`, `retirer`, `pause`, `liste`, `apercu`. Contenu texte ou embed (titre + couleur au choix).",
+    "Page dashboard `/discord/sticky` : liste des salons avec sticky, éditeur (salon, contenu, embed/texte, couleur, anti-rebond, actif), boutons « Republier maintenant » et supprimer, stats (actifs / en pause / repositionnements).",
+    "Ajouté à la grille des modules du hub Discord.",
+  ],
+};
+
 const v12106_fr: ChangelogEntry = {
   version: "v1.21.6",
   date: "2026-09-10",
@@ -604,6 +616,18 @@ const v12052_fr: ChangelogEntry = {
     "Dynamic Island : correction d'un bug de priorité qui empêchait Spotify de jamais s'afficher, systématiquement évincé par la synchronisation d'arrière-plan.",
     "Commande /help du Bot Discord : la liste des commandes est désormais générée dynamiquement depuis les commandes réellement enregistrées (fin des commandes fantômes et des commandes manquantes), et affiche la vraie syntaxe des commandes à sous-commandes (ex. /automod status).",
     "Audit de l'enregistrement des commandes slash Discord : architecture confirmée saine, aucune dérive entre le code et les commandes déployées.",
+  ],
+};
+
+const v12107_en: ChangelogEntry = {
+  version: "v1.21.7",
+  date: "2026-09-10",
+  title: "New Bot Module: Sticky Messages",
+  items: [
+    "New \"Sticky Messages\" module: keeps an important message always visible at the bottom of a channel. Whenever a member posts, the bot deletes the old one and reposts it at the bottom (adjustable debounce, 2–120s).",
+    "`/sticky` command: `set`, `retirer` (remove), `pause`, `liste` (list), `apercu` (preview). Plain text or embed (custom title + colour).",
+    "`/discord/sticky` dashboard page: list of channels with a sticky, editor (channel, content, embed/text, colour, debounce, active), \"Repost now\" and delete buttons, stats (active / paused / reposts).",
+    "Added to the Discord hub's module grid.",
   ],
 };
 
@@ -1216,6 +1240,18 @@ const v12052_en: ChangelogEntry = {
   ],
 };
 
+const v12107_es: ChangelogEntry = {
+  version: "v1.21.7",
+  date: "2026-09-10",
+  title: "Nuevo Módulo del Bot: Sticky Messages",
+  items: [
+    "Nuevo módulo « Sticky Messages »: mantiene un mensaje importante siempre visible al final de un canal. En cuanto un miembro escribe, el bot borra el anterior y lo vuelve a publicar abajo (anti-rebote ajustable, 2–120 s).",
+    "Comando `/sticky`: `set`, `retirer` (quitar), `pause`, `liste` (lista), `apercu` (vista previa). Texto simple o embed (título + color a elección).",
+    "Página del panel `/discord/sticky`: lista de canales con sticky, editor (canal, contenido, embed/texto, color, anti-rebote, activo), botones « Republicar ahora » y eliminar, estadísticas (activos / en pausa / reposiciones).",
+    "Añadido a la cuadrícula de módulos del hub de Discord.",
+  ],
+};
+
 const v12106_es: ChangelogEntry = {
   version: "v1.21.6",
   date: "2026-09-10",
@@ -1822,6 +1858,18 @@ const v12052_es: ChangelogEntry = {
     "Dynamic Island: corregido un error de prioridad que impedía que Spotify apareciera, siempre desplazado por la sincronización en segundo plano.",
     "Comando /help del Bot de Discord: la lista de comandos ahora se genera dinámicamente desde los comandos realmente registrados (fin de comandos fantasma o ausentes), mostrando la sintaxis real de los comandos con subcomandos.",
     "Auditoría del registro de comandos slash de Discord: arquitectura confirmada como sólida, sin desviación entre el código y los comandos desplegados.",
+  ],
+};
+
+const v12107_de: ChangelogEntry = {
+  version: "v1.21.7",
+  date: "2026-09-10",
+  title: "Neues Bot-Modul: Sticky Messages",
+  items: [
+    "Neues Modul Sticky Messages: haelt eine wichtige Nachricht immer am unteren Rand eines Kanals sichtbar. Sobald ein Mitglied schreibt, loescht der Bot die alte und postet sie unten neu (einstellbare Entprellung, 2–120 s).",
+    "Befehl `/sticky`: `set`, `retirer` (entfernen), `pause`, `liste`, `apercu` (Vorschau). Klartext oder Embed (Titel + Farbe waehlbar).",
+    "Dashboard-Seite `/discord/sticky`: Liste der Kanaele mit Sticky, Editor (Kanal, Inhalt, Embed/Text, Farbe, Entprellung, aktiv), Buttons Jetzt neu posten und Loeschen, Statistiken (aktiv / pausiert / Neupositionierungen).",
+    "Zum Modul-Raster des Discord-Hubs hinzugefuegt.",
   ],
 };
 
@@ -24539,5 +24587,9 @@ CHANGELOG_BY_LANG.fr.unshift(v12106_fr);
 CHANGELOG_BY_LANG.en.unshift(v12106_en);
 CHANGELOG_BY_LANG.es.unshift(v12106_es);
 CHANGELOG_BY_LANG.de.unshift(v12106_de);
+CHANGELOG_BY_LANG.fr.unshift(v12107_fr);
+CHANGELOG_BY_LANG.en.unshift(v12107_en);
+CHANGELOG_BY_LANG.es.unshift(v12107_es);
+CHANGELOG_BY_LANG.de.unshift(v12107_de);
 
 export const CHANGELOG = CHANGELOG_BY_LANG.fr;

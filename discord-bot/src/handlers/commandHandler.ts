@@ -55,6 +55,7 @@ import { pollCommand } from '../modules/polls/commands/pollCommand.js';
 import { eventCommand } from '../modules/events/eventsCommand.js';
 import { voiceCommand } from '../modules/voice/commands/voiceCommand.js';
 import { starboardCommand } from '../modules/starboard/commands/starboardCommand.js';
+import { stickyCommand } from '../modules/stickyMessages/commands/stickyCommand.js';
 import { logsCommand } from '../modules/logs/commands/logsCommand.js';
 
 import { config } from '../config.js';
@@ -141,6 +142,9 @@ class CommandRegistry {
 
     // Starboard (hall of fame des messages étoilés)
     this.register(starboardCommand);
+
+    // Sticky Messages (message épinglé en bas d'un salon)
+    this.register(stickyCommand);
 
     // Journaux du serveur (routage par catégorie, verbosité, rétention)
     this.register(logsCommand);

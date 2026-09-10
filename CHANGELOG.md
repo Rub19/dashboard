@@ -2,6 +2,18 @@
 
 Toutes les modifications notables de ce projet seront documentées dans ce fichier.
 
+## v1.21.7 — 2026-09-10
+
+**Nouveau module bot : Sticky Messages**
+
+- **`discord-bot/src/modules/stickyMessages/`** (nouveau) : `types/sticky.ts` (zod `StickyMessageSchema` : `content` ≤2000, `asEmbed`, `title`, `color` `#RRGGBB`, `enabled`, `cooldownSeconds` 2–120, `lastMessageId`, `repostCount`), `storage/stickyStorage.ts` (JSON `data/sticky_messages.json`, clé `guildId:channelId`, `getOverview`), `services/stickyService.ts` (`handleMessage` anti-rebond coalescé par salon, `repost` = supprime l'ancien + renvoie en bas, `forceRepost`, `clearPosted`, check perms `SendMessages`+`ManageMessages`(+`EmbedLinks`)), `commands/stickyCommand.ts` (`/sticky set|retirer|pause|liste|apercu`).
+- **Câblage bot** : `handlers/commandHandler.ts` (register), `events/messageCreate.ts` (`stickyService.handleMessage` avant l'anti-raid), `server/routes/stickyRoutes.ts` + montage `/api/guilds/:guildId/sticky` dans `server/index.ts` (GET `/overview`, GET/PUT/DELETE `/config/:channelId`, POST `/config/:channelId/repost`, GET `/channels`).
+- **`discord-bot/test_sticky_v1.ts`** (nouveau) : 25 assertions (defaults, update partiel, isolation multi-guilde, overview, validation zod, delete) — 25/25.
+- **`ethone-next/app/discord/sticky/`** (nouveau) : `page.tsx` + `StickyCenterClient.tsx` — liste des salons, éditeur (salon / contenu / embed+titre+couleur / anti-rebond / actif), boutons Republier & Supprimer, stats, mode hors-ligne (`/sticky` sur Discord).
+- **`ethone-next/app/discord/page.tsx`** : `ModuleType` `"sticky"`, entrée `MODULES` (icône `Pin`), bloc `activeModule === "sticky"`.
+- Validation : `discord-bot` `npm run node:build` ✓, `test_sticky_v1` 25/25 ; `ethone-next` `tsc` 0 erreur, `build` ✓, `test:unit` 69/69, `lint` 0 erreur.
+- ⚠️ Nécessite le redéploiement du bot sur le VPS pour être actif sur Discord.
+
 ## v1.21.6 — 2026-09-10
 
 **Rework visuel des pages du bot — « moins IA »**

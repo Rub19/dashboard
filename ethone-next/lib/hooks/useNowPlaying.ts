@@ -4,6 +4,7 @@ import { useCallback, useEffect, useRef, useState } from "react";
 import { useSettings } from "@/components/SettingsProvider";
 import { OAUTH_APP_CLIENT_IDS } from "@/lib/oauth";
 import { fetchWorker } from "@/lib/api";
+import { fetchWorkerCached } from "@/lib/hooks/useCachedFetch";
 import type { NowPlaying } from "@/lib/hooks/useLiveData";
 
 type ApiData = Record<string, unknown>;
@@ -391,10 +392,17 @@ export function useNowPlaying(pollMs = 3000) {
         return;
       }
 
-      // 3. Try Worker now-playing endpoint
+      // 3. Try Worker now-playing endpoint. Shared 4s cache so the 4 useNowPlaying
+      // consumers (Dock, Dynamic Island @3s, MediaWidget, useBrain @3s) — plus
+      // useLiveData / useDashboard — collapse onto one request instead of each
+      // polling the Worker on its own timer.
       if (isSpotifyConnected && resolvedSpotifyClientId) {
         try {
-          const res = await fetchWorker(`/api/spotify/now-playing?clientId=${encodeURIComponent(resolvedSpotifyClientId)}`);
+          const res = await fetchWorkerCached(
+            `/api/spotify/now-playing?clientId=${encodeURIComponent(resolvedSpotifyClientId)}`,
+            {},
+            4000
+          );
           const mapped = mapNowPlaying(res);
           if (mapped && (mapped.title || mapped.isPlaying)) {
             setData(mapped);

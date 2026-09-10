@@ -1,3 +1,13 @@
+const v12113_fr: ChangelogEntry = {
+  version: "v1.21.13",
+  date: "2026-09-10",
+  title: "Perf : now-playing & useHomeData partagés",
+  items: [
+    "`useNowPlaying` (4 instances : Dock, Dynamic Island @3 s, MediaWidget, Brain @3 s) : `/api/spotify/now-playing` passe par `fetchWorkerCached` (TTL 4 s) — les 4 pollers partagent 1 requête, et un poll de 3 s sur un cache de 4 s = surtout des hits.",
+    "`useHomeData` (4 composants : DashboardOverview, 2 panneaux Brain, contexte Brain) : ses 5 requêtes (`/api/cloud/dashboard`, now-playing, lanyard, valorant, lol) passent par `fetchWorkerCached` (TTL 10–60 s).",
+  ],
+};
+
 const v12112_fr: ChangelogEntry = {
   version: "v1.21.12",
   date: "2026-09-10",
@@ -672,6 +682,16 @@ const v12052_fr: ChangelogEntry = {
     "Dynamic Island : correction d'un bug de priorité qui empêchait Spotify de jamais s'afficher, systématiquement évincé par la synchronisation d'arrière-plan.",
     "Commande /help du Bot Discord : la liste des commandes est désormais générée dynamiquement depuis les commandes réellement enregistrées (fin des commandes fantômes et des commandes manquantes), et affiche la vraie syntaxe des commandes à sous-commandes (ex. /automod status).",
     "Audit de l'enregistrement des commandes slash Discord : architecture confirmée saine, aucune dérive entre le code et les commandes déployées.",
+  ],
+};
+
+const v12113_en: ChangelogEntry = {
+  version: "v1.21.13",
+  date: "2026-09-10",
+  title: "Perf: Shared now-playing & useHomeData",
+  items: [
+    "`useNowPlaying` (4 instances: Dock, Dynamic Island @3s, MediaWidget, Brain @3s): `/api/spotify/now-playing` goes through `fetchWorkerCached` (4s TTL) — the 4 pollers share one request, and a 3s poll against a 4s cache is mostly hits.",
+    "`useHomeData` (4 components: DashboardOverview, 2 Brain panels, Brain context): its 5 requests (`/api/cloud/dashboard`, now-playing, lanyard, valorant, lol) go through `fetchWorkerCached` (10-60s TTL).",
   ],
 };
 
@@ -1352,6 +1372,16 @@ const v12052_en: ChangelogEntry = {
   ],
 };
 
+const v12113_es: ChangelogEntry = {
+  version: "v1.21.13",
+  date: "2026-09-10",
+  title: "Rendimiento: now-playing y useHomeData compartidos",
+  items: [
+    "`useNowPlaying` (4 instancias): `/api/spotify/now-playing` pasa por `fetchWorkerCached` (TTL 4 s) — los 4 pollers comparten 1 petición.",
+    "`useHomeData` (4 componentes): sus 5 peticiones pasan por `fetchWorkerCached` (TTL 10-60 s).",
+  ],
+};
+
 const v12112_es: ChangelogEntry = {
   version: "v1.21.12",
   date: "2026-09-10",
@@ -2026,6 +2056,16 @@ const v12052_es: ChangelogEntry = {
     "Dynamic Island: corregido un error de prioridad que impedía que Spotify apareciera, siempre desplazado por la sincronización en segundo plano.",
     "Comando /help del Bot de Discord: la lista de comandos ahora se genera dinámicamente desde los comandos realmente registrados (fin de comandos fantasma o ausentes), mostrando la sintaxis real de los comandos con subcomandos.",
     "Auditoría del registro de comandos slash de Discord: arquitectura confirmada como sólida, sin desviación entre el código y los comandos desplegados.",
+  ],
+};
+
+const v12113_de: ChangelogEntry = {
+  version: "v1.21.13",
+  date: "2026-09-10",
+  title: "Performance: geteiltes now-playing & useHomeData",
+  items: [
+    "`useNowPlaying` (4 Instanzen): `/api/spotify/now-playing` laeuft ueber `fetchWorkerCached` (4s TTL) — die 4 Poller teilen sich eine Anfrage.",
+    "`useHomeData` (4 Komponenten): seine 5 Anfragen laufen ueber `fetchWorkerCached` (10-60s TTL).",
   ],
 };
 
@@ -24835,5 +24875,9 @@ CHANGELOG_BY_LANG.fr.unshift(v12112_fr);
 CHANGELOG_BY_LANG.en.unshift(v12112_en);
 CHANGELOG_BY_LANG.es.unshift(v12112_es);
 CHANGELOG_BY_LANG.de.unshift(v12112_de);
+CHANGELOG_BY_LANG.fr.unshift(v12113_fr);
+CHANGELOG_BY_LANG.en.unshift(v12113_en);
+CHANGELOG_BY_LANG.es.unshift(v12113_es);
+CHANGELOG_BY_LANG.de.unshift(v12113_de);
 
 export const CHANGELOG = CHANGELOG_BY_LANG.fr;

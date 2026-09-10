@@ -1,7 +1,7 @@
 "use client";
 
 import { useEffect, useState, useMemo } from "react";
-import { fetchWorker } from "../api";
+import { fetchWorkerCached } from "./useCachedFetch";
 import { useSettings } from "@/components/SettingsProvider";
 import { timeContext } from "@/lib/home-model";
 
@@ -111,12 +111,14 @@ export function useHomeData() {
           return Promise.race([promise, timeout]);
         };
 
+        // Shared cache/dedup: ~4 components use useHomeData and each mounts this
+        // load() — without this they each fired the same 5 requests.
         const [dash, np, la, val, lo] = await Promise.allSettled([
-          withTimeout(fetchWorker("/api/cloud/dashboard"), DASHBOARD_TIMEOUT_MS),
-          nowPlayingPath ? withTimeout(fetchWorker(nowPlayingPath), DASHBOARD_TIMEOUT_MS) : Promise.resolve(null),
-          lanyardPath ? withTimeout(fetchWorker(lanyardPath), DASHBOARD_TIMEOUT_MS) : Promise.resolve(null),
-          valorantPath ? withTimeout(fetchWorker(valorantPath), DASHBOARD_TIMEOUT_MS) : Promise.resolve(null),
-          lolPath ? withTimeout(fetchWorker(lolPath), DASHBOARD_TIMEOUT_MS) : Promise.resolve(null),
+          withTimeout(fetchWorkerCached<{ data?: any; matches?: any }>("/api/cloud/dashboard", {}, 10000), DASHBOARD_TIMEOUT_MS),
+          nowPlayingPath ? withTimeout(fetchWorkerCached<{ data?: any; matches?: any }>(nowPlayingPath, {}, 4000), DASHBOARD_TIMEOUT_MS) : Promise.resolve(null),
+          lanyardPath ? withTimeout(fetchWorkerCached<{ data?: any; matches?: any }>(lanyardPath, {}, 10000), DASHBOARD_TIMEOUT_MS) : Promise.resolve(null),
+          valorantPath ? withTimeout(fetchWorkerCached<{ data?: any; matches?: any }>(valorantPath, {}, 60000), DASHBOARD_TIMEOUT_MS) : Promise.resolve(null),
+          lolPath ? withTimeout(fetchWorkerCached<{ data?: any; matches?: any }>(lolPath, {}, 60000), DASHBOARD_TIMEOUT_MS) : Promise.resolve(null),
         ]);
 
         if (cancelled) return;

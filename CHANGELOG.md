@@ -2,6 +2,14 @@
 
 Toutes les modifications notables de ce projet seront documentées dans ce fichier.
 
+## v1.21.13 — 2026-09-10
+
+**Perf : now-playing & useHomeData routés via le cache partagé**
+
+- **`lib/hooks/useNowPlaying.ts`** : l'appel `/api/spotify/now-playing` (étape 3) passe de `fetchWorker` à `fetchWorkerCached(url, {}, 4000)`. 4 consommateurs (`Dock` @15 s, `DynamicIslandContainer` @3 s, `MediaWidget` @15 s, `useBrain` @3 s) partagent désormais 1 requête ; un poll de 3 s contre un TTL de 4 s = majoritairement des cache-hits.
+- **`lib/hooks/useDashboard.ts`** (`useHomeData`, utilisé par `DashboardOverview` + `BrainBriefingPanel` + `BrainContextPanel` + `useBrainContext`) : les 5 `fetchWorker` du `Promise.allSettled` (`/api/cloud/dashboard`, now-playing, lanyard, valorant, lol) → `fetchWorkerCached` (TTL 10 s / 4 s / 10 s / 60 s / 60 s). Import `fetchWorker` (devenu inutilisé) retiré.
+- Validation : `tsc` 0 erreur, `build` ✓, `test:unit` 73/73.
+
 ## v1.21.12 — 2026-09-10
 
 **Perf : 3 hooks de plus routés via `fetchWorkerCached`**

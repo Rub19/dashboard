@@ -762,6 +762,24 @@ export default function BotControlClient({ initialTab = "overview" }: BotControl
     },
   });
 
+  // The bot's real Discord avatar + name (GET /api/bot/presence/identity).
+  useEffect(() => {
+    if (!BOT_API_URL) return;
+    fetch(`${BOT_API_URL}/api/bot/presence/identity`, { credentials: "include" })
+      .then((r) => r.json())
+      .then((res) => {
+        const d = res?.data;
+        if (!d) return;
+        setBotCore((prev: any) => ({
+          ...prev,
+          name: d.username || prev.name,
+          discriminator: d.discriminator || prev.discriminator,
+          avatarUrl: d.avatarUrl || prev.avatarUrl,
+        }));
+      })
+      .catch(() => {});
+  }, []);
+
   // Fetch real data from bot backend API
   const fetchData = useCallback(async () => {
     try {
@@ -1039,7 +1057,7 @@ export default function BotControlClient({ initialTab = "overview" }: BotControl
               {/* Direct Buttons */}
               <div className="flex items-center gap-2">
                 {isOwner && (
-                  <div className="flex items-center gap-1.5 px-3 py-1.5 rounded-xl bg-amber-500/15 border border-amber-500/40 text-amber-300 text-xs font-bold shadow-lg shadow-amber-500/10">
+                  <div className="flex items-center gap-1.5 px-3 py-1.5 rounded-xl bg-amber-500/10 border border-amber-500/25 text-amber-300 text-xs font-semibold">
                     <Crown className="w-3.5 h-3.5 text-amber-400" />
                     <span className="hidden sm:inline">Owner : rub19.mailpro@gmail.com</span>
                     <span className="sm:hidden">Owner</span>
@@ -1126,13 +1144,11 @@ export default function BotControlClient({ initialTab = "overview" }: BotControl
         {/* EXCLUSIVE BOT OWNER CONTROL PANEL (rub19.mailpro@gmail.com) */}
         {/* ======================================================== */}
         {isOwner && (
-          <div className="mb-8 p-6 rounded-2xl bg-gradient-to-br from-amber-950/40 via-zinc-900/90 to-zinc-950 border border-amber-500/40 space-y-6 shadow-2xl relative overflow-hidden">
-            <div className="absolute top-0 right-0 w-96 h-96 bg-amber-500/10 rounded-full blur-3xl pointer-events-none" />
-
-            <div className="flex flex-col lg:flex-row lg:items-center justify-between gap-6 pb-5 border-b border-amber-500/20 relative z-10">
+          <div className="mb-8 p-6 rounded-2xl bg-white/[0.02] border border-white/10 space-y-6">
+            <div className="flex flex-col lg:flex-row lg:items-center justify-between gap-6 pb-5 border-b border-white/10">
               <div>
                 <div className="flex flex-wrap items-center gap-2">
-                  <span className="px-2.5 py-0.5 rounded-full text-[10px] font-bold bg-amber-500/20 text-amber-300 border border-amber-500/40 uppercase tracking-widest flex items-center gap-1">
+                  <span className="px-2.5 py-0.5 rounded-full text-[10px] font-bold bg-amber-500/10 text-amber-300 border border-amber-500/20 uppercase tracking-wide flex items-center gap-1">
                     <Crown className="w-3 h-3 text-amber-400" />
                     Propriétaire Vérifié
                   </span>
@@ -1184,7 +1200,7 @@ export default function BotControlClient({ initialTab = "overview" }: BotControl
 
             {/* Owner Telemetry Grid */}
             <div className="grid grid-cols-2 sm:grid-cols-4 gap-3 relative z-10">
-              <div className="p-3.5 rounded-xl bg-zinc-950/70 border border-amber-500/20">
+              <div className="p-3.5 rounded-xl bg-white/[0.02] border border-white/10">
                 <span className="text-[10px] text-zinc-400 block uppercase font-mono">Processus VPS PM2</span>
                 <span className="text-sm font-bold text-white font-mono mt-1 block flex items-center gap-1.5">
                   <span className="w-2 h-2 rounded-full bg-emerald-400 shadow-[0_0_5px_rgba(52,211,153,0.8)]" />
@@ -1193,7 +1209,7 @@ export default function BotControlClient({ initialTab = "overview" }: BotControl
                 <span className="text-[10px] text-emerald-400 mt-0.5 block font-mono">Status: Online</span>
               </div>
 
-              <div className="p-3.5 rounded-xl bg-zinc-950/70 border border-amber-500/20">
+              <div className="p-3.5 rounded-xl bg-white/[0.02] border border-white/10">
                 <span className="text-[10px] text-zinc-400 block uppercase font-mono">Compte Suprême</span>
                 <span className="text-xs font-bold text-amber-300 font-mono mt-1 block truncate" title="rub19.mailpro@gmail.com">
                   rub19.mailpro@gmail.com
@@ -1201,13 +1217,13 @@ export default function BotControlClient({ initialTab = "overview" }: BotControl
                 <span className="text-[10px] text-zinc-400 mt-0.5 block">Niveau Root vérifié</span>
               </div>
 
-              <div className="p-3.5 rounded-xl bg-zinc-950/70 border border-amber-500/20">
+              <div className="p-3.5 rounded-xl bg-white/[0.02] border border-white/10">
                 <span className="text-[10px] text-zinc-400 block uppercase font-mono">Gateway Shard</span>
                 <span className="text-sm font-bold text-white font-mono mt-1 block">{botCore.pingMs} ms (WebSocket)</span>
                 <span className="text-[10px] text-emerald-400 mt-0.5 block">Shard 0 Connecté</span>
               </div>
 
-              <div className="p-3.5 rounded-xl bg-zinc-950/70 border border-amber-500/20">
+              <div className="p-3.5 rounded-xl bg-white/[0.02] border border-white/10">
                 <span className="text-[10px] text-zinc-400 block uppercase font-mono">Audit Supabase</span>
                 <span className="text-sm font-bold text-white font-mono mt-1 block">
                   {ownerLogs.length} action(s)
@@ -1218,7 +1234,7 @@ export default function BotControlClient({ initialTab = "overview" }: BotControl
 
             {/* Recent Audit Logs if any */}
             {ownerLogs.length > 0 && (
-              <div className="pt-2 border-t border-amber-500/15 relative z-10">
+              <div className="pt-2 border-t border-white/10 relative z-10">
                 <span className="text-[11px] font-bold text-zinc-300 uppercase tracking-wider block mb-2">
                   Dernières Actions Administratives Exécutées
                 </span>

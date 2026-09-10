@@ -2,32 +2,7 @@
 
 import { Icon as IconifyIcon, type IconProps } from "@iconify/react";
 
-function RiotGamesSvg({ className, color }: { className?: string; color?: string }) {
-  return (
-    <svg
-      viewBox="0 0 24 24"
-      fill={color || "#EB0029"}
-      className={className}
-      aria-hidden="true"
-    >
-      <path d="M13.458.86L0 7.093l3.353 12.761l2.552-.313l-.701-8.024l.838-.373l1.447 8.202l4.361-.535l-.775-8.857l.83-.37l1.591 9.025l4.412-.542l-.849-9.708l.84-.374l1.74 9.87L24 17.318V3.5Zm.316 19.356l.222 1.256L24 23.14v-4.18l-10.22 1.256Z" />
-    </svg>
-  );
-}
-
-function ValorantSvg({ className, color }: { className?: string; color?: string }) {
-  return (
-    <svg
-      viewBox="0 0 24 24"
-      fill={color || "#FF4655"}
-      className={className}
-      aria-hidden="true"
-    >
-      <path d="M12 2l12 20h-7l-5-8.5-5 8.5H0L12 2z" />
-    </svg>
-  );
-}
-
+// tracker.gg has no Simple Icons entry — keep a hand-drawn mark for it.
 function TrackerGgSvg({ className, color }: { className?: string; color?: string }) {
   return (
     <svg
@@ -75,24 +50,26 @@ function WeatherSvg({ className, color }: { className?: string; color?: string }
 }
 
 const OVERRIDES: Record<string, string> = {
-  spotify: "tabler:brand-spotify",
-  youtube: "tabler:brand-youtube",
-  twitch: "tabler:brand-twitch",
-  discord: "tabler:brand-discord",
-  reddit: "tabler:brand-reddit",
-  bluesky: "tabler:brand-bluesky",
-  steam: "tabler:brand-steam",
-  minecraft: "tabler:brand-minecraft",
-  github: "tabler:brand-github",
-  gitlab: "tabler:brand-gitlab",
-  notion: "tabler:brand-notion",
+  spotify: "simple-icons:spotify",
+  youtube: "simple-icons:youtube",
+  twitch: "simple-icons:twitch",
+  discord: "simple-icons:discord",
+  reddit: "simple-icons:reddit",
+  bluesky: "simple-icons:bluesky",
+  steam: "simple-icons:steam",
+  minecraft: "simple-icons:minecraft",
+  github: "simple-icons:github",
+  gitlab: "simple-icons:gitlab",
+  notion: "simple-icons:notion",
   todoist: "simple-icons:todoist",
-  "google-calendar": "tabler:brand-google",
-  "google-drive": "tabler:brand-google-drive",
-  vscode: "tabler:brand-vscode",
-  jira: "tabler:brand-jira",
-  lastfm: "tabler:brand-lastfm",
-  openai: "tabler:brand-openai",
+  "google-calendar": "simple-icons:googlecalendar",
+  googlecalendar: "simple-icons:googlecalendar",
+  "google-drive": "simple-icons:googledrive",
+  googledrive: "simple-icons:googledrive",
+  vscode: "simple-icons:visualstudiocode",
+  jira: "simple-icons:jira",
+  lastfm: "simple-icons:lastdotfm",
+  openai: "simple-icons:openai",
   plex: "simple-icons:plex",
   jellyfin: "simple-icons:jellyfin",
   emby: "simple-icons:emby",
@@ -102,9 +79,12 @@ const OVERRIDES: Record<string, string> = {
   fitbit: "simple-icons:fitbit",
   anthropic: "simple-icons:anthropic",
   gemini: "simple-icons:googlegemini",
-  groq: "simple-icons:groq",
+  groq: "lucide:cpu", // no official brand mark in Simple Icons
   ollama: "simple-icons:ollama",
-  "lm-studio": "tabler:brain",
+  "lm-studio": "simple-icons:lmstudio",
+  riot: "simple-icons:riotgames",
+  riotgames: "simple-icons:riotgames",
+  valorant: "simple-icons:valorant",
   email: "tabler:mail",
   weather: "tabler:cloud-sun",
   rss: "tabler:rss",
@@ -160,14 +140,6 @@ export default function ServiceIcon({
   ...props
 }: { id: string; icon: string; colored?: boolean; className?: string } & Omit<IconProps, "icon">) {
   const color = colored ? COLORS[id] : undefined;
-
-  if (id === "riot" || id === "riotgames") {
-    return <RiotGamesSvg className={className} color={color} />;
-  }
-
-  if (id === "valorant") {
-    return <ValorantSvg className={className} color={color} />;
-  }
 
   if (id === "tracker-gg" || id === "tracker.gg" || id === "tracker") {
     return <TrackerGgSvg className={className} color={color} />;

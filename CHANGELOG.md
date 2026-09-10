@@ -2,6 +2,16 @@
 
 Toutes les modifications notables de ce projet seront documentées dans ce fichier.
 
+## v1.21.0 — 2026-09-10
+
+**Vrais logos de marque + défilement page Connexions + avatar du bot**
+
+- **`components/ServiceIcon.tsx`** : `OVERRIDES` passe de `tabler:brand-*` (contour monochrome) à `simple-icons:*` (logos officiels remplis) pour spotify/youtube/twitch/discord/reddit/bluesky/steam/minecraft/github/gitlab/notion/googlecalendar/googledrive/vscode/jira/lastfm/openai. `groq` → `lucide:cpu` (pas de marque Simple Icons), `riot`/`valorant` → `simple-icons:riotgames`/`valorant`. Les composants `RiotGamesSvg` / `ValorantSvg` dessinés à la main supprimés ; `TrackerGgSvg` conservé (tracker.gg absent de Simple Icons).
+- **`components/GameBrandIcon.tsx`** : réécrit. Ordre : (1) `iconUrl` = icône Rich Presence réelle de Discord, (2) `simple-icons:*` via une table `BRANDS` (valorant, leagueoflegends, counterstrike, dota2, minecraft, roblox, fortnite, rockstargames, fivem, fifa, ea, epicgames, steam), (3) `Gamepad2`. ~15 SVG de jeux approximatifs supprimés.
+- **`components/IntegrationsSettings.tsx`** : root `h-full min-h-0` → `flex-1` (le `h-full` ne se résolvait pas dans la colonne flex → page inscrollable) ; conteneur de liste `pb-16 [overscroll-behavior:contain]`.
+- **`app/discord/bot/BotControlClient.tsx`** : nouvel effet `GET /api/bot/presence/identity` → `botCore.avatarUrl` / `name` / `discriminator` (vrai avatar du bot au lieu de `embed/avatars/0.png`). Carte « Propriétaire Vérifié » : dégradé ambré + `shadow-2xl` + halo `blur-3xl` retirés → `bg-white/[0.02] border-white/10`.
+- Validation : `tsc` 0 erreur, `build`, `test:unit` 14/14 69/69, `lint` 353.
+
 ## discord-bot — 2026-09-10 (durcissement auth)
 
 Suite à une question sur le modèle de sécurité : **rien à corriger sur le fond** — chaque route `/api/guilds/:guildId/*` passe par `authMiddleware` + `createGuildAuthMiddleware`, qui vérifie en direct contre l'API Discord (avec le token OAuth de l'utilisateur) que celui-ci a **Administrateur / Gérer le serveur / est propriétaire** de CE serveur précis, sinon `403`. Côté ETHONE personnel, le Worker filtre tout sur `auth.userId` (extrait du JWT Supabase vérifié), jamais un id fourni par le client. Deux durcissements quand même :

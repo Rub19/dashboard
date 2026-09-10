@@ -1,3 +1,15 @@
+const v12100_fr: ChangelogEntry = {
+  version: "v1.21.0",
+  date: "2026-09-10",
+  title: "Vrais Logos de Marque + Défilement Connexions + Avatar du Bot",
+  items: [
+    "Page Connexions : les icônes des services passent des glyphes Tabler (contour monochrome) aux vrais logos officiels (Simple Icons) — Spotify, YouTube, Discord, GitHub, Notion, Plex, etc.",
+    "Carte « SOCIAL & MEDIA » (activité Discord) : le logo du jeu utilise d'abord l'icône Rich Presence réelle de Discord, sinon le vrai logo de marque (Valorant, LoL, CS2, Minecraft, GTA, Fortnite…). Fini les triangles rouges approximatifs pour Valorant.",
+    "Page Connexions : on ne pouvait pas défiler jusqu'en bas (root `h-full` dans une colonne flex). Corrigé + marge basse.",
+    "Bot Control Center : l'en-tête affiche maintenant le vrai avatar du bot (via `/api/bot/presence/identity`) au lieu de l'avatar Discord générique. Carte « Propriétaire Vérifié » allégée (plus de dégradé ambré ni de halo).",
+  ],
+};
+
 const v12099_fr: ChangelogEntry = {
   version: "v1.20.99",
   date: "2026-09-10",
@@ -526,6 +538,18 @@ const v12052_fr: ChangelogEntry = {
     "Dynamic Island : correction d'un bug de priorité qui empêchait Spotify de jamais s'afficher, systématiquement évincé par la synchronisation d'arrière-plan.",
     "Commande /help du Bot Discord : la liste des commandes est désormais générée dynamiquement depuis les commandes réellement enregistrées (fin des commandes fantômes et des commandes manquantes), et affiche la vraie syntaxe des commandes à sous-commandes (ex. /automod status).",
     "Audit de l'enregistrement des commandes slash Discord : architecture confirmée saine, aucune dérive entre le code et les commandes déployées.",
+  ],
+};
+
+const v12100_en: ChangelogEntry = {
+  version: "v1.21.0",
+  date: "2026-09-10",
+  title: "Real Brand Logos + Connections Scroll + Bot Avatar",
+  items: [
+    "Connections page: service icons move from Tabler glyphs (monochrome outline) to the real official logos (Simple Icons) — Spotify, YouTube, Discord, GitHub, Notion, Plex, etc.",
+    "\"SOCIAL & MEDIA\" card (Discord activity): the game logo uses Discord's real Rich Presence icon first, then the real brand mark (Valorant, LoL, CS2, Minecraft, GTA, Fortnite…). No more approximate red triangles for Valorant.",
+    "Connections page: couldn't scroll to the bottom (root `h-full` inside a flex column). Fixed + bottom padding.",
+    "Bot Control Center: the header now shows the bot's real avatar (via `/api/bot/presence/identity`) instead of the generic Discord avatar. \"Verified Owner\" card toned down (no more amber gradient or glow).",
   ],
 };
 
@@ -1060,6 +1084,18 @@ const v12052_en: ChangelogEntry = {
   ],
 };
 
+const v12100_es: ChangelogEntry = {
+  version: "v1.21.0",
+  date: "2026-09-10",
+  title: "Logos de Marca Reales + Desplazamiento en Conexiones + Avatar del Bot",
+  items: [
+    "Pagina de Conexiones: los iconos de los servicios pasan de glifos Tabler (contorno monocromo) a los logos oficiales reales (Simple Icons) — Spotify, YouTube, Discord, GitHub, Notion, Plex, etc.",
+    "Tarjeta \"SOCIAL & MEDIA\" (actividad de Discord): el logo del juego usa primero el icono real de Rich Presence de Discord y si no, la marca real (Valorant, LoL, CS2, Minecraft, GTA, Fortnite…). Se acabaron los triangulos rojos aproximados para Valorant.",
+    "Pagina de Conexiones: no se podia desplazar hasta abajo (root `h-full` en una columna flex). Corregido + margen inferior.",
+    "Bot Control Center: la cabecera ahora muestra el avatar real del bot (via `/api/bot/presence/identity`) en vez del avatar generico de Discord. Tarjeta \"Propietario Verificado\" mas sobria (sin degradado ambar ni halo).",
+  ],
+};
+
 const v12099_es: ChangelogEntry = {
   version: "v1.20.99",
   date: "2026-09-10",
@@ -1588,6 +1624,18 @@ const v12052_es: ChangelogEntry = {
     "Dynamic Island: corregido un error de prioridad que impedía que Spotify apareciera, siempre desplazado por la sincronización en segundo plano.",
     "Comando /help del Bot de Discord: la lista de comandos ahora se genera dinámicamente desde los comandos realmente registrados (fin de comandos fantasma o ausentes), mostrando la sintaxis real de los comandos con subcomandos.",
     "Auditoría del registro de comandos slash de Discord: arquitectura confirmada como sólida, sin desviación entre el código y los comandos desplegados.",
+  ],
+};
+
+const v12100_de: ChangelogEntry = {
+  version: "v1.21.0",
+  date: "2026-09-10",
+  title: "Echte Markenlogos + Verbindungen-Scroll + Bot-Avatar",
+  items: [
+    "Verbindungsseite: Service-Symbole wechseln von Tabler-Glyphen (einfarbige Kontur) zu den echten offiziellen Logos (Simple Icons) — Spotify, YouTube, Discord, GitHub, Notion, Plex usw.",
+    "\"SOCIAL & MEDIA\"-Karte (Discord-Aktivitaet): Das Spiel-Logo nutzt zuerst das echte Rich-Presence-Symbol von Discord, sonst die echte Marke (Valorant, LoL, CS2, Minecraft, GTA, Fortnite…). Keine ungefaehren roten Dreiecke mehr fuer Valorant.",
+    "Verbindungsseite: Man konnte nicht nach ganz unten scrollen (Root `h-full` in einer Flex-Spalte). Behoben + unterer Abstand.",
+    "Bot Control Center: Der Kopf zeigt jetzt den echten Bot-Avatar (ueber `/api/bot/presence/identity`) statt des generischen Discord-Avatars. \"Verifizierter Eigentuemer\"-Karte entschaerft (kein Bernstein-Verlauf, kein Schein).",
   ],
 };
 
@@ -24199,5 +24247,9 @@ CHANGELOG_BY_LANG.fr.unshift(v12099_fr);
 CHANGELOG_BY_LANG.en.unshift(v12099_en);
 CHANGELOG_BY_LANG.es.unshift(v12099_es);
 CHANGELOG_BY_LANG.de.unshift(v12099_de);
+CHANGELOG_BY_LANG.fr.unshift(v12100_fr);
+CHANGELOG_BY_LANG.en.unshift(v12100_en);
+CHANGELOG_BY_LANG.es.unshift(v12100_es);
+CHANGELOG_BY_LANG.de.unshift(v12100_de);
 
 export const CHANGELOG = CHANGELOG_BY_LANG.fr;

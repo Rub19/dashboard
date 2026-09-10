@@ -339,7 +339,7 @@ export default function IntegrationsSettings() {
   );
 
   return (
-    <div className="h-full min-h-0 w-full flex flex-col overflow-hidden bg-transparent">
+    <div className="flex min-h-0 w-full flex-1 flex-col overflow-hidden bg-transparent">
       {/* Top Header Bar */}
       <div className="shrink-0 border-b border-[var(--panel-border)]/60 bg-[var(--panel-bg)]/40 px-6 py-4 backdrop-blur-xl">
         <div className="flex flex-col gap-4 sm:flex-row sm:items-center sm:justify-between max-w-7xl mx-auto w-full">
@@ -403,7 +403,7 @@ export default function IntegrationsSettings() {
       </div>
 
       {/* Main Scrollable Content */}
-      <div className="flex-1 overflow-y-auto os-scroll p-4 sm:p-6 space-y-6">
+      <div className="min-h-0 flex-1 overflow-y-auto os-scroll p-4 sm:p-6 pb-16 space-y-6 [overscroll-behavior:contain]">
         <div className="max-w-7xl mx-auto w-full space-y-6">
           {/* Brain Ecosystem Hub */}
           <BrainIntegrationsHub

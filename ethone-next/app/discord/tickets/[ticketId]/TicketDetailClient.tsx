@@ -366,7 +366,7 @@ export default function TicketDetailClient() {
   }
 
   return (
-    <div className="min-h-screen bg-gradient-to-b from-zinc-950 via-zinc-900 to-black text-white px-4 sm:px-8 py-6 pb-36">
+    <div className="h-full overflow-y-auto os-scroll [overscroll-behavior:contain] bg-[var(--bg-main)] text-white px-4 sm:px-8 py-6 pb-36">
       {/* Header */}
       <div className="flex flex-col md:flex-row md:items-center justify-between gap-4 border-b border-white/10 pb-5">
         <div className="flex items-center gap-3">
@@ -433,7 +433,7 @@ export default function TicketDetailClient() {
             <button
               onClick={handleClaim}
               disabled={actionLoading}
-              className="flex h-9 items-center gap-1.5 rounded-xl bg-emerald-600 px-3.5 text-xs font-bold text-white hover:bg-emerald-500 shadow-md shadow-emerald-600/20 transition-all cursor-pointer"
+              className="flex h-9 items-center gap-1.5 rounded-xl bg-emerald-600 px-3.5 text-xs font-bold text-white hover:bg-emerald-500 shadow-sm transition-all cursor-pointer"
             >
               <User className="h-3.5 w-3.5" />
               <span>Prendre en charge</span>
@@ -597,7 +597,7 @@ export default function TicketDetailClient() {
                 </p>
                 <Link
                   href={`/discord/moderation/cases/${ticket.relatedCaseId}?guildId=${guildId}`}
-                  className="inline-flex items-center gap-1.5 rounded-xl bg-orange-600/20 border border-orange-500/30 px-3 py-1.5 text-xs font-bold text-orange-300 hover:bg-orange-600/30 transition-all"
+                  className="inline-flex items-center gap-1.5 rounded-xl bg-orange-600/20 border border-orange-500/30 px-3 py-1.5 text-xs font-bold text-orange-300 hover:bg-orange-500/30 transition-all"
                 >
                   <span>Consulter le Dossier #{ticket.relatedCaseId}</span>
                   <ChevronRight className="h-3 w-3" />

@@ -306,14 +306,7 @@ export default function EventsCenterClient() {
   };
 
   return (
-    <div className="min-h-screen bg-[var(--bg-main)] text-slate-100 pb-20 selection:bg-indigo-500/30">
-      {/* Background ambient lighting */}
-      <div className="fixed inset-0 pointer-events-none overflow-hidden">
-        <div className="absolute -top-40 left-1/4 w-[600px] h-[600px] bg-indigo-600/10 rounded-full blur-[140px]" />
-        <div className="absolute top-1/3 right-10 w-[500px] h-[500px] bg-purple-600/10 rounded-full blur-[140px]" />
-        <div className="absolute bottom-10 left-1/3 w-[450px] h-[450px] bg-cyan-600/10 rounded-full blur-[120px]" />
-      </div>
-
+    <div className="h-full overflow-y-auto os-scroll [overscroll-behavior:contain] bg-[var(--bg-main)] text-slate-100 pb-20 selection:bg-indigo-500/30">
       <div className="relative max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 pt-8">
         {/* Navigation & Header */}
         <div className="flex flex-col md:flex-row md:items-center justify-between gap-6 pb-8 border-b border-white/10">
@@ -364,7 +357,7 @@ export default function EventsCenterClient() {
 
             <Link
               href="/discord/events/create"
-              className="inline-flex items-center gap-2 px-5 py-2.5 rounded-xl text-sm font-semibold bg-gradient-to-r from-indigo-500 via-purple-500 to-cyan-500 hover:from-indigo-600 hover:to-cyan-600 text-white shadow-lg shadow-indigo-500/25 transition-all hover:scale-[1.02]"
+              className="inline-flex items-center gap-2 px-5 py-2.5 rounded-xl text-sm font-semibold bg-indigo-600 hover:bg-indigo-600 text-white shadow-sm transition-all hover:scale-[1.02]"
             >
               <Plus className="w-4 h-4" />
               Créer un Événement
@@ -494,7 +487,7 @@ export default function EventsCenterClient() {
                 onClick={() => setSelectedFilter(tab.id)}
                 className={`px-3 py-1.5 rounded-xl text-xs font-semibold whitespace-nowrap transition-all ${
                   selectedFilter === tab.id
-                    ? "bg-indigo-500 text-white shadow-md shadow-indigo-500/25"
+                    ? "bg-indigo-500 text-white shadow-sm"
                     : "bg-white/5 hover:bg-white/10 text-slate-300 border border-white/5"
                 }`}
               >
@@ -532,7 +525,7 @@ export default function EventsCenterClient() {
                         className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500"
                       />
                     ) : (
-                      <div className="w-full h-full bg-gradient-to-br from-indigo-900/60 via-purple-900/40 to-black flex items-center justify-center">
+                      <div className="w-full h-full bg-white/[0.03] flex items-center justify-center">
                         <span className="text-5xl">{event.emoji || "📅"}</span>
                       </div>
                     )}
@@ -546,8 +539,8 @@ export default function EventsCenterClient() {
                       </span>
 
                       {isLive ? (
-                        <span className="px-2.5 py-1 rounded-lg text-xs font-bold uppercase tracking-wider bg-red-500/90 text-white flex items-center gap-1.5 shadow-[0_0_10px_rgba(244,63,94,0.5)]">
-                          <span className="w-2 h-2 rounded-full bg-white shadow-[0_0_4px_rgba(255,255,255,0.9)]" />
+                        <span className="px-2.5 py-1 rounded-lg text-xs font-bold uppercase tracking-wider bg-red-500/90 text-white flex items-center gap-1.5">
+                          <span className="w-2 h-2 rounded-full bg-white" />
                           En Direct
                         </span>
                       ) : isPast ? (

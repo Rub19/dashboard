@@ -272,13 +272,13 @@ export default function AiCenterClient() {
   };
 
   return (
-    <div className="min-h-screen bg-neutral-950 text-neutral-100 p-4 md:p-8">
+    <div className="h-full overflow-y-auto os-scroll [overscroll-behavior:contain] bg-[var(--bg-main)] text-neutral-100 p-4 md:p-8">
       <div className="max-w-7xl mx-auto space-y-8">
         {/* Top Header */}
         <div className="flex flex-col md:flex-row md:items-center justify-between gap-4">
           <div>
             <div className="flex items-center gap-3">
-              <div className="p-2.5 bg-gradient-to-tr from-indigo-500/20 to-purple-500/20 text-indigo-400 rounded-xl border border-indigo-500/30 shadow-lg shadow-indigo-500/10">
+              <div className="p-2.5 bg-indigo-500/15 text-indigo-400 rounded-xl border border-indigo-500/30 shadow-sm">
                 <Bot className="w-6 h-6" />
               </div>
               <div>
@@ -308,7 +308,7 @@ export default function AiCenterClient() {
               onClick={handlePublish}
               className={`px-4 py-2 rounded-xl text-xs font-semibold flex items-center gap-2 shadow-lg transition-all ${
                 !isPublished
-                  ? "bg-indigo-600 hover:bg-indigo-500 text-white shadow-indigo-600/25"
+                  ? "bg-indigo-600 hover:bg-indigo-500 text-white"
                   : "bg-neutral-800 hover:bg-neutral-700 text-neutral-300"
               }`}
             >
@@ -795,7 +795,7 @@ export default function AiCenterClient() {
               </div>
               <button
                 onClick={() => setShowAddKnowledgeModal(true)}
-                className="px-4 py-2 rounded-xl bg-indigo-600 hover:bg-indigo-500 text-white text-xs font-semibold flex items-center gap-2 shadow-lg shadow-indigo-600/20 transition-all self-start sm:self-auto"
+                className="px-4 py-2 rounded-xl bg-indigo-600 hover:bg-indigo-500 text-white text-xs font-semibold flex items-center gap-2 shadow-sm transition-all self-start sm:self-auto"
               >
                 <Plus className="w-4 h-4" />
                 Ajouter une Source
@@ -1229,7 +1229,7 @@ export default function AiCenterClient() {
                   </button>
                   <button
                     onClick={handleAddKnowledge}
-                    className="px-5 py-2 rounded-xl bg-indigo-600 hover:bg-indigo-500 text-xs font-semibold text-white shadow-lg shadow-indigo-600/20 transition-all"
+                    className="px-5 py-2 rounded-xl bg-indigo-600 hover:bg-indigo-500 text-xs font-semibold text-white shadow-sm transition-all"
                   >
                     Indexer la Source
                   </button>

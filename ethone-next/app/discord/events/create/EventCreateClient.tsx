@@ -170,11 +170,9 @@ export default function EventCreateClient() {
   };
 
   return (
-    <div className="min-h-screen bg-[var(--bg-main)] text-slate-100 pb-20 selection:bg-indigo-500/30">
+    <div className="h-full overflow-y-auto os-scroll [overscroll-behavior:contain] bg-[var(--bg-main)] text-slate-100 pb-20 selection:bg-indigo-500/30">
       {/* Background glow */}
       <div className="fixed inset-0 pointer-events-none overflow-hidden">
-        <div className="absolute -top-20 left-1/4 w-[600px] h-[600px] bg-indigo-600/10 rounded-full blur-[140px]" />
-        <div className="absolute top-1/2 right-10 w-[500px] h-[500px] bg-purple-600/10 rounded-full blur-[140px]" />
       </div>
 
       <div className="relative max-w-6xl mx-auto px-4 sm:px-6 lg:px-8 pt-8">
@@ -207,7 +205,7 @@ export default function EventCreateClient() {
             {/* Progress line */}
             <div className="absolute top-4 left-0 right-0 h-0.5 bg-white/10 z-0" />
             <div
-              className="absolute top-4 left-0 h-0.5 bg-gradient-to-r from-indigo-500 to-purple-500 transition-all duration-300 z-0"
+              className="absolute top-4 left-0 h-0.5 bg-indigo-500 transition-all duration-300 z-0"
               style={{ width: `${((step - 1) / (STEPS.length - 1)) * 100}%` }}
             />
 
@@ -224,7 +222,7 @@ export default function EventCreateClient() {
                   <div
                     className={`w-8 h-8 rounded-full flex items-center justify-center text-xs font-bold transition-all ${
                       isCompleted
-                        ? "bg-indigo-500 text-white shadow-md shadow-indigo-500/30"
+                        ? "bg-indigo-500 text-white shadow-sm"
                         : isCurrent
                         ? "bg-purple-600 text-white ring-4 ring-purple-500/20 shadow-lg"
                         : "bg-black/60 border border-white/10 text-slate-500"
@@ -721,7 +719,7 @@ export default function EventCreateClient() {
                 <button
                   type="button"
                   onClick={() => setStep((s) => s + 1)}
-                  className="inline-flex items-center gap-2 px-5 py-2.5 rounded-xl text-xs font-semibold bg-indigo-500 hover:bg-indigo-600 text-white shadow-md shadow-indigo-500/25"
+                  className="inline-flex items-center gap-2 px-5 py-2.5 rounded-xl text-xs font-semibold bg-indigo-500 hover:bg-indigo-600 text-white shadow-sm"
                 >
                   Suivant
                   <ArrowRight className="w-4 h-4" />
@@ -731,7 +729,7 @@ export default function EventCreateClient() {
                   type="button"
                   disabled={isSubmitting}
                   onClick={handlePublish}
-                  className="inline-flex items-center gap-2 px-6 py-2.5 rounded-xl text-xs font-semibold bg-gradient-to-r from-emerald-500 to-cyan-500 hover:from-emerald-600 hover:to-cyan-600 text-white shadow-lg shadow-emerald-500/25"
+                  className="inline-flex items-center gap-2 px-6 py-2.5 rounded-xl text-xs font-semibold bg-emerald-500 hover:bg-emerald-600 text-white shadow-sm"
                 >
                   {isSubmitting ? "Publication en cours..." : "Publier l'Événement"}
                   <Check className="w-4 h-4" />

@@ -1350,7 +1350,7 @@ export default function ServerManagementClient({
           <div className="flex flex-col md:flex-row items-start md:items-center justify-between gap-4">
             {/* Server Identity */}
             <div className="flex items-center gap-3.5">
-              <div className="h-12 w-12 rounded-2xl bg-gradient-to-br from-indigo-500 to-purple-600 flex items-center justify-center font-bold text-lg shadow-lg shadow-indigo-500/20 border border-white/20 overflow-hidden">
+              <div className="h-12 w-12 rounded-2xl bg-indigo-600 flex items-center justify-center font-bold text-lg shadow-sm border border-white/20 overflow-hidden">
                 {overview?.guild.icon ? (
                   <img src={overview.guild.icon} alt={overview.guild.name} className="h-full w-full object-cover" />
                 ) : (
@@ -1399,7 +1399,7 @@ export default function ServerManagementClient({
                 className={cn(
                   "px-3 py-2 rounded-xl text-xs font-semibold flex items-center gap-1.5 border transition-all cursor-pointer shrink-0",
                   safeModeEnabled
-                    ? "bg-rose-500/20 text-rose-300 border-rose-500/40 shadow-md shadow-rose-500/20"
+                    ? "bg-rose-500/20 text-rose-300 border-rose-500/40 shadow-sm"
                     : "bg-zinc-900 border-white/10 text-zinc-300 hover:text-white hover:bg-zinc-800"
                 )}
                 title="Mode de verrouillage d'urgence"
@@ -1443,7 +1443,7 @@ export default function ServerManagementClient({
                   className={cn(
                     "flex items-center gap-2 px-3 py-1.5 rounded-xl text-xs font-semibold whitespace-nowrap transition-all cursor-pointer",
                     isActive
-                      ? "bg-indigo-600 text-white shadow-md shadow-indigo-600/25"
+                      ? "bg-indigo-600 text-white shadow-sm"
                       : "text-zinc-400 hover:text-zinc-200 hover:bg-white/5"
                   )}
                 >
@@ -2076,7 +2076,7 @@ export default function ServerManagementClient({
                       </button>
                       <button
                         onClick={() => setIsBanModalOpen(true)}
-                        className="px-3.5 py-2 rounded-xl bg-rose-600 text-white text-xs font-semibold hover:bg-rose-500 transition-all cursor-pointer shadow-md shadow-rose-600/20"
+                        className="px-3.5 py-2 rounded-xl bg-rose-600 text-white text-xs font-semibold hover:bg-rose-500 transition-all cursor-pointer shadow-sm"
                       >
                         🔨 Bannir définitivement
                       </button>
@@ -2198,7 +2198,7 @@ export default function ServerManagementClient({
 
               <button
                 onClick={() => setIsCreateChannelOpen(true)}
-                className="px-4 py-2 rounded-xl bg-indigo-600 hover:bg-indigo-500 text-white text-xs font-bold flex items-center gap-2 shadow-md shadow-indigo-600/20 cursor-pointer shrink-0"
+                className="px-4 py-2 rounded-xl bg-indigo-600 hover:bg-indigo-500 text-white text-xs font-bold flex items-center gap-2 shadow-sm cursor-pointer shrink-0"
               >
                 <Plus className="h-4 w-4" />
                 <span>Créer un salon</span>
@@ -2391,7 +2391,7 @@ export default function ServerManagementClient({
                     </button>
                     <button
                       onClick={handleCreateChannel}
-                      className="px-4 py-2 rounded-xl bg-indigo-600 hover:bg-indigo-500 text-white text-xs font-bold shadow-md shadow-indigo-600/20"
+                      className="px-4 py-2 rounded-xl bg-indigo-600 hover:bg-indigo-500 text-white text-xs font-bold shadow-sm"
                     >
                       Créer le salon
                     </button>
@@ -2421,7 +2421,7 @@ export default function ServerManagementClient({
 
               <button
                 onClick={() => setIsCreateRoleOpen(true)}
-                className="px-4 py-2 rounded-xl bg-purple-600 hover:bg-purple-500 text-white text-xs font-bold flex items-center gap-2 shadow-md shadow-purple-600/20 cursor-pointer shrink-0"
+                className="px-4 py-2 rounded-xl bg-purple-600 hover:bg-purple-500 text-white text-xs font-bold flex items-center gap-2 shadow-sm cursor-pointer shrink-0"
               >
                 <Plus className="h-4 w-4" />
                 <span>Nouveau Rôle</span>
@@ -2559,7 +2559,7 @@ export default function ServerManagementClient({
                     </button>
                     <button
                       onClick={handleCreateRole}
-                      className="px-4 py-2 rounded-xl bg-purple-600 hover:bg-purple-500 text-white text-xs font-bold shadow-md shadow-purple-600/20"
+                      className="px-4 py-2 rounded-xl bg-purple-600 hover:bg-purple-500 text-white text-xs font-bold shadow-sm"
                     >
                       Créer le rôle
                     </button>
@@ -2643,7 +2643,7 @@ export default function ServerManagementClient({
                 <button
                   onClick={handleRunDebugger}
                   disabled={debugging}
-                  className="px-4 py-2 rounded-xl bg-indigo-600 hover:bg-indigo-500 text-white text-xs font-bold flex items-center gap-2 shadow-md shadow-indigo-600/20 disabled:opacity-50 cursor-pointer"
+                  className="px-4 py-2 rounded-xl bg-indigo-600 hover:bg-indigo-500 text-white text-xs font-bold flex items-center gap-2 shadow-sm disabled:opacity-50 cursor-pointer"
                 >
                   <Key className="h-4 w-4" />
                   <span>{debugging ? "Analyse en cours..." : "Analyser la chaîne de résolution"}</span>
@@ -2860,7 +2860,7 @@ export default function ServerManagementClient({
               </div>
               <button
                 onClick={() => setIsCreateWebhookOpen(true)}
-                className="px-4 py-2 rounded-xl bg-indigo-600 hover:bg-indigo-500 text-white text-xs font-bold flex items-center gap-2 shadow-md shadow-indigo-600/20 cursor-pointer"
+                className="px-4 py-2 rounded-xl bg-indigo-600 hover:bg-indigo-500 text-white text-xs font-bold flex items-center gap-2 shadow-sm cursor-pointer"
               >
                 <Plus className="h-4 w-4" />
                 <span>Nouveau Webhook</span>
@@ -3034,7 +3034,7 @@ export default function ServerManagementClient({
                   <button
                     onClick={handleSaveSettings}
                     disabled={savingSettings}
-                    className="px-5 py-2.5 rounded-xl bg-indigo-600 hover:bg-indigo-500 text-white text-xs font-bold shadow-md shadow-indigo-600/20 disabled:opacity-50 cursor-pointer"
+                    className="px-5 py-2.5 rounded-xl bg-indigo-600 hover:bg-indigo-500 text-white text-xs font-bold shadow-sm disabled:opacity-50 cursor-pointer"
                   >
                     {savingSettings ? "Enregistrement..." : "Enregistrer les modifications"}
                   </button>
@@ -3225,7 +3225,7 @@ export default function ServerManagementClient({
                 onClick={handleToggleSafeMode}
                 className={cn(
                   "px-4 py-2 rounded-xl text-white text-xs font-bold shadow-md",
-                  safeModeEnabled ? "bg-emerald-600 hover:bg-emerald-500" : "bg-rose-600 hover:bg-rose-500 shadow-rose-600/20"
+                  safeModeEnabled ? "bg-emerald-600 hover:bg-emerald-500" : "bg-rose-600 hover:bg-rose-500"
                 )}
               >
                 {safeModeEnabled ? "Désactiver le Safe Mode" : "Activer le Verrouillage d'Urgence"}

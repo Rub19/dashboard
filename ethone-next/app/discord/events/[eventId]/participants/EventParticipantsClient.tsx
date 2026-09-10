@@ -247,10 +247,9 @@ export default function EventParticipantsClient() {
   };
 
   return (
-    <div className="min-h-screen bg-[var(--bg-main)] text-slate-100 pb-20 selection:bg-indigo-500/30">
+    <div className="h-full overflow-y-auto os-scroll [overscroll-behavior:contain] bg-[var(--bg-main)] text-slate-100 pb-20 selection:bg-indigo-500/30">
       {/* Glow */}
       <div className="fixed inset-0 pointer-events-none overflow-hidden">
-        <div className="absolute top-10 right-1/4 w-[600px] h-[600px] bg-purple-600/10 rounded-full blur-[140px]" />
       </div>
 
       <div className="relative max-w-6xl mx-auto px-4 sm:px-6 lg:px-8 pt-8">
@@ -330,7 +329,7 @@ export default function EventParticipantsClient() {
                 onClick={() => setFilterRsvp(tab.id)}
                 className={`px-3 py-1.5 rounded-xl text-xs font-semibold whitespace-nowrap transition-all ${
                   filterRsvp === tab.id
-                    ? "bg-indigo-500 text-white shadow-sm shadow-indigo-500/30"
+                    ? "bg-indigo-500 text-white shadow-sm"
                     : "bg-white/5 hover:bg-white/10 text-slate-400"
                 }`}
               >

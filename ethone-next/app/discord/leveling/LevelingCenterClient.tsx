@@ -197,13 +197,13 @@ export default function LevelingCenterClient() {
   };
 
   return (
-    <div className="min-h-screen bg-neutral-950 text-neutral-100 p-4 md:p-8">
+    <div className="h-full overflow-y-auto os-scroll [overscroll-behavior:contain] bg-[var(--bg-main)] text-neutral-100 p-4 md:p-8">
       <div className="max-w-7xl mx-auto space-y-8">
         {/* Top Header */}
         <div className="flex flex-col md:flex-row md:items-center justify-between gap-4">
           <div>
             <div className="flex items-center gap-3">
-              <div className="p-2.5 bg-gradient-to-tr from-fuchsia-500/20 to-purple-500/20 text-fuchsia-400 rounded-xl border border-fuchsia-500/30 shadow-lg shadow-fuchsia-500/10">
+              <div className="p-2.5 bg-fuchsia-500/15 text-fuchsia-400 rounded-xl border border-fuchsia-500/30 shadow-sm">
                 <Award className="w-6 h-6" />
               </div>
               <div>
@@ -230,7 +230,7 @@ export default function LevelingCenterClient() {
             </button>
             <button
               onClick={() => showToast("Classement synchronisé avec la base Discord en temps réel !")}
-              className="px-4 py-2 rounded-xl bg-gradient-to-r from-fuchsia-600 to-purple-600 hover:from-fuchsia-500 hover:to-purple-500 text-white text-xs font-semibold flex items-center gap-2 shadow-lg shadow-fuchsia-600/20 transition-all cursor-pointer"
+              className="px-4 py-2 rounded-xl bg-fuchsia-600 hover:bg-fuchsia-500 text-white text-xs font-semibold flex items-center gap-2 shadow-sm transition-all cursor-pointer"
             >
               <RefreshCw className="w-4 h-4" />
               Synchroniser Discord
@@ -394,7 +394,7 @@ export default function LevelingCenterClient() {
                           </div>
                           <div className="h-2 w-full bg-neutral-950 rounded-full overflow-hidden border border-neutral-800">
                             <div
-                              className="h-full bg-gradient-to-r from-fuchsia-500 to-purple-500 rounded-full transition-all duration-500"
+                              className="h-full bg-fuchsia-500 rounded-full transition-all duration-500"
                               style={{ width: `${progressPct}%` }}
                             />
                           </div>
@@ -444,7 +444,7 @@ export default function LevelingCenterClient() {
                         onClick={() => setCardBgTheme(th.id as any)}
                         className={`p-3 rounded-xl border text-center transition-all cursor-pointer ${
                           cardBgTheme === th.id
-                            ? "border-fuchsia-500 shadow-lg shadow-fuchsia-500/20 bg-neutral-800"
+                            ? "border-fuchsia-500 shadow-sm bg-neutral-800"
                             : "border-neutral-800 bg-neutral-950 text-neutral-400 hover:text-white"
                         }`}
                       >
@@ -507,7 +507,7 @@ export default function LevelingCenterClient() {
                   <button
                     type="button"
                     onClick={() => showToast("Design de la Rank Card sauvegardé pour le serveur !")}
-                    className="w-full h-10 rounded-xl bg-fuchsia-600 hover:bg-fuchsia-500 text-white font-bold text-xs shadow-lg shadow-fuchsia-600/20 transition-all cursor-pointer"
+                    className="w-full h-10 rounded-xl bg-fuchsia-600 hover:bg-fuchsia-500 text-white font-bold text-xs shadow-sm transition-all cursor-pointer"
                   >
                     Enregistrer le modèle de carte
                   </button>
@@ -540,7 +540,6 @@ export default function LevelingCenterClient() {
                 }
               >
                 {/* Background overlay for readability */}
-                <div className="absolute inset-0 bg-black/40 backdrop-blur-[2px] -z-0" />
 
                 <div className="relative z-10 space-y-5">
                   <div className="flex items-center justify-between">
@@ -837,14 +836,14 @@ export default function LevelingCenterClient() {
                 <button
                   type="button"
                   onClick={() => handleAdjustXp(false)}
-                  className="flex-1 py-2.5 rounded-xl bg-rose-600/20 hover:bg-rose-600/30 text-rose-400 border border-rose-500/30 text-xs font-bold transition-all cursor-pointer"
+                  className="flex-1 py-2.5 rounded-xl bg-rose-600/20 hover:bg-rose-500/30 text-rose-400 border border-rose-500/30 text-xs font-bold transition-all cursor-pointer"
                 >
                   - Retirer {xpDelta} XP
                 </button>
                 <button
                   type="button"
                   onClick={() => handleAdjustXp(true)}
-                  className="flex-1 py-2.5 rounded-xl bg-fuchsia-600 hover:bg-fuchsia-500 text-white text-xs font-bold shadow-lg shadow-fuchsia-600/20 transition-all cursor-pointer"
+                  className="flex-1 py-2.5 rounded-xl bg-fuchsia-600 hover:bg-fuchsia-500 text-white text-xs font-bold shadow-sm transition-all cursor-pointer"
                 >
                   + Ajouter {xpDelta} XP
                 </button>

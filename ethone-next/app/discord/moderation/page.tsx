@@ -524,7 +524,7 @@ export default function ModerationCenterPage() {
 
             <button
               onClick={() => setIsNewSanctionOpen(true)}
-              className="flex h-8 items-center gap-1.5 rounded-xl bg-gradient-to-r from-orange-600 to-amber-600 px-3.5 text-xs font-semibold text-white shadow-lg shadow-orange-500/10 hover:from-orange-500 hover:to-amber-500 transition-all active:scale-95"
+              className="flex h-8 items-center gap-1.5 rounded-xl bg-orange-600 px-3.5 text-xs font-semibold text-white shadow-sm hover:bg-orange-500 transition-all active:scale-95"
             >
               <Plus className="h-3.5 w-3.5" />
               <span>Nouvelle Sanction</span>
@@ -1123,7 +1123,7 @@ export default function ModerationCenterPage() {
           {/* ======================================================== */}
           {activeTab === "staff" && (
             <div className="space-y-4 animate-in fade-in duration-200">
-              <div className="rounded-2xl border border-blue-500/20 bg-gradient-to-r from-blue-500/10 to-indigo-500/10 p-4">
+              <div className="rounded-2xl border border-blue-500/20 bg-blue-500/15 p-4">
                 <div className="flex items-start gap-3">
                   <ShieldCheck className="h-5 w-5 text-blue-400 mt-0.5" />
                   <div>

@@ -1066,7 +1066,7 @@ export default function BotControlClient({ initialTab = "overview" }: BotControl
 
                 <Link
                   href="/discord/bot/presence"
-                  className="px-3.5 py-2 rounded-xl bg-indigo-600 hover:bg-indigo-500 text-white text-xs font-semibold flex items-center gap-1.5 transition-all shadow-md shadow-indigo-600/20"
+                  className="px-3.5 py-2 rounded-xl bg-indigo-600 hover:bg-indigo-500 text-white text-xs font-semibold flex items-center gap-1.5 transition-all shadow-sm"
                 >
                   <Sparkles className="w-3.5 h-3.5" />
                   <span>Présence</span>
@@ -1169,7 +1169,7 @@ export default function BotControlClient({ initialTab = "overview" }: BotControl
                 <button
                   onClick={handleRemoteRestart}
                   disabled={restartingBot}
-                  className="px-4 py-2.5 rounded-xl bg-rose-600 hover:bg-rose-500 text-white text-xs font-semibold flex items-center gap-2 transition-all shadow-lg shadow-rose-600/25 disabled:opacity-50 cursor-pointer"
+                  className="px-4 py-2.5 rounded-xl bg-rose-600 hover:bg-rose-500 text-white text-xs font-semibold flex items-center gap-2 transition-all shadow-sm disabled:opacity-50 cursor-pointer"
                   title="Redémarrer le bot sur le VPS via PM2"
                 >
                   <Power className={cn("w-4 h-4", restartingBot && "animate-spin")} />
@@ -1179,7 +1179,7 @@ export default function BotControlClient({ initialTab = "overview" }: BotControl
                 <button
                   onClick={handleRemoteUpdate}
                   disabled={updatingBot}
-                  className="px-4 py-2.5 rounded-xl bg-indigo-600 hover:bg-indigo-500 text-white text-xs font-semibold flex items-center gap-2 transition-all shadow-lg shadow-indigo-600/25 disabled:opacity-50 cursor-pointer"
+                  className="px-4 py-2.5 rounded-xl bg-indigo-600 hover:bg-indigo-500 text-white text-xs font-semibold flex items-center gap-2 transition-all shadow-sm disabled:opacity-50 cursor-pointer"
                   title="Déclencher la mise à jour et recharger les modules"
                 >
                   <RefreshCw className={cn("w-4 h-4", updatingBot && "animate-spin")} />
@@ -1203,7 +1203,7 @@ export default function BotControlClient({ initialTab = "overview" }: BotControl
               <div className="p-3.5 rounded-xl bg-white/[0.02] border border-white/10">
                 <span className="text-[10px] text-zinc-400 block uppercase font-mono">Processus VPS PM2</span>
                 <span className="text-sm font-bold text-white font-mono mt-1 block flex items-center gap-1.5">
-                  <span className="w-2 h-2 rounded-full bg-emerald-400 shadow-[0_0_5px_rgba(52,211,153,0.8)]" />
+                  <span className="w-2 h-2 rounded-full bg-emerald-400" />
                   ethone-bot
                 </span>
                 <span className="text-[10px] text-emerald-400 mt-0.5 block font-mono">Status: Online</span>
@@ -1725,7 +1725,7 @@ export default function BotControlClient({ initialTab = "overview" }: BotControl
                 <button
                   onClick={handleSaveSettings}
                   disabled={savingSettings}
-                  className="px-5 py-2.5 rounded-xl bg-indigo-600 hover:bg-indigo-500 text-white text-xs font-semibold flex items-center gap-2 transition-all shadow-md shadow-indigo-600/20 disabled:opacity-50"
+                  className="px-5 py-2.5 rounded-xl bg-indigo-600 hover:bg-indigo-500 text-white text-xs font-semibold flex items-center gap-2 transition-all shadow-sm disabled:opacity-50"
                 >
                   <Check className={cn("w-4 h-4", savingSettings && "animate-spin")} />
                   <span>{savingSettings ? "Enregistrement..." : "Enregistrer les modifications"}</span>
@@ -2040,7 +2040,7 @@ export default function BotControlClient({ initialTab = "overview" }: BotControl
                         className={cn(
                           "p-3 rounded-xl border cursor-pointer transition-all space-y-2 text-center",
                           isSelected
-                            ? "bg-zinc-800/90 border-pink-500 shadow-md shadow-pink-500/10 text-white"
+                            ? "bg-zinc-800/90 border-pink-500 shadow-sm text-white"
                             : "bg-zinc-900/40 border-zinc-800 hover:border-zinc-700 text-zinc-400"
                         )}
                       >
@@ -2185,7 +2185,7 @@ export default function BotControlClient({ initialTab = "overview" }: BotControl
                         className={cn(
                           "p-3 rounded-xl text-left border transition-all space-y-1.5",
                           activeRolePreset === preset.id
-                            ? "bg-indigo-950/40 border-indigo-500/60 shadow-md shadow-indigo-500/10"
+                            ? "bg-indigo-950/40 border-indigo-500/60 shadow-sm"
                             : "bg-zinc-900/60 border-zinc-800/80 hover:bg-zinc-900 hover:border-zinc-700"
                         )}
                       >
@@ -2648,7 +2648,7 @@ export default function BotControlClient({ initialTab = "overview" }: BotControl
                 <button
                   onClick={handleRunDiagnostics}
                   disabled={diagnosticsRunning}
-                  className="px-5 py-2.5 rounded-xl bg-emerald-600 hover:bg-emerald-500 text-white text-xs font-semibold flex items-center gap-2 transition-all shadow-md shadow-emerald-600/20 disabled:opacity-50"
+                  className="px-5 py-2.5 rounded-xl bg-emerald-600 hover:bg-emerald-500 text-white text-xs font-semibold flex items-center gap-2 transition-all shadow-sm disabled:opacity-50"
                 >
                   <RefreshCw className={cn("w-4 h-4", diagnosticsRunning && "animate-spin")} />
                   <span>{diagnosticsRunning ? "Vérification en cours..." : "Lancer un diagnostic complet"}</span>

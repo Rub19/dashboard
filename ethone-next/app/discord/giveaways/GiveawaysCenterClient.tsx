@@ -260,13 +260,13 @@ export default function GiveawaysCenterClient() {
   const endedGiveaways = useMemo(() => giveaways.filter((g) => g.status === "ENDED"), [giveaways]);
 
   return (
-    <div className="min-h-screen bg-neutral-950 text-neutral-100 p-4 md:p-8">
+    <div className="h-full overflow-y-auto os-scroll [overscroll-behavior:contain] bg-[var(--bg-main)] text-neutral-100 p-4 md:p-8">
       <div className="max-w-7xl mx-auto space-y-8">
         {/* Top Header */}
         <div className="flex flex-col md:flex-row md:items-center justify-between gap-4">
           <div>
             <div className="flex items-center gap-3">
-              <div className="p-2.5 bg-gradient-to-tr from-rose-500/20 to-amber-500/20 text-rose-400 rounded-xl border border-rose-500/30 shadow-lg shadow-rose-500/10">
+              <div className="p-2.5 bg-rose-500/15 text-rose-400 rounded-xl border border-rose-500/30 shadow-sm">
                 <Gift className="w-6 h-6" />
               </div>
               <div>
@@ -286,7 +286,7 @@ export default function GiveawaysCenterClient() {
           <div className="flex items-center gap-2.5 flex-wrap">
             <button
               onClick={() => setActiveTab("create")}
-              className="px-4 py-2 rounded-xl bg-gradient-to-r from-rose-600 to-amber-600 hover:from-rose-500 hover:to-amber-500 text-white text-xs font-semibold flex items-center gap-2 shadow-lg shadow-rose-600/20 transition-all cursor-pointer"
+              className="px-4 py-2 rounded-xl bg-rose-600 hover:bg-rose-500 text-white text-xs font-semibold flex items-center gap-2 shadow-sm transition-all cursor-pointer"
             >
               <Plus className="w-4 h-4" />
               Créer un Concours
@@ -541,7 +541,7 @@ export default function GiveawaysCenterClient() {
                           onClick={() => setFormWinners(cnt)}
                           className={`flex-1 h-10 rounded-xl text-xs font-semibold transition-all cursor-pointer ${
                             formWinners === cnt
-                              ? "bg-rose-500 text-white shadow-md shadow-rose-500/20"
+                              ? "bg-rose-500 text-white shadow-sm"
                               : "bg-neutral-950 border border-neutral-800 text-neutral-400 hover:text-white"
                           }`}
                         >
@@ -649,7 +649,7 @@ export default function GiveawaysCenterClient() {
               <div className="pt-3">
                 <button
                   type="submit"
-                  className="w-full h-11 rounded-xl bg-gradient-to-r from-rose-600 to-amber-600 hover:from-rose-500 hover:to-amber-500 text-white text-xs font-bold flex items-center justify-center gap-2 shadow-lg shadow-rose-600/20 transition-all cursor-pointer"
+                  className="w-full h-11 rounded-xl bg-rose-600 hover:bg-rose-500 text-white text-xs font-bold flex items-center justify-center gap-2 shadow-sm transition-all cursor-pointer"
                 >
                   <Send className="w-4 h-4" />
                   Publier le concours sur Discord
@@ -764,7 +764,7 @@ export default function GiveawaysCenterClient() {
 
                       <button
                         onClick={() => handleTriggerReroll(gw)}
-                        className="px-3 py-1.5 rounded-xl bg-rose-600/10 hover:bg-rose-600/20 text-rose-400 border border-rose-500/30 text-xs font-semibold flex items-center gap-1.5 transition-colors cursor-pointer"
+                        className="px-3 py-1.5 rounded-xl bg-rose-600/10 hover:bg-rose-500/20 text-rose-400 border border-rose-500/30 text-xs font-semibold flex items-center gap-1.5 transition-colors cursor-pointer"
                       >
                         <RefreshCw className="w-3.5 h-3.5" />
                         Reroll Gagnant
@@ -929,7 +929,7 @@ export default function GiveawaysCenterClient() {
                   <button
                     type="button"
                     onClick={executeReroll}
-                    className="px-4 py-2 rounded-xl text-xs font-bold text-white bg-rose-600 hover:bg-rose-500 shadow-lg shadow-rose-600/20 flex items-center gap-1.5"
+                    className="px-4 py-2 rounded-xl text-xs font-bold text-white bg-rose-600 hover:bg-rose-500 shadow-sm flex items-center gap-1.5"
                   >
                     <Dice5 className="w-4 h-4" />
                     Tirer au sort maintenant

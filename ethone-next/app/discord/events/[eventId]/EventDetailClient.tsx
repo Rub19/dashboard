@@ -156,10 +156,9 @@ export default function EventDetailClient() {
     : 100;
 
   return (
-    <div className="min-h-screen bg-[var(--bg-main)] text-slate-100 pb-20 selection:bg-indigo-500/30">
+    <div className="h-full overflow-y-auto os-scroll [overscroll-behavior:contain] bg-[var(--bg-main)] text-slate-100 pb-20 selection:bg-indigo-500/30">
       {/* Background glow */}
       <div className="fixed inset-0 pointer-events-none overflow-hidden">
-        <div className="absolute top-0 left-1/3 w-[700px] h-[700px] bg-indigo-600/10 rounded-full blur-[160px]" />
       </div>
 
       {/* Hero Banner Image */}
@@ -276,7 +275,7 @@ export default function EventDetailClient() {
                 onClick={() => handleRSVP("GOING")}
                 className={`flex-1 sm:flex-initial px-5 py-2.5 rounded-xl text-xs font-bold transition-all flex items-center justify-center gap-2 ${
                   userRsvp === "GOING"
-                    ? "bg-emerald-500 text-white shadow-lg shadow-emerald-500/30"
+                    ? "bg-emerald-500 text-white shadow-sm"
                     : "bg-emerald-500/10 hover:bg-emerald-500/20 text-emerald-400 border border-emerald-500/20"
                 }`}
               >
@@ -288,7 +287,7 @@ export default function EventDetailClient() {
                 onClick={() => handleRSVP("MAYBE")}
                 className={`flex-1 sm:flex-initial px-4 py-2.5 rounded-xl text-xs font-bold transition-all ${
                   userRsvp === "MAYBE"
-                    ? "bg-amber-500 text-white shadow-lg shadow-amber-500/30"
+                    ? "bg-amber-500 text-white shadow-sm"
                     : "bg-white/5 hover:bg-white/10 text-slate-300 border border-white/10"
                 }`}
               >
@@ -314,7 +313,7 @@ export default function EventDetailClient() {
                 className={`px-4 py-2.5 rounded-xl text-xs font-bold transition-all flex items-center gap-2 ${
                   isCheckedIn
                     ? "bg-indigo-500/20 text-indigo-300 border border-indigo-500/30 cursor-default"
-                    : "bg-indigo-600 hover:bg-indigo-500 text-white shadow-md shadow-indigo-500/30"
+                    : "bg-indigo-600 hover:bg-indigo-500 text-white shadow-sm"
                 }`}
               >
                 <Ticket className="w-4 h-4" />

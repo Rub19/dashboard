@@ -321,8 +321,6 @@ export default function PollsCenterClient() {
     <div className="min-h-screen bg-black text-white selection:bg-indigo-500/30">
       {/* Top Background Glow */}
       <div className="pointer-events-none fixed inset-0 z-0 overflow-hidden opacity-30">
-        <div className="absolute -left-40 top-0 h-96 w-96 rounded-full bg-indigo-600 blur-[130px]" />
-        <div className="absolute right-0 top-1/4 h-80 w-80 rounded-full bg-purple-600 blur-[140px]" />
       </div>
 
       <div className="relative z-10 mx-auto max-w-7xl px-4 py-8 sm:px-6 lg:px-8">
@@ -392,7 +390,7 @@ export default function PollsCenterClient() {
               <span className="text-xs text-zinc-500">configurés</span>
             </div>
             <div className="mt-2 flex items-center gap-1.5 text-xs text-indigo-400">
-              <span className="h-1.5 w-1.5 rounded-full bg-emerald-400 shadow-[0_0_5px_rgba(52,211,153,0.8)]" />
+              <span className="h-1.5 w-1.5 rounded-full bg-emerald-400" />
               {kpis.active} actifs actuellement
             </div>
           </div>
@@ -567,7 +565,7 @@ export default function PollsCenterClient() {
                       <div>
                         {poll.status === "ACTIVE" && (
                           <span className="inline-flex items-center gap-1.5 rounded-full bg-emerald-500/10 border border-emerald-500/30 px-2.5 py-0.5 text-[11px] font-semibold text-emerald-400">
-                            <span className="h-1.5 w-1.5 rounded-full bg-emerald-400 shadow-[0_0_5px_rgba(52,211,153,0.8)]" />
+                            <span className="h-1.5 w-1.5 rounded-full bg-emerald-400" />
                             En cours
                           </span>
                         )}
@@ -612,7 +610,7 @@ export default function PollsCenterClient() {
                       </div>
                       <div className="h-2 w-full overflow-hidden rounded-full bg-zinc-800">
                         <div
-                          className="h-full rounded-full bg-gradient-to-r from-indigo-500 to-purple-500 transition-all duration-500"
+                          className="h-full rounded-full bg-indigo-500 transition-all duration-500"
                           style={{ width: `${Math.min(100, poll.participationRate)}%` }}
                         />
                       </div>
@@ -763,7 +761,7 @@ export default function PollsCenterClient() {
               </button>
               <button
                 onClick={handleDeployConfirm}
-                className="rounded-xl bg-indigo-600 px-4 py-2 text-xs font-semibold text-white hover:bg-indigo-500 shadow-lg shadow-indigo-500/25"
+                className="rounded-xl bg-indigo-600 px-4 py-2 text-xs font-semibold text-white hover:bg-indigo-500 shadow-sm"
               >
                 Envoyer le panneau
               </button>

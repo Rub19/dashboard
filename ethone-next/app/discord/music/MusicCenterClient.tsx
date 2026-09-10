@@ -512,7 +512,7 @@ export default function MusicCenterClient() {
               <div className="flex items-center gap-2">
                 <h1 className="text-base font-bold text-white flex items-center gap-2">
                   <span>Music Center</span>
-                  <span className="flex h-2 w-2 rounded-full bg-violet-400 shadow-[0_0_5px_rgba(167,139,250,0.8)]" />
+                  <span className="flex h-2 w-2 rounded-full bg-violet-400" />
                 </h1>
                 <span
                   className={cn(
@@ -585,7 +585,7 @@ export default function MusicCenterClient() {
                 )}
                 {isPlaying && (
                   <div className="absolute top-2.5 right-2.5 flex items-center gap-1 bg-black/70 backdrop-blur-md px-2 py-1 rounded-lg text-[10px] font-bold text-emerald-400 border border-emerald-500/30">
-                    <span className="h-1.5 w-1.5 rounded-full bg-emerald-400 shadow-[0_0_5px_rgba(52,211,153,0.8)]" />
+                    <span className="h-1.5 w-1.5 rounded-full bg-emerald-400" />
                     EN COURS
                   </div>
                 )}
@@ -674,7 +674,7 @@ export default function MusicCenterClient() {
                     <button
                       onClick={handlePlayPause}
                       disabled={!currentTrack}
-                      className="flex h-12 w-12 items-center justify-center rounded-2xl bg-gradient-to-r from-violet-600 to-indigo-600 text-white font-bold shadow-lg shadow-violet-600/30 hover:scale-105 active:scale-95 disabled:opacity-40 transition-all cursor-pointer"
+                      className="flex h-12 w-12 items-center justify-center rounded-2xl bg-violet-600 text-white font-bold shadow-sm hover:scale-105 active:scale-95 disabled:opacity-40 transition-all cursor-pointer"
                       title={isPlaying ? "Mettre en pause" : "Lire"}
                     >
                       {isPlaying ? <Pause className="h-5 w-5 fill-white" /> : <Play className="h-5 w-5 fill-white ml-0.5" />}
@@ -775,7 +775,7 @@ export default function MusicCenterClient() {
               <button
                 type="submit"
                 disabled={isSearching || !searchQuery.trim()}
-                className="flex h-10 items-center gap-1.5 rounded-xl bg-violet-600 px-5 text-xs font-bold text-white shadow-md shadow-violet-600/20 hover:bg-violet-500 disabled:opacity-50 transition-all cursor-pointer"
+                className="flex h-10 items-center gap-1.5 rounded-xl bg-violet-600 px-5 text-xs font-bold text-white shadow-sm hover:bg-violet-500 disabled:opacity-50 transition-all cursor-pointer"
               >
                 {isSearching ? <RefreshCw className="h-3.5 w-3.5 animate-spin" /> : <Search className="h-3.5 w-3.5" />}
                 <span>Rechercher</span>
@@ -856,7 +856,7 @@ export default function MusicCenterClient() {
                   className={cn(
                     "flex items-center gap-2 px-4 py-2 rounded-xl text-xs font-bold transition-all shrink-0 cursor-pointer",
                     isActive
-                      ? "bg-violet-500/20 text-violet-300 border border-violet-500/30 shadow-md shadow-violet-500/5"
+                      ? "bg-violet-500/20 text-violet-300 border border-violet-500/30 shadow-sm"
                       : "text-zinc-400 hover:text-white hover:bg-white/5"
                   )}
                 >

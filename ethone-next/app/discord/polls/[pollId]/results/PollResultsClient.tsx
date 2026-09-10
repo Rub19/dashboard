@@ -101,8 +101,6 @@ export default function PollResultsClient() {
     <div className="min-h-screen bg-black text-white selection:bg-indigo-500/30">
       {/* Top Glow Background */}
       <div className="pointer-events-none fixed inset-0 z-0 overflow-hidden opacity-30">
-        <div className="absolute -left-40 top-0 h-96 w-96 rounded-full bg-indigo-600 blur-[130px]" />
-        <div className="absolute right-0 top-1/4 h-80 w-80 rounded-full bg-purple-600 blur-[140px]" />
       </div>
 
       <div className="relative z-10 mx-auto max-w-7xl px-4 py-8 sm:px-6 lg:px-8">
@@ -161,7 +159,7 @@ export default function PollResultsClient() {
           <div className="mb-8 relative overflow-hidden rounded-2xl border border-amber-500/30 bg-gradient-to-r from-amber-500/10 via-zinc-900/50 to-indigo-500/10 p-6 backdrop-blur-xl">
             <div className="flex flex-col gap-4 sm:flex-row sm:items-center sm:justify-between">
               <div className="flex items-center gap-4">
-                <div className="flex h-14 w-14 items-center justify-center rounded-2xl bg-gradient-to-tr from-amber-500 to-yellow-300 text-black shadow-lg shadow-amber-500/20">
+                <div className="flex h-14 w-14 items-center justify-center rounded-2xl bg-gradient-to-tr from-amber-500 to-yellow-300 text-black shadow-sm">
                   <Trophy className="h-7 w-7" />
                 </div>
                 <div>
@@ -225,7 +223,7 @@ export default function PollResultsClient() {
                     className={cn(
                       "rounded-xl border p-4 transition-all",
                       opt.isWinner
-                        ? "border-indigo-500/50 bg-indigo-500/10 shadow-lg shadow-indigo-500/5"
+                        ? "border-indigo-500/50 bg-indigo-500/10 shadow-sm"
                         : "border-zinc-800 bg-black/30"
                     )}
                   >
@@ -255,7 +253,7 @@ export default function PollResultsClient() {
                           "h-full rounded-full transition-all duration-700",
                           opt.isWinner
                             ? "bg-gradient-to-r from-amber-400 to-indigo-500"
-                            : "bg-gradient-to-r from-indigo-500 to-purple-500"
+                            : "bg-indigo-500"
                         )}
                         style={{ width: `${opt.percent}%` }}
                       />

@@ -395,7 +395,7 @@ export default function FormBuilderClient() {
           <button
             onClick={handleSave}
             disabled={isSaving}
-            className="flex h-8 items-center gap-1.5 px-3.5 rounded-xl bg-gradient-to-r from-indigo-600 to-cyan-600 text-xs font-bold text-white shadow hover:from-indigo-500 hover:to-cyan-500 transition-all cursor-pointer active:scale-95"
+            className="flex h-8 items-center gap-1.5 px-3.5 rounded-xl bg-indigo-600 text-xs font-bold text-white shadow hover:bg-indigo-500 transition-all cursor-pointer active:scale-95"
           >
             <Save className="h-3.5 w-3.5" />
             <span>{isSaving ? "Sauvegarde..." : "Publier"}</span>

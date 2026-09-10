@@ -140,7 +140,7 @@ export default function VoiceSettingsClient() {
         <button
           onClick={handleSave}
           disabled={isSaving}
-          className="flex h-10 items-center gap-2 rounded-xl bg-emerald-500 px-5 text-xs font-bold text-white shadow-lg shadow-emerald-500/20 hover:bg-emerald-600 transition-all active:scale-95 disabled:opacity-50 cursor-pointer"
+          className="flex h-10 items-center gap-2 rounded-xl bg-emerald-500 px-5 text-xs font-bold text-white shadow-sm hover:bg-emerald-600 transition-all active:scale-95 disabled:opacity-50 cursor-pointer"
         >
           <Save className="h-4 w-4" />
           <span>{isSaving ? "Enregistrement..." : "Enregistrer les modifications"}</span>

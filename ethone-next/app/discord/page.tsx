@@ -561,7 +561,7 @@ export default function DiscordDashboardPage() {
           <div className="flex items-center gap-3.5">
             <div className="relative flex h-11 w-11 shrink-0 items-center justify-center rounded-2xl border border-[#5865F2]/30 bg-[#5865F2]/15 text-[#5865F2] shadow-sm">
               <DiscordIcon className="h-6 w-6" />
-              <span className="absolute -bottom-1 -right-1 flex h-3.5 w-3.5 items-center justify-center rounded-full border-2 border-[var(--bg-main)] bg-emerald-400 shadow-[0_0_6px_rgba(52,211,153,0.8)]">
+              <span className="absolute -bottom-1 -right-1 flex h-3.5 w-3.5 items-center justify-center rounded-full border-2 border-[var(--bg-main)] bg-emerald-400">
                 <span className="h-1.5 w-1.5 rounded-full bg-white" />
               </span>
             </div>
@@ -882,7 +882,7 @@ export default function DiscordDashboardPage() {
                   <button
                     onClick={handleSaveSettings}
                     disabled={isSaving}
-                    className="flex h-9 items-center gap-2 rounded-xl bg-emerald-500 px-4 text-xs font-semibold text-white shadow-md shadow-emerald-500/20 transition-all hover:bg-emerald-600 active:scale-95 disabled:opacity-50 cursor-pointer"
+                    className="flex h-9 items-center gap-2 rounded-xl bg-emerald-500 px-4 text-xs font-semibold text-white shadow-sm transition-all hover:bg-emerald-600 active:scale-95 disabled:opacity-50 cursor-pointer"
                   >
                     <Save className="h-3.5 w-3.5" />
                     <span>{isSaving ? "Sauvegarde..." : "Enregistrer les modifications"}</span>
@@ -902,7 +902,7 @@ export default function DiscordDashboardPage() {
                           className="h-full w-full object-cover"
                         />
                         {liveMusicState.status === "PLAYING" && (
-                          <span className="absolute bottom-1 right-1 flex h-2.5 w-2.5 rounded-full bg-emerald-400 shadow-[0_0_6px_rgba(52,211,153,0.9)] ring-2 ring-black/40" />
+                          <span className="absolute bottom-1 right-1 flex h-2.5 w-2.5 rounded-full bg-emerald-400 ring-2 ring-black/40" />
                         )}
                       </div>
                       <div className="min-w-0 space-y-0.5">
@@ -957,7 +957,7 @@ export default function DiscordDashboardPage() {
 
                       <Link
                         href={`/discord/music?guildId=${selectedGuild.id}`}
-                        className="flex h-9 items-center gap-1.5 rounded-xl bg-violet-600 px-3.5 text-xs font-bold text-white shadow-md shadow-violet-600/20 hover:bg-violet-500 transition-all active:scale-95 cursor-pointer"
+                        className="flex h-9 items-center gap-1.5 rounded-xl bg-violet-600 px-3.5 text-xs font-bold text-white shadow-sm hover:bg-violet-500 transition-all active:scale-95 cursor-pointer"
                       >
                         <Music2 className="h-3.5 w-3.5" />
                         <span>Ouvrir Music Center</span>
@@ -1001,7 +1001,7 @@ export default function DiscordDashboardPage() {
                       className={cn(
                         "flex items-center gap-2.5 rounded-2xl border p-3 text-left transition-all duration-150 cursor-pointer",
                         isCurrent
-                          ? "border-emerald-500/40 bg-emerald-500/10 text-white shadow-md shadow-emerald-500/5"
+                          ? "border-emerald-500/40 bg-emerald-500/10 text-white shadow-sm"
                           : "border-white/10 bg-white/[0.02] text-zinc-400 hover:border-white/20 hover:text-white"
                       )}
                     >
@@ -1100,7 +1100,7 @@ export default function DiscordDashboardPage() {
                             className={cn(
                               "rounded-lg px-3 py-1.5 text-xs font-semibold transition-all cursor-pointer",
                               guildSettings.mentionLimit === val
-                                ? "bg-emerald-500 text-white shadow-md shadow-emerald-500/20"
+                                ? "bg-emerald-500 text-white shadow-sm"
                                 : "text-zinc-400 hover:text-white hover:bg-white/5"
                             )}
                           >
@@ -1124,7 +1124,7 @@ export default function DiscordDashboardPage() {
                         className={cn(
                           "rounded-xl px-3 py-1.5 text-xs font-semibold transition-all cursor-pointer",
                           guildSettings.emergencyLockdown
-                            ? "bg-rose-500 text-white shadow-lg shadow-rose-500/20"
+                            ? "bg-rose-500 text-white shadow-sm"
                             : "border border-rose-500/30 text-rose-300 hover:bg-rose-500/10"
                         )}
                       >
@@ -2229,7 +2229,7 @@ export default function DiscordDashboardPage() {
                 {/* MODULE 20: Server Management Center */}
                 {activeModule === "server" && (
                   <div className="space-y-4">
-                    <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-3 rounded-2xl border border-blue-500/30 bg-gradient-to-r from-blue-500/10 via-indigo-500/10 to-purple-500/10 p-4 shadow-lg shadow-blue-500/5">
+                    <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-3 rounded-2xl border border-blue-500/30 bg-gradient-to-r from-blue-500/10 via-indigo-500/10 to-purple-500/10 p-4 shadow-sm">
                       <div>
                         <div className="flex items-center gap-2">
                           <p className="text-xs font-bold text-white">Server Management Center</p>
@@ -2340,7 +2340,7 @@ export default function DiscordDashboardPage() {
                 {/* MODULE 21: Bot Control Center */}
                 {activeModule === "bot" && (
                   <div className="space-y-4">
-                    <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-3 rounded-2xl border border-emerald-500/30 bg-gradient-to-r from-emerald-500/10 via-cyan-500/10 to-indigo-500/10 p-4 shadow-lg shadow-emerald-500/5">
+                    <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-3 rounded-2xl border border-emerald-500/30 bg-gradient-to-r from-emerald-500/10 via-cyan-500/10 to-indigo-500/10 p-4 shadow-sm">
                       <div>
                         <div className="flex items-center gap-2">
                           <p className="text-xs font-bold text-white">Bot Control Center &amp; Intelligence</p>

@@ -107,8 +107,6 @@ export default function PollVoteClient() {
     <div className="min-h-screen bg-black text-white selection:bg-indigo-500/30 flex flex-col justify-between">
       {/* Background Glow */}
       <div className="pointer-events-none fixed inset-0 z-0 overflow-hidden opacity-25">
-        <div className="absolute -left-40 top-0 h-96 w-96 rounded-full bg-indigo-600 blur-[140px]" />
-        <div className="absolute right-0 top-1/3 h-80 w-80 rounded-full bg-purple-600 blur-[150px]" />
       </div>
 
       <div className="relative z-10 mx-auto w-full max-w-2xl px-4 py-12 sm:px-6">
@@ -151,7 +149,7 @@ export default function PollVoteClient() {
         {/* Voted Confirmation State */}
         {hasVoted ? (
           <div className="rounded-2xl border border-emerald-500/30 bg-emerald-500/10 p-8 text-center backdrop-blur-xl">
-            <div className="mx-auto flex h-14 w-14 items-center justify-center rounded-2xl bg-emerald-500 text-black shadow-lg shadow-emerald-500/30 mb-4">
+            <div className="mx-auto flex h-14 w-14 items-center justify-center rounded-2xl bg-emerald-500 text-black shadow-sm mb-4">
               <CheckCircle2 className="h-7 w-7" />
             </div>
             <h2 className="text-xl font-bold text-white mb-2">Vote Enregistré avec Succès !</h2>
@@ -163,7 +161,7 @@ export default function PollVoteClient() {
             <div className="flex flex-wrap items-center justify-center gap-3">
               <Link
                 href={`/discord/polls/${poll.id}/results?guildId=${guildParam}`}
-                className="inline-flex items-center gap-2 rounded-xl bg-indigo-600 px-4 py-2 text-xs font-semibold text-white hover:bg-indigo-500 shadow-lg shadow-indigo-500/25"
+                className="inline-flex items-center gap-2 rounded-xl bg-indigo-600 px-4 py-2 text-xs font-semibold text-white hover:bg-indigo-500 shadow-sm"
               >
                 Voir les Résultats en direct
                 <ChevronRight className="h-3.5 w-3.5" />
@@ -201,7 +199,7 @@ export default function PollVoteClient() {
                           className={cn(
                             "w-full flex items-center justify-between rounded-xl border p-4 text-left transition-all",
                             isSelected
-                              ? "border-indigo-500 bg-indigo-500/10 text-white shadow-lg shadow-indigo-500/10 scale-[1.01]"
+                              ? "border-indigo-500 bg-indigo-500/10 text-white shadow-sm scale-[1.01]"
                               : "border-zinc-800 bg-black/40 text-zinc-300 hover:border-zinc-700 hover:bg-zinc-800/40"
                           )}
                         >
@@ -241,7 +239,7 @@ export default function PollVoteClient() {
               <button
                 onClick={handleSubmitVote}
                 disabled={isSubmitting}
-                className="inline-flex items-center gap-2 rounded-xl bg-gradient-to-r from-indigo-600 to-purple-600 px-6 py-2.5 text-xs font-semibold text-white shadow-lg shadow-indigo-500/25 hover:brightness-110 active:scale-[0.98] transition-all disabled:opacity-50"
+                className="inline-flex items-center gap-2 rounded-xl bg-indigo-600 px-6 py-2.5 text-xs font-semibold text-white shadow-sm hover:brightness-110 active:scale-[0.98] transition-all disabled:opacity-50"
               >
                 {isSubmitting ? (
                   <div className="h-4 w-4 animate-spin rounded-full border-2 border-white border-t-transparent" />

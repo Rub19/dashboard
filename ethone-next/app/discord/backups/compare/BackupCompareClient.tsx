@@ -134,7 +134,7 @@ export default function BackupCompareClient() {
   });
 
   return (
-    <div className="min-h-screen bg-neutral-950 text-neutral-100 p-4 md:p-8">
+    <div className="h-full overflow-y-auto os-scroll [overscroll-behavior:contain] bg-[var(--bg-main)] text-neutral-100 p-4 md:p-8">
       <div className="max-w-7xl mx-auto space-y-6">
         {/* Navigation retour */}
         <div className="flex items-center justify-between">

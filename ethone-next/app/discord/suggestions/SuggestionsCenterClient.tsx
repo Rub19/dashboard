@@ -231,13 +231,13 @@ export default function SuggestionsCenterClient() {
   };
 
   return (
-    <div className="min-h-screen bg-neutral-950 text-neutral-100 p-4 md:p-8">
+    <div className="h-full overflow-y-auto os-scroll [overscroll-behavior:contain] bg-[var(--bg-main)] text-neutral-100 p-4 md:p-8">
       <div className="max-w-7xl mx-auto space-y-8">
         {/* Top Header */}
         <div className="flex flex-col md:flex-row md:items-center justify-between gap-4">
           <div>
             <div className="flex items-center gap-3">
-              <div className="p-2.5 bg-gradient-to-tr from-amber-500/20 to-orange-500/20 text-amber-400 rounded-xl border border-amber-500/30 shadow-lg shadow-amber-500/10">
+              <div className="p-2.5 bg-amber-500/15 text-amber-400 rounded-xl border border-amber-500/30 shadow-sm">
                 <Lightbulb className="w-6 h-6" />
               </div>
               <div>
@@ -264,7 +264,7 @@ export default function SuggestionsCenterClient() {
             </button>
             <button
               onClick={() => showToast("Synchronisation des votes Discord effectuée !")}
-              className="px-4 py-2 rounded-xl bg-gradient-to-r from-amber-600 to-orange-600 hover:from-amber-500 hover:to-orange-500 text-white text-xs font-semibold flex items-center gap-2 shadow-lg shadow-amber-600/20 transition-all cursor-pointer"
+              className="px-4 py-2 rounded-xl bg-amber-600 hover:bg-amber-500 text-white text-xs font-semibold flex items-center gap-2 shadow-sm transition-all cursor-pointer"
             >
               <RefreshCw className="w-4 h-4" />
               Actualiser les Votes
@@ -375,7 +375,7 @@ export default function SuggestionsCenterClient() {
                       onClick={() => setCategoryFilter(cat)}
                       className={`px-2.5 py-1 rounded-lg font-semibold transition-all cursor-pointer ${
                         categoryFilter === cat
-                          ? "bg-amber-500 text-white shadow-md shadow-amber-500/20"
+                          ? "bg-amber-500 text-white shadow-sm"
                           : "text-neutral-400 hover:text-white"
                       }`}
                     >
@@ -651,7 +651,7 @@ export default function SuggestionsCenterClient() {
                 <button
                   type="button"
                   onClick={() => showToast("Paramètres des suggestions sauvegardés !")}
-                  className="px-5 py-2.5 rounded-xl bg-amber-600 hover:bg-amber-500 text-white font-bold text-xs shadow-lg shadow-amber-600/20 transition-all cursor-pointer"
+                  className="px-5 py-2.5 rounded-xl bg-amber-600 hover:bg-amber-500 text-white font-bold text-xs shadow-sm transition-all cursor-pointer"
                 >
                   Enregistrer les modifications
                 </button>
@@ -702,7 +702,7 @@ export default function SuggestionsCenterClient() {
                         onClick={() => setNewStatus(st.id as SuggestionStatus)}
                         className={`p-2 rounded-xl border text-center font-semibold text-xs transition-all cursor-pointer ${
                           newStatus === st.id
-                            ? "bg-amber-500 text-white border-amber-400 shadow-md shadow-amber-500/20"
+                            ? "bg-amber-500 text-white border-amber-400 shadow-sm"
                             : "bg-neutral-950 border-neutral-800 text-neutral-400 hover:text-white"
                         }`}
                       >
@@ -747,7 +747,7 @@ export default function SuggestionsCenterClient() {
                 <button
                   type="button"
                   onClick={handleSaveStaffReply}
-                  className="px-4 py-2 rounded-xl text-xs font-bold text-white bg-amber-600 hover:bg-amber-500 shadow-lg shadow-amber-600/20 flex items-center gap-1.5 cursor-pointer"
+                  className="px-4 py-2 rounded-xl text-xs font-bold text-white bg-amber-600 hover:bg-amber-500 shadow-sm flex items-center gap-1.5 cursor-pointer"
                 >
                   <Send className="w-4 h-4" />
                   Publier la décision

@@ -223,13 +223,13 @@ export default function CommandsCenterClient() {
   };
 
   return (
-    <div className="min-h-screen bg-neutral-950 text-neutral-100 p-4 md:p-8">
+    <div className="h-full overflow-y-auto os-scroll [overscroll-behavior:contain] bg-[var(--bg-main)] text-neutral-100 p-4 md:p-8">
       <div className="max-w-7xl mx-auto space-y-8">
         {/* Top Header */}
         <div className="flex flex-col md:flex-row md:items-center justify-between gap-4">
           <div>
             <div className="flex items-center gap-3">
-              <div className="p-2.5 bg-gradient-to-tr from-indigo-500/20 to-purple-500/20 text-indigo-400 rounded-xl border border-indigo-500/30 shadow-lg shadow-indigo-500/10">
+              <div className="p-2.5 bg-indigo-500/15 text-indigo-400 rounded-xl border border-indigo-500/30 shadow-sm">
                 <Code2 className="w-6 h-6" />
               </div>
               <div>
@@ -256,7 +256,7 @@ export default function CommandsCenterClient() {
             </button>
             <button
               onClick={() => setActiveTab("builder")}
-              className="px-4 py-2 rounded-xl bg-gradient-to-r from-indigo-600 to-purple-600 hover:from-indigo-500 hover:to-purple-500 text-white text-xs font-semibold flex items-center gap-2 shadow-lg shadow-indigo-600/20 transition-all cursor-pointer"
+              className="px-4 py-2 rounded-xl bg-indigo-600 hover:bg-indigo-500 text-white text-xs font-semibold flex items-center gap-2 shadow-sm transition-all cursor-pointer"
             >
               <Plus className="w-4 h-4" />
               Créer une Commande
@@ -565,7 +565,7 @@ export default function CommandsCenterClient() {
                       onClick={() => setBuilderResponseType("EMBED")}
                       className={`flex-1 py-2.5 rounded-xl text-xs font-bold transition-all cursor-pointer ${
                         builderResponseType === "EMBED"
-                          ? "bg-indigo-600 text-white shadow-md shadow-indigo-600/20"
+                          ? "bg-indigo-600 text-white shadow-sm"
                           : "bg-neutral-950 border border-neutral-800 text-neutral-400"
                       }`}
                     >
@@ -576,7 +576,7 @@ export default function CommandsCenterClient() {
                       onClick={() => setBuilderResponseType("TEXT")}
                       className={`flex-1 py-2.5 rounded-xl text-xs font-bold transition-all cursor-pointer ${
                         builderResponseType === "TEXT"
-                          ? "bg-indigo-600 text-white shadow-md shadow-indigo-600/20"
+                          ? "bg-indigo-600 text-white shadow-sm"
                           : "bg-neutral-950 border border-neutral-800 text-neutral-400"
                       }`}
                     >
@@ -662,7 +662,7 @@ export default function CommandsCenterClient() {
 
               <button
                 type="submit"
-                className="w-full h-11 rounded-xl bg-gradient-to-r from-indigo-600 to-purple-600 hover:from-indigo-500 hover:to-purple-500 text-white font-bold text-xs flex items-center justify-center gap-2 shadow-lg shadow-indigo-600/20 transition-all cursor-pointer"
+                className="w-full h-11 rounded-xl bg-indigo-600 hover:bg-indigo-500 text-white font-bold text-xs flex items-center justify-center gap-2 shadow-sm transition-all cursor-pointer"
               >
                 <Plus className="w-4 h-4" />
                 Enregistrer & Déployer la commande

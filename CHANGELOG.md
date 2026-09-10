@@ -2,6 +2,21 @@
 
 Toutes les modifications notables de ce projet seront documentées dans ce fichier.
 
+## v1.21.6 — 2026-09-10
+
+**Rework visuel des pages du bot — « moins IA »**
+
+- Codemod sur **49 fichiers `app/discord/**`** :
+  - Boutons `bg-gradient-to-r from-X-600 to-Y-600` + `hover:from-X-500 hover:to-Y-500` → `bg-X-600 hover:bg-X-500`.
+  - Halos néon `shadow-[0_0_Npx_rgba(...)]` supprimés.
+  - Ombres teintées `shadow-{md,lg} shadow-X-500/NN` → `shadow-sm` ; ` shadow-X-NNN/NN` isolées → supprimées.
+  - Cartes stat `bg-gradient-to-br from-X-500/10 via-zinc-900/NN to-zinc-900/NN` → `bg-white/[0.02]` (bordure + icône colorées conservées).
+  - Tuiles d'icône `bg-gradient-to-br from-X-500 to-Y-{6,7}00` → `bg-X-600` ; chips `from-X-500/NN to-Y-500/NN` → `bg-X-500/15`.
+  - Barres de progression `bg-gradient-to-r from-X-500 to-Y-{4,5}00` → `bg-X-500`.
+- Racines `min-h-screen bg-gradient-to-b …` / `bg-zinc-950` / `bg-neutral-950` → `h-full overflow-y-auto os-scroll [overscroll-behavior:contain] bg-[var(--bg-main)]` — corrige au passage le défilement (le `min-h-screen` dans le `<main>` `overflow-hidden` de la Shell empêchait d'atteindre le bas).
+- `EventsCenterClient.tsx` : blocs `fixed inset-0` avec `blur-[140px]` (« Background ambient lighting ») retirés.
+- Validation : `tsc` 0 erreur, `build` ✓, `test:unit` 14/14 69/69, `lint` 0 erreur.
+
 ## v1.21.5 — 2026-09-10
 
 **tracker.gg : raison d'indisponibilité exposée**

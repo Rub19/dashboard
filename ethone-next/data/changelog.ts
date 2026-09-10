@@ -1,3 +1,14 @@
+const v12106_fr: ChangelogEntry = {
+  version: "v1.21.6",
+  date: "2026-09-10",
+  title: "Pages Bot : Nettoyage Visuel (moins « IA »)",
+  items: [
+    "49 pages `/discord/*` allégées : dégradés à 2-3 couleurs sur les boutons → aplats unis, halos néon (`shadow-[0_0_Npx_...]`) supprimés, ombres teintées → neutres, cartes stat « verre teinté » multi-stops → surface plate.",
+    "Fonds de page `min-h-screen bg-gradient-...` → `h-full overflow-y-auto` : corrige aussi les pages qui ne défilaient pas jusqu'en bas (le `min-h-screen` dans le `<main>` en `overflow-hidden` de la Shell).",
+    "Blocs de lumière d'ambiance floutés (`blur-[140px]`) retirés de la page Événements.",
+  ],
+};
+
 const v12105_fr: ChangelogEntry = {
   version: "v1.21.5",
   date: "2026-09-10",
@@ -593,6 +604,17 @@ const v12052_fr: ChangelogEntry = {
     "Dynamic Island : correction d'un bug de priorité qui empêchait Spotify de jamais s'afficher, systématiquement évincé par la synchronisation d'arrière-plan.",
     "Commande /help du Bot Discord : la liste des commandes est désormais générée dynamiquement depuis les commandes réellement enregistrées (fin des commandes fantômes et des commandes manquantes), et affiche la vraie syntaxe des commandes à sous-commandes (ex. /automod status).",
     "Audit de l'enregistrement des commandes slash Discord : architecture confirmée saine, aucune dérive entre le code et les commandes déployées.",
+  ],
+};
+
+const v12106_en: ChangelogEntry = {
+  version: "v1.21.6",
+  date: "2026-09-10",
+  title: "Bot Pages: Visual Cleanup (less \"AI-looking\")",
+  items: [
+    "49 `/discord/*` pages toned down: 2-3 colour button gradients → flat solids, neon glows (`shadow-[0_0_Npx_...]`) removed, tinted shadows → neutral, multi-stop \"tinted glass\" stat cards → flat surface.",
+    "Page backgrounds `min-h-screen bg-gradient-...` → `h-full overflow-y-auto`: also fixes pages that couldn't scroll to the bottom (`min-h-screen` inside the shell's `overflow-hidden` `<main>`).",
+    "Blurred ambient-lighting blobs (`blur-[140px]`) removed from the Events page.",
   ],
 };
 
@@ -1194,6 +1216,17 @@ const v12052_en: ChangelogEntry = {
   ],
 };
 
+const v12106_es: ChangelogEntry = {
+  version: "v1.21.6",
+  date: "2026-09-10",
+  title: "Páginas del Bot: Limpieza Visual (menos « IA »)",
+  items: [
+    "49 páginas `/discord/*` suavizadas: degradados de 2-3 colores en botones → planos sólidos, halos neón (`shadow-[0_0_Npx_...]`) eliminados, sombras teñidas → neutras, tarjetas de stats « cristal teñido » multi-stop → superficie plana.",
+    "Fondos de página `min-h-screen bg-gradient-...` → `h-full overflow-y-auto`: corrige también las páginas que no bajaban del todo (`min-h-screen` dentro del `<main>` en `overflow-hidden` de la Shell).",
+    "Bloques de luz ambiental difuminados (`blur-[140px]`) quitados de la página Eventos.",
+  ],
+};
+
 const v12105_es: ChangelogEntry = {
   version: "v1.21.5",
   date: "2026-09-10",
@@ -1789,6 +1822,17 @@ const v12052_es: ChangelogEntry = {
     "Dynamic Island: corregido un error de prioridad que impedía que Spotify apareciera, siempre desplazado por la sincronización en segundo plano.",
     "Comando /help del Bot de Discord: la lista de comandos ahora se genera dinámicamente desde los comandos realmente registrados (fin de comandos fantasma o ausentes), mostrando la sintaxis real de los comandos con subcomandos.",
     "Auditoría del registro de comandos slash de Discord: arquitectura confirmada como sólida, sin desviación entre el código y los comandos desplegados.",
+  ],
+};
+
+const v12106_de: ChangelogEntry = {
+  version: "v1.21.6",
+  date: "2026-09-10",
+  title: "Bot-Seiten: Visuelle Bereinigung (weniger nach KI aussehend)",
+  items: [
+    "49 `/discord/*`-Seiten entschlackt: 2-3-Farben-Verlaeufe auf Buttons → flache Volltoene, Neon-Schein (`shadow-[0_0_Npx_...]`) entfernt, getoente Schatten → neutral, mehrstufige Glas-Statkarten → flache Flaeche.",
+    "Seitenhintergruende `min-h-screen bg-gradient-...` → `h-full overflow-y-auto`: behebt auch Seiten, die nicht bis unten scrollten (`min-h-screen` im `overflow-hidden`-`<main>` der Shell).",
+    "Verschwommene Ambient-Licht-Bloecke (`blur-[140px]`) von der Events-Seite entfernt.",
   ],
 };
 
@@ -24491,5 +24535,9 @@ CHANGELOG_BY_LANG.fr.unshift(v12105_fr);
 CHANGELOG_BY_LANG.en.unshift(v12105_en);
 CHANGELOG_BY_LANG.es.unshift(v12105_es);
 CHANGELOG_BY_LANG.de.unshift(v12105_de);
+CHANGELOG_BY_LANG.fr.unshift(v12106_fr);
+CHANGELOG_BY_LANG.en.unshift(v12106_en);
+CHANGELOG_BY_LANG.es.unshift(v12106_es);
+CHANGELOG_BY_LANG.de.unshift(v12106_de);
 
 export const CHANGELOG = CHANGELOG_BY_LANG.fr;

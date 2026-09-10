@@ -126,7 +126,7 @@ export default function SetupWizardClient() {
   };
 
   return (
-    <div className="min-h-screen bg-zinc-950 text-white flex flex-col items-center justify-start py-8 px-4 sm:px-6 relative overflow-hidden pb-36">
+    <div className="h-full overflow-y-auto os-scroll [overscroll-behavior:contain] bg-[var(--bg-main)] text-white flex flex-col items-center justify-start py-8 px-4 sm:px-6 relative overflow-hidden pb-36">
       {/* Background Glows */}
       <div className="absolute top-0 left-1/2 -translate-x-1/2 w-[600px] h-[300px] bg-indigo-500/10 rounded-full blur-3xl pointer-events-none" />
 
@@ -143,7 +143,7 @@ export default function SetupWizardClient() {
           </Link>
 
           <div className="flex items-center gap-2">
-            <span className="w-2 h-2 rounded-full bg-emerald-400 shadow-[0_0_5px_rgba(52,211,153,0.8)]" />
+            <span className="w-2 h-2 rounded-full bg-emerald-400" />
             <span className="text-xs font-mono text-zinc-400 font-medium">SETUP ASSISTÉ</span>
           </div>
         </div>
@@ -250,7 +250,7 @@ export default function SetupWizardClient() {
                         onClick={() => setSelectedGuild(g)}
                         className={`flex items-center justify-between p-3.5 rounded-2xl border cursor-pointer transition ${
                           isSelected
-                            ? "bg-indigo-950/30 border-indigo-500 shadow-md shadow-indigo-500/10"
+                            ? "bg-indigo-950/30 border-indigo-500 shadow-sm"
                             : "bg-zinc-950/60 border-zinc-800/80 hover:bg-zinc-900/80"
                         }`}
                       >
@@ -535,7 +535,7 @@ export default function SetupWizardClient() {
           {/* STEP 5: FINISH & LAUNCH */}
           {currentStep === 5 && (
             <div className="space-y-6 text-center py-4 animate-in fade-in duration-300">
-              <div className="w-16 h-16 rounded-3xl bg-gradient-to-tr from-emerald-500 to-indigo-600 flex items-center justify-center text-white mx-auto shadow-xl shadow-emerald-500/20">
+              <div className="w-16 h-16 rounded-3xl bg-emerald-600 flex items-center justify-center text-white mx-auto shadow-xl">
                 <Rocket className="w-8 h-8 animate-bounce" />
               </div>
 
@@ -582,7 +582,7 @@ export default function SetupWizardClient() {
               <div className="pt-2">
                 <Link
                   href="/discord"
-                  className="inline-flex items-center gap-2 px-6 py-3 rounded-xl bg-gradient-to-r from-emerald-600 to-indigo-600 hover:from-emerald-500 hover:to-indigo-500 text-white text-xs font-bold shadow-lg shadow-emerald-500/20 transition cursor-pointer"
+                  className="inline-flex items-center gap-2 px-6 py-3 rounded-xl bg-emerald-600 hover:bg-emerald-500 text-white text-xs font-bold shadow-sm transition cursor-pointer"
                 >
                   <span>Accéder à la console Bot</span>
                   <ArrowRight className="w-4 h-4" />
@@ -612,7 +612,7 @@ export default function SetupWizardClient() {
             {currentStep < 4 ? (
               <button
                 onClick={handleNext}
-                className="inline-flex items-center gap-1.5 px-5 py-2.5 rounded-xl bg-indigo-600 hover:bg-indigo-500 text-white text-xs font-semibold shadow-md shadow-indigo-600/20 transition cursor-pointer"
+                className="inline-flex items-center gap-1.5 px-5 py-2.5 rounded-xl bg-indigo-600 hover:bg-indigo-500 text-white text-xs font-semibold shadow-sm transition cursor-pointer"
               >
                 <span>Étape suivante</span>
                 <ChevronRight className="w-4 h-4" />
@@ -621,7 +621,7 @@ export default function SetupWizardClient() {
               <button
                 onClick={handleSaveAndFinish}
                 disabled={isSaving}
-                className="inline-flex items-center gap-1.5 px-6 py-2.5 rounded-xl bg-emerald-600 hover:bg-emerald-500 text-white text-xs font-bold shadow-md shadow-emerald-600/20 transition cursor-pointer disabled:opacity-50"
+                className="inline-flex items-center gap-1.5 px-6 py-2.5 rounded-xl bg-emerald-600 hover:bg-emerald-500 text-white text-xs font-bold shadow-sm transition cursor-pointer disabled:opacity-50"
               >
                 <span>{isSaving ? "Sauvegarde..." : "Valider & Lancer"}</span>
                 <Rocket className="w-4 h-4" />

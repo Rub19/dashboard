@@ -187,7 +187,7 @@ export default function FormCreateClient() {
                 className={cn(
                   "rounded-2xl border p-4 cursor-pointer transition-all duration-150 flex flex-col justify-between",
                   isSelected
-                    ? "border-indigo-500 bg-indigo-500/10 shadow-lg shadow-indigo-500/10 ring-1 ring-indigo-500/50"
+                    ? "border-indigo-500 bg-indigo-500/10 shadow-sm ring-1 ring-indigo-500/50"
                     : "border-white/10 bg-white/[0.02] hover:border-white/20 hover:bg-white/[0.04]"
                 )}
               >
@@ -260,7 +260,7 @@ export default function FormCreateClient() {
           <button
             onClick={handleCreate}
             disabled={isSubmitting || !formTitle.trim()}
-            className="h-9 px-5 rounded-xl bg-gradient-to-r from-indigo-600 to-cyan-600 text-xs font-bold text-white shadow-lg shadow-indigo-600/20 hover:from-indigo-500 hover:to-cyan-500 transition-all flex items-center gap-1.5 disabled:opacity-50 cursor-pointer active:scale-95"
+            className="h-9 px-5 rounded-xl bg-indigo-600 text-xs font-bold text-white shadow-sm hover:bg-indigo-500 transition-all flex items-center gap-1.5 disabled:opacity-50 cursor-pointer active:scale-95"
           >
             <span>Créer et Ouvrir le Builder</span>
             <ArrowRight className="h-3.5 w-3.5" />

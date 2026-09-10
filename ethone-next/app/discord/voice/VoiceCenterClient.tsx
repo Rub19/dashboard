@@ -385,7 +385,7 @@ export default function VoiceCenterClient() {
           <div className="mt-3 flex items-baseline gap-2">
             <span className="text-3xl font-black text-white">{data?.kpis.activeVoiceChannelsCount || 0}</span>
             <span className="text-xs text-emerald-400 font-semibold flex items-center gap-0.5">
-              <span className="h-1.5 w-1.5 rounded-full bg-emerald-400 shadow-[0_0_5px_rgba(52,211,153,0.8)] inline-block mr-1" />
+              <span className="h-1.5 w-1.5 rounded-full bg-emerald-400 inline-block mr-1" />
               En direct
             </span>
           </div>
@@ -440,7 +440,7 @@ export default function VoiceCenterClient() {
       </div>
 
       {/* DISCORD PANEL DEPLOYER (Personal Voice Rooms Banner) */}
-      <div className="rounded-2xl border border-indigo-500/30 bg-gradient-to-r from-indigo-950/40 via-zinc-900/80 to-zinc-900/80 p-6 backdrop-blur-xl shadow-xl shadow-indigo-950/20">
+      <div className="rounded-2xl border border-indigo-500/30 bg-white/[0.02] p-6 backdrop-blur-xl shadow-xl">
         <div className="flex flex-col lg:flex-row lg:items-center justify-between gap-6">
           <div className="space-y-2 max-w-2xl">
             <div className="inline-flex items-center gap-1.5 text-xs font-bold text-indigo-400 uppercase tracking-wider">
@@ -466,7 +466,7 @@ export default function VoiceCenterClient() {
             <button
               onClick={handlePublishPanel}
               disabled={isPublishing}
-              className="flex h-10 items-center justify-center gap-2 rounded-xl bg-indigo-600 px-5 text-xs font-bold text-white shadow-lg shadow-indigo-600/30 hover:bg-indigo-500 transition-all active:scale-95 disabled:opacity-50 cursor-pointer whitespace-nowrap"
+              className="flex h-10 items-center justify-center gap-2 rounded-xl bg-indigo-600 px-5 text-xs font-bold text-white shadow-sm hover:bg-indigo-500 transition-all active:scale-95 disabled:opacity-50 cursor-pointer whitespace-nowrap"
             >
               {isPublishing ? (
                 <RefreshCw className="h-4 w-4 animate-spin" />

@@ -719,7 +719,7 @@ export function TicketCenterClient() {
   const getPriorityBadge = (p: TicketPriority) => {
     switch (p) {
       case "URGENT":
-        return "bg-rose-500/20 text-rose-300 border-rose-500/40 shadow-[0_0_10px_rgba(244,63,94,0.25)]";
+        return "bg-rose-500/20 text-rose-300 border-rose-500/40";
       case "HIGH":
         return "bg-amber-500/20 text-amber-300 border-amber-500/40";
       case "NORMAL":
@@ -749,11 +749,11 @@ export function TicketCenterClient() {
   };
 
   return (
-    <div className="min-h-screen bg-gradient-to-b from-zinc-950 via-zinc-900 to-black text-white px-4 sm:px-8 py-6 pb-36">
+    <div className="h-full overflow-y-auto os-scroll [overscroll-behavior:contain] bg-[var(--bg-main)] text-white px-4 sm:px-8 py-6 pb-36">
       {/* Top Bar / Guild Selector */}
       <div className="flex flex-col md:flex-row md:items-center justify-between gap-4 border-b border-white/10 pb-6">
         <div className="flex items-center gap-3">
-          <div className="flex h-12 w-12 items-center justify-center rounded-2xl bg-gradient-to-br from-emerald-500 to-teal-700 shadow-lg shadow-emerald-500/20">
+          <div className="flex h-12 w-12 items-center justify-center rounded-2xl bg-emerald-600 shadow-sm">
             <Ticket className="h-6 w-6 text-white" />
           </div>
           <div>
@@ -810,7 +810,7 @@ export function TicketCenterClient() {
 
       {/* KPI Header Cards */}
       <div className="grid grid-cols-2 sm:grid-cols-5 gap-3 mt-6">
-        <div className="rounded-2xl border border-emerald-500/20 bg-gradient-to-br from-emerald-500/10 via-zinc-900/50 to-zinc-900/80 p-4 shadow-lg shadow-emerald-500/5">
+        <div className="rounded-2xl border border-emerald-500/20 bg-white/[0.02] p-4 shadow-sm">
           <div className="flex items-center justify-between text-zinc-400 text-xs">
             <span>Tickets Ouverts</span>
             <Ticket className="h-4 w-4 text-emerald-400" />
@@ -819,7 +819,7 @@ export function TicketCenterClient() {
           <p className="text-[10px] text-emerald-300/80 mt-1">En attente de prise en charge</p>
         </div>
 
-        <div className="rounded-2xl border border-amber-500/20 bg-gradient-to-br from-amber-500/10 via-zinc-900/50 to-zinc-900/80 p-4 shadow-lg shadow-amber-500/5">
+        <div className="rounded-2xl border border-amber-500/20 bg-white/[0.02] p-4 shadow-sm">
           <div className="flex items-center justify-between text-zinc-400 text-xs">
             <span>En Attente</span>
             <Clock className="h-4 w-4 text-amber-400" />
@@ -828,7 +828,7 @@ export function TicketCenterClient() {
           <p className="text-[10px] text-amber-300/80 mt-1">Réponse membre ou staff requise</p>
         </div>
 
-        <div className="rounded-2xl border border-blue-500/20 bg-gradient-to-br from-blue-500/10 via-zinc-900/50 to-zinc-900/80 p-4 shadow-lg shadow-blue-500/5">
+        <div className="rounded-2xl border border-blue-500/20 bg-white/[0.02] p-4 shadow-sm">
           <div className="flex items-center justify-between text-zinc-400 text-xs">
             <span>Clôturés Aujourd&apos;hui</span>
             <CheckCircle2 className="h-4 w-4 text-blue-400" />
@@ -837,7 +837,7 @@ export function TicketCenterClient() {
           <p className="text-[10px] text-blue-300/80 mt-1">Sur {overview?.totalTickets ?? 0} tickets au total</p>
         </div>
 
-        <div className="rounded-2xl border border-indigo-500/20 bg-gradient-to-br from-indigo-500/10 via-zinc-900/50 to-zinc-900/80 p-4 shadow-lg shadow-indigo-500/5">
+        <div className="rounded-2xl border border-indigo-500/20 bg-white/[0.02] p-4 shadow-sm">
           <div className="flex items-center justify-between text-zinc-400 text-xs">
             <span>Temps de Réponse</span>
             <Zap className="h-4 w-4 text-indigo-400" />
@@ -846,7 +846,7 @@ export function TicketCenterClient() {
           <p className="text-[10px] text-indigo-300/80 mt-1">Moyenne première réponse</p>
         </div>
 
-        <div className="rounded-2xl border border-teal-500/20 bg-gradient-to-br from-teal-500/10 via-zinc-900/50 to-zinc-900/80 p-4 shadow-lg shadow-teal-500/5 col-span-2 sm:col-span-1">
+        <div className="rounded-2xl border border-teal-500/20 bg-white/[0.02] p-4 shadow-sm col-span-2 sm:col-span-1">
           <div className="flex items-center justify-between text-zinc-400 text-xs">
             <span>Taux de Résolution</span>
             <Sparkles className="h-4 w-4 text-teal-400" />
@@ -877,7 +877,7 @@ export function TicketCenterClient() {
               className={cn(
                 "flex items-center gap-2 rounded-xl px-3.5 py-2 font-medium transition-all whitespace-nowrap cursor-pointer",
                 isActive
-                  ? "bg-gradient-to-r from-emerald-600 to-teal-600 text-white shadow-md shadow-emerald-600/20"
+                  ? "bg-emerald-600 text-white shadow-sm"
                   : "text-zinc-400 hover:bg-white/5 hover:text-white"
               )}
             >
@@ -1063,7 +1063,7 @@ export function TicketCenterClient() {
                       <td className="py-3 px-4">
                         {t.claimedBy ? (
                           <div className="flex items-center gap-1.5">
-                            <span className="h-2 w-2 rounded-full bg-emerald-400 shadow-[0_0_5px_rgba(52,211,153,0.8)]" />
+                            <span className="h-2 w-2 rounded-full bg-emerald-400" />
                             <span className="font-medium text-emerald-300">{t.claimedBy.tag}</span>
                           </div>
                         ) : (
@@ -1147,7 +1147,7 @@ export function TicketCenterClient() {
                 });
                 setShowPanelModal(true);
               }}
-              className="flex items-center gap-1.5 rounded-xl bg-gradient-to-r from-emerald-600 to-teal-600 px-3.5 py-2 text-xs font-bold text-white shadow-md shadow-emerald-600/20 hover:from-emerald-500 hover:to-teal-500 transition-all cursor-pointer"
+              className="flex items-center gap-1.5 rounded-xl bg-emerald-600 px-3.5 py-2 text-xs font-bold text-white shadow-sm hover:bg-emerald-500 transition-all cursor-pointer"
             >
               <Plus className="h-4 w-4" />
               <span>Nouveau Panneau</span>
@@ -1259,7 +1259,7 @@ export function TicketCenterClient() {
                 });
                 setShowCategoryModal(true);
               }}
-              className="flex items-center gap-1.5 rounded-xl bg-gradient-to-r from-emerald-600 to-teal-600 px-3.5 py-2 text-xs font-bold text-white shadow-md shadow-emerald-600/20 hover:from-emerald-500 hover:to-teal-500 transition-all cursor-pointer"
+              className="flex items-center gap-1.5 rounded-xl bg-emerald-600 px-3.5 py-2 text-xs font-bold text-white shadow-sm hover:bg-emerald-500 transition-all cursor-pointer"
             >
               <Plus className="h-4 w-4" />
               <span>Nouvelle Catégorie</span>
@@ -1352,7 +1352,7 @@ export function TicketCenterClient() {
                 });
                 setShowTeamModal(true);
               }}
-              className="flex items-center gap-1.5 rounded-xl bg-gradient-to-r from-emerald-600 to-teal-600 px-3.5 py-2 text-xs font-bold text-white shadow-md shadow-emerald-600/20 hover:from-emerald-500 hover:to-teal-500 transition-all cursor-pointer"
+              className="flex items-center gap-1.5 rounded-xl bg-emerald-600 px-3.5 py-2 text-xs font-bold text-white shadow-sm hover:bg-emerald-500 transition-all cursor-pointer"
             >
               <Plus className="h-4 w-4" />
               <span>Créer une Équipe</span>
@@ -1416,7 +1416,7 @@ export function TicketCenterClient() {
                   body: JSON.stringify(newRule),
                 }).then(() => fetchAllData());
               }}
-              className="flex items-center gap-1.5 rounded-xl bg-gradient-to-r from-emerald-600 to-teal-600 px-3.5 py-2 text-xs font-bold text-white shadow-md shadow-emerald-600/20 hover:from-emerald-500 hover:to-teal-500 transition-all cursor-pointer"
+              className="flex items-center gap-1.5 rounded-xl bg-emerald-600 px-3.5 py-2 text-xs font-bold text-white shadow-sm hover:bg-emerald-500 transition-all cursor-pointer"
             >
               <Plus className="h-4 w-4" />
               <span>Ajouter une Règle</span>
@@ -1543,7 +1543,7 @@ export function TicketCenterClient() {
                     </div>
                     <div className="h-2 w-full rounded-full bg-white/5 overflow-hidden">
                       <div
-                        className="h-full bg-gradient-to-r from-emerald-500 to-teal-500 rounded-full"
+                        className="h-full bg-emerald-500 rounded-full"
                         style={{
                           width: `${Math.min(
                             100,

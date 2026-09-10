@@ -315,7 +315,7 @@ export default function StarboardCenterClient() {
           <button
             onClick={handleSave}
             disabled={saving || !selectedGuild}
-            className="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-xl bg-gradient-to-r from-amber-600 to-yellow-600 hover:from-amber-500 hover:to-yellow-500 text-white text-xs font-medium shadow-lg shadow-amber-600/20 transition-all disabled:opacity-50"
+            className="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-xl bg-amber-600 hover:bg-amber-500 text-white text-xs font-medium shadow-sm transition-all disabled:opacity-50"
           >
             <Save className="w-3.5 h-3.5" />
             {saving ? "Enregistrement..." : "Sauvegarder"}

@@ -431,11 +431,11 @@ export function WelcomeCenterClient() {
   };
 
   return (
-    <div className="min-h-screen bg-gradient-to-b from-zinc-950 via-zinc-900 to-black text-white px-4 sm:px-8 py-6 pb-36">
+    <div className="h-full overflow-y-auto os-scroll [overscroll-behavior:contain] bg-[var(--bg-main)] text-white px-4 sm:px-8 py-6 pb-36">
       {/* Top Bar / Guild Selector */}
       <div className="flex flex-col md:flex-row md:items-center justify-between gap-4 border-b border-white/10 pb-6">
         <div className="flex items-center gap-3">
-          <div className="flex h-12 w-12 items-center justify-center rounded-2xl bg-gradient-to-br from-teal-500 to-emerald-700 shadow-lg shadow-teal-500/20">
+          <div className="flex h-12 w-12 items-center justify-center rounded-2xl bg-teal-600 shadow-sm">
             <Sparkles className="h-6 w-6 text-white" />
           </div>
           <div>
@@ -483,7 +483,7 @@ export function WelcomeCenterClient() {
 
           <button
             onClick={() => setShowTestModal(true)}
-            className="flex h-9 items-center gap-1.5 rounded-xl bg-gradient-to-r from-teal-600 to-emerald-600 px-3.5 text-xs font-bold text-white shadow-md shadow-teal-600/20 hover:from-teal-500 hover:to-emerald-500 transition-all cursor-pointer"
+            className="flex h-9 items-center gap-1.5 rounded-xl bg-teal-600 px-3.5 text-xs font-bold text-white shadow-sm hover:bg-teal-500 transition-all cursor-pointer"
           >
             <span>🧪 Tester l&apos;accueil</span>
           </button>
@@ -499,7 +499,7 @@ export function WelcomeCenterClient() {
 
       {/* KPI Header Cards */}
       <div className="grid grid-cols-2 sm:grid-cols-5 gap-3 mt-6">
-        <div className="rounded-2xl border border-teal-500/20 bg-gradient-to-br from-teal-500/10 via-zinc-900/50 to-zinc-900/80 p-4 shadow-lg shadow-teal-500/5">
+        <div className="rounded-2xl border border-teal-500/20 bg-white/[0.02] p-4 shadow-sm">
           <div className="flex items-center justify-between text-zinc-400 text-xs">
             <span>Nouveaux Membres</span>
             <UserPlus className="h-4 w-4 text-teal-400" />
@@ -508,7 +508,7 @@ export function WelcomeCenterClient() {
           <p className="text-[10px] text-teal-300/80 mt-1">Arrivées enregistrées aujourd&apos;hui</p>
         </div>
 
-        <div className="rounded-2xl border border-emerald-500/20 bg-gradient-to-br from-emerald-500/10 via-zinc-900/50 to-zinc-900/80 p-4 shadow-lg shadow-emerald-500/5">
+        <div className="rounded-2xl border border-emerald-500/20 bg-white/[0.02] p-4 shadow-sm">
           <div className="flex items-center justify-between text-zinc-400 text-xs">
             <span>Messages Envoyés</span>
             <MessageSquare className="h-4 w-4 text-emerald-400" />
@@ -517,7 +517,7 @@ export function WelcomeCenterClient() {
           <p className="text-[10px] text-emerald-300/80 mt-1">Salons + DMs délivrés</p>
         </div>
 
-        <div className="rounded-2xl border border-blue-500/20 bg-gradient-to-br from-blue-500/10 via-zinc-900/50 to-zinc-900/80 p-4 shadow-lg shadow-blue-500/5">
+        <div className="rounded-2xl border border-blue-500/20 bg-white/[0.02] p-4 shadow-sm">
           <div className="flex items-center justify-between text-zinc-400 text-xs">
             <span>Taux de Vérification</span>
             <Shield className="h-4 w-4 text-blue-400" />
@@ -526,7 +526,7 @@ export function WelcomeCenterClient() {
           <p className="text-[10px] text-blue-300/80 mt-1">Membres ayant validé le règlement</p>
         </div>
 
-        <div className="rounded-2xl border border-purple-500/20 bg-gradient-to-br from-purple-500/10 via-zinc-900/50 to-zinc-900/80 p-4 shadow-lg shadow-purple-500/5">
+        <div className="rounded-2xl border border-purple-500/20 bg-white/[0.02] p-4 shadow-sm">
           <div className="flex items-center justify-between text-zinc-400 text-xs">
             <span>Complétion Onboarding</span>
             <Users className="h-4 w-4 text-purple-400" />
@@ -535,7 +535,7 @@ export function WelcomeCenterClient() {
           <p className="text-[10px] text-purple-300/80 mt-1">Parcours terminé avec rôles</p>
         </div>
 
-        <div className="rounded-2xl border border-amber-500/20 bg-gradient-to-br from-amber-500/10 via-zinc-900/50 to-zinc-900/80 p-4 shadow-lg shadow-amber-500/5 col-span-2 sm:col-span-1">
+        <div className="rounded-2xl border border-amber-500/20 bg-white/[0.02] p-4 shadow-sm col-span-2 sm:col-span-1">
           <div className="flex items-center justify-between text-zinc-400 text-xs">
             <span>Rôles Distribués</span>
             <Sparkles className="h-4 w-4 text-amber-400" />
@@ -568,7 +568,7 @@ export function WelcomeCenterClient() {
               className={cn(
                 "flex items-center gap-2 rounded-xl px-3.5 py-2 font-medium transition-all whitespace-nowrap cursor-pointer",
                 isActive
-                  ? "bg-gradient-to-r from-teal-600 to-emerald-600 text-white shadow-md shadow-teal-600/20"
+                  ? "bg-teal-600 text-white shadow-sm"
                   : "text-zinc-400 hover:bg-white/5 hover:text-white"
               )}
             >
@@ -683,7 +683,7 @@ export function WelcomeCenterClient() {
 
                   <div className="h-3 w-full rounded-full bg-white/5 overflow-hidden">
                     <div
-                      className="h-full bg-gradient-to-r from-teal-500 to-emerald-400 rounded-full transition-all duration-500"
+                      className="h-full bg-teal-500 rounded-full transition-all duration-500"
                       style={{ width: `${Math.max(5, stage.percentage)}%` }}
                     />
                   </div>

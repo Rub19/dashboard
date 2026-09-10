@@ -150,13 +150,13 @@ export default function RolesCenterClient() {
   };
 
   return (
-    <div className="min-h-screen bg-neutral-950 text-neutral-100 p-4 md:p-8">
+    <div className="h-full overflow-y-auto os-scroll [overscroll-behavior:contain] bg-[var(--bg-main)] text-neutral-100 p-4 md:p-8">
       <div className="max-w-7xl mx-auto space-y-8">
         {/* Top Header */}
         <div className="flex flex-col md:flex-row md:items-center justify-between gap-4">
           <div>
             <div className="flex items-center gap-3">
-              <div className="p-2.5 bg-gradient-to-tr from-pink-500/20 to-purple-500/20 text-pink-400 rounded-xl border border-pink-500/30 shadow-lg shadow-pink-500/10">
+              <div className="p-2.5 bg-pink-500/15 text-pink-400 rounded-xl border border-pink-500/30 shadow-sm">
                 <Tag className="w-6 h-6" />
               </div>
               <div>
@@ -176,7 +176,7 @@ export default function RolesCenterClient() {
           <div className="flex items-center gap-2.5 flex-wrap">
             <button
               onClick={() => setActiveTab("builder")}
-              className="px-4 py-2 rounded-xl bg-gradient-to-r from-pink-600 to-purple-600 hover:from-pink-500 hover:to-purple-500 text-white text-xs font-semibold flex items-center gap-2 shadow-lg shadow-pink-600/20 transition-all cursor-pointer"
+              className="px-4 py-2 rounded-xl bg-pink-600 hover:bg-pink-500 text-white text-xs font-semibold flex items-center gap-2 shadow-sm transition-all cursor-pointer"
             >
               <Plus className="w-4 h-4" />
               Créer un Panneau
@@ -412,7 +412,7 @@ export default function RolesCenterClient() {
                       onClick={() => setFormMode("MULTIPLE")}
                       className={`flex-1 h-10 rounded-xl text-xs font-bold cursor-pointer ${
                         formMode === "MULTIPLE"
-                          ? "bg-pink-600 text-white shadow-md shadow-pink-600/20"
+                          ? "bg-pink-600 text-white shadow-sm"
                           : "bg-neutral-950 border border-neutral-800 text-neutral-400"
                       }`}
                     >
@@ -423,7 +423,7 @@ export default function RolesCenterClient() {
                       onClick={() => setFormMode("EXCLUSIVE")}
                       className={`flex-1 h-10 rounded-xl text-xs font-bold cursor-pointer ${
                         formMode === "EXCLUSIVE"
-                          ? "bg-pink-600 text-white shadow-md shadow-pink-600/20"
+                          ? "bg-pink-600 text-white shadow-sm"
                           : "bg-neutral-950 border border-neutral-800 text-neutral-400"
                       }`}
                     >
@@ -492,7 +492,7 @@ export default function RolesCenterClient() {
               <div className="pt-3">
                 <button
                   type="submit"
-                  className="w-full h-11 rounded-xl bg-gradient-to-r from-pink-600 to-purple-600 hover:from-pink-500 hover:to-purple-500 text-white font-bold text-xs flex items-center justify-center gap-2 shadow-lg shadow-pink-600/20 transition-all cursor-pointer"
+                  className="w-full h-11 rounded-xl bg-pink-600 hover:bg-pink-500 text-white font-bold text-xs flex items-center justify-center gap-2 shadow-sm transition-all cursor-pointer"
                 >
                   <Send className="w-4 h-4" />
                   Publier le panneau sur Discord

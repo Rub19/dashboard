@@ -561,7 +561,7 @@ export default function FormsCenterClient() {
                       <span
                         className={cn(
                           "h-1.5 w-1.5 rounded-full",
-                          isPublished && "bg-emerald-400 shadow-[0_0_5px_rgba(52,211,153,0.8)]",
+                          isPublished && "bg-emerald-400",
                           isDraft && "bg-amber-400",
                           isClosed && "bg-zinc-400"
                         )}

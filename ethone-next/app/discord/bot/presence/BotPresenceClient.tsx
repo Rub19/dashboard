@@ -556,9 +556,9 @@ export default function BotPresenceClient({ initialTab = "overview" }: BotPresen
   };
 
   const statusDotColor = {
-    online: "bg-emerald-500 shadow-[0_0_12px_rgba(16,185,129,0.7)]",
-    idle: "bg-amber-400 shadow-[0_0_12px_rgba(251,191,36,0.7)]",
-    dnd: "bg-rose-500 shadow-[0_0_12px_rgba(244,63,94,0.7)]",
+    online: "bg-emerald-500",
+    idle: "bg-amber-400",
+    dnd: "bg-rose-500",
     invisible: "bg-zinc-500",
   };
 
@@ -602,7 +602,7 @@ export default function BotPresenceClient({ initialTab = "overview" }: BotPresen
                   Bot Presence & Identity Center <span className="text-indigo-400 text-sm font-mono px-2 py-0.5 rounded bg-indigo-500/10 border border-indigo-500/20">2.0</span>
                 </h1>
                 <span className="inline-flex items-center gap-1 px-2 py-0.5 rounded text-[11px] font-semibold bg-emerald-500/10 text-emerald-400 border border-emerald-500/20">
-                  <span className="w-1.5 h-1.5 rounded-full bg-emerald-400 shadow-[0_0_5px_rgba(52,211,153,0.8)]" />
+                  <span className="w-1.5 h-1.5 rounded-full bg-emerald-400" />
                   Gateway Active
                 </span>
               </div>
@@ -963,7 +963,7 @@ export default function BotPresenceClient({ initialTab = "overview" }: BotPresen
                     <button
                       onClick={() => handleApplyPresence(currentStatus, { type: activityType, name: activityName, url: streamUrl }, false)}
                       disabled={saving}
-                      className="px-6 py-2.5 rounded-xl bg-gradient-to-r from-indigo-600 to-purple-600 hover:from-indigo-500 hover:to-purple-500 text-white font-semibold text-xs shadow-lg shadow-indigo-500/20 flex items-center gap-2 transition-all disabled:opacity-50"
+                      className="px-6 py-2.5 rounded-xl bg-indigo-600 hover:bg-indigo-500 text-white font-semibold text-xs shadow-sm flex items-center gap-2 transition-all disabled:opacity-50"
                     >
                       <Save className="w-4 h-4" />
                       <span>{saving ? "Application sur Gateway..." : "Appliquer Immédiatement sur Discord"}</span>
@@ -1167,7 +1167,7 @@ export default function BotPresenceClient({ initialTab = "overview" }: BotPresen
                   </label>
                   <div className="px-3 py-2 rounded-lg bg-zinc-900 border border-zinc-800 text-sm font-mono text-emerald-400 flex items-center justify-between">
                     <span>{rotationConfig.enabled ? "Dans quelques secondes" : "En pause"}</span>
-                    <span className="w-2 h-2 rounded-full bg-emerald-400 shadow-[0_0_5px_rgba(52,211,153,0.8)]" />
+                    <span className="w-2 h-2 rounded-full bg-emerald-400" />
                   </div>
                   <p className="text-[11px] text-zinc-400">Horodatage précis synchronisé</p>
                 </div>

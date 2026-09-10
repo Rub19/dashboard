@@ -937,7 +937,7 @@ export default function AutoModCommandCenterPage() {
                   : "border-red-500/30 bg-red-500/10 text-red-300 hover:bg-red-500/20"
               )}
             >
-              <div className={cn("h-2 w-2 rounded-full", config.enabled ? "bg-emerald-400 shadow-[0_0_5px_rgba(52,211,153,0.8)]" : "bg-red-500")} />
+              <div className={cn("h-2 w-2 rounded-full", config.enabled ? "bg-emerald-400" : "bg-red-500")} />
               <span>{config.enabled ? "Actif" : "En pause"}</span>
             </button>
 
@@ -945,7 +945,7 @@ export default function AutoModCommandCenterPage() {
             <button
               onClick={handleSaveConfig}
               disabled={isSaving}
-              className="flex h-8 items-center gap-1.5 rounded-xl bg-gradient-to-r from-amber-600 to-orange-600 px-3 text-xs font-semibold text-white shadow-lg shadow-amber-500/10 hover:from-amber-500 hover:to-orange-500 transition-all active:scale-95 disabled:opacity-50"
+              className="flex h-8 items-center gap-1.5 rounded-xl bg-amber-600 px-3 text-xs font-semibold text-white shadow-sm hover:bg-amber-500 transition-all active:scale-95 disabled:opacity-50"
             >
               <Save className="h-3.5 w-3.5" />
               <span>{isSaving ? "Enregistrement..." : "Enregistrer"}</span>
@@ -1081,7 +1081,7 @@ export default function AutoModCommandCenterPage() {
               </div>
 
               {/* BANNIÈRE PASSERELLE ANTI-RAID */}
-              <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4 rounded-2xl border border-blue-500/20 bg-gradient-to-r from-blue-500/10 via-indigo-500/10 to-blue-600/10 p-4 shadow-lg shadow-blue-500/5">
+              <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4 rounded-2xl border border-blue-500/20 bg-gradient-to-r from-blue-500/10 via-indigo-500/10 to-blue-600/10 p-4 shadow-sm">
                 <div className="flex items-start gap-3">
                   <div className="flex h-10 w-10 shrink-0 items-center justify-center rounded-xl bg-blue-500/20 border border-blue-500/30 text-blue-400">
                     <Shield className="h-5 w-5" />
@@ -1227,7 +1227,7 @@ export default function AutoModCommandCenterPage() {
                 </div>
                 <button
                   onClick={startNewRule}
-                  className="flex h-8 items-center gap-1.5 rounded-xl bg-gradient-to-r from-amber-600 to-orange-600 px-3.5 text-xs font-semibold text-white hover:from-amber-500 hover:to-orange-500 transition-all active:scale-95"
+                  className="flex h-8 items-center gap-1.5 rounded-xl bg-amber-600 px-3.5 text-xs font-semibold text-white hover:bg-amber-500 transition-all active:scale-95"
                 >
                   <Plus className="h-3.5 w-3.5" />
                   <span>Nouvelle Règle</span>
@@ -1236,7 +1236,7 @@ export default function AutoModCommandCenterPage() {
 
               {/* Formulaire d'Édition de Règle */}
               {(isCreatingRule || editingRule) && editingRule && (
-                <div className="rounded-2xl border border-amber-500/30 bg-zinc-900/90 p-5 shadow-2xl shadow-amber-500/5 space-y-5">
+                <div className="rounded-2xl border border-amber-500/30 bg-zinc-900/90 p-5 shadow-2xl space-y-5">
                   <div className="flex items-center justify-between border-b border-white/10 pb-3">
                     <div className="flex items-center gap-2">
                       <Layers className="h-4 w-4 text-amber-400" />
@@ -2409,7 +2409,7 @@ export default function AutoModCommandCenterPage() {
                     type="button"
                     onClick={handleRunSandboxTest}
                     disabled={isTestingSandbox || !sandboxMessage.trim()}
-                    className="flex h-9 items-center gap-2 rounded-xl bg-gradient-to-r from-amber-500 to-orange-500 px-5 text-xs font-bold text-black hover:from-amber-400 hover:to-orange-400 transition-all active:scale-95 disabled:opacity-50 cursor-pointer"
+                    className="flex h-9 items-center gap-2 rounded-xl bg-amber-500 px-5 text-xs font-bold text-black hover:brightness-110 transition-all active:scale-95 disabled:opacity-50 cursor-pointer"
                   >
                     <Play className={cn("h-3.5 w-3.5 fill-black", isTestingSandbox && "animate-spin")} />
                     <span>{isTestingSandbox ? "Simulation..." : "Lancer la Simulation"}</span>

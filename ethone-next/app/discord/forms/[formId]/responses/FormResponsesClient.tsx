@@ -643,7 +643,7 @@ export default function FormResponsesClient() {
               <div className="flex items-center gap-2">
                 <button
                   onClick={() => handleUpdateStatus("APPROVED", "Candidature acceptée")}
-                  className="flex-1 sm:flex-initial h-9 px-4 rounded-xl bg-emerald-600 text-xs font-bold text-white hover:bg-emerald-500 transition-all cursor-pointer shadow-md shadow-emerald-600/20"
+                  className="flex-1 sm:flex-initial h-9 px-4 rounded-xl bg-emerald-600 text-xs font-bold text-white hover:bg-emerald-500 transition-all cursor-pointer shadow-sm"
                 >
                   Approuver
                 </button>

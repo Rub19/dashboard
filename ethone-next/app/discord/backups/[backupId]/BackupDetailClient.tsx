@@ -267,7 +267,7 @@ export default function BackupDetailClient() {
   };
 
   return (
-    <div className="min-h-screen bg-neutral-950 text-neutral-100 p-4 md:p-8">
+    <div className="h-full overflow-y-auto os-scroll [overscroll-behavior:contain] bg-[var(--bg-main)] text-neutral-100 p-4 md:p-8">
       <div className="max-w-7xl mx-auto space-y-6">
         {/* Navigation retour */}
         <div className="flex items-center justify-between">
@@ -317,7 +317,7 @@ export default function BackupDetailClient() {
 
             <Link
               href={`/discord/backups?restore=${snapshot.backupId}`}
-              className="px-4 py-1.5 rounded-lg bg-emerald-600 hover:bg-emerald-500 text-white text-xs font-semibold flex items-center gap-1.5 shadow-lg shadow-emerald-600/20 transition-all"
+              className="px-4 py-1.5 rounded-lg bg-emerald-600 hover:bg-emerald-500 text-white text-xs font-semibold flex items-center gap-1.5 shadow-sm transition-all"
             >
               <RotateCcw className="w-3.5 h-3.5" />
               Restaurer ce snapshot

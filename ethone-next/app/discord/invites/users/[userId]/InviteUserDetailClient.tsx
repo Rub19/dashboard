@@ -161,7 +161,7 @@ export default function InviteUserDetailClient() {
   );
 
   return (
-    <div className="min-h-screen bg-zinc-950 text-white flex flex-col p-4 sm:p-8 pb-36 max-w-6xl mx-auto">
+    <div className="h-full overflow-y-auto os-scroll [overscroll-behavior:contain] bg-[var(--bg-main)] text-white flex flex-col p-4 sm:p-8 pb-36 max-w-6xl mx-auto">
       {/* Top Breadcrumb */}
       <div className="flex items-center justify-between mb-6 pb-4 border-b border-zinc-800">
         <Link
@@ -184,7 +184,7 @@ export default function InviteUserDetailClient() {
       {/* User Hero Banner */}
       <div className="relative overflow-hidden rounded-3xl border border-zinc-800 bg-zinc-900/60 p-6 sm:p-8 shadow-2xl backdrop-blur-xl mb-6">
         <div className="flex flex-col sm:flex-row items-center gap-6">
-          <div className="w-20 h-20 rounded-2xl bg-gradient-to-tr from-pink-500 to-indigo-600 flex items-center justify-center text-2xl font-bold text-white shadow-xl shadow-pink-500/20">
+          <div className="w-20 h-20 rounded-2xl bg-pink-600 flex items-center justify-center text-2xl font-bold text-white shadow-xl">
             {profile?.userTag ? profile.userTag.slice(0, 2).toUpperCase() : "U"}
           </div>
 

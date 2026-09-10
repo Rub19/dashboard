@@ -262,8 +262,6 @@ export default function DiscordCalendarClient() {
     <div className="h-full min-h-0 overflow-y-auto os-scroll bg-[var(--bg-main)] text-slate-100 pb-24 selection:bg-indigo-500/30 [overscroll-behavior:contain]">
       {/* Glow Effects */}
       <div className="fixed inset-0 pointer-events-none overflow-hidden">
-        <div className="absolute top-10 left-1/3 w-[600px] h-[600px] bg-indigo-600/10 rounded-full blur-[140px]" />
-        <div className="absolute bottom-10 right-10 w-[500px] h-[500px] bg-purple-600/10 rounded-full blur-[140px]" />
       </div>
 
       <div className="relative max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 pt-8">
@@ -415,7 +413,7 @@ export default function DiscordCalendarClient() {
                       <span
                         className={`text-xs font-bold w-6 h-6 flex items-center justify-center rounded-full ${
                           isToday
-                            ? "bg-indigo-500 text-white shadow-md shadow-indigo-500/50"
+                            ? "bg-indigo-500 text-white shadow-sm"
                             : cell.isCurrentMonth
                             ? "text-slate-300"
                             : "text-slate-600"

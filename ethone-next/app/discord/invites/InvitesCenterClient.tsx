@@ -324,12 +324,12 @@ export default function InvitesCenterClient() {
   };
 
   return (
-    <div className="min-h-screen bg-zinc-950 text-white flex flex-col p-4 sm:p-8 pb-36 max-w-7xl mx-auto">
+    <div className="h-full overflow-y-auto os-scroll [overscroll-behavior:contain] bg-[var(--bg-main)] text-white flex flex-col p-4 sm:p-8 pb-36 max-w-7xl mx-auto">
       {/* Top Header */}
       <div className="flex flex-col md:flex-row md:items-center justify-between gap-4 mb-6 pb-6 border-b border-zinc-800">
         <div>
           <div className="flex items-center gap-2.5 mb-1">
-            <div className="w-10 h-10 rounded-2xl bg-gradient-to-tr from-pink-600 to-indigo-600 flex items-center justify-center text-white shadow-lg shadow-pink-500/20">
+            <div className="w-10 h-10 rounded-2xl bg-gradient-to-tr from-pink-600 to-indigo-600 flex items-center justify-center text-white shadow-sm">
               <UserPlus className="w-5 h-5" />
             </div>
             <div>
@@ -558,7 +558,7 @@ export default function InvitesCenterClient() {
               onClick={() => setActiveTab(tab.id as any)}
               className={`inline-flex items-center gap-2 px-4 py-2.5 rounded-2xl text-xs font-semibold transition-all cursor-pointer ${
                 isActive
-                  ? "bg-gradient-to-r from-pink-600 to-indigo-600 text-white shadow-md shadow-pink-600/20"
+                  ? "bg-pink-600 text-white shadow-sm"
                   : "bg-zinc-900/60 text-zinc-400 hover:text-white hover:bg-zinc-800/80 border border-zinc-800/60"
               }`}
             >
@@ -632,7 +632,7 @@ export default function InvitesCenterClient() {
                     </td>
                     <td className="py-3.5 px-3">
                       <div className="flex items-center gap-2.5">
-                        <div className="w-8 h-8 rounded-xl bg-gradient-to-tr from-pink-500 to-indigo-600 flex items-center justify-center font-bold text-white text-xs">
+                        <div className="w-8 h-8 rounded-xl bg-pink-600 flex items-center justify-center font-bold text-white text-xs">
                           {entry.userTag.slice(0, 2).toUpperCase()}
                         </div>
                         <div>
@@ -748,7 +748,7 @@ export default function InvitesCenterClient() {
 
               <button
                 onClick={() => setShowRewardModal(true)}
-                className="inline-flex items-center gap-2 px-4 py-2.5 rounded-xl bg-gradient-to-r from-pink-600 to-indigo-600 hover:from-pink-500 hover:to-indigo-500 text-white text-xs font-bold shadow-lg shadow-pink-600/20 transition cursor-pointer"
+                className="inline-flex items-center gap-2 px-4 py-2.5 rounded-xl bg-pink-600 hover:bg-pink-500 text-white text-xs font-bold shadow-sm transition cursor-pointer"
               >
                 <Plus className="w-4 h-4" />
                 <span>Nouveau Palier</span>
@@ -837,7 +837,7 @@ export default function InvitesCenterClient() {
 
                   {/* Progress Bar */}
                   <div className="w-full bg-zinc-800 h-2.5 rounded-full overflow-hidden mb-3">
-                    <div className="bg-gradient-to-r from-pink-500 to-indigo-500 h-full transition-all" style={{ width: `${pct}%` }} />
+                    <div className="bg-pink-500 h-full transition-all" style={{ width: `${pct}%` }} />
                   </div>
 
                   <div className="flex flex-wrap items-center justify-between text-xs text-zinc-400 pt-2 border-t border-zinc-900">
@@ -1003,7 +1003,7 @@ export default function InvitesCenterClient() {
               </button>
               <button
                 onClick={handleCreateReward}
-                className="flex-1 py-2.5 rounded-xl bg-pink-600 hover:bg-pink-500 text-white text-xs font-bold shadow-lg shadow-pink-600/20 transition cursor-pointer"
+                className="flex-1 py-2.5 rounded-xl bg-pink-600 hover:bg-pink-500 text-white text-xs font-bold shadow-sm transition cursor-pointer"
               >
                 Ajouter le palier
               </button>

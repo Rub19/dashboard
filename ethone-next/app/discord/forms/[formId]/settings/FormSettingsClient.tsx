@@ -117,7 +117,7 @@ export default function FormSettingsClient() {
           <button
             onClick={handleSave}
             disabled={isSaving}
-            className="flex h-9 items-center gap-1.5 px-4 rounded-xl bg-gradient-to-r from-indigo-600 to-cyan-600 text-xs font-bold text-white shadow-lg shadow-indigo-600/20 hover:from-indigo-500 hover:to-cyan-500 transition-all cursor-pointer active:scale-95"
+            className="flex h-9 items-center gap-1.5 px-4 rounded-xl bg-indigo-600 text-xs font-bold text-white shadow-sm hover:bg-indigo-500 transition-all cursor-pointer active:scale-95"
           >
             <Save className="h-3.5 w-3.5" />
             <span>{isSaving ? "Enregistrement..." : "Sauvegarder"}</span>
@@ -220,7 +220,7 @@ export default function FormSettingsClient() {
             <div className="pt-3 border-t border-white/10">
               <button
                 onClick={handlePublishDiscordPanel}
-                className="w-full h-9 rounded-xl bg-indigo-600 hover:bg-indigo-500 text-xs font-bold text-white transition-all shadow-md shadow-indigo-600/20 cursor-pointer"
+                className="w-full h-9 rounded-xl bg-indigo-600 hover:bg-indigo-500 text-xs font-bold text-white transition-all shadow-sm cursor-pointer"
               >
                 Publier le Panneau sur Discord
               </button>

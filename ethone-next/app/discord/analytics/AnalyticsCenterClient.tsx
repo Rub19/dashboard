@@ -70,13 +70,13 @@ export default function AnalyticsCenterClient() {
   ];
 
   return (
-    <div className="min-h-screen bg-neutral-950 text-neutral-100 p-4 md:p-8">
+    <div className="h-full overflow-y-auto os-scroll [overscroll-behavior:contain] bg-[var(--bg-main)] text-neutral-100 p-4 md:p-8">
       <div className="max-w-7xl mx-auto space-y-8">
         {/* Top Header */}
         <div className="flex flex-col md:flex-row md:items-center justify-between gap-4">
           <div>
             <div className="flex items-center gap-3">
-              <div className="p-2.5 bg-gradient-to-tr from-cyan-500/20 to-blue-500/20 text-cyan-400 rounded-xl border border-cyan-500/30 shadow-lg shadow-cyan-500/10">
+              <div className="p-2.5 bg-cyan-500/15 text-cyan-400 rounded-xl border border-cyan-500/30 shadow-sm">
                 <BarChart3 className="w-6 h-6" />
               </div>
               <div>
@@ -102,7 +102,7 @@ export default function AnalyticsCenterClient() {
                   onClick={() => setPeriod(p)}
                   className={`px-3 py-1.5 rounded-lg transition-all cursor-pointer ${
                     period === p
-                      ? "bg-cyan-500 text-white shadow-md shadow-cyan-500/20"
+                      ? "bg-cyan-500 text-white shadow-sm"
                       : "text-neutral-400 hover:text-white"
                   }`}
                 >
@@ -236,7 +236,7 @@ export default function AnalyticsCenterClient() {
                         </div>
                         <div className="w-full bg-neutral-950 rounded-t-lg overflow-hidden h-44 flex items-end">
                           <div
-                            className="w-full bg-gradient-to-t from-cyan-600 to-indigo-500 rounded-t-lg group-hover:from-cyan-400 group-hover:to-indigo-400 transition-all duration-300 shadow-lg shadow-cyan-500/10"
+                            className="w-full bg-gradient-to-t from-cyan-600 to-indigo-500 rounded-t-lg group-hover:from-cyan-400 group-hover:to-indigo-400 transition-all duration-300 shadow-sm"
                             style={{ height: `${heightPct}%` }}
                           />
                         </div>
@@ -397,7 +397,7 @@ export default function AnalyticsCenterClient() {
                         const isWeekend = dayIdx >= 4;
                         const isPrimeTime = slotIdx >= 8 && slotIdx <= 11;
                         let opacityClass = "bg-neutral-950 border border-neutral-800";
-                        if (isPrimeTime && isWeekend) opacityClass = "bg-cyan-400 shadow-md shadow-cyan-400/20";
+                        if (isPrimeTime && isWeekend) opacityClass = "bg-cyan-400 shadow-sm";
                         else if (isPrimeTime) opacityClass = "bg-cyan-600";
                         else if (slotIdx >= 6) opacityClass = "bg-cyan-800/70";
                         else if (slotIdx >= 3) opacityClass = "bg-cyan-950/60";
@@ -522,7 +522,7 @@ export default function AnalyticsCenterClient() {
                 <button
                   type="button"
                   onClick={() => showToast("Digest hebdomadaire envoyé immédiatement dans Discord !")}
-                  className="px-5 py-2.5 rounded-xl bg-cyan-600 hover:bg-cyan-500 text-white font-bold text-xs shadow-lg shadow-cyan-600/20 transition-all cursor-pointer"
+                  className="px-5 py-2.5 rounded-xl bg-cyan-600 hover:bg-cyan-500 text-white font-bold text-xs shadow-sm transition-all cursor-pointer"
                 >
                   Envoyer un rapport test sur Discord
                 </button>

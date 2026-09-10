@@ -174,8 +174,6 @@ export default function PollCreateClient() {
     <div className="min-h-screen bg-black text-white selection:bg-indigo-500/30">
       {/* Top Background Glow */}
       <div className="pointer-events-none fixed inset-0 z-0 overflow-hidden opacity-30">
-        <div className="absolute -left-40 top-0 h-96 w-96 rounded-full bg-indigo-600 blur-[130px]" />
-        <div className="absolute right-0 top-1/3 h-80 w-80 rounded-full bg-purple-600 blur-[140px]" />
       </div>
 
       <div className="relative z-10 mx-auto max-w-7xl px-4 py-8 sm:px-6 lg:px-8">
@@ -213,7 +211,7 @@ export default function PollCreateClient() {
             </button>
             <button
               onClick={() => handleSave(true)}
-              className="inline-flex items-center gap-2 rounded-xl bg-gradient-to-r from-indigo-600 to-purple-600 px-4 py-2.5 text-xs font-semibold text-white shadow-lg shadow-indigo-500/25 hover:brightness-110 active:scale-[0.98] transition-all"
+              className="inline-flex items-center gap-2 rounded-xl bg-indigo-600 px-4 py-2.5 text-xs font-semibold text-white shadow-sm hover:brightness-110 active:scale-[0.98] transition-all"
             >
               <Send className="h-3.5 w-3.5" />
               Publier Immédiatement
@@ -338,7 +336,7 @@ export default function PollCreateClient() {
                         className={cn(
                           "flex flex-col items-start rounded-xl border p-4 text-left transition-all",
                           isSel
-                            ? "border-indigo-500 bg-indigo-500/10 text-white shadow-lg shadow-indigo-500/10"
+                            ? "border-indigo-500 bg-indigo-500/10 text-white shadow-sm"
                             : "border-zinc-800 bg-zinc-900/50 text-zinc-400 hover:border-zinc-700 hover:text-white"
                         )}
                       >

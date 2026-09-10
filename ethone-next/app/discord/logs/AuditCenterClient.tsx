@@ -457,7 +457,7 @@ export function AuditCenterClient() {
   const getSeverityBadge = (severity: AuditSeverity) => {
     switch (severity) {
       case "CRITICAL":
-        return "bg-rose-500/20 text-rose-300 border-rose-500/40 shadow-[0_0_10px_rgba(244,63,94,0.25)]";
+        return "bg-rose-500/20 text-rose-300 border-rose-500/40";
       case "HIGH":
         return "bg-orange-500/20 text-orange-300 border-orange-500/30";
       case "MEDIUM":
@@ -496,7 +496,7 @@ export function AuditCenterClient() {
   };
 
   return (
-    <div className="min-h-screen bg-zinc-950 text-white selection:bg-indigo-500 selection:text-white pb-36">
+    <div className="h-full overflow-y-auto os-scroll [overscroll-behavior:contain] bg-[var(--bg-main)] text-white selection:bg-indigo-500 selection:text-white pb-36">
       {/* HEADER TOP BAR */}
       <div className="sticky top-0 z-40 border-b border-white/10 bg-zinc-950/80 backdrop-blur-xl">
         <div className="mx-auto flex max-w-7xl items-center justify-between px-4 py-3 sm:px-6">
@@ -508,7 +508,7 @@ export function AuditCenterClient() {
               <ArrowLeft className="h-4 w-4" />
             </Link>
             <div className="flex items-center gap-2">
-              <div className="flex h-8 w-8 items-center justify-center rounded-xl bg-gradient-to-br from-indigo-500 to-blue-600 text-white shadow-md shadow-indigo-500/20">
+              <div className="flex h-8 w-8 items-center justify-center rounded-xl bg-indigo-600 text-white shadow-sm">
                 <FileText className="h-4 w-4" />
               </div>
               <div>
@@ -535,13 +535,13 @@ export function AuditCenterClient() {
               className={cn(
                 "flex items-center gap-1.5 rounded-xl border px-3 py-1.5 text-xs font-semibold transition-all cursor-pointer",
                 liveStreaming
-                  ? "border-emerald-500/30 bg-emerald-500/10 text-emerald-300 shadow-sm shadow-emerald-500/20"
+                  ? "border-emerald-500/30 bg-emerald-500/10 text-emerald-300 shadow-sm"
                   : "border-white/10 bg-white/5 text-zinc-400 hover:text-white"
               )}
             >
               {liveStreaming ? (
                 <>
-                  <span className="relative inline-flex h-2 w-2 rounded-full bg-emerald-500 shadow-[0_0_5px_rgba(52,211,153,0.8)]" />
+                  <span className="relative inline-flex h-2 w-2 rounded-full bg-emerald-500" />
                   <span>Flux Live</span>
                 </>
               ) : (
@@ -618,7 +618,7 @@ export function AuditCenterClient() {
             className={cn(
               "col-span-2 sm:col-span-1 rounded-2xl border p-4 backdrop-blur-xl transition-all",
               (overview?.criticalToday ?? 0) > 0
-                ? "border-rose-500/40 bg-gradient-to-br from-rose-950/40 to-red-900/20 shadow-lg shadow-rose-950/30"
+                ? "border-rose-500/40 bg-white/[0.03] shadow-sm"
                 : "border-white/10 bg-zinc-900/60"
             )}
           >
@@ -651,7 +651,7 @@ export function AuditCenterClient() {
             className={cn(
               "flex items-center gap-2 rounded-xl px-4 py-2 transition-all cursor-pointer shrink-0",
               activeTab === "stream"
-                ? "bg-indigo-600 text-white shadow-md shadow-indigo-600/30"
+                ? "bg-indigo-600 text-white shadow-sm"
                 : "text-zinc-400 hover:bg-white/5 hover:text-white"
             )}
           >
@@ -665,7 +665,7 @@ export function AuditCenterClient() {
             className={cn(
               "flex items-center gap-2 rounded-xl px-4 py-2 transition-all cursor-pointer shrink-0",
               activeTab === "critical"
-                ? "bg-rose-600 text-white shadow-md shadow-rose-600/30"
+                ? "bg-rose-600 text-white shadow-sm"
                 : "text-zinc-400 hover:bg-white/5 hover:text-white"
             )}
           >
@@ -679,7 +679,7 @@ export function AuditCenterClient() {
             className={cn(
               "flex items-center gap-2 rounded-xl px-4 py-2 transition-all cursor-pointer shrink-0",
               activeTab === "analytics"
-                ? "bg-indigo-600 text-white shadow-md shadow-indigo-600/30"
+                ? "bg-indigo-600 text-white shadow-sm"
                 : "text-zinc-400 hover:bg-white/5 hover:text-white"
             )}
           >
@@ -693,7 +693,7 @@ export function AuditCenterClient() {
             className={cn(
               "flex items-center gap-2 rounded-xl px-4 py-2 transition-all cursor-pointer shrink-0",
               activeTab === "routing"
-                ? "bg-indigo-600 text-white shadow-md shadow-indigo-600/30"
+                ? "bg-indigo-600 text-white shadow-sm"
                 : "text-zinc-400 hover:bg-white/5 hover:text-white"
             )}
           >
@@ -773,7 +773,7 @@ export function AuditCenterClient() {
                       className={cn(
                         "rounded-lg px-2.5 py-1 text-[11px] font-semibold transition-all cursor-pointer",
                         selectedPeriod === p
-                          ? "bg-indigo-600 text-white shadow-sm shadow-indigo-600/30"
+                          ? "bg-indigo-600 text-white shadow-sm"
                           : "text-zinc-400 hover:text-white"
                       )}
                     >
@@ -951,7 +951,7 @@ export function AuditCenterClient() {
               {(overview?.criticalEvents || []).map((crit) => (
                 <div
                   key={crit.id}
-                  className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 rounded-2xl border border-rose-500/30 bg-zinc-900/80 p-4 backdrop-blur-xl shadow-lg shadow-rose-950/20"
+                  className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 rounded-2xl border border-rose-500/30 bg-zinc-900/80 p-4 backdrop-blur-xl shadow-sm"
                 >
                   <div className="space-y-1">
                     <div className="flex items-center gap-2">
@@ -973,7 +973,7 @@ export function AuditCenterClient() {
                     <button
                       type="button"
                       onClick={() => handleInvestigate(crit.id)}
-                      className="flex h-9 items-center gap-2 rounded-xl bg-gradient-to-r from-rose-600 to-red-600 px-4 text-xs font-bold text-white shadow-md shadow-rose-600/30 transition-all hover:from-rose-500 hover:to-red-500 cursor-pointer"
+                      className="flex h-9 items-center gap-2 rounded-xl bg-rose-600 px-4 text-xs font-bold text-white shadow-sm transition-all hover:bg-rose-500 cursor-pointer"
                     >
                       <Eye className="h-3.5 w-3.5" />
                       <span>Mode Enquête Approfondie</span>
@@ -1005,7 +1005,7 @@ export function AuditCenterClient() {
                       </div>
                       <div className="h-2 w-full rounded-full bg-white/5 overflow-hidden">
                         <div
-                          className="h-full bg-gradient-to-r from-indigo-500 to-blue-500 rounded-full"
+                          className="h-full bg-indigo-500 rounded-full"
                           style={{ width: `${pct}%` }}
                         />
                       </div>
@@ -1065,7 +1065,7 @@ export function AuditCenterClient() {
                   type="button"
                   onClick={handleSaveConfig}
                   disabled={savingConfig}
-                  className="flex items-center gap-2 rounded-xl bg-indigo-600 px-4 py-2 text-xs font-bold text-white shadow-md shadow-indigo-600/30 hover:bg-indigo-500 transition-all cursor-pointer"
+                  className="flex items-center gap-2 rounded-xl bg-indigo-600 px-4 py-2 text-xs font-bold text-white shadow-sm hover:bg-indigo-500 transition-all cursor-pointer"
                 >
                   <CheckCircle2 className="h-4 w-4" />
                   <span>{savingConfig ? "Sauvegarde..." : "Enregistrer"}</span>
@@ -1226,7 +1226,7 @@ export function AuditCenterClient() {
             </button>
 
             <div className="flex items-center gap-2.5">
-              <div className="flex h-9 w-9 items-center justify-center rounded-xl bg-indigo-600 text-white shadow-md shadow-indigo-600/30">
+              <div className="flex h-9 w-9 items-center justify-center rounded-xl bg-indigo-600 text-white shadow-sm">
                 <Eye className="h-5 w-5" />
               </div>
               <div>
@@ -1455,7 +1455,7 @@ export function AuditCenterClient() {
               <button
                 type="button"
                 onClick={handleDownloadExport}
-                className="w-full flex items-center justify-center gap-2 rounded-xl bg-indigo-600 py-2.5 text-xs font-bold text-white shadow-md shadow-indigo-600/30 hover:bg-indigo-500 transition-all cursor-pointer"
+                className="w-full flex items-center justify-center gap-2 rounded-xl bg-indigo-600 py-2.5 text-xs font-bold text-white shadow-sm hover:bg-indigo-500 transition-all cursor-pointer"
               >
                 <Download className="h-4 w-4" />
                 <span>Télécharger l&apos;export {exportFormat.toUpperCase()}</span>

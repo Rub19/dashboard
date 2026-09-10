@@ -1,3 +1,12 @@
+const v12076_fr: ChangelogEntry = {
+  version: "v1.20.76",
+  date: "2026-09-10",
+  title: "Correctif : Page Restait Bloquée au Lieu de Rediriger vers la Connexion",
+  items: [
+    "Correctif de la dernière découverte du chantier sécurité : visiter une page qui nécessite d'être connecté (Réglages, etc.) sans session valide (jamais connecté, session expirée ou révoquée) laissait la page bloquée sur l'écran de démarrage au lieu de rediriger vers la connexion. Redirection automatique et immédiate vers /login désormais en place, confirmée fonctionnelle dans le navigateur sans boucle ni blocage.",
+  ],
+};
+
 const v12075_fr: ChangelogEntry = {
   version: "v1.20.75",
   date: "2026-09-10",
@@ -256,6 +265,15 @@ const v12052_fr: ChangelogEntry = {
     "Dynamic Island : correction d'un bug de priorité qui empêchait Spotify de jamais s'afficher, systématiquement évincé par la synchronisation d'arrière-plan.",
     "Commande /help du Bot Discord : la liste des commandes est désormais générée dynamiquement depuis les commandes réellement enregistrées (fin des commandes fantômes et des commandes manquantes), et affiche la vraie syntaxe des commandes à sous-commandes (ex. /automod status).",
     "Audit de l'enregistrement des commandes slash Discord : architecture confirmée saine, aucune dérive entre le code et les commandes déployées.",
+  ],
+};
+
+const v12076_en: ChangelogEntry = {
+  version: "v1.20.76",
+  date: "2026-09-10",
+  title: "Fix: Page Stayed Stuck Instead of Redirecting to Login",
+  items: [
+    "Fix for the last finding from the security project: visiting a page that requires being signed in (Settings, etc.) with no valid session (never signed in, expired, or revoked) left the page stuck on the boot screen instead of redirecting to login. Automatic, immediate redirect to /login is now in place, confirmed working in the browser with no loop or stuck state.",
   ],
 };
 
@@ -520,6 +538,15 @@ const v12052_en: ChangelogEntry = {
   ],
 };
 
+const v12076_es: ChangelogEntry = {
+  version: "v1.20.76",
+  date: "2026-09-10",
+  title: "Corrección: La Página Se Quedaba Bloqueada en Vez de Redirigir al Login",
+  items: [
+    "Corrección del último hallazgo del proyecto de seguridad: visitar una página que requiere haber iniciado sesión (Ajustes, etc.) sin una sesión válida (nunca conectado, expirada o revocada) dejaba la página bloqueada en la pantalla de inicio en lugar de redirigir al login. Ahora hay una redirección automática e inmediata a /login, confirmada funcionando en el navegador sin bucles ni bloqueos.",
+  ],
+};
+
 const v12075_es: ChangelogEntry = {
   version: "v1.20.75",
   date: "2026-09-10",
@@ -778,6 +805,15 @@ const v12052_es: ChangelogEntry = {
     "Dynamic Island: corregido un error de prioridad que impedía que Spotify apareciera, siempre desplazado por la sincronización en segundo plano.",
     "Comando /help del Bot de Discord: la lista de comandos ahora se genera dinámicamente desde los comandos realmente registrados (fin de comandos fantasma o ausentes), mostrando la sintaxis real de los comandos con subcomandos.",
     "Auditoría del registro de comandos slash de Discord: arquitectura confirmada como sólida, sin desviación entre el código y los comandos desplegados.",
+  ],
+};
+
+const v12076_de: ChangelogEntry = {
+  version: "v1.20.76",
+  date: "2026-09-10",
+  title: "Fix: Seite Blieb Hängen Statt zur Anmeldung Umzuleiten",
+  items: [
+    "Fix für den letzten Befund des Sicherheitsprojekts: Der Besuch einer Seite, die eine Anmeldung erfordert (Einstellungen usw.), ohne gültige Sitzung (nie angemeldet, abgelaufen oder widerrufen) ließ die Seite auf dem Startbildschirm hängen, statt zur Anmeldung umzuleiten. Eine automatische, sofortige Weiterleitung zu /login ist jetzt vorhanden, im Browser bestätigt funktionierend ohne Schleife oder Hänger.",
   ],
 };
 
@@ -23022,5 +23058,10 @@ CHANGELOG_BY_LANG.fr.unshift(v12075_fr);
 CHANGELOG_BY_LANG.en.unshift(v12075_en);
 CHANGELOG_BY_LANG.es.unshift(v12075_es);
 CHANGELOG_BY_LANG.de.unshift(v12075_de);
+
+CHANGELOG_BY_LANG.fr.unshift(v12076_fr);
+CHANGELOG_BY_LANG.en.unshift(v12076_en);
+CHANGELOG_BY_LANG.es.unshift(v12076_es);
+CHANGELOG_BY_LANG.de.unshift(v12076_de);
 
 export const CHANGELOG = CHANGELOG_BY_LANG.fr;

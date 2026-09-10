@@ -120,8 +120,20 @@ export default function BootProvider({ children }: { children: ReactNode }) {
         setState("recovering");
         router.replace("/");
       }
-    } else {
+    } else if (publicRoute) {
       setState("ready");
+    } else {
+      // No session (never logged in, expired, or revoked — e.g. Phase 1's
+      // SESSION_REVOKED) on a page that requires one. Previously this fell
+      // through to the same "ready" state as the public-route case below,
+      // and nothing else in this component (or anywhere else in the app)
+      // ever redirected away — the private route's <Shell>{children}</Shell>
+      // rendered anyway with no session, leaving the user stuck on a
+      // partially-authenticated page instead of being sent to /login. Mirror
+      // the symmetric session-on-a-public-route case above: bounce to
+      // /login rather than rendering a private page with nothing behind it.
+      setState("recovering");
+      router.replace("/login");
     }
   }, [authLoading, authError, session, profileLoaded, publicRoute, router]);
 

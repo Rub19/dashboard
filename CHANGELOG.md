@@ -2,6 +2,17 @@
 
 Toutes les modifications notables de ce projet seront documentées dans ce fichier.
 
+## v1.20.76 — 2026-09-10
+
+**Correctif : page restait bloquée au lieu de rediriger vers la connexion (dernière découverte du chantier Session & Account Security 2.0)**
+
+- **Root cause** : `components/BootProvider.tsx`'s `check()` gérait le cas symétrique inverse (`session` présente sur une route publique → redirection vers `/`) mais pas celui-ci : quand `session` est `null` (jamais connecté, session expirée, ou révoquée par la Phase 1) sur une route privée, le code tombait dans la même branche `else` que le cas "route publique sans session" — passait l'état à `"ready"` sans jamais rediriger. La page rendait ensuite `<Shell>{children}</Shell>` sans session, ou restait bloquée sur l'écran de démarrage selon le moment exact où `authLoading` se résolvait.
+- **Correctif** : nouvelle branche explicite — `!session && !publicRoute` passe l'état à `"recovering"` et appelle `router.replace("/login")`, symétrique au correctif déjà existant pour le cas inverse.
+- **Vérifié en conditions réelles dans le navigateur** (pas seulement par lecture de code) : session/cookies/localStorage/Service Worker entièrement purgés, visite directe de `/settings/security/` → redirection propre et immédiate vers `/login/`, sans boucle, sans blocage. (Un faux blocage à 0% observé lors d'un premier test provenait d'un Service Worker servant une version en cache antérieure au correctif — pas un bug du correctif lui-même ; confirmé en le désinscrivant et en revérifiant sur un onglet neuf.)
+- Validation : `tsc --noEmit` (0 erreur), `npm run build`, `npm run test:unit` (14/14, 69/69, inchangé).
+
+Avec ce correctif, les deux découvertes de la Phase 5 sont closes : le chantier « Session & Account Security 2.0 » est maintenant complet, y compris sur le plan pratique (connexions réellement traçables + redirection propre en cas de session invalide).
+
 ## v1.20.75 — 2026-09-10
 
 **Sécurité : toutes les connexions sont maintenant traçables et révocables (clôture du 2e constat de la Phase 5)**

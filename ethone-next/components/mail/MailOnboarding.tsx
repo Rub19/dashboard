@@ -141,9 +141,9 @@ export default function MailOnboarding({
             setSelectedProvider("ethone");
             setView("create");
           }}
-          className="group relative flex flex-col items-start gap-2.5 rounded-2xl border border-[var(--accent-primary)]/40 bg-[var(--accent-primary)]/10 p-4 text-left transition-all hover:scale-[1.02] hover:border-[var(--accent-primary)] hover:bg-[var(--accent-primary)]/15"
+          className="group relative flex flex-col items-start gap-2.5 rounded-2xl border border-[var(--accent-primary)]/40 bg-[var(--accent-primary)]/10 p-4 text-left transition-all hover:border-[var(--accent-primary)] hover:bg-[var(--accent-primary)]/15"
         >
-          <div className="flex h-10 w-10 items-center justify-center rounded-xl bg-[var(--accent-primary)] text-[var(--accent-contrast)] shadow-md shadow-[var(--accent-primary)]/20">
+          <div className="flex h-10 w-10 items-center justify-center rounded-xl bg-[var(--accent-primary)] text-[var(--accent-contrast)]">
             <Zap className="h-5 w-5" />
           </div>
           <div>
@@ -166,7 +166,7 @@ export default function MailOnboarding({
             setSelectedProvider("gmail");
             setView("create");
           }}
-          className="group relative flex flex-col items-start gap-2.5 rounded-2xl border border-[var(--panel-border)]/[0.12] bg-[var(--panel-bg)]/[0.4] p-4 text-left transition-all hover:scale-[1.02] hover:border-[var(--panel-border)]/[0.3] hover:bg-[var(--panel-bg)]"
+          className="group relative flex flex-col items-start gap-2.5 rounded-2xl border border-[var(--panel-border)]/[0.12] bg-[var(--panel-bg)]/[0.4] p-4 text-left transition-all hover:border-[var(--panel-border)]/[0.3] hover:bg-[var(--panel-bg)]"
         >
           <div className="flex h-10 w-10 items-center justify-center rounded-xl bg-red-500/15 text-red-400">
             <Mail className="h-5 w-5" />
@@ -186,7 +186,7 @@ export default function MailOnboarding({
             setSelectedProvider("outlook");
             setView("create");
           }}
-          className="group relative flex flex-col items-start gap-2.5 rounded-2xl border border-[var(--panel-border)]/[0.12] bg-[var(--panel-bg)]/[0.4] p-4 text-left transition-all hover:scale-[1.02] hover:border-[var(--panel-border)]/[0.3] hover:bg-[var(--panel-bg)]"
+          className="group relative flex flex-col items-start gap-2.5 rounded-2xl border border-[var(--panel-border)]/[0.12] bg-[var(--panel-bg)]/[0.4] p-4 text-left transition-all hover:border-[var(--panel-border)]/[0.3] hover:bg-[var(--panel-bg)]"
         >
           <div className="flex h-10 w-10 items-center justify-center rounded-xl bg-blue-500/15 text-blue-400">
             <Globe className="h-5 w-5" />
@@ -206,7 +206,7 @@ export default function MailOnboarding({
             setSelectedProvider("imap");
             setView("create");
           }}
-          className="group relative flex flex-col items-start gap-2.5 rounded-2xl border border-[var(--panel-border)]/[0.12] bg-[var(--panel-bg)]/[0.4] p-4 text-left transition-all hover:scale-[1.02] hover:border-[var(--panel-border)]/[0.3] hover:bg-[var(--panel-bg)]"
+          className="group relative flex flex-col items-start gap-2.5 rounded-2xl border border-[var(--panel-border)]/[0.12] bg-[var(--panel-bg)]/[0.4] p-4 text-left transition-all hover:border-[var(--panel-border)]/[0.3] hover:bg-[var(--panel-bg)]"
         >
           <div className="flex h-10 w-10 items-center justify-center rounded-xl bg-emerald-500/15 text-emerald-400">
             <Server className="h-5 w-5" />
@@ -300,7 +300,7 @@ export default function MailOnboarding({
         disabled={loading || !local.trim()}
         isLoading={loading}
         leftIcon={<Sparkles className="h-4 w-4" />}
-        className="h-11 w-full shadow-lg shadow-[var(--accent-primary)]/20"
+        className="h-11 w-full"
       >
         Finaliser et accéder à ma boîte mail
       </Button>
@@ -356,7 +356,7 @@ export default function MailOnboarding({
         disabled={loading}
         isLoading={loading}
         leftIcon={<ArrowRight className="h-4 w-4" />}
-        className="h-11 w-full shadow-lg shadow-[var(--accent-primary)]/20"
+        className="h-11 w-full"
       >
         Continuer vers la boîte de réception
       </Button>

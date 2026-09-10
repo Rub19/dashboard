@@ -1,6 +1,6 @@
 "use client";
 
-import { useEffect, useMemo, useState } from "react";
+import { useState } from "react";
 import { motion } from "framer-motion";
 import {
   Inbox,
@@ -14,8 +14,6 @@ import {
   ChevronLeft,
   ChevronRight,
   Tag,
-  HardDrive,
-  Mail,
 } from "lucide-react";
 import { useI18n } from "@/lib/hooks/useI18n";
 import MailProfileButton from "./MailProfileButton";
@@ -36,18 +34,23 @@ type MailSidebarProps = {
   labels?: MailLabel[];
   activeLabel?: string;
   onSelectLabel?: (labelId: string | undefined) => void;
-  createAlias?: (input: string | { alias?: string; display_name?: string; random?: boolean }) => Promise<MailAlias | null | undefined>;
-  updateAlias?: (id: string, patch: { display_name?: string; is_primary?: boolean }) => Promise<MailAlias | null | undefined>;
+  createAlias?: (
+    input: string | { alias?: string; display_name?: string; random?: boolean }
+  ) => Promise<MailAlias | null | undefined>;
+  updateAlias?: (
+    id: string,
+    patch: { display_name?: string; is_primary?: boolean }
+  ) => Promise<MailAlias | null | undefined>;
 };
 
-const FOLDER_DEFS: { id: MailFolder; label: string; icon: typeof Inbox; color?: string }[] = [
+const FOLDER_DEFS: { id: MailFolder; label: string; icon: typeof Inbox }[] = [
   { id: "inbox", label: "Boîte de réception", icon: Inbox },
-  { id: "starred", label: "Favoris / Suivis", icon: Star, color: "text-[var(--warning)]" },
-  { id: "sent", label: "Messages envoyés", icon: Send },
+  { id: "starred", label: "Suivis", icon: Star },
+  { id: "sent", label: "Envoyés", icon: Send },
   { id: "drafts", label: "Brouillons", icon: FileEdit },
   { id: "archive", label: "Archives", icon: Archive },
   { id: "trash", label: "Corbeille", icon: Trash2 },
-  { id: "spam", label: "Courrier indésirable", icon: AlertTriangle },
+  { id: "spam", label: "Indésirables", icon: AlertTriangle },
 ];
 
 export default function MailSidebar({
@@ -66,97 +69,51 @@ export default function MailSidebar({
 }: MailSidebarProps) {
   const i18n = useI18n();
   const [collapsed, setCollapsed] = useState(false);
-  const [storage, setStorage] = useState({ used: 1.2, total: 10 });
-
-  useEffect(() => {
-    if (typeof navigator === "undefined" || !navigator.storage?.estimate) return;
-    navigator.storage
-      .estimate()
-      .then((est) => {
-        const total = (est.quota || 10 * 1024 ** 3) / 1024 ** 3;
-        const used = (est.usage || 0) / 1024 ** 3;
-        setStorage({ used: Math.max(0.1, used), total: Math.max(used, total) });
-      })
-      .catch(() => {});
-  }, []);
-
-  const percent = useMemo(
-    () => Math.min(100, Math.max(1, Math.round((storage.used / storage.total) * 100))),
-    [storage]
-  );
 
   return (
     <motion.aside
-      animate={{ width: collapsed ? "4.5rem" : "15rem" }}
-      transition={{ type: "spring", stiffness: 350, damping: 30 }}
-      className="relative flex h-full shrink-0 flex-col justify-between rounded-2xl border border-[var(--panel-border)]/[0.12] bg-[var(--panel-bg)]/[0.45] p-3 shadow-sm backdrop-blur-[var(--panel-blur)] select-none overflow-hidden"
+      animate={{ width: collapsed ? "4rem" : "15rem" }}
+      transition={{ type: "spring", stiffness: 350, damping: 32 }}
+      className="v8-panel relative flex h-full shrink-0 flex-col justify-between overflow-hidden p-2.5 select-none"
     >
-      <div className="space-y-4">
-        {/* Header with Collapse toggle */}
-        <div className="flex items-center justify-between px-1">
+      <div className="space-y-3">
+        {/* Header */}
+        <div className={cn("flex items-center px-1", collapsed ? "justify-center" : "justify-between")}>
           {!collapsed && (
-            <div className="flex items-center gap-2">
-              <div className="flex h-7 w-7 items-center justify-center rounded-xl bg-[var(--accent-primary)]/15 text-[var(--accent-primary)] shadow-sm">
-                <Mail className="h-4 w-4" />
-              </div>
-              <span className="text-xs font-bold uppercase tracking-wider text-[var(--text-primary)]">
-                ETHONE Mail
-              </span>
-            </div>
+            <span className="text-sm font-semibold tracking-tight text-[var(--text-primary)]">Mail</span>
           )}
           <button
             type="button"
             onClick={() => setCollapsed((c) => !c)}
-            className={cn(
-              "flex h-7 w-7 items-center justify-center rounded-lg border border-[var(--panel-border)]/[0.1] text-[var(--text-muted)] transition-all hover:bg-[var(--panel-bg)] hover:text-[var(--text-primary)]",
-              collapsed && "mx-auto"
-            )}
-            title={collapsed ? "Agrandir le menu" : "Réduire le menu"}
+            className="flex h-7 w-7 items-center justify-center rounded-lg text-[var(--text-muted)] transition-colors hover:bg-[var(--surface-2)] hover:text-[var(--text-primary)]"
+            title={collapsed ? "Agrandir" : "Réduire"}
           >
-            {collapsed ? <ChevronRight className="h-3.5 w-3.5" /> : <ChevronLeft className="h-3.5 w-3.5" />}
+            {collapsed ? <ChevronRight className="h-4 w-4" /> : <ChevronLeft className="h-4 w-4" />}
           </button>
         </div>
 
-        {/* Compose Button */}
+        {/* Compose */}
         <button
           type="button"
           onClick={onCompose}
           disabled={!canCompose}
           className={cn(
-            "group relative flex items-center rounded-xl font-bold transition-all duration-200 cursor-pointer overflow-hidden active:scale-98 disabled:opacity-50 disabled:cursor-not-allowed",
-            "bg-gradient-to-r from-[var(--accent-primary)] to-[var(--accent-secondary,var(--accent-primary))] text-white",
-            "border border-white/20 shadow-[0_4px_16px_var(--glow-color)] hover:shadow-[0_6px_24px_var(--glow-color)] hover:brightness-110",
-            collapsed ? "h-10 w-10 justify-center mx-auto p-0" : "w-full justify-between px-3.5 py-2.5"
+            "flex items-center rounded-xl bg-[var(--accent-primary)] font-medium text-[var(--accent-contrast)] transition-[filter,transform] duration-150 hover:brightness-[1.08] active:scale-[0.98] disabled:opacity-50",
+            collapsed ? "mx-auto h-10 w-10 justify-center" : "w-full gap-2 px-3 py-2.5"
           )}
           title="Nouveau message (Ctrl+U)"
         >
-          {/* Subtle sheen highlight animation on hover */}
-          <div className="pointer-events-none absolute inset-0 bg-gradient-to-r from-white/0 via-white/15 to-white/0 opacity-0 group-hover:opacity-100 transition-opacity duration-300" />
-
-          <div className="relative z-10 flex items-center gap-2.5 min-w-0">
-            <div className="flex h-6 w-6 shrink-0 items-center justify-center rounded-lg bg-black/20 text-white shadow-xs">
-              <SquarePen className="h-3.5 w-3.5" />
-            </div>
-            {!collapsed && (
-              <span className="text-xs sm:text-sm font-bold text-white tracking-wide truncate">
-                {i18n("newMessage", "Nouveau message")}
-              </span>
-            )}
-          </div>
-
-          {!collapsed && (
-            <kbd className="relative z-10 hidden sm:inline-flex items-center rounded-md border border-white/20 bg-black/25 px-1.5 py-0.5 font-mono text-[9px] font-semibold text-white/90 shadow-inner">
-              Ctrl+U
-            </kbd>
-          )}
+          <SquarePen className="h-4 w-4 shrink-0" />
+          {!collapsed && <span className="text-[13px]">{i18n("newMessage", "Nouveau message")}</span>}
         </button>
 
-        {/* Navigation Folders */}
+        {/* Folders */}
         <nav className="space-y-0.5" aria-label="Dossiers Mail">
           {FOLDER_DEFS.map((f) => {
             const isActive = active === f.id && !activeLabel;
             const count = counts[f.id] ?? 0;
-            const IconComponent = f.icon;
+            const Icon = f.icon;
+            const badge = f.id === "inbox" ? (unread > 0 ? unread : 0) : count;
 
             return (
               <button
@@ -167,38 +124,33 @@ export default function MailSidebar({
                   onChange(f.id);
                 }}
                 className={cn(
-                  "group relative flex w-full items-center rounded-xl text-xs font-medium transition-all duration-150 cursor-pointer",
-                  collapsed ? "h-10 justify-center px-0" : "justify-between px-3 py-2",
+                  "group flex w-full items-center rounded-lg text-[13px] transition-colors",
+                  collapsed ? "h-9 justify-center" : "justify-between px-2.5 py-1.5",
                   isActive
-                    ? "border border-[var(--accent-primary)]/30 bg-[var(--accent-primary)]/15 text-[var(--text-primary)] font-semibold shadow-xs"
-                    : "border border-transparent text-[var(--text-muted)] hover:bg-[var(--surface-hover)]/40 hover:text-[var(--text-primary)]"
+                    ? "bg-[var(--accent-primary)]/[0.12] font-medium text-[var(--text-primary)]"
+                    : "text-[var(--text-muted)] hover:bg-[var(--surface-2)]/60 hover:text-[var(--text-primary)]"
                 )}
                 title={f.label}
               >
-                <span className={cn("flex items-center gap-2.5 min-w-0", collapsed && "justify-center")}>
-                  <span
+                <span className={cn("flex min-w-0 items-center gap-2.5", collapsed && "justify-center")}>
+                  <Icon
                     className={cn(
-                      "transition-colors duration-150",
-                      isActive
-                        ? "text-[var(--accent-primary)]"
-                        : f.color || "text-[var(--text-muted)] group-hover:text-[var(--text-primary)]"
+                      "h-4 w-4 shrink-0",
+                      isActive ? "text-[var(--accent-primary)]" : "text-[var(--text-muted)] group-hover:text-[var(--text-primary)]"
                     )}
-                  >
-                    <IconComponent className="h-4 w-4 shrink-0" />
-                  </span>
+                  />
                   {!collapsed && <span className="truncate">{i18n(f.id, f.label)}</span>}
                 </span>
-
-                {!collapsed && count > 0 && (
+                {!collapsed && badge > 0 && (
                   <span
                     className={cn(
-                      "relative z-10 rounded-full px-2 py-0.5 text-[10px] font-mono font-medium",
+                      "rounded-full px-1.5 text-[11px] tabular-nums",
                       f.id === "inbox" && unread > 0
-                        ? "bg-[var(--accent-primary)] text-[var(--accent-contrast)] font-bold shadow-sm"
-                        : "bg-[var(--panel-border)]/[0.2] text-[var(--text-muted)]"
+                        ? "bg-[var(--accent-primary)] font-medium text-[var(--accent-contrast)]"
+                        : "text-[var(--text-muted)]"
                     )}
                   >
-                    {f.id === "inbox" ? (unread > 0 ? unread : count) : count}
+                    {badge}
                   </span>
                 )}
               </button>
@@ -206,10 +158,10 @@ export default function MailSidebar({
           })}
         </nav>
 
-        {/* Labels / Tags Section */}
+        {/* Labels */}
         {labels.length > 0 && !collapsed && (
-          <div className="pt-2 border-t border-[var(--panel-border)]/[0.1] space-y-1">
-            <p className="px-2 text-[10px] font-bold uppercase tracking-wider text-[var(--text-muted)]">
+          <div className="space-y-0.5 border-t border-[var(--panel-border)] pt-2.5">
+            <p className="px-2.5 pb-1 text-[11px] font-medium uppercase tracking-wide text-[var(--text-muted)]">
               Étiquettes
             </p>
             {labels.map((l) => (
@@ -218,13 +170,13 @@ export default function MailSidebar({
                 type="button"
                 onClick={() => onSelectLabel?.(l.name)}
                 className={cn(
-                  "flex w-full items-center gap-2 rounded-xl px-3 py-1.5 text-xs transition-colors",
+                  "flex w-full items-center gap-2.5 rounded-lg px-2.5 py-1.5 text-[13px] transition-colors",
                   activeLabel === l.name
-                    ? "bg-[var(--accent-primary)]/15 text-[var(--accent-primary)] font-semibold"
-                    : "text-[var(--text-muted)] hover:bg-[var(--panel-bg)] hover:text-[var(--text-primary)]"
+                    ? "bg-[var(--accent-primary)]/[0.12] font-medium text-[var(--text-primary)]"
+                    : "text-[var(--text-muted)] hover:bg-[var(--surface-2)]/60 hover:text-[var(--text-primary)]"
                 )}
               >
-                <Tag className="h-3 w-3" style={{ color: l.color || "var(--accent-primary)" }} />
+                <Tag className="h-3.5 w-3.5 shrink-0" style={{ color: l.color || "var(--accent-primary)" }} />
                 <span className="truncate">{l.name}</span>
               </button>
             ))}
@@ -232,45 +184,17 @@ export default function MailSidebar({
         )}
       </div>
 
-      {/* Footer Area: Account profile & storage widget */}
-      <div className="space-y-2.5 pt-3 border-t border-[var(--panel-border)]/[0.1]">
-        {!collapsed && (
+      {/* Footer: account */}
+      {!collapsed && (
+        <div className="border-t border-[var(--panel-border)] pt-2.5">
           <MailProfileButton
             aliases={aliases}
             primaryAlias={aliases.find((a) => a.is_primary)}
             createAlias={createAlias}
             updateAlias={updateAlias}
           />
-        )}
-
-        {/* Storage Widget */}
-        {!collapsed ? (
-          <div className="rounded-xl border border-[var(--panel-border)]/[0.12] bg-[var(--panel-bg)]/[0.3] p-2.5">
-            <div className="flex items-center justify-between text-[10px] text-[var(--text-muted)]">
-              <span className="font-semibold uppercase tracking-wider flex items-center gap-1">
-                <HardDrive className="h-3 w-3 text-[var(--accent-primary)]" />
-                {i18n("storage", "Stockage")}
-              </span>
-              <span className="font-mono">{percent}%</span>
-            </div>
-            <div className="mt-1.5 h-1.5 w-full overflow-hidden rounded-full bg-[var(--panel-border)]/[0.2]">
-              <div
-                className="h-full rounded-full bg-[var(--accent-primary)] transition-all duration-300 shadow-[0_0_8px_var(--glow-color)]"
-                style={{ width: `${percent}%` }}
-              />
-            </div>
-            <p className="mt-1 text-[10px] font-mono text-[var(--text-muted)]">
-              {storage.used.toFixed(1)} Go / {storage.total.toFixed(0)} Go
-            </p>
-          </div>
-        ) : (
-          <div className="flex justify-center" title={`Stockage : ${percent}% utilisé`}>
-            <div className="flex h-8 w-8 items-center justify-center rounded-xl bg-[var(--panel-bg)]/[0.4] text-[var(--text-muted)]">
-              <HardDrive className="h-4 w-4" />
-            </div>
-          </div>
-        )}
-      </div>
+        </div>
+      )}
     </motion.aside>
   );
 }

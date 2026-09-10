@@ -25492,4 +25492,65 @@ CHANGELOG_BY_LANG.en.unshift(v12126_en);
 CHANGELOG_BY_LANG.es.unshift(v12126_es);
 CHANGELOG_BY_LANG.de.unshift(v12126_de);
 
+const v12127_fr: ChangelogEntry = {
+  version: "v1.21.27",
+  date: "2026-09-11",
+  title: "Refonte du design de la boite mail",
+  items: [
+    "Nouvelle direction visuelle plus sobre et moderne : surfaces plates, panneaux unifies (v8-panel), suppression des degrades, des halos lumineux et de la fausse jauge de stockage.",
+    "Avatars d expediteur repenses : pastille ronde monochrome et lisible, une teinte stable par contact, plus aucun degrade arc-en-ciel.",
+    "Liste des messages allegee : en-tete simplifie, filtres en pastilles, barre d actions groupees integree au flux au lieu d une carte flottante, etats de chargement et vide plus discrets.",
+    "Lecture d un message : barre d outils compacte, en-tete d expediteur clarifie, corps du mail qui suit desormais le theme clair ou sombre, pieces jointes en cartes neutres.",
+    "Barre laterale et fenetre de composition alignees sur la meme grammaire visuelle : boutons pleins sans ombre coloree, coins et espacements homogenes.",
+    "Aucune fonctionnalite modifiee : dossiers, recherche, tri, selection multiple, brouillons, reponses rapides et raccourcis clavier fonctionnent comme avant.",
+  ],
+};
+
+const v12127_en: ChangelogEntry = {
+  version: "v1.21.27",
+  date: "2026-09-11",
+  title: "Mail inbox design overhaul",
+  items: [
+    "New, calmer and more modern visual direction: flat surfaces, unified panels (v8-panel), no more gradients, glow shadows or the misleading storage gauge.",
+    "Reworked sender avatars: a single-tone, readable round badge with a stable hue per contact, no rainbow gradients.",
+    "Lighter thread list: simplified header, pill filters, bulk-action bar now inline instead of a floating card, quieter loading and empty states.",
+    "Message reading view: compact toolbar, clearer sender header, mail body that now follows the light or dark theme, attachments as neutral cards.",
+    "Sidebar and composer aligned on the same visual grammar: solid buttons without colored shadow, consistent corners and spacing.",
+    "No feature changed: folders, search, sort, multi-select, drafts, quick replies and keyboard shortcuts all work as before.",
+  ],
+};
+
+const v12127_es: ChangelogEntry = {
+  version: "v1.21.27",
+  date: "2026-09-11",
+  title: "Rediseno de la bandeja de correo",
+  items: [
+    "Nueva direccion visual mas sobria y moderna: superficies planas, paneles unificados (v8-panel), sin degradados, sin halos luminosos ni el medidor de almacenamiento enganoso.",
+    "Avatares de remitente renovados: una insignia redonda de un solo tono, legible, con un color estable por contacto y sin degradados.",
+    "Lista de mensajes mas ligera: encabezado simplificado, filtros en pastillas, barra de acciones en lote integrada en el flujo en lugar de una tarjeta flotante, estados de carga y vacio mas discretos.",
+    "Vista de lectura: barra de herramientas compacta, encabezado de remitente mas claro, cuerpo del correo que ahora sigue el tema claro u oscuro, adjuntos como tarjetas neutras.",
+    "Barra lateral y ventana de redaccion alineadas con la misma gramatica visual: botones solidos sin sombra de color, esquinas y espaciados homogeneos.",
+    "Ninguna funcion cambio: carpetas, busqueda, orden, seleccion multiple, borradores, respuestas rapidas y atajos de teclado siguen igual.",
+  ],
+};
+
+const v12127_de: ChangelogEntry = {
+  version: "v1.21.27",
+  date: "2026-09-11",
+  title: "Neugestaltung des Mail-Postfachs",
+  items: [
+    "Neue, ruhigere und modernere Optik: flache Flaechen, einheitliche Panels (v8-panel), keine Verlaeufe, keine Leucht-Schatten und keine irrefuehrende Speicheranzeige mehr.",
+    "Ueberarbeitete Absender-Avatare: ein einfarbiges, gut lesbares rundes Abzeichen mit fester Farbe pro Kontakt, keine Regenbogen-Verlaeufe.",
+    "Schlankere Nachrichtenliste: vereinfachte Kopfzeile, Filter als Pillen, Sammelaktionsleiste jetzt im Fluss statt als schwebende Karte, dezentere Lade- und Leerzustaende.",
+    "Leseansicht: kompakte Werkzeugleiste, klarere Absenderkopfzeile, Mail-Text folgt jetzt dem hellen oder dunklen Thema, Anhaenge als neutrale Karten.",
+    "Seitenleiste und Editor folgen derselben visuellen Grammatik: flache Buttons ohne farbigen Schatten, einheitliche Ecken und Abstaende.",
+    "Keine Funktion geaendert: Ordner, Suche, Sortierung, Mehrfachauswahl, Entwuerfe, Schnellantworten und Tastenkuerzel funktionieren wie zuvor.",
+  ],
+};
+
+CHANGELOG_BY_LANG.fr.unshift(v12127_fr);
+CHANGELOG_BY_LANG.en.unshift(v12127_en);
+CHANGELOG_BY_LANG.es.unshift(v12127_es);
+CHANGELOG_BY_LANG.de.unshift(v12127_de);
+
 export const CHANGELOG = CHANGELOG_BY_LANG.fr;

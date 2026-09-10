@@ -251,9 +251,9 @@ export default function ComposeMailModal({
           exit={{ opacity: 0, y: 40, scale: 0.95 }}
           transition={{ type: "spring", stiffness: 350, damping: 28 }}
           className={cn(
-            "pointer-events-auto flex flex-col overflow-hidden rounded-2xl border border-[var(--panel-border)]/[0.2] bg-[var(--bg-main)]/[0.95] shadow-2xl backdrop-blur-2xl transition-all duration-200",
+            "pointer-events-auto flex flex-col overflow-hidden rounded-2xl border border-[var(--panel-border)] bg-[var(--bg-main)] shadow-2xl transition-all duration-200",
             isFullscreen
-              ? "fixed inset-4 z-50 rounded-3xl"
+              ? "fixed inset-4 z-50"
               : "h-[min(650px,85vh)] w-[min(600px,94vw)]"
           )}
           onDragOver={(e) => {
@@ -268,15 +268,10 @@ export default function ComposeMailModal({
           }}
         >
           {/* Header */}
-          <div className="flex items-center justify-between border-b border-[var(--panel-border)]/[0.1] bg-[var(--panel-bg)]/[0.4] px-4 py-3 select-none">
-            <div className="flex items-center gap-2">
-              <span className="flex h-6 w-6 items-center justify-center rounded-lg bg-[var(--accent-primary)]/15 text-[var(--accent-primary)] font-bold text-xs">
-                @
-              </span>
-              <h2 className="text-xs font-bold text-[var(--text-primary)]">
-                {subject ? subject : "Nouveau message"}
-              </h2>
-            </div>
+          <div className="flex items-center justify-between border-b border-[var(--panel-border)] px-4 py-3 select-none">
+            <h2 className="truncate text-[13px] font-medium text-[var(--text-primary)]">
+              {subject ? subject : "Nouveau message"}
+            </h2>
 
             <div className="flex items-center gap-1">
               <button
@@ -299,7 +294,7 @@ export default function ComposeMailModal({
           </div>
 
           {/* Form Fields */}
-          <div className="shrink-0 space-y-1.5 border-b border-[var(--panel-border)]/[0.1] p-3 text-xs">
+          <div className="shrink-0 space-y-1.5 border-b border-[var(--panel-border)] p-3 text-xs">
             {/* From (Alias) */}
             <div className="flex items-center gap-2">
               <span className="w-12 shrink-0 font-semibold text-[var(--text-muted)]">De :</span>
@@ -501,15 +496,15 @@ export default function ComposeMailModal({
 
           {/* Attachments Pills */}
           {attachments.length > 0 && (
-            <div className="flex flex-wrap gap-2 border-t border-[var(--panel-border)]/[0.1] bg-[var(--panel-bg)]/[0.2] p-2.5">
+            <div className="flex flex-wrap gap-2 border-t border-[var(--panel-border)] p-2.5">
               {attachments.map((a, i) => (
                 <div
                   key={`${a.filename}-${i}`}
-                  className="flex items-center gap-2 rounded-lg border border-[var(--panel-border)]/[0.12] bg-[var(--panel-bg)]/[0.6] px-2.5 py-1 text-xs text-[var(--text-primary)]"
+                  className="flex items-center gap-2 rounded-lg border border-[var(--panel-border)] bg-[var(--surface-2)]/50 px-2.5 py-1 text-xs text-[var(--text-primary)]"
                 >
-                  <Paperclip className="h-3.5 w-3.5 text-[var(--accent-primary)]" />
+                  <Paperclip className="h-3.5 w-3.5 text-[var(--text-muted)]" />
                   <span className="truncate max-w-[150px] font-medium">{a.filename}</span>
-                  <span className="text-[10px] text-[var(--text-muted)] font-mono">
+                  <span className="text-[10px] text-[var(--text-muted)]">
                     ({formatFileSize(a.size)})
                   </span>
                   <button
@@ -525,7 +520,7 @@ export default function ComposeMailModal({
           )}
 
           {/* Footer Bar */}
-          <div className="flex items-center justify-between border-t border-[var(--panel-border)]/[0.1] bg-[var(--panel-bg)]/[0.4] px-4 py-3 select-none">
+          <div className="flex items-center justify-between border-t border-[var(--panel-border)] px-4 py-3 select-none">
             <div className="flex items-center gap-2">
               <Button
                 type="button"
@@ -553,16 +548,16 @@ export default function ComposeMailModal({
                   size="sm"
                   onClick={handleAi}
                   disabled={aiLoading || !body.trim()}
-                  leftIcon={aiLoading ? <Loader2 className="h-3.5 w-3.5 animate-spin" /> : <Sparkles className="h-3.5 w-3.5 text-purple-400" />}
-                  className="text-xs text-purple-300 hover:text-purple-200"
+                  leftIcon={aiLoading ? <Loader2 className="h-3.5 w-3.5 animate-spin" /> : <Sparkles className="h-3.5 w-3.5" />}
+                  className="text-xs"
                   title="Améliorer le message avec l'IA"
                 >
-                  IA Assistant
+                  Assistant
                 </Button>
               )}
 
               {lastSaved && (
-                <span className="hidden sm:inline-flex items-center gap-1 font-mono text-[10px] text-[var(--text-muted)]">
+                <span className="hidden sm:inline-flex items-center gap-1 text-[10px] text-[var(--text-muted)]">
                   <Clock className="h-3 w-3" />
                   Enregistré à {lastSaved.toLocaleTimeString([], { hour: "2-digit", minute: "2-digit" })}
                 </span>
@@ -591,10 +586,9 @@ export default function ComposeMailModal({
                 disabled={loading || (!to.length && !toInput.trim()) || !fromAliasId}
                 isLoading={loading}
                 leftIcon={<Send className="h-3.5 w-3.5" />}
-                className="shadow-md shadow-[var(--accent-primary)]/20"
               >
                 <span>Envoyer</span>
-                <kbd className="hidden sm:inline-block ml-1 rounded bg-white/20 px-1 py-0.2 font-mono text-[9px] text-white">
+                <kbd className="hidden sm:inline-block ml-1.5 rounded bg-black/15 px-1 py-0.5 text-[9px] text-[var(--accent-contrast)]/80">
                   Ctrl+Enter
                 </kbd>
               </Button>

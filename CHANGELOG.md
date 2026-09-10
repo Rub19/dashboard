@@ -2,6 +2,19 @@
 
 Toutes les modifications notables de ce projet seront documentées dans ce fichier.
 
+## v1.21.27 — 2026-09-11
+
+**Refonte du design de la boîte mail (`ethone-next/app/mail` + `components/mail/*`)**
+
+- Pass « moins IA / plus sobre » sur toute la page mail — purement présentationnel, aucun changement de données, d'API ou de comportement.
+- `components/mail/MailAvatar.tsx` (nouveau) : composant d'avatar monogramme plat partagé (une teinte stable par contact, plus de dégradés arc-en-ciel). Remplace `getAvatarColor`/`initialsFrom` dupliqués dans `MailThreadItem` et `MailDetailView`.
+- `MailSidebar.tsx` : bouton « Nouveau message » plein sans dégradé ni animation de brillance, suppression de la fausse jauge de stockage (`navigator.storage.estimate()` mal étiquetée), conteneur `v8-panel`, retrait des halos (`shadow-[0_0_*_var(--glow-color)]`).
+- `MailThreadList.tsx` : `v8-panel`, en-tête simplifié, filtres en pastilles, barre d'actions groupées intégrée au flux (plus de carte flottante `absolute`), skeleton/empty plus discrets.
+- `MailThreadItem.tsx` : layout 3 lignes épuré, avatar plat, marqueur de bord accent pour actif/non-lu, badges statiques ↔ actions au survol.
+- `MailDetailView.tsx` : `v8-panel`, barre d'outils compacte, corps du mail sans `prose-invert` codé en dur (suit désormais le thème clair/sombre), pièces jointes en cartes neutres, empty state sans halo flou.
+- `ComposeMailModal.tsx` / `MailProfileButton.tsx` / `MailOnboarding.tsx` : boutons pleins sans ombre colorée, retrait des `hover:scale-*`, bordures/fonds alignés sur les tokens de thème.
+- Validation : `tsc` 0 erreur, `build` ✓, `test:unit` 73/73.
+
 ## v1.21.16 — 2026-09-10
 
 **Nouveau module bot : AFK**

@@ -102,20 +102,20 @@ export default function MailProfileButton({ aliases, primaryAlias, updateAlias, 
       <button
         type="button"
         onClick={() => setOpen(true)}
-        className="group flex w-full items-center gap-3 rounded-2xl border border-[var(--panel-border)] bg-[var(--surface-raised)]/70 p-2.5 text-left transition-all hover:bg-[var(--surface-raised)] hover:border-[var(--accent-primary)]/40 shadow-xs cursor-pointer"
+        className="group flex w-full items-center gap-2.5 rounded-xl px-2 py-2 text-left transition-colors hover:bg-[var(--surface-2)]/60"
       >
-        <span className="flex h-9 w-9 shrink-0 items-center justify-center rounded-xl bg-[var(--accent-primary)]/15 border border-[var(--accent-primary)]/30 text-[var(--accent-primary)] shadow-xs">
+        <span className="flex h-8 w-8 shrink-0 items-center justify-center rounded-full bg-[var(--surface-2)] text-[var(--text-muted)]">
           <User className="h-4 w-4" />
         </span>
         <div className="min-w-0 flex-1">
-          <p className="text-xs font-bold text-[var(--text-primary)] truncate">
+          <p className="truncate text-[13px] font-medium text-[var(--text-primary)]">
             {primary?.display_name || "Profil mail"}
           </p>
-          <p className="text-[11px] text-[var(--text-muted)] truncate font-mono">
+          <p className="truncate text-[11px] text-[var(--text-muted)]">
             {primary?.alias || "rubens@ethone.dev"}
           </p>
         </div>
-        <Mail className="h-4 w-4 shrink-0 text-[var(--text-muted)] group-hover:text-[var(--accent-primary)] transition-colors" />
+        <Mail className="h-4 w-4 shrink-0 text-[var(--text-muted)] transition-colors group-hover:text-[var(--text-primary)]" />
       </button>
 
       {/* Modal Profile / Settings */}
@@ -130,7 +130,7 @@ export default function MailProfileButton({ aliases, primaryAlias, updateAlias, 
         <div className="space-y-5 pt-1">
           {/* 1. ADRESSE PRINCIPALE */}
           {primary && (
-            <div className="rounded-2xl border border-[var(--accent-primary)]/30 bg-gradient-to-b from-[var(--surface-raised)]/90 to-[var(--surface-raised)]/60 p-4 shadow-sm space-y-3.5">
+            <div className="rounded-2xl border border-[var(--panel-border)] bg-[var(--surface-2)]/40 p-4 space-y-3.5">
               <div className="flex items-center justify-between">
                 <div className="flex items-center gap-1.5 text-[10px] font-bold uppercase tracking-wider text-[var(--accent-primary)]">
                   <Crown className="h-3.5 w-3.5" />
@@ -180,7 +180,7 @@ export default function MailProfileButton({ aliases, primaryAlias, updateAlias, 
                     type="button"
                     onClick={handleSaveDisplayName}
                     disabled={saving || displayName.trim() === (primary.display_name || "")}
-                    className="flex h-9 w-9 shrink-0 items-center justify-center rounded-xl bg-[var(--accent-primary)] text-[var(--accent-contrast)] hover:scale-105 transition-all active:scale-95 disabled:opacity-40 cursor-pointer shadow-xs"
+                    className="flex h-9 w-9 shrink-0 items-center justify-center rounded-xl bg-[var(--accent-primary)] text-[var(--accent-contrast)] transition-[filter] hover:brightness-110 active:scale-95 disabled:opacity-40 cursor-pointer"
                     title="Enregistrer le nom"
                   >
                     {saving ? <Loader2 className="h-4 w-4 animate-spin" /> : <Check className="h-4 w-4" />}
@@ -283,7 +283,7 @@ export default function MailProfileButton({ aliases, primaryAlias, updateAlias, 
                   type="button"
                   onClick={handleCreate}
                   disabled={creating || !local.trim()}
-                  className="w-full mt-1 flex items-center justify-center gap-2 rounded-xl bg-[var(--accent-primary)] py-2.5 px-4 text-xs font-bold text-[var(--accent-contrast)] shadow-md hover:scale-[1.01] transition-all active:scale-95 disabled:opacity-50 cursor-pointer"
+                  className="w-full mt-1 flex items-center justify-center gap-2 rounded-xl bg-[var(--accent-primary)] py-2.5 px-4 text-xs font-semibold text-[var(--accent-contrast)] transition-[filter] hover:brightness-110 active:scale-95 disabled:opacity-50 cursor-pointer"
                 >
                   {creating ? <Loader2 className="h-4 w-4 animate-spin" /> : <Plus className="h-4 w-4" />}
                   <span>Créer l&apos;adresse</span>

@@ -153,7 +153,18 @@ export async function otpSendRoute({ request, env }) {
   const acceptLanguage = request.headers.get("accept-language") || "";
   const country = request.headers.get("cf-ipcountry") || request.cf?.country || "";
   const timezone = request.cf?.timezone || "Europe/Paris";
-  const result = await sendOtp(env, email, userId, acceptLanguage, country, timezone);
+  let result;
+  try {
+    result = await sendOtp(env, email, userId, acceptLanguage, country, timezone);
+  } catch (err) {
+    // sendOtp throws a plain Error for the expected "this email has no
+    // account" / "cooldown" cases — normalise them to real HTTP statuses so
+    // the login screen can show a clear message instead of a generic 500.
+    const message = err instanceof Error ? err.message : "";
+    if (/account not found/i.test(message)) throw httpError("PROVIDER_NOT_FOUND", 404);
+    if (/too many/i.test(message)) throw httpError("AUTH_RATE_LIMITED", 429, { retryable: true });
+    throw err;
+  }
   return { data: { sent: result.sent, userId: result.userId, contact: result.contact, expiresIn: result.expiresIn, ...(result.code ? { code: result.code } : {}) } };
 }
 

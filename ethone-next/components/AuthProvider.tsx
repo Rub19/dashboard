@@ -4,11 +4,13 @@ import {
   createContext,
   useContext,
   useEffect,
+  useRef,
   useState,
   type ReactNode,
 } from "react";
 import { supabase } from "@/lib/supabase";
 import { fetchWorker, clearCachedToken, WorkerError } from "@/lib/api";
+import { sendOtp as sendOtpWorker, verifyOtp as verifyOtpWorker } from "@/lib/auth";
 import { clearFetchCache } from "@/lib/hooks/useCachedFetch";
 import { authLog } from "@/lib/auth-log";
 import { Session, User } from "@supabase/supabase-js";
@@ -28,8 +30,7 @@ type AuthContextValue = {
   verifyOtp: (
     email: string,
     code: string,
-    rememberMe?: boolean,
-    type?: "email" | "magiclink" | "recovery"
+    rememberMe?: boolean
   ) => Promise<{ error?: Error }>;
   signInPassword: (email: string, password: string) => Promise<{ error?: Error }>;
   signInWithOAuth: (provider: "google" | "github" | "discord") => Promise<{ error?: Error; url?: string | null }>;
@@ -364,47 +365,42 @@ export default function AuthProvider({ children }: { children: ReactNode }) {
     await resolveSession();
   }
 
+  // Passwordless login goes through ETHONE's own Worker OTP flow
+  // (POST /api/auth/otp/send -> a real 6-digit code, delivered by the
+  // branded email in worker/src/services/otp-service.js via Resend), NOT
+  // Supabase's native signInWithOtp — which only ever sent its default,
+  // unbranded "magic link" email with no code in it, leaving the 6-digit
+  // input on the login screen impossible to fill. verifyOtp needs the
+  // userId that the send step resolved, so it's stashed here between the
+  // two calls.
+  const otpUserIdRef = useRef<string | null>(null);
+
   async function signInOtp(email: string) {
     authLog("OTP requested");
-    const { error } = await supabase.auth.signInWithOtp({
-      email,
-      options: { shouldCreateUser: true },
-    });
-    return { error: error ?? undefined };
+    const res = await sendOtpWorker(email);
+    if (!res.ok) {
+      return { error: res.error instanceof Error ? res.error : new Error(String(res.error || "Impossible d'envoyer le code.")) };
+    }
+    otpUserIdRef.current = res.userId ?? null;
+    return {};
   }
 
-  async function verifyOtp(
-    email: string,
-    code: string,
-    rememberMe = false,
-    type: "email" | "magiclink" | "recovery" = "email"
-  ) {
+  async function verifyOtp(email: string, code: string, rememberMe = false) {
     authLog("OTP verification started");
-    const { data, error } = await supabase.auth.verifyOtp({
-      email,
-      token: code,
-      type,
-    });
-    if (data.session) {
-      authLog("OTP verification result", "success");
-      setSession(data.session);
-      setUser(data.session.user);
-      if (rememberMe) {
-        localStorage.setItem("ethone-remember-me", "true");
-        localStorage.setItem("ethone-remember-token", data.session.access_token);
-        localStorage.setItem("ethone-remember-refresh", data.session.refresh_token);
-        localStorage.setItem("ethone-remember-expires", String((data.session.expires_at ?? Date.now() / 1000 + 8 * 60 * 60) * 1000));
-        localStorage.setItem("ethone-auth-type", "otp");
-      } else {
-        localStorage.removeItem("ethone-remember-me");
-        localStorage.removeItem("ethone-remember-token");
-        localStorage.removeItem("ethone-remember-refresh");
-        localStorage.removeItem("ethone-remember-expires");
-        localStorage.removeItem("ethone-auth-type");
-      }
+    const userId = otpUserIdRef.current;
+    if (!userId) {
+      return { error: new Error("Demandez un nouveau code avant de le valider.") };
     }
-    if (error) authLog("OTP verification result", "error");
-    return { error: error ?? undefined };
+    const res = await verifyOtpWorker(userId, email, code, rememberMe);
+    if (!res.ok || !res.session) {
+      authLog("OTP verification result", "error");
+      return { error: res.error instanceof Error ? res.error : new Error(String(res.error || "Code invalide.")) };
+    }
+    authLog("OTP verification result", "success");
+    setSession(res.session);
+    setUser(res.session.user);
+    otpUserIdRef.current = null;
+    return {};
   }
 
   async function signInPassword(email: string, password: string) {

@@ -2,6 +2,24 @@
 
 Toutes les modifications notables de ce projet seront documentées dans ce fichier.
 
+## v1.20.85 — 2026-09-10
+
+**Connexion par code : la page de login utilisait le flux OTP natif Supabase (lien magique, aucun code) au lieu de l'infra OTP ETHONE**
+
+Constat (test utilisateur) : l'onglet « Code OTP » recevait « Your sign-in link » de `noreply@mail.app.supabase.io` — un lien, sans `{{ .Token }}` — alors que l'UI attend un code à 6 chiffres. Connexion par code impossible, et tout le travail sur l'e-mail OTP custom (`worker/src/services/otp-service.js`) ne servait à rien puisque ce chemin n'était jamais appelé.
+
+- **`ethone-next/components/AuthProvider.tsx`** — `signInOtp` / `verifyOtp` réécrites : au lieu de `supabase.auth.signInWithOtp` / `verifyOtp` (natif), elles appellent `sendOtp` / `verifyOtp` de `lib/auth.ts` → `POST /api/auth/otp/send` (code à 6 chiffres généré par le Worker, e-mail ETHONE brandé via Resend) puis `POST /api/auth/otp/verify` → jeton de service → `supabase.auth.setSession`. Le `userId` renvoyé par l'étape d'envoi est mémorisé dans un ref entre les deux appels. Le paramètre `type` (`email`/`magiclink`/`recovery`), inutilisé par le seul appelant, est retiré de la signature.
+- **`ethone-next/lib/auth.ts`** — `sendOtp` / `verifyOtp` : `fetchWorker` enveloppé dans un try/catch qui traduit les `WorkerError` (404 → « aucun compte avec cet e-mail », 429 → « trop de demandes », 401/400 → « code invalide ou expiré ») en `{ ok: false, error }` propre, au lieu de laisser l'exception bloquer l'écran sur « chargement ».
+- **`worker/src/routes/security-identity.js`** — `otpSendRoute` : « Account not found » / cooldown lançaient un `Error` brut → 500 générique. Normalisé en `httpError("PROVIDER_NOT_FOUND", 404)` / `httpError("AUTH_RATE_LIMITED", 429)`.
+- Changement de comportement assumé : la connexion par code ne crée plus de compte à la volée (le natif avait `shouldCreateUser: true`). Un e-mail sans compte renvoie un message pointant vers l'onglet « S'inscrire ».
+- Validation : `tsc` 0 erreur, `lint` 0 erreur, `build`, `worker` 215/215, `test:unit` 14/14 69/69.
+
+## v1.20.84 — 2026-09-10
+
+**Menus profil et langue : fond « verre » translucide → fond solide opaque (lisibilité)**
+
+`components/UserProfileDropdown.tsx` + `components/LanguageSwitcher.tsx` : `bg-[var(--panel-bg)]/95` (où `--panel-bg` = `colorMix(bgSurface, transparent, glassOpacity)`, translucide par design) → `bg-[var(--bg-surface-elevated)]` (solide, opaque, toujours adapté au thème). `backdrop-blur` conservé pour l'effet givré sur les bords. Le texte de ces deux menus, chargés de contenu, était difficile à lire par-dessus le dashboard.
+
 ## v1.20.83 — 2026-09-10
 
 **E-mail OTP : logo 404 corrigé + langue = langue du navigateur (pas du pays)**

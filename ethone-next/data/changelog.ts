@@ -1,3 +1,15 @@
+const v12085_fr: ChangelogEntry = {
+  version: "v1.20.85",
+  date: "2026-09-10",
+  title: "Connexion par Code : le Vrai E-mail ETHONE (Plus le Lien Supabase Générique)",
+  items: [
+    "L'onglet « Code OTP » de la connexion envoyait en fait l'e-mail par défaut de Supabase (« Your sign-in link » depuis noreply@mail.app.supabase.io) — un lien magique sans aucun code à 6 chiffres, alors que l'écran demande un code. Impossible de se connecter par cette méthode.",
+    "Corrigé : l'onglet passe désormais par le flux OTP d'ETHONE — vrai code à 6 chiffres généré côté serveur, envoyé dans l'e-mail ETHONE (logo réparé, langue du navigateur, mise en page soignée) via Resend, puis vérifié et session ouverte.",
+    "Messages d'erreur clairs : « aucun compte avec cet e-mail » (au lieu d'une erreur générique), « code invalide ou expiré », « trop de demandes ».",
+    "Note : la connexion par code fonctionne pour un compte existant — pour un nouveau compte, utilise l'onglet « S'inscrire ».",
+  ],
+};
+
 const v12084_fr: ChangelogEntry = {
   version: "v1.20.84",
   date: "2026-09-10",
@@ -354,6 +366,18 @@ const v12052_fr: ChangelogEntry = {
     "Dynamic Island : correction d'un bug de priorité qui empêchait Spotify de jamais s'afficher, systématiquement évincé par la synchronisation d'arrière-plan.",
     "Commande /help du Bot Discord : la liste des commandes est désormais générée dynamiquement depuis les commandes réellement enregistrées (fin des commandes fantômes et des commandes manquantes), et affiche la vraie syntaxe des commandes à sous-commandes (ex. /automod status).",
     "Audit de l'enregistrement des commandes slash Discord : architecture confirmée saine, aucune dérive entre le code et les commandes déployées.",
+  ],
+};
+
+const v12085_en: ChangelogEntry = {
+  version: "v1.20.85",
+  date: "2026-09-10",
+  title: "Code Login: the Real ETHONE Email (Not the Generic Supabase Link)",
+  items: [
+    "The login page's \"OTP Code\" tab was actually sending Supabase's default email (\"Your sign-in link\" from noreply@mail.app.supabase.io) — a magic link with no 6-digit code in it, while the screen asks for a code. You couldn't sign in that way.",
+    "Fixed: the tab now goes through ETHONE's own OTP flow — a real 6-digit code generated server-side, sent in the ETHONE email (fixed logo, browser language, clean layout) via Resend, then verified and the session opened.",
+    "Clear error messages: \"no account with this email\" (instead of a generic error), \"invalid or expired code\", \"too many requests\".",
+    "Note: code login works for an existing account — for a new account, use the \"Sign up\" tab.",
   ],
 };
 
@@ -716,6 +740,18 @@ const v12052_en: ChangelogEntry = {
   ],
 };
 
+const v12085_es: ChangelogEntry = {
+  version: "v1.20.85",
+  date: "2026-09-10",
+  title: "Inicio con Código: el Correo Real de ETHONE (No el Enlace Genérico de Supabase)",
+  items: [
+    "La pestaña «Código OTP» del inicio de sesión enviaba en realidad el correo por defecto de Supabase («Your sign-in link» desde noreply@mail.app.supabase.io) — un enlace mágico sin ningún código de 6 dígitos, mientras que la pantalla pide un código. No se podía iniciar sesión así.",
+    "Corregido: la pestaña ahora usa el flujo OTP propio de ETHONE — un código real de 6 dígitos generado en el servidor, enviado en el correo de ETHONE (logo reparado, idioma del navegador, diseño cuidado) vía Resend, luego verificado y sesión abierta.",
+    "Mensajes de error claros: «ninguna cuenta con este correo» (en vez de un error genérico), «código inválido o expirado», «demasiadas solicitudes».",
+    "Nota: el inicio con código funciona para una cuenta existente — para una cuenta nueva, usa la pestaña «Registrarse».",
+  ],
+};
+
 const v12084_es: ChangelogEntry = {
   version: "v1.20.84",
   date: "2026-09-10",
@@ -1072,6 +1108,18 @@ const v12052_es: ChangelogEntry = {
     "Dynamic Island: corregido un error de prioridad que impedía que Spotify apareciera, siempre desplazado por la sincronización en segundo plano.",
     "Comando /help del Bot de Discord: la lista de comandos ahora se genera dinámicamente desde los comandos realmente registrados (fin de comandos fantasma o ausentes), mostrando la sintaxis real de los comandos con subcomandos.",
     "Auditoría del registro de comandos slash de Discord: arquitectura confirmada como sólida, sin desviación entre el código y los comandos desplegados.",
+  ],
+};
+
+const v12085_de: ChangelogEntry = {
+  version: "v1.20.85",
+  date: "2026-09-10",
+  title: "Code-Login: die Echte ETHONE-E-Mail (Nicht der Generische Supabase-Link)",
+  items: [
+    "Der Tab „OTP-Code\" auf der Anmeldeseite verschickte in Wirklichkeit die Standard-E-Mail von Supabase („Your sign-in link\" von noreply@mail.app.supabase.io) — ein Magic Link ohne 6-stelligen Code, während der Bildschirm einen Code verlangt. So konnte man sich nicht anmelden.",
+    "Behoben: Der Tab nutzt jetzt den eigenen OTP-Ablauf von ETHONE — ein echter, serverseitig erzeugter 6-stelliger Code, versendet in der ETHONE-E-Mail (repariertes Logo, Browsersprache, sauberes Layout) über Resend, dann verifiziert und Sitzung geöffnet.",
+    "Klare Fehlermeldungen: „kein Konto mit dieser E-Mail\" (statt eines generischen Fehlers), „Code ungültig oder abgelaufen\", „zu viele Anfragen\".",
+    "Hinweis: Der Code-Login funktioniert für ein bestehendes Konto — für ein neues Konto den Tab „Registrieren\" verwenden.",
   ],
 };
 
@@ -23451,5 +23499,9 @@ CHANGELOG_BY_LANG.fr.unshift(v12084_fr);
 CHANGELOG_BY_LANG.en.unshift(v12084_en);
 CHANGELOG_BY_LANG.es.unshift(v12084_es);
 CHANGELOG_BY_LANG.de.unshift(v12084_de);
+CHANGELOG_BY_LANG.fr.unshift(v12085_fr);
+CHANGELOG_BY_LANG.en.unshift(v12085_en);
+CHANGELOG_BY_LANG.es.unshift(v12085_es);
+CHANGELOG_BY_LANG.de.unshift(v12085_de);
 
 export const CHANGELOG = CHANGELOG_BY_LANG.fr;

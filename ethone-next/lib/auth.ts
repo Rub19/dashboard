@@ -2,37 +2,69 @@
 
 import { Provider } from "@supabase/supabase-js";
 import { supabase } from "./supabase";
-import { fetchWorker } from "./api";
+import { fetchWorker, WorkerError } from "./api";
 import { consumeAuthAttempt, resetAuthAttempt } from "./rate-limiter";
 
 function rateLimitedResult(retryAfterMs: number) {
   const error = new Error(`Trop de tentatives. Patientez quelques instants avant de réessayer.`);
   (error as Error & { status?: string }).status = "rate-limited";
   (error as Error & { retryAfterMs?: number }).retryAfterMs = retryAfterMs;
-  return { ok: false, error, retryAfterMs };
+  return { ok: false as const, error, retryAfterMs };
 }
 
 export async function sendOtp(email: string) {
   const attempt = consumeAuthAttempt("sign-in", email);
   if (!attempt.allowed) return rateLimitedResult(attempt.retryAfterMs);
 
-  const res = await fetchWorker("/api/auth/otp/send", {
-    method: "POST",
-    body: JSON.stringify({ email }),
-  });
-  if (!res?.data?.sent) return { ok: false, error: new Error(res?.error || "Impossible d'envoyer le code.") };
-  return { ok: true, userId: res.data.userId as string, expiresIn: res.data.expiresIn as number, code: res.data.code as string | undefined };
+  let res: { data?: { sent?: boolean; userId?: string; expiresIn?: number; code?: string } } | null;
+  try {
+    res = await fetchWorker("/api/auth/otp/send", {
+      method: "POST",
+      body: JSON.stringify({ email }),
+    });
+  } catch (err) {
+    // fetchWorker throws WorkerError on any non-2xx (e.g. 404 when the email
+    // has no account, 429 when rate limited server-side). Surface it as a
+    // clean {ok:false} so the login screen shows the message instead of
+    // hanging on "loading".
+    const status = err instanceof WorkerError ? err.status : 0;
+    const message =
+      status === 404
+        ? "Aucun compte ETHONE avec cet e-mail. Créez un compte pour continuer."
+        : status === 429
+        ? "Trop de demandes de code. Patientez quelques minutes."
+        : err instanceof Error
+        ? err.message
+        : "Impossible d'envoyer le code.";
+    return { ok: false as const, error: new Error(message) };
+  }
+  if (!res?.data?.sent) return { ok: false as const, error: new Error("Impossible d'envoyer le code.") };
+  return { ok: true as const, userId: res.data.userId as string, expiresIn: res.data.expiresIn as number, code: res.data.code as string | undefined };
 }
 
 export async function verifyOtp(userId: string, email: string, code: string, rememberMe = false) {
   const attempt = consumeAuthAttempt("sign-in", `${userId}:${email}`);
   if (!attempt.allowed) return rateLimitedResult(attempt.retryAfterMs);
 
-  const res = await fetchWorker("/api/auth/otp/verify", {
-    method: "POST",
-    body: JSON.stringify({ userId, email, code, rememberMe }),
-  });
-  if (!res?.data?.token) return { ok: false, error: new Error(res?.error || "Code invalide.") };
+  let res: { data?: { token?: string; expiresIn?: number } } | null;
+  try {
+    res = await fetchWorker("/api/auth/otp/verify", {
+      method: "POST",
+      body: JSON.stringify({ userId, email, code, rememberMe }),
+    });
+  } catch (err) {
+    const status = err instanceof WorkerError ? err.status : 0;
+    const message =
+      status === 401 || status === 400
+        ? "Code invalide ou expiré. Demandez-en un nouveau."
+        : status === 429
+        ? "Trop de tentatives. Patientez quelques minutes."
+        : err instanceof Error
+        ? err.message
+        : "Code invalide.";
+    return { ok: false as const, error: new Error(message) };
+  }
+  if (!res?.data?.token) return { ok: false as const, error: new Error("Code invalide.") };
 
   const token = res.data.token as string;
   const refreshToken = typeof crypto !== "undefined" && "randomUUID" in crypto
@@ -42,7 +74,7 @@ export async function verifyOtp(userId: string, email: string, code: string, rem
     access_token: token,
     refresh_token: refreshToken,
   });
-  if (error) return { ok: false, error };
+  if (error) return { ok: false as const, error };
   if (rememberMe) {
     localStorage.setItem("ethone-remember-me", "true");
     localStorage.setItem("ethone-remember-token", token);
@@ -55,7 +87,7 @@ export async function verifyOtp(userId: string, email: string, code: string, rem
     localStorage.removeItem("ethone-auth-type");
   }
   resetAuthAttempt("sign-in", `${userId}:${email}`);
-  return { ok: true, session: data.session };
+  return { ok: true as const, session: data.session };
 }
 
 export async function signInWithOtp(email: string) {

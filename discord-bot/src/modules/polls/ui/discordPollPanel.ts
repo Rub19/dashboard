@@ -175,7 +175,7 @@ export class DiscordPollPanel {
       }
 
       const chosenOpt = poll.questions[0]?.options.find((o) => o.id === optionId);
-      const confirmEmbed = baseEmbed('success', { footerText: 'ETHONE Polls 2.0' })
+      const confirmEmbed = baseEmbed('success', { footerText: 'ETHONE Sondages' })
         .setTitle(t.poll_vote_success_title)
         .setDescription(
           formatString(t.poll_vote_success_desc, {

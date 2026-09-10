@@ -63,7 +63,7 @@ export const languageCommand: Command = {
           `• \`/language langue:[fr | en | es | de]\`\n` +
           `• Ou cliquez sur l'un des boutons de sélection rapide ci-dessous :`
         )
-        .setFooter({ text: `${ctx.guildConfig.botName} • Multilingual Support 2.0` });
+        .setFooter({ text: `${ctx.guildConfig.botName} • Multilingue` });
 
       const buttonsRow = new ActionRowBuilder<ButtonBuilder>().addComponents(
         new ButtonBuilder()

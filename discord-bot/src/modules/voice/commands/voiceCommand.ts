@@ -13,12 +13,12 @@ import { baseEmbed, successEmbed } from '../../../utils/embeds.js';
 
 export const voiceCommand: Command = {
   name: 'voice',
-  description: 'Créer et gérer votre salon vocal personnalisé (Voice 2.0)',
+  description: 'Crée et gère ton salon vocal personnel',
   category: 'voice',
   aliases: ['vocal', 'room', 'salon'],
   slashData: new SlashCommandBuilder()
     .setName('voice')
-    .setDescription('Créer et gérer votre salon vocal personnalisé (Voice 2.0)')
+    .setDescription('Crée et gère ton salon vocal personnel')
     .addSubcommand((sub) =>
       sub
         .setName('create')
@@ -136,7 +136,7 @@ export const voiceCommand: Command = {
         return;
       }
 
-      const embed = successEmbed({ footerText: 'ETHONE Voice Engine 2.0 • 100% interactif' })
+      const embed = successEmbed({ footerText: 'ETHONE Vocal' })
         .setTitle('🎉 Votre Salon Vocal est prêt !')
         .setDescription(
           `Votre salon **${result.channel.name}** a été créé avec succès dans <#${result.channel.id}>.\n\n` +
@@ -186,7 +186,7 @@ export const voiceCommand: Command = {
       }
 
       const room = userRooms[0];
-      const embed = baseEmbed(room.isLocked ? 'error' : 'success', { footerText: 'ETHONE Voice Engine 2.0' })
+      const embed = baseEmbed(room.isLocked ? 'error' : 'success', { footerText: 'ETHONE Vocal' })
         .setTitle(`🎙️ Statut de votre salon : ${room.name}`)
         .setDescription(`Salon : <#${room.id}>`)
         .addFields(
@@ -230,7 +230,7 @@ export const voiceCommand: Command = {
       }
 
       await ctx.reply({
-        embeds: [baseEmbed('success').setDescription(`✅ Le **Panneau Permanent de Création Voice 2.0** a été publié avec succès dans <#${channel.id}> !`)],
+        embeds: [baseEmbed('success').setDescription(`✅ Le **Panneau de création de salon vocal** a été publié avec succès dans <#${channel.id}> !`)],
         ephemeral: true,
       });
       return;

@@ -25,8 +25,8 @@ export class DiscordVoicePanel {
    * Generates the permanent Creation Panel embed & buttons for the dedicated text channel.
    */
   public static buildCreatePanel(settings?: VoiceTrackerSettings) {
-    const embed = baseEmbed('primary', { footerText: 'ETHONE Voice Engine 2.0 • 100% interactif, 0 commande requise' })
-      .setTitle('🎛️ Salons Vocaux Personnalisés 2.0')
+    const embed = baseEmbed('primary', { footerText: 'ETHONE Vocal, 0 commande requise' })
+      .setTitle('🎛️ Salons vocaux personnalisés')
       .setDescription(
         'Créez et contrôlez instantanément votre propre salon vocal temporaire !\n\n' +
         '**Comment ça marche ?**\n' +
@@ -230,7 +230,7 @@ export class DiscordVoicePanel {
       const prefs = voiceRepository.getUserPreferences(interaction.user.id);
       const modal = new ModalBuilder()
         .setCustomId('modal_voice_user_prefs')
-        .setTitle('Mes préférences vocales 2.0');
+        .setTitle('Mes préférences vocales');
 
       const nameInput = new TextInputBuilder()
         .setCustomId('pref_name')
@@ -268,7 +268,7 @@ export class DiscordVoicePanel {
 
     if (customId === 'voice_help') {
       const helpEmbed = baseEmbed('info', { footerText: 'ETHONE Discord Suite' })
-        .setTitle('📖 Comment fonctionne les Salons Personnalisés 2.0 ?')
+        .setTitle('📖 Comment ça marche ?')
         .setDescription(
           '**1. Création simple et instantanée**\n' +
           'Cliquez sur **Créer mon salon**. Le bot crée immédiatement un salon vocal avec votre nom et vos préférences.\n\n' +

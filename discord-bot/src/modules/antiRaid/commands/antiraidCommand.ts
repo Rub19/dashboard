@@ -14,12 +14,12 @@ import { BRAND_COLORS } from '../../../utils/embeds.js';
 
 export const antiraidCommand: Command = {
   name: 'antiraid',
-  description: 'Centre de contrôle Anti-Raid 2.0 (Statut, Raid Mode, Verrouillage)',
+  description: 'Anti-Raid : statut, activation, détecteurs',
   category: 'Sécurité',
   userPermissions: [PermissionFlagsBits.Administrator],
   slashData: new SlashCommandBuilder()
     .setName('antiraid')
-    .setDescription('Centre de contrôle Anti-Raid 2.0')
+    .setDescription('Centre Anti-Raid')
     .setDefaultMemberPermissions(PermissionFlagsBits.Administrator)
     .addSubcommand((sub) =>
       sub.setName('status').setDescription('Affiche le statut actuel et le Risk Score du serveur')

@@ -1,3 +1,14 @@
+const v12124_fr: ChangelogEntry = {
+  version: "v1.21.24",
+  date: "2026-09-10",
+  title: "Bot : Nettoyage des Embeds (moins « IA »)",
+  items: [
+    "Suppression de « 2.0 » partout dans les sorties du bot : titres (`🛡️ Centre Anti-Raid 2.0` → `🛡️ Anti-Raid`, `🤖 AutoMod 2.0` → `🤖 AutoMod`), footers (`ETHONE Music Center 2.0` → `ETHONE Musique`, etc.), descriptions de commandes, et le `Modérateur` des sanctions auto (`Anti-Raid 2.0` / `AutoMod 2.0` → `Anti-Raid` / `AutoMod`).",
+    "`/help` refait : titre `Commandes & modules`, plus de copie marketing (« Bienvenue sur le centre d'aide officiel… »), fiches de commande compactes (nom + description + syntaxe, sans les labels `📝 Description :` / `⌨️ Syntaxe :` / `🏷️ Accès :`), badge `🔒` seulement pour les commandes staff (fini le `✨`).",
+    "Panneaux Voice / IA / Forms / Polls : titres et footers debrandés.",
+  ],
+};
+
 const v12123_fr: ChangelogEntry = {
   version: "v1.21.23",
   date: "2026-09-10",
@@ -787,6 +798,17 @@ const v12052_fr: ChangelogEntry = {
     "Dynamic Island : correction d'un bug de priorité qui empêchait Spotify de jamais s'afficher, systématiquement évincé par la synchronisation d'arrière-plan.",
     "Commande /help du Bot Discord : la liste des commandes est désormais générée dynamiquement depuis les commandes réellement enregistrées (fin des commandes fantômes et des commandes manquantes), et affiche la vraie syntaxe des commandes à sous-commandes (ex. /automod status).",
     "Audit de l'enregistrement des commandes slash Discord : architecture confirmée saine, aucune dérive entre le code et les commandes déployées.",
+  ],
+};
+
+const v12124_en: ChangelogEntry = {
+  version: "v1.21.24",
+  date: "2026-09-10",
+  title: "Bot: Embed Cleanup (less AI-looking)",
+  items: [
+    "Removed the 2.0 suffix everywhere in the bot output: titles (Anti-Raid Center 2.0 becomes Anti-Raid, AutoMod 2.0 becomes AutoMod), footers, command descriptions, and the Moderator label on auto-sanctions (Anti-Raid 2.0 / AutoMod 2.0 become Anti-Raid / AutoMod).",
+    "`/help` redone: title `Commands & modules`, no more marketing copy, compact command cards (name + description + syntax, no `📝 Description:` / `⌨️ Syntax:` labels), `🔒` badge only for staff commands (no more `✨`).",
+    "Voice / AI / Forms / Polls panels: de-branded titles and footers.",
   ],
 };
 
@@ -1582,6 +1604,17 @@ const v12052_en: ChangelogEntry = {
   ],
 };
 
+const v12124_es: ChangelogEntry = {
+  version: "v1.21.24",
+  date: "2026-09-10",
+  title: "Bot: Limpieza de Embeds (menos « IA »)",
+  items: [
+    "Eliminado « 2.0 » en toda la salida del bot: titulos, footers, descripciones de comandos, y el `Moderador` de sanciones automaticas.",
+    "`/help` rehecho: titulo `Comandos y modulos`, sin copia de marketing, fichas de comando compactas, badge `🔒` solo para comandos de staff.",
+    "Paneles Voice / IA / Forms / Polls: titulos y footers sin marca.",
+  ],
+};
+
 const v12123_es: ChangelogEntry = {
   version: "v1.21.23",
   date: "2026-09-10",
@@ -2371,6 +2404,17 @@ const v12052_es: ChangelogEntry = {
     "Dynamic Island: corregido un error de prioridad que impedía que Spotify apareciera, siempre desplazado por la sincronización en segundo plano.",
     "Comando /help del Bot de Discord: la lista de comandos ahora se genera dinámicamente desde los comandos realmente registrados (fin de comandos fantasma o ausentes), mostrando la sintaxis real de los comandos con subcomandos.",
     "Auditoría del registro de comandos slash de Discord: arquitectura confirmada como sólida, sin desviación entre el código y los comandos desplegados.",
+  ],
+};
+
+const v12124_de: ChangelogEntry = {
+  version: "v1.21.24",
+  date: "2026-09-10",
+  title: "Bot: Embed-Bereinigung (weniger nach KI aussehend)",
+  items: [
+    "« 2.0 » ueberall in der Bot-Ausgabe entfernt: Titel, Footer, Befehlsbeschreibungen und der `Moderator` bei Auto-Sanktionen.",
+    "`/help` neu: Titel `Befehle & Module`, keine Marketing-Texte mehr, kompakte Befehlskarten, `🔒`-Badge nur fuer Staff-Befehle.",
+    "Voice- / KI- / Forms- / Polls-Panels: entmarkte Titel und Footer.",
   ],
 };
 
@@ -25339,5 +25383,9 @@ CHANGELOG_BY_LANG.fr.unshift(v12123_fr);
 CHANGELOG_BY_LANG.en.unshift(v12123_en);
 CHANGELOG_BY_LANG.es.unshift(v12123_es);
 CHANGELOG_BY_LANG.de.unshift(v12123_de);
+CHANGELOG_BY_LANG.fr.unshift(v12124_fr);
+CHANGELOG_BY_LANG.en.unshift(v12124_en);
+CHANGELOG_BY_LANG.es.unshift(v12124_es);
+CHANGELOG_BY_LANG.de.unshift(v12124_de);
 
 export const CHANGELOG = CHANGELOG_BY_LANG.fr;

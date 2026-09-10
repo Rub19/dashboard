@@ -26,7 +26,7 @@ export class DiscordAiPanel {
     const personality = settings.personality;
 
     const embed = baseEmbed('primary', {
-      footerText: `Demandé par ${userTag} • ETHONE AI 2.0`,
+      footerText: `Demandé par ${userTag} • ETHONE IA`,
     })
       .setAuthor({
         name: personality.name,

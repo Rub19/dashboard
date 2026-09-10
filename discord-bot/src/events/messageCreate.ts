@@ -77,7 +77,7 @@ export async function onMessageCreate(message: Message) {
   // 3. Enregistrement Analytics
   analyticsService.recordMessage(message);
 
-  // 4. Traitement par l'Assistant IA 2.0 (si mentionné ou salon automatique)
+  // 4. Traitement par l'Assistant IA (si mentionné ou salon automatique)
   const aiHandled = await aiService.handleMessage(message);
   if (aiHandled) return;
 

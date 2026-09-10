@@ -220,7 +220,7 @@ export class DiscordFormPanel {
       return;
     }
 
-    const embed = baseEmbed('success', { footerText: 'ETHONE Forms 2.0' })
+    const embed = baseEmbed('success', { footerText: 'ETHONE Formulaires' })
       .setTitle(t.form_submitted_title)
       .setDescription(
         formatString(t.form_submitted_desc, { title: form.title, id: result.response?.id || '' })

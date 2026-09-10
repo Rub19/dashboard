@@ -11,15 +11,15 @@ import { formatString, getTranslation } from '../../../utils/i18n.js';
 
 export const automodCommand: Command = {
   name: 'automod',
-  description: 'Gestion et diagnostic du moteur AutoMod 2.0 (Smart Moderation)',
+  description: 'Modération automatique : statut, règles, test',
   category: 'Sécurité',
   userPermissions: [PermissionFlagsBits.Administrator],
   slashData: new SlashCommandBuilder()
     .setName('automod')
-    .setDescription('Centre de contrôle AutoMod 2.0')
+    .setDescription('Centre AutoMod')
     .setDefaultMemberPermissions(PermissionFlagsBits.Administrator)
     .addSubcommand((sub) =>
-      sub.setName('status').setDescription('Affiche le statut et la configuration du moteur AutoMod 2.0')
+      sub.setName('status').setDescription('Affiche le statut et la configuration AutoMod')
     )
     .addSubcommand((sub) =>
       sub

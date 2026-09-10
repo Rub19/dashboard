@@ -14,7 +14,7 @@ const replyInfo = (ctx: CommandContext, msg: string) =>
 
 export const musicCommand: Command = {
   name: 'music',
-  description: 'Contrôle complet du lecteur de musique ETHONE 2.0',
+  description: 'Contrôle du lecteur de musique',
   category: 'Musique',
   aliases: ['m', 'p', 'player'],
   slashData: new SlashCommandBuilder()

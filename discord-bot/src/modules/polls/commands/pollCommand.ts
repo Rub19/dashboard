@@ -12,7 +12,7 @@ import { formatString, getTranslation } from '../../../utils/i18n.js';
 
 export const pollCommand: Command = {
   name: 'poll',
-  description: 'Gestion des sondages, votes et décisions ETHONE Polls & Voting 2.0',
+  description: 'Sondages, votes et décisions du serveur',
   category: 'Communauté',
   userPermissions: [PermissionFlagsBits.ManageGuild],
   slashData: new SlashCommandBuilder()
@@ -106,7 +106,7 @@ export const pollCommand: Command = {
             )
             .join('\n\n')
         )
-        .setFooter({ text: 'ETHONE Polls & Voting 2.0' });
+        .setFooter({ text: 'ETHONE Sondages' });
 
       await ctx.reply({ embeds: [embed], ephemeral: true });
       return;

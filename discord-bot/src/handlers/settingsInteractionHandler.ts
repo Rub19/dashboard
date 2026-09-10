@@ -534,7 +534,7 @@ export async function handleSettingsButton(interaction: ButtonInteraction): Prom
       }
 
       const t = getTranslation(targetLang);
-      const embed = baseEmbed('success', { footerText: `${updated.botName} • Multilingual Support 2.0` })
+      const embed = baseEmbed('success', { footerText: `${updated.botName} • Multilingue` })
         .setTitle(`${t.lang_flag} ${t.lang_changed_title}`)
         .setDescription(t.lang_changed_desc)
         .addFields({

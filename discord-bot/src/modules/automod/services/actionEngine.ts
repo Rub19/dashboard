@@ -145,7 +145,7 @@ export class ActionEngine {
             userId: member.id,
             userTag: member.user.tag,
             moderatorId: 'AUTOMOD',
-            moderatorTag: 'AutoMod 2.0',
+            moderatorTag: 'AutoMod',
             action: act as any,
             reason,
             durationSeconds: act === 'TIMEOUT' ? (customTimeoutSeconds || 300) : null,
@@ -162,7 +162,7 @@ export class ActionEngine {
     }
 
     logService.automod(guild.id, 'AUTOMOD_TRIGGER', {
-      actor: { id: 'AUTOMOD', tag: 'AutoMod 2.0', isBot: true },
+      actor: { id: 'AUTOMOD', tag: 'AutoMod', isBot: true },
       target: { id: member.id, type: 'USER', name: member.user.tag, tag: member.user.tag },
       channel: { id: message.channelId, name: 'name' in message.channel ? (message.channel as any).name : 'salon' },
       reason,

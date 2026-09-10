@@ -117,7 +117,7 @@ class RaidDetectionService {
         memberInfo.riskContributions.push('Bot non whitelisté');
 
         try {
-          await member.kick('Bot non whitelisté (Protection Bot Raid 2.0)');
+          await member.kick('Bot non autorisé (Protection Anti-Raid)');
           await raidAlertService.sendAlert({
             guild,
             threatLevel: 'SUSPICIOUS',

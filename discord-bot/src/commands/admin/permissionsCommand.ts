@@ -58,7 +58,7 @@ export const permissionsCommand: Command = {
         });
 
         const successEmbed = buildSuccessEmbed({
-          footerText: `Configuré par ${ctx.author.tag} • ETHONE Permissions 2.0`,
+          footerText: `Configuré par ${ctx.author.tag} • ETHONE Permissions`,
         })
           .setTitle(`✅ Préset de Permissions Appliqué : ${selected.name}`)
           .setDescription(`${selected.description}\n\nTous les contrôles de modération et d'administration ont été mis à jour instantanément.`)

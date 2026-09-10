@@ -31,7 +31,7 @@ export const HELP_CATEGORIES: HelpCategoryMeta[] = [
     name: 'Intelligence Artificielle',
     emoji: '🤖',
     color: 0x8b5cf6, // Violet vibrant
-    description: "Assistant IA 2.0, réponses intelligentes du serveur et résumés de salon",
+    description: "Assistant IA du serveur : réponses et résumés de salon",
     commandNames: ['ask', 'summarize', 'imagine'],
   },
   {
@@ -217,56 +217,52 @@ export class HelpPanel {
       embed
         .setColor(BRAND_COLORS.primary) // Couleur de marque ETHONE
         .setAuthor({
-          name: `${guildConfig.botName} • Centre d'Aide & Documentation`,
+          name: `${guildConfig.botName} — Aide`,
           iconURL: botAvatarUrl,
         })
-        .setTitle(`✨ Catalogue des Commandes & Modules`)
+        .setTitle('Commandes & modules')
         .setDescription(
-          `Bienvenue sur le centre d'aide officiel de **${guildConfig.botName}** !\n` +
-            `Découvrez l'ensemble de nos outils, commandes et automatisations pour votre serveur.\n\n` +
-            `> 💡 **Comment naviguer ?**\n` +
-            `> Choisissez un module dans le **menu déroulant** ci-dessous, ou servez-vous des boutons \`◀\` et \`▶\` pour feuilleter toutes les pages !\n`
+          `Choisis un module dans le menu déroulant ci-dessous, ou utilise \`◀\` \`▶\` pour parcourir les pages.`
         )
         .addFields(
           {
-            name: '📊 Vue d\'ensemble',
+            name: 'Vue d\'ensemble',
             value:
-              `• **${allCommands.length}** commandes prêtes\n` +
-              `• **${HELP_CATEGORIES.length}** modules spécialisés\n` +
-              `• Préfixe : \`${prefix}\` *(ou commandes Slash \`/\`)*`,
+              `${allCommands.length} commandes · ${HELP_CATEGORIES.length} modules\n` +
+              `Préfixe : \`${prefix}\` — ou commandes slash \`/\``,
             inline: true,
           },
           {
-            name: '🚀 Accès Immédiat',
+            name: 'Raccourcis',
             value:
-              `• **\`/ask\`** : Assistant IA 2.0\n` +
-              `• **\`/rank\`** : Carte de niveau XP\n` +
-              `• **\`/settings\`** : Configuration serveur`,
+              `\`/ask\` — assistant IA\n` +
+              `\`/rank\` — carte de niveau\n` +
+              `\`/settings\` — configuration`,
             inline: true,
           },
           {
-            name: `📂 Modules du Serveur (1/2)`,
-            value: HELP_CATEGORIES.slice(0, 5)
+            name: 'Modules',
+            value: HELP_CATEGORIES.slice(0, 7)
               .map((cat) => {
                 const cmdCount = resolveCategoryCommands(cat, allCommands).length;
-                return `${cat.emoji} **${cat.name}** (\`${cmdCount} cmd${cmdCount > 1 ? 's' : ''}\`)\n└ *${cat.description}*`;
+                return `${cat.emoji} **${cat.name}** — ${cmdCount} cmd${cmdCount > 1 ? 's' : ''}`;
               })
-              .join('\n\n'),
+              .join('\n'),
             inline: false,
           },
           {
-            name: `📂 Modules du Serveur (2/2)`,
-            value: HELP_CATEGORIES.slice(5)
+            name: '​',
+            value: HELP_CATEGORIES.slice(7)
               .map((cat) => {
                 const cmdCount = resolveCategoryCommands(cat, allCommands).length;
-                return `${cat.emoji} **${cat.name}** (\`${cmdCount} cmd${cmdCount > 1 ? 's' : ''}\`)\n└ *${cat.description}*`;
+                return `${cat.emoji} **${cat.name}** — ${cmdCount} cmd${cmdCount > 1 ? 's' : ''}`;
               })
-              .join('\n\n'),
+              .join('\n'),
             inline: false,
           }
         )
         .setFooter({
-          text: `Page d'accueil • Sélectionnez un module ci-dessous • Demandé par ${requesterTag}`,
+          text: `Demandé par ${requesterTag}`,
           iconURL: requesterAvatarUrl,
         })
         .setTimestamp();
@@ -279,14 +275,11 @@ export class HelpPanel {
       embed
         .setColor(cat.color)
         .setAuthor({
-          name: `${guildConfig.botName} • Guide des Commandes`,
+          name: `${guildConfig.botName} — Aide`,
           iconURL: botAvatarUrl,
         })
-        .setTitle(`${cat.emoji} Module : ${cat.name}`)
-        .setDescription(
-          `*${cat.description}*\n` +
-            `────────────────────────────────────────`
-        );
+        .setTitle(`${cat.emoji} ${cat.name}`)
+        .setDescription(`*${cat.description}*`);
 
       if (categoryCommands.length === 0) {
         embed.addFields({
@@ -296,21 +289,16 @@ export class HelpPanel {
       } else {
         for (const cmd of categoryCommands) {
           const isStaff = cmd.userPermissions && cmd.userPermissions.length > 0;
-          const badge = isStaff ? '`🔒 Staff / Admin`' : '`👥 Tous les membres`';
-
           const syntaxText = buildCommandSyntax(cmd, prefix, guildConfig.prefixCommandsEnabled);
 
           const aliasesText =
             cmd.aliases && cmd.aliases.length > 0
-              ? ` *(alias : ${cmd.aliases.map((a) => `\`${a}\``).join(', ')})*`
+              ? ` · alias ${cmd.aliases.map((a) => `\`${a}\``).join(', ')}`
               : '';
 
           embed.addFields({
-            name: `${cat.emoji} /${cmd.name} ${isStaff ? '🛡️' : '✨'}`,
-            value:
-              `> 📝 **Description :** ${cmd.description}\n` +
-              `> ⌨️ **Syntaxe :** ${syntaxText}${aliasesText}\n` +
-              `> 🏷️ **Accès :** ${badge}`,
+            name: `/${cmd.name}${isStaff ? ' 🔒' : ''}`,
+            value: `${cmd.description}\n${syntaxText}${aliasesText}`,
             inline: false,
           });
         }

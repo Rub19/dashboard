@@ -2,6 +2,15 @@
 
 Toutes les modifications notables de ce projet seront documentées dans ce fichier.
 
+## v1.20.82 — 2026-09-10
+
+**Trackers (Valorant / LoL) : alignement du scoreboard, historique plus profond, Dynamic Island auto-masquée**
+
+- **Alignement** : `components/tracker/ValorantMatchRow.tsx` et `LolMatchRow.tsx` — la première cellule (`<td>`) du tableau du scoreboard portait `display:flex`, ce qui la sort du modèle de tableau et décale toutes les colonnes suivantes (Rang, TRS, ACS, K/D/A, dégâts, CS, Or...). Le flex a été déplacé dans un `<div>` interne. Le rang était par ailleurs affiché deux fois (libellé texte sous le pseudo + badge en colonne dédiée) — le libellé sous le pseudo est remplacé par le nom de l'agent/champion (cohérent avec l'en-tête « Joueur / Agent »).
+- **Nombre de matchs** : `lib/lol-tracker.ts` — `count=10` + `slice(0, 8)` → `count=24`, récupération des détails en lots de 6 avec 250 ms de pause entre lots (le chemin worker fetchait déjà jusqu'à 100 via `mapLimit`, seul le chemin client direct était bridé). `lib/valorant-tracker.ts` — Henrik v3 `size=15` → `size=25`.
+- **Dynamic Island** : `components/DynamicIslandContainer.tsx` — masquée automatiquement sur `/matches` (et `/matches/*`) via `usePathname`, sans modifier la préférence persistée (`ethone_show_dynamic_island`) : elle réapparaît telle quelle sur toutes les autres routes.
+- Validation : `tsc` 0 erreur, `lint` 0 erreur, `build`, `test:unit` 14/14 69/69.
+
 ## v1.20.81 — 2026-09-10
 
 **Dashboard du bot : fetch vers `/api/bot/*` corrigé (404 → serveur du bot) + passe d'accessibilité des modales (audits parallèles)**

@@ -375,7 +375,15 @@ export async function fetchLolMatchesDirect(
   // 2. Matches IDs by PUUID
   const qObj = LOL_QUEUES.find((q) => q.id === queue);
   const queueParam = qObj?.queueId ? `&queue=${qObj.queueId}` : "";
-  const matchIdsUrl = `https://europe.api.riotgames.com/lol/match/v5/matches/by-puuid/${encodeURIComponent(puuid)}/ids?count=10${queueParam}`;
+  // Riot caps `count` at 100 for the match-ids endpoint. We ask for a wide
+  // window and then fetch details in throttled batches below (each id is a
+  // separate match-v5 call, and a personal Riot key is rate-limited — hence
+  // the batching rather than one big Promise.all like before, which also
+  // capped the visible history at 8).
+  const MATCH_LIMIT = 24;
+  const BATCH_SIZE = 6;
+  const BATCH_DELAY_MS = 250;
+  const matchIdsUrl = `https://europe.api.riotgames.com/lol/match/v5/matches/by-puuid/${encodeURIComponent(puuid)}/ids?count=${MATCH_LIMIT}${queueParam}`;
   const idsRes = await fetch(matchIdsUrl, { headers });
   if (!idsRes.ok) {
     throw new Error(`Riot API Match IDs: ${idsRes.status}`);
@@ -383,15 +391,26 @@ export async function fetchLolMatchesDirect(
   const matchIds: string[] = await idsRes.json();
   if (!Array.isArray(matchIds) || matchIds.length === 0) return [];
 
-  // 3. Fetch each match in parallel
-  const matchDetails = await Promise.allSettled(
-    matchIds.slice(0, 8).map(async (mId) => {
-      const mUrl = `https://europe.api.riotgames.com/lol/match/v5/matches/${encodeURIComponent(mId)}`;
-      const mRes = await fetch(mUrl, { headers });
-      if (!mRes.ok) return null;
-      return mRes.json();
-    })
-  );
+  // 3. Fetch each match, in small sequential batches to stay under the
+  // per-key rate limit while still loading a real history.
+  const idsToFetch = matchIds.slice(0, MATCH_LIMIT);
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
+  const matchDetails: PromiseSettledResult<any>[] = [];
+  for (let i = 0; i < idsToFetch.length; i += BATCH_SIZE) {
+    const batch = idsToFetch.slice(i, i + BATCH_SIZE);
+    const settled = await Promise.allSettled(
+      batch.map(async (mId) => {
+        const mUrl = `https://europe.api.riotgames.com/lol/match/v5/matches/${encodeURIComponent(mId)}`;
+        const mRes = await fetch(mUrl, { headers });
+        if (!mRes.ok) return null;
+        return mRes.json();
+      })
+    );
+    matchDetails.push(...settled);
+    if (i + BATCH_SIZE < idsToFetch.length) {
+      await new Promise((resolve) => setTimeout(resolve, BATCH_DELAY_MS));
+    }
+  }
 
   const validMatches: LolMatch[] = [];
 

@@ -1,3 +1,14 @@
+const v12082_fr: ChangelogEntry = {
+  version: "v1.20.82",
+  date: "2026-09-10",
+  title: "Trackers : Alignement du Scoreboard, Plus de Matchs, Dynamic Island Auto-masquée",
+  items: [
+    "Correctif d'alignement : dans le détail d'un match (Valorant et LoL), la première colonne du scoreboard était un `<td>` en `display:flex` — ce qui la faisait sortir de la grille du tableau et décalait toutes les colonnes de stats (rang, TRS, ACS, K/D...). Corrigé ; les colonnes sont désormais réellement alignées. Le rang, qui était affiché deux fois (sous le pseudo + en colonne dédiée), n'apparaît plus que dans sa colonne — l'agent/champion prend la place sous le pseudo.",
+    "Plus de matchs chargés : LoL passe de 8 à 24 matchs (récupérés en lots pour respecter la limite de l'API Riot), Valorant de 15 à 25.",
+    "La Dynamic Island se masque automatiquement sur les pages Trackers (elle chevauchait la barre d'outils dense du scoreboard) — sans toucher à ta préférence, elle réapparaît partout ailleurs.",
+  ],
+};
+
 const v12081_fr: ChangelogEntry = {
   version: "v1.20.81",
   date: "2026-09-10",
@@ -323,6 +334,17 @@ const v12052_fr: ChangelogEntry = {
     "Dynamic Island : correction d'un bug de priorité qui empêchait Spotify de jamais s'afficher, systématiquement évincé par la synchronisation d'arrière-plan.",
     "Commande /help du Bot Discord : la liste des commandes est désormais générée dynamiquement depuis les commandes réellement enregistrées (fin des commandes fantômes et des commandes manquantes), et affiche la vraie syntaxe des commandes à sous-commandes (ex. /automod status).",
     "Audit de l'enregistrement des commandes slash Discord : architecture confirmée saine, aucune dérive entre le code et les commandes déployées.",
+  ],
+};
+
+const v12082_en: ChangelogEntry = {
+  version: "v1.20.82",
+  date: "2026-09-10",
+  title: "Trackers: Scoreboard Alignment, More Matches, Dynamic Island Auto-Hidden",
+  items: [
+    "Alignment fix: in a match's detail view (Valorant and LoL), the scoreboard's first column was a `<td>` with `display:flex` — which drops it out of the table's column grid and knocked every stat column (rank, TRS, ACS, K/D...) out of alignment. Fixed; the columns actually line up now. Rank, which was shown twice (under the name + in a dedicated column), now only appears in its column — the agent/champion takes its place under the name.",
+    "More matches loaded: LoL goes from 8 to 24 matches (fetched in batches to respect the Riot API rate limit), Valorant from 15 to 25.",
+    "The Dynamic Island auto-hides on the Tracker pages (it overlapped the dense scoreboard toolbar) — without touching your preference, it comes back everywhere else.",
   ],
 };
 
@@ -654,6 +676,17 @@ const v12052_en: ChangelogEntry = {
   ],
 };
 
+const v12082_es: ChangelogEntry = {
+  version: "v1.20.82",
+  date: "2026-09-10",
+  title: "Trackers: Alineación del Marcador, Más Partidas, Dynamic Island Auto-oculta",
+  items: [
+    "Corrección de alineación: en el detalle de una partida (Valorant y LoL), la primera columna del marcador era un `<td>` con `display:flex` — lo que la saca de la cuadrícula de la tabla y desalineaba todas las columnas de estadísticas (rango, TRS, ACS, K/D...). Corregido; las columnas ahora sí quedan alineadas. El rango, que se mostraba dos veces (bajo el nombre + en una columna dedicada), ahora solo aparece en su columna — el agente/campeón ocupa su lugar bajo el nombre.",
+    "Más partidas cargadas: LoL pasa de 8 a 24 partidas (obtenidas por lotes para respetar el límite de la API de Riot), Valorant de 15 a 25.",
+    "La Dynamic Island se oculta automáticamente en las páginas de Trackers (se superponía a la densa barra de herramientas del marcador) — sin tocar tu preferencia, reaparece en todo lo demás.",
+  ],
+};
+
 const v12081_es: ChangelogEntry = {
   version: "v1.20.81",
   date: "2026-09-10",
@@ -979,6 +1012,17 @@ const v12052_es: ChangelogEntry = {
     "Dynamic Island: corregido un error de prioridad que impedía que Spotify apareciera, siempre desplazado por la sincronización en segundo plano.",
     "Comando /help del Bot de Discord: la lista de comandos ahora se genera dinámicamente desde los comandos realmente registrados (fin de comandos fantasma o ausentes), mostrando la sintaxis real de los comandos con subcomandos.",
     "Auditoría del registro de comandos slash de Discord: arquitectura confirmada como sólida, sin desviación entre el código y los comandos desplegados.",
+  ],
+};
+
+const v12082_de: ChangelogEntry = {
+  version: "v1.20.82",
+  date: "2026-09-10",
+  title: "Tracker: Scoreboard-Ausrichtung, Mehr Matches, Dynamic Island Automatisch Ausgeblendet",
+  items: [
+    "Ausrichtungs-Fix: In der Detailansicht eines Matches (Valorant und LoL) war die erste Spalte des Scoreboards ein `<td>` mit `display:flex` — was es aus dem Spaltenraster der Tabelle wirft und jede Statistik-Spalte (Rang, TRS, ACS, K/D...) aus der Ausrichtung brachte. Behoben; die Spalten sind jetzt wirklich ausgerichtet. Der Rang, der doppelt angezeigt wurde (unter dem Namen + in einer eigenen Spalte), erscheint jetzt nur noch in seiner Spalte — der Agent/Champion nimmt seinen Platz unter dem Namen ein.",
+    "Mehr Matches geladen: LoL geht von 8 auf 24 Matches (in Stapeln abgerufen, um das Rate-Limit der Riot-API einzuhalten), Valorant von 15 auf 25.",
+    "Die Dynamic Island blendet sich auf den Tracker-Seiten automatisch aus (sie überlappte die dichte Scoreboard-Symbolleiste) — ohne deine Einstellung zu ändern, erscheint sie überall sonst wieder.",
   ],
 };
 
@@ -23315,5 +23359,9 @@ CHANGELOG_BY_LANG.fr.unshift(v12081_fr);
 CHANGELOG_BY_LANG.en.unshift(v12081_en);
 CHANGELOG_BY_LANG.es.unshift(v12081_es);
 CHANGELOG_BY_LANG.de.unshift(v12081_de);
+CHANGELOG_BY_LANG.fr.unshift(v12082_fr);
+CHANGELOG_BY_LANG.en.unshift(v12082_en);
+CHANGELOG_BY_LANG.es.unshift(v12082_es);
+CHANGELOG_BY_LANG.de.unshift(v12082_de);
 
 export const CHANGELOG = CHANGELOG_BY_LANG.fr;

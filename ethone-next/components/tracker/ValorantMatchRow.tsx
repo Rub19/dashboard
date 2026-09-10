@@ -393,7 +393,11 @@ export default function ValorantMatchRow({ match, index }: ValorantMatchRowProps
                                 )}
                               >
                                 {/* Player / Agent with Left Vertical Party Trait (Bar) */}
-                                <td className="py-2 pl-2 flex items-center gap-2">
+                                {/* The inner flex row lives in a div, not on the <td> itself:
+                                    a display:flex <td> drops out of the table's column grid
+                                    and knocks every stat column out of alignment. */}
+                                <td className="py-2 pl-2">
+                                 <div className="flex items-center gap-2">
                                   {/* Sleek Vertical Party Trait Bar (Matching Screen 2) */}
                                   <div
                                     className="h-8 w-1 flex items-center justify-center shrink-0 cursor-default"
@@ -424,20 +428,22 @@ export default function ValorantMatchRow({ match, index }: ValorantMatchRowProps
                                     </span>
                                   </div>
 
-                                  {/* Name, Tag & Rank Label */}
+                                  {/* Name & Tag — the rank lives in its own column
+                                      to the right, so it isn't repeated here. */}
                                   <div className="min-w-0">
-                                    <div className="flex items-center gap-1.5">
-                                      <span className="font-bold text-white truncate max-w-[120px]">
+                                    <div className="flex items-baseline gap-1.5">
+                                      <span className="font-bold text-white truncate max-w-[140px]">
                                         {p.name}
                                       </span>
-                                      <span className="text-[10px] text-zinc-500 font-mono">
+                                      <span className="text-[10px] text-zinc-500 font-mono shrink-0">
                                         #{p.tag}
                                       </span>
                                     </div>
-                                    <span className="text-[10px] text-zinc-400 font-medium block truncate">
-                                      {p.currenttier_patched || "Ascendant 1"}
+                                    <span className="text-[10px] text-zinc-500 font-medium block truncate">
+                                      {p.character}
                                     </span>
                                   </div>
+                                 </div>
                                 </td>
 
                                 {/* Rank Badge */}

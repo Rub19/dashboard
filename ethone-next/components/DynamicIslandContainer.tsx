@@ -5,7 +5,7 @@ import { useCallback, useEffect, useMemo, useRef, useState } from "react";
 import { createPortal } from "react-dom";
 import { AnimatePresence, motion } from "framer-motion";
 import SafeImage from "@/components/SafeImage";
-import { useRouter } from "next/navigation";
+import { useRouter, usePathname } from "next/navigation";
 import { Icon, type IconPack } from "@/lib/icons";
 
 import LiveMediaProgress from "@/components/LiveMediaProgress";
@@ -260,6 +260,13 @@ export default function DynamicIslandContainer() {
   const { nowPlaying, loading: npLoading, refetch: refetchNowPlaying } = useNowPlaying(3000);
   const isThinking = useBrainActivityStore((s) => s.isThinking);
   const { visible } = useDynamicIslandStore();
+  const pathname = usePathname();
+  // The tracker pages (/matches) are dense, full-width scoreboards — the
+  // floating island overlaps their top toolbar and adds noise. Hide it there
+  // automatically, WITHOUT touching the persisted user preference, so it
+  // reappears as before on every other route.
+  const onTrackerRoute = pathname === "/matches" || (pathname?.startsWith("/matches/") ?? false);
+  const effectiveVisible = visible && !onTrackerRoute;
   const { pendingCount, syncing, lastSync, syncError, sync } = useActivityJournal();
   const queue = useUploadQueue();
   const uploadingCount = queue.items.filter((it) => it.status === "uploading" || it.status === "queued").length;
@@ -737,7 +744,7 @@ export default function DynamicIslandContainer() {
 
   const islandContent = (
     <AnimatePresence>
-      {visible && (
+      {effectiveVisible && (
         <motion.div
           key="dynamic-island"
           initial={{ opacity: 0, y: -20, scale: 0.9 }}

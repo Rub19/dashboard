@@ -578,7 +578,10 @@ export default function LolMatchRow({ match, index }: LolMatchRowProps) {
                                 )}
                               >
                                 {/* Champion & Player Info with Left Party Trait Bar */}
-                                <td className="py-2 pl-2 flex items-center gap-2">
+                                {/* Inner flex row in a div — a display:flex <td> breaks
+                                    the table column grid and misaligns every stat column. */}
+                                <td className="py-2 pl-2">
+                                 <div className="flex items-center gap-2">
                                   {/* Sleek Vertical Party Trait Bar (Matching Screen 2) */}
                                   <div
                                     className="h-8 w-1 flex items-center justify-center shrink-0 cursor-default"
@@ -608,14 +611,15 @@ export default function LolMatchRow({ match, index }: LolMatchRowProps) {
                                     </span>
                                   </div>
                                   <div className="min-w-0">
-                                    <div className="flex items-center gap-1.5">
-                                      <span className="font-bold text-white truncate max-w-[120px]">{p.name}</span>
-                                      <span className="text-[10px] text-zinc-500 font-mono">#{p.tag}</span>
+                                    <div className="flex items-baseline gap-1.5">
+                                      <span className="font-bold text-white truncate max-w-[140px]">{p.name}</span>
+                                      <span className="text-[10px] text-zinc-500 font-mono shrink-0">#{p.tag}</span>
                                     </div>
-                                    <span className="text-[10px] text-zinc-400 font-medium block truncate">
+                                    <span className="text-[10px] text-zinc-500 font-medium block truncate">
                                       {p.character || "Champion"}
                                     </span>
                                   </div>
+                                 </div>
                                 </td>
 
                                 {/* Build (Spells + 6 Items + Trinket) */}

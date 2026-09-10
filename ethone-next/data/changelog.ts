@@ -1,3 +1,13 @@
+const v12117_fr: ChangelogEntry = {
+  version: "v1.21.17",
+  date: "2026-09-10",
+  title: "Fix : Client OAuth Google",
+  items: [
+    "L'ancien client OAuth Google (`644274299172-…`, projet supprimé) donnait `401 invalid_client` sur toutes les connexions Calendar / Drive / YouTube. Remplacé par le client du projet actif (`259857269450-…`), partagé avec le « Sign in with Google » de Supabase.",
+    "À faire côté Rubens : ajouter `https://ethone.dev` (origins) + `https://ethone.dev/` (redirect) au client, mettre `GOOGLE_CLIENT_SECRET` + `GOOGLE_CLIENT_ID` dans le Worker, et publier l'app Google (sinon les tokens périment tous les 7 jours).",
+  ],
+};
+
 const v12116_fr: ChangelogEntry = {
   version: "v1.21.16",
   date: "2026-09-10",
@@ -716,6 +726,16 @@ const v12052_fr: ChangelogEntry = {
     "Dynamic Island : correction d'un bug de priorité qui empêchait Spotify de jamais s'afficher, systématiquement évincé par la synchronisation d'arrière-plan.",
     "Commande /help du Bot Discord : la liste des commandes est désormais générée dynamiquement depuis les commandes réellement enregistrées (fin des commandes fantômes et des commandes manquantes), et affiche la vraie syntaxe des commandes à sous-commandes (ex. /automod status).",
     "Audit de l'enregistrement des commandes slash Discord : architecture confirmée saine, aucune dérive entre le code et les commandes déployées.",
+  ],
+};
+
+const v12117_en: ChangelogEntry = {
+  version: "v1.21.17",
+  date: "2026-09-10",
+  title: "Fix: Google OAuth Client",
+  items: [
+    "The old Google OAuth client (`644274299172-…`, deleted project) returned `401 invalid_client` on every Calendar / Drive / YouTube connection. Swapped for the active project's client (`259857269450-…`), shared with Supabase's Sign in with Google.",
+    "Rubens to do: add `https://ethone.dev` (origins) + `https://ethone.dev/` (redirect) to the client, set `GOOGLE_CLIENT_SECRET` + `GOOGLE_CLIENT_ID` in the Worker, and publish the Google app (otherwise tokens expire every 7 days).",
   ],
 };
 
@@ -1440,6 +1460,16 @@ const v12052_en: ChangelogEntry = {
   ],
 };
 
+const v12117_es: ChangelogEntry = {
+  version: "v1.21.17",
+  date: "2026-09-10",
+  title: "Fix: Cliente OAuth de Google",
+  items: [
+    "El antiguo cliente OAuth de Google (`644274299172-…`, proyecto eliminado) devolvía `401 invalid_client` en cada conexión de Calendar / Drive / YouTube. Reemplazado por el cliente del proyecto activo (`259857269450-…`), compartido con el « Sign in with Google » de Supabase.",
+    "Pendiente de Rubens: añadir `https://ethone.dev` (origins) + `https://ethone.dev/` (redirect) al cliente, poner `GOOGLE_CLIENT_SECRET` + `GOOGLE_CLIENT_ID` en el Worker, y publicar la app de Google.",
+  ],
+};
+
 const v12116_es: ChangelogEntry = {
   version: "v1.21.16",
   date: "2026-09-10",
@@ -2158,6 +2188,16 @@ const v12052_es: ChangelogEntry = {
     "Dynamic Island: corregido un error de prioridad que impedía que Spotify apareciera, siempre desplazado por la sincronización en segundo plano.",
     "Comando /help del Bot de Discord: la lista de comandos ahora se genera dinámicamente desde los comandos realmente registrados (fin de comandos fantasma o ausentes), mostrando la sintaxis real de los comandos con subcomandos.",
     "Auditoría del registro de comandos slash de Discord: arquitectura confirmada como sólida, sin desviación entre el código y los comandos desplegados.",
+  ],
+};
+
+const v12117_de: ChangelogEntry = {
+  version: "v1.21.17",
+  date: "2026-09-10",
+  title: "Fix: Google-OAuth-Client",
+  items: [
+    "Der alte Google-OAuth-Client (`644274299172-…`, geloeschtes Projekt) lieferte `401 invalid_client` bei jeder Calendar-/Drive-/YouTube-Verbindung. Ersetzt durch den Client des aktiven Projekts (`259857269450-…`), gemeinsam mit Supabases Sign in with Google.",
+    "Von Rubens zu erledigen: `https://ethone.dev` (Origins) + `https://ethone.dev/` (Redirect) zum Client hinzufuegen, `GOOGLE_CLIENT_SECRET` + `GOOGLE_CLIENT_ID` im Worker setzen und die Google-App veroeffentlichen.",
   ],
 };
 
@@ -25027,5 +25067,9 @@ CHANGELOG_BY_LANG.fr.unshift(v12116_fr);
 CHANGELOG_BY_LANG.en.unshift(v12116_en);
 CHANGELOG_BY_LANG.es.unshift(v12116_es);
 CHANGELOG_BY_LANG.de.unshift(v12116_de);
+CHANGELOG_BY_LANG.fr.unshift(v12117_fr);
+CHANGELOG_BY_LANG.en.unshift(v12117_en);
+CHANGELOG_BY_LANG.es.unshift(v12117_es);
+CHANGELOG_BY_LANG.de.unshift(v12117_de);
 
 export const CHANGELOG = CHANGELOG_BY_LANG.fr;

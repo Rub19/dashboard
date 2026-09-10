@@ -48,7 +48,11 @@ export async function startOAuthConnect(provider: string, clientId: string, stat
 }
 
 // Public OAuth app Client IDs. Client secrets remain exclusively in the Worker.
-const GOOGLE_CLIENT_ID = "644274299172-hsan3pc3a2fri6p5m4olmeiont98dk15.apps.googleusercontent.com";
+// Google: single Web client in the "double-reef-433023-p4" project, shared by
+// the Supabase "Sign in with Google" flow (redirect …supabase.co/auth/v1/callback)
+// and the ETHONE connections (redirect https://ethone.dev/). The matching
+// GOOGLE_CLIENT_SECRET / GOOGLE_CLIENT_ID live only in the Worker env.
+const GOOGLE_CLIENT_ID = "259857269450-m5kiejkhb1k0lt4h673mi0jsrklmtas3.apps.googleusercontent.com";
 
 export const OAUTH_APP_CLIENT_IDS: Record<string, string> = {
   spotify: "6619fbf6315e4e68948dc08532251912",

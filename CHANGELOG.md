@@ -2,6 +2,15 @@
 
 Toutes les modifications notables de ce projet seront documentées dans ce fichier.
 
+## v1.20.93 — 2026-09-10
+
+**Bot Control Center : onglet « Modules » vide**
+
+- `components` → `app/discord/bot/BotControlClient.tsx` : `servers` démarrait sur un placeholder codé en dur (`id: "1128633164290596884"`). L'effet de sélection par défaut (`if (!settingsGuildId && servers.length > 0)`) ne s'exécutait qu'une fois → dès que `GET /api/bot/presence/servers` renvoyait un `guildId` différent, `settingsGuildId` restait bloqué sur le placeholder, et `GET /api/guilds/<placeholder>/modules` → `guildAuth` → 404 (bot pas dans cette guilde) → `modules` restait `[]`, rendu comme une grille vide sans message.
+- `servers` démarre maintenant à `[]` ; l'effet re-sélectionne `servers[0].id` si `settingsGuildId` n'est pas/plus dans la liste.
+- `loadModules` : `catch {}` silencieux → capture `res.status` / `data.error` dans un nouvel état `modulesError`, affiché (avec « Réessayer ») dans les deux emplacements de rendu des modules (onglet dédié + vue filtrée).
+- Validation : `tsc` 0 erreur, `build`, `lint` inchangé.
+
 ## v1.20.92 — 2026-09-10
 
 **Trackers : plus de matchs chargés**

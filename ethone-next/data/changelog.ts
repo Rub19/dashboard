@@ -1,3 +1,14 @@
+const v12093_fr: ChangelogEntry = {
+  version: "v1.20.93",
+  date: "2026-09-10",
+  title: "Console du Bot : Onglet « Modules » Vide — Corrigé",
+  items: [
+    "Le Centre de Contrôle du Bot partait avec un serveur factice codé en dur (`1128633164290596884`). L'auto-sélection ne se faisait qu'une fois : quand la vraie liste de serveurs arrivait avec un autre identifiant, le sélecteur restait bloqué sur le faux → l'appel des modules tapait un serveur où le bot n'est pas → 404 → l'onglet « Modules » restait vide sans aucun message.",
+    "Corrigé : la liste démarre vide et se remplit avec les vrais serveurs ; si la sélection courante n'est plus dans la liste, elle se recale automatiquement.",
+    "En cas d'échec de chargement des modules, un message clair s'affiche maintenant (« session expirée », « tu dois être admin de ce serveur », code HTTP…) avec un bouton « Réessayer », au lieu d'un écran vide silencieux.",
+  ],
+};
+
 const v12092_fr: ChangelogEntry = {
   version: "v1.20.92",
   date: "2026-09-10",
@@ -446,6 +457,17 @@ const v12052_fr: ChangelogEntry = {
     "Dynamic Island : correction d'un bug de priorité qui empêchait Spotify de jamais s'afficher, systématiquement évincé par la synchronisation d'arrière-plan.",
     "Commande /help du Bot Discord : la liste des commandes est désormais générée dynamiquement depuis les commandes réellement enregistrées (fin des commandes fantômes et des commandes manquantes), et affiche la vraie syntaxe des commandes à sous-commandes (ex. /automod status).",
     "Audit de l'enregistrement des commandes slash Discord : architecture confirmée saine, aucune dérive entre le code et les commandes déployées.",
+  ],
+};
+
+const v12093_en: ChangelogEntry = {
+  version: "v1.20.93",
+  date: "2026-09-10",
+  title: "Bot Console: Empty \"Modules\" Tab — Fixed",
+  items: [
+    "The Bot Control Center started with a hardcoded placeholder server (`1128633164290596884`). The auto-select ran only once: when the real server list arrived with a different id, the picker stayed stuck on the placeholder → the modules call hit a guild the bot isn't in → 404 → the \"Modules\" tab stayed empty with no message.",
+    "Fixed: the list now starts empty and fills with the real servers; if the current selection is no longer in the list it re-selects automatically.",
+    "When loading modules fails, a clear message now shows (session expired, must be a server admin, HTTP code…) with a \"Retry\" button, instead of a silent blank area.",
   ],
 };
 
@@ -900,6 +922,17 @@ const v12052_en: ChangelogEntry = {
   ],
 };
 
+const v12093_es: ChangelogEntry = {
+  version: "v1.20.93",
+  date: "2026-09-10",
+  title: "Consola del Bot: Pestana \"Modulos\" Vacia — Corregido",
+  items: [
+    "El Centro de Control del Bot arrancaba con un servidor ficticio fijo (`1128633164290596884`). La autoseleccion solo se hacia una vez: cuando llegaba la lista real de servidores con otro identificador, el selector se quedaba en el ficticio → la llamada de modulos apuntaba a un servidor donde el bot no esta → 404 → la pestana \"Modulos\" quedaba vacia sin mensaje.",
+    "Corregido: la lista empieza vacia y se llena con los servidores reales; si la seleccion actual ya no esta en la lista, se reajusta automaticamente.",
+    "Si falla la carga de modulos, ahora aparece un mensaje claro (sesion caducada, debes ser admin del servidor, codigo HTTP…) con un boton \"Reintentar\", en vez de una zona en blanco silenciosa.",
+  ],
+};
+
 const v12092_es: ChangelogEntry = {
   version: "v1.20.92",
   date: "2026-09-10",
@@ -1348,6 +1381,17 @@ const v12052_es: ChangelogEntry = {
     "Dynamic Island: corregido un error de prioridad que impedía que Spotify apareciera, siempre desplazado por la sincronización en segundo plano.",
     "Comando /help del Bot de Discord: la lista de comandos ahora se genera dinámicamente desde los comandos realmente registrados (fin de comandos fantasma o ausentes), mostrando la sintaxis real de los comandos con subcomandos.",
     "Auditoría del registro de comandos slash de Discord: arquitectura confirmada como sólida, sin desviación entre el código y los comandos desplegados.",
+  ],
+};
+
+const v12093_de: ChangelogEntry = {
+  version: "v1.20.93",
+  date: "2026-09-10",
+  title: "Bot-Konsole: Leerer \"Module\"-Tab — behoben",
+  items: [
+    "Das Bot Control Center startete mit einem fest verdrahteten Platzhalter-Server (`1128633164290596884`). Die Auto-Auswahl lief nur einmal: Kam die echte Serverliste mit einer anderen ID, blieb die Auswahl beim Platzhalter → der Module-Aufruf traf eine Gilde, in der der Bot nicht ist → 404 → der \"Module\"-Tab blieb ohne Meldung leer.",
+    "Behoben: Die Liste startet leer und fuellt sich mit den echten Servern; ist die aktuelle Auswahl nicht mehr in der Liste, wird automatisch neu ausgewaehlt.",
+    "Schlaegt das Laden der Module fehl, erscheint jetzt eine klare Meldung (Sitzung abgelaufen, Server-Admin erforderlich, HTTP-Code…) mit \"Erneut versuchen\"-Schaltflaeche statt einer stillen leeren Flaeche.",
   ],
 };
 
@@ -23851,5 +23895,9 @@ CHANGELOG_BY_LANG.fr.unshift(v12092_fr);
 CHANGELOG_BY_LANG.en.unshift(v12092_en);
 CHANGELOG_BY_LANG.es.unshift(v12092_es);
 CHANGELOG_BY_LANG.de.unshift(v12092_de);
+CHANGELOG_BY_LANG.fr.unshift(v12093_fr);
+CHANGELOG_BY_LANG.en.unshift(v12093_en);
+CHANGELOG_BY_LANG.es.unshift(v12093_es);
+CHANGELOG_BY_LANG.de.unshift(v12093_de);
 
 export const CHANGELOG = CHANGELOG_BY_LANG.fr;

@@ -264,22 +264,18 @@ export default function BotControlClient({ initialTab = "overview" }: BotControl
   // Discord slash command reads and writes, so toggles here and on Discord stay in sync.
   const [modules, setModules] = useState<any[]>([]);
   const [modulesLoading, setModulesLoading] = useState(false);
+  const [modulesError, setModulesError] = useState<string | null>(null);
   const [togglingModuleId, setTogglingModuleId] = useState<string | null>(null);
 
   // Real Commands
   const [commands, setCommands] = useState<any[]>([]);
 
-  // Real Installed Servers
-  const [servers, setServers] = useState<any[]>([
-    {
-      id: "1128633164290596884",
-      name: "ETHONE Server",
-      memberCount: 48,
-      owner: "Bot Owner",
-      botJoinedAt: "2026-01-10",
-      status: "connected",
-    },
-  ]);
+  // Real Installed Servers — populated from GET /api/bot/presence/servers.
+  // Starts empty: a hardcoded placeholder id used to get locked in as
+  // `settingsGuildId` (the default-select effect only ran once), so when the
+  // real guild list arrived with a different id the modules fetch kept hitting
+  // a guild the bot isn't in → 404 → the Modules tab stayed empty.
+  const [servers, setServers] = useState<any[]>([]);
 
   // Real Recent Discord Events
   const [recentEvents, setRecentEvents] = useState<any[]>([
@@ -319,9 +315,11 @@ export default function BotControlClient({ initialTab = "overview" }: BotControl
   const [settingsGuildId, setSettingsGuildId] = useState("");
   const [loadingGuildSettings, setLoadingGuildSettings] = useState(false);
 
-  // Default to the first known server once the real server list has loaded.
+  // Select the first server once the list loads — and re-select if the current
+  // choice isn't in the (updated) list, so a stale id can't get stuck.
   useEffect(() => {
-    if (!settingsGuildId && servers.length > 0) {
+    if (servers.length === 0) return;
+    if (!settingsGuildId || !servers.some((s) => s.id === settingsGuildId)) {
       setSettingsGuildId(servers[0].id);
     }
   }, [servers, settingsGuildId]);
@@ -352,7 +350,13 @@ export default function BotControlClient({ initialTab = "overview" }: BotControl
   // Load the real per-guild module toggles (GET /api/guilds/:guildId/modules) whenever
   // the selected server changes.
   const loadModules = useCallback(async () => {
-    if (!settingsGuildId || !BOT_API_URL) {
+    setModulesError(null);
+    if (!BOT_API_URL) {
+      setModules([]);
+      setModulesError("Le serveur du bot n'est pas joignable depuis cet environnement.");
+      return;
+    }
+    if (!settingsGuildId) {
       setModules([]);
       return;
     }
@@ -361,12 +365,23 @@ export default function BotControlClient({ initialTab = "overview" }: BotControl
       const res = await fetch(`${BOT_API_URL}/api/guilds/${settingsGuildId}/modules`, {
         credentials: "include",
       });
-      const data = await res.json();
-      if (Array.isArray(data?.modules)) {
+      const data = await res.json().catch(() => null);
+      if (res.ok && Array.isArray(data?.modules)) {
         setModules(data.modules);
+      } else {
+        setModules([]);
+        setModulesError(
+          data?.error ||
+            (res.status === 401
+              ? "Session expirée — reconnecte-toi au dashboard Discord."
+              : res.status === 403
+                ? "Tu dois être administrateur de ce serveur (ou le bot n'y est pas)."
+                : `Impossible de charger les modules (HTTP ${res.status}).`)
+        );
       }
     } catch {
-      // Mode tolérant
+      setModules([]);
+      setModulesError("Impossible de joindre le serveur du bot. Réessaie.");
     } finally {
       setModulesLoading(false);
     }
@@ -1381,6 +1396,16 @@ export default function BotControlClient({ initialTab = "overview" }: BotControl
                 <p className="text-xs text-zinc-500 italic pt-2">Sélectionnez un serveur pour voir ses modules.</p>
               ) : modulesLoading && modules.length === 0 ? (
                 <p className="text-xs text-zinc-500 italic pt-2">Chargement des modules…</p>
+              ) : modulesError ? (
+                <div className="mt-2 flex flex-col items-start gap-2 rounded-xl border border-red-500/25 bg-red-500/10 p-4 text-xs text-red-300">
+                  <span className="font-medium">{modulesError}</span>
+                  <button
+                    onClick={() => loadModules()}
+                    className="rounded-lg border border-red-500/30 px-2.5 py-1 font-semibold transition-colors hover:bg-red-500/15 cursor-pointer"
+                  >
+                    Réessayer
+                  </button>
+                </div>
               ) : (
                 <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-3 pt-2">
                   {filteredModules.map((m) => {
@@ -1606,6 +1631,21 @@ export default function BotControlClient({ initialTab = "overview" }: BotControl
               <p className="text-xs text-zinc-500 italic">Sélectionnez un serveur pour voir ses modules.</p>
             ) : modulesLoading && modules.length === 0 ? (
               <p className="text-xs text-zinc-500 italic">Chargement des modules…</p>
+            ) : modulesError ? (
+              <div className="flex flex-col items-start gap-2 rounded-xl border border-red-500/25 bg-red-500/10 p-4 text-xs text-red-300">
+                <span className="flex items-center gap-2 font-medium">
+                  <Layers className="h-4 w-4 shrink-0" />
+                  {modulesError}
+                </span>
+                <button
+                  onClick={() => loadModules()}
+                  className="rounded-lg border border-red-500/30 px-2.5 py-1 font-semibold transition-colors hover:bg-red-500/15 cursor-pointer"
+                >
+                  Réessayer
+                </button>
+              </div>
+            ) : modules.length === 0 ? (
+              <p className="text-xs text-zinc-500 italic">Aucun module disponible pour ce serveur.</p>
             ) : (
               <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-3">
                 {modules.map((m) => {

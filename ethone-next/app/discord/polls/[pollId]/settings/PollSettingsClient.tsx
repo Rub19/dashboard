@@ -4,22 +4,14 @@ import { useState } from "react";
 import Link from "next/link";
 import { useParams, useRouter, useSearchParams } from "next/navigation";
 import {
-  Settings,
   ChevronRight,
   Save,
   Trash2,
   AlertTriangle,
   RotateCcw,
-  Archive,
-  Eye,
-  Sliders,
-  ShieldCheck,
-  Sparkles,
-  Lock,
 } from "lucide-react";
 import { useToast } from "@/components/ToastProvider";
 import { useDiscordOAuth } from "@/lib/hooks/useDiscordOAuth";
-import { cn } from "@/lib/utils";
 
 export default function PollSettingsClient() {
   const params = useParams();

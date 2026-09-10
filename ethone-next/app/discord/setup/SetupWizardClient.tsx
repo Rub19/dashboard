@@ -35,8 +35,7 @@ const STEPS = [
 ];
 
 export default function SetupWizardClient() {
-  const router = useRouter();
-  const { profile, loading: discordLoading, connect } = useDiscordOAuth();
+  const { profile, connect } = useDiscordOAuth();
   const { success, error: showError } = useToast();
 
   const [currentStep, setCurrentStep] = useState(1);
@@ -119,7 +118,7 @@ export default function SetupWizardClient() {
 
       success("Configuration terminée !", "Votre serveur est maintenant prêt à utiliser ETHONE Bot.");
       setCurrentStep(5);
-    } catch (e) {
+    } catch {
       showError("Erreur de sauvegarde", "Impossible de sauvegarder la configuration.");
     } finally {
       setIsSaving(false);
@@ -169,7 +168,6 @@ export default function SetupWizardClient() {
           {/* Stepper Tabs */}
           <div className="hidden sm:grid grid-cols-5 gap-2 mt-4">
             {STEPS.map((s) => {
-              const Icon = s.icon;
               const isPast = s.id < currentStep;
               const isCurrent = s.id === currentStep;
               return (

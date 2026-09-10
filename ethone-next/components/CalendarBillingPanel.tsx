@@ -5,7 +5,7 @@ import { CalendarDate, getLocalTimeZone } from "@internationalized/date";
 import { useI18n } from "@/lib/hooks/useI18n";
 import { useSettings } from "@/components/SettingsProvider";
 import { Icon } from "@/lib/icons";
-import { detectBrandMeta, BILL_BRANDS } from "@/lib/bills-brands";
+import { detectBrandMeta } from "@/lib/bills-brands";
 import {
   addBill,
   editBill,
@@ -15,11 +15,8 @@ import {
   toISODate,
   type Bill,
   type BillCategory,
-  BILL_CATEGORIES,
 } from "@/lib/bills-manager";
-import Select from "@/components/ui/Select";
-import Input from "@/components/Input";
-import { Check, Trash2, Plus, Calendar, CreditCard, Tag, Sparkles, ChevronDown } from "lucide-react";
+import { Check, Trash2, Plus, CreditCard, ChevronDown } from "lucide-react";
 import { hapticSuccessPattern, hapticRigidImpact } from "@/lib/haptics";
 import { useToast } from "@/components/ToastProvider";
 import { cn } from "@/lib/utils";
@@ -67,7 +64,7 @@ export type CalendarBillingPanelProps = {
 export default function CalendarBillingPanel({ date, bills, onChange }: CalendarBillingPanelProps) {
   const i18n = useI18n();
   const { settings } = useSettings();
-  const { success, notify } = useToast();
+  const { success } = useToast();
 
   const [adding, setAdding] = useState(false);
   const [label, setLabel] = useState("");

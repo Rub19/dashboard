@@ -2,7 +2,6 @@
 
 import { motion, AnimatePresence } from "framer-motion";
 import { Icon } from "@/lib/icons";
-import { cn } from "@/lib/utils";
 import confetti from "canvas-confetti";
 import { useEffect } from "react";
 

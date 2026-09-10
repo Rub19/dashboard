@@ -394,7 +394,7 @@ export async function fetchLolMatchesDirect(
   // 3. Fetch each match, in small sequential batches to stay under the
   // per-key rate limit while still loading a real history.
   const idsToFetch = matchIds.slice(0, MATCH_LIMIT);
-  // eslint-disable-next-line @typescript-eslint/no-explicit-any
+   
   const matchDetails: PromiseSettledResult<any>[] = [];
   for (let i = 0; i < idsToFetch.length; i += BATCH_SIZE) {
     const batch = idsToFetch.slice(i, i + BATCH_SIZE);

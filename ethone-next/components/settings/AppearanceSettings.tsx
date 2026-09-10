@@ -11,7 +11,6 @@ import { useSettingsForm } from "./SettingsFormContext";
 import { ACCENTS } from "@/components/SettingsProvider";
 import { type Settings, DEFAULTS } from "@/lib/settings";
 import BentoCard from "@/components/ui/BentoCard";
-import PremiumThemePicker from "./PremiumThemePicker";
 import ThemeStudio from "./ThemeStudio";
 import LiveThemePreview from "./LiveThemePreview";
 import Switch from "@/components/Switch";
@@ -128,7 +127,6 @@ function SettingsRow({ label, description, children }: RowProps) {
 }
 
 export default function AppearanceSettings() {
-  const i18n = useI18n();
   const { settings } = useSettings();
   const form = useSettingsForm();
   const colorInputId = useId();
@@ -165,7 +163,6 @@ export default function AppearanceSettings() {
     return keys.filter((k) => isDirty(k, settings[k])).length;
   }, [settings]);
 
-  const currentTheme = settings.theme;
   const currentAccent = settings.accentColor;
   const isGrain = settings.wallpaper === "grain";
 

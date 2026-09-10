@@ -1,32 +1,21 @@
 "use client";
 
 import React, { useState, useMemo } from "react";
-import Link from "next/link";
 import {
   Lightbulb,
   ThumbsUp,
   ThumbsDown,
   CheckCircle2,
-  XCircle,
-  Clock,
   Sparkles,
   Search,
-  Filter,
   Sliders,
   Send,
-  Plus,
-  Trash2,
   MessageSquare,
   Crown,
-  ChevronRight,
   ShieldCheck,
-  Eye,
   Hash,
   RefreshCw,
-  AlertTriangle,
-  Zap,
   Kanban,
-  Check,
   X,
 } from "lucide-react";
 

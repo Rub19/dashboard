@@ -7,26 +7,16 @@ import {
   FileText,
   Plus,
   Search,
-  Filter,
   CheckCircle2,
   Clock,
-  XCircle,
-  Archive,
   Copy,
-  ExternalLink,
-  ChevronRight,
   TrendingUp,
   Settings,
-  Eye,
   Sliders,
   Sparkles,
   Layers,
   ArrowRight,
-  Share2,
   Trash2,
-  AlertCircle,
-  HelpCircle,
-  BarChart3,
 } from "lucide-react";
 import { useToast } from "@/components/ToastProvider";
 import { useDiscordOAuth } from "@/lib/hooks/useDiscordOAuth";
@@ -165,7 +155,7 @@ export default function FormsCenterClient() {
   const searchParams = useSearchParams();
   const rawGuildId = searchParams.get("guildId");
   const { profile } = useDiscordOAuth();
-  const { success, error: showError } = useToast();
+  const { success } = useToast();
 
   const activeGuild = useMemo(() => {
     if (rawGuildId && profile?.guilds) {

@@ -4,25 +4,10 @@ import { useState, useMemo } from "react";
 import Link from "next/link";
 import { useParams, useSearchParams } from "next/navigation";
 import {
-  FileText,
   Search,
-  Filter,
-  CheckCircle2,
-  Clock,
-  XCircle,
-  Archive,
   Download,
   ArrowLeft,
-  User,
-  Shield,
-  Tag,
-  MessageSquare,
-  Sparkles,
-  ExternalLink,
-  ChevronRight,
   Sliders,
-  Send,
-  AlertTriangle,
 } from "lucide-react";
 import { useToast } from "@/components/ToastProvider";
 import { cn } from "@/lib/utils";
@@ -148,7 +133,7 @@ export default function FormResponsesClient() {
   const searchParams = useSearchParams();
   const formId = (params?.formId as string) || "demo";
   const rawGuildId = searchParams.get("guildId") || "123456789012345678";
-  const { success, error: showError } = useToast();
+  const { success } = useToast();
 
   const [responses, setResponses] = useState<ResponseItem[]>(DEMO_RESPONSES);
   const [selectedStatus, setSelectedStatus] = useState<string>("ALL");

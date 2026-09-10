@@ -1,8 +1,8 @@
 "use client";
 
-import { useState, useCallback } from "react";
+import { useState } from "react";
 import { motion, AnimatePresence } from "framer-motion";
-import { Sparkles, Brain, Zap, Check, Plus, X, ArrowRight, Loader2, ListPlus } from "lucide-react";
+import { Sparkles, Brain, Zap, Check, X, Loader2, ListPlus } from "lucide-react";
 import { PRESET_TASK_PACKS, generateAITasks, type GeneratedTask, type TaskSuggestionPack } from "@/lib/tasks/ai-task-engine";
 import { useToast } from "@/components/ToastProvider";
 import { cn } from "@/lib/utils";
@@ -14,7 +14,7 @@ interface AiTaskDrawerProps {
 }
 
 export default function AiTaskDrawer({ isOpen, onClose, onAddTasks }: AiTaskDrawerProps) {
-  const { notify, success } = useToast();
+  const { success } = useToast();
   const [prompt, setPrompt] = useState("");
   const [isGenerating, setIsGenerating] = useState(false);
   const [previewTasks, setPreviewTasks] = useState<GeneratedTask[]>([]);

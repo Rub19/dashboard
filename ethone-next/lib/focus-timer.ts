@@ -1,4 +1,4 @@
-import { supabase, isMissingSchemaError } from "./supabase";
+import { supabase } from "./supabase";
 import { useSyncStore } from "./stores/sync";
 
 const SESSION_KEY = "ethone-focus-session-v1";

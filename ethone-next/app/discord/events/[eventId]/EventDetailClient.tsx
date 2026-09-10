@@ -1,29 +1,21 @@
 "use client";
 
-import React, { useState, useEffect, useMemo } from "react";
+import React, { useState, useEffect } from "react";
 import Link from "next/link";
 import { useParams } from "next/navigation";
-import { motion } from "framer-motion";
 import {
-  Calendar,
   Clock,
-  MapPin,
   Volume2,
   Users,
   CheckCircle2,
-  AlertCircle,
   Share2,
   Settings,
   BarChart2,
   ArrowLeft,
   Ticket,
   Sparkles,
-  Copy,
   Check,
-  ExternalLink,
-  MessageSquare,
   Shield,
-  Layers,
 } from "lucide-react";
 
 interface EventDetailData {
@@ -159,7 +151,6 @@ export default function EventDetailClient() {
   };
 
   const startDate = new Date(event.startDate);
-  const endDate = new Date(event.endDate);
   const fillRate = !event.capacity.unlimited && event.capacity.maxParticipants > 0
     ? Math.min(100, Math.round((event.stats.goingCount / event.capacity.maxParticipants) * 100))
     : 100;

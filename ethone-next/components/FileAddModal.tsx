@@ -5,10 +5,9 @@ import Modal from "@/components/ui/Modal";
 import Button from "@/components/ui/Button";
 import Input from "@/components/Input";
 import FileUploader from "@/components/FileUploader";
-import { Icon } from "@/lib/icons";
 import { useI18n } from "@/lib/hooks/useI18n";
 import { cn } from "@/lib/utils";
-import { UploadCloud, Link as LinkIcon, FolderPlus, Cloud, Check, ExternalLink, Globe } from "lucide-react";
+import { UploadCloud, Link as LinkIcon, FolderPlus, Cloud, Check } from "lucide-react";
 
 export type TabId = "upload" | "link" | "drive" | "folder";
 

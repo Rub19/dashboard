@@ -2,7 +2,7 @@
 
 import { memo, useState } from "react";
 import { motion } from "framer-motion";
-import { Check, Trash2, Calendar, Clock, Sparkles, Tag, Target, MoreVertical, Edit2 } from "lucide-react";
+import { Check, Trash2, Calendar, Tag, Target, Edit2 } from "lucide-react";
 import { type Task, type TaskPriority } from "@/components/TasksWidget";
 import { hapticSuccessPattern, hapticRigidImpact } from "@/lib/haptics";
 import { useToast } from "@/components/ToastProvider";
@@ -61,7 +61,6 @@ export const TaskItemRow = memo(function TaskItemRow({
   onUpdateTitle,
 }: TaskItemRowProps) {
   const router = useRouter();
-  const { notify } = useToast();
   const [isEditing, setIsEditing] = useState(false);
   const [editTitle, setEditTitle] = useState(task.title);
 

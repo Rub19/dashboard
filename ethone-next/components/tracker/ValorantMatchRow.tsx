@@ -4,21 +4,11 @@ import { useState } from "react";
 import { motion, AnimatePresence } from "framer-motion";
 import {
   MoreVertical,
-  ChevronDown,
   ChevronUp,
-  Shield,
-  Zap,
-  Target,
-  Flame,
-  Trophy,
-  Users,
   Swords,
-  Crown,
-  Activity,
 } from "lucide-react";
 import {
   type ValorantMatch,
-  type ValorantPlayer,
   getAgentIcon,
   formatTimeAgo,
   calculateMatchRankBadge,

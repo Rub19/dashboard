@@ -1,7 +1,7 @@
 "use client";
 
 import { useState } from "react";
-import { User, Mail, Star, Plus, Check, Loader2, Crown, Copy, CheckCircle2, Shuffle, Sparkles } from "lucide-react";
+import { User, Mail, Star, Plus, Check, Loader2, Crown, Copy, CheckCircle2, Shuffle } from "lucide-react";
 import { useI18n } from "@/lib/hooks/useI18n";
 import { useToast } from "@/components/ToastProvider";
 import type { MailAlias } from "@/lib/hooks/useMail";

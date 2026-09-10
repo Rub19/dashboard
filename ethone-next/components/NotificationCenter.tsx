@@ -9,11 +9,6 @@ import {
   Check,
   Trash2,
   Search,
-  Inbox,
-  Star,
-  Brain,
-  Plug,
-  Layers,
   Sparkles,
   ChevronDown,
   ChevronUp,
@@ -21,7 +16,6 @@ import {
 import {
   useNotifications,
   type Notification,
-  type NotificationGroup,
   type NotificationListItem,
 } from "@/lib/hooks/useNotifications";
 import { useI18n } from "@/lib/hooks/useI18n";
@@ -30,7 +24,6 @@ import { usePresence } from "@/components/PresenceProvider";
 import { useToast } from "@/components/ToastProvider";
 import NotificationItem from "@/components/NotificationItem";
 import { Popover, PopoverTrigger, PopoverContent } from "@/components/motion/Popover";
-import Modal from "@/components/ui/Modal";
 import { cn } from "@/lib/utils";
 
 const FILTERS = [
@@ -42,9 +35,7 @@ const FILTERS = [
 ] as const;
 
 export default function NotificationCenter() {
-  const i18n = useI18n();
   const router = useRouter();
-  const isMobile = useIsMobile();
   const { success } = useToast();
   const { setNotification } = usePresence();
   const {

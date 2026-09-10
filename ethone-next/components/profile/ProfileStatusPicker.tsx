@@ -4,12 +4,6 @@ import { useState } from "react";
 import {
   Check,
   Smile,
-  Clock,
-  Sparkles,
-  Zap,
-  Gamepad2,
-  Brain,
-  Shield,
   X,
   RefreshCw,
 } from "lucide-react";

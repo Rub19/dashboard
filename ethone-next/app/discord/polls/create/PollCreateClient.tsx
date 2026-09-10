@@ -12,16 +12,10 @@ import {
   Layers,
   Award,
   ShieldCheck,
-  CheckCircle2,
-  Calendar,
   Save,
   Send,
   Eye,
-  Settings,
-  HelpCircle,
-  Clock,
   Zap,
-  Sliders,
 } from "lucide-react";
 import { useToast } from "@/components/ToastProvider";
 import { useDiscordOAuth } from "@/lib/hooks/useDiscordOAuth";
@@ -167,7 +161,6 @@ export default function PollCreateClient() {
       return;
     }
 
-    const pollId = `poll-${Date.now().toString(36)}`;
     showToast(
       publish
         ? "Sondage publié et déployé avec succès !"

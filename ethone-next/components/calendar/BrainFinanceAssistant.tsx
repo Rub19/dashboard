@@ -2,7 +2,7 @@
 
 import { useState } from "react";
 import { motion, AnimatePresence } from "framer-motion";
-import { Brain, Sparkles, Plus, Check, Loader2, TrendingUp, AlertCircle, DollarSign, Wallet, X, Zap } from "lucide-react";
+import { Brain, Sparkles, Plus, Loader2 } from "lucide-react";
 import { BILL_BRANDS, detectBrandMeta } from "@/lib/bills-brands";
 import { Icon } from "@/lib/icons";
 import { addBill, type Bill, toISODate } from "@/lib/bills-manager";
@@ -18,7 +18,7 @@ interface BrainFinanceAssistantProps {
 }
 
 export default function BrainFinanceAssistant({ bills, onRefresh, selectedDate }: BrainFinanceAssistantProps) {
-  const { notify, success, error: showError } = useToast();
+  const { success, error: showError } = useToast();
   const [isOpen, setIsOpen] = useState(false);
   const [prompt, setPrompt] = useState("");
   const [isProcessing, setIsProcessing] = useState(false);
@@ -40,7 +40,6 @@ export default function BrainFinanceAssistant({ bills, onRefresh, selectedDate }
   }, 0);
 
   const totalYearly = totalMonthly * 12;
-  const unpaidCount = bills.filter((b) => !b.paid).length;
 
   const popularKeys = [
     "chatgpt", "spotify", "netflix", "youtube", "prime", "disney", "applemusic", "apple",

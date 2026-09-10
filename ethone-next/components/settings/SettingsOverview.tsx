@@ -1,8 +1,6 @@
 "use client";
 
-import { useMemo } from "react";
 import { useRouter } from "next/navigation";
-import { motion } from "framer-motion";
 import { Icon } from "@/lib/icons";
 import { useSettings } from "@/components/SettingsProvider";
 import { useI18n } from "@/lib/hooks/useI18n";
@@ -18,7 +16,7 @@ export default function SettingsOverview({ onNavigate }: SettingsOverviewProps) 
   const router = useRouter();
   const i18n = useI18n();
   const { settings } = useSettings();
-  const { ambientSound, playAmbient, stopAmbient } = useSound();
+  const { ambientSound } = useSound();
 
   const userStatus = USER_STATUS_CONFIG[settings.status] || USER_STATUS_CONFIG.online;
 

@@ -36,7 +36,6 @@ export default function Screen7GettingStarted({ onStartSetup, onExploreDashboard
       <div className="w-full bg-zinc-900/50 border border-zinc-800/80 rounded-2xl p-5 mb-6 shadow-xl relative backdrop-blur-sm">
         <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
           {steps.map((s) => {
-            const Icon = s.icon;
             return (
               <div key={s.num} className="p-3 rounded-xl bg-zinc-950/80 border border-zinc-800/80 flex items-start gap-3">
                 <span className="px-2 py-1 rounded-lg bg-indigo-500/10 text-indigo-400 font-mono text-xs font-bold shrink-0">

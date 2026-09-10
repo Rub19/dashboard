@@ -4,17 +4,11 @@ import { useState, useMemo } from "react";
 import Link from "next/link";
 import { useRouter, useSearchParams } from "next/navigation";
 import {
-  FileText,
-  Sparkles,
   ArrowLeft,
   ArrowRight,
   CheckCircle2,
-  Shield,
-  Layers,
-  HelpCircle,
 } from "lucide-react";
 import { useToast } from "@/components/ToastProvider";
-import { useDiscordOAuth } from "@/lib/hooks/useDiscordOAuth";
 import { cn } from "@/lib/utils";
 
 const TEMPLATES = [

@@ -53,7 +53,7 @@ import SortableWidget from "@/components/SortableWidget";
 import WidgetContainer from "@/components/widgets/WidgetContainer";
 import WidgetPickerModal from "@/components/widgets/WidgetPickerModal";
 import WidgetConfigModal from "@/components/widgets/WidgetConfigModal";
-import { getWidgetManifest, type WidgetSize } from "@/lib/widget-registry";
+import { getWidgetManifest } from "@/lib/widget-registry";
 
 const LiveBentoGrid = dynamic(() => import("@/components/LiveBentoGrid"));
 const BillsWidget = dynamic(() => import("@/components/BillsWidget"));
@@ -118,7 +118,6 @@ export default function DashboardOverview() {
   const router = useRouter();
   const { success } = useToast();
   const { settings, update: updateSettings } = useSettings();
-  const { activeProfile } = useActiveProfile();
   const { displayName } = useUserIdentity();
   const { greeting, dashboard, nowPlaying, loading, error } = useHomeData();
   const live = useLiveData();

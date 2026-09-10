@@ -1,7 +1,7 @@
 "use client";
 
 import { useMemo, useState } from "react";
-import { motion, AnimatePresence } from "framer-motion";
+import { motion } from "framer-motion";
 import {
   Mail,
   Shuffle,
@@ -9,9 +9,7 @@ import {
   ArrowRight,
   ArrowLeft,
   Sparkles,
-  CheckCircle2,
   Globe,
-  Lock,
   Server,
   Zap,
 } from "lucide-react";
@@ -21,7 +19,6 @@ import Input from "@/components/Input";
 import FormField from "@/components/FormField";
 import { useToast } from "@/components/ToastProvider";
 import type { MailAlias } from "@/lib/hooks/useMail";
-import { cn } from "@/lib/utils";
 
 function sanitizeLocal(value: string) {
   return value.toLowerCase().replace(/[^a-z0-9._-]/g, "").slice(0, 64);
@@ -51,7 +48,6 @@ export default function MailOnboarding({
   updateAlias,
   onComplete,
 }: MailOnboardingProps) {
-  const i18n = useI18n();
   const { success, error: toastError } = useToast();
   const primary = aliases.find((a) => a.is_primary) || aliases[0];
 

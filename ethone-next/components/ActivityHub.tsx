@@ -3,7 +3,7 @@
 import { useEffect, useMemo, useRef, useState } from "react";
 import { useRouter, useSearchParams } from "next/navigation";
 import { motion, AnimatePresence } from "framer-motion";
-import { Activity, Flame, TrendingUp, Sparkles, ExternalLink, CheckCircle2, RefreshCw, Loader2, AlertCircle, Download, Trash2, FileJson, FileSpreadsheet, Lightbulb, BarChart2 } from "lucide-react";
+import { Activity, Flame, TrendingUp, CheckCircle2, RefreshCw, Loader2, AlertCircle, Download, Trash2, FileJson, FileSpreadsheet, Lightbulb, BarChart2 } from "lucide-react";
 import { useItems } from "@/lib/hooks/useItems";
 import { useCloudFiles } from "@/lib/hooks/useCloudFiles";
 import { useActivityJournal } from "@/lib/hooks/useActivityJournal";

@@ -7,57 +7,30 @@ import {
   Shield,
   ShieldAlert,
   ShieldCheck,
-  Zap,
   AlertTriangle,
   Lock,
-  Unlock,
   Users,
   UserX,
   UserCheck,
   Clock,
-  Activity,
   RefreshCw,
-  Sliders,
   Settings,
   Search,
-  CheckCircle2,
-  XCircle,
   ChevronDown,
   ChevronRight,
   ArrowLeft,
-  ExternalLink,
   Eye,
-  Info,
   FileText,
-  Sparkles,
-  Terminal,
-  Hash,
-  Layers,
   Plus,
   Trash2,
-  Save,
-  Server,
-  Filter,
-  Play,
-  Check,
   Ban,
   VolumeX,
-  MessageSquare,
-  AtSign,
-  Link2,
-  Code,
   AlertCircle,
-  HelpCircle,
   X,
-  SlidersHorizontal,
   RotateCcw,
-  Calendar,
   BarChart3,
-  TrendingUp,
   FileCheck,
-  Download,
 } from "lucide-react";
-import { useAuth } from "@/components/AuthProvider";
 import { useToast } from "@/components/ToastProvider";
 import { useDiscordOAuth, type DiscordGuild } from "@/lib/hooks/useDiscordOAuth";
 import { cn } from "@/lib/utils";
@@ -218,10 +191,9 @@ const STANDARD_REASONS = [
 ];
 
 export default function ModerationCenterPage() {
-  const router = useRouter();
   const searchParams = useSearchParams();
   const { success, error: showError } = useToast();
-  const { profile, loading: discordLoading } = useDiscordOAuth();
+  const { profile } = useDiscordOAuth();
 
   // Filtrer les serveurs où l'utilisateur est admin ou propriétaire
   const manageableGuilds: DiscordGuild[] = useMemo(() => {
@@ -1023,7 +995,6 @@ export default function ModerationCenterPage() {
                 <div className="relative pl-6 space-y-6 before:absolute before:left-2.5 before:top-2 before:bottom-2 before:w-0.5 before:bg-white/10">
                   {cases.map((c) => {
                     const conf = ACTION_CONFIG[c.action] || ACTION_CONFIG.WARN;
-                    const Icon = conf.icon;
                     return (
                       <div key={c.id} className="relative group">
                         <div className="absolute -left-[27px] top-1.5 h-3.5 w-3.5 rounded-full border-2 border-[var(--bg-main)] bg-orange-500 group-hover:scale-125 transition-transform" />

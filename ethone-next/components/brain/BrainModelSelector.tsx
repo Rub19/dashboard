@@ -2,7 +2,6 @@
 
 import { useState, useRef, useEffect } from "react";
 import { Icon } from "@/lib/icons";
-import { Sparkles, Zap, Brain, Code, Cpu, ShieldCheck } from "lucide-react";
 import { cn } from "@/lib/utils";
 import { useToast } from "@/components/ToastProvider";
 

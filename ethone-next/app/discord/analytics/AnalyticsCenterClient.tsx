@@ -1,28 +1,18 @@
 "use client";
 
 import React, { useState } from "react";
-import Link from "next/link";
 import {
   BarChart3,
   TrendingUp,
   Users,
   MessageSquare,
-  Volume2,
-  Calendar,
   Clock,
   Download,
-  Share2,
-  Sparkles,
-  Zap,
-  Activity,
   ArrowUpRight,
-  ArrowDownRight,
   CheckCircle2,
-  RefreshCw,
   Hash,
   Crown,
   FileText,
-  Sliders,
   ShieldCheck,
   X,
 } from "lucide-react";

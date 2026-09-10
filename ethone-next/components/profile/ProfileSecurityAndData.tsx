@@ -6,18 +6,15 @@ import {
   ShieldCheck,
   KeyRound,
   Download,
-  Trash2,
   ExternalLink,
   Lock,
   CheckCircle2,
-  XCircle,
   AlertTriangle,
   RefreshCw,
 } from "lucide-react";
 import { useAuth } from "@/components/AuthProvider";
 import { useToast } from "@/components/ToastProvider";
 import Modal from "@/components/ui/Modal";
-import { cn } from "@/lib/utils";
 
 interface ProfileSecurityAndDataProps {
   onExportData: () => void;
@@ -30,7 +27,6 @@ export default function ProfileSecurityAndData({
 }: ProfileSecurityAndDataProps) {
   const router = useRouter();
   const { user } = useAuth();
-  const { success } = useToast();
 
   const [isResetConfirmOpen, setIsResetConfirmOpen] = useState(false);
 

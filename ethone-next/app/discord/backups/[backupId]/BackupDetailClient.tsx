@@ -1,6 +1,6 @@
 "use client";
 
-import React, { useState, useEffect } from "react";
+import React, { useState } from "react";
 import Link from "next/link";
 import { useParams, useRouter } from "next/navigation";
 import {
@@ -12,12 +12,10 @@ import {
   Lock,
   Unlock,
   CheckCircle2,
-  AlertTriangle,
   FileCode,
   FolderTree,
   Users,
   Shield,
-  Settings,
   Sparkles,
   Copy,
   Check,
@@ -25,12 +23,10 @@ import {
   Hash,
   Volume2,
   Calendar,
-  Layers,
 } from "lucide-react";
 
 export default function BackupDetailClient() {
   const params = useParams();
-  const router = useRouter();
   const backupId = (params?.backupId as string) || "demo";
 
   const [copied, setCopied] = useState(false);

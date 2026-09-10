@@ -1,33 +1,21 @@
 "use client";
 
-import React, { useState, useMemo } from "react";
-import Link from "next/link";
+import React, { useState } from "react";
 import {
   Code2,
   Terminal,
-  Zap,
   Play,
   Sliders,
   Sparkles,
   Plus,
   Trash2,
   CheckCircle2,
-  AlertTriangle,
-  Send,
   Eye,
-  Lock,
   Layers,
-  Search,
-  ChevronRight,
   ShieldCheck,
   Hash,
   ExternalLink,
-  Clock,
-  HelpCircle,
-  Copy,
-  RefreshCw,
   X,
-  FileCode,
 } from "lucide-react";
 
 interface CommandItem {
@@ -768,9 +756,7 @@ export default function CommandsCenterClient() {
                     onClick={() => {
                       setSimInput(`/${c.name}`);
                       setTimeout(() => {
-                        const evt = { preventDefault: () => {} } as any;
                         // simulate
-                        const clean = c.name.toLowerCase();
                         if (c.responseType === "EMBED") {
                           setSimOutput({
                             embed: c.embedData,

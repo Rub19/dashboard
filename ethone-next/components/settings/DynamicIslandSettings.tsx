@@ -11,7 +11,6 @@ import AudioVisualizer from "@/components/AudioVisualizer";
 type PreviewState = "spotify" | "mail" | "upload" | "sync" | "brain" | "pomodoro";
 
 export default function DynamicIslandSettings() {
-  const i18n = useI18n();
   const { settings, update } = useSettings();
   const [previewState, setPreviewState] = useState<PreviewState>("spotify");
   const [isExpanded, setIsExpanded] = useState(false);

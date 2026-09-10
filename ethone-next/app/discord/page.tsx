@@ -20,34 +20,24 @@ import {
   ChevronRight,
   Server,
   Users,
-  CheckCircle2,
   AlertTriangle,
   ArrowRight,
   Sparkles,
   Sliders,
   RefreshCw,
-  Activity,
   Plus,
-  Trash2,
-  Lock,
-  Unlock,
-  Volume2,
   Hash,
   Send,
   Crown,
   Settings2,
   Radio,
-  ToggleLeft,
-  ToggleRight,
   Save,
-  Minus,
   Zap,
   Music2,
   Play,
   Pause,
   SkipForward,
   SkipBack,
-  Disc,
   Ticket,
   UserPlus,
   Archive,
@@ -63,7 +53,6 @@ import {
 } from "lucide-react";
 import { useAuth } from "@/components/AuthProvider";
 import { useToast } from "@/components/ToastProvider";
-import { useI18n } from "@/lib/hooks/useI18n";
 import { useDiscordOAuth, type DiscordGuild } from "@/lib/hooks/useDiscordOAuth";
 import DiscordIcon from "@/components/DiscordIcon";
 import { cn } from "@/lib/utils";
@@ -330,8 +319,6 @@ const DEFAULT_SETTINGS: GuildSettings = {
 };
 
 export default function DiscordDashboardPage() {
-  const router = useRouter();
-  const { user, session } = useAuth();
   const { success, info, error: showError } = useToast();
   const { profile, loading: discordLoading, connect } = useDiscordOAuth();
   const {
@@ -413,7 +400,7 @@ export default function DiscordDashboardPage() {
     try {
       localStorage.setItem(`ethone:discord:settings:${selectedGuild.id}`, JSON.stringify(guildSettings));
       success("Configuration enregistrée", `Réglages mis à jour pour "${selectedGuild.name}".`);
-    } catch (err) {
+    } catch {
       showError("Erreur de sauvegarde", "Impossible d'enregistrer les paramètres localement.");
     } finally {
       setIsSaving(false);

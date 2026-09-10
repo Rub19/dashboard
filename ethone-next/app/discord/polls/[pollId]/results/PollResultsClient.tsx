@@ -1,22 +1,13 @@
 "use client";
 
-import { useState } from "react";
 import Link from "next/link";
 import { useParams, useSearchParams } from "next/navigation";
 import {
   BarChart3,
   Trophy,
-  Users,
   Download,
-  CheckCircle2,
-  AlertCircle,
-  Share2,
   ChevronRight,
-  RefreshCw,
-  Clock,
-  ShieldCheck,
   Vote,
-  Sparkles,
 } from "lucide-react";
 import { useToast } from "@/components/ToastProvider";
 import { useDiscordOAuth } from "@/lib/hooks/useDiscordOAuth";

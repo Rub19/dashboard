@@ -156,7 +156,7 @@ export function useItems(kind: "notes" | "tasks" | "events") {
           localStorage.setItem(cacheKey, JSON.stringify(res.data));
         } catch {}
       }
-    } catch (err) {
+    } catch {
       // Graceful offline fallback
       setIsOffline(true);
       if (typeof window !== "undefined") {

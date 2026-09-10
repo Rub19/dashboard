@@ -14,7 +14,7 @@ import { Icon } from "@/lib/icons";
 import { cn } from "@/lib/utils";
 import Button from "@/components/ui/Button";
 import Modal from "@/components/ui/Modal";
-import SettingsNavigation, { CATEGORY_ORDER, sectionCategory } from "./SettingsNavigation";
+import SettingsNavigation, { CATEGORY_ORDER } from "./SettingsNavigation";
 import SettingsContent from "./SettingsContent";
 import { useSettingsNavigation, resolveCategory } from "./useSettingsNavigation";
 
@@ -25,7 +25,6 @@ export default function SettingsLayout({ initialSection }: { initialSection?: st
   const form = useSettingsForm();
   const params = useParams();
   const searchParams = useSearchParams();
-  const router = useRouter();
   const contentRef = useRef<HTMLElement | null>(null);
   const searchRef = useRef<HTMLInputElement>(null);
 

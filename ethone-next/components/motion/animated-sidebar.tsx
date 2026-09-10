@@ -25,11 +25,8 @@ import {
 } from "react";
 import { SharedLayoutBg } from "@/components/motion/shared-layout-bg";
 import {
-  EASE_DRAWER,
   EASE_OUT,
-  SPRING_LAYOUT,
   SPRING_PRESS,
-  SPRING_SWAP,
 } from "@/lib/ease";
 import { cn } from "@/lib/utils";
 

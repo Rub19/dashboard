@@ -1,7 +1,6 @@
 "use client";
 
-import { useMemo } from "react";
-import { Sparkles, Check, Heart, Shield, Bell, Zap, Search } from "lucide-react";
+import { Sparkles, Shield, Search } from "lucide-react";
 import { cn } from "@/lib/utils";
 import { useSettings } from "@/components/SettingsProvider";
 import { PRESET_THEMES, type PremiumThemeId } from "@/lib/theme-tokens";
@@ -17,7 +16,6 @@ export default function LiveThemePreview({ themeId, accentHex, className }: Live
 
   const activeThemeId = (themeId || settings.theme) as PremiumThemeId;
   const themeDef = PRESET_THEMES[activeThemeId] || PRESET_THEMES.obsidian;
-  const activeAccent = accentHex || settings.customAccent || themeDef.accentPrimary;
 
   return (
     <div

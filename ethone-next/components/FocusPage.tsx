@@ -1,7 +1,6 @@
 "use client";
 
 import { useEffect, useRef, useState } from "react";
-import { motion } from "framer-motion";
 import { useI18n } from "@/lib/hooks/useI18n";
 import { useToast } from "@/components/ToastProvider";
 import { useFocus } from "@/components/FocusProvider";
@@ -38,7 +37,6 @@ const FOCUS_MODES = [
 type Tab = "focus" | "history";
 
 export default function FocusPage() {
-  const i18n = useI18n();
   const { success } = useToast();
   const { state, start, pause, resume, stop, skipBreak, adjustTime, format, setGoal } = useFocus();
   const { settings, update } = useSettings();

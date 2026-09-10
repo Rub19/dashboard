@@ -1,7 +1,7 @@
 "use client";
 
 import { useEffect, useMemo, useState } from "react";
-import { motion, AnimatePresence } from "framer-motion";
+import { motion } from "framer-motion";
 import {
   Inbox,
   Star,
@@ -18,7 +18,6 @@ import {
   Mail,
 } from "lucide-react";
 import { useI18n } from "@/lib/hooks/useI18n";
-import Button from "@/components/ui/Button";
 import MailProfileButton from "./MailProfileButton";
 import type { MailAlias, MailLabel } from "@/lib/hooks/useMail";
 import { cn } from "@/lib/utils";

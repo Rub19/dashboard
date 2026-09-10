@@ -1,13 +1,11 @@
 "use client";
 
 import { memo, useMemo, useState, useEffect } from "react";
-import Link from "next/link";
 import { useRouter } from "next/navigation";
-import { AlertCircle, Loader2, User, ExternalLink, Activity } from "lucide-react";
+import { User, Activity } from "lucide-react";
 import { useSettings } from "@/components/SettingsProvider";
 import { useI18n } from "@/lib/hooks/useI18n";
 import { TiltCard } from "@/components/ui/TiltCard";
-import ClientImage from "@/components/ClientImage";
 import GameIcon from "@/components/icons/GameIcon";
 import { cn } from "@/lib/utils";
 

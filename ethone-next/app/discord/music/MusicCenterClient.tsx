@@ -1,6 +1,6 @@
 "use client";
 
-import { useState, useEffect, useCallback, useRef } from "react";
+import { useState, useEffect, useCallback } from "react";
 import Link from "next/link";
 import { useSearchParams } from "next/navigation";
 import {
@@ -22,17 +22,9 @@ import {
   Settings2,
   BarChart3,
   Search,
-  Check,
   X,
-  Radio,
-  ExternalLink,
-  Sparkles,
   GripVertical,
-  MoreVertical,
-  ChevronRight,
   RefreshCw,
-  Sliders,
-  Shield,
   Music2,
   Disc,
 } from "lucide-react";

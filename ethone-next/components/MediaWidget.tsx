@@ -8,7 +8,6 @@ import { useNowPlaying } from "@/lib/hooks/useNowPlaying";
 import { useSettings } from "@/components/SettingsProvider";
 import { useI18n } from "@/lib/hooks/useI18n";
 import { useConnections } from "@/lib/hooks/useConnections";
-import { fetchWorker } from "@/lib/api";
 import { useToast } from "@/components/ToastProvider";
 import { useRouter } from "next/navigation";
 import { sendSpotifyCommand } from "@/lib/spotify-client";

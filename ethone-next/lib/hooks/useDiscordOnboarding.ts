@@ -88,7 +88,7 @@ export function useDiscordOnboarding() {
             setCurrentStep(0);
           }
         }
-      } catch (err) {
+      } catch {
         if (isMounted) {
           setIsCompleted(false);
           setIsLoading(false);
@@ -123,7 +123,7 @@ export function useDiscordOnboarding() {
         localStorage.setItem(STORAGE_KEYS.COMPLETED, "true");
         localStorage.setItem(STORAGE_KEYS.VERSION, String(CURRENT_ONBOARDING_VERSION));
         localStorage.setItem(STORAGE_KEYS.COMPLETED_AT, now);
-      } catch (e) {}
+      } catch {}
     }
 
     // 2. Persist to Supabase

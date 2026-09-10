@@ -1,22 +1,17 @@
 "use client";
 
-import React, { useState } from "react";
+import React from "react";
 import Link from "next/link";
 import { useParams } from "next/navigation";
-import { motion } from "framer-motion";
 import {
   BarChart3,
   TrendingUp,
-  Users,
   CheckCircle2,
   XCircle,
-  Clock,
   ArrowLeft,
-  Calendar,
   Volume2,
   PieChart,
   Percent,
-  Sparkles,
   Lightbulb,
 } from "lucide-react";
 

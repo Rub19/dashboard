@@ -1,13 +1,10 @@
 "use client";
 
-import React, { useState, useEffect, useMemo } from "react";
+import React, { useState, useEffect } from "react";
 import Link from "next/link";
 import { useRouter, useSearchParams } from "next/navigation";
-import { motion, AnimatePresence } from "framer-motion";
 import {
-  Calendar,
   Clock,
-  Sparkles,
   ArrowLeft,
   ArrowRight,
   Check,
@@ -16,12 +13,9 @@ import {
   Bell,
   Bot,
   Eye,
-  Layers,
-  Image as ImageIcon,
   CheckCircle2,
   Radio,
   FileText,
-  AlertCircle,
   Save,
 } from "lucide-react";
 
@@ -220,7 +214,6 @@ export default function EventCreateClient() {
             {STEPS.map((s) => {
               const isCompleted = step > s.id;
               const isCurrent = step === s.id;
-              const Icon = s.icon;
 
               return (
                 <button

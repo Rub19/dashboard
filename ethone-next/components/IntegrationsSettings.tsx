@@ -9,7 +9,7 @@ import { useI18n } from "@/lib/hooks/useI18n";
 import { useSettings } from "@/components/SettingsProvider";
 import { useToast } from "@/components/ToastProvider";
 import { useProviderCredentials } from "@/lib/hooks/useProviderCredentials";
-import { INTEGRATIONS, INTEGRATION_CATEGORIES } from "@/lib/integrations";
+import { INTEGRATIONS } from "@/lib/integrations";
 import { isConfigured, pingIntegration, type PingResult } from "@/lib/connection-config";
 import { getIntegrationConfig } from "@/lib/integrations.config";
 import CategoryTabs from "@/components/CategoryTabs";
@@ -18,7 +18,6 @@ import ConnectionCard from "@/components/ConnectionCard";
 import BrainIntegrationsHub from "@/components/connections/BrainIntegrationsHub";
 import Input from "@/components/ui/Input";
 import { EmptyState } from "@/components/ui";
-import { ErrorState } from "@/components/ui";
 import { cn } from "@/lib/utils";
 
 function clientIdFromStorage(provider: string): string {

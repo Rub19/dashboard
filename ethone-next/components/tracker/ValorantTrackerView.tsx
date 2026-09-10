@@ -1,19 +1,12 @@
 "use client";
 
 import { useState, useEffect, useMemo, useCallback } from "react";
-import { motion, AnimatePresence } from "framer-motion";
 import {
   RefreshCw,
   Search,
   Swords,
-  Trophy,
-  Shield,
-  Zap,
-  Target,
-  Sparkles,
   AlertCircle,
   Clock,
-  ChevronRight,
   User,
   Key,
   ExternalLink,
@@ -111,7 +104,7 @@ export default function ValorantTrackerView() {
         // 1. Direct Henrik API call
         try {
           validMatches = await fetchValorantMatchesDirect(cleanName, cleanTag, selectedMode, henrikApiKey);
-        } catch (directErr) {
+        } catch {
           // 2. Fallback to Cloudflare Worker
           try {
             const modeParam = selectedMode !== "all" ? `&mode=${encodeURIComponent(selectedMode)}` : "";

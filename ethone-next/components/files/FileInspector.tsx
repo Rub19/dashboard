@@ -1,6 +1,5 @@
 "use client";
 
-import { useState, useEffect } from "react";
 import { useRouter } from "next/navigation";
 import {
   X,
@@ -22,7 +21,7 @@ import {
   Layers,
 } from "lucide-react";
 import { useI18n } from "@/lib/hooks/useI18n";
-import { formatBytes, mimeIcon, getFileExtension, getFileCategory } from "@/lib/files";
+import { formatBytes, getFileExtension, getFileCategory } from "@/lib/files";
 import SafeImage from "@/components/SafeImage";
 import Button from "@/components/ui/Button";
 import { cn } from "@/lib/utils";
@@ -56,7 +55,6 @@ export default function FileInspector({
   onRestore,
 }: FileInspectorProps) {
   const router = useRouter();
-  const i18n = useI18n();
 
   if (!file) return null;
 

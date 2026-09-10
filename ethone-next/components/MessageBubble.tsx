@@ -254,7 +254,7 @@ export function MessageBubbleContent({
 
     return cloneElement(child, {
       ...props,
-      // eslint-disable-next-line react-hooks/refs
+       
       ref: mergeRefs(child.props.ref, ref as Ref<HTMLElement> | undefined),
       className: cn(classes, child.props.className),
       children: composedChildren,

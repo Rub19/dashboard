@@ -184,7 +184,6 @@ export function useIdentity() {
 
   const save = useCallback(
     async (input: IdentityInput) => {
-      const effectiveId = user?.id || "local";
 
       const current = identity || getLocalIdentity(user?.id) || {
         user_id: user?.id || "",

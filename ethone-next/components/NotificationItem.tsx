@@ -5,7 +5,6 @@ import { motion } from "framer-motion";
 import {
   Check,
   CheckCheck,
-  Archive,
   Trash2,
   MoreHorizontal,
   Clock,
@@ -19,8 +18,6 @@ import {
   Plug,
   Mail,
   ExternalLink,
-  ChevronDown,
-  ChevronUp,
   ArrowLeft,
 } from "lucide-react";
 import { useNotifications, type Notification, type SnoozeDuration } from "@/lib/hooks/useNotifications";
@@ -83,7 +80,6 @@ export default function NotificationItem({
   n: Notification;
   onOpen?: (n: Notification) => void;
 }) {
-  const i18n = useI18n();
   const { success } = useToast();
   const {
     markRead,

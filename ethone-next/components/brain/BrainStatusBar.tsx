@@ -5,11 +5,9 @@ import { motion, AnimatePresence } from "framer-motion";
 import {
   Brain,
   Sparkles,
-  Zap,
   Layers,
   Music,
   Clock,
-  CheckCircle2,
   HelpCircle,
   X,
   ShieldCheck,

@@ -10,9 +10,7 @@ import {
   Check,
   ExternalLink,
   Download,
-  Shield,
   Sparkles,
-  Swords,
   Box,
 } from "lucide-react";
 import { useSettings } from "@/components/SettingsProvider";
@@ -103,7 +101,6 @@ const GamingCard = memo(function GamingCard({
     [bodyCandidates, avatarCandidates]
   );
 
-  const server = profile?.server;
 
   const { statusText, statusClass, statusDot } = useMemo(() => {
     if (hasProfile || hasUsername) {

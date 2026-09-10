@@ -8,14 +8,9 @@ import {
   Sparkles,
   Send,
   Loader2,
-  Shuffle,
   Maximize2,
   Minimize2,
-  Trash2,
-  Check,
-  FileText,
   Clock,
-  Plus,
 } from "lucide-react";
 import { useI18n } from "@/lib/hooks/useI18n";
 import Button from "@/components/ui/Button";
@@ -67,7 +62,6 @@ export default function ComposeMailModal({
   aliases = [],
   createAlias,
 }: ComposeMailModalProps) {
-  const i18n = useI18n();
   const fileInputRef = useRef<HTMLInputElement>(null);
 
   const [to, setTo] = useState<string[]>(initial?.to ?? []);

@@ -4,15 +4,9 @@ import { useMemo, useState } from "react";
 import { motion } from "framer-motion";
 import {
   Plug,
-  PlugZap,
   RefreshCw,
   SlidersHorizontal,
-  CheckCircle2,
-  AlertCircle,
-  HelpCircle,
   Loader2,
-  ChevronRight,
-  ExternalLink,
 } from "lucide-react";
 import { useI18n } from "@/lib/hooks/useI18n";
 import { useSettings } from "@/components/SettingsProvider";
@@ -53,9 +47,8 @@ export default function ConnectionCard({
   onTest?: (id: string) => void;
   onDisconnect?: (id: string) => void;
 }) {
-  const i18n = useI18n();
   const { settings, update } = useSettings();
-  const { success, error: showError } = useToast();
+  const { error: showError } = useToast();
   const [drawerOpen, setDrawerOpen] = useState(false);
   const [showGuide, setShowGuide] = useState(false);
   const [testing, setTesting] = useState(false);
@@ -63,7 +56,6 @@ export default function ConnectionCard({
 
   const config = useMemo(() => getIntegrationConfig(integration.id), [integration.id]);
   const isConnected = isConfigured(integration, settings, credentialConnected, oauthConnected);
-  const isOauth = integration.status === "oauth";
 
   const handleQuickConnect = async (e?: React.MouseEvent) => {
     e?.stopPropagation();

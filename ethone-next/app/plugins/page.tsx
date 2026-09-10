@@ -1,6 +1,6 @@
 "use client";
 
-import { useState, useMemo, useEffect } from "react";
+import { useState, useMemo } from "react";
 import { useRouter, useSearchParams } from "next/navigation";
 import {
   Search,
@@ -14,18 +14,14 @@ import {
   Download,
   Heart,
   RefreshCw,
-  SlidersHorizontal,
   X,
-  CheckCircle2,
 } from "lucide-react";
 import { useI18n } from "@/lib/hooks/useI18n";
-import { useToast } from "@/components/ToastProvider";
 import { cn } from "@/lib/utils";
 import {
   MARKETPLACE_ITEMS,
   getMarketplaceItem,
   type MarketplaceItem,
-  type MarketplaceItemType,
   type VerificationTier,
 } from "@/lib/marketplace/marketplace-registry";
 import {
@@ -57,9 +53,6 @@ type NavTab =
 type SortOption = "recommended" | "popular" | "newest" | "rating";
 
 export default function PluginsPage() {
-  const i18n = useI18n();
-  const router = useRouter();
-  const searchParams = useSearchParams();
 
   const [activeWorkspace] = useLocalStorage<string>("ethone-active-workspace", "personal");
   const [search, setSearch] = useState("");

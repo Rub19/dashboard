@@ -26,7 +26,6 @@ export default function MailPage() {
   const i18n = useI18n();
   const { success, error: toastError } = useToast();
   const registerIsland = useIslandQueueStore((s) => s.register);
-  const unregisterIsland = useIslandQueueStore((s) => s.unregister);
 
   const {
     messages,

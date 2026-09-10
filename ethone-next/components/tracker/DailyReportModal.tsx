@@ -6,14 +6,7 @@ import {
   X,
   TrendingUp,
   TrendingDown,
-  Trophy,
-  Target,
-  Zap,
   Sparkles,
-  Award,
-  Swords,
-  Shield,
-  Activity,
 } from "lucide-react";
 import { cn } from "@/lib/utils";
 import type { ValorantDayGroup } from "@/lib/valorant-tracker";

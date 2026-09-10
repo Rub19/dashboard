@@ -1,7 +1,7 @@
 "use client";
 
 import { useState, useMemo } from "react";
-import { useTracker, type TrackerGame, type TrackerPlayer } from "@/lib/hooks/useTracker";
+import { useTracker } from "@/lib/hooks/useTracker";
 import FlatCard from "@/components/FlatCard";
 import LiquidSidebar from "@/components/LiquidSidebar";
 import ValorantTrackerView from "@/components/tracker/ValorantTrackerView";

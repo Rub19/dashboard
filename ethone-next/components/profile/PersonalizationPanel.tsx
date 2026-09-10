@@ -8,8 +8,6 @@ import {
   Check,
   Shield,
   HelpCircle,
-  Eye,
-  Info,
   Code2,
   Gamepad2,
   Music,

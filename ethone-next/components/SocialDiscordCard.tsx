@@ -2,7 +2,7 @@
 
 import { memo, useCallback, useEffect, useMemo, useState } from "react";
 import { useRouter } from "next/navigation";
-import { AlertCircle, ExternalLink, Loader2, Music, Radio, RadioOff } from "lucide-react";
+import { ExternalLink, Loader2, Music, Radio, RadioOff } from "lucide-react";
 import { useSettings } from "@/components/SettingsProvider";
 import { useI18n } from "@/lib/hooks/useI18n";
 import { useDiscordOAuth } from "@/lib/hooks/useDiscordOAuth";

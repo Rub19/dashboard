@@ -5,48 +5,26 @@ import Link from "next/link";
 import { useSearchParams } from "next/navigation";
 import {
   Sparkles,
-  Search,
   Plus,
   RefreshCw,
   Sliders,
   Users,
-  FileText,
   Clock,
-  CheckCircle2,
-  AlertTriangle,
-  ChevronRight,
-  User,
-  Hash,
   ExternalLink,
   Trash2,
-  Edit2,
-  Send,
   BarChart3,
   Shield,
   MessageSquare,
-  Download,
   Settings2,
   Zap,
   Tag,
-  ArrowUpRight,
-  Filter,
-  Layers,
-  Flame,
   Check,
-  X,
-  Lock,
-  Unlock,
   Eye,
-  Copy,
   ChevronDown,
   ChevronUp,
-  ArrowRight,
   UserPlus,
   UserMinus,
   Mail,
-  HelpCircle,
-  Link as LinkIcon,
-  Smile,
 } from "lucide-react";
 import { useDiscordOAuth, type DiscordGuild } from "@/lib/hooks/useDiscordOAuth";
 import { useToast } from "@/components/ToastProvider";
@@ -165,7 +143,7 @@ export function WelcomeCenterClient() {
   const guildIdParam = searchParams.get("guildId");
   const tabParam = searchParams.get("tab");
 
-  const { profile, loading: discordLoading } = useDiscordOAuth();
+  const { profile } = useDiscordOAuth();
   const { success, error: showError, info } = useToast();
 
   const [selectedGuild, setSelectedGuild] = useState<DiscordGuild | null>(null);

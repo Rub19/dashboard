@@ -21,7 +21,6 @@ export default function BrainContextDrawer({
   isOpen,
   onClose,
 }: BrainContextDrawerProps) {
-  const i18n = useI18n();
   const { settings } = useSettings();
   const [activeWorkspace] = useLocalStorage<string>("ethone-active-workspace", "personal");
 

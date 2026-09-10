@@ -8,8 +8,6 @@ import {
   Clock,
   AlertCircle,
   User,
-  Activity,
-  Trophy,
 } from "lucide-react";
 import { useSettings } from "@/components/SettingsProvider";
 import { useToast } from "@/components/ToastProvider";
@@ -101,7 +99,7 @@ export default function LolTrackerView() {
         // 1. Direct Riot API call
         try {
           validMatches = await fetchLolMatchesDirect(cleanName, cleanTag, selectedQueue, riotApiKey);
-        } catch (directErr) {
+        } catch {
           // 2. Fallback to Cloudflare Worker
           try {
             const queueParam = selectedQueue !== "all" ? `&mode=${encodeURIComponent(selectedQueue)}` : "";

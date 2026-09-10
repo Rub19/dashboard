@@ -129,9 +129,8 @@ export function analyzeImportedAvatar(file: {
   const meta = parseAvatarFileMetadata(file.name);
   const width = file.width || 512;
   const height = file.height || 512;
-  const isSquare = Math.abs(width - height) < 10;
   
-  let qualityScore = 70;
+  const qualityScore = 70;
   return {
     fileName: file.name,
     detectedFranchise: meta.franchise,

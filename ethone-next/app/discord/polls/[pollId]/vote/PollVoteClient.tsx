@@ -7,13 +7,9 @@ import {
   Vote,
   CheckCircle2,
   Lock,
-  Sparkles,
   ShieldCheck,
   Send,
-  ExternalLink,
   ChevronRight,
-  Clock,
-  Award,
 } from "lucide-react";
 import { useToast } from "@/components/ToastProvider";
 import { useDiscordOAuth } from "@/lib/hooks/useDiscordOAuth";

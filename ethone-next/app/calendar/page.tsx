@@ -19,7 +19,6 @@ import {
   type Bill,
 } from "@/lib/bills-manager";
 import { detectBrandMeta } from "@/lib/bills-brands";
-import { Sparkles, Calendar as CalendarIcon, CreditCard, DollarSign } from "lucide-react";
 
 function startOfDay(date: Date) {
   const d = new Date(date);
@@ -83,7 +82,6 @@ function buildMarkers(bills: Bill[], focused: CalendarDate): CalendarMarker[] {
 }
 
 export default function CalendarPage() {
-  const i18n = useI18n();
   const [selected, setSelected] = useState<CalendarDate>(() => today(getLocalTimeZone()));
   const [focused, setFocused] = useState<CalendarDate>(() => startOfMonth(today(getLocalTimeZone())));
   const [bills, setBills] = useState<Bill[]>([]);

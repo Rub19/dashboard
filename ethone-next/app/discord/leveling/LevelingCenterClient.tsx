@@ -1,29 +1,19 @@
 "use client";
 
 import React, { useState, useMemo } from "react";
-import Link from "next/link";
 import {
   Award,
   Zap,
   Trophy,
   Sliders,
-  Users,
   Search,
   Plus,
   Trash2,
   CheckCircle2,
-  AlertTriangle,
-  Crown,
-  Sparkles,
-  ShieldCheck,
-  ChevronRight,
   Eye,
   Hash,
   RefreshCw,
-  Image as ImageIcon,
   Palette,
-  Volume2,
-  MessageSquare,
   Lock,
   X,
   Edit2,

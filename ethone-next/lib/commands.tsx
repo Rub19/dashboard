@@ -9,7 +9,6 @@ import { useUserData } from "@/lib/hooks/useUserData";
 import { useWindowManager } from "@/components/WindowManagerProvider";
 import { useProfiles } from "@/lib/hooks/useProfiles";
 import { PRESETS } from "@/lib/presets";
-import { PLUGINS } from "@/lib/plugins";
 import { Icon } from "@/lib/icons";
 import { useFocus } from "@/components/FocusProvider";
 import { activityJournal } from "@/lib/activity-journal";
@@ -53,8 +52,7 @@ export function useCommandItems(setOpen: (v: boolean) => void): CommandItem[] {
   const router = useRouter();
   const { settings, update } = useSettings();
   const { signOut } = useAuth();
-  const { items: macros } = useUserData("macro");
-  const { openWindow, toggleMissionControl } = useWindowManager();
+  const { openWindow } = useWindowManager();
   const { select, profiles } = useProfiles();
   const { start, stop } = useFocus();
 

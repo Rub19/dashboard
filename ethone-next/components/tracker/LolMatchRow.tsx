@@ -5,15 +5,6 @@ import { motion, AnimatePresence } from "framer-motion";
 import {
   MoreVertical,
   Shield,
-  Users,
-  Swords,
-  Trophy,
-  BarChart3,
-  ExternalLink,
-  Flame,
-  Zap,
-  Crown,
-  ChevronDown,
   ChevronUp,
 } from "lucide-react";
 import {
@@ -111,7 +102,6 @@ export default function LolMatchRow({ match, index }: LolMatchRowProps) {
   }, [me?.items, defaultItems]);
   const trinket = me?.items?.find((it) => it && (it.id ?? 0) === 3340) || defaultItems[defaultItems.length - 1];
 
-  const rune = me?.rune;
 
   return (
     <motion.div

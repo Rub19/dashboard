@@ -1,25 +1,21 @@
 "use client";
 
-import { useEffect, useMemo, useRef, useState, useCallback } from "react";
+import { useEffect, useMemo, useState, useCallback } from "react";
 import { useRouter } from "next/navigation";
-import { motion, AnimatePresence } from "framer-motion";
 import { useCloudFiles, type CloudFile } from "@/lib/hooks/useCloudFiles";
 import { useUserState } from "@/lib/hooks/useUserState";
 import { useShares } from "@/lib/hooks/useShares";
-import { useDrops } from "@/lib/hooks/useDrops";
 import { useI18n } from "@/lib/hooks/useI18n";
 import { useToast } from "@/components/ToastProvider";
 import { useIsMobile } from "@/lib/hooks/useMediaQuery";
 import { cn } from "@/lib/utils";
 import Modal from "@/components/ui/Modal";
-import ContextMenu from "@/components/ContextMenu";
 import { useSelection } from "@/lib/hooks/useSelection";
 import BulkActionBar from "@/components/BulkActionBar";
 import {
   formatBytes,
   sortFiles,
   getFileCategory,
-  FILE_CATEGORIES,
   type FileCategory,
 } from "@/lib/files";
 import FileAddModal, { type TabId } from "@/components/FileAddModal";
@@ -28,21 +24,14 @@ import FileCard from "@/components/FileCard";
 import FileDropOverlay from "@/components/FileDropOverlay";
 import EmptyState from "@/components/ui/EmptyState";
 import Button from "@/components/ui/Button";
-import Select from "@/components/ui/Select";
 import { useSettings } from "@/components/SettingsProvider";
 import FileNavigationSidebar, { type FileSection } from "@/components/files/FileNavigationSidebar";
 import FileInspector from "@/components/files/FileInspector";
 import {
-  Folder,
-  FolderPlus,
-  Plus,
   Cloud,
   Search,
-  Sparkles,
-  Brain,
   Clock,
   Star,
-  Trash2,
   Grid2X2,
   List as ListIcon,
   RefreshCw,
@@ -52,7 +41,6 @@ import {
   CheckSquare,
   Square,
   ArrowUpDown,
-  Filter,
 } from "lucide-react";
 
 function folderPath(files: CloudFile[], folderId: string | null) {
@@ -77,8 +65,6 @@ type Modal =
   | null;
 
 export default function FilesPage() {
-  const i18n = useI18n();
-  const router = useRouter();
   const isMobile = useIsMobile();
   const { settings } = useSettings();
   const { success, error: toastError } = useToast();
@@ -111,7 +97,6 @@ export default function FilesPage() {
     syncWithDrive,
   } = useCloudFiles(clientId || undefined);
 
-  const { create: createShare } = useShares();
   const [activeSection, setActiveSection] = useState<FileSection>("home");
   const [selectedCategory, setSelectedCategory] = useState<FileCategory>("all");
   const [modal, setModal] = useState<Modal>(null);
@@ -298,7 +283,7 @@ export default function FilesPage() {
     try {
       await syncWithDrive();
       success("Google Drive synchronisé avec succès");
-    } catch (e) {
+    } catch {
       toastError("Erreur lors de la synchronisation");
     } finally {
       setSyncingDrive(false);

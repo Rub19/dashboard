@@ -61,7 +61,6 @@ function FileCardComponent({
   const i18n = useI18n();
   const isGrid = viewMode === "grid";
   const ext = getFileExtension(file.name);
-  const category = getFileCategory(file);
   const iconName = mimeIcon(file.mimeType, file.isFolder, file.name);
 
   const isImage = file.mimeType?.startsWith("image/") || ["png", "jpg", "jpeg", "webp", "gif", "svg"].includes(ext);

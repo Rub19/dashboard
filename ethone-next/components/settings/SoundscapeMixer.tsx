@@ -46,7 +46,6 @@ export const SOUNDSCAPE_PRESETS = [
 ];
 
 export default function SoundscapeMixer() {
-  const i18n = useI18n();
   const { settings, update } = useSettings();
   const { ambientLayers, playAmbientLayer, stopAmbientLayer, stopAmbient, setAmbientLayerVolume } = useSound();
 

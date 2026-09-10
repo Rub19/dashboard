@@ -1,7 +1,6 @@
 "use client";
 
 import React, { useState } from "react";
-import Link from "next/link";
 import {
   Bot,
   Sparkles,
@@ -16,22 +15,12 @@ import {
   Plus,
   Trash2,
   ShieldCheck,
-  MessageSquare,
-  Clock,
   ThumbsUp,
   ThumbsDown,
-  Ticket,
-  Lock,
   Eye,
-  RefreshCw,
   Zap,
   Globe,
-  HelpCircle,
-  FileText,
-  AlertTriangle,
-  ArrowRight,
   Hash,
-  Volume2,
   X,
 } from "lucide-react";
 

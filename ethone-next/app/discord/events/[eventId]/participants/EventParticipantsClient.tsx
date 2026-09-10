@@ -3,22 +3,14 @@
 import React, { useState, useMemo } from "react";
 import Link from "next/link";
 import { useParams } from "next/navigation";
-import { motion, AnimatePresence } from "framer-motion";
 import {
   Users,
   Search,
   Download,
   CheckCircle2,
-  Clock,
-  XCircle,
   ArrowLeft,
-  ArrowUpRight,
-  Filter,
-  Ticket,
   UserCheck,
-  UserX,
   Trash2,
-  Calendar,
 } from "lucide-react";
 
 interface Participant {

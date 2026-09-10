@@ -80,7 +80,7 @@ function humanError(err: unknown, i18n: (key: string, fallback?: string) => stri
 export default function LoginPage() {
   const i18n = useI18n();
   const router = useRouter();
-  const { success, error: showError } = useToast();
+  const { success } = useToast();
   const { session, signInOtp, verifyOtp } = useAuth();
   const reduced = !!useReducedMotion();
 

@@ -5,7 +5,6 @@ import { useIdentity, IdentityPresenceStatus, IDENTITY_PRESENCE_STATUSES } from 
 import { useI18n } from "@/lib/hooks/useI18n";
 import { useToast } from "@/components/ToastProvider";
 import FlatCard from "@/components/FlatCard";
-import Input from "@/components/Input";
 import Button from "@/components/ui/Button";
 import { Save } from "lucide-react";
 

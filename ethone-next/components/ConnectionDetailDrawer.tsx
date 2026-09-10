@@ -30,7 +30,7 @@ import { useSettings } from "@/components/SettingsProvider";
 import { useToast } from "@/components/ToastProvider";
 import { useProviderCredentials } from "@/lib/hooks/useProviderCredentials";
 import { getCapabilities, getPermissions, getAssociatedWidgets } from "@/lib/connection-capabilities";
-import { ShieldCheck, LayoutGrid, AlertCircle } from "lucide-react";
+import { ShieldCheck, LayoutGrid } from "lucide-react";
 import { PUBLIC_FIELDS, CREDENTIAL_FIELDS } from "@/lib/connection-config";
 import type { Integration } from "@/lib/integrations";
 import type { IntegrationConfig } from "@/lib/integrations.config";

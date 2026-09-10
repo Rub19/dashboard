@@ -1,6 +1,6 @@
 "use client";
 
-import { useMemo, useRef, useState, useEffect, type KeyboardEvent as ReactKeyboardEvent, type ReactNode } from "react";
+import { useMemo, useRef, useState, useEffect } from "react";
 import { useRouter, usePathname } from "next/navigation";
 import { motion, AnimatePresence } from "framer-motion";
 import {
@@ -9,13 +9,11 @@ import {
   Sparkles,
   Layers,
   LayoutGrid,
-  Activity,
   Workflow,
   ExternalLink,
   CheckCircle2,
   ChevronRight,
   Radio,
-  Brain as BrainIcon,
   Maximize2,
 } from "lucide-react";
 import { Icon } from "@/lib/icons";
@@ -165,11 +163,9 @@ function MissionControlHUD() {
   const i18n = useI18n();
   const router = useRouter();
   const pathname = usePathname();
-  const { settings } = useSettings();
   const { activeProfile } = useActiveProfile();
   const { windows, setMissionControl, focusWindow, closeWindow, openWindow } = useWindowManager();
   const { records } = useLiveData();
-  const brain = useBrain();
   const [query, setQuery] = useState("");
   const dialogRef = useRef<HTMLDivElement>(null);
   const searchInputRef = useRef<HTMLInputElement>(null);

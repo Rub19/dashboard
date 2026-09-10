@@ -1,19 +1,14 @@
 "use client";
 
-import { useState, useEffect, useCallback, useMemo } from "react";
+import { useState, useEffect, useCallback } from "react";
 import Link from "next/link";
 import { useSearchParams } from "next/navigation";
 import {
   FileText,
   Search,
-  ShieldCheck,
   ShieldAlert,
-  AlertTriangle,
   RefreshCw,
   Download,
-  Filter,
-  ChevronRight,
-  ExternalLink,
   Clock,
   User,
   Hash,
@@ -21,20 +16,14 @@ import {
   ArrowLeft,
   X,
   CheckCircle2,
-  Calendar,
   Zap,
   Sliders,
-  Bell,
-  Trash2,
-  ArrowUpRight,
   Eye,
   Activity,
   Server,
-  Play,
   Pause,
   AlertOctagon,
   Scale,
-  Sparkles,
 } from "lucide-react";
 import { useDiscordOAuth, type DiscordGuild } from "@/lib/hooks/useDiscordOAuth";
 import { useToast } from "@/components/ToastProvider";
@@ -198,7 +187,7 @@ export interface InvestigationResult {
 export function AuditCenterClient() {
   const searchParams = useSearchParams();
   const guildParam = searchParams.get("guildId");
-  const { profile, loading: discordLoading } = useDiscordOAuth();
+  const { profile } = useDiscordOAuth();
   const { success, error: showError } = useToast();
 
   const [selectedGuild, setSelectedGuild] = useState<DiscordGuild | null>(null);

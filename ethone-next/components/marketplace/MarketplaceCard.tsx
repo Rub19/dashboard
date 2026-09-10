@@ -11,7 +11,6 @@ import {
   Flame,
   Award,
   Zap,
-  Sparkles,
   Heart,
   Bookmark,
   Trash2,

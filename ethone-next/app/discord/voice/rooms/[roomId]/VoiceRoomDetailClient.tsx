@@ -7,28 +7,20 @@ import {
   ArrowLeft,
   Lock,
   Unlock,
-  Eye,
-  EyeOff,
   Edit2,
   Users,
   Crown,
   Trash2,
   Mic,
   MicOff,
-  Volume2,
-  VolumeX,
   Tv,
   Clock,
   Radio,
   Shield,
   UserX,
-  UserCheck,
   Plus,
   RefreshCw,
-  ExternalLink,
-  ChevronRight,
   AlertTriangle,
-  Sparkles,
 } from "lucide-react";
 import { useToast } from "@/components/ToastProvider";
 import { cn } from "@/lib/utils";
@@ -83,7 +75,7 @@ export default function VoiceRoomDetailClient({ roomId }: { roomId: string }) {
   const router = useRouter();
   const searchParams = useSearchParams();
   const guildId = searchParams.get("guildId") || "1128633164290596884";
-  const { success, error: showError } = useToast();
+  const { success } = useToast();
 
   const [room, setRoom] = useState<TemporaryRoomDetail | null>(null);
   const [timeline, setTimeline] = useState<TimelineEvent[]>([]);

@@ -3,7 +3,6 @@
 import { useEffect, useMemo, useRef, useState } from "react";
 import { motion, AnimatePresence } from "framer-motion";
 import {
-  Inbox,
   Reply,
   ReplyAll,
   Forward,
@@ -16,7 +15,6 @@ import {
   Download,
   AlertTriangle,
   Send,
-  MoreVertical,
   Copy,
   CheckCircle2,
   FileText,
@@ -26,7 +24,6 @@ import {
   ChevronDown,
   ChevronUp,
   ChevronLeft,
-  Sparkles,
 } from "lucide-react";
 import { useI18n } from "@/lib/hooks/useI18n";
 import type { MailMessage, MailAttachment } from "@/lib/hooks/useMail";

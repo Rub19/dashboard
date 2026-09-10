@@ -1,6 +1,6 @@
 "use client";
 
-import { useCallback, useEffect, useMemo, useRef, useState } from "react";
+import { useCallback, useEffect, useRef, useState } from "react";
 import { useSettings } from "@/components/SettingsProvider";
 import { OAUTH_APP_CLIENT_IDS } from "@/lib/oauth";
 import { fetchWorker } from "@/lib/api";

@@ -3,15 +3,11 @@
 import { useMemo, useState } from "react";
 import { motion, AnimatePresence } from "framer-motion";
 import {
-  Search,
-  Filter,
-  ArrowUpDown,
   CheckSquare,
   Square,
   Archive,
   Trash2,
   MailOpen,
-  Mail,
   Star,
   X,
   Inbox,

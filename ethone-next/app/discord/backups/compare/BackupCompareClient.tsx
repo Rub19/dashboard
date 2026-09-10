@@ -10,14 +10,11 @@ import {
   AlertCircle,
   MinusCircle,
   CheckCircle2,
-  Filter,
-  Layers,
   Users,
   FolderTree,
   Shield,
   Sparkles,
   ArrowRight,
-  Server,
 } from "lucide-react";
 
 export default function BackupCompareClient() {

@@ -1,7 +1,7 @@
 "use client";
 
 import { useState } from "react";
-import { RefreshCw, CheckCircle2, History, ArrowUpRight, Loader2, Sparkles } from "lucide-react";
+import { RefreshCw, CheckCircle2, History, Loader2, Sparkles } from "lucide-react";
 import { Icon } from "@/lib/icons";
 import { cn } from "@/lib/utils";
 import type { MarketplaceItem } from "@/lib/marketplace/marketplace-registry";

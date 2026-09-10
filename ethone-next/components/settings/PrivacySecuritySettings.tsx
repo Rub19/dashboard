@@ -5,10 +5,8 @@ import { Icon } from "@/lib/icons";
 import { useSettings } from "@/components/SettingsProvider";
 import { useI18n } from "@/lib/hooks/useI18n";
 import { useToast } from "@/components/ToastProvider";
-import { cn } from "@/lib/utils";
 
 export default function PrivacySecuritySettings() {
-  const i18n = useI18n();
   const { settings, update } = useSettings();
   const { notify } = useToast();
   const [clearingHistory, setClearingHistory] = useState(false);

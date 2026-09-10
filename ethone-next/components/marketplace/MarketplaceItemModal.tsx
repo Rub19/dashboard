@@ -3,17 +3,12 @@
 import { useState } from "react";
 import { useRouter } from "next/navigation";
 import {
-  X,
   Star,
   Download,
   Check,
-  ShieldCheck,
-  AlertTriangle,
   ExternalLink,
-  Layers,
   Lock,
   Plug,
-  Calendar,
   Sparkles,
   Trash2,
   Loader2,

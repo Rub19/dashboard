@@ -7,39 +7,27 @@ import {
   ShieldAlert,
   ShieldCheck,
   Shield,
-  Flame,
   Zap,
   AlertTriangle,
   Lock,
-  Unlock,
   Users,
   UserX,
-  UserCheck,
-  Clock,
   Activity,
   RefreshCw,
   Sliders,
-  Settings,
-  Radio,
   Search,
   CheckCircle2,
-  XCircle,
   ChevronDown,
-  ChevronRight,
   ArrowLeft,
   ExternalLink,
   Eye,
-  Info,
   FileText,
   Sparkles,
   Terminal,
-  Hash,
   Layers,
   Plus,
   Trash2,
   Save,
-  Server,
-  Filter,
   Play,
   Check,
   Ban,
@@ -49,14 +37,12 @@ import {
   Link2,
   Code,
   AlertCircle,
-  HelpCircle,
   X,
   SlidersHorizontal,
 } from "lucide-react";
 import { useAuth } from "@/components/AuthProvider";
 import { useToast } from "@/components/ToastProvider";
 import { useDiscordOAuth, type DiscordGuild } from "@/lib/hooks/useDiscordOAuth";
-import DiscordIcon from "@/components/DiscordIcon";
 import { cn } from "@/lib/utils";
 
 // ==========================================
@@ -390,11 +376,9 @@ const ALL_ACTIONS: { id: AutoModAction; label: string; desc: string; icon: any }
 ];
 
 export default function AutoModCommandCenterPage() {
-  const router = useRouter();
   const searchParams = useSearchParams();
-  const { user } = useAuth();
   const { success, error: showError } = useToast();
-  const { profile, loading: discordLoading } = useDiscordOAuth();
+  const { profile } = useDiscordOAuth();
 
   // Filtrer les serveurs où l'utilisateur est admin ou propriétaire
   const manageableGuilds: DiscordGuild[] = useMemo(() => {

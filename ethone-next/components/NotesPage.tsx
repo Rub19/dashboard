@@ -31,7 +31,7 @@ function formatDate(iso?: string) {
 export default function NotesPage() {
   const i18n = useI18n();
   const { error: showError, notify } = useToast();
-  const { items, loading, error, isOffline, create, remove } = useItems("notes");
+  const { items, loading, isOffline, create, remove } = useItems("notes");
 
   const [title, setTitle] = useState("");
   const [body, setBody] = useState("");

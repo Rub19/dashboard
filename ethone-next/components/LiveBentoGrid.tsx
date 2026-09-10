@@ -3,7 +3,6 @@
 import { memo, useCallback } from "react";
 import { useRouter } from "next/navigation";
 import LiveStats from "@/components/LiveStats";
-import BentoCard from "@/components/BentoCard";
 import { useI18n } from "@/lib/hooks/useI18n";
 import type { WidgetStateType } from "@/components/WidgetState";
 import GamingCard from "@/components/GamingCard";
@@ -48,9 +47,7 @@ const LiveBentoGrid = memo(function LiveBentoGrid({
   className = "",
   scrollable = true,
 }: LiveBentoGridProps) {
-  const i18n = useI18n();
   const router = useRouter();
-  const handleConnect = useCallback(() => { router.push("/settings?category=integrations"); }, [router]);
   const childHeight = scrollable ? "h-full" : "h-auto min-h-0";
 
   return (

@@ -8,7 +8,6 @@ import {
   BarChart3,
   Settings,
   Copy,
-  ExternalLink,
   ChevronRight,
   PauseCircle,
   PlayCircle,
@@ -17,11 +16,8 @@ import {
   Users,
   ShieldCheck,
   Send,
-  Calendar,
   Layers,
-  Award,
   Zap,
-  Sparkles,
   Search,
 } from "lucide-react";
 import { useToast } from "@/components/ToastProvider";

@@ -17,7 +17,6 @@ import { useFocus } from "@/components/FocusProvider";
 import { useI18n } from "@/lib/hooks/useI18n";
 import { useSettings } from "@/components/SettingsProvider";
 import { useToast } from "@/components/ToastProvider";
-import { fetchWorker } from "@/lib/api";
 import { useUploadQueue } from "@/lib/upload-queue";
 import { OAUTH_APP_CLIENT_IDS } from "@/lib/oauth";
 import { useDynamicIslandStore } from "@/lib/stores/dynamic-island";

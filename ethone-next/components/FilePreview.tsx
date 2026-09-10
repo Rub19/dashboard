@@ -1,8 +1,8 @@
 "use client";
 
-import { useEffect, useState, useMemo } from "react";
+import { useEffect, useState } from "react";
 import { AnimatePresence, motion, useReducedMotion } from "framer-motion";
-import { X, ExternalLink, Download, Share2, Pencil, FolderInput, Heart, RotateCcw, Trash2, Trash, Copy, Brain, FileCode, Tag } from "lucide-react";
+import { X, ExternalLink, Download, Share2, Pencil, FolderInput, Heart, RotateCcw, Trash2, Trash, Copy, Brain, Tag } from "lucide-react";
 import { useI18n } from "@/lib/hooks/useI18n";
 import { useFocusTrap } from "@/lib/hooks/useFocusTrap";
 import { fetchWorker } from "@/lib/api";

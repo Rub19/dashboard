@@ -5,45 +5,29 @@ import Link from "next/link";
 import { useRouter, useSearchParams } from "next/navigation";
 import {
   ShieldAlert,
-  ShieldCheck,
   Shield,
   Flame,
   Zap,
-  AlertTriangle,
   Lock,
   Unlock,
   Users,
   UserX,
-  UserCheck,
   Clock,
   Activity,
   RefreshCw,
-  Sliders,
-  Settings,
   Radio,
-  Search,
-  CheckCircle2,
-  XCircle,
   ChevronDown,
-  ChevronRight,
   ArrowLeft,
-  ExternalLink,
   Eye,
-  Info,
-  FileText,
   Sparkles,
   Terminal,
   Hash,
   Layers,
-  Plus,
-  Trash2,
   Save,
-  Server,
 } from "lucide-react";
 import { useAuth } from "@/components/AuthProvider";
 import { useToast } from "@/components/ToastProvider";
 import { useDiscordOAuth, type DiscordGuild } from "@/lib/hooks/useDiscordOAuth";
-import DiscordIcon from "@/components/DiscordIcon";
 import { cn } from "@/lib/utils";
 
 // Types Anti-Raid 2.0
@@ -326,11 +310,9 @@ const THREAT_COLORS: Record<ThreatLevel, { text: string; bg: string; border: str
 const BOT_API_URL = process.env.NEXT_PUBLIC_DISCORD_BOT_API || "";
 
 export default function AntiRaidDashboardPage() {
-  const router = useRouter();
   const searchParams = useSearchParams();
-  const { user } = useAuth();
-  const { success, error: showError } = useToast();
-  const { profile, loading: discordLoading } = useDiscordOAuth();
+  const { success } = useToast();
+  const { profile } = useDiscordOAuth();
 
   // Serveurs gérables (Admin / Owner)
   const manageableGuilds: DiscordGuild[] = useMemo(() => {

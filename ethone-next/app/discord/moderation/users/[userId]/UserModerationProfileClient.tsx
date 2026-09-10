@@ -6,38 +6,21 @@ import { useParams, useSearchParams, useRouter } from "next/navigation";
 import {
   Shield,
   ShieldAlert,
-  ShieldCheck,
   AlertTriangle,
   Lock,
-  Unlock,
-  Users,
   UserX,
-  UserCheck,
   Clock,
   Activity,
   ArrowLeft,
-  ChevronRight,
-  ExternalLink,
   Plus,
-  Trash2,
-  CheckCircle2,
-  XCircle,
   FileText,
   AlertCircle,
   VolumeX,
   Ban,
-  Calendar,
-  Layers,
-  MessageSquare,
   HelpCircle,
   RotateCcw,
   Sparkles,
-  Link2,
-  Save,
-  Check,
   X,
-  Search,
-  Filter,
 } from "lucide-react";
 import { useToast } from "@/components/ToastProvider";
 import { useDiscordOAuth, type DiscordGuild } from "@/lib/hooks/useDiscordOAuth";
@@ -58,11 +41,10 @@ const STANDARD_REASONS = [
 ];
 
 export default function UserModerationProfileClient() {
-  const router = useRouter();
   const params = useParams();
   const searchParams = useSearchParams();
   const { success, error: showError } = useToast();
-  const { profile, loading: discordLoading } = useDiscordOAuth();
+  const { profile } = useDiscordOAuth();
 
   const rawUserId = String(params?.userId || "");
   const queryUserId = searchParams.get("userId");

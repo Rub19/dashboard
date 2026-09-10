@@ -10,8 +10,6 @@ import {
   Bell,
   Download,
   Save,
-  CheckCircle2,
-  RefreshCw,
   Hash,
 } from "lucide-react";
 import { useToast } from "@/components/ToastProvider";

@@ -72,7 +72,7 @@ export function useUserData(kind: "space" | "flow" | "interaction" | "macro" | "
           localStorage.setItem(cacheKey, JSON.stringify(res.data));
         } catch {}
       }
-    } catch (err) {
+    } catch {
       if (typeof window !== "undefined") {
         try {
           const stored = localStorage.getItem(cacheKey);

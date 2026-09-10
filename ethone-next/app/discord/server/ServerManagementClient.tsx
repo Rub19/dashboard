@@ -1,17 +1,14 @@
 "use client";
 
-import { useState, useEffect, useCallback, useMemo } from "react";
+import { useState, useEffect, useCallback } from "react";
 import Link from "next/link";
 import { useSearchParams, useRouter } from "next/navigation";
 import {
-  Server,
   Users,
   Hash,
   Shield,
   ShieldAlert,
   ShieldCheck,
-  Lock,
-  Unlock,
   Key,
   Smile,
   Webhook,
@@ -21,9 +18,7 @@ import {
   RefreshCw,
   Plus,
   Trash2,
-  Edit2,
   ChevronRight,
-  ChevronDown,
   Folder,
   Volume2,
   Radio,
@@ -31,24 +26,14 @@ import {
   AlertTriangle,
   CheckCircle2,
   XCircle,
-  HelpCircle,
   ExternalLink,
   Crown,
   Clock,
-  UserCheck,
-  UserX,
-  VolumeX,
-  Sliders,
   FileText,
-  Layers,
   BarChart3,
-  Flame,
   Zap,
-  Filter,
   Check,
   X,
-  Download,
-  Terminal,
   Cpu,
   Database,
   Wifi,
@@ -302,7 +287,6 @@ export default function ServerManagementClient({
   openedChannelId,
 }: Props) {
   const searchParams = useSearchParams();
-  const router = useRouter();
   const guildId = searchParams.get("guildId") || "1128633164290596884";
   const { success, error: showError } = useToast();
 

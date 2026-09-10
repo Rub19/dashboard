@@ -2,7 +2,6 @@
 
 import { useState } from "react";
 import { Icon } from "@/lib/icons";
-import { cn } from "@/lib/utils";
 
 interface FocusStatsAndGoalsProps {
   completedPomodoros: number;

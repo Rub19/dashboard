@@ -1,9 +1,7 @@
 "use client";
 
-import { useMemo } from "react";
-import { Sparkles, Brain, ArrowRight, ShieldCheck, Download, Star } from "lucide-react";
+import { Sparkles, Brain, ArrowRight, ShieldCheck, Download } from "lucide-react";
 import { useUserIdentity } from "@/lib/hooks/useUserIdentity";
-import { cn } from "@/lib/utils";
 import type { MarketplaceItem } from "@/lib/marketplace/marketplace-registry";
 import type { BrainMatchResult } from "@/lib/marketplace/brain-recommendation-engine";
 
@@ -25,7 +23,6 @@ export default function MarketplaceHero({
   onViewBrainDrawer,
 }: MarketplaceHeroProps) {
   const identity = useUserIdentity();
-  const userName = identity?.displayName || "Compte";
 
   const topPick = recommendations[0];
 

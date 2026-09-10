@@ -1,3 +1,14 @@
+const v12089_fr: ChangelogEntry = {
+  version: "v1.20.89",
+  date: "2026-09-10",
+  title: "Nettoyage Interne : ~700 Imports Morts Retires",
+  items: [
+    "Passe de menage sur le code du dashboard : environ 900 avertissements du linter elimines (surtout des imports d'icones et des variables jamais utilises), soit ~850 lignes de code mort en moins sur 163 fichiers. Aucun changement visible ni de comportement.",
+    "Ajout d'une regle de lint qui retire automatiquement les imports inutilises a l'avenir, pour que ca ne re-derive pas.",
+    "Verifie : typecheck, build et tests unitaires tous au vert.",
+  ],
+};
+
 const v12088_fr: ChangelogEntry = {
   version: "v1.20.88",
   date: "2026-09-10",
@@ -404,6 +415,17 @@ const v12052_fr: ChangelogEntry = {
     "Dynamic Island : correction d'un bug de priorité qui empêchait Spotify de jamais s'afficher, systématiquement évincé par la synchronisation d'arrière-plan.",
     "Commande /help du Bot Discord : la liste des commandes est désormais générée dynamiquement depuis les commandes réellement enregistrées (fin des commandes fantômes et des commandes manquantes), et affiche la vraie syntaxe des commandes à sous-commandes (ex. /automod status).",
     "Audit de l'enregistrement des commandes slash Discord : architecture confirmée saine, aucune dérive entre le code et les commandes déployées.",
+  ],
+};
+
+const v12089_en: ChangelogEntry = {
+  version: "v1.20.89",
+  date: "2026-09-10",
+  title: "Internal Cleanup: ~700 Dead Imports Removed",
+  items: [
+    "Housekeeping pass over the dashboard code: about 900 linter warnings cleared (mostly unused icon imports and variables), roughly 850 lines of dead code removed across 163 files. No visible or behavioural change.",
+    "Added a lint rule that auto-strips unused imports going forward, so it doesn't drift back.",
+    "Verified: typecheck, build and unit tests all green.",
   ],
 };
 
@@ -816,6 +838,17 @@ const v12052_en: ChangelogEntry = {
   ],
 };
 
+const v12089_es: ChangelogEntry = {
+  version: "v1.20.89",
+  date: "2026-09-10",
+  title: "Limpieza Interna: ~700 Importaciones Muertas Eliminadas",
+  items: [
+    "Pasada de limpieza sobre el codigo del panel: unas 900 advertencias del linter eliminadas (sobre todo importaciones de iconos y variables nunca usadas), aproximadamente 850 lineas de codigo muerto menos en 163 archivos. Sin cambios visibles ni de comportamiento.",
+    "Se anadio una regla de lint que elimina automaticamente las importaciones no usadas en adelante, para que no vuelva a acumularse.",
+    "Verificado: typecheck, build y pruebas unitarias todo en verde.",
+  ],
+};
+
 const v12088_es: ChangelogEntry = {
   version: "v1.20.88",
   date: "2026-09-10",
@@ -1222,6 +1255,17 @@ const v12052_es: ChangelogEntry = {
     "Dynamic Island: corregido un error de prioridad que impedía que Spotify apareciera, siempre desplazado por la sincronización en segundo plano.",
     "Comando /help del Bot de Discord: la lista de comandos ahora se genera dinámicamente desde los comandos realmente registrados (fin de comandos fantasma o ausentes), mostrando la sintaxis real de los comandos con subcomandos.",
     "Auditoría del registro de comandos slash de Discord: arquitectura confirmada como sólida, sin desviación entre el código y los comandos desplegados.",
+  ],
+};
+
+const v12089_de: ChangelogEntry = {
+  version: "v1.20.89",
+  date: "2026-09-10",
+  title: "Interne Bereinigung: ~700 tote Importe entfernt",
+  items: [
+    "Aufraeumdurchlauf im Dashboard-Code: rund 900 Linter-Warnungen beseitigt (vor allem ungenutzte Icon-Importe und Variablen), etwa 850 Zeilen toter Code weniger in 163 Dateien. Keine sichtbare Aenderung, kein geaendertes Verhalten.",
+    "Eine Lint-Regel hinzugefuegt, die ungenutzte Importe kuenftig automatisch entfernt, damit es nicht zurueckwaechst.",
+    "Geprueft: Typecheck, Build und Unit-Tests alle gruen.",
   ],
 };
 
@@ -23667,5 +23711,9 @@ CHANGELOG_BY_LANG.fr.unshift(v12088_fr);
 CHANGELOG_BY_LANG.en.unshift(v12088_en);
 CHANGELOG_BY_LANG.es.unshift(v12088_es);
 CHANGELOG_BY_LANG.de.unshift(v12088_de);
+CHANGELOG_BY_LANG.fr.unshift(v12089_fr);
+CHANGELOG_BY_LANG.en.unshift(v12089_en);
+CHANGELOG_BY_LANG.es.unshift(v12089_es);
+CHANGELOG_BY_LANG.de.unshift(v12089_de);
 
 export const CHANGELOG = CHANGELOG_BY_LANG.fr;

@@ -12,10 +12,7 @@ import {
   Unlock,
   Check,
   Save,
-  AlertTriangle,
-  RotateCcw,
   Zap,
-  Calendar,
 } from "lucide-react";
 
 export default function BackupSettingsClient() {

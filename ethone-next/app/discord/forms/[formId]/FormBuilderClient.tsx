@@ -1,10 +1,9 @@
 "use client";
 
-import { useState, useMemo, useEffect } from "react";
+import { useState, useMemo } from "react";
 import Link from "next/link";
 import { useParams, useSearchParams } from "next/navigation";
 import {
-  FileText,
   Plus,
   Trash2,
   Copy,
@@ -13,14 +12,10 @@ import {
   GripVertical,
   CheckCircle2,
   Settings,
-  Eye,
   Smartphone,
   Monitor,
-  Sparkles,
-  Layers,
   ArrowLeft,
   Save,
-  HelpCircle,
   Sliders,
   Type,
   AlignLeft,
@@ -37,9 +32,6 @@ import {
   Link2,
   Mail,
   ToggleLeft,
-  Split,
-  Undo2,
-  Redo2,
 } from "lucide-react";
 import { useToast } from "@/components/ToastProvider";
 import { cn } from "@/lib/utils";
@@ -203,7 +195,7 @@ export default function FormBuilderClient() {
   const searchParams = useSearchParams();
   const formId = (params?.formId as string) || "demo";
   const rawGuildId = searchParams.get("guildId") || "123456789012345678";
-  const { success, error: showError } = useToast();
+  const { success } = useToast();
 
   const [formTitle, setFormTitle] = useState("Candidature Modérateur / Staff 2026");
   const [formDescription, setFormDescription] = useState(

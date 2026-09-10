@@ -33,7 +33,6 @@ export type AIEngineResponse = {
   model: string;
 };
 
-const POLLINATIONS_MODELS = ["openai", "deepseek", "mistral", "qwen", "searchgpt"];
 
 const OPENROUTER_FREE_MODEL_MAP: Record<string, string> = {
   "deepseek-r1-free": "deepseek/deepseek-r1:free",

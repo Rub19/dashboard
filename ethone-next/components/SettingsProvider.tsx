@@ -9,7 +9,6 @@ import { applyPreset, type Preset } from "@/lib/preset-engine";
 import { supabase } from "@/lib/supabase";
 import { useSyncStore } from "@/lib/stores/sync";
 import {
-  PREMIUM_THEMES,
   THEME_DEFINITIONS,
   applyTheme,
   applyAccent,

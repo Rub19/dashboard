@@ -13,33 +13,17 @@ import {
   FileText,
   Clock,
   CheckCircle2,
-  AlertTriangle,
   ChevronRight,
-  User,
-  Hash,
-  ExternalLink,
   Trash2,
   Edit2,
   Send,
   Sparkles,
   BarChart3,
   Shield,
-  MessageSquare,
-  Star,
   Download,
-  Eye,
   Settings2,
   Zap,
-  Tag,
-  Scale,
-  ArrowUpRight,
-  Filter,
-  Layers,
-  Flame,
-  Check,
   X,
-  Play,
-  Pause,
 } from "lucide-react";
 import { useDiscordOAuth, type DiscordGuild } from "@/lib/hooks/useDiscordOAuth";
 import { useToast } from "@/components/ToastProvider";
@@ -292,7 +276,7 @@ export function TicketCenterClient() {
   const guildIdParam = searchParams.get("guildId");
   const tabParam = searchParams.get("tab");
 
-  const { profile, loading: discordLoading } = useDiscordOAuth();
+  const { profile } = useDiscordOAuth();
   const { success, error: showError, info } = useToast();
 
   const [selectedGuild, setSelectedGuild] = useState<DiscordGuild | null>(null);

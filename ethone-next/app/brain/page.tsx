@@ -17,7 +17,6 @@ import { cn } from "@/lib/utils";
 type BrainView = "chat" | "briefing" | "memory" | "automations" | "diagnostics";
 
 export default function BrainPage() {
-  const i18n = useI18n();
   const mail = useMail();
 
   const mailClient = useMemo(

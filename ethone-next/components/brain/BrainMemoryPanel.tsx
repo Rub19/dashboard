@@ -8,10 +8,7 @@ import {
   Plus,
   Trash2,
   Edit2,
-  Check,
-  X,
   AlertTriangle,
-  Info,
   Shield,
   Sparkles,
 } from "lucide-react";

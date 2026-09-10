@@ -4,16 +4,11 @@ import React, { useState } from "react";
 import Link from "next/link";
 import {
   Archive,
-  Clock,
-  HardDrive,
   ShieldCheck,
-  ShieldAlert,
   Plus,
   Search,
-  Filter,
   RotateCcw,
   GitCompare,
-  Download,
   Trash2,
   Lock,
   Unlock,
@@ -21,18 +16,7 @@ import {
   CheckCircle2,
   AlertTriangle,
   Settings,
-  Sparkles,
-  Server,
   X,
-  Play,
-  Check,
-  Calendar,
-  Layers,
-  Users,
-  FolderTree,
-  Shield,
-  FileCode,
-  Zap,
 } from "lucide-react";
 
 interface BackupItem {

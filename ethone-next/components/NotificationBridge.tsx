@@ -9,7 +9,7 @@ import { useSettings } from "@/components/SettingsProvider";
 import { fetchWorker } from "@/lib/api";
 
 export default function NotificationBridge() {
-  const { add, focusDigest, clearFocusDigest } = useNotifications();
+  const { add, focusDigest } = useNotifications();
   const { register } = useDynamicIslandQueue();
   const { info } = useToast();
   const i18n = useI18n();

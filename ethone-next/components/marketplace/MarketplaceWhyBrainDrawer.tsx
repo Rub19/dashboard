@@ -1,6 +1,6 @@
 "use client";
 
-import { Brain, CheckCircle2, ThumbsUp, ThumbsDown, ShieldCheck, Sparkles } from "lucide-react";
+import { Brain, CheckCircle2, ThumbsUp, ThumbsDown, ShieldCheck } from "lucide-react";
 import Modal from "@/components/ui/Modal";
 import { useToast } from "@/components/ToastProvider";
 import type { MarketplaceItem } from "@/lib/marketplace/marketplace-registry";

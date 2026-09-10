@@ -12,7 +12,6 @@ import {
   Download,
   Upload,
   Layers,
-  Sliders,
   Trash2,
 } from "lucide-react";
 import { useI18n } from "@/lib/hooks/useI18n";
@@ -36,7 +35,6 @@ interface ThemeStudioProps {
 }
 
 export default function ThemeStudio({ className }: ThemeStudioProps) {
-  const i18n = useI18n();
   const { success, error: toastError } = useToast();
   const { settings, update } = useSettings();
 

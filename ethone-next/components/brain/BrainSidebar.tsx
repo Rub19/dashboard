@@ -29,7 +29,6 @@ export default function BrainSidebar({
   isOpen,
   onClose,
 }: BrainSidebarProps) {
-  const i18n = useI18n();
   const [search, setSearch] = useState("");
   const [editingId, setEditingId] = useState<string | null>(null);
   const [editTitle, setEditTitle] = useState("");

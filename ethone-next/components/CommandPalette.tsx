@@ -1,25 +1,21 @@
 "use client";
 
-import { memo, useCallback, useEffect, useId, useMemo, useRef, useState } from "react";
+import { useCallback, useEffect, useMemo, useRef, useState } from "react";
 import { usePathname, useRouter } from "next/navigation";
 import { motion, AnimatePresence, useReducedMotion } from "framer-motion";
 import { createPortal } from "react-dom";
 import {
   Search,
   X,
-  Pin,
   Sparkles,
   Command,
   ArrowRight,
-  Clock,
   Star,
   AlertTriangle,
   CornerDownLeft,
-  ChevronRight,
   Brain,
 } from "lucide-react";
 import { useCommandPalette } from "@/components/CommandPaletteProvider";
-import { useSettings } from "@/components/SettingsProvider";
 import { useI18n } from "@/lib/hooks/useI18n";
 import { useCommandItems, type CommandItem } from "@/lib/commands";
 import {
@@ -45,7 +41,6 @@ export default function CommandPalette() {
   const { open, setOpen } = useCommandPalette();
   const pathname = usePathname();
   const router = useRouter();
-  const i18n = useI18n();
   const isTouch = useTouchCapable();
   const prefersReduced = useReducedMotion();
 

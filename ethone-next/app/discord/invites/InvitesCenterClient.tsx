@@ -5,9 +5,6 @@ import Link from "next/link";
 import { useSearchParams } from "next/navigation";
 import {
   UserPlus,
-  Users,
-  ShieldAlert,
-  ShieldCheck,
   TrendingUp,
   Award,
   Link as LinkIcon,
@@ -18,23 +15,17 @@ import {
   RefreshCw,
   Search,
   ChevronRight,
-  ExternalLink,
   Copy,
   Plus,
   Trash2,
   CheckCircle2,
-  AlertTriangle,
   Clock,
   Sparkles,
   Layers,
-  ArrowRight,
-  Download,
-  Filter,
-  Check,
   Radio,
   Lightbulb,
 } from "lucide-react";
-import { useDiscordOAuth, type DiscordGuild } from "@/lib/hooks/useDiscordOAuth";
+import { useDiscordOAuth } from "@/lib/hooks/useDiscordOAuth";
 import { useToast } from "@/components/ToastProvider";
 
 const API_BASE = process.env.NEXT_PUBLIC_DISCORD_BOT_API || "";

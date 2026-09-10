@@ -11,7 +11,6 @@ import {
   SkipBack,
   SkipForward,
 } from "lucide-react";
-import { fetchWorker } from "@/lib/api";
 import { useRouter } from "next/navigation";
 import { useToast } from "@/components/ToastProvider";
 import { useI18n } from "@/lib/hooks/useI18n";

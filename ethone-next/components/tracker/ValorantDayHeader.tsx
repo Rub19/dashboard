@@ -1,6 +1,6 @@
 "use client";
 
-import { TrendingUp, BarChart2 } from "lucide-react";
+import { TrendingUp } from "lucide-react";
 import type { ValorantDayGroup } from "@/lib/valorant-tracker";
 import { cn } from "@/lib/utils";
 

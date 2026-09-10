@@ -2,6 +2,16 @@
 
 Toutes les modifications notables de ce projet seront documentées dans ce fichier.
 
+## v1.20.89 — 2026-09-10
+
+**Nettoyage de code mort dans `ethone-next` (aucun changement de comportement)**
+
+- Ajout de `eslint-plugin-unused-imports` + règle `unused-imports/no-unused-imports` (auto-fixable) dans `eslint.config.mjs`.
+- `npx eslint . --fix` : ~693 imports jamais référencés supprimés (surtout des icônes `lucide-react` importées puis retirées du JSX au fil des refontes) — 143 fichiers, warnings de lint `1061 → 368`.
+- Codemod ciblé (`scratchpad/codemod_unused.js`, piloté par la sortie `file:line:name` d'eslint, patterns sûrs uniquement) : `368 → 354` — bindings `catch (e)` inutilisés → `catch {`, résultats de hooks jamais lus retirés de la déstructuration (`const { i18n } = useI18n()`, `const router = useRouter()`, `const { success, error: showError } = useToast()` → `{ success }`, etc.). 116 occurrences sur 88 fichiers.
+- Total : **163 fichiers, −857 lignes nettes**, `tsc` 0 erreur (garde-fou : toute suppression d'un binding encore utilisé aurait cassé la compilation), `build` OK, `test:unit` 14/14 69/69.
+- Restant (219 `no-unused-vars`) : moitiés de `const [x, setX] = useState()`, fonctions locales non câblées (`handleAddCommand`, `handleSavePanel`…) — souvent des amorces de fonctionnalités non terminées, laissées pour revue manuelle.
+
 ## v1.20.88 — 2026-09-10
 
 **Starboard : page dashboard dédiée + entrée dans la grille des modules du hub Discord**

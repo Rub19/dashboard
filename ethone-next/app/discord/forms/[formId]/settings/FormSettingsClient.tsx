@@ -4,20 +4,15 @@ import { useState } from "react";
 import Link from "next/link";
 import { useParams, useSearchParams } from "next/navigation";
 import {
-  Settings,
   ArrowLeft,
   Save,
   MessageSquare,
   Shield,
   Zap,
   Star,
-  CheckCircle2,
-  Share2,
   Plus,
   Trash2,
   Sliders,
-  Sparkles,
-  Ticket,
 } from "lucide-react";
 import { useToast } from "@/components/ToastProvider";
 import { cn } from "@/lib/utils";
@@ -27,7 +22,7 @@ export default function FormSettingsClient() {
   const searchParams = useSearchParams();
   const formId = (params?.formId as string) || "demo";
   const rawGuildId = searchParams.get("guildId") || "123456789012345678";
-  const { success, error: showError } = useToast();
+  const { success } = useToast();
 
   const [activeTab, setActiveTab] = useState<"discord" | "antispam" | "scoring" | "automations">("discord");
 

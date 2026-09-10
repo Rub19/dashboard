@@ -8,12 +8,9 @@ import {
   Shield,
   Camera,
   Upload,
-  Crop as CropIcon,
   Check,
-  Palette,
   Save,
   Loader2,
-  ExternalLink,
 } from "lucide-react";
 import { useAuth } from "@/components/AuthProvider";
 import { useToast } from "@/components/ToastProvider";
@@ -81,7 +78,6 @@ export default function ProfilePage() {
     if (typeof window === "undefined") {
       return { displayName: "", username: "", bio: "", avatarFrameId: "" };
     }
-    const currentUserId = user?.id || "local";
     const localName =
       (user?.id ? localStorage.getItem(`ethone_user_name:${user.id}`) : null) ||
       localStorage.getItem("ethone_user_name:local") ||

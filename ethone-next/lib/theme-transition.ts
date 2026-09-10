@@ -1,7 +1,6 @@
 import { startTransition } from "react";
 import {
   applyTheme,
-  applyAccent,
   resolvePremiumTheme,
   PRESET_THEMES,
   UNIVERSAL_ACCENTS,

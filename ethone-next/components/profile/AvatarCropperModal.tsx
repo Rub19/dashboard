@@ -1,6 +1,6 @@
 "use client";
 
-import { useState, useRef, useEffect, useCallback } from "react";
+import { useState, useRef, useEffect } from "react";
 import {
   ZoomIn,
   ZoomOut,
@@ -8,12 +8,9 @@ import {
   Check,
   X,
   Move,
-  Camera,
   Crop as CropIcon,
-  Sparkles,
 } from "lucide-react";
 import Modal from "@/components/ui/Modal";
-import { cn } from "@/lib/utils";
 
 interface AvatarCropperModalProps {
   imageSrc: string | null;
@@ -91,12 +88,8 @@ export default function AvatarCropperModal({
     canvas.height = outputSize;
 
     const containerSize = containerRef.current.clientWidth || 280;
-    const scale = (imgDimensions.width / containerSize) * (1 / zoom);
 
     // Calculate crop box in natural image coordinates
-    const sourceX = (imgDimensions.width / 2 - offset.x * (imgDimensions.width / containerSize)) - (imgDimensions.width / (2 * zoom));
-    const sourceY = (imgDimensions.height / 2 - offset.y * (imgDimensions.height / containerSize)) - (imgDimensions.height / (2 * zoom));
-    const sourceSize = imgDimensions.width / zoom;
 
     // Draw circular cropped region
     ctx.imageSmoothingQuality = "high";

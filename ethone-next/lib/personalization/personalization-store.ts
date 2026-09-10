@@ -78,7 +78,7 @@ const DEFAULT_PREFERENCES: PersonalizationPreferences = {
 
 export function usePersonalizationStore() {
   const { success, error: toastError } = useToast();
-  const { settings, update: updateSettings } = useSettings();
+  const { settings } = useSettings();
 
   const [preferences, setPreferences] = useLocalStorage<PersonalizationPreferences>(
     STORAGE_KEY,

@@ -1,7 +1,7 @@
 "use client";
 
 import { useState, useMemo } from "react";
-import { Search, Plus, Check, Sparkles, Star } from "lucide-react";
+import { Search, Plus, Check, Sparkles } from "lucide-react";
 import Modal from "@/components/ui/Modal";
 import { Icon } from "@/lib/icons";
 import { cn } from "@/lib/utils";
@@ -9,7 +9,6 @@ import {
   WIDGET_REGISTRY,
   WIDGET_CATEGORIES,
   type WidgetCategory,
-  type WidgetManifest,
 } from "@/lib/widget-registry";
 
 export type WidgetPickerModalProps = {

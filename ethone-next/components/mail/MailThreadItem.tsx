@@ -1,6 +1,5 @@
 "use client";
 
-import { motion } from "framer-motion";
 import { Star, Paperclip, Archive, Trash2, MailOpen, Mail, AlertCircle } from "lucide-react";
 import type { MailMessage } from "@/lib/hooks/useMail";
 import { cn } from "@/lib/utils";

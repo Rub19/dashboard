@@ -8,21 +8,10 @@ import {
   Save,
   Radio,
   Sliders,
-  Shield,
   Clock,
-  Crown,
-  Lock,
-  Layers,
-  Sparkles,
   RefreshCw,
-  CheckCircle2,
-  AlertCircle,
-  Hash,
-  Bell,
-  Zap,
 } from "lucide-react";
 import { useToast } from "@/components/ToastProvider";
-import { cn } from "@/lib/utils";
 
 interface VoiceSettings {
   enabled: boolean;
@@ -69,7 +58,7 @@ const BOT_API_URL = process.env.NEXT_PUBLIC_DISCORD_BOT_API || "";
 export default function VoiceSettingsClient() {
   const searchParams = useSearchParams();
   const guildId = searchParams.get("guildId") || "1128633164290596884";
-  const { success, error: showError } = useToast();
+  const { success } = useToast();
 
   const [settings, setSettings] = useState<VoiceSettings>(DEFAULT_SETTINGS);
   const [loading, setLoading] = useState(true);

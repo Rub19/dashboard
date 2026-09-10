@@ -1,8 +1,8 @@
 "use client";
 
 import { memo } from "react";
-import { motion, AnimatePresence } from "framer-motion";
-import { Plus, CheckCircle2, Clock, Flame, Check } from "lucide-react";
+import { AnimatePresence } from "framer-motion";
+import { CheckCircle2, Clock, Flame } from "lucide-react";
 import { type Task } from "@/components/TasksWidget";
 import { TaskItemRow } from "./TaskItemRow";
 import { cn } from "@/lib/utils";

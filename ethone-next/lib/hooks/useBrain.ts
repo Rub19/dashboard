@@ -17,7 +17,7 @@ import {
   BRAIN_PROVIDERS,
   BRAIN_MEMORY_CATEGORIES,
 } from "@/lib/brain/preferences";
-import { brainComplete, brainDiagnostic, brainProviderList } from "@/lib/brain/providers";
+import { brainDiagnostic, brainProviderList } from "@/lib/brain/providers";
 import { askBrainAI } from "@/lib/brain/ai-engine";
 import { listBrainMemories, createBrainMemory, updateBrainMemory, removeBrainMemory, clearBrainMemories, type BrainMemory } from "@/lib/brain/memory";
 import { createBrainActionRegistry, type BrainMailClient } from "@/lib/brain/action-registry";
@@ -65,8 +65,6 @@ export type BrainConversation = {
   favorite?: boolean;
 };
 
-const STORAGE_KEY_CONVERSATIONS = "ethone:brain:conversations";
-const STORAGE_KEY_ACTIVE_CONV = "ethone:brain:active_conversation";
 
 function createInitialConversation(): BrainConversation {
   return {

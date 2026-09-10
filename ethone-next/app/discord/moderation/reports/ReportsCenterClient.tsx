@@ -5,21 +5,12 @@ import Link from "next/link";
 import { useRouter, useSearchParams } from "next/navigation";
 import {
   AlertTriangle,
-  ShieldAlert,
-  ShieldCheck,
   CheckCircle2,
-  XCircle,
-  Clock,
   ArrowLeft,
   Search,
-  Filter,
   User,
   Plus,
   X,
-  ExternalLink,
-  ChevronRight,
-  Sparkles,
-  RotateCcw,
 } from "lucide-react";
 import { useToast } from "@/components/ToastProvider";
 import { useDiscordOAuth, type DiscordGuild } from "@/lib/hooks/useDiscordOAuth";
@@ -59,10 +50,9 @@ const STATUS_CONFIG: Record<
 };
 
 export default function ReportsCenterClient() {
-  const router = useRouter();
   const searchParams = useSearchParams();
   const { success, error: showError } = useToast();
-  const { profile, loading: discordLoading } = useDiscordOAuth();
+  const { profile } = useDiscordOAuth();
 
   const manageableGuilds: DiscordGuild[] = useMemo(() => {
     if (!profile?.guilds) return [];

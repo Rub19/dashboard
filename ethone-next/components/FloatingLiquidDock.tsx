@@ -21,7 +21,6 @@ import {
   Brain,
   SlidersHorizontal,
   X,
-  ChevronRight,
   Palette,
   CheckCircle2,
   Calendar,

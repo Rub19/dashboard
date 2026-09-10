@@ -3,20 +3,14 @@
 import React, { useState } from "react";
 import Link from "next/link";
 import { useParams, useRouter } from "next/navigation";
-import { motion } from "framer-motion";
 import {
   Settings,
   ArrowLeft,
   Save,
   Clock,
-  Volume2,
   Users,
-  Bell,
-  Bot,
   AlertTriangle,
-  Trash2,
   Check,
-  Radio,
   FileText,
 } from "lucide-react";
 

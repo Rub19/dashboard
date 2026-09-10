@@ -18,7 +18,6 @@ const DOCK_PREVIEW_ICONS = [
 ];
 
 export default function DockSettings() {
-  const i18n = useI18n();
   const { settings, update } = useSettings();
 
   const scaleClass = useMemo(() => {

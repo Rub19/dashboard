@@ -5,15 +5,7 @@ import Link from "next/link";
 import { useParams, useSearchParams } from "next/navigation";
 import {
   ChevronLeft,
-  User,
   Shield,
-  ShieldAlert,
-  ShieldCheck,
-  Award,
-  Users,
-  CheckCircle2,
-  Clock,
-  ArrowRight,
   ExternalLink,
   RefreshCw,
   Search,
@@ -28,7 +20,6 @@ export default function InviteUserDetailClient() {
   const userId = (params?.userId as string) || "usr_alex";
   const guildId = searchParams.get("guildId") || "1128633164290596884";
 
-  const { success, error: showError } = useToast();
   const [loading, setLoading] = useState(true);
   const [profile, setProfile] = useState<any>(null);
   const [referrals, setReferrals] = useState<any[]>([]);

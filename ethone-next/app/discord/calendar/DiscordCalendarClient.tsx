@@ -8,22 +8,11 @@ import {
   ChevronLeft,
   ChevronRight,
   Plus,
-  Clock,
-  MapPin,
   Users,
   Download,
-  Filter,
-  CheckCircle2,
   X,
   ExternalLink,
   Volume2,
-  Trophy,
-  Gamepad2,
-  Eye,
-  CalendarDays,
-  List,
-  Sparkles,
-  Layers,
 } from "lucide-react";
 
 interface CalendarEvent {
@@ -400,7 +389,6 @@ export default function DiscordCalendarClient() {
           <div className="space-y-4">
             {filteredEvents.map((ev) => {
               const start = new Date(ev.startDate);
-              const end = new Date(ev.endDate);
               return (
                 <div
                   key={ev.id}

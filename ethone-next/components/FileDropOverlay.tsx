@@ -2,9 +2,9 @@
 
 import { useEffect, useRef, useState } from "react";
 import { AnimatePresence, motion, useReducedMotion } from "framer-motion";
-import { UploadCloud, File, Sparkles } from "lucide-react";
+import { UploadCloud, File } from "lucide-react";
 import { useI18n } from "@/lib/hooks/useI18n";
-import { formatBytes, getFileExtension } from "@/lib/files";
+import { formatBytes } from "@/lib/files";
 
 export type FileDropOverlayProps = {
   onDrop: (files: File[]) => void;

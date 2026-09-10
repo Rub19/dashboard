@@ -1,6 +1,6 @@
 "use client";
 
-import { useEffect, useState, useCallback, useMemo } from "react";
+import { useCallback, useMemo } from "react";
 import { useLocalStorage } from "@/lib/hooks/useLocalStorage";
 import { useDesktopLayout, type WidgetLayout } from "@/lib/hooks/useDesktopLayout";
 import { useSettings } from "@/components/SettingsProvider";
@@ -8,7 +8,6 @@ import { transitionTheme } from "@/lib/theme-transition";
 import { activityJournal } from "@/lib/activity-journal";
 import { useToast } from "@/components/ToastProvider";
 import {
-  MARKETPLACE_ITEMS,
   getMarketplaceItem,
   type MarketplaceItem,
 } from "./marketplace-registry";
@@ -46,8 +45,8 @@ const DEFAULT_INSTALLED: Record<string, InstalledExtensionRecord> = {
 };
 
 export function useMarketplaceStore() {
-  const { toast, success, error: toastError } = useToast();
-  const { settings, update: updateSettings } = useSettings();
+  const { success, error: toastError } = useToast();
+  const { update: updateSettings } = useSettings();
   const { layout, update: updateLayout } = useDesktopLayout();
 
   const [installed, setInstalled] = useLocalStorage<Record<string, InstalledExtensionRecord>>(

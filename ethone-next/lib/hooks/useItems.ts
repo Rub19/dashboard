@@ -17,6 +17,61 @@ export type Item = {
   updatedAt?: string;
 };
 
+/* eslint-disable @typescript-eslint/no-explicit-any */
+type RawRow = Record<string, any>;
+
+// The dashboard mounts ~5 components that each call useItems(kind) for the same
+// user; without this they fired ~5 identical Supabase reads per kind on load
+// (and the Worker fallback then tripped the edge rate limit → 429 storm).
+// Collapse concurrent identical loads into one request, and serve a very short
+// TTL cache so a second mount in the same tick reuses the result.
+const _itemsInFlight = new Map<string, Promise<RawRow[] | null>>();
+const _itemsCache = new Map<string, { at: number; rows: RawRow[] }>();
+const ITEMS_CACHE_TTL = 2500;
+
+function dbKindOf(kind: "notes" | "tasks" | "events") {
+  return kind === "notes" ? "note" : kind === "tasks" ? "task" : "event";
+}
+
+async function loadItemRowsShared(
+  userId: string,
+  kind: "notes" | "tasks" | "events"
+): Promise<RawRow[] | null> {
+  const key = `${userId}:${kind}`;
+  const cached = _itemsCache.get(key);
+  if (cached && Date.now() - cached.at < ITEMS_CACHE_TTL) return cached.rows;
+  const existing = _itemsInFlight.get(key);
+  if (existing) return existing;
+
+  const promise = (async () => {
+    const { data, error } = await supabase
+      .from("ethone_items")
+      .select("*")
+      .eq("user_id", userId)
+      .eq("kind", dbKindOf(kind))
+      .order("updated_at", { ascending: false });
+    if (error || !Array.isArray(data)) return null;
+    _itemsCache.set(key, { at: Date.now(), rows: data as RawRow[] });
+    return data as RawRow[];
+  })();
+
+  _itemsInFlight.set(key, promise);
+  try {
+    return await promise;
+  } finally {
+    _itemsInFlight.delete(key);
+  }
+}
+
+/** Drop the shared items cache (e.g. after a local mutation or on sign-out). */
+export function invalidateItemsCache(userId?: string, kind?: "notes" | "tasks" | "events") {
+  if (userId && kind) {
+    _itemsCache.delete(`${userId}:${kind}`);
+    return;
+  }
+  _itemsCache.clear();
+}
+
 const DEFAULT_DEMO_ITEMS: Record<string, Item[]> = {
   notes: [
     {
@@ -115,14 +170,9 @@ export function useItems(kind: "notes" | "tasks" | "events") {
 
       if (userId) {
         try {
-          const { data: dbRows, error: dbError } = await supabase
-            .from("ethone_items")
-            .select("*")
-            .eq("user_id", userId)
-            .eq("kind", kind === "notes" ? "note" : kind === "tasks" ? "task" : "event")
-            .order("updated_at", { ascending: false });
+          const dbRows = await loadItemRowsShared(userId, kind);
 
-          if (!dbError && Array.isArray(dbRows)) {
+          if (Array.isArray(dbRows)) {
             const mapped: Item[] = dbRows.map((row) => ({
               id: row.id,
               title: row.title || "Sans titre",
@@ -201,6 +251,7 @@ export function useItems(kind: "notes" | "tasks" | "events") {
               filter: `user_id=eq.${userId}`,
             },
             (payload) => {
+              invalidateItemsCache();
               setItems((prev) => {
                 let next = prev;
                 if (payload.eventType === "INSERT") {
@@ -269,6 +320,7 @@ export function useItems(kind: "notes" | "tasks" | "events") {
       };
 
       // 1. Instant local optimistic update
+      invalidateItemsCache();
       setItems((prev) => {
         const next = [newItem, ...prev];
         try {
@@ -347,6 +399,7 @@ export function useItems(kind: "notes" | "tasks" | "events") {
 
   const update = useCallback(
     async (id: string, input: Partial<Omit<Item, "id">>) => {
+      invalidateItemsCache();
       setItems((prev) => {
         const next = prev.map((item) =>
           item.id === id ? { ...item, ...input, updatedAt: new Date().toISOString() } : item
@@ -396,6 +449,7 @@ export function useItems(kind: "notes" | "tasks" | "events") {
 
   const remove = useCallback(
     async (id: string) => {
+      invalidateItemsCache();
       setItems((prev) => {
         const next = prev.filter((i) => i.id !== id);
         try {

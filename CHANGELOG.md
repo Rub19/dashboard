@@ -2,6 +2,17 @@
 
 Toutes les modifications notables de ce projet seront documentées dans ce fichier.
 
+## v1.21.10 — 2026-09-10
+
+**Perf : tempête de requêtes au chargement du dashboard + SW cache-poisoning**
+
+Constaté en QA (navigateur, réseau) : `/dashboard` déclenchait **~95 requêtes Worker + ~61 Supabase** au chargement — `ethone_items` ×28, `ethone_user_state` ×19, `/api/profiles` ×10, `spotify/now-playing` ×14… — les mêmes requêtes lancées en rafale par des composants montés en parallèle, jusqu'au **429** de l'edge Worker (avec retries qui aggravaient).
+
+- **`lib/hooks/useItems.ts`** : `loadItemRowsShared(userId, kind)` — `Map` d'`inFlight` + cache résultat TTL 2,5 s au niveau module, clé `userId:kind`. `reload()` passe par lui. `invalidateItemsCache()` (exporté) appelé dans `add` / `update` / `remove` et le handler realtime `postgres_changes`.
+- **`lib/hooks/useProfiles.ts`** : `fetchProfilesShared(force)` module-level (in-flight partagé + cache TTL 4 s) remplace le `inFlightRef` par instance. Les 2 consommateurs (`SettingsProvider`, `ProfileDropdown` de la top bar) partagent une seule requête `/api/profiles`. `invalidateProfilesCache()` sur `fetchAll(true)`.
+- **`public/sw.js`** : `isBadStaticResponse(request, response)` — un asset `.js`/`.css`/`/_next/static/` ne doit jamais renvoyer un corps `text/html` (fallback SPA servi pendant une propagation de déploiement Cloudflare). Ces réponses ne sont plus mises en cache ; une entrée déjà empoisonnée est purgée et re-fetchée ; les assets en cache sont revalidés en arrière-plan (`refreshStaticAsset`). `CACHE_NAME` v418 → v419.
+- Validation : `tsc` 0 erreur, `build` ✓, `test:unit` 69/69, `sw.js` `node --check` OK.
+
 ## v1.21.9 — 2026-09-10
 
 **Pages `/boost` & `/browser` : défilement**

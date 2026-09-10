@@ -1,3 +1,15 @@
+const v12110_fr: ChangelogEntry = {
+  version: "v1.21.10",
+  date: "2026-09-10",
+  title: "Perf : Fin de la Tempête de Requêtes au Chargement",
+  items: [
+    "Le tableau de bord tirait ~95 requêtes Worker + ~61 requêtes Supabase au chargement (mêmes requêtes répétées 10 à 28 fois par des composants montés en parallèle) → l'endpoint Worker répondait 429.",
+    "`useItems` (notes/tâches/événements) : cache partagé au niveau module + déduplication des requêtes en vol par `userId:kind`. 5 composants qui montent le hook = 1 requête au lieu de 5+.",
+    "`useProfiles` : le garde anti-doublon `useRef` par instance devient un cache module partagé — les 2 instances (SettingsProvider + menu profil) partagent 1 seule requête `/api/profiles`.",
+    "Service Worker : ne met plus en cache une réponse HTML pour une URL `.js`/`.css` (piège de course pendant un déploiement Cloudflare qui cassait le style jusqu'au prochain vidage de cache) + revalidation en arrière-plan des assets déjà en cache.",
+  ],
+};
+
 const v12109_fr: ChangelogEntry = {
   version: "v1.21.9",
   date: "2026-09-10",
@@ -636,6 +648,18 @@ const v12052_fr: ChangelogEntry = {
     "Dynamic Island : correction d'un bug de priorité qui empêchait Spotify de jamais s'afficher, systématiquement évincé par la synchronisation d'arrière-plan.",
     "Commande /help du Bot Discord : la liste des commandes est désormais générée dynamiquement depuis les commandes réellement enregistrées (fin des commandes fantômes et des commandes manquantes), et affiche la vraie syntaxe des commandes à sous-commandes (ex. /automod status).",
     "Audit de l'enregistrement des commandes slash Discord : architecture confirmée saine, aucune dérive entre le code et les commandes déployées.",
+  ],
+};
+
+const v12110_en: ChangelogEntry = {
+  version: "v1.21.10",
+  date: "2026-09-10",
+  title: "Perf: No More Load-Time Request Storm",
+  items: [
+    "The dashboard fired ~95 Worker + ~61 Supabase requests on load (the same queries repeated 10-28× by components mounting in parallel) — enough to trip the Worker's edge 429.",
+    "`useItems` (notes/tasks/events): module-level shared cache + in-flight dedup keyed by `userId:kind`. 5 components mounting the hook = 1 request instead of 5+.",
+    "`useProfiles`: the per-instance `useRef` dedup guard is now a shared module cache — the 2 instances (SettingsProvider + profile menu) share a single `/api/profiles` request.",
+    "Service Worker: no longer caches an HTML body under a `.js`/`.css` URL (a Cloudflare deploy race that broke styling until the next cache wipe) + background-revalidates already-cached assets.",
   ],
 };
 
@@ -1280,6 +1304,18 @@ const v12052_en: ChangelogEntry = {
   ],
 };
 
+const v12110_es: ChangelogEntry = {
+  version: "v1.21.10",
+  date: "2026-09-10",
+  title: "Rendimiento: Se Acabó la Tormenta de Peticiones al Cargar",
+  items: [
+    "El panel lanzaba ~95 peticiones al Worker + ~61 a Supabase al cargar (las mismas consultas repetidas 10-28× por componentes montados en paralelo) — suficiente para provocar el 429 del Worker.",
+    "`useItems` (notas/tareas/eventos): caché compartida a nivel de módulo + deduplicación de peticiones en vuelo por `userId:kind`. 5 componentes montando el hook = 1 petición en vez de 5+.",
+    "`useProfiles`: el guard anti-duplicados `useRef` por instancia pasa a ser una caché de módulo compartida — las 2 instancias comparten una sola petición `/api/profiles`.",
+    "Service Worker: ya no cachea un cuerpo HTML bajo una URL `.js`/`.css` (una carrera de despliegue de Cloudflare que rompía los estilos hasta el siguiente vaciado de caché) + revalidación en segundo plano de los assets ya cacheados.",
+  ],
+};
+
 const v12109_es: ChangelogEntry = {
   version: "v1.21.9",
   date: "2026-09-10",
@@ -1918,6 +1954,18 @@ const v12052_es: ChangelogEntry = {
     "Dynamic Island: corregido un error de prioridad que impedía que Spotify apareciera, siempre desplazado por la sincronización en segundo plano.",
     "Comando /help del Bot de Discord: la lista de comandos ahora se genera dinámicamente desde los comandos realmente registrados (fin de comandos fantasma o ausentes), mostrando la sintaxis real de los comandos con subcomandos.",
     "Auditoría del registro de comandos slash de Discord: arquitectura confirmada como sólida, sin desviación entre el código y los comandos desplegados.",
+  ],
+};
+
+const v12110_de: ChangelogEntry = {
+  version: "v1.21.10",
+  date: "2026-09-10",
+  title: "Performance: Kein Anfragensturm mehr beim Laden",
+  items: [
+    "Das Dashboard feuerte beim Laden ~95 Worker- + ~61 Supabase-Anfragen (dieselben Abfragen 10-28× von parallel gemounteten Komponenten) — genug fuer den 429 des Workers.",
+    "`useItems` (Notizen/Aufgaben/Termine): modulweiter gemeinsamer Cache + In-Flight-Dedup nach `userId:kind`. 5 Komponenten, die den Hook mounten = 1 Anfrage statt 5+.",
+    "`useProfiles`: der Pro-Instanz-`useRef`-Dedup-Guard wird zu einem gemeinsamen Modul-Cache — die 2 Instanzen teilen sich eine einzige `/api/profiles`-Anfrage.",
+    "Service Worker: cacht keinen HTML-Body mehr unter einer `.js`/`.css`-URL (ein Cloudflare-Deploy-Race, das das Styling bis zum naechsten Cache-Leeren zerstoerte) + Hintergrund-Revalidierung bereits gecachter Assets.",
   ],
 };
 
@@ -24679,5 +24727,9 @@ CHANGELOG_BY_LANG.fr.unshift(v12109_fr);
 CHANGELOG_BY_LANG.en.unshift(v12109_en);
 CHANGELOG_BY_LANG.es.unshift(v12109_es);
 CHANGELOG_BY_LANG.de.unshift(v12109_de);
+CHANGELOG_BY_LANG.fr.unshift(v12110_fr);
+CHANGELOG_BY_LANG.en.unshift(v12110_en);
+CHANGELOG_BY_LANG.es.unshift(v12110_es);
+CHANGELOG_BY_LANG.de.unshift(v12110_de);
 
 export const CHANGELOG = CHANGELOG_BY_LANG.fr;

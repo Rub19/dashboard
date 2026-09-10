@@ -16,6 +16,47 @@ export type Profile = {
   createdAt: string;
 };
 
+// Module-level so every useProfiles() consumer (SettingsProvider, the top-bar
+// ProfileDropdown, the command palette…) shares one in-flight request and a
+// short result cache — previously each instance had its own useRef guard, so N
+// mounts × M auth events = an /api/profiles burst that hit the edge 429.
+type ProfilesResult = { list: Profile[]; activeId: string };
+let _profilesInFlight: Promise<ProfilesResult | null> | null = null;
+let _profilesCache: { at: number; result: ProfilesResult } | null = null;
+const PROFILES_CACHE_TTL = 4000;
+
+async function fetchProfilesShared(force: boolean): Promise<ProfilesResult | null> {
+  if (!force && _profilesCache && Date.now() - _profilesCache.at < PROFILES_CACHE_TTL) {
+    return _profilesCache.result;
+  }
+  if (_profilesInFlight) return _profilesInFlight;
+  _profilesInFlight = (async () => {
+    try {
+      const res = force
+        ? await fetchWorker("/api/profiles")
+        : await fetchWorkerCached("/api/profiles");
+      const list =
+        Array.isArray(res?.data?.list) && res.data.list.length > 0
+          ? res.data.list.map(mapProfile)
+          : DEFAULT_LOCAL_PROFILES;
+      const activeEntry = res?.data?.active ? mapProfile(res.data.active) : list[0] || DEFAULT_LOCAL_PROFILES[0];
+      const result: ProfilesResult = { list, activeId: activeEntry?.id || list[0]?.id || "personal" };
+      _profilesCache = { at: Date.now(), result };
+      return result;
+    } catch {
+      return null;
+    } finally {
+      _profilesInFlight = null;
+    }
+  })();
+  return _profilesInFlight;
+}
+
+/** Drop the shared profiles cache (after a profile mutation or on sign-out). */
+export function invalidateProfilesCache() {
+  _profilesCache = null;
+}
+
 function mapProfile(p: Record<string, unknown>): Profile {
   return {
     id: String(p.id),
@@ -73,47 +114,23 @@ export function useProfiles() {
     [profiles, active]
   );
 
-  // In-flight guard: onAuthStateChange can fire several events back-to-back
-  // (INITIAL_SESSION, a TOKEN_REFRESHED retry burst, etc.) and each one used
-  // to trigger its own uncached, uncoalesced fetchAll(true) — a burst of
-  // concurrent /api/profiles calls with nothing to stop them piling up,
-  // which is exactly what ran the endpoint into a 429 in production. This
-  // collapses any overlapping calls into the one already in flight.
-  const inFlightRef = useRef<Promise<void> | null>(null);
-
   const fetchAll = useCallback(async (force = false) => {
-    if (inFlightRef.current) return inFlightRef.current;
-    const run = (async () => {
-    try {
-      const res = force
-        ? await fetchWorker("/api/profiles")
-        : await fetchWorkerCached("/api/profiles");
-      const list = Array.isArray(res?.data?.list) && res.data.list.length > 0
-        ? res.data.list.map(mapProfile)
-        : DEFAULT_LOCAL_PROFILES;
-      const activeEntry = res?.data?.active ? mapProfile(res.data.active) : list[0] || DEFAULT_LOCAL_PROFILES[0];
-      setProfiles(list);
-      setActive(activeEntry?.id || list[0]?.id || "personal");
+    if (force) invalidateProfilesCache();
+    const result = await fetchProfilesShared(force);
+    if (result) {
+      setProfiles(result.list);
+      setActive(result.activeId);
       if (typeof window !== "undefined") {
         try {
-          localStorage.setItem("ethone_local_profiles", JSON.stringify(list));
-          localStorage.setItem("ethone_active_profile_id", activeEntry?.id || list[0]?.id || "personal");
+          localStorage.setItem("ethone_local_profiles", JSON.stringify(result.list));
+          localStorage.setItem("ethone_active_profile_id", result.activeId);
         } catch {}
       }
-    } catch {
-      // Retain existing local profiles or default
+    } else {
       setProfiles((prev) => (prev.length > 0 ? prev : DEFAULT_LOCAL_PROFILES));
       setActive((prev) => prev || "personal");
-    } finally {
-      setLoaded(true);
     }
-    })();
-    inFlightRef.current = run;
-    try {
-      await run;
-    } finally {
-      inFlightRef.current = null;
-    }
+    setLoaded(true);
   }, []);
 
   // Tracks the signed-in user id so the auth-state listener below only

@@ -1,4 +1,4 @@
-const CACHE_NAME = "ethone-next-v418";
+const CACHE_NAME = "ethone-next-v419";
 const PRECACHE = ["/", "/login/", "/dashboard/", "/offline.html"];
 const STATIC_EXTENSIONS = [".js", ".css", ".png", ".jpg", ".jpeg", ".webp", ".svg", ".woff", ".woff2", ".ico"];
 
@@ -116,6 +116,31 @@ async function normalizeRecord(data) {
 function isStaticAsset(url) {
   const pathname = new URL(url).pathname;
   return STATIC_EXTENSIONS.some((ext) => pathname.endsWith(ext)) || pathname.startsWith("/_next/");
+}
+
+// A static asset (.js/.css/font/image) must never come back as an HTML body —
+// that only happens when a CDN serves the SPA fallback for a missing file.
+function isBadStaticResponse(request, response) {
+  const pathname = new URL(request.url).pathname;
+  const looksCodeOrStyle =
+    pathname.endsWith(".js") ||
+    pathname.endsWith(".css") ||
+    pathname.endsWith(".woff") ||
+    pathname.endsWith(".woff2") ||
+    pathname.startsWith("/_next/static/");
+  if (!looksCodeOrStyle) return false;
+  const type = (response.headers.get("content-type") || "").toLowerCase();
+  return type.startsWith("text/html");
+}
+
+function refreshStaticAsset(request) {
+  return fetch(request)
+    .then((response) => {
+      if (!response || response.status !== 200 || response.type !== "basic") return;
+      if (isBadStaticResponse(request, response)) return;
+      return caches.open(CACHE_NAME).then((cache) => cache.put(request, response.clone()));
+    })
+    .catch(() => {});
 }
 
 const OFFLINE_HTML = `<!doctype html>
@@ -282,10 +307,27 @@ self.addEventListener("fetch", (event) => {
   if (isStaticAsset(event.request.url)) {
     event.respondWith(
       caches.match(event.request).then((cached) => {
-        if (cached) return cached;
+        // A hashed asset (.js/.css/font) never changes content for a given URL,
+        // so serve from cache — but revalidate in the background so a bad entry
+        // (e.g. an HTML fallback cached during a deploy race, see below) heals
+        // on the next load instead of being served forever.
+        if (cached) {
+          if (!isBadStaticResponse(event.request, cached)) {
+            event.waitUntil(refreshStaticAsset(event.request));
+            return cached;
+          }
+          // Poisoned cache entry — drop it and fall through to a fresh fetch.
+          caches.open(CACHE_NAME).then((cache) => cache.delete(event.request));
+        }
         return fetch(event.request)
           .then((response) => {
             if (!response || response.status !== 200 || response.type !== "basic") return response;
+            // During a deploy, Cloudflare can answer a not-yet-propagated
+            // /_next/ asset with the SPA index.html (200). Caching that under a
+            // .css/.js URL breaks the page until the entry is replaced — and
+            // this branch used to have no revalidation. Never cache an HTML
+            // body for a non-HTML asset request.
+            if (isBadStaticResponse(event.request, response)) return response;
             const clone = response.clone();
             caches.open(CACHE_NAME).then((cache) => cache.put(event.request, clone));
             return response;

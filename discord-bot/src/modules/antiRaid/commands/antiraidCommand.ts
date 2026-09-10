@@ -104,50 +104,70 @@ export const antiraidCommand: Command = {
 
       const raidCfg = raidConfigService.getConfig(guildId);
 
+      // --- Anti-Raid désactivé : embed court et sans ambiguïté ---
+      if (!raidCfg.enabled) {
+        await ctx.reply({
+          embeds: [
+            new EmbedBuilder()
+              .setColor(BRAND_COLORS.neutral)
+              .setAuthor({ name: `Anti-Raid — ${ctx.guild.name}`, iconURL: ctx.guild.iconURL({ size: 128 }) ?? undefined })
+              .setDescription(
+                '## ⚪ Désactivé\nAucune détection ni sanction automatique sur ce serveur. Les réglages sont conservés.\n\n**Réactiver :** `/antiraid toggle actif:True`'
+              )
+              .setTimestamp(),
+          ],
+        });
+        return;
+      }
+
+      // --- Anti-Raid actif : tableau de bord ---
+      const threatLine =
+        metrics.threatLevel === 'SAFE'
+          ? '🟢 Aucune menace'
+          : metrics.threatLevel === 'SUSPICIOUS'
+          ? '🟡 Activité suspecte'
+          : metrics.threatLevel === 'ELEVATED'
+          ? '🟠 Menace élevée'
+          : '🔴 RAID EN COURS';
+
+      const detectors: string[] = [];
+      const d = (on: boolean, label: string) => `${on ? '🟢' : '⚫'} ${label}`;
+      detectors.push(d(raidCfg.joinRaid.enabled, 'Vague d\'arrivées'));
+      detectors.push(d(raidCfg.messageRaid.enabled, 'Spam messages'));
+      detectors.push(d(raidCfg.mentionRaid.enabled, 'Spam mentions'));
+      detectors.push(d(raidCfg.botRaid.enabled && raidCfg.botRaid.blockUnwhitelistedBots, 'Bots non autorisés'));
+      detectors.push(d(raidCfg.serverNuke.enabled, 'Nuke serveur'));
+      detectors.push(d(raidCfg.accountAge.enabled, 'Comptes récents'));
+
       const embed = new EmbedBuilder()
-        .setTitle(formatString(t.antiraid_status_title, { guildName: ctx.guild.name }))
-        .setColor(raidCfg.enabled ? levelColors[metrics.threatLevel] || BRAND_COLORS.info : BRAND_COLORS.neutral)
-        .setThumbnail(ctx.guild.iconURL({ size: 128 }) ?? null)
-        .setDescription(
-          raidCfg.enabled
-            ? `🛡️ **Anti-Raid : ACTIF**${raidCfg.botRaid.blockUnwhitelistedBots ? '' : ' · expulsion auto des bots désactivée'}`
-            : '⚪ **Anti-Raid : DÉSACTIVÉ** — aucune détection ni sanction automatique. `/antiraid toggle actif:True` pour réactiver.'
-        )
+        .setColor(levelColors[metrics.threatLevel] || BRAND_COLORS.success)
+        .setAuthor({ name: `Anti-Raid — ${ctx.guild.name}`, iconURL: ctx.guild.iconURL({ size: 128 }) ?? undefined })
+        .setDescription(`**${threatLine}** · Risk Score **${metrics.currentRiskScore}/100**`)
         .addFields(
           {
-            name: t.antiraid_field_risk_score,
-            value: `**${metrics.currentRiskScore}/100** (\`${metrics.threatLevel}\`)`,
+            name: 'Mode d\'urgence',
+            value: metrics.raidModeActive ? '🔴 **RAID MODE ACTIF**' : 'Aucun',
             inline: true,
           },
           {
-            name: t.antiraid_field_raidmode,
-            value: metrics.raidModeActive ? t.antiraid_raidmode_active : t.antiraid_raidmode_normal,
-            inline: true,
-          },
-          {
-            name: t.antiraid_field_lockdown,
+            name: 'Verrouillage',
             value: metrics.lockdownActive
-              ? formatString(t.antiraid_lockdown_active, { count: metrics.lockedChannelsCount })
-              : t.antiraid_lockdown_inactive,
+              ? `🔴 ${metrics.lockedChannelsCount} salon${metrics.lockedChannelsCount > 1 ? 's' : ''} verrouillé${metrics.lockedChannelsCount > 1 ? 's' : ''}`
+              : 'Aucun',
             inline: true,
           },
           {
-            name: t.antiraid_field_joins,
-            value: formatString(t.antiraid_joins_value, { count: metrics.joinsPerMinute }),
-            inline: true,
+            name: 'Activité (60 s)',
+            value: `${metrics.joinsPerMinute} arrivées · ${metrics.messagesPerMinute} msg · ${metrics.mentionsPerMinute} mentions`,
+            inline: false,
           },
           {
-            name: t.antiraid_field_messages,
-            value: formatString(t.antiraid_messages_value, { count: metrics.messagesPerMinute }),
-            inline: true,
-          },
-          {
-            name: t.antiraid_field_mentions,
-            value: formatString(t.antiraid_mentions_value, { count: metrics.mentionsPerMinute }),
-            inline: true,
+            name: 'Détecteurs',
+            value: detectors.join('\n'),
+            inline: false,
           }
         )
-        .setFooter({ text: t.antiraid_status_footer })
+        .setFooter({ text: '/antiraid toggle · botprotection · trustbot · raidmode · lockdown' })
         .setTimestamp();
 
       await ctx.reply({ embeds: [embed] });

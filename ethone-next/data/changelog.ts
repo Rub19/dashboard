@@ -1,3 +1,12 @@
+const v12123_fr: ChangelogEntry = {
+  version: "v1.21.23",
+  date: "2026-09-10",
+  title: "Anti-Raid : /antiraid status refait",
+  items: [
+    "`🟢 Inactif` / `🟢 Normal` pretaient a confusion (voyant vert sur un etat « inactif »). Refonte : quand l'Anti-Raid est coupe, embed court « ⚪ Desactive » sans metriques trompeuses. Quand il est actif : ligne menace (🟢 Aucune menace / 🟡 suspect / 🔴 RAID), Mode d'urgence = « Aucun » (au lieu de « 🟢 Normal »), Verrouillage = « Aucun » (au lieu de « 🟢 Inactif »), et une liste **Detecteurs** (🟢 actif / ⚫ coupe) pour voir d'un coup d'oeil ce qui tourne.",
+  ],
+};
+
 const v12122_fr: ChangelogEntry = {
   version: "v1.21.22",
   date: "2026-09-10",
@@ -778,6 +787,15 @@ const v12052_fr: ChangelogEntry = {
     "Dynamic Island : correction d'un bug de priorité qui empêchait Spotify de jamais s'afficher, systématiquement évincé par la synchronisation d'arrière-plan.",
     "Commande /help du Bot Discord : la liste des commandes est désormais générée dynamiquement depuis les commandes réellement enregistrées (fin des commandes fantômes et des commandes manquantes), et affiche la vraie syntaxe des commandes à sous-commandes (ex. /automod status).",
     "Audit de l'enregistrement des commandes slash Discord : architecture confirmée saine, aucune dérive entre le code et les commandes déployées.",
+  ],
+};
+
+const v12123_en: ChangelogEntry = {
+  version: "v1.21.23",
+  date: "2026-09-10",
+  title: "Anti-Raid: /antiraid status redone",
+  items: [
+    "`🟢 Inactive` / `🟢 Normal` was confusing (green light on an inactive state). Rework: when Anti-Raid is off, a short « ⚪ Disabled » embed with no misleading metrics. When on: a threat line (🟢 no threat / 🟡 suspicious / 🔴 RAID), Emergency mode = « None », Lockdown = « None », plus a **Detectors** list (🟢 on / ⚫ off) to see at a glance what's running.",
   ],
 };
 
@@ -1564,6 +1582,15 @@ const v12052_en: ChangelogEntry = {
   ],
 };
 
+const v12123_es: ChangelogEntry = {
+  version: "v1.21.23",
+  date: "2026-09-10",
+  title: "Anti-Raid: /antiraid status rehecho",
+  items: [
+    "`🟢 Inactivo` / `🟢 Normal` confundia. Rework: si Anti-Raid esta apagado, embed corto « ⚪ Desactivado » sin metricas engañosas. Si esta activo: linea de amenaza, Modo de emergencia = « Ninguno », Bloqueo = « Ninguno », y lista de **Detectores** (🟢 on / ⚫ off).",
+  ],
+};
+
 const v12122_es: ChangelogEntry = {
   version: "v1.21.22",
   date: "2026-09-10",
@@ -2344,6 +2371,15 @@ const v12052_es: ChangelogEntry = {
     "Dynamic Island: corregido un error de prioridad que impedía que Spotify apareciera, siempre desplazado por la sincronización en segundo plano.",
     "Comando /help del Bot de Discord: la lista de comandos ahora se genera dinámicamente desde los comandos realmente registrados (fin de comandos fantasma o ausentes), mostrando la sintaxis real de los comandos con subcomandos.",
     "Auditoría del registro de comandos slash de Discord: arquitectura confirmada como sólida, sin desviación entre el código y los comandos desplegados.",
+  ],
+};
+
+const v12123_de: ChangelogEntry = {
+  version: "v1.21.23",
+  date: "2026-09-10",
+  title: "Anti-Raid: /antiraid status neu",
+  items: [
+    "`🟢 Inaktiv` / `🟢 Normal` war verwirrend. Rework: bei ausgeschaltetem Anti-Raid ein kurzes « ⚪ Deaktiviert »-Embed ohne irrefuehrende Metriken. Bei eingeschaltetem: Bedrohungszeile, Notfallmodus = « Keiner », Sperre = « Keine », plus eine **Detektoren**-Liste (🟢 an / ⚫ aus).",
   ],
 };
 
@@ -25299,5 +25335,9 @@ CHANGELOG_BY_LANG.fr.unshift(v12122_fr);
 CHANGELOG_BY_LANG.en.unshift(v12122_en);
 CHANGELOG_BY_LANG.es.unshift(v12122_es);
 CHANGELOG_BY_LANG.de.unshift(v12122_de);
+CHANGELOG_BY_LANG.fr.unshift(v12123_fr);
+CHANGELOG_BY_LANG.en.unshift(v12123_en);
+CHANGELOG_BY_LANG.es.unshift(v12123_es);
+CHANGELOG_BY_LANG.de.unshift(v12123_de);
 
 export const CHANGELOG = CHANGELOG_BY_LANG.fr;

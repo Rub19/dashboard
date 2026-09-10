@@ -1,3 +1,14 @@
+const v12097_fr: ChangelogEntry = {
+  version: "v1.20.97",
+  date: "2026-09-10",
+  title: "Page Formulaires : Branchée au Bot",
+  items: [
+    "Comme les sondages : /discord/forms charge tes vrais formulaires depuis le bot (`GET /api/guilds/:id/forms`) quand un serveur est connecté ; sinon mode « Données de démonstration » (badge + liste locale par serveur conservée).",
+    "Dupliquer → `/duplicate`, publier → `/publish`, supprimer → `DELETE`. Mises à jour optimistes avec retour arrière si l'action échoue.",
+    "Bouton Rafraîchir ajouté, en-tête allégé (bloc d'icône neutre, plus de pastille « No-Code Builder », titre « Formulaires »).",
+  ],
+};
+
 const v12096_fr: ChangelogEntry = {
   version: "v1.20.96",
   date: "2026-09-10",
@@ -492,6 +503,17 @@ const v12052_fr: ChangelogEntry = {
     "Dynamic Island : correction d'un bug de priorité qui empêchait Spotify de jamais s'afficher, systématiquement évincé par la synchronisation d'arrière-plan.",
     "Commande /help du Bot Discord : la liste des commandes est désormais générée dynamiquement depuis les commandes réellement enregistrées (fin des commandes fantômes et des commandes manquantes), et affiche la vraie syntaxe des commandes à sous-commandes (ex. /automod status).",
     "Audit de l'enregistrement des commandes slash Discord : architecture confirmée saine, aucune dérive entre le code et les commandes déployées.",
+  ],
+};
+
+const v12097_en: ChangelogEntry = {
+  version: "v1.20.97",
+  date: "2026-09-10",
+  title: "Forms Page: Wired to the Bot",
+  items: [
+    "Like polls: /discord/forms loads your real forms from the bot (`GET /api/guilds/:id/forms`) when a server is connected; otherwise \"demo data\" mode (badge + the per-server local list is kept).",
+    "Duplicate → `/duplicate`, publish → `/publish`, delete → `DELETE`. Optimistic updates that roll back if the action fails.",
+    "Added a Refresh button, trimmed the header (neutral icon block, no more \"No-Code Builder\" pill, title \"Formulaires\").",
   ],
 };
 
@@ -992,6 +1014,17 @@ const v12052_en: ChangelogEntry = {
   ],
 };
 
+const v12097_es: ChangelogEntry = {
+  version: "v1.20.97",
+  date: "2026-09-10",
+  title: "Pagina de Formularios: Conectada al Bot",
+  items: [
+    "Como los sondeos: /discord/forms carga tus formularios reales desde el bot (`GET /api/guilds/:id/forms`) cuando hay un servidor conectado; si no, modo \"datos de demostracion\" (distintivo + se conserva la lista local por servidor).",
+    "Duplicar → `/duplicate`, publicar → `/publish`, eliminar → `DELETE`. Actualizaciones optimistas que se revierten si la accion falla.",
+    "Se anadio un boton Actualizar y se aligero la cabecera (bloque de icono neutro, sin distintivo \"No-Code Builder\", titulo \"Formularios\").",
+  ],
+};
+
 const v12096_es: ChangelogEntry = {
   version: "v1.20.96",
   date: "2026-09-10",
@@ -1486,6 +1519,17 @@ const v12052_es: ChangelogEntry = {
     "Dynamic Island: corregido un error de prioridad que impedía que Spotify apareciera, siempre desplazado por la sincronización en segundo plano.",
     "Comando /help del Bot de Discord: la lista de comandos ahora se genera dinámicamente desde los comandos realmente registrados (fin de comandos fantasma o ausentes), mostrando la sintaxis real de los comandos con subcomandos.",
     "Auditoría del registro de comandos slash de Discord: arquitectura confirmada como sólida, sin desviación entre el código y los comandos desplegados.",
+  ],
+};
+
+const v12097_de: ChangelogEntry = {
+  version: "v1.20.97",
+  date: "2026-09-10",
+  title: "Formular-Seite: An den Bot angebunden",
+  items: [
+    "Wie die Umfragen: /discord/forms laedt deine echten Formulare vom Bot (`GET /api/guilds/:id/forms`), wenn ein Server verbunden ist; sonst \"Demodaten\"-Modus (Abzeichen + die serverlokale Liste bleibt erhalten).",
+    "Duplizieren → `/duplicate`, veroeffentlichen → `/publish`, loeschen → `DELETE`. Optimistische Updates mit Rollback bei Fehlschlag.",
+    "Aktualisieren-Button hinzugefuegt, Kopf entschlackt (neutraler Symbolblock, keine \"No-Code Builder\"-Pille mehr, Titel \"Formulaire\").",
   ],
 };
 
@@ -24051,5 +24095,9 @@ CHANGELOG_BY_LANG.fr.unshift(v12096_fr);
 CHANGELOG_BY_LANG.en.unshift(v12096_en);
 CHANGELOG_BY_LANG.es.unshift(v12096_es);
 CHANGELOG_BY_LANG.de.unshift(v12096_de);
+CHANGELOG_BY_LANG.fr.unshift(v12097_fr);
+CHANGELOG_BY_LANG.en.unshift(v12097_en);
+CHANGELOG_BY_LANG.es.unshift(v12097_es);
+CHANGELOG_BY_LANG.de.unshift(v12097_de);
 
 export const CHANGELOG = CHANGELOG_BY_LANG.fr;

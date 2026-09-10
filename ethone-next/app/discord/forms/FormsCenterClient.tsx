@@ -1,6 +1,6 @@
 "use client";
 
-import { useState, useMemo, useEffect } from "react";
+import { useState, useMemo, useEffect, useCallback } from "react";
 import Link from "next/link";
 import { useSearchParams } from "next/navigation";
 import {
@@ -17,10 +17,34 @@ import {
   Layers,
   ArrowRight,
   Trash2,
+  RefreshCw,
 } from "lucide-react";
 import { useToast } from "@/components/ToastProvider";
 import { useDiscordOAuth } from "@/lib/hooks/useDiscordOAuth";
 import { cn } from "@/lib/utils";
+
+const BOT_API_URL = process.env.NEXT_PUBLIC_DISCORD_BOT_API || "";
+
+function mapForm(raw: Record<string, unknown>): FormItem {
+  const r = raw as Record<string, any>;
+  const sections = Array.isArray(r.sections) ? r.sections : [];
+  const fields = sections.reduce((n: number, s: any) => n + (Array.isArray(s?.fields) ? s.fields.length : 0), 0);
+  return {
+    id: String(r.id ?? r.formId ?? ""),
+    title: String(r.title ?? "Formulaire"),
+    description: String(r.description ?? ""),
+    category: String(r.category ?? "Général"),
+    status: (r.status ?? "DRAFT") as FormItem["status"],
+    version: Number(r.version ?? 1),
+    sectionsCount: Number(r.sectionsCount ?? sections.length),
+    fieldsCount: Number(r.fieldsCount ?? fields),
+    responsesCount: Number(r.responsesCount ?? r.stats?.responsesCount ?? 0),
+    pendingCount: Number(r.pendingCount ?? r.stats?.pendingCount ?? 0),
+    completionRate: Number(r.completionRate ?? r.stats?.completionRate ?? 0),
+    lastResponseAt: r.lastResponseAt ?? undefined,
+    updatedAt: String(r.updatedAt ?? new Date().toISOString()),
+  };
+}
 
 interface FormItem {
   id: string;
@@ -167,33 +191,74 @@ export default function FormsCenterClient() {
   const currentGuildId = activeGuild?.id || "123456789012345678";
 
   const [forms, setForms] = useState<FormItem[]>(DEMO_FORMS);
+  const [isDemo, setIsDemo] = useState(true);
+  const [loading, setLoading] = useState(false);
   const [searchQuery, setSearchQuery] = useState("");
   const [selectedStatus, setSelectedStatus] = useState<string>("ALL");
   const [selectedCategory, setSelectedCategory] = useState<string>("ALL");
   const [isTemplateModalOpen, setIsTemplateModalOpen] = useState(false);
 
-  // Persistence per guild
-  useEffect(() => {
-    try {
-      const saved = localStorage.getItem(`ethone:forms:${currentGuildId}`);
-      if (saved) {
-        setForms(JSON.parse(saved));
-      } else {
+  const loadForms = useCallback(async () => {
+    if (!BOT_API_URL || !currentGuildId || currentGuildId === "123456789012345678") {
+      // No live server: keep the per-guild local list (or the demo set).
+      try {
+        const saved = localStorage.getItem(`ethone:forms:${currentGuildId}`);
+        setForms(saved ? JSON.parse(saved) : DEMO_FORMS);
+      } catch {
         setForms(DEMO_FORMS);
       }
+      setIsDemo(true);
+      return;
+    }
+    setLoading(true);
+    try {
+      const res = await fetch(`${BOT_API_URL}/api/guilds/${currentGuildId}/forms`, { credentials: "include" });
+      const data = await res.json().catch(() => null);
+      if (res.ok && Array.isArray(data?.forms)) {
+        setForms(data.forms.map(mapForm));
+        setIsDemo(false);
+      } else {
+        setIsDemo(true);
+      }
     } catch {
-      setForms(DEMO_FORMS);
+      setIsDemo(true);
+    } finally {
+      setLoading(false);
     }
   }, [currentGuildId]);
 
-  const saveFormsList = (updated: FormItem[]) => {
-    setForms(updated);
-    try {
-      localStorage.setItem(`ethone:forms:${currentGuildId}`, JSON.stringify(updated));
-    } catch (err) {
-      console.error(err);
-    }
-  };
+  useEffect(() => {
+    loadForms();
+  }, [loadForms]);
+
+  // In demo mode this persists the local list; live, it's a no-op (the bot owns state).
+  const saveFormsList = useCallback(
+    (updated: FormItem[]) => {
+      setForms(updated);
+      if (isDemo) {
+        try {
+          localStorage.setItem(`ethone:forms:${currentGuildId}`, JSON.stringify(updated));
+        } catch {}
+      }
+    },
+    [isDemo, currentGuildId]
+  );
+
+  const formAction = useCallback(
+    async (formId: string, path: string, method: "POST" | "DELETE" = "POST"): Promise<boolean> => {
+      if (isDemo || !BOT_API_URL) return true;
+      try {
+        const res = await fetch(`${BOT_API_URL}/api/guilds/${currentGuildId}/forms/${formId}${path}`, {
+          method,
+          credentials: "include",
+        });
+        return res.ok;
+      } catch {
+        return false;
+      }
+    },
+    [isDemo, currentGuildId]
+  );
 
   // KPIs
   const stats = useMemo(() => {
@@ -235,45 +300,61 @@ export default function FormsCenterClient() {
   }, [forms]);
 
   // Actions
-  const handleDuplicate = (form: FormItem) => {
-    const duplicated: FormItem = {
-      ...form,
-      id: `form-${Date.now().toString(36)}`,
-      title: `${form.title} (Copie)`,
-      status: "DRAFT",
-      version: 1,
-      responsesCount: 0,
-      pendingCount: 0,
-      completionRate: 0,
-      updatedAt: new Date().toISOString(),
-    };
-    const updated = [duplicated, ...forms];
-    saveFormsList(updated);
-    success("Formulaire dupliqué", `"${duplicated.title}" a été créé en brouillon.`);
+  const handleDuplicate = async (form: FormItem) => {
+    if (isDemo || !BOT_API_URL) {
+      saveFormsList([
+        {
+          ...form,
+          id: `form-${Date.now().toString(36)}`,
+          title: `${form.title} (Copie)`,
+          status: "DRAFT",
+          version: 1,
+          responsesCount: 0,
+          pendingCount: 0,
+          completionRate: 0,
+          updatedAt: new Date().toISOString(),
+        },
+        ...forms,
+      ]);
+      success("Formulaire dupliqué", `"${form.title}" a été créé en brouillon.`);
+      return;
+    }
+    const ok = await formAction(form.id, "/duplicate");
+    if (!ok) return void success("Échec", "Impossible de dupliquer le formulaire.");
+    success("Formulaire dupliqué", `"${form.title}" a été créé en brouillon.`);
+    loadForms();
   };
 
-  const handleTogglePublish = (formId: string) => {
-    const updated = forms.map((f) => {
-      if (f.id === formId) {
-        const nextStatus = f.status === "PUBLISHED" ? ("CLOSED" as const) : ("PUBLISHED" as const);
-        return { ...f, status: nextStatus, updatedAt: new Date().toISOString() };
-      }
-      return f;
-    });
-    saveFormsList(updated);
-    const target = updated.find((f) => f.id === formId);
+  const handleTogglePublish = async (formId: string) => {
+    const target = forms.find((f) => f.id === formId);
+    if (!target) return;
+    const willPublish = target.status !== "PUBLISHED";
+    const nextStatus: FormItem["status"] = willPublish ? "PUBLISHED" : "CLOSED";
+    saveFormsList(forms.map((f) => (f.id === formId ? { ...f, status: nextStatus, updatedAt: new Date().toISOString() } : f)));
+    // The bot only exposes a publish action; "close" stays local for now.
+    const ok = willPublish ? await formAction(formId, "/publish") : true;
+    if (!ok) {
+      saveFormsList(forms.map((f) => (f.id === formId ? { ...f, status: target.status } : f)));
+      success("Échec", "Impossible de publier le formulaire.");
+      return;
+    }
     success(
-      target?.status === "PUBLISHED" ? "Formulaire publié" : "Formulaire fermé",
-      `Le statut est maintenant ${target?.status === "PUBLISHED" ? "Ouvert aux réponses" : "Fermé"}.`
+      willPublish ? "Formulaire publié" : "Formulaire fermé",
+      `Le statut est maintenant ${willPublish ? "Ouvert aux réponses" : "Fermé"}.`
     );
   };
 
-  const handleDelete = (formId: string) => {
-    if (confirm("Êtes-vous sûr de vouloir supprimer ce formulaire ? Toutes ses réponses seront archivées.")) {
-      const updated = forms.filter((f) => f.id !== formId);
-      saveFormsList(updated);
-      success("Formulaire supprimé", "Le formulaire a été retiré du dashboard.");
+  const handleDelete = async (formId: string) => {
+    if (!confirm("Êtes-vous sûr de vouloir supprimer ce formulaire ? Toutes ses réponses seront archivées.")) return;
+    const snapshot = forms;
+    saveFormsList(forms.filter((f) => f.id !== formId));
+    const ok = await formAction(formId, "", "DELETE");
+    if (!ok) {
+      saveFormsList(snapshot);
+      success("Échec", "Impossible de supprimer le formulaire.");
+      return;
     }
+    success("Formulaire supprimé", "Le formulaire a été retiré.");
   };
 
   return (
@@ -282,21 +363,33 @@ export default function FormsCenterClient() {
       <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 border-b border-white/10 pb-5">
         <div>
           <div className="flex items-center gap-2.5">
-            <div className="flex h-10 w-10 items-center justify-center rounded-2xl bg-gradient-to-tr from-indigo-500 to-cyan-500 text-white shadow-lg shadow-indigo-500/20">
+            <div className="flex h-10 w-10 items-center justify-center rounded-2xl bg-white/[0.04] border border-white/10 text-zinc-300">
               <FileText className="h-5 w-5" />
             </div>
             <div>
               <h1 className="text-xl sm:text-2xl font-black tracking-tight text-white flex items-center gap-2">
-                <span>Forms &amp; Applications</span>
-                <span className="text-[10px] font-bold uppercase tracking-wider px-2 py-0.5 rounded-full bg-indigo-500/20 text-indigo-300 border border-indigo-500/30">
-                  No-Code Builder
-                </span>
+                <span>Formulaires</span>
+                {isDemo && (
+                  <span className="text-[10px] font-semibold px-2 py-0.5 rounded-full bg-amber-500/10 text-amber-300 border border-amber-500/30">
+                    Données de démonstration
+                  </span>
+                )}
               </h1>
               <p className="text-xs text-zinc-400 mt-0.5">
-                Créez des formulaires sur-mesure, publiez-les sur Discord et pilotez les candidatures avec review et automations.
+                {isDemo
+                  ? "Connecte un serveur pour gérer tes vrais formulaires depuis ici."
+                  : "Formulaires et candidatures, synchronisés avec le bot."}
               </p>
             </div>
           </div>
+          <button
+            onClick={loadForms}
+            disabled={loading}
+            className="inline-flex items-center justify-center rounded-xl border border-white/10 bg-white/5 p-2.5 text-zinc-400 transition-colors hover:text-white hover:bg-white/10 disabled:opacity-50"
+            title="Rafraîchir"
+          >
+            <RefreshCw className={cn("h-4 w-4", loading && "animate-spin")} />
+          </button>
         </div>
 
         <div className="flex items-center gap-2 self-start sm:self-center">
@@ -309,7 +402,7 @@ export default function FormsCenterClient() {
           </button>
           <Link
             href={`/discord/forms/create?guildId=${currentGuildId}`}
-            className="flex h-9 items-center gap-1.5 rounded-xl bg-gradient-to-r from-indigo-600 to-cyan-600 px-4 text-xs font-bold text-white shadow-lg shadow-indigo-600/20 hover:from-indigo-500 hover:to-cyan-500 transition-all cursor-pointer active:scale-95"
+            className="flex h-9 items-center gap-1.5 rounded-xl bg-[#5865F2] px-4 text-xs font-semibold text-white hover:bg-[#4752C4] transition-colors cursor-pointer"
           >
             <Plus className="h-3.5 w-3.5" />
             <span>Créer un formulaire</span>

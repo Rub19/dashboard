@@ -2,6 +2,15 @@
 
 Toutes les modifications notables de ce projet seront documentées dans ce fichier.
 
+## v1.20.97 — 2026-09-10
+
+**`/discord/forms` : branchée au bot (même traitement que les sondages)**
+
+- `app/discord/forms/FormsCenterClient.tsx` : ajout `BOT_API_URL`, `mapForm(raw)` (calcule `fieldsCount` depuis `sections[].fields`), `loadForms()` (`GET /api/guilds/:id/forms`) + bouton Rafraîchir. `isDemo` + badge ; `saveFormsList` ne persiste dans `localStorage` qu'en mode démo (le bot est la source de vérité en live).
+- `formAction(formId, path, method)` → `handleDuplicate` → `POST /:id/duplicate` ; `handleTogglePublish` → `POST /:id/publish` (fermeture reste locale, pas d'endpoint) ; `handleDelete` → `DELETE /:id`. Optimiste + rollback.
+- En-tête : bloc d'icône `bg-gradient-to-tr from-indigo-500 to-cyan-500` → neutre ; pastille « No-Code Builder » retirée ; titre « Forms & Applications » → « Formulaires » ; bouton créer `bg-gradient-to-r` → `bg-[#5865F2]`.
+- Validation : `tsc` 0 erreur, `build`, `test:unit` 14/14 69/69, `lint` 353.
+
 ## v1.20.96 — 2026-09-10
 
 **`/discord/polls` : branchée au bot (fin de la démo)**

@@ -43,7 +43,7 @@ const ICONS: Record<string, string> = {
 };
 
 // Pages where the dock should auto-hide to avoid overlapping chat/focus/bottom input bars
-const AUTO_HIDE_ROUTES = ["/brain", "/focus", "/scratchpad"];
+const AUTO_HIDE_ROUTES = ["/brain", "/focus", "/scratchpad", "/matches"];
 
 function Dock() {
   const { settings, update } = useSettings();

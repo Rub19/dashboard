@@ -2,6 +2,15 @@
 
 Toutes les modifications notables de ce projet seront documentées dans ce fichier.
 
+## v1.20.91 — 2026-09-10
+
+**Trackers : défilement bloqué, dock qui gêne, ligne « Vous » moche — corrigés**
+
+- **Défilement** : `ValorantTrackerView` / `LolTrackerView` (+ l'onglet Apex de `app/matches/page.tsx`) avaient un root `h-full` à l'intérieur d'une colonne flex — quand `h-full` ne se résout pas contre un parent `flex-1` sans hauteur explicite, la vue prend la hauteur du contenu, déborde son parent `overflow-hidden` et devient inscrollable. Passés en `flex min-h-0 w-full flex-1 flex-col` (+ `flex-1` sur le wrapper de page). Conteneurs de liste : ajout de `pb-6 [overscroll-behavior:contain] [touch-action:pan-y]`.
+- **Dock** : `"/matches"` ajouté à `AUTO_HIDE_ROUTES` dans `components/Dock.tsx` — le dock flottant du bas se masque sur les Trackers (il chevauchait les dernières lignes du scoreboard). L'onglet discret de ré-affichage reste disponible.
+- **Ligne « Vous »** (`ValorantMatchRow.tsx` + `LolMatchRow.tsx`) : `border-l-2 border-cyan-400` sur le `<tr>` (rend mal) → `bg-amber-400/[0.07]` + `[&>td:first-child]:border-l-2 [&>td:first-child]:border-amber-400/80` ; pseudo en `text-amber-300` + badge « VOUS ». Idem pour la variante carte et le scoreboard LoL.
+- Validation : `tsc` 0 erreur, `build`, `test:unit` 14/14 69/69, `lint` inchangé.
+
 ## discord-bot — 2026-09-10 (musique : autocomplétion réelle + nouvelles commandes raccourcies)
 
 - **Autocomplétion `/play` réelle.** L'option `recherche` de `/play` et `/music play` avait `setAutocomplete(true)` mais ne renvoyait que **8 phrases codées en dur** — dès que tu tapais un vrai titre, la liste était vide. Elle interroge maintenant l'endpoint public de suggestions YouTube (le même que la barre de recherche du site, sans clé API, ~200 ms, cache 5 min) et propose de vrais résultats. Un lien collé est laissé tel quel.

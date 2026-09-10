@@ -563,7 +563,7 @@ export default function LolMatchRow({ match, index }: LolMatchRowProps) {
                                 className={cn(
                                   "transition-colors",
                                   p.isMe
-                                    ? "bg-cyan-500/10 font-semibold text-cyan-200 border-l-2 border-cyan-400"
+                                    ? "bg-amber-400/[0.07] text-white [&>td:first-child]:border-l-2 [&>td:first-child]:border-amber-400/80"
                                     : "hover:bg-white/[0.02] text-zinc-300"
                                 )}
                               >
@@ -602,8 +602,11 @@ export default function LolMatchRow({ match, index }: LolMatchRowProps) {
                                   </div>
                                   <div className="min-w-0">
                                     <div className="flex items-baseline gap-1.5">
-                                      <span className="font-bold text-white truncate max-w-[140px]">{p.name}</span>
+                                      <span className={cn("font-bold truncate max-w-[140px]", p.isMe ? "text-amber-300" : "text-white")}>{p.name}</span>
                                       <span className="text-[10px] text-zinc-500 font-mono shrink-0">#{p.tag}</span>
+                                      {p.isMe && (
+                                        <span className="shrink-0 rounded bg-amber-400/15 px-1 py-px text-[8px] font-black uppercase tracking-wider text-amber-300">Vous</span>
+                                      )}
                                     </div>
                                     <span className="text-[10px] text-zinc-500 font-medium block truncate">
                                       {p.character || "Champion"}

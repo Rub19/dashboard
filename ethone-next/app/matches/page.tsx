@@ -56,7 +56,7 @@ export default function MatchesPage() {
   const { items, loading, syncing, sync } = useTracker(path, trackerKind);
 
   return (
-    <div className="h-full min-h-0 w-full flex overflow-hidden gap-4 p-2 sm:p-4">
+    <div className="flex min-h-0 w-full flex-1 overflow-hidden gap-4 p-2 sm:p-4">
       {/* Liquid Sidebar for switching games */}
       <LiquidSidebar
         items={tabs}
@@ -72,7 +72,7 @@ export default function MatchesPage() {
         ) : tab === "lol" ? (
           <LolTrackerView />
         ) : (
-          <div className="h-full min-h-0 w-full flex flex-col overflow-hidden space-y-4">
+          <div className="flex min-h-0 w-full flex-1 flex-col overflow-hidden space-y-4">
             <div className="shrink-0 space-y-4">
               <div className="flex items-center justify-between gap-4">
                 <h1 className="min-w-0 truncate text-2xl font-bold">{i18n("matchesTitle")}</h1>
@@ -164,7 +164,7 @@ export default function MatchesPage() {
               )}
             </div>
 
-            <div className="min-h-0 w-full flex-1 overflow-y-auto os-scroll space-y-4">
+            <div className="min-h-0 w-full flex-1 overflow-y-auto os-scroll space-y-4 pb-6 [overscroll-behavior:contain] [touch-action:pan-y]">
               {loading && !items ? (
                 <div className="space-y-3">
                   <div className="h-20 animate-pulse rounded-[var(--panel-radius)] bg-[var(--border)]" />

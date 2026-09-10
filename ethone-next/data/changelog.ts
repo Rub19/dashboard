@@ -1,3 +1,14 @@
+const v12091_fr: ChangelogEntry = {
+  version: "v1.20.91",
+  date: "2026-09-10",
+  title: "Trackers : Défilement Réparé, Dock Masqué, Ligne « Vous » Plus Propre",
+  items: [
+    "Défilement : sur la page Trackers, la liste des matchs pouvait rester bloquée (les vues Valorant / LoL / Apex reposaient sur `h-full` qui ne se résolvait pas toujours dans la colonne flex). Passées en `flex-1` + `overscroll-contain`, avec une marge basse pour ne plus coller au bord.",
+    "Le Dock du bas se masque automatiquement sur les pages Trackers (comme la Dynamic Island) — il chevauchait les dernières lignes du tableau. Un petit onglet en bas permet de le rappeler si besoin.",
+    "Ligne « Vous » dans le tableau des scores : le liseré cyan sur toute la ligne (moche sur un `<tr>`) est remplacé par un fond ambré discret, une barre ambrée nette à gauche, ton pseudo en doré et un petit badge « VOUS ». Appliqué à Valorant et LoL.",
+  ],
+};
+
 const v12090_fr: ChangelogEntry = {
   version: "v1.20.90",
   date: "2026-09-10",
@@ -425,6 +436,17 @@ const v12052_fr: ChangelogEntry = {
     "Dynamic Island : correction d'un bug de priorité qui empêchait Spotify de jamais s'afficher, systématiquement évincé par la synchronisation d'arrière-plan.",
     "Commande /help du Bot Discord : la liste des commandes est désormais générée dynamiquement depuis les commandes réellement enregistrées (fin des commandes fantômes et des commandes manquantes), et affiche la vraie syntaxe des commandes à sous-commandes (ex. /automod status).",
     "Audit de l'enregistrement des commandes slash Discord : architecture confirmée saine, aucune dérive entre le code et les commandes déployées.",
+  ],
+};
+
+const v12091_en: ChangelogEntry = {
+  version: "v1.20.91",
+  date: "2026-09-10",
+  title: "Trackers: Scroll Fixed, Dock Hidden, Cleaner \"You\" Row",
+  items: [
+    "Scrolling: on the Trackers page the match list could get stuck (the Valorant / LoL / Apex views relied on `h-full`, which did not always resolve inside the flex column). Switched to `flex-1` + `overscroll-contain`, with bottom padding so the last row no longer hugs the edge.",
+    "The bottom Dock now auto-hides on the Trackers pages (like the Dynamic Island) — it was overlapping the last scoreboard rows. A small tab at the bottom brings it back if needed.",
+    "\"You\" row in the scoreboard: the full-width cyan outline (which renders badly on a `<tr>`) is replaced with a subtle amber background, a crisp amber left bar, your name in gold and a small \"VOUS\" badge. Applied to Valorant and LoL.",
   ],
 };
 
@@ -858,6 +880,17 @@ const v12052_en: ChangelogEntry = {
   ],
 };
 
+const v12091_es: ChangelogEntry = {
+  version: "v1.20.91",
+  date: "2026-09-10",
+  title: "Trackers: Desplazamiento Arreglado, Dock Oculto, Fila \"Tu\" Mas Limpia",
+  items: [
+    "Desplazamiento: en la pagina de Trackers la lista de partidas podia quedarse bloqueada (las vistas de Valorant / LoL / Apex dependian de `h-full`, que no siempre se resolvia dentro de la columna flex). Ahora usan `flex-1` + `overscroll-contain`, con margen inferior para que la ultima fila no quede pegada al borde.",
+    "El Dock inferior ahora se oculta automaticamente en las paginas de Trackers (como la Dynamic Island) — tapaba las ultimas filas del marcador. Una pequena pestana abajo lo vuelve a mostrar si hace falta.",
+    "Fila \"Tu\" en el marcador: el contorno cian de toda la fila (que se ve mal en un `<tr>`) se sustituye por un fondo ambar sutil, una barra ambar nitida a la izquierda, tu nombre en dorado y una pequena insignia \"VOUS\". Aplicado a Valorant y LoL.",
+  ],
+};
+
 const v12090_es: ChangelogEntry = {
   version: "v1.20.90",
   date: "2026-09-10",
@@ -1285,6 +1318,17 @@ const v12052_es: ChangelogEntry = {
     "Dynamic Island: corregido un error de prioridad que impedía que Spotify apareciera, siempre desplazado por la sincronización en segundo plano.",
     "Comando /help del Bot de Discord: la lista de comandos ahora se genera dinámicamente desde los comandos realmente registrados (fin de comandos fantasma o ausentes), mostrando la sintaxis real de los comandos con subcomandos.",
     "Auditoría del registro de comandos slash de Discord: arquitectura confirmada como sólida, sin desviación entre el código y los comandos desplegados.",
+  ],
+};
+
+const v12091_de: ChangelogEntry = {
+  version: "v1.20.91",
+  date: "2026-09-10",
+  title: "Tracker: Scrollen repariert, Dock ausgeblendet, sauberere \"Du\"-Zeile",
+  items: [
+    "Scrollen: Auf der Tracker-Seite konnte die Match-Liste haengen bleiben (die Valorant- / LoL- / Apex-Ansichten stuetzten sich auf `h-full`, das in der Flex-Spalte nicht immer aufging). Jetzt `flex-1` + `overscroll-contain`, mit unterem Abstand, damit die letzte Zeile nicht am Rand klebt.",
+    "Das untere Dock blendet sich auf den Tracker-Seiten automatisch aus (wie die Dynamic Island) — es ueberdeckte die letzten Scoreboard-Zeilen. Ein kleiner Reiter unten holt es bei Bedarf zurueck.",
+    "\"Du\"-Zeile im Scoreboard: Der cyanfarbene Rahmen ueber die ganze Zeile (der auf einem `<tr>` schlecht aussieht) wird durch einen dezenten Bernstein-Hintergrund, eine klare Bernstein-Leiste links, deinen Namen in Gold und ein kleines \"VOUS\"-Abzeichen ersetzt. Gilt fuer Valorant und LoL.",
   ],
 };
 
@@ -23759,5 +23803,9 @@ CHANGELOG_BY_LANG.fr.unshift(v12090_fr);
 CHANGELOG_BY_LANG.en.unshift(v12090_en);
 CHANGELOG_BY_LANG.es.unshift(v12090_es);
 CHANGELOG_BY_LANG.de.unshift(v12090_de);
+CHANGELOG_BY_LANG.fr.unshift(v12091_fr);
+CHANGELOG_BY_LANG.en.unshift(v12091_en);
+CHANGELOG_BY_LANG.es.unshift(v12091_es);
+CHANGELOG_BY_LANG.de.unshift(v12091_de);
 
 export const CHANGELOG = CHANGELOG_BY_LANG.fr;

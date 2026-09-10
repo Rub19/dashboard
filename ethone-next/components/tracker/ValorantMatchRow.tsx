@@ -378,7 +378,7 @@ export default function ValorantMatchRow({ match, index }: ValorantMatchRowProps
                                 className={cn(
                                   "transition-colors",
                                   p.isMe
-                                    ? "bg-cyan-500/10 font-semibold text-cyan-200 border-l-2 border-cyan-400"
+                                    ? "bg-amber-400/[0.07] text-white [&>td:first-child]:border-l-2 [&>td:first-child]:border-amber-400/80"
                                     : "hover:bg-white/[0.02] text-zinc-300"
                                 )}
                               >
@@ -422,12 +422,20 @@ export default function ValorantMatchRow({ match, index }: ValorantMatchRowProps
                                       to the right, so it isn't repeated here. */}
                                   <div className="min-w-0">
                                     <div className="flex items-baseline gap-1.5">
-                                      <span className="font-bold text-white truncate max-w-[140px]">
+                                      <span className={cn(
+                                        "font-bold truncate max-w-[140px]",
+                                        p.isMe ? "text-amber-300" : "text-white"
+                                      )}>
                                         {p.name}
                                       </span>
                                       <span className="text-[10px] text-zinc-500 font-mono shrink-0">
                                         #{p.tag}
                                       </span>
+                                      {p.isMe && (
+                                        <span className="shrink-0 rounded bg-amber-400/15 px-1 py-px text-[8px] font-black uppercase tracking-wider text-amber-300">
+                                          Vous
+                                        </span>
+                                      )}
                                     </div>
                                     <span className="text-[10px] text-zinc-500 font-medium block truncate">
                                       {p.character}
@@ -537,14 +545,17 @@ export default function ValorantMatchRow({ match, index }: ValorantMatchRowProps
                         className={cn(
                           "rounded-2xl border p-3 flex items-center justify-between gap-3 backdrop-blur-xl",
                           p.isMe
-                            ? "border-cyan-500/30 bg-cyan-500/10 text-cyan-200"
+                            ? "border-amber-400/30 bg-amber-400/[0.08] text-white"
                             : "border-white/10 bg-white/[0.03] text-zinc-300"
                         )}
                       >
                         <div className="flex items-center gap-2.5">
                           <img src={pIcon} alt="" className="h-9 w-9 rounded-xl object-cover border border-white/10" />
                           <div>
-                            <span className="font-bold text-white text-xs block">{p.name}</span>
+                            <span className={cn("font-bold text-xs block", p.isMe ? "text-amber-300" : "text-white")}>
+                              {p.name}
+                              {p.isMe && <span className="ml-1.5 rounded bg-amber-400/15 px-1 py-px text-[8px] font-black uppercase tracking-wider text-amber-300 align-middle">Vous</span>}
+                            </span>
                             <span className="text-[10px] text-zinc-400 font-mono">
                               {p.character} • {p.stats.kills} Kills
                             </span>

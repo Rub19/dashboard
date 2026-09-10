@@ -271,7 +271,7 @@ export default function ValorantTrackerView() {
   };
 
   return (
-    <div className="flex h-full min-h-0 w-full flex-col overflow-hidden space-y-4">
+    <div className="flex min-h-0 w-full flex-1 flex-col overflow-hidden space-y-4">
       {/* Top Search & Filter Bar */}
       <div className="shrink-0 rounded-3xl border border-white/10 bg-[#0c0d14]/90 p-4 backdrop-blur-2xl shadow-lg">
         <form onSubmit={handleSearchSubmit} className="flex flex-col lg:flex-row lg:items-center justify-between gap-4">
@@ -470,7 +470,7 @@ export default function ValorantTrackerView() {
       )}
 
       {/* Main Content Area */}
-      <div className="min-h-0 w-full flex-1 overflow-y-auto os-scroll space-y-6 pr-1">
+      <div className="min-h-0 w-full flex-1 overflow-y-auto os-scroll space-y-6 pr-1 pb-6 [overscroll-behavior:contain] [touch-action:pan-y]">
         {loading ? (
           <div className="space-y-4">
             {[...Array(6)].map((_, i) => (

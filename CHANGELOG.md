@@ -2,6 +2,16 @@
 
 Toutes les modifications notables de ce projet seront documentées dans ce fichier.
 
+## v1.20.83 — 2026-09-10
+
+**E-mail OTP : logo 404 corrigé + langue = langue du navigateur (pas du pays)**
+
+`worker/src/services/otp-service.js`. Vérifié : `node --check`, `npm test` 215/215 (+1 test pour `resolveEmailLocale`).
+
+- **Logo cassé** : le `<img>` visait `https://raw.githubusercontent.com/Rub19/dashboard/gh-pages/icons/ethone-icon-192.png` — qui renvoie **404** (la branche `gh-pages` n'a plus ce fichier depuis le passage à Cloudflare Pages ; confirmé par `curl`). Remplacé par `https://ethone.dev/icons/ethone-icon-192.png` (200, `image/png`, servi par le déploiement Pages).
+- **`resolveEmailLocale`** : ne devine plus la langue à partir du pays de la requête quand un `Accept-Language` est présent mais non supporté. Nouvelle logique : on parcourt les tags `Accept-Language` dans l'ordre de priorité du navigateur et on prend le premier parmi `fr` / `es` / `de` / `en` ; tout le reste (pt, it, nl...) → `en`. Le repli par pays ne s'applique plus que si l'en-tête `Accept-Language` est totalement absent.
+- Lissage du bloc code : `text-indent:12px` compense l'espacement de fin de `letter-spacing` (le code était décalé ~6px à gauche du centre), code en `#ffffff` (contraste), libellé en petites capitales.
+
 ## v1.20.82 — 2026-09-10
 
 **Trackers (Valorant / LoL) : alignement du scoreboard, historique plus profond, Dynamic Island auto-masquée**

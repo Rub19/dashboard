@@ -1,3 +1,14 @@
+const v12083_fr: ChangelogEntry = {
+  version: "v1.20.83",
+  date: "2026-09-10",
+  title: "E-mail du Code de Connexion : Logo Réparé + Langue du Navigateur",
+  items: [
+    "Le logo ETHONE dans l'e-mail du code de connexion (OTP) était cassé : il pointait vers une ancienne URL GitHub qui renvoie 404 depuis le passage à Cloudflare Pages. Corrigé — il pointe désormais vers ethone.dev.",
+    "L'e-mail est envoyé dans la langue du navigateur : français, espagnol ou allemand si c'est l'une de celles-là, anglais pour tout le reste (portugais, italien...). Avant, la langue pouvait être devinée à partir du pays de la requête — un lusophone en Allemagne pouvait recevoir l'e-mail en allemand.",
+    "Petit lissage visuel : le code à 6 chiffres est mieux centré (il était légèrement décalé à gauche) et passe en blanc pour un meilleur contraste, le libellé au-dessus est en petites majuscules.",
+  ],
+};
+
 const v12082_fr: ChangelogEntry = {
   version: "v1.20.82",
   date: "2026-09-10",
@@ -334,6 +345,17 @@ const v12052_fr: ChangelogEntry = {
     "Dynamic Island : correction d'un bug de priorité qui empêchait Spotify de jamais s'afficher, systématiquement évincé par la synchronisation d'arrière-plan.",
     "Commande /help du Bot Discord : la liste des commandes est désormais générée dynamiquement depuis les commandes réellement enregistrées (fin des commandes fantômes et des commandes manquantes), et affiche la vraie syntaxe des commandes à sous-commandes (ex. /automod status).",
     "Audit de l'enregistrement des commandes slash Discord : architecture confirmée saine, aucune dérive entre le code et les commandes déployées.",
+  ],
+};
+
+const v12083_en: ChangelogEntry = {
+  version: "v1.20.83",
+  date: "2026-09-10",
+  title: "Login Code Email: Logo Fixed + Browser Language",
+  items: [
+    "The ETHONE logo in the login-code (OTP) email was broken: it pointed at an old GitHub URL that has returned 404 since the move to Cloudflare Pages. Fixed — it now points at ethone.dev.",
+    "The email is sent in the browser's language: French, Spanish, or German if it's one of those, English for everything else (Portuguese, Italian...). Before, the language could be guessed from the request's country — a Portuguese speaker in Germany could get the email in German.",
+    "Small visual polish: the 6-digit code is better centered (it was slightly left of center) and is now white for better contrast, with a small-caps label above it.",
   ],
 };
 
@@ -676,6 +698,17 @@ const v12052_en: ChangelogEntry = {
   ],
 };
 
+const v12083_es: ChangelogEntry = {
+  version: "v1.20.83",
+  date: "2026-09-10",
+  title: "Correo del Código de Acceso: Logo Reparado + Idioma del Navegador",
+  items: [
+    "El logo de ETHONE en el correo del código de acceso (OTP) estaba roto: apuntaba a una URL antigua de GitHub que devuelve 404 desde el cambio a Cloudflare Pages. Corregido — ahora apunta a ethone.dev.",
+    "El correo se envía en el idioma del navegador: francés, español o alemán si es uno de esos, inglés para todo lo demás (portugués, italiano...). Antes, el idioma podía deducirse del país de la solicitud — un hablante de portugués en Alemania podía recibir el correo en alemán.",
+    "Pequeño retoque visual: el código de 6 dígitos queda mejor centrado (estaba ligeramente a la izquierda) y ahora es blanco para mayor contraste, con una etiqueta en versalitas encima.",
+  ],
+};
+
 const v12082_es: ChangelogEntry = {
   version: "v1.20.82",
   date: "2026-09-10",
@@ -1012,6 +1045,17 @@ const v12052_es: ChangelogEntry = {
     "Dynamic Island: corregido un error de prioridad que impedía que Spotify apareciera, siempre desplazado por la sincronización en segundo plano.",
     "Comando /help del Bot de Discord: la lista de comandos ahora se genera dinámicamente desde los comandos realmente registrados (fin de comandos fantasma o ausentes), mostrando la sintaxis real de los comandos con subcomandos.",
     "Auditoría del registro de comandos slash de Discord: arquitectura confirmada como sólida, sin desviación entre el código y los comandos desplegados.",
+  ],
+};
+
+const v12083_de: ChangelogEntry = {
+  version: "v1.20.83",
+  date: "2026-09-10",
+  title: "Login-Code-E-Mail: Logo Repariert + Browsersprache",
+  items: [
+    "Das ETHONE-Logo in der Login-Code-E-Mail (OTP) war kaputt: Es zeigte auf eine alte GitHub-URL, die seit dem Wechsel zu Cloudflare Pages 404 zurückgibt. Behoben — es zeigt jetzt auf ethone.dev.",
+    "Die E-Mail wird in der Browsersprache gesendet: Französisch, Spanisch oder Deutsch, wenn es eine davon ist, sonst Englisch für alles andere (Portugiesisch, Italienisch...). Vorher konnte die Sprache aus dem Land der Anfrage erraten werden — ein Portugiesisch-Sprecher in Deutschland konnte die E-Mail auf Deutsch bekommen.",
+    "Kleiner optischer Feinschliff: Der 6-stellige Code ist besser zentriert (er war leicht nach links versetzt) und jetzt weiß für besseren Kontrast, mit einem Label in Kapitälchen darüber.",
   ],
 };
 
@@ -23363,5 +23407,9 @@ CHANGELOG_BY_LANG.fr.unshift(v12082_fr);
 CHANGELOG_BY_LANG.en.unshift(v12082_en);
 CHANGELOG_BY_LANG.es.unshift(v12082_es);
 CHANGELOG_BY_LANG.de.unshift(v12082_de);
+CHANGELOG_BY_LANG.fr.unshift(v12083_fr);
+CHANGELOG_BY_LANG.en.unshift(v12083_en);
+CHANGELOG_BY_LANG.es.unshift(v12083_es);
+CHANGELOG_BY_LANG.de.unshift(v12083_de);
 
 export const CHANGELOG = CHANGELOG_BY_LANG.fr;

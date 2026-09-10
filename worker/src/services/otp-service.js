@@ -65,11 +65,21 @@ const COUNTRY_TO_LOCALE = {
   DE: "de", AT: "de"
 };
 
+// Browser language decides the email language. Walk the Accept-Language list
+// in the browser's own priority order and take the first tag ETHONE actually
+// ships an email translation for (fr / es / de / en). Any other browser
+// language (pt, it, nl, ...) gets English — deliberately NOT a guess from the
+// request's country, so a Portuguese speaker in Germany isn't sent German.
+// The country fallback only applies when there's no Accept-Language header at
+// all (rare — most non-browser callers still send one).
 export function resolveEmailLocale(acceptLanguage = "", country = "") {
-  const match = String(acceptLanguage).match(/^[a-zA-Z]{2}/);
-  if (match) {
-    const lang = match[0].toLowerCase();
-    if (EMAIL_I18N[lang]) return lang;
+  const raw = String(acceptLanguage).trim();
+  if (raw) {
+    for (const tag of raw.split(",")) {
+      const lang = tag.trim().slice(0, 2).toLowerCase();
+      if (lang === "fr" || lang === "es" || lang === "de" || lang === "en") return lang;
+    }
+    return "en";
   }
   const cc = String(country).toUpperCase();
   return COUNTRY_TO_LOCALE[cc] || "en";
@@ -105,7 +115,7 @@ function buildOtpEmail(code, contact, expiresAt, locale, timezone) {
         <table role="presentation" width="100%" cellpadding="0" cellspacing="0" border="0" style="background:#14191f; border:1px solid #1f2937; border-radius:16px; max-width:520px; width:100%; padding:32px 24px;">
           <tr>
             <td align="center" style="padding-bottom:8px;">
-              <img src="https://raw.githubusercontent.com/Rub19/dashboard/gh-pages/icons/ethone-icon-192.png" alt="ETHONE" width="64" height="64" style="display:block; margin:0 auto 12px; border-radius:15px;">
+              <img src="https://ethone.dev/icons/ethone-icon-192.png" alt="ETHONE" width="64" height="64" style="display:block; margin:0 auto 12px; border-radius:15px;">
             </td>
           </tr>
           <tr>
@@ -124,8 +134,8 @@ function buildOtpEmail(code, contact, expiresAt, locale, timezone) {
               <table role="presentation" width="100%" cellpadding="0" cellspacing="0" border="0" style="background:#0b1d1b; border:1px solid #7be5c3; border-radius:12px; padding:24px;">
                 <tr>
                   <td align="center">
-                    <p style="margin:0 0 8px; color:#7be5c3; font-size:13px; font-weight:500;">${i18n.codeLabel}</p>
-                    <div style="font-size:38px; letter-spacing:12px; font-weight:700; color:#7be5c3; font-family:ui-monospace,SFMono-Regular,Menlo,Monaco,Consolas,monospace;">${code}</div>
+                    <p style="margin:0 0 10px; color:#7be5c3; font-size:12px; font-weight:600; text-transform:uppercase; letter-spacing:1.5px;">${i18n.codeLabel}</p>
+                    <div style="font-size:38px; letter-spacing:12px; text-indent:12px; font-weight:700; color:#ffffff; font-family:ui-monospace,SFMono-Regular,Menlo,Monaco,Consolas,monospace;">${code}</div>
                   </td>
                 </tr>
               </table>

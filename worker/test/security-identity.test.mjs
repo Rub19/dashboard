@@ -4,6 +4,7 @@ import { clearJwksCache } from "../src/middleware/auth.js";
 import { clearLocalRateLimits } from "../src/middleware/rate-limit.js";
 import { clearCache } from "../src/utils/cache.js";
 import { accessToken, invoke, json, payload, testEnv } from "./helpers.mjs";
+import { resolveEmailLocale } from "../src/services/otp-service.js";
 
 beforeEach(() => {
   clearCache();
@@ -66,6 +67,24 @@ test("otp send returns debug code in development when enabled", async () => {
   assert.equal(body.data.sent, true);
   assert.equal(typeof body.data.code, "string");
   assert.equal(body.data.code.length, 6);
+});
+
+test("OTP email locale follows the browser language, English for anything unsupported", () => {
+  // Supported browser languages win, respecting the Accept-Language priority order.
+  assert.equal(resolveEmailLocale("fr-FR,fr;q=0.9,en;q=0.8", "FR"), "fr");
+  assert.equal(resolveEmailLocale("de-DE,de;q=0.9", ""), "de");
+  assert.equal(resolveEmailLocale("es-ES", ""), "es");
+  assert.equal(resolveEmailLocale("en-US,en;q=0.9", ""), "en");
+  // Unsupported browser language -> English, NOT a guess from the country
+  // (a Portuguese speaker in Germany must not get a German email).
+  assert.equal(resolveEmailLocale("pt-BR,pt;q=0.9", "DE"), "en");
+  assert.equal(resolveEmailLocale("it-IT", "FR"), "en");
+  // First supported tag in the list wins even if an unsupported one precedes it.
+  assert.equal(resolveEmailLocale("pt-BR,pt;q=0.9,fr;q=0.5", ""), "fr");
+  // No Accept-Language at all -> country fallback, then English.
+  assert.equal(resolveEmailLocale("", "DE"), "de");
+  assert.equal(resolveEmailLocale("", "BR"), "en");
+  assert.equal(resolveEmailLocale("", ""), "en");
 });
 
 test("device list requires authentication", async () => {

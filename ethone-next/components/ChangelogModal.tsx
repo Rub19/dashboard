@@ -6,6 +6,7 @@ import { X, Sparkles } from "lucide-react";
 import { useI18n } from "@/lib/hooks/useI18n";
 import ChangelogList from "@/components/ChangelogList";
 import type { ChangelogEntry } from "@/data/changelog";
+import { useFocusTrap } from "@/lib/hooks/useFocusTrap";
 
 type ChangelogModalProps = {
   isOpen: boolean;
@@ -22,6 +23,7 @@ export default function ChangelogModal({
 }: ChangelogModalProps) {
   const i18n = useI18n();
   const reduce = useReducedMotion();
+  const trapRef = useFocusTrap<HTMLDivElement>(isOpen);
 
   useEffect(() => {
     if (!isOpen) return;
@@ -56,6 +58,7 @@ export default function ChangelogModal({
                 : { type: "spring", duration: 0.55, bounce: 0.12 }
             }
             onClick={(e) => e.stopPropagation()}
+            ref={trapRef}
             className="relative flex w-full max-w-2xl sm:max-w-3xl max-h-[80vh] flex-col overflow-hidden rounded-2xl border border-[var(--panel-border)] bg-[#0C0C0E]/95 shadow-2xl shadow-black/80 backdrop-blur-2xl"
             role="dialog"
             aria-modal="true"

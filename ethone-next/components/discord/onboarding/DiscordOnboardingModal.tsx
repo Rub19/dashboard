@@ -1,6 +1,6 @@
 "use client";
 
-import React, { useState, useEffect, useCallback } from "react";
+import React, { useState, useEffect, useCallback, useId, useRef } from "react";
 import { useRouter } from "next/navigation";
 import { X, ChevronLeft, ChevronRight, AlertCircle } from "lucide-react";
 import Screen0Hero from "./Screen0Hero";
@@ -33,6 +33,32 @@ export default function DiscordOnboardingModal({
 }: DiscordOnboardingModalProps) {
   const router = useRouter();
   const [showExitConfirm, setShowExitConfirm] = useState(false);
+  const dialogRef = useRef<HTMLDivElement>(null);
+  const previouslyFocusedRef = useRef<HTMLElement | null>(null);
+  const skipButtonRef = useRef<HTMLButtonElement>(null);
+  const continueIntroButtonRef = useRef<HTMLButtonElement>(null);
+  const exitConfirmTitleId = useId();
+
+  // Move focus into the dialog on open and restore it to the trigger on close.
+  useEffect(() => {
+    if (isOpen) {
+      previouslyFocusedRef.current = document.activeElement as HTMLElement | null;
+      dialogRef.current?.focus();
+    } else if (previouslyFocusedRef.current) {
+      previouslyFocusedRef.current.focus();
+      previouslyFocusedRef.current = null;
+    }
+  }, [isOpen]);
+
+  // Move focus to the exit-confirmation dialog when it appears, and back to
+  // the button that opened it when it's dismissed.
+  useEffect(() => {
+    if (showExitConfirm) {
+      continueIntroButtonRef.current?.focus();
+    } else {
+      skipButtonRef.current?.focus();
+    }
+  }, [showExitConfirm]);
 
   // Keyboard navigation
   const handleKeyDown = useCallback(
@@ -97,10 +123,12 @@ export default function DiscordOnboardingModal({
     <div className="fixed inset-0 z-50 flex items-center justify-center p-3 sm:p-6 bg-black/85 backdrop-blur-md animate-in fade-in duration-200">
       {/* Modal Dialog Card */}
       <div
+        ref={dialogRef}
+        tabIndex={-1}
         role="dialog"
         aria-modal="true"
         aria-label="ETHONE Bot Onboarding"
-        className="relative w-full max-w-4xl max-h-[92vh] flex flex-col bg-zinc-950/95 border border-zinc-800 rounded-3xl shadow-2xl overflow-hidden backdrop-blur-xl"
+        className="relative w-full max-w-4xl max-h-[92vh] flex flex-col bg-zinc-950/95 border border-zinc-800 rounded-3xl shadow-2xl overflow-hidden backdrop-blur-xl outline-none"
       >
         {/* Subtle Ambient Radial Glow */}
         <div className="absolute -top-32 -left-32 w-80 h-80 bg-indigo-500/15 rounded-full blur-3xl pointer-events-none" />
@@ -120,6 +148,7 @@ export default function DiscordOnboardingModal({
               {currentStep + 1} / {TOTAL_SCREENS}
             </span>
             <button
+              ref={skipButtonRef}
               onClick={handleSkipPrompt}
               aria-label="Fermer l'introduction"
               className="p-1.5 rounded-lg text-zinc-400 hover:text-white hover:bg-zinc-800/80 transition cursor-pointer"
@@ -200,12 +229,17 @@ export default function DiscordOnboardingModal({
 
         {/* Soft Exit Confirmation Modal Overlay */}
         {showExitConfirm && (
-          <div className="absolute inset-0 z-30 flex items-center justify-center p-4 bg-black/80 backdrop-blur-sm animate-in fade-in duration-150">
+          <div
+            className="absolute inset-0 z-30 flex items-center justify-center p-4 bg-black/80 backdrop-blur-sm animate-in fade-in duration-150"
+            role="dialog"
+            aria-modal="true"
+            aria-labelledby={exitConfirmTitleId}
+          >
             <div className="w-full max-w-sm p-6 rounded-2xl bg-zinc-900 border border-zinc-800 shadow-2xl text-center">
               <div className="w-10 h-10 rounded-full bg-zinc-800 text-indigo-400 flex items-center justify-center mx-auto mb-3">
                 <AlertCircle className="w-5 h-5" />
               </div>
-              <h4 className="text-base font-bold text-white mb-1">
+              <h4 id={exitConfirmTitleId} className="text-base font-bold text-white mb-1">
                 Passer l'introduction ?
               </h4>
               <p className="text-xs text-zinc-400 mb-5 leading-relaxed">
@@ -219,6 +253,7 @@ export default function DiscordOnboardingModal({
                   Quitter
                 </button>
                 <button
+                  ref={continueIntroButtonRef}
                   onClick={() => setShowExitConfirm(false)}
                   className="flex-1 py-2 px-3 rounded-xl bg-indigo-600 hover:bg-indigo-500 text-white text-xs font-medium shadow-md transition cursor-pointer"
                 >

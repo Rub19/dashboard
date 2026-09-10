@@ -103,7 +103,7 @@ export default function FocusPopover({ open, onClose, referenceRef }: { open: bo
             style={{ transformOrigin: "bottom center" }}
             className="fixed bottom-[calc(7rem+env(safe-area-inset-bottom))] left-1/2 z-[90] w-72 -translate-x-1/2 rounded-lg border border-[var(--panel-border)] bg-[var(--panel-bg)] p-4 shadow-2xl outline-none backdrop-blur-[var(--panel-blur)]"
             role="dialog"
-            aria-modal="true"
+            aria-modal="false"
             aria-label={i18n("focus")}
           >
             <div className="mb-3 flex items-center justify-between">

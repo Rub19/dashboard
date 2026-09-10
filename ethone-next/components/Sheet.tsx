@@ -1,10 +1,11 @@
 "use client";
 
-import { useEffect } from "react";
+import { useEffect, useId } from "react";
 import { motion, AnimatePresence, useReducedMotion, type PanInfo } from "framer-motion";
 import { X } from "lucide-react";
 import { useI18n } from "@/lib/hooks/useI18n";
 import { hapticLightImpact } from "@/lib/haptics";
+import { useFocusTrap } from "@/lib/hooks/useFocusTrap";
 
 function cn(...parts: (string | false | undefined)[]) {
   return parts.filter(Boolean).join(" ");
@@ -31,6 +32,8 @@ export default function Sheet({
 }: SheetProps) {
   const i18n = useI18n();
   const reduce = useReducedMotion();
+  const trapRef = useFocusTrap<HTMLDivElement>(open);
+  const titleId = useId();
 
   useEffect(() => {
     if (!open) return;
@@ -80,8 +83,11 @@ export default function Sheet({
               className
             )}
             style={{ maxHeight: initialHeight }}
+            ref={trapRef}
             role="dialog"
             aria-modal="true"
+            aria-labelledby={title ? titleId : undefined}
+            aria-label={title ? undefined : i18n("panel")}
           >
             {showHandle && (
               <div className="flex w-full justify-center pt-2 pb-1">
@@ -90,7 +96,7 @@ export default function Sheet({
             )}
             <div className="flex items-center justify-between border-b border-[var(--text-primary)]/[0.06] px-4 py-3">
               {title ? (
-                <span className="text-sm font-semibold text-[var(--text-primary)]">{title}</span>
+                <span id={titleId} className="text-sm font-semibold text-[var(--text-primary)]">{title}</span>
               ) : (
                 <span />
               )}

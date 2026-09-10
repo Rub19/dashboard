@@ -5,10 +5,12 @@ const FOCUSABLE =
 
 export function useFocusTrap<T extends HTMLElement>(enabled: boolean) {
   const ref = useRef<T>(null);
+  const previouslyFocused = useRef<HTMLElement | null>(null);
 
   useEffect(() => {
     if (!enabled || !ref.current) return;
     const container = ref.current;
+    previouslyFocused.current = document.activeElement as HTMLElement | null;
     const elements = Array.from(container.querySelectorAll<HTMLElement>(FOCUSABLE)).filter(
       (el) => !el.hasAttribute("disabled") && !el.getAttribute("aria-disabled")
     );
@@ -34,7 +36,10 @@ export function useFocusTrap<T extends HTMLElement>(enabled: boolean) {
     }
 
     container.addEventListener("keydown", onKeyDown);
-    return () => container.removeEventListener("keydown", onKeyDown);
+    return () => {
+      container.removeEventListener("keydown", onKeyDown);
+      previouslyFocused.current?.focus?.();
+    };
   }, [enabled]);
 
   return ref;

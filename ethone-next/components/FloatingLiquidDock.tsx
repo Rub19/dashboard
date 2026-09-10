@@ -37,6 +37,7 @@ import {
 } from "lucide-react";
 import { useCommandPalette } from "@/components/CommandPaletteProvider";
 import { useFocus } from "@/components/FocusProvider";
+import { useFocusTrap } from "@/lib/hooks/useFocusTrap";
 import { useSettings } from "@/components/SettingsProvider";
 import { PREMIUM_THEMES, resolvePremiumTheme } from "@/lib/theme-engine";
 import { cn } from "@/lib/utils";
@@ -80,6 +81,7 @@ export default function FloatingLiquidDock() {
   } catch {}
 
   const isMenuOpen = sheetOpen || Boolean(animatedSidebar?.openMobile);
+  const sheetTrapRef = useFocusTrap<HTMLDivElement>(sheetOpen);
 
   useEffect(() => {
     function onCloseDrawer() {
@@ -89,6 +91,15 @@ export default function FloatingLiquidDock() {
     window.addEventListener("v8:request-close-drawer", onCloseDrawer);
     return () => window.removeEventListener("v8:request-close-drawer", onCloseDrawer);
   }, [animatedSidebar]);
+
+  useEffect(() => {
+    if (!sheetOpen) return;
+    function onKeyDown(e: KeyboardEvent) {
+      if (e.key === "Escape") setSheetOpen(false);
+    }
+    document.addEventListener("keydown", onKeyDown);
+    return () => document.removeEventListener("keydown", onKeyDown);
+  }, [sheetOpen]);
 
   const allItems = useMemo(
     () =>
@@ -241,6 +252,7 @@ export default function FloatingLiquidDock() {
 
             {/* Bottom Sheet Modal */}
             <motion.div
+              ref={sheetTrapRef}
               initial={{ y: "100%" }}
               animate={{ y: 0 }}
               exit={{ y: "100%" }}

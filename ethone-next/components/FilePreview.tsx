@@ -4,6 +4,7 @@ import { useEffect, useState, useMemo } from "react";
 import { AnimatePresence, motion, useReducedMotion } from "framer-motion";
 import { X, ExternalLink, Download, Share2, Pencil, FolderInput, Heart, RotateCcw, Trash2, Trash, Copy, Brain, FileCode, Tag } from "lucide-react";
 import { useI18n } from "@/lib/hooks/useI18n";
+import { useFocusTrap } from "@/lib/hooks/useFocusTrap";
 import { fetchWorker } from "@/lib/api";
 import { Icon } from "@/lib/icons";
 import Button from "@/components/ui/Button";
@@ -66,6 +67,7 @@ export default function FilePreview({
   const [text, setText] = useState<string | null>(null);
   const [textLoading, setTextLoading] = useState(false);
   const [copiedLink, setCopiedLink] = useState(false);
+  const trapRef = useFocusTrap<HTMLElement>(open);
 
   useEffect(() => {
     if (!open) return;
@@ -262,6 +264,7 @@ export default function FilePreview({
             aria-hidden="true"
           />
           <motion.aside
+            ref={trapRef}
             initial={{ x: "100%" }}
             animate={{ x: 0 }}
             exit={{ x: "100%" }}

@@ -266,14 +266,15 @@ export default function BotControlClient({ initialTab = "overview" }: BotControl
     lastSync: new Date().toISOString(),
   });
 
-  // Real Subsystems Health
+  // Real Subsystems Health — placeholder until GET /api/bot/overview resolves and
+  // replaces this with globalStatus.subsystems (see fetchData below).
   const [subsystems, setSubsystems] = useState<any[]>([
-    { id: "gateway", name: "Gateway WebSocket", status: "operational", latency: "22ms" },
-    { id: "rest", name: "Discord REST API", status: "operational", latency: "38ms" },
-    { id: "database", name: "Configuration DB", status: "operational", latency: "4ms" },
-    { id: "sync", name: "Realtime Sync Bus", status: "operational", latency: "< 1ms" },
-    { id: "voice", name: "Moteur Vocal WebRTC", status: "operational", latency: "14ms" },
-    { id: "scheduler", name: "Gestionnaire de Tâches", status: "operational", latency: "0ms" },
+    { id: "gateway", name: "Gateway WebSocket", status: "operational" },
+    { id: "restApi", name: "Discord REST API", status: "operational" },
+    { id: "database", name: "Configuration DB", status: "operational" },
+    { id: "eventBus", name: "Realtime Sync Bus", status: "operational" },
+    { id: "voiceEngine", name: "Moteur Vocal WebRTC", status: "operational" },
+    { id: "jobScheduler", name: "Gestionnaire de Tâches", status: "operational" },
   ]);
 
   // Real per-guild Modules — fetched from GET /api/guilds/:guildId/modules, which reads
@@ -497,6 +498,106 @@ export default function BotControlClient({ initialTab = "overview" }: BotControl
   const [commandSearch, setCommandSearch] = useState("");
   const [commandCategory, setCommandCategory] = useState("all");
 
+  // Integrations Center State — GET /api/bot/integrations, POST /api/bot/integrations/:id/test
+  const [integrations, setIntegrations] = useState<any[]>([]);
+  const [integrationsLoading, setIntegrationsLoading] = useState(false);
+  const [integrationsError, setIntegrationsError] = useState(false);
+  const [testingIntegrationId, setTestingIntegrationId] = useState<string | null>(null);
+
+  const loadIntegrations = useCallback(async () => {
+    if (!BOT_API_URL) return;
+    setIntegrationsLoading(true);
+    setIntegrationsError(false);
+    try {
+      const res = await fetch(`${BOT_API_URL}/api/bot/integrations`);
+      const json = await res.json().catch(() => null);
+      if (res.ok && json?.success && Array.isArray(json.data)) {
+        setIntegrations(json.data);
+      } else {
+        setIntegrationsError(true);
+      }
+    } catch {
+      setIntegrationsError(true);
+    } finally {
+      setIntegrationsLoading(false);
+    }
+  }, []);
+
+  const handleTestIntegration = async (id: string) => {
+    if (!BOT_API_URL) return;
+    setTestingIntegrationId(id);
+    try {
+      const res = await fetch(`${BOT_API_URL}/api/bot/integrations/${id}/test`, { method: "POST" });
+      const json = await res.json().catch(() => null);
+      if (res.ok && json?.success && json.data) {
+        setIntegrations((prev) => prev.map((i) => (i.id === id ? json.data : i)));
+        toast?.success?.("Intégration testée avec succès.");
+      } else {
+        toast?.error?.(json?.error || "Échec du test d'intégration.");
+      }
+    } catch {
+      toast?.error?.("Erreur réseau lors du test d'intégration.");
+    } finally {
+      setTestingIntegrationId(null);
+    }
+  };
+
+  // Queue & Jobs Center State — GET /api/bot/jobs, POST /api/bot/jobs/:jobId/run
+  const [jobs, setJobs] = useState<any[]>([]);
+  const [jobsLoading, setJobsLoading] = useState(false);
+  const [jobsError, setJobsError] = useState(false);
+  const [runningJobId, setRunningJobId] = useState<string | null>(null);
+
+  const loadJobs = useCallback(async () => {
+    if (!BOT_API_URL) return;
+    setJobsLoading(true);
+    setJobsError(false);
+    try {
+      const res = await fetch(`${BOT_API_URL}/api/bot/jobs`);
+      const json = await res.json().catch(() => null);
+      if (res.ok && json?.success && Array.isArray(json.data)) {
+        setJobs(json.data);
+      } else {
+        setJobsError(true);
+      }
+    } catch {
+      setJobsError(true);
+    } finally {
+      setJobsLoading(false);
+    }
+  }, []);
+
+  const handleRunJob = async (jobId: string) => {
+    if (!BOT_API_URL) return;
+    setRunningJobId(jobId);
+    try {
+      const res = await fetch(`${BOT_API_URL}/api/bot/jobs/${jobId}/run`, { method: "POST" });
+      const json = await res.json().catch(() => null);
+      if (res.ok && json?.success && json.data) {
+        setJobs((prev) => prev.map((j) => (j.id === jobId ? json.data : j)));
+        toast?.success?.(`Tâche "${json.data.name}" exécutée avec succès.`);
+      } else {
+        toast?.error?.(json?.error || "Échec de l'exécution de la tâche.");
+      }
+    } catch {
+      toast?.error?.("Erreur réseau lors de l'exécution de la tâche.");
+    } finally {
+      setRunningJobId(null);
+    }
+  };
+
+  // Lazy-load Integrations/Jobs the first time their tab is opened — these two panels
+  // are not part of the main overview fetch (fetchData) since most sessions never visit
+  // them; this also covers direct navigation to /discord/bot/integrations or /discord/bot/jobs.
+  useEffect(() => {
+    if (activeTab === "integrations" && integrations.length === 0 && !integrationsLoading) {
+      loadIntegrations();
+    }
+    if (activeTab === "jobs" && jobs.length === 0 && !jobsLoading) {
+      loadJobs();
+    }
+  }, [activeTab, integrations.length, integrationsLoading, loadIntegrations, jobs.length, jobsLoading, loadJobs]);
+
   const handleSaveSettings = async () => {
     setSavingSettings(true);
     try {
@@ -520,9 +621,39 @@ export default function BotControlClient({ initialTab = "overview" }: BotControl
     }
   };
 
+  // Runs the real backend suite (POST /api/bot/diagnostics/run — botDiagnosticsService),
+  // which returns { status: 'pass'|'warn'|'critical', message, latencyMs, ... } per check.
+  // Falls back to a local simulation if the bot API isn't configured/reachable so the
+  // button still gives visible feedback instead of silently failing.
   const handleRunDiagnostics = async () => {
     setDiagnosticsRunning(true);
     try {
+      if (BOT_API_URL) {
+        const res = await fetch(`${BOT_API_URL}/api/bot/diagnostics/run`, { method: "POST" });
+        const json = await res.json().catch(() => null);
+        if (res.ok && json?.success && Array.isArray(json.data?.checks)) {
+          const statusMap: Record<string, string> = { pass: "passed", warn: "warning", critical: "critical" };
+          setDiagnosticChecks(
+            json.data.checks.map((c: any) => ({
+              id: c.id,
+              name: c.name,
+              detail: c.message || c.details,
+              status: statusMap[c.status] || "passed",
+              latency: `${c.latencyMs}ms`,
+            }))
+          );
+          const { pass, warn, critical, total } = json.data.summary;
+          if (critical > 0) {
+            toast?.error?.(`Diagnostic terminé : ${critical} sous-système(s) critique(s) détecté(s).`);
+          } else if (warn > 0) {
+            toast?.warning?.(`Diagnostic terminé : ${pass}/${total} opérationnels, ${warn} avertissement(s).`);
+          } else {
+            toast?.success?.(`Diagnostic exécuté : ${total}/${total} sous-systèmes 100% opérationnels !`);
+          }
+          return;
+        }
+      }
+      // Fallback simulation (no BOT_API_URL configured, or the request failed)
       await new Promise((r) => setTimeout(r, 1200));
       setDiagnosticChecks((prev) =>
         prev.map((c) => ({
@@ -531,10 +662,9 @@ export default function BotControlClient({ initialTab = "overview" }: BotControl
           latency: `${Math.floor(Math.random() * 15 + 15)}ms`,
         }))
       );
-      (toast as any)?.success?.("Diagnostic exécuté : 6/6 sous-systèmes 100% opérationnels !") ||
-      (toast as any)?.info?.("Diagnostic terminé avec succès !");
+      toast?.info?.("Bot hors-ligne : diagnostic simulé localement.");
     } catch {
-      (toast as any)?.error?.("Erreur lors du diagnostic.");
+      toast?.error?.("Erreur lors du diagnostic.");
     } finally {
       setDiagnosticsRunning(false);
     }
@@ -648,16 +778,43 @@ export default function BotControlClient({ initialTab = "overview" }: BotControl
       ]);
 
       if (overviewRes.status === "fulfilled" && overviewRes.value?.success) {
+        // GET /api/bot/overview returns { globalStatus, snapshot, recentIncidents, topErrors }
+        // (see botControlRoutes.ts / botTelemetryService.ts) — uptime/version live under
+        // globalStatus, ping/guild/user counts live under snapshot (not top-level, and not
+        // under a "telemetry" key).
         const o = overviewRes.value.data;
         if (o) {
+          const globalStatus = o.globalStatus;
+          const snapshot = o.snapshot;
           setBotCore((prev: any) => ({
             ...prev,
-            uptimeSeconds: o.uptimeSeconds || prev.uptimeSeconds,
-            pingMs: o.telemetry?.latency?.currentPingMs || prev.pingMs,
-            version: o.version || prev.version,
-            guildCount: o.telemetry?.guildsCount || prev.guildCount,
-            userCount: o.telemetry?.cachedUsersCount || prev.userCount,
+            uptimeSeconds: globalStatus?.uptimeSeconds ?? prev.uptimeSeconds,
+            pingMs: snapshot?.latency?.currentPingMs ?? prev.pingMs,
+            version: globalStatus?.version || prev.version,
+            guildCount: snapshot?.guildsCount ?? prev.guildCount,
+            userCount: snapshot?.cachedUsersCount ?? prev.userCount,
+            shardsCount: snapshot?.shardsCount ?? prev.shardsCount,
           }));
+          if (globalStatus?.subsystems) {
+            const labels: Record<string, string> = {
+              gateway: "Gateway WebSocket",
+              restApi: "Discord REST API",
+              database: "Configuration DB",
+              cache: "Cache Mémoire",
+              eventBus: "Realtime Sync Bus",
+              jobScheduler: "Gestionnaire de Tâches",
+              aiProvider: "Fournisseur IA",
+              storage: "Stockage",
+              voiceEngine: "Moteur Vocal WebRTC",
+            };
+            setSubsystems(
+              Object.entries(globalStatus.subsystems).map(([id, status]) => ({
+                id,
+                name: labels[id] || id,
+                status,
+              }))
+            );
+          }
         }
       }
 
@@ -734,6 +891,22 @@ export default function BotControlClient({ initialTab = "overview" }: BotControl
   };
 
   const currentCfg = statusConfig[botCore.status as keyof typeof statusConfig] || statusConfig.online;
+
+  // Subsystem health status mapping — mirrors BotSubsystemHealth's status values
+  // (operational / degraded / critical) returned by GET /api/bot/overview.
+  const subsystemStatusConfig: Record<string, { label: string; dot: string; text: string }> = {
+    operational: { label: "Opérationnel", dot: "bg-emerald-400", text: "text-emerald-400" },
+    degraded: { label: "Dégradé", dot: "bg-amber-400", text: "text-amber-400" },
+    critical: { label: "Critique", dot: "bg-rose-400", text: "text-rose-400" },
+  };
+
+  // Diagnostic check status mapping — mirrors POST /api/bot/diagnostics/run's
+  // per-check status ('pass'/'warn'/'critical', normalized to passed/warning/critical).
+  const diagnosticStatusConfig: Record<string, { label: string; icon: any; chip: string; badge: string }> = {
+    passed: { label: "Opérationnel", icon: Check, chip: "bg-emerald-500/10 text-emerald-400", badge: "bg-emerald-500/10 text-emerald-400 border-emerald-500/20" },
+    warning: { label: "Avertissement", icon: AlertTriangle, chip: "bg-amber-500/10 text-amber-400", badge: "bg-amber-500/10 text-amber-400 border-amber-500/20" },
+    critical: { label: "Critique", icon: XCircle, chip: "bg-rose-500/10 text-rose-400", badge: "bg-rose-500/10 text-rose-400 border-rose-500/20" },
+  };
 
   // Filter modules (search only — the real per-guild module list has no "category"
   // grouping, unlike the old fabricated 22-module catalog it replaced)
@@ -908,6 +1081,8 @@ export default function BotControlClient({ initialTab = "overview" }: BotControl
             { id: "performance", label: "Performances & RAM", icon: Activity },
             { id: "diagnostics", label: "Diagnostics 1-Clic", icon: CheckCircle2 },
             { id: "security", label: "Sécurité & Audit", icon: ShieldCheck },
+            { id: "integrations", label: "Intégrations", icon: Wifi, count: integrations.length },
+            { id: "jobs", label: "Tâches Planifiées", icon: ListRestart, count: jobs.length },
             { id: "commands", label: "Commandes", icon: Terminal, count: officialCommands.length },
             { id: "health", label: "Sous-Systèmes", icon: Cpu },
             { id: "servers", label: "Serveurs Installés", icon: Server, count: servers.length },
@@ -1126,15 +1301,21 @@ export default function BotControlClient({ initialTab = "overview" }: BotControl
                 </div>
 
                 <div className="space-y-2">
-                  {subsystems.slice(0, 3).map((s) => (
-                    <div
-                      key={s.id}
-                      className="px-3 py-2 rounded-xl bg-zinc-950/60 border border-zinc-800/80 flex items-center justify-between text-xs"
-                    >
-                      <span className="text-zinc-300 font-medium">{s.name}</span>
-                      <span className="font-mono text-emerald-400 font-bold">{s.latency}</span>
-                    </div>
-                  ))}
+                  {subsystems.slice(0, 3).map((s) => {
+                    const cfg = subsystemStatusConfig[s.status] || subsystemStatusConfig.operational;
+                    return (
+                      <div
+                        key={s.id}
+                        className="px-3 py-2 rounded-xl bg-zinc-950/60 border border-zinc-800/80 flex items-center justify-between text-xs"
+                      >
+                        <span className="text-zinc-300 font-medium">{s.name}</span>
+                        <span className={cn("font-mono font-bold flex items-center gap-1.5", cfg.text)}>
+                          <span className={cn("w-1.5 h-1.5 rounded-full", cfg.dot)} />
+                          {cfg.label}
+                        </span>
+                      </div>
+                    );
+                  })}
                 </div>
               </div>
 
@@ -1304,18 +1485,21 @@ export default function BotControlClient({ initialTab = "overview" }: BotControl
               </h3>
 
               <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4">
-                {subsystems.map((sub) => (
-                  <div key={sub.id} className="p-4 rounded-xl bg-zinc-950/60 border border-zinc-800/80 space-y-2">
-                    <div className="flex items-center justify-between">
-                      <span className="text-xs font-bold text-white">{sub.name}</span>
-                      <span className="w-2 h-2 rounded-full bg-emerald-400" />
+                {subsystems.map((sub) => {
+                  const cfg = subsystemStatusConfig[sub.status] || subsystemStatusConfig.operational;
+                  return (
+                    <div key={sub.id} className="p-4 rounded-xl bg-zinc-950/60 border border-zinc-800/80 space-y-2">
+                      <div className="flex items-center justify-between">
+                        <span className="text-xs font-bold text-white">{sub.name}</span>
+                        <span className={cn("w-2 h-2 rounded-full", cfg.dot)} />
+                      </div>
+                      <div className="flex items-center justify-between text-xs pt-1">
+                        <span className="text-zinc-400">Statut :</span>
+                        <span className={cn("font-mono font-bold", cfg.text)}>{cfg.label}</span>
+                      </div>
                     </div>
-                    <div className="flex items-center justify-between text-xs pt-1">
-                      <span className="text-zinc-400">Latence :</span>
-                      <span className="font-mono font-bold text-emerald-400">{sub.latency}</span>
-                    </div>
-                  </div>
-                ))}
+                  );
+                })}
               </div>
             </div>
           </div>
@@ -2435,29 +2619,33 @@ export default function BotControlClient({ initialTab = "overview" }: BotControl
 
               {/* Diagnostic Items List */}
               <div className="space-y-3">
-                {diagnosticChecks.map((item) => (
-                  <div
-                    key={item.id}
-                    className="p-4 rounded-xl bg-zinc-950/60 border border-zinc-800/80 flex flex-col sm:flex-row sm:items-center justify-between gap-3"
-                  >
-                    <div className="flex items-center gap-3">
-                      <div className="w-8 h-8 rounded-lg bg-emerald-500/10 text-emerald-400 flex items-center justify-center shrink-0">
-                        <Check className="w-4 h-4" />
+                {diagnosticChecks.map((item: any) => {
+                  const cfg = diagnosticStatusConfig[item.status] || diagnosticStatusConfig.passed;
+                  const StatusIcon = cfg.icon;
+                  return (
+                    <div
+                      key={item.id}
+                      className="p-4 rounded-xl bg-zinc-950/60 border border-zinc-800/80 flex flex-col sm:flex-row sm:items-center justify-between gap-3"
+                    >
+                      <div className="flex items-center gap-3">
+                        <div className={cn("w-8 h-8 rounded-lg flex items-center justify-center shrink-0", cfg.chip)}>
+                          <StatusIcon className="w-4 h-4" />
+                        </div>
+                        <div>
+                          <span className="text-xs font-bold text-white block">{item.name}</span>
+                          <span className="text-[11px] text-zinc-400 block">{item.detail}</span>
+                        </div>
                       </div>
-                      <div>
-                        <span className="text-xs font-bold text-white block">{item.name}</span>
-                        <span className="text-[11px] text-zinc-400 block">{item.detail}</span>
-                      </div>
-                    </div>
 
-                    <div className="flex items-center gap-3 self-end sm:self-center">
-                      <span className="text-xs font-mono text-zinc-400">{item.latency}</span>
-                      <span className="px-2 py-0.5 rounded-full text-[10px] font-semibold bg-emerald-500/10 text-emerald-400 border border-emerald-500/20">
-                        Opérationnel
-                      </span>
+                      <div className="flex items-center gap-3 self-end sm:self-center">
+                        <span className="text-xs font-mono text-zinc-400">{item.latency}</span>
+                        <span className={cn("px-2 py-0.5 rounded-full text-[10px] font-semibold border", cfg.badge)}>
+                          {cfg.label}
+                        </span>
+                      </div>
                     </div>
-                  </div>
-                ))}
+                  );
+                })}
               </div>
             </div>
           </div>
@@ -2516,6 +2704,193 @@ export default function BotControlClient({ initialTab = "overview" }: BotControl
                   </p>
                 </div>
               </div>
+            </div>
+          </div>
+        )}
+
+        {/* ======================================================== */}
+        {/* TAB: INTEGRATIONS                                        */}
+        {/* ======================================================== */}
+        {activeTab === "integrations" && (
+          <div className="space-y-6">
+            <div className="p-6 rounded-2xl bg-zinc-900/60 border border-zinc-800 space-y-6">
+              <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 pb-4 border-b border-zinc-800">
+                <div>
+                  <h3 className="text-base font-bold text-white flex items-center gap-2">
+                    <Wifi className="w-5 h-5 text-indigo-400" />
+                    Intégrations & Services Externes
+                  </h3>
+                  <p className="text-xs text-zinc-400">
+                    État de connexion des services tiers utilisés par le bot (Discord REST, base de données, IA, stockage)
+                  </p>
+                </div>
+                <button
+                  onClick={loadIntegrations}
+                  disabled={integrationsLoading}
+                  className="px-4 py-2 rounded-xl bg-zinc-900 hover:bg-zinc-800 border border-zinc-800 text-zinc-200 text-xs font-medium flex items-center gap-2 transition-all disabled:opacity-50"
+                >
+                  <RefreshCw className={cn("w-3.5 h-3.5 text-indigo-400", integrationsLoading && "animate-spin")} />
+                  <span>{integrationsLoading ? "Chargement..." : "Actualiser"}</span>
+                </button>
+              </div>
+
+              {integrationsLoading && integrations.length === 0 ? (
+                <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                  {[0, 1].map((i) => (
+                    <div key={i} className="p-4 rounded-xl bg-zinc-950/60 border border-zinc-800/80 h-24 animate-pulse" />
+                  ))}
+                </div>
+              ) : integrationsError ? (
+                <div className="p-8 text-center rounded-xl bg-rose-950/20 border border-rose-500/30 text-xs text-rose-300 space-y-2">
+                  <AlertCircle className="w-6 h-6 mx-auto" />
+                  <p className="font-semibold">Impossible de charger les intégrations</p>
+                  <p className="text-rose-300/70">Le serveur du bot Discord est peut-être hors-ligne. Réessayez dans un instant.</p>
+                  <button
+                    onClick={loadIntegrations}
+                    className="mt-2 px-3 py-1.5 rounded-lg bg-rose-500/10 border border-rose-500/30 text-rose-300 hover:bg-rose-500/20 transition-colors"
+                  >
+                    Réessayer
+                  </button>
+                </div>
+              ) : integrations.length === 0 ? (
+                <div className="p-8 text-center rounded-xl bg-zinc-950/40 border border-zinc-800/60 text-xs text-zinc-400 space-y-1">
+                  <Wifi className="w-6 h-6 text-zinc-500 mx-auto mb-2" />
+                  <p className="font-semibold text-zinc-200">Aucune intégration détectée</p>
+                  <p>Le bot n'a signalé aucun service externe pour le moment.</p>
+                </div>
+              ) : (
+                <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                  {integrations.map((item) => {
+                    const healthy = item.status === "healthy";
+                    const degraded = item.status === "degraded";
+                    return (
+                      <div key={item.id} className="p-4 rounded-xl bg-zinc-950/60 border border-zinc-800/80 space-y-2.5">
+                        <div className="flex items-center justify-between gap-2">
+                          <span className="text-xs font-bold text-white">{item.name}</span>
+                          <span
+                            className={cn(
+                              "px-2 py-0.5 rounded-full text-[10px] font-semibold border flex items-center gap-1.5 shrink-0",
+                              healthy
+                                ? "bg-emerald-500/10 text-emerald-400 border-emerald-500/20"
+                                : degraded
+                                ? "bg-amber-500/10 text-amber-400 border-amber-500/20"
+                                : "bg-rose-500/10 text-rose-400 border-rose-500/20"
+                            )}
+                          >
+                            <span className={cn("w-1.5 h-1.5 rounded-full", healthy ? "bg-emerald-400" : degraded ? "bg-amber-400" : "bg-rose-400")} />
+                            {healthy ? "Opérationnel" : degraded ? "Dégradé" : "Hors-ligne"}
+                          </span>
+                        </div>
+                        <p className="text-[11px] text-zinc-400">{item.details}</p>
+                        <div className="flex items-center justify-between pt-1.5 border-t border-zinc-900 text-[11px]">
+                          <code className="text-zinc-500 font-mono truncate max-w-[180px]">{item.endpointMasked}</code>
+                          <span className="text-zinc-400 font-mono">{item.latencyMs}ms</span>
+                        </div>
+                        <button
+                          onClick={() => handleTestIntegration(item.id)}
+                          disabled={testingIntegrationId === item.id}
+                          className="w-full py-1.5 rounded-lg bg-zinc-900 hover:bg-indigo-600 border border-zinc-800 hover:border-indigo-500 text-zinc-300 hover:text-white text-[11px] font-semibold transition-all disabled:opacity-50"
+                        >
+                          {testingIntegrationId === item.id ? "Test en cours..." : "Tester la connexion"}
+                        </button>
+                      </div>
+                    );
+                  })}
+                </div>
+              )}
+            </div>
+          </div>
+        )}
+
+        {/* ======================================================== */}
+        {/* TAB: JOBS & SCHEDULER                                    */}
+        {/* ======================================================== */}
+        {activeTab === "jobs" && (
+          <div className="space-y-6">
+            <div className="p-6 rounded-2xl bg-zinc-900/60 border border-zinc-800 space-y-6">
+              <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 pb-4 border-b border-zinc-800">
+                <div>
+                  <h3 className="text-base font-bold text-white flex items-center gap-2">
+                    <ListRestart className="w-5 h-5 text-indigo-400" />
+                    Tâches Planifiées & Files d'Attente
+                  </h3>
+                  <p className="text-xs text-zinc-400">
+                    Tâches de fond récurrentes exécutées par le bot (nettoyage, sauvegardes, synchronisation)
+                  </p>
+                </div>
+                <button
+                  onClick={loadJobs}
+                  disabled={jobsLoading}
+                  className="px-4 py-2 rounded-xl bg-zinc-900 hover:bg-zinc-800 border border-zinc-800 text-zinc-200 text-xs font-medium flex items-center gap-2 transition-all disabled:opacity-50"
+                >
+                  <RefreshCw className={cn("w-3.5 h-3.5 text-indigo-400", jobsLoading && "animate-spin")} />
+                  <span>{jobsLoading ? "Chargement..." : "Actualiser"}</span>
+                </button>
+              </div>
+
+              {jobsLoading && jobs.length === 0 ? (
+                <div className="space-y-3">
+                  {[0, 1, 2].map((i) => (
+                    <div key={i} className="p-4 rounded-xl bg-zinc-950/60 border border-zinc-800/80 h-16 animate-pulse" />
+                  ))}
+                </div>
+              ) : jobsError ? (
+                <div className="p-8 text-center rounded-xl bg-rose-950/20 border border-rose-500/30 text-xs text-rose-300 space-y-2">
+                  <AlertCircle className="w-6 h-6 mx-auto" />
+                  <p className="font-semibold">Impossible de charger les tâches planifiées</p>
+                  <p className="text-rose-300/70">Le serveur du bot Discord est peut-être hors-ligne. Réessayez dans un instant.</p>
+                  <button
+                    onClick={loadJobs}
+                    className="mt-2 px-3 py-1.5 rounded-lg bg-rose-500/10 border border-rose-500/30 text-rose-300 hover:bg-rose-500/20 transition-colors"
+                  >
+                    Réessayer
+                  </button>
+                </div>
+              ) : jobs.length === 0 ? (
+                <div className="p-8 text-center rounded-xl bg-zinc-950/40 border border-zinc-800/60 text-xs text-zinc-400 space-y-1">
+                  <ListRestart className="w-6 h-6 text-zinc-500 mx-auto mb-2" />
+                  <p className="font-semibold text-zinc-200">Aucune tâche planifiée</p>
+                  <p>Le bot n'a signalé aucune tâche de fond pour le moment.</p>
+                </div>
+              ) : (
+                <div className="space-y-3">
+                  {jobs.map((job) => (
+                    <div
+                      key={job.id}
+                      className="p-4 rounded-xl bg-zinc-950/60 border border-zinc-800/80 flex flex-col sm:flex-row sm:items-center justify-between gap-3"
+                    >
+                      <div className="flex items-center gap-3 min-w-0">
+                        <div
+                          className={cn(
+                            "w-8 h-8 rounded-lg flex items-center justify-center shrink-0",
+                            job.status === "failed" ? "bg-rose-500/10 text-rose-400" : job.status === "running" ? "bg-indigo-500/10 text-indigo-400" : "bg-emerald-500/10 text-emerald-400"
+                          )}
+                        >
+                          <ListRestart className={cn("w-4 h-4", job.status === "running" && "animate-spin")} />
+                        </div>
+                        <div className="min-w-0">
+                          <span className="text-xs font-bold text-white block truncate">{job.name}</span>
+                          <span className="text-[11px] text-zinc-400 block truncate">{job.description}</span>
+                          <span className="text-[10px] text-zinc-500 font-mono block mt-0.5">
+                            {job.intervalDescription} • {job.totalRuns} exécutions{job.failureCount > 0 ? ` • ${job.failureCount} échec(s)` : ""}
+                          </span>
+                        </div>
+                      </div>
+
+                      <div className="flex items-center gap-3 self-end sm:self-center shrink-0">
+                        <span className="text-xs font-mono text-zinc-400">{job.durationMs}ms</span>
+                        <button
+                          onClick={() => handleRunJob(job.id)}
+                          disabled={runningJobId === job.id || job.status === "running"}
+                          className="px-3 py-1.5 rounded-lg bg-zinc-900 hover:bg-indigo-600 border border-zinc-800 hover:border-indigo-500 text-zinc-300 hover:text-white text-[11px] font-semibold transition-all disabled:opacity-50"
+                        >
+                          {runningJobId === job.id ? "Exécution..." : "Exécuter maintenant"}
+                        </button>
+                      </div>
+                    </div>
+                  ))}
+                </div>
+              )}
             </div>
           </div>
         )}

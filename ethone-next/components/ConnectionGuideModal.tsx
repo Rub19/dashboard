@@ -1,12 +1,13 @@
 "use client";
 
-import { useEffect, useState } from "react";
+import { useEffect, useId, useState } from "react";
 import { createPortal } from "react-dom";
 import { Check, Copy, ExternalLink, X, Compass, ShieldCheck } from "lucide-react";
 import { motion, AnimatePresence } from "framer-motion";
 import { getConnectionGuide, type ConnectionGuide } from "@/config/connectionsGuide";
 import { getIntegrationConfig, type IntegrationConfig } from "@/lib/integrations.config";
 import { hapticLightImpact } from "@/lib/haptics";
+import { useFocusTrap } from "@/lib/hooks/useFocusTrap";
 import ServiceIcon from "@/components/ServiceIcon";
 
 function GuideSteps({
@@ -178,10 +179,21 @@ export default function ConnectionGuideModal({
   onCopy,
 }: ConnectionGuideModalProps) {
   const [mounted, setMounted] = useState(false);
+  const trapRef = useFocusTrap<HTMLDivElement>(isOpen);
+  const titleId = useId();
 
   useEffect(() => {
     setMounted(true);
   }, []);
+
+  useEffect(() => {
+    if (!isOpen) return;
+    function onKeyDown(e: KeyboardEvent) {
+      if (e.key === "Escape") onClose();
+    }
+    document.addEventListener("keydown", onKeyDown);
+    return () => document.removeEventListener("keydown", onKeyDown);
+  }, [isOpen, onClose]);
 
   const config = getIntegrationConfig(integrationId);
   const guide = getConnectionGuide(integrationId);
@@ -191,7 +203,7 @@ export default function ConnectionGuideModal({
   const content = (
     <AnimatePresence>
       {isOpen && (
-        <div className="fixed inset-0 z-[999999] overflow-y-auto" aria-modal="true" role="dialog">
+        <div className="fixed inset-0 z-[999999] overflow-y-auto" aria-modal="true" role="dialog" aria-labelledby={titleId}>
           {/* Backdrop */}
           <motion.div
             initial={{ opacity: 0 }}
@@ -205,6 +217,7 @@ export default function ConnectionGuideModal({
           {/* Modal Centered Container */}
           <div className="flex min-h-full items-center justify-center p-4 sm:p-6">
             <motion.div
+              ref={trapRef}
               initial={{ scale: 0.95, opacity: 0, y: 16 }}
               animate={{ scale: 1, opacity: 1, y: 0 }}
               exit={{ scale: 0.95, opacity: 0, y: 16 }}
@@ -219,7 +232,7 @@ export default function ConnectionGuideModal({
                     <ServiceIcon id={integrationId} icon="plug" className="h-5 w-5" colored />
                   </div>
                   <div className="min-w-0">
-                    <h2 className="text-base font-bold text-[var(--text-primary)] truncate">
+                    <h2 id={titleId} className="text-base font-bold text-[var(--text-primary)] truncate">
                       Guide : {config?.name || guide?.title || integrationId}
                     </h2>
                     <p className="text-xs text-[var(--text-muted)] truncate">

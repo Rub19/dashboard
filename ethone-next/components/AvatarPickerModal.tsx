@@ -22,6 +22,7 @@ import {
   Info,
 } from "lucide-react";
 import { useToast } from "@/components/ToastProvider";
+import { useFocusTrap } from "@/lib/hooks/useFocusTrap";
 import { useUserIdentity } from "@/lib/hooks/useUserIdentity";
 import {
   useIdentity,
@@ -98,6 +99,16 @@ export default function AvatarPickerModal({
   const [showCustomInput, setShowCustomInput] = useState(false);
   const [customUrl, setCustomUrl] = useState("");
   const fileInputRef = useRef<HTMLInputElement>(null);
+  const trapRef = useFocusTrap<HTMLDivElement>(isOpen);
+
+  useEffect(() => {
+    if (!isOpen) return;
+    function onKeyDown(e: KeyboardEvent) {
+      if (e.key === "Escape") onClose();
+    }
+    document.addEventListener("keydown", onKeyDown);
+    return () => document.removeEventListener("keydown", onKeyDown);
+  }, [isOpen, onClose]);
 
   useEffect(() => {
     if (isOpen) {
@@ -286,9 +297,11 @@ export default function AvatarPickerModal({
   return createPortal(
     <div className="fixed inset-0 z-[100] flex items-center justify-center p-3 sm:p-6 bg-black/80 backdrop-blur-md animate-in fade-in duration-200">
       <div
+        ref={trapRef}
         className="relative flex h-[92vh] max-h-[920px] w-full max-w-5xl flex-col overflow-hidden rounded-2xl border border-[var(--panel-border)] bg-[#0b0c10] shadow-2xl"
         role="dialog"
         aria-modal="true"
+        aria-label="Choisir un avatar"
       >
         {/* TOP PREVIEW & CONTROLS HEADER */}
         <div className="relative border-b border-[var(--panel-border)]/60 bg-gradient-to-b from-[#14161f] to-[#0d0e14] p-4 sm:p-6">

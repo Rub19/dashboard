@@ -52,6 +52,13 @@ import {
 import { useToast } from "@/components/ToastProvider";
 import { cn } from "@/lib/utils";
 
+// Même convention que le reste des pages /discord/* (BotControlClient, welcome,
+// moderation, automod...) : NEXT_PUBLIC_DISCORD_BOT_API pointe vers le serveur Express
+// du bot Discord (pas vers ethone-next lui-même — build en export statique, il n'existe
+// pas de route Next.js /api/bot/*). Sans ce préfixe, ces fetch() visaient ethone.dev lui
+// -même et échouaient systématiquement (404) en production comme en développement.
+const BOT_API_URL = process.env.NEXT_PUBLIC_DISCORD_BOT_API || "";
+
 export type PresenceTab =
   | "overview"
   | "rotation"
@@ -215,6 +222,7 @@ export default function BotPresenceClient({ initialTab = "overview" }: BotPresen
   // New identity edit inputs
   const [editUsername, setEditUsername] = useState("");
   const [newAvatarFile, setNewAvatarFile] = useState<File | null>(null);
+  const [uploadingAvatar, setUploadingAvatar] = useState(false);
 
   // Telemetry variables for preview
   const previewContext = useMemo(() => {
@@ -246,9 +254,14 @@ export default function BotPresenceClient({ initialTab = "overview" }: BotPresen
 
   // Fetch initial presence data from API
   const fetchData = useCallback(async () => {
+    if (!BOT_API_URL) {
+      setLoading(false);
+      setRefreshing(false);
+      return;
+    }
     try {
       setRefreshing(true);
-      const res = await fetch("/api/bot/presence");
+      const res = await fetch(`${BOT_API_URL}/api/bot/presence`);
       if (res.ok) {
         const json = await res.json();
         if (json.success && json.data) {
@@ -273,7 +286,7 @@ export default function BotPresenceClient({ initialTab = "overview" }: BotPresen
       }
 
       // Fetch profiles
-      const profRes = await fetch("/api/bot/presence/profiles");
+      const profRes = await fetch(`${BOT_API_URL}/api/bot/presence/profiles`);
       if (profRes.ok) {
         const pJson = await profRes.json();
         if (pJson.success && pJson.data) {
@@ -282,7 +295,7 @@ export default function BotPresenceClient({ initialTab = "overview" }: BotPresen
       }
 
       // Fetch servers
-      const srvRes = await fetch("/api/bot/presence/servers");
+      const srvRes = await fetch(`${BOT_API_URL}/api/bot/presence/servers`);
       if (srvRes.ok) {
         const sJson = await srvRes.json();
         if (sJson.success && sJson.data) {
@@ -291,7 +304,7 @@ export default function BotPresenceClient({ initialTab = "overview" }: BotPresen
       }
 
       // Fetch identity
-      const idRes = await fetch("/api/bot/presence/identity");
+      const idRes = await fetch(`${BOT_API_URL}/api/bot/presence/identity`);
       if (idRes.ok) {
         const idJson = await idRes.json();
         if (idJson.success && idJson.data) {
@@ -301,7 +314,7 @@ export default function BotPresenceClient({ initialTab = "overview" }: BotPresen
       }
 
       // Fetch history
-      const histRes = await fetch("/api/bot/presence/history");
+      const histRes = await fetch(`${BOT_API_URL}/api/bot/presence/history`);
       if (histRes.ok) {
         const hJson = await histRes.json();
         if (hJson.success && hJson.data) {
@@ -340,7 +353,7 @@ export default function BotPresenceClient({ initialTab = "overview" }: BotPresen
         force,
       };
 
-      const res = await fetch("/api/bot/presence", {
+      const res = await fetch(`${BOT_API_URL}/api/bot/presence`, {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify(payload),
@@ -376,7 +389,7 @@ export default function BotPresenceClient({ initialTab = "overview" }: BotPresen
   const handleApplyProfile = async (profileId: string) => {
     try {
       setSaving(true);
-      const res = await fetch(`/api/bot/presence/profiles/${profileId}/apply`, { method: "POST" });
+      const res = await fetch(`${BOT_API_URL}/api/bot/presence/profiles/${profileId}/apply`, { method: "POST" });
       const json = await res.json().catch(() => null);
       if (res.ok && json?.success) {
         toast.success("Profil de présence activé avec succès !");
@@ -402,7 +415,7 @@ export default function BotPresenceClient({ initialTab = "overview" }: BotPresen
   const handleToggleRotation = async () => {
     const nextState = !rotationConfig.enabled;
     try {
-      const res = await fetch("/api/bot/presence/rotation", {
+      const res = await fetch(`${BOT_API_URL}/api/bot/presence/rotation`, {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({ enabled: nextState }),
@@ -451,7 +464,7 @@ export default function BotPresenceClient({ initialTab = "overview" }: BotPresen
   const handleSaveRotationConfig = async () => {
     try {
       setSaving(true);
-      const res = await fetch("/api/bot/presence/rotation", {
+      const res = await fetch(`${BOT_API_URL}/api/bot/presence/rotation`, {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify(rotationConfig),
@@ -490,7 +503,7 @@ export default function BotPresenceClient({ initialTab = "overview" }: BotPresen
     if (!editUsername.trim() || editUsername === identity.username) return;
     try {
       setSaving(true);
-      const res = await fetch("/api/bot/presence/identity", {
+      const res = await fetch(`${BOT_API_URL}/api/bot/presence/identity/username`, {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({ username: editUsername.trim() }),
@@ -507,6 +520,39 @@ export default function BotPresenceClient({ initialTab = "overview" }: BotPresen
       setIdentity((prev) => ({ ...prev, username: editUsername.trim() }));
     } finally {
       setSaving(false);
+    }
+  };
+
+  // Handle Avatar Update — reads the selected file as a data URL and sends it to
+  // POST /api/bot/presence/identity/avatar (client.user.setAvatar accepts a data URI).
+  const handleUpdateAvatar = async () => {
+    if (!newAvatarFile) return;
+    try {
+      setUploadingAvatar(true);
+      const dataUrl = await new Promise<string>((resolve, reject) => {
+        const reader = new FileReader();
+        reader.onload = () => resolve(reader.result as string);
+        reader.onerror = () => reject(reader.error);
+        reader.readAsDataURL(newAvatarFile);
+      });
+
+      const res = await fetch(`${BOT_API_URL}/api/bot/presence/identity/avatar`, {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ avatarUrl: dataUrl }),
+      });
+      const json = await res.json().catch(() => null);
+      if (res.ok && json?.success) {
+        toast.success("Avatar du bot mis à jour avec succès !");
+        setIdentity((prev) => ({ ...prev, avatarUrl: json.avatarUrl || prev.avatarUrl }));
+        setNewAvatarFile(null);
+      } else {
+        toast.error(json?.error || "Impossible de changer l'avatar (limite Discord: 2/1h).");
+      }
+    } catch {
+      toast.error("Erreur réseau lors du téléversement de l'avatar.");
+    } finally {
+      setUploadingAvatar(false);
     }
   };
 
@@ -1485,10 +1531,10 @@ export default function BotPresenceClient({ initialTab = "overview" }: BotPresen
                     </div>
                   </div>
 
-                  <div className="pt-2">
+                  <div className="pt-2 space-y-2">
                     <label className="w-full py-2.5 px-4 rounded-xl border border-dashed border-zinc-700 hover:border-indigo-500 hover:bg-indigo-500/5 text-xs text-zinc-300 flex items-center justify-center gap-2 cursor-pointer transition-all">
                       <Upload className="w-4 h-4 text-indigo-400" />
-                      <span>Téléverser un nouvel avatar (PNG/JPG)</span>
+                      <span>{newAvatarFile ? newAvatarFile.name : "Téléverser un nouvel avatar (PNG/JPG)"}</span>
                       <input
                         type="file"
                         accept="image/*"
@@ -1496,11 +1542,35 @@ export default function BotPresenceClient({ initialTab = "overview" }: BotPresen
                         onChange={(e) => {
                           if (e.target.files?.[0]) {
                             setNewAvatarFile(e.target.files[0]);
-                            toast.success("Image sélectionnée.");
+                            toast.info("Image sélectionnée. Cliquez sur \"Appliquer l'avatar\" pour confirmer.");
                           }
                         }}
                       />
                     </label>
+                    {newAvatarFile && (
+                      <div className="flex items-center gap-2">
+                        <button
+                          onClick={handleUpdateAvatar}
+                          disabled={uploadingAvatar || identity.avatarChangesRemaining <= 0}
+                          className="flex-1 py-2 rounded-lg bg-indigo-600 hover:bg-indigo-500 text-white text-xs font-semibold transition-colors disabled:opacity-50 flex items-center justify-center gap-1.5"
+                        >
+                          <Save className="w-3.5 h-3.5" />
+                          <span>{uploadingAvatar ? "Envoi en cours..." : "Appliquer l'avatar"}</span>
+                        </button>
+                        <button
+                          onClick={() => setNewAvatarFile(null)}
+                          disabled={uploadingAvatar}
+                          className="px-3 py-2 rounded-lg bg-zinc-800 hover:bg-zinc-700 text-zinc-300 text-xs font-medium transition-colors disabled:opacity-50"
+                        >
+                          Annuler
+                        </button>
+                      </div>
+                    )}
+                    {identity.avatarChangesRemaining <= 0 && (
+                      <p className="text-[11px] text-amber-400">
+                        Limite Discord atteinte : réessayez dans moins d'une heure.
+                      </p>
+                    )}
                   </div>
                 </div>
 

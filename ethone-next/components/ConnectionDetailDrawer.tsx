@@ -1,6 +1,6 @@
 "use client";
 
-import { useEffect, useMemo, useState } from "react";
+import { useEffect, useId, useMemo, useState } from "react";
 import { createPortal } from "react-dom";
 import { motion, AnimatePresence } from "framer-motion";
 import {
@@ -25,6 +25,7 @@ import {
   Bot,
 } from "lucide-react";
 import { useI18n } from "@/lib/hooks/useI18n";
+import { useFocusTrap } from "@/lib/hooks/useFocusTrap";
 import { useSettings } from "@/components/SettingsProvider";
 import { useToast } from "@/components/ToastProvider";
 import { useProviderCredentials } from "@/lib/hooks/useProviderCredentials";
@@ -99,10 +100,21 @@ export default function ConnectionDetailDrawer({
   const [copied, setCopied] = useState<string | null>(null);
   const [discordMode, setDiscordMode] = useState<"oauth" | "lanyard">("oauth");
   const [mounted, setMounted] = useState(false);
+  const trapRef = useFocusTrap<HTMLDivElement>(isOpen);
+  const titleId = useId();
 
   useEffect(() => {
     setMounted(true);
   }, []);
+
+  useEffect(() => {
+    if (!isOpen) return;
+    function onKeyDown(e: KeyboardEvent) {
+      if (e.key === "Escape") onClose();
+    }
+    document.addEventListener("keydown", onKeyDown);
+    return () => document.removeEventListener("keydown", onKeyDown);
+  }, [isOpen, onClose]);
 
   const publicFieldDefs = PUBLIC_FIELDS[integration.id] ?? [];
   const credFieldDefs = CREDENTIAL_FIELDS[integration.id] ?? [];
@@ -252,7 +264,7 @@ export default function ConnectionDetailDrawer({
   const drawerContent = (
     <AnimatePresence>
       {isOpen && (
-        <div className="fixed inset-0 z-[99999] overflow-hidden" aria-modal="true" role="dialog">
+        <div className="fixed inset-0 z-[99999] overflow-hidden" aria-modal="true" role="dialog" aria-labelledby={titleId}>
           {/* Backdrop with dark blur and dimming */}
           <motion.div
             initial={{ opacity: 0 }}
@@ -265,6 +277,7 @@ export default function ConnectionDetailDrawer({
 
           {/* Drawer Sliding from Right */}
           <motion.div
+            ref={trapRef}
             initial={{ x: "100%" }}
             animate={{ x: 0 }}
             exit={{ x: "100%" }}
@@ -280,7 +293,7 @@ export default function ConnectionDetailDrawer({
                 </div>
                 <div className="min-w-0">
                   <div className="flex items-center gap-2">
-                    <h2 className="text-lg font-extrabold text-[var(--text-primary)] truncate">{integration.name}</h2>
+                    <h2 id={titleId} className="text-lg font-extrabold text-[var(--text-primary)] truncate">{integration.name}</h2>
                     {config?.badge && (
                       <span className="rounded-md border border-[var(--panel-border)] bg-[var(--surface-raised)] px-1.5 py-0.5 font-mono text-[10px] font-bold text-[var(--text-muted)]">
                         {config.badge}

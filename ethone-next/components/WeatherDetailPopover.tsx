@@ -184,7 +184,7 @@ function WeatherDetailContent({
           style={{ ...floatingStyles, visibility: isPositioned ? "visible" : "hidden" }}
           className="v8-panel z-[var(--z-popover)] w-80 max-w-[calc(100vw-1rem)] overflow-hidden p-4"
           role="dialog"
-          aria-modal="true"
+          aria-modal="false"
           aria-label={i18n("weather")}
           data-weather-placement={actualPlacement}
         >

@@ -1,3 +1,14 @@
+const v12081_fr: ChangelogEntry = {
+  version: "v1.20.81",
+  date: "2026-09-10",
+  title: "Dashboard du Bot Réparé + Accessibilité des Fenêtres Modales",
+  items: [
+    "Correctif important : les pages de contrôle du bot Discord (Contrôle du bot, Présence) appelaient `/api/bot/*` sur ethone.dev — qui n'existe pas (site en export statique) — donc tout renvoyait 404 et les panneaux restaient vides. Elles pointent désormais vers le serveur du bot, comme le font déjà toutes les autres pages `/discord/*`. Les panneaux Intégrations, File d'attente & Jobs et Diagnostics sont maintenant réellement câblés à leurs points d'API existants côté bot (ils étaient affichés mais inertes).",
+    "Nouveau : changer l'avatar du bot depuis Présence → Identité fonctionne (sélection du fichier + bouton « Appliquer », avec le rappel de la limite Discord de 2 changements par heure). Avant, sélectionner un fichier ne menait à rien.",
+    "Accessibilité : les fenêtres modales et tiroirs (sélecteur d'avatar, notes de version, aperçu de fichier, guides de connexion, onboarding Discord, menu du dock mobile, feuilles inférieures) piègent désormais correctement le focus clavier tant qu'ils sont ouverts, se ferment avec Échap, rendent le focus à l'élément déclencheur à la fermeture, et annoncent leur rôle aux lecteurs d'écran. Les popovers non bloquants (météo, focus) n'annoncent plus à tort qu'ils bloquent le reste de la page.",
+  ],
+};
+
 const v12080_fr: ChangelogEntry = {
   version: "v1.20.80",
   date: "2026-09-10",
@@ -312,6 +323,17 @@ const v12052_fr: ChangelogEntry = {
     "Dynamic Island : correction d'un bug de priorité qui empêchait Spotify de jamais s'afficher, systématiquement évincé par la synchronisation d'arrière-plan.",
     "Commande /help du Bot Discord : la liste des commandes est désormais générée dynamiquement depuis les commandes réellement enregistrées (fin des commandes fantômes et des commandes manquantes), et affiche la vraie syntaxe des commandes à sous-commandes (ex. /automod status).",
     "Audit de l'enregistrement des commandes slash Discord : architecture confirmée saine, aucune dérive entre le code et les commandes déployées.",
+  ],
+};
+
+const v12081_en: ChangelogEntry = {
+  version: "v1.20.81",
+  date: "2026-09-10",
+  title: "Bot Dashboard Fixed + Modal Accessibility",
+  items: [
+    "Important fix: the Discord bot control pages (Bot Control, Presence) were calling `/api/bot/*` on ethone.dev — which doesn't exist (static-export site) — so everything 404'd and the panels stayed empty. They now point at the bot server, the way every other `/discord/*` page already does. The Integrations, Queue & Jobs, and Diagnostics panels are now actually wired to their existing bot-side API endpoints (they were shown but inert).",
+    "New: changing the bot's avatar from Presence → Identity works (file select + \"Apply\" button, with the Discord 2-changes-per-hour limit reminder). Before, selecting a file did nothing.",
+    "Accessibility: modals and drawers (avatar picker, changelog, file preview, connection guides, Discord onboarding, mobile dock menu, bottom sheets) now properly trap keyboard focus while open, close on Escape, return focus to the trigger element on close, and announce their role to screen readers. Non-blocking popovers (weather, focus) no longer falsely claim to block the rest of the page.",
   ],
 };
 
@@ -632,6 +654,17 @@ const v12052_en: ChangelogEntry = {
   ],
 };
 
+const v12081_es: ChangelogEntry = {
+  version: "v1.20.81",
+  date: "2026-09-10",
+  title: "Panel del Bot Reparado + Accesibilidad de Ventanas Modales",
+  items: [
+    "Corrección importante: las páginas de control del bot de Discord (Control del Bot, Presencia) llamaban a `/api/bot/*` en ethone.dev — que no existe (sitio de exportación estática) — así que todo devolvía 404 y los paneles quedaban vacíos. Ahora apuntan al servidor del bot, como ya hacen todas las demás páginas `/discord/*`. Los paneles de Integraciones, Cola y Trabajos, y Diagnósticos ahora están realmente conectados a sus endpoints de API existentes del lado del bot (se mostraban pero estaban inertes).",
+    "Nuevo: cambiar el avatar del bot desde Presencia → Identidad funciona (selección de archivo + botón «Aplicar», con el recordatorio del límite de Discord de 2 cambios por hora). Antes, seleccionar un archivo no hacía nada.",
+    "Accesibilidad: las ventanas modales y paneles (selector de avatar, notas de versión, vista previa de archivos, guías de conexión, onboarding de Discord, menú del dock móvil, hojas inferiores) ahora atrapan correctamente el foco del teclado mientras están abiertos, se cierran con Escape, devuelven el foco al elemento que los abrió al cerrarse, y anuncian su rol a los lectores de pantalla. Los popovers no bloqueantes (clima, concentración) ya no afirman falsamente que bloquean el resto de la página.",
+  ],
+};
+
 const v12080_es: ChangelogEntry = {
   version: "v1.20.80",
   date: "2026-09-10",
@@ -946,6 +979,17 @@ const v12052_es: ChangelogEntry = {
     "Dynamic Island: corregido un error de prioridad que impedía que Spotify apareciera, siempre desplazado por la sincronización en segundo plano.",
     "Comando /help del Bot de Discord: la lista de comandos ahora se genera dinámicamente desde los comandos realmente registrados (fin de comandos fantasma o ausentes), mostrando la sintaxis real de los comandos con subcomandos.",
     "Auditoría del registro de comandos slash de Discord: arquitectura confirmada como sólida, sin desviación entre el código y los comandos desplegados.",
+  ],
+};
+
+const v12081_de: ChangelogEntry = {
+  version: "v1.20.81",
+  date: "2026-09-10",
+  title: "Bot-Dashboard Repariert + Barrierefreiheit der Modalfenster",
+  items: [
+    "Wichtiger Fix: Die Discord-Bot-Steuerungsseiten (Bot-Steuerung, Präsenz) riefen `/api/bot/*` auf ethone.dev auf — das nicht existiert (statischer Export) — sodass alles 404 lieferte und die Panels leer blieben. Sie zeigen jetzt auf den Bot-Server, so wie es jede andere `/discord/*`-Seite bereits tut. Die Panels Integrationen, Warteschlange & Jobs und Diagnose sind jetzt tatsächlich an ihre vorhandenen bot-seitigen API-Endpunkte angebunden (sie wurden angezeigt, waren aber funktionslos).",
+    "Neu: Das Ändern des Bot-Avatars über Präsenz → Identität funktioniert (Dateiauswahl + Schaltfläche zum Anwenden, mit dem Hinweis auf das Discord-Limit von 2 Änderungen pro Stunde). Vorher bewirkte die Dateiauswahl nichts.",
+    "Barrierefreiheit: Modalfenster und Schubladen (Avatar-Auswahl, Änderungsprotokoll, Dateivorschau, Verbindungsanleitungen, Discord-Onboarding, mobiles Dock-Menü, Bottom-Sheets) fangen jetzt den Tastaturfokus korrekt ein, solange sie geöffnet sind, schließen mit Escape, geben den Fokus beim Schließen an das auslösende Element zurück und geben ihre Rolle an Screenreader weiter. Nicht-blockierende Popovers (Wetter, Fokus) behaupten nicht mehr fälschlicherweise, den Rest der Seite zu blockieren.",
   ],
 };
 
@@ -23267,5 +23311,9 @@ CHANGELOG_BY_LANG.fr.unshift(v12080_fr);
 CHANGELOG_BY_LANG.en.unshift(v12080_en);
 CHANGELOG_BY_LANG.es.unshift(v12080_es);
 CHANGELOG_BY_LANG.de.unshift(v12080_de);
+CHANGELOG_BY_LANG.fr.unshift(v12081_fr);
+CHANGELOG_BY_LANG.en.unshift(v12081_en);
+CHANGELOG_BY_LANG.es.unshift(v12081_es);
+CHANGELOG_BY_LANG.de.unshift(v12081_de);
 
 export const CHANGELOG = CHANGELOG_BY_LANG.fr;

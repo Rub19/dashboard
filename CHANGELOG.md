@@ -2,6 +2,16 @@
 
 Toutes les modifications notables de ce projet seront documentées dans ce fichier.
 
+## v1.20.81 — 2026-09-10
+
+**Dashboard du bot : fetch vers `/api/bot/*` corrigé (404 → serveur du bot) + passe d'accessibilité des modales (audits parallèles)**
+
+Deux agents d'audit lancés en parallèle, interrompus par une limite de session avant leurs rapports finaux ; chaque diff relu et re-vérifié ici avant envoi (`tsc` 0 erreur, `lint` 0 erreur, `build`, `test:unit` 14/14 69/69).
+
+- **`app/discord/bot/BotControlClient.tsx` + `app/discord/bot/presence/BotPresenceClient.tsx`** : tous les `fetch("/api/bot/...")` visaient `ethone.dev/api/bot/*` — inexistant en export statique — donc 404 systématique, panneaux vides. Corrigé pour passer par `NEXT_PUBLIC_DISCORD_BOT_API` (le serveur Express du bot), exactement comme le font déjà `automod/page.tsx`, `InvitesCenterClient`, `AuditCenterClient`, etc. Vérifié que les endpoints ciblés existent bien côté bot (`discord-bot/src/server/routes/botControlRoutes.ts` : `GET /overview`, `GET /jobs`, `POST /jobs/:jobId/run`, `GET /integrations`, `POST /diagnostics/run`). Les panneaux Intégrations / File d'attente & Jobs / Diagnostics sont désormais réellement câblés (lazy-load à l'ouverture de l'onglet, états loading/erreur/vide propres). Le bouton Diagnostics appelle le vrai `POST /api/bot/diagnostics/run` avec repli sur une simulation locale si le serveur du bot n'est pas joignable.
+- **Nouveau : changement d'avatar du bot** (`BotPresenceClient` → Présence → Identité) : lecture du fichier en data-URL → `POST /api/bot/presence/identity/avatar`, bouton « Appliquer » + « Annuler », rappel de la limite Discord (2/h). Avant, sélectionner un fichier ne déclenchait rien. Corrige aussi le chemin de `identity/username` (visait `/identity` au lieu de `/identity/username`).
+- **Accessibilité — piège à focus + Échap + restauration du focus** : `lib/hooks/useFocusTrap.ts` restaure désormais le focus sur l'élément déclencheur à la fermeture. Câblé dans `AvatarPickerModal`, `ChangelogModal`, `FilePreview`, `ConnectionDetailDrawer`, `ConnectionGuideModal`, `DiscordOnboardingModal`, `Sheet`, `FloatingLiquidDock` (menu mobile) — chacun avec fermeture Échap et un libellé accessible (`aria-labelledby`/`aria-label`). `FocusPopover` et `WeatherDetailPopover` : `aria-modal="true"` → `"false"` (ce sont des popovers non bloquants, l'attribut mentait aux lecteurs d'écran).
+
 ## discord-bot — 2026-09-10 (refonte des embeds + MP de sanction)
 
 **Refonte de cohérence des embeds Discord + notifications MP de modération passées en embed**

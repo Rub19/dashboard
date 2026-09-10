@@ -335,6 +335,21 @@ export default function DiscordDashboardPage() {
   const [activeModule, setActiveModule] = useState<ModuleType>("security");
   const [searchQuery, setSearchQuery] = useState("");
   const [onlyManageable, setOnlyManageable] = useState(true);
+  // IDs of the servers the bot is actually in — used to sort those first and
+  // show an "invite" affordance on the rest.
+  const [botGuildIds, setBotGuildIds] = useState<Set<string>>(new Set());
+
+  useEffect(() => {
+    const api = process.env.NEXT_PUBLIC_DISCORD_BOT_API || "";
+    if (!api) return;
+    fetch(`${api}/api/bot/presence/servers`, { credentials: "include" })
+      .then((r) => r.json())
+      .then((res) => {
+        const list = Array.isArray(res?.data) ? res.data : [];
+        setBotGuildIds(new Set(list.map((g: { guildId?: string; id?: string }) => String(g.guildId ?? g.id))));
+      })
+      .catch(() => {});
+  }, []);
 
   // Serveurs réels de l'utilisateur (ZÉRO FAKE INFO)
   const allGuilds: DiscordGuild[] = useMemo(() => {
@@ -360,10 +375,16 @@ export default function DiscordDashboardPage() {
   }, [allGuilds, onlyManageable]);
 
   const filteredGuilds = useMemo(() => {
-    if (!searchQuery.trim()) return displayGuilds;
-    const q = searchQuery.toLowerCase();
-    return displayGuilds.filter((g) => g.name.toLowerCase().includes(q));
-  }, [displayGuilds, searchQuery]);
+    const q = searchQuery.trim().toLowerCase();
+    const base = q ? displayGuilds.filter((g) => g.name.toLowerCase().includes(q)) : displayGuilds;
+    if (botGuildIds.size === 0) return base;
+    // Servers where the bot is already installed come first, order otherwise kept.
+    return [...base].sort((a, b) => {
+      const ai = botGuildIds.has(a.id) ? 0 : 1;
+      const bi = botGuildIds.has(b.id) ? 0 : 1;
+      return ai - bi;
+    });
+  }, [displayGuilds, searchQuery, botGuildIds]);
 
   // Sélection automatique du premier serveur réel
   useEffect(() => {
@@ -702,6 +723,7 @@ export default function DiscordDashboardPage() {
                 const isSelected = selectedGuild?.id === guild.id;
                 const isOwner = guild.owner;
                 const isManager = canManageGuild(guild);
+                const hasBot = botGuildIds.has(guild.id);
                 const initials = guild.name
                   .split(" ")
                   .map((n) => n[0])
@@ -710,59 +732,78 @@ export default function DiscordDashboardPage() {
                   .toUpperCase();
 
                 return (
-                  <button
+                  <div
                     key={guild.id}
-                    onClick={() => setSelectedGuild(guild)}
                     className={cn(
-                      "flex w-full items-center gap-2.5 rounded-2xl border p-2 text-left transition-all duration-150 cursor-pointer",
+                      "flex w-full items-stretch gap-1 rounded-2xl border transition-all duration-150",
                       isSelected
                         ? "border-[#5865F2]/50 bg-[#5865F2]/15 shadow-md shadow-[#5865F2]/10"
-                        : "border-white/5 bg-white/[0.02] hover:border-white/15 hover:bg-white/[0.04]"
+                        : hasBot
+                        ? "border-white/10 bg-white/[0.03] hover:border-white/20 hover:bg-white/[0.05]"
+                        : "border-white/5 bg-white/[0.015] hover:border-white/12 hover:bg-white/[0.03]"
                     )}
                   >
-                    {/* Clean Avatar without buggy clipped corner badge */}
-                    <div className="flex h-9 w-9 shrink-0 items-center justify-center overflow-hidden rounded-xl border border-white/10 bg-zinc-800 font-bold text-xs text-white shadow-inner">
-                      {guild.iconUrl ? (
-                        <img
-                          src={guild.iconUrl}
-                          alt={guild.name}
-                          className="h-full w-full object-cover rounded-xl"
-                        />
-                      ) : (
-                        <span>{initials}</span>
-                      )}
-                    </div>
-
-                    <div className="min-w-0 flex-1">
-                      <p className="truncate text-xs font-semibold text-white">
-                        {guild.name}
-                      </p>
-                      <div className="flex items-center gap-1.5 mt-0.5">
-                        {isOwner ? (
-                          <span className="inline-flex items-center gap-1 rounded bg-amber-500/15 border border-amber-500/30 px-1.5 py-0.2 text-[9px] font-semibold text-amber-300">
-                            <Crown className="h-2.5 w-2.5" />
-                            Propriétaire
-                          </span>
-                        ) : isManager ? (
-                          <span className="inline-flex items-center gap-1 rounded bg-emerald-500/15 border border-emerald-500/30 px-1.5 py-0.2 text-[9px] font-semibold text-emerald-300">
-                            <ShieldCheck className="h-2.5 w-2.5" />
-                            Gérer le serveur
-                          </span>
+                    <button
+                      onClick={() => setSelectedGuild(guild)}
+                      className="flex min-w-0 flex-1 items-center gap-2.5 p-2 text-left cursor-pointer"
+                    >
+                      <div className={cn(
+                        "flex h-9 w-9 shrink-0 items-center justify-center overflow-hidden rounded-xl border bg-zinc-800 font-bold text-xs text-white shadow-inner",
+                        hasBot ? "border-emerald-500/40" : "border-white/10 opacity-70"
+                      )}>
+                        {guild.iconUrl ? (
+                          <img src={guild.iconUrl} alt={guild.name} className="h-full w-full object-cover rounded-xl" />
                         ) : (
-                          <span className="text-[10px] text-zinc-500">Membre</span>
+                          <span>{initials}</span>
                         )}
                       </div>
-                    </div>
 
-                    <div className="flex shrink-0 items-center pr-1">
-                      <span
-                        className={cn(
-                          "h-2 w-2 rounded-full",
-                          isSelected ? "bg-emerald-400" : "bg-zinc-600"
-                        )}
-                      />
+                      <div className="min-w-0 flex-1">
+                        <p className={cn("truncate text-xs font-semibold", hasBot ? "text-white" : "text-zinc-300")}>
+                          {guild.name}
+                        </p>
+                        <div className="flex items-center gap-1.5 mt-0.5">
+                          {isOwner ? (
+                            <span className="inline-flex items-center gap-1 rounded bg-amber-500/15 border border-amber-500/30 px-1.5 py-0.2 text-[9px] font-semibold text-amber-300">
+                              <Crown className="h-2.5 w-2.5" />
+                              Propriétaire
+                            </span>
+                          ) : isManager ? (
+                            <span className="inline-flex items-center gap-1 rounded bg-emerald-500/15 border border-emerald-500/30 px-1.5 py-0.2 text-[9px] font-semibold text-emerald-300">
+                              <ShieldCheck className="h-2.5 w-2.5" />
+                              Gérer
+                            </span>
+                          ) : (
+                            <span className="text-[10px] text-zinc-500">Membre</span>
+                          )}
+                          {hasBot && (
+                            <span className="inline-flex items-center gap-1 text-[9px] font-semibold text-emerald-400">
+                              <span className="h-1.5 w-1.5 rounded-full bg-emerald-400" />
+                              Bot actif
+                            </span>
+                          )}
+                        </div>
+                      </div>
+                    </button>
+
+                    <div className="flex shrink-0 items-center pr-2">
+                      {hasBot ? (
+                        <span className={cn("h-2 w-2 rounded-full", isSelected ? "bg-emerald-400" : "bg-emerald-500/40")} />
+                      ) : (
+                        <a
+                          href={`${BOT_INVITE_URL}&guild_id=${guild.id}`}
+                          target="_blank"
+                          rel="noopener noreferrer"
+                          onClick={(e) => e.stopPropagation()}
+                          title="Inviter le bot sur ce serveur"
+                          className="inline-flex items-center gap-1 rounded-lg border border-[#5865F2]/40 bg-[#5865F2]/15 px-2 py-1 text-[10px] font-semibold text-[#a9b2ff] transition-colors hover:bg-[#5865F2]/25 hover:text-white"
+                        >
+                          <Plus className="h-3 w-3" />
+                          Ajouter
+                        </a>
+                      )}
                     </div>
-                  </button>
+                  </div>
                 );
               })
             )}

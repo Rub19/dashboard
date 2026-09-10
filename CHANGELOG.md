@@ -2,6 +2,15 @@
 
 Toutes les modifications notables de ce projet seront documentées dans ce fichier.
 
+## v1.21.1 — 2026-09-10
+
+**Raccourcis clavier adaptés à la plateforme + liste des serveurs du hub Discord**
+
+- Nouveau `lib/hooks/useModKey.ts` : `useModKey()` → `"⌘"` sur macOS/iOS, `"Ctrl"` ailleurs (résolu après montage pour ne pas casser l'hydratation) ; `applyModKey(str, mod)` réécrit une chaîne `"⌘…"`. Le symbole `⌘` était affiché en dur partout, même sous Windows/Linux.
+- Appliqué : `components/CommandBarTrigger.tsx` (`⌘K` de la top bar), `components/TopBar.tsx` (`⌘B`), `components/Sidebar.tsx` (`⌘1`-`⌘9`, `⌘D` via `applyModKey`), `components/settings/ShortcutsSettings.tsx` (`k === "⌘" ? mod : k` dans le rendu du tableau).
+- **`app/discord/page.tsx`** — liste « Vos Serveurs » : nouvel effet `GET /api/bot/presence/servers` → `botGuildIds` (Set). `filteredGuilds` trie les serveurs où le bot est présent en premier. Chaque ligne : row `<button>` + zone d'action séparée — si le bot est là, point vert « Bot actif » ; sinon lien `+ Ajouter` vers `${BOT_INVITE_URL}&guild_id=${guild.id}` (avatar/nom grisés). Row passée de `<button>` à `<div>` (le lien d'invite ne peut pas être imbriqué dans un `<button>`).
+- Validation : `tsc` 0 erreur, `build`, `test:unit` 14/14 69/69, `lint` 353.
+
 ## v1.21.0 — 2026-09-10
 
 **Vrais logos de marque + défilement page Connexions + avatar du bot**

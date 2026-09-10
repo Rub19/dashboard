@@ -2,6 +2,7 @@
 
 import { useState, useMemo } from "react";
 import { Icon } from "@/lib/icons";
+import { useModKey } from "@/lib/hooks/useModKey";
 
 interface ShortcutGroup {
   category: string;
@@ -45,6 +46,7 @@ const SHORTCUT_GROUPS: ShortcutGroup[] = [
 
 export default function ShortcutsSettings() {
   const [query, setQuery] = useState("");
+  const mod = useModKey();
 
   const filteredGroups = useMemo(() => {
     if (!query.trim()) return SHORTCUT_GROUPS;
@@ -101,12 +103,12 @@ export default function ShortcutsSettings() {
                   </div>
 
                   <div className="flex items-center gap-1 shrink-0">
-                    {shortcut.keys.map((k) => (
+                    {shortcut.keys.map((k, i) => (
                       <kbd
-                        key={k}
+                        key={`${k}-${i}`}
                         className="flex h-6 min-w-[24px] items-center justify-center rounded-lg border border-[var(--panel-border)] bg-[var(--surface-raised)] px-2 font-mono text-[11px] font-bold text-[var(--text-primary)] shadow-sm"
                       >
-                        {k}
+                        {k === "⌘" ? mod : k}
                       </kbd>
                     ))}
                   </div>

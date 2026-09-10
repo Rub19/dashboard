@@ -13,6 +13,7 @@ import {
   ChevronRight,
 } from "lucide-react";
 import { useAnimatedSidebar } from "@/components/motion/animated-sidebar";
+import { useModKey } from "@/lib/hooks/useModKey";
 import CommandBarTrigger from "@/components/CommandBarTrigger";
 import NotificationCenter from "@/components/NotificationCenter";
 import LanguageSwitcher from "@/components/LanguageSwitcher";
@@ -60,8 +61,10 @@ function useBreadcrumb() {
 
 function SidebarTopToggle() {
   const { open, setOpen } = useAnimatedSidebar();
+  const mod = useModKey();
+  const kb = mod === "⌘" ? "⌘B" : "Ctrl B";
   return (
-    <Tooltip label={open ? "Réduire la barre (⌘B)" : "Ouvrir la barre (⌘B)"} position="bottom">
+    <Tooltip label={open ? `Réduire la barre (${kb})` : `Ouvrir la barre (${kb})`} position="bottom">
       <button
         type="button"
         onClick={() => setOpen(!open)}

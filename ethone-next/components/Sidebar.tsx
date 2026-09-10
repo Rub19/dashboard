@@ -26,6 +26,7 @@ import {
   LucideIcon,
 } from "lucide-react";
 import { useI18n } from "@/lib/hooks/useI18n";
+import { useModKey, applyModKey } from "@/lib/hooks/useModKey";
 import { useUserIdentity } from "@/lib/hooks/useUserIdentity";
 import { useAuth } from "@/components/AuthProvider";
 import { ADMIN_EMAIL } from "@/lib/admin";
@@ -270,6 +271,7 @@ const SidebarFooter = memo(function SidebarFooter() {
 
 function Sidebar() {
   const i18n = useI18n();
+  const mod = useModKey();
   const router = useRouter();
   const pathname = usePathname() ?? "/";
   const { setOpen } = useAnimatedSidebar();
@@ -333,7 +335,7 @@ function Sidebar() {
                         strokeWidth={1.9}
                       />
                     }
-                    shortcut={SHORTCUTS[app.id]}
+                    shortcut={SHORTCUTS[app.id] ? applyModKey(SHORTCUTS[app.id], mod) : undefined}
                     onSelect={() => router.push(app.href)}
                   >
                     {i18n(app.id, app.id === "admin" ? "Admin" : app.id)}

@@ -1,3 +1,13 @@
+const v12101_fr: ChangelogEntry = {
+  version: "v1.21.1",
+  date: "2026-09-10",
+  title: "Raccourcis Clavier Adaptés à ta Plateforme + Liste des Serveurs",
+  items: [
+    "Les raccourcis affichaient le symbole Mac ⌘ meme sous Windows/Linux. Nouveau hook `useModKey` : ⌘ sur Mac, Ctrl ailleurs. Appliqué a la barre de recherche du haut, au bouton de la sidebar (⌘B), aux numéros de la sidebar (⌘1-9) et au panneau Réglages > Raccourcis.",
+    "Liste « Vos Serveurs » (hub Discord) : les serveurs ou le bot est déja installé sont maintenant en premier, avec un point vert « Bot actif ». Les autres sont grisés avec un bouton « + Ajouter » qui ouvre l’invitation du bot pré-remplie sur ce serveur.",
+  ],
+};
+
 const v12100_fr: ChangelogEntry = {
   version: "v1.21.0",
   date: "2026-09-10",
@@ -538,6 +548,16 @@ const v12052_fr: ChangelogEntry = {
     "Dynamic Island : correction d'un bug de priorité qui empêchait Spotify de jamais s'afficher, systématiquement évincé par la synchronisation d'arrière-plan.",
     "Commande /help du Bot Discord : la liste des commandes est désormais générée dynamiquement depuis les commandes réellement enregistrées (fin des commandes fantômes et des commandes manquantes), et affiche la vraie syntaxe des commandes à sous-commandes (ex. /automod status).",
     "Audit de l'enregistrement des commandes slash Discord : architecture confirmée saine, aucune dérive entre le code et les commandes déployées.",
+  ],
+};
+
+const v12101_en: ChangelogEntry = {
+  version: "v1.21.1",
+  date: "2026-09-10",
+  title: "Platform-Aware Keyboard Shortcuts + Server List",
+  items: [
+    "Shortcuts showed the Mac ⌘ symbol even on Windows/Linux. New `useModKey` hook: ⌘ on Mac, Ctrl elsewhere. Applied to the top search bar, the sidebar toggle (⌘B), the sidebar number shortcuts (⌘1-9) and Settings > Shortcuts.",
+    "\"Your Servers\" list (Discord hub): servers where the bot is already installed now come first, with a green \"Bot active\" dot. The rest are dimmed with a \"+ Add\" button that opens the bot invite pre-filled for that server.",
   ],
 };
 
@@ -1084,6 +1104,16 @@ const v12052_en: ChangelogEntry = {
   ],
 };
 
+const v12101_es: ChangelogEntry = {
+  version: "v1.21.1",
+  date: "2026-09-10",
+  title: "Atajos de Teclado Segun tu Plataforma + Lista de Servidores",
+  items: [
+    "Los atajos mostraban el simbolo Mac ⌘ incluso en Windows/Linux. Nuevo hook `useModKey`: ⌘ en Mac, Ctrl en el resto. Aplicado a la barra de busqueda superior, al boton de la barra lateral (⌘B), a los numeros de la barra lateral (⌘1-9) y a Ajustes > Atajos.",
+    "Lista \"Tus Servidores\" (hub de Discord): los servidores donde el bot ya esta instalado ahora van primero, con un punto verde \"Bot activo\". El resto aparecen atenuados con un boton \"+ Anadir\" que abre la invitacion del bot rellenada para ese servidor.",
+  ],
+};
+
 const v12100_es: ChangelogEntry = {
   version: "v1.21.0",
   date: "2026-09-10",
@@ -1624,6 +1654,16 @@ const v12052_es: ChangelogEntry = {
     "Dynamic Island: corregido un error de prioridad que impedía que Spotify apareciera, siempre desplazado por la sincronización en segundo plano.",
     "Comando /help del Bot de Discord: la lista de comandos ahora se genera dinámicamente desde los comandos realmente registrados (fin de comandos fantasma o ausentes), mostrando la sintaxis real de los comandos con subcomandos.",
     "Auditoría del registro de comandos slash de Discord: arquitectura confirmada como sólida, sin desviación entre el código y los comandos desplegados.",
+  ],
+};
+
+const v12101_de: ChangelogEntry = {
+  version: "v1.21.1",
+  date: "2026-09-10",
+  title: "Plattformabhaengige Tastenkuerzel + Serverliste",
+  items: [
+    "Die Kuerzel zeigten das Mac-Symbol ⌘ auch unter Windows/Linux. Neuer Hook `useModKey`: ⌘ auf Mac, Ctrl sonst. Angewendet auf die obere Suchleiste, den Sidebar-Schalter (⌘B), die Sidebar-Nummern (⌘1-9) und Einstellungen > Kuerzel.",
+    "Liste \"Deine Server\" (Discord-Hub): Server, auf denen der Bot bereits installiert ist, stehen jetzt oben, mit gruenem Punkt \"Bot aktiv\". Der Rest ist abgedunkelt mit einem \"+ Hinzufuegen\"-Button, der die Bot-Einladung fuer diesen Server vorbefuellt oeffnet.",
   ],
 };
 
@@ -24251,5 +24291,9 @@ CHANGELOG_BY_LANG.fr.unshift(v12100_fr);
 CHANGELOG_BY_LANG.en.unshift(v12100_en);
 CHANGELOG_BY_LANG.es.unshift(v12100_es);
 CHANGELOG_BY_LANG.de.unshift(v12100_de);
+CHANGELOG_BY_LANG.fr.unshift(v12101_fr);
+CHANGELOG_BY_LANG.en.unshift(v12101_en);
+CHANGELOG_BY_LANG.es.unshift(v12101_es);
+CHANGELOG_BY_LANG.de.unshift(v12101_de);
 
 export const CHANGELOG = CHANGELOG_BY_LANG.fr;

@@ -20,8 +20,10 @@ function projectOrigin(env) {
   }
 }
 
-function supabaseHeaders(secret) {
-  return { apikey: secret, "content-type": "application/json", Authorization: `Bearer ${secret}` };
+function supabaseHeaders(secret, prefer) {
+  const headers = { apikey: secret, "content-type": "application/json", Authorization: `Bearer ${secret}` };
+  if (prefer) headers.Prefer = prefer;
+  return headers;
 }
 
 async function supabaseRequest(env, path, options = {}) {
@@ -34,7 +36,7 @@ async function supabaseRequest(env, path, options = {}) {
     expectedOrigin: origin,
     service: "supabase",
     method: options.method || "GET",
-    headers: supabaseHeaders(secret),
+    headers: supabaseHeaders(secret, options.prefer),
     body: options.body,
     maxBytes: options.maxBytes || 8192
   });
@@ -60,8 +62,12 @@ export async function teamMembersRoute({ request, env, auth }) {
     const token = [...Array(32)].map(() => Math.random().toString(36)[2]).join("");
     const inviteUrl = `${env.DASHBOARD_ORIGIN || "https://ethone.dev"}/team/join?token=${token}`;
 
+    // Prefer: return=representation is required to get the new row back —
+    // PostgREST's default POST response is empty, which would silently make
+    // `member` undefined below even though the invite was created.
     const insert = await supabaseRequest(env, "/rest/v1/ethone_team_members", {
       method: "POST",
+      prefer: "return=representation",
       body: JSON.stringify({
         owner_id: auth.userId,
         email,
@@ -100,6 +106,7 @@ export async function teamMembersRoute({ request, env, auth }) {
     }
     const update = await supabaseRequest(env, `/rest/v1/ethone_team_members?id=eq.${encodeURIComponent(id)}&owner_id=eq.${encodeURIComponent(auth.userId)}`, {
       method: "PATCH",
+      prefer: "return=representation",
       body: JSON.stringify(updates),
       maxBytes: 2048
     });

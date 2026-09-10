@@ -2,6 +2,22 @@
 
 Toutes les modifications notables de ce projet seront documentées dans ce fichier.
 
+## v1.20.80 — 2026-09-10
+
+**Correctifs backend : bugs de perte de données silencieuse (`safeText` mal appelé) + sémantique PostgREST (audit parallèle)**
+
+Audit de correctness du Worker lancé en parallèle. Fichiers touchés : `worker/src/routes/{profiles,team,user-data}.js`, `worker/src/services/{cloud-files,cloud-shares,items,lastfm,connections}-client.js`, + 4 nouveaux fichiers de tests. Vérifié indépendamment avant envoi (pas seulement le rapport de l'agent, qui a été interrompu par une limite de session avant de produire son rapport final) : `node --check` OK, `npm test` 214/214 (197 existants + 17 nouveaux).
+
+- **`safeText(value, maximum)` — bug racine, sévère et répandu** : la signature n'a que 2 arguments (le 2e est la longueur max), mais des dizaines d'appels passaient `safeText(x, "", 128)` ou `safeText(x, "Sans titre")` comme s'il y avait un paramètre « fallback » au milieu. Le `""`/la chaîne devenait l'argument `maximum` → `.slice(0, "")` / `.slice(0, NaN)` → `.slice(0, 0)` → **retour vide systématique**. Conséquences confirmées :
+  - `cloud-shares-client.js` : **le partage public de fichiers et les drops étaient entièrement cassés de bout en bout** — chaque filtre `slug`/`id` devenait `eq.` (vide), un lien partagé ne pouvait jamais être résolu, la révocation ne matchait aucune ligne, `drive_client_id` était stocké vide.
+  - `cloud-files-client.js` : navigation dans les dossiers cassée (filtre `drive_parent_id` = `""`), et renommer/déplacer/tagguer/résumer un fichier écrivait des valeurs vides.
+  - `items-client.js` : titre et contenu de **chaque tâche** stockés et renvoyés vides quel que soit l'input.
+  - Correctif : `safeText(x, <n>)` partout, avec `|| "fallback"` explicite là où un défaut était voulu.
+- **PostgREST `Prefer: return=minimal` par défaut** : les POST/PATCH renvoyaient un corps vide, donc `insert`/`update` était `null` même pour une écriture réussie (création de profil, invitation d'équipe, donnée utilisateur, tâche). Correctif : `Prefer: return=representation` sur les écritures qui ont besoin de la ligne en retour, + garde `created ? view(created) : null`.
+- **PostgREST n'a pas d'opérateur d'incrément en place** : `{ download_count: { "+": 1 } }` tente de caster un objet JSON dans une colonne `int` — rejeté par Postgres à chaque appel. Faisait échouer chaque téléchargement de partage / dépôt de drop **après** que le fichier ait déjà été transféré depuis Drive. Correctif : lecture du compteur puis réécriture d'un entier.
+- **Quirk Last.fm** : l'API JSON collapse une liste à un seul élément en objet nu (héritage de ses racines XML). `recenttracks.track` / `toptracks.track` / `topartists.artist` sont un objet quand il y a exactement 1 résultat. `now-playing` demande toujours `limit=1` → `.slice()` sur un objet → 500. Nouveau helper `toArray()`.
+- **`connections-client.js`** : déconnecter Discord ciblait une table `user_data` (clé `key=discord_profile`) qui n'existe pas — le vrai emplacement est `ethone_user_data` (`kind=discord`, écrit par `setDiscordDataRow`). L'ancien DELETE matchait zéro ligne, donc le snapshot Discord survivait à la déconnexion et `listConnections` continuait de reporter Discord comme connecté.
+
 ## v1.20.79 — 2026-09-10
 
 **Correctif : variables de couleur d'accent et de fond au survol jamais définies par le moteur de thème (audit parallèle)**

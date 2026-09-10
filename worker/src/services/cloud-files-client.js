@@ -119,7 +119,12 @@ export async function listCloudFiles(env, userId, { parentId = null, trashed = f
   params.set("user_id", `eq.${userId}`);
   params.set("trashed", `eq.${trashed === true}`);
   if (parentId) {
-    params.set("drive_parent_id", `eq.${safeText(parentId, "", 128)}`);
+    // safeText(value, maximum) takes only two arguments — a stray "" here
+    // (copy-pasted as if there were a middle "fallback" parameter) became
+    // the `maximum` argument, so `.slice(0, "")` always returned "" and this
+    // filter silently matched drive_parent_id = "" instead of the real
+    // folder id, breaking folder navigation.
+    params.set("drive_parent_id", `eq.${safeText(parentId, 128)}`);
   } else {
     params.set("drive_parent_id", "in.(null,root)");
   }
@@ -143,7 +148,7 @@ export async function listCloudFiles(env, userId, { parentId = null, trashed = f
 export async function getCloudFile(env, userId, driveFileId) {
   const origin = projectOrigin(env);
   if (!origin || !userId || !driveFileId) return null;
-  const response = await supabaseRequest(env, `/rest/v1/ethone_files?user_id=eq.${encodeURIComponent(userId)}&drive_file_id=eq.${encodeURIComponent(safeText(driveFileId, "", 128))}&select=*,ethone_file_favorites!left(file_id)`, { maxBytes: 128 * 1024 });
+  const response = await supabaseRequest(env, `/rest/v1/ethone_files?user_id=eq.${encodeURIComponent(userId)}&drive_file_id=eq.${encodeURIComponent(safeText(driveFileId, 128))}&select=*,ethone_file_favorites!left(file_id)`, { maxBytes: 128 * 1024 });
   const row = firstRow(response);
   if (!row) return null;
   return {
@@ -155,16 +160,21 @@ export async function getCloudFile(env, userId, driveFileId) {
 export async function updateCloudFile(env, userId, driveFileId, patch = {}) {
   const origin = projectOrigin(env);
   if (!origin || !userId || !driveFileId) return null;
+  // Each safeText() call below takes (value, maximum) — passing a stray ""
+  // as a middle argument silently zeroed the max length (`.slice(0, "")` is
+  // `.slice(0, 0)`), so every one of these fields was written as "" no
+  // matter what the caller sent (rename, move, tag, and brain-summary
+  // updates all silently wrote blank values).
   const body = {};
-  if (patch.parentId !== undefined) body.drive_parent_id = patch.parentId ? safeText(patch.parentId, "", 128) : null;
-  if (patch.name !== undefined) body.name = safeText(patch.name, "", 500);
+  if (patch.parentId !== undefined) body.drive_parent_id = patch.parentId ? safeText(patch.parentId, 128) : null;
+  if (patch.name !== undefined) body.name = safeText(patch.name, 500);
   if (patch.trashed !== undefined) body.trashed = patch.trashed === true;
   if (patch.tags !== undefined) body.tags = safeTags(patch.tags);
-  if (patch.brainSummary !== undefined) body.brain_summary = safeText(patch.brainSummary, "", 2000);
-  if (patch.brainSuggestedFolderId !== undefined) body.brain_suggested_folder = patch.brainSuggestedFolderId ? safeText(patch.brainSuggestedFolderId, "", 128) : null;
-  if (patch.brainAnalyzedAt !== undefined) body.brain_analyzed_at = safeText(patch.brainAnalyzedAt, "", 40) || null;
+  if (patch.brainSummary !== undefined) body.brain_summary = safeText(patch.brainSummary, 2000);
+  if (patch.brainSuggestedFolderId !== undefined) body.brain_suggested_folder = patch.brainSuggestedFolderId ? safeText(patch.brainSuggestedFolderId, 128) : null;
+  if (patch.brainAnalyzedAt !== undefined) body.brain_analyzed_at = safeText(patch.brainAnalyzedAt, 40) || null;
   if (!Object.keys(body).length) return getCloudFile(env, userId, driveFileId);
-  const response = await supabaseRequest(env, `/rest/v1/ethone_files?user_id=eq.${encodeURIComponent(userId)}&drive_file_id=eq.${encodeURIComponent(safeText(driveFileId, "", 128))}`, {
+  const response = await supabaseRequest(env, `/rest/v1/ethone_files?user_id=eq.${encodeURIComponent(userId)}&drive_file_id=eq.${encodeURIComponent(safeText(driveFileId, 128))}`, {
     method: "PATCH",
     body,
     maxBytes: 128 * 1024

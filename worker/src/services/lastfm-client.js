@@ -29,6 +29,17 @@ function imageUrl(images) {
   return safePublicUrl(selected?.["#text"], ["lastfm.freetls.fastly.net", "lastfm-img2.akamaized.net"]);
 }
 
+// Last.fm's JSON API collapses a singleton list to a bare object instead of a
+// one-element array (a well-known quirk inherited from its XML roots) — e.g.
+// recenttracks.track is an array when there are 0 or 2+ tracks, but a plain
+// object when there's exactly 1. now-playing always requests limit=1, so this
+// path is hit on every call for an active user; without this, `.slice()` below
+// throws and the route 500s instead of returning the single track/artist.
+function toArray(value) {
+  if (Array.isArray(value)) return value;
+  return value && typeof value === "object" ? [value] : [];
+}
+
 function track(value = {}) {
   return Object.freeze({
     name: safeText(value.name, 180),
@@ -44,17 +55,17 @@ function track(value = {}) {
 
 export async function getRecentTracks(env, username, limit = 20, apiKeyOverride) {
   const response = await lastFmRequest(env, "user.getrecenttracks", username, { limit, apiKeyOverride });
-  return Object.freeze((response.data?.recenttracks?.track || []).slice(0, limit).map(track));
+  return Object.freeze(toArray(response.data?.recenttracks?.track).slice(0, limit).map(track));
 }
 
 export async function getTopTracks(env, username, period = "7day", limit = 20, apiKeyOverride) {
   const response = await lastFmRequest(env, "user.gettoptracks", username, { period, limit, apiKeyOverride });
-  return Object.freeze((response.data?.toptracks?.track || []).slice(0, limit).map(track));
+  return Object.freeze(toArray(response.data?.toptracks?.track).slice(0, limit).map(track));
 }
 
 export async function getTopArtists(env, username, period = "7day", limit = 20, apiKeyOverride) {
   const response = await lastFmRequest(env, "user.gettopartists", username, { period, limit, apiKeyOverride });
-  return Object.freeze((response.data?.topartists?.artist || []).slice(0, limit).map((value) => Object.freeze({
+  return Object.freeze(toArray(response.data?.topartists?.artist).slice(0, limit).map((value) => Object.freeze({
     name: safeText(value.name, 160),
     playCount: safeNumber(value.playcount, 0, 1000000000),
     artworkUrl: imageUrl(value.image),

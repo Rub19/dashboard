@@ -15,8 +15,10 @@ function projectOrigin(env) {
   }
 }
 
-function supabaseHeaders(secret) {
-  return { apikey: secret, "content-type": "application/json", Authorization: `Bearer ${secret}` };
+function supabaseHeaders(secret, prefer) {
+  const headers = { apikey: secret, "content-type": "application/json", Authorization: `Bearer ${secret}` };
+  if (prefer) headers.Prefer = prefer;
+  return headers;
 }
 
 async function supabaseRequest(env, path, options = {}) {
@@ -29,7 +31,7 @@ async function supabaseRequest(env, path, options = {}) {
     expectedOrigin: origin,
     service: "supabase",
     method: options.method || "GET",
-    headers: supabaseHeaders(secret),
+    headers: supabaseHeaders(secret, options.prefer),
     body: options.body,
     maxBytes: options.maxBytes || 8192
   });
@@ -105,8 +107,12 @@ export async function profilesRoute({ request, env, auth, route }) {
     const existing = await supabaseRequest(env, `/rest/v1/ethone_profiles?user_id=eq.${encodeURIComponent(auth.userId)}&select=id&limit=1`);
     const isFirst = !Array.isArray(existing) || existing.length === 0;
     const now = new Date().toISOString();
+    // Without Prefer: return=representation, PostgREST replies to a POST with
+    // an empty body (its default is return=minimal) — `insert` would be null
+    // and profileView(null) would throw instead of handing back the new row.
     const insert = await supabaseRequest(env, "/rest/v1/ethone_profiles", {
       method: "POST",
+      prefer: "return=representation",
       body: JSON.stringify({
         user_id: auth.userId,
         name,
@@ -121,7 +127,7 @@ export async function profilesRoute({ request, env, auth, route }) {
       })
     });
     const created = Array.isArray(insert) ? insert[0] : insert;
-    return { data: profileView(created) };
+    return { data: created ? profileView(created) : null };
   }
 
   if (method === "POST" && action === "activate") {
@@ -135,6 +141,7 @@ export async function profilesRoute({ request, env, auth, route }) {
     });
     const result = await supabaseRequest(env, `/rest/v1/ethone_profiles?id=eq.${encodeURIComponent(profileId)}&user_id=eq.${encodeURIComponent(auth.userId)}`, {
       method: "PATCH",
+      prefer: "return=representation",
       body: JSON.stringify({ is_active: true, updated_at: now })
     });
     const activated = Array.isArray(result) ? result[0] : result;
@@ -153,6 +160,7 @@ export async function profilesRoute({ request, env, auth, route }) {
     }
     const update = await supabaseRequest(env, `/rest/v1/ethone_profiles?id=eq.${encodeURIComponent(profileId)}&user_id=eq.${encodeURIComponent(auth.userId)}`, {
       method: "PATCH",
+      prefer: "return=representation",
       body: JSON.stringify(updates)
     });
     const updated = Array.isArray(update) ? update[0] : update;

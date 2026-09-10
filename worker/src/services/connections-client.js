@@ -103,8 +103,13 @@ export async function disconnectProvider(env, userId, provider) {
       await Promise.allSettled([
         supabaseRequest(env, `/rest/v1/user_oauth_tokens?owner_id=eq.${encodeURIComponent(userId)}&provider=eq.${encodeURIComponent(provider)}`, { method: "DELETE" }),
         supabaseRequest(env, `/rest/v1/user_provider_credentials?owner_id=eq.${encodeURIComponent(userId)}&provider=eq.${encodeURIComponent(provider)}`, { method: "DELETE" }),
+        // Discord's cached profile snapshot lives in ethone_user_data (kind='discord',
+        // written by setDiscordDataRow in discord-oauth-client.js) — not in a `user_data`
+        // table keyed by `key`, which doesn't exist. The old target here always matched
+        // zero rows, so the snapshot survived disconnect and listConnections' fallback
+        // check (see its comment) kept reporting Discord as connected afterwards.
         provider === "discord"
-          ? supabaseRequest(env, `/rest/v1/user_data?owner_id=eq.${encodeURIComponent(userId)}&key=eq.discord_profile`, { method: "DELETE" })
+          ? supabaseRequest(env, `/rest/v1/ethone_user_data?user_id=eq.${encodeURIComponent(userId)}&kind=eq.discord`, { method: "DELETE" })
           : null,
       ]);
     }

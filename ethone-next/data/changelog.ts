@@ -1,3 +1,17 @@
+const v12080_fr: ChangelogEntry = {
+  version: "v1.20.80",
+  date: "2026-09-10",
+  title: "Correctifs : Partage de Fichiers, Navigation des Dossiers et Titres de Tâches Silencieusement Cassés",
+  items: [
+    "Bug sérieux trouvé lors d'un audit du backend : une fonction utilitaire de nettoyage de texte (`safeText`) était appelée partout avec un argument en trop, ce qui coupait toujours le texte à zéro caractère. Conséquences concrètes : le partage public de fichiers et les « drops » étaient entièrement cassés de bout en bout (impossible de retrouver un lien partagé), la navigation dans les dossiers du cloud ne filtrait plus rien, et renommer/déplacer un fichier ou modifier le titre/contenu d'une tâche enregistrait une valeur vide.",
+    "Bug lié : plusieurs écritures en base (créer un profil, inviter un membre d'équipe, créer une donnée utilisateur, créer une tâche) ne récupéraient jamais la ligne créée en retour — l'app recevait `null` pour une création pourtant réussie.",
+    "Compteurs de téléchargement des partages et de fichiers des drops : la syntaxe d'incrémentation utilisée n'est pas supportée par la base et faisait échouer chaque téléchargement/dépôt public APRÈS que le fichier ait déjà été transféré. Corrigé.",
+    "Last.fm : quand un utilisateur n'a qu'un seul morceau écouté sur la période, l'API Last.fm renvoie un objet au lieu d'une liste — le widget « en écoute » plantait (erreur 500) au lieu d'afficher ce morceau.",
+    "Discord : déconnecter Discord ne supprimait pas le profil Discord mis en cache (mauvais nom de table visé), si bien que Discord réapparaissait comme « connecté » juste après. Corrigé.",
+    "17 nouveaux tests automatisés côté serveur couvrant chacun de ces cas (214 au total désormais).",
+  ],
+};
+
 const v12079_fr: ChangelogEntry = {
   version: "v1.20.79",
   date: "2026-09-10",
@@ -298,6 +312,20 @@ const v12052_fr: ChangelogEntry = {
     "Dynamic Island : correction d'un bug de priorité qui empêchait Spotify de jamais s'afficher, systématiquement évincé par la synchronisation d'arrière-plan.",
     "Commande /help du Bot Discord : la liste des commandes est désormais générée dynamiquement depuis les commandes réellement enregistrées (fin des commandes fantômes et des commandes manquantes), et affiche la vraie syntaxe des commandes à sous-commandes (ex. /automod status).",
     "Audit de l'enregistrement des commandes slash Discord : architecture confirmée saine, aucune dérive entre le code et les commandes déployées.",
+  ],
+};
+
+const v12080_en: ChangelogEntry = {
+  version: "v1.20.80",
+  date: "2026-09-10",
+  title: "Fixes: File Sharing, Folder Navigation, and Task Titles Silently Broken",
+  items: [
+    "Serious bug found in a backend audit: a text-sanitizing helper (`safeText`) was being called everywhere with one extra argument, which always truncated the text to zero characters. Concrete impact: public file sharing and \"drops\" were completely broken end to end (a shared link could never be resolved), cloud folder navigation stopped filtering, and renaming/moving a file or editing a task's title/body silently saved a blank value.",
+    "Related bug: several database writes (create a profile, invite a team member, create user data, create a task) never got the created row back — the app received `null` for a write that in fact succeeded.",
+    "Share download counters and drop file counters: the increment syntax used isn't supported by the database and made every public download/drop fail AFTER the file had already been transferred. Fixed.",
+    "Last.fm: when a user has only one scrobble in the period, the Last.fm API returns an object instead of a list — the \"now playing\" widget crashed (500) instead of showing that one track.",
+    "Discord: disconnecting Discord didn't delete the cached Discord profile (wrong table name targeted), so Discord showed as \"connected\" again right after. Fixed.",
+    "17 new server-side tests covering each of these (214 total now).",
   ],
 };
 
@@ -604,6 +632,20 @@ const v12052_en: ChangelogEntry = {
   ],
 };
 
+const v12080_es: ChangelogEntry = {
+  version: "v1.20.80",
+  date: "2026-09-10",
+  title: "Correcciones: Compartir Archivos, Navegación de Carpetas y Títulos de Tareas Rotos en Silencio",
+  items: [
+    "Fallo serio encontrado en una auditoría del backend: una función de saneamiento de texto (`safeText`) se llamaba en todas partes con un argumento de más, lo que siempre recortaba el texto a cero caracteres. Impacto concreto: compartir archivos públicamente y los «drops» estaban completamente rotos de extremo a extremo (un enlace compartido nunca podía resolverse), la navegación por carpetas del cloud dejó de filtrar, y renombrar/mover un archivo o editar el título/contenido de una tarea guardaba un valor vacío.",
+    "Fallo relacionado: varias escrituras en base de datos (crear un perfil, invitar a un miembro del equipo, crear datos de usuario, crear una tarea) nunca recibían de vuelta la fila creada — la app recibía `null` para una escritura que de hecho tuvo éxito.",
+    "Contadores de descargas de recursos compartidos y de archivos de drops: la sintaxis de incremento usada no la admite la base de datos y hacía fallar cada descarga/drop público DESPUÉS de que el archivo ya se hubiera transferido. Corregido.",
+    "Last.fm: cuando un usuario tiene solo una reproducción en el periodo, la API de Last.fm devuelve un objeto en vez de una lista — el widget de «en reproducción» se caía (500) en vez de mostrar esa pista.",
+    "Discord: desconectar Discord no eliminaba el perfil de Discord en caché (nombre de tabla incorrecto), así que Discord volvía a aparecer como «conectado» justo después. Corregido.",
+    "17 nuevas pruebas automatizadas del lado del servidor que cubren cada uno de estos casos (214 en total ahora).",
+  ],
+};
+
 const v12079_es: ChangelogEntry = {
   version: "v1.20.79",
   date: "2026-09-10",
@@ -904,6 +946,20 @@ const v12052_es: ChangelogEntry = {
     "Dynamic Island: corregido un error de prioridad que impedía que Spotify apareciera, siempre desplazado por la sincronización en segundo plano.",
     "Comando /help del Bot de Discord: la lista de comandos ahora se genera dinámicamente desde los comandos realmente registrados (fin de comandos fantasma o ausentes), mostrando la sintaxis real de los comandos con subcomandos.",
     "Auditoría del registro de comandos slash de Discord: arquitectura confirmada como sólida, sin desviación entre el código y los comandos desplegados.",
+  ],
+};
+
+const v12080_de: ChangelogEntry = {
+  version: "v1.20.80",
+  date: "2026-09-10",
+  title: "Fixes: Dateifreigabe, Ordnernavigation und Aufgabentitel Stillschweigend Kaputt",
+  items: [
+    "Ernster Fehler bei einem Backend-Audit gefunden: eine Text-Bereinigungsfunktion (`safeText`) wurde überall mit einem zusätzlichen Argument aufgerufen, wodurch der Text immer auf null Zeichen gekürzt wurde. Konkrete Auswirkung: öffentliche Dateifreigabe und Drops waren durchgängig kaputt (ein geteilter Link konnte nie aufgelöst werden), die Cloud-Ordnernavigation filterte nicht mehr, und das Umbenennen/Verschieben einer Datei oder das Bearbeiten von Titel/Inhalt einer Aufgabe speicherte stillschweigend einen leeren Wert.",
+    "Verwandter Fehler: mehrere Datenbankschreibvorgänge (Profil erstellen, Teammitglied einladen, Benutzerdaten anlegen, Aufgabe erstellen) bekamen die erstellte Zeile nie zurück — die App erhielt `null` für einen Schreibvorgang, der tatsächlich erfolgreich war.",
+    "Download-Zähler für Freigaben und Datei-Zähler für Drops: die verwendete Inkrement-Syntax wird von der Datenbank nicht unterstützt und ließ jeden öffentlichen Download/Drop fehlschlagen, NACHDEM die Datei bereits übertragen war. Behoben.",
+    "Last.fm: wenn ein Nutzer nur einen Scrobble im Zeitraum hat, gibt die Last.fm-API ein Objekt statt einer Liste zurück — das Widget für gerade gespielte Titel stürzte ab (500), statt diesen einen Titel anzuzeigen.",
+    "Discord: das Trennen von Discord löschte das zwischengespeicherte Discord-Profil nicht (falscher Tabellenname), sodass Discord direkt danach wieder als verbunden angezeigt wurde. Behoben.",
+    "17 neue serverseitige Tests, die jeden dieser Fälle abdecken (jetzt 214 insgesamt).",
   ],
 };
 
@@ -23207,5 +23263,9 @@ CHANGELOG_BY_LANG.fr.unshift(v12079_fr);
 CHANGELOG_BY_LANG.en.unshift(v12079_en);
 CHANGELOG_BY_LANG.es.unshift(v12079_es);
 CHANGELOG_BY_LANG.de.unshift(v12079_de);
+CHANGELOG_BY_LANG.fr.unshift(v12080_fr);
+CHANGELOG_BY_LANG.en.unshift(v12080_en);
+CHANGELOG_BY_LANG.es.unshift(v12080_es);
+CHANGELOG_BY_LANG.de.unshift(v12080_de);
 
 export const CHANGELOG = CHANGELOG_BY_LANG.fr;

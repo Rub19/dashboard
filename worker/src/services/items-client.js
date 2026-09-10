@@ -41,10 +41,14 @@ export async function listItems(env, userId, kind) {
   const path = `/rest/v1/ethone_items?user_id=eq.${encodeURIComponent(userId)}&kind=eq.${encodeURIComponent(kind)}&order=updated_at.desc`;
   const response = await supabaseRequest(env, path);
   const rows = Array.isArray(response.data) ? response.data : [];
+  // safeText(value, maximum) has no "fallback" parameter — passing a string
+  // like "Sans titre" here made it the `maximum` argument. Number("Sans
+  // titre") is NaN, which coerces to 0, so `.slice(0, 0)` returned "" for
+  // every title and body on every item, no matter what was actually stored.
   return rows.map((row) => ({
     id: row.id,
-    title: safeText(row.title, "Sans titre"),
-    body: safeText(row.body, ""),
+    title: safeText(row.title, 200) || "Sans titre",
+    body: safeText(row.body, 10000),
     done: row.done === true,
     startAt: row.start_at,
     endAt: row.end_at,
@@ -59,14 +63,20 @@ export async function createItem(env, userId, kind, input) {
   const body = {
     user_id: userId,
     kind,
-    title: safeText(input.title, "Sans titre").slice(0, 200),
-    body: safeText(input.body, "").slice(0, 10000),
+    // See the comment in listItems above — safeText's second argument is a
+    // character cap, not a fallback; this used to store "" for every title
+    // and body regardless of input.
+    title: safeText(input.title, 200) || "Sans titre",
+    body: safeText(input.body, 10000),
     done: input.done === true,
     start_at: input.startAt || null,
     end_at: input.endAt || null,
     data: typeof input.data === "object" && input.data ? input.data : {}
   };
-  const response = await supabaseRequest(env, "/rest/v1/ethone_items", { method: "POST", body });
+  // Prefer: return=representation is required here — PostgREST's default for a
+  // POST is an empty body, which would make `row` (and the returned id) null
+  // even though the insert succeeded.
+  const response = await supabaseRequest(env, "/rest/v1/ethone_items", { method: "POST", body, headers: { Prefer: "return=representation" } });
   const row = Array.isArray(response.data) ? response.data[0] : null;
   return { id: row?.id };
 }
@@ -74,8 +84,8 @@ export async function createItem(env, userId, kind, input) {
 export async function updateItem(env, userId, id, input) {
   if (!userId || !id) throw httpError("AUTH_REQUIRED", 401);
   const set = {};
-  if (input.title !== undefined) set.title = safeText(input.title, "Sans titre").slice(0, 200);
-  if (input.body !== undefined) set.body = safeText(input.body, "").slice(0, 10000);
+  if (input.title !== undefined) set.title = safeText(input.title, 200) || "Sans titre";
+  if (input.body !== undefined) set.body = safeText(input.body, 10000);
   if (input.done !== undefined) set.done = input.done === true;
   if (input.startAt !== undefined) set.start_at = input.startAt || null;
   if (input.endAt !== undefined) set.end_at = input.endAt || null;

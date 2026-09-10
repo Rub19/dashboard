@@ -92,7 +92,9 @@ function normalizeDrop(row) {
     userId: safeText(row?.user_id, 128),
     slug: safeText(row?.slug, 64),
     driveClientId: safeText(row?.drive_client_id, 120),
-    title: safeText(row?.title, 200, "Drop"),
+    // safeText() has no third "fallback" parameter — it was silently ignored,
+    // so a row with no title rendered as "" instead of the intended "Drop".
+    title: safeText(row?.title, 200) || "Drop",
     description: safeText(row?.description, 1000),
     visibility: safeText(row?.visibility, 16),
     expiresAt: safeText(row?.expires_at, 40),
@@ -103,8 +105,15 @@ function normalizeDrop(row) {
   });
 }
 
+// safeText(value, maximum) only takes two arguments. Every call below used to
+// pass a stray "" as a middle argument (as if there were a `fallback` param),
+// which became `maximum` — `.slice(0, "")` coerces to `.slice(0, 0)` and
+// always returns "". That silently turned every slug/id filter in this file
+// into `eq.` (empty string), so shares and drops could never be found,
+// created records stored an empty drive_client_id, and revoke matched zero
+// rows — the public sharing/drop feature was completely broken end to end.
 async function findFileById(env, userId, fileId) {
-  const response = await supabaseRequest(env, `/rest/v1/ethone_files?user_id=eq.${encodeURIComponent(userId)}&id=eq.${encodeURIComponent(safeText(fileId, "", 128))}&select=*`, { maxBytes: 64 * 1024 });
+  const response = await supabaseRequest(env, `/rest/v1/ethone_files?user_id=eq.${encodeURIComponent(userId)}&id=eq.${encodeURIComponent(safeText(fileId, 128))}&select=*`, { maxBytes: 64 * 1024 });
   return firstRow(response);
 }
 
@@ -117,7 +126,7 @@ export async function createShare(env, userId, { fileId, visibility = "public", 
   const body = {
     user_id: userId,
     file_id: fileId,
-    drive_client_id: safeText(fileRecord.drive_client_id, "", 120),
+    drive_client_id: safeText(fileRecord.drive_client_id, 120),
     slug: generateSlug(),
     visibility: safeVisibility,
     password_hash: safeVisibility === "password" ? hashPassword(password) : null,
@@ -137,7 +146,7 @@ export async function listShares(env, userId, { fileId = null, limit = 100 } = {
   const origin = projectOrigin(env);
   if (!origin || !userId) return [];
   let path = `/rest/v1/ethone_file_shares?user_id=eq.${encodeURIComponent(userId)}&revoked=eq.false&order=created_at.desc&limit=${Math.max(1, Math.min(500, Number(limit) || 100))}&select=*`;
-  if (fileId) path += `&file_id=eq.${encodeURIComponent(safeText(fileId, "", 128))}`;
+  if (fileId) path += `&file_id=eq.${encodeURIComponent(safeText(fileId, 128))}`;
   const response = await supabaseRequest(env, path, { maxBytes: 512 * 1024 });
   return Array.isArray(response.data) ? response.data.map(normalizeShare) : [];
 }
@@ -145,7 +154,7 @@ export async function listShares(env, userId, { fileId = null, limit = 100 } = {
 export async function getShareBySlug(env, slug, password = "") {
   const origin = projectOrigin(env);
   if (!origin || !slug) throw httpError("PROVIDER_NOT_FOUND", 404);
-  const response = await supabaseRequest(env, `/rest/v1/ethone_file_shares?slug=eq.${encodeURIComponent(safeText(slug, "", 64))}&revoked=eq.false&select=*,ethone_files!inner(*)`);
+  const response = await supabaseRequest(env, `/rest/v1/ethone_file_shares?slug=eq.${encodeURIComponent(safeText(slug, 64))}&revoked=eq.false&select=*,ethone_files!inner(*)`);
   const row = firstRow(response);
   if (!row) throw httpError("PROVIDER_NOT_FOUND", 404);
   if (row.expires_at && new Date(row.expires_at) < new Date()) throw httpError("SHARE_EXPIRED", 410);
@@ -158,9 +167,19 @@ export async function getShareBySlug(env, slug, password = "") {
 export async function incrementShareDownload(env, slug) {
   const origin = projectOrigin(env);
   if (!origin || !slug) return null;
-  const response = await supabaseRequest(env, `/rest/v1/ethone_file_shares?slug=eq.${encodeURIComponent(safeText(slug, "", 64))}`, {
+  // PostgREST has no in-place increment operator — `{ download_count: { "+": 1 } }`
+  // tries to cast a JSON object into the `download_count` int column, which
+  // Postgres rejects on every call. That made this PATCH throw, which in turn
+  // made cloudShareDownloadRoute fail *after* the file had already been
+  // streamed from Drive — every public share download errored out. Read the
+  // current count and write back a plain integer instead.
+  const encodedSlug = encodeURIComponent(safeText(slug, 64));
+  const current = await supabaseRequest(env, `/rest/v1/ethone_file_shares?slug=eq.${encodedSlug}&select=download_count`, { maxBytes: 2048 });
+  const nextCount = (Number(firstRow(current)?.download_count) || 0) + 1;
+  const response = await supabaseRequest(env, `/rest/v1/ethone_file_shares?slug=eq.${encodedSlug}`, {
     method: "PATCH",
-    body: { download_count: { "+": 1 } },
+    headers: { Prefer: "return=representation" },
+    body: { download_count: nextCount },
     maxBytes: 64 * 1024
   });
   return firstRow(response);
@@ -169,7 +188,7 @@ export async function incrementShareDownload(env, slug) {
 export async function revokeShare(env, userId, slug) {
   const origin = projectOrigin(env);
   if (!origin || !userId) throw httpError("AUTH_REQUIRED", 401);
-  const response = await supabaseRequest(env, `/rest/v1/ethone_file_shares?user_id=eq.${encodeURIComponent(userId)}&slug=eq.${encodeURIComponent(safeText(slug, "", 64))}`, {
+  const response = await supabaseRequest(env, `/rest/v1/ethone_file_shares?user_id=eq.${encodeURIComponent(userId)}&slug=eq.${encodeURIComponent(safeText(slug, 64))}`, {
     method: "PATCH",
     body: { revoked: true },
     maxBytes: 64 * 1024
@@ -184,7 +203,7 @@ export async function createDrop(env, userId, { title, description = "", visibil
   const body = {
     user_id: userId,
     slug: generateSlug(),
-    drive_client_id: safeText(driveClientId, "", 120),
+    drive_client_id: safeText(driveClientId, 120),
     title: safeText(title, 200),
     description: safeText(description, 1000),
     visibility: safeVisibility,
@@ -213,7 +232,7 @@ export async function listDrops(env, userId, { limit = 100 } = {}) {
 export async function getDropBySlug(env, slug, password = "") {
   const origin = projectOrigin(env);
   if (!origin || !slug) throw httpError("PROVIDER_NOT_FOUND", 404);
-  const response = await supabaseRequest(env, `/rest/v1/ethone_file_drops?slug=eq.${encodeURIComponent(safeText(slug, "", 64))}&select=*`);
+  const response = await supabaseRequest(env, `/rest/v1/ethone_file_drops?slug=eq.${encodeURIComponent(safeText(slug, 64))}&select=*`);
   const row = firstRow(response);
   if (!row) throw httpError("PROVIDER_NOT_FOUND", 404);
   if (row.expires_at && new Date(row.expires_at) < new Date()) throw httpError("DROP_EXPIRED", 410);
@@ -224,9 +243,16 @@ export async function getDropBySlug(env, slug, password = "") {
 export async function incrementDropFileCount(env, slug) {
   const origin = projectOrigin(env);
   if (!origin || !slug) return null;
-  const response = await supabaseRequest(env, `/rest/v1/ethone_file_drops?slug=eq.${encodeURIComponent(safeText(slug, "", 64))}`, {
+  // Same PostgREST increment-operator issue as incrementShareDownload above —
+  // `{ file_count: { "+": 1 } }` isn't valid for an int column and made every
+  // drop upload fail after the file was already stored in Drive.
+  const encodedSlug = encodeURIComponent(safeText(slug, 64));
+  const current = await supabaseRequest(env, `/rest/v1/ethone_file_drops?slug=eq.${encodedSlug}&select=file_count`, { maxBytes: 2048 });
+  const nextCount = (Number(firstRow(current)?.file_count) || 0) + 1;
+  const response = await supabaseRequest(env, `/rest/v1/ethone_file_drops?slug=eq.${encodedSlug}`, {
     method: "PATCH",
-    body: { file_count: { "+": 1 } },
+    headers: { Prefer: "return=representation" },
+    body: { file_count: nextCount },
     maxBytes: 64 * 1024
   });
   return firstRow(response);
@@ -235,7 +261,7 @@ export async function incrementDropFileCount(env, slug) {
 export async function revokeDrop(env, userId, slug) {
   const origin = projectOrigin(env);
   if (!origin || !userId) throw httpError("AUTH_REQUIRED", 401);
-  const response = await supabaseRequest(env, `/rest/v1/ethone_file_drops?user_id=eq.${encodeURIComponent(userId)}&slug=eq.${encodeURIComponent(safeText(slug, "", 64))}`, {
+  const response = await supabaseRequest(env, `/rest/v1/ethone_file_drops?user_id=eq.${encodeURIComponent(userId)}&slug=eq.${encodeURIComponent(safeText(slug, 64))}`, {
     method: "DELETE",
     maxBytes: 64 * 1024
   });

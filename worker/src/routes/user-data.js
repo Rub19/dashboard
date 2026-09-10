@@ -13,8 +13,10 @@ function projectOrigin(env) {
   }
 }
 
-function supabaseHeaders(secret) {
-  return { apikey: secret, "content-type": "application/json", Authorization: `Bearer ${secret}` };
+function supabaseHeaders(secret, prefer) {
+  const headers = { apikey: secret, "content-type": "application/json", Authorization: `Bearer ${secret}` };
+  if (prefer) headers.Prefer = prefer;
+  return headers;
 }
 
 async function supabaseRequest(env, path, options = {}) {
@@ -27,7 +29,7 @@ async function supabaseRequest(env, path, options = {}) {
     expectedOrigin: origin,
     service: "supabase",
     method: options.method || "GET",
-    headers: supabaseHeaders(secret),
+    headers: supabaseHeaders(secret, options.prefer),
     body: options.body,
     maxBytes: options.maxBytes || 8192
   });
@@ -82,8 +84,12 @@ export async function userDataRoute({ request, env, auth, route }) {
       }
     }
 
+    // Without Prefer: return=representation PostgREST returns no body for a
+    // POST, so `insert` would be null and the caller would get back `data:
+    // null` for a row that was in fact created.
     const insert = await supabaseRequest(env, "/rest/v1/ethone_user_data", {
       method: "POST",
+      prefer: "return=representation",
       body: JSON.stringify({
         user_id: auth.userId,
         kind,
@@ -116,6 +122,7 @@ export async function userDataRoute({ request, env, auth, route }) {
     path = appendProfileFilter(path, active);
     const update = await supabaseRequest(env, path, {
       method: "PATCH",
+      prefer: "return=representation",
       body: JSON.stringify(updates)
     });
     return { data: update?.[0] || update };

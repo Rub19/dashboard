@@ -49,6 +49,7 @@ import {
 import { pollCommand } from '../modules/polls/commands/pollCommand.js';
 import { eventCommand } from '../modules/events/eventsCommand.js';
 import { voiceCommand } from '../modules/voice/commands/voiceCommand.js';
+import { starboardCommand } from '../modules/starboard/commands/starboardCommand.js';
 
 import { config } from '../config.js';
 import { Command } from '../types/command.js';
@@ -126,6 +127,9 @@ class CommandRegistry {
 
     // Salons Vocaux 2.0 (Voice Center)
     this.register(voiceCommand);
+
+    // Starboard (hall of fame des messages étoilés)
+    this.register(starboardCommand);
   }
 
   public register(command: Command) {

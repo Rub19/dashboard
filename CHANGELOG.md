@@ -2,6 +2,19 @@
 
 Toutes les modifications notables de ce projet seront documentées dans ce fichier.
 
+## discord-bot — 2026-09-10 (nouveau module : Starboard)
+
+**Le bot a désormais un Starboard — le « hall of fame » des messages les plus appréciés du serveur.**
+
+- Quand un message atteint un seuil de réactions ⭐ (configurable), le bot le republie dans un salon dédié, avec un embed maintenu à jour (compteur de ⭐, image jointe, lien « → Aller au message »). Si le total repasse sous le seuil, l'entrée est retirée (option `retirer_sous_seuil`).
+- **Nouvelle commande `/starboard`** (permission *Gérer le serveur*) : `setup` (salon + seuil + emoji), `salon`, `seuil`, `emoji` (unicode ou custom `<:nom:id>`), `options` (auto-étoile de l'auteur, ignorer les bots, inclure les salons NSFW, retrait sous le seuil), `ignorer` (basculer un salon exclu), `toggle`, `status` (config + stats + record).
+- Décompte fiable : le bot **recompte réellement** les réacteurs à chaque ajout/retrait (via `reaction.users.fetch`), en filtrant les bots et l'auto-étoile selon la config — pas de dérive de compteur après un redémarrage. Le starboard lui-même, les salons ignorés et les messages du bot ne peuvent pas être étoilés ; vérification des permissions `SendMessages` + `EmbedLinks` dans le salon cible avant publication. Supprimer le message d'origine retire automatiquement son entrée du starboard.
+- **Nouveau côté gateway** : le bot écoute maintenant `MessageReactionAdd` / `Remove` / `RemoveAll` / `RemoveEmoji` (intent `GuildMessageReactions` + partials `Reaction`/`User` ajoutés) — première brique de réactions du bot, réutilisable pour de futurs modules (reaction-roles natifs, etc.).
+- Persistance : `data/starboard_configs.json` + `data/starboard_entries.json` (même approche JSON que Suggestions / Voice, `data/` gitignore).
+- API Dashboard : `GET/PUT /api/guilds/:guildId/starboard/config`, `GET .../overview`, `GET .../entries` (derrière `authMiddleware` + `guildAuth`, prêt pour une future page dashboard — pas d'UI ajoutée pour l'instant).
+- Fichiers : `src/modules/starboard/{types,storage,services,commands}`, `src/server/routes/starboardRoutes.ts`, wiring dans `handlers/eventHandler.ts`, `handlers/commandHandler.ts`, `index.ts`, `server/index.ts`.
+- Validation : `npm run node:build` (tsc) propre.
+
 ## v1.20.87 — 2026-09-10
 
 **Pages Tâches / Fichiers / Mail : états de chargement et d'erreur + icônes Discord plus nettes**

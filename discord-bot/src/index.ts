@@ -26,9 +26,16 @@ const client = new Client({
     GatewayIntentBits.MessageContent, // Requis pour lire les commandes préfixes (ex: !ping)
     GatewayIntentBits.GuildModeration, // Requis pour les bans / unbans
     GatewayIntentBits.GuildVoiceStates, // Requis pour les logs d'activité vocale
+    GatewayIntentBits.GuildMessageReactions, // Requis pour le Starboard (réactions ⭐)
     GatewayIntentBits.DirectMessages,
   ],
-  partials: [Partials.Channel, Partials.Message, Partials.GuildMember],
+  partials: [
+    Partials.Channel,
+    Partials.Message,
+    Partials.GuildMember,
+    Partials.Reaction, // Starboard : réactions sur des messages non mis en cache
+    Partials.User,
+  ],
 });
 
 // Enregistrement des événements

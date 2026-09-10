@@ -32,6 +32,7 @@ import { raidDetectionService } from '../modules/antiRaid/services/raidDetection
 import { autoModService } from '../modules/automod/services/autoModService.js';
 import { inviteSnapshotService } from '../modules/invites/services/inviteSnapshotService.js';
 import { voiceService } from '../modules/voice/services/voiceService.js';
+import { starboardService } from '../modules/starboard/services/starboardService.js';
 import { healthStatusService } from '../services/resilience/healthStatusService.js';
 import { logger } from '../utils/logger.js';
 
@@ -101,6 +102,7 @@ export function registerEvents(client: Client): void {
   client.on(Events.MessageDelete, (message) => {
     handleMessageDelete(message);
     autoModService.handleMessageDelete(message);
+    starboardService.handleMessageDelete(message);
   });
   client.on(Events.MessageBulkDelete, (messages, channel) =>
     handleMessageDeleteBulk(messages, channel)
@@ -206,4 +208,18 @@ export function registerEvents(client: Client): void {
 
   // Logs : Serveur
   client.on(Events.GuildUpdate, (oldGuild, newGuild) => handleGuildUpdate(oldGuild, newGuild));
+
+  // Starboard : réactions ⭐
+  client.on(Events.MessageReactionAdd, (reaction, user) => {
+    starboardService.handleReactionAdd(reaction, user);
+  });
+  client.on(Events.MessageReactionRemove, (reaction, user) => {
+    starboardService.handleReactionRemove(reaction, user);
+  });
+  client.on(Events.MessageReactionRemoveAll, (message) => {
+    starboardService.handleReactionClear(message);
+  });
+  client.on(Events.MessageReactionRemoveEmoji, (reaction) => {
+    starboardService.handleReactionClear(reaction.message);
+  });
 }

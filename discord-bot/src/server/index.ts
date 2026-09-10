@@ -31,6 +31,7 @@ import { createBackupRouter } from './routes/backupRoutes.js';
 import { createAiRouter } from './routes/aiRoutes.js';
 import { createFormRouter } from './routes/formRoutes.js';
 import { createPollRouter } from './routes/pollRoutes.js';
+import { createStarboardRouter } from './routes/starboardRoutes.js';
 import { createEventRouter } from './routes/events.js';
 import { createCalendarRouter } from './routes/calendar.js';
 import { createServerRouter } from './routes/serverRoutes.js';
@@ -196,6 +197,12 @@ export function startWebServer(client: Client): http.Server {
     authMiddleware,
     createGuildAuthMiddleware(client),
     createEventRouter(client)
+  );
+  app.use(
+    '/api/guilds/:guildId/starboard',
+    authMiddleware,
+    createGuildAuthMiddleware(client),
+    createStarboardRouter(client)
   );
   app.use(
     '/api/guilds/:guildId/calendar',

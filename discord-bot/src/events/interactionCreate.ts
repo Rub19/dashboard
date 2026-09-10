@@ -32,6 +32,7 @@ import { discordFormPanel } from '../modules/forms/ui/discordFormPanel.js';
 import { discordPollPanel } from '../modules/polls/ui/discordPollPanel.js';
 import { handleEventButton } from '../modules/events/eventsInteractionHandler.js';
 import { handleLogsInteraction } from '../modules/logs/interactions/logsInteractionHandler.js';
+import { youtubeSuggestions } from '../modules/music/providers/searchSuggest.js';
 import { discordOwnerPanel } from '../modules/presence/ui/discordOwnerPanel.js';
 import { handlePermissionPresetButton } from '../commands/admin/permissionsCommand.js';
 import { baseEmbed } from '../utils/embeds.js';
@@ -150,20 +151,15 @@ export async function onInteractionCreate(interaction: Interaction) {
     }
 
     if ((interaction.commandName === 'music' || interaction.commandName === 'play') && focused.name === 'recherche') {
-      const suggestions = [
-        'Lo-Fi Hip Hop Beats to relax/study',
-        'Synthwave 80s Retro Chill',
-        'Phonk Gym Gaming Mix 2026',
-        'Chillhop Music Lounge',
-        'Acoustic Guitar Cozy Songs',
-        'Deep House Club Mix',
-        'Cyberpunk Electro Bass Boosted',
-        'Piano Instrumental Relaxing',
-      ];
+      // Un lien collé : ne rien suggérer, le laisser tel quel.
+      if (/^https?:\/\//i.test(query)) {
+        await interaction.respond([{ name: `🔗 ${query}`.slice(0, 100), value: query.slice(0, 100) }]).catch(() => null);
+        return;
+      }
+      const suggestions = await youtubeSuggestions(query);
       const filtered = suggestions
-        .filter((s) => !query || s.toLowerCase().includes(query))
         .slice(0, 25)
-        .map((s) => ({ name: s, value: s }));
+        .map((s) => ({ name: s.slice(0, 100), value: s.slice(0, 100) }));
       await interaction.respond(filtered).catch(() => null);
       return;
     }

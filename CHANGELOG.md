@@ -2,6 +2,19 @@
 
 Toutes les modifications notables de ce projet seront documentées dans ce fichier.
 
+## discord-bot — 2026-09-10 (musique : autocomplétion réelle + nouvelles commandes raccourcies)
+
+- **Autocomplétion `/play` réelle.** L'option `recherche` de `/play` et `/music play` avait `setAutocomplete(true)` mais ne renvoyait que **8 phrases codées en dur** — dès que tu tapais un vrai titre, la liste était vide. Elle interroge maintenant l'endpoint public de suggestions YouTube (le même que la barre de recherche du site, sans clé API, ~200 ms, cache 5 min) et propose de vrais résultats. Un lien collé est laissé tel quel.
+- **Nouvelles commandes raccourcies** (elles existaient seulement en sous-commande de `/music`) :
+  - `/volume [niveau]` — règle le volume 0-100 %, ou affiche le volume actuel si vide (alias `vol`)
+  - `/loop [mode]` — fait défiler off → titre → file, ou fixe un mode précis (alias `repeat`)
+  - `/shuffle` — mélange la file (alias `mix`)
+  - `/previous` — revient au titre précédent (alias `prev`, `back`)
+  - `/clearqueue` — vide la file, le titre en cours continue (alias `cq`)
+- Toutes vérifient qu'une musique joue et que l'utilisateur est dans le bon salon vocal ; messages d'erreur clairs, icônes 🔊/🔉/🔇/🔂/🔁/🔀.
+- Fichiers : `src/modules/music/providers/searchSuggest.ts` (nouveau), `src/commands/music/musicShortcuts.ts`, `src/events/interactionCreate.ts`, `src/handlers/commandHandler.ts`.
+- Validation : `npm run node:build` (tsc) propre ; endpoint de suggestions testé en conditions réelles.
+
 ## discord-bot — 2026-09-10 (nouvelle commande : `/logs`)
 
 **Le module Journaux (logs) a enfin une commande Discord, avec un setup guidé.** Avant, il ne se configurait que depuis le dashboard.

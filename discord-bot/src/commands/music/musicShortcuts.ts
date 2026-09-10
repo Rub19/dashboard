@@ -2,6 +2,7 @@ import { PermissionFlagsBits, SlashCommandBuilder, type VoiceBasedChannel } from
 import { Command, CommandContext } from '../../types/command.js';
 import { musicService } from '../../modules/music/services/musicService.js';
 import { DiscordMusicPanel } from '../../modules/music/ui/discordMusicPanel.js';
+import type { RepeatMode } from '../../modules/music/types/music.js';
 import { formatString, getTranslation } from '../../utils/i18n.js';
 import { errorEmbed } from '../../utils/embeds.js';
 
@@ -302,5 +303,178 @@ export const nowPlayingCommand: Command = {
       .setThumbnail(track.thumbnail);
 
     await ctx.reply({ embeds: [embed] });
+  },
+};
+
+export const volumeCommand: Command = {
+  name: 'volume',
+  description: 'Règle le volume de la musique (0-100%)',
+  category: 'Musique',
+  aliases: ['vol'],
+  slashData: new SlashCommandBuilder()
+    .setName('volume')
+    .setDescription('Règle le volume de la musique (0-100%)')
+    .addIntegerOption((opt) =>
+      opt
+        .setName('niveau')
+        .setDescription('Niveau de volume entre 0 et 100 (vide = affiche le volume actuel)')
+        .setMinValue(0)
+        .setMaxValue(100)
+        .setRequired(false)
+    ),
+  execute: async (ctx: CommandContext) => {
+    if (!ctx.guild) return;
+    const state = musicService.getPlayer(ctx.guild.id, false)?.getState();
+    if (!state || !state.currentTrack) {
+      await replyInfo(ctx, "Aucune musique n'est en cours de lecture.");
+      return;
+    }
+
+    const level =
+      ctx.isSlash && ctx.interaction
+        ? ctx.interaction.options.getInteger('niveau')
+        : ctx.args[0] != null
+          ? parseInt(ctx.args[0], 10)
+          : null;
+
+    if (level == null || Number.isNaN(level)) {
+      await replyInfo(ctx, `🔊 Volume actuel : **${state.volume}%**`);
+      return;
+    }
+
+    if (!checkVoice(ctx)) return;
+    const clamped = Math.min(100, Math.max(0, level));
+    const res = musicService.setVolume(ctx.guild.id, clamped, ctx.member!);
+    if (res.success) {
+      const icon = clamped === 0 ? '🔇' : clamped < 40 ? '🔉' : '🔊';
+      await replySuccess(ctx, `${icon} Volume réglé sur **${clamped}%**.`);
+    } else {
+      await replyError(ctx, res.error || "Impossible de régler le volume.");
+    }
+  },
+};
+
+const LOOP_LABELS: Record<RepeatMode, string> = {
+  OFF: 'désactivée',
+  SONG: 'sur le titre en cours',
+  QUEUE: 'sur toute la file',
+};
+
+export const loopCommand: Command = {
+  name: 'loop',
+  description: 'Change le mode de répétition (off / titre / file)',
+  category: 'Musique',
+  aliases: ['repeat'],
+  slashData: new SlashCommandBuilder()
+    .setName('loop')
+    .setDescription('Change le mode de répétition')
+    .addStringOption((opt) =>
+      opt
+        .setName('mode')
+        .setDescription('Mode de répétition (vide = fait défiler off → titre → file)')
+        .setRequired(false)
+        .addChoices(
+          { name: 'Désactivé', value: 'OFF' },
+          { name: 'Répéter le titre', value: 'SONG' },
+          { name: 'Répéter la file', value: 'QUEUE' }
+        )
+    ),
+  execute: async (ctx: CommandContext) => {
+    if (!checkVoice(ctx)) return;
+    const state = musicService.getPlayer(ctx.guild!.id, false)?.getState();
+    if (!state || !state.currentTrack) {
+      await replyInfo(ctx, "Aucune musique n'est en cours de lecture.");
+      return;
+    }
+
+    const CYCLE: RepeatMode[] = ['OFF', 'SONG', 'QUEUE'];
+    const explicit = (ctx.isSlash && ctx.interaction
+      ? ctx.interaction.options.getString('mode')
+      : ctx.args[0]?.toUpperCase()) as RepeatMode | null;
+    const mode: RepeatMode =
+      explicit && CYCLE.includes(explicit)
+        ? explicit
+        : CYCLE[(CYCLE.indexOf(state.repeatMode) + 1) % CYCLE.length];
+
+    const res = musicService.setRepeatMode(ctx.guild!.id, mode, ctx.member!);
+    if (res.success) {
+      const icon = mode === 'OFF' ? '➡️' : mode === 'SONG' ? '🔂' : '🔁';
+      await replySuccess(ctx, `${icon} Répétition **${LOOP_LABELS[mode]}**.`);
+    } else {
+      await replyError(ctx, res.error || "Impossible de changer le mode de répétition.");
+    }
+  },
+};
+
+export const shuffleCommand: Command = {
+  name: 'shuffle',
+  description: "Mélange aléatoirement la file d'attente",
+  category: 'Musique',
+  aliases: ['mix'],
+  slashData: new SlashCommandBuilder()
+    .setName('shuffle')
+    .setDescription("Mélange aléatoirement la file d'attente"),
+  execute: async (ctx: CommandContext) => {
+    if (!checkVoice(ctx)) return;
+    const state = musicService.getPlayer(ctx.guild!.id, false)?.getState();
+    if (!state || state.queue.length < 2) {
+      await replyInfo(ctx, "Il faut au moins 2 titres dans la file pour la mélanger.");
+      return;
+    }
+    const res = musicService.shuffle(ctx.guild!.id, ctx.member!);
+    if (res.success) {
+      await replySuccess(ctx, `🔀 File mélangée — **${state.queue.length}** titres réordonnés.`);
+    } else {
+      await replyError(ctx, res.error || "Impossible de mélanger la file.");
+    }
+  },
+};
+
+export const previousCommand: Command = {
+  name: 'previous',
+  description: 'Revient au titre précédent',
+  category: 'Musique',
+  aliases: ['prev', 'back'],
+  slashData: new SlashCommandBuilder()
+    .setName('previous')
+    .setDescription('Revient au titre précédent'),
+  execute: async (ctx: CommandContext) => {
+    if (!checkVoice(ctx)) return;
+    await ctx.deferReply();
+    const res = await musicService.previous(ctx.guild!.id, ctx.member!);
+    if (res.success) {
+      if (res.prevTrack) {
+        await replySuccess(ctx, `⏮️ Retour à **${res.prevTrack.title}**.`);
+      } else {
+        await replyInfo(ctx, "Aucun titre précédent dans l'historique.");
+      }
+    } else {
+      await replyError(ctx, res.error || "Impossible de revenir en arrière.");
+    }
+  },
+};
+
+export const clearQueueCommand: Command = {
+  name: 'clearqueue',
+  description: "Vide la file d'attente (le titre en cours continue)",
+  category: 'Musique',
+  aliases: ['cq', 'emptyqueue'],
+  slashData: new SlashCommandBuilder()
+    .setName('clearqueue')
+    .setDescription("Vide la file d'attente (le titre en cours continue)"),
+  execute: async (ctx: CommandContext) => {
+    if (!checkVoice(ctx)) return;
+    const state = musicService.getPlayer(ctx.guild!.id, false)?.getState();
+    const count = state?.queue.length ?? 0;
+    if (count === 0) {
+      await replyInfo(ctx, "La file d'attente est déjà vide.");
+      return;
+    }
+    const res = musicService.clearQueue(ctx.guild!.id, ctx.member!);
+    if (res.success) {
+      await replySuccess(ctx, `🗑️ File vidée — **${count}** titre(s) retiré(s).`);
+    } else {
+      await replyError(ctx, res.error || "Impossible de vider la file.");
+    }
   },
 };

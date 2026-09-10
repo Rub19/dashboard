@@ -159,7 +159,15 @@ function trackerUnavailable(error, extra = {}) {
   };
   const reason = byCode[error.code] || (error.status >= 500 && error.status < 600 ? "upstream" : null);
   if (!reason) return null;
-  return { available: false, reason, ...extra };
+  // Surface tracker.gg's own rejection message (not a secret) so a bad/pending
+  // key is diagnosable without server logs.
+  let hint;
+  if (reason === "key_rejected") {
+    const d = error.detail;
+    const msg = typeof d === "string" ? d : d?.message || d?.errors?.[0]?.message || d?.error;
+    if (msg) hint = String(msg).slice(0, 160);
+  }
+  return { available: false, reason, ...(hint ? { hint } : {}), ...extra };
 }
 
 export async function trackerGameProfileRoute({ env, url, auth, request }) {

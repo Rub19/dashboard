@@ -50,6 +50,7 @@ import { pollCommand } from '../modules/polls/commands/pollCommand.js';
 import { eventCommand } from '../modules/events/eventsCommand.js';
 import { voiceCommand } from '../modules/voice/commands/voiceCommand.js';
 import { starboardCommand } from '../modules/starboard/commands/starboardCommand.js';
+import { logsCommand } from '../modules/logs/commands/logsCommand.js';
 
 import { config } from '../config.js';
 import { Command } from '../types/command.js';
@@ -130,6 +131,9 @@ class CommandRegistry {
 
     // Starboard (hall of fame des messages étoilés)
     this.register(starboardCommand);
+
+    // Journaux du serveur (routage par catégorie, verbosité, rétention)
+    this.register(logsCommand);
   }
 
   public register(command: Command) {

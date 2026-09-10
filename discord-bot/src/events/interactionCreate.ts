@@ -31,6 +31,7 @@ import { DiscordAiPanel } from '../modules/ai/ui/discordAiPanel.js';
 import { discordFormPanel } from '../modules/forms/ui/discordFormPanel.js';
 import { discordPollPanel } from '../modules/polls/ui/discordPollPanel.js';
 import { handleEventButton } from '../modules/events/eventsInteractionHandler.js';
+import { handleLogsInteraction } from '../modules/logs/interactions/logsInteractionHandler.js';
 import { discordOwnerPanel } from '../modules/presence/ui/discordOwnerPanel.js';
 import { handlePermissionPresetButton } from '../commands/admin/permissionsCommand.js';
 import { baseEmbed } from '../utils/embeds.js';
@@ -63,6 +64,8 @@ export async function onInteractionCreate(interaction: Interaction) {
       await handleRoleSelect(interaction);
     } else if (interaction.customId.startsWith('voice_')) {
       await DiscordVoicePanel.handleSelectMenu(interaction);
+    } else if (interaction.customId.startsWith('logs_')) {
+      await handleLogsInteraction(interaction);
     }
     return;
   }
@@ -104,6 +107,8 @@ export async function onInteractionCreate(interaction: Interaction) {
       await handleEventButton(interaction);
     } else if (interaction.customId.startsWith('owner_presence_')) {
       await discordOwnerPanel.handleButton(interaction);
+    } else if (interaction.customId.startsWith('logs_')) {
+      await handleLogsInteraction(interaction);
     }
     return;
   }

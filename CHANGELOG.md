@@ -2,6 +2,17 @@
 
 Toutes les modifications notables de ce projet seront documentées dans ce fichier.
 
+## discord-bot — 2026-09-10 (nouvelle commande : `/logs`)
+
+**Le module Journaux (logs) a enfin une commande Discord, avec un setup guidé.** Avant, il ne se configurait que depuis le dashboard.
+
+- **`/logs setup`** — panneau interactif éphémère (permission *Gérer le serveur*) : menu de sélection de salon + boutons pour choisir la catégorie à router (Général / Modération / Sécurité / AutoMod / Raid), sélecteur de rétention (7 / 30 / 90 / 180 j / 1 an / illimité), bouton Activer/Désactiver, bouton de verbosité (Tout → Important → Critique → Off). L'embed se met à jour en direct à chaque clic. Sans état : la catégorie en cours d'édition est encodée dans le `customId` du menu.
+- **Sous-commandes rapides** : `/logs channel #salon` (tout dans un seul salon + activation), `/logs route <catégorie> [#salon]` (une catégorie dans son propre salon, ou vide pour retirer), `/logs verbosite <catégorie> <niveau>`, `/logs retention <durée>`, `/logs status` (embed récap), `/logs disable`.
+- **Catégories → routage réel** : les 5 « buckets » correspondent exactement à ce que `DiscordLogService.dispatchToDiscord` utilise déjà (`routing.{general,moderation,security,automod,raid}ChannelId` + seuils). Général = arrivées/départs, messages supprimés & édités, rôles, salons, serveur, vocal. La commande écrit dans **le même `auditRepository`** que la page dashboard `/discord/logs` — les deux restent synchronisés.
+- Vérif des permissions bot (`SendMessages` + `EmbedLinks`) sur le salon avant de l'accepter dans `/logs channel`.
+- Fichiers : `src/modules/logs/commands/logsCommand.ts`, `src/modules/logs/interactions/logsInteractionHandler.ts`, wiring dans `handlers/commandHandler.ts` + `events/interactionCreate.ts` (branche `logs_` pour boutons et menus).
+- Validation : `npm run node:build` (tsc) propre.
+
 ## v1.20.90 — 2026-09-10
 
 **Erreurs console 401 sur la page de connexion — corrigées**

@@ -2,6 +2,22 @@
 
 Toutes les modifications notables de ce projet seront documentées dans ce fichier.
 
+## v1.21.15 — 2026-09-10
+
+**Nouveau module bot : Reminders (« rappelle-moi »)**
+
+- **`discord-bot/src/modules/reminders/`** (nouveau) :
+  - `types/reminder.ts` — zod `ReminderSchema` (`id`, `guildId`, `channelId`, `userId`, `message` ≤1500, `remindAt` ISO, `recurrence` none|daily|weekly, `delivered`, `deliveredCount`).
+  - `storage/reminderStorage.ts` — JSON `data/reminders.json`, `getDue(now)`, `listForUser`, `getOverview`, `pruneDelivered` (purge les délivrés non-récurrents après 24 h).
+  - `services/reminderService.ts` — `parseDuration("1h30m")` (s/m/h/d/j/w combinables, borné à 1 an), scheduler `setInterval` 30 s : livre les rappels dus (`<@user>` + embed dans le salon, fallback MP), replanifie les récurrents.
+  - `commands/reminderCommand.ts` — `/reminder add|list|cancel` (25 rappels max/personne, délai min 30 s).
+- **Câblage** : `commandHandler.ts` (register), `server/index.ts` (`reminderService.initialize(client)` + route `/api/guilds/:guildId/reminders` — GET `/overview` `/list` `/channels`, POST `/` (crée pour `req.user.id`), DELETE `/:id`).
+- **`discord-bot/test_reminders_v1.ts`** (nouveau) : 23 assertions (parseDuration, CRUD, due-detection, isolation user, overview, validation) — 23/23.
+- **`ethone-next/app/discord/reminders/`** (nouveau) : `page.tsx` + `RemindersCenterClient.tsx` — formulaire (salon / délai / message / récurrence), liste des rappels en attente + annulation, stats, mode hors-ligne.
+- **`ethone-next/app/discord/page.tsx`** : `ModuleType` `"reminders"`, entrée `MODULES` (icône `Clock`, badge Utilitaires), bloc `activeModule === "reminders"`.
+- Validation : `discord-bot` `npm run node:build` ✓, `test_reminders_v1` 23/23 ; `ethone-next` `tsc` 0 erreur, `build` ✓, `test:unit` 73/73, `lint` 0 erreur.
+- ⚠️ Nécessite le redéploiement du bot sur le VPS pour être actif sur Discord.
+
 ## v1.21.14 — 2026-09-10
 
 **Perf : Supabase — lectures `user-state` & `identity` partagées**

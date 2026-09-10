@@ -56,6 +56,7 @@ import { eventCommand } from '../modules/events/eventsCommand.js';
 import { voiceCommand } from '../modules/voice/commands/voiceCommand.js';
 import { starboardCommand } from '../modules/starboard/commands/starboardCommand.js';
 import { stickyCommand } from '../modules/stickyMessages/commands/stickyCommand.js';
+import { reminderCommand } from '../modules/reminders/commands/reminderCommand.js';
 import { logsCommand } from '../modules/logs/commands/logsCommand.js';
 
 import { config } from '../config.js';
@@ -145,6 +146,9 @@ class CommandRegistry {
 
     // Sticky Messages (message épinglé en bas d'un salon)
     this.register(stickyCommand);
+
+    // Reminders (« rappelle-moi » — rappels personnels programmés)
+    this.register(reminderCommand);
 
     // Journaux du serveur (routage par catégorie, verbosité, rétention)
     this.register(logsCommand);

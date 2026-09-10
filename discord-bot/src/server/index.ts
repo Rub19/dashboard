@@ -33,6 +33,8 @@ import { createFormRouter } from './routes/formRoutes.js';
 import { createPollRouter } from './routes/pollRoutes.js';
 import { createStarboardRouter } from './routes/starboardRoutes.js';
 import { createStickyRouter } from './routes/stickyRoutes.js';
+import { createReminderRouter } from './routes/reminderRoutes.js';
+import { reminderService } from '../modules/reminders/services/reminderService.js';
 import { createEventRouter } from './routes/events.js';
 import { createCalendarRouter } from './routes/calendar.js';
 import { createServerRouter } from './routes/serverRoutes.js';
@@ -212,6 +214,12 @@ export function startWebServer(client: Client): http.Server {
     createStickyRouter(client)
   );
   app.use(
+    '/api/guilds/:guildId/reminders',
+    authMiddleware,
+    createGuildAuthMiddleware(client),
+    createReminderRouter(client)
+  );
+  app.use(
     '/api/guilds/:guildId/calendar',
     authMiddleware,
     createGuildAuthMiddleware(client),
@@ -267,6 +275,9 @@ export function startWebServer(client: Client): http.Server {
   // Initialisation des services de fond Événements 2.0
   eventsSchedulerService.initialize(client);
   eventsAutomationService.initialize(client);
+
+  // Scheduler des rappels personnels (tick 30s)
+  reminderService.initialize(client);
 
   // Route de santé de l'API
   app.get('/api/health', (req: Request, res: Response) => {

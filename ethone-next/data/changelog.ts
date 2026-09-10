@@ -1,3 +1,15 @@
+const v12115_fr: ChangelogEntry = {
+  version: "v1.21.15",
+  date: "2026-09-10",
+  title: "Nouveau Module Bot : Reminders (« rappelle-moi »)",
+  items: [
+    "Nouveau module « Reminders » : `/reminder add 2h révise le TP` — à l'échéance le bot te mentionne dans le salon (fallback MP) avec ton message. Délais combinables (`10m`, `2h`, `1d`, `1h30m`, max 1 an), récurrence quotidienne / hebdomadaire, 25 rappels max par personne. Scheduler qui passe toutes les 30 s.",
+    "Commandes : `/reminder add`, `/reminder list`, `/reminder cancel <id>`.",
+    "Page dashboard `/discord/reminders` : formulaire de création (salon, délai, message, récurrence), liste des rappels en attente avec annulation, stats (en attente / récurrents / envoyés / prochain).",
+    "Ajouté à la grille des modules du hub Discord (catégorie Utilitaires).",
+  ],
+};
+
 const v12114_fr: ChangelogEntry = {
   version: "v1.21.14",
   date: "2026-09-10",
@@ -692,6 +704,18 @@ const v12052_fr: ChangelogEntry = {
     "Dynamic Island : correction d'un bug de priorité qui empêchait Spotify de jamais s'afficher, systématiquement évincé par la synchronisation d'arrière-plan.",
     "Commande /help du Bot Discord : la liste des commandes est désormais générée dynamiquement depuis les commandes réellement enregistrées (fin des commandes fantômes et des commandes manquantes), et affiche la vraie syntaxe des commandes à sous-commandes (ex. /automod status).",
     "Audit de l'enregistrement des commandes slash Discord : architecture confirmée saine, aucune dérive entre le code et les commandes déployées.",
+  ],
+};
+
+const v12115_en: ChangelogEntry = {
+  version: "v1.21.15",
+  date: "2026-09-10",
+  title: "New Bot Module: Reminders",
+  items: [
+    "New \"Reminders\" module: `/reminder add 2h revise the lab` — at the due time the bot pings you in the channel (DM fallback) with your message. Combinable delays (`10m`, `2h`, `1d`, `1h30m`, max 1 year), daily / weekly recurrence, 25 reminders per person max. Scheduler ticks every 30s.",
+    "Commands: `/reminder add`, `/reminder list`, `/reminder cancel <id>`.",
+    "`/discord/reminders` dashboard page: create form (channel, delay, message, recurrence), list of pending reminders with cancel, stats (pending / recurring / sent / next).",
+    "Added to the Discord hub's module grid (Utilities category).",
   ],
 };
 
@@ -1392,6 +1416,18 @@ const v12052_en: ChangelogEntry = {
   ],
 };
 
+const v12115_es: ChangelogEntry = {
+  version: "v1.21.15",
+  date: "2026-09-10",
+  title: "Nuevo Módulo del Bot: Reminders",
+  items: [
+    "Nuevo módulo « Reminders »: `/reminder add 2h repasar la práctica` — al vencer, el bot te menciona en el canal (fallback MD) con tu mensaje. Retrasos combinables (`10m`, `2h`, `1d`, `1h30m`, máx 1 año), recurrencia diaria / semanal, 25 recordatorios por persona. Scheduler cada 30 s.",
+    "Comandos: `/reminder add`, `/reminder list`, `/reminder cancel <id>`.",
+    "Página `/discord/reminders`: formulario de creación, lista de recordatorios pendientes con cancelación, estadísticas.",
+    "Añadido a la cuadrícula de módulos del hub de Discord (categoría Utilidades).",
+  ],
+};
+
 const v12114_es: ChangelogEntry = {
   version: "v1.21.14",
   date: "2026-09-10",
@@ -2086,6 +2122,18 @@ const v12052_es: ChangelogEntry = {
     "Dynamic Island: corregido un error de prioridad que impedía que Spotify apareciera, siempre desplazado por la sincronización en segundo plano.",
     "Comando /help del Bot de Discord: la lista de comandos ahora se genera dinámicamente desde los comandos realmente registrados (fin de comandos fantasma o ausentes), mostrando la sintaxis real de los comandos con subcomandos.",
     "Auditoría del registro de comandos slash de Discord: arquitectura confirmada como sólida, sin desviación entre el código y los comandos desplegados.",
+  ],
+};
+
+const v12115_de: ChangelogEntry = {
+  version: "v1.21.15",
+  date: "2026-09-10",
+  title: "Neues Bot-Modul: Reminders",
+  items: [
+    "Neues Modul Reminders: `/reminder add 2h Praktikum wiederholen` — zur Faelligkeit pingt dich der Bot im Kanal (DM-Fallback) mit deiner Nachricht. Kombinierbare Verzoegerungen (`10m`, `2h`, `1d`, `1h30m`, max 1 Jahr), taegliche / woechentliche Wiederholung, 25 Reminder pro Person. Scheduler alle 30 s.",
+    "Befehle: `/reminder add`, `/reminder list`, `/reminder cancel <id>`.",
+    "Dashboard-Seite `/discord/reminders`: Erstellformular, Liste der ausstehenden Reminder mit Abbrechen, Statistiken.",
+    "Zum Modul-Raster des Discord-Hubs hinzugefuegt (Kategorie Werkzeuge).",
   ],
 };
 
@@ -24923,5 +24971,9 @@ CHANGELOG_BY_LANG.fr.unshift(v12114_fr);
 CHANGELOG_BY_LANG.en.unshift(v12114_en);
 CHANGELOG_BY_LANG.es.unshift(v12114_es);
 CHANGELOG_BY_LANG.de.unshift(v12114_de);
+CHANGELOG_BY_LANG.fr.unshift(v12115_fr);
+CHANGELOG_BY_LANG.en.unshift(v12115_en);
+CHANGELOG_BY_LANG.es.unshift(v12115_es);
+CHANGELOG_BY_LANG.de.unshift(v12115_de);
 
 export const CHANGELOG = CHANGELOG_BY_LANG.fr;

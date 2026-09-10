@@ -36,6 +36,8 @@ import { createStickyRouter } from './routes/stickyRoutes.js';
 import { createReminderRouter } from './routes/reminderRoutes.js';
 import { reminderService } from '../modules/reminders/services/reminderService.js';
 import { createAfkRouter } from './routes/afkRoutes.js';
+import { createBirthdayRouter } from './routes/birthdayRoutes.js';
+import { birthdayService } from '../modules/birthdays/services/birthdayService.js';
 import { createEventRouter } from './routes/events.js';
 import { createCalendarRouter } from './routes/calendar.js';
 import { createServerRouter } from './routes/serverRoutes.js';
@@ -227,6 +229,12 @@ export function startWebServer(client: Client): http.Server {
     createAfkRouter(client)
   );
   app.use(
+    '/api/guilds/:guildId/birthdays',
+    authMiddleware,
+    createGuildAuthMiddleware(client),
+    createBirthdayRouter(client)
+  );
+  app.use(
     '/api/guilds/:guildId/calendar',
     authMiddleware,
     createGuildAuthMiddleware(client),
@@ -285,6 +293,9 @@ export function startWebServer(client: Client): http.Server {
 
   // Scheduler des rappels personnels (tick 30s)
   reminderService.initialize(client);
+
+  // Scheduler des anniversaires (tick 15 min)
+  birthdayService.initialize(client);
 
   // Route de santé de l'API
   app.get('/api/health', (req: Request, res: Response) => {

@@ -1,3 +1,15 @@
+const v12118_fr: ChangelogEntry = {
+  version: "v1.21.18",
+  date: "2026-09-10",
+  title: "Nouveau Module Bot : Birthdays",
+  items: [
+    "Nouveau module « Birthdays » : `/birthday set 14 07` enregistre ta date (année optionnelle pour l'age). Chaque jour a l'heure configuree, le bot annonce les anniversaires du jour dans un salon (message personnalisable {user} {age} {date}) et attribue un role « Anniversaire » retire le lendemain. Scheduler toutes les 15 min.",
+    "Commandes : `/birthday set|remove|list`, `/birthday config` (Admin : salon, heure, role, message, on/off).",
+    "Page dashboard `/discord/birthdays` : toggle actif, salon + heure d'annonce, role du jour, message avec placeholders, ping on/off, liste des prochains anniversaires (30 j).",
+    "Ajoute a la grille des modules du hub Discord (Communaute).",
+  ],
+};
+
 const v12117_fr: ChangelogEntry = {
   version: "v1.21.17",
   date: "2026-09-10",
@@ -726,6 +738,18 @@ const v12052_fr: ChangelogEntry = {
     "Dynamic Island : correction d'un bug de priorité qui empêchait Spotify de jamais s'afficher, systématiquement évincé par la synchronisation d'arrière-plan.",
     "Commande /help du Bot Discord : la liste des commandes est désormais générée dynamiquement depuis les commandes réellement enregistrées (fin des commandes fantômes et des commandes manquantes), et affiche la vraie syntaxe des commandes à sous-commandes (ex. /automod status).",
     "Audit de l'enregistrement des commandes slash Discord : architecture confirmée saine, aucune dérive entre le code et les commandes déployées.",
+  ],
+};
+
+const v12118_en: ChangelogEntry = {
+  version: "v1.21.18",
+  date: "2026-09-10",
+  title: "New Bot Module: Birthdays",
+  items: [
+    "New Birthdays module: `/birthday set 14 07` stores your date (year optional, for age). Every day at the configured hour the bot announces the day's birthdays in a channel (customizable message {user} {age} {date}) and assigns a Birthday role removed the next day. Scheduler every 15 min.",
+    "Commands: `/birthday set|remove|list`, `/birthday config` (Admin: channel, hour, role, message, on/off).",
+    "`/discord/birthdays` dashboard page: active toggle, announce channel + hour, birthday role, message with placeholders, ping on/off, upcoming list (30 days).",
+    "Added to the Discord hub's module grid (Community).",
   ],
 };
 
@@ -1460,6 +1484,18 @@ const v12052_en: ChangelogEntry = {
   ],
 };
 
+const v12118_es: ChangelogEntry = {
+  version: "v1.21.18",
+  date: "2026-09-10",
+  title: "Nuevo Modulo del Bot: Birthdays",
+  items: [
+    "Nuevo modulo « Birthdays »: `/birthday set 14 07` guarda tu fecha (ano opcional, para la edad). Cada dia a la hora configurada el bot anuncia los cumpleanos del dia en un canal (mensaje personalizable {user} {age} {date}) y asigna un rol « Cumpleanos » retirado al dia siguiente. Scheduler cada 15 min.",
+    "Comandos: `/birthday set|remove|list`, `/birthday config` (Admin).",
+    "Pagina `/discord/birthdays`: toggle, canal + hora, rol del dia, mensaje con placeholders, ping on/off, lista de proximos.",
+    "Anadido a la cuadricula de modulos del hub de Discord (Comunidad).",
+  ],
+};
+
 const v12117_es: ChangelogEntry = {
   version: "v1.21.17",
   date: "2026-09-10",
@@ -2188,6 +2224,18 @@ const v12052_es: ChangelogEntry = {
     "Dynamic Island: corregido un error de prioridad que impedía que Spotify apareciera, siempre desplazado por la sincronización en segundo plano.",
     "Comando /help del Bot de Discord: la lista de comandos ahora se genera dinámicamente desde los comandos realmente registrados (fin de comandos fantasma o ausentes), mostrando la sintaxis real de los comandos con subcomandos.",
     "Auditoría del registro de comandos slash de Discord: arquitectura confirmada como sólida, sin desviación entre el código y los comandos desplegados.",
+  ],
+};
+
+const v12118_de: ChangelogEntry = {
+  version: "v1.21.18",
+  date: "2026-09-10",
+  title: "Neues Bot-Modul: Birthdays",
+  items: [
+    "Neues Modul Birthdays: `/birthday set 14 07` speichert dein Datum (Jahr optional, fuer das Alter). Taeglich zur konfigurierten Stunde kuendigt der Bot die Geburtstage des Tages in einem Kanal an (anpassbare Nachricht {user} {age} {date}) und vergibt eine Geburtstags-Rolle, die am naechsten Tag entfernt wird. Scheduler alle 15 Min.",
+    "Befehle: `/birthday set|remove|list`, `/birthday config` (Admin).",
+    "Dashboard-Seite `/discord/birthdays`: Aktiv-Toggle, Ankuendigungskanal + Stunde, Tagesrolle, Nachricht mit Platzhaltern, Ping on/off, Liste der naechsten.",
+    "Zum Modul-Raster des Discord-Hubs hinzugefuegt (Community).",
   ],
 };
 
@@ -25071,5 +25119,9 @@ CHANGELOG_BY_LANG.fr.unshift(v12117_fr);
 CHANGELOG_BY_LANG.en.unshift(v12117_en);
 CHANGELOG_BY_LANG.es.unshift(v12117_es);
 CHANGELOG_BY_LANG.de.unshift(v12117_de);
+CHANGELOG_BY_LANG.fr.unshift(v12118_fr);
+CHANGELOG_BY_LANG.en.unshift(v12118_en);
+CHANGELOG_BY_LANG.es.unshift(v12118_es);
+CHANGELOG_BY_LANG.de.unshift(v12118_de);
 
 export const CHANGELOG = CHANGELOG_BY_LANG.fr;

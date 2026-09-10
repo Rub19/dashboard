@@ -86,7 +86,7 @@ export default function TrackerGgView() {
               : reason === "no_api_key"
               ? "La clé API tracker.gg n'est pas configurée côté serveur."
               : reason === "key_rejected"
-              ? `La clé API tracker.gg n'a pas accès à ${game.label} (tous les jeux ne sont pas ouverts sur une clé standard — CS2 et Valorant sont souvent réservés).`
+              ? `tracker.gg refuse la clé API (403). L'application n'est probablement pas encore validée pour la production par tracker.gg, ou n'a pas accès à ${game.label}.`
               : reason === "not_found"
               ? "Profil introuvable — vérifie la plateforme et l'identifiant."
               : "tracker.gg est indisponible pour le moment, réessaie plus tard."

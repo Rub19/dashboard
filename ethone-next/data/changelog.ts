@@ -25553,4 +25553,65 @@ CHANGELOG_BY_LANG.en.unshift(v12127_en);
 CHANGELOG_BY_LANG.es.unshift(v12127_es);
 CHANGELOG_BY_LANG.de.unshift(v12127_de);
 
+const v12128_fr: ChangelogEntry = {
+  version: "v1.21.28",
+  date: "2026-09-11",
+  title: "Refonte visuelle : Météo et widgets Live",
+  items: [
+    "Page Météo repensee dans l esprit sobre : suppression des degrades d ambiance par condition (le lavis violet orage, le lavis ambre soleil), des halos lumineux et du flou d arriere-plan.",
+    "Icones meteo passees en monochrome : elles suivent desormais le theme (clair inclus) au lieu d un ambre / bleu / indigo code en dur qui ne marchait que sur le theme sombre par defaut.",
+    "Barres de temperature et de progression du soleil : aplat d accent unique au lieu des degrades arc-en-ciel ; boussole du vent sans effet neon.",
+    "Widget meteo (accueil) : plus d effet de carte 3D au survol, plus de halo lumineux, icone statique au lieu de flotter, panneau plat unifie (v8-panel).",
+    "Widgets Live (Spotify, Discord, Steam, Valorant, RSS…) : chaque carte avait son lavis de couleur et sa bordure teintee ; toutes utilisent maintenant la meme surface plate du theme, l identite venant de l icone et du contenu.",
+    "Purement presentationnel : aucune donnee, API ni interaction modifiee.",
+  ],
+};
+
+const v12128_en: ChangelogEntry = {
+  version: "v1.21.28",
+  date: "2026-09-11",
+  title: "Visual overhaul: Weather and Live widgets",
+  items: [
+    "Weather page reworked toward the calmer look: removed the per-condition ambience gradients (the violet storm wash, the amber sun wash), the glow halos and the background blur.",
+    "Weather icons are now monochrome: they follow the theme (light included) instead of a hardcoded amber / blue / indigo that only worked on the default dark theme.",
+    "Temperature and sun-progress bars: a single flat accent fill instead of rainbow gradients; wind compass without the neon effect.",
+    "Weather widget (home): no more 3D card tilt on hover, no more glow halo, static icon instead of floating, unified flat panel (v8-panel).",
+    "Live widgets (Spotify, Discord, Steam, Valorant, RSS…): each card had its own color wash and tinted border; they now all use the same flat theme surface, identity coming from the icon and content.",
+    "Purely presentational: no data, API or interaction changed.",
+  ],
+};
+
+const v12128_es: ChangelogEntry = {
+  version: "v1.21.28",
+  date: "2026-09-11",
+  title: "Renovacion visual: Clima y widgets Live",
+  items: [
+    "Pagina de Clima rediseniada hacia un aspecto mas sobrio: se quitaron los degradados de ambiente por condicion (el lavado violeta de tormenta, el ambar de sol), los halos luminosos y el desenfoque de fondo.",
+    "Los iconos del clima ahora son monocromos: siguen el tema (incluido el claro) en lugar de un ambar / azul / indigo fijo que solo funcionaba en el tema oscuro por defecto.",
+    "Barras de temperatura y de progreso del sol: un relleno de acento plano en lugar de degradados; brujula del viento sin efecto neon.",
+    "Widget de clima (inicio): sin inclinacion 3D al pasar el raton, sin halo luminoso, icono estatico en lugar de flotar, panel plano unificado (v8-panel).",
+    "Widgets Live (Spotify, Discord, Steam, Valorant, RSS…): cada tarjeta tenia su lavado de color y su borde tenido; ahora todas usan la misma superficie plana del tema.",
+    "Puramente presentacional: sin cambios de datos, API ni interaccion.",
+  ],
+};
+
+const v12128_de: ChangelogEntry = {
+  version: "v1.21.28",
+  date: "2026-09-11",
+  title: "Visuelle Ueberarbeitung: Wetter und Live-Widgets",
+  items: [
+    "Wetterseite ruhiger gestaltet: die zustandsabhaengigen Ambiente-Verlaeufe (violetter Gewitter-Schleier, bernsteinfarbener Sonnen-Schleier), die Leucht-Halos und die Hintergrund-Unschaerfe wurden entfernt.",
+    "Wettersymbole sind jetzt einfarbig: sie folgen dem Thema (auch hell) statt eines fest kodierten Bernstein / Blau / Indigo, das nur auf dem dunklen Standardthema funktionierte.",
+    "Temperatur- und Sonnenverlaufsbalken: eine flache Akzentfuellung statt Regenbogen-Verlaeufen; Windkompass ohne Neon-Effekt.",
+    "Wetter-Widget (Startseite): kein 3D-Kippen der Karte beim Hover, kein Leucht-Halo, statisches Symbol statt Schweben, einheitliches flaches Panel (v8-panel).",
+    "Live-Widgets (Spotify, Discord, Steam, Valorant, RSS…): jede Karte hatte ihren eigenen Farbschleier und getoenten Rand; sie nutzen jetzt alle dieselbe flache Themenoberflaeche.",
+    "Rein visuell: keine Aenderung an Daten, API oder Interaktion.",
+  ],
+};
+
+CHANGELOG_BY_LANG.fr.unshift(v12128_fr);
+CHANGELOG_BY_LANG.en.unshift(v12128_en);
+CHANGELOG_BY_LANG.es.unshift(v12128_es);
+CHANGELOG_BY_LANG.de.unshift(v12128_de);
+
 export const CHANGELOG = CHANGELOG_BY_LANG.fr;

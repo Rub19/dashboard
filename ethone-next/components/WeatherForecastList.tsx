@@ -52,11 +52,11 @@ export default function WeatherForecastList({ days }: { days: ForecastDay[] }) {
             <Icon pack="phosphor" name={icon} className={`h-4 w-4 ${color}`} />
             <div className="mx-3 h-1 flex-1 rounded-xl bg-[var(--text-primary)]/[0.04]">
               <div
-                className="relative h-full rounded-xl bg-gradient-to-r from-[var(--info)] via-[var(--warning)] to-[var(--danger)]"
+                className="relative h-full rounded-xl bg-[var(--accent-primary)]/40"
                 style={{ marginLeft: `${left}%`, width: `${Math.max(width, 4)}%` }}
               />
             </div>
-            <span className="text-xs font-mono text-[var(--text-muted)]">
+            <span className="text-xs tabular-nums text-[var(--text-muted)]">
               {min !== undefined ? `${Math.round(min)}°` : "—"} / <span className="font-semibold text-[var(--text-primary)]">{max !== undefined ? `${Math.round(max)}°` : "—"}</span>
             </span>
           </motion.div>

@@ -85,18 +85,6 @@ function windDirectionLabel(deg?: number): string {
   return directions[index];
 }
 
-function weatherAmbience(code?: number, isDay?: boolean) {
-  if (code === undefined) return "from-transparent to-transparent";
-  if (!isDay) return "from-indigo-500/[0.08] to-transparent";
-  if (code <= 1) return "from-amber-500/[0.10] via-amber-500/[0.03] to-transparent";
-  if (code <= 3) return "from-slate-400/[0.10] to-transparent";
-  if ([45, 48].includes(code)) return "from-slate-400/[0.12] to-transparent";
-  if ([51, 53, 55, 56, 57, 61, 63, 65, 66, 67, 80, 81, 82].includes(code)) return "from-blue-500/[0.12] to-transparent";
-  if ([71, 73, 75, 77, 85, 86].includes(code)) return "from-cyan-400/[0.10] to-transparent";
-  if ([95, 96, 99].includes(code)) return "from-violet-500/[0.15] to-transparent";
-  return "from-slate-400/[0.08] to-transparent";
-}
-
 function brainAdvice(weather: WeatherData | null): string {
   if (!weather) return "—";
   const temp = toNum(weather.temperature);
@@ -284,18 +272,17 @@ export default function WeatherPage() {
 
   const iconName = weatherIconFromCode(code, condition, isDay);
   const iconColor = weatherIconColor(code, isDay);
-  const ambience = weatherAmbience(code, isDay);
 
   const conditions = useMemo(
     () => [
-      { icon: "wind", color: "text-[var(--info)]", label: i18n("wind", "Vent"), value: wind !== undefined ? `${Math.round(wind)} km/h` : "—", sub: windGusts !== undefined ? `Rafales ${Math.round(windGusts)}` : undefined },
-      { icon: "droplets", color: "text-blue-400", label: i18n("humidity", "Humidité"), value: humidity !== undefined ? `${Math.round(humidity)}%` : "—", sub: "Relative" },
-      { icon: "sun", color: "text-amber-400", label: i18n("weatherUV", "UV"), value: uv !== undefined ? `${Math.round(uv)}` : "—", sub: uv !== undefined ? uvLabel(uv) : undefined },
-      { icon: "gauge", color: "text-purple-400", label: i18n("weatherPressure", "Pression"), value: pressure !== undefined ? `${Math.round(pressure)} hPa` : "—", sub: "Tendance stable" },
-      { icon: "cloud", color: "text-cyan-400", label: i18n("dewPoint", "Point de rosée"), value: dewPoint !== undefined ? `${Math.round(dewPoint)}°` : "—", sub: "Humidité ressentie" },
-      { icon: "eye", color: "text-emerald-400", label: i18n("visibility", "Visibilité"), value: visibility !== undefined ? `${(visibility / 1000).toFixed(1)} km` : "—", sub: "Portée" },
-      { icon: "leaf", color: "text-[var(--accent-primary)]", label: i18n("weatherAirQuality", "Air"), value: aqi !== undefined ? `${Math.round(aqi)}` : "—", sub: aqiText || undefined },
-      { icon: "sunrise", color: "text-amber-300", label: i18n("weatherSun", "Soleil"), value: `${formatTime(sunrise)} / ${formatTime(sunset)}`, sub: `${i18n("sunrise", "Lever")} / ${i18n("sunset", "Coucher")}` },
+      { icon: "wind", label: i18n("wind", "Vent"), value: wind !== undefined ? `${Math.round(wind)} km/h` : "—", sub: windGusts !== undefined ? `Rafales ${Math.round(windGusts)}` : undefined },
+      { icon: "droplets", label: i18n("humidity", "Humidité"), value: humidity !== undefined ? `${Math.round(humidity)}%` : "—", sub: "Relative" },
+      { icon: "sun", label: i18n("weatherUV", "UV"), value: uv !== undefined ? `${Math.round(uv)}` : "—", sub: uv !== undefined ? uvLabel(uv) : undefined },
+      { icon: "gauge", label: i18n("weatherPressure", "Pression"), value: pressure !== undefined ? `${Math.round(pressure)} hPa` : "—", sub: "Tendance stable" },
+      { icon: "cloud", label: i18n("dewPoint", "Point de rosée"), value: dewPoint !== undefined ? `${Math.round(dewPoint)}°` : "—", sub: "Humidité ressentie" },
+      { icon: "eye", label: i18n("visibility", "Visibilité"), value: visibility !== undefined ? `${(visibility / 1000).toFixed(1)} km` : "—", sub: "Portée" },
+      { icon: "leaf", label: i18n("weatherAirQuality", "Air"), value: aqi !== undefined ? `${Math.round(aqi)}` : "—", sub: aqiText || undefined },
+      { icon: "sunrise", label: i18n("weatherSun", "Soleil"), value: `${formatTime(sunrise)} / ${formatTime(sunset)}`, sub: `${i18n("sunrise", "Lever")} / ${i18n("sunset", "Coucher")}` },
     ],
     [i18n, wind, windGusts, humidity, uv, pressure, dewPoint, visibility, aqi, aqiText, sunrise, sunset]
   );
@@ -333,7 +320,7 @@ export default function WeatherPage() {
   return (
     <div className="h-full min-h-0 w-full flex flex-col overflow-hidden p-4 sm:p-6">
       <div className="mx-auto flex h-full w-full max-w-7xl flex-col">
-        <Card variant="default" padding="md" className="mb-3 shrink-0 backdrop-blur-2xl">
+        <Card variant="default" padding="md" className="mb-3 shrink-0">
           <div className="flex flex-col gap-4 sm:flex-row sm:items-center sm:justify-between">
             <div className="flex items-start gap-3 sm:items-center">
               <div className="flex h-10 w-10 shrink-0 items-center justify-center rounded-2xl bg-[var(--accent-primary)]/10 text-[var(--accent-primary)] border border-[var(--accent-primary)]/20 shadow-sm">
@@ -342,8 +329,8 @@ export default function WeatherPage() {
               <div>
                 <div className="flex items-center gap-2.5">
                   <h1 className="text-lg font-bold tracking-tight text-[var(--text-primary)]">{i18n("weather", "Météo")}</h1>
-                  <span className="inline-flex items-center gap-1.5 rounded-full border border-white/10 bg-white/[0.04] px-2.5 py-0.5 text-[10px] font-medium text-[var(--text-muted)]">
-                    <span className="h-1.5 w-1.5 rounded-full bg-emerald-400 shadow-[0_0_5px_var(--glow-color)]" />
+                  <span className="inline-flex items-center gap-1.5 rounded-full border border-[var(--panel-border)] bg-[var(--surface-2)]/40 px-2.5 py-0.5 text-[10px] font-medium text-[var(--text-muted)]">
+                    <span className="h-1.5 w-1.5 rounded-full bg-[var(--success)]" />
                     <span>{i18n("lastUpdated", "Mis à jour")} : <strong className="text-[var(--text-primary)] font-semibold">{lastUpdatedText}</strong></span>
                   </span>
                 </div>
@@ -406,8 +393,7 @@ export default function WeatherPage() {
                 animate="visible"
                 variants={itemVariants}
               >
-                <Card variant="primary" padding="lg" className={cn("relative overflow-hidden", ambience)}>
-                  <div className={cn("pointer-events-none absolute inset-0 bg-gradient-to-br", ambience)} />
+                <Card variant="primary" padding="lg" className="relative overflow-hidden">
                   <div className="relative z-10 flex h-full flex-col justify-between gap-6">
                     <div className="flex items-start justify-between gap-4">
                       <div>
@@ -492,7 +478,7 @@ export default function WeatherPage() {
                               {h.temperature !== undefined ? `${Math.round(h.temperature)}°` : "—"}
                             </span>
                             {(h.precipitationProbability ?? 0) > 0 && (
-                              <span className="text-[10px] text-blue-400">{Math.round(h.precipitationProbability ?? 0)}%</span>
+                              <span className="text-[10px] text-[var(--text-muted)]">{Math.round(h.precipitationProbability ?? 0)}%</span>
                             )}
                           </div>
                         );
@@ -592,7 +578,7 @@ export default function WeatherPage() {
                         className="relative z-10 flex items-center justify-center transition-transform duration-700 ease-out"
                         style={{ transform: `rotate(${windDir ?? 0}deg)` }}
                       >
-                        <Navigation className="h-6 w-6 text-emerald-400 fill-emerald-400/25 drop-shadow-[0_0_8px_rgba(52,211,153,0.6)]" />
+                        <Navigation className="h-6 w-6 text-[var(--accent-primary)] fill-[var(--accent-primary)]/20" />
                       </div>
                     </div>
                     <div className="flex-1 space-y-1">
@@ -603,7 +589,7 @@ export default function WeatherPage() {
                       {windGusts !== undefined && (
                         <p className="text-xs text-[var(--text-muted)]">Rafales {Math.round(windGusts)} km/h</p>
                       )}
-                      <p className="text-xs font-semibold text-emerald-400">{windDirectionLabel(windDir)}</p>
+                      <p className="text-xs font-semibold text-[var(--text-primary)]">{windDirectionLabel(windDir)}</p>
                     </div>
                   </div>
                 </Card>
@@ -634,8 +620,8 @@ export default function WeatherPage() {
                       <span>{i18n("sunset", "Coucher")} {formatTime(sunset)}</span>
                     </div>
                     <div className="relative h-2 w-full rounded-full bg-[var(--text-primary)]/[0.06]">
-                      <div className="absolute left-0 top-0 h-full rounded-full bg-gradient-to-r from-amber-300 to-amber-500" style={{ width: `${sunProgress ?? 0}%` }} />
-                      <div className="absolute top-1/2 h-2.5 w-2.5 -translate-x-1/2 -translate-y-1/2 rounded-full bg-[var(--accent-primary)] shadow" style={{ left: `${sunProgress ?? 0}%` }} />
+                      <div className="absolute left-0 top-0 h-full rounded-full bg-[var(--accent-primary)]/50" style={{ width: `${sunProgress ?? 0}%` }} />
+                      <div className="absolute top-1/2 h-2.5 w-2.5 -translate-x-1/2 -translate-y-1/2 rounded-full bg-[var(--accent-primary)]" style={{ left: `${sunProgress ?? 0}%` }} />
                     </div>
                     <p className="text-xs text-[var(--text-muted)]">{i18n("dayProgress", "Avancée de la journée")}</p>
                   </div>
@@ -657,7 +643,7 @@ export default function WeatherPage() {
                         key={c.label}
                         className="flex items-start gap-3 rounded-xl border border-[var(--panel-border)] bg-[var(--panel-bg)] p-3 transition-colors hover:border-[var(--accent-primary)]/20"
                       >
-                        <Icon pack="phosphor" name={c.icon} className={cn("mt-0.5 h-5 w-5", c.color)} />
+                        <Icon pack="phosphor" name={c.icon} className="mt-0.5 h-5 w-5 text-[var(--text-muted)]" />
                         <div className="min-w-0">
                           <p className="text-xs text-[var(--text-muted)]">{c.label}</p>
                           <p className="text-sm font-semibold text-[var(--text-primary)]">{c.value}</p>

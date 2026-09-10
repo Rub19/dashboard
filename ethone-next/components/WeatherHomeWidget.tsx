@@ -1,7 +1,6 @@
 "use client";
 
 import Link from "next/link";
-import { motion } from "framer-motion";
 import { cn } from "@/lib/utils";
 import { useI18n } from "@/lib/hooks/useI18n";
 import { useSettings } from "@/components/SettingsProvider";
@@ -133,13 +132,9 @@ export default function WeatherHomeWidget({ data, loading, className }: WeatherH
         )}
       >
         <div className="flex h-full min-h-0 items-center gap-3">
-          <motion.div
-            animate={{ y: [0, -3, 0] }}
-            transition={{ duration: 4, repeat: Infinity, ease: "easeInOut" }}
-            className="shrink-0"
-          >
+          <div className="shrink-0">
             <Icon name={icon} className={cn("h-10 w-10", color)} />
-          </motion.div>
+          </div>
 
           <div className="min-w-0 flex-1">
             <div className="flex items-baseline gap-2">

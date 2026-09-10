@@ -212,14 +212,14 @@ function WeatherDetailContent({
               <div className="grid grid-cols-2 gap-2">
                 {humidity !== undefined && (
                   <div className="flex items-center gap-2 rounded-[var(--panel-radius)] bg-[var(--panel-bg)] px-3 py-2 text-sm">
-                    <Icon pack="phosphor" name="droplets" className="h-4 w-4 text-sky-400" />
+                    <Icon pack="phosphor" name="droplets" className="h-4 w-4 text-[var(--text-muted)]" />
                     <span className="font-medium">{humidity}%</span>
                     <span className="text-[var(--text-muted)]">{i18n("humidity")}</span>
                   </div>
                 )}
                 {wind !== undefined && (
                   <div className="flex items-center gap-2 rounded-[var(--panel-radius)] bg-[var(--panel-bg)] px-3 py-2 text-sm">
-                    <Icon pack="phosphor" name="wind" className="h-4 w-4 text-[var(--accent-primary)]" />
+                    <Icon pack="phosphor" name="wind" className="h-4 w-4 text-[var(--text-muted)]" />
                     <span className="font-medium">{wind} km/h</span>
                     <span className="text-[var(--text-muted)]">{i18n("wind")}</span>
                   </div>

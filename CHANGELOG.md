@@ -2,6 +2,18 @@
 
 Toutes les modifications notables de ce projet seront documentées dans ce fichier.
 
+## v1.21.28 — 2026-09-11
+
+**Refonte visuelle « moins IA » : Météo + widgets Live** — présentationnel uniquement.
+
+- `components/WeatherWidget.tsx` : `weatherAmbience()` neutralisé (plus de dégradés rainbow par condition + halo néon), `weatherIconColor()` → monochrome `text-[var(--text-primary)]` (theme-safe, light inclus). `TiltCard` → `div` `v8-panel` plat, suppression du blob `blur-2xl`, icône statique (plus de `motion` flottant), `WeatherBadge` tones → muted.
+- `components/WeatherPage.tsx` : suppression de `weatherAmbience()` local + du lavis `bg-gradient-to-br` sur la hero card, `backdrop-blur-2xl` retiré, tableau `conditions` dé-rainbow-isé (`text-blue/amber/purple/cyan/emerald-400` → `text-[var(--text-muted)]`), aiguille de vent `drop-shadow-[0_0_8px]` + `text-emerald-400` → `text-[var(--accent-primary)]`, barre soleil `from-amber-300 to-amber-500` → aplat accent, point live `shadow-[0_0_5px]` retiré.
+- `components/WeatherForecastList.tsx` : barre de temp `from-[var(--info)] via-[var(--warning)] to-[var(--danger)]` → `bg-[var(--accent-primary)]/40`.
+- `components/WeatherHomeWidget.tsx` : icône statique (suppression du `motion.div` flottant + import `motion`).
+- `components/WeatherDetailPopover.tsx` : icônes badges `text-sky-400` / `text-[var(--accent-primary)]` → muted.
+- `components/LiveWidgets.tsx` : map `GRADIENTS` (21 lavis de couleur par source : violet Spotify, sky/amber météo, rose Valorant…) remplacée par une surface plate unique `CARD_SURFACE` = `bg-[var(--panel-bg)] border-[var(--panel-border)]` ; `bg-gradient-to-br` retiré du rendu des cartes.
+- Validation : `tsc` 0 erreur, `eslint` clean, `build` ✓, `test:unit` 73/73.
+
 ## v1.21.27 — 2026-09-11
 
 **Refonte du design de la boîte mail (`ethone-next/app/mail` + `components/mail/*`)**

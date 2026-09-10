@@ -97,29 +97,13 @@ const CATEGORIES: Record<string, "gaming" | "social" | "productivity"> = {
   bluesky: "social",
 };
 
-const GRADIENTS: Record<string, string> = {
-  nowplaying: "from-violet-900/30 via-fuchsia-900/10 to-black/20 border-violet-500/20",
-  lanyard: "from-indigo-900/30 via-[var(--accent-primary)] to-black/20 border-indigo-500/20",
-  github: "from-zinc-800/40 to-black/20 border-zinc-500/20",
-  todoist: "from-rose-900/30 to-black/20 border-rose-500/20",
-  reddit: "from-orange-900/30 to-black/20 border-orange-500/20",
-  youtube: "from-red-900/30 to-black/20 border-red-500/20",
-  weather: "from-sky-900/30 via-amber-900/10 to-black/20 border-sky-500/20",
-  lastfm: "from-red-950/30 via-rose-900/10 to-black/20 border-red-600/20",
-  twitch: "from-violet-950/30 via-fuchsia-900/10 to-black/20 border-violet-600/20",
-  minecraft: "from-[var(--accent-primary)] via-[var(--accent-primary)] to-black/20 border-[var(--accent-primary)]",
-  steam: "from-sky-950/30 via-blue-900/10 to-black/20 border-sky-600/20",
-  rss: "from-amber-950/30 via-orange-900/10 to-black/20 border-amber-600/20",
-  bluesky: "from-sky-950/30 via-[var(--info)] to-black/20 border-sky-600/20",
-  bills: "from-[var(--accent-primary)] via-yellow-900/10 to-black/20 border-[var(--accent-primary)]",
-  valorant: "from-rose-950/30 via-red-900/10 to-black/20 border-rose-600/20",
-  lol: "from-yellow-950/30 via-amber-900/10 to-black/20 border-yellow-600/20",
-  "google-calendar": "from-red-900/30 via-rose-900/10 to-black/20 border-red-500/20",
-  "google-drive": "from-[var(--accent-primary)] via-[var(--accent-primary)] to-black/20 border-[var(--accent-primary)]",
-  notion: "from-zinc-800/40 to-black/20 border-zinc-500/20",
-  tracker: "from-orange-950/30 via-amber-900/10 to-black/20 border-orange-600/20",
-  apex: "from-orange-950/30 via-red-900/10 to-black/20 border-orange-600/20",
-};
+/**
+ * Live-widget cards used to each carry a per-source rainbow gradient wash +
+ * colored border (violet Spotify, sky/amber weather, rose Valorant…) — the
+ * textbook "generic AI dashboard" look. Every card now uses the one flat
+ * theme surface; the source identity comes from its icon and content.
+ */
+const CARD_SURFACE = "bg-[var(--panel-bg)] border-[var(--panel-border)]";
 
 function formatTime(ms: number) {
   const seconds = Math.max(0, Math.floor(ms / 1000));
@@ -1105,7 +1089,7 @@ export default function LiveWidgets({
 
   function renderCard(record: LiveRecord) {
     const isFlipped = !!flipped[record.id];
-    const gradient = GRADIENTS[record.source] || "from-[var(--surface-raised)]/20 to-transparent border-[var(--panel-border)]";
+    const gradient = CARD_SURFACE;
     const isSpotify = record.source === "nowplaying";
     const isDiscord = record.source === "lanyard";
     const isYoutube = record.source === "youtube";
@@ -1153,7 +1137,7 @@ export default function LiveWidgets({
           <div className="absolute inset-0 h-full" style={{ backfaceVisibility: "hidden" }}>
             <div
               className={`h-full min-w-0 overflow-hidden rounded-[var(--panel-radius)] shadow-sm transition-colors duration-150 ${
-                isWeather || isRiot ? "relative" : `border bg-gradient-to-br p-4 ${gradient}`
+                isWeather || isRiot ? "relative" : `border p-4 ${gradient}`
               }`}
             >
               <div className={`absolute right-3 top-3 z-10 h-2.5 w-2.5 rounded-full ${STATUS_DOT[record.status]}`} />

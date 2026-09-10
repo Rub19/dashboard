@@ -5,7 +5,6 @@ import Link from "next/link";
 import { motion } from "framer-motion";
 import { useI18n } from "@/lib/hooks/useI18n";
 import { Icon } from "@/lib/icons";
-import { TiltCard } from "@/components/ui/TiltCard";
 
 export type ForecastDay = {
   date?: string;
@@ -124,91 +123,22 @@ export function weatherIconFromCode(code?: number, condition?: string, isDay?: b
   return weatherIconFromCondition(condition || "") || (isDay === false ? "cloudMoon" : "cloudSun");
 }
 
-export function weatherAmbience(code?: number, isDay?: boolean): { gradient: string; border: string; glow: string } {
-  const isNight = isDay === false;
-
-  // Thunderstorm: violet / amber "orage" theme
-  if (code !== undefined && code >= 95) {
-    return {
-      gradient: "bg-gradient-to-br from-violet-900/40 via-amber-950/20 to-zinc-950",
-      border: "border-violet-500/30",
-      glow: "bg-violet-500",
-    };
-  }
-
-  // Clear / sunny
-  if (code === 0) {
-    return isNight
-      ? {
-          gradient: "bg-gradient-to-br from-indigo-900/30 via-zinc-950/80 to-zinc-950",
-          border: "border-indigo-500/20",
-          glow: "bg-indigo-500",
-        }
-      : {
-          gradient: "bg-gradient-to-br from-amber-500/15 via-zinc-950/80 to-zinc-950",
-          border: "border-amber-500/20",
-          glow: "bg-amber-500",
-        };
-  }
-
-  // Partly cloudy
-  if (code !== undefined && code >= 1 && code <= 3) {
-    return isNight
-      ? {
-          gradient: "bg-gradient-to-br from-indigo-800/20 via-zinc-950/80 to-zinc-950",
-          border: "border-indigo-400/20",
-          glow: "bg-indigo-400",
-        }
-      : {
-          gradient: "bg-gradient-to-br from-sky-500/10 via-amber-500/5 to-zinc-950",
-          border: "border-sky-500/20",
-          glow: "bg-sky-400",
-        };
-  }
-
-  // Fog / mist
-  if (code === 45 || code === 48) {
-    return {
-      gradient: "bg-gradient-to-br from-slate-500/10 via-zinc-950/80 to-zinc-950",
-      border: "border-slate-500/20",
-      glow: "bg-slate-400",
-    };
-  }
-
-  // Drizzle / rain
-  if ((code !== undefined && code >= 51 && code <= 67) || (code !== undefined && code >= 80 && code <= 82)) {
-    return {
-      gradient: "bg-gradient-to-br from-sky-700/20 via-zinc-950/80 to-zinc-950",
-      border: "border-sky-500/20",
-      glow: "bg-sky-500",
-    };
-  }
-
-  // Snow
-  if ((code !== undefined && code >= 71 && code <= 77) || (code !== undefined && code >= 85 && code <= 86)) {
-    return {
-      gradient: "bg-gradient-to-br from-cyan-600/10 via-zinc-950/80 to-zinc-950",
-      border: "border-cyan-500/20",
-      glow: "bg-cyan-400",
-    };
-  }
-
-  // Default
-  return {
-    gradient: "bg-gradient-to-br from-indigo-500/10 via-zinc-950/80 to-zinc-950",
-    border: "border-indigo-500/20",
-    glow: "bg-indigo-500",
-  };
+/**
+ * Kept for API compatibility with existing callers. The old per-condition
+ * rainbow gradient + neon glow washes were the biggest "generic AI dashboard"
+ * tell on the weather surface — now a no-op: panels use the flat theme surface.
+ */
+export function weatherAmbience(_code?: number, _isDay?: boolean): { gradient: string; border: string; glow: string } {
+  return { gradient: "", border: "border-[var(--panel-border)]", glow: "" };
 }
 
-export function weatherIconColor(code?: number, isDay?: boolean): string {
-  if (code === 0) return isDay === false ? "text-indigo-300" : "text-amber-400";
-  if (code !== undefined && code >= 1 && code <= 3) return isDay === false ? "text-indigo-300" : "text-amber-300";
-  if (code === 45 || code === 48) return "text-slate-400";
-  if ((code !== undefined && code >= 51 && code <= 67) || (code !== undefined && code >= 80 && code <= 82)) return "text-sky-400";
-  if ((code !== undefined && code >= 71 && code <= 77) || (code !== undefined && code >= 85 && code <= 86)) return "text-[var(--info)]";
-  if (code !== undefined && code >= 95) return "text-violet-400";
-  return isDay === false ? "text-indigo-300" : "text-amber-400";
+/**
+ * Monochrome weather icons — reads correctly on every one of the 16 themes
+ * (light included) instead of hardcoded amber/sky/indigo that only worked on
+ * the near-black default.
+ */
+export function weatherIconColor(_code?: number, _isDay?: boolean): string {
+  return "text-[var(--text-primary)]";
 }
 
 function formatShortDay(iso?: string, locale = "fr"): string {
@@ -225,8 +155,6 @@ function formatTime(iso?: string, locale = "fr"): string {
   return new Intl.DateTimeFormat(locale, { hour: "2-digit", minute: "2-digit" }).format(d);
 }
 
-const ANIMATED_ICON_ANIMATE = { y: [0, -4, 0] };
-const ANIMATED_ICON_TRANSITION = { duration: 4, repeat: Infinity, ease: "easeInOut" as const };
 const SKELETON_PILLS = Array.from({ length: 4 });
 const SKELETON_COMPACT_GRID = Array.from({ length: 3 });
 const SKELETON_FULL_GRID = Array.from({ length: 5 });
@@ -241,13 +169,9 @@ const AnimatedWeatherIcon = memo(function AnimatedWeatherIcon({
   compact?: boolean;
 }) {
   return (
-    <motion.div
-      animate={ANIMATED_ICON_ANIMATE}
-      transition={ANIMATED_ICON_TRANSITION}
-      className={`shrink-0 ${compact ? "h-10 w-10" : "h-14 w-14 md:h-16 md:w-16"}`}
-    >
+    <div className={`shrink-0 ${compact ? "h-10 w-10" : "h-14 w-14 md:h-16 md:w-16"}`}>
       <Icon name={name} className={`h-full w-full ${colorClass}`} />
-    </motion.div>
+    </div>
   );
 });
 
@@ -255,25 +179,16 @@ const WeatherBadge = memo(function WeatherBadge({
   icon,
   label,
   value,
-  tone = "zinc",
 }: {
   icon: string;
   label?: string;
   value: string;
+  /** retained for call-site compatibility; icons are monochrome now */
   tone?: "zinc" | "cyan" | "emerald" | "amber" | "rose" | "violet";
 }) {
-  const toneClass = {
-    zinc: "text-[var(--text-primary)]",
-    cyan: "text-[var(--info)]",
-    emerald: "text-[var(--accent-primary)]",
-    amber: "text-amber-400",
-    rose: "text-rose-400",
-    violet: "text-violet-400",
-  }[tone];
-
   return (
-    <div className="flex w-full items-center gap-1.5 rounded-xl bg-[var(--text-primary)]/[0.04] px-2.5 py-1.5 text-xs font-medium text-[var(--text-primary)] ring-1 ring-inset ring-[var(--text-primary)]/[0.06] backdrop-blur-sm">
-      <Icon name={icon} className={`h-3 w-3 ${toneClass}`} />
+    <div className="flex w-full items-center gap-1.5 rounded-xl border border-[var(--panel-border)] bg-[var(--surface-2)]/40 px-2.5 py-1.5 text-xs font-medium text-[var(--text-primary)]">
+      <Icon name={icon} className="h-3 w-3 text-[var(--text-muted)]" />
       {label && <span className="text-[var(--text-muted)]">{label}</span>}
       <span>{value}</span>
     </div>
@@ -287,10 +202,10 @@ const ForecastPill = memo(function ForecastPill({ day, icon, colorClass, compact
   const max = toNum(day.max);
 
   return (
-    <div className="v8-inset flex min-h-[64px] flex-col items-center gap-1 p-2.5 transition-colors hover:bg-[var(--background)]/50">
+    <div className="v8-inset flex min-h-[64px] flex-col items-center gap-1 p-2.5 transition-colors hover:bg-[var(--surface-2)]/50">
       <span className="text-[11px] font-medium uppercase text-[var(--text-muted)]">{formatShortDay(day.date, locale)}</span>
       <Icon name={icon} className={`my-0.5 ${compact ? "h-4 w-4" : "h-5 w-5"} ${colorClass}`} />
-      <span className={`font-mono font-semibold text-[var(--text-primary)] ${compact ? "text-[10px]" : "text-xs"}`}>
+      <span className={`font-semibold tabular-nums text-[var(--text-primary)] ${compact ? "text-[10px]" : "text-xs"}`}>
         {min !== undefined ? `${Math.round(min)}°` : "—"}{" "}
         <span className="text-[var(--text-muted)]">/ {max !== undefined ? `${Math.round(max)}°` : "—"}</span>
       </span>
@@ -302,7 +217,7 @@ const WeatherSkeleton = memo(function WeatherSkeleton({ compact }: { compact?: b
   const grid = compact ? SKELETON_COMPACT_GRID : SKELETON_FULL_GRID;
   return (
     <div
-      className={`animate-pulse space-y-4 rounded-2xl bg-[var(--text-primary)]/[0.04] p-5 backdrop-blur-2xl ${
+      className={`v8-panel animate-pulse space-y-4 p-5 ${
         compact ? "min-h-[130px]" : "min-h-[260px]"
       }`}
     >
@@ -349,7 +264,6 @@ const WeatherWidget = memo(function WeatherWidget({ data, loading, onRefresh, co
   const sunset = toStr(data?.sunset);
   const forecast = useMemo(() => (data?.forecast || []).slice(0, 5), [data?.forecast]);
 
-  const { gradient, glow } = weatherAmbience(code, isDay);
   const iconColor = weatherIconColor(code, isDay);
   const iconName = weatherIconFromCode(code, condition, isDay);
   const locale = i18n("daysShort")?.includes(",") ? "fr" : "en";
@@ -361,7 +275,7 @@ const WeatherWidget = memo(function WeatherWidget({ data, loading, onRefresh, co
   if (!data) {
     return (
       <div
-        className={`flex flex-col items-center justify-center gap-2 rounded-2xl border border-[var(--text-primary)]/[0.06] bg-[var(--background)]/60 p-5 text-center backdrop-blur-2xl ${
+        className={`v8-panel flex flex-col items-center justify-center gap-2 p-5 text-center ${
           compact ? "min-h-[130px]" : "min-h-[260px]"
         } ${className || ""}`}
       >
@@ -392,18 +306,10 @@ const WeatherWidget = memo(function WeatherWidget({ data, loading, onRefresh, co
   }
 
   return (
-    <TiltCard
-      className={`group h-full min-h-0 bg-[var(--background)]/70 p-4 shadow-xl shadow-[var(--background)]/50 backdrop-blur-2xl transition-colors ${gradient} ${
-        className || ""
-      }`}
+    <div
+      className={`v8-panel group flex h-full min-h-0 flex-col overflow-hidden p-4 ${className || ""}`}
     >
-      {/* Ambient neon glow */}
-      <div
-        className={`pointer-events-none absolute -right-16 -top-16 h-48 w-48 rounded-full ${glow} blur-2xl opacity-30 transition-opacity group-hover:opacity-40`}
-        aria-hidden="true"
-      />
-
-      <div className="relative z-10 flex h-full min-h-0 flex-col">
+      <div className="flex h-full min-h-0 flex-col">
         {/* Header */}
         <div className="flex items-start justify-between gap-3">
           <div className={`flex gap-2 ${compact ? "items-center" : "flex-col items-start"}`}>
@@ -467,19 +373,19 @@ const WeatherWidget = memo(function WeatherWidget({ data, loading, onRefresh, co
           <div className="mt-3 grid grid-cols-2 gap-2 sm:grid-cols-4">
             {sunrise && (
               <div className="flex items-center gap-1.5 text-xs text-[var(--text-muted)]">
-                <Icon name="sunrise" className="h-3.5 w-3.5 text-amber-300" />
+                <Icon name="sunrise" className="h-3.5 w-3.5 text-[var(--text-muted)]" />
                 <span>{formatTime(sunrise, locale)}</span>
               </div>
             )}
             {sunset && (
               <div className="flex items-center gap-1.5 text-xs text-[var(--text-muted)]">
-                <Icon name="sunset" className="h-3.5 w-3.5 text-indigo-300" />
+                <Icon name="sunset" className="h-3.5 w-3.5 text-[var(--text-muted)]" />
                 <span>{formatTime(sunset, locale)}</span>
               </div>
             )}
             {pressure !== undefined && (
               <div className="flex items-center gap-1.5 text-xs text-[var(--text-muted)]">
-                <Icon name="gauge" className="h-3.5 w-3.5 text-[var(--accent-primary)]" />
+                <Icon name="gauge" className="h-3.5 w-3.5 text-[var(--text-muted)]" />
                 <span>
                   {Math.round(pressure)} {i18n("weatherPressureUnit") || "hPa"}
                 </span>
@@ -487,7 +393,7 @@ const WeatherWidget = memo(function WeatherWidget({ data, loading, onRefresh, co
             )}
             {aqi !== undefined && (
               <div className="flex items-center gap-1.5 text-xs text-[var(--text-muted)]">
-                <Icon name="wind" className="h-3.5 w-3.5 text-sky-400" />
+                <Icon name="wind" className="h-3.5 w-3.5 text-[var(--text-muted)]" />
                 <span>
                   {aqiLabel || `${i18n("weatherAirQuality") || "AQI"} ${Math.round(aqi)}`}
                 </span>
@@ -509,7 +415,7 @@ const WeatherWidget = memo(function WeatherWidget({ data, loading, onRefresh, co
           </div>
         )}
       </div>
-    </TiltCard>
+    </div>
   );
 });
 

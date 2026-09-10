@@ -33,12 +33,16 @@ jobs:
       - name: Set up Node.js
         uses: actions/setup-node@v4
         with:
-          node-version: '20'
+          # @discordjs/voice needs >= 22.12; also matches the VPS runtime.
+          node-version: '22'
           cache: 'npm'
           cache-dependency-path: discord-bot/package-lock.json
 
+      # `npm install`, not `npm ci`: the VPS deploys with `npm install` and the
+      # lockfile isn't strictly `npm ci`-clean across npm majors. tsc is what we
+      # actually want to gate on here.
       - name: Install dependencies
-        run: npm ci
+        run: npm install --no-audit --no-fund
         working-directory: discord-bot
 
       - name: Type-check (tsc)

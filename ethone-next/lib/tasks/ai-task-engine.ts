@@ -26,7 +26,7 @@ export const PRESET_TASK_PACKS: TaskSuggestionPack[] = [
     description: "Cycle complet de dev, tests, lint et déploiement Cloudflare",
     icon: "code",
     badge: "DEV & CLOUD",
-    gradient: "from-cyan-500/20 to-blue-500/10 border-cyan-500/30 text-cyan-400",
+    gradient: "",
     tasks: [
       { title: "Vérifier le statut git et les modifications en cours", category: "Dev", priority: "high", estimatedMinutes: 10 },
       { title: "Lancer les tests de build Next.js et TypeScript (0 erreur)", category: "Dev", priority: "urgent", estimatedMinutes: 15 },
@@ -40,7 +40,7 @@ export const PRESET_TASK_PACKS: TaskSuggestionPack[] = [
     description: "Bloc de concentration intense sans distraction pour avancer sur l'essentiel",
     icon: "zap",
     badge: "FOCUS",
-    gradient: "from-amber-500/20 to-orange-500/10 border-amber-500/30 text-amber-400",
+    gradient: "",
     tasks: [
       { title: "Définir l'unique objectif prioritaire du bloc", category: "Focus", priority: "urgent", estimatedMinutes: 5 },
       { title: "Activer le mode Zen et couper les notifications", category: "Organisation", priority: "medium", estimatedMinutes: 2 },
@@ -54,7 +54,7 @@ export const PRESET_TASK_PACKS: TaskSuggestionPack[] = [
     description: "Amélioration des animations, contrastes et composants Obsidian Glass",
     icon: "sparkles",
     badge: "DESIGN",
-    gradient: "from-purple-500/20 to-pink-500/10 border-purple-500/30 text-purple-400",
+    gradient: "",
     tasks: [
       { title: "Auditer les contrastes et les flous de fond backdrop-blur", category: "Design", priority: "medium", estimatedMinutes: 20 },
       { title: "Affiner les micro-animations d'entrée et sortie Framer Motion", category: "Design", priority: "high", estimatedMinutes: 25 },
@@ -67,7 +67,7 @@ export const PRESET_TASK_PACKS: TaskSuggestionPack[] = [
     description: "Revue des variables d'environnement, clés API et règles CORS",
     icon: "shield",
     badge: "SÉCURITÉ",
-    gradient: "from-emerald-500/20 to-teal-500/10 border-emerald-500/30 text-emerald-400",
+    gradient: "",
     tasks: [
       { title: "Vérifier que toutes les clés API sont masquées en Secret", category: "Sécurité", priority: "urgent", estimatedMinutes: 10 },
       { title: "Vérifier l'absence de tokens hardcodés dans le code source", category: "Sécurité", priority: "high", estimatedMinutes: 15 },

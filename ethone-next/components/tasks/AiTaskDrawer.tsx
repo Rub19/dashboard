@@ -73,33 +73,33 @@ export default function AiTaskDrawer({ isOpen, onClose, onAddTasks }: AiTaskDraw
           animate={{ opacity: 1 }}
           exit={{ opacity: 0 }}
           onClick={onClose}
-          className="absolute inset-0 bg-black/75 backdrop-blur-xl"
+          className="absolute inset-0 bg-black/60 backdrop-blur-sm"
         />
 
         {/* Modal Window */}
         <motion.div
-          initial={{ opacity: 0, scale: 0.95, y: 16 }}
+          initial={{ opacity: 0, scale: 0.97, y: 12 }}
           animate={{ opacity: 1, scale: 1, y: 0 }}
-          exit={{ opacity: 0, scale: 0.95, y: 16 }}
-          transition={{ duration: 0.25, ease: [0.16, 1, 0.3, 1] }}
-          className="relative flex max-h-[85vh] w-full max-w-2xl flex-col overflow-hidden rounded-3xl border border-white/15 bg-[#0c0d14]/95 shadow-[0_16px_60px_rgba(0,0,0,0.8)] backdrop-blur-3xl"
+          exit={{ opacity: 0, scale: 0.97, y: 12 }}
+          transition={{ duration: 0.2, ease: [0.16, 1, 0.3, 1] }}
+          className="v8-panel relative flex max-h-[85vh] w-full max-w-2xl flex-col overflow-hidden shadow-2xl"
         >
           {/* Header */}
-          <div className="flex items-center justify-between border-b border-white/10 px-6 py-4">
+          <div className="flex items-center justify-between border-b border-[var(--panel-border)] px-6 py-4">
             <div className="flex items-center gap-3">
-              <div className="flex h-10 w-10 items-center justify-center rounded-2xl border border-purple-500/30 bg-purple-500/15 text-purple-400 shadow-[0_0_16px_rgba(168,85,247,0.25)]">
+              <div className="flex h-9 w-9 items-center justify-center rounded-xl bg-[var(--surface-2)] text-[var(--text-muted)]">
                 <Brain className="h-5 w-5" />
               </div>
               <div>
-                <h3 className="text-base font-bold text-white">Assistant & Suggestions IA</h3>
-                <p className="text-xs text-zinc-400">Décomposez vos projets en tâches intelligentes</p>
+                <h3 className="text-sm font-semibold text-[var(--text-primary)]">Assistant IA</h3>
+                <p className="text-xs text-[var(--text-muted)]">Décomposez un projet en tâches</p>
               </div>
             </div>
 
             <button
               type="button"
               onClick={onClose}
-              className="flex h-8 w-8 items-center justify-center rounded-full text-zinc-400 hover:bg-white/10 hover:text-white transition-colors"
+              className="flex h-8 w-8 items-center justify-center rounded-lg text-[var(--text-muted)] transition-colors hover:bg-[var(--surface-2)] hover:text-[var(--text-primary)]"
             >
               <X className="h-4 w-4" />
             </button>
@@ -109,7 +109,7 @@ export default function AiTaskDrawer({ isOpen, onClose, onAddTasks }: AiTaskDraw
           <div className="flex-1 overflow-y-auto p-6 space-y-6 os-scroll">
             {/* Prompt Input */}
             <div className="space-y-2">
-              <label className="text-xs font-bold uppercase tracking-wider text-zinc-400">
+              <label className="text-[11px] font-medium uppercase tracking-wide text-[var(--text-muted)]">
                 Que souhaitez-vous accomplir ?
               </label>
               <div className="relative flex items-center">
@@ -118,14 +118,14 @@ export default function AiTaskDrawer({ isOpen, onClose, onAddTasks }: AiTaskDraw
                   value={prompt}
                   onChange={(e) => setPrompt(e.target.value)}
                   onKeyDown={(e) => e.key === "Enter" && handleGenerate()}
-                  placeholder="Ex: Préparer le sprint de tests et déploiement..."
-                  className="w-full rounded-2xl border border-white/15 bg-white/5 px-4 py-3.5 pr-28 text-sm text-white placeholder-zinc-500 outline-none transition-all focus:border-purple-500/60 focus:bg-white/10 focus:ring-2 focus:ring-purple-500/20"
+                  placeholder="Ex : Préparer le sprint de tests et déploiement…"
+                  className="w-full rounded-xl border border-[var(--panel-border)] bg-[var(--surface-2)]/50 px-4 py-3 pr-28 text-sm text-[var(--text-primary)] placeholder:text-[var(--text-muted)] outline-none transition-colors focus:border-[var(--accent-primary)]"
                 />
                 <button
                   type="button"
                   onClick={handleGenerate}
                   disabled={!prompt.trim() || isGenerating}
-                  className="absolute right-2 flex items-center gap-1.5 rounded-xl bg-purple-600 px-3 py-2 text-xs font-bold text-white shadow-md transition-all hover:bg-purple-500 active:scale-95 disabled:opacity-50 disabled:pointer-events-none cursor-pointer"
+                  className="absolute right-2 flex items-center gap-1.5 rounded-lg bg-[var(--accent-primary)] px-3 py-2 text-xs font-medium text-[var(--accent-contrast)] transition-[filter] hover:brightness-110 active:scale-95 disabled:opacity-50 disabled:pointer-events-none"
                 >
                   {isGenerating ? (
                     <Loader2 className="h-3.5 w-3.5 animate-spin" />
@@ -139,7 +139,7 @@ export default function AiTaskDrawer({ isOpen, onClose, onAddTasks }: AiTaskDraw
 
             {/* Presets Grid */}
             <div className="space-y-2.5">
-              <p className="flex items-center gap-1.5 text-xs font-bold uppercase tracking-wider text-zinc-400">
+              <p className="flex items-center gap-1.5 text-[11px] font-medium uppercase tracking-wide text-[var(--text-muted)]">
                 <Zap className="h-3.5 w-3.5" />
                 Suggestions instantanées
               </p>
@@ -149,18 +149,13 @@ export default function AiTaskDrawer({ isOpen, onClose, onAddTasks }: AiTaskDraw
                     key={pack.id}
                     type="button"
                     onClick={() => handleSelectPack(pack)}
-                    className={cn(
-                      "flex flex-col items-start gap-1 rounded-2xl border p-3.5 text-left transition-all hover:scale-[1.02] active:scale-95 cursor-pointer bg-white/[0.03] hover:bg-white/[0.07]",
-                      pack.gradient
-                    )}
+                    className="flex flex-col items-start gap-1 rounded-xl border border-[var(--panel-border)] bg-[var(--surface-2)]/40 p-3.5 text-left transition-colors hover:bg-[var(--surface-2)] active:scale-[0.99]"
                   >
-                    <div className="flex w-full items-center justify-between">
-                      <span className="text-xs font-bold text-white">{pack.title}</span>
-                      <span className="rounded-md border border-white/10 bg-white/10 px-1.5 py-0.2 font-mono text-[9px] font-bold">
-                        {pack.tasks.length} tâches
-                      </span>
+                    <div className="flex w-full items-center justify-between gap-2">
+                      <span className="text-xs font-medium text-[var(--text-primary)]">{pack.title}</span>
+                      <span className="shrink-0 text-[10px] text-[var(--text-muted)]">{pack.tasks.length} tâches</span>
                     </div>
-                    <p className="line-clamp-2 text-[11px] text-zinc-400">{pack.description}</p>
+                    <p className="line-clamp-2 text-[11px] text-[var(--text-muted)]">{pack.description}</p>
                   </button>
                 ))}
               </div>
@@ -168,11 +163,11 @@ export default function AiTaskDrawer({ isOpen, onClose, onAddTasks }: AiTaskDraw
 
             {/* Generated Preview List */}
             {previewTasks.length > 0 && (
-              <div className="space-y-3 rounded-2xl border border-purple-500/20 bg-purple-500/5 p-4 animate-in fade-in zoom-in-95 duration-200">
+              <div className="space-y-3 rounded-xl border border-[var(--panel-border)] bg-[var(--surface-2)]/40 p-4">
                 <div className="flex items-center justify-between">
-                  <span className="flex items-center gap-1.5 text-xs font-bold text-purple-300">
+                  <span className="flex items-center gap-1.5 text-xs font-medium text-[var(--text-primary)]">
                     <ListPlus className="h-3.5 w-3.5" />
-                    Tâches générées ({selectedIndices.size} / {previewTasks.length} sélectionnées)
+                    Tâches générées ({selectedIndices.size} / {previewTasks.length})
                   </span>
                   <button
                     type="button"
@@ -183,7 +178,7 @@ export default function AiTaskDrawer({ isOpen, onClose, onAddTasks }: AiTaskDraw
                           : new Set(previewTasks.map((_, i) => i))
                       )
                     }
-                    className="text-[11px] font-semibold text-purple-400 hover:underline"
+                    className="text-[11px] font-medium text-[var(--accent-primary)] hover:underline"
                   >
                     {selectedIndices.size === previewTasks.length ? "Désélectionner tout" : "Tout sélectionner"}
                   </button>
@@ -197,19 +192,19 @@ export default function AiTaskDrawer({ isOpen, onClose, onAddTasks }: AiTaskDraw
                         key={idx}
                         onClick={() => toggleTaskSelection(idx)}
                         className={cn(
-                          "flex items-center justify-between gap-3 rounded-xl border p-3 transition-all cursor-pointer",
+                          "flex items-center justify-between gap-3 rounded-lg border p-3 transition-colors cursor-pointer",
                           isSelected
-                            ? "border-purple-500/40 bg-purple-500/15 text-white shadow-xs"
-                            : "border-white/10 bg-white/5 text-zinc-400 opacity-60"
+                            ? "border-[var(--accent-primary)]/40 bg-[var(--accent-primary)]/10 text-[var(--text-primary)]"
+                            : "border-[var(--panel-border)] bg-[var(--surface-2)]/40 text-[var(--text-muted)] opacity-70"
                         )}
                       >
                         <div className="flex items-center gap-2.5 min-w-0">
                           <div
                             className={cn(
-                              "flex h-5 w-5 shrink-0 items-center justify-center rounded-lg border transition-all",
+                              "flex h-5 w-5 shrink-0 items-center justify-center rounded-md border transition-colors",
                               isSelected
-                                ? "border-purple-400 bg-purple-500 text-white"
-                                : "border-white/20 bg-transparent"
+                                ? "border-[var(--accent-primary)] bg-[var(--accent-primary)] text-[var(--accent-contrast)]"
+                                : "border-[var(--panel-border)] bg-transparent"
                             )}
                           >
                             {isSelected && <Check className="h-3.5 w-3.5" />}
@@ -218,17 +213,17 @@ export default function AiTaskDrawer({ isOpen, onClose, onAddTasks }: AiTaskDraw
                         </div>
 
                         <div className="flex items-center gap-2 shrink-0">
-                          <span className="rounded-md border border-white/10 bg-white/10 px-2 py-0.5 text-[10px] font-mono text-zinc-300">
+                          <span className="rounded-md border border-[var(--panel-border)] bg-[var(--surface-2)]/60 px-2 py-0.5 text-[10px] text-[var(--text-muted)]">
                             {task.category}
                           </span>
                           <span
                             className={cn(
-                              "rounded-md px-1.5 py-0.5 font-mono text-[9px] font-bold uppercase",
+                              "rounded-md border px-1.5 py-0.5 text-[10px] font-medium",
                               task.priority === "urgent"
-                                ? "bg-rose-500/20 text-rose-300 border border-rose-500/30"
+                                ? "border-[var(--danger)]/25 bg-[var(--danger)]/10 text-[var(--danger)]"
                                 : task.priority === "high"
-                                ? "bg-amber-500/20 text-amber-300 border border-amber-500/30"
-                                : "bg-emerald-500/20 text-emerald-300 border border-emerald-500/30"
+                                ? "border-[var(--warning)]/25 bg-[var(--warning)]/10 text-[var(--warning)]"
+                                : "border-[var(--panel-border)] bg-[var(--surface-2)] text-[var(--text-muted)]"
                             )}
                           >
                             {task.priority}
@@ -243,11 +238,11 @@ export default function AiTaskDrawer({ isOpen, onClose, onAddTasks }: AiTaskDraw
           </div>
 
           {/* Footer */}
-          <div className="flex items-center justify-between border-t border-white/10 bg-white/[0.02] px-6 py-4">
+          <div className="flex items-center justify-between border-t border-[var(--panel-border)] px-6 py-4">
             <button
               type="button"
               onClick={onClose}
-              className="rounded-xl px-4 py-2 text-xs font-semibold text-zinc-400 hover:text-white transition-colors"
+              className="rounded-lg px-4 py-2 text-xs font-medium text-[var(--text-muted)] transition-colors hover:text-[var(--text-primary)]"
             >
               Annuler
             </button>
@@ -256,7 +251,7 @@ export default function AiTaskDrawer({ isOpen, onClose, onAddTasks }: AiTaskDraw
               type="button"
               disabled={selectedIndices.size === 0}
               onClick={handleCommitTasks}
-              className="flex items-center gap-2 rounded-xl bg-gradient-to-r from-purple-600 to-indigo-600 px-5 py-2.5 text-xs font-bold text-white shadow-lg shadow-purple-600/30 transition-all hover:scale-105 active:scale-95 disabled:opacity-40 disabled:pointer-events-none cursor-pointer"
+              className="flex items-center gap-2 rounded-lg bg-[var(--accent-primary)] px-5 py-2.5 text-xs font-medium text-[var(--accent-contrast)] transition-[filter] hover:brightness-110 active:scale-95 disabled:opacity-40 disabled:pointer-events-none"
             >
               <ListPlus className="h-4 w-4" />
               <span>Ajouter {selectedIndices.size} tâche(s)</span>

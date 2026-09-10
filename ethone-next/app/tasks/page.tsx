@@ -150,41 +150,43 @@ export default function TasksPage() {
     }
   };
 
+  const KPIS = [
+    { label: "Total", value: stats.total, icon: Layers },
+    { label: "En cours", value: stats.open, icon: Clock },
+    { label: "Prioritaires", value: stats.urgentOrHigh, icon: Flame },
+    { label: "Progression", value: `${stats.percent}%`, icon: CheckCircle2 },
+  ];
+
   return (
-    <div className="flex h-full min-h-0 w-full flex-col overflow-hidden p-4 sm:p-6 lg:p-8 space-y-6">
-      {/* Top Banner & Header */}
-      <div className="flex flex-col gap-4 sm:flex-row sm:items-center sm:justify-between shrink-0">
+    <div className="flex h-full min-h-0 w-full flex-col overflow-hidden p-4 sm:p-6 lg:p-8 space-y-4">
+      {/* Header */}
+      <div className="flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-between shrink-0">
         <div>
-          <div className="flex items-center gap-2.5">
-            <h1 className="text-2xl sm:text-3xl font-black tracking-tight text-white">Tâches & Objectifs</h1>
-            <span className="rounded-full border border-purple-500/30 bg-purple-500/10 px-2.5 py-0.5 font-mono text-[10px] font-bold text-purple-400">
-              {stats.total} actives
-            </span>
-          </div>
-          <p className="mt-1 text-xs text-zinc-400">
-            Organisez, priorisez et automatisez votre productivité quotidienne.
+          <h1 className="text-xl font-semibold tracking-tight text-[var(--text-primary)]">Tâches</h1>
+          <p className="mt-0.5 text-xs text-[var(--text-muted)]">
+            Organisez et priorisez votre travail du jour.
           </p>
         </div>
 
-        {/* Action Controls */}
-        <div className="flex items-center gap-2.5">
+        <div className="flex items-center gap-2">
           <button
             type="button"
             onClick={() => setIsAiDrawerOpen(true)}
-            className="flex items-center gap-2 rounded-2xl border border-purple-500/40 bg-purple-500/15 px-3.5 py-2 text-xs font-bold text-purple-300 shadow-[0_0_20px_rgba(168,85,247,0.2)] transition-all hover:bg-purple-500/25 hover:scale-105 active:scale-95 cursor-pointer"
+            className="flex items-center gap-2 rounded-xl border border-[var(--panel-border)] px-3 py-1.5 text-xs font-medium text-[var(--text-muted)] transition-colors hover:bg-[var(--surface-2)] hover:text-[var(--text-primary)]"
           >
-            <Sparkles className="h-4 w-4 text-purple-400" />
-            <span>Assistant & Suggestions IA</span>
+            <Sparkles className="h-3.5 w-3.5" />
+            <span>Assistant IA</span>
           </button>
 
-          {/* View Toggle */}
-          <div className="flex items-center rounded-2xl border border-white/10 bg-white/5 p-1">
+          <div className="flex items-center rounded-xl border border-[var(--panel-border)] p-0.5">
             <button
               type="button"
               onClick={() => setViewMode("list")}
               className={cn(
-                "flex h-7 w-7 items-center justify-center rounded-xl transition-colors",
-                viewMode === "list" ? "bg-white/15 text-white" : "text-zinc-400 hover:text-white"
+                "flex h-7 w-7 items-center justify-center rounded-lg transition-colors",
+                viewMode === "list"
+                  ? "bg-[var(--surface-2)] text-[var(--text-primary)]"
+                  : "text-[var(--text-muted)] hover:text-[var(--text-primary)]"
               )}
               title="Vue Liste"
             >
@@ -194,8 +196,10 @@ export default function TasksPage() {
               type="button"
               onClick={() => setViewMode("kanban")}
               className={cn(
-                "flex h-7 w-7 items-center justify-center rounded-xl transition-colors",
-                viewMode === "kanban" ? "bg-white/15 text-white" : "text-zinc-400 hover:text-white"
+                "flex h-7 w-7 items-center justify-center rounded-lg transition-colors",
+                viewMode === "kanban"
+                  ? "bg-[var(--surface-2)] text-[var(--text-primary)]"
+                  : "text-[var(--text-muted)] hover:text-[var(--text-primary)]"
               )}
               title="Vue Kanban"
             >
@@ -205,106 +209,72 @@ export default function TasksPage() {
         </div>
       </div>
 
-      {/* KPI Cards Grid */}
-      <div className="grid grid-cols-2 gap-3 sm:grid-cols-4 shrink-0">
-        <div className="flex items-center justify-between rounded-2xl border border-white/10 bg-[var(--bg-surface-elevated)]/80 p-3.5 backdrop-blur-xl">
-          <div>
-            <p className="text-[10px] font-bold uppercase tracking-wider text-zinc-400">Total Tâches</p>
-            <p className="text-xl font-bold text-white mt-0.5">{stats.total}</p>
+      {/* KPI strip */}
+      <div className="v8-panel grid shrink-0 grid-cols-2 divide-[var(--panel-border)] sm:grid-cols-4 sm:divide-x">
+        {KPIS.map((kpi) => (
+          <div key={kpi.label} className="flex items-center gap-3 p-3.5">
+            <span className="flex h-9 w-9 shrink-0 items-center justify-center rounded-lg bg-[var(--surface-2)] text-[var(--text-muted)]">
+              <kpi.icon className="h-4 w-4" />
+            </span>
+            <div className="min-w-0">
+              <p className="text-[11px] uppercase tracking-wide text-[var(--text-muted)]">{kpi.label}</p>
+              <p className="mt-0.5 text-lg font-semibold tabular-nums text-[var(--text-primary)]">{kpi.value}</p>
+            </div>
           </div>
-          <span className="flex h-9 w-9 items-center justify-center rounded-xl border border-white/10 bg-white/5 text-zinc-300">
-            <Layers className="h-4 w-4" />
-          </span>
-        </div>
-
-        <div className="flex items-center justify-between rounded-2xl border border-cyan-500/20 bg-cyan-500/5 p-3.5 backdrop-blur-xl">
-          <div>
-            <p className="text-[10px] font-bold uppercase tracking-wider text-cyan-400">En cours</p>
-            <p className="text-xl font-bold text-cyan-300 mt-0.5">{stats.open}</p>
-          </div>
-          <span className="flex h-9 w-9 items-center justify-center rounded-xl border border-cyan-500/30 bg-cyan-500/10 text-cyan-400">
-            <Clock className="h-4 w-4" />
-          </span>
-        </div>
-
-        <div className="flex items-center justify-between rounded-2xl border border-amber-500/20 bg-amber-500/5 p-3.5 backdrop-blur-xl">
-          <div>
-            <p className="text-[10px] font-bold uppercase tracking-wider text-amber-400">Prioritaires</p>
-            <p className="text-xl font-bold text-amber-300 mt-0.5">{stats.urgentOrHigh}</p>
-          </div>
-          <span className="flex h-9 w-9 items-center justify-center rounded-xl border border-amber-500/30 bg-amber-500/10 text-amber-400">
-            <Flame className="h-4 w-4" />
-          </span>
-        </div>
-
-        <div className="flex items-center justify-between rounded-2xl border border-emerald-500/20 bg-emerald-500/5 p-3.5 backdrop-blur-xl">
-          <div>
-            <p className="text-[10px] font-bold uppercase tracking-wider text-emerald-400">Progression</p>
-            <p className="text-xl font-bold text-emerald-300 mt-0.5">{stats.percent}%</p>
-          </div>
-          <span className="flex h-9 w-9 items-center justify-center rounded-xl border border-emerald-500/30 bg-emerald-500/10 text-emerald-400">
-            <CheckCircle2 className="h-4 w-4" />
-          </span>
-        </div>
+        ))}
       </div>
 
-      {/* Quick Add Bar */}
+      {/* Quick add */}
       <form
         onSubmit={handleQuickAdd}
-        className="flex flex-col gap-2 rounded-2xl border border-white/15 bg-[var(--bg-surface-elevated)]/90 p-2.5 backdrop-blur-2xl shadow-xl sm:flex-row sm:items-center shrink-0"
+        className="v8-panel flex flex-col gap-2 p-2 sm:flex-row sm:items-center shrink-0"
       >
-        <div className="relative flex-1">
-          <input
-            type="text"
-            value={newTitle}
-            onChange={(e) => setNewTitle(e.target.value)}
-            placeholder="Ajouter une nouvelle tâche rapide (ex: Finaliser la doc API)..."
-            className="w-full bg-transparent px-3 py-2 text-sm text-white placeholder-zinc-500 outline-none"
-          />
-        </div>
+        <input
+          type="text"
+          value={newTitle}
+          onChange={(e) => setNewTitle(e.target.value)}
+          placeholder="Ajouter une tâche…"
+          className="flex-1 bg-transparent px-3 py-2 text-sm text-[var(--text-primary)] placeholder:text-[var(--text-muted)] outline-none"
+        />
 
         <div className="flex items-center gap-2 px-1">
-          {/* Category Picker */}
           <select
             value={newCategory}
             onChange={(e) => setNewCategory(e.target.value)}
-            className="rounded-xl border border-white/10 bg-white/5 px-2.5 py-1.5 font-mono text-xs text-zinc-300 outline-none cursor-pointer hover:bg-white/10"
+            className="cursor-pointer rounded-lg border border-[var(--panel-border)] bg-transparent px-2.5 py-1.5 text-xs text-[var(--text-muted)] outline-none hover:text-[var(--text-primary)]"
           >
             {CATEGORIES.filter((c) => c !== "Tous").map((c) => (
-              <option key={c} value={c} className="bg-[var(--bg-surface-elevated)] text-white">
+              <option key={c} value={c} className="bg-[var(--panel-bg)] text-[var(--text-primary)]">
                 {c}
               </option>
             ))}
           </select>
 
-          {/* Priority Picker */}
           <select
             value={newPriority}
             onChange={(e) => setNewPriority(e.target.value as TaskPriority)}
-            className="rounded-xl border border-white/10 bg-white/5 px-2.5 py-1.5 font-mono text-xs text-zinc-300 outline-none cursor-pointer hover:bg-white/10"
+            className="cursor-pointer rounded-lg border border-[var(--panel-border)] bg-transparent px-2.5 py-1.5 text-xs text-[var(--text-muted)] outline-none hover:text-[var(--text-primary)]"
           >
-            <option value="low" className="bg-[var(--bg-surface-elevated)] text-white">Basse</option>
-            <option value="medium" className="bg-[var(--bg-surface-elevated)] text-white">Moyenne</option>
-            <option value="high" className="bg-[var(--bg-surface-elevated)] text-white">Haute</option>
-            <option value="urgent" className="bg-[var(--bg-surface-elevated)] text-white">Urgente</option>
+            <option value="low" className="bg-[var(--panel-bg)] text-[var(--text-primary)]">Basse</option>
+            <option value="medium" className="bg-[var(--panel-bg)] text-[var(--text-primary)]">Moyenne</option>
+            <option value="high" className="bg-[var(--panel-bg)] text-[var(--text-primary)]">Haute</option>
+            <option value="urgent" className="bg-[var(--panel-bg)] text-[var(--text-primary)]">Urgente</option>
           </select>
 
-          {/* Submit */}
           <button
             type="submit"
             disabled={!newTitle.trim()}
-            className="flex items-center gap-1.5 rounded-xl bg-white px-3.5 py-1.5 text-xs font-bold text-black shadow-md transition-all hover:bg-zinc-200 active:scale-95 disabled:opacity-40 disabled:pointer-events-none cursor-pointer shrink-0"
+            className="flex shrink-0 items-center gap-1.5 rounded-lg bg-[var(--accent-primary)] px-3.5 py-1.5 text-xs font-medium text-[var(--accent-contrast)] transition-[filter] hover:brightness-110 active:scale-95 disabled:opacity-40 disabled:pointer-events-none"
           >
-            <Plus className="h-4 w-4 stroke-[3]" />
+            <Plus className="h-4 w-4" />
             <span>Ajouter</span>
           </button>
         </div>
       </form>
 
-      {/* Filter Tabs & Search */}
+      {/* Tabs + search */}
       <div className="flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-between shrink-0">
-        {/* Tabs */}
-        <div className="flex items-center gap-1.5 overflow-x-auto os-scroll pb-1 sm:pb-0">
+        <div className="flex items-center gap-1 overflow-x-auto os-scroll pb-1 sm:pb-0">
           {[
             { id: "all", label: "Toutes", count: stats.total },
             { id: "open", label: "En cours", count: stats.open },
@@ -316,54 +286,50 @@ export default function TasksPage() {
               type="button"
               onClick={() => setActiveTab(tab.id as FilterTab)}
               className={cn(
-                "rounded-xl px-3 py-1.5 text-xs font-bold transition-all cursor-pointer",
+                "rounded-full px-3 py-1.5 text-xs font-medium transition-colors",
                 activeTab === tab.id
-                  ? "border border-white/20 bg-white/15 text-white shadow-sm"
-                  : "text-zinc-400 hover:bg-white/5 hover:text-white"
+                  ? "bg-[var(--accent-primary)] text-[var(--accent-contrast)]"
+                  : "text-[var(--text-muted)] hover:bg-[var(--surface-2)] hover:text-[var(--text-primary)]"
               )}
             >
-              {tab.label} <span className="opacity-60 text-[10px] font-mono">({tab.count})</span>
+              {tab.label} <span className="opacity-60">({tab.count})</span>
             </button>
           ))}
         </div>
 
-        {/* Search */}
         <div className="relative w-full sm:w-64">
-          <Search className="absolute left-3 top-1/2 -translate-y-1/2 h-3.5 w-3.5 text-zinc-500" />
+          <Search className="absolute left-3 top-1/2 -translate-y-1/2 h-3.5 w-3.5 text-[var(--text-muted)]" />
           <input
             type="text"
             value={searchQuery}
             onChange={(e) => setSearchQuery(e.target.value)}
-            placeholder="Rechercher une tâche..."
-            className="w-full rounded-xl border border-white/10 bg-white/5 pl-8 pr-3 py-1.5 text-xs text-white placeholder-zinc-500 outline-none focus:border-white/20"
+            placeholder="Rechercher…"
+            className="w-full rounded-lg border border-[var(--panel-border)] bg-transparent pl-8 pr-3 py-1.5 text-xs text-[var(--text-primary)] placeholder:text-[var(--text-muted)] outline-none focus:border-[var(--accent-primary)]"
           />
         </div>
       </div>
 
-      {/* Main View Area */}
+      {/* View area */}
       <div className="flex-1 min-h-0 overflow-hidden">
         {loading && items.length === 0 ? (
           <div className="h-full space-y-2.5 overflow-hidden" aria-busy="true">
             {Array.from({ length: 6 }).map((_, i) => (
-              <div
-                key={i}
-                className="h-16 animate-pulse rounded-2xl border border-white/10 bg-[var(--bg-surface-elevated)]/60"
-              />
+              <div key={i} className="h-16 animate-pulse rounded-xl bg-[var(--surface-2)]/60" />
             ))}
           </div>
         ) : error && items.length === 0 ? (
-          <div className="flex flex-col items-center justify-center rounded-3xl border border-red-500/20 bg-red-500/5 p-12 text-center backdrop-blur-2xl">
-            <div className="flex h-14 w-14 items-center justify-center rounded-2xl border border-red-500/20 bg-red-500/10 text-red-300 mb-3">
-              <AlertTriangle className="h-7 w-7" />
+          <div className="v8-panel flex flex-col items-center justify-center p-12 text-center">
+            <div className="mb-3 flex h-12 w-12 items-center justify-center rounded-full bg-[var(--danger)]/10 text-[var(--danger)]">
+              <AlertTriangle className="h-6 w-6" />
             </div>
-            <h3 className="text-base font-bold text-white">Impossible de charger vos tâches</h3>
-            <p className="text-xs text-zinc-400 max-w-sm mt-1">
-              Vérifiez votre connexion. Vos tâches se resynchroniseront automatiquement une fois de retour en ligne.
+            <h3 className="text-sm font-medium text-[var(--text-primary)]">Impossible de charger vos tâches</h3>
+            <p className="mt-1 max-w-sm text-xs text-[var(--text-muted)]">
+              Vérifiez votre connexion. Vos tâches se resynchroniseront automatiquement.
             </p>
             <button
               type="button"
               onClick={() => reload()}
-              className="mt-4 flex items-center gap-2 rounded-2xl bg-white/10 px-4 py-2 text-xs font-bold text-white transition-all hover:bg-white/15 active:scale-95 cursor-pointer"
+              className="mt-4 flex items-center gap-2 rounded-lg border border-[var(--panel-border)] px-4 py-2 text-xs font-medium text-[var(--text-primary)] transition-colors hover:bg-[var(--surface-2)] active:scale-95"
             >
               <RefreshCw className="h-3.5 w-3.5" />
               <span>Réessayer</span>
@@ -377,29 +343,31 @@ export default function TasksPage() {
             onNewTask={() => setIsAiDrawerOpen(true)}
           />
         ) : (
-          <div className="h-full min-h-0 overflow-y-auto os-scroll pr-1 space-y-2.5 pb-6">
+          <div className="h-full min-h-0 overflow-y-auto os-scroll pr-1 space-y-2 pb-6">
             <AnimatePresence mode="popLayout" initial={false}>
               {filteredTasks.length === 0 ? (
                 <motion.div
-                  initial={{ opacity: 0, scale: 0.96 }}
-                  animate={{ opacity: 1, scale: 1 }}
-                  exit={{ opacity: 0, scale: 0.96 }}
-                  className="flex flex-col items-center justify-center rounded-3xl border border-white/10 bg-[var(--bg-surface-elevated)]/50 p-12 text-center backdrop-blur-2xl"
+                  initial={{ opacity: 0 }}
+                  animate={{ opacity: 1 }}
+                  exit={{ opacity: 0 }}
+                  className="v8-panel flex flex-col items-center justify-center p-12 text-center"
                 >
-                  <div className="flex h-14 w-14 items-center justify-center rounded-2xl border border-white/10 bg-white/5 text-zinc-400 mb-3">
-                    <CheckCircle2 className="h-7 w-7" />
+                  <div className="mb-3 flex h-12 w-12 items-center justify-center rounded-full bg-[var(--surface-2)] text-[var(--text-muted)]">
+                    <CheckCircle2 className="h-6 w-6" />
                   </div>
-                  <h3 className="text-base font-bold text-white">Aucune tâche correspondante</h3>
-                  <p className="text-xs text-zinc-400 max-w-sm mt-1">
-                    {searchQuery ? "Aucune tâche ne correspond à votre recherche." : "Votre liste est vide. Utilisez l'IA pour générer votre sprint du jour !"}
+                  <h3 className="text-sm font-medium text-[var(--text-primary)]">Aucune tâche correspondante</h3>
+                  <p className="mt-1 max-w-sm text-xs text-[var(--text-muted)]">
+                    {searchQuery
+                      ? "Aucune tâche ne correspond à votre recherche."
+                      : "Votre liste est vide. L'assistant peut générer un plan pour vous."}
                   </p>
                   <button
                     type="button"
                     onClick={() => setIsAiDrawerOpen(true)}
-                    className="mt-4 flex items-center gap-2 rounded-2xl bg-purple-600 px-4 py-2 text-xs font-bold text-white shadow-lg shadow-purple-600/30 transition-all hover:bg-purple-500 active:scale-95 cursor-pointer"
+                    className="mt-4 flex items-center gap-2 rounded-lg bg-[var(--accent-primary)] px-4 py-2 text-xs font-medium text-[var(--accent-contrast)] transition-[filter] hover:brightness-110 active:scale-95"
                   >
                     <Sparkles className="h-3.5 w-3.5" />
-                    <span>Générer un plan avec l&apos;IA</span>
+                    <span>Générer un plan</span>
                   </button>
                 </motion.div>
               ) : (

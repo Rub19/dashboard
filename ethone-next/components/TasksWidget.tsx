@@ -132,7 +132,7 @@ const TasksWidget = memo(function TasksWidget({ className = "", data, scrollable
 
   const badge = useMemo(
     () => (
-      <span className="rounded-full border border-[var(--text-primary)]/[0.08] bg-[var(--text-primary)]/[0.04] px-2.5 py-1 text-[11px] font-mono font-medium text-[var(--accent-primary)]">
+      <span className="rounded-full border border-[var(--panel-border)] bg-[var(--surface-2)]/50 px-2.5 py-1 text-[11px] font-medium text-[var(--text-muted)]">
         {stats.done} / {stats.total} {i18n("done", "terminées")}
       </span>
     ),
@@ -155,10 +155,10 @@ const TasksWidget = memo(function TasksWidget({ className = "", data, scrollable
         {/* Header */}
         <div className="shrink-0 flex items-start justify-between gap-3">
           <div className="flex items-center gap-2.5">
-            <span className="flex h-8 w-8 shrink-0 items-center justify-center rounded-xl border border-[var(--accent-primary)]/30 bg-[var(--accent-primary)]/15 text-[var(--accent-primary)] shadow-[0_0_12px_var(--glow-color)]">
+            <span className="flex h-8 w-8 shrink-0 items-center justify-center rounded-xl bg-[var(--surface-2)] text-[var(--text-muted)]">
               <Icon name="check-square" className="h-4 w-4" />
             </span>
-            <h3 className="text-sm font-bold tracking-wide text-[var(--text-primary)]">
+            <h3 className="text-sm font-semibold tracking-tight text-[var(--text-primary)]">
               {i18n("myTasks", "Mes Tâches")}
             </h3>
           </div>
@@ -189,10 +189,10 @@ const TasksWidget = memo(function TasksWidget({ className = "", data, scrollable
           <button
             type="submit"
             disabled={!newTaskTitle.trim() || loading}
-            className={`flex shrink-0 items-center justify-center rounded-lg p-2 text-[var(--background)] font-bold transition-all active:scale-95 ${
+            className={`flex shrink-0 items-center justify-center rounded-lg p-2 font-medium transition-[filter] active:scale-95 ${
               newTaskTitle.trim()
-                ? "bg-[var(--accent-primary)] hover:bg-[var(--accent-primary)] shadow-md"
-                : "cursor-not-allowed bg-[var(--surface-raised)] text-[var(--text-muted)]"
+                ? "bg-[var(--accent-primary)] text-[var(--accent-contrast)] hover:brightness-110"
+                : "cursor-not-allowed bg-[var(--surface-2)] text-[var(--text-muted)]"
             }`}
           >
             <Icon name="plus" className="h-4 w-4" />

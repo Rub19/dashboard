@@ -2,6 +2,18 @@
 
 Toutes les modifications notables de ce projet seront documentées dans ce fichier.
 
+## v1.21.29 — 2026-09-11
+
+**Refonte visuelle « moins IA » : page Tâches** — présentationnel uniquement, aucune logique/donnée touchée.
+
+- `app/tasks/page.tsx` : la page n'utilisait quasiment pas les tokens de thème (`text-white`, `text-zinc-*`, `bg-white/5`, `bg-[#0e1017]`, `bg-[var(--bg-surface-elevated)]`). Réécriture du rendu sur tokens : header sobre (`text-xl font-semibold`, badge `font-mono` supprimé), bandeau KPI = 4 tuiles identiques dans un `v8-panel` `divide-x` (fini le rainbow cyan/amber/emerald + `backdrop-blur-xl`), quick-add en `v8-panel` (bouton `bg-white text-black` → `bg-[var(--accent-primary)]`), onglets en pills accent, recherche tokenisée, états vide/erreur en `v8-panel` (plus de `rounded-3xl backdrop-blur-2xl`), bouton IA à plat (plus de `shadow-[0_0_20px_rgba(168,85,247)]` + `hover:scale-105`).
+- `components/tasks/TaskItemRow.tsx` : `PRIORITY_THEMES` → tokens sémantiques (urgent `--danger`, haute `--warning`, medium/basse muted), suppression des 3 `glow: shadow-[0_0_8px_rgba(...)]`, carte sans `backdrop-blur-xl`/`bg-[#0e1017]`/`hover:shadow-[0_4px_20px]`, case cochée `bg-emerald-500 shadow-[0_0_12px]` → `bg-[var(--success)]`, hover checkbox `border-purple-400` → accent, meta/actions dé-`font-mono`-isés.
+- `components/tasks/TasksKanbanView.tsx` : colonnes `rounded-3xl bg-[#0c0d14]/70 backdrop-blur-2xl` → `v8-panel` ; en-têtes de colonne dé-rainbow-isés (amber/cyan/emerald → chip muted) ; `text-white`/`font-mono` → tokens ; import `cn` retiré.
+- `components/tasks/AiTaskDrawer.tsx` : `bg-[#0c0d14]/95 backdrop-blur-3xl rounded-3xl` → `v8-panel` ; tout le violet (`purple-500/600`, `shadow-[0_0_16px_rgba(168,85,247)]`) → accent/muted ; bouton footer `bg-gradient-to-r from-purple-600 to-indigo-600 shadow-lg hover:scale-105` → `bg-[var(--accent-primary)]` plat ; packs de suggestions sans `pack.gradient` ; backdrop `bg-black/75 backdrop-blur-xl` → `bg-black/60 backdrop-blur-sm`.
+- `lib/tasks/ai-task-engine.ts` : les 4 `gradient:` des `PRESET_TASK_PACKS` (from-cyan/amber/purple/emerald…) vidés (`""`) — plus référencés.
+- `components/TasksWidget.tsx` (widget accueil) : chip d'icône `shadow-[0_0_12px_var(--glow-color)]` retiré, badge `font-mono` → muted, bouton submit `bg-white text-black` → accent.
+- Validation : `tsc` 0 erreur, `build` ✓, `test:unit` 73/73.
+
 ## v1.21.28 — 2026-09-11
 
 **Refonte visuelle « moins IA » : Météo + widgets Live** — présentationnel uniquement.

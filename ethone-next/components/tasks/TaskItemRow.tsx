@@ -5,44 +5,39 @@ import { motion } from "framer-motion";
 import { Check, Trash2, Calendar, Tag, Target, Edit2 } from "lucide-react";
 import { type Task, type TaskPriority } from "@/components/TasksWidget";
 import { hapticSuccessPattern, hapticRigidImpact } from "@/lib/haptics";
-import { useToast } from "@/components/ToastProvider";
 import { useRouter } from "next/navigation";
 import { cn } from "@/lib/utils";
 
 const PRIORITY_THEMES: Record<
   TaskPriority,
-  { badge: string; text: string; bg: string; border: string; glow: string; label: string }
+  { badge: string; text: string; bg: string; border: string; label: string }
 > = {
   urgent: {
-    badge: "URGENT",
-    text: "text-rose-400",
-    bg: "bg-rose-500/15",
-    border: "border-rose-500/30",
-    glow: "shadow-[0_0_8px_rgba(244,63,94,0.4)]",
+    badge: "Urgent",
+    text: "text-[var(--danger)]",
+    bg: "bg-[var(--danger)]/10",
+    border: "border-[var(--danger)]/25",
     label: "Urgente",
   },
   high: {
-    badge: "HAUTE",
-    text: "text-amber-400",
-    bg: "bg-amber-500/15",
-    border: "border-amber-500/30",
-    glow: "shadow-[0_0_8px_rgba(245,158,11,0.4)]",
+    badge: "Haute",
+    text: "text-[var(--warning)]",
+    bg: "bg-[var(--warning)]/10",
+    border: "border-[var(--warning)]/25",
     label: "Haute",
   },
   medium: {
-    badge: "MOYENNE",
-    text: "text-cyan-400",
-    bg: "bg-cyan-500/15",
-    border: "border-cyan-500/30",
-    glow: "shadow-[0_0_8px_rgba(6,182,212,0.4)]",
+    badge: "Moyenne",
+    text: "text-[var(--text-muted)]",
+    bg: "bg-[var(--surface-2)]",
+    border: "border-[var(--panel-border)]",
     label: "Moyenne",
   },
   low: {
-    badge: "BASSE",
-    text: "text-zinc-400",
-    bg: "bg-zinc-500/15",
-    border: "border-zinc-500/30",
-    glow: "",
+    badge: "Basse",
+    text: "text-[var(--text-muted)]",
+    bg: "bg-[var(--surface-2)]",
+    border: "border-[var(--panel-border)]",
     label: "Basse",
   },
 };
@@ -100,10 +95,8 @@ export const TaskItemRow = memo(function TaskItemRow({
       transition={{ duration: 0.2 }}
       onClick={handleToggle}
       className={cn(
-        "group relative flex items-center justify-between gap-3.5 rounded-2xl border p-3.5 sm:p-4 backdrop-blur-xl transition-all duration-200 cursor-pointer select-none",
-        task.done
-          ? "border-white/5 bg-white/[0.02] opacity-60"
-          : "border-white/10 bg-[#0e1017]/80 hover:border-white/20 hover:bg-[#12141e]/90 hover:shadow-[0_4px_20px_rgba(0,0,0,0.4)]"
+        "group relative flex items-center justify-between gap-3.5 rounded-xl border border-[var(--panel-border)] bg-[var(--panel-bg)] p-3.5 sm:p-4 transition-colors duration-150 cursor-pointer select-none",
+        task.done ? "opacity-55" : "hover:bg-[var(--surface-2)]/50"
       )}
     >
       {/* Left: Checkbox + Content */}
@@ -115,10 +108,10 @@ export const TaskItemRow = memo(function TaskItemRow({
             handleToggle();
           }}
           className={cn(
-            "mt-0.5 flex h-6 w-6 shrink-0 items-center justify-center rounded-xl border transition-all duration-200 cursor-pointer",
+            "mt-0.5 flex h-6 w-6 shrink-0 items-center justify-center rounded-lg border transition-colors duration-150 cursor-pointer",
             task.done
-              ? "border-emerald-500 bg-emerald-500 text-black shadow-[0_0_12px_rgba(16,185,129,0.5)]"
-              : "border-white/25 bg-white/5 text-transparent hover:border-purple-400 hover:bg-purple-500/10"
+              ? "border-[var(--success)] bg-[var(--success)] text-[var(--bg-main)]"
+              : "border-[var(--panel-border)] bg-[var(--surface-2)] text-transparent hover:border-[var(--accent-primary)]"
           )}
         >
           <Check className={cn("h-3.5 w-3.5 stroke-[3]", task.done ? "opacity-100" : "opacity-0")} />
@@ -137,13 +130,13 @@ export const TaskItemRow = memo(function TaskItemRow({
                 if (e.key === "Escape") setIsEditing(false);
               }}
               onClick={(e) => e.stopPropagation()}
-              className="w-full rounded-lg border border-purple-500/50 bg-white/10 px-2 py-1 text-sm font-semibold text-white outline-none"
+              className="w-full rounded-lg border border-[var(--accent-primary)] bg-[var(--surface-2)] px-2 py-1 text-sm font-medium text-[var(--text-primary)] outline-none"
             />
           ) : (
             <p
               className={cn(
                 "text-sm font-medium leading-tight transition-colors",
-                task.done ? "text-zinc-500 line-through" : "text-zinc-100 group-hover:text-white"
+                task.done ? "text-[var(--text-muted)] line-through" : "text-[var(--text-primary)]"
               )}
             >
               {task.title}
@@ -152,14 +145,14 @@ export const TaskItemRow = memo(function TaskItemRow({
 
           {/* Sub-meta tags */}
           <div className="mt-1.5 flex flex-wrap items-center gap-2">
-            <span className="inline-flex items-center gap-1 rounded-md border border-white/10 bg-white/5 px-2 py-0.5 text-[10px] font-mono text-zinc-400">
+            <span className="inline-flex items-center gap-1 rounded-md border border-[var(--panel-border)] bg-[var(--surface-2)]/60 px-2 py-0.5 text-[10px] text-[var(--text-muted)]">
               <Tag className="h-2.5 w-2.5" />
               {category}
             </span>
 
             {task.data?.dueDate && (
-              <span className="inline-flex items-center gap-1 text-[10px] font-mono text-zinc-400">
-                <Calendar className="h-3 w-3 text-zinc-500" />
+              <span className="inline-flex items-center gap-1 text-[10px] text-[var(--text-muted)]">
+                <Calendar className="h-3 w-3" />
                 {new Date(task.data.dueDate).toLocaleDateString(undefined, {
                   day: "2-digit",
                   month: "short",
@@ -174,11 +167,10 @@ export const TaskItemRow = memo(function TaskItemRow({
       <div className="flex shrink-0 items-center gap-2">
         <span
           className={cn(
-            "rounded-lg border px-2 py-0.5 font-mono text-[9px] font-bold tracking-wider uppercase",
+            "rounded-md border px-2 py-0.5 text-[10px] font-medium",
             priorityTheme.bg,
             priorityTheme.border,
-            priorityTheme.text,
-            priorityTheme.glow
+            priorityTheme.text
           )}
         >
           {priorityTheme.badge}
@@ -191,7 +183,7 @@ export const TaskItemRow = memo(function TaskItemRow({
               type="button"
               onClick={handleStartFocus}
               title="Lancer en Mode Focus"
-              className="flex h-7 w-7 items-center justify-center rounded-lg text-zinc-400 hover:bg-purple-500/20 hover:text-purple-300 transition-colors"
+              className="flex h-7 w-7 items-center justify-center rounded-lg text-[var(--text-muted)] transition-colors hover:bg-[var(--surface-2)] hover:text-[var(--text-primary)]"
             >
               <Target className="h-3.5 w-3.5" />
             </button>
@@ -204,7 +196,7 @@ export const TaskItemRow = memo(function TaskItemRow({
               setIsEditing(true);
             }}
             title="Modifier le titre"
-            className="flex h-7 w-7 items-center justify-center rounded-lg text-zinc-400 hover:bg-white/10 hover:text-white transition-colors"
+            className="flex h-7 w-7 items-center justify-center rounded-lg text-[var(--text-muted)] transition-colors hover:bg-[var(--surface-2)] hover:text-[var(--text-primary)]"
           >
             <Edit2 className="h-3.5 w-3.5" />
           </button>
@@ -213,7 +205,7 @@ export const TaskItemRow = memo(function TaskItemRow({
             type="button"
             onClick={handleDelete}
             title="Supprimer la tâche"
-            className="flex h-7 w-7 items-center justify-center rounded-lg text-zinc-400 hover:bg-rose-500/20 hover:text-rose-400 transition-colors"
+            className="flex h-7 w-7 items-center justify-center rounded-lg text-[var(--text-muted)] transition-colors hover:bg-[var(--danger)]/15 hover:text-[var(--danger)]"
           >
             <Trash2 className="h-3.5 w-3.5" />
           </button>

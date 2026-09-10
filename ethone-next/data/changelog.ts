@@ -25614,4 +25614,73 @@ CHANGELOG_BY_LANG.en.unshift(v12128_en);
 CHANGELOG_BY_LANG.es.unshift(v12128_es);
 CHANGELOG_BY_LANG.de.unshift(v12128_de);
 
+const v12129_fr: ChangelogEntry = {
+  version: "v1.21.29",
+  date: "2026-09-11",
+  title: "Refonte visuelle : page Tâches",
+  items: [
+    "La page Taches n utilisait quasiment pas le systeme de theme : texte blanc en dur, fonds #0e1017 / #0c0d14, cartes KPI arc-en-ciel (cyan / ambre / emeraude), boutons violets avec halo neon, degrades. Tout repasse sur les tokens de theme (fonctionne sur les 16 themes, clair inclus).",
+    "Bandeau de statistiques : 4 tuiles identiques dans un seul panneau plat au lieu de 4 cartes de couleurs differentes ; chaque chiffre avec la meme pastille d icone neutre.",
+    "Barre d ajout rapide, onglets, recherche : panneaux plats (v8-panel), plus de flou d arriere-plan ni d ombre coloree ; bouton Ajouter en aplat d accent au lieu du bouton blanc sur noir.",
+    "Lignes de taches : plus de flou, plus de halo sur la case cochee, badge de priorite en tokens semantiques (urgent = danger, haute = warning) au lieu de rose / ambre / cyan codes en dur.",
+    "Vue Kanban : colonnes en panneaux plats, en-tetes sans code couleur par colonne.",
+    "Fenetre Assistant IA : plus de fond #0c0d14 + blur-3xl, plus de violet ni de bouton degrade violet vers indigo, packs de suggestions sans lavis de couleur.",
+    "Widget Taches (accueil) : pastille d icone et bouton alignes sur le meme style plat.",
+    "Purement presentationnel : aucune logique, donnee ou raccourci modifie.",
+  ],
+};
+
+const v12129_en: ChangelogEntry = {
+  version: "v1.21.29",
+  date: "2026-09-11",
+  title: "Visual overhaul: Tasks page",
+  items: [
+    "The Tasks page barely used the theme system: hardcoded white text, #0e1017 / #0c0d14 backgrounds, rainbow KPI cards (cyan / amber / emerald), purple buttons with neon glow, gradients. All moved to theme tokens (works on all 16 themes, light included).",
+    "Stats strip: 4 identical tiles in one flat panel instead of 4 differently-colored cards; every number gets the same neutral icon chip.",
+    "Quick-add bar, tabs, search: flat panels (v8-panel), no background blur or colored shadow; Add button is a flat accent fill instead of white-on-black.",
+    "Task rows: no blur, no glow on the checked box, priority badge on semantic tokens (urgent = danger, high = warning) instead of hardcoded rose / amber / cyan.",
+    "Kanban view: columns as flat panels, headers without per-column color coding.",
+    "AI Assistant modal: no more #0c0d14 + blur-3xl, no purple, no purple-to-indigo gradient button, suggestion packs without color washes.",
+    "Tasks widget (home): icon chip and button aligned to the same flat style.",
+    "Purely presentational: no logic, data or shortcut changed.",
+  ],
+};
+
+const v12129_es: ChangelogEntry = {
+  version: "v1.21.29",
+  date: "2026-09-11",
+  title: "Renovacion visual: pagina de Tareas",
+  items: [
+    "La pagina de Tareas apenas usaba el sistema de tema: texto blanco fijo, fondos #0e1017 / #0c0d14, tarjetas KPI arcoiris (cian / ambar / esmeralda), botones violetas con halo neon, degradados. Todo pasa a tokens de tema (funciona en los 16 temas, claro incluido).",
+    "Franja de estadisticas: 4 celdas identicas en un solo panel plano en lugar de 4 tarjetas de colores distintos; cada numero con la misma insignia de icono neutra.",
+    "Barra de anadido rapido, pestanas, busqueda: paneles planos (v8-panel), sin desenfoque de fondo ni sombra de color; boton Anadir en relleno de acento plano.",
+    "Filas de tareas: sin desenfoque, sin halo en la casilla marcada, insignia de prioridad en tokens semanticos (urgente = danger, alta = warning).",
+    "Vista Kanban: columnas como paneles planos, cabeceras sin codigo de color por columna.",
+    "Modal de Asistente IA: sin fondo #0c0d14 + blur-3xl, sin violeta, sin boton degradado violeta a indigo.",
+    "Widget de Tareas (inicio): insignia de icono y boton alineados al mismo estilo plano.",
+    "Puramente presentacional: sin cambios de logica, datos ni atajos.",
+  ],
+};
+
+const v12129_de: ChangelogEntry = {
+  version: "v1.21.29",
+  date: "2026-09-11",
+  title: "Visuelle Ueberarbeitung: Aufgabenseite",
+  items: [
+    "Die Aufgabenseite nutzte das Themensystem kaum: fest kodierter weisser Text, Hintergruende #0e1017 / #0c0d14, Regenbogen-KPI-Karten (Cyan / Bernstein / Smaragd), violette Buttons mit Neon-Halo, Verlaeufe. Alles auf Themen-Tokens umgestellt (funktioniert auf allen 16 Themen, hell inklusive).",
+    "Statistikleiste: 4 identische Kacheln in einem flachen Panel statt 4 unterschiedlich gefaerbter Karten; jede Zahl mit demselben neutralen Icon-Chip.",
+    "Schnell-Hinzufuegen-Leiste, Tabs, Suche: flache Panels (v8-panel), keine Hintergrund-Unschaerfe oder farbiger Schatten; Hinzufuegen-Button als flache Akzentfuellung.",
+    "Aufgabenzeilen: keine Unschaerfe, kein Halo auf dem angehakten Kaestchen, Prioritaets-Badge auf semantischen Tokens (dringend = danger, hoch = warning).",
+    "Kanban-Ansicht: Spalten als flache Panels, Kopfzeilen ohne Farbcodierung pro Spalte.",
+    "KI-Assistent-Dialog: kein #0c0d14 + blur-3xl mehr, kein Violett, kein violett-zu-indigo Verlaufsbutton.",
+    "Aufgaben-Widget (Startseite): Icon-Chip und Button auf denselben flachen Stil gebracht.",
+    "Rein visuell: keine Aenderung an Logik, Daten oder Kuerzeln.",
+  ],
+};
+
+CHANGELOG_BY_LANG.fr.unshift(v12129_fr);
+CHANGELOG_BY_LANG.en.unshift(v12129_en);
+CHANGELOG_BY_LANG.es.unshift(v12129_es);
+CHANGELOG_BY_LANG.de.unshift(v12129_de);
+
 export const CHANGELOG = CHANGELOG_BY_LANG.fr;

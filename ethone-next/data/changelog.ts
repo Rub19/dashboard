@@ -25801,4 +25801,65 @@ CHANGELOG_BY_LANG.en.unshift(v12131_en);
 CHANGELOG_BY_LANG.es.unshift(v12131_es);
 CHANGELOG_BY_LANG.de.unshift(v12131_de);
 
+const v12132_fr: ChangelogEntry = {
+  version: "v1.21.32",
+  date: "2026-09-11",
+  title: "Refonte visuelle : selecteur d avatar",
+  items: [
+    "La fenetre de choix d avatar (783 lignes) n utilisait quasiment aucun token de theme : fond noir code en dur (#0b0c10), degrade d en-tete (#14161f vers #0d0e14), gris zinc et blanc partout. Resultat : la fenetre restait noire meme sur un theme clair. Entierement repassee sur les tokens de theme.",
+    "Bouton Valider l avatar : degrade emerald vers teal remplace par un aplat de la couleur d accent ; halo de carte selectionnee (ombre verte) retire au profit d une bordure plus discrete ; le badge de verification et l etat selectionne utilisent desormais les tokens semantiques (succes, accent) au lieu de vert code en dur.",
+    "Onglets de categorie, cartes de cadres / arriere-plans / badges, favoris, recherche, panneau d import d URL : tous les textes et fonds gris zinc / noir passes sur les tokens.",
+    "Conserve volontairement : le voile d arriere-plan de la fenetre modale, le texte sur les vignettes d arriere-plan de profil (doit rester lisible sur un degrade arbitraire choisi par l utilisateur) et le voile sur la miniature d avatar au survol du coeur favori (assure la lisibilite sur une image arbitraire).",
+    "Petite retouche associee : le badge Verifie de la carte de profil (paramètres) passe de vert code en dur au token succes.",
+    "Purement presentationnel : aucune logique, donnee ni raccourci modifie.",
+  ],
+};
+
+const v12132_en: ChangelogEntry = {
+  version: "v1.21.32",
+  date: "2026-09-11",
+  title: "Visual overhaul: avatar picker",
+  items: [
+    "The avatar picker modal (783 lines) barely used any theme token: hardcoded black background (#0b0c10), header gradient (#14161f to #0d0e14), zinc-grey and white everywhere. Result: the modal stayed black even on a light theme. Fully moved to theme tokens.",
+    "Apply-avatar button: emerald-to-teal gradient replaced by a flat accent fill; the selected-card glow (green shadow) removed in favor of a plain accent border; the verification badge and selected states now use semantic tokens (success, accent) instead of hardcoded green.",
+    "Category tabs, frame/background/badge cards, favorites, search, URL-import panel: all the zinc/black text and surfaces moved to tokens.",
+    "Deliberately kept: the modal's own backdrop scrim, the text on profile-background swatches (must stay readable over an arbitrary user-picked gradient), and the overlay on the avatar thumbnail's favorite-heart button on hover (keeps it readable over an arbitrary image).",
+    "Related small fix: the Verified badge on the profile card (settings) moved from hardcoded green to the success token.",
+    "Purely presentational: no logic, data or shortcut changed.",
+  ],
+};
+
+const v12132_es: ChangelogEntry = {
+  version: "v1.21.32",
+  date: "2026-09-11",
+  title: "Renovacion visual: selector de avatar",
+  items: [
+    "El modal de seleccion de avatar (783 lineas) apenas usaba tokens de tema: fondo negro fijo (#0b0c10), degradado de cabecera (#14161f a #0d0e14), gris zinc y blanco por todas partes. Resultado: el modal quedaba negro incluso en un tema claro. Movido por completo a tokens de tema.",
+    "Boton Aplicar avatar: degradado esmeralda a verde azulado reemplazado por un relleno plano de acento; el halo de la tarjeta seleccionada (sombra verde) eliminado a favor de un borde plano de acento; la insignia de verificacion y los estados seleccionados usan ahora tokens semanticos (success, accent) en lugar de verde fijo.",
+    "Pestanas de categoria, tarjetas de marcos / fondos / insignias, favoritos, busqueda, panel de importar URL: todo el texto y superficies zinc/negro movidos a tokens.",
+    "Se conservo deliberadamente: el velo de fondo propio del modal, el texto sobre las miniaturas de fondo de perfil (debe seguir siendo legible sobre un degradado arbitrario elegido por el usuario) y la superposicion del boton de favorito en la miniatura del avatar (mantiene la legibilidad sobre una imagen arbitraria).",
+    "Correccion relacionada: la insignia Verificado de la tarjeta de perfil (ajustes) paso de verde fijo al token success.",
+    "Puramente presentacional: sin cambios de logica, datos ni atajos.",
+  ],
+};
+
+const v12132_de: ChangelogEntry = {
+  version: "v1.21.32",
+  date: "2026-09-11",
+  title: "Visuelle Ueberarbeitung: Avatar-Auswahl",
+  items: [
+    "Das Avatar-Auswahlfenster (783 Zeilen) nutzte kaum Themen-Tokens: fest kodierter schwarzer Hintergrund (#0b0c10), Kopfzeilen-Verlauf (#14161f bis #0d0e14), ueberall Zinc-Grau und Weiss. Ergebnis: das Fenster blieb selbst in einem hellen Thema schwarz. Vollstaendig auf Themen-Tokens umgestellt.",
+    "Avatar-uebernehmen-Button: Smaragd-zu-Petrol-Verlauf durch flache Akzentfuellung ersetzt; der Glow der ausgewaehlten Karte (gruener Schatten) zugunsten eines schlichten Akzent-Rahmens entfernt; Verifizierungs-Badge und ausgewaehlte Zustaende nutzen jetzt semantische Tokens (success, accent) statt fest kodiertem Gruen.",
+    "Kategorie-Tabs, Rahmen-/Hintergrund-/Badge-Karten, Favoriten, Suche, URL-Import-Panel: aller Zinc-/Schwarz-Text und -Flaechen auf Tokens umgestellt.",
+    "Bewusst beibehalten: der eigene Hintergrund-Schleier des Modals, der Text auf den Profilhintergrund-Vorschaukacheln (muss auf einem beliebigen, vom Nutzer gewaehlten Verlauf lesbar bleiben) und die Ueberlagerung auf dem Favoriten-Herz-Button der Avatar-Miniatur (haelt sie auf einem beliebigen Bild lesbar).",
+    "Zugehoerige kleine Korrektur: das Verifiziert-Badge der Profilkarte (Einstellungen) wechselt von fest kodiertem Gruen zum success-Token.",
+    "Rein visuell: keine Aenderung an Logik, Daten oder Kuerzeln.",
+  ],
+};
+
+CHANGELOG_BY_LANG.fr.unshift(v12132_fr);
+CHANGELOG_BY_LANG.en.unshift(v12132_en);
+CHANGELOG_BY_LANG.es.unshift(v12132_es);
+CHANGELOG_BY_LANG.de.unshift(v12132_de);
+
 export const CHANGELOG = CHANGELOG_BY_LANG.fr;

@@ -2,6 +2,15 @@
 
 Toutes les modifications notables de ce projet seront documentées dans ce fichier.
 
+## v1.21.32 — 2026-09-11
+
+**Refonte visuelle « moins IA » : sélecteur d'avatar** — présentationnel uniquement.
+
+- `components/AvatarPickerModal.tsx` (783 lignes) : n'utilisait quasiment aucun token de thème — fond `bg-[#0b0c10]`, en-tête `bg-gradient-to-b from-[#14161f] to-[#0d0e14]`, `text-zinc-200/300/400/500/600`, `bg-zinc-800/900/950`, `border-zinc-*`, `text-white`/`bg-white`/`bg-black` partout. La fenêtre restait noire même en thème clair. 45 remplacements sur tokens : conteneur → `v8-panel`, bouton « Valider l'avatar » (dégradé `emerald→teal`) → aplat `--accent-primary`, halo de sélection `shadow-[0_0_20px_rgba(16,185,129,…)]` retiré, badges/onglets/cartes (cadres, arrière-plans, badges) → tokens, cœur favori → token `--danger`, indicateur « Vérifié » → `--success`.
+- Conservé volontairement : le voile de fond de la modale (`bg-black/60`), le texte sur les vignettes d'arrière-plan de profil (doit rester lisible sur un dégradé arbitraire choisi par l'utilisateur — data-driven, comme les swatches de `ThemeStudio`), le voile sur la miniature d'avatar au survol du cœur favori (lisibilité sur image arbitraire).
+- `components/settings/UserProfileCard.tsx` : badge « Vérifié » `emerald` codé en dur → token `--success` (petite retouche associée).
+- Validation : `tsc` 0 erreur, `build` ✓, `test:unit` 73/73.
+
 ## v1.21.31 — 2026-09-11
 
 **Refonte visuelle « moins IA » : Dynamic Island + Fichiers** — présentationnel uniquement.

@@ -16,6 +16,7 @@ development-only/
 credentials/
 .agents/
 .worktree/
+.claude/worktrees/
 
 # Provider and platform state
 .wrangler/

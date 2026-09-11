@@ -134,8 +134,8 @@ export default function UserProfileCard({
             <div className="flex flex-wrap items-center gap-2">
               <h3 className="truncate text-base font-bold text-[var(--text-primary)]">{displayName}</h3>
               {/* Active Badge */}
-              <div className="inline-flex items-center gap-1.5 rounded-full border border-emerald-500/30 bg-emerald-500/10 px-2 py-0.5 text-emerald-400">
-                <span className="h-1.5 w-1.5 rounded-full bg-emerald-400" />
+              <div className="inline-flex items-center gap-1.5 rounded-full border border-[var(--success)]/30 bg-[var(--success)]/10 px-2 py-0.5 text-[var(--success)]">
+                <span className="h-1.5 w-1.5 rounded-full bg-[var(--success)]" />
                 <span className="text-[10px] font-semibold">{badgeId === "founder" ? "Founder" : badgeId === "developer" ? "Developer" : badgeId === "brain-master" ? "Brain Master" : badgeId === "power-user" ? "Power User" : "Vérifié"}</span>
               </div>
               {/* Status badge */}

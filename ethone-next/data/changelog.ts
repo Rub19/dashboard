@@ -25740,4 +25740,65 @@ CHANGELOG_BY_LANG.en.unshift(v12130_en);
 CHANGELOG_BY_LANG.es.unshift(v12130_es);
 CHANGELOG_BY_LANG.de.unshift(v12130_de);
 
+const v12131_fr: ChangelogEntry = {
+  version: "v1.21.31",
+  date: "2026-09-11",
+  title: "Refonte visuelle : Dynamic Island et Fichiers",
+  items: [
+    "Dynamic Island (barre Spotify compacte et etendue) : horloge, titre de piste et boutons de lecture avaient du blanc et du gris zinc codes en dur (illisibles en theme clair). Passes sur les tokens ; le halo de lecture en cours et l effet de coeur aime sont conserves (indicateurs d etat reels).",
+    "Page Fichiers : bandeau d erreur et bouton Reessayer sur les tokens danger, icone et montant du stockage ETHONE de-arc-en-ciel-ises, boutons de vue/tri sans hover blanc code en dur.",
+    "Inspecteur de fichier : le bloc ETHONE Brain (violet partout, carte lumineuse) repasse en aplat accent comme le reste de l assistant IA de l app ; etoile favori sur le token warning ; badge Google Drive garde son bleu de marque, badge ETHONE Cloud passe en accent ; separateurs et bordures blanches codees en dur retires.",
+    "Barre laterale des fichiers : icone de stockage ETHONE de-arc-en-ciel-isee ; le bloc Google Drive garde son bleu de marque (connexion, quota).",
+    "Zone de depot de fichiers : badge de compte de fichiers en texte blanc code en dur passe sur le token de contraste d accent ; le halo de zone active au survol est conserve (etat de glisser-deposer reel).",
+    "Purement presentationnel : aucune logique, donnee ni raccourci modifie.",
+  ],
+};
+
+const v12131_en: ChangelogEntry = {
+  version: "v1.21.31",
+  date: "2026-09-11",
+  title: "Visual overhaul: Dynamic Island and Files",
+  items: [
+    "Dynamic Island (compact and expanded Spotify bar): the clock, track title and playback buttons had hardcoded white/zinc-grey (unreadable on light themes). Moved to theme tokens; the now-playing glow ring and the liked-heart fill are kept (they reflect real state).",
+    "Files page: error banner and Retry button moved to danger tokens, ETHONE storage icon/amount de-rainbowed, view/sort buttons without hardcoded white hover.",
+    "File inspector: the ETHONE Brain panel (purple everywhere, glowing card) flattened to the same accent treatment as the rest of the app's AI assistant surfaces; favorite star on the warning token; Google Drive badge keeps its brand blue, ETHONE Cloud badge moves to accent; hardcoded white dividers/borders removed.",
+    "Files sidebar: ETHONE storage icon de-rainbowed; the Google Drive block keeps its brand blue (connection, quota).",
+    "File drop zone: hardcoded white file-count badge text moved to the accent-contrast token; the active drop-zone glow is kept (it reflects a real drag state).",
+    "Purely presentational: no logic, data or shortcut changed.",
+  ],
+};
+
+const v12131_es: ChangelogEntry = {
+  version: "v1.21.31",
+  date: "2026-09-11",
+  title: "Renovacion visual: Dynamic Island y Archivos",
+  items: [
+    "Dynamic Island (barra de Spotify compacta y ampliada): el reloj, el titulo de la pista y los botones de reproduccion tenian blanco / gris zinc fijos (ilegibles en temas claros). Movidos a tokens de tema; se conserva el halo de reproduccion actual y el corazon de favorito (reflejan estado real).",
+    "Pagina de Archivos: banner de error y boton Reintentar en tokens de danger, icono y cantidad de almacenamiento ETHONE sin colores arcoiris, botones de vista/orden sin hover blanco fijo.",
+    "Inspector de archivo: el panel ETHONE Brain (violeta por todas partes, tarjeta luminosa) aplanado al mismo tratamiento de acento que el resto del asistente IA de la app; estrella de favorito en el token warning; la insignia de Google Drive conserva su azul de marca, la insignia ETHONE Cloud pasa a acento.",
+    "Barra lateral de archivos: icono de almacenamiento ETHONE sin colores arcoiris; el bloque de Google Drive conserva su azul de marca.",
+    "Zona de soltar archivos: insignia de cantidad de archivos en texto blanco fijo movida al token de contraste de acento; se conserva el halo de zona activa (refleja un estado real de arrastrar y soltar).",
+    "Puramente presentacional: sin cambios de logica, datos ni atajos.",
+  ],
+};
+
+const v12131_de: ChangelogEntry = {
+  version: "v1.21.31",
+  date: "2026-09-11",
+  title: "Visuelle Ueberarbeitung: Dynamic Island und Dateien",
+  items: [
+    "Dynamic Island (kompakte und erweiterte Spotify-Leiste): Uhr, Titelname und Wiedergabe-Buttons hatten fest kodiertes Weiss / Zinc-Grau (unlesbar in hellen Themen). Auf Themen-Tokens umgestellt; der Wiedergabe-Glow-Ring und das gefuellte Herz bleiben erhalten (echter Zustand).",
+    "Dateien-Seite: Fehlerbanner und Wiederholen-Button auf danger-Tokens, ETHONE-Speicher-Icon/Betrag ohne Regenbogenfarben, Ansichts-/Sortier-Buttons ohne fest kodiertes weisses Hover.",
+    "Datei-Inspektor: das ETHONE-Brain-Panel (ueberall Violett, leuchtende Karte) auf dieselbe flache Akzent-Optik wie der Rest der KI-Assistenzflaechen der App gebracht; Favoriten-Stern auf dem warning-Token; das Google-Drive-Badge behaelt sein Marken-Blau, das ETHONE-Cloud-Badge wechselt zu Akzent.",
+    "Dateien-Seitenleiste: ETHONE-Speicher-Icon ohne Regenbogenfarben; der Google-Drive-Block behaelt sein Marken-Blau.",
+    "Datei-Ablagezone: fest kodierter weisser Dateianzahl-Badge-Text auf das Akzent-Kontrast-Token verschoben; der aktive Ablagezonen-Glow bleibt erhalten (echter Drag-Zustand).",
+    "Rein visuell: keine Aenderung an Logik, Daten oder Kuerzeln.",
+  ],
+};
+
+CHANGELOG_BY_LANG.fr.unshift(v12131_fr);
+CHANGELOG_BY_LANG.en.unshift(v12131_en);
+CHANGELOG_BY_LANG.es.unshift(v12131_es);
+CHANGELOG_BY_LANG.de.unshift(v12131_de);
+
 export const CHANGELOG = CHANGELOG_BY_LANG.fr;

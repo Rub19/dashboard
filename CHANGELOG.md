@@ -2,6 +2,17 @@
 
 Toutes les modifications notables de ce projet seront documentées dans ce fichier.
 
+## v1.21.31 — 2026-09-11
+
+**Refonte visuelle « moins IA » : Dynamic Island + Fichiers** — présentationnel uniquement.
+
+- `components/DynamicIslandContainer.tsx` : horloge (`border-white/10 bg-white/[0.04] text-zinc-400`), titre/artiste (`text-white`/`text-zinc-400`/`text-zinc-300`), anneaux de pochette (`ring-white/10`, `ring-white/15`), badge « lecture en cours » (`bg-black/80`), bouton like et boutons de transport (`text-zinc-300/400 hover:bg-white/10 hover:text-white`) → tokens de thème. Le halo de lecture en cours (`shadow-[0_0_8px_var(--glow-color)]`) est conservé (indicateur d'état réel, cf. `DESIGN_REWORK_NOTES.md`).
+- `app/files/page.tsx` : 5× `hover:text-white` → `hover:text-[var(--text-primary)]`, bandeau/bouton d'erreur `border-red-500/…` → tokens `--danger`, icône + montant « Stockage ETHONE Cloud » `text-emerald-400`/`font-mono` → muted. Le bloc Quota Google Drive garde son bleu de marque.
+- `components/files/FileInspector.tsx` : bloc « ETHONE Brain Intelligence » (violet partout, carte à halo) → aplat accent cohérent avec le reste des surfaces IA de l'app ; étoile favori `amber` → token `--warning` ; badge « ETHONE Cloud » `emerald` → accent (Google Drive garde son bleu de marque) ; bouton fermer et séparateurs `border-white/*` → tokens.
+- `components/files/FileNavigationSidebar.tsx` : icône stockage ETHONE `emerald` → muted (le bloc Google Drive garde son bleu de marque).
+- `components/FileDropOverlay.tsx` : badge de compte de fichiers `text-white` codé en dur → `text-[var(--accent-contrast)]`. Le halo de zone de dépôt active est conservé (état de glisser-déposer réel).
+- Validation : `tsc` 0 erreur, `build` ✓, `test:unit` 73/73.
+
 ## v1.21.30 — 2026-09-11
 
 **Refonte visuelle « moins IA » : notifications + Mission Control** — présentationnel uniquement.

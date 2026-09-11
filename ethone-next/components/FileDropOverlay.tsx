@@ -142,7 +142,7 @@ export default function FileDropOverlay({ onDrop, disabled }: FileDropOverlayPro
                   {meta.size ? ` • ${formatBytes(meta.size)}` : ""}
                 </span>
                 {fileCount > 1 && (
-                  <span className="rounded-full bg-[var(--accent-primary)] px-1.5 py-0.2 text-[10px] font-bold text-white">
+                  <span className="rounded-full bg-[var(--accent-primary)] px-1.5 py-0.2 text-[10px] font-bold text-[var(--accent-contrast)]">
                     +{fileCount - 1}
                   </span>
                 )}

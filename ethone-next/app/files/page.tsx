@@ -396,7 +396,7 @@ export default function FilesPage() {
                   "flex h-8 items-center gap-1.5 rounded-xl border px-2.5 text-xs font-semibold transition-all cursor-pointer",
                   selectMode
                     ? "border-[var(--accent-primary)]/40 bg-[var(--accent-primary)]/15 text-[var(--accent-primary)]"
-                    : "border-[var(--panel-border)] bg-[var(--surface-raised)]/60 text-[var(--text-muted)] hover:text-white"
+                    : "border-[var(--panel-border)] bg-[var(--surface-raised)]/60 text-[var(--text-muted)] hover:text-[var(--text-primary)]"
                 )}
                 title="Mode sélection"
               >
@@ -412,7 +412,7 @@ export default function FilesPage() {
                     "flex h-7 w-7 items-center justify-center rounded-lg transition-all cursor-pointer",
                     viewMode === "grid"
                       ? "bg-[var(--accent-primary)] text-[var(--accent-contrast)] shadow-xs"
-                      : "text-[var(--text-muted)] hover:text-white"
+                      : "text-[var(--text-muted)] hover:text-[var(--text-primary)]"
                   )}
                   title="Grille"
                 >
@@ -425,7 +425,7 @@ export default function FilesPage() {
                     "flex h-7 w-7 items-center justify-center rounded-lg transition-all cursor-pointer",
                     viewMode === "list"
                       ? "bg-[var(--accent-primary)] text-[var(--accent-contrast)] shadow-xs"
-                      : "text-[var(--text-muted)] hover:text-white"
+                      : "text-[var(--text-muted)] hover:text-[var(--text-primary)]"
                   )}
                   title="Liste"
                 >
@@ -436,7 +436,7 @@ export default function FilesPage() {
               <button
                 type="button"
                 onClick={() => reload()}
-                className="flex h-8 w-8 items-center justify-center rounded-xl border border-[var(--panel-border)] bg-[var(--surface-raised)]/60 text-[var(--text-muted)] hover:text-white transition-all cursor-pointer shadow-xs"
+                className="flex h-8 w-8 items-center justify-center rounded-xl border border-[var(--panel-border)] bg-[var(--surface-raised)]/60 text-[var(--text-muted)] hover:text-[var(--text-primary)] transition-all cursor-pointer shadow-xs"
                 title="Rafraîchir"
               >
                 <RefreshCw className={cn("h-3.5 w-3.5", loading && "animate-spin text-[var(--accent-primary)]")} />
@@ -472,7 +472,7 @@ export default function FilesPage() {
               <button
                 type="button"
                 onClick={() => setSortDirection((d) => (d === "asc" ? "desc" : "asc"))}
-                className="flex h-8 w-8 items-center justify-center rounded-xl border border-[var(--panel-border)] bg-[var(--surface-raised)]/60 text-[var(--text-muted)] hover:text-white transition-all cursor-pointer"
+                className="flex h-8 w-8 items-center justify-center rounded-xl border border-[var(--panel-border)] bg-[var(--surface-raised)]/60 text-[var(--text-muted)] hover:text-[var(--text-primary)] transition-all cursor-pointer"
                 title={sortDirection === "asc" ? "Ordre croissant" : "Ordre décroissant"}
               >
                 <ArrowUpDown className="h-3.5 w-3.5" />
@@ -484,7 +484,7 @@ export default function FilesPage() {
         {/* Content Body */}
         <div className="flex-1 overflow-y-auto os-scroll p-4 space-y-6">
           {error && (
-            <div className="flex flex-wrap items-center justify-between gap-3 rounded-2xl border border-red-500/25 bg-red-500/10 px-4 py-3 text-xs text-red-300">
+            <div className="flex flex-wrap items-center justify-between gap-3 rounded-2xl border border-[var(--danger)]/25 bg-[var(--danger)]/10 px-4 py-3 text-xs text-[var(--danger)]">
               <span className="flex items-center gap-2">
                 <Cloud className="h-4 w-4 shrink-0" />
                 Impossible de charger vos fichiers pour le moment. Les éléments affichés proviennent de votre cache local.
@@ -492,7 +492,7 @@ export default function FilesPage() {
               <button
                 type="button"
                 onClick={() => reload()}
-                className="shrink-0 rounded-lg border border-red-500/30 px-2.5 py-1 font-semibold transition-colors hover:bg-red-500/15 cursor-pointer"
+                className="shrink-0 rounded-lg border border-[var(--danger)]/30 px-2.5 py-1 font-semibold transition-colors hover:bg-[var(--danger)]/15 cursor-pointer"
               >
                 Réessayer
               </button>
@@ -507,12 +507,12 @@ export default function FilesPage() {
                 <div className="rounded-2xl border border-[var(--panel-border)]/60 bg-[var(--surface-raised)]/40 p-4 flex items-center justify-between">
                   <div className="space-y-1">
                     <p className="text-xs font-bold text-[var(--text-primary)] flex items-center gap-2">
-                      <HardDrive className="h-4 w-4 text-emerald-400" />
+                      <HardDrive className="h-4 w-4 text-[var(--text-muted)]" />
                       Stockage ETHONE Cloud
                     </p>
                     <p className="text-[11px] text-[var(--text-muted)]">Fichiers stockés localement et synchronisés</p>
                   </div>
-                  <span className="font-mono text-sm font-bold text-emerald-400">
+                  <span className="text-sm font-semibold tabular-nums text-[var(--text-primary)]">
                     {formatBytes(files.filter((f) => !f.trashed && !f.isFolder).reduce((acc, f) => acc + (f.size || 0), 0))}
                   </span>
                 </div>

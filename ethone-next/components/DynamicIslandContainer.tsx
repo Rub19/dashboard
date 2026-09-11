@@ -66,8 +66,8 @@ const IslandLiveClock = React.memo(function IslandLiveClock() {
   }, []);
 
   return (
-    <span className="flex items-center gap-1 rounded-full border border-white/10 bg-white/[0.04] px-2.5 py-1 font-mono text-[10px] tabular-nums text-zinc-400">
-      <Icon name="clock" pack="phosphor" className="h-3 w-3 text-zinc-400" />
+    <span className="flex items-center gap-1 rounded-full border border-[var(--panel-border)] bg-[var(--surface-2)]/40 px-2.5 py-1 text-[10px] tabular-nums text-[var(--text-muted)]">
+      <Icon name="clock" pack="phosphor" className="h-3 w-3" />
       {timeStr}
     </span>
   );
@@ -101,7 +101,7 @@ function SpotifyCompact({
               "h-6 w-6 shrink-0 rounded-lg object-cover bg-[var(--surface-raised)] transition-all duration-200",
               isPlaying
                 ? "ring-1 ring-[var(--accent-primary)]/60 shadow-[0_0_8px_var(--glow-color)]"
-                : "ring-1 ring-white/10"
+                : "ring-1 ring-[var(--panel-border)]"
             )}
             iconClassName="h-3.5 w-3.5 text-[var(--accent-primary)]"
             loading="eager"
@@ -110,15 +110,15 @@ function SpotifyCompact({
             crossOrigin="anonymous"
           />
         ) : (
-          <div className="flex h-6 w-6 items-center justify-center rounded-lg bg-[var(--surface-raised)] ring-1 ring-white/10">
+          <div className="flex h-6 w-6 items-center justify-center rounded-lg bg-[var(--surface-raised)] ring-1 ring-[var(--panel-border)]">
             <ServiceIcon id="spotify" icon="music" className="h-3.5 w-3.5" colored />
           </div>
         )}
       </div>
-      <div className="min-w-0 flex-1 truncate text-xs font-semibold tracking-tight text-white flex items-center gap-1.5" title={artist ? `${trackTitle} • ${artist}` : trackTitle}>
+      <div className="min-w-0 flex-1 truncate text-xs font-semibold tracking-tight text-[var(--text-primary)] flex items-center gap-1.5" title={artist ? `${trackTitle} • ${artist}` : trackTitle}>
         <span className="truncate">{trackTitle}</span>
         {artist && (
-          <span className="truncate text-[11px] font-normal text-zinc-400 shrink-0">
+          <span className="truncate text-[11px] font-normal text-[var(--text-muted)] shrink-0">
             • {artist}
           </span>
         )}
@@ -796,7 +796,7 @@ export default function DynamicIslandContainer() {
                     animate={{ opacity: 1, scale: 1 }}
                     exit={{ opacity: 0, scale: 0.96 }}
                     transition={{ duration: 0.2, ease: EASE_OUT }}
-                    className="relative flex items-center gap-3.5 rounded-2xl border border-white/5 bg-white/[0.03] p-2.5 backdrop-blur-md"
+                    className="relative flex items-center gap-3.5 rounded-2xl border border-[var(--panel-border)] bg-[var(--surface-2)]/40 p-2.5"
                   >
                     <div className="relative shrink-0 flex items-center justify-center">
                       {(nowPlaying?.cover || nowPlaying?.artworkUrl || (nowPlaying?.covers && nowPlaying.covers.length > 0)) ? (
@@ -804,7 +804,7 @@ export default function DynamicIslandContainer() {
                           candidates={[nowPlaying?.cover, nowPlaying?.artworkUrl, ...(nowPlaying?.covers || [])]}
                           alt={nowPlaying?.title || "Spotify"}
                           size={68}
-                          className="h-[68px] w-[68px] rounded-xl object-cover shadow-lg ring-1 ring-white/15"
+                          className="h-[68px] w-[68px] rounded-xl object-cover shadow-lg ring-1 ring-[var(--panel-border)]"
                           iconClassName="h-6 w-6 text-[var(--accent-primary)]"
                           loading="eager"
                           priority
@@ -812,22 +812,22 @@ export default function DynamicIslandContainer() {
                           crossOrigin="anonymous"
                         />
                       ) : (
-                        <div className="flex h-[68px] w-[68px] items-center justify-center rounded-xl bg-[var(--surface-raised)] ring-1 ring-white/15 shadow-lg">
+                        <div className="flex h-[68px] w-[68px] items-center justify-center rounded-xl bg-[var(--surface-raised)] ring-1 ring-[var(--panel-border)] shadow-lg">
                           <ServiceIcon id="spotify" icon="music" className="h-9 w-9" colored />
                         </div>
                       )}
                       {nowPlaying?.isPlaying && (
-                        <div className="absolute -bottom-1 -right-1 flex h-4 w-4 items-center justify-center rounded-full bg-black/80 border border-[var(--accent-primary)]/40 shadow-xs">
+                        <div className="absolute -bottom-1 -right-1 flex h-4 w-4 items-center justify-center rounded-full bg-[var(--panel-bg)] border border-[var(--accent-primary)]/40">
                           <span className="h-2 w-2 rounded-full bg-[var(--accent-primary)] animate-ping" />
                         </div>
                       )}
                     </div>
 
                     <div className="flex min-w-0 flex-1 flex-col justify-center gap-0.5">
-                      <p className="line-clamp-1 text-sm font-bold tracking-tight text-white" title={nowPlaying?.title}>
+                      <p className="line-clamp-1 text-sm font-semibold tracking-tight text-[var(--text-primary)]" title={nowPlaying?.title}>
                         {nowPlaying?.title || "Spotify"}
                       </p>
-                      <p className="truncate text-xs font-medium text-zinc-300" title={nowPlaying?.artist}>
+                      <p className="truncate text-xs font-medium text-[var(--text-muted)]" title={nowPlaying?.artist}>
                         {nowPlaying?.artist || (isSpotifyConnected ? "Connecté • Prêt pour la lecture" : "Prêt • Cliquez pour connecter")}
                       </p>
                       <p className="truncate text-[10px] font-semibold text-[var(--accent-primary)]/90" title={nowPlaying?.album}>
@@ -840,15 +840,15 @@ export default function DynamicIslandContainer() {
                       onClick={toggleLike}
                       disabled={likeLoading || !nowPlaying?.id}
                       className={cn(
-                        "flex h-8 w-8 shrink-0 items-center justify-center rounded-full transition-all duration-150 active:scale-90 cursor-pointer",
+                        "flex h-8 w-8 shrink-0 items-center justify-center rounded-full transition-colors duration-150 active:scale-90 cursor-pointer",
                         isSaved
-                          ? "bg-rose-500/20 text-rose-400 hover:bg-rose-500/30 hover:scale-110"
-                          : "text-zinc-400 hover:bg-white/10 hover:text-white hover:scale-110",
+                          ? "bg-[var(--danger)]/15 text-[var(--danger)] hover:bg-[var(--danger)]/25"
+                          : "text-[var(--text-muted)] hover:bg-[var(--surface-2)] hover:text-[var(--text-primary)]",
                       )}
                       aria-label={isSaved ? i18n("unlike") : i18n("like")}
                       title={isSaved ? i18n("unlike") : i18n("like")}
                     >
-                      <Icon name="heart" pack="phosphor" className={cn("h-4 w-4 transition-transform", isSaved && "fill-current text-rose-500")} />
+                      <Icon name="heart" pack="phosphor" className={cn("h-4 w-4 transition-transform", isSaved && "fill-current")} />
                     </button>
                   </motion.div>
                 </AnimatePresence>
@@ -890,7 +890,7 @@ export default function DynamicIslandContainer() {
                     type="button"
                     onClick={() => spotifyControl("previous")}
                     disabled={pendingSpotify}
-                    className="flex h-9 w-9 items-center justify-center rounded-full text-zinc-300 transition-all duration-150 hover:scale-110 hover:bg-white/10 hover:text-white active:scale-95 disabled:opacity-40 cursor-pointer"
+                    className="flex h-9 w-9 items-center justify-center rounded-full text-[var(--text-muted)] transition-colors duration-150 hover:bg-[var(--surface-2)] hover:text-[var(--text-primary)] active:scale-95 disabled:opacity-40 cursor-pointer"
                     aria-label={i18n("previous")}
                     title="Piste précédente"
                   >
@@ -901,7 +901,7 @@ export default function DynamicIslandContainer() {
                     type="button"
                     onClick={togglePlay}
                     disabled={pendingSpotify}
-                    className="flex h-11 w-11 items-center justify-center rounded-full bg-[var(--accent-primary)] text-[var(--accent-contrast)] font-bold shadow-lg shadow-[var(--accent-primary)]/30 transition-all duration-150 hover:scale-105 hover:bg-[var(--accent-hover)] active:scale-95 disabled:opacity-40 cursor-pointer"
+                    className="flex h-11 w-11 items-center justify-center rounded-full bg-[var(--accent-primary)] text-[var(--accent-contrast)] font-semibold transition-[filter] duration-150 hover:brightness-110 active:scale-95 disabled:opacity-40 cursor-pointer"
                     aria-label={nowPlaying?.isPlaying ? i18n("pause") : i18n("play")}
                     title={nowPlaying?.isPlaying ? "Mettre en pause" : "Lire"}
                   >
@@ -916,7 +916,7 @@ export default function DynamicIslandContainer() {
                     type="button"
                     onClick={() => spotifyControl("next")}
                     disabled={pendingSpotify}
-                    className="flex h-9 w-9 items-center justify-center rounded-full text-zinc-300 transition-all duration-150 hover:scale-110 hover:bg-white/10 hover:text-white active:scale-95 disabled:opacity-40 cursor-pointer"
+                    className="flex h-9 w-9 items-center justify-center rounded-full text-[var(--text-muted)] transition-colors duration-150 hover:bg-[var(--surface-2)] hover:text-[var(--text-primary)] active:scale-95 disabled:opacity-40 cursor-pointer"
                     aria-label={i18n("next")}
                     title="Piste suivante"
                   >
@@ -1130,7 +1130,7 @@ export default function DynamicIslandContainer() {
                     <button
                       type="button"
                       onClick={() => router.push("/mail")}
-                      className="flex items-center gap-1.5 rounded-xl bg-[var(--accent-primary)] px-3.5 py-1.5 text-xs font-semibold text-[var(--accent-contrast)] transition-all hover:scale-105"
+                      className="flex items-center gap-1.5 rounded-xl bg-[var(--accent-primary)] px-3.5 py-1.5 text-xs font-semibold text-[var(--accent-contrast)] transition-[filter] hover:brightness-110"
                     >
                       <Icon name="envelope-simple" pack="phosphor" className="h-3.5 w-3.5" />
                       <span>{i18n("openMail", "Ouvrir Mail")}</span>

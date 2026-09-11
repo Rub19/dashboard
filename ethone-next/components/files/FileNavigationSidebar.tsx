@@ -190,7 +190,7 @@ export default function FileNavigationSidebar({
         <div className="rounded-xl border border-[var(--panel-border)]/50 bg-[var(--surface-raised)]/40 p-2 text-xs">
           <div className="flex items-center justify-between">
             <span className="flex items-center gap-1.5 font-semibold text-[var(--text-primary)]">
-              <HardDrive className="h-3.5 w-3.5 text-emerald-400" />
+              <HardDrive className="h-3.5 w-3.5 text-[var(--text-muted)]" />
               ETHONE
             </span>
             <span className="font-mono text-[11px] text-[var(--text-muted)]">
@@ -207,7 +207,7 @@ export default function FileNavigationSidebar({
                 <Cloud className="h-3.5 w-3.5 text-blue-400" />
                 Drive
               </span>
-              <span className="font-mono text-[11px] text-zinc-400">
+              <span className="text-[11px] text-blue-300/70">
                 {formatBytes(quota.used)} / {formatBytes(quota.total)}
               </span>
             </div>

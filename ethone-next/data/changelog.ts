@@ -25862,4 +25862,61 @@ CHANGELOG_BY_LANG.en.unshift(v12132_en);
 CHANGELOG_BY_LANG.es.unshift(v12132_es);
 CHANGELOG_BY_LANG.de.unshift(v12132_de);
 
+const v12133_fr: ChangelogEntry = {
+  version: "v1.21.33",
+  date: "2026-09-11",
+  title: "Nouveau Module Bot : Highlights (mots-cles surveilles)",
+  items: [
+    "Nouveau module Highlights : chacun peut surveiller jusqu a 15 mots-cles personnels par serveur avec /highlight add. Des qu un AUTRE membre (jamais soi-meme, jamais un bot) ecrit ce mot dans un salon, un DM est envoye avec l auteur, le salon, un extrait du message et un lien direct.",
+    "Anti-spam integre : cooldown de 15 minutes par membre et par mot-cle pour eviter une avalanche de DM dans un salon tres actif. Possibilite d ignorer un salon precis avec /highlight mute-channel, et de mettre tout en pause sans perdre ses mots-cles via /highlight toggle.",
+    "Commandes : /highlight add | remove (avec autocompletion) | list | toggle | mute-channel | unmute-channel.",
+    "Page dashboard /discord/highlights : reglage 100% personnel (les mots-cles d un membre ne sont jamais visibles par les autres, meme les admins ne voient que des compteurs agreges) — chips de mots-cles, interrupteur actif/pause, liste des salons ignores.",
+    "Ajoute a la grille des modules du hub Discord (Personnel).",
+  ],
+};
+
+const v12133_en: ChangelogEntry = {
+  version: "v1.21.33",
+  date: "2026-09-11",
+  title: "New Bot Module: Highlights (watched keywords)",
+  items: [
+    "New Highlights module: everyone can watch up to 15 personal keywords per server with /highlight add. As soon as ANOTHER member (never yourself, never a bot) writes that word in a channel, a DM is sent with the author, the channel, a message excerpt and a direct link.",
+    "Built-in anti-spam: a 15-minute cooldown per member and per keyword avoids a flood of DMs in a fast-moving channel. You can ignore a specific channel with /highlight mute-channel, and pause everything without losing your keywords via /highlight toggle.",
+    "Commands: /highlight add | remove (with autocomplete) | list | toggle | mute-channel | unmute-channel.",
+    "Dashboard page /discord/highlights: a fully personal setting (a member's keywords are never visible to others, even admins only see aggregate counts) — keyword chips, active/paused switch, ignored-channel list.",
+    "Added to the Discord hub module grid (Personal).",
+  ],
+};
+
+const v12133_es: ChangelogEntry = {
+  version: "v1.21.33",
+  date: "2026-09-11",
+  title: "Nuevo Modulo de Bot: Highlights (palabras clave vigiladas)",
+  items: [
+    "Nuevo modulo Highlights: cada persona puede vigilar hasta 15 palabras clave personales por servidor con /highlight add. En cuanto OTRO miembro (nunca tu mismo, nunca un bot) escribe esa palabra en un canal, se envia un DM con el autor, el canal, un extracto del mensaje y un enlace directo.",
+    "Anti-spam integrado: enfriamiento de 15 minutos por miembro y por palabra clave para evitar una avalancha de DM en un canal muy activo. Se puede ignorar un canal concreto con /highlight mute-channel, y pausar todo sin perder las palabras clave con /highlight toggle.",
+    "Comandos: /highlight add | remove (con autocompletado) | list | toggle | mute-channel | unmute-channel.",
+    "Pagina de panel /discord/highlights: ajuste 100% personal (las palabras clave de un miembro nunca son visibles para otros, ni siquiera los administradores ven mas que contadores agregados) — chips de palabras clave, interruptor activo/pausa, lista de canales ignorados.",
+    "Anadido a la cuadricula de modulos del hub de Discord (Personal).",
+  ],
+};
+
+const v12133_de: ChangelogEntry = {
+  version: "v1.21.33",
+  date: "2026-09-11",
+  title: "Neues Bot-Modul: Highlights (ueberwachte Schluesselwoerter)",
+  items: [
+    "Neues Highlights-Modul: jeder kann mit /highlight add bis zu 15 persoenliche Schluesselwoerter pro Server ueberwachen. Sobald ein ANDERES Mitglied (nie man selbst, nie ein Bot) dieses Wort in einem Kanal schreibt, wird eine DM mit Autor, Kanal, Nachrichtenausschnitt und Direktlink verschickt.",
+    "Eingebauter Anti-Spam: eine 15-minuetige Abklingzeit pro Mitglied und Schluesselwort verhindert eine DM-Flut in einem sehr aktiven Kanal. Ein bestimmter Kanal kann mit /highlight mute-channel ignoriert werden, und alles laesst sich mit /highlight toggle pausieren, ohne die Schluesselwoerter zu verlieren.",
+    "Befehle: /highlight add | remove (mit Autovervollstaendigung) | list | toggle | mute-channel | unmute-channel.",
+    "Dashboard-Seite /discord/highlights: eine vollstaendig persoenliche Einstellung (die Schluesselwoerter eines Mitglieds sind fuer andere nie sichtbar, selbst Admins sehen nur aggregierte Zaehler) — Schluesselwort-Chips, Aktiv/Pause-Schalter, Liste der ignorierten Kanaele.",
+    "Zum Modul-Raster des Discord-Hubs hinzugefuegt (Persoenlich).",
+  ],
+};
+
+CHANGELOG_BY_LANG.fr.unshift(v12133_fr);
+CHANGELOG_BY_LANG.en.unshift(v12133_en);
+CHANGELOG_BY_LANG.es.unshift(v12133_es);
+CHANGELOG_BY_LANG.de.unshift(v12133_de);
+
 export const CHANGELOG = CHANGELOG_BY_LANG.fr;

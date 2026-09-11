@@ -2,6 +2,13 @@
 
 Toutes les modifications notables de ce projet seront documentées dans ce fichier.
 
+## v1.21.35 — 2026-09-11
+
+**Cases à cocher modernisées (module Logs)**
+
+- `app/discord/page.tsx` : les 3 cases à cocher de l'aperçu « Surveillance des événements serveur » (module Audit & Logs) étaient des `<input type="checkbox">` natifs du navigateur (`accent-blue-500`) — remplacées par le composant `Checkbox` du système de design (`components/ui/Checkbox.tsx`) : coche animée, anneau de focus, tokens de thème. État local ajouté (`logsPreview`) pour garder le comportement cliquable existant.
+- Validation : `tsc` 0 erreur, `build` ✓, `test:unit` 73/73.
+
 ## v1.21.34 — 2026-09-11
 
 **Refonte visuelle « moins IA » : introduction du bot Discord (9 écrans)** — présentationnel uniquement.

@@ -62,6 +62,7 @@ import DiscordIcon from "@/components/DiscordIcon";
 import { cn } from "@/lib/utils";
 import { useDiscordOnboarding } from "@/lib/hooks/useDiscordOnboarding";
 import DiscordOnboardingModal from "@/components/discord/onboarding/DiscordOnboardingModal";
+import { Checkbox } from "@/components/ui/Checkbox";
 
 const BOT_CLIENT_ID = "1545139931154878464";
 const BOT_INVITE_URL = `https://discord.com/oauth2/authorize?client_id=${BOT_CLIENT_ID}&permissions=8&scope=bot%20applications.commands`;
@@ -408,6 +409,9 @@ export default function DiscordDashboardPage() {
   // every server "à ajouter".
   const [botGuildIds, setBotGuildIds] = useState<Set<string>>(new Set());
   const [botPresenceKnown, setBotPresenceKnown] = useState(false);
+  // Preview toggles shown on the Logs module gateway card (informational —
+  // the real per-event routing lives in the Audit Center at /discord/logs).
+  const [logsPreview, setLogsPreview] = useState({ messages: true, roles: true, members: true });
 
   useEffect(() => {
     const api = process.env.NEXT_PUBLIC_DISCORD_BOT_API || "";
@@ -1721,18 +1725,24 @@ export default function DiscordDashboardPage() {
                     <div className="rounded-2xl border border-white/10 bg-white/[0.02] p-4 space-y-2">
                       <p className="font-bold text-white">Surveillance des événements serveur</p>
                       <div className="space-y-2.5 pt-1 text-[11px]">
-                        <label className="flex items-center gap-2 text-zinc-300 cursor-pointer">
-                          <input type="checkbox" defaultChecked className="rounded border-zinc-700 accent-blue-500" />
-                          <span>Journaliser la suppression et modification de messages</span>
-                        </label>
-                        <label className="flex items-center gap-2 text-zinc-300 cursor-pointer">
-                          <input type="checkbox" defaultChecked className="rounded border-zinc-700 accent-blue-500" />
-                          <span>Journaliser les modifications de rôles, permissions et salons</span>
-                        </label>
-                        <label className="flex items-center gap-2 text-zinc-300 cursor-pointer">
-                          <input type="checkbox" defaultChecked className="rounded border-zinc-700 accent-blue-500" />
-                          <span>Journaliser les arrivées, départs, bans et timeouts</span>
-                        </label>
+                        <Checkbox
+                          checked={logsPreview.messages}
+                          onCheckedChange={(v) => setLogsPreview((p) => ({ ...p, messages: v }))}
+                          label="Journaliser la suppression et modification de messages"
+                          className="text-zinc-300 [&_span]:text-[11px] [&_span]:text-zinc-300"
+                        />
+                        <Checkbox
+                          checked={logsPreview.roles}
+                          onCheckedChange={(v) => setLogsPreview((p) => ({ ...p, roles: v }))}
+                          label="Journaliser les modifications de rôles, permissions et salons"
+                          className="text-zinc-300 [&_span]:text-[11px] [&_span]:text-zinc-300"
+                        />
+                        <Checkbox
+                          checked={logsPreview.members}
+                          onCheckedChange={(v) => setLogsPreview((p) => ({ ...p, members: v }))}
+                          label="Journaliser les arrivées, départs, bans et timeouts"
+                          className="text-zinc-300 [&_span]:text-[11px] [&_span]:text-zinc-300"
+                        />
                       </div>
                     </div>
                   </div>

@@ -25984,4 +25984,45 @@ CHANGELOG_BY_LANG.en.unshift(v12134_en);
 CHANGELOG_BY_LANG.es.unshift(v12134_es);
 CHANGELOG_BY_LANG.de.unshift(v12134_de);
 
+const v12135_fr: ChangelogEntry = {
+  version: "v1.21.35",
+  date: "2026-09-11",
+  title: "Cases a cocher modernisees (module Logs)",
+  items: [
+    "Les 3 cases a cocher de l apercu Surveillance des evenements serveur (page Discord, module Audit & Logs) etaient des cases natives du navigateur (accent-blue-500) : remplacees par le composant Checkbox du systeme de design, avec coche animee et tokens de theme.",
+  ],
+};
+
+const v12135_en: ChangelogEntry = {
+  version: "v1.21.35",
+  date: "2026-09-11",
+  title: "Modernized checkboxes (Logs module)",
+  items: [
+    "The 3 checkboxes in the Server event monitoring preview (Discord page, Audit & Logs module) were native browser checkboxes (accent-blue-500): replaced with the design system's Checkbox component, with an animated check and theme tokens.",
+  ],
+};
+
+const v12135_es: ChangelogEntry = {
+  version: "v1.21.35",
+  date: "2026-09-11",
+  title: "Casillas modernizadas (modulo Logs)",
+  items: [
+    "Las 3 casillas de la vista previa Monitoreo de eventos del servidor (pagina Discord, modulo Auditoria y Logs) eran casillas nativas del navegador (accent-blue-500): reemplazadas por el componente Checkbox del sistema de diseno, con marca animada y tokens de tema.",
+  ],
+};
+
+const v12135_de: ChangelogEntry = {
+  version: "v1.21.35",
+  date: "2026-09-11",
+  title: "Modernisierte Checkboxen (Logs-Modul)",
+  items: [
+    "Die 3 Checkboxen in der Vorschau Serverereignis-Ueberwachung (Discord-Seite, Modul Audit & Logs) waren native Browser-Checkboxen (accent-blue-500): ersetzt durch die Checkbox-Komponente des Designsystems, mit animiertem Haekchen und Themen-Tokens.",
+  ],
+};
+
+CHANGELOG_BY_LANG.fr.unshift(v12135_fr);
+CHANGELOG_BY_LANG.en.unshift(v12135_en);
+CHANGELOG_BY_LANG.es.unshift(v12135_es);
+CHANGELOG_BY_LANG.de.unshift(v12135_de);
+
 export const CHANGELOG = CHANGELOG_BY_LANG.fr;

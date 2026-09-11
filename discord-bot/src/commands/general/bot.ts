@@ -25,7 +25,12 @@ export const botCommand: Command = {
   name: 'bot',
   description: 'Statut système, métriques et informations sur le bot ETHONE',
   category: 'Général',
-  aliases: ['stats', 'status', 'about'],
+  // NOTE: "status" was previously listed here, but it collides with the real,
+  // unrelated /status command (admin/statusCommand.ts, Bot Owner presence
+  // control) and always resolved to this handler instead — crashing with
+  // CommandInteractionOptionNoSubcommand whenever /status was actually
+  // invoked. Removed; use /bot status, !stats, or !about instead.
+  aliases: ['stats', 'about'],
   slashData: new SlashCommandBuilder()
     .setName('bot')
     .setDescription('Centre d\'informations et diagnostic système du bot')
@@ -49,7 +54,11 @@ export const botCommand: Command = {
     let subcommand = 'status';
 
     if (ctx.isSlash && ctx.interaction) {
-      subcommand = (ctx.interaction as any).options?.getSubcommand?.() || 'status';
+      // getSubcommand() defaults to required=true and throws
+      // (CommandInteractionOptionNoSubcommand) when the interaction has none —
+      // pass false so a missing subcommand falls back to 'status' below
+      // instead of crashing the interaction handler.
+      subcommand = (ctx.interaction as any).options?.getSubcommand?.(false) || 'status';
     } else if (ctx.args.length > 0) {
       subcommand = ctx.args[0].toLowerCase();
     }

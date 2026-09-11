@@ -2,6 +2,17 @@
 
 Toutes les modifications notables de ce projet seront documentées dans ce fichier.
 
+## v1.21.36 — 2026-09-11
+
+**Correctif bot : `/status` et `/resume` exécutaient la mauvaise commande**
+
+- Bug de production trouvé dans les logs PM2 (`CommandInteractionOptionNoSubcommand` sur `/status`). Cause réelle : `discord-bot/src/commands/general/bot.ts` déclarait `'status'` comme alias, ce qui écrasait silencieusement la vraie commande `/status` (`admin/statusCommand.ts`, statut de présence réservé au Bot Owner) à chaque appel — `getCommand('status')` résolvait vers `bot` au lieu du vrai `status`.
+- Même bug sur `/resume` : `general/summarize.ts` déclarait `'resume'` comme alias français de « résumer », ce qui exécutait le résumé de discussion au lieu de relancer la musique (`music/musicShortcuts.ts`'s vrai `/resume`).
+- `discord-bot/src/handlers/commandHandler.ts` : `getCommand()` corrigé à la racine — un nom de commande réel est désormais toujours prioritaire sur un alias portant le même nom, pour toute commande future aussi. Alias `status`/`resume` retirés de `bot.ts`/`summarize.ts` (inutilisables de toute façon). `bot.ts` durci en plus (`getSubcommand(false)` au lieu de `getSubcommand()` qui lève une exception par défaut).
+- `discord-bot/test_commands_v1.ts` (nouveau, 7 assertions) : garde qu'aucun nom de commande n'est jamais masqué par un alias, teste spécifiquement ces deux régressions, confirme que les alias légitimes (`stats`, `about`, `recap`) fonctionnent toujours.
+- Validation : `discord-bot` `npm run node:build` 0 erreur + 7/7 nouveaux tests + 164/164 assertions des suites existantes (afk, birthdays, serverStats, tags, reminders, sticky, highlights).
+- ⚠️ Nécessite le redéploiement du bot sur le VPS.
+
 ## v1.21.35 — 2026-09-11
 
 **Cases à cocher modernisées (module Logs)**

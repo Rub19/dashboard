@@ -26025,4 +26025,61 @@ CHANGELOG_BY_LANG.en.unshift(v12135_en);
 CHANGELOG_BY_LANG.es.unshift(v12135_es);
 CHANGELOG_BY_LANG.de.unshift(v12135_de);
 
+const v12136_fr: ChangelogEntry = {
+  version: "v1.21.36",
+  date: "2026-09-11",
+  title: "Correctif bot : /status et /resume executaient la mauvaise commande",
+  items: [
+    "Bug de production trouve dans les logs PM2 : /status plantait avec CommandInteractionOptionNoSubcommand. Cause reelle : /bot declarait status comme alias, ce qui ecrasait silencieusement la vraie commande /status (statut de presence, reservee au Bot Owner) a chaque appel.",
+    "Meme probleme sur /resume : /summarize declarait resume comme alias en francais, ce qui executait le resume de discussion au lieu de relancer la lecture de musique demandee.",
+    "Corrige a la racine dans le registre de commandes : un nom de commande reel est desormais toujours prioritaire sur un alias portant le meme nom, quelle que soit la commande. Les alias status et resume retires de /bot et /summarize car ils etaient de toute facon inutilisables.",
+    "Nouvelle suite de tests test_commands_v1.ts (7 assertions) qui verifie qu aucun nom de commande n est jamais masque par un alias, garde specifiquement contre ces deux regressions, et confirme que les alias legitimes (stats, about, recap) fonctionnent toujours.",
+    "Necessite le redeploiement du bot sur le VPS.",
+  ],
+};
+
+const v12136_en: ChangelogEntry = {
+  version: "v1.21.36",
+  date: "2026-09-11",
+  title: "Bot fix: /status and /resume ran the wrong command",
+  items: [
+    "Production bug found from the PM2 logs: /status crashed with CommandInteractionOptionNoSubcommand. Root cause: /bot declared status as an alias, which silently shadowed the real /status command (presence status, Bot Owner only) on every call.",
+    "Same issue on /resume: /summarize declared the French word resume as an alias, which ran the chat-summary logic instead of resuming music playback as requested.",
+    "Fixed at the root in the command registry: a real command name now always wins over an alias with the same name, for any command. Removed the status and resume aliases from /bot and /summarize since they were unusable anyway.",
+    "New test_commands_v1.ts suite (7 assertions) verifies no command name is ever shadowed by an alias, specifically guards against these two regressions, and confirms the legitimate aliases (stats, about, recap) still work.",
+    "Requires redeploying the bot on the VPS.",
+  ],
+};
+
+const v12136_es: ChangelogEntry = {
+  version: "v1.21.36",
+  date: "2026-09-11",
+  title: "Correccion del bot: /status y /resume ejecutaban el comando equivocado",
+  items: [
+    "Error de produccion encontrado en los logs de PM2: /status fallaba con CommandInteractionOptionNoSubcommand. Causa real: /bot declaraba status como alias, lo que ocultaba silenciosamente el verdadero comando /status (estado de presencia, solo para el Bot Owner) en cada llamada.",
+    "Mismo problema en /resume: /summarize declaraba la palabra resume como alias, lo que ejecutaba el resumen de chat en lugar de reanudar la musica solicitada.",
+    "Corregido de raiz en el registro de comandos: un nombre de comando real ahora siempre tiene prioridad sobre un alias con el mismo nombre, para cualquier comando. Se quitaron los alias status y resume de /bot y /summarize ya que eran inutilizables de todos modos.",
+    "Nueva suite test_commands_v1.ts (7 aserciones) que verifica que ningun nombre de comando quede oculto por un alias, protege especificamente contra estas dos regresiones, y confirma que los alias legitimos (stats, about, recap) siguen funcionando.",
+    "Requiere volver a desplegar el bot en el VPS.",
+  ],
+};
+
+const v12136_de: ChangelogEntry = {
+  version: "v1.21.36",
+  date: "2026-09-11",
+  title: "Bot-Fix: /status und /resume fuehrten den falschen Befehl aus",
+  items: [
+    "Produktionsfehler aus den PM2-Logs gefunden: /status stuerzte mit CommandInteractionOptionNoSubcommand ab. Eigentliche Ursache: /bot deklarierte status als Alias, wodurch der echte /status-Befehl (Praesenzstatus, nur Bot Owner) bei jedem Aufruf stillschweigend ueberdeckt wurde.",
+    "Gleiches Problem bei /resume: /summarize deklarierte das franzoesische Wort resume als Alias, wodurch die Chat-Zusammenfassung statt der gewuenschten Fortsetzung der Musikwiedergabe ausgefuehrt wurde.",
+    "An der Wurzel im Befehlsregister behoben: ein echter Befehlsname hat jetzt immer Vorrang vor einem Alias mit demselben Namen, fuer jeden Befehl. Die Aliase status und resume aus /bot und /summarize entfernt, da sie ohnehin unbenutzbar waren.",
+    "Neue Testsuite test_commands_v1.ts (7 Assertions) prueft, dass kein Befehlsname jemals von einem Alias ueberdeckt wird, schuetzt gezielt vor diesen zwei Regressionen und bestaetigt, dass die legitimen Aliase (stats, about, recap) weiterhin funktionieren.",
+    "Erfordert ein erneutes Deployment des Bots auf dem VPS.",
+  ],
+};
+
+CHANGELOG_BY_LANG.fr.unshift(v12136_fr);
+CHANGELOG_BY_LANG.en.unshift(v12136_en);
+CHANGELOG_BY_LANG.es.unshift(v12136_es);
+CHANGELOG_BY_LANG.de.unshift(v12136_de);
+
 export const CHANGELOG = CHANGELOG_BY_LANG.fr;

@@ -187,8 +187,16 @@ class CommandRegistry {
 
   public getCommand(nameOrAlias: string): Command | undefined {
     const lower = nameOrAlias.toLowerCase();
-    const resolvedName = this.aliases.get(lower) ?? lower;
-    return this.commands.get(resolvedName);
+    // A canonical command name always wins over an alias registered under the
+    // same string — otherwise a later command that happens to alias e.g.
+    // "status" permanently shadows the real, unrelated /status command (this
+    // is exactly what caused /status and /resume to crash in production:
+    // bot.ts aliases "status" and summarize.ts aliases "resume", both of
+    // which collide with real standalone commands of those names).
+    const direct = this.commands.get(lower);
+    if (direct) return direct;
+    const resolvedName = this.aliases.get(lower);
+    return resolvedName ? this.commands.get(resolvedName) : undefined;
   }
 
   public getAllCommands(): Command[] {

@@ -2,6 +2,15 @@
 
 Toutes les modifications notables de ce projet seront documentées dans ce fichier.
 
+## v1.21.34 — 2026-09-11
+
+**Refonte visuelle « moins IA » : introduction du bot Discord (9 écrans)** — présentationnel uniquement.
+
+- `components/discord/onboarding/DiscordOnboardingModal.tsx` (le cadre) : `bg-zinc-950/95 border-zinc-800 rounded-3xl backdrop-blur-xl` → `v8-panel`, 2 halos d'ambiance (`bg-indigo-500/15`/`bg-teal-500/15 blur-3xl`) supprimés, points/dots de progression en dégradé indigo→teal → aplat accent, boutons Continuer/Configurer en dégradé → aplats `--accent-primary`/`--success`, popup de confirmation de sortie sur `v8-panel`.
+- `Screen0Hero.tsx` → `Screen7GettingStarted.tsx` : passe en 2 temps — 220 substitutions automatiques (`bg-zinc-*` → `--surface-2`, `border-zinc-*` → `--panel-border`, `text-zinc-*` → `--text-muted`, `text-white` → `--text-primary`) suivies d'un passage manuel par écran : chaque écran avait sa propre couleur d'accent « aléatoire » (indigo/teal/rose/cyan/fuchsia/emerald) unifiée sur `--accent-primary` ; halos d'ambiance (`blur-3xl`/`blur-2xl`) supprimés ; dégradés de logo/texte/CTA aplatis ; statuts illustratifs (menace/avertissement/résolu) recolorés sur `--danger`/`--warning`/`--success` au lieu de rose/ambre/emerald codés en dur.
+- Conservé volontairement : la palette de 12 couleurs par module (`Screen2Features`) et les 5 couleurs d'accent du sélecteur (`Screen6Customization`) — contenu interactif lui-même, pas du chrome décoratif (même raisonnement que les swatches de `ThemeStudio`).
+- Validation : `tsc` 0 erreur, `build` ✓, `test:unit` 73/73.
+
 ## v1.21.33 — 2026-09-11
 
 **Nouveau module bot : Highlights (mots-clés surveillés)** — « Google Alerts » perso pour le chat.

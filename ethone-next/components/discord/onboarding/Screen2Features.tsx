@@ -37,15 +37,15 @@ const MODULES: ModuleInfo[] = [
     color: "text-orange-400 bg-orange-500/10 border-orange-500/30",
     preview: (
       <div className="space-y-2">
-        <div className="flex items-center justify-between text-[11px] font-mono pb-1 border-b border-zinc-800">
-          <span className="text-zinc-400">DOSSIER #1842</span>
-          <span className="px-1.5 py-0.5 rounded bg-rose-500/20 text-rose-300 font-bold">BAN ACTIF</span>
+        <div className="flex items-center justify-between text-[11px] font-mono pb-1 border-b border-[var(--panel-border)]">
+          <span className="text-[var(--text-muted)]">DOSSIER #1842</span>
+          <span className="px-1.5 py-0.5 rounded bg-[var(--danger)]/20 text-[var(--danger)] font-bold">BAN ACTIF</span>
         </div>
-        <div className="text-xs text-zinc-300 font-medium">Membre: @ShadowUser (ID: 8849...)</div>
-        <div className="text-[11px] text-zinc-400">Motif: Tentative de scam et spam récurrent</div>
+        <div className="text-xs text-[var(--text-muted)] font-medium">Membre: @ShadowUser (ID: 8849...)</div>
+        <div className="text-[11px] text-[var(--text-muted)]">Motif: Tentative de scam et spam récurrent</div>
         <div className="flex gap-1.5 pt-1">
-          <span className="px-2 py-0.5 rounded bg-zinc-800 text-zinc-400 text-[10px]">3 Avertissements</span>
-          <span className="px-2 py-0.5 rounded bg-zinc-800 text-zinc-400 text-[10px]">1 Mute</span>
+          <span className="px-2 py-0.5 rounded bg-[var(--surface-2)] text-[var(--text-muted)] text-[10px]">3 Avertissements</span>
+          <span className="px-2 py-0.5 rounded bg-[var(--surface-2)] text-[var(--text-muted)] text-[10px]">1 Mute</span>
         </div>
       </div>
     ),
@@ -59,12 +59,12 @@ const MODULES: ModuleInfo[] = [
     color: "text-amber-400 bg-amber-500/10 border-amber-500/30",
     preview: (
       <div className="space-y-2">
-        <div className="flex items-center justify-between text-[11px] font-mono pb-1 border-b border-zinc-800">
-          <span className="text-zinc-400">FILTRE LIENS & INVITES</span>
-          <span className="px-1.5 py-0.5 rounded bg-emerald-500/20 text-emerald-300 font-bold">ACTIF</span>
+        <div className="flex items-center justify-between text-[11px] font-mono pb-1 border-b border-[var(--panel-border)]">
+          <span className="text-[var(--text-muted)]">FILTRE LIENS & INVITES</span>
+          <span className="px-1.5 py-0.5 rounded bg-[var(--success)]/20 text-[var(--success)] font-bold">ACTIF</span>
         </div>
-        <div className="text-xs text-zinc-300">Message intercepté: &quot;discord.gg/free-nitro...&quot;</div>
-        <div className="text-[11px] text-amber-400 font-medium">Action: Message supprimé + Avertissement auto</div>
+        <div className="text-xs text-[var(--text-muted)]">Message intercepté: &quot;discord.gg/free-nitro...&quot;</div>
+        <div className="text-[11px] text-[var(--warning)] font-medium">Action: Message supprimé + Avertissement auto</div>
       </div>
     ),
   },
@@ -77,14 +77,14 @@ const MODULES: ModuleInfo[] = [
     color: "text-emerald-400 bg-emerald-500/10 border-emerald-500/30",
     preview: (
       <div className="space-y-2">
-        <div className="flex items-center justify-between text-[11px] font-mono pb-1 border-b border-zinc-800">
-          <span className="text-zinc-400">RISK SCORE SERVEUR</span>
-          <span className="px-1.5 py-0.5 rounded bg-emerald-500/20 text-emerald-300 font-bold">14 / 100</span>
+        <div className="flex items-center justify-between text-[11px] font-mono pb-1 border-b border-[var(--panel-border)]">
+          <span className="text-[var(--text-muted)]">RISK SCORE SERVEUR</span>
+          <span className="px-1.5 py-0.5 rounded bg-[var(--success)]/20 text-[var(--success)] font-bold">14 / 100</span>
         </div>
-        <div className="w-full bg-zinc-800 h-2 rounded-full overflow-hidden">
-          <div className="bg-emerald-500 h-full w-[14%]" />
+        <div className="w-full bg-[var(--surface-2)] h-2 rounded-full overflow-hidden">
+          <div className="bg-[var(--success)] h-full w-[14%]" />
         </div>
-        <div className="text-[11px] text-zinc-400">Statut: Serveur sous protection maximale • 0 menace active</div>
+        <div className="text-[11px] text-[var(--text-muted)]">Statut: Serveur sous protection maximale • 0 menace active</div>
       </div>
     ),
   },
@@ -98,7 +98,7 @@ const MODULES: ModuleInfo[] = [
     preview: (
       <div className="space-y-1.5 text-center p-2 rounded-lg bg-teal-950/20 border border-teal-500/20">
         <div className="text-xs font-bold text-teal-300">BIENVENUE SUR LE SERVEUR</div>
-        <div className="text-[11px] text-zinc-300">Bienvenue @Alex ! Tu es notre 1,284ème membre.</div>
+        <div className="text-[11px] text-[var(--text-muted)]">Bienvenue @Alex ! Tu es notre 1,284ème membre.</div>
         <div className="inline-flex items-center gap-1 text-[10px] text-teal-400 font-mono mt-1">
           <CheckCircle2 className="w-3 h-3" /> Auto-rôle @Membre attribué
         </div>
@@ -115,15 +115,15 @@ const MODULES: ModuleInfo[] = [
     preview: (
       <div className="space-y-2">
         <div className="flex items-center gap-2">
-          <div className="w-7 h-7 rounded-lg bg-violet-600 flex items-center justify-center text-white">
+          <div className="w-7 h-7 rounded-lg bg-violet-600 flex items-center justify-center text-[var(--text-primary)]">
             <Play className="w-3.5 h-3.5 fill-white" />
           </div>
           <div className="flex-1 min-w-0">
-            <div className="text-xs font-semibold text-white truncate">Midnight City - M83</div>
-            <div className="text-[10px] text-zinc-400">2:45 / 4:03 • 🔊 Salon Vocal 1</div>
+            <div className="text-xs font-semibold text-[var(--text-primary)] truncate">Midnight City - M83</div>
+            <div className="text-[10px] text-[var(--text-muted)]">2:45 / 4:03 • 🔊 Salon Vocal 1</div>
           </div>
         </div>
-        <div className="w-full bg-zinc-800 h-1 rounded-full overflow-hidden">
+        <div className="w-full bg-[var(--surface-2)] h-1 rounded-full overflow-hidden">
           <div className="bg-violet-400 h-full w-[65%]" />
         </div>
       </div>
@@ -139,7 +139,7 @@ const MODULES: ModuleInfo[] = [
     preview: (
       <div className="space-y-1.5">
         <div className="flex justify-between items-center text-[11px]">
-          <span className="text-zinc-400">ACTIVITÉ DERNIÈRES 24H</span>
+          <span className="text-[var(--text-muted)]">ACTIVITÉ DERNIÈRES 24H</span>
           <span className="text-cyan-400 font-mono font-bold">+18.4%</span>
         </div>
         <div className="flex items-end gap-1 h-10 pt-1">
@@ -159,12 +159,12 @@ const MODULES: ModuleInfo[] = [
     color: "text-emerald-400 bg-emerald-500/10 border-emerald-500/30",
     preview: (
       <div className="space-y-1.5">
-        <div className="flex items-center justify-between text-[11px] pb-1 border-b border-zinc-800">
-          <span className="font-mono text-zinc-300">TICKET #042</span>
-          <span className="px-1.5 py-0.5 rounded bg-amber-500/20 text-amber-300 text-[10px]">En cours</span>
+        <div className="flex items-center justify-between text-[11px] pb-1 border-b border-[var(--panel-border)]">
+          <span className="font-mono text-[var(--text-muted)]">TICKET #042</span>
+          <span className="px-1.5 py-0.5 rounded bg-[var(--warning)]/20 text-[var(--warning)] text-[10px]">En cours</span>
         </div>
-        <div className="text-xs text-zinc-300">Catégorie: Problème Technique</div>
-        <div className="text-[10px] text-zinc-400">Assigné à: @SupportTeam • Réponse il y a 2m</div>
+        <div className="text-xs text-[var(--text-muted)]">Catégorie: Problème Technique</div>
+        <div className="text-[10px] text-[var(--text-muted)]">Assigné à: @SupportTeam • Réponse il y a 2m</div>
       </div>
     ),
   },
@@ -176,9 +176,9 @@ const MODULES: ModuleInfo[] = [
     icon: Gift,
     color: "text-rose-400 bg-rose-500/10 border-rose-500/30",
     preview: (
-      <div className="space-y-1 text-center p-1.5 rounded bg-rose-950/20 border border-rose-500/20">
-        <div className="text-xs font-bold text-rose-300">🎁 Nitro 1 Mois (x3)</div>
-        <div className="text-[11px] text-zinc-400">142 participants • Fin dans 2h 15m</div>
+      <div className="space-y-1 text-center p-1.5 rounded bg-[var(--danger)]/10 border border-[var(--danger)]/20">
+        <div className="text-xs font-bold text-[var(--danger)]">🎁 Nitro 1 Mois (x3)</div>
+        <div className="text-[11px] text-[var(--text-muted)]">142 participants • Fin dans 2h 15m</div>
       </div>
     ),
   },
@@ -192,13 +192,13 @@ const MODULES: ModuleInfo[] = [
     preview: (
       <div className="space-y-1.5">
         <div className="flex justify-between items-center text-[11px]">
-          <span className="text-white font-semibold">NIVEAU 24</span>
+          <span className="text-[var(--text-primary)] font-semibold">NIVEAU 24</span>
           <span className="text-fuchsia-400 font-mono">3,850 / 4,000 XP</span>
         </div>
-        <div className="w-full bg-zinc-800 h-2 rounded-full overflow-hidden">
+        <div className="w-full bg-[var(--surface-2)] h-2 rounded-full overflow-hidden">
           <div className="bg-fuchsia-500 h-full w-[85%]" />
         </div>
-        <div className="text-[10px] text-zinc-400">Prochain déblocage: Rôle @Vétéran</div>
+        <div className="text-[10px] text-[var(--text-muted)]">Prochain déblocage: Rôle @Vétéran</div>
       </div>
     ),
   },
@@ -211,10 +211,10 @@ const MODULES: ModuleInfo[] = [
     color: "text-yellow-400 bg-yellow-500/10 border-yellow-500/30",
     preview: (
       <div className="space-y-1.5">
-        <div className="text-xs font-medium text-white">&quot;Ajouter un salon pour les tutoriels de code&quot;</div>
+        <div className="text-xs font-medium text-[var(--text-primary)]">&quot;Ajouter un salon pour les tutoriels de code&quot;</div>
         <div className="flex items-center gap-3 text-[11px]">
-          <span className="text-emerald-400 font-bold">▲ 48</span>
-          <span className="text-rose-400 font-bold">▼ 2</span>
+          <span className="text-[var(--success)] font-bold">▲ 48</span>
+          <span className="text-[var(--danger)] font-bold">▼ 2</span>
           <span className="px-1.5 py-0.5 rounded bg-yellow-500/20 text-yellow-300 text-[10px] ml-auto">En examen</span>
         </div>
       </div>
@@ -230,7 +230,7 @@ const MODULES: ModuleInfo[] = [
     preview: (
       <div className="space-y-1 font-mono text-[11px]">
         <div className="text-indigo-300">/regles</div>
-        <div className="p-1.5 rounded bg-zinc-950 border border-zinc-800 text-[10px] text-zinc-300">
+        <div className="p-1.5 rounded bg-[var(--surface-2)] border border-[var(--panel-border)] text-[10px] text-[var(--text-muted)]">
           Embed: &quot;Charte du serveur - Respectez les membres...&quot;
         </div>
       </div>
@@ -246,10 +246,10 @@ export default function Screen2Features() {
     <div className="flex flex-col max-w-3xl mx-auto py-2 px-3 sm:px-4 animate-in fade-in zoom-in-95 duration-500">
       {/* Header */}
       <div className="text-center mb-4">
-        <h3 className="text-2xl sm:text-3xl font-bold text-white tracking-tight mb-1">
+        <h3 className="text-2xl sm:text-3xl font-bold text-[var(--text-primary)] tracking-tight mb-1">
           Une suite d'outils complète & intégrée
         </h3>
-        <p className="text-xs sm:text-sm text-zinc-400 max-w-lg mx-auto">
+        <p className="text-xs sm:text-sm text-[var(--text-muted)] max-w-lg mx-auto">
           Survolez ou sélectionnez un module pour découvrir ses capacités en temps réel.
         </p>
       </div>
@@ -265,10 +265,10 @@ export default function Screen2Features() {
                 key={m.id}
                 onClick={() => setSelectedId(m.id)}
                 onMouseEnter={() => setSelectedId(m.id)}
-                className={`flex flex-col items-start p-2.5 rounded-xl border text-left transition-all duration-200 cursor-pointer ${
+                className={`flex flex-col items-start p-2.5 rounded-xl border text-left transition-colors duration-150 cursor-pointer ${
                   isSelected
-                    ? "bg-zinc-800/90 border-indigo-500/60 shadow-md shadow-indigo-500/10 scale-[1.02]"
-                    : "bg-zinc-900/40 border-zinc-800/80 hover:bg-zinc-800/50 hover:border-zinc-700"
+                    ? "bg-[var(--surface-2)] border-[var(--accent-primary)]/50"
+                    : "bg-[var(--surface-2)]/40 border-[var(--panel-border)] hover:bg-[var(--surface-2)]/70"
                 }`}
               >
                 <div className="flex items-center justify-between w-full mb-1.5">
@@ -276,42 +276,40 @@ export default function Screen2Features() {
                     <Icon className="w-3.5 h-3.5" />
                   </div>
                   {isSelected && (
-                    <span className="w-1.5 h-1.5 rounded-full bg-indigo-400 shadow-[0_0_5px_var(--glow-color)]" />
+                    <span className="w-1.5 h-1.5 rounded-full bg-[var(--accent-primary)]" />
                   )}
                 </div>
-                <div className="text-xs font-semibold text-white truncate w-full">{m.name}</div>
-                <div className="text-[10px] text-zinc-500 truncate w-full">{m.badge}</div>
+                <div className="text-xs font-semibold text-[var(--text-primary)] truncate w-full">{m.name}</div>
+                <div className="text-[10px] text-[var(--text-muted)] truncate w-full">{m.badge}</div>
               </button>
             );
           })}
         </div>
 
         {/* Dynamic Micro-Preview Box */}
-        <div className="md:col-span-5 bg-zinc-900/80 border border-zinc-800 rounded-2xl p-4 shadow-xl flex flex-col justify-between min-h-[260px] relative overflow-hidden backdrop-blur-sm">
-          <div className="absolute top-0 right-0 w-32 h-32 bg-indigo-500/10 rounded-full blur-2xl pointer-events-none" />
-
+        <div className="v8-panel md:col-span-5 p-4 flex flex-col justify-between min-h-[260px] relative overflow-hidden">
           <div>
             <div className="flex items-center gap-2 mb-2">
               <div className={`p-2 rounded-xl border ${currentModule.color}`}>
                 <currentModule.icon className="w-4 h-4" />
               </div>
               <div>
-                <h4 className="text-sm font-bold text-white">{currentModule.name}</h4>
-                <span className="text-[10px] text-indigo-400 font-medium">{currentModule.badge}</span>
+                <h4 className="text-sm font-bold text-[var(--text-primary)]">{currentModule.name}</h4>
+                <span className="text-[10px] text-[var(--accent-primary)] font-medium">{currentModule.badge}</span>
               </div>
             </div>
 
-            <p className="text-xs text-zinc-400 mb-4 leading-relaxed">
+            <p className="text-xs text-[var(--text-muted)] mb-4 leading-relaxed">
               {currentModule.desc}
             </p>
           </div>
 
           {/* Interactive Live Preview Pane */}
-          <div className="p-3 rounded-xl bg-zinc-950/90 border border-zinc-800/90 shadow-inner">
-            <div className="text-[10px] font-mono text-zinc-500 uppercase tracking-wider mb-2 flex items-center justify-between">
+          <div className="v8-inset p-3">
+            <div className="text-[10px] text-[var(--text-muted)] uppercase tracking-wider mb-2 flex items-center justify-between">
               <span>APERÇU EN DIRECT</span>
-              <span className="text-emerald-400 flex items-center gap-1 font-sans">
-                <span className="w-1.5 h-1.5 rounded-full bg-emerald-400 shadow-[0_0_5px_var(--glow-color)]"></span> Sync
+              <span className="text-[var(--success)] flex items-center gap-1">
+                <span className="w-1.5 h-1.5 rounded-full bg-[var(--success)]"></span> Sync
               </span>
             </div>
             {currentModule.preview}

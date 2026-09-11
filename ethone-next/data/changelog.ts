@@ -25919,4 +25919,69 @@ CHANGELOG_BY_LANG.en.unshift(v12133_en);
 CHANGELOG_BY_LANG.es.unshift(v12133_es);
 CHANGELOG_BY_LANG.de.unshift(v12133_de);
 
+const v12134_fr: ChangelogEntry = {
+  version: "v1.21.34",
+  date: "2026-09-11",
+  title: "Refonte visuelle : introduction du bot Discord",
+  items: [
+    "L introduction du bot Discord (9 ecrans, la fenetre plein format qui presente ETHONE Bot) n utilisait quasiment aucun token de theme : fond zinc code en dur, deux halos d ambiance flous par ecran, degrades indigo-violet-sarcelle un peu differents a chaque etape, boutons en degrade, cases de selection avec halo neon. Toute la fenetre passee sur les tokens de theme.",
+    "Chaque ecran avait sa propre couleur d accent decorative (indigo, sarcelle, rose, cyan, fuchsia, emeraude) juste pour varier visuellement : unifiees sur la couleur d accent de l app pour une identite coherente d un ecran a l autre.",
+    "Logo d accueil : anneau lumineux au survol et degrade de texte retires au profit d un badge plat et d un titre en couleur d accent unie.",
+    "Diagramme d architecture, cycle de protection, pipeline d automatisation, grille de metriques : halos d ambiance decoratifs supprimes, statuts realistes (menace / avertissement / resolu) recolores sur les tokens semantiques (danger / warning / success) au lieu de rose / ambre / emeraude code en dur.",
+    "Conserve volontairement : la palette de 12 modules (Moderation, AutoMod, Musique...) et les 5 couleurs d accent du selecteur de personnalisation, qui sont le contenu interactif lui-meme, pas du chrome decoratif.",
+    "Boutons d action (Continuer, Configurer, Passer l introduction) : degrades et ombres colorees remplaces par des aplats de la couleur d accent ou du token succes.",
+    "Purement presentationnel : aucune logique, donnee ni raccourci modifie.",
+  ],
+};
+
+const v12134_en: ChangelogEntry = {
+  version: "v1.21.34",
+  date: "2026-09-11",
+  title: "Visual overhaul: Discord bot onboarding",
+  items: [
+    "The Discord bot onboarding flow (9 screens, the full-size modal that introduces ETHONE Bot) barely used any theme token: hardcoded zinc background, two blurred ambience glows per screen, a slightly different indigo-purple-teal gradient at each step, gradient buttons, selection chips with a neon glow. The whole modal moved to theme tokens.",
+    "Each screen had its own decorative accent colour (indigo, teal, rose, cyan, fuchsia, emerald) purely for visual variety: unified onto the app's own accent colour for a consistent identity screen to screen.",
+    "Hero logo: the hover glow ring and gradient text removed in favor of a flat badge and a solid accent-coloured title.",
+    "Architecture diagram, protection cycle, automation pipeline, metrics grid: decorative ambience glows removed, realistic statuses (threat / warning / resolved) recoloured onto semantic tokens (danger / warning / success) instead of hardcoded rose / amber / emerald.",
+    "Deliberately kept: the 12-module colour palette (Moderation, AutoMod, Music...) and the 5 accent colours in the customization picker, which are the interactive content itself, not decorative chrome.",
+    "Action buttons (Continue, Configure, Skip intro): gradients and coloured shadows replaced by flat accent or success-token fills.",
+    "Purely presentational: no logic, data or shortcut changed.",
+  ],
+};
+
+const v12134_es: ChangelogEntry = {
+  version: "v1.21.34",
+  date: "2026-09-11",
+  title: "Renovacion visual: introduccion del bot de Discord",
+  items: [
+    "La introduccion del bot de Discord (9 pantallas, el modal a pantalla completa que presenta ETHONE Bot) apenas usaba tokens de tema: fondo zinc fijo, dos halos de ambiente difuminados por pantalla, un degradado indigo-morado-verde azulado ligeramente distinto en cada paso, botones en degradado, chips de seleccion con halo neon. Todo el modal movido a tokens de tema.",
+    "Cada pantalla tenia su propio color de acento decorativo (indigo, verde azulado, rosa, cian, fucsia, esmeralda) solo por variedad visual: unificados en el color de acento propio de la app para una identidad coherente de pantalla a pantalla.",
+    "Logo de bienvenida: el anillo luminoso al pasar el raton y el texto en degradado eliminados en favor de una insignia plana y un titulo en color de acento solido.",
+    "Diagrama de arquitectura, ciclo de proteccion, pipeline de automatizacion, cuadricula de metricas: halos de ambiente decorativos eliminados, estados realistas (amenaza / advertencia / resuelto) recoloreados con tokens semanticos (danger / warning / success) en lugar de rosa / ambar / esmeralda fijos.",
+    "Se conservo deliberadamente: la paleta de 12 modulos (Moderacion, AutoMod, Musica...) y los 5 colores de acento del selector de personalizacion, que son el contenido interactivo en si, no chrome decorativo.",
+    "Botones de accion (Continuar, Configurar, Saltar introduccion): degradados y sombras de color reemplazados por rellenos planos de acento o del token success.",
+    "Puramente presentacional: sin cambios de logica, datos ni atajos.",
+  ],
+};
+
+const v12134_de: ChangelogEntry = {
+  version: "v1.21.34",
+  date: "2026-09-11",
+  title: "Visuelle Ueberarbeitung: Discord-Bot-Einfuehrung",
+  items: [
+    "Die Discord-Bot-Einfuehrung (9 Bildschirme, das Vollbild-Modal, das ETHONE Bot vorstellt) nutzte kaum Themen-Tokens: fest kodierter Zinc-Hintergrund, zwei verschwommene Ambiente-Glows pro Bildschirm, ein je Schritt leicht anderer Indigo-Violett-Petrol-Verlauf, Verlaufs-Buttons, Auswahl-Chips mit Neon-Halo. Das gesamte Modal auf Themen-Tokens umgestellt.",
+    "Jeder Bildschirm hatte seine eigene dekorative Akzentfarbe (Indigo, Petrol, Rose, Cyan, Fuchsia, Smaragd) nur zur optischen Abwechslung: vereinheitlicht auf die eigene Akzentfarbe der App fuer eine durchgaengige Identitaet von Bildschirm zu Bildschirm.",
+    "Hero-Logo: der Leucht-Ring beim Hover und der Verlaufstext entfernt zugunsten eines flachen Badges und eines Titels in einfarbiger Akzentfarbe.",
+    "Architektur-Diagramm, Schutzzyklus, Automatisierungs-Pipeline, Kennzahlen-Raster: dekorative Ambiente-Glows entfernt, realistische Status (Bedrohung / Warnung / geloest) auf semantische Tokens (danger / warning / success) umgefaerbt statt fest kodiertem Rose / Amber / Smaragd.",
+    "Bewusst beibehalten: die 12 Modul-Farben (Moderation, AutoMod, Musik...) und die 5 Akzentfarben im Personalisierungs-Picker, die der eigentliche interaktive Inhalt sind, kein dekoratives Chrome.",
+    "Aktions-Buttons (Weiter, Konfigurieren, Einfuehrung ueberspringen): Verlaeufe und farbige Schatten durch flache Akzent- oder success-Token-Fuellungen ersetzt.",
+    "Rein visuell: keine Aenderung an Logik, Daten oder Kuerzeln.",
+  ],
+};
+
+CHANGELOG_BY_LANG.fr.unshift(v12134_fr);
+CHANGELOG_BY_LANG.en.unshift(v12134_en);
+CHANGELOG_BY_LANG.es.unshift(v12134_es);
+CHANGELOG_BY_LANG.de.unshift(v12134_de);
+
 export const CHANGELOG = CHANGELOG_BY_LANG.fr;

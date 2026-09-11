@@ -40,6 +40,7 @@ import { createBirthdayRouter } from './routes/birthdayRoutes.js';
 import { createTagRouter } from './routes/tagRoutes.js';
 import { createServerStatsRouter } from './routes/serverStatsRoutes.js';
 import { serverStatsService } from '../modules/serverStats/services/serverStatsService.js';
+import { createHighlightsRouter } from './routes/highlightsRoutes.js';
 import { birthdayService } from '../modules/birthdays/services/birthdayService.js';
 import { createEventRouter } from './routes/events.js';
 import { createCalendarRouter } from './routes/calendar.js';
@@ -248,6 +249,12 @@ export function startWebServer(client: Client): http.Server {
     authMiddleware,
     createGuildAuthMiddleware(client),
     createServerStatsRouter(client)
+  );
+  app.use(
+    '/api/guilds/:guildId/highlights',
+    authMiddleware,
+    createGuildAuthMiddleware(client),
+    createHighlightsRouter(client)
   );
   app.use(
     '/api/guilds/:guildId/calendar',

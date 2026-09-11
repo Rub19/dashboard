@@ -62,6 +62,7 @@ import { birthdayCommand } from '../modules/birthdays/commands/birthdayCommand.j
 import { tagCommand } from '../modules/tags/commands/tagCommand.js';
 import { serverStatsCommand } from '../modules/serverStats/commands/serverStatsCommand.js';
 import { logsCommand } from '../modules/logs/commands/logsCommand.js';
+import { highlightCommand } from '../modules/highlights/commands/highlightCommand.js';
 
 import { config } from '../config.js';
 import { Command } from '../types/command.js';
@@ -168,6 +169,9 @@ class CommandRegistry {
 
     // Journaux du serveur (routage par catégorie, verbosité, rétention)
     this.register(logsCommand);
+
+    // Highlights (mots-clés surveillés — DM quand quelqu'un d'autre les mentionne)
+    this.register(highlightCommand);
   }
 
   public register(command: Command) {

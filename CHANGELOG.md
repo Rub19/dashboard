@@ -2,6 +2,19 @@
 
 Toutes les modifications notables de ce projet seront documentées dans ce fichier.
 
+## v1.21.32 — 2026-09-11
+
+**Nouveau module bot : Highlights (mots-clés surveillés)** — « Google Alerts » perso pour le chat.
+
+- `discord-bot/src/modules/highlights/` (nouveau) : `types/highlight.ts` (schémas zod `HighlightKeywordSchema` / `HighlightUserConfigSchema`, mot-clé 2-50 caractères), `storage/highlightStorage.ts` (JSON `data/highlights_keywords.json` + `data/highlights_configs.json`, plafond `MAX_KEYWORDS_PER_USER = 15`), `services/matching.ts` (fonction pure `matchesKeyword` — limite de mot stricte quand le mot-clé s'y prête, sinon sous-chaîne, testable sans client Discord), `services/highlightService.ts` (`handleMessage` : scan serveur uniquement, ignore bots et son propre message, respecte la config par destinataire + un cache de cooldown 15 min par (utilisateur, mot-clé), DM en échec silencieux).
+- `discord-bot/src/modules/highlights/commands/highlightCommand.ts` : `/highlight add | remove` (avec autocomplétion des mots-clés du membre) `| list | toggle | mute-channel | unmute-channel`.
+- `discord-bot/src/server/routes/highlightsRoutes.ts` (nouveau, monté dans `server/index.ts` sous `/api/guilds/:guildId/highlights`) : `GET /overview` (compteurs agrégés seulement — jamais le contenu des mots-clés d'autrui), `GET /mine` / `PUT /mine/config` / `POST /mine/keywords` / `DELETE /mine/keywords/:keyword` scopés strictement à `req.user.id` (même principe que `reminderRoutes.ts`), `GET /channels` pour le sélecteur du dashboard.
+- Branché dans `discord-bot/src/events/messageCreate.ts` (fire-and-forget, aligné sur `afkService`) et `discord-bot/src/handlers/commandHandler.ts`.
+- `discord-bot/test_highlights_v1.ts` (nouveau, 39 assertions) : add/remove/list, plafond 15 mots-clés, validation de longueur, toggle, salons ignorés, isolation multi-serveur, et la logique de correspondance (casse, propre message ignoré, auteur bot ignoré, cooldown, salon ignoré).
+- `ethone-next/app/discord/highlights/page.tsx` + `HighlightsCenterClient.tsx` (nouveau) : page personnelle (pas une config d'admin) avec chips de mots-clés, interrupteur actif/pause, liste de salons ignorés — construite directement sur les tokens de thème (`v8-panel`, `--text-primary`, `--surface-2`…), sans dette visuelle à rattraper plus tard.
+- `ethone-next/app/discord/page.tsx` : nouveau module `highlights` (icône `Eye`, badge « Personnel ») ajouté à la grille du hub Discord.
+- Validation : `discord-bot` `tsc` 0 erreur + suite de tests 39/39 ; `ethone-next` `tsc --noEmit` 0 erreur, `build` ✓, `test:unit` inchangé ; `node scripts/audit-security.mjs` ✓.
+
 ## v1.21.31 — 2026-09-11
 
 **Refonte visuelle « moins IA » : Dynamic Island + Fichiers** — présentationnel uniquement.

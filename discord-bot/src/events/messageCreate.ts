@@ -13,6 +13,7 @@ import { raidDetectionService } from '../modules/antiRaid/services/raidDetection
 import { aiService } from '../modules/ai/services/aiService.js';
 import { stickyService } from '../modules/stickyMessages/services/stickyService.js';
 import { afkService } from '../modules/afk/services/afkService.js';
+import { highlightService } from '../modules/highlights/services/highlightService.js';
 import { discordOwnerPanel } from '../modules/presence/ui/discordOwnerPanel.js';
 import { config } from '../config.js';
 import { syncEngine } from '../services/syncEngine.js';
@@ -60,6 +61,9 @@ export async function onMessageCreate(message: Message) {
 
   // AFK : retour d'absence de l'auteur + notification des membres AFK mentionnés.
   afkService.handleMessage(message).catch(() => {});
+
+  // Highlights : DM des membres qui surveillent un mot-clé présent dans ce message.
+  highlightService.handleMessage(message).catch(() => {});
 
   // 1. Analyse Anti-Raid 2.0 (Spam burst, Mention Raid, @everyone)
   await raidDetectionService.handleMessage(message);

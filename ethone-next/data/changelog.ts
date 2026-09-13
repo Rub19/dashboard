@@ -26286,4 +26286,57 @@ CHANGELOG_BY_LANG.en.unshift(v12140_en);
 CHANGELOG_BY_LANG.es.unshift(v12140_es);
 CHANGELOG_BY_LANG.de.unshift(v12140_de);
 
+const v12141_fr: ChangelogEntry = {
+  version: "v1.21.41",
+  date: "2026-09-13",
+  title: "Nouvelle page Analytics : gaming, finances, taches et focus",
+  items: [
+    "Nouvelle page /analytics (icone dans la barre laterale) qui regroupe en un seul endroit ta forme recente en jeu (League of Legends, Valorant, TFT), tes factures du mois, ta completion de taches et tes sessions Focus.",
+    "Honnete sur ce qui est reellement mesure : le gaming reste limite a la fenetre recente que l'API renvoie (pas un historique complet), les finances sont un instantane du mois en cours (pas une courbe de depenses dans le temps), et les taches n'ont pas encore de date de completion enregistree donc seule la creation par jour est affichee comme tendance.",
+    "Nouveaux graphiques (barres, courbes, anneaux) via la librairie recharts, entierement branches sur les couleurs du theme actif.",
+    "Aucune nouvelle collecte de donnees : tout est lu depuis ce qui existe deja (cache local du tracker gaming, factures, taches Supabase, historique Focus local).",
+  ],
+};
+
+const v12141_en: ChangelogEntry = {
+  version: "v1.21.41",
+  date: "2026-09-13",
+  title: "New Analytics page: gaming, finances, tasks and focus",
+  items: [
+    "New /analytics page (sidebar icon) bringing together your recent gaming form (League of Legends, Valorant, TFT), this month's bills, task completion, and Focus sessions in one place.",
+    "Honest about what's actually measured: gaming stays limited to the recent window the API returns (not a full history), finances are a snapshot of the current month (not a spend-over-time trend), and tasks have no completion date recorded yet so only creations-per-day is shown as a trend.",
+    "New charts (bar, line, donut) via the recharts library, fully wired to the active theme's colours.",
+    "No new data collection: everything is read from what already exists (the gaming tracker's local cache, bills, Supabase tasks, local Focus history).",
+  ],
+};
+
+const v12141_es: ChangelogEntry = {
+  version: "v1.21.41",
+  date: "2026-09-13",
+  title: "Nueva pagina Analytics: gaming, finanzas, tareas y focus",
+  items: [
+    "Nueva pagina /analytics (icono en la barra lateral) que reune en un solo lugar tu forma reciente en juego (League of Legends, Valorant, TFT), tus facturas del mes, tu tasa de tareas completadas y tus sesiones Focus.",
+    "Honesta sobre lo que realmente mide: el gaming sigue limitado a la ventana reciente que devuelve la API (no un historial completo), las finanzas son una foto del mes actual (no una tendencia de gasto en el tiempo), y las tareas aun no tienen fecha de finalizacion registrada, asi que solo se muestra la creacion por dia como tendencia.",
+    "Nuevos graficos (barras, lineas, anillos) con la libreria recharts, conectados por completo a los colores del tema activo.",
+    "Ninguna recoleccion de datos nueva: todo se lee de lo que ya existe (cache local del tracker de juegos, facturas, tareas de Supabase, historial Focus local).",
+  ],
+};
+
+const v12141_de: ChangelogEntry = {
+  version: "v1.21.41",
+  date: "2026-09-13",
+  title: "Neue Analytics-Seite: Gaming, Finanzen, Aufgaben und Focus",
+  items: [
+    "Neue Seite /analytics (Symbol in der Seitenleiste), die deine aktuelle Spielform (League of Legends, Valorant, TFT), die Rechnungen des Monats, deine Aufgaben-Abschlussquote und deine Focus-Sitzungen an einem Ort zusammenfuehrt.",
+    "Ehrlich ueber das, was wirklich gemessen wird: Gaming bleibt auf das kurze Zeitfenster beschraenkt, das die API liefert (kein vollstaendiger Verlauf), Finanzen sind eine Momentaufnahme des aktuellen Monats (kein Ausgabenverlauf ueber die Zeit), und Aufgaben haben noch kein erfasstes Abschlussdatum, weshalb nur Erstellungen pro Tag als Trend gezeigt werden.",
+    "Neue Diagramme (Balken, Linien, Ringe) ueber die Bibliothek recharts, vollstaendig an die Farben des aktiven Themes angebunden.",
+    "Keine neue Datenerfassung: alles wird aus bereits vorhandenen Quellen gelesen (lokaler Cache des Gaming-Trackers, Rechnungen, Supabase-Aufgaben, lokaler Focus-Verlauf).",
+  ],
+};
+
+CHANGELOG_BY_LANG.fr.unshift(v12141_fr);
+CHANGELOG_BY_LANG.en.unshift(v12141_en);
+CHANGELOG_BY_LANG.es.unshift(v12141_es);
+CHANGELOG_BY_LANG.de.unshift(v12141_de);
+
 export const CHANGELOG = CHANGELOG_BY_LANG.fr;

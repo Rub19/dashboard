@@ -1,6 +1,6 @@
 {
   "name": "ethone-next",
-  "version": "1.21.40",
+  "version": "1.21.41",
   "private": true,
   "scripts": {
     "dev": "next dev",
@@ -41,6 +41,7 @@
     "openai": "^7.4.0",
     "react": "19.2.8",
     "react-dom": "19.2.8",
+    "recharts": "^3.10.1",
     "sonner": "^1.7.4",
     "zustand": "^5.0.15"
   },

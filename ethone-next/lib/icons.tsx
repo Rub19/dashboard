@@ -59,6 +59,7 @@ const MAP: Record<string, Partial<Record<IconPack, string>>> = {
   files: { lucide: "folder", phosphor: "folder", tabler: "folder", heroicons: "folder", radix: "file" },
   bills: { lucide: "receipt", phosphor: "receipt", tabler: "receipt", heroicons: "receipt-percent", radix: "file-text" },
   activity: { lucide: "activity", phosphor: "activity", tabler: "activity", heroicons: "chart-bar", radix: "dashboard" },
+  analytics: { lucide: "line-chart", phosphor: "chart-line", tabler: "chart-line", heroicons: "chart-bar-square", radix: "bar-chart" },
   "scan-search": { lucide: "scan-search", phosphor: "magnifying-glass", tabler: "scan-search", heroicons: "magnifying-glass", radix: "magnifying-glass" },
   "shield-check": { lucide: "shield-check", phosphor: "shield-check", tabler: "shield-check", heroicons: "shield-check", radix: "shield" },
   history: { lucide: "history", phosphor: "clock-counter-clockwise", tabler: "history", heroicons: "clock", radix: "counter-clockwise" },

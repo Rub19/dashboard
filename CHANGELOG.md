@@ -2,6 +2,16 @@
 
 Toutes les modifications notables de ce projet seront documentées dans ce fichier.
 
+## v1.21.41 — 2026-09-13
+
+**Nouvelle page Analytics : gaming, finances, tâches et focus**
+
+- Nouvelle page `/analytics` (icône dans la barre latérale, `lib/navigation.ts` + `components/Sidebar.tsx`) qui regroupe la forme récente en jeu (League of Legends, Valorant, TFT via `lib/hooks/useGamingAnalytics.ts`, en relisant le cache déjà écrit par `/matches` — aucun nouvel appel API), les factures du mois (`lib/bills-manager.ts`), la complétion des tâches (Supabase `tasks`) et l'historique Focus (`localStorage`).
+- Nouvelle librairie **recharts** pour les graphiques (barres/courbes/anneaux), avec des wrappers thémés (`components/charts/*`) qui lisent les variables CSS du thème actif en direct (`useChartPalette`).
+- Honnête sur les limites actuelles de chaque source de données (fenêtre gaming bornée par l'API, factures = instantané du mois, pas de date de complétion de tâche enregistrée) — affiché en légende plutôt que masqué, pas de fausse tendance long terme fabriquée.
+- Nouvelles fonctions pures testées unitairement (`lib/analytics.ts`, `groupTftMatchesByDate`) : répartition des factures par catégorie, snapshot payé/à payer du mois, stats de tâches, historique focus par jour.
+- Validation : `tsc` 0 erreur, `eslint` 0 erreur, `build` ✓ (`/analytics` prérendue), `test:unit` 81/81 (+8 nouveaux tests), `audit-security` PASS (1938 fichiers).
+
 ## v1.21.40 — 2026-09-13
 
 **Bordures et coins concentriques : le reste du dashboard + nettoyage login**

@@ -2,6 +2,14 @@
 
 Toutes les modifications notables de ce projet seront documentées dans ce fichier.
 
+## v1.21.39 — 2026-09-13
+
+**Bordures et coins concentriques : 33 pages de modules Discord (suite et fin)**
+
+- 33 fichiers convertis en une passe : `server/ServerManagementClient.tsx`, `moderation/automod/page.tsx`, `welcome/WelcomeCenterClient.tsx`, `security/anti-raid/page.tsx`, `moderation/page.tsx`, `music/MusicCenterClient.tsx`, `moderation/users/[userId]/UserModerationProfileClient.tsx`, `logs/AuditCenterClient.tsx`, `tickets/*`, `forms/*`, `events/*`, `calendar/DiscordCalendarClient.tsx`, `birthdays/BirthdaysCenterClient.tsx`, `sticky/StickyCenterClient.tsx`, `moderation/reports/ReportsCenterClient.tsx`, `starboard/StarboardCenterClient.tsx`, `server-stats/ServerStatsCenterClient.tsx`, `tags/TagsCenterClient.tsx`, `reminders/RemindersCenterClient.tsx`, `afk/AfkCenterClient.tsx`, `bot/BotControlClient.tsx`, `leveling/LevelingCenterClient.tsx`.
+- ~970 occurrences de `rounded-2xl/xl/lg/3xl border border-white/10|5` converties sur deux niveaux (`--panel-radius` pour les grandes cartes, `--inset-radius` pour les éléments imbriqués), toutes les bordures → `--panel-border` (ou le token de survol existant), y compris les variantes en crochets (`border-white/[0.08]`) et les alphas de hover non standards (`/25`, `/40`).
+- Validation : `tsc` 0 erreur, `eslint` 0 erreur, `build` ✓, `test:unit` 73/73.
+
 ## v1.21.38 — 2026-09-13
 
 **Bordures et coins concentriques : page Discord principale**

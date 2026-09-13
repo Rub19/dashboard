@@ -26184,4 +26184,53 @@ CHANGELOG_BY_LANG.en.unshift(v12138_en);
 CHANGELOG_BY_LANG.es.unshift(v12138_es);
 CHANGELOG_BY_LANG.de.unshift(v12138_de);
 
+const v12139_fr: ChangelogEntry = {
+  version: "v1.21.39",
+  date: "2026-09-13",
+  title: "Bordures et coins concentriques : 33 pages de modules Discord",
+  items: [
+    "Suite et fin du chantier bordures/coins sur la section Discord : les 33 fichiers restants (Serveur, AutoMod, Anti-Raid, Moderation, Musique, Audit Center, Tickets, Formulaires, Evenements, Calendrier, Anniversaires, Sticky, Signalements, Starboard, Server Stats, Tags, Rappels, AFK, Bot Control, Leveling...) appliquaient tous le meme rayon fixe et la meme bordure blanche a 10% ou 5% presque invisible, sans lien avec le systeme de panneaux du reste de l app.",
+    "Pres de 970 occurrences converties sur deux niveaux, meme methode que la page Discord principale : grandes cartes suivent --panel-radius, elements imbriques suivent --inset-radius, toutes les bordures passent sur --panel-border (ou le token de survol existant pour les etats hover). Bordures et fonds a couleur semantique conserves.",
+    "Purement presentationnel : aucune logique ni donnee modifiee.",
+  ],
+};
+
+const v12139_en: ChangelogEntry = {
+  version: "v1.21.39",
+  date: "2026-09-13",
+  title: "Concentric borders and corners: 33 Discord module pages",
+  items: [
+    "Wrapping up the borders/corners pass on the Discord section: the remaining 33 files (Server, AutoMod, Anti-Raid, Moderation, Music, Audit Center, Tickets, Forms, Events, Calendar, Birthdays, Sticky, Reports, Starboard, Server Stats, Tags, Reminders, AFK, Bot Control, Leveling...) all applied the same fixed radius and the same near-invisible 10% or 5% white border, unrelated to the rest of the app's panel system.",
+    "Close to 970 occurrences converted across two tiers, same method as the main Discord page: large cards follow --panel-radius, nested elements follow --inset-radius, every border moved onto --panel-border (or the existing hover token for hover states). Semantically-coloured borders/backgrounds left as-is.",
+    "Purely presentational: no logic or data changed.",
+  ],
+};
+
+const v12139_es: ChangelogEntry = {
+  version: "v1.21.39",
+  date: "2026-09-13",
+  title: "Bordes y esquinas concentricas: 33 paginas de modulos de Discord",
+  items: [
+    "Cierre del trabajo de bordes/esquinas en la seccion de Discord: los 33 archivos restantes (Servidor, AutoMod, Anti-Raid, Moderacion, Musica, Audit Center, Tickets, Formularios, Eventos, Calendario, Cumpleanos, Sticky, Reportes, Starboard, Server Stats, Tags, Recordatorios, AFK, Bot Control, Leveling...) aplicaban el mismo radio fijo y el mismo borde blanco al 10% o 5% casi invisible, sin relacion con el sistema de paneles del resto de la app.",
+    "Cerca de 970 ocurrencias convertidas en dos niveles, mismo metodo que la pagina principal de Discord: las tarjetas grandes siguen --panel-radius, los elementos anidados siguen --inset-radius, todos los bordes pasaron a --panel-border (o el token de hover existente). Bordes y fondos de color semantico se dejaron tal cual.",
+    "Puramente presentacional: sin cambios de logica ni datos.",
+  ],
+};
+
+const v12139_de: ChangelogEntry = {
+  version: "v1.21.39",
+  date: "2026-09-13",
+  title: "Konzentrische Raender und Ecken: 33 Discord-Modulseiten",
+  items: [
+    "Abschluss der Raender/Ecken-Arbeit im Discord-Bereich: die verbleibenden 33 Dateien (Server, AutoMod, Anti-Raid, Moderation, Musik, Audit Center, Tickets, Formulare, Events, Kalender, Geburtstage, Sticky, Meldungen, Starboard, Server Stats, Tags, Erinnerungen, AFK, Bot Control, Leveling...) verwendeten alle denselben festen Radius und denselben kaum sichtbaren 10%- oder 5%-weissen Rand, ohne Bezug zum Panel-System des Rests der App.",
+    "Fast 970 Vorkommen auf zwei Ebenen umgestellt, dieselbe Methode wie bei der Haupt-Discord-Seite: grosse Karten folgen --panel-radius, verschachtelte Elemente folgen --inset-radius, alle Raender wechselten zu --panel-border (oder dem vorhandenen Hover-Token). Semantisch eingefaerbte Raender/Hintergruende blieben unveraendert.",
+    "Rein visuell: keine Aenderung an Logik oder Daten.",
+  ],
+};
+
+CHANGELOG_BY_LANG.fr.unshift(v12139_fr);
+CHANGELOG_BY_LANG.en.unshift(v12139_en);
+CHANGELOG_BY_LANG.es.unshift(v12139_es);
+CHANGELOG_BY_LANG.de.unshift(v12139_de);
+
 export const CHANGELOG = CHANGELOG_BY_LANG.fr;

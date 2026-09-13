@@ -177,7 +177,7 @@ export default function EventCreateClient() {
 
       <div className="relative max-w-6xl mx-auto px-4 sm:px-6 lg:px-8 pt-8">
         {/* Navigation & Header */}
-        <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 pb-6 border-b border-white/10 mb-8">
+        <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 pb-6 border-b border-[var(--panel-border)] mb-8">
           <div>
             <div className="flex items-center gap-2 mb-1.5 text-xs text-indigo-400 font-semibold uppercase tracking-wider">
               <Link href="/discord/events" className="hover:underline flex items-center gap-1">
@@ -192,7 +192,7 @@ export default function EventCreateClient() {
 
           <button
             onClick={handleSaveDraft}
-            className="inline-flex items-center gap-2 px-3.5 py-2 rounded-xl text-xs font-semibold bg-white/5 hover:bg-white/10 border border-white/10 text-slate-300 transition-colors self-start sm:self-auto"
+            className="inline-flex items-center gap-2 px-3.5 py-2 rounded-xl text-xs font-semibold bg-white/5 hover:bg-white/10 border border-[var(--panel-border)] text-slate-300 transition-colors self-start sm:self-auto"
           >
             <Save className="w-3.5 h-3.5 text-indigo-400" />
             {saveToast ? "Brouillon Sauvegardé !" : "Sauvegarder Brouillon"}
@@ -225,7 +225,7 @@ export default function EventCreateClient() {
                         ? "bg-indigo-500 text-white shadow-sm"
                         : isCurrent
                         ? "bg-purple-600 text-white ring-4 ring-purple-500/20 shadow-lg"
-                        : "bg-black/60 border border-white/10 text-slate-500"
+                        : "bg-black/60 border border-[var(--panel-border)] text-slate-500"
                     }`}
                   >
                     {isCompleted ? <Check className="w-4 h-4" /> : s.id}
@@ -246,7 +246,7 @@ export default function EventCreateClient() {
         {/* Main 2-column Grid: Form vs Live Discord Preview */}
         <div className="grid grid-cols-1 lg:grid-cols-12 gap-8 items-start">
           {/* Step Form Area (7 Cols) */}
-          <div className="lg:col-span-7 rounded-2xl bg-white/[0.02] border border-white/10 p-6 backdrop-blur-xl shadow-xl">
+          <div className="lg:col-span-7 rounded-2xl bg-white/[0.02] border border-[var(--panel-border)] p-6 backdrop-blur-xl shadow-xl">
             {/* STEP 1: Basic Info */}
             {step === 1 && (
               <div className="space-y-5">
@@ -264,7 +264,7 @@ export default function EventCreateClient() {
                     value={form.title}
                     onChange={(e) => updateForm("title", e.target.value)}
                     placeholder="Ex: Soirée Valorant Tournoi 5v5"
-                    className="w-full px-4 py-2.5 rounded-xl bg-black/40 border border-white/10 text-sm text-white focus:outline-none focus:border-indigo-500"
+                    className="w-full px-4 py-2.5 rounded-xl bg-black/40 border border-[var(--panel-border)] text-sm text-white focus:outline-none focus:border-indigo-500"
                   />
                 </div>
 
@@ -276,7 +276,7 @@ export default function EventCreateClient() {
                     <select
                       value={form.category}
                       onChange={(e) => updateForm("category", e.target.value)}
-                      className="w-full px-3 py-2.5 rounded-xl bg-black/40 border border-white/10 text-sm text-white focus:outline-none focus:border-indigo-500"
+                      className="w-full px-3 py-2.5 rounded-xl bg-black/40 border border-[var(--panel-border)] text-sm text-white focus:outline-none focus:border-indigo-500"
                     >
                       <option value="GAMING">Gaming</option>
                       <option value="TOURNAMENT">Tournoi</option>
@@ -296,7 +296,7 @@ export default function EventCreateClient() {
                       type="text"
                       value={form.emoji}
                       onChange={(e) => updateForm("emoji", e.target.value)}
-                      className="w-full px-3 py-2.5 rounded-xl bg-black/40 border border-white/10 text-sm text-white focus:outline-none focus:border-indigo-500"
+                      className="w-full px-3 py-2.5 rounded-xl bg-black/40 border border-[var(--panel-border)] text-sm text-white focus:outline-none focus:border-indigo-500"
                     />
                   </div>
                 </div>
@@ -310,7 +310,7 @@ export default function EventCreateClient() {
                     value={form.description}
                     onChange={(e) => updateForm("description", e.target.value)}
                     placeholder="Expliquez les détails, règles et horaires aux participants..."
-                    className="w-full px-4 py-2.5 rounded-xl bg-black/40 border border-white/10 text-sm text-white focus:outline-none focus:border-indigo-500"
+                    className="w-full px-4 py-2.5 rounded-xl bg-black/40 border border-[var(--panel-border)] text-sm text-white focus:outline-none focus:border-indigo-500"
                   />
                 </div>
 
@@ -323,7 +323,7 @@ export default function EventCreateClient() {
                     value={form.imageUrl}
                     onChange={(e) => updateForm("imageUrl", e.target.value)}
                     placeholder="https://images.unsplash.com/..."
-                    className="w-full px-4 py-2.5 rounded-xl bg-black/40 border border-white/10 text-sm text-white focus:outline-none focus:border-indigo-500"
+                    className="w-full px-4 py-2.5 rounded-xl bg-black/40 border border-[var(--panel-border)] text-sm text-white focus:outline-none focus:border-indigo-500"
                   />
                 </div>
               </div>
@@ -346,7 +346,7 @@ export default function EventCreateClient() {
                       type="date"
                       value={form.startDate}
                       onChange={(e) => updateForm("startDate", e.target.value)}
-                      className="w-full px-3 py-2 rounded-xl bg-black/40 border border-white/10 text-sm text-white"
+                      className="w-full px-3 py-2 rounded-xl bg-black/40 border border-[var(--panel-border)] text-sm text-white"
                     />
                   </div>
                   <div>
@@ -357,7 +357,7 @@ export default function EventCreateClient() {
                       type="time"
                       value={form.startTime}
                       onChange={(e) => updateForm("startTime", e.target.value)}
-                      className="w-full px-3 py-2 rounded-xl bg-black/40 border border-white/10 text-sm text-white"
+                      className="w-full px-3 py-2 rounded-xl bg-black/40 border border-[var(--panel-border)] text-sm text-white"
                     />
                   </div>
                 </div>
@@ -371,7 +371,7 @@ export default function EventCreateClient() {
                       type="date"
                       value={form.endDate}
                       onChange={(e) => updateForm("endDate", e.target.value)}
-                      className="w-full px-3 py-2 rounded-xl bg-black/40 border border-white/10 text-sm text-white"
+                      className="w-full px-3 py-2 rounded-xl bg-black/40 border border-[var(--panel-border)] text-sm text-white"
                     />
                   </div>
                   <div>
@@ -382,7 +382,7 @@ export default function EventCreateClient() {
                       type="time"
                       value={form.endTime}
                       onChange={(e) => updateForm("endTime", e.target.value)}
-                      className="w-full px-3 py-2 rounded-xl bg-black/40 border border-white/10 text-sm text-white"
+                      className="w-full px-3 py-2 rounded-xl bg-black/40 border border-[var(--panel-border)] text-sm text-white"
                     />
                   </div>
                 </div>
@@ -394,7 +394,7 @@ export default function EventCreateClient() {
                   <select
                     value={form.recurrence}
                     onChange={(e) => updateForm("recurrence", e.target.value)}
-                    className="w-full px-3 py-2.5 rounded-xl bg-black/40 border border-white/10 text-sm text-white"
+                    className="w-full px-3 py-2.5 rounded-xl bg-black/40 border border-[var(--panel-border)] text-sm text-white"
                   >
                     <option value="NONE">Événement unique (Pas de récurrence)</option>
                     <option value="WEEKLY">Chaque semaine (Hebdomadaire)</option>
@@ -427,7 +427,7 @@ export default function EventCreateClient() {
                       className={`p-4 rounded-xl border text-left flex items-center gap-3 transition-all ${
                         form.locationType === loc.id
                           ? "bg-indigo-500/20 border-indigo-500 text-white"
-                          : "bg-black/30 border-white/10 text-slate-400 hover:border-white/20"
+                          : "bg-black/30 border-[var(--panel-border)] text-slate-400 hover:border-[var(--input-border-hover)]"
                       }`}
                     >
                       <loc.icon className="w-5 h-5 text-indigo-400" />
@@ -445,7 +445,7 @@ export default function EventCreateClient() {
                     value={form.channelName}
                     onChange={(e) => updateForm("channelName", e.target.value)}
                     placeholder="Ex: 🎮 Vocal Gaming #1"
-                    className="w-full px-4 py-2.5 rounded-xl bg-black/40 border border-white/10 text-sm text-white"
+                    className="w-full px-4 py-2.5 rounded-xl bg-black/40 border border-[var(--panel-border)] text-sm text-white"
                   />
                 </div>
               </div>
@@ -459,7 +459,7 @@ export default function EventCreateClient() {
                   Capacité & Inscriptions
                 </h2>
 
-                <div className="p-4 rounded-xl bg-black/40 border border-white/10 space-y-4">
+                <div className="p-4 rounded-xl bg-black/40 border border-[var(--panel-border)] space-y-4">
                   <div className="flex items-center justify-between">
                     <div>
                       <span className="text-xs font-bold text-white block">Capacité Illimitée</span>
@@ -474,7 +474,7 @@ export default function EventCreateClient() {
                   </div>
 
                   {!form.unlimitedCapacity && (
-                    <div className="pt-3 border-t border-white/5">
+                    <div className="pt-3 border-t border-[var(--panel-border)]">
                       <label className="block text-xs font-semibold text-slate-300 mb-1.5">
                         Nombre Maximum de Participants
                       </label>
@@ -484,12 +484,12 @@ export default function EventCreateClient() {
                         max="500"
                         value={form.maxParticipants}
                         onChange={(e) => updateForm("maxParticipants", parseInt(e.target.value, 10))}
-                        className="w-full px-4 py-2.5 rounded-xl bg-black/60 border border-white/10 text-sm text-white"
+                        className="w-full px-4 py-2.5 rounded-xl bg-black/60 border border-[var(--panel-border)] text-sm text-white"
                       />
                     </div>
                   )}
 
-                  <div className="flex items-center justify-between pt-3 border-t border-white/5">
+                  <div className="flex items-center justify-between pt-3 border-t border-[var(--panel-border)]">
                     <div>
                       <span className="text-xs font-bold text-white block">Liste d'Attente Automatique</span>
                       <span className="text-[11px] text-slate-400">Si complet, place les nouveaux inscrits en file d'attente</span>
@@ -521,7 +521,7 @@ export default function EventCreateClient() {
                     type="text"
                     value={form.announcementChannel}
                     onChange={(e) => updateForm("announcementChannel", e.target.value)}
-                    className="w-full px-4 py-2.5 rounded-xl bg-black/40 border border-white/10 text-sm text-white"
+                    className="w-full px-4 py-2.5 rounded-xl bg-black/40 border border-[var(--panel-border)] text-sm text-white"
                   />
                 </div>
 
@@ -532,7 +532,7 @@ export default function EventCreateClient() {
                   <select
                     value={form.mentionType}
                     onChange={(e) => updateForm("mentionType", e.target.value)}
-                    className="w-full px-3 py-2.5 rounded-xl bg-black/40 border border-white/10 text-sm text-white"
+                    className="w-full px-3 py-2.5 rounded-xl bg-black/40 border border-[var(--panel-border)] text-sm text-white"
                   >
                     <option value="NONE">Aucune mention</option>
                     <option value="HERE">@here (Membres connectés)</option>
@@ -577,7 +577,7 @@ export default function EventCreateClient() {
                   ].map((r) => (
                     <div
                       key={r.key}
-                      className="p-3.5 rounded-xl bg-black/40 border border-white/10 flex items-center justify-between"
+                      className="p-3.5 rounded-xl bg-black/40 border border-[var(--panel-border)] flex items-center justify-between"
                     >
                       <div>
                         <span className="text-xs font-bold text-white block">{r.label}</span>
@@ -609,7 +609,7 @@ export default function EventCreateClient() {
                 </h2>
 
                 <div className="space-y-3">
-                  <div className="p-4 rounded-xl bg-black/40 border border-white/10 flex items-center justify-between">
+                  <div className="p-4 rounded-xl bg-black/40 border border-[var(--panel-border)] flex items-center justify-between">
                     <div>
                       <span className="text-xs font-bold text-white block">Fil de discussion dédié</span>
                       <span className="text-[11px] text-slate-400">Créer un thread automatique sous l'annonce pour les questions</span>
@@ -627,7 +627,7 @@ export default function EventCreateClient() {
                     />
                   </div>
 
-                  <div className="p-4 rounded-xl bg-black/40 border border-white/10 flex items-center justify-between">
+                  <div className="p-4 rounded-xl bg-black/40 border border-[var(--panel-border)] flex items-center justify-between">
                     <div>
                       <span className="text-xs font-bold text-white block">Rôle temporaire d'inscrit</span>
                       <span className="text-[11px] text-slate-400">Attribue automatiquement un rôle Discord lors du RSVP 'Going'</span>
@@ -645,7 +645,7 @@ export default function EventCreateClient() {
                     />
                   </div>
 
-                  <div className="p-4 rounded-xl bg-black/40 border border-white/10 flex items-center justify-between">
+                  <div className="p-4 rounded-xl bg-black/40 border border-[var(--panel-border)] flex items-center justify-between">
                     <div>
                       <span className="text-xs font-bold text-white block">Nettoyage après l'événement</span>
                       <span className="text-[11px] text-slate-400">Retirer automatiquement le rôle temporaire une fois l'événement terminé</span>
@@ -678,7 +678,7 @@ export default function EventCreateClient() {
                   ✅ Votre événement est prêt à être programmé. Le bot ETHONE publiera l'encart interactif dans {form.announcementChannel}.
                 </div>
 
-                <div className="grid grid-cols-2 gap-3 text-xs p-4 rounded-xl bg-black/40 border border-white/10">
+                <div className="grid grid-cols-2 gap-3 text-xs p-4 rounded-xl bg-black/40 border border-[var(--panel-border)]">
                   <div>
                     <span className="text-slate-500 block">Titre</span>
                     <span className="text-white font-semibold">{form.emoji} {form.title || "Sans titre"}</span>
@@ -700,7 +700,7 @@ export default function EventCreateClient() {
             )}
 
             {/* Bottom Form Navigation Buttons */}
-            <div className="flex items-center justify-between pt-6 mt-6 border-t border-white/10">
+            <div className="flex items-center justify-between pt-6 mt-6 border-t border-[var(--panel-border)]">
               <button
                 type="button"
                 disabled={step === 1}
@@ -708,7 +708,7 @@ export default function EventCreateClient() {
                 className={`inline-flex items-center gap-2 px-4 py-2 rounded-xl text-xs font-semibold ${
                   step === 1
                     ? "opacity-30 cursor-not-allowed text-slate-500"
-                    : "bg-white/5 hover:bg-white/10 text-slate-300 border border-white/10"
+                    : "bg-white/5 hover:bg-white/10 text-slate-300 border border-[var(--panel-border)]"
                 }`}
               >
                 <ArrowLeft className="w-4 h-4" />

@@ -548,7 +548,7 @@ export default function LevelingCenterClient() {
                         <img
                           src="https://images.unsplash.com/photo-1534528741775-53994a69daeb?w=120&auto=format&fit=crop&q=80"
                           alt="Avatar"
-                          className="w-16 h-16 rounded-full border-2 border-white/20 object-cover shadow-xl"
+                          className="w-16 h-16 rounded-full border-2 border-[var(--input-border-hover)] object-cover shadow-xl"
                         />
                         <span className="absolute bottom-0 right-0 w-4 h-4 bg-emerald-500 border-2 border-neutral-950 rounded-full" />
                       </div>
@@ -559,7 +559,7 @@ export default function LevelingCenterClient() {
                           <span className="text-xs text-neutral-400 font-semibold">#4412</span>
                         </div>
                         <div className="flex items-center gap-1.5 mt-1">
-                          <span className="px-2 py-0.5 rounded text-[10px] font-bold bg-white/10 text-white border border-white/20">
+                          <span className="px-2 py-0.5 rounded text-[10px] font-bold bg-white/10 text-white border border-[var(--input-border-hover)]">
                             👑 ETHONE VIP
                           </span>
                           {cardShowBadge && (
@@ -596,7 +596,7 @@ export default function LevelingCenterClient() {
                         <strong>1,840</strong> / 2,500 XP
                       </span>
                     </div>
-                    <div className="h-3 w-full bg-black/50 rounded-full overflow-hidden border border-white/10 p-0.5">
+                    <div className="h-3 w-full bg-black/50 rounded-full overflow-hidden border border-[var(--panel-border)] p-0.5">
                       <div
                         className="h-full rounded-full transition-all duration-300"
                         style={{

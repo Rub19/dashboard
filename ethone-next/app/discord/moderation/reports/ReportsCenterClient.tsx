@@ -251,7 +251,7 @@ export default function ReportsCenterClient() {
   return (
     <div className="min-h-screen bg-[var(--bg-main)] text-slate-200 pb-36 font-sans">
       {/* HEADER NAVIGATION */}
-      <div className="border-b border-white/5 bg-slate-900/40 backdrop-blur-xl sticky top-0 z-30 px-6 py-4">
+      <div className="border-b border-[var(--panel-border)] bg-slate-900/40 backdrop-blur-xl sticky top-0 z-30 px-6 py-4">
         <div className="max-w-7xl mx-auto flex flex-col md:flex-row items-start md:items-center justify-between gap-4">
           <div className="flex items-center gap-3">
             <Link
@@ -289,7 +289,7 @@ export default function ReportsCenterClient() {
                   const g = manageableGuilds.find((item) => item.id === e.target.value);
                   if (g) setSelectedGuild(g);
                 }}
-                className="bg-slate-800/80 border border-white/10 text-white text-xs rounded-xl px-3 py-2 outline-none focus:border-ethone-accent"
+                className="bg-slate-800/80 border border-[var(--panel-border)] text-white text-xs rounded-xl px-3 py-2 outline-none focus:border-ethone-accent"
               >
                 {manageableGuilds.map((g) => (
                   <option key={g.id} value={g.id}>
@@ -304,7 +304,7 @@ export default function ReportsCenterClient() {
 
       <div className="max-w-7xl mx-auto px-6 pt-6 space-y-6">
         {/* BARRE DE FILTRES ET RECHERCHE */}
-        <div className="p-4 rounded-2xl bg-slate-900/50 border border-white/5 backdrop-blur-md flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4">
+        <div className="p-4 rounded-2xl bg-slate-900/50 border border-[var(--panel-border)] backdrop-blur-md flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4">
           <div className="flex items-center gap-2 overflow-x-auto pb-1 sm:pb-0 w-full sm:w-auto">
             {["ALL", "NEW", "REVIEWING", "ACTIONED", "DISMISSED", "ESCALATED"].map((st) => (
               <button
@@ -313,7 +313,7 @@ export default function ReportsCenterClient() {
                 className={cn(
                   "text-xs px-3 py-1.5 rounded-xl font-semibold transition-colors whitespace-nowrap",
                   selectedStatus === st
-                    ? "bg-white/10 text-white border border-white/10"
+                    ? "bg-white/10 text-white border border-[var(--panel-border)]"
                     : "text-slate-400 hover:text-white"
                 )}
               >
@@ -329,7 +329,7 @@ export default function ReportsCenterClient() {
               value={searchQuery}
               onChange={(e) => setSearchQuery(e.target.value)}
               placeholder="Filtrer par id, membre, motif..."
-              className="w-full bg-slate-800/80 border border-white/10 rounded-xl pl-9 pr-3 py-1.5 text-xs text-white placeholder:text-slate-500 outline-none focus:border-ethone-accent"
+              className="w-full bg-slate-800/80 border border-[var(--panel-border)] rounded-xl pl-9 pr-3 py-1.5 text-xs text-white placeholder:text-slate-500 outline-none focus:border-ethone-accent"
             />
           </div>
         </div>
@@ -342,7 +342,7 @@ export default function ReportsCenterClient() {
               return (
                 <div
                   key={report.id}
-                  className="p-5 rounded-2xl bg-slate-900/40 border border-white/5 hover:border-white/10 transition-all flex flex-col justify-between space-y-4"
+                  className="p-5 rounded-2xl bg-slate-900/40 border border-[var(--panel-border)] hover:border-[var(--input-border-hover)] transition-all flex flex-col justify-between space-y-4"
                 >
                   <div className="space-y-2">
                     <div className="flex items-center justify-between">
@@ -368,7 +368,7 @@ export default function ReportsCenterClient() {
                       <p className="text-sm text-slate-200 mt-2 font-medium">{report.reason}</p>
                     </div>
 
-                    <div className="text-xs text-slate-400 flex items-center justify-between pt-2 border-t border-white/5">
+                    <div className="text-xs text-slate-400 flex items-center justify-between pt-2 border-t border-[var(--panel-border)]">
                       <span>Signalé par : @{report.reporterUserTag}</span>
                       {report.assignedModerator ? (
                         <span className="text-ethone-accent font-medium">Assigné à @{report.assignedModerator.tag}</span>
@@ -379,7 +379,7 @@ export default function ReportsCenterClient() {
                   </div>
 
                   {/* ACTIONS MODÉRATEURS */}
-                  <div className="flex items-center justify-between gap-2 pt-3 border-t border-white/5 flex-wrap">
+                  <div className="flex items-center justify-between gap-2 pt-3 border-t border-[var(--panel-border)] flex-wrap">
                     <Link
                       href={selectedGuild ? `/discord/moderation/users/${report.reportedUserId}?guildId=${selectedGuild.id}` : `/discord/moderation/users/${report.reportedUserId}`}
                       className="px-3 py-1.5 rounded-xl bg-white/5 hover:bg-white/10 text-xs font-semibold text-white transition-colors flex items-center gap-1.5"
@@ -414,7 +414,7 @@ export default function ReportsCenterClient() {
             })}
           </div>
         ) : (
-          <div className="p-12 text-center rounded-2xl bg-slate-900/30 border border-white/5 space-y-2">
+          <div className="p-12 text-center rounded-2xl bg-slate-900/30 border border-[var(--panel-border)] space-y-2">
             <CheckCircle2 className="w-8 h-8 text-emerald-400 mx-auto" />
             <h3 className="text-sm font-bold text-white">File de signalements vide</h3>
             <p className="text-xs text-slate-400">Aucun signalement ne requiert d'attention dans cette catégorie.</p>
@@ -425,7 +425,7 @@ export default function ReportsCenterClient() {
       {/* MODALE CONSIGNER SIGNALEMENT */}
       {isNewReportOpen && (
         <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/80 backdrop-blur-sm animate-in fade-in">
-          <form onSubmit={handleCreateReport} className="w-full max-w-md rounded-2xl bg-slate-900 border border-white/10 shadow-2xl p-6 space-y-4">
+          <form onSubmit={handleCreateReport} className="w-full max-w-md rounded-2xl bg-slate-900 border border-[var(--panel-border)] shadow-2xl p-6 space-y-4">
             <div className="flex items-center justify-between">
               <h3 className="text-base font-bold text-white flex items-center gap-2">
                 <Plus className="w-5 h-5 text-amber-400" />
@@ -445,7 +445,7 @@ export default function ReportsCenterClient() {
                   value={newReportTargetId}
                   onChange={(e) => setNewReportTargetId(e.target.value)}
                   placeholder="Ex : 123456789012345678"
-                  className="w-full bg-slate-800 border border-white/10 text-white text-xs rounded-xl p-2.5 outline-none focus:border-ethone-accent"
+                  className="w-full bg-slate-800 border border-[var(--panel-border)] text-white text-xs rounded-xl p-2.5 outline-none focus:border-ethone-accent"
                 />
               </div>
 
@@ -454,7 +454,7 @@ export default function ReportsCenterClient() {
                 <select
                   value={newReportCategory}
                   onChange={(e) => setNewReportCategory(e.target.value)}
-                  className="w-full bg-slate-800 border border-white/10 text-white text-xs rounded-xl p-2.5 outline-none"
+                  className="w-full bg-slate-800 border border-[var(--panel-border)] text-white text-xs rounded-xl p-2.5 outline-none"
                 >
                   <option value="Spam">Spam & Flood</option>
                   <option value="Harassment">Harcèlement</option>
@@ -473,7 +473,7 @@ export default function ReportsCenterClient() {
                   value={newReportReason}
                   onChange={(e) => setNewReportReason(e.target.value)}
                   placeholder="Détaillez le comportement ou l'infraction constatée..."
-                  className="w-full bg-slate-800 border border-white/10 text-white text-xs rounded-xl p-2.5 outline-none focus:border-ethone-accent resize-none"
+                  className="w-full bg-slate-800 border border-[var(--panel-border)] text-white text-xs rounded-xl p-2.5 outline-none focus:border-ethone-accent resize-none"
                 />
               </div>
             </div>
@@ -501,7 +501,7 @@ export default function ReportsCenterClient() {
       {/* MODALE CLASSER SANS SUITE */}
       {dismissingReport && (
         <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/80 backdrop-blur-sm animate-in fade-in">
-          <div className="w-full max-w-md rounded-2xl bg-slate-900 border border-white/10 shadow-2xl p-6 space-y-4">
+          <div className="w-full max-w-md rounded-2xl bg-slate-900 border border-[var(--panel-border)] shadow-2xl p-6 space-y-4">
             <div className="flex items-center justify-between">
               <h3 className="text-base font-bold text-white">Classer le signalement {dismissingReport.id}</h3>
               <button onClick={() => setDismissingReport(null)} className="text-slate-400 hover:text-white">
@@ -515,7 +515,7 @@ export default function ReportsCenterClient() {
                 value={dismissReason}
                 onChange={(e) => setDismissReason(e.target.value)}
                 placeholder="Ex : Preuves insuffisantes, malentendu..."
-                className="w-full bg-slate-800 border border-white/10 text-white text-xs rounded-xl p-2.5 outline-none focus:border-ethone-accent"
+                className="w-full bg-slate-800 border border-[var(--panel-border)] text-white text-xs rounded-xl p-2.5 outline-none focus:border-ethone-accent"
               />
             </div>
             <div className="flex justify-end gap-2 pt-2">

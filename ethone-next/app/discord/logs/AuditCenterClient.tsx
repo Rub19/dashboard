@@ -498,12 +498,12 @@ export function AuditCenterClient() {
   return (
     <div className="h-full overflow-y-auto os-scroll [overscroll-behavior:contain] bg-[var(--bg-main)] text-white selection:bg-indigo-500 selection:text-white pb-36">
       {/* HEADER TOP BAR */}
-      <div className="sticky top-0 z-40 border-b border-white/10 bg-zinc-950/80 backdrop-blur-xl">
+      <div className="sticky top-0 z-40 border-b border-[var(--panel-border)] bg-zinc-950/80 backdrop-blur-xl">
         <div className="mx-auto flex max-w-7xl items-center justify-between px-4 py-3 sm:px-6">
           <div className="flex items-center gap-3">
             <Link
               href={selectedGuild ? `/discord?guildId=${selectedGuild.id}` : "/discord"}
-              className="flex h-8 w-8 items-center justify-center rounded-xl border border-white/10 bg-white/5 text-zinc-300 transition-all hover:bg-white/10 hover:text-white"
+              className="flex h-8 w-8 items-center justify-center rounded-[var(--inset-radius)] border border-[var(--panel-border)] bg-white/5 text-zinc-300 transition-all hover:bg-white/10 hover:text-white"
             >
               <ArrowLeft className="h-4 w-4" />
             </Link>
@@ -536,7 +536,7 @@ export function AuditCenterClient() {
                 "flex items-center gap-1.5 rounded-xl border px-3 py-1.5 text-xs font-semibold transition-all cursor-pointer",
                 liveStreaming
                   ? "border-emerald-500/30 bg-emerald-500/10 text-emerald-300 shadow-sm"
-                  : "border-white/10 bg-white/5 text-zinc-400 hover:text-white"
+                  : "border-[var(--panel-border)] bg-white/5 text-zinc-400 hover:text-white"
               )}
             >
               {liveStreaming ? (
@@ -556,7 +556,7 @@ export function AuditCenterClient() {
             <button
               type="button"
               onClick={() => setExportModalOpen(true)}
-              className="flex items-center gap-1.5 rounded-xl border border-white/10 bg-white/5 px-3 py-1.5 text-xs font-semibold text-zinc-200 transition-all hover:bg-white/10 hover:text-white cursor-pointer"
+              className="flex items-center gap-1.5 rounded-[var(--inset-radius)] border border-[var(--panel-border)] bg-white/5 px-3 py-1.5 text-xs font-semibold text-zinc-200 transition-all hover:bg-white/10 hover:text-white cursor-pointer"
             >
               <Download className="h-3.5 w-3.5" />
               <span className="hidden sm:inline">Exporter</span>
@@ -568,7 +568,7 @@ export function AuditCenterClient() {
       <div className="mx-auto max-w-7xl px-4 pt-6 sm:px-6 space-y-6">
         {/* KPI METRICS OVERVIEW BANNER */}
         <div className="grid grid-cols-2 gap-3 sm:grid-cols-5">
-          <div className="rounded-2xl border border-white/10 bg-zinc-900/60 p-4 backdrop-blur-xl">
+          <div className="rounded-[var(--panel-radius)] border border-[var(--panel-border)] bg-zinc-900/60 p-4 backdrop-blur-xl">
             <div className="flex items-center justify-between">
               <span className="text-xs text-zinc-400">Événements (Auj.)</span>
               <Activity className="h-4 w-4 text-indigo-400" />
@@ -581,7 +581,7 @@ export function AuditCenterClient() {
             </span>
           </div>
 
-          <div className="rounded-2xl border border-white/10 bg-zinc-900/60 p-4 backdrop-blur-xl">
+          <div className="rounded-[var(--panel-radius)] border border-[var(--panel-border)] bg-zinc-900/60 p-4 backdrop-blur-xl">
             <div className="flex items-center justify-between">
               <span className="text-xs text-zinc-400">Sécurité & Raids</span>
               <ShieldAlert className="h-4 w-4 text-rose-400" />
@@ -592,7 +592,7 @@ export function AuditCenterClient() {
             <span className="text-[10px] text-zinc-500">Menaces & verrouillages</span>
           </div>
 
-          <div className="rounded-2xl border border-white/10 bg-zinc-900/60 p-4 backdrop-blur-xl">
+          <div className="rounded-[var(--panel-radius)] border border-[var(--panel-border)] bg-zinc-900/60 p-4 backdrop-blur-xl">
             <div className="flex items-center justify-between">
               <span className="text-xs text-zinc-400">Modération</span>
               <Scale className="h-4 w-4 text-orange-400" />
@@ -603,7 +603,7 @@ export function AuditCenterClient() {
             <span className="text-[10px] text-zinc-500">Cases générées</span>
           </div>
 
-          <div className="rounded-2xl border border-white/10 bg-zinc-900/60 p-4 backdrop-blur-xl">
+          <div className="rounded-[var(--panel-radius)] border border-[var(--panel-border)] bg-zinc-900/60 p-4 backdrop-blur-xl">
             <div className="flex items-center justify-between">
               <span className="text-xs text-zinc-400">AutoMod</span>
               <Zap className="h-4 w-4 text-amber-400" />
@@ -619,7 +619,7 @@ export function AuditCenterClient() {
               "col-span-2 sm:col-span-1 rounded-2xl border p-4 backdrop-blur-xl transition-all",
               (overview?.criticalToday ?? 0) > 0
                 ? "border-rose-500/40 bg-white/[0.03] shadow-sm"
-                : "border-white/10 bg-zinc-900/60"
+                : "border-[var(--panel-border)] bg-zinc-900/60"
             )}
           >
             <div className="flex items-center justify-between">
@@ -644,7 +644,7 @@ export function AuditCenterClient() {
         </div>
 
         {/* TABS NAVIGATION */}
-        <div className="flex items-center gap-2 overflow-x-auto border-b border-white/10 pb-2 text-xs font-semibold">
+        <div className="flex items-center gap-2 overflow-x-auto border-b border-[var(--panel-border)] pb-2 text-xs font-semibold">
           <button
             type="button"
             onClick={() => setActiveTab("stream")}
@@ -706,7 +706,7 @@ export function AuditCenterClient() {
         {activeTab === "stream" && (
           <div className="space-y-4">
             {/* BARRE DE FILTRES MULTI-CRITÈRES */}
-            <div className="flex flex-wrap items-center justify-between gap-3 rounded-2xl border border-white/10 bg-zinc-900/60 p-3.5 backdrop-blur-xl">
+            <div className="flex flex-wrap items-center justify-between gap-3 rounded-[var(--panel-radius)] border border-[var(--panel-border)] bg-zinc-900/60 p-3.5 backdrop-blur-xl">
               <div className="flex flex-1 items-center gap-2 min-w-[240px]">
                 <div className="relative flex-1">
                   <Search className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-zinc-500" />
@@ -715,7 +715,7 @@ export function AuditCenterClient() {
                     value={searchQuery}
                     onChange={(e) => setSearchQuery(e.target.value)}
                     placeholder="Recherche (acteur, cible, ID, Case #, salon, raison...)"
-                    className="h-9 w-full rounded-xl border border-white/10 bg-zinc-950/80 pl-9 pr-3 text-xs text-white placeholder:text-zinc-500 outline-none focus:border-indigo-500"
+                    className="h-9 w-full rounded-[var(--inset-radius)] border border-[var(--panel-border)] bg-zinc-950/80 pl-9 pr-3 text-xs text-white placeholder:text-zinc-500 outline-none focus:border-indigo-500"
                   />
                   {searchQuery && (
                     <button
@@ -734,7 +734,7 @@ export function AuditCenterClient() {
                 <select
                   value={selectedModule}
                   onChange={(e) => setSelectedModule(e.target.value)}
-                  className="h-9 rounded-xl border border-white/10 bg-zinc-950/80 px-3 text-xs text-white outline-none focus:border-indigo-500 cursor-pointer"
+                  className="h-9 rounded-[var(--inset-radius)] border border-[var(--panel-border)] bg-zinc-950/80 px-3 text-xs text-white outline-none focus:border-indigo-500 cursor-pointer"
                 >
                   <option value="ALL">Tous les modules</option>
                   <option value="SECURITY">Sécurité & Raids</option>
@@ -753,7 +753,7 @@ export function AuditCenterClient() {
                 <select
                   value={selectedSeverity}
                   onChange={(e) => setSelectedSeverity(e.target.value)}
-                  className="h-9 rounded-xl border border-white/10 bg-zinc-950/80 px-3 text-xs text-white outline-none focus:border-indigo-500 cursor-pointer"
+                  className="h-9 rounded-[var(--inset-radius)] border border-[var(--panel-border)] bg-zinc-950/80 px-3 text-xs text-white outline-none focus:border-indigo-500 cursor-pointer"
                 >
                   <option value="ALL">Toutes sévérités</option>
                   <option value="CRITICAL">🔥 CRITICAL</option>
@@ -764,7 +764,7 @@ export function AuditCenterClient() {
                 </select>
 
                 {/* Filtre Période */}
-                <div className="flex items-center rounded-xl bg-zinc-950/80 p-0.5 border border-white/10">
+                <div className="flex items-center rounded-xl bg-zinc-950/80 p-0.5 border border-[var(--panel-border)]">
                   {["1h", "24h", "7d", "30d", "all"].map((p) => (
                     <button
                       key={p}
@@ -785,7 +785,7 @@ export function AuditCenterClient() {
                 <button
                   type="button"
                   onClick={fetchEvents}
-                  className="flex h-9 w-9 items-center justify-center rounded-xl border border-white/10 bg-white/5 text-zinc-300 transition-all hover:bg-white/10 hover:text-white cursor-pointer"
+                  className="flex h-9 w-9 items-center justify-center rounded-[var(--inset-radius)] border border-[var(--panel-border)] bg-white/5 text-zinc-300 transition-all hover:bg-white/10 hover:text-white cursor-pointer"
                   title="Rafraîchir les logs"
                 >
                   <RefreshCw className={cn("h-3.5 w-3.5", loadingEvents && "animate-spin")} />
@@ -794,7 +794,7 @@ export function AuditCenterClient() {
             </div>
 
             {/* TABLEAU DES LOGS */}
-            <div className="overflow-hidden rounded-2xl border border-white/10 bg-zinc-900/60 backdrop-blur-xl">
+            <div className="overflow-hidden rounded-[var(--panel-radius)] border border-[var(--panel-border)] bg-zinc-900/60 backdrop-blur-xl">
               {events.length === 0 ? (
                 <div className="flex flex-col items-center justify-center py-16 text-center text-zinc-500">
                   <FileText className="h-10 w-10 text-zinc-600 mb-2" />
@@ -806,7 +806,7 @@ export function AuditCenterClient() {
               ) : (
                 <div className="overflow-x-auto">
                   <table className="w-full text-left text-xs">
-                    <thead className="border-b border-white/10 bg-white/[0.02] text-[11px] font-bold uppercase text-zinc-400">
+                    <thead className="border-b border-[var(--panel-border)] bg-white/[0.02] text-[11px] font-bold uppercase text-zinc-400">
                       <tr>
                         <th className="px-4 py-3">Gravité</th>
                         <th className="px-4 py-3">Module & Type</th>
@@ -989,7 +989,7 @@ export function AuditCenterClient() {
         {activeTab === "analytics" && (
           <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
             {/* RÉPARTITION PAR MODULE */}
-            <div className="rounded-2xl border border-white/10 bg-zinc-900/60 p-5 backdrop-blur-xl space-y-4">
+            <div className="rounded-[var(--panel-radius)] border border-[var(--panel-border)] bg-zinc-900/60 p-5 backdrop-blur-xl space-y-4">
               <h3 className="text-xs font-bold text-white flex items-center gap-2">
                 <Layers className="h-4 w-4 text-indigo-400" />
                 Répartition des Événements par Module
@@ -1016,7 +1016,7 @@ export function AuditCenterClient() {
             </div>
 
             {/* RÉPARTITION PAR SÉVÉRITÉ */}
-            <div className="rounded-2xl border border-white/10 bg-zinc-900/60 p-5 backdrop-blur-xl space-y-4">
+            <div className="rounded-[var(--panel-radius)] border border-[var(--panel-border)] bg-zinc-900/60 p-5 backdrop-blur-xl space-y-4">
               <h3 className="text-xs font-bold text-white flex items-center gap-2">
                 <Activity className="h-4 w-4 text-emerald-400" />
                 Distribution par Niveau de Sévérité
@@ -1053,8 +1053,8 @@ export function AuditCenterClient() {
         {/* TAB 4: ROUTAGE SALONS & RÉTENTION */}
         {activeTab === "routing" && (
           <div className="max-w-4xl space-y-6">
-            <div className="rounded-2xl border border-white/10 bg-zinc-900/60 p-5 backdrop-blur-xl space-y-4">
-              <div className="flex items-center justify-between border-b border-white/10 pb-3">
+            <div className="rounded-[var(--panel-radius)] border border-[var(--panel-border)] bg-zinc-900/60 p-5 backdrop-blur-xl space-y-4">
+              <div className="flex items-center justify-between border-b border-[var(--panel-border)] pb-3">
                 <div>
                   <h3 className="text-sm font-bold text-white">Routage vers Salons Discord</h3>
                   <p className="text-xs text-zinc-400">
@@ -1074,21 +1074,21 @@ export function AuditCenterClient() {
 
               <div className="grid grid-cols-1 sm:grid-cols-2 gap-4 text-xs">
                 {/* Salon Général */}
-                <div className="rounded-xl border border-white/5 bg-white/[0.02] p-3 space-y-2">
+                <div className="rounded-[var(--inset-radius)] border border-[var(--panel-border)] bg-white/[0.02] p-3 space-y-2">
                   <span className="font-bold text-white">Logs Généraux & Serveur</span>
                   <input
                     type="text"
                     value={configRouting.generalChannelId}
                     onChange={(e) => setConfigRouting({ ...configRouting, generalChannelId: e.target.value })}
                     placeholder="ID du salon (ex: 123456789...)"
-                    className="h-9 w-full rounded-lg border border-white/10 bg-zinc-950/80 px-3 text-white outline-none focus:border-indigo-500"
+                    className="h-9 w-full rounded-[var(--inset-radius)] border border-[var(--panel-border)] bg-zinc-950/80 px-3 text-white outline-none focus:border-indigo-500"
                   />
                   <div className="flex items-center justify-between text-[11px] text-zinc-400">
                     <span>Seuil de déclenchement :</span>
                     <select
                       value={configRouting.generalThreshold}
                       onChange={(e) => setConfigRouting({ ...configRouting, generalThreshold: e.target.value })}
-                      className="rounded border border-white/10 bg-zinc-900 px-2 py-1 text-white"
+                      className="rounded border border-[var(--panel-border)] bg-zinc-900 px-2 py-1 text-white"
                     >
                       <option value="OFF">OFF</option>
                       <option value="ALL">ALL (Tous)</option>
@@ -1099,21 +1099,21 @@ export function AuditCenterClient() {
                 </div>
 
                 {/* Salon Modération */}
-                <div className="rounded-xl border border-white/5 bg-white/[0.02] p-3 space-y-2">
+                <div className="rounded-[var(--inset-radius)] border border-[var(--panel-border)] bg-white/[0.02] p-3 space-y-2">
                   <span className="font-bold text-orange-400">Logs de Modération (Cases)</span>
                   <input
                     type="text"
                     value={configRouting.moderationChannelId}
                     onChange={(e) => setConfigRouting({ ...configRouting, moderationChannelId: e.target.value })}
                     placeholder="ID du salon mod-logs"
-                    className="h-9 w-full rounded-lg border border-white/10 bg-zinc-950/80 px-3 text-white outline-none focus:border-orange-500"
+                    className="h-9 w-full rounded-[var(--inset-radius)] border border-[var(--panel-border)] bg-zinc-950/80 px-3 text-white outline-none focus:border-orange-500"
                   />
                   <div className="flex items-center justify-between text-[11px] text-zinc-400">
                     <span>Seuil de déclenchement :</span>
                     <select
                       value={configRouting.moderationThreshold}
                       onChange={(e) => setConfigRouting({ ...configRouting, moderationThreshold: e.target.value })}
-                      className="rounded border border-white/10 bg-zinc-900 px-2 py-1 text-white"
+                      className="rounded border border-[var(--panel-border)] bg-zinc-900 px-2 py-1 text-white"
                     >
                       <option value="OFF">OFF</option>
                       <option value="ALL">ALL (Tous)</option>
@@ -1124,21 +1124,21 @@ export function AuditCenterClient() {
                 </div>
 
                 {/* Salon Sécurité */}
-                <div className="rounded-xl border border-white/5 bg-white/[0.02] p-3 space-y-2">
+                <div className="rounded-[var(--inset-radius)] border border-[var(--panel-border)] bg-white/[0.02] p-3 space-y-2">
                   <span className="font-bold text-rose-400">Logs Sécurité & Anti-Raid</span>
                   <input
                     type="text"
                     value={configRouting.securityChannelId}
                     onChange={(e) => setConfigRouting({ ...configRouting, securityChannelId: e.target.value })}
                     placeholder="ID du salon security-alerts"
-                    className="h-9 w-full rounded-lg border border-white/10 bg-zinc-950/80 px-3 text-white outline-none focus:border-rose-500"
+                    className="h-9 w-full rounded-[var(--inset-radius)] border border-[var(--panel-border)] bg-zinc-950/80 px-3 text-white outline-none focus:border-rose-500"
                   />
                   <div className="flex items-center justify-between text-[11px] text-zinc-400">
                     <span>Seuil de déclenchement :</span>
                     <select
                       value={configRouting.securityThreshold}
                       onChange={(e) => setConfigRouting({ ...configRouting, securityThreshold: e.target.value })}
-                      className="rounded border border-white/10 bg-zinc-900 px-2 py-1 text-white"
+                      className="rounded border border-[var(--panel-border)] bg-zinc-900 px-2 py-1 text-white"
                     >
                       <option value="OFF">OFF</option>
                       <option value="ALL">ALL (Tous)</option>
@@ -1149,21 +1149,21 @@ export function AuditCenterClient() {
                 </div>
 
                 {/* Salon AutoMod */}
-                <div className="rounded-xl border border-white/5 bg-white/[0.02] p-3 space-y-2">
+                <div className="rounded-[var(--inset-radius)] border border-[var(--panel-border)] bg-white/[0.02] p-3 space-y-2">
                   <span className="font-bold text-amber-400">Logs Détections AutoMod</span>
                   <input
                     type="text"
                     value={configRouting.automodChannelId}
                     onChange={(e) => setConfigRouting({ ...configRouting, automodChannelId: e.target.value })}
                     placeholder="ID du salon automod-logs"
-                    className="h-9 w-full rounded-lg border border-white/10 bg-zinc-950/80 px-3 text-white outline-none focus:border-amber-500"
+                    className="h-9 w-full rounded-[var(--inset-radius)] border border-[var(--panel-border)] bg-zinc-950/80 px-3 text-white outline-none focus:border-amber-500"
                   />
                   <div className="flex items-center justify-between text-[11px] text-zinc-400">
                     <span>Seuil de déclenchement :</span>
                     <select
                       value={configRouting.automodThreshold}
                       onChange={(e) => setConfigRouting({ ...configRouting, automodThreshold: e.target.value })}
-                      className="rounded border border-white/10 bg-zinc-900 px-2 py-1 text-white"
+                      className="rounded border border-[var(--panel-border)] bg-zinc-900 px-2 py-1 text-white"
                     >
                       <option value="OFF">OFF</option>
                       <option value="ALL">ALL (Tous)</option>
@@ -1176,7 +1176,7 @@ export function AuditCenterClient() {
             </div>
 
             {/* RÉTENTION DES LOGS */}
-            <div className="rounded-2xl border border-white/10 bg-zinc-900/60 p-5 backdrop-blur-xl space-y-3">
+            <div className="rounded-[var(--panel-radius)] border border-[var(--panel-border)] bg-zinc-900/60 p-5 backdrop-blur-xl space-y-3">
               <h3 className="text-sm font-bold text-white">Politique de Conservation & Purge (Rétention)</h3>
               <p className="text-xs text-zinc-400">
                 Détermine combien de temps les logs sont conservés avant d&apos;être purgés automatiquement pour préserver l&apos;espace disque et le respect de la vie privée.
@@ -1198,7 +1198,7 @@ export function AuditCenterClient() {
                       "rounded-xl border px-3.5 py-2 text-xs font-semibold transition-all cursor-pointer",
                       configRouting.retentionDays === r.val
                         ? "border-indigo-500 bg-indigo-600/20 text-indigo-300"
-                        : "border-white/10 bg-zinc-950/60 text-zinc-400 hover:text-white"
+                        : "border-[var(--panel-border)] bg-zinc-950/60 text-zinc-400 hover:text-white"
                     )}
                   >
                     {r.label}
@@ -1213,7 +1213,7 @@ export function AuditCenterClient() {
       {/* MODAL INVESTIGATION (MODE ENQUÊTE APPROFONDIE) */}
       {investigatingEventId && (
         <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/80 backdrop-blur-sm p-4 overflow-y-auto">
-          <div className="relative w-full max-w-3xl rounded-3xl border border-white/15 bg-zinc-900 p-6 shadow-2xl space-y-5 my-8">
+          <div className="relative w-full max-w-3xl rounded-3xl border border-[var(--panel-border)] bg-zinc-900 p-6 shadow-2xl space-y-5 my-8">
             <button
               type="button"
               onClick={() => {
@@ -1247,7 +1247,7 @@ export function AuditCenterClient() {
             ) : investigationData ? (
               <div className="space-y-5 text-xs">
                 {/* SYNTHÈSE "QUI, QUOI, QUAND, OÙ, POURQUOI" */}
-                <div className="rounded-2xl border border-white/10 bg-zinc-950/80 p-4 space-y-3">
+                <div className="rounded-[var(--panel-radius)] border border-[var(--panel-border)] bg-zinc-950/80 p-4 space-y-3">
                   <h3 className="font-bold text-white text-xs uppercase tracking-wider text-indigo-400">
                     Fiche d&apos;Investigation
                   </h3>
@@ -1317,7 +1317,7 @@ export function AuditCenterClient() {
                   </div>
 
                   {investigationData.targetEvent.reason && (
-                    <div className="border-t border-white/5 pt-2">
+                    <div className="border-t border-[var(--panel-border)] pt-2">
                       <span className="text-[10px] text-zinc-500 uppercase font-bold">POURQUOI ? (Motif)</span>
                       <p className="text-xs text-zinc-300 mt-0.5 bg-white/5 p-2 rounded-xl">
                         {investigationData.targetEvent.reason}
@@ -1332,7 +1332,7 @@ export function AuditCenterClient() {
                     <Clock className="h-4 w-4 text-indigo-400" />
                     Chronologie des Événements Connexes (Chaîne de Causalité)
                   </h3>
-                  <div className="rounded-2xl border border-white/10 bg-zinc-950/60 p-3 space-y-2 max-h-60 overflow-y-auto">
+                  <div className="rounded-[var(--panel-radius)] border border-[var(--panel-border)] bg-zinc-950/60 p-3 space-y-2 max-h-60 overflow-y-auto">
                     {investigationData.causalityChain.map((step) => (
                       <div
                         key={step.eventId}
@@ -1369,9 +1369,9 @@ export function AuditCenterClient() {
                       <Sliders className="h-4 w-4 text-amber-400" />
                       Différence d&apos;État Détectée (Avant / Après)
                     </h3>
-                    <div className="overflow-hidden rounded-2xl border border-white/10 bg-zinc-950/60">
+                    <div className="overflow-hidden rounded-[var(--panel-radius)] border border-[var(--panel-border)] bg-zinc-950/60">
                       <table className="w-full text-left text-xs">
-                        <thead className="border-b border-white/10 bg-white/5 text-[10px] uppercase font-bold text-zinc-400">
+                        <thead className="border-b border-[var(--panel-border)] bg-white/5 text-[10px] uppercase font-bold text-zinc-400">
                           <tr>
                             <th className="px-3 py-2">Champ Modifié</th>
                             <th className="px-3 py-2 text-rose-400">État Avant (Previous)</th>
@@ -1400,7 +1400,7 @@ export function AuditCenterClient() {
       {/* MODAL EXPORT (CSV / JSON) */}
       {exportModalOpen && (
         <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/80 backdrop-blur-sm p-4">
-          <div className="relative w-full max-w-md rounded-3xl border border-white/15 bg-zinc-900 p-6 shadow-2xl space-y-4">
+          <div className="relative w-full max-w-md rounded-3xl border border-[var(--panel-border)] bg-zinc-900 p-6 shadow-2xl space-y-4">
             <button
               type="button"
               onClick={() => setExportModalOpen(false)}
@@ -1428,7 +1428,7 @@ export function AuditCenterClient() {
                     "flex flex-col items-center justify-center p-3 rounded-2xl border text-xs font-bold transition-all cursor-pointer",
                     exportFormat === "csv"
                       ? "border-indigo-500 bg-indigo-500/20 text-indigo-300"
-                      : "border-white/10 bg-white/5 text-zinc-400 hover:text-white"
+                      : "border-[var(--panel-border)] bg-white/5 text-zinc-400 hover:text-white"
                   )}
                 >
                   <span className="text-base">📊</span>
@@ -1442,7 +1442,7 @@ export function AuditCenterClient() {
                     "flex flex-col items-center justify-center p-3 rounded-2xl border text-xs font-bold transition-all cursor-pointer",
                     exportFormat === "json"
                       ? "border-indigo-500 bg-indigo-500/20 text-indigo-300"
-                      : "border-white/10 bg-white/5 text-zinc-400 hover:text-white"
+                      : "border-[var(--panel-border)] bg-white/5 text-zinc-400 hover:text-white"
                   )}
                 >
                   <span className="text-base">📦</span>

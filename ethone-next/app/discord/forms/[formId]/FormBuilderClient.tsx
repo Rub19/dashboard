@@ -317,11 +317,11 @@ export default function FormBuilderClient() {
   return (
     <div className="min-h-screen bg-black text-white flex flex-col">
       {/* Top Builder Navbar */}
-      <header className="h-14 border-b border-white/10 bg-zinc-950/90 backdrop-blur-md px-4 flex items-center justify-between gap-4 shrink-0">
+      <header className="h-14 border-b border-[var(--panel-border)] bg-zinc-950/90 backdrop-blur-md px-4 flex items-center justify-between gap-4 shrink-0">
         <div className="flex items-center gap-3">
           <Link
             href={`/discord/forms?guildId=${rawGuildId}`}
-            className="flex h-8 w-8 items-center justify-center rounded-xl border border-white/10 bg-white/5 text-zinc-400 hover:text-white hover:bg-white/10 transition-all cursor-pointer"
+            className="flex h-8 w-8 items-center justify-center rounded-[var(--inset-radius)] border border-[var(--panel-border)] bg-white/5 text-zinc-400 hover:text-white hover:bg-white/10 transition-all cursor-pointer"
           >
             <ArrowLeft className="h-4 w-4" />
           </Link>
@@ -331,7 +331,7 @@ export default function FormBuilderClient() {
               type="text"
               value={formTitle}
               onChange={(e) => setFormTitle(e.target.value)}
-              className="bg-transparent text-sm font-bold text-white border-b border-transparent hover:border-white/20 focus:border-indigo-500 outline-none px-1 py-0.5 rounded transition-colors"
+              className="bg-transparent text-sm font-bold text-white border-b border-transparent hover:border-[var(--input-border-hover)] focus:border-indigo-500 outline-none px-1 py-0.5 rounded transition-colors"
             />
             <span className="text-[10px] font-bold uppercase tracking-wider px-2 py-0.5 rounded-full bg-amber-500/20 text-amber-300 border border-amber-500/30">
               Brouillon v2
@@ -340,7 +340,7 @@ export default function FormBuilderClient() {
         </div>
 
         {/* Center: View Switcher */}
-        <div className="flex items-center gap-1 bg-white/5 border border-white/10 p-0.5 rounded-xl">
+        <div className="flex items-center gap-1 bg-white/5 border border-[var(--panel-border)] p-0.5 rounded-xl">
           <button
             onClick={() => setPreviewMode("edit")}
             className={cn(
@@ -387,7 +387,7 @@ export default function FormBuilderClient() {
         <div className="flex items-center gap-2">
           <Link
             href={`/discord/forms/${formId}/settings?guildId=${rawGuildId}`}
-            className="flex h-8 items-center gap-1.5 px-3 rounded-xl border border-white/10 bg-white/5 text-xs font-semibold text-zinc-300 hover:bg-white/10 hover:text-white transition-all cursor-pointer"
+            className="flex h-8 items-center gap-1.5 px-3 rounded-[var(--inset-radius)] border border-[var(--panel-border)] bg-white/5 text-xs font-semibold text-zinc-300 hover:bg-white/10 hover:text-white transition-all cursor-pointer"
           >
             <Settings className="h-3.5 w-3.5" />
             <span className="hidden lg:inline">Paramètres &amp; Discord</span>
@@ -407,7 +407,7 @@ export default function FormBuilderClient() {
       {previewMode === "edit" ? (
         <div className="flex-1 flex overflow-hidden">
           {/* LEFT PALETTE (Fields Library) */}
-          <aside className="w-64 border-r border-white/10 bg-zinc-950/60 p-4 overflow-y-auto shrink-0 hidden md:block space-y-5">
+          <aside className="w-64 border-r border-[var(--panel-border)] bg-zinc-950/60 p-4 overflow-y-auto shrink-0 hidden md:block space-y-5">
             <div>
               <h2 className="text-[11px] font-bold uppercase tracking-wider text-zinc-400">Bibliothèque de Champs</h2>
               <p className="text-[10px] text-zinc-500 mt-0.5">Cliquez sur un élément pour l&apos;ajouter à l&apos;étape active.</p>
@@ -425,7 +425,7 @@ export default function FormBuilderClient() {
                       <button
                         key={item.type}
                         onClick={() => handleAddField(item.type, item.label)}
-                        className="flex items-center gap-2.5 p-2 rounded-xl border border-white/5 bg-white/[0.02] hover:bg-indigo-600/10 hover:border-indigo-500/40 text-left transition-all cursor-pointer group"
+                        className="flex items-center gap-2.5 p-2 rounded-[var(--inset-radius)] border border-[var(--panel-border)] bg-white/[0.02] hover:bg-indigo-600/10 hover:border-indigo-500/40 text-left transition-all cursor-pointer group"
                       >
                         <div className="h-7 w-7 rounded-lg bg-white/5 group-hover:bg-indigo-600 text-zinc-400 group-hover:text-white flex items-center justify-center shrink-0 transition-colors">
                           <Icon className="h-3.5 w-3.5" />
@@ -448,7 +448,7 @@ export default function FormBuilderClient() {
           <main className="flex-1 overflow-y-auto p-4 sm:p-6 lg:p-8 bg-black/50 flex flex-col items-center">
             <div className="w-full max-w-2xl space-y-5">
               {/* Multi-step Header Navigation */}
-              <div className="flex items-center justify-between gap-2 border-b border-white/10 pb-3">
+              <div className="flex items-center justify-between gap-2 border-b border-[var(--panel-border)] pb-3">
                 <div className="flex items-center gap-1.5 overflow-x-auto pb-1 scrollbar-none">
                   {sections.map((sec, idx) => (
                     <button
@@ -469,7 +469,7 @@ export default function FormBuilderClient() {
                   ))}
                   <button
                     onClick={handleAddSection}
-                    className="h-8 px-2.5 rounded-xl border border-dashed border-white/20 text-zinc-400 hover:text-white hover:border-white/40 text-xs flex items-center gap-1 transition-all cursor-pointer"
+                    className="h-8 px-2.5 rounded-xl border border-dashed border-[var(--input-border-hover)] text-zinc-400 hover:text-white hover:border-[var(--input-border-hover)] text-xs flex items-center gap-1 transition-all cursor-pointer"
                   >
                     <Plus className="h-3 w-3" />
                     <span>Étape</span>
@@ -478,8 +478,8 @@ export default function FormBuilderClient() {
               </div>
 
               {/* Active Step Card */}
-              <div className="rounded-3xl border border-white/10 bg-white/[0.02] p-5 backdrop-blur-sm space-y-4">
-                <div className="border-b border-white/5 pb-3">
+              <div className="rounded-[var(--panel-radius)] border border-[var(--panel-border)] bg-white/[0.02] p-5 backdrop-blur-sm space-y-4">
+                <div className="border-b border-[var(--panel-border)] pb-3">
                   <input
                     type="text"
                     value={sections.find((s) => s.id === activeSectionId)?.title || ""}
@@ -490,7 +490,7 @@ export default function FormBuilderClient() {
                       );
                     }}
                     placeholder="Titre de l'étape..."
-                    className="text-base font-black text-white bg-transparent outline-none w-full border-b border-transparent hover:border-white/20 focus:border-indigo-500"
+                    className="text-base font-black text-white bg-transparent outline-none w-full border-b border-transparent hover:border-[var(--input-border-hover)] focus:border-indigo-500"
                   />
                   <input
                     type="text"
@@ -508,7 +508,7 @@ export default function FormBuilderClient() {
 
                 {/* Fields List */}
                 {currentSectionFields.length === 0 ? (
-                  <div className="py-12 border border-dashed border-white/10 rounded-2xl text-center space-y-2">
+                  <div className="py-12 border border-dashed border-[var(--panel-border)] rounded-2xl text-center space-y-2">
                     <p className="text-xs text-zinc-400">Aucun champ dans cette étape.</p>
                     <p className="text-[11px] text-zinc-500">Cliquez sur la palette à gauche pour ajouter votre premier champ.</p>
                   </div>
@@ -524,7 +524,7 @@ export default function FormBuilderClient() {
                             "rounded-2xl border p-4 transition-all cursor-pointer relative group",
                             isSelected
                               ? "border-indigo-500 bg-indigo-500/[0.08] ring-1 ring-indigo-500/40 shadow-md"
-                              : "border-white/10 bg-white/[0.02] hover:border-white/20 hover:bg-white/[0.03]"
+                              : "border-[var(--panel-border)] bg-white/[0.02] hover:border-[var(--input-border-hover)] hover:bg-white/[0.03]"
                           )}
                         >
                           <div className="flex items-start justify-between gap-3 mb-2">
@@ -592,7 +592,7 @@ export default function FormBuilderClient() {
                                 type="text"
                                 disabled
                                 placeholder={field.placeholder || "Réponse courte..."}
-                                className="h-9 w-full rounded-xl border border-white/10 bg-black/40 px-3 text-xs text-zinc-400"
+                                className="h-9 w-full rounded-[var(--inset-radius)] border border-[var(--panel-border)] bg-black/40 px-3 text-xs text-zinc-400"
                               />
                             )}
                             {field.type === "LONG_TEXT" && (
@@ -600,7 +600,7 @@ export default function FormBuilderClient() {
                                 disabled
                                 rows={2}
                                 placeholder={field.placeholder || "Réponse détaillée..."}
-                                className="w-full rounded-xl border border-white/10 bg-black/40 p-2.5 text-xs text-zinc-400 resize-none"
+                                className="w-full rounded-[var(--inset-radius)] border border-[var(--panel-border)] bg-black/40 p-2.5 text-xs text-zinc-400 resize-none"
                               />
                             )}
                             {field.type === "NUMBER" && (
@@ -608,15 +608,15 @@ export default function FormBuilderClient() {
                                 type="number"
                                 disabled
                                 placeholder={field.placeholder || "0"}
-                                className="h-9 w-36 rounded-xl border border-white/10 bg-black/40 px-3 text-xs text-zinc-400"
+                                className="h-9 w-36 rounded-[var(--inset-radius)] border border-[var(--panel-border)] bg-black/40 px-3 text-xs text-zinc-400"
                               />
                             )}
                             {field.type === "YES_NO" && (
                               <div className="flex gap-2">
-                                <span className="px-3 py-1.5 rounded-lg border border-white/10 bg-white/5 text-xs text-zinc-300">
+                                <span className="px-3 py-1.5 rounded-[var(--inset-radius)] border border-[var(--panel-border)] bg-white/5 text-xs text-zinc-300">
                                   Oui
                                 </span>
-                                <span className="px-3 py-1.5 rounded-lg border border-white/10 bg-white/5 text-xs text-zinc-300">
+                                <span className="px-3 py-1.5 rounded-[var(--inset-radius)] border border-[var(--panel-border)] bg-white/5 text-xs text-zinc-300">
                                   Non
                                 </span>
                               </div>
@@ -624,7 +624,7 @@ export default function FormBuilderClient() {
                             {field.type === "SELECT" && (
                               <select
                                 disabled
-                                className="h-9 w-full rounded-xl border border-white/10 bg-black/40 px-3 text-xs text-zinc-400"
+                                className="h-9 w-full rounded-[var(--inset-radius)] border border-[var(--panel-border)] bg-black/40 px-3 text-xs text-zinc-400"
                               >
                                 <option>{field.placeholder || "Choisir une option..."}</option>
                                 {field.options.map((o) => (
@@ -650,7 +650,7 @@ export default function FormBuilderClient() {
           </main>
 
           {/* RIGHT SIDEBAR (Field Settings & Logic) */}
-          <aside className="w-72 border-l border-white/10 bg-zinc-950/60 p-4 overflow-y-auto shrink-0 hidden lg:block space-y-4">
+          <aside className="w-72 border-l border-[var(--panel-border)] bg-zinc-950/60 p-4 overflow-y-auto shrink-0 hidden lg:block space-y-4">
             <div>
               <h2 className="text-[11px] font-bold uppercase tracking-wider text-zinc-400">Configuration</h2>
               <p className="text-[10px] text-zinc-500 mt-0.5">Propriétés et règles du champ sélectionné.</p>
@@ -669,7 +669,7 @@ export default function FormBuilderClient() {
                         prev.map((f) => (f.id === selectedField.id ? { ...f, label: val } : f))
                       );
                     }}
-                    className="h-8 w-full rounded-xl border border-white/10 bg-zinc-900 px-2.5 text-xs text-white outline-none focus:border-indigo-500"
+                    className="h-8 w-full rounded-[var(--inset-radius)] border border-[var(--panel-border)] bg-zinc-900 px-2.5 text-xs text-white outline-none focus:border-indigo-500"
                   />
                 </div>
 
@@ -685,7 +685,7 @@ export default function FormBuilderClient() {
                       );
                     }}
                     placeholder="Précisez les attentes..."
-                    className="w-full rounded-xl border border-white/10 bg-zinc-900 p-2 text-xs text-white outline-none focus:border-indigo-500 resize-none"
+                    className="w-full rounded-[var(--inset-radius)] border border-[var(--panel-border)] bg-zinc-900 p-2 text-xs text-white outline-none focus:border-indigo-500 resize-none"
                   />
                 </div>
 
@@ -701,12 +701,12 @@ export default function FormBuilderClient() {
                       );
                     }}
                     placeholder="Ex: 18, Mon serveur..."
-                    className="h-8 w-full rounded-xl border border-white/10 bg-zinc-900 px-2.5 text-xs text-white outline-none focus:border-indigo-500"
+                    className="h-8 w-full rounded-[var(--inset-radius)] border border-[var(--panel-border)] bg-zinc-900 px-2.5 text-xs text-white outline-none focus:border-indigo-500"
                   />
                 </div>
 
                 {/* Required Toggle */}
-                <label className="flex items-center justify-between p-2.5 rounded-xl border border-white/10 bg-white/[0.02] cursor-pointer">
+                <label className="flex items-center justify-between p-2.5 rounded-[var(--inset-radius)] border border-[var(--panel-border)] bg-white/[0.02] cursor-pointer">
                   <span className="font-semibold text-zinc-200">Champ obligatoire</span>
                   <input
                     type="checkbox"
@@ -723,7 +723,7 @@ export default function FormBuilderClient() {
 
                 {/* Options Editor (if has options) */}
                 {selectedField.options.length > 0 && (
-                  <div className="space-y-2 pt-2 border-t border-white/10">
+                  <div className="space-y-2 pt-2 border-t border-[var(--panel-border)]">
                     <div className="flex items-center justify-between">
                       <span className="font-semibold text-zinc-200">Choix &amp; Points</span>
                       <button
@@ -769,7 +769,7 @@ export default function FormBuilderClient() {
                                 )
                               );
                             }}
-                            className="h-7 flex-1 rounded-lg border border-white/10 bg-zinc-900 px-2 text-[11px] text-white outline-none"
+                            className="h-7 flex-1 rounded-[var(--inset-radius)] border border-[var(--panel-border)] bg-zinc-900 px-2 text-[11px] text-white outline-none"
                           />
                           <input
                             type="number"
@@ -790,7 +790,7 @@ export default function FormBuilderClient() {
                                 )
                               );
                             }}
-                            className="h-7 w-12 rounded-lg border border-white/10 bg-zinc-900 px-1 text-[11px] text-amber-300 outline-none text-center"
+                            className="h-7 w-12 rounded-[var(--inset-radius)] border border-[var(--panel-border)] bg-zinc-900 px-1 text-[11px] text-amber-300 outline-none text-center"
                           />
                         </div>
                       ))}
@@ -809,14 +809,14 @@ export default function FormBuilderClient() {
           <div
             className={cn(
               "w-full transition-all duration-200",
-              previewMode === "desktop" && "max-w-2xl rounded-3xl border border-white/10 bg-black/60 p-6 sm:p-8 shadow-2xl backdrop-blur-xl",
+              previewMode === "desktop" && "max-w-2xl rounded-[var(--panel-radius)] border border-[var(--panel-border)] bg-black/60 p-6 sm:p-8 shadow-2xl backdrop-blur-xl",
               previewMode === "mobile" && "max-w-sm rounded-[40px] border-4 border-zinc-800 bg-black p-6 shadow-2xl space-y-4",
               previewMode === "discord" && "max-w-md rounded-2xl border border-indigo-500/40 bg-[#313338] p-5 shadow-2xl text-white"
             )}
           >
             {/* Discord Header */}
             {previewMode === "discord" && (
-              <div className="border-b border-white/10 pb-3 mb-4">
+              <div className="border-b border-[var(--panel-border)] pb-3 mb-4">
                 <span className="text-xs font-bold text-zinc-300 uppercase tracking-wider block">Modal Discord</span>
                 <h3 className="text-base font-bold text-white">{formTitle}</h3>
               </div>
@@ -824,7 +824,7 @@ export default function FormBuilderClient() {
 
             {/* Web Header */}
             {previewMode !== "discord" && (
-              <div className="border-b border-white/10 pb-4 mb-5">
+              <div className="border-b border-[var(--panel-border)] pb-4 mb-5">
                 <div className="flex items-center gap-2 mb-1">
                   <span className="text-lg">🛡️</span>
                   <h2 className="text-lg font-bold text-white">{formTitle}</h2>
@@ -847,25 +847,25 @@ export default function FormBuilderClient() {
                     <input
                       type="text"
                       placeholder={f.placeholder || "Votre réponse..."}
-                      className="h-9 w-full rounded-xl border border-white/10 bg-zinc-900/90 px-3 text-xs text-white outline-none focus:border-indigo-500"
+                      className="h-9 w-full rounded-[var(--inset-radius)] border border-[var(--panel-border)] bg-zinc-900/90 px-3 text-xs text-white outline-none focus:border-indigo-500"
                     />
                   )}
                   {f.type === "LONG_TEXT" && (
                     <textarea
                       rows={3}
                       placeholder={f.placeholder || "Votre réponse détaillée..."}
-                      className="w-full rounded-xl border border-white/10 bg-zinc-900/90 p-2.5 text-xs text-white outline-none focus:border-indigo-500 resize-none"
+                      className="w-full rounded-[var(--inset-radius)] border border-[var(--panel-border)] bg-zinc-900/90 p-2.5 text-xs text-white outline-none focus:border-indigo-500 resize-none"
                     />
                   )}
                   {f.type === "NUMBER" && (
                     <input
                       type="number"
                       placeholder={f.placeholder || "0"}
-                      className="h-9 w-full rounded-xl border border-white/10 bg-zinc-900/90 px-3 text-xs text-white outline-none focus:border-indigo-500"
+                      className="h-9 w-full rounded-[var(--inset-radius)] border border-[var(--panel-border)] bg-zinc-900/90 px-3 text-xs text-white outline-none focus:border-indigo-500"
                     />
                   )}
                   {f.type === "SELECT" && (
-                    <select className="h-9 w-full rounded-xl border border-white/10 bg-zinc-900/90 px-3 text-xs text-zinc-300 outline-none focus:border-indigo-500">
+                    <select className="h-9 w-full rounded-[var(--inset-radius)] border border-[var(--panel-border)] bg-zinc-900/90 px-3 text-xs text-zinc-300 outline-none focus:border-indigo-500">
                       <option>{f.placeholder || "Sélectionnez..."}</option>
                       {f.options.map((o) => (
                         <option key={o.id}>{o.label}</option>
@@ -874,10 +874,10 @@ export default function FormBuilderClient() {
                   )}
                   {f.type === "YES_NO" && (
                     <div className="flex gap-2 pt-1">
-                      <button className="flex-1 h-8 rounded-xl border border-white/10 bg-white/5 text-xs font-semibold text-zinc-300 hover:bg-white/10">
+                      <button className="flex-1 h-8 rounded-[var(--inset-radius)] border border-[var(--panel-border)] bg-white/5 text-xs font-semibold text-zinc-300 hover:bg-white/10">
                         Oui
                       </button>
-                      <button className="flex-1 h-8 rounded-xl border border-white/10 bg-white/5 text-xs font-semibold text-zinc-300 hover:bg-white/10">
+                      <button className="flex-1 h-8 rounded-[var(--inset-radius)] border border-[var(--panel-border)] bg-white/5 text-xs font-semibold text-zinc-300 hover:bg-white/10">
                         Non
                       </button>
                     </div>
@@ -886,7 +886,7 @@ export default function FormBuilderClient() {
               ))}
             </div>
 
-            <div className="mt-6 pt-4 border-t border-white/10 flex justify-end">
+            <div className="mt-6 pt-4 border-t border-[var(--panel-border)] flex justify-end">
               <button
                 onClick={() => success("Simulation de soumission", "Test de formulaire exécuté sans impacter les analytics réelles.")}
                 className="h-9 px-4 rounded-xl bg-indigo-600 text-xs font-bold text-white hover:bg-indigo-500 shadow cursor-pointer active:scale-95"

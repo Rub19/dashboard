@@ -195,13 +195,13 @@ export default function ServerStatsCenterClient() {
 
   return (
     <div className="h-full min-h-0 w-full flex flex-col overflow-hidden bg-[var(--bg-main)] text-white">
-      <div className="shrink-0 border-b border-white/10 bg-[var(--bg-surface-elevated)]/80 backdrop-blur-md px-4 sm:px-6 py-3.5 flex flex-wrap items-center justify-between gap-3 z-20">
+      <div className="shrink-0 border-b border-[var(--panel-border)] bg-[var(--bg-surface-elevated)]/80 backdrop-blur-md px-4 sm:px-6 py-3.5 flex flex-wrap items-center justify-between gap-3 z-20">
         <div className="flex items-center gap-3">
           <Link href="/discord" className="p-1.5 rounded-lg text-white/50 hover:text-white hover:bg-white/5 transition-colors" title="Retour au hub Discord">
             <ArrowLeft className="w-5 h-5" />
           </Link>
           <div className="flex items-center gap-2.5">
-            <div className="w-9 h-9 rounded-xl bg-white/[0.04] border border-white/10 flex items-center justify-center text-zinc-300">
+            <div className="w-9 h-9 rounded-xl bg-white/[0.04] border border-[var(--panel-border)] flex items-center justify-center text-zinc-300">
               <BarChart3 className="w-5 h-5" />
             </div>
             <div>
@@ -220,7 +220,7 @@ export default function ServerStatsCenterClient() {
                   const g = manageableGuilds.find((item) => item.id === e.target.value);
                   if (g) setSelectedGuild(g);
                 }}
-                className="appearance-none bg-white/[0.04] border border-white/10 rounded-xl px-3 py-1.5 pr-8 text-xs font-medium text-white/90 focus:outline-none focus:border-[#5865F2]/50 hover:bg-white/[0.07] transition-all cursor-pointer"
+                className="appearance-none bg-white/[0.04] border border-[var(--panel-border)] rounded-xl px-3 py-1.5 pr-8 text-xs font-medium text-white/90 focus:outline-none focus:border-[#5865F2]/50 hover:bg-white/[0.07] transition-all cursor-pointer"
               >
                 {manageableGuilds.map((g) => (
                   <option key={g.id} value={g.id} className="bg-[var(--bg-surface-elevated)] text-white">{g.name}</option>
@@ -231,7 +231,7 @@ export default function ServerStatsCenterClient() {
           ) : (
             <span className="text-xs text-white/40">Aucun serveur administrable</span>
           )}
-          <button onClick={load} className="p-2 rounded-xl bg-white/[0.04] hover:bg-white/[0.08] border border-white/10 text-white/70 hover:text-white transition-colors" title="Rafraîchir">
+          <button onClick={load} className="p-2 rounded-xl bg-white/[0.04] hover:bg-white/[0.08] border border-[var(--panel-border)] text-white/70 hover:text-white transition-colors" title="Rafraîchir">
             <RefreshCw className={cn("w-4 h-4", loading && "animate-spin")} />
           </button>
         </div>
@@ -239,7 +239,7 @@ export default function ServerStatsCenterClient() {
 
       <div className="flex-1 overflow-y-auto os-scroll px-4 sm:px-6 py-6 pb-36 space-y-6 [overscroll-behavior:contain]">
         {!discordLoading && manageableGuilds.length === 0 && (
-          <div className="rounded-2xl border border-white/10 bg-white/[0.02] p-6 text-center text-sm text-zinc-400">
+          <div className="rounded-[var(--panel-radius)] border border-[var(--panel-border)] bg-white/[0.02] p-6 text-center text-sm text-zinc-400">
             Connectez un serveur Discord où vous êtes administrateur.
           </div>
         )}
@@ -254,7 +254,7 @@ export default function ServerStatsCenterClient() {
         {selectedGuild && (
           <>
             {/* Config */}
-            <div className="rounded-2xl border border-white/10 bg-white/[0.02] p-4 sm:p-5 flex flex-col sm:flex-row sm:items-center gap-4">
+            <div className="rounded-[var(--panel-radius)] border border-[var(--panel-border)] bg-white/[0.02] p-4 sm:p-5 flex flex-col sm:flex-row sm:items-center gap-4">
               <button
                 type="button"
                 role="switch"
@@ -283,7 +283,7 @@ export default function ServerStatsCenterClient() {
               <div className="grid grid-cols-1 sm:grid-cols-3 gap-3">
                 <div>
                   <label className="mb-1 block text-[11px] font-medium text-zinc-400">Salon</label>
-                  <select value={fChannel} onChange={(e) => setFChannel(e.target.value)} className="w-full rounded-xl border border-white/10 bg-white/[0.04] px-3 py-2 text-xs text-white focus:outline-none focus:border-[#5865F2]/50 [&>option]:bg-[var(--bg-surface-elevated)]">
+                  <select value={fChannel} onChange={(e) => setFChannel(e.target.value)} className="w-full rounded-[var(--inset-radius)] border border-[var(--panel-border)] bg-white/[0.04] px-3 py-2 text-xs text-white focus:outline-none focus:border-[#5865F2]/50 [&>option]:bg-[var(--bg-surface-elevated)]">
                     <option value="">— Choisir —</option>
                     {channels.filter((c) => !usedChannels.has(c.id)).map((c) => (
                       <option key={c.id} value={c.id}>{c.type === "voice" ? "🔊 " : c.type === "stage" ? "🎙️ " : "# "}{c.name}</option>
@@ -292,14 +292,14 @@ export default function ServerStatsCenterClient() {
                 </div>
                 <div>
                   <label className="mb-1 block text-[11px] font-medium text-zinc-400">Statistique</label>
-                  <select value={fType} onChange={(e) => setFType(e.target.value)} className="w-full rounded-xl border border-white/10 bg-white/[0.04] px-3 py-2 text-xs text-white focus:outline-none focus:border-[#5865F2]/50 [&>option]:bg-[var(--bg-surface-elevated)]">
+                  <select value={fType} onChange={(e) => setFType(e.target.value)} className="w-full rounded-[var(--inset-radius)] border border-[var(--panel-border)] bg-white/[0.04] px-3 py-2 text-xs text-white focus:outline-none focus:border-[#5865F2]/50 [&>option]:bg-[var(--bg-surface-elevated)]">
                     {STAT_TYPES.map((t) => <option key={t.value} value={t.value}>{t.label}</option>)}
                   </select>
                 </div>
                 {fType === "roleMembers" && (
                   <div>
                     <label className="mb-1 block text-[11px] font-medium text-zinc-400">Rôle</label>
-                    <select value={fRole} onChange={(e) => setFRole(e.target.value)} className="w-full rounded-xl border border-white/10 bg-white/[0.04] px-3 py-2 text-xs text-white focus:outline-none focus:border-[#5865F2]/50 [&>option]:bg-[var(--bg-surface-elevated)]">
+                    <select value={fRole} onChange={(e) => setFRole(e.target.value)} className="w-full rounded-[var(--inset-radius)] border border-[var(--panel-border)] bg-white/[0.04] px-3 py-2 text-xs text-white focus:outline-none focus:border-[#5865F2]/50 [&>option]:bg-[var(--bg-surface-elevated)]">
                       <option value="">— Choisir —</option>
                       {roles.map((r) => <option key={r.id} value={r.id}>@{r.name}</option>)}
                     </select>
@@ -309,18 +309,18 @@ export default function ServerStatsCenterClient() {
               <div>
                 <label className="mb-1 block text-[11px] font-medium text-zinc-400">Format — <code className="rounded bg-black/30 px-1">{"{count}"}</code> = la valeur</label>
                 <div className="flex gap-2">
-                  <input value={fTemplate} onChange={(e) => setFTemplate(e.target.value.slice(0, 80))} placeholder="👥 {count} membres" className="flex-1 rounded-xl border border-white/10 bg-white/[0.04] px-3 py-2 text-xs text-white placeholder-zinc-600 focus:outline-none focus:border-[#5865F2]/50" />
+                  <input value={fTemplate} onChange={(e) => setFTemplate(e.target.value.slice(0, 80))} placeholder="👥 {count} membres" className="flex-1 rounded-[var(--inset-radius)] border border-[var(--panel-border)] bg-white/[0.04] px-3 py-2 text-xs text-white placeholder-zinc-600 focus:outline-none focus:border-[#5865F2]/50" />
                   <button onClick={addChannel} className="inline-flex items-center gap-1.5 rounded-xl bg-[#5865F2] px-4 py-2 text-xs font-semibold text-white hover:bg-[#4752C4] transition-colors cursor-pointer">Ajouter</button>
                 </div>
               </div>
             </div>
 
             {/* List */}
-            <div className="rounded-2xl border border-white/10 bg-white/[0.02] overflow-hidden">
-              <div className="flex items-center justify-between border-b border-white/10 px-4 py-3">
+            <div className="rounded-[var(--panel-radius)] border border-[var(--panel-border)] bg-white/[0.02] overflow-hidden">
+              <div className="flex items-center justify-between border-b border-[var(--panel-border)] px-4 py-3">
                 <p className="text-xs font-bold uppercase tracking-wide text-zinc-400">Compteurs ({overview?.channels.length ?? 0})</p>
                 {overview && overview.channels.length > 0 && (
-                  <button onClick={refreshNow} className="inline-flex items-center gap-1.5 rounded-lg border border-white/10 bg-white/5 px-2.5 py-1 text-[11px] font-semibold text-zinc-300 hover:bg-white/10 transition-colors cursor-pointer">
+                  <button onClick={refreshNow} className="inline-flex items-center gap-1.5 rounded-[var(--inset-radius)] border border-[var(--panel-border)] bg-white/5 px-2.5 py-1 text-[11px] font-semibold text-zinc-300 hover:bg-white/10 transition-colors cursor-pointer">
                     <RefreshCw className="h-3 w-3" /> Rafraîchir maintenant
                   </button>
                 )}
@@ -339,7 +339,7 @@ export default function ServerStatsCenterClient() {
                         </p>
                         <p className="mt-0.5 text-[11px] text-zinc-400">#{channelName(c.channelId)} · <code className="text-zinc-500">{c.template}</code></p>
                       </div>
-                      <button onClick={() => removeChannel(c.channelId)} title="Retirer" className="shrink-0 rounded-lg border border-white/10 bg-white/5 p-2 text-rose-300 hover:bg-rose-500/15 hover:text-rose-200 transition-colors cursor-pointer">
+                      <button onClick={() => removeChannel(c.channelId)} title="Retirer" className="shrink-0 rounded-[var(--inset-radius)] border border-[var(--panel-border)] bg-white/5 p-2 text-rose-300 hover:bg-rose-500/15 hover:text-rose-200 transition-colors cursor-pointer">
                         <Trash2 className="h-3.5 w-3.5" />
                       </button>
                     </div>

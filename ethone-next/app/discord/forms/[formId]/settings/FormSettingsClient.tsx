@@ -90,11 +90,11 @@ export default function FormSettingsClient() {
   return (
     <div className="min-h-screen bg-black text-white p-4 sm:p-6 lg:p-8 space-y-6 max-w-5xl mx-auto">
       {/* Header */}
-      <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 border-b border-white/10 pb-4">
+      <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 border-b border-[var(--panel-border)] pb-4">
         <div className="flex items-center gap-3">
           <Link
             href={`/discord/forms?guildId=${rawGuildId}`}
-            className="flex h-9 w-9 items-center justify-center rounded-xl border border-white/10 bg-white/5 text-zinc-400 hover:text-white hover:bg-white/10 transition-all cursor-pointer"
+            className="flex h-9 w-9 items-center justify-center rounded-[var(--inset-radius)] border border-[var(--panel-border)] bg-white/5 text-zinc-400 hover:text-white hover:bg-white/10 transition-all cursor-pointer"
           >
             <ArrowLeft className="h-4 w-4" />
           </Link>
@@ -109,7 +109,7 @@ export default function FormSettingsClient() {
         <div className="flex items-center gap-2">
           <Link
             href={`/discord/forms/${formId}?guildId=${rawGuildId}`}
-            className="flex h-9 items-center gap-1.5 px-3 rounded-xl border border-white/10 bg-white/5 text-xs font-semibold text-zinc-300 hover:bg-white/10 hover:text-white transition-all cursor-pointer"
+            className="flex h-9 items-center gap-1.5 px-3 rounded-[var(--inset-radius)] border border-[var(--panel-border)] bg-white/5 text-xs font-semibold text-zinc-300 hover:bg-white/10 hover:text-white transition-all cursor-pointer"
           >
             <Sliders className="h-3.5 w-3.5" />
             <span>Builder</span>
@@ -126,7 +126,7 @@ export default function FormSettingsClient() {
       </div>
 
       {/* Tabs */}
-      <div className="flex items-center gap-1 border-b border-white/10 pb-3 overflow-x-auto scrollbar-none">
+      <div className="flex items-center gap-1 border-b border-[var(--panel-border)] pb-3 overflow-x-auto scrollbar-none">
         {[
           { id: "discord", label: "Panneau Discord & Embed", icon: MessageSquare },
           { id: "antispam", label: "Anti-Spam & Sécurité", icon: Shield },
@@ -157,7 +157,7 @@ export default function FormSettingsClient() {
       {activeTab === "discord" && (
         <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
           {/* Settings Form */}
-          <div className="rounded-3xl border border-white/10 bg-white/[0.02] p-5 space-y-4">
+          <div className="rounded-[var(--panel-radius)] border border-[var(--panel-border)] bg-white/[0.02] p-5 space-y-4">
             <h3 className="text-xs font-bold uppercase tracking-wider text-zinc-400">Configuration de l&apos;Embed</h3>
 
             <div className="space-y-1.5">
@@ -167,7 +167,7 @@ export default function FormSettingsClient() {
                 value={channelId}
                 onChange={(e) => setChannelId(e.target.value)}
                 placeholder="ID ou #nom-du-salon"
-                className="h-9 w-full rounded-xl border border-white/10 bg-zinc-900 px-3 text-xs text-white outline-none focus:border-indigo-500 font-mono"
+                className="h-9 w-full rounded-[var(--inset-radius)] border border-[var(--panel-border)] bg-zinc-900 px-3 text-xs text-white outline-none focus:border-indigo-500 font-mono"
               />
               <p className="text-[10px] text-zinc-500">Le bot y enverra le panneau avec le bouton interactif.</p>
             </div>
@@ -178,7 +178,7 @@ export default function FormSettingsClient() {
                 type="text"
                 value={embedTitle}
                 onChange={(e) => setEmbedTitle(e.target.value)}
-                className="h-9 w-full rounded-xl border border-white/10 bg-zinc-900 px-3 text-xs text-white outline-none focus:border-indigo-500"
+                className="h-9 w-full rounded-[var(--inset-radius)] border border-[var(--panel-border)] bg-zinc-900 px-3 text-xs text-white outline-none focus:border-indigo-500"
               />
             </div>
 
@@ -188,7 +188,7 @@ export default function FormSettingsClient() {
                 rows={3}
                 value={embedDescription}
                 onChange={(e) => setEmbedDescription(e.target.value)}
-                className="w-full rounded-xl border border-white/10 bg-zinc-900 p-2.5 text-xs text-white outline-none focus:border-indigo-500 resize-none"
+                className="w-full rounded-[var(--inset-radius)] border border-[var(--panel-border)] bg-zinc-900 p-2.5 text-xs text-white outline-none focus:border-indigo-500 resize-none"
               />
             </div>
 
@@ -199,7 +199,7 @@ export default function FormSettingsClient() {
                   type="text"
                   value={buttonText}
                   onChange={(e) => setButtonText(e.target.value)}
-                  className="h-9 w-full rounded-xl border border-white/10 bg-zinc-900 px-3 text-xs text-white outline-none focus:border-indigo-500"
+                  className="h-9 w-full rounded-[var(--inset-radius)] border border-[var(--panel-border)] bg-zinc-900 px-3 text-xs text-white outline-none focus:border-indigo-500"
                 />
               </div>
 
@@ -208,7 +208,7 @@ export default function FormSettingsClient() {
                 <select
                   value={submissionMode}
                   onChange={(e) => setSubmissionMode(e.target.value as any)}
-                  className="h-9 w-full rounded-xl border border-white/10 bg-zinc-900 px-2.5 text-xs text-white outline-none focus:border-indigo-500"
+                  className="h-9 w-full rounded-[var(--inset-radius)] border border-[var(--panel-border)] bg-zinc-900 px-2.5 text-xs text-white outline-none focus:border-indigo-500"
                 >
                   <option value="HYBRID">Hybride (Modal ou Web selon champs)</option>
                   <option value="MODAL">Modal Discord natif (≤ 5 champs)</option>
@@ -217,7 +217,7 @@ export default function FormSettingsClient() {
               </div>
             </div>
 
-            <div className="pt-3 border-t border-white/10">
+            <div className="pt-3 border-t border-[var(--panel-border)]">
               <button
                 onClick={handlePublishDiscordPanel}
                 className="w-full h-9 rounded-xl bg-indigo-600 hover:bg-indigo-500 text-xs font-bold text-white transition-all shadow-sm cursor-pointer"
@@ -252,7 +252,7 @@ export default function FormSettingsClient() {
 
       {/* TAB 2: ANTI-SPAM */}
       {activeTab === "antispam" && (
-        <div className="rounded-3xl border border-white/10 bg-white/[0.02] p-5 sm:p-6 space-y-4 max-w-2xl">
+        <div className="rounded-[var(--panel-radius)] border border-[var(--panel-border)] bg-white/[0.02] p-5 sm:p-6 space-y-4 max-w-2xl">
           <h3 className="text-xs font-bold uppercase tracking-wider text-zinc-400">Règles Anti-Spam &amp; Éligibilité</h3>
 
           <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
@@ -262,7 +262,7 @@ export default function FormSettingsClient() {
                 type="number"
                 value={cooldownMinutes}
                 onChange={(e) => setCooldownMinutes(Number(e.target.value))}
-                className="h-9 w-full rounded-xl border border-white/10 bg-zinc-900 px-3 text-xs text-white outline-none focus:border-indigo-500"
+                className="h-9 w-full rounded-[var(--inset-radius)] border border-[var(--panel-border)] bg-zinc-900 px-3 text-xs text-white outline-none focus:border-indigo-500"
               />
               <p className="text-[10px] text-zinc-500">1440 min = 24 heures entre deux soumissions.</p>
             </div>
@@ -273,7 +273,7 @@ export default function FormSettingsClient() {
                 type="number"
                 value={maxSubmissions}
                 onChange={(e) => setMaxSubmissions(Number(e.target.value))}
-                className="h-9 w-full rounded-xl border border-white/10 bg-zinc-900 px-3 text-xs text-white outline-none focus:border-indigo-500"
+                className="h-9 w-full rounded-[var(--inset-radius)] border border-[var(--panel-border)] bg-zinc-900 px-3 text-xs text-white outline-none focus:border-indigo-500"
               />
               <p className="text-[10px] text-zinc-500">Nombre maximum de candidatures simultanées.</p>
             </div>
@@ -284,7 +284,7 @@ export default function FormSettingsClient() {
                 type="number"
                 value={minAccountAge}
                 onChange={(e) => setMinAccountAge(Number(e.target.value))}
-                className="h-9 w-full rounded-xl border border-white/10 bg-zinc-900 px-3 text-xs text-white outline-none focus:border-indigo-500"
+                className="h-9 w-full rounded-[var(--inset-radius)] border border-[var(--panel-border)] bg-zinc-900 px-3 text-xs text-white outline-none focus:border-indigo-500"
               />
               <p className="text-[10px] text-zinc-500">Bloque les comptes récents anti-raid.</p>
             </div>
@@ -295,7 +295,7 @@ export default function FormSettingsClient() {
                 type="number"
                 value={minGuildMembership}
                 onChange={(e) => setMinGuildMembership(Number(e.target.value))}
-                className="h-9 w-full rounded-xl border border-white/10 bg-zinc-900 px-3 text-xs text-white outline-none focus:border-indigo-500"
+                className="h-9 w-full rounded-[var(--inset-radius)] border border-[var(--panel-border)] bg-zinc-900 px-3 text-xs text-white outline-none focus:border-indigo-500"
               />
               <p className="text-[10px] text-zinc-500">Temps minimum depuis l&apos;arrivée sur le serveur.</p>
             </div>
@@ -305,8 +305,8 @@ export default function FormSettingsClient() {
 
       {/* TAB 3: SCORING */}
       {activeTab === "scoring" && (
-        <div className="rounded-3xl border border-white/10 bg-white/[0.02] p-5 sm:p-6 space-y-4 max-w-2xl">
-          <div className="flex items-center justify-between border-b border-white/10 pb-3">
+        <div className="rounded-[var(--panel-radius)] border border-[var(--panel-border)] bg-white/[0.02] p-5 sm:p-6 space-y-4 max-w-2xl">
+          <div className="flex items-center justify-between border-b border-[var(--panel-border)] pb-3">
             <div>
               <h3 className="text-sm font-bold text-white">Moteur de Scoring Pondéré</h3>
               <p className="text-xs text-zinc-400">Attribuez des points aux réponses pour qualifier automatiquement les profils.</p>
@@ -327,7 +327,7 @@ export default function FormSettingsClient() {
                   type="number"
                   value={maxScore}
                   onChange={(e) => setMaxScore(Number(e.target.value))}
-                  className="h-9 w-full rounded-xl border border-white/10 bg-zinc-900 px-3 text-xs text-white outline-none focus:border-indigo-500"
+                  className="h-9 w-full rounded-[var(--inset-radius)] border border-[var(--panel-border)] bg-zinc-900 px-3 text-xs text-white outline-none focus:border-indigo-500"
                 />
               </div>
 
@@ -337,7 +337,7 @@ export default function FormSettingsClient() {
                   type="number"
                   value={passScore}
                   onChange={(e) => setPassScore(Number(e.target.value))}
-                  className="h-9 w-full rounded-xl border border-white/10 bg-zinc-900 px-3 text-xs text-white outline-none focus:border-indigo-500"
+                  className="h-9 w-full rounded-[var(--inset-radius)] border border-[var(--panel-border)] bg-zinc-900 px-3 text-xs text-white outline-none focus:border-indigo-500"
                 />
                 <p className="text-[10px] text-zinc-500">Attribue automatiquement le tag &quot;Recommended&quot;.</p>
               </div>
@@ -348,8 +348,8 @@ export default function FormSettingsClient() {
 
       {/* TAB 4: AUTOMATIONS */}
       {activeTab === "automations" && (
-        <div className="rounded-3xl border border-white/10 bg-white/[0.02] p-5 sm:p-6 space-y-4">
-          <div className="flex items-center justify-between border-b border-white/10 pb-3">
+        <div className="rounded-[var(--panel-radius)] border border-[var(--panel-border)] bg-white/[0.02] p-5 sm:p-6 space-y-4">
+          <div className="flex items-center justify-between border-b border-[var(--panel-border)] pb-3">
             <div>
               <h3 className="text-sm font-bold text-white">Règles d&apos;Automatisation No-Code</h3>
               <p className="text-xs text-zinc-400">Déclenchez des actions Discord sans coder lors des soumissions ou reviews.</p>
@@ -377,7 +377,7 @@ export default function FormSettingsClient() {
             {automations.map((rule) => (
               <div
                 key={rule.id}
-                className="p-4 rounded-2xl border border-white/10 bg-white/[0.02] flex items-center justify-between gap-4"
+                className="p-4 rounded-[var(--panel-radius)] border border-[var(--panel-border)] bg-white/[0.02] flex items-center justify-between gap-4"
               >
                 <div className="flex items-center gap-3">
                   <div className="h-8 w-8 rounded-xl bg-indigo-600/20 text-indigo-400 flex items-center justify-center shrink-0">

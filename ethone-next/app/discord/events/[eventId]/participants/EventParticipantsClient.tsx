@@ -254,7 +254,7 @@ export default function EventParticipantsClient() {
 
       <div className="relative max-w-6xl mx-auto px-4 sm:px-6 lg:px-8 pt-8">
         {/* Navigation */}
-        <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 pb-6 border-b border-white/10 mb-8">
+        <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 pb-6 border-b border-[var(--panel-border)] mb-8">
           <div>
             <div className="flex items-center gap-2 mb-1.5 text-xs text-indigo-400 font-semibold uppercase tracking-wider">
               <Link href={`/discord/events/${eventId}`} className="hover:underline flex items-center gap-1">
@@ -280,14 +280,14 @@ export default function EventParticipantsClient() {
             <button
               onClick={loadParticipants}
               disabled={loading}
-              className="inline-flex items-center justify-center px-2 py-2 rounded-xl bg-white/5 hover:bg-white/10 border border-white/10 text-slate-400 hover:text-white transition-colors disabled:opacity-50"
+              className="inline-flex items-center justify-center px-2 py-2 rounded-xl bg-white/5 hover:bg-white/10 border border-[var(--panel-border)] text-slate-400 hover:text-white transition-colors disabled:opacity-50"
               title="Rafraîchir"
             >
               <RefreshCw className={`w-3.5 h-3.5 ${loading ? "animate-spin" : ""}`} />
             </button>
             <button
               onClick={handleExportCSV}
-              className="inline-flex items-center gap-1.5 px-3 py-2 rounded-xl text-xs font-semibold bg-white/5 hover:bg-white/10 border border-white/10 text-slate-300 transition-colors"
+              className="inline-flex items-center gap-1.5 px-3 py-2 rounded-xl text-xs font-semibold bg-white/5 hover:bg-white/10 border border-[var(--panel-border)] text-slate-300 transition-colors"
             >
               <Download className="w-3.5 h-3.5 text-cyan-400" />
               CSV
@@ -295,7 +295,7 @@ export default function EventParticipantsClient() {
 
             <button
               onClick={handleExportJSON}
-              className="inline-flex items-center gap-1.5 px-3 py-2 rounded-xl text-xs font-semibold bg-white/5 hover:bg-white/10 border border-white/10 text-slate-300 transition-colors"
+              className="inline-flex items-center gap-1.5 px-3 py-2 rounded-xl text-xs font-semibold bg-white/5 hover:bg-white/10 border border-[var(--panel-border)] text-slate-300 transition-colors"
             >
               <Download className="w-3.5 h-3.5 text-purple-400" />
               JSON
@@ -304,7 +304,7 @@ export default function EventParticipantsClient() {
         </div>
 
         {/* Toolbar */}
-        <div className="flex flex-col md:flex-row items-center justify-between gap-4 p-4 rounded-2xl bg-white/[0.02] border border-white/10 backdrop-blur-xl mb-6">
+        <div className="flex flex-col md:flex-row items-center justify-between gap-4 p-4 rounded-2xl bg-white/[0.02] border border-[var(--panel-border)] backdrop-blur-xl mb-6">
           <div className="relative w-full md:w-80">
             <Search className="absolute left-3.5 top-1/2 -translate-y-1/2 w-4 h-4 text-slate-400" />
             <input
@@ -312,7 +312,7 @@ export default function EventParticipantsClient() {
               placeholder="Chercher par nom ou ticket..."
               value={searchQuery}
               onChange={(e) => setSearchQuery(e.target.value)}
-              className="w-full pl-10 pr-4 py-2 rounded-xl bg-black/40 border border-white/10 text-xs text-white focus:outline-none focus:border-indigo-500"
+              className="w-full pl-10 pr-4 py-2 rounded-xl bg-black/40 border border-[var(--panel-border)] text-xs text-white focus:outline-none focus:border-indigo-500"
             />
           </div>
 
@@ -340,11 +340,11 @@ export default function EventParticipantsClient() {
         </div>
 
         {/* Participants Table */}
-        <div className="rounded-2xl border border-white/10 bg-white/[0.01] backdrop-blur-xl overflow-hidden shadow-2xl">
+        <div className="rounded-[var(--panel-radius)] border border-[var(--panel-border)] bg-white/[0.01] backdrop-blur-xl overflow-hidden shadow-2xl">
           <div className="overflow-x-auto">
             <table className="w-full text-left border-collapse">
               <thead>
-                <tr className="border-b border-white/10 bg-white/[0.02] text-[11px] font-bold text-slate-400 uppercase tracking-wider">
+                <tr className="border-b border-[var(--panel-border)] bg-white/[0.02] text-[11px] font-bold text-slate-400 uppercase tracking-wider">
                   <th className="p-4">Participant</th>
                   <th className="p-4">Ticket</th>
                   <th className="p-4">Statut RSVP</th>
@@ -366,7 +366,7 @@ export default function EventParticipantsClient() {
                           <img
                             src={p.avatarUrl}
                             alt={p.username}
-                            className="w-8 h-8 rounded-full object-cover border border-white/10"
+                            className="w-8 h-8 rounded-full object-cover border border-[var(--panel-border)]"
                           />
                           <div>
                             <div className="font-bold text-white">{p.displayName}</div>
@@ -411,7 +411,7 @@ export default function EventParticipantsClient() {
                           className={`px-3 py-1 rounded-lg text-[11px] font-semibold flex items-center gap-1.5 transition-colors ${
                             isAttended
                               ? "bg-emerald-500/20 text-emerald-300 border border-emerald-500/30"
-                              : "bg-white/5 hover:bg-white/10 text-slate-400 border border-white/10"
+                              : "bg-white/5 hover:bg-white/10 text-slate-400 border border-[var(--panel-border)]"
                           }`}
                         >
                           <CheckCircle2 className={`w-3.5 h-3.5 ${isAttended ? "text-emerald-400" : "text-slate-500"}`} />

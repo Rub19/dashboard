@@ -1345,12 +1345,12 @@ export default function ServerManagementClient({
   return (
     <div className="min-h-screen bg-black text-white selection:bg-indigo-500 selection:text-white">
       {/* Top Banner & Header */}
-      <header className="border-b border-white/10 bg-zinc-950/60 backdrop-blur-xl sticky top-0 z-30">
+      <header className="border-b border-[var(--panel-border)] bg-zinc-950/60 backdrop-blur-xl sticky top-0 z-30">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-4">
           <div className="flex flex-col md:flex-row items-start md:items-center justify-between gap-4">
             {/* Server Identity */}
             <div className="flex items-center gap-3.5">
-              <div className="h-12 w-12 rounded-2xl bg-indigo-600 flex items-center justify-center font-bold text-lg shadow-sm border border-white/20 overflow-hidden">
+              <div className="h-12 w-12 rounded-2xl bg-indigo-600 flex items-center justify-center font-bold text-lg shadow-sm border border-[var(--input-border-hover)] overflow-hidden">
                 {overview?.guild.icon ? (
                   <img src={overview.guild.icon} alt={overview.guild.name} className="h-full w-full object-cover" />
                 ) : (
@@ -1389,7 +1389,7 @@ export default function ServerManagementClient({
                   placeholder="Recherche globale..."
                   value={searchQuery}
                   onChange={(e) => handleGlobalSearch(e.target.value)}
-                  className="w-full bg-zinc-900/80 border border-white/10 rounded-xl pl-9 pr-4 py-2 text-xs text-white placeholder-zinc-500 focus:outline-none focus:border-indigo-500 focus:ring-1 focus:ring-indigo-500 transition-all"
+                  className="w-full bg-zinc-900/80 border border-[var(--panel-border)] rounded-xl pl-9 pr-4 py-2 text-xs text-white placeholder-zinc-500 focus:outline-none focus:border-indigo-500 focus:ring-1 focus:ring-indigo-500 transition-all"
                 />
               </div>
 
@@ -1400,7 +1400,7 @@ export default function ServerManagementClient({
                   "px-3 py-2 rounded-xl text-xs font-semibold flex items-center gap-1.5 border transition-all cursor-pointer shrink-0",
                   safeModeEnabled
                     ? "bg-rose-500/20 text-rose-300 border-rose-500/40 shadow-sm"
-                    : "bg-zinc-900 border-white/10 text-zinc-300 hover:text-white hover:bg-zinc-800"
+                    : "bg-zinc-900 border-[var(--panel-border)] text-zinc-300 hover:text-white hover:bg-zinc-800"
                 )}
                 title="Mode de verrouillage d'urgence"
               >
@@ -1412,7 +1412,7 @@ export default function ServerManagementClient({
               <button
                 onClick={refreshAll}
                 disabled={refreshing}
-                className="p-2 bg-zinc-900 border border-white/10 rounded-xl text-zinc-300 hover:text-white hover:bg-zinc-800 transition-all disabled:opacity-50 cursor-pointer shrink-0"
+                className="p-2 bg-zinc-900 border border-[var(--panel-border)] rounded-xl text-zinc-300 hover:text-white hover:bg-zinc-800 transition-all disabled:opacity-50 cursor-pointer shrink-0"
                 title="Actualiser les données"
               >
                 <RefreshCw className={cn("h-4 w-4", refreshing && "animate-spin text-indigo-400")} />
@@ -1421,7 +1421,7 @@ export default function ServerManagementClient({
           </div>
 
           {/* Navigation Tabs Bar */}
-          <div className="flex items-center gap-1 mt-4 overflow-x-auto pb-1 scrollbar-none border-t border-white/5 pt-3">
+          <div className="flex items-center gap-1 mt-4 overflow-x-auto pb-1 scrollbar-none border-t border-[var(--panel-border)] pt-3">
             {[
               { id: "overview", label: "Vue d'ensemble", icon: BarChart3 },
               { id: "members", label: "Membres", icon: Users },
@@ -1460,7 +1460,7 @@ export default function ServerManagementClient({
       {searchResults && (
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-4">
           <div className="rounded-2xl border border-indigo-500/30 bg-zinc-950/90 backdrop-blur-xl p-4 shadow-xl">
-            <div className="flex items-center justify-between pb-3 border-b border-white/10 mb-3">
+            <div className="flex items-center justify-between pb-3 border-b border-[var(--panel-border)] mb-3">
               <h3 className="text-xs font-bold text-white flex items-center gap-2">
                 <Search className="h-4 w-4 text-indigo-400" />
                 Résultats de recherche pour "{searchQuery}"
@@ -1551,7 +1551,7 @@ export default function ServerManagementClient({
             {/* Top Stat Cards */}
             <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
               {/* Total Members */}
-              <div className="p-4 rounded-2xl border border-white/10 bg-zinc-950/40 backdrop-blur-xl">
+              <div className="p-4 rounded-[var(--panel-radius)] border border-[var(--panel-border)] bg-zinc-950/40 backdrop-blur-xl">
                 <div className="flex items-center justify-between text-zinc-400 mb-2">
                   <span className="text-xs font-semibold">Total Membres</span>
                   <Users className="h-4 w-4 text-indigo-400" />
@@ -1567,7 +1567,7 @@ export default function ServerManagementClient({
               </div>
 
               {/* Channels */}
-              <div className="p-4 rounded-2xl border border-white/10 bg-zinc-950/40 backdrop-blur-xl">
+              <div className="p-4 rounded-[var(--panel-radius)] border border-[var(--panel-border)] bg-zinc-950/40 backdrop-blur-xl">
                 <div className="flex items-center justify-between text-zinc-400 mb-2">
                   <span className="text-xs font-semibold">Salons & Espaces</span>
                   <Hash className="h-4 w-4 text-cyan-400" />
@@ -1583,7 +1583,7 @@ export default function ServerManagementClient({
               </div>
 
               {/* Rôles & Sécurité */}
-              <div className="p-4 rounded-2xl border border-white/10 bg-zinc-950/40 backdrop-blur-xl">
+              <div className="p-4 rounded-[var(--panel-radius)] border border-[var(--panel-border)] bg-zinc-950/40 backdrop-blur-xl">
                 <div className="flex items-center justify-between text-zinc-400 mb-2">
                   <span className="text-xs font-semibold">Rôles & Staff</span>
                   <Shield className="h-4 w-4 text-purple-400" />
@@ -1599,7 +1599,7 @@ export default function ServerManagementClient({
               </div>
 
               {/* Server Boost */}
-              <div className="p-4 rounded-2xl border border-white/10 bg-zinc-950/40 backdrop-blur-xl">
+              <div className="p-4 rounded-[var(--panel-radius)] border border-[var(--panel-border)] bg-zinc-950/40 backdrop-blur-xl">
                 <div className="flex items-center justify-between text-zinc-400 mb-2">
                   <span className="text-xs font-semibold">Nitro Boosts</span>
                   <Sparkles className="h-4 w-4 text-pink-400" />
@@ -1616,7 +1616,7 @@ export default function ServerManagementClient({
             {/* Middle Row: Explainable Security Score & Health Diagnostics */}
             <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
               {/* Security Score Card */}
-              <div className="p-5 rounded-3xl border border-white/10 bg-zinc-950/60 backdrop-blur-xl space-y-4">
+              <div className="p-5 rounded-[var(--panel-radius)] border border-[var(--panel-border)] bg-zinc-950/60 backdrop-blur-xl space-y-4">
                 <div className="flex items-center justify-between">
                   <div className="flex items-center gap-2.5">
                     <ShieldCheck className="h-5 w-5 text-emerald-400" />
@@ -1629,7 +1629,7 @@ export default function ServerManagementClient({
                 </div>
 
                 <div className="flex items-center gap-4 py-2">
-                  <div className="flex h-16 w-16 items-center justify-center rounded-2xl bg-white/[0.04] border border-white/10">
+                  <div className="flex h-16 w-16 items-center justify-center rounded-2xl bg-white/[0.04] border border-[var(--panel-border)]">
                     <span className="text-2xl font-black text-emerald-400">{overview?.security.score || 0}%</span>
                   </div>
                   <div className="space-y-1">
@@ -1643,7 +1643,7 @@ export default function ServerManagementClient({
                 </div>
 
                 {/* Factors List */}
-                <div className="space-y-2 pt-2 border-t border-white/5">
+                <div className="space-y-2 pt-2 border-t border-[var(--panel-border)]">
                   {overview?.security.factors.slice(0, 3).map((factor, idx) => (
                     <div key={idx} className="flex items-center justify-between text-xs p-2 rounded-xl bg-white/[0.02]">
                       <div className="flex items-center gap-2">
@@ -1663,14 +1663,14 @@ export default function ServerManagementClient({
 
                 <button
                   onClick={() => setIsSecurityModalOpen(true)}
-                  className="w-full py-2 rounded-xl border border-white/10 bg-white/5 text-xs font-semibold text-zinc-200 hover:bg-white/10 hover:text-white transition-all cursor-pointer"
+                  className="w-full py-2 rounded-[var(--inset-radius)] border border-[var(--panel-border)] bg-white/5 text-xs font-semibold text-zinc-200 hover:bg-white/10 hover:text-white transition-all cursor-pointer"
                 >
                   Voir tous les facteurs d'évaluation ({overview?.security.factors.length || 0})
                 </button>
               </div>
 
               {/* Health Diagnostics Card */}
-              <div className="p-5 rounded-3xl border border-white/10 bg-zinc-950/60 backdrop-blur-xl space-y-4">
+              <div className="p-5 rounded-[var(--panel-radius)] border border-[var(--panel-border)] bg-zinc-950/60 backdrop-blur-xl space-y-4">
                 <div className="flex items-center justify-between">
                   <div className="flex items-center gap-2.5">
                     <Activity className="h-5 w-5 text-cyan-400" />
@@ -1683,7 +1683,7 @@ export default function ServerManagementClient({
                 </div>
 
                 <div className="grid grid-cols-2 gap-3 pt-2">
-                  <div className="p-3 rounded-2xl border border-white/5 bg-white/[0.02]">
+                  <div className="p-3 rounded-2xl border border-[var(--panel-border)] bg-white/[0.02]">
                     <div className="flex items-center justify-between text-[11px] text-zinc-400 mb-1">
                       <span>Gateway Discord</span>
                       <Wifi className="h-3.5 w-3.5 text-emerald-400" />
@@ -1694,7 +1694,7 @@ export default function ServerManagementClient({
                     <span className="text-[10px] text-emerald-400 font-semibold">Connecté & Réactif</span>
                   </div>
 
-                  <div className="p-3 rounded-2xl border border-white/5 bg-white/[0.02]">
+                  <div className="p-3 rounded-2xl border border-[var(--panel-border)] bg-white/[0.02]">
                     <div className="flex items-center justify-between text-[11px] text-zinc-400 mb-1">
                       <span>Base de Données</span>
                       <Database className="h-3.5 w-3.5 text-emerald-400" />
@@ -1705,7 +1705,7 @@ export default function ServerManagementClient({
                     <span className="text-[10px] text-emerald-400 font-semibold">Latence ultra-faible</span>
                   </div>
 
-                  <div className="p-3 rounded-2xl border border-white/5 bg-white/[0.02]">
+                  <div className="p-3 rounded-2xl border border-[var(--panel-border)] bg-white/[0.02]">
                     <div className="flex items-center justify-between text-[11px] text-zinc-400 mb-1">
                       <span>Mémoire Heap</span>
                       <Cpu className="h-3.5 w-3.5 text-indigo-400" />
@@ -1718,7 +1718,7 @@ export default function ServerManagementClient({
                     </span>
                   </div>
 
-                  <div className="p-3 rounded-2xl border border-white/5 bg-white/[0.02]">
+                  <div className="p-3 rounded-2xl border border-[var(--panel-border)] bg-white/[0.02]">
                     <div className="flex items-center justify-between text-[11px] text-zinc-400 mb-1">
                       <span>Tâches Planifiées</span>
                       <Clock className="h-3.5 w-3.5 text-purple-400" />
@@ -1732,7 +1732,7 @@ export default function ServerManagementClient({
 
                 <button
                   onClick={() => handleTabChange("health")}
-                  className="w-full py-2 rounded-xl border border-white/10 bg-white/5 text-xs font-semibold text-zinc-200 hover:bg-white/10 hover:text-white transition-all cursor-pointer"
+                  className="w-full py-2 rounded-[var(--inset-radius)] border border-[var(--panel-border)] bg-white/5 text-xs font-semibold text-zinc-200 hover:bg-white/10 hover:text-white transition-all cursor-pointer"
                 >
                   Ouvrir le moniteur de diagnostic complet
                 </button>
@@ -1742,7 +1742,7 @@ export default function ServerManagementClient({
             {/* Quick Actions & Recent Activity Feed */}
             <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
               {/* Quick Actions Panel */}
-              <div className="p-5 rounded-3xl border border-white/10 bg-zinc-950/60 backdrop-blur-xl space-y-3">
+              <div className="p-5 rounded-[var(--panel-radius)] border border-[var(--panel-border)] bg-zinc-950/60 backdrop-blur-xl space-y-3">
                 <h3 className="text-sm font-bold text-white flex items-center gap-2">
                   <Zap className="h-4 w-4 text-amber-400" />
                   Actions d'Administration Rapides
@@ -1752,7 +1752,7 @@ export default function ServerManagementClient({
                     onClick={() => {
                       setIsCreateChannelOpen(true);
                     }}
-                    className="w-full p-2.5 rounded-xl border border-white/10 bg-white/[0.03] hover:bg-white/10 text-left flex items-center justify-between text-xs font-semibold text-zinc-200 transition-all cursor-pointer"
+                    className="w-full p-2.5 rounded-[var(--inset-radius)] border border-[var(--panel-border)] bg-white/[0.03] hover:bg-white/10 text-left flex items-center justify-between text-xs font-semibold text-zinc-200 transition-all cursor-pointer"
                   >
                     <span className="flex items-center gap-2">
                       <Plus className="h-3.5 w-3.5 text-cyan-400" />
@@ -1763,7 +1763,7 @@ export default function ServerManagementClient({
 
                   <button
                     onClick={() => setIsCreateRoleOpen(true)}
-                    className="w-full p-2.5 rounded-xl border border-white/10 bg-white/[0.03] hover:bg-white/10 text-left flex items-center justify-between text-xs font-semibold text-zinc-200 transition-all cursor-pointer"
+                    className="w-full p-2.5 rounded-[var(--inset-radius)] border border-[var(--panel-border)] bg-white/[0.03] hover:bg-white/10 text-left flex items-center justify-between text-xs font-semibold text-zinc-200 transition-all cursor-pointer"
                   >
                     <span className="flex items-center gap-2">
                       <Plus className="h-3.5 w-3.5 text-purple-400" />
@@ -1774,7 +1774,7 @@ export default function ServerManagementClient({
 
                   <button
                     onClick={() => handleTabChange("permissions")}
-                    className="w-full p-2.5 rounded-xl border border-white/10 bg-white/[0.03] hover:bg-white/10 text-left flex items-center justify-between text-xs font-semibold text-zinc-200 transition-all cursor-pointer"
+                    className="w-full p-2.5 rounded-[var(--inset-radius)] border border-[var(--panel-border)] bg-white/[0.03] hover:bg-white/10 text-left flex items-center justify-between text-xs font-semibold text-zinc-200 transition-all cursor-pointer"
                   >
                     <span className="flex items-center gap-2">
                       <Key className="h-3.5 w-3.5 text-amber-400" />
@@ -1797,7 +1797,7 @@ export default function ServerManagementClient({
               </div>
 
               {/* Recent Activity Feed */}
-              <div className="md:col-span-2 p-5 rounded-3xl border border-white/10 bg-zinc-950/60 backdrop-blur-xl space-y-4">
+              <div className="md:col-span-2 p-5 rounded-[var(--panel-radius)] border border-[var(--panel-border)] bg-zinc-950/60 backdrop-blur-xl space-y-4">
                 <div className="flex items-center justify-between">
                   <h3 className="text-sm font-bold text-white flex items-center gap-2">
                     <FileText className="h-4 w-4 text-blue-400" />
@@ -1815,10 +1815,10 @@ export default function ServerManagementClient({
                   {overview?.recentActivity.map((act) => (
                     <div
                       key={act.id}
-                      className="flex items-center justify-between p-3 rounded-2xl border border-white/5 bg-white/[0.02] text-xs"
+                      className="flex items-center justify-between p-3 rounded-2xl border border-[var(--panel-border)] bg-white/[0.02] text-xs"
                     >
                       <div className="flex items-center gap-3">
-                        <span className="px-2 py-0.5 rounded-md text-[10px] font-mono font-bold bg-white/5 text-zinc-300 border border-white/10">
+                        <span className="px-2 py-0.5 rounded-md text-[10px] font-mono font-bold bg-white/5 text-zinc-300 border border-[var(--panel-border)]">
                           {act.type}
                         </span>
                         <div>
@@ -1845,7 +1845,7 @@ export default function ServerManagementClient({
         {activeTab === "members" && (
           <div className="space-y-4">
             {/* Filter and Search Toolbar */}
-            <div className="flex flex-col sm:flex-row items-stretch sm:items-center justify-between gap-3 p-4 rounded-2xl border border-white/10 bg-zinc-950/60">
+            <div className="flex flex-col sm:flex-row items-stretch sm:items-center justify-between gap-3 p-4 rounded-[var(--panel-radius)] border border-[var(--panel-border)] bg-zinc-950/60">
               <div className="flex items-center gap-2 overflow-x-auto pb-1 sm:pb-0">
                 {[
                   { id: "all", label: "Tous" },
@@ -1876,16 +1876,16 @@ export default function ServerManagementClient({
                   placeholder="Filtrer par nom ou ID..."
                   value={memberSearch}
                   onChange={(e) => setMemberSearch(e.target.value)}
-                  className="w-full bg-zinc-900 border border-white/10 rounded-xl pl-9 pr-4 py-2 text-xs text-white placeholder-zinc-500 focus:outline-none focus:border-indigo-500"
+                  className="w-full bg-zinc-900 border border-[var(--panel-border)] rounded-xl pl-9 pr-4 py-2 text-xs text-white placeholder-zinc-500 focus:outline-none focus:border-indigo-500"
                 />
               </div>
             </div>
 
             {/* Members Table */}
-            <div className="rounded-3xl border border-white/10 bg-zinc-950/40 overflow-hidden">
+            <div className="rounded-[var(--panel-radius)] border border-[var(--panel-border)] bg-zinc-950/40 overflow-hidden">
               <div className="overflow-x-auto">
                 <table className="w-full text-left text-xs">
-                  <thead className="bg-white/[0.03] border-b border-white/10 text-zinc-400 uppercase tracking-wider text-[10px]">
+                  <thead className="bg-white/[0.03] border-b border-[var(--panel-border)] text-zinc-400 uppercase tracking-wider text-[10px]">
                     <tr>
                       <th className="p-4">Membre</th>
                       <th className="p-4">Rôles</th>
@@ -1899,7 +1899,7 @@ export default function ServerManagementClient({
                       <tr key={m.id} className="hover:bg-white/[0.02] transition-all">
                         <td className="p-4">
                           <div className="flex items-center gap-3">
-                            <div className="h-9 w-9 rounded-full bg-zinc-800 border border-white/10 overflow-hidden flex items-center justify-center font-bold text-xs">
+                            <div className="h-9 w-9 rounded-full bg-zinc-800 border border-[var(--panel-border)] overflow-hidden flex items-center justify-center font-bold text-xs">
                               {m.avatar ? (
                                 <img src={m.avatar} alt={m.username} className="h-full w-full object-cover" />
                               ) : (
@@ -1925,7 +1925,7 @@ export default function ServerManagementClient({
                             {m.roles.slice(0, 3).map((r) => (
                               <span
                                 key={r.id}
-                                className="px-2 py-0.5 rounded-full text-[10px] font-medium border border-white/10"
+                                className="px-2 py-0.5 rounded-full text-[10px] font-medium border border-[var(--panel-border)]"
                                 style={{ backgroundColor: `${r.color}20`, color: r.color }}
                               >
                                 {r.name}
@@ -1958,7 +1958,7 @@ export default function ServerManagementClient({
                         <td className="p-4 text-right">
                           <button
                             onClick={() => fetchMemberProfile(m.id)}
-                            className="px-3 py-1.5 rounded-xl border border-white/10 bg-white/5 hover:bg-white/10 text-xs font-semibold text-zinc-200 hover:text-white transition-all cursor-pointer"
+                            className="px-3 py-1.5 rounded-[var(--inset-radius)] border border-[var(--panel-border)] bg-white/5 hover:bg-white/10 text-xs font-semibold text-zinc-200 hover:text-white transition-all cursor-pointer"
                           >
                             Gérer le profil
                           </button>
@@ -1973,10 +1973,10 @@ export default function ServerManagementClient({
             {/* Member Profile Drawer / Modal */}
             {selectedMember && (
               <div className="fixed inset-0 z-50 bg-black/80 backdrop-blur-md flex items-center justify-center p-4">
-                <div className="w-full max-w-2xl rounded-3xl border border-white/15 bg-zinc-950 p-6 space-y-6 max-h-[90vh] overflow-y-auto shadow-2xl">
-                  <div className="flex items-start justify-between pb-4 border-b border-white/10">
+                <div className="w-full max-w-2xl rounded-3xl border border-[var(--panel-border)] bg-zinc-950 p-6 space-y-6 max-h-[90vh] overflow-y-auto shadow-2xl">
+                  <div className="flex items-start justify-between pb-4 border-b border-[var(--panel-border)]">
                     <div className="flex items-center gap-4">
-                      <div className="h-14 w-14 rounded-2xl bg-zinc-800 border border-white/15 overflow-hidden flex items-center justify-center text-lg font-bold">
+                      <div className="h-14 w-14 rounded-2xl bg-zinc-800 border border-[var(--panel-border)] overflow-hidden flex items-center justify-center text-lg font-bold">
                         {selectedMember.avatar ? (
                           <img src={selectedMember.avatar} alt={selectedMember.username} className="h-full w-full object-cover" />
                         ) : (
@@ -2001,7 +2001,7 @@ export default function ServerManagementClient({
                   </div>
 
                   {/* Security Risk & Flags */}
-                  <div className="p-4 rounded-2xl border border-white/10 bg-white/[0.02] space-y-2">
+                  <div className="p-4 rounded-[var(--panel-radius)] border border-[var(--panel-border)] bg-white/[0.02] space-y-2">
                     <div className="flex items-center justify-between text-xs">
                       <span className="font-semibold text-zinc-300">Score de risque du membre</span>
                       <span className="font-bold text-emerald-400">{selectedMember.security.riskScore}% Risque</span>
@@ -2036,7 +2036,7 @@ export default function ServerManagementClient({
                     {selectedMember.moderationHistory.recentCases.length > 0 ? (
                       <div className="space-y-2">
                         {selectedMember.moderationHistory.recentCases.map((c) => (
-                          <div key={c.id} className="p-3 rounded-xl border border-white/5 bg-white/[0.02] text-xs flex items-center justify-between">
+                          <div key={c.id} className="p-3 rounded-[var(--inset-radius)] border border-[var(--panel-border)] bg-white/[0.02] text-xs flex items-center justify-between">
                             <div>
                               <span className="font-bold text-amber-400">{c.type}</span> — <span className="text-white">{c.reason}</span>
                               <p className="text-[11px] text-zinc-500 mt-0.5">Par {c.moderatorTag}</p>
@@ -2053,7 +2053,7 @@ export default function ServerManagementClient({
                   </div>
 
                   {/* Administrative Action Controls */}
-                  <div className="pt-4 border-t border-white/10 space-y-3">
+                  <div className="pt-4 border-t border-[var(--panel-border)] space-y-3">
                     <h3 className="text-xs font-bold text-white uppercase tracking-wider">Actions Administratives</h3>
                     <div className="flex flex-wrap gap-2.5">
                       <button
@@ -2095,14 +2095,14 @@ export default function ServerManagementClient({
             {/* Timeout Modal */}
             {isTimeoutModalOpen && selectedMember && (
               <div className="fixed inset-0 z-50 bg-black/80 backdrop-blur-sm flex items-center justify-center p-4">
-                <div className="w-full max-w-md rounded-2xl border border-white/10 bg-zinc-950 p-5 space-y-4">
+                <div className="w-full max-w-md rounded-[var(--panel-radius)] border border-[var(--panel-border)] bg-zinc-950 p-5 space-y-4">
                   <h3 className="text-sm font-bold text-white">Exclure {selectedMember.displayName}</h3>
                   <div>
                     <label className="text-xs text-zinc-400 block mb-1">Durée :</label>
                     <select
                       value={timeoutMinutes}
                       onChange={(e) => setTimeoutMinutes(Number(e.target.value))}
-                      className="w-full bg-zinc-900 border border-white/10 rounded-xl px-3 py-2 text-xs text-white"
+                      className="w-full bg-zinc-900 border border-[var(--panel-border)] rounded-xl px-3 py-2 text-xs text-white"
                     >
                       <option value={1}>1 minute</option>
                       <option value={5}>5 minutes</option>
@@ -2119,7 +2119,7 @@ export default function ServerManagementClient({
                       placeholder="Raison du timeout..."
                       value={timeoutReason}
                       onChange={(e) => setTimeoutReason(e.target.value)}
-                      className="w-full bg-zinc-900 border border-white/10 rounded-xl px-3 py-2 text-xs text-white placeholder-zinc-500"
+                      className="w-full bg-zinc-900 border border-[var(--panel-border)] rounded-xl px-3 py-2 text-xs text-white placeholder-zinc-500"
                     />
                   </div>
                   <div className="flex justify-end gap-2 pt-2">
@@ -2155,7 +2155,7 @@ export default function ServerManagementClient({
                       placeholder="Ex: Non respect répété des règles / Spam malveillant"
                       value={banReason}
                       onChange={(e) => setBanReason(e.target.value)}
-                      className="w-full bg-zinc-900 border border-white/10 rounded-xl px-3 py-2 text-xs text-white placeholder-zinc-500"
+                      className="w-full bg-zinc-900 border border-[var(--panel-border)] rounded-xl px-3 py-2 text-xs text-white placeholder-zinc-500"
                     />
                   </div>
                   <div className="flex justify-end gap-2 pt-2">
@@ -2184,7 +2184,7 @@ export default function ServerManagementClient({
         {activeTab === "channels" && (
           <div className="space-y-4">
             {/* Top Bar: Channel search & Create Channel button */}
-            <div className="flex items-center justify-between gap-3 p-4 rounded-2xl border border-white/10 bg-zinc-950/60">
+            <div className="flex items-center justify-between gap-3 p-4 rounded-[var(--panel-radius)] border border-[var(--panel-border)] bg-zinc-950/60">
               <div className="relative w-full sm:w-72">
                 <Search className="absolute left-3 top-2.5 h-4 w-4 text-zinc-400" />
                 <input
@@ -2192,7 +2192,7 @@ export default function ServerManagementClient({
                   placeholder="Rechercher un salon..."
                   value={channelSearch}
                   onChange={(e) => setChannelSearch(e.target.value)}
-                  className="w-full bg-zinc-900 border border-white/10 rounded-xl pl-9 pr-4 py-2 text-xs text-white placeholder-zinc-500 focus:outline-none focus:border-indigo-500"
+                  className="w-full bg-zinc-900 border border-[var(--panel-border)] rounded-xl pl-9 pr-4 py-2 text-xs text-white placeholder-zinc-500 focus:outline-none focus:border-indigo-500"
                 />
               </div>
 
@@ -2208,7 +2208,7 @@ export default function ServerManagementClient({
             {/* Visual Channel Tree */}
             <div className="space-y-4">
               {channelTree.categories.map((category) => (
-                <div key={category.id} className="rounded-3xl border border-white/10 bg-zinc-950/40 p-4 space-y-2">
+                <div key={category.id} className="rounded-[var(--panel-radius)] border border-[var(--panel-border)] bg-zinc-950/40 p-4 space-y-2">
                   <div className="flex items-center justify-between text-xs font-bold text-zinc-400 uppercase tracking-wider px-2 py-1">
                     <span className="flex items-center gap-2">
                       <Folder className="h-4 w-4 text-amber-400" />
@@ -2225,7 +2225,7 @@ export default function ServerManagementClient({
                       .map((ch) => (
                         <div
                           key={ch.id}
-                          className="flex items-center justify-between p-2.5 rounded-2xl border border-white/5 bg-white/[0.02] hover:bg-white/[0.04] transition-all group"
+                          className="flex items-center justify-between p-2.5 rounded-2xl border border-[var(--panel-border)] bg-white/[0.02] hover:bg-white/[0.04] transition-all group"
                         >
                           <div className="flex items-center gap-2.5 min-w-0">
                             {ch.typeName === "voice" || ch.type === 2 ? (
@@ -2265,7 +2265,7 @@ export default function ServerManagementClient({
 
               {/* Orphan Channels */}
               {channelTree.orphanChannels.length > 0 && (
-                <div className="rounded-3xl border border-white/10 bg-zinc-950/40 p-4 space-y-2">
+                <div className="rounded-[var(--panel-radius)] border border-[var(--panel-border)] bg-zinc-950/40 p-4 space-y-2">
                   <div className="flex items-center justify-between text-xs font-bold text-zinc-400 uppercase tracking-wider px-2 py-1">
                     <span>Sans catégorie</span>
                   </div>
@@ -2273,7 +2273,7 @@ export default function ServerManagementClient({
                     {channelTree.orphanChannels.map((ch) => (
                       <div
                         key={ch.id}
-                        className="flex items-center justify-between p-2.5 rounded-2xl border border-white/5 bg-white/[0.02]"
+                        className="flex items-center justify-between p-2.5 rounded-2xl border border-[var(--panel-border)] bg-white/[0.02]"
                       >
                         <div className="flex items-center gap-2">
                           <Hash className="h-4 w-4 text-zinc-400" />
@@ -2295,8 +2295,8 @@ export default function ServerManagementClient({
             {/* Create Channel Wizard Modal */}
             {isCreateChannelOpen && (
               <div className="fixed inset-0 z-50 bg-black/80 backdrop-blur-sm flex items-center justify-center p-4">
-                <div className="w-full max-w-md rounded-3xl border border-white/15 bg-zinc-950 p-6 space-y-4 shadow-2xl">
-                  <div className="flex items-center justify-between pb-3 border-b border-white/10">
+                <div className="w-full max-w-md rounded-3xl border border-[var(--panel-border)] bg-zinc-950 p-6 space-y-4 shadow-2xl">
+                  <div className="flex items-center justify-between pb-3 border-b border-[var(--panel-border)]">
                     <h3 className="text-sm font-bold text-white flex items-center gap-2">
                       <Plus className="h-4 w-4 text-indigo-400" />
                       Créer un salon Discord
@@ -2327,7 +2327,7 @@ export default function ServerManagementClient({
                             "flex items-center gap-2 p-2.5 rounded-xl border text-xs font-semibold transition-all cursor-pointer",
                             newChannelType === t.type
                               ? "border-indigo-500 bg-indigo-500/20 text-white"
-                              : "border-white/10 bg-white/5 text-zinc-400 hover:text-white"
+                              : "border-[var(--panel-border)] bg-white/5 text-zinc-400 hover:text-white"
                           )}
                         >
                           <t.icon className="h-4 w-4 text-indigo-400" />
@@ -2345,7 +2345,7 @@ export default function ServerManagementClient({
                       placeholder="nouveau-salon"
                       value={newChannelName}
                       onChange={(e) => setNewChannelName(e.target.value)}
-                      className="w-full bg-zinc-900 border border-white/10 rounded-xl px-3 py-2 text-xs text-white placeholder-zinc-500 focus:outline-none focus:border-indigo-500"
+                      className="w-full bg-zinc-900 border border-[var(--panel-border)] rounded-xl px-3 py-2 text-xs text-white placeholder-zinc-500 focus:outline-none focus:border-indigo-500"
                     />
                   </div>
 
@@ -2356,7 +2356,7 @@ export default function ServerManagementClient({
                       <select
                         value={newChannelCategory}
                         onChange={(e) => setNewChannelCategory(e.target.value)}
-                        className="w-full bg-zinc-900 border border-white/10 rounded-xl px-3 py-2 text-xs text-white"
+                        className="w-full bg-zinc-900 border border-[var(--panel-border)] rounded-xl px-3 py-2 text-xs text-white"
                       >
                         <option value="">(Aucune catégorie)</option>
                         {channelTree.categories.map((cat) => (
@@ -2377,12 +2377,12 @@ export default function ServerManagementClient({
                         placeholder="Description du salon..."
                         value={newChannelTopic}
                         onChange={(e) => setNewChannelTopic(e.target.value)}
-                        className="w-full bg-zinc-900 border border-white/10 rounded-xl px-3 py-2 text-xs text-white placeholder-zinc-500"
+                        className="w-full bg-zinc-900 border border-[var(--panel-border)] rounded-xl px-3 py-2 text-xs text-white placeholder-zinc-500"
                       />
                     </div>
                   )}
 
-                  <div className="flex justify-end gap-2 pt-3 border-t border-white/10">
+                  <div className="flex justify-end gap-2 pt-3 border-t border-[var(--panel-border)]">
                     <button
                       onClick={() => setIsCreateChannelOpen(false)}
                       className="px-4 py-2 rounded-xl bg-white/5 text-zinc-400 hover:text-white text-xs font-semibold"
@@ -2407,7 +2407,7 @@ export default function ServerManagementClient({
         {/* ========================================================================= */}
         {activeTab === "roles" && (
           <div className="space-y-4">
-            <div className="flex items-center justify-between gap-3 p-4 rounded-2xl border border-white/10 bg-zinc-950/60">
+            <div className="flex items-center justify-between gap-3 p-4 rounded-[var(--panel-radius)] border border-[var(--panel-border)] bg-zinc-950/60">
               <div className="relative w-full sm:w-72">
                 <Search className="absolute left-3 top-2.5 h-4 w-4 text-zinc-400" />
                 <input
@@ -2415,7 +2415,7 @@ export default function ServerManagementClient({
                   placeholder="Rechercher un rôle..."
                   value={roleSearch}
                   onChange={(e) => setRoleSearch(e.target.value)}
-                  className="w-full bg-zinc-900 border border-white/10 rounded-xl pl-9 pr-4 py-2 text-xs text-white placeholder-zinc-500 focus:outline-none focus:border-indigo-500"
+                  className="w-full bg-zinc-900 border border-[var(--panel-border)] rounded-xl pl-9 pr-4 py-2 text-xs text-white placeholder-zinc-500 focus:outline-none focus:border-indigo-500"
                 />
               </div>
 
@@ -2449,13 +2449,13 @@ export default function ServerManagementClient({
                     className={cn(
                       "p-3.5 rounded-2xl border flex items-center justify-between transition-all",
                       role.isEditableByBot
-                        ? "border-white/10 bg-zinc-950/40 hover:bg-white/[0.03]"
+                        ? "border-[var(--panel-border)] bg-zinc-950/40 hover:bg-white/[0.03]"
                         : "border-amber-500/30 bg-amber-500/[0.03]"
                     )}
                   >
                     <div className="flex items-center gap-3">
                       <div
-                        className="h-4 w-4 rounded-full border border-white/20 shrink-0"
+                        className="h-4 w-4 rounded-full border border-[var(--input-border-hover)] shrink-0"
                         style={{ backgroundColor: role.color }}
                       />
                       <div>
@@ -2488,8 +2488,8 @@ export default function ServerManagementClient({
             {/* Create Role Modal */}
             {isCreateRoleOpen && (
               <div className="fixed inset-0 z-50 bg-black/80 backdrop-blur-sm flex items-center justify-center p-4">
-                <div className="w-full max-w-md rounded-3xl border border-white/15 bg-zinc-950 p-6 space-y-4 shadow-2xl">
-                  <div className="flex items-center justify-between pb-3 border-b border-white/10">
+                <div className="w-full max-w-md rounded-3xl border border-[var(--panel-border)] bg-zinc-950 p-6 space-y-4 shadow-2xl">
+                  <div className="flex items-center justify-between pb-3 border-b border-[var(--panel-border)]">
                     <h3 className="text-sm font-bold text-white flex items-center gap-2">
                       <Plus className="h-4 w-4 text-purple-400" />
                       Créer un nouveau rôle
@@ -2506,7 +2506,7 @@ export default function ServerManagementClient({
                       placeholder="Ex: VIP, Testeur, Membre Pro"
                       value={newRoleName}
                       onChange={(e) => setNewRoleName(e.target.value)}
-                      className="w-full bg-zinc-900 border border-white/10 rounded-xl px-3 py-2 text-xs text-white placeholder-zinc-500"
+                      className="w-full bg-zinc-900 border border-[var(--panel-border)] rounded-xl px-3 py-2 text-xs text-white placeholder-zinc-500"
                     />
                   </div>
 
@@ -2517,13 +2517,13 @@ export default function ServerManagementClient({
                         type="color"
                         value={newRoleColor}
                         onChange={(e) => setNewRoleColor(e.target.value)}
-                        className="h-9 w-9 rounded-xl border border-white/10 bg-transparent cursor-pointer"
+                        className="h-9 w-9 rounded-[var(--inset-radius)] border border-[var(--panel-border)] bg-transparent cursor-pointer"
                       />
                       <input
                         type="text"
                         value={newRoleColor}
                         onChange={(e) => setNewRoleColor(e.target.value)}
-                        className="flex-1 bg-zinc-900 border border-white/10 rounded-xl px-3 py-2 text-xs text-white font-mono"
+                        className="flex-1 bg-zinc-900 border border-[var(--panel-border)] rounded-xl px-3 py-2 text-xs text-white font-mono"
                       />
                     </div>
                   </div>
@@ -2534,7 +2534,7 @@ export default function ServerManagementClient({
                         type="checkbox"
                         checked={newRoleHoist}
                         onChange={(e) => setNewRoleHoist(e.target.checked)}
-                        className="rounded border-white/20 bg-zinc-900 text-purple-600 focus:ring-0"
+                        className="rounded border-[var(--input-border-hover)] bg-zinc-900 text-purple-600 focus:ring-0"
                       />
                       <span>Afficher les membres séparément dans la liste (Hoist)</span>
                     </label>
@@ -2544,13 +2544,13 @@ export default function ServerManagementClient({
                         type="checkbox"
                         checked={newRoleMentionable}
                         onChange={(e) => setNewRoleMentionable(e.target.checked)}
-                        className="rounded border-white/20 bg-zinc-900 text-purple-600 focus:ring-0"
+                        className="rounded border-[var(--input-border-hover)] bg-zinc-900 text-purple-600 focus:ring-0"
                       />
                       <span>Permettre à tout le monde de mentionner ce rôle</span>
                     </label>
                   </div>
 
-                  <div className="flex justify-end gap-2 pt-3 border-t border-white/10">
+                  <div className="flex justify-end gap-2 pt-3 border-t border-[var(--panel-border)]">
                     <button
                       onClick={() => setIsCreateRoleOpen(false)}
                       className="px-4 py-2 rounded-xl bg-white/5 text-zinc-400 hover:text-white text-xs font-semibold"
@@ -2594,7 +2594,7 @@ export default function ServerManagementClient({
                   <select
                     value={debugUserId}
                     onChange={(e) => setDebugUserId(e.target.value)}
-                    className="w-full bg-zinc-900 border border-white/10 rounded-xl px-3 py-2 text-xs text-white"
+                    className="w-full bg-zinc-900 border border-[var(--panel-border)] rounded-xl px-3 py-2 text-xs text-white"
                   >
                     <option value="">Sélectionner un membre...</option>
                     {members.map((m) => (
@@ -2610,7 +2610,7 @@ export default function ServerManagementClient({
                   <select
                     value={debugChannelId}
                     onChange={(e) => setDebugChannelId(e.target.value)}
-                    className="w-full bg-zinc-900 border border-white/10 rounded-xl px-3 py-2 text-xs text-white"
+                    className="w-full bg-zinc-900 border border-[var(--panel-border)] rounded-xl px-3 py-2 text-xs text-white"
                   >
                     <option value="">Sélectionner un salon...</option>
                     {[...channelTree.categories.flatMap((c) => c.channels), ...channelTree.orphanChannels].map((c) => (
@@ -2626,7 +2626,7 @@ export default function ServerManagementClient({
                   <select
                     value={debugPermKey}
                     onChange={(e) => setDebugPermKey(e.target.value)}
-                    className="w-full bg-zinc-900 border border-white/10 rounded-xl px-3 py-2 text-xs text-white"
+                    className="w-full bg-zinc-900 border border-[var(--panel-border)] rounded-xl px-3 py-2 text-xs text-white"
                   >
                     <option value="ViewChannel">Voir le salon (ViewChannel)</option>
                     <option value="SendMessages">Envoyer des messages (SendMessages)</option>
@@ -2652,8 +2652,8 @@ export default function ServerManagementClient({
 
               {/* Debugger Result Flow */}
               {debugResult && (
-                <div className="p-4 rounded-2xl border border-white/10 bg-zinc-900/80 space-y-4 mt-4">
-                  <div className="flex items-center justify-between pb-3 border-b border-white/10">
+                <div className="p-4 rounded-[var(--panel-radius)] border border-[var(--panel-border)] bg-zinc-900/80 space-y-4 mt-4">
+                  <div className="flex items-center justify-between pb-3 border-b border-[var(--panel-border)]">
                     <div>
                       <span className="text-xs text-zinc-400">Verdict Final pour</span>{" "}
                       <span className="text-xs font-bold text-white">{debugResult.userTag}</span>{" "}
@@ -2681,7 +2681,7 @@ export default function ServerManagementClient({
                     {debugResult.steps.map((step, idx) => (
                       <div
                         key={idx}
-                        className="p-3 rounded-xl border border-white/5 bg-white/[0.02] flex items-center justify-between text-xs"
+                        className="p-3 rounded-[var(--inset-radius)] border border-[var(--panel-border)] bg-white/[0.02] flex items-center justify-between text-xs"
                       >
                         <div>
                           <p className="font-bold text-white">{step.step}</p>
@@ -2707,7 +2707,7 @@ export default function ServerManagementClient({
             </div>
 
             {/* Global Permission Matrix Table */}
-            <div className="rounded-3xl border border-white/10 bg-zinc-950/40 p-5 space-y-4">
+            <div className="rounded-[var(--panel-radius)] border border-[var(--panel-border)] bg-zinc-950/40 p-5 space-y-4">
               <div className="flex items-center justify-between">
                 <div>
                   <h3 className="text-sm font-bold text-white">Matrice Globale de Permissions</h3>
@@ -2717,7 +2717,7 @@ export default function ServerManagementClient({
 
               <div className="overflow-x-auto">
                 <table className="w-full text-left text-xs">
-                  <thead className="bg-white/[0.02] border-b border-white/10 text-zinc-400 text-[10px] uppercase font-mono">
+                  <thead className="bg-white/[0.02] border-b border-[var(--panel-border)] text-zinc-400 text-[10px] uppercase font-mono">
                     <tr>
                       <th className="p-3">Permission</th>
                       {roles.map((r) => (
@@ -2763,7 +2763,7 @@ export default function ServerManagementClient({
             {/* Quotas Progress Cards */}
             {emojiQuota && (
               <div className="grid grid-cols-1 sm:grid-cols-3 gap-4">
-                <div className="p-4 rounded-2xl border border-white/10 bg-zinc-950/40">
+                <div className="p-4 rounded-[var(--panel-radius)] border border-[var(--panel-border)] bg-zinc-950/40">
                   <span className="text-xs text-zinc-400 block mb-1">Emojis Statiques</span>
                   <div className="text-xl font-bold text-white">
                     {emojiQuota.usedStatic} / {emojiQuota.maxStatic}
@@ -2776,7 +2776,7 @@ export default function ServerManagementClient({
                   </div>
                 </div>
 
-                <div className="p-4 rounded-2xl border border-white/10 bg-zinc-950/40">
+                <div className="p-4 rounded-[var(--panel-radius)] border border-[var(--panel-border)] bg-zinc-950/40">
                   <span className="text-xs text-zinc-400 block mb-1">Emojis Animés (GIF)</span>
                   <div className="text-xl font-bold text-white">
                     {emojiQuota.usedAnimated} / {emojiQuota.maxAnimated}
@@ -2789,7 +2789,7 @@ export default function ServerManagementClient({
                   </div>
                 </div>
 
-                <div className="p-4 rounded-2xl border border-white/10 bg-zinc-950/40">
+                <div className="p-4 rounded-[var(--panel-radius)] border border-[var(--panel-border)] bg-zinc-950/40">
                   <span className="text-xs text-zinc-400 block mb-1">Stickers Personnalisés</span>
                   <div className="text-xl font-bold text-white">
                     {emojiQuota.usedStickers} / {emojiQuota.maxStickers}
@@ -2805,7 +2805,7 @@ export default function ServerManagementClient({
             )}
 
             {/* Emojis Gallery */}
-            <div className="p-5 rounded-3xl border border-white/10 bg-zinc-950/40 space-y-4">
+            <div className="p-5 rounded-[var(--panel-radius)] border border-[var(--panel-border)] bg-zinc-950/40 space-y-4">
               <h3 className="text-sm font-bold text-white flex items-center gap-2">
                 <Smile className="h-4 w-4 text-amber-400" />
                 Galerie des Emojis ({emojis.length})
@@ -2814,7 +2814,7 @@ export default function ServerManagementClient({
                 {emojis.map((emoji) => (
                   <div
                     key={emoji.id}
-                    className="p-3 rounded-2xl border border-white/5 bg-white/[0.02] flex flex-col items-center text-center group hover:bg-white/[0.05] transition-all"
+                    className="p-3 rounded-2xl border border-[var(--panel-border)] bg-white/[0.02] flex flex-col items-center text-center group hover:bg-white/[0.05] transition-all"
                   >
                     <img src={emoji.url} alt={emoji.name} className="h-10 w-10 object-contain mb-2" />
                     <span className="font-mono text-xs font-bold text-white truncate max-w-full">:{emoji.name}:</span>
@@ -2827,7 +2827,7 @@ export default function ServerManagementClient({
             </div>
 
             {/* Stickers Gallery */}
-            <div className="p-5 rounded-3xl border border-white/10 bg-zinc-950/40 space-y-4">
+            <div className="p-5 rounded-[var(--panel-radius)] border border-[var(--panel-border)] bg-zinc-950/40 space-y-4">
               <h3 className="text-sm font-bold text-white flex items-center gap-2">
                 <Sparkles className="h-4 w-4 text-pink-400" />
                 Stickers du Serveur ({stickers.length})
@@ -2836,7 +2836,7 @@ export default function ServerManagementClient({
                 {stickers.map((stk) => (
                   <div
                     key={stk.id}
-                    className="p-4 rounded-2xl border border-white/5 bg-white/[0.02] flex flex-col items-center text-center"
+                    className="p-4 rounded-2xl border border-[var(--panel-border)] bg-white/[0.02] flex flex-col items-center text-center"
                   >
                     <img src={stk.url} alt={stk.name} className="h-20 w-20 object-contain mb-2" />
                     <span className="font-bold text-xs text-white">{stk.name}</span>
@@ -2853,7 +2853,7 @@ export default function ServerManagementClient({
         {/* ========================================================================= */}
         {activeTab === "webhooks" && (
           <div className="space-y-4">
-            <div className="flex items-center justify-between p-4 rounded-2xl border border-white/10 bg-zinc-950/60">
+            <div className="flex items-center justify-between p-4 rounded-[var(--panel-radius)] border border-[var(--panel-border)] bg-zinc-950/60">
               <div className="flex items-center gap-2 text-xs text-zinc-300">
                 <ShieldCheck className="h-4 w-4 text-emerald-400" />
                 <span>Sécurité garantie : les tokens secrets des webhooks ne sont jamais transmis au navigateur.</span>
@@ -2868,9 +2868,9 @@ export default function ServerManagementClient({
             </div>
 
             {/* Webhooks Table */}
-            <div className="rounded-3xl border border-white/10 bg-zinc-950/40 overflow-hidden">
+            <div className="rounded-[var(--panel-radius)] border border-[var(--panel-border)] bg-zinc-950/40 overflow-hidden">
               <table className="w-full text-left text-xs">
-                <thead className="bg-white/[0.02] border-b border-white/10 text-zinc-400 text-[10px] uppercase font-mono">
+                <thead className="bg-white/[0.02] border-b border-[var(--panel-border)] text-zinc-400 text-[10px] uppercase font-mono">
                   <tr>
                     <th className="p-4">Nom</th>
                     <th className="p-4">Salon Cible</th>
@@ -2915,7 +2915,7 @@ export default function ServerManagementClient({
             {/* Create Webhook Modal */}
             {isCreateWebhookOpen && (
               <div className="fixed inset-0 z-50 bg-black/80 backdrop-blur-sm flex items-center justify-center p-4">
-                <div className="w-full max-w-md rounded-3xl border border-white/15 bg-zinc-950 p-6 space-y-4 shadow-2xl">
+                <div className="w-full max-w-md rounded-3xl border border-[var(--panel-border)] bg-zinc-950 p-6 space-y-4 shadow-2xl">
                   <h3 className="text-sm font-bold text-white flex items-center gap-2">
                     <Webhook className="h-4 w-4 text-indigo-400" />
                     Créer un Webhook
@@ -2928,7 +2928,7 @@ export default function ServerManagementClient({
                       placeholder="Ex: GitHub Notifier"
                       value={newWebhookName}
                       onChange={(e) => setNewWebhookName(e.target.value)}
-                      className="w-full bg-zinc-900 border border-white/10 rounded-xl px-3 py-2 text-xs text-white"
+                      className="w-full bg-zinc-900 border border-[var(--panel-border)] rounded-xl px-3 py-2 text-xs text-white"
                     />
                   </div>
 
@@ -2937,7 +2937,7 @@ export default function ServerManagementClient({
                     <select
                       value={newWebhookChannel}
                       onChange={(e) => setNewWebhookChannel(e.target.value)}
-                      className="w-full bg-zinc-900 border border-white/10 rounded-xl px-3 py-2 text-xs text-white"
+                      className="w-full bg-zinc-900 border border-[var(--panel-border)] rounded-xl px-3 py-2 text-xs text-white"
                     >
                       <option value="">Sélectionner un salon...</option>
                       {[...channelTree.categories.flatMap((c) => c.channels), ...channelTree.orphanChannels].map((c) => (
@@ -2948,7 +2948,7 @@ export default function ServerManagementClient({
                     </select>
                   </div>
 
-                  <div className="flex justify-end gap-2 pt-3 border-t border-white/10">
+                  <div className="flex justify-end gap-2 pt-3 border-t border-[var(--panel-border)]">
                     <button
                       onClick={() => setIsCreateWebhookOpen(false)}
                       className="px-4 py-2 rounded-xl bg-white/5 text-zinc-400 hover:text-white text-xs"
@@ -2973,7 +2973,7 @@ export default function ServerManagementClient({
         {/* ========================================================================= */}
         {activeTab === "settings" && settings && (
           <div className="max-w-3xl space-y-6">
-            <div className="p-6 rounded-3xl border border-white/10 bg-zinc-950/40 space-y-4">
+            <div className="p-6 rounded-[var(--panel-radius)] border border-[var(--panel-border)] bg-zinc-950/40 space-y-4">
               <h3 className="text-sm font-bold text-white flex items-center gap-2">
                 <Settings className="h-4 w-4 text-indigo-400" />
                 Paramètres Discord du Serveur
@@ -2986,7 +2986,7 @@ export default function ServerManagementClient({
                     type="text"
                     value={settings.name}
                     onChange={(e) => setSettings({ ...settings, name: e.target.value })}
-                    className="w-full bg-zinc-900 border border-white/10 rounded-xl px-3 py-2 text-white font-semibold"
+                    className="w-full bg-zinc-900 border border-[var(--panel-border)] rounded-xl px-3 py-2 text-white font-semibold"
                   />
                 </div>
 
@@ -2996,7 +2996,7 @@ export default function ServerManagementClient({
                     rows={3}
                     value={settings.description || ""}
                     onChange={(e) => setSettings({ ...settings, description: e.target.value })}
-                    className="w-full bg-zinc-900 border border-white/10 rounded-xl p-3 text-white"
+                    className="w-full bg-zinc-900 border border-[var(--panel-border)] rounded-xl p-3 text-white"
                   />
                 </div>
 
@@ -3006,7 +3006,7 @@ export default function ServerManagementClient({
                     <select
                       value={settings.verificationLevel}
                       onChange={(e) => setSettings({ ...settings, verificationLevel: Number(e.target.value) })}
-                      className="w-full bg-zinc-900 border border-white/10 rounded-xl px-3 py-2 text-white"
+                      className="w-full bg-zinc-900 border border-[var(--panel-border)] rounded-xl px-3 py-2 text-white"
                     >
                       <option value={0}>Aucun (Non restreint)</option>
                       <option value={1}>Faible (Email vérifié)</option>
@@ -3021,7 +3021,7 @@ export default function ServerManagementClient({
                     <select
                       value={settings.explicitContentFilter}
                       onChange={(e) => setSettings({ ...settings, explicitContentFilter: Number(e.target.value) })}
-                      className="w-full bg-zinc-900 border border-white/10 rounded-xl px-3 py-2 text-white"
+                      className="w-full bg-zinc-900 border border-[var(--panel-border)] rounded-xl px-3 py-2 text-white"
                     >
                       <option value={0}>Désactivé</option>
                       <option value={1}>Analyser les membres sans rôle</option>
@@ -3030,7 +3030,7 @@ export default function ServerManagementClient({
                   </div>
                 </div>
 
-                <div className="flex justify-end pt-4 border-t border-white/10">
+                <div className="flex justify-end pt-4 border-t border-[var(--panel-border)]">
                   <button
                     onClick={handleSaveSettings}
                     disabled={savingSettings}
@@ -3049,7 +3049,7 @@ export default function ServerManagementClient({
         {/* ========================================================================= */}
         {activeTab === "audit" && (
           <div className="space-y-4">
-            <div className="p-4 rounded-2xl border border-white/10 bg-zinc-950/60 flex items-center justify-between">
+            <div className="p-4 rounded-[var(--panel-radius)] border border-[var(--panel-border)] bg-zinc-950/60 flex items-center justify-between">
               <div>
                 <h3 className="text-sm font-bold text-white flex items-center gap-2">
                   <FileText className="h-4 w-4 text-indigo-400" />
@@ -3072,7 +3072,7 @@ export default function ServerManagementClient({
               {auditLogs.map((log) => (
                 <div
                   key={log.id}
-                  className="p-3.5 rounded-2xl border border-white/5 bg-zinc-950/40 flex items-center justify-between text-xs"
+                  className="p-3.5 rounded-2xl border border-[var(--panel-border)] bg-zinc-950/40 flex items-center justify-between text-xs"
                 >
                   <div className="flex items-center gap-3">
                     <span
@@ -3114,7 +3114,7 @@ export default function ServerManagementClient({
         {/* ========================================================================= */}
         {activeTab === "health" && overview?.health && (
           <div className="space-y-6 max-w-4xl">
-            <div className="p-6 rounded-3xl border border-white/10 bg-zinc-950/40 space-y-6">
+            <div className="p-6 rounded-[var(--panel-radius)] border border-[var(--panel-border)] bg-zinc-950/40 space-y-6">
               <div className="flex items-center justify-between">
                 <div>
                   <h3 className="text-base font-bold text-white flex items-center gap-2">
@@ -3130,7 +3130,7 @@ export default function ServerManagementClient({
 
               <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
                 {/* Gateway */}
-                <div className="p-4 rounded-2xl border border-white/5 bg-white/[0.02] space-y-2">
+                <div className="p-4 rounded-2xl border border-[var(--panel-border)] bg-white/[0.02] space-y-2">
                   <div className="flex items-center justify-between text-xs text-zinc-400">
                     <span className="font-semibold">Discord Gateway WebSocket</span>
                     <Wifi className="h-4 w-4 text-emerald-400" />
@@ -3144,7 +3144,7 @@ export default function ServerManagementClient({
                 </div>
 
                 {/* Database */}
-                <div className="p-4 rounded-2xl border border-white/5 bg-white/[0.02] space-y-2">
+                <div className="p-4 rounded-2xl border border-[var(--panel-border)] bg-white/[0.02] space-y-2">
                   <div className="flex items-center justify-between text-xs text-zinc-400">
                     <span className="font-semibold">Persistance & Base de Données</span>
                     <Database className="h-4 w-4 text-emerald-400" />
@@ -3158,7 +3158,7 @@ export default function ServerManagementClient({
                 </div>
 
                 {/* Node.js Heap Memory */}
-                <div className="p-4 rounded-2xl border border-white/5 bg-white/[0.02] space-y-2">
+                <div className="p-4 rounded-2xl border border-[var(--panel-border)] bg-white/[0.02] space-y-2">
                   <div className="flex items-center justify-between text-xs text-zinc-400">
                     <span className="font-semibold">Mémoire Heap Process</span>
                     <Cpu className="h-4 w-4 text-indigo-400" />
@@ -3183,7 +3183,7 @@ export default function ServerManagementClient({
                 </div>
 
                 {/* Event Scheduler */}
-                <div className="p-4 rounded-2xl border border-white/5 bg-white/[0.02] space-y-2">
+                <div className="p-4 rounded-2xl border border-[var(--panel-border)] bg-white/[0.02] space-y-2">
                   <div className="flex items-center justify-between text-xs text-zinc-400">
                     <span className="font-semibold">Scheduler & Background Jobs</span>
                     <Clock className="h-4 w-4 text-purple-400" />
@@ -3214,7 +3214,7 @@ export default function ServerManagementClient({
                 ? "Désactiver le Safe Mode réactivera les créations et modifications standards."
                 : "Activer le Safe Mode gèlera immédiatement les invitations, bloquera les arrivées massives et renforcera les règles de salon."}
             </p>
-            <div className="flex justify-end gap-2 pt-3 border-t border-white/10">
+            <div className="flex justify-end gap-2 pt-3 border-t border-[var(--panel-border)]">
               <button
                 onClick={() => setIsSafeModeModalOpen(false)}
                 className="px-4 py-2 rounded-xl bg-white/5 text-zinc-400 hover:text-white text-xs font-semibold"
@@ -3238,8 +3238,8 @@ export default function ServerManagementClient({
       {/* Security Breakdown Modal */}
       {isSecurityModalOpen && overview?.security && (
         <div className="fixed inset-0 z-50 bg-black/80 backdrop-blur-sm flex items-center justify-center p-4">
-          <div className="w-full max-w-lg rounded-3xl border border-white/15 bg-zinc-950 p-6 space-y-4 shadow-2xl">
-            <div className="flex items-center justify-between pb-3 border-b border-white/10">
+          <div className="w-full max-w-lg rounded-3xl border border-[var(--panel-border)] bg-zinc-950 p-6 space-y-4 shadow-2xl">
+            <div className="flex items-center justify-between pb-3 border-b border-[var(--panel-border)]">
               <h3 className="text-sm font-bold text-white flex items-center gap-2">
                 <ShieldCheck className="h-4 w-4 text-emerald-400" />
                 Détail de l'Évaluation de Sécurité ({overview.security.score}/100)
@@ -3251,7 +3251,7 @@ export default function ServerManagementClient({
 
             <div className="space-y-2.5 max-h-[60vh] overflow-y-auto pr-1">
               {overview.security.factors.map((factor, idx) => (
-                <div key={idx} className="p-3.5 rounded-2xl border border-white/5 bg-white/[0.02] space-y-1">
+                <div key={idx} className="p-3.5 rounded-2xl border border-[var(--panel-border)] bg-white/[0.02] space-y-1">
                   <div className="flex items-center justify-between text-xs">
                     <span className="font-bold text-white flex items-center gap-2">
                       {factor.positive ? (

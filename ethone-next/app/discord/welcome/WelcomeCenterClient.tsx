@@ -433,7 +433,7 @@ export function WelcomeCenterClient() {
   return (
     <div className="h-full overflow-y-auto os-scroll [overscroll-behavior:contain] bg-[var(--bg-main)] text-white px-4 sm:px-8 py-6 pb-36">
       {/* Top Bar / Guild Selector */}
-      <div className="flex flex-col md:flex-row md:items-center justify-between gap-4 border-b border-white/10 pb-6">
+      <div className="flex flex-col md:flex-row md:items-center justify-between gap-4 border-b border-[var(--panel-border)] pb-6">
         <div className="flex items-center gap-3">
           <div className="flex h-12 w-12 items-center justify-center rounded-2xl bg-teal-600 shadow-sm">
             <Sparkles className="h-6 w-6 text-white" />
@@ -459,7 +459,7 @@ export function WelcomeCenterClient() {
               const g = guilds.find((item: DiscordGuild) => item.id === e.target.value);
               if (g) setSelectedGuild(g);
             }}
-            className="h-9 rounded-xl border border-white/10 bg-zinc-900/90 px-3 text-xs text-white outline-none focus:border-teal-500 cursor-pointer"
+            className="h-9 rounded-[var(--inset-radius)] border border-[var(--panel-border)] bg-zinc-900/90 px-3 text-xs text-white outline-none focus:border-teal-500 cursor-pointer"
           >
             {guilds.length > 0 ? (
               guilds.map((g: DiscordGuild) => (
@@ -475,7 +475,7 @@ export function WelcomeCenterClient() {
           <button
             onClick={fetchAllData}
             disabled={loading}
-            className="flex h-9 w-9 items-center justify-center rounded-xl border border-white/10 bg-zinc-900/80 text-zinc-300 hover:bg-white/10 hover:text-white transition-all cursor-pointer"
+            className="flex h-9 w-9 items-center justify-center rounded-[var(--inset-radius)] border border-[var(--panel-border)] bg-zinc-900/80 text-zinc-300 hover:bg-white/10 hover:text-white transition-all cursor-pointer"
             title="Rafraîchir"
           >
             <RefreshCw className={cn("h-4 w-4", loading && "animate-spin text-teal-400")} />
@@ -490,7 +490,7 @@ export function WelcomeCenterClient() {
 
           <Link
             href={`/discord?guildId=${currentGuildId}`}
-            className="flex h-9 items-center gap-1.5 rounded-xl border border-white/10 bg-zinc-900/80 px-3 text-xs font-medium text-zinc-300 hover:bg-white/10 hover:text-white transition-all"
+            className="flex h-9 items-center gap-1.5 rounded-[var(--inset-radius)] border border-[var(--panel-border)] bg-zinc-900/80 px-3 text-xs font-medium text-zinc-300 hover:bg-white/10 hover:text-white transition-all"
           >
             <span>Retour Discord</span>
           </Link>
@@ -546,7 +546,7 @@ export function WelcomeCenterClient() {
       </div>
 
       {/* Tabs Navigation */}
-      <div className="flex items-center gap-1.5 overflow-x-auto border-b border-white/10 pb-2 mt-8 text-xs scrollbar-none">
+      <div className="flex items-center gap-1.5 overflow-x-auto border-b border-[var(--panel-border)] pb-2 mt-8 text-xs scrollbar-none">
         {[
           { id: "overview", label: "Vue d'Ensemble & Funnel", icon: BarChart3 },
           { id: "builder", label: "Welcome Message & Embed", icon: Sliders },
@@ -584,7 +584,7 @@ export function WelcomeCenterClient() {
         <div className="space-y-6 mt-6">
           {/* System Status Toggles */}
           <div className="grid grid-cols-2 sm:grid-cols-4 gap-3">
-            <div className="flex items-center justify-between rounded-xl border border-white/10 bg-white/[0.02] p-3.5">
+            <div className="flex items-center justify-between rounded-[var(--inset-radius)] border border-[var(--panel-border)] bg-white/[0.02] p-3.5">
               <div>
                 <p className="text-xs font-bold text-white">Système Welcome</p>
                 <p className="text-[10px] text-zinc-400">Salons textuels d&apos;accueil</p>
@@ -601,7 +601,7 @@ export function WelcomeCenterClient() {
               </span>
             </div>
 
-            <div className="flex items-center justify-between rounded-xl border border-white/10 bg-white/[0.02] p-3.5">
+            <div className="flex items-center justify-between rounded-[var(--inset-radius)] border border-[var(--panel-border)] bg-white/[0.02] p-3.5">
               <div>
                 <p className="text-xs font-bold text-white">Système Goodbye</p>
                 <p className="text-[10px] text-zinc-400">Notifications de départ</p>
@@ -618,7 +618,7 @@ export function WelcomeCenterClient() {
               </span>
             </div>
 
-            <div className="flex items-center justify-between rounded-xl border border-white/10 bg-white/[0.02] p-3.5">
+            <div className="flex items-center justify-between rounded-[var(--inset-radius)] border border-[var(--panel-border)] bg-white/[0.02] p-3.5">
               <div>
                 <p className="text-xs font-bold text-white">Vérification</p>
                 <p className="text-[10px] text-zinc-400">Validation de règlement</p>
@@ -635,7 +635,7 @@ export function WelcomeCenterClient() {
               </span>
             </div>
 
-            <div className="flex items-center justify-between rounded-xl border border-white/10 bg-white/[0.02] p-3.5">
+            <div className="flex items-center justify-between rounded-[var(--inset-radius)] border border-[var(--panel-border)] bg-white/[0.02] p-3.5">
               <div>
                 <p className="text-xs font-bold text-white">Onboarding Flow</p>
                 <p className="text-[10px] text-zinc-400">Parcours multi-étapes</p>
@@ -654,7 +654,7 @@ export function WelcomeCenterClient() {
           </div>
 
           {/* Onboarding Funnel Visualizer */}
-          <div className="rounded-2xl border border-white/10 bg-white/[0.02] p-6 space-y-4 shadow-xl">
+          <div className="rounded-[var(--panel-radius)] border border-[var(--panel-border)] bg-white/[0.02] p-6 space-y-4 shadow-xl">
             <div>
               <h2 className="text-sm font-bold text-white flex items-center gap-2">
                 <BarChart3 className="h-4 w-4 text-teal-400" />
@@ -693,7 +693,7 @@ export function WelcomeCenterClient() {
           </div>
 
           {/* Live Recent Events Stream */}
-          <div className="rounded-2xl border border-white/10 bg-white/[0.02] p-5 space-y-3">
+          <div className="rounded-[var(--panel-radius)] border border-[var(--panel-border)] bg-white/[0.02] p-5 space-y-3">
             <h3 className="text-xs font-bold uppercase tracking-wider text-zinc-400 flex items-center gap-2">
               <Clock className="h-3.5 w-3.5 text-teal-400" />
               <span>Activité Récente de Bienvenue</span>
@@ -746,7 +746,7 @@ export function WelcomeCenterClient() {
             </div>
 
             {/* Variable Helper Chips */}
-            <div className="rounded-xl border border-white/10 bg-white/[0.02] p-3 space-y-2">
+            <div className="rounded-[var(--inset-radius)] border border-[var(--panel-border)] bg-white/[0.02] p-3 space-y-2">
               <p className="text-[10px] uppercase font-bold text-zinc-400">Variables Disponibles (Cliquez pour insérer)</p>
               <div className="flex flex-wrap gap-1.5">
                 {[
@@ -765,7 +765,7 @@ export function WelcomeCenterClient() {
                       navigator.clipboard.writeText(v);
                       info("Variable copiée", `${v} est dans votre presse-papiers.`);
                     }}
-                    className="rounded-md bg-white/5 border border-white/10 px-2 py-0.5 text-[11px] font-mono text-teal-300 hover:bg-teal-500/20 transition-colors cursor-pointer"
+                    className="rounded-md bg-white/5 border border-[var(--panel-border)] px-2 py-0.5 text-[11px] font-mono text-teal-300 hover:bg-teal-500/20 transition-colors cursor-pointer"
                   >
                     {v}
                   </button>
@@ -774,7 +774,7 @@ export function WelcomeCenterClient() {
             </div>
 
             {/* General Switch & Text */}
-            <div className="rounded-2xl border border-white/10 bg-white/[0.02] p-4 space-y-3">
+            <div className="rounded-[var(--panel-radius)] border border-[var(--panel-border)] bg-white/[0.02] p-4 space-y-3">
               <label className="flex items-center justify-between cursor-pointer">
                 <span className="text-xs font-bold text-white">Activer le message de bienvenue</span>
                 <input
@@ -802,13 +802,13 @@ export function WelcomeCenterClient() {
                     }))
                   }
                   placeholder="👋 Bienvenue {user} sur **{server}** !"
-                  className="mt-1 w-full rounded-xl border border-white/10 bg-zinc-900/90 p-2.5 text-xs text-white outline-none focus:border-teal-500 resize-none font-sans"
+                  className="mt-1 w-full rounded-[var(--inset-radius)] border border-[var(--panel-border)] bg-zinc-900/90 p-2.5 text-xs text-white outline-none focus:border-teal-500 resize-none font-sans"
                 />
               </div>
             </div>
 
             {/* Embed Builder */}
-            <div className="rounded-2xl border border-white/10 bg-white/[0.02] p-4 space-y-3">
+            <div className="rounded-[var(--panel-radius)] border border-[var(--panel-border)] bg-white/[0.02] p-4 space-y-3">
               <div className="flex items-center justify-between">
                 <label className="flex items-center gap-2 cursor-pointer">
                   <input
@@ -849,7 +849,7 @@ export function WelcomeCenterClient() {
               </div>
 
               {config.welcome.embed.enabled && (
-                <div className="space-y-3 pt-2 border-t border-white/5">
+                <div className="space-y-3 pt-2 border-t border-[var(--panel-border)]">
                   <div>
                     <label className="text-[11px] font-semibold text-zinc-300">Titre de l&apos;embed</label>
                     <input
@@ -864,7 +864,7 @@ export function WelcomeCenterClient() {
                           },
                         }))
                       }
-                      className="mt-1 h-9 w-full rounded-xl border border-white/10 bg-zinc-900 px-3 text-xs text-white outline-none focus:border-teal-500"
+                      className="mt-1 h-9 w-full rounded-[var(--inset-radius)] border border-[var(--panel-border)] bg-zinc-900 px-3 text-xs text-white outline-none focus:border-teal-500"
                     />
                   </div>
 
@@ -882,7 +882,7 @@ export function WelcomeCenterClient() {
                           },
                         }))
                       }
-                      className="mt-1 w-full rounded-xl border border-white/10 bg-zinc-900 p-2.5 text-xs text-white outline-none focus:border-teal-500 resize-none"
+                      className="mt-1 w-full rounded-[var(--inset-radius)] border border-[var(--panel-border)] bg-zinc-900 p-2.5 text-xs text-white outline-none focus:border-teal-500 resize-none"
                     />
                   </div>
 
@@ -901,7 +901,7 @@ export function WelcomeCenterClient() {
                             },
                           }))
                         }
-                        className="mt-1 h-9 w-full rounded-xl border border-white/10 bg-zinc-900 px-3 text-xs text-white outline-none focus:border-teal-500"
+                        className="mt-1 h-9 w-full rounded-[var(--inset-radius)] border border-[var(--panel-border)] bg-zinc-900 px-3 text-xs text-white outline-none focus:border-teal-500"
                       />
                     </div>
                     <div>
@@ -918,13 +918,13 @@ export function WelcomeCenterClient() {
                             },
                           }))
                         }
-                        className="mt-1 h-9 w-full rounded-xl border border-white/10 bg-zinc-900 px-3 text-xs text-white outline-none focus:border-teal-500"
+                        className="mt-1 h-9 w-full rounded-[var(--inset-radius)] border border-[var(--panel-border)] bg-zinc-900 px-3 text-xs text-white outline-none focus:border-teal-500"
                       />
                     </div>
                   </div>
 
                   {/* Dynamic Fields List */}
-                  <div className="space-y-2 pt-2 border-t border-white/5">
+                  <div className="space-y-2 pt-2 border-t border-[var(--panel-border)]">
                     <div className="flex items-center justify-between">
                       <label className="text-[11px] font-bold text-zinc-300">Champs Personnalisés</label>
                       <button
@@ -954,7 +954,7 @@ export function WelcomeCenterClient() {
                     </div>
 
                     {config.welcome.embed.fields?.map((f: EmbedField, idx: number) => (
-                      <div key={f.id} className="flex items-center gap-2 rounded-xl border border-white/5 bg-black/40 p-2 text-xs">
+                      <div key={f.id} className="flex items-center gap-2 rounded-[var(--inset-radius)] border border-[var(--panel-border)] bg-black/40 p-2 text-xs">
                         <input
                           type="text"
                           value={f.name}
@@ -967,7 +967,7 @@ export function WelcomeCenterClient() {
                             }));
                           }}
                           placeholder="Nom"
-                          className="h-7 w-1/3 rounded-lg border border-white/10 bg-zinc-900 px-2 text-[11px] text-white"
+                          className="h-7 w-1/3 rounded-[var(--inset-radius)] border border-[var(--panel-border)] bg-zinc-900 px-2 text-[11px] text-white"
                         />
                         <input
                           type="text"
@@ -981,7 +981,7 @@ export function WelcomeCenterClient() {
                             }));
                           }}
                           placeholder="Valeur"
-                          className="h-7 flex-1 rounded-lg border border-white/10 bg-zinc-900 px-2 text-[11px] text-white"
+                          className="h-7 flex-1 rounded-[var(--inset-radius)] border border-[var(--panel-border)] bg-zinc-900 px-2 text-[11px] text-white"
                         />
                         <label className="flex items-center gap-1 text-[10px] text-zinc-400 cursor-pointer">
                           <input
@@ -1019,7 +1019,7 @@ export function WelcomeCenterClient() {
             </div>
 
             {/* Interactive Buttons Builder */}
-            <div className="rounded-2xl border border-white/10 bg-white/[0.02] p-4 space-y-3">
+            <div className="rounded-[var(--panel-radius)] border border-[var(--panel-border)] bg-white/[0.02] p-4 space-y-3">
               <div className="flex items-center justify-between">
                 <p className="text-xs font-bold text-white">Boutons d&apos;Action Discord (Max 5)</p>
                 <button
@@ -1050,7 +1050,7 @@ export function WelcomeCenterClient() {
 
               <div className="space-y-2">
                 {config.welcome.buttons?.map((btn: WelcomeButton, idx: number) => (
-                  <div key={btn.id} className="rounded-xl border border-white/5 bg-black/40 p-3 space-y-2 text-xs">
+                  <div key={btn.id} className="rounded-[var(--inset-radius)] border border-[var(--panel-border)] bg-black/40 p-3 space-y-2 text-xs">
                     <div className="flex items-center gap-2">
                       <input
                         type="text"
@@ -1061,7 +1061,7 @@ export function WelcomeCenterClient() {
                           setConfig((p: any) => ({ ...p, welcome: { ...p.welcome, buttons: updated } }));
                         }}
                         placeholder="Label"
-                        className="h-8 flex-1 rounded-lg border border-white/10 bg-zinc-900 px-2 text-xs text-white"
+                        className="h-8 flex-1 rounded-[var(--inset-radius)] border border-[var(--panel-border)] bg-zinc-900 px-2 text-xs text-white"
                       />
                       <input
                         type="text"
@@ -1072,7 +1072,7 @@ export function WelcomeCenterClient() {
                           setConfig((p: any) => ({ ...p, welcome: { ...p.welcome, buttons: updated } }));
                         }}
                         placeholder="Emoji"
-                        className="h-8 w-14 rounded-lg border border-white/10 bg-zinc-900 px-2 text-xs text-white text-center"
+                        className="h-8 w-14 rounded-[var(--inset-radius)] border border-[var(--panel-border)] bg-zinc-900 px-2 text-xs text-white text-center"
                       />
                       <select
                         value={btn.action}
@@ -1081,7 +1081,7 @@ export function WelcomeCenterClient() {
                           updated[idx].action = e.target.value as any;
                           setConfig((p: any) => ({ ...p, welcome: { ...p.welcome, buttons: updated } }));
                         }}
-                        className="h-8 rounded-lg border border-white/10 bg-zinc-900 px-2 text-xs text-zinc-300"
+                        className="h-8 rounded-[var(--inset-radius)] border border-[var(--panel-border)] bg-zinc-900 px-2 text-xs text-zinc-300"
                       >
                         <option value="RULES">📜 Règlement</option>
                         <option value="VERIFY">✅ Vérifier</option>
@@ -1112,7 +1112,7 @@ export function WelcomeCenterClient() {
                           setConfig((p: any) => ({ ...p, welcome: { ...p.welcome, buttons: updated } }));
                         }}
                         placeholder="https://..."
-                        className="h-7 w-full rounded-lg border border-white/10 bg-zinc-900 px-2 text-[11px] text-white"
+                        className="h-7 w-full rounded-[var(--inset-radius)] border border-[var(--panel-border)] bg-zinc-900 px-2 text-[11px] text-white"
                       />
                     )}
                   </div>
@@ -1196,7 +1196,7 @@ export function WelcomeCenterClient() {
                       )}
 
                       {/* Footer & Timestamp */}
-                      <div className="flex items-center gap-2 pt-2 text-[10px] text-zinc-400 border-t border-white/5">
+                      <div className="flex items-center gap-2 pt-2 text-[10px] text-zinc-400 border-t border-[var(--panel-border)]">
                         <span>{renderParsed(config.welcome.embed.footer || "ETHONE Guard")}</span>
                         {config.welcome.embed.showTimestamp && <span>• Aujourd&apos;hui à 14:32</span>}
                       </div>
@@ -1247,7 +1247,7 @@ export function WelcomeCenterClient() {
             </p>
           </div>
 
-          <div className="rounded-2xl border border-white/10 bg-white/[0.02] p-5 space-y-4">
+          <div className="rounded-[var(--panel-radius)] border border-[var(--panel-border)] bg-white/[0.02] p-5 space-y-4">
             <label className="flex items-center justify-between cursor-pointer">
               <span className="text-xs font-bold text-white">Activer les messages de départ</span>
               <input
@@ -1273,7 +1273,7 @@ export function WelcomeCenterClient() {
                     goodbye: { ...p.goodbye, channelId: e.target.value || null },
                   }))
                 }
-                className="mt-1 h-9 w-full rounded-xl border border-white/10 bg-zinc-900 px-3 text-xs text-white outline-none focus:border-teal-500 cursor-pointer"
+                className="mt-1 h-9 w-full rounded-[var(--inset-radius)] border border-[var(--panel-border)] bg-zinc-900 px-3 text-xs text-white outline-none focus:border-teal-500 cursor-pointer"
               >
                 <option value="">Sélectionner un salon...</option>
                 {channels.map((ch) => (
@@ -1296,7 +1296,7 @@ export function WelcomeCenterClient() {
                   }))
                 }
                 placeholder="📤 Au revoir **{username}** ! Nous ne sommes plus que **{membercount}** membres."
-                className="mt-1 w-full rounded-xl border border-white/10 bg-zinc-900 p-2.5 text-xs text-white outline-none focus:border-teal-500 resize-none font-sans"
+                className="mt-1 w-full rounded-[var(--inset-radius)] border border-[var(--panel-border)] bg-zinc-900 p-2.5 text-xs text-white outline-none focus:border-teal-500 resize-none font-sans"
               />
             </div>
 
@@ -1321,7 +1321,7 @@ export function WelcomeCenterClient() {
             </p>
           </div>
 
-          <div className="rounded-2xl border border-white/10 bg-white/[0.02] p-5 space-y-4">
+          <div className="rounded-[var(--panel-radius)] border border-[var(--panel-border)] bg-white/[0.02] p-5 space-y-4">
             <label className="flex items-center justify-between cursor-pointer">
               <div>
                 <p className="text-xs font-bold text-white">Activer le message privé en DM</p>
@@ -1358,7 +1358,7 @@ export function WelcomeCenterClient() {
                   }))
                 }
                 placeholder="👋 Bonjour {user}, bienvenue sur **{server}** !"
-                className="mt-1 w-full rounded-xl border border-white/10 bg-zinc-900 p-2.5 text-xs text-white outline-none focus:border-teal-500 resize-none font-sans"
+                className="mt-1 w-full rounded-[var(--inset-radius)] border border-[var(--panel-border)] bg-zinc-900 p-2.5 text-xs text-white outline-none focus:border-teal-500 resize-none font-sans"
               />
             </div>
 
@@ -1392,7 +1392,7 @@ export function WelcomeCenterClient() {
             </button>
           </div>
 
-          <label className="flex items-center justify-between rounded-xl border border-white/10 bg-white/[0.02] p-4 cursor-pointer">
+          <label className="flex items-center justify-between rounded-[var(--inset-radius)] border border-[var(--panel-border)] bg-white/[0.02] p-4 cursor-pointer">
             <div>
               <p className="text-xs font-bold text-white">Activer le flux d&apos;Onboarding</p>
               <p className="text-[11px] text-zinc-400">Déclenche automatiquement les étapes pour les nouveaux arrivants.</p>
@@ -1410,7 +1410,7 @@ export function WelcomeCenterClient() {
             {onboarding.steps.map((step, idx) => (
               <div
                 key={step.id}
-                className="rounded-2xl border border-white/10 bg-white/[0.02] p-4 space-y-3 hover:border-teal-500/30 transition-colors"
+                className="rounded-[var(--panel-radius)] border border-[var(--panel-border)] bg-white/[0.02] p-4 space-y-3 hover:border-teal-500/30 transition-colors"
               >
                 <div className="flex items-center justify-between">
                   <div className="flex items-center gap-2">
@@ -1477,7 +1477,7 @@ export function WelcomeCenterClient() {
                     updated[idx].title = e.target.value;
                     setOnboarding((p: any) => ({ ...p, steps: updated }));
                   }}
-                  className="h-8 w-full rounded-lg border border-white/10 bg-zinc-900 px-2.5 text-xs text-white"
+                  className="h-8 w-full rounded-[var(--inset-radius)] border border-[var(--panel-border)] bg-zinc-900 px-2.5 text-xs text-white"
                 />
 
                 <textarea
@@ -1488,7 +1488,7 @@ export function WelcomeCenterClient() {
                     updated[idx].description = e.target.value;
                     setOnboarding((p: any) => ({ ...p, steps: updated }));
                   }}
-                  className="w-full rounded-lg border border-white/10 bg-zinc-900 p-2 text-xs text-white resize-none"
+                  className="w-full rounded-[var(--inset-radius)] border border-[var(--panel-border)] bg-zinc-900 p-2 text-xs text-white resize-none"
                 />
               </div>
             ))}
@@ -1508,7 +1508,7 @@ export function WelcomeCenterClient() {
                 };
                 setOnboarding((p: any) => ({ ...p, steps: [...p.steps, newStep] }));
               }}
-              className="flex items-center justify-center gap-1.5 w-full rounded-xl border border-dashed border-white/20 py-3 text-xs font-bold text-zinc-300 hover:border-teal-500 hover:text-teal-300 transition-all cursor-pointer"
+              className="flex items-center justify-center gap-1.5 w-full rounded-xl border border-dashed border-[var(--input-border-hover)] py-3 text-xs font-bold text-zinc-300 hover:border-teal-500 hover:text-teal-300 transition-all cursor-pointer"
             >
               <Plus className="h-4 w-4" />
               <span>Ajouter une étape au parcours</span>
@@ -1527,7 +1527,7 @@ export function WelcomeCenterClient() {
             </p>
           </div>
 
-          <div className="rounded-2xl border border-white/10 bg-white/[0.02] p-5 space-y-4">
+          <div className="rounded-[var(--panel-radius)] border border-[var(--panel-border)] bg-white/[0.02] p-5 space-y-4">
             <label className="flex items-center justify-between cursor-pointer">
               <span className="text-xs font-bold text-white">Activer le module de vérification</span>
               <input
@@ -1543,7 +1543,7 @@ export function WelcomeCenterClient() {
               <select
                 value={verification.verifiedRoleId || ""}
                 onChange={(e) => setVerification((p: any) => ({ ...p, verifiedRoleId: e.target.value || null }))}
-                className="mt-1 h-9 w-full rounded-xl border border-white/10 bg-zinc-900 px-3 text-xs text-white outline-none focus:border-teal-500 cursor-pointer"
+                className="mt-1 h-9 w-full rounded-[var(--inset-radius)] border border-[var(--panel-border)] bg-zinc-900 px-3 text-xs text-white outline-none focus:border-teal-500 cursor-pointer"
               >
                 <option value="">Sélectionner un rôle...</option>
                 {roles.map((r) => (
@@ -1560,7 +1560,7 @@ export function WelcomeCenterClient() {
                 rows={2}
                 value={verification.verificationPrompt}
                 onChange={(e) => setVerification((p: any) => ({ ...p, verificationPrompt: e.target.value }))}
-                className="mt-1 w-full rounded-xl border border-white/10 bg-zinc-900 p-2.5 text-xs text-white outline-none focus:border-teal-500 resize-none"
+                className="mt-1 w-full rounded-[var(--inset-radius)] border border-[var(--panel-border)] bg-zinc-900 p-2.5 text-xs text-white outline-none focus:border-teal-500 resize-none"
               />
             </div>
 
@@ -1589,7 +1589,7 @@ export function WelcomeCenterClient() {
             {templates.map((tpl) => (
               <div
                 key={tpl.id}
-                className="rounded-2xl border border-white/10 bg-white/[0.02] p-5 space-y-3 hover:border-teal-500/40 transition-colors flex flex-col justify-between"
+                className="rounded-[var(--panel-radius)] border border-[var(--panel-border)] bg-white/[0.02] p-5 space-y-3 hover:border-teal-500/40 transition-colors flex flex-col justify-between"
               >
                 <div className="space-y-2">
                   <div className="flex items-center justify-between">
@@ -1608,7 +1608,7 @@ export function WelcomeCenterClient() {
                 <button
                   onClick={() => handleApplyTemplate(tpl.id)}
                   disabled={saving}
-                  className="w-full rounded-xl bg-white/5 border border-white/10 py-2 text-xs font-bold text-zinc-200 hover:bg-teal-600 hover:text-white hover:border-teal-500 transition-all cursor-pointer"
+                  className="w-full rounded-xl bg-white/5 border border-[var(--panel-border)] py-2 text-xs font-bold text-zinc-200 hover:bg-teal-600 hover:text-white hover:border-teal-500 transition-all cursor-pointer"
                 >
                   Appliquer ce modèle
                 </button>
@@ -1628,7 +1628,7 @@ export function WelcomeCenterClient() {
             </p>
           </div>
 
-          <div className="rounded-2xl border border-white/10 bg-white/[0.02] p-5 space-y-4">
+          <div className="rounded-[var(--panel-radius)] border border-[var(--panel-border)] bg-white/[0.02] p-5 space-y-4">
             <div className="space-y-2">
               <label className="text-xs font-semibold text-zinc-300">Rôles attribués à l&apos;arrivée</label>
               <div className="flex flex-wrap gap-2 pt-1">
@@ -1652,7 +1652,7 @@ export function WelcomeCenterClient() {
                         "flex items-center gap-1.5 rounded-lg border px-2.5 py-1 text-xs transition-all cursor-pointer",
                         isSelected
                           ? "border-teal-500 bg-teal-500/20 text-teal-200 font-bold"
-                          : "border-white/10 bg-white/5 text-zinc-400 hover:text-white"
+                          : "border-[var(--panel-border)] bg-white/5 text-zinc-400 hover:text-white"
                       )}
                     >
                       <span className="h-2 w-2 rounded-full" style={{ backgroundColor: r.color }} />
@@ -1685,7 +1685,7 @@ export function WelcomeCenterClient() {
             </p>
           </div>
 
-          <div className="rounded-2xl border border-white/10 bg-white/[0.02] p-5 space-y-4">
+          <div className="rounded-[var(--panel-radius)] border border-[var(--panel-border)] bg-white/[0.02] p-5 space-y-4">
             <label className="flex items-center justify-between cursor-pointer">
               <span className="text-xs font-bold text-white">Activer le filtrage conditionnel</span>
               <input
@@ -1723,7 +1723,7 @@ export function WelcomeCenterClient() {
                     },
                   }))
                 }
-                className="mt-1 h-9 w-full rounded-xl border border-white/10 bg-zinc-900 px-3 text-xs text-white outline-none focus:border-teal-500"
+                className="mt-1 h-9 w-full rounded-[var(--inset-radius)] border border-[var(--panel-border)] bg-zinc-900 px-3 text-xs text-white outline-none focus:border-teal-500"
               />
               <p className="text-[10px] text-zinc-400 mt-1">Si le compte est plus jeune, l&apos;accueil peut être différé ou restreint.</p>
             </div>
@@ -1749,7 +1749,7 @@ export function WelcomeCenterClient() {
             </p>
           </div>
 
-          <div className="rounded-2xl border border-white/10 bg-white/[0.02] p-5 space-y-4">
+          <div className="rounded-[var(--panel-radius)] border border-[var(--panel-border)] bg-white/[0.02] p-5 space-y-4">
             <div>
               <label className="text-xs font-semibold text-zinc-300">Salon de bienvenue (Welcome Channel)</label>
               <select
@@ -1760,7 +1760,7 @@ export function WelcomeCenterClient() {
                     welcome: { ...p.welcome, channelId: e.target.value || null },
                   }))
                 }
-                className="mt-1 h-9 w-full rounded-xl border border-white/10 bg-zinc-900 px-3 text-xs text-white outline-none focus:border-teal-500 cursor-pointer"
+                className="mt-1 h-9 w-full rounded-[var(--inset-radius)] border border-[var(--panel-border)] bg-zinc-900 px-3 text-xs text-white outline-none focus:border-teal-500 cursor-pointer"
               >
                 <option value="">Sélectionner un salon...</option>
                 {channels.map((ch) => (
@@ -1771,7 +1771,7 @@ export function WelcomeCenterClient() {
               </select>
             </div>
 
-            <div className="space-y-2 pt-2 border-t border-white/5">
+            <div className="space-y-2 pt-2 border-t border-[var(--panel-border)]">
               <label className="flex items-center justify-between cursor-pointer text-xs">
                 <span className="text-zinc-300">Mentionner le membre lors de l&apos;arrivée</span>
                 <input
@@ -1817,7 +1817,7 @@ export function WelcomeCenterClient() {
       {/* MODAL: TEST WELCOME */}
       {showTestModal && (
         <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/80 backdrop-blur-sm p-4">
-          <div className="w-full max-w-md rounded-2xl border border-white/10 bg-zinc-950 p-6 space-y-4 shadow-2xl">
+          <div className="w-full max-w-md rounded-[var(--panel-radius)] border border-[var(--panel-border)] bg-zinc-950 p-6 space-y-4 shadow-2xl">
             <h3 className="text-sm font-bold text-white flex items-center gap-2">
               <span>🧪 Tester l&apos;Accueil en Conditions Réelles</span>
             </h3>
@@ -1836,7 +1836,7 @@ export function WelcomeCenterClient() {
                       "rounded-xl border py-2 text-xs font-bold transition-all",
                       testType === "welcome"
                         ? "border-teal-500 bg-teal-500/20 text-teal-300"
-                        : "border-white/10 bg-white/5 text-zinc-400 hover:text-white"
+                        : "border-[var(--panel-border)] bg-white/5 text-zinc-400 hover:text-white"
                     )}
                   >
                     👋 Bienvenue
@@ -1848,7 +1848,7 @@ export function WelcomeCenterClient() {
                       "rounded-xl border py-2 text-xs font-bold transition-all",
                       testType === "goodbye"
                         ? "border-teal-500 bg-teal-500/20 text-teal-300"
-                        : "border-white/10 bg-white/5 text-zinc-400 hover:text-white"
+                        : "border-[var(--panel-border)] bg-white/5 text-zinc-400 hover:text-white"
                     )}
                   >
                     📤 Départ
@@ -1866,7 +1866,7 @@ export function WelcomeCenterClient() {
                       "rounded-xl border py-2 text-xs font-bold transition-all",
                       testTarget === "channel"
                         ? "border-teal-500 bg-teal-500/20 text-teal-300"
-                        : "border-white/10 bg-white/5 text-zinc-400 hover:text-white"
+                        : "border-[var(--panel-border)] bg-white/5 text-zinc-400 hover:text-white"
                     )}
                   >
                     Salon Textuel
@@ -1878,7 +1878,7 @@ export function WelcomeCenterClient() {
                       "rounded-xl border py-2 text-xs font-bold transition-all",
                       testTarget === "dm"
                         ? "border-teal-500 bg-teal-500/20 text-teal-300"
-                        : "border-white/10 bg-white/5 text-zinc-400 hover:text-white"
+                        : "border-[var(--panel-border)] bg-white/5 text-zinc-400 hover:text-white"
                     )}
                   >
                     Message Privé (DM)
@@ -1891,7 +1891,7 @@ export function WelcomeCenterClient() {
               <button
                 type="button"
                 onClick={() => setShowTestModal(false)}
-                className="rounded-xl border border-white/10 px-4 py-2 text-xs font-medium text-zinc-300 hover:bg-white/5"
+                className="rounded-[var(--inset-radius)] border border-[var(--panel-border)] px-4 py-2 text-xs font-medium text-zinc-300 hover:bg-white/5"
               >
                 Annuler
               </button>

@@ -49,7 +49,7 @@ export default function EventAnalyticsClient() {
 
       <div className="relative max-w-6xl mx-auto px-4 sm:px-6 lg:px-8 pt-8">
         {/* Navigation */}
-        <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 pb-6 border-b border-white/10 mb-8">
+        <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 pb-6 border-b border-[var(--panel-border)] mb-8">
           <div>
             <div className="flex items-center gap-2 mb-1.5 text-xs text-indigo-400 font-semibold uppercase tracking-wider">
               <Link href={`/discord/events/${eventId}`} className="hover:underline flex items-center gap-1">
@@ -69,7 +69,7 @@ export default function EventAnalyticsClient() {
 
         {/* 4 KPI Cards */}
         <div className="grid grid-cols-2 lg:grid-cols-4 gap-4 mb-8">
-          <div className="p-5 rounded-2xl bg-white/[0.02] border border-white/10 backdrop-blur-xl">
+          <div className="p-5 rounded-2xl bg-white/[0.02] border border-[var(--panel-border)] backdrop-blur-xl">
             <div className="flex items-center justify-between text-xs text-slate-400 mb-2">
               <span>Taux de Présence</span>
               <CheckCircle2 className="w-4 h-4 text-emerald-400" />
@@ -80,7 +80,7 @@ export default function EventAnalyticsClient() {
             </span>
           </div>
 
-          <div className="p-5 rounded-2xl bg-white/[0.02] border border-white/10 backdrop-blur-xl">
+          <div className="p-5 rounded-2xl bg-white/[0.02] border border-[var(--panel-border)] backdrop-blur-xl">
             <div className="flex items-center justify-between text-xs text-slate-400 mb-2">
               <span>Taux de No-Show</span>
               <XCircle className="w-4 h-4 text-rose-400" />
@@ -91,7 +91,7 @@ export default function EventAnalyticsClient() {
             </span>
           </div>
 
-          <div className="p-5 rounded-2xl bg-white/[0.02] border border-white/10 backdrop-blur-xl">
+          <div className="p-5 rounded-2xl bg-white/[0.02] border border-[var(--panel-border)] backdrop-blur-xl">
             <div className="flex items-center justify-between text-xs text-slate-400 mb-2">
               <span>Pic Vocal Simultané</span>
               <Volume2 className="w-4 h-4 text-cyan-400" />
@@ -102,7 +102,7 @@ export default function EventAnalyticsClient() {
             </span>
           </div>
 
-          <div className="p-5 rounded-2xl bg-white/[0.02] border border-white/10 backdrop-blur-xl">
+          <div className="p-5 rounded-2xl bg-white/[0.02] border border-[var(--panel-border)] backdrop-blur-xl">
             <div className="flex items-center justify-between text-xs text-slate-400 mb-2">
               <span>Remplissage Capacité</span>
               <Percent className="w-4 h-4 text-purple-400" />
@@ -117,7 +117,7 @@ export default function EventAnalyticsClient() {
         {/* 2-Column Analytics Breakdown */}
         <div className="grid grid-cols-1 lg:grid-cols-2 gap-8 mb-8">
           {/* Timeline Bar Chart */}
-          <div className="p-6 rounded-2xl bg-white/[0.02] border border-white/10 backdrop-blur-xl">
+          <div className="p-6 rounded-2xl bg-white/[0.02] border border-[var(--panel-border)] backdrop-blur-xl">
             <h3 className="text-sm font-bold text-white mb-6 flex items-center justify-between">
               <span>Évolution des Inscriptions Cumulées</span>
               <TrendingUp className="w-4 h-4 text-indigo-400" />
@@ -143,7 +143,7 @@ export default function EventAnalyticsClient() {
           </div>
 
           {/* Distribution Breakdown */}
-          <div className="p-6 rounded-2xl bg-white/[0.02] border border-white/10 backdrop-blur-xl flex flex-col justify-between">
+          <div className="p-6 rounded-2xl bg-white/[0.02] border border-[var(--panel-border)] backdrop-blur-xl flex flex-col justify-between">
             <div>
               <h3 className="text-sm font-bold text-white mb-4 flex items-center justify-between">
                 <span>Répartition des Réponses</span>
@@ -192,7 +192,7 @@ export default function EventAnalyticsClient() {
               </div>
             </div>
 
-            <div className="flex items-start gap-2 p-4 rounded-xl bg-black/40 border border-white/5 mt-6 text-xs text-slate-400">
+            <div className="flex items-start gap-2 p-4 rounded-xl bg-black/40 border border-[var(--panel-border)] mt-6 text-xs text-slate-400">
               <Lightbulb className="h-3.5 w-3.5 shrink-0 mt-0.5 text-slate-300" />
               <span><strong>Insight Automatique</strong> : Le rappel envoyé à <strong>J-1</strong> a converti 4 hésitants en inscrits fermes.</span>
             </div>

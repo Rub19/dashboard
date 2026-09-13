@@ -258,12 +258,12 @@ export default function CaseDetailClient() {
   return (
     <div className="h-full min-h-0 flex flex-col overflow-hidden bg-[var(--bg-main)] text-zinc-100 font-sans">
       {/* HEADER */}
-      <header className="shrink-0 border-b border-white/[0.08] bg-black/40 backdrop-blur-xl px-4 sm:px-6 py-3.5 z-20">
+      <header className="shrink-0 border-b border-[var(--panel-border)] bg-black/40 backdrop-blur-xl px-4 sm:px-6 py-3.5 z-20">
         <div className="max-w-6xl mx-auto flex items-center justify-between">
           <div className="flex items-center gap-3">
             <Link
               href={`/discord/moderation?guildId=${guildId}`}
-              className="flex h-8 w-8 items-center justify-center rounded-xl border border-white/10 bg-white/5 text-zinc-400 hover:text-white hover:bg-white/10 transition-all cursor-pointer"
+              className="flex h-8 w-8 items-center justify-center rounded-[var(--inset-radius)] border border-[var(--panel-border)] bg-white/5 text-zinc-400 hover:text-white hover:bg-white/10 transition-all cursor-pointer"
             >
               <ArrowLeft className="h-4 w-4" />
             </Link>
@@ -309,7 +309,7 @@ export default function CaseDetailClient() {
         <div className="max-w-6xl mx-auto space-y-6">
 
           {/* FICHE RÉCAPITULATIVE */}
-          <div className="rounded-2xl border border-white/10 bg-white/[0.02] p-5 backdrop-blur-md grid grid-cols-1 sm:grid-cols-2 md:grid-cols-4 gap-4">
+          <div className="rounded-[var(--panel-radius)] border border-[var(--panel-border)] bg-white/[0.02] p-5 backdrop-blur-md grid grid-cols-1 sm:grid-cols-2 md:grid-cols-4 gap-4">
             <div>
               <span className="text-[11px] text-zinc-500 uppercase font-semibold">Membre Sanctionné</span>
               <p className="text-sm font-bold text-white mt-0.5">{modCase.userTag}</p>
@@ -346,9 +346,9 @@ export default function CaseDetailClient() {
           </div>
 
           {/* MOTIF & CONTEXTE DU MESSAGE */}
-          <div className="rounded-2xl border border-white/10 bg-white/[0.02] p-5 backdrop-blur-md space-y-3">
+          <div className="rounded-[var(--panel-radius)] border border-[var(--panel-border)] bg-white/[0.02] p-5 backdrop-blur-md space-y-3">
             <h3 className="text-xs font-bold uppercase tracking-wider text-white">Motif de la Sanction</h3>
-            <p className="text-sm text-zinc-200 bg-black/30 p-3 rounded-xl border border-white/5 font-sans">
+            <p className="text-sm text-zinc-200 bg-black/30 p-3 rounded-[var(--inset-radius)] border border-[var(--panel-border)] font-sans">
               {modCase.reason}
             </p>
 
@@ -358,7 +358,7 @@ export default function CaseDetailClient() {
                   <MessageSquare className="h-3.5 w-3.5 text-zinc-500" />
                   Contenu du message incriminé (#{modCase.metadata.channelName || "salon"}) :
                 </span>
-                <p className="text-xs font-mono text-amber-300/90 bg-black/50 p-3 rounded-xl border border-white/5 break-all">
+                <p className="text-xs font-mono text-amber-300/90 bg-black/50 p-3 rounded-[var(--inset-radius)] border border-[var(--panel-border)] break-all">
                   {modCase.metadata.messageContent}
                 </p>
               </div>
@@ -375,7 +375,7 @@ export default function CaseDetailClient() {
 
           <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
             {/* PREUVES (EVIDENCE) */}
-            <div className="rounded-2xl border border-white/10 bg-white/[0.02] p-5 backdrop-blur-md space-y-4">
+            <div className="rounded-[var(--panel-radius)] border border-[var(--panel-border)] bg-white/[0.02] p-5 backdrop-blur-md space-y-4">
               <div className="flex items-center justify-between">
                 <h3 className="text-xs font-bold uppercase tracking-wider text-white flex items-center gap-2">
                   <Paperclip className="h-3.5 w-3.5 text-orange-400" />
@@ -390,7 +390,7 @@ export default function CaseDetailClient() {
                   value={newEvidenceUrl}
                   onChange={(e) => setNewEvidenceUrl(e.target.value)}
                   placeholder="Lien URL de capture ou preuve (https://...)"
-                  className="h-8 w-full rounded-lg border border-white/10 bg-black/40 px-3 text-xs text-white outline-none focus:border-orange-500"
+                  className="h-8 w-full rounded-[var(--inset-radius)] border border-[var(--panel-border)] bg-black/40 px-3 text-xs text-white outline-none focus:border-orange-500"
                 />
                 <div className="flex gap-2">
                   <input
@@ -398,7 +398,7 @@ export default function CaseDetailClient() {
                     value={newEvidenceContent}
                     onChange={(e) => setNewEvidenceContent(e.target.value)}
                     placeholder="Description ou note de preuve..."
-                    className="h-8 flex-1 rounded-lg border border-white/10 bg-black/40 px-3 text-xs text-white outline-none focus:border-orange-500"
+                    className="h-8 flex-1 rounded-[var(--inset-radius)] border border-[var(--panel-border)] bg-black/40 px-3 text-xs text-white outline-none focus:border-orange-500"
                   />
                   <button
                     type="submit"
@@ -418,7 +418,7 @@ export default function CaseDetailClient() {
                   evidence.map((ev) => (
                     <div
                       key={ev.id}
-                      className="rounded-xl border border-white/5 bg-black/40 p-3 text-xs space-y-1"
+                      className="rounded-[var(--inset-radius)] border border-[var(--panel-border)] bg-black/40 p-3 text-xs space-y-1"
                     >
                       {ev.url && (
                         <a
@@ -440,7 +440,7 @@ export default function CaseDetailClient() {
             </div>
 
             {/* NOTES INTERNES STAFF */}
-            <div className="rounded-2xl border border-white/10 bg-white/[0.02] p-5 backdrop-blur-md space-y-4">
+            <div className="rounded-[var(--panel-radius)] border border-[var(--panel-border)] bg-white/[0.02] p-5 backdrop-blur-md space-y-4">
               <div className="flex items-center justify-between">
                 <h3 className="text-xs font-bold uppercase tracking-wider text-white flex items-center gap-2">
                   <FileText className="h-3.5 w-3.5 text-amber-400" />
@@ -455,7 +455,7 @@ export default function CaseDetailClient() {
                   value={newNoteContent}
                   onChange={(e) => setNewNoteContent(e.target.value)}
                   placeholder="Ajouter un commentaire staff interne..."
-                  className="h-8 flex-1 rounded-lg border border-white/10 bg-black/40 px-3 text-xs text-white outline-none focus:border-orange-500"
+                  className="h-8 flex-1 rounded-[var(--inset-radius)] border border-[var(--panel-border)] bg-black/40 px-3 text-xs text-white outline-none focus:border-orange-500"
                 />
                 <button
                   type="submit"
@@ -474,7 +474,7 @@ export default function CaseDetailClient() {
                   notes.map((n) => (
                     <div
                       key={n.id}
-                      className="rounded-xl border border-white/5 bg-black/40 p-3 text-xs space-y-1"
+                      className="rounded-[var(--inset-radius)] border border-[var(--panel-border)] bg-black/40 p-3 text-xs space-y-1"
                     >
                       <p className="text-zinc-200">{n.content}</p>
                       <p className="text-[10px] text-zinc-500">
@@ -488,7 +488,7 @@ export default function CaseDetailClient() {
           </div>
 
           {/* CASES ASSOCIÉES (HISTORIQUE DE L'UTILISATEUR) */}
-          <div className="rounded-2xl border border-white/10 bg-white/[0.02] p-5 backdrop-blur-md space-y-3">
+          <div className="rounded-[var(--panel-radius)] border border-[var(--panel-border)] bg-white/[0.02] p-5 backdrop-blur-md space-y-3">
             <h3 className="text-xs font-bold uppercase tracking-wider text-white">
               Autres Sanctions Récemment Reçues par {modCase.userTag} ({relatedCases.length})
             </h3>
@@ -500,7 +500,7 @@ export default function CaseDetailClient() {
                   <Link
                     key={rc.id}
                     href={`/discord/moderation/cases/${rc.caseNumber}?guildId=${rc.guildId}`}
-                    className="rounded-xl border border-white/5 bg-black/40 p-3 hover:border-white/10 transition-all space-y-1 block"
+                    className="rounded-[var(--inset-radius)] border border-[var(--panel-border)] bg-black/40 p-3 hover:border-[var(--input-border-hover)] transition-all space-y-1 block"
                   >
                     <div className="flex items-center justify-between text-xs">
                       <span className="font-bold text-white font-mono">Case #{rc.caseNumber}</span>
@@ -524,8 +524,8 @@ export default function CaseDetailClient() {
       {/* MODAL RÉVOCATION */}
       {isRevertOpen && (
         <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/70 backdrop-blur-sm animate-in fade-in">
-          <div className="w-full max-w-md rounded-2xl border border-white/10 bg-[var(--bg-surface-elevated)] p-6 shadow-2xl space-y-4">
-            <div className="flex items-center justify-between border-b border-white/10 pb-3">
+          <div className="w-full max-w-md rounded-[var(--panel-radius)] border border-[var(--panel-border)] bg-[var(--bg-surface-elevated)] p-6 shadow-2xl space-y-4">
+            <div className="flex items-center justify-between border-b border-[var(--panel-border)] pb-3">
               <h3 className="text-sm font-bold text-white">Révoquer la Case #{modCase.caseNumber}</h3>
               <button onClick={() => setIsRevertOpen(false)} className="text-zinc-400 hover:text-white cursor-pointer">
                 <X className="h-4 w-4" />
@@ -543,15 +543,15 @@ export default function CaseDetailClient() {
                 value={revertReason}
                 onChange={(e) => setRevertReason(e.target.value)}
                 placeholder="Ex: Excuses sincères, sanction levée après vérification..."
-                className="w-full rounded-xl border border-white/10 bg-black/40 p-2.5 text-xs text-white outline-none focus:border-orange-500 resize-none"
+                className="w-full rounded-[var(--inset-radius)] border border-[var(--panel-border)] bg-black/40 p-2.5 text-xs text-white outline-none focus:border-orange-500 resize-none"
               />
             </div>
 
-            <div className="flex justify-end gap-2 pt-2 border-t border-white/10">
+            <div className="flex justify-end gap-2 pt-2 border-t border-[var(--panel-border)]">
               <button
                 type="button"
                 onClick={() => setIsRevertOpen(false)}
-                className="h-8 rounded-xl border border-white/10 px-4 text-xs font-medium text-zinc-400 hover:text-white cursor-pointer"
+                className="h-8 rounded-[var(--inset-radius)] border border-[var(--panel-border)] px-4 text-xs font-medium text-zinc-400 hover:text-white cursor-pointer"
               >
                 Annuler
               </button>

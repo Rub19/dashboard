@@ -1144,8 +1144,8 @@ export default function BotControlClient({ initialTab = "overview" }: BotControl
         {/* EXCLUSIVE BOT OWNER CONTROL PANEL (rub19.mailpro@gmail.com) */}
         {/* ======================================================== */}
         {isOwner && (
-          <div className="mb-8 p-6 rounded-2xl bg-white/[0.02] border border-white/10 space-y-6">
-            <div className="flex flex-col lg:flex-row lg:items-center justify-between gap-6 pb-5 border-b border-white/10">
+          <div className="mb-8 p-6 rounded-2xl bg-white/[0.02] border border-[var(--panel-border)] space-y-6">
+            <div className="flex flex-col lg:flex-row lg:items-center justify-between gap-6 pb-5 border-b border-[var(--panel-border)]">
               <div>
                 <div className="flex flex-wrap items-center gap-2">
                   <span className="px-2.5 py-0.5 rounded-full text-[10px] font-bold bg-amber-500/10 text-amber-300 border border-amber-500/20 uppercase tracking-wide flex items-center gap-1">
@@ -1200,7 +1200,7 @@ export default function BotControlClient({ initialTab = "overview" }: BotControl
 
             {/* Owner Telemetry Grid */}
             <div className="grid grid-cols-2 sm:grid-cols-4 gap-3 relative z-10">
-              <div className="p-3.5 rounded-xl bg-white/[0.02] border border-white/10">
+              <div className="p-3.5 rounded-xl bg-white/[0.02] border border-[var(--panel-border)]">
                 <span className="text-[10px] text-zinc-400 block uppercase font-mono">Processus VPS PM2</span>
                 <span className="text-sm font-bold text-white font-mono mt-1 block flex items-center gap-1.5">
                   <span className="w-2 h-2 rounded-full bg-emerald-400" />
@@ -1209,7 +1209,7 @@ export default function BotControlClient({ initialTab = "overview" }: BotControl
                 <span className="text-[10px] text-emerald-400 mt-0.5 block font-mono">Status: Online</span>
               </div>
 
-              <div className="p-3.5 rounded-xl bg-white/[0.02] border border-white/10">
+              <div className="p-3.5 rounded-xl bg-white/[0.02] border border-[var(--panel-border)]">
                 <span className="text-[10px] text-zinc-400 block uppercase font-mono">Compte Suprême</span>
                 <span className="text-xs font-bold text-amber-300 font-mono mt-1 block truncate" title="rub19.mailpro@gmail.com">
                   rub19.mailpro@gmail.com
@@ -1217,13 +1217,13 @@ export default function BotControlClient({ initialTab = "overview" }: BotControl
                 <span className="text-[10px] text-zinc-400 mt-0.5 block">Niveau Root vérifié</span>
               </div>
 
-              <div className="p-3.5 rounded-xl bg-white/[0.02] border border-white/10">
+              <div className="p-3.5 rounded-xl bg-white/[0.02] border border-[var(--panel-border)]">
                 <span className="text-[10px] text-zinc-400 block uppercase font-mono">Gateway Shard</span>
                 <span className="text-sm font-bold text-white font-mono mt-1 block">{botCore.pingMs} ms (WebSocket)</span>
                 <span className="text-[10px] text-emerald-400 mt-0.5 block">Shard 0 Connecté</span>
               </div>
 
-              <div className="p-3.5 rounded-xl bg-white/[0.02] border border-white/10">
+              <div className="p-3.5 rounded-xl bg-white/[0.02] border border-[var(--panel-border)]">
                 <span className="text-[10px] text-zinc-400 block uppercase font-mono">Audit Supabase</span>
                 <span className="text-sm font-bold text-white font-mono mt-1 block">
                   {ownerLogs.length} action(s)
@@ -1234,7 +1234,7 @@ export default function BotControlClient({ initialTab = "overview" }: BotControl
 
             {/* Recent Audit Logs if any */}
             {ownerLogs.length > 0 && (
-              <div className="pt-2 border-t border-white/10 relative z-10">
+              <div className="pt-2 border-t border-[var(--panel-border)] relative z-10">
                 <span className="text-[11px] font-bold text-zinc-300 uppercase tracking-wider block mb-2">
                   Dernières Actions Administratives Exécutées
                 </span>

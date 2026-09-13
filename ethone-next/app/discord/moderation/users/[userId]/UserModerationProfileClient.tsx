@@ -330,7 +330,7 @@ export default function UserModerationProfileClient() {
   return (
     <div className="min-h-screen bg-[var(--bg-main)] text-slate-200 pb-36 font-sans">
       {/* HEADER NAVIGATION */}
-      <div className="border-b border-white/5 bg-slate-900/40 backdrop-blur-xl sticky top-0 z-30 px-6 py-4">
+      <div className="border-b border-[var(--panel-border)] bg-slate-900/40 backdrop-blur-xl sticky top-0 z-30 px-6 py-4">
         <div className="max-w-7xl mx-auto flex flex-col md:flex-row items-start md:items-center justify-between gap-4">
           <div className="flex items-center gap-3">
             <Link
@@ -368,7 +368,7 @@ export default function UserModerationProfileClient() {
                   const g = manageableGuilds.find((item) => item.id === e.target.value);
                   if (g) setSelectedGuild(g);
                 }}
-                className="bg-slate-800/80 border border-white/10 text-white text-xs rounded-xl px-3 py-2 outline-none focus:border-ethone-accent"
+                className="bg-slate-800/80 border border-[var(--panel-border)] text-white text-xs rounded-xl px-3 py-2 outline-none focus:border-ethone-accent"
               >
                 {manageableGuilds.map((g) => (
                   <option key={g.id} value={g.id}>
@@ -385,7 +385,7 @@ export default function UserModerationProfileClient() {
         {/* CARD PROFIL & SCORE DE RISQUE */}
         <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
           {/* FICHE IDENTITÉ */}
-          <div className="lg:col-span-2 p-6 rounded-2xl bg-slate-900/50 border border-white/5 backdrop-blur-md relative overflow-hidden flex flex-col justify-between">
+          <div className="lg:col-span-2 p-6 rounded-2xl bg-slate-900/50 border border-[var(--panel-border)] backdrop-blur-md relative overflow-hidden flex flex-col justify-between">
             <div className="flex flex-col sm:flex-row items-start sm:items-center gap-5">
               <div className="relative">
                 {userProfile?.avatarUrl ? (
@@ -395,7 +395,7 @@ export default function UserModerationProfileClient() {
                     className="w-20 h-20 rounded-2xl object-cover ring-2 ring-white/10"
                   />
                 ) : (
-                  <div className="w-20 h-20 rounded-2xl bg-indigo-500/15 border border-white/10 flex items-center justify-center text-2xl font-bold text-white">
+                  <div className="w-20 h-20 rounded-2xl bg-indigo-500/15 border border-[var(--panel-border)] flex items-center justify-center text-2xl font-bold text-white">
                     {userProfile?.username?.substring(0, 2).toUpperCase() || "??"}
                   </div>
                 )}
@@ -456,24 +456,24 @@ export default function UserModerationProfileClient() {
             </div>
 
             {/* STATISTIQUES SANCTIONS DU MEMBRE */}
-            <div className="grid grid-cols-2 sm:grid-cols-5 gap-3 pt-6 mt-6 border-t border-white/5">
-              <div className="p-3 rounded-xl bg-slate-800/40 border border-white/5 text-center">
+            <div className="grid grid-cols-2 sm:grid-cols-5 gap-3 pt-6 mt-6 border-t border-[var(--panel-border)]">
+              <div className="p-3 rounded-xl bg-slate-800/40 border border-[var(--panel-border)] text-center">
                 <span className="text-xs text-slate-400 block font-medium">Warnings</span>
                 <span className="text-lg font-bold text-amber-400">{userProfile?.stats?.warnings || 0}</span>
               </div>
-              <div className="p-3 rounded-xl bg-slate-800/40 border border-white/5 text-center">
+              <div className="p-3 rounded-xl bg-slate-800/40 border border-[var(--panel-border)] text-center">
                 <span className="text-xs text-slate-400 block font-medium">Timeouts</span>
                 <span className="text-lg font-bold text-orange-400">{userProfile?.stats?.timeouts || 0}</span>
               </div>
-              <div className="p-3 rounded-xl bg-slate-800/40 border border-white/5 text-center">
+              <div className="p-3 rounded-xl bg-slate-800/40 border border-[var(--panel-border)] text-center">
                 <span className="text-xs text-slate-400 block font-medium">Kicks</span>
                 <span className="text-lg font-bold text-rose-400">{userProfile?.stats?.kicks || 0}</span>
               </div>
-              <div className="p-3 rounded-xl bg-slate-800/40 border border-white/5 text-center">
+              <div className="p-3 rounded-xl bg-slate-800/40 border border-[var(--panel-border)] text-center">
                 <span className="text-xs text-slate-400 block font-medium">Bans</span>
                 <span className="text-lg font-bold text-red-400">{userProfile?.stats?.bans || 0}</span>
               </div>
-              <div className="p-3 rounded-xl bg-slate-800/40 border border-white/5 text-center col-span-2 sm:col-span-1">
+              <div className="p-3 rounded-xl bg-slate-800/40 border border-[var(--panel-border)] text-center col-span-2 sm:col-span-1">
                 <span className="text-xs text-slate-400 block font-medium">Cases Total</span>
                 <span className="text-lg font-bold text-white">{userProfile?.stats?.totalCases || 0}</span>
               </div>
@@ -481,7 +481,7 @@ export default function UserModerationProfileClient() {
           </div>
 
           {/* JAUGE DE SCORE DE RISQUE */}
-          <div className="p-6 rounded-2xl bg-slate-900/50 border border-white/5 backdrop-blur-md flex flex-col justify-between">
+          <div className="p-6 rounded-2xl bg-slate-900/50 border border-[var(--panel-border)] backdrop-blur-md flex flex-col justify-between">
             <div>
               <div className="flex items-center justify-between">
                 <div className="flex items-center gap-2">
@@ -518,19 +518,19 @@ export default function UserModerationProfileClient() {
 
               {/* FACTEURS DE RISQUE */}
               <div className="mt-4 space-y-1.5 text-xs text-slate-400 font-medium">
-                <div className="flex justify-between py-1 border-b border-white/5">
+                <div className="flex justify-between py-1 border-b border-[var(--panel-border)]">
                   <span>Sanctions directes</span>
                   <span className="text-slate-300 font-mono">+{userProfile?.riskBreakdown?.sanctions || 0} pts</span>
                 </div>
-                <div className="flex justify-between py-1 border-b border-white/5">
+                <div className="flex justify-between py-1 border-b border-[var(--panel-border)]">
                   <span>Avertissements (Warnings)</span>
                   <span className="text-slate-300 font-mono">+{userProfile?.riskBreakdown?.warnings || 0} pts</span>
                 </div>
-                <div className="flex justify-between py-1 border-b border-white/5">
+                <div className="flex justify-between py-1 border-b border-[var(--panel-border)]">
                   <span>Incidents AutoMod / Anti-Raid</span>
                   <span className="text-slate-300 font-mono">+{userProfile?.riskBreakdown?.autoModTriggers || 0} pts</span>
                 </div>
-                <div className="flex justify-between py-1 border-b border-white/5">
+                <div className="flex justify-between py-1 border-b border-[var(--panel-border)]">
                   <span>Signalements déposés</span>
                   <span className="text-slate-300 font-mono">+{userProfile?.riskBreakdown?.reportsCount || 0} pts</span>
                 </div>
@@ -541,7 +541,7 @@ export default function UserModerationProfileClient() {
               </div>
             </div>
 
-            <div className="mt-4 p-2.5 rounded-xl bg-white/5 border border-white/5 text-[11px] text-slate-400 flex items-start gap-2">
+            <div className="mt-4 p-2.5 rounded-xl bg-white/5 border border-[var(--panel-border)] text-[11px] text-slate-400 flex items-start gap-2">
               <HelpCircle className="w-4 h-4 text-slate-400 shrink-0 mt-0.5" />
               <span>
                 Le score de risque est calculé pour guider vos modérateurs. Il ne prend aucune décision automatique sans accord humain.
@@ -551,7 +551,7 @@ export default function UserModerationProfileClient() {
         </div>
 
         {/* QUICK ACTIONS TOOLBAR */}
-        <div className="p-4 rounded-2xl bg-slate-900/60 border border-white/10 backdrop-blur-md flex items-center justify-between flex-wrap gap-3">
+        <div className="p-4 rounded-2xl bg-slate-900/60 border border-[var(--panel-border)] backdrop-blur-md flex items-center justify-between flex-wrap gap-3">
           <div className="flex items-center gap-2">
             <Sparkles className="w-5 h-5 text-amber-400" />
             <span className="text-sm font-bold text-white uppercase tracking-wider">Actions Rapides Staff :</span>
@@ -600,7 +600,7 @@ export default function UserModerationProfileClient() {
 
             <button
               onClick={() => setActiveTab("notes")}
-              className="px-3.5 py-2 rounded-xl bg-slate-800 hover:bg-slate-700 text-slate-300 border border-white/10 text-xs font-semibold flex items-center gap-1.5 transition-colors"
+              className="px-3.5 py-2 rounded-xl bg-slate-800 hover:bg-slate-700 text-slate-300 border border-[var(--panel-border)] text-xs font-semibold flex items-center gap-1.5 transition-colors"
             >
               <Plus className="w-4 h-4" />
               <span>Ajouter une Note</span>
@@ -609,7 +609,7 @@ export default function UserModerationProfileClient() {
         </div>
 
         {/* ONGLETS SECTIONS */}
-        <div className="flex items-center gap-2 overflow-x-auto pb-1 border-b border-white/5">
+        <div className="flex items-center gap-2 overflow-x-auto pb-1 border-b border-[var(--panel-border)]">
           {[
             { id: "overview", label: "Vue d'ensemble", count: null },
             { id: "cases", label: "Cases & Dossiers", count: userProfile?.stats?.totalCases },
@@ -626,7 +626,7 @@ export default function UserModerationProfileClient() {
               className={cn(
                 "px-4 py-2.5 rounded-xl text-xs font-semibold whitespace-nowrap transition-all flex items-center gap-2",
                 activeTab === tab.id
-                  ? "bg-white/10 text-white shadow-sm border border-white/10"
+                  ? "bg-white/10 text-white shadow-sm border border-[var(--panel-border)]"
                   : "text-slate-400 hover:text-white hover:bg-white/5"
               )}
             >
@@ -651,7 +651,7 @@ export default function UserModerationProfileClient() {
         {activeTab === "overview" && (
           <div className="space-y-6">
             {/* Sanctions Actives */}
-            <div className="p-6 rounded-2xl bg-slate-900/40 border border-white/5">
+            <div className="p-6 rounded-2xl bg-slate-900/40 border border-[var(--panel-border)]">
               <h3 className="text-sm font-bold text-white mb-4 flex items-center gap-2">
                 <Clock className="w-4 h-4 text-orange-400" />
                 <span>Sanctions Actives en Cours ({userProfile?.activeSanctions?.length || 0})</span>
@@ -683,14 +683,14 @@ export default function UserModerationProfileClient() {
                   ))}
                 </div>
               ) : (
-                <div className="p-8 text-center text-xs text-slate-400 rounded-xl bg-slate-800/20 border border-dashed border-white/10">
+                <div className="p-8 text-center text-xs text-slate-400 rounded-xl bg-slate-800/20 border border-dashed border-[var(--panel-border)]">
                   ✅ Aucune sanction active sur ce membre actuellement.
                 </div>
               )}
             </div>
 
             {/* Dernières Notes Staff */}
-            <div className="p-6 rounded-2xl bg-slate-900/40 border border-white/5">
+            <div className="p-6 rounded-2xl bg-slate-900/40 border border-[var(--panel-border)]">
               <div className="flex items-center justify-between mb-4">
                 <h3 className="text-sm font-bold text-white flex items-center gap-2">
                   <FileText className="w-4 h-4 text-ethone-accent" />
@@ -707,7 +707,7 @@ export default function UserModerationProfileClient() {
               {userProfile?.notes?.length > 0 ? (
                 <div className="space-y-3">
                   {userProfile.notes.slice(0, 3).map((n: any) => (
-                    <div key={n.id} className="p-3.5 rounded-xl bg-slate-800/40 border border-white/5">
+                    <div key={n.id} className="p-3.5 rounded-xl bg-slate-800/40 border border-[var(--panel-border)]">
                       <div className="flex items-center justify-between text-xs text-slate-400 mb-1">
                         <span className="font-semibold text-white">Ajouté par @{n.authorTag}</span>
                         <span className="text-[11px]">{new Date(n.createdAt).toLocaleDateString("fr-FR")}</span>
@@ -725,7 +725,7 @@ export default function UserModerationProfileClient() {
 
         {/* 2. CASES */}
         {activeTab === "cases" && (
-          <div className="p-6 rounded-2xl bg-slate-900/40 border border-white/5 space-y-4">
+          <div className="p-6 rounded-2xl bg-slate-900/40 border border-[var(--panel-border)] space-y-4">
             <h3 className="text-base font-bold text-white">Dossiers Disciplinaires (Cases)</h3>
             {userProfile?.timeline?.length > 0 ? (
               <div className="divide-y divide-white/5">
@@ -781,7 +781,7 @@ export default function UserModerationProfileClient() {
 
         {/* 3. WARNINGS */}
         {activeTab === "warnings" && (
-          <div className="p-6 rounded-2xl bg-slate-900/40 border border-white/5 space-y-4">
+          <div className="p-6 rounded-2xl bg-slate-900/40 border border-[var(--panel-border)] space-y-4">
             <h3 className="text-base font-bold text-white flex items-center gap-2">
               <AlertCircle className="w-5 h-5 text-amber-400" />
               <span>Historique des Avertissements (Warnings)</span>
@@ -821,7 +821,7 @@ export default function UserModerationProfileClient() {
 
         {/* 4. SANCTIONS */}
         {activeTab === "sanctions" && (
-          <div className="p-6 rounded-2xl bg-slate-900/40 border border-white/5 space-y-4">
+          <div className="p-6 rounded-2xl bg-slate-900/40 border border-[var(--panel-border)] space-y-4">
             <h3 className="text-base font-bold text-white">Sanctions Lourdes (Timeouts, Kicks, Bans)</h3>
             {userProfile?.timeline?.filter((c: any) => c.action !== "WARN").length > 0 ? (
               <div className="divide-y divide-white/5">
@@ -861,7 +861,7 @@ export default function UserModerationProfileClient() {
         {activeTab === "notes" && (
           <div className="space-y-6">
             {/* Formulaire ajout de note */}
-            <form onSubmit={handleAddNote} className="p-5 rounded-2xl bg-slate-900/60 border border-white/10 space-y-3">
+            <form onSubmit={handleAddNote} className="p-5 rounded-2xl bg-slate-900/60 border border-[var(--panel-border)] space-y-3">
               <h3 className="text-sm font-bold text-white flex items-center gap-2">
                 <Lock className="w-4 h-4 text-amber-400" />
                 <span>Rédiger une Note Staff Privée</span>
@@ -871,7 +871,7 @@ export default function UserModerationProfileClient() {
                 onChange={(e) => setNewNoteContent(e.target.value)}
                 placeholder="Renseignez une observation confidentielle (visible uniquement par le staff modération)..."
                 rows={3}
-                className="w-full bg-slate-800/80 border border-white/10 rounded-xl p-3 text-sm text-white placeholder:text-slate-500 outline-none focus:border-ethone-accent resize-none"
+                className="w-full bg-slate-800/80 border border-[var(--panel-border)] rounded-xl p-3 text-sm text-white placeholder:text-slate-500 outline-none focus:border-ethone-accent resize-none"
               />
               <div className="flex justify-end">
                 <button
@@ -885,12 +885,12 @@ export default function UserModerationProfileClient() {
             </form>
 
             {/* Liste des notes */}
-            <div className="p-6 rounded-2xl bg-slate-900/40 border border-white/5 space-y-4">
+            <div className="p-6 rounded-2xl bg-slate-900/40 border border-[var(--panel-border)] space-y-4">
               <h4 className="text-sm font-bold text-white">Notes Privées Existantes ({userProfile?.notes?.length || 0})</h4>
               {userProfile?.notes?.length > 0 ? (
                 <div className="space-y-3">
                   {userProfile.notes.map((n: any) => (
-                    <div key={n.id} className="p-4 rounded-xl bg-slate-800/40 border border-white/5 space-y-1">
+                    <div key={n.id} className="p-4 rounded-xl bg-slate-800/40 border border-[var(--panel-border)] space-y-1">
                       <div className="flex items-center justify-between text-xs">
                         <span className="font-bold text-white">@{n.authorTag}</span>
                         <span className="text-slate-400">{new Date(n.createdAt).toLocaleString("fr-FR")}</span>
@@ -908,12 +908,12 @@ export default function UserModerationProfileClient() {
 
         {/* 6. EVIDENCE */}
         {activeTab === "evidence" && (
-          <div className="p-6 rounded-2xl bg-slate-900/40 border border-white/5 space-y-4">
+          <div className="p-6 rounded-2xl bg-slate-900/40 border border-[var(--panel-border)] space-y-4">
             <h3 className="text-base font-bold text-white">Preuves Archivées (Evidence Center)</h3>
             <p className="text-xs text-slate-400">
               Métadonnées et captures horodatées associées aux dossiers de cet utilisateur.
             </p>
-            <div className="p-8 text-center text-xs text-slate-400 rounded-xl bg-slate-800/20 border border-dashed border-white/10">
+            <div className="p-8 text-center text-xs text-slate-400 rounded-xl bg-slate-800/20 border border-dashed border-[var(--panel-border)]">
               📁 Ouvrez une Case pour consulter ou attacher de nouvelles preuves (Message Discord, URL de capture, transcript).
             </div>
           </div>
@@ -921,7 +921,7 @@ export default function UserModerationProfileClient() {
 
         {/* 7. ACTIVITY TIMELINE */}
         {activeTab === "activity" && (
-          <div className="p-6 rounded-2xl bg-slate-900/40 border border-white/5 space-y-4">
+          <div className="p-6 rounded-2xl bg-slate-900/40 border border-[var(--panel-border)] space-y-4">
             <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-3">
               <h3 className="text-base font-bold text-white flex items-center gap-2">
                 <Activity className="w-5 h-5 text-ethone-accent" />
@@ -937,7 +937,7 @@ export default function UserModerationProfileClient() {
                     className={cn(
                       "text-[11px] px-2.5 py-1 rounded-lg font-semibold transition-colors",
                       timelineFilter === f
-                        ? "bg-white/10 text-white border border-white/10"
+                        ? "bg-white/10 text-white border border-[var(--panel-border)]"
                         : "text-slate-400 hover:text-white"
                     )}
                   >
@@ -950,7 +950,7 @@ export default function UserModerationProfileClient() {
             {filteredTimeline.length > 0 ? (
               <div className="space-y-4 pt-2">
                 {filteredTimeline.map((item) => (
-                  <div key={item.id} className="p-4 rounded-xl bg-slate-800/30 border border-white/5 flex items-start gap-4">
+                  <div key={item.id} className="p-4 rounded-xl bg-slate-800/30 border border-[var(--panel-border)] flex items-start gap-4">
                     <div className="p-2 rounded-xl bg-white/5 text-slate-300 mt-0.5">
                       {item.type === "CASE" ? (
                         <Shield className="w-4 h-4 text-orange-400" />
@@ -981,7 +981,7 @@ export default function UserModerationProfileClient() {
 
         {/* 8. REPORTS */}
         {activeTab === "reports" && (
-          <div className="p-6 rounded-2xl bg-slate-900/40 border border-white/5 space-y-4">
+          <div className="p-6 rounded-2xl bg-slate-900/40 border border-[var(--panel-border)] space-y-4">
             <h3 className="text-base font-bold text-white flex items-center gap-2">
               <AlertTriangle className="w-5 h-5 text-amber-400" />
               <span>Signalements Visant ce Membre ({reports.length})</span>
@@ -1021,7 +1021,7 @@ export default function UserModerationProfileClient() {
       {/* MODALE D'ACTION RAPIDE (WARN / TIMEOUT / KICK / BAN / QUARANTINE) */}
       {activeActionModal && (
         <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/80 backdrop-blur-sm animate-in fade-in">
-          <div className="w-full max-w-lg rounded-2xl bg-slate-900 border border-white/10 shadow-2xl p-6 space-y-4">
+          <div className="w-full max-w-lg rounded-2xl bg-slate-900 border border-[var(--panel-border)] shadow-2xl p-6 space-y-4">
             <div className="flex items-center justify-between">
               <div className="flex items-center gap-2">
                 <ShieldAlert className="w-5 h-5 text-ethone-accent" />
@@ -1051,7 +1051,7 @@ export default function UserModerationProfileClient() {
                     setActionStandardCategory(e.target.value);
                     if (!actionReason) setActionReason(e.target.value);
                   }}
-                  className="w-full bg-slate-800 border border-white/10 text-white text-xs rounded-xl p-2.5 outline-none"
+                  className="w-full bg-slate-800 border border-[var(--panel-border)] text-white text-xs rounded-xl p-2.5 outline-none"
                 >
                   {STANDARD_REASONS.map((r) => (
                     <option key={r} value={r}>
@@ -1069,7 +1069,7 @@ export default function UserModerationProfileClient() {
                   value={actionReason}
                   onChange={(e) => setActionReason(e.target.value)}
                   placeholder="Expliquez la raison exacte..."
-                  className="w-full bg-slate-800 border border-white/10 text-white text-xs rounded-xl p-2.5 outline-none focus:border-ethone-accent"
+                  className="w-full bg-slate-800 border border-[var(--panel-border)] text-white text-xs rounded-xl p-2.5 outline-none focus:border-ethone-accent"
                 />
               </div>
 
@@ -1094,7 +1094,7 @@ export default function UserModerationProfileClient() {
                           "py-1.5 text-xs rounded-lg font-semibold border transition-colors",
                           timeoutDuration === d.s
                             ? "bg-orange-500/20 text-orange-400 border-orange-500/40"
-                            : "bg-slate-800 text-slate-300 border-white/5 hover:bg-slate-700"
+                            : "bg-slate-800 text-slate-300 border-[var(--panel-border)] hover:bg-slate-700"
                         )}
                       >
                         {d.l}
@@ -1114,7 +1114,7 @@ export default function UserModerationProfileClient() {
                   <select
                     value={banDeleteDays}
                     onChange={(e) => setBanDeleteDays(e.target.value)}
-                    className="w-full bg-slate-800 border border-white/10 text-white text-xs rounded-xl p-2.5 outline-none"
+                    className="w-full bg-slate-800 border border-[var(--panel-border)] text-white text-xs rounded-xl p-2.5 outline-none"
                   >
                     <option value="0">Ne pas supprimer</option>
                     <option value="1">Dernières 24 heures</option>
@@ -1131,7 +1131,7 @@ export default function UserModerationProfileClient() {
                   value={internalNote}
                   onChange={(e) => setInternalNote(e.target.value)}
                   placeholder="Contexte supplémentaire..."
-                  className="w-full bg-slate-800 border border-white/10 text-white text-xs rounded-xl p-2.5 outline-none focus:border-ethone-accent"
+                  className="w-full bg-slate-800 border border-[var(--panel-border)] text-white text-xs rounded-xl p-2.5 outline-none focus:border-ethone-accent"
                 />
               </div>
 
@@ -1173,7 +1173,7 @@ export default function UserModerationProfileClient() {
               )}
             </div>
 
-            <div className="flex items-center justify-end gap-2 pt-3 border-t border-white/5">
+            <div className="flex items-center justify-end gap-2 pt-3 border-t border-[var(--panel-border)]">
               <button
                 type="button"
                 onClick={() => setActiveActionModal(null)}
@@ -1206,7 +1206,7 @@ export default function UserModerationProfileClient() {
       {/* MODALE PARDON / RÉVOCATION */}
       {revertingCase && (
         <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/80 backdrop-blur-sm animate-in fade-in">
-          <div className="w-full max-w-md rounded-2xl bg-slate-900 border border-white/10 shadow-2xl p-6 space-y-4">
+          <div className="w-full max-w-md rounded-2xl bg-slate-900 border border-[var(--panel-border)] shadow-2xl p-6 space-y-4">
             <div className="flex items-center justify-between">
               <h3 className="text-base font-bold text-white flex items-center gap-2">
                 <RotateCcw className="w-5 h-5 text-amber-400" />
@@ -1226,7 +1226,7 @@ export default function UserModerationProfileClient() {
                 value={revertReason}
                 onChange={(e) => setRevertReason(e.target.value)}
                 placeholder="Ex : Erreur de manipulation, recours accepté..."
-                className="w-full bg-slate-800 border border-white/10 text-white text-xs rounded-xl p-2.5 outline-none focus:border-ethone-accent"
+                className="w-full bg-slate-800 border border-[var(--panel-border)] text-white text-xs rounded-xl p-2.5 outline-none focus:border-ethone-accent"
               />
             </div>
             <div className="flex justify-end gap-2 pt-2">

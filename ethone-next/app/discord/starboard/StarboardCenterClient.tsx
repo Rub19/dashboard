@@ -95,7 +95,7 @@ function Switch({
       role="switch"
       aria-checked={checked}
       onClick={() => onChange(!checked)}
-      className="flex w-full items-start justify-between gap-3 rounded-2xl border border-white/10 bg-white/[0.02] p-3.5 text-left transition-colors hover:border-white/20 cursor-pointer"
+      className="flex w-full items-start justify-between gap-3 rounded-[var(--panel-radius)] border border-[var(--panel-border)] bg-white/[0.02] p-3.5 text-left transition-colors hover:border-[var(--input-border-hover)] cursor-pointer"
     >
       <span className="min-w-0">
         <span className="block text-xs font-semibold text-white">{label}</span>
@@ -258,7 +258,7 @@ export default function StarboardCenterClient() {
   return (
     <div className="h-full min-h-0 w-full flex flex-col overflow-hidden bg-[var(--bg-main)] text-white">
       {/* Header */}
-      <div className="shrink-0 border-b border-white/10 bg-[var(--bg-surface-elevated)]/80 backdrop-blur-md px-4 sm:px-6 py-3.5 flex flex-wrap items-center justify-between gap-3 z-20">
+      <div className="shrink-0 border-b border-[var(--panel-border)] bg-[var(--bg-surface-elevated)]/80 backdrop-blur-md px-4 sm:px-6 py-3.5 flex flex-wrap items-center justify-between gap-3 z-20">
         <div className="flex items-center gap-3">
           <Link
             href="/discord"
@@ -268,7 +268,7 @@ export default function StarboardCenterClient() {
             <ArrowLeft className="w-5 h-5" />
           </Link>
           <div className="flex items-center gap-2.5">
-            <div className="w-9 h-9 rounded-xl bg-white/[0.04] border border-white/10 flex items-center justify-center text-zinc-300">
+            <div className="w-9 h-9 rounded-xl bg-white/[0.04] border border-[var(--panel-border)] flex items-center justify-center text-zinc-300">
               <Star className="w-5 h-5" />
             </div>
             <div>
@@ -292,7 +292,7 @@ export default function StarboardCenterClient() {
                   const g = manageableGuilds.find((item) => item.id === e.target.value);
                   if (g) setSelectedGuild(g);
                 }}
-                className="appearance-none bg-white/[0.04] border border-white/10 rounded-xl px-3 py-1.5 pr-8 text-xs font-medium text-white/90 focus:outline-none focus:border-amber-500/50 hover:bg-white/[0.07] transition-all cursor-pointer"
+                className="appearance-none bg-white/[0.04] border border-[var(--panel-border)] rounded-xl px-3 py-1.5 pr-8 text-xs font-medium text-white/90 focus:outline-none focus:border-amber-500/50 hover:bg-white/[0.07] transition-all cursor-pointer"
               >
                 {manageableGuilds.map((g) => (
                   <option key={g.id} value={g.id} className="bg-[var(--bg-surface-elevated)] text-white">
@@ -307,7 +307,7 @@ export default function StarboardCenterClient() {
           )}
           <button
             onClick={load}
-            className="p-2 rounded-xl bg-white/[0.04] hover:bg-white/[0.08] border border-white/10 text-white/70 hover:text-white transition-colors"
+            className="p-2 rounded-xl bg-white/[0.04] hover:bg-white/[0.08] border border-[var(--panel-border)] text-white/70 hover:text-white transition-colors"
             title="Rafraîchir"
           >
             <RefreshCw className={cn("w-4 h-4", loading && "animate-spin")} />
@@ -326,7 +326,7 @@ export default function StarboardCenterClient() {
       {/* Body */}
       <div className="flex-1 overflow-y-auto os-scroll px-4 sm:px-6 py-6 pb-36 space-y-6">
         {!discordLoading && manageableGuilds.length === 0 && (
-          <div className="rounded-2xl border border-white/10 bg-white/[0.02] p-6 text-center text-sm text-zinc-400">
+          <div className="rounded-[var(--panel-radius)] border border-[var(--panel-border)] bg-white/[0.02] p-6 text-center text-sm text-zinc-400">
             Connectez un serveur Discord où vous êtes administrateur pour configurer le Starboard.
           </div>
         )}
@@ -352,7 +352,7 @@ export default function StarboardCenterClient() {
                 { label: "⭐ cumulées", value: String(stats.totalStars), icon: Star, tone: "text-yellow-400" },
                 { label: "Record", value: stats.topMessage ? `${stats.topMessage.starCount} ⭐` : "—", icon: Trophy, tone: "text-fuchsia-400" },
               ].map((s) => (
-                <div key={s.label} className="rounded-2xl border border-white/10 bg-white/[0.025] p-3.5">
+                <div key={s.label} className="rounded-[var(--panel-radius)] border border-[var(--panel-border)] bg-white/[0.025] p-3.5">
                   <div className="flex items-center gap-1.5 text-[11px] font-medium text-zinc-400">
                     <s.icon className={cn("h-3.5 w-3.5", s.tone)} />
                     {s.label}
@@ -363,8 +363,8 @@ export default function StarboardCenterClient() {
             </div>
 
             {/* Config */}
-            <div className="rounded-3xl border border-white/10 bg-white/[0.025] p-5 sm:p-6 space-y-5">
-              <div className="flex items-center justify-between border-b border-white/10 pb-4">
+            <div className="rounded-[var(--panel-radius)] border border-[var(--panel-border)] bg-white/[0.025] p-5 sm:p-6 space-y-5">
+              <div className="flex items-center justify-between border-b border-[var(--panel-border)] pb-4">
                 <div>
                   <h3 className="text-sm font-bold text-white">Configuration</h3>
                   <p className="text-xs text-zinc-400 mt-0.5">Serveur : {selectedGuild.name}</p>
@@ -382,7 +382,7 @@ export default function StarboardCenterClient() {
                     <select
                       value={config.channelId ?? ""}
                       onChange={(e) => patch("channelId", e.target.value || null)}
-                      className="w-full appearance-none rounded-xl border border-white/10 bg-white/[0.04] px-3 py-2 text-xs text-white focus:border-amber-500/50 focus:outline-none"
+                      className="w-full appearance-none rounded-[var(--inset-radius)] border border-[var(--panel-border)] bg-white/[0.04] px-3 py-2 text-xs text-white focus:border-amber-500/50 focus:outline-none"
                     >
                       <option value="" className="bg-[var(--bg-surface-elevated)]">— Choisir un salon —</option>
                       {channels.map((c) => (
@@ -397,7 +397,7 @@ export default function StarboardCenterClient() {
                       value={config.channelId ?? ""}
                       onChange={(e) => patch("channelId", e.target.value.trim() || null)}
                       placeholder="ID du salon (ex: 123456789012345678)"
-                      className="w-full rounded-xl border border-white/10 bg-white/[0.04] px-3 py-2 text-xs text-white placeholder:text-zinc-500 focus:border-amber-500/50 focus:outline-none"
+                      className="w-full rounded-[var(--inset-radius)] border border-[var(--panel-border)] bg-white/[0.04] px-3 py-2 text-xs text-white placeholder:text-zinc-500 focus:border-amber-500/50 focus:outline-none"
                     />
                   )}
                   <p className="mt-1 text-[11px] text-zinc-500">Actuel : #{channelName(config.channelId)}</p>
@@ -410,7 +410,7 @@ export default function StarboardCenterClient() {
                     value={config.emoji}
                     onChange={(e) => patch("emoji", e.target.value)}
                     placeholder="⭐ ou <:nom:id>"
-                    className="w-full rounded-xl border border-white/10 bg-white/[0.04] px-3 py-2 text-xs text-white placeholder:text-zinc-500 focus:border-amber-500/50 focus:outline-none"
+                    className="w-full rounded-[var(--inset-radius)] border border-[var(--panel-border)] bg-white/[0.04] px-3 py-2 text-xs text-white placeholder:text-zinc-500 focus:border-amber-500/50 focus:outline-none"
                   />
                   <p className="mt-1 text-[11px] text-zinc-500">Emoji unicode ou custom du serveur.</p>
                 </div>
@@ -458,7 +458,7 @@ export default function StarboardCenterClient() {
                             "rounded-lg border px-2 py-1 text-[11px] font-medium transition-colors cursor-pointer",
                             on
                               ? "border-rose-500/40 bg-rose-500/15 text-rose-300"
-                              : "border-white/10 bg-white/[0.03] text-zinc-400 hover:border-white/25 hover:text-white"
+                              : "border-[var(--panel-border)] bg-white/[0.03] text-zinc-400 hover:border-[var(--input-border-hover)] hover:text-white"
                           )}
                         >
                           #{c.name}
@@ -471,7 +471,7 @@ export default function StarboardCenterClient() {
             </div>
 
             {/* Top starred */}
-            <div className="rounded-3xl border border-white/10 bg-white/[0.025] p-5 sm:p-6">
+            <div className="rounded-[var(--panel-radius)] border border-[var(--panel-border)] bg-white/[0.025] p-5 sm:p-6">
               <h3 className="text-sm font-bold text-white flex items-center gap-2">
                 <Trophy className="h-4 w-4 text-amber-400" /> Messages les plus étoilés
               </h3>

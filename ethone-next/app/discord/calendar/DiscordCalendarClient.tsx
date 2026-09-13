@@ -266,7 +266,7 @@ export default function DiscordCalendarClient() {
 
       <div className="relative max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 pt-8">
         {/* Header */}
-        <div className="flex flex-col md:flex-row md:items-center justify-between gap-6 pb-6 border-b border-white/10">
+        <div className="flex flex-col md:flex-row md:items-center justify-between gap-6 pb-6 border-b border-[var(--panel-border)]">
           <div>
             <div className="flex items-center gap-2 mb-2 text-xs text-indigo-400 font-semibold uppercase tracking-wider">
               <Link href="/discord/events" className="hover:underline flex items-center gap-1">
@@ -291,14 +291,14 @@ export default function DiscordCalendarClient() {
             <button
               onClick={loadEvents}
               disabled={loading}
-              className="inline-flex items-center justify-center rounded-xl border border-white/10 bg-white/5 p-2 text-slate-400 transition-colors hover:text-white hover:bg-white/10 disabled:opacity-50"
+              className="inline-flex items-center justify-center rounded-[var(--inset-radius)] border border-[var(--panel-border)] bg-white/5 p-2 text-slate-400 transition-colors hover:text-white hover:bg-white/10 disabled:opacity-50"
               title="Rafraîchir"
             >
               <RefreshCw className={`w-3.5 h-3.5 ${loading ? "animate-spin" : ""}`} />
             </button>
             <button
               onClick={handleExportICS}
-              className="inline-flex items-center gap-2 px-3.5 py-2 rounded-xl text-xs font-semibold bg-white/5 hover:bg-white/10 border border-white/10 text-slate-200 transition-colors"
+              className="inline-flex items-center gap-2 px-3.5 py-2 rounded-xl text-xs font-semibold bg-white/5 hover:bg-white/10 border border-[var(--panel-border)] text-slate-200 transition-colors"
             >
               <Download className="w-3.5 h-3.5 text-cyan-400" />
               Exporter iCal (.ics)
@@ -315,25 +315,25 @@ export default function DiscordCalendarClient() {
         </div>
 
         {/* Toolbar: Navigation & View Switcher */}
-        <div className="flex flex-col sm:flex-row items-center justify-between gap-4 my-6 p-4 rounded-2xl bg-white/[0.02] border border-white/10 backdrop-blur-xl">
+        <div className="flex flex-col sm:flex-row items-center justify-between gap-4 my-6 p-4 rounded-2xl bg-white/[0.02] border border-[var(--panel-border)] backdrop-blur-xl">
           {/* Navigation Controls */}
           <div className="flex items-center gap-2 w-full sm:w-auto justify-between sm:justify-start">
             <button
               onClick={handleToday}
-              className="px-3 py-1.5 rounded-xl bg-white/5 hover:bg-white/10 border border-white/10 text-xs font-semibold text-white transition-colors"
+              className="px-3 py-1.5 rounded-xl bg-white/5 hover:bg-white/10 border border-[var(--panel-border)] text-xs font-semibold text-white transition-colors"
             >
               Aujourd'hui
             </button>
             <div className="flex items-center gap-1">
               <button
                 onClick={handlePrev}
-                className="p-1.5 rounded-xl bg-white/5 hover:bg-white/10 border border-white/10 text-slate-300 transition-colors"
+                className="p-1.5 rounded-xl bg-white/5 hover:bg-white/10 border border-[var(--panel-border)] text-slate-300 transition-colors"
               >
                 <ChevronLeft className="w-4 h-4" />
               </button>
               <button
                 onClick={handleNext}
-                className="p-1.5 rounded-xl bg-white/5 hover:bg-white/10 border border-white/10 text-slate-300 transition-colors"
+                className="p-1.5 rounded-xl bg-white/5 hover:bg-white/10 border border-[var(--panel-border)] text-slate-300 transition-colors"
               >
                 <ChevronRight className="w-4 h-4" />
               </button>
@@ -365,7 +365,7 @@ export default function DiscordCalendarClient() {
           </div>
 
           {/* View Modes */}
-          <div className="flex items-center gap-1 bg-black/40 p-1 rounded-xl border border-white/10">
+          <div className="flex items-center gap-1 bg-black/40 p-1 rounded-[var(--inset-radius)] border border-[var(--panel-border)]">
             {(["MONTH", "AGENDA"] as ViewMode[]).map((mode) => (
               <button
                 key={mode}
@@ -385,10 +385,10 @@ export default function DiscordCalendarClient() {
         {/* View 1: Month View — the 7-col grid needs room; on narrow screens it
             scrolls horizontally instead of crushing every cell to nothing. */}
         {viewMode === "MONTH" && (
-          <div className="rounded-2xl border border-white/10 bg-white/[0.01] backdrop-blur-xl overflow-x-auto os-scroll shadow-2xl">
+          <div className="rounded-[var(--panel-radius)] border border-[var(--panel-border)] bg-white/[0.01] backdrop-blur-xl overflow-x-auto os-scroll shadow-2xl">
            <div className="min-w-[640px]">
             {/* Weekdays Header */}
-            <div className="grid grid-cols-7 border-b border-white/10 bg-white/[0.03] text-center text-xs font-bold text-slate-400 py-3">
+            <div className="grid grid-cols-7 border-b border-[var(--panel-border)] bg-white/[0.03] text-center text-xs font-bold text-slate-400 py-3">
               {["Lun", "Mar", "Mer", "Jeu", "Ven", "Sam", "Dim"].map((d, i) => (
                 <div key={i}>{d}</div>
               ))}
@@ -405,7 +405,7 @@ export default function DiscordCalendarClient() {
                 return (
                   <div
                     key={idx}
-                    className={`min-h-[120px] p-2 border-b border-r border-white/5 transition-colors flex flex-col justify-between ${
+                    className={`min-h-[120px] p-2 border-b border-r border-[var(--panel-border)] transition-colors flex flex-col justify-between ${
                       cell.isCurrentMonth ? "bg-transparent" : "bg-black/40 text-slate-600"
                     } hover:bg-white/[0.02]`}
                   >
@@ -463,7 +463,7 @@ export default function DiscordCalendarClient() {
                 <div
                   key={ev.id}
                   onClick={() => setActiveModalEvent(ev)}
-                  className="p-5 rounded-2xl bg-white/[0.02] border border-white/10 backdrop-blur-xl hover:border-indigo-500/40 cursor-pointer transition-all flex flex-col md:flex-row items-start md:items-center justify-between gap-4"
+                  className="p-5 rounded-2xl bg-white/[0.02] border border-[var(--panel-border)] backdrop-blur-xl hover:border-indigo-500/40 cursor-pointer transition-all flex flex-col md:flex-row items-start md:items-center justify-between gap-4"
                 >
                   <div className="flex items-start gap-4">
                     <div
@@ -474,7 +474,7 @@ export default function DiscordCalendarClient() {
                     </div>
                     <div>
                       <div className="flex items-center gap-2 mb-1">
-                        <span className="px-2 py-0.5 rounded-md text-[10px] font-bold uppercase tracking-wider bg-white/5 border border-white/10 text-slate-300">
+                        <span className="px-2 py-0.5 rounded-md text-[10px] font-bold uppercase tracking-wider bg-white/5 border border-[var(--panel-border)] text-slate-300">
                           {ev.category}
                         </span>
                         <span className="text-xs text-indigo-400 font-semibold">
@@ -486,7 +486,7 @@ export default function DiscordCalendarClient() {
                     </div>
                   </div>
 
-                  <div className="flex items-center gap-4 w-full md:w-auto justify-between md:justify-end pt-3 md:pt-0 border-t md:border-t-0 border-white/5">
+                  <div className="flex items-center gap-4 w-full md:w-auto justify-between md:justify-end pt-3 md:pt-0 border-t md:border-t-0 border-[var(--panel-border)]">
                     <div className="text-right">
                       <div className="text-xs font-semibold text-slate-300 flex items-center gap-1.5">
                         <Volume2 className="w-3.5 h-3.5 text-cyan-400" />
@@ -501,7 +501,7 @@ export default function DiscordCalendarClient() {
                     <Link
                       href={`/discord/events/${ev.id}`}
                       onClick={(e) => e.stopPropagation()}
-                      className="p-2.5 rounded-xl bg-white/5 hover:bg-white/10 text-slate-300 border border-white/10 transition-colors"
+                      className="p-2.5 rounded-xl bg-white/5 hover:bg-white/10 text-slate-300 border border-[var(--panel-border)] transition-colors"
                     >
                       <ExternalLink className="w-4 h-4" />
                     </Link>
@@ -520,7 +520,7 @@ export default function DiscordCalendarClient() {
                 initial={{ opacity: 0, scale: 0.95 }}
                 animate={{ opacity: 1, scale: 1 }}
                 exit={{ opacity: 0, scale: 0.95 }}
-                className="relative w-full max-w-lg rounded-2xl bg-[var(--bg-surface-elevated)] border border-white/15 p-6 shadow-2xl"
+                className="relative w-full max-w-lg rounded-2xl bg-[var(--bg-surface-elevated)] border border-[var(--panel-border)] p-6 shadow-2xl"
               >
                 <button
                   onClick={() => setActiveModalEvent(null)}
@@ -530,7 +530,7 @@ export default function DiscordCalendarClient() {
                 </button>
 
                 <div className="flex items-center gap-3 mb-4">
-                  <span className="text-3xl p-3 rounded-2xl bg-white/5 border border-white/10">
+                  <span className="text-3xl p-3 rounded-2xl bg-white/5 border border-[var(--panel-border)]">
                     {activeModalEvent.emoji}
                   </span>
                   <div>
@@ -545,7 +545,7 @@ export default function DiscordCalendarClient() {
                   {activeModalEvent.description}
                 </p>
 
-                <div className="grid grid-cols-2 gap-3 p-4 rounded-xl bg-black/40 border border-white/5 mb-6 text-xs">
+                <div className="grid grid-cols-2 gap-3 p-4 rounded-xl bg-black/40 border border-[var(--panel-border)] mb-6 text-xs">
                   <div>
                     <span className="text-slate-500 block mb-0.5">Date & Heure</span>
                     <span className="text-slate-200 font-semibold">

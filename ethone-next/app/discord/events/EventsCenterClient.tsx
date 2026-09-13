@@ -309,7 +309,7 @@ export default function EventsCenterClient() {
     <div className="h-full overflow-y-auto os-scroll [overscroll-behavior:contain] bg-[var(--bg-main)] text-slate-100 pb-20 selection:bg-indigo-500/30">
       <div className="relative max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 pt-8">
         {/* Navigation & Header */}
-        <div className="flex flex-col md:flex-row md:items-center justify-between gap-6 pb-8 border-b border-white/10">
+        <div className="flex flex-col md:flex-row md:items-center justify-between gap-6 pb-8 border-b border-[var(--panel-border)]">
           <div>
             <div className="flex items-center gap-3 mb-2">
               <span className="inline-flex items-center gap-1.5 px-3 py-1 rounded-full text-xs font-semibold bg-indigo-500/10 text-indigo-400 border border-indigo-500/20">
@@ -329,7 +329,7 @@ export default function EventsCenterClient() {
               <button
                 onClick={loadEvents}
                 disabled={loading}
-                className="inline-flex items-center justify-center rounded-lg border border-white/10 bg-white/5 p-1.5 text-zinc-400 transition-colors hover:text-white hover:bg-white/10 disabled:opacity-50"
+                className="inline-flex items-center justify-center rounded-[var(--inset-radius)] border border-[var(--panel-border)] bg-white/5 p-1.5 text-zinc-400 transition-colors hover:text-white hover:bg-white/10 disabled:opacity-50"
                 title="Rafraîchir"
               >
                 <RefreshCw className={`w-3.5 h-3.5 ${loading ? "animate-spin" : ""}`} />
@@ -349,7 +349,7 @@ export default function EventsCenterClient() {
           <div className="flex items-center gap-3">
             <Link
               href="/discord/calendar"
-              className="inline-flex items-center gap-2 px-4 py-2.5 rounded-xl text-sm font-semibold bg-white/5 hover:bg-white/10 border border-white/10 text-slate-200 transition-all hover:scale-[1.02]"
+              className="inline-flex items-center gap-2 px-4 py-2.5 rounded-xl text-sm font-semibold bg-white/5 hover:bg-white/10 border border-[var(--panel-border)] text-slate-200 transition-all hover:scale-[1.02]"
             >
               <CalendarDays className="w-4 h-4 text-cyan-400" />
               Vue Calendrier
@@ -367,7 +367,7 @@ export default function EventsCenterClient() {
 
         {/* Top KPIs Grid */}
         <div className="grid grid-cols-2 lg:grid-cols-4 gap-4 my-8">
-          <div className="relative p-5 rounded-2xl bg-white/[0.03] border border-white/10 backdrop-blur-xl overflow-hidden group hover:border-indigo-500/40 transition-all">
+          <div className="relative p-5 rounded-2xl bg-white/[0.03] border border-[var(--panel-border)] backdrop-blur-xl overflow-hidden group hover:border-indigo-500/40 transition-all">
             <div className="flex items-center justify-between text-slate-400 text-xs font-medium uppercase tracking-wider">
               <span>Événements à Venir</span>
               <div className="p-2 rounded-lg bg-indigo-500/10 text-indigo-400">
@@ -381,7 +381,7 @@ export default function EventsCenterClient() {
             </div>
           </div>
 
-          <div className="relative p-5 rounded-2xl bg-white/[0.03] border border-white/10 backdrop-blur-xl overflow-hidden group hover:border-emerald-500/40 transition-all">
+          <div className="relative p-5 rounded-2xl bg-white/[0.03] border border-[var(--panel-border)] backdrop-blur-xl overflow-hidden group hover:border-emerald-500/40 transition-all">
             <div className="flex items-center justify-between text-slate-400 text-xs font-medium uppercase tracking-wider">
               <span>Taux de Présence</span>
               <div className="p-2 rounded-lg bg-emerald-500/10 text-emerald-400">
@@ -395,7 +395,7 @@ export default function EventsCenterClient() {
             </div>
           </div>
 
-          <div className="relative p-5 rounded-2xl bg-white/[0.03] border border-white/10 backdrop-blur-xl overflow-hidden group hover:border-purple-500/40 transition-all">
+          <div className="relative p-5 rounded-2xl bg-white/[0.03] border border-[var(--panel-border)] backdrop-blur-xl overflow-hidden group hover:border-purple-500/40 transition-all">
             <div className="flex items-center justify-between text-slate-400 text-xs font-medium uppercase tracking-wider">
               <span>Inscriptions Confirmées</span>
               <div className="p-2 rounded-lg bg-purple-500/10 text-purple-400">
@@ -409,7 +409,7 @@ export default function EventsCenterClient() {
             </div>
           </div>
 
-          <div className="relative p-5 rounded-2xl bg-white/[0.03] border border-white/10 backdrop-blur-xl overflow-hidden group hover:border-cyan-500/40 transition-all">
+          <div className="relative p-5 rounded-2xl bg-white/[0.03] border border-[var(--panel-border)] backdrop-blur-xl overflow-hidden group hover:border-cyan-500/40 transition-all">
             <div className="flex items-center justify-between text-slate-400 text-xs font-medium uppercase tracking-wider">
               <span>Sessions Live</span>
               <div className="p-2 rounded-lg bg-cyan-500/10 text-cyan-400">
@@ -448,7 +448,7 @@ export default function EventsCenterClient() {
                   </h3>
                   <p className="text-xs text-slate-400 mt-1 line-clamp-2">{tpl.desc}</p>
                 </div>
-                <div className="mt-4 pt-3 border-t border-white/10 flex items-center justify-between text-xs font-semibold text-indigo-400">
+                <div className="mt-4 pt-3 border-t border-[var(--panel-border)] flex items-center justify-between text-xs font-semibold text-indigo-400">
                   <span>Utiliser ce template</span>
                   <ChevronRight className="w-4 h-4 group-hover:translate-x-1 transition-transform" />
                 </div>
@@ -458,7 +458,7 @@ export default function EventsCenterClient() {
         </div>
 
         {/* Search & Filter Toolbar */}
-        <div className="flex flex-col md:flex-row items-center justify-between gap-4 p-4 rounded-2xl bg-white/[0.02] border border-white/10 backdrop-blur-xl mb-8">
+        <div className="flex flex-col md:flex-row items-center justify-between gap-4 p-4 rounded-2xl bg-white/[0.02] border border-[var(--panel-border)] backdrop-blur-xl mb-8">
           {/* Search bar */}
           <div className="relative w-full md:w-96">
             <Search className="absolute left-3.5 top-1/2 -translate-y-1/2 w-4 h-4 text-slate-400" />
@@ -467,7 +467,7 @@ export default function EventsCenterClient() {
               placeholder="Rechercher par titre, jeu ou mot-clé..."
               value={searchQuery}
               onChange={(e) => setSearchQuery(e.target.value)}
-              className="w-full pl-10 pr-4 py-2.5 rounded-xl bg-black/40 border border-white/10 text-sm text-white placeholder-slate-500 focus:outline-none focus:border-indigo-500 transition-colors"
+              className="w-full pl-10 pr-4 py-2.5 rounded-xl bg-black/40 border border-[var(--panel-border)] text-sm text-white placeholder-slate-500 focus:outline-none focus:border-indigo-500 transition-colors"
             />
           </div>
 
@@ -488,7 +488,7 @@ export default function EventsCenterClient() {
                 className={`px-3 py-1.5 rounded-xl text-xs font-semibold whitespace-nowrap transition-all ${
                   selectedFilter === tab.id
                     ? "bg-indigo-500 text-white shadow-sm"
-                    : "bg-white/5 hover:bg-white/10 text-slate-300 border border-white/5"
+                    : "bg-white/5 hover:bg-white/10 text-slate-300 border border-[var(--panel-border)]"
                 }`}
               >
                 {tab.label}
@@ -514,7 +514,7 @@ export default function EventsCenterClient() {
                   initial={{ opacity: 0, y: 15 }}
                   animate={{ opacity: 1, y: 0 }}
                   exit={{ opacity: 0, scale: 0.95 }}
-                  className="group relative rounded-2xl bg-white/[0.02] border border-white/10 backdrop-blur-xl overflow-hidden hover:border-indigo-500/40 hover:shadow-2xl hover:shadow-indigo-500/10 transition-all flex flex-col justify-between"
+                  className="group relative rounded-2xl bg-white/[0.02] border border-[var(--panel-border)] backdrop-blur-xl overflow-hidden hover:border-indigo-500/40 hover:shadow-2xl hover:shadow-indigo-500/10 transition-all flex flex-col justify-between"
                 >
                   {/* Card Banner Image or Gradient */}
                   <div className="relative h-44 w-full bg-slate-900 overflow-hidden">
@@ -533,7 +533,7 @@ export default function EventsCenterClient() {
 
                     {/* Top Badges */}
                     <div className="absolute top-3 left-3 right-3 flex items-center justify-between">
-                      <span className="px-2.5 py-1 rounded-lg text-xs font-bold uppercase tracking-wider bg-black/60 backdrop-blur-md border border-white/10 text-white flex items-center gap-1.5">
+                      <span className="px-2.5 py-1 rounded-lg text-xs font-bold uppercase tracking-wider bg-black/60 backdrop-blur-md border border-[var(--panel-border)] text-white flex items-center gap-1.5">
                         {event.emoji && <span>{event.emoji}</span>}
                         {event.category}
                       </span>
@@ -544,7 +544,7 @@ export default function EventsCenterClient() {
                           En Direct
                         </span>
                       ) : isPast ? (
-                        <span className="px-2.5 py-1 rounded-lg text-xs font-bold uppercase tracking-wider bg-slate-800/80 text-slate-300 border border-white/10">
+                        <span className="px-2.5 py-1 rounded-lg text-xs font-bold uppercase tracking-wider bg-slate-800/80 text-slate-300 border border-[var(--panel-border)]">
                           Terminé
                         </span>
                       ) : (
@@ -584,7 +584,7 @@ export default function EventsCenterClient() {
                     </div>
 
                     {/* Capacity Gauge & Attendees */}
-                    <div className="mt-5 pt-4 border-t border-white/5">
+                    <div className="mt-5 pt-4 border-t border-[var(--panel-border)]">
                       <div className="flex items-center justify-between text-xs text-slate-300 mb-1.5">
                         <span className="flex items-center gap-1.5 font-medium">
                           <Users className="w-3.5 h-3.5 text-indigo-400" />
@@ -624,14 +624,14 @@ export default function EventsCenterClient() {
 
                         <Link
                           href={`/discord/events/${event.id}`}
-                          className="py-2 px-3 rounded-xl bg-white/5 hover:bg-white/10 text-slate-300 border border-white/10 text-xs font-semibold transition-colors flex items-center justify-center"
+                          className="py-2 px-3 rounded-xl bg-white/5 hover:bg-white/10 text-slate-300 border border-[var(--panel-border)] text-xs font-semibold transition-colors flex items-center justify-center"
                         >
                           Détails
                         </Link>
 
                         <button
                           onClick={() => handleCopy(event.id)}
-                          className="p-2 rounded-xl bg-white/5 hover:bg-white/10 text-slate-400 hover:text-white border border-white/10 transition-colors"
+                          className="p-2 rounded-xl bg-white/5 hover:bg-white/10 text-slate-400 hover:text-white border border-[var(--panel-border)] transition-colors"
                           title="Copier le lien Discord"
                         >
                           {copiedId === event.id ? <Check className="w-3.5 h-3.5 text-emerald-400" /> : <Copy className="w-3.5 h-3.5" />}
@@ -639,7 +639,7 @@ export default function EventsCenterClient() {
 
                         <button
                           onClick={() => handleDuplicateEvent(event)}
-                          className="p-2 rounded-xl bg-white/5 hover:bg-white/10 text-slate-400 hover:text-white border border-white/10 transition-colors"
+                          className="p-2 rounded-xl bg-white/5 hover:bg-white/10 text-slate-400 hover:text-white border border-[var(--panel-border)] transition-colors"
                           title="Dupliquer"
                         >
                           <CopyPlus className="w-3.5 h-3.5" />
@@ -648,7 +648,7 @@ export default function EventsCenterClient() {
                         {event.status !== "CANCELLED" && event.status !== "COMPLETED" && (
                           <button
                             onClick={() => handleCancelEvent(event)}
-                            className="p-2 rounded-xl bg-white/5 hover:bg-rose-500/15 text-slate-400 hover:text-rose-400 border border-white/10 transition-colors"
+                            className="p-2 rounded-xl bg-white/5 hover:bg-rose-500/15 text-slate-400 hover:text-rose-400 border border-[var(--panel-border)] transition-colors"
                             title="Annuler l'événement"
                           >
                             <X className="w-3.5 h-3.5" />
@@ -665,7 +665,7 @@ export default function EventsCenterClient() {
 
         {/* Empty State */}
         {filteredEvents.length === 0 && (
-          <div className="text-center py-16 bg-white/[0.01] rounded-2xl border border-white/10 my-8">
+          <div className="text-center py-16 bg-white/[0.01] rounded-[var(--panel-radius)] border border-[var(--panel-border)] my-8">
             <Calendar className="w-12 h-12 text-slate-600 mx-auto mb-3" />
             <h3 className="text-base font-bold text-white">Aucun événement trouvé</h3>
             <p className="text-xs text-slate-400 max-w-sm mx-auto mt-1">

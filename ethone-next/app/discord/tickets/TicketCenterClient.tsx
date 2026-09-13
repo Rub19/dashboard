@@ -751,7 +751,7 @@ export function TicketCenterClient() {
   return (
     <div className="h-full overflow-y-auto os-scroll [overscroll-behavior:contain] bg-[var(--bg-main)] text-white px-4 sm:px-8 py-6 pb-36">
       {/* Top Bar / Guild Selector */}
-      <div className="flex flex-col md:flex-row md:items-center justify-between gap-4 border-b border-white/10 pb-6">
+      <div className="flex flex-col md:flex-row md:items-center justify-between gap-4 border-b border-[var(--panel-border)] pb-6">
         <div className="flex items-center gap-3">
           <div className="flex h-12 w-12 items-center justify-center rounded-2xl bg-emerald-600 shadow-sm">
             <Ticket className="h-6 w-6 text-white" />
@@ -777,7 +777,7 @@ export function TicketCenterClient() {
               const g = guilds.find((item: DiscordGuild) => item.id === e.target.value);
               if (g) setSelectedGuild(g);
             }}
-            className="h-9 rounded-xl border border-white/10 bg-zinc-900/90 px-3 text-xs text-white outline-none focus:border-emerald-500 cursor-pointer"
+            className="h-9 rounded-[var(--inset-radius)] border border-[var(--panel-border)] bg-zinc-900/90 px-3 text-xs text-white outline-none focus:border-emerald-500 cursor-pointer"
           >
             {guilds.length > 0 ? (
               guilds.map((g: DiscordGuild) => (
@@ -793,7 +793,7 @@ export function TicketCenterClient() {
           <button
             onClick={fetchAllData}
             disabled={loading}
-            className="flex h-9 w-9 items-center justify-center rounded-xl border border-white/10 bg-zinc-900/80 text-zinc-300 hover:bg-white/10 hover:text-white transition-all cursor-pointer"
+            className="flex h-9 w-9 items-center justify-center rounded-[var(--inset-radius)] border border-[var(--panel-border)] bg-zinc-900/80 text-zinc-300 hover:bg-white/10 hover:text-white transition-all cursor-pointer"
             title="Rafraîchir les données"
           >
             <RefreshCw className={cn("h-4 w-4", loading && "animate-spin text-emerald-400")} />
@@ -801,7 +801,7 @@ export function TicketCenterClient() {
 
           <Link
             href={`/discord?guildId=${currentGuildId}`}
-            className="flex h-9 items-center gap-1.5 rounded-xl border border-white/10 bg-zinc-900/80 px-3 text-xs font-medium text-zinc-300 hover:bg-white/10 hover:text-white transition-all"
+            className="flex h-9 items-center gap-1.5 rounded-[var(--inset-radius)] border border-[var(--panel-border)] bg-zinc-900/80 px-3 text-xs font-medium text-zinc-300 hover:bg-white/10 hover:text-white transition-all"
           >
             <span>Retour Discord</span>
           </Link>
@@ -857,7 +857,7 @@ export function TicketCenterClient() {
       </div>
 
       {/* Tabs Bar */}
-      <div className="flex items-center gap-1.5 overflow-x-auto border-b border-white/10 pb-2 mt-8 text-xs scrollbar-none">
+      <div className="flex items-center gap-1.5 overflow-x-auto border-b border-[var(--panel-border)] pb-2 mt-8 text-xs scrollbar-none">
         {[
           { id: "explorer", label: "Tickets", icon: Ticket, count: totalTickets },
           { id: "panels", label: "Panels Discord", icon: Sliders, count: panels.length },
@@ -902,7 +902,7 @@ export function TicketCenterClient() {
       {activeTab === "explorer" && (
         <div className="space-y-4 mt-6">
           {/* Filters Bar */}
-          <div className="flex flex-col md:flex-row md:items-center justify-between gap-3 rounded-2xl border border-white/10 bg-white/[0.02] p-3">
+          <div className="flex flex-col md:flex-row md:items-center justify-between gap-3 rounded-[var(--panel-radius)] border border-[var(--panel-border)] bg-white/[0.02] p-3">
             <div className="flex flex-wrap items-center gap-2">
               <div className="relative min-w-[240px]">
                 <Search className="absolute left-3 top-1/2 -translate-y-1/2 h-3.5 w-3.5 text-zinc-500" />
@@ -911,7 +911,7 @@ export function TicketCenterClient() {
                   value={searchQuery}
                   onChange={(e) => setSearchQuery(e.target.value)}
                   placeholder="Rechercher par ID, utilisateur, tag, case..."
-                  className="h-9 w-full rounded-xl border border-white/10 bg-zinc-900/80 pl-9 pr-3 text-xs text-white placeholder-zinc-500 outline-none focus:border-emerald-500"
+                  className="h-9 w-full rounded-[var(--inset-radius)] border border-[var(--panel-border)] bg-zinc-900/80 pl-9 pr-3 text-xs text-white placeholder-zinc-500 outline-none focus:border-emerald-500"
                 />
               </div>
 
@@ -919,7 +919,7 @@ export function TicketCenterClient() {
               <select
                 value={statusFilter}
                 onChange={(e) => setStatusFilter(e.target.value)}
-                className="h-9 rounded-xl border border-white/10 bg-zinc-900/80 px-2.5 text-xs text-zinc-300 outline-none focus:border-emerald-500 cursor-pointer"
+                className="h-9 rounded-[var(--inset-radius)] border border-[var(--panel-border)] bg-zinc-900/80 px-2.5 text-xs text-zinc-300 outline-none focus:border-emerald-500 cursor-pointer"
               >
                 <option value="ALL">Tous les statuts</option>
                 <option value="OPEN">🟢 Ouverts</option>
@@ -933,7 +933,7 @@ export function TicketCenterClient() {
               <select
                 value={priorityFilter}
                 onChange={(e) => setPriorityFilter(e.target.value)}
-                className="h-9 rounded-xl border border-white/10 bg-zinc-900/80 px-2.5 text-xs text-zinc-300 outline-none focus:border-emerald-500 cursor-pointer"
+                className="h-9 rounded-[var(--inset-radius)] border border-[var(--panel-border)] bg-zinc-900/80 px-2.5 text-xs text-zinc-300 outline-none focus:border-emerald-500 cursor-pointer"
               >
                 <option value="ALL">Toutes priorités</option>
                 <option value="URGENT">🔥 Urgent</option>
@@ -946,7 +946,7 @@ export function TicketCenterClient() {
               <select
                 value={categoryFilter}
                 onChange={(e) => setCategoryFilter(e.target.value)}
-                className="h-9 rounded-xl border border-white/10 bg-zinc-900/80 px-2.5 text-xs text-zinc-300 outline-none focus:border-emerald-500 cursor-pointer"
+                className="h-9 rounded-[var(--inset-radius)] border border-[var(--panel-border)] bg-zinc-900/80 px-2.5 text-xs text-zinc-300 outline-none focus:border-emerald-500 cursor-pointer"
               >
                 <option value="">Toutes catégories</option>
                 {categories.map((c) => (
@@ -965,9 +965,9 @@ export function TicketCenterClient() {
           </div>
 
           {/* Tickets Table */}
-          <div className="overflow-x-auto rounded-2xl border border-white/10 bg-white/[0.02]">
+          <div className="overflow-x-auto rounded-[var(--panel-radius)] border border-[var(--panel-border)] bg-white/[0.02]">
             <table className="w-full text-left text-xs">
-              <thead className="border-b border-white/10 bg-white/[0.03] text-zinc-400">
+              <thead className="border-b border-[var(--panel-border)] bg-white/[0.03] text-zinc-400">
                 <tr>
                   <th className="py-3 px-4 font-semibold">Ticket ID</th>
                   <th className="py-3 px-4 font-semibold">Demandeur</th>
@@ -1011,7 +1011,7 @@ export function TicketCenterClient() {
                       {/* Demandeur */}
                       <td className="py-3 px-4">
                         <div className="flex items-center gap-2">
-                          <div className="h-6 w-6 rounded-full bg-zinc-800 flex items-center justify-center text-[10px] font-bold text-emerald-400 border border-white/10 overflow-hidden">
+                          <div className="h-6 w-6 rounded-full bg-zinc-800 flex items-center justify-center text-[10px] font-bold text-emerald-400 border border-[var(--panel-border)] overflow-hidden">
                             {t.userAvatar ? (
                               <img src={t.userAvatar} alt="" className="h-full w-full object-cover" />
                             ) : (
@@ -1027,7 +1027,7 @@ export function TicketCenterClient() {
 
                       {/* Catégorie */}
                       <td className="py-3 px-4">
-                        <span className="rounded-lg bg-white/5 border border-white/10 px-2 py-0.5 text-zinc-300 font-medium">
+                        <span className="rounded-lg bg-white/5 border border-[var(--panel-border)] px-2 py-0.5 text-zinc-300 font-medium">
                           {t.categoryName || "Général"}
                         </span>
                       </td>
@@ -1070,7 +1070,7 @@ export function TicketCenterClient() {
                           <button
                             onClick={() => handleQuickClaim(t)}
                             disabled={actionLoading}
-                            className="rounded-lg border border-white/10 bg-white/5 px-2 py-1 text-[10px] text-zinc-400 hover:text-white hover:bg-emerald-600/30 transition-all cursor-pointer"
+                            className="rounded-[var(--inset-radius)] border border-[var(--panel-border)] bg-white/5 px-2 py-1 text-[10px] text-zinc-400 hover:text-white hover:bg-emerald-600/30 transition-all cursor-pointer"
                           >
                             + Prendre en charge
                           </button>
@@ -1094,7 +1094,7 @@ export function TicketCenterClient() {
                         <div className="flex items-center justify-end gap-1.5">
                           <Link
                             href={`/discord/tickets/${t.id}?guildId=${currentGuildId}`}
-                            className="rounded-lg border border-white/10 bg-white/5 p-1.5 text-zinc-300 hover:text-white hover:bg-emerald-600/20 transition-all"
+                            className="rounded-[var(--inset-radius)] border border-[var(--panel-border)] bg-white/5 p-1.5 text-zinc-300 hover:text-white hover:bg-emerald-600/20 transition-all"
                             title="Ouvrir le détail complet"
                           >
                             <ChevronRight className="h-4 w-4" />
@@ -1158,7 +1158,7 @@ export function TicketCenterClient() {
             {panels.map((p) => (
               <div
                 key={p.id}
-                className="rounded-2xl border border-white/10 bg-white/[0.02] p-5 space-y-4 hover:border-emerald-500/40 transition-colors"
+                className="rounded-[var(--panel-radius)] border border-[var(--panel-border)] bg-white/[0.02] p-5 space-y-4 hover:border-emerald-500/40 transition-colors"
               >
                 <div className="flex items-start justify-between">
                   <div>
@@ -1166,12 +1166,12 @@ export function TicketCenterClient() {
                     <p className="text-xs text-zinc-400 mt-1 line-clamp-2">{p.description}</p>
                   </div>
                   <span
-                    className="h-5 w-5 rounded-full border border-white/20 shrink-0"
+                    className="h-5 w-5 rounded-full border border-[var(--input-border-hover)] shrink-0"
                     style={{ backgroundColor: p.color || "#5865F2" }}
                   />
                 </div>
 
-                <div className="rounded-xl border border-white/5 bg-black/40 p-3 space-y-2">
+                <div className="rounded-[var(--inset-radius)] border border-[var(--panel-border)] bg-black/40 p-3 space-y-2">
                   <p className="text-[10px] uppercase font-bold text-zinc-400">Catégories liées</p>
                   <div className="flex flex-wrap gap-1.5">
                     {p.categoryIds && p.categoryIds.length > 0 ? (
@@ -1193,14 +1193,14 @@ export function TicketCenterClient() {
                 </div>
 
                 {/* Publication dans salon textuel */}
-                <div className="pt-2 border-t border-white/5 flex items-center justify-between gap-2">
+                <div className="pt-2 border-t border-[var(--panel-border)] flex items-center justify-between gap-2">
                   <div className="flex items-center gap-2">
                     <input
                       type="text"
                       placeholder="ID Salon textuel"
                       defaultValue={p.channelId || ""}
                       onChange={(e) => setTargetChannelId(e.target.value)}
-                      className="h-8 w-36 rounded-lg border border-white/10 bg-zinc-900 px-2.5 text-[11px] text-white outline-none focus:border-emerald-500"
+                      className="h-8 w-36 rounded-[var(--inset-radius)] border border-[var(--panel-border)] bg-zinc-900 px-2.5 text-[11px] text-white outline-none focus:border-emerald-500"
                     />
                     <button
                       onClick={() => handlePublishPanel(p.id)}
@@ -1217,7 +1217,7 @@ export function TicketCenterClient() {
                       setEditingPanel(p);
                       setShowPanelModal(true);
                     }}
-                    className="rounded-lg border border-white/10 p-1.5 text-zinc-400 hover:text-white transition-all cursor-pointer"
+                    className="rounded-[var(--inset-radius)] border border-[var(--panel-border)] p-1.5 text-zinc-400 hover:text-white transition-all cursor-pointer"
                     title="Modifier le panel"
                   >
                     <Edit2 className="h-4 w-4" />
@@ -1270,7 +1270,7 @@ export function TicketCenterClient() {
             {categories.map((cat) => (
               <div
                 key={cat.id}
-                className="rounded-2xl border border-white/10 bg-white/[0.02] p-5 space-y-4 hover:border-emerald-500/40 transition-colors"
+                className="rounded-[var(--panel-radius)] border border-[var(--panel-border)] bg-white/[0.02] p-5 space-y-4 hover:border-emerald-500/40 transition-colors"
               >
                 <div className="flex items-center justify-between">
                   <div className="flex items-center gap-2.5">
@@ -1281,14 +1281,14 @@ export function TicketCenterClient() {
                     </div>
                   </div>
                   <span
-                    className="h-4 w-4 rounded-full border border-white/20"
+                    className="h-4 w-4 rounded-full border border-[var(--input-border-hover)]"
                     style={{ backgroundColor: cat.color || "#3B82F6" }}
                   />
                 </div>
 
                 <p className="text-xs text-zinc-300">{cat.description || "Aucune description"}</p>
 
-                <div className="space-y-1.5 pt-2 border-t border-white/5 text-[11px]">
+                <div className="space-y-1.5 pt-2 border-t border-[var(--panel-border)] text-[11px]">
                   <div className="flex items-center justify-between text-zinc-400">
                     <span>Priorité par défaut</span>
                     <span className="font-bold text-white">{cat.defaultPriority || "NORMAL"}</span>
@@ -1305,13 +1305,13 @@ export function TicketCenterClient() {
                   </div>
                 </div>
 
-                <div className="pt-2 flex items-center justify-end gap-2 border-t border-white/5">
+                <div className="pt-2 flex items-center justify-end gap-2 border-t border-[var(--panel-border)]">
                   <button
                     onClick={() => {
                       setEditingCategory(cat);
                       setShowCategoryModal(true);
                     }}
-                    className="flex items-center gap-1 rounded-lg border border-white/10 bg-white/5 px-2.5 py-1 text-xs font-medium text-zinc-300 hover:text-white transition-all cursor-pointer"
+                    className="flex items-center gap-1 rounded-[var(--inset-radius)] border border-[var(--panel-border)] bg-white/5 px-2.5 py-1 text-xs font-medium text-zinc-300 hover:text-white transition-all cursor-pointer"
                   >
                     <Edit2 className="h-3.5 w-3.5" />
                     <span>Modifier</span>
@@ -1363,7 +1363,7 @@ export function TicketCenterClient() {
             {teams.map((t) => (
               <div
                 key={t.id}
-                className="rounded-2xl border border-white/10 bg-white/[0.02] p-5 space-y-4 hover:border-emerald-500/40 transition-colors"
+                className="rounded-[var(--panel-radius)] border border-[var(--panel-border)] bg-white/[0.02] p-5 space-y-4 hover:border-emerald-500/40 transition-colors"
               >
                 <div className="flex items-center justify-between">
                   <div className="flex items-center gap-2">
@@ -1377,7 +1377,7 @@ export function TicketCenterClient() {
                 </div>
                 <p className="text-xs text-zinc-300">{t.description || "Aucune description"}</p>
 
-                <div className="rounded-xl border border-white/5 bg-black/40 p-3 space-y-1 text-xs">
+                <div className="rounded-[var(--inset-radius)] border border-[var(--panel-border)] bg-black/40 p-3 space-y-1 text-xs">
                   <p className="text-[10px] text-zinc-400 font-medium uppercase">Membres & Rôles</p>
                   <p className="text-white font-semibold">
                     {t.roleIds.length > 0 ? `${t.roleIds.length} rôle(s) Discord assigné(s)` : "Aucun rôle configuré"}
@@ -1427,7 +1427,7 @@ export function TicketCenterClient() {
             {automations.map((a) => (
               <div
                 key={a.id}
-                className="flex items-center justify-between rounded-2xl border border-white/10 bg-white/[0.02] p-4"
+                className="flex items-center justify-between rounded-[var(--panel-radius)] border border-[var(--panel-border)] bg-white/[0.02] p-4"
               >
                 <div className="flex items-center gap-3">
                   <div className="flex h-9 w-9 items-center justify-center rounded-xl bg-emerald-500/10 text-emerald-400 border border-emerald-500/20">
@@ -1478,9 +1478,9 @@ export function TicketCenterClient() {
             </p>
           </div>
 
-          <div className="overflow-x-auto rounded-2xl border border-white/10 bg-white/[0.02]">
+          <div className="overflow-x-auto rounded-[var(--panel-radius)] border border-[var(--panel-border)] bg-white/[0.02]">
             <table className="w-full text-left text-xs">
-              <thead className="border-b border-white/10 bg-white/[0.03] text-zinc-400">
+              <thead className="border-b border-[var(--panel-border)] bg-white/[0.03] text-zinc-400">
                 <tr>
                   <th className="py-3 px-4">Ticket</th>
                   <th className="py-3 px-4">Membre</th>
@@ -1506,7 +1506,7 @@ export function TicketCenterClient() {
                             href={`${API_BASE}/api/guilds/${currentGuildId}/tickets/transcripts/${t.id}/download`}
                             target="_blank"
                             rel="noopener noreferrer"
-                            className="inline-flex items-center gap-1 rounded-lg border border-white/10 bg-white/5 px-2.5 py-1 text-[11px] font-semibold text-emerald-400 hover:bg-emerald-600/20"
+                            className="inline-flex items-center gap-1 rounded-[var(--inset-radius)] border border-[var(--panel-border)] bg-white/5 px-2.5 py-1 text-[11px] font-semibold text-emerald-400 hover:bg-emerald-600/20"
                           >
                             <Download className="h-3 w-3" />
                             <span>HTML</span>
@@ -1532,7 +1532,7 @@ export function TicketCenterClient() {
           </div>
 
           <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-            <div className="rounded-2xl border border-white/10 bg-white/[0.02] p-5 space-y-3">
+            <div className="rounded-[var(--panel-radius)] border border-[var(--panel-border)] bg-white/[0.02] p-5 space-y-3">
               <h3 className="font-bold text-white text-xs uppercase tracking-wider">Répartition par Catégorie</h3>
               <div className="space-y-2">
                 {Object.entries(overview?.byCategory || {}).map(([catName, count]) => (
@@ -1557,7 +1557,7 @@ export function TicketCenterClient() {
               </div>
             </div>
 
-            <div className="rounded-2xl border border-white/10 bg-white/[0.02] p-5 space-y-3">
+            <div className="rounded-[var(--panel-radius)] border border-[var(--panel-border)] bg-white/[0.02] p-5 space-y-3">
               <h3 className="font-bold text-white text-xs uppercase tracking-wider">Répartition par Priorité</h3>
               <div className="space-y-2">
                 {Object.entries(overview?.byPriority || {}).map(([prio, count]) => (
@@ -1602,7 +1602,7 @@ export function TicketCenterClient() {
             </p>
           </div>
 
-          <div className="rounded-2xl border border-white/10 bg-white/[0.02] p-5 space-y-4">
+          <div className="rounded-[var(--panel-radius)] border border-[var(--panel-border)] bg-white/[0.02] p-5 space-y-4">
             <label className="flex items-center justify-between cursor-pointer">
               <div>
                 <p className="font-bold text-white text-xs">Activer le système de Tickets</p>
@@ -1616,7 +1616,7 @@ export function TicketCenterClient() {
               />
             </label>
 
-            <div className="border-t border-white/5 pt-4 space-y-3">
+            <div className="border-t border-[var(--panel-border)] pt-4 space-y-3">
               <div>
                 <label className="text-xs font-semibold text-zinc-300">Max Tickets Ouverts par Membre</label>
                 <input
@@ -1627,7 +1627,7 @@ export function TicketCenterClient() {
                   onBlur={(e) =>
                     handleSaveConfig({ maxOpenTicketsPerUser: parseInt(e.target.value, 10) })
                   }
-                  className="mt-1 h-9 w-full rounded-xl border border-white/10 bg-zinc-900/80 px-3 text-xs text-white outline-none focus:border-emerald-500"
+                  className="mt-1 h-9 w-full rounded-[var(--inset-radius)] border border-[var(--panel-border)] bg-zinc-900/80 px-3 text-xs text-white outline-none focus:border-emerald-500"
                 />
               </div>
 
@@ -1641,7 +1641,7 @@ export function TicketCenterClient() {
                   onBlur={(e) =>
                     handleSaveConfig({ inactivityCloseHours: parseInt(e.target.value, 10) })
                   }
-                  className="mt-1 h-9 w-full rounded-xl border border-white/10 bg-zinc-900/80 px-3 text-xs text-white outline-none focus:border-emerald-500"
+                  className="mt-1 h-9 w-full rounded-[var(--inset-radius)] border border-[var(--panel-border)] bg-zinc-900/80 px-3 text-xs text-white outline-none focus:border-emerald-500"
                 />
               </div>
 
@@ -1651,7 +1651,7 @@ export function TicketCenterClient() {
                   type="text"
                   defaultValue={config.channelNamingScheme || "ticket-{username}"}
                   onBlur={(e) => handleSaveConfig({ channelNamingScheme: e.target.value })}
-                  className="mt-1 h-9 w-full rounded-xl border border-white/10 bg-zinc-900/80 px-3 text-xs text-white outline-none focus:border-emerald-500 font-mono"
+                  className="mt-1 h-9 w-full rounded-[var(--inset-radius)] border border-[var(--panel-border)] bg-zinc-900/80 px-3 text-xs text-white outline-none focus:border-emerald-500 font-mono"
                 />
                 <p className="text-[10px] text-zinc-400 mt-1">Variables : {"{username}"}, {"{count}"}, {"{category}"}</p>
               </div>
@@ -1663,7 +1663,7 @@ export function TicketCenterClient() {
       {/* MODAL: FERMETURE TICKET */}
       {showCloseModal && ticketToClose && (
         <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/80 backdrop-blur-sm p-4">
-          <div className="w-full max-w-md rounded-2xl border border-white/10 bg-zinc-950 p-6 space-y-4 shadow-2xl">
+          <div className="w-full max-w-md rounded-[var(--panel-radius)] border border-[var(--panel-border)] bg-zinc-950 p-6 space-y-4 shadow-2xl">
             <h3 className="text-sm font-bold text-white">Clôturer le Ticket #{ticketToClose.id}</h3>
             <p className="text-xs text-zinc-400">
               Un transcript HTML/JSON sera automatiquement archivé et le salon Discord sera supprimé dans 5 secondes.
@@ -1676,14 +1676,14 @@ export function TicketCenterClient() {
                 value={closeReason}
                 onChange={(e) => setCloseReason(e.target.value)}
                 placeholder="Ex: Problème résolu, inactivité..."
-                className="h-9 w-full rounded-xl border border-white/10 bg-zinc-900 px-3 text-xs text-white outline-none focus:border-emerald-500"
+                className="h-9 w-full rounded-[var(--inset-radius)] border border-[var(--panel-border)] bg-zinc-900 px-3 text-xs text-white outline-none focus:border-emerald-500"
               />
             </div>
 
             <div className="flex items-center justify-end gap-2 pt-2">
               <button
                 onClick={() => setShowCloseModal(false)}
-                className="rounded-xl border border-white/10 px-4 py-2 text-xs font-medium text-zinc-300 hover:bg-white/5 cursor-pointer"
+                className="rounded-[var(--inset-radius)] border border-[var(--panel-border)] px-4 py-2 text-xs font-medium text-zinc-300 hover:bg-white/5 cursor-pointer"
               >
                 Annuler
               </button>

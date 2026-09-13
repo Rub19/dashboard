@@ -161,10 +161,10 @@ export default function FormCreateClient() {
   return (
     <div className="min-h-screen bg-black text-white p-4 sm:p-6 lg:p-8 space-y-6 max-w-5xl mx-auto">
       {/* Header */}
-      <div className="flex items-center gap-3 border-b border-white/10 pb-4">
+      <div className="flex items-center gap-3 border-b border-[var(--panel-border)] pb-4">
         <Link
           href={`/discord/forms?guildId=${rawGuildId || "123456789012345678"}`}
-          className="flex h-9 w-9 items-center justify-center rounded-xl border border-white/10 bg-white/5 text-zinc-400 hover:text-white hover:bg-white/10 transition-all cursor-pointer"
+          className="flex h-9 w-9 items-center justify-center rounded-[var(--inset-radius)] border border-[var(--panel-border)] bg-white/5 text-zinc-400 hover:text-white hover:bg-white/10 transition-all cursor-pointer"
         >
           <ArrowLeft className="h-4 w-4" />
         </Link>
@@ -188,7 +188,7 @@ export default function FormCreateClient() {
                   "rounded-2xl border p-4 cursor-pointer transition-all duration-150 flex flex-col justify-between",
                   isSelected
                     ? "border-indigo-500 bg-indigo-500/10 shadow-sm ring-1 ring-indigo-500/50"
-                    : "border-white/10 bg-white/[0.02] hover:border-white/20 hover:bg-white/[0.04]"
+                    : "border-[var(--panel-border)] bg-white/[0.02] hover:border-[var(--input-border-hover)] hover:bg-white/[0.04]"
                 )}
               >
                 <div>
@@ -201,7 +201,7 @@ export default function FormCreateClient() {
                   <h3 className="text-sm font-bold text-white">{tmpl.title}</h3>
                   <p className="text-xs text-zinc-400 mt-1 line-clamp-2 leading-relaxed">{tmpl.description}</p>
                 </div>
-                <div className="mt-3 pt-2.5 border-t border-white/5 flex items-center justify-between text-[11px] text-zinc-500">
+                <div className="mt-3 pt-2.5 border-t border-[var(--panel-border)] flex items-center justify-between text-[11px] text-zinc-500">
                   <span>{tmpl.category}</span>
                   <span>{tmpl.fields.length} champs</span>
                 </div>
@@ -212,7 +212,7 @@ export default function FormCreateClient() {
       </div>
 
       {/* Step 2: Form Details */}
-      <div className="rounded-3xl border border-white/10 bg-white/[0.02] p-5 sm:p-6 space-y-4">
+      <div className="rounded-[var(--panel-radius)] border border-[var(--panel-border)] bg-white/[0.02] p-5 sm:p-6 space-y-4">
         <h2 className="text-xs font-bold uppercase tracking-wider text-zinc-400">2. Informations de base</h2>
 
         <div className="grid grid-cols-1 sm:grid-cols-3 gap-4">
@@ -223,7 +223,7 @@ export default function FormCreateClient() {
               value={formTitle}
               onChange={(e) => setFormTitle(e.target.value)}
               placeholder="Ex: Candidature Modérateur 2026"
-              className="h-10 w-full rounded-xl border border-white/10 bg-zinc-900 px-3 text-xs text-white placeholder:text-zinc-500 outline-none focus:border-indigo-500"
+              className="h-10 w-full rounded-[var(--inset-radius)] border border-[var(--panel-border)] bg-zinc-900 px-3 text-xs text-white placeholder:text-zinc-500 outline-none focus:border-indigo-500"
             />
           </div>
 
@@ -234,7 +234,7 @@ export default function FormCreateClient() {
               value={formCategory}
               onChange={(e) => setFormCategory(e.target.value)}
               placeholder="Ex: Staff & Modération"
-              className="h-10 w-full rounded-xl border border-white/10 bg-zinc-900 px-3 text-xs text-white placeholder:text-zinc-500 outline-none focus:border-indigo-500"
+              className="h-10 w-full rounded-[var(--inset-radius)] border border-[var(--panel-border)] bg-zinc-900 px-3 text-xs text-white placeholder:text-zinc-500 outline-none focus:border-indigo-500"
             />
           </div>
         </div>
@@ -246,14 +246,14 @@ export default function FormCreateClient() {
             onChange={(e) => setFormDescription(e.target.value)}
             rows={3}
             placeholder="Expliquez l'objectif de ce formulaire, les critères recherchés et le délai de réponse estimé..."
-            className="w-full rounded-xl border border-white/10 bg-zinc-900 p-3 text-xs text-white placeholder:text-zinc-500 outline-none focus:border-indigo-500 resize-none"
+            className="w-full rounded-[var(--inset-radius)] border border-[var(--panel-border)] bg-zinc-900 p-3 text-xs text-white placeholder:text-zinc-500 outline-none focus:border-indigo-500 resize-none"
           />
         </div>
 
-        <div className="flex items-center justify-end gap-3 pt-3 border-t border-white/10">
+        <div className="flex items-center justify-end gap-3 pt-3 border-t border-[var(--panel-border)]">
           <Link
             href={`/discord/forms?guildId=${rawGuildId || "123456789012345678"}`}
-            className="h-9 px-4 rounded-xl border border-white/10 text-xs font-semibold text-zinc-300 hover:bg-white/5 flex items-center transition-all cursor-pointer"
+            className="h-9 px-4 rounded-[var(--inset-radius)] border border-[var(--panel-border)] text-xs font-semibold text-zinc-300 hover:bg-white/5 flex items-center transition-all cursor-pointer"
           >
             Annuler
           </Link>

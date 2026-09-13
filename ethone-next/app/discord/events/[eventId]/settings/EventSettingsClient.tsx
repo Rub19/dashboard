@@ -51,7 +51,7 @@ export default function EventSettingsClient() {
 
       <div className="relative max-w-4xl mx-auto px-4 sm:px-6 lg:px-8 pt-8">
         {/* Header */}
-        <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 pb-6 border-b border-white/10 mb-8">
+        <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 pb-6 border-b border-[var(--panel-border)] mb-8">
           <div>
             <div className="flex items-center gap-2 mb-1.5 text-xs text-indigo-400 font-semibold uppercase tracking-wider">
               <Link href={`/discord/events/${eventId}`} className="hover:underline flex items-center gap-1">
@@ -80,7 +80,7 @@ export default function EventSettingsClient() {
         {/* Settings Sections */}
         <div className="space-y-8">
           {/* Section 1: Informations Générales */}
-          <div className="p-6 rounded-2xl bg-white/[0.02] border border-white/10 backdrop-blur-xl space-y-4">
+          <div className="p-6 rounded-2xl bg-white/[0.02] border border-[var(--panel-border)] backdrop-blur-xl space-y-4">
             <h2 className="text-sm font-bold text-white flex items-center gap-2">
               <FileText className="w-4 h-4 text-indigo-400" />
               Informations Principales
@@ -92,7 +92,7 @@ export default function EventSettingsClient() {
                 type="text"
                 value={title}
                 onChange={(e) => setTitle(e.target.value)}
-                className="w-full px-3 py-2 rounded-xl bg-black/40 border border-white/10 text-xs text-white"
+                className="w-full px-3 py-2 rounded-xl bg-black/40 border border-[var(--panel-border)] text-xs text-white"
               />
             </div>
 
@@ -102,13 +102,13 @@ export default function EventSettingsClient() {
                 rows={3}
                 value={description}
                 onChange={(e) => setDescription(e.target.value)}
-                className="w-full px-3 py-2 rounded-xl bg-black/40 border border-white/10 text-xs text-white"
+                className="w-full px-3 py-2 rounded-xl bg-black/40 border border-[var(--panel-border)] text-xs text-white"
               />
             </div>
           </div>
 
           {/* Section 2: Reprogrammation */}
-          <div className="p-6 rounded-2xl bg-white/[0.02] border border-white/10 backdrop-blur-xl space-y-4">
+          <div className="p-6 rounded-2xl bg-white/[0.02] border border-[var(--panel-border)] backdrop-blur-xl space-y-4">
             <h2 className="text-sm font-bold text-white flex items-center gap-2">
               <Clock className="w-4 h-4 text-indigo-400" />
               Reprogrammer la Date & Heure
@@ -121,7 +121,7 @@ export default function EventSettingsClient() {
                   type="date"
                   value={startDate}
                   onChange={(e) => setStartDate(e.target.value)}
-                  className="w-full px-3 py-2 rounded-xl bg-black/40 border border-white/10 text-xs text-white"
+                  className="w-full px-3 py-2 rounded-xl bg-black/40 border border-[var(--panel-border)] text-xs text-white"
                 />
               </div>
               <div>
@@ -130,7 +130,7 @@ export default function EventSettingsClient() {
                   type="time"
                   value={startTime}
                   onChange={(e) => setStartTime(e.target.value)}
-                  className="w-full px-3 py-2 rounded-xl bg-black/40 border border-white/10 text-xs text-white"
+                  className="w-full px-3 py-2 rounded-xl bg-black/40 border border-[var(--panel-border)] text-xs text-white"
                 />
               </div>
             </div>
@@ -142,7 +142,7 @@ export default function EventSettingsClient() {
                   type="date"
                   value={endDate}
                   onChange={(e) => setEndDate(e.target.value)}
-                  className="w-full px-3 py-2 rounded-xl bg-black/40 border border-white/10 text-xs text-white"
+                  className="w-full px-3 py-2 rounded-xl bg-black/40 border border-[var(--panel-border)] text-xs text-white"
                 />
               </div>
               <div>
@@ -151,14 +151,14 @@ export default function EventSettingsClient() {
                   type="time"
                   value={endTime}
                   onChange={(e) => setEndTime(e.target.value)}
-                  className="w-full px-3 py-2 rounded-xl bg-black/40 border border-white/10 text-xs text-white"
+                  className="w-full px-3 py-2 rounded-xl bg-black/40 border border-[var(--panel-border)] text-xs text-white"
                 />
               </div>
             </div>
           </div>
 
           {/* Section 3: Capacité & Rôles */}
-          <div className="p-6 rounded-2xl bg-white/[0.02] border border-white/10 backdrop-blur-xl space-y-4">
+          <div className="p-6 rounded-2xl bg-white/[0.02] border border-[var(--panel-border)] backdrop-blur-xl space-y-4">
             <h2 className="text-sm font-bold text-white flex items-center gap-2">
               <Users className="w-4 h-4 text-indigo-400" />
               Capacité & Inscriptions
@@ -171,7 +171,7 @@ export default function EventSettingsClient() {
                   type="number"
                   value={maxCapacity}
                   onChange={(e) => setMaxCapacity(parseInt(e.target.value, 10))}
-                  className="w-full px-3 py-2 rounded-xl bg-black/40 border border-white/10 text-xs text-white"
+                  className="w-full px-3 py-2 rounded-xl bg-black/40 border border-[var(--panel-border)] text-xs text-white"
                 />
               </div>
               <div>
@@ -180,7 +180,7 @@ export default function EventSettingsClient() {
                   type="text"
                   value={channelName}
                   onChange={(e) => setChannelName(e.target.value)}
-                  className="w-full px-3 py-2 rounded-xl bg-black/40 border border-white/10 text-xs text-white"
+                  className="w-full px-3 py-2 rounded-xl bg-black/40 border border-[var(--panel-border)] text-xs text-white"
                 />
               </div>
             </div>
@@ -221,7 +221,7 @@ export default function EventSettingsClient() {
         {/* Modal Confirm Cancel */}
         {showCancelModal && (
           <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/80 backdrop-blur-md">
-            <div className="w-full max-w-md p-6 rounded-2xl bg-[var(--bg-surface-elevated)] border border-white/10 shadow-2xl space-y-4">
+            <div className="w-full max-w-md p-6 rounded-2xl bg-[var(--bg-surface-elevated)] border border-[var(--panel-border)] shadow-2xl space-y-4">
               <h3 className="text-base font-bold text-white">Confirmer l'annulation ?</h3>
               <p className="text-xs text-slate-400">
                 Êtes-vous sûr de vouloir annuler cet événement ? Les participants inscrits recevront une notification sur Discord.

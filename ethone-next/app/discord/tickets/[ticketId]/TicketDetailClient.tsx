@@ -368,11 +368,11 @@ export default function TicketDetailClient() {
   return (
     <div className="h-full overflow-y-auto os-scroll [overscroll-behavior:contain] bg-[var(--bg-main)] text-white px-4 sm:px-8 py-6 pb-36">
       {/* Header */}
-      <div className="flex flex-col md:flex-row md:items-center justify-between gap-4 border-b border-white/10 pb-5">
+      <div className="flex flex-col md:flex-row md:items-center justify-between gap-4 border-b border-[var(--panel-border)] pb-5">
         <div className="flex items-center gap-3">
           <Link
             href={`/discord/tickets?guildId=${guildId}`}
-            className="flex h-9 w-9 items-center justify-center rounded-xl border border-white/10 bg-white/5 text-zinc-300 hover:text-white hover:bg-white/10 transition-all"
+            className="flex h-9 w-9 items-center justify-center rounded-[var(--inset-radius)] border border-[var(--panel-border)] bg-white/5 text-zinc-300 hover:text-white hover:bg-white/10 transition-all"
           >
             <ArrowLeft className="h-4 w-4" />
           </Link>
@@ -397,7 +397,7 @@ export default function TicketDetailClient() {
             value={ticket.priority}
             onChange={(e) => handlePriorityChange(e.target.value)}
             disabled={actionLoading}
-            className="h-9 rounded-xl border border-white/10 bg-zinc-900 px-3 text-xs text-zinc-200 outline-none focus:border-emerald-500 cursor-pointer"
+            className="h-9 rounded-[var(--inset-radius)] border border-[var(--panel-border)] bg-zinc-900 px-3 text-xs text-zinc-200 outline-none focus:border-emerald-500 cursor-pointer"
           >
             <option value="LOW">💤 Priorité Faible</option>
             <option value="NORMAL">📌 Priorité Normale</option>
@@ -410,7 +410,7 @@ export default function TicketDetailClient() {
             value={ticket.status}
             onChange={(e) => handleStatusChange(e.target.value)}
             disabled={actionLoading}
-            className="h-9 rounded-xl border border-white/10 bg-zinc-900 px-3 text-xs text-zinc-200 outline-none focus:border-emerald-500 cursor-pointer"
+            className="h-9 rounded-[var(--inset-radius)] border border-[var(--panel-border)] bg-zinc-900 px-3 text-xs text-zinc-200 outline-none focus:border-emerald-500 cursor-pointer"
           >
             <option value="OPEN">🟢 Ouvert</option>
             <option value="WAITING_USER">🔵 En attente membre</option>
@@ -425,7 +425,7 @@ export default function TicketDetailClient() {
             <button
               onClick={handleUnclaim}
               disabled={actionLoading}
-              className="flex h-9 items-center gap-1.5 rounded-xl border border-white/10 bg-zinc-800 px-3 text-xs font-medium text-zinc-200 hover:bg-zinc-700 transition-all cursor-pointer"
+              className="flex h-9 items-center gap-1.5 rounded-[var(--inset-radius)] border border-[var(--panel-border)] bg-zinc-800 px-3 text-xs font-medium text-zinc-200 hover:bg-zinc-700 transition-all cursor-pointer"
             >
               <span>Libérer la prise en charge</span>
             </button>
@@ -451,7 +451,7 @@ export default function TicketDetailClient() {
             }}
             target={API_BASE ? "_blank" : undefined}
             rel="noopener noreferrer"
-            className="flex h-9 items-center gap-1.5 rounded-xl border border-white/10 bg-white/5 px-3 text-xs font-medium text-zinc-300 hover:text-white hover:bg-white/10 transition-all"
+            className="flex h-9 items-center gap-1.5 rounded-[var(--inset-radius)] border border-[var(--panel-border)] bg-white/5 px-3 text-xs font-medium text-zinc-300 hover:text-white hover:bg-white/10 transition-all"
           >
             <Download className="h-3.5 w-3.5" />
             <span>Transcript</span>
@@ -485,7 +485,7 @@ export default function TicketDetailClient() {
         {/* Left Column (2/3): Request Info & Transcript */}
         <div className="lg:col-span-2 space-y-6">
           {/* Answers to Form Fields */}
-          <div className="rounded-2xl border border-white/10 bg-white/[0.02] p-5 space-y-4 shadow-lg">
+          <div className="rounded-[var(--panel-radius)] border border-[var(--panel-border)] bg-white/[0.02] p-5 space-y-4 shadow-lg">
             <h2 className="text-sm font-bold text-white flex items-center gap-2">
               <FileText className="h-4 w-4 text-emerald-400" />
               <span>Formulaire de Demande Initiale</span>
@@ -494,7 +494,7 @@ export default function TicketDetailClient() {
             {ticket.answers && Object.keys(ticket.answers).length > 0 ? (
               <div className="grid grid-cols-1 sm:grid-cols-2 gap-3 pt-1">
                 {Object.entries(ticket.answers).map(([key, val]) => (
-                  <div key={key} className="rounded-xl border border-white/5 bg-black/40 p-3">
+                  <div key={key} className="rounded-[var(--inset-radius)] border border-[var(--panel-border)] bg-black/40 p-3">
                     <p className="text-[11px] font-semibold text-zinc-400 capitalize">{key}</p>
                     <p className="text-xs font-medium text-zinc-100 mt-1 whitespace-pre-wrap">
                       {String(val) || "N/A"}
@@ -508,7 +508,7 @@ export default function TicketDetailClient() {
           </div>
 
           {/* Quick Reply or Discord Channel Link */}
-          <div className="rounded-2xl border border-white/10 bg-white/[0.02] p-5 space-y-3">
+          <div className="rounded-[var(--panel-radius)] border border-[var(--panel-border)] bg-white/[0.02] p-5 space-y-3">
             <div className="flex items-center justify-between">
               <h2 className="text-sm font-bold text-white flex items-center gap-2">
                 <MessageSquare className="h-4 w-4 text-teal-400" />
@@ -531,7 +531,7 @@ export default function TicketDetailClient() {
           </div>
 
           {/* Activity Timeline */}
-          <div className="rounded-2xl border border-white/10 bg-white/[0.02] p-5 space-y-4">
+          <div className="rounded-[var(--panel-radius)] border border-[var(--panel-border)] bg-white/[0.02] p-5 space-y-4">
             <h2 className="text-sm font-bold text-white flex items-center gap-2">
               <Clock className="h-4 w-4 text-indigo-400" />
               <span>Chronologie d&apos;Activité & Traçabilité</span>
@@ -559,10 +559,10 @@ export default function TicketDetailClient() {
         {/* Right Column (1/3): User Profile, Notes, Case Linking, Rating */}
         <div className="space-y-6">
           {/* User Card */}
-          <div className="rounded-2xl border border-white/10 bg-white/[0.02] p-5 space-y-4">
+          <div className="rounded-[var(--panel-radius)] border border-[var(--panel-border)] bg-white/[0.02] p-5 space-y-4">
             <h2 className="text-xs font-bold uppercase tracking-wider text-zinc-400">Demandeur</h2>
             <div className="flex items-center gap-3">
-              <div className="h-12 w-12 rounded-full bg-zinc-800 flex items-center justify-center font-bold text-emerald-400 text-sm border border-white/10 overflow-hidden">
+              <div className="h-12 w-12 rounded-full bg-zinc-800 flex items-center justify-center font-bold text-emerald-400 text-sm border border-[var(--panel-border)] overflow-hidden">
                 {ticket.userAvatar ? (
                   <img src={ticket.userAvatar} alt="" className="h-full w-full object-cover" />
                 ) : (
@@ -577,7 +577,7 @@ export default function TicketDetailClient() {
           </div>
 
           {/* Linked Moderation Case */}
-          <div className="rounded-2xl border border-white/10 bg-white/[0.02] p-5 space-y-3">
+          <div className="rounded-[var(--panel-radius)] border border-[var(--panel-border)] bg-white/[0.02] p-5 space-y-3">
             <div className="flex items-center justify-between">
               <h2 className="text-xs font-bold uppercase tracking-wider text-zinc-400 flex items-center gap-1.5">
                 <Scale className="h-3.5 w-3.5 text-orange-400" />
@@ -608,7 +608,7 @@ export default function TicketDetailClient() {
                 <p className="text-xs text-zinc-400">Aucun dossier de sanction associé à ce ticket.</p>
                 <button
                   onClick={() => setShowLinkCaseModal(true)}
-                  className="rounded-lg border border-white/10 bg-white/5 px-2.5 py-1 text-xs text-zinc-300 hover:text-white transition-all cursor-pointer"
+                  className="rounded-[var(--inset-radius)] border border-[var(--panel-border)] bg-white/5 px-2.5 py-1 text-xs text-zinc-300 hover:text-white transition-all cursor-pointer"
                 >
                   + Lier une Case #
                 </button>
@@ -617,7 +617,7 @@ export default function TicketDetailClient() {
           </div>
 
           {/* Private Internal Notes */}
-          <div className="rounded-2xl border border-white/10 bg-white/[0.02] p-5 space-y-4">
+          <div className="rounded-[var(--panel-radius)] border border-[var(--panel-border)] bg-white/[0.02] p-5 space-y-4">
             <h2 className="text-xs font-bold uppercase tracking-wider text-zinc-400 flex items-center gap-1.5">
               <Lock className="h-3.5 w-3.5 text-amber-400" />
               <span>Notes Internes Staff (Privé)</span>
@@ -633,7 +633,7 @@ export default function TicketDetailClient() {
                 onChange={(e) => setNoteContent(e.target.value)}
                 placeholder="Ajouter une note d'investigation..."
                 rows={2}
-                className="w-full rounded-xl border border-white/10 bg-zinc-900/90 p-2.5 text-xs text-white placeholder-zinc-500 outline-none focus:border-emerald-500 resize-none"
+                className="w-full rounded-[var(--inset-radius)] border border-[var(--panel-border)] bg-zinc-900/90 p-2.5 text-xs text-white placeholder-zinc-500 outline-none focus:border-emerald-500 resize-none"
               />
               <button
                 type="submit"
@@ -645,10 +645,10 @@ export default function TicketDetailClient() {
             </form>
 
             {/* Notes List */}
-            <div className="space-y-2.5 pt-2 border-t border-white/5">
+            <div className="space-y-2.5 pt-2 border-t border-[var(--panel-border)]">
               {ticket.notes && ticket.notes.length > 0 ? (
                 ticket.notes.map((n: any) => (
-                  <div key={n.id} className="rounded-xl border border-white/5 bg-black/40 p-3 text-xs space-y-1">
+                  <div key={n.id} className="rounded-[var(--inset-radius)] border border-[var(--panel-border)] bg-black/40 p-3 text-xs space-y-1">
                     <div className="flex items-center justify-between text-[10px] text-zinc-400">
                       <span className="font-bold text-amber-300">{n.authorTag}</span>
                       <span>{new Date(n.createdAt).toLocaleTimeString("fr-FR")}</span>
@@ -663,7 +663,7 @@ export default function TicketDetailClient() {
           </div>
 
           {/* Satisfaction Rating (CSAT) */}
-          <div className="rounded-2xl border border-white/10 bg-white/[0.02] p-5 space-y-3">
+          <div className="rounded-[var(--panel-radius)] border border-[var(--panel-border)] bg-white/[0.02] p-5 space-y-3">
             <h2 className="text-xs font-bold uppercase tracking-wider text-zinc-400 flex items-center gap-1.5">
               <Star className="h-3.5 w-3.5 text-yellow-400 fill-yellow-400" />
               <span>Avis Membre (CSAT)</span>
@@ -701,7 +701,7 @@ export default function TicketDetailClient() {
       {/* MODAL: FERMETURE */}
       {showCloseModal && (
         <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/80 backdrop-blur-sm p-4">
-          <div className="w-full max-w-md rounded-2xl border border-white/10 bg-zinc-950 p-6 space-y-4 shadow-2xl">
+          <div className="w-full max-w-md rounded-[var(--panel-radius)] border border-[var(--panel-border)] bg-zinc-950 p-6 space-y-4 shadow-2xl">
             <h3 className="text-sm font-bold text-white">Clôturer le Ticket #{ticket.id}</h3>
             <p className="text-xs text-zinc-400">
               La transcription complète sera générée et le salon Discord sera supprimé automatiquement.
@@ -714,14 +714,14 @@ export default function TicketDetailClient() {
                 value={closeReason}
                 onChange={(e) => setCloseReason(e.target.value)}
                 placeholder="Ex: Problème résolu, question traitée..."
-                className="h-9 w-full rounded-xl border border-white/10 bg-zinc-900 px-3 text-xs text-white outline-none focus:border-emerald-500"
+                className="h-9 w-full rounded-[var(--inset-radius)] border border-[var(--panel-border)] bg-zinc-900 px-3 text-xs text-white outline-none focus:border-emerald-500"
               />
             </div>
 
             <div className="flex items-center justify-end gap-2 pt-2">
               <button
                 onClick={() => setShowCloseModal(false)}
-                className="rounded-xl border border-white/10 px-4 py-2 text-xs font-medium text-zinc-300 hover:bg-white/5 cursor-pointer"
+                className="rounded-[var(--inset-radius)] border border-[var(--panel-border)] px-4 py-2 text-xs font-medium text-zinc-300 hover:bg-white/5 cursor-pointer"
               >
                 Annuler
               </button>
@@ -740,7 +740,7 @@ export default function TicketDetailClient() {
       {/* MODAL: LIER CASE DE MODÉRATION */}
       {showLinkCaseModal && (
         <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/80 backdrop-blur-sm p-4">
-          <div className="w-full max-w-md rounded-2xl border border-white/10 bg-zinc-950 p-6 space-y-4 shadow-2xl">
+          <div className="w-full max-w-md rounded-[var(--panel-radius)] border border-[var(--panel-border)] bg-zinc-950 p-6 space-y-4 shadow-2xl">
             <h3 className="text-sm font-bold text-white">Lier un Dossier de Modération</h3>
             <p className="text-xs text-zinc-400">
               Rattachez ce ticket au Case System de Moderation Center pour garder un suivi complet de la sanction.
@@ -753,14 +753,14 @@ export default function TicketDetailClient() {
                 value={caseIdToLink}
                 onChange={(e) => setCaseIdToLink(e.target.value)}
                 placeholder="Ex: 1, 2, 1842..."
-                className="h-9 w-full rounded-xl border border-white/10 bg-zinc-900 px-3 text-xs text-white outline-none focus:border-orange-500 font-mono"
+                className="h-9 w-full rounded-[var(--inset-radius)] border border-[var(--panel-border)] bg-zinc-900 px-3 text-xs text-white outline-none focus:border-orange-500 font-mono"
               />
             </div>
 
             <div className="flex items-center justify-end gap-2 pt-2">
               <button
                 onClick={() => setShowLinkCaseModal(false)}
-                className="rounded-xl border border-white/10 px-4 py-2 text-xs font-medium text-zinc-300 hover:bg-white/5 cursor-pointer"
+                className="rounded-[var(--inset-radius)] border border-[var(--panel-border)] px-4 py-2 text-xs font-medium text-zinc-300 hover:bg-white/5 cursor-pointer"
               >
                 Annuler
               </button>

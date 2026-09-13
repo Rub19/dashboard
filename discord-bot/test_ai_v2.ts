@@ -48,7 +48,7 @@ async function runTests() {
   assert(!injection2.safe && injection2.flagged, 'System prompt leak attempt blocked');
 
   const shieldedPrompt = AISafetyService.buildShieldedSystemPrompt(settings, 'ETHONE Gaming');
-  assert(shieldedPrompt.includes('RÈGLES DE SÉCURITÉ STRICTES'), 'Shielded prompt embeds strict guardrails');
+  assert(shieldedPrompt.includes('SÉCURITÉ ABSOLUE & DISCORD TERMS OF SERVICE'), 'Shielded prompt embeds strict guardrails');
 
   // 3. Knowledge Retrieval (RAG)
   console.log('\n--- 3. Knowledge Base & RAG Engine ---');

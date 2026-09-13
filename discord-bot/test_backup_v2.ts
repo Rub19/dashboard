@@ -19,10 +19,69 @@ function assert(condition: boolean, name: string) {
   }
 }
 
+// This suite always assumed a couple of demo BackupSnapshots already existed
+// on disk for SEED_GUILD_ID (data/discord_backups.json) — that was never
+// actually true (the repository has no seed/demo-data mechanism of its own),
+// so every assertion downstream of `demoBackups[0]` silently depended on
+// whatever was left over in the data file from a previous manual run. Build
+// two real, checksum-valid snapshots up front instead, using the same
+// BackupIntegrityService.computeChecksum the production code path uses, so
+// the suite is self-contained and passes the same way in any environment.
+const SEED_GUILD_ID = '123456789012345678';
+
+function buildSeedSnapshot(
+  backupId: string,
+  name: string,
+  isProtected: boolean,
+  createdAt: string
+): BackupSnapshot {
+  const unsealed: Omit<BackupSnapshot, 'checksum' | 'sizeBytes'> = {
+    backupId,
+    guildId: SEED_GUILD_ID,
+    name,
+    description: 'Snapshot de seed généré par la suite de tests',
+    createdAt,
+    createdBy: { id: 'seed-user', tag: 'SeedBot#0000' },
+    type: 'FULL',
+    status: 'COMPLETED',
+    isProtected,
+    schemaVersion: BackupIntegrityService.CURRENT_SCHEMA_VERSION,
+    includedComponents: ['ROLES', 'CATEGORIES', 'CHANNELS', 'PERMISSIONS', 'SERVER_CONFIG', 'EMOJIS', 'ETHONE_CONFIG'],
+    objectCounts: { categories: 2, channels: 1, roles: 2, permissions: 0, emojis: 0, ethoneModules: 0 },
+    data: {
+      guild: { name: 'Test Server', icon: null, description: null },
+      roles: [
+        // @everyone must always be present in a real snapshot (Discord guilds
+        // always have it) — the restore-preview safety check specifically
+        // relies on this flag to prove SAFE mode never touches it.
+        { id: SEED_GUILD_ID, name: '@everyone', color: 0, hoist: false, position: 0, permissions: '0', mentionable: false, managed: false, isEveryone: true },
+        { id: 'role-admin', name: 'Administrateur', color: 0xff0000, hoist: true, position: 5, permissions: '8', mentionable: false, managed: false },
+      ],
+      categories: [
+        { id: 'cat-1', name: 'Général', position: 0, permissionOverwrites: [] },
+        { id: 'cat-2', name: 'Annonces', position: 1, permissionOverwrites: [] },
+      ],
+      channels: [
+        { id: 'chan-1', name: 'general', type: 0, topic: 'Bienvenue', position: 0, permissionOverwrites: [] },
+      ],
+      emojis: [],
+      ethoneConfig: {},
+    },
+  };
+  const checksum = BackupIntegrityService.computeChecksum(unsealed);
+  const sizeBytes = Buffer.byteLength(JSON.stringify(unsealed.data), 'utf8');
+  return { ...unsealed, checksum, sizeBytes };
+}
+
 async function runTests() {
   console.log('\n=== [ETHONE BACKUP & RESTORE 2.0 — TEST SUITE] ===\n');
 
   const testGuildId = 'test_guild_123';
+
+  backupRepository.save(buildSeedSnapshot('BKP-SEED-1', 'Sauvegarde protégée', true, new Date().toISOString()));
+  backupRepository.save(
+    buildSeedSnapshot('BKP-SEED-2', 'Sauvegarde standard', false, new Date(Date.now() - 3600_000).toISOString())
+  );
 
   // 1. Repository CRUD & Seed Data
   console.log('--- 1. Backup Repository & Seeding ---');
@@ -178,6 +237,13 @@ async function runTests() {
   const testVal = backupService.testBackup('123456789012345678', demoBackups[0].backupId);
   assert(testVal.valid, 'testBackup returns valid = true for intact snapshot');
   assert(testVal.readiness === 'READY', 'testBackup returns readiness = READY');
+
+  // 9. Cleanup — leave the local data/discord_backups.json exactly as this
+  // run found it, so the suite stays idempotent across repeated runs and
+  // never accumulates duplicate seed fixtures.
+  backupRepository.toggleProtection(SEED_GUILD_ID, 'BKP-SEED-1', false);
+  backupRepository.delete(SEED_GUILD_ID, 'BKP-SEED-1');
+  backupRepository.delete(SEED_GUILD_ID, 'BKP-SEED-2');
 
   console.log(`\n=== RESULTS: ${passed}/${total} tests passed (${((passed / total) * 100).toFixed(1)}%) ===\n`);
 }

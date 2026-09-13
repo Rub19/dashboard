@@ -144,6 +144,21 @@ async function runTests() {
 
   // 4. Results & Quorum Calculation Tests
   console.log('\n📊 4. Results & Quorum Calculation Service:');
+  // The seed data's `endsAt` is computed relative to whenever this poll was
+  // first written to disk (the repository only seeds once — see
+  // pollRepository.seedDefaultData()'s `if (this.polls.length === 0)` guard —
+  // so it never gets a fresh "+24h from now" on subsequent runs). Once that
+  // original 24h window elapses, castVote's own expiry check flips the poll
+  // to ENDED and every vote below silently fails with 0 voters. Reset it
+  // defensively so this section doesn't depend on when the repo happened to
+  // be seeded.
+  const staffPollForVoting = pollRepository.getPollById(testGuildId, 'staff-decision-01');
+  if (staffPollForVoting) {
+    staffPollForVoting.status = 'ACTIVE';
+    staffPollForVoting.endsAt = new Date(Date.now() + 86400000).toISOString();
+    delete staffPollForVoting.endedAt;
+    pollRepository.savePoll(staffPollForVoting);
+  }
   pollVotingService.castVote(
     testGuildId,
     'staff-decision-01',
@@ -192,6 +207,17 @@ async function runTests() {
 
   const panelRows = discordPollPanel.buildPanelActionRows(gamePoll);
   assert(panelRows.length >= 1, `Generated ${panelRows.length} action rows for Discord panel`);
+
+  // Cleanup — duplicatePoll() and the standalone testLimitPoll (section 3)
+  // above both create real, permanently-persisted polls on every run
+  // (data/discord_polls.json has no test isolation of its own), so repeated
+  // runs of this suite would otherwise leave an ever-growing pile of
+  // "(Copie)" drafts and "poll-limit-*" fixtures behind. Remove exactly what
+  // this run created; nothing else in this file persists new top-level polls.
+  if (dupRes.poll) {
+    pollRepository.deletePoll(testGuildId, dupRes.poll.id);
+  }
+  pollRepository.deletePoll(testGuildId, testLimitPoll.id);
 
   // Summary
   console.log(`\n========================================`);

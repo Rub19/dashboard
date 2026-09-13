@@ -2,6 +2,13 @@
 
 Toutes les modifications notables de ce projet seront documentées dans ce fichier.
 
+## v1.21.38 — 2026-09-13
+
+**Bordures et coins concentriques : page Discord principale**
+
+- `app/discord/page.tsx` (hub avec liste des serveurs, grille de modules, 20+ panneaux de contenu par module) : plus de 160 occurrences de `rounded-2xl/xl/lg/3xl border border-white/10|5` converties sur deux niveaux — grandes cartes → `--panel-radius`, éléments imbriqués (lignes serveur, puces module, badges, icônes) → `--inset-radius`, toutes les bordures → `--panel-border`. Bordures/fonds à couleur sémantique (Discord, statuts) conservés.
+- Validation : `tsc` 0 erreur, `build` ✓, `test:unit` 73/73.
+
 ## v1.21.37 — 2026-09-13
 
 **Bordures et coins concentriques (système de panneaux + page de connexion)**

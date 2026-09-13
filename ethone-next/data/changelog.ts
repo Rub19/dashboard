@@ -26135,4 +26135,53 @@ CHANGELOG_BY_LANG.en.unshift(v12137_en);
 CHANGELOG_BY_LANG.es.unshift(v12137_es);
 CHANGELOG_BY_LANG.de.unshift(v12137_de);
 
+const v12138_fr: ChangelogEntry = {
+  version: "v1.21.38",
+  date: "2026-09-13",
+  title: "Bordures et coins concentriques : page Discord principale",
+  items: [
+    "Suite du chantier bordures/coins : la grande page Discord (hub avec la liste des serveurs, la grille de modules et les 20+ panneaux de contenu par module) appliquait le meme rayon fixe et la meme bordure blanche a 10% presque invisible partout, sans lien avec le systeme de panneaux du reste de l app.",
+    "Plus de 160 occurrences converties sur deux niveaux : les grandes cartes (bandeau serveur selectionne, panneaux de contenu par module, cartes d ouverture Automod/Audit Center...) suivent desormais --panel-radius, les elements imbriques (lignes de serveur, puces de module, badges, icones d avatar) suivent --inset-radius, et toutes les bordures passent sur --panel-border. Les bordures et fonds a couleur semantique (Discord, statuts, avertissements) sont conserves tels quels.",
+    "Purement presentationnel : aucune logique ni donnee modifiee.",
+  ],
+};
+
+const v12138_en: ChangelogEntry = {
+  version: "v1.21.38",
+  date: "2026-09-13",
+  title: "Concentric borders and corners: main Discord page",
+  items: [
+    "Continuing the borders/corners pass: the big Discord hub page (server list, module grid, and 20+ per-module content panels) applied the same fixed radius and the same barely-visible 10% white border everywhere, unrelated to the rest of the app's panel system.",
+    "Over 160 occurrences converted across two tiers: the large cards (selected-server banner, per-module content panels, AutoMod/Audit Center gateway cards...) now follow --panel-radius, nested elements (server rows, module chips, badges, avatar icons) follow --inset-radius, and every border moved onto --panel-border. Semantically-coloured borders/backgrounds (Discord brand, statuses, warnings) were left as-is.",
+    "Purely presentational: no logic or data changed.",
+  ],
+};
+
+const v12138_es: ChangelogEntry = {
+  version: "v1.21.38",
+  date: "2026-09-13",
+  title: "Bordes y esquinas concentricas: pagina principal de Discord",
+  items: [
+    "Continuacion del trabajo de bordes/esquinas: la gran pagina hub de Discord (lista de servidores, cuadricula de modulos y mas de 20 paneles de contenido por modulo) aplicaba el mismo radio fijo y el mismo borde blanco al 10% casi invisible en todas partes, sin relacion con el sistema de paneles del resto de la app.",
+    "Mas de 160 ocurrencias convertidas en dos niveles: las tarjetas grandes (banner del servidor seleccionado, paneles de contenido por modulo, tarjetas de acceso a AutoMod/Audit Center...) ahora siguen --panel-radius, los elementos anidados (filas de servidor, chips de modulo, insignias, iconos de avatar) siguen --inset-radius, y todos los bordes pasaron a --panel-border. Los bordes y fondos de color semantico (marca Discord, estados, avisos) se dejaron tal cual.",
+    "Puramente presentacional: sin cambios de logica ni datos.",
+  ],
+};
+
+const v12138_de: ChangelogEntry = {
+  version: "v1.21.38",
+  date: "2026-09-13",
+  title: "Konzentrische Raender und Ecken: Haupt-Discord-Seite",
+  items: [
+    "Fortsetzung der Raender/Ecken-Arbeit: die grosse Discord-Hub-Seite (Serverliste, Modul-Raster und ueber 20 Inhaltspanels pro Modul) verwendete ueberall denselben festen Radius und denselben kaum sichtbaren 10%-weissen Rand, ohne Bezug zum Panel-System des Rests der App.",
+    "Ueber 160 Vorkommen auf zwei Ebenen umgestellt: die grossen Karten (Banner des ausgewaehlten Servers, Inhaltspanels pro Modul, AutoMod-/Audit-Center-Einstiegskarten...) folgen jetzt --panel-radius, verschachtelte Elemente (Serverzeilen, Modul-Chips, Badges, Avatar-Icons) folgen --inset-radius, und alle Raender wechselten zu --panel-border. Semantisch eingefaerbte Raender/Hintergruende (Discord-Marke, Status, Warnungen) blieben unveraendert.",
+    "Rein visuell: keine Aenderung an Logik oder Daten.",
+  ],
+};
+
+CHANGELOG_BY_LANG.fr.unshift(v12138_fr);
+CHANGELOG_BY_LANG.en.unshift(v12138_en);
+CHANGELOG_BY_LANG.es.unshift(v12138_es);
+CHANGELOG_BY_LANG.de.unshift(v12138_de);
+
 export const CHANGELOG = CHANGELOG_BY_LANG.fr;

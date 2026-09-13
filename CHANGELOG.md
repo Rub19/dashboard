@@ -2,6 +2,15 @@
 
 Toutes les modifications notables de ce projet seront documentées dans ce fichier.
 
+## v1.21.37 — 2026-09-13
+
+**Bordures et coins concentriques (système de panneaux + page de connexion)**
+
+- `app/globals.css` : `--panel-radius` dérive désormais de `--card-radius` (donc du réglage Apparence → style des coins : arrondi/doux/net, qu'il ignorait totalement avant) ; `--inset-radius` reste à 75 % du rayon extérieur (coins concentriques). `--panel-border` 6%→12 % et `--inset-border` 4%→8 % (dérivés de `--text-primary`, plus du blanc en dur). S'applique **instantanément** à tout ce qui utilise déjà `.v8-panel`/`.v8-inset` (mail, météo, tâches, notifications, Mission Control, sélecteur d'avatar, onboarding Discord, fichiers…).
+- `app/login/page.tsx` + `components/auth/AuthInputField.tsx` : la grande carte (`rounded-[2.25rem]` arbitraire) et tous ses éléments internes (badge de marque, pastilles, icône d'état, sélecteur d'onglets, bannière d'erreur, boutons OAuth, séparateur, champ de saisie) passés sur `--panel-radius`/`--inset-radius`/`--panel-border`.
+- Vérifié visuellement dans le navigateur (desktop + mobile), aucune erreur console.
+- Validation : `tsc` 0 erreur, `build` ✓, `test:unit` 73/73.
+
 ## v1.21.36 — 2026-09-11
 
 **Correctif bot : `/status` et `/resume` exécutaient la mauvaise commande**

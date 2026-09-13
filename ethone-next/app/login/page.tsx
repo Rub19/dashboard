@@ -347,12 +347,12 @@ export default function LoginPage() {
 
         {/* Brand Header */}
         <div className="z-10 flex items-center gap-3">
-          <div className="relative flex h-10 w-10 items-center justify-center rounded-2xl bg-white/[0.04] border border-white/10 shadow-lg">
+          <div className="relative flex h-10 w-10 items-center justify-center rounded-[var(--inset-radius)] bg-white/[0.04] border border-[var(--panel-border)] shadow-lg">
             <BrandMark size={28} />
           </div>
           <div className="flex items-center gap-2">
             <span className="text-xl font-bold tracking-tight text-white font-mono">ETHONE</span>
-            <span className="rounded-lg border border-white/10 bg-white/[0.04] px-2 py-0.5 text-[10px] font-semibold uppercase tracking-wider text-[var(--accent-primary,#C1234F)]">
+            <span className="rounded-lg border border-[var(--panel-border)] bg-white/[0.04] px-2 py-0.5 text-[10px] font-semibold uppercase tracking-wider text-[var(--accent-primary,#C1234F)]">
               OS
             </span>
           </div>
@@ -360,7 +360,7 @@ export default function LoginPage() {
 
         {/* Main Hero Content */}
         <div className="z-10 max-w-lg space-y-4">
-          <div className="inline-flex items-center gap-2 rounded-full border border-white/10 bg-white/[0.03] px-3.5 py-1 text-[11px] font-medium tracking-wide text-zinc-300 backdrop-blur-md">
+          <div className="inline-flex items-center gap-2 rounded-full border border-[var(--panel-border)] bg-white/[0.03] px-3.5 py-1 text-[11px] font-medium tracking-wide text-zinc-300 backdrop-blur-md">
             <Sparkles className="h-3.5 w-3.5 text-[var(--accent-primary,#C1234F)]" />
             <span>Environnement personnel unifié</span>
           </div>
@@ -379,7 +379,7 @@ export default function LoginPage() {
 
         {/* System Status Pill */}
         <div className="z-10 flex items-center gap-3 text-xs text-zinc-400">
-          <div className="flex items-center gap-2 rounded-full border border-white/10 bg-white/[0.03] px-3.5 py-1.5 backdrop-blur-md">
+          <div className="flex items-center gap-2 rounded-full border border-[var(--panel-border)] bg-white/[0.03] px-3.5 py-1.5 backdrop-blur-md">
             <span className="relative flex h-2 w-2">
               <span className="relative inline-flex rounded-full h-2 w-2 bg-emerald-400 shadow-[0_0_5px_var(--glow-color)]" />
             </span>
@@ -392,14 +392,14 @@ export default function LoginPage() {
       <div className="relative flex flex-1 items-center justify-center p-4 sm:p-8 lg:w-1/2">
         <div className="relative w-full max-w-[440px]">
           {/* Card Ambient Glow */}
-          <div className="pointer-events-none absolute -inset-1 rounded-[2.5rem] bg-gradient-to-br from-[var(--accent-primary,#C1234F)]/15 via-transparent to-[var(--accent-secondary,#E03365)]/10 blur-xl" />
+          <div className="pointer-events-none absolute -inset-1 rounded-[var(--panel-radius)] bg-gradient-to-br from-[var(--accent-primary,#C1234F)]/15 via-transparent to-[var(--accent-secondary,#E03365)]/10 blur-xl" />
 
           {/* Main Glass Card */}
           <motion.div
             initial={reduced ? undefined : { opacity: 0, y: 16, scale: 0.98 }}
             animate={{ opacity: 1, y: 0, scale: 1 }}
             transition={{ duration: 0.3, ease: [0.16, 1, 0.3, 1] }}
-            className="relative overflow-hidden rounded-[2.25rem] border border-white/10 bg-[var(--bg-card,#13161E)]/90 p-6 sm:p-9 shadow-2xl backdrop-blur-2xl"
+            className="relative overflow-hidden rounded-[var(--panel-radius)] border border-[var(--panel-border)] bg-[var(--bg-card,#13161E)]/90 p-6 sm:p-9 shadow-2xl backdrop-blur-2xl"
           >
             {/* Top Card Icon & Title */}
             <div className="text-center space-y-3">
@@ -413,10 +413,10 @@ export default function LoginPage() {
                 }
                 transition={{ duration: 0.6, repeat: isLoading ? Infinity : 0 }}
                 className={cn(
-                  "mx-auto flex h-14 w-14 items-center justify-center rounded-2xl border transition-all duration-300 shadow-lg",
+                  "mx-auto flex h-14 w-14 items-center justify-center rounded-[var(--inset-radius)] border transition-all duration-300 shadow-lg",
                   isSuccess
                     ? "border-emerald-400/50 bg-emerald-500/20 text-emerald-300 shadow-emerald-500/20"
-                    : "border-white/10 bg-white/[0.04] text-white shadow-black/40"
+                    : "border-[var(--panel-border)] bg-white/[0.04] text-white shadow-black/40"
                 )}
               >
                 {isSuccess ? (
@@ -439,7 +439,7 @@ export default function LoginPage() {
             {/* Mode Selector Tabs (only when in root mode or register) */}
             {!(mode === "otp" && otpStep === "code") && (
               <div className="mt-6">
-                <div className="relative grid grid-cols-3 rounded-2xl border border-white/10 bg-white/[0.03] p-1 shadow-inner">
+                <div className="relative grid grid-cols-3 rounded-[var(--inset-radius)] border border-[var(--panel-border)] bg-white/[0.03] p-1 shadow-inner">
                   {(["password", "otp", "register"] as AuthMode[]).map((m) => {
                     const active = mode === m;
                     const label =
@@ -460,7 +460,7 @@ export default function LoginPage() {
                         disabled={isLoading}
                         aria-pressed={active}
                         className={cn(
-                          "relative z-10 select-none rounded-xl py-2 text-xs font-medium transition-colors cursor-pointer",
+                          "relative z-10 select-none rounded-lg py-2 text-xs font-medium transition-colors cursor-pointer",
                           active
                             ? "text-white font-semibold"
                             : "text-zinc-400 hover:text-white"
@@ -470,7 +470,7 @@ export default function LoginPage() {
                           <motion.span
                             layoutId="activeAuthTab"
                             transition={{ duration: 0.22, ease: [0.16, 1, 0.3, 1] }}
-                            className="absolute inset-0 z-0 rounded-xl bg-white/10 border border-white/15 shadow-sm"
+                            className="absolute inset-0 z-0 rounded-lg bg-white/10 border border-[var(--panel-border)] shadow-sm"
                           />
                         )}
                         <span className="relative z-10">{label}</span>
@@ -493,7 +493,7 @@ export default function LoginPage() {
                   transition={{ duration: 0.16, ease: "easeOut" }}
                   className="mt-4 overflow-hidden"
                 >
-                  <div className="flex items-start gap-2.5 rounded-2xl border border-rose-500/20 bg-rose-500/10 p-3.5 text-xs text-rose-300">
+                  <div className="flex items-start gap-2.5 rounded-[var(--inset-radius)] border border-rose-500/20 bg-rose-500/10 p-3.5 text-xs text-rose-300">
                     <AlertCircle className="mt-0.5 h-4 w-4 shrink-0 text-rose-400" />
                     <span className="leading-snug">{error}</span>
                   </div>
@@ -861,11 +861,11 @@ export default function LoginPage() {
             {mode !== "register" && !(mode === "otp" && otpStep === "code") && (
               <div className="mt-6 space-y-4">
                 <div className="relative flex items-center">
-                  <div className="flex-1 border-t border-white/10" />
+                  <div className="flex-1 border-t border-[var(--panel-border)]" />
                   <span className="px-3 text-[11px] font-medium text-zinc-500 uppercase tracking-wider">
                     ou continuer avec
                   </span>
-                  <div className="flex-1 border-t border-white/10" />
+                  <div className="flex-1 border-t border-[var(--panel-border)]" />
                 </div>
 
                 <div className="grid grid-cols-3 gap-2 sm:gap-3">
@@ -873,7 +873,7 @@ export default function LoginPage() {
                     type="button"
                     onClick={() => handleOAuth("google")}
                     disabled={isLoading || isSuccess}
-                    className="flex h-11 items-center justify-center gap-2 rounded-2xl border border-white/10 bg-white/[0.035] px-2.5 text-xs font-medium text-white transition-all duration-150 hover:bg-white/[0.07] hover:border-white/20 active:scale-[0.98] disabled:opacity-50 cursor-pointer"
+                    className="flex h-11 items-center justify-center gap-2 rounded-[var(--inset-radius)] border border-[var(--panel-border)] bg-white/[0.035] px-2.5 text-xs font-medium text-white transition-all duration-150 hover:bg-white/[0.07] hover:border-[var(--input-border-hover)] active:scale-[0.98] disabled:opacity-50 cursor-pointer"
                   >
                     {oauthLoading === "google" ? (
                       <Loader2 className="h-4 w-4 animate-spin" />
@@ -887,7 +887,7 @@ export default function LoginPage() {
                     type="button"
                     onClick={() => handleOAuth("github")}
                     disabled={isLoading || isSuccess}
-                    className="flex h-11 items-center justify-center gap-2 rounded-2xl border border-white/10 bg-white/[0.035] px-2.5 text-xs font-medium text-white transition-all duration-150 hover:bg-white/[0.07] hover:border-white/20 active:scale-[0.98] disabled:opacity-50 cursor-pointer"
+                    className="flex h-11 items-center justify-center gap-2 rounded-[var(--inset-radius)] border border-[var(--panel-border)] bg-white/[0.035] px-2.5 text-xs font-medium text-white transition-all duration-150 hover:bg-white/[0.07] hover:border-[var(--input-border-hover)] active:scale-[0.98] disabled:opacity-50 cursor-pointer"
                   >
                     {oauthLoading === "github" ? (
                       <Loader2 className="h-4 w-4 animate-spin" />
@@ -901,7 +901,7 @@ export default function LoginPage() {
                     type="button"
                     onClick={() => handleOAuth("discord")}
                     disabled={isLoading || isSuccess}
-                    className="flex h-11 items-center justify-center gap-2 rounded-2xl border border-white/10 bg-white/[0.035] px-2.5 text-xs font-medium text-white transition-all duration-150 hover:bg-[#5865F2]/20 hover:border-[#5865F2]/50 hover:text-[#5865F2] active:scale-[0.98] disabled:opacity-50 cursor-pointer"
+                    className="flex h-11 items-center justify-center gap-2 rounded-[var(--inset-radius)] border border-[var(--panel-border)] bg-white/[0.035] px-2.5 text-xs font-medium text-white transition-all duration-150 hover:bg-[#5865F2]/20 hover:border-[#5865F2]/50 hover:text-[#5865F2] active:scale-[0.98] disabled:opacity-50 cursor-pointer"
                   >
                     {oauthLoading === "discord" ? (
                       <Loader2 className="h-4 w-4 animate-spin" />
@@ -917,7 +917,7 @@ export default function LoginPage() {
                     type="button"
                     onClick={handlePasskey}
                     disabled={isLoading || isSuccess}
-                    className="flex h-11 w-full items-center justify-center gap-2 rounded-2xl border border-white/10 bg-white/[0.03] px-4 text-xs font-medium text-zinc-300 transition-all duration-150 hover:bg-white/[0.06] hover:text-white active:scale-[0.98] disabled:opacity-50 cursor-pointer"
+                    className="flex h-11 w-full items-center justify-center gap-2 rounded-[var(--inset-radius)] border border-[var(--panel-border)] bg-white/[0.03] px-4 text-xs font-medium text-zinc-300 transition-all duration-150 hover:bg-white/[0.06] hover:text-white active:scale-[0.98] disabled:opacity-50 cursor-pointer"
                   >
                     <KeyRound className="h-4 w-4 text-[var(--accent-primary,#C1234F)]" />
                     <span>Se connecter avec une clé de sécurité (Passkey)</span>

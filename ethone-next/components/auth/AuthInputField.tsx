@@ -28,10 +28,10 @@ const AuthInputField = forwardRef<HTMLInputElement, AuthInputFieldProps>(
             ref={ref}
             disabled={disabled}
             className={cn(
-              "h-12 w-full rounded-2xl border bg-white/[0.035] text-sm text-white placeholder-zinc-500 transition-all duration-150 outline-none",
+              "h-12 w-full rounded-[var(--inset-radius)] border bg-white/[0.035] text-sm text-white placeholder-zinc-500 transition-all duration-150 outline-none",
               leftIcon ? "pl-11" : "pl-4",
               rightElement ? "pr-11" : "pr-4",
-              "border-white/10 hover:border-white/20",
+              "border-[var(--panel-border)] hover:border-[var(--input-border-hover)]",
               "focus:border-emerald-500/60 focus:bg-white/[0.06] focus:ring-4 focus:ring-emerald-500/15",
               error && "border-rose-500/70 text-rose-300 focus:border-rose-500 focus:ring-rose-500/15",
               disabled && "opacity-50 cursor-not-allowed",

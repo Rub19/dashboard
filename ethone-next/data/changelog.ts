@@ -26082,4 +26082,57 @@ CHANGELOG_BY_LANG.en.unshift(v12136_en);
 CHANGELOG_BY_LANG.es.unshift(v12136_es);
 CHANGELOG_BY_LANG.de.unshift(v12136_de);
 
+const v12137_fr: ChangelogEntry = {
+  version: "v1.21.37",
+  date: "2026-09-13",
+  title: "Bordures et coins concentriques (systeme de panneaux + page de connexion)",
+  items: [
+    "Les bordures des panneaux etaient a peine visibles (6% de blanc) et le rayon des coins interieurs etait fixe, independant du reglage Apparence > style des coins (arrondi / doux / net) : deux panneaux imbriques pouvaient donc avoir des angles qui ne correspondent pas. Les deux tokens globaux corriges dans app/globals.css : le rayon des panneaux suit desormais le meme reglage que le reste de l interface, et le rayon interieur reste toujours a 75% du rayon exterieur (angles concentriques, methode utilisee par Linear/Vercel/Stripe). Les bordures passent de 6%/4% a 12%/8% pour vraiment se voir. Ce changement s applique instantanement a tous les panneaux deja construits sur ce systeme (mail, meteo, taches, notifications, centre de controle, selecteur d avatar, introduction Discord, fichiers...).",
+    "Page de connexion entierement repassee sur ce systeme : la grande carte (rayon arbitraire de 2.25rem sans rapport avec le reste de l app) et tous les elements a l interieur (badge de marque, pastille du statut systeme, icone d etat, selecteur d onglets, banniere d erreur, boutons Google/GitHub/Discord/Passkey, separateur) ont desormais des coins concentriques avec la carte et des bordures qui se voient vraiment, au lieu d un blanc a 10% presque invisible.",
+    "Champ de saisie du formulaire de connexion (composants/auth/AuthInputField) aligne sur le meme systeme.",
+    "Verifie visuellement dans le navigateur sur la page de connexion (bureau et mobile) : aucune erreur console, aucune regression de mise en page.",
+  ],
+};
+
+const v12137_en: ChangelogEntry = {
+  version: "v1.21.37",
+  date: "2026-09-13",
+  title: "Concentric borders and corners (panel system + login page)",
+  items: [
+    "Panel borders were barely visible (6% white) and the inner-panel corner radius was fixed, independent of the Appearance -> corner style setting (rounded / soft / sharp): two nested panels could therefore end up with mismatched angles. Fixed at the token level in app/globals.css: panel radius now follows the same setting as the rest of the UI, and the inner radius always stays at 75% of the outer one (concentric corners, the technique used by Linear/Vercel/Stripe). Borders raised from 6%/4% to 12%/8% so they actually read as a border. This change applies instantly to every panel already built on this system (mail, weather, tasks, notifications, mission control, avatar picker, Discord onboarding, files...).",
+    "Login page fully moved onto this system: the big card (previously an arbitrary 2.25rem radius unrelated to the rest of the app) and everything inside it (brand badge, system-status pill, state icon, mode-selector tabs, error banner, Google/GitHub/Discord/Passkey buttons, divider) now have corners concentric with the card and borders that actually read as borders instead of a barely-visible 10% white.",
+    "Login form input field (components/auth/AuthInputField) aligned onto the same system.",
+    "Visually verified in the browser on the login page (desktop and mobile): no console errors, no layout regression.",
+  ],
+};
+
+const v12137_es: ChangelogEntry = {
+  version: "v1.21.37",
+  date: "2026-09-13",
+  title: "Bordes y esquinas concentricas (sistema de paneles + pagina de inicio de sesion)",
+  items: [
+    "Los bordes de los paneles apenas se veian (6% de blanco) y el radio de esquina interior era fijo, independiente del ajuste Apariencia > estilo de esquinas (redondeado / suave / recto): dos paneles anidados podian terminar con angulos que no coincidian. Corregido a nivel de token en app/globals.css: el radio del panel ahora sigue el mismo ajuste que el resto de la interfaz, y el radio interior se mantiene siempre al 75% del exterior (esquinas concentricas, la tecnica que usan Linear/Vercel/Stripe). Los bordes suben del 6%/4% al 12%/8% para que realmente se noten. Este cambio se aplica de inmediato a todos los paneles ya construidos con este sistema (correo, clima, tareas, notificaciones, centro de control, selector de avatar, introduccion de Discord, archivos...).",
+    "Pagina de inicio de sesion movida por completo a este sistema: la tarjeta grande (antes un radio arbitrario de 2.25rem sin relacion con el resto de la app) y todo lo que hay dentro (insignia de marca, pastilla de estado del sistema, icono de estado, selector de pestanas, banner de error, botones de Google/GitHub/Discord/Passkey, separador) ahora tienen esquinas concentricas con la tarjeta y bordes que realmente se ven, en lugar de un blanco al 10% casi invisible.",
+    "Campo de entrada del formulario de inicio de sesion (components/auth/AuthInputField) alineado al mismo sistema.",
+    "Verificado visualmente en el navegador en la pagina de inicio de sesion (escritorio y movil): sin errores de consola, sin regresion de diseno.",
+  ],
+};
+
+const v12137_de: ChangelogEntry = {
+  version: "v1.21.37",
+  date: "2026-09-13",
+  title: "Konzentrische Raender und Ecken (Panel-System + Login-Seite)",
+  items: [
+    "Panel-Raender waren kaum sichtbar (6% Weiss), und der innere Eckenradius war fest, unabhaengig von der Einstellung Erscheinungsbild > Eckenstil (rund / weich / scharf): zwei verschachtelte Panels konnten dadurch nicht zueinander passende Winkel haben. Auf Token-Ebene in app/globals.css behoben: der Panel-Radius folgt jetzt derselben Einstellung wie der Rest der Oberflaeche, und der innere Radius bleibt immer bei 75% des aeusseren (konzentrische Ecken, die Technik, die Linear/Vercel/Stripe verwenden). Raender von 6%/4% auf 12%/8% angehoben, damit sie tatsaechlich als Rand wahrgenommen werden. Diese Aenderung wirkt sich sofort auf jedes bereits auf diesem System aufgebaute Panel aus (Mail, Wetter, Aufgaben, Benachrichtigungen, Mission Control, Avatar-Auswahl, Discord-Einfuehrung, Dateien...).",
+    "Login-Seite vollstaendig auf dieses System umgestellt: die grosse Karte (vorher ein willkuerlicher 2.25rem-Radius ohne Bezug zum Rest der App) und alles darin (Marken-Badge, Systemstatus-Pille, Statussymbol, Modus-Auswahl-Tabs, Fehlerbanner, Google-/GitHub-/Discord-/Passkey-Buttons, Trennlinie) haben jetzt zur Karte konzentrische Ecken und Raender, die tatsaechlich als Rand wahrgenommen werden, statt einem kaum sichtbaren 10%-Weiss.",
+    "Eingabefeld des Login-Formulars (components/auth/AuthInputField) auf dasselbe System abgestimmt.",
+    "Visuell im Browser auf der Login-Seite geprüft (Desktop und Mobil): keine Konsolenfehler, keine Layout-Regression.",
+  ],
+};
+
+CHANGELOG_BY_LANG.fr.unshift(v12137_fr);
+CHANGELOG_BY_LANG.en.unshift(v12137_en);
+CHANGELOG_BY_LANG.es.unshift(v12137_es);
+CHANGELOG_BY_LANG.de.unshift(v12137_de);
+
 export const CHANGELOG = CHANGELOG_BY_LANG.fr;

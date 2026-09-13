@@ -510,12 +510,20 @@ export const AnimatedSidebarHeader = forwardRef<
 export const AnimatedSidebarContent = forwardRef<
   HTMLDivElement,
   HTMLAttributes<HTMLDivElement>
->(function AnimatedSidebarContent({ className, ...props }, forwardedRef) {
+>(function AnimatedSidebarContent({ className, style, ...props }, forwardedRef) {
+  // The scrollbar is hidden (no-scrollbar) for a cleaner look, but with no
+  // visible scrollbar a menu item that overflows the available height used to
+  // just hard-clip at the container edge — a stray sliver of an icon peeking
+  // out with no visual cue that the list scrolls. A soft mask fade at both
+  // edges reads as an intentional boundary instead of a clipped one.
+  const fadeMask =
+    "linear-gradient(to bottom, transparent 0, black 14px, black calc(100% - 14px), transparent 100%)";
   return (
     <div
       {...props}
       ref={forwardedRef}
       data-slot="sidebar-content"
+      style={{ maskImage: fadeMask, WebkitMaskImage: fadeMask, ...style }}
       className={cn(
         "flex min-h-0 flex-1 flex-col gap-2 overflow-y-auto overflow-x-hidden overscroll-contain px-2 py-2 no-scrollbar",
         className,
@@ -745,7 +753,7 @@ export function AnimatedSidebarMenuSubButton({
   );
 
   const interactiveClassName = cn(
-    "flex min-h-8 w-full min-w-0 items-center gap-2 rounded-lg px-2 text-left text-xs outline-none",
+    "flex min-h-8 w-full min-w-0 items-center gap-2 rounded-[var(--inset-radius)] px-2 text-left text-xs outline-none",
     "text-[var(--text-muted)] transition-colors hover:bg-[var(--text-primary)]/[0.08] hover:text-[var(--text-primary)]",
     "focus-visible:bg-[var(--text-primary)]/[0.08] focus-visible:ring-2 focus-visible:ring-[var(--accent-primary)]",
     isActive && "bg-[var(--accent-primary)]/15 text-[var(--accent-primary)]",
@@ -903,7 +911,7 @@ export function AnimatedSidebarMenuButton({
   );
 
   const interactiveClassName = cn(
-    "group relative flex w-full min-w-0 overflow-hidden rounded-2xl py-2.5 text-[13px] font-medium outline-none transition-colors duration-150",
+    "group relative flex w-full min-w-0 overflow-hidden rounded-[var(--panel-radius)] py-2.5 text-[13px] font-medium outline-none transition-colors duration-150",
     panel.collapsed
       ? "items-center justify-center gap-0 px-0 mx-auto"
       : "items-center gap-3 px-3.5 text-left",

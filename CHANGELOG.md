@@ -2,6 +2,16 @@
 
 Toutes les modifications notables de ce projet seront documentées dans ce fichier.
 
+## v1.21.44 — 2026-09-14
+
+**Polish interface : sidebar, carte météo 3D et calendrier**
+
+- `components/motion/animated-sidebar.tsx` : la pastille de la page active (`AnimatedSidebarMenuButton`) utilisait `rounded-2xl` en dur pendant que son overlay de surbrillance utilisait déjà `var(--panel-radius)` — décalage visible surtout en mode réduit. Recalibré sur le même jeton (idem pour les sous-éléments de menu, `rounded-lg` → `var(--inset-radius)`).
+- Même fichier : la liste de navigation (`AnimatedSidebarContent`) peut dépasser la hauteur disponible ; comme la barre de défilement est masquée (`no-scrollbar`) sans indice visuel, la dernière icône se retrouvait parfois coupée net au bord. Ajout d'un fondu (masque CSS) en haut/bas pour que ça se lise comme un bord voulu.
+- `components/WeatherWidget.tsx` : l'effet de bascule 3D au survol (`TiltCard`) avait été retiré par erreur lors du nettoyage visuel `v1.21.28` en même temps que le glow néon — remis en place (le glow reste supprimé, lui légitimement).
+- `components/ui/calendar.tsx` : la case du jour sélectionné utilisait un dégradé violet/indigo figé avec un halo néon (`shadow-[0_0_18px_rgba(168,85,247,0.4)]`) sans lien avec le thème choisi ; la case « aujourd'hui » utilisait du cyan tout aussi figé. Les deux passent maintenant par les jetons du thème actif (`--accent-primary`, `--info`) et par `--inset-radius` pour l'arrondi, cohérent avec le reste de l'app.
+- Validation : `tsc` 0 erreur, `eslint` 0 erreur, `build` ✓, `test:unit` 88/88, `audit-security` PASS (1954 fichiers).
+
 ## v1.21.43 — 2026-09-14
 
 **Giveaways : le dashboard branché sur le vrai bot, plus de fausses promesses**

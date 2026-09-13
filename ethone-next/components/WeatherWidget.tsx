@@ -5,6 +5,7 @@ import Link from "next/link";
 import { motion } from "framer-motion";
 import { useI18n } from "@/lib/hooks/useI18n";
 import { Icon } from "@/lib/icons";
+import { TiltCard } from "@/components/ui/TiltCard";
 
 export type ForecastDay = {
   date?: string;
@@ -306,7 +307,8 @@ const WeatherWidget = memo(function WeatherWidget({ data, loading, onRefresh, co
   }
 
   return (
-    <div
+    <TiltCard
+      max={8}
       className={`v8-panel group flex h-full min-h-0 flex-col overflow-hidden p-4 ${className || ""}`}
     >
       <div className="flex h-full min-h-0 flex-col">
@@ -415,7 +417,7 @@ const WeatherWidget = memo(function WeatherWidget({ data, loading, onRefresh, co
           </div>
         )}
       </div>
-    </div>
+    </TiltCard>
   );
 });
 

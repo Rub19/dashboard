@@ -210,20 +210,20 @@ export function Calendar({
               onClick={() => select(day)}
               aria-pressed={selected}
               className={cn(
-                "relative flex min-h-0 flex-col items-center justify-between rounded-xl sm:rounded-2xl p-1 sm:p-1.5 text-xs sm:text-sm transition-all duration-150 cursor-pointer overflow-hidden",
+                "relative flex min-h-0 flex-col items-center justify-between rounded-[var(--inset-radius)] p-1 sm:p-1.5 text-xs sm:text-sm transition-all duration-150 cursor-pointer overflow-hidden",
                 !inMonth && "pointer-events-none opacity-0",
                 selected
-                  ? "border border-purple-400/70 bg-gradient-to-b from-purple-500/30 to-indigo-500/20 text-white shadow-[0_0_18px_rgba(168,85,247,0.4)] scale-[1.02]"
+                  ? "border border-[var(--accent-primary)]/50 bg-[var(--accent-primary)]/15 text-[var(--text-primary)]"
                   : isTodayCell
-                    ? "border border-cyan-500/50 bg-cyan-500/10 text-cyan-300 ring-1 ring-cyan-500/30 hover:bg-cyan-500/20"
-                    : "border border-[var(--panel-border)] bg-white/[0.02] text-zinc-300 hover:border-[var(--input-border-hover)] hover:bg-white/[0.06]",
-                marker && !selected && "border-[var(--panel-border)] bg-white/[0.04]"
+                    ? "border border-[var(--info)]/40 bg-[var(--info)]/10 text-[var(--info)] hover:bg-[var(--info)]/15"
+                    : "border border-[var(--panel-border)] bg-[var(--text-primary)]/[0.02] text-[var(--text-muted)] hover:border-[var(--input-border-hover)] hover:bg-[var(--text-primary)]/[0.06]",
+                marker && !selected && "border-[var(--panel-border)] bg-[var(--text-primary)]/[0.04]"
               )}
             >
               <span
                 className={cn(
                   "text-[11px] sm:text-xs font-bold leading-none",
-                  selected ? "text-white" : isTodayCell ? "text-cyan-300" : "text-zinc-200",
+                  selected ? "text-[var(--text-primary)]" : isTodayCell ? "text-[var(--info)]" : "text-[var(--text-primary)]",
                 )}
               >
                 {day.day}

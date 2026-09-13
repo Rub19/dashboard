@@ -26449,4 +26449,57 @@ CHANGELOG_BY_LANG.en.unshift(v12143_en);
 CHANGELOG_BY_LANG.es.unshift(v12143_es);
 CHANGELOG_BY_LANG.de.unshift(v12143_de);
 
+const v12144_fr: ChangelogEntry = {
+  version: "v1.21.44",
+  date: "2026-09-14",
+  title: "Polish interface : sidebar, carte meteo 3D et calendrier",
+  items: [
+    "Sidebar : le coin arrondi de la pastille active (Notes, Tasks...) ne suivait pas le meme rayon que le bouton lui-meme, un decalage plus visible en mode reduit. Recalibre sur le meme jeton de rayon partout (menu principal et sous-menus).",
+    "Sidebar : la liste de navigation pouvait couper net une icone en bas quand elle depassait la hauteur disponible (barre de defilement masquee, sans indice visuel). Ajout d'un fondu en haut et en bas pour que la coupure se lise comme voulue plutot que cassee.",
+    "Carte meteo (accueil) : l'effet de bascule 3D au survol avait ete retire par erreur lors d'un nettoyage visuel precedent. Restaure.",
+    "Calendrier : la case du jour selectionne utilisait un degrade violet/indigo avec halo neon fixe, deconnecte du theme choisi. Remplace par les couleurs du theme actif (memes jetons que le reste de l'app), la case du jour courant utilise desormais la meme famille de couleur \"info\" que le reste du dashboard.",
+  ],
+};
+
+const v12144_en: ChangelogEntry = {
+  version: "v1.21.44",
+  date: "2026-09-14",
+  title: "UI polish: sidebar, weather 3D card and calendar",
+  items: [
+    "Sidebar: the active pill's (Notes, Tasks...) corner radius didn't match the button's own radius, more visible in the collapsed rail. Recalibrated onto the same radius token everywhere (main menu and sub-items).",
+    "Sidebar: the nav list could hard-clip an icon at the bottom edge when it overflowed the available height (hidden scrollbar, no visual cue). Added a top/bottom fade so the edge reads as intentional instead of cut off.",
+    "Weather card (home): the 3D hover-tilt effect had been removed by mistake during an earlier visual cleanup pass. Restored.",
+    "Calendar: the selected-day cell used a fixed purple/indigo gradient with a neon glow, disconnected from the chosen theme. Replaced with the active theme's own colors (same tokens as the rest of the app); today's cell now uses the same \"info\" color family used elsewhere in the dashboard.",
+  ],
+};
+
+const v12144_es: ChangelogEntry = {
+  version: "v1.21.44",
+  date: "2026-09-14",
+  title: "Pulido de interfaz: sidebar, tarjeta de clima 3D y calendario",
+  items: [
+    "Sidebar: el radio de esquina de la pastilla activa (Notas, Tareas...) no coincidia con el del propio boton, mas visible en modo reducido. Recalibrado al mismo token de radio en todas partes (menu principal y submenus).",
+    "Sidebar: la lista de navegacion podia cortar de golpe un icono en el borde inferior cuando superaba la altura disponible (barra de desplazamiento oculta, sin pista visual). Anadido un desvanecido arriba y abajo para que el corte se vea intencional y no roto.",
+    "Tarjeta de clima (inicio): el efecto de inclinacion 3D al pasar el cursor se habia eliminado por error en una limpieza visual anterior. Restaurado.",
+    "Calendario: la celda del dia seleccionado usaba un degradado morado/indigo fijo con resplandor neon, desconectado del tema elegido. Sustituido por los colores del tema activo (mismos tokens que el resto de la app); la celda del dia actual usa ahora la misma familia de color \"info\" que el resto del dashboard.",
+  ],
+};
+
+const v12144_de: ChangelogEntry = {
+  version: "v1.21.44",
+  date: "2026-09-14",
+  title: "UI-Politur: Sidebar, 3D-Wetterkarte und Kalender",
+  items: [
+    "Sidebar: Der Eckradius der aktiven Pille (Notizen, Aufgaben...) stimmte nicht mit dem des Buttons selbst uberein, im eingeklappten Modus starker sichtbar. Auf denselben Radius-Token vereinheitlicht (Hauptmenu und Untermenus).",
+    "Sidebar: Die Navigationsliste konnte ein Symbol am unteren Rand hart abschneiden, wenn sie die verfugbare Hohe uberschritt (versteckte Scrollleiste, kein visueller Hinweis). Ein Verlauf oben und unten sorgt jetzt dafur, dass der Rand beabsichtigt statt abgeschnitten wirkt.",
+    "Wetterkarte (Start): Der 3D-Kippeffekt beim Uberfahren mit der Maus war bei einer fruheren visuellen Bereinigung versehentlich entfernt worden. Wiederhergestellt.",
+    "Kalender: Die Zelle des ausgewahlten Tages nutzte einen festen violett-indigo Farbverlauf mit Neon-Schein, losgelost vom gewahlten Theme. Ersetzt durch die Farben des aktiven Themes (gleiche Tokens wie im Rest der App); die Zelle des heutigen Tages nutzt jetzt dieselbe \"Info\"-Farbfamilie wie der Rest des Dashboards.",
+  ],
+};
+
+CHANGELOG_BY_LANG.fr.unshift(v12144_fr);
+CHANGELOG_BY_LANG.en.unshift(v12144_en);
+CHANGELOG_BY_LANG.es.unshift(v12144_es);
+CHANGELOG_BY_LANG.de.unshift(v12144_de);
+
 export const CHANGELOG = CHANGELOG_BY_LANG.fr;

@@ -47,6 +47,24 @@ export interface GuildMusicState {
   updatedAt: string; // ISO
 }
 
+// The plain-data shape of a guild's live queue, persisted so it survives a
+// bot restart (see musicPersistence.ts's saveQueueState/getQueueState).
+export interface MusicQueueSnapshot {
+  queue: Track[];
+  history: Track[];
+  currentTrack: Track | null;
+  repeatMode: RepeatMode;
+  shuffleEnabled: boolean;
+}
+
+export interface MusicQueueState {
+  guildId: string;
+  snapshot: MusicQueueSnapshot;
+  voiceChannelId: string | null;
+  status: PlayerStatus;
+  savedAt: string; // ISO
+}
+
 export interface MusicPlaylist {
   id: string;
   name: string;

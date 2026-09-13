@@ -50,8 +50,20 @@ export class GuildMusicPlayer {
   }
 
   private emitState(): void {
+    const state = this.getState();
     if (this.onStateChangeCallback) {
-      this.onStateChangeCallback(this.getState());
+      this.onStateChangeCallback(state);
+    }
+    // Persisted here (not only from musicService.ts's command wrappers) so a
+    // track ending naturally and auto-advancing — driven internally by the
+    // AudioPlayer's Idle event, never going through musicService — still
+    // gets its queue snapshot saved. Cheap enough: this only fires on real
+    // discrete transitions (play/pause/skip/volume/...), never on a per-tick
+    // timer.
+    if (this.status === 'IDLE' && this.queue.isEmpty() && !state.currentTrack) {
+      musicPersistence.clearQueueState(this.guildId);
+    } else {
+      musicPersistence.saveQueueState(this.guildId, this.queue.toSnapshot(), this.currentVoiceChannel?.id || null, this.status);
     }
   }
 

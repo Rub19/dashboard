@@ -3,7 +3,7 @@ import play from 'play-dl';
 import { Track, TrackRequester } from '../types/music.js';
 import { logger } from '../../../utils/logger.js';
 import { createYtDlpStream } from './ytdlpStream.js';
-import { expandPlaylist, isPlaylistUrl } from './playlistResolver.js';
+import { expandPlaylist, isPlaylistUrl, getSpotifyToken } from './playlistResolver.js';
 
 /**
  * Single audio path for every "real" provider (Spotify bridge, YouTube,
@@ -161,38 +161,80 @@ export class SpotifyBridgeProvider implements IMusicProvider {
   }
 
   public async resolveTrack(query: string, requestedBy: TrackRequester): Promise<Track | null> {
+    // Real Spotify Web API metadata (real album name, real duration, real
+    // album art) when SPOTIFY_CLIENT_ID/SECRET are configured — same
+    // client-credentials token already used for playlist/album import.
+    // Falls back to the public oEmbed endpoint (title/author/thumbnail only,
+    // no duration, no album) when credentials aren't set, same as before.
+    const trackId = query.match(/open\.spotify\.com\/(?:[a-z-]+\/)?track\/([A-Za-z0-9]+)/i)?.[1];
+    let fullTitle: string | null = null;
+    let artist: string | null = null;
+    let album: string | null = null;
+    let durationSeconds: number | null = null;
+    let thumbnail: string | null = null;
+
+    if (trackId) {
+      try {
+        const token = await getSpotifyToken();
+        if (token) {
+          const res = await fetch(`https://api.spotify.com/v1/tracks/${trackId}`, {
+            headers: { Authorization: `Bearer ${token}` },
+          });
+          if (res.ok) {
+            const data = (await res.json()) as {
+              name?: string;
+              duration_ms?: number;
+              artists?: Array<{ name?: string }>;
+              album?: { name?: string; images?: Array<{ url?: string }> };
+            };
+            fullTitle = data.name || null;
+            artist = (data.artists || []).map((a) => a.name).filter(Boolean).join(', ') || null;
+            album = data.album?.name || null;
+            durationSeconds = data.duration_ms ? Math.round(data.duration_ms / 1000) : null;
+            thumbnail = data.album?.images?.[0]?.url || null;
+          }
+        }
+      } catch (err) {
+        logger.warn('[SpotifyBridgeProvider] Erreur résolution Spotify Web API :', err);
+      }
+    }
+
     try {
-      const oembedUrl = `https://open.spotify.com/oembed?url=${encodeURIComponent(query)}`;
-      const res = await fetch(oembedUrl);
-      if (res.ok) {
-        const data = (await res.json()) as any;
-        const fullTitle = data.title || 'Spotify Track';
-        const artist = data.author_name || 'Spotify Artist';
-
-        await ensureSoundCloud();
-        const scResults = await play.search(`${fullTitle} ${artist}`, {
-          source: { soundcloud: 'tracks' },
-          limit: 1,
-        });
-
-        if (scResults && scResults.length > 0) {
-          const sc = scResults[0];
-          return {
-            id: `sp-${Date.now().toString(36)}`,
-            title: fullTitle,
-            artist,
-            album: 'Spotify Music',
-            duration: sc.durationInSec || 210,
-            thumbnail: data.thumbnail_url || sc.thumbnail || 'https://images.unsplash.com/photo-1511671782779-c97d3d27a1d4?w=500&auto=format&fit=crop&q=80',
-            url: sc.url,
-            source: 'SPOTIFY',
-            requestedBy,
-            addedAt: new Date().toISOString(),
-          };
+      if (!fullTitle || !artist) {
+        const oembedUrl = `https://open.spotify.com/oembed?url=${encodeURIComponent(query)}`;
+        const res = await fetch(oembedUrl);
+        if (res.ok) {
+          const data = (await res.json()) as any;
+          fullTitle = fullTitle || data.title || 'Spotify Track';
+          artist = artist || data.author_name || 'Spotify Artist';
+          thumbnail = thumbnail || data.thumbnail_url || null;
         }
       }
+      if (!fullTitle) return null;
+
+      await ensureSoundCloud();
+      const scResults = await play.search(`${fullTitle} ${artist}`, {
+        source: { soundcloud: 'tracks' },
+        limit: 1,
+      });
+
+      if (scResults && scResults.length > 0) {
+        const sc = scResults[0];
+        return {
+          id: `sp-${Date.now().toString(36)}`,
+          title: fullTitle,
+          artist: artist || 'Spotify Artist',
+          album: album || 'Spotify',
+          duration: durationSeconds || sc.durationInSec || 210,
+          thumbnail: thumbnail || sc.thumbnail || 'https://images.unsplash.com/photo-1511671782779-c97d3d27a1d4?w=500&auto=format&fit=crop&q=80',
+          url: sc.url,
+          source: 'SPOTIFY',
+          requestedBy,
+          addedAt: new Date().toISOString(),
+        };
+      }
     } catch (err) {
-      logger.warn('[SpotifyBridgeProvider] Erreur résolution Spotify oEmbed :', err);
+      logger.warn('[SpotifyBridgeProvider] Erreur résolution Spotify :', err);
     }
     return null;
   }

@@ -2,9 +2,12 @@ import fs from 'fs';
 import path from 'path';
 import {
   MusicPlaylist,
+  MusicQueueSnapshot,
+  MusicQueueState,
   MusicSettings,
   MusicSettingsSchema,
   MusicStats,
+  PlayerStatus,
   Track,
 } from '../types/music.js';
 import { logger } from '../../../utils/logger.js';
@@ -29,12 +32,14 @@ class MusicPersistence {
   private historyFile = path.resolve(this.dataDir, 'music_history.json');
   private settingsFile = path.resolve(this.dataDir, 'music_settings.json');
   private statsFile = path.resolve(this.dataDir, 'music_stats.json');
+  private queueStateFile = path.resolve(this.dataDir, 'music_queue_state.json');
 
   private playlists = new Map<string, MusicPlaylist[]>(); // guildId -> playlists
   private favorites = new Map<string, Map<string, Track[]>>(); // guildId -> userId -> favorites
   private history = new Map<string, Track[]>(); // guildId -> history
   private settings = new Map<string, MusicSettings>(); // guildId -> settings
   private stats = new Map<string, MusicStats>(); // guildId -> stats
+  private queueState = new Map<string, MusicQueueState>(); // guildId -> live queue snapshot
 
   constructor() {
     this.ensureDir();
@@ -108,6 +113,17 @@ class MusicPersistence {
       }
     } catch (err) {
       logger.error('Erreur chargement music_stats.json :', err);
+    }
+
+    try {
+      if (fs.existsSync(this.queueStateFile)) {
+        const data = JSON.parse(fs.readFileSync(this.queueStateFile, 'utf-8'));
+        for (const [gid, s] of Object.entries(data)) {
+          this.queueState.set(gid, s as MusicQueueState);
+        }
+      }
+    } catch (err) {
+      logger.error('Erreur chargement music_queue_state.json :', err);
     }
   }
 
@@ -317,6 +333,44 @@ class MusicPersistence {
       fs.writeFileSync(this.statsFile, JSON.stringify(obj, null, 2), 'utf-8');
     } catch (err) {
       logger.error('Erreur sauvegarde music_stats.json :', err);
+    }
+  }
+
+  // --- QUEUE STATE (survives a bot restart) ---
+  public getQueueState(guildId: string): MusicQueueState | null {
+    return this.queueState.get(guildId) || null;
+  }
+
+  public getAllQueueStates(): MusicQueueState[] {
+    return Array.from(this.queueState.values());
+  }
+
+  public saveQueueState(guildId: string, snapshot: MusicQueueSnapshot, voiceChannelId: string | null, status: PlayerStatus): void {
+    this.queueState.set(guildId, {
+      guildId,
+      snapshot,
+      voiceChannelId,
+      status,
+      savedAt: new Date().toISOString(),
+    });
+    this.persistQueueState();
+  }
+
+  public clearQueueState(guildId: string): void {
+    if (this.queueState.delete(guildId)) {
+      this.persistQueueState();
+    }
+  }
+
+  private persistQueueState(): void {
+    try {
+      const obj: Record<string, MusicQueueState> = {};
+      for (const [gid, s] of this.queueState.entries()) {
+        obj[gid] = s;
+      }
+      fs.writeFileSync(this.queueStateFile, JSON.stringify(obj, null, 2), 'utf-8');
+    } catch (err) {
+      logger.error('Erreur sauvegarde music_queue_state.json :', err);
     }
   }
 }

@@ -199,17 +199,31 @@ export function createMusicRouter(discordClient: Client) {
 
   router.post('/playlists', async (req: Request, res: Response): Promise<void> => {
     const guildId = String(req.params.guildId);
-    const { name, tracks } = req.body;
+    const { name, tracks, sourceUrl } = req.body;
     if (!name || typeof name !== 'string') {
       res.status(400).json({ error: 'Nom de playlist requis.' });
       return;
     }
-    const pl = musicService.createPlaylist(
-      guildId,
-      name.trim(),
-      { id: 'dashboard', tag: 'Dashboard Staff' },
-      Array.isArray(tracks) ? tracks : []
-    );
+    const createdBy = {
+      id: (req as any).user?.id || 'dashboard',
+      tag: (req as any).user?.username || 'Dashboard Staff',
+    };
+
+    // A sourceUrl (Spotify/YouTube playlist or album link) is resolved
+    // server-side rather than trusting client-supplied track data — this is
+    // the real "import a playlist" path; a /play <url> alone only ever
+    // queued a collection transiently with no way to save it.
+    if (sourceUrl && typeof sourceUrl === 'string') {
+      const result = await musicService.importPlaylist(guildId, name.trim(), createdBy, sourceUrl);
+      if (!result.success) {
+        res.status(400).json({ error: result.error || 'Échec de l\'import de la playlist.' });
+        return;
+      }
+      res.json({ playlist: result.playlist, importedCount: result.count });
+      return;
+    }
+
+    const pl = musicService.createPlaylist(guildId, name.trim(), createdBy, Array.isArray(tracks) ? tracks : []);
     res.json({ playlist: pl });
   });
 

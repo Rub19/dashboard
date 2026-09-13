@@ -26502,4 +26502,61 @@ CHANGELOG_BY_LANG.en.unshift(v12144_en);
 CHANGELOG_BY_LANG.es.unshift(v12144_es);
 CHANGELOG_BY_LANG.de.unshift(v12144_de);
 
+const v12145_fr: ChangelogEntry = {
+  version: "v1.21.45",
+  date: "2026-09-14",
+  title: "Bot musique : la file survit a un redemarrage, demarrage plus rapide, Spotify enrichi",
+  items: [
+    "La file d'attente et le titre en cours etaient uniquement en memoire et disparaissaient a chaque redemarrage du bot. Desormais sauvegardes en continu ; au redemarrage, si le salon vocal existe encore et contient de vrais membres, le bot le rejoint et reprend la lecture (depuis le debut du titre, pas la position exacte).",
+    "Latence de demarrage reduite : la connexion au salon vocal et la resolution des metadonnees du titre se faisaient l'une apres l'autre, desormais en parallele.",
+    "Spotify : le nom d'album affiche etait toujours la valeur generique \"Spotify\" meme quand la vraie info etait disponible. Corrige pour les playlists, les albums et les liens de titre individuel (ce dernier recupere maintenant aussi la vraie duree via l'API Spotify quand les identifiants sont configures, au lieu de deviner).",
+    "Nouveau : possibilite d'importer une playlist Spotify ou YouTube comme playlist ETHONE sauvegardee, plutot que de seulement pouvoir la mettre en file d'attente une seule fois.",
+    "Nouvelle suite de tests pour ce module (aucune n'existait).",
+  ],
+};
+
+const v12145_en: ChangelogEntry = {
+  version: "v1.21.45",
+  date: "2026-09-14",
+  title: "Music bot: queue survives a restart, faster startup, richer Spotify",
+  items: [
+    "The queue and current track were in-memory only and vanished on every bot restart. Now saved continuously; on restart, if the voice channel still exists with real members in it, the bot rejoins and resumes playback (from the start of the track, not the exact position).",
+    "Reduced startup latency: connecting to the voice channel and resolving the track's metadata used to happen one after the other, now in parallel.",
+    "Spotify: the displayed album name was always the generic \"Spotify\" placeholder even when the real info was available. Fixed for playlists, albums, and single-track links (which now also fetch the real duration via the Spotify API when credentials are configured, instead of guessing).",
+    "New: import a Spotify or YouTube playlist as a saved ETHONE playlist, instead of only being able to queue it once transiently.",
+    "New test suite for this module, which previously had none.",
+  ],
+};
+
+const v12145_es: ChangelogEntry = {
+  version: "v1.21.45",
+  date: "2026-09-14",
+  title: "Bot de musica: la cola sobrevive a un reinicio, arranque mas rapido, Spotify mas completo",
+  items: [
+    "La cola y la pista actual solo existian en memoria y desaparecian en cada reinicio del bot. Ahora se guardan continuamente; al reiniciar, si el canal de voz sigue existiendo con miembros reales, el bot vuelve a unirse y retoma la reproduccion (desde el inicio de la pista, no la posicion exacta).",
+    "Menos latencia al arrancar: conectar al canal de voz y resolver los metadatos de la pista se hacian uno tras otro, ahora en paralelo.",
+    "Spotify: el nombre del album mostrado era siempre el generico \"Spotify\" aunque hubiera informacion real disponible. Corregido para playlists, albumes y enlaces de pista individual (que ahora tambien obtiene la duracion real via la API de Spotify cuando hay credenciales configuradas, en vez de adivinarla).",
+    "Novedad: importar una playlist de Spotify o YouTube como playlist guardada de ETHONE, en vez de solo poder encolarla una vez de forma temporal.",
+    "Nueva suite de pruebas para este modulo, que antes no tenia ninguna.",
+  ],
+};
+
+const v12145_de: ChangelogEntry = {
+  version: "v1.21.45",
+  date: "2026-09-14",
+  title: "Musik-Bot: Warteschlange uberlebt Neustart, schnellerer Start, mehr Spotify",
+  items: [
+    "Warteschlange und aktueller Titel existierten nur im Arbeitsspeicher und gingen bei jedem Bot-Neustart verloren. Werden jetzt fortlaufend gespeichert; existiert der Sprachkanal beim Neustart noch mit echten Mitgliedern darin, tritt der Bot wieder bei und setzt die Wiedergabe fort (vom Anfang des Titels, nicht von der genauen Position).",
+    "Geringere Startlatenz: Verbindung zum Sprachkanal und Aufloesung der Titel-Metadaten liefen nacheinander ab, jetzt parallel.",
+    "Spotify: Der angezeigte Albumname war immer der generische Platzhalter \"Spotify\", selbst wenn die echte Information verfuegbar war. Behoben fuer Playlists, Alben und einzelne Titel-Links (Letztere holen jetzt bei konfigurierten Zugangsdaten auch die echte Dauer uber die Spotify-API statt sie zu schaetzen).",
+    "Neu: eine Spotify- oder YouTube-Playlist als gespeicherte ETHONE-Playlist importieren, statt sie nur einmalig temporaer in die Warteschlange stellen zu koennen.",
+    "Neue Testsuite fuer dieses Modul, das zuvor keine hatte.",
+  ],
+};
+
+CHANGELOG_BY_LANG.fr.unshift(v12145_fr);
+CHANGELOG_BY_LANG.en.unshift(v12145_en);
+CHANGELOG_BY_LANG.es.unshift(v12145_es);
+CHANGELOG_BY_LANG.de.unshift(v12145_de);
+
 export const CHANGELOG = CHANGELOG_BY_LANG.fr;

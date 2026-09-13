@@ -94,7 +94,10 @@ export async function expandYouTubePlaylist(url: string, requestedBy: TrackReque
 
 let spotifyToken: { value: string; expiresAt: number } | null = null;
 
-async function getSpotifyToken(): Promise<string | null> {
+// Exported so musicProvider.ts's SpotifyBridgeProvider (single-track links)
+// can share the same client-credentials token instead of only ever calling
+// Spotify's public oEmbed endpoint, which has no album name or duration.
+export async function getSpotifyToken(): Promise<string | null> {
   if (!config.spotifyClientId || !config.spotifyClientSecret) return null;
   if (spotifyToken && spotifyToken.expiresAt > Date.now() + 10_000) return spotifyToken.value;
 
@@ -125,7 +128,7 @@ interface SpotifyTrackObj {
   name?: string;
   duration_ms?: number;
   artists?: Array<{ name?: string }>;
-  album?: { images?: Array<{ url?: string }> };
+  album?: { name?: string; images?: Array<{ url?: string }> };
 }
 
 export async function expandSpotifyCollection(url: string, requestedBy: TrackRequester): Promise<Track[]> {
@@ -141,11 +144,31 @@ export async function expandSpotifyCollection(url: string, requestedBy: TrackReq
 
   const authHeaders = { Authorization: `Bearer ${token}` };
   const collected: SpotifyTrackObj[] = [];
+
+  // /albums/{id}/tracks items carry no `album` field at all (obviously —
+  // they're already scoped to one album), so the real album name/art has to
+  // come from a separate lightweight lookup instead of the hardcoded
+  // 'Spotify' literal every track used to fall back to.
+  let albumName: string | null = null;
+  let albumThumbnail: string | null = null;
+  if (kind === 'album') {
+    try {
+      const albumRes = await fetch(`https://api.spotify.com/v1/albums/${id}?fields=name,images`, { headers: authHeaders });
+      if (albumRes.ok) {
+        const albumJson = (await albumRes.json()) as { name?: string; images?: Array<{ url?: string }> };
+        albumName = albumJson.name || null;
+        albumThumbnail = albumJson.images?.[0]?.url || null;
+      }
+    } catch (err) {
+      logger.warn('[playlist] Spotify album metadata error :', err);
+    }
+  }
+
   // /playlists/{id}/tracks returns { items: [{ track }] }; /albums/{id}/tracks returns { items: [track] }.
   let next: string | null =
     kind === 'album'
       ? `https://api.spotify.com/v1/albums/${id}/tracks?limit=50`
-      : `https://api.spotify.com/v1/playlists/${id}/tracks?limit=100&fields=next,items(track(name,duration_ms,artists(name),album(images)))`;
+      : `https://api.spotify.com/v1/playlists/${id}/tracks?limit=100&fields=next,items(track(name,duration_ms,artists(name),album(name,images)))`;
 
   try {
     while (next && collected.length < MAX_PLAYLIST_TRACKS) {
@@ -171,9 +194,9 @@ export async function expandSpotifyCollection(url: string, requestedBy: TrackReq
       id: `sppl-${id}-${i}`,
       title: t.name || 'Titre Spotify',
       artist,
-      album: 'Spotify',
+      album: t.album?.name || albumName || 'Spotify',
       duration: Math.round((t.duration_ms || 0) / 1000),
-      thumbnail: t.album?.images?.[0]?.url || THUMB_FALLBACK,
+      thumbnail: t.album?.images?.[0]?.url || albumThumbnail || THUMB_FALLBACK,
       // Streamed from YouTube (Spotify itself serves no audio) — yt-dlp
       // resolves this search term and plays the top hit.
       url: `ytsearch1:${t.name} ${artist}`,

@@ -2,6 +2,19 @@
 
 Toutes les modifications notables de ce projet seront documentées dans ce fichier.
 
+## v1.21.45 — 2026-09-14
+
+**Bot musique : la file survit à un redémarrage, démarrage plus rapide, Spotify enrichi**
+
+- `discord-bot/src/modules/music/` : la file d'attente et le titre en cours (`MusicQueue`, en mémoire pure via `musicService.ts`'s `players` Map) ne survivaient jamais à un redémarrage/crash. Ajout de `MusicQueue.toSnapshot()`/`restoreFromSnapshot()` + un 5ᵉ fichier persisté (`music_queue_state.json`, même convention que playlists/favoris/historique/réglages/stats). Sauvegarde à chaque transition d'état réelle (`guildMusicPlayer.ts`'s `emitState()`), donc même l'avancement automatique en fin de titre est couvert, pas seulement les commandes explicites.
+- Au démarrage (`musicService.initialize()`), chaque guilde ayant une file sauvegardée la récupère en mémoire ; si le statut était lecture/pause et que le salon vocal existe encore avec de vrais membres dedans, le bot le rejoint et relance le titre en cours (depuis le début, pas la position exacte — un vrai seek-au-redémarrage est un chantier à part).
+- Latence : `musicService.play()` connectait le salon vocal PUIS résolvait les métadonnées du titre, en séquence. Les deux sont indépendantes → passées en `Promise.all`, ce qui retire une des deux attentes de chaque lecture.
+- Spotify : `playlistResolver.ts` ne demandait que `album(images)` à l'API Spotify pour les playlists/albums, d'où le nom d'album générique `'Spotify'` codé en dur malgré la vraie donnée à portée d'un champ. Corrigé (+ récupération dédiée du nom d'album pour le cas `/album/`, qui n'a pas ce champ par piste). `musicProvider.ts`'s `SpotifyBridgeProvider` (liens de titre individuel) n'utilisait que l'oEmbed public (pas de durée, pas d'album) — utilise maintenant la vraie API Spotify Web quand `SPOTIFY_CLIENT_ID`/`SECRET` sont configurés, oEmbed restant le repli.
+- Nouveau : `musicService.importPlaylist()` + `POST .../playlists` accepte un `sourceUrl` optionnel — une playlist Spotify/YouTube peut maintenant être **sauvegardée** comme playlist ETHONE, pas seulement mise en file une fois.
+- Nouveau `discord-bot/test_music_v1.ts` (23 assertions) — ce module n'avait aucun test.
+- Explicitement non traité (signalé, pas bricolé à moitié) : reprise à la position exacte après redémarrage, pré-chargement du titre suivant pendant la lecture du titre actuel, pool de processus `yt-dlp` — chacun changerait un chemin de lecture audio en direct que je ne peux pas vérifier dans cet environnement (pas de connexion vocale Discord réelle ni de `yt-dlp` exécutable ici).
+- Validation : `discord-bot` `npm run node:build` ✓, `test_music_v1.ts` 23/23, `test_giveaways_v1.ts` toujours 24/24 (pas de régression croisée). `ethone-next` `tsc` 0 erreur (aucun changement de ce côté). `audit-security` PASS (1956 fichiers). Latence, survie au redémarrage et richesse Spotify réelles nécessitent un bot en direct — à vérifier par l'utilisateur après redéploiement.
+
 ## v1.21.44 — 2026-09-14
 
 **Polish interface : sidebar, carte météo 3D et calendrier**

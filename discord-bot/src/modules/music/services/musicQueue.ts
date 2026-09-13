@@ -1,4 +1,4 @@
-import { RepeatMode, Track } from '../types/music.js';
+import { MusicQueueSnapshot, RepeatMode, Track } from '../types/music.js';
 
 export class MusicQueue {
   private queue: Track[] = [];
@@ -8,6 +8,27 @@ export class MusicQueue {
   private shuffleEnabled: boolean = false;
 
   constructor(public readonly guildId: string) {}
+
+  // Plain-data view of everything this class holds, for persistence
+  // (musicPersistence.ts) — restart survival relies on this being a
+  // faithful round-trip with restoreFromSnapshot below.
+  public toSnapshot(): MusicQueueSnapshot {
+    return {
+      queue: [...this.queue],
+      history: [...this.history],
+      currentTrack: this.currentTrack,
+      repeatMode: this.repeatMode,
+      shuffleEnabled: this.shuffleEnabled,
+    };
+  }
+
+  public restoreFromSnapshot(snapshot: MusicQueueSnapshot): void {
+    this.queue = [...(snapshot.queue || [])];
+    this.history = [...(snapshot.history || [])];
+    this.currentTrack = snapshot.currentTrack || null;
+    this.repeatMode = snapshot.repeatMode || 'OFF';
+    this.shuffleEnabled = Boolean(snapshot.shuffleEnabled);
+  }
 
   public getTracks(): Track[] {
     return [...this.queue];

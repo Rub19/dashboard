@@ -29,8 +29,8 @@ export async function onReady(client: Client<true>) {
   // Démarrage du Moderation Center 2.0 & du scheduler de sanctions temporaires
   ModerationService.initialize(client);
 
-  // Démarrage de Music Center 2.0
-  musicService.initialize(client);
+  // Démarrage de Music Center 2.0 (restaure aussi les files d'attente actives)
+  await musicService.initialize(client);
 
   // Démarrage de Logs & Audit Center 2.0
   logService.initialize(client);

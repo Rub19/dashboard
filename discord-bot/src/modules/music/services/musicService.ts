@@ -11,9 +11,51 @@ class MusicService {
   private client: Client | null = null;
   private players = new Map<string, GuildMusicPlayer>();
 
-  public initialize(client: Client): void {
+  public async initialize(client: Client): Promise<void> {
     this.client = client;
     logger.info('[MusicService] Initialisé et synchronisé avec le client Discord.');
+    await this.restoreQueuesFromDisk(client);
+  }
+
+  // Restart survival: reload every guild's saved queue into memory, and for
+  // a guild that was actually playing/paused (not just idle-with-leftovers),
+  // best-effort rejoin its last voice channel and resume the current track
+  // FROM THE START (exact-position resume isn't attempted — see the music
+  // improvement plan). If the channel is gone or now empty, the queue is
+  // still restored in memory so the next /play or dashboard action has it,
+  // it just won't auto-rejoin to an empty room.
+  private async restoreQueuesFromDisk(client: Client): Promise<void> {
+    const states = musicPersistence.getAllQueueStates();
+    for (const state of states) {
+      try {
+        const guild = client.guilds.cache.get(state.guildId);
+        if (!guild) continue;
+
+        const player = this.getPlayer(state.guildId, true)!;
+        player.queue.restoreFromSnapshot(state.snapshot);
+
+        const hasContent = Boolean(state.snapshot.currentTrack) || state.snapshot.queue.length > 0;
+        if (!hasContent) continue;
+        if (state.status !== 'PLAYING' && state.status !== 'PAUSED') continue;
+        if (!state.voiceChannelId) continue;
+
+        const channel = guild.channels.cache.get(state.voiceChannelId);
+        if (!channel || !channel.isVoiceBased()) continue;
+        const hasRealMembers = channel.members.some((m) => !m.user.bot);
+        if (!hasRealMembers) continue;
+
+        const connected = await player.connect(channel);
+        if (!connected) continue;
+
+        const resumeTrack = player.queue.getCurrentTrack() || player.queue.next();
+        if (resumeTrack) {
+          await player.playTrack(resumeTrack);
+          logger.success(`[MusicService] File d'attente restaurée et lecture reprise pour la guilde ${state.guildId}.`);
+        }
+      } catch (err) {
+        logger.warn(`[MusicService] Échec de restauration de la file pour la guilde ${state.guildId} :`, err);
+      }
+    }
   }
 
   public getPlayer(guildId: string, autoCreate: boolean = true): GuildMusicPlayer | null {
@@ -82,22 +124,31 @@ class MusicService {
       }
     }
 
-    if (voiceChannel) {
-      const connected = await player.connect(voiceChannel);
-      if (!connected) {
-        return { success: false, error: 'Impossible de se connecter au salon vocal.' };
-      }
-    }
-
-    // 3. Résolution du titre
+    // 3. Résolution du titre — lancée EN PARALLÈLE de la connexion vocale
+    // (les deux sont indépendantes : l'une ouvre le socket audio, l'autre
+    // interroge l'API du fournisseur). Auparavant séquentiel, ce qui ajoutait
+    // le temps de connexion vocale ET le temps de résolution des métadonnées
+    // à chaque lecture au lieu du plus long des deux seulement.
     const requestedBy = {
       id: member?.id || 'dashboard',
       tag: member?.user.tag || 'Dashboard User',
       avatar: member?.user.displayAvatarURL?.() || null,
     };
 
-    // A playlist / album URL resolves to many tracks; anything else to one.
-    const tracks = await musicProviderManager.resolveMany(queryOrUrl, requestedBy);
+    let connected = true;
+    let tracks: Track[];
+    if (voiceChannel) {
+      [connected, tracks] = await Promise.all([
+        player.connect(voiceChannel),
+        musicProviderManager.resolveMany(queryOrUrl, requestedBy),
+      ]);
+    } else {
+      tracks = await musicProviderManager.resolveMany(queryOrUrl, requestedBy);
+    }
+
+    if (!connected) {
+      return { success: false, error: 'Impossible de se connecter au salon vocal.' };
+    }
     if (tracks.length === 0) {
       if (/open\.spotify\.com\/(?:[a-z-]+\/)?(?:playlist|album)\//i.test(queryOrUrl)) {
         return {
@@ -319,6 +370,24 @@ class MusicService {
 
   public deletePlaylist(guildId: string, playlistId: string): boolean {
     return musicPersistence.deletePlaylist(guildId, playlistId);
+  }
+
+  // Resolves a Spotify/YouTube playlist or album URL and saves the result as
+  // a real, persisted ETHONE playlist — previously `/play <url>` could only
+  // queue a collection transiently, with no way to keep it for later.
+  public async importPlaylist(
+    guildId: string,
+    name: string,
+    createdBy: { id: string; tag: string },
+    sourceUrl: string
+  ): Promise<{ success: boolean; playlist?: MusicPlaylist; count: number; error?: string }> {
+    const requestedBy = { id: createdBy.id, tag: createdBy.tag, avatar: null };
+    const tracks = await musicProviderManager.resolveMany(sourceUrl, requestedBy);
+    if (tracks.length === 0) {
+      return { success: false, count: 0, error: "Impossible de résoudre cette playlist (lien invalide, ou identifiants Spotify non configurés côté bot)." };
+    }
+    const playlist = this.createPlaylist(guildId, name, createdBy, tracks);
+    return { success: true, playlist, count: tracks.length };
   }
 
   public async playPlaylist(guild: Guild, member: GuildMember | null, playlistId: string): Promise<{ success: boolean; count: number; error?: string }> {

@@ -69,6 +69,13 @@ import { youtubeActivityRoute, youtubeOAuthDisconnectRoute, youtubeOAuthExchange
 import { rssRoute } from "./routes/rss.js";
 import { signOutRoute } from "./routes/signout.js";
 import { teamMembersRoute } from "./routes/team.js";
+import {
+  sharedSpacesRoute,
+  sharedSpaceMembersRoute,
+  sharedSpaceJoinResolveRoute,
+  sharedSpaceJoinAcceptRoute,
+  sharedSpaceJoinDeclineRoute
+} from "./routes/shared-spaces.js";
 import { userDataRoute } from "./routes/user-data.js";
 import { profileRoute } from "./routes/profile.js";
 import { profilesRoute } from "./routes/profiles.js";
@@ -269,6 +276,18 @@ export const ROUTES = Object.freeze([
   route("team.members.post", "/api/team/members", teamMembersRoute, { method: "POST", service: "team", rateLimit: "strict" }),
   route("team.members.patch", "/api/team/members", teamMembersRoute, { method: "PATCH", service: "team", rateLimit: "strict" }),
   route("team.members.delete", "/api/team/members", teamMembersRoute, { method: "DELETE", service: "team", rateLimit: "strict" }),
+
+  // Shared Spaces
+  route("shared-spaces.get", "/api/shared-spaces", sharedSpacesRoute, { service: "shared-spaces" }),
+  route("shared-spaces.post", "/api/shared-spaces", sharedSpacesRoute, { method: "POST", service: "shared-spaces", rateLimit: "strict" }),
+  route("shared-spaces.delete", "/api/shared-spaces", sharedSpacesRoute, { method: "DELETE", service: "shared-spaces", rateLimit: "strict" }),
+  route("shared-spaces.members.get", "/api/shared-spaces/members", sharedSpaceMembersRoute, { service: "shared-spaces" }),
+  route("shared-spaces.members.post", "/api/shared-spaces/members", sharedSpaceMembersRoute, { method: "POST", service: "shared-spaces", rateLimit: "strict" }),
+  route("shared-spaces.members.patch", "/api/shared-spaces/members", sharedSpaceMembersRoute, { method: "PATCH", service: "shared-spaces", rateLimit: "strict" }),
+  route("shared-spaces.members.delete", "/api/shared-spaces/members", sharedSpaceMembersRoute, { method: "DELETE", service: "shared-spaces", rateLimit: "strict" }),
+  route("shared-spaces.join.resolve", "/api/shared-spaces/join", sharedSpaceJoinResolveRoute, { public: true, service: "shared-spaces", rateLimit: "standard" }),
+  route("shared-spaces.join.accept", "/api/shared-spaces/join/accept", sharedSpaceJoinAcceptRoute, { method: "POST", service: "shared-spaces", rateLimit: "strict" }),
+  route("shared-spaces.join.decline", "/api/shared-spaces/join/decline", sharedSpaceJoinDeclineRoute, { method: "POST", service: "shared-spaces", rateLimit: "strict" }),
 
   // User data (spaces, flows, interactions)
   route("user-data.spaces", "/api/user-data/spaces", userDataRoute, { service: "user-data", action: "space" }),

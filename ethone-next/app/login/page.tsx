@@ -120,7 +120,14 @@ export default function LoginPage() {
     if (authState === "success" && session && !successRedirected.current) {
       successRedirected.current = true;
       authLog("Redirecting to app dashboard");
-      const timer = setTimeout(() => router.replace("/"), 750);
+      // `next` (e.g. from a shared-space invite link) is read straight off
+      // window.location rather than useSearchParams() so this page doesn't
+      // need a Suspense boundary just for one param. Only a same-origin
+      // relative path we actually expect is honoured — anything else falls
+      // back to "/", never an open redirect to an arbitrary URL.
+      const nextParam = typeof window !== "undefined" ? new URLSearchParams(window.location.search).get("next") || "" : "";
+      const safeNext = nextParam.startsWith("/spaces/join") ? nextParam : "/";
+      const timer = setTimeout(() => router.replace(safeNext), 750);
       return () => clearTimeout(timer);
     }
   }, [authState, session, router]);

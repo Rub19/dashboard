@@ -26339,4 +26339,57 @@ CHANGELOG_BY_LANG.en.unshift(v12141_en);
 CHANGELOG_BY_LANG.es.unshift(v12141_es);
 CHANGELOG_BY_LANG.de.unshift(v12141_de);
 
+const v12142_fr: ChangelogEntry = {
+  version: "v1.21.42",
+  date: "2026-09-13",
+  title: "Espaces partages : liste de taches partagee avec un proche",
+  items: [
+    "Nouvel onglet Partages sur la page Spaces : cree un espace, invite quelqu'un par e-mail, et partagez une liste de taches en temps reel (liste de courses, projet commun...).",
+    "Vraie invitation de bout en bout, construite pour de vrai (pas un stub) : e-mail reel envoye, page /spaces/join qui vous fait passer par la connexion si besoin, et l'acceptation verifie que l'adresse e-mail du compte connecte correspond bien a celle invitee avant de lier l'invitation a votre compte.",
+    "La revocation d'un membre coupe reellement son acces des la prochaine requete (regles de securite au niveau base de donnees, pas juste cote interface).",
+    "Phase 1 : uniquement une liste de taches partagee pour l'instant. Calendrier et notes partages, ainsi que les espaces lies a un serveur Discord, viendront dans une prochaine etape.",
+  ],
+};
+
+const v12142_en: ChangelogEntry = {
+  version: "v1.21.42",
+  date: "2026-09-13",
+  title: "Shared Spaces: a real shared task list with someone close to you",
+  items: [
+    "New Shared tab on the Spaces page: create a space, invite someone by email, and share a real-time task list (a shopping list, a joint project...).",
+    "A real end-to-end invite, actually built (not a stub): a real email is sent, a /spaces/join page walks you through logging in if needed, and acceptance checks that the signed-in account's email really matches the invited one before linking the invite to your account.",
+    "Revoking a member actually cuts their access on the very next request (database-level security rules, not just a UI check).",
+    "Phase 1: a shared task list only, for now. Shared calendar and notes, plus Discord-server-linked spaces, are coming in a later step.",
+  ],
+};
+
+const v12142_es: ChangelogEntry = {
+  version: "v1.21.42",
+  date: "2026-09-13",
+  title: "Espacios compartidos: una lista de tareas compartida de verdad",
+  items: [
+    "Nueva pestana Compartidos en la pagina Spaces: crea un espacio, invita a alguien por correo, y comparte una lista de tareas en tiempo real (lista de la compra, proyecto conjunto...).",
+    "Invitacion real de principio a fin, construida de verdad (no un simulacro): se envia un correo real, una pagina /spaces/join te guia a iniciar sesion si hace falta, y la aceptacion comprueba que el correo de la cuenta conectada coincide con el invitado antes de vincular la invitacion a tu cuenta.",
+    "Revocar a un miembro corta su acceso de verdad en la siguiente peticion (reglas de seguridad a nivel de base de datos, no solo en la interfaz).",
+    "Fase 1: solo una lista de tareas compartida por ahora. Calendario y notas compartidos, y los espacios vinculados a un servidor de Discord, llegaran en una siguiente etapa.",
+  ],
+};
+
+const v12142_de: ChangelogEntry = {
+  version: "v1.21.42",
+  date: "2026-09-13",
+  title: "Geteilte Bereiche: eine echte gemeinsame Aufgabenliste",
+  items: [
+    "Neuer Tab Geteilt auf der Spaces-Seite: einen Bereich erstellen, jemanden per E-Mail einladen und eine Aufgabenliste in Echtzeit teilen (Einkaufsliste, gemeinsames Projekt...).",
+    "Eine echte Einladung von Anfang bis Ende, tatsaechlich gebaut (kein Platzhalter): eine echte E-Mail wird verschickt, eine /spaces/join-Seite fuehrt bei Bedarf durch die Anmeldung, und die Annahme prueft, dass die E-Mail des angemeldeten Kontos wirklich mit der eingeladenen uebereinstimmt, bevor die Einladung mit dem Konto verknuepft wird.",
+    "Der Widerruf eines Mitglieds kappt dessen Zugriff wirklich bei der naechsten Anfrage (Sicherheitsregeln auf Datenbankebene, nicht nur in der Oberflaeche).",
+    "Phase 1: vorerst nur eine geteilte Aufgabenliste. Geteilter Kalender und Notizen sowie mit einem Discord-Server verknuepfte Bereiche folgen in einem spaeteren Schritt.",
+  ],
+};
+
+CHANGELOG_BY_LANG.fr.unshift(v12142_fr);
+CHANGELOG_BY_LANG.en.unshift(v12142_en);
+CHANGELOG_BY_LANG.es.unshift(v12142_es);
+CHANGELOG_BY_LANG.de.unshift(v12142_de);
+
 export const CHANGELOG = CHANGELOG_BY_LANG.fr;

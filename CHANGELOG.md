@@ -2,6 +2,17 @@
 
 Toutes les modifications notables de ce projet seront documentées dans ce fichier.
 
+## v1.21.42 — 2026-09-13
+
+**Espaces partagés (Phase 1) : liste de tâches partagée, invitation réelle de bout en bout**
+
+- Nouvelles tables Supabase `ethone_shared_spaces`, `ethone_shared_space_members`, `ethone_space_tasks` (migration `202609130001_ethone_shared_spaces.sql`) — construites séparément du système `ethone_team_members`/`ethone_file_collaborators` existant, confirmé cassé (lien d'invitation vers une route inexistante, aucun mécanisme reliant l'e-mail invité à un vrai compte, RLS de `ethone_files` ne référençant jamais les collaborateurs). Ici, la politique RLS sur `ethone_space_tasks` référence réellement la table de membres avec `status = 'active'`.
+- Nouvelles routes Worker (`worker/src/routes/shared-spaces.js`) : création/suppression d'espace, invitation/révocation/retrait de membre, résolution publique du lien d'invitation, acceptation/refus. L'acceptation vérifie que l'e-mail du JWT du compte connecté correspond bien à l'e-mail invité avant de lier l'invitation à ce compte — c'est le mécanisme qui manquait dans l'ancien système.
+- Nouveau flux `/spaces/join` : redirige vers la connexion (avec retour automatique) si l'invité n'est pas connecté, affiche le nom de l'espace, permet d'accepter ou refuser.
+- Nouvel onglet « Partagés » sur `/spaces` (l'ancien sélecteur de préréglages reste inchangé dans son propre onglet), page de détail `/spaces/[id]` avec liste des membres et liste de tâches partagée en temps réel (`lib/hooks/useSpaceTasks.ts`, calqué sur le pattern de resynchronisation temps réel déjà utilisé par `useTasks.ts`).
+- Phase 1 volontairement limitée à une liste de tâches partagée : calendrier/notes partagés et espaces liés à un serveur Discord sont explicitement reportés à une prochaine étape.
+- Validation : `tsc` 0 erreur, `eslint` 0 erreur, `build` ✓ (`/spaces`, `/spaces/join`, `/spaces/[id]` prérendues), `test:unit` 88/88 (+7 nouveaux), `worker test` 231/231 (+13 nouveaux, dont 7 tests IDOR à deux/trois identités), `audit-security` PASS (1952 fichiers). Aucun test RLS automatisé n'est possible dans cet environnement (pas de CLI Supabase/Postgres local) — la vérification RLS réelle nécessite un test manuel à deux comptes une fois déployé.
+
 ## v1.21.41 — 2026-09-13
 
 **Nouvelle page Analytics : gaming, finances, tâches et focus**

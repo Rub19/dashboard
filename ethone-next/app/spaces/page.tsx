@@ -10,6 +10,8 @@ import Input from "@/components/Input";
 import Button from "@/components/ui/Button";
 import { useToast } from "@/components/ToastProvider";
 import { useSettings } from "@/components/SettingsProvider";
+import { Tabs, TabsList, TabsTrigger, TabsContent } from "@/components/ui/Tabs";
+import SharedSpacesTab from "@/components/spaces/SharedSpacesTab";
 
 const WORKSPACE_THEMES: Record<string, { theme: string; accent: string }> = {
   personal: { theme: "obsidian", accent: "violet" },
@@ -140,7 +142,17 @@ export default function SpacesPage() {
         </span>
       </div>
 
-      <div className="min-h-0 w-full flex-1 space-y-6 overflow-y-auto p-6 pb-10 no-scrollbar">
+      <Tabs defaultValue="presets" className="flex min-h-0 flex-1 flex-col">
+        <TabsList className="mx-6 mt-1 self-start">
+          <TabsTrigger value="presets">Préréglages</TabsTrigger>
+          <TabsTrigger value="shared">Partagés</TabsTrigger>
+        </TabsList>
+
+        <TabsContent value="shared" className="min-h-0 flex-1 overflow-y-auto p-6 pb-10 no-scrollbar">
+          <SharedSpacesTab />
+        </TabsContent>
+
+        <TabsContent value="presets" className="min-h-0 w-full flex-1 space-y-6 overflow-y-auto p-6 pb-10 no-scrollbar">
       <FlatCard>
         <h2 className="mb-3 text-sm font-semibold capitalize text-[var(--foreground)]">{i18n("active")} {i18n("spaces")}</h2>
         <div className="grid grid-cols-2 gap-3 sm:grid-cols-4">
@@ -319,7 +331,8 @@ export default function SpacesPage() {
           );
         })}
       </div>
-      </div>
+        </TabsContent>
+      </Tabs>
     </div>
   );
 }

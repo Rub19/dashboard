@@ -1,3 +1,4 @@
+import { randomInt } from 'node:crypto';
 import {
   ActionRowBuilder,
   ButtonBuilder,
@@ -400,7 +401,7 @@ class GiveawayService {
     const candidates = [...validCandidateIds];
 
     while (selectedWinners.length < winnersNeeded && candidates.length > 0) {
-      const randIdx = Math.floor(Math.random() * candidates.length);
+      const randIdx = randomInt(candidates.length);
       selectedWinners.push(candidates[randIdx]);
       candidates.splice(randIdx, 1);
     }

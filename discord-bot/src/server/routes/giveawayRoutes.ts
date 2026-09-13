@@ -1,5 +1,5 @@
 import express, { Request, Response } from 'express';
-import { Client } from 'discord.js';
+import { ChannelType, Client } from 'discord.js';
 import { giveawayStorage } from '../../modules/giveaways/storage/giveawayStorage.js';
 import { giveawayService } from '../../modules/giveaways/services/giveawayService.js';
 
@@ -11,6 +11,34 @@ export function createGiveawayRouter(discordClient: Client) {
     const guildId = String(req.params.guildId);
     const overview = giveawayStorage.getOverview(guildId);
     res.json(overview);
+  });
+
+  // Salons texte du serveur (sélecteur du dashboard) — même convention que reminderRoutes.ts.
+  router.get('/channels', (req: Request, res: Response): void => {
+    const guild = discordClient.guilds.cache.get(String(req.params.guildId));
+    if (!guild) {
+      res.json({ channels: [] });
+      return;
+    }
+    const channels = guild.channels.cache
+      .filter((c) => c.type === ChannelType.GuildText || c.type === ChannelType.GuildAnnouncement)
+      .map((c) => ({ id: c.id, name: c.name }))
+      .sort((a, b) => a.name.localeCompare(b.name));
+    res.json({ channels });
+  });
+
+  // Rôles du serveur (sélecteur requis/exclu du dashboard) — même convention que welcomeRoutes.ts.
+  router.get('/roles', (req: Request, res: Response): void => {
+    const guild = discordClient.guilds.cache.get(String(req.params.guildId));
+    if (!guild) {
+      res.json({ roles: [] });
+      return;
+    }
+    const roles = guild.roles.cache
+      .filter((r) => r.name !== '@everyone')
+      .map((r) => ({ id: r.id, name: r.name, color: r.hexColor, position: r.position }))
+      .sort((a, b) => b.position - a.position);
+    res.json({ roles });
   });
 
   // 2. Liste des Giveaways

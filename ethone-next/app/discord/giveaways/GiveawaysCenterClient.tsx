@@ -1,471 +1,733 @@
 "use client";
 
-import React, { useState, useMemo } from "react";
+import { useCallback, useEffect, useMemo, useState } from "react";
+import { useSearchParams } from "next/navigation";
 import {
   Gift,
   Sparkles,
   Trophy,
   Clock,
   Users,
-  CheckCircle2,
   RefreshCw,
   Plus,
-  Trash2,
   ShieldCheck,
   Send,
-  Hash,
   Crown,
-  Sliders,
-  Zap,
   Dice5,
   Eye,
   X,
+  Ban,
 } from "lucide-react";
+import { useToast } from "@/components/ToastProvider";
+import { useDiscordOAuth, type DiscordGuild } from "@/lib/hooks/useDiscordOAuth";
+
+const BOT_API_URL = process.env.NEXT_PUBLIC_DISCORD_BOT_API || "";
+
+// Mirrors discord-bot/src/modules/giveaways/types/giveaway.ts's Giveaway/GiveawayRequirements/GiveawayParticipant —
+// this dashboard reads and writes the real backend shape, not a made-up one.
+type GiveawayStatus = "scheduled" | "active" | "paused" | "ended" | "cancelled";
+
+interface GiveawayRequirements {
+  requiredRoleIds: string[];
+  roleMode: "all" | "any";
+  excludedRoleIds: string[];
+  minAccountAgeDays: number;
+  minLevel: number;
+}
+
+interface GiveawayParticipant {
+  userId: string;
+  username: string;
+  avatarUrl: string | null;
+  joinedAt: string;
+  isEligible: boolean;
+}
 
 interface Giveaway {
   id: string;
+  guildId: string;
+  channelId: string;
+  messageId: string | null;
   prize: string;
   description: string;
-  channel: string;
   winnerCount: number;
-  hostedBy: string;
-  hostAvatar?: string;
-  endsAt: string;
+  rewardRoleId: string | null;
+  bannerUrl: string | null;
+  status: GiveawayStatus;
   createdAt: string;
-  status: "ACTIVE" | "ENDED" | "CANCELLED";
-  entriesCount: number;
-  requiredRole?: string;
-  minAccountAgeDays?: number;
-  bonusBoosterEntries?: number;
-  winners?: {
-    id: string;
-    username: string;
-    avatar: string;
-    claimed: boolean;
-  }[];
-  seed?: string;
+  endsAt: string;
+  hostedById: string;
+  hostedByTag: string;
+  requirements: GiveawayRequirements;
+  participants: GiveawayParticipant[];
+  winnerIds: string[];
+  requireClaim: boolean;
+  claimTimeoutHours: number;
+}
+
+interface GiveawayOverview {
+  activeCount: number;
+  endedCount: number;
+  totalParticipants: number;
+  totalWinners: number;
+}
+
+interface GuildChannel {
+  id: string;
+  name: string;
+}
+
+interface GuildRole {
+  id: string;
+  name: string;
+  color: string;
+}
+
+function relativeEndsAt(iso: string): string {
+  const diff = new Date(iso).getTime() - Date.now();
+  if (diff <= 0) return "Terminé";
+  const mins = Math.round(diff / 60000);
+  if (mins < 60) return `Dans ${mins} min`;
+  if (mins < 1440) return `Dans ${Math.round(mins / 60)} h`;
+  return `Dans ${Math.round(mins / 1440)} j`;
+}
+
+function winnerNames(gw: Giveaway): string[] {
+  return gw.winnerIds.map((id) => gw.participants.find((p) => p.userId === id)?.username || id);
 }
 
 export default function GiveawaysCenterClient() {
-  const [activeTab, setActiveTab] = useState<
-    "active" | "create" | "history" | "fairness" | "settings"
-  >("active");
+  const searchParams = useSearchParams();
+  const { success, error: showError } = useToast();
+  const { profile } = useDiscordOAuth();
 
-  const [giveaways, setGiveaways] = useState<Giveaway[]>([
-    {
-      id: "gw-1",
-      prize: "Discord Nitro (1 An) + Rôle VIP",
-      description: "Concours spécial célébration des 5,000 membres ! Tentez de remporter 1 an de Nitro complet et tous les avantages VIP.",
-      channel: "🎉-giveaways",
-      winnerCount: 2,
-      hostedBy: "Staff ETHONE",
-      endsAt: "Dans 2 jours (18h)",
-      createdAt: "Il y a 1 jour",
-      status: "ACTIVE",
-      entriesCount: 342,
-      requiredRole: "Membre Vérifié",
-      minAccountAgeDays: 7,
-      bonusBoosterEntries: 3,
-      seed: "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
-    },
-    {
-      id: "gw-2",
-      prize: "Carte Cadeau Steam 50€",
-      description: "Pour participer, ayez au moins le rôle Actif ou soyez Nitro Booster du serveur.",
-      channel: "🎉-giveaways",
-      winnerCount: 1,
-      hostedBy: "AlexDev#0001",
-      endsAt: "Dans 6 heures",
-      createdAt: "Il y a 3 jours",
-      status: "ACTIVE",
-      entriesCount: 189,
-      requiredRole: "Niveau 10+",
-      minAccountAgeDays: 14,
-      bonusBoosterEntries: 2,
-      seed: "a4f5c2298bc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852c991",
-    },
-    {
-      id: "gw-3",
-      prize: "Clé de Jeu AAA : Cyberpunk 2077 Ultimate",
-      description: "Offert par la communauté pour les membres du club Tech & Gaming.",
-      channel: "🎮-jeux-concours",
-      winnerCount: 1,
-      hostedBy: "ShadowGamer#1337",
-      endsAt: "Dans 4 jours",
-      createdAt: "Il y a 4 heures",
-      status: "ACTIVE",
-      entriesCount: 94,
-      requiredRole: "Gamer Club",
-      seed: "f1a2b3c4d5e6f7a8b9c0d1e2f3a4b5c6d7e8f9a0b1c2d3e4f5a6b7c8d9e0f1a2",
-    },
-    {
-      id: "gw-4",
-      prize: "Discord Nitro (1 Mois)",
-      description: "Tirage flash du week-end !",
-      channel: "🎉-giveaways",
-      winnerCount: 1,
-      hostedBy: "Staff ETHONE",
-      endsAt: "Terminé hier",
-      createdAt: "Il y a 3 jours",
-      status: "ENDED",
-      entriesCount: 260,
-      winners: [
-        {
-          id: "usr-4412",
-          username: "Kylian_Gamer#9912",
-          avatar: "https://images.unsplash.com/photo-1535713875002-d1d0cf377fde?w=60&auto=format&fit=crop&q=80",
-          claimed: true,
-        },
-      ],
-      seed: "8d969eef6ecad3c29a3a629280e686cf0c3f5d5a86aff3ca12020c923adc6c92",
-    },
-    {
-      id: "gw-5",
-      prize: "Casque Audio HyperX Cloud II",
-      description: "Grand concours anniversaire du serveur ETHONE.",
-      channel: "🎉-giveaways",
-      winnerCount: 1,
-      hostedBy: "Owner ETHONE",
-      endsAt: "Terminé le 28/08",
-      createdAt: "Il y a 7 jours",
-      status: "ENDED",
-      entriesCount: 618,
-      winners: [
-        {
-          id: "usr-9901",
-          username: "Sarah_T#2048",
-          avatar: "https://images.unsplash.com/photo-1494790108377-be9c29b29330?w=60&auto=format&fit=crop&q=80",
-          claimed: true,
-        },
-      ],
-      seed: "ca978112ca1bbdcafac231b39a23dc4da786eff8147c4e72b9807785afee48bb",
-    },
-  ]);
+  const manageableGuilds: DiscordGuild[] = useMemo(() => {
+    if (!profile?.guilds) return [];
+    return profile.guilds.filter((g) => {
+      if (g.owner) return true;
+      if (!g.permissions) return false;
+      const num = Number(g.permissions);
+      return (num & 8) === 8 || (num & 32) === 32;
+    });
+  }, [profile?.guilds]);
 
-  // Create Form State
+  const queryGuildId = searchParams.get("guildId");
+  const [selectedGuild, setSelectedGuild] = useState<DiscordGuild | null>(null);
+
+  useEffect(() => {
+    if (manageableGuilds.length === 0) return;
+    if (queryGuildId) {
+      const match = manageableGuilds.find((g) => g.id === queryGuildId);
+      if (match) {
+        setSelectedGuild(match);
+        return;
+      }
+    }
+    if (!selectedGuild) setSelectedGuild(manageableGuilds[0]);
+  }, [manageableGuilds, queryGuildId, selectedGuild]);
+
+  const [activeTab, setActiveTab] = useState<"active" | "create" | "history" | "fairness">("active");
+  const [overview, setOverview] = useState<GiveawayOverview | null>(null);
+  const [giveaways, setGiveaways] = useState<Giveaway[]>([]);
+  const [channels, setChannels] = useState<GuildChannel[]>([]);
+  const [roles, setRoles] = useState<GuildRole[]>([]);
+  const [loading, setLoading] = useState(false);
+  const [saving, setSaving] = useState(false);
+  const [offline, setOffline] = useState(false);
+
+  const load = useCallback(async () => {
+    if (!selectedGuild) return;
+    if (!BOT_API_URL) {
+      setOffline(true);
+      return;
+    }
+    setLoading(true);
+    setOffline(false);
+    try {
+      const base = `${BOT_API_URL}/api/guilds/${selectedGuild.id}/giveaways`;
+      const [ovRes, listRes, chRes, roleRes] = await Promise.all([
+        fetch(`${base}/overview`, { credentials: "include" }),
+        fetch(`${base}/list`, { credentials: "include" }),
+        fetch(`${base}/channels`, { credentials: "include" }),
+        fetch(`${base}/roles`, { credentials: "include" }),
+      ]);
+      if (!ovRes.ok) throw new Error("overview");
+      setOverview(await ovRes.json());
+      if (listRes.ok) setGiveaways((await listRes.json()).giveaways ?? []);
+      if (chRes.ok) setChannels((await chRes.json()).channels ?? []);
+      if (roleRes.ok) setRoles((await roleRes.json()).roles ?? []);
+    } catch {
+      setOffline(true);
+    } finally {
+      setLoading(false);
+    }
+  }, [selectedGuild]);
+
+  useEffect(() => {
+    setGiveaways([]);
+    setOverview(null);
+    load();
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [selectedGuild]);
+
+  // Create form state
   const [formPrize, setFormPrize] = useState("");
   const [formDesc, setFormDesc] = useState("");
-  const [formChannel, setFormChannel] = useState("giveaways");
+  const [formChannelId, setFormChannelId] = useState("");
   const [formWinners, setFormWinners] = useState(1);
   const [formDurationValue, setFormDurationValue] = useState(24);
   const [formDurationUnit, setFormDurationUnit] = useState<"h" | "d">("h");
-  const [formReqRole, setFormReqRole] = useState("Tous les membres");
+  const [formRequiredRoleId, setFormRequiredRoleId] = useState("");
   const [formMinAge, setFormMinAge] = useState(0);
-  const [formBoosterBonus, setFormBoosterBonus] = useState(2);
-  const [formPingRole, setFormPingRole] = useState("@everyone");
+  const [formMinLevel, setFormMinLevel] = useState(0);
+  const [formRewardRoleId, setFormRewardRoleId] = useState("");
+  const [formRequireClaim, setFormRequireClaim] = useState(false);
+  const [formClaimTimeoutHours, setFormClaimTimeoutHours] = useState(24);
 
-  // Reroll Modal State
-  const [rerollModalOpen, setRerollModalOpen] = useState(false);
-  const [selectedGiveawayForReroll, setSelectedGiveawayForReroll] = useState<Giveaway | null>(null);
-  const [rerollNewWinner, setRerollNewWinner] = useState<string | null>(null);
-  const [toastMessage, setToastMessage] = useState<string | null>(null);
+  useEffect(() => {
+    if (!formChannelId && channels[0]) setFormChannelId(channels[0].id);
+  }, [channels, formChannelId]);
 
-  const showToast = (msg: string) => {
-    setToastMessage(msg);
-    setTimeout(() => setToastMessage(null), 3500);
-  };
+  // Reroll modal state
+  const [rerollTarget, setRerollTarget] = useState<Giveaway | null>(null);
+  const [rerollBusy, setRerollBusy] = useState(false);
 
-  const handleCreate = (e: React.FormEvent) => {
+  const activeGiveaways = useMemo(() => giveaways.filter((g) => g.status === "active"), [giveaways]);
+  const endedGiveaways = useMemo(() => giveaways.filter((g) => g.status === "ended"), [giveaways]);
+
+  async function handleCreate(e: React.FormEvent) {
     e.preventDefault();
-    if (!formPrize.trim()) return;
-
-    const newGw: Giveaway = {
-      id: `gw-${Date.now().toString(36)}`,
-      prize: formPrize,
-      description: formDesc || "Cliquez sur 🎉 pour participer au tirage au sort !",
-      channel: formChannel.startsWith("#") ? formChannel : `#${formChannel}`,
-      winnerCount: formWinners,
-      hostedBy: "Vous (Administrateur)",
-      endsAt: `Dans ${formDurationValue} ${formDurationUnit === "h" ? "heures" : "jours"}`,
-      createdAt: "À l'instant",
-      status: "ACTIVE",
-      entriesCount: 0,
-      requiredRole: formReqRole !== "Tous les membres" ? formReqRole : undefined,
-      minAccountAgeDays: formMinAge > 0 ? formMinAge : undefined,
-      bonusBoosterEntries: formBoosterBonus > 0 ? formBoosterBonus : undefined,
-      seed: Math.random().toString(36).substring(2, 15) + Math.random().toString(36).substring(2, 15),
-    };
-
-    setGiveaways([newGw, ...giveaways]);
-    setFormPrize("");
-    setFormDesc("");
-    setActiveTab("active");
-    showToast(`Le concours "${newGw.prize}" a été publié avec succès sur Discord !`);
-  };
-
-  const handleEndNow = (gwId: string) => {
-    setGiveaways((prev) =>
-      prev.map((g) => {
-        if (g.id === gwId) {
-          return {
-            ...g,
-            status: "ENDED",
-            endsAt: "Terminé à l'instant",
-            winners: [
-              {
-                id: "usr-lucky",
-                username: "LuckyWinner#7721",
-                avatar: "https://images.unsplash.com/photo-1535713875002-d1d0cf377fde?w=60&auto=format&fit=crop&q=80",
-                claimed: false,
-              },
-            ],
-          };
-        }
-        return g;
-      })
-    );
-    showToast("Le concours a été clôturé et le gagnant a été tiré au sort !");
-  };
-
-  const handleTriggerReroll = (gw: Giveaway) => {
-    setSelectedGiveawayForReroll(gw);
-    setRerollNewWinner(null);
-    setRerollModalOpen(true);
-  };
-
-  const executeReroll = () => {
-    const candidates = [
-      "Nocturne#4412",
-      "Vortex_Gamer#1109",
-      "Luna_Tech#8892",
-      "Kévin99#3312",
-      "Zephyr#0042",
-    ];
-    const picked = candidates[Math.floor(Math.random() * candidates.length)];
-    setRerollNewWinner(picked);
-
-    if (selectedGiveawayForReroll) {
-      setGiveaways((prev) =>
-        prev.map((g) => {
-          if (g.id === selectedGiveawayForReroll.id) {
-            return {
-              ...g,
-              winners: [
-                {
-                  id: `usr-${Date.now()}`,
-                  username: picked,
-                  avatar: "https://images.unsplash.com/photo-1570295999919-56ceb5ecca61?w=60&auto=format&fit=crop&q=80",
-                  claimed: false,
-                },
-              ],
-            };
-          }
-          return g;
-        })
-      );
+    if (!selectedGuild) return;
+    if (!formPrize.trim() || !formChannelId) {
+      showError("Champs manquants", "Le lot et le salon sont obligatoires.");
+      return;
     }
-  };
+    const durationMinutes = formDurationValue * (formDurationUnit === "h" ? 60 : 1440);
+    setSaving(true);
+    try {
+      const res = await fetch(`${BOT_API_URL}/api/guilds/${selectedGuild.id}/giveaways/create`, {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        credentials: "include",
+        body: JSON.stringify({
+          channelId: formChannelId,
+          prize: formPrize,
+          description: formDesc,
+          winnerCount: formWinners,
+          durationMinutes,
+          rewardRoleId: formRewardRoleId || null,
+          requirements: {
+            requiredRoleIds: formRequiredRoleId ? [formRequiredRoleId] : [],
+            roleMode: "any",
+            excludedRoleIds: [],
+            minAccountAgeDays: formMinAge,
+            minLevel: formMinLevel,
+          },
+          requireClaim: formRequireClaim,
+          claimTimeoutHours: formClaimTimeoutHours,
+        }),
+      });
+      const data = await res.json();
+      if (!res.ok) throw new Error(data?.error || "Échec de la création");
+      setFormPrize("");
+      setFormDesc("");
+      setActiveTab("active");
+      success("Concours publié", `"${formPrize}" a été publié sur Discord.`);
+      await load();
+    } catch (err) {
+      showError("Échec", err instanceof Error ? err.message : "Impossible de créer le concours.");
+    } finally {
+      setSaving(false);
+    }
+  }
 
-  const activeGiveaways = useMemo(() => giveaways.filter((g) => g.status === "ACTIVE"), [giveaways]);
-  const endedGiveaways = useMemo(() => giveaways.filter((g) => g.status === "ENDED"), [giveaways]);
+  async function handleEndNow(gwId: string) {
+    if (!selectedGuild) return;
+    try {
+      const res = await fetch(`${BOT_API_URL}/api/guilds/${selectedGuild.id}/giveaways/${gwId}/end`, {
+        method: "POST",
+        credentials: "include",
+      });
+      const data = await res.json();
+      if (!res.ok) throw new Error(data?.error);
+      success("Concours clôturé", "Le(s) gagnant(s) ont été tirés au sort.");
+      await load();
+    } catch (err) {
+      showError("Échec", err instanceof Error ? err.message : "Impossible de clôturer le concours.");
+    }
+  }
+
+  async function handleCancel(gwId: string, prize: string) {
+    if (!selectedGuild) return;
+    try {
+      const res = await fetch(`${BOT_API_URL}/api/guilds/${selectedGuild.id}/giveaways/${gwId}/cancel`, {
+        method: "POST",
+        credentials: "include",
+      });
+      const data = await res.json();
+      if (!res.ok || !data?.success) throw new Error(data?.error);
+      success("Concours annulé", `"${prize}" a été annulé.`);
+      await load();
+    } catch (err) {
+      showError("Échec", err instanceof Error ? err.message : "Impossible d'annuler le concours.");
+    }
+  }
+
+  async function executeReroll(count: number) {
+    if (!selectedGuild || !rerollTarget) return;
+    setRerollBusy(true);
+    try {
+      const res = await fetch(`${BOT_API_URL}/api/guilds/${selectedGuild.id}/giveaways/${rerollTarget.id}/reroll`, {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        credentials: "include",
+        body: JSON.stringify({ count }),
+      });
+      const data = await res.json();
+      if (!res.ok) throw new Error(data?.error);
+      success("Nouveau tirage effectué", "Le(s) nouveau(x) gagnant(s) ont été annoncés sur Discord.");
+      setRerollTarget(null);
+      await load();
+    } catch (err) {
+      showError("Échec du reroll", err instanceof Error ? err.message : "Impossible de retirer un gagnant.");
+    } finally {
+      setRerollBusy(false);
+    }
+  }
+
+  if (!BOT_API_URL || offline) {
+    return (
+      <div className="flex h-full items-center justify-center p-8">
+        <div className="max-w-sm rounded-[var(--panel-radius)] border border-[var(--panel-border)] bg-[var(--surface-raised)]/40 p-6 text-center">
+          <Gift className="mx-auto mb-3 h-8 w-8 text-[var(--text-muted)]" />
+          <p className="text-sm text-[var(--text-muted)]">
+            {!BOT_API_URL
+              ? "Le serveur du bot n'est pas configuré ici."
+              : "Impossible de joindre le bot Discord pour le moment."}
+          </p>
+        </div>
+      </div>
+    );
+  }
 
   return (
-    <div className="h-full overflow-y-auto os-scroll [overscroll-behavior:contain] bg-[var(--bg-main)] text-neutral-100 p-4 md:p-8">
+    <div className="h-full overflow-y-auto os-scroll bg-[var(--bg-main)] text-[var(--text-primary)] p-4 md:p-8">
       <div className="max-w-7xl mx-auto space-y-8">
-        {/* Top Header */}
+        {/* Header */}
         <div className="flex flex-col md:flex-row md:items-center justify-between gap-4">
-          <div>
-            <div className="flex items-center gap-3">
-              <div className="p-2.5 bg-rose-500/15 text-rose-400 rounded-xl border border-rose-500/30 shadow-sm">
-                <Gift className="w-6 h-6" />
-              </div>
-              <div>
-                <h1 className="text-2xl font-bold text-white tracking-tight flex items-center gap-2">
-                  ETHONE Giveaways & Tirages
-                  <span className="px-2 py-0.5 rounded text-[11px] font-semibold bg-emerald-500/10 text-emerald-400 border border-emerald-500/20">
-                    🟢 Moteur Actif v2.4
-                  </span>
-                </h1>
-                <p className="text-xs text-neutral-400">
-                  Concours automatisés, tirages cryptographiques vérifiables, conditions d'accès et distribution équitable.
-                </p>
-              </div>
+          <div className="flex items-center gap-3">
+            <div className="p-2.5 bg-rose-500/15 text-rose-400 rounded-[var(--inset-radius)] border border-rose-500/30">
+              <Gift className="w-6 h-6" />
+            </div>
+            <div>
+              <h1 className="text-2xl font-bold tracking-tight">Giveaways</h1>
+              <p className="text-xs text-[var(--text-muted)]">
+                Concours Discord avec conditions d'entrée, tirage aléatoire sécurisé, reroll et réclamation de lot.
+              </p>
             </div>
           </div>
-
           <div className="flex items-center gap-2.5 flex-wrap">
             <button
               onClick={() => setActiveTab("create")}
-              className="px-4 py-2 rounded-xl bg-rose-600 hover:bg-rose-500 text-white text-xs font-semibold flex items-center gap-2 shadow-sm transition-all cursor-pointer"
+              className="px-4 py-2 rounded-[var(--inset-radius)] bg-rose-600 hover:bg-rose-500 text-white text-xs font-semibold flex items-center gap-2 cursor-pointer"
             >
               <Plus className="w-4 h-4" />
-              Créer un Concours
+              Créer un concours
             </button>
             <button
-              onClick={() => {
-                if (endedGiveaways.length > 0) {
-                  handleTriggerReroll(endedGiveaways[0]);
-                } else {
-                  showToast("Aucun concours terminé disponible pour un reroll.");
-                }
-              }}
-              className="px-3.5 py-2 rounded-xl border border-neutral-800 bg-neutral-900 hover:bg-neutral-800 text-xs font-semibold text-neutral-200 flex items-center gap-2 transition-colors cursor-pointer"
+              onClick={load}
+              disabled={loading}
+              className="px-3.5 py-2 rounded-[var(--inset-radius)] border border-[var(--panel-border)] bg-[var(--surface-raised)] hover:bg-[var(--surface)] text-xs font-semibold flex items-center gap-2 transition-colors cursor-pointer disabled:opacity-50"
             >
-              <RefreshCw className="w-4 h-4 text-rose-400" />
-              Reroll Rapide
+              <RefreshCw className={`w-4 h-4 ${loading ? "animate-spin" : ""}`} />
+              Actualiser
             </button>
           </div>
         </div>
 
-        {/* Toast Notification */}
-        {toastMessage && (
-          <div className="p-3 bg-emerald-500/10 border border-emerald-500/30 rounded-xl flex items-center justify-between text-xs text-emerald-300 animate-fadeIn">
-            <span className="flex items-center gap-2 font-medium">
-              <CheckCircle2 className="w-4 h-4 text-emerald-400" />
-              {toastMessage}
-            </span>
-            <button onClick={() => setToastMessage(null)} className="text-emerald-400 hover:text-white">
-              <X className="w-4 h-4" />
-            </button>
+        {manageableGuilds.length > 1 && (
+          <div className="flex flex-wrap gap-1.5">
+            {manageableGuilds.map((g) => (
+              <button
+                key={g.id}
+                onClick={() => setSelectedGuild(g)}
+                className={`px-3 py-1.5 rounded-[var(--inset-radius)] text-xs font-semibold cursor-pointer ${
+                  selectedGuild?.id === g.id
+                    ? "bg-[var(--accent-primary)] text-[var(--accent-contrast)]"
+                    : "border border-[var(--panel-border)] text-[var(--text-muted)] hover:text-[var(--text-primary)]"
+                }`}
+              >
+                {g.name}
+              </button>
+            ))}
           </div>
         )}
 
-        {/* 6 Metric KPI Cards */}
-        <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-6 gap-3">
-          <div className="bg-neutral-900 border border-neutral-800 rounded-2xl p-4 space-y-1">
-            <span className="text-xs text-neutral-500 font-medium">Concours Actifs</span>
-            <p className="text-2xl font-bold text-rose-400">{activeGiveaways.length}</p>
-            <span className="text-[11px] text-emerald-400">En cours sur Discord</span>
+        {/* KPI tiles — only what's honestly computable from the real overview */}
+        <div className="grid grid-cols-2 sm:grid-cols-4 gap-3">
+          <div className="bg-[var(--surface-raised)]/40 border border-[var(--panel-border)] rounded-[var(--panel-radius)] p-4 space-y-1">
+            <span className="text-xs text-[var(--text-muted)] font-medium">Concours actifs</span>
+            <p className="text-2xl font-bold text-rose-400">{overview?.activeCount ?? "—"}</p>
           </div>
-
-          <div className="bg-neutral-900 border border-neutral-800 rounded-2xl p-4 space-y-1">
-            <span className="text-xs text-neutral-500 font-medium">Lots Distribués</span>
-            <p className="text-2xl font-bold text-white">48</p>
-            <span className="text-[11px] text-neutral-400">Depuis le lancement</span>
+          <div className="bg-[var(--surface-raised)]/40 border border-[var(--panel-border)] rounded-[var(--panel-radius)] p-4 space-y-1">
+            <span className="text-xs text-[var(--text-muted)] font-medium">Concours terminés</span>
+            <p className="text-2xl font-bold">{overview?.endedCount ?? "—"}</p>
           </div>
-
-          <div className="bg-neutral-900 border border-neutral-800 rounded-2xl p-4 space-y-1">
-            <span className="text-xs text-neutral-500 font-medium">Total Participations</span>
-            <p className="text-2xl font-bold text-amber-400">2,840</p>
-            <span className="text-[11px] text-emerald-400">+14% ce mois-ci</span>
+          <div className="bg-[var(--surface-raised)]/40 border border-[var(--panel-border)] rounded-[var(--panel-radius)] p-4 space-y-1">
+            <span className="text-xs text-[var(--text-muted)] font-medium">Participations</span>
+            <p className="text-2xl font-bold text-amber-400">{overview?.totalParticipants ?? "—"}</p>
           </div>
-
-          <div className="bg-neutral-900 border border-neutral-800 rounded-2xl p-4 space-y-1">
-            <span className="text-xs text-neutral-500 font-medium">Membres Uniques</span>
-            <p className="text-2xl font-bold text-indigo-400">912</p>
-            <span className="text-[11px] text-neutral-400">Participants distincts</span>
-          </div>
-
-          <div className="bg-neutral-900 border border-neutral-800 rounded-2xl p-4 space-y-1">
-            <span className="text-xs text-neutral-500 font-medium">Valeur Cumulée</span>
-            <p className="text-2xl font-bold text-emerald-400">1,450 €</p>
-            <span className="text-[11px] text-neutral-400">Lots offerts</span>
-          </div>
-
-          <div className="bg-neutral-900 border border-neutral-800 rounded-2xl p-4 space-y-1">
-            <span className="text-xs text-neutral-500 font-medium">Tirage Impartial</span>
-            <p className="text-2xl font-bold text-cyan-400">100%</p>
-            <span className="text-[11px] text-cyan-400">SHA-256 CSPRNG</span>
+          <div className="bg-[var(--surface-raised)]/40 border border-[var(--panel-border)] rounded-[var(--panel-radius)] p-4 space-y-1">
+            <span className="text-xs text-[var(--text-muted)] font-medium">Gagnants tirés</span>
+            <p className="text-2xl font-bold text-emerald-400">{overview?.totalWinners ?? "—"}</p>
           </div>
         </div>
 
-        {/* Navigation Tabs */}
-        <div className="flex border-b border-neutral-800 gap-2 overflow-x-auto pb-1">
+        {/* Tabs */}
+        <div className="flex border-b border-[var(--panel-border)] gap-2 overflow-x-auto pb-1">
           {[
-            { id: "active", label: `En Cours (${activeGiveaways.length})`, icon: Gift },
-            { id: "create", label: "Créateur de Concours", icon: Plus },
-            { id: "history", label: `Historique & Reroll (${endedGiveaways.length})`, icon: Trophy },
-            { id: "fairness", label: "Algorithme & Anti-Triche", icon: ShieldCheck },
-            { id: "settings", label: "Paramètres & Templates", icon: Sliders },
+            { id: "active", label: `En cours (${activeGiveaways.length})`, icon: Gift },
+            { id: "create", label: "Créer", icon: Plus },
+            { id: "history", label: `Historique (${endedGiveaways.length})`, icon: Trophy },
+            { id: "fairness", label: "Tirage & Éligibilité", icon: ShieldCheck },
           ].map((tab) => {
             const Icon = tab.icon;
             const isActive = activeTab === tab.id;
             return (
               <button
                 key={tab.id}
-                onClick={() => setActiveTab(tab.id as any)}
-                className={`px-4 py-2.5 text-xs font-semibold rounded-t-xl transition-colors flex items-center gap-2 whitespace-nowrap cursor-pointer ${
-                  isActive
-                    ? "bg-neutral-900 text-white border-b-2 border-rose-500"
-                    : "text-neutral-400 hover:text-white"
+                onClick={() => setActiveTab(tab.id as typeof activeTab)}
+                className={`px-4 py-2.5 text-xs font-semibold rounded-t-[var(--inset-radius)] transition-colors flex items-center gap-2 whitespace-nowrap cursor-pointer ${
+                  isActive ? "bg-[var(--surface-raised)] border-b-2 border-rose-500" : "text-[var(--text-muted)] hover:text-[var(--text-primary)]"
                 }`}
               >
-                <Icon className={`w-4 h-4 ${isActive ? "text-rose-400" : "text-neutral-500"}`} />
+                <Icon className={`w-4 h-4 ${isActive ? "text-rose-400" : "text-[var(--text-muted)]"}`} />
                 {tab.label}
               </button>
             );
           })}
         </div>
 
-        {/* TAB 1: En Cours */}
+        {/* TAB: Active */}
         {activeTab === "active" && (
           <div className="space-y-4">
-            <div className="flex items-center justify-between">
-              <h2 className="text-sm font-bold text-white flex items-center gap-2">
-                <Gift className="w-4 h-4 text-rose-400" />
-                Concours actuellement ouverts aux votes ({activeGiveaways.length})
-              </h2>
-              <span className="text-xs text-neutral-500">Mise à jour en temps réel via Discord Gateway</span>
-            </div>
-
+            {activeGiveaways.length === 0 && !loading && (
+              <p className="py-10 text-center text-sm text-[var(--text-muted)]">Aucun concours en cours.</p>
+            )}
             <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
-              {activeGiveaways.map((gw) => (
-                <div
-                  key={gw.id}
-                  className="bg-neutral-900 border border-neutral-800 hover:border-rose-500/40 rounded-2xl p-5 space-y-4 transition-all shadow-lg flex flex-col justify-between"
-                >
-                  <div className="space-y-3">
-                    <div className="flex items-start justify-between gap-2">
-                      <span className="px-2.5 py-1 rounded-lg text-[10px] font-semibold bg-rose-500/10 text-rose-400 border border-rose-500/20 flex items-center gap-1.5">
-                        <Clock className="w-3 h-3" />
-                        {gw.endsAt}
-                      </span>
-                      <span className="px-2 py-0.5 rounded text-[10px] font-mono text-neutral-400 bg-neutral-800 border border-neutral-700">
-                        #{gw.channel}
-                      </span>
-                    </div>
-
-                    <div>
-                      <h3 className="text-base font-bold text-white group-hover:text-rose-400 transition-colors">
-                        {gw.prize}
-                      </h3>
-                      <p className="text-xs text-neutral-400 line-clamp-2 mt-1">
-                        {gw.description}
-                      </p>
-                    </div>
-
-                    <div className="pt-2 border-t border-neutral-800/80 grid grid-cols-2 gap-2 text-xs">
-                      <div>
-                        <span className="text-[10px] text-neutral-500 uppercase tracking-wider block">Gagnants</span>
-                        <span className="font-semibold text-white flex items-center gap-1">
-                          <Trophy className="w-3.5 h-3.5 text-amber-400" />
-                          {gw.winnerCount} place{gw.winnerCount > 1 ? "s" : ""}
+              {activeGiveaways.map((gw) => {
+                const channelName = channels.find((c) => c.id === gw.channelId)?.name;
+                const requiredRoleNames = gw.requirements.requiredRoleIds.map((id) => roles.find((r) => r.id === id)?.name || id);
+                return (
+                  <div key={gw.id} className="bg-[var(--surface-raised)]/40 border border-[var(--panel-border)] hover:border-rose-500/40 rounded-[var(--panel-radius)] p-5 space-y-4 transition-all flex flex-col justify-between">
+                    <div className="space-y-3">
+                      <div className="flex items-start justify-between gap-2">
+                        <span className="px-2.5 py-1 rounded-[var(--inset-radius)] text-[10px] font-semibold bg-rose-500/10 text-rose-400 border border-rose-500/20 flex items-center gap-1.5">
+                          <Clock className="w-3 h-3" />
+                          {relativeEndsAt(gw.endsAt)}
                         </span>
+                        {channelName && (
+                          <span className="px-2 py-0.5 rounded text-[10px] font-mono text-[var(--text-muted)] bg-[var(--surface)] border border-[var(--panel-border)]">
+                            #{channelName}
+                          </span>
+                        )}
                       </div>
                       <div>
-                        <span className="text-[10px] text-neutral-500 uppercase tracking-wider block">Participations</span>
-                        <span className="font-semibold text-rose-400 flex items-center gap-1 font-mono">
-                          <Users className="w-3.5 h-3.5 text-rose-400" />
-                          {gw.entriesCount} entrées
-                        </span>
+                        <h3 className="text-base font-bold">{gw.prize}</h3>
+                        {gw.description && <p className="text-xs text-[var(--text-muted)] line-clamp-2 mt-1">{gw.description}</p>}
                       </div>
+                      <div className="pt-2 border-t border-[var(--panel-border)] grid grid-cols-2 gap-2 text-xs">
+                        <div>
+                          <span className="text-[10px] text-[var(--text-muted)] uppercase tracking-wider block">Gagnants</span>
+                          <span className="font-semibold flex items-center gap-1">
+                            <Trophy className="w-3.5 h-3.5 text-amber-400" />
+                            {gw.winnerCount} place{gw.winnerCount > 1 ? "s" : ""}
+                          </span>
+                        </div>
+                        <div>
+                          <span className="text-[10px] text-[var(--text-muted)] uppercase tracking-wider block">Participants</span>
+                          <span className="font-semibold text-rose-400 flex items-center gap-1 font-mono">
+                            <Users className="w-3.5 h-3.5" />
+                            {gw.participants.length}
+                          </span>
+                        </div>
+                      </div>
+                      {requiredRoleNames.length > 0 && (
+                        <div className="p-2 rounded-[var(--inset-radius)] bg-[var(--surface)] border border-[var(--panel-border)] text-[11px] flex items-center gap-2">
+                          <ShieldCheck className="w-3.5 h-3.5 text-indigo-400 shrink-0" />
+                          <span>Requis : <strong className="text-indigo-300">{requiredRoleNames.join(", ")}</strong></span>
+                        </div>
+                      )}
                     </div>
+                    <div className="pt-3 border-t border-[var(--panel-border)] flex items-center justify-between gap-2">
+                      <button
+                        onClick={() => handleEndNow(gw.id)}
+                        className="px-3 py-1.5 rounded-[var(--inset-radius)] bg-[var(--surface)] hover:bg-[var(--surface-raised)] text-xs font-semibold transition-colors flex items-center gap-1.5 cursor-pointer"
+                      >
+                        <Trophy className="w-3 h-3 text-amber-400" />
+                        Tirer maintenant
+                      </button>
+                      <button
+                        onClick={() => handleCancel(gw.id, gw.prize)}
+                        className="p-1.5 rounded-[var(--inset-radius)] text-[var(--text-muted)] hover:text-rose-400 hover:bg-rose-500/10 transition-colors cursor-pointer"
+                        title="Annuler le concours"
+                      >
+                        <Ban className="h-4 w-4" />
+                      </button>
+                    </div>
+                  </div>
+                );
+              })}
+            </div>
+          </div>
+        )}
 
-                    {gw.requiredRole && (
-                      <div className="p-2 rounded-xl bg-neutral-950 border border-neutral-800 text-[11px] text-neutral-300 flex items-center gap-2">
-                        <ShieldCheck className="w-3.5 h-3.5 text-indigo-400 shrink-0" />
-                        <span>Requis : <strong className="text-indigo-300">{gw.requiredRole}</strong></span>
+        {/* TAB: Create */}
+        {activeTab === "create" && (
+          <div className="grid grid-cols-1 lg:grid-cols-12 gap-6">
+            <form onSubmit={handleCreate} className="lg:col-span-7 bg-[var(--surface-raised)]/40 border border-[var(--panel-border)] rounded-[var(--panel-radius)] p-6 space-y-5">
+              <div className="flex items-center gap-2">
+                <Sparkles className="w-5 h-5 text-rose-400" />
+                <h3 className="text-base font-bold">Nouveau concours Discord</h3>
+              </div>
+
+              <div>
+                <label className="block text-xs font-semibold mb-1">Lot / récompense *</label>
+                <input
+                  type="text"
+                  required
+                  placeholder="ex: Discord Nitro 1 mois, Clé de jeu Steam, Rôle VIP..."
+                  value={formPrize}
+                  onChange={(e) => setFormPrize(e.target.value)}
+                  className="w-full h-10 rounded-[var(--inset-radius)] bg-[var(--surface)] border border-[var(--panel-border)] px-3.5 text-xs focus:outline-none focus:border-rose-500"
+                />
+              </div>
+
+              <div>
+                <label className="block text-xs font-semibold mb-1">Description</label>
+                <textarea
+                  rows={3}
+                  placeholder="Détails, conditions, liens..."
+                  value={formDesc}
+                  onChange={(e) => setFormDesc(e.target.value)}
+                  className="w-full rounded-[var(--inset-radius)] bg-[var(--surface)] border border-[var(--panel-border)] p-3 text-xs focus:outline-none focus:border-rose-500"
+                />
+              </div>
+
+              <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+                <div>
+                  <label className="block text-xs font-semibold mb-1">Salon de publication *</label>
+                  <select
+                    value={formChannelId}
+                    onChange={(e) => setFormChannelId(e.target.value)}
+                    className="w-full h-10 rounded-[var(--inset-radius)] bg-[var(--surface)] border border-[var(--panel-border)] px-3 text-xs focus:outline-none focus:border-rose-500"
+                  >
+                    <option value="">Sélectionner un salon</option>
+                    {channels.map((c) => (
+                      <option key={c.id} value={c.id}>#{c.name}</option>
+                    ))}
+                  </select>
+                </div>
+                <div>
+                  <label className="block text-xs font-semibold mb-1">Nombre de gagnants</label>
+                  <div className="flex items-center gap-2">
+                    {[1, 2, 3, 5].map((cnt) => (
+                      <button
+                        key={cnt}
+                        type="button"
+                        onClick={() => setFormWinners(cnt)}
+                        className={`flex-1 h-10 rounded-[var(--inset-radius)] text-xs font-semibold transition-all cursor-pointer ${
+                          formWinners === cnt ? "bg-rose-500 text-white" : "bg-[var(--surface)] border border-[var(--panel-border)] text-[var(--text-muted)] hover:text-[var(--text-primary)]"
+                        }`}
+                      >
+                        {cnt}
+                      </button>
+                    ))}
+                  </div>
+                </div>
+              </div>
+
+              <div>
+                <label className="block text-xs font-semibold mb-1">Durée du concours</label>
+                <div className="flex gap-2">
+                  <input
+                    type="number"
+                    min={1}
+                    max={30}
+                    value={formDurationValue}
+                    onChange={(e) => setFormDurationValue(Number(e.target.value))}
+                    className="w-24 h-10 rounded-[var(--inset-radius)] bg-[var(--surface)] border border-[var(--panel-border)] px-3 text-xs text-center focus:outline-none focus:border-rose-500"
+                  />
+                  <button
+                    type="button"
+                    onClick={() => setFormDurationUnit("h")}
+                    className={`flex-1 h-10 rounded-[var(--inset-radius)] text-xs font-semibold cursor-pointer ${formDurationUnit === "h" ? "bg-[var(--surface-raised)] border border-[var(--panel-border)]" : "bg-[var(--surface)] text-[var(--text-muted)] border border-[var(--panel-border)]"}`}
+                  >
+                    Heures
+                  </button>
+                  <button
+                    type="button"
+                    onClick={() => setFormDurationUnit("d")}
+                    className={`flex-1 h-10 rounded-[var(--inset-radius)] text-xs font-semibold cursor-pointer ${formDurationUnit === "d" ? "bg-[var(--surface-raised)] border border-[var(--panel-border)]" : "bg-[var(--surface)] text-[var(--text-muted)] border border-[var(--panel-border)]"}`}
+                  >
+                    Jours
+                  </button>
+                </div>
+              </div>
+
+              <div className="pt-2 border-t border-[var(--panel-border)] space-y-3">
+                <h4 className="text-xs font-bold flex items-center gap-1.5">
+                  <ShieldCheck className="w-4 h-4 text-indigo-400" />
+                  Conditions d'éligibilité
+                </h4>
+                <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
+                  <div>
+                    <label className="block text-[11px] text-[var(--text-muted)] mb-1">Rôle Discord requis</label>
+                    <select
+                      value={formRequiredRoleId}
+                      onChange={(e) => setFormRequiredRoleId(e.target.value)}
+                      className="w-full h-9 rounded-[var(--inset-radius)] bg-[var(--surface)] border border-[var(--panel-border)] px-3 text-xs"
+                    >
+                      <option value="">Aucun (tous les membres)</option>
+                      {roles.map((r) => (
+                        <option key={r.id} value={r.id}>{r.name}</option>
+                      ))}
+                    </select>
+                  </div>
+                  <div>
+                    <label className="block text-[11px] text-[var(--text-muted)] mb-1">Ancienneté min. du compte (jours)</label>
+                    <input
+                      type="number"
+                      min={0}
+                      value={formMinAge}
+                      onChange={(e) => setFormMinAge(Number(e.target.value))}
+                      className="w-full h-9 rounded-[var(--inset-radius)] bg-[var(--surface)] border border-[var(--panel-border)] px-3 text-xs"
+                    />
+                  </div>
+                  <div>
+                    <label className="block text-[11px] text-[var(--text-muted)] mb-1">Niveau XP minimum</label>
+                    <input
+                      type="number"
+                      min={0}
+                      value={formMinLevel}
+                      onChange={(e) => setFormMinLevel(Number(e.target.value))}
+                      className="w-full h-9 rounded-[var(--inset-radius)] bg-[var(--surface)] border border-[var(--panel-border)] px-3 text-xs"
+                    />
+                  </div>
+                  <div>
+                    <label className="block text-[11px] text-[var(--text-muted)] mb-1">Rôle attribué au(x) gagnant(s)</label>
+                    <select
+                      value={formRewardRoleId}
+                      onChange={(e) => setFormRewardRoleId(e.target.value)}
+                      className="w-full h-9 rounded-[var(--inset-radius)] bg-[var(--surface)] border border-[var(--panel-border)] px-3 text-xs"
+                    >
+                      <option value="">Aucun</option>
+                      {roles.map((r) => (
+                        <option key={r.id} value={r.id}>{r.name}</option>
+                      ))}
+                    </select>
+                  </div>
+                </div>
+              </div>
+
+              <div className="pt-2 border-t border-[var(--panel-border)] space-y-3">
+                <label className="flex items-center gap-2 text-xs font-semibold cursor-pointer">
+                  <input type="checkbox" checked={formRequireClaim} onChange={(e) => setFormRequireClaim(e.target.checked)} className="h-4 w-4" />
+                  Le(s) gagnant(s) doivent réclamer leur lot
+                </label>
+                {formRequireClaim && (
+                  <div>
+                    <label className="block text-[11px] text-[var(--text-muted)] mb-1">Délai de réclamation (heures)</label>
+                    <input
+                      type="number"
+                      min={1}
+                      max={72}
+                      value={formClaimTimeoutHours}
+                      onChange={(e) => setFormClaimTimeoutHours(Number(e.target.value))}
+                      className="w-32 h-9 rounded-[var(--inset-radius)] bg-[var(--surface)] border border-[var(--panel-border)] px-3 text-xs"
+                    />
+                  </div>
+                )}
+              </div>
+
+              <button
+                type="submit"
+                disabled={saving}
+                className="w-full h-11 rounded-[var(--inset-radius)] bg-rose-600 hover:bg-rose-500 text-white text-xs font-bold flex items-center justify-center gap-2 transition-all cursor-pointer disabled:opacity-50"
+              >
+                <Send className="w-4 h-4" />
+                {saving ? "Publication..." : "Publier le concours sur Discord"}
+              </button>
+            </form>
+
+            <div className="lg:col-span-5 space-y-3">
+              <div className="flex items-center justify-between">
+                <span className="text-xs font-bold text-[var(--text-muted)] flex items-center gap-1.5">
+                  <Eye className="w-4 h-4 text-indigo-400" />
+                  Aperçu du message Discord
+                </span>
+              </div>
+              <div className="bg-[#2B2D31] rounded-[var(--panel-radius)] p-4 space-y-3 border border-[var(--panel-border)] font-sans">
+                <div className="flex items-center gap-2">
+                  <div className="w-8 h-8 rounded-full bg-gradient-to-tr from-rose-500 to-amber-500 flex items-center justify-center text-white font-bold text-xs">ET</div>
+                  <div>
+                    <div className="flex items-center gap-1.5">
+                      <span className="text-xs font-bold text-white">ETHONE Bot</span>
+                      <span className="bg-[#5865F2] text-white text-[9px] font-bold px-1 rounded">BOT</span>
+                    </div>
+                  </div>
+                </div>
+                <div className="border-l-4 border-rose-500 bg-[#1E1F22] rounded-r-xl p-3.5 space-y-2">
+                  <div className="flex items-center gap-2 text-rose-400 text-xs font-bold">
+                    <Gift className="w-4 h-4" />
+                    <span>CONCOURS</span>
+                  </div>
+                  <h4 className="text-sm font-bold text-white">{formPrize || "Titre du lot à gagner"}</h4>
+                  <p className="text-xs text-neutral-300 leading-relaxed">
+                    {formDesc || "Cliquez sur le bouton ci-dessous pour participer au tirage au sort !"}
+                  </p>
+                  <div className="pt-2 border-t border-neutral-800 text-[11px] space-y-1 text-neutral-300">
+                    <p>🏆 <strong>Gagnants :</strong> {formWinners}</p>
+                    <p>⏳ <strong>Fin :</strong> Dans {formDurationValue} {formDurationUnit === "h" ? "heures" : "jours"}</p>
+                    {formRequiredRoleId && <p>🔒 <strong>Rôle requis :</strong> {roles.find((r) => r.id === formRequiredRoleId)?.name}</p>}
+                  </div>
+                </div>
+                <button type="button" className="w-full py-2 rounded bg-[#5865F2] text-white text-xs font-bold flex items-center justify-center gap-1.5">
+                  🎉 Participer (0)
+                </button>
+              </div>
+            </div>
+          </div>
+        )}
+
+        {/* TAB: History */}
+        {activeTab === "history" && (
+          <div className="bg-[var(--surface-raised)]/40 border border-[var(--panel-border)] rounded-[var(--panel-radius)] overflow-hidden">
+            {endedGiveaways.length === 0 && (
+              <p className="py-10 text-center text-sm text-[var(--text-muted)]">Aucun concours terminé pour l'instant.</p>
+            )}
+            <div className="divide-y divide-[var(--panel-border)]">
+              {endedGiveaways.map((gw) => (
+                <div key={gw.id} className="p-4 flex flex-col md:flex-row md:items-center justify-between gap-4">
+                  <div className="space-y-1">
+                    <h3 className="text-sm font-bold">{gw.prize}</h3>
+                    <p className="text-xs text-[var(--text-muted)]">
+                      {gw.participants.length} participants · organisé par {gw.hostedByTag}
+                    </p>
+                  </div>
+                  <div className="flex items-center gap-4 flex-wrap">
+                    {gw.winnerIds.length > 0 && (
+                      <div className="flex items-center gap-2 bg-[var(--surface)] px-3 py-1.5 rounded-[var(--inset-radius)] border border-[var(--panel-border)]">
+                        <Crown className="w-4 h-4 text-amber-400" />
+                        <span className="text-xs font-semibold text-amber-300">{winnerNames(gw).join(", ")}</span>
                       </div>
                     )}
-                  </div>
-
-                  <div className="pt-3 border-t border-neutral-800 flex items-center justify-between gap-2">
                     <button
-                      onClick={() => handleEndNow(gw.id)}
-                      className="px-3 py-1.5 rounded-lg bg-neutral-800 hover:bg-neutral-700 text-white text-xs font-semibold transition-colors flex items-center gap-1.5 cursor-pointer"
+                      onClick={() => setRerollTarget(gw)}
+                      className="px-3 py-1.5 rounded-[var(--inset-radius)] bg-rose-600/10 hover:bg-rose-500/20 text-rose-400 border border-rose-500/30 text-xs font-semibold flex items-center gap-1.5 transition-colors cursor-pointer"
                     >
-                      <Trophy className="w-3 h-3 text-amber-400" />
-                      Tirer maintenant
-                    </button>
-                    <button
-                      onClick={() => {
-                        setGiveaways((prev) => prev.filter((g) => g.id !== gw.id));
-                        showToast(`Concours "${gw.prize}" annulé.`);
-                      }}
-                      className="p-1.5 rounded-lg text-neutral-500 hover:text-rose-400 hover:bg-rose-500/10 transition-colors cursor-pointer"
-                      title="Annuler le concours"
-                    >
-                      <Trash2 className="w-4 h-4" />
+                      <RefreshCw className="w-3.5 h-3.5" />
+                      Reroll
                     </button>
                   </div>
                 </div>
@@ -474,467 +736,64 @@ export default function GiveawaysCenterClient() {
           </div>
         )}
 
-        {/* TAB 2: Créateur de Concours */}
-        {activeTab === "create" && (
-          <div className="grid grid-cols-1 lg:grid-cols-12 gap-6">
-            {/* Form */}
-            <form onSubmit={handleCreate} className="lg:col-span-7 bg-neutral-900 border border-neutral-800 rounded-2xl p-6 space-y-5">
-              <div className="flex items-center gap-2">
-                <Sparkles className="w-5 h-5 text-rose-400" />
-                <h3 className="text-base font-bold text-white">Nouveau Concours Discord</h3>
-              </div>
-
-              <div className="space-y-4">
-                <div>
-                  <label className="block text-xs font-semibold text-neutral-300 mb-1">
-                    Lot / Récompense à gagner *
-                  </label>
-                  <input
-                    type="text"
-                    required
-                    placeholder="ex: Discord Nitro 1 Mois, Clé de Jeu Steam, Rôle VIP..."
-                    value={formPrize}
-                    onChange={(e) => setFormPrize(e.target.value)}
-                    className="w-full h-10 rounded-xl bg-neutral-950 border border-neutral-800 px-3.5 text-xs text-white placeholder-neutral-500 focus:outline-none focus:border-rose-500"
-                  />
-                </div>
-
-                <div>
-                  <label className="block text-xs font-semibold text-neutral-300 mb-1">
-                    Description & Règles du tirage
-                  </label>
-                  <textarea
-                    rows={3}
-                    placeholder="Ajoutez des détails pour les participants, conditions, liens..."
-                    value={formDesc}
-                    onChange={(e) => setFormDesc(e.target.value)}
-                    className="w-full rounded-xl bg-neutral-950 border border-neutral-800 p-3 text-xs text-white placeholder-neutral-500 focus:outline-none focus:border-rose-500"
-                  />
-                </div>
-
-                <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
-                  <div>
-                    <label className="block text-xs font-semibold text-neutral-300 mb-1">
-                      Salon Discord de publication
-                    </label>
-                    <div className="relative">
-                      <Hash className="w-4 h-4 absolute left-3 top-1/2 -translate-y-1/2 text-neutral-500" />
-                      <input
-                        type="text"
-                        value={formChannel}
-                        onChange={(e) => setFormChannel(e.target.value)}
-                        placeholder="giveaways"
-                        className="w-full h-10 rounded-xl bg-neutral-950 border border-neutral-800 pl-9 pr-3 text-xs text-white focus:outline-none focus:border-rose-500"
-                      />
-                    </div>
-                  </div>
-
-                  <div>
-                    <label className="block text-xs font-semibold text-neutral-300 mb-1">
-                      Nombre de gagnants
-                    </label>
-                    <div className="flex items-center gap-2">
-                      {[1, 2, 3, 5].map((cnt) => (
-                        <button
-                          key={cnt}
-                          type="button"
-                          onClick={() => setFormWinners(cnt)}
-                          className={`flex-1 h-10 rounded-xl text-xs font-semibold transition-all cursor-pointer ${
-                            formWinners === cnt
-                              ? "bg-rose-500 text-white shadow-sm"
-                              : "bg-neutral-950 border border-neutral-800 text-neutral-400 hover:text-white"
-                          }`}
-                        >
-                          {cnt}
-                        </button>
-                      ))}
-                    </div>
-                  </div>
-                </div>
-
-                <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
-                  <div>
-                    <label className="block text-xs font-semibold text-neutral-300 mb-1">
-                      Durée du concours
-                    </label>
-                    <div className="flex gap-2">
-                      <input
-                        type="number"
-                        min={1}
-                        max={30}
-                        value={formDurationValue}
-                        onChange={(e) => setFormDurationValue(Number(e.target.value))}
-                        className="w-24 h-10 rounded-xl bg-neutral-950 border border-neutral-800 px-3 text-xs text-white text-center focus:outline-none focus:border-rose-500"
-                      />
-                      <button
-                        type="button"
-                        onClick={() => setFormDurationUnit("h")}
-                        className={`flex-1 h-10 rounded-xl text-xs font-semibold cursor-pointer ${
-                          formDurationUnit === "h"
-                            ? "bg-neutral-800 text-white border border-neutral-700"
-                            : "bg-neutral-950 text-neutral-500 border border-neutral-800"
-                        }`}
-                      >
-                        Heures
-                      </button>
-                      <button
-                        type="button"
-                        onClick={() => setFormDurationUnit("d")}
-                        className={`flex-1 h-10 rounded-xl text-xs font-semibold cursor-pointer ${
-                          formDurationUnit === "d"
-                            ? "bg-neutral-800 text-white border border-neutral-700"
-                            : "bg-neutral-950 text-neutral-500 border border-neutral-800"
-                        }`}
-                      >
-                        Jours
-                      </button>
-                    </div>
-                  </div>
-
-                  <div>
-                    <label className="block text-xs font-semibold text-neutral-300 mb-1">
-                      Mention de notification
-                    </label>
-                    <div className="flex gap-2">
-                      {["@everyone", "@here", "Aucun"].map((ping) => (
-                        <button
-                          key={ping}
-                          type="button"
-                          onClick={() => setFormPingRole(ping)}
-                          className={`flex-1 h-10 rounded-xl text-xs font-semibold cursor-pointer ${
-                            formPingRole === ping
-                              ? "bg-rose-500 text-white"
-                              : "bg-neutral-950 border border-neutral-800 text-neutral-400"
-                          }`}
-                        >
-                          {ping}
-                        </button>
-                      ))}
-                    </div>
-                  </div>
-                </div>
-
-                <div className="pt-2 border-t border-neutral-800 space-y-3">
-                  <h4 className="text-xs font-bold text-neutral-200 flex items-center gap-1.5">
-                    <ShieldCheck className="w-4 h-4 text-indigo-400" />
-                    Conditions & Éligibilité des participants
-                  </h4>
-
-                  <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
-                    <div>
-                      <label className="block text-[11px] text-neutral-400 mb-1">Rôle Discord obligatoire</label>
-                      <input
-                        type="text"
-                        value={formReqRole}
-                        onChange={(e) => setFormReqRole(e.target.value)}
-                        placeholder="ex: Membre Vérifié, VIP"
-                        className="w-full h-9 rounded-xl bg-neutral-950 border border-neutral-800 px-3 text-xs text-white"
-                      />
-                    </div>
-                    <div>
-                      <label className="block text-[11px] text-neutral-400 mb-1">Bonus Nitro Boosters (+ entrées)</label>
-                      <input
-                        type="number"
-                        min={0}
-                        max={10}
-                        value={formBoosterBonus}
-                        onChange={(e) => setFormBoosterBonus(Number(e.target.value))}
-                        className="w-full h-9 rounded-xl bg-neutral-950 border border-neutral-800 px-3 text-xs text-white"
-                      />
-                    </div>
-                  </div>
-                </div>
-              </div>
-
-              <div className="pt-3">
-                <button
-                  type="submit"
-                  className="w-full h-11 rounded-xl bg-rose-600 hover:bg-rose-500 text-white text-xs font-bold flex items-center justify-center gap-2 shadow-sm transition-all cursor-pointer"
-                >
-                  <Send className="w-4 h-4" />
-                  Publier le concours sur Discord
-                </button>
-              </div>
-            </form>
-
-            {/* Live Discord Embed Preview */}
-            <div className="lg:col-span-5 space-y-3">
-              <div className="flex items-center justify-between">
-                <span className="text-xs font-bold text-neutral-400 flex items-center gap-1.5">
-                  <Eye className="w-4 h-4 text-indigo-400" />
-                  Aperçu en direct (Rendu Discord)
-                </span>
-                <span className="text-[11px] text-neutral-500 font-mono">#{formChannel || "giveaways"}</span>
-              </div>
-
-              <div className="bg-[#2B2D31] rounded-2xl p-4 space-y-3 border border-neutral-800/80 shadow-2xl font-sans">
-                <div className="flex items-center gap-2">
-                  <div className="w-8 h-8 rounded-full bg-gradient-to-tr from-rose-500 to-amber-500 flex items-center justify-center text-white font-bold text-xs">
-                    ET
-                  </div>
-                  <div>
-                    <div className="flex items-center gap-1.5">
-                      <span className="text-xs font-bold text-white">ETHONE Bot</span>
-                      <span className="bg-[#5865F2] text-white text-[9px] font-bold px-1 rounded">BOT</span>
-                    </div>
-                    <span className="text-[10px] text-neutral-400">Aujourd'hui à 15:40</span>
-                  </div>
-                </div>
-
-                {formPingRole !== "Aucun" && (
-                  <p className="text-xs text-[#5865F2] font-semibold">{formPingRole}</p>
-                )}
-
-                {/* Discord Embed */}
-                <div className="border-l-4 border-rose-500 bg-[#1E1F22] rounded-r-xl p-3.5 space-y-2">
-                  <div className="flex items-center gap-2 text-rose-400 text-xs font-bold">
-                    <Gift className="w-4 h-4" />
-                    <span>CONCOURS OFFICIEL</span>
-                  </div>
-
-                  <h4 className="text-sm font-bold text-white">
-                    {formPrize || "Titre du lot à gagner"}
-                  </h4>
-
-                  <p className="text-xs text-neutral-300 leading-relaxed">
-                    {formDesc || "Cliquez sur le bouton ci-dessous pour participer au tirage au sort !"}
-                  </p>
-
-                  <div className="pt-2 border-t border-neutral-800 text-[11px] space-y-1 text-neutral-300">
-                    <p>🏆 <strong>Gagnants :</strong> {formWinners}</p>
-                    <p>⏳ <strong>Fin :</strong> Dans {formDurationValue} {formDurationUnit === "h" ? "heures" : "jours"}</p>
-                    {formReqRole !== "Tous les membres" && (
-                      <p>🔒 <strong>Rôle requis :</strong> @{formReqRole}</p>
-                    )}
-                    {formBoosterBonus > 0 && (
-                      <p>💎 <strong>Boosters :</strong> +{formBoosterBonus} chances supplémentaires</p>
-                    )}
-                  </div>
-                </div>
-
-                {/* Discord Button */}
-                <div className="flex gap-2">
-                  <button
-                    type="button"
-                    className="flex-1 py-2 rounded bg-[#5865F2] hover:bg-[#4752C4] text-white text-xs font-bold flex items-center justify-center gap-1.5 shadow"
-                  >
-                    <span>🎉 Participer (0)</span>
-                  </button>
-                </div>
-              </div>
-            </div>
-          </div>
-        )}
-
-        {/* TAB 3: Historique & Reroll */}
-        {activeTab === "history" && (
-          <div className="space-y-4">
-            <div className="flex items-center justify-between">
-              <h2 className="text-sm font-bold text-white flex items-center gap-2">
-                <Trophy className="w-4 h-4 text-amber-400" />
-                Concours clôturés et historique des gagnants ({endedGiveaways.length})
-              </h2>
-            </div>
-
-            <div className="bg-neutral-900 border border-neutral-800 rounded-2xl overflow-hidden">
-              <div className="divide-y divide-neutral-800">
-                {endedGiveaways.map((gw) => (
-                  <div key={gw.id} className="p-4 flex flex-col md:flex-row md:items-center justify-between gap-4">
-                    <div className="space-y-1">
-                      <div className="flex items-center gap-2">
-                        <span className="px-2 py-0.5 rounded text-[10px] font-bold bg-neutral-800 text-neutral-400 border border-neutral-700">
-                          {gw.endsAt}
-                        </span>
-                        <h3 className="text-sm font-bold text-white">{gw.prize}</h3>
-                      </div>
-                      <p className="text-xs text-neutral-400">
-                        {gw.entriesCount} participants &bull; #{gw.channel} &bull; Organisé par {gw.hostedBy}
-                      </p>
-                    </div>
-
-                    <div className="flex items-center gap-4 flex-wrap">
-                      {gw.winners && gw.winners.length > 0 && (
-                        <div className="flex items-center gap-2 bg-neutral-950 px-3 py-1.5 rounded-xl border border-neutral-800">
-                          <Crown className="w-4 h-4 text-amber-400" />
-                          <span className="text-xs font-semibold text-amber-300">
-                            {gw.winners.map((w) => w.username).join(", ")}
-                          </span>
-                        </div>
-                      )}
-
-                      <button
-                        onClick={() => handleTriggerReroll(gw)}
-                        className="px-3 py-1.5 rounded-xl bg-rose-600/10 hover:bg-rose-500/20 text-rose-400 border border-rose-500/30 text-xs font-semibold flex items-center gap-1.5 transition-colors cursor-pointer"
-                      >
-                        <RefreshCw className="w-3.5 h-3.5" />
-                        Reroll Gagnant
-                      </button>
-                    </div>
-                  </div>
-                ))}
-              </div>
-            </div>
-          </div>
-        )}
-
-        {/* TAB 4: Fairness & Anti-Cheat */}
+        {/* TAB: Fairness — honest description of what actually runs today */}
         {activeTab === "fairness" && (
           <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-            <div className="bg-neutral-900 border border-neutral-800 rounded-2xl p-6 space-y-4">
+            <div className="bg-[var(--surface-raised)]/40 border border-[var(--panel-border)] rounded-[var(--panel-radius)] p-6 space-y-4">
               <div className="flex items-center gap-2">
-                <ShieldCheck className="w-5 h-5 text-emerald-400" />
-                <h3 className="text-base font-bold text-white">Preuve Cryptographique d'Impartialité (Fair Play)</h3>
+                <Dice5 className="w-5 h-5 text-emerald-400" />
+                <h3 className="text-base font-bold">Tirage au sort</h3>
               </div>
-              <p className="text-xs text-neutral-400 leading-relaxed">
-                ETHONE utilise un générateur pseudo-aléatoire à sécurité cryptographique (CSPRNG). Chaque concours génère une graine (Seed) publique calculée par hachage SHA-256 avant le tirage, empêchant toute manipulation par les modérateurs ou le staff.
+              <p className="text-xs text-[var(--text-muted)] leading-relaxed">
+                Chaque gagnant est tiré uniformément au hasard parmi les participants éligibles encore présents sur le serveur,
+                via le générateur aléatoire cryptographiquement sécurisé de Node.js (<code className="text-emerald-400">crypto.randomInt</code>),
+                sans remise (un même membre ne peut pas être tiré deux fois pour le même concours). Le reroll exclut automatiquement
+                les gagnants déjà tirés.
               </p>
-
-              <div className="p-3.5 rounded-xl bg-neutral-950 border border-neutral-800 space-y-2">
-                <span className="text-[10px] text-neutral-500 uppercase font-mono tracking-wider block">Dernière Graine de Tirage</span>
-                <p className="font-mono text-xs text-emerald-400 break-all">
-                  e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855
-                </p>
-              </div>
-
-              <div className="pt-2 text-xs text-neutral-300 space-y-2">
-                <div className="flex items-center gap-2">
-                  <CheckCircle2 className="w-4 h-4 text-emerald-400" />
-                  <span>Horodatage immuable sur la blockchain ou logs signés</span>
-                </div>
-                <div className="flex items-center gap-2">
-                  <CheckCircle2 className="w-4 h-4 text-emerald-400" />
-                  <span>Validation publique accessible à tous les participants</span>
-                </div>
-              </div>
             </div>
-
-            <div className="bg-neutral-900 border border-neutral-800 rounded-2xl p-6 space-y-4">
+            <div className="bg-[var(--surface-raised)]/40 border border-[var(--panel-border)] rounded-[var(--panel-radius)] p-6 space-y-4">
               <div className="flex items-center gap-2">
-                <Zap className="w-5 h-5 text-amber-400" />
-                <h3 className="text-base font-bold text-white">Protection Anti-Double Compte & Anti-Bot</h3>
+                <ShieldCheck className="w-5 h-5 text-indigo-400" />
+                <h3 className="text-base font-bold">Conditions d'éligibilité</h3>
               </div>
-              <p className="text-xs text-neutral-400 leading-relaxed">
-                Le filtre anti-triche disqualifie automatiquement les comptes douteux avant le tirage au sort :
+              <p className="text-xs text-[var(--text-muted)] leading-relaxed">
+                Au moment du tirage, chaque participant est revérifié : rôle requis toujours possédé, aucun rôle exclu, ancienneté
+                de compte suffisante, et niveau d'XP minimum atteint si configuré. Un participant qui ne remplit plus une condition
+                (ou qui a quitté le serveur) est exclu du tirage.
               </p>
-
-              <div className="space-y-2.5">
-                <div className="p-3 rounded-xl bg-neutral-950 border border-neutral-800 flex items-center justify-between text-xs">
-                  <div>
-                    <span className="font-bold text-white block">Ancienneté Minimale Discord</span>
-                    <span className="text-neutral-500 text-[11px]">Rejette les comptes créés depuis moins de 7 jours</span>
-                  </div>
-                  <span className="text-emerald-400 font-semibold">Actif</span>
-                </div>
-
-                <div className="p-3 rounded-xl bg-neutral-950 border border-neutral-800 flex items-center justify-between text-xs">
-                  <div>
-                    <span className="font-bold text-white block">Vérification Téléphone / Email</span>
-                    <span className="text-neutral-500 text-[11px]">Exige le badge vérifié Discord</span>
-                  </div>
-                  <span className="text-emerald-400 font-semibold">Actif</span>
-                </div>
-
-                <div className="p-3 rounded-xl bg-neutral-950 border border-neutral-800 flex items-center justify-between text-xs">
-                  <div>
-                    <span className="font-bold text-white block">Détection de VPN & Proxy Suspects</span>
-                    <span className="text-neutral-500 text-[11px]">Croisement avec la base anti-raid ETHONE</span>
-                  </div>
-                  <span className="text-emerald-400 font-semibold">Actif</span>
-                </div>
-              </div>
             </div>
           </div>
         )}
 
-        {/* TAB 5: Settings */}
-        {activeTab === "settings" && (
-          <div className="bg-neutral-900 border border-neutral-800 rounded-2xl p-6 space-y-6 max-w-2xl">
-            <h3 className="text-base font-bold text-white flex items-center gap-2">
-              <Sliders className="w-4 h-4 text-rose-400" />
-              Réglages Généraux des Concours
-            </h3>
-
-            <div className="space-y-4 text-xs">
-              <div>
-                <label className="block font-semibold text-neutral-300 mb-1">Message privé automatique au gagnant (DM)</label>
-                <textarea
-                  rows={3}
-                  defaultValue="Félicitations {user} ! Vous avez remporté le concours '{prize}' sur le serveur ETHONE ! Veuillez contacter un administrateur sous 48h pour réclamer votre lot."
-                  className="w-full rounded-xl bg-neutral-950 border border-neutral-800 p-3 text-xs text-white focus:outline-none focus:border-rose-500"
-                />
-              </div>
-
-              <div>
-                <label className="block font-semibold text-neutral-300 mb-1">Délai limite de réclamation du lot (Claim timeout)</label>
-                <input
-                  type="text"
-                  defaultValue="48 heures"
-                  className="w-full h-10 rounded-xl bg-neutral-950 border border-neutral-800 px-3 text-xs text-white"
-                />
-              </div>
-
-              <div className="pt-2">
-                <button
-                  type="button"
-                  onClick={() => showToast("Paramètres des concours enregistrés !")}
-                  className="px-5 py-2.5 rounded-xl bg-rose-600 hover:bg-rose-500 text-white font-bold text-xs transition-colors cursor-pointer"
-                >
-                  Enregistrer les paramètres
-                </button>
-              </div>
-            </div>
-          </div>
-        )}
-
-        {/* Reroll Confirmation Modal */}
-        {rerollModalOpen && (
+        {/* Reroll Modal */}
+        {rerollTarget && (
           <div className="fixed inset-0 z-50 bg-black/80 backdrop-blur-sm flex items-center justify-center p-4">
-            <div className="bg-neutral-900 border border-neutral-800 rounded-2xl max-w-md w-full p-6 space-y-4 shadow-2xl">
+            <div className="bg-[var(--surface-raised)] border border-[var(--panel-border)] rounded-[var(--panel-radius)] max-w-md w-full p-6 space-y-4">
               <div className="flex items-center justify-between">
                 <div className="flex items-center gap-2 text-rose-400 font-bold text-sm">
                   <RefreshCw className="w-4 h-4" />
                   <span>Reroll de gagnant</span>
                 </div>
-                <button onClick={() => setRerollModalOpen(false)} className="text-neutral-500 hover:text-white">
+                <button onClick={() => setRerollTarget(null)} className="text-[var(--text-muted)] hover:text-[var(--text-primary)]">
                   <X className="w-4 h-4" />
                 </button>
               </div>
-
-              <p className="text-xs text-neutral-300">
-                Vous vous apprêtez à tirer un nouveau gagnant pour le lot :{" "}
-                <strong className="text-white">{selectedGiveawayForReroll?.prize}</strong>.
+              <p className="text-xs">
+                Un nouveau gagnant sera tiré au sort pour <strong>{rerollTarget.prize}</strong> parmi les participants restants (les
+                gagnants actuels sont exclus).
               </p>
-
-              {rerollNewWinner ? (
-                <div className="p-4 rounded-xl bg-emerald-500/10 border border-emerald-500/30 text-center space-y-2">
-                  <Crown className="w-6 h-6 text-amber-400 mx-auto" />
-                  <p className="text-xs text-neutral-400">Nouveau gagnant tiré au sort :</p>
-                  <p className="text-base font-bold text-emerald-400">{rerollNewWinner}</p>
-                </div>
-              ) : (
-                <div className="p-3 rounded-xl bg-neutral-950 border border-neutral-800 text-[11px] text-neutral-400">
-                  L'ancien gagnant sera notifié de l'expiration de son lot et le nouveau gagnant sera immédiatement annoncé dans le salon Discord.
-                </div>
-              )}
-
               <div className="flex justify-end gap-2 pt-2">
-                <button
-                  type="button"
-                  onClick={() => setRerollModalOpen(false)}
-                  className="px-4 py-2 rounded-xl text-xs font-semibold text-neutral-400 hover:text-white bg-neutral-800"
-                >
-                  Fermer
+                <button onClick={() => setRerollTarget(null)} className="px-4 py-2 rounded-[var(--inset-radius)] text-xs font-semibold text-[var(--text-muted)] hover:text-[var(--text-primary)] bg-[var(--surface)]">
+                  Annuler
                 </button>
-                {!rerollNewWinner && (
-                  <button
-                    type="button"
-                    onClick={executeReroll}
-                    className="px-4 py-2 rounded-xl text-xs font-bold text-white bg-rose-600 hover:bg-rose-500 shadow-sm flex items-center gap-1.5"
-                  >
-                    <Dice5 className="w-4 h-4" />
-                    Tirer au sort maintenant
-                  </button>
-                )}
+                <button
+                  onClick={() => executeReroll(1)}
+                  disabled={rerollBusy}
+                  className="px-4 py-2 rounded-[var(--inset-radius)] text-xs font-bold text-white bg-rose-600 hover:bg-rose-500 flex items-center gap-1.5 disabled:opacity-50"
+                >
+                  <Dice5 className="w-4 h-4" />
+                  {rerollBusy ? "Tirage..." : "Tirer au sort"}
+                </button>
               </div>
             </div>
           </div>

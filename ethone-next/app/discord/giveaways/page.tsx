@@ -2,7 +2,7 @@ import GiveawaysCenterClient from "./GiveawaysCenterClient";
 
 export const metadata = {
   title: "Giveaways & Tirages | ETHONE",
-  description: "Concours automatisés, tirages cryptographiques et distribution équitable.",
+  description: "Concours Discord automatisés avec conditions d'éligibilité et tirage au sort sécurisé.",
 };
 
 export default function GiveawaysPage() {

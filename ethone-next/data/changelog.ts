@@ -26392,4 +26392,61 @@ CHANGELOG_BY_LANG.en.unshift(v12142_en);
 CHANGELOG_BY_LANG.es.unshift(v12142_es);
 CHANGELOG_BY_LANG.de.unshift(v12142_de);
 
+const v12143_fr: ChangelogEntry = {
+  version: "v1.21.43",
+  date: "2026-09-14",
+  title: "Giveaways : le dashboard branche enfin sur le vrai bot",
+  items: [
+    "Le module Giveaways du bot existait deja et fonctionnait reellement (commande /giveaway, tirage programme, boutons Participer/Reclamer, API), mais la page du dashboard etait une maquette : 5 concours factices en dur, aucune des actions (creer, cloturer, reroll) ne touchait le vrai bot.",
+    "Page entierement rebranchee sur l'API reelle du bot : creation, cloture, annulation et reroll envoient maintenant de vraies requetes, avec un vrai selecteur de salon et de role tire du serveur Discord.",
+    "L'onglet Equite affichait des affirmations inventees (preuve cryptographique SHA-256, horodatage blockchain, detection VPN, verification telephone) qui ne correspondaient a aucune fonctionnalite reelle : retire et remplace par une description honnete de ce qui tourne vraiment (tirage aleatoire sans remise, re-verification des conditions d'eligibilite au moment du tirage).",
+    "Le tirage au sort du bot utilise maintenant un generateur aleatoire cryptographiquement securise (crypto.randomInt) au lieu de Math.random, pour que la description ci-dessus soit vraie.",
+    "Nouvelle suite de tests pour ce module (aucune n'existait), qui n'en avait aucune.",
+  ],
+};
+
+const v12143_en: ChangelogEntry = {
+  version: "v1.21.43",
+  date: "2026-09-14",
+  title: "Giveaways: the dashboard finally talks to the real bot",
+  items: [
+    "The bot's Giveaways module already existed and genuinely worked (a real /giveaway command, scheduled draws, Enter/Claim buttons, a real API), but the dashboard page was a mockup: 5 hardcoded fake giveaways, none of the actions (create, end, reroll) ever touched the real bot.",
+    "Page fully rewired to the real bot API: create, end, cancel and reroll now send real requests, with a real channel and role picker pulled straight from the Discord server.",
+    "The Fairness tab displayed made-up claims (SHA-256 cryptographic proof, blockchain timestamping, VPN detection, phone verification) that matched no real feature: removed and replaced with an honest description of what actually runs (random draw without replacement, eligibility re-checked at draw time).",
+    "The bot's draw now uses a cryptographically secure random generator (crypto.randomInt) instead of Math.random, so the description above is actually true.",
+    "New test suite for this module, which previously had none.",
+  ],
+};
+
+const v12143_es: ChangelogEntry = {
+  version: "v1.21.43",
+  date: "2026-09-14",
+  title: "Giveaways: el dashboard por fin habla con el bot real",
+  items: [
+    "El modulo Giveaways del bot ya existia y funcionaba de verdad (comando /giveaway real, sorteos programados, botones Participar/Reclamar, una API real), pero la pagina del dashboard era una maqueta: 5 sorteos falsos fijos, ninguna accion (crear, cerrar, repetir) tocaba el bot real.",
+    "Pagina reconectada por completo a la API real del bot: crear, cerrar, cancelar y repetir sorteo ahora envian peticiones reales, con un selector real de canal y rol sacado directamente del servidor de Discord.",
+    "La pestana de Equidad mostraba afirmaciones inventadas (prueba criptografica SHA-256, sello de tiempo en blockchain, deteccion de VPN, verificacion telefonica) que no correspondian a ninguna funcion real: eliminadas y sustituidas por una descripcion honesta de lo que realmente ocurre (sorteo aleatorio sin repeticion, condiciones de elegibilidad revisadas de nuevo en el momento del sorteo).",
+    "El sorteo del bot ahora usa un generador aleatorio criptograficamente seguro (crypto.randomInt) en lugar de Math.random, para que la descripcion anterior sea realmente cierta.",
+    "Nueva suite de pruebas para este modulo, que antes no tenia ninguna.",
+  ],
+};
+
+const v12143_de: ChangelogEntry = {
+  version: "v1.21.43",
+  date: "2026-09-14",
+  title: "Giveaways: das Dashboard spricht endlich mit dem echten Bot",
+  items: [
+    "Das Giveaways-Modul des Bots existierte bereits und funktionierte wirklich (echter /giveaway-Befehl, geplante Ziehungen, Teilnehmen/Einlösen-Buttons, eine echte API) - die Dashboard-Seite war jedoch eine Attrappe: 5 fest einprogrammierte Fake-Gewinnspiele, keine der Aktionen (erstellen, beenden, neu ziehen) beruehrte den echten Bot.",
+    "Seite vollstaendig auf die echte Bot-API umgestellt: Erstellen, Beenden, Abbrechen und Neu-Ziehen senden jetzt echte Anfragen, mit einer echten Kanal- und Rollenauswahl direkt vom Discord-Server.",
+    "Der Tab Fairness zeigte erfundene Behauptungen (kryptografischer SHA-256-Nachweis, Blockchain-Zeitstempel, VPN-Erkennung, Telefonverifizierung), die zu keiner echten Funktion passten: entfernt und durch eine ehrliche Beschreibung dessen ersetzt, was tatsaechlich laeuft (Zufallsziehung ohne Zuruecklegen, erneute Pruefung der Teilnahmebedingungen zum Ziehungszeitpunkt).",
+    "Die Ziehung des Bots verwendet jetzt einen kryptografisch sicheren Zufallsgenerator (crypto.randomInt) statt Math.random, damit die obige Beschreibung auch wirklich stimmt.",
+    "Neue Testsuite fuer dieses Modul, das zuvor keine hatte.",
+  ],
+};
+
+CHANGELOG_BY_LANG.fr.unshift(v12143_fr);
+CHANGELOG_BY_LANG.en.unshift(v12143_en);
+CHANGELOG_BY_LANG.es.unshift(v12143_es);
+CHANGELOG_BY_LANG.de.unshift(v12143_de);
+
 export const CHANGELOG = CHANGELOG_BY_LANG.fr;

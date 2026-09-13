@@ -2,6 +2,17 @@
 
 Toutes les modifications notables de ce projet seront documentées dans ce fichier.
 
+## v1.21.43 — 2026-09-14
+
+**Giveaways : le dashboard branché sur le vrai bot, plus de fausses promesses**
+
+- Découverte en investiguant : le module Giveaways du bot (`discord-bot/src/modules/giveaways/`) existait déjà et fonctionnait réellement de bout en bout — commande `/giveaway`, planificateur (`giveawayScheduler.ts`, un vrai `setTimeout` par concours démarré au boot), boutons Participer/Réclamer, API REST (`giveawayRoutes.ts`). Le seul vrai trou : `ethone-next/app/discord/giveaways/GiveawaysCenterClient.tsx` était une maquette autonome (5 concours factices en `useState`, aucun appel réseau) avec un schéma local ne correspondant pas du tout au backend.
+- Page réécrite pour parler au vrai backend : création/clôture/annulation/reroll envoient de vraies requêtes `POST /api/guilds/:guildId/giveaways/*`. Nouveaux endpoints `GET .../channels` et `GET .../roles` sur `giveawayRoutes.ts` (même convention que `reminderRoutes.ts`/`welcomeRoutes.ts`) pour de vrais sélecteurs de salon/rôle au lieu de champs texte libres.
+- L'onglet « Équité » affichait des affirmations fabriquées (« preuve cryptographique SHA-256 », « horodatage immuable sur la blockchain », détection VPN/proxy et vérification téléphone marquées « Actif ») ne correspondant à aucune fonctionnalité réelle. Retiré et remplacé par une description honnête du vrai mécanisme (tirage aléatoire sans remise, re-vérification de l'éligibilité au moment du tirage).
+- Corrigé le tirage au sort du bot (`giveawayService.ts`) pour utiliser `crypto.randomInt` (Node) au lieu de `Math.random()` — pour que la nouvelle description honnête soit vraie.
+- Nouvelle suite de tests `discord-bot/test_giveaways_v1.ts` (24 assertions) — ce module n'avait encore aucune couverture, contrairement aux autres modules (polls, backup, forms...).
+- Validation : `tsc` 0 erreur (dashboard + bot), `eslint` 0 erreur, `build` ✓ (`/discord/giveaways` prérendue), `test:unit` 88/88, `test_giveaways_v1.ts` 24/24, `audit-security` PASS (1954 fichiers).
+
 ## v1.21.42 — 2026-09-13
 
 **Espaces partagés (Phase 1) : liste de tâches partagée, invitation réelle de bout en bout**

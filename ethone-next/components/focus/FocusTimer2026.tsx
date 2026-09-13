@@ -154,7 +154,7 @@ export default function FocusTimer2026({
         <button
           type="button"
           onClick={() => onAdjustTime(-300)}
-          className="flex h-9 items-center justify-center rounded-xl border border-[var(--panel-border)] bg-[var(--surface-raised)]/40 px-2.5 text-xs font-semibold text-[var(--text-muted)] hover:text-[var(--text-primary)] hover:border-[var(--accent-primary)]/40 transition-all active:scale-95"
+          className="flex h-9 items-center justify-center rounded-[var(--inset-radius)] border border-[var(--panel-border)] bg-[var(--surface-raised)]/40 px-2.5 text-xs font-semibold text-[var(--text-muted)] hover:text-[var(--text-primary)] hover:border-[var(--accent-primary)]/40 transition-all active:scale-95"
           title="Retirer 5 minutes"
         >
           -5 min
@@ -178,7 +178,7 @@ export default function FocusTimer2026({
         <button
           type="button"
           onClick={onStop}
-          className="flex h-11 w-11 items-center justify-center rounded-xl border border-[var(--panel-border)] bg-[var(--surface-raised)]/60 text-[var(--text-muted)] hover:text-[var(--danger)] hover:border-[var(--danger)]/40 transition-all active:scale-95"
+          className="flex h-11 w-11 items-center justify-center rounded-[var(--inset-radius)] border border-[var(--panel-border)] bg-[var(--surface-raised)]/60 text-[var(--text-muted)] hover:text-[var(--danger)] hover:border-[var(--danger)]/40 transition-all active:scale-95"
           title="Réinitialiser le cycle"
         >
           <Icon name="rotate-ccw" className="h-4 w-4" />
@@ -190,7 +190,7 @@ export default function FocusTimer2026({
           onClick={onSkipBreak}
           disabled={!isBreak}
           className={cn(
-            "flex h-11 w-11 items-center justify-center rounded-xl border transition-all active:scale-95",
+            "flex h-11 w-11 items-center justify-center rounded-[var(--inset-radius)] border transition-all active:scale-95",
             isBreak
               ? "border-[var(--panel-border)] bg-[var(--surface-raised)]/60 text-[var(--text-primary)] hover:border-[var(--accent-primary)]/40 hover:text-[var(--accent-primary)]"
               : "border-transparent text-[var(--text-muted)]/30 opacity-40 cursor-not-allowed"
@@ -204,7 +204,7 @@ export default function FocusTimer2026({
         <button
           type="button"
           onClick={() => onAdjustTime(300)}
-          className="flex h-9 items-center justify-center rounded-xl border border-[var(--panel-border)] bg-[var(--surface-raised)]/40 px-2.5 text-xs font-semibold text-[var(--text-muted)] hover:text-[var(--text-primary)] hover:border-[var(--accent-primary)]/40 transition-all active:scale-95"
+          className="flex h-9 items-center justify-center rounded-[var(--inset-radius)] border border-[var(--panel-border)] bg-[var(--surface-raised)]/40 px-2.5 text-xs font-semibold text-[var(--text-muted)] hover:text-[var(--text-primary)] hover:border-[var(--accent-primary)]/40 transition-all active:scale-95"
           title="Ajouter 5 minutes"
         >
           +5 min

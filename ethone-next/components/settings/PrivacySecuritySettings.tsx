@@ -29,7 +29,7 @@ export default function PrivacySecuritySettings() {
         </h4>
 
         <div className="grid grid-cols-1 gap-3 sm:grid-cols-2">
-          <label className="flex items-center justify-between gap-3 rounded-2xl border border-[var(--panel-border)] bg-[var(--panel-bg)] p-4">
+          <label className="flex items-center justify-between gap-3 rounded-[var(--panel-radius)] border border-[var(--panel-border)] bg-[var(--panel-bg)] p-4">
             <div>
               <p className="text-sm font-semibold text-[var(--text-primary)]">
                 Personnalisation locale Brain
@@ -46,7 +46,7 @@ export default function PrivacySecuritySettings() {
             />
           </label>
 
-          <label className="flex items-center justify-between gap-3 rounded-2xl border border-[var(--panel-border)] bg-[var(--panel-bg)] p-4">
+          <label className="flex items-center justify-between gap-3 rounded-[var(--panel-radius)] border border-[var(--panel-border)] bg-[var(--panel-bg)] p-4">
             <div>
               <p className="text-sm font-semibold text-[var(--text-primary)]">
                 Signaux de présence publics
@@ -64,7 +64,7 @@ export default function PrivacySecuritySettings() {
           </label>
         </div>
 
-        <div className="flex items-center justify-between gap-4 rounded-2xl border border-[var(--panel-border)] bg-[var(--panel-bg)] p-4">
+        <div className="flex items-center justify-between gap-4 rounded-[var(--panel-radius)] border border-[var(--panel-border)] bg-[var(--panel-bg)] p-4">
           <div>
             <p className="text-sm font-semibold text-[var(--text-primary)]">
               Historique des commandes et recherches
@@ -78,7 +78,7 @@ export default function PrivacySecuritySettings() {
             type="button"
             onClick={handleClearHistory}
             disabled={clearingHistory}
-            className="flex items-center gap-2 rounded-xl border border-[var(--panel-border)] bg-[var(--surface-raised)] px-3 py-2 text-xs font-semibold text-[var(--text-primary)] hover:border-[var(--danger)]/50 hover:text-[var(--danger)] transition-all active:scale-95"
+            className="flex items-center gap-2 rounded-[var(--inset-radius)] border border-[var(--panel-border)] bg-[var(--surface-raised)] px-3 py-2 text-xs font-semibold text-[var(--text-primary)] hover:border-[var(--danger)]/50 hover:text-[var(--danger)] transition-all active:scale-95"
           >
             <Icon name="trash" className="h-3.5 w-3.5 text-[var(--danger)]" />
             Effacer l&apos;historique

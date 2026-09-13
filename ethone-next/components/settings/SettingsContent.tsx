@@ -525,7 +525,7 @@ function SyncStatusCard() {
   }[config.tone];
 
   return (
-    <div className="rounded-2xl border border-[var(--panel-border)] bg-[var(--panel-bg)] p-5 flex flex-col gap-4">
+    <div className="rounded-[var(--panel-radius)] border border-[var(--panel-border)] bg-[var(--panel-bg)] p-5 flex flex-col gap-4">
       <div className="flex items-center justify-between">
         <div className="flex items-center gap-3">
           <div className={`h-10 w-10 rounded-xl flex items-center justify-center ${iconWrapClass}`}>
@@ -1393,7 +1393,7 @@ export default function SettingsContent({
         keywords: ["version", "à propos", "ethone", "système", "crédits"],
         fields: [],
         children: (
-          <div className="rounded-2xl border border-[var(--panel-border)] bg-[var(--panel-bg)] p-5 flex flex-col gap-4">
+          <div className="rounded-[var(--panel-radius)] border border-[var(--panel-border)] bg-[var(--panel-bg)] p-5 flex flex-col gap-4">
             <div className="flex items-center gap-4">
               <div className="h-12 w-12 rounded-2xl bg-[var(--accent-primary)]/15 text-[var(--accent-primary)] flex items-center justify-center font-bold text-xl ring-1 ring-[var(--accent-primary)]/30">
                 E
@@ -1581,7 +1581,7 @@ export default function SettingsContent({
     <div className="w-full space-y-6 pb-24">
       {isSearching && (
         <div
-          className="flex items-center justify-between rounded-xl border border-[var(--text-primary)]/[0.06] bg-[var(--text-primary)]/[0.02] px-3.5 py-2.5 text-xs text-[var(--text-muted)]"
+          className="flex items-center justify-between rounded-[var(--inset-radius)] border border-[var(--text-primary)]/[0.06] bg-[var(--text-primary)]/[0.02] px-3.5 py-2.5 text-xs text-[var(--text-muted)]"
           role="status"
           aria-live="polite"
         >
@@ -1595,7 +1595,7 @@ export default function SettingsContent({
       )}
 
       {!isSearching && activeCategoryDef && (
-        <div className="rounded-2xl border border-[var(--panel-border)] bg-[var(--panel-bg)]/80 p-4 sm:p-5 shadow-xs backdrop-blur-[var(--panel-blur)]">
+        <div className="rounded-[var(--panel-radius)] border border-[var(--panel-border)] bg-[var(--panel-bg)]/80 p-4 sm:p-5 shadow-xs backdrop-blur-[var(--panel-blur)]">
           <div className="flex items-center gap-3.5">
             <div className="flex h-10 w-10 shrink-0 items-center justify-center rounded-xl bg-[var(--accent-primary)]/10 text-[var(--accent-primary)]">
               <Icon name={activeCategoryDef.icon} className="h-5 w-5" />
@@ -1627,7 +1627,7 @@ export default function SettingsContent({
             className="space-y-4 transform-gpu"
           >
             {isSearching && (
-              <h3 className="flex items-center gap-2 rounded-xl border border-[var(--panel-border)] bg-[var(--panel-bg)]/80 px-3.5 py-2 text-xs font-semibold text-[var(--text-primary)] backdrop-blur-[var(--panel-blur)]">
+              <h3 className="flex items-center gap-2 rounded-[var(--inset-radius)] border border-[var(--panel-border)] bg-[var(--panel-bg)]/80 px-3.5 py-2 text-xs font-semibold text-[var(--text-primary)] backdrop-blur-[var(--panel-blur)]">
                 <Icon name={category.icon} className="h-4 w-4 text-[var(--accent-primary)]" />
                 {category.label}
               </h3>

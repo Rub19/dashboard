@@ -134,7 +134,7 @@ export default function LiveWidget() {
             animate={{ opacity: 1, scale: 1, y: 0 }}
             exit={{ opacity: 0, scale: 0.9, y: 20 }}
             transition={{ duration: 0.2, ease: "easeOut" }}
-            className={`w-80 cursor-grab overflow-hidden rounded-2xl border border-[var(--text-primary)]/10 bg-[var(--background)]/90 shadow-[0_0_40px_rgba(0,0,0,0.8)] backdrop-blur-2xl active:cursor-grabbing ${
+            className={`w-80 cursor-grab overflow-hidden rounded-[var(--panel-radius)] border border-[var(--text-primary)]/10 bg-[var(--background)]/90 shadow-[0_0_40px_rgba(0,0,0,0.8)] backdrop-blur-2xl active:cursor-grabbing ${
               expanded ? "w-[720px]" : ""
             }`}
           >
@@ -193,7 +193,7 @@ export default function LiveWidget() {
                         {i18n("liveStreamHint", "HLS / WebRTC / iframe")}
                       </span>
                     </div>
-                    <div className="relative aspect-video w-full overflow-hidden rounded-xl border border-[var(--text-primary)]/[0.06] bg-[var(--background)]">
+                    <div className="relative aspect-video w-full overflow-hidden rounded-[var(--inset-radius)] border border-[var(--text-primary)]/[0.06] bg-[var(--background)]">
                       {streamUrl && isSecureStream ? (
                         <iframe
                           src={embedUrl}
@@ -218,7 +218,7 @@ export default function LiveWidget() {
 
                   {/* Now playing */}
                   {nowPlaying?.isPlaying ? (
-                    <div className="flex items-center gap-3 rounded-xl border border-[var(--text-primary)]/[0.06] bg-[var(--text-primary)]/[0.02] p-2">
+                    <div className="flex items-center gap-3 rounded-[var(--inset-radius)] border border-[var(--text-primary)]/[0.06] bg-[var(--text-primary)]/[0.02] p-2">
                       {nowPlaying.cover || nowPlaying.artworkUrl ? (
                         <ClientImage
                           src={nowPlaying.cover || nowPlaying.artworkUrl}
@@ -251,7 +251,7 @@ export default function LiveWidget() {
 
                   {/* Spotify controls */}
                   {nowPlaying && (
-                    <div className="flex items-center justify-center gap-2 rounded-xl border border-[var(--text-primary)]/[0.06] bg-[var(--text-primary)]/[0.02] p-1.5">
+                    <div className="flex items-center justify-center gap-2 rounded-[var(--inset-radius)] border border-[var(--text-primary)]/[0.06] bg-[var(--text-primary)]/[0.02] p-1.5">
                       <button
                         type="button"
                         aria-label={i18n("previous")}
@@ -281,7 +281,7 @@ export default function LiveWidget() {
 
                   {/* Lanyard status */}
                   {lanyard?.discord_status && (
-                    <div className="flex items-center gap-3 rounded-xl border border-[var(--text-primary)]/[0.06] bg-[var(--text-primary)]/[0.02] p-2.5">
+                    <div className="flex items-center gap-3 rounded-[var(--inset-radius)] border border-[var(--text-primary)]/[0.06] bg-[var(--text-primary)]/[0.02] p-2.5">
                       <div className="relative h-10 w-10 shrink-0">
                         {discordAvatarUrl ? (
                           <ClientImage
@@ -327,7 +327,7 @@ export default function LiveWidget() {
 
                   {/* Discord Spotify activity */}
                   {lanyardSpotify?.playing && (
-                    <div className="flex items-center gap-3 rounded-xl border border-[var(--text-primary)]/[0.06] bg-[var(--text-primary)]/[0.02] p-2.5">
+                    <div className="flex items-center gap-3 rounded-[var(--inset-radius)] border border-[var(--text-primary)]/[0.06] bg-[var(--text-primary)]/[0.02] p-2.5">
                       {lanyardSpotify.artworkUrl || lanyardSpotify.artwork ? (
                         <ClientImage
                           src={lanyardSpotify.artworkUrl || lanyardSpotify.artwork}
@@ -379,7 +379,7 @@ export default function LiveWidget() {
                               }
                             }}
                             title={i18n("paste", "Coller")}
-                            className="flex h-7 w-7 items-center justify-center rounded-lg border border-[var(--text-primary)]/[0.06] bg-[var(--text-primary)]/[0.03] text-[var(--text-muted)] transition-colors hover:bg-[var(--text-primary)]/[0.06] hover:text-[var(--text-primary)]"
+                            className="flex h-7 w-7 items-center justify-center rounded-[var(--inset-radius)] border border-[var(--text-primary)]/[0.06] bg-[var(--text-primary)]/[0.03] text-[var(--text-muted)] transition-colors hover:bg-[var(--text-primary)]/[0.06] hover:text-[var(--text-primary)]"
                           >
                             <ClipboardPaste className="h-3.5 w-3.5" />
                           </button>
@@ -388,7 +388,7 @@ export default function LiveWidget() {
                               type="button"
                               onClick={() => setLiveSource("")}
                               title={i18n("clear", "Effacer")}
-                              className="flex h-7 w-7 items-center justify-center rounded-lg border border-[var(--text-primary)]/[0.06] bg-[var(--text-primary)]/[0.03] text-[var(--text-muted)] transition-colors hover:bg-[var(--danger)]/10 hover:text-[var(--danger)]"
+                              className="flex h-7 w-7 items-center justify-center rounded-[var(--inset-radius)] border border-[var(--text-primary)]/[0.06] bg-[var(--text-primary)]/[0.03] text-[var(--text-muted)] transition-colors hover:bg-[var(--danger)]/10 hover:text-[var(--danger)]"
                             >
                               <X className="h-3.5 w-3.5" />
                             </button>
@@ -415,7 +415,7 @@ export default function LiveWidget() {
           animate={{ opacity: 1, scale: 1 }}
           exit={{ opacity: 0, scale: 0.8 }}
           onClick={() => toggleMinimize()}
-          className="flex items-center gap-1.5 rounded-xl border border-[var(--accent-primary)]/30 bg-[var(--accent-primary)]/15 px-3 py-1.5 text-xs font-medium text-[var(--accent-primary)] shadow-lg transition-all hover:bg-[var(--accent-primary)]/25"
+          className="flex items-center gap-1.5 rounded-[var(--inset-radius)] border border-[var(--accent-primary)]/30 bg-[var(--accent-primary)]/15 px-3 py-1.5 text-xs font-medium text-[var(--accent-primary)] shadow-lg transition-all hover:bg-[var(--accent-primary)]/25"
         >
           <Radio className="h-3.5 w-3.5 text-[var(--accent-primary)]" />
           <span>Live</span>

@@ -59,7 +59,7 @@ export default function ChangelogModal({
             }
             onClick={(e) => e.stopPropagation()}
             ref={trapRef}
-            className="relative flex w-full max-w-2xl sm:max-w-3xl max-h-[80vh] flex-col overflow-hidden rounded-2xl border border-[var(--panel-border)] bg-[#0C0C0E]/95 shadow-2xl shadow-black/80 backdrop-blur-2xl"
+            className="relative flex w-full max-w-2xl sm:max-w-3xl max-h-[80vh] flex-col overflow-hidden rounded-[var(--panel-radius)] border border-[var(--panel-border)] bg-[#0C0C0E]/95 shadow-2xl shadow-black/80 backdrop-blur-2xl"
             role="dialog"
             aria-modal="true"
             aria-labelledby="changelog-modal-title"
@@ -73,7 +73,7 @@ export default function ChangelogModal({
             {/* Fixed header */}
             <div className="relative z-10 flex shrink-0 items-center justify-between gap-3 border-b border-[var(--text-primary)]/[0.06] px-6 py-4">
               <div className="flex items-center gap-3">
-                <div className="flex h-10 w-10 items-center justify-center rounded-xl border border-[var(--accent)]/25 bg-[var(--accent)]/10 text-[var(--accent)] shadow-[0_0_14px_rgba(139,92,246,0.18)]">
+                <div className="flex h-10 w-10 items-center justify-center rounded-[var(--inset-radius)] border border-[var(--accent)]/25 bg-[var(--accent)]/10 text-[var(--accent)] shadow-[0_0_14px_rgba(139,92,246,0.18)]">
                   <Sparkles className="h-5 w-5" />
                 </div>
                 <div>
@@ -82,7 +82,7 @@ export default function ChangelogModal({
                     className="flex items-center gap-2 text-sm font-bold text-[var(--text-primary)]"
                   >
                     <span>{i18n("changelogTitle") || "Journal des modifications"}</span>
-                    <span className="rounded-lg border border-[var(--accent)]/25 bg-[var(--accent)]/10 px-2 py-0.5 font-mono text-[10px] text-[var(--accent)]">
+                    <span className="rounded-[var(--inset-radius)] border border-[var(--accent)]/25 bg-[var(--accent)]/10 px-2 py-0.5 font-mono text-[10px] text-[var(--accent)]">
                       {versionLabel}
                     </span>
                   </h3>

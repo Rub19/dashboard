@@ -181,7 +181,7 @@ export default function BrainVoiceOverlay({
         initial={{ opacity: 0, y: 20 }}
         animate={{ opacity: 1, y: 0 }}
         transition={{ delay: 0.4 }}
-        className="absolute bottom-10 flex items-center gap-2 rounded-2xl border border-white/10 bg-white/[0.06] px-5 py-2.5 text-sm font-medium text-white/60 backdrop-blur-md transition-all hover:bg-white/[0.12] hover:text-white"
+        className="absolute bottom-10 flex items-center gap-2 rounded-[var(--panel-radius)] border border-[var(--panel-border)] bg-white/[0.06] px-5 py-2.5 text-sm font-medium text-white/60 backdrop-blur-md transition-all hover:bg-white/[0.12] hover:text-white"
       >
         <span className="text-base">✕</span>
         Quitter le mode vocal

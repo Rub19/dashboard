@@ -94,7 +94,7 @@ export default function ProfileHero2026({
   };
 
   return (
-    <div className="relative overflow-hidden rounded-3xl border border-[var(--panel-border)]/80 bg-gradient-to-b from-[var(--surface-raised)]/90 via-[var(--panel-bg)]/80 to-[var(--surface-raised)]/60 p-5 sm:p-7 shadow-lg backdrop-blur-xl">
+    <div className="relative overflow-hidden rounded-[var(--panel-radius)] border border-[var(--panel-border)]/80 bg-gradient-to-b from-[var(--surface-raised)]/90 via-[var(--panel-bg)]/80 to-[var(--surface-raised)]/60 p-5 sm:p-7 shadow-lg backdrop-blur-xl">
       {/* Dynamic Background Aura */}
       <div className="absolute -right-16 -top-16 h-64 w-64 rounded-full bg-[var(--accent-primary)]/15 blur-3xl pointer-events-none" />
 
@@ -106,7 +106,7 @@ export default function ProfileHero2026({
             <div
               onClick={onOpenAvatarPicker}
               className={cn(
-                "group relative h-24 w-24 sm:h-28 sm:w-28 overflow-hidden rounded-3xl border-2 bg-[var(--surface-raised)] shadow-md cursor-pointer transition-transform hover:scale-105",
+                "group relative h-24 w-24 sm:h-28 sm:w-28 overflow-hidden rounded-[var(--panel-radius)] border-2 bg-[var(--surface-raised)] shadow-md cursor-pointer transition-transform hover:scale-105",
                 activeFrame?.cssClass || "border-[var(--panel-border)]"
               )}
               title="Changer d'avatar"
@@ -152,7 +152,7 @@ export default function ProfileHero2026({
               <button
                 type="button"
                 onClick={handleCopyUsername}
-                className="inline-flex items-center gap-1 rounded-xl border border-[var(--panel-border)] bg-[var(--surface-raised)]/60 px-2 py-0.5 text-xs font-mono text-[var(--accent-primary)] hover:bg-[var(--surface-hover)] transition-colors cursor-pointer"
+                className="inline-flex items-center gap-1 rounded-[var(--inset-radius)] border border-[var(--panel-border)] bg-[var(--surface-raised)]/60 px-2 py-0.5 text-xs font-mono text-[var(--accent-primary)] hover:bg-[var(--surface-hover)] transition-colors cursor-pointer"
                 title="Copier le @username"
               >
                 <span>@{username}</span>
@@ -169,7 +169,7 @@ export default function ProfileHero2026({
             {customStatus && customStatus.text && (
               <div
                 onClick={onOpenStatusPicker}
-                className="inline-flex items-center gap-1.5 rounded-xl border border-purple-500/30 bg-purple-950/20 px-2.5 py-1 text-xs font-medium text-purple-200 hover:bg-purple-950/40 transition-colors cursor-pointer"
+                className="inline-flex items-center gap-1.5 rounded-[var(--inset-radius)] border border-purple-500/30 bg-purple-950/20 px-2.5 py-1 text-xs font-medium text-purple-200 hover:bg-purple-950/40 transition-colors cursor-pointer"
               >
                 <span>{customStatus.emoji}</span>
                 <span>{customStatus.text}</span>
@@ -185,7 +185,7 @@ export default function ProfileHero2026({
         {/* Right: Active Workspace & Theme Indicators */}
         <div className="shrink-0 flex flex-col sm:flex-row md:flex-col gap-2.5 pt-2 md:pt-0 border-t md:border-t-0 border-[var(--panel-border)]/40">
           {/* Active Workspace Selector */}
-          <div className="rounded-2xl border border-[var(--panel-border)] bg-[var(--surface-raised)]/70 p-2.5 space-y-1.5">
+          <div className="rounded-[var(--panel-radius)] border border-[var(--panel-border)] bg-[var(--surface-raised)]/70 p-2.5 space-y-1.5">
             <span className="text-[10px] font-bold uppercase tracking-wider text-[var(--text-muted)] flex items-center gap-1">
               <Layout className="h-3 w-3 text-[var(--accent-primary)]" />
               <span>Espace Actif</span>
@@ -216,7 +216,7 @@ export default function ProfileHero2026({
           </div>
 
           {/* Active Theme & Mode Badge */}
-          <div className="flex items-center justify-between gap-3 rounded-2xl border border-[var(--panel-border)] bg-[var(--surface-raised)]/50 px-3 py-2 text-xs text-[var(--text-muted)]">
+          <div className="flex items-center justify-between gap-3 rounded-[var(--panel-radius)] border border-[var(--panel-border)] bg-[var(--surface-raised)]/50 px-3 py-2 text-xs text-[var(--text-muted)]">
             <div className="flex items-center gap-1.5">
               <Palette className="h-3.5 w-3.5 text-[var(--accent-primary)]" />
               <span className="capitalize">{settings.theme}</span>

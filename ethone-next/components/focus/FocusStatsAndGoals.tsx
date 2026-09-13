@@ -28,7 +28,7 @@ export default function FocusStatsAndGoals({
   };
 
   return (
-    <div className="flex flex-col gap-4 rounded-2xl border border-[var(--panel-border)] bg-[var(--surface-raised)]/60 p-4 shadow-lg backdrop-blur-xl">
+    <div className="flex flex-col gap-4 rounded-[var(--panel-radius)] border border-[var(--panel-border)] bg-[var(--surface-raised)]/60 p-4 shadow-lg backdrop-blur-xl">
       <div className="flex items-center justify-between border-b border-[var(--panel-border)]/50 pb-2.5">
         <div className="flex items-center gap-2">
           <Icon name="chart-bar" className="h-4 w-4 text-[var(--accent-primary)]" />
@@ -44,7 +44,7 @@ export default function FocusStatsAndGoals({
       </div>
 
       {/* Daily Goal Bar */}
-      <div className="space-y-1.5 rounded-xl border border-[var(--panel-border)] bg-[var(--surface-raised)]/40 p-3">
+      <div className="space-y-1.5 rounded-[var(--inset-radius)] border border-[var(--panel-border)] bg-[var(--surface-raised)]/40 p-3">
         <div className="flex items-center justify-between text-xs">
           <span className="font-semibold text-[var(--text-primary)]">Objectif du jour</span>
           <span className="font-mono text-[var(--accent-primary)] font-bold">
@@ -62,21 +62,21 @@ export default function FocusStatsAndGoals({
 
       {/* 3 Metric Cards */}
       <div className="grid grid-cols-3 gap-2">
-        <div className="flex flex-col items-center justify-center rounded-xl border border-[var(--panel-border)] bg-[var(--surface-raised)]/40 p-2.5 text-center">
+        <div className="flex flex-col items-center justify-center rounded-[var(--inset-radius)] border border-[var(--panel-border)] bg-[var(--surface-raised)]/40 p-2.5 text-center">
           <span className="text-lg font-bold font-mono text-[var(--text-primary)]">
             {completedPomodoros}
           </span>
           <span className="text-[10px] text-[var(--text-muted)]">Cycles</span>
         </div>
 
-        <div className="flex flex-col items-center justify-center rounded-xl border border-[var(--panel-border)] bg-[var(--surface-raised)]/40 p-2.5 text-center">
+        <div className="flex flex-col items-center justify-center rounded-[var(--inset-radius)] border border-[var(--panel-border)] bg-[var(--surface-raised)]/40 p-2.5 text-center">
           <span className="text-lg font-bold font-mono text-amber-400">
             {formatHours(totalFocusSeconds)}
           </span>
           <span className="text-[10px] text-[var(--text-muted)]">Temps total</span>
         </div>
 
-        <div className="flex flex-col items-center justify-center rounded-xl border border-[var(--panel-border)] bg-[var(--surface-raised)]/40 p-2.5 text-center">
+        <div className="flex flex-col items-center justify-center rounded-[var(--inset-radius)] border border-[var(--panel-border)] bg-[var(--surface-raised)]/40 p-2.5 text-center">
           <span className="text-lg font-bold font-mono text-[var(--info)]">
             {completedBreaks}
           </span>

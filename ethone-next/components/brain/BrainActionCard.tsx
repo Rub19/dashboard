@@ -19,7 +19,7 @@ export default function BrainActionCard({
   const [saved, setSaved] = useState(false);
 
   return (
-    <div className="my-2.5 overflow-hidden rounded-2xl border border-[var(--panel-border)] bg-[var(--surface-raised)]/70 p-3.5 shadow-md backdrop-blur-md">
+    <div className="my-2.5 overflow-hidden rounded-[var(--panel-radius)] border border-[var(--panel-border)] bg-[var(--surface-raised)]/70 p-3.5 shadow-md backdrop-blur-md">
       {/* Execution Timeline Header */}
       <div className="flex items-center justify-between border-b border-[var(--panel-border)]/50 pb-2.5 mb-2.5">
         <div className="flex items-center gap-2">
@@ -108,7 +108,7 @@ export default function BrainActionCard({
             <button
               type="button"
               onClick={() => setSaved(true)}
-              className="flex items-center gap-1.5 rounded-xl border border-[var(--panel-border)] bg-[var(--surface-raised)] px-3 py-1.5 text-xs font-semibold text-[var(--text-primary)] hover:border-[var(--accent-primary)]/50 transition-all"
+              className="flex items-center gap-1.5 rounded-[var(--inset-radius)] border border-[var(--panel-border)] bg-[var(--surface-raised)] px-3 py-1.5 text-xs font-semibold text-[var(--text-primary)] hover:border-[var(--accent-primary)]/50 transition-all"
             >
               <Icon name={saved ? "check" : "floppy-disk"} className="h-3.5 w-3.5 text-[var(--success)]" />
               {saved ? "Synchronisé Supabase" : "Enregistrer"}

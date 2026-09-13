@@ -56,7 +56,7 @@ export default function Badge({ children, variant = "default", dot, className, s
   return (
     <span
       className={cn(
-        "inline-flex items-center justify-center gap-1 rounded-lg border font-semibold transition-colors",
+        "inline-flex items-center justify-center gap-1 rounded-[var(--inset-radius)] border font-semibold transition-colors",
         SIZES[size],
         VARIANTS[variant],
         className

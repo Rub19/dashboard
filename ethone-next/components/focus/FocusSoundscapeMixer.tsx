@@ -54,7 +54,7 @@ export default function FocusSoundscapeMixer() {
   };
 
   return (
-    <div className="flex flex-col gap-3 rounded-2xl border border-[var(--panel-border)] bg-[var(--surface-raised)]/60 p-4 shadow-lg backdrop-blur-xl">
+    <div className="flex flex-col gap-3 rounded-[var(--panel-radius)] border border-[var(--panel-border)] bg-[var(--surface-raised)]/60 p-4 shadow-lg backdrop-blur-xl">
       <div className="flex items-center justify-between border-b border-[var(--panel-border)]/50 pb-2.5">
         <div className="flex items-center gap-2">
           <Icon name="waveform" className="h-4 w-4 text-[var(--accent-primary)]" />
@@ -67,7 +67,7 @@ export default function FocusSoundscapeMixer() {
           type="button"
           onClick={toggleMasterMute}
           className={cn(
-            "flex items-center gap-1.5 rounded-lg border px-2.5 py-1 text-xs font-semibold transition-all",
+            "flex items-center gap-1.5 rounded-[var(--inset-radius)] border px-2.5 py-1 text-xs font-semibold transition-all",
             masterMuted
               ? "border-[var(--danger)]/40 bg-[var(--danger)]/15 text-[var(--danger)]"
               : "border-[var(--panel-border)] bg-[var(--surface-raised)] text-[var(--text-muted)] hover:text-[var(--text-primary)]"
@@ -86,7 +86,7 @@ export default function FocusSoundscapeMixer() {
             <div
               key={sound.id}
               className={cn(
-                "flex flex-col gap-1.5 rounded-xl border p-2.5 transition-all",
+                "flex flex-col gap-1.5 rounded-[var(--inset-radius)] border p-2.5 transition-all",
                 isActive
                   ? "border-[var(--accent-primary)]/40 bg-[var(--accent-primary)]/10 shadow-sm"
                   : "border-[var(--panel-border)]/60 bg-[var(--surface-raised)]/40 hover:bg-[var(--surface-hover)]/60"

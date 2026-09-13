@@ -215,7 +215,7 @@ function TimelineItem({
       className="group relative flex gap-3 cursor-pointer rounded-xl p-1 transition-colors hover:bg-white/[0.03]"
     >
       <div className="relative flex flex-col items-center">
-        <span className={`flex h-9 w-9 shrink-0 items-center justify-center rounded-lg border ${meta.bg} ${meta.border}`}>
+        <span className={`flex h-9 w-9 shrink-0 items-center justify-center rounded-[var(--inset-radius)] border ${meta.bg} ${meta.border}`}>
           <Icon name={event.icon || "activity"} className={`h-4 w-4 ${meta.color}`} />
         </span>
         <div className="mt-1 h-full w-px border-l border-[var(--text-primary)]/[0.08]" />
@@ -257,7 +257,7 @@ function TimelineGroup({
   return (
     <div className="relative flex gap-3">
       <div className="relative flex flex-col items-center">
-        <span className={cn("relative flex h-9 w-9 shrink-0 items-center justify-center rounded-lg border", meta.bg, meta.border)}>
+        <span className={cn("relative flex h-9 w-9 shrink-0 items-center justify-center rounded-[var(--inset-radius)] border", meta.bg, meta.border)}>
           <Icon name={first.icon || "activity"} className={cn("h-4 w-4", meta.color)} />
           <span className="absolute -right-1 -top-1 flex h-4 w-4 items-center justify-center rounded-full bg-[var(--accent-primary)] text-[10px] font-bold text-[var(--accent-contrast)]">
             {count}
@@ -805,7 +805,7 @@ export default function ActivityHub() {
                   type="button"
                   onClick={() => sync()}
                   disabled={syncing}
-                  className="inline-flex items-center gap-1.5 rounded-xl bg-[var(--danger)]/10 border border-[var(--danger)]/20 text-[var(--danger)] text-xs px-3 py-1.5 transition-colors hover:bg-[var(--danger)]/20 disabled:opacity-50"
+                  className="inline-flex items-center gap-1.5 rounded-[var(--inset-radius)] bg-[var(--danger)]/10 border border-[var(--danger)]/20 text-[var(--danger)] text-xs px-3 py-1.5 transition-colors hover:bg-[var(--danger)]/20 disabled:opacity-50"
                 >
                   <AlertCircle className="h-3.5 w-3.5" />
                   {i18n("journalSyncError")}
@@ -821,7 +821,7 @@ export default function ActivityHub() {
                 type="button"
                 onClick={() => sync()}
                 disabled={syncing}
-                className="inline-flex items-center gap-1.5 rounded-xl bg-[var(--accent-primary)]/15 hover:bg-[var(--accent-primary)]/25 border border-[var(--accent-primary)]/30 text-[var(--accent-primary)] text-xs font-medium px-3.5 py-1.5 transition-all disabled:opacity-50"
+                className="inline-flex items-center gap-1.5 rounded-[var(--inset-radius)] bg-[var(--accent-primary)]/15 hover:bg-[var(--accent-primary)]/25 border border-[var(--accent-primary)]/30 text-[var(--accent-primary)] text-xs font-medium px-3.5 py-1.5 transition-all disabled:opacity-50"
               >
                 {syncing ? <Loader2 className="h-3.5 w-3.5 animate-spin" /> : <RefreshCw className="h-3.5 w-3.5" />}
                 {syncing ? i18n("journalSyncing") : i18n("journalSyncNow")}
@@ -919,7 +919,7 @@ export default function ActivityHub() {
             ) : (
               <div className="space-y-3">
                 {insights.map((insight, i) => (
-                  <div key={i} className="rounded-xl border border-[var(--text-primary)]/[0.06] bg-[var(--text-primary)]/[0.02] p-3">
+                  <div key={i} className="rounded-[var(--inset-radius)] border border-[var(--text-primary)]/[0.06] bg-[var(--text-primary)]/[0.02] p-3">
                     <div className="flex items-center gap-2">
                       <Icon name={insight.icon} pack="phosphor" className="h-3.5 w-3.5 text-[var(--accent-primary)]" />
                       <p className="text-[11px] font-medium text-[var(--text-primary)]">{insight.title}</p>
@@ -997,7 +997,7 @@ export default function ActivityHub() {
                 type="button"
                 onClick={() => setExportFormat("csv")}
                 className={cn(
-                  "inline-flex items-center gap-1.5 rounded-xl border px-3 py-2 text-xs font-medium transition-colors",
+                  "inline-flex items-center gap-1.5 rounded-[var(--inset-radius)] border px-3 py-2 text-xs font-medium transition-colors",
                   exportFormat === "csv"
                     ? "border-[var(--accent-primary)]/30 bg-[var(--accent-primary)]/15 text-[var(--accent-primary)]"
                     : "border-[var(--text-primary)]/[0.08] bg-[var(--text-primary)]/[0.04] text-[var(--text-muted)] hover:text-[var(--text-primary)]"
@@ -1010,7 +1010,7 @@ export default function ActivityHub() {
                 type="button"
                 onClick={() => setExportFormat("json")}
                 className={cn(
-                  "inline-flex items-center gap-1.5 rounded-xl border px-3 py-2 text-xs font-medium transition-colors",
+                  "inline-flex items-center gap-1.5 rounded-[var(--inset-radius)] border px-3 py-2 text-xs font-medium transition-colors",
                   exportFormat === "json"
                     ? "border-[var(--accent-primary)]/30 bg-[var(--accent-primary)]/15 text-[var(--accent-primary)]"
                     : "border-[var(--text-primary)]/[0.08] bg-[var(--text-primary)]/[0.04] text-[var(--text-muted)] hover:text-[var(--text-primary)]"
@@ -1021,7 +1021,7 @@ export default function ActivityHub() {
               </button>
             </div>
           </div>
-          <div className="rounded-xl border border-[var(--text-primary)]/[0.06] bg-[var(--text-primary)]/[0.02] p-3 text-xs text-[var(--text-muted)]">
+          <div className="rounded-[var(--inset-radius)] border border-[var(--text-primary)]/[0.06] bg-[var(--text-primary)]/[0.02] p-3 text-xs text-[var(--text-muted)]">
             {filteredEntries.length} {i18n("eventsToExport", "événements à exporter")}
           </div>
         </div>
@@ -1038,8 +1038,8 @@ export default function ActivityHub() {
       >
         {selectedEvent && (
           <div className="space-y-4 p-1 text-xs">
-            <div className="flex items-start gap-3 rounded-2xl border border-[var(--panel-border)] bg-[var(--surface-raised)]/50 p-4">
-              <div className="flex h-10 w-10 shrink-0 items-center justify-center rounded-xl bg-[var(--accent-primary)]/15 border border-[var(--accent-primary)]/30 text-[var(--accent-primary)]">
+            <div className="flex items-start gap-3 rounded-[var(--panel-radius)] border border-[var(--panel-border)] bg-[var(--surface-raised)]/50 p-4">
+              <div className="flex h-10 w-10 shrink-0 items-center justify-center rounded-[var(--inset-radius)] bg-[var(--accent-primary)]/15 border border-[var(--accent-primary)]/30 text-[var(--accent-primary)]">
                 <Icon name={selectedEvent.icon || "activity"} className="h-5 w-5" />
               </div>
               <div className="min-w-0 flex-1 space-y-1">

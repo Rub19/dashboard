@@ -126,7 +126,7 @@ function DayTimelineCardImpl({ todayEvents, nextTasks, className = "", focus, sc
             events.map((e) => (
               <div
                 key={e.id}
-                className="flex items-center gap-2 rounded-xl border border-[var(--text-primary)]/[0.06] bg-[var(--text-primary)]/[0.02] px-2.5 py-2"
+                className="flex items-center gap-2 rounded-[var(--inset-radius)] border border-[var(--text-primary)]/[0.06] bg-[var(--text-primary)]/[0.02] px-2.5 py-2"
               >
                 <Icon name="calendar-days" className="h-4 w-4 text-[var(--info)]" />
                 <div className="min-w-0 flex-1">
@@ -139,14 +139,14 @@ function DayTimelineCardImpl({ todayEvents, nextTasks, className = "", focus, sc
             nextTasks.map((t) => (
               <div
                 key={t.id}
-                className="flex items-center gap-2 rounded-xl border border-[var(--text-primary)]/[0.06] bg-[var(--text-primary)]/[0.02] px-2.5 py-2"
+                className="flex items-center gap-2 rounded-[var(--inset-radius)] border border-[var(--text-primary)]/[0.06] bg-[var(--text-primary)]/[0.02] px-2.5 py-2"
               >
                 <Icon name="circle" className="h-4 w-4 text-[var(--accent-primary)]" />
                 <p className="min-w-0 flex-1 truncate text-sm font-medium">{t.title}</p>
               </div>
             ))}
           {events.length === 0 && nextTasks.length === 0 && (
-            <div className="flex items-center gap-2 rounded-xl border border-[var(--text-primary)]/[0.06] bg-[var(--text-primary)]/[0.02] px-2.5 py-2 text-sm text-[var(--text-muted)]">
+            <div className="flex items-center gap-2 rounded-[var(--inset-radius)] border border-[var(--text-primary)]/[0.06] bg-[var(--text-primary)]/[0.02] px-2.5 py-2 text-sm text-[var(--text-muted)]">
               <Icon name="coffee" className="h-4 w-4" />
               <span>
                 {i18n("noImperative")} — {i18n("freeDay")}
@@ -155,7 +155,7 @@ function DayTimelineCardImpl({ todayEvents, nextTasks, className = "", focus, sc
           )}
         </div>
 
-        <div className="rounded-xl border border-[var(--text-primary)]/[0.06] bg-[var(--text-primary)]/[0.02] p-2.5">
+        <div className="rounded-[var(--inset-radius)] border border-[var(--text-primary)]/[0.06] bg-[var(--text-primary)]/[0.02] p-2.5">
           <div className="mb-1.5 flex items-center justify-between">
             <span className="flex items-center gap-1.5 text-xs font-medium text-[var(--text-primary)]">
               <Icon name="timer" className="h-3.5 w-3.5 text-[var(--accent)]" />
@@ -239,7 +239,7 @@ function ProjectsTasksCardImpl({
         </div>
 
         <div className="grid grid-cols-2 gap-2">
-          <div className="rounded-xl border border-[var(--text-primary)]/[0.06] bg-[var(--text-primary)]/[0.02] p-2">
+          <div className="rounded-[var(--inset-radius)] border border-[var(--text-primary)]/[0.06] bg-[var(--text-primary)]/[0.02] p-2">
             <div className="mb-1 flex items-center gap-1.5 text-[10px] text-[var(--text-muted)]">
               <Icon name="timer" className="h-3.5 w-3.5 text-[var(--danger)]" />
               {i18n("focusMinutes")}
@@ -247,7 +247,7 @@ function ProjectsTasksCardImpl({
             <p className="text-lg font-bold leading-none text-[var(--danger)]">{focusMinutes}</p>
           </div>
           {typeof unreadMail === "number" && (
-            <div className="rounded-xl border border-[var(--text-primary)]/[0.06] bg-[var(--text-primary)]/[0.02] p-2">
+            <div className="rounded-[var(--inset-radius)] border border-[var(--text-primary)]/[0.06] bg-[var(--text-primary)]/[0.02] p-2">
               <div className="mb-1 flex items-center gap-1.5 text-[10px] text-[var(--text-muted)]">
                 <Icon name="mail" className="h-3.5 w-3.5 text-[var(--info)]" />
                 {i18n("unread")}
@@ -255,7 +255,7 @@ function ProjectsTasksCardImpl({
               <p className="text-lg font-bold leading-none text-[var(--info)]">{mailLoading ? "-" : unreadMail}</p>
             </div>
           )}
-          <div className="rounded-xl border border-[var(--text-primary)]/[0.06] bg-[var(--text-primary)]/[0.02] p-2">
+          <div className="rounded-[var(--inset-radius)] border border-[var(--text-primary)]/[0.06] bg-[var(--text-primary)]/[0.02] p-2">
             <div className="mb-1 flex items-center gap-1.5 text-[10px] text-[var(--text-muted)]">
               <Icon name="trophy" className="h-3.5 w-3.5 text-[var(--warning)]" />
               {i18n("focusDone")}
@@ -297,7 +297,7 @@ function RecentNotesCardImpl({ notes, className = "", scrollable = true, loading
     () => (
       <Link
         href="/notes"
-        className="relative z-0 inline-flex items-center gap-1 rounded-lg border border-[var(--text-primary)]/[0.08] bg-[var(--text-primary)]/[0.04] px-2 py-1 text-[10px] font-medium text-[var(--text-primary)] transition-colors hover:bg-[var(--text-primary)]/[0.08] hover:text-[var(--text-primary)]"
+        className="relative z-0 inline-flex items-center gap-1 rounded-[var(--inset-radius)] border border-[var(--text-primary)]/[0.08] bg-[var(--text-primary)]/[0.04] px-2 py-1 text-[10px] font-medium text-[var(--text-primary)] transition-colors hover:bg-[var(--text-primary)]/[0.08] hover:text-[var(--text-primary)]"
       >
         <Icon name="plus" className="h-3 w-3" />
         {i18n("createNote")}
@@ -327,7 +327,7 @@ function RecentNotesCardImpl({ notes, className = "", scrollable = true, loading
               <Link
                 key={n.id}
                 href="/notes"
-                className="group flex items-start gap-2 rounded-xl border border-[var(--text-primary)]/[0.06] bg-[var(--text-primary)]/[0.02] p-2.5 transition-colors hover:bg-[var(--text-primary)]/[0.04]"
+                className="group flex items-start gap-2 rounded-[var(--inset-radius)] border border-[var(--text-primary)]/[0.06] bg-[var(--text-primary)]/[0.02] p-2.5 transition-colors hover:bg-[var(--text-primary)]/[0.04]"
               >
                 <Icon name="file-text" className="mt-0.5 h-4 w-4 shrink-0 text-[var(--accent-secondary)]" />
                 <div className="min-w-0 flex-1">

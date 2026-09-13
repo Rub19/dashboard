@@ -103,7 +103,7 @@ export default function SoundscapeMixer() {
   return (
     <div className="flex flex-col gap-6">
       {/* Soundscape Control Header */}
-      <div className="relative overflow-hidden rounded-2xl border border-[var(--panel-border)] bg-gradient-to-br from-[var(--surface-raised)] to-[var(--panel-bg)] p-5 shadow-lg">
+      <div className="relative overflow-hidden rounded-[var(--panel-radius)] border border-[var(--panel-border)] bg-gradient-to-br from-[var(--surface-raised)] to-[var(--panel-bg)] p-5 shadow-lg">
         <div className="flex flex-col gap-4 sm:flex-row sm:items-center sm:justify-between">
           <div className="flex items-center gap-3.5">
             <div className="flex h-12 w-12 shrink-0 items-center justify-center rounded-xl bg-[var(--accent-primary)]/15 text-[var(--accent-primary)] ring-1 ring-[var(--accent-primary)]/30">
@@ -131,7 +131,7 @@ export default function SoundscapeMixer() {
             <button
               type="button"
               onClick={randomize}
-              className="flex items-center gap-1.5 rounded-xl border border-[var(--panel-border)] bg-[var(--panel-bg)] px-3 py-2 text-xs font-semibold text-[var(--text-primary)] hover:border-[var(--accent-primary)]/50 hover:bg-[var(--surface-hover)] transition-all active:scale-95"
+              className="flex items-center gap-1.5 rounded-[var(--inset-radius)] border border-[var(--panel-border)] bg-[var(--panel-bg)] px-3 py-2 text-xs font-semibold text-[var(--text-primary)] hover:border-[var(--accent-primary)]/50 hover:bg-[var(--surface-hover)] transition-all active:scale-95"
             >
               <Icon name="sparkles" className="h-3.5 w-3.5 text-[var(--accent-primary)]" />
               🎲 Ambiance aléatoire
@@ -140,7 +140,7 @@ export default function SoundscapeMixer() {
               <button
                 type="button"
                 onClick={() => stopAmbient()}
-                className="flex items-center gap-1.5 rounded-xl border border-[var(--danger)]/30 bg-[var(--danger)]/10 px-3 py-2 text-xs font-semibold text-[var(--danger)] hover:bg-[var(--danger)]/20 transition-all active:scale-95"
+                className="flex items-center gap-1.5 rounded-[var(--inset-radius)] border border-[var(--danger)]/30 bg-[var(--danger)]/10 px-3 py-2 text-xs font-semibold text-[var(--danger)] hover:bg-[var(--danger)]/20 transition-all active:scale-95"
               >
                 <Icon name="x" className="h-3.5 w-3.5" />
                 Tout couper
@@ -178,7 +178,7 @@ export default function SoundscapeMixer() {
               key={preset.id}
               type="button"
               onClick={() => applyPreset(preset)}
-              className="group flex flex-col items-center justify-center rounded-xl border border-[var(--panel-border)] bg-[var(--panel-bg)] p-2.5 text-center transition-all hover:border-[var(--accent-primary)]/50 hover:bg-[var(--surface-hover)]/40 active:scale-95"
+              className="group flex flex-col items-center justify-center rounded-[var(--inset-radius)] border border-[var(--panel-border)] bg-[var(--panel-bg)] p-2.5 text-center transition-all hover:border-[var(--accent-primary)]/50 hover:bg-[var(--surface-hover)]/40 active:scale-95"
             >
               <Icon
                 name={preset.icon}
@@ -229,7 +229,7 @@ export default function SoundscapeMixer() {
             <div
               key={sound.id}
               className={cn(
-                "flex flex-col justify-between rounded-2xl border p-4 transition-all",
+                "flex flex-col justify-between rounded-[var(--panel-radius)] border p-4 transition-all",
                 isActive
                   ? "border-[var(--accent-primary)] bg-[var(--accent-primary)]/[0.06] shadow-[0_0_20px_-6px_var(--glow-color)]"
                   : "border-[var(--panel-border)] bg-[var(--panel-bg)] hover:border-[var(--accent-primary)]/30"
@@ -306,12 +306,12 @@ export default function SoundscapeMixer() {
       </div>
 
       {/* Smart Soundscape Preferences */}
-      <div className="rounded-2xl border border-[var(--panel-border)] bg-[var(--panel-bg)] p-4 flex flex-col gap-3">
+      <div className="rounded-[var(--panel-radius)] border border-[var(--panel-border)] bg-[var(--panel-bg)] p-4 flex flex-col gap-3">
         <h4 className="text-xs font-semibold uppercase tracking-wider text-[var(--text-muted)]">
           Comportement & Options de mixage
         </h4>
         <div className="grid grid-cols-1 gap-3 sm:grid-cols-2">
-          <label className="flex items-center justify-between gap-3 rounded-xl border border-[var(--panel-border)]/50 bg-[var(--surface-raised)]/40 p-3">
+          <label className="flex items-center justify-between gap-3 rounded-[var(--inset-radius)] border border-[var(--panel-border)]/50 bg-[var(--surface-raised)]/40 p-3">
             <div>
               <p className="text-xs font-semibold text-[var(--text-primary)]">
                 Couper lors de la lecture musicale
@@ -328,7 +328,7 @@ export default function SoundscapeMixer() {
             />
           </label>
 
-          <label className="flex items-center justify-between gap-3 rounded-xl border border-[var(--panel-border)]/50 bg-[var(--surface-raised)]/40 p-3">
+          <label className="flex items-center justify-between gap-3 rounded-[var(--inset-radius)] border border-[var(--panel-border)]/50 bg-[var(--surface-raised)]/40 p-3">
             <div>
               <p className="text-xs font-semibold text-[var(--text-primary)]">
                 Atténuation sur notifications

@@ -36,7 +36,7 @@ export default function SettingsSelect<T extends string = string>({
           onChange(e.target.value as T);
         }}
         className={cn(
-          "w-full cursor-pointer appearance-none rounded-xl border border-[var(--input-border)] bg-[var(--input-bg)] text-[var(--text-primary)] font-medium transition-all duration-180 outline-none",
+          "w-full cursor-pointer appearance-none rounded-[var(--inset-radius)] border border-[var(--input-border)] bg-[var(--input-bg)] text-[var(--text-primary)] font-medium transition-all duration-180 outline-none",
           "hover:border-[var(--input-border-hover)] hover:bg-[var(--input-bg-hover)]",
           "focus:border-[var(--accent-primary)] focus:bg-[var(--input-bg-focus)] focus:shadow-[0_0_0_3px_color-mix(in_srgb,var(--accent-primary)_18%,transparent)]",
           size === "sm" ? "h-8.5 px-3 pr-8 text-xs" : "h-10 px-3.5 pr-9 text-sm",

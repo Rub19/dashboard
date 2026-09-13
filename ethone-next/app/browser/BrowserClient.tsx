@@ -52,7 +52,7 @@ const PRESET_PAGES: Record<
     category: "Simulation",
     content: (
       <div className="space-y-6">
-        <div className="rounded-2xl border border-blue-500/20 bg-blue-500/5 p-6">
+        <div className="rounded-[var(--panel-radius)] border border-blue-500/20 bg-blue-500/5 p-6">
           <div className="flex items-center gap-3">
             <div className="flex h-10 w-10 items-center justify-center rounded-xl bg-blue-500/20 text-blue-400">
               <Sparkles className="h-5 w-5" />
@@ -67,7 +67,7 @@ const PRESET_PAGES: Record<
         </div>
 
         <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
-          <div className="rounded-xl border border-white/10 bg-white/[0.02] p-4">
+          <div className="rounded-[var(--inset-radius)] border border-[var(--panel-border)] bg-white/[0.02] p-4">
             <div className="flex items-center gap-2 text-xs font-bold text-emerald-400 mb-2">
               <ShieldCheck className="h-4 w-4" />
               <span>Sandbox Isolation</span>
@@ -77,7 +77,7 @@ const PRESET_PAGES: Record<
             </p>
           </div>
 
-          <div className="rounded-xl border border-white/10 bg-white/[0.02] p-4">
+          <div className="rounded-[var(--inset-radius)] border border-[var(--panel-border)] bg-white/[0.02] p-4">
             <div className="flex items-center gap-2 text-xs font-bold text-indigo-400 mb-2">
               <Zap className="h-4 w-4" />
               <span>Moteur Nitro Render</span>
@@ -87,7 +87,7 @@ const PRESET_PAGES: Record<
             </p>
           </div>
 
-          <div className="rounded-xl border border-white/10 bg-white/[0.02] p-4">
+          <div className="rounded-[var(--inset-radius)] border border-[var(--panel-border)] bg-white/[0.02] p-4">
             <div className="flex items-center gap-2 text-xs font-bold text-amber-400 mb-2">
               <Lock className="h-4 w-4" />
               <span>Strict CSP Enforced</span>
@@ -98,8 +98,8 @@ const PRESET_PAGES: Record<
           </div>
         </div>
 
-        <div className="rounded-xl border border-white/10 bg-black/40 p-4 font-mono text-xs text-zinc-300">
-          <div className="flex items-center justify-between pb-2 mb-2 border-b border-white/10 text-zinc-400">
+        <div className="rounded-[var(--inset-radius)] border border-[var(--panel-border)] bg-black/40 p-4 font-mono text-xs text-zinc-300">
+          <div className="flex items-center justify-between pb-2 mb-2 border-b border-[var(--panel-border)] text-zinc-400">
             <span>En-têtes de Réponse HTTP Réseau</span>
             <span className="text-[10px] text-emerald-400">200 OK (Cloudflare Edge)</span>
           </div>
@@ -120,7 +120,7 @@ const PRESET_PAGES: Record<
     category: "Diagnostic",
     content: (
       <div className="space-y-6">
-        <div className="rounded-2xl border border-emerald-500/20 bg-emerald-500/5 p-6">
+        <div className="rounded-[var(--panel-radius)] border border-emerald-500/20 bg-emerald-500/5 p-6">
           <div className="flex items-center gap-3">
             <div className="flex h-10 w-10 items-center justify-center rounded-xl bg-emerald-500/20 text-emerald-400">
               <ShieldCheck className="h-5 w-5" />
@@ -143,7 +143,7 @@ const PRESET_PAGES: Record<
           ].map((item, idx) => (
             <div
               key={idx}
-              className="flex items-center justify-between rounded-xl border border-white/10 bg-white/[0.02] p-3 text-xs"
+              className="flex items-center justify-between rounded-[var(--inset-radius)] border border-[var(--panel-border)] bg-white/[0.02] p-3 text-xs"
             >
               <div>
                 <span className="font-semibold text-white">{item.label}</span>
@@ -178,13 +178,13 @@ const PRESET_PAGES: Record<
             type="text"
             readOnly
             value="ETHONE OS Discord Bot and Performance suite"
-            className="w-full rounded-2xl border border-white/20 bg-white/5 py-3.5 pl-12 pr-4 text-xs text-white placeholder-zinc-500 focus:outline-none"
+            className="w-full rounded-[var(--panel-radius)] border border-[var(--panel-border)] bg-white/5 py-3.5 pl-12 pr-4 text-xs text-white placeholder-zinc-500 focus:outline-none"
           />
           <Search className="absolute left-4 top-1/2 -translate-y-1/2 h-4 w-4 text-zinc-400" />
         </div>
 
-        <div className="text-left space-y-3 pt-6 border-t border-white/10">
-          <div className="rounded-xl border border-white/10 bg-white/[0.02] p-3.5 hover:border-white/20 transition-all">
+        <div className="text-left space-y-3 pt-6 border-t border-[var(--panel-border)]">
+          <div className="rounded-[var(--inset-radius)] border border-[var(--panel-border)] bg-white/[0.02] p-3.5 hover:border-[var(--input-border-hover)] transition-all">
             <span className="text-[10px] text-blue-400">https://ethone.dev/boost</span>
             <h3 className="text-xs font-bold text-white mt-0.5">Performance & Gaming Boost Hub — ETHONE OS</h3>
             <p className="text-[11px] text-zinc-400 mt-1">
@@ -192,7 +192,7 @@ const PRESET_PAGES: Record<
             </p>
           </div>
 
-          <div className="rounded-xl border border-white/10 bg-white/[0.02] p-3.5 hover:border-white/20 transition-all">
+          <div className="rounded-[var(--inset-radius)] border border-[var(--panel-border)] bg-white/[0.02] p-3.5 hover:border-[var(--input-border-hover)] transition-all">
             <span className="text-[10px] text-emerald-400">https://ethone.dev/discord</span>
             <h3 className="text-xs font-bold text-white mt-0.5">Discord Bot Management Suite — ETHONE</h3>
             <p className="text-[11px] text-zinc-400 mt-1">
@@ -210,7 +210,7 @@ const PRESET_PAGES: Record<
     category: "Documentation",
     content: (
       <div className="space-y-6">
-        <div className="rounded-2xl border border-purple-500/20 bg-purple-500/5 p-6">
+        <div className="rounded-[var(--panel-radius)] border border-purple-500/20 bg-purple-500/5 p-6">
           <div className="flex items-center gap-3">
             <div className="flex h-10 w-10 items-center justify-center rounded-xl bg-purple-500/20 text-purple-400">
               <FileText className="h-5 w-5" />
@@ -225,7 +225,7 @@ const PRESET_PAGES: Record<
         </div>
 
         <div className="space-y-4">
-          <div className="rounded-xl border border-white/10 bg-white/[0.02] p-4">
+          <div className="rounded-[var(--inset-radius)] border border-[var(--panel-border)] bg-white/[0.02] p-4">
             <h3 className="text-xs font-bold text-white mb-2">Variables d&apos;Environnement Clés</h3>
             <div className="space-y-2 text-xs font-mono">
               <div className="rounded-lg bg-black/40 p-2 text-zinc-300">
@@ -244,7 +244,7 @@ const PRESET_PAGES: Record<
             </div>
           </div>
 
-          <div className="rounded-xl border border-white/10 bg-white/[0.02] p-4">
+          <div className="rounded-[var(--inset-radius)] border border-[var(--panel-border)] bg-white/[0.02] p-4">
             <h3 className="text-xs font-bold text-white mb-2">Règles de Navigation Statique & SPA</h3>
             <p className="text-xs text-zinc-400">
               Le projet utilise <code className="text-blue-400 bg-white/5 px-1 py-0.5 rounded">output: &quot;export&quot;</code> avec Next.js.
@@ -310,7 +310,7 @@ export default function BrowserClient({ initialId }: BrowserClientProps) {
   return (
     <div className="h-full overflow-y-auto os-scroll [overscroll-behavior:contain] bg-[var(--bg-main)] text-white p-4 sm:p-8 pb-32">
       {/* Top Banner */}
-      <div className="mb-6 flex flex-col md:flex-row md:items-center justify-between gap-4 border-b border-white/10 pb-6">
+      <div className="mb-6 flex flex-col md:flex-row md:items-center justify-between gap-4 border-b border-[var(--panel-border)] pb-6">
         <div className="flex items-center gap-4">
           <div className="flex h-12 w-12 items-center justify-center rounded-2xl bg-indigo-600 shadow-sm">
             <Globe className="h-6 w-6 text-white" />
@@ -330,7 +330,7 @@ export default function BrowserClient({ initialId }: BrowserClientProps) {
 
         {/* Viewport switcher */}
         <div className="flex items-center gap-2">
-          <div className="flex items-center rounded-xl border border-white/10 bg-white/5 p-1">
+          <div className="flex items-center rounded-[var(--inset-radius)] border border-[var(--panel-border)] bg-white/5 p-1">
             <button
               onClick={() => setViewportMode("desktop")}
               className={cn(
@@ -384,10 +384,10 @@ export default function BrowserClient({ initialId }: BrowserClientProps) {
               href={`/browser/${item.id}`}
               onClick={() => handleSelectTab(item.id)}
               className={cn(
-                "flex items-center gap-3 rounded-xl border p-3 transition-all",
+                "flex items-center gap-3 rounded-[var(--inset-radius)] border p-3 transition-all",
                 isSelected
                   ? "border-blue-500/50 bg-blue-500/10 text-white shadow-sm"
-                  : "border-white/10 bg-white/[0.02] text-zinc-400 hover:border-white/20 hover:text-white"
+                  : "border-[var(--panel-border)] bg-white/[0.02] text-zinc-400 hover:border-[var(--input-border-hover)] hover:text-white"
               )}
             >
               <div
@@ -410,14 +410,14 @@ export default function BrowserClient({ initialId }: BrowserClientProps) {
       {/* Main Browser Window Frame */}
       <div
         className={cn(
-          "mx-auto rounded-2xl border border-white/10 bg-zinc-950 shadow-2xl overflow-hidden transition-all duration-300",
+          "mx-auto rounded-[var(--panel-radius)] border border-[var(--panel-border)] bg-zinc-950 shadow-2xl overflow-hidden transition-all duration-300",
           viewportMode === "desktop" && "w-full",
           viewportMode === "tablet" && "max-w-2xl",
           viewportMode === "mobile" && "max-w-sm"
         )}
       >
         {/* Browser Chrome Header (Tabs Bar) */}
-        <div className="flex items-center gap-2 border-b border-white/10 bg-zinc-900/80 px-4 pt-2.5 overflow-x-auto no-scrollbar">
+        <div className="flex items-center gap-2 border-b border-[var(--panel-border)] bg-zinc-900/80 px-4 pt-2.5 overflow-x-auto no-scrollbar">
           {/* Window control dots */}
           <div className="flex items-center gap-1.5 mr-2">
             <div className="h-3 w-3 rounded-full bg-red-500/80" />
@@ -436,7 +436,7 @@ export default function BrowserClient({ initialId }: BrowserClientProps) {
                   className={cn(
                     "group flex items-center gap-2 rounded-t-xl px-3 py-1.5 text-xs transition-all max-w-[180px] truncate cursor-pointer",
                     isActive
-                      ? "bg-zinc-950 text-white border-t border-x border-white/10 font-semibold"
+                      ? "bg-zinc-950 text-white border-t border-x border-[var(--panel-border)] font-semibold"
                       : "text-zinc-400 hover:bg-white/5 hover:text-zinc-200"
                   )}
                 >
@@ -449,7 +449,7 @@ export default function BrowserClient({ initialId }: BrowserClientProps) {
         </div>
 
         {/* Browser Navigation Bar (URL Bar) */}
-        <div className="flex items-center gap-2 border-b border-white/10 bg-zinc-900/40 p-2.5">
+        <div className="flex items-center gap-2 border-b border-[var(--panel-border)] bg-zinc-900/40 p-2.5">
           <div className="flex items-center gap-1 text-zinc-400">
             <button
               onClick={() => handleSelectTab("demo")}
@@ -475,7 +475,7 @@ export default function BrowserClient({ initialId }: BrowserClientProps) {
           </div>
 
           {/* URL Input */}
-          <div className="flex-1 flex items-center gap-2 rounded-xl border border-white/10 bg-zinc-950/80 px-3 py-1.5 text-xs text-zinc-300">
+          <div className="flex-1 flex items-center gap-2 rounded-[var(--inset-radius)] border border-[var(--panel-border)] bg-zinc-950/80 px-3 py-1.5 text-xs text-zinc-300">
             <Lock className="h-3 w-3 text-emerald-400 flex-shrink-0" />
             <span className="text-emerald-400 font-mono text-[11px]">https://</span>
             <input
@@ -503,7 +503,7 @@ export default function BrowserClient({ initialId }: BrowserClientProps) {
         </div>
 
         {/* Bookmarks Bar */}
-        <div className="flex items-center gap-4 border-b border-white/5 bg-zinc-950/40 px-4 py-1.5 text-[10px] text-zinc-400 overflow-x-auto no-scrollbar">
+        <div className="flex items-center gap-4 border-b border-[var(--panel-border)] bg-zinc-950/40 px-4 py-1.5 text-[10px] text-zinc-400 overflow-x-auto no-scrollbar">
           <Link href="/boost" className="flex items-center gap-1 hover:text-white transition-colors">
             <Zap className="h-3 w-3 text-orange-400" />
             <span>ETHONE Boost Hub</span>

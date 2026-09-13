@@ -129,7 +129,7 @@ function WorkspaceCard({
           ))}
         </div>
 
-        <div className="mt-auto flex items-center justify-between border-t border-white/[0.06] pt-3">
+        <div className="mt-auto flex items-center justify-between border-t border-[var(--panel-border)] pt-3">
           <div className="flex items-center gap-1.5">
             {w.widgets.map((widgetId) => (
               <span

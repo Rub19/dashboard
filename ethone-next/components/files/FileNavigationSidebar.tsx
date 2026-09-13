@@ -92,7 +92,7 @@ export default function FileNavigationSidebar({
         <button
           type="button"
           onClick={onNewFolder}
-          className="flex h-9 w-9 items-center justify-center rounded-xl border border-[var(--panel-border)] bg-[var(--surface-raised)]/60 text-[var(--text-primary)] hover:border-[var(--accent-primary)]/40 active:scale-95 transition-all cursor-pointer shadow-xs"
+          className="flex h-9 w-9 items-center justify-center rounded-[var(--inset-radius)] border border-[var(--panel-border)] bg-[var(--surface-raised)]/60 text-[var(--text-primary)] hover:border-[var(--accent-primary)]/40 active:scale-95 transition-all cursor-pointer shadow-xs"
           title="Nouveau dossier"
         >
           <Plus className="h-4 w-4" />
@@ -187,7 +187,7 @@ export default function FileNavigationSidebar({
         </div>
 
         {/* ETHONE Local/Cloud usage */}
-        <div className="rounded-xl border border-[var(--panel-border)]/50 bg-[var(--surface-raised)]/40 p-2 text-xs">
+        <div className="rounded-[var(--inset-radius)] border border-[var(--panel-border)]/50 bg-[var(--surface-raised)]/40 p-2 text-xs">
           <div className="flex items-center justify-between">
             <span className="flex items-center gap-1.5 font-semibold text-[var(--text-primary)]">
               <HardDrive className="h-3.5 w-3.5 text-[var(--text-muted)]" />
@@ -201,7 +201,7 @@ export default function FileNavigationSidebar({
 
         {/* Google Drive Quota if connected */}
         {quota && quota.total > 0 && (
-          <div className="rounded-xl border border-blue-500/20 bg-blue-500/5 p-2 text-xs">
+          <div className="rounded-[var(--inset-radius)] border border-blue-500/20 bg-blue-500/5 p-2 text-xs">
             <div className="flex items-center justify-between">
               <span className="flex items-center gap-1.5 font-semibold text-blue-300">
                 <Cloud className="h-3.5 w-3.5 text-blue-400" />

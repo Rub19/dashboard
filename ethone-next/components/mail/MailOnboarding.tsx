@@ -141,7 +141,7 @@ export default function MailOnboarding({
             setSelectedProvider("ethone");
             setView("create");
           }}
-          className="group relative flex flex-col items-start gap-2.5 rounded-2xl border border-[var(--accent-primary)]/40 bg-[var(--accent-primary)]/10 p-4 text-left transition-all hover:border-[var(--accent-primary)] hover:bg-[var(--accent-primary)]/15"
+          className="group relative flex flex-col items-start gap-2.5 rounded-[var(--panel-radius)] border border-[var(--accent-primary)]/40 bg-[var(--accent-primary)]/10 p-4 text-left transition-all hover:border-[var(--accent-primary)] hover:bg-[var(--accent-primary)]/15"
         >
           <div className="flex h-10 w-10 items-center justify-center rounded-xl bg-[var(--accent-primary)] text-[var(--accent-contrast)]">
             <Zap className="h-5 w-5" />
@@ -166,7 +166,7 @@ export default function MailOnboarding({
             setSelectedProvider("gmail");
             setView("create");
           }}
-          className="group relative flex flex-col items-start gap-2.5 rounded-2xl border border-[var(--panel-border)]/[0.12] bg-[var(--panel-bg)]/[0.4] p-4 text-left transition-all hover:border-[var(--panel-border)]/[0.3] hover:bg-[var(--panel-bg)]"
+          className="group relative flex flex-col items-start gap-2.5 rounded-[var(--panel-radius)] border border-[var(--panel-border)]/[0.12] bg-[var(--panel-bg)]/[0.4] p-4 text-left transition-all hover:border-[var(--panel-border)]/[0.3] hover:bg-[var(--panel-bg)]"
         >
           <div className="flex h-10 w-10 items-center justify-center rounded-xl bg-red-500/15 text-red-400">
             <Mail className="h-5 w-5" />
@@ -186,7 +186,7 @@ export default function MailOnboarding({
             setSelectedProvider("outlook");
             setView("create");
           }}
-          className="group relative flex flex-col items-start gap-2.5 rounded-2xl border border-[var(--panel-border)]/[0.12] bg-[var(--panel-bg)]/[0.4] p-4 text-left transition-all hover:border-[var(--panel-border)]/[0.3] hover:bg-[var(--panel-bg)]"
+          className="group relative flex flex-col items-start gap-2.5 rounded-[var(--panel-radius)] border border-[var(--panel-border)]/[0.12] bg-[var(--panel-bg)]/[0.4] p-4 text-left transition-all hover:border-[var(--panel-border)]/[0.3] hover:bg-[var(--panel-bg)]"
         >
           <div className="flex h-10 w-10 items-center justify-center rounded-xl bg-blue-500/15 text-blue-400">
             <Globe className="h-5 w-5" />
@@ -206,7 +206,7 @@ export default function MailOnboarding({
             setSelectedProvider("imap");
             setView("create");
           }}
-          className="group relative flex flex-col items-start gap-2.5 rounded-2xl border border-[var(--panel-border)]/[0.12] bg-[var(--panel-bg)]/[0.4] p-4 text-left transition-all hover:border-[var(--panel-border)]/[0.3] hover:bg-[var(--panel-bg)]"
+          className="group relative flex flex-col items-start gap-2.5 rounded-[var(--panel-radius)] border border-[var(--panel-border)]/[0.12] bg-[var(--panel-bg)]/[0.4] p-4 text-left transition-all hover:border-[var(--panel-border)]/[0.3] hover:bg-[var(--panel-bg)]"
         >
           <div className="flex h-10 w-10 items-center justify-center rounded-xl bg-emerald-500/15 text-emerald-400">
             <Server className="h-5 w-5" />
@@ -239,7 +239,7 @@ export default function MailOnboarding({
   const createForm = (
     <div className="space-y-4">
       {aliases.length > 0 && primary?.alias && (
-        <div className="rounded-2xl border border-[var(--panel-border)]/[0.1] bg-[var(--panel-bg)]/[0.4] p-3 text-xs text-[var(--text-muted)]">
+        <div className="rounded-[var(--panel-radius)] border border-[var(--panel-border)]/[0.1] bg-[var(--panel-bg)]/[0.4] p-3 text-xs text-[var(--text-muted)]">
           Adresse existante : <span className="font-semibold text-[var(--text-primary)]">{primary.alias}</span>
         </div>
       )}
@@ -321,7 +321,7 @@ export default function MailOnboarding({
   // Step 3: Confirm Profile
   const confirmForm = (
     <div className="space-y-4">
-      <div className="rounded-2xl border border-[var(--accent-primary)]/30 bg-[var(--accent-primary)]/10 p-5">
+      <div className="rounded-[var(--panel-radius)] border border-[var(--accent-primary)]/30 bg-[var(--accent-primary)]/10 p-5">
         <div className="flex items-center gap-2 text-[10px] font-bold uppercase tracking-wider text-[var(--accent-primary)]">
           <Crown className="h-4 w-4" />
           Votre adresse principale
@@ -386,10 +386,10 @@ export default function MailOnboarding({
         initial={{ opacity: 0, y: 20, scale: 0.96 }}
         animate={{ opacity: 1, y: 0, scale: 1 }}
         transition={{ duration: 0.25, ease: "easeOut" }}
-        className="w-full max-w-xl rounded-3xl border border-[var(--panel-border)]/[0.2] bg-[var(--panel-bg)]/[0.9] p-6 sm:p-8 shadow-2xl backdrop-blur-2xl flex flex-col gap-6"
+        className="w-full max-w-xl rounded-[var(--panel-radius)] border border-[var(--panel-border)]/[0.2] bg-[var(--panel-bg)]/[0.9] p-6 sm:p-8 shadow-2xl backdrop-blur-2xl flex flex-col gap-6"
       >
         <div className="flex items-center gap-3">
-          <div className="flex h-12 w-12 items-center justify-center rounded-2xl border border-[var(--accent-primary)]/30 bg-[var(--accent-primary)]/15 text-[var(--accent-primary)] shadow-md">
+          <div className="flex h-12 w-12 items-center justify-center rounded-[var(--panel-radius)] border border-[var(--accent-primary)]/30 bg-[var(--accent-primary)]/15 text-[var(--accent-primary)] shadow-md">
             <Mail className="h-6 w-6" />
           </div>
           <div>

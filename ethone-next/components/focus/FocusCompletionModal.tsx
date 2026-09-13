@@ -63,7 +63,7 @@ export default function FocusCompletionModal({
             animate={{ opacity: 1, scale: 1, y: 0 }}
             exit={{ opacity: 0, scale: 0.9, y: 20 }}
             transition={{ type: "spring", stiffness: 400, damping: 28 }}
-            className="w-full max-w-sm rounded-2xl border border-[var(--panel-border)] bg-[var(--panel-bg)] p-6 shadow-2xl backdrop-blur-xl"
+            className="w-full max-w-sm rounded-[var(--panel-radius)] border border-[var(--panel-border)] bg-[var(--panel-bg)] p-6 shadow-2xl backdrop-blur-xl"
           >
             {/* Icon */}
             <div className="flex flex-col items-center text-center mb-5">
@@ -116,7 +116,7 @@ export default function FocusCompletionModal({
                 <button
                   type="button"
                   onClick={onReview}
-                  className="flex items-center justify-center gap-1.5 rounded-xl border border-[var(--panel-border)] bg-[var(--surface-raised)]/60 px-3 py-2 text-xs font-medium text-[var(--text-muted)] transition-all hover:text-[var(--text-primary)]"
+                  className="flex items-center justify-center gap-1.5 rounded-[var(--inset-radius)] border border-[var(--panel-border)] bg-[var(--surface-raised)]/60 px-3 py-2 text-xs font-medium text-[var(--text-muted)] transition-all hover:text-[var(--text-primary)]"
                 >
                   <Icon name="bar-chart-2" className="h-3.5 w-3.5" />
                   Statistiques
@@ -124,7 +124,7 @@ export default function FocusCompletionModal({
                 <button
                   type="button"
                   onClick={onDismiss}
-                  className="flex items-center justify-center gap-1.5 rounded-xl border border-[var(--panel-border)] bg-[var(--surface-raised)]/60 px-3 py-2 text-xs font-medium text-[var(--text-muted)] transition-all hover:text-[var(--text-primary)]"
+                  className="flex items-center justify-center gap-1.5 rounded-[var(--inset-radius)] border border-[var(--panel-border)] bg-[var(--surface-raised)]/60 px-3 py-2 text-xs font-medium text-[var(--text-muted)] transition-all hover:text-[var(--text-primary)]"
                 >
                   <Icon name="x" className="h-3.5 w-3.5" />
                   Fermer

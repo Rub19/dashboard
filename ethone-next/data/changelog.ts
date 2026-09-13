@@ -26233,4 +26233,57 @@ CHANGELOG_BY_LANG.en.unshift(v12139_en);
 CHANGELOG_BY_LANG.es.unshift(v12139_es);
 CHANGELOG_BY_LANG.de.unshift(v12139_de);
 
+const v12140_fr: ChangelogEntry = {
+  version: "v1.21.40",
+  date: "2026-09-13",
+  title: "Bordures et coins concentriques : le reste du dashboard",
+  items: [
+    "Le chantier bordures/coins couvre maintenant tout le dashboard, pas seulement Discord : 45 fichiers (accueil, fichiers, brain, connexions, parametres, tracker, marketplace, boost, navigateur, flows, interactions, admin...) avaient encore des bordures blanches brutes a 5, 10, 15 ou 20% converties vers --panel-border ou le token de survol.",
+    "En plus, 188 fichiers utilisaient deja la bonne couleur de bordure mais un rayon de coin fixe (rounded-xl, rounded-2xl...) qui ignorait le style d angle choisi dans Apparence (arrondi, doux, anguleux) : desormais convertis vers --panel-radius / --inset-radius comme le reste de l app, environ 780 occurrences au total.",
+    "Retire le halo degrade flou derriere la carte de connexion (page de login) qui laissait un espace visible autour de la carte.",
+    "Purement presentationnel : aucune logique ni donnee modifiee.",
+  ],
+};
+
+const v12140_en: ChangelogEntry = {
+  version: "v1.21.40",
+  date: "2026-09-13",
+  title: "Concentric borders and corners: the rest of the dashboard",
+  items: [
+    "The borders/corners pass now covers the whole dashboard, not just Discord: 45 files (home, files, brain, connections, settings, tracker, marketplace, boost, browser, flows, interactions, admin...) still had raw white borders at 5, 10, 15 or 20% opacity, converted to --panel-border or the hover token.",
+    "On top of that, 188 files already used the right border colour but a fixed corner radius (rounded-xl, rounded-2xl...) that ignored the corner style chosen in Appearance (rounded, soft, sharp) — now converted to --panel-radius / --inset-radius like the rest of the app, roughly 780 occurrences in total.",
+    "Removed the blurred gradient halo behind the login card that left a visible gap around it.",
+    "Purely presentational: no logic or data changed.",
+  ],
+};
+
+const v12140_es: ChangelogEntry = {
+  version: "v1.21.40",
+  date: "2026-09-13",
+  title: "Bordes y esquinas concentricas: el resto del dashboard",
+  items: [
+    "El trabajo de bordes/esquinas ahora cubre todo el dashboard, no solo Discord: 45 archivos (inicio, archivos, brain, conexiones, ajustes, tracker, marketplace, boost, navegador, flows, interacciones, admin...) todavia tenian bordes blancos sin procesar al 5, 10, 15 o 20%, convertidos a --panel-border o al token de hover.",
+    "Ademas, 188 archivos ya usaban el color de borde correcto pero un radio de esquina fijo (rounded-xl, rounded-2xl...) que ignoraba el estilo de angulo elegido en Apariencia (redondeado, suave, anguloso): ahora convertidos a --panel-radius / --inset-radius como el resto de la app, unas 780 ocurrencias en total.",
+    "Se elimino el halo degradado difuminado detras de la tarjeta de inicio de sesion que dejaba un espacio visible alrededor de ella.",
+    "Puramente presentacional: sin cambios de logica ni datos.",
+  ],
+};
+
+const v12140_de: ChangelogEntry = {
+  version: "v1.21.40",
+  date: "2026-09-13",
+  title: "Konzentrische Raender und Ecken: der Rest des Dashboards",
+  items: [
+    "Die Raender/Ecken-Arbeit deckt jetzt das ganze Dashboard ab, nicht nur Discord: 45 Dateien (Start, Dateien, Brain, Verbindungen, Einstellungen, Tracker, Marketplace, Boost, Browser, Flows, Interactions, Admin...) hatten noch rohe weisse Raender bei 5, 10, 15 oder 20%, umgestellt auf --panel-border oder das Hover-Token.",
+    "Zusaetzlich verwendeten 188 Dateien bereits die richtige Randfarbe, aber einen festen Eckradius (rounded-xl, rounded-2xl...), der den in Erscheinungsbild gewaehlten Eckenstil (rund, weich, kantig) ignorierte - jetzt auf --panel-radius / --inset-radius umgestellt wie im Rest der App, insgesamt rund 780 Vorkommen.",
+    "Den unscharfen Farbverlauf-Schein hinter der Login-Karte entfernt, der einen sichtbaren Abstand um die Karte hinterliess.",
+    "Rein visuell: keine Aenderung an Logik oder Daten.",
+  ],
+};
+
+CHANGELOG_BY_LANG.fr.unshift(v12140_fr);
+CHANGELOG_BY_LANG.en.unshift(v12140_en);
+CHANGELOG_BY_LANG.es.unshift(v12140_es);
+CHANGELOG_BY_LANG.de.unshift(v12140_de);
+
 export const CHANGELOG = CHANGELOG_BY_LANG.fr;

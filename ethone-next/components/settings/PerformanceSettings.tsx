@@ -96,7 +96,7 @@ export default function PerformanceSettings() {
     <div className="flex flex-col gap-6">
       {/* Live System Diagnostics Card */}
       <div className="grid grid-cols-2 gap-3 sm:grid-cols-4">
-        <div className="flex flex-col rounded-2xl border border-[var(--panel-border)] bg-[var(--panel-bg)] p-4">
+        <div className="flex flex-col rounded-[var(--panel-radius)] border border-[var(--panel-border)] bg-[var(--panel-bg)] p-4">
           <div className="flex items-center justify-between">
             <span className="text-[11px] font-medium text-[var(--text-muted)]">Mémoire UI</span>
             <Icon name="cpu" className="h-4 w-4 text-[var(--accent-primary)]" />
@@ -105,7 +105,7 @@ export default function PerformanceSettings() {
           <span className="text-[10px] text-[var(--text-muted)]">{heapUsed ? "Heap JS utilisé" : "Non disponible sur ce navigateur"}</span>
         </div>
 
-        <div className="flex flex-col rounded-2xl border border-[var(--panel-border)] bg-[var(--panel-bg)] p-4">
+        <div className="flex flex-col rounded-[var(--panel-radius)] border border-[var(--panel-border)] bg-[var(--panel-bg)] p-4">
           <div className="flex items-center justify-between">
             <span className="text-[11px] font-medium text-[var(--text-muted)]">Rendu Écran</span>
             <Icon name="monitor" className="h-4 w-4 text-[var(--info)]" />
@@ -114,7 +114,7 @@ export default function PerformanceSettings() {
           <span className="text-[10px] text-[var(--text-muted)]">Fréquence d&apos;affichage mesurée</span>
         </div>
 
-        <div className="flex flex-col rounded-2xl border border-[var(--panel-border)] bg-[var(--panel-bg)] p-4">
+        <div className="flex flex-col rounded-[var(--panel-radius)] border border-[var(--panel-border)] bg-[var(--panel-bg)] p-4">
           <div className="flex items-center justify-between">
             <span className="text-[11px] font-medium text-[var(--text-muted)]">Audio Web API</span>
             <Icon name="speaker-high" className="h-4 w-4 text-[var(--accent-secondary)]" />
@@ -123,7 +123,7 @@ export default function PerformanceSettings() {
           <span className="text-[10px] text-[var(--text-muted)]">{audioEnabled ? "Synthétiseur disponible" : "Sons désactivés dans les réglages"}</span>
         </div>
 
-        <div className="flex flex-col rounded-2xl border border-[var(--panel-border)] bg-[var(--panel-bg)] p-4">
+        <div className="flex flex-col rounded-[var(--panel-radius)] border border-[var(--panel-border)] bg-[var(--panel-bg)] p-4">
           <div className="flex items-center justify-between">
             <span className="text-[11px] font-medium text-[var(--text-muted)]">Stockage local</span>
             <Icon name="hard-drive" className="h-4 w-4 text-[var(--warning)]" />
@@ -143,7 +143,7 @@ export default function PerformanceSettings() {
           <div
             onClick={() => update({ performanceMode: "normal" })}
             className={cn(
-              "flex cursor-pointer flex-col gap-1.5 rounded-2xl border p-4 transition-all",
+              "flex cursor-pointer flex-col gap-1.5 rounded-[var(--panel-radius)] border p-4 transition-all",
               settings.performanceMode === "normal"
                 ? "border-[var(--accent-primary)] bg-[var(--accent-primary)]/[0.08] shadow-md"
                 : "border-[var(--panel-border)] bg-[var(--panel-bg)] hover:border-[var(--accent-primary)]/40"
@@ -163,7 +163,7 @@ export default function PerformanceSettings() {
           <div
             onClick={() => update({ performanceMode: "low" })}
             className={cn(
-              "flex cursor-pointer flex-col gap-1.5 rounded-2xl border p-4 transition-all",
+              "flex cursor-pointer flex-col gap-1.5 rounded-[var(--panel-radius)] border p-4 transition-all",
               settings.performanceMode === "low"
                 ? "border-[var(--accent-primary)] bg-[var(--accent-primary)]/[0.08] shadow-md"
                 : "border-[var(--panel-border)] bg-[var(--panel-bg)] hover:border-[var(--accent-primary)]/40"
@@ -184,7 +184,7 @@ export default function PerformanceSettings() {
 
       {/* Background Quality and Cache Management */}
       <div className="grid grid-cols-1 gap-4 sm:grid-cols-2">
-        <div className="flex flex-col gap-3 rounded-2xl border border-[var(--panel-border)] bg-[var(--panel-bg)] p-4">
+        <div className="flex flex-col gap-3 rounded-[var(--panel-radius)] border border-[var(--panel-border)] bg-[var(--panel-bg)] p-4">
           <label className="text-sm font-semibold text-[var(--text-primary)]">
             Qualité des fonds & auras
           </label>
@@ -214,7 +214,7 @@ export default function PerformanceSettings() {
           </div>
         </div>
 
-        <div className="flex flex-col justify-between gap-3 rounded-2xl border border-[var(--panel-border)] bg-[var(--panel-bg)] p-4">
+        <div className="flex flex-col justify-between gap-3 rounded-[var(--panel-radius)] border border-[var(--panel-border)] bg-[var(--panel-bg)] p-4">
           <div>
             <p className="text-sm font-semibold text-[var(--text-primary)]">
               Nettoyer le cache local
@@ -228,7 +228,7 @@ export default function PerformanceSettings() {
             type="button"
             onClick={handleClearCache}
             disabled={clearingCache}
-            className="flex items-center justify-center gap-2 rounded-xl border border-[var(--panel-border)] bg-[var(--surface-raised)] py-2 px-4 text-xs font-semibold text-[var(--text-primary)] hover:border-[var(--accent-primary)]/50 transition-all active:scale-95"
+            className="flex items-center justify-center gap-2 rounded-[var(--inset-radius)] border border-[var(--panel-border)] bg-[var(--surface-raised)] py-2 px-4 text-xs font-semibold text-[var(--text-primary)] hover:border-[var(--accent-primary)]/50 transition-all active:scale-95"
           >
             <Icon name="trash" className="h-4 w-4 text-[var(--danger)]" />
             {clearingCache ? "Nettoyage en cours..." : cacheCleared ? "✓ Cache nettoyé" : "Vider le cache"}

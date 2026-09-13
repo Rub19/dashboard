@@ -64,7 +64,7 @@ export default function Screen6Customization() {
               <label className="text-xs font-semibold text-[var(--text-muted)] block mb-2">
                 Niveau de sévérité de la protection
               </label>
-              <div className="grid grid-cols-3 gap-1.5 p-1 bg-[var(--surface-2)] rounded-xl border border-[var(--panel-border)] text-xs">
+              <div className="grid grid-cols-3 gap-1.5 p-1 bg-[var(--surface-2)] rounded-[var(--inset-radius)] border border-[var(--panel-border)] text-xs">
                 <button
                   onClick={() => setSecurityLevel("standard")}
                   className={`py-1.5 rounded-lg font-medium transition cursor-pointer ${
@@ -94,7 +94,7 @@ export default function Screen6Customization() {
           </div>
 
           {/* Interactive Live Embed Preview */}
-          <div className="p-3.5 rounded-xl bg-[var(--surface-2)]/60 border border-[var(--panel-border)] shadow-inner relative overflow-hidden">
+          <div className="p-3.5 rounded-[var(--inset-radius)] bg-[var(--surface-2)]/60 border border-[var(--panel-border)] shadow-inner relative overflow-hidden">
             <div className={`absolute left-0 top-0 bottom-0 w-1 ${activeColor.bg}`} />
             
             <div className="flex items-center gap-2 mb-2 pl-2">

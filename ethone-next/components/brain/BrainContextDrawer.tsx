@@ -56,7 +56,7 @@ export default function BrainContextDrawer({
           <span className="text-[10px] font-bold uppercase tracking-wider text-[var(--text-muted)]">
             Environnement ETHONE
           </span>
-          <div className="rounded-2xl border border-[var(--panel-border)] bg-[var(--surface-raised)]/40 p-3 space-y-2">
+          <div className="rounded-[var(--panel-radius)] border border-[var(--panel-border)] bg-[var(--surface-raised)]/40 p-3 space-y-2">
             <div className="flex items-center justify-between">
               <span className="text-xs text-[var(--text-muted)]">Espace de travail</span>
               <span className="rounded-full bg-[var(--accent-primary)]/15 px-2 py-0.5 text-[10px] font-semibold text-[var(--accent-primary)] capitalize">
@@ -95,7 +95,7 @@ export default function BrainContextDrawer({
               {attachments.map((att) => (
                 <div
                   key={att.id}
-                  className="flex items-center justify-between gap-2 rounded-xl border border-[var(--panel-border)] bg-[var(--surface-raised)]/60 px-3 py-2 text-xs"
+                  className="flex items-center justify-between gap-2 rounded-[var(--inset-radius)] border border-[var(--panel-border)] bg-[var(--surface-raised)]/60 px-3 py-2 text-xs"
                 >
                   <div className="flex items-center gap-2 min-w-0">
                     <Icon
@@ -133,7 +133,7 @@ export default function BrainContextDrawer({
             ].map((s) => (
               <div
                 key={s.id}
-                className="flex items-center gap-2 rounded-xl border border-[var(--panel-border)] bg-[var(--surface-raised)]/40 p-2.5 shadow-xs transition-all hover:bg-[var(--surface-raised)]"
+                className="flex items-center gap-2 rounded-[var(--inset-radius)] border border-[var(--panel-border)] bg-[var(--surface-raised)]/40 p-2.5 shadow-xs transition-all hover:bg-[var(--surface-raised)]"
               >
                 <ServiceIcon
                   id={s.id}
@@ -164,7 +164,7 @@ export default function BrainContextDrawer({
             ].map((cap) => (
               <span
                 key={cap}
-                className="inline-flex items-center gap-1 rounded-lg border border-[var(--panel-border)] bg-[var(--surface-raised)]/30 px-2 py-1 text-[10px] font-medium text-[var(--text-muted)]"
+                className="inline-flex items-center gap-1 rounded-[var(--inset-radius)] border border-[var(--panel-border)] bg-[var(--surface-raised)]/30 px-2 py-1 text-[10px] font-medium text-[var(--text-muted)]"
               >
                 <Icon name="check" className="h-3 w-3" />
                 {cap}

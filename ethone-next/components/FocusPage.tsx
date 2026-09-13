@@ -122,7 +122,7 @@ export default function FocusPage() {
         {/* Right header controls */}
         <div className="flex items-center gap-2">
           {/* Tabs */}
-          <div className="flex rounded-xl border border-[var(--panel-border)] bg-[var(--surface-raised)]/60 p-0.5">
+          <div className="flex rounded-[var(--inset-radius)] border border-[var(--panel-border)] bg-[var(--surface-raised)]/60 p-0.5">
             {(["focus", "history"] as Tab[]).map((t) => (
               <button
                 key={t}
@@ -182,7 +182,7 @@ export default function FocusPage() {
             type="button"
             onClick={handleZen}
             className={cn(
-              "hidden sm:flex items-center gap-1.5 rounded-xl border px-3 py-1.5 text-xs font-semibold transition-all",
+              "hidden sm:flex items-center gap-1.5 rounded-[var(--inset-radius)] border px-3 py-1.5 text-xs font-semibold transition-all",
               zenMode
                 ? "border-[var(--accent-primary)]/40 bg-[var(--accent-primary)]/15 text-[var(--accent-primary)]"
                 : "border-[var(--panel-border)] bg-[var(--surface-raised)]/60 text-[var(--text-muted)] hover:text-[var(--text-primary)]"
@@ -206,7 +206,7 @@ export default function FocusPage() {
           <div className="max-w-6xl mx-auto w-full space-y-5">
 
             {/* Goal Input Banner */}
-            <div className="flex items-center gap-3 rounded-2xl border border-[var(--accent-primary)]/20 bg-[var(--accent-primary)]/08 px-4 py-3 backdrop-blur-sm">
+            <div className="flex items-center gap-3 rounded-[var(--panel-radius)] border border-[var(--accent-primary)]/20 bg-[var(--accent-primary)]/08 px-4 py-3 backdrop-blur-sm">
               <Icon name="target" className="h-4 w-4 text-[var(--accent-primary)] shrink-0" />
               {editingGoal ? (
                 <input
@@ -244,7 +244,7 @@ export default function FocusPage() {
             </div>
 
             {/* Focus Mode Selector Bar */}
-            <div className="flex items-center justify-start sm:justify-center gap-1.5 overflow-x-auto no-scrollbar p-1 rounded-2xl border border-[var(--panel-border)] bg-[var(--surface-raised)]/50 backdrop-blur-md">
+            <div className="flex items-center justify-start sm:justify-center gap-1.5 overflow-x-auto no-scrollbar p-1 rounded-[var(--panel-radius)] border border-[var(--panel-border)] bg-[var(--surface-raised)]/50 backdrop-blur-md">
               {FOCUS_MODES.map((mode) => {
                 const isActive = activePreset === mode.id;
                 return (
@@ -267,7 +267,7 @@ export default function FocusPage() {
             </div>
 
             {/* Brain Smart Recommendation Pill */}
-            <div className="flex items-center gap-2.5 rounded-2xl border border-[var(--accent-primary)]/25 bg-[var(--accent-primary)]/10 px-4 py-2.5 text-xs text-[var(--text-primary)] shadow-sm">
+            <div className="flex items-center gap-2.5 rounded-[var(--panel-radius)] border border-[var(--accent-primary)]/25 bg-[var(--accent-primary)]/10 px-4 py-2.5 text-xs text-[var(--text-primary)] shadow-sm">
               <Icon name="brain" className="h-4 w-4 text-[var(--accent-primary)] shrink-0" />
               <span className="text-[var(--text-muted)]">Recommandation Brain :</span>
               <span className="font-semibold text-[var(--text-primary)]">
@@ -282,7 +282,7 @@ export default function FocusPage() {
             {/* 2-Column Responsive Layout */}
             <div className="grid grid-cols-1 lg:grid-cols-12 gap-6 items-start">
               {/* Left Column: Center Timer */}
-              <div className="lg:col-span-7 flex flex-col items-center justify-center rounded-3xl border border-[var(--panel-border)] bg-[var(--surface-raised)]/50 p-6 shadow-xl backdrop-blur-2xl">
+              <div className="lg:col-span-7 flex flex-col items-center justify-center rounded-[var(--panel-radius)] border border-[var(--panel-border)] bg-[var(--surface-raised)]/50 p-6 shadow-xl backdrop-blur-2xl">
                 <FocusTimer2026
                   progress={progress}
                   remaining={format(state.remaining)}
@@ -343,7 +343,7 @@ export default function FocusPage() {
           <button
             type="button"
             onClick={handleZen}
-            className="mt-8 rounded-xl border border-[var(--panel-border)] bg-[var(--surface-raised)]/60 px-4 py-2 text-xs font-semibold text-[var(--text-primary)] hover:border-[var(--accent-primary)]/40 transition-all"
+            className="mt-8 rounded-[var(--inset-radius)] border border-[var(--panel-border)] bg-[var(--surface-raised)]/60 px-4 py-2 text-xs font-semibold text-[var(--text-primary)] hover:border-[var(--accent-primary)]/40 transition-all"
           >
             Quitter le mode Zen (Échap)
           </button>

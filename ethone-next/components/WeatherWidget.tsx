@@ -187,7 +187,7 @@ const WeatherBadge = memo(function WeatherBadge({
   tone?: "zinc" | "cyan" | "emerald" | "amber" | "rose" | "violet";
 }) {
   return (
-    <div className="flex w-full items-center gap-1.5 rounded-xl border border-[var(--panel-border)] bg-[var(--surface-2)]/40 px-2.5 py-1.5 text-xs font-medium text-[var(--text-primary)]">
+    <div className="flex w-full items-center gap-1.5 rounded-[var(--inset-radius)] border border-[var(--panel-border)] bg-[var(--surface-2)]/40 px-2.5 py-1.5 text-xs font-medium text-[var(--text-primary)]">
       <Icon name={icon} className="h-3 w-3 text-[var(--text-muted)]" />
       {label && <span className="text-[var(--text-muted)]">{label}</span>}
       <span>{value}</span>
@@ -285,7 +285,7 @@ const WeatherWidget = memo(function WeatherWidget({ data, loading, onRefresh, co
         <div className="mt-1 flex flex-wrap items-center justify-center gap-2">
           <Link
             href="/weather"
-            className="inline-flex items-center gap-1.5 rounded-xl border border-[var(--text-primary)]/[0.08] bg-[var(--text-primary)]/[0.04] px-3 py-1.5 text-xs font-medium text-[var(--text-primary)] transition-all hover:bg-[var(--text-primary)]/[0.08] active:scale-95"
+            className="inline-flex items-center gap-1.5 rounded-[var(--inset-radius)] border border-[var(--text-primary)]/[0.08] bg-[var(--text-primary)]/[0.04] px-3 py-1.5 text-xs font-medium text-[var(--text-primary)] transition-all hover:bg-[var(--text-primary)]/[0.08] active:scale-95"
           >
             <Icon name="map-pin" className="h-3 w-3" />
             {i18n("configureCity", "Configurer la ville")}

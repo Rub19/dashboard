@@ -238,7 +238,7 @@ const BentoContextMenu = forwardRef<HTMLDivElement, BentoContextMenuProps>(
         exit={{ opacity: 0, scale: 0.95 }}
         transition={{ duration: 0.12, ease: "easeOut" }}
         style={{ left: x, top: y }}
-        className="fixed z-[9999] min-w-[220px] select-none rounded-2xl border border-[var(--text-primary)]/[0.1] bg-zinc-950/85 p-1.5 shadow-[0_20px_50px_rgba(0,0,0,0.8)] backdrop-blur-2xl"
+        className="fixed z-[9999] min-w-[220px] select-none rounded-[var(--panel-radius)] border border-[var(--text-primary)]/[0.1] bg-zinc-950/85 p-1.5 shadow-[0_20px_50px_rgba(0,0,0,0.8)] backdrop-blur-2xl"
       >
         {items.map((item, index) =>
           item.kind === "separator" ? (

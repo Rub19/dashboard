@@ -78,7 +78,7 @@ const SystemControlCard = memo(function SystemControlCard({ className = "", scro
                   type="button"
                   onClick={() => handleStatusSelect(id, config.presence)}
                   aria-pressed={active}
-                  className={`flex min-h-[40px] items-center justify-center gap-1.5 rounded-lg border border-[var(--text-primary)]/[0.08] px-2.5 py-2 text-[11px] font-medium transition-all duration-150 active:scale-95 ${
+                  className={`flex min-h-[40px] items-center justify-center gap-1.5 rounded-[var(--inset-radius)] border border-[var(--text-primary)]/[0.08] px-2.5 py-2 text-[11px] font-medium transition-all duration-150 active:scale-95 ${
                     active
                       ? `${config.bg} ${config.text} ring-1 ${config.ring} shadow-sm`
                       : "bg-[var(--text-primary)]/[0.02] text-[var(--text-muted)] hover:bg-[var(--text-primary)]/[0.06] hover:text-[var(--text-primary)] hover:border-[var(--text-primary)]/20"
@@ -112,10 +112,10 @@ const SystemControlCard = memo(function SystemControlCard({ className = "", scro
                   title={i18n(key)}
                   aria-label={i18n(key)}
                   style={{ backgroundColor: palette.background }}
-                  className={`group relative flex h-9 w-9 items-center justify-center rounded-xl border transition-all duration-200 hover:scale-110 active:scale-95 cursor-pointer ${
+                  className={`group relative flex h-9 w-9 items-center justify-center rounded-[var(--inset-radius)] border transition-all duration-200 hover:scale-110 active:scale-95 cursor-pointer ${
                     active
-                      ? "border-white/30 ring-2 ring-inset ring-white/40 shadow-[0_0_12px_rgba(255,255,255,0.15)]"
-                      : "border-white/10 opacity-75 hover:opacity-100 hover:border-white/25"
+                      ? "border-[var(--input-border-hover)] ring-2 ring-inset ring-white/40 shadow-[0_0_12px_rgba(255,255,255,0.15)]"
+                      : "border-[var(--panel-border)] opacity-75 hover:opacity-100 hover:border-[var(--input-border-hover)]"
                   }`}
                 >
                   <span
@@ -127,7 +127,7 @@ const SystemControlCard = memo(function SystemControlCard({ className = "", scro
                   />
                   {active && (
                     <span
-                      className="absolute inset-0 rounded-xl border border-white/40 pointer-events-none"
+                      className="absolute inset-0 rounded-[var(--inset-radius)] border border-[var(--panel-border)] pointer-events-none"
                       aria-hidden="true"
                     />
                   )}
@@ -139,7 +139,7 @@ const SystemControlCard = memo(function SystemControlCard({ className = "", scro
 
         <div className="space-y-1.5">
           <p className="text-xs font-medium text-[var(--text-muted)]">{i18n("sessionMode")}</p>
-          <div className="flex items-center gap-1 rounded-lg border border-[var(--text-primary)]/[0.08] bg-[var(--text-primary)]/[0.02] p-1">
+          <div className="flex items-center gap-1 rounded-[var(--inset-radius)] border border-[var(--text-primary)]/[0.08] bg-[var(--text-primary)]/[0.02] p-1">
             <button
               type="button"
               onClick={handlePrevMode}

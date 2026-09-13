@@ -172,13 +172,13 @@ export default function TasksPage() {
           <button
             type="button"
             onClick={() => setIsAiDrawerOpen(true)}
-            className="flex items-center gap-2 rounded-xl border border-[var(--panel-border)] px-3 py-1.5 text-xs font-medium text-[var(--text-muted)] transition-colors hover:bg-[var(--surface-2)] hover:text-[var(--text-primary)]"
+            className="flex items-center gap-2 rounded-[var(--inset-radius)] border border-[var(--panel-border)] px-3 py-1.5 text-xs font-medium text-[var(--text-muted)] transition-colors hover:bg-[var(--surface-2)] hover:text-[var(--text-primary)]"
           >
             <Sparkles className="h-3.5 w-3.5" />
             <span>Assistant IA</span>
           </button>
 
-          <div className="flex items-center rounded-xl border border-[var(--panel-border)] p-0.5">
+          <div className="flex items-center rounded-[var(--inset-radius)] border border-[var(--panel-border)] p-0.5">
             <button
               type="button"
               onClick={() => setViewMode("list")}
@@ -241,7 +241,7 @@ export default function TasksPage() {
           <select
             value={newCategory}
             onChange={(e) => setNewCategory(e.target.value)}
-            className="cursor-pointer rounded-lg border border-[var(--panel-border)] bg-transparent px-2.5 py-1.5 text-xs text-[var(--text-muted)] outline-none hover:text-[var(--text-primary)]"
+            className="cursor-pointer rounded-[var(--inset-radius)] border border-[var(--panel-border)] bg-transparent px-2.5 py-1.5 text-xs text-[var(--text-muted)] outline-none hover:text-[var(--text-primary)]"
           >
             {CATEGORIES.filter((c) => c !== "Tous").map((c) => (
               <option key={c} value={c} className="bg-[var(--panel-bg)] text-[var(--text-primary)]">
@@ -253,7 +253,7 @@ export default function TasksPage() {
           <select
             value={newPriority}
             onChange={(e) => setNewPriority(e.target.value as TaskPriority)}
-            className="cursor-pointer rounded-lg border border-[var(--panel-border)] bg-transparent px-2.5 py-1.5 text-xs text-[var(--text-muted)] outline-none hover:text-[var(--text-primary)]"
+            className="cursor-pointer rounded-[var(--inset-radius)] border border-[var(--panel-border)] bg-transparent px-2.5 py-1.5 text-xs text-[var(--text-muted)] outline-none hover:text-[var(--text-primary)]"
           >
             <option value="low" className="bg-[var(--panel-bg)] text-[var(--text-primary)]">Basse</option>
             <option value="medium" className="bg-[var(--panel-bg)] text-[var(--text-primary)]">Moyenne</option>
@@ -304,7 +304,7 @@ export default function TasksPage() {
             value={searchQuery}
             onChange={(e) => setSearchQuery(e.target.value)}
             placeholder="Rechercher…"
-            className="w-full rounded-lg border border-[var(--panel-border)] bg-transparent pl-8 pr-3 py-1.5 text-xs text-[var(--text-primary)] placeholder:text-[var(--text-muted)] outline-none focus:border-[var(--accent-primary)]"
+            className="w-full rounded-[var(--inset-radius)] border border-[var(--panel-border)] bg-transparent pl-8 pr-3 py-1.5 text-xs text-[var(--text-primary)] placeholder:text-[var(--text-muted)] outline-none focus:border-[var(--accent-primary)]"
           />
         </div>
       </div>
@@ -329,7 +329,7 @@ export default function TasksPage() {
             <button
               type="button"
               onClick={() => reload()}
-              className="mt-4 flex items-center gap-2 rounded-lg border border-[var(--panel-border)] px-4 py-2 text-xs font-medium text-[var(--text-primary)] transition-colors hover:bg-[var(--surface-2)] active:scale-95"
+              className="mt-4 flex items-center gap-2 rounded-[var(--inset-radius)] border border-[var(--panel-border)] px-4 py-2 text-xs font-medium text-[var(--text-primary)] transition-colors hover:bg-[var(--surface-2)] active:scale-95"
             >
               <RefreshCw className="h-3.5 w-3.5" />
               <span>Réessayer</span>

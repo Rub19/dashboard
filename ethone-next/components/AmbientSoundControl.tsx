@@ -107,7 +107,7 @@ export default function AmbientSoundControl({ value, onChange, compact }: Ambien
             type="button"
             onClick={() => toggle(id)}
             className={cn(
-              "group relative flex flex-col items-center justify-center rounded-xl border p-2.5 transition-all active:scale-95",
+              "group relative flex flex-col items-center justify-center rounded-[var(--inset-radius)] border p-2.5 transition-all active:scale-95",
               compact ? "min-w-[4.5rem] flex-1" : "",
               active
                 ? "border-[var(--accent-primary)] bg-[var(--accent-primary)]/10 text-[var(--accent-primary)] shadow-[0_0_12px_-4px_var(--accent-primary)]"

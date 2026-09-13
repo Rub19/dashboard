@@ -56,7 +56,7 @@ class WidgetErrorBoundary extends Component<ErrorBoundaryProps, ErrorBoundarySta
   render() {
     if (this.state.hasError) {
       return (
-        <div className="flex h-full min-h-[160px] w-full flex-col items-center justify-center gap-2.5 rounded-2xl border border-rose-500/30 bg-rose-500/10 p-4 text-center">
+        <div className="flex h-full min-h-[160px] w-full flex-col items-center justify-center gap-2.5 rounded-[var(--panel-radius)] border border-rose-500/30 bg-rose-500/10 p-4 text-center">
           <AlertTriangle className="h-6 w-6 text-rose-400" />
           <p className="text-xs font-bold text-rose-300">
             {this.props.fallbackTitle || "Erreur du widget"}
@@ -121,7 +121,7 @@ export default function WidgetContainer({
   return (
     <div
       className={cn(
-        "group relative flex h-full min-h-0 w-full flex-col overflow-hidden rounded-3xl border border-[var(--panel-border)]/70 bg-[var(--panel-bg)]/80 backdrop-blur-xl shadow-xs transition-all duration-200",
+        "group relative flex h-full min-h-0 w-full flex-col overflow-hidden rounded-[var(--panel-radius)] border border-[var(--panel-border)]/70 bg-[var(--panel-bg)]/80 backdrop-blur-xl shadow-xs transition-all duration-200",
         className
       )}
     >

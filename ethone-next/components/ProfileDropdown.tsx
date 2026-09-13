@@ -231,7 +231,7 @@ export default function ProfileDropdown() {
         ref={setTrigger as unknown as React.Ref<HTMLButtonElement>}
         onClick={() => setOpen(!open)}
         disabled={pending}
-        className="flex h-10 items-center gap-2 rounded-xl border border-[var(--panel-border)] bg-[var(--text-primary)]/[0.03] px-2 text-[var(--text-primary)] transition-colors hover:bg-[var(--text-primary)]/[0.05]"
+        className="flex h-10 items-center gap-2 rounded-[var(--inset-radius)] border border-[var(--panel-border)] bg-[var(--text-primary)]/[0.03] px-2 text-[var(--text-primary)] transition-colors hover:bg-[var(--text-primary)]/[0.05]"
         aria-label={i18n("profile")}
         aria-expanded={open}
         aria-haspopup="true"
@@ -251,10 +251,10 @@ export default function ProfileDropdown() {
               exit={{ opacity: 0, y: 8, scale: 0.98 }}
               transition={{ duration: 0.15, ease: "easeOut" as const }}
               style={{ ...floatingStyles, originX: 1, originY: 0 }}
-              className="z-[var(--z-dropdown)] w-80 overflow-hidden rounded-xl border border-[var(--text-primary)]/10 bg-[var(--background)]/90 p-3 shadow-[0_16px_40px_rgba(0,0,0,0.85)] backdrop-blur-2xl"
+              className="z-[var(--z-dropdown)] w-80 overflow-hidden rounded-[var(--inset-radius)] border border-[var(--text-primary)]/10 bg-[var(--background)]/90 p-3 shadow-[0_16px_40px_rgba(0,0,0,0.85)] backdrop-blur-2xl"
             >
             {/* User Card Header */}
-            <div className="flex items-center justify-between gap-3 rounded-lg border border-[var(--text-primary)]/[0.06] bg-[var(--text-primary)]/[0.03] p-3">
+            <div className="flex items-center justify-between gap-3 rounded-[var(--inset-radius)] border border-[var(--text-primary)]/[0.06] bg-[var(--text-primary)]/[0.03] p-3">
               <div className="flex min-w-0 items-center gap-3">
                 <Avatar url={avatarUrl} name={displayName} size="md" />
                 <div className="min-w-0">
@@ -262,7 +262,7 @@ export default function ProfileDropdown() {
                   <p className="truncate text-[11px] text-[var(--text-muted)] max-w-[160px]">{email}</p>
                 </div>
               </div>
-              <span className="flex shrink-0 items-center gap-1 rounded-lg border border-[var(--accent-primary)] bg-[var(--accent-primary)] px-2 py-0.5 text-[10px] font-semibold text-[var(--accent-primary)]">
+              <span className="flex shrink-0 items-center gap-1 rounded-[var(--inset-radius)] border border-[var(--accent-primary)] bg-[var(--accent-primary)] px-2 py-0.5 text-[10px] font-semibold text-[var(--accent-primary)]">
                 <span className="h-1.5 w-1.5 rounded-full bg-[var(--accent-primary)]" />
                 {i18n("active") || "Actif"}
               </span>
@@ -280,7 +280,7 @@ export default function ProfileDropdown() {
                       key={w.id}
                       type="button"
                       onClick={() => handleWorkspace(w.id)}
-                      className={`flex items-center gap-2 rounded-lg border p-2 text-xs font-medium transition-all ${
+                      className={`flex items-center gap-2 rounded-[var(--inset-radius)] border p-2 text-xs font-medium transition-all ${
                         isActive
                           ? "border-[var(--text-primary)]/20 bg-[var(--text-primary)]/[0.08] text-[var(--text-primary)] shadow-sm"
                           : "border-[var(--text-primary)]/[0.04] bg-[var(--text-primary)]/[0.02] text-[var(--text-muted)] hover:bg-[var(--text-primary)]/[0.04] hover:text-[var(--text-primary)]"
@@ -299,7 +299,7 @@ export default function ProfileDropdown() {
 
             {/* Quick Profile Actions */}
             {activeProfile && (
-              <div className="grid grid-cols-4 gap-1.5 rounded-lg border border-[var(--text-primary)]/[0.05] bg-[var(--text-primary)]/[0.02] p-1 pt-3">
+              <div className="grid grid-cols-4 gap-1.5 rounded-[var(--inset-radius)] border border-[var(--text-primary)]/[0.05] bg-[var(--text-primary)]/[0.02] p-1 pt-3">
                 <button
                   type="button"
                 onClick={handleRename}
@@ -461,7 +461,7 @@ export default function ProfileDropdown() {
                   type="button"
                   onClick={handleDelete}
                   disabled={pending}
-                  className="flex items-center gap-2.5 rounded-lg border border-transparent px-3 py-2 text-xs font-medium text-[var(--danger)] transition-all hover:border-[var(--danger)]/20 hover:bg-[var(--danger)]/10 hover:text-[var(--danger)]"
+                  className="flex items-center gap-2.5 rounded-[var(--inset-radius)] border border-transparent px-3 py-2 text-xs font-medium text-[var(--danger)] transition-all hover:border-[var(--danger)]/20 hover:bg-[var(--danger)]/10 hover:text-[var(--danger)]"
                 >
                   <Trash2 className="h-4 w-4" />
                   {i18n("deleteProfile")}
@@ -470,7 +470,7 @@ export default function ProfileDropdown() {
               <button
                 type="button"
                 onClick={handleSignOut}
-                className="mt-1 flex items-center gap-2.5 rounded-lg border border-transparent px-3 py-2 text-xs font-medium text-[var(--danger)] transition-all hover:border-[var(--danger)]/20 hover:bg-[var(--danger)]/10 hover:text-[var(--danger)]"
+                className="mt-1 flex items-center gap-2.5 rounded-[var(--inset-radius)] border border-transparent px-3 py-2 text-xs font-medium text-[var(--danger)] transition-all hover:border-[var(--danger)]/20 hover:bg-[var(--danger)]/10 hover:text-[var(--danger)]"
               >
                 <LogOut className="h-4 w-4" />
                 {i18n("signOut")}

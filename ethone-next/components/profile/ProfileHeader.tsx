@@ -15,7 +15,7 @@ export function ProfileHeader() {
   const badges = identity?.badge_ids ?? [];
 
   return (
-    <section className="relative overflow-hidden rounded-2xl border border-[var(--panel-border)] bg-[var(--panel-bg)] p-6 backdrop-blur-[var(--panel-blur)]">
+    <section className="relative overflow-hidden rounded-[var(--panel-radius)] border border-[var(--panel-border)] bg-[var(--panel-bg)] p-6 backdrop-blur-[var(--panel-blur)]">
       <div
         className="absolute inset-x-0 top-0 h-24 bg-gradient-to-r from-violet-600/20 via-cyan-500/10 to-transparent"
         aria-hidden="true"

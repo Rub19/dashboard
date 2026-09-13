@@ -23,7 +23,7 @@ function maskId(id: string) {
 }
 
 const linkBtnClass =
-  "relative inline-flex items-center justify-center whitespace-nowrap h-9 px-3 text-xs gap-2 rounded-xl font-semibold transition-all duration-150 ease-out focus-visible:ring-2 focus-visible:ring-[var(--accent-primary)]/60 focus-visible:outline-none border border-[var(--panel-border)] bg-[var(--panel-bg)] text-[var(--text-primary)] hover:border-[var(--accent-primary)]/30 hover:bg-[var(--text-primary)]/[0.04] cursor-pointer";
+  "relative inline-flex items-center justify-center whitespace-nowrap h-9 px-3 text-xs gap-2 rounded-[var(--inset-radius)] font-semibold transition-all duration-150 ease-out focus-visible:ring-2 focus-visible:ring-[var(--accent-primary)]/60 focus-visible:outline-none border border-[var(--panel-border)] bg-[var(--panel-bg)] text-[var(--text-primary)] hover:border-[var(--accent-primary)]/30 hover:bg-[var(--text-primary)]/[0.04] cursor-pointer";
 
 export default function UserProfileCard({
   onEditProfile,
@@ -99,7 +99,7 @@ export default function UserProfileCard({
 
   return (
     <>
-      <div className="relative overflow-hidden rounded-2xl border border-[var(--panel-border)] bg-[var(--panel-bg)] p-4">
+      <div className="relative overflow-hidden rounded-[var(--panel-radius)] border border-[var(--panel-border)] bg-[var(--panel-bg)] p-4">
         <div className="flex items-start gap-4">
           {/* Avatar with click-to-change gallery */}
           <div className="relative shrink-0 group cursor-pointer" onClick={() => setIsAvatarPickerOpen(true)} title="Changer l'avatar (Netflix, Crunchyroll, Gaming...)">

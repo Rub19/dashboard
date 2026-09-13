@@ -37,7 +37,7 @@ export default function Screen7GettingStarted({ onStartSetup, onExploreDashboard
         <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
           {steps.map((s) => {
             return (
-              <div key={s.num} className="p-3 rounded-xl bg-[var(--surface-2)]/60 border border-[var(--panel-border)] flex items-start gap-3">
+              <div key={s.num} className="p-3 rounded-[var(--inset-radius)] bg-[var(--surface-2)]/60 border border-[var(--panel-border)] flex items-start gap-3">
                 <span className="px-2 py-1 rounded-lg bg-[var(--accent-primary)]/10 text-[var(--accent-primary)] text-xs font-bold shrink-0">
                   {s.num}
                 </span>
@@ -63,7 +63,7 @@ export default function Screen7GettingStarted({ onStartSetup, onExploreDashboard
 
         <button
           onClick={onExploreDashboard}
-          className="w-full sm:w-auto inline-flex items-center justify-center gap-2 px-5 py-3 rounded-xl bg-[var(--surface-2)]/40 hover:bg-[var(--surface-2)] text-[var(--text-muted)] hover:text-[var(--text-primary)] text-sm font-medium border border-[var(--panel-border)] transition cursor-pointer"
+          className="w-full sm:w-auto inline-flex items-center justify-center gap-2 px-5 py-3 rounded-[var(--inset-radius)] bg-[var(--surface-2)]/40 hover:bg-[var(--surface-2)] text-[var(--text-muted)] hover:text-[var(--text-primary)] text-sm font-medium border border-[var(--panel-border)] transition cursor-pointer"
         >
           <LayoutDashboard className="w-4 h-4 text-[var(--text-muted)]" />
           <span>Explorer le dashboard</span>

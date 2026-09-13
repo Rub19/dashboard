@@ -69,7 +69,7 @@ export default function WidgetPickerModal({
             value={query}
             onChange={(e) => setQuery(e.target.value)}
             placeholder="Rechercher un widget, une permission ou un service..."
-            className="w-full rounded-2xl border border-[var(--panel-border)] bg-[var(--surface-raised)]/70 py-2.5 pl-10 pr-4 text-xs text-[var(--text-primary)] placeholder-[var(--text-muted)] focus:border-[var(--accent-primary)] focus:outline-none"
+            className="w-full rounded-[var(--panel-radius)] border border-[var(--panel-border)] bg-[var(--surface-raised)]/70 py-2.5 pl-10 pr-4 text-xs text-[var(--text-primary)] placeholder-[var(--text-muted)] focus:border-[var(--accent-primary)] focus:outline-none"
           />
         </div>
 
@@ -131,7 +131,7 @@ export default function WidgetPickerModal({
               <div
                 key={manifest.id}
                 className={cn(
-                  "flex flex-col justify-between rounded-2xl border p-4 transition-all",
+                  "flex flex-col justify-between rounded-[var(--panel-radius)] border p-4 transition-all",
                   isInstalled
                     ? "border-[var(--panel-border)] bg-[var(--surface-raised)]/30 opacity-75"
                     : "border-[var(--panel-border)]/80 bg-[var(--surface-raised)]/70 hover:border-[var(--accent-primary)]/50"

@@ -534,7 +534,7 @@ export default function MailPage() {
       {/* 2. Mail Thread List (Full on mobile if no active thread, side on desktop) */}
       <div className={cn("h-full flex-1 flex-col", activeThread ? "hidden md:flex md:max-w-xs lg:max-w-sm" : "flex")}>
         {error && !loading && messages.length === 0 && (
-          <div className="mb-2 flex items-center gap-2 rounded-xl border border-[var(--danger)]/25 bg-[var(--danger)]/10 px-3 py-2 text-xs text-[var(--danger)]">
+          <div className="mb-2 flex items-center gap-2 rounded-[var(--inset-radius)] border border-[var(--danger)]/25 bg-[var(--danger)]/10 px-3 py-2 text-xs text-[var(--danger)]">
             <span className="h-1.5 w-1.5 shrink-0 rounded-full bg-[var(--danger)]" />
             <span>Impossible de charger votre boîte mail. Vérifiez votre connexion puis réessayez.</span>
           </div>

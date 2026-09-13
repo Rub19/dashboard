@@ -12,7 +12,7 @@ export type WeatherMetricCardProps = {
 
 export default function WeatherMetricCard({ icon, iconColor, label, value, sub }: WeatherMetricCardProps) {
   return (
-    <div className="flex flex-col justify-between rounded-2xl border border-[var(--text-primary)]/[0.06] p-4 transition-colors hover:border-white/12">
+    <div className="flex flex-col justify-between rounded-[var(--panel-radius)] border border-[var(--text-primary)]/[0.06] p-4 transition-colors hover:border-[var(--input-border-hover)]">
       <Icon pack="phosphor" name={icon} className={`mb-1 h-4 w-4 ${iconColor}`} />
       <div className="mt-2">
         <p className="text-lg font-bold text-[var(--text-primary)]">{value}</p>

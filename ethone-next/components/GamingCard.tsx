@@ -142,7 +142,7 @@ const GamingCard = memo(function GamingCard({
   return (
     <TiltCard
       className={cn(
-        "relative flex h-full min-h-0 flex-col overflow-hidden no-scrollbar select-none rounded-2xl border border-emerald-500/20 bg-gradient-to-br from-[#1b2d18]/95 via-[#131d10]/98 to-[#0a0f08]/98 p-4 shadow-xl shadow-emerald-950/40 backdrop-blur-2xl transition-all duration-300 hover:border-emerald-500/40 group",
+        "relative flex h-full min-h-0 flex-col overflow-hidden no-scrollbar select-none rounded-[var(--panel-radius)] border border-emerald-500/20 bg-gradient-to-br from-[#1b2d18]/95 via-[#131d10]/98 to-[#0a0f08]/98 p-4 shadow-xl shadow-emerald-950/40 backdrop-blur-2xl transition-all duration-300 hover:border-emerald-500/40 group",
         className
       )}
     >
@@ -155,7 +155,7 @@ const GamingCard = memo(function GamingCard({
       {/* Header: Title + Gaming Badge + Live Status */}
       <div className="relative z-10 flex shrink-0 items-center justify-between">
         <div className="flex items-center gap-2">
-          <div className="flex h-6 w-6 items-center justify-center rounded-lg bg-emerald-500/15 border border-emerald-500/30 text-emerald-400 shadow-sm">
+          <div className="flex h-6 w-6 items-center justify-center rounded-[var(--inset-radius)] bg-emerald-500/15 border border-emerald-500/30 text-emerald-400 shadow-sm">
             <Box className="h-3.5 w-3.5" />
           </div>
           <div>
@@ -236,13 +236,13 @@ const GamingCard = memo(function GamingCard({
           {/* Feature Badges & Quick Action Links */}
           <div className="w-full flex items-center justify-center gap-2 pt-1 shrink-0">
             {/* Model Badge */}
-            <span className="rounded-lg border border-white/10 bg-white/5 px-2 py-1 text-[10px] font-semibold text-zinc-300">
+            <span className="rounded-[var(--inset-radius)] border border-[var(--panel-border)] bg-white/5 px-2 py-1 text-[10px] font-semibold text-zinc-300">
               {profile?.model === "slim" ? "Slim (Alex)" : "Classic (Steve)"}
             </span>
 
             {/* Cape Badge */}
             {profile?.capeUrl || capeCandidates.length > 0 ? (
-              <span className="rounded-lg border border-emerald-500/30 bg-emerald-500/10 px-2 py-1 text-[10px] font-bold text-emerald-300 flex items-center gap-1">
+              <span className="rounded-[var(--inset-radius)] border border-emerald-500/30 bg-emerald-500/10 px-2 py-1 text-[10px] font-bold text-emerald-300 flex items-center gap-1">
                 <Sparkles className="h-3 w-3" />
                 <span>Cape</span>
               </span>
@@ -254,7 +254,7 @@ const GamingCard = memo(function GamingCard({
                 href={nameMcUrl}
                 target="_blank"
                 rel="noopener noreferrer"
-                className="rounded-lg border border-white/10 bg-white/5 px-2 py-1 text-[10px] font-bold text-zinc-300 hover:text-white hover:bg-white/10 transition-all flex items-center gap-1"
+                className="rounded-[var(--inset-radius)] border border-[var(--panel-border)] bg-white/5 px-2 py-1 text-[10px] font-bold text-zinc-300 hover:text-white hover:bg-white/10 transition-all flex items-center gap-1"
                 title="Voir sur NameMC"
               >
                 <span>NameMC</span>
@@ -268,7 +268,7 @@ const GamingCard = memo(function GamingCard({
                 href={skinDownloadUrl}
                 target="_blank"
                 rel="noopener noreferrer"
-                className="rounded-lg border border-white/10 bg-white/5 p-1 text-zinc-400 hover:text-white hover:bg-white/10 transition-all"
+                className="rounded-[var(--inset-radius)] border border-[var(--panel-border)] bg-white/5 p-1 text-zinc-400 hover:text-white hover:bg-white/10 transition-all"
                 title="Télécharger le Skin PNG"
               >
                 <Download className="h-3 w-3" />
@@ -278,7 +278,7 @@ const GamingCard = memo(function GamingCard({
         </div>
       ) : (
         <div className="relative z-10 flex flex-1 flex-col items-center justify-center gap-3 py-4 text-center">
-          <div className="flex h-14 w-14 items-center justify-center rounded-2xl border border-emerald-500/20 bg-emerald-500/10 text-emerald-400">
+          <div className="flex h-14 w-14 items-center justify-center rounded-[var(--panel-radius)] border border-emerald-500/20 bg-emerald-500/10 text-emerald-400">
             <User className="h-6 w-6" />
           </div>
           <div>

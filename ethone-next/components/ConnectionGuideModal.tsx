@@ -36,7 +36,7 @@ function GuideSteps({
   return (
     <div className="space-y-4">
       {/* Direct Portal Link */}
-      <div className="flex flex-col sm:flex-row items-stretch sm:items-center justify-between gap-2 rounded-xl border border-[var(--accent-primary)]/30 bg-[var(--accent-primary)]/10 p-3">
+      <div className="flex flex-col sm:flex-row items-stretch sm:items-center justify-between gap-2 rounded-[var(--inset-radius)] border border-[var(--accent-primary)]/30 bg-[var(--accent-primary)]/10 p-3">
         <div className="flex items-center gap-2">
           <Compass className="h-4 w-4 text-[var(--accent-primary)] shrink-0" />
           <span className="text-xs font-semibold text-[var(--text-primary)]">
@@ -60,7 +60,7 @@ function GuideSteps({
 
       {/* Redirect URI Box (if applicable) */}
       {config?.callbackPath && (
-        <div className="space-y-1.5 rounded-xl border border-[var(--panel-border)] bg-[var(--surface-sunken)] p-3">
+        <div className="space-y-1.5 rounded-[var(--inset-radius)] border border-[var(--panel-border)] bg-[var(--surface-sunken)] p-3">
           <div className="flex items-center justify-between">
             <span className="text-xs font-semibold text-[var(--text-primary)] flex items-center gap-1.5">
               <ShieldCheck className="h-3.5 w-3.5 text-emerald-400" />
@@ -87,7 +87,7 @@ function GuideSteps({
           <p className="text-[10px] text-[var(--text-muted)]">
             Collez cette URL exacte dans le champ &quot;Redirect URIs&quot; de votre console développeur :
           </p>
-          <code className="block w-full truncate rounded-lg border border-[var(--panel-border)] bg-black/60 px-2.5 py-1.5 font-mono text-[11px] text-[var(--accent-primary)] select-all">
+          <code className="block w-full truncate rounded-[var(--inset-radius)] border border-[var(--panel-border)] bg-black/60 px-2.5 py-1.5 font-mono text-[11px] text-[var(--accent-primary)] select-all">
             {redirectUri}
           </code>
         </div>
@@ -104,7 +104,7 @@ function GuideSteps({
             {configSteps.map((step, idx) => (
               <li
                 key={idx}
-                className="flex items-start gap-3 rounded-xl border border-[var(--panel-border)] bg-[var(--surface-raised)]/40 p-3"
+                className="flex items-start gap-3 rounded-[var(--inset-radius)] border border-[var(--panel-border)] bg-[var(--surface-raised)]/40 p-3"
               >
                 <span className="flex h-5 w-5 shrink-0 items-center justify-center rounded-full bg-[var(--accent-primary)] text-[10px] font-bold text-[var(--accent-contrast)]">
                   {idx + 1}
@@ -113,7 +113,7 @@ function GuideSteps({
                   <p className="text-xs font-bold text-[var(--text-primary)]">{step.title}</p>
                   <p className="text-xs text-[var(--text-muted)] leading-relaxed">{step.description}</p>
                   {step.copyValueType === "callback" && (
-                    <div className="mt-2 flex items-center justify-between rounded-lg border border-[var(--panel-border)] bg-black/50 p-2">
+                    <div className="mt-2 flex items-center justify-between rounded-[var(--inset-radius)] border border-[var(--panel-border)] bg-black/50 p-2">
                       <code className="text-[11px] font-mono text-[var(--accent-primary)] truncate">
                         {redirectUri}
                       </code>
@@ -140,7 +140,7 @@ function GuideSteps({
             {guideSteps.map((step, index) => (
               <li
                 key={index}
-                className="flex items-start gap-3 rounded-xl border border-[var(--panel-border)] bg-[var(--surface-raised)]/40 p-3 text-xs"
+                className="flex items-start gap-3 rounded-[var(--inset-radius)] border border-[var(--panel-border)] bg-[var(--surface-raised)]/40 p-3 text-xs"
               >
                 <span className="flex h-5 w-5 shrink-0 items-center justify-center rounded-full bg-[var(--accent-primary)] text-[10px] font-bold text-[var(--accent-contrast)]">
                   {index + 1}
@@ -150,7 +150,7 @@ function GuideSteps({
             ))}
           </ol>
         ) : (
-          <div className="rounded-xl border border-[var(--panel-border)] bg-[var(--surface-raised)]/30 p-4 text-center">
+          <div className="rounded-[var(--inset-radius)] border border-[var(--panel-border)] bg-[var(--surface-raised)]/30 p-4 text-center">
             <p className="text-xs text-[var(--text-muted)]">
               Entrez simplement vos identifiants ou clé API dans le formulaire pour activer le service.
             </p>
@@ -223,12 +223,12 @@ export default function ConnectionGuideModal({
               exit={{ scale: 0.95, opacity: 0, y: 16 }}
               transition={{ duration: 0.2, ease: "easeOut" }}
               onClick={(e) => e.stopPropagation()}
-              className="relative w-full max-w-xl max-h-[85vh] flex flex-col overflow-hidden rounded-2xl border border-[var(--panel-border)] bg-[#090d14] shadow-2xl backdrop-blur-2xl z-[1000000]"
+              className="relative w-full max-w-xl max-h-[85vh] flex flex-col overflow-hidden rounded-[var(--panel-radius)] border border-[var(--panel-border)] bg-[#090d14] shadow-2xl backdrop-blur-2xl z-[1000000]"
             >
               {/* Header */}
               <div className="flex shrink-0 items-center justify-between border-b border-[var(--panel-border)] p-4 sm:p-5 bg-black/40">
                 <div className="flex items-center gap-3 min-w-0">
-                  <div className="flex h-10 w-10 shrink-0 items-center justify-center rounded-xl bg-[var(--surface-raised)] border border-[var(--panel-border)] shadow-sm">
+                  <div className="flex h-10 w-10 shrink-0 items-center justify-center rounded-[var(--inset-radius)] bg-[var(--surface-raised)] border border-[var(--panel-border)] shadow-sm">
                     <ServiceIcon id={integrationId} icon="plug" className="h-5 w-5" colored />
                   </div>
                   <div className="min-w-0">

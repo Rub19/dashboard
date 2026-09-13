@@ -118,7 +118,7 @@ export default function MarketplaceCard({
   return (
     <div
       onClick={() => onSelect(item)}
-      className="group relative flex flex-col justify-between overflow-hidden rounded-2xl border border-[var(--panel-border)] bg-[var(--surface-raised)]/60 hover:bg-[var(--surface-raised)]/90 p-4 shadow-sm backdrop-blur-md transition-all duration-200 hover:border-[var(--panel-border)] hover:shadow-md cursor-pointer"
+      className="group relative flex flex-col justify-between overflow-hidden rounded-[var(--panel-radius)] border border-[var(--panel-border)] bg-[var(--surface-raised)]/60 hover:bg-[var(--surface-raised)]/90 p-4 shadow-sm backdrop-blur-md transition-all duration-200 hover:border-[var(--panel-border)] hover:shadow-md cursor-pointer"
     >
       {/* Top Bar: Icon + Verified Badge + Brain Score */}
       <div>
@@ -126,7 +126,7 @@ export default function MarketplaceCard({
           <div className="flex items-center gap-3">
             <div
               className={cn(
-                "flex h-11 w-11 shrink-0 items-center justify-center rounded-xl border border-[var(--panel-border)] shadow-xs",
+                "flex h-11 w-11 shrink-0 items-center justify-center rounded-[var(--inset-radius)] border border-[var(--panel-border)] shadow-xs",
                 item.iconBg || "bg-[var(--panel-bg)] text-[var(--accent-primary)]"
               )}
             >
@@ -152,7 +152,7 @@ export default function MarketplaceCard({
                 onWhyBrain(item, brainMatch);
               }}
               title="Voir pourquoi cette recommandation a été choisie par Brain"
-              className="shrink-0 flex items-center gap-1 rounded-lg border border-purple-500/40 bg-purple-950/40 px-2 py-0.5 text-[11px] font-bold text-purple-300 hover:bg-purple-900/60 transition-colors shadow-xs"
+              className="shrink-0 flex items-center gap-1 rounded-[var(--inset-radius)] border border-purple-500/40 bg-purple-950/40 px-2 py-0.5 text-[11px] font-bold text-purple-300 hover:bg-purple-900/60 transition-colors shadow-xs"
             >
               <Brain className="h-3 w-3" />
               <span>{brainMatch.score}%</span>
@@ -194,7 +194,7 @@ export default function MarketplaceCard({
                 type="button"
                 onClick={handleInstallClick}
                 disabled={installing}
-                className="flex items-center gap-1.5 rounded-xl border border-amber-500/40 bg-amber-500/15 hover:bg-amber-500/25 px-2.5 py-1.5 text-xs font-semibold text-amber-300 shadow-xs transition-transform active:scale-95 cursor-pointer"
+                className="flex items-center gap-1.5 rounded-[var(--inset-radius)] border border-amber-500/40 bg-amber-500/15 hover:bg-amber-500/25 px-2.5 py-1.5 text-xs font-semibold text-amber-300 shadow-xs transition-transform active:scale-95 cursor-pointer"
               >
                 {installing ? (
                   <Loader2 className="h-3.5 w-3.5 animate-spin" />
@@ -210,7 +210,7 @@ export default function MarketplaceCard({
                   e.stopPropagation();
                   onSelect(item);
                 }}
-                className="flex items-center gap-1.5 rounded-xl border border-emerald-500/30 bg-emerald-950/20 px-2.5 py-1.5 text-xs font-semibold text-emerald-400 cursor-pointer"
+                className="flex items-center gap-1.5 rounded-[var(--inset-radius)] border border-emerald-500/30 bg-emerald-950/20 px-2.5 py-1.5 text-xs font-semibold text-emerald-400 cursor-pointer"
               >
                 <Check className="h-3.5 w-3.5" />
                 <span>Installé</span>

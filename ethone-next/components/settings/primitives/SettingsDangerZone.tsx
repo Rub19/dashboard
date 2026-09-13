@@ -20,7 +20,7 @@ export default function SettingsDangerZone({
   return (
     <div
       className={cn(
-        "flex flex-col gap-3 rounded-2xl border border-[var(--danger)]/30 bg-[var(--danger)]/5 p-4 sm:p-5 transition-all",
+        "flex flex-col gap-3 rounded-[var(--panel-radius)] border border-[var(--danger)]/30 bg-[var(--danger)]/5 p-4 sm:p-5 transition-all",
         className
       )}
     >

@@ -161,7 +161,7 @@ const SyncBadge = memo(function SyncBadge({ collapsed }: { collapsed: boolean })
   return (
     <div
       className={cn(
-        "flex items-center gap-2 rounded-xl border-transparent bg-transparent text-[10px] font-medium text-[var(--text-muted)]",
+        "flex items-center gap-2 rounded-[var(--inset-radius)] border-transparent bg-transparent text-[10px] font-medium text-[var(--text-muted)]",
         collapsed
           ? "h-9 w-9 shrink-0 items-center justify-center p-0"
           : "px-2.5 py-2"
@@ -183,14 +183,14 @@ const SidebarProfile = memo(function SidebarProfile({ collapsed }: { collapsed: 
       type="button"
       onClick={() => router.push("/settings?category=profile")}
       className={cn(
-        "group mb-2 flex w-full items-center gap-2.5 rounded-2xl border border-[var(--panel-border)] bg-[var(--panel-bg)]/50 transition-all hover:border-[var(--accent-primary)]/40 hover:bg-[var(--surface-hover)] cursor-pointer",
+        "group mb-2 flex w-full items-center gap-2.5 rounded-[var(--panel-radius)] border border-[var(--panel-border)] bg-[var(--panel-bg)]/50 transition-all hover:border-[var(--accent-primary)]/40 hover:bg-[var(--surface-hover)] cursor-pointer",
         collapsed ? "justify-center p-1.5" : "p-2"
       )}
       title={`Profil : ${displayName}`}
       aria-label={`Profil : ${displayName}`}
     >
       <div className={cn(
-        "relative flex shrink-0 items-center justify-center overflow-hidden rounded-xl border border-[var(--text-primary)]/[0.08] bg-[var(--accent-primary)]/15 text-[var(--accent-primary)] font-bold text-xs",
+        "relative flex shrink-0 items-center justify-center overflow-hidden rounded-[var(--inset-radius)] border border-[var(--text-primary)]/[0.08] bg-[var(--accent-primary)]/15 text-[var(--accent-primary)] font-bold text-xs",
         collapsed ? "h-9 w-9" : "h-8 w-8"
       )}>
         {avatarUrl ? (
@@ -248,7 +248,7 @@ const SidebarFooter = memo(function SidebarFooter() {
         <button
           type="button"
           onClick={() => router.push("/settings")}
-          className="flex h-9 w-9 shrink-0 items-center justify-center rounded-xl border-transparent bg-transparent text-[var(--text-muted)] transition-colors hover:border-[var(--panel-border)] hover:bg-[var(--text-primary)]/[0.06] hover:text-[var(--text-primary)] cursor-pointer"
+          className="flex h-9 w-9 shrink-0 items-center justify-center rounded-[var(--inset-radius)] border-transparent bg-transparent text-[var(--text-muted)] transition-colors hover:border-[var(--panel-border)] hover:bg-[var(--text-primary)]/[0.06] hover:text-[var(--text-primary)] cursor-pointer"
           aria-label={i18n("settings")}
           title={i18n("settings")}
         >
@@ -258,7 +258,7 @@ const SidebarFooter = memo(function SidebarFooter() {
         <button
           type="button"
           onClick={() => setOpen(false)}
-          className="flex h-9 w-9 shrink-0 items-center justify-center rounded-xl border-transparent bg-transparent text-[var(--text-muted)] transition-colors hover:border-[var(--panel-border)] hover:bg-[var(--text-primary)]/[0.06] hover:text-[var(--text-primary)] cursor-pointer"
+          className="flex h-9 w-9 shrink-0 items-center justify-center rounded-[var(--inset-radius)] border-transparent bg-transparent text-[var(--text-muted)] transition-colors hover:border-[var(--panel-border)] hover:bg-[var(--text-primary)]/[0.06] hover:text-[var(--text-primary)] cursor-pointer"
           aria-label={i18n("collapseSidebar", "Réduire")}
           title={i18n("collapseSidebar", "Réduire")}
         >

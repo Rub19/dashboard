@@ -164,7 +164,7 @@ export default function SpotifyConfig() {
   if (!integration) return null;
 
   return (
-    <div className="flex h-full flex-col gap-4 rounded-2xl border border-[var(--text-primary)]/[0.08] bg-[var(--text-primary)]/[0.02] p-4">
+    <div className="flex h-full flex-col gap-4 rounded-[var(--panel-radius)] border border-[var(--text-primary)]/[0.08] bg-[var(--text-primary)]/[0.02] p-4">
       <div className="flex items-start justify-between gap-3">
         <div>
           <h3 className="font-semibold text-[var(--text-primary)]">Spotify</h3>
@@ -206,7 +206,7 @@ export default function SpotifyConfig() {
           )}
 
           {config?.requiresRedirectUri && origin && (
-            <div className="rounded-xl border border-white/10 bg-[var(--text-primary)]/[0.03] p-2.5">
+            <div className="rounded-[var(--inset-radius)] border border-[var(--panel-border)] bg-[var(--text-primary)]/[0.03] p-2.5">
               <p className="text-[11px] font-medium text-[var(--text-primary)]">{i18n("redirectUri")}</p>
               <code className="mt-1 block break-all rounded-lg bg-[var(--background)] px-2 py-1 text-[10px] text-[var(--text-muted)]">
                 {`${origin}${config.callbackPath}`}
@@ -232,7 +232,7 @@ export default function SpotifyConfig() {
               type="button"
               onClick={handleTest}
               disabled={!rawValue.trim() || testing}
-              className="flex items-center justify-center gap-1.5 rounded-xl border border-[var(--panel-border)] bg-[var(--text-primary)]/[0.04] px-3 py-2 text-sm font-medium text-[var(--text-primary)] transition hover:bg-[var(--text-primary)]/[0.08] hover:text-[var(--text-primary)] disabled:opacity-50"
+              className="flex items-center justify-center gap-1.5 rounded-[var(--inset-radius)] border border-[var(--panel-border)] bg-[var(--text-primary)]/[0.04] px-3 py-2 text-sm font-medium text-[var(--text-primary)] transition hover:bg-[var(--text-primary)]/[0.08] hover:text-[var(--text-primary)] disabled:opacity-50"
             >
               {testing ? <Loader2 className="h-4 w-4 animate-spin" /> : <RefreshCw className="h-4 w-4" />}
               {testing ? i18n("testingInProgress") : i18n("testConnection")}
@@ -244,7 +244,7 @@ export default function SpotifyConfig() {
               type="button"
               onClick={handleTest}
               disabled={testing}
-              className="flex items-center justify-center gap-1.5 rounded-xl border border-[var(--panel-border)] bg-[var(--text-primary)]/[0.04] px-3 py-2 text-sm font-medium text-[var(--text-primary)] transition hover:bg-[var(--text-primary)]/[0.08] hover:text-[var(--text-primary)] disabled:opacity-50"
+              className="flex items-center justify-center gap-1.5 rounded-[var(--inset-radius)] border border-[var(--panel-border)] bg-[var(--text-primary)]/[0.04] px-3 py-2 text-sm font-medium text-[var(--text-primary)] transition hover:bg-[var(--text-primary)]/[0.08] hover:text-[var(--text-primary)] disabled:opacity-50"
             >
               {testing ? <Loader2 className="h-4 w-4 animate-spin" /> : <RefreshCw className="h-4 w-4" />}
               {testing ? i18n("testingInProgress") : i18n("testConnection")}
@@ -253,7 +253,7 @@ export default function SpotifyConfig() {
               type="button"
               onClick={handleDisconnect}
               disabled={submitting}
-              className="flex items-center justify-center gap-1.5 rounded-xl border border-[var(--danger)]/20 px-3 py-2 text-sm font-medium text-[var(--danger)] transition hover:border-[var(--danger)]/40 hover:bg-[var(--danger)]/10 disabled:opacity-50"
+              className="flex items-center justify-center gap-1.5 rounded-[var(--inset-radius)] border border-[var(--danger)]/20 px-3 py-2 text-sm font-medium text-[var(--danger)] transition hover:border-[var(--danger)]/40 hover:bg-[var(--danger)]/10 disabled:opacity-50"
             >
               {submitting ? <Loader2 className="h-4 w-4 animate-spin" /> : <Unlink className="h-4 w-4" />}
               {submitting ? i18n("disconnecting") : i18n("disconnect", "Déconnecter")}
@@ -263,7 +263,7 @@ export default function SpotifyConfig() {
       </div>
 
       {!!health?.data && (
-        <pre className="max-h-40 overflow-auto rounded-xl border border-[var(--panel-border)] bg-[var(--panel-bg)]/50 p-3 font-mono text-[10px] text-[var(--text-primary)]">
+        <pre className="max-h-40 overflow-auto rounded-[var(--inset-radius)] border border-[var(--panel-border)] bg-[var(--panel-bg)]/50 p-3 font-mono text-[10px] text-[var(--text-primary)]">
           {JSON.stringify(health.data as Record<string, unknown>, null, 2)}
         </pre>
       )}

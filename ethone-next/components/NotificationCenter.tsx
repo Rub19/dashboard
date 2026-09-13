@@ -169,7 +169,7 @@ export default function NotificationCenter() {
             type="button"
             onClick={handleMarkAllRead}
             disabled={unreadCount === 0}
-            className="flex h-8 w-8 items-center justify-center rounded-xl border border-[var(--panel-border)] bg-[var(--surface-raised)]/60 text-[var(--text-muted)] hover:text-[var(--text-primary)] hover:border-[var(--accent-primary)]/40 transition-all active:scale-95 disabled:opacity-30 cursor-pointer shadow-xs"
+            className="flex h-8 w-8 items-center justify-center rounded-[var(--inset-radius)] border border-[var(--panel-border)] bg-[var(--surface-raised)]/60 text-[var(--text-muted)] hover:text-[var(--text-primary)] hover:border-[var(--accent-primary)]/40 transition-all active:scale-95 disabled:opacity-30 cursor-pointer shadow-xs"
             title="Tout marquer comme lu"
           >
             <Check className="h-4 w-4" />
@@ -178,7 +178,7 @@ export default function NotificationCenter() {
             type="button"
             onClick={handleClear}
             disabled={activeItems.length === 0}
-            className="flex h-8 w-8 items-center justify-center rounded-xl border border-[var(--panel-border)] bg-[var(--surface-raised)]/60 text-[var(--text-muted)] hover:text-rose-400 hover:border-rose-500/40 transition-all active:scale-95 disabled:opacity-30 cursor-pointer shadow-xs"
+            className="flex h-8 w-8 items-center justify-center rounded-[var(--inset-radius)] border border-[var(--panel-border)] bg-[var(--surface-raised)]/60 text-[var(--text-muted)] hover:text-rose-400 hover:border-rose-500/40 transition-all active:scale-95 disabled:opacity-30 cursor-pointer shadow-xs"
             title="Tout effacer"
           >
             <Trash2 className="h-4 w-4" />
@@ -188,7 +188,7 @@ export default function NotificationCenter() {
 
       {/* Focus Digest Banner if accumulated */}
       {focusDigest.length > 0 && (
-        <div className="flex items-center justify-between gap-2 rounded-2xl border border-amber-500/30 bg-amber-500/10 p-2.5 text-xs text-amber-300">
+        <div className="flex items-center justify-between gap-2 rounded-[var(--panel-radius)] border border-amber-500/30 bg-amber-500/10 p-2.5 text-xs text-amber-300">
           <div className="flex items-center gap-2 min-w-0">
             <Sparkles className="h-4 w-4 text-amber-400 shrink-0" />
             <span className="truncate">
@@ -198,7 +198,7 @@ export default function NotificationCenter() {
           <button
             type="button"
             onClick={clearFocusDigest}
-            className="shrink-0 rounded-lg border border-amber-500/40 bg-amber-500/20 px-2.5 py-1 text-[10px] font-bold text-amber-200 hover:bg-amber-500/30 transition-all"
+            className="shrink-0 rounded-[var(--inset-radius)] border border-amber-500/40 bg-amber-500/20 px-2.5 py-1 text-[10px] font-bold text-amber-200 hover:bg-amber-500/30 transition-all"
           >
             Tout voir
           </button>
@@ -214,7 +214,7 @@ export default function NotificationCenter() {
           value={query}
           onChange={(e) => setQuery(e.target.value)}
           placeholder="Rechercher dans les notifications..."
-          className="w-full rounded-xl border border-[var(--panel-border)] bg-[var(--surface-raised)]/60 py-1.5 pl-8 pr-2.5 text-xs text-[var(--text-primary)] placeholder-[var(--text-muted)] focus:border-[var(--accent-primary)] focus:outline-none"
+          className="w-full rounded-[var(--inset-radius)] border border-[var(--panel-border)] bg-[var(--surface-raised)]/60 py-1.5 pl-8 pr-2.5 text-xs text-[var(--text-primary)] placeholder-[var(--text-muted)] focus:border-[var(--accent-primary)] focus:outline-none"
         />
       </div>
 
@@ -262,7 +262,7 @@ export default function NotificationCenter() {
                 return (
                   <div
                     key={item.groupKey}
-                    className="rounded-2xl border border-[var(--panel-border)]/70 bg-[var(--surface-raised)]/40 overflow-hidden transition-all shadow-xs"
+                    className="rounded-[var(--panel-radius)] border border-[var(--panel-border)]/70 bg-[var(--surface-raised)]/40 overflow-hidden transition-all shadow-xs"
                   >
                     {/* Group Header */}
                     <div
@@ -323,7 +323,7 @@ export default function NotificationCenter() {
         <button
           type="button"
           className={cn(
-            "relative flex h-8 w-8 items-center justify-center rounded-xl border transition-all active:scale-95 cursor-pointer shadow-xs",
+            "relative flex h-8 w-8 items-center justify-center rounded-[var(--inset-radius)] border transition-all active:scale-95 cursor-pointer shadow-xs",
             unreadCount > 0
               ? "border-[var(--accent-primary)]/40 bg-[var(--accent-primary)]/15 text-[var(--accent-primary)] hover:bg-[var(--accent-primary)]/25"
               : "border-[var(--panel-border)] bg-[var(--surface-raised)]/60 text-[var(--text-muted)] hover:text-[var(--text-primary)]"
@@ -339,7 +339,7 @@ export default function NotificationCenter() {
         </button>
       </PopoverTrigger>
 
-      <PopoverContent className="w-[380px] max-w-[95vw] rounded-3xl border border-[var(--panel-border)] bg-[var(--panel-bg)]/95 p-4 shadow-2xl backdrop-blur-2xl">
+      <PopoverContent className="w-[380px] max-w-[95vw] rounded-[var(--panel-radius)] border border-[var(--panel-border)] bg-[var(--panel-bg)]/95 p-4 shadow-2xl backdrop-blur-2xl">
         {content}
       </PopoverContent>
     </Popover>

@@ -75,7 +75,7 @@ export default function ShortcutsSettings() {
           value={query}
           onChange={(e) => setQuery(e.target.value)}
           placeholder="Rechercher un raccourci clavier..."
-          className="w-full rounded-xl border border-[var(--panel-border)] bg-[var(--panel-bg)] py-2.5 pl-10 pr-4 text-xs text-[var(--text-primary)] placeholder-[var(--text-muted)] focus:border-[var(--accent-primary)] focus:outline-none focus:ring-1 focus:ring-[var(--accent-primary)]"
+          className="w-full rounded-[var(--inset-radius)] border border-[var(--panel-border)] bg-[var(--panel-bg)] py-2.5 pl-10 pr-4 text-xs text-[var(--text-primary)] placeholder-[var(--text-muted)] focus:border-[var(--accent-primary)] focus:outline-none focus:ring-1 focus:ring-[var(--accent-primary)]"
         />
       </div>
 
@@ -87,7 +87,7 @@ export default function ShortcutsSettings() {
               {group.category}
             </h4>
 
-            <div className="overflow-hidden rounded-2xl border border-[var(--panel-border)] bg-[var(--panel-bg)] divide-y divide-[var(--panel-border)]/50">
+            <div className="overflow-hidden rounded-[var(--panel-radius)] border border-[var(--panel-border)] bg-[var(--panel-bg)] divide-y divide-[var(--panel-border)]/50">
               {group.shortcuts.map((shortcut) => (
                 <div
                   key={shortcut.label}
@@ -106,7 +106,7 @@ export default function ShortcutsSettings() {
                     {shortcut.keys.map((k, i) => (
                       <kbd
                         key={`${k}-${i}`}
-                        className="flex h-6 min-w-[24px] items-center justify-center rounded-lg border border-[var(--panel-border)] bg-[var(--surface-raised)] px-2 font-mono text-[11px] font-bold text-[var(--text-primary)] shadow-sm"
+                        className="flex h-6 min-w-[24px] items-center justify-center rounded-[var(--inset-radius)] border border-[var(--panel-border)] bg-[var(--surface-raised)] px-2 font-mono text-[11px] font-bold text-[var(--text-primary)] shadow-sm"
                       >
                         {k === "⌘" ? mod : k}
                       </kbd>

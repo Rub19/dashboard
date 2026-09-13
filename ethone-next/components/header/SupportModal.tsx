@@ -32,14 +32,14 @@ export default function SupportModal() {
         <button
           type="button"
           aria-label="Soutenir ETHONE"
-          className="inline-flex h-9 items-center gap-1.5 rounded-xl border border-[var(--panel-border)]/70 bg-[var(--surface-raised)]/60 px-3 text-xs font-semibold text-[var(--text-muted)] hover:border-[var(--accent-primary)]/40 hover:bg-[var(--accent-primary)]/10 hover:text-[var(--text-primary)] transition-all active:scale-95 cursor-pointer shadow-sm"
+          className="inline-flex h-9 items-center gap-1.5 rounded-[var(--inset-radius)] border border-[var(--panel-border)]/70 bg-[var(--surface-raised)]/60 px-3 text-xs font-semibold text-[var(--text-muted)] hover:border-[var(--accent-primary)]/40 hover:bg-[var(--accent-primary)]/10 hover:text-[var(--text-primary)] transition-all active:scale-95 cursor-pointer shadow-sm"
         >
           <Icon name="heart" className="h-3.5 w-3.5 text-[var(--accent-primary)]" />
           <span className="hidden xl:inline">Soutenir</span>
         </button>
       </PopoverTrigger>
 
-      <PopoverContent className="w-[340px] max-w-[calc(100vw-2rem)] overflow-hidden rounded-2xl border border-[var(--panel-border)] bg-[var(--panel-bg)]/95 p-4 shadow-2xl backdrop-blur-2xl">
+      <PopoverContent className="w-[340px] max-w-[calc(100vw-2rem)] overflow-hidden rounded-[var(--panel-radius)] border border-[var(--panel-border)] bg-[var(--panel-bg)]/95 p-4 shadow-2xl backdrop-blur-2xl">
         <div className="flex flex-col gap-4 select-none">
           {/* Header */}
           <div className="flex items-center gap-3 border-b border-[var(--panel-border)]/50 pb-3">
@@ -75,7 +75,7 @@ export default function SupportModal() {
             <button
               type="button"
               onClick={handleCopyLink}
-              className="flex w-full items-center justify-center gap-2 rounded-xl border border-[var(--panel-border)] bg-[var(--surface-raised)] py-2 px-3 text-xs font-semibold text-[var(--text-primary)] hover:border-[var(--accent-primary)]/40 transition-all active:scale-[0.98]"
+              className="flex w-full items-center justify-center gap-2 rounded-[var(--inset-radius)] border border-[var(--panel-border)] bg-[var(--surface-raised)] py-2 px-3 text-xs font-semibold text-[var(--text-primary)] hover:border-[var(--accent-primary)]/40 transition-all active:scale-[0.98]"
             >
               <Icon name="share-network" className="h-3.5 w-3.5" />
               <span>Partager le projet</span>

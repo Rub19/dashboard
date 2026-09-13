@@ -796,7 +796,7 @@ export default function DynamicIslandContainer() {
                     animate={{ opacity: 1, scale: 1 }}
                     exit={{ opacity: 0, scale: 0.96 }}
                     transition={{ duration: 0.2, ease: EASE_OUT }}
-                    className="relative flex items-center gap-3.5 rounded-2xl border border-[var(--panel-border)] bg-[var(--surface-2)]/40 p-2.5"
+                    className="relative flex items-center gap-3.5 rounded-[var(--panel-radius)] border border-[var(--panel-border)] bg-[var(--surface-2)]/40 p-2.5"
                   >
                     <div className="relative shrink-0 flex items-center justify-center">
                       {(nowPlaying?.cover || nowPlaying?.artworkUrl || (nowPlaying?.covers && nowPlaying.covers.length > 0)) ? (
@@ -972,7 +972,7 @@ export default function DynamicIslandContainer() {
                   <button
                     type="button"
                     onClick={() => focus.stop()}
-                    className="flex items-center gap-1.5 rounded-xl border border-[var(--danger)]/20 px-3 py-1.5 text-xs font-medium text-[var(--danger)] transition-colors hover:bg-[var(--danger)]/10 hover:text-[var(--danger)]"
+                    className="flex items-center gap-1.5 rounded-[var(--inset-radius)] border border-[var(--danger)]/20 px-3 py-1.5 text-xs font-medium text-[var(--danger)] transition-colors hover:bg-[var(--danger)]/10 hover:text-[var(--danger)]"
                   >
                     <Icon name="stop" pack="phosphor" className="h-3.5 w-3.5" />
                     {i18n("stop")}
@@ -983,7 +983,7 @@ export default function DynamicIslandContainer() {
                       router.push("/focus");
                       setMode("COMPACT");
                     }}
-                    className="flex items-center gap-1.5 rounded-xl border border-[var(--panel-border)] px-3 py-1.5 text-xs font-medium text-[var(--text-muted)] transition-colors hover:border-[var(--accent-primary)]/40 hover:text-[var(--text-primary)]"
+                    className="flex items-center gap-1.5 rounded-[var(--inset-radius)] border border-[var(--panel-border)] px-3 py-1.5 text-xs font-medium text-[var(--text-muted)] transition-colors hover:border-[var(--accent-primary)]/40 hover:text-[var(--text-primary)]"
                   >
                     <Icon name="arrow-square-out" pack="phosphor" className="h-3.5 w-3.5" />
                     Ouvrir Focus
@@ -1102,7 +1102,7 @@ export default function DynamicIslandContainer() {
                       selected={selectedView ?? "mail"}
                       onSelect={selectView}
                     />
-                    <div className="flex h-12 w-12 items-center justify-center rounded-2xl border border-[var(--accent-primary)]/30 bg-[var(--accent-primary)]/15 text-[var(--accent-primary)] shadow-sm">
+                    <div className="flex h-12 w-12 items-center justify-center rounded-[var(--panel-radius)] border border-[var(--accent-primary)]/30 bg-[var(--accent-primary)]/15 text-[var(--accent-primary)] shadow-sm">
                       <Icon
                         name={
                           mail.status === "syncing"

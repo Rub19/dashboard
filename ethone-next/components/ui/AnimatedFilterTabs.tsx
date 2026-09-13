@@ -47,7 +47,7 @@ export default function AnimatedFilterTabs({
               <motion.div
                 layoutId={pillLayoutId}
                 initial={false}
-                className="absolute inset-0 rounded-lg bg-[var(--accent-primary)]/15 border border-[var(--accent-primary)]/30 shadow-[0_0_12px_var(--glow-color)] -z-10"
+                className="absolute inset-0 rounded-[var(--inset-radius)] bg-[var(--accent-primary)]/15 border border-[var(--accent-primary)]/30 shadow-[0_0_12px_var(--glow-color)] -z-10"
                 transition={{ type: "spring", stiffness: 450, damping: 35 }}
               />
             )}

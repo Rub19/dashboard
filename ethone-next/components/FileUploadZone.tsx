@@ -81,7 +81,7 @@ export default function FileUploadZone({
       }}
       transition={{ duration: 0.2, ease: "easeOut" }}
       className={cn(
-        "group relative flex cursor-pointer flex-col items-center justify-center overflow-hidden rounded-2xl border-2 transition-all duration-200 select-none",
+        "group relative flex cursor-pointer flex-col items-center justify-center overflow-hidden rounded-[var(--panel-radius)] border-2 transition-all duration-200 select-none",
         compact ? "min-h-[9rem] p-4" : "min-h-[12rem] p-8",
         dragging
           ? "border-solid border-[var(--accent-primary)] bg-[var(--accent-primary)]/[0.12]"
@@ -122,7 +122,7 @@ export default function FileUploadZone({
             transition={{ duration: 0.15 }}
             className="flex flex-col items-center gap-2.5 text-center"
           >
-            <div className="flex h-12 w-12 items-center justify-center rounded-2xl border border-[var(--panel-border)]/[0.2] bg-[var(--panel-bg)] text-[var(--text-muted)] transition-all group-hover:scale-105 group-hover:border-[var(--accent-primary)]/30 group-hover:text-[var(--accent-primary)]">
+            <div className="flex h-12 w-12 items-center justify-center rounded-[var(--panel-radius)] border border-[var(--panel-border)]/[0.2] bg-[var(--panel-bg)] text-[var(--text-muted)] transition-all group-hover:scale-105 group-hover:border-[var(--accent-primary)]/30 group-hover:text-[var(--accent-primary)]">
               <UploadCloud className="h-6 w-6" />
             </div>
             <div>

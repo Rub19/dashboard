@@ -42,7 +42,7 @@ export default function FocusTaskQueue({
   };
 
   return (
-    <div className="flex flex-col gap-3 rounded-2xl border border-[var(--panel-border)] bg-[var(--surface-raised)]/60 p-4 shadow-lg backdrop-blur-xl">
+    <div className="flex flex-col gap-3 rounded-[var(--panel-radius)] border border-[var(--panel-border)] bg-[var(--surface-raised)]/60 p-4 shadow-lg backdrop-blur-xl">
       <div className="flex items-center justify-between border-b border-[var(--panel-border)]/50 pb-2.5">
         <div className="flex items-center gap-2">
           <Icon name="check-circle" className="h-4 w-4 text-[var(--accent-primary)]" />
@@ -54,7 +54,7 @@ export default function FocusTaskQueue({
         <button
           type="button"
           onClick={() => setShowAdd(!showAdd)}
-          className="flex items-center gap-1 rounded-lg border border-[var(--panel-border)] px-2 py-1 text-[11px] font-semibold text-[var(--text-muted)] hover:border-[var(--accent-primary)]/40 hover:text-[var(--text-primary)] transition-all"
+          className="flex items-center gap-1 rounded-[var(--inset-radius)] border border-[var(--panel-border)] px-2 py-1 text-[11px] font-semibold text-[var(--text-muted)] hover:border-[var(--accent-primary)]/40 hover:text-[var(--text-primary)] transition-all"
         >
           <Icon name="plus" className="h-3 w-3" />
           <span>Ajouter</span>
@@ -70,7 +70,7 @@ export default function FocusTaskQueue({
             value={newTaskTitle}
             onChange={(e) => setNewTaskTitle(e.target.value)}
             placeholder="Ex: Rédiger le rapport..."
-            className="flex-1 rounded-xl border border-[var(--panel-border)] bg-[var(--surface-raised)] px-3 py-1.5 text-xs text-[var(--text-primary)] focus:border-[var(--accent-primary)] focus:outline-none"
+            className="flex-1 rounded-[var(--inset-radius)] border border-[var(--panel-border)] bg-[var(--surface-raised)] px-3 py-1.5 text-xs text-[var(--text-primary)] focus:border-[var(--accent-primary)] focus:outline-none"
           />
           <button
             type="submit"

@@ -345,7 +345,7 @@ export const AnimatedSidebar = forwardRef<HTMLElement, AnimatedSidebarProps>(
             variant === "sidebar" &&
               (side === "left" ? "border-border border-r" : "border-border border-l"),
             variant === "floating" &&
-              "m-2 h-[calc(100%-1rem)] rounded-2xl border border-[var(--panel-border)] bg-[var(--panel-bg)] shadow-sm",
+              "m-2 h-[calc(100%-1rem)] rounded-[var(--panel-radius)] border border-[var(--panel-border)] bg-[var(--panel-bg)] shadow-sm",
             variant === "inset" && "m-2 h-[calc(100svh-1rem)] rounded-2xl",
             panelClassName,
           )}
@@ -611,7 +611,7 @@ export const AnimatedSidebarMenu = forwardRef<
       ref={forwardedRef as React.Ref<HTMLElement>}
       as="ul"
       inset={0}
-      pillClassName="rounded-2xl bg-[var(--text-primary)]/[0.04] border border-[var(--accent-primary)]/[0.12] shadow-[0_0_15px_color-mix(in_srgb,var(--accent-primary)_20%,transparent)]"
+      pillClassName="rounded-[var(--panel-radius)] bg-[var(--text-primary)]/[0.04] border border-[var(--accent-primary)]/[0.12] shadow-[0_0_15px_color-mix(in_srgb,var(--accent-primary)_20%,transparent)]"
       pillContainerClassName="inset-y-0.5"
       data-slot="sidebar-menu"
       className={cn("flex w-full min-w-0 list-none flex-col gap-1.5", className)}
@@ -854,7 +854,7 @@ export function AnimatedSidebarMenuButton({
           initial={{ opacity: 0 }}
           animate={{ opacity: 1 }}
           transition={context.reduce ? { duration: 0 } : { duration: 0.18, ease: EASE_OUT }}
-          className="absolute inset-0 rounded-2xl border border-[var(--accent-primary)]/25 bg-[var(--accent-primary)]/10 shadow-[0_0_15px_color-mix(in_srgb,var(--accent-primary)_25%,transparent)]"
+          className="absolute inset-0 rounded-[var(--panel-radius)] border border-[var(--accent-primary)]/25 bg-[var(--accent-primary)]/10 shadow-[0_0_15px_color-mix(in_srgb,var(--accent-primary)_25%,transparent)]"
         />
       ) : null}
       {icon ? (

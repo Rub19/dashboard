@@ -66,9 +66,9 @@ export default function Screen4Automation() {
             return (
               <div
                 key={s.step}
-                className="flex items-center gap-3 p-2.5 rounded-xl bg-[var(--surface-2)]/60 border border-[var(--panel-border)] hover:bg-[var(--surface-2)] transition-colors"
+                className="flex items-center gap-3 p-2.5 rounded-[var(--inset-radius)] bg-[var(--surface-2)]/60 border border-[var(--panel-border)] hover:bg-[var(--surface-2)] transition-colors"
               >
-                <div className={`p-2 rounded-xl border shrink-0 ${s.color}`}>
+                <div className={`p-2 rounded-[var(--inset-radius)] border shrink-0 ${s.color}`}>
                   <Icon className="w-4 h-4" />
                 </div>
 

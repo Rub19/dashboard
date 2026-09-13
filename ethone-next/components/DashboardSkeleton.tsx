@@ -52,7 +52,7 @@ export default function DashboardSkeleton() {
           variants={itemVariants}
           className={cn(
             WIDGET_COL_SPAN[w.id],
-            "min-w-0 flex min-h-[120px] flex-col overflow-hidden rounded-2xl border border-[var(--panel-border)] bg-[var(--panel-bg)] p-4 shadow-sm backdrop-blur-[var(--panel-blur)]",
+            "min-w-0 flex min-h-[120px] flex-col overflow-hidden rounded-[var(--panel-radius)] border border-[var(--panel-border)] bg-[var(--panel-bg)] p-4 shadow-sm backdrop-blur-[var(--panel-blur)]",
             w.h === 2 ? "min-h-[220px]" : "",
           )}
         >

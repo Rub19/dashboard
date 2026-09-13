@@ -108,7 +108,7 @@ export default function ProfileStatusPicker({
                 type="button"
                 onClick={() => onSelectStatus(opt.id)}
                 className={cn(
-                  "flex items-start gap-2.5 rounded-2xl border p-3 text-left transition-all cursor-pointer",
+                  "flex items-start gap-2.5 rounded-[var(--panel-radius)] border p-3 text-left transition-all cursor-pointer",
                   currentStatus === opt.id
                     ? "border-[var(--accent-primary)] bg-[var(--accent-primary)]/10 shadow-xs"
                     : "border-[var(--panel-border)] bg-[var(--surface-raised)]/50 hover:bg-[var(--surface-hover)]"
@@ -130,7 +130,7 @@ export default function ProfileStatusPicker({
         </div>
 
         {/* Auto Status Sync Switch */}
-        <div className="flex items-center justify-between rounded-2xl border border-[var(--panel-border)] bg-[var(--surface-raised)]/40 p-3 text-xs">
+        <div className="flex items-center justify-between rounded-[var(--panel-radius)] border border-[var(--panel-border)] bg-[var(--surface-raised)]/40 p-3 text-xs">
           <div className="space-y-0.5">
             <span className="font-bold text-[var(--text-primary)] flex items-center gap-1.5">
               <RefreshCw className="h-3.5 w-3.5 text-[var(--accent-primary)]" />
@@ -159,14 +159,14 @@ export default function ProfileStatusPicker({
         </div>
 
         {/* Custom Status Message */}
-        <div className="rounded-2xl border border-[var(--panel-border)] bg-[var(--surface-raised)]/40 p-3 space-y-2.5">
+        <div className="rounded-[var(--panel-radius)] border border-[var(--panel-border)] bg-[var(--surface-raised)]/40 p-3 space-y-2.5">
           <label className="text-xs font-bold uppercase tracking-wider text-[var(--text-muted)] block">
             Message de statut personnalisé
           </label>
 
           {/* Emoji row + Input */}
           <div className="flex items-center gap-2">
-            <div className="flex items-center gap-1 bg-[var(--surface-raised)] border border-[var(--panel-border)] rounded-xl p-1">
+            <div className="flex items-center gap-1 bg-[var(--surface-raised)] border border-[var(--panel-border)] rounded-[var(--inset-radius)] p-1">
               {EMOJI_PRESETS.map((emoji) => (
                 <button
                   key={emoji}
@@ -188,7 +188,7 @@ export default function ProfileStatusPicker({
               onChange={(e) => setCustomText(e.target.value)}
               placeholder="Que faites-vous ?"
               maxLength={60}
-              className="flex-1 rounded-xl border border-[var(--panel-border)] bg-[var(--surface-raised)] px-3 py-1.5 text-xs text-[var(--text-primary)] placeholder-[var(--text-muted)] focus:border-[var(--accent-primary)] focus:outline-none"
+              className="flex-1 rounded-[var(--inset-radius)] border border-[var(--panel-border)] bg-[var(--surface-raised)] px-3 py-1.5 text-xs text-[var(--text-primary)] placeholder-[var(--text-muted)] focus:border-[var(--accent-primary)] focus:outline-none"
             />
           </div>
         </div>
@@ -209,7 +209,7 @@ export default function ProfileStatusPicker({
             <button
               type="button"
               onClick={onClose}
-              className="rounded-xl border border-[var(--panel-border)] px-4 py-2 text-xs font-semibold text-[var(--text-muted)] hover:text-white cursor-pointer"
+              className="rounded-[var(--inset-radius)] border border-[var(--panel-border)] px-4 py-2 text-xs font-semibold text-[var(--text-muted)] hover:text-white cursor-pointer"
             >
               Fermer
             </button>

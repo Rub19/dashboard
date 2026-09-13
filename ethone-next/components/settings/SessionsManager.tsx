@@ -62,7 +62,7 @@ function DeviceRow({
               type="button"
               onClick={() => onTrust(device)}
               disabled={busy}
-              className="rounded-lg border border-[var(--panel-border)] px-2.5 py-1.5 text-[11px] font-medium text-[var(--text-secondary)] hover:bg-[var(--surface-hover)] disabled:opacity-50"
+              className="rounded-[var(--inset-radius)] border border-[var(--panel-border)] px-2.5 py-1.5 text-[11px] font-medium text-[var(--text-secondary)] hover:bg-[var(--surface-hover)] disabled:opacity-50"
             >
               {i18n(device.trusted ? "revoke" : "trust")}
             </button>
@@ -243,7 +243,7 @@ export default function SessionsManager() {
             <Icon name="history" className="h-4 w-4 text-[var(--text-secondary)]" />
             <span className="text-sm font-medium text-[var(--text-primary)]">{i18n("securityEvents")}</span>
           </div>
-          <div className="flex flex-col divide-y divide-[var(--panel-border)]/60 overflow-hidden rounded-xl border border-[var(--panel-border)]">
+          <div className="flex flex-col divide-y divide-[var(--panel-border)]/60 overflow-hidden rounded-[var(--inset-radius)] border border-[var(--panel-border)]">
             {recentEvents.map((event) => (
               <div key={event.id} className="flex items-center justify-between gap-3 px-3 py-2">
                 <span className="truncate text-xs text-[var(--text-primary)]">{event.kind || event.action || i18n("event")}</span>

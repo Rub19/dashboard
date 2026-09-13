@@ -144,7 +144,7 @@ export function Calendar({
   return (
     <div
       className={cn(
-        "flex flex-col overflow-hidden rounded-3xl border border-white/10 bg-zinc-950/80 p-3 sm:p-4 backdrop-blur-2xl shadow-xl",
+        "flex flex-col overflow-hidden rounded-[var(--panel-radius)] border border-[var(--panel-border)] bg-zinc-950/80 p-3 sm:p-4 backdrop-blur-2xl shadow-xl",
         className,
       )}
     >
@@ -152,7 +152,7 @@ export function Calendar({
         <button
           type="button"
           onClick={() => nav(-1)}
-          className="rounded-xl border border-[var(--panel-border)] bg-[var(--text-primary)]/4 p-1.5 text-[var(--text-muted)] transition-colors hover:text-[var(--text-primary)] cursor-pointer"
+          className="rounded-[var(--inset-radius)] border border-[var(--panel-border)] bg-[var(--text-primary)]/4 p-1.5 text-[var(--text-muted)] transition-colors hover:text-[var(--text-primary)] cursor-pointer"
           aria-label="Mois précédent"
         >
           <ChevronLeft className="h-4 w-4" />
@@ -182,7 +182,7 @@ export function Calendar({
         <button
           type="button"
           onClick={() => nav(1)}
-          className="rounded-xl border border-[var(--panel-border)] bg-[var(--text-primary)]/4 p-1.5 text-[var(--text-muted)] transition-colors hover:text-[var(--text-primary)] cursor-pointer"
+          className="rounded-[var(--inset-radius)] border border-[var(--panel-border)] bg-[var(--text-primary)]/4 p-1.5 text-[var(--text-muted)] transition-colors hover:text-[var(--text-primary)] cursor-pointer"
           aria-label="Mois suivant"
         >
           <ChevronRight className="h-4 w-4" />
@@ -216,8 +216,8 @@ export function Calendar({
                   ? "border border-purple-400/70 bg-gradient-to-b from-purple-500/30 to-indigo-500/20 text-white shadow-[0_0_18px_rgba(168,85,247,0.4)] scale-[1.02]"
                   : isTodayCell
                     ? "border border-cyan-500/50 bg-cyan-500/10 text-cyan-300 ring-1 ring-cyan-500/30 hover:bg-cyan-500/20"
-                    : "border border-white/[0.04] bg-white/[0.02] text-zinc-300 hover:border-white/15 hover:bg-white/[0.06]",
-                marker && !selected && "border-white/10 bg-white/[0.04]"
+                    : "border border-[var(--panel-border)] bg-white/[0.02] text-zinc-300 hover:border-[var(--input-border-hover)] hover:bg-white/[0.06]",
+                marker && !selected && "border-[var(--panel-border)] bg-white/[0.04]"
               )}
             >
               <span
@@ -236,7 +236,7 @@ export function Calendar({
                       {marker.logos.slice(0, 2).map((logoUrl, i) => (
                         <div
                           key={i}
-                          className="flex h-3.5 w-3.5 sm:h-4 sm:w-4 shrink-0 items-center justify-center rounded-full bg-black/70 border border-white/20 p-0.5 shadow-xs"
+                          className="flex h-3.5 w-3.5 sm:h-4 sm:w-4 shrink-0 items-center justify-center rounded-full bg-black/70 border border-[var(--input-border-hover)] p-0.5 shadow-xs"
                         >
                           <img
                             src={logoUrl}

@@ -125,14 +125,14 @@ export default function DailyReportModal({
           animate={{ opacity: 1, scale: 1, y: 0 }}
           exit={{ opacity: 0, scale: 0.95, y: 15 }}
           transition={{ type: "spring", stiffness: 400, damping: 30 }}
-          className="relative w-full max-w-lg overflow-hidden rounded-3xl border border-white/10 bg-[#0d1017]/95 p-5 sm:p-6 shadow-2xl backdrop-blur-2xl"
+          className="relative w-full max-w-lg overflow-hidden rounded-[var(--panel-radius)] border border-[var(--panel-border)] bg-[#0d1017]/95 p-5 sm:p-6 shadow-2xl backdrop-blur-2xl"
         >
           {/* Header */}
-          <div className="flex items-center justify-between border-b border-white/10 pb-4">
+          <div className="flex items-center justify-between border-b border-[var(--panel-border)] pb-4">
             <div className="flex items-center gap-2.5">
               <div
                 className={cn(
-                  "flex h-10 w-10 items-center justify-center rounded-2xl border shadow-md",
+                  "flex h-10 w-10 items-center justify-center rounded-[var(--panel-radius)] border shadow-md",
                   isVal
                     ? "border-rose-500/30 bg-rose-500/10 text-rose-400"
                     : "border-amber-500/30 bg-amber-500/10 text-amber-400"
@@ -151,7 +151,7 @@ export default function DailyReportModal({
             <button
               type="button"
               onClick={onClose}
-              className="flex h-8 w-8 items-center justify-center rounded-xl border border-white/10 bg-white/5 text-zinc-400 hover:bg-white/10 hover:text-white transition cursor-pointer"
+              className="flex h-8 w-8 items-center justify-center rounded-[var(--inset-radius)] border border-[var(--panel-border)] bg-white/5 text-zinc-400 hover:bg-white/10 hover:text-white transition cursor-pointer"
             >
               <X className="h-4 w-4" />
             </button>
@@ -160,7 +160,7 @@ export default function DailyReportModal({
           {/* Stats Grid */}
           <div className="mt-5 grid grid-cols-2 sm:grid-cols-3 gap-3">
             {/* Record & Win Rate */}
-            <div className="rounded-2xl border border-white/10 bg-white/[0.03] p-3 backdrop-blur-xl">
+            <div className="rounded-[var(--panel-radius)] border border-[var(--panel-border)] bg-white/[0.03] p-3 backdrop-blur-xl">
               <span className="block text-[10px] font-bold text-zinc-400 uppercase tracking-wider">
                 Bilan ({stats.winRate}%)
               </span>
@@ -172,7 +172,7 @@ export default function DailyReportModal({
             </div>
 
             {/* K/D or KDA */}
-            <div className="rounded-2xl border border-white/10 bg-white/[0.03] p-3 backdrop-blur-xl">
+            <div className="rounded-[var(--panel-radius)] border border-[var(--panel-border)] bg-white/[0.03] p-3 backdrop-blur-xl">
               <span className="block text-[10px] font-bold text-zinc-400 uppercase tracking-wider">
                 {isVal ? "Ratio K/D" : "KDA Moyen"}
               </span>
@@ -193,7 +193,7 @@ export default function DailyReportModal({
             </div>
 
             {/* ACS / DPM */}
-            <div className="rounded-2xl border border-white/10 bg-white/[0.03] p-3 backdrop-blur-xl">
+            <div className="rounded-[var(--panel-radius)] border border-[var(--panel-border)] bg-white/[0.03] p-3 backdrop-blur-xl">
               <span className="block text-[10px] font-bold text-zinc-400 uppercase tracking-wider">
                 {isVal ? "Score ACS" : "Dégâts DPM"}
               </span>
@@ -214,7 +214,7 @@ export default function DailyReportModal({
 
             {/* HS% if Valorant */}
             {isVal && (
-              <div className="rounded-2xl border border-white/10 bg-white/[0.03] p-3 backdrop-blur-xl">
+              <div className="rounded-[var(--panel-radius)] border border-[var(--panel-border)] bg-white/[0.03] p-3 backdrop-blur-xl">
                 <span className="block text-[10px] font-bold text-zinc-400 uppercase tracking-wider">
                   Précision HS
                 </span>
@@ -236,7 +236,7 @@ export default function DailyReportModal({
           </div>
 
           {/* AI Coach Insights Section */}
-          <div className="mt-5 rounded-2xl border border-white/10 bg-black/40 p-4 shadow-inner">
+          <div className="mt-5 rounded-[var(--panel-radius)] border border-[var(--panel-border)] bg-black/40 p-4 shadow-inner">
             <div className="flex items-center gap-2 mb-2">
               <Sparkles className="h-4 w-4 text-amber-400" />
               <h4 className="text-xs font-bold text-white uppercase tracking-wider">

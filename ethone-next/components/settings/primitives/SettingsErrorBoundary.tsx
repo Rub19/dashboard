@@ -35,7 +35,7 @@ export default class SettingsErrorBoundary extends Component<Props, State> {
   render() {
     if (this.state.hasError) {
       return (
-        <div className="flex flex-col items-center justify-center gap-4 rounded-2xl border border-[var(--danger)]/30 bg-[var(--danger)]/5 p-8 text-center my-6">
+        <div className="flex flex-col items-center justify-center gap-4 rounded-[var(--panel-radius)] border border-[var(--danger)]/30 bg-[var(--danger)]/5 p-8 text-center my-6">
           <div className="flex h-12 w-12 items-center justify-center rounded-2xl bg-[var(--danger)]/15 text-[var(--danger)]">
             <AlertTriangle className="h-6 w-6" />
           </div>

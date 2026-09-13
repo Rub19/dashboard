@@ -103,7 +103,7 @@ export default function CalendarBills({ items = [] }: { items?: CalendarItem[] }
 
   return (
     <div className="w-full p-4 sm:p-6">
-      <div className="overflow-hidden rounded-2xl border border-[var(--panel-border)] bg-[var(--panel-bg)]/[0.04] shadow-2xl backdrop-blur-xl">
+      <div className="overflow-hidden rounded-[var(--panel-radius)] border border-[var(--panel-border)] bg-[var(--panel-bg)]/[0.04] shadow-2xl backdrop-blur-xl">
         {/* Header */}
         <div className="flex items-center justify-between border-b border-[var(--panel-border)] px-6 py-5">
           <h2 className="text-xl font-semibold tracking-tight text-[var(--text-primary)]">

@@ -60,7 +60,7 @@ const UploadIslandView = memo(function UploadIslandView() {
           <div
             key={it.id}
             className={cn(
-              "flex items-center gap-2 rounded-xl border border-[var(--panel-border)] bg-[var(--panel-bg)] p-2",
+              "flex items-center gap-2 rounded-[var(--inset-radius)] border border-[var(--panel-border)] bg-[var(--panel-bg)] p-2",
               it.status === "error" && "border-red-400/30"
             )}
           >

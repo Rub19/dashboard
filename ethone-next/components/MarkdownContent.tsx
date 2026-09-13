@@ -27,7 +27,7 @@ function renderInline(text: string): React.ReactNode[] {
       tokens.push(
         <code
           key={keyIdx++}
-          className="rounded-md bg-black/30 border border-white/10 px-1.5 py-0.5 font-mono text-[11px] font-semibold text-[var(--accent-primary,#38bdf8)] shadow-xs"
+          className="rounded-md bg-black/30 border border-[var(--panel-border)] px-1.5 py-0.5 font-mono text-[11px] font-semibold text-[var(--accent-primary,#38bdf8)] shadow-xs"
         >
           {codeMatch[1]}
         </code>
@@ -133,9 +133,9 @@ function parseMarkdown(raw: string): React.ReactNode[] {
       nodes.push(
         <div
           key={nodeKey++}
-          className="my-3 overflow-hidden rounded-2xl border border-[var(--panel-border)] bg-black/60 shadow-lg"
+          className="my-3 overflow-hidden rounded-[var(--panel-radius)] border border-[var(--panel-border)] bg-black/60 shadow-lg"
         >
-          <div className="flex items-center justify-between border-b border-white/5 bg-white/5 px-3.5 py-1.5 text-xs text-[var(--text-muted)]">
+          <div className="flex items-center justify-between border-b border-[var(--panel-border)] bg-white/5 px-3.5 py-1.5 text-xs text-[var(--text-muted)]">
             <span className="font-mono text-[11px] uppercase tracking-wider">{lang || "code"}</span>
             <button
               type="button"

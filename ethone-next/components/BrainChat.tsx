@@ -162,7 +162,7 @@ export default function BrainChat({
             <button
               type="button"
               onClick={onToggleSidebar}
-              className="md:hidden flex h-8 w-8 items-center justify-center rounded-xl border border-[var(--panel-border)] text-[var(--text-muted)] hover:text-[var(--text-primary)]"
+              className="md:hidden flex h-8 w-8 items-center justify-center rounded-[var(--inset-radius)] border border-[var(--panel-border)] text-[var(--text-muted)] hover:text-[var(--text-primary)]"
               title="Menu des discussions"
             >
               <List className="h-4 w-4" />
@@ -211,7 +211,7 @@ export default function BrainChat({
           <button
             type="button"
             onClick={() => brain.clearChat()}
-            className="flex h-8 items-center gap-1.5 rounded-xl border border-[var(--panel-border)] px-2.5 text-xs font-medium text-[var(--text-muted)] hover:border-[var(--danger)]/50 hover:text-[var(--danger)] transition-colors cursor-pointer"
+            className="flex h-8 items-center gap-1.5 rounded-[var(--inset-radius)] border border-[var(--panel-border)] px-2.5 text-xs font-medium text-[var(--text-muted)] hover:border-[var(--danger)]/50 hover:text-[var(--danger)] transition-colors cursor-pointer"
           >
             <Trash2 className="h-3.5 w-3.5" />
             <span className="hidden sm:inline">Effacer</span>
@@ -221,7 +221,7 @@ export default function BrainChat({
             <button
               type="button"
               onClick={onToggleContext}
-              className="flex h-8 w-8 items-center justify-center rounded-xl border border-[var(--panel-border)] text-[var(--text-muted)] hover:text-[var(--text-primary)] transition-colors cursor-pointer"
+              className="flex h-8 w-8 items-center justify-center rounded-[var(--inset-radius)] border border-[var(--panel-border)] text-[var(--text-muted)] hover:text-[var(--text-primary)] transition-colors cursor-pointer"
               title="Contexte et mémoire"
             >
               <SlidersHorizontal className="h-4 w-4" />
@@ -256,7 +256,7 @@ export default function BrainChat({
           <motion.div
             initial={{ opacity: 0, y: 6 }}
             animate={{ opacity: 1, y: 0 }}
-            className="flex items-center gap-3 rounded-2xl border border-[var(--panel-border)] bg-[var(--surface-raised)]/60 p-3.5 w-fit"
+            className="flex items-center gap-3 rounded-[var(--panel-radius)] border border-[var(--panel-border)] bg-[var(--surface-raised)]/60 p-3.5 w-fit"
           >
             <span className="flex h-6 w-6 items-center justify-center rounded-lg bg-[var(--accent-primary)]/20 text-[var(--accent-primary)]">
               <Brain className="h-3.5 w-3.5 animate-pulse" />
@@ -351,7 +351,7 @@ export default function BrainChat({
                 key={item.label}
                 type="button"
                 onClick={() => brain.send(item.prompt)}
-                className="group flex items-center gap-3 rounded-2xl border border-[var(--panel-border)] bg-[var(--surface-raised)]/40 p-3 text-left transition-all hover:border-[var(--accent-primary)]/40 hover:bg-[var(--surface-hover)]/60 active:scale-95 shadow-sm cursor-pointer"
+                className="group flex items-center gap-3 rounded-[var(--panel-radius)] border border-[var(--panel-border)] bg-[var(--surface-raised)]/40 p-3 text-left transition-all hover:border-[var(--accent-primary)]/40 hover:bg-[var(--surface-hover)]/60 active:scale-95 shadow-sm cursor-pointer"
               >
                 <span className="flex h-8 w-8 shrink-0 items-center justify-center rounded-xl bg-[var(--surface-raised)] text-[var(--accent-primary)] group-hover:scale-110 transition-transform shadow-xs">
                   <IconComp className="h-4 w-4" />

@@ -125,7 +125,7 @@ export default function ContextMenu({
           animate={{ opacity: 1, y: 0, scale: 1 }}
           exit={reduce ? { opacity: 0 } : { opacity: 0, y: -4, scale: 0.97 }}
           transition={reduce ? { duration: 0 } : { duration: 0.12, ease: "easeOut" }}
-          className="v8-context-menu ethone-context-menu fixed z-[var(--z-modal)] min-w-[12rem] max-w-[20rem] overflow-hidden rounded-2xl border border-[var(--panel-border)]/[0.12] bg-[var(--panel-bg)]/[0.92] p-1 shadow-2xl shadow-black/20 outline-none backdrop-blur-2xl"
+          className="v8-context-menu ethone-context-menu fixed z-[var(--z-modal)] min-w-[12rem] max-w-[20rem] overflow-hidden rounded-[var(--panel-radius)] border border-[var(--panel-border)]/[0.12] bg-[var(--panel-bg)]/[0.92] p-1 shadow-2xl shadow-black/20 outline-none backdrop-blur-2xl"
           style={{ left: adjusted.x, top: adjusted.y }}
           role="menu"
           aria-label={i18n("actions")}

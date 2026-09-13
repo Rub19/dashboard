@@ -60,7 +60,7 @@ export default function VersionUpdateToast() {
             <div className="v8-panel relative overflow-hidden p-4 shadow-2xl">
               <div className="flex items-center gap-3.5 sm:gap-4">
                 {/* Left Icon Badge */}
-                <div className="flex h-11 w-11 shrink-0 items-center justify-center rounded-2xl border border-[var(--accent-primary)]/25 bg-[var(--accent-primary)]/10 text-[var(--accent-primary)]">
+                <div className="flex h-11 w-11 shrink-0 items-center justify-center rounded-[var(--panel-radius)] border border-[var(--accent-primary)]/25 bg-[var(--accent-primary)]/10 text-[var(--accent-primary)]">
                   <ArrowUpCircle className="h-5 w-5" />
                 </div>
 

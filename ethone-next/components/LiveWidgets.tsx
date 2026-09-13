@@ -1256,7 +1256,7 @@ export default function LiveWidgets({
                   <Link
                     href="/settings?category=integrations"
                     onClick={(e) => e.stopPropagation()}
-                    className="inline-flex items-center gap-1.5 rounded-xl border border-[var(--panel-border)] bg-[var(--panel-bg)]/80 px-3 py-1.5 text-xs font-medium text-[var(--text-primary)] transition-all hover:bg-[var(--panel-bg)] active:scale-95"
+                    className="inline-flex items-center gap-1.5 rounded-[var(--inset-radius)] border border-[var(--panel-border)] bg-[var(--panel-bg)]/80 px-3 py-1.5 text-xs font-medium text-[var(--text-primary)] transition-all hover:bg-[var(--panel-bg)] active:scale-95"
                   >
                     <Icon name="link" className="h-3 w-3" />
                     {i18n("connect", "Connecter")}

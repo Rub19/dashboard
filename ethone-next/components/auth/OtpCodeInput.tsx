@@ -155,7 +155,7 @@ export default function OtpCodeInput({
               className={cn(
                 "h-14 sm:h-16 w-full rounded-2xl text-center text-xl sm:text-2xl font-bold font-mono outline-none transition-all duration-150 select-none",
                 "border bg-white/[0.035] text-white",
-                isFilled ? "border-emerald-500/40 bg-emerald-500/[0.04]" : "border-white/10 hover:border-white/20",
+                isFilled ? "border-emerald-500/40 bg-emerald-500/[0.04]" : "border-[var(--panel-border)] hover:border-[var(--input-border-hover)]",
                 "focus:border-emerald-400 focus:bg-white/[0.07] focus:ring-4 focus:ring-emerald-500/20 focus:scale-[1.03]",
                 error && "border-rose-500/80 text-rose-400 focus:border-rose-500 focus:ring-rose-500/20",
                 isSuccess && "border-emerald-400 bg-emerald-500/20 text-emerald-300",

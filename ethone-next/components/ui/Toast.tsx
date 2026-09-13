@@ -96,7 +96,7 @@ export default function Toast({
       dragElastic={0.2}
       onDragEnd={handleDragEnd}
       style={{ x, opacity, zIndex: 50 - depth }}
-      className={`relative w-full min-w-0 overflow-hidden rounded-xl border bg-[var(--panel-bg)]/85 p-3.5 shadow-2xl shadow-[var(--background)]/80 backdrop-blur-xl md:min-w-[300px] md:max-w-md ${config.border} flex items-center gap-3 text-sm text-[var(--text-primary)]`}
+      className={`relative w-full min-w-0 overflow-hidden rounded-[var(--inset-radius)] border bg-[var(--panel-bg)]/85 p-3.5 shadow-2xl shadow-[var(--background)]/80 backdrop-blur-xl md:min-w-[300px] md:max-w-md ${config.border} flex items-center gap-3 text-sm text-[var(--text-primary)]`}
     >
       <span className="shrink-0">{config.icon}</span>
       <p className="min-w-0 flex-1 truncate">{toast.message}</p>

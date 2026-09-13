@@ -269,7 +269,7 @@ export default function PluginsPage() {
             value={search}
             onChange={(e) => setSearch(e.target.value)}
             placeholder="Rechercher (ex: 'setup gaming', GitHub, Pomodoro...)"
-            className="w-full rounded-2xl border border-[var(--panel-border)] bg-[var(--surface-raised)]/70 pl-10 pr-9 py-2.5 text-xs text-[var(--text-primary)] placeholder-[var(--text-muted)] focus:border-[var(--accent-primary)] focus:outline-none shadow-inner"
+            className="w-full rounded-[var(--panel-radius)] border border-[var(--panel-border)] bg-[var(--surface-raised)]/70 pl-10 pr-9 py-2.5 text-xs text-[var(--text-primary)] placeholder-[var(--text-muted)] focus:border-[var(--accent-primary)] focus:outline-none shadow-inner"
           />
           {search && (
             <button
@@ -285,7 +285,7 @@ export default function PluginsPage() {
 
       {/* Natural Language Intent Detection Banner */}
       {searchIntent.hasIntent && (
-        <div className="shrink-0 flex items-center justify-between gap-2 rounded-2xl border border-purple-500/30 bg-purple-950/25 px-4 py-2 text-xs backdrop-blur-md">
+        <div className="shrink-0 flex items-center justify-between gap-2 rounded-[var(--panel-radius)] border border-purple-500/30 bg-purple-950/25 px-4 py-2 text-xs backdrop-blur-md">
           <div className="flex items-center gap-2 text-purple-200">
             <Brain className="h-4 w-4 text-purple-400 shrink-0" />
             <span>
@@ -375,7 +375,7 @@ export default function PluginsPage() {
               value={sortBy}
               onChange={(e) => setSortBy(e.target.value as any)}
               aria-label="Trier par"
-              className="rounded-xl border border-[var(--panel-border)] bg-[var(--surface-raised)] px-2.5 py-1 text-xs text-[var(--text-primary)] focus:border-[var(--accent-primary)] focus:outline-none cursor-pointer"
+              className="rounded-[var(--inset-radius)] border border-[var(--panel-border)] bg-[var(--surface-raised)] px-2.5 py-1 text-xs text-[var(--text-primary)] focus:border-[var(--accent-primary)] focus:outline-none cursor-pointer"
             >
               <option value="recommended">Recommandé (Brain Match)</option>
               <option value="popular">Plus populaires</option>
@@ -412,7 +412,7 @@ export default function PluginsPage() {
 
             {/* Grid of Items */}
             {displayedItems.length === 0 ? (
-              <div className="flex flex-col items-center justify-center py-20 text-center rounded-3xl border border-[var(--panel-border)]/40 bg-[var(--surface-raised)]/20 p-8">
+              <div className="flex flex-col items-center justify-center py-20 text-center rounded-[var(--panel-radius)] border border-[var(--panel-border)]/40 bg-[var(--surface-raised)]/20 p-8">
                 <Search className="h-8 w-8 text-[var(--text-muted)] mb-2" />
                 <p className="text-sm font-semibold text-[var(--text-primary)]">
                   Aucun module ne correspond à vos critères
@@ -424,7 +424,7 @@ export default function PluginsPage() {
                   <button
                     type="button"
                     onClick={() => setSearch("")}
-                    className="mt-4 rounded-xl border border-[var(--panel-border)] bg-[var(--surface-raised)] px-4 py-2 text-xs font-semibold text-[var(--text-primary)] hover:bg-[var(--surface-hover)] transition-colors cursor-pointer"
+                    className="mt-4 rounded-[var(--inset-radius)] border border-[var(--panel-border)] bg-[var(--surface-raised)] px-4 py-2 text-xs font-semibold text-[var(--text-primary)] hover:bg-[var(--surface-hover)] transition-colors cursor-pointer"
                   >
                     Réinitialiser la recherche
                   </button>

@@ -261,7 +261,7 @@ export const RiotGamingCardContent = memo(function RiotGamingCardContent({
         </span>
         <span
           className={cn(
-            "inline-flex shrink-0 items-center gap-1.5 rounded-lg border px-2 py-0.5 text-[10px] font-medium",
+            "inline-flex shrink-0 items-center gap-1.5 rounded-[var(--inset-radius)] border px-2 py-0.5 text-[10px] font-medium",
             status.badge
           )}
         >
@@ -272,7 +272,7 @@ export const RiotGamingCardContent = memo(function RiotGamingCardContent({
 
       {!configured ? (
         <div className="flex flex-1 flex-col items-center justify-center gap-3 py-2 text-center">
-          <div className="flex h-16 w-16 items-center justify-center rounded-2xl border border-[var(--text-primary)]/10 bg-[var(--text-primary)]/[0.04]">
+          <div className="flex h-16 w-16 items-center justify-center rounded-[var(--panel-radius)] border border-[var(--text-primary)]/10 bg-[var(--text-primary)]/[0.04]">
             <User className="h-7 w-7 text-[var(--text-muted)]" />
           </div>
           <div>
@@ -305,7 +305,7 @@ export const RiotGamingCardContent = memo(function RiotGamingCardContent({
           {/* Avatar / PP with Level Badge */}
           <div className="relative">
             <div className={cn(
-              "h-14 w-14 overflow-hidden rounded-2xl border shadow-lg relative bg-black/50 flex items-center justify-center",
+              "h-14 w-14 overflow-hidden rounded-[var(--panel-radius)] border shadow-lg relative bg-black/50 flex items-center justify-center",
               game === "valorant" ? "border-rose-500/40 shadow-rose-950/40" : "border-amber-500/40 shadow-amber-950/40"
             )}>
               <img
@@ -322,7 +322,7 @@ export const RiotGamingCardContent = memo(function RiotGamingCardContent({
             </div>
             {/* Level Badge */}
             <span className={cn(
-              "absolute -bottom-1.5 -right-1.5 rounded-lg px-1.5 py-0.2 font-mono text-[9px] font-black shadow-md border",
+              "absolute -bottom-1.5 -right-1.5 rounded-[var(--inset-radius)] px-1.5 py-0.2 font-mono text-[9px] font-black shadow-md border",
               game === "valorant"
                 ? "bg-rose-950 text-rose-300 border-rose-500/40"
                 : "bg-amber-950 text-amber-300 border-amber-500/40"

@@ -59,14 +59,14 @@ export default function TftMatchRow({ match }: { match: TftMatch }) {
   const ordinal = placement === 1 ? "1ère" : `${placement}e`;
 
   return (
-    <div className={cn("rounded-2xl border bg-white/[0.02] backdrop-blur-xl transition-colors", pc.border)}>
+    <div className={cn("rounded-[var(--panel-radius)] border bg-white/[0.02] backdrop-blur-xl transition-colors", pc.border)}>
       {/* Collapsed header */}
       <button
         type="button"
         onClick={() => setOpen((v) => !v)}
         className="flex w-full items-center gap-3 p-3 text-left sm:gap-4 sm:p-4"
       >
-        <div className={cn("flex h-14 w-14 shrink-0 flex-col items-center justify-center rounded-xl border", pc.bg, pc.border)}>
+        <div className={cn("flex h-14 w-14 shrink-0 flex-col items-center justify-center rounded-[var(--inset-radius)] border", pc.bg, pc.border)}>
           <span className={cn("text-lg font-black leading-none", pc.text)}>{placement}</span>
           <span className="mt-0.5 text-[9px] font-bold uppercase tracking-wide text-zinc-500">{ordinal}</span>
         </div>
@@ -106,7 +106,7 @@ export default function TftMatchRow({ match }: { match: TftMatch }) {
 
       {/* Expanded lobby */}
       {open && (
-        <div className="border-t border-white/5 p-3 sm:p-4">
+        <div className="border-t border-[var(--panel-border)] p-3 sm:p-4">
           <div className="grid grid-cols-1 gap-2 lg:grid-cols-2">
             {match.players.map((p) => {
               const ppc = tftPlacementColor(p.placement);
@@ -114,8 +114,8 @@ export default function TftMatchRow({ match }: { match: TftMatch }) {
                 <div
                   key={p.puuid || p.placement}
                   className={cn(
-                    "rounded-xl border p-2.5",
-                    p.isMe ? "border-amber-400/40 bg-amber-400/[0.06]" : "border-white/10 bg-white/[0.02]"
+                    "rounded-[var(--inset-radius)] border p-2.5",
+                    p.isMe ? "border-amber-400/40 bg-amber-400/[0.06]" : "border-[var(--panel-border)] bg-white/[0.02]"
                   )}
                 >
                   <div className="flex items-center gap-2">

@@ -88,11 +88,11 @@ export default function FlowCard({
   const showFooter = onEdit || onDuplicate || onLogs || onRun || rightAction;
 
   return (
-    <div className="group relative flex flex-col overflow-hidden rounded-2xl v8-panel p-4 shadow-sm backdrop-blur-xl transition-all duration-200 hover:border-white/15 hover:shadow-2xl">
+    <div className="group relative flex flex-col overflow-hidden rounded-[var(--panel-radius)] v8-panel p-4 shadow-sm backdrop-blur-xl transition-all duration-200 hover:border-[var(--input-border-hover)] hover:shadow-2xl">
       <div className="flex items-start justify-between gap-3">
         <div className="flex items-start gap-3">
           <span
-            className={`flex h-9 w-9 shrink-0 items-center justify-center rounded-xl border border-[var(--text-primary)]/[0.08] ${iconClass}`}
+            className={`flex h-9 w-9 shrink-0 items-center justify-center rounded-[var(--inset-radius)] border border-[var(--text-primary)]/[0.08] ${iconClass}`}
           >
             <Icon name={icon} className="h-4.5 w-4.5" />
           </span>
@@ -100,12 +100,12 @@ export default function FlowCard({
             <h3 className="truncate text-sm font-bold text-[var(--text-primary)]">{title}</h3>
             <div className="mt-1 flex items-center gap-2">
               {active || running ? (
-                <span className="inline-flex items-center gap-1.5 rounded-lg border border-[var(--accent-primary)] bg-[var(--accent-primary)] px-2 py-0.5 text-[10px] font-semibold text-[var(--accent-primary)]">
+                <span className="inline-flex items-center gap-1.5 rounded-[var(--inset-radius)] border border-[var(--accent-primary)] bg-[var(--accent-primary)] px-2 py-0.5 text-[10px] font-semibold text-[var(--accent-primary)]">
                   <PulsingDot color="bg-[var(--accent-primary)]" />
                   {running ? "En cours" : "Actif"}
                 </span>
               ) : (
-                <span className="inline-flex items-center gap-1.5 rounded-lg border border-zinc-700/50 bg-[var(--text-primary)]/[0.03] px-2 py-0.5 text-[10px] font-semibold text-[var(--text-muted)]">
+                <span className="inline-flex items-center gap-1.5 rounded-[var(--inset-radius)] border border-zinc-700/50 bg-[var(--text-primary)]/[0.03] px-2 py-0.5 text-[10px] font-semibold text-[var(--text-muted)]">
                   <span className="h-1.5 w-1.5 rounded-full bg-zinc-500" />
                   En pause
                 </span>
@@ -149,7 +149,7 @@ export default function FlowCard({
       <div className="mt-3 flex items-center gap-2 overflow-x-auto pb-1">
         {steps.map((step, i) => (
           <span key={i} className="contents">
-            <span className="inline-flex shrink-0 items-center gap-1.5 rounded-lg border border-[var(--text-primary)]/[0.06] bg-[var(--text-primary)]/[0.03] px-2.5 py-1 text-[11px] font-mono text-[var(--text-primary)]">
+            <span className="inline-flex shrink-0 items-center gap-1.5 rounded-[var(--inset-radius)] border border-[var(--text-primary)]/[0.06] bg-[var(--text-primary)]/[0.03] px-2.5 py-1 text-[11px] font-mono text-[var(--text-primary)]">
               <span className="text-[var(--text-muted)]">{i + 1}.</span>
               {step}
             </span>
@@ -165,7 +165,7 @@ export default function FlowCard({
           {widgets.map((w) => (
             <span
               key={w}
-              className="flex h-6 w-6 items-center justify-center rounded-lg border border-[var(--text-primary)]/[0.06] bg-[var(--text-primary)]/[0.02] text-[var(--text-muted)]"
+              className="flex h-6 w-6 items-center justify-center rounded-[var(--inset-radius)] border border-[var(--text-primary)]/[0.06] bg-[var(--text-primary)]/[0.02] text-[var(--text-muted)]"
               title={w}
             >
               <Icon name={widgetIcons[w] || "box"} className="h-3 w-3" />

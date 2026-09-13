@@ -21,7 +21,7 @@ export default function ErrorState({
   return (
     <div
       className={cn(
-        "flex w-full flex-col items-center justify-center gap-3 rounded-2xl border border-[var(--danger)]/20 bg-[var(--danger)]/5 p-6 text-center",
+        "flex w-full flex-col items-center justify-center gap-3 rounded-[var(--panel-radius)] border border-[var(--danger)]/20 bg-[var(--danger)]/5 p-6 text-center",
         className
       )}
     >
@@ -34,7 +34,7 @@ export default function ErrorState({
         <button
           type="button"
           onClick={onRetry}
-          className="rounded-lg border border-[var(--danger)]/30 bg-[var(--danger)]/10 px-3 py-1.5 text-xs font-medium text-[var(--danger)] transition hover:bg-[var(--danger)]/20"
+          className="rounded-[var(--inset-radius)] border border-[var(--danger)]/30 bg-[var(--danger)]/10 px-3 py-1.5 text-xs font-medium text-[var(--danger)] transition hover:bg-[var(--danger)]/20"
         >
           {retryLabel}
         </button>

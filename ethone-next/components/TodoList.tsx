@@ -77,7 +77,7 @@ const TodoList = memo(function TodoList({ tasks, loading, onToggle, onDelete, on
       scrollable ? "h-full min-h-0 overflow-hidden" : "h-auto overflow-visible",
       className
     )}>
-      <div className="shrink-0 flex items-center gap-1.5 rounded-xl border border-[var(--text-primary)]/[0.04] bg-[var(--text-primary)]/[0.02] p-1 text-[11px]">
+      <div className="shrink-0 flex items-center gap-1.5 rounded-[var(--inset-radius)] border border-[var(--text-primary)]/[0.04] bg-[var(--text-primary)]/[0.02] p-1 text-[11px]">
         {tabs.map((tab) => (
           <button
             key={tab.id}
@@ -130,7 +130,7 @@ const TodoList = memo(function TodoList({ tasks, loading, onToggle, onDelete, on
                 <button
                   type="button"
                   onClick={onNewTask}
-                  className="mt-1 inline-flex items-center gap-1.5 rounded-xl border border-[var(--text-primary)]/[0.08] bg-[var(--text-primary)]/[0.04] px-3 py-1.5 text-xs font-medium text-[var(--text-primary)] transition-all hover:bg-[var(--text-primary)]/[0.08] active:scale-95"
+                  className="mt-1 inline-flex items-center gap-1.5 rounded-[var(--inset-radius)] border border-[var(--text-primary)]/[0.08] bg-[var(--text-primary)]/[0.04] px-3 py-1.5 text-xs font-medium text-[var(--text-primary)] transition-all hover:bg-[var(--text-primary)]/[0.08] active:scale-95"
                 >
                   <Plus className="h-3.5 w-3.5 text-[var(--accent-primary)]" />
                   {i18n("newTask", "Nouvelle tâche")}

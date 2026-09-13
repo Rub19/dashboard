@@ -288,7 +288,7 @@ export default function ConnectionDetailDrawer({
             {/* Header: Safe top padding to clear topbar */}
             <div className="flex shrink-0 items-center justify-between border-b border-[var(--panel-border)] px-6 py-5 bg-black/60 pt-[calc(1.25rem+env(safe-area-inset-top))]">
               <div className="flex items-center gap-3.5 min-w-0">
-                <div className="flex h-12 w-12 shrink-0 items-center justify-center rounded-2xl bg-[var(--surface-raised)] border border-[var(--panel-border)] shadow-md">
+                <div className="flex h-12 w-12 shrink-0 items-center justify-center rounded-[var(--panel-radius)] bg-[var(--surface-raised)] border border-[var(--panel-border)] shadow-md">
                   <ServiceIcon id={integration.id} icon={integration.icon} className="h-6 w-6" colored />
                 </div>
                 <div className="min-w-0">
@@ -311,7 +311,7 @@ export default function ConnectionDetailDrawer({
                   hapticLightImpact();
                   onClose();
                 }}
-                className="flex h-10 w-10 shrink-0 items-center justify-center rounded-xl bg-white/5 border border-white/10 text-zinc-400 transition hover:bg-white/10 hover:text-white cursor-pointer"
+                className="flex h-10 w-10 shrink-0 items-center justify-center rounded-[var(--inset-radius)] bg-white/5 border border-[var(--panel-border)] text-zinc-400 transition hover:bg-white/10 hover:text-white cursor-pointer"
                 aria-label={i18n("close", "Fermer")}
               >
                 <X className="h-5 w-5" />
@@ -345,7 +345,7 @@ export default function ConnectionDetailDrawer({
 
               {/* Discord Mode Switch if Discord */}
               {integration.id === "discord" && (
-                <div className="space-y-3 rounded-2xl border border-indigo-500/30 bg-indigo-500/10 p-4">
+                <div className="space-y-3 rounded-[var(--panel-radius)] border border-indigo-500/30 bg-indigo-500/10 p-4">
                   <div className="flex items-center justify-between">
                     <span className="text-xs font-bold text-indigo-300 flex items-center gap-1.5">
                       <Radio className="h-4 w-4" /> Mode de Connexion Discord
@@ -356,10 +356,10 @@ export default function ConnectionDetailDrawer({
                       type="button"
                       onClick={() => setDiscordMode("oauth")}
                       className={cn(
-                        "rounded-xl py-2 px-3 text-xs font-bold transition-all border text-center cursor-pointer",
+                        "rounded-[var(--inset-radius)] py-2 px-3 text-xs font-bold transition-all border text-center cursor-pointer",
                         discordMode === "oauth"
                           ? "bg-indigo-600 border-indigo-400 text-white shadow-md"
-                          : "bg-white/5 border-white/10 text-zinc-400 hover:text-white"
+                          : "bg-white/5 border-[var(--panel-border)] text-zinc-400 hover:text-white"
                       )}
                     >
                       Bot Discord 2.0 (Page Bot)
@@ -368,10 +368,10 @@ export default function ConnectionDetailDrawer({
                       type="button"
                       onClick={() => setDiscordMode("lanyard")}
                       className={cn(
-                        "rounded-xl py-2 px-3 text-xs font-bold transition-all border text-center cursor-pointer",
+                        "rounded-[var(--inset-radius)] py-2 px-3 text-xs font-bold transition-all border text-center cursor-pointer",
                         discordMode === "lanyard"
                           ? "bg-indigo-600 border-indigo-400 text-white shadow-md"
-                          : "bg-white/5 border-white/10 text-zinc-400 hover:text-white"
+                          : "bg-white/5 border-[var(--panel-border)] text-zinc-400 hover:text-white"
                       )}
                     >
                       Lanyard (ID Discord)
@@ -393,7 +393,7 @@ export default function ConnectionDetailDrawer({
                       e.preventDefault();
                       void handleSaveCredentials();
                     }}
-                    className="space-y-4 rounded-2xl border border-[var(--panel-border)] bg-[var(--surface-raised)]/50 p-4"
+                    className="space-y-4 rounded-[var(--panel-radius)] border border-[var(--panel-border)] bg-[var(--surface-raised)]/50 p-4"
                   >
                     {/* Public Fields */}
                     {publicFieldDefs.map((f) => (
@@ -407,7 +407,7 @@ export default function ConnectionDetailDrawer({
                             onChange={(e) =>
                               setPublicValues((p) => ({ ...p, [f.key as string]: e.target.value }))
                             }
-                            className="w-full rounded-xl border border-[var(--panel-border)] bg-[var(--surface-sunken)] px-3 py-2 text-xs text-[var(--text-primary)] focus:border-[var(--accent-primary)] focus:outline-none"
+                            className="w-full rounded-[var(--inset-radius)] border border-[var(--panel-border)] bg-[var(--surface-sunken)] px-3 py-2 text-xs text-[var(--text-primary)] focus:border-[var(--accent-primary)] focus:outline-none"
                           >
                             {f.options.map((opt) => (
                               <option key={opt} value={opt}>
@@ -428,10 +428,10 @@ export default function ConnectionDetailDrawer({
                                   ? "Ex: 279328249871204352 (votre ID utilisateur personnel)"
                                   : `Entrez ${f.label}...`
                               }
-                              className="w-full rounded-xl border border-[var(--panel-border)] bg-[var(--surface-sunken)] px-3.5 py-2.5 text-xs text-[var(--text-primary)] placeholder-[var(--text-muted)] focus:border-[var(--accent-primary)] focus:outline-none font-mono"
+                              className="w-full rounded-[var(--inset-radius)] border border-[var(--panel-border)] bg-[var(--surface-sunken)] px-3.5 py-2.5 text-xs text-[var(--text-primary)] placeholder-[var(--text-muted)] focus:border-[var(--accent-primary)] focus:outline-none font-mono"
                             />
                             {integration.id === "discord" && (
-                              <div className="rounded-xl border border-indigo-500/20 bg-indigo-500/10 p-3 text-[11px] text-indigo-300 space-y-1.5 leading-relaxed">
+                              <div className="rounded-[var(--inset-radius)] border border-indigo-500/20 bg-indigo-500/10 p-3 text-[11px] text-indigo-300 space-y-1.5 leading-relaxed">
                                 <p className="font-semibold text-indigo-200">
                                   📌 Comment trouver votre ID Discord personnel ?
                                 </p>
@@ -490,7 +490,7 @@ export default function ConnectionDetailDrawer({
                                 setCredValues((p) => ({ ...p, [f.key as string]: e.target.value }))
                               }
                               placeholder={`Entrez ${f.label}...`}
-                              className="w-full rounded-xl border border-[var(--panel-border)] bg-[var(--surface-sunken)] px-3.5 py-2.5 pr-20 text-xs font-mono text-[var(--text-primary)] placeholder-[var(--text-muted)] focus:border-[var(--accent-primary)] focus:outline-none"
+                              className="w-full rounded-[var(--inset-radius)] border border-[var(--panel-border)] bg-[var(--surface-sunken)] px-3.5 py-2.5 pr-20 text-xs font-mono text-[var(--text-primary)] placeholder-[var(--text-muted)] focus:border-[var(--accent-primary)] focus:outline-none"
                             />
                             <div className="absolute right-2 top-1/2 -translate-y-1/2 flex items-center gap-1">
                               {val && (
@@ -539,7 +539,7 @@ export default function ConnectionDetailDrawer({
               {/* Discord OAuth2 Dedicated Configuration */}
               {integration.id === "discord" && discordMode === "oauth" && (
                 <Section title="Connexion OAuth2 Discord (Bot ETHONE)">
-                  <div className="space-y-3.5 rounded-2xl border border-indigo-500/30 bg-indigo-500/5 p-4">
+                  <div className="space-y-3.5 rounded-[var(--panel-radius)] border border-indigo-500/30 bg-indigo-500/5 p-4">
                     <div className="flex items-center justify-between">
                       <div>
                         <p className="text-xs font-bold text-white flex items-center gap-1.5">
@@ -572,11 +572,11 @@ export default function ConnectionDetailDrawer({
                           setCredValues((p) => ({ ...p, clientId: e.target.value }))
                         }
                         placeholder="Ex: 1545139931154878464"
-                        className="w-full rounded-xl border border-[var(--panel-border)] bg-[var(--surface-sunken)] px-3.5 py-2 text-xs font-mono text-[var(--text-primary)] placeholder-[var(--text-muted)] focus:border-indigo-500 focus:outline-none"
+                        className="w-full rounded-[var(--inset-radius)] border border-[var(--panel-border)] bg-[var(--surface-sunken)] px-3.5 py-2 text-xs font-mono text-[var(--text-primary)] placeholder-[var(--text-muted)] focus:border-indigo-500 focus:outline-none"
                       />
                     </div>
 
-                    <div className="rounded-xl border border-indigo-500/20 bg-indigo-500/10 p-3">
+                    <div className="rounded-[var(--inset-radius)] border border-indigo-500/20 bg-indigo-500/10 p-3">
                       <p className="text-[11px] text-indigo-200 leading-relaxed">
                         💡 Cliquez sur <strong>« Connecter »</strong> ci-dessous pour ouvrir directement la page d&apos;autorisation Discord et lier votre compte en 1 clic.
                       </p>
@@ -594,7 +594,7 @@ export default function ConnectionDetailDrawer({
                       </a>
                       <a
                         href="/discord"
-                        className="inline-flex w-full items-center justify-center gap-2 rounded-xl border border-indigo-500/40 bg-indigo-600/20 px-3.5 py-2.5 text-xs font-semibold text-indigo-200 transition-all hover:bg-indigo-600/35 hover:text-white hover:border-indigo-400/60"
+                        className="inline-flex w-full items-center justify-center gap-2 rounded-[var(--inset-radius)] border border-indigo-500/40 bg-indigo-600/20 px-3.5 py-2.5 text-xs font-semibold text-indigo-200 transition-all hover:bg-indigo-600/35 hover:text-white hover:border-indigo-400/60"
                       >
                         <Bot className="h-4 w-4 text-indigo-400" />
                         <span>Ouvrir le Dashboard Discord Bot 2.0</span>
@@ -607,7 +607,7 @@ export default function ConnectionDetailDrawer({
               {/* Status Section */}
               <Section title="État du service">
                 <div className="grid grid-cols-2 gap-3 text-xs">
-                  <div className="rounded-xl border border-[var(--panel-border)] bg-[var(--surface-raised)]/40 p-3">
+                  <div className="rounded-[var(--inset-radius)] border border-[var(--panel-border)] bg-[var(--surface-raised)]/40 p-3">
                     <span className="text-[10px] text-[var(--text-muted)]">Statut</span>
                     <div className="mt-1 flex items-center gap-1.5 font-semibold text-[var(--text-primary)]">
                       <span
@@ -624,21 +624,21 @@ export default function ConnectionDetailDrawer({
                     </div>
                   </div>
 
-                  <div className="rounded-xl border border-[var(--panel-border)] bg-[var(--surface-raised)]/40 p-3">
+                  <div className="rounded-[var(--inset-radius)] border border-[var(--panel-border)] bg-[var(--surface-raised)]/40 p-3">
                     <span className="text-[10px] text-[var(--text-muted)]">Dernière synchronisation</span>
                     <span className="mt-1 block font-semibold text-[var(--text-primary)]">
                       {lastSync ? relativeTime(lastSync, i18n) : "—"}
                     </span>
                   </div>
 
-                  <div className="rounded-xl border border-[var(--panel-border)] bg-[var(--surface-raised)]/40 p-3">
+                  <div className="rounded-[var(--inset-radius)] border border-[var(--panel-border)] bg-[var(--surface-raised)]/40 p-3">
                     <span className="text-[10px] text-[var(--text-muted)]">Latence</span>
                     <span className="mt-1 block font-mono font-semibold text-[var(--text-primary)]">
                       {health?.ms ? `${health.ms} ms` : "—"}
                     </span>
                   </div>
 
-                  <div className="rounded-xl border border-[var(--panel-border)] bg-[var(--surface-raised)]/40 p-3">
+                  <div className="rounded-[var(--inset-radius)] border border-[var(--panel-border)] bg-[var(--surface-raised)]/40 p-3">
                     <span className="text-[10px] text-[var(--text-muted)]">Intégration Brain</span>
                     <span className="mt-1 block font-semibold text-[var(--accent-primary)]">
                       Active
@@ -671,7 +671,7 @@ export default function ConnectionDetailDrawer({
                     {associatedWidgets.map((w) => (
                       <span
                         key={w}
-                        className="inline-flex items-center gap-1.5 rounded-xl border border-[var(--panel-border)] bg-[var(--surface-raised)]/60 px-2.5 py-1 text-xs font-semibold text-[var(--text-primary)]"
+                        className="inline-flex items-center gap-1.5 rounded-[var(--inset-radius)] border border-[var(--panel-border)] bg-[var(--surface-raised)]/60 px-2.5 py-1 text-xs font-semibold text-[var(--text-primary)]"
                       >
                         <LayoutGrid className="h-3 w-3 text-[var(--accent-primary)]" />
                         <span>Widget : {w.toUpperCase()}</span>
@@ -689,13 +689,13 @@ export default function ConnectionDetailDrawer({
                       {permissions.map((p) => (
                         <span
                           key={p}
-                          className="rounded-lg bg-white/5 border border-white/10 px-2 py-0.5 font-mono text-[10px] text-zinc-300"
+                          className="rounded-[var(--inset-radius)] bg-white/5 border border-[var(--panel-border)] px-2 py-0.5 font-mono text-[10px] text-zinc-300"
                         >
                           {p}
                         </span>
                       ))}
                     </div>
-                    <div className="flex items-start gap-2 rounded-xl border border-[var(--accent-primary)]/20 bg-[var(--accent-primary)]/5 p-2.5 text-[11px] text-[var(--text-muted)]">
+                    <div className="flex items-start gap-2 rounded-[var(--inset-radius)] border border-[var(--accent-primary)]/20 bg-[var(--accent-primary)]/5 p-2.5 text-[11px] text-[var(--text-muted)]">
                       <ShieldCheck className="h-4 w-4 shrink-0 text-[var(--accent-primary)] mt-0.5" />
                       <p className="leading-relaxed">
                         Chiffrement des jetons côté serveur. Aucune exposition de vos mots de passe ou secrets privés.
@@ -708,7 +708,7 @@ export default function ConnectionDetailDrawer({
               {/* Technical logs */}
               {logs && (
                 <Section title="Détails techniques">
-                  <div className="rounded-xl border border-[var(--panel-border)] bg-[var(--surface-sunken)] p-3">
+                  <div className="rounded-[var(--inset-radius)] border border-[var(--panel-border)] bg-[var(--surface-sunken)] p-3">
                     <button
                       type="button"
                       onClick={() => setLogsOpen(!logsOpen)}
@@ -732,7 +732,7 @@ export default function ConnectionDetailDrawer({
               <button
                 type="button"
                 onClick={onTest}
-                className="flex items-center gap-2 rounded-xl border border-white/10 bg-white/5 px-4 py-2.5 text-xs font-bold text-white hover:bg-white/10 transition-all active:scale-95 cursor-pointer"
+                className="flex items-center gap-2 rounded-[var(--inset-radius)] border border-[var(--panel-border)] bg-white/5 px-4 py-2.5 text-xs font-bold text-white hover:bg-white/10 transition-all active:scale-95 cursor-pointer"
               >
                 <RefreshCw className="h-3.5 w-3.5" />
                 <span>Tester la connexion</span>
@@ -744,7 +744,7 @@ export default function ConnectionDetailDrawer({
                     <button
                       type="button"
                       onClick={() => setConfirmDisconnect(false)}
-                      className="rounded-xl border border-white/10 px-3 py-2 text-xs font-semibold text-zinc-400 hover:text-white cursor-pointer"
+                      className="rounded-[var(--inset-radius)] border border-[var(--panel-border)] px-3 py-2 text-xs font-semibold text-zinc-400 hover:text-white cursor-pointer"
                     >
                       Annuler
                     </button>
@@ -768,7 +768,7 @@ export default function ConnectionDetailDrawer({
                       hapticLightImpact();
                       setConfirmDisconnect(true);
                     }}
-                    className="flex items-center gap-2 rounded-xl border border-rose-500/30 bg-rose-500/10 px-4 py-2.5 text-xs font-bold text-rose-300 hover:bg-rose-500/20 transition-all active:scale-95 cursor-pointer"
+                    className="flex items-center gap-2 rounded-[var(--inset-radius)] border border-rose-500/30 bg-rose-500/10 px-4 py-2.5 text-xs font-bold text-rose-300 hover:bg-rose-500/20 transition-all active:scale-95 cursor-pointer"
                   >
                     <Unplug className="h-3.5 w-3.5" />
                     <span>Déconnecter</span>

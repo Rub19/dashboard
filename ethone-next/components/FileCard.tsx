@@ -84,7 +84,7 @@ function FileCardComponent({
       aria-label={label}
       title={label}
       className={cn(
-        "flex h-7 w-7 items-center justify-center rounded-lg border border-transparent transition-all duration-150 active:scale-95",
+        "flex h-7 w-7 items-center justify-center rounded-[var(--inset-radius)] border border-transparent transition-all duration-150 active:scale-95",
         variant === "default" && "text-[var(--text-muted)] hover:border-[var(--panel-border)]/[0.2] hover:bg-[var(--panel-bg)] hover:text-[var(--text-primary)]",
         variant === "danger" && "text-[var(--danger)] hover:border-[var(--danger)]/30 hover:bg-[var(--danger)]/15",
         variant === "favorite" && "text-[var(--warning)] hover:border-[var(--warning)]/30 hover:bg-[var(--warning)]/15",
@@ -118,7 +118,7 @@ function FileCardComponent({
         <div className="flex h-full w-full flex-col items-center justify-center gap-2">
           <div
             className={cn(
-              "flex h-14 w-14 items-center justify-center rounded-2xl border transition-all duration-200",
+              "flex h-14 w-14 items-center justify-center rounded-[var(--panel-radius)] border transition-all duration-200",
               file.isFolder
                 ? "border-[var(--accent-primary)]/20 bg-[var(--accent-primary)]/10 text-[var(--accent-primary)] shadow-sm group-hover:scale-105"
                 : "border-[var(--panel-border)]/[0.1] bg-[var(--panel-bg)]/[0.5] text-[var(--text-muted)] group-hover:text-[var(--accent-primary)]"
@@ -155,14 +155,14 @@ function FileCardComponent({
       <div className="absolute right-2.5 top-2.5 flex items-center gap-1.5">
         {file.brainSummary && (
           <div
-            className="flex h-6 w-6 items-center justify-center rounded-lg border border-[var(--accent-primary)]/30 bg-[var(--panel-bg)]/[0.85] text-[var(--accent-primary)] shadow-sm backdrop-blur-md"
+            className="flex h-6 w-6 items-center justify-center rounded-[var(--inset-radius)] border border-[var(--accent-primary)]/30 bg-[var(--panel-bg)]/[0.85] text-[var(--accent-primary)] shadow-sm backdrop-blur-md"
             title={`Résumé Brain : ${file.brainSummary}`}
           >
             <Icon name="brain" className="h-3.5 w-3.5" />
           </div>
         )}
         {file.isFavorite && (
-          <div className="flex h-6 w-6 items-center justify-center rounded-lg border border-[var(--danger)]/20 bg-[var(--panel-bg)]/[0.85] text-[var(--danger)] shadow-sm backdrop-blur-md">
+          <div className="flex h-6 w-6 items-center justify-center rounded-[var(--inset-radius)] border border-[var(--danger)]/20 bg-[var(--panel-bg)]/[0.85] text-[var(--danger)] shadow-sm backdrop-blur-md">
             <Icon name="heart" className="h-3.5 w-3.5" />
           </div>
         )}
@@ -173,7 +173,7 @@ function FileCardComponent({
   const gridContent = (
     <div
       className={cn(
-        "relative flex h-full flex-col overflow-hidden rounded-2xl border p-2.5 transition-all duration-200",
+        "relative flex h-full flex-col overflow-hidden rounded-[var(--panel-radius)] border p-2.5 transition-all duration-200",
         selected
           ? "border-[var(--accent-primary)]/50 bg-[var(--accent-primary)]/[0.07] shadow-[0_0_20px_var(--glow-color)]"
           : "border-[var(--panel-border)]/[0.12] bg-[var(--panel-bg)]/[0.45] hover:border-[var(--accent-primary)]/35 hover:bg-[var(--panel-bg)]/[0.7] hover:shadow-lg"
@@ -234,7 +234,7 @@ function FileCardComponent({
   const listContent = (
     <div
       className={cn(
-        "grid grid-cols-[1.5rem_2.5rem_minmax(0,1fr)_4.5rem] sm:grid-cols-[1.5rem_2.5rem_minmax(0,1fr)_6rem_6rem_7rem] items-center gap-3 rounded-xl border border-transparent px-3 py-2 transition-all duration-150",
+        "grid grid-cols-[1.5rem_2.5rem_minmax(0,1fr)_4.5rem] sm:grid-cols-[1.5rem_2.5rem_minmax(0,1fr)_6rem_6rem_7rem] items-center gap-3 rounded-[var(--inset-radius)] border border-transparent px-3 py-2 transition-all duration-150",
         selected
           ? "border-[var(--accent-primary)]/40 bg-[var(--accent-primary)]/[0.08]"
           : "hover:border-[var(--panel-border)]/[0.12] hover:bg-[var(--panel-bg)]/[0.6]"
@@ -251,7 +251,7 @@ function FileCardComponent({
       <button type="button" onClick={onOpen} className="focus:outline-none flex justify-center">
         <div
           className={cn(
-            "flex h-9 w-9 shrink-0 items-center justify-center overflow-hidden rounded-xl border transition-colors",
+            "flex h-9 w-9 shrink-0 items-center justify-center overflow-hidden rounded-[var(--inset-radius)] border transition-colors",
             file.isFolder
               ? "border-[var(--accent-primary)]/20 bg-[var(--accent-primary)]/10 text-[var(--accent-primary)]"
               : "border-[var(--panel-border)]/[0.1] bg-[var(--bg-main)]/[0.7] text-[var(--text-muted)] group-hover:text-[var(--accent-primary)]"

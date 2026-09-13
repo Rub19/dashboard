@@ -108,7 +108,7 @@ export default function LolMatchRow({ match, index }: LolMatchRowProps) {
       initial={{ opacity: 0, y: 10 }}
       animate={{ opacity: 1, y: 0 }}
       transition={{ duration: 0.2, delay: Math.min(index * 0.03, 0.3) }}
-      className="overflow-hidden rounded-2xl border border-white/[0.07] bg-[#0c1017]/85 backdrop-blur-xl transition-all duration-200 hover:border-white/15 hover:bg-[#0f141e]/95 shadow-sm"
+      className="overflow-hidden rounded-[var(--panel-radius)] border border-[var(--panel-border)] bg-[#0c1017]/85 backdrop-blur-xl transition-all duration-200 hover:border-[var(--input-border-hover)] hover:bg-[#0f141e]/95 shadow-sm"
     >
       {/* Main Row (Matching Screenshot 1 & 3 Pixel-Perfect) */}
       <div
@@ -144,7 +144,7 @@ export default function LolMatchRow({ match, index }: LolMatchRowProps) {
           </div>
 
           {/* Champion Avatar with Level Badge */}
-          <div className="relative h-12 w-12 shrink-0 overflow-hidden rounded-xl border border-white/10 bg-black/40 shadow-inner">
+          <div className="relative h-12 w-12 shrink-0 overflow-hidden rounded-[var(--inset-radius)] border border-[var(--panel-border)] bg-black/40 shadow-inner">
             <img
               src={
                 meta?.championImageUrl ||
@@ -171,7 +171,7 @@ export default function LolMatchRow({ match, index }: LolMatchRowProps) {
               {spells.slice(0, 2).map((spell, si) => (
                 <div
                   key={si}
-                  className="h-5 w-5 overflow-hidden rounded-md border border-white/10 bg-black/50"
+                  className="h-5 w-5 overflow-hidden rounded-md border border-[var(--panel-border)] bg-black/50"
                   title={spell.name}
                 >
                   {spell.image ? (
@@ -192,7 +192,7 @@ export default function LolMatchRow({ match, index }: LolMatchRowProps) {
                   className="h-4 w-4 object-contain"
                 />
               </div>
-              <div className="h-5 w-5 overflow-hidden rounded-md border border-white/10 bg-black/50 flex items-center justify-center">
+              <div className="h-5 w-5 overflow-hidden rounded-md border border-[var(--panel-border)] bg-black/50 flex items-center justify-center">
                 <img
                   src="https://ddragon.leagueoflegends.com/cdn/img/perk-images/Styles/7200_Domination.png"
                   alt="Rune"
@@ -208,7 +208,7 @@ export default function LolMatchRow({ match, index }: LolMatchRowProps) {
               {itemSlots.map((item, ii) => (
                 <div
                   key={ii}
-                  className="h-5 w-5 overflow-hidden rounded-md border border-white/10 bg-black/40 flex items-center justify-center"
+                  className="h-5 w-5 overflow-hidden rounded-md border border-[var(--panel-border)] bg-black/40 flex items-center justify-center"
                 >
                   {item?.image ? (
                     <img
@@ -221,7 +221,7 @@ export default function LolMatchRow({ match, index }: LolMatchRowProps) {
                       }}
                     />
                   ) : (
-                    <div className="h-full w-full bg-white/[0.03] border border-dashed border-white/10" />
+                    <div className="h-full w-full bg-white/[0.03] border border-dashed border-[var(--panel-border)]" />
                   )}
                 </div>
               ))}
@@ -255,12 +255,12 @@ export default function LolMatchRow({ match, index }: LolMatchRowProps) {
           <div className="flex items-center gap-2">
             <div
               className={cn(
-                "flex h-9 w-9 items-center justify-center rounded-xl border shadow-sm",
+                "flex h-9 w-9 items-center justify-center rounded-[var(--inset-radius)] border shadow-sm",
                 trs >= 700
                   ? "border-emerald-500/40 bg-emerald-500/15 text-emerald-400 shadow-emerald-500/20"
                   : trs >= 400
                   ? "border-cyan-500/40 bg-cyan-500/15 text-cyan-300"
-                  : "border-white/10 bg-white/5 text-zinc-400"
+                  : "border-[var(--panel-border)] bg-white/5 text-zinc-400"
               )}
             >
               <Shield className="h-5 w-5" />
@@ -300,7 +300,7 @@ export default function LolMatchRow({ match, index }: LolMatchRowProps) {
           </div>
 
           {/* Teams 2-Row Champion Preview (Guaranteed 5 Champions each) */}
-          <div className="hidden sm:flex flex-col gap-1 border-l border-white/10 pl-3">
+          <div className="hidden sm:flex flex-col gap-1 border-l border-[var(--panel-border)] pl-3">
             {/* Blue Team Row */}
             <div className="flex items-center gap-1">
               <span className="h-3.5 w-0.5 rounded-full bg-cyan-400 mr-0.5" />
@@ -377,10 +377,10 @@ export default function LolMatchRow({ match, index }: LolMatchRowProps) {
             animate={{ opacity: 1, height: "auto" }}
             exit={{ opacity: 0, height: 0 }}
             transition={{ duration: 0.3 }}
-            className="border-t border-white/10 bg-[#080b11]/95 p-4 sm:p-5 overflow-hidden space-y-5"
+            className="border-t border-[var(--panel-border)] bg-[#080b11]/95 p-4 sm:p-5 overflow-hidden space-y-5"
           >
             {/* Header with Game Result, Duration, Tabs & Actions */}
-            <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3 border-b border-white/10 pb-4">
+            <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3 border-b border-[var(--panel-border)] pb-4">
               <div>
                 <div className="flex items-center gap-2">
                   <span
@@ -403,7 +403,7 @@ export default function LolMatchRow({ match, index }: LolMatchRowProps) {
               </div>
 
               {/* Navigation Tabs */}
-              <div className="flex items-center gap-1 rounded-xl bg-white/[0.04] p-1 border border-white/10 text-xs">
+              <div className="flex items-center gap-1 rounded-[var(--inset-radius)] bg-white/[0.04] p-1 border border-[var(--panel-border)] text-xs">
                 <button
                   type="button"
                   onClick={() => setActiveTab("scoreboard")}
@@ -434,7 +434,7 @@ export default function LolMatchRow({ match, index }: LolMatchRowProps) {
             {/* Teams Overview Banner (Red Side vs Blue Side) */}
             <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
               {/* Red Side */}
-              <div className="rounded-2xl border border-rose-500/20 bg-rose-500/[0.04] p-3.5 backdrop-blur-xl">
+              <div className="rounded-[var(--panel-radius)] border border-rose-500/20 bg-rose-500/[0.04] p-3.5 backdrop-blur-xl">
                 <div className="flex items-center justify-between">
                   <span className="text-xs font-black text-rose-400 uppercase tracking-wider">
                     RED SIDE
@@ -450,7 +450,7 @@ export default function LolMatchRow({ match, index }: LolMatchRowProps) {
               </div>
 
               {/* Blue Side */}
-              <div className="rounded-2xl border border-cyan-500/20 bg-cyan-500/[0.04] p-3.5 backdrop-blur-xl">
+              <div className="rounded-[var(--panel-radius)] border border-cyan-500/20 bg-cyan-500/[0.04] p-3.5 backdrop-blur-xl">
                 <div className="flex items-center justify-between">
                   <span className="text-xs font-black text-cyan-400 uppercase tracking-wider">
                     BLUE SIDE
@@ -490,7 +490,7 @@ export default function LolMatchRow({ match, index }: LolMatchRowProps) {
                   return (
                     <div key={gi} className="space-y-1.5 min-w-[700px]">
                       {/* Team Header Bar */}
-                      <div className={cn("flex items-center justify-between px-3 py-1.5 rounded-xl border text-xs font-bold shadow-xs", teamGroup.badgeStyle)}>
+                      <div className={cn("flex items-center justify-between px-3 py-1.5 rounded-[var(--inset-radius)] border text-xs font-bold shadow-xs", teamGroup.badgeStyle)}>
                         <div className="flex items-center gap-2">
                           <span className="uppercase tracking-wider">{teamGroup.name}</span>
                           <span className="text-[11px] font-medium opacity-80">
@@ -507,7 +507,7 @@ export default function LolMatchRow({ match, index }: LolMatchRowProps) {
                       {/* Team Players Table */}
                       <table className="w-full text-left text-xs">
                         <thead>
-                          <tr className="border-b border-white/10 text-[10px] uppercase tracking-wider text-zinc-500">
+                          <tr className="border-b border-[var(--panel-border)] text-[10px] uppercase tracking-wider text-zinc-500">
                             <th className="pb-1.5 pl-2">Joueur / Champion</th>
                             <th className="pb-1.5 text-center">Build</th>
                             <th className="pb-1.5 text-center">TRS</th>
@@ -590,7 +590,7 @@ export default function LolMatchRow({ match, index }: LolMatchRowProps) {
                                     )}
                                   </div>
 
-                                  <div className="relative h-8 w-8 shrink-0 overflow-hidden rounded-xl border border-white/10 bg-black">
+                                  <div className="relative h-8 w-8 shrink-0 overflow-hidden rounded-[var(--inset-radius)] border border-[var(--panel-border)] bg-black">
                                     <img
                                       src={getLolChampionIcon(p.character)}
                                       alt=""
@@ -621,7 +621,7 @@ export default function LolMatchRow({ match, index }: LolMatchRowProps) {
                                     {/* 2 Spells */}
                                     <div className="flex flex-col gap-0.5">
                                       {pSpells.slice(0, 2).map((sp, spi) => (
-                                        <div key={spi} className="h-3.5 w-3.5 rounded overflow-hidden bg-black/50 border border-white/10">
+                                        <div key={spi} className="h-3.5 w-3.5 rounded overflow-hidden bg-black/50 border border-[var(--panel-border)]">
                                           <img
                                             src={sp.image}
                                             alt=""
@@ -634,7 +634,7 @@ export default function LolMatchRow({ match, index }: LolMatchRowProps) {
                                     {/* 6 Items Grid */}
                                     <div className="grid grid-cols-3 gap-0.5">
                                       {pItemSlots.slice(0, 6).map((it, iti) => (
-                                        <div key={iti} className="h-4 w-4 rounded bg-black/60 border border-white/10 overflow-hidden">
+                                        <div key={iti} className="h-4 w-4 rounded bg-black/60 border border-[var(--panel-border)] overflow-hidden">
                                           <img
                                             src={it.image}
                                             alt=""
@@ -715,7 +715,7 @@ export default function LolMatchRow({ match, index }: LolMatchRowProps) {
                     const pDmgPercent = Math.min(100, Math.round((p.stats.damage / maxDamage) * 100));
                     return (
                       <div key={pi} className="flex items-center gap-3">
-                        <div className="h-6 w-6 rounded-lg overflow-hidden border border-white/10 shrink-0">
+                        <div className="h-6 w-6 rounded-[var(--inset-radius)] overflow-hidden border border-[var(--panel-border)] shrink-0">
                           <img src={getLolChampionIcon(p.character)} alt="" className="h-full w-full object-cover" />
                         </div>
                         <span className="w-24 text-xs font-bold text-white truncate">{p.name}</span>

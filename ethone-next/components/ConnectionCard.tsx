@@ -117,7 +117,7 @@ export default function ConnectionCard({
         transition={{ duration: 0.15, ease: "easeOut" }}
         onClick={() => setDrawerOpen(true)}
         className={cn(
-          "group relative flex flex-col justify-between rounded-2xl border p-4.5 transition-all cursor-pointer shadow-lg backdrop-blur-2xl",
+          "group relative flex flex-col justify-between rounded-[var(--panel-radius)] border p-4.5 transition-all cursor-pointer shadow-lg backdrop-blur-2xl",
           isConnected
             ? "border-[var(--accent-primary)]/30 bg-gradient-to-b from-[var(--surface-raised)]/90 to-[var(--surface-raised)]/60 hover:border-[var(--accent-primary)]/60"
             : "border-[var(--panel-border)]/70 bg-[var(--surface-raised)]/50 hover:border-[var(--panel-border)] hover:bg-[var(--surface-raised)]/70"
@@ -127,7 +127,7 @@ export default function ConnectionCard({
         <div>
           <div className="flex items-start justify-between gap-2.5 mb-3">
             <div className="flex items-center gap-3 min-w-0">
-              <div className="flex h-11 w-11 shrink-0 items-center justify-center rounded-xl border border-[var(--panel-border)] bg-[var(--surface-raised)] shadow-xs transition-transform group-hover:scale-105">
+              <div className="flex h-11 w-11 shrink-0 items-center justify-center rounded-[var(--inset-radius)] border border-[var(--panel-border)] bg-[var(--surface-raised)] shadow-xs transition-transform group-hover:scale-105">
                 <ServiceIcon id={integration.id} icon={integration.icon} className="h-6 w-6" colored />
               </div>
               <div className="min-w-0">
@@ -194,7 +194,7 @@ export default function ConnectionCard({
               type="button"
               onClick={handleTestPing}
               disabled={testing}
-              className="flex h-8 w-8 items-center justify-center rounded-xl border border-[var(--panel-border)] bg-[var(--surface-raised)] text-[var(--text-muted)] hover:text-[var(--text-primary)] hover:border-[var(--accent-primary)]/40 transition-all active:scale-95"
+              className="flex h-8 w-8 items-center justify-center rounded-[var(--inset-radius)] border border-[var(--panel-border)] bg-[var(--surface-raised)] text-[var(--text-muted)] hover:text-[var(--text-primary)] hover:border-[var(--accent-primary)]/40 transition-all active:scale-95"
               title="Tester la connexion"
             >
               {testing ? <Loader2 className="h-3.5 w-3.5 animate-spin" /> : <RefreshCw className="h-3.5 w-3.5" />}
@@ -207,7 +207,7 @@ export default function ConnectionCard({
                   e.stopPropagation();
                   setDrawerOpen(true);
                 }}
-                className="flex items-center gap-1 rounded-xl border border-[var(--panel-border)] bg-[var(--surface-raised)] px-2.5 py-1.5 text-xs font-semibold text-[var(--text-primary)] hover:border-[var(--accent-primary)]/40 transition-all active:scale-95"
+                className="flex items-center gap-1 rounded-[var(--inset-radius)] border border-[var(--panel-border)] bg-[var(--surface-raised)] px-2.5 py-1.5 text-xs font-semibold text-[var(--text-primary)] hover:border-[var(--accent-primary)]/40 transition-all active:scale-95"
               >
                 <SlidersHorizontal className="h-3 w-3 text-[var(--accent-primary)]" />
                 <span>Gérer</span>

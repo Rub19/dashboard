@@ -323,7 +323,7 @@ export default function WeatherPage() {
         <Card variant="default" padding="md" className="mb-3 shrink-0">
           <div className="flex flex-col gap-4 sm:flex-row sm:items-center sm:justify-between">
             <div className="flex items-start gap-3 sm:items-center">
-              <div className="flex h-10 w-10 shrink-0 items-center justify-center rounded-2xl bg-[var(--accent-primary)]/10 text-[var(--accent-primary)] border border-[var(--accent-primary)]/20 shadow-sm">
+              <div className="flex h-10 w-10 shrink-0 items-center justify-center rounded-[var(--panel-radius)] bg-[var(--accent-primary)]/10 text-[var(--accent-primary)] border border-[var(--accent-primary)]/20 shadow-sm">
                 <Icon pack="phosphor" name="cloudSun" className="h-5 w-5" />
               </div>
               <div>
@@ -470,7 +470,7 @@ export default function WeatherPage() {
                         return (
                           <div
                             key={h.time}
-                            className="flex min-w-[4.5rem] flex-col items-center gap-1.5 rounded-xl border border-[var(--panel-border)] bg-[var(--panel-bg)] p-2 text-center transition-colors hover:bg-[var(--text-primary)]/[0.03]"
+                            className="flex min-w-[4.5rem] flex-col items-center gap-1.5 rounded-[var(--inset-radius)] border border-[var(--panel-border)] bg-[var(--panel-bg)] p-2 text-center transition-colors hover:bg-[var(--text-primary)]/[0.03]"
                           >
                             <span className="text-[10px] font-medium text-[var(--text-muted)]">{i === 0 ? i18n("now", "Maintenant") : formatHour(h.time)}</span>
                             <Icon pack="phosphor" name={hIcon} className={cn("h-5 w-5", hColor)} />
@@ -641,7 +641,7 @@ export default function WeatherPage() {
                     {conditions.map((c) => (
                       <div
                         key={c.label}
-                        className="flex items-start gap-3 rounded-xl border border-[var(--panel-border)] bg-[var(--panel-bg)] p-3 transition-colors hover:border-[var(--accent-primary)]/20"
+                        className="flex items-start gap-3 rounded-[var(--inset-radius)] border border-[var(--panel-border)] bg-[var(--panel-bg)] p-3 transition-colors hover:border-[var(--accent-primary)]/20"
                       >
                         <Icon pack="phosphor" name={c.icon} className="mt-0.5 h-5 w-5 text-[var(--text-muted)]" />
                         <div className="min-w-0">

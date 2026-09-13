@@ -30,7 +30,7 @@ export default function CopyableField({ label, value, copyKey }: CopyableFieldPr
   return (
     <div className="flex flex-col gap-1">
       <span className="text-[11px] font-medium text-[var(--text-primary)]">{label}</span>
-      <div className="flex items-center justify-between gap-2 rounded-xl border border-[var(--text-primary)]/[0.08] bg-[var(--surface)] px-3 py-2">
+      <div className="flex items-center justify-between gap-2 rounded-[var(--inset-radius)] border border-[var(--text-primary)]/[0.08] bg-[var(--surface)] px-3 py-2">
         <code className="min-w-0 truncate text-xs font-mono text-[var(--accent-primary)]">{value}</code>
         <button
           type="button"

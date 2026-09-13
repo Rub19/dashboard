@@ -56,7 +56,7 @@ function statusTone(status?: string) {
     case "idle":
       return "border-amber-500/30 bg-amber-500/10 text-amber-400";
     default:
-      return "border-white/10 bg-white/5 text-zinc-400";
+      return "border-[var(--panel-border)] bg-white/5 text-zinc-400";
   }
 }
 
@@ -305,7 +305,7 @@ const SocialDiscordCard = memo(function SocialDiscordCard({
   return (
     <TiltCard
       className={cn(
-        "relative flex h-full min-h-0 flex-col overflow-hidden no-scrollbar select-none rounded-2xl border border-white/[0.06] bg-[#0c0d14]/95 p-4 shadow-2xl backdrop-blur-2xl transition-all duration-300 hover:border-white/[0.12] group",
+        "relative flex h-full min-h-0 flex-col overflow-hidden no-scrollbar select-none rounded-[var(--panel-radius)] border border-[var(--panel-border)] bg-[#0c0d14]/95 p-4 shadow-2xl backdrop-blur-2xl transition-all duration-300 hover:border-[var(--input-border-hover)] group",
         className
       )}
     >
@@ -352,7 +352,7 @@ const SocialDiscordCard = memo(function SocialDiscordCard({
         </div>
 
         {!hasLanyard && !hasOAuth && !activeMusic ? (
-          <div className="flex flex-1 flex-col items-center justify-center gap-3 rounded-xl border border-white/[0.05] bg-white/[0.02] p-4 text-center">
+          <div className="flex flex-1 flex-col items-center justify-center gap-3 rounded-[var(--inset-radius)] border border-[var(--panel-border)] bg-white/[0.02] p-4 text-center">
             {loading && hasAnyConnection ? (
               <Loader2 className="h-6 w-6 animate-spin text-zinc-400" />
             ) : hasAnyConnection ? (
@@ -369,7 +369,7 @@ const SocialDiscordCard = memo(function SocialDiscordCard({
               <button
                 type="button"
                 onClick={handleConnectIntegrations}
-                className="inline-flex items-center gap-1.5 rounded-xl border border-white/[0.08] bg-white/[0.04] px-3 py-1.5 text-xs font-medium text-white transition-all hover:bg-white/[0.08] active:scale-95 cursor-pointer"
+                className="inline-flex items-center gap-1.5 rounded-[var(--inset-radius)] border border-[var(--panel-border)] bg-white/[0.04] px-3 py-1.5 text-xs font-medium text-white transition-all hover:bg-white/[0.08] active:scale-95 cursor-pointer"
               >
                 <ExternalLink className="h-3 w-3" />
                 {i18n("connectSpotifyDiscord", "Connecter Spotify / Discord")}
@@ -378,7 +378,7 @@ const SocialDiscordCard = memo(function SocialDiscordCard({
               <button
                 type="button"
                 onClick={handleConnectIntegrations}
-                className="inline-flex items-center gap-1.5 rounded-xl border border-white/[0.08] bg-white/[0.04] px-2.5 py-1 text-[11px] font-medium text-zinc-400 transition-all hover:bg-white/[0.08] hover:text-white active:scale-95 cursor-pointer"
+                className="inline-flex items-center gap-1.5 rounded-[var(--inset-radius)] border border-[var(--panel-border)] bg-white/[0.04] px-2.5 py-1 text-[11px] font-medium text-zinc-400 transition-all hover:bg-white/[0.08] hover:text-white active:scale-95 cursor-pointer"
               >
                 <ExternalLink className="h-3 w-3" />
                 {i18n("manageIntegrations", "Gérer les connexions")}
@@ -390,7 +390,7 @@ const SocialDiscordCard = memo(function SocialDiscordCard({
             {(hasLanyard || hasOAuth) && (
               <div className="flex flex-col items-center gap-2 text-center">
                 <div className="relative h-16 w-16 shrink-0">
-                  <div className="relative h-full w-full overflow-hidden rounded-2xl border border-white/[0.08] shadow-lg">
+                  <div className="relative h-full w-full overflow-hidden rounded-[var(--panel-radius)] border border-[var(--panel-border)] shadow-lg">
                     <ClientImage
                       candidates={[primaryAvatar]}
                       alt={displayName}
@@ -430,13 +430,13 @@ const SocialDiscordCard = memo(function SocialDiscordCard({
             )}
 
             {customStatus && (
-              <p className="max-w-full truncate rounded-lg bg-white/[0.04] px-3 py-1 text-[11px] text-zinc-200 border border-white/[0.05]">
+              <p className="max-w-full truncate rounded-[var(--inset-radius)] bg-white/[0.04] px-3 py-1 text-[11px] text-zinc-200 border border-[var(--panel-border)]">
                 {customStatus}
               </p>
             )}
 
             {gameActivity && (
-              <div className="w-full shrink-0 rounded-2xl border border-white/[0.08] bg-white/[0.03] p-2.5 text-center shadow-inner backdrop-blur-md">
+              <div className="w-full shrink-0 rounded-[var(--panel-radius)] border border-[var(--panel-border)] bg-white/[0.03] p-2.5 text-center shadow-inner backdrop-blur-md">
                 <div className="flex items-center justify-center gap-2">
                   <GameBrandIcon
                     name={gameActivity.name}
@@ -460,14 +460,14 @@ const SocialDiscordCard = memo(function SocialDiscordCard({
 
         {/* Spotify / Media Player with Glossy Styling */}
         {activeMusic && (
-          <div className="mt-auto flex flex-col gap-2 rounded-xl border border-white/[0.08] bg-black/40 p-3 backdrop-blur-xl shadow-lg relative overflow-hidden">
+          <div className="mt-auto flex flex-col gap-2 rounded-[var(--inset-radius)] border border-[var(--panel-border)] bg-black/40 p-3 backdrop-blur-xl shadow-lg relative overflow-hidden">
             <div className="flex items-center gap-3 relative z-10">
               <ClientImage
                 candidates={coverCandidates}
                 alt={activeMusic.title || ""}
                 width={42}
                 height={42}
-                className="h-10 w-10 shrink-0 rounded-lg shadow-md border border-white/10"
+                className="h-10 w-10 shrink-0 rounded-[var(--inset-radius)] shadow-md border border-[var(--panel-border)]"
                 fallback={
                   <div className="flex h-10 w-10 shrink-0 items-center justify-center rounded-lg bg-[var(--accent-primary)]/15 text-[var(--accent-primary)]">
                     <Music className="h-4 w-4" />
@@ -500,7 +500,7 @@ const SocialDiscordCard = memo(function SocialDiscordCard({
         )}
 
         {(hasLanyard || hasOAuth) && !customStatus && !gameActivity && !activeMusic && (
-          <div className="mt-auto flex flex-col items-center justify-center gap-1.5 rounded-xl border border-white/[0.05] bg-white/[0.02] p-3 text-center">
+          <div className="mt-auto flex flex-col items-center justify-center gap-1.5 rounded-[var(--inset-radius)] border border-[var(--panel-border)] bg-white/[0.02] p-3 text-center">
             <Radio className="h-4 w-4 text-zinc-500" />
             <p className="text-[10px] text-zinc-400">Aucune activité en cours.</p>
           </div>

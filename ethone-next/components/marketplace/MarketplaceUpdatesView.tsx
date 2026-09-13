@@ -43,8 +43,8 @@ export default function MarketplaceUpdatesView({
 
   if (updates.length === 0) {
     return (
-      <div className="flex flex-col items-center justify-center py-20 text-center rounded-3xl border border-[var(--panel-border)]/60 bg-[var(--surface-raised)]/30 p-8">
-        <div className="flex h-16 w-16 items-center justify-center rounded-2xl bg-emerald-950/30 border border-emerald-500/30 text-emerald-400 mb-4 shadow-sm">
+      <div className="flex flex-col items-center justify-center py-20 text-center rounded-[var(--panel-radius)] border border-[var(--panel-border)]/60 bg-[var(--surface-raised)]/30 p-8">
+        <div className="flex h-16 w-16 items-center justify-center rounded-[var(--panel-radius)] bg-emerald-950/30 border border-emerald-500/30 text-emerald-400 mb-4 shadow-sm">
           <CheckCircle2 className="h-8 w-8" />
         </div>
         <h3 className="text-base font-bold text-[var(--text-primary)]">Tout est à jour !</h3>
@@ -58,7 +58,7 @@ export default function MarketplaceUpdatesView({
   return (
     <div className="space-y-4">
       {/* Top Banner */}
-      <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 rounded-2xl border border-amber-500/30 bg-amber-950/15 p-4 backdrop-blur-md">
+      <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 rounded-[var(--panel-radius)] border border-amber-500/30 bg-amber-950/15 p-4 backdrop-blur-md">
         <div className="flex items-center gap-3">
           <div className="flex h-10 w-10 shrink-0 items-center justify-center rounded-xl bg-amber-500/20 text-amber-300">
             <RefreshCw className="h-5 w-5" />
@@ -92,13 +92,13 @@ export default function MarketplaceUpdatesView({
           return (
             <div
               key={item.id}
-              className="rounded-2xl border border-[var(--panel-border)] bg-[var(--surface-raised)]/60 p-4 backdrop-blur-md space-y-3"
+              className="rounded-[var(--panel-radius)] border border-[var(--panel-border)] bg-[var(--surface-raised)]/60 p-4 backdrop-blur-md space-y-3"
             >
               <div className="flex items-start justify-between gap-3">
                 <div className="flex items-center gap-3">
                   <div
                     className={cn(
-                      "flex h-12 w-12 shrink-0 items-center justify-center rounded-xl border border-[var(--panel-border)]",
+                      "flex h-12 w-12 shrink-0 items-center justify-center rounded-[var(--inset-radius)] border border-[var(--panel-border)]",
                       item.iconBg || "bg-[var(--panel-bg)] text-[var(--accent-primary)]"
                     )}
                   >
@@ -120,7 +120,7 @@ export default function MarketplaceUpdatesView({
                     <button
                       type="button"
                       onClick={() => onRollback(item.id)}
-                      className="flex items-center gap-1 rounded-xl border border-[var(--panel-border)] bg-[var(--surface-raised)] hover:bg-[var(--surface-hover)] px-3 py-1.5 text-xs font-medium text-[var(--text-muted)] hover:text-white transition-colors cursor-pointer"
+                      className="flex items-center gap-1 rounded-[var(--inset-radius)] border border-[var(--panel-border)] bg-[var(--surface-raised)] hover:bg-[var(--surface-hover)] px-3 py-1.5 text-xs font-medium text-[var(--text-muted)] hover:text-white transition-colors cursor-pointer"
                       title="Restaurer la version précédente"
                     >
                       <History className="h-3.5 w-3.5" />
@@ -132,7 +132,7 @@ export default function MarketplaceUpdatesView({
                     type="button"
                     onClick={() => handleUpdateSingle(item.id)}
                     disabled={isUpdating}
-                    className="flex items-center gap-1.5 rounded-xl border border-amber-500/40 bg-amber-500/20 hover:bg-amber-500/30 px-3.5 py-1.5 text-xs font-bold text-amber-200 transition-all cursor-pointer shadow-xs"
+                    className="flex items-center gap-1.5 rounded-[var(--inset-radius)] border border-amber-500/40 bg-amber-500/20 hover:bg-amber-500/30 px-3.5 py-1.5 text-xs font-bold text-amber-200 transition-all cursor-pointer shadow-xs"
                   >
                     {isUpdating ? <Loader2 className="h-3.5 w-3.5 animate-spin" /> : <RefreshCw className="h-3.5 w-3.5" />}
                     <span>Mettre à jour</span>
@@ -142,7 +142,7 @@ export default function MarketplaceUpdatesView({
 
               {/* Changelog Highlights */}
               {item.changelog && item.changelog.length > 0 && (
-                <div className="rounded-xl border border-[var(--panel-border)]/50 bg-[var(--panel-bg)]/50 p-3">
+                <div className="rounded-[var(--inset-radius)] border border-[var(--panel-border)]/50 bg-[var(--panel-bg)]/50 p-3">
                   <span className="text-[11px] font-bold uppercase tracking-wider text-[var(--text-muted)] block mb-1">
                     Nouveautés dans la v{item.version} :
                   </span>

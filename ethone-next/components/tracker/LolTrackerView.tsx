@@ -227,11 +227,11 @@ export default function LolTrackerView() {
   return (
     <div className="flex min-h-0 w-full flex-1 flex-col overflow-hidden space-y-4">
       {/* Top Search & Filter Bar */}
-      <div className="shrink-0 rounded-3xl border border-white/10 bg-[#0c0d14]/90 p-4 backdrop-blur-2xl shadow-lg">
+      <div className="shrink-0 rounded-[var(--panel-radius)] border border-[var(--panel-border)] bg-[#0c0d14]/90 p-4 backdrop-blur-2xl shadow-lg">
         <form onSubmit={handleSearchSubmit} className="flex flex-col lg:flex-row lg:items-center justify-between gap-4">
           {/* Riot ID Input */}
           <div className="flex flex-wrap items-center gap-2 flex-1 min-w-0">
-            <div className="flex items-center gap-2 rounded-2xl border border-white/10 bg-black/40 px-3 py-2 flex-1 min-w-[180px]">
+            <div className="flex items-center gap-2 rounded-[var(--panel-radius)] border border-[var(--panel-border)] bg-black/40 px-3 py-2 flex-1 min-w-[180px]">
               <User className="h-4 w-4 text-zinc-400 shrink-0" />
               <input
                 type="text"
@@ -242,7 +242,7 @@ export default function LolTrackerView() {
               />
             </div>
 
-            <div className="flex items-center gap-1 rounded-2xl border border-white/10 bg-black/40 px-3 py-2 w-28 shrink-0">
+            <div className="flex items-center gap-1 rounded-[var(--panel-radius)] border border-[var(--panel-border)] bg-black/40 px-3 py-2 w-28 shrink-0">
               <span className="text-xs font-bold text-zinc-500">#</span>
               <input
                 type="text"
@@ -284,7 +284,7 @@ export default function LolTrackerView() {
               type="button"
               onClick={() => fetchMatches(true)}
               disabled={syncing}
-              className="flex items-center gap-1.5 rounded-xl border border-white/10 bg-white/5 px-3 py-1.5 text-xs font-bold text-white hover:bg-white/10 active:scale-95 transition-all cursor-pointer disabled:opacity-50"
+              className="flex items-center gap-1.5 rounded-[var(--inset-radius)] border border-[var(--panel-border)] bg-white/5 px-3 py-1.5 text-xs font-bold text-white hover:bg-white/10 active:scale-95 transition-all cursor-pointer disabled:opacity-50"
             >
               <RefreshCw className={cn("h-3.5 w-3.5 text-amber-400", syncing && "animate-spin")} />
               <span>{syncing ? "Synchro..." : "Actualiser"}</span>
@@ -297,7 +297,7 @@ export default function LolTrackerView() {
       {matches.length > 0 && (
         <div className="shrink-0 grid grid-cols-2 md:grid-cols-4 gap-3">
           {/* Win Rate */}
-          <div className="rounded-2xl border border-white/10 bg-[#0c1017]/85 p-3.5 backdrop-blur-xl">
+          <div className="rounded-[var(--panel-radius)] border border-[var(--panel-border)] bg-[#0c1017]/85 p-3.5 backdrop-blur-xl">
             <span className="block text-[11px] font-bold text-zinc-400">
               Win Rate <span className="text-sm font-black text-white">{winRate}%</span>
             </span>
@@ -313,7 +313,7 @@ export default function LolTrackerView() {
           </div>
 
           {/* Avg DPM */}
-          <div className="rounded-2xl border border-white/10 bg-[#0c1017]/85 p-3.5 backdrop-blur-xl">
+          <div className="rounded-[var(--panel-radius)] border border-[var(--panel-border)] bg-[#0c1017]/85 p-3.5 backdrop-blur-xl">
             <span className="block text-[11px] font-bold text-zinc-400">
               Avg DPM <span className="text-sm font-black text-white">{avgDpm}</span>
             </span>
@@ -323,7 +323,7 @@ export default function LolTrackerView() {
           </div>
 
           {/* Avg KDA */}
-          <div className="rounded-2xl border border-white/10 bg-[#0c1017]/85 p-3.5 backdrop-blur-xl">
+          <div className="rounded-[var(--panel-radius)] border border-[var(--panel-border)] bg-[#0c1017]/85 p-3.5 backdrop-blur-xl">
             <span className="block text-[11px] font-bold text-zinc-400">
               Avg KDA <span className="text-sm font-black text-white">{avgKda}</span>
             </span>
@@ -333,7 +333,7 @@ export default function LolTrackerView() {
           </div>
 
           {/* Avg GPM */}
-          <div className="rounded-2xl border border-white/10 bg-[#0c1017]/85 p-3.5 backdrop-blur-xl">
+          <div className="rounded-[var(--panel-radius)] border border-[var(--panel-border)] bg-[#0c1017]/85 p-3.5 backdrop-blur-xl">
             <span className="block text-[11px] font-bold text-zinc-400">
               Avg GPM <span className="text-sm font-black text-white">{avgGpm}</span>
             </span>
@@ -346,7 +346,7 @@ export default function LolTrackerView() {
 
       {/* Quick Champion Filter */}
       {matches.length > 0 && availableChampions.length > 1 && (
-        <div className="shrink-0 flex flex-wrap items-center gap-2 rounded-2xl border border-white/5 bg-[#0c1017]/60 p-2 backdrop-blur-xl">
+        <div className="shrink-0 flex flex-wrap items-center gap-2 rounded-[var(--panel-radius)] border border-[var(--panel-border)] bg-[#0c1017]/60 p-2 backdrop-blur-xl">
           <span className="text-[10px] font-bold uppercase tracking-wider text-zinc-500 px-2">Champion :</span>
           <div className="flex items-center gap-1 overflow-x-auto os-scroll">
             <button
@@ -387,13 +387,13 @@ export default function LolTrackerView() {
             {[...Array(6)].map((_, i) => (
               <div
                 key={i}
-                className="h-16 animate-pulse rounded-2xl border border-white/5 bg-white/[0.02]"
+                className="h-16 animate-pulse rounded-[var(--panel-radius)] border border-[var(--panel-border)] bg-white/[0.02]"
               />
             ))}
           </div>
         ) : errorMsg ? (
           <div className="flex flex-col items-center justify-center py-16 text-center text-zinc-400">
-            <div className="flex h-14 w-14 items-center justify-center rounded-2xl border border-amber-500/30 bg-amber-500/10 text-amber-400 mb-3 shadow-md">
+            <div className="flex h-14 w-14 items-center justify-center rounded-[var(--panel-radius)] border border-amber-500/30 bg-amber-500/10 text-amber-400 mb-3 shadow-md">
               <AlertCircle className="h-7 w-7" />
             </div>
             <h4 className="text-sm font-bold text-white">Erreur de chargement League of Legends</h4>
@@ -401,7 +401,7 @@ export default function LolTrackerView() {
           </div>
         ) : dayGroups.length === 0 ? (
           <div className="flex flex-col items-center justify-center py-16 text-center text-zinc-400">
-            <div className="flex h-14 w-14 items-center justify-center rounded-2xl border border-white/10 bg-white/5 text-zinc-300 mb-3">
+            <div className="flex h-14 w-14 items-center justify-center rounded-[var(--panel-radius)] border border-[var(--panel-border)] bg-white/5 text-zinc-300 mb-3">
               <Shield className="h-7 w-7" />
             </div>
             <h4 className="text-sm font-bold text-white">Aucune partie trouvée</h4>

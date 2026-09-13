@@ -72,7 +72,7 @@ export default function FocusHistoryView() {
   const todaySessions = history.filter((h) => isWithin(h.completedAt, "today")).length;
 
   return (
-    <div className="rounded-2xl border border-[var(--panel-border)] bg-[var(--surface-raised)]/40 p-5 backdrop-blur-md">
+    <div className="rounded-[var(--panel-radius)] border border-[var(--panel-border)] bg-[var(--surface-raised)]/40 p-5 backdrop-blur-md">
       <div className="flex items-center justify-between mb-4">
         <div className="flex items-center gap-2">
           <div className="flex h-7 w-7 items-center justify-center rounded-lg bg-[var(--accent-primary)]/15 text-[var(--accent-primary)]">
@@ -136,7 +136,7 @@ export default function FocusHistoryView() {
               initial={{ opacity: 0, y: 4 }}
               animate={{ opacity: 1, y: 0 }}
               transition={{ delay: i * 0.04 }}
-              className="flex items-center gap-3 rounded-xl border border-[var(--panel-border)]/50 bg-[var(--surface-raised)]/40 px-3 py-2.5"
+              className="flex items-center gap-3 rounded-[var(--inset-radius)] border border-[var(--panel-border)]/50 bg-[var(--surface-raised)]/40 px-3 py-2.5"
             >
               <div className="flex h-8 w-8 shrink-0 items-center justify-center rounded-lg bg-[var(--accent-primary)]/10 text-[var(--accent-primary)]">
                 <Icon name="timer" className="h-4 w-4" />

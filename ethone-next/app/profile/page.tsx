@@ -389,7 +389,7 @@ export default function ProfilePage() {
         {activeTab === "identity" && (
           <div className="space-y-5">
             {/* Avatar Quick Management */}
-            <div className="rounded-3xl border border-[var(--panel-border)]/80 bg-[var(--surface-raised)]/60 p-5 sm:p-6 backdrop-blur-md space-y-4">
+            <div className="rounded-[var(--panel-radius)] border border-[var(--panel-border)]/80 bg-[var(--surface-raised)]/60 p-5 sm:p-6 backdrop-blur-md space-y-4">
               <div>
                 <h3 className="text-base font-bold text-[var(--text-primary)] flex items-center gap-2">
                   <Camera className="h-4 w-4 text-[var(--accent-primary)]" />
@@ -413,7 +413,7 @@ export default function ProfilePage() {
                 <button
                   type="button"
                   onClick={() => setIsAvatarPickerOpen(true)}
-                  className="flex items-center gap-2 rounded-2xl border border-[var(--panel-border)] bg-[var(--surface-raised)] hover:bg-[var(--surface-hover)] px-4 py-2.5 text-xs font-bold text-[var(--text-primary)] transition-colors cursor-pointer"
+                  className="flex items-center gap-2 rounded-[var(--panel-radius)] border border-[var(--panel-border)] bg-[var(--surface-raised)] hover:bg-[var(--surface-hover)] px-4 py-2.5 text-xs font-bold text-[var(--text-primary)] transition-colors cursor-pointer"
                 >
                   <Sparkles className="h-4 w-4 text-amber-400" />
                   <span>Ouvrir la bibliothèque d'avatars</span>
@@ -435,7 +435,7 @@ export default function ProfilePage() {
                         setForm((prev) => ({ ...prev, avatarFrameId: frame.id }));
                       }}
                       className={cn(
-                        "rounded-2xl border p-2.5 text-center transition-all cursor-pointer",
+                        "rounded-[var(--panel-radius)] border p-2.5 text-center transition-all cursor-pointer",
                         form.avatarFrameId === frame.id
                           ? "border-[var(--accent-primary)] bg-[var(--accent-primary)]/15 shadow-xs font-bold text-white"
                           : "border-[var(--panel-border)] bg-[var(--surface-raised)] text-[var(--text-muted)] hover:text-white"
@@ -449,7 +449,7 @@ export default function ProfilePage() {
             </div>
 
             {/* Profile Identity Form */}
-            <div className="rounded-3xl border border-[var(--panel-border)]/80 bg-[var(--surface-raised)]/60 p-5 sm:p-6 backdrop-blur-md space-y-4">
+            <div className="rounded-[var(--panel-radius)] border border-[var(--panel-border)]/80 bg-[var(--surface-raised)]/60 p-5 sm:p-6 backdrop-blur-md space-y-4">
               <div>
                 <h3 className="text-base font-bold text-[var(--text-primary)]">
                   Coordonnées publiques & Biographie
@@ -472,7 +472,7 @@ export default function ProfilePage() {
                       setForm((prev) => ({ ...prev, displayName: e.target.value }));
                     }}
                     placeholder="Votre nom ou pseudonyme"
-                    className="w-full rounded-2xl border border-[var(--panel-border)] bg-[var(--surface-raised)] px-3.5 py-2.5 text-xs text-[var(--text-primary)] focus:border-[var(--accent-primary)] focus:outline-none"
+                    className="w-full rounded-[var(--panel-radius)] border border-[var(--panel-border)] bg-[var(--surface-raised)] px-3.5 py-2.5 text-xs text-[var(--text-primary)] focus:border-[var(--accent-primary)] focus:outline-none"
                   />
                 </div>
 
@@ -491,7 +491,7 @@ export default function ProfilePage() {
                       }));
                     }}
                     placeholder="nom_utilisateur"
-                    className="w-full rounded-2xl border border-[var(--panel-border)] bg-[var(--surface-raised)] px-3.5 py-2.5 text-xs text-[var(--text-primary)] focus:border-[var(--accent-primary)] focus:outline-none font-mono"
+                    className="w-full rounded-[var(--panel-radius)] border border-[var(--panel-border)] bg-[var(--surface-raised)] px-3.5 py-2.5 text-xs text-[var(--text-primary)] focus:border-[var(--accent-primary)] focus:outline-none font-mono"
                   />
                 </div>
               </div>
@@ -508,7 +508,7 @@ export default function ProfilePage() {
                   }}
                   placeholder="Décrivez votre activité ou votre philosophie de travail..."
                   rows={3}
-                  className="w-full rounded-2xl border border-[var(--panel-border)] bg-[var(--surface-raised)] px-3.5 py-2.5 text-xs text-[var(--text-primary)] focus:border-[var(--accent-primary)] focus:outline-none resize-none leading-relaxed"
+                  className="w-full rounded-[var(--panel-radius)] border border-[var(--panel-border)] bg-[var(--surface-raised)] px-3.5 py-2.5 text-xs text-[var(--text-primary)] focus:border-[var(--accent-primary)] focus:outline-none resize-none leading-relaxed"
                 />
               </div>
 
@@ -530,7 +530,7 @@ export default function ProfilePage() {
         {/* Tab 2: Status & Presence */}
         {activeTab === "status" && (
           <div className="space-y-4">
-            <div className="rounded-3xl border border-[var(--panel-border)]/80 bg-[var(--surface-raised)]/60 p-5 sm:p-6 backdrop-blur-md space-y-4">
+            <div className="rounded-[var(--panel-radius)] border border-[var(--panel-border)]/80 bg-[var(--surface-raised)]/60 p-5 sm:p-6 backdrop-blur-md space-y-4">
               <div className="flex items-center justify-between">
                 <div>
                   <h3 className="text-base font-bold text-[var(--text-primary)] flex items-center gap-2">
@@ -563,7 +563,7 @@ export default function ProfilePage() {
                     type="button"
                     onClick={() => setPresenceStatus(s.id as any)}
                     className={cn(
-                      "flex items-center gap-2 rounded-2xl border p-3 text-xs font-bold transition-all cursor-pointer",
+                      "flex items-center gap-2 rounded-[var(--panel-radius)] border p-3 text-xs font-bold transition-all cursor-pointer",
                       preferences.presenceStatus === s.id
                         ? "border-[var(--accent-primary)] bg-[var(--accent-primary)]/15 text-white shadow-xs"
                         : "border-[var(--panel-border)] bg-[var(--surface-raised)] text-[var(--text-muted)] hover:text-white"

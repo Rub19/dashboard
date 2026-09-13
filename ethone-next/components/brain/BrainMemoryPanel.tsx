@@ -179,7 +179,7 @@ export default function BrainMemoryPanel() {
       </div>
 
       {/* Privacy First Explanation Card */}
-      <div className="flex items-start gap-3 rounded-2xl border border-[var(--accent-primary)]/30 bg-[var(--accent-primary)]/10 p-3.5 text-xs text-[var(--text-primary)]">
+      <div className="flex items-start gap-3 rounded-[var(--panel-radius)] border border-[var(--accent-primary)]/30 bg-[var(--accent-primary)]/10 p-3.5 text-xs text-[var(--text-primary)]">
         <Shield className="h-4 w-4 text-[var(--accent-primary)] shrink-0 mt-0.5" />
         <div className="space-y-1">
           <p className="font-semibold text-[var(--accent-primary)]">
@@ -200,7 +200,7 @@ export default function BrainMemoryPanel() {
             value={searchQuery}
             onChange={(e) => setSearchQuery(e.target.value)}
             placeholder="Rechercher dans les souvenirs Brain..."
-            className="w-full rounded-xl border border-[var(--panel-border)] bg-[var(--surface-raised)]/50 py-2 pl-9.5 pr-4 text-xs text-[var(--text-primary)] placeholder-[var(--text-muted)] focus:border-[var(--accent-primary)] focus:outline-none"
+            className="w-full rounded-[var(--inset-radius)] border border-[var(--panel-border)] bg-[var(--surface-raised)]/50 py-2 pl-9.5 pr-4 text-xs text-[var(--text-primary)] placeholder-[var(--text-muted)] focus:border-[var(--accent-primary)] focus:outline-none"
           />
         </div>
 
@@ -233,7 +233,7 @@ export default function BrainMemoryPanel() {
           <motion.div
             key={m.id}
             layout
-            className="group relative flex flex-col justify-between rounded-2xl border border-[var(--panel-border)]/60 bg-[var(--surface-raised)]/40 p-4 hover:border-[var(--panel-border)] transition-all shadow-sm"
+            className="group relative flex flex-col justify-between rounded-[var(--panel-radius)] border border-[var(--panel-border)]/60 bg-[var(--surface-raised)]/40 p-4 hover:border-[var(--panel-border)] transition-all shadow-sm"
           >
             <div>
               <div className="flex items-center justify-between mb-2">
@@ -300,7 +300,7 @@ export default function BrainMemoryPanel() {
               initial={{ opacity: 0, scale: 0.95 }}
               animate={{ opacity: 1, scale: 1 }}
               exit={{ opacity: 0, scale: 0.95 }}
-              className="w-full max-w-md rounded-3xl border border-[var(--panel-border)] bg-[var(--bg-surface)] p-6 shadow-2xl space-y-4"
+              className="w-full max-w-md rounded-[var(--panel-radius)] border border-[var(--panel-border)] bg-[var(--bg-surface)] p-6 shadow-2xl space-y-4"
             >
               <h4 className="text-sm font-bold text-[var(--text-primary)]">
                 Ajouter un souvenir à Brain
@@ -312,7 +312,7 @@ export default function BrainMemoryPanel() {
                   <select
                     value={newCategory}
                     onChange={(e) => setNewCategory(e.target.value as BrainMemoryCategory)}
-                    className="mt-1 w-full rounded-xl border border-[var(--panel-border)] bg-[var(--surface-raised)] px-3 py-2 text-xs text-[var(--text-primary)] focus:outline-none"
+                    className="mt-1 w-full rounded-[var(--inset-radius)] border border-[var(--panel-border)] bg-[var(--surface-raised)] px-3 py-2 text-xs text-[var(--text-primary)] focus:outline-none"
                   >
                     <option value="habits">Habitudes & Routines</option>
                     <option value="interface">Interface & Style</option>
@@ -330,7 +330,7 @@ export default function BrainMemoryPanel() {
                     value={newKey}
                     onChange={(e) => setNewKey(e.target.value)}
                     placeholder="Ex: Préférence thématique, horaire de travail"
-                    className="mt-1 w-full rounded-xl border border-[var(--panel-border)] bg-[var(--surface-raised)] px-3 py-2 text-xs text-[var(--text-primary)] focus:outline-none"
+                    className="mt-1 w-full rounded-[var(--inset-radius)] border border-[var(--panel-border)] bg-[var(--surface-raised)] px-3 py-2 text-xs text-[var(--text-primary)] focus:outline-none"
                   />
                 </div>
 
@@ -341,7 +341,7 @@ export default function BrainMemoryPanel() {
                     value={newValue}
                     onChange={(e) => setNewValue(e.target.value)}
                     placeholder="Ex: L'utilisateur préfère travailler en session Focus de 45 minutes le matin."
-                    className="mt-1 w-full rounded-xl border border-[var(--panel-border)] bg-[var(--surface-raised)] p-3 text-xs text-[var(--text-primary)] focus:outline-none"
+                    className="mt-1 w-full rounded-[var(--inset-radius)] border border-[var(--panel-border)] bg-[var(--surface-raised)] p-3 text-xs text-[var(--text-primary)] focus:outline-none"
                   />
                 </div>
               </div>
@@ -367,7 +367,7 @@ export default function BrainMemoryPanel() {
               initial={{ opacity: 0, scale: 0.95 }}
               animate={{ opacity: 1, scale: 1 }}
               exit={{ opacity: 0, scale: 0.95 }}
-              className="w-full max-w-md rounded-3xl border border-[var(--panel-border)] bg-[var(--bg-surface)] p-6 shadow-2xl space-y-4"
+              className="w-full max-w-md rounded-[var(--panel-radius)] border border-[var(--panel-border)] bg-[var(--bg-surface)] p-6 shadow-2xl space-y-4"
             >
               <h4 className="text-sm font-bold text-[var(--text-primary)]">
                 Modifier : {editingMemory.key}
@@ -379,7 +379,7 @@ export default function BrainMemoryPanel() {
                   rows={4}
                   value={newValue}
                   onChange={(e) => setNewValue(e.target.value)}
-                  className="mt-1 w-full rounded-xl border border-[var(--panel-border)] bg-[var(--surface-raised)] p-3 text-xs text-[var(--text-primary)] focus:outline-none"
+                  className="mt-1 w-full rounded-[var(--inset-radius)] border border-[var(--panel-border)] bg-[var(--surface-raised)] p-3 text-xs text-[var(--text-primary)] focus:outline-none"
                 />
               </div>
 
@@ -404,7 +404,7 @@ export default function BrainMemoryPanel() {
               initial={{ opacity: 0, scale: 0.95 }}
               animate={{ opacity: 1, scale: 1 }}
               exit={{ opacity: 0, scale: 0.95 }}
-              className="w-full max-w-sm rounded-3xl border border-[var(--panel-border)] bg-[var(--bg-surface)] p-6 shadow-2xl space-y-4 text-center"
+              className="w-full max-w-sm rounded-[var(--panel-radius)] border border-[var(--panel-border)] bg-[var(--bg-surface)] p-6 shadow-2xl space-y-4 text-center"
             >
               <AlertTriangle className="mx-auto h-8 w-8 text-rose-400" />
               <div>
@@ -440,7 +440,7 @@ export default function BrainMemoryPanel() {
               initial={{ opacity: 0, scale: 0.95 }}
               animate={{ opacity: 1, scale: 1 }}
               exit={{ opacity: 0, scale: 0.95 }}
-              className="w-full max-w-sm rounded-3xl border border-[var(--panel-border)] bg-[var(--bg-surface)] p-6 shadow-2xl space-y-4 text-center"
+              className="w-full max-w-sm rounded-[var(--panel-radius)] border border-[var(--panel-border)] bg-[var(--bg-surface)] p-6 shadow-2xl space-y-4 text-center"
             >
               <AlertTriangle className="mx-auto h-8 w-8 text-rose-400" />
               <div>

@@ -27,7 +27,7 @@ export default function MarketplaceHero({
   const topPick = recommendations[0];
 
   return (
-    <div className="relative overflow-hidden rounded-3xl border border-[var(--panel-border)]/80 bg-gradient-to-br from-[var(--surface-raised)]/90 via-[var(--panel-bg)]/80 to-[var(--surface-raised)]/40 p-5 sm:p-7 shadow-lg backdrop-blur-xl">
+    <div className="relative overflow-hidden rounded-[var(--panel-radius)] border border-[var(--panel-border)]/80 bg-gradient-to-br from-[var(--surface-raised)]/90 via-[var(--panel-bg)]/80 to-[var(--surface-raised)]/40 p-5 sm:p-7 shadow-lg backdrop-blur-xl">
       {/* Background Subtle Glow */}
       <div className="absolute -right-20 -top-20 h-64 w-64 rounded-full bg-[var(--accent-primary)]/10 blur-3xl pointer-events-none" />
 
@@ -74,9 +74,9 @@ export default function MarketplaceHero({
 
         {/* Right: Brain Highlight Banner */}
         {topPick && (
-          <div className="shrink-0 w-full lg:w-80 rounded-2xl border border-purple-500/30 bg-purple-950/20 p-4 backdrop-blur-md shadow-md">
+          <div className="shrink-0 w-full lg:w-80 rounded-[var(--panel-radius)] border border-purple-500/30 bg-purple-950/20 p-4 backdrop-blur-md shadow-md">
             <div className="flex items-center justify-between gap-2 mb-2.5">
-              <span className="inline-flex items-center gap-1.5 rounded-lg border border-purple-500/40 bg-purple-900/40 px-2 py-0.5 text-[11px] font-bold text-purple-200">
+              <span className="inline-flex items-center gap-1.5 rounded-[var(--inset-radius)] border border-purple-500/40 bg-purple-900/40 px-2 py-0.5 text-[11px] font-bold text-purple-200">
                 <Brain className="h-3.5 w-3.5 text-purple-300" />
                 <span>{topPick.match.score}% Match Brain</span>
               </span>

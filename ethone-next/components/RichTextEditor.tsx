@@ -314,7 +314,7 @@ export default function RichTextEditor({
   return (
     <div className={`v8-rich-text flex h-full min-h-0 flex-col ${className}`}>
       <div
-        className="mb-4 flex flex-wrap items-center gap-2 rounded-2xl border border-[var(--text-primary)]/[0.08] bg-[var(--text-primary)]/[0.03] p-2"
+        className="mb-4 flex flex-wrap items-center gap-2 rounded-[var(--panel-radius)] border border-[var(--text-primary)]/[0.08] bg-[var(--text-primary)]/[0.03] p-2"
         role="toolbar"
         aria-label="Formatage du texte"
         onMouseDown={(e) => e.preventDefault()}
@@ -363,7 +363,7 @@ export default function RichTextEditor({
             ref={blockButtonRef}
             type="button"
             onClick={() => setBlockOpen((v) => !v)}
-            className="flex min-w-fit items-center gap-2 rounded-lg border border-[var(--panel-border)] bg-[var(--text-primary)]/[0.04] px-3 py-1.5 text-xs font-medium text-[var(--text-primary)] transition-colors hover:bg-[var(--text-primary)]/[0.08]"
+            className="flex min-w-fit items-center gap-2 rounded-[var(--inset-radius)] border border-[var(--panel-border)] bg-[var(--text-primary)]/[0.04] px-3 py-1.5 text-xs font-medium text-[var(--text-primary)] transition-colors hover:bg-[var(--text-primary)]/[0.08]"
           >
             <span>{selectedBlock.label}</span>
             <Icon name="chevronDown" className="h-3.5 w-3.5 shrink-0 text-[var(--text-muted)]" />
@@ -376,7 +376,7 @@ export default function RichTextEditor({
                 exit={{ opacity: 0, y: -4, scale: 0.98 }}
                 transition={{ duration: 0.12, ease: "easeOut" }}
                 data-rich-block-listbox
-                className="absolute left-0 top-full z-[var(--z-modal)] mt-1.5 min-w-fit overflow-hidden rounded-xl border border-[var(--panel-border)] bg-[var(--panel-bg)]/95 p-1 shadow-2xl backdrop-blur-xl"
+                className="absolute left-0 top-full z-[var(--z-modal)] mt-1.5 min-w-fit overflow-hidden rounded-[var(--inset-radius)] border border-[var(--panel-border)] bg-[var(--panel-bg)]/95 p-1 shadow-2xl backdrop-blur-xl"
               >
                 {BLOCK_TOOLS.map((tool) => (
                   <button
@@ -410,7 +410,7 @@ export default function RichTextEditor({
       </div>
 
       <div
-        className="relative flex-1 min-h-0 cursor-text overflow-hidden v8-inset px-4 py-3 transition-all duration-200 focus-within:border-white/20 focus-within:ring-1 focus-within:ring-white/15 focus-within:shadow-[0_0_15px_rgba(255,255,255,0.03)]"
+        className="relative flex-1 min-h-0 cursor-text overflow-hidden v8-inset px-4 py-3 transition-all duration-200 focus-within:border-[var(--input-border-hover)] focus-within:ring-1 focus-within:ring-white/15 focus-within:shadow-[0_0_15px_rgba(255,255,255,0.03)]"
         onClick={() => ref.current?.focus()}
       >
         {empty && placeholder && (

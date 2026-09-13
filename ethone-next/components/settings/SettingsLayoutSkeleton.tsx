@@ -7,7 +7,7 @@ export default function SettingsLayoutSkeleton() {
       aria-label="Chargement des réglages"
       aria-busy="true"
     >
-      <div className="hidden w-64 shrink-0 flex-col gap-3 rounded-2xl border border-[var(--panel-border)] bg-[var(--panel-bg)] p-4 md:flex">
+      <div className="hidden w-64 shrink-0 flex-col gap-3 rounded-[var(--panel-radius)] border border-[var(--panel-border)] bg-[var(--panel-bg)] p-4 md:flex">
         <div className="h-8 w-3/4 rounded-lg bg-[var(--text-primary)]/[0.08]" />
         <div className="space-y-2">
           <div className="h-9 rounded-lg bg-[var(--text-primary)]/[0.06]" />
@@ -15,7 +15,7 @@ export default function SettingsLayoutSkeleton() {
           <div className="h-9 rounded-lg bg-[var(--text-primary)]/[0.06]" />
         </div>
       </div>
-      <div className="min-w-0 flex-1 space-y-4 overflow-hidden rounded-2xl border border-[var(--panel-border)] bg-[var(--panel-bg)] p-4">
+      <div className="min-w-0 flex-1 space-y-4 overflow-hidden rounded-[var(--panel-radius)] border border-[var(--panel-border)] bg-[var(--panel-bg)] p-4">
         <div className="h-8 w-1/3 rounded-lg bg-[var(--text-primary)]/[0.08]" />
         <div className="h-48 rounded-2xl bg-[var(--text-primary)]/[0.06]" />
         <div className="h-48 rounded-2xl bg-[var(--text-primary)]/[0.06]" />

@@ -51,7 +51,7 @@ export default function SystemHealthBanner({
   const tone = errors > 0 ? "error" : ok > 0 ? "success" : "warning";
 
   return (
-    <div className="mb-4 w-full overflow-hidden rounded-2xl border border-[var(--panel-border)] bg-[var(--panel-bg)] p-4 shadow-sm backdrop-blur-[var(--panel-blur)]">
+    <div className="mb-4 w-full overflow-hidden rounded-[var(--panel-radius)] border border-[var(--panel-border)] bg-[var(--panel-bg)] p-4 shadow-sm backdrop-blur-[var(--panel-blur)]">
       <div className="flex flex-col items-start justify-between gap-3 sm:flex-row sm:items-center">
         <div className="flex items-center gap-3">
           <div className="flex h-10 w-10 shrink-0 items-center justify-center rounded-[var(--panel-radius)] bg-[var(--accent-primary)]/10 text-[var(--accent-primary)]">
@@ -69,7 +69,7 @@ export default function SystemHealthBanner({
 
         <div className="flex w-full flex-wrap items-center gap-2 sm:w-auto">
           <span
-            className={`inline-flex items-center gap-1.5 rounded-lg border px-2.5 py-1 text-[10px] font-semibold ${
+            className={`inline-flex items-center gap-1.5 rounded-[var(--inset-radius)] border px-2.5 py-1 text-[10px] font-semibold ${
               tone === "success"
                 ? "border-[var(--success)]/20 bg-[var(--success)]/10 text-[var(--success)]"
                 : tone === "error"
@@ -88,7 +88,7 @@ export default function SystemHealthBanner({
           </span>
 
           {avgLatency > 0 && (
-            <span className="rounded-lg border border-[var(--accent-primary)]/20 bg-[var(--accent-primary)]/10 px-2.5 py-1 text-xs font-mono text-[var(--accent-primary)]">
+            <span className="rounded-[var(--inset-radius)] border border-[var(--accent-primary)]/20 bg-[var(--accent-primary)]/10 px-2.5 py-1 text-xs font-mono text-[var(--accent-primary)]">
               <span className="mr-1 inline-block h-2 w-2 rounded-full bg-[var(--accent-primary)]" />
               {avgLatency} ms
             </span>
@@ -98,7 +98,7 @@ export default function SystemHealthBanner({
             type="button"
             onClick={onTestAll}
             disabled={testing}
-            className="flex items-center gap-1.5 rounded-lg border border-[var(--accent-primary)]/20 bg-[var(--accent-primary)]/10 px-3 py-1.5 text-xs font-medium text-[var(--accent-primary)] transition hover:bg-[var(--accent-primary)]/20 disabled:opacity-50"
+            className="flex items-center gap-1.5 rounded-[var(--inset-radius)] border border-[var(--accent-primary)]/20 bg-[var(--accent-primary)]/10 px-3 py-1.5 text-xs font-medium text-[var(--accent-primary)] transition hover:bg-[var(--accent-primary)]/20 disabled:opacity-50"
           >
             {testing ? <Loader2 className="h-3.5 w-3.5 animate-spin" /> : <RefreshCw className="h-3.5 w-3.5" />}
             {i18n("testAll", "Tester toutes")}
@@ -132,7 +132,7 @@ export default function SystemHealthBanner({
                 return (
                   <div
                     key={integration.id}
-                    className="flex items-center gap-3 rounded-xl border border-[var(--text-primary)]/[0.06] bg-[var(--text-primary)]/[0.02] p-2.5"
+                    className="flex items-center gap-3 rounded-[var(--inset-radius)] border border-[var(--text-primary)]/[0.06] bg-[var(--text-primary)]/[0.02] p-2.5"
                   >
                     <div className="flex h-8 w-8 shrink-0 items-center justify-center rounded-lg bg-[var(--text-primary)]/[0.04] text-[var(--text-primary)]">
                       <ServiceIcon id={integration.id} icon={integration.icon} className="h-4 w-4" colored />

@@ -120,7 +120,7 @@ export default function NotificationItem({
       transition={{ duration: 0.15 }}
       onClick={() => onOpen?.(n)}
       className={cn(
-        "group relative flex flex-col gap-2 rounded-2xl border p-3.5 transition-all duration-150 cursor-pointer shadow-xs",
+        "group relative flex flex-col gap-2 rounded-[var(--panel-radius)] border p-3.5 transition-all duration-150 cursor-pointer shadow-xs",
         isUnread
           ? isCritical
             ? "border-l-4 border-l-rose-500 border-rose-500/30 bg-rose-950/25 hover:bg-rose-950/35"
@@ -136,7 +136,7 @@ export default function NotificationItem({
         <div className="flex items-start gap-2.5 min-w-0 flex-1">
           <div
             className={cn(
-              "flex h-9 w-9 shrink-0 items-center justify-center rounded-xl border shadow-xs",
+              "flex h-9 w-9 shrink-0 items-center justify-center rounded-[var(--inset-radius)] border shadow-xs",
               isUnread
                 ? isCritical
                   ? "border-rose-500/40 bg-rose-500/20"
@@ -181,7 +181,7 @@ export default function NotificationItem({
             <button
               type="button"
               onClick={handleMarkRead}
-              className="flex h-7 w-7 items-center justify-center rounded-lg border border-[var(--accent-primary)]/40 bg-[var(--accent-primary)]/15 text-[var(--accent-primary)] hover:bg-[var(--accent-primary)]/25 transition-all active:scale-95 cursor-pointer shadow-xs"
+              className="flex h-7 w-7 items-center justify-center rounded-[var(--inset-radius)] border border-[var(--accent-primary)]/40 bg-[var(--accent-primary)]/15 text-[var(--accent-primary)] hover:bg-[var(--accent-primary)]/25 transition-all active:scale-95 cursor-pointer shadow-xs"
               title="Marquer comme lu et masquer"
             >
               <Check className="h-3.5 w-3.5" />
@@ -202,7 +202,7 @@ export default function NotificationItem({
               remove(n.id);
               success("Notification supprimée");
             }}
-            className="flex h-7 w-7 items-center justify-center rounded-lg border border-[var(--panel-border)] bg-[var(--surface-raised)] text-[var(--text-muted)] hover:text-rose-400 hover:border-rose-500/40 transition-all active:scale-95 cursor-pointer shadow-xs"
+            className="flex h-7 w-7 items-center justify-center rounded-[var(--inset-radius)] border border-[var(--panel-border)] bg-[var(--surface-raised)] text-[var(--text-muted)] hover:text-rose-400 hover:border-rose-500/40 transition-all active:scale-95 cursor-pointer shadow-xs"
             title="Supprimer la notification"
           >
             <Trash2 className="h-3.5 w-3.5" />
@@ -211,7 +211,7 @@ export default function NotificationItem({
           <div onClick={(e) => e.stopPropagation()}>
             <AnimatedDropdown modal={false} onOpenChange={() => setSnoozeExpanded(false)}>
             <AnimatedDropdownTrigger
-              className="h-7 w-7 p-0 rounded-lg border border-[var(--panel-border)] bg-[var(--surface-raised)] text-[var(--text-muted)] hover:text-white hover:border-[var(--accent-primary)]/40 shadow-xs"
+              className="h-7 w-7 p-0 rounded-[var(--inset-radius)] border border-[var(--panel-border)] bg-[var(--surface-raised)] text-[var(--text-muted)] hover:text-white hover:border-[var(--accent-primary)]/40 shadow-xs"
             >
               <MoreHorizontal className="h-3.5 w-3.5" />
             </AnimatedDropdownTrigger>
@@ -331,7 +331,7 @@ export default function NotificationItem({
                   window.open(n.action.url, "_blank");
                 }
               }}
-              className="rounded-xl border border-[var(--accent-primary)]/40 bg-[var(--accent-primary)]/15 px-3 py-1 text-[11px] font-bold text-[var(--accent-primary)] hover:bg-[var(--accent-primary)]/25 transition-all active:scale-95 shadow-xs"
+              className="rounded-[var(--inset-radius)] border border-[var(--accent-primary)]/40 bg-[var(--accent-primary)]/15 px-3 py-1 text-[11px] font-bold text-[var(--accent-primary)] hover:bg-[var(--accent-primary)]/25 transition-all active:scale-95 shadow-xs"
             >
               {n.action.label}
             </button>

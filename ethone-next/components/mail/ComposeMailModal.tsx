@@ -251,7 +251,7 @@ export default function ComposeMailModal({
           exit={{ opacity: 0, y: 40, scale: 0.95 }}
           transition={{ type: "spring", stiffness: 350, damping: 28 }}
           className={cn(
-            "pointer-events-auto flex flex-col overflow-hidden rounded-2xl border border-[var(--panel-border)] bg-[var(--bg-main)] shadow-2xl transition-all duration-200",
+            "pointer-events-auto flex flex-col overflow-hidden rounded-[var(--panel-radius)] border border-[var(--panel-border)] bg-[var(--bg-main)] shadow-2xl transition-all duration-200",
             isFullscreen
               ? "fixed inset-4 z-50"
               : "h-[min(650px,85vh)] w-[min(600px,94vw)]"
@@ -347,7 +347,7 @@ export default function ComposeMailModal({
             {/* To Field */}
             <div className="flex items-center gap-2">
               <span className="w-12 shrink-0 font-semibold text-[var(--text-muted)]">À :</span>
-              <div className="flex flex-1 flex-wrap items-center gap-1.5 rounded-xl border border-[var(--input-border)] bg-[var(--input-bg)] p-2 focus-within:border-[var(--accent-primary)] focus-within:bg-[var(--input-bg-focus)] focus-within:shadow-[0_0_0_3px_color-mix(in_srgb,var(--accent-primary)_18%,transparent),0_0_16px_-4px_var(--glow-color)] transition-all duration-180">
+              <div className="flex flex-1 flex-wrap items-center gap-1.5 rounded-[var(--inset-radius)] border border-[var(--input-border)] bg-[var(--input-bg)] p-2 focus-within:border-[var(--accent-primary)] focus-within:bg-[var(--input-bg-focus)] focus-within:shadow-[0_0_0_3px_color-mix(in_srgb,var(--accent-primary)_18%,transparent),0_0_16px_-4px_var(--glow-color)] transition-all duration-180">
                 {to.map((t, i) => (
                   <span
                     key={`${t}-${i}`}
@@ -399,7 +399,7 @@ export default function ComposeMailModal({
             {showCc && (
               <div className="flex items-center gap-2">
                 <span className="w-12 shrink-0 font-semibold text-[var(--text-muted)]">Cc :</span>
-                <div className="flex flex-1 flex-wrap items-center gap-1.5 rounded-xl border border-[var(--input-border)] bg-[var(--input-bg)] p-2 focus-within:border-[var(--accent-primary)] focus-within:bg-[var(--input-bg-focus)] focus-within:shadow-[0_0_0_3px_color-mix(in_srgb,var(--accent-primary)_18%,transparent),0_0_16px_-4px_var(--glow-color)] transition-all duration-180">
+                <div className="flex flex-1 flex-wrap items-center gap-1.5 rounded-[var(--inset-radius)] border border-[var(--input-border)] bg-[var(--input-bg)] p-2 focus-within:border-[var(--accent-primary)] focus-within:bg-[var(--input-bg-focus)] focus-within:shadow-[0_0_0_3px_color-mix(in_srgb,var(--accent-primary)_18%,transparent),0_0_16px_-4px_var(--glow-color)] transition-all duration-180">
                   {cc.map((c, i) => (
                     <span
                       key={`${c}-${i}`}
@@ -431,7 +431,7 @@ export default function ComposeMailModal({
             {showBcc && (
               <div className="flex items-center gap-2">
                 <span className="w-12 shrink-0 font-semibold text-[var(--text-muted)]">Cci :</span>
-                <div className="flex flex-1 flex-wrap items-center gap-1.5 rounded-xl border border-[var(--input-border)] bg-[var(--input-bg)] p-2 focus-within:border-[var(--accent-primary)] focus-within:bg-[var(--input-bg-focus)] focus-within:shadow-[0_0_0_3px_color-mix(in_srgb,var(--accent-primary)_18%,transparent),0_0_16px_-4px_var(--glow-color)] transition-all duration-180">
+                <div className="flex flex-1 flex-wrap items-center gap-1.5 rounded-[var(--inset-radius)] border border-[var(--input-border)] bg-[var(--input-bg)] p-2 focus-within:border-[var(--accent-primary)] focus-within:bg-[var(--input-bg-focus)] focus-within:shadow-[0_0_0_3px_color-mix(in_srgb,var(--accent-primary)_18%,transparent),0_0_16px_-4px_var(--glow-color)] transition-all duration-180">
                   {bcc.map((b, i) => (
                     <span
                       key={`${b}-${i}`}
@@ -485,7 +485,7 @@ export default function ComposeMailModal({
 
             {/* Drag & drop overlay indicator */}
             {isDragOver && (
-              <div className="absolute inset-2 flex items-center justify-center rounded-2xl border-2 border-dashed border-[var(--accent-primary)] bg-[var(--bg-main)]/90 backdrop-blur-sm">
+              <div className="absolute inset-2 flex items-center justify-center rounded-[var(--panel-radius)] border-2 border-dashed border-[var(--accent-primary)] bg-[var(--bg-main)]/90 backdrop-blur-sm">
                 <p className="flex items-center gap-2 text-sm font-semibold text-[var(--accent-primary)]">
                   <Paperclip className="h-5 w-5" />
                   Déposez les pièces jointes ici
@@ -500,7 +500,7 @@ export default function ComposeMailModal({
               {attachments.map((a, i) => (
                 <div
                   key={`${a.filename}-${i}`}
-                  className="flex items-center gap-2 rounded-lg border border-[var(--panel-border)] bg-[var(--surface-2)]/50 px-2.5 py-1 text-xs text-[var(--text-primary)]"
+                  className="flex items-center gap-2 rounded-[var(--inset-radius)] border border-[var(--panel-border)] bg-[var(--surface-2)]/50 px-2.5 py-1 text-xs text-[var(--text-primary)]"
                 >
                   <Paperclip className="h-3.5 w-3.5 text-[var(--text-muted)]" />
                   <span className="truncate max-w-[150px] font-medium">{a.filename}</span>

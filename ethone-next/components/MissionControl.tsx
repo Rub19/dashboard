@@ -257,10 +257,10 @@ function MissionControlHUD() {
 
             {/* Quick Action Chips & Close Button */}
             <div className="flex items-center gap-2">
-              <span className="hidden sm:inline-flex items-center rounded-lg border border-[var(--panel-border)] px-2 py-1 text-[11px] text-[var(--text-muted)]">
+              <span className="hidden sm:inline-flex items-center rounded-[var(--inset-radius)] border border-[var(--panel-border)] px-2 py-1 text-[11px] text-[var(--text-muted)]">
                 F2
               </span>
-              <span className="hidden sm:inline-flex items-center rounded-lg border border-[var(--panel-border)] px-2 py-1 text-[11px] text-[var(--text-muted)]">
+              <span className="hidden sm:inline-flex items-center rounded-[var(--inset-radius)] border border-[var(--panel-border)] px-2 py-1 text-[11px] text-[var(--text-muted)]">
                 ESC
               </span>
               <button
@@ -284,7 +284,7 @@ function MissionControlHUD() {
               onChange={(e) => setQuery(e.target.value)}
               placeholder="Rechercher une fenêtre, un espace, un dashboard..."
               autoFocus
-              className="w-full rounded-xl border border-[var(--panel-border)] bg-[var(--surface-2)]/40 py-2.5 pl-10 pr-4 text-xs sm:text-sm text-[var(--text-primary)] placeholder:text-[var(--text-muted)] focus:border-[var(--accent-primary)] focus:outline-none transition-colors"
+              className="w-full rounded-[var(--inset-radius)] border border-[var(--panel-border)] bg-[var(--surface-2)]/40 py-2.5 pl-10 pr-4 text-xs sm:text-sm text-[var(--text-primary)] placeholder:text-[var(--text-muted)] focus:border-[var(--accent-primary)] focus:outline-none transition-colors"
             />
           </div>
         </div>
@@ -306,7 +306,7 @@ function MissionControlHUD() {
                         type="button"
                         onClick={() => navigateAndClose("/spaces")}
                         className={cn(
-                          "group relative flex flex-col justify-between rounded-2xl border p-4 text-left transition-all duration-200 cursor-pointer shadow-sm active:scale-98",
+                          "group relative flex flex-col justify-between rounded-[var(--panel-radius)] border p-4 text-left transition-all duration-200 cursor-pointer shadow-sm active:scale-98",
                           isActive
                             ? "border-[var(--accent-primary)]/40 bg-[var(--accent-primary)]/10"
                             : "border-[var(--panel-border)] bg-[var(--surface-2)]/40 hover:bg-[var(--surface-2)]"
@@ -314,7 +314,7 @@ function MissionControlHUD() {
                       >
                         <div className="flex items-start justify-between gap-2 mb-3">
                           <div className={cn(
-                            "flex h-10 w-10 items-center justify-center rounded-xl border transition-colors",
+                            "flex h-10 w-10 items-center justify-center rounded-[var(--inset-radius)] border transition-colors",
                             isActive
                               ? "border-[var(--accent-primary)]/50 bg-[var(--accent-primary)]/20 text-[var(--accent-primary)]"
                               : "bg-[var(--surface-2)] text-[var(--text-muted)]"
@@ -357,14 +357,14 @@ function MissionControlHUD() {
                         type="button"
                         onClick={() => navigateAndClose("/flows")}
                         className={cn(
-                          "group flex flex-col justify-between rounded-2xl border p-4 text-left transition-all duration-200 cursor-pointer shadow-sm active:scale-98",
+                          "group flex flex-col justify-between rounded-[var(--panel-radius)] border p-4 text-left transition-all duration-200 cursor-pointer shadow-sm active:scale-98",
                           isActive
                             ? "border-[var(--accent-primary)]/60 bg-[var(--accent-primary)]/10"
                             : "border-[var(--panel-border)] bg-[var(--surface-2)]/40 hover:bg-[var(--surface-2)]"
                         )}
                       >
                         <div className="flex items-center gap-3 mb-3">
-                          <div className="flex h-9 w-9 items-center justify-center rounded-xl border bg-[var(--surface-2)] text-[var(--text-muted)]">
+                          <div className="flex h-9 w-9 items-center justify-center rounded-[var(--inset-radius)] border bg-[var(--surface-2)] text-[var(--text-muted)]">
                             <Icon name="workflow" className="h-4 w-4 text-[var(--accent-primary)]" />
                           </div>
                           <div>
@@ -381,7 +381,7 @@ function MissionControlHUD() {
                           {w.steps.map((step, i) => (
                             <span
                               key={i}
-                              className="rounded-lg border border-[var(--panel-border)] bg-[var(--surface-2)]/50 px-2 py-1 text-[10px] font-medium text-[var(--text-muted)]"
+                              className="rounded-[var(--inset-radius)] border border-[var(--panel-border)] bg-[var(--surface-2)]/50 px-2 py-1 text-[10px] font-medium text-[var(--text-muted)]"
                             >
                               {i + 1}. {step}
                             </span>
@@ -397,7 +397,7 @@ function MissionControlHUD() {
               <section>
                 <SectionHeader title="Fenêtres Ouvertes" count={windows.length} icon={Maximize2} />
                 {windows.length === 0 ? (
-                  <div className="flex flex-col items-center justify-center gap-3 rounded-2xl border border-dashed border-[var(--panel-border)] p-10 text-center text-[var(--text-muted)]">
+                  <div className="flex flex-col items-center justify-center gap-3 rounded-[var(--panel-radius)] border border-dashed border-[var(--panel-border)] p-10 text-center text-[var(--text-muted)]">
                     <LayoutGrid className="h-9 w-9 opacity-60 text-[var(--text-muted)]" />
                     <div>
                       <p className="text-sm font-medium text-[var(--text-primary)]">Aucune fenêtre ouverte</p>
@@ -407,7 +407,7 @@ function MissionControlHUD() {
                     </div>
                   </div>
                 ) : filteredWindows.length === 0 ? (
-                  <div className="flex flex-col items-center justify-center gap-2 rounded-2xl border border-[var(--panel-border)] p-8 text-center text-[var(--text-muted)]">
+                  <div className="flex flex-col items-center justify-center gap-2 rounded-[var(--panel-radius)] border border-[var(--panel-border)] p-8 text-center text-[var(--text-muted)]">
                     <Search className="h-6 w-6 opacity-40" />
                     <p className="text-xs">Aucune fenêtre ne correspond à votre recherche.</p>
                   </div>
@@ -421,7 +421,7 @@ function MissionControlHUD() {
                             focusWindow(win.id);
                             setMissionControl(false);
                           }}
-                          className="flex aspect-video w-full flex-col justify-between rounded-2xl border border-[var(--panel-border)] bg-[var(--surface-2)]/40 p-3.5 text-left transition-colors hover:border-[var(--accent-primary)]/40 hover:bg-[var(--surface-2)] active:scale-98 cursor-pointer"
+                          className="flex aspect-video w-full flex-col justify-between rounded-[var(--panel-radius)] border border-[var(--panel-border)] bg-[var(--surface-2)]/40 p-3.5 text-left transition-colors hover:border-[var(--accent-primary)]/40 hover:bg-[var(--surface-2)] active:scale-98 cursor-pointer"
                         >
                           <div className="flex items-center gap-2.5 min-w-0 pr-6">
                             <div className="flex h-8 w-8 shrink-0 items-center justify-center rounded-lg bg-[var(--surface-2)] text-[var(--accent-primary)]">
@@ -434,7 +434,7 @@ function MissionControlHUD() {
                           </div>
 
                           {/* Mini Window Content Mockup */}
-                          <div className="h-14 w-full rounded-xl border border-[var(--panel-border)] bg-[var(--surface-2)]/40 p-2 opacity-60 flex flex-col justify-around">
+                          <div className="h-14 w-full rounded-[var(--inset-radius)] border border-[var(--panel-border)] bg-[var(--surface-2)]/40 p-2 opacity-60 flex flex-col justify-around">
                             <div className="h-1.5 w-1/3 rounded bg-[var(--accent-primary)]/40" />
                             <div className="h-1.5 w-2/3 rounded bg-[var(--text-muted)]/40" />
                             <div className="h-1.5 w-1/2 rounded bg-[var(--text-muted)]/20" />
@@ -475,14 +475,14 @@ function MissionControlHUD() {
                         type="button"
                         onClick={() => handleOpenApp(r.route, label)}
                         className={cn(
-                          "group flex w-full items-center gap-3 rounded-xl border p-2.5 text-left transition-all duration-150 cursor-pointer shadow-xs active:scale-98",
+                          "group flex w-full items-center gap-3 rounded-[var(--inset-radius)] border p-2.5 text-left transition-all duration-150 cursor-pointer shadow-xs active:scale-98",
                           isCurrent
                             ? "border-[var(--accent-primary)]/40 bg-[var(--accent-primary)]/10 text-[var(--text-primary)]"
                             : "border-transparent hover:bg-[var(--surface-2)]/60 text-[var(--text-muted)] hover:text-[var(--text-primary)]"
                         )}
                       >
                         <div className={cn(
-                          "flex h-8 w-8 shrink-0 items-center justify-center rounded-lg border",
+                          "flex h-8 w-8 shrink-0 items-center justify-center rounded-[var(--inset-radius)] border",
                           isCurrent
                             ? "border-[var(--accent-primary)]/40 bg-[var(--accent-primary)]/20 text-[var(--accent-primary)]"
                             : "bg-[var(--surface-2)] text-[var(--text-muted)] group-hover:text-[var(--text-primary)]"
@@ -515,7 +515,7 @@ function MissionControlHUD() {
                       key={record.id}
                       type="button"
                       onClick={() => navigateAndClose("/connections")}
-                      className="group flex w-full items-center gap-2.5 rounded-xl border border-transparent p-2 text-left hover:bg-[var(--surface-2)]/60 transition-colors cursor-pointer"
+                      className="group flex w-full items-center gap-2.5 rounded-[var(--inset-radius)] border border-transparent p-2 text-left hover:bg-[var(--surface-2)]/60 transition-colors cursor-pointer"
                     >
                       <span className={cn("h-2 w-2 shrink-0 rounded-full", STATUS_DOT[record.status] || "bg-zinc-500")} />
                       <div className="min-w-0 flex-1">

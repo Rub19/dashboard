@@ -295,7 +295,7 @@ export default function ThemeStudio({ className }: ThemeStudioProps) {
             initial={{ opacity: 0, y: -20, scale: 0.95 }}
             animate={{ opacity: 1, y: 0, scale: 1 }}
             exit={{ opacity: 0, y: -20, scale: 0.95 }}
-            className="sticky top-2 z-50 flex items-center justify-between gap-3 rounded-2xl border border-[var(--accent-primary)]/40 bg-[var(--panel-bg)]/95 p-3.5 shadow-2xl backdrop-blur-2xl"
+            className="sticky top-2 z-50 flex items-center justify-between gap-3 rounded-[var(--panel-radius)] border border-[var(--accent-primary)]/40 bg-[var(--panel-bg)]/95 p-3.5 shadow-2xl backdrop-blur-2xl"
           >
             <div className="flex items-center gap-2.5">
               <Eye className="h-5 w-5 text-[var(--accent-primary)] animate-pulse" />
@@ -323,7 +323,7 @@ export default function ThemeStudio({ className }: ThemeStudioProps) {
 
       {/* Navigation Tabs */}
       <div className="flex items-center justify-between border-b border-[var(--panel-border)]/60 pb-3 gap-2 overflow-x-auto no-scrollbar">
-        <div className="flex items-center gap-1.5 p-1 rounded-2xl border border-[var(--panel-border)] bg-[var(--surface-raised)]/50">
+        <div className="flex items-center gap-1.5 p-1 rounded-[var(--panel-radius)] border border-[var(--panel-border)] bg-[var(--surface-raised)]/50">
           <button
             type="button"
             onClick={() => setActiveTab("preset")}
@@ -384,7 +384,7 @@ export default function ThemeStudio({ className }: ThemeStudioProps) {
         <button
           type="button"
           onClick={handleResetToDefault}
-          className="flex shrink-0 items-center gap-1.5 rounded-xl border border-[var(--panel-border)]/60 bg-[var(--surface-raised)]/40 px-3 py-1.5 text-xs font-medium text-[var(--text-muted)] hover:text-[var(--text-primary)] hover:bg-[var(--surface-hover)] transition-all"
+          className="flex shrink-0 items-center gap-1.5 rounded-[var(--inset-radius)] border border-[var(--panel-border)]/60 bg-[var(--surface-raised)]/40 px-3 py-1.5 text-xs font-medium text-[var(--text-muted)] hover:text-[var(--text-primary)] hover:bg-[var(--surface-hover)] transition-all"
           title="Rétablir les réglages d'origine"
         >
           <RotateCcw className="h-3.5 w-3.5" />
@@ -435,7 +435,7 @@ export default function ThemeStudio({ className }: ThemeStudioProps) {
                   whileTap={{ scale: 0.98 }}
                   onClick={() => handleSelectTheme(theme.id, true)}
                   className={cn(
-                    "group relative flex flex-col justify-between overflow-hidden rounded-3xl border-2 p-4 text-left transition-all cursor-pointer shadow-lg",
+                    "group relative flex flex-col justify-between overflow-hidden rounded-[var(--panel-radius)] border-2 p-4 text-left transition-all cursor-pointer shadow-lg",
                     isSelected
                       ? "border-[var(--accent-primary)] shadow-[0_0_24px_var(--glow-color)]"
                       : "border-[var(--panel-border)]/60 hover:border-[var(--panel-border)]"
@@ -483,7 +483,7 @@ export default function ThemeStudio({ className }: ThemeStudioProps) {
 
                   {/* Miniature Desktop / Mobile UI Preview */}
                   <div
-                    className="mt-4 aspect-[16/9] w-full overflow-hidden rounded-2xl border p-2 flex gap-1.5"
+                    className="mt-4 aspect-[16/9] w-full overflow-hidden rounded-[var(--panel-radius)] border p-2 flex gap-1.5"
                     style={{
                       borderColor: theme.borderSubtle,
                       backgroundColor: theme.bgSurface,
@@ -491,7 +491,7 @@ export default function ThemeStudio({ className }: ThemeStudioProps) {
                   >
                     {/* Mini Sidebar */}
                     <div
-                      className="w-1/4 rounded-xl border p-1.5 flex flex-col justify-between"
+                      className="w-1/4 rounded-[var(--inset-radius)] border p-1.5 flex flex-col justify-between"
                       style={{
                         borderColor: theme.borderSubtle,
                         backgroundColor: theme.bgSidebar,
@@ -508,7 +508,7 @@ export default function ThemeStudio({ className }: ThemeStudioProps) {
                     {/* Mini Content Area */}
                     <div className="flex-1 space-y-1.5">
                       <div
-                        className="h-4 w-full rounded-lg border flex items-center px-1.5 justify-between"
+                        className="h-4 w-full rounded-[var(--inset-radius)] border flex items-center px-1.5 justify-between"
                         style={{ borderColor: theme.borderSubtle, backgroundColor: theme.bgCard }}
                       >
                         <div className="h-1.5 w-8 rounded-full" style={{ backgroundColor: theme.accentPrimary }} />
@@ -516,14 +516,14 @@ export default function ThemeStudio({ className }: ThemeStudioProps) {
                       </div>
                       <div className="grid grid-cols-2 gap-1">
                         <div
-                          className="h-8 rounded-lg border p-1"
+                          className="h-8 rounded-[var(--inset-radius)] border p-1"
                           style={{ borderColor: theme.borderSubtle, backgroundColor: theme.bgCard }}
                         >
                           <div className="h-1.5 w-5 rounded-full opacity-70" style={{ backgroundColor: theme.textPrimary }} />
                           <div className="mt-1 h-2 w-2 rounded-full" style={{ backgroundColor: theme.accentPrimary }} />
                         </div>
                         <div
-                          className="h-8 rounded-lg border p-1"
+                          className="h-8 rounded-[var(--inset-radius)] border p-1"
                           style={{ borderColor: theme.borderSubtle, backgroundColor: theme.bgCard }}
                         >
                           <div className="h-1.5 w-6 rounded-full opacity-70" style={{ backgroundColor: theme.textPrimary }} />
@@ -534,7 +534,7 @@ export default function ThemeStudio({ className }: ThemeStudioProps) {
                   </div>
 
                   {/* Actions footer */}
-                  <div className="mt-3 flex items-center justify-between pt-2 border-t border-white/5">
+                  <div className="mt-3 flex items-center justify-between pt-2 border-t border-[var(--panel-border)]">
                     <button
                       type="button"
                       onClick={(e) => {
@@ -601,7 +601,7 @@ export default function ThemeStudio({ className }: ThemeStudioProps) {
                   type="button"
                   onClick={() => handleSelectAccent(accent.id)}
                   className={cn(
-                    "flex flex-col items-center gap-2.5 rounded-2xl border p-3.5 text-center transition-all touch-manipulation",
+                    "flex flex-col items-center gap-2.5 rounded-[var(--panel-radius)] border p-3.5 text-center transition-all touch-manipulation",
                     isSelected
                       ? "border-[var(--accent-primary)] bg-[var(--surface-raised)] shadow-lg"
                       : "border-[var(--panel-border)]/60 bg-[var(--surface-raised)]/40 hover:bg-[var(--surface-hover)]"
@@ -622,7 +622,7 @@ export default function ThemeStudio({ className }: ThemeStudioProps) {
           </div>
 
           {/* Custom Hex Color Picker */}
-          <div className="rounded-3xl border border-[var(--panel-border)] bg-[var(--surface-raised)]/50 p-5 space-y-4">
+          <div className="rounded-[var(--panel-radius)] border border-[var(--panel-border)] bg-[var(--surface-raised)]/50 p-5 space-y-4">
             <h4 className="text-sm font-bold text-[var(--text-primary)] flex items-center gap-2">
               <Palette className="h-4 w-4 text-[var(--accent-primary)]" />
               <span>Couleur d'accent personnalisée (Hex)</span>
@@ -633,7 +633,7 @@ export default function ThemeStudio({ className }: ThemeStudioProps) {
                 type="color"
                 value={isValidHexColor(settings.customAccent) ? settings.customAccent : "#8b5cf6"}
                 onChange={(e) => handleSelectAccent("custom", e.target.value)}
-                className="h-10 w-12 cursor-pointer rounded-xl border border-[var(--panel-border)] bg-transparent p-1"
+                className="h-10 w-12 cursor-pointer rounded-[var(--inset-radius)] border border-[var(--panel-border)] bg-transparent p-1"
               />
               <input
                 type="text"
@@ -645,7 +645,7 @@ export default function ThemeStudio({ className }: ThemeStudioProps) {
                   }
                 }}
                 placeholder="#8b5cf6"
-                className="w-36 rounded-xl border border-[var(--panel-border)] bg-[var(--surface-raised)] px-3 py-2 text-xs font-mono text-[var(--text-primary)] focus:border-[var(--accent-primary)] focus:outline-none"
+                className="w-36 rounded-[var(--inset-radius)] border border-[var(--panel-border)] bg-[var(--surface-raised)] px-3 py-2 text-xs font-mono text-[var(--text-primary)] focus:border-[var(--accent-primary)] focus:outline-none"
               />
               <span className="text-xs text-[var(--text-muted)]">
                 Entrez un code hexadécimal valide pour un accent unique.
@@ -668,7 +668,7 @@ export default function ThemeStudio({ className }: ThemeStudioProps) {
           </div>
 
           <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-            <div className="space-y-4 rounded-3xl border border-[var(--panel-border)] bg-[var(--surface-raised)]/50 p-5">
+            <div className="space-y-4 rounded-[var(--panel-radius)] border border-[var(--panel-border)] bg-[var(--surface-raised)]/50 p-5">
               <div>
                 <label className="text-xs font-semibold text-[var(--text-primary)]">Nom du thème</label>
                 <input
@@ -676,7 +676,7 @@ export default function ThemeStudio({ className }: ThemeStudioProps) {
                   value={customName}
                   onChange={(e) => setCustomName(e.target.value)}
                   placeholder="Ex: Mon Thème Cyberpunk"
-                  className="mt-1 w-full rounded-xl border border-[var(--panel-border)] bg-[var(--surface-raised)] px-3.5 py-2 text-xs text-[var(--text-primary)] focus:border-[var(--accent-primary)] focus:outline-none"
+                  className="mt-1 w-full rounded-[var(--inset-radius)] border border-[var(--panel-border)] bg-[var(--surface-raised)] px-3.5 py-2 text-xs text-[var(--text-primary)] focus:border-[var(--accent-primary)] focus:outline-none"
                 />
               </div>
 
@@ -687,13 +687,13 @@ export default function ThemeStudio({ className }: ThemeStudioProps) {
                   value={customDescription}
                   onChange={(e) => setCustomDescription(e.target.value)}
                   placeholder="Description courte de l'ambiance"
-                  className="mt-1 w-full rounded-xl border border-[var(--panel-border)] bg-[var(--surface-raised)] px-3.5 py-2 text-xs text-[var(--text-primary)] focus:border-[var(--accent-primary)] focus:outline-none"
+                  className="mt-1 w-full rounded-[var(--inset-radius)] border border-[var(--panel-border)] bg-[var(--surface-raised)] px-3.5 py-2 text-xs text-[var(--text-primary)] focus:border-[var(--accent-primary)] focus:outline-none"
                 />
               </div>
 
               <div>
                 <label className="text-xs font-semibold text-[var(--text-primary)]">Schéma de couleurs</label>
-                <div className="mt-1 flex items-center gap-1.5 rounded-xl border border-[var(--panel-border)] bg-[var(--surface-raised)] p-1">
+                <div className="mt-1 flex items-center gap-1.5 rounded-[var(--inset-radius)] border border-[var(--panel-border)] bg-[var(--surface-raised)] p-1">
                   {(["dark", "light"] as const).map((scheme) => (
                     <button
                       key={scheme}
@@ -720,13 +720,13 @@ export default function ThemeStudio({ className }: ThemeStudioProps) {
                       type="color"
                       value={customBgMain}
                       onChange={(e) => setCustomBgMain(e.target.value)}
-                      className="h-8 w-10 cursor-pointer rounded-lg border border-[var(--panel-border)] bg-transparent p-0.5"
+                      className="h-8 w-10 cursor-pointer rounded-[var(--inset-radius)] border border-[var(--panel-border)] bg-transparent p-0.5"
                     />
                     <input
                       type="text"
                       value={customBgMain}
                       onChange={(e) => setCustomBgMain(e.target.value)}
-                      className="w-full rounded-lg border border-[var(--panel-border)] bg-[var(--surface-raised)] px-2 py-1.5 text-xs font-mono text-[var(--text-primary)]"
+                      className="w-full rounded-[var(--inset-radius)] border border-[var(--panel-border)] bg-[var(--surface-raised)] px-2 py-1.5 text-xs font-mono text-[var(--text-primary)]"
                     />
                   </div>
                 </div>
@@ -738,13 +738,13 @@ export default function ThemeStudio({ className }: ThemeStudioProps) {
                       type="color"
                       value={customBgSurface}
                       onChange={(e) => setCustomBgSurface(e.target.value)}
-                      className="h-8 w-10 cursor-pointer rounded-lg border border-[var(--panel-border)] bg-transparent p-0.5"
+                      className="h-8 w-10 cursor-pointer rounded-[var(--inset-radius)] border border-[var(--panel-border)] bg-transparent p-0.5"
                     />
                     <input
                       type="text"
                       value={customBgSurface}
                       onChange={(e) => setCustomBgSurface(e.target.value)}
-                      className="w-full rounded-lg border border-[var(--panel-border)] bg-[var(--surface-raised)] px-2 py-1.5 text-xs font-mono text-[var(--text-primary)]"
+                      className="w-full rounded-[var(--inset-radius)] border border-[var(--panel-border)] bg-[var(--surface-raised)] px-2 py-1.5 text-xs font-mono text-[var(--text-primary)]"
                     />
                   </div>
                 </div>
@@ -756,13 +756,13 @@ export default function ThemeStudio({ className }: ThemeStudioProps) {
                       type="color"
                       value={customBgSidebar}
                       onChange={(e) => setCustomBgSidebar(e.target.value)}
-                      className="h-8 w-10 cursor-pointer rounded-lg border border-[var(--panel-border)] bg-transparent p-0.5"
+                      className="h-8 w-10 cursor-pointer rounded-[var(--inset-radius)] border border-[var(--panel-border)] bg-transparent p-0.5"
                     />
                     <input
                       type="text"
                       value={customBgSidebar}
                       onChange={(e) => setCustomBgSidebar(e.target.value)}
-                      className="w-full rounded-lg border border-[var(--panel-border)] bg-[var(--surface-raised)] px-2 py-1.5 text-xs font-mono text-[var(--text-primary)]"
+                      className="w-full rounded-[var(--inset-radius)] border border-[var(--panel-border)] bg-[var(--surface-raised)] px-2 py-1.5 text-xs font-mono text-[var(--text-primary)]"
                     />
                   </div>
                 </div>
@@ -774,13 +774,13 @@ export default function ThemeStudio({ className }: ThemeStudioProps) {
                       type="color"
                       value={customAccent}
                       onChange={(e) => setCustomAccent(e.target.value)}
-                      className="h-8 w-10 cursor-pointer rounded-lg border border-[var(--panel-border)] bg-transparent p-0.5"
+                      className="h-8 w-10 cursor-pointer rounded-[var(--inset-radius)] border border-[var(--panel-border)] bg-transparent p-0.5"
                     />
                     <input
                       type="text"
                       value={customAccent}
                       onChange={(e) => setCustomAccent(e.target.value)}
-                      className="w-full rounded-lg border border-[var(--panel-border)] bg-[var(--surface-raised)] px-2 py-1.5 text-xs font-mono text-[var(--text-primary)]"
+                      className="w-full rounded-[var(--inset-radius)] border border-[var(--panel-border)] bg-[var(--surface-raised)] px-2 py-1.5 text-xs font-mono text-[var(--text-primary)]"
                     />
                   </div>
                 </div>
@@ -795,7 +795,7 @@ export default function ThemeStudio({ className }: ThemeStudioProps) {
 
             {/* Live Interactive Preview Box */}
             <div
-              className="rounded-3xl border-2 p-6 flex flex-col justify-between shadow-2xl"
+              className="rounded-[var(--panel-radius)] border-2 p-6 flex flex-col justify-between shadow-2xl"
               style={{
                 backgroundColor: customBgMain,
                 borderColor: customAccent,
@@ -810,7 +810,7 @@ export default function ThemeStudio({ className }: ThemeStudioProps) {
 
               <div className="my-6 space-y-3">
                 <div
-                  className="rounded-2xl p-3.5 border shadow-md flex items-center justify-between"
+                  className="rounded-[var(--panel-radius)] p-3.5 border shadow-md flex items-center justify-between"
                   style={{ backgroundColor: customBgSurface, borderColor: "rgba(255,255,255,0.1)" }}
                 >
                   <span className="text-xs font-semibold">Surface Bento Card</span>
@@ -818,7 +818,7 @@ export default function ThemeStudio({ className }: ThemeStudioProps) {
                 </div>
 
                 <div
-                  className="rounded-2xl p-3.5 border shadow-md flex items-center justify-between"
+                  className="rounded-[var(--panel-radius)] p-3.5 border shadow-md flex items-center justify-between"
                   style={{ backgroundColor: customBgSidebar, borderColor: "rgba(255,255,255,0.08)" }}
                 >
                   <span className="text-xs font-semibold">Barre Latérale / Dock</span>
@@ -852,7 +852,7 @@ export default function ThemeStudio({ className }: ThemeStudioProps) {
             </p>
           </div>
 
-          <div className="rounded-3xl border border-[var(--panel-border)] bg-[var(--surface-raised)]/50 p-5 space-y-4">
+          <div className="rounded-[var(--panel-radius)] border border-[var(--panel-border)] bg-[var(--surface-raised)]/50 p-5 space-y-4">
             <label className="text-xs font-semibold text-[var(--text-primary)]">
               Collez le code JSON du thème :
             </label>
@@ -861,7 +861,7 @@ export default function ThemeStudio({ className }: ThemeStudioProps) {
               value={importJson}
               onChange={(e) => setImportJson(e.target.value)}
               placeholder='{\n  "label": "Cyber Matrix",\n  "bgMain": "#001100",\n  "bgSurface": "#002200",\n  "bgSidebar": "#001800",\n  "accentPrimary": "#00ff66"\n}'
-              className="w-full rounded-2xl border border-[var(--panel-border)] bg-[var(--surface-raised)] p-3.5 text-xs font-mono text-[var(--text-primary)] placeholder-[var(--text-muted)] focus:border-[var(--accent-primary)] focus:outline-none"
+              className="w-full rounded-[var(--panel-radius)] border border-[var(--panel-border)] bg-[var(--surface-raised)] p-3.5 text-xs font-mono text-[var(--text-primary)] placeholder-[var(--text-muted)] focus:border-[var(--accent-primary)] focus:outline-none"
             />
 
             <div className="flex items-center gap-3">

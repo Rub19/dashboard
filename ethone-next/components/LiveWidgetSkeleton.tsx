@@ -3,7 +3,7 @@
 export default function LiveWidgetSkeleton() {
   return (
     <div
-      className="fixed bottom-12 right-6 z-40 h-10 w-10 rounded-2xl border border-[var(--text-primary)]/[0.08] bg-[var(--bg-main)]/80"
+      className="fixed bottom-12 right-6 z-40 h-10 w-10 rounded-[var(--panel-radius)] border border-[var(--text-primary)]/[0.08] bg-[var(--bg-main)]/80"
       aria-hidden="true"
     />
   );

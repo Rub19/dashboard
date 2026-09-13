@@ -31,7 +31,7 @@ function BentoCard({
         <div className="relative z-10 mb-2 flex shrink-0 items-center justify-between border-b border-[var(--border-subtle)] pb-2">
           <div className="flex items-center gap-2.5">
             {icon && (
-              <span className="flex h-7 w-7 items-center justify-center rounded-lg border border-[var(--border-subtle)] bg-[var(--surface)] text-[var(--text-primary)]">
+              <span className="flex h-7 w-7 items-center justify-center rounded-[var(--inset-radius)] border border-[var(--border-subtle)] bg-[var(--surface)] text-[var(--text-primary)]">
                 <Icon name={icon} className="h-4 w-4" />
               </span>
             )}

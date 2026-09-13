@@ -200,7 +200,7 @@ const HeroBriefingCard = memo(function HeroBriefingCard({
 
         <div className="flex flex-wrap gap-2">
           {quickActions.map((a) => {
-            const base = "inline-flex items-center gap-1.5 rounded-lg border border-[var(--text-primary)]/[0.06] bg-[var(--text-primary)]/[0.02] px-2.5 py-1.5 text-[11px] font-medium text-[var(--text-primary)] transition-colors hover:bg-[var(--text-primary)]/[0.06] hover:text-[var(--accent-primary)]";
+            const base = "inline-flex items-center gap-1.5 rounded-[var(--inset-radius)] border border-[var(--text-primary)]/[0.06] bg-[var(--text-primary)]/[0.02] px-2.5 py-1.5 text-[11px] font-medium text-[var(--text-primary)] transition-colors hover:bg-[var(--text-primary)]/[0.06] hover:text-[var(--accent-primary)]";
             return (
               <Link key={a.id} href={a.href} className={base} aria-label={a.label}>
                 <Icon pack="phosphor" name={a.icon} className="h-3 w-3" />
@@ -211,7 +211,7 @@ const HeroBriefingCard = memo(function HeroBriefingCard({
           <button
             type="button"
             onClick={focusBrain}
-            className="inline-flex items-center gap-1.5 rounded-lg border border-[var(--text-primary)]/[0.06] bg-[var(--text-primary)]/[0.02] px-2.5 py-1.5 text-[11px] font-medium text-[var(--text-primary)] transition-colors hover:bg-[var(--text-primary)]/[0.06] hover:text-[var(--accent-primary)]"
+            className="inline-flex items-center gap-1.5 rounded-[var(--inset-radius)] border border-[var(--text-primary)]/[0.06] bg-[var(--text-primary)]/[0.02] px-2.5 py-1.5 text-[11px] font-medium text-[var(--text-primary)] transition-colors hover:bg-[var(--text-primary)]/[0.06] hover:text-[var(--accent-primary)]"
             aria-label={i18n("brain", "Brain")}
           >
             <Icon pack="phosphor" name="brain" className="h-3 w-3" />
@@ -220,7 +220,7 @@ const HeroBriefingCard = memo(function HeroBriefingCard({
         </div>
 
         {(brain.loading || latestAssistant || brain.error) && (
-          <div className="rounded-xl border border-[var(--text-primary)]/[0.06] bg-[var(--text-primary)]/[0.02] p-2.5 text-xs text-[var(--text-primary)]">
+          <div className="rounded-[var(--inset-radius)] border border-[var(--text-primary)]/[0.06] bg-[var(--text-primary)]/[0.02] p-2.5 text-xs text-[var(--text-primary)]">
             {brain.loading && (
               <div className="flex items-center gap-2 text-[var(--text-muted)]">
                 <TypingDots />

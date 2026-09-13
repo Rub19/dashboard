@@ -359,7 +359,7 @@ export default function AvatarPickerModal({
               <button
                 type="button"
                 onClick={handleRandomPick}
-                className="flex items-center gap-1.5 rounded-xl border border-[var(--panel-border)] bg-[var(--surface-2)]/60 px-3 py-2 text-xs font-semibold text-[var(--text-primary)] transition-colors hover:bg-[var(--surface-2)]"
+                className="flex items-center gap-1.5 rounded-[var(--inset-radius)] border border-[var(--panel-border)] bg-[var(--surface-2)]/60 px-3 py-2 text-xs font-semibold text-[var(--text-primary)] transition-colors hover:bg-[var(--surface-2)]"
                 title="Choisir un avatar aléatoire"
               >
                 <Dice5 className="h-4 w-4" />
@@ -378,7 +378,7 @@ export default function AvatarPickerModal({
               <button
                 type="button"
                 onClick={onClose}
-                className="rounded-xl border border-[var(--panel-border)] bg-[var(--surface-2)]/60 p-2 text-[var(--text-muted)] transition-colors hover:bg-[var(--surface-2)] hover:text-[var(--text-primary)]"
+                className="rounded-[var(--inset-radius)] border border-[var(--panel-border)] bg-[var(--surface-2)]/60 p-2 text-[var(--text-muted)] transition-colors hover:bg-[var(--surface-2)] hover:text-[var(--text-primary)]"
                 aria-label="Fermer"
               >
                 <X className="h-5 w-5" />
@@ -395,7 +395,7 @@ export default function AvatarPickerModal({
                 value={searchQuery}
                 onChange={(e) => setSearchQuery(e.target.value)}
                 placeholder="Rechercher un personnage, une série, un anime (ex: Gojo, Stranger Things, Jinx, One Piece)..."
-                className="w-full rounded-xl border border-[var(--panel-border)] bg-[var(--surface-2)]/40 pl-10 pr-4 py-2 text-xs text-[var(--text-primary)] placeholder:text-[var(--text-muted)] focus:border-[var(--accent-primary)] focus:outline-none"
+                className="w-full rounded-[var(--inset-radius)] border border-[var(--panel-border)] bg-[var(--surface-2)]/40 pl-10 pr-4 py-2 text-xs text-[var(--text-primary)] placeholder:text-[var(--text-muted)] focus:border-[var(--accent-primary)] focus:outline-none"
               />
               {searchQuery && (
                 <button
@@ -411,7 +411,7 @@ export default function AvatarPickerModal({
             <button
               type="button"
               onClick={() => setShowCustomInput((v) => !v)}
-              className="flex items-center justify-center gap-1.5 rounded-xl border border-[var(--panel-border)] bg-[var(--surface-2)]/40 px-3 py-2 text-xs font-medium text-[var(--text-muted)] hover:text-[var(--text-primary)]"
+              className="flex items-center justify-center gap-1.5 rounded-[var(--inset-radius)] border border-[var(--panel-border)] bg-[var(--surface-2)]/40 px-3 py-2 text-xs font-medium text-[var(--text-muted)] hover:text-[var(--text-primary)]"
             >
               <Upload className="h-3.5 w-3.5" />
               <span>Importer image / URL</span>
@@ -420,13 +420,13 @@ export default function AvatarPickerModal({
 
           {/* Custom URL / Upload Panel */}
           {showCustomInput && (
-            <div className="mt-3 flex flex-wrap items-center gap-2 rounded-xl border border-[var(--panel-border)] bg-[var(--surface-2)]/50 p-3 text-xs">
+            <div className="mt-3 flex flex-wrap items-center gap-2 rounded-[var(--inset-radius)] border border-[var(--panel-border)] bg-[var(--surface-2)]/50 p-3 text-xs">
               <input
                 type="text"
                 value={customUrl}
                 onChange={(e) => setCustomUrl(e.target.value)}
                 placeholder="Coller une URL d'image directe (HTTPS)..."
-                className="flex-1 min-w-[200px] rounded-lg border border-[var(--panel-border)] bg-[var(--surface-2)] px-3 py-1.5 text-xs text-[var(--text-primary)] placeholder:text-[var(--text-muted)] focus:border-[var(--accent-primary)] focus:outline-none"
+                className="flex-1 min-w-[200px] rounded-[var(--inset-radius)] border border-[var(--panel-border)] bg-[var(--surface-2)] px-3 py-1.5 text-xs text-[var(--text-primary)] placeholder:text-[var(--text-muted)] focus:border-[var(--accent-primary)] focus:outline-none"
               />
               <button
                 type="button"
@@ -443,7 +443,7 @@ export default function AvatarPickerModal({
               <button
                 type="button"
                 onClick={() => fileInputRef.current?.click()}
-                className="flex items-center gap-1 rounded-lg border border-[var(--panel-border)] bg-[var(--surface-2)] px-3 py-1.5 text-xs font-medium text-[var(--text-primary)] hover:bg-[var(--surface-2)]/70"
+                className="flex items-center gap-1 rounded-[var(--inset-radius)] border border-[var(--panel-border)] bg-[var(--surface-2)] px-3 py-1.5 text-xs font-medium text-[var(--text-primary)] hover:bg-[var(--surface-2)]/70"
               >
                 <Upload className="h-3 w-3" />
                 Parcourir
@@ -506,7 +506,7 @@ export default function AvatarPickerModal({
                         type="button"
                         onClick={() => setSelectedFrameId(frame.id)}
                         className={cn(
-                          "flex flex-col items-center gap-2.5 rounded-xl border p-3.5 text-left transition-all",
+                          "flex flex-col items-center gap-2.5 rounded-[var(--inset-radius)] border p-3.5 text-left transition-all",
                           isSelected
                             ? "border-[var(--accent-primary)] bg-[var(--accent-primary)]/10"
                             : "border-[var(--panel-border)] bg-[var(--surface-2)]/40 hover:bg-[var(--surface-2)]/60"
@@ -548,7 +548,7 @@ export default function AvatarPickerModal({
                         type="button"
                         onClick={() => setSelectedBgId(bg.id)}
                         className={cn(
-                          "relative h-20 rounded-xl border p-3 flex flex-col justify-end overflow-hidden transition-all bg-gradient-to-br",
+                          "relative h-20 rounded-[var(--inset-radius)] border p-3 flex flex-col justify-end overflow-hidden transition-all bg-gradient-to-br",
                           bg.cssGradient,
                           isSelected
                             ? "border-[var(--accent-primary)] ring-2 ring-[var(--accent-primary)]/50"
@@ -580,13 +580,13 @@ export default function AvatarPickerModal({
                         type="button"
                         onClick={() => setSelectedBadgeId(badge.id)}
                         className={cn(
-                          "flex items-center gap-3 rounded-xl border p-3 text-left transition-all",
+                          "flex items-center gap-3 rounded-[var(--inset-radius)] border p-3 text-left transition-all",
                           isSelected
                             ? "border-[var(--accent-primary)] bg-[var(--accent-primary)]/10"
                             : "border-[var(--panel-border)] bg-[var(--surface-2)]/40 hover:bg-[var(--surface-2)]/60"
                         )}
                       >
-                        <span className={cn("rounded-lg px-2.5 py-1 text-xs font-bold border", badge.bg)}>
+                        <span className={cn("rounded-[var(--inset-radius)] px-2.5 py-1 text-xs font-bold border", badge.bg)}>
                           {badge.label}
                         </span>
                         <span className="text-[11px] text-[var(--text-muted)]">{badge.description}</span>
@@ -688,7 +688,7 @@ function HorizontalAvatarRow({
           <button
             type="button"
             onClick={() => handleScroll("left")}
-            className="rounded-lg border border-[var(--panel-border)] bg-[var(--surface-2)]/60 p-1 text-[var(--text-muted)] hover:bg-[var(--surface-2)] hover:text-[var(--text-primary)]"
+            className="rounded-[var(--inset-radius)] border border-[var(--panel-border)] bg-[var(--surface-2)]/60 p-1 text-[var(--text-muted)] hover:bg-[var(--surface-2)] hover:text-[var(--text-primary)]"
             aria-label="Défiler à gauche"
           >
             <ChevronLeft className="h-3.5 w-3.5" />
@@ -696,7 +696,7 @@ function HorizontalAvatarRow({
           <button
             type="button"
             onClick={() => handleScroll("right")}
-            className="rounded-lg border border-[var(--panel-border)] bg-[var(--surface-2)]/60 p-1 text-[var(--text-muted)] hover:bg-[var(--surface-2)] hover:text-[var(--text-primary)]"
+            className="rounded-[var(--inset-radius)] border border-[var(--panel-border)] bg-[var(--surface-2)]/60 p-1 text-[var(--text-muted)] hover:bg-[var(--surface-2)] hover:text-[var(--text-primary)]"
             aria-label="Défiler à droite"
           >
             <ChevronRight className="h-3.5 w-3.5" />
@@ -718,7 +718,7 @@ function HorizontalAvatarRow({
               key={avatar.id}
               onClick={() => onSelectAvatar(avatar)}
               className={cn(
-                "group/card relative flex flex-col items-center gap-1.5 rounded-2xl border p-2 cursor-pointer transition-all duration-200 snap-start shrink-0 select-none",
+                "group/card relative flex flex-col items-center gap-1.5 rounded-[var(--panel-radius)] border p-2 cursor-pointer transition-all duration-200 snap-start shrink-0 select-none",
                 isSelected
                   ? "border-[var(--accent-primary)] bg-[var(--accent-primary)]/10"
                   : "border-[var(--panel-border)] bg-[var(--surface-2)]/40 hover:bg-[var(--surface-2)]/60"

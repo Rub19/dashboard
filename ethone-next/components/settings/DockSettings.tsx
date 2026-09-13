@@ -59,7 +59,7 @@ export default function DockSettings() {
   return (
     <div className="flex flex-col gap-6">
       {/* Live Dock Simulator */}
-      <div className="relative flex flex-col items-center justify-center overflow-hidden rounded-2xl border border-[var(--panel-border)] bg-gradient-to-b from-[var(--surface-raised)]/60 to-[var(--bg-main)] p-10 shadow-inner">
+      <div className="relative flex flex-col items-center justify-center overflow-hidden rounded-[var(--panel-radius)] border border-[var(--panel-border)] bg-gradient-to-b from-[var(--surface-raised)]/60 to-[var(--bg-main)] p-10 shadow-inner">
         <div className="absolute left-4 top-4 flex items-center gap-2">
           <span className="flex h-2 w-2 rounded-full bg-[var(--accent-primary)]" />
           <span className="text-[11px] font-semibold text-[var(--text-muted)] uppercase tracking-wider">
@@ -70,7 +70,7 @@ export default function DockSettings() {
         <div className="my-8 flex items-center justify-center">
           <div
             className={cn(
-              "flex items-center rounded-2xl border shadow-2xl transition-all duration-300",
+              "flex items-center rounded-[var(--panel-radius)] border shadow-2xl transition-all duration-300",
               scaleClass,
               glassClass
             )}
@@ -95,7 +95,7 @@ export default function DockSettings() {
       {/* Dock Controls Grid */}
       <div className="grid grid-cols-1 gap-4 sm:grid-cols-2">
         {/* Scale Selector */}
-        <div className="flex flex-col gap-2 rounded-2xl border border-[var(--panel-border)] bg-[var(--panel-bg)] p-4">
+        <div className="flex flex-col gap-2 rounded-[var(--panel-radius)] border border-[var(--panel-border)] bg-[var(--panel-bg)] p-4">
           <label className="text-sm font-semibold text-[var(--text-primary)]">
             Taille du Dock
           </label>
@@ -125,7 +125,7 @@ export default function DockSettings() {
         </div>
 
         {/* Glass Style Selector */}
-        <div className="flex flex-col gap-2 rounded-2xl border border-[var(--panel-border)] bg-[var(--panel-bg)] p-4">
+        <div className="flex flex-col gap-2 rounded-[var(--panel-radius)] border border-[var(--panel-border)] bg-[var(--panel-bg)] p-4">
           <label className="text-sm font-semibold text-[var(--text-primary)]">
             Translucidité & Verre
           </label>
@@ -155,7 +155,7 @@ export default function DockSettings() {
         </div>
 
         {/* Visibility Toggles */}
-        <label className="flex items-center justify-between gap-3 rounded-2xl border border-[var(--panel-border)] bg-[var(--panel-bg)] p-4">
+        <label className="flex items-center justify-between gap-3 rounded-[var(--panel-radius)] border border-[var(--panel-border)] bg-[var(--panel-bg)] p-4">
           <div>
             <p className="text-sm font-semibold text-[var(--text-primary)]">
               Afficher le Dock
@@ -172,7 +172,7 @@ export default function DockSettings() {
           />
         </label>
 
-        <label className="flex items-center justify-between gap-3 rounded-2xl border border-[var(--panel-border)] bg-[var(--panel-bg)] p-4">
+        <label className="flex items-center justify-between gap-3 rounded-[var(--panel-radius)] border border-[var(--panel-border)] bg-[var(--panel-bg)] p-4">
           <div>
             <p className="text-sm font-semibold text-[var(--text-primary)]">
               Masquage automatique
@@ -189,7 +189,7 @@ export default function DockSettings() {
           />
         </label>
 
-        <label className="flex items-center justify-between gap-3 rounded-2xl border border-[var(--panel-border)] bg-[var(--panel-bg)] p-4">
+        <label className="flex items-center justify-between gap-3 rounded-[var(--panel-radius)] border border-[var(--panel-border)] bg-[var(--panel-bg)] p-4">
           <div>
             <p className="text-sm font-semibold text-[var(--text-primary)]">
               Effet de grossissement (Magnify)
@@ -206,7 +206,7 @@ export default function DockSettings() {
           />
         </label>
 
-        <label className="flex items-center justify-between gap-3 rounded-2xl border border-[var(--panel-border)] bg-[var(--panel-bg)] p-4">
+        <label className="flex items-center justify-between gap-3 rounded-[var(--panel-radius)] border border-[var(--panel-border)] bg-[var(--panel-bg)] p-4">
           <div>
             <p className="text-sm font-semibold text-[var(--text-primary)]">
               Bouton flottant d&apos;enregistrement

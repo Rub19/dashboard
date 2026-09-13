@@ -61,7 +61,7 @@ function StatCard({ label, value, icon, tone = "text-[var(--accent)]" }: StatCar
 
 function MiniStat({ label, value, icon }: { label: string; value: number; icon: string }) {
   return (
-    <div className="flex items-center justify-between rounded-xl border border-[var(--panel-border)] bg-[var(--panel-bg)]/50 p-3 backdrop-blur-sm">
+    <div className="flex items-center justify-between rounded-[var(--inset-radius)] border border-[var(--panel-border)] bg-[var(--panel-bg)]/50 p-3 backdrop-blur-sm">
       <div className="flex items-center gap-2.5">
         <div className="flex h-8 w-8 items-center justify-center rounded-lg bg-[var(--text-primary)]/[0.05]">
           <Icon name={icon} className="h-4 w-4 text-[var(--accent)]" />
@@ -138,7 +138,7 @@ export default function AdminPage() {
   if (!isAdmin) {
     return (
       <div className="flex h-full min-h-0 flex-col items-center justify-center gap-4 p-6 text-center">
-        <div className="flex h-16 w-16 items-center justify-center rounded-2xl border border-[var(--panel-border)] bg-[var(--panel-bg)]">
+        <div className="flex h-16 w-16 items-center justify-center rounded-[var(--panel-radius)] border border-[var(--panel-border)] bg-[var(--panel-bg)]">
           <Lock className="h-7 w-7 text-[var(--muted)]" />
         </div>
         <h1 className="text-lg font-semibold text-[var(--foreground)]">{i18n("adminRestricted", "Espace réservé")}</h1>
@@ -164,7 +164,7 @@ export default function AdminPage() {
             type="button"
             onClick={load}
             disabled={loading}
-            className="flex h-9 w-9 items-center justify-center rounded-xl border border-[var(--panel-border)] bg-[var(--panel-bg)] text-[var(--foreground)] transition-colors hover:bg-[var(--text-primary)]/[0.06] disabled:opacity-50"
+            className="flex h-9 w-9 items-center justify-center rounded-[var(--inset-radius)] border border-[var(--panel-border)] bg-[var(--panel-bg)] text-[var(--foreground)] transition-colors hover:bg-[var(--text-primary)]/[0.06] disabled:opacity-50"
             aria-label={i18n("refresh", "Actualiser")}
           >
             <RefreshCw className={`h-4 w-4 ${loading ? "animate-spin" : ""}`} />

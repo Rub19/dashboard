@@ -85,7 +85,7 @@ export default function MarketplaceItemModal({
           <div className="flex items-center gap-4">
             <div
               className={cn(
-                "flex h-16 w-16 shrink-0 items-center justify-center rounded-2xl border border-[var(--panel-border)] shadow-md",
+                "flex h-16 w-16 shrink-0 items-center justify-center rounded-[var(--panel-radius)] border border-[var(--panel-border)] shadow-md",
                 item.iconBg || "bg-[var(--panel-bg)] text-[var(--accent-primary)]"
               )}
             >
@@ -116,7 +116,7 @@ export default function MarketplaceItemModal({
 
           {brainMatch && (
             <div className="shrink-0 flex flex-col items-end">
-              <span className="inline-flex items-center gap-1.5 rounded-xl border border-purple-500/40 bg-purple-950/40 px-2.5 py-1 text-xs font-bold text-purple-300 shadow-xs">
+              <span className="inline-flex items-center gap-1.5 rounded-[var(--inset-radius)] border border-purple-500/40 bg-purple-950/40 px-2.5 py-1 text-xs font-bold text-purple-300 shadow-xs">
                 <span>{brainMatch.score}% Match Brain</span>
               </span>
               <span className="text-[10px] text-purple-300/80 mt-1">
@@ -143,7 +143,7 @@ export default function MarketplaceItemModal({
             <span>Aperçu de simulation dans votre Home</span>
           </h3>
 
-          <div className="relative overflow-hidden rounded-2xl border border-[var(--panel-border)] bg-[var(--panel-bg)]/80 p-4 shadow-inner">
+          <div className="relative overflow-hidden rounded-[var(--panel-radius)] border border-[var(--panel-border)] bg-[var(--panel-bg)]/80 p-4 shadow-inner">
             <div className="text-[11px] text-[var(--text-muted)] mb-2 flex items-center justify-between">
               <span>Grille Home 12 colonnes (Preview)</span>
               <span className="text-emerald-400 font-medium">Impact performance : {item.compatibility.performanceImpact}</span>
@@ -151,17 +151,17 @@ export default function MarketplaceItemModal({
 
             {/* Simulated 12-col layout */}
             <div className="grid grid-cols-12 gap-2 h-24">
-              <div className="col-span-4 rounded-xl border border-dashed border-[var(--panel-border)] bg-[var(--surface-raised)]/30 flex items-center justify-center text-[10px] text-[var(--text-muted)]">
+              <div className="col-span-4 rounded-[var(--inset-radius)] border border-dashed border-[var(--panel-border)] bg-[var(--surface-raised)]/30 flex items-center justify-center text-[10px] text-[var(--text-muted)]">
                 Widget existant
               </div>
-              <div className="col-span-4 rounded-xl border border-dashed border-[var(--panel-border)] bg-[var(--surface-raised)]/30 flex items-center justify-center text-[10px] text-[var(--text-muted)]">
+              <div className="col-span-4 rounded-[var(--inset-radius)] border border-dashed border-[var(--panel-border)] bg-[var(--surface-raised)]/30 flex items-center justify-center text-[10px] text-[var(--text-muted)]">
                 Widget existant
               </div>
 
               {/* Placed Target Widget */}
               <div
                 className={cn(
-                  "col-span-4 rounded-xl border-2 border-dashed border-[var(--accent-primary)] bg-[var(--accent-primary)]/10 flex flex-col items-center justify-center gap-1 text-[11px] font-bold text-[var(--accent-primary)] p-1 text-center"
+                  "col-span-4 rounded-[var(--inset-radius)] border-2 border-dashed border-[var(--accent-primary)] bg-[var(--accent-primary)]/10 flex flex-col items-center justify-center gap-1 text-[11px] font-bold text-[var(--accent-primary)] p-1 text-center"
                 )}
               >
                 <Icon name={item.icon} className="h-4 w-4" />
@@ -183,7 +183,7 @@ export default function MarketplaceItemModal({
               {item.features.map((feat, i) => (
                 <div
                   key={i}
-                  className="flex items-start gap-2 rounded-xl border border-[var(--panel-border)]/50 bg-[var(--surface-raised)]/40 p-2 text-xs text-[var(--text-primary)]"
+                  className="flex items-start gap-2 rounded-[var(--inset-radius)] border border-[var(--panel-border)]/50 bg-[var(--surface-raised)]/40 p-2 text-xs text-[var(--text-primary)]"
                 >
                   <Check className="h-3.5 w-3.5 text-emerald-400 shrink-0 mt-0.5" />
                   <span>{feat}</span>
@@ -210,7 +210,7 @@ export default function MarketplaceItemModal({
               {item.permissions.map((perm) => (
                 <div
                   key={perm.id}
-                  className="flex items-center justify-between rounded-xl border border-[var(--panel-border)]/50 bg-[var(--surface-raised)]/40 px-3 py-2 text-xs"
+                  className="flex items-center justify-between rounded-[var(--inset-radius)] border border-[var(--panel-border)]/50 bg-[var(--surface-raised)]/40 px-3 py-2 text-xs"
                 >
                   <div>
                     <strong className="text-[var(--text-primary)]">{perm.name}</strong>
@@ -237,7 +237,7 @@ export default function MarketplaceItemModal({
               {item.dependencies.map((dep) => (
                 <div
                   key={dep.id}
-                  className="flex items-center justify-between rounded-xl border border-amber-500/30 bg-amber-950/15 p-3 text-xs"
+                  className="flex items-center justify-between rounded-[var(--inset-radius)] border border-amber-500/30 bg-amber-950/15 p-3 text-xs"
                 >
                   <div>
                     <strong className="text-amber-200">{dep.name}</strong>
@@ -251,7 +251,7 @@ export default function MarketplaceItemModal({
                         onClose();
                         router.push(dep.connectRoute!);
                       }}
-                      className="shrink-0 flex items-center gap-1 rounded-lg border border-amber-500/40 bg-amber-500/20 hover:bg-amber-500/30 px-2.5 py-1 text-xs font-semibold text-amber-200 transition-colors cursor-pointer"
+                      className="shrink-0 flex items-center gap-1 rounded-[var(--inset-radius)] border border-amber-500/40 bg-amber-500/20 hover:bg-amber-500/30 px-2.5 py-1 text-xs font-semibold text-amber-200 transition-colors cursor-pointer"
                     >
                       <span>Connecter</span>
                       <ExternalLink className="h-3 w-3" />
@@ -265,7 +265,7 @@ export default function MarketplaceItemModal({
 
         {/* Workspace Selector */}
         {!isInstalled && (
-          <div className="rounded-2xl border border-[var(--panel-border)]/60 bg-[var(--surface-raised)]/30 p-3">
+          <div className="rounded-[var(--panel-radius)] border border-[var(--panel-border)]/60 bg-[var(--surface-raised)]/30 p-3">
             <label className="text-xs font-bold text-[var(--text-primary)] block mb-1.5">
               Destination d'installation
             </label>
@@ -281,7 +281,7 @@ export default function MarketplaceItemModal({
                   type="button"
                   onClick={() => setSelectedWorkspace(ws.id)}
                   className={cn(
-                    "rounded-xl p-2 text-center border font-medium transition-all cursor-pointer",
+                    "rounded-[var(--inset-radius)] p-2 text-center border font-medium transition-all cursor-pointer",
                     selectedWorkspace === ws.id
                       ? "border-[var(--accent-primary)] bg-[var(--accent-primary)]/15 text-[var(--accent-primary)] font-semibold shadow-xs"
                       : "border-[var(--panel-border)] bg-[var(--surface-raised)] text-[var(--text-muted)] hover:text-white"
@@ -299,7 +299,7 @@ export default function MarketplaceItemModal({
           <button
             type="button"
             onClick={onClose}
-            className="rounded-xl border border-[var(--panel-border)] px-4 py-2 text-xs font-semibold text-[var(--text-muted)] hover:text-white transition-colors cursor-pointer"
+            className="rounded-[var(--inset-radius)] border border-[var(--panel-border)] px-4 py-2 text-xs font-semibold text-[var(--text-muted)] hover:text-white transition-colors cursor-pointer"
           >
             Fermer
           </button>
@@ -312,7 +312,7 @@ export default function MarketplaceItemModal({
                     type="button"
                     onClick={handleUpdateClick}
                     disabled={Boolean(installPhase)}
-                    className="flex items-center gap-1.5 rounded-xl border border-amber-500/40 bg-amber-500/20 hover:bg-amber-500/30 px-4 py-2 text-xs font-bold text-amber-200 transition-all cursor-pointer shadow-xs"
+                    className="flex items-center gap-1.5 rounded-[var(--inset-radius)] border border-amber-500/40 bg-amber-500/20 hover:bg-amber-500/30 px-4 py-2 text-xs font-bold text-amber-200 transition-all cursor-pointer shadow-xs"
                   >
                     {installPhase ? <Loader2 className="h-4 w-4 animate-spin" /> : <RefreshCw className="h-4 w-4" />}
                     <span>Mettre à jour v{item.version}</span>
@@ -322,7 +322,7 @@ export default function MarketplaceItemModal({
                 <button
                   type="button"
                   onClick={handleUninstallClick}
-                  className="flex items-center gap-1.5 rounded-xl border border-rose-500/30 bg-rose-950/20 hover:bg-rose-950/40 px-4 py-2 text-xs font-bold text-rose-400 transition-colors cursor-pointer"
+                  className="flex items-center gap-1.5 rounded-[var(--inset-radius)] border border-rose-500/30 bg-rose-950/20 hover:bg-rose-950/40 px-4 py-2 text-xs font-bold text-rose-400 transition-colors cursor-pointer"
                 >
                   <Trash2 className="h-4 w-4" />
                   <span>Désinstaller</span>

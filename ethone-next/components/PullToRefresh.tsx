@@ -90,7 +90,7 @@ export default function PullToRefresh({
       >
         <div
           className={cn(
-            "flex h-8 w-8 items-center justify-center rounded-full border border-white/10 bg-[var(--panel-bg)]/80 backdrop-blur-md shadow-lg transition-colors",
+            "flex h-8 w-8 items-center justify-center rounded-full border border-[var(--panel-border)] bg-[var(--panel-bg)]/80 backdrop-blur-md shadow-lg transition-colors",
             ready ? "text-[var(--accent-primary)]" : "text-[var(--text-muted)]"
           )}
         >

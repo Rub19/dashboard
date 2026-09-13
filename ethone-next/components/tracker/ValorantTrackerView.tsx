@@ -273,11 +273,11 @@ export default function ValorantTrackerView() {
   return (
     <div className="flex min-h-0 w-full flex-1 flex-col overflow-hidden space-y-4">
       {/* Top Search & Filter Bar */}
-      <div className="shrink-0 rounded-3xl border border-white/10 bg-[#0c0d14]/90 p-4 backdrop-blur-2xl shadow-lg">
+      <div className="shrink-0 rounded-[var(--panel-radius)] border border-[var(--panel-border)] bg-[#0c0d14]/90 p-4 backdrop-blur-2xl shadow-lg">
         <form onSubmit={handleSearchSubmit} className="flex flex-col lg:flex-row lg:items-center justify-between gap-4">
           {/* Riot ID Input */}
           <div className="flex flex-wrap items-center gap-2 flex-1 min-w-0">
-            <div className="flex items-center gap-2 rounded-2xl border border-white/10 bg-black/40 px-3 py-2 flex-1 min-w-[200px]">
+            <div className="flex items-center gap-2 rounded-[var(--panel-radius)] border border-[var(--panel-border)] bg-black/40 px-3 py-2 flex-1 min-w-[200px]">
               <User className="h-4 w-4 text-zinc-400 shrink-0" />
               <input
                 type="text"
@@ -288,7 +288,7 @@ export default function ValorantTrackerView() {
               />
             </div>
 
-            <div className="flex items-center gap-1 rounded-2xl border border-white/10 bg-black/40 px-3 py-2 w-28 shrink-0">
+            <div className="flex items-center gap-1 rounded-[var(--panel-radius)] border border-[var(--panel-border)] bg-black/40 px-3 py-2 w-28 shrink-0">
               <span className="text-xs font-bold text-zinc-500">#</span>
               <input
                 type="text"
@@ -324,7 +324,7 @@ export default function ValorantTrackerView() {
               type="button"
               onClick={() => setApiKeyModalOpen(true)}
               className={cn(
-                "flex items-center gap-1.5 rounded-xl border px-3 py-1.5 text-xs font-bold transition-all cursor-pointer",
+                "flex items-center gap-1.5 rounded-[var(--inset-radius)] border px-3 py-1.5 text-xs font-bold transition-all cursor-pointer",
                 hasApiKey
                   ? "border-emerald-500/30 bg-emerald-500/10 text-emerald-300 hover:bg-emerald-500/20"
                   : "border-amber-500/30 bg-amber-500/10 text-amber-300 hover:bg-amber-500/20"
@@ -346,7 +346,7 @@ export default function ValorantTrackerView() {
               type="button"
               onClick={() => fetchMatches(true)}
               disabled={syncing}
-              className="flex items-center gap-1.5 rounded-xl border border-white/10 bg-white/5 px-3 py-1.5 text-xs font-bold text-white hover:bg-white/10 active:scale-95 transition-all cursor-pointer disabled:opacity-50"
+              className="flex items-center gap-1.5 rounded-[var(--inset-radius)] border border-[var(--panel-border)] bg-white/5 px-3 py-1.5 text-xs font-bold text-white hover:bg-white/10 active:scale-95 transition-all cursor-pointer disabled:opacity-50"
             >
               <RefreshCw className={cn("h-3.5 w-3.5 text-cyan-400", syncing && "animate-spin")} />
               <span>{syncing ? "Synchro..." : "Actualiser"}</span>
@@ -359,29 +359,29 @@ export default function ValorantTrackerView() {
       {matches.length > 0 && (
         <div className="shrink-0 grid grid-cols-1 sm:grid-cols-3 gap-3">
           {/* Winrate & Match Stats */}
-          <div className="rounded-2xl border border-white/10 bg-[#0c0d14]/70 p-3.5 backdrop-blur-xl flex items-center justify-between shadow-md">
+          <div className="rounded-[var(--panel-radius)] border border-[var(--panel-border)] bg-[#0c0d14]/70 p-3.5 backdrop-blur-xl flex items-center justify-between shadow-md">
             <div>
               <p className="text-[10px] font-bold uppercase tracking-wider text-zinc-400">Victoires / Ratio</p>
               <p className="text-lg font-black text-white">{winRate}% <span className="text-xs font-normal text-zinc-400">({totalWins}V - {totalLosses}D)</span></p>
             </div>
-            <div className="flex h-10 w-10 items-center justify-center rounded-xl bg-rose-500/15 text-rose-400 font-bold border border-rose-500/20">
+            <div className="flex h-10 w-10 items-center justify-center rounded-[var(--inset-radius)] bg-rose-500/15 text-rose-400 font-bold border border-rose-500/20">
               {winRate}%
             </div>
           </div>
 
           {/* Average Combat Score (ACS) */}
-          <div className="rounded-2xl border border-white/10 bg-[#0c0d14]/70 p-3.5 backdrop-blur-xl flex items-center justify-between shadow-md">
+          <div className="rounded-[var(--panel-radius)] border border-[var(--panel-border)] bg-[#0c0d14]/70 p-3.5 backdrop-blur-xl flex items-center justify-between shadow-md">
             <div>
               <p className="text-[10px] font-bold uppercase tracking-wider text-zinc-400">Score de Combat Moyen (ACS)</p>
               <p className="text-lg font-black text-cyan-400">{avgAcs} <span className="text-xs font-normal text-zinc-400">pts/round</span></p>
             </div>
-            <div className="flex h-10 w-10 items-center justify-center rounded-xl bg-cyan-500/15 text-cyan-400 font-bold border border-cyan-500/20">
+            <div className="flex h-10 w-10 items-center justify-center rounded-[var(--inset-radius)] bg-cyan-500/15 text-cyan-400 font-bold border border-cyan-500/20">
               ACS
             </div>
           </div>
 
           {/* Top Agent */}
-          <div className="rounded-2xl border border-white/10 bg-[#0c0d14]/70 p-3.5 backdrop-blur-xl flex items-center justify-between shadow-md">
+          <div className="rounded-[var(--panel-radius)] border border-[var(--panel-border)] bg-[#0c0d14]/70 p-3.5 backdrop-blur-xl flex items-center justify-between shadow-md">
             <div className="min-w-0">
               <p className="text-[10px] font-bold uppercase tracking-wider text-zinc-400">Agent Principal</p>
               <p className="text-lg font-black text-white truncate">{topAgents[0]?.name || "Valorant"}</p>
@@ -398,7 +398,7 @@ export default function ValorantTrackerView() {
 
       {/* Quick Agent & Map Filters */}
       {matches.length > 0 && (availableAgents.length > 1 || availableMaps.length > 1) && (
-        <div className="shrink-0 flex flex-wrap items-center gap-2 rounded-2xl border border-white/5 bg-[#0c0d14]/50 p-2 backdrop-blur-xl">
+        <div className="shrink-0 flex flex-wrap items-center gap-2 rounded-[var(--panel-radius)] border border-[var(--panel-border)] bg-[#0c0d14]/50 p-2 backdrop-blur-xl">
           <span className="text-[10px] font-bold uppercase tracking-wider text-zinc-500 px-2">Filtres :</span>
           
           {/* Agent Filter */}
@@ -436,7 +436,7 @@ export default function ValorantTrackerView() {
 
           {/* Map Filter */}
           {availableMaps.length > 1 && (
-            <div className="flex items-center gap-1 border-l border-white/10 pl-2 overflow-x-auto os-scroll">
+            <div className="flex items-center gap-1 border-l border-[var(--panel-border)] pl-2 overflow-x-auto os-scroll">
               <button
                 type="button"
                 onClick={() => setSelectedMap("all")}
@@ -476,13 +476,13 @@ export default function ValorantTrackerView() {
             {[...Array(6)].map((_, i) => (
               <div
                 key={i}
-                className="h-16 animate-pulse rounded-2xl border border-white/5 bg-white/[0.02]"
+                className="h-16 animate-pulse rounded-[var(--panel-radius)] border border-[var(--panel-border)] bg-white/[0.02]"
               />
             ))}
           </div>
         ) : errorMsg ? (
           <div className="flex flex-col items-center justify-center py-16 text-center text-zinc-400">
-            <div className="flex h-14 w-14 items-center justify-center rounded-2xl border border-rose-500/30 bg-rose-500/10 text-rose-400 mb-3 shadow-md">
+            <div className="flex h-14 w-14 items-center justify-center rounded-[var(--panel-radius)] border border-rose-500/30 bg-rose-500/10 text-rose-400 mb-3 shadow-md">
               <AlertCircle className="h-7 w-7" />
             </div>
             <h4 className="text-sm font-bold text-white">Impossible de charger les parties</h4>
@@ -490,7 +490,7 @@ export default function ValorantTrackerView() {
           </div>
         ) : dayGroups.length === 0 ? (
           <div className="flex flex-col items-center justify-center py-16 text-center text-zinc-400">
-            <div className="flex h-14 w-14 items-center justify-center rounded-2xl border border-white/10 bg-white/5 text-zinc-300 mb-3">
+            <div className="flex h-14 w-14 items-center justify-center rounded-[var(--panel-radius)] border border-[var(--panel-border)] bg-white/5 text-zinc-300 mb-3">
               <Swords className="h-7 w-7" />
             </div>
             <h4 className="text-sm font-bold text-white">Aucune partie trouvée</h4>
@@ -547,7 +547,7 @@ export default function ValorantTrackerView() {
             <label className="block text-xs font-bold text-zinc-300">
               Clé API Henrik (Authorization)
             </label>
-            <div className="flex items-center gap-2 rounded-xl border border-white/15 bg-black/60 px-3 py-2 text-xs">
+            <div className="flex items-center gap-2 rounded-[var(--inset-radius)] border border-[var(--panel-border)] bg-black/60 px-3 py-2 text-xs">
               <Key className="h-4 w-4 text-amber-400 shrink-0" />
               <input
                 type="text"
@@ -572,7 +572,7 @@ export default function ValorantTrackerView() {
             </p>
           </div>
 
-          <div className="flex items-center justify-end gap-2 pt-2 border-t border-white/10">
+          <div className="flex items-center justify-end gap-2 pt-2 border-t border-[var(--panel-border)]">
             <Button
               type="button"
               variant="secondary"

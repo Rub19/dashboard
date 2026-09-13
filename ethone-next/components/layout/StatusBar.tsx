@@ -283,7 +283,7 @@ export default function StatusBar() {
             <button
               type="button"
               onClick={() => (isMinimized ? openLive() : closeLive())}
-              className="flex items-center gap-1.5 rounded-lg border border-[var(--accent-primary)]/30 bg-[var(--accent-primary)]/10 px-2.5 py-1 text-xs font-medium text-[var(--accent-primary)] transition-all hover:bg-[var(--accent-primary)]/20"
+              className="flex items-center gap-1.5 rounded-[var(--inset-radius)] border border-[var(--accent-primary)]/30 bg-[var(--accent-primary)]/10 px-2.5 py-1 text-xs font-medium text-[var(--accent-primary)] transition-all hover:bg-[var(--accent-primary)]/20"
             >
               <Radio className="h-3.5 w-3.5 text-[var(--accent-primary)]" />
               <span>{isMinimized ? i18n("liveMinimized") || "Live réduit" : i18n("liveActive") || "Live actif"}</span>
@@ -312,7 +312,7 @@ export default function StatusBar() {
                   hapticLightImpact();
                   update({ dockVisible: true });
                 }}
-                className="flex items-center gap-1.5 rounded-xl border border-[var(--panel-border)]/70 bg-[var(--surface-raised)]/70 px-2.5 py-1 text-xs font-semibold text-[var(--text-muted)] transition-all hover:border-[var(--accent-primary)]/40 hover:bg-[var(--accent-primary)]/15 hover:text-[var(--text-primary)] hover:scale-105 active:scale-95 cursor-pointer shadow-xs"
+                className="flex items-center gap-1.5 rounded-[var(--inset-radius)] border border-[var(--panel-border)]/70 bg-[var(--surface-raised)]/70 px-2.5 py-1 text-xs font-semibold text-[var(--text-muted)] transition-all hover:border-[var(--accent-primary)]/40 hover:bg-[var(--accent-primary)]/15 hover:text-[var(--text-primary)] hover:scale-105 active:scale-95 cursor-pointer shadow-xs"
                 aria-label={i18n("showDock", "Afficher le dock")}
                 title={i18n("showDock", "Afficher le dock")}
               >
@@ -345,7 +345,7 @@ export default function StatusBar() {
               onClick={() => setMenuOpen((v) => !v)}
             />
             {menuOpen && (
-              <div className="absolute bottom-full left-1/2 z-40 mb-2 w-40 -translate-x-1/2 rounded-xl border border-[var(--panel-border)] bg-[var(--panel-bg)] p-1 shadow-2xl backdrop-blur-[var(--panel-blur)]">
+              <div className="absolute bottom-full left-1/2 z-40 mb-2 w-40 -translate-x-1/2 rounded-[var(--inset-radius)] border border-[var(--panel-border)] bg-[var(--panel-bg)] p-1 shadow-2xl backdrop-blur-[var(--panel-blur)]">
                 <button
                   type="button"
                   onClick={() => {

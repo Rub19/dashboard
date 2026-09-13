@@ -180,7 +180,7 @@ export default function AppearanceSettings() {
       <BentoCard title="Icônes & Style" icon="sparkles" className="md:col-span-2">
         <div className="space-y-5">
           <SettingsRow label="Pack d'icônes" description="Set d'icônes utilisé dans l'interface.">
-            <div className="flex items-center gap-1 rounded-xl border border-[var(--text-primary)]/[0.08] bg-[var(--text-primary)]/[0.03] p-1">
+            <div className="flex items-center gap-1 rounded-[var(--inset-radius)] border border-[var(--text-primary)]/[0.08] bg-[var(--text-primary)]/[0.03] p-1">
               {PACKS.map((pack) => {
                 const active = settings.iconPack === pack.id;
                 const sample = getSampleIcon(pack.id);
@@ -491,7 +491,7 @@ export default function AppearanceSettings() {
       </BentoCard>
 
       {modifiedCount > 0 && (
-        <div className="md:col-span-2 flex items-center gap-2 rounded-xl border border-[var(--accent-primary)]/40 bg-[var(--accent-primary)]/10 px-3 py-2 text-[11px] text-[var(--accent-primary)]">
+        <div className="md:col-span-2 flex items-center gap-2 rounded-[var(--inset-radius)] border border-[var(--accent-primary)]/40 bg-[var(--accent-primary)]/10 px-3 py-2 text-[11px] text-[var(--accent-primary)]">
           <Sparkles className="h-3.5 w-3.5" />
           {modifiedCount} option{modifiedCount > 1 ? "s" : ""} modifiée{modifiedCount > 1 ? "s" : ""}
         </div>

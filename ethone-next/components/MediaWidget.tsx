@@ -127,9 +127,9 @@ export default function MediaWidget({ className = "" }: { className?: string }) 
 
   if (!nowPlaying && !loading) {
     return (
-      <div className={`w-full rounded-2xl border border-white/10 bg-zinc-950/70 p-4 shadow-2xl shadow-black/80 backdrop-blur-xl ${className}`}>
+      <div className={`w-full rounded-[var(--panel-radius)] border border-[var(--panel-border)] bg-zinc-950/70 p-4 shadow-2xl shadow-black/80 backdrop-blur-xl ${className}`}>
         <div className="flex flex-col items-center justify-center gap-3 text-center">
-          <div className="flex h-12 w-12 items-center justify-center rounded-full border border-white/10 bg-[var(--text-primary)]/[0.03]">
+          <div className="flex h-12 w-12 items-center justify-center rounded-full border border-[var(--panel-border)] bg-[var(--text-primary)]/[0.03]">
             <Music className="h-5 w-5 text-[var(--text-muted)]" />
           </div>
           <div>
@@ -161,7 +161,7 @@ export default function MediaWidget({ className = "" }: { className?: string }) 
               <button
                 type="button"
                 onClick={() => router.push("/connections/")}
-                className="rounded-xl border border-[var(--panel-border)] px-3 py-1.5 text-xs text-[var(--text-primary)] transition-colors hover:bg-[var(--text-primary)]/[0.05]"
+                className="rounded-[var(--inset-radius)] border border-[var(--panel-border)] px-3 py-1.5 text-xs text-[var(--text-primary)] transition-colors hover:bg-[var(--text-primary)]/[0.05]"
               >
                 {i18n("configureConnections")}
               </button>
@@ -173,10 +173,10 @@ export default function MediaWidget({ className = "" }: { className?: string }) 
   }
 
   return (
-    <div className={`group w-full rounded-2xl border border-white/10 bg-zinc-950/70 p-4 shadow-2xl shadow-black/80 backdrop-blur-xl ${className}`}>
+    <div className={`group w-full rounded-[var(--panel-radius)] border border-[var(--panel-border)] bg-zinc-950/70 p-4 shadow-2xl shadow-black/80 backdrop-blur-xl ${className}`}>
       <div className="flex items-center gap-4">
         <div className="relative shrink-0">
-          <div className="relative h-16 w-16 overflow-hidden rounded-xl border border-white/10 shadow-lg">
+          <div className="relative h-16 w-16 overflow-hidden rounded-[var(--inset-radius)] border border-[var(--panel-border)] shadow-lg">
             <SafeImage
               candidates={coverCandidates}
               alt={nowPlaying?.title || ""}
@@ -189,7 +189,7 @@ export default function MediaWidget({ className = "" }: { className?: string }) 
             />
           </div>
           <div
-            className={`absolute -bottom-1.5 -right-1.5 flex h-5 w-5 items-center justify-center rounded-full border border-white/10 shadow-sm ${sourceMeta?.color ?? "bg-zinc-500 text-[var(--text-primary)]"}`}
+            className={`absolute -bottom-1.5 -right-1.5 flex h-5 w-5 items-center justify-center rounded-full border border-[var(--panel-border)] shadow-sm ${sourceMeta?.color ?? "bg-zinc-500 text-[var(--text-primary)]"}`}
             title={sourceMeta?.label ?? nowPlaying?.source}
           >
             {sourceMeta?.icon ?? <Music className="h-3 w-3" />}
@@ -276,7 +276,7 @@ export default function MediaWidget({ className = "" }: { className?: string }) 
               {volume > 0 ? <Volume2 className="h-4 w-4" /> : <VolumeX className="h-4 w-4" />}
             </button>
             {showVolume && (
-              <div className="absolute right-0 top-1/2 z-10 flex w-24 -translate-y-1/2 items-center rounded-xl border border-white/10 bg-zinc-900/95 px-2 py-1.5 shadow-xl backdrop-blur-md">
+              <div className="absolute right-0 top-1/2 z-10 flex w-24 -translate-y-1/2 items-center rounded-[var(--inset-radius)] border border-[var(--panel-border)] bg-zinc-900/95 px-2 py-1.5 shadow-xl backdrop-blur-md">
                 <input
                   type="range"
                   min={0}

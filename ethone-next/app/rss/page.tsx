@@ -82,7 +82,7 @@ export default function RssPage() {
 
         {feed && (
           <>
-            <div className="mb-4 border-b border-white/[0.06] pb-3">
+            <div className="mb-4 border-b border-[var(--panel-border)] pb-3">
               <h2 className="text-lg font-semibold text-[var(--text-primary)]">{feed.title}</h2>
               <p className="text-sm text-[var(--muted)]">{feed.description}</p>
             </div>
@@ -93,7 +93,7 @@ export default function RssPage() {
                 return (
                   <div
                     key={i}
-                    className="rounded-xl border border-white/[0.06] bg-white/[0.02] p-3 transition-colors hover:border-[var(--accent-primary)]/20 hover:bg-white/[0.04]"
+                    className="rounded-[var(--inset-radius)] border border-[var(--panel-border)] bg-white/[0.02] p-3 transition-colors hover:border-[var(--accent-primary)]/20 hover:bg-white/[0.04]"
                   >
                     {safeLink ? (
                       <a href={safeLink} target="_blank" rel="noopener noreferrer" className="block hover:opacity-90">

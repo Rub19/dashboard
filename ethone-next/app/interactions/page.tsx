@@ -117,9 +117,9 @@ function getHeatmapColor(level: number) {
     case 3:
       return "bg-[var(--accent-primary)] border border-[var(--accent-primary)]";
     case 4:
-      return "bg-[var(--accent-primary)] shadow-[0_0_8px_var(--glow-color)] border border-white/40";
+      return "bg-[var(--accent-primary)] shadow-[0_0_8px_var(--glow-color)] border border-[var(--input-border-hover)]";
     default:
-      return "bg-white/[0.03] border border-white/[0.05]";
+      return "bg-white/[0.03] border border-[var(--panel-border)]";
   }
 }
 
@@ -342,7 +342,7 @@ export default function InteractionsPage() {
         </div>
 
         <div className="flex items-center gap-2">
-          <div className="flex items-center gap-1.5 rounded-xl border border-white/[0.08] bg-zinc-950/80 px-3 py-1.5 text-xs font-medium text-zinc-300">
+          <div className="flex items-center gap-1.5 rounded-[var(--inset-radius)] border border-[var(--panel-border)] bg-zinc-950/80 px-3 py-1.5 text-xs font-medium text-zinc-300">
             <span className="h-2 w-2 rounded-full bg-[var(--accent-primary)] shadow-[0_0_5px_var(--glow-color)]" />
             <span>Télémétrie en direct</span>
           </div>
@@ -404,7 +404,7 @@ export default function InteractionsPage() {
 
       {/* Heatmap */}
       <div className="flex w-full flex-col gap-4 rounded-2xl v8-panel p-5 shadow-xl backdrop-blur-2xl">
-        <div className="flex flex-col justify-between gap-3 border-b border-white/[0.04] pb-3 sm:flex-row sm:items-center">
+        <div className="flex flex-col justify-between gap-3 border-b border-[var(--panel-border)] pb-3 sm:flex-row sm:items-center">
           <div className="flex items-center gap-2.5">
             <Flame className="h-4 w-4 text-[var(--accent-primary)]" />
             <h3 className="text-sm font-bold text-white">Heatmap des interactions ({selectedYear})</h3>
@@ -419,7 +419,7 @@ export default function InteractionsPage() {
               <span>Plus</span>
             </div>
 
-            <div className="flex items-center rounded-xl border border-white/10 bg-white/[0.03] p-0.5">
+            <div className="flex items-center rounded-[var(--inset-radius)] border border-[var(--panel-border)] bg-white/[0.03] p-0.5">
               {years.map((y) => (
                 <button
                   key={y}
@@ -498,7 +498,7 @@ export default function InteractionsPage() {
           </div>
         )}
 
-        <div className="flex items-center justify-between border-t border-white/[0.04] pt-3 text-[11px] text-zinc-500">
+        <div className="flex items-center justify-between border-t border-[var(--panel-border)] pt-3 text-[11px] text-zinc-500">
           <span>{loading ? "Chargement…" : `${stats.total.toLocaleString(language)} interactions enregistrées`}</span>
           <span>Données calculées en temps réel</span>
         </div>
@@ -538,7 +538,7 @@ export default function InteractionsPage() {
             ))}
           </div>
 
-          <div className="flex items-center justify-between rounded-xl border border-white/[0.04] bg-white/[0.02] p-3 text-[11px] text-zinc-400">
+          <div className="flex items-center justify-between rounded-[var(--inset-radius)] border border-[var(--panel-border)] bg-white/[0.02] p-3 text-[11px] text-zinc-400">
             <span>
               Module le plus sollicité : <strong className="text-white">{topCategory?.label || "—"}</strong>
             </span>
@@ -560,7 +560,7 @@ export default function InteractionsPage() {
             {loading ? (
               <div className="h-48 w-full animate-pulse rounded-xl bg-white/[0.03]" />
             ) : recent.length === 0 ? (
-              <div className="flex flex-col items-center justify-center gap-2 rounded-xl border border-white/[0.04] bg-white/[0.02] p-6 text-center text-zinc-400">
+              <div className="flex flex-col items-center justify-center gap-2 rounded-[var(--inset-radius)] border border-[var(--panel-border)] bg-white/[0.02] p-6 text-center text-zinc-400">
                 <Command className="h-5 w-5 text-zinc-500" />
                 <p className="text-sm font-medium text-zinc-300">Aucune interaction récente</p>
                 <p className="text-[11px]">Déclenchez une action pour alimenter le flux.</p>
@@ -572,7 +572,7 @@ export default function InteractionsPage() {
                 return (
                   <div
                     key={r.id || i}
-                    className="flex items-center justify-between gap-2 rounded-xl border border-white/[0.04] bg-white/[0.02] p-2.5 transition-colors hover:bg-white/[0.04]"
+                    className="flex items-center justify-between gap-2 rounded-[var(--inset-radius)] border border-[var(--panel-border)] bg-white/[0.02] p-2.5 transition-colors hover:bg-white/[0.04]"
                   >
                     <div className="flex min-w-0 items-center gap-2.5">
                       <IconComp className={`h-3.5 w-3.5 shrink-0 ${color}`} />
@@ -590,7 +590,7 @@ export default function InteractionsPage() {
           <button
             type="button"
             onClick={() => document.getElementById("interactions-scroll")?.scrollTo({ top: 0, behavior: "smooth" })}
-            className="flex w-full items-center justify-center gap-1.5 rounded-xl border border-[var(--text-primary)]/[0.08] bg-[var(--text-primary)]/[0.03] py-2 text-xs font-medium text-[var(--text-primary)]/[0.8] transition-all hover:bg-[var(--text-primary)]/[0.06] hover:text-[var(--text-primary)]"
+            className="flex w-full items-center justify-center gap-1.5 rounded-[var(--inset-radius)] border border-[var(--text-primary)]/[0.08] bg-[var(--text-primary)]/[0.03] py-2 text-xs font-medium text-[var(--text-primary)]/[0.8] transition-all hover:bg-[var(--text-primary)]/[0.06] hover:text-[var(--text-primary)]"
           >
             <span>Voir tout l&apos;historique</span>
             <ChevronRight className="h-3.5 w-3.5 text-[var(--muted)]" />
@@ -599,7 +599,7 @@ export default function InteractionsPage() {
       </div>
 
       {error && (
-        <div className="rounded-2xl border border-red-500/30 bg-red-500/10 p-4 text-sm text-red-400">
+        <div className="rounded-[var(--panel-radius)] border border-red-500/30 bg-red-500/10 p-4 text-sm text-red-400">
           {error.message}
         </div>
       )}

@@ -31,14 +31,14 @@ export default function LanguageSelector() {
       <button
         type="button"
         onClick={() => setOpen((v) => !v)}
-        className="liquid-glass-btn inline-flex h-9 items-center gap-2 rounded-xl border border-[var(--panel-border)] bg-[var(--panel-bg)] px-3 text-[var(--text-primary)] backdrop-blur-[var(--panel-blur)] transition-colors hover:border-[var(--accent-primary)]/50"
+        className="liquid-glass-btn inline-flex h-9 items-center gap-2 rounded-[var(--inset-radius)] border border-[var(--panel-border)] bg-[var(--panel-bg)] px-3 text-[var(--text-primary)] backdrop-blur-[var(--panel-blur)] transition-colors hover:border-[var(--accent-primary)]/50"
       >
         <Globe className="h-4 w-4 text-[var(--accent-primary)]" />
         <span className="text-xs font-medium">{LOCALE_NAMES[locale]}</span>
       </button>
 
       {open && (
-        <div className="absolute right-0 top-full z-[var(--z-modal)] mt-2 w-40 rounded-xl border border-[var(--panel-border)] bg-[var(--panel-bg)] p-1 shadow-2xl backdrop-blur-[var(--panel-blur)]">
+        <div className="absolute right-0 top-full z-[var(--z-modal)] mt-2 w-40 rounded-[var(--inset-radius)] border border-[var(--panel-border)] bg-[var(--panel-bg)] p-1 shadow-2xl backdrop-blur-[var(--panel-blur)]">
           {SUPPORTED_LOCALES.map((l) => (
             <button
               key={l}

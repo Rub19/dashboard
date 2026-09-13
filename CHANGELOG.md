@@ -2,6 +2,15 @@
 
 Toutes les modifications notables de ce projet seront documentées dans ce fichier.
 
+## v1.21.40 — 2026-09-13
+
+**Bordures et coins concentriques : le reste du dashboard + nettoyage login**
+
+- 45 fichiers hors Discord (`app/boost`, `app/browser`, `app/flows`, `app/interactions`, `app/login/verify`, `app/not-found`, `app/rss`, `app/system`, `app/team`, `components/tracker/*`, `components/settings/*`, `components/brain/*`, etc.) avaient encore des bordures blanches brutes (`border-white/5|10|15|20|25|40` + variantes en crochets) — converties vers `--panel-border` ou le token de survol, ~221 occurrences.
+- 188 fichiers supplémentaires utilisaient déjà `--panel-border` comme couleur mais gardaient un rayon de coin Tailwind figé (`rounded-xl/lg/2xl/3xl`) qui ignorait le style d'angle choisi dans Apparence (arrondi/doux/anguleux) — convertis vers `--panel-radius`/`--inset-radius`, ~780 occurrences.
+- Retiré le halo dégradé flou (`blur-xl`, `-inset-1`) derrière la carte de connexion sur `/login` qui laissait un espace visible autour de la carte.
+- Purement présentationnel : aucune logique ni donnée modifiée. Validation : `tsc` 0 erreur, `eslint` 0 erreur (319 warnings préexistants), `build` ✓, `test:unit` 73/73.
+
 ## v1.21.39 — 2026-09-13
 
 **Bordures et coins concentriques : 33 pages de modules Discord (suite et fin)**

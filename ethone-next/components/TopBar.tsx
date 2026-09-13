@@ -69,7 +69,7 @@ function SidebarTopToggle() {
       <button
         type="button"
         onClick={() => setOpen(!open)}
-        className="inline-flex h-9 w-9 items-center justify-center rounded-xl border border-[var(--panel-border)]/70 bg-[var(--surface-raised)]/60 text-[var(--text-muted)] hover:border-[var(--accent-primary)]/40 hover:bg-[var(--surface-hover)] hover:text-[var(--text-primary)] transition-all active:scale-95 cursor-pointer shadow-sm"
+        className="inline-flex h-9 w-9 items-center justify-center rounded-[var(--inset-radius)] border border-[var(--panel-border)]/70 bg-[var(--surface-raised)]/60 text-[var(--text-muted)] hover:border-[var(--accent-primary)]/40 hover:bg-[var(--surface-hover)] hover:text-[var(--text-primary)] transition-all active:scale-95 cursor-pointer shadow-sm"
         aria-label="Basculer la barre latérale"
       >
         <Icon name={open ? "sidebar-simple" : "sidebar"} className="h-4 w-4" />
@@ -121,7 +121,7 @@ function ThemeToggle() {
           aria-haspopup="menu"
           aria-expanded={open}
           className={cn(
-            "inline-flex h-9 w-9 items-center justify-center rounded-xl border transition-all active:scale-95 cursor-pointer shadow-sm",
+            "inline-flex h-9 w-9 items-center justify-center rounded-[var(--inset-radius)] border transition-all active:scale-95 cursor-pointer shadow-sm",
             open
               ? "border-[var(--accent-primary)]/50 bg-[var(--surface-hover)] text-[var(--text-primary)]"
               : "border-[var(--panel-border)]/70 bg-[var(--surface-raised)]/60 text-[var(--text-muted)] hover:border-[var(--accent-primary)]/40 hover:bg-[var(--surface-hover)] hover:text-[var(--text-primary)]"
@@ -135,7 +135,7 @@ function ThemeToggle() {
       {open && (
         <div
           role="menu"
-          className="absolute right-0 top-full z-50 mt-2 max-h-[70vh] w-56 overflow-y-auto os-scroll rounded-2xl border border-[var(--panel-border)] bg-[var(--panel-bg)] p-1.5 shadow-2xl backdrop-blur-2xl"
+          className="absolute right-0 top-full z-50 mt-2 max-h-[70vh] w-56 overflow-y-auto os-scroll rounded-[var(--panel-radius)] border border-[var(--panel-border)] bg-[var(--panel-bg)] p-1.5 shadow-2xl backdrop-blur-2xl"
         >
           {PREMIUM_THEMES.map((id) => {
             const def = THEME_DEFINITIONS[id];
@@ -155,7 +155,7 @@ function ThemeToggle() {
                 )}
               >
                 <span
-                  className="h-4 w-4 shrink-0 rounded-full border border-white/15"
+                  className="h-4 w-4 shrink-0 rounded-full border border-[var(--panel-border)]"
                   style={{ background: `linear-gradient(135deg, ${def?.accentPrimary ?? "#888"}, ${def?.accentSecondary ?? def?.accentPrimary ?? "#888"})` }}
                 />
                 <span className="min-w-0 flex-1 truncate">{def?.label ?? id}</span>
@@ -179,7 +179,7 @@ function FocusToggle() {
         type="button"
         onClick={() => (isActive ? focus.stop() : focus.start("pomodoro"))}
         className={cn(
-          "inline-flex h-9 w-9 items-center justify-center rounded-xl border transition-all active:scale-95 cursor-pointer shadow-sm",
+          "inline-flex h-9 w-9 items-center justify-center rounded-[var(--inset-radius)] border transition-all active:scale-95 cursor-pointer shadow-sm",
           isActive
             ? "border-[var(--accent-primary)] bg-[var(--accent-primary)]/20 text-[var(--accent-primary)] shadow-sm shadow-[var(--accent-primary)]/20"
             : "border-[var(--panel-border)]/70 bg-[var(--surface-raised)]/60 text-[var(--text-muted)] hover:border-[var(--accent-primary)]/40 hover:bg-[var(--surface-hover)] hover:text-[var(--text-primary)]"
@@ -201,7 +201,7 @@ function DynamicIslandToggle() {
         type="button"
         onClick={toggle}
         className={cn(
-          "inline-flex h-9 w-9 items-center justify-center rounded-xl border transition-all active:scale-95 cursor-pointer shadow-sm",
+          "inline-flex h-9 w-9 items-center justify-center rounded-[var(--inset-radius)] border transition-all active:scale-95 cursor-pointer shadow-sm",
           visible
             ? "border-[var(--panel-border)]/70 bg-[var(--surface-raised)]/60 text-[var(--text-muted)] hover:border-[var(--accent-primary)]/40 hover:bg-[var(--surface-hover)] hover:text-[var(--text-primary)]"
             : "border-[var(--warning)]/30 bg-[var(--warning)]/10 text-[var(--warning)]"
@@ -219,7 +219,7 @@ function FeedbackButton() {
     <Tooltip label="Assistant Brain & Échange" position="bottom">
       <Link
         href="/brain"
-        className="inline-flex h-9 w-9 items-center justify-center rounded-xl border border-[var(--panel-border)]/70 bg-[var(--surface-raised)]/60 text-[var(--text-muted)] hover:border-[var(--accent-primary)]/40 hover:bg-[var(--surface-hover)] hover:text-[var(--text-primary)] transition-all active:scale-95 cursor-pointer shadow-sm"
+        className="inline-flex h-9 w-9 items-center justify-center rounded-[var(--inset-radius)] border border-[var(--panel-border)]/70 bg-[var(--surface-raised)]/60 text-[var(--text-muted)] hover:border-[var(--accent-primary)]/40 hover:bg-[var(--surface-hover)] hover:text-[var(--text-primary)] transition-all active:scale-95 cursor-pointer shadow-sm"
         aria-label="Assistant Brain"
       >
         <MessageSquare className="h-4 w-4" />

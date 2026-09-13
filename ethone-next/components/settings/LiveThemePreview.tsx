@@ -20,7 +20,7 @@ export default function LiveThemePreview({ themeId, accentHex, className }: Live
   return (
     <div
       className={cn(
-        "relative overflow-hidden rounded-3xl border border-[var(--panel-border)]/70 p-5 shadow-2xl backdrop-blur-2xl transition-all duration-300 select-none",
+        "relative overflow-hidden rounded-[var(--panel-radius)] border border-[var(--panel-border)]/70 p-5 shadow-2xl backdrop-blur-2xl transition-all duration-300 select-none",
         className
       )}
       style={{
@@ -73,7 +73,7 @@ export default function LiveThemePreview({ themeId, accentHex, className }: Live
 
             <button
               type="button"
-              className="rounded-xl border py-2 px-3 text-xs font-semibold transition-all hover:bg-white/5 active:scale-95 cursor-pointer"
+              className="rounded-[var(--inset-radius)] border py-2 px-3 text-xs font-semibold transition-all hover:bg-white/5 active:scale-95 cursor-pointer"
               style={{
                 borderColor: "var(--border-subtle)",
                 backgroundColor: "var(--bg-surface-elevated)",
@@ -91,7 +91,7 @@ export default function LiveThemePreview({ themeId, accentHex, className }: Live
               type="text"
               readOnly
               value="Champ textuel avec halo dynamique..."
-              className="w-full rounded-xl border py-2 pl-9 pr-3 text-xs text-[var(--text-primary)] focus:outline-none"
+              className="w-full rounded-[var(--inset-radius)] border py-2 pl-9 pr-3 text-xs text-[var(--text-primary)] focus:outline-none"
               style={{
                 backgroundColor: "var(--bg-input)",
                 borderColor: "var(--border-subtle)",
@@ -103,7 +103,7 @@ export default function LiveThemePreview({ themeId, accentHex, className }: Live
         {/* Right column: Cards & Status Badges */}
         <div className="space-y-3">
           <div
-            className="rounded-2xl border p-3"
+            className="rounded-[var(--panel-radius)] border p-3"
             style={{
               backgroundColor: "var(--bg-card)",
               borderColor: "var(--border-subtle)",

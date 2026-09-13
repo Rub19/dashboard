@@ -46,7 +46,7 @@ export default function PremiumThemePicker({ value, onChange }: PremiumThemePick
               onClick={() => handleSelect(id)}
               whileHover={{ scale: 1.01 }}
               whileTap={{ scale: 0.98 }}
-              className={`group relative overflow-hidden rounded-2xl border-2 text-left transition-shadow duration-200 focus:outline-none focus:ring-2 focus:ring-[var(--border-active)] focus:ring-offset-2 focus:ring-offset-[var(--bg-main)] ${
+              className={`group relative overflow-hidden rounded-[var(--panel-radius)] border-2 text-left transition-shadow duration-200 focus:outline-none focus:ring-2 focus:ring-[var(--border-active)] focus:ring-offset-2 focus:ring-offset-[var(--bg-main)] ${
                 selected
                   ? "border-[var(--accent-primary)] shadow-[0_0_24px_var(--glow-color)]"
                   : "border-transparent hover:shadow-[0_0_16px_var(--glow-color)]"
@@ -85,7 +85,7 @@ export default function PremiumThemePicker({ value, onChange }: PremiumThemePick
               <div className="relative p-3">
                 {/* Dashboard miniature */}
                 <div
-                  className="mb-3 aspect-[16/10] w-full overflow-hidden rounded-xl border"
+                  className="mb-3 aspect-[16/10] w-full overflow-hidden rounded-[var(--inset-radius)] border"
                   style={{ borderColor: def.borderSubtle, backgroundColor: def.bgMain }}
                 >
                   <div className="relative flex h-full w-full">

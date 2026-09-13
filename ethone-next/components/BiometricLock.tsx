@@ -43,7 +43,7 @@ export default function BiometricLock({ children, title, className = "" }: Biome
   return (
     <div
       className={cn(
-        "flex h-full min-h-[320px] flex-col items-center justify-center gap-4 rounded-2xl border border-dashed border-[var(--panel-border)] bg-[var(--panel-bg)]/60 p-6 text-center backdrop-blur-[var(--panel-blur)]",
+        "flex h-full min-h-[320px] flex-col items-center justify-center gap-4 rounded-[var(--panel-radius)] border border-dashed border-[var(--panel-border)] bg-[var(--panel-bg)]/60 p-6 text-center backdrop-blur-[var(--panel-blur)]",
         className
       )}
     >

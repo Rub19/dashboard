@@ -37,13 +37,13 @@ export const BrainStatusBar = memo(function BrainStatusBar({
   return (
     <div
       className={cn(
-        "relative flex flex-wrap items-center justify-between gap-3 rounded-2xl border border-[var(--panel-border)]/60 bg-[var(--surface-raised)]/30 px-4 py-2.5 backdrop-blur-md transition-all select-none",
+        "relative flex flex-wrap items-center justify-between gap-3 rounded-[var(--panel-radius)] border border-[var(--panel-border)]/60 bg-[var(--surface-raised)]/30 px-4 py-2.5 backdrop-blur-md transition-all select-none",
         className
       )}
     >
       {/* Left: Status & AI Model Info */}
       <div className="flex items-center gap-3">
-        <div className="relative flex h-8 w-8 items-center justify-center rounded-xl bg-[var(--accent-primary)]/15 border border-[var(--accent-primary)]/30 text-[var(--accent-primary)] shadow-sm">
+        <div className="relative flex h-8 w-8 items-center justify-center rounded-[var(--inset-radius)] bg-[var(--accent-primary)]/15 border border-[var(--accent-primary)]/30 text-[var(--accent-primary)] shadow-sm">
           <Brain className={cn("h-4 w-4", loading ? "animate-pulse" : "")} />
           <span
             className={cn(
@@ -73,21 +73,21 @@ export const BrainStatusBar = memo(function BrainStatusBar({
       {/* Right: Live Context Badges & Explainability */}
       <div className="flex items-center gap-1.5 overflow-x-auto no-scrollbar">
         {context?.route && (
-          <span className="inline-flex items-center gap-1 rounded-lg border border-[var(--panel-border)]/40 bg-[var(--surface-raised)]/40 px-2 py-0.8 text-[10px] font-medium text-[var(--text-secondary)]">
+          <span className="inline-flex items-center gap-1 rounded-[var(--inset-radius)] border border-[var(--panel-border)]/40 bg-[var(--surface-raised)]/40 px-2 py-0.8 text-[10px] font-medium text-[var(--text-secondary)]">
             <Layers className="h-3 w-3 text-[var(--accent-primary)]" />
             <span className="capitalize">{context.route.replace("/", "") || "Home"}</span>
           </span>
         )}
 
         {context?.focusActive && (
-          <span className="inline-flex items-center gap-1 rounded-lg border border-amber-500/30 bg-amber-500/10 px-2 py-0.8 text-[10px] font-medium text-amber-400">
+          <span className="inline-flex items-center gap-1 rounded-[var(--inset-radius)] border border-amber-500/30 bg-amber-500/10 px-2 py-0.8 text-[10px] font-medium text-amber-400">
             <Clock className="h-3 w-3" />
             <span>Focus actif</span>
           </span>
         )}
 
         {context?.nowPlaying?.title && (
-          <span className="inline-flex items-center gap-1 rounded-lg border border-emerald-500/30 bg-emerald-500/10 px-2 py-0.8 text-[10px] font-medium text-emerald-400 truncate max-w-[130px]">
+          <span className="inline-flex items-center gap-1 rounded-[var(--inset-radius)] border border-emerald-500/30 bg-emerald-500/10 px-2 py-0.8 text-[10px] font-medium text-emerald-400 truncate max-w-[130px]">
             <Music className="h-3 w-3 shrink-0" />
             <span className="truncate">{context.nowPlaying.title}</span>
           </span>
@@ -97,7 +97,7 @@ export const BrainStatusBar = memo(function BrainStatusBar({
         <button
           type="button"
           onClick={() => setShowExplanation(true)}
-          className="inline-flex items-center gap-1 rounded-lg border border-[var(--panel-border)]/60 bg-[var(--surface-raised)]/50 px-2 py-0.8 text-[10px] font-semibold text-[var(--text-muted)] hover:text-[var(--text-primary)] hover:bg-[var(--surface-hover)] transition-all"
+          className="inline-flex items-center gap-1 rounded-[var(--inset-radius)] border border-[var(--panel-border)]/60 bg-[var(--surface-raised)]/50 px-2 py-0.8 text-[10px] font-semibold text-[var(--text-muted)] hover:text-[var(--text-primary)] hover:bg-[var(--surface-hover)] transition-all"
           title="Pourquoi Brain a utilisé ce contexte ?"
         >
           <HelpCircle className="h-3 w-3 text-[var(--accent-primary)]" />
@@ -113,7 +113,7 @@ export const BrainStatusBar = memo(function BrainStatusBar({
               initial={{ opacity: 0, scale: 0.95 }}
               animate={{ opacity: 1, scale: 1 }}
               exit={{ opacity: 0, scale: 0.95 }}
-              className="w-full max-w-md rounded-3xl border border-[var(--panel-border)] bg-[var(--bg-surface)] p-6 shadow-2xl space-y-4"
+              className="w-full max-w-md rounded-[var(--panel-radius)] border border-[var(--panel-border)] bg-[var(--bg-surface)] p-6 shadow-2xl space-y-4"
             >
               <div className="flex items-center justify-between border-b border-[var(--panel-border)]/60 pb-3">
                 <div className="flex items-center gap-2">

@@ -286,11 +286,11 @@ export default function DockMediaFlyout({ nowPlaying, clientId }: DockMediaFlyou
             }}
             onMouseLeave={handleLeave}
             style={{ position: "fixed", left: pos.left, bottom: pos.bottom }}
-            className="z-[var(--z-popover)] w-80 rounded-xl border border-[var(--text-primary)]/10 bg-[var(--background)]/95 p-4 shadow-2xl backdrop-blur-2xl pointer-events-auto origin-bottom"
+            className="z-[var(--z-popover)] w-80 rounded-[var(--inset-radius)] border border-[var(--text-primary)]/10 bg-[var(--background)]/95 p-4 shadow-2xl backdrop-blur-2xl pointer-events-auto origin-bottom"
           >
             {!hasTrack ? (
               <div className="flex items-center gap-3">
-                <div className="flex h-12 w-12 shrink-0 items-center justify-center rounded-xl border border-white/10 bg-[var(--surface-raised)] shadow-md">
+                <div className="flex h-12 w-12 shrink-0 items-center justify-center rounded-[var(--inset-radius)] border border-[var(--panel-border)] bg-[var(--surface-raised)] shadow-md">
                   <ServiceIcon id="spotify" icon="music" className="h-7 w-7" colored />
                 </div>
                 <div className="min-w-0 flex-1">
@@ -315,14 +315,14 @@ export default function DockMediaFlyout({ nowPlaying, clientId }: DockMediaFlyou
                       candidates={coverCandidates}
                       alt={title}
                       size={96}
-                      className="h-12 w-12 shrink-0 rounded-xl border border-white/10 object-cover shadow-md"
+                      className="h-12 w-12 shrink-0 rounded-[var(--inset-radius)] border border-[var(--panel-border)] object-cover shadow-md"
                       iconClassName="h-6 w-6"
                       loading="eager"
                       priority
                       crossOrigin="anonymous"
                     />
                   ) : (
-                    <div className="flex h-12 w-12 shrink-0 items-center justify-center rounded-xl border border-white/10 bg-[var(--surface-raised)] shadow-md">
+                    <div className="flex h-12 w-12 shrink-0 items-center justify-center rounded-[var(--inset-radius)] border border-[var(--panel-border)] bg-[var(--surface-raised)] shadow-md">
                       <ServiceIcon id="spotify" icon="music" className="h-7 w-7" colored />
                     </div>
                   )}

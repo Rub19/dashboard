@@ -181,7 +181,7 @@ export default function FilePreview({
     if (isAudio && previewUrl) {
       return (
         <div className="flex h-full w-full flex-col items-center justify-center gap-4 p-6">
-          <div className="flex h-16 w-16 items-center justify-center rounded-2xl border border-[var(--accent-primary)]/20 bg-[var(--accent-primary)]/10 text-[var(--accent-primary)] shadow-md">
+          <div className="flex h-16 w-16 items-center justify-center rounded-[var(--panel-radius)] border border-[var(--accent-primary)]/20 bg-[var(--accent-primary)]/10 text-[var(--accent-primary)] shadow-md">
             <Icon name="music" className="h-8 w-8" />
           </div>
           <p className="text-xs font-semibold text-[var(--text-primary)]">{file.name}</p>
@@ -195,7 +195,7 @@ export default function FilePreview({
           <iframe
             src={previewUrl}
             title={file.name}
-            className="h-full min-h-[320px] w-full rounded-xl border border-[var(--panel-border)]/[0.12] bg-[var(--bg-main)]"
+            className="h-full min-h-[320px] w-full rounded-[var(--inset-radius)] border border-[var(--panel-border)]/[0.12] bg-[var(--bg-main)]"
             allow="autoplay"
           />
         </div>
@@ -211,7 +211,7 @@ export default function FilePreview({
       }
       return (
         <div className="h-full w-full p-2">
-          <pre className="max-h-[320px] w-full overflow-auto rounded-xl border border-[var(--panel-border)]/[0.12] bg-[var(--bg-main)]/[0.9] p-3 text-left font-mono text-[11px] leading-relaxed text-[var(--text-primary)] os-scroll selection:bg-[var(--accent-primary)]/20">
+          <pre className="max-h-[320px] w-full overflow-auto rounded-[var(--inset-radius)] border border-[var(--panel-border)]/[0.12] bg-[var(--bg-main)]/[0.9] p-3 text-left font-mono text-[11px] leading-relaxed text-[var(--text-primary)] os-scroll selection:bg-[var(--accent-primary)]/20">
             {text}
           </pre>
         </div>
@@ -220,7 +220,7 @@ export default function FilePreview({
     if (file.webViewLink) {
       return (
         <div className="flex h-full flex-col items-center justify-center gap-3 p-6 text-[var(--text-muted)]">
-          <div className="flex h-16 w-16 items-center justify-center rounded-2xl border border-[var(--panel-border)]/[0.15] bg-[var(--panel-bg)]">
+          <div className="flex h-16 w-16 items-center justify-center rounded-[var(--panel-radius)] border border-[var(--panel-border)]/[0.15] bg-[var(--panel-bg)]">
             <Icon name={icon} className="h-8 w-8 text-[var(--accent-primary)]" />
           </div>
           <span className="text-xs font-medium text-[var(--text-primary)]">{file.name}</span>
@@ -237,7 +237,7 @@ export default function FilePreview({
     }
     return (
       <div className="flex h-full flex-col items-center justify-center gap-3 p-6 text-[var(--text-muted)]">
-        <div className="flex h-16 w-16 items-center justify-center rounded-2xl border border-[var(--panel-border)]/[0.15] bg-[var(--panel-bg)]">
+        <div className="flex h-16 w-16 items-center justify-center rounded-[var(--panel-radius)] border border-[var(--panel-border)]/[0.15] bg-[var(--panel-bg)]">
           <Icon name={icon} className="h-8 w-8" />
         </div>
         <div className="text-center">
@@ -278,7 +278,7 @@ export default function FilePreview({
             <div className="flex items-center justify-between gap-3 border-b border-[var(--panel-border)]/[0.12] px-5 py-4">
               <div className="min-w-0 flex-1">
                 <div className="flex items-center gap-2">
-                  <span className="rounded-lg border border-[var(--accent-primary)]/20 bg-[var(--accent-primary)]/10 px-2 py-0.5 text-[10px] font-semibold text-[var(--accent-primary)] uppercase">
+                  <span className="rounded-[var(--inset-radius)] border border-[var(--accent-primary)]/20 bg-[var(--accent-primary)]/10 px-2 py-0.5 text-[10px] font-semibold text-[var(--accent-primary)] uppercase">
                     {ext || (file.isFolder ? "Dossier" : "Fichier")}
                   </span>
                   <h2 className="truncate text-sm font-semibold tracking-tight text-[var(--text-primary)]" title={file.name}>
@@ -292,7 +292,7 @@ export default function FilePreview({
               <button
                 type="button"
                 onClick={onClose}
-                className="flex h-8 w-8 items-center justify-center rounded-xl border border-[var(--panel-border)]/[0.12] bg-[var(--panel-bg)]/[0.5] text-[var(--text-muted)] transition-colors hover:bg-[var(--panel-bg)] hover:text-[var(--text-primary)]"
+                className="flex h-8 w-8 items-center justify-center rounded-[var(--inset-radius)] border border-[var(--panel-border)]/[0.12] bg-[var(--panel-bg)]/[0.5] text-[var(--text-muted)] transition-colors hover:bg-[var(--panel-bg)] hover:text-[var(--text-primary)]"
                 aria-label={i18n("close")}
               >
                 <X className="h-4 w-4" />
@@ -302,13 +302,13 @@ export default function FilePreview({
             {/* Content Body */}
             <div className="min-h-0 flex-1 overflow-y-auto os-scroll space-y-4 p-5">
               {/* Media viewer box */}
-              <div className="relative min-h-[200px] w-full overflow-hidden rounded-2xl border border-[var(--panel-border)]/[0.12] bg-[var(--bg-main)]/[0.6] shadow-inner">
+              <div className="relative min-h-[200px] w-full overflow-hidden rounded-[var(--panel-radius)] border border-[var(--panel-border)]/[0.12] bg-[var(--bg-main)]/[0.6] shadow-inner">
                 {renderMedia()}
               </div>
 
               {/* Brain Summary section if present */}
               {file.brainSummary && (
-                <div className="rounded-2xl border border-[var(--accent-primary)]/25 bg-[var(--accent-primary)]/[0.06] p-4 shadow-sm">
+                <div className="rounded-[var(--panel-radius)] border border-[var(--accent-primary)]/25 bg-[var(--accent-primary)]/[0.06] p-4 shadow-sm">
                   <div className="flex items-center gap-2 text-xs font-semibold text-[var(--accent-primary)]">
                     <Brain className="h-4 w-4" />
                     <span>Résumé ETHONE Brain</span>
@@ -330,7 +330,7 @@ export default function FilePreview({
                     {file.tags.map((tag) => (
                       <span
                         key={tag}
-                        className="rounded-lg border border-[var(--panel-border)]/[0.15] bg-[var(--panel-bg)] px-2 py-0.5 text-[11px] text-[var(--text-primary)]"
+                        className="rounded-[var(--inset-radius)] border border-[var(--panel-border)]/[0.15] bg-[var(--panel-bg)] px-2 py-0.5 text-[11px] text-[var(--text-primary)]"
                       >
                         #{tag}
                       </span>
@@ -340,7 +340,7 @@ export default function FilePreview({
               )}
 
               {/* Metadata Details Table */}
-              <div className="space-y-2.5 rounded-2xl border border-[var(--panel-border)]/[0.12] bg-[var(--panel-bg)]/[0.3] p-4 text-xs">
+              <div className="space-y-2.5 rounded-[var(--panel-radius)] border border-[var(--panel-border)]/[0.12] bg-[var(--panel-bg)]/[0.3] p-4 text-xs">
                 <h3 className="font-semibold uppercase tracking-wider text-[10px] text-[var(--text-muted)]">
                   Informations
                 </h3>

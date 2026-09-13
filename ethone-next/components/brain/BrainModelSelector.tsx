@@ -135,7 +135,7 @@ export default function BrainModelSelector({
       <button
         type="button"
         onClick={() => setIsOpen(!isOpen)}
-        className="flex items-center gap-1.5 rounded-xl border border-[var(--panel-border)] bg-[var(--surface-raised)]/80 px-2.5 py-1 text-xs font-semibold text-[var(--text-primary)] hover:border-[var(--accent-primary)]/50 transition-all active:scale-95 cursor-pointer shadow-xs"
+        className="flex items-center gap-1.5 rounded-[var(--inset-radius)] border border-[var(--panel-border)] bg-[var(--surface-raised)]/80 px-2.5 py-1 text-xs font-semibold text-[var(--text-primary)] hover:border-[var(--accent-primary)]/50 transition-all active:scale-95 cursor-pointer shadow-xs"
       >
         <span className="h-1.5 w-1.5 rounded-full bg-[var(--accent-primary)] shadow-[0_0_6px_var(--glow-color)]" />
         <span className="truncate max-w-[140px] sm:max-w-none">{activeModel.name}</span>
@@ -149,7 +149,7 @@ export default function BrainModelSelector({
       </button>
 
       {isOpen && (
-        <div className="absolute bottom-full mb-2 left-0 z-50 w-80 overflow-hidden rounded-2xl border border-[var(--panel-border)] bg-[#0c0d12] p-1.5 shadow-2xl backdrop-blur-3xl animate-in fade-in zoom-in-95 duration-150 select-none">
+        <div className="absolute bottom-full mb-2 left-0 z-50 w-80 overflow-hidden rounded-[var(--panel-radius)] border border-[var(--panel-border)] bg-[#0c0d12] p-1.5 shadow-2xl backdrop-blur-3xl animate-in fade-in zoom-in-95 duration-150 select-none">
           <div className="flex items-center justify-between px-3 py-2 border-b border-[var(--panel-border)]/50">
             <span className="text-[10px] font-bold uppercase tracking-wider text-[var(--text-muted)]">
               Modèles IA 100% Gratuits

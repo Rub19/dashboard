@@ -124,9 +124,9 @@ export default function FileDropOverlay({ onDrop, disabled }: FileDropOverlayPro
               stiffness: 350,
               damping: 28,
             }}
-            className="relative flex h-[min(65vh,380px)] w-[min(90vw,540px)] flex-col items-center justify-center rounded-3xl border-2 border-dashed border-[var(--accent-primary)] bg-[var(--panel-bg)]/[0.95] p-8 text-center shadow-2xl backdrop-blur-3xl"
+            className="relative flex h-[min(65vh,380px)] w-[min(90vw,540px)] flex-col items-center justify-center rounded-[var(--panel-radius)] border-2 border-dashed border-[var(--accent-primary)] bg-[var(--panel-bg)]/[0.95] p-8 text-center shadow-2xl backdrop-blur-3xl"
           >
-            <div className="mb-4 flex h-20 w-20 items-center justify-center rounded-3xl border border-[var(--accent-primary)]/30 bg-[var(--accent-primary)]/15 text-[var(--accent-primary)] shadow-[0_0_30px_var(--glow-color)]">
+            <div className="mb-4 flex h-20 w-20 items-center justify-center rounded-[var(--panel-radius)] border border-[var(--accent-primary)]/30 bg-[var(--accent-primary)]/15 text-[var(--accent-primary)] shadow-[0_0_30px_var(--glow-color)]">
               <UploadCloud className="h-10 w-10 animate-bounce" />
             </div>
 
@@ -135,7 +135,7 @@ export default function FileDropOverlay({ onDrop, disabled }: FileDropOverlayPro
             </h3>
 
             {meta && (
-              <div className="mt-3 flex items-center gap-2 rounded-xl border border-[var(--accent-primary)]/30 bg-[var(--accent-primary)]/10 px-4 py-1.5 text-[var(--accent-primary)] shadow-sm">
+              <div className="mt-3 flex items-center gap-2 rounded-[var(--inset-radius)] border border-[var(--accent-primary)]/30 bg-[var(--accent-primary)]/10 px-4 py-1.5 text-[var(--accent-primary)] shadow-sm">
                 <File className="h-3.5 w-3.5" />
                 <span className="max-w-[260px] truncate text-xs font-mono font-medium">
                   {meta.name}

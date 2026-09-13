@@ -69,7 +69,7 @@ export default function RichToast({
       <div className="flex w-full items-start gap-3">
         {/* Icon */}
         <div
-          className="flex h-9 w-9 shrink-0 items-center justify-center rounded-xl border"
+          className="flex h-9 w-9 shrink-0 items-center justify-center rounded-[var(--inset-radius)] border"
           style={{
             color: cfg.color,
             borderColor: `color-mix(in srgb, ${cfg.color} 25%, transparent)`,
@@ -106,7 +106,7 @@ export default function RichToast({
               <button
                 type="button"
                 onClick={action.onClick}
-                className="cursor-pointer rounded-lg border border-[var(--panel-border)] px-2.5 py-1 text-[11px] font-medium text-[var(--text-primary)] transition-colors hover:bg-[var(--surface-2)] active:scale-95 focus:outline-none"
+                className="cursor-pointer rounded-[var(--inset-radius)] border border-[var(--panel-border)] px-2.5 py-1 text-[11px] font-medium text-[var(--text-primary)] transition-colors hover:bg-[var(--surface-2)] active:scale-95 focus:outline-none"
               >
                 {action.label}
               </button>

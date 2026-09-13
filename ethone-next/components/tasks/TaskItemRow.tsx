@@ -95,7 +95,7 @@ export const TaskItemRow = memo(function TaskItemRow({
       transition={{ duration: 0.2 }}
       onClick={handleToggle}
       className={cn(
-        "group relative flex items-center justify-between gap-3.5 rounded-xl border border-[var(--panel-border)] bg-[var(--panel-bg)] p-3.5 sm:p-4 transition-colors duration-150 cursor-pointer select-none",
+        "group relative flex items-center justify-between gap-3.5 rounded-[var(--inset-radius)] border border-[var(--panel-border)] bg-[var(--panel-bg)] p-3.5 sm:p-4 transition-colors duration-150 cursor-pointer select-none",
         task.done ? "opacity-55" : "hover:bg-[var(--surface-2)]/50"
       )}
     >
@@ -108,7 +108,7 @@ export const TaskItemRow = memo(function TaskItemRow({
             handleToggle();
           }}
           className={cn(
-            "mt-0.5 flex h-6 w-6 shrink-0 items-center justify-center rounded-lg border transition-colors duration-150 cursor-pointer",
+            "mt-0.5 flex h-6 w-6 shrink-0 items-center justify-center rounded-[var(--inset-radius)] border transition-colors duration-150 cursor-pointer",
             task.done
               ? "border-[var(--success)] bg-[var(--success)] text-[var(--bg-main)]"
               : "border-[var(--panel-border)] bg-[var(--surface-2)] text-transparent hover:border-[var(--accent-primary)]"
@@ -130,7 +130,7 @@ export const TaskItemRow = memo(function TaskItemRow({
                 if (e.key === "Escape") setIsEditing(false);
               }}
               onClick={(e) => e.stopPropagation()}
-              className="w-full rounded-lg border border-[var(--accent-primary)] bg-[var(--surface-2)] px-2 py-1 text-sm font-medium text-[var(--text-primary)] outline-none"
+              className="w-full rounded-[var(--inset-radius)] border border-[var(--accent-primary)] bg-[var(--surface-2)] px-2 py-1 text-sm font-medium text-[var(--text-primary)] outline-none"
             />
           ) : (
             <p

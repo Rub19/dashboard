@@ -125,10 +125,10 @@ export default function TftTrackerView() {
 
   return (
     <div className="flex min-h-0 w-full flex-1 flex-col overflow-hidden space-y-4">
-      <div className="shrink-0 rounded-3xl border border-white/10 bg-[#0c0d14]/90 p-4 backdrop-blur-2xl shadow-lg">
+      <div className="shrink-0 rounded-[var(--panel-radius)] border border-[var(--panel-border)] bg-[#0c0d14]/90 p-4 backdrop-blur-2xl shadow-lg">
         <form onSubmit={handleSubmit} className="flex flex-col lg:flex-row lg:items-center justify-between gap-4">
           <div className="flex flex-wrap items-center gap-2 flex-1 min-w-0">
-            <div className="flex items-center gap-2 rounded-2xl border border-white/10 bg-black/40 px-3 py-2 flex-1 min-w-[180px]">
+            <div className="flex items-center gap-2 rounded-[var(--panel-radius)] border border-[var(--panel-border)] bg-black/40 px-3 py-2 flex-1 min-w-[180px]">
               <User className="h-4 w-4 text-zinc-400 shrink-0" />
               <input
                 type="text"
@@ -138,7 +138,7 @@ export default function TftTrackerView() {
                 className="w-full bg-transparent text-xs font-bold text-white placeholder-zinc-500 outline-none"
               />
             </div>
-            <div className="flex items-center gap-1 rounded-2xl border border-white/10 bg-black/40 px-3 py-2 w-28 shrink-0">
+            <div className="flex items-center gap-1 rounded-[var(--panel-radius)] border border-[var(--panel-border)] bg-black/40 px-3 py-2 w-28 shrink-0">
               <span className="text-xs font-bold text-zinc-500">#</span>
               <input
                 type="text"
@@ -168,7 +168,7 @@ export default function TftTrackerView() {
               type="button"
               onClick={() => fetchMatches(true)}
               disabled={syncing}
-              className="flex items-center gap-1.5 rounded-xl border border-white/10 bg-white/5 px-3 py-1.5 text-xs font-bold text-white hover:bg-white/10 active:scale-95 transition-all cursor-pointer disabled:opacity-50"
+              className="flex items-center gap-1.5 rounded-[var(--inset-radius)] border border-[var(--panel-border)] bg-white/5 px-3 py-1.5 text-xs font-bold text-white hover:bg-white/10 active:scale-95 transition-all cursor-pointer disabled:opacity-50"
             >
               <RefreshCw className={cn("h-3.5 w-3.5 text-indigo-400", syncing && "animate-spin")} />
               <span>{syncing ? "Synchro..." : "Actualiser"}</span>
@@ -185,7 +185,7 @@ export default function TftTrackerView() {
             { label: "Top 4", value: `${stats.top4Rate}%`, icon: Trophy, tone: "text-emerald-400" },
             { label: "Tops 1", value: `${stats.firstRate}%`, icon: Crown, tone: "text-amber-400" },
           ].map((s) => (
-            <div key={s.label} className="rounded-2xl border border-white/10 bg-[#0c1017]/85 p-3.5 backdrop-blur-xl">
+            <div key={s.label} className="rounded-[var(--panel-radius)] border border-[var(--panel-border)] bg-[#0c1017]/85 p-3.5 backdrop-blur-xl">
               <div className="flex items-center gap-1.5 text-[11px] font-medium text-zinc-400">
                 <s.icon className={cn("h-3.5 w-3.5", s.tone)} />
                 {s.label}
@@ -200,7 +200,7 @@ export default function TftTrackerView() {
         {loading ? (
           <div className="space-y-3">
             {[...Array(5)].map((_, i) => (
-              <div key={i} className="h-20 animate-pulse rounded-2xl border border-white/5 bg-white/[0.02]" />
+              <div key={i} className="h-20 animate-pulse rounded-[var(--panel-radius)] border border-[var(--panel-border)] bg-white/[0.02]" />
             ))}
           </div>
         ) : errorMsg && matches.length === 0 ? (

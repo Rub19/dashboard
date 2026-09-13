@@ -96,7 +96,7 @@ function SystemStatusPills() {
   const syncLabel = syncing ? i18n("v8Syncing") || "Sync" : online ? i18n("v8Synced") || "Sync" : i18n("v8Offline") || "Offline";
 
   return (
-    <div className="hidden items-center gap-1.5 rounded-xl border border-[var(--text-primary)]/[0.06] bg-[var(--text-primary)]/[0.03] p-1 md:flex">
+    <div className="hidden items-center gap-1.5 rounded-[var(--inset-radius)] border border-[var(--text-primary)]/[0.06] bg-[var(--text-primary)]/[0.03] p-1 md:flex">
       <StatusPill icon={<Briefcase className="h-3 w-3 text-[var(--text-muted)]" />} title={i18n("workspace")}>
         {workspaceLabel}
       </StatusPill>

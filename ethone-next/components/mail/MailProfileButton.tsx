@@ -130,7 +130,7 @@ export default function MailProfileButton({ aliases, primaryAlias, updateAlias, 
         <div className="space-y-5 pt-1">
           {/* 1. ADRESSE PRINCIPALE */}
           {primary && (
-            <div className="rounded-2xl border border-[var(--panel-border)] bg-[var(--surface-2)]/40 p-4 space-y-3.5">
+            <div className="rounded-[var(--panel-radius)] border border-[var(--panel-border)] bg-[var(--surface-2)]/40 p-4 space-y-3.5">
               <div className="flex items-center justify-between">
                 <div className="flex items-center gap-1.5 text-[10px] font-bold uppercase tracking-wider text-[var(--accent-primary)]">
                   <Crown className="h-3.5 w-3.5" />
@@ -141,7 +141,7 @@ export default function MailProfileButton({ aliases, primaryAlias, updateAlias, 
                 </span>
               </div>
 
-              <div className="flex items-center justify-between gap-3 rounded-xl border border-[var(--panel-border)] bg-[var(--surface-raised)] p-3">
+              <div className="flex items-center justify-between gap-3 rounded-[var(--inset-radius)] border border-[var(--panel-border)] bg-[var(--surface-raised)] p-3">
                 <div className="min-w-0 flex-1">
                   <p className="flex items-center gap-2 text-sm font-bold text-[var(--text-primary)] font-mono">
                     <Mail className="h-4 w-4 shrink-0 text-[var(--accent-primary)]" />
@@ -154,7 +154,7 @@ export default function MailProfileButton({ aliases, primaryAlias, updateAlias, 
                 <button
                   type="button"
                   onClick={() => copyEmail(primary.alias)}
-                  className="flex h-8 w-8 shrink-0 items-center justify-center rounded-lg border border-[var(--panel-border)] bg-[var(--surface-raised)] text-[var(--text-muted)] hover:text-white transition-colors cursor-pointer"
+                  className="flex h-8 w-8 shrink-0 items-center justify-center rounded-[var(--inset-radius)] border border-[var(--panel-border)] bg-[var(--surface-raised)] text-[var(--text-muted)] hover:text-white transition-colors cursor-pointer"
                   title="Copier l'adresse"
                 >
                   {copied === primary.alias ? (
@@ -174,7 +174,7 @@ export default function MailProfileButton({ aliases, primaryAlias, updateAlias, 
                     value={displayName}
                     onChange={(e) => setDisplayName(e.target.value.slice(0, 80))}
                     placeholder="Ex: Rub"
-                    className="flex-1 rounded-xl border border-[var(--panel-border)] bg-[var(--surface-raised)] px-3 py-2 text-xs text-[var(--text-primary)] focus:border-[var(--accent-primary)] focus:outline-none"
+                    className="flex-1 rounded-[var(--inset-radius)] border border-[var(--panel-border)] bg-[var(--surface-raised)] px-3 py-2 text-xs text-[var(--text-primary)] focus:border-[var(--accent-primary)] focus:outline-none"
                   />
                   <button
                     type="button"
@@ -204,7 +204,7 @@ export default function MailProfileButton({ aliases, primaryAlias, updateAlias, 
                   <div
                     key={a.id}
                     className={cn(
-                      "flex items-center justify-between gap-3 rounded-2xl border p-3 transition-all",
+                      "flex items-center justify-between gap-3 rounded-[var(--panel-radius)] border p-3 transition-all",
                       a.is_primary
                         ? "border-[var(--accent-primary)]/40 bg-[var(--accent-primary)]/10"
                         : "border-[var(--panel-border)] bg-[var(--surface-raised)]/40 hover:border-[var(--panel-border)]/80"
@@ -228,7 +228,7 @@ export default function MailProfileButton({ aliases, primaryAlias, updateAlias, 
                         type="button"
                         onClick={() => handleSetPrimary(a.id)}
                         disabled={primaryLoading === a.id}
-                        className="rounded-xl border border-[var(--panel-border)] bg-[var(--surface-raised)] px-3 py-1.5 text-xs font-medium text-[var(--text-muted)] hover:text-white hover:border-[var(--accent-primary)]/40 transition-all cursor-pointer disabled:opacity-50"
+                        className="rounded-[var(--inset-radius)] border border-[var(--panel-border)] bg-[var(--surface-raised)] px-3 py-1.5 text-xs font-medium text-[var(--text-muted)] hover:text-white hover:border-[var(--accent-primary)]/40 transition-all cursor-pointer disabled:opacity-50"
                       >
                         {primaryLoading === a.id ? (
                           <Loader2 className="h-3.5 w-3.5 animate-spin" />
@@ -245,7 +245,7 @@ export default function MailProfileButton({ aliases, primaryAlias, updateAlias, 
 
           {/* 3. AJOUTER UNE ADRESSE */}
           {createAlias && (
-            <div className="rounded-2xl border border-[var(--panel-border)] bg-[var(--surface-raised)]/40 p-4 space-y-3">
+            <div className="rounded-[var(--panel-radius)] border border-[var(--panel-border)] bg-[var(--surface-raised)]/40 p-4 space-y-3">
               <h4 className="text-[10px] font-bold uppercase tracking-wider text-[var(--text-muted)]">
                 Ajouter une adresse
               </h4>
@@ -255,7 +255,7 @@ export default function MailProfileButton({ aliases, primaryAlias, updateAlias, 
                   value={newDisplayName}
                   onChange={(e) => setNewDisplayName(e.target.value.slice(0, 80))}
                   placeholder="Nom affiché (optionnel)"
-                  className="w-full rounded-xl border border-[var(--panel-border)] bg-[var(--surface-raised)] px-3 py-2 text-xs text-[var(--text-primary)] focus:border-[var(--accent-primary)] focus:outline-none"
+                  className="w-full rounded-[var(--inset-radius)] border border-[var(--panel-border)] bg-[var(--surface-raised)] px-3 py-2 text-xs text-[var(--text-primary)] focus:border-[var(--accent-primary)] focus:outline-none"
                 />
 
                 <div className="relative flex items-center">
@@ -264,14 +264,14 @@ export default function MailProfileButton({ aliases, primaryAlias, updateAlias, 
                     value={local}
                     onChange={(e) => setLocal(sanitizeLocal(e.target.value))}
                     placeholder="votre-alias"
-                    className="w-full rounded-xl border border-[var(--panel-border)] bg-[var(--surface-raised)] px-3 py-2 pr-32 text-xs text-[var(--text-primary)] font-mono focus:border-[var(--accent-primary)] focus:outline-none"
+                    className="w-full rounded-[var(--inset-radius)] border border-[var(--panel-border)] bg-[var(--surface-raised)] px-3 py-2 pr-32 text-xs text-[var(--text-primary)] font-mono focus:border-[var(--accent-primary)] focus:outline-none"
                   />
                   <div className="absolute right-2 top-1/2 -translate-y-1/2 flex items-center gap-1.5">
                     <span className="text-[11px] font-mono text-[var(--text-muted)]">@ethone.dev</span>
                     <button
                       type="button"
                       onClick={() => setLocal(randomLocal())}
-                      className="flex h-7 w-7 items-center justify-center rounded-lg border border-[var(--panel-border)] bg-[var(--surface-raised)] text-[var(--text-muted)] hover:text-white hover:border-[var(--accent-primary)]/40 transition-all cursor-pointer"
+                      className="flex h-7 w-7 items-center justify-center rounded-[var(--inset-radius)] border border-[var(--panel-border)] bg-[var(--surface-raised)] text-[var(--text-muted)] hover:text-white hover:border-[var(--accent-primary)]/40 transition-all cursor-pointer"
                       title="Générer un alias aléatoire"
                     >
                       <Shuffle className="h-3.5 w-3.5" />

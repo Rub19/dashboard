@@ -63,10 +63,10 @@ export default function VerifyMfaPage() {
         initial={{ opacity: 0, y: 12 }}
         animate={{ opacity: 1, y: 0 }}
         transition={{ duration: 0.35, ease: "easeOut" }}
-        className="relative w-full max-w-[420px] rounded-3xl border border-white/10 bg-white/[0.03] p-7 shadow-2xl backdrop-blur-xl sm:p-9"
+        className="relative w-full max-w-[420px] rounded-[var(--panel-radius)] border border-[var(--panel-border)] bg-white/[0.03] p-7 shadow-2xl backdrop-blur-xl sm:p-9"
       >
         <div className="flex flex-col items-center gap-3 text-center">
-          <div className="flex h-12 w-12 items-center justify-center rounded-2xl border border-white/10 bg-white/[0.04] shadow-lg">
+          <div className="flex h-12 w-12 items-center justify-center rounded-[var(--panel-radius)] border border-[var(--panel-border)] bg-white/[0.04] shadow-lg">
             <BrandMark size={26} />
           </div>
           <div className="flex items-center gap-2 text-emerald-400">
@@ -140,7 +140,7 @@ export default function VerifyMfaPage() {
             <motion.div
               initial={{ opacity: 0 }}
               animate={{ opacity: 1 }}
-              className="mt-4 flex items-start gap-2 rounded-xl border border-rose-500/20 bg-rose-500/10 p-3 text-sm text-rose-300"
+              className="mt-4 flex items-start gap-2 rounded-[var(--inset-radius)] border border-rose-500/20 bg-rose-500/10 p-3 text-sm text-rose-300"
             >
               <AlertCircle className="mt-0.5 h-4 w-4 shrink-0" />
               <span>{errorMessage}</span>
@@ -148,7 +148,7 @@ export default function VerifyMfaPage() {
           )}
         </div>
 
-        <div className="mt-6 flex flex-col items-center gap-3 border-t border-white/10 pt-5 text-sm">
+        <div className="mt-6 flex flex-col items-center gap-3 border-t border-[var(--panel-border)] pt-5 text-sm">
           <button
             type="button"
             onClick={() => {

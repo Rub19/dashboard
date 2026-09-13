@@ -352,7 +352,7 @@ export default function LoginPage() {
           </div>
           <div className="flex items-center gap-2">
             <span className="text-xl font-bold tracking-tight text-white font-mono">ETHONE</span>
-            <span className="rounded-lg border border-[var(--panel-border)] bg-white/[0.04] px-2 py-0.5 text-[10px] font-semibold uppercase tracking-wider text-[var(--accent-primary,#C1234F)]">
+            <span className="rounded-[var(--inset-radius)] border border-[var(--panel-border)] bg-white/[0.04] px-2 py-0.5 text-[10px] font-semibold uppercase tracking-wider text-[var(--accent-primary,#C1234F)]">
               OS
             </span>
           </div>
@@ -391,9 +391,6 @@ export default function LoginPage() {
       {/* Right side: Auth Form Card */}
       <div className="relative flex flex-1 items-center justify-center p-4 sm:p-8 lg:w-1/2">
         <div className="relative w-full max-w-[440px]">
-          {/* Card Ambient Glow */}
-          <div className="pointer-events-none absolute -inset-1 rounded-[var(--panel-radius)] bg-gradient-to-br from-[var(--accent-primary,#C1234F)]/15 via-transparent to-[var(--accent-secondary,#E03365)]/10 blur-xl" />
-
           {/* Main Glass Card */}
           <motion.div
             initial={reduced ? undefined : { opacity: 0, y: 16, scale: 0.98 }}
@@ -470,7 +467,7 @@ export default function LoginPage() {
                           <motion.span
                             layoutId="activeAuthTab"
                             transition={{ duration: 0.22, ease: [0.16, 1, 0.3, 1] }}
-                            className="absolute inset-0 z-0 rounded-lg bg-white/10 border border-[var(--panel-border)] shadow-sm"
+                            className="absolute inset-0 z-0 rounded-[var(--inset-radius)] bg-white/10 border border-[var(--panel-border)] shadow-sm"
                           />
                         )}
                         <span className="relative z-10">{label}</span>

@@ -40,19 +40,19 @@ export default function Screen0Hero({ onNext, onSkip }: Screen0Props) {
 
       {/* Feature Highlights Pills */}
       <div className="grid grid-cols-2 sm:grid-cols-4 gap-2.5 w-full max-w-lg mb-8">
-        <div className="flex items-center justify-center gap-2 p-2.5 rounded-xl bg-[var(--surface-2)]/40 border border-[var(--panel-border)] text-xs text-[var(--text-muted)]">
+        <div className="flex items-center justify-center gap-2 p-2.5 rounded-[var(--inset-radius)] bg-[var(--surface-2)]/40 border border-[var(--panel-border)] text-xs text-[var(--text-muted)]">
           <Shield className="w-3.5 h-3.5" />
           <span>Anti-Raid IA</span>
         </div>
-        <div className="flex items-center justify-center gap-2 p-2.5 rounded-xl bg-[var(--surface-2)]/40 border border-[var(--panel-border)] text-xs text-[var(--text-muted)]">
+        <div className="flex items-center justify-center gap-2 p-2.5 rounded-[var(--inset-radius)] bg-[var(--surface-2)]/40 border border-[var(--panel-border)] text-xs text-[var(--text-muted)]">
           <Zap className="w-3.5 h-3.5" />
           <span>Automatisations</span>
         </div>
-        <div className="flex items-center justify-center gap-2 p-2.5 rounded-xl bg-[var(--surface-2)]/40 border border-[var(--panel-border)] text-xs text-[var(--text-muted)]">
+        <div className="flex items-center justify-center gap-2 p-2.5 rounded-[var(--inset-radius)] bg-[var(--surface-2)]/40 border border-[var(--panel-border)] text-xs text-[var(--text-muted)]">
           <Music className="w-3.5 h-3.5" />
           <span>Audio Lossless</span>
         </div>
-        <div className="flex items-center justify-center gap-2 p-2.5 rounded-xl bg-[var(--surface-2)]/40 border border-[var(--panel-border)] text-xs text-[var(--text-muted)]">
+        <div className="flex items-center justify-center gap-2 p-2.5 rounded-[var(--inset-radius)] bg-[var(--surface-2)]/40 border border-[var(--panel-border)] text-xs text-[var(--text-muted)]">
           <Bell className="w-3.5 h-3.5" />
           <span>Logs & Audit</span>
         </div>
@@ -69,7 +69,7 @@ export default function Screen0Hero({ onNext, onSkip }: Screen0Props) {
         </button>
         <button
           onClick={onSkip}
-          className="w-full sm:w-auto px-5 py-3 rounded-xl bg-[var(--surface-2)]/40 hover:bg-[var(--surface-2)] text-[var(--text-muted)] hover:text-[var(--text-primary)] text-sm font-medium border border-[var(--panel-border)] transition cursor-pointer"
+          className="w-full sm:w-auto px-5 py-3 rounded-[var(--inset-radius)] bg-[var(--surface-2)]/40 hover:bg-[var(--surface-2)] text-[var(--text-muted)] hover:text-[var(--text-primary)] text-sm font-medium border border-[var(--panel-border)] transition cursor-pointer"
         >
           Passer l'introduction
         </button>

@@ -56,7 +56,7 @@ export default function PersonalizationPanel({
   return (
     <div className="space-y-6">
       {/* 1. Explicit Interests */}
-      <div className="rounded-3xl border border-[var(--panel-border)]/80 bg-[var(--surface-raised)]/60 p-5 sm:p-6 backdrop-blur-md space-y-3">
+      <div className="rounded-[var(--panel-radius)] border border-[var(--panel-border)]/80 bg-[var(--surface-raised)]/60 p-5 sm:p-6 backdrop-blur-md space-y-3">
         <div className="flex items-center justify-between">
           <div>
             <h3 className="text-base font-bold text-[var(--text-primary)] flex items-center gap-2">
@@ -83,7 +83,7 @@ export default function PersonalizationPanel({
                 type="button"
                 onClick={() => onToggleInterest(item.id)}
                 className={cn(
-                  "flex items-center gap-2 rounded-2xl border p-3 text-xs font-semibold transition-all cursor-pointer",
+                  "flex items-center gap-2 rounded-[var(--panel-radius)] border p-3 text-xs font-semibold transition-all cursor-pointer",
                   isSelected
                     ? "border-[var(--accent-primary)] bg-[var(--accent-primary)]/15 text-[var(--text-primary)] shadow-xs"
                     : "border-[var(--panel-border)] bg-[var(--surface-raised)] text-[var(--text-muted)] hover:text-white hover:bg-[var(--surface-hover)]"
@@ -99,7 +99,7 @@ export default function PersonalizationPanel({
       </div>
 
       {/* 2. Inferred Preferences by Brain */}
-      <div className="rounded-3xl border border-purple-500/30 bg-purple-950/15 p-5 sm:p-6 backdrop-blur-md space-y-3">
+      <div className="rounded-[var(--panel-radius)] border border-purple-500/30 bg-purple-950/15 p-5 sm:p-6 backdrop-blur-md space-y-3">
         <div className="flex items-center justify-between">
           <div>
             <h3 className="text-base font-bold text-purple-100 flex items-center gap-2">
@@ -123,7 +123,7 @@ export default function PersonalizationPanel({
 
         {/* Transparency note */}
         {showTransparencyInfo && (
-          <div className="rounded-2xl border border-purple-500/30 bg-purple-900/30 p-3 text-xs text-purple-100/90 leading-relaxed space-y-1">
+          <div className="rounded-[var(--panel-radius)] border border-purple-500/30 bg-purple-900/30 p-3 text-xs text-purple-100/90 leading-relaxed space-y-1">
             <strong className="block font-bold">Transparence Algorithmique ETHONE :</strong>
             <p>
               Le moteur Brain analyse localement la fréquence d'utilisation de vos espaces, les types d'extensions installées et les intégrations connectées. Aucun profil publicitaire n'est créé et vos données ne quittent jamais votre environnement sécurisé.
@@ -135,7 +135,7 @@ export default function PersonalizationPanel({
           {inferredPreferences.map((pref) => (
             <div
               key={pref.id}
-              className="rounded-2xl border border-purple-500/20 bg-purple-950/30 p-3.5 space-y-1.5"
+              className="rounded-[var(--panel-radius)] border border-purple-500/20 bg-purple-950/30 p-3.5 space-y-1.5"
             >
               <div className="flex items-center justify-between">
                 <span className="text-xs font-bold text-white">{pref.label}</span>
@@ -152,7 +152,7 @@ export default function PersonalizationPanel({
       </div>
 
       {/* 3. Interface Density */}
-      <div className="rounded-3xl border border-[var(--panel-border)]/80 bg-[var(--surface-raised)]/60 p-5 sm:p-6 backdrop-blur-md space-y-3">
+      <div className="rounded-[var(--panel-radius)] border border-[var(--panel-border)]/80 bg-[var(--surface-raised)]/60 p-5 sm:p-6 backdrop-blur-md space-y-3">
         <div>
           <h3 className="text-base font-bold text-[var(--text-primary)] flex items-center gap-2">
             <Sliders className="h-4 w-4 text-[var(--accent-primary)]" />
@@ -174,7 +174,7 @@ export default function PersonalizationPanel({
               type="button"
               onClick={() => onSetDensity(item.id as InterfaceDensity)}
               className={cn(
-                "rounded-2xl border p-3 text-left transition-all cursor-pointer",
+                "rounded-[var(--panel-radius)] border p-3 text-left transition-all cursor-pointer",
                 preferences.density === item.id
                   ? "border-[var(--accent-primary)] bg-[var(--accent-primary)]/15 shadow-xs"
                   : "border-[var(--panel-border)] bg-[var(--surface-raised)] hover:bg-[var(--surface-hover)]"
@@ -193,7 +193,7 @@ export default function PersonalizationPanel({
       </div>
 
       {/* 4. Privacy & Personalization Controls */}
-      <div className="rounded-3xl border border-[var(--panel-border)]/80 bg-[var(--surface-raised)]/60 p-5 sm:p-6 backdrop-blur-md space-y-3">
+      <div className="rounded-[var(--panel-radius)] border border-[var(--panel-border)]/80 bg-[var(--surface-raised)]/60 p-5 sm:p-6 backdrop-blur-md space-y-3">
         <div>
           <h3 className="text-base font-bold text-[var(--text-primary)] flex items-center gap-2">
             <Shield className="h-4 w-4 text-emerald-400" />
@@ -232,7 +232,7 @@ export default function PersonalizationPanel({
             return (
               <div
                 key={toggle.key}
-                className="flex items-center justify-between rounded-2xl border border-[var(--panel-border)]/60 bg-[var(--surface-raised)]/40 p-3.5"
+                className="flex items-center justify-between rounded-[var(--panel-radius)] border border-[var(--panel-border)]/60 bg-[var(--surface-raised)]/40 p-3.5"
               >
                 <div className="space-y-0.5 pr-4">
                   <span className="text-xs font-bold text-[var(--text-primary)]">{toggle.label}</span>

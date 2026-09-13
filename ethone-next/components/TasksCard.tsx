@@ -66,7 +66,7 @@ const TasksCard = memo(function TasksCard({ task, onToggle, onDelete }: TasksCar
 
   return (
     <div
-      className="group relative flex items-center justify-between gap-3 rounded-xl border border-[var(--panel-border)] bg-[var(--panel-bg)] p-3 transition-all duration-200 hover:border-[var(--panel-border)] hover:bg-[var(--inset-bg)]"
+      className="group relative flex items-center justify-between gap-3 rounded-[var(--inset-radius)] border border-[var(--panel-border)] bg-[var(--panel-bg)] p-3 transition-all duration-200 hover:border-[var(--panel-border)] hover:bg-[var(--inset-bg)]"
       onClick={handleToggle}
     >
       <div className="flex min-w-0 flex-1 items-start gap-3">
@@ -76,7 +76,7 @@ const TasksCard = memo(function TasksCard({ task, onToggle, onDelete }: TasksCar
             e.stopPropagation();
             handleToggle();
           }}
-          className={`mt-0.5 flex h-5 w-5 shrink-0 items-center justify-center rounded-lg border transition-all ${
+          className={`mt-0.5 flex h-5 w-5 shrink-0 items-center justify-center rounded-[var(--inset-radius)] border transition-all ${
             task.done
               ? "border-[var(--accent-primary)] bg-[var(--accent-primary)] text-[var(--accent-contrast)] shadow-[0_0_10px_var(--glow-color)]"
               : "border-[var(--text-primary)]/20 hover:border-[var(--accent-primary)]"

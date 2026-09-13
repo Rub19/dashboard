@@ -111,7 +111,7 @@ export default function BrainComposer({
 
       {/* Drag & Drop Visual Glow Overlay */}
       {isDragging && (
-        <div className="absolute inset-0 z-40 flex items-center justify-center rounded-3xl border-2 border-dashed border-[var(--accent-primary)] bg-[var(--bg-main)]/90 backdrop-blur-md animate-in fade-in zoom-in-95">
+        <div className="absolute inset-0 z-40 flex items-center justify-center rounded-[var(--panel-radius)] border-2 border-dashed border-[var(--accent-primary)] bg-[var(--bg-main)]/90 backdrop-blur-md animate-in fade-in zoom-in-95">
           <div className="flex items-center gap-3 text-[var(--accent-primary)] font-semibold text-sm">
             <Icon name="upload-simple" className="h-6 w-6 animate-bounce" />
             <span>Déposer pour analyser avec Brain</span>
@@ -145,7 +145,7 @@ export default function BrainComposer({
       )}
 
       {/* Main Composer Box */}
-      <div className="relative rounded-2xl border border-[var(--panel-border)] bg-[var(--surface-raised)]/60 shadow-lg backdrop-blur-2xl transition-all focus-within:border-[var(--accent-primary)]/70 focus-within:shadow-[0_0_24px_-6px_var(--glow-color)]">
+      <div className="relative rounded-[var(--panel-radius)] border border-[var(--panel-border)] bg-[var(--surface-raised)]/60 shadow-lg backdrop-blur-2xl transition-all focus-within:border-[var(--accent-primary)]/70 focus-within:shadow-[0_0_24px_-6px_var(--glow-color)]">
         {/* Text Area Input */}
         <textarea
           ref={textareaRef}
@@ -169,7 +169,7 @@ export default function BrainComposer({
               <button
                 type="button"
                 onClick={() => setShowPlusMenu(!showPlusMenu)}
-                className="flex h-8 w-8 items-center justify-center rounded-xl border border-[var(--panel-border)]/60 bg-[var(--surface-raised)]/60 text-[var(--text-muted)] hover:text-[var(--text-primary)] hover:border-[var(--accent-primary)]/40 transition-all active:scale-95"
+                className="flex h-8 w-8 items-center justify-center rounded-[var(--inset-radius)] border border-[var(--panel-border)]/60 bg-[var(--surface-raised)]/60 text-[var(--text-muted)] hover:text-[var(--text-primary)] hover:border-[var(--accent-primary)]/40 transition-all active:scale-95"
                 title="Ajouter un contexte ou fichier"
               >
                 <Icon name="plus" className="h-4 w-4" />
@@ -177,7 +177,7 @@ export default function BrainComposer({
 
               {/* Plus Dropdown Menu */}
               {showPlusMenu && (
-                <div className="absolute bottom-full mb-2 left-0 z-50 w-52 overflow-hidden rounded-2xl border border-[var(--panel-border)] bg-[var(--panel-bg)]/95 p-1.5 shadow-2xl backdrop-blur-2xl animate-in fade-in zoom-in-95">
+                <div className="absolute bottom-full mb-2 left-0 z-50 w-52 overflow-hidden rounded-[var(--panel-radius)] border border-[var(--panel-border)] bg-[var(--panel-bg)]/95 p-1.5 shadow-2xl backdrop-blur-2xl animate-in fade-in zoom-in-95">
                   <button
                     type="button"
                     onClick={() => {
@@ -234,7 +234,7 @@ export default function BrainComposer({
                 onClick={onVoiceToggle}
                 title={voiceActive ? "Quitter le mode vocal" : "Mode vocal"}
                 className={cn(
-                  "flex h-8 w-8 items-center justify-center rounded-xl border transition-all active:scale-95",
+                  "flex h-8 w-8 items-center justify-center rounded-[var(--inset-radius)] border transition-all active:scale-95",
                   voiceActive
                     ? "border-[var(--accent-primary)] bg-[var(--accent-primary)]/20 text-[var(--accent-primary)] shadow-[0_0_12px_-2px_var(--glow-color)] animate-pulse"
                     : "border-[var(--panel-border)]/60 bg-[var(--surface-raised)]/60 text-[var(--text-muted)] hover:border-[var(--accent-primary)]/40 hover:text-[var(--text-primary)]"

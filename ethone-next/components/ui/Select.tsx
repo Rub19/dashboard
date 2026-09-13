@@ -199,7 +199,7 @@ export default function Select({
         opacity: mounted ? 1 : 0,
         transform: mounted ? "translateY(0)" : "translateY(-6px)",
       }}
-      className="z-[var(--z-dropdown)] rounded-2xl border border-[var(--panel-border)]/[0.2] bg-[var(--bg-main)]/95 shadow-2xl backdrop-blur-2xl transition-[opacity,transform] duration-150 ease-out overflow-hidden"
+      className="z-[var(--z-dropdown)] rounded-[var(--panel-radius)] border border-[var(--panel-border)]/[0.2] bg-[var(--bg-main)]/95 shadow-2xl backdrop-blur-2xl transition-[opacity,transform] duration-150 ease-out overflow-hidden"
     >
       <div role="group" className="max-h-64 overflow-y-auto p-1.5 [scrollbar-width:thin]">
         {options.map((option, index) => {

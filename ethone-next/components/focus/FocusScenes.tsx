@@ -66,7 +66,7 @@ export default function FocusScenes() {
   };
 
   return (
-    <div className="flex flex-col gap-3 rounded-2xl border border-[var(--panel-border)] bg-[var(--surface-raised)]/60 p-4 shadow-lg backdrop-blur-xl">
+    <div className="flex flex-col gap-3 rounded-[var(--panel-radius)] border border-[var(--panel-border)] bg-[var(--surface-raised)]/60 p-4 shadow-lg backdrop-blur-xl">
       <div className="flex items-center gap-2 border-b border-[var(--panel-border)]/50 pb-2.5">
         <Icon name="sparkles" className="h-4 w-4 text-[var(--accent-primary)]" />
         <span className="text-xs font-bold uppercase tracking-wider text-[var(--text-primary)]">
@@ -80,7 +80,7 @@ export default function FocusScenes() {
             key={scene.id}
             type="button"
             onClick={() => handleLaunchScene(scene)}
-            className={`group relative flex items-center justify-between rounded-xl border border-[var(--panel-border)]/60 bg-gradient-to-r ${scene.bgGradient} p-3 text-left transition-all hover:scale-[1.02] hover:border-[var(--accent-primary)]/50 active:scale-[0.98] shadow-sm`}
+            className={`group relative flex items-center justify-between rounded-[var(--inset-radius)] border border-[var(--panel-border)]/60 bg-gradient-to-r ${scene.bgGradient} p-3 text-left transition-all hover:scale-[1.02] hover:border-[var(--accent-primary)]/50 active:scale-[0.98] shadow-sm`}
           >
             <div className="flex items-center gap-3">
               <span className="flex h-8 w-8 items-center justify-center rounded-lg bg-[var(--surface-raised)]/80 text-[var(--accent-primary)] group-hover:scale-110 transition-transform">

@@ -78,7 +78,7 @@ function StatusBadge({ status, invitedAt }: { status: TeamStatus; invitedAt?: st
 function RoleBadge({ role }: { role: TeamRole }) {
   const meta = ROLE_META[role] || ROLE_META.viewer;
   return (
-    <span className={`inline-flex rounded-lg border px-2 py-0.5 text-[10px] font-medium capitalize ${meta.color} ${meta.border} ${meta.bg}`}>
+    <span className={`inline-flex rounded-[var(--inset-radius)] border px-2 py-0.5 text-[10px] font-medium capitalize ${meta.color} ${meta.border} ${meta.bg}`}>
       {meta.label}
     </span>
   );
@@ -129,7 +129,7 @@ export default function TeamMemberTable({ members, loading, onUpdateRole, onRemo
           className="min-w-0 w-full sm:w-72"
         />
 
-        <div className="flex items-center gap-1.5 rounded-xl border border-[var(--text-primary)]/[0.06] bg-[var(--text-primary)]/[0.02] p-1">
+        <div className="flex items-center gap-1.5 rounded-[var(--inset-radius)] border border-[var(--text-primary)]/[0.06] bg-[var(--text-primary)]/[0.02] p-1">
           {FILTERS.map((id) => (
             <button
               key={id}
@@ -142,7 +142,7 @@ export default function TeamMemberTable({ members, loading, onUpdateRole, onRemo
               {filter === id && (
                 <motion.div
                   layoutId="teamFilterPill"
-                  className="absolute inset-0 rounded-lg bg-[var(--accent-primary)] border border-[var(--accent-primary)]"
+                  className="absolute inset-0 rounded-[var(--inset-radius)] bg-[var(--accent-primary)] border border-[var(--accent-primary)]"
                   transition={{ type: "spring", stiffness: 400, damping: 30 }}
                 />
               )}

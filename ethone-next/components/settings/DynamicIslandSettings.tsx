@@ -18,7 +18,7 @@ export default function DynamicIslandSettings() {
   return (
     <div className="flex flex-col gap-6">
       {/* Live Interactive Simulator */}
-      <div className="relative flex flex-col items-center justify-center overflow-hidden rounded-2xl border border-[var(--panel-border)] bg-gradient-to-b from-[var(--surface-raised)]/60 to-[var(--bg-main)] p-8 shadow-inner">
+      <div className="relative flex flex-col items-center justify-center overflow-hidden rounded-[var(--panel-radius)] border border-[var(--panel-border)] bg-gradient-to-b from-[var(--surface-raised)]/60 to-[var(--bg-main)] p-8 shadow-inner">
         <div className="absolute left-4 top-4 flex items-center gap-2">
           <span className="flex h-2 w-2 rounded-full bg-[var(--accent-primary)] shadow-[0_0_5px_var(--glow-color)]" />
           <span className="text-[11px] font-semibold text-[var(--text-muted)] uppercase tracking-wider">
@@ -163,7 +163,7 @@ export default function DynamicIslandSettings() {
         </h4>
 
         <div className="grid grid-cols-1 gap-3 sm:grid-cols-2">
-          <label className="flex items-center justify-between gap-3 rounded-2xl border border-[var(--panel-border)] bg-[var(--panel-bg)] p-4">
+          <label className="flex items-center justify-between gap-3 rounded-[var(--panel-radius)] border border-[var(--panel-border)] bg-[var(--panel-bg)] p-4">
             <div>
               <p className="text-sm font-semibold text-[var(--text-primary)]">
                 Activer la Dynamic Island
@@ -180,7 +180,7 @@ export default function DynamicIslandSettings() {
             />
           </label>
 
-          <label className="flex items-center justify-between gap-3 rounded-2xl border border-[var(--panel-border)] bg-[var(--panel-bg)] p-4">
+          <label className="flex items-center justify-between gap-3 rounded-[var(--panel-radius)] border border-[var(--panel-border)] bg-[var(--panel-bg)] p-4">
             <div>
               <p className="text-sm font-semibold text-[var(--text-primary)]">
                 Afficher le lecteur Spotify
@@ -197,7 +197,7 @@ export default function DynamicIslandSettings() {
             />
           </label>
 
-          <label className="flex items-center justify-between gap-3 rounded-2xl border border-[var(--panel-border)] bg-[var(--panel-bg)] p-4">
+          <label className="flex items-center justify-between gap-3 rounded-[var(--panel-radius)] border border-[var(--panel-border)] bg-[var(--panel-bg)] p-4">
             <div>
               <p className="text-sm font-semibold text-[var(--text-primary)]">
                 Notifications et alertes
@@ -214,7 +214,7 @@ export default function DynamicIslandSettings() {
             />
           </label>
 
-          <label className="flex items-center justify-between gap-3 rounded-2xl border border-[var(--panel-border)] bg-[var(--panel-bg)] p-4">
+          <label className="flex items-center justify-between gap-3 rounded-[var(--panel-radius)] border border-[var(--panel-border)] bg-[var(--panel-bg)] p-4">
             <div>
               <p className="text-sm font-semibold text-[var(--text-primary)]">
                 Progression des uploads et synchro

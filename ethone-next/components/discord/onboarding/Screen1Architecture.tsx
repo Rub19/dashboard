@@ -26,8 +26,8 @@ export default function Screen1Architecture() {
         {/* 3 Nodes Connected */}
         <div className="grid grid-cols-1 md:grid-cols-3 gap-4 relative z-10 items-center">
           {/* Node 1: ETHONE Dashboard */}
-          <div className="flex flex-col items-center text-center p-4 rounded-xl bg-[var(--surface-2)]/60 border border-[var(--accent-primary)]/25 transition-colors hover:border-[var(--accent-primary)]/50">
-            <div className="w-12 h-12 rounded-xl bg-[var(--accent-primary)]/10 border border-[var(--accent-primary)]/25 flex items-center justify-center text-[var(--accent-primary)] mb-3">
+          <div className="flex flex-col items-center text-center p-4 rounded-[var(--inset-radius)] bg-[var(--surface-2)]/60 border border-[var(--accent-primary)]/25 transition-colors hover:border-[var(--accent-primary)]/50">
+            <div className="w-12 h-12 rounded-[var(--inset-radius)] bg-[var(--accent-primary)]/10 border border-[var(--accent-primary)]/25 flex items-center justify-center text-[var(--accent-primary)] mb-3">
               <LayoutDashboard className="w-6 h-6" />
             </div>
             <h4 className="text-sm font-semibold text-[var(--text-primary)] mb-1">ETHONE Dashboard</h4>
@@ -38,7 +38,7 @@ export default function Screen1Architecture() {
           </div>
 
           {/* Node 2: ETHONE Bot Core (Center) */}
-          <div className="flex flex-col items-center text-center p-4 rounded-xl bg-[var(--accent-primary)]/10 border border-[var(--accent-primary)]/40 relative">
+          <div className="flex flex-col items-center text-center p-4 rounded-[var(--inset-radius)] bg-[var(--accent-primary)]/10 border border-[var(--accent-primary)]/40 relative">
             <div className="absolute -top-2.5 px-2.5 py-0.5 rounded-full bg-[var(--success)]/15 border border-[var(--success)]/40 text-[var(--success)] text-[10px] font-medium flex items-center gap-1">
               <span className="w-1.5 h-1.5 rounded-full bg-[var(--success)]"></span>
               <span>Online (18ms)</span>
@@ -55,8 +55,8 @@ export default function Screen1Architecture() {
           </div>
 
           {/* Node 3: Discord Server */}
-          <div className="flex flex-col items-center text-center p-4 rounded-xl bg-[var(--surface-2)]/60 border border-[var(--panel-border)] transition-colors">
-            <div className="w-12 h-12 rounded-xl bg-[var(--surface-2)] border border-[var(--panel-border)] flex items-center justify-center text-[var(--text-muted)] mb-3">
+          <div className="flex flex-col items-center text-center p-4 rounded-[var(--inset-radius)] bg-[var(--surface-2)]/60 border border-[var(--panel-border)] transition-colors">
+            <div className="w-12 h-12 rounded-[var(--inset-radius)] bg-[var(--surface-2)] border border-[var(--panel-border)] flex items-center justify-center text-[var(--text-muted)] mb-3">
               <DiscordIcon className="w-6 h-6" />
             </div>
             <h4 className="text-sm font-semibold text-[var(--text-primary)] mb-1">Serveur Discord</h4>

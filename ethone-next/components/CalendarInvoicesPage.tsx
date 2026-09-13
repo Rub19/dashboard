@@ -116,7 +116,7 @@ export default function CalendarInvoicesPage() {
               </p>
             ) : null}
             {selectedItem.vendor && (
-              <div className="mt-3 flex items-center gap-2 rounded-xl border border-[var(--text-primary)]/[0.06] bg-[var(--text-primary)]/[0.03] p-3">
+              <div className="mt-3 flex items-center gap-2 rounded-[var(--inset-radius)] border border-[var(--text-primary)]/[0.06] bg-[var(--text-primary)]/[0.03] p-3">
                 <span
                   className="flex h-8 w-8 items-center justify-center rounded-full text-[var(--text-primary)]"
                   style={{ backgroundColor: selectedItem.color || "#A259FF" }}

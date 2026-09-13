@@ -89,7 +89,7 @@ export default function FlowAutomations({ activeFlow }: { activeFlow?: string })
               type="time"
               value={triggerValue}
               onChange={(e) => setTriggerValue(e.target.value)}
-              className="h-11 flex-1 rounded-xl border border-[var(--text-primary)]/[0.08] bg-[var(--text-primary)]/[0.04] px-3 text-sm text-[var(--text-primary)] outline-none transition-all duration-200 focus:border-white/20 focus:ring-1 focus:ring-white/15 focus:shadow-[0_0_15px_rgba(255,255,255,0.03)] md:h-10"
+              className="h-11 flex-1 rounded-[var(--inset-radius)] border border-[var(--text-primary)]/[0.08] bg-[var(--text-primary)]/[0.04] px-3 text-sm text-[var(--text-primary)] outline-none transition-all duration-200 focus:border-[var(--input-border-hover)] focus:ring-1 focus:ring-white/15 focus:shadow-[0_0_15px_rgba(255,255,255,0.03)] md:h-10"
             />
           ) : (
             <Select
@@ -128,7 +128,7 @@ export default function FlowAutomations({ activeFlow }: { activeFlow?: string })
               return (
                 <div
                   key={rule.id}
-                  className="flex items-center justify-between gap-3 rounded-xl border border-[var(--text-primary)]/[0.08] bg-[var(--text-primary)]/[0.04] p-2.5"
+                  className="flex items-center justify-between gap-3 rounded-[var(--inset-radius)] border border-[var(--text-primary)]/[0.08] bg-[var(--text-primary)]/[0.04] p-2.5"
                 >
                   <span className="min-w-0 text-sm text-[var(--text-primary)]">
                     <span className="font-medium text-[var(--text-primary)]">{triggerLabel(rule.trigger)}</span>

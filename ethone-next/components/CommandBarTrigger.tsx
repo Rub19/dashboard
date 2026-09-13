@@ -16,7 +16,7 @@ export default function CommandBarTrigger({ className }: { className?: string })
       onClick={() => setOpen(true)}
       aria-label={`Recherche et commandes (${shortcut})`}
       className={cn(
-        "flex h-9 items-center gap-2 rounded-xl border border-[var(--panel-border)]/70 bg-[var(--surface-raised)]/60 px-3 text-xs font-semibold text-[var(--text-muted)] hover:border-[var(--accent-primary)]/40 hover:bg-[var(--surface-hover)] hover:text-[var(--text-primary)] transition-all active:scale-95 cursor-pointer select-none shadow-sm",
+        "flex h-9 items-center gap-2 rounded-[var(--inset-radius)] border border-[var(--panel-border)]/70 bg-[var(--surface-raised)]/60 px-3 text-xs font-semibold text-[var(--text-muted)] hover:border-[var(--accent-primary)]/40 hover:bg-[var(--surface-hover)] hover:text-[var(--text-primary)] transition-all active:scale-95 cursor-pointer select-none shadow-sm",
         className
       )}
     >

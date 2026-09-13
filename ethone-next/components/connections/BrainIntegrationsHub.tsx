@@ -66,11 +66,11 @@ export default function BrainIntegrationsHub({
   }, [configuredMap]);
 
   return (
-    <div className="relative overflow-hidden rounded-3xl border border-[var(--accent-primary)]/25 bg-gradient-to-br from-[var(--surface-raised)]/90 via-[var(--surface-raised)]/70 to-[var(--accent-primary)]/10 p-5 shadow-xl backdrop-blur-2xl space-y-4">
+    <div className="relative overflow-hidden rounded-[var(--panel-radius)] border border-[var(--accent-primary)]/25 bg-gradient-to-br from-[var(--surface-raised)]/90 via-[var(--surface-raised)]/70 to-[var(--accent-primary)]/10 p-5 shadow-xl backdrop-blur-2xl space-y-4">
       <div className="flex flex-col md:flex-row md:items-center justify-between gap-4">
         {/* Left: Brain Title & Ecosystem Stats */}
         <div className="flex items-start gap-3.5 min-w-0">
-          <div className="flex h-11 w-11 shrink-0 items-center justify-center rounded-2xl bg-[var(--accent-primary)]/15 border border-[var(--accent-primary)]/30 text-[var(--accent-primary)] shadow-sm">
+          <div className="flex h-11 w-11 shrink-0 items-center justify-center rounded-[var(--panel-radius)] bg-[var(--accent-primary)]/15 border border-[var(--accent-primary)]/30 text-[var(--accent-primary)] shadow-sm">
             <Icon name="brain" className="h-5 w-5" />
           </div>
           <div>
@@ -94,7 +94,7 @@ export default function BrainIntegrationsHub({
             <div
               key={cap.id}
               className={cn(
-                "inline-flex items-center gap-1.5 rounded-xl border px-2.5 py-1 text-[11px] font-medium transition-all",
+                "inline-flex items-center gap-1.5 rounded-[var(--inset-radius)] border px-2.5 py-1 text-[11px] font-medium transition-all",
                 cap.active
                   ? "border-[var(--accent-primary)]/40 bg-[var(--accent-primary)]/10 text-[var(--accent-primary)] font-semibold shadow-xs"
                   : "border-[var(--panel-border)]/60 bg-[var(--surface-raised)]/40 text-[var(--text-muted)] opacity-60"
@@ -115,7 +115,7 @@ export default function BrainIntegrationsHub({
 
       {/* Proactive Brain Suggestion Card */}
       {brainSuggestion.id !== "all-set" && (
-        <div className="flex items-center justify-between gap-3 rounded-2xl border border-[var(--accent-primary)]/30 bg-[var(--accent-primary)]/10 p-3 text-xs">
+        <div className="flex items-center justify-between gap-3 rounded-[var(--panel-radius)] border border-[var(--accent-primary)]/30 bg-[var(--accent-primary)]/10 p-3 text-xs">
           <div className="flex items-center gap-2.5">
             <Sparkles className="h-4 w-4 text-[var(--accent-primary)] shrink-0" />
             <div>

@@ -140,7 +140,7 @@ export default function BrainPage() {
           <button
             type="button"
             onClick={() => setContextOpen(!contextOpen)}
-            className="flex items-center gap-1.5 rounded-xl border border-[var(--panel-border)] px-2.5 py-1 text-xs font-medium text-[var(--text-muted)] hover:text-[var(--text-primary)] transition-colors"
+            className="flex items-center gap-1.5 rounded-[var(--inset-radius)] border border-[var(--panel-border)] px-2.5 py-1 text-xs font-medium text-[var(--text-muted)] hover:text-[var(--text-primary)] transition-colors"
           >
             <Icon name="scan-search" className="h-3.5 w-3.5 text-[var(--accent-primary)]" />
             <span className="hidden lg:inline">Contexte</span>
@@ -182,7 +182,7 @@ export default function BrainPage() {
                 {brain.automations.map((rule) => (
                   <div
                     key={rule.id}
-                    className="flex items-center justify-between rounded-2xl border border-[var(--panel-border)] bg-[var(--surface-raised)]/60 p-4"
+                    className="flex items-center justify-between rounded-[var(--panel-radius)] border border-[var(--panel-border)] bg-[var(--surface-raised)]/60 p-4"
                   >
                     <div>
                       <p className="text-xs font-bold text-[var(--text-primary)]">
@@ -225,7 +225,7 @@ export default function BrainPage() {
                 {brain.providers.map((p) => (
                   <div
                     key={p.id}
-                    className="flex items-center justify-between rounded-2xl border border-[var(--panel-border)] bg-[var(--surface-raised)]/60 p-4"
+                    className="flex items-center justify-between rounded-[var(--panel-radius)] border border-[var(--panel-border)] bg-[var(--surface-raised)]/60 p-4"
                   >
                     <div>
                       <p className="text-xs font-bold text-[var(--text-primary)]">{p.label}</p>
@@ -236,7 +236,7 @@ export default function BrainPage() {
                     <button
                       type="button"
                       onClick={() => brain.testProvider(p.id)}
-                      className="rounded-xl border border-[var(--panel-border)] bg-[var(--surface-raised)] px-3 py-1.5 text-xs font-semibold text-[var(--text-primary)] hover:border-[var(--accent-primary)]/50 transition-all"
+                      className="rounded-[var(--inset-radius)] border border-[var(--panel-border)] bg-[var(--surface-raised)] px-3 py-1.5 text-xs font-semibold text-[var(--text-primary)] hover:border-[var(--accent-primary)]/50 transition-all"
                     >
                       Tester la latence
                     </button>

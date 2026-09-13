@@ -47,13 +47,13 @@ export default function MyConnectionsRow({
               whileHover={{ y: -2 }}
               whileTap={{ scale: 0.97 }}
               className={cn(
-                "group flex shrink-0 items-center gap-3 rounded-2xl border p-2.5 pr-4 transition-all cursor-pointer shadow-sm",
+                "group flex shrink-0 items-center gap-3 rounded-[var(--panel-radius)] border p-2.5 pr-4 transition-all cursor-pointer shadow-sm",
                 isOk
                   ? "border-[var(--accent-primary)]/30 bg-[var(--surface-raised)]/70 hover:border-[var(--accent-primary)]/60 hover:bg-[var(--surface-raised)]"
                   : "border-[var(--panel-border)] bg-[var(--surface-raised)]/40 hover:border-[var(--panel-border)]/80"
               )}
             >
-              <div className="flex h-9 w-9 shrink-0 items-center justify-center rounded-xl bg-[var(--surface-raised)] border border-[var(--panel-border)] shadow-xs">
+              <div className="flex h-9 w-9 shrink-0 items-center justify-center rounded-[var(--inset-radius)] bg-[var(--surface-raised)] border border-[var(--panel-border)] shadow-xs">
                 <ServiceIcon id={integration.id} icon={integration.icon} className="h-5 w-5" colored />
               </div>
               <div className="min-w-0 text-left">

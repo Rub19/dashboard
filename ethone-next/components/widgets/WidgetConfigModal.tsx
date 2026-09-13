@@ -43,7 +43,7 @@ export default function WidgetConfigModal({
       <div className="space-y-4 p-2 text-xs">
         {widgetId === "live" && (
           <div className="space-y-3">
-            <label className="flex items-center justify-between rounded-xl border border-[var(--panel-border)] p-2.5">
+            <label className="flex items-center justify-between rounded-[var(--inset-radius)] border border-[var(--panel-border)] p-2.5">
               <span className="font-semibold text-[var(--text-primary)]">Effet 3D Tilt interactif</span>
               <input
                 type="checkbox"
@@ -67,7 +67,7 @@ export default function WidgetConfigModal({
                 max={15}
                 value={Number(config.limit) || 5}
                 onChange={(e) => handleChange("limit", Number(e.target.value))}
-                className="w-full rounded-xl border border-[var(--panel-border)] bg-[var(--surface-raised)] p-2 text-xs text-[var(--text-primary)] focus:outline-none focus:border-[var(--accent-primary)]"
+                className="w-full rounded-[var(--inset-radius)] border border-[var(--panel-border)] bg-[var(--surface-raised)] p-2 text-xs text-[var(--text-primary)] focus:outline-none focus:border-[var(--accent-primary)]"
               />
             </div>
           </div>
@@ -85,7 +85,7 @@ export default function WidgetConfigModal({
                 max={10}
                 value={Number(config.maxItems) || 4}
                 onChange={(e) => handleChange("maxItems", Number(e.target.value))}
-                className="w-full rounded-xl border border-[var(--panel-border)] bg-[var(--surface-raised)] p-2 text-xs text-[var(--text-primary)] focus:outline-none focus:border-[var(--accent-primary)]"
+                className="w-full rounded-[var(--inset-radius)] border border-[var(--panel-border)] bg-[var(--surface-raised)] p-2 text-xs text-[var(--text-primary)] focus:outline-none focus:border-[var(--accent-primary)]"
               />
             </div>
           </div>
@@ -93,7 +93,7 @@ export default function WidgetConfigModal({
 
         {widgetId === "system" && (
           <div className="space-y-3">
-            <label className="flex items-center justify-between rounded-xl border border-[var(--panel-border)] p-2.5">
+            <label className="flex items-center justify-between rounded-[var(--inset-radius)] border border-[var(--panel-border)] p-2.5">
               <span className="font-semibold text-[var(--text-primary)]">Afficher la latence réseau</span>
               <input
                 type="checkbox"

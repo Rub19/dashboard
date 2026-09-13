@@ -393,7 +393,7 @@ export default function FilesPage() {
                 type="button"
                 onClick={() => setSelectMode(!selectMode)}
                 className={cn(
-                  "flex h-8 items-center gap-1.5 rounded-xl border px-2.5 text-xs font-semibold transition-all cursor-pointer",
+                  "flex h-8 items-center gap-1.5 rounded-[var(--inset-radius)] border px-2.5 text-xs font-semibold transition-all cursor-pointer",
                   selectMode
                     ? "border-[var(--accent-primary)]/40 bg-[var(--accent-primary)]/15 text-[var(--accent-primary)]"
                     : "border-[var(--panel-border)] bg-[var(--surface-raised)]/60 text-[var(--text-muted)] hover:text-[var(--text-primary)]"
@@ -404,7 +404,7 @@ export default function FilesPage() {
                 <span className="hidden sm:inline">Sélection</span>
               </button>
 
-              <div className="flex items-center rounded-xl border border-[var(--panel-border)] bg-[var(--surface-raised)]/60 p-0.5">
+              <div className="flex items-center rounded-[var(--inset-radius)] border border-[var(--panel-border)] bg-[var(--surface-raised)]/60 p-0.5">
                 <button
                   type="button"
                   onClick={() => setViewMode("grid")}
@@ -436,7 +436,7 @@ export default function FilesPage() {
               <button
                 type="button"
                 onClick={() => reload()}
-                className="flex h-8 w-8 items-center justify-center rounded-xl border border-[var(--panel-border)] bg-[var(--surface-raised)]/60 text-[var(--text-muted)] hover:text-[var(--text-primary)] transition-all cursor-pointer shadow-xs"
+                className="flex h-8 w-8 items-center justify-center rounded-[var(--inset-radius)] border border-[var(--panel-border)] bg-[var(--surface-raised)]/60 text-[var(--text-muted)] hover:text-[var(--text-primary)] transition-all cursor-pointer shadow-xs"
                 title="Rafraîchir"
               >
                 <RefreshCw className={cn("h-3.5 w-3.5", loading && "animate-spin text-[var(--accent-primary)]")} />
@@ -453,7 +453,7 @@ export default function FilesPage() {
                 value={query}
                 onChange={(e) => setQuery(e.target.value)}
                 placeholder="Rechercher par nom, extension (ex: pdf, *.png), ou filtre (from:drive)..."
-                className="w-full rounded-xl border border-[var(--panel-border)] bg-[var(--surface-raised)]/60 py-2 pl-9 pr-3 text-xs text-[var(--text-primary)] placeholder-[var(--text-muted)] focus:border-[var(--accent-primary)] focus:outline-none"
+                className="w-full rounded-[var(--inset-radius)] border border-[var(--panel-border)] bg-[var(--surface-raised)]/60 py-2 pl-9 pr-3 text-xs text-[var(--text-primary)] placeholder-[var(--text-muted)] focus:border-[var(--accent-primary)] focus:outline-none"
               />
             </div>
 
@@ -461,7 +461,7 @@ export default function FilesPage() {
               <select
                 value={sort}
                 onChange={(e) => setSort(e.target.value as any)}
-                className="h-8 rounded-xl border border-[var(--panel-border)] bg-[var(--surface-raised)]/80 px-2.5 text-xs text-[var(--text-primary)] focus:outline-none focus:border-[var(--accent-primary)] cursor-pointer"
+                className="h-8 rounded-[var(--inset-radius)] border border-[var(--panel-border)] bg-[var(--surface-raised)]/80 px-2.5 text-xs text-[var(--text-primary)] focus:outline-none focus:border-[var(--accent-primary)] cursor-pointer"
               >
                 <option value="date">Date</option>
                 <option value="name">Nom</option>
@@ -472,7 +472,7 @@ export default function FilesPage() {
               <button
                 type="button"
                 onClick={() => setSortDirection((d) => (d === "asc" ? "desc" : "asc"))}
-                className="flex h-8 w-8 items-center justify-center rounded-xl border border-[var(--panel-border)] bg-[var(--surface-raised)]/60 text-[var(--text-muted)] hover:text-[var(--text-primary)] transition-all cursor-pointer"
+                className="flex h-8 w-8 items-center justify-center rounded-[var(--inset-radius)] border border-[var(--panel-border)] bg-[var(--surface-raised)]/60 text-[var(--text-muted)] hover:text-[var(--text-primary)] transition-all cursor-pointer"
                 title={sortDirection === "asc" ? "Ordre croissant" : "Ordre décroissant"}
               >
                 <ArrowUpDown className="h-3.5 w-3.5" />
@@ -484,7 +484,7 @@ export default function FilesPage() {
         {/* Content Body */}
         <div className="flex-1 overflow-y-auto os-scroll p-4 space-y-6">
           {error && (
-            <div className="flex flex-wrap items-center justify-between gap-3 rounded-2xl border border-[var(--danger)]/25 bg-[var(--danger)]/10 px-4 py-3 text-xs text-[var(--danger)]">
+            <div className="flex flex-wrap items-center justify-between gap-3 rounded-[var(--panel-radius)] border border-[var(--danger)]/25 bg-[var(--danger)]/10 px-4 py-3 text-xs text-[var(--danger)]">
               <span className="flex items-center gap-2">
                 <Cloud className="h-4 w-4 shrink-0" />
                 Impossible de charger vos fichiers pour le moment. Les éléments affichés proviennent de votre cache local.
@@ -492,7 +492,7 @@ export default function FilesPage() {
               <button
                 type="button"
                 onClick={() => reload()}
-                className="shrink-0 rounded-lg border border-[var(--danger)]/30 px-2.5 py-1 font-semibold transition-colors hover:bg-[var(--danger)]/15 cursor-pointer"
+                className="shrink-0 rounded-[var(--inset-radius)] border border-[var(--danger)]/30 px-2.5 py-1 font-semibold transition-colors hover:bg-[var(--danger)]/15 cursor-pointer"
               >
                 Réessayer
               </button>
@@ -504,7 +504,7 @@ export default function FilesPage() {
             <div className="space-y-6">
               {/* Storage Overview Banner */}
               <div className="grid grid-cols-1 md:grid-cols-2 gap-3">
-                <div className="rounded-2xl border border-[var(--panel-border)]/60 bg-[var(--surface-raised)]/40 p-4 flex items-center justify-between">
+                <div className="rounded-[var(--panel-radius)] border border-[var(--panel-border)]/60 bg-[var(--surface-raised)]/40 p-4 flex items-center justify-between">
                   <div className="space-y-1">
                     <p className="text-xs font-bold text-[var(--text-primary)] flex items-center gap-2">
                       <HardDrive className="h-4 w-4 text-[var(--text-muted)]" />
@@ -518,7 +518,7 @@ export default function FilesPage() {
                 </div>
 
                 {quota && quota.total > 0 && (
-                  <div className="rounded-2xl border border-blue-500/30 bg-blue-500/10 p-4 space-y-2">
+                  <div className="rounded-[var(--panel-radius)] border border-blue-500/30 bg-blue-500/10 p-4 space-y-2">
                     <div className="flex items-center justify-between">
                       <p className="text-xs font-bold text-blue-300 flex items-center gap-2">
                         <Cloud className="h-4 w-4 text-blue-400" />
@@ -670,7 +670,7 @@ export default function FilesPage() {
                   {Array.from({ length: 12 }).map((_, i) => (
                     <div
                       key={i}
-                      className="aspect-[4/3] animate-pulse rounded-xl border border-[var(--panel-border)]/50 bg-[var(--surface-raised)]/40"
+                      className="aspect-[4/3] animate-pulse rounded-[var(--inset-radius)] border border-[var(--panel-border)]/50 bg-[var(--surface-raised)]/40"
                     />
                   ))}
                 </div>
@@ -821,7 +821,7 @@ export default function FilesPage() {
               type="text"
               value={form.name || ""}
               onChange={(e) => setForm({ ...form, name: e.target.value })}
-              className="w-full rounded-xl border border-[var(--panel-border)] bg-[var(--surface-raised)] p-2.5 text-xs text-[var(--text-primary)] focus:outline-none focus:border-[var(--accent-primary)]"
+              className="w-full rounded-[var(--inset-radius)] border border-[var(--panel-border)] bg-[var(--surface-raised)] p-2.5 text-xs text-[var(--text-primary)] focus:outline-none focus:border-[var(--accent-primary)]"
             />
             <div className="flex justify-end gap-2">
               <Button variant="secondary" size="sm" onClick={() => setModal(null)}>

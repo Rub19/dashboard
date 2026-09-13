@@ -96,7 +96,7 @@ const MODULES: ModuleInfo[] = [
     icon: Sparkles,
     color: "text-teal-400 bg-teal-500/10 border-teal-500/30",
     preview: (
-      <div className="space-y-1.5 text-center p-2 rounded-lg bg-teal-950/20 border border-teal-500/20">
+      <div className="space-y-1.5 text-center p-2 rounded-[var(--inset-radius)] bg-teal-950/20 border border-teal-500/20">
         <div className="text-xs font-bold text-teal-300">BIENVENUE SUR LE SERVEUR</div>
         <div className="text-[11px] text-[var(--text-muted)]">Bienvenue @Alex ! Tu es notre 1,284ème membre.</div>
         <div className="inline-flex items-center gap-1 text-[10px] text-teal-400 font-mono mt-1">
@@ -265,14 +265,14 @@ export default function Screen2Features() {
                 key={m.id}
                 onClick={() => setSelectedId(m.id)}
                 onMouseEnter={() => setSelectedId(m.id)}
-                className={`flex flex-col items-start p-2.5 rounded-xl border text-left transition-colors duration-150 cursor-pointer ${
+                className={`flex flex-col items-start p-2.5 rounded-[var(--inset-radius)] border text-left transition-colors duration-150 cursor-pointer ${
                   isSelected
                     ? "bg-[var(--surface-2)] border-[var(--accent-primary)]/50"
                     : "bg-[var(--surface-2)]/40 border-[var(--panel-border)] hover:bg-[var(--surface-2)]/70"
                 }`}
               >
                 <div className="flex items-center justify-between w-full mb-1.5">
-                  <div className={`p-1.5 rounded-lg border ${m.color}`}>
+                  <div className={`p-1.5 rounded-[var(--inset-radius)] border ${m.color}`}>
                     <Icon className="w-3.5 h-3.5" />
                   </div>
                   {isSelected && (
@@ -290,7 +290,7 @@ export default function Screen2Features() {
         <div className="v8-panel md:col-span-5 p-4 flex flex-col justify-between min-h-[260px] relative overflow-hidden">
           <div>
             <div className="flex items-center gap-2 mb-2">
-              <div className={`p-2 rounded-xl border ${currentModule.color}`}>
+              <div className={`p-2 rounded-[var(--inset-radius)] border ${currentModule.color}`}>
                 <currentModule.icon className="w-4 h-4" />
               </div>
               <div>

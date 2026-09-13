@@ -42,7 +42,7 @@ export default function LanguageSwitcher() {
           aria-label={i18n("language")}
           aria-haspopup="listbox"
           aria-expanded={open}
-          className="flex h-9 items-center gap-2 rounded-xl border border-[var(--panel-border)]/70 bg-[var(--surface-raised)]/60 px-2.5 text-xs font-semibold text-[var(--text-primary)] hover:border-[var(--accent-primary)]/40 hover:bg-[var(--surface-hover)] transition-all active:scale-95 cursor-pointer select-none shadow-sm"
+          className="flex h-9 items-center gap-2 rounded-[var(--inset-radius)] border border-[var(--panel-border)]/70 bg-[var(--surface-raised)]/60 px-2.5 text-xs font-semibold text-[var(--text-primary)] hover:border-[var(--accent-primary)]/40 hover:bg-[var(--surface-hover)] transition-all active:scale-95 cursor-pointer select-none shadow-sm"
         >
           <FlagIcon code={current} className="h-4 w-5 rounded-sm overflow-hidden" />
           <span className="uppercase text-[11px] text-[var(--text-muted)] font-bold">
@@ -53,7 +53,7 @@ export default function LanguageSwitcher() {
 
       {/* Solid surface, not the translucent glass --panel-bg — same
           readability fix as UserProfileDropdown's menu. */}
-      <PopoverContent className="w-52 max-w-[calc(100vw-2rem)] overflow-hidden rounded-2xl border border-[var(--panel-border)] bg-[var(--bg-surface-elevated)] p-1.5 shadow-2xl backdrop-blur-2xl">
+      <PopoverContent className="w-52 max-w-[calc(100vw-2rem)] overflow-hidden rounded-[var(--panel-radius)] border border-[var(--panel-border)] bg-[var(--bg-surface-elevated)] p-1.5 shadow-2xl backdrop-blur-2xl">
         <div role="listbox" aria-label={i18n("language")} className="space-y-1">
           <div className="px-2.5 py-1.5 border-b border-[var(--panel-border)]/50">
             <span className="text-[10px] font-bold uppercase tracking-wider text-[var(--text-muted)]">

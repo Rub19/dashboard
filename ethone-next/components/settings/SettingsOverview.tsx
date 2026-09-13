@@ -76,7 +76,7 @@ export default function SettingsOverview({ onNavigate }: SettingsOverviewProps) 
   return (
     <div className="flex flex-col gap-6">
       {/* Hero Control Center Banner */}
-      <div className="relative overflow-hidden rounded-2xl border border-[var(--panel-border)] bg-gradient-to-br from-[var(--surface-raised)] to-[var(--panel-bg)] p-5 shadow-lg">
+      <div className="relative overflow-hidden rounded-[var(--panel-radius)] border border-[var(--panel-border)] bg-gradient-to-br from-[var(--surface-raised)] to-[var(--panel-bg)] p-5 shadow-lg">
         <div className="relative z-10 flex flex-col gap-4 sm:flex-row sm:items-center sm:justify-between">
           <div className="flex items-center gap-4">
             <div className="relative flex h-14 w-14 shrink-0 items-center justify-center rounded-2xl bg-[var(--accent-primary)]/15 text-[var(--accent-primary)] ring-2 ring-[var(--accent-primary)]/30">
@@ -108,7 +108,7 @@ export default function SettingsOverview({ onNavigate }: SettingsOverviewProps) 
             <button
               type="button"
               onClick={() => onNavigate("profile")}
-              className="flex items-center gap-1.5 rounded-xl border border-[var(--panel-border)] bg-[var(--panel-bg)] px-3 py-1.5 text-xs font-medium text-[var(--text-primary)] hover:border-[var(--accent-primary)]/50 transition-colors"
+              className="flex items-center gap-1.5 rounded-[var(--inset-radius)] border border-[var(--panel-border)] bg-[var(--panel-bg)] px-3 py-1.5 text-xs font-medium text-[var(--text-primary)] hover:border-[var(--accent-primary)]/50 transition-colors"
             >
               <Icon name="user" className="h-3.5 w-3.5 text-[var(--accent-primary)]" />
               Gérer le profil
@@ -116,7 +116,7 @@ export default function SettingsOverview({ onNavigate }: SettingsOverviewProps) 
             <button
               type="button"
               onClick={() => onNavigate("performance")}
-              className="flex items-center gap-1.5 rounded-xl border border-[var(--panel-border)] bg-[var(--panel-bg)] px-3 py-1.5 text-xs font-medium text-[var(--text-primary)] hover:border-[var(--accent-primary)]/50 transition-colors"
+              className="flex items-center gap-1.5 rounded-[var(--inset-radius)] border border-[var(--panel-border)] bg-[var(--panel-bg)] px-3 py-1.5 text-xs font-medium text-[var(--text-primary)] hover:border-[var(--accent-primary)]/50 transition-colors"
             >
               <Icon name="cpu" className="h-3.5 w-3.5 text-[var(--info)]" />
               Diagnostic
@@ -133,7 +133,7 @@ export default function SettingsOverview({ onNavigate }: SettingsOverviewProps) 
         {/* Theme Indicator */}
         <div
           onClick={() => onNavigate("themes")}
-          className="group flex cursor-pointer flex-col justify-between rounded-xl border border-[var(--panel-border)] bg-[var(--panel-bg)] p-3 transition-all hover:border-[var(--accent-primary)]/40 hover:shadow-md"
+          className="group flex cursor-pointer flex-col justify-between rounded-[var(--inset-radius)] border border-[var(--panel-border)] bg-[var(--panel-bg)] p-3 transition-all hover:border-[var(--accent-primary)]/40 hover:shadow-md"
         >
           <div className="flex items-center justify-between">
             <span className="text-[11px] font-medium text-[var(--text-muted)]">Thème</span>
@@ -150,7 +150,7 @@ export default function SettingsOverview({ onNavigate }: SettingsOverviewProps) 
         {/* Sync Indicator */}
         <div
           onClick={() => onNavigate("sync")}
-          className="group flex cursor-pointer flex-col justify-between rounded-xl border border-[var(--panel-border)] bg-[var(--panel-bg)] p-3 transition-all hover:border-[var(--accent-primary)]/40 hover:shadow-md"
+          className="group flex cursor-pointer flex-col justify-between rounded-[var(--inset-radius)] border border-[var(--panel-border)] bg-[var(--panel-bg)] p-3 transition-all hover:border-[var(--accent-primary)]/40 hover:shadow-md"
         >
           <div className="flex items-center justify-between">
             <span className="text-[11px] font-medium text-[var(--text-muted)]">Sync Cloud</span>
@@ -165,7 +165,7 @@ export default function SettingsOverview({ onNavigate }: SettingsOverviewProps) 
         {/* Audio / Soundscape Indicator */}
         <div
           onClick={() => onNavigate("soundscapes")}
-          className="group flex cursor-pointer flex-col justify-between rounded-xl border border-[var(--panel-border)] bg-[var(--panel-bg)] p-3 transition-all hover:border-[var(--accent-primary)]/40 hover:shadow-md"
+          className="group flex cursor-pointer flex-col justify-between rounded-[var(--inset-radius)] border border-[var(--panel-border)] bg-[var(--panel-bg)] p-3 transition-all hover:border-[var(--accent-primary)]/40 hover:shadow-md"
         >
           <div className="flex items-center justify-between">
             <span className="text-[11px] font-medium text-[var(--text-muted)]">Ambiance</span>
@@ -182,7 +182,7 @@ export default function SettingsOverview({ onNavigate }: SettingsOverviewProps) 
         {/* Island Indicator */}
         <div
           onClick={() => onNavigate("dynamic-island")}
-          className="group flex cursor-pointer flex-col justify-between rounded-xl border border-[var(--panel-border)] bg-[var(--panel-bg)] p-3 transition-all hover:border-[var(--accent-primary)]/40 hover:shadow-md"
+          className="group flex cursor-pointer flex-col justify-between rounded-[var(--inset-radius)] border border-[var(--panel-border)] bg-[var(--panel-bg)] p-3 transition-all hover:border-[var(--accent-primary)]/40 hover:shadow-md"
         >
           <div className="flex items-center justify-between">
             <span className="text-[11px] font-medium text-[var(--text-muted)]">Island</span>
@@ -199,7 +199,7 @@ export default function SettingsOverview({ onNavigate }: SettingsOverviewProps) 
         {/* Dock Indicator */}
         <div
           onClick={() => onNavigate("dock")}
-          className="group flex cursor-pointer flex-col justify-between rounded-xl border border-[var(--panel-border)] bg-[var(--panel-bg)] p-3 transition-all hover:border-[var(--accent-primary)]/40 hover:shadow-md"
+          className="group flex cursor-pointer flex-col justify-between rounded-[var(--inset-radius)] border border-[var(--panel-border)] bg-[var(--panel-bg)] p-3 transition-all hover:border-[var(--accent-primary)]/40 hover:shadow-md"
         >
           <div className="flex items-center justify-between">
             <span className="text-[11px] font-medium text-[var(--text-muted)]">Dock</span>
@@ -216,7 +216,7 @@ export default function SettingsOverview({ onNavigate }: SettingsOverviewProps) 
         {/* Language & Locale */}
         <div
           onClick={() => onNavigate("language")}
-          className="group flex cursor-pointer flex-col justify-between rounded-xl border border-[var(--panel-border)] bg-[var(--panel-bg)] p-3 transition-all hover:border-[var(--accent-primary)]/40 hover:shadow-md"
+          className="group flex cursor-pointer flex-col justify-between rounded-[var(--inset-radius)] border border-[var(--panel-border)] bg-[var(--panel-bg)] p-3 transition-all hover:border-[var(--accent-primary)]/40 hover:shadow-md"
         >
           <div className="flex items-center justify-between">
             <span className="text-[11px] font-medium text-[var(--text-muted)]">Langue</span>
@@ -242,7 +242,7 @@ export default function SettingsOverview({ onNavigate }: SettingsOverviewProps) 
               key={action.id}
               type="button"
               onClick={() => ("onClick" in action && action.onClick ? action.onClick() : onNavigate(action.id))}
-              className="group flex items-start gap-3.5 rounded-2xl border border-[var(--panel-border)] bg-[var(--panel-bg)] p-4 text-left transition-all hover:border-[var(--accent-primary)]/40 hover:bg-[var(--surface-hover)]/30 hover:shadow-md"
+              className="group flex items-start gap-3.5 rounded-[var(--panel-radius)] border border-[var(--panel-border)] bg-[var(--panel-bg)] p-4 text-left transition-all hover:border-[var(--accent-primary)]/40 hover:bg-[var(--surface-hover)]/30 hover:shadow-md"
             >
               <div
                 className="flex h-10 w-10 shrink-0 items-center justify-center rounded-xl bg-[var(--surface-raised)] transition-transform group-hover:scale-105"

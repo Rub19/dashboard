@@ -246,7 +246,7 @@ export default function CommandPalette() {
                   <X className="h-4 w-4" />
                 </button>
               )}
-              <kbd className="hidden sm:inline-flex items-center gap-1 rounded-lg border border-[var(--panel-border)] bg-[var(--surface-raised)]/60 px-2 py-1 font-mono text-[10px] text-[var(--text-muted)]">
+              <kbd className="hidden sm:inline-flex items-center gap-1 rounded-[var(--inset-radius)] border border-[var(--panel-border)] bg-[var(--surface-raised)]/60 px-2 py-1 font-mono text-[10px] text-[var(--text-muted)]">
                 ESC
               </kbd>
             </div>
@@ -294,7 +294,7 @@ export default function CommandPalette() {
                   <button
                     type="button"
                     onClick={() => setSensitivePrompt(null)}
-                    className="rounded-xl border border-[var(--panel-border)] px-4 py-2 text-xs font-semibold text-[var(--text-primary)] hover:bg-[var(--surface-hover)]"
+                    className="rounded-[var(--inset-radius)] border border-[var(--panel-border)] px-4 py-2 text-xs font-semibold text-[var(--text-primary)] hover:bg-[var(--surface-hover)]"
                   >
                     Annuler
                   </button>
@@ -320,7 +320,7 @@ export default function CommandPalette() {
                       router.push(`/brain/?q=${encodeURIComponent(query.trim())}`);
                       setOpen(false);
                     }}
-                    className="group mx-2 mb-2 flex items-center justify-between gap-3 rounded-2xl border border-[var(--accent-primary)]/40 bg-[var(--accent-primary)]/10 p-3.5 transition-all cursor-pointer hover:bg-[var(--accent-primary)]/20"
+                    className="group mx-2 mb-2 flex items-center justify-between gap-3 rounded-[var(--panel-radius)] border border-[var(--accent-primary)]/40 bg-[var(--accent-primary)]/10 p-3.5 transition-all cursor-pointer hover:bg-[var(--accent-primary)]/20"
                   >
                     <div className="flex items-center gap-3">
                       <div className="flex h-9 w-9 items-center justify-center rounded-xl bg-[var(--accent-primary)] text-[var(--accent-contrast)] shadow-md">
@@ -369,7 +369,7 @@ export default function CommandPalette() {
                           {/* Icon Container */}
                           <div
                             className={cn(
-                              "flex h-8 w-8 shrink-0 items-center justify-center rounded-xl border text-sm transition-all",
+                              "flex h-8 w-8 shrink-0 items-center justify-center rounded-[var(--inset-radius)] border text-sm transition-all",
                               isSelected
                                 ? "border-[var(--accent-primary)]/60 bg-[var(--accent-primary)]/15 text-[var(--accent-primary)] shadow-sm"
                                 : "border-[var(--panel-border)]/60 bg-[var(--surface-raised)]/60 text-[var(--text-muted)]"

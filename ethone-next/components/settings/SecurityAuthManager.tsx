@@ -239,13 +239,13 @@ export default function SecurityAuthManager() {
                 {i18n("totpManualEntry", "Entrez cette clé manuellement (\"configuration manuelle\" / \"entrer une clé\") :")}
               </p>
               <div className="mt-2 flex items-center gap-2">
-                <code className="min-w-0 flex-1 truncate rounded-lg border border-[var(--panel-border)] bg-[var(--panel-bg)] px-2.5 py-1.5 text-xs">
+                <code className="min-w-0 flex-1 truncate rounded-[var(--inset-radius)] border border-[var(--panel-border)] bg-[var(--panel-bg)] px-2.5 py-1.5 text-xs">
                   {totpData.secret}
                 </code>
                 <button
                   type="button"
                   onClick={() => copy(totpData.secret)}
-                  className="flex h-8 w-8 shrink-0 items-center justify-center rounded-lg border border-[var(--panel-border)] text-[var(--text-muted)] hover:text-[var(--accent-primary)]"
+                  className="flex h-8 w-8 shrink-0 items-center justify-center rounded-[var(--inset-radius)] border border-[var(--panel-border)] text-[var(--text-muted)] hover:text-[var(--accent-primary)]"
                   aria-label={i18n("copy", "Copier")}
                 >
                   <Icon name="copy" className="h-3.5 w-3.5" />
@@ -259,7 +259,7 @@ export default function SecurityAuthManager() {
               </p>
               <div className="mt-2 grid grid-cols-2 gap-1.5 sm:grid-cols-4">
                 {totpData.backupCodes.map((c) => (
-                  <code key={c} className="rounded-lg border border-[var(--panel-border)] bg-[var(--panel-bg)] px-2 py-1 text-center text-[11px]">
+                  <code key={c} className="rounded-[var(--inset-radius)] border border-[var(--panel-border)] bg-[var(--panel-bg)] px-2 py-1 text-center text-[11px]">
                     {c}
                   </code>
                 ))}
@@ -318,7 +318,7 @@ export default function SecurityAuthManager() {
         )}
 
         {passkeys.length > 0 && (
-          <div className="flex flex-col divide-y divide-[var(--panel-border)]/60 overflow-hidden rounded-xl border border-[var(--panel-border)]">
+          <div className="flex flex-col divide-y divide-[var(--panel-border)]/60 overflow-hidden rounded-[var(--inset-radius)] border border-[var(--panel-border)]">
             {passkeys.map((p) => (
               <div key={p.id} className="flex items-center justify-between gap-2 px-3 py-2">
                 <div className="min-w-0">

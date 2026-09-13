@@ -143,7 +143,7 @@ export default function AvatarCropperModal({
             onPointerDown={handlePointerDown}
             onPointerMove={handlePointerMove}
             onPointerUp={handlePointerUp}
-            className="relative h-72 w-72 overflow-hidden rounded-2xl border-2 border-dashed border-[var(--panel-border)] bg-black/80 shadow-inner select-none touch-none cursor-grab active:cursor-grabbing"
+            className="relative h-72 w-72 overflow-hidden rounded-[var(--panel-radius)] border-2 border-dashed border-[var(--panel-border)] bg-black/80 shadow-inner select-none touch-none cursor-grab active:cursor-grabbing"
           >
             {/* Movable & Scalable Image */}
             {imageSrc && (
@@ -179,7 +179,7 @@ export default function AvatarCropperModal({
         </div>
 
         {/* Zoom Controls */}
-        <div className="rounded-2xl border border-[var(--panel-border)]/60 bg-[var(--surface-raised)]/40 p-3 space-y-2">
+        <div className="rounded-[var(--panel-radius)] border border-[var(--panel-border)]/60 bg-[var(--surface-raised)]/40 p-3 space-y-2">
           <div className="flex items-center justify-between text-xs font-semibold text-[var(--text-primary)]">
             <span className="flex items-center gap-1.5">
               <ZoomIn className="h-3.5 w-3.5 text-[var(--accent-primary)]" />
@@ -192,7 +192,7 @@ export default function AvatarCropperModal({
             <button
               type="button"
               onClick={() => setZoom((z) => Math.max(0.8, Number((z - 0.2).toFixed(1))))}
-              className="rounded-lg border border-[var(--panel-border)] bg-[var(--surface-raised)] p-1.5 text-[var(--text-muted)] hover:text-white cursor-pointer"
+              className="rounded-[var(--inset-radius)] border border-[var(--panel-border)] bg-[var(--surface-raised)] p-1.5 text-[var(--text-muted)] hover:text-white cursor-pointer"
             >
               <ZoomOut className="h-4 w-4" />
             </button>
@@ -210,7 +210,7 @@ export default function AvatarCropperModal({
             <button
               type="button"
               onClick={() => setZoom((z) => Math.min(3, Number((z + 0.2).toFixed(1))))}
-              className="rounded-lg border border-[var(--panel-border)] bg-[var(--surface-raised)] p-1.5 text-[var(--text-muted)] hover:text-white cursor-pointer"
+              className="rounded-[var(--inset-radius)] border border-[var(--panel-border)] bg-[var(--surface-raised)] p-1.5 text-[var(--text-muted)] hover:text-white cursor-pointer"
             >
               <ZoomIn className="h-4 w-4" />
             </button>
@@ -222,7 +222,7 @@ export default function AvatarCropperModal({
                 setOffset({ x: 0, y: 0 });
               }}
               title="Réinitialiser le centrage"
-              className="rounded-lg border border-[var(--panel-border)] bg-[var(--surface-raised)] p-1.5 text-[var(--text-muted)] hover:text-white cursor-pointer"
+              className="rounded-[var(--inset-radius)] border border-[var(--panel-border)] bg-[var(--surface-raised)] p-1.5 text-[var(--text-muted)] hover:text-white cursor-pointer"
             >
               <RotateCcw className="h-4 w-4" />
             </button>
@@ -234,7 +234,7 @@ export default function AvatarCropperModal({
           <button
             type="button"
             onClick={onClose}
-            className="rounded-xl border border-[var(--panel-border)] px-4 py-2 text-xs font-semibold text-[var(--text-muted)] hover:text-white cursor-pointer"
+            className="rounded-[var(--inset-radius)] border border-[var(--panel-border)] px-4 py-2 text-xs font-semibold text-[var(--text-muted)] hover:text-white cursor-pointer"
           >
             Annuler
           </button>

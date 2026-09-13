@@ -102,7 +102,7 @@ export default function UserProfileDropdown({ dataTestId = "user-profile-trigger
     return CHANGELOG_BY_LANG[settings.language] || CHANGELOG;
   }, [settings.language]);
 
-  const VERSION_LABEL = changelog[0]?.version || "v1.21.39";
+  const VERSION_LABEL = changelog[0]?.version || "v1.21.40";
 
   const menuItems = [
     {
@@ -173,7 +173,7 @@ export default function UserProfileDropdown({ dataTestId = "user-profile-trigger
             data-testid={dataTestId}
             aria-label="Menu profil utilisateur"
             aria-expanded={open}
-            className="group relative flex h-9 items-center gap-2 rounded-xl border border-[var(--panel-border)]/70 bg-[var(--surface-raised)]/60 px-2 text-[var(--text-primary)] hover:border-[var(--accent-primary)]/40 hover:bg-[var(--surface-hover)] transition-all active:scale-95 cursor-pointer select-none shadow-sm"
+            className="group relative flex h-9 items-center gap-2 rounded-[var(--inset-radius)] border border-[var(--panel-border)]/70 bg-[var(--surface-raised)]/60 px-2 text-[var(--text-primary)] hover:border-[var(--accent-primary)]/40 hover:bg-[var(--surface-hover)] transition-all active:scale-95 cursor-pointer select-none shadow-sm"
           >
             <div className="relative flex h-6 w-6 shrink-0 items-center justify-center">
               <div className="flex h-full w-full items-center justify-center overflow-hidden rounded-lg bg-[var(--accent-primary)]/15 text-[var(--accent-primary)] font-bold text-xs">
@@ -223,10 +223,10 @@ export default function UserProfileDropdown({ dataTestId = "user-profile-trigger
             which is colorMix(bgSurface, transparent, glassOpacity) and made
             this text-heavy menu hard to read over the busy dashboard behind
             it). Blur kept only for the frosting at the rounded edges. */}
-        <PopoverContent className="w-[340px] max-w-[calc(100vw-2rem)] overflow-hidden rounded-2xl border border-[var(--panel-border)] bg-[var(--bg-surface-elevated)] backdrop-blur-2xl p-3.5 shadow-2xl z-[var(--z-dropdown)]">
+        <PopoverContent className="w-[340px] max-w-[calc(100vw-2rem)] overflow-hidden rounded-[var(--panel-radius)] border border-[var(--panel-border)] bg-[var(--bg-surface-elevated)] backdrop-blur-2xl p-3.5 shadow-2xl z-[var(--z-dropdown)]">
           <div className="flex w-full flex-col gap-3 select-none">
             {/* User Header Profile */}
-            <div className="flex items-center gap-3 rounded-xl border border-[var(--panel-border)]/70 bg-[#121319] p-2.5 shadow-xs">
+            <div className="flex items-center gap-3 rounded-[var(--inset-radius)] border border-[var(--panel-border)]/70 bg-[#121319] p-2.5 shadow-xs">
               <button
                 type="button"
                 onClick={() => {
@@ -284,7 +284,7 @@ export default function UserProfileDropdown({ dataTestId = "user-profile-trigger
             </div>
 
             {/* Status Selector Bar */}
-            <div className="grid grid-cols-5 gap-1 rounded-xl border border-[var(--panel-border)]/70 bg-[#121319] p-1 shadow-xs">
+            <div className="grid grid-cols-5 gap-1 rounded-[var(--inset-radius)] border border-[var(--panel-border)]/70 bg-[#121319] p-1 shadow-xs">
               {STATUS_KEYS.map((st) => {
                 const cfg = USER_STATUS_CONFIG[st];
                 const isSelected = currentStatus === st;
@@ -308,7 +308,7 @@ export default function UserProfileDropdown({ dataTestId = "user-profile-trigger
             </div>
 
             {/* Storage Estimation Bar */}
-            <div className="flex flex-col gap-1 rounded-xl border border-[var(--panel-border)]/70 bg-[#121319] p-2.5 shadow-xs">
+            <div className="flex flex-col gap-1 rounded-[var(--inset-radius)] border border-[var(--panel-border)]/70 bg-[#121319] p-2.5 shadow-xs">
               <div className="flex items-center justify-between text-xs">
                 <span className="font-semibold text-[11px] text-[var(--text-primary)]">
                   Stockage Cloud
@@ -335,7 +335,7 @@ export default function UserProfileDropdown({ dataTestId = "user-profile-trigger
                     setOpen(false);
                     item.action();
                   }}
-                  className="group relative flex w-full items-center justify-between rounded-xl border border-transparent p-2.5 text-xs text-[var(--text-muted)] transition-all duration-150 hover:border-[var(--accent-primary)]/40 hover:bg-gradient-to-r hover:from-[var(--accent-primary)]/10 hover:via-[#161720] hover:to-transparent hover:text-[var(--text-primary)] hover:shadow-xs cursor-pointer overflow-hidden"
+                  className="group relative flex w-full items-center justify-between rounded-[var(--inset-radius)] border border-transparent p-2.5 text-xs text-[var(--text-muted)] transition-all duration-150 hover:border-[var(--accent-primary)]/40 hover:bg-gradient-to-r hover:from-[var(--accent-primary)]/10 hover:via-[#161720] hover:to-transparent hover:text-[var(--text-primary)] hover:shadow-xs cursor-pointer overflow-hidden"
                 >
                   {/* Left glowing hover pill */}
                   <div className="absolute left-0 top-2 bottom-2 w-1 rounded-r-full bg-[var(--accent-primary)] opacity-0 shadow-[0_0_8px_var(--glow-color)] transition-all duration-150 group-hover:opacity-100" />
@@ -361,7 +361,7 @@ export default function UserProfileDropdown({ dataTestId = "user-profile-trigger
                       </span>
                     )}
                     {item.kbd && (
-                      <kbd className="rounded-lg border border-[var(--panel-border)]/60 bg-[#14151e] px-1.5 py-0.5 font-mono text-[10px] text-[var(--text-muted)] transition-colors group-hover:border-[var(--accent-primary)]/40 group-hover:text-[var(--accent-primary)]">
+                      <kbd className="rounded-[var(--inset-radius)] border border-[var(--panel-border)]/60 bg-[#14151e] px-1.5 py-0.5 font-mono text-[10px] text-[var(--text-muted)] transition-colors group-hover:border-[var(--accent-primary)]/40 group-hover:text-[var(--accent-primary)]">
                         {item.kbd}
                       </kbd>
                     )}
@@ -377,7 +377,7 @@ export default function UserProfileDropdown({ dataTestId = "user-profile-trigger
                 <button
                   type="button"
                   onClick={() => setConfirmSignOut(true)}
-                  className="group relative flex w-full items-center justify-between rounded-xl border border-transparent p-2.5 text-xs font-semibold text-[var(--danger)] transition-all duration-150 hover:border-[var(--danger)]/30 hover:bg-[var(--danger)]/10 cursor-pointer overflow-hidden"
+                  className="group relative flex w-full items-center justify-between rounded-[var(--inset-radius)] border border-transparent p-2.5 text-xs font-semibold text-[var(--danger)] transition-all duration-150 hover:border-[var(--danger)]/30 hover:bg-[var(--danger)]/10 cursor-pointer overflow-hidden"
                 >
                   <div className="absolute left-0 top-2 bottom-2 w-1 rounded-r-full bg-[var(--danger)] opacity-0 shadow-[0_0_8px_rgba(239,68,68,0.5)] transition-all duration-150 group-hover:opacity-100" />
                   <div className="flex items-center gap-2.5 pl-1">
@@ -389,7 +389,7 @@ export default function UserProfileDropdown({ dataTestId = "user-profile-trigger
                   <ChevronRight className="h-3.5 w-3.5 text-[var(--danger)] opacity-0 -translate-x-1 transition-all duration-150 group-hover:opacity-100 group-hover:translate-x-0" />
                 </button>
               ) : (
-                <div className="flex flex-col gap-2 rounded-xl border border-[var(--danger)]/30 bg-[var(--danger)]/10 p-2.5">
+                <div className="flex flex-col gap-2 rounded-[var(--inset-radius)] border border-[var(--danger)]/30 bg-[var(--danger)]/10 p-2.5">
                   <span className="text-xs font-bold text-[var(--danger)]">
                     Confirmer la déconnexion ?
                   </span>
@@ -397,7 +397,7 @@ export default function UserProfileDropdown({ dataTestId = "user-profile-trigger
                     <button
                       type="button"
                       onClick={() => setConfirmSignOut(false)}
-                      className="flex-1 rounded-lg border border-[var(--panel-border)] py-1 text-xs font-medium text-[var(--text-primary)] hover:bg-[var(--surface-hover)] cursor-pointer"
+                      className="flex-1 rounded-[var(--inset-radius)] border border-[var(--panel-border)] py-1 text-xs font-medium text-[var(--text-primary)] hover:bg-[var(--surface-hover)] cursor-pointer"
                     >
                       Annuler
                     </button>

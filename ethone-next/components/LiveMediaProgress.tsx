@@ -148,7 +148,7 @@ export default function LiveMediaProgress({
         <div
           ref={thumbRef}
           className={cn(
-            "pointer-events-none absolute top-1/2 h-3.5 w-3.5 -translate-x-1/2 -translate-y-1/2 rounded-full border border-white/20 bg-white shadow-md shadow-emerald-500/40 transition-transform duration-150 will-change-[left]",
+            "pointer-events-none absolute top-1/2 h-3.5 w-3.5 -translate-x-1/2 -translate-y-1/2 rounded-full border border-[var(--input-border-hover)] bg-white shadow-md shadow-emerald-500/40 transition-transform duration-150 will-change-[left]",
             dragging || hovered ? "scale-125" : "scale-100"
           )}
           style={{ left: "0%" }}

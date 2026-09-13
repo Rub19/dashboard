@@ -93,7 +93,7 @@ function ActionButton({ icon, label, active, onClick }: ActionButtonProps) {
     <button
       type="button"
       onClick={onClick}
-      className={`flex flex-col items-center gap-1 rounded-lg border border-[var(--panel-border)] bg-[var(--panel-bg)] p-2 text-[10px] font-medium transition-colors hover:border-[var(--accent-primary)] ${
+      className={`flex flex-col items-center gap-1 rounded-[var(--inset-radius)] border border-[var(--panel-border)] bg-[var(--panel-bg)] p-2 text-[10px] font-medium transition-colors hover:border-[var(--accent-primary)] ${
         active ? "border-[var(--accent-primary)] text-[var(--accent-primary)]" : ""
       } backdrop-blur-[var(--panel-blur)]`}
     >
@@ -168,7 +168,7 @@ export default function DockControlCenter({
             aria-label={i18n("controlCenter")}
           >
             <div
-              className="max-h-[calc(80vh-2.5rem)] space-y-4 overflow-y-auto rounded-lg border border-[var(--panel-border)] bg-[var(--panel-bg)] p-4 shadow-2xl backdrop-blur-3xl"
+              className="max-h-[calc(80vh-2.5rem)] space-y-4 overflow-y-auto rounded-[var(--inset-radius)] border border-[var(--panel-border)] bg-[var(--panel-bg)] p-4 shadow-2xl backdrop-blur-3xl"
             >
               <div className="mb-2 flex items-center justify-between">
                 <h3 className="text-sm font-semibold text-[var(--text-primary)]">{i18n("controlCenter")}</h3>
@@ -192,7 +192,7 @@ export default function DockControlCenter({
                       key={id}
                       type="button"
                       onClick={() => update({ uiAnimations: id })}
-                      className={`rounded-lg border border-[var(--panel-border)] bg-[var(--panel-bg)] px-2 py-1.5 text-[10px] font-medium transition-colors hover:border-[var(--accent-primary)] ${
+                      className={`rounded-[var(--inset-radius)] border border-[var(--panel-border)] bg-[var(--panel-bg)] px-2 py-1.5 text-[10px] font-medium transition-colors hover:border-[var(--accent-primary)] ${
                         settings.uiAnimations === id ? "border-[var(--accent-primary)] text-[var(--accent-primary)]" : ""
                       } backdrop-blur-[var(--panel-blur)]`}
                     >
@@ -248,7 +248,7 @@ export default function DockControlCenter({
                         update({ soundPack: pack as SoundPack });
                         play("click", pack);
                       }}
-                      className={`flex flex-col items-center gap-1 rounded-lg border border-[var(--panel-border)] bg-[var(--panel-bg)] p-2 text-[10px] font-medium transition-colors hover:border-[var(--accent-primary)] ${
+                      className={`flex flex-col items-center gap-1 rounded-[var(--inset-radius)] border border-[var(--panel-border)] bg-[var(--panel-bg)] p-2 text-[10px] font-medium transition-colors hover:border-[var(--accent-primary)] ${
                         settings.soundPack === pack ? "border-[var(--accent-primary)] text-[var(--accent-primary)]" : ""
                       } backdrop-blur-[var(--panel-blur)]`}
                     >

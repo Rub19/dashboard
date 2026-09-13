@@ -119,7 +119,7 @@ export default function AiTaskDrawer({ isOpen, onClose, onAddTasks }: AiTaskDraw
                   onChange={(e) => setPrompt(e.target.value)}
                   onKeyDown={(e) => e.key === "Enter" && handleGenerate()}
                   placeholder="Ex : Préparer le sprint de tests et déploiement…"
-                  className="w-full rounded-xl border border-[var(--panel-border)] bg-[var(--surface-2)]/50 px-4 py-3 pr-28 text-sm text-[var(--text-primary)] placeholder:text-[var(--text-muted)] outline-none transition-colors focus:border-[var(--accent-primary)]"
+                  className="w-full rounded-[var(--inset-radius)] border border-[var(--panel-border)] bg-[var(--surface-2)]/50 px-4 py-3 pr-28 text-sm text-[var(--text-primary)] placeholder:text-[var(--text-muted)] outline-none transition-colors focus:border-[var(--accent-primary)]"
                 />
                 <button
                   type="button"
@@ -149,7 +149,7 @@ export default function AiTaskDrawer({ isOpen, onClose, onAddTasks }: AiTaskDraw
                     key={pack.id}
                     type="button"
                     onClick={() => handleSelectPack(pack)}
-                    className="flex flex-col items-start gap-1 rounded-xl border border-[var(--panel-border)] bg-[var(--surface-2)]/40 p-3.5 text-left transition-colors hover:bg-[var(--surface-2)] active:scale-[0.99]"
+                    className="flex flex-col items-start gap-1 rounded-[var(--inset-radius)] border border-[var(--panel-border)] bg-[var(--surface-2)]/40 p-3.5 text-left transition-colors hover:bg-[var(--surface-2)] active:scale-[0.99]"
                   >
                     <div className="flex w-full items-center justify-between gap-2">
                       <span className="text-xs font-medium text-[var(--text-primary)]">{pack.title}</span>
@@ -163,7 +163,7 @@ export default function AiTaskDrawer({ isOpen, onClose, onAddTasks }: AiTaskDraw
 
             {/* Generated Preview List */}
             {previewTasks.length > 0 && (
-              <div className="space-y-3 rounded-xl border border-[var(--panel-border)] bg-[var(--surface-2)]/40 p-4">
+              <div className="space-y-3 rounded-[var(--inset-radius)] border border-[var(--panel-border)] bg-[var(--surface-2)]/40 p-4">
                 <div className="flex items-center justify-between">
                   <span className="flex items-center gap-1.5 text-xs font-medium text-[var(--text-primary)]">
                     <ListPlus className="h-3.5 w-3.5" />
@@ -192,7 +192,7 @@ export default function AiTaskDrawer({ isOpen, onClose, onAddTasks }: AiTaskDraw
                         key={idx}
                         onClick={() => toggleTaskSelection(idx)}
                         className={cn(
-                          "flex items-center justify-between gap-3 rounded-lg border p-3 transition-colors cursor-pointer",
+                          "flex items-center justify-between gap-3 rounded-[var(--inset-radius)] border p-3 transition-colors cursor-pointer",
                           isSelected
                             ? "border-[var(--accent-primary)]/40 bg-[var(--accent-primary)]/10 text-[var(--text-primary)]"
                             : "border-[var(--panel-border)] bg-[var(--surface-2)]/40 text-[var(--text-muted)] opacity-70"

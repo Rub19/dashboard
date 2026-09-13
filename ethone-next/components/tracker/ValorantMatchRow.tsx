@@ -70,7 +70,7 @@ export default function ValorantMatchRow({ match, index }: ValorantMatchRowProps
       initial={{ opacity: 0, y: 10 }}
       animate={{ opacity: 1, y: 0 }}
       transition={{ duration: 0.2, delay: Math.min(index * 0.03, 0.3) }}
-      className="overflow-hidden rounded-2xl border border-white/[0.07] bg-[#0c1017]/85 backdrop-blur-xl transition-all duration-200 hover:border-white/15 hover:bg-[#0f141e]/95 shadow-sm"
+      className="overflow-hidden rounded-[var(--panel-radius)] border border-[var(--panel-border)] bg-[#0c1017]/85 backdrop-blur-xl transition-all duration-200 hover:border-[var(--input-border-hover)] hover:bg-[#0f141e]/95 shadow-sm"
     >
       {/* Main Row (Matching Screenshot 4 Pixel-Perfect) */}
       <div
@@ -90,7 +90,7 @@ export default function ValorantMatchRow({ match, index }: ValorantMatchRowProps
         {/* Left Side: Agent Avatar + Meta + Map + Score */}
         <div className="flex items-center gap-3.5 pl-2.5 min-w-0">
           {/* Agent Avatar */}
-          <div className="relative h-12 w-12 shrink-0 overflow-hidden rounded-xl border border-white/10 bg-black/40 shadow-inner">
+          <div className="relative h-12 w-12 shrink-0 overflow-hidden rounded-[var(--inset-radius)] border border-[var(--panel-border)] bg-black/40 shadow-inner">
             <img
               src={agentIcon}
               alt={meta.agentName || "Agent"}
@@ -121,7 +121,7 @@ export default function ValorantMatchRow({ match, index }: ValorantMatchRowProps
                     ? "border border-amber-500/40 bg-amber-500/15 text-amber-300 shadow-[0_0_8px_rgba(245,158,11,0.2)]"
                     : rankBadge.tone === "silver"
                     ? "border border-zinc-500/40 bg-zinc-700/30 text-zinc-200"
-                    : "border border-white/10 bg-white/5 text-zinc-400"
+                    : "border border-[var(--panel-border)] bg-white/5 text-zinc-400"
                 )}
               >
                 {rankBadge.label}
@@ -151,7 +151,7 @@ export default function ValorantMatchRow({ match, index }: ValorantMatchRowProps
           {highlights.map((badge, bi) => (
             <span
               key={bi}
-              className="rounded-lg border border-white/10 bg-white/[0.04] px-2 py-0.5 text-[10px] font-bold text-zinc-300 shadow-xs"
+              className="rounded-[var(--inset-radius)] border border-[var(--panel-border)] bg-white/[0.04] px-2 py-0.5 text-[10px] font-bold text-zinc-300 shadow-xs"
             >
               {badge}
             </span>
@@ -234,12 +234,12 @@ export default function ValorantMatchRow({ match, index }: ValorantMatchRowProps
             animate={{ opacity: 1, height: "auto" }}
             exit={{ opacity: 0, height: 0 }}
             transition={{ duration: 0.3 }}
-            className="border-t border-white/10 bg-[#080b11]/95 p-4 sm:p-5 overflow-hidden space-y-5"
+            className="border-t border-[var(--panel-border)] bg-[#080b11]/95 p-4 sm:p-5 overflow-hidden space-y-5"
           >
             {/* Header: Map & Teams Rounds & Mode Details */}
-            <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3 border-b border-white/10 pb-4">
+            <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3 border-b border-[var(--panel-border)] pb-4">
               <div className="flex items-center gap-3">
-                <div className="flex h-10 w-10 items-center justify-center rounded-2xl border border-rose-500/30 bg-rose-500/10 text-rose-400 shadow-md">
+                <div className="flex h-10 w-10 items-center justify-center rounded-[var(--panel-radius)] border border-rose-500/30 bg-rose-500/10 text-rose-400 shadow-md">
                   <Swords className="h-5 w-5" />
                 </div>
                 <div>
@@ -259,7 +259,7 @@ export default function ValorantMatchRow({ match, index }: ValorantMatchRowProps
               </div>
 
               {/* Tabs */}
-              <div className="flex items-center gap-1 rounded-xl bg-white/[0.04] p-1 border border-white/10 text-xs">
+              <div className="flex items-center gap-1 rounded-[var(--inset-radius)] bg-white/[0.04] p-1 border border-[var(--panel-border)] text-xs">
                 <button
                   type="button"
                   onClick={() => setActiveTab("scoreboard")}
@@ -316,7 +316,7 @@ export default function ValorantMatchRow({ match, index }: ValorantMatchRowProps
                   return (
                     <div key={gi} className="space-y-1.5 min-w-[800px]">
                       {/* Team Header Bar */}
-                      <div className={cn("flex items-center justify-between px-3 py-1.5 rounded-xl border text-xs font-bold shadow-xs", teamGroup.badgeStyle)}>
+                      <div className={cn("flex items-center justify-between px-3 py-1.5 rounded-[var(--inset-radius)] border text-xs font-bold shadow-xs", teamGroup.badgeStyle)}>
                         <div className="flex items-center gap-2">
                           <span className="uppercase tracking-wider">{teamGroup.name}</span>
                           <span className="text-[11px] font-medium opacity-80">· Rang Moyen : {avgRank}</span>
@@ -327,7 +327,7 @@ export default function ValorantMatchRow({ match, index }: ValorantMatchRowProps
                       {/* Team Players Table */}
                       <table className="w-full text-left text-xs">
                         <thead>
-                          <tr className="border-b border-white/10 text-[10px] uppercase tracking-wider text-zinc-500">
+                          <tr className="border-b border-[var(--panel-border)] text-[10px] uppercase tracking-wider text-zinc-500">
                             <th className="pb-1.5 pl-2">Joueur / Agent</th>
                             <th className="pb-1.5 text-center">Rang</th>
                             <th className="pb-1.5 text-center">TRS</th>
@@ -407,7 +407,7 @@ export default function ValorantMatchRow({ match, index }: ValorantMatchRowProps
                                   </div>
 
                                   {/* Agent Avatar with Level Badge */}
-                                  <div className="relative h-8 w-8 shrink-0 overflow-hidden rounded-xl border border-white/10 bg-black">
+                                  <div className="relative h-8 w-8 shrink-0 overflow-hidden rounded-[var(--inset-radius)] border border-[var(--panel-border)] bg-black">
                                     <img
                                       src={pIcon}
                                       alt=""
@@ -543,14 +543,14 @@ export default function ValorantMatchRow({ match, index }: ValorantMatchRowProps
                       <div
                         key={pi}
                         className={cn(
-                          "rounded-2xl border p-3 flex items-center justify-between gap-3 backdrop-blur-xl",
+                          "rounded-[var(--panel-radius)] border p-3 flex items-center justify-between gap-3 backdrop-blur-xl",
                           p.isMe
                             ? "border-amber-400/30 bg-amber-400/[0.08] text-white"
-                            : "border-white/10 bg-white/[0.03] text-zinc-300"
+                            : "border-[var(--panel-border)] bg-white/[0.03] text-zinc-300"
                         )}
                       >
                         <div className="flex items-center gap-2.5">
-                          <img src={pIcon} alt="" className="h-9 w-9 rounded-xl object-cover border border-white/10" />
+                          <img src={pIcon} alt="" className="h-9 w-9 rounded-[var(--inset-radius)] object-cover border border-[var(--panel-border)]" />
                           <div>
                             <span className={cn("font-bold text-xs block", p.isMe ? "text-amber-300" : "text-white")}>
                               {p.name}

@@ -141,11 +141,11 @@ Donne-moi un bilan financier express en 3 puces : (1) Total estimé par mois et 
   };
 
   return (
-    <div className="space-y-3 rounded-2xl border border-white/10 bg-[#0c0d14]/90 p-4 backdrop-blur-2xl">
+    <div className="space-y-3 rounded-[var(--panel-radius)] border border-[var(--panel-border)] bg-[#0c0d14]/90 p-4 backdrop-blur-2xl">
       {/* Header Bar */}
       <div className="flex items-center justify-between">
         <div className="flex items-center gap-2.5">
-          <div className="flex h-8 w-8 items-center justify-center rounded-xl border border-purple-500/30 bg-purple-500/15 text-purple-400 shadow-[0_0_12px_rgba(168,85,247,0.25)]">
+          <div className="flex h-8 w-8 items-center justify-center rounded-[var(--inset-radius)] border border-purple-500/30 bg-purple-500/15 text-purple-400 shadow-[0_0_12px_rgba(168,85,247,0.25)]">
             <Brain className="h-4 w-4" />
           </div>
           <div>
@@ -159,7 +159,7 @@ Donne-moi un bilan financier express en 3 puces : (1) Total estimé par mois et 
         <button
           type="button"
           onClick={() => setIsOpen(!isOpen)}
-          className="flex items-center gap-1 rounded-xl border border-white/10 bg-white/5 px-2.5 py-1 text-[11px] font-bold text-purple-300 hover:bg-white/10 transition-all active:scale-95 cursor-pointer"
+          className="flex items-center gap-1 rounded-[var(--inset-radius)] border border-[var(--panel-border)] bg-white/5 px-2.5 py-1 text-[11px] font-bold text-purple-300 hover:bg-white/10 transition-all active:scale-95 cursor-pointer"
         >
           <Sparkles className="h-3 w-3 text-purple-400" />
           <span>{isOpen ? "Fermer" : "Assistant IA"}</span>
@@ -177,7 +177,7 @@ Donne-moi un bilan financier express en 3 puces : (1) Total estimé par mois et 
               key={pick.key}
               type="button"
               onClick={() => handleQuickAddPopular(pick.key)}
-              className="group flex shrink-0 items-center gap-2 rounded-xl border border-white/10 bg-white/5 px-2.5 py-1.5 text-xs text-white hover:border-purple-500/40 hover:bg-purple-500/10 transition-all active:scale-95 cursor-pointer shadow-xs"
+              className="group flex shrink-0 items-center gap-2 rounded-[var(--inset-radius)] border border-[var(--panel-border)] bg-white/5 px-2.5 py-1.5 text-xs text-white hover:border-purple-500/40 hover:bg-purple-500/10 transition-all active:scale-95 cursor-pointer shadow-xs"
             >
               {pick.logo ? (
                 <img
@@ -216,7 +216,7 @@ Donne-moi un bilan financier express en 3 puces : (1) Total estimé par mois et 
             animate={{ opacity: 1, height: "auto" }}
             exit={{ opacity: 0, height: 0 }}
             transition={{ duration: 0.25 }}
-            className="space-y-3 border-t border-white/10 pt-3 overflow-hidden"
+            className="space-y-3 border-t border-[var(--panel-border)] pt-3 overflow-hidden"
           >
             {/* Natural language AI Bill Add */}
             <div className="space-y-1.5">
@@ -230,7 +230,7 @@ Donne-moi un bilan financier express en 3 puces : (1) Total estimé par mois et 
                   onChange={(e) => setPrompt(e.target.value)}
                   onKeyDown={(e) => e.key === "Enter" && handleCreateWithAi()}
                   placeholder="Ex: Netflix 13.49€, ChatGPT 20$, Loyer 750€..."
-                  className="w-full rounded-xl border border-white/10 bg-white/5 px-3 py-2 pr-24 text-xs text-white placeholder-zinc-500 outline-none focus:border-purple-500/50"
+                  className="w-full rounded-[var(--inset-radius)] border border-[var(--panel-border)] bg-white/5 px-3 py-2 pr-24 text-xs text-white placeholder-zinc-500 outline-none focus:border-purple-500/50"
                 />
                 <button
                   type="button"
@@ -250,7 +250,7 @@ Donne-moi un bilan financier express en 3 puces : (1) Total estimé par mois et 
                 type="button"
                 onClick={handleAskBrainAdvice}
                 disabled={isProcessing}
-                className="flex w-full items-center justify-center gap-2 rounded-xl border border-purple-500/30 bg-purple-500/10 py-2 text-xs font-bold text-purple-300 hover:bg-purple-500/20 transition-all cursor-pointer shadow-sm"
+                className="flex w-full items-center justify-center gap-2 rounded-[var(--inset-radius)] border border-purple-500/30 bg-purple-500/10 py-2 text-xs font-bold text-purple-300 hover:bg-purple-500/20 transition-all cursor-pointer shadow-sm"
               >
                 {isProcessing ? (
                   <Loader2 className="h-3.5 w-3.5 animate-spin text-purple-400" />
@@ -261,7 +261,7 @@ Donne-moi un bilan financier express en 3 puces : (1) Total estimé par mois et 
               </button>
 
               {aiAdvice && (
-                <div className="rounded-xl border border-purple-500/20 bg-purple-500/5 p-3 text-xs leading-relaxed text-zinc-300 whitespace-pre-line animate-in fade-in zoom-in-95 duration-200">
+                <div className="rounded-[var(--inset-radius)] border border-purple-500/20 bg-purple-500/5 p-3 text-xs leading-relaxed text-zinc-300 whitespace-pre-line animate-in fade-in zoom-in-95 duration-200">
                   {aiAdvice}
                 </div>
               )}

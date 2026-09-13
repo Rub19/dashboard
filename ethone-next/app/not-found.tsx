@@ -94,7 +94,7 @@ export default function NotFound() {
           </Link>
           <Link
             href="/connections/"
-            className="inline-flex items-center gap-2 rounded-xl border border-white/[0.08] bg-white/[0.03] px-5 py-2.5 text-sm font-medium text-zinc-300 transition-colors hover:bg-white/[0.06] hover:text-white"
+            className="inline-flex items-center gap-2 rounded-[var(--inset-radius)] border border-[var(--panel-border)] bg-white/[0.03] px-5 py-2.5 text-sm font-medium text-zinc-300 transition-colors hover:bg-white/[0.06] hover:text-white"
           >
             <Icon name="plug" className="h-4 w-4" />
             {i18n("connections")}

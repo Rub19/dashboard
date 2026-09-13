@@ -122,9 +122,9 @@ export default function TrackerGgView() {
   return (
     <div className="flex min-h-0 w-full flex-1 flex-col overflow-hidden space-y-4">
       {/* Controls */}
-      <div className="shrink-0 rounded-3xl border border-white/10 bg-[#0c0d14]/90 p-4 backdrop-blur-2xl shadow-lg">
+      <div className="shrink-0 rounded-[var(--panel-radius)] border border-[var(--panel-border)] bg-[#0c0d14]/90 p-4 backdrop-blur-2xl shadow-lg">
         <form onSubmit={handleSubmit} className="flex flex-col gap-3 lg:flex-row lg:items-center">
-          <div className="flex items-center gap-2 rounded-2xl border border-white/10 bg-black/40 px-3 py-2 shrink-0">
+          <div className="flex items-center gap-2 rounded-[var(--panel-radius)] border border-[var(--panel-border)] bg-black/40 px-3 py-2 shrink-0">
             <Gamepad2 className="h-4 w-4 text-zinc-400 shrink-0" />
             <select
               value={gameId}
@@ -138,7 +138,7 @@ export default function TrackerGgView() {
           </div>
 
           {game.platforms.length > 1 && (
-            <div className="flex items-center gap-2 rounded-2xl border border-white/10 bg-black/40 px-3 py-2 shrink-0">
+            <div className="flex items-center gap-2 rounded-[var(--panel-radius)] border border-[var(--panel-border)] bg-black/40 px-3 py-2 shrink-0">
               <select
                 value={platform}
                 onChange={(e) => setPlatform(e.target.value)}
@@ -151,7 +151,7 @@ export default function TrackerGgView() {
             </div>
           )}
 
-          <div className="flex items-center gap-2 rounded-2xl border border-white/10 bg-black/40 px-3 py-2 flex-1 min-w-[180px]">
+          <div className="flex items-center gap-2 rounded-[var(--panel-radius)] border border-[var(--panel-border)] bg-black/40 px-3 py-2 flex-1 min-w-[180px]">
             <User className="h-4 w-4 text-zinc-400 shrink-0" />
             <input
               type="text"
@@ -183,7 +183,7 @@ export default function TrackerGgView() {
               type="button"
               onClick={() => load(true)}
               disabled={syncing}
-              className="flex items-center gap-1.5 rounded-xl border border-white/10 bg-white/5 px-3 py-1.5 text-xs font-bold text-white hover:bg-white/10 active:scale-95 transition-all cursor-pointer disabled:opacity-50"
+              className="flex items-center gap-1.5 rounded-[var(--inset-radius)] border border-[var(--panel-border)] bg-white/5 px-3 py-1.5 text-xs font-bold text-white hover:bg-white/10 active:scale-95 transition-all cursor-pointer disabled:opacity-50"
             >
               <RefreshCw className={cn("h-3.5 w-3.5 text-indigo-400", syncing && "animate-spin")} />
               <span>{syncing ? "Synchro..." : "Actualiser"}</span>
@@ -194,7 +194,7 @@ export default function TrackerGgView() {
 
       {/* Profile header */}
       {available && profile && (
-        <div className="shrink-0 flex items-center gap-3 rounded-2xl border border-white/10 bg-[#0c1017]/85 p-3.5 backdrop-blur-xl">
+        <div className="shrink-0 flex items-center gap-3 rounded-[var(--panel-radius)] border border-[var(--panel-border)] bg-[#0c1017]/85 p-3.5 backdrop-blur-xl">
           {profile.avatarUrl ? (
             // eslint-disable-next-line @next/next/no-img-element
             <img src={profile.avatarUrl} alt="" className="h-10 w-10 rounded-lg object-cover" />
@@ -214,7 +214,7 @@ export default function TrackerGgView() {
       {tiles.length > 0 && (
         <div className="shrink-0 grid grid-cols-2 md:grid-cols-3 lg:grid-cols-6 gap-3">
           {tiles.map((s) => (
-            <div key={s.label} className="rounded-2xl border border-white/10 bg-[#0c1017]/85 p-3.5 backdrop-blur-xl">
+            <div key={s.label} className="rounded-[var(--panel-radius)] border border-[var(--panel-border)] bg-[#0c1017]/85 p-3.5 backdrop-blur-xl">
               <div className="flex items-center gap-1.5 text-[11px] font-medium text-zinc-400">
                 <BarChart3 className="h-3.5 w-3.5 text-indigo-400" />
                 {s.label}
@@ -230,7 +230,7 @@ export default function TrackerGgView() {
         {loading ? (
           <div className="space-y-3">
             {[...Array(4)].map((_, i) => (
-              <div key={i} className="h-24 animate-pulse rounded-2xl border border-white/5 bg-white/[0.02]" />
+              <div key={i} className="h-24 animate-pulse rounded-[var(--panel-radius)] border border-[var(--panel-border)] bg-white/[0.02]" />
             ))}
           </div>
         ) : errorMsg && !available ? (
@@ -249,7 +249,7 @@ export default function TrackerGgView() {
             {profile!.segments
               .filter((seg) => Object.keys(seg.stats).length > 0)
               .map((seg, i) => (
-                <div key={`${seg.type}-${i}`} className="rounded-2xl border border-white/10 bg-[#0c1017]/85 p-4 backdrop-blur-xl">
+                <div key={`${seg.type}-${i}`} className="rounded-[var(--panel-radius)] border border-[var(--panel-border)] bg-[#0c1017]/85 p-4 backdrop-blur-xl">
                   <p className="mb-3 text-xs font-bold uppercase tracking-wide text-zinc-400">{seg.name || seg.type}</p>
                   <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-4 gap-3">
                     {Object.entries(seg.stats).slice(0, 16).map(([k, stat]) => (
@@ -272,8 +272,8 @@ export default function TrackerGgView() {
                     <div
                       key={m.id || i}
                       className={cn(
-                        "flex items-center gap-3 rounded-2xl border p-3 backdrop-blur-xl",
-                        win ? "border-emerald-500/20 bg-emerald-500/[0.04]" : "border-white/10 bg-white/[0.02]"
+                        "flex items-center gap-3 rounded-[var(--panel-radius)] border p-3 backdrop-blur-xl",
+                        win ? "border-emerald-500/20 bg-emerald-500/[0.04]" : "border-[var(--panel-border)] bg-white/[0.02]"
                       )}
                     >
                       {m.metadata.agentImageUrl && (

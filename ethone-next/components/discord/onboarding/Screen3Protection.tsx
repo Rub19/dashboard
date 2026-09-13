@@ -37,7 +37,7 @@ export default function Screen3Protection() {
 
           {/* Orbiting threats intercepted list */}
           <div className="flex-1 w-full space-y-2">
-            <div className="flex items-center justify-between p-2 rounded-xl bg-[var(--surface-2)]/60 border border-[var(--danger)]/20 text-xs">
+            <div className="flex items-center justify-between p-2 rounded-[var(--inset-radius)] bg-[var(--surface-2)]/60 border border-[var(--danger)]/20 text-xs">
               <div className="flex items-center gap-2">
                 <AlertTriangle className="w-3.5 h-3.5 text-[var(--danger)] shrink-0" />
                 <span className="text-[var(--text-muted)] font-medium">Spam mass-mention (@everyone)</span>
@@ -45,7 +45,7 @@ export default function Screen3Protection() {
               <span className="px-2 py-0.5 rounded bg-[var(--danger)]/10 text-[var(--danger)] text-[10px] font-bold">INTERCEPTÉ</span>
             </div>
 
-            <div className="flex items-center justify-between p-2 rounded-xl bg-[var(--surface-2)]/60 border border-[var(--warning)]/20 text-xs">
+            <div className="flex items-center justify-between p-2 rounded-[var(--inset-radius)] bg-[var(--surface-2)]/60 border border-[var(--warning)]/20 text-xs">
               <div className="flex items-center gap-2">
                 <Zap className="w-3.5 h-3.5 text-[var(--warning)] shrink-0" />
                 <span className="text-[var(--text-muted)] font-medium">Vague de bots suspects (14 joins/10s)</span>
@@ -53,7 +53,7 @@ export default function Screen3Protection() {
               <span className="px-2 py-0.5 rounded bg-[var(--warning)]/10 text-[var(--warning)] text-[10px] font-bold">CAPTCHA ACTIF</span>
             </div>
 
-            <div className="flex items-center justify-between p-2 rounded-xl bg-[var(--surface-2)]/60 border border-[var(--success)]/20 text-xs">
+            <div className="flex items-center justify-between p-2 rounded-[var(--inset-radius)] bg-[var(--surface-2)]/60 border border-[var(--success)]/20 text-xs">
               <div className="flex items-center gap-2">
                 <Lock className="w-3.5 h-3.5 text-[var(--success)] shrink-0" />
                 <span className="text-[var(--text-muted)] font-medium">Lien phishing frauduleux</span>
@@ -69,15 +69,15 @@ export default function Screen3Protection() {
             CYCLE DE PROTECTION AUTOMATISÉ
           </div>
           <div className="grid grid-cols-3 gap-2">
-            <div className="p-2.5 rounded-xl bg-[var(--surface-2)]/60 border border-[var(--panel-border)] text-center">
+            <div className="p-2.5 rounded-[var(--inset-radius)] bg-[var(--surface-2)]/60 border border-[var(--panel-border)] text-center">
               <div className="text-[11px] font-bold text-[var(--text-primary)] mb-0.5">1. Détection</div>
               <div className="text-[10px] text-[var(--text-muted)] leading-tight">Analyse de signature en temps réel</div>
             </div>
-            <div className="p-2.5 rounded-xl bg-[var(--surface-2)]/60 border border-[var(--panel-border)] text-center">
+            <div className="p-2.5 rounded-[var(--inset-radius)] bg-[var(--surface-2)]/60 border border-[var(--panel-border)] text-center">
               <div className="text-[11px] font-bold text-[var(--text-primary)] mb-0.5">2. Évaluation</div>
               <div className="text-[10px] text-[var(--text-muted)] leading-tight">Calcul du Risk Score & sévérité</div>
             </div>
-            <div className="p-2.5 rounded-xl bg-[var(--surface-2)]/60 border border-[var(--panel-border)] text-center">
+            <div className="p-2.5 rounded-[var(--inset-radius)] bg-[var(--surface-2)]/60 border border-[var(--panel-border)] text-center">
               <div className="text-[11px] font-bold text-[var(--text-primary)] mb-0.5">3. Neutralisation</div>
               <div className="text-[10px] text-[var(--text-muted)] leading-tight">Sanction & journalisation d'audit</div>
             </div>

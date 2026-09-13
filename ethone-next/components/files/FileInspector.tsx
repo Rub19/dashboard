@@ -76,7 +76,7 @@ export default function FileInspector({
             type="button"
             onClick={() => onFavorite(file)}
             className={cn(
-              "flex h-8 w-8 items-center justify-center rounded-xl border transition-all cursor-pointer",
+              "flex h-8 w-8 items-center justify-center rounded-[var(--inset-radius)] border transition-all cursor-pointer",
               file.isFavorite
                 ? "border-[var(--warning)]/40 bg-[var(--warning)]/15 text-[var(--warning)]"
                 : "border-[var(--panel-border)] bg-[var(--surface-raised)]/60 text-[var(--text-muted)] hover:text-[var(--warning)]"
@@ -102,7 +102,7 @@ export default function FileInspector({
         <button
           type="button"
           onClick={onClose}
-          className="flex h-8 w-8 items-center justify-center rounded-xl border border-[var(--panel-border)] bg-[var(--surface-raised)]/60 text-[var(--text-muted)] hover:text-[var(--text-primary)] transition-colors cursor-pointer"
+          className="flex h-8 w-8 items-center justify-center rounded-[var(--inset-radius)] border border-[var(--panel-border)] bg-[var(--surface-raised)]/60 text-[var(--text-muted)] hover:text-[var(--text-primary)] transition-colors cursor-pointer"
           title="Fermer l'inspecteur"
         >
           <X className="h-4 w-4" />
@@ -111,7 +111,7 @@ export default function FileInspector({
 
       {/* Preview Box */}
       <div className="mt-4 flex flex-col items-center">
-        <div className="relative flex h-36 w-full items-center justify-center overflow-hidden rounded-2xl border border-[var(--panel-border)]/60 bg-[var(--surface-raised)]/50 p-2 shadow-inner">
+        <div className="relative flex h-36 w-full items-center justify-center overflow-hidden rounded-[var(--panel-radius)] border border-[var(--panel-border)]/60 bg-[var(--surface-raised)]/50 p-2 shadow-inner">
           {isImage && (file.thumbnailLink || file.webViewLink) ? (
             <SafeImage
               candidates={[file.thumbnailLink, file.webViewLink, file.iconUrl].filter(Boolean) as string[]}
@@ -122,7 +122,7 @@ export default function FileInspector({
             />
           ) : (
             <div className="flex flex-col items-center gap-2 text-[var(--text-muted)]">
-              <div className="flex h-14 w-14 items-center justify-center rounded-2xl bg-[var(--accent-primary)]/10 text-[var(--accent-primary)] border border-[var(--accent-primary)]/20 shadow-md">
+              <div className="flex h-14 w-14 items-center justify-center rounded-[var(--panel-radius)] bg-[var(--accent-primary)]/10 text-[var(--accent-primary)] border border-[var(--accent-primary)]/20 shadow-md">
                 <FileText className="h-7 w-7" />
               </div>
               <span className="rounded-md border border-[var(--panel-border)] bg-[var(--surface-2)]/50 px-2 py-0.5 text-[10px] uppercase font-medium text-[var(--text-muted)]">
@@ -141,7 +141,7 @@ export default function FileInspector({
       </div>
 
       {/* Brain AI Intelligence Actions */}
-      <div className="mt-4 rounded-2xl border border-[var(--panel-border)] bg-[var(--surface-2)]/40 p-3">
+      <div className="mt-4 rounded-[var(--panel-radius)] border border-[var(--panel-border)] bg-[var(--surface-2)]/40 p-3">
         <div className="flex items-center gap-1.5 text-xs font-semibold text-[var(--text-primary)]">
           <Brain className="h-4 w-4 text-[var(--accent-primary)]" />
           <span>ETHONE Brain</span>
@@ -162,7 +162,7 @@ export default function FileInspector({
           <button
             type="button"
             onClick={() => askBrain(`Explique-moi les concepts clés contenus dans "${file.name}".`)}
-            className="flex items-center justify-between rounded-xl border border-[var(--panel-border)] px-2.5 py-1.5 text-xs font-medium text-[var(--text-primary)] hover:bg-[var(--surface-2)] transition-colors cursor-pointer"
+            className="flex items-center justify-between rounded-[var(--inset-radius)] border border-[var(--panel-border)] px-2.5 py-1.5 text-xs font-medium text-[var(--text-primary)] hover:bg-[var(--surface-2)] transition-colors cursor-pointer"
           >
             <span>Poser une question à Brain</span>
             <ExternalLink className="h-3 w-3 text-[var(--text-muted)]" />

@@ -19,7 +19,7 @@ export default function SettingsPreview({
   return (
     <div
       className={cn(
-        "relative flex flex-col gap-3 overflow-hidden rounded-2xl border border-[var(--panel-border)]/60 bg-[var(--surface-raised)]/30 p-4 sm:p-5 backdrop-blur-md",
+        "relative flex flex-col gap-3 overflow-hidden rounded-[var(--panel-radius)] border border-[var(--panel-border)]/60 bg-[var(--surface-raised)]/30 p-4 sm:p-5 backdrop-blur-md",
         className
       )}
     >
@@ -35,7 +35,7 @@ export default function SettingsPreview({
           </span>
         )}
       </div>
-      <div className="flex w-full items-center justify-center min-h-[120px] rounded-xl border border-[var(--panel-border)]/40 bg-[var(--background-deep)]/40 p-4">
+      <div className="flex w-full items-center justify-center min-h-[120px] rounded-[var(--inset-radius)] border border-[var(--panel-border)]/40 bg-[var(--background-deep)]/40 p-4">
         {children}
       </div>
     </div>

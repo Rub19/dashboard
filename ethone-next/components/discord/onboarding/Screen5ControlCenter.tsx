@@ -24,7 +24,7 @@ export default function Screen5ControlCenter() {
       <div className="v8-panel w-full p-5 mb-5 relative">
         <div className="grid grid-cols-2 sm:grid-cols-3 gap-3">
           {/* Card 1 */}
-          <div className="p-3 rounded-xl bg-[var(--surface-2)]/60 border border-[var(--panel-border)]">
+          <div className="p-3 rounded-[var(--inset-radius)] bg-[var(--surface-2)]/60 border border-[var(--panel-border)]">
             <div className="flex items-center justify-between mb-1.5">
               <Users className="w-4 h-4 text-[var(--text-muted)]" />
               <span className="text-[10px] text-[var(--success)] font-semibold">+14%</span>
@@ -34,7 +34,7 @@ export default function Screen5ControlCenter() {
           </div>
 
           {/* Card 2 */}
-          <div className="p-3 rounded-xl bg-[var(--surface-2)]/60 border border-[var(--panel-border)]">
+          <div className="p-3 rounded-[var(--inset-radius)] bg-[var(--surface-2)]/60 border border-[var(--panel-border)]">
             <div className="flex items-center justify-between mb-1.5">
               <MessageSquare className="w-4 h-4 text-[var(--text-muted)]" />
               <span className="text-[10px] text-[var(--success)] font-semibold">Live</span>
@@ -44,7 +44,7 @@ export default function Screen5ControlCenter() {
           </div>
 
           {/* Card 3 */}
-          <div className="p-3 rounded-xl bg-[var(--surface-2)]/60 border border-[var(--panel-border)]">
+          <div className="p-3 rounded-[var(--inset-radius)] bg-[var(--surface-2)]/60 border border-[var(--panel-border)]">
             <div className="flex items-center justify-between mb-1.5">
               <ShieldCheck className="w-4 h-4 text-[var(--text-muted)]" />
               <span className="px-1.5 py-0.2 rounded bg-[var(--success)]/20 text-[var(--success)] text-[9px] font-bold">OPTIMAL</span>
@@ -54,7 +54,7 @@ export default function Screen5ControlCenter() {
           </div>
 
           {/* Card 4 */}
-          <div className="p-3 rounded-xl bg-[var(--surface-2)]/60 border border-[var(--panel-border)]">
+          <div className="p-3 rounded-[var(--inset-radius)] bg-[var(--surface-2)]/60 border border-[var(--panel-border)]">
             <div className="flex items-center justify-between mb-1.5">
               <Ticket className="w-4 h-4 text-[var(--text-muted)]" />
               <span className="text-[10px] text-[var(--text-muted)]">4m moy.</span>
@@ -64,7 +64,7 @@ export default function Screen5ControlCenter() {
           </div>
 
           {/* Card 5 */}
-          <div className="p-3 rounded-xl bg-[var(--surface-2)]/60 border border-[var(--panel-border)]">
+          <div className="p-3 rounded-[var(--inset-radius)] bg-[var(--surface-2)]/60 border border-[var(--panel-border)]">
             <div className="flex items-center justify-between mb-1.5">
               <Activity className="w-4 h-4 text-[var(--text-muted)]" />
               <span className="text-[10px] text-[var(--success)] font-semibold">Fort</span>
@@ -74,7 +74,7 @@ export default function Screen5ControlCenter() {
           </div>
 
           {/* Card 6 */}
-          <div className="p-3 rounded-xl bg-[var(--surface-2)]/60 border border-[var(--panel-border)]">
+          <div className="p-3 rounded-[var(--inset-radius)] bg-[var(--surface-2)]/60 border border-[var(--panel-border)]">
             <div className="flex items-center justify-between mb-1.5">
               <Music2 className="w-4 h-4 text-[var(--text-muted)]" />
               <span className="w-2 h-2 rounded-full bg-[var(--accent-primary)] animate-pulse" />

@@ -49,7 +49,7 @@ export default function PrivacyShield({ children }: { children: ReactNode }) {
               transition={{ duration: 0.2 }}
               className="pointer-events-none fixed inset-0 z-[100] flex flex-col items-center justify-center gap-3 bg-black/40 backdrop-blur-[14px]"
             >
-              <div className="rounded-2xl border border-white/10 bg-white/5 px-4 py-2 text-xs text-white/70">
+              <div className="rounded-[var(--panel-radius)] border border-[var(--panel-border)] bg-white/5 px-4 py-2 text-xs text-white/70">
                 {i18n("privacyShield") || "Mode discret activé"}
               </div>
             </motion.div>

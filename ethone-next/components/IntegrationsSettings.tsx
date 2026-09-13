@@ -344,7 +344,7 @@ export default function IntegrationsSettings() {
       <div className="shrink-0 border-b border-[var(--panel-border)]/60 bg-[var(--panel-bg)]/40 px-6 py-4 backdrop-blur-xl">
         <div className="flex flex-col gap-4 sm:flex-row sm:items-center sm:justify-between max-w-7xl mx-auto w-full">
           <div className="flex items-center gap-3">
-            <div className="flex h-10 w-10 shrink-0 items-center justify-center rounded-xl bg-[var(--accent-primary)]/15 border border-[var(--accent-primary)]/30 text-[var(--accent-primary)] shadow-sm">
+            <div className="flex h-10 w-10 shrink-0 items-center justify-center rounded-[var(--inset-radius)] bg-[var(--accent-primary)]/15 border border-[var(--accent-primary)]/30 text-[var(--accent-primary)] shadow-sm">
               <Plug className="h-5 w-5" />
             </div>
             <div>
@@ -392,7 +392,7 @@ export default function IntegrationsSettings() {
                   setSearch("");
                   setFilter("all");
                 }}
-                className="flex items-center gap-1 rounded-xl border border-[var(--panel-border)] bg-[var(--surface-raised)] px-3 py-2 text-xs font-semibold text-[var(--text-muted)] hover:text-[var(--text-primary)] transition-all cursor-pointer"
+                className="flex items-center gap-1 rounded-[var(--inset-radius)] border border-[var(--panel-border)] bg-[var(--surface-raised)] px-3 py-2 text-xs font-semibold text-[var(--text-muted)] hover:text-[var(--text-primary)] transition-all cursor-pointer"
               >
                 <RefreshCcw className="h-3 w-3" />
                 <span>Effacer filtres</span>
@@ -434,7 +434,7 @@ export default function IntegrationsSettings() {
                   type="button"
                   onClick={() => setFilter(filter === "connected" ? "all" : "connected")}
                   className={cn(
-                    "flex items-center gap-1.5 rounded-xl border px-3 py-1.5 text-xs font-bold transition-all cursor-pointer",
+                    "flex items-center gap-1.5 rounded-[var(--inset-radius)] border px-3 py-1.5 text-xs font-bold transition-all cursor-pointer",
                     filter === "connected"
                       ? "border-[var(--accent-primary)] bg-[var(--accent-primary)]/20 text-[var(--accent-primary)]"
                       : "border-[var(--accent-primary)]/30 bg-[var(--accent-primary)]/10 text-[var(--accent-primary)] hover:bg-[var(--accent-primary)]/20"
@@ -450,7 +450,7 @@ export default function IntegrationsSettings() {
                     type="button"
                     onClick={() => setFilter(filter === "error" ? "all" : "error")}
                     className={cn(
-                      "flex items-center gap-1.5 rounded-xl border px-3 py-1.5 text-xs font-bold transition-all cursor-pointer",
+                      "flex items-center gap-1.5 rounded-[var(--inset-radius)] border px-3 py-1.5 text-xs font-bold transition-all cursor-pointer",
                       filter === "error"
                         ? "border-[var(--danger)] bg-[var(--danger)]/20 text-[var(--danger)]"
                         : "border-[var(--danger)]/30 bg-[var(--danger)]/10 text-[var(--danger)] hover:bg-[var(--danger)]/20"

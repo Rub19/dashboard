@@ -60,14 +60,14 @@ function QueueItem({
 
   return (
     <div
-      className={`relative overflow-hidden rounded-2xl border bg-[var(--panel-bg)]/[0.8] p-4 shadow-sm transition-colors ${
+      className={`relative overflow-hidden rounded-[var(--panel-radius)] border bg-[var(--panel-bg)]/[0.8] p-4 shadow-sm transition-colors ${
         task.status === "error"
           ? "border-[var(--danger)]/30 bg-[var(--danger)]/[0.04]"
           : "border-[var(--panel-border)]/[0.12]"
       }`}
     >
       <div className="flex items-start gap-3.5">
-        <div className="relative flex h-14 w-14 shrink-0 overflow-hidden rounded-xl border border-[var(--panel-border)]/[0.2] bg-[var(--panel-bg)]">
+        <div className="relative flex h-14 w-14 shrink-0 overflow-hidden rounded-[var(--inset-radius)] border border-[var(--panel-border)]/[0.2] bg-[var(--panel-bg)]">
           {isImage && objectUrl ? (
             <NextImage
               src={objectUrl}
@@ -101,7 +101,7 @@ function QueueItem({
                 <button
                   type="button"
                   onClick={onRetry}
-                  className="flex items-center gap-1 rounded-lg border border-[var(--danger)]/20 bg-[var(--danger)]/10 px-2 py-1 text-[10px] font-semibold text-[var(--danger)] transition hover:bg-[var(--danger)]/20"
+                  className="flex items-center gap-1 rounded-[var(--inset-radius)] border border-[var(--danger)]/20 bg-[var(--danger)]/10 px-2 py-1 text-[10px] font-semibold text-[var(--danger)] transition hover:bg-[var(--danger)]/20"
                   aria-label={i18n("retry")}
                 >
                   <RefreshCcw className="h-3 w-3" />
@@ -156,7 +156,7 @@ function QueueItem({
 
           {task.status === "success" && (
             <div className="mt-3 flex items-center gap-1.5">
-              <span className="flex items-center gap-1 rounded-lg border border-[var(--accent-primary)]/20 bg-[var(--accent-primary)]/10 px-2 py-0.5 text-[10px] font-semibold text-[var(--accent-primary)]">
+              <span className="flex items-center gap-1 rounded-[var(--inset-radius)] border border-[var(--accent-primary)]/20 bg-[var(--accent-primary)]/10 px-2 py-0.5 text-[10px] font-semibold text-[var(--accent-primary)]">
                 <CheckCircle2 className="h-3.5 w-3.5" />
                 {i18n("uploadedInstant") || "Téléversé à l’instant"}
               </span>

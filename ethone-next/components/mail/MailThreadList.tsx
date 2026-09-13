@@ -160,7 +160,7 @@ export default function MailThreadList({
             <select
               value={sort}
               onChange={(e) => setSort(e.target.value as SortMode)}
-              className="cursor-pointer rounded-lg border border-[var(--panel-border)] bg-transparent px-2 py-1 text-xs text-[var(--text-muted)] transition-colors hover:text-[var(--text-primary)] focus:outline-none"
+              className="cursor-pointer rounded-[var(--inset-radius)] border border-[var(--panel-border)] bg-transparent px-2 py-1 text-xs text-[var(--text-muted)] transition-colors hover:text-[var(--text-primary)] focus:outline-none"
             >
               <option value="date_desc">Plus récents</option>
               <option value="date_asc">Plus anciens</option>

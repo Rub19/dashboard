@@ -44,10 +44,10 @@ export default function TrackerModeDropdown({
     <AnimatedDropdown>
       <AnimatedDropdownTrigger
         className={cn(
-          "flex items-center gap-2 rounded-2xl border px-3.5 py-1.5 text-xs font-bold",
+          "flex items-center gap-2 rounded-[var(--panel-radius)] border px-3.5 py-1.5 text-xs font-bold",
           "transition-all shadow-md active:scale-95 cursor-pointer backdrop-blur-xl",
-          "border-white/10 bg-black/60 text-zinc-200 hover:border-white/20 hover:bg-white/[0.08]",
-          "data-[popup-open]:border-white/25 data-[popup-open]:bg-white/15 data-[popup-open]:text-white data-[popup-open]:ring-2 data-[popup-open]:ring-white/10",
+          "border-[var(--panel-border)] bg-black/60 text-zinc-200 hover:border-[var(--input-border-hover)] hover:bg-white/[0.08]",
+          "data-[popup-open]:border-[var(--input-border-hover)] data-[popup-open]:bg-white/15 data-[popup-open]:text-white data-[popup-open]:ring-2 data-[popup-open]:ring-white/10",
           className,
         )}
       >

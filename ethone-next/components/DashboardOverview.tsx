@@ -492,7 +492,7 @@ export default function DashboardOverview() {
       <PullToRefresh onRefresh={handleRefresh}>
         <div className={cn("mx-auto w-full min-h-full px-2 pb-28 sm:px-4 space-y-4", maxWClass)}>
           {/* 1. Intelligent OS Home 2026 Header */}
-          <header className="shrink-0 flex flex-col md:flex-row md:items-center justify-between gap-4 rounded-3xl border border-[var(--panel-border)]/80 bg-[var(--panel-bg)]/80 p-5 shadow-sm backdrop-blur-[var(--panel-blur)] select-none">
+          <header className="shrink-0 flex flex-col md:flex-row md:items-center justify-between gap-4 rounded-[var(--panel-radius)] border border-[var(--panel-border)]/80 bg-[var(--panel-bg)]/80 p-5 shadow-sm backdrop-blur-[var(--panel-blur)] select-none">
             <div className="min-w-0 space-y-1">
               <div className="flex items-center gap-2">
                 <span className="rounded-lg bg-[var(--accent-primary)]/15 px-2 py-0.5 font-mono text-[10px] font-bold text-[var(--accent-primary)] uppercase tracking-wider">
@@ -525,7 +525,7 @@ export default function DashboardOverview() {
               <button
                 type="button"
                 onClick={() => window.dispatchEvent(new CustomEvent("v8:open-command-palette"))}
-                className="flex h-9 items-center gap-2 rounded-2xl border border-[var(--panel-border)] bg-[var(--surface-raised)]/70 px-3 text-xs font-semibold text-[var(--text-muted)] hover:text-white hover:border-[var(--accent-primary)]/40 transition-all cursor-pointer shadow-xs"
+                className="flex h-9 items-center gap-2 rounded-[var(--panel-radius)] border border-[var(--panel-border)] bg-[var(--surface-raised)]/70 px-3 text-xs font-semibold text-[var(--text-muted)] hover:text-white hover:border-[var(--accent-primary)]/40 transition-all cursor-pointer shadow-xs"
                 title="Ouvrir la palette de commandes (Ctrl + K)"
               >
                 <Search className="h-3.5 w-3.5 text-[var(--accent-primary)]" />
@@ -550,7 +550,7 @@ export default function DashboardOverview() {
           </header>
 
           {/* 2. Priority Layer: What's Important Right Now — one strip, not four duplicate cards */}
-          <div className="grid grid-cols-2 divide-x divide-y divide-[var(--panel-border)]/50 overflow-hidden rounded-2xl border border-[var(--panel-border)]/60 bg-[var(--surface-raised)]/40 shadow-xs sm:grid-cols-4 sm:divide-y-0">
+          <div className="grid grid-cols-2 divide-x divide-y divide-[var(--panel-border)]/50 overflow-hidden rounded-[var(--panel-radius)] border border-[var(--panel-border)]/60 bg-[var(--surface-raised)]/40 shadow-xs sm:grid-cols-4 sm:divide-y-0">
             {/* Calendar summary */}
             <button
               type="button"
@@ -640,7 +640,7 @@ export default function DashboardOverview() {
                     type="button"
                     onClick={() => setLayoutLocked(!layoutLocked)}
                     className={cn(
-                      "flex items-center gap-1 rounded-xl border px-2.5 py-1 text-xs font-semibold transition-all cursor-pointer",
+                      "flex items-center gap-1 rounded-[var(--inset-radius)] border px-2.5 py-1 text-xs font-semibold transition-all cursor-pointer",
                       layoutLocked
                         ? "border-amber-500/40 bg-amber-500/10 text-amber-400"
                         : "border-[var(--panel-border)] text-[var(--text-muted)] hover:text-white"
@@ -654,7 +654,7 @@ export default function DashboardOverview() {
                   <button
                     type="button"
                     onClick={handleOptimizeWithBrain}
-                    className="flex items-center gap-1 rounded-xl border border-[var(--accent-primary)]/40 bg-[var(--accent-primary)]/15 px-2.5 py-1 text-xs font-bold text-[var(--accent-primary)] hover:opacity-90 transition-all cursor-pointer"
+                    className="flex items-center gap-1 rounded-[var(--inset-radius)] border border-[var(--accent-primary)]/40 bg-[var(--accent-primary)]/15 px-2.5 py-1 text-xs font-bold text-[var(--accent-primary)] hover:opacity-90 transition-all cursor-pointer"
                     title="Optimiser la disposition selon l'heure et le contexte"
                   >
                     <Sparkles className="h-3 w-3" />
@@ -664,7 +664,7 @@ export default function DashboardOverview() {
                   <button
                     type="button"
                     onClick={handleResetLayout}
-                    className="flex items-center gap-1 rounded-xl border border-[var(--panel-border)] bg-[var(--surface-raised)] px-2.5 py-1 text-xs font-semibold text-[var(--text-muted)] hover:text-white transition-all cursor-pointer"
+                    className="flex items-center gap-1 rounded-[var(--inset-radius)] border border-[var(--panel-border)] bg-[var(--surface-raised)] px-2.5 py-1 text-xs font-semibold text-[var(--text-muted)] hover:text-white transition-all cursor-pointer"
                     title="Réinitialiser l'agencement"
                   >
                     <RotateCcw className="h-3 w-3" />
@@ -700,7 +700,7 @@ export default function DashboardOverview() {
           )}
 
           {error && (
-            <div className="shrink-0 rounded-2xl border border-[var(--warning)]/30 bg-[var(--warning)]/10 p-4 text-sm text-[var(--text-muted)]">
+            <div className="shrink-0 rounded-[var(--panel-radius)] border border-[var(--warning)]/30 bg-[var(--warning)]/10 p-4 text-sm text-[var(--text-muted)]">
               Certaines données du tableau de bord n&apos;ont pas pu être actualisées. Les informations affichées peuvent dater de votre dernière session.
             </div>
           )}

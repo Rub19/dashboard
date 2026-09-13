@@ -12,7 +12,7 @@ import Select from "@/components/ui/Select";
 
 function Card({ children, className }: { children: ReactNode; className?: string }) {
   return (
-    <div className={cn("rounded-2xl border border-[var(--panel-border)]/[0.12] bg-[var(--panel-bg)] p-[var(--panel-padding)] shadow-sm", className)}>
+    <div className={cn("rounded-[var(--panel-radius)] border border-[var(--panel-border)]/[0.12] bg-[var(--panel-bg)] p-[var(--panel-padding)] shadow-sm", className)}>
       {children}
     </div>
   );

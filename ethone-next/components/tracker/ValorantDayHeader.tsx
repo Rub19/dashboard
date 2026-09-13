@@ -18,7 +18,7 @@ export default function ValorantDayHeader({ group, onViewReport }: ValorantDayHe
           <h3 className="text-base font-black text-white tracking-wide">
             {group.dateLabel}
           </h3>
-          <span className="flex h-5 min-w-[20px] items-center justify-center rounded-md border border-white/15 bg-white/5 px-1.5 font-mono text-[10px] font-bold text-zinc-300">
+          <span className="flex h-5 min-w-[20px] items-center justify-center rounded-md border border-[var(--panel-border)] bg-white/5 px-1.5 font-mono text-[10px] font-bold text-zinc-300">
             {group.count}
           </span>
         </div>

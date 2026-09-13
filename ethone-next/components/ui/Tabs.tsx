@@ -77,7 +77,7 @@ export function Tabs({
 const listClasses: Record<Variant, string> = {
   pill: "inline-flex items-center gap-1 rounded-full border border-[var(--panel-border)] bg-[var(--bg-surface)] p-1",
   underline: "inline-flex items-center gap-1 border-b border-[var(--panel-border)]",
-  segment: "inline-flex items-center gap-0 rounded-lg border border-[var(--panel-border)] bg-[var(--bg-surface)] p-0.5",
+  segment: "inline-flex items-center gap-0 rounded-[var(--inset-radius)] border border-[var(--panel-border)] bg-[var(--bg-surface)] p-0.5",
 };
 
 export function TabsList({ children, className }: { children: ReactNode; className?: string }) {

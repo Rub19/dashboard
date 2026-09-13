@@ -91,7 +91,7 @@ function AttachmentCard({ attachment }: { attachment: MailAttachment }) {
     <button
       type="button"
       onClick={handleDownload}
-      className="group flex items-center gap-3 rounded-xl border border-[var(--panel-border)] bg-[var(--surface-2)]/40 p-2.5 text-left transition-colors hover:bg-[var(--surface-2)]"
+      className="group flex items-center gap-3 rounded-[var(--inset-radius)] border border-[var(--panel-border)] bg-[var(--surface-2)]/40 p-2.5 text-left transition-colors hover:bg-[var(--surface-2)]"
       title={`Télécharger ${attachment.filename}`}
     >
       <span className="flex h-9 w-9 shrink-0 items-center justify-center rounded-lg bg-[var(--surface-2)]">
@@ -197,7 +197,7 @@ export default function MailDetailView({
           {SHORTCUTS.map(([key, label]) => (
             <div
               key={key}
-              className="flex flex-col items-center gap-1 rounded-xl border border-[var(--panel-border)] bg-[var(--surface-2)]/40 p-2.5"
+              className="flex flex-col items-center gap-1 rounded-[var(--inset-radius)] border border-[var(--panel-border)] bg-[var(--surface-2)]/40 p-2.5"
             >
               <kbd className="rounded-md bg-[var(--surface-2)] px-2 py-0.5 text-[11px] font-medium text-[var(--text-primary)]">
                 {key}
@@ -347,7 +347,7 @@ export default function MailDetailView({
             <div
               key={msg.id}
               className={cn(
-                "rounded-xl border border-[var(--panel-border)]",
+                "rounded-[var(--inset-radius)] border border-[var(--panel-border)]",
                 isLatest ? "bg-transparent p-1" : "bg-[var(--surface-2)]/30 p-3"
               )}
             >

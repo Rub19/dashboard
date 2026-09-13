@@ -212,7 +212,7 @@ function Dock() {
               type="button"
               onClick={handleRestoreDock}
               title="Afficher le Dock"
-              className="flex items-center gap-1.5 rounded-full border border-white/15 bg-black/80 px-3.5 py-1.5 text-[10px] font-bold text-zinc-300 backdrop-blur-2xl shadow-xl hover:border-purple-500/40 hover:bg-purple-500/15 hover:text-white transition-all active:scale-95 cursor-pointer"
+              className="flex items-center gap-1.5 rounded-full border border-[var(--panel-border)] bg-black/80 px-3.5 py-1.5 text-[10px] font-bold text-zinc-300 backdrop-blur-2xl shadow-xl hover:border-purple-500/40 hover:bg-purple-500/15 hover:text-white transition-all active:scale-95 cursor-pointer"
             >
               <ChevronUp className="h-3 w-3 text-purple-400" />
               <span>Dock</span>
@@ -240,7 +240,7 @@ function Dock() {
                 className="pointer-events-auto absolute bottom-full left-1/2 z-[var(--z-dock)] mb-4 w-[min(90vw,420px)] -translate-x-1/2"
               >
                 <FlatCard style={{ boxShadow: "none" }}>
-                  <div className="space-y-3 rounded-2xl border border-[var(--panel-border)] bg-[var(--panel-bg)] p-4 backdrop-blur-md">
+                  <div className="space-y-3 rounded-[var(--panel-radius)] border border-[var(--panel-border)] bg-[var(--panel-bg)] p-4 backdrop-blur-md">
                     <div className="flex items-center justify-between">
                       <h3 className="text-sm font-medium text-[var(--text-primary)]">{i18n("dockLauncher")}</h3>
                       <button
@@ -261,7 +261,7 @@ function Dock() {
                             router.push(app.href);
                             setLauncherOpen(false);
                           }}
-                          className="flex flex-col items-center gap-1 rounded-xl border border-[var(--panel-border)] bg-[var(--bg-surface)]/80 p-2 text-[var(--text-primary)] transition-colors hover:border-[var(--accent-primary)]/30 hover:bg-[var(--text-primary)]/[0.06]"
+                          className="flex flex-col items-center gap-1 rounded-[var(--inset-radius)] border border-[var(--panel-border)] bg-[var(--bg-surface)]/80 p-2 text-[var(--text-primary)] transition-colors hover:border-[var(--accent-primary)]/30 hover:bg-[var(--text-primary)]/[0.06]"
                         >
                           <Icon name={app.icon} className="h-5 w-5" />
                           <span className="w-full truncate text-center text-[10px] leading-tight">{app.label}</span>
@@ -274,7 +274,7 @@ function Dock() {
             )}
 
             <nav
-              className="pointer-events-auto inline-flex items-center gap-1.5 overflow-x-auto no-scrollbar v8-dock px-3.5 py-1.5 select-none backdrop-blur-2xl border border-white/10 bg-[#080c14]/85 shadow-[0_12px_40px_rgba(0,0,0,0.7),0_0_0_1px_rgba(255,255,255,0.05)] rounded-2xl"
+              className="pointer-events-auto inline-flex items-center gap-1.5 overflow-x-auto no-scrollbar v8-dock px-3.5 py-1.5 select-none backdrop-blur-2xl border border-[var(--panel-border)] bg-[#080c14]/85 shadow-[0_12px_40px_rgba(0,0,0,0.7),0_0_0_1px_rgba(255,255,255,0.05)] rounded-[var(--panel-radius)]"
               aria-label={i18n("dock")}
             >
               <DockMediaFlyout

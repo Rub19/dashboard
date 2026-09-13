@@ -166,7 +166,7 @@ export default function FloatingLiquidDock() {
         data-liquid-dock
         aria-label="Navigation principale mobile"
         className={cn(
-          "fixed bottom-3 left-1/2 z-[var(--z-dock)] flex h-[62px] w-[94%] max-w-[420px] -translate-x-1/2 flex-row items-center justify-around rounded-2xl border border-[var(--panel-border)]/80 bg-[#0a0c12]/90 px-1.5 shadow-[0_12px_40px_rgba(0,0,0,0.8),0_0_0_1px_rgba(255,255,255,0.06)] backdrop-blur-2xl md:hidden transition-all duration-200 select-none pb-[env(safe-area-inset-bottom)]",
+          "fixed bottom-3 left-1/2 z-[var(--z-dock)] flex h-[62px] w-[94%] max-w-[420px] -translate-x-1/2 flex-row items-center justify-around rounded-[var(--panel-radius)] border border-[var(--panel-border)]/80 bg-[#0a0c12]/90 px-1.5 shadow-[0_12px_40px_rgba(0,0,0,0.8),0_0_0_1px_rgba(255,255,255,0.06)] backdrop-blur-2xl md:hidden transition-all duration-200 select-none pb-[env(safe-area-inset-bottom)]",
           isMenuOpen
             ? "opacity-0 pointer-events-none translate-y-8"
             : "opacity-100 translate-y-0"
@@ -198,7 +198,7 @@ export default function FloatingLiquidDock() {
                     stiffness: 450,
                     damping: 35,
                   }}
-                  className="absolute inset-0 -z-10 rounded-xl bg-[var(--accent-primary)]/15 border border-[var(--accent-primary)]/30 shadow-[0_0_15px_rgba(var(--accent-rgb),0.25)]"
+                  className="absolute inset-0 -z-10 rounded-[var(--inset-radius)] bg-[var(--accent-primary)]/15 border border-[var(--accent-primary)]/30 shadow-[0_0_15px_rgba(var(--accent-rgb),0.25)]"
                 />
               )}
               <IconComp className={cn("h-5 w-5", isActive ? "stroke-[2.4]" : "stroke-[1.8]")} />
@@ -282,7 +282,7 @@ export default function FloatingLiquidDock() {
                 <button
                   type="button"
                   onClick={() => setSheetOpen(false)}
-                  className="rounded-xl border border-zinc-800 bg-zinc-900/80 p-1.5 text-zinc-400 hover:text-white"
+                  className="rounded-[var(--inset-radius)] border border-zinc-800 bg-zinc-900/80 p-1.5 text-zinc-400 hover:text-white"
                   aria-label="Fermer"
                 >
                   <X className="h-4 w-4" />
@@ -298,7 +298,7 @@ export default function FloatingLiquidDock() {
                     value={searchQuery}
                     onChange={(e) => setSearchQuery(e.target.value)}
                     placeholder="Rechercher une application, un outil..."
-                    className="w-full rounded-xl border border-zinc-800 bg-black/60 pl-9 pr-4 py-2 text-xs text-white placeholder:text-zinc-500 focus:border-[var(--accent-primary)] focus:outline-none"
+                    className="w-full rounded-[var(--inset-radius)] border border-zinc-800 bg-black/60 pl-9 pr-4 py-2 text-xs text-white placeholder:text-zinc-500 focus:border-[var(--accent-primary)] focus:outline-none"
                   />
                   {searchQuery && (
                     <button
@@ -325,7 +325,7 @@ export default function FloatingLiquidDock() {
                         href={item.href}
                         onClick={() => setSheetOpen(false)}
                         className={cn(
-                          "flex flex-col items-center justify-center gap-1.5 rounded-2xl border p-2.5 text-center transition-all touch-manipulation active:scale-95",
+                          "flex flex-col items-center justify-center gap-1.5 rounded-[var(--panel-radius)] border p-2.5 text-center transition-all touch-manipulation active:scale-95",
                           isActive
                             ? "border-[var(--accent-primary)] bg-[var(--accent-primary)]/15 shadow-[0_0_15px_rgba(var(--accent-rgb),0.2)]"
                             : "border-zinc-800/80 bg-zinc-900/40 hover:bg-zinc-800/60"
@@ -361,7 +361,7 @@ export default function FloatingLiquidDock() {
                         setSheetOpen(false);
                         setCommandOpen(true);
                       }}
-                      className="flex items-center gap-2 rounded-xl border border-zinc-800 bg-zinc-900/60 p-2.5 text-left text-xs font-semibold text-zinc-200 hover:bg-zinc-800"
+                      className="flex items-center gap-2 rounded-[var(--inset-radius)] border border-zinc-800 bg-zinc-900/60 p-2.5 text-left text-xs font-semibold text-zinc-200 hover:bg-zinc-800"
                     >
                       <Search className="h-4 w-4 text-emerald-400 shrink-0" />
                       <span className="truncate">Spotlight (Recherche)</span>
@@ -374,7 +374,7 @@ export default function FloatingLiquidDock() {
                         if (focus.state.phase === "idle") focus.start("pomodoro");
                         else focus.stop();
                       }}
-                      className="flex items-center gap-2 rounded-xl border border-zinc-800 bg-zinc-900/60 p-2.5 text-left text-xs font-semibold text-zinc-200 hover:bg-zinc-800"
+                      className="flex items-center gap-2 rounded-[var(--inset-radius)] border border-zinc-800 bg-zinc-900/60 p-2.5 text-left text-xs font-semibold text-zinc-200 hover:bg-zinc-800"
                     >
                       <Timer className="h-4 w-4 text-amber-400 shrink-0" />
                       <span className="truncate">
@@ -385,7 +385,7 @@ export default function FloatingLiquidDock() {
                     <button
                       type="button"
                       onClick={handleNextTheme}
-                      className="flex items-center gap-2 rounded-xl border border-zinc-800 bg-zinc-900/60 p-2.5 text-left text-xs font-semibold text-zinc-200 hover:bg-zinc-800"
+                      className="flex items-center gap-2 rounded-[var(--inset-radius)] border border-zinc-800 bg-zinc-900/60 p-2.5 text-left text-xs font-semibold text-zinc-200 hover:bg-zinc-800"
                     >
                       <Palette className="h-4 w-4 text-cyan-400 shrink-0" />
                       <span className="truncate">Changer Thème</span>
@@ -394,7 +394,7 @@ export default function FloatingLiquidDock() {
                     <Link
                       href="/settings"
                       onClick={() => setSheetOpen(false)}
-                      className="flex items-center gap-2 rounded-xl border border-zinc-800 bg-zinc-900/60 p-2.5 text-left text-xs font-semibold text-zinc-200 hover:bg-zinc-800"
+                      className="flex items-center gap-2 rounded-[var(--inset-radius)] border border-zinc-800 bg-zinc-900/60 p-2.5 text-left text-xs font-semibold text-zinc-200 hover:bg-zinc-800"
                     >
                       <SlidersHorizontal className="h-4 w-4 text-purple-400 shrink-0" />
                       <span className="truncate">Paramètres OS</span>

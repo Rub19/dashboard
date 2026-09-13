@@ -46,7 +46,7 @@ export default function WeatherForecastList({ days }: { days: ForecastDay[] }) {
             initial={{ opacity: 0, y: 6 }}
             animate={{ opacity: 1, y: 0 }}
             transition={{ duration: 0.15, delay: i * 0.04, ease: "easeOut" }}
-            className="flex items-center justify-between border-b border-[var(--text-primary)]/[0.04] px-2 py-2.5 last:border-none hover:rounded-xl hover:bg-[var(--text-primary)]/[0.02] transition-colors"
+            className="flex items-center justify-between border-b border-[var(--text-primary)]/[0.04] px-2 py-2.5 last:border-none hover:rounded-[var(--inset-radius)] hover:bg-[var(--text-primary)]/[0.02] transition-colors"
           >
             <span className="w-12 text-xs font-medium text-[var(--text-primary)]">{formatShortDay(day.date, locale)}</span>
             <Icon pack="phosphor" name={icon} className={`h-4 w-4 ${color}`} />

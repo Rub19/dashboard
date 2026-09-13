@@ -109,7 +109,7 @@ export default function FileAddModal({
               type="button"
               onClick={() => setTab(a.id)}
               className={cn(
-                "group relative flex flex-col items-center gap-1.5 rounded-2xl border p-3.5 text-center transition-all duration-150 active:scale-98 cursor-pointer",
+                "group relative flex flex-col items-center gap-1.5 rounded-[var(--panel-radius)] border p-3.5 text-center transition-all duration-150 active:scale-98 cursor-pointer",
                 tab === a.id
                   ? "border-[var(--accent-primary)]/60 bg-[var(--accent-primary)]/15 text-[var(--accent-primary)] shadow-md"
                   : "border-[var(--panel-border)] bg-[var(--surface-raised)] text-[var(--text-muted)] hover:border-[var(--accent-primary)]/30 hover:bg-[var(--surface-hover)] hover:text-[var(--text-primary)]"
@@ -125,12 +125,12 @@ export default function FileAddModal({
         </div>
 
         {/* Tab Content Box */}
-        <div className="mt-4 min-h-[220px] rounded-2xl border border-[var(--panel-border)] bg-[var(--surface-raised)]/60 p-5">
+        <div className="mt-4 min-h-[220px] rounded-[var(--panel-radius)] border border-[var(--panel-border)] bg-[var(--surface-raised)]/60 p-5">
           {tab === "upload" && (
             <div className="space-y-4">
               {!clientId ? (
                 <div className="flex flex-col items-center justify-center gap-3 py-6 text-center">
-                  <div className="flex h-14 w-14 items-center justify-center rounded-2xl border border-[var(--panel-border)] bg-[var(--surface-raised)] text-[var(--accent-primary)] shadow-sm">
+                  <div className="flex h-14 w-14 items-center justify-center rounded-[var(--panel-radius)] border border-[var(--panel-border)] bg-[var(--surface-raised)] text-[var(--accent-primary)] shadow-sm">
                     <Cloud className="h-7 w-7" />
                   </div>
                   <div>
@@ -231,7 +231,7 @@ export default function FileAddModal({
           {tab === "drive" && (
             <div className="flex flex-col items-center justify-center gap-4 py-4 text-center">
               <div className={cn(
-                "flex h-16 w-16 items-center justify-center rounded-2xl border transition-all",
+                "flex h-16 w-16 items-center justify-center rounded-[var(--panel-radius)] border transition-all",
                 clientId
                   ? "border-[var(--success)]/30 bg-[var(--success)]/10 text-[var(--success)] shadow-sm"
                   : "border-[var(--panel-border)] bg-[var(--surface-raised)] text-[var(--text-muted)]"

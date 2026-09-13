@@ -215,7 +215,7 @@ export default function NotesPage() {
           )}
 
           {isOffline && (
-            <div className="flex items-center gap-2 rounded-xl border border-[var(--panel-border)] bg-[var(--surface-raised)]/60 px-3 py-2 text-xs text-[var(--text-muted)]">
+            <div className="flex items-center gap-2 rounded-[var(--inset-radius)] border border-[var(--panel-border)] bg-[var(--surface-raised)]/60 px-3 py-2 text-xs text-[var(--text-muted)]">
               <span className="h-1.5 w-1.5 rounded-full bg-[var(--warning)] shadow-[0_0_5px_var(--glow-color)]" />
               <span>Mode local actif. Vos notes sont sécurisées et synchronisées sur cet appareil.</span>
             </div>
@@ -228,7 +228,7 @@ export default function NotesPage() {
               data-context-id={note.id}
               data-active={index === activeIndex}
               className={cn(
-                "group rounded-2xl v8-panel p-3 backdrop-blur-2xl transition-colors hover:border-[var(--text-primary)]/[0.12]",
+                "group rounded-[var(--panel-radius)] v8-panel p-3 backdrop-blur-2xl transition-colors hover:border-[var(--text-primary)]/[0.12]",
                 index === activeIndex && "border-[var(--accent-primary)]/40 bg-[var(--accent-primary)]/10"
               )}
             >
@@ -281,7 +281,7 @@ export default function NotesPage() {
 
           {!loading && filtered.length === 0 && (
             <div className="flex min-h-[180px] flex-col items-center justify-center gap-2.5 rounded-2xl v8-panel p-6 text-center text-[var(--text-muted)]">
-              <div className="flex h-12 w-12 items-center justify-center rounded-2xl border border-[var(--panel-border)] bg-[var(--surface-raised)] text-[var(--accent-primary)] shadow-sm">
+              <div className="flex h-12 w-12 items-center justify-center rounded-[var(--panel-radius)] border border-[var(--panel-border)] bg-[var(--surface-raised)] text-[var(--accent-primary)] shadow-sm">
                 <Icon name="notebook-pen" className="h-6 w-6" />
               </div>
               <p className="text-sm font-bold text-[var(--text-primary)]">{i18n("noNotes", "Aucune note")}</p>
@@ -292,7 +292,7 @@ export default function NotesPage() {
                   const input = document.querySelector('input[placeholder*="Titre"]') as HTMLInputElement | null;
                   input?.focus();
                 }}
-                className="mt-2 inline-flex items-center gap-1.5 rounded-xl border border-[var(--accent-primary)]/40 bg-[var(--accent-primary)]/15 px-3.5 py-1.5 text-xs font-bold text-[var(--accent-primary)] shadow-sm transition-all hover:bg-[var(--accent-primary)]/25 active:scale-95 cursor-pointer"
+                className="mt-2 inline-flex items-center gap-1.5 rounded-[var(--inset-radius)] border border-[var(--accent-primary)]/40 bg-[var(--accent-primary)]/15 px-3.5 py-1.5 text-xs font-bold text-[var(--accent-primary)] shadow-sm transition-all hover:bg-[var(--accent-primary)]/25 active:scale-95 cursor-pointer"
               >
                 <Icon name="plus" className="h-3.5 w-3.5" />
                 <span>{i18n("newNote", "Rédiger une note")}</span>
@@ -328,7 +328,7 @@ export default function NotesPage() {
               type="button"
               onClick={() => exportNoteAsFile(title || "Nouvelle Note", body)}
               disabled={loading || (!title.trim() && !body.trim())}
-              className="inline-flex items-center gap-1.5 rounded-xl border border-[var(--panel-border)] bg-[var(--surface-raised)] px-3 py-2 text-xs font-semibold text-[var(--text-primary)] transition-all hover:bg-[var(--surface-hover)] active:scale-95 disabled:opacity-50"
+              className="inline-flex items-center gap-1.5 rounded-[var(--inset-radius)] border border-[var(--panel-border)] bg-[var(--surface-raised)] px-3 py-2 text-xs font-semibold text-[var(--text-primary)] transition-all hover:bg-[var(--surface-hover)] active:scale-95 disabled:opacity-50"
             >
               <Icon name="hard-drive" className="h-3.5 w-3.5" />
               Exporter (.md)

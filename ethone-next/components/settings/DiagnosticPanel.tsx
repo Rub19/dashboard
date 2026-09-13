@@ -200,7 +200,7 @@ export default function DiagnosticPanel() {
             <div
               key={check.id}
               className={cn(
-                "flex items-center gap-3 rounded-lg border border-[var(--text-primary)]/[0.04] bg-[var(--text-primary)]/[0.02] px-3 py-2.5 transition-colors",
+                "flex items-center gap-3 rounded-[var(--inset-radius)] border border-[var(--text-primary)]/[0.04] bg-[var(--text-primary)]/[0.02] px-3 py-2.5 transition-colors",
                 check.status === "success" && "border-[var(--success)]/10 bg-[var(--success)]/[0.03]",
                 check.status === "error" && "border-[var(--danger)]/10 bg-[var(--danger)]/[0.03]"
               )}

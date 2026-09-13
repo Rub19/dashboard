@@ -94,14 +94,14 @@ export default function CalendarGrid({
             type="button"
             onClick={prev}
             aria-label="Mois précédent"
-            className="flex h-7 w-7 items-center justify-center rounded-lg border border-[var(--panel-border)] bg-[var(--text-primary)]/[0.04] text-[var(--text-muted)] transition-colors hover:bg-[var(--text-primary)]/[0.08] hover:text-[var(--text-primary)]"
+            className="flex h-7 w-7 items-center justify-center rounded-[var(--inset-radius)] border border-[var(--panel-border)] bg-[var(--text-primary)]/[0.04] text-[var(--text-muted)] transition-colors hover:bg-[var(--text-primary)]/[0.08] hover:text-[var(--text-primary)]"
           >
             <ChevronLeft className="h-3.5 w-3.5" />
           </button>
           <button
             type="button"
             onClick={selectToday}
-            className="rounded-lg border border-[var(--panel-border)] bg-[var(--text-primary)]/[0.06] px-2.5 py-1 text-[11px] font-medium text-[var(--text-primary)] transition-colors hover:bg-[var(--text-primary)]/10"
+            className="rounded-[var(--inset-radius)] border border-[var(--panel-border)] bg-[var(--text-primary)]/[0.06] px-2.5 py-1 text-[11px] font-medium text-[var(--text-primary)] transition-colors hover:bg-[var(--text-primary)]/10"
           >
             Aujourd&apos;hui
           </button>
@@ -109,7 +109,7 @@ export default function CalendarGrid({
             type="button"
             onClick={next}
             aria-label="Mois suivant"
-            className="flex h-7 w-7 items-center justify-center rounded-lg border border-[var(--panel-border)] bg-[var(--text-primary)]/[0.04] text-[var(--text-muted)] transition-colors hover:bg-[var(--text-primary)]/[0.08] hover:text-[var(--text-primary)]"
+            className="flex h-7 w-7 items-center justify-center rounded-[var(--inset-radius)] border border-[var(--panel-border)] bg-[var(--text-primary)]/[0.04] text-[var(--text-muted)] transition-colors hover:bg-[var(--text-primary)]/[0.08] hover:text-[var(--text-primary)]"
           >
             <ChevronRight className="h-3.5 w-3.5" />
           </button>

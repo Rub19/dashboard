@@ -81,7 +81,7 @@ function CoachingBadges({ badges }: { badges: string[] }) {
           initial={{ opacity: 0, scale: 0.8, y: 6 }}
           animate={{ opacity: 1, scale: 1, y: 0 }}
           transition={{ delay: i * 0.05 }}
-          className="rounded-lg border border-[var(--panel-border)] bg-[var(--panel-bg)] px-2 py-0.5 text-[10px] text-[var(--text-muted)] backdrop-blur-[var(--panel-blur)]"
+          className="rounded-[var(--inset-radius)] border border-[var(--panel-border)] bg-[var(--panel-bg)] px-2 py-0.5 text-[10px] text-[var(--text-muted)] backdrop-blur-[var(--panel-blur)]"
         >
           {badge}
         </motion.span>
@@ -223,7 +223,7 @@ export default function PasswordField({
                     {["Généré", "Unique", "Sécurisé"].map((badge) => (
                       <span
                         key={badge}
-                        className="rounded-lg border border-[var(--accent-primary)] bg-[var(--accent-primary)] px-2 py-0.5 text-[10px] font-medium text-[var(--accent-primary)]"
+                        className="rounded-[var(--inset-radius)] border border-[var(--accent-primary)] bg-[var(--accent-primary)] px-2 py-0.5 text-[10px] font-medium text-[var(--accent-primary)]"
                       >
                         {badge}
                       </span>

@@ -29,10 +29,10 @@ function BillingCard({
   accent?: Accent;
 }) {
   return (
-    <div className="group relative flex min-h-0 flex-col overflow-hidden rounded-2xl v8-panel p-5 shadow-sm backdrop-blur-2xl transition-all hover:border-white/15">
+    <div className="group relative flex min-h-0 flex-col overflow-hidden rounded-[var(--panel-radius)] v8-panel p-5 shadow-sm backdrop-blur-2xl transition-all hover:border-[var(--input-border-hover)]">
       <div className="mb-4 flex items-center gap-2.5">
         <div
-          className={`flex h-9 w-9 shrink-0 items-center justify-center rounded-xl border ${accentMap[accent]}`}
+          className={`flex h-9 w-9 shrink-0 items-center justify-center rounded-[var(--inset-radius)] border ${accentMap[accent]}`}
         >
           <Icon name={icon} className="h-4 w-4" />
         </div>
@@ -81,7 +81,7 @@ export default function BillingTab() {
         <div className="space-y-3">
           <div className="flex items-center justify-between">
             <span className="text-2xl font-bold tracking-tight text-[var(--text-primary)]">—</span>
-            <span className="rounded-lg border border-zinc-500/20 bg-zinc-500/10 px-2 py-0.5 text-[10px] font-medium text-[var(--text-muted)]">
+            <span className="rounded-[var(--inset-radius)] border border-zinc-500/20 bg-zinc-500/10 px-2 py-0.5 text-[10px] font-medium text-[var(--text-muted)]">
               {i18n("noPlan", "Aucun abonnement")}
             </span>
           </div>
@@ -91,7 +91,7 @@ export default function BillingTab() {
           <button
             type="button"
             disabled
-            className="flex w-full cursor-not-allowed items-center justify-center gap-1.5 rounded-xl border border-[var(--panel-border)] bg-[var(--text-primary)]/4 py-2 text-xs font-medium text-[var(--text-muted)]"
+            className="flex w-full cursor-not-allowed items-center justify-center gap-1.5 rounded-[var(--inset-radius)] border border-[var(--panel-border)] bg-[var(--text-primary)]/4 py-2 text-xs font-medium text-[var(--text-muted)]"
           >
             <CreditCard className="h-3.5 w-3.5" />
             {i18n("managePlan") || "Gérer le plan"}

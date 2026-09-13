@@ -152,13 +152,13 @@ const BrainBriefingPanel = memo(function BrainBriefingPanel({ _className = "", _
       </div>
 
       {!synthesisDismissed && (
-        <div className="rounded-xl border border-[var(--accent-primary)]/20 bg-[var(--accent-primary)]/10 p-3">
+        <div className="rounded-[var(--inset-radius)] border border-[var(--accent-primary)]/20 bg-[var(--accent-primary)]/10 p-3">
           <p className="text-sm font-medium text-[var(--text-primary)]">{synthesis}</p>
           <div className="mt-2 flex flex-wrap gap-2">
             <button
               type="button"
               onClick={handleSpeakBriefing}
-              className={`inline-flex items-center gap-1.5 rounded-lg border border-purple-500/30 px-2.5 py-1.5 text-[11px] font-semibold transition-all ${
+              className={`inline-flex items-center gap-1.5 rounded-[var(--inset-radius)] border border-purple-500/30 px-2.5 py-1.5 text-[11px] font-semibold transition-all ${
                 speaking
                   ? "bg-purple-500/20 text-purple-300 animate-pulse"
                   : "bg-purple-500/10 text-purple-400 hover:bg-purple-500/20"
@@ -177,7 +177,7 @@ const BrainBriefingPanel = memo(function BrainBriefingPanel({ _className = "", _
             </button>
             <Link
               href="/calendar"
-              className="inline-flex items-center gap-1.5 rounded-lg border border-[var(--text-primary)]/[0.08] bg-[var(--text-primary)]/[0.04] px-2.5 py-1.5 text-[11px] font-medium text-[var(--text-primary)] transition-colors hover:bg-[var(--text-primary)]/[0.08]"
+              className="inline-flex items-center gap-1.5 rounded-[var(--inset-radius)] border border-[var(--text-primary)]/[0.08] bg-[var(--text-primary)]/[0.04] px-2.5 py-1.5 text-[11px] font-medium text-[var(--text-primary)] transition-colors hover:bg-[var(--text-primary)]/[0.08]"
             >
               <Icon name="calendar" className="h-3 w-3" />
               {i18n("seeAgenda", "Voir mon agenda")}
@@ -185,7 +185,7 @@ const BrainBriefingPanel = memo(function BrainBriefingPanel({ _className = "", _
             <button
               type="button"
               onClick={handleDismissSynthesis}
-              className="inline-flex items-center gap-1.5 rounded-lg border border-[var(--text-primary)]/[0.08] px-2.5 py-1.5 text-[11px] font-medium text-[var(--text-muted)] transition-colors hover:bg-[var(--text-primary)]/[0.04] hover:text-[var(--text-primary)]"
+              className="inline-flex items-center gap-1.5 rounded-[var(--inset-radius)] border border-[var(--text-primary)]/[0.08] px-2.5 py-1.5 text-[11px] font-medium text-[var(--text-muted)] transition-colors hover:bg-[var(--text-primary)]/[0.04] hover:text-[var(--text-primary)]"
             >
               {i18n("dismiss", "Ignorer")}
             </button>
@@ -193,7 +193,7 @@ const BrainBriefingPanel = memo(function BrainBriefingPanel({ _className = "", _
               <Link
                 key={r.href}
                 href={r.href}
-                className="inline-flex items-center gap-1.5 rounded-lg border border-[var(--accent-primary)]/20 bg-[var(--accent-primary)]/10 px-2.5 py-1.5 text-[11px] font-medium text-[var(--accent-primary)] transition-colors hover:bg-[var(--accent-primary)]/15"
+                className="inline-flex items-center gap-1.5 rounded-[var(--inset-radius)] border border-[var(--accent-primary)]/20 bg-[var(--accent-primary)]/10 px-2.5 py-1.5 text-[11px] font-medium text-[var(--accent-primary)] transition-colors hover:bg-[var(--accent-primary)]/15"
               >
                 <Icon name={r.icon} className="h-3 w-3" />
                 {r.label}
@@ -210,7 +210,7 @@ const BrainBriefingPanel = memo(function BrainBriefingPanel({ _className = "", _
             <div
               key={s.id}
               className={cn(
-                "flex flex-col justify-between rounded-xl border p-2.5 transition-colors",
+                "flex flex-col justify-between rounded-[var(--inset-radius)] border p-2.5 transition-colors",
                 s.highlight
                   ? "border-[var(--accent-primary)]/25 bg-[var(--accent-primary)]/[0.06] hover:border-[var(--accent-primary)]/40"
                   : "border-[var(--text-primary)]/[0.06] bg-[var(--text-primary)]/[0.02] hover:border-[var(--text-primary)]/10"

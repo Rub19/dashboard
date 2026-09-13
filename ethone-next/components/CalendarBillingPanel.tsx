@@ -144,9 +144,9 @@ export default function CalendarBillingPanel({ date, bills, onChange }: Calendar
   const hasUnpaid = dayBills.some((b) => !b.paid);
 
   return (
-    <div className="flex h-full min-h-0 flex-col overflow-hidden rounded-3xl border border-white/10 bg-[#0c0d14]/90 p-4 sm:p-5 backdrop-blur-2xl shadow-xl">
+    <div className="flex h-full min-h-0 flex-col overflow-hidden rounded-[var(--panel-radius)] border border-[var(--panel-border)] bg-[#0c0d14]/90 p-4 sm:p-5 backdrop-blur-2xl shadow-xl">
       {/* Header with Selected Date & Total Due */}
-      <div className="mb-4 flex shrink-0 items-start justify-between gap-3 border-b border-white/10 pb-3.5">
+      <div className="mb-4 flex shrink-0 items-start justify-between gap-3 border-b border-[var(--panel-border)] pb-3.5">
         <div>
           <p className="text-xs font-semibold capitalize text-zinc-400">
             {selectedDate.toLocaleDateString(settings.language, {
@@ -163,7 +163,7 @@ export default function CalendarBillingPanel({ date, bills, onChange }: Calendar
         </div>
 
         {hasUnpaid && (
-          <div className="rounded-xl border border-rose-500/30 bg-rose-500/10 px-3 py-1.5 text-right">
+          <div className="rounded-[var(--inset-radius)] border border-rose-500/30 bg-rose-500/10 px-3 py-1.5 text-right">
             <p className="text-sm font-black text-rose-300">
               {formatCurrency(totalDue, dueCurrency, settings.language)}
             </p>
@@ -176,7 +176,7 @@ export default function CalendarBillingPanel({ date, bills, onChange }: Calendar
       <div className="min-h-0 flex-1 overflow-y-auto os-scroll space-y-2.5 pr-1">
         {dayBills.length === 0 ? (
           <div className="flex flex-col items-center justify-center py-10 text-center text-zinc-500">
-            <div className="flex h-12 w-12 items-center justify-center rounded-2xl border border-white/10 bg-white/5 text-zinc-400 mb-2">
+            <div className="flex h-12 w-12 items-center justify-center rounded-[var(--panel-radius)] border border-[var(--panel-border)] bg-white/5 text-zinc-400 mb-2">
               <CreditCard className="h-6 w-6" />
             </div>
             <p className="text-xs font-semibold text-zinc-300">Rien à payer ce jour</p>
@@ -191,16 +191,16 @@ export default function CalendarBillingPanel({ date, bills, onChange }: Calendar
               <div
                 key={b.id}
                 className={cn(
-                  "group relative flex items-center justify-between gap-3 rounded-2xl border p-3 transition-all duration-200",
+                  "group relative flex items-center justify-between gap-3 rounded-[var(--panel-radius)] border p-3 transition-all duration-200",
                   b.paid
-                    ? "border-white/5 bg-white/[0.02] opacity-70"
-                    : "border-white/10 bg-white/[0.04] hover:border-white/20 hover:bg-white/[0.07]"
+                    ? "border-[var(--panel-border)] bg-white/[0.02] opacity-70"
+                    : "border-[var(--panel-border)] bg-white/[0.04] hover:border-[var(--input-border-hover)] hover:bg-white/[0.07]"
                 )}
               >
                 {/* Brand Logo or Icon */}
                 <div className="flex items-center gap-3 min-w-0 flex-1">
                   <div
-                    className="relative flex h-10 w-10 shrink-0 items-center justify-center overflow-hidden rounded-xl border border-white/10 bg-black/40 shadow-xs"
+                    className="relative flex h-10 w-10 shrink-0 items-center justify-center overflow-hidden rounded-[var(--inset-radius)] border border-[var(--panel-border)] bg-black/40 shadow-xs"
                     style={{ backgroundColor: brand.bgColor || "#18181b" }}
                   >
                     {brand.logo ? (
@@ -274,15 +274,15 @@ export default function CalendarBillingPanel({ date, bills, onChange }: Calendar
       </div>
 
       {/* Add Bill Form / Trigger */}
-      <div className="pt-3 border-t border-white/10 shrink-0">
+      <div className="pt-3 border-t border-[var(--panel-border)] shrink-0">
         {adding ? (
-          <div className="space-y-3 rounded-2xl border border-white/15 bg-white/5 p-3.5 animate-in fade-in zoom-in-95 duration-150">
+          <div className="space-y-3 rounded-[var(--panel-radius)] border border-[var(--panel-border)] bg-white/5 p-3.5 animate-in fade-in zoom-in-95 duration-150">
             <input
               type="text"
               value={label}
               onChange={(e) => handleLabelChange(e.target.value)}
               placeholder="Nom ou marque (ex: Netflix, ChatGPT, EDF)..."
-              className="w-full rounded-xl border border-white/15 bg-black/40 px-3 py-2 text-xs text-white placeholder-zinc-500 outline-none focus:border-purple-500/50"
+              className="w-full rounded-[var(--inset-radius)] border border-[var(--panel-border)] bg-black/40 px-3 py-2 text-xs text-white placeholder-zinc-500 outline-none focus:border-purple-500/50"
             />
 
             <div className="grid grid-cols-3 gap-2">
@@ -292,14 +292,14 @@ export default function CalendarBillingPanel({ date, bills, onChange }: Calendar
                 value={amount}
                 onChange={(e) => setAmount(e.target.value)}
                 placeholder="Montant"
-                className="w-full rounded-xl border border-white/15 bg-black/40 px-2.5 py-1.5 font-mono text-xs text-white placeholder-zinc-500 outline-none focus:border-purple-500/50"
+                className="w-full rounded-[var(--inset-radius)] border border-[var(--panel-border)] bg-black/40 px-2.5 py-1.5 font-mono text-xs text-white placeholder-zinc-500 outline-none focus:border-purple-500/50"
               />
 
               <div className="relative">
                 <select
                   value={currency}
                   onChange={(e) => setCurrency(e.target.value)}
-                  className="w-full appearance-none rounded-xl border border-white/15 bg-black/40 px-2.5 py-1.5 pr-7 font-mono text-xs text-white outline-none focus:border-purple-500/50 cursor-pointer"
+                  className="w-full appearance-none rounded-[var(--inset-radius)] border border-[var(--panel-border)] bg-black/40 px-2.5 py-1.5 pr-7 font-mono text-xs text-white outline-none focus:border-purple-500/50 cursor-pointer"
                 >
                   {CURRENCIES.map((c) => (
                     <option key={c.id} value={c.id} className="bg-zinc-900 text-white">
@@ -314,7 +314,7 @@ export default function CalendarBillingPanel({ date, bills, onChange }: Calendar
                 <select
                   value={recurrence}
                   onChange={(e) => setRecurrence(e.target.value as typeof recurrence)}
-                  className="w-full appearance-none rounded-xl border border-white/15 bg-black/40 px-2.5 py-1.5 pr-7 text-xs text-white outline-none focus:border-purple-500/50 cursor-pointer"
+                  className="w-full appearance-none rounded-[var(--inset-radius)] border border-[var(--panel-border)] bg-black/40 px-2.5 py-1.5 pr-7 text-xs text-white outline-none focus:border-purple-500/50 cursor-pointer"
                 >
                   <option value="monthly" className="bg-zinc-900 text-white">Mensuel</option>
                   <option value="yearly" className="bg-zinc-900 text-white">Annuel</option>
@@ -348,7 +348,7 @@ export default function CalendarBillingPanel({ date, bills, onChange }: Calendar
           <button
             type="button"
             onClick={() => setAdding(true)}
-            className="flex w-full items-center justify-center gap-2 rounded-2xl border border-purple-500/30 bg-purple-500/10 py-2.5 text-xs font-bold text-purple-300 hover:bg-purple-500/20 active:scale-95 transition-all cursor-pointer shadow-xs"
+            className="flex w-full items-center justify-center gap-2 rounded-[var(--panel-radius)] border border-purple-500/30 bg-purple-500/10 py-2.5 text-xs font-bold text-purple-300 hover:bg-purple-500/20 active:scale-95 transition-all cursor-pointer shadow-xs"
           >
             <Plus className="h-4 w-4" />
             <span>Ajouter une facture / abonnement</span>

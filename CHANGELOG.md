@@ -2,6 +2,14 @@
 
 Toutes les modifications notables de ce projet seront documentées dans ce fichier.
 
+## v1.21.64 — 2026-09-14
+
+**Fluidité : Discord Lanyard non mis en cache (confirmé par capture console), FPS mesuré en permanence pour rien**
+
+- Capture console fournie par l'utilisateur : ~30 requêtes quasi simultanées vers `api.lanyard.rest`. Cet appel est fait en direct depuis le navigateur (pas via le Worker) donc jamais mis en cache — 4 points d'appel indépendants (`useLiveData.ts`, `useNowPlaying.ts`, `SocialDiscordCard.tsx`). Nouveau `lib/lanyard-client.ts` (cache 10s + dédup) branché sur les 3 pollers automatiques.
+- `lib/hooks/useCosmicPerformance.ts` : la boucle `requestAnimationFrame` de mesure FPS tournait en permanence (même fond désactivé, même onglet caché) puisque `CosmicBackground` est monté globalement. Ne tourne plus que quand c'est utile (`enabled` + `isVisible`).
+- Validation : `tsc`/`build`/`lint` (0 erreur)/`test:unit` 115/115 ✓. `audit-security` PASS (1985 fichiers).
+
 ## v1.21.63 — 2026-09-14
 
 **Fluidité : suppression de 3 cycles de requêtes redondants**

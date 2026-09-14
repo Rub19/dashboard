@@ -26,7 +26,7 @@ function clampPixelRatio(ratio: number) {
   return isMobileOrTablet() ? Math.min(ratio, 1.5) : Math.min(ratio, 2);
 }
 
-export function useCosmicPerformance(preferred: BackgroundQuality): CosmicPerformance {
+export function useCosmicPerformance(preferred: BackgroundQuality, enabled = true): CosmicPerformance {
   const [isVisible, setIsVisible] = useState(
     typeof document !== "undefined" ? !document.hidden : true
   );
@@ -51,8 +51,16 @@ export function useCosmicPerformance(preferred: BackgroundQuality): CosmicPerfor
     return () => document.removeEventListener("visibilitychange", onVisibility);
   }, []);
 
+  // This loop exists only to auto-downgrade `quality` when the canvas is
+  // actually struggling — so it must not run at all when the background is
+  // disabled/static (CosmicBackground doesn't even mount a canvas then), and
+  // must stop while the tab is hidden instead of ticking forever in the
+  // background. Previously this ran unconditionally for as long as
+  // CosmicBackground was mounted (i.e. always, app-wide, via Shell.tsx),
+  // calling setFps() once a second forever regardless of settings or tab
+  // visibility.
   useEffect(() => {
-    if (typeof performance === "undefined") return;
+    if (typeof performance === "undefined" || !enabled || !isVisible) return;
 
     let raf = 0;
     const tracker = fpsRef.current;
@@ -75,7 +83,7 @@ export function useCosmicPerformance(preferred: BackgroundQuality): CosmicPerfor
 
     raf = requestAnimationFrame(tick);
     return () => cancelAnimationFrame(raf);
-  }, []);
+  }, [enabled, isVisible]);
 
   useEffect(() => {
     if (preferred === "static") {

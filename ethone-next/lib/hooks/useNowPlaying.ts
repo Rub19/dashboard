@@ -5,6 +5,7 @@ import { useSettings } from "@/components/SettingsProvider";
 import { OAUTH_APP_CLIENT_IDS } from "@/lib/oauth";
 import { fetchWorker } from "@/lib/api";
 import { fetchWorkerCached } from "@/lib/hooks/useCachedFetch";
+import { fetchLanyardCached } from "@/lib/lanyard-client";
 import type { NowPlaying } from "@/lib/hooks/useLiveData";
 
 type ApiData = Record<string, unknown>;
@@ -231,44 +232,41 @@ export function useNowPlaying(pollMs = 3000) {
         } catch {}
       }
 
-      // Helper for Lanyard Spotify live detection
+      // Helper for Lanyard Spotify live detection. Routed through
+      // fetchLanyardCached (lib/lanyard-client.ts) instead of a bare fetch()
+      // here — this hook is polled by several always-mounted consumers
+      // (DynamicIslandContainer, Dock) each on their own timer, and without
+      // a shared cache each one hit api.lanyard.rest independently.
       const fetchLanyardTrack = async (id: string): Promise<NowPlaying | null> => {
-        try {
-          const lanyardRes = await fetch(`https://api.lanyard.rest/v1/users/${encodeURIComponent(id)}`);
-          if (lanyardRes.ok) {
-            const lJson = (await lanyardRes.json()) as {
-              data?: {
-                spotify?: {
-                  track_id?: string;
-                  song?: string;
-                  artist?: string;
-                  album?: string;
-                  album_art_url?: string;
-                  timestamps?: { start?: number; end?: number };
-                };
-              };
-            };
-            const sp = lJson?.data?.spotify;
-            if (sp && sp.song) {
-              const start = sp.timestamps?.start;
-              const end = sp.timestamps?.end;
-              return {
-                id: sp.track_id,
-                source: "spotify",
-                title: sp.song,
-                artist: sp.artist || "Spotify",
-                album: sp.album,
-                cover: sp.album_art_url,
-                artworkUrl: sp.album_art_url,
-                covers: sp.album_art_url ? [sp.album_art_url] : [],
-                progressMs: start ? Math.max(0, Date.now() - start) : undefined,
-                durationMs: start && end ? end - start : undefined,
-                isPlaying: true,
-                isSaved: false,
-              };
+        const data = await fetchLanyardCached(id);
+        const sp = data?.spotify as
+          | {
+              track_id?: string;
+              song?: string;
+              artist?: string;
+              album?: string;
+              album_art_url?: string;
+              timestamps?: { start?: number; end?: number };
             }
-          }
-        } catch {}
+          | undefined;
+        if (sp && sp.song) {
+          const start = sp.timestamps?.start;
+          const end = sp.timestamps?.end;
+          return {
+            id: sp.track_id,
+            source: "spotify",
+            title: sp.song,
+            artist: sp.artist || "Spotify",
+            album: sp.album,
+            cover: sp.album_art_url,
+            artworkUrl: sp.album_art_url,
+            covers: sp.album_art_url ? [sp.album_art_url] : [],
+            progressMs: start ? Math.max(0, Date.now() - start) : undefined,
+            durationMs: start && end ? end - start : undefined,
+            isPlaying: true,
+            isSaved: false,
+          };
+        }
         return null;
       };
 

@@ -3,6 +3,7 @@
 import { useEffect, useMemo, useRef, useState } from "react";
 import { fetchWorkerCached } from "@/lib/hooks/useCachedFetch";
 import { fetchWeatherSafe } from "@/lib/weather-service";
+import { fetchLanyardCached } from "@/lib/lanyard-client";
 import { useSettings } from "@/components/SettingsProvider";
 import { useI18n } from "@/lib/hooks/useI18n";
 import { useConnections } from "./useConnections";
@@ -86,20 +87,6 @@ function asStringList(value: unknown): string[] {
   return value.map(asStr).filter((item): item is string => Boolean(item));
 }
 
-async function fetchLanyardDirect(userId?: string | null): Promise<ApiData | null> {
-  if (!userId) return null;
-  try {
-    const res = await fetch(`https://api.lanyard.rest/v1/users/${encodeURIComponent(userId)}`);
-    if (res.ok) {
-      const json = (await res.json()) as { success?: boolean; data?: ApiData };
-      if (json.success && json.data) {
-        return json.data;
-      }
-    }
-  } catch {}
-  return null;
-}
-
 // Per-endpoint cache TTL. useLiveData mounts ~6-10 times and each polls on its
 // own 60s interval; without a real TTL those polls miss the 5s cache and each
 // fires a fresh request. These values reflect how fast the data actually moves.
@@ -137,7 +124,7 @@ async function fetchLanyardWithFallback(path: string | null, userId?: string | n
     } catch {}
   }
   if (userId) {
-    return fetchLanyardDirect(userId);
+    return fetchLanyardCached(userId);
   }
   return null;
 }

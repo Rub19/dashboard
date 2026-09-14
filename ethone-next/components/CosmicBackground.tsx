@@ -50,7 +50,10 @@ const AURA_CONFIGS: Record<string, { hues: number[]; accent: string; bgGlow: str
 export default function CosmicBackground() {
   const canvasRef = useRef<HTMLCanvasElement>(null);
   const { settings } = useSettings();
-  const { quality, isVisible, pixelRatio } = useCosmicPerformance(settings.backgroundQuality);
+  const { quality, isVisible, pixelRatio } = useCosmicPerformance(
+    settings.backgroundQuality,
+    settings.ambientEffectsEnabled
+  );
 
   const currentAura = settings.aura || "classic";
   const auraConfig = AURA_CONFIGS[currentAura] || AURA_CONFIGS.classic;

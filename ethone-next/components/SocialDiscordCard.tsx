@@ -8,6 +8,7 @@ import { useI18n } from "@/lib/hooks/useI18n";
 import { useDiscordOAuth } from "@/lib/hooks/useDiscordOAuth";
 import { Icon } from "@/lib/icons";
 import type { LanyardPresence, NowPlaying } from "@/lib/hooks/useLiveData";
+import { fetchLanyardCached } from "@/lib/lanyard-client";
 import ClientImage from "@/components/ClientImage";
 import { TiltCard } from "@/components/ui/TiltCard";
 import { GameBrandIcon } from "@/components/GameBrandIcon";
@@ -136,33 +137,30 @@ const SocialDiscordCard = memo(function SocialDiscordCard({
 
     let cancelled = false;
     async function fetchDirect() {
-      try {
-        const res = await fetch(`https://api.lanyard.rest/v1/users/${encodeURIComponent(effectiveUserId!)}`);
-        if (res.ok) {
-          const json = await res.json();
-          if (json?.success && json?.data && !cancelled) {
-            const d = json.data;
-            const discordUser = d.discord_user || {};
-            const avatarHash = discordUser.avatar || d.avatarHash;
-            const avatarUrl =
-              discordUser.avatarUrl ||
-              (avatarHash
-                ? `https://cdn.discordapp.com/avatars/${effectiveUserId}/${avatarHash}.${String(avatarHash).startsWith("a_") ? "gif" : "png"}?size=256`
-                : "");
-            setLocalLanyard({
-              userId: effectiveUserId,
-              displayName: discordUser.global_name || discordUser.display_name || discordUser.username || d.displayName,
-              username: discordUser.username || d.username,
-              avatarUrl,
-              avatarHash,
-              discriminator: discordUser.discriminator,
-              discord_status: d.discord_status || d.status || "online",
-              activities: d.activities,
-              spotify: d.spotify,
-            });
-          }
-        }
-      } catch {}
+      // Routed through fetchLanyardCached (lib/lanyard-client.ts) — this
+      // component polls every 20s, on top of every other always-mounted
+      // consumer independently hitting the same api.lanyard.rest endpoint.
+      const d = await fetchLanyardCached(effectiveUserId);
+      if (d && !cancelled) {
+        const discordUser = (d.discord_user as Record<string, unknown>) || {};
+        const avatarHash = (discordUser.avatar as string) || (d.avatarHash as string);
+        const avatarUrl =
+          (discordUser.avatarUrl as string) ||
+          (avatarHash
+            ? `https://cdn.discordapp.com/avatars/${effectiveUserId}/${avatarHash}.${String(avatarHash).startsWith("a_") ? "gif" : "png"}?size=256`
+            : "");
+        setLocalLanyard({
+          userId: effectiveUserId,
+          displayName: (discordUser.global_name || discordUser.display_name || discordUser.username || d.displayName) as string,
+          username: (discordUser.username || d.username) as string,
+          avatarUrl,
+          avatarHash,
+          discriminator: discordUser.discriminator as string,
+          discord_status: (d.discord_status || d.status || "online") as LanyardPresence["discord_status"],
+          activities: d.activities as LanyardPresence["activities"],
+          spotify: d.spotify as LanyardPresence["spotify"],
+        });
+      }
     }
     fetchDirect();
     const timer = setInterval(fetchDirect, 20000);

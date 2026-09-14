@@ -27513,4 +27513,57 @@ CHANGELOG_BY_LANG.en.unshift(v12163_en);
 CHANGELOG_BY_LANG.es.unshift(v12163_es);
 CHANGELOG_BY_LANG.de.unshift(v12163_de);
 
+const v12164_fr: ChangelogEntry = {
+  version: "v1.21.64",
+  date: "2026-09-14",
+  title: "Fluidité : Discord Lanyard non mis en cache (confirmé par capture console), FPS mesuré en permanence pour rien",
+  items: [
+    "L'utilisateur a envoyé une capture de la console navigateur montrant environ 30 requêtes quasi simultanées vers `api.lanyard.rest` (présence Discord/Spotify en direct). Cause confirmée : cet appel est fait en direct depuis le navigateur (pas via le Worker), donc il ne bénéficiait d'aucun cache — 4 endroits différents (`useLiveData.ts`, `useNowPlaying.ts`, `SocialDiscordCard.tsx`) le rappelaient chacun sur leur propre minuteur, sans coordination.",
+    "Nouveau module partagé `lib/lanyard-client.ts` : cache de 10s + déduplication des requêtes en vol, même principe que `fetchWorkerCached` déjà utilisé partout ailleurs. Les 3 points d'appel automatiques (pollers) y sont maintenant raccordés — N composants qui demandent la même présence en même temps ne déclenchent plus qu'une seule requête réseau.",
+    "Deuxième bug trouvé en creusant le « FPS » : `useCosmicPerformance` (qui adapte la qualité du fond animé) faisait tourner sa propre boucle `requestAnimationFrame` juste pour mesurer les FPS — en permanence, même quand le fond animé est désactivé dans les réglages, et même onglet caché. Elle ne tourne maintenant que quand elle sert réellement à quelque chose (fond activé et visible).",
+    "Validation : `tsc`/`build`/`lint` (0 erreur, 0 nouveau warning)/`test:unit` 115/115 ✓. `audit-security` PASS (1985 fichiers).",
+  ],
+};
+
+const v12164_en: ChangelogEntry = {
+  version: "v1.21.64",
+  date: "2026-09-14",
+  title: "Fluidity: uncached Discord Lanyard calls (confirmed via console capture), FPS measured forever for nothing",
+  items: [
+    "The user sent a browser console capture showing roughly 30 near-simultaneous requests to `api.lanyard.rest` (live Discord/Spotify presence). Confirmed cause: this call is made directly from the browser (not through the Worker), so it never benefited from any caching -- 4 different places (`useLiveData.ts`, `useNowPlaying.ts`, `SocialDiscordCard.tsx`) each re-fetched it on their own timer, uncoordinated.",
+    "New shared module `lib/lanyard-client.ts`: 10s cache + in-flight request dedup, same principle as `fetchWorkerCached` already used everywhere else. All 3 automatic (polling) call sites now go through it -- N components asking for the same presence at the same time now trigger just one network request.",
+    "Second bug found while digging into \"FPS\": `useCosmicPerformance` (which adapts the animated background's quality) ran its own `requestAnimationFrame` loop just to measure FPS -- continuously, even when the animated background is disabled in settings, and even with the tab hidden. It now only runs when it's actually useful (background enabled and visible).",
+    "Validation: `tsc`/`build`/`lint` (0 errors, 0 new warnings)/`test:unit` 115/115 pass. `audit-security` PASS (1985 files).",
+  ],
+};
+
+const v12164_es: ChangelogEntry = {
+  version: "v1.21.64",
+  date: "2026-09-14",
+  title: "Fluidez: llamadas a Discord Lanyard sin caché (confirmado por captura de consola), FPS medido sin parar para nada",
+  items: [
+    "El usuario envió una captura de la consola del navegador mostrando unas 30 peticiones casi simultáneas a `api.lanyard.rest` (presencia en vivo de Discord/Spotify). Causa confirmada: esta llamada se hace directamente desde el navegador (no a través del Worker), así que nunca se beneficiaba de ningún caché -- 4 lugares distintos (`useLiveData.ts`, `useNowPlaying.ts`, `SocialDiscordCard.tsx`) la volvían a pedir cada uno con su propio temporizador, sin coordinación.",
+    "Nuevo módulo compartido `lib/lanyard-client.ts`: caché de 10s + deduplicación de peticiones en vuelo, mismo principio que `fetchWorkerCached` ya usado en todas partes. Los 3 puntos de llamada automáticos (sondeos) ahora pasan por él -- N componentes que piden la misma presencia al mismo tiempo ahora disparan una sola petición de red.",
+    "Segundo bug encontrado investigando los \"FPS\": `useCosmicPerformance` (que adapta la calidad del fondo animado) ejecutaba su propio bucle `requestAnimationFrame` solo para medir FPS -- de forma continua, incluso con el fondo animado desactivado en ajustes, e incluso con la pestaña oculta. Ahora solo se ejecuta cuando realmente sirve de algo (fondo activado y visible).",
+    "Validación: `tsc`/`build`/`lint` (0 errores, 0 advertencias nuevas)/`test:unit` 115/115 ✓. `audit-security` PASS (1985 archivos).",
+  ],
+};
+
+const v12164_de: ChangelogEntry = {
+  version: "v1.21.64",
+  date: "2026-09-14",
+  title: "Fluessigkeit: ungecachte Discord-Lanyard-Aufrufe (per Konsolen-Mitschnitt bestaetigt), FPS dauerhaft grundlos gemessen",
+  items: [
+    "Der Nutzer schickte einen Browser-Konsolen-Mitschnitt, der rund 30 nahezu gleichzeitige Anfragen an `api.lanyard.rest` zeigte (Discord/Spotify-Live-Praesenz). Bestaetigte Ursache: Dieser Aufruf erfolgt direkt aus dem Browser (nicht ueber den Worker), profitierte also nie von irgendeinem Caching -- 4 verschiedene Stellen (`useLiveData.ts`, `useNowPlaying.ts`, `SocialDiscordCard.tsx`) riefen ihn jeweils auf ihrem eigenen Timer erneut ab, unkoordiniert.",
+    "Neues gemeinsames Modul `lib/lanyard-client.ts`: 10s-Cache + Deduplizierung laufender Anfragen, gleiches Prinzip wie das bereits ueberall genutzte `fetchWorkerCached`. Alle 3 automatischen (Polling-)Aufrufstellen laufen jetzt darueber -- N Komponenten, die gleichzeitig dieselbe Praesenz anfordern, loesen jetzt nur noch eine einzige Netzwerkanfrage aus.",
+    "Zweiter Fehler bei der Suche nach \"FPS\" gefunden: `useCosmicPerformance` (das die Qualitaet des animierten Hintergrunds anpasst) liess seine eigene `requestAnimationFrame`-Schleife nur zur FPS-Messung laufen -- durchgehend, selbst wenn der animierte Hintergrund in den Einstellungen deaktiviert ist, und selbst bei ausgeblendetem Tab. Sie laeuft jetzt nur noch, wenn sie tatsaechlich gebraucht wird (Hintergrund aktiviert und sichtbar).",
+    "Validierung: `tsc`/`build`/`lint` (0 Fehler, 0 neue Warnungen)/`test:unit` 115/115 bestanden. `audit-security` PASS (1985 Dateien).",
+  ],
+};
+
+CHANGELOG_BY_LANG.fr.unshift(v12164_fr);
+CHANGELOG_BY_LANG.en.unshift(v12164_en);
+CHANGELOG_BY_LANG.es.unshift(v12164_es);
+CHANGELOG_BY_LANG.de.unshift(v12164_de);
+
 export const CHANGELOG = CHANGELOG_BY_LANG.fr;

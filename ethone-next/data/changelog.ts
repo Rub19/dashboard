@@ -27729,4 +27729,49 @@ CHANGELOG_BY_LANG.en.unshift(v12167_en);
 CHANGELOG_BY_LANG.es.unshift(v12167_es);
 CHANGELOG_BY_LANG.de.unshift(v12167_de);
 
+const v12168_fr: ChangelogEntry = {
+  version: "v1.21.68",
+  date: "2026-09-14",
+  title: "Fix : erreur console non gérée sur le Service Worker (revalidation en arrière-plan)",
+  items: [
+    "Trouvé en analysant une capture console fournie par l'utilisateur : `sw.js` sert une réponse en cache puis relance une requête réseau en arrière-plan pour rafraîchir ce cache (pattern stale-while-revalidate) — mais cette requête n'avait pas de `.catch()`. Si elle échoue (hors-ligne, requête bloquée par une extension, navigation annulée...), ça remontait en `Uncaught (in promise) TypeError: Failed to fetch` dans la console. Le cache et l'affichage fonctionnaient quand même normalement, mais ça polluait la console. Erreur maintenant absorbée silencieusement.",
+    "Validation : `tsc` 0 erreur.",
+  ],
+};
+
+const v12168_en: ChangelogEntry = {
+  version: "v1.21.68",
+  date: "2026-09-14",
+  title: "Fix: unhandled console error from the Service Worker's background revalidation",
+  items: [
+    "Found while reviewing a console capture the user provided: `sw.js` serves a cached response then kicks off a background network request to refresh that cache (stale-while-revalidate pattern) -- but that request had no `.catch()`. When it failed (offline, request blocked by an extension, cancelled navigation...), it surfaced as `Uncaught (in promise) TypeError: Failed to fetch` in the console. The cache and the page still worked fine either way, but it cluttered the console. The error is now swallowed silently.",
+    "Validation: `tsc` 0 errors.",
+  ],
+};
+
+const v12168_es: ChangelogEntry = {
+  version: "v1.21.68",
+  date: "2026-09-14",
+  title: "Corrección: error de consola no controlado en la revalidación en segundo plano del Service Worker",
+  items: [
+    "Encontrado al revisar una captura de consola proporcionada por el usuario: `sw.js` sirve una respuesta en caché y luego lanza una petición de red en segundo plano para refrescar esa caché (patrón stale-while-revalidate) -- pero esa petición no tenía `.catch()`. Cuando fallaba (sin conexión, petición bloqueada por una extensión, navegación cancelada...), aparecía como `Uncaught (in promise) TypeError: Failed to fetch` en la consola. La caché y la página seguían funcionando bien de todos modos, pero ensuciaba la consola. El error ahora se absorbe silenciosamente.",
+    "Validación: `tsc` 0 errores.",
+  ],
+};
+
+const v12168_de: ChangelogEntry = {
+  version: "v1.21.68",
+  date: "2026-09-14",
+  title: "Fix: Unbehandelter Konsolenfehler bei der Hintergrund-Revalidierung des Service Workers",
+  items: [
+    "Gefunden bei der Durchsicht einer vom Nutzer bereitgestellten Konsolen-Aufnahme: `sw.js` liefert eine zwischengespeicherte Antwort und stößt dann eine Hintergrund-Netzwerkanfrage an, um diesen Cache zu aktualisieren (Stale-while-revalidate-Muster) -- diese Anfrage hatte jedoch kein `.catch()`. Schlug sie fehl (offline, von einer Erweiterung blockierte Anfrage, abgebrochene Navigation...), erschien in der Konsole `Uncaught (in promise) TypeError: Failed to fetch`. Cache und Seite funktionierten trotzdem einwandfrei, aber es verschmutzte die Konsole. Der Fehler wird jetzt still abgefangen.",
+    "Validierung: `tsc` 0 Fehler.",
+  ],
+};
+
+CHANGELOG_BY_LANG.fr.unshift(v12168_fr);
+CHANGELOG_BY_LANG.en.unshift(v12168_en);
+CHANGELOG_BY_LANG.es.unshift(v12168_es);
+CHANGELOG_BY_LANG.de.unshift(v12168_de);
+
 export const CHANGELOG = CHANGELOG_BY_LANG.fr;

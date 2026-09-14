@@ -2,6 +2,13 @@
 
 Toutes les modifications notables de ce projet seront documentées dans ce fichier.
 
+## v1.21.68 — 2026-09-14
+
+**Fix : erreur console non gérée sur le Service Worker (revalidation en arrière-plan)**
+
+- `public/sw.js` : la requête réseau de revalidation en arrière-plan (stale-while-revalidate) n'avait pas de `.catch()` — un échec (hors-ligne, requête bloquée par une extension, navigation annulée) remontait en `Uncaught (in promise) TypeError: Failed to fetch` dans la console, alors même que le cache/l'affichage fonctionnaient normalement. Erreur maintenant absorbée silencieusement.
+- Validation : `tsc` 0 erreur.
+
 ## v1.21.67 — 2026-09-14
 
 **Menu profil : trop de rouge — icônes neutres par défaut, badge sécurité en vert**

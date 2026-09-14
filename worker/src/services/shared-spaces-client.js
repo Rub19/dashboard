@@ -86,6 +86,24 @@ export async function deleteSpace(env, spaceId, ownerId) {
   return true;
 }
 
+export async function updateSpaceDiscordLink(env, spaceId, ownerId, { guildId, channelId }) {
+  const response = await supabaseRequest(
+    env,
+    `/rest/v1/ethone_shared_spaces?id=eq.${encodeURIComponent(spaceId)}&owner_id=eq.${encodeURIComponent(ownerId)}`,
+    {
+      method: "PATCH",
+      body: {
+        discord_guild_id: guildId,
+        discord_channel_id: channelId,
+        discord_linked_at: guildId && channelId ? new Date().toISOString() : null,
+        updated_at: new Date().toISOString()
+      },
+      headers: { Prefer: "return=representation" }
+    }
+  );
+  return firstRow(response);
+}
+
 export async function listSpaceMembers(env, spaceId) {
   const response = await supabaseRequest(env, `/rest/v1/ethone_shared_space_members?space_id=eq.${encodeURIComponent(spaceId)}&order=invited_at.desc&select=*`);
   return rows(response);

@@ -8,6 +8,9 @@ export interface SharedSpace {
   owner_id: string;
   name: string;
   role: "owner" | "member";
+  discord_guild_id: string | null;
+  discord_channel_id: string | null;
+  discord_linked_at: string | null;
   created_at: string;
   updated_at: string;
 }
@@ -77,7 +80,19 @@ export function useSharedSpaces() {
     [reload]
   );
 
-  return { spaces, loading, error, reload, createSpace, deleteSpace };
+  const linkDiscord = useCallback(
+    async (id: string, link: { guildId: string | null; channelId: string | null }) => {
+      const res = await fetchWorker("/api/shared-spaces", {
+        method: "PATCH",
+        body: JSON.stringify({ id, discord_guild_id: link.guildId, discord_channel_id: link.channelId }),
+      });
+      await reload();
+      return res.data as SharedSpace;
+    },
+    [reload]
+  );
+
+  return { spaces, loading, error, reload, createSpace, deleteSpace, linkDiscord };
 }
 
 export function useSpaceMembers(spaceId: string | null) {

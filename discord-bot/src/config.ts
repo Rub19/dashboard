@@ -21,6 +21,10 @@ const envSchema = z.object({
   // Spotify Developer — https://developer.spotify.com/dashboard
   SPOTIFY_CLIENT_ID: z.string().optional().default(''),
   SPOTIFY_CLIENT_SECRET: z.string().optional().default(''),
+  // Secret partagé pour le relais Worker -> bot des notifications d'activité
+  // des Espaces Partagés (POST /api/internal/shared-spaces/notify). Vide =
+  // fonctionnalité désactivée (la route interne refuse tout appel).
+  SHARED_SPACES_BOT_KEY: z.string().optional().default(''),
 });
 
 const parsed = envSchema.safeParse(process.env);
@@ -43,4 +47,5 @@ export const config = {
   botOwnerId: parsed.data.BOT_OWNER_ID || '825124006209388616',
   spotifyClientId: parsed.data.SPOTIFY_CLIENT_ID,
   spotifyClientSecret: parsed.data.SPOTIFY_CLIENT_SECRET,
+  sharedSpacesBotKey: parsed.data.SHARED_SPACES_BOT_KEY,
 };

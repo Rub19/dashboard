@@ -74,7 +74,8 @@ import {
   sharedSpaceMembersRoute,
   sharedSpaceJoinResolveRoute,
   sharedSpaceJoinAcceptRoute,
-  sharedSpaceJoinDeclineRoute
+  sharedSpaceJoinDeclineRoute,
+  sharedSpaceNotifyRoute
 } from "./routes/shared-spaces.js";
 import { userDataRoute } from "./routes/user-data.js";
 import { profileRoute } from "./routes/profile.js";
@@ -281,6 +282,7 @@ export const ROUTES = Object.freeze([
   route("shared-spaces.get", "/api/shared-spaces", sharedSpacesRoute, { service: "shared-spaces" }),
   route("shared-spaces.post", "/api/shared-spaces", sharedSpacesRoute, { method: "POST", service: "shared-spaces", rateLimit: "strict" }),
   route("shared-spaces.delete", "/api/shared-spaces", sharedSpacesRoute, { method: "DELETE", service: "shared-spaces", rateLimit: "strict" }),
+  route("shared-spaces.patch", "/api/shared-spaces", sharedSpacesRoute, { method: "PATCH", service: "shared-spaces", rateLimit: "strict" }),
   route("shared-spaces.members.get", "/api/shared-spaces/members", sharedSpaceMembersRoute, { service: "shared-spaces" }),
   route("shared-spaces.members.post", "/api/shared-spaces/members", sharedSpaceMembersRoute, { method: "POST", service: "shared-spaces", rateLimit: "strict" }),
   route("shared-spaces.members.patch", "/api/shared-spaces/members", sharedSpaceMembersRoute, { method: "PATCH", service: "shared-spaces", rateLimit: "strict" }),
@@ -288,6 +290,7 @@ export const ROUTES = Object.freeze([
   route("shared-spaces.join.resolve", "/api/shared-spaces/join", sharedSpaceJoinResolveRoute, { public: true, service: "shared-spaces", rateLimit: "standard" }),
   route("shared-spaces.join.accept", "/api/shared-spaces/join/accept", sharedSpaceJoinAcceptRoute, { method: "POST", service: "shared-spaces", rateLimit: "strict" }),
   route("shared-spaces.join.decline", "/api/shared-spaces/join/decline", sharedSpaceJoinDeclineRoute, { method: "POST", service: "shared-spaces", rateLimit: "strict" }),
+  route("shared-spaces.notify", "/api/shared-spaces/notify", sharedSpaceNotifyRoute, { method: "POST", service: "shared-spaces", rateLimit: "standard" }),
 
   // User data (spaces, flows, interactions)
   route("user-data.spaces", "/api/user-data/spaces", userDataRoute, { service: "user-data", action: "space" }),

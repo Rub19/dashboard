@@ -12,32 +12,28 @@ function errorMessage(err: unknown): string {
   return String(err);
 }
 
-export type SpaceTask = {
+export type SpaceEvent = {
   id: string;
   space_id: string;
   created_by: string;
   title: string;
   description: string | null;
-  is_completed: boolean;
-  priority: "low" | "medium" | "high";
-  due_date: string | null;
+  start_at: string;
+  end_at: string | null;
+  all_day: boolean;
   created_at: string;
   updated_at: string;
 };
 
-export type SpaceTaskInput = Omit<SpaceTask, "id" | "space_id" | "created_by" | "created_at" | "updated_at">;
+export type SpaceEventInput = Omit<SpaceEvent, "id" | "space_id" | "created_by" | "created_at" | "updated_at">;
 
 type SyncStatus = "idle" | "syncing" | "error";
 
-// Direct-to-Supabase, structurally the same shape as lib/hooks/useTasks.ts —
-// including its realtime-resubscribe-on-account-switch fix (tracking
-// currentUserId via onAuthStateChange rather than a stale closure) — but
-// filtered by space_id instead of user_id, since RLS on ethone_space_tasks
-// (not a client-side check) is what actually enforces membership. The effect
-// also resubscribes when spaceId itself changes, so switching between spaces
-// doesn't leave a stale channel behind.
-export function useSpaceTasks(spaceId: string | null) {
-  const [items, setItems] = useState<SpaceTask[]>([]);
+// Direct-to-Supabase clone of lib/hooks/useSpaceTasks.ts — same
+// currentUserId/realtime-resubscribe pattern, filtered by space_id, RLS
+// (not a client-side check) enforces membership.
+export function useSpaceEvents(spaceId: string | null) {
+  const [items, setItems] = useState<SpaceEvent[]>([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<Error | null>(null);
   const [status, setStatus] = useState<SyncStatus>("idle");
@@ -65,13 +61,13 @@ export function useSpaceTasks(spaceId: string | null) {
     setError(null);
     try {
       const { data, error: fetchError } = await supabase
-        .from("ethone_space_tasks")
+        .from("ethone_space_events")
         .select("*")
         .eq("space_id", spaceId)
-        .order("created_at", { ascending: false });
+        .order("start_at", { ascending: true });
 
       if (fetchError) throw fetchError;
-      setItems((data as SpaceTask[]) || []);
+      setItems((data as SpaceEvent[]) || []);
     } catch (err) {
       setError(new Error(errorMessage(err)));
     } finally {
@@ -94,29 +90,29 @@ export function useSpaceTasks(spaceId: string | null) {
     async function subscribe() {
       try {
         channel = supabase
-          .channel(`space_tasks_changes:${realtimeId}`)
+          .channel(`space_events_changes:${realtimeId}`)
           .on(
             "postgres_changes",
             {
               event: "*",
               schema: "public",
-              table: "ethone_space_tasks",
+              table: "ethone_space_events",
               filter: `space_id=eq.${spaceId}`,
             },
             (payload) => {
               setItems((prev) => {
                 if (payload.eventType === "INSERT") {
-                  const next = payload.new as SpaceTask;
-                  if (prev.some((t) => t.id === next.id)) return prev;
-                  return [next, ...prev];
+                  const next = payload.new as SpaceEvent;
+                  if (prev.some((e) => e.id === next.id)) return prev;
+                  return [...prev, next].sort((a, b) => a.start_at.localeCompare(b.start_at));
                 }
                 if (payload.eventType === "UPDATE") {
-                  const next = payload.new as SpaceTask;
-                  return prev.map((t) => (t.id === next.id ? next : t));
+                  const next = payload.new as SpaceEvent;
+                  return prev.map((e) => (e.id === next.id ? next : e));
                 }
                 if (payload.eventType === "DELETE") {
                   const removed = payload.old as { id: string };
-                  return prev.filter((t) => t.id !== removed.id);
+                  return prev.filter((e) => e.id !== removed.id);
                 }
                 return prev;
               });
@@ -135,7 +131,7 @@ export function useSpaceTasks(spaceId: string | null) {
   }, [realtimeId, currentUserId, spaceId]);
 
   const create = useCallback(
-    async (input: SpaceTaskInput) => {
+    async (input: SpaceEventInput) => {
       if (!spaceId) return null;
       const userId = (await supabase.auth.getSession()).data?.session?.user?.id;
       if (!userId) return null;
@@ -143,16 +139,16 @@ export function useSpaceTasks(spaceId: string | null) {
       setStatus("syncing");
       try {
         const { data, error: insertError } = await supabase
-          .from("ethone_space_tasks")
+          .from("ethone_space_events")
           .insert({ ...input, space_id: spaceId, created_by: userId })
           .select()
           .single();
 
         if (insertError) throw insertError;
-        const next = data as SpaceTask;
-        setItems((prev) => (prev.some((t) => t.id === next.id) ? prev : [next, ...prev]));
+        const next = data as SpaceEvent;
+        setItems((prev) => (prev.some((e) => e.id === next.id) ? prev : [...prev, next].sort((a, b) => a.start_at.localeCompare(b.start_at))));
         setStatus("idle");
-        notifySpaceActivity(spaceId, "task", "created", next.title);
+        notifySpaceActivity(spaceId, "event", "created", next.title);
         return next;
       } catch (err) {
         setStatus("error");
@@ -164,27 +160,23 @@ export function useSpaceTasks(spaceId: string | null) {
   );
 
   const update = useCallback(
-    async (id: string, input: Partial<SpaceTaskInput>) => {
+    async (id: string, input: Partial<SpaceEventInput>) => {
       setStatus("syncing");
-      const wasCompleted = items.find((t) => t.id === id)?.is_completed;
-      const optimistic = { ...items.find((t) => t.id === id), ...input, id, updated_at: new Date().toISOString() } as SpaceTask;
-      setItems((prev) => prev.map((t) => (t.id === id ? optimistic : t)));
+      const optimistic = { ...items.find((e) => e.id === id), ...input, id, updated_at: new Date().toISOString() } as SpaceEvent;
+      setItems((prev) => prev.map((e) => (e.id === id ? optimistic : e)));
 
       try {
         const { data, error: updateError } = await supabase
-          .from("ethone_space_tasks")
+          .from("ethone_space_events")
           .update({ ...input, updated_at: new Date().toISOString() })
           .eq("id", id)
           .select()
           .single();
 
         if (updateError) throw updateError;
-        const next = data as SpaceTask;
-        setItems((prev) => prev.map((t) => (t.id === id ? next : t)));
+        const next = data as SpaceEvent;
+        setItems((prev) => prev.map((e) => (e.id === id ? next : e)));
         setStatus("idle");
-        if (input.is_completed === true && wasCompleted === false) {
-          notifySpaceActivity(next.space_id, "task", "completed", next.title);
-        }
         return next;
       } catch (err) {
         setStatus("error");
@@ -200,10 +192,10 @@ export function useSpaceTasks(spaceId: string | null) {
     async (id: string) => {
       setStatus("syncing");
       const previous = [...items];
-      setItems((prev) => prev.filter((t) => t.id !== id));
+      setItems((prev) => prev.filter((e) => e.id !== id));
 
       try {
-        const { error: deleteError } = await supabase.from("ethone_space_tasks").delete().eq("id", id);
+        const { error: deleteError } = await supabase.from("ethone_space_events").delete().eq("id", id);
         if (deleteError) throw deleteError;
         setStatus("idle");
       } catch (err) {

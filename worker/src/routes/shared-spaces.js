@@ -1,6 +1,8 @@
 import { httpError } from "../middleware/errors.js";
 import { applyAuthRateLimit } from "../middleware/rate-limit.js";
 import { requestExternal } from "../utils/external-request.js";
+import { PATTERNS, requireSecret } from "../middleware/validation.js";
+import { getDiscordProfile } from "../services/discord-oauth-client.js";
 import {
   listOwnedSpaces,
   listMemberSpaceIds,
@@ -10,6 +12,7 @@ import {
   isActiveSpaceMember,
   createSpace,
   deleteSpace,
+  updateSpaceDiscordLink,
   listSpaceMembers,
   insertMemberInvite,
   getMemberByToken,
@@ -23,6 +26,8 @@ import {
 const EMAIL_RE = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
 const UUID_RE = /^[0-9a-f]{8}-[0-9a-f]{4}-[1-8][0-9a-f]{3}-[89ab][0-9a-f]{3}-[0-9a-f]{12}$/i;
 const TOKEN_RE = /^[0-9a-f]{48}$/;
+const NOTIFY_KIND_RE = /^(task|event|note)$/;
+const NOTIFY_ACTION_RE = /^(created|completed)$/;
 
 async function readJsonBody(request, maxFields) {
   const contentType = String(request.headers.get("content-type") || "").toLowerCase();
@@ -86,6 +91,27 @@ async function assertOwnerOrMember(env, spaceId, userId) {
   throw httpError("SPACE_NOT_FOUND", 404);
 }
 
+// Reads the guild list already stored by the dashboard's Discord OAuth
+// connect flow (worker/src/services/discord-oauth-client.js) instead of
+// making a fresh live Discord API call from the Worker. This snapshot can be
+// stale (permissions revoked since connecting) -- accepted here because
+// linking a space only chooses WHERE its own activity gets posted, never
+// grants data access; a stale link just fails silently at post time.
+async function assertGuildAdmin(env, userId, guildId) {
+  const profile = await getDiscordProfile(env, userId);
+  const guild = Array.isArray(profile?.guilds) ? profile.guilds.find((g) => g?.id === guildId) : null;
+  if (!guild) throw httpError("FORBIDDEN", 403);
+  if (guild.owner === true) return;
+  let perms = 0n;
+  try {
+    perms = BigInt(guild.permissions || "0");
+  } catch {
+    perms = BigInt(Number(guild.permissions) || 0);
+  }
+  if ((perms & 8n) === 8n || (perms & 32n) === 32n) return;
+  throw httpError("FORBIDDEN", 403);
+}
+
 export async function sharedSpacesRoute({ request, env, auth }) {
   if (!auth?.userId) throw httpError("AUTH_REQUIRED", 401);
   const method = String(request.method || "GET").toUpperCase();
@@ -114,6 +140,24 @@ export async function sharedSpacesRoute({ request, env, auth }) {
     const id = requireField(body, "id", UUID_RE, 36);
     await deleteSpace(env, id, auth.userId);
     return { data: { deleted: true } };
+  }
+
+  if (method === "PATCH") {
+    await applyAuthRateLimit({ request, env, route: { id: "shared-spaces.discord-link" } }, auth.userId);
+    const body = await readJsonBody(request, 3);
+    const id = requireField(body, "id", UUID_RE, 36);
+    if (!(await isSpaceOwner(env, id, auth.userId))) throw httpError("SPACE_NOT_FOUND", 404);
+
+    const guildId = body.discord_guild_id === null || body.discord_guild_id === undefined ? null : String(body.discord_guild_id);
+    const channelId = body.discord_channel_id === null || body.discord_channel_id === undefined ? null : String(body.discord_channel_id);
+    if (guildId !== null && !PATTERNS.discordId.test(guildId)) throw httpError("INVALID_PARAMETER", 400, { detail: "discord_guild_id" });
+    if (channelId !== null && !PATTERNS.discordId.test(channelId)) throw httpError("INVALID_PARAMETER", 400, { detail: "discord_channel_id" });
+    if ((guildId === null) !== (channelId === null)) throw httpError("INVALID_PARAMETER", 400, { detail: "discord_link" });
+
+    if (guildId !== null) await assertGuildAdmin(env, auth.userId, guildId);
+
+    const space = await updateSpaceDiscordLink(env, id, auth.userId, { guildId, channelId });
+    return { data: space };
   }
 
   throw httpError("METHOD_NOT_ALLOWED", 405);
@@ -231,4 +275,51 @@ export async function sharedSpaceJoinDeclineRoute({ request, env, auth }) {
   const member = await resolveAndValidateInvite(env, token, auth);
   const updated = await declineMemberInvite(env, member.id);
   return { data: { declined: true, member: updated } };
+}
+
+// Best-effort relay to the discord-bot's internal notify endpoint. Every
+// failure mode (space not linked, bot unreachable, secret not configured)
+// returns {notified:false} rather than throwing -- a client just fired this
+// after an already-successful Supabase write, and a bot outage must never
+// surface as a visible error for that write.
+export async function sharedSpaceNotifyRoute({ request, env, auth }) {
+  if (!auth?.userId) throw httpError("AUTH_REQUIRED", 401);
+  const body = await readJsonBody(request, 4);
+  const spaceId = requireField(body, "space_id", UUID_RE, 36);
+  const kind = requireField(body, "kind", NOTIFY_KIND_RE, 10);
+  const action = requireField(body, "action", NOTIFY_ACTION_RE, 12);
+  const title = String(body.title || "").slice(0, 300);
+
+  await assertOwnerOrMember(env, spaceId, auth.userId);
+
+  try {
+    const space = await getSpaceById(env, spaceId);
+    if (!space?.discord_guild_id || !space?.discord_channel_id) return { data: { notified: false } };
+
+    const origin = String(env.DISCORD_BOT_ORIGIN || "");
+    if (!origin) return { data: { notified: false } };
+    const key = requireSecret(env, "SHARED_SPACES_BOT_KEY");
+
+    await requestExternal(new URL("/api/internal/shared-spaces/notify", origin), {
+      env,
+      expectedOrigin: origin,
+      service: "discord-bot",
+      method: "POST",
+      headers: { "content-type": "application/json", "x-internal-key": key },
+      body: JSON.stringify({
+        guildId: space.discord_guild_id,
+        channelId: space.discord_channel_id,
+        spaceName: space.name,
+        kind,
+        action,
+        title,
+        actorName: auth.displayName || auth.email || "Quelqu'un"
+      }),
+      retries: 0,
+      maxBytes: 2048
+    });
+    return { data: { notified: true } };
+  } catch {
+    return { data: { notified: false } };
+  }
 }

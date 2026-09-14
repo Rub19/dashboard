@@ -26669,4 +26669,61 @@ CHANGELOG_BY_LANG.en.unshift(v12147_en);
 CHANGELOG_BY_LANG.es.unshift(v12147_es);
 CHANGELOG_BY_LANG.de.unshift(v12147_de);
 
+const v12148_fr: ChangelogEntry = {
+  version: "v1.21.48",
+  date: "2026-09-14",
+  title: "Espaces partages : calendrier, notes, lien Discord",
+  items: [
+    "Nouveau : calendrier partage (titre + date) et notes partagees (titre + texte) dans chaque espace, en plus des taches deja existantes. Meme securite que les taches : visible uniquement par le proprietaire et les membres actifs.",
+    "Nouveau : un espace peut etre lie a un serveur Discord (et un salon precis) que tu administres. Une fois lie, chaque nouvelle tache/evenement/note (et chaque tache marquee terminee) envoie une notification dans ce salon.",
+    "La notification est \"best-effort\" : si le bot est hors ligne ou mal configure, ca ne bloque jamais l'ajout de la tache/note/evenement cote dashboard, ca echoue juste silencieusement.",
+    "Cote technique (pour toi) : ca demande une nouvelle configuration en plus de la migration -- un secret partage entre le Worker et le bot. Details et commandes exactes juste apres ce changelog.",
+    "Explicitement pas fait cette fois : synchroniser automatiquement les membres du serveur Discord vers les membres de l'espace (le lien ne sert qu'aux notifications), et l'edition riche des notes (texte simple pour l'instant).",
+  ],
+};
+
+const v12148_en: ChangelogEntry = {
+  version: "v1.21.48",
+  date: "2026-09-14",
+  title: "Shared Spaces: calendar, notes, Discord link",
+  items: [
+    "New: a shared calendar (title + date) and shared notes (title + text) in every space, alongside the tasks that already existed. Same security as tasks: visible only to the owner and active members.",
+    "New: a space can be linked to a Discord server you administer (and a specific channel). Once linked, every new task/event/note (and every task marked done) posts a notification into that channel.",
+    "The notification is best-effort: if the bot is offline or not configured, it never blocks adding the task/note/event on the dashboard side, it just fails silently.",
+    "Technical note (for you): this needs one more piece of setup beyond the migration -- a shared secret between the Worker and the bot. Exact details and commands right after this changelog.",
+    "Explicitly not done this time: automatically syncing Discord server members into space members (the link is for notifications only), and rich-text note editing (plain text for now).",
+  ],
+};
+
+const v12148_es: ChangelogEntry = {
+  version: "v1.21.48",
+  date: "2026-09-14",
+  title: "Espacios compartidos: calendario, notas, enlace con Discord",
+  items: [
+    "Nuevo: un calendario compartido (titulo + fecha) y notas compartidas (titulo + texto) en cada espacio, junto a las tareas que ya existian. Misma seguridad que las tareas: visible solo para el propietario y los miembros activos.",
+    "Nuevo: un espacio puede vincularse a un servidor de Discord que administras (y a un canal concreto). Una vez vinculado, cada nueva tarea/evento/nota (y cada tarea marcada como completada) publica una notificacion en ese canal.",
+    "La notificacion es \"best-effort\": si el bot esta desconectado o no configurado, nunca bloquea añadir la tarea/nota/evento en el dashboard, simplemente falla en silencio.",
+    "Nota tecnica (para ti): esto necesita una configuracion mas ademas de la migracion -- un secreto compartido entre el Worker y el bot. Detalles y comandos exactos justo despues de este changelog.",
+    "Explicitamente no hecho esta vez: sincronizar automaticamente los miembros del servidor de Discord como miembros del espacio (el enlace es solo para notificaciones), y edicion enriquecida de notas (texto simple por ahora).",
+  ],
+};
+
+const v12148_de: ChangelogEntry = {
+  version: "v1.21.48",
+  date: "2026-09-14",
+  title: "Geteilte Bereiche: Kalender, Notizen, Discord-Verknuepfung",
+  items: [
+    "Neu: ein geteilter Kalender (Titel + Datum) und geteilte Notizen (Titel + Text) in jedem Bereich, zusaetzlich zu den bereits bestehenden Aufgaben. Gleiche Sicherheit wie bei Aufgaben: nur fuer den Besitzer und aktive Mitglieder sichtbar.",
+    "Neu: ein Bereich kann mit einem Discord-Server verknuepft werden, den du verwaltest (und einem bestimmten Kanal). Nach der Verknuepfung sendet jede neue Aufgabe/jedes Ereignis/jede Notiz (und jede als erledigt markierte Aufgabe) eine Benachrichtigung in diesen Kanal.",
+    "Die Benachrichtigung ist \"best effort\": Ist der Bot offline oder nicht konfiguriert, wird das Hinzufuegen der Aufgabe/Notiz/des Ereignisses im Dashboard niemals blockiert, es schlaegt nur stillschweigend fehl.",
+    "Technischer Hinweis (fuer dich): das braucht neben der Migration noch eine weitere Einrichtung -- ein gemeinsames Secret zwischen Worker und Bot. Details und genaue Befehle direkt nach diesem Changelog.",
+    "Diesmal bewusst nicht umgesetzt: automatisches Synchronisieren der Discord-Server-Mitglieder als Bereichsmitglieder (die Verknuepfung dient nur Benachrichtigungen) und Rich-Text-Bearbeitung von Notizen (vorerst einfacher Text).",
+  ],
+};
+
+CHANGELOG_BY_LANG.fr.unshift(v12148_fr);
+CHANGELOG_BY_LANG.en.unshift(v12148_en);
+CHANGELOG_BY_LANG.es.unshift(v12148_es);
+CHANGELOG_BY_LANG.de.unshift(v12148_de);
+
 export const CHANGELOG = CHANGELOG_BY_LANG.fr;

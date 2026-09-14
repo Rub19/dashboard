@@ -21,6 +21,8 @@ import { createAntiRaidRouter } from './routes/antiRaidRoutes.js';
 import { createAutoModRouter } from './routes/autoModRoutes.js';
 import { createLevelingRouter } from './routes/levelingRoutes.js';
 import { createGiveawayRouter } from './routes/giveawayRoutes.js';
+import { createSharedSpaceRouter } from './routes/sharedSpaceRoutes.js';
+import { createInternalSharedSpaceRouter } from './routes/internalSharedSpaceRoutes.js';
 import { createAnalyticsRouter } from './routes/analyticsRoutes.js';
 import { createSuggestionRouter } from './routes/suggestionRoutes.js';
 import { createCustomCommandRouter } from './routes/customCommandRoutes.js';
@@ -53,6 +55,7 @@ import { eventsSchedulerService } from '../modules/events/eventsSchedulerService
 import { eventsAutomationService } from '../modules/events/eventsAutomationService.js';
 import { authMiddleware, requireBotOwner } from './middleware/auth.js';
 import { createGuildAuthMiddleware } from './middleware/guildAuth.js';
+import { requireSharedSpacesKey } from './middleware/internalAuth.js';
 import { rateLimit } from './middleware/antiAbuseMiddleware.js';
 
 export function startWebServer(client: Client): http.Server {
@@ -142,6 +145,13 @@ export function startWebServer(client: Client): http.Server {
     createGuildAuthMiddleware(client),
     createGiveawayRouter(client)
   );
+  app.use(
+    '/api/guilds/:guildId/shared-space',
+    authMiddleware,
+    createGuildAuthMiddleware(client),
+    createSharedSpaceRouter(client)
+  );
+  app.use('/api/internal/shared-spaces', requireSharedSpacesKey, createInternalSharedSpaceRouter(client));
   app.use(
     '/api/guilds/:guildId/analytics',
     authMiddleware,

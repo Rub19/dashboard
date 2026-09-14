@@ -27676,4 +27676,57 @@ CHANGELOG_BY_LANG.en.unshift(v12166_en);
 CHANGELOG_BY_LANG.es.unshift(v12166_es);
 CHANGELOG_BY_LANG.de.unshift(v12166_de);
 
+const v12167_fr: ChangelogEntry = {
+  version: "v1.21.67",
+  date: "2026-09-14",
+  title: "Menu profil : trop de rouge — icônes neutres par défaut, badge sécurité en vert",
+  items: [
+    "Retour : le menu profil (clic sur l'avatar) était jugé trop rouge — chaque icône (Mon Profil, Réglages, Sécurité, Command Palette, Notes de version) utilisait en permanence la couleur d'accent, même sans survol. Les icônes sont maintenant neutres au repos et ne prennent la couleur d'accent qu'au survol, sans changer le thème/l'accent lui-même.",
+    "Le badge « Actif » de Sécurité & Sessions passe du rouge accent au vert (couleur `--success` déjà utilisée ailleurs dans l'app) — plus cohérent sémantiquement pour un statut positif, et ça casse un peu le mur de rouge.",
+    "Le badge de version (Notes de version) et le reste du menu (bordure de survol, barre de stockage, pastille de statut) gardent l'accent du thème — inchangé.",
+    "Validation : `tsc`/`build`/`test:unit` 115/115 ✓.",
+  ],
+};
+
+const v12167_en: ChangelogEntry = {
+  version: "v1.21.67",
+  date: "2026-09-14",
+  title: "Profile menu: too much red — neutral icons by default, security badge in green",
+  items: [
+    "Feedback: the profile menu (click on the avatar) read as too red -- every icon (My Profile, Settings, Security, Command Palette, Release Notes) was permanently tinted with the accent color, even without hover. Icons are now neutral at rest and only pick up the accent color on hover, without changing the theme/accent itself.",
+    "The \"Active\" badge on Security & Sessions moved from the red accent to green (the `--success` token already used elsewhere in the app) -- more semantically correct for a positive status, and breaks up the wall of red a bit.",
+    "The version badge (Release Notes) and the rest of the menu (hover border, storage bar, status dot) keep the theme accent -- unchanged.",
+    "Validation: `tsc`/`build`/`test:unit` 115/115 pass.",
+  ],
+};
+
+const v12167_es: ChangelogEntry = {
+  version: "v1.21.67",
+  date: "2026-09-14",
+  title: "Menú de perfil: demasiado rojo — iconos neutros por defecto, insignia de seguridad en verde",
+  items: [
+    "Comentario: el menú de perfil (clic en el avatar) se veía demasiado rojo -- cada icono (Mi Perfil, Ajustes, Seguridad, Command Palette, Notas de versión) llevaba el color de acento de forma permanente, incluso sin pasar el cursor. Los iconos ahora son neutros en reposo y solo toman el color de acento al pasar el cursor, sin cambiar el tema/acento en sí.",
+    "La insignia \"Activo\" de Seguridad y Sesiones pasa del rojo de acento a verde (token `--success` ya usado en otras partes de la app) -- más coherente semánticamente para un estado positivo, y rompe un poco el muro de rojo.",
+    "La insignia de versión (Notas de versión) y el resto del menú (borde al pasar el cursor, barra de almacenamiento, punto de estado) mantienen el acento del tema -- sin cambios.",
+    "Validación: `tsc`/`build`/`test:unit` 115/115 ✓.",
+  ],
+};
+
+const v12167_de: ChangelogEntry = {
+  version: "v1.21.67",
+  date: "2026-09-14",
+  title: "Profilmenü: zu viel Rot — Icons standardmäßig neutral, Sicherheits-Badge in Grün",
+  items: [
+    "Feedback: Das Profilmenü (Klick auf den Avatar) wirkte zu rot -- jedes Icon (Mein Profil, Einstellungen, Sicherheit, Command Palette, Versionshinweise) war dauerhaft in der Akzentfarbe eingefärbt, auch ohne Hover. Icons sind jetzt im Ruhezustand neutral und nehmen die Akzentfarbe nur bei Hover an, ohne das Theme/den Akzent selbst zu ändern.",
+    "Das \"Aktiv\"-Badge bei Sicherheit & Sitzungen wechselt vom roten Akzent zu Grün (Token `--success`, bereits an anderer Stelle in der App verwendet) -- semantisch stimmiger für einen positiven Status und lockert die rote Wand etwas auf.",
+    "Das Versions-Badge (Versionshinweise) und der Rest des Menüs (Hover-Rahmen, Speicherbalken, Status-Punkt) behalten den Theme-Akzent -- unverändert.",
+    "Validierung: `tsc`/`build`/`test:unit` 115/115 bestanden.",
+  ],
+};
+
+CHANGELOG_BY_LANG.fr.unshift(v12167_fr);
+CHANGELOG_BY_LANG.en.unshift(v12167_en);
+CHANGELOG_BY_LANG.es.unshift(v12167_es);
+CHANGELOG_BY_LANG.de.unshift(v12167_de);
+
 export const CHANGELOG = CHANGELOG_BY_LANG.fr;

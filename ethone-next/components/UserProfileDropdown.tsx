@@ -102,7 +102,7 @@ export default function UserProfileDropdown({ dataTestId = "user-profile-trigger
     return CHANGELOG_BY_LANG[settings.language] || CHANGELOG;
   }, [settings.language]);
 
-  const VERSION_LABEL = changelog[0]?.version || "v1.21.66";
+  const VERSION_LABEL = changelog[0]?.version || "v1.21.67";
 
   const menuItems = [
     {
@@ -125,6 +125,7 @@ export default function UserProfileDropdown({ dataTestId = "user-profile-trigger
       label: "Sécurité & Sessions",
       description: "Appareils connectés & authentification",
       badge: "Actif",
+      badgeTone: "success" as const,
       icon: "shield",
       action: () => router.push("/settings?category=security"),
     },
@@ -341,7 +342,7 @@ export default function UserProfileDropdown({ dataTestId = "user-profile-trigger
                   <div className="absolute left-0 top-2 bottom-2 w-1 rounded-r-full bg-[var(--accent-primary)] opacity-0 shadow-[0_0_8px_var(--glow-color)] transition-all duration-150 group-hover:opacity-100" />
 
                   <div className="flex items-center gap-2.5 min-w-0 pl-1">
-                    <div className="flex h-7 w-7 shrink-0 items-center justify-center rounded-lg bg-[#14151e] text-[var(--accent-primary)] transition-transform duration-150 group-hover:scale-110 group-hover:bg-[var(--accent-primary)]/20 shadow-xs">
+                    <div className="flex h-7 w-7 shrink-0 items-center justify-center rounded-lg bg-[#14151e] text-[var(--text-muted)] transition-all duration-150 group-hover:scale-110 group-hover:bg-[var(--accent-primary)]/20 group-hover:text-[var(--accent-primary)] shadow-xs">
                       <Icon name={item.icon} className="h-4 w-4" />
                     </div>
                     <div className="flex flex-col text-left min-w-0">
@@ -356,7 +357,14 @@ export default function UserProfileDropdown({ dataTestId = "user-profile-trigger
 
                   <div className="flex items-center gap-1.5 shrink-0">
                     {item.badge && (
-                      <span className="rounded-md border border-[var(--accent-primary)]/30 bg-[var(--accent-primary)]/10 px-1.5 py-0.5 font-mono text-[9px] font-bold text-[var(--accent-primary)]">
+                      <span
+                        className={cn(
+                          "rounded-md border px-1.5 py-0.5 font-mono text-[9px] font-bold",
+                          item.badgeTone === "success"
+                            ? "border-[var(--success)]/30 bg-[var(--success)]/10 text-[var(--success)]"
+                            : "border-[var(--accent-primary)]/30 bg-[var(--accent-primary)]/10 text-[var(--accent-primary)]"
+                        )}
+                      >
                         {item.badge}
                       </span>
                     )}

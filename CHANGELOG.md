@@ -2,6 +2,14 @@
 
 Toutes les modifications notables de ce projet seront documentées dans ce fichier.
 
+## v1.21.67 — 2026-09-14
+
+**Menu profil : trop de rouge — icônes neutres par défaut, badge sécurité en vert**
+
+- `components/UserProfileDropdown.tsx` : chaque icône du menu profil (Mon Profil, Réglages, Sécurité, Command Palette, Notes de version) utilisait en permanence la couleur d'accent du thème, même sans survol — rendu jugé trop rouge par l'utilisateur. Les icônes sont désormais neutres au repos, accent au survol uniquement, sans toucher au thème lui-même.
+- Le badge "Actif" de Sécurité & Sessions passe de l'accent rouge à `--success` (vert) — plus cohérent sémantiquement pour un statut positif.
+- Validation : `tsc`/`build`/`test:unit` 115/115 ✓.
+
 ## v1.21.66 — 2026-09-14
 
 **Fix : "Actualiser" un widget rechargeait toute la page + double bouton Annuler ; motion design dashboard**

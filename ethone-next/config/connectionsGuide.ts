@@ -627,8 +627,8 @@ export const CONNECTION_GUIDES: Record<string, ConnectionGuide> = {
       ],
     },
   },
-  "tracker-gg": {
-    id: "tracker-gg",
+  tracker: {
+    id: "tracker",
     title: "Tracker Network (TRN)",
     badge: "CLOUD",
     fields: [{ label: "Clé API Tracker.gg", placeholder: "Votre clé API TRN", type: "password" }],

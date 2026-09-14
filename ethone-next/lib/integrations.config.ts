@@ -638,8 +638,8 @@ export const INTEGRATIONS_CONFIG: Record<string, IntegrationConfig> = {
       },
     ],
   },
-  "tracker-gg": {
-    id: "tracker-gg",
+  tracker: {
+    id: "tracker",
     name: "Tracker.gg",
     category: "webhook",
     badge: "RESTRICTED",

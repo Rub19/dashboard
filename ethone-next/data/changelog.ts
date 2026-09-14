@@ -27240,4 +27240,57 @@ CHANGELOG_BY_LANG.en.unshift(v12158_en);
 CHANGELOG_BY_LANG.es.unshift(v12158_es);
 CHANGELOG_BY_LANG.de.unshift(v12158_de);
 
+const v12159_fr: ChangelogEntry = {
+  version: "v1.21.59",
+  date: "2026-09-14",
+  title: "Fix : la clé API Tracker.gg (Apex Legends) ne pouvait jamais être enregistrée",
+  items: [
+    "En creusant la question « quels trackers existent sur ETHONE et comment les configurer », trouvé un vrai bug de longue date : la carte « Tracker.gg » de l'onglet Connexions utilisait l'identifiant `tracker-gg`, alors que tout le reste du système (formulaire de saisie de la clé, Worker, vérification de connexion pour Apex/CS2/Rocket League...) attend l'identifiant `tracker`. Résultat concret : le formulaire de saisie de la clé API ne s'affichait tout simplement jamais sur cette carte (aucun champ ne correspondait à `tracker-gg`), donc personne n'a jamais pu configurer cette clé depuis l'interface, peu importe les tentatives.",
+    "Corrigé en 4 fichiers (`lib/integrations.ts`, `lib/integrations.config.ts`, `config/connectionsGuide.ts`, `lib/home-model.ts`) pour utiliser `tracker` partout, alignés sur ce que `lib/connection-config.ts` et le Worker attendaient déjà. La carte Tracker.gg affiche maintenant son formulaire de clé API et son guide complet comme les autres services (Riot Games, Steam, etc.).",
+    "Rappel pour les trackers de jeu disponibles sur ETHONE : Valorant et League of Legends (page `/matches`, clé Henrik/Riot à configurer directement dans chaque onglet de jeu) fonctionnaient déjà correctement ; Apex Legends et les autres jeux Tracker.gg (CS2, Rocket League, The Finals, Marvel Rivals...) ont besoin de cette clé Tracker.gg désormais configurable via Réglages → Connexions → Tracker.gg.",
+    "Validation : `tsc`/`build`/`lint` (0 erreur)/`test:unit` 115/115 ✓. `audit-security` PASS (1982 fichiers). Aucun changement côté Worker nécessaire — il utilisait déjà le bon identifiant `tracker`.",
+  ],
+};
+
+const v12159_en: ChangelogEntry = {
+  version: "v1.21.59",
+  date: "2026-09-14",
+  title: "Fix: the Tracker.gg (Apex Legends) API key could never be saved",
+  items: [
+    "While digging into \"what trackers exist on ETHONE and how do I set them up,\" found a real, long-standing bug: the \"Tracker.gg\" card in the Connections tab used the id `tracker-gg`, while everything else in the system (the key-entry form, the Worker, the connection check for Apex/CS2/Rocket League...) expected the id `tracker`. Concrete result: the API key entry form simply never rendered on that card (no field definition matched `tracker-gg`), so nobody could ever configure that key from the UI, no matter how many times they tried.",
+    "Fixed across 4 files (`lib/integrations.ts`, `lib/integrations.config.ts`, `config/connectionsGuide.ts`, `lib/home-model.ts`) to use `tracker` everywhere, matching what `lib/connection-config.ts` and the Worker already expected. The Tracker.gg card now shows its API key form and full setup guide like every other service (Riot Games, Steam, etc.).",
+    "Recap of the game trackers available on ETHONE: Valorant and League of Legends (`/matches` page, Henrik/Riot key configured directly in each game tab) already worked correctly; Apex Legends and the other Tracker.gg-backed games (CS2, Rocket League, The Finals, Marvel Rivals...) need this Tracker.gg key, now configurable via Settings -> Connections -> Tracker.gg.",
+    "Validation: `tsc`/`build`/`lint` (0 errors)/`test:unit` 115/115 pass. `audit-security` PASS (1982 files). No Worker-side change needed -- it already used the correct `tracker` id.",
+  ],
+};
+
+const v12159_es: ChangelogEntry = {
+  version: "v1.21.59",
+  date: "2026-09-14",
+  title: "Corrección: la clave API de Tracker.gg (Apex Legends) nunca se podía guardar",
+  items: [
+    "Investigando \"qué trackers hay en ETHONE y cómo configurarlos\", se encontró un bug real y de larga data: la tarjeta \"Tracker.gg\" de la pestaña Conexiones usaba el id `tracker-gg`, mientras que todo lo demás en el sistema (el formulario de la clave, el Worker, la comprobación de conexión para Apex/CS2/Rocket League...) esperaba el id `tracker`. Resultado concreto: el formulario para introducir la clave API simplemente nunca aparecía en esa tarjeta (ningún campo coincidía con `tracker-gg`), así que nadie pudo configurar esa clave desde la interfaz, por más intentos que hiciera.",
+    "Corregido en 4 archivos (`lib/integrations.ts`, `lib/integrations.config.ts`, `config/connectionsGuide.ts`, `lib/home-model.ts`) para usar `tracker` en todas partes, alineado con lo que `lib/connection-config.ts` y el Worker ya esperaban. La tarjeta Tracker.gg ahora muestra su formulario de clave API y su guía completa como cualquier otro servicio (Riot Games, Steam, etc.).",
+    "Resumen de los trackers de juego disponibles en ETHONE: Valorant y League of Legends (página `/matches`, clave Henrik/Riot configurada directamente en cada pestaña de juego) ya funcionaban correctamente; Apex Legends y los demás juegos con Tracker.gg (CS2, Rocket League, The Finals, Marvel Rivals...) necesitan esta clave de Tracker.gg, ahora configurable en Ajustes -> Conexiones -> Tracker.gg.",
+    "Validación: `tsc`/`build`/`lint` (0 errores)/`test:unit` 115/115 ✓. `audit-security` PASS (1982 archivos). No se necesitó ningún cambio en el Worker -- ya usaba el id correcto `tracker`.",
+  ],
+};
+
+const v12159_de: ChangelogEntry = {
+  version: "v1.21.59",
+  date: "2026-09-14",
+  title: "Fix: Der Tracker.gg-API-Schluessel (Apex Legends) liess sich nie speichern",
+  items: [
+    "Bei der Recherche zu \"welche Tracker gibt es auf ETHONE und wie richtet man sie ein\" wurde ein echter, seit Langem bestehender Fehler gefunden: Die \"Tracker.gg\"-Karte im Verbindungen-Tab verwendete die ID `tracker-gg`, waehrend alles andere im System (das Formular zur Schluesseleingabe, der Worker, die Verbindungspruefung fuer Apex/CS2/Rocket League...) die ID `tracker` erwartete. Konkretes Ergebnis: Das Formular zur Eingabe des API-Schluessels wurde auf dieser Karte schlicht nie angezeigt (keine Felddefinition passte zu `tracker-gg`), sodass niemand diesen Schluessel jemals ueber die Oberflaeche konfigurieren konnte, egal wie oft man es versuchte.",
+    "Behoben in 4 Dateien (`lib/integrations.ts`, `lib/integrations.config.ts`, `config/connectionsGuide.ts`, `lib/home-model.ts`), sodass ueberall `tracker` verwendet wird, passend zu dem, was `lib/connection-config.ts` und der Worker bereits erwarteten. Die Tracker.gg-Karte zeigt jetzt ihr API-Schluessel-Formular und die vollstaendige Einrichtungsanleitung wie jeder andere Dienst (Riot Games, Steam usw.).",
+    "Zusammenfassung der auf ETHONE verfuegbaren Spiel-Tracker: Valorant und League of Legends (`/matches`-Seite, Henrik/Riot-Schluessel direkt in jedem Spiel-Tab konfiguriert) funktionierten bereits korrekt; Apex Legends und die anderen Tracker.gg-gestuetzten Spiele (CS2, Rocket League, The Finals, Marvel Rivals...) benoetigen diesen Tracker.gg-Schluessel, jetzt konfigurierbar unter Einstellungen -> Verbindungen -> Tracker.gg.",
+    "Validierung: `tsc`/`build`/`lint` (0 Fehler)/`test:unit` 115/115 bestanden. `audit-security` PASS (1982 Dateien). Keine Worker-seitige Aenderung noetig -- er verwendete bereits die korrekte `tracker`-ID.",
+  ],
+};
+
+CHANGELOG_BY_LANG.fr.unshift(v12159_fr);
+CHANGELOG_BY_LANG.en.unshift(v12159_en);
+CHANGELOG_BY_LANG.es.unshift(v12159_es);
+CHANGELOG_BY_LANG.de.unshift(v12159_de);
+
 export const CHANGELOG = CHANGELOG_BY_LANG.fr;

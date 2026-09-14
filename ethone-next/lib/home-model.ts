@@ -72,7 +72,7 @@ const SOURCE_NAME: Record<string, string> = {
   lol: "LoL",
   twitch: "Twitch",
   lastfm: "Last.fm",
-  "tracker-gg": "Tracker.gg",
+  tracker: "Tracker.gg",
   "google-drive": "Google Drive",
   youtube: "YouTube",
   reddit: "Reddit",

@@ -2,6 +2,14 @@
 
 Toutes les modifications notables de ce projet seront documentées dans ce fichier.
 
+## v1.21.59 — 2026-09-14
+
+**Fix : la clé API Tracker.gg (Apex Legends) ne pouvait jamais être enregistrée**
+
+- La carte "Tracker.gg" de l'onglet Connexions utilisait l'id `tracker-gg`, alors que `lib/connection-config.ts` (formulaire de clé API) et le Worker (vérification de connexion Apex/CS2/Rocket League) attendaient `tracker` — le formulaire de saisie ne s'affichait donc jamais, personne ne pouvait configurer cette clé.
+- Corrigé dans `lib/integrations.ts`, `lib/integrations.config.ts`, `config/connectionsGuide.ts`, `lib/home-model.ts` pour utiliser `tracker` partout. Aucun changement Worker nécessaire (il avait déjà le bon id).
+- Validation : `tsc`/`build`/`lint` (0 erreur)/`test:unit` 115/115 ✓. `audit-security` PASS (1982 fichiers).
+
 ## v1.21.58 — 2026-09-14
 
 **Fix : fuite d'identité entre comptes sur le même navigateur, dashboard plus fluide**

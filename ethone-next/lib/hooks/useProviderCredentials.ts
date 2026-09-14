@@ -2,6 +2,7 @@
 
 import { useCallback, useEffect, useState } from "react";
 import { fetchWorker } from "@/lib/api";
+import { fetchWorkerCached } from "@/lib/hooks/useCachedFetch";
 
 export type ProviderCredential = {
   apiKey?: string;
@@ -31,7 +32,11 @@ export function useProviderCredentials() {
   const load = useCallback(async () => {
     setLoading(true);
     try {
-      const res = await fetchWorker("/api/provider-credentials");
+      const res = await fetchWorkerCached<{ data?: { providers?: string[] } }>(
+        "/api/provider-credentials",
+        {},
+        30000
+      );
       const providers = Array.isArray(res?.data?.providers) ? res.data.providers : [];
       const map: Record<string, boolean> = {};
       providers.forEach((p: string) => {

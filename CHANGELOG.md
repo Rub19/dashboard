@@ -2,6 +2,15 @@
 
 Toutes les modifications notables de ce projet seront documentées dans ce fichier.
 
+## v1.21.57 — 2026-09-14
+
+**Fix : orage de 429 sur /api/provider-credentials**
+
+- Repéré via les logs console envoyés par l'utilisateur : ~30 requêtes 429 d'affilée sur `/api/provider-credentials` au chargement de la page Connexions.
+- `components/ConnectionCard.tsx` monte `ConnectionDetailDrawer` pour chaque carte de connexion (même fermée) ; `lib/hooks/useProviderCredentials.ts` appelait `fetchWorker` brut au montage — avec ~40 providers listés dans `ALLOWED`, ça fait ~40 requêtes identiques simultanées, aucune mutualisée.
+- `lib/hooks/useProviderCredentials.ts` : route maintenant via `fetchWorkerCached` (cache 30s + déduplication des requêtes en vol), même remède déjà appliqué à `useDiscordOAuth`/`useItems`/`useProfiles`/`useConnections` lors du fix de l'orage 429 de septembre.
+- Validation : `tsc`/`build`/`lint` (0 erreur)/`test:unit` 115/115 ✓. `audit-security` PASS (1982 fichiers).
+
 ## v1.21.56 — 2026-09-14
 
 **Réglages : badge de version + Sync Cloud réels sur la page d'accueil, ménage de code**

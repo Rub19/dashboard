@@ -27130,4 +27130,53 @@ CHANGELOG_BY_LANG.en.unshift(v12156_en);
 CHANGELOG_BY_LANG.es.unshift(v12156_es);
 CHANGELOG_BY_LANG.de.unshift(v12156_de);
 
+const v12157_fr: ChangelogEntry = {
+  version: "v1.21.57",
+  date: "2026-09-14",
+  title: "Fix : orage de 429 sur /api/provider-credentials",
+  items: [
+    "Repéré via les logs console envoyés par l'utilisateur : la page Connexions déclenchait une trentaine de requêtes 429 (Too Many Requests) d'affilée sur `/api/provider-credentials`. Cause : `ConnectionDetailDrawer` est monté pour CHAQUE carte de connexion (même fermée), et son hook `useProviderCredentials` appelait `fetchWorker` brut (sans cache ni déduplication) au montage — avec une quarantaine de providers listés, ça fait autant de requêtes identiques tirées en même temps.",
+    "Même correctif déjà appliqué à `useDiscordOAuth` (27 composants), `useItems`, `useProfiles` et `useConnections` lors du fix de l'orage 429 de septembre (v1.21.10–v1.21.12) : `useProviderCredentials` passe maintenant par `fetchWorkerCached` (cache 30s + déduplication des requêtes en vol) au lieu de `fetchWorker` direct. N consommateurs de la même clé = 1 requête partagée.",
+    "Validation : `tsc`/`build`/`lint` (0 erreur)/`test:unit` 115/115 ✓. `audit-security` PASS (1982 fichiers). Pas de reproduction live possible dans cet environnement (pas d'accès à un compte authentifié) — corrigé par lecture de code en suivant exactement le pattern déjà validé pour les hooks similaires.",
+  ],
+};
+
+const v12157_en: ChangelogEntry = {
+  version: "v1.21.57",
+  date: "2026-09-14",
+  title: "Fix: 429 storm on /api/provider-credentials",
+  items: [
+    "Spotted from console logs the user sent over: the Connections page fired about thirty 429 (Too Many Requests) errors in a row against `/api/provider-credentials`. Cause: `ConnectionDetailDrawer` mounts for EVERY connection card (even closed ones), and its `useProviderCredentials` hook called bare `fetchWorker` (no cache, no dedup) on mount -- with roughly forty providers listed, that's as many identical requests fired at once.",
+    "Same fix already applied to `useDiscordOAuth` (27 components), `useItems`, `useProfiles` and `useConnections` during the September 429-storm fix (v1.21.10-v1.21.12): `useProviderCredentials` now goes through `fetchWorkerCached` (30s cache + in-flight request dedup) instead of bare `fetchWorker`. N consumers of the same key = 1 shared request.",
+    "Validation: `tsc`/`build`/`lint` (0 errors)/`test:unit` 115/115 pass. `audit-security` PASS (1982 files). No live reproduction possible in this environment (no access to an authenticated account) -- fixed by code reading, following exactly the pattern already validated for similar hooks.",
+  ],
+};
+
+const v12157_es: ChangelogEntry = {
+  version: "v1.21.57",
+  date: "2026-09-14",
+  title: "Corrección: tormenta de 429 en /api/provider-credentials",
+  items: [
+    "Detectado a partir de los logs de consola que envió el usuario: la página de Conexiones disparaba unos treinta errores 429 (Too Many Requests) seguidos contra `/api/provider-credentials`. Causa: `ConnectionDetailDrawer` se monta para CADA tarjeta de conexión (incluso cerradas), y su hook `useProviderCredentials` llamaba a `fetchWorker` directo (sin caché ni deduplicación) al montarse -- con unos cuarenta proveedores listados, eso son otras tantas solicitudes idénticas disparadas a la vez.",
+    "Misma corrección ya aplicada a `useDiscordOAuth` (27 componentes), `useItems`, `useProfiles` y `useConnections` durante la corrección de la tormenta de 429 de septiembre (v1.21.10-v1.21.12): `useProviderCredentials` ahora pasa por `fetchWorkerCached` (caché de 30s + deduplicación de solicitudes en vuelo) en lugar de `fetchWorker` directo. N consumidores de la misma clave = 1 solicitud compartida.",
+    "Validación: `tsc`/`build`/`lint` (0 errores)/`test:unit` 115/115 ✓. `audit-security` PASS (1982 archivos). No fue posible reproducirlo en vivo en este entorno (sin acceso a una cuenta autenticada) -- corregido leyendo el código, siguiendo exactamente el patrón ya validado para hooks similares.",
+  ],
+};
+
+const v12157_de: ChangelogEntry = {
+  version: "v1.21.57",
+  date: "2026-09-14",
+  title: "Fix: 429-Sturm auf /api/provider-credentials",
+  items: [
+    "Entdeckt anhand der Konsolen-Logs, die der Nutzer geschickt hat: Die Verbindungsseite loeste rund dreissig 429-Fehler (Too Many Requests) in Folge gegen `/api/provider-credentials` aus. Ursache: `ConnectionDetailDrawer` wird fuer JEDE Verbindungskarte gemountet (auch geschlossene), und dessen `useProviderCredentials`-Hook rief beim Mounten direktes `fetchWorker` auf (kein Cache, keine Deduplizierung) -- bei rund vierzig gelisteten Providern sind das ebenso viele identische, gleichzeitig abgefeuerte Anfragen.",
+    "Derselbe Fix wurde bereits bei `useDiscordOAuth` (27 Komponenten), `useItems`, `useProfiles` und `useConnections` beim September-Fix des 429-Sturms angewendet (v1.21.10-v1.21.12): `useProviderCredentials` laeuft jetzt ueber `fetchWorkerCached` (30s Cache + Deduplizierung laufender Anfragen) statt ueber direktes `fetchWorker`. N Verbraucher desselben Schluessels = 1 geteilte Anfrage.",
+    "Validierung: `tsc`/`build`/`lint` (0 Fehler)/`test:unit` 115/115 bestanden. `audit-security` PASS (1982 Dateien). Keine Live-Reproduktion in dieser Umgebung moeglich (kein Zugriff auf ein authentifiziertes Konto) -- durch Code-Lektuere behoben, exakt nach dem bereits fuer aehnliche Hooks validierten Muster.",
+  ],
+};
+
+CHANGELOG_BY_LANG.fr.unshift(v12157_fr);
+CHANGELOG_BY_LANG.en.unshift(v12157_en);
+CHANGELOG_BY_LANG.es.unshift(v12157_es);
+CHANGELOG_BY_LANG.de.unshift(v12157_de);
+
 export const CHANGELOG = CHANGELOG_BY_LANG.fr;

@@ -249,7 +249,7 @@ export default function LoginPage() {
       maxLength(32, "32 caractères maximum"),
     ]);
     const emailErr = validate(email, [required("L'adresse e-mail est requise"), emailValidator("E-mail invalide")]);
-    const passErr = validate(password, [required("Le mot de passe est requis"), passwordStrength("8+ caractères requis")]);
+    const passErr = validate(password, [required("Le mot de passe est requis"), passwordStrength(i18n("passwordRequirement"))]);
     const confirmErr = validate(confirmPassword, [
       required("Confirmez votre mot de passe"),
       match(() => password, "Les mots de passe ne correspondent pas"),
@@ -355,9 +355,11 @@ export default function LoginPage() {
 
   return (
     <div className="relative flex min-h-dvh w-full overflow-hidden bg-[var(--bg-main,#0E1015)] text-white selection:bg-[var(--accent-primary,#C1234F)]/30 selection:text-white">
-      {/* Language switcher — top-right on mobile, moved over the hero half on
-          desktop so it never sits on the login card's corner. */}
-      <div className="absolute right-4 top-4 z-50 sm:right-6 sm:top-6 lg:right-[calc(50%+1.5rem)]">
+      {/* Language switcher — top-right corner on mobile/tablet, where there's
+          no hero panel to anchor it to. On desktop it moves into the hero
+          panel's own header row instead (below) so it's never an orphan
+          element floating independently above both columns. */}
+      <div className="absolute right-4 top-4 z-50 sm:right-6 sm:top-6 lg:hidden">
         <LanguageSwitcher />
       </div>
 
@@ -390,16 +392,19 @@ export default function LoginPage() {
         />
 
         {/* Brand Header */}
-        <div className="z-10 flex items-center gap-3">
-          <div className="relative flex h-10 w-10 items-center justify-center rounded-[var(--inset-radius)] bg-white/[0.04] border border-[var(--panel-border)] shadow-lg">
-            <BrandMark size={28} />
+        <div className="z-10 flex items-center justify-between gap-3">
+          <div className="flex items-center gap-3">
+            <div className="relative flex h-10 w-10 items-center justify-center rounded-[var(--inset-radius)] bg-white/[0.04] border border-[var(--panel-border)] shadow-lg">
+              <BrandMark size={28} />
+            </div>
+            <div className="flex items-center gap-2">
+              <span className="text-xl font-bold tracking-tight text-white font-mono">ETHONE</span>
+              <span className="rounded-[var(--inset-radius)] border border-[var(--panel-border)] bg-white/[0.04] px-2 py-0.5 text-[10px] font-semibold uppercase tracking-wider text-[var(--accent-primary,#C1234F)]">
+                OS
+              </span>
+            </div>
           </div>
-          <div className="flex items-center gap-2">
-            <span className="text-xl font-bold tracking-tight text-white font-mono">ETHONE</span>
-            <span className="rounded-[var(--inset-radius)] border border-[var(--panel-border)] bg-white/[0.04] px-2 py-0.5 text-[10px] font-semibold uppercase tracking-wider text-[var(--accent-primary,#C1234F)]">
-              OS
-            </span>
-          </div>
+          <LanguageSwitcher />
         </div>
 
         {/* Main Hero Content */}

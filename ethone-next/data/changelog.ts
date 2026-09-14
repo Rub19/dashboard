@@ -26938,4 +26938,53 @@ CHANGELOG_BY_LANG.en.unshift(v12152_en);
 CHANGELOG_BY_LANG.es.unshift(v12152_es);
 CHANGELOG_BY_LANG.de.unshift(v12152_de);
 
+const v12153_fr: ChangelogEntry = {
+  version: "v1.21.53",
+  date: "2026-09-14",
+  title: "Fix : mot de passe refusé à tort, notif de mise à jour et sélecteur de langue repensés",
+  items: [
+    "Vrai bug trouvé en testant l'inscription : un mot de passe pouvait afficher \"Bon\" avec les 3 critères visibles cochés verts, puis être refusé au clic sur \"Créer mon espace\" avec le message \"8+ caractères requis\" — alors qu'il faisait largement plus de 8 caractères. La vraie règle exige 12+ caractères et un symbole, mais la jauge visuelle ne vérifiait que 8+ caractères et n'affichait jamais l'exigence de symbole. Jauge et message d'erreur corrigés pour refléter exactement la vraie règle (12+ caractères, majuscule, minuscule, chiffre, symbole).",
+    "Notification \"nouvelle mise à jour\" repensée une seconde fois : repositionnée en bas à droite pour correspondre à l'unique convention de notification déjà utilisée partout ailleurs dans l'app (au lieu d'une bannière large et isolée en bas au centre), et resserrée pour ressembler aux autres notifications.",
+    "Sélecteur de langue (page de connexion) : il flottait seul en haut de l'écran, sans lien avec la carte ni le panneau de gauche. Déplacé dans la ligne d'en-tête à côté du logo ETHONE sur desktop ; reste dans le coin supérieur droit sur mobile où il n'y a pas de panneau gauche pour l'accueillir.",
+  ],
+};
+
+const v12153_en: ChangelogEntry = {
+  version: "v1.21.53",
+  date: "2026-09-14",
+  title: "Fix: password wrongly rejected, redesigned update toast and language switcher",
+  items: [
+    "Real bug found while testing sign-up: a password could show \"Bon\" (Good) with all 3 visible checks green, then get rejected on clicking \"Créer mon espace\" with \"8+ caractères requis\" -- even though it was well over 8 characters. The real rule requires 12+ characters plus a symbol, but the visual meter only checked 8+ characters and never displayed the symbol requirement at all. Fixed both the meter and the error message to match the real rule exactly (12+ characters, uppercase, lowercase, number, symbol).",
+    "\"New update\" notification redesigned a second time: moved to the bottom-right to match the one notification convention already used everywhere else in the app (instead of a wide, isolated bottom-center banner), and tightened to look like the other notifications.",
+    "Language switcher (login page): it floated alone at the top of the screen, disconnected from both the card and the left panel. Moved into the header row next to the ETHONE logo on desktop; stays in the top-right corner on mobile where there's no left panel to anchor it to.",
+  ],
+};
+
+const v12153_es: ChangelogEntry = {
+  version: "v1.21.53",
+  date: "2026-09-14",
+  title: "Corrección: contraseña rechazada por error, aviso de actualización y selector de idioma rediseñados",
+  items: [
+    "Bug real encontrado al probar el registro: una contraseña podía mostrar \"Bon\" (Bien) con las 3 marcas visibles en verde, y aun así ser rechazada al pulsar \"Créer mon espace\" con el mensaje \"8+ caractères requis\" -- aunque tenía muchos más de 8 caracteres. La regla real exige 12+ caracteres y un símbolo, pero el indicador visual solo comprobaba 8+ caracteres y nunca mostraba el requisito del símbolo. Corregidos el indicador y el mensaje de error para reflejar exactamente la regla real (12+ caracteres, mayúscula, minúscula, número, símbolo).",
+    "Aviso de \"nueva actualización\" rediseñado por segunda vez: movido a la esquina inferior derecha para coincidir con la única convención de notificación ya usada en el resto de la app (en vez de un banner ancho y aislado en la parte inferior central), y reducido para parecerse al resto de notificaciones.",
+    "Selector de idioma (página de login): flotaba solo en la parte superior de la pantalla, sin relación con la tarjeta ni con el panel izquierdo. Movido a la fila de cabecera junto al logo de ETHONE en escritorio; se mantiene en la esquina superior derecha en móvil, donde no hay panel izquierdo que lo acoja.",
+  ],
+};
+
+const v12153_de: ChangelogEntry = {
+  version: "v1.21.53",
+  date: "2026-09-14",
+  title: "Fix: Passwort faelschlich abgelehnt, Update-Hinweis und Sprachumschalter neu gestaltet",
+  items: [
+    "Echter Bug beim Testen der Registrierung gefunden: ein Passwort konnte in der Anzeige \"Bon\" (Gut) mit allen 3 sichtbaren gruenen Haekchen zeigen und wurde beim Klick auf \"Créer mon espace\" trotzdem mit \"8+ caractères requis\" abgelehnt -- obwohl es deutlich mehr als 8 Zeichen hatte. Die echte Regel verlangt 12+ Zeichen plus ein Sonderzeichen, die visuelle Anzeige pruefte aber nur 8+ Zeichen und zeigte die Sonderzeichen-Anforderung nie an. Anzeige und Fehlermeldung korrigiert, damit sie genau der echten Regel entsprechen (12+ Zeichen, Gross-, Kleinbuchstabe, Zahl, Sonderzeichen).",
+    "\"Neues Update\"-Hinweis ein zweites Mal neu gestaltet: unten rechts platziert, passend zur einzigen Benachrichtigungs-Konvention, die im Rest der App bereits verwendet wird (statt eines breiten, isolierten Banners unten mittig), und verschlankt, damit er wie die anderen Benachrichtigungen aussieht.",
+    "Sprachumschalter (Login-Seite): er schwebte allein oben auf dem Bildschirm, ohne Bezug zur Karte oder zum linken Bereich. Auf dem Desktop in die Kopfzeile neben das ETHONE-Logo verschoben; bleibt auf dem Handy in der oberen rechten Ecke, wo es keinen linken Bereich zum Andocken gibt.",
+  ],
+};
+
+CHANGELOG_BY_LANG.fr.unshift(v12153_fr);
+CHANGELOG_BY_LANG.en.unshift(v12153_en);
+CHANGELOG_BY_LANG.es.unshift(v12153_es);
+CHANGELOG_BY_LANG.de.unshift(v12153_de);
+
 export const CHANGELOG = CHANGELOG_BY_LANG.fr;

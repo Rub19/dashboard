@@ -2,6 +2,16 @@
 
 Toutes les modifications notables de ce projet seront documentées dans ce fichier.
 
+## v1.21.53 — 2026-09-14
+
+**Fix : mot de passe refusé à tort, notification de mise à jour et sélecteur de langue repensés**
+
+- **Bug réel trouvé en testant l'inscription** (`components/auth/PasswordStrengthMeter.tsx`, `app/login/page.tsx`) : `lib/form-validation.ts`'s `passwordStrength()` exige réellement 12+ caractères + majuscule + minuscule + chiffre + **symbole**, mais la jauge visuelle ne vérifiait/affichait que 8+ caractères, majuscule et chiffre — jamais le symbole, jamais la vraie longueur minimale. Un mot de passe de 14 caractères sans symbole affichait donc "Bon" avec tout coché vert, puis se faisait rejeter au submit avec le message trompeur "8+ caractères requis" (qui ne décrivait même pas la vraie raison du refus). Jauge et message corrigés pour correspondre exactement au validateur réel ; le message d'erreur réutilise maintenant la clé i18n `passwordRequirement` déjà correcte et utilisée par la page de réinitialisation de mot de passe.
+- `components/VersionUpdateToast.tsx` repensé une seconde fois : après le premier ajustement de position (v1.21.51, au-dessus de la barre de statut), en creusant le vrai problème signalé — la bannière large en bas-centre était un design isolé, incohérent avec l'unique convention de notification déjà utilisée partout ailleurs dans l'app (`context/ToastContext.tsx`, bas-droite sur desktop via `sonner`). Repositionnée en bas-droite (bas-centre sur mobile), resserrée à une taille proche de `RichToast` (les autres notifications de l'app) pour s'intégrer visuellement au lieu de trancher.
+- `app/login/page.tsx` : le sélecteur de langue flottait seul, positionné à `calc(50%+1.5rem)` au-dessus des deux colonnes, sans lien visuel avec quoi que ce soit — signalé par l'utilisateur comme "chelou". Déplacé dans la ligne d'en-tête du panneau gauche (desktop), à côté du logo ETHONE ; reste en coin haut-droit sur mobile où il n'y a pas de panneau gauche.
+- Tests : `components/auth/PasswordStrengthMeter.test.tsx` (4 cas — rendu vide, les 5 critères affichés correspondent exactement à `passwordStrength()`, un mot de passe sans symbole n'est jamais "Excellent" et échoue bien la validation réelle, un mot de passe complet est "Excellent" et passe la validation réelle).
+- Validation : `ethone-next` `tsc` ✓, `npm run build` ✓, `lint` 0 erreur, `test:unit` 115/115 ✓. `audit-security` PASS (1982 fichiers). Toast et sélecteur de langue vérifiés visuellement en local (desktop 1440px et mobile 375px, capture d'écran à l'appui).
+
 ## v1.21.52 — 2026-09-14
 
 **Discord : nouvelle Vue d'ensemble (mission control)**

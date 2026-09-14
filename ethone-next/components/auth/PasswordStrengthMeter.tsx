@@ -11,17 +11,23 @@ interface PasswordStrengthMeterProps {
 export default function PasswordStrengthMeter({ password }: PasswordStrengthMeterProps) {
   if (!password) return null;
 
-  const hasMinLength = password.length >= 8;
+  // Mirrors lib/form-validation.ts's passwordStrength() exactly -- this
+  // meter used to check 8+ chars and never showed the symbol requirement at
+  // all, so a password could read "Bon" with every visible check green and
+  // still get rejected on submit for a requirement the user was never told
+  // about.
+  const hasMinLength = password.length >= 12;
   const hasUppercase = /[A-Z]/.test(password);
+  const hasLowercase = /[a-z]/.test(password);
   const hasNumber = /[0-9]/.test(password);
   const hasSpecial = /[^A-Za-z0-9]/.test(password);
 
-  const score = [hasMinLength, hasUppercase, hasNumber, hasSpecial].filter(Boolean).length;
+  const score = [hasMinLength, hasUppercase, hasLowercase, hasNumber, hasSpecial].filter(Boolean).length;
 
   const getStrengthLabel = () => {
     if (score <= 1) return { text: "Faible", color: "text-rose-400", barColor: "bg-rose-500" };
-    if (score === 2) return { text: "Moyen", color: "text-amber-400", barColor: "bg-amber-500" };
-    if (score === 3) return { text: "Bon", color: "text-emerald-400", barColor: "bg-emerald-500" };
+    if (score <= 3) return { text: "Moyen", color: "text-amber-400", barColor: "bg-amber-500" };
+    if (score === 4) return { text: "Bon", color: "text-emerald-400", barColor: "bg-emerald-500" };
     return { text: "Excellent", color: "text-emerald-300", barColor: "bg-emerald-400" };
   };
 
@@ -37,7 +43,7 @@ export default function PasswordStrengthMeter({ password }: PasswordStrengthMete
     >
       <div className="flex items-center justify-between">
         <div className="flex gap-1.5 flex-1 max-w-[140px]">
-          {[1, 2, 3, 4].map((level) => (
+          {[1, 2, 3, 4, 5].map((level) => (
             <div
               key={level}
               className={cn(
@@ -55,15 +61,23 @@ export default function PasswordStrengthMeter({ password }: PasswordStrengthMete
       <div className="flex flex-wrap gap-2 text-[10px] text-zinc-400">
         <span className={cn("flex items-center gap-1 transition-colors", hasMinLength ? "text-emerald-400" : "text-zinc-500")}>
           {hasMinLength ? <Check className="h-3 w-3" /> : <span className="h-1.5 w-1.5 rounded-full bg-zinc-600" />}
-          8+ caractères
+          12+ caractères
         </span>
         <span className={cn("flex items-center gap-1 transition-colors", hasUppercase ? "text-emerald-400" : "text-zinc-500")}>
           {hasUppercase ? <Check className="h-3 w-3" /> : <span className="h-1.5 w-1.5 rounded-full bg-zinc-600" />}
           1 majuscule
         </span>
+        <span className={cn("flex items-center gap-1 transition-colors", hasLowercase ? "text-emerald-400" : "text-zinc-500")}>
+          {hasLowercase ? <Check className="h-3 w-3" /> : <span className="h-1.5 w-1.5 rounded-full bg-zinc-600" />}
+          1 minuscule
+        </span>
         <span className={cn("flex items-center gap-1 transition-colors", hasNumber ? "text-emerald-400" : "text-zinc-500")}>
           {hasNumber ? <Check className="h-3 w-3" /> : <span className="h-1.5 w-1.5 rounded-full bg-zinc-600" />}
           1 chiffre
+        </span>
+        <span className={cn("flex items-center gap-1 transition-colors", hasSpecial ? "text-emerald-400" : "text-zinc-500")}>
+          {hasSpecial ? <Check className="h-3 w-3" /> : <span className="h-1.5 w-1.5 rounded-full bg-zinc-600" />}
+          1 symbole
         </span>
       </div>
     </motion.div>

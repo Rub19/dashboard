@@ -54,6 +54,7 @@ import {
   Moon,
   Cake,
   Eye,
+  LayoutDashboard,
 } from "lucide-react";
 import { useAuth } from "@/components/AuthProvider";
 import { useToast } from "@/components/ToastProvider";
@@ -68,6 +69,7 @@ const BOT_CLIENT_ID = "1545139931154878464";
 const BOT_INVITE_URL = `https://discord.com/oauth2/authorize?client_id=${BOT_CLIENT_ID}&permissions=8&scope=bot%20applications.commands`;
 
 type ModuleType =
+  | "overview"
   | "security"
   | "commands"
   | "suggestions"
@@ -108,6 +110,14 @@ interface BotModule {
 }
 
 const MODULES: BotModule[] = [
+  {
+    id: "overview",
+    title: "Vue d'ensemble",
+    description: "Statut du bot, modération, sécurité, musique, tickets, giveaways, backups et activité récente en un coup d'œil.",
+    icon: LayoutDashboard,
+    color: "text-indigo-400",
+    badge: "Mission Control",
+  },
   {
     id: "security",
     title: "Sécurité & Anti-Raid",
@@ -1098,6 +1108,53 @@ export default function DiscordDashboardPage() {
                     Serveur : {selectedGuild.name}
                   </span>
                 </div>
+
+                {/* MODULE 0: Vue d'ensemble */}
+                {activeModule === "overview" && (
+                  <div className="space-y-4 text-xs">
+                    <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-3 rounded-[var(--panel-radius)] border border-[var(--panel-border)] bg-white/[0.03] p-4">
+                      <div>
+                        <div className="flex items-center gap-2">
+                          <p className="text-xs font-bold text-white">Mission Control</p>
+                        </div>
+                        <p className="text-[11px] text-zinc-300 mt-0.5">
+                          Statut du bot, modération, sécurité, musique, tickets, giveaways, backups et activité récente réunis en un coup d'œil — données réelles, pas de tuile fictive.
+                        </p>
+                      </div>
+                      <Link
+                        href={`/discord/overview?guildId=${selectedGuild.id}`}
+                        className="flex h-9 shrink-0 items-center gap-2 rounded-xl bg-indigo-600 px-4 text-xs font-semibold text-white transition-colors hover:bg-indigo-500 active:scale-95 cursor-pointer"
+                      >
+                        <LayoutDashboard className="h-4 w-4" />
+                        <span>Ouvrir la Vue d'ensemble</span>
+                        <ChevronRight className="h-3.5 w-3.5" />
+                      </Link>
+                    </div>
+
+                    <div className="grid grid-cols-2 sm:grid-cols-4 gap-3">
+                      <div className="rounded-[var(--inset-radius)] border border-[var(--panel-border)] bg-white/[0.02] p-3">
+                        <p className="text-[10px] text-zinc-400 font-medium uppercase tracking-wider">Statut & Membres</p>
+                        <p className="text-lg font-bold text-cyan-400 mt-1">En direct</p>
+                        <p className="text-[10px] text-zinc-400 mt-0.5">Uptime, ping, membres réels</p>
+                      </div>
+                      <div className="rounded-[var(--inset-radius)] border border-[var(--panel-border)] bg-white/[0.02] p-3">
+                        <p className="text-[10px] text-zinc-400 font-medium uppercase tracking-wider">Modération & Sécurité</p>
+                        <p className="text-lg font-bold text-blue-400 mt-1">Cas récents</p>
+                        <p className="text-[10px] text-zinc-400 mt-0.5">Incidents & sanctions réels</p>
+                      </div>
+                      <div className="rounded-[var(--inset-radius)] border border-[var(--panel-border)] bg-white/[0.02] p-3">
+                        <p className="text-[10px] text-zinc-400 font-medium uppercase tracking-wider">Musique, Tickets, Giveaways</p>
+                        <p className="text-lg font-bold text-purple-400 mt-1">Actifs maintenant</p>
+                        <p className="text-[10px] text-zinc-400 mt-0.5">Lecture en cours, files réelles</p>
+                      </div>
+                      <div className="rounded-[var(--inset-radius)] border border-[var(--panel-border)] bg-white/[0.02] p-3">
+                        <p className="text-[10px] text-zinc-400 font-medium uppercase tracking-wider">Backups & Activité</p>
+                        <p className="text-lg font-bold text-emerald-400 mt-1">Historique réel</p>
+                        <p className="text-[10px] text-zinc-400 mt-0.5">Dernière sauvegarde, commandes récentes</p>
+                      </div>
+                    </div>
+                  </div>
+                )}
 
                 {/* MODULE 1: Sécurité & Anti-Raid */}
                 {activeModule === "security" && (

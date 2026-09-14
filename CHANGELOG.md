@@ -2,6 +2,18 @@
 
 Toutes les modifications notables de ce projet seront documentées dans ce fichier.
 
+## v1.21.52 — 2026-09-14
+
+**Discord : nouvelle Vue d'ensemble (mission control)**
+
+- Nouvelle page `app/discord/overview/` (`OverviewClient.tsx` + `page.tsx`), premier module de la grille `/discord` : statut du bot, membres, modération, sécurité, musique, tickets, giveaways, backups et activité récente pour le serveur sélectionné, en un coup d'œil.
+- Avant de construire quoi que ce soit, j'ai lu les vrais handlers Express (pas juste les hooks client) de chaque source candidate. Trouvé trois endpoints bot-wide fabriqués (`/api/bot/ai` : constantes codées en dur, `recordAiUsage` jamais appelé nulle part ; `/api/bot/security` : `score: 98` etc. codés en dur ; `/api/bot/performance` : commentaire du code lui-même "Generate realistic smoothed historical telemetry points", `Math.random()`) et la même version guild-scoped de l'IA (`aiRepository.getAnalytics()` : `requestsToday: 42` codé en dur, jamais incrémenté par un vrai usage). **Aucun de ces trois n'est utilisé** — pas de carte "IA" sur cette page, volontairement.
+- Trouvé au passage, non corrigé ici (hors périmètre, signalé séparément) : `/discord/analytics` (536 lignes) n'a **aucun** appel `fetch()`/`BOT_API_URL` — entièrement fictif, même travers que Giveaways avant sa correction.
+- `lib/hooks/useGuildOverview.ts` : nouveau hook, 8 requêtes réelles en parallèle via `Promise.allSettled` (pas `Promise.all`) — un module en panne (ex. backups mal configuré) ne vide jamais les autres cartes, chacune a son propre état loading/error. Endpoints : `/api/guilds/:guildId/overview` (statut bot + membres + `stats.recentActivities`, un vrai journal de commandes alimenté par `statsService.recordCommand()`, confirmé appelé depuis `interactionCreate.ts` et `messageCreate.ts`), `/bot/overview` (miroir guild-scoped, `snapshot.guildsCount` réel), `/moderation/overview`, `/music/state`, `/tickets/overview`, `/giveaways/overview`, `/security/overview` (pas `/api/bot/security`), `/backups/overview`.
+- `app/discord/page.tsx` : nouvelle entrée `MODULES` ("Vue d'ensemble", en tête de grille) + panneau déplié associé, même pattern que les modules existants (Giveaways, Tickets...).
+- Tests : `lib/hooks/useGuildOverview.test.ts` (4 cas — aucun guildId → pas d'appel réseau, 8 endpoints appelés avec le bon guildId, un endpoint en échec ne vide pas les autres, re-fetch au changement de guildId).
+- Validation : `ethone-next` `tsc` ✓, `npm run build` ✓ (`/discord/overview` compile), `lint` 0 erreur, `test:unit` 111/111 ✓. `audit-security` PASS (1981 fichiers). Page vérifiée en local (charge sans erreur console propre au code, redirige correctement quand non connecté) — impossible de vérifier avec de vraies données de serveur Discord depuis cet environnement (pas d'accès à un compte/guilde réel), à tester après déploiement.
+
 ## v1.21.51 — 2026-09-14
 
 **Fix : code OTP perdu après rechargement + page de login redessinée**

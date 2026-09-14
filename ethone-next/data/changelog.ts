@@ -26885,4 +26885,57 @@ CHANGELOG_BY_LANG.en.unshift(v12151_en);
 CHANGELOG_BY_LANG.es.unshift(v12151_es);
 CHANGELOG_BY_LANG.de.unshift(v12151_de);
 
+const v12152_fr: ChangelogEntry = {
+  version: "v1.21.52",
+  date: "2026-09-14",
+  title: "Discord : nouvelle Vue d'ensemble (mission control)",
+  items: [
+    "Nouvelle page /discord/overview (\"Vue d'ensemble\", en premier dans la grille des modules) : statut du bot, membres, modération, sécurité, musique, tickets, giveaways et sauvegardes réunis en un coup d'œil pour le serveur sélectionné — huit vraies routes déjà existantes, aucune tuile inventée.",
+    "Volontairement pas de carte \"IA\" : en vérifiant les sources possibles, les compteurs d'activité IA (globaux et par serveur) se sont révélés être des valeurs par défaut codées en dur, jamais mises à jour par un vrai usage — je préfère ne rien afficher plutôt qu'un chiffre fictif.",
+    "Trouvé au passage (pas corrigé dans cette passe, à traiter séparément) : la page /discord/analytics existante n'a aucun appel réseau réel, elle est entièrement fictive, comme l'était Giveaways avant sa correction.",
+    "Chaque tuile est cliquable vers sa page complète, plus une section \"Activité récente\" (vrai journal des commandes utilisées) et des raccourcis d'actions rapides.",
+  ],
+};
+
+const v12152_en: ChangelogEntry = {
+  version: "v1.21.52",
+  date: "2026-09-14",
+  title: "Discord: new Overview page (mission control)",
+  items: [
+    "New /discord/overview page (\"Vue d'ensemble\", first in the module grid): bot status, members, moderation, security, music, tickets, giveaways, and backups in one glance for the selected server -- eight real, already-shipped routes, no invented tiles.",
+    "Deliberately no \"AI\" card: while checking possible data sources, the AI activity counters (both global and per-server) turned out to be hardcoded default values that are never updated by real usage -- showing nothing beats showing a fake number.",
+    "Found along the way (not fixed in this pass, to be handled separately): the existing /discord/analytics page makes no real network calls at all -- entirely mocked, the same pattern Giveaways had before its fix.",
+    "Every tile links through to its full page, plus a real \"Recent Activity\" feed (actual command-usage log) and quick-action shortcuts.",
+  ],
+};
+
+const v12152_es: ChangelogEntry = {
+  version: "v1.21.52",
+  date: "2026-09-14",
+  title: "Discord: nueva Vista general (mission control)",
+  items: [
+    "Nueva página /discord/overview (\"Vue d'ensemble\", primera en la cuadrícula de módulos): estado del bot, miembros, moderación, seguridad, música, tickets, giveaways y copias de seguridad de un vistazo para el servidor seleccionado -- ocho rutas reales ya existentes, ninguna tarjeta inventada.",
+    "Deliberadamente sin tarjeta de \"IA\": al revisar las posibles fuentes de datos, los contadores de actividad de IA (globales y por servidor) resultaron ser valores por defecto codificados a mano, nunca actualizados por uso real -- prefiero no mostrar nada antes que un número ficticio.",
+    "Encontrado de paso (no corregido en esta pasada, se tratará aparte): la página /discord/analytics existente no hace ninguna llamada de red real -- totalmente simulada, el mismo patrón que tenía Giveaways antes de su corrección.",
+    "Cada tarjeta enlaza a su página completa, más una sección \"Actividad reciente\" real (registro real de comandos usados) y accesos directos de acciones rápidas.",
+  ],
+};
+
+const v12152_de: ChangelogEntry = {
+  version: "v1.21.52",
+  date: "2026-09-14",
+  title: "Discord: neue Übersichtsseite (Mission Control)",
+  items: [
+    "Neue Seite /discord/overview (\"Vue d'ensemble\", zuerst im Modul-Raster): Bot-Status, Mitglieder, Moderation, Sicherheit, Musik, Tickets, Giveaways und Backups auf einen Blick für den ausgewählten Server -- acht echte, bereits vorhandene Routen, keine erfundene Kachel.",
+    "Bewusst keine \"KI\"-Karte: bei der Pruefung moeglicher Datenquellen stellten sich die KI-Aktivitaetszaehler (global und pro Server) als fest codierte Standardwerte heraus, die nie durch echte Nutzung aktualisiert werden -- lieber nichts anzeigen als eine erfundene Zahl.",
+    "Nebenbei gefunden (in diesem Durchgang nicht behoben, wird separat behandelt): die bestehende Seite /discord/analytics macht ueberhaupt keine echten Netzwerkaufrufe -- komplett simuliert, dasselbe Muster wie bei Giveaways vor dessen Korrektur.",
+    "Jede Kachel verlinkt zur vollstaendigen Seite, dazu ein echter \"Letzte Aktivitaet\"-Feed (echtes Befehlsnutzungsprotokoll) und Schnellzugriffe.",
+  ],
+};
+
+CHANGELOG_BY_LANG.fr.unshift(v12152_fr);
+CHANGELOG_BY_LANG.en.unshift(v12152_en);
+CHANGELOG_BY_LANG.es.unshift(v12152_es);
+CHANGELOG_BY_LANG.de.unshift(v12152_de);
+
 export const CHANGELOG = CHANGELOG_BY_LANG.fr;

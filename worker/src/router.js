@@ -62,6 +62,7 @@ import { steamRoute } from "./routes/steam.js";
 import { supabaseRoute } from "./routes/supabase.js";
 import { todoistOAuthDisconnectRoute, todoistOAuthExchangeRoute, todoistTasksRoute } from "./routes/todoist-oauth.js";
 import { trackerLolRoute, trackerRoute, trackerValorantRoute, trackerValorantMatchesRoute, trackerLolMatchesRoute, trackerTftMatchesRoute, trackerApexMatchesRoute, trackerGameProfileRoute, trackerGameMatchesRoute } from "./routes/tracker.js";
+import { friendGameDinoRoute } from "./routes/friend-games.js";
 import { twitchRoute } from "./routes/twitch.js";
 import { weatherRoute, geocodeRoute } from "./routes/weather.js";
 import { billsScanRoute } from "./routes/bills-scan.js";
@@ -135,7 +136,12 @@ function route(id, path, handler, options = {}) {
     public: options.public === true,
     rateLimit: options.rateLimit || "standard",
     service: options.service || "core",
-    action: options.action || ""
+    action: options.action || "",
+    // When true, the response is allowed to be framed by ethone.dev (see
+    // securityHeaders() in index.js) instead of the default DENY/'none' —
+    // an explicit, per-route opt-in for the handful of routes meant to be
+    // embedded in an <iframe>, never a global relaxation.
+    embeddable: options.embeddable === true
   });
 }
 
@@ -162,6 +168,7 @@ export const ROUTES = Object.freeze([
   route("tracker.tft-matches", "/api/stats/tft-matches", trackerTftMatchesRoute, { public: true, service: "tracker", rateLimit: "edge" }),
   route("tracker.game-profile", "/api/stats/tracker-profile", trackerGameProfileRoute, { public: true, service: "tracker", rateLimit: "edge" }),
   route("tracker.game-matches", "/api/stats/tracker-matches", trackerGameMatchesRoute, { public: true, service: "tracker", rateLimit: "edge" }),
+  route("games.dino", "/api/games/dino", friendGameDinoRoute, { public: true, service: "games", rateLimit: "edge", embeddable: true }),
   route("twitch.channel", "/api/twitch/channel", twitchRoute, { public: true, service: "twitch", rateLimit: "edge" }),
   route("lastfm.recent-tracks", "/api/lastfm/recent-tracks", lastFmRoute, { public: true, service: "lastfm", action: "recent-tracks", rateLimit: "edge" }),
   route("lastfm.top-artists", "/api/lastfm/top-artists", lastFmRoute, { public: true, service: "lastfm", action: "top-artists", rateLimit: "edge" }),

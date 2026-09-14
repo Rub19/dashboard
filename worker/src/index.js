@@ -10,11 +10,19 @@ import { sendScheduledMessages } from "./services/mail-client.js";
 import { processOutbox } from "./services/mail-outbox.js";
 import { AiQuotaManager } from "./services/ai-quota-durable-object.js";
 
-function securityHeaders(response) {
+function securityHeaders(response, route) {
   const headers = new Headers(response.headers);
-  headers.set("content-security-policy", "default-src 'none'; frame-ancestors 'none'; base-uri 'none'; form-action 'none'");
+  // Framing is DENY/'none' by default for every route. A route explicitly
+  // marked embeddable (route.js's `embeddable: true`, currently only the
+  // friend-game iframe embed) gets a narrow exception instead: framing is
+  // allowed, but only from ETHONE's own origins, never left wide open.
+  if (route?.embeddable === true) {
+    headers.set("content-security-policy", "default-src 'none'; frame-ancestors https://ethone.dev https://*.pages.dev; base-uri 'none'; form-action 'none'");
+  } else {
+    headers.set("content-security-policy", "default-src 'none'; frame-ancestors 'none'; base-uri 'none'; form-action 'none'");
+    headers.set("x-frame-options", "DENY");
+  }
   headers.set("permissions-policy", "camera=(), microphone=(), geolocation=()");
-  headers.set("x-frame-options", "DENY");
   headers.set("cross-origin-resource-policy", "cross-origin");
   return new Response(response.body, { status: response.status, statusText: response.statusText, headers });
 }
@@ -83,7 +91,7 @@ async function handleRequest(request, env, executionCtx) {
   if (request.method === "HEAD") {
     response = new Response(null, { status: response.status, statusText: response.statusText, headers: response.headers });
   }
-  response = securityHeaders(applyCors(response, cors));
+  response = securityHeaders(applyCors(response, cors), context.route);
   writeRequestLog(context, response, startedAt);
   return response;
 }

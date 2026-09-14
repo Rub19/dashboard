@@ -1,5 +1,6 @@
 export const CATALOG: Record<string, Record<string, string>> = {
   "fr": {
+    "games": "Jeux",
     "home": "Accueil",
     "notes": "Notes",
     "tasks": "Tâches",
@@ -1173,6 +1174,7 @@ export const CATALOG: Record<string, Record<string, string>> = {
     "checkEmail": "Vérifiez votre boîte mail."
   },
   "en": {
+    "games": "Games",
     "home": "Home",
     "notes": "Notes",
     "tasks": "Tasks",
@@ -2345,6 +2347,7 @@ export const CATALOG: Record<string, Record<string, string>> = {
     "auraDescription": "Luminous mood accompanying the theme."
   },
   "es": {
+    "games": "Juegos",
     "home": "Inicio",
     "notes": "Notas",
     "tasks": "Tareas",
@@ -3517,6 +3520,7 @@ export const CATALOG: Record<string, Record<string, string>> = {
     "revoked": "revocado"
   },
   "de": {
+    "games": "Spiele",
     "home": "Startseite",
     "notes": "Notizen",
     "tasks": "Aufgaben",
@@ -4699,6 +4703,7 @@ export const CATALOG: Record<string, Record<string, string>> = {
     "interactions": "インタラクション",
     "connections": "接続",
     "plugins": "プラグイン",
+    "games": "ゲーム",
     "spaces": "スペース",
     "flows": "フロー",
     "brain": "Brain",

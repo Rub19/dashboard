@@ -2,6 +2,16 @@
 
 Toutes les modifications notables de ce projet seront documentées dans ce fichier.
 
+## v1.21.60 — 2026-09-14
+
+**Nouveau : mini-jeu « Dino Corridor » dans la sidebar**
+
+- Nouvel onglet « Jeux » dans la sidebar (`components/Sidebar.tsx`), jeu de Lehnoxzs (github.com/Lehnoxzs/HAARPE-DINO-GAME) intégré en iframe (`app/games/page.tsx`).
+- Le fichier est brut sur GitHub (servi comme texte, pas comme page web) — nouvelle route Worker `worker/src/routes/friend-games.js` (`/api/games/dino`) qui le récupère et le ressert avec le bon `Content-Type`, cache 5 min. Toute mise à jour poussée par Lehnoxzs apparaît automatiquement en quelques minutes.
+- `worker/src/index.js` : exception ciblée et explicite (`route.embeddable`) à la protection anti-clickjacking globale, pour cette seule route, limitée à ethone.dev — le reste de l'API garde sa protection stricte inchangée.
+- Stats/Supabase explicitement hors scope pour l'instant (le jeu n'en expose pas encore).
+- Validation : `tsc`/`build`/`lint` (0 erreur)/`test:unit` 115/115 ✓ (`ethone-next`), suite Worker 251/251 ✓. `audit-security` PASS (1984 fichiers).
+
 ## v1.21.59 — 2026-09-14
 
 **Fix : la clé API Tracker.gg (Apex Legends) ne pouvait jamais être enregistrée**

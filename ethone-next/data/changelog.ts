@@ -27293,4 +27293,61 @@ CHANGELOG_BY_LANG.en.unshift(v12159_en);
 CHANGELOG_BY_LANG.es.unshift(v12159_es);
 CHANGELOG_BY_LANG.de.unshift(v12159_de);
 
+const v12160_fr: ChangelogEntry = {
+  version: "v1.21.60",
+  date: "2026-09-14",
+  title: "Nouveau : mini-jeu « Dino Corridor » dans la sidebar",
+  items: [
+    "Ajout d'un nouvel onglet « Jeux » dans la sidebar, avec le jeu Dino Corridor (créé par Lehnoxzs, github.com/Lehnoxzs/HAARPE-DINO-GAME) intégré en iframe.",
+    "Le fichier du jeu est hébergé brut sur GitHub, qui le sert comme texte et non comme page web — un iframe direct ne l'aurait donc jamais affiché. Le Worker récupère maintenant le fichier lui-même et le ressert avec le bon type de contenu (nouvelle route `/api/games/dino`, cache 5 minutes), donc toute mise à jour poussée par Lehnoxzs apparaît sur ETHONE en quelques minutes, automatiquement.",
+    "Le Worker bloque par défaut l'affichage en iframe de toutes ses réponses (protection anti-clickjacking). Ajout d'une exception explicite et ciblée pour cette seule route (autorisée uniquement depuis ethone.dev), sans toucher à la protection stricte du reste de l'API.",
+    "Pas encore de statistiques connectées à Supabase pour ce jeu — prévu pour plus tard, une fois que le jeu les exposera de son côté.",
+    "Validation : `tsc`/`build`/`lint` (0 erreur)/`test:unit` 115/115 ✓ côté `ethone-next`, suite de tests Worker 251/251 ✓ (aucun test existant cassé par le changement d'en-têtes de sécurité). `audit-security` PASS (1984 fichiers).",
+  ],
+};
+
+const v12160_en: ChangelogEntry = {
+  version: "v1.21.60",
+  date: "2026-09-14",
+  title: "New: \"Dino Corridor\" mini-game in the sidebar",
+  items: [
+    "Added a new \"Games\" tab in the sidebar, embedding the Dino Corridor game (made by Lehnoxzs, github.com/Lehnoxzs/HAARPE-DINO-GAME) via iframe.",
+    "The game file is hosted raw on GitHub, which serves it as plain text rather than a web page -- a direct iframe would never have rendered it. The Worker now fetches the file itself and re-serves it with the right content type (new `/api/games/dino` route, 5-minute cache), so any update Lehnoxzs pushes shows up on ETHONE within a few minutes, automatically.",
+    "The Worker blocks every response from being framed by default (anti-clickjacking protection). Added a narrow, explicit exception for this one route only (allowed exclusively from ethone.dev), leaving the strict protection on the rest of the API untouched.",
+    "No Supabase-connected stats for this game yet -- planned for later, once the game exposes them on its side.",
+    "Validation: `tsc`/`build`/`lint` (0 errors)/`test:unit` 115/115 pass on `ethone-next`, Worker test suite 251/251 pass (no existing test broken by the security-header change). `audit-security` PASS (1984 files).",
+  ],
+};
+
+const v12160_es: ChangelogEntry = {
+  version: "v1.21.60",
+  date: "2026-09-14",
+  title: "Nuevo: minijuego \"Dino Corridor\" en la barra lateral",
+  items: [
+    "Se añadió una nueva pestaña \"Juegos\" en la barra lateral, integrando el juego Dino Corridor (creado por Lehnoxzs, github.com/Lehnoxzs/HAARPE-DINO-GAME) mediante iframe.",
+    "El archivo del juego está alojado en bruto en GitHub, que lo sirve como texto plano en lugar de una página web -- un iframe directo nunca lo habría mostrado. Ahora el Worker obtiene el archivo él mismo y lo vuelve a servir con el tipo de contenido correcto (nueva ruta `/api/games/dino`, caché de 5 minutos), así que cualquier actualización que Lehnoxzs suba aparece en ETHONE en cuestión de minutos, automáticamente.",
+    "El Worker bloquea por defecto que cualquiera de sus respuestas se muestre en un iframe (protección anti-clickjacking). Se añadió una excepción explícita y acotada solo para esta ruta (permitida únicamente desde ethone.dev), sin tocar la protección estricta del resto de la API.",
+    "Todavía sin estadísticas conectadas a Supabase para este juego -- previsto para más adelante, cuando el juego las exponga por su lado.",
+    "Validación: `tsc`/`build`/`lint` (0 errores)/`test:unit` 115/115 ✓ en `ethone-next`, suite de pruebas del Worker 251/251 ✓ (ninguna prueba existente rota por el cambio de cabeceras de seguridad). `audit-security` PASS (1984 archivos).",
+  ],
+};
+
+const v12160_de: ChangelogEntry = {
+  version: "v1.21.60",
+  date: "2026-09-14",
+  title: "Neu: Mini-Spiel \"Dino Corridor\" in der Seitenleiste",
+  items: [
+    "Neuer \"Spiele\"-Tab in der Seitenleiste hinzugefuegt, mit dem Spiel Dino Corridor (erstellt von Lehnoxzs, github.com/Lehnoxzs/HAARPE-DINO-GAME), eingebettet per iframe.",
+    "Die Spieldatei liegt roh auf GitHub, das sie als reinen Text statt als Webseite ausliefert -- ein direktes iframe haette sie nie dargestellt. Der Worker holt die Datei jetzt selbst und liefert sie mit dem richtigen Content-Type erneut aus (neue Route `/api/games/dino`, 5-Minuten-Cache), sodass jedes von Lehnoxzs gepushte Update innerhalb weniger Minuten automatisch auf ETHONE erscheint.",
+    "Der Worker blockiert standardmaessig, dass irgendeine seiner Antworten eingebettet werden kann (Anti-Clickjacking-Schutz). Eine schmale, explizite Ausnahme wurde nur fuer diese eine Route hinzugefuegt (ausschliesslich von ethone.dev aus erlaubt), ohne den strikten Schutz des restlichen APIs anzutasten.",
+    "Noch keine mit Supabase verbundenen Statistiken fuer dieses Spiel -- fuer spaeter geplant, sobald das Spiel sie auf seiner Seite bereitstellt.",
+    "Validierung: `tsc`/`build`/`lint` (0 Fehler)/`test:unit` 115/115 bestanden bei `ethone-next`, Worker-Testsuite 251/251 bestanden (kein bestehender Test durch die Aenderung der Sicherheits-Header gebrochen). `audit-security` PASS (1984 Dateien).",
+  ],
+};
+
+CHANGELOG_BY_LANG.fr.unshift(v12160_fr);
+CHANGELOG_BY_LANG.en.unshift(v12160_en);
+CHANGELOG_BY_LANG.es.unshift(v12160_es);
+CHANGELOG_BY_LANG.de.unshift(v12160_de);
+
 export const CHANGELOG = CHANGELOG_BY_LANG.fr;

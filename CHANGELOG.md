@@ -2,6 +2,16 @@
 
 Toutes les modifications notables de ce projet seront documentées dans ce fichier.
 
+## v1.21.46 — 2026-09-14
+
+**Bot musique : préchargement du titre suivant (expérimental)**
+
+- `discord-bot/src/modules/music/services/guildMusicPlayer.ts` : quand un titre démarre, un minuteur programme le préchargement en arrière-plan du titre suivant environ 10 secondes avant la fin prévue du titre en cours (`PREFETCH_LEAD_MS`), en se basant sur `track.duration`. Désactivé pour les titres < 20s, les flux à durée inconnue (radios) et les modes répétition titre/file (`shouldPrefetch()`/`prefetchDelayMs()`, extraites en fonctions pures testables).
+- Le préchargement re-vérifie que la file n'a pas changé entre-temps avant de garder le résultat ; en cas d'échec ou de non-correspondance, `playTrack()` retombe silencieusement sur la création synchrone déjà existante — aucune régression possible, uniquement un chemin rapide en plus quand tout se passe bien.
+- Pourquoi seulement 10 secondes avant la fin (et pas dès le début du titre) : une ressource audio préchargée trop tôt resterait inutilisée potentiellement plusieurs minutes, un flux `yt-dlp` non consommé pendant ce temps étant un territoire que je ne peux pas vérifier sans bot en conditions réelles. Un délai court limite ce risque à quelques secondes, une durée déjà acceptée aujourd'hui entre le lancement de `yt-dlp` et le début de la lecture.
+- `discord-bot/test_music_v1.ts` étendu (8 nouvelles assertions, 31/31 au total) pour la logique de planification pure ; le comportement réel du flux audio préchargé reste **non vérifiable dans cet environnement** (pas de connexion vocale Discord ni de `yt-dlp` ici) — marqué explicitement comme expérimental, à confirmer par l'utilisateur après redéploiement.
+- Validation : `discord-bot` `npm run node:build` ✓, `test_music_v1.ts` 31/31, `test_giveaways_v1.ts` toujours 24/24, `audit-security` PASS (1956 fichiers).
+
 ## v1.21.45 — 2026-09-14
 
 **Bot musique : la file survit à un redémarrage, démarrage plus rapide, Spotify enrichi**

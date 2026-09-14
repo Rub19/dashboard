@@ -1,6 +1,7 @@
 import { MusicQueue } from './src/modules/music/services/musicQueue.js';
 import { musicPersistence } from './src/modules/music/storage/musicPersistence.js';
 import { Track } from './src/modules/music/types/music.js';
+import { PREFETCH_LEAD_MS, prefetchDelayMs, shouldPrefetch } from './src/modules/music/services/guildMusicPlayer.js';
 
 let passed = 0;
 let failed = 0;
@@ -96,6 +97,21 @@ async function runTests() {
   musicPersistence.clearQueueState(GUILD_A);
   assert(musicPersistence.getQueueState(GUILD_A) === null, 'clearQueueState() removes a guild\'s saved state');
   assert(musicPersistence.getQueueState(GUILD_B) !== null, 'clearQueueState() does not affect other guilds');
+
+  // 4. Next-track prefetch scheduling (pure logic only — the actual
+  // createAudioResource()/yt-dlp stream behavior can't be exercised without
+  // a live bot, see the plan notes for this pass).
+  console.log('\n⏱️  4. Prefetch Scheduling:');
+  assert(shouldPrefetch(track({ id: 'long', duration: 180 }), 'OFF') === true, 'A normal-length track with repeat OFF is prefetch-eligible');
+  assert(shouldPrefetch(track({ id: 'short', duration: 10 }), 'OFF') === false, 'A track shorter than the minimum is skipped (no meaningful gap to hide)');
+  assert(shouldPrefetch(track({ id: 'song-repeat', duration: 180 }), 'SONG') === false, 'Repeat SONG mode is skipped (peeking the queue can\'t replicate its compound next() logic)');
+  assert(shouldPrefetch(track({ id: 'queue-repeat', duration: 180 }), 'QUEUE') === false, 'Repeat QUEUE mode is skipped for the same reason');
+  assert(shouldPrefetch(null, 'OFF') === false, 'No current track means nothing to schedule against');
+  assert(shouldPrefetch(track({ id: 'live', duration: 0 }), 'OFF') === false, 'Unknown duration (e.g. a live/radio stream) is skipped — there is no "about to end" to time against');
+
+  const delay = prefetchDelayMs(track({ id: 'delay-test', duration: 180 }));
+  assert(delay === 180_000 - PREFETCH_LEAD_MS, `prefetchDelayMs() fires ${PREFETCH_LEAD_MS}ms before the track ends (got ${delay}ms for a 180s track)`);
+  assert(prefetchDelayMs(track({ id: 'edge', duration: 5 })) === 0, 'prefetchDelayMs() never returns a negative delay for a track shorter than the lead time');
 
   // Cleanup — keep this suite idempotent across repeated runs.
   console.log('\n🧹 Cleanup:');

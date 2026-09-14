@@ -1,6 +1,7 @@
 import {
   AudioPlayer,
   AudioPlayerStatus,
+  AudioResource,
   createAudioPlayer,
   entersState,
   getVoiceConnection,
@@ -10,11 +11,43 @@ import {
   VoiceConnectionStatus,
 } from '@discordjs/voice';
 import { Guild, VoiceBasedChannel } from 'discord.js';
-import { GuildMusicState, PlayerStatus, Track, VoiceChannelInfo } from '../types/music.js';
+import { GuildMusicState, PlayerStatus, RepeatMode, Track, VoiceChannelInfo } from '../types/music.js';
 import { MusicQueue } from './musicQueue.js';
 import { musicPersistence } from '../storage/musicPersistence.js';
 import { musicProviderManager } from '../providers/musicProvider.js';
 import { logger } from '../../../utils/logger.js';
+
+// How long before a track is expected to end that the NEXT track's audio
+// resource gets prefetched. Deliberately short (not "as soon as the current
+// track starts") — an AudioResource's underlying yt-dlp stream sitting
+// unconsumed for a long time is unverified territory here (no live Discord
+// voice connection or yt-dlp binary in this environment); ~10s is an
+// ordinary amount of idle time for a piped child process, comparable to the
+// spawn-then-immediately-consume latency this whole feature already accepts
+// today.
+export const PREFETCH_LEAD_MS = 10_000;
+const MIN_PREFETCH_TRACK_SECONDS = 20;
+
+interface PrefetchedResource {
+  trackId: string;
+  resource: AudioResource;
+}
+
+// Pure so this can be unit-tested without a real timer, player, or track —
+// see test_music_v1.ts. Repeat modes are skipped entirely: SONG/QUEUE change
+// what "next" even means (queue.next()'s compound logic, like re-pushing the
+// finished track for QUEUE mode), and peeking the queue array without
+// calling next() can't safely replicate that — falls back to the existing
+// synchronous path in those modes, no regression, just no latency win there.
+export function shouldPrefetch(track: Pick<Track, 'duration'> | null | undefined, repeatMode: RepeatMode): boolean {
+  if (!track) return false;
+  if (repeatMode !== 'OFF') return false;
+  return track.duration >= MIN_PREFETCH_TRACK_SECONDS;
+}
+
+export function prefetchDelayMs(track: Pick<Track, 'duration'>): number {
+  return Math.max(0, track.duration * 1000 - PREFETCH_LEAD_MS);
+}
 
 export class GuildMusicPlayer {
   public readonly guildId: string;
@@ -32,6 +65,9 @@ export class GuildMusicPlayer {
   private playbackStartTime: number | null = null;
   private pausedAtPosition: number = 0;
   private disconnectTimer: NodeJS.Timeout | null = null;
+
+  private prefetchedResource: PrefetchedResource | null = null;
+  private prefetchTimer: NodeJS.Timeout | null = null;
 
   private onStateChangeCallback?: (state: GuildMusicState) => void;
 
@@ -167,6 +203,7 @@ export class GuildMusicPlayer {
         this.status = 'PLAYING';
         this.playbackStartTime = Date.now();
         this.cancelDisconnectTimer();
+        this.schedulePrefetch();
         this.emitState();
       });
 
@@ -199,8 +236,65 @@ export class GuildMusicPlayer {
     }
   }
 
+  private cancelPrefetchTimer(): void {
+    if (this.prefetchTimer) {
+      clearTimeout(this.prefetchTimer);
+      this.prefetchTimer = null;
+    }
+  }
+
+  // Schedules a background fetch of the next queued track's audio resource,
+  // timed so it lands a few seconds before the current track ends — see
+  // PREFETCH_LEAD_MS above for why not sooner. Best-effort only: any failure
+  // here just means handleTrackEnd() falls back to fetching fresh, exactly
+  // like it does today.
+  private schedulePrefetch(): void {
+    this.cancelPrefetchTimer();
+    const currentTrack = this.queue.getCurrentTrack();
+    if (!shouldPrefetch(currentTrack, this.queue.getRepeatMode())) return;
+
+    this.prefetchTimer = setTimeout(() => {
+      this.prefetchTimer = null;
+      this.prefetchNextTrack().catch((err) => {
+        logger.warn(`[MusicPlayer] Échec du préchargement du titre suivant (guild ${this.guildId}) :`, err);
+      });
+    }, prefetchDelayMs(currentTrack!));
+  }
+
+  private async prefetchNextTrack(): Promise<void> {
+    const upcoming = this.queue.getTracks()[0];
+    if (!upcoming) return;
+
+    const resource = await musicProviderManager.createAudioResource(upcoming);
+    if (!resource) return;
+
+    // The queue may have changed while the fetch was in flight (reorder,
+    // removal, a manual skip that already moved past this track) — only
+    // keep the result if it's still genuinely next.
+    if (this.queue.getTracks()[0]?.id !== upcoming.id) return;
+
+    resource.playStream.on('error', (streamErr) => {
+      logger.warn(`[MusicPlayer] Erreur sur le flux préchargé pour "${upcoming.title}" (guild ${this.guildId}) :`, streamErr);
+      if (this.prefetchedResource?.trackId === upcoming.id) {
+        this.prefetchedResource = null;
+      }
+    });
+
+    this.prefetchedResource = { trackId: upcoming.id, resource };
+  }
+
   public async playTrack(track: Track): Promise<boolean> {
     this.initPlayer();
+
+    // Every call starts a fresh prefetch lifecycle. If a background prefetch
+    // already produced this exact track's resource, consume it and skip the
+    // synchronous fetch below entirely — that's the actual latency win.
+    // Anything else pending (a prefetch for a track we're NOT about to play,
+    // e.g. after a manual skip past it) is discarded, never leaked forward.
+    this.cancelPrefetchTimer();
+    const readyPrefetch = this.prefetchedResource?.trackId === track.id ? this.prefetchedResource.resource : null;
+    this.prefetchedResource = null;
+
     try {
       this.queue.setCurrentTrack(track);
       this.pausedAtPosition = 0;
@@ -220,7 +314,7 @@ export class GuildMusicPlayer {
         }
       }
 
-      const resource = await musicProviderManager.createAudioResource(track);
+      const resource = readyPrefetch || (await musicProviderManager.createAudioResource(track));
       if (!resource || !this.player) {
         logger.error(`[MusicPlayer] Impossible de créer la ressource audio pour "${track.title}"`);
         this.handleTrackEnd();
@@ -326,6 +420,8 @@ export class GuildMusicPlayer {
   }
 
   public stop(): void {
+    this.cancelPrefetchTimer();
+    this.prefetchedResource = null;
     this.queue.reset();
     if (this.player) {
       this.player.stop();
@@ -371,6 +467,8 @@ export class GuildMusicPlayer {
 
   public disconnect(): void {
     this.cancelDisconnectTimer();
+    this.cancelPrefetchTimer();
+    this.prefetchedResource = null;
     this.queue.reset();
     if (this.player) {
       this.player.stop();

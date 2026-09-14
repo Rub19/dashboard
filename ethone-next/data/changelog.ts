@@ -26559,4 +26559,57 @@ CHANGELOG_BY_LANG.en.unshift(v12145_en);
 CHANGELOG_BY_LANG.es.unshift(v12145_es);
 CHANGELOG_BY_LANG.de.unshift(v12145_de);
 
+const v12146_fr: ChangelogEntry = {
+  version: "v1.21.46",
+  date: "2026-09-14",
+  title: "Bot musique : prechargement du titre suivant (experimental)",
+  items: [
+    "Le titre suivant de la file commence maintenant a etre prepare environ 10 secondes avant la fin du titre en cours, pour reduire au maximum le trou audio entre deux titres.",
+    "Desactive automatiquement pour les titres courts (moins de 20s), les flux a duree inconnue (radios en direct) et les modes de repetition (titre/file) ou la notion de \"titre suivant\" est plus complexe a anticiper sans risque.",
+    "En cas d'echec du prechargement (rien a voir avec toi, juste une protection), la lecture retombe silencieusement sur le comportement precedent sans aucune interruption audible.",
+    "Marque comme experimental : je n'ai pas d'acces a un salon vocal Discord ni a yt-dlp dans mon environnement de developpement pour verifier en conditions reelles que le trou entre deux titres est effectivement reduit. Dis-moi ce que ca donne une fois redeploye.",
+  ],
+};
+
+const v12146_en: ChangelogEntry = {
+  version: "v1.21.46",
+  date: "2026-09-14",
+  title: "Music bot: next-track prefetch (experimental)",
+  items: [
+    "The next queued track now starts being prepared about 10 seconds before the current one ends, to minimize the audio gap between tracks.",
+    "Automatically disabled for short tracks (under 20s), streams with unknown duration (live radio), and repeat modes (song/queue) where \"what's next\" is more complex to anticipate safely.",
+    "If the prefetch fails for any reason (nothing you'd notice, just a safety net), playback silently falls back to the previous behavior with no audible interruption.",
+    "Marked experimental: I don't have access to a real Discord voice channel or yt-dlp in my development environment to verify the gap is actually shorter under real conditions. Let me know how it feels once redeployed.",
+  ],
+};
+
+const v12146_es: ChangelogEntry = {
+  version: "v1.21.46",
+  date: "2026-09-14",
+  title: "Bot de musica: precarga de la siguiente pista (experimental)",
+  items: [
+    "La siguiente pista de la cola ahora empieza a prepararse unos 10 segundos antes de que termine la actual, para minimizar el corte de audio entre pistas.",
+    "Desactivado automaticamente para pistas cortas (menos de 20s), transmisiones de duracion desconocida (radio en directo) y modos de repeticion (pista/cola) donde anticipar \"la siguiente\" es mas complejo de hacer con seguridad.",
+    "Si la precarga falla por cualquier motivo (algo que no notarias, es solo una proteccion), la reproduccion vuelve silenciosamente al comportamiento anterior sin ninguna interrupcion audible.",
+    "Marcado como experimental: no tengo acceso a un canal de voz de Discord real ni a yt-dlp en mi entorno de desarrollo para verificar que el corte es realmente mas corto en condiciones reales. Cuentame que tal una vez redesplegado.",
+  ],
+};
+
+const v12146_de: ChangelogEntry = {
+  version: "v1.21.46",
+  date: "2026-09-14",
+  title: "Musik-Bot: Vorabladen des naechsten Titels (experimentell)",
+  items: [
+    "Der naechste Titel in der Warteschlange wird jetzt schon etwa 10 Sekunden vor Ende des aktuellen Titels vorbereitet, um die Audiopause zwischen Titeln zu minimieren.",
+    "Automatisch deaktiviert bei kurzen Titeln (unter 20s), Streams mit unbekannter Dauer (Live-Radio) und Wiederholungsmodi (Titel/Warteschlange), bei denen \"der naechste Titel\" schwieriger sicher vorherzusagen ist.",
+    "Schlaegt das Vorabladen aus irgendeinem Grund fehl (nichts, was auffallen wuerde, nur eine Absicherung), faellt die Wiedergabe stillschweigend auf das bisherige Verhalten zurueck, ohne hoerbare Unterbrechung.",
+    "Als experimentell markiert: Ich habe in meiner Entwicklungsumgebung keinen Zugriff auf einen echten Discord-Sprachkanal oder yt-dlp, um unter realen Bedingungen zu pruefen, ob die Luecke tatsaechlich kuerzer ist. Sag mir, wie es sich nach dem erneuten Deployment anfuehlt.",
+  ],
+};
+
+CHANGELOG_BY_LANG.fr.unshift(v12146_fr);
+CHANGELOG_BY_LANG.en.unshift(v12146_en);
+CHANGELOG_BY_LANG.es.unshift(v12146_es);
+CHANGELOG_BY_LANG.de.unshift(v12146_de);
+
 export const CHANGELOG = CHANGELOG_BY_LANG.fr;

@@ -135,7 +135,7 @@ function ThemeToggle() {
       {open && (
         <div
           role="menu"
-          className="absolute right-0 top-full z-50 mt-2 max-h-[70vh] w-56 overflow-y-auto os-scroll rounded-[var(--panel-radius)] border border-[var(--panel-border)] bg-[var(--panel-bg)] p-1.5 shadow-2xl backdrop-blur-2xl"
+          className="absolute right-0 top-full z-50 mt-2 max-h-[70vh] w-56 overflow-y-auto os-scroll rounded-[var(--panel-radius)] border border-[var(--panel-border)] bg-[var(--panel-bg)] p-1.5 shadow-2xl backdrop-blur-[var(--panel-blur)]"
         >
           {PREMIUM_THEMES.map((id) => {
             const def = THEME_DEFINITIONS[id];
@@ -234,7 +234,7 @@ function TopBar() {
   return (
     <header
       data-v8-topbar
-      className="pointer-events-none relative z-40 shrink-0 select-none border-b border-[var(--panel-border)]/60 bg-[var(--panel-bg)]/80 px-4 pt-safe backdrop-blur-2xl transition-all"
+      className="pointer-events-none relative z-40 shrink-0 select-none border-b border-[var(--panel-border)]/60 bg-[var(--panel-bg)]/80 px-4 pt-safe backdrop-blur-[var(--panel-blur)] transition-all"
     >
       {/* Mobile Bar */}
       <div className="pointer-events-auto flex h-14 items-center justify-between md:hidden">

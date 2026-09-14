@@ -2,6 +2,14 @@
 
 Toutes les modifications notables de ce projet seront documentées dans ce fichier.
 
+## v1.21.65 — 2026-09-14
+
+**Fix : flou d'interface trop lourd sur la TopBar, le Dock et l'île dynamique pendant le scroll**
+
+- La TopBar, le Dock et l'île dynamique restent fixes pendant que le contenu défile en dessous — leur `backdrop-filter` doit être recalculé à chaque frame de scroll. Les trois utilisaient un flou Tailwind codé en dur (40-64px) au lieu de la variable de thème (24px) déjà utilisée correctement par la sidebar.
+- `components/TopBar.tsx`, `components/Dock.tsx`, `components/ui/DynamicIsland.tsx` : alignés sur `var(--panel-blur)` — flou réduit + respect cohérent du réglage "Flou interface" (Réglages → Apparence), qui ne s'appliquait pas à ces trois éléments faute d'utiliser la même variable.
+- Validation : `tsc`/`build`/`lint` (0 erreur)/`test:unit` 115/115 ✓. `audit-security` PASS (1985 fichiers).
+
 ## v1.21.64 — 2026-09-14
 
 **Fluidité : Discord Lanyard non mis en cache (confirmé par capture console), FPS mesuré en permanence pour rien**

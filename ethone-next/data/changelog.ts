@@ -27566,4 +27566,57 @@ CHANGELOG_BY_LANG.en.unshift(v12164_en);
 CHANGELOG_BY_LANG.es.unshift(v12164_es);
 CHANGELOG_BY_LANG.de.unshift(v12164_de);
 
+const v12165_fr: ChangelogEntry = {
+  version: "v1.21.65",
+  date: "2026-09-14",
+  title: "Fix : flou d'interface trop lourd sur la TopBar, le Dock et l'île dynamique pendant le scroll",
+  items: [
+    "En creusant le rapport « ça rame quand je scroll sur les pages » : la barre du haut, le dock et l'île dynamique restent fixes à l'écran pendant que le contenu de la page défile en dessous — le navigateur doit donc recalculer leur flou d'arrière-plan (`backdrop-filter`) à chaque frame de défilement. Ces trois éléments utilisaient un flou Tailwind codé en dur (40px, voire 64px pour l'île dynamique), plus lourd que le flou standard de l'interface (24px) déjà utilisé correctement par la sidebar.",
+    "Alignés sur `var(--panel-blur)` comme la sidebar : flou réduit sur les éléments qui restent visibles en permanence pendant le scroll, et respect cohérent du réglage « Flou interface » dans Réglages → Apparence (ce réglage ne s'appliquait déjà pas à ces trois éléments faute d'utiliser la même variable).",
+    "Les flous plus lourds (survols, aperçus de fichiers, mode focus plein écran...) sont laissés tels quels : ils ne s'affichent que ponctuellement, pas en continu pendant un défilement normal.",
+    "Validation : `tsc`/`build`/`lint` (0 erreur, 0 nouveau warning)/`test:unit` 115/115 ✓. `audit-security` PASS (1985 fichiers). Pas de mesure de FPS en direct possible dans cet environnement — demander à l'utilisateur de confirmer que le défilement est plus fluide après déploiement.",
+  ],
+};
+
+const v12165_en: ChangelogEntry = {
+  version: "v1.21.65",
+  date: "2026-09-14",
+  title: "Fix: interface blur too heavy on the TopBar, Dock and Dynamic Island while scrolling",
+  items: [
+    "Digging into the \"it's laggy when I scroll on pages\" report: the top bar, dock, and dynamic island stay pinned on screen while the page content scrolls underneath -- so the browser has to recompute their background blur (`backdrop-filter`) on every scroll frame. All three used a hardcoded Tailwind blur (40px, or 64px for the dynamic island), heavier than the standard interface blur (24px) already correctly used by the sidebar.",
+    "Aligned onto `var(--panel-blur)` like the sidebar: lighter blur on the elements that stay visible continuously during scroll, and consistent respect for the \"Interface blur\" toggle in Settings -> Appearance (that setting was already silently not applying to these three elements since they weren't using the same variable).",
+    "Heavier blurs elsewhere (hover previews, file previews, full-screen focus mode...) were left alone -- they only render occasionally, not continuously during normal scrolling.",
+    "Validation: `tsc`/`build`/`lint` (0 errors, 0 new warnings)/`test:unit` 115/115 pass. `audit-security` PASS (1985 files). No live FPS measurement possible in this environment -- ask the user to confirm scrolling feels smoother after deploy.",
+  ],
+};
+
+const v12165_es: ChangelogEntry = {
+  version: "v1.21.65",
+  date: "2026-09-14",
+  title: "Corrección: desenfoque de interfaz demasiado pesado en la barra superior, el Dock y la Isla Dinámica al hacer scroll",
+  items: [
+    "Investigando el reporte \"va lento cuando hago scroll en las páginas\": la barra superior, el dock y la isla dinámica permanecen fijos en pantalla mientras el contenido de la página se desplaza debajo -- así que el navegador tiene que recalcular su desenfoque de fondo (`backdrop-filter`) en cada fotograma del scroll. Los tres usaban un desenfoque de Tailwind fijo (40px, o 64px en la isla dinámica), más pesado que el desenfoque estándar de la interfaz (24px) ya usado correctamente por la barra lateral.",
+    "Alineados con `var(--panel-blur)` como la barra lateral: desenfoque más ligero en los elementos que permanecen visibles continuamente durante el scroll, y respeto coherente del interruptor \"Desenfoque de interfaz\" en Ajustes -> Apariencia (ese ajuste ya no se aplicaba silenciosamente a estos tres elementos por no usar la misma variable).",
+    "Los desenfoques más pesados en otras partes (vistas previas al pasar el cursor, vista previa de archivos, modo enfoque a pantalla completa...) se dejaron intactos -- solo aparecen ocasionalmente, no de forma continua durante el scroll normal.",
+    "Validación: `tsc`/`build`/`lint` (0 errores, 0 advertencias nuevas)/`test:unit` 115/115 ✓. `audit-security` PASS (1985 archivos). No fue posible medir FPS en vivo en este entorno -- pedir al usuario que confirme que el scroll se siente más fluido tras el despliegue.",
+  ],
+};
+
+const v12165_de: ChangelogEntry = {
+  version: "v1.21.65",
+  date: "2026-09-14",
+  title: "Fix: zu starker Oberflaechen-Weichzeichner auf TopBar, Dock und Dynamic Island beim Scrollen",
+  items: [
+    "Bei der Untersuchung von \"es ruckelt beim Scrollen auf Seiten\": Die obere Leiste, das Dock und die Dynamic Island bleiben auf dem Bildschirm fixiert, waehrend der Seiteninhalt darunter scrollt -- der Browser muss also ihren Hintergrund-Weichzeichner (`backdrop-filter`) bei jedem Scroll-Frame neu berechnen. Alle drei verwendeten einen fest codierten Tailwind-Weichzeichner (40px, bei der Dynamic Island sogar 64px), staerker als der Standard-Oberflaechen-Weichzeichner (24px), der von der Seitenleiste bereits korrekt verwendet wird.",
+    "An `var(--panel-blur)` angeglichen wie die Seitenleiste: leichterer Weichzeichner auf den Elementen, die waehrend des Scrollens durchgehend sichtbar bleiben, und konsistente Beachtung des \"Oberflaechen-Weichzeichner\"-Schalters unter Einstellungen -> Erscheinungsbild (diese Einstellung griff bei diesen drei Elementen bisher stillschweigend nicht, da sie nicht dieselbe Variable nutzten).",
+    "Staerkere Weichzeichner an anderer Stelle (Hover-Vorschauen, Dateivorschau, Vollbild-Fokusmodus...) wurden unangetastet gelassen -- sie werden nur gelegentlich angezeigt, nicht durchgehend waehrend des normalen Scrollens.",
+    "Validierung: `tsc`/`build`/`lint` (0 Fehler, 0 neue Warnungen)/`test:unit` 115/115 bestanden. `audit-security` PASS (1985 Dateien). Keine Live-FPS-Messung in dieser Umgebung moeglich -- den Nutzer bitten, nach dem Deploy zu bestaetigen, dass sich das Scrollen fluessiger anfuehlt.",
+  ],
+};
+
+CHANGELOG_BY_LANG.fr.unshift(v12165_fr);
+CHANGELOG_BY_LANG.en.unshift(v12165_en);
+CHANGELOG_BY_LANG.es.unshift(v12165_es);
+CHANGELOG_BY_LANG.de.unshift(v12165_de);
+
 export const CHANGELOG = CHANGELOG_BY_LANG.fr;

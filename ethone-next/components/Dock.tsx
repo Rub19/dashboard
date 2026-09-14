@@ -212,7 +212,7 @@ function Dock() {
               type="button"
               onClick={handleRestoreDock}
               title="Afficher le Dock"
-              className="flex items-center gap-1.5 rounded-full border border-[var(--panel-border)] bg-black/80 px-3.5 py-1.5 text-[10px] font-bold text-zinc-300 backdrop-blur-2xl shadow-xl hover:border-purple-500/40 hover:bg-purple-500/15 hover:text-white transition-all active:scale-95 cursor-pointer"
+              className="flex items-center gap-1.5 rounded-full border border-[var(--panel-border)] bg-black/80 px-3.5 py-1.5 text-[10px] font-bold text-zinc-300 backdrop-blur-[var(--panel-blur)] shadow-xl hover:border-purple-500/40 hover:bg-purple-500/15 hover:text-white transition-all active:scale-95 cursor-pointer"
             >
               <ChevronUp className="h-3 w-3 text-purple-400" />
               <span>Dock</span>
@@ -274,7 +274,7 @@ function Dock() {
             )}
 
             <nav
-              className="pointer-events-auto inline-flex items-center gap-1.5 overflow-x-auto no-scrollbar v8-dock px-3.5 py-1.5 select-none backdrop-blur-2xl border border-[var(--panel-border)] bg-[#080c14]/85 shadow-[0_12px_40px_rgba(0,0,0,0.7),0_0_0_1px_rgba(255,255,255,0.05)] rounded-[var(--panel-radius)]"
+              className="pointer-events-auto inline-flex items-center gap-1.5 overflow-x-auto no-scrollbar v8-dock px-3.5 py-1.5 select-none backdrop-blur-[var(--panel-blur)] border border-[var(--panel-border)] bg-[#080c14]/85 shadow-[0_12px_40px_rgba(0,0,0,0.7),0_0_0_1px_rgba(255,255,255,0.05)] rounded-[var(--panel-radius)]"
               aria-label={i18n("dock")}
             >
               <DockMediaFlyout

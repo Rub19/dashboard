@@ -183,7 +183,7 @@ export function DynamicIsland({
         className={cn(
           "relative inline-flex items-start justify-center overflow-hidden",
           "border border-[var(--panel-border)]/[0.22] bg-[var(--bg-main)]/90 text-[var(--text-primary)]",
-          "shadow-[0_8px_32px_-4px_rgba(0,0,0,0.55),0_0_20px_-6px_var(--glow-color)] backdrop-blur-3xl",
+          "shadow-[0_8px_32px_-4px_rgba(0,0,0,0.55),0_0_20px_-6px_var(--glow-color)] backdrop-blur-[var(--panel-blur)]",
           "cursor-pointer pointer-events-auto select-none transition-colors duration-200",
           "before:pointer-events-none before:absolute before:inset-0 before:z-10 before:rounded-[inherit]",
           "before:bg-gradient-to-b before:from-[var(--text-primary)]/[0.06] before:to-transparent",

@@ -8,6 +8,7 @@ import { Icon } from "@/lib/icons";
 import { DEFAULTS, USER_STATUS_CONFIG } from "@/lib/settings";
 import { subscribePush, unsubscribePush } from "@/lib/push";
 import { useSyncStore } from "@/lib/stores/sync";
+import { CHANGELOG } from "@/data/changelog";
 import {
   BUILT_IN_PRESETS,
   applyPreset,
@@ -1400,7 +1401,12 @@ export default function SettingsContent({
               </div>
               <div>
                 <h4 className="text-base font-bold text-[var(--text-primary)]">ETHONE OS Desktop & Web</h4>
-                <p className="text-xs text-[var(--text-muted)]">Version 1.20.36 (Turbopack / Next.js 16.3.3)</p>
+                <p className="text-xs text-[var(--text-muted)]">
+                  {i18n("aboutVersionLine", "Version {{version}} (Turbopack / Next.js 16.3.3)").replace(
+                    "{{version}}",
+                    CHANGELOG[0]?.version || "v1.21.55"
+                  )}
+                </p>
               </div>
             </div>
             <p className="text-xs text-[var(--text-muted)] leading-relaxed">

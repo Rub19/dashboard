@@ -2,6 +2,13 @@
 
 Toutes les modifications notables de ce projet seront documentées dans ce fichier.
 
+## v1.21.55 — 2026-09-14
+
+**Fix : numéro de version figé sur la page Réglages**
+
+- `components/settings/SettingsContent.tsx` (section "À propos") : affichait en dur `Version 1.20.36 (Turbopack / Next.js 16.3.3)`, gelé depuis des dizaines de versions pendant que l'app avançait jusqu'à la 1.21.54. Remplacé par `CHANGELOG[0]?.version` (même source que `VERSION_LABEL` dans `UserProfileDropdown.tsx`) — la page affiche désormais la vraie version courante, mise à jour automatiquement à chaque ship.
+- Validation : `tsc`/`build`/`lint` (0 erreur)/`test:unit` 115/115 ✓. `audit-security` PASS (1982 fichiers). Page settings inaccessible sans session authentifiée dans cet environnement — vérifié par lecture de code et par la construction statique réussie de `/settings/[section]`.
+
 ## v1.21.54 — 2026-09-14
 
 **Fix : doublon du sélecteur de langue, exigence du mot de passe visible dès le départ, logs OTP étendus**

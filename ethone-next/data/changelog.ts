@@ -27036,4 +27036,45 @@ CHANGELOG_BY_LANG.en.unshift(v12154_en);
 CHANGELOG_BY_LANG.es.unshift(v12154_es);
 CHANGELOG_BY_LANG.de.unshift(v12154_de);
 
+const v12155_fr: ChangelogEntry = {
+  version: "v1.21.55",
+  date: "2026-09-14",
+  title: "Fix : numéro de version figé sur la page Réglages",
+  items: [
+    "La page « À propos » des Réglages affichait « Version 1.20.36 » en dur, restée gelée depuis des dizaines de versions pendant que l'app était passée à la 1.21.x. Elle affiche maintenant la vraie version courante, prise directement du changelog (la même source que le badge de version dans le menu du profil).",
+  ],
+};
+
+const v12155_en: ChangelogEntry = {
+  version: "v1.21.55",
+  date: "2026-09-14",
+  title: "Fix: frozen version number on the Settings page",
+  items: [
+    "The Settings \"About\" page hard-coded \"Version 1.20.36\", frozen for dozens of releases while the app moved on to 1.21.x. It now shows the real current version, read straight from the changelog (the same source as the version badge in the profile menu).",
+  ],
+};
+
+const v12155_es: ChangelogEntry = {
+  version: "v1.21.55",
+  date: "2026-09-14",
+  title: "Corrección: número de versión congelado en la página de Ajustes",
+  items: [
+    "La página \"Acerca de\" de Ajustes mostraba \"Version 1.20.36\" fijo en el código, congelado desde hace decenas de versiones mientras la app avanzaba a la 1.21.x. Ahora muestra la versión real actual, obtenida directamente del changelog (la misma fuente que la insignia de versión del menú de perfil).",
+  ],
+};
+
+const v12155_de: ChangelogEntry = {
+  version: "v1.21.55",
+  date: "2026-09-14",
+  title: "Fix: eingefrorene Versionsnummer auf der Einstellungsseite",
+  items: [
+    "Die \"Über\"-Seite der Einstellungen zeigte fest codiert \"Version 1.20.36\" an, eingefroren seit Dutzenden von Versionen, waehrend die App laengst bei 1.21.x angekommen war. Sie zeigt jetzt die echte aktuelle Version, direkt aus dem Changelog gelesen (dieselbe Quelle wie das Versions-Badge im Profilmenue).",
+  ],
+};
+
+CHANGELOG_BY_LANG.fr.unshift(v12155_fr);
+CHANGELOG_BY_LANG.en.unshift(v12155_en);
+CHANGELOG_BY_LANG.es.unshift(v12155_es);
+CHANGELOG_BY_LANG.de.unshift(v12155_de);
+
 export const CHANGELOG = CHANGELOG_BY_LANG.fr;

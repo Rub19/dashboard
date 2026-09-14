@@ -27077,4 +27077,57 @@ CHANGELOG_BY_LANG.en.unshift(v12155_en);
 CHANGELOG_BY_LANG.es.unshift(v12155_es);
 CHANGELOG_BY_LANG.de.unshift(v12155_de);
 
+const v12156_fr: ChangelogEntry = {
+  version: "v1.21.56",
+  date: "2026-09-14",
+  title: "Réglages : badge de version + Sync Cloud réels sur la page d'accueil, ménage de code",
+  items: [
+    "La bannière « ETHONE Control Center » en haut de la page Réglages affichait aussi « v1.20.36 » en dur (même bug que la page « À propos », corrigé séparément juste avant) — même correctif appliqué : lit maintenant la vraie version depuis le changelog.",
+    "Cette même bannière affichait toujours « Sync Cloud : Connecté / Supabase actif » en vert, peu importe l'état réel — alors qu'un store de synchronisation réel (idle/syncing/offline/error) existe déjà et est utilisé correctement plus bas sur la même page (carte « Synchronisation Cloud »). La vignette de la page d'accueil utilise maintenant ce même état réel : elle peut donc afficher « Hors ligne » ou « Erreur de sync » quand c'est vraiment le cas, au lieu de toujours prétendre que tout va bien.",
+    "La vignette « Langue » de cette bannière affichait un « Région FR » fixe même en anglais/espagnol/allemand (aucun réglage de région n'existe dans l'app) — remplacé par le vrai nom de la langue active.",
+    "Ménage : le bouton « Enregistrer » flottant de la page Réglages dupliquait entièrement la logique du bouton « Enregistrer » de l'en-tête au lieu de la réutiliser ; import et variable inutilisés retirés de `SettingsLayout.tsx`.",
+  ],
+};
+
+const v12156_en: ChangelogEntry = {
+  version: "v1.21.56",
+  date: "2026-09-14",
+  title: "Settings: real version badge + real Cloud Sync status on the home page, code cleanup",
+  items: [
+    "The \"ETHONE Control Center\" banner at the top of the Settings page also hard-coded \"v1.20.36\" (same bug as the \"About\" page, fixed separately right before this) -- same fix applied: it now reads the real version from the changelog.",
+    "That same banner always showed \"Sync Cloud: Connecté / Supabase actif\" in green regardless of actual state -- while a real sync store (idle/syncing/offline/error) already exists and is used correctly further down the same page (the \"Synchronisation Cloud\" card). The home banner's tile now reads that same real state, so it can show \"Offline\" or \"Sync error\" when that's actually true instead of always claiming everything's fine.",
+    "The \"Language\" tile on that banner showed a fixed \"Région FR\" even in English/Spanish/German (there is no region setting anywhere in the app) -- replaced with the real active language name.",
+    "Cleanup: the Settings page's floating \"Save\" button fully duplicated the header \"Save\" button's logic instead of reusing it; removed an unused import and variable from `SettingsLayout.tsx`.",
+  ],
+};
+
+const v12156_es: ChangelogEntry = {
+  version: "v1.21.56",
+  date: "2026-09-14",
+  title: "Ajustes: insignia de versión + estado real de Sync Cloud en la página de inicio, limpieza de código",
+  items: [
+    "El banner \"ETHONE Control Center\" en la parte superior de la página de Ajustes también mostraba \"v1.20.36\" fijo en el código (mismo bug que la página \"Acerca de\", corregido por separado justo antes) -- se aplicó la misma corrección: ahora lee la versión real desde el changelog.",
+    "Ese mismo banner siempre mostraba \"Sync Cloud: Connecté / Supabase actif\" en verde sin importar el estado real -- cuando ya existe un store de sincronización real (idle/syncing/offline/error) y se usa correctamente más abajo en la misma página (tarjeta \"Synchronisation Cloud\"). La vista de inicio ahora lee ese mismo estado real, así que puede mostrar \"Sin conexión\" o \"Error de sync\" cuando eso sea realmente cierto, en lugar de afirmar siempre que todo va bien.",
+    "La vista \"Idioma\" de ese banner mostraba un \"Región FR\" fijo incluso en inglés/español/alemán (no existe ningún ajuste de región en la app) -- reemplazado por el nombre real del idioma activo.",
+    "Limpieza: el botón flotante \"Guardar\" de Ajustes duplicaba por completo la lógica del botón \"Guardar\" del encabezado en lugar de reutilizarla; se eliminó una importación y una variable sin usar de `SettingsLayout.tsx`.",
+  ],
+};
+
+const v12156_de: ChangelogEntry = {
+  version: "v1.21.56",
+  date: "2026-09-14",
+  title: "Einstellungen: echtes Versions-Badge + echter Cloud-Sync-Status auf der Startseite, Code-Aufraeumung",
+  items: [
+    "Das \"ETHONE Control Center\"-Banner oben auf der Einstellungsseite zeigte ebenfalls fest codiert \"v1.20.36\" an (derselbe Fehler wie auf der \"Ueber\"-Seite, kurz zuvor separat behoben) -- dieselbe Korrektur angewendet: liest die echte Version jetzt aus dem Changelog.",
+    "Dasselbe Banner zeigte immer \"Sync Cloud: Connecté / Supabase actif\" in Gruen an, unabhaengig vom tatsaechlichen Zustand -- obwohl ein echter Sync-Store (idle/syncing/offline/error) bereits existiert und weiter unten auf derselben Seite korrekt verwendet wird (Karte \"Synchronisation Cloud\"). Die Kachel auf der Startseite liest jetzt denselben echten Zustand, kann also \"Offline\" oder \"Sync-Fehler\" anzeigen, wenn das tatsaechlich zutrifft, statt immer zu behaupten, alles sei in Ordnung.",
+    "Die \"Sprache\"-Kachel dieses Banners zeigte ein festes \"Région FR\" selbst auf Englisch/Spanisch/Deutsch (es gibt keine Regionseinstellung in der App) -- ersetzt durch den echten Namen der aktiven Sprache.",
+    "Aufraeumung: Der schwebende \"Speichern\"-Button der Einstellungsseite duplizierte vollstaendig die Logik des \"Speichern\"-Buttons im Header, statt sie wiederzuverwenden; ein ungenutzter Import und eine ungenutzte Variable wurden aus `SettingsLayout.tsx` entfernt.",
+  ],
+};
+
+CHANGELOG_BY_LANG.fr.unshift(v12156_fr);
+CHANGELOG_BY_LANG.en.unshift(v12156_en);
+CHANGELOG_BY_LANG.es.unshift(v12156_es);
+CHANGELOG_BY_LANG.de.unshift(v12156_de);
+
 export const CHANGELOG = CHANGELOG_BY_LANG.fr;

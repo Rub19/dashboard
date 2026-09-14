@@ -7,6 +7,8 @@ import { useI18n } from "@/lib/hooks/useI18n";
 import { useSound } from "@/lib/sound";
 import { USER_STATUS_CONFIG } from "@/lib/settings";
 import { cn } from "@/lib/utils";
+import { CHANGELOG } from "@/data/changelog";
+import { useSyncStore } from "@/lib/stores/sync";
 
 interface SettingsOverviewProps {
   onNavigate: (categoryId: string) => void;
@@ -19,6 +21,13 @@ export default function SettingsOverview({ onNavigate }: SettingsOverviewProps) 
   const { ambientSound } = useSound();
 
   const userStatus = USER_STATUS_CONFIG[settings.status] || USER_STATUS_CONFIG.online;
+  const syncStatus = useSyncStore((s) => s.status);
+  const SYNC_STATUS_CONFIG = {
+    idle: { label: "Connecté", detail: "Supabase actif", color: "text-[var(--success)]" },
+    syncing: { label: "Synchronisation...", detail: "Supabase actif", color: "text-[var(--info)]" },
+    offline: { label: "Hors ligne", detail: "En attente de connexion", color: "text-[var(--warning)]" },
+    error: { label: "Erreur de sync", detail: "Voir Synchronisation Cloud", color: "text-[var(--danger)]" },
+  }[syncStatus];
 
   const quickActions = [
     {
@@ -95,7 +104,7 @@ export default function SettingsOverview({ onNavigate }: SettingsOverviewProps) 
                   ETHONE Control Center
                 </h2>
                 <span className="rounded-full bg-[var(--accent-primary)]/15 px-2 py-0.5 text-[10px] font-semibold text-[var(--accent-primary)]">
-                  v1.20.36
+                  {CHANGELOG[0]?.version || "v1.21.56"}
                 </span>
               </div>
               <p className="text-xs text-[var(--text-muted)]">
@@ -154,11 +163,16 @@ export default function SettingsOverview({ onNavigate }: SettingsOverviewProps) 
         >
           <div className="flex items-center justify-between">
             <span className="text-[11px] font-medium text-[var(--text-muted)]">Sync Cloud</span>
-            <Icon name="arrows-clockwise" className="h-4 w-4 text-[var(--success)]" />
+            <Icon
+              name="arrows-clockwise"
+              className={cn("h-4 w-4", SYNC_STATUS_CONFIG.color, syncStatus === "syncing" ? "animate-spin" : "")}
+            />
           </div>
           <div className="mt-2">
-            <p className="text-xs font-semibold text-[var(--success)]">Connecté</p>
-            <span className="text-[10px] text-[var(--text-muted)]">Supabase actif</span>
+            <p className={cn("text-xs font-semibold", syncStatus === "syncing" ? "animate-pulse" : "", SYNC_STATUS_CONFIG.color)}>
+              {SYNC_STATUS_CONFIG.label}
+            </p>
+            <span className="text-[10px] text-[var(--text-muted)]">{SYNC_STATUS_CONFIG.detail}</span>
           </div>
         </div>
 
@@ -226,7 +240,9 @@ export default function SettingsOverview({ onNavigate }: SettingsOverviewProps) 
             <p className="text-xs font-semibold uppercase text-[var(--text-primary)]">
               {settings.language}
             </p>
-            <span className="text-[10px] text-[var(--text-muted)]">Région FR</span>
+            <span className="text-[10px] text-[var(--text-muted)]">
+              {i18n(`lang${settings.language.charAt(0).toUpperCase()}${settings.language.slice(1)}`, settings.language)}
+            </span>
           </div>
         </div>
       </div>

@@ -1,7 +1,7 @@
 "use client";
 
 import { useCallback, useEffect, useRef, useState } from "react";
-import { useParams, useRouter, useSearchParams } from "next/navigation";
+import { useParams, useSearchParams } from "next/navigation";
 import { RotateCcw, Save, X, ChevronRight } from "lucide-react";
 import { useI18n } from "@/lib/hooks/useI18n";
 import Input from "@/components/Input";
@@ -34,7 +34,6 @@ export default function SettingsLayout({ initialSection }: { initialSection?: st
 
   const {
     activeCategory,
-    navState,
     navigateTo,
     registerContainerRef,
     registerCategoryRef,
@@ -364,25 +363,7 @@ export default function SettingsLayout({ initialSection }: { initialSection?: st
                 variant="primary"
                 size="sm"
                 leftIcon={<Save className="h-3.5 w-3.5" />}
-                onClick={async () => {
-                  try {
-                    const results = await form.saveExplicit();
-                    const failed = results.filter((r) => !r.ok);
-                    if (failed.length > 0) {
-                      showError(
-                        "Certaines modifications de compte n'ont pas pu être enregistrées",
-                        failed.map((f) => f.field).join(", ")
-                      );
-                    }
-                    if (results.some((r) => r.ok && r.message === "confirm")) {
-                      notify.sync("Email de confirmation envoyé", "Vérifiez votre boîte de réception pour confirmer le changement.");
-                    } else {
-                      notify.sync();
-                    }
-                  } catch (err) {
-                    showError(String(err));
-                  }
-                }}
+                onClick={handleSave}
                 disabled={!form.hasExplicitChanges || form.isSaving}
                 isLoading={form.isSaving}
               >

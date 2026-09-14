@@ -2,6 +2,16 @@
 
 Toutes les modifications notables de ce projet seront documentées dans ce fichier.
 
+## v1.21.56 — 2026-09-14
+
+**Réglages : badge de version + Sync Cloud réels sur la page d'accueil, ménage de code**
+
+- `components/settings/SettingsOverview.tsx` : la bannière "ETHONE Control Center" affichait aussi `v1.20.36` en dur (même correctif que la v1.21.55, appliqué ici à la bannière d'accueil) — lit maintenant `CHANGELOG[0]?.version`.
+- Même fichier : la vignette "Sync Cloud" affichait toujours "Connecté / Supabase actif" en vert, sans lien avec le vrai `useSyncStore` (idle/syncing/offline/error) déjà utilisé plus bas sur la même page — branchée sur le vrai état, peut maintenant afficher "Hors ligne" / "Erreur de sync".
+- Même fichier : la vignette "Langue" affichait "Région FR" fixe même quand la langue active n'est pas le français (aucun réglage de région n'existe dans l'app) — remplacé par le vrai nom de la langue active.
+- `components/settings/SettingsLayout.tsx` : le bouton "Enregistrer" flottant dupliquait en ligne toute la logique du bouton "Enregistrer" de l'en-tête au lieu d'appeler `handleSave` ; `useRouter` et `navState` retirés (imports/variables inutilisés).
+- Validation : `tsc`/`build`/`lint` (0 erreur, 0 warning sur les fichiers touchés)/`test:unit` 115/115 ✓. `audit-security` PASS (1982 fichiers).
+
 ## v1.21.55 — 2026-09-14
 
 **Fix : numéro de version figé sur la page Réglages**

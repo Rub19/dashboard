@@ -27179,4 +27179,65 @@ CHANGELOG_BY_LANG.en.unshift(v12157_en);
 CHANGELOG_BY_LANG.es.unshift(v12157_es);
 CHANGELOG_BY_LANG.de.unshift(v12157_de);
 
+const v12158_fr: ChangelogEntry = {
+  version: "v1.21.58",
+  date: "2026-09-14",
+  title: "Fix : fuite d'identité entre comptes sur le même navigateur, dashboard plus fluide",
+  items: [
+    "Repéré via un signalement direct : créer un second compte (nom/email différent) sur le même navigateur affichait le nom et l'avatar du PREMIER compte sur le nouveau. Cause : `lib/identity/useIdentity.ts` écrit un cache local parallèle (`ethone:identity:current`, `ethone:user_name`, plusieurs clés `:local`, `ethone:user:username`/`bio`/`frame`) que le nettoyage à la déconnexion ne balayait pas — ces clés survivaient et étaient lues par le compte suivant avant même son propre profil Supabase. Même chose pour les cadres/fonds/badges d'avatar (`components/AvatarPickerModal.tsx`, clés sans aucun scope) et pour les widgets épinglés/favoris/configurés du dashboard (`components/DashboardOverview.tsx`).",
+    "`components/AuthProvider.tsx` : la logique de nettoyage de `signOut()` est extraite dans un helper `sweepLocalIdentityAndCredentials()` et complétée avec ces clés manquantes, puis appelée aussi en tout début de `signUp()` — au cas où un navigateur atteindrait le formulaire d'inscription avec une session jamais explicitement déconnectée.",
+    "Si un service (ex. Spotify) affichait « Non lié » après ce genre de bascule de compte, c'est ce même nettoyage (déjà partiellement en place) qui avait fait son travail en effaçant un signal local — reconnecter le service une fois suffit, l'état réel vit côté serveur.",
+    "Dashboard plus fluide : `lib/hooks/useLiveData.ts` reconstruisait ~20 entrées dérivées (météo, Spotify, Discord, trackers...) via ~350 lignes de JS non mémoïsées à CHAQUE rendu de CHAQUE composant qui utilise ce hook — et la page d'accueil en monte 3 en même temps. Ce recalcul est maintenant dans un `useMemo`, ce qui devrait sensiblement réduire les à-coups.",
+    "Page d'accueil : les widgets Brain et Factures affichaient leur titre deux fois (une fois dans l'en-tête du widget, une fois dans la carte elle-même) — doublon retiré.",
+    "Validation : `tsc`/`build`/`lint` (0 erreur, 0 nouveau warning)/`test:unit` 115/115 ✓. `audit-security` PASS (1982 fichiers). Couverture des clés localStorage revérifiée exhaustivement contre chaque écriture réelle du code (pas seulement les lectures de repli, jamais écrites).",
+  ],
+};
+
+const v12158_en: ChangelogEntry = {
+  version: "v1.21.58",
+  date: "2026-09-14",
+  title: "Fix: identity leak between accounts on the same browser, smoother dashboard",
+  items: [
+    "Spotted from a direct report: creating a second account (different name/email) on the same browser showed the FIRST account's name and avatar on the new one. Cause: `lib/identity/useIdentity.ts` writes a parallel local cache (`ethone:identity:current`, `ethone:user_name`, several `:local` keys, `ethone:user:username`/`bio`/`frame`) that the sign-out cleanup never swept -- those keys survived and were read by the next account before its own Supabase profile even loaded. Same for avatar frames/backgrounds/badges (`components/AvatarPickerModal.tsx`, completely unscoped keys) and for the dashboard's pinned/favorite/configured widgets (`components/DashboardOverview.tsx`).",
+    "`components/AuthProvider.tsx`: `signOut()`'s cleanup logic is extracted into a `sweepLocalIdentityAndCredentials()` helper and filled in with these missing keys, then also called at the very start of `signUp()` -- in case a browser reaches the register form with a session that was never explicitly signed out.",
+    "If a service (e.g. Spotify) showed \"not linked\" after this kind of account switch, that was the same cleanup (already partly in place) doing its job by wiping a local signal -- reconnecting the service once is enough, the real state lives server-side.",
+    "Smoother dashboard: `lib/hooks/useLiveData.ts` was rebuilding ~20 derived entries (weather, Spotify, Discord, trackers...) via ~350 lines of non-memoized JS on EVERY render of EVERY component using this hook -- and the home page mounts 3 of them at once. That rebuild is now inside a `useMemo`, which should noticeably cut down on jank.",
+    "Home page: the Brain and Bills widgets showed their title twice (once in the widget header, once inside the card itself) -- duplicate removed.",
+    "Validation: `tsc`/`build`/`lint` (0 errors, 0 new warnings)/`test:unit` 115/115 pass. `audit-security` PASS (1982 files). localStorage key coverage re-verified exhaustively against every actual write in the code (not just dead fallback reads that are never written).",
+  ],
+};
+
+const v12158_es: ChangelogEntry = {
+  version: "v1.21.58",
+  date: "2026-09-14",
+  title: "Corrección: fuga de identidad entre cuentas en el mismo navegador, dashboard más fluido",
+  items: [
+    "Detectado a partir de un reporte directo: crear una segunda cuenta (nombre/email distinto) en el mismo navegador mostraba el nombre y avatar de la PRIMERA cuenta en la nueva. Causa: `lib/identity/useIdentity.ts` escribe una caché local paralela (`ethone:identity:current`, `ethone:user_name`, varias claves `:local`, `ethone:user:username`/`bio`/`frame`) que la limpieza al cerrar sesión nunca barría -- esas claves sobrevivían y las leía la siguiente cuenta antes incluso de cargar su propio perfil de Supabase. Lo mismo para marcos/fondos/insignias de avatar (`components/AvatarPickerModal.tsx`, claves sin ningún alcance) y para los widgets fijados/favoritos/configurados del dashboard (`components/DashboardOverview.tsx`).",
+    "`components/AuthProvider.tsx`: la lógica de limpieza de `signOut()` se extrajo a un helper `sweepLocalIdentityAndCredentials()` y se completó con estas claves faltantes, y también se llama al inicio de `signUp()` -- por si un navegador llega al formulario de registro con una sesión que nunca se cerró explícitamente.",
+    "Si un servicio (ej. Spotify) mostraba \"no vinculado\" tras este tipo de cambio de cuenta, era esa misma limpieza (ya parcialmente en marcha) haciendo su trabajo al borrar una señal local -- basta con reconectar el servicio una vez, el estado real vive en el servidor.",
+    "Dashboard más fluido: `lib/hooks/useLiveData.ts` reconstruía ~20 entradas derivadas (clima, Spotify, Discord, trackers...) mediante ~350 líneas de JS no memoizadas en CADA renderizado de CADA componente que usa este hook -- y la página de inicio monta 3 a la vez. Esa reconstrucción ahora está dentro de un `useMemo`, lo que debería reducir notablemente los tirones.",
+    "Página de inicio: los widgets Brain y Facturas mostraban su título dos veces (una en la cabecera del widget, otra dentro de la tarjeta) -- duplicado eliminado.",
+    "Validación: `tsc`/`build`/`lint` (0 errores, 0 advertencias nuevas)/`test:unit` 115/115 ✓. `audit-security` PASS (1982 archivos). Cobertura de claves de localStorage reverificada exhaustivamente contra cada escritura real del código (no solo lecturas de respaldo que nunca se escriben).",
+  ],
+};
+
+const v12158_de: ChangelogEntry = {
+  version: "v1.21.58",
+  date: "2026-09-14",
+  title: "Fix: Identitaetsleck zwischen Konten im selben Browser, fluessigeres Dashboard",
+  items: [
+    "Entdeckt durch eine direkte Meldung: Das Erstellen eines zweiten Kontos (anderer Name/E-Mail) im selben Browser zeigte Name und Avatar des ERSTEN Kontos beim neuen an. Ursache: `lib/identity/useIdentity.ts` schreibt einen parallelen lokalen Cache (`ethone:identity:current`, `ethone:user_name`, mehrere `:local`-Schluessel, `ethone:user:username`/`bio`/`frame`), den die Abmelde-Bereinigung nie erfasste -- diese Schluessel ueberlebten und wurden vom naechsten Konto gelesen, noch bevor dessen eigenes Supabase-Profil geladen war. Dasselbe bei Avatar-Rahmen/Hintergruenden/Abzeichen (`components/AvatarPickerModal.tsx`, komplett unskopierte Schluessel) und bei den angehefteten/favorisierten/konfigurierten Dashboard-Widgets (`components/DashboardOverview.tsx`).",
+    "`components/AuthProvider.tsx`: Die Bereinigungslogik von `signOut()` wurde in einen Helfer `sweepLocalIdentityAndCredentials()` ausgelagert und um diese fehlenden Schluessel ergaenzt, und wird jetzt auch ganz am Anfang von `signUp()` aufgerufen -- falls ein Browser das Registrierungsformular mit einer nie explizit abgemeldeten Sitzung erreicht.",
+    "Zeigte ein Dienst (z. B. Spotify) nach so einem Kontowechsel \"nicht verknuepft\" an, war das dieselbe Bereinigung (bereits teilweise vorhanden), die ihre Arbeit tat und ein lokales Signal loeschte -- den Dienst einmal neu verbinden genuegt, der echte Zustand lebt serverseitig.",
+    "Fluessigeres Dashboard: `lib/hooks/useLiveData.ts` baute ~20 abgeleitete Eintraege (Wetter, Spotify, Discord, Tracker...) ueber ~350 Zeilen nicht memoisiertes JS bei JEDEM Render JEDER Komponente neu auf, die diesen Hook nutzt -- und die Startseite mountet gleich 3 davon. Dieser Neuaufbau steckt jetzt in einem `useMemo`, was Ruckler spuerbar reduzieren sollte.",
+    "Startseite: Die Widgets Brain und Rechnungen zeigten ihren Titel doppelt an (einmal im Widget-Header, einmal in der Karte selbst) -- Duplikat entfernt.",
+    "Validierung: `tsc`/`build`/`lint` (0 Fehler, 0 neue Warnungen)/`test:unit` 115/115 bestanden. `audit-security` PASS (1982 Dateien). Abdeckung der localStorage-Schluessel erschoepfend gegen jeden tatsaechlichen Schreibzugriff im Code nachgeprueft (nicht nur nie geschriebene Fallback-Lesezugriffe).",
+  ],
+};
+
+CHANGELOG_BY_LANG.fr.unshift(v12158_fr);
+CHANGELOG_BY_LANG.en.unshift(v12158_en);
+CHANGELOG_BY_LANG.es.unshift(v12158_es);
+CHANGELOG_BY_LANG.de.unshift(v12158_de);
+
 export const CHANGELOG = CHANGELOG_BY_LANG.fr;

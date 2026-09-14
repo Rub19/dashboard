@@ -1404,7 +1404,7 @@ export default function SettingsContent({
                 <p className="text-xs text-[var(--text-muted)]">
                   {i18n("aboutVersionLine", "Version {{version}} (Turbopack / Next.js 16.3.3)").replace(
                     "{{version}}",
-                    CHANGELOG[0]?.version || "v1.21.57"
+                    CHANGELOG[0]?.version || "v1.21.58"
                   )}
                 </p>
               </div>

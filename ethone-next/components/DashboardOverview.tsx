@@ -443,14 +443,17 @@ export default function DashboardOverview() {
       case "recent":
         return <RecentNotesCard notes={notes} loading={notesLoading} scrollable={false} className={homeCardClass} />;
       case "brain":
+        // WidgetContainer already renders this widget's name/icon in its own
+        // header (from the widget manifest) — BentoCard's title/icon would
+        // just duplicate it directly underneath, so this passes noHeader.
         return (
-          <BentoCard title={i18n("brain", "Brain")} icon="brain" scrollable={false} className={homeCardClass}>
+          <BentoCard noHeader scrollable={false} className={homeCardClass}>
             <BrainBriefingPanel />
           </BentoCard>
         );
       case "bills":
         return (
-          <BentoCard title={i18n("billsTitle", "Factures")} icon="bills" scrollable={false} className={homeCardClass}>
+          <BentoCard noHeader scrollable={false} className={homeCardClass}>
             <BillsWidget />
           </BentoCard>
         );
@@ -720,7 +723,7 @@ export default function DashboardOverview() {
                   animate="visible"
                   variants={gridVariants}
                   data-home-grid
-                  className={cn("grid w-full h-auto auto-rows-fr grid-cols-12", densityGap)}
+                  className={cn("grid w-full h-auto auto-rows-auto grid-cols-12", densityGap)}
                 >
                   {visibleWidgets.map((w, i) => (
                     <SortableWidget

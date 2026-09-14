@@ -2,6 +2,15 @@
 
 Toutes les modifications notables de ce projet seront documentées dans ce fichier.
 
+## v1.21.58 — 2026-09-14
+
+**Fix : fuite d'identité entre comptes sur le même navigateur, dashboard plus fluide**
+
+- `components/AuthProvider.tsx` : `lib/identity/useIdentity.ts` écrit un cache local parallèle (`ethone:identity:current`, `ethone:user_name`, clés `:local`, `ethone:user:username`/`bio`/`frame`) jamais balayé à la déconnexion — un second compte créé sur le même navigateur héritait du nom/avatar du premier. Logique de nettoyage extraite dans `sweepLocalIdentityAndCredentials()`, complétée avec les clés manquantes (+ `AvatarPickerModal.tsx` frame/bg/badge, + widgets épinglés/favoris/configurés du dashboard), et appelée aussi en début de `signUp()`.
+- `lib/hooks/useLiveData.ts` : le tableau `records` (~20 entrées, ~350 lignes) était reconstruit à chaque rendu de chaque instance du hook (3 simultanées sur le dashboard) — enveloppé dans `useMemo`.
+- `components/DashboardOverview.tsx` : titres dupliqués sur les widgets Brain/Factures (en-tête du widget + en-tête de la carte) — doublon retiré via `noHeader`. Grille : `auto-rows-fr` forçait toutes les lignes à la hauteur de la plus haute (le widget Brain héritait d'un grand vide sous le Hub Live) — remplacé par `auto-rows-auto`.
+- Validation : `tsc`/`build`/`lint` (0 erreur)/`test:unit` 115/115 ✓. `audit-security` PASS (1982 fichiers).
+
 ## v1.21.57 — 2026-09-14
 
 **Fix : orage de 429 sur /api/provider-credentials**

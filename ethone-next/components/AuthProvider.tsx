@@ -83,6 +83,29 @@ const SIGNOUT_EXACT_KEYS = [
   "spotify_refresh_token",
   "RIOT_API_KEY",
   "HENRIK_API_KEY",
+  // lib/identity/useIdentity.ts writes these bare/mis-namespaced keys
+  // alongside the properly `:${userId}`-scoped ones below (which the
+  // SIGNOUT_KEY_PREFIXES sweep below now also catches via "ethone:identity:"
+  // and "ethone:user:"). These specific ones use a different separator or no
+  // scoping at all and were silently missed by the old list, letting one
+  // account's display name/avatar/bio leak into the next account signed in
+  // on the same browser.
+  "ethone:user_name",
+  "ethone_user_name:local",
+  "ethone_user_username:local",
+  "ethone_user_bio:local",
+  "ethone_user_frame:local",
+  "ethone_custom_avatar:local",
+  // components/AvatarPickerModal.tsx writes these with no user scoping at all.
+  "ethone_user_frame",
+  "ethone_user_bg",
+  "ethone_user_badge",
+  // components/DashboardOverview.tsx's pinned/favorite/configured widgets —
+  // pure local UI preference with no cloud backing, but still leaks the
+  // previous account's dashboard customization into the next one.
+  "ethone-pinned-widgets",
+  "ethone-favorite-widgets",
+  "ethone-widget-configs",
 ];
 
 // Prefixes for localStorage keys that are namespaced by guild/provider id
@@ -104,6 +127,15 @@ const SIGNOUT_KEY_PREFIXES = [
   "ethone:clientId:", // per-provider OAuth client ids
   "ethone:pub:", // public provider identifiers (e.g. Discord lanyard user id)
   "ethone:oauth:", // transient OAuth/PKCE verifier state
+  // lib/identity/useIdentity.ts's local identity cache: the bare
+  // "ethone:identity:current" blob (checked before any per-user key or the
+  // fresh Supabase profile — the actual leak vector) AND every
+  // "ethone:identity:${userId}" variant, for whichever user id it was last
+  // written under, not just the current one.
+  "ethone:identity:",
+  // lib/identity/useIdentity.ts also writes ethone:user:username,
+  // ethone:user:bio, ethone:user:frame — no per-user scoping.
+  "ethone:user:",
 ];
 
 // Registers (or touches, if it already exists) an ethone_devices row for
@@ -152,6 +184,54 @@ function deleteIndexedDbSafely(name: string, timeoutMs = 2000) {
     request.onblocked = () => clearTimeout(timer);
   } catch {
     // IndexedDB unavailable (private mode, unsupported) — nothing to clean up.
+  }
+}
+
+// Sweeps every local cache that must never survive a sign-out or leak into a
+// newly created account on the same browser: the module-level bearer-token
+// and fetchWorkerCached caches, every localStorage key matching
+// SIGNOUT_EXACT_KEYS/SIGNOUT_KEY_PREFIXES (identity, provider credentials,
+// OAuth tokens, dashboard customization — see the comments on those lists),
+// the outgoing user's `:${userId}`-suffixed identity keys, and the unscoped
+// IndexedDB caches. Called from signOut() (the normal path) AND from the
+// start of signUp() — a browser can reach the register form with a stale,
+// never-signed-out session's localStorage still present, and that must not
+// leak into the brand-new account either.
+function sweepLocalIdentityAndCredentials(outgoingUserId?: string) {
+  try {
+    clearCachedToken();
+  } catch {}
+  try {
+    clearFetchCache();
+  } catch {}
+
+  if (typeof window === "undefined") return;
+
+  try {
+    for (let i = localStorage.length - 1; i >= 0; i--) {
+      const key = localStorage.key(i);
+      if (!key) continue;
+      if (
+        SIGNOUT_EXACT_KEYS.includes(key) ||
+        SIGNOUT_KEY_PREFIXES.some((prefix) => key.startsWith(prefix))
+      ) {
+        localStorage.removeItem(key);
+      }
+    }
+    if (outgoingUserId) {
+      localStorage.removeItem(`ethone_user_name:${outgoingUserId}`);
+      localStorage.removeItem(`ethone_user_avatar:${outgoingUserId}`);
+      localStorage.removeItem(`ethone_custom_avatar:${outgoingUserId}`);
+      localStorage.removeItem(`ethone:custom:avatar:${outgoingUserId}`);
+    }
+    window.dispatchEvent(new CustomEvent("ethone:identity:update"));
+  } catch {}
+
+  // Unscoped IndexedDB caches (cloud files, mail) — never keyed by user, so
+  // they must be dropped here too. Fire-and-forget: see
+  // deleteIndexedDbSafely.
+  for (const dbName of INDEXEDDB_DATABASES) {
+    deleteIndexedDbSafely(dbName);
   }
 }
 
@@ -426,6 +506,14 @@ export default function AuthProvider({ children }: { children: ReactNode }) {
   }
 
   async function signUp(email: string, password: string, username: string) {
+    // A browser can reach this form with a previous account's local caches
+    // still present (e.g. the user never clicked "sign out" — the session
+    // just expired, or they typed a new email directly into the register
+    // form). Sweep before creating the new account so its display
+    // name/avatar/credentials never inherit the outgoing identity's local
+    // cache. `user` here is still the PREVIOUS session's user, if any.
+    sweepLocalIdentityAndCredentials(user?.id);
+
     const displayName = username.trim() || email.split("@")[0];
     const { data, error } = await supabase.auth.signUp({
       email,
@@ -493,46 +581,7 @@ export default function AuthProvider({ children }: { children: ReactNode }) {
       authLog("supabase.auth.signOut failed", err instanceof Error ? err.message : String(err));
     }
 
-    // Drop the module-level bearer token cache immediately (lib/api.ts can
-    // otherwise keep serving this token to Worker calls for up to 60s).
-    try {
-      clearCachedToken();
-    } catch {}
-
-    // Drop the shared fetchWorker response cache (useCachedFetch.ts) so the
-    // next signed-in user never reads a GET response cached under this user.
-    try {
-      clearFetchCache();
-    } catch {}
-
-    if (typeof window !== "undefined") {
-      try {
-        for (let i = localStorage.length - 1; i >= 0; i--) {
-          const key = localStorage.key(i);
-          if (!key) continue;
-          if (
-            SIGNOUT_EXACT_KEYS.includes(key) ||
-            SIGNOUT_KEY_PREFIXES.some((prefix) => key.startsWith(prefix))
-          ) {
-            localStorage.removeItem(key);
-          }
-        }
-        if (currentUserId) {
-          localStorage.removeItem(`ethone_user_name:${currentUserId}`);
-          localStorage.removeItem(`ethone_user_avatar:${currentUserId}`);
-          localStorage.removeItem(`ethone_custom_avatar:${currentUserId}`);
-          localStorage.removeItem(`ethone:custom:avatar:${currentUserId}`);
-        }
-        window.dispatchEvent(new CustomEvent("ethone:identity:update"));
-      } catch {}
-
-      // Unscoped IndexedDB caches (cloud files, mail) — never keyed by user,
-      // so they must be dropped here too. Fire-and-forget: see
-      // deleteIndexedDbSafely, the hard reload below covers the rest.
-      for (const dbName of INDEXEDDB_DATABASES) {
-        deleteIndexedDbSafely(dbName);
-      }
-    }
+    sweepLocalIdentityAndCredentials(currentUserId);
 
     setSession(null);
     setUser(null);

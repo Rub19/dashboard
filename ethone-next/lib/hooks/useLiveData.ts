@@ -1,6 +1,6 @@
 "use client";
 
-import { useEffect, useRef, useState } from "react";
+import { useEffect, useMemo, useRef, useState } from "react";
 import { fetchWorkerCached } from "@/lib/hooks/useCachedFetch";
 import { fetchWeatherSafe } from "@/lib/weather-service";
 import { useSettings } from "@/components/SettingsProvider";
@@ -619,10 +619,16 @@ export function useLiveData(pollMs = 60000) {
     connected,
   ]);
 
-  const records: LiveRecord[] = [];
+  // The ~350-line block below derives ~20 LiveRecord entries from raw
+  // provider state. Without useMemo it reran (and reallocated every object
+  // in it) on every render of every useLiveData() consumer — the dashboard
+  // mounts 3 of these simultaneously — which also broke referential
+  // stability for any downstream useMemo/useCallback keyed on `records`.
+  const records = useMemo<LiveRecord[]>(() => {
+  const list: LiveRecord[] = [];
 
   if (nowPlaying?.isPlaying || isSpotifyConnected || nowPlaying?.title) {
-    records.push({
+    list.push({
       id: "nowplaying",
       source: "nowplaying",
       label: nowPlaying?.source || "Spotify",
@@ -633,7 +639,7 @@ export function useLiveData(pollMs = 60000) {
       status: "connected",
     });
   } else {
-    records.push({
+    list.push({
       id: "nowplaying",
       source: "nowplaying",
       label: "Spotify",
@@ -652,7 +658,7 @@ export function useLiveData(pollMs = 60000) {
 
   if (lanyard?.discord_status || isDiscordConnected) {
     const activity = lanyard?.activities?.[0];
-    records.push({
+    list.push({
       id: "lanyard",
       source: "lanyard",
       label: "Discord",
@@ -663,7 +669,7 @@ export function useLiveData(pollMs = 60000) {
       status: error ? "error" : "connected",
     });
   } else {
-    records.push({
+    list.push({
       id: "lanyard",
       source: "lanyard",
       label: "Discord",
@@ -691,7 +697,7 @@ export function useLiveData(pollMs = 60000) {
     })
     .filter(Boolean)
     .join(" · ");
-  records.push({
+  list.push({
     id: "weather",
     source: "weather",
     label: "Météo",
@@ -703,7 +709,7 @@ export function useLiveData(pollMs = 60000) {
   });
 
   const githubLogin = asStr(github?.login);
-  records.push({
+  list.push({
     id: "github",
     source: "github",
     label: "GitHub",
@@ -715,7 +721,7 @@ export function useLiveData(pollMs = 60000) {
   });
 
   const todoistTask = asStr(todoist?.task);
-  records.push({
+  list.push({
     id: "todoist",
     source: "todoist",
     label: "Todoist",
@@ -727,7 +733,7 @@ export function useLiveData(pollMs = 60000) {
   const youtubeChannel = asStr((youtube?.channel as ApiData)?.title) || asStr(youtube?.channelTitle);
   const youtubeVideo = youtube?.latestVideo as ApiData;
   const youtubeVideoTitle = asStr(youtubeVideo?.title) || asStr(youtube?.latestVideoTitle);
-  records.push({
+  list.push({
     id: "youtube",
     source: "youtube",
     label: "YouTube",
@@ -742,7 +748,7 @@ export function useLiveData(pollMs = 60000) {
   const redditKarma = asNum(redditProfile?.karma);
   const redditPost = reddit?.latestPost as ApiData;
   const redditPostTitle = asStr(redditPost?.title) || asStr(reddit?.latestPostTitle);
-  records.push({
+  list.push({
     id: "reddit",
     source: "reddit",
     label: "Reddit",
@@ -760,7 +766,7 @@ export function useLiveData(pollMs = 60000) {
     ? (lastfmData.track as ApiData[])
     : [];
   const lastfmTrack = lastfmList[0];
-  records.push({
+  list.push({
     id: "lastfm",
     source: "lastfm",
     label: "Last.fm",
@@ -771,7 +777,7 @@ export function useLiveData(pollMs = 60000) {
   });
 
   const twitchChannel = twitch?.channel as ApiData | undefined;
-  records.push({
+  list.push({
     id: "twitch",
     source: "twitch",
     label: "Twitch",
@@ -784,7 +790,7 @@ export function useLiveData(pollMs = 60000) {
 
   const mc = (minecraft as ApiData) || {};
   const mcName = asStr(mc?.username) || asStr(mc?.name);
-  records.push({
+  list.push({
     id: "minecraft",
     source: "minecraft",
     label: "Minecraft",
@@ -796,7 +802,7 @@ export function useLiveData(pollMs = 60000) {
 
   const st = (steam as ApiData) || {};
   const steamName = asStr(st?.personaName) || asStr(st?.name);
-  records.push({
+  list.push({
     id: "steam",
     source: "steam",
     label: "Steam",
@@ -808,7 +814,7 @@ export function useLiveData(pollMs = 60000) {
   });
 
   const firstAchievement = (steamAchievements?.[0] as ApiData) || {};
-  records.push({
+  list.push({
     id: "steam-achievements",
     source: "steam-achievements",
     label: "Steam",
@@ -821,7 +827,7 @@ export function useLiveData(pollMs = 60000) {
 
   const rssFeed = rss?.feed as ApiData | undefined;
   const rssItem = (rssFeed?.items as ApiData[] | undefined)?.[0];
-  records.push({
+  list.push({
     id: "rss",
     source: "rss",
     label: "RSS",
@@ -838,7 +844,7 @@ export function useLiveData(pollMs = 60000) {
     return !isNaN(due.getTime()) && due >= new Date() && !data.paid;
   });
   const upcomingData = (upcomingBill?.data || upcomingBill) as ApiData;
-  records.push({
+  list.push({
     id: "bills",
     source: "bills",
     label: i18n("bills") || "Bills",
@@ -858,7 +864,7 @@ export function useLiveData(pollMs = 60000) {
         Boolean(localStorage.getItem("ethone:cred:riot:henrikApiKey")) ||
         Boolean(cleanRiotName)));
 
-  records.push({
+  list.push({
     id: "valorant",
     source: "valorant",
     label: "Valorant",
@@ -888,7 +894,7 @@ export function useLiveData(pollMs = 60000) {
         Boolean(localStorage.getItem("ethone:cred:riot:riotApiKey")) ||
         Boolean(cleanRiotName)));
 
-  records.push({
+  list.push({
     id: "lol",
     source: "lol",
     label: "League",
@@ -900,7 +906,7 @@ export function useLiveData(pollMs = 60000) {
 
   const calendarEvents = (calendar?.events as ApiData[] | undefined) ?? [];
   const nextCalendarEvent = calendarEvents[0];
-  records.push({
+  list.push({
     id: "google-calendar",
     source: "google-calendar",
     label: i18n("googleCalendar"),
@@ -912,7 +918,7 @@ export function useLiveData(pollMs = 60000) {
 
   const driveFiles = (drive?.files as ApiData[] | undefined) ?? [];
   const latestDriveFile = driveFiles[0];
-  records.push({
+  list.push({
     id: "google-drive",
     source: "google-drive",
     label: i18n("googleDrive"),
@@ -925,7 +931,7 @@ export function useLiveData(pollMs = 60000) {
 
   const notionPages = (notion?.pages as ApiData[] | undefined) ?? [];
   const latestNotionPage = notionPages[0];
-  records.push({
+  list.push({
     id: "notion",
     source: "notion",
     label: i18n("notion"),
@@ -935,7 +941,7 @@ export function useLiveData(pollMs = 60000) {
     status: latestNotionPage ? "connected" : loading ? "loading" : error ? "error" : "empty",
   });
 
-  records.push({
+  list.push({
     id: "bluesky",
     source: "bluesky",
     label: "Bluesky",
@@ -948,7 +954,7 @@ export function useLiveData(pollMs = 60000) {
 
   const apexSegments = (apexProfile?.segments as ApiData[] | undefined) ?? [];
   const topApexSegment = apexSegments[0];
-  records.push({
+  list.push({
     id: "tracker",
     source: "tracker",
     label: i18n("trackerApex"),
@@ -961,7 +967,7 @@ export function useLiveData(pollMs = 60000) {
 
   const apexMatch = (apexMatches || [])[0];
   const matchMetadata = (apexMatch?.metadata as ApiData) ?? {};
-  records.push({
+  list.push({
     id: "apex",
     source: "apex",
     label: i18n("trackerApex"),
@@ -971,6 +977,51 @@ export function useLiveData(pollMs = 60000) {
     image: asStr(matchMetadata?.agentImageUrl),
     status: apexMatch ? "connected" : loading ? "loading" : hasApexId ? (error ? "error" : "empty") : (error ? "error" : "empty"),
   });
+
+  return list;
+  }, [
+    nowPlaying,
+    isSpotifyConnected,
+    loading,
+    error,
+    i18n,
+    connected,
+    lanyardUserId,
+    lanyard,
+    weather,
+    github,
+    todoist,
+    youtube,
+    reddit,
+    lastfm,
+    liveLastfmUsername,
+    twitch,
+    liveTwitchLogin,
+    minecraft,
+    liveMinecraftUsername,
+    steam,
+    liveSteamId,
+    steamAchievements,
+    liveSteamAppId,
+    rss,
+    liveRssUrl,
+    bills,
+    valorant,
+    hasRiotId,
+    cleanRiotName,
+    cleanRiotTag,
+    lol,
+    calendar,
+    calendarClientId,
+    drive,
+    driveClientId,
+    notion,
+    bluesky,
+    liveBlueskyHandle,
+    apexProfile,
+    hasApexId,
+    apexMatches,
+  ]);
 
   return {
     nowPlaying,

@@ -2,6 +2,17 @@
 
 Toutes les modifications notables de ce projet seront documentées dans ce fichier.
 
+## v1.21.50 — 2026-09-14
+
+**Polish : lien Discord exposé, notification de mise à jour, e-mail OTP refondu**
+
+- Découverte en cours de session : `NEXT_PUBLIC_DISCORD_BOT_API` n'était configuré nulle part (ni Worker, ni les 2 projets Pages, ni committé) — tout le pan `/discord/*` du dashboard (giveaways, tickets, tags, server-stats, polls, modération, voice, musique...) appelait une URL vide en production, confirmé par un 404 réel sur `https://ethone.dev/api/guilds/...`. Corrigé en exposant le bot publiquement (Caddy + Let's Encrypt sur `bot.ethone.dev`, VPS) et en configurant la variable côté Pages.
+- `worker/wrangler.jsonc` : nouvelle variable `DISCORD_BOT_ORIGIN=https://bot.ethone.dev`, utilisée par le relais de notification des Espaces Partagés (v1.21.48) — celui-ci peut maintenant réellement atteindre le bot.
+- `components/VersionUpdateToast.tsx` : la carte "Nouvelle mise à jour disponible" chevauchait la barre de statut du bas (offset de 1.5rem contre une barre de 2.5rem de haut). Remontée à 3.5rem, padding augmenté, léger reflet dégradé en haut de la carte.
+- `worker/src/services/otp-service.js` : e-mail du code de connexion refondu — six chiffres affichés individuellement dans des cases (même style que la saisie web), barre d'accent dégradée en haut, note de sécurité mise en valeur dans son propre encart. Ajout d'une journalisation de diagnostic (id, dates de création/expiration, âge réel en ms) quand un code est rejeté comme expiré, pour pouvoir enfin établir la cause exacte du bug signalé (code rejeté comme expiré quelques secondes après réception) à la prochaine occurrence — non reproductible ni confirmée avec certitude depuis cet environnement malgré une relecture complète du chemin TTL/stockage/comparaison, qui n'a révélé aucune erreur de calcul.
+- `worker/src/routes/team.js` : la page `/team` envoyait un vrai e-mail d'invitation avec un lien `/team/join` qui n'a jamais existé côté serveur (aucune route de résolution/acceptation) — 404 garanti pour la personne invitée. Plutôt que de construire tout un flux d'acceptation sécurisé pour une fonctionnalité dont le modèle de collaboration (`ethone_file_collaborators`) ne donne de toute façon aucun accès réel aux fichiers (confirmé plus tôt cette session), l'envoi de cet e-mail est désactivé — l'invitation reste créée et trackée comme "en attente", simplement sans e-mail cassé envoyé à un tiers réel.
+- Validation : `worker` 249/249 tests toujours au vert, `node --check` sur les fichiers modifiés, `ethone-next` `tsc`/`lint`/`build` inchangés (aucun fichier dashboard touché dans ce lot hors changelog/version). `audit-security` PASS (1977 fichiers). Rendu de l'e-mail vérifié visuellement (aperçu HTML local dans le navigateur).
+
 ## v1.21.49 — 2026-09-14
 
 **Analytics : historique gaming réel (LoL/Valorant/TFT)**

@@ -26775,4 +26775,61 @@ CHANGELOG_BY_LANG.en.unshift(v12149_en);
 CHANGELOG_BY_LANG.es.unshift(v12149_es);
 CHANGELOG_BY_LANG.de.unshift(v12149_de);
 
+const v12150_fr: ChangelogEntry = {
+  version: "v1.21.50",
+  date: "2026-09-14",
+  title: "Polish : lien Discord exposé, notification de mise à jour, e-mail OTP refondu",
+  items: [
+    "Le pan Discord du dashboard (giveaways, tickets, tags...) était cassé en production depuis le début : NEXT_PUBLIC_DISCORD_BOT_API n'était configuré nulle part. Le bot est maintenant exposé publiquement (bot.ethone.dev, HTTPS via Caddy) et la variable configurée.",
+    "Notification \"nouvelle mise à jour disponible\" : remontée au-dessus de la barre de statut (elle chevauchait avant), plus d'espace, léger reflet en haut de la carte.",
+    "E-mail du code de connexion (OTP) refondu : les six chiffres sont maintenant affichés dans des cases individuelles (même style que la saisie sur le site), barre d'accent en haut, note de sécurité mise en valeur.",
+    "Ajout de journalisation de diagnostic côté serveur pour le cas signalé où un code est rejeté comme expiré quelques secondes après réception — pas encore de cause confirmée avec certitude (candidats : envoi en double, délai de livraison de l'e-mail), les prochains logs permettront de trancher.",
+    "Page /team : elle envoyait un e-mail d'invitation réel avec un lien vers /team/join, une page qui n'a jamais existé (404 garanti). L'envoi de cet e-mail est désactivé (l'invitation reste trackée en \"en attente\", juste sans e-mail cassé) plutôt que de reconstruire tout un flux d'acceptation pour une fonctionnalité dont le modèle d'accès aux fichiers ne fonctionne de toute façon pas — les Espaces Partagés sont l'alternative qui marche vraiment.",
+  ],
+};
+
+const v12150_en: ChangelogEntry = {
+  version: "v1.21.50",
+  date: "2026-09-14",
+  title: "Polish: exposed Discord link, update toast, redesigned OTP email",
+  items: [
+    "The dashboard's Discord section (giveaways, tickets, tags...) had been broken in production from the start: NEXT_PUBLIC_DISCORD_BOT_API was never configured anywhere. The bot is now publicly exposed (bot.ethone.dev, HTTPS via Caddy) and the variable is set.",
+    "\"New update available\" notification: moved above the status bar (it used to overlap it), more breathing room, a subtle top highlight on the card.",
+    "Login code (OTP) email redesigned: the six digits now render as individually boxed digits (matching the site's own input), a top accent bar, a highlighted security note.",
+    "Added server-side diagnostic logging for the reported case where a code gets rejected as expired seconds after being received -- no confirmed root cause yet (candidates: a duplicate send, email delivery delay), the next occurrence's logs should settle it.",
+    "/team page: it was sending a real invite email linking to /team/join, a page that never existed (guaranteed 404). That email send is now disabled (the invite still gets tracked as pending, just without a broken email) rather than rebuilding a whole acceptance flow for a feature whose file-access model doesn't actually work anyway -- Shared Spaces is the working alternative.",
+  ],
+};
+
+const v12150_es: ChangelogEntry = {
+  version: "v1.21.50",
+  date: "2026-09-14",
+  title: "Pulido: enlace de Discord expuesto, aviso de actualización, email OTP rediseñado",
+  items: [
+    "La sección de Discord del dashboard (giveaways, tickets, tags...) llevaba rota en producción desde el principio: NEXT_PUBLIC_DISCORD_BOT_API nunca estuvo configurado en ningún sitio. El bot ahora está expuesto públicamente (bot.ethone.dev, HTTPS via Caddy) y la variable configurada.",
+    "Aviso de \"nueva actualización disponible\": subido por encima de la barra de estado (antes se solapaba), más espacio, un ligero reflejo superior en la tarjeta.",
+    "Email del código de acceso (OTP) rediseñado: los seis dígitos ahora se muestran en casillas individuales (igual que en la web), barra de acento superior, nota de seguridad destacada.",
+    "Se añadió registro de diagnóstico en el servidor para el caso reportado de un código rechazado como caducado segundos después de recibirlo -- aún sin causa confirmada con certeza (candidatos: un envío duplicado, retraso en la entrega del email), los próximos registros deberían aclararlo.",
+    "Página /team: enviaba un email de invitación real con un enlace a /team/join, una página que nunca existió (404 garantizado). Ese envío queda desactivado (la invitación se sigue registrando como pendiente, solo sin el email roto) en vez de reconstruir todo un flujo de aceptación para una función cuyo modelo de acceso a archivos tampoco funciona -- los Espacios Compartidos son la alternativa que sí funciona.",
+  ],
+};
+
+const v12150_de: ChangelogEntry = {
+  version: "v1.21.50",
+  date: "2026-09-14",
+  title: "Feinschliff: Discord-Link freigeschaltet, Update-Hinweis, OTP-E-Mail neu gestaltet",
+  items: [
+    "Der Discord-Bereich des Dashboards (Giveaways, Tickets, Tags...) war seit Beginn in Produktion kaputt: NEXT_PUBLIC_DISCORD_BOT_API war nirgends konfiguriert. Der Bot ist jetzt öffentlich erreichbar (bot.ethone.dev, HTTPS via Caddy) und die Variable gesetzt.",
+    "\"Neues Update verfügbar\"-Hinweis: über die Statusleiste angehoben (überlappte sie vorher), mehr Abstand, dezenter oberer Glanz auf der Karte.",
+    "Anmeldecode-E-Mail (OTP) neu gestaltet: die sechs Ziffern erscheinen jetzt als einzelne Kästchen (wie auf der Seite selbst), oberer Akzentbalken, hervorgehobener Sicherheitshinweis.",
+    "Server-seitiges Diagnose-Logging hinzugefügt für den gemeldeten Fall, dass ein Code Sekunden nach Erhalt als abgelaufen abgelehnt wird -- noch keine sicher bestätigte Ursache (Kandidaten: doppelter Versand, verzögerte E-Mail-Zustellung), die nächsten Logs sollten das klären.",
+    "/team-Seite: sie verschickte eine echte Einladungs-E-Mail mit einem Link zu /team/join, einer Seite, die es nie gab (garantierter 404). Dieser E-Mail-Versand ist jetzt deaktiviert (die Einladung bleibt als \"ausstehend\" erfasst, nur ohne kaputten Link) statt einen kompletten Annahme-Ablauf für eine Funktion nachzubauen, deren Dateizugriffsmodell ohnehin nicht funktioniert -- Geteilte Bereiche sind die tatsächlich funktionierende Alternative.",
+  ],
+};
+
+CHANGELOG_BY_LANG.fr.unshift(v12150_fr);
+CHANGELOG_BY_LANG.en.unshift(v12150_en);
+CHANGELOG_BY_LANG.es.unshift(v12150_es);
+CHANGELOG_BY_LANG.de.unshift(v12150_de);
+
 export const CHANGELOG = CHANGELOG_BY_LANG.fr;

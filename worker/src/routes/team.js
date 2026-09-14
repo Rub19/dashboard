@@ -60,7 +60,6 @@ export async function teamMembersRoute({ request, env, auth }) {
     if (!email) throw httpError("INVALID_PARAMETER", 400, { detail: "email" });
 
     const token = [...Array(32)].map(() => Math.random().toString(36)[2]).join("");
-    const inviteUrl = `${env.DASHBOARD_ORIGIN || "https://ethone.dev"}/team/join?token=${token}`;
 
     // Prefer: return=representation is required to get the new row back —
     // PostgREST's default POST response is empty, which would silently make
@@ -78,8 +77,13 @@ export async function teamMembersRoute({ request, env, auth }) {
       })
     });
 
-    const sent = await sendInviteEmail(env, email, displayName, inviteUrl);
-    return { data: { member: insert?.[0] || insert, sent } };
+    // No invite email sent (yet): there is no /team/join acceptance page or
+    // resolve/accept route on this backend, so a sent email would only ever
+    // link to a dead 404 for the invitee. The row is still created as
+    // "pending" so it's tracked -- just not emailed. `sent` is always false
+    // until that flow actually exists (see Shared Spaces' join/accept for
+    // the pattern this would need to mirror).
+    return { data: { member: insert?.[0] || insert, sent: false } };
   }
 
   if (method === "DELETE") {
@@ -114,28 +118,4 @@ export async function teamMembersRoute({ request, env, auth }) {
   }
 
   throw httpError("METHOD_NOT_ALLOWED", 405);
-}
-
-async function sendInviteEmail(env, email, displayName, inviteUrl) {
-  const resendKey = env.RESEND_API_KEY;
-  const from = env.RESEND_FROM || env.SMTP_FROM;
-  if (!resendKey || !from) return false;
-  try {
-    await requestExternal("https://api.resend.com/emails", {
-      env,
-      method: "POST",
-      expectedOrigin: "https://api.resend.com",
-      headers: { authorization: `Bearer ${resendKey}`, "content-type": "application/json" },
-      body: JSON.stringify({
-        from,
-        to: email,
-        subject: "Invitation à rejoindre ETHONE",
-        text: `Bonjour ${displayName || "collègue"},\n\nVous êtes invité à rejoindre une équipe sur ETHONE.\n\nLien : ${inviteUrl}\n\nCe lien est personnel.\n— ETHONE`,
-        html: `<p>Bonjour ${displayName || "collègue"},</p><p>Vous êtes invité à rejoindre une équipe sur ETHONE.</p><p><a href="${inviteUrl}" style="padding:10px 16px;background:#7be5c3;color:#07110e;border-radius:8px;text-decoration:none;display:inline-block;font-weight:600;">Rejoindre l'équipe</a></p><p>Ce lien est personnel.</p><p>— ETHONE</p>`
-      })
-    });
-    return true;
-  } catch {
-    return false;
-  }
 }

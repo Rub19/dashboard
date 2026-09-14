@@ -53,11 +53,11 @@ export default function VersionUpdateToast() {
             animate={{ opacity: 1, y: 0, scale: 1 }}
             exit={{ opacity: 0, y: 50, scale: 0.94 }}
             transition={{ type: "spring", stiffness: 380, damping: 26 }}
-            className="fixed bottom-[calc(1.5rem+env(safe-area-inset-bottom))] left-1/2 z-[var(--z-critical)] w-[calc(100%-2rem)] max-w-xl -translate-x-1/2 select-none"
+            className="fixed bottom-[calc(3.5rem+env(safe-area-inset-bottom))] left-1/2 z-[var(--z-critical)] w-[calc(100%-2rem)] max-w-xl -translate-x-1/2 select-none"
             role="status"
             aria-live="polite"
           >
-            <div className="v8-panel relative overflow-hidden p-4 shadow-2xl">
+            <div className="v8-panel relative overflow-hidden p-4 sm:p-5 shadow-2xl before:absolute before:inset-x-0 before:top-0 before:h-px before:bg-gradient-to-r before:from-transparent before:via-[var(--accent-primary)]/50 before:to-transparent">
               <div className="flex items-center gap-3.5 sm:gap-4">
                 {/* Left Icon Badge */}
                 <div className="flex h-11 w-11 shrink-0 items-center justify-center rounded-[var(--panel-radius)] border border-[var(--accent-primary)]/25 bg-[var(--accent-primary)]/10 text-[var(--accent-primary)]">

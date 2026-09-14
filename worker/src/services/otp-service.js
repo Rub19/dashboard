@@ -106,7 +106,16 @@ function buildOtpEmail(code, contact, expiresAt, locale, timezone) {
   const expires = formatExpiresAt(expiresAt, locale, timezone);
   const minutes = Math.round(OTP_TTL_MS / 60000);
   const masked = maskContact(contact);
-  const spacedCode = String(code).split("").join(" "); // thin space between digits (survives copy better than letter-spacing)
+  const digits = String(code).split("");
+  // Six individually boxed digits, mirroring the web app's own OTP input
+  // (components/auth/OtpCodeInput.tsx) so the email and the page the user
+  // types the code into feel like the same product.
+  const digitBoxes = digits
+    .map(
+      (d, i) =>
+        `<td style="padding:0 ${i === digits.length - 1 ? 0 : 5}px 0 0;"><div style="width:38px; height:46px; line-height:46px; text-align:center; background:#0f1a16; border:1px solid #2a4a40; border-radius:10px; color:#ffffff; font-size:22px; font-weight:800; font-family:ui-monospace,SFMono-Regular,Menlo,Monaco,Consolas,monospace;">${d}</div></td>`
+    )
+    .join("");
   const html = `<!DOCTYPE html>
 <html lang="${locale}">
 <head>
@@ -119,55 +128,70 @@ function buildOtpEmail(code, contact, expiresAt, locale, timezone) {
   <table role="presentation" width="100%" cellpadding="0" cellspacing="0" border="0" style="background:#07080b; padding:32px 12px;">
     <tr>
       <td align="center">
-        <table role="presentation" cellpadding="0" cellspacing="0" border="0" style="background:#111419; border:1px solid #232a35; border-radius:18px; max-width:480px; width:100%;">
+        <table role="presentation" cellpadding="0" cellspacing="0" border="0" style="max-width:480px; width:100%; border-radius:20px; overflow:hidden; background:#111419; border:1px solid #232a35;">
           <tr>
-            <td align="center" style="padding:34px 32px 22px;">
-              <img src="https://ethone.dev/icons/ethone-icon-192.png" alt="ETHONE" width="56" height="56" style="display:block; border-radius:14px;">
-              <div style="margin-top:12px; font-size:13px; font-weight:700; letter-spacing:3px; color:#8a929e;">ETHONE</div>
+            <td style="height:3px; line-height:3px; font-size:0; background-color:#5fd0ab; background-image:linear-gradient(90deg,#5fd0ab,#7be5c3,#5fd0ab);">&nbsp;</td>
+          </tr>
+          <tr>
+            <td align="center" style="padding:36px 32px 20px;">
+              <table role="presentation" cellpadding="0" cellspacing="0" border="0">
+                <tr>
+                  <td style="width:60px; height:60px; border-radius:16px; background:#0f1a16; border:1px solid #2a4a40;">
+                    <img src="https://ethone.dev/icons/ethone-icon-192.png" alt="ETHONE" width="60" height="60" style="display:block; border-radius:16px;">
+                  </td>
+                </tr>
+              </table>
+              <div style="margin-top:14px; font-size:12px; font-weight:700; letter-spacing:4px; color:#8a929e;">ETHONE</div>
             </td>
           </tr>
           <tr><td style="padding:0 32px;"><div style="height:1px; background:#1e242e;"></div></td></tr>
           <tr>
-            <td style="padding:24px 32px 4px;">
-              <p style="margin:0 0 6px; color:#f4f7fa; font-size:16px; font-weight:600;">${i18n.greeting}</p>
-              <p style="margin:0; color:#98a1ad; font-size:14px; line-height:1.55;">${i18n.intro}</p>
+            <td style="padding:26px 32px 6px;">
+              <p style="margin:0 0 6px; color:#f4f7fa; font-size:17px; font-weight:700;">${i18n.greeting}</p>
+              <p style="margin:0; color:#98a1ad; font-size:14px; line-height:1.6;">${i18n.intro}</p>
             </td>
           </tr>
           <tr>
-            <td style="padding:22px 32px;">
-              <table role="presentation" width="100%" cellpadding="0" cellspacing="0" border="0" style="background:#0d1512; border:1px solid #244039; border-radius:14px;">
+            <td style="padding:24px 32px 4px;">
+              <table role="presentation" width="100%" cellpadding="0" cellspacing="0" border="0" style="background:#0d1512; border:1px solid #1f382f; border-radius:16px;">
                 <tr>
-                  <td align="center" style="padding:22px 16px;">
-                    <div style="color:#5fd0ab; font-size:11px; font-weight:700; text-transform:uppercase; letter-spacing:2px;">${i18n.codeLabel}</div>
-                    <div style="margin-top:10px; font-size:34px; font-weight:800; color:#ffffff; font-family:ui-monospace,SFMono-Regular,Menlo,Monaco,Consolas,monospace;">${spacedCode}</div>
-                    <div style="margin-top:10px; color:#6f7a86; font-size:12px;">${i18n.validityHint.replace("{minutes}", String(minutes))}</div>
+                  <td align="center" style="padding:26px 20px;">
+                    <div style="color:#5fd0ab; font-size:11px; font-weight:700; text-transform:uppercase; letter-spacing:2.5px;">${i18n.codeLabel}</div>
+                    <table role="presentation" cellpadding="0" cellspacing="0" border="0" style="margin:16px auto 0;">
+                      <tr>${digitBoxes}</tr>
+                    </table>
+                    <div style="margin-top:16px; color:#6f7a86; font-size:12px;">${i18n.validityHint.replace("{minutes}", String(minutes))}</div>
                   </td>
                 </tr>
               </table>
             </td>
           </tr>
           <tr>
-            <td style="padding:0 32px 6px;">
+            <td style="padding:20px 32px 6px;">
               <table role="presentation" width="100%" cellpadding="0" cellspacing="0" border="0" style="font-size:13px; color:#98a1ad;">
                 <tr>
-                  <td style="padding:5px 0;">${i18n.account}</td>
-                  <td align="right" style="padding:5px 0; color:#dfe4ea;">${masked}</td>
+                  <td style="padding:6px 0;">${i18n.account}</td>
+                  <td align="right" style="padding:6px 0; color:#dfe4ea;">${masked}</td>
                 </tr>
                 <tr><td colspan="2"><div style="height:1px; background:#1a2029;"></div></td></tr>
                 <tr>
-                  <td style="padding:5px 0;">${i18n.validUntil}</td>
-                  <td align="right" style="padding:5px 0; color:#dfe4ea;">${expires}</td>
+                  <td style="padding:6px 0;">${i18n.validUntil}</td>
+                  <td align="right" style="padding:6px 0; color:#dfe4ea;">${expires}</td>
                 </tr>
               </table>
             </td>
           </tr>
           <tr>
-            <td style="padding:16px 32px 4px;">
-              <p style="margin:0; color:#7c8590; font-size:12px; line-height:1.55;">${i18n.security}</p>
+            <td style="padding:18px 32px 4px;">
+              <table role="presentation" width="100%" cellpadding="0" cellspacing="0" border="0" style="background:#161a20; border-radius:10px;">
+                <tr>
+                  <td style="padding:12px 14px; color:#8991a0; font-size:12px; line-height:1.55;">&#128274;&nbsp; ${i18n.security}</td>
+                </tr>
+              </table>
             </td>
           </tr>
           <tr>
-            <td align="center" style="padding:22px 32px 30px;">
+            <td align="center" style="padding:24px 32px 32px;">
               <div style="height:1px; background:#1e242e; margin-bottom:18px;"></div>
               <div style="color:#c3c9d1; font-size:12px; font-weight:600;">${i18n.tagline}</div>
               <div style="margin-top:3px; color:#616a76; font-size:11px;">${i18n.signoff}</div>
@@ -304,7 +328,25 @@ export async function verifyOtp(env, userId, email, code, deviceId, sessionId = 
   const existing = await getActiveOtpCode(env, userId, contact);
   if (!existing) throw new Error("No active verification code");
   if (existing.used_at) throw new Error("Code already used");
-  if (new Date(existing.expires_at) < new Date()) throw new Error("Code expired");
+  if (new Date(existing.expires_at) < new Date()) {
+    // Diagnostic only: a user reported a code being rejected as expired
+    // within seconds of receiving it, which the TTL math here can't explain
+    // on its own (OTP_TTL_MS is 10 minutes). Logging the actual row age
+    // lets this be root-caused from Worker logs next time it happens,
+    // instead of guessing -- candidates are a duplicate concurrent send
+    // superseding the row the user is reading from their inbox, or an
+    // email delivery delay (Gmail can defer/greylist transactional mail)
+    // making the "just arrived" email actually minutes old server-side.
+    console.warn("[otp] rejected as expired", {
+      otpId: existing.id,
+      userId,
+      createdAt: existing.created_at,
+      expiresAt: existing.expires_at,
+      now: new Date().toISOString(),
+      ageMs: Date.now() - new Date(existing.created_at).getTime()
+    });
+    throw new Error("Code expired");
+  }
 
   const attempts = (existing.attempts || 0) + 1;
   if (attempts > MAX_ATTEMPTS) {

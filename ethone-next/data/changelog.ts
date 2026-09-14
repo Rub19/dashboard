@@ -27350,4 +27350,53 @@ CHANGELOG_BY_LANG.en.unshift(v12160_en);
 CHANGELOG_BY_LANG.es.unshift(v12160_es);
 CHANGELOG_BY_LANG.de.unshift(v12160_de);
 
+const v12161_fr: ChangelogEntry = {
+  version: "v1.21.61",
+  date: "2026-09-14",
+  title: "Fix : le jeu Dino Corridor ne pouvait pas s'afficher (CSP du site lui-même)",
+  items: [
+    "En revérifiant le fix de la v1.21.60 juste après l'avoir déployé : le Worker autorisait bien l'affichage en iframe (corrigé en v1.21.60), mais `ethone-next` a sa PROPRE politique de sécurité (`public/_headers`) avec `default-src 'self'` et aucune règle `frame-src` — donc le navigateur bloquait quand même l'iframe, cette fois côté site plutôt que côté Worker.",
+    "Ajout de `frame-src 'self' https://raspy-fog-bf5b.rub19-mailpro.workers.dev` à la CSP du site. Vérifié dans le build réel (`dist/_headers`, celui effectivement déployé) que la directive est bien présente.",
+    "Validation : `build`/`lint` (0 erreur)/`test:unit` 115/115 ✓. `audit-security` PASS (1984 fichiers).",
+  ],
+};
+
+const v12161_en: ChangelogEntry = {
+  version: "v1.21.61",
+  date: "2026-09-14",
+  title: "Fix: the Dino Corridor game couldn't render (site's own CSP)",
+  items: [
+    "Double-checking the v1.21.60 fix right after shipping it: the Worker correctly allowed being framed (fixed in v1.21.60), but `ethone-next` has its OWN security policy (`public/_headers`) with `default-src 'self'` and no `frame-src` rule at all -- so the browser still blocked the iframe, this time on the site's side rather than the Worker's.",
+    "Added `frame-src 'self' https://raspy-fog-bf5b.rub19-mailpro.workers.dev` to the site's CSP. Verified in the actual build output (`dist/_headers`, the one that actually gets deployed) that the directive is present.",
+    "Validation: `build`/`lint` (0 errors)/`test:unit` 115/115 pass. `audit-security` PASS (1984 files).",
+  ],
+};
+
+const v12161_es: ChangelogEntry = {
+  version: "v1.21.61",
+  date: "2026-09-14",
+  title: "Corrección: el juego Dino Corridor no podía mostrarse (CSP del propio sitio)",
+  items: [
+    "Revisando dos veces la corrección de la v1.21.60 justo después de publicarla: el Worker permitía correctamente ser embebido en iframe (corregido en v1.21.60), pero `ethone-next` tiene su PROPIA política de seguridad (`public/_headers`) con `default-src 'self'` y sin ninguna regla `frame-src` -- así que el navegador seguía bloqueando el iframe, esta vez por el lado del sitio en lugar del Worker.",
+    "Se añadió `frame-src 'self' https://raspy-fog-bf5b.rub19-mailpro.workers.dev` a la CSP del sitio. Verificado en el build real (`dist/_headers`, el que realmente se despliega) que la directiva está presente.",
+    "Validación: `build`/`lint` (0 errores)/`test:unit` 115/115 ✓. `audit-security` PASS (1984 archivos).",
+  ],
+};
+
+const v12161_de: ChangelogEntry = {
+  version: "v1.21.61",
+  date: "2026-09-14",
+  title: "Fix: Das Dino-Corridor-Spiel liess sich nicht anzeigen (eigene CSP der Seite)",
+  items: [
+    "Beim erneuten Pruefen des v1.21.60-Fixes direkt nach dem Ausliefern: Der Worker erlaubte das Einbetten per iframe korrekt (in v1.21.60 behoben), aber `ethone-next` hat seine EIGENE Sicherheitsrichtlinie (`public/_headers`) mit `default-src 'self'` und ganz ohne `frame-src`-Regel -- der Browser blockierte das iframe also weiterhin, diesmal auf Seiten der Website statt des Workers.",
+    "`frame-src 'self' https://raspy-fog-bf5b.rub19-mailpro.workers.dev` zur CSP der Website hinzugefuegt. Im tatsaechlichen Build-Output (`dist/_headers`, dem tatsaechlich ausgelieferten) geprueft, dass die Direktive vorhanden ist.",
+    "Validierung: `build`/`lint` (0 Fehler)/`test:unit` 115/115 bestanden. `audit-security` PASS (1984 Dateien).",
+  ],
+};
+
+CHANGELOG_BY_LANG.fr.unshift(v12161_fr);
+CHANGELOG_BY_LANG.en.unshift(v12161_en);
+CHANGELOG_BY_LANG.es.unshift(v12161_es);
+CHANGELOG_BY_LANG.de.unshift(v12161_de);
+
 export const CHANGELOG = CHANGELOG_BY_LANG.fr;

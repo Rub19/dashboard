@@ -2,6 +2,14 @@
 
 Toutes les modifications notables de ce projet seront documentées dans ce fichier.
 
+## v1.21.61 — 2026-09-14
+
+**Fix : le jeu Dino Corridor ne pouvait pas s'afficher (CSP du site lui-même)**
+
+- `ethone-next/public/_headers` : `default-src 'self'` sans règle `frame-src` bloquait l'iframe pointant vers le domaine du Worker, malgré le fix Worker de la v1.21.60. Ajout de `frame-src 'self' https://raspy-fog-bf5b.rub19-mailpro.workers.dev`.
+- Vérifié dans `dist/_headers` (le build réellement déployé) que la directive est présente.
+- Validation : `build`/`lint` (0 erreur)/`test:unit` 115/115 ✓. `audit-security` PASS (1984 fichiers).
+
 ## v1.21.60 — 2026-09-14
 
 **Nouveau : mini-jeu « Dino Corridor » dans la sidebar**

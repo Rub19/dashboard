@@ -2,6 +2,18 @@
 
 Toutes les modifications notables de ce projet seront documentées dans ce fichier.
 
+## v1.21.49 — 2026-09-14
+
+**Analytics : historique gaming réel (LoL/Valorant/TFT)**
+
+- Dernier morceau laissé de côté dans Analytics Phase 2 (v1.21.47), repensé plus sûr : pas de nouveau Cloudflare Cron Trigger ni de duplication des appels Riot côté Worker — `lib/gaming-snapshot.ts`'s `syncCurrentDaySnapshot()` réutilise simplement les taux de victoire déjà calculés côté client par `useGamingAnalytics()` (lui-même purement local, aucun appel Riot/HenrikDev propre) et les enregistre en upsert quotidien dans `ethone_gaming_snapshots`.
+- `supabase/migrations/202609150002_ethone_gaming_snapshots.sql` — nouvelle table, RLS propriétaire uniquement (select/insert/update), même forme que `ethone_bill_snapshots`. **Migration à exécuter manuellement dans le SQL Editor de Supabase.**
+- `components/AnalyticsClient.tsx` : nouveau graphique "victoires / jour" par jeu (LoL, Valorant, TFT) sous les mini-graphiques existants, alimenté par ce nouvel historique qui se construit à partir de maintenant.
+- Bug corrigé au passage (trouvé en écrivant les tests) : la date du jour était calculée via `toISOString()` (UTC), ce qui aurait décalé le snapshot d'un jour pour tout fuseau horaire non-UTC en fin/début de journée — remplacé par un calcul en heure locale, même correction déjà appliquée dans `bills-snapshot.ts`.
+- Nécessite d'avoir déjà visité `/matches` au moins une fois (le tracker doit avoir des données en cache local pour qu'un instantané ait du contenu).
+- Tests : `lib/gaming-snapshot.test.ts` (6 cas — non configuré, pas de session, upsert correct, échec réseau avalé, timezone).
+- Validation : `ethone-next` `tsc` ✓, `npm run build` ✓, `lint` 0 erreur, `test:unit` 107/107 ✓. `audit-security` PASS (1977 fichiers).
+
 ## v1.21.48 — 2026-09-14
 
 **Espaces Partagés Phase 2 : calendrier, notes, lien Discord**

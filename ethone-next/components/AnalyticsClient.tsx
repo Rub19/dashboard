@@ -9,6 +9,7 @@ import { useGamingAnalytics } from "@/lib/hooks/useGamingAnalytics";
 import { useFocusSessionHistory } from "@/lib/hooks/useFocusSessionHistory";
 import { listBills, type BillCategory } from "@/lib/bills-manager";
 import { syncCurrentMonthSnapshot, loadBillSnapshots, type BillMonthSnapshotRow } from "@/lib/bills-snapshot";
+import { syncCurrentDaySnapshot, loadGamingSnapshots, type GamingSnapshotRow } from "@/lib/gaming-snapshot";
 import {
   billsCategoryBreakdown,
   billsMonthSnapshot,
@@ -32,6 +33,13 @@ const CATEGORY_LABELS: Record<BillCategory, string> = {
   taxes: "Impôts",
   other: "Autre",
 };
+
+// s is "YYYY-MM-DD" -- formatted via string slicing, not Date parsing, so a
+// UTC-midnight interpretation can't shift it a day in non-UTC timezones.
+function dayLabel(day: string): string {
+  const [, month, date] = day.split("-");
+  return `${date}/${month}`;
+}
 
 function formatRelativeSync(timestamp: number | null): string | null {
   if (!timestamp) return null;
@@ -86,6 +94,7 @@ export default function AnalyticsClient() {
   const { items: focusHistory } = useFocusSessionHistory();
   const [bills, setBills] = useState<ReturnType<typeof listBills>>([]);
   const [billSnapshots, setBillSnapshots] = useState<BillMonthSnapshotRow[]>([]);
+  const [gamingSnapshots, setGamingSnapshots] = useState<GamingSnapshotRow[]>([]);
 
   useEffect(() => {
     setBills(listBills());
@@ -93,6 +102,16 @@ export default function AnalyticsClient() {
       loadBillSnapshots().then(setBillSnapshots);
     });
   }, []);
+
+  useEffect(() => {
+    if (!gaming.configured) return;
+    void syncCurrentDaySnapshot(gaming).then(() => {
+      loadGamingSnapshots().then(setGamingSnapshots);
+    });
+    // Only re-sync when the underlying totals actually change (a new match
+    // synced), not on every render.
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [gaming.configured, gaming.lol.totalGames, gaming.valorant.totalGames, gaming.tft.totalGames]);
 
   const taskStats = useMemo(() => tasksStats(tasks), [tasks]);
   const categoryBreakdown = useMemo(() => billsCategoryBreakdown(bills), [bills]);
@@ -106,6 +125,31 @@ export default function AnalyticsClient() {
       .filter((h) => new Date(h.completedAt) >= weekAgo)
       .reduce((sum, h) => sum + Math.round((h.duration || 0) / 60), 0);
   }, [focusHistory]);
+
+  const lolWinRateSeries = useMemo(
+    () =>
+      gamingSnapshots
+        .filter((s) => s.lol_win_rate !== null)
+        .slice(-30)
+        .map((s) => ({ label: dayLabel(s.day), value: s.lol_win_rate as number })),
+    [gamingSnapshots]
+  );
+  const valorantWinRateSeries = useMemo(
+    () =>
+      gamingSnapshots
+        .filter((s) => s.valorant_win_rate !== null)
+        .slice(-30)
+        .map((s) => ({ label: dayLabel(s.day), value: s.valorant_win_rate as number })),
+    [gamingSnapshots]
+  );
+  const tftTop4RateSeries = useMemo(
+    () =>
+      gamingSnapshots
+        .filter((s) => s.tft_top4_rate !== null)
+        .slice(-30)
+        .map((s) => ({ label: dayLabel(s.day), value: s.tft_top4_rate as number })),
+    [gamingSnapshots]
+  );
 
   const gamingConfigured = gaming.configured;
   const bestWinRate = gamingConfigured
@@ -204,14 +248,32 @@ export default function AnalyticsClient() {
       </div>
 
       {/* Gaming */}
-      <SectionCard icon={<Gamepad2 className="h-4 w-4" />} title="Gaming" caption="Forme récente — fenêtre limitée par l'API (~20-40 dernières parties), pas un historique complet.">
+      <SectionCard icon={<Gamepad2 className="h-4 w-4" />} title="Gaming" caption="Forme récente (fenêtre limitée par l'API) et taux de victoire réel dans le temps, construit depuis chaque ouverture de cette page.">
         {!gamingConfigured ? (
           <EmptyCta label="Configurer ton compte Riot dans le tracker" href="/matches" />
         ) : (
-          <div className="grid gap-4 sm:grid-cols-3">
-            <GameMiniChart title="League of Legends" totalGames={gaming.lol.totalGames} rate={gaming.lol.winRate} rateLabel="victoires" lastSync={gaming.lol.lastSync} data={gaming.lol.days.slice(0, 14).reverse().map((d) => ({ label: d.dateLabel, value: d.count }))} color={palette.info} />
-            <GameMiniChart title="Valorant" totalGames={gaming.valorant.totalGames} rate={gaming.valorant.winRate} rateLabel="victoires" lastSync={gaming.valorant.lastSync} data={gaming.valorant.days.slice(0, 14).reverse().map((d) => ({ label: d.dateLabel, value: d.count }))} color={palette.danger} />
-            <GameMiniChart title="TFT" totalGames={gaming.tft.totalGames} rate={gaming.tft.top4Rate} rateLabel="top 4" lastSync={gaming.tft.lastSync} data={gaming.tft.days.slice(0, 14).reverse().map((d) => ({ label: d.dateLabel, value: d.count }))} color={palette.warning} />
+          <div className="space-y-4">
+            <div className="grid gap-4 sm:grid-cols-3">
+              <GameMiniChart title="League of Legends" totalGames={gaming.lol.totalGames} rate={gaming.lol.winRate} rateLabel="victoires" lastSync={gaming.lol.lastSync} data={gaming.lol.days.slice(0, 14).reverse().map((d) => ({ label: d.dateLabel, value: d.count }))} color={palette.info} />
+              <GameMiniChart title="Valorant" totalGames={gaming.valorant.totalGames} rate={gaming.valorant.winRate} rateLabel="victoires" lastSync={gaming.valorant.lastSync} data={gaming.valorant.days.slice(0, 14).reverse().map((d) => ({ label: d.dateLabel, value: d.count }))} color={palette.danger} />
+              <GameMiniChart title="TFT" totalGames={gaming.tft.totalGames} rate={gaming.tft.top4Rate} rateLabel="top 4" lastSync={gaming.tft.lastSync} data={gaming.tft.days.slice(0, 14).reverse().map((d) => ({ label: d.dateLabel, value: d.count }))} color={palette.warning} />
+            </div>
+            {(lolWinRateSeries.length > 1 || valorantWinRateSeries.length > 1 || tftTop4RateSeries.length > 1) && (
+              <div className="grid gap-4 sm:grid-cols-3">
+                <div>
+                  <p className="mb-2 text-xs font-medium text-[var(--text-muted)]">LoL — victoires / jour</p>
+                  <AnalyticsLineChart data={lolWinRateSeries} valueSuffix="%" color={palette.info} height={120} />
+                </div>
+                <div>
+                  <p className="mb-2 text-xs font-medium text-[var(--text-muted)]">Valorant — victoires / jour</p>
+                  <AnalyticsLineChart data={valorantWinRateSeries} valueSuffix="%" color={palette.danger} height={120} />
+                </div>
+                <div>
+                  <p className="mb-2 text-xs font-medium text-[var(--text-muted)]">TFT — top 4 / jour</p>
+                  <AnalyticsLineChart data={tftTop4RateSeries} valueSuffix="%" color={palette.warning} height={120} />
+                </div>
+              </div>
+            )}
           </div>
         )}
       </SectionCard>

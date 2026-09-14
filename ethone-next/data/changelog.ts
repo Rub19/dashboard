@@ -26726,4 +26726,53 @@ CHANGELOG_BY_LANG.en.unshift(v12148_en);
 CHANGELOG_BY_LANG.es.unshift(v12148_es);
 CHANGELOG_BY_LANG.de.unshift(v12148_de);
 
+const v12149_fr: ChangelogEntry = {
+  version: "v1.21.49",
+  date: "2026-09-14",
+  title: "Analytics : historique gaming reel (LoL/Valorant/TFT)",
+  items: [
+    "Dernier morceau laisse de cote dans Analytics Phase 2 (v1.21.47), repense en version plus sure : pas de nouveau Cron ni d'appel Riot cote serveur — juste un instantane quotidien des taux de victoire deja calcules par le tracker, enregistre a chaque ouverture d'Analytics.",
+    "Nouveau graphique \"victoires / jour\" pour LoL, Valorant et TFT, qui se construit reellement dans le temps a partir de maintenant (comme les autres historiques de cette semaine).",
+    "Necessite d'avoir deja visite /matches au moins une fois pour que le tracker ait des donnees en cache local a partir desquelles calculer l'instantane.",
+  ],
+};
+
+const v12149_en: ChangelogEntry = {
+  version: "v1.21.49",
+  date: "2026-09-14",
+  title: "Analytics: real gaming history (LoL/Valorant/TFT)",
+  items: [
+    "The last piece left out of Analytics Phase 2 (v1.21.47), re-scoped to something safer: no new Cron trigger or server-side Riot calls -- just a daily snapshot of the win rates the tracker already computes, saved each time Analytics is opened.",
+    "New \"wins / day\" chart for LoL, Valorant, and TFT, building real history forward from now (same pattern as this week's other histories).",
+    "Needs at least one visit to /matches first so the tracker has local cached data to snapshot from.",
+  ],
+};
+
+const v12149_es: ChangelogEntry = {
+  version: "v1.21.49",
+  date: "2026-09-14",
+  title: "Analytics: historial real de gaming (LoL/Valorant/TFT)",
+  items: [
+    "La ultima pieza que quedaba pendiente de Analytics Phase 2 (v1.21.47), replanteada de forma mas segura: sin nuevo Cron ni llamadas a Riot desde el servidor -- solo una instantanea diaria de las tasas de victoria que el tracker ya calcula, guardada cada vez que abres Analytics.",
+    "Nuevo grafico \"victorias / dia\" para LoL, Valorant y TFT, que se construye de verdad con el tiempo a partir de ahora (mismo patron que los demas historiales de esta semana).",
+    "Necesita haber visitado /matches al menos una vez para que el tracker tenga datos en cache local a partir de los cuales calcular la instantanea.",
+  ],
+};
+
+const v12149_de: ChangelogEntry = {
+  version: "v1.21.49",
+  date: "2026-09-14",
+  title: "Analytics: echte Gaming-Historie (LoL/Valorant/TFT)",
+  items: [
+    "Der letzte offene Punkt aus Analytics Phase 2 (v1.21.47), sicherer neu zugeschnitten: kein neuer Cron-Trigger, keine serverseitigen Riot-Aufrufe -- nur ein taeglicher Schnappschuss der Siegraten, die der Tracker ohnehin schon berechnet, gespeichert bei jedem Oeffnen von Analytics.",
+    "Neues Diagramm \"Siege / Tag\" fuer LoL, Valorant und TFT, das ab jetzt eine echte Historie aufbaut (gleiches Muster wie die anderen Historien dieser Woche).",
+    "Setzt mindestens einen Besuch von /matches voraus, damit der Tracker lokal zwischengespeicherte Daten fuer den Schnappschuss hat.",
+  ],
+};
+
+CHANGELOG_BY_LANG.fr.unshift(v12149_fr);
+CHANGELOG_BY_LANG.en.unshift(v12149_en);
+CHANGELOG_BY_LANG.es.unshift(v12149_es);
+CHANGELOG_BY_LANG.de.unshift(v12149_de);
+
 export const CHANGELOG = CHANGELOG_BY_LANG.fr;

@@ -215,12 +215,12 @@ export default function SpaceDetailClient() {
                       {STATUS_LABEL[m.status]}
                     </span>
                     {space?.role === "owner" && m.status === "active" && (
-                      <button type="button" aria-label="Révoquer" onClick={() => handleRevoke(m.id)} className="text-[var(--text-muted)] hover:text-rose-400">
+                      <button type="button" aria-label="Révoquer" onClick={() => handleRevoke(m.id)} className="-m-2 p-2 text-[var(--text-muted)] hover:text-rose-400">
                         <Ban className="h-3.5 w-3.5" />
                       </button>
                     )}
                     {space?.role === "owner" && (
-                      <button type="button" aria-label="Supprimer" onClick={() => handleRemove(m.id)} className="text-[var(--text-muted)] hover:text-rose-400">
+                      <button type="button" aria-label="Supprimer" onClick={() => handleRemove(m.id)} className="-m-2 p-2 text-[var(--text-muted)] hover:text-rose-400">
                         <Trash2 className="h-3.5 w-3.5" />
                       </button>
                     )}
@@ -262,7 +262,7 @@ export default function SpaceDetailClient() {
                   <p className={cn("min-w-0 flex-1 truncate text-sm", task.is_completed ? "text-[var(--text-muted)] line-through" : "text-[var(--text-primary)]")}>
                     {task.title}
                   </p>
-                  <button type="button" aria-label="Supprimer la tâche" onClick={() => removeTask(task.id)} className="text-[var(--text-muted)] hover:text-rose-400">
+                  <button type="button" aria-label="Supprimer la tâche" onClick={() => removeTask(task.id)} className="-m-2 p-2 text-[var(--text-muted)] hover:text-rose-400">
                     <Trash2 className="h-3.5 w-3.5" />
                   </button>
                 </div>
@@ -306,7 +306,7 @@ export default function SpaceDetailClient() {
                       {new Date(ev.start_at).toLocaleString("fr-FR", { dateStyle: "medium", timeStyle: "short" })}
                     </p>
                   </div>
-                  <button type="button" aria-label="Supprimer l'événement" onClick={() => removeEvent(ev.id)} className="text-[var(--text-muted)] hover:text-rose-400">
+                  <button type="button" aria-label="Supprimer l'événement" onClick={() => removeEvent(ev.id)} className="-m-2 p-2 text-[var(--text-muted)] hover:text-rose-400">
                     <Trash2 className="h-3.5 w-3.5" />
                   </button>
                 </div>
@@ -348,7 +348,7 @@ export default function SpaceDetailClient() {
                     <p className="truncate text-sm font-medium text-[var(--text-primary)]">{note.title}</p>
                     {note.body && <p className="mt-0.5 line-clamp-2 text-xs text-[var(--text-muted)]">{note.body}</p>}
                   </div>
-                  <button type="button" aria-label="Supprimer la note" onClick={() => removeNote(note.id)} className="text-[var(--text-muted)] hover:text-rose-400">
+                  <button type="button" aria-label="Supprimer la note" onClick={() => removeNote(note.id)} className="-m-2 p-2 text-[var(--text-muted)] hover:text-rose-400">
                     <Trash2 className="h-3.5 w-3.5" />
                   </button>
                 </div>

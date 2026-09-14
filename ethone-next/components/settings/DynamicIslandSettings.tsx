@@ -33,7 +33,7 @@ export default function DynamicIslandSettings() {
             onClick={() => setIsExpanded(!isExpanded)}
             className={cn(
               "relative cursor-pointer overflow-hidden border border-[var(--panel-border)]/[0.3] bg-[var(--bg-main)] text-[var(--text-primary)] shadow-[0_8px_32px_-4px_rgba(0,0,0,0.55),0_0_20px_-6px_var(--glow-color)] backdrop-blur-3xl transition-colors duration-200 select-none",
-              isExpanded ? "rounded-3xl p-4 w-80" : "h-10 rounded-full px-3.5 flex items-center gap-2.5 min-w-[140px]"
+              isExpanded ? "rounded-3xl p-4 w-64 sm:w-80" : "h-10 rounded-full px-3.5 flex items-center gap-2.5 min-w-[140px]"
             )}
           >
             <AnimatePresence mode="wait">

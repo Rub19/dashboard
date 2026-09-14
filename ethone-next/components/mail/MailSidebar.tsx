@@ -43,7 +43,7 @@ type MailSidebarProps = {
   ) => Promise<MailAlias | null | undefined>;
 };
 
-const FOLDER_DEFS: { id: MailFolder; label: string; icon: typeof Inbox }[] = [
+export const FOLDER_DEFS: { id: MailFolder; label: string; icon: typeof Inbox }[] = [
   { id: "inbox", label: "Boîte de réception", icon: Inbox },
   { id: "starred", label: "Suivis", icon: Star },
   { id: "sent", label: "Envoyés", icon: Send },

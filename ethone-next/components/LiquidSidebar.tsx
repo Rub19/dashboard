@@ -29,7 +29,7 @@ export default function LiquidSidebar({
 
   return (
     <div
-      className="w-56 shrink-0 space-y-1 rounded-[var(--panel-radius)] border border-[var(--panel-border)] bg-[var(--panel-bg)] p-2 backdrop-blur-[var(--panel-blur)]"
+      className="flex w-full shrink-0 gap-1 overflow-x-auto no-scrollbar rounded-[var(--panel-radius)] border border-[var(--panel-border)] bg-[var(--panel-bg)] p-2 backdrop-blur-[var(--panel-blur)] md:w-56 md:flex-col md:gap-0 md:space-y-1 md:overflow-visible"
       role="tablist"
       aria-label="Panneau latéral"
     >
@@ -42,7 +42,7 @@ export default function LiquidSidebar({
             role="tab"
             aria-selected={isActive}
             onClick={() => handleClick(item.id)}
-            className={`relative flex w-full items-center gap-3 rounded-[var(--panel-radius)] px-3 py-2 text-sm font-medium transition-colors ${
+            className={`relative flex shrink-0 items-center gap-2 whitespace-nowrap rounded-[var(--panel-radius)] px-3 py-2 text-sm font-medium transition-colors md:w-full md:gap-3 ${
               isActive
                 ? "bg-[var(--accent-primary)] text-[var(--accent-contrast)]"
                 : "text-[var(--text-muted)] hover:bg-[var(--panel-bg)] hover:text-[var(--text-primary)]"

@@ -27774,4 +27774,69 @@ CHANGELOG_BY_LANG.en.unshift(v12168_en);
 CHANGELOG_BY_LANG.es.unshift(v12168_es);
 CHANGELOG_BY_LANG.de.unshift(v12168_de);
 
+const v12169_fr: ChangelogEntry = {
+  version: "v1.21.69",
+  date: "2026-09-14",
+  title: "Responsive : Mail (mobile + desktop étroit), page Jeux, réglages île dynamique",
+  items: [
+    "Fix (mobile + PC) : le volet liste de messages de Mail (`MailThreadList`) avait une largeur fixe de 416px codée en dur, qui débordait sur mobile ET annulait silencieusement le plafond de largeur prévu par la page une fois un message ouvert sur un écran laptop étroit (1024-1366px). Largeur pilotée uniquement par le conteneur parent désormais.",
+    "Fix (mobile) : en dessous de 1024px, aucun moyen d'accéder aux dossiers (Boîte de réception, Suivis, Archives...) ni de composer un nouveau message — le panneau qui les contient était entièrement masqué sans alternative tactile. Ajout d'un sélecteur de dossier + bouton « Nouveau » dans l'en-tête de la liste de messages, visible uniquement en dessous de `lg`.",
+    "Fix (mobile) : la page Matches/Trackers (Valorant, LoL, TFT, Apex...) avait un sélecteur de jeu en colonne fixe de 224px sans aucune adaptation mobile, écrasant tout le reste de l'interface sous ~768px. Devient une rangée horizontale défilante sous `md`, colonne fixe au-delà.",
+    "Fix (mobile) : dans Réglages → Île Dynamique, la capsule de prévisualisation dépassait la largeur de l'écran une fois dépliée sur un téléphone (~375px).",
+    "Fix (tactile) : 5 boutons icône-seule dans une Space (révoquer/supprimer un membre, supprimer une tâche/un événement/une note) avaient une zone cliquable d'environ 14×14px, bien en dessous du seuil tactile recommandé — agrandie sans changer l'apparence.",
+    "Suite à un audit dédié (deux passes séparées, mobile ~375-414px et PC 1024-2560px) : le reste du dashboard (accueil, Notes, Tâches, Paramètres, Spaces, Marketplace, Personas...) était déjà correctement responsive, aucune autre action nécessaire.",
+    "Validation : `tsc`/`build`/`lint` (0 erreur, 0 nouveau warning)/`test:unit` 115/115 ✓. `audit-security` PASS (1985 fichiers).",
+  ],
+};
+
+const v12169_en: ChangelogEntry = {
+  version: "v1.21.69",
+  date: "2026-09-14",
+  title: "Responsive: Mail (mobile + narrow desktop), Games page, Dynamic Island settings",
+  items: [
+    "Fix (mobile + desktop): Mail's message-list pane (`MailThreadList`) had a hardcoded fixed 416px width, which overflowed on mobile AND silently defeated the page's intended width cap once a message was open on a narrow laptop screen (1024-1366px). Width is now driven purely by the parent container.",
+    "Fix (mobile): below 1024px there was no way to reach folders (Inbox, Starred, Archive...) or compose a new message -- the panel holding both was fully hidden with no touch alternative. Added a folder switcher + \"New\" button to the message list's header, shown only below `lg`.",
+    "Fix (mobile): the Matches/Trackers page (Valorant, LoL, TFT, Apex...) had a fixed 224px-wide game-switcher column with zero mobile handling, crowding out the rest of the UI under ~768px. Becomes a horizontal scrollable row below `md`, fixed column above.",
+    "Fix (mobile): in Settings -> Dynamic Island, the live preview capsule overflowed the screen width once expanded on a phone (~375px).",
+    "Fix (touch): 5 icon-only buttons in a Space (revoke/remove member, delete task/event/note) had a tap target of roughly 14x14px, well under the recommended touch threshold -- enlarged without changing the visuals.",
+    "Following a dedicated audit (two separate passes, mobile ~375-414px and desktop 1024-2560px): the rest of the dashboard (home, Notes, Tasks, Settings, Spaces, Marketplace, Personas...) was already correctly responsive, no further action needed.",
+    "Validation: `tsc`/`build`/`lint` (0 errors, 0 new warnings)/`test:unit` 115/115 pass. `audit-security` PASS (1985 files).",
+  ],
+};
+
+const v12169_es: ChangelogEntry = {
+  version: "v1.21.69",
+  date: "2026-09-14",
+  title: "Responsive: Mail (móvil + escritorio estrecho), página de Juegos, ajustes de Isla Dinámica",
+  items: [
+    "Corrección (móvil + escritorio): el panel de lista de mensajes de Mail (`MailThreadList`) tenía un ancho fijo de 416px codificado, que desbordaba en móvil Y anulaba silenciosamente el límite de ancho previsto por la página al abrir un mensaje en una ventana de portátil estrecha (1024-1366px). El ancho ahora lo define únicamente el contenedor padre.",
+    "Corrección (móvil): por debajo de 1024px no había forma de acceder a las carpetas (Recibidos, Destacados, Archivo...) ni de redactar un mensaje nuevo -- el panel que los contenía estaba completamente oculto sin alternativa táctil. Se añadió un selector de carpetas + botón \"Nuevo\" en la cabecera de la lista de mensajes, visible solo por debajo de `lg`.",
+    "Corrección (móvil): la página de Matches/Trackers (Valorant, LoL, TFT, Apex...) tenía una columna fija de 224px para el selector de juego sin ninguna adaptación móvil, aplastando el resto de la interfaz por debajo de ~768px. Pasa a ser una fila horizontal desplazable por debajo de `md`, columna fija por encima.",
+    "Corrección (móvil): en Ajustes -> Isla Dinámica, la cápsula de vista previa desbordaba el ancho de pantalla al expandirse en un teléfono (~375px).",
+    "Corrección (táctil): 5 botones de solo icono en un Space (revocar/eliminar miembro, eliminar tarea/evento/nota) tenían un área táctil de unos 14x14px, muy por debajo del umbral táctil recomendado -- ampliada sin cambiar el aspecto visual.",
+    "Tras una auditoría dedicada (dos pasadas separadas, móvil ~375-414px y escritorio 1024-2560px): el resto del panel (inicio, Notas, Tareas, Ajustes, Spaces, Marketplace, Personas...) ya era correctamente responsive, sin más acciones necesarias.",
+    "Validación: `tsc`/`build`/`lint` (0 errores, 0 advertencias nuevas)/`test:unit` 115/115 ✓. `audit-security` PASS (1985 archivos).",
+  ],
+};
+
+const v12169_de: ChangelogEntry = {
+  version: "v1.21.69",
+  date: "2026-09-14",
+  title: "Responsive: Mail (mobil + schmaler Desktop), Spiele-Seite, Dynamic-Island-Einstellungen",
+  items: [
+    "Fix (mobil + Desktop): Der Nachrichtenlisten-Bereich von Mail (`MailThreadList`) hatte eine fest codierte Breite von 416px, die auf Mobilgeräten überlief UND die von der Seite vorgesehene Breitenbegrenzung bei geöffneter Nachricht auf einem schmalen Laptop-Fenster (1024-1366px) stillschweigend aushebelte. Die Breite wird jetzt ausschließlich vom übergeordneten Container bestimmt.",
+    "Fix (mobil): Unterhalb von 1024px gab es keine Möglichkeit, auf Ordner (Posteingang, Markiert, Archiv...) zuzugreifen oder eine neue Nachricht zu verfassen -- das Panel mit beidem war vollständig ausgeblendet, ohne Touch-Alternative. Ein Ordner-Umschalter + \"Neu\"-Button wurde im Header der Nachrichtenliste ergänzt, nur unterhalb von `lg` sichtbar.",
+    "Fix (mobil): Die Matches/Tracker-Seite (Valorant, LoL, TFT, Apex...) hatte eine fest 224px breite Spiele-Auswahlspalte ohne jede mobile Anpassung, die den Rest der Oberfläche unter ~768px verdrängte. Wird unterhalb von `md` zu einer horizontal scrollbaren Reihe, darüber feste Spalte.",
+    "Fix (mobil): Unter Einstellungen -> Dynamic Island lief die Live-Vorschau-Kapsel beim Ausklappen auf einem Telefon (~375px) über den Bildschirmrand hinaus.",
+    "Fix (Touch): 5 reine Icon-Buttons in einem Space (Mitglied widerrufen/entfernen, Aufgabe/Termin/Notiz löschen) hatten eine Tippfläche von etwa 14x14px, deutlich unter dem empfohlenen Touch-Schwellenwert -- vergrößert, ohne die Optik zu verändern.",
+    "Nach einem eigenen Audit (zwei getrennte Durchgänge, mobil ~375-414px und Desktop 1024-2560px): Der Rest des Dashboards (Start, Notizen, Aufgaben, Einstellungen, Spaces, Marketplace, Personas...) war bereits korrekt responsive, keine weiteren Maßnahmen nötig.",
+    "Validierung: `tsc`/`build`/`lint` (0 Fehler, 0 neue Warnungen)/`test:unit` 115/115 bestanden. `audit-security` PASS (1985 Dateien).",
+  ],
+};
+
+CHANGELOG_BY_LANG.fr.unshift(v12169_fr);
+CHANGELOG_BY_LANG.en.unshift(v12169_en);
+CHANGELOG_BY_LANG.es.unshift(v12169_es);
+CHANGELOG_BY_LANG.de.unshift(v12169_de);
+
 export const CHANGELOG = CHANGELOG_BY_LANG.fr;

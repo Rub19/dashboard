@@ -60,7 +60,7 @@ export default function MatchesPage() {
   const { items, loading, syncing, sync } = useTracker(path, trackerKind);
 
   return (
-    <div className="flex min-h-0 w-full flex-1 overflow-hidden gap-4 p-2 sm:p-4">
+    <div className="flex min-h-0 w-full flex-1 flex-col overflow-hidden gap-4 p-2 sm:p-4 md:flex-row">
       {/* Liquid Sidebar for switching games */}
       <LiquidSidebar
         items={tabs}

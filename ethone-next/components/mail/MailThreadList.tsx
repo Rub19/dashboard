@@ -2,11 +2,12 @@
 
 import { useMemo, useState } from "react";
 import { AnimatePresence, motion } from "framer-motion";
-import { CheckSquare, Square, Archive, Trash2, MailOpen, Star, X, Inbox, Paperclip } from "lucide-react";
+import { CheckSquare, Square, Archive, Trash2, MailOpen, Star, X, Inbox, Paperclip, SquarePen } from "lucide-react";
 import { useI18n } from "@/lib/hooks/useI18n";
 import Input from "@/components/Input";
 import type { MailMessage } from "@/lib/hooks/useMail";
 import MailThreadItem from "./MailThreadItem";
+import { FOLDER_DEFS, type MailFolder } from "./MailSidebar";
 import { cn } from "@/lib/utils";
 
 const FILTERS = ["all", "unread", "starred", "attachments"] as const;
@@ -30,6 +31,10 @@ type MailThreadListProps = {
     action: "read" | "unread" | "star" | "unstar" | "archive" | "trash",
     messageIds: string[]
   ) => Promise<void>;
+  activeFolder?: MailFolder;
+  onFolderChange?: (folder: MailFolder) => void;
+  onCompose?: () => void;
+  canCompose?: boolean;
 };
 
 const FILTER_LABELS: Record<ThreadFilter, string> = {
@@ -52,6 +57,10 @@ export default function MailThreadList({
   onArchive,
   onTrash,
   onBulkAction,
+  activeFolder,
+  onFolderChange,
+  onCompose,
+  canCompose = true,
 }: MailThreadListProps) {
   const i18n = useI18n();
   const [filter, setFilter] = useState<ThreadFilter>("all");
@@ -136,7 +145,7 @@ export default function MailThreadList({
   }
 
   return (
-    <div className="v8-panel relative flex h-full w-[26rem] shrink-0 flex-col overflow-hidden">
+    <div className="v8-panel relative flex h-full w-full min-w-0 flex-col overflow-hidden">
       {/* Header */}
       <div className="shrink-0 border-b border-[var(--panel-border)] px-4 pt-3.5 pb-3 select-none">
         <div className="flex items-center justify-between gap-2">
@@ -169,6 +178,35 @@ export default function MailThreadList({
             </select>
           </div>
         </div>
+
+        {(onFolderChange || onCompose) && (
+          <div className="mt-2.5 flex items-center gap-1.5 lg:hidden">
+            {onFolderChange && (
+              <select
+                value={activeFolder ?? "inbox"}
+                onChange={(e) => onFolderChange(e.target.value as MailFolder)}
+                className="min-w-0 flex-1 cursor-pointer rounded-[var(--inset-radius)] border border-[var(--panel-border)] bg-transparent px-2 py-1.5 text-xs text-[var(--text-primary)] focus:outline-none"
+              >
+                {FOLDER_DEFS.map((f) => (
+                  <option key={f.id} value={f.id}>
+                    {f.label}
+                  </option>
+                ))}
+              </select>
+            )}
+            {onCompose && (
+              <button
+                type="button"
+                onClick={onCompose}
+                disabled={!canCompose}
+                className="flex shrink-0 items-center gap-1.5 rounded-[var(--inset-radius)] bg-[var(--accent-primary)] px-3 py-1.5 text-xs font-semibold text-[var(--accent-contrast)] transition-opacity disabled:cursor-not-allowed disabled:opacity-50"
+              >
+                <SquarePen className="h-3.5 w-3.5" />
+                Nouveau
+              </button>
+            )}
+          </div>
+        )}
 
         <div className="mt-2.5">
           <Input

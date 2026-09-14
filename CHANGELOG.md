@@ -2,6 +2,18 @@
 
 Toutes les modifications notables de ce projet seront documentées dans ce fichier.
 
+## v1.21.69 — 2026-09-14
+
+**Responsive : Mail (mobile + desktop étroit), page Matches, réglages île dynamique**
+
+- `components/mail/MailThreadList.tsx`, `app/mail/page.tsx` : largeur fixe de 416px sur le volet liste de messages — débordait sur mobile et annulait silencieusement le plafond de largeur prévu par la page sur laptop étroit (1024-1366px). Largeur pilotée uniquement par le conteneur parent.
+- `components/mail/MailThreadList.tsx`, `components/mail/MailSidebar.tsx` : sous 1024px, aucun moyen d'accéder aux dossiers ni de composer un message (panneau entièrement masqué sans alternative tactile). Ajout d'un sélecteur de dossier + bouton "Nouveau" dans l'en-tête, visible sous `lg`.
+- `components/LiquidSidebar.tsx`, `app/matches/page.tsx` : sélecteur de jeu en colonne fixe de 224px sans adaptation mobile, écrasait l'UI sous ~768px. Devient une rangée horizontale défilante sous `md`.
+- `components/settings/DynamicIslandSettings.tsx` : capsule de prévisualisation dépassait l'écran sur mobile une fois dépliée.
+- `components/spaces/SpaceDetailClient.tsx` : 5 boutons icône-seule avec une zone cliquable ~14×14px, agrandis sans changer l'apparence.
+- Suite à un audit dédié (mobile ~375-414px + PC 1024-2560px) : le reste du dashboard était déjà correctement responsive.
+- Validation : `tsc`/`build`/`lint` (0 erreur)/`test:unit` 115/115 ✓. `audit-security` PASS (1985 fichiers).
+
 ## v1.21.68 — 2026-09-14
 
 **Fix : erreur console non gérée sur le Service Worker (revalidation en arrière-plan)**

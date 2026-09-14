@@ -532,7 +532,7 @@ export default function MailPage() {
       </div>
 
       {/* 2. Mail Thread List (Full on mobile if no active thread, side on desktop) */}
-      <div className={cn("h-full flex-1 flex-col", activeThread ? "hidden md:flex md:max-w-xs lg:max-w-sm" : "flex")}>
+      <div className={cn("h-full min-w-0 flex-1 flex-col", activeThread ? "hidden md:flex md:max-w-xs lg:max-w-sm" : "flex")}>
         {error && !loading && messages.length === 0 && (
           <div className="mb-2 flex items-center gap-2 rounded-[var(--inset-radius)] border border-[var(--danger)]/25 bg-[var(--danger)]/10 px-3 py-2 text-xs text-[var(--danger)]">
             <span className="h-1.5 w-1.5 shrink-0 rounded-full bg-[var(--danger)]" />
@@ -552,6 +552,10 @@ export default function MailPage() {
           onArchive={handleArchiveMsg}
           onTrash={handleTrashMsg}
           onBulkAction={handleBulkAction}
+          activeFolder={folder as MailFolder}
+          onFolderChange={handleFolderChange}
+          onCompose={() => openCompose("new")}
+          canCompose={aliases.length > 0}
         />
       </div>
 

@@ -25,6 +25,7 @@ function task(overrides: Partial<Task>): Task {
     is_completed: false,
     priority: "medium",
     due_date: null,
+    completed_at: null,
     created_at: "2026-09-01T00:00:00.000Z",
     updated_at: "2026-09-01T00:00:00.000Z",
     ...overrides,
@@ -83,6 +84,19 @@ describe("tasksStats", () => {
     expect(stats.createdByDay).toEqual([
       { rawDate: "2026-09-01", dateLabel: expect.any(String), count: 2 },
       { rawDate: "2026-09-02", dateLabel: expect.any(String), count: 1 },
+    ]);
+  });
+
+  it("computes completed-per-day from completed_at, ignoring incomplete tasks", () => {
+    const tasks = [
+      task({ id: "1", is_completed: true, completed_at: "2026-09-03T10:00:00.000Z" }),
+      task({ id: "2", is_completed: true, completed_at: "2026-09-03T18:00:00.000Z" }),
+      task({ id: "3", is_completed: true, completed_at: "2026-09-04T09:00:00.000Z" }),
+      task({ id: "4", is_completed: false, completed_at: null }),
+    ];
+    expect(tasksStats(tasks).completedByDay).toEqual([
+      { rawDate: "2026-09-03", dateLabel: expect.any(String), count: 2 },
+      { rawDate: "2026-09-04", dateLabel: expect.any(String), count: 1 },
     ]);
   });
 

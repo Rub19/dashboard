@@ -26,11 +26,12 @@ export type Task = {
   is_completed: boolean;
   priority: "low" | "medium" | "high";
   due_date: string | null;
+  completed_at: string | null;
   created_at: string;
   updated_at: string;
 };
 
-export type TaskInput = Omit<Task, "id" | "created_at" | "updated_at" | "user_id">;
+export type TaskInput = Omit<Task, "id" | "completed_at" | "created_at" | "updated_at" | "user_id">;
 
 type SyncStatus = "idle" | "syncing" | "error";
 
@@ -160,7 +161,7 @@ export function useTasks() {
       try {
         const { data, error: insertError } = await supabase
           .from("tasks")
-          .insert({ ...input, user_id: userId })
+          .insert({ ...input, completed_at: input.is_completed ? new Date().toISOString() : null, user_id: userId })
           .select()
           .single();
 
@@ -186,14 +187,23 @@ export function useTasks() {
         return null;
       }
 
+      // Transparent so every existing caller (a checkbox toggle just does
+      // update(id, {is_completed})) gets a real completion timestamp for
+      // free — this is what makes a "completed over time" trend possible on
+      // the Analytics page instead of only "created over time".
+      const patch: Partial<TaskInput> & { completed_at?: string | null } = { ...input };
+      if (typeof input.is_completed === "boolean") {
+        patch.completed_at = input.is_completed ? new Date().toISOString() : null;
+      }
+
       setStatus("syncing");
-      const optimistic = { ...items.find((t) => t.id === id), ...input, id, updated_at: new Date().toISOString() } as Task;
+      const optimistic = { ...items.find((t) => t.id === id), ...patch, id, updated_at: new Date().toISOString() } as Task;
       setItems((prev) => prev.map((t) => (t.id === id ? optimistic : t)));
 
       try {
         const { data, error: updateError } = await supabase
           .from("tasks")
-          .update({ ...input, updated_at: new Date().toISOString() })
+          .update({ ...patch, updated_at: new Date().toISOString() })
           .eq("id", id)
           .eq("user_id", userId)
           .select()

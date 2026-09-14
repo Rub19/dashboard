@@ -69,12 +69,14 @@ export interface TasksStats {
   completionRate: number | null;
   byPriority: { low: number; medium: number; high: number };
   createdByDay: TaskCreatedByDay[];
+  completedByDay: TaskCreatedByDay[];
 }
 
-/** Completion rate + priority split (current snapshot) and tasks-created-per-day (real trend, from created_at). No completed-over-time trend is possible yet — there's no completed_at column. */
+/** Completion rate + priority split (current snapshot), tasks-created-per-day, and — now that tasks.completed_at is a real column — a genuine completed-per-day trend. */
 export function tasksStats(tasks: Task[]): TasksStats {
   const byPriority = { low: 0, medium: 0, high: 0 };
   const byDay = new Map<string, number>();
+  const completedByDayMap = new Map<string, number>();
   let completed = 0;
 
   for (const task of tasks) {
@@ -82,22 +84,26 @@ export function tasksStats(tasks: Task[]): TasksStats {
     if (task.priority in byPriority) byPriority[task.priority] += 1;
     const rawDate = task.created_at ? task.created_at.slice(0, 10) : null;
     if (rawDate) byDay.set(rawDate, (byDay.get(rawDate) || 0) + 1);
+    const completedRawDate = task.completed_at ? task.completed_at.slice(0, 10) : null;
+    if (completedRawDate) completedByDayMap.set(completedRawDate, (completedByDayMap.get(completedRawDate) || 0) + 1);
   }
 
-  const createdByDay: TaskCreatedByDay[] = Array.from(byDay.entries())
-    .map(([rawDate, count]) => ({
-      rawDate,
-      dateLabel: new Date(rawDate).toLocaleDateString("en-US", { month: "short", day: "numeric" }),
-      count,
-    }))
-    .sort((a, b) => a.rawDate.localeCompare(b.rawDate));
+  const toSeries = (map: Map<string, number>): TaskCreatedByDay[] =>
+    Array.from(map.entries())
+      .map(([rawDate, count]) => ({
+        rawDate,
+        dateLabel: new Date(rawDate).toLocaleDateString("en-US", { month: "short", day: "numeric" }),
+        count,
+      }))
+      .sort((a, b) => a.rawDate.localeCompare(b.rawDate));
 
   return {
     total: tasks.length,
     completed,
     completionRate: tasks.length ? Math.round((completed / tasks.length) * 100) : null,
     byPriority,
-    createdByDay,
+    createdByDay: toSeries(byDay),
+    completedByDay: toSeries(completedByDayMap),
   };
 }
 

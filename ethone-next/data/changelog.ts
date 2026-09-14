@@ -26612,4 +26612,61 @@ CHANGELOG_BY_LANG.en.unshift(v12146_en);
 CHANGELOG_BY_LANG.es.unshift(v12146_es);
 CHANGELOG_BY_LANG.de.unshift(v12146_de);
 
+const v12147_fr: ChangelogEntry = {
+  version: "v1.21.47",
+  date: "2026-09-14",
+  title: "Analytics : vrai historique long terme (taches, focus, factures)",
+  items: [
+    "Taches : la date de completion est maintenant vraiment enregistree (avant, seule la date de creation existait). Nouveau graphique \"Terminees / jour\" a cote de \"Creees / jour\".",
+    "Focus : les sessions terminees sont maintenant aussi sauvegardees dans le cloud (en plus du cache local sur cet appareil, qui reste). La page Analytics affiche desormais un historique reel, synchronise entre tous tes appareils, sans limite de 100 entrees.",
+    "Factures : un instantane du mois (paye / a payer / repartition par categorie) est enregistre chaque fois que tu ouvres la page Analytics. Nouveau graphique \"A payer / mois\" qui se construit avec le temps.",
+    "Important : ces trois historiques commencent a s'accumuler a partir de maintenant, pas retroactivement — impossible de reconstruire des dates de completion, sessions ou etats de factures qui n'ont jamais ete enregistres avant ce jour.",
+    "Reste pour une prochaine fois (plus gros, plus risque) : un instantane periodique des stats de jeu (LoL/Valorant/TFT), qui demanderait une vraie tache planifiee cote serveur.",
+  ],
+};
+
+const v12147_en: ChangelogEntry = {
+  version: "v1.21.47",
+  date: "2026-09-14",
+  title: "Analytics: real long-term history (tasks, focus, bills)",
+  items: [
+    "Tasks: completion date is now actually recorded (previously only the creation date existed). New \"Completed / day\" chart next to \"Created / day\".",
+    "Focus: completed sessions are now also saved to the cloud (in addition to the local cache on this device, which stays). The Analytics page now shows real history, synced across all your devices, with no 100-entry cap.",
+    "Bills: a snapshot of the month (paid / unpaid / category breakdown) is saved each time you open the Analytics page. New \"Unpaid / month\" chart that builds up over time.",
+    "Important: all three histories start accumulating from now on, not retroactively — there's no way to reconstruct completion dates, sessions, or bill states that were never recorded before today.",
+    "Left for a future pass (bigger, riskier): a periodic snapshot of gaming stats (LoL/Valorant/TFT), which would need a real server-side scheduled job.",
+  ],
+};
+
+const v12147_es: ChangelogEntry = {
+  version: "v1.21.47",
+  date: "2026-09-14",
+  title: "Analytics: historial real a largo plazo (tareas, focus, facturas)",
+  items: [
+    "Tareas: la fecha de finalizacion ahora se registra de verdad (antes solo existia la fecha de creacion). Nuevo grafico \"Terminadas / dia\" junto a \"Creadas / dia\".",
+    "Focus: las sesiones completadas ahora tambien se guardan en la nube (ademas de la cache local en este dispositivo, que se mantiene). La pagina de Analytics ahora muestra un historial real, sincronizado entre todos tus dispositivos, sin limite de 100 entradas.",
+    "Facturas: se guarda una instantanea del mes (pagado / pendiente / desglose por categoria) cada vez que abres la pagina de Analytics. Nuevo grafico \"Pendiente / mes\" que se va construyendo con el tiempo.",
+    "Importante: estos tres historiales empiezan a acumularse desde ahora, no retroactivamente — no hay forma de reconstruir fechas de finalizacion, sesiones o estados de facturas que nunca se registraron antes de hoy.",
+    "Queda para otra vez (mas grande, mas arriesgado): una instantanea periodica de las estadisticas de juego (LoL/Valorant/TFT), que necesitaria una tarea programada real en el servidor.",
+  ],
+};
+
+const v12147_de: ChangelogEntry = {
+  version: "v1.21.47",
+  date: "2026-09-14",
+  title: "Analytics: echte Langzeit-Historie (Aufgaben, Fokus, Rechnungen)",
+  items: [
+    "Aufgaben: das Abschlussdatum wird jetzt wirklich gespeichert (vorher gab es nur das Erstellungsdatum). Neues Diagramm \"Erledigt / Tag\" neben \"Erstellt / Tag\".",
+    "Fokus: abgeschlossene Sitzungen werden jetzt zusaetzlich in der Cloud gespeichert (der lokale Cache auf diesem Geraet bleibt zusaetzlich bestehen). Die Analytics-Seite zeigt jetzt eine echte, geraeteuebergreifend synchronisierte Historie ohne 100-Eintraege-Limit.",
+    "Rechnungen: bei jedem Oeffnen der Analytics-Seite wird ein Schnappschuss des Monats (bezahlt / offen / Aufteilung nach Kategorie) gespeichert. Neues Diagramm \"Offen / Monat\", das sich mit der Zeit aufbaut.",
+    "Wichtig: alle drei Historien sammeln sich erst ab jetzt an, nicht rueckwirkend — es gibt keine Moeglichkeit, Abschlussdaten, Sitzungen oder Rechnungszustaende zu rekonstruieren, die vor heute nie erfasst wurden.",
+    "Fuer einen spaeteren Durchgang zurueckgestellt (groesser, riskanter): ein periodischer Schnappschuss der Gaming-Statistiken (LoL/Valorant/TFT), der einen echten serverseitigen geplanten Job braeuchte.",
+  ],
+};
+
+CHANGELOG_BY_LANG.fr.unshift(v12147_fr);
+CHANGELOG_BY_LANG.en.unshift(v12147_en);
+CHANGELOG_BY_LANG.es.unshift(v12147_es);
+CHANGELOG_BY_LANG.de.unshift(v12147_de);
+
 export const CHANGELOG = CHANGELOG_BY_LANG.fr;

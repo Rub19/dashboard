@@ -6,13 +6,14 @@ import { LineChart as LineChartIcon, Gamepad2, Receipt, CheckCircle2, Timer, Arr
 import { useI18n } from "@/lib/hooks/useI18n";
 import { useTasks } from "@/lib/hooks/useTasks";
 import { useGamingAnalytics } from "@/lib/hooks/useGamingAnalytics";
+import { useFocusSessionHistory } from "@/lib/hooks/useFocusSessionHistory";
 import { listBills, type BillCategory } from "@/lib/bills-manager";
+import { syncCurrentMonthSnapshot, loadBillSnapshots, type BillMonthSnapshotRow } from "@/lib/bills-snapshot";
 import {
   billsCategoryBreakdown,
   billsMonthSnapshot,
   tasksStats,
   focusHistoryByDay,
-  type FocusHistoryEntry,
 } from "@/lib/analytics";
 import AnalyticsBarChart from "@/components/charts/AnalyticsBarChart";
 import AnalyticsLineChart from "@/components/charts/AnalyticsLineChart";
@@ -31,17 +32,6 @@ const CATEGORY_LABELS: Record<BillCategory, string> = {
   taxes: "Impôts",
   other: "Autre",
 };
-
-function readFocusHistory(): FocusHistoryEntry[] {
-  if (typeof window === "undefined") return [];
-  try {
-    const raw = localStorage.getItem("ethone-focus-history") || "[]";
-    const parsed = JSON.parse(raw);
-    return Array.isArray(parsed) ? parsed : [];
-  } catch {
-    return [];
-  }
-}
 
 function formatRelativeSync(timestamp: number | null): string | null {
   if (!timestamp) return null;
@@ -93,12 +83,15 @@ export default function AnalyticsClient() {
   const palette = useChartPalette();
   const gaming = useGamingAnalytics();
   const { items: tasks } = useTasks();
+  const { items: focusHistory } = useFocusSessionHistory();
   const [bills, setBills] = useState<ReturnType<typeof listBills>>([]);
-  const [focusHistory, setFocusHistory] = useState<FocusHistoryEntry[]>([]);
+  const [billSnapshots, setBillSnapshots] = useState<BillMonthSnapshotRow[]>([]);
 
   useEffect(() => {
     setBills(listBills());
-    setFocusHistory(readFocusHistory());
+    void syncCurrentMonthSnapshot().then(() => {
+      loadBillSnapshots().then(setBillSnapshots);
+    });
   }, []);
 
   const taskStats = useMemo(() => tasksStats(tasks), [tasks]);
@@ -224,11 +217,11 @@ export default function AnalyticsClient() {
       </SectionCard>
 
       {/* Finances */}
-      <SectionCard icon={<Receipt className="h-4 w-4" />} title="Finances" caption="Répartition par catégorie et ce mois-ci — pas d'historique de dépenses au fil du temps pour l'instant.">
+      <SectionCard icon={<Receipt className="h-4 w-4" />} title="Finances" caption="Répartition par catégorie, ce mois-ci, et historique mensuel réel à partir de ce mois-ci.">
         {bills.length === 0 ? (
           <EmptyCta label="Ajouter tes factures dans le calendrier" href="/calendar" />
         ) : (
-          <div className="grid gap-4 sm:grid-cols-2">
+          <div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-3">
             <div>
               <p className="mb-2 text-xs font-medium text-[var(--text-muted)]">Par catégorie (non payé)</p>
               <AnalyticsDonutChart
@@ -247,16 +240,29 @@ export default function AnalyticsClient() {
                 color={palette.warning}
               />
             </div>
+            {billSnapshots.length > 0 ? (
+              <div>
+                <p className="mb-2 text-xs font-medium text-[var(--text-muted)]">À payer / mois</p>
+                <AnalyticsLineChart
+                  data={billSnapshots.slice(-12).map((s) => ({
+                    label: new Date(s.month).toLocaleDateString("fr-FR", { month: "short", year: "2-digit" }),
+                    value: Math.round(s.unpaid_amount),
+                  }))}
+                  valueSuffix="€"
+                  color={palette.danger}
+                />
+              </div>
+            ) : null}
           </div>
         )}
       </SectionCard>
 
       {/* Tasks */}
-      <SectionCard icon={<CheckCircle2 className="h-4 w-4" />} title="Tâches" caption="Complétion actuelle et créations par jour — pas de suivi des complétions dans le temps pour l'instant (aucune date de complétion enregistrée).">
+      <SectionCard icon={<CheckCircle2 className="h-4 w-4" />} title="Tâches" caption="Complétion actuelle, et créations/complétions par jour.">
         {tasks.length === 0 ? (
           <EmptyCta label="Créer tes premières tâches" href="/tasks" />
         ) : (
-          <div className="grid gap-4 sm:grid-cols-3">
+          <div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-4">
             <div>
               <p className="mb-2 text-xs font-medium text-[var(--text-muted)]">Complétion</p>
               <AnalyticsDonutChart
@@ -282,12 +288,16 @@ export default function AnalyticsClient() {
               <p className="mb-2 text-xs font-medium text-[var(--text-muted)]">Créées / jour</p>
               <AnalyticsLineChart data={taskStats.createdByDay.slice(-14).map((d) => ({ label: d.dateLabel, value: d.count }))} color={palette.accent} />
             </div>
+            <div>
+              <p className="mb-2 text-xs font-medium text-[var(--text-muted)]">Terminées / jour</p>
+              <AnalyticsLineChart data={taskStats.completedByDay.slice(-14).map((d) => ({ label: d.dateLabel, value: d.count }))} color={palette.success} />
+            </div>
           </div>
         )}
       </SectionCard>
 
       {/* Focus */}
-      <SectionCard icon={<Timer className="h-4 w-4" />} title="Focus" caption="Sessions réelles, limitées aux 100 dernières et à cet appareil.">
+      <SectionCard icon={<Timer className="h-4 w-4" />} title="Focus" caption="Historique réel, synchronisé entre appareils.">
         {focusHistory.length === 0 ? (
           <EmptyCta label="Démarrer une session focus" href="/focus" />
         ) : (

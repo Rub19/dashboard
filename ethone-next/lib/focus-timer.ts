@@ -449,6 +449,13 @@ export class FocusTimer {
             detail: { duration: this.state.total, goal: this.state.goal, preset: this.state.activePreset }
           }));
         } catch {}
+
+        void this.saveFocusSessionToCloud({
+          duration: this.state.total,
+          preset: this.state.activePreset,
+          goal: this.state.goal,
+          completedAt: new Date().toISOString(),
+        });
       }
 
       this.state = this.makeState({
@@ -616,6 +623,30 @@ export class FocusTimer {
       useSyncStore.getState().setStatus("pomodoro", "idle");
     } catch {
       useSyncStore.getState().setStatus("pomodoro", "idle");
+    }
+  }
+
+  private async saveFocusSessionToCloud(session: {
+    duration: number;
+    preset: string;
+    goal?: string;
+    completedAt: string;
+  }): Promise<void> {
+    try {
+      const { data: sessionData } = await supabase.auth.getSession();
+      const userId = sessionData?.session?.user?.id;
+      if (!userId) return;
+
+      await supabase.from("ethone_focus_sessions").insert({
+        user_id: userId,
+        duration: session.duration,
+        preset: session.preset,
+        goal: session.goal || null,
+        completed_at: session.completedAt,
+      });
+    } catch {
+      // Best-effort history log; the localStorage copy above already
+      // covers the offline/instant case for FocusHistoryView.
     }
   }
 

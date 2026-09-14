@@ -2,6 +2,19 @@
 
 Toutes les modifications notables de ce projet seront documentées dans ce fichier.
 
+## v1.21.47 — 2026-09-14
+
+**Analytics : vrai historique long terme (tâches, focus, factures)**
+
+- `supabase/migrations/202609140001_analytics_phase2_history.sql` — trois ajouts additifs : `tasks.completed_at` (nouvelle colonne, pas de changement RLS nécessaire), `ethone_focus_sessions` (journal append-only, RLS propriétaire-uniquement select/insert, même forme que `tasks`), `ethone_bill_snapshots` (une ligne par mois/utilisateur, unique `(user_id, month)`, RLS propriétaire select/insert/update). **Migration à exécuter manuellement dans le SQL Editor de Supabase — je n'y ai pas accès.**
+- Tâches : `lib/hooks/useTasks.ts`'s `update()`/`create()` renseignent maintenant `completed_at` automatiquement dès qu'`is_completed` change (aucun appelant à modifier). `lib/analytics.ts`'s `tasksStats()` calcule un vrai `completedByDay`. `components/AnalyticsClient.tsx` affiche "Terminées / jour" à côté de "Créées / jour".
+- Focus : `lib/focus-timer.ts`'s `advance()` sauvegarde maintenant chaque session terminée dans `ethone_focus_sessions` (insertion best-effort, en plus du cache `localStorage` existant qui reste inchangé pour `FocusHistoryView.tsx`). Nouveau `lib/hooks/useFocusSessionHistory.ts` — historique réel, illimité, synchronisé entre appareils, utilisé uniquement par la page Analytics.
+- Factures : nouveau `lib/bills-snapshot.ts`'s `syncCurrentMonthSnapshot()` — à l'ouverture d'Analytics, enregistre un instantané du mois courant (payé/à payer/répartition par catégorie) dans `ethone_bill_snapshots`. Nouveau graphique "À payer / mois" dans `AnalyticsClient.tsx`, alimenté par ce nouvel historique qui se construit à partir de maintenant.
+- Important, répété dans le changelog in-app : ces trois historiques démarrent à partir du déploiement, pas rétroactivement — aucune reconstruction possible de dates de complétion, sessions ou états de factures jamais enregistrés avant aujourd'hui.
+- Explicitement laissé pour une prochaine passe séparée (plus gros et plus risqué que ce lot entier) : instantané périodique des stats de jeu (LoL/Valorant/TFT), qui demanderait une vraie infrastructure Cloudflare Cron Trigger côté Worker.
+- Tests : `lib/analytics.test.ts` étendu pour `completedByDay`, nouveaux `lib/hooks/useFocusSessionHistory.test.ts` et `lib/bills-snapshot.test.ts` (mock Supabase, convention `useSpaceTasks.test.ts`).
+- Validation : `ethone-next` `tsc --noEmit` ✓, `npm run build` ✓, `npm run lint` (0 erreur, warnings préexistants uniquement), `npm run test:unit` 95/95. `audit-security` PASS (1961 fichiers). Aucune vérification RLS automatisée possible ici (même limite que pour les Espaces Partagés) — policies revues à la main contre le schéma déjà en production de `tasks`.
+
 ## v1.21.46 — 2026-09-14
 
 **Bot musique : préchargement du titre suivant (expérimental)**

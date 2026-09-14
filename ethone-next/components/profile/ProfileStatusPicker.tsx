@@ -165,8 +165,8 @@ export default function ProfileStatusPicker({
           </label>
 
           {/* Emoji row + Input */}
-          <div className="flex items-center gap-2">
-            <div className="flex items-center gap-1 bg-[var(--surface-raised)] border border-[var(--panel-border)] rounded-[var(--inset-radius)] p-1">
+          <div className="flex flex-wrap items-center gap-2">
+            <div className="flex shrink-0 items-center gap-1 bg-[var(--surface-raised)] border border-[var(--panel-border)] rounded-[var(--inset-radius)] p-1">
               {EMOJI_PRESETS.map((emoji) => (
                 <button
                   key={emoji}
@@ -188,7 +188,7 @@ export default function ProfileStatusPicker({
               onChange={(e) => setCustomText(e.target.value)}
               placeholder="Que faites-vous ?"
               maxLength={60}
-              className="flex-1 rounded-[var(--inset-radius)] border border-[var(--panel-border)] bg-[var(--surface-raised)] px-3 py-1.5 text-xs text-[var(--text-primary)] placeholder-[var(--text-muted)] focus:border-[var(--accent-primary)] focus:outline-none"
+              className="min-w-0 flex-1 rounded-[var(--inset-radius)] border border-[var(--panel-border)] bg-[var(--surface-raised)] px-3 py-1.5 text-xs text-[var(--text-primary)] placeholder-[var(--text-muted)] focus:border-[var(--accent-primary)] focus:outline-none"
             />
           </div>
         </div>

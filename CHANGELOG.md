@@ -2,6 +2,15 @@
 
 Toutes les modifications notables de ce projet seront documentées dans ce fichier.
 
+## v1.21.62 — 2026-09-14
+
+**Fix : avatars Jett/Omen cassés, statut personnalisé qui débordait, poll Spotify allégé**
+
+- Audit complet des 347 avatars (`lib/identity/avatarCatalog.ts` + `avatarDriveManifest.ts`) : seuls Jett et Omen pointaient vers un mauvais UUID d'agent Valorant (vérifié contre l'API officielle Riot) — corrigé. Le reste du catalogue (Netflix, Crunchyroll, LoL, ETHONE) est intact.
+- `components/profile/ProfileStatusPicker.tsx` : le champ "Message de statut personnalisé" débordait du cadre (input sans `min-w-0` en flexbox) — corrigé, avec repli en ligne propre si l'espace manque.
+- `components/DynamicIslandContainer.tsx` : poll Spotify global (toutes pages) réduit de 3s à 8s à l'arrêt — aucun impact visuel (barre de progression déjà interpolée côté client), plafond de 5s conservé pendant une lecture active.
+- Validation : `tsc`/`build`/`lint` (0 erreur)/`test:unit` 115/115 ✓. `audit-security` PASS (1984 fichiers).
+
 ## v1.21.61 — 2026-09-14
 
 **Fix : le jeu Dino Corridor ne pouvait pas s'afficher (CSP du site lui-même)**

@@ -256,7 +256,17 @@ export default function DynamicIslandContainer() {
   const { settings } = useSettings();
   const { success: showSuccess, error: showError } = useToast();
   const focus = useFocus();
-  const { nowPlaying, loading: npLoading, refetch: refetchNowPlaying } = useNowPlaying(3000);
+  // DynamicIslandContainer is mounted globally (every page, not just the
+  // dashboard — see Shell.tsx), so this poll interval sets a floor on how
+  // often the whole app re-renders/fetches. LiveMediaProgress already
+  // interpolates the progress bar client-side via requestAnimationFrame
+  // (see components/LiveMediaProgress.tsx), so a slower poll here only
+  // affects how quickly external changes (skip/pause from another device)
+  // get picked up — not visual smoothness. useNowPlaying itself already
+  // caps this at 5s while something is actively playing regardless of the
+  // value passed here (lib/hooks/useNowPlaying.ts), so 8s only really
+  // slows down the idle/paused case.
+  const { nowPlaying, loading: npLoading, refetch: refetchNowPlaying } = useNowPlaying(8000);
   const isThinking = useBrainActivityStore((s) => s.isThinking);
   const { visible } = useDynamicIslandStore();
   const pathname = usePathname();

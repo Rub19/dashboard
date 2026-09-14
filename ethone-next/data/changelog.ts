@@ -27399,4 +27399,57 @@ CHANGELOG_BY_LANG.en.unshift(v12161_en);
 CHANGELOG_BY_LANG.es.unshift(v12161_es);
 CHANGELOG_BY_LANG.de.unshift(v12161_de);
 
+const v12162_fr: ChangelogEntry = {
+  version: "v1.21.62",
+  date: "2026-09-14",
+  title: "Fix : avatars Jett/Omen cassés, statut personnalisé qui débordait, poll Spotify allégé",
+  items: [
+    "Audit complet des 347 avatars du sélecteur (`lib/identity/avatarCatalog.ts` + `avatarDriveManifest.ts`) : 345 étaient déjà corrects (Netflix, Crunchyroll, League of Legends, logos ETHONE — tous vérifiés un par un). Seuls Jett et Omen (Valorant) pointaient vers un UUID d'agent erroné auprès de l'API officielle Riot, d'où le cercle de secours affiché à la place du vrai portrait. Corrigé avec les bons UUID.",
+    "Dans le sélecteur de statut de présence, le champ « Message de statut personnalisé » débordait du cadre de la fenêtre sur les écrans étroits — l'input n'avait pas `min-w-0`, donc en flexbox il refusait de rétrécir sous la largeur de son propre texte. Corrigé, et la rangée d'émojis + le champ passent proprement à la ligne si la place manque au lieu de déborder.",
+    "`DynamicIslandContainer` (monté sur TOUTES les pages, pas seulement le dashboard) sondait Spotify toutes les 3 secondes en continu. Passé à 8s à l'arrêt — la barre de progression s'anime déjà en douceur côté client (`requestAnimationFrame`) donc ça ne change rien visuellement, et le hook garde déjà un plafond de 5s pendant une lecture active.",
+    "Validation : `tsc`/`build`/`lint` (0 erreur, 0 nouveau warning)/`test:unit` 115/115 ✓. `audit-security` PASS (1984 fichiers).",
+  ],
+};
+
+const v12162_en: ChangelogEntry = {
+  version: "v1.21.62",
+  date: "2026-09-14",
+  title: "Fix: broken Jett/Omen avatars, overflowing custom status, lighter Spotify polling",
+  items: [
+    "Full audit of the 347 avatars in the picker (`lib/identity/avatarCatalog.ts` + `avatarDriveManifest.ts`): 345 were already correct (Netflix, Crunchyroll, League of Legends, ETHONE logos -- checked one by one). Only Jett and Omen (Valorant) pointed at a wrong agent UUID against Riot's official API, hence the fallback circle showing instead of the real portrait. Fixed with the correct UUIDs.",
+    "In the presence status picker, the \"Custom status message\" field overflowed the modal's frame on narrow screens -- the input was missing `min-w-0`, so in a flex row it refused to shrink below its own text's width. Fixed, and the emoji row + input now wrap cleanly onto their own line when space is tight instead of overflowing.",
+    "`DynamicIslandContainer` (mounted on EVERY page, not just the dashboard) polled Spotify every 3 seconds continuously. Raised to 8s while idle -- the progress bar already animates smoothly client-side (`requestAnimationFrame`) so this changes nothing visually, and the hook already caps at 5s while something is actively playing.",
+    "Validation: `tsc`/`build`/`lint` (0 errors, 0 new warnings)/`test:unit` 115/115 pass. `audit-security` PASS (1984 files).",
+  ],
+};
+
+const v12162_es: ChangelogEntry = {
+  version: "v1.21.62",
+  date: "2026-09-14",
+  title: "Corrección: avatares rotos de Jett/Omen, estado personalizado que se desbordaba, sondeo de Spotify más ligero",
+  items: [
+    "Auditoría completa de los 347 avatares del selector (`lib/identity/avatarCatalog.ts` + `avatarDriveManifest.ts`): 345 ya estaban correctos (Netflix, Crunchyroll, League of Legends, logos ETHONE -- verificados uno por uno). Solo Jett y Omen (Valorant) apuntaban a un UUID de agente incorrecto según la API oficial de Riot, de ahí el círculo de repuesto en lugar del retrato real. Corregido con los UUID correctos.",
+    "En el selector de estado de presencia, el campo \"Mensaje de estado personalizado\" se desbordaba del marco de la ventana en pantallas estrechas -- al input le faltaba `min-w-0`, así que en una fila flex se negaba a encogerse por debajo del ancho de su propio texto. Corregido, y la fila de emojis + el campo ahora pasan limpiamente a su propia línea cuando falta espacio en lugar de desbordarse.",
+    "`DynamicIslandContainer` (montado en TODAS las páginas, no solo el dashboard) sondeaba Spotify cada 3 segundos de forma continua. Aumentado a 8s en reposo -- la barra de progreso ya se anima suavemente en el cliente (`requestAnimationFrame`), así que esto no cambia nada visualmente, y el hook ya limita a 5s mientras algo se está reproduciendo activamente.",
+    "Validación: `tsc`/`build`/`lint` (0 errores, 0 advertencias nuevas)/`test:unit` 115/115 ✓. `audit-security` PASS (1984 archivos).",
+  ],
+};
+
+const v12162_de: ChangelogEntry = {
+  version: "v1.21.62",
+  date: "2026-09-14",
+  title: "Fix: kaputte Jett/Omen-Avatare, ueberlaufender Statustext, leichteres Spotify-Polling",
+  items: [
+    "Vollstaendige Pruefung aller 347 Avatare im Auswahlmenue (`lib/identity/avatarCatalog.ts` + `avatarDriveManifest.ts`): 345 waren bereits korrekt (Netflix, Crunchyroll, League of Legends, ETHONE-Logos -- einzeln geprueft). Nur Jett und Omen (Valorant) zeigten auf eine falsche Agenten-UUID gegenueber Riots offizieller API, daher der Platzhalter-Kreis statt des echten Portraits. Mit den richtigen UUIDs behoben.",
+    "Im Praesenzstatus-Auswahlmenue lief das Feld \"Benutzerdefinierte Statusnachricht\" auf schmalen Bildschirmen ueber den Rahmen des Fensters hinaus -- dem Input fehlte `min-w-0`, sodass es sich in einer Flex-Zeile nicht unter die Breite seines eigenen Texts verkleinern liess. Behoben, und die Emoji-Zeile + das Feld brechen jetzt sauber in eine eigene Zeile um, wenn der Platz knapp wird, statt ueberzulaufen.",
+    "`DynamicIslandContainer` (auf JEDER Seite gemountet, nicht nur im Dashboard) fragte Spotify durchgehend alle 3 Sekunden ab. Im Leerlauf auf 8s erhoeht -- die Fortschrittsleiste animiert bereits clientseitig fluessig (`requestAnimationFrame`), das aendert also visuell nichts, und der Hook deckelt bereits bei 5s waehrend aktiv etwas abgespielt wird.",
+    "Validierung: `tsc`/`build`/`lint` (0 Fehler, 0 neue Warnungen)/`test:unit` 115/115 bestanden. `audit-security` PASS (1984 Dateien).",
+  ],
+};
+
+CHANGELOG_BY_LANG.fr.unshift(v12162_fr);
+CHANGELOG_BY_LANG.en.unshift(v12162_en);
+CHANGELOG_BY_LANG.es.unshift(v12162_es);
+CHANGELOG_BY_LANG.de.unshift(v12162_de);
+
 export const CHANGELOG = CHANGELOG_BY_LANG.fr;

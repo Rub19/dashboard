@@ -183,29 +183,52 @@ export async function otpVerifyRoute({ request, env }) {
   // instead of the actual verification outcome. Falling back to resolving
   // it server-side from the email (exactly like sendOtp already does) means
   // a verify can never fail purely because the client forgot its own id.
-  let userId = body.userId && UUID_RE.test(body.userId) ? body.userId : null;
-  if (!userId) userId = await getUserIdByEmail(env, email);
-  if (!userId) throw httpError("PROVIDER_NOT_FOUND", 404);
-  await applyAuthRateLimit({ request, env, route: { id: "otp.verify" } }, userId);
+  // Everything from here to the verifyOtp() call sits outside that call's
+  // own try/catch below -- getUserIdByEmail / getTotpRecord / getOrCreateDevice
+  // can each fail for reasons that have nothing to do with the code itself
+  // (a transient Supabase request, a bad response shape), and previously any
+  // such failure surfaced as an unlogged, generic 500 that the login screen
+  // couldn't distinguish from a real "wrong/expired code". Wrapping the whole
+  // thing and logging before re-throwing means the NEXT occurrence of the
+  // still-unexplained "generic error" report is visible in Worker logs
+  // instead of being a dead end.
+  let userId;
+  let sessionId;
+  let device;
+  try {
+    userId = body.userId && UUID_RE.test(body.userId) ? body.userId : null;
+    if (!userId) userId = await getUserIdByEmail(env, email);
+    if (!userId) throw httpError("PROVIDER_NOT_FOUND", 404);
+    await applyAuthRateLimit({ request, env, route: { id: "otp.verify" } }, userId);
 
-  const userAgent = request.headers.get("user-agent") || "";
-  // A real session_id, shared by the device row and the minted token's
-  // session_id claim, is what lets a session actually be revoked later:
-  // middleware/auth.js's per-request revocation check looks up
-  // ethone_devices by (userId, session_id). Previously both were hardcoded
-  // null, so every OTP-issued token was unrevoke-able and every request
-  // created a fresh device row (getOrCreateDevice's session-based reuse
-  // never matched).
-  const sessionId = crypto.randomUUID();
-  // Determined BEFORE the device row (= this session) is created, so the
-  // very first token this route ever hands back already belongs to a
-  // session already flagged pending — unlike the password/OAuth/passkey
-  // flows (see deviceUpsertRoute), there's no window here where a request
-  // could beat the flag being set, because the Worker mints this session's
-  // token itself instead of the client exchanging one directly with Supabase.
-  const totpRecord = await getTotpRecord(env, userId);
-  const mfaPending = Boolean(totpRecord?.data?.verified);
-  const device = await getOrCreateDevice(env, userId, sessionId, userAgent, "", mfaPending);
+    const userAgent = request.headers.get("user-agent") || "";
+    // A real session_id, shared by the device row and the minted token's
+    // session_id claim, is what lets a session actually be revoked later:
+    // middleware/auth.js's per-request revocation check looks up
+    // ethone_devices by (userId, session_id). Previously both were hardcoded
+    // null, so every OTP-issued token was unrevoke-able and every request
+    // created a fresh device row (getOrCreateDevice's session-based reuse
+    // never matched).
+    sessionId = crypto.randomUUID();
+    // Determined BEFORE the device row (= this session) is created, so the
+    // very first token this route ever hands back already belongs to a
+    // session already flagged pending — unlike the password/OAuth/passkey
+    // flows (see deviceUpsertRoute), there's no window here where a request
+    // could beat the flag being set, because the Worker mints this session's
+    // token itself instead of the client exchanging one directly with Supabase.
+    const totpRecord = await getTotpRecord(env, userId);
+    const mfaPending = Boolean(totpRecord?.data?.verified);
+    device = await getOrCreateDevice(env, userId, sessionId, userAgent, "", mfaPending);
+  } catch (err) {
+    if (err && err.name === "HttpError") throw err;
+    console.error("[otp.verify] setup failed before code check", {
+      email: email.slice(0, 3) + "***" + email.slice(email.indexOf("@")),
+      hasClientUserId: Boolean(body.userId),
+      message: err instanceof Error ? err.message : String(err),
+      stack: err instanceof Error ? err.stack : undefined
+    });
+    throw err;
+  }
   try {
     await verifyOtp(env, userId, email, code, device.id, sessionId);
   } catch (err) {
@@ -218,6 +241,11 @@ export async function otpVerifyRoute({ request, env }) {
     if (/no active/i.test(message)) throw httpError("OTP_NOT_FOUND", 404);
     if (/too many/i.test(message)) throw httpError("AUTH_RATE_LIMITED", 429, { retryable: true });
     if (/invalid/i.test(message)) throw httpError("TOTP_INVALID", 401);
+    console.error("[otp.verify] verifyOtp threw an unmapped error", {
+      email: email.slice(0, 3) + "***" + email.slice(email.indexOf("@")),
+      message,
+      stack: err instanceof Error ? err.stack : undefined
+    });
     throw err;
   }
   const rememberMe = Boolean(body.rememberMe);

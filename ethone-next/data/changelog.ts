@@ -26987,4 +26987,53 @@ CHANGELOG_BY_LANG.en.unshift(v12153_en);
 CHANGELOG_BY_LANG.es.unshift(v12153_es);
 CHANGELOG_BY_LANG.de.unshift(v12153_de);
 
+const v12154_fr: ChangelogEntry = {
+  version: "v1.21.54",
+  date: "2026-09-14",
+  title: "Fix : doublon du sélecteur de langue, exigence du mot de passe visible dès le départ",
+  items: [
+    "Le sélecteur de langue s'affichait deux fois sur la page de connexion (un ajout précédent pas entièrement retiré). Corrigé — un seul, ancré en haut à droite à toutes les tailles d'écran.",
+    "Formulaire d'inscription : \"12 caractères minimum, avec majuscule, minuscule, chiffre et symbole.\" s'affiche maintenant dès l'arrivée sur le champ mot de passe, avant même de commencer à taper — plus besoin de deviner la règle avant l'échec au clic sur \"Créer mon espace\".",
+    "Ajout de journalisation complète côté serveur sur tout le chemin de vérification OTP (résolution de l'identifiant, création de l'appareil, vérification du code) — jusqu'ici certaines étapes pouvaient échouer silencieusement sans laisser aucune trace exploitable. Le bug \"erreur générique\" signalé plusieurs fois n'est toujours pas confirmé avec certitude ; les prochains logs Cloudflare devraient enfin montrer la vraie cause.",
+  ],
+};
+
+const v12154_en: ChangelogEntry = {
+  version: "v1.21.54",
+  date: "2026-09-14",
+  title: "Fix: duplicate language switcher, password requirement shown upfront",
+  items: [
+    "The language switcher was rendering twice on the login page (a previous addition wasn't fully removed). Fixed -- a single one, anchored top-right at every screen size.",
+    "Sign-up form: \"12+ characters, with uppercase, lowercase, number, and symbol.\" now shows the moment you reach the password field, before you even start typing -- no more guessing the rule until it fails on clicking \"Créer mon espace\".",
+    "Added full server-side logging across the entire OTP verify path (id resolution, device creation, code check) -- until now some steps could fail silently with no usable trace at all. The repeatedly-reported \"generic error\" bug still isn't confirmed with certainty; the next Cloudflare logs should finally show the real cause.",
+  ],
+};
+
+const v12154_es: ChangelogEntry = {
+  version: "v1.21.54",
+  date: "2026-09-14",
+  title: "Corrección: selector de idioma duplicado, requisito de contraseña visible desde el inicio",
+  items: [
+    "El selector de idioma se mostraba dos veces en la página de login (un añadido anterior no se había retirado del todo). Corregido -- uno solo, anclado arriba a la derecha en cualquier tamaño de pantalla.",
+    "Formulario de registro: \"12+ caracteres, con mayúscula, minúscula, número y símbolo.\" ahora se muestra en cuanto llegas al campo de contraseña, antes incluso de empezar a escribir -- ya no hay que adivinar la regla hasta que falla al pulsar \"Créer mon espace\".",
+    "Se añadió registro completo en el servidor en todo el flujo de verificación OTP (resolución del id, creación del dispositivo, comprobación del código) -- hasta ahora algunos pasos podían fallar en silencio sin dejar ningún rastro utilizable. El bug de \"error genérico\" reportado varias veces sigue sin causa confirmada con certeza; los próximos registros de Cloudflare deberían por fin mostrar la causa real.",
+  ],
+};
+
+const v12154_de: ChangelogEntry = {
+  version: "v1.21.54",
+  date: "2026-09-14",
+  title: "Fix: doppelter Sprachumschalter, Passwortanforderung von Anfang an sichtbar",
+  items: [
+    "Der Sprachumschalter wurde auf der Login-Seite zweimal angezeigt (ein frueherer Zusatz war nicht vollstaendig entfernt worden). Behoben -- nur noch einer, oben rechts verankert bei jeder Bildschirmgroesse.",
+    "Registrierungsformular: \"12+ Zeichen mit Gross- und Kleinbuchstaben, Zahl und Symbol.\" wird jetzt schon beim Erreichen des Passwortfelds angezeigt, noch bevor man zu tippen beginnt -- kein Raten der Regel mehr bis zum Fehlschlag beim Klick auf \"Créer mon espace\".",
+    "Vollstaendiges serverseitiges Logging ueber den gesamten OTP-Verifizierungspfad hinzugefuegt (ID-Aufloesung, Geraete-Erstellung, Code-Pruefung) -- bisher konnten manche Schritte stillschweigend fehlschlagen, ohne eine verwertbare Spur zu hinterlassen. Der mehrfach gemeldete \"generische Fehler\"-Bug ist weiterhin nicht mit Sicherheit bestaetigt; die naechsten Cloudflare-Logs sollten die tatsaechliche Ursache endlich zeigen.",
+  ],
+};
+
+CHANGELOG_BY_LANG.fr.unshift(v12154_fr);
+CHANGELOG_BY_LANG.en.unshift(v12154_en);
+CHANGELOG_BY_LANG.es.unshift(v12154_es);
+CHANGELOG_BY_LANG.de.unshift(v12154_de);
+
 export const CHANGELOG = CHANGELOG_BY_LANG.fr;

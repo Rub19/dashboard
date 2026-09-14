@@ -2,6 +2,15 @@
 
 Toutes les modifications notables de ce projet seront documentées dans ce fichier.
 
+## v1.21.54 — 2026-09-14
+
+**Fix : doublon du sélecteur de langue, exigence du mot de passe visible dès le départ, logs OTP étendus**
+
+- `app/login/page.tsx` : le passage précédent (v1.21.53) avait ajouté le sélecteur de langue dans la ligne d'en-tête du panneau gauche SANS retirer celui déjà repositionné en coin haut-droit — doublon visible confirmé par capture d'écran. Le doublon dans la ligne d'en-tête est retiré ; un seul sélecteur reste, ancré en haut à droite à toutes les tailles.
+- Formulaire d'inscription : `PasswordStrengthMeter` ne s'affichait qu'une fois la saisie commencée. Ajout d'un texte statique ("12 caractères minimum, avec majuscule, minuscule, chiffre et symbole.", réutilise `i18n("passwordRequirement")`) affiché tant que le champ est vide, remplacé par la jauge dynamique dès la première frappe — l'exigence est visible avant même d'essayer.
+- `worker/src/routes/security-identity.js` : le bug "erreur générique" signalé plusieurs fois par l'utilisateur reste non confirmé avec certitude malgré le correctif v1.21.51 (résolution de l'userId par e-mail, déploiement vérifié à jour côté Worker ET Pages). Repéré que `getUserIdByEmail`/`getTotpRecord`/`getOrCreateDevice` tournaient hors du bloc try/catch existant — une panne transitoire de l'un de ces appels devenait un 500 générique totalement silencieux, sans aucune trace dans les logs. Toute la préparation (résolution de l'identifiant → création de l'appareil) est maintenant dans son propre bloc try/catch qui journalise le détail complet (message, stack, e-mail masqué) avant de relancer l'erreur ; le bloc `verifyOtp` existant journalise aussi désormais tout message d'erreur qui ne correspond à aucun des 5 cas déjà mappés. Prochaine occurrence = trace exploitable dans Cloudflare → Worker → Logs.
+- Validation : `worker` 251/251 tests toujours au vert (comportement inchangé, juste plus de visibilité), `ethone-next` `tsc`/`build`/`lint` (0 erreur)/`test:unit` 115/115 ✓. `audit-security` PASS (1982 fichiers). Doublon et texte du mot de passe vérifiés visuellement en local.
+
 ## v1.21.53 — 2026-09-14
 
 **Fix : mot de passe refusé à tort, notification de mise à jour et sélecteur de langue repensés**

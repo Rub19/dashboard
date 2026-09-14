@@ -355,11 +355,14 @@ export default function LoginPage() {
 
   return (
     <div className="relative flex min-h-dvh w-full overflow-hidden bg-[var(--bg-main,#0E1015)] text-white selection:bg-[var(--accent-primary,#C1234F)]/30 selection:text-white">
-      {/* Language switcher — top-right corner on mobile/tablet, where there's
-          no hero panel to anchor it to. On desktop it moves into the hero
-          panel's own header row instead (below) so it's never an orphan
-          element floating independently above both columns. */}
-      <div className="absolute right-4 top-4 z-50 sm:right-6 sm:top-6 lg:hidden">
+      {/* Language switcher — pinned to the actual top-right corner of the
+          viewport at every breakpoint (the one place a locale switcher is
+          expected, and never in visual competition with either column).
+          Previous attempts tried to pair it with the hero logo via
+          justify-between, but on a ~1000px-wide hero half that put ~900px
+          of empty space between the two, which still read as two
+          disconnected floating elements rather than one header. */}
+      <div className="absolute right-4 top-4 z-50 sm:right-6 sm:top-6">
         <LanguageSwitcher />
       </div>
 
@@ -392,19 +395,16 @@ export default function LoginPage() {
         />
 
         {/* Brand Header */}
-        <div className="z-10 flex items-center justify-between gap-3">
-          <div className="flex items-center gap-3">
-            <div className="relative flex h-10 w-10 items-center justify-center rounded-[var(--inset-radius)] bg-white/[0.04] border border-[var(--panel-border)] shadow-lg">
-              <BrandMark size={28} />
-            </div>
-            <div className="flex items-center gap-2">
-              <span className="text-xl font-bold tracking-tight text-white font-mono">ETHONE</span>
-              <span className="rounded-[var(--inset-radius)] border border-[var(--panel-border)] bg-white/[0.04] px-2 py-0.5 text-[10px] font-semibold uppercase tracking-wider text-[var(--accent-primary,#C1234F)]">
-                OS
-              </span>
-            </div>
+        <div className="z-10 flex items-center gap-3">
+          <div className="relative flex h-10 w-10 items-center justify-center rounded-[var(--inset-radius)] bg-white/[0.04] border border-[var(--panel-border)] shadow-lg">
+            <BrandMark size={28} />
           </div>
-          <LanguageSwitcher />
+          <div className="flex items-center gap-2">
+            <span className="text-xl font-bold tracking-tight text-white font-mono">ETHONE</span>
+            <span className="rounded-[var(--inset-radius)] border border-[var(--panel-border)] bg-white/[0.04] px-2 py-0.5 text-[10px] font-semibold uppercase tracking-wider text-[var(--accent-primary,#C1234F)]">
+              OS
+            </span>
+          </div>
         </div>
 
         {/* Main Hero Content */}
@@ -867,7 +867,11 @@ export default function LoginPage() {
                           </button>
                         }
                       />
-                      <PasswordStrengthMeter password={password} />
+                      {password ? (
+                        <PasswordStrengthMeter password={password} />
+                      ) : (
+                        <p className="pt-1 text-[11px] text-zinc-500">{i18n("passwordRequirement")}</p>
+                      )}
                     </div>
 
                     <AuthInputField

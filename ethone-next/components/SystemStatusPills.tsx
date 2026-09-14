@@ -6,7 +6,7 @@ import { useI18n } from "@/lib/hooks/useI18n";
 import { useActiveProfile } from "@/components/SettingsProvider";
 import { useActivityJournal } from "@/lib/hooks/useActivityJournal";
 import { useLocalStorage } from "@/lib/hooks/useLocalStorage";
-import { useLiveData } from "@/lib/hooks/useLiveData";
+import { useWeatherOnly } from "@/lib/hooks/useWeatherOnly";
 import Clock from "@/components/Clock";
 import WeatherDetailPopover from "@/components/WeatherDetailPopover";
 
@@ -55,7 +55,7 @@ function Separator() {
 
 function WeatherStatusPill() {
   const i18n = useI18n();
-  const { weather } = useLiveData(300000);
+  const { weather } = useWeatherOnly(300000);
   const [open, setOpen] = useState(false);
   const [buttonEl, setButtonEl] = useState<HTMLElement | null>(null);
 

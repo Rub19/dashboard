@@ -27452,4 +27452,65 @@ CHANGELOG_BY_LANG.en.unshift(v12162_en);
 CHANGELOG_BY_LANG.es.unshift(v12162_es);
 CHANGELOG_BY_LANG.de.unshift(v12162_de);
 
+const v12163_fr: ChangelogEntry = {
+  version: "v1.21.63",
+  date: "2026-09-14",
+  title: "Fluidité : suppression de 3 cycles de requêtes redondants",
+  items: [
+    "`useLiveData` (~26 requêtes en parallèle + son propre minuteur à chaque montage) était appelé indépendamment par au moins 10 composants. Cette passe supprime les doublons confirmés, sans réécrire l'architecture :",
+    "`LiveWidget.tsx` (toujours monté, sur toutes les pages) et le composant qu'il affiche, `LiveWidgets.tsx`, appelaient chacun leur propre copie de `useLiveData` — deux cycles complets en parallèle pour le même sous-arbre. `LiveWidgets` reçoit maintenant les données déjà récupérées par son parent au lieu de les refetcher.",
+    "`components/LiveTopBento.tsx` appelait aussi `useLiveData` mais n'était importé par aucun autre fichier du dépôt — code mort, supprimé.",
+    "`DockWeatherFlyout.tsx` et `SystemStatusPills.tsx` (dans la barre du haut, masqué sous 2xl mais quand même monté et actif) déclenchaient les ~26 requêtes complètes toutes les 5 minutes juste pour afficher une température. Nouveau hook dédié `useWeatherOnly` qui ne récupère que la météo — la mise en cache réseau existante (`fetchWorkerCached`, TTL 5 min) évite toute requête redondante même avec plusieurs appelants simultanés.",
+    "Reste identifié mais volontairement pas traité ici (nécessite sa propre conception) : l'appel indépendant de `PresenceProvider.tsx` à `useLiveData`, et un store partagé pour les vues qui ne sont montées que ponctuellement (dashboard, plugins, mission control).",
+    "Validation : `tsc`/`build`/`lint` (0 erreur, 0 nouveau warning)/`test:unit` 115/115 ✓. `audit-security` PASS (1984 fichiers).",
+  ],
+};
+
+const v12163_en: ChangelogEntry = {
+  version: "v1.21.63",
+  date: "2026-09-14",
+  title: "Fluidity: removed 3 redundant fetch cycles",
+  items: [
+    "`useLiveData` (~26 parallel requests + its own timer on every mount) was called independently by at least 10 components. This pass removes the confirmed duplicates, without rewriting the architecture:",
+    "`LiveWidget.tsx` (always mounted, on every page) and the component it renders, `LiveWidgets.tsx`, each called their own copy of `useLiveData` -- two full cycles running in parallel for the same subtree. `LiveWidgets` now receives the data its parent already fetched instead of re-fetching it.",
+    "`components/LiveTopBento.tsx` also called `useLiveData` but wasn't imported by any other file in the repo -- dead code, deleted.",
+    "`DockWeatherFlyout.tsx` and `SystemStatusPills.tsx` (in the top bar, CSS-hidden below 2xl but still mounted and active) each triggered the full ~26 requests every 5 minutes just to show a temperature. New dedicated `useWeatherOnly` hook that fetches only the weather -- the existing network cache (`fetchWorkerCached`, 5min TTL) still collapses redundant requests even with several simultaneous callers.",
+    "Identified but deliberately left alone for now (needs its own design pass): `PresenceProvider.tsx`'s independent `useLiveData` call, and a shared store for the views that are only mounted on demand (dashboard, plugins, mission control).",
+    "Validation: `tsc`/`build`/`lint` (0 errors, 0 new warnings)/`test:unit` 115/115 pass. `audit-security` PASS (1984 files).",
+  ],
+};
+
+const v12163_es: ChangelogEntry = {
+  version: "v1.21.63",
+  date: "2026-09-14",
+  title: "Fluidez: eliminados 3 ciclos de peticiones redundantes",
+  items: [
+    "`useLiveData` (~26 peticiones en paralelo + su propio temporizador en cada montaje) se llamaba de forma independiente desde al menos 10 componentes. Esta actualización elimina los duplicados confirmados, sin reescribir la arquitectura:",
+    "`LiveWidget.tsx` (siempre montado, en todas las páginas) y el componente que renderiza, `LiveWidgets.tsx`, llamaban cada uno a su propia copia de `useLiveData` -- dos ciclos completos ejecutándose en paralelo para el mismo subárbol. `LiveWidgets` ahora recibe los datos que su padre ya obtuvo en lugar de volver a pedirlos.",
+    "`components/LiveTopBento.tsx` también llamaba a `useLiveData` pero ningún otro archivo del repositorio lo importaba -- código muerto, eliminado.",
+    "`DockWeatherFlyout.tsx` y `SystemStatusPills.tsx` (en la barra superior, oculto con CSS por debajo de 2xl pero aun así montado y activo) disparaban las ~26 peticiones completas cada 5 minutos solo para mostrar una temperatura. Nuevo hook dedicado `useWeatherOnly` que solo obtiene el clima -- la caché de red existente (`fetchWorkerCached`, TTL de 5 min) sigue evitando peticiones redundantes aunque haya varias llamadas simultáneas.",
+    "Identificado pero dejado deliberadamente para más adelante (necesita su propio diseño): la llamada independiente de `PresenceProvider.tsx` a `useLiveData`, y un store compartido para las vistas que solo se montan puntualmente (dashboard, plugins, mission control).",
+    "Validación: `tsc`/`build`/`lint` (0 errores, 0 advertencias nuevas)/`test:unit` 115/115 ✓. `audit-security` PASS (1984 archivos).",
+  ],
+};
+
+const v12163_de: ChangelogEntry = {
+  version: "v1.21.63",
+  date: "2026-09-14",
+  title: "Fluessigkeit: 3 redundante Abruf-Zyklen entfernt",
+  items: [
+    "`useLiveData` (~26 parallele Anfragen + eigener Timer bei jedem Mount) wurde von mindestens 10 Komponenten unabhaengig voneinander aufgerufen. Dieser Durchgang entfernt die bestaetigten Duplikate, ohne die Architektur umzuschreiben:",
+    "`LiveWidget.tsx` (immer gemountet, auf jeder Seite) und die von ihr gerenderte Komponente `LiveWidgets.tsx` riefen jeweils ihre eigene Kopie von `useLiveData` auf -- zwei vollstaendige Zyklen liefen parallel fuer denselben Teilbaum. `LiveWidgets` erhaelt die Daten jetzt von seinem Elternteil, statt sie selbst erneut abzurufen.",
+    "`components/LiveTopBento.tsx` rief ebenfalls `useLiveData` auf, wurde aber von keiner anderen Datei im Repository importiert -- toter Code, geloescht.",
+    "`DockWeatherFlyout.tsx` und `SystemStatusPills.tsx` (in der oberen Leiste, unterhalb von 2xl per CSS versteckt, aber dennoch gemountet und aktiv) loesten alle 5 Minuten die vollen ~26 Anfragen aus, nur um eine Temperatur anzuzeigen. Neuer dedizierter `useWeatherOnly`-Hook, der nur das Wetter abruft -- der bestehende Netzwerk-Cache (`fetchWorkerCached`, 5-Minuten-TTL) verhindert weiterhin redundante Anfragen, selbst bei mehreren gleichzeitigen Aufrufern.",
+    "Erkannt, aber bewusst vorerst unangetastet gelassen (braucht einen eigenen Entwurf): der unabhaengige `useLiveData`-Aufruf von `PresenceProvider.tsx`, sowie ein gemeinsamer Store fuer die nur punktuell gemounteten Ansichten (Dashboard, Plugins, Mission Control).",
+    "Validierung: `tsc`/`build`/`lint` (0 Fehler, 0 neue Warnungen)/`test:unit` 115/115 bestanden. `audit-security` PASS (1984 Dateien).",
+  ],
+};
+
+CHANGELOG_BY_LANG.fr.unshift(v12163_fr);
+CHANGELOG_BY_LANG.en.unshift(v12163_en);
+CHANGELOG_BY_LANG.es.unshift(v12163_es);
+CHANGELOG_BY_LANG.de.unshift(v12163_de);
+
 export const CHANGELOG = CHANGELOG_BY_LANG.fr;

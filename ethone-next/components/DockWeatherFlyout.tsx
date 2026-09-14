@@ -2,12 +2,12 @@
 
 import { useState } from "react";
 import { ChevronUp, CloudSun } from "lucide-react";
-import { useLiveData } from "@/lib/hooks/useLiveData";
+import { useWeatherOnly } from "@/lib/hooks/useWeatherOnly";
 import WeatherDetailPopover from "@/components/WeatherDetailPopover";
 import { cn } from "@/lib/utils";
 
 export default function DockWeatherFlyout() {
-  const { weather } = useLiveData(300000);
+  const { weather } = useWeatherOnly(300000);
   const [open, setOpen] = useState(false);
   const [buttonEl, setButtonEl] = useState<HTMLButtonElement | null>(null);
 

@@ -20,7 +20,12 @@ export default function LiveWidget() {
   const i18n = useI18n();
   const { settings } = useSettings();
   const { error: showError } = useToast();
-  const { nowPlaying, lanyard, loading } = useLiveData();
+  // Fetched once here and passed down to LiveWidgets below instead of that
+  // component calling useLiveData() itself — the two were independently
+  // running the same ~26-endpoint fetch/interval cycle in the same
+  // always-mounted subtree.
+  const liveData = useLiveData();
+  const { nowPlaying, lanyard, loading } = liveData;
 
   const {
     isOpen,
@@ -179,7 +184,7 @@ export default function LiveWidget() {
             <div className="p-3">
               {expanded ? (
                 <div className="max-h-[440px] overflow-auto pr-1">
-                  <LiveWidgets />
+                  <LiveWidgets liveData={liveData} />
                 </div>
               ) : (
                 <div className="space-y-3">

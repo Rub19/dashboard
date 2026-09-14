@@ -2,6 +2,16 @@
 
 Toutes les modifications notables de ce projet seront documentées dans ce fichier.
 
+## v1.21.63 — 2026-09-14
+
+**Fluidité : suppression de 3 cycles de requêtes redondants**
+
+- `LiveWidget.tsx` (toujours monté) et `LiveWidgets.tsx` (qu'il affiche) appelaient chacun leur propre `useLiveData()` — fusionné, `LiveWidgets` reçoit maintenant les données déjà récupérées par son parent.
+- `components/LiveTopBento.tsx` : code mort (aucun importeur) — supprimé.
+- `DockWeatherFlyout.tsx` / `SystemStatusPills.tsx` : déclenchaient les ~26 requêtes complètes de `useLiveData` toutes les 5 min juste pour la météo — nouveau hook dédié `lib/hooks/useWeatherOnly.ts`.
+- Pas traité ici (nécessite sa propre conception) : `PresenceProvider.tsx`'s appel indépendant, store partagé pour les vues ponctuellement montées.
+- Validation : `tsc`/`build`/`lint` (0 erreur)/`test:unit` 115/115 ✓. `audit-security` PASS (1984 fichiers).
+
 ## v1.21.62 — 2026-09-14
 
 **Fix : avatars Jett/Omen cassés, statut personnalisé qui débordait, poll Spotify allégé**

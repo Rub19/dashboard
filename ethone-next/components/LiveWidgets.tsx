@@ -185,9 +185,14 @@ function periodLabel(period: LastfmPeriod) {
 export default function LiveWidgets({
   showHeader = true,
   customizing = false,
+  liveData,
 }: {
   showHeader?: boolean;
   customizing?: boolean;
+  // The sole caller (LiveWidget.tsx) already fetches this in its own
+  // always-mounted tree — passed down instead of this component running an
+  // independent, redundant copy of the same ~26-endpoint fetch/interval cycle.
+  liveData: ReturnType<typeof useLiveData>;
 }) {
   const CategoryTag = showHeader ? "h3" : "h2";
   const {
@@ -212,7 +217,7 @@ export default function LiveWidgets({
     lol,
     liveTrackerRiotName,
     liveTrackerRiotTag,
-  } = useLiveData();
+  } = liveData;
   const { settings, update } = useSettings();
   const { error: showError } = useToast();
   const i18n = useI18n();

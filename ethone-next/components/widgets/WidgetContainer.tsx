@@ -121,7 +121,7 @@ export default function WidgetContainer({
   return (
     <div
       className={cn(
-        "group relative flex h-full min-h-0 w-full flex-col overflow-hidden rounded-[var(--panel-radius)] border border-[var(--panel-border)]/70 bg-[var(--panel-bg)]/80 backdrop-blur-xl shadow-xs transition-all duration-200",
+        "group relative flex h-full min-h-0 w-full flex-col overflow-hidden rounded-[var(--panel-radius)] border border-[var(--panel-border)]/70 bg-[var(--panel-bg)]/80 backdrop-blur-xl shadow-xs transition-[border-color,box-shadow] duration-200 hover:border-[var(--accent-primary)]/20",
         className
       )}
     >

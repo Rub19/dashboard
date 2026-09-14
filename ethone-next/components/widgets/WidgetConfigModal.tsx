@@ -39,6 +39,7 @@ export default function WidgetConfigModal({
       title={`Configuration — ${manifest?.name || widgetId}`}
       description="Personnalisez les options d'affichage et le comportement de ce widget."
       size="sm"
+      hideFooter
     >
       <div className="space-y-4 p-2 text-xs">
         {widgetId === "live" && (

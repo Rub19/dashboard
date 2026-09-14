@@ -2,10 +2,11 @@
 
 import { useSortable } from "@dnd-kit/sortable";
 import { CSS } from "@dnd-kit/utilities";
-import { motion } from "framer-motion";
+import { motion, useReducedMotion } from "framer-motion";
 import { EASE_OUT } from "@/lib/ease";
 import { cn } from "@/lib/utils";
 import { Icon } from "@/lib/icons";
+import { useSettings } from "@/components/SettingsProvider";
 
 export type SortableWidgetProps = {
   id: string;
@@ -30,6 +31,10 @@ export default function SortableWidget({
     transition,
     isDragging,
   } = useSortable({ id, disabled: !customizing });
+
+  const { settings } = useSettings();
+  const osReducedMotion = useReducedMotion();
+  const skipEntranceAnimation = Boolean(settings.reducedMotion) || Boolean(osReducedMotion);
 
   const style = {
     transform: CSS.Transform.toString(transform),
@@ -57,9 +62,13 @@ export default function SortableWidget({
         </div>
       )}
       <motion.div
-        initial={{ opacity: 0, y: 18, scale: 0.97 }}
+        initial={skipEntranceAnimation ? false : { opacity: 0, y: 18, scale: 0.97 }}
         animate={{ opacity: 1, y: 0, scale: 1 }}
-        transition={{ duration: 0.36, delay: index * 0.04, ease: EASE_OUT }}
+        transition={
+          skipEntranceAnimation
+            ? { duration: 0 }
+            : { duration: 0.36, delay: index * 0.04, ease: EASE_OUT }
+        }
         className={cn(
           "flex h-full min-w-0 flex-col",
           customizing && "pointer-events-none"

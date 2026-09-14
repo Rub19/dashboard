@@ -2,6 +2,17 @@
 
 Toutes les modifications notables de ce projet seront documentées dans ce fichier.
 
+## v1.21.66 — 2026-09-14
+
+**Fix : "Actualiser" un widget rechargeait toute la page + double bouton Annuler ; motion design dashboard**
+
+- `components/DashboardOverview.tsx` : le menu "Actualiser" d'un widget appelait `handleRefresh()` (`window.location.reload()`), partagé avec le pull-to-refresh — rechargeait toute la page pour un seul widget. Nouveau compteur `widgetRefreshKeys` par widget, utilisé comme `key` React sur `WidgetContainer` : remonter juste ce widget refait naturellement son chargement de données, sans toucher aux hooks.
+- `components/widgets/WidgetConfigModal.tsx` : `<Modal>` n'avait pas `hideFooter`, dupliquant le footer par défaut (2e bouton "Annuler") en plus du footer custom du composant. Un seul bouton reste.
+- `components/widgets/WidgetContainer.tsx` : ajout du hover CSS déjà utilisé par `BentoCard.tsx` (léger contour en surbrillance au survol), jusqu'ici totalement statique.
+- `components/SortableWidget.tsx` : l'animation d'entrée des widgets ne respectait que `prefers-reduced-motion` du système ; respecte maintenant aussi le réglage "Réduire les animations" (Réglages → Accessibilité).
+- Mobile : le badge `Ctrl K` du bouton "Commandes" (inutile sans clavier physique) ne s'affiche plus en dessous de `sm`.
+- Validation : `tsc`/`build`/`lint` (0 erreur, 0 nouveau warning)/`test:unit` 115/115 ✓. `audit-security` PASS (1985 fichiers).
+
 ## v1.21.65 — 2026-09-14
 
 **Fix : flou d'interface trop lourd sur la TopBar, le Dock et l'île dynamique pendant le scroll**

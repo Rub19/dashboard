@@ -27619,4 +27619,61 @@ CHANGELOG_BY_LANG.en.unshift(v12165_en);
 CHANGELOG_BY_LANG.es.unshift(v12165_es);
 CHANGELOG_BY_LANG.de.unshift(v12165_de);
 
+const v12166_fr: ChangelogEntry = {
+  version: "v1.21.66",
+  date: "2026-09-14",
+  title: "Fix : « Actualiser » un widget rechargeait toute la page + double bouton Annuler",
+  items: [
+    "Fix : cliquer sur « Actualiser » dans le menu d'un widget individuel (ex. Notes Récentes) rechargeait toute la page au lieu de juste ce widget. Chaque widget remonte maintenant son propre contenu à l'actualisation (les sources de données n'exposant pas de rafraîchissement uniforme, remonter le composant refait naturellement son chargement initial) — le bouton « Actualiser » du pull-to-refresh (qui recharge tout) n'est pas concerné.",
+    "Fix : la fenêtre « Configurer » d'un widget affichait deux boutons « Annuler » (un du composant, un du cadre de modale par défaut). Un seul reste maintenant.",
+    "Motion design (dashboard) : les cartes de widgets réagissent maintenant au survol (léger contour en surbrillance). L'animation d'entrée des widgets respecte désormais le réglage « Réduire les animations » de Réglages → Accessibilité, en plus du réglage système.",
+    "Mobile : le badge clavier « Ctrl K » du bouton Commandes ne s'affiche plus sur mobile (inutile sans clavier physique).",
+    "Validation : `tsc`/`build`/`lint` (0 erreur, 0 nouveau warning)/`test:unit` 115/115 ✓. `audit-security` PASS (1985 fichiers).",
+  ],
+};
+
+const v12166_en: ChangelogEntry = {
+  version: "v1.21.66",
+  date: "2026-09-14",
+  title: "Fix: widget \"Refresh\" reloaded the whole page + duplicate Cancel button",
+  items: [
+    "Fix: clicking \"Refresh\" in an individual widget's menu (e.g. Recent Notes) reloaded the entire page instead of just that widget. Each widget now remounts its own content on refresh (since data sources don't expose a uniform refetch, remounting naturally re-triggers the initial load) -- the pull-to-refresh button (which reloads everything) is unaffected.",
+    "Fix: a widget's \"Configure\" modal showed two \"Cancel\" buttons (one from the component, one from the modal's default frame). Only one remains now.",
+    "Motion design (dashboard): widget cards now respond to hover (subtle border highlight). The widget entrance animation now respects the \"Reduce motion\" toggle in Settings -> Accessibility, in addition to the OS-level setting.",
+    "Mobile: the \"Ctrl K\" keyboard badge on the Commands button no longer shows on mobile (meaningless without a physical keyboard).",
+    "Validation: `tsc`/`build`/`lint` (0 errors, 0 new warnings)/`test:unit` 115/115 pass. `audit-security` PASS (1985 files).",
+  ],
+};
+
+const v12166_es: ChangelogEntry = {
+  version: "v1.21.66",
+  date: "2026-09-14",
+  title: "Corrección: \"Actualizar\" un widget recargaba toda la página + botón Cancelar duplicado",
+  items: [
+    "Corrección: al hacer clic en \"Actualizar\" en el menú de un widget individual (ej. Notas Recientes) se recargaba toda la página en lugar de solo ese widget. Cada widget ahora vuelve a montar su propio contenido al actualizar (como las fuentes de datos no exponen una recarga uniforme, volver a montar el componente repite de forma natural su carga inicial) -- el botón de pull-to-refresh (que recarga todo) no se ve afectado.",
+    "Corrección: la ventana \"Configurar\" de un widget mostraba dos botones \"Cancelar\" (uno del componente, uno del marco de modal por defecto). Ahora solo queda uno.",
+    "Diseño de movimiento (panel principal): las tarjetas de widgets ahora responden al pasar el cursor (un ligero borde resaltado). La animación de entrada de los widgets ahora respeta el interruptor \"Reducir animaciones\" en Ajustes -> Accesibilidad, además del ajuste del sistema.",
+    "Móvil: la insignia de teclado \"Ctrl K\" del botón Comandos ya no se muestra en móvil (inútil sin teclado físico).",
+    "Validación: `tsc`/`build`/`lint` (0 errores, 0 advertencias nuevas)/`test:unit` 115/115 ✓. `audit-security` PASS (1985 archivos).",
+  ],
+};
+
+const v12166_de: ChangelogEntry = {
+  version: "v1.21.66",
+  date: "2026-09-14",
+  title: "Fix: Widget-\"Aktualisieren\" lud die ganze Seite neu + doppelter Abbrechen-Button",
+  items: [
+    "Fix: Ein Klick auf \"Aktualisieren\" im Menü eines einzelnen Widgets (z.B. Letzte Notizen) lud die gesamte Seite neu statt nur dieses Widget. Jedes Widget montiert seinen eigenen Inhalt jetzt beim Aktualisieren neu (da die Datenquellen keine einheitliche Neuladefunktion bieten, löst ein Neu-Mounten auf natürliche Weise den ursprünglichen Ladevorgang erneut aus) -- der Pull-to-Refresh-Button (der alles neu lädt) ist davon nicht betroffen.",
+    "Fix: Das \"Konfigurieren\"-Fenster eines Widgets zeigte zwei \"Abbrechen\"-Buttons (einen von der Komponente, einen vom Standard-Modalrahmen). Jetzt bleibt nur noch einer.",
+    "Motion Design (Dashboard): Widget-Karten reagieren jetzt auf Hover (leichte Rahmenhervorhebung). Die Eintritts-Animation der Widgets respektiert jetzt zusätzlich zur Systemeinstellung den Schalter \"Animationen reduzieren\" unter Einstellungen -> Barrierefreiheit.",
+    "Mobil: Das Tastatur-Badge \"Ctrl K\" am Befehle-Button wird auf Mobilgeräten nicht mehr angezeigt (sinnlos ohne physische Tastatur).",
+    "Validierung: `tsc`/`build`/`lint` (0 Fehler, 0 neue Warnungen)/`test:unit` 115/115 bestanden. `audit-security` PASS (1985 Dateien).",
+  ],
+};
+
+CHANGELOG_BY_LANG.fr.unshift(v12166_fr);
+CHANGELOG_BY_LANG.en.unshift(v12166_en);
+CHANGELOG_BY_LANG.es.unshift(v12166_es);
+CHANGELOG_BY_LANG.de.unshift(v12166_de);
+
 export const CHANGELOG = CHANGELOG_BY_LANG.fr;

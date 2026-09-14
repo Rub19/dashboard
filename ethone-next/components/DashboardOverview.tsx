@@ -302,6 +302,22 @@ export default function DashboardOverview() {
     window.location.reload();
   }, []);
 
+  // Per-widget "Actualiser" used to call handleRefresh too, reloading the
+  // whole page for a single widget's menu action. None of the widgets'
+  // underlying data sources expose a uniform refetch (useHomeData/
+  // SystemControlCard/BrainBriefingPanel/BillsWidget have none at all), so
+  // instead of wiring N different reload paths, bumping a per-widget key
+  // remounts just that widget's subtree — every data source already
+  // refetches on mount, so this is correct for every widget type with no
+  // hook changes needed.
+  const [widgetRefreshKeys, setWidgetRefreshKeys] = useState<Record<string, number>>({});
+  const handleWidgetRefresh = useCallback(
+    (id: string) => {
+      setWidgetRefreshKeys((prev) => ({ ...prev, [id]: (prev[id] ?? 0) + 1 }));
+    },
+    [setWidgetRefreshKeys]
+  );
+
   const handleOptimizeWithBrain = useCallback(() => {
     const period = getDayPeriod(hour);
     const scores = WIDGET_PRIORITY_SCORES[period];
@@ -533,7 +549,7 @@ export default function DashboardOverview() {
               >
                 <Search className="h-3.5 w-3.5 text-[var(--accent-primary)]" />
                 <span className="hidden sm:inline">Commandes</span>
-                <kbd className="rounded-md bg-[var(--panel-bg)] px-1.5 py-0.5 font-mono text-[9px] font-bold text-[var(--text-muted)] border border-[var(--panel-border)]">
+                <kbd className="hidden sm:inline rounded-md bg-[var(--panel-bg)] px-1.5 py-0.5 font-mono text-[9px] font-bold text-[var(--text-muted)] border border-[var(--panel-border)]">
                   Ctrl K
                 </kbd>
               </button>
@@ -734,6 +750,7 @@ export default function DashboardOverview() {
                       customizing={customizing && !layoutLocked}
                     >
                       <WidgetContainer
+                        key={`${w.id}-${widgetRefreshKeys[w.id] ?? 0}`}
                         id={w.id}
                         pinned={pinnedWidgets.includes(w.id)}
                         favorite={favoriteWidgets.includes(w.id)}
@@ -741,7 +758,7 @@ export default function DashboardOverview() {
                         onFavorite={() => handleToggleFavorite(w.id)}
                         onConfigure={() => setConfigModal({ open: true, widgetId: w.id })}
                         onHide={() => toggleSection(w.id)}
-                        onRefresh={() => handleRefresh()}
+                        onRefresh={() => handleWidgetRefresh(w.id)}
                       >
                         {renderWidgetContent(w.id)}
                       </WidgetContainer>

@@ -37,7 +37,10 @@ export function useGitHubStatus(enabled = true): GitHubStatus {
 
   useEffect(() => {
     fetchStatus();
-    const id = setInterval(fetchStatus, REFRESH_INTERVAL);
+    const id = setInterval(() => {
+      if (typeof document !== "undefined" && document.hidden) return;
+      fetchStatus();
+    }, REFRESH_INTERVAL);
     return () => clearInterval(id);
   }, [fetchStatus]);
 

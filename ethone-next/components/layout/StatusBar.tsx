@@ -71,7 +71,10 @@ function usePing() {
 
   useEffect(() => {
     measure();
-    const interval = setInterval(measure, 10000);
+    const interval = setInterval(() => {
+      if (typeof document !== "undefined" && document.hidden) return;
+      measure();
+    }, 10000);
     return () => clearInterval(interval);
   }, [measure]);
 

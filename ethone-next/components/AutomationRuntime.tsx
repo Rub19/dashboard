@@ -31,6 +31,7 @@ export default function AutomationRuntime() {
 
   useEffect(() => {
     const id = setInterval(() => {
+      if (typeof document !== "undefined" && document.hidden) return;
       runAutomations({ route: routeFromPathname(pathname), space: activeFlow, localTime: formatTime(new Date()) });
     }, 15000);
     return () => clearInterval(id);

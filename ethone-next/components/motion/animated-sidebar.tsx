@@ -20,6 +20,7 @@ import {
   useContext,
   useEffect,
   useId,
+  useMemo,
   useState,
   useSyncExternalStore,
 } from "react";
@@ -238,20 +239,23 @@ export function AnimatedSidebarProvider({
     return () => window.removeEventListener("keydown", handleShortcut);
   }, [toggleSidebar]);
 
+  const contextValue = useMemo(
+    () => ({
+      isMobile,
+      layoutId: `${generatedId}-active`,
+      open: desktopOpen,
+      openMobile: mobileOpen,
+      reduce,
+      setOpen,
+      setOpenMobile,
+      state: (desktopOpen ? "expanded" : "collapsed") as SidebarState,
+      toggleSidebar,
+    }),
+    [isMobile, generatedId, desktopOpen, mobileOpen, reduce, setOpen, setOpenMobile, toggleSidebar]
+  );
+
   return (
-    <AnimatedSidebarContext.Provider
-      value={{
-        isMobile,
-        layoutId: `${generatedId}-active`,
-        open: desktopOpen,
-        openMobile: mobileOpen,
-        reduce,
-        setOpen,
-        setOpenMobile,
-        state: desktopOpen ? "expanded" : "collapsed",
-        toggleSidebar,
-      }}
-    >
+    <AnimatedSidebarContext.Provider value={contextValue}>
       <div
         {...props}
         data-slot="sidebar-wrapper"

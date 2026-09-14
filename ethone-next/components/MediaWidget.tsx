@@ -2,7 +2,7 @@
 
 import { useCallback, useEffect, useMemo, useState } from "react";
 import SafeImage from "@/components/SafeImage";
-import { motion } from "framer-motion";
+import { motion, useReducedMotion } from "framer-motion";
 import { SkipBack, SkipForward, Play, Pause, Volume2, VolumeX, Music, Server } from "lucide-react";
 import { useNowPlaying } from "@/lib/hooks/useNowPlaying";
 import { useSettings } from "@/components/SettingsProvider";
@@ -18,22 +18,28 @@ function formatTime(ms: number) {
 }
 
 function MediaEqualizer({ className = "" }: { className?: string }) {
+  const { settings } = useSettings();
+  const osReducedMotion = useReducedMotion();
+  const reduced = Boolean(settings.reducedMotion) || Boolean(osReducedMotion);
+
   return (
     <div className={`flex items-end gap-[3px] ${className}`}>
       {[0, 1, 2, 3].map((i) => (
         <motion.div
           key={i}
-          className="w-1 rounded-lg bg-[var(--accent-primary)]"
-          initial={{ height: "30%" }}
-          animate={{
-            height: ["30%", "80%", "40%", "70%", "30%"],
-          }}
-          transition={{
-            duration: 0.8 + i * 0.15,
-            repeat: Infinity,
-            ease: "easeInOut",
-            delay: i * 0.08,
-          }}
+          className="h-3 w-1 origin-bottom rounded-lg bg-[var(--accent-primary)]"
+          initial={false}
+          animate={reduced ? { scaleY: 0.5 } : { scaleY: [0.3, 0.8, 0.4, 0.7, 0.3] }}
+          transition={
+            reduced
+              ? { duration: 0 }
+              : {
+                  duration: 0.8 + i * 0.15,
+                  repeat: Infinity,
+                  ease: "easeInOut",
+                  delay: i * 0.08,
+                }
+          }
         />
       ))}
     </div>

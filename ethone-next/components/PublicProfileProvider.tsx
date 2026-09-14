@@ -1,6 +1,6 @@
 "use client";
 
-import { createContext, useCallback, useContext, useEffect, useState, type ReactNode } from "react";
+import { createContext, useCallback, useContext, useEffect, useMemo, useState, type ReactNode } from "react";
 import { fetchWorker } from "@/lib/api";
 import { supabase } from "@/lib/supabase";
 import { useAuth } from "@/components/AuthProvider";
@@ -222,8 +222,13 @@ export default function PublicProfileProvider({ children }: { children: ReactNod
     load();
   }, [load]);
 
+  const value = useMemo(
+    () => ({ profile, loading, error, reload: load, save }),
+    [profile, loading, error, load, save]
+  );
+
   return (
-    <PublicProfileContext.Provider value={{ profile, loading, error, reload: load, save }}>
+    <PublicProfileContext.Provider value={value}>
       {children}
     </PublicProfileContext.Provider>
   );

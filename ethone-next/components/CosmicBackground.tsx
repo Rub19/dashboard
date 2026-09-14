@@ -139,7 +139,7 @@ export default function CosmicBackground() {
       if (!canvas) return;
 
       if (!running || !isVisible) {
-        raf = requestAnimationFrame(draw);
+        raf = 0;
         return;
       }
 
@@ -194,6 +194,9 @@ export default function CosmicBackground() {
 
     function onVisibility() {
       running = !document.hidden;
+      if (running && isVisible && raf === 0) {
+        raf = requestAnimationFrame(draw);
+      }
     }
 
     resize();

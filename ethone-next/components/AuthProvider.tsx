@@ -2,8 +2,10 @@
 
 import {
   createContext,
+  useCallback,
   useContext,
   useEffect,
+  useMemo,
   useRef,
   useState,
   type ReactNode,
@@ -243,7 +245,7 @@ export default function AuthProvider({ children }: { children: ReactNode }) {
   const [isOnline, setIsOnline] = useState(true);
   const [mfaPending, setMfaPending] = useState<boolean | null>(null);
 
-  async function resolveSession() {
+  const resolveSession = useCallback(async () => {
     authLog("resolveSession", "start");
     let settled = false;
     const timeout = new Promise<never>((_, reject) =>
@@ -376,7 +378,7 @@ export default function AuthProvider({ children }: { children: ReactNode }) {
     } else {
       setMfaPending(null);
     }
-  }
+  }, []);
 
   useEffect(() => {
     resolveSession();
@@ -438,12 +440,12 @@ export default function AuthProvider({ children }: { children: ReactNode }) {
         window.removeEventListener("storage", handleStorage);
       }
     };
-  }, []);
+  }, [resolveSession]);
 
-  async function refreshSession() {
+  const refreshSession = useCallback(async () => {
     setLoading(true);
     await resolveSession();
-  }
+  }, [resolveSession]);
 
   // Passwordless login goes through ETHONE's own Worker OTP flow
   // (POST /api/auth/otp/send -> a real 6-digit code, delivered by the
@@ -455,7 +457,7 @@ export default function AuthProvider({ children }: { children: ReactNode }) {
   // two calls.
   const otpUserIdRef = useRef<string | null>(null);
 
-  async function signInOtp(email: string) {
+  const signInOtp = useCallback(async (email: string) => {
     authLog("OTP requested");
     const res = await sendOtpWorker(email);
     if (!res.ok) {
@@ -463,9 +465,9 @@ export default function AuthProvider({ children }: { children: ReactNode }) {
     }
     otpUserIdRef.current = res.userId ?? null;
     return {};
-  }
+  }, []);
 
-  async function verifyOtp(email: string, code: string, rememberMe = false) {
+  const verifyOtp = useCallback(async (email: string, code: string, rememberMe = false) => {
     authLog("OTP verification started");
     // otpUserIdRef is in-memory only, so a page reload/discard between send
     // and verify (tab backgrounded on mobile, code opened from a different
@@ -483,18 +485,18 @@ export default function AuthProvider({ children }: { children: ReactNode }) {
     setUser(res.session.user);
     otpUserIdRef.current = null;
     return {};
-  }
+  }, []);
 
-  async function signInPassword(email: string, password: string) {
+  const signInPassword = useCallback(async (email: string, password: string) => {
     const { data, error } = await supabase.auth.signInWithPassword({ email, password });
     if (data.session) {
       setSession(data.session);
       setUser(data.session.user);
     }
     return { error: error ?? undefined };
-  }
+  }, []);
 
-  async function signInWithOAuth(provider: "google" | "github" | "discord") {
+  const signInWithOAuth = useCallback(async (provider: "google" | "github" | "discord") => {
     const { data, error } = await supabase.auth.signInWithOAuth({
       provider,
       options: {
@@ -503,9 +505,9 @@ export default function AuthProvider({ children }: { children: ReactNode }) {
       },
     });
     return { error: error ?? undefined, url: data?.url };
-  }
+  }, []);
 
-  async function signUp(email: string, password: string, username: string) {
+  const signUp = useCallback(async (email: string, password: string, username: string) => {
     // A browser can reach this form with a previous account's local caches
     // still present (e.g. the user never clicked "sign out" — the session
     // just expired, or they typed a new email directly into the register
@@ -537,16 +539,16 @@ export default function AuthProvider({ children }: { children: ReactNode }) {
       }
     }
     return { error: error ?? undefined, session: data.session ?? undefined };
-  }
+  }, [user]);
 
-  async function resetPassword(email: string) {
+  const resetPassword = useCallback(async (email: string) => {
     const { error } = await supabase.auth.resetPasswordForEmail(email, {
       redirectTo: typeof window !== "undefined" ? `${window.location.origin}/reset-password/` : undefined,
     });
     return { error: error ?? undefined };
-  }
+  }, []);
 
-  async function verifyMfaChallenge(input: { code?: string; backupCode?: string }) {
+  const verifyMfaChallenge = useCallback(async (input: { code?: string; backupCode?: string }) => {
     try {
       await fetchWorker("/api/auth/totp/challenge", { method: "POST", body: JSON.stringify(input) });
       // The Worker already cleared mfa_pending on the device row (and its
@@ -557,9 +559,9 @@ export default function AuthProvider({ children }: { children: ReactNode }) {
     } catch (err) {
       return { error: err instanceof Error ? err : new Error(String(err)) };
     }
-  }
+  }, []);
 
-  async function signOut() {
+  const signOut = useCallback(async () => {
     const currentUserId = user?.id;
 
     // Best-effort server-side revoke. Swallowed: the Worker being unreachable
@@ -599,29 +601,49 @@ export default function AuthProvider({ children }: { children: ReactNode }) {
         // local state is already cleared above, nothing else to do.
       }
     }
-  }
+  }, [user]);
 
-  return (
-    <AuthContext.Provider
-      value={{
-        session,
-        user,
-        loading,
-        error,
-        isOnline,
-        mfaPending,
-        signInOtp,
-        verifyOtp,
-        signInPassword,
-        signInWithOAuth,
-        signUp,
-        resetPassword,
-        refreshSession,
-        signOut,
-        verifyMfaChallenge,
-      }}
-    >
-      {children}
-    </AuthContext.Provider>
+  // Memoized so the ~27 consumers of useAuth() only re-render when a field
+  // they actually read changes, instead of on every AuthProvider render
+  // (e.g. the isOnline listener firing) — the handler functions above are
+  // themselves useCallback-stabilized so this doesn't just recompute every
+  // time regardless.
+  const value = useMemo<AuthContextValue>(
+    () => ({
+      session,
+      user,
+      loading,
+      error,
+      isOnline,
+      mfaPending,
+      signInOtp,
+      verifyOtp,
+      signInPassword,
+      signInWithOAuth,
+      signUp,
+      resetPassword,
+      refreshSession,
+      signOut,
+      verifyMfaChallenge,
+    }),
+    [
+      session,
+      user,
+      loading,
+      error,
+      isOnline,
+      mfaPending,
+      signInOtp,
+      verifyOtp,
+      signInPassword,
+      signInWithOAuth,
+      signUp,
+      resetPassword,
+      refreshSession,
+      signOut,
+      verifyMfaChallenge,
+    ]
   );
+
+  return <AuthContext.Provider value={value}>{children}</AuthContext.Provider>;
 }

@@ -1,23 +1,21 @@
 "use client";
 
-import { memo } from "react";
+import { memo, useEffect, useSyncExternalStore } from "react";
 import { Icon as IconifyIcon, type IconProps, type IconifyJSON } from "@iconify/react";
 import { getLucideIcon, type LucideIcon as LucideIconType } from "@/lib/lucide-icons";
 import { addCollection } from "@iconify/react";
 import { icons as lucide } from "@iconify-json/lucide";
-import { icons as phosphor } from "@iconify-json/ph";
-import { icons as tabler } from "@iconify-json/tabler";
-import { icons as heroicons } from "@iconify-json/heroicons";
-import { icons as radix } from "@iconify-json/radix-icons";
-import { icons as simpleIcons } from "@iconify-json/simple-icons";
 import { useSettings } from "@/components/SettingsProvider";
 
+// `lucide` is kept eager: it's the universal safety-net fallback used
+// throughout this file whenever a name is missing from another pack, so it
+// must always be synchronously available. The other five packs are
+// ~200KB-4.6MB of icon JSON each and, at any given moment, only the ONE pack
+// a user actually has selected (settings.iconPack) is ever rendered from —
+// loading all six unconditionally shipped ~12MB of unused icon data on every
+// route. They're now fetched as separate lazy chunks, one at a time, only
+// for the pack currently in use.
 addCollection(lucide as unknown as IconifyJSON);
-addCollection(phosphor as unknown as IconifyJSON);
-addCollection(tabler as unknown as IconifyJSON);
-addCollection(heroicons as unknown as IconifyJSON);
-addCollection(radix as unknown as IconifyJSON);
-addCollection(simpleIcons as unknown as IconifyJSON);
 
 export type IconPack = "lucide" | "phosphor" | "tabler" | "heroicons" | "radix" | "brand";
 
@@ -30,22 +28,71 @@ const PREFIXES: Record<IconPack, string> = {
   brand: "simple-icons",
 };
 
-const LIBRARIES: Record<IconPack, IconifyJSON> = {
-  lucide,
-  phosphor,
-  tabler,
-  heroicons,
-  radix,
-  brand: simpleIcons,
+const LAZY_LOADERS: Partial<Record<IconPack, () => Promise<{ icons: unknown }>>> = {
+  phosphor: () => import("@iconify-json/ph"),
+  tabler: () => import("@iconify-json/tabler"),
+  heroicons: () => import("@iconify-json/heroicons"),
+  radix: () => import("@iconify-json/radix-icons"),
+  brand: () => import("@iconify-json/simple-icons"),
 };
 
-const EXISTS = Object.fromEntries(
-  (Object.keys(LIBRARIES) as IconPack[]).map((pack) => {
-    const lib = LIBRARIES[pack];
-    const set = new Set([...Object.keys(lib.icons || {}), ...Object.keys(lib.aliases || {})]);
-    return [pack, set];
-  })
-) as Record<IconPack, Set<string>>;
+function existingNames(lib: IconifyJSON) {
+  return new Set([...Object.keys(lib.icons || {}), ...Object.keys(lib.aliases || {})]);
+}
+
+const EXISTS: Record<IconPack, Set<string>> = {
+  lucide: existingNames(lucide as unknown as IconifyJSON),
+  phosphor: new Set(),
+  tabler: new Set(),
+  heroicons: new Set(),
+  radix: new Set(),
+  brand: new Set(),
+};
+
+const loadedPacks = new Set<IconPack>(["lucide"]);
+const loadingPromises = new Map<IconPack, Promise<void>>();
+const subscribers = new Set<() => void>();
+
+function notifySubscribers() {
+  for (const sub of subscribers) sub();
+}
+
+function ensurePackLoaded(pack: IconPack) {
+  if (pack === "lucide" || loadedPacks.has(pack) || loadingPromises.has(pack)) return;
+  const loader = LAZY_LOADERS[pack];
+  if (!loader) return;
+  const promise = loader()
+    .then(({ icons: data }) => {
+      const lib = data as unknown as IconifyJSON;
+      addCollection(lib);
+      EXISTS[pack] = existingNames(lib);
+      loadedPacks.add(pack);
+      notifySubscribers();
+    })
+    .catch(() => {
+      // Leave the pack unloaded — iconExists()/useIconName() already fall
+      // back to lucide-prefixed icon ids when a pack has nothing registered
+      // yet, so a failed fetch degrades to lucide-styled icons instead of
+      // rendering something broken.
+    })
+    .finally(() => {
+      loadingPromises.delete(pack);
+    });
+  loadingPromises.set(pack, promise);
+}
+
+function subscribe(callback: () => void) {
+  subscribers.add(callback);
+  return () => subscribers.delete(callback);
+}
+
+function usePackLoaded(pack: IconPack) {
+  return useSyncExternalStore(
+    subscribe,
+    () => loadedPacks.has(pack),
+    () => pack === "lucide"
+  );
+}
 
 function iconExists(pack: IconPack, name: string) {
   return EXISTS[pack].has(name);
@@ -273,6 +320,16 @@ function IconComponent({
 } & Omit<IconProps, "icon">) {
   const { settings } = useSettings();
   const iconPack = pack ?? settings.iconPack;
+
+  // Kicks off (or no-ops if already loading/loaded) the lazy fetch for this
+  // pack's icon JSON. Until it resolves, useIconName()/iconExists() below
+  // safely fall back to lucide-prefixed ids (already loaded eagerly), so
+  // this never renders a missing icon — just a lucide-styled one briefly.
+  useEffect(() => {
+    ensurePackLoaded(iconPack);
+  }, [iconPack]);
+  usePackLoaded(iconPack);
+
   const iconId = useIconName(name, iconPack);
 
   if (iconPack === "lucide") {

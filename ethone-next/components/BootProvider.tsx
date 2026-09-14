@@ -45,10 +45,15 @@ export function useBoot() {
 const PUBLIC_ROUTES = ["/login", "/password-recovery", "/reset-password", "/terms", "/privacy"];
 
 const BOOT_TIMEOUT_MS = 8_000;
-const BOOT_MIN_DURATION_MS = 600;
-const SEGMENT_1 = 150;
-const SEGMENT_2 = 300;
-const SEGMENT_3 = 450;
+// Kept short on purpose: this is only a floor for the progress-bar animation
+// to feel intentional, not a wait for real work — auth/profile resolution
+// still gates readiness independently via canShowApp below. A long floor
+// here means every cold load/refresh pays it even when session+profile are
+// already warm/cached.
+const BOOT_MIN_DURATION_MS = 160;
+const SEGMENT_1 = 40;
+const SEGMENT_2 = 80;
+const SEGMENT_3 = 120;
 
 function isPublicRoute(pathname: string | null): boolean {
   if (!pathname) return false;

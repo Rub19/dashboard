@@ -2,6 +2,23 @@
 
 Toutes les modifications notables de ce projet seront documentées dans ce fichier.
 
+## v1.22.0 — 2026-09-15
+
+**Performance : -8 Mo de JS par page, timer Focus qui figeait le dashboard, fuites en arrière-plan**
+
+Audit complet en 5 passes ciblées (re-renders/contexts, pollers/listeners/realtime, démarrage/flashs, poids du bundle, coût animations/CSS), mesuré avant/après sur un vrai build de production.
+
+- `lib/icons.tsx` : chargeait les 6 packs d'icônes complets (~12,5 Mo) sur chaque page au lieu du seul pack actif. JS initial de `/login` mesuré : 15,9 Mo → 3,8 Mo. Chargement à la demande avec repli automatique sur Lucide, vérifié en navigateur.
+- `components/DashboardOverview.tsx` + nouveau `components/FocusModeStatusButton.tsx` : le timer Focus faisait re-render les 9 widgets du dashboard chaque seconde. Isolé dans son propre composant.
+- `components/CosmicBackground.tsx` : la boucle d'animation du fond continuait de tourner onglet caché au lieu de s'arrêter.
+- `components/AutomationRuntime.tsx`, `lib/hooks/useGitHubStatus.ts`, `components/layout/StatusBar.tsx` : pollers désormais mis en pause onglet caché.
+- `components/Spotlight.tsx` : re-render React à chaque pixel de souris → manipulation DOM directe.
+- `components/AuthProvider.tsx`, `components/motion/animated-sidebar.tsx`, `components/PublicProfileProvider.tsx`, `components/CommandPaletteProvider.tsx` : valeurs de contexte mémoïsées (Auth = ~27 consommateurs, Sidebar = toute l'app).
+- `components/BootProvider.tsx` : délai minimal d'affichage réduit de 600ms à 160ms.
+- `components/MediaWidget.tsx` : égaliseur de lecture passé en transform CSS + respect de "Réduire les animations".
+- Reste documenté pour une prochaine passe : ~21 usages redondants de `backdrop-blur`, quelques animations `width`/`left` à convertir en `transform`, lazy-loading additionnel (sélecteur d'avatar, île dynamique).
+- Validation : `tsc`/`build`/`lint` (0 erreur)/`test:unit` 115/115 ✓. `audit-security` PASS (1986 fichiers).
+
 ## v1.21.69 — 2026-09-14
 
 **Responsive : Mail (mobile + desktop étroit), page Matches, réglages île dynamique**

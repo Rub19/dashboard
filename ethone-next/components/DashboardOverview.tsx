@@ -10,7 +10,6 @@ import {
   Sparkles,
   Calendar as CalendarIcon,
   CheckCircle2,
-  Timer,
   Brain,
   Lock,
   Unlock,
@@ -41,7 +40,7 @@ import { useItems } from "@/lib/hooks/useItems";
 import { useSettings, useActiveProfile } from "@/components/SettingsProvider";
 import { useUserIdentity } from "@/lib/hooks/useUserIdentity";
 import { useI18n } from "@/lib/hooks/useI18n";
-import { useFocus } from "@/components/FocusProvider";
+import FocusModeStatusButton from "@/components/FocusModeStatusButton";
 import { useDesktopLayout, type WidgetLayout } from "@/lib/hooks/useDesktopLayout";
 import { useLocalStorage } from "@/lib/hooks/useLocalStorage";
 import { useToast } from "@/components/ToastProvider";
@@ -126,7 +125,6 @@ export default function DashboardOverview() {
   const { items: events, loading: eventsLoading } = useItems("events");
   const homeLoading = loading;
   const bentoLoading = false;
-  const focus = useFocus();
   const [customizing, setCustomizing] = useState(false);
   const [pickerOpen, setPickerOpen] = useState(false);
   const [configModal, setConfigModal] = useState<{ open: boolean; widgetId: string } | null>(null);
@@ -448,7 +446,6 @@ export default function DashboardOverview() {
           <DayTimelineCard
             todayEvents={todayEvents}
             nextTasks={nextTasks}
-            focus={focus}
             loading={eventsLoading || tasksApi.loading}
             scrollable={false}
             className={homeCardClass}
@@ -613,23 +610,7 @@ export default function DashboardOverview() {
             </button>
 
             {/* Focus Session */}
-            <button
-              type="button"
-              onClick={() => router.push("/focus")}
-              className="group flex items-center gap-3 p-3.5 text-left transition-colors hover:bg-[var(--surface-raised)]/70 cursor-pointer"
-            >
-              <span className="flex h-9 w-9 shrink-0 items-center justify-center rounded-xl bg-sky-500/15 text-sky-400">
-                <Timer className="h-4 w-4" />
-              </span>
-              <div className="min-w-0">
-                <p className="text-[10px] font-bold uppercase tracking-wider text-[var(--text-muted)]">Focus Mode</p>
-                <p className="truncate text-xs font-semibold text-[var(--text-primary)]">
-                  {focus?.state?.phase && focus.state.phase !== "idle"
-                    ? "Session en cours (" + focus.state.phase + ")"
-                    : "Prêt à démarrer"}
-                </p>
-              </div>
-            </button>
+            <FocusModeStatusButton />
 
             {/* Brain Status */}
             <button

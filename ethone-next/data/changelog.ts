@@ -27839,4 +27839,81 @@ CHANGELOG_BY_LANG.en.unshift(v12169_en);
 CHANGELOG_BY_LANG.es.unshift(v12169_es);
 CHANGELOG_BY_LANG.de.unshift(v12169_de);
 
+const v1220_fr: ChangelogEntry = {
+  version: "v1.22.0",
+  date: "2026-09-15",
+  title: "Performance : -8 Mo de JS par page, timer Focus qui figeait le dashboard, fuites en arrière-plan",
+  items: [
+    "LE plus gros trouvé : le système d'icônes chargeait les 6 packs complets (Lucide, Phosphor, Tabler, Heroicons, Radix, Simple Icons — environ 12,5 Mo) sur CHAQUE page, alors qu'un seul pack est utilisé à la fois (Phosphor par défaut). Vérifié sur un vrai build de prod : le JS initial de la page de connexion passe de ~15,9 Mo à ~3,8 Mo (build réel, mesuré, pas une estimation). Seul le pack actif est désormais chargé à la demande, avec repli automatique et invisible sur Lucide le temps du chargement — vérifié qu'une icône Phosphor s'affiche correctement une fois le pack chargé.",
+    "Le timer Focus (session en cours) faisait re-render TOUTE la grille de widgets du dashboard (9 widgets, dont les plus lourds comme le résumé Brain) chaque seconde dès qu'une session focus tournait — le composant qui lit l'état du timer en direct était au niveau de toute la page au lieu d'être isolé dans son propre petit bouton. Extrait dans un composant dédié : seul ce bouton se met à jour chaque seconde, plus toute la page.",
+    "Le fond animé (étoiles/halos) continuait de tourner en arrière-plan même onglet caché — la boucle d'animation se reprogrammait indéfiniment au lieu de s'arrêter, gaspillant du CPU/de la batterie quand ETHONE est en arrière-plan.",
+    "5 pollers (automatisations, statut GitHub, ping réseau, et d'autres) tournaient en continu même onglet caché, sans jamais se mettre en pause.",
+    "L'effet de suivi de souris (spotlight) déclenchait un re-render React à chaque pixel de déplacement de la souris — passé en manipulation directe du DOM (aucun re-render).",
+    "Le contexte d'authentification (utilisé par ~27 fichiers) et le contexte de la sidebar (qui enveloppe toute l'application) recréaient un nouvel objet à chaque rendu, forçant tous leurs consommateurs à se re-render même quand rien de pertinent n'avait changé. Mémoïsés.",
+    "L'écran de démarrage imposait une attente minimale de 600ms avant d'afficher l'interface, même quand la session et le profil étaient déjà en cache — réduite à 160ms.",
+    "L'égaliseur de lecture en cours (dashboard) tournait en boucle infinie sans jamais respecter le réglage « Réduire les animations » ; passé en transformation CSS (plus léger) et branché sur le réglage.",
+    "Audit complet effectué (5 passes ciblées : re-renders/contexts, pollers/listeners/realtime, démarrage/flashs, poids du bundle, coût des animations/CSS) — cette version corrige les points les plus critiques (P0 et les plus gros P1) trouvés ; le reste (environ 21 usages redondants de flou d'arrière-plan, quelques animations qui déplacent la mise en page au lieu d'utiliser des transformations, un chargement différé supplémentaire possible pour le sélecteur d'avatar et l'île dynamique) est documenté mais pas encore traité — sera fait dans une prochaine passe.",
+    "Validation : `tsc`/`build`/`lint` (0 erreur, 0 nouveau warning)/`test:unit` 115/115 ✓. `audit-security` PASS (1986 fichiers). Taille du bundle mesurée sur un vrai build de production, pas estimée.",
+  ],
+};
+
+const v1220_en: ChangelogEntry = {
+  version: "v1.22.0",
+  date: "2026-09-15",
+  title: "Performance: -8MB of JS per page, Focus timer freezing the dashboard, background leaks",
+  items: [
+    "THE biggest find: the icon system loaded all 6 full icon packs (Lucide, Phosphor, Tabler, Heroicons, Radix, Simple Icons -- roughly 12.5MB) on EVERY page, even though only one pack is ever active at a time (Phosphor by default). Verified on a real production build: initial JS on the login page dropped from ~15.9MB to ~3.8MB (measured on an actual build, not an estimate). Only the active pack now loads on demand, with an automatic, invisible fallback to Lucide while it loads -- verified a Phosphor icon renders correctly once the pack finishes loading.",
+    "The Focus timer (active session) was forcing the ENTIRE dashboard widget grid (9 widgets, including heavy ones like the Brain summary) to re-render every second whenever a focus session was running -- the component reading the live timer state sat at the whole-page level instead of being isolated in its own small button. Extracted into a dedicated component: now only that button updates every second, not the whole page.",
+    "The animated background (stars/glows) kept running even with the tab hidden -- its animation loop kept rescheduling itself indefinitely instead of stopping, wasting CPU/battery while ETHONE sits in the background.",
+    "5 pollers (automations, GitHub status, network ping, and others) kept running continuously even with the tab hidden, never pausing.",
+    "The mouse-follow spotlight effect triggered a React re-render on every single pixel of mouse movement -- switched to direct DOM manipulation (zero re-renders).",
+    "The auth context (used by ~27 files) and the sidebar context (wrapping the entire app) recreated a fresh object on every render, forcing every consumer to re-render even when nothing relevant had changed. Both memoized.",
+    "The boot screen enforced a minimum 600ms wait before showing the app, even when the session and profile were already cached -- cut to 160ms.",
+    "The now-playing equalizer (dashboard) ran an infinite animation loop that never respected the \"Reduce motion\" setting; switched to a CSS transform (cheaper) and wired to the setting.",
+    "A full audit was run (5 targeted passes: re-renders/contexts, pollers/listeners/realtime, boot/flashes, bundle weight, animation/CSS cost) -- this release fixes the most critical (P0) and biggest P1 findings; the rest (roughly 21 redundant backdrop-blur usages, a few animations moving layout instead of using transforms, further lazy-loading opportunities for the avatar picker and dynamic island) is documented but not yet addressed -- planned for a follow-up pass.",
+    "Validation: `tsc`/`build`/`lint` (0 errors, 0 new warnings)/`test:unit` 115/115 pass. `audit-security` PASS (1986 files). Bundle size measured on a real production build, not estimated.",
+  ],
+};
+
+const v1220_es: ChangelogEntry = {
+  version: "v1.22.0",
+  date: "2026-09-15",
+  title: "Rendimiento: -8MB de JS por página, el temporizador Focus congelaba el panel, fugas en segundo plano",
+  items: [
+    "EL hallazgo más grande: el sistema de iconos cargaba los 6 paquetes completos (Lucide, Phosphor, Tabler, Heroicons, Radix, Simple Icons -- unos 12,5MB) en CADA página, aunque solo un paquete está activo a la vez (Phosphor por defecto). Verificado en un build de producción real: el JS inicial de la página de login pasó de ~15,9MB a ~3,8MB (medido en un build real, no una estimación). Ahora solo se carga el paquete activo bajo demanda, con reserva automática e invisible a Lucide mientras carga -- verificado que un icono Phosphor se renderiza correctamente una vez cargado el paquete.",
+    "El temporizador Focus (sesión activa) forzaba el re-render de TODA la cuadrícula de widgets del panel (9 widgets, incluidos los pesados como el resumen de Brain) cada segundo mientras corría una sesión focus -- el componente que leía el estado del temporizador en vivo estaba a nivel de toda la página en lugar de aislado en su propio botón pequeño. Extraído a un componente dedicado: ahora solo ese botón se actualiza cada segundo, no la página entera.",
+    "El fondo animado (estrellas/resplandores) seguía corriendo con la pestaña oculta -- su bucle de animación se reprogramaba indefinidamente en lugar de detenerse, desperdiciando CPU/batería mientras ETHONE está en segundo plano.",
+    "5 pollers (automatizaciones, estado de GitHub, ping de red, y otros) seguían corriendo continuamente con la pestaña oculta, sin pausarse nunca.",
+    "El efecto de foco que sigue al ratón (spotlight) disparaba un re-render de React en cada píxel de movimiento del ratón -- cambiado a manipulación directa del DOM (cero re-renders).",
+    "El contexto de autenticación (usado por ~27 archivos) y el contexto de la barra lateral (que envuelve toda la app) recreaban un objeto nuevo en cada render, forzando a todos sus consumidores a re-renderizar incluso cuando nada relevante había cambiado. Ambos memoizados.",
+    "La pantalla de arranque imponía una espera mínima de 600ms antes de mostrar la app, incluso cuando la sesión y el perfil ya estaban en caché -- reducida a 160ms.",
+    "El ecualizador de reproducción (panel) corría un bucle de animación infinito que nunca respetaba el ajuste \"Reducir animaciones\"; cambiado a una transformación CSS (más ligero) y conectado al ajuste.",
+    "Se realizó una auditoría completa (5 pasadas específicas: re-renders/contextos, pollers/listeners/realtime, arranque/parpadeos, peso del bundle, costo de animaciones/CSS) -- esta versión corrige los hallazgos más críticos (P0) y los mayores P1; el resto (unos 21 usos redundantes de desenfoque de fondo, algunas animaciones que mueven el layout en vez de usar transforms, más oportunidades de carga diferida para el selector de avatar y la isla dinámica) está documentado pero no resuelto aún -- planeado para una siguiente pasada.",
+    "Validación: `tsc`/`build`/`lint` (0 errores, 0 advertencias nuevas)/`test:unit` 115/115 ✓. `audit-security` PASS (1986 archivos). Tamaño del bundle medido en un build de producción real, no estimado.",
+  ],
+};
+
+const v1220_de: ChangelogEntry = {
+  version: "v1.22.0",
+  date: "2026-09-15",
+  title: "Performance: -8MB JS pro Seite, Focus-Timer blockierte das Dashboard, Hintergrund-Lecks",
+  items: [
+    "DER größte Fund: Das Icon-System lud alle 6 vollständigen Icon-Pakete (Lucide, Phosphor, Tabler, Heroicons, Radix, Simple Icons -- rund 12,5MB) auf JEDER Seite, obwohl immer nur ein Paket aktiv ist (Phosphor standardmäßig). Auf einem echten Produktions-Build verifiziert: Das initiale JS der Login-Seite sank von ~15,9MB auf ~3,8MB (an einem echten Build gemessen, keine Schätzung). Jetzt wird nur noch das aktive Paket bei Bedarf geladen, mit automatischem, unsichtbarem Rückfall auf Lucide während des Ladens -- verifiziert, dass ein Phosphor-Icon nach dem Laden des Pakets korrekt gerendert wird.",
+    "Der Focus-Timer (aktive Sitzung) zwang das GESAMTE Dashboard-Widget-Raster (9 Widgets, darunter schwere wie die Brain-Zusammenfassung) jede Sekunde zum Neu-Rendern, sobald eine Focus-Sitzung lief -- die Komponente, die den Live-Timer-Status las, saß auf der gesamten Seitenebene statt isoliert in ihrem eigenen kleinen Button. In eine eigene Komponente ausgelagert: Jetzt aktualisiert sich nur noch dieser Button jede Sekunde, nicht die ganze Seite.",
+    "Der animierte Hintergrund (Sterne/Leuchten) lief auch bei ausgeblendetem Tab weiter -- seine Animationsschleife plante sich unendlich neu, statt zu stoppen, was CPU/Akku verschwendete, während ETHONE im Hintergrund liegt.",
+    "5 Poller (Automatisierungen, GitHub-Status, Netzwerk-Ping und andere) liefen auch bei ausgeblendetem Tab durchgehend weiter, ohne je zu pausieren.",
+    "Der Mausverfolgungs-Spotlight-Effekt löste bei jedem einzelnen Pixel Mausbewegung ein React-Re-Render aus -- auf direkte DOM-Manipulation umgestellt (keine Re-Renders mehr).",
+    "Der Auth-Kontext (von ~27 Dateien genutzt) und der Sidebar-Kontext (der die gesamte App umschließt) erzeugten bei jedem Render ein neues Objekt, was alle Verbraucher zum Neu-Rendern zwang, selbst wenn sich nichts Relevantes geändert hatte. Beide memoisiert.",
+    "Der Boot-Bildschirm erzwang eine Mindestwartezeit von 600ms vor Anzeige der App, selbst wenn Sitzung und Profil bereits zwischengespeichert waren -- auf 160ms reduziert.",
+    "Der Now-Playing-Equalizer (Dashboard) lief in einer Endlosschleife, die die Einstellung \"Animationen reduzieren\" nie beachtete; auf eine CSS-Transformation umgestellt (leichter) und an die Einstellung angebunden.",
+    "Ein vollständiges Audit wurde durchgeführt (5 gezielte Durchgänge: Re-Renders/Contexts, Poller/Listener/Realtime, Boot/Flashes, Bundle-Gewicht, Animations-/CSS-Kosten) -- diese Version behebt die kritischsten (P0) und größten P1-Befunde; der Rest (rund 21 redundante Backdrop-Blur-Verwendungen, einige Animationen, die Layout statt Transforms bewegen, weitere Lazy-Loading-Möglichkeiten für den Avatar-Picker und die Dynamic Island) ist dokumentiert, aber noch nicht behoben -- für einen Folgedurchgang geplant.",
+    "Validierung: `tsc`/`build`/`lint` (0 Fehler, 0 neue Warnungen)/`test:unit` 115/115 bestanden. `audit-security` PASS (1986 Dateien). Bundle-Größe an einem echten Produktions-Build gemessen, nicht geschätzt.",
+  ],
+};
+
+CHANGELOG_BY_LANG.fr.unshift(v1220_fr);
+CHANGELOG_BY_LANG.en.unshift(v1220_en);
+CHANGELOG_BY_LANG.es.unshift(v1220_es);
+CHANGELOG_BY_LANG.de.unshift(v1220_de);
+
 export const CHANGELOG = CHANGELOG_BY_LANG.fr;

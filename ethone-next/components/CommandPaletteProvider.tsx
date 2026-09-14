@@ -1,6 +1,6 @@
 "use client";
 
-import { createContext, useContext, useState } from "react";
+import { createContext, useContext, useMemo, useState } from "react";
 import CommandPalette from "@/components/CommandPalette";
 
 const CommandPaletteContext = createContext<{
@@ -16,9 +16,10 @@ export default function CommandPaletteProvider({
   children: React.ReactNode;
 }) {
   const [open, setOpen] = useState(false);
+  const value = useMemo(() => ({ open, setOpen }), [open]);
 
   return (
-    <CommandPaletteContext.Provider value={{ open, setOpen }}>
+    <CommandPaletteContext.Provider value={value}>
       {children}
       <CommandPalette />
     </CommandPaletteContext.Provider>

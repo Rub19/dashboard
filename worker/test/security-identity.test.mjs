@@ -129,6 +129,44 @@ test("otp verify surfaces an expired code as OTP_EXPIRED, not a generic error", 
   assert.equal((await payload(response)).error.code, "OTP_EXPIRED");
 });
 
+test("otp verify resolves userId from email when the client didn't send one (e.g. lost a reloaded tab's in-memory state)", async () => {
+  const fetchImpl = async (input, init) => {
+    const url = new URL(String(input));
+    if (url.hostname !== "project-ref.supabase.co") return new Response("not found", { status: 404 });
+    const method = init?.method || "GET";
+    if (url.pathname === "/auth/v1/admin/users") {
+      return json({ users: [{ id: "4a8ad6a5-7f6e-4d41-9d07-28f6dca8719a", email: "qa@ethone.dev" }] });
+    }
+    return otpVerifyMock({ codeHash: await hashOtp("123456") })(input, init);
+  };
+  const env = testEnv({ __TEST_FETCH__: fetchImpl });
+  const headers = { "content-type": "application/json" };
+  const response = await invoke("/api/auth/otp/verify", {
+    auth: false, env, headers, method: "POST",
+    body: JSON.stringify({ email: "qa@ethone.dev", code: "123456", rememberMe: false }),
+  });
+  assert.equal(response.status, 200);
+  const body = await payload(response);
+  assert.equal(body.data.verified, true);
+  assert.equal(typeof body.data.token, "string");
+});
+
+test("otp verify with no userId and an email with no account is a clean 404, not a 500", async () => {
+  const fetchImpl = async (input) => {
+    const url = new URL(String(input));
+    if (url.hostname !== "project-ref.supabase.co") return new Response("not found", { status: 404 });
+    if (url.pathname === "/auth/v1/admin/users") return json({ users: [] });
+    return json([]);
+  };
+  const env = testEnv({ __TEST_FETCH__: fetchImpl });
+  const headers = { "content-type": "application/json" };
+  const response = await invoke("/api/auth/otp/verify", {
+    auth: false, env, headers, method: "POST",
+    body: JSON.stringify({ email: "nobody@ethone.dev", code: "123456", rememberMe: false }),
+  });
+  assert.equal(response.status, 404);
+});
+
 test("OTP email locale follows the browser language, English for anything unsupported", () => {
   // Supported browser languages win, respecting the Accept-Language priority order.
   assert.equal(resolveEmailLocale("fr-FR,fr;q=0.9,en;q=0.8", "FR"), "fr");

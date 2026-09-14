@@ -39,8 +39,8 @@ export async function sendOtp(email: string) {
   return { ok: true as const, userId: res.data.userId as string, expiresIn: res.data.expiresIn as number, code: res.data.code as string | undefined };
 }
 
-export async function verifyOtp(userId: string, email: string, code: string, rememberMe = false) {
-  const attempt = consumeAuthAttempt("sign-in", `${userId}:${email}`);
+export async function verifyOtp(userId: string | null, email: string, code: string, rememberMe = false) {
+  const attempt = consumeAuthAttempt("sign-in", `${userId || "unknown"}:${email}`);
   if (!attempt.allowed) return rateLimitedResult(attempt.retryAfterMs);
 
   let res: { data?: { token?: string; expiresIn?: number } } | null;
@@ -80,7 +80,7 @@ export async function verifyOtp(userId: string, email: string, code: string, rem
     localStorage.removeItem("ethone-remember-expires");
     localStorage.removeItem("ethone-auth-type");
   }
-  resetAuthAttempt("sign-in", `${userId}:${email}`);
+  resetAuthAttempt("sign-in", `${userId || "unknown"}:${email}`);
   return { ok: true as const, session: data.session };
 }
 

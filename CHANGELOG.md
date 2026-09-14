@@ -2,6 +2,17 @@
 
 Toutes les modifications notables de ce projet seront documentées dans ce fichier.
 
+## v1.21.51 — 2026-09-14
+
+**Fix : code OTP perdu après rechargement + page de login redessinée**
+
+- Cause probable réelle trouvée pour le bug "code rejeté quelques secondes après réception" (signalé en v1.21.50, log de diagnostic ajouté sans cause confirmée à l'époque) : `otpUserIdRef`, l'identifiant utilisateur nécessaire à `verifyOtp`, n'était stocké qu'en mémoire côté navigateur (`useRef`) — un onglet mis en arrière-plan puis relu sur mobile (fréquent) le remet à `null`, sans que l'écran ne change (le composant garde son état visuel). Le message affiché devenait le générique "Une erreur est survenue" plutôt que la vraie cause.
+- `worker/src/routes/security-identity.js` : `otpVerifyRoute` accepte maintenant `userId` comme optionnel — s'il est absent, résolu côté serveur via `getUserIdByEmail(env, email)`, exactement comme le fait déjà `otpSendRoute`. `ethone-next/lib/auth.ts` et `components/AuthProvider.tsx` : suppression du blocage client qui refusait de tenter la vérification si la ref était vide.
+- `worker/src/services/otp-service.js` : e-mail du code — ajout d'un encart `user-select:all` sous les six cases (sélection complète en un seul appui long, puisqu'un vrai bouton "copier" ne peut pas fonctionner en JavaScript dans un client mail).
+- `app/login/page.tsx` : refonte du panneau gauche (desktop) — fond animé discret (lueurs radiales en dérive lente, grille de points, respecte `prefers-reduced-motion`) et grille de 6 fonctionnalités (Notes, Tâches, Calendrier, Finances, Musique, IA locale) pour combler le vide au-dessus et en dessous du texte.
+- Tests : `worker/test/security-identity.test.mjs` — 2 nouveaux cas (résolution par e-mail quand `userId` absent ; e-mail sans compte → 404 propre, pas un 500).
+- Validation : `worker` 251/251 tests ✓, `ethone-next` `tsc`/`lint`/`build`/`test:unit` 107/107 ✓, `audit-security` PASS (1977 fichiers). Page de login vérifiée visuellement en local (rendu desktop, aucune erreur console). Cause du bug OTP non re-confirmée en conditions réelles depuis cet environnement (pas de session utilisateur ici) — à surveiller après déploiement.
+
 ## v1.21.50 — 2026-09-14
 
 **Polish : lien Discord exposé, notification de mise à jour, e-mail OTP refondu**

@@ -39,7 +39,22 @@ import {
   ChevronLeft,
   Sparkles,
   ShieldCheck,
+  StickyNote,
+  ListChecks,
+  CalendarDays,
+  Wallet,
+  Music2,
+  Brain,
 } from "lucide-react";
+
+const HERO_FEATURES = [
+  { icon: StickyNote, label: "Notes" },
+  { icon: ListChecks, label: "Tâches" },
+  { icon: CalendarDays, label: "Calendrier" },
+  { icon: Wallet, label: "Finances" },
+  { icon: Music2, label: "Musique" },
+  { icon: Brain, label: "IA locale" },
+] as const;
 
 type AuthMode = "password" | "otp" | "register";
 type OtpStep = "email" | "code";
@@ -348,9 +363,31 @@ export default function LoginPage() {
 
       {/* Left side: Premium OS Hero Presentation (Desktop only) */}
       <div className="relative hidden w-1/2 flex-col justify-between overflow-hidden p-10 lg:flex xl:p-14 select-none">
-        {/* Subtle Ambient Radial Lighting */}
-        <div className="pointer-events-none absolute -left-20 -top-20 h-[36rem] w-[36rem] rounded-full bg-[var(--accent-primary,#C1234F)]/[0.04] blur-[140px]" />
-        <div className="pointer-events-none absolute -bottom-20 -right-20 h-[36rem] w-[36rem] rounded-full bg-[var(--accent-secondary,#E03365)]/[0.03] blur-[140px]" />
+        {/* Faint dot grid — gives the empty field some texture without competing with the text */}
+        <div
+          className="pointer-events-none absolute inset-0 opacity-[0.15]"
+          style={{
+            backgroundImage: "radial-gradient(circle, rgba(255,255,255,0.5) 1px, transparent 1px)",
+            backgroundSize: "28px 28px",
+          }}
+        />
+
+        {/* Ambient Radial Lighting — slow drifting glow instead of static, to fill the negative space with gentle motion */}
+        <motion.div
+          className="pointer-events-none absolute -left-20 -top-20 h-[36rem] w-[36rem] rounded-full bg-[var(--accent-primary,#C1234F)]/[0.05] blur-[140px]"
+          animate={reduced ? undefined : { x: [0, 40, 0], y: [0, 30, 0] }}
+          transition={{ duration: 18, repeat: Infinity, ease: "easeInOut" }}
+        />
+        <motion.div
+          className="pointer-events-none absolute -bottom-20 -right-20 h-[36rem] w-[36rem] rounded-full bg-[var(--accent-secondary,#E03365)]/[0.04] blur-[140px]"
+          animate={reduced ? undefined : { x: [0, -30, 0], y: [0, -40, 0] }}
+          transition={{ duration: 22, repeat: Infinity, ease: "easeInOut" }}
+        />
+        <motion.div
+          className="pointer-events-none absolute left-1/3 top-1/2 h-[26rem] w-[26rem] -translate-y-1/2 rounded-full bg-white/[0.02] blur-[130px]"
+          animate={reduced ? undefined : { scale: [1, 1.12, 1], opacity: [0.6, 1, 0.6] }}
+          transition={{ duration: 14, repeat: Infinity, ease: "easeInOut" }}
+        />
 
         {/* Brand Header */}
         <div className="z-10 flex items-center gap-3">
@@ -382,6 +419,18 @@ export default function LoginPage() {
           <p className="text-base text-zinc-400 font-light leading-relaxed">
             Notes, tâches, calendrier, finances, musique, fichiers et IA locale réunis dans un système fluide et instantané.
           </p>
+
+          <div className="grid grid-cols-3 gap-2.5 pt-2">
+            {HERO_FEATURES.map(({ icon: Icon, label }) => (
+              <div
+                key={label}
+                className="flex items-center gap-2 rounded-[var(--inset-radius)] border border-[var(--panel-border)] bg-white/[0.03] px-3 py-2.5 backdrop-blur-md"
+              >
+                <Icon className="h-4 w-4 shrink-0 text-[var(--accent-primary,#C1234F)]" />
+                <span className="truncate text-[12.5px] font-medium text-zinc-300">{label}</span>
+              </div>
+            ))}
+          </div>
         </div>
 
         {/* System Status Pill */}

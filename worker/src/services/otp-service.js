@@ -16,6 +16,7 @@ const EMAIL_I18N = {
     account: "Compte",
     codeLabel: "Code à six chiffres",
     validityHint: "Expire dans {minutes} minutes",
+    copyHint: "Appuyez pour tout sélectionner",
     validUntil: "Valable jusqu'au",
     security: "Ne partagez ce code avec personne. Si vous n'êtes pas à l'origine de cette demande, ignorez cet email.",
     tagline: "ETHONE — votre dashboard personnel",
@@ -28,6 +29,7 @@ const EMAIL_I18N = {
     account: "Account",
     codeLabel: "Six-digit code",
     validityHint: "Expires in {minutes} minutes",
+    copyHint: "Tap to select all",
     validUntil: "Valid until",
     security: "Do not share this code with anyone. If you did not request it, you can ignore this email.",
     tagline: "ETHONE — your personal dashboard",
@@ -40,6 +42,7 @@ const EMAIL_I18N = {
     account: "Cuenta",
     codeLabel: "Código de seis dígitos",
     validityHint: "Caduca en {minutes} minutos",
+    copyHint: "Toca para seleccionar todo",
     validUntil: "Válido hasta",
     security: "No compartas este código con nadie. Si no fuiste tú quien lo solicitó, ignora este email.",
     tagline: "ETHONE — tu dashboard personal",
@@ -52,6 +55,7 @@ const EMAIL_I18N = {
     account: "Konto",
     codeLabel: "Sechsstelliger Code",
     validityHint: "Läuft in {minutes} Minuten ab",
+    copyHint: "Zum Auswählen antippen",
     validUntil: "Gültig bis",
     security: "Teile diesen Code mit niemandem. Wenn du ihn nicht angefordert hast, ignoriere diese E-Mail.",
     tagline: "ETHONE — dein persönliches Dashboard",
@@ -160,7 +164,11 @@ function buildOtpEmail(code, contact, expiresAt, locale, timezone) {
                     <table role="presentation" cellpadding="0" cellspacing="0" border="0" style="margin:16px auto 0;">
                       <tr>${digitBoxes}</tr>
                     </table>
-                    <div style="margin-top:16px; color:#6f7a86; font-size:12px;">${i18n.validityHint.replace("{minutes}", String(minutes))}</div>
+                    <div style="margin-top:14px;">
+                      <span style="-webkit-user-select:all; user-select:all; font-family:ui-monospace,SFMono-Regular,Menlo,Monaco,Consolas,monospace; font-size:13px; letter-spacing:1px; color:#8a929e; border:1px dashed #2a4a40; border-radius:8px; padding:4px 10px; cursor:pointer;">${code}</span>
+                    </div>
+                    <div style="margin-top:6px; color:#5a6470; font-size:10.5px;">${i18n.copyHint}</div>
+                    <div style="margin-top:12px; color:#6f7a86; font-size:12px;">${i18n.validityHint.replace("{minutes}", String(minutes))}</div>
                   </td>
                 </tr>
               </table>

@@ -173,10 +173,20 @@ export async function otpVerifyRoute({ request, env }) {
   // rememberMe). Was 3 — every verify from the login screen was rejected
   // with INVALID_REQUEST 400, which the UI then showed as "code expired".
   const body = await readJsonBody(request, 4);
-  const userId = requireField(body, "userId", UUID_RE, 36);
-  await applyAuthRateLimit({ request, env, route: { id: "otp.verify" } }, userId);
   const email = requireField(body, "email", EMAIL_RE, 320);
   const code = requireField(body, "code", CODE_RE, 6);
+  // userId is normally the id the send step resolved and handed back to the
+  // client (stashed client-side between the two calls). That client-side
+  // stash is in-memory only -- a tab reload/discard between send and verify
+  // (backgrounding on mobile, opening the code from a different tab) wipes
+  // it, which previously surfaced as an opaque "Une erreur est survenue"
+  // instead of the actual verification outcome. Falling back to resolving
+  // it server-side from the email (exactly like sendOtp already does) means
+  // a verify can never fail purely because the client forgot its own id.
+  let userId = body.userId && UUID_RE.test(body.userId) ? body.userId : null;
+  if (!userId) userId = await getUserIdByEmail(env, email);
+  if (!userId) throw httpError("PROVIDER_NOT_FOUND", 404);
+  await applyAuthRateLimit({ request, env, route: { id: "otp.verify" } }, userId);
 
   const userAgent = request.headers.get("user-agent") || "";
   // A real session_id, shared by the device row and the minted token's

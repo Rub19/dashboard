@@ -26832,4 +26832,57 @@ CHANGELOG_BY_LANG.en.unshift(v12150_en);
 CHANGELOG_BY_LANG.es.unshift(v12150_es);
 CHANGELOG_BY_LANG.de.unshift(v12150_de);
 
+const v12151_fr: ChangelogEntry = {
+  version: "v1.21.51",
+  date: "2026-09-14",
+  title: "Fix : code OTP perdu après rechargement + page de login redessinée",
+  items: [
+    "Trouvé la vraie cause probable du bug \"code rejeté quelques secondes après réception\" signalé plus tôt : l'identifiant utilisateur nécessaire à la vérification n'était gardé qu'en mémoire côté navigateur (une simple mise en arrière-plan de l'onglet sur mobile suffit à le perdre), ce qui donnait un message d'erreur générique et trompeur plutôt que la vraie raison de l'échec.",
+    "Corrigé : si cet identifiant est absent, le serveur le retrouve maintenant lui-même à partir de l'e-mail (exactement comme au moment de l'envoi du code) — une vérification ne peut plus échouer juste parce que le navigateur a oublié son propre état.",
+    "E-mail du code : le code est maintenant aussi affiché dans un encart sélectionnable en un seul geste (appui long), en plus des cases individuelles — un vrai bouton \"copier\" n'est techniquement pas possible dans un e-mail (aucun client mail n'exécute de JavaScript), ceci est l'équivalent le plus proche qui fonctionne réellement.",
+    "Page de connexion : le grand panneau de gauche était vide en haut et en bas. Ajout d'un fond animé discret (lueurs qui dérivent doucement, grille de points) et d'une grille des fonctionnalités (Notes, Tâches, Calendrier, Finances, Musique, IA locale) pour remplir l'espace avec du contenu utile plutôt que du vide.",
+  ],
+};
+
+const v12151_en: ChangelogEntry = {
+  version: "v1.21.51",
+  date: "2026-09-14",
+  title: "Fix: OTP code lost after a reload + redesigned login page",
+  items: [
+    "Found the likely real cause of the earlier-reported \"code rejected seconds after being received\" bug: the user id needed to verify a code was only kept in the browser's memory (a tab merely being backgrounded on mobile is enough to lose it), which surfaced as a generic, misleading error instead of the real failure reason.",
+    "Fixed: if that id is missing, the server now resolves it itself from the email (exactly like it already does when sending the code) -- a verification can no longer fail just because the browser forgot its own state.",
+    "Code email: the code is now also shown in a one-tap-to-select box, alongside the individually boxed digits -- a real \"copy\" button isn't technically possible in an email (no mail client runs JavaScript), this is the closest thing that actually works.",
+    "Login page: the large left panel was empty at the top and bottom. Added a subtle animated background (slowly drifting glows, a dot grid) and a feature grid (Notes, Tasks, Calendar, Finances, Music, local AI) to fill the space with useful content instead of empty space.",
+  ],
+};
+
+const v12151_es: ChangelogEntry = {
+  version: "v1.21.51",
+  date: "2026-09-14",
+  title: "Corrección: código OTP perdido tras recargar + página de login rediseñada",
+  items: [
+    "Encontrada la causa probable real del bug reportado antes \"código rechazado segundos después de recibirlo\": el id de usuario necesario para verificar el código solo se guardaba en la memoria del navegador (basta con que la pestaña pase a segundo plano en el móvil para perderlo), lo que mostraba un error genérico y engañoso en vez del motivo real.",
+    "Corregido: si ese id falta, el servidor ahora lo resuelve él mismo a partir del email (igual que ya hace al enviar el código) -- una verificación ya no puede fallar solo porque el navegador olvidó su propio estado.",
+    "Email del código: el código ahora también se muestra en una casilla seleccionable de un solo toque, junto a los dígitos en casillas individuales -- un botón \"copiar\" real no es técnicamente posible en un email (ningún cliente de correo ejecuta JavaScript), esto es lo más parecido que funciona de verdad.",
+    "Página de login: el gran panel izquierdo estaba vacío arriba y abajo. Se añadió un fondo animado sutil (resplandores que se desplazan lentamente, una cuadrícula de puntos) y una cuadrícula de funciones (Notas, Tareas, Calendario, Finanzas, Música, IA local) para llenar el espacio con contenido útil en vez de vacío.",
+  ],
+};
+
+const v12151_de: ChangelogEntry = {
+  version: "v1.21.51",
+  date: "2026-09-14",
+  title: "Fix: OTP-Code nach Neuladen verloren + Login-Seite neu gestaltet",
+  items: [
+    "Wahrscheinliche echte Ursache des zuvor gemeldeten Bugs \"Code Sekunden nach Erhalt abgelehnt\" gefunden: die zur Verifizierung noetige Nutzer-ID wurde nur im Speicher des Browsers gehalten (ein Tab, der auf dem Handy nur in den Hintergrund geraet, reicht, um sie zu verlieren), was einen generischen, irrefuehrenden Fehler statt des echten Grundes zeigte.",
+    "Behoben: fehlt diese ID, loest der Server sie jetzt selbst anhand der E-Mail auf (genau wie beim Versenden des Codes) -- eine Verifizierung kann nicht mehr allein daran scheitern, dass der Browser seinen eigenen Zustand vergessen hat.",
+    "Code-E-Mail: der Code wird jetzt zusaetzlich in einem mit einem Tap vollstaendig markierbaren Kaestchen angezeigt, neben den einzeln eingerahmten Ziffern -- ein echter \"Kopieren\"-Button ist in einer E-Mail technisch nicht moeglich (kein Mail-Client fuehrt JavaScript aus), das ist die naechstbeste tatsaechlich funktionierende Loesung.",
+    "Login-Seite: das grosse linke Feld war oben und unten leer. Ein dezenter animierter Hintergrund (langsam driftende Lichter, ein Punktraster) und ein Funktionsraster (Notizen, Aufgaben, Kalender, Finanzen, Musik, lokale KI) wurden hinzugefuegt, um den Platz mit nuetzlichem Inhalt statt Leere zu fuellen.",
+  ],
+};
+
+CHANGELOG_BY_LANG.fr.unshift(v12151_fr);
+CHANGELOG_BY_LANG.en.unshift(v12151_en);
+CHANGELOG_BY_LANG.es.unshift(v12151_es);
+CHANGELOG_BY_LANG.de.unshift(v12151_de);
+
 export const CHANGELOG = CHANGELOG_BY_LANG.fr;

@@ -387,10 +387,12 @@ export default function AuthProvider({ children }: { children: ReactNode }) {
 
   async function verifyOtp(email: string, code: string, rememberMe = false) {
     authLog("OTP verification started");
+    // otpUserIdRef is in-memory only, so a page reload/discard between send
+    // and verify (tab backgrounded on mobile, code opened from a different
+    // tab...) can legitimately leave it null even with a fresh, valid code.
+    // Pass whatever's available -- the Worker resolves it from the email
+    // itself when missing, the same way sendOtp already does.
     const userId = otpUserIdRef.current;
-    if (!userId) {
-      return { error: new Error("Demandez un nouveau code avant de le valider.") };
-    }
     const res = await verifyOtpWorker(userId, email, code, rememberMe);
     if (!res.ok || !res.session) {
       authLog("OTP verification result", "error");

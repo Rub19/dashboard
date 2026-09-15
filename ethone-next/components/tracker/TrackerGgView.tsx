@@ -1,7 +1,7 @@
 "use client";
 
 import { useState, useEffect, useMemo, useCallback } from "react";
-import { RefreshCw, Search, Clock, AlertCircle, User, Gamepad2, BarChart3 } from "lucide-react";
+import { RefreshCw, Search, Clock, AlertCircle, User, Gamepad2, BarChart3, Star } from "lucide-react";
 import {
   TRACKER_GAMES,
   fetchTrackerProfile,
@@ -13,6 +13,17 @@ import {
 import { cn } from "@/lib/utils";
 
 const CACHE_TTL_MS = 15 * 60 * 1000;
+const FAVORITES_KEY = "ethone-trackergg:favorites";
+
+function loadFavorites(): string[] {
+  try {
+    const raw = localStorage.getItem(FAVORITES_KEY);
+    const parsed = raw ? JSON.parse(raw) : [];
+    return Array.isArray(parsed) ? parsed.filter((id) => typeof id === "string") : [];
+  } catch {
+    return [];
+  }
+}
 
 type CachePayload = { profile: TrackerProfile | null; matches: TrackerMatch[]; timestamp: number };
 
@@ -23,6 +34,32 @@ function fmtStat(k: string): string {
 export default function TrackerGgView() {
   const [gameId, setGameId] = useState(TRACKER_GAMES[0].id);
   const game = useMemo(() => TRACKER_GAMES.find((g) => g.id === gameId) ?? TRACKER_GAMES[0], [gameId]);
+  const [favorites, setFavorites] = useState<string[]>([]);
+
+  useEffect(() => {
+    setFavorites(loadFavorites());
+  }, []);
+
+  const toggleFavorite = useCallback((id: string) => {
+    setFavorites((prev) => {
+      const next = prev.includes(id) ? prev.filter((f) => f !== id) : [...prev, id];
+      try {
+        localStorage.setItem(FAVORITES_KEY, JSON.stringify(next));
+      } catch {}
+      return next;
+    });
+  }, []);
+
+  const orderedGames = useMemo(() => {
+    const favSet = new Set(favorites);
+    return [...TRACKER_GAMES].sort((a, b) => {
+      const aFav = favSet.has(a.id) ? 0 : 1;
+      const bFav = favSet.has(b.id) ? 0 : 1;
+      return aFav - bFav;
+    });
+  }, [favorites]);
+
+  const isFavorite = favorites.includes(gameId);
   const [platform, setPlatform] = useState(game.platforms[0].value);
   const [identifier, setIdentifier] = useState("");
   const [profile, setProfile] = useState<TrackerProfile | null>(null);
@@ -131,10 +168,20 @@ export default function TrackerGgView() {
               onChange={(e) => setGameId(e.target.value)}
               className="bg-transparent text-xs font-bold text-white outline-none [&>option]:bg-[#0c0d14]"
             >
-              {TRACKER_GAMES.map((g) => (
-                <option key={g.id} value={g.id}>{g.label}</option>
+              {orderedGames.map((g) => (
+                <option key={g.id} value={g.id}>{favorites.includes(g.id) ? `★ ${g.label}` : g.label}</option>
               ))}
             </select>
+            <button
+              type="button"
+              onClick={() => toggleFavorite(gameId)}
+              className="shrink-0 text-zinc-500 hover:text-amber-400 active:scale-90 transition-all cursor-pointer"
+              title={isFavorite ? "Retirer des favoris" : "Ajouter aux favoris"}
+              aria-label={isFavorite ? "Retirer des favoris" : "Ajouter aux favoris"}
+              aria-pressed={isFavorite}
+            >
+              <Star className={cn("h-4 w-4", isFavorite && "fill-amber-400 text-amber-400")} />
+            </button>
           </div>
 
           {game.platforms.length > 1 && (

@@ -91,6 +91,38 @@ export const TRACKER_GAMES: TrackerGame[] = [
     idLabel: "Nom EA",
     idHint: "Ton pseudo EA",
   },
+  // Slugs ci-dessous non vérifiés en direct (docs Tracker.gg bloquées aux
+  // requêtes automatisées) — à tester réellement avec la clé API du serveur ;
+  // le message d'erreur existant (reason === "not_found" / "key_rejected")
+  // dira clairement si un slug ou l'accès au titre est faux.
+  {
+    id: "fortnite",
+    label: "Fortnite",
+    platforms: [{ value: "epic", label: "Epic Games" }],
+    idLabel: "Pseudo Epic",
+    idHint: "Ton pseudo Epic Games",
+  },
+  {
+    id: "r6siege",
+    label: "Rainbow Six Siege",
+    platforms: [{ value: "ubi", label: "Ubisoft" }, { value: "psn", label: "PSN" }, { value: "xbl", label: "Xbox" }],
+    idLabel: "Nom Ubisoft",
+    idHint: "Ton pseudo Ubisoft Connect",
+  },
+  {
+    id: "destiny-2",
+    label: "Destiny 2",
+    platforms: [{ value: "steam", label: "Steam" }, { value: "psn", label: "PSN" }, { value: "xbl", label: "Xbox" }],
+    idLabel: "Nom",
+    idHint: "Ton pseudo",
+  },
+  {
+    id: "warzone",
+    label: "Call of Duty: Warzone",
+    platforms: [{ value: "battlenet", label: "Battle.net" }, { value: "psn", label: "PSN" }, { value: "xbl", label: "Xbox" }],
+    idLabel: "Nom",
+    idHint: "Ton pseudo (Battletag pour Battle.net)",
+  },
 ];
 
 function qs(params: Record<string, string>): string {

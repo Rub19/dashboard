@@ -11,9 +11,9 @@ import {
   type ReactNode,
 } from "react";
 import { supabase } from "@/lib/supabase";
-import { fetchWorker, clearCachedToken, WorkerError } from "@/lib/api";
+import { fetchWorker, WorkerError } from "@/lib/api";
 import { sendOtp as sendOtpWorker, verifyOtp as verifyOtpWorker } from "@/lib/auth";
-import { clearFetchCache } from "@/lib/hooks/useCachedFetch";
+import { sweepLocalIdentityAndCredentials } from "@/lib/identity-sweep";
 import { authLog } from "@/lib/auth-log";
 import { Session, User } from "@supabase/supabase-js";
 
@@ -34,10 +34,6 @@ type AuthContextValue = {
     code: string,
     rememberMe?: boolean
   ) => Promise<{ error?: Error }>;
-  signInPassword: (email: string, password: string) => Promise<{ error?: Error }>;
-  signInWithOAuth: (provider: "google" | "github" | "discord") => Promise<{ error?: Error; url?: string | null }>;
-  signUp: (email: string, password: string, username: string) => Promise<{ error?: Error; session?: Session }>;
-  resetPassword: (email: string) => Promise<{ error?: Error }>;
   refreshSession: () => Promise<void>;
   signOut: () => Promise<void>;
   // Login-time 2FA gate (distinct from Settings → Security's setup/verify,
@@ -57,88 +53,6 @@ export function useAuth() {
 }
 
 const SESSION_TIMEOUT_MS = 6_000;
-
-// IndexedDB databases used for offline/local caching (see lib/cloud-cache.ts
-// and lib/mail-cache.ts). Neither is scoped by user, so both must be wiped on
-// sign-out or the next account on this browser can read the previous user's
-// cached files/mail before its own data has loaded.
-const INDEXEDDB_DATABASES = ["ethone-cloud", "ethone-mail-cache"];
-
-// Exact, non-namespaced localStorage keys that must never survive a sign-out
-// because they either hold session material or leak identity/credentials
-// across accounts on the same browser.
-const SIGNOUT_EXACT_KEYS = [
-  "ethone-remember-me",
-  "ethone-remember-token",
-  "ethone-remember-refresh",
-  "ethone-remember-expires",
-  "ethone-auth-type",
-  "ethone_user_name",
-  "ethone_user_avatar",
-  "ethone_custom_avatar",
-  "ethone:custom:avatar",
-  // Bare, non-namespaced credential keys read/injected by lib/api.ts and
-  // various provider integrations.
-  "discord_token",
-  "github_token",
-  "spotify_access_token",
-  "spotify_refresh_token",
-  "RIOT_API_KEY",
-  "HENRIK_API_KEY",
-  // lib/identity/useIdentity.ts writes these bare/mis-namespaced keys
-  // alongside the properly `:${userId}`-scoped ones below (which the
-  // SIGNOUT_KEY_PREFIXES sweep below now also catches via "ethone:identity:"
-  // and "ethone:user:"). These specific ones use a different separator or no
-  // scoping at all and were silently missed by the old list, letting one
-  // account's display name/avatar/bio leak into the next account signed in
-  // on the same browser.
-  "ethone:user_name",
-  "ethone_user_name:local",
-  "ethone_user_username:local",
-  "ethone_user_bio:local",
-  "ethone_user_frame:local",
-  "ethone_custom_avatar:local",
-  // components/AvatarPickerModal.tsx writes these with no user scoping at all.
-  "ethone_user_frame",
-  "ethone_user_bg",
-  "ethone_user_badge",
-  // components/DashboardOverview.tsx's pinned/favorite/configured widgets —
-  // pure local UI preference with no cloud backing, but still leaks the
-  // previous account's dashboard customization into the next one.
-  "ethone-pinned-widgets",
-  "ethone-favorite-widgets",
-  "ethone-widget-configs",
-];
-
-// Prefixes for localStorage keys that are namespaced by guild/provider id
-// (not by ETHONE user id) and therefore leak the previous user's Discord
-// servers, automation config, and provider credentials into the next signed
-// in user unless swept on sign-out. This mirrors the bundle
-// IntegrationsSettings.tsx already clears when a user manually disconnects a
-// single provider (connected/token/refresh_token/clientId/pub/cred), applied
-// here to every provider at once.
-const SIGNOUT_KEY_PREFIXES = [
-  "ethone:discord:", // guilds, profile, userId, settings:{guildId}
-  "ethone:automod:", // cfg:{guildId}, rules:{guildId}
-  "ethone:anti-raid:", // {guildId}
-  "ethone:forms:", // {guildId}
-  "ethone:cred:", // per-provider credentials (riot, spotify, ai:*, ...)
-  "ethone:token:", // per-provider access tokens
-  "ethone:refresh_token:", // per-provider refresh tokens
-  "ethone:connected:", // per-provider "connected" flags
-  "ethone:clientId:", // per-provider OAuth client ids
-  "ethone:pub:", // public provider identifiers (e.g. Discord lanyard user id)
-  "ethone:oauth:", // transient OAuth/PKCE verifier state
-  // lib/identity/useIdentity.ts's local identity cache: the bare
-  // "ethone:identity:current" blob (checked before any per-user key or the
-  // fresh Supabase profile — the actual leak vector) AND every
-  // "ethone:identity:${userId}" variant, for whichever user id it was last
-  // written under, not just the current one.
-  "ethone:identity:",
-  // lib/identity/useIdentity.ts also writes ethone:user:username,
-  // ethone:user:bio, ethone:user:frame — no per-user scoping.
-  "ethone:user:",
-];
 
 // Registers (or touches, if it already exists) an ethone_devices row for
 // the current session, AND doubles as the login-time 2FA status check: the
@@ -172,70 +86,6 @@ async function syncMfaStatus(): Promise<boolean | null> {
   }
 }
 
-function deleteIndexedDbSafely(name: string, timeoutMs = 2000) {
-  if (typeof indexedDB === "undefined") return;
-  try {
-    const request = indexedDB.deleteDatabase(name);
-    // Fire-and-forget: if another tab/connection is holding the DB open,
-    // onblocked fires but the delete stays pending. That's fine here — the
-    // hard reload that follows sign-out tears down every connection anyway,
-    // so we don't await this or block sign-out on it.
-    const timer = setTimeout(() => {}, timeoutMs);
-    request.onsuccess = () => clearTimeout(timer);
-    request.onerror = () => clearTimeout(timer);
-    request.onblocked = () => clearTimeout(timer);
-  } catch {
-    // IndexedDB unavailable (private mode, unsupported) — nothing to clean up.
-  }
-}
-
-// Sweeps every local cache that must never survive a sign-out or leak into a
-// newly created account on the same browser: the module-level bearer-token
-// and fetchWorkerCached caches, every localStorage key matching
-// SIGNOUT_EXACT_KEYS/SIGNOUT_KEY_PREFIXES (identity, provider credentials,
-// OAuth tokens, dashboard customization — see the comments on those lists),
-// the outgoing user's `:${userId}`-suffixed identity keys, and the unscoped
-// IndexedDB caches. Called from signOut() (the normal path) AND from the
-// start of signUp() — a browser can reach the register form with a stale,
-// never-signed-out session's localStorage still present, and that must not
-// leak into the brand-new account either.
-function sweepLocalIdentityAndCredentials(outgoingUserId?: string) {
-  try {
-    clearCachedToken();
-  } catch {}
-  try {
-    clearFetchCache();
-  } catch {}
-
-  if (typeof window === "undefined") return;
-
-  try {
-    for (let i = localStorage.length - 1; i >= 0; i--) {
-      const key = localStorage.key(i);
-      if (!key) continue;
-      if (
-        SIGNOUT_EXACT_KEYS.includes(key) ||
-        SIGNOUT_KEY_PREFIXES.some((prefix) => key.startsWith(prefix))
-      ) {
-        localStorage.removeItem(key);
-      }
-    }
-    if (outgoingUserId) {
-      localStorage.removeItem(`ethone_user_name:${outgoingUserId}`);
-      localStorage.removeItem(`ethone_user_avatar:${outgoingUserId}`);
-      localStorage.removeItem(`ethone_custom_avatar:${outgoingUserId}`);
-      localStorage.removeItem(`ethone:custom:avatar:${outgoingUserId}`);
-    }
-    window.dispatchEvent(new CustomEvent("ethone:identity:update"));
-  } catch {}
-
-  // Unscoped IndexedDB caches (cloud files, mail) — never keyed by user, so
-  // they must be dropped here too. Fire-and-forget: see
-  // deleteIndexedDbSafely.
-  for (const dbName of INDEXEDDB_DATABASES) {
-    deleteIndexedDbSafely(dbName);
-  }
-}
 
 export default function AuthProvider({ children }: { children: ReactNode }) {
   const [session, setSession] = useState<Session | null>(null);
@@ -487,100 +337,6 @@ export default function AuthProvider({ children }: { children: ReactNode }) {
     return {};
   }, []);
 
-  const signInPassword = useCallback(async (email: string, password: string) => {
-    const { data, error } = await supabase.auth.signInWithPassword({ email, password });
-    if (data.session) {
-      setSession(data.session);
-      setUser(data.session.user);
-    }
-    return { error: error ?? undefined };
-  }, []);
-
-  const signInWithOAuth = useCallback(async (provider: "google" | "github" | "discord") => {
-    const { data, error } = await supabase.auth.signInWithOAuth({
-      provider,
-      options: {
-        redirectTo: typeof window !== "undefined" ? `${window.location.origin}/` : undefined,
-        scopes: provider === "discord" ? "identify email guilds" : undefined,
-      },
-    });
-    return { error: error ?? undefined, url: data?.url };
-  }, []);
-
-  const signUp = useCallback(async (email: string, password: string, username: string) => {
-    // Unlike OTP/passkey/login, signup calls Supabase directly from the
-    // browser with nothing but the public anon key — the Worker never
-    // mediates it, so it never got the same brute-force/spam protection.
-    // This pre-flight gate applies the same IP+email rate limit OTP already
-    // gets; a 429 here means the real Supabase call below never happens.
-    // Any other precheck failure (Worker unreachable, etc.) fails OPEN —
-    // this is a defense-in-depth addition, not the primary auth mechanism,
-    // so a transient Worker hiccup must never block a legitimate signup.
-    try {
-      await fetchWorker("/api/auth/precheck", {
-        method: "POST",
-        body: JSON.stringify({ email, action: "signup" }),
-      });
-    } catch (err) {
-      if (err instanceof WorkerError && err.status === 429) {
-        return { error: new Error(err.message || "Trop de tentatives. Réessayez dans quelques minutes.") };
-      }
-    }
-
-    // A browser can reach this form with a previous account's local caches
-    // still present (e.g. the user never clicked "sign out" — the session
-    // just expired, or they typed a new email directly into the register
-    // form). Sweep before creating the new account so its display
-    // name/avatar/credentials never inherit the outgoing identity's local
-    // cache. `user` here is still the PREVIOUS session's user, if any.
-    sweepLocalIdentityAndCredentials(user?.id);
-
-    const displayName = username.trim() || email.split("@")[0];
-    const { data, error } = await supabase.auth.signUp({
-      email,
-      password,
-      options: { data: { username, display_name: displayName } },
-    });
-    if (data.session) {
-      setSession(data.session);
-      setUser(data.session.user);
-
-      // Seed the public profile row so the dashboard shows the real username, not a generic label.
-      try {
-        await supabase.from("profiles").upsert({
-          id: data.session.user.id,
-          username,
-          display_name: displayName,
-          updated_at: new Date().toISOString(),
-        });
-      } catch (dbErr) {
-        console.warn("ETHONE profile seed failed:", dbErr);
-      }
-    }
-    return { error: error ?? undefined, session: data.session ?? undefined };
-  }, [user]);
-
-  const resetPassword = useCallback(async (email: string) => {
-    // Same pre-flight gate as signUp above — password recovery also calls
-    // Supabase directly from the browser and previously had no protection
-    // against being scripted into an email-bombing vector.
-    try {
-      await fetchWorker("/api/auth/precheck", {
-        method: "POST",
-        body: JSON.stringify({ email, action: "reset_password" }),
-      });
-    } catch (err) {
-      if (err instanceof WorkerError && err.status === 429) {
-        return { error: new Error(err.message || "Trop de tentatives. Réessayez dans quelques minutes.") };
-      }
-    }
-
-    const { error } = await supabase.auth.resetPasswordForEmail(email, {
-      redirectTo: typeof window !== "undefined" ? `${window.location.origin}/reset-password/` : undefined,
-    });
-    return { error: error ?? undefined };
-  }, []);
-
   const verifyMfaChallenge = useCallback(async (input: { code?: string; backupCode?: string }) => {
     try {
       await fetchWorker("/api/auth/totp/challenge", { method: "POST", body: JSON.stringify(input) });
@@ -651,10 +407,6 @@ export default function AuthProvider({ children }: { children: ReactNode }) {
       mfaPending,
       signInOtp,
       verifyOtp,
-      signInPassword,
-      signInWithOAuth,
-      signUp,
-      resetPassword,
       refreshSession,
       signOut,
       verifyMfaChallenge,
@@ -668,10 +420,6 @@ export default function AuthProvider({ children }: { children: ReactNode }) {
       mfaPending,
       signInOtp,
       verifyOtp,
-      signInPassword,
-      signInWithOAuth,
-      signUp,
-      resetPassword,
       refreshSession,
       signOut,
       verifyMfaChallenge,

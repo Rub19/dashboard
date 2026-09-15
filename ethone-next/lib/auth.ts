@@ -4,6 +4,7 @@ import { Provider } from "@supabase/supabase-js";
 import { supabase } from "./supabase";
 import { fetchWorker, WorkerError } from "./api";
 import { consumeAuthAttempt, resetAuthAttempt } from "./rate-limiter";
+import { sweepLocalIdentityAndCredentials } from "./identity-sweep";
 
 function rateLimitedResult(retryAfterMs: number) {
   const error = new Error(`Trop de tentatives. Patientez quelques instants avant de réessayer.`);
@@ -113,6 +114,16 @@ export async function signUpWithPassword(email: string, password: string, userna
     }
     return { ok: false as const, user: null, session: null, error: new Error("Impossible de vérifier la requête — réessayez.") };
   }
+
+  // A browser can reach this form with a previous account's local caches
+  // still present (e.g. the user never clicked "sign out" — the session just
+  // expired, or they typed a new email directly into the register form).
+  // Sweep before creating the new account so its display name/avatar/
+  // credentials never inherit the outgoing identity's local cache.
+  try {
+    const { data: outgoing } = await supabase.auth.getUser();
+    sweepLocalIdentityAndCredentials(outgoing?.user?.id);
+  } catch {}
 
   const displayName = username.trim() || email.split("@")[0];
   const { data, error } = await supabase.auth.signUp({

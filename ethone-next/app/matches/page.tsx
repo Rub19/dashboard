@@ -18,14 +18,20 @@ import Input from "@/components/Input";
 import FormField from "@/components/FormField";
 import Button from "@/components/ui/Button";
 import { useSettings } from "@/components/SettingsProvider";
-import { Swords, Gamepad2, Shield, Crown } from "lucide-react";
+import GameBrandIcon from "@/components/GameBrandIcon";
 
+// Real brand marks via GameBrandIcon (Simple Icons), same source used for
+// Discord Rich Presence game icons elsewhere in the app. Apex Legends has no
+// official mark in that icon set (checked directly against Iconify's Simple
+// Icons collection) so it — and "Autres jeux", which isn't one specific game
+// — fall through to GameBrandIcon's own generic Gamepad2 fallback rather
+// than a fabricated logo.
 const tabs = [
-  { id: "valorant", label: "Valorant", icon: <Swords className="h-4 w-4" /> },
-  { id: "lol", label: "League of Legends", icon: <Shield className="h-4 w-4" /> },
-  { id: "tft", label: "Teamfight Tactics", icon: <Crown className="h-4 w-4" /> },
-  { id: "apex", label: "Apex Legends", icon: <Gamepad2 className="h-4 w-4" /> },
-  { id: "trackergg", label: "Autres jeux", icon: <Gamepad2 className="h-4 w-4" /> },
+  { id: "valorant", label: "Valorant", icon: <GameBrandIcon name="Valorant" className="h-4 w-4" /> },
+  { id: "lol", label: "League of Legends", icon: <GameBrandIcon name="League of Legends" className="h-4 w-4" /> },
+  { id: "tft", label: "Teamfight Tactics", icon: <GameBrandIcon name="Teamfight Tactics" className="h-4 w-4" /> },
+  { id: "apex", label: "Apex Legends", icon: <GameBrandIcon name="Apex Legends" className="h-4 w-4" /> },
+  { id: "trackergg", label: "Autres jeux", icon: <GameBrandIcon name="" className="h-4 w-4" /> },
 ];
 
 const APEX_PLATFORMS = ["origin", "xbl", "psn"] as const;

@@ -6,6 +6,7 @@ import { useSearchParams } from "next/navigation";
 import { Hash, ArrowLeft, RefreshCw, Plus, Trash2, AlertTriangle, ChevronDown } from "lucide-react";
 import { useToast } from "@/components/ToastProvider";
 import { useDiscordOAuth, type DiscordGuild } from "@/lib/hooks/useDiscordOAuth";
+import { useDiscordSync } from "@/lib/useDiscordSync";
 import { cn } from "@/lib/utils";
 
 const BOT_API_URL = process.env.NEXT_PUBLIC_DISCORD_BOT_API || "";
@@ -97,6 +98,23 @@ export default function TagsCenterClient() {
     setEditContent("");
     load();
   }, [load]);
+
+  // Reflète en direct les changements faits via la commande Discord /tag add|edit
+  // (ou un autre onglet dashboard) — remplace le tag concerné dans la liste, ou
+  // l'ajoute s'il est nouveau.
+  useDiscordSync({
+    guildId: selectedGuild?.id,
+    onConfigUpdated: (module, updatedTag: any) => {
+      if (module !== "tags" || !updatedTag?.name) return;
+      setTags((prev) => {
+        const idx = prev.findIndex((t) => t.name === updatedTag.name);
+        if (idx === -1) return [...prev, updatedTag];
+        const next = [...prev];
+        next[idx] = { ...next[idx], ...updatedTag };
+        return next;
+      });
+    },
+  });
 
   const openEditor = (tag?: TagRow) => {
     if (tag) {

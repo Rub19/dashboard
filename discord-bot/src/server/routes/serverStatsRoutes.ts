@@ -3,6 +3,7 @@ import { ChannelType, Client } from 'discord.js';
 import { serverStatsStorage, MAX_STAT_CHANNELS } from '../../modules/serverStats/storage/serverStatsStorage.js';
 import { serverStatsService } from '../../modules/serverStats/services/serverStatsService.js';
 import { StatChannelSchema, StatsConfigSchema } from '../../modules/serverStats/types/serverStats.js';
+import { emitConfigUpdated } from '../../services/syncConfigEmitter.js';
 
 /**
  * API Dashboard du module Server Stats.
@@ -27,7 +28,9 @@ export function createServerStatsRouter(client: Client) {
       res.status(400).json({ error: 'Configuration invalide', details: parsed.error.flatten() });
       return;
     }
-    res.json({ success: true, config: serverStatsStorage.updateConfig(guildId, parsed.data) });
+    const updated = serverStatsStorage.updateConfig(guildId, parsed.data);
+    emitConfigUpdated('serverStats', guildId, updated, 'DASHBOARD', req.user?.id);
+    res.json({ success: true, config: updated });
   });
 
   router.put('/channels/:channelId', async (req: Request, res: Response): Promise<void> => {

@@ -43,6 +43,7 @@ import {
 import { useAuth } from "@/components/AuthProvider";
 import { useToast } from "@/components/ToastProvider";
 import { useDiscordOAuth, type DiscordGuild } from "@/lib/hooks/useDiscordOAuth";
+import { useDiscordSync } from "@/lib/useDiscordSync";
 import { cn } from "@/lib/utils";
 
 // ==========================================
@@ -521,6 +522,17 @@ export default function AutoModCommandCenterPage() {
   useEffect(() => {
     fetchAllData();
   }, [fetchAllData]);
+
+  // Reflète en direct les changements faits ailleurs (commande Discord /automod,
+  // un autre onglet dashboard...) sans attendre un rechargement manuel.
+  useDiscordSync({
+    guildId: selectedGuild?.id,
+    onConfigUpdated: (module, updatedConfig) => {
+      if (module === "automod" && updatedConfig) {
+        setConfig((prev) => ({ ...prev, ...updatedConfig }));
+      }
+    },
+  });
 
   // Sauvegarder la configuration
   const handleSaveConfig = async () => {

@@ -25,6 +25,7 @@ import { TicketScheduler } from './ticketScheduler.js';
 import { logService } from '../../logs/services/logService.js';
 import { logger } from '../../../utils/logger.js';
 import { baseEmbed } from '../../../utils/embeds.js';
+import { analyticsService } from '../../analytics/services/analyticsService.js';
 
 class TicketService {
   private discordClient: Client | null = null;
@@ -204,6 +205,7 @@ class TicketService {
 
       // Sauvegarde
       ticketRepository.saveTicket(ticket);
+      analyticsService.recordTicketCreated(guild.id);
 
       // Envoi du message de bienvenue et panel de contrôles
       await this.sendTicketChannelPanel(channel, ticket, category, user);

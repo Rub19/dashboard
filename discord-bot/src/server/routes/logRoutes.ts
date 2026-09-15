@@ -6,6 +6,7 @@ import { InvestigationService } from '../../modules/logs/services/investigationS
 import { LogExportService } from '../../modules/logs/services/logExportService.js';
 import { logService } from '../../modules/logs/services/logService.js';
 import { AuditModule, AuditSeverity } from '../../modules/logs/types/auditEvent.js';
+import { emitConfigUpdated } from '../../services/syncConfigEmitter.js';
 
 export function createLogRouter(discordClient: Client) {
   const router = express.Router({ mergeParams: true });
@@ -154,6 +155,7 @@ export function createLogRouter(discordClient: Client) {
         after: updated.routing,
       });
 
+      emitConfigUpdated('logs', guildId, updated, 'DASHBOARD', req.user?.id);
       res.json({ success: true, config: updated });
     } catch (err: any) {
       res.status(400).json({ error: err.message || 'Données de configuration invalides' });
@@ -164,6 +166,7 @@ export function createLogRouter(discordClient: Client) {
     const guildId = String(req.params.guildId);
     try {
       const updated = auditRepository.updateConfig(guildId, req.body);
+      emitConfigUpdated('logs', guildId, updated, 'DASHBOARD', req.user?.id);
       res.json({ success: true, config: updated });
     } catch (err: any) {
       res.status(400).json({ error: err.message || 'Données invalides' });

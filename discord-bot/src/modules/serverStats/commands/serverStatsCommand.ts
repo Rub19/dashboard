@@ -3,6 +3,7 @@ import { Command, CommandContext } from '../../../types/command.js';
 import { serverStatsStorage, MAX_STAT_CHANNELS } from '../storage/serverStatsStorage.js';
 import { serverStatsService, computeStat, renderName } from '../services/serverStatsService.js';
 import { StatType } from '../types/serverStats.js';
+import { emitConfigUpdated } from '../../../services/syncConfigEmitter.js';
 
 const TYPE_LABELS: Record<StatType, string> = {
   members: 'Membres', humans: 'Humains', bots: 'Bots', online: 'En ligne',
@@ -168,6 +169,7 @@ export const serverStatsCommand: Command = {
       return;
     }
     const updated = serverStatsStorage.updateConfig(guild.id, patch);
+    emitConfigUpdated('serverStats', guild.id, updated, 'DISCORD_COMMAND', ctx.author.id);
     await ctx.reply({
       embeds: [ctx.createEmbed('success').setDescription(`✅ État : ${updated.enabled ? 'actif' : 'inactif'} · intervalle : ${updated.updateIntervalMinutes} min`)],
       ephemeral: true,

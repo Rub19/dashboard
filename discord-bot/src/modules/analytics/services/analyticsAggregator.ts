@@ -6,6 +6,7 @@ import {
   TimeSeriesPoint,
   TimeRangePeriod,
   TopChannelStat,
+  TopMemberStat,
 } from '../types/analytics.js';
 import { analyticsWriteBuffer } from '../storage/analyticsWriteBuffer.js';
 import { sanctionService } from '../../moderation/sanctions/sanctionService.js';
@@ -68,6 +69,16 @@ export class AnalyticsAggregator {
     }
     const activeUsersPrev = activeUserSetPrev.size;
 
+    // Rétention : part des membres actifs de la période précédente encore actifs cette période
+    let retentionRate: number | null = null;
+    if (activeUserSetPrev.size > 0) {
+      let retained = 0;
+      for (const u of activeUserSetPrev) {
+        if (activeUserSetCurrent.has(u)) retained += 1;
+      }
+      retentionRate = Math.round((retained / activeUserSetPrev.size) * 1000) / 10;
+    }
+
     // Récupérer le membre count réel sur Discord
     const guild = client.guilds.cache.get(guildId);
     const currentMemberCount = guild ? guild.memberCount : 0;
@@ -118,6 +129,37 @@ export class AnalyticsAggregator {
           percentage,
         };
       });
+
+    // 5b. Top Members (par nombre de messages)
+    const authorMap: Record<string, number> = {};
+    for (const b of currentBuckets) {
+      for (const [uid, cnt] of Object.entries(b.authorMessageCounts || {})) {
+        authorMap[uid] = (authorMap[uid] || 0) + cnt;
+      }
+    }
+    const topMembers: TopMemberStat[] = Object.entries(authorMap)
+      .sort((a, b) => b[1] - a[1])
+      .slice(0, 5)
+      .map(([uid, count]) => {
+        const member = guild?.members.cache.get(uid);
+        return {
+          userId: uid,
+          username: member ? member.user.tag : `Utilisateur ${uid.substring(0, 6)}`,
+          avatarUrl: member ? member.user.displayAvatarURL({ size: 64 }) : null,
+          messageCount: count,
+        };
+      });
+
+    // 5c. Répartition des types de messages (texte / média / lien)
+    const textCurrent = currentBuckets.reduce((sum, b) => sum + (b.textMessagesCount || 0), 0);
+    const mediaCurrent = currentBuckets.reduce((sum, b) => sum + (b.mediaMessagesCount || 0), 0);
+    const linkCurrent = currentBuckets.reduce((sum, b) => sum + (b.linkMessagesCount || 0), 0);
+    const classifiedTotal = textCurrent + mediaCurrent + linkCurrent;
+    const messageTypeBreakdown = {
+      textPct: classifiedTotal > 0 ? Math.round((textCurrent / classifiedTotal) * 100) : 0,
+      mediaPct: classifiedTotal > 0 ? Math.round((mediaCurrent / classifiedTotal) * 100) : 0,
+      linkPct: classifiedTotal > 0 ? Math.round((linkCurrent / classifiedTotal) * 100) : 0,
+    };
 
     // 6. Peak Heatmap (7 jours x 24 heures)
     const peakHeatmap = this.buildPeakHeatmap(currentBuckets);
@@ -201,6 +243,9 @@ export class AnalyticsAggregator {
       insights,
       timeSeries,
       topChannels,
+      topMembers,
+      messageTypeBreakdown,
+      retentionRate,
       peakHeatmap,
       moderationBreakdown,
       topCommands,

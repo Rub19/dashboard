@@ -2,6 +2,7 @@ import { SlashCommandBuilder, PermissionFlagsBits } from 'discord.js';
 import { Command, CommandContext } from '../../../types/command.js';
 import { tagStorage, MAX_TAGS_PER_GUILD } from '../storage/tagStorage.js';
 import { TAG_NAME_RE } from '../types/tag.js';
+import { emitConfigUpdated } from '../../../services/syncConfigEmitter.js';
 
 function normName(raw: string): string {
   return raw.trim().toLowerCase().replace(/\s+/g, '-').slice(0, 32);
@@ -165,7 +166,8 @@ export const tagCommand: Command = {
         });
         return;
       }
-      tagStorage.set({ guildId, name, content, createdBy: ctx.author.id });
+      const createdTag = tagStorage.set({ guildId, name, content, createdBy: ctx.author.id });
+      emitConfigUpdated('tags', guildId, createdTag, 'DISCORD_COMMAND', ctx.author.id);
       await ctx.reply({
         embeds: [ctx.createEmbed('success').setDescription(`✅ Tag \`${name}\` créé. \`/tag get ${name}\` pour l'afficher.`)],
         ephemeral: true,
@@ -181,7 +183,8 @@ export const tagCommand: Command = {
         await ctx.reply({ embeds: [ctx.createEmbed('error').setDescription(`❌ Aucun tag \`${name}\`.`)], ephemeral: true });
         return;
       }
-      tagStorage.set({ guildId, name, content, createdBy: existing.createdBy });
+      const editedTag = tagStorage.set({ guildId, name, content, createdBy: existing.createdBy });
+      emitConfigUpdated('tags', guildId, editedTag, 'DISCORD_COMMAND', ctx.author.id);
       await ctx.reply({
         embeds: [ctx.createEmbed('success').setDescription(`✅ Tag \`${name}\` modifié.`)],
         ephemeral: true,

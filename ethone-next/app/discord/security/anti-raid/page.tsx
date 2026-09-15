@@ -28,6 +28,7 @@ import {
 import { useAuth } from "@/components/AuthProvider";
 import { useToast } from "@/components/ToastProvider";
 import { useDiscordOAuth, type DiscordGuild } from "@/lib/hooks/useDiscordOAuth";
+import { useDiscordSync } from "@/lib/useDiscordSync";
 import { cn } from "@/lib/utils";
 
 // Types Anti-Raid
@@ -425,6 +426,17 @@ export default function AntiRaidDashboardPage() {
       setSettings(DEFAULT_ANTI_RAID_SETTINGS);
     }
   }, [selectedGuild]);
+
+  // Reflète en direct les changements faits via la commande Discord /antiraid
+  // (ou un autre onglet dashboard) sans attendre un rechargement manuel.
+  useDiscordSync({
+    guildId: selectedGuild?.id,
+    onConfigUpdated: (module, updatedConfig) => {
+      if (module === "antiRaid" && updatedConfig) {
+        setSettings((prev: any) => ({ ...prev, ...updatedConfig }));
+      }
+    },
+  });
 
   const fetchIncidents = useCallback(async () => {
     if (!selectedGuild) return;

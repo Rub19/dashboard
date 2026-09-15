@@ -8,6 +8,7 @@ import { autoModRepository } from '../storage/autoModRepository.js';
 import { RuleTesterService } from '../services/ruleTesterService.js';
 import { AutoModRiskEngine } from '../services/autoModRiskEngine.js';
 import { formatString, getTranslation } from '../../../utils/i18n.js';
+import { emitConfigUpdated } from '../../../services/syncConfigEmitter.js';
 
 export const automodCommand: Command = {
   name: 'automod',
@@ -253,7 +254,8 @@ export const automodCommand: Command = {
         active = ctx.args[1]?.toLowerCase() === 'on' || ctx.args[1]?.toLowerCase() === 'true';
       }
 
-      autoModRepository.updateConfig(guildId, { smartMode: active });
+      const smartModeConfig = autoModRepository.updateConfig(guildId, { smartMode: active });
+      emitConfigUpdated('automod', guildId, smartModeConfig, 'DISCORD_COMMAND', ctx.author.id);
       await ctx.reply({
         embeds: [ctx.createEmbed('success').setDescription(active ? t.automod_smartmode_toggle_on : t.automod_smartmode_toggle_off)],
       });
@@ -298,18 +300,20 @@ export const automodCommand: Command = {
       }
 
       // Toggle du moteur AutoMod entier (champ racine, pas un sous-objet détecteur)
+      let toggledConfig;
       if (moduleKey === 'all') {
-        autoModRepository.updateConfig(guildId, { enabled: active });
+        toggledConfig = autoModRepository.updateConfig(guildId, { enabled: active });
       } else {
         // Fusion superficielle dans updateConfig() : on doit repartir de l'objet
         // détecteur EXISTANT et n'écraser que `enabled`, sinon Zod réinitialiserait
         // silencieusement tous les autres réglages du détecteur (seuils, actions,
         // listes blanches/noires...) à leurs valeurs par défaut.
         const currentDetector = (config as Record<string, unknown>)[moduleKey] as Record<string, unknown> | undefined;
-        autoModRepository.updateConfig(guildId, {
+        toggledConfig = autoModRepository.updateConfig(guildId, {
           [moduleKey]: { ...(currentDetector || {}), enabled: active },
         } as Partial<typeof config>);
       }
+      emitConfigUpdated('automod', guildId, toggledConfig, 'DISCORD_COMMAND', ctx.author.id);
 
       await ctx.reply({
         embeds: [

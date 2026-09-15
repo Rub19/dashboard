@@ -19,6 +19,7 @@ import {
 } from "lucide-react";
 import { useToast } from "@/components/ToastProvider";
 import { useDiscordOAuth, type DiscordGuild } from "@/lib/hooks/useDiscordOAuth";
+import { useDiscordSync } from "@/lib/useDiscordSync";
 import { cn } from "@/lib/utils";
 
 const BOT_API_URL = process.env.NEXT_PUBLIC_DISCORD_BOT_API || "";
@@ -188,6 +189,17 @@ export default function StarboardCenterClient() {
   useEffect(() => {
     load();
   }, [load]);
+
+  // Reflète en direct les changements faits via la commande Discord /starboard
+  // (ou un autre onglet dashboard) sans attendre un rechargement manuel.
+  useDiscordSync({
+    guildId: selectedGuild?.id,
+    onConfigUpdated: (module, updatedConfig) => {
+      if (module === "starboard" && updatedConfig) {
+        setConfig((prev) => ({ ...prev, ...updatedConfig }));
+      }
+    },
+  });
 
   const patch = <K extends keyof StarboardConfig>(key: K, value: StarboardConfig[K]) =>
     setConfig((c) => ({ ...c, [key]: value }));

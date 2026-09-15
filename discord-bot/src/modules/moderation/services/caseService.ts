@@ -11,6 +11,7 @@ import { moderationRepository } from '../storage/moderationRepository.js';
 import { ModerationLogger } from './moderationLogger.js';
 import { StaffAbuseDetector } from './staffAbuseDetector.js';
 import { logService } from '../../logs/services/logService.js';
+import { analyticsWriteBuffer } from '../../analytics/storage/analyticsWriteBuffer.js';
 
 export class CaseService {
   public static createCase(
@@ -51,6 +52,8 @@ export class CaseService {
       appealStatus: 'NONE',
       metadata: params.metadata || {},
     });
+
+    analyticsWriteBuffer.recordModerationAction(params.guildId);
 
     // 1. Journalisation dans les logs de modération
     ModerationLogger.logCase(discordClient, modCase);

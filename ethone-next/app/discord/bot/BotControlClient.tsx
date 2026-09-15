@@ -391,6 +391,19 @@ export default function BotControlClient({ initialTab = "overview" }: BotControl
     loadModules();
   }, [loadModules]);
 
+  // Reflète en direct les changements du toggle de modules faits via la commande
+  // Discord /module (ou un autre onglet dashboard). Instance séparée de celle plus
+  // bas : celle-ci est scopée à settingsGuildId (flux par serveur), alors que la
+  // globale (sans guildId) sert la présence du bot, qui n'est pas liée à un serveur.
+  useDiscordSync({
+    guildId: settingsGuildId,
+    onConfigUpdated: (module, updatedModules) => {
+      if (module === "modules" && updatedModules) {
+        setModules((prev) => prev.map((m) => ({ ...m, enabled: updatedModules[m.id] ?? m.enabled })));
+      }
+    },
+  });
+
   // Toggle a module for the selected guild — writes straight to guildConfigService via
   // PATCH /api/guilds/:guildId/modules/:moduleId, the exact same state the /module
   // Discord slash command reads and updates. Optimistic update with rollback on failure.

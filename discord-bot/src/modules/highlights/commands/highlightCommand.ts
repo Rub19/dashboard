@@ -2,6 +2,7 @@ import { ChannelType, SlashCommandBuilder } from 'discord.js';
 import { Command, CommandContext } from '../../../types/command.js';
 import { highlightStorage, MAX_KEYWORDS_PER_USER } from '../storage/highlightStorage.js';
 import { HIGHLIGHT_KEYWORD_MAX_LENGTH, HIGHLIGHT_KEYWORD_MIN_LENGTH } from '../types/highlight.js';
+import { emitConfigUpdated } from '../../../services/syncConfigEmitter.js';
 
 function normKeyword(raw: string): string {
   return raw.trim();
@@ -162,7 +163,8 @@ export const highlightCommand: Command = {
 
     if (sub === 'toggle') {
       const active = ctx.interaction!.options.getBoolean('actif', true);
-      highlightStorage.updateConfig(guildId, userId, { enabled: active });
+      const toggledHighlightConfig = highlightStorage.updateConfig(guildId, userId, { enabled: active });
+      emitConfigUpdated('highlights', guildId, { ...toggledHighlightConfig, userId }, 'DISCORD_COMMAND', userId);
       await ctx.reply({
         embeds: [
           ctx
@@ -184,7 +186,8 @@ export const highlightCommand: Command = {
         });
         return;
       }
-      highlightStorage.updateConfig(guildId, userId, { ignoredChannelIds: [...config.ignoredChannelIds, channel.id] });
+      const mutedConfig = highlightStorage.updateConfig(guildId, userId, { ignoredChannelIds: [...config.ignoredChannelIds, channel.id] });
+      emitConfigUpdated('highlights', guildId, { ...mutedConfig, userId }, 'DISCORD_COMMAND', userId);
       await ctx.reply({
         embeds: [ctx.createEmbed('success').setDescription(`✅ <#${channel.id}> ignoré — plus aucun highlight depuis ce salon.`)],
         ephemeral: true,
@@ -202,9 +205,10 @@ export const highlightCommand: Command = {
       });
       return;
     }
-    highlightStorage.updateConfig(guildId, userId, {
+    const unmutedConfig = highlightStorage.updateConfig(guildId, userId, {
       ignoredChannelIds: config.ignoredChannelIds.filter((id) => id !== channel.id),
     });
+    emitConfigUpdated('highlights', guildId, { ...unmutedConfig, userId }, 'DISCORD_COMMAND', userId);
     await ctx.reply({
       embeds: [ctx.createEmbed('success').setDescription(`✅ <#${channel.id}> réactivé pour les highlights.`)],
       ephemeral: true,

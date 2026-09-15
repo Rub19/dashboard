@@ -6,6 +6,7 @@ import {
   HIGHLIGHT_KEYWORD_MIN_LENGTH,
   HighlightUserConfigSchema,
 } from '../../modules/highlights/types/highlight.js';
+import { emitConfigUpdated } from '../../services/syncConfigEmitter.js';
 
 /**
  * API Dashboard du module Highlights.
@@ -68,7 +69,9 @@ export function createHighlightsRouter(client: Client) {
       res.status(400).json({ error: 'Configuration invalide', details: parsed.error.flatten() });
       return;
     }
-    res.json({ success: true, config: highlightStorage.updateConfig(guildId, userId, parsed.data) });
+    const updated = highlightStorage.updateConfig(guildId, userId, parsed.data);
+    emitConfigUpdated('highlights', guildId, { ...updated, userId }, 'DASHBOARD', userId);
+    res.json({ success: true, config: updated });
   });
 
   router.post('/mine/keywords', (req: Request, res: Response): void => {

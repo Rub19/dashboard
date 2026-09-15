@@ -6,6 +6,7 @@ import { useSearchParams } from "next/navigation";
 import { BarChart3, ArrowLeft, RefreshCw, Save, ChevronDown, Plus, Trash2, AlertTriangle } from "lucide-react";
 import { useToast } from "@/components/ToastProvider";
 import { useDiscordOAuth, type DiscordGuild } from "@/lib/hooks/useDiscordOAuth";
+import { useDiscordSync } from "@/lib/useDiscordSync";
 import { cn } from "@/lib/utils";
 
 const BOT_API_URL = process.env.NEXT_PUBLIC_DISCORD_BOT_API || "";
@@ -121,6 +122,17 @@ export default function ServerStatsCenterClient() {
   useEffect(() => {
     load();
   }, [load]);
+
+  // Reflète en direct les changements faits via la commande Discord /serverstats
+  // (ou un autre onglet dashboard) sans attendre un rechargement manuel.
+  useDiscordSync({
+    guildId: selectedGuild?.id,
+    onConfigUpdated: (module, updatedConfig: any) => {
+      if (module !== "serverStats" || !updatedConfig) return;
+      if (typeof updatedConfig.enabled === "boolean") setEnabled(updatedConfig.enabled);
+      if (typeof updatedConfig.updateIntervalMinutes === "number") setIntervalMin(updatedConfig.updateIntervalMinutes);
+    },
+  });
 
   const channelName = (id: string) => channels.find((c) => c.id === id)?.name ?? id;
   const roleName = (id: string | null) => (id ? roles.find((r) => r.id === id)?.name ?? id : "");

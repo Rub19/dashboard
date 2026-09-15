@@ -7,6 +7,7 @@ import { raidActionService } from '../../modules/antiRaid/services/raidActionSer
 import { raidIncidentService } from '../../modules/antiRaid/services/raidIncidentService.js';
 import { raidCache } from '../../modules/antiRaid/services/raidCache.js';
 import { AntiRaidConfigSchema } from '../../modules/antiRaid/types/antiRaid.js';
+import { emitConfigUpdated } from '../../services/syncConfigEmitter.js';
 
 export function createAntiRaidRouter(discordClient: Client) {
   const router = express.Router({ mergeParams: true });
@@ -43,6 +44,7 @@ export function createAntiRaidRouter(discordClient: Client) {
       // Validation Zod
       const parsed = AntiRaidConfigSchema.partial().parse(req.body);
       const updated = raidConfigService.updateConfig(guildId, parsed);
+      emitConfigUpdated('antiRaid', guildId, updated, 'DASHBOARD', req.user?.id);
       res.json({ success: true, config: updated });
     } catch (err: any) {
       res.status(400).json({ error: err.message || 'Configuration Anti-Raid invalide' });

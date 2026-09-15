@@ -2,6 +2,7 @@ import { SlashCommandBuilder, PermissionFlagsBits, ChannelType, TextChannel } fr
 import { Command, CommandContext } from '../../../types/command.js';
 import { auditRepository } from '../storage/auditRepository.js';
 import type { AuditChannelRouting, ChannelLogThreshold } from '../types/auditEvent.js';
+import { emitConfigUpdated } from '../../../services/syncConfigEmitter.js';
 import {
   buildLogsPanel,
   patchLogRouting,
@@ -198,7 +199,8 @@ export const logsCommand: Command = {
 
     if (sub === 'retention') {
       const days = ctx.interaction.options.getInteger('duree', true);
-      auditRepository.updateConfig(guild.id, { retentionDays: days });
+      const retentionConfig = auditRepository.updateConfig(guild.id, { retentionDays: days });
+      emitConfigUpdated('logs', guild.id, retentionConfig, 'DISCORD_COMMAND', ctx.author.id);
       await ctx.reply({
         embeds: [
           ctx
@@ -214,7 +216,8 @@ export const logsCommand: Command = {
     }
 
     if (sub === 'disable') {
-      auditRepository.updateConfig(guild.id, { enabled: false });
+      const disabledConfig = auditRepository.updateConfig(guild.id, { enabled: false });
+      emitConfigUpdated('logs', guild.id, disabledConfig, 'DISCORD_COMMAND', ctx.author.id);
       await ctx.reply({
         embeds: [
           ctx.createEmbed('neutral').setDescription('⏸️ Journaux désactivés. La configuration est conservée — `/logs setup` pour réactiver.'),

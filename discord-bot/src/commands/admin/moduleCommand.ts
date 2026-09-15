@@ -2,6 +2,7 @@ import { PermissionFlagsBits, SlashCommandBuilder } from 'discord.js';
 import { Command, CommandContext } from '../../types/command.js';
 import { guildConfigService } from '../../services/guildConfigService.js';
 import { GuildModules } from '../../types/guildConfig.js';
+import { emitConfigUpdated } from '../../services/syncConfigEmitter.js';
 
 /**
  * /module — Active/désactive un module entier du bot sur ce serveur (modération,
@@ -90,9 +91,10 @@ export const moduleCommand: Command = {
       return;
     }
 
-    guildConfigService.updateConfig(ctx.guild.id, {
+    const updatedGuildConfig = guildConfigService.updateConfig(ctx.guild.id, {
       modules: { [moduleKey]: active } as Partial<GuildModules>,
     });
+    emitConfigUpdated('modules', ctx.guild.id, updatedGuildConfig.modules, 'DISCORD_COMMAND', ctx.author.id);
 
     await ctx.reply({
       embeds: [

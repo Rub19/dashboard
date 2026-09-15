@@ -27,6 +27,7 @@ import {
 } from "lucide-react";
 import { useDiscordOAuth, type DiscordGuild } from "@/lib/hooks/useDiscordOAuth";
 import { useToast } from "@/components/ToastProvider";
+import { useDiscordSync } from "@/lib/useDiscordSync";
 import { cn } from "@/lib/utils";
 
 const API_BASE = process.env.NEXT_PUBLIC_DISCORD_BOT_API || "";
@@ -329,6 +330,29 @@ export function AuditCenterClient() {
       }
     } catch {}
   }, [selectedGuild]);
+
+  // Reflète en direct les changements faits via la commande Discord /logs
+  // (ou un autre onglet dashboard) sans attendre un rechargement manuel — même
+  // mapping vers la forme locale aplatie que fetchConfig ci-dessus.
+  useDiscordSync({
+    guildId: selectedGuild?.id,
+    onConfigUpdated: (module, updatedConfig: any) => {
+      if (module !== "logs" || !updatedConfig) return;
+      setConfigRouting({
+        generalChannelId: updatedConfig.routing?.generalChannelId || "",
+        generalThreshold: updatedConfig.routing?.generalThreshold || "ALL",
+        moderationChannelId: updatedConfig.routing?.moderationChannelId || "",
+        moderationThreshold: updatedConfig.routing?.moderationThreshold || "IMPORTANT",
+        securityChannelId: updatedConfig.routing?.securityChannelId || "",
+        securityThreshold: updatedConfig.routing?.securityThreshold || "IMPORTANT",
+        automodChannelId: updatedConfig.routing?.automodChannelId || "",
+        automodThreshold: updatedConfig.routing?.automodThreshold || "IMPORTANT",
+        raidChannelId: updatedConfig.routing?.raidChannelId || "",
+        raidThreshold: updatedConfig.routing?.raidThreshold || "CRITICAL_ONLY",
+        retentionDays: updatedConfig.retentionDays ?? 90,
+      });
+    },
+  });
 
   // Chargement initial
   useEffect(() => {

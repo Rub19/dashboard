@@ -11,6 +11,7 @@ import { raidModeService } from '../services/raidModeService.js';
 import { raidActionService } from '../services/raidActionService.js';
 import { formatString, getTranslation } from '../../../utils/i18n.js';
 import { BRAND_COLORS } from '../../../utils/embeds.js';
+import { emitConfigUpdated } from '../../../services/syncConfigEmitter.js';
 
 export const antiraidCommand: Command = {
   name: 'antiraid',
@@ -176,7 +177,8 @@ export const antiraidCommand: Command = {
 
     if (sub === 'toggle') {
       const active = (ctx.interaction as ChatInputCommandInteraction).options.getBoolean('actif', true);
-      raidConfigService.updateConfig(guildId, { enabled: active });
+      const toggledRaidConfig = raidConfigService.updateConfig(guildId, { enabled: active });
+      emitConfigUpdated('antiRaid', guildId, toggledRaidConfig, 'DISCORD_COMMAND', ctx.author.id);
       await ctx.reply({
         embeds: [
           ctx
@@ -195,9 +197,10 @@ export const antiraidCommand: Command = {
     if (sub === 'botprotection') {
       const active = (ctx.interaction as ChatInputCommandInteraction).options.getBoolean('actif', true);
       const current = raidConfigService.getConfig(guildId);
-      raidConfigService.updateConfig(guildId, {
+      const botProtectionConfig = raidConfigService.updateConfig(guildId, {
         botRaid: { ...current.botRaid, blockUnwhitelistedBots: active },
       });
+      emitConfigUpdated('antiRaid', guildId, botProtectionConfig, 'DISCORD_COMMAND', ctx.author.id);
       await ctx.reply({
         embeds: [
           ctx

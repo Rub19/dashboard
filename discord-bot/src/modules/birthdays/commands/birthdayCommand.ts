@@ -1,6 +1,7 @@
 import { SlashCommandBuilder, PermissionFlagsBits, ChannelType, TextChannel } from 'discord.js';
 import { Command, CommandContext } from '../../../types/command.js';
 import { birthdayStorage, daysUntil } from '../storage/birthdayStorage.js';
+import { emitConfigUpdated } from '../../../services/syncConfigEmitter.js';
 
 const MONTHS_FR = [
   'janvier', 'février', 'mars', 'avril', 'mai', 'juin',
@@ -153,6 +154,7 @@ export const birthdayCommand: Command = {
     }
 
     const updated = birthdayStorage.updateConfig(guildId, patch);
+    emitConfigUpdated('birthdays', guildId, updated, 'DISCORD_COMMAND', ctx.author.id);
     await ctx.reply({
       embeds: [
         ctx

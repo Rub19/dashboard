@@ -2,6 +2,7 @@ import express, { Request, Response } from 'express';
 import { ChannelType, Client } from 'discord.js';
 import { birthdayStorage } from '../../modules/birthdays/storage/birthdayStorage.js';
 import { BirthdayConfigSchema } from '../../modules/birthdays/types/birthday.js';
+import { emitConfigUpdated } from '../../services/syncConfigEmitter.js';
 
 /**
  * API Dashboard du module Birthdays.
@@ -31,7 +32,9 @@ export function createBirthdayRouter(client: Client) {
       res.status(400).json({ error: 'Configuration invalide', details: parsed.error.flatten() });
       return;
     }
-    res.json({ success: true, config: birthdayStorage.updateConfig(guildId, parsed.data) });
+    const updated = birthdayStorage.updateConfig(guildId, parsed.data);
+    emitConfigUpdated('birthdays', guildId, updated, 'DASHBOARD', req.user?.id);
+    res.json({ success: true, config: updated });
   });
 
   router.get('/list', (req: Request, res: Response): void => {

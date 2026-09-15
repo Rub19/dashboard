@@ -17,6 +17,10 @@ export interface HourlyBucket {
   activeUserIds: string[];
   channelMessageCounts: Record<string, number>;
   commandCounts: Record<string, number>;
+  textMessagesCount: number;
+  mediaMessagesCount: number;
+  linkMessagesCount: number;
+  authorMessageCounts: Record<string, number>;
 }
 
 export interface AnalyticsKPI {
@@ -52,6 +56,19 @@ export interface TopChannelStat {
   percentage: number;
 }
 
+export interface TopMemberStat {
+  userId: string;
+  username: string;
+  avatarUrl: string | null;
+  messageCount: number;
+}
+
+export interface MessageTypeBreakdown {
+  textPct: number;
+  mediaPct: number;
+  linkPct: number;
+}
+
 export interface TimeSeriesPoint {
   timestamp: string;
   messages: number;
@@ -78,6 +95,10 @@ export interface AnalyticsOverview {
   insights: AutomaticInsight[];
   timeSeries: TimeSeriesPoint[];
   topChannels: TopChannelStat[];
+  topMembers: TopMemberStat[];
+  messageTypeBreakdown: MessageTypeBreakdown;
+  /** % of members active in the previous period who were still active this period; null if the previous period had no active members to compare against. */
+  retentionRate: number | null;
   peakHeatmap: Array<{ day: number; hour: number; value: number }>; // 0-6 days x 0-23 hours
   moderationBreakdown: Record<string, number>;
   topCommands: Array<{ command: string; count: number; percentage: number }>;

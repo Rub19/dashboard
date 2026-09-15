@@ -6,6 +6,7 @@ import { useSearchParams } from "next/navigation";
 import { Cake, ArrowLeft, RefreshCw, Save, ChevronDown, AlertTriangle } from "lucide-react";
 import { useToast } from "@/components/ToastProvider";
 import { useDiscordOAuth, type DiscordGuild } from "@/lib/hooks/useDiscordOAuth";
+import { useDiscordSync } from "@/lib/useDiscordSync";
 import { cn } from "@/lib/utils";
 
 const BOT_API_URL = process.env.NEXT_PUBLIC_DISCORD_BOT_API || "";
@@ -138,6 +139,17 @@ export default function BirthdaysCenterClient() {
   useEffect(() => {
     load();
   }, [load]);
+
+  // Reflète en direct les changements faits via la commande Discord /birthday
+  // (ou un autre onglet dashboard) sans attendre un rechargement manuel.
+  useDiscordSync({
+    guildId: selectedGuild?.id,
+    onConfigUpdated: (module, updatedConfig) => {
+      if (module === "birthdays" && updatedConfig) {
+        setConfig((prev) => ({ ...prev, ...updatedConfig }));
+      }
+    },
+  });
 
   const patch = <K extends keyof BirthdayConfig>(key: K, value: BirthdayConfig[K]) => setConfig((c) => ({ ...c, [key]: value }));
 

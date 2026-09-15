@@ -17,6 +17,7 @@ import {
 } from "lucide-react";
 import { useToast } from "@/components/ToastProvider";
 import { useDiscordOAuth, type DiscordGuild } from "@/lib/hooks/useDiscordOAuth";
+import { useDiscordSync } from "@/lib/useDiscordSync";
 import { cn } from "@/lib/utils";
 
 const BOT_API_URL = process.env.NEXT_PUBLIC_DISCORD_BOT_API || "";
@@ -158,6 +159,18 @@ export default function StickyCenterClient() {
     setOverview(null);
     load();
   }, [load]);
+
+  // Reflète en direct les changements faits via la commande Discord /sticky (ou un
+  // autre onglet dashboard) — config par salon : on met à jour l'éditeur ouvert s'il
+  // correspond, et on rafraîchit la liste d'ensemble dans tous les cas.
+  useDiscordSync({
+    guildId: selectedGuild?.id,
+    onConfigUpdated: (module, updatedConfig: any) => {
+      if (module !== "stickyMessages" || !updatedConfig) return;
+      setDraft((prev) => (prev && prev.channelId === updatedConfig.channelId ? { ...prev, ...updatedConfig } : prev));
+      load();
+    },
+  });
 
   const channelName = (id: string) => channels.find((c) => c.id === id)?.name ?? id;
 

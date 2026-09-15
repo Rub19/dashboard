@@ -2,6 +2,7 @@ import { SlashCommandBuilder, PermissionFlagsBits, ChannelType, TextChannel } fr
 import { Command, CommandContext } from '../../../types/command.js';
 import { stickyStorage } from '../storage/stickyStorage.js';
 import { stickyService } from '../services/stickyService.js';
+import { emitConfigUpdated } from '../../../services/syncConfigEmitter.js';
 
 const HEX = /^#([0-9A-Fa-f]{6})$/;
 
@@ -109,7 +110,7 @@ export const stickyCommand: Command = {
       // Retirer l'ancien message posté avant de reconfigurer.
       await stickyService.clearPosted(guild, channel.id).catch(() => {});
 
-      stickyStorage.upsert({
+      const stickyConfig = stickyStorage.upsert({
         guildId: guild.id,
         channelId: channel.id,
         content,
@@ -121,6 +122,7 @@ export const stickyCommand: Command = {
         lastMessageId: null,
         createdBy: ctx.author.id,
       });
+      emitConfigUpdated('stickyMessages', guild.id, stickyConfig, 'DISCORD_COMMAND', ctx.author.id);
 
       await stickyService.forceRepost(guild, channel.id).catch(() => {});
 
@@ -164,6 +166,7 @@ export const stickyCommand: Command = {
         return;
       }
       const next = stickyStorage.upsert({ guildId: guild.id, channelId: channel.id, enabled: !existing.enabled });
+      emitConfigUpdated('stickyMessages', guild.id, next, 'DISCORD_COMMAND', ctx.author.id);
       if (next.enabled) {
         await stickyService.forceRepost(guild, channel.id).catch(() => {});
       } else {

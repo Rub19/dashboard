@@ -3,6 +3,7 @@ import path from 'path';
 import { Sanction, SanctionType } from '../types/sanction.js';
 import { ModerationConfig, ModerationConfigSchema } from '../types/moderationConfig.js';
 import { logger } from '../../../utils/logger.js';
+import { analyticsWriteBuffer } from '../../analytics/storage/analyticsWriteBuffer.js';
 
 class SanctionService {
   private sanctionsFilePath = path.resolve(process.cwd(), 'data', 'sanctions.json');
@@ -137,6 +138,7 @@ class SanctionService {
 
     this.sanctions.unshift(newSanction);
     this.saveSanctions();
+    analyticsWriteBuffer.recordModerationAction(params.guildId);
 
     // Vérifier l'auto-escalade si c'est un avertissement
     let escalationTriggered = false;

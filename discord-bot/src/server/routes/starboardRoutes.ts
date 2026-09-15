@@ -2,6 +2,7 @@ import express, { Request, Response } from 'express';
 import { ChannelType, Client, PermissionFlagsBits } from 'discord.js';
 import { starboardStorage } from '../../modules/starboard/storage/starboardStorage.js';
 import { StarboardConfigSchema } from '../../modules/starboard/types/starboard.js';
+import { emitConfigUpdated } from '../../services/syncConfigEmitter.js';
 
 /**
  * API Dashboard du module Starboard.
@@ -32,6 +33,7 @@ export function createStarboardRouter(discordClient: Client) {
       return;
     }
     const updated = starboardStorage.updateConfig(guildId, parsed.data);
+    emitConfigUpdated('starboard', guildId, updated, 'DASHBOARD', req.user?.id);
     res.json({ success: true, config: updated });
   });
 

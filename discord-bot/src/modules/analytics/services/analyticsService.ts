@@ -3,10 +3,25 @@ import { AnalyticsOverview, TimeRangePeriod } from '../types/analytics.js';
 import { analyticsWriteBuffer } from '../storage/analyticsWriteBuffer.js';
 import { AnalyticsAggregator } from './analyticsAggregator.js';
 
+const URL_REGEX = /https?:\/\/\S+/i;
+
 class AnalyticsService {
   public recordMessage(message: Message): void {
     if (!message.guild || message.author.bot) return;
-    analyticsWriteBuffer.recordMessage(message.guild.id, message.channel.id, message.author.id);
+    const hasMedia =
+      message.attachments.size > 0 ||
+      message.embeds.some((e) => e.image || e.video || e.thumbnail);
+    const messageType: 'text' | 'media' | 'link' = hasMedia
+      ? 'media'
+      : URL_REGEX.test(message.content)
+      ? 'link'
+      : 'text';
+    analyticsWriteBuffer.recordMessage(
+      message.guild.id,
+      message.channel.id,
+      message.author.id,
+      messageType
+    );
   }
 
   public recordCommand(guildId: string, commandName: string, userId: string): void {

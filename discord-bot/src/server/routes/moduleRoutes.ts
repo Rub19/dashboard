@@ -5,6 +5,7 @@ import { guildConfigService } from '../../services/guildConfigService.js';
 import { GuildModules } from '../../types/guildConfig.js';
 import { authMiddleware } from '../middleware/auth.js';
 import { createGuildAuthMiddleware } from '../middleware/guildAuth.js';
+import { emitConfigUpdated } from '../../services/syncConfigEmitter.js';
 
 interface ModuleDefinition {
   id: keyof GuildModules;
@@ -115,6 +116,7 @@ export function createModuleRouter(client: Client): express.Router {
           [moduleId]: enabled,
         },
       });
+      emitConfigUpdated('modules', guildId, updated.modules, 'DASHBOARD', req.user?.id);
 
       res.json({
         success: true,

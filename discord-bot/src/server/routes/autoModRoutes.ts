@@ -7,6 +7,7 @@ import { StrikeService } from '../../modules/automod/services/strikeService.js';
 import { AutoModIncidentService } from '../../modules/automod/services/autoModIncidentService.js';
 import { AutoModRiskEngine } from '../../modules/automod/services/autoModRiskEngine.js';
 import { rateLimit, idempotent, guildLock } from '../middleware/antiAbuseMiddleware.js';
+import { emitConfigUpdated } from '../../services/syncConfigEmitter.js';
 
 export function createAutoModRouter(discordClient: Client) {
   const router = express.Router({ mergeParams: true });
@@ -69,6 +70,7 @@ export function createAutoModRouter(discordClient: Client) {
       try {
         const parsed = AutoModConfigSchema.partial().parse(req.body);
         const updated = autoModRepository.updateConfig(guildId, parsed);
+        emitConfigUpdated('automod', guildId, updated, 'DASHBOARD', req.user?.id);
         res.json({ success: true, config: updated });
       } catch (err: any) {
         res.status(400).json({ error: err.message || 'Configuration AutoMod invalide' });

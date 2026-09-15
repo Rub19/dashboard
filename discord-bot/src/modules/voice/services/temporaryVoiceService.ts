@@ -17,6 +17,7 @@ import { VoiceAutomationService } from './voiceAutomationService.js';
 import { DiscordVoicePanel } from '../ui/discordVoicePanel.js';
 import { logService } from '../../logs/services/logService.js';
 import { logger } from '../../../utils/logger.js';
+import { analyticsService } from '../../analytics/services/analyticsService.js';
 
 export class TemporaryVoiceService {
   // Map of active deletion countdown timers: roomId -> NodeJS.Timeout
@@ -514,7 +515,13 @@ export class TemporaryVoiceService {
     const guild = member.guild;
     const settings = voiceRepository.getSettings(guild.id);
 
-    VoiceSessionService.recordLeave(member, channelId);
+    const closedSession = VoiceSessionService.recordLeave(member, channelId);
+    if (closedSession && closedSession.durationSeconds > 0) {
+      const minutes = Math.round(closedSession.durationSeconds / 60);
+      if (minutes > 0) {
+        analyticsService.recordVoiceMinutes(guild.id, minutes, member.id);
+      }
+    }
     room.currentUsers = room.currentUsers.filter((u) => u.id !== member.id);
     voiceRepository.saveRoom(room);
 

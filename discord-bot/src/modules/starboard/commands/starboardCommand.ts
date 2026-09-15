@@ -1,6 +1,7 @@
 import { SlashCommandBuilder, PermissionFlagsBits, ChannelType, TextChannel } from 'discord.js';
 import { Command, CommandContext } from '../../../types/command.js';
 import { starboardStorage } from '../storage/starboardStorage.js';
+import { emitConfigUpdated } from '../../../services/syncConfigEmitter.js';
 
 /** Valide un emoji : unicode simple OU emoji custom `<:name:id>` / `<a:name:id>`. */
 function normalizeEmoji(raw: string): string | null {
@@ -151,6 +152,7 @@ export const starboardCommand: Command = {
         ...(threshold ? { threshold } : {}),
         ...(emoji ? { emoji } : {}),
       });
+      emitConfigUpdated('starboard', guildId, config, 'DISCORD_COMMAND', ctx.author.id);
 
       await ctx.reply({
         embeds: [
@@ -167,7 +169,8 @@ export const starboardCommand: Command = {
 
     if (sub === 'salon') {
       const channel = ctx.interaction!.options.getChannel('salon', true) as TextChannel;
-      starboardStorage.updateConfig(guildId, { channelId: channel.id });
+      const channelConfig = starboardStorage.updateConfig(guildId, { channelId: channel.id });
+      emitConfigUpdated('starboard', guildId, channelConfig, 'DISCORD_COMMAND', ctx.author.id);
       await ctx.reply({
         embeds: [ctx.createEmbed('success').setDescription(`✅ Salon du starboard : <#${channel.id}>.`)],
       });
@@ -177,6 +180,7 @@ export const starboardCommand: Command = {
     if (sub === 'seuil') {
       const value = ctx.interaction!.options.getInteger('valeur', true);
       const config = starboardStorage.updateConfig(guildId, { threshold: value });
+      emitConfigUpdated('starboard', guildId, config, 'DISCORD_COMMAND', ctx.author.id);
       await ctx.reply({
         embeds: [ctx.createEmbed('success').setDescription(`✅ Seuil : **${config.threshold}** ${config.emoji}.`)],
       });
@@ -192,7 +196,8 @@ export const starboardCommand: Command = {
         });
         return;
       }
-      starboardStorage.updateConfig(guildId, { emoji });
+      const emojiConfig = starboardStorage.updateConfig(guildId, { emoji });
+      emitConfigUpdated('starboard', guildId, emojiConfig, 'DISCORD_COMMAND', ctx.author.id);
       await ctx.reply({
         embeds: [ctx.createEmbed('success').setDescription(`✅ Emoji déclencheur : ${emoji}.`)],
       });
@@ -219,6 +224,7 @@ export const starboardCommand: Command = {
       }
 
       const config = starboardStorage.updateConfig(guildId, patch);
+      emitConfigUpdated('starboard', guildId, config, 'DISCORD_COMMAND', ctx.author.id);
       await ctx.reply({
         embeds: [
           ctx
@@ -249,7 +255,8 @@ export const starboardCommand: Command = {
         set.add(channel.id);
         added = true;
       }
-      starboardStorage.updateConfig(guildId, { ignoredChannelIds: Array.from(set) });
+      const ignoredConfig = starboardStorage.updateConfig(guildId, { ignoredChannelIds: Array.from(set) });
+      emitConfigUpdated('starboard', guildId, ignoredConfig, 'DISCORD_COMMAND', ctx.author.id);
       await ctx.reply({
         embeds: [
           ctx
@@ -278,6 +285,7 @@ export const starboardCommand: Command = {
         return;
       }
       const next = starboardStorage.updateConfig(guildId, { enabled: !config.enabled });
+      emitConfigUpdated('starboard', guildId, next, 'DISCORD_COMMAND', ctx.author.id);
       await ctx.reply({
         embeds: [
           ctx

@@ -2,6 +2,7 @@ import express, { Request, Response } from 'express';
 import { Client } from 'discord.js';
 import { tagStorage, MAX_TAGS_PER_GUILD } from '../../modules/tags/storage/tagStorage.js';
 import { TAG_NAME_RE } from '../../modules/tags/types/tag.js';
+import { emitConfigUpdated } from '../../services/syncConfigEmitter.js';
 
 /**
  * API Dashboard du module Tags.
@@ -41,6 +42,7 @@ export function createTagRouter(_client: Client) {
       content: content.trim(),
       createdBy: existing?.createdBy ?? (req.user?.id ?? null),
     });
+    emitConfigUpdated('tags', guildId, tag, 'DASHBOARD', req.user?.id);
     res.json({ success: true, tag });
   });
 

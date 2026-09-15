@@ -6,6 +6,7 @@ import { useSearchParams } from "next/navigation";
 import { Eye, ArrowLeft, RefreshCw, Plus, X, ChevronDown, AlertTriangle, Hash } from "lucide-react";
 import { useToast } from "@/components/ToastProvider";
 import { useDiscordOAuth, type DiscordGuild } from "@/lib/hooks/useDiscordOAuth";
+import { useDiscordSync } from "@/lib/useDiscordSync";
 import { cn } from "@/lib/utils";
 
 const BOT_API_URL = process.env.NEXT_PUBLIC_DISCORD_BOT_API || "";
@@ -118,6 +119,18 @@ export default function HighlightsCenterClient() {
   useEffect(() => {
     load();
   }, [load]);
+
+  // Reflète en direct les changements faits via la commande Discord /highlight
+  // (ou un autre onglet dashboard) — config per-user, on ignore les events des
+  // autres membres du serveur.
+  useDiscordSync({
+    guildId: selectedGuild?.id,
+    onConfigUpdated: (module, updatedConfig: any) => {
+      if (module === "highlights" && updatedConfig && updatedConfig.userId === profile?.user?.id) {
+        setConfig((prev) => (prev ? { ...prev, ...updatedConfig } : prev));
+      }
+    },
+  });
 
   const handleToggleEnabled = async (value: boolean) => {
     if (!selectedGuild) return;

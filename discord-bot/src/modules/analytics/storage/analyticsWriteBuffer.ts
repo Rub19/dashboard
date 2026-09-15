@@ -32,6 +32,11 @@ class AnalyticsWriteBuffer {
       const fromStorage = analyticsStorage.getAllBuckets().get(key);
       if (fromStorage) {
         bucket = { ...fromStorage };
+        // Rétrocompatibilité : anciens buckets persistés avant l'ajout de ces champs
+        bucket.textMessagesCount = bucket.textMessagesCount ?? 0;
+        bucket.mediaMessagesCount = bucket.mediaMessagesCount ?? 0;
+        bucket.linkMessagesCount = bucket.linkMessagesCount ?? 0;
+        bucket.authorMessageCounts = bucket.authorMessageCounts ?? {};
       } else {
         bucket = {
           guildId,
@@ -47,6 +52,10 @@ class AnalyticsWriteBuffer {
           activeUserIds: [],
           channelMessageCounts: {},
           commandCounts: {},
+          textMessagesCount: 0,
+          mediaMessagesCount: 0,
+          linkMessagesCount: 0,
+          authorMessageCounts: {},
         };
       }
       this.activeBuckets.set(key, bucket);
@@ -62,10 +71,19 @@ class AnalyticsWriteBuffer {
     this.isDirty = false;
   }
 
-  public recordMessage(guildId: string, channelId: string, userId: string): void {
+  public recordMessage(
+    guildId: string,
+    channelId: string,
+    userId: string,
+    messageType: 'text' | 'media' | 'link' = 'text'
+  ): void {
     const b = this.getOrCreateBucket(guildId);
     b.messagesCount += 1;
     b.channelMessageCounts[channelId] = (b.channelMessageCounts[channelId] || 0) + 1;
+    b.authorMessageCounts[userId] = (b.authorMessageCounts[userId] || 0) + 1;
+    if (messageType === 'media') b.mediaMessagesCount += 1;
+    else if (messageType === 'link') b.linkMessagesCount += 1;
+    else b.textMessagesCount += 1;
     if (!b.activeUserIds.includes(userId)) {
       b.activeUserIds.push(userId);
     }

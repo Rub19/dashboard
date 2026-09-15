@@ -3,6 +3,7 @@ import { ChannelType, Client, PermissionFlagsBits } from 'discord.js';
 import { stickyStorage } from '../../modules/stickyMessages/storage/stickyStorage.js';
 import { stickyService } from '../../modules/stickyMessages/services/stickyService.js';
 import { StickyMessageSchema } from '../../modules/stickyMessages/types/sticky.js';
+import { emitConfigUpdated } from '../../services/syncConfigEmitter.js';
 
 /**
  * API Dashboard du module Sticky Messages.
@@ -59,7 +60,9 @@ export function createStickyRouter(discordClient: Client) {
     if (guild && updated.enabled) {
       await stickyService.forceRepost(guild, channelId).catch(() => {});
     }
-    res.json({ success: true, config: stickyStorage.get(guildId, channelId) });
+    const finalConfig = stickyStorage.get(guildId, channelId);
+    emitConfigUpdated('stickyMessages', guildId, finalConfig, 'DASHBOARD', req.user?.id);
+    res.json({ success: true, config: finalConfig });
   });
 
   // Supprimer un sticky

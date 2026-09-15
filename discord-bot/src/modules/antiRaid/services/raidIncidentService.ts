@@ -6,6 +6,7 @@ import {
   RaidType,
   ThreatLevel,
 } from '../types/antiRaid.js';
+import { analyticsService } from '../../analytics/services/analyticsService.js';
 
 class RaidIncidentService {
   private activeIncidents = new Map<string, RaidIncident>(); // guildId -> active incident
@@ -42,6 +43,7 @@ class RaidIncidentService {
 
     this.activeIncidents.set(params.guildId, incident);
     raidRepository.addIncident(params.guildId, incident);
+    analyticsService.recordSecurityIncident(params.guildId);
     return incident;
   }
 

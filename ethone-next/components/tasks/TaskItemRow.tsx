@@ -1,12 +1,14 @@
 "use client";
 
 import { memo, useState } from "react";
-import { motion } from "framer-motion";
+import { motion, useReducedMotion } from "framer-motion";
 import { Check, Trash2, Calendar, Tag, Target, Edit2 } from "lucide-react";
 import { type Task, type TaskPriority } from "@/components/TasksWidget";
 import { hapticSuccessPattern, hapticRigidImpact } from "@/lib/haptics";
 import { useRouter } from "next/navigation";
 import { cn } from "@/lib/utils";
+import { EASE_OUT } from "@/lib/ease";
+import { useSettings } from "@/components/SettingsProvider";
 
 const PRIORITY_THEMES: Record<
   TaskPriority,
@@ -58,6 +60,9 @@ export const TaskItemRow = memo(function TaskItemRow({
   const router = useRouter();
   const [isEditing, setIsEditing] = useState(false);
   const [editTitle, setEditTitle] = useState(task.title);
+  const { settings } = useSettings();
+  const osReducedMotion = useReducedMotion();
+  const skipEntranceAnimation = Boolean(settings.reducedMotion) || Boolean(osReducedMotion);
 
   const priority = (task.data?.priority as TaskPriority) || "medium";
   const priorityTheme = PRIORITY_THEMES[priority] || PRIORITY_THEMES.medium;
@@ -89,10 +94,10 @@ export const TaskItemRow = memo(function TaskItemRow({
   return (
     <motion.div
       layout
-      initial={{ opacity: 0, y: 8, scale: 0.98 }}
+      initial={skipEntranceAnimation ? false : { opacity: 0, y: 8, scale: 0.98 }}
       animate={{ opacity: 1, y: 0, scale: 1 }}
-      exit={{ opacity: 0, y: -8, scale: 0.98 }}
-      transition={{ duration: 0.2 }}
+      exit={skipEntranceAnimation ? { opacity: 0 } : { opacity: 0, y: -8, scale: 0.98 }}
+      transition={skipEntranceAnimation ? { duration: 0 } : { duration: 0.2, ease: EASE_OUT }}
       onClick={handleToggle}
       className={cn(
         "group relative flex items-center justify-between gap-3.5 rounded-[var(--inset-radius)] border border-[var(--panel-border)] bg-[var(--panel-bg)] p-3.5 sm:p-4 transition-colors duration-150 cursor-pointer select-none",

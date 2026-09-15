@@ -127,7 +127,7 @@ const Input = forwardRef<HTMLInputElement, InputProps>(
           }}
           className={cn(
             "min-w-0 flex-1 bg-transparent border-0 p-0 text-[var(--text-primary)]",
-            "placeholder:text-[var(--text-muted)]/60 placeholder:font-normal",
+            "placeholder:text-[var(--text-muted)] placeholder:font-normal",
             "outline-none ring-0 focus:outline-none focus-visible:outline-none focus:ring-0 focus-visible:ring-0",
             "caret-[var(--accent-primary)] disabled:cursor-not-allowed select-text",
             sizeConfig.input,

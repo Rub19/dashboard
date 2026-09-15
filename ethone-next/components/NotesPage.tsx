@@ -2,13 +2,16 @@
 
 import { useEffect, useMemo, useState } from "react";
 import { Share2 } from "lucide-react";
+import { motion, useReducedMotion } from "framer-motion";
 import { useItems } from "@/lib/hooks/useItems";
 import { useSelection } from "@/lib/hooks/useSelection";
 import { useI18n } from "@/lib/hooks/useI18n";
 import { useToast } from "@/components/ToastProvider";
 import { useListKeyboard } from "@/lib/hooks/useListKeyboard";
+import { useSettings } from "@/components/SettingsProvider";
 import { Icon } from "@/lib/icons";
 import { cn } from "@/lib/utils";
+import { EASE_OUT } from "@/lib/ease";
 import Input from "@/components/Input";
 import Select from "@/components/ui/Select";
 import BulkActionBar from "@/components/BulkActionBar";
@@ -32,6 +35,9 @@ export default function NotesPage() {
   const i18n = useI18n();
   const { error: showError, notify } = useToast();
   const { items, loading, isOffline, create, remove } = useItems("notes");
+  const { settings } = useSettings();
+  const osReducedMotion = useReducedMotion();
+  const skipEntranceAnimation = Boolean(settings.reducedMotion) || Boolean(osReducedMotion);
 
   const [title, setTitle] = useState("");
   const [body, setBody] = useState("");
@@ -222,13 +228,20 @@ export default function NotesPage() {
           )}
 
           {filtered.map((note, index) => (
-            <div
+            <motion.div
               key={note.id}
+              initial={skipEntranceAnimation ? false : { opacity: 0, y: 8 }}
+              animate={{ opacity: 1, y: 0 }}
+              transition={
+                skipEntranceAnimation
+                  ? { duration: 0 }
+                  : { duration: 0.22, delay: Math.min(index, 10) * 0.02, ease: EASE_OUT }
+              }
               data-context-menu="note"
               data-context-id={note.id}
               data-active={index === activeIndex}
               className={cn(
-                "group rounded-[var(--panel-radius)] v8-panel p-3 transition-colors hover:border-[var(--text-primary)]/[0.12]",
+                "group rounded-[var(--panel-radius)] v8-panel p-3 transition-colors hover:border-[var(--accent-primary)]/20",
                 index === activeIndex && "border-[var(--accent-primary)]/40 bg-[var(--accent-primary)]/10"
               )}
             >
@@ -276,7 +289,7 @@ export default function NotesPage() {
                   <Icon name="trash-2" className="h-4 w-4" />
                 </button>
               </div>
-            </div>
+            </motion.div>
           ))}
 
           {!loading && filtered.length === 0 && (

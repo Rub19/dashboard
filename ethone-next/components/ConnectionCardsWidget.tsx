@@ -199,7 +199,7 @@ const ConnectionCardsWidget = memo(function ConnectionCardsWidget({
                               </p>
                             )}
                             {record.subtitle && (
-                              <p className="line-clamp-2 text-[9px] text-[var(--text-muted)]/70" title={record.subtitle}>
+                              <p className="line-clamp-2 text-[9px] text-[var(--text-muted)]" title={record.subtitle}>
                                 {record.subtitle}
                               </p>
                             )}

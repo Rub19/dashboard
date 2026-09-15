@@ -112,6 +112,7 @@ import {
   passkeyRenameRoute,
   passkeyRevokeRoute,
   passkeyListRoute,
+  authPrecheckRoute,
   otpSendRoute,
   otpVerifyRoute,
   deviceUpsertRoute,
@@ -259,6 +260,7 @@ export const ROUTES = Object.freeze([
   route("passkey.list", "/api/auth/passkeys", passkeyListRoute, { service: "security", rateLimit: "standard" }),
 
   // OTP fallback
+  route("auth.precheck", "/api/auth/precheck", authPrecheckRoute, { method: "POST", public: true, service: "security", rateLimit: "strict" }),
   route("otp.send", "/api/auth/otp/send", otpSendRoute, { method: "POST", public: true, service: "security", rateLimit: "strict" }),
   route("otp.verify", "/api/auth/otp/verify", otpVerifyRoute, { method: "POST", public: true, service: "security", rateLimit: "strict" }),
 

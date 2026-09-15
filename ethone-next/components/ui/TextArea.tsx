@@ -75,7 +75,7 @@ const TextArea = forwardRef<HTMLTextAreaElement, TextAreaProps>(
           }}
           className={cn(
             "h-full min-h-[5.5rem] w-full resize-y bg-transparent border-0 p-0 text-sm leading-relaxed text-[var(--text-primary)]",
-            "placeholder:text-[var(--text-muted)]/60 placeholder:font-normal",
+            "placeholder:text-[var(--text-muted)] placeholder:font-normal",
             "outline-none ring-0 focus:outline-none focus-visible:outline-none focus:ring-0 focus-visible:ring-0",
             "caret-[var(--accent-primary)] disabled:cursor-not-allowed [scrollbar-width:thin]",
             inputClassName

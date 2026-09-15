@@ -28026,4 +28026,65 @@ CHANGELOG_BY_LANG.en.unshift(v1222_en);
 CHANGELOG_BY_LANG.es.unshift(v1222_es);
 CHANGELOG_BY_LANG.de.unshift(v1222_de);
 
+const v1230_fr: ChangelogEntry = {
+  version: "v1.23.0",
+  date: "2026-09-15",
+  title: "Sécurité : anti-abus sur l'inscription/mot de passe oublié ; contraste corrigé sur 3 thèmes + placeholders",
+  items: [
+    "Audit de sécurité demandé : injection SQL (aucun risque — zéro SQL brut dans tout le repo, tout passe par le client Supabase paramétré), favicon, page 404, cookies, clés API exposées — tout déjà en ordre. Liens internes : aucun lien cassé trouvé sur l'ensemble du site.",
+    "Anti-spam : l'inscription et la réinitialisation de mot de passe appelaient Supabase directement depuis le navigateur, sans passer par le Worker — contrairement à l'OTP, elles n'avaient donc aucune protection anti-abus personnalisée (juste les limites génériques de Supabase). Ajout d'une vérification préalable (`/api/auth/precheck`) qui applique la même limite IP+email que l'OTP avant d'autoriser l'appel réel à Supabase. Si le Worker est injoignable, l'inscription/réinitialisation continue normalement (aucun blocage en cas de panne du Worker).",
+    "Contraste : l'audit d'accessibilité automatisé affichait « 0 problème » depuis le début, mais la vérification de contraste ne s'exécute techniquement pas dans son environnement de test (JSDOM) — elle n'a donc jamais réellement été vérifiée. Calcul manuel du contraste WCAG effectué à la place : trouvé et corrigé un vrai bug à fort impact (le texte des placeholders de TOUS les champs de formulaire de l'app tombait à 2.3-3.4:1, sous le seuil de 4.5:1), plus 2 cas isolés, plus les couleurs de texte discret de 3 thèmes (Carbon Graphite, Midnight OLED, Arctic Light) qui échouaient face à leurs propres fonds.",
+    "Régénéré les styles de secours affichés avant le chargement du thème complet (évite un flash du mauvais thème) : 3 anciens identifiants de thème n'existaient plus (renommés depuis), et le thème Cyber Neon utilisait des couleurs obsolètes. Les 13 thèmes actuels ont maintenant chacun leur secours à jour.",
+    "Le script d'audit d'accessibilité lui-même corrigé pour signaler honnêtement quand le contraste n'a pas pu être vérifié, au lieu de rester silencieux dessus.",
+    "Validation : `tsc`/`build`/`lint` (0 erreur, 0 nouveau warning)/`test:unit` 115/115 ✓, tests Worker 255/255 ✓ (4 nouveaux). `audit-security` PASS (1986 fichiers). Vérifié visuellement sur le build de production réel.",
+  ],
+};
+
+const v1230_en: ChangelogEntry = {
+  version: "v1.23.0",
+  date: "2026-09-15",
+  title: "Security: anti-abuse on signup/password reset; contrast fixed across 3 themes + placeholders",
+  items: [
+    "Requested security audit: SQL injection (no risk -- zero raw SQL anywhere in the repo, everything goes through Supabase's parameterized client), favicon, 404 page, cookies, exposed API keys -- all already in order. Internal links: no broken links found anywhere on the site.",
+    "Anti-spam: signup and password reset called Supabase directly from the browser, bypassing the Worker entirely -- unlike OTP, they had no custom abuse protection (just Supabase's generic defaults). Added a pre-flight check (`/api/auth/precheck`) that applies the same IP+email rate limit OTP already gets before the real Supabase call is allowed through. If the Worker is unreachable, signup/reset still proceeds normally (never blocked by a Worker outage).",
+    "Contrast: the automated accessibility audit had shown \"0 issues\" from the start, but its contrast check can't actually execute in its test environment (JSDOM) -- so it was never really checked. Ran the WCAG contrast math by hand instead: found and fixed a real, high-impact bug (placeholder text in every form field across the app sat at 2.3-3.4:1, below the 4.5:1 threshold), plus 2 isolated cases, plus 3 themes' (Carbon Graphite, Midnight OLED, Arctic Light) muted text color failing against their own backgrounds.",
+    "Regenerated the fallback styles shown before the full theme loads (prevents a flash of the wrong theme): 3 old theme ids no longer existed (renamed since), and Cyber Neon's fallback used stale colors. All 13 current themes now have an up-to-date fallback.",
+    "Fixed the accessibility audit script itself to honestly flag when contrast couldn't be verified, instead of staying silent about it.",
+    "Validation: `tsc`/`build`/`lint` (0 errors, 0 new warnings)/`test:unit` 115/115 pass, Worker tests 255/255 pass (4 new). `audit-security` PASS (1986 files). Verified visually on the real production build.",
+  ],
+};
+
+const v1230_es: ChangelogEntry = {
+  version: "v1.23.0",
+  date: "2026-09-15",
+  title: "Seguridad: anti-abuso en registro/recuperación de contraseña; contraste corregido en 3 temas + placeholders",
+  items: [
+    "Auditoría de seguridad solicitada: inyección SQL (sin riesgo -- cero SQL crudo en todo el repositorio, todo pasa por el cliente parametrizado de Supabase), favicon, página 404, cookies, claves API expuestas -- todo ya en orden. Enlaces internos: no se encontraron enlaces rotos en todo el sitio.",
+    "Anti-spam: el registro y la recuperación de contraseña llamaban a Supabase directamente desde el navegador, sin pasar por el Worker -- a diferencia del OTP, no tenían protección anti-abuso personalizada (solo los límites genéricos de Supabase). Se añadió una verificación previa (`/api/auth/precheck`) que aplica el mismo límite de IP+email que ya tiene el OTP antes de permitir la llamada real a Supabase. Si el Worker no está disponible, el registro/recuperación continúa normalmente (nunca bloqueado por una caída del Worker).",
+    "Contraste: la auditoría de accesibilidad automatizada mostraba \"0 problemas\" desde el principio, pero su verificación de contraste no puede ejecutarse realmente en su entorno de prueba (JSDOM) -- así que nunca se comprobó de verdad. Se hizo el cálculo de contraste WCAG a mano: se encontró y corrigió un bug real de alto impacto (el texto de los placeholders en todos los campos de formulario de la app estaba en 2.3-3.4:1, por debajo del umbral de 4.5:1), más 2 casos aislados, más el color de texto discreto de 3 temas (Carbon Graphite, Midnight OLED, Arctic Light) que fallaba contra sus propios fondos.",
+    "Regenerados los estilos de respaldo mostrados antes de cargar el tema completo (evita un parpadeo del tema incorrecto): 3 ids de tema antiguos ya no existían (renombrados desde entonces), y Cyber Neon usaba colores obsoletos en su respaldo. Los 13 temas actuales tienen ahora un respaldo actualizado.",
+    "Corregido el propio script de auditoría de accesibilidad para señalar honestamente cuando el contraste no pudo verificarse, en lugar de quedarse callado al respecto.",
+    "Validación: `tsc`/`build`/`lint` (0 errores, 0 advertencias nuevas)/`test:unit` 115/115 ✓, tests del Worker 255/255 ✓ (4 nuevos). `audit-security` PASS (1986 archivos). Verificado visualmente en el build de producción real.",
+  ],
+};
+
+const v1230_de: ChangelogEntry = {
+  version: "v1.23.0",
+  date: "2026-09-15",
+  title: "Sicherheit: Missbrauchsschutz bei Registrierung/Passwort-Reset; Kontrast in 3 Themes + Platzhaltern korrigiert",
+  items: [
+    "Angefordertes Sicherheitsaudit: SQL-Injection (kein Risiko -- null rohes SQL im gesamten Repo, alles läuft über Supabases parametrisierten Client), Favicon, 404-Seite, Cookies, offengelegte API-Schlüssel -- alles bereits in Ordnung. Interne Links: keine defekten Links auf der gesamten Seite gefunden.",
+    "Anti-Spam: Registrierung und Passwort-Reset riefen Supabase direkt aus dem Browser auf, am Worker vorbei -- anders als OTP hatten sie daher keinen eigenen Missbrauchsschutz (nur Supabases generische Standardwerte). Eine Vorab-Prüfung (`/api/auth/precheck`) wurde ergänzt, die dasselbe IP+E-Mail-Limit wie OTP anwendet, bevor der eigentliche Supabase-Aufruf zugelassen wird. Ist der Worker nicht erreichbar, läuft Registrierung/Reset trotzdem normal weiter (nie durch einen Worker-Ausfall blockiert).",
+    "Kontrast: Das automatisierte Barrierefreiheits-Audit zeigte von Anfang an \"0 Probleme\", aber seine Kontrastprüfung kann in seiner Testumgebung (JSDOM) technisch gar nicht laufen -- sie wurde also nie wirklich geprüft. Stattdessen wurde die WCAG-Kontrastrechnung von Hand durchgeführt: ein echter, wirkungsstarker Bug gefunden und behoben (Platzhaltertext in jedem Formularfeld der App lag bei 2,3-3,4:1, unter dem Schwellenwert von 4,5:1), dazu 2 isolierte Fälle sowie die dezente Textfarbe von 3 Themes (Carbon Graphite, Midnight OLED, Arctic Light), die gegen ihre eigenen Hintergründe versagte.",
+    "Die vor dem vollständigen Laden des Themes angezeigten Fallback-Stile neu generiert (verhindert ein Aufblitzen des falschen Themes): 3 alte Theme-IDs existierten nicht mehr (seitdem umbenannt), und Cyber Neon nutzte veraltete Farben im Fallback. Alle 13 aktuellen Themes haben jetzt einen aktuellen Fallback.",
+    "Das Barrierefreiheits-Audit-Skript selbst korrigiert, damit es ehrlich meldet, wenn Kontrast nicht überprüft werden konnte, statt stillschweigend darüber hinwegzugehen.",
+    "Validierung: `tsc`/`build`/`lint` (0 Fehler, 0 neue Warnungen)/`test:unit` 115/115 bestanden, Worker-Tests 255/255 bestanden (4 neue). `audit-security` PASS (1986 Dateien). Visuell am echten Produktions-Build verifiziert.",
+  ],
+};
+
+CHANGELOG_BY_LANG.fr.unshift(v1230_fr);
+CHANGELOG_BY_LANG.en.unshift(v1230_en);
+CHANGELOG_BY_LANG.es.unshift(v1230_es);
+CHANGELOG_BY_LANG.de.unshift(v1230_de);
+
 export const CHANGELOG = CHANGELOG_BY_LANG.fr;

@@ -2,6 +2,18 @@
 
 Toutes les modifications notables de ce projet seront documentées dans ce fichier.
 
+## v1.23.0 — 2026-09-15
+
+**Sécurité : anti-abus sur l'inscription/mot de passe oublié ; contraste corrigé sur 3 thèmes + placeholders**
+
+- Audit demandé : injection SQL (zéro SQL brut dans tout le repo), favicon, 404, cookies, clés API — tout déjà en ordre. Aucun lien interne cassé trouvé.
+- `worker/src/routes/security-identity.js`, `worker/src/router.js` : nouvelle route `/api/auth/precheck` appliquant la même limite IP+email que l'OTP (5 tentatives/5min) — 4 nouveaux tests, 255/255 tests Worker passent.
+- `components/AuthProvider.tsx` : `signUp`/`resetPassword` appellent ce précontrôle avant Supabase (fail-open si le Worker est injoignable).
+- Contraste : l'audit `axe-core` automatisé affichait "0 problème" à tort — sa vérification de contraste ne s'exécute pas sous JSDOM (jamais réellement testée). Calcul WCAG manuel : placeholders de formulaire corrigés partout dans l'app (2.3-3.4:1 → conforme), 2 cas isolés corrigés, couleurs de texte discret de 3 thèmes (Carbon, Midnight, Arctic) ajustées.
+- `app/globals.css` : styles de repli pré-chargement régénérés pour les 13 thèmes actuels (3 anciens noms obsolètes supprimés, Cyber Neon désynchronisé mis à jour) — évite un flash du mauvais thème.
+- `scripts/a11y-audit.mjs` : signale maintenant honnêtement quand le contraste n'a pas pu être vérifié.
+- Validation : `tsc`/`build`/`lint` (0 erreur)/`test:unit` 115/115 ✓. `audit-security` PASS (1986 fichiers).
+
 ## v1.22.2 — 2026-09-15
 
 **Performance : Réglages découpés par catégorie (chargement à la demande)**

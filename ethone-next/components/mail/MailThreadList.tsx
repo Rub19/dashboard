@@ -328,12 +328,13 @@ export default function MailThreadList({
             </p>
           </div>
         ) : (
-          filtered.map((thread) => {
+          filtered.map((thread, index) => {
             const key = thread[0]?.thread_id || thread[0]?.id;
             const last = thread[thread.length - 1];
             return (
               <MailThreadItem
                 key={key}
+                index={index}
                 messages={thread}
                 active={activeThreadId === key}
                 selected={selectedIds.has(key)}

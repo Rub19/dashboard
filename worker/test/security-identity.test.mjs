@@ -48,6 +48,40 @@ test("passkey register options requires authentication", async () => {
   assert.equal(response.status, 401);
 });
 
+test("auth precheck requires a valid email", async () => {
+  const env = testEnv();
+  const headers = { "content-type": "application/json" };
+  const response = await invoke("/api/auth/precheck", { auth: false, env, headers, method: "POST", body: JSON.stringify({ email: "not-an-email", action: "signup" }) });
+  assert.equal(response.status, 400);
+  const body = await payload(response);
+  assert.equal(body.error.code, "INVALID_PARAMETER");
+});
+
+test("auth precheck allows a fresh email/action pair through", async () => {
+  const env = testEnv();
+  const headers = { "content-type": "application/json" };
+  const response = await invoke("/api/auth/precheck", { auth: false, env, headers, method: "POST", body: JSON.stringify({ email: "qa@ethone.dev", action: "signup" }) });
+  assert.equal(response.status, 200);
+  const body = await payload(response);
+  assert.equal(body.data.ok, true);
+});
+
+test("auth precheck defaults to a generic action when none is given", async () => {
+  const env = testEnv();
+  const headers = { "content-type": "application/json" };
+  const response = await invoke("/api/auth/precheck", { auth: false, env, headers, method: "POST", body: JSON.stringify({ email: "qa@ethone.dev" }) });
+  assert.equal(response.status, 200);
+});
+
+test("auth precheck returns 429 once the shared auth rate limit is exhausted, same as OTP", async () => {
+  const env = testEnv({ RATE_LIMIT_STANDARD: { limit: async () => ({ success: false }) } });
+  const headers = { "content-type": "application/json" };
+  const response = await invoke("/api/auth/precheck", { auth: false, env, headers, method: "POST", body: JSON.stringify({ email: "spammer@ethone.dev", action: "reset_password" }) });
+  assert.equal(response.status, 429);
+  const body = await payload(response);
+  assert.equal(body.error.code, "AUTH_RATE_LIMITED");
+});
+
 test("otp send requires a valid email", async () => {
   const env = testEnv({ __TEST_FETCH__: createMockSupabaseFetch(), ENVIRONMENT: "development", ETHONE_DEBUG_OTP: "true" });
   const headers = { "content-type": "application/json" };

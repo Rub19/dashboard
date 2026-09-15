@@ -112,7 +112,19 @@ async function audit(path) {
     }
   }
 
-  return issues;
+  // JSDOM has no real <canvas> 2D context, which axe-core's color-contrast
+  // rule needs to measure rendered text against its background -- it can't
+  // run to a verdict here and lands in `incomplete`, never `violations`, so
+  // the loop above silently never sees it either way. That previously made
+  // this script report "0 issues" on contrast that was simply never
+  // checked. Surfaced separately (not counted as a hard issue, since
+  // `incomplete` isn't a confirmed failure) so a passing run is honest about
+  // what it did and didn't verify, instead of implying contrast is clean.
+  const unverified = axeResult.incomplete
+    .filter((check) => check.id === "color-contrast")
+    .map((check) => `UNVERIFIED (needs a real browser, not JSDOM): ${check.id} (${check.nodes.length} nodes)`);
+
+  return { issues, unverified };
 }
 
 async function main() {
@@ -127,16 +139,20 @@ async function main() {
 
   let total = 0;
   let pagesWithIssues = 0;
+  let pagesUnverified = 0;
   const report = [];
   for await (const path of walk(DIST)) {
     const rel = relative(DIST, path);
-    const issues = await audit(path);
+    const { issues, unverified } = await audit(path);
     total++;
-    report.push({ page: rel, issues });
+    report.push({ page: rel, issues, unverified });
     if (issues.length) {
       pagesWithIssues++;
       console.log(`\n❌ ${rel}`);
       for (const issue of issues) console.log(`  - ${issue}`);
+    } else if (unverified.length) {
+      pagesUnverified++;
+      console.log(`⚠️  ${rel} (0 issues, but contrast unverified)`);
     } else {
       console.log(`✅ ${rel}`);
     }
@@ -146,11 +162,15 @@ async function main() {
     timestamp: new Date().toISOString(),
     totalPages: total,
     pagesWithIssues,
+    pagesUnverified,
     report,
   };
 
   await writeFile(join(OUT_DIR, "a11y-report.json"), JSON.stringify(summary, null, 2));
-  console.log(`\nAudited ${total} pages. ${pagesWithIssues} with issues.`);
+  console.log(`\nAudited ${total} pages. ${pagesWithIssues} with issues, ${pagesUnverified} with unverified contrast.`);
+  if (pagesUnverified) {
+    console.log(`Note: color-contrast can't be checked under JSDOM (no real <canvas>). Verify it with a real browser (e.g. Playwright) if you need a definitive answer.`);
+  }
   console.log(`Report written to ${join(OUT_DIR, "a11y-report.json")}`);
   process.exit(0);
 }

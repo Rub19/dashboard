@@ -154,8 +154,8 @@ export default function BrainVoiceOverlay({
           {!interimText && !finalText && !error && voiceState === "listening" && (
             <motion.p
               initial={{ opacity: 0 }}
-              animate={{ opacity: 0.4 }}
-              className="text-xs text-white/40 italic"
+              animate={{ opacity: 0.7 }}
+              className="text-xs text-white italic"
             >
               Parlez...
             </motion.p>

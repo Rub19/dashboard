@@ -104,7 +104,7 @@ export default function SettingsOverview({ onNavigate }: SettingsOverviewProps) 
                   ETHONE Control Center
                 </h2>
                 <span className="rounded-full bg-[var(--accent-primary)]/15 px-2 py-0.5 text-[10px] font-semibold text-[var(--accent-primary)]">
-                  {CHANGELOG[0]?.version || "v1.22.2"}
+                  {CHANGELOG[0]?.version || "v1.23.0"}
                 </span>
               </div>
               <p className="text-xs text-[var(--text-muted)]">

@@ -1,8 +1,11 @@
 "use client";
 
 import { Star, Paperclip, Archive, Trash2, MailOpen, Mail, AlertCircle } from "lucide-react";
+import { motion, useReducedMotion } from "framer-motion";
 import type { MailMessage } from "@/lib/hooks/useMail";
 import { cn } from "@/lib/utils";
+import { EASE_OUT } from "@/lib/ease";
+import { useSettings } from "@/components/SettingsProvider";
 import MailAvatar from "./MailAvatar";
 
 function formatThreadDate(iso: string) {
@@ -21,6 +24,7 @@ function formatThreadDate(iso: string) {
 
 export type MailThreadItemProps = {
   messages: MailMessage[];
+  index?: number;
   active?: boolean;
   selected?: boolean;
   onSelectToggle?: () => void;
@@ -33,6 +37,7 @@ export type MailThreadItemProps = {
 
 export default function MailThreadItem({
   messages,
+  index = 0,
   active,
   selected = false,
   onSelectToggle,
@@ -42,6 +47,13 @@ export default function MailThreadItem({
   onArchive,
   onTrash,
 }: MailThreadItemProps) {
+  const { settings } = useSettings();
+  const osReducedMotion = useReducedMotion();
+  const skipEntranceAnimation = Boolean(settings.reducedMotion) || Boolean(osReducedMotion);
+  // Cap the stagger so a long list (search results, a big inbox) doesn't
+  // queue up seconds of cascading delay -- only the first screenful visibly
+  // staggers, the rest fade in together.
+  const staggerDelay = Math.min(index, 10) * 0.02;
   const last = messages[messages.length - 1];
   if (!last) return null;
 
@@ -56,7 +68,14 @@ export default function MailThreadItem({
   const threadCount = messages.length;
 
   return (
-    <div
+    <motion.div
+      initial={skipEntranceAnimation ? false : { opacity: 0, y: 6 }}
+      animate={{ opacity: 1, y: 0 }}
+      transition={
+        skipEntranceAnimation
+          ? { duration: 0 }
+          : { duration: 0.2, delay: staggerDelay, ease: EASE_OUT }
+      }
       onClick={onClick}
       role="button"
       tabIndex={0}
@@ -211,6 +230,6 @@ export default function MailThreadItem({
           </div>
         </div>
       </div>
-    </div>
+    </motion.div>
   );
 }

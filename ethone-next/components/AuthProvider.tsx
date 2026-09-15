@@ -508,6 +508,25 @@ export default function AuthProvider({ children }: { children: ReactNode }) {
   }, []);
 
   const signUp = useCallback(async (email: string, password: string, username: string) => {
+    // Unlike OTP/passkey/login, signup calls Supabase directly from the
+    // browser with nothing but the public anon key — the Worker never
+    // mediates it, so it never got the same brute-force/spam protection.
+    // This pre-flight gate applies the same IP+email rate limit OTP already
+    // gets; a 429 here means the real Supabase call below never happens.
+    // Any other precheck failure (Worker unreachable, etc.) fails OPEN —
+    // this is a defense-in-depth addition, not the primary auth mechanism,
+    // so a transient Worker hiccup must never block a legitimate signup.
+    try {
+      await fetchWorker("/api/auth/precheck", {
+        method: "POST",
+        body: JSON.stringify({ email, action: "signup" }),
+      });
+    } catch (err) {
+      if (err instanceof WorkerError && err.status === 429) {
+        return { error: new Error(err.message || "Trop de tentatives. Réessayez dans quelques minutes.") };
+      }
+    }
+
     // A browser can reach this form with a previous account's local caches
     // still present (e.g. the user never clicked "sign out" — the session
     // just expired, or they typed a new email directly into the register
@@ -542,6 +561,20 @@ export default function AuthProvider({ children }: { children: ReactNode }) {
   }, [user]);
 
   const resetPassword = useCallback(async (email: string) => {
+    // Same pre-flight gate as signUp above — password recovery also calls
+    // Supabase directly from the browser and previously had no protection
+    // against being scripted into an email-bombing vector.
+    try {
+      await fetchWorker("/api/auth/precheck", {
+        method: "POST",
+        body: JSON.stringify({ email, action: "reset_password" }),
+      });
+    } catch (err) {
+      if (err instanceof WorkerError && err.status === 429) {
+        return { error: new Error(err.message || "Trop de tentatives. Réessayez dans quelques minutes.") };
+      }
+    }
+
     const { error } = await supabase.auth.resetPasswordForEmail(email, {
       redirectTo: typeof window !== "undefined" ? `${window.location.origin}/reset-password/` : undefined,
     });

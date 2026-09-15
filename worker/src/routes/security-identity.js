@@ -145,6 +145,21 @@ export async function passkeyRevokeRoute({ request, env, auth }) {
   return { data: { revoked: true } };
 }
 
+// Pre-flight abuse gate for auth flows that otherwise talk to Supabase
+// directly from the browser (signup, password reset) with nothing but the
+// public anon key — unlike OTP/passkey/login, which the Worker itself
+// mediates and can rate-limit. The client calls this first; a 429 here means
+// it never makes the real Supabase call at all. Combines IP + email exactly
+// like applyAuthRateLimit already does for OTP, so the same brute-force/spam
+// guard now covers every auth entry point instead of just some of them.
+export async function authPrecheckRoute({ request, env }) {
+  const body = await readJsonBody(request, 2);
+  const email = requireField(body, "email", EMAIL_RE, 320);
+  const action = fieldText(body, "action", /^[a-z_]{1,40}$/, 40, "generic");
+  await applyAuthRateLimit({ request, env, route: { id: `auth.precheck.${action}` } }, email);
+  return { data: { ok: true } };
+}
+
 export async function otpSendRoute({ request, env }) {
   const body = await readJsonBody(request, 2);
   const email = requireField(body, "email", EMAIL_RE, 320);

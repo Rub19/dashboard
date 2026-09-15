@@ -148,7 +148,11 @@ export const PRESET_THEMES: Record<PremiumThemeId, ThemeDefinition> = {
     glowColor: "rgba(255, 255, 255, 0.15)",
     textPrimary: "#ffffff",
     textSecondary: "#d4d4d8",
-    textMuted: "#71717a",
+    // Was #71717a (zinc-500) -- ~4.1-4.2:1 against this theme's own
+    // surface/sidebar, just under WCAG AA's 4.5:1 for normal text. Lightened
+    // slightly to clear it (~5.4:1) without drifting as light as
+    // accentSecondary (#a1a1aa), which would blur the muted/accent distinction.
+    textMuted: "#82828b",
     textDisabled: "#3f3f46",
     textInverse: "#000000",
     glassDefault: "low",
@@ -232,7 +236,10 @@ export const PRESET_THEMES: Record<PremiumThemeId, ThemeDefinition> = {
     glowColor: "rgba(2, 132, 199, 0.2)",
     textPrimary: "#0f172a",
     textSecondary: "#334155",
-    textMuted: "#64748b",
+    // Was #64748b (slate-500) -- 4.76:1 against bgSurface but only 4.34:1
+    // against the slightly darker bgSidebar, under WCAG AA's 4.5:1. Darkened
+    // slightly to clear both (~4.9-5.3:1).
+    textMuted: "#5c6c82",
     textDisabled: "#cbd5e1",
     textInverse: "#ffffff",
     glassDefault: "low",
@@ -260,7 +267,11 @@ export const PRESET_THEMES: Record<PremiumThemeId, ThemeDefinition> = {
     glowColor: "rgba(148, 163, 184, 0.2)",
     textPrimary: "#f1f5f9",
     textSecondary: "#cbd5e1",
-    textMuted: "#64748b",
+    // Was #64748b (slate-500) -- ~3.8:1 against this theme's own dark
+    // surfaces, below WCAG AA's 4.5:1 for normal text. Lightened to clear it
+    // (~5.5-5.7:1) while staying visibly darker/more muted than
+    // accentPrimary (#94a3b8) and textSecondary.
+    textMuted: "#7f8fa6",
     textDisabled: "#334155",
     textInverse: "#0c0d10",
     glassDefault: "low",

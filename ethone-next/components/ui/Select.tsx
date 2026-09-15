@@ -269,7 +269,7 @@ export default function Select({
           disabled ? "cursor-not-allowed opacity-50" : "cursor-pointer"
         )}
       >
-        <span className={cn("truncate", !selected && "text-[var(--text-muted)]/60 font-normal")}>
+        <span className={cn("truncate", !selected && "text-[var(--text-muted)] font-normal")}>
           {selected ? selected.label : placeholder}
         </span>
         <motion.span

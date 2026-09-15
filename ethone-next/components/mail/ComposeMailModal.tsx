@@ -370,7 +370,7 @@ export default function ComposeMailModal({
                   onKeyDown={(e) => handleKeyDown(e, to, setTo, toInput, setToInput)}
                   onBlur={() => addTag(to, setTo, toInput, setToInput)}
                   placeholder={to.length === 0 ? "destinataire@exemple.com" : ""}
-                  className="flex-1 min-w-[120px] bg-transparent text-xs text-[var(--text-primary)] placeholder:text-[var(--text-muted)]/60 focus:outline-none border-0 p-0"
+                  className="flex-1 min-w-[120px] bg-transparent text-xs text-[var(--text-primary)] placeholder:text-[var(--text-muted)] focus:outline-none border-0 p-0"
                 />
                 <div className="flex items-center gap-1 text-[10px] text-[var(--text-muted)]">
                   {!showCc && (
@@ -421,7 +421,7 @@ export default function ComposeMailModal({
                     onChange={(e) => setCcInput(e.target.value)}
                     onKeyDown={(e) => handleKeyDown(e, cc, setCc, ccInput, setCcInput)}
                     onBlur={() => addTag(cc, setCc, ccInput, setCcInput)}
-                    className="flex-1 min-w-[120px] bg-transparent text-xs text-[var(--text-primary)] placeholder:text-[var(--text-muted)]/60 focus:outline-none border-0 p-0"
+                    className="flex-1 min-w-[120px] bg-transparent text-xs text-[var(--text-primary)] placeholder:text-[var(--text-muted)] focus:outline-none border-0 p-0"
                   />
                 </div>
               </div>
@@ -453,7 +453,7 @@ export default function ComposeMailModal({
                     onChange={(e) => setBccInput(e.target.value)}
                     onKeyDown={(e) => handleKeyDown(e, bcc, setBcc, bccInput, setBccInput)}
                     onBlur={() => addTag(bcc, setBcc, bccInput, setBccInput)}
-                    className="flex-1 min-w-[120px] bg-transparent text-xs text-[var(--text-primary)] placeholder:text-[var(--text-muted)]/60 focus:outline-none border-0 p-0"
+                    className="flex-1 min-w-[120px] bg-transparent text-xs text-[var(--text-primary)] placeholder:text-[var(--text-muted)] focus:outline-none border-0 p-0"
                   />
                 </div>
               </div>

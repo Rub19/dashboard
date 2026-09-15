@@ -1,12 +1,15 @@
 "use client";
 
-import { useState } from "react";
+import { useRef, useState } from "react";
 import { useI18n } from "@/lib/hooks/useI18n";
 import { resetPassword } from "@/lib/auth";
 import { useToast } from "@/components/ToastProvider";
 import FlatCard from "@/components/FlatCard";
 import Input from "@/components/Input";
 import FormField from "@/components/FormField";
+import TurnstileWidget, { type TurnstileWidgetHandle } from "@/components/auth/TurnstileWidget";
+
+const TURNSTILE_SITE_KEY = process.env.NEXT_PUBLIC_TURNSTILE_SITE_KEY || "";
 
 export default function PasswordRecoveryPage() {
   const i18n = useI18n();
@@ -14,12 +17,16 @@ export default function PasswordRecoveryPage() {
   const [email, setEmail] = useState("");
   const [sent, setSent] = useState(false);
   const [loading, setLoading] = useState(false);
+  const [turnstileToken, setTurnstileToken] = useState("");
+  const turnstileRef = useRef<TurnstileWidgetHandle>(null);
 
   async function handleSubmit(e: React.FormEvent) {
     e.preventDefault();
     if (!email) return;
     setLoading(true);
-    const { error } = await resetPassword(email);
+    const { error } = await resetPassword(email, turnstileToken);
+    turnstileRef.current?.reset();
+    setTurnstileToken("");
     setLoading(false);
     if (error) {
       showError(error.message);
@@ -52,6 +59,15 @@ export default function PasswordRecoveryPage() {
                       className="w-full"
                     />
                   </FormField>
+                  {TURNSTILE_SITE_KEY && (
+                    <TurnstileWidget
+                      ref={turnstileRef}
+                      siteKey={TURNSTILE_SITE_KEY}
+                      action="reset_password"
+                      onToken={setTurnstileToken}
+                      onExpire={() => setTurnstileToken("")}
+                    />
+                  )}
                   <button
                     type="submit"
                     disabled={loading || !email}

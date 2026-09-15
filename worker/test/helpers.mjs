@@ -32,9 +32,25 @@ export function json(data, options = {}) {
   });
 }
 
+// Test convention: a fake Turnstile token of the form "<anything>::<action>"
+// makes this mock siteverify echo back that action, so each test controls
+// whether verifyTurnstileToken's action check passes or fails without the
+// mock needing to know the caller's real expected action.
+export function mockSiteverify(input, init) {
+  const url = new URL(String(input));
+  if (url.hostname !== "challenges.cloudflare.com" || url.pathname !== "/turnstile/v0/siteverify") return null;
+  const params = new URLSearchParams(String(init?.body || ""));
+  const token = params.get("response") || "";
+  const [, action] = token.split("::");
+  if (!token || token === "invalid-token") return json({ success: false, "error-codes": ["invalid-input-response"] });
+  return json({ success: true, action: action || "generic", hostname: "ethone.dev" });
+}
+
 export function providerFetch(counter = { calls: 0 }) {
-  return async (input) => {
+  return async (input, init) => {
     counter.calls += 1;
+    const siteverify = mockSiteverify(input, init);
+    if (siteverify) return siteverify;
     const url = new URL(String(input));
     if (url.hostname === "api.steampowered.com") {
       if (url.pathname.includes("ResolveVanityURL")) return json({ response: { success: 1, steamid: "76561198000000000" } });
@@ -177,6 +193,8 @@ export function testEnv(overrides = {}) {
     VAPID_PUBLIC_KEY: "vapid-public-key-mock",
     VAPID_PRIVATE_KEY: "vapid-private-key-mock",
     WEBHOOK_SECRET: "webhook-secret-mock",
+    TURNSTILE_SECRET: "turnstile-secret-mock",
+    TURNSTILE_HOSTNAMES: "ethone.dev",
     PUSH_ENCRYPTION_ENABLED: "false",
     OUTBOUND_TIMEOUT_MS: "100",
     RATE_LIMIT_EDGE: limiter(),

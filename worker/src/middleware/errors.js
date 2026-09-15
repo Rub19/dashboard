@@ -7,6 +7,7 @@ const PUBLIC_MESSAGES = Object.freeze({
   MFA_REQUIRED: "Verification a deux facteurs requise.",
   CONFIRMATION_REQUIRED: "Confirmation requise pour cette action.",
   AUTH_RATE_LIMITED: "Trop de tentatives. Reessayez plus tard.",
+  TURNSTILE_FAILED: "Verification anti-bot echouee. Reessayez.",
   FORBIDDEN: "Acces refuse.",
   TOTP_ALREADY_ENABLED: "L'authentification a deux facteurs est deja activee.",
   TOTP_NOT_SETUP: "L'authentification a deux facteurs n'est pas configuree.",

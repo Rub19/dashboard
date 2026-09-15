@@ -12,7 +12,7 @@ function rateLimitedResult(retryAfterMs: number) {
   return { ok: false as const, error, retryAfterMs };
 }
 
-export async function sendOtp(email: string) {
+export async function sendOtp(email: string, turnstileToken?: string) {
   const attempt = consumeAuthAttempt("sign-in", email);
   if (!attempt.allowed) return rateLimitedResult(attempt.retryAfterMs);
 
@@ -20,7 +20,7 @@ export async function sendOtp(email: string) {
   try {
     res = await fetchWorker("/api/auth/otp/send", {
       method: "POST",
-      body: JSON.stringify({ email }),
+      body: JSON.stringify({ email, turnstileToken }),
     });
   } catch (err) {
     // fetchWorker throws WorkerError on any non-2xx. 404 = the email has no
@@ -95,9 +95,24 @@ export async function signInWithOtp(email: string) {
   return { ok: !error, error };
 }
 
-export async function signUpWithPassword(email: string, password: string, username: string) {
+export async function signUpWithPassword(email: string, password: string, username: string, turnstileToken?: string) {
   const attempt = consumeAuthAttempt("sign-up", email);
   if (!attempt.allowed) return { ...rateLimitedResult(attempt.retryAfterMs), user: null, session: null };
+
+  // Signup calls Supabase directly from the browser with the public anon key —
+  // this precheck is the only server-side checkpoint (rate limit + Turnstile)
+  // before that call. A failure here means the Supabase call below never runs.
+  try {
+    await fetchWorker("/api/auth/precheck", {
+      method: "POST",
+      body: JSON.stringify({ email, action: "signup", turnstileToken }),
+    });
+  } catch (err) {
+    if (err instanceof WorkerError) {
+      return { ok: false as const, user: null, session: null, error: new Error(err.message) };
+    }
+    return { ok: false as const, user: null, session: null, error: new Error("Impossible de vérifier la requête — réessayez.") };
+  }
 
   const displayName = username.trim() || email.split("@")[0];
   const { data, error } = await supabase.auth.signUp({
@@ -151,9 +166,23 @@ export async function signInWithPassword(email: string, password: string, rememb
   return { ok: !error && !!data.session, session: data.session, error };
 }
 
-export async function resetPassword(email: string) {
+export async function resetPassword(email: string, turnstileToken?: string) {
   const attempt = consumeAuthAttempt("password-reset", email);
   if (!attempt.allowed) return { ...rateLimitedResult(attempt.retryAfterMs) };
+
+  // Same precheck gate as signUpWithPassword — resetPasswordForEmail also
+  // calls Supabase directly from the browser with no other server checkpoint.
+  try {
+    await fetchWorker("/api/auth/precheck", {
+      method: "POST",
+      body: JSON.stringify({ email, action: "reset_password", turnstileToken }),
+    });
+  } catch (err) {
+    if (err instanceof WorkerError) {
+      return { ok: false as const, error: new Error(err.message) };
+    }
+    return { ok: false as const, error: new Error("Impossible de vérifier la requête — réessayez.") };
+  }
 
   const { error } = await supabase.auth.resetPasswordForEmail(email, { redirectTo: `${typeof window !== "undefined" ? window.location.origin : ""}/reset-password/` });
   return { ok: !error, error };

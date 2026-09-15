@@ -28,7 +28,7 @@ type AuthContextValue = {
   // BootProvider treats null like "still booting" so the dashboard never
   // flashes open before this is known one way or the other.
   mfaPending: boolean | null;
-  signInOtp: (email: string) => Promise<{ error?: Error }>;
+  signInOtp: (email: string, turnstileToken?: string) => Promise<{ error?: Error }>;
   verifyOtp: (
     email: string,
     code: string,
@@ -457,9 +457,9 @@ export default function AuthProvider({ children }: { children: ReactNode }) {
   // two calls.
   const otpUserIdRef = useRef<string | null>(null);
 
-  const signInOtp = useCallback(async (email: string) => {
+  const signInOtp = useCallback(async (email: string, turnstileToken?: string) => {
     authLog("OTP requested");
-    const res = await sendOtpWorker(email);
+    const res = await sendOtpWorker(email, turnstileToken);
     if (!res.ok) {
       return { error: res.error instanceof Error ? res.error : new Error(String(res.error || "Impossible d'envoyer le code.")) };
     }

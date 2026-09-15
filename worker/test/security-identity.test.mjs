@@ -3,7 +3,7 @@ import test, { beforeEach } from "node:test";
 import { clearJwksCache } from "../src/middleware/auth.js";
 import { clearLocalRateLimits } from "../src/middleware/rate-limit.js";
 import { clearCache } from "../src/utils/cache.js";
-import { accessToken, invoke, json, payload, testEnv } from "./helpers.mjs";
+import { accessToken, invoke, json, mockSiteverify, payload, testEnv } from "./helpers.mjs";
 import { resolveEmailLocale } from "../src/services/otp-service.js";
 
 beforeEach(() => {
@@ -13,7 +13,9 @@ beforeEach(() => {
 });
 
 function createMockSupabaseFetch() {
-  return async (input) => {
+  return async (input, init) => {
+    const siteverify = mockSiteverify(input, init);
+    if (siteverify) return siteverify;
     const url = new URL(String(input));
     if (url.hostname !== "project-ref.supabase.co") return new Response("not found", { status: 404 });
 
@@ -60,7 +62,7 @@ test("auth precheck requires a valid email", async () => {
 test("auth precheck allows a fresh email/action pair through", async () => {
   const env = testEnv();
   const headers = { "content-type": "application/json" };
-  const response = await invoke("/api/auth/precheck", { auth: false, env, headers, method: "POST", body: JSON.stringify({ email: "qa@ethone.dev", action: "signup" }) });
+  const response = await invoke("/api/auth/precheck", { auth: false, env, headers, method: "POST", body: JSON.stringify({ email: "qa@ethone.dev", action: "signup", turnstileToken: "valid-token::signup" }) });
   assert.equal(response.status, 200);
   const body = await payload(response);
   assert.equal(body.data.ok, true);
@@ -69,14 +71,32 @@ test("auth precheck allows a fresh email/action pair through", async () => {
 test("auth precheck defaults to a generic action when none is given", async () => {
   const env = testEnv();
   const headers = { "content-type": "application/json" };
-  const response = await invoke("/api/auth/precheck", { auth: false, env, headers, method: "POST", body: JSON.stringify({ email: "qa@ethone.dev" }) });
+  const response = await invoke("/api/auth/precheck", { auth: false, env, headers, method: "POST", body: JSON.stringify({ email: "qa@ethone.dev", turnstileToken: "valid-token::generic" }) });
   assert.equal(response.status, 200);
+});
+
+test("auth precheck rejects a Turnstile token that fails verification", async () => {
+  const env = testEnv();
+  const headers = { "content-type": "application/json" };
+  const response = await invoke("/api/auth/precheck", { auth: false, env, headers, method: "POST", body: JSON.stringify({ email: "qa@ethone.dev", action: "signup", turnstileToken: "invalid-token" }) });
+  assert.equal(response.status, 403);
+  const body = await payload(response);
+  assert.equal(body.error.code, "TURNSTILE_FAILED");
+});
+
+test("auth precheck rejects a Turnstile token solved for a different action", async () => {
+  const env = testEnv();
+  const headers = { "content-type": "application/json" };
+  const response = await invoke("/api/auth/precheck", { auth: false, env, headers, method: "POST", body: JSON.stringify({ email: "qa@ethone.dev", action: "signup", turnstileToken: "valid-token::reset_password" }) });
+  assert.equal(response.status, 403);
+  const body = await payload(response);
+  assert.equal(body.error.code, "TURNSTILE_FAILED");
 });
 
 test("auth precheck returns 429 once the shared auth rate limit is exhausted, same as OTP", async () => {
   const env = testEnv({ RATE_LIMIT_STANDARD: { limit: async () => ({ success: false }) } });
   const headers = { "content-type": "application/json" };
-  const response = await invoke("/api/auth/precheck", { auth: false, env, headers, method: "POST", body: JSON.stringify({ email: "spammer@ethone.dev", action: "reset_password" }) });
+  const response = await invoke("/api/auth/precheck", { auth: false, env, headers, method: "POST", body: JSON.stringify({ email: "spammer@ethone.dev", action: "reset_password", turnstileToken: "valid-token::reset_password" }) });
   assert.equal(response.status, 429);
   const body = await payload(response);
   assert.equal(body.error.code, "AUTH_RATE_LIMITED");
@@ -85,7 +105,7 @@ test("auth precheck returns 429 once the shared auth rate limit is exhausted, sa
 test("otp send requires a valid email", async () => {
   const env = testEnv({ __TEST_FETCH__: createMockSupabaseFetch(), ENVIRONMENT: "development", ETHONE_DEBUG_OTP: "true" });
   const headers = { "content-type": "application/json" };
-  const response = await invoke("/api/auth/otp/send", { auth: false, env, headers, method: "POST", body: JSON.stringify({ email: "not-an-email" }) });
+  const response = await invoke("/api/auth/otp/send", { auth: false, env, headers, method: "POST", body: JSON.stringify({ email: "not-an-email", turnstileToken: "valid-token::login_otp" }) });
   assert.equal(response.status, 400);
   const body = await payload(response);
   assert.equal(body.error.code, "INVALID_PARAMETER");
@@ -94,13 +114,22 @@ test("otp send requires a valid email", async () => {
 test("otp send returns debug code in development when enabled", async () => {
   const env = testEnv({ __TEST_FETCH__: createMockSupabaseFetch(), ENVIRONMENT: "development", ETHONE_DEBUG_OTP: "true" });
   const headers = { "content-type": "application/json" };
-  const response = await invoke("/api/auth/otp/send", { auth: false, env, headers, method: "POST", body: JSON.stringify({ email: "qa@ethone.dev" }) });
+  const response = await invoke("/api/auth/otp/send", { auth: false, env, headers, method: "POST", body: JSON.stringify({ email: "qa@ethone.dev", turnstileToken: "valid-token::login_otp" }) });
   assert.equal(response.status, 200);
   const body = await payload(response);
   assert.equal(body.ok, true);
   assert.equal(body.data.sent, true);
   assert.equal(typeof body.data.code, "string");
   assert.equal(body.data.code.length, 6);
+});
+
+test("otp send rejects a Turnstile token that fails verification", async () => {
+  const env = testEnv({ __TEST_FETCH__: createMockSupabaseFetch(), ENVIRONMENT: "development", ETHONE_DEBUG_OTP: "true" });
+  const headers = { "content-type": "application/json" };
+  const response = await invoke("/api/auth/otp/send", { auth: false, env, headers, method: "POST", body: JSON.stringify({ email: "qa@ethone.dev", turnstileToken: "invalid-token" }) });
+  assert.equal(response.status, 403);
+  const body = await payload(response);
+  assert.equal(body.error.code, "TURNSTILE_FAILED");
 });
 
 async function hashOtp(code) {

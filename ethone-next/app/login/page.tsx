@@ -25,6 +25,7 @@ import { triggerHaptic } from "@/lib/haptics";
 import AuthInputField from "@/components/auth/AuthInputField";
 import OtpCodeInput from "@/components/auth/OtpCodeInput";
 import PasswordStrengthMeter from "@/components/auth/PasswordStrengthMeter";
+import TurnstileWidget, { type TurnstileWidgetHandle } from "@/components/auth/TurnstileWidget";
 import {
   Mail,
   Lock,
@@ -46,6 +47,8 @@ import {
   Music2,
   Brain,
 } from "lucide-react";
+
+const TURNSTILE_SITE_KEY = process.env.NEXT_PUBLIC_TURNSTILE_SITE_KEY || "";
 
 const HERO_FEATURES = [
   { icon: StickyNote, label: "Notes" },
@@ -119,6 +122,11 @@ export default function LoginPage() {
   const emailInputRef = useRef<HTMLInputElement>(null);
   const successRedirected = useRef(false);
 
+  const [registerTurnstileToken, setRegisterTurnstileToken] = useState("");
+  const registerTurnstileRef = useRef<TurnstileWidgetHandle>(null);
+  const [otpTurnstileToken, setOtpTurnstileToken] = useState("");
+  const otpTurnstileRef = useRef<TurnstileWidgetHandle>(null);
+
   useEffect(() => {
     if (typeof window !== "undefined") {
       setPasskeyReady(!!window.PublicKeyCredential);
@@ -177,7 +185,9 @@ export default function LoginPage() {
     setError(null);
     authLog("Requesting OTP code for:", email);
 
-    const result = await signInOtp(email);
+    const result = await signInOtp(email, otpTurnstileToken);
+    otpTurnstileRef.current?.reset();
+    setOtpTurnstileToken("");
     if (!result.error) {
       setMaskedEmail(maskEmail(email));
       setOtpStep("code");
@@ -265,7 +275,9 @@ export default function LoginPage() {
     setAuthState("loading");
     setError(null);
 
-    const { ok, session: newSession, error: err } = await signUpWithPassword(email, password, username.trim());
+    const { ok, session: newSession, error: err } = await signUpWithPassword(email, password, username.trim(), registerTurnstileToken);
+    registerTurnstileRef.current?.reset();
+    setRegisterTurnstileToken("");
     if (!ok || err) {
       setAuthState("error");
       triggerHaptic("error");
@@ -697,6 +709,16 @@ export default function LoginPage() {
                       />
                     </div>
 
+                    {TURNSTILE_SITE_KEY && (
+                      <TurnstileWidget
+                        ref={otpTurnstileRef}
+                        siteKey={TURNSTILE_SITE_KEY}
+                        action="login_otp"
+                        onToken={setOtpTurnstileToken}
+                        onExpire={() => setOtpTurnstileToken("")}
+                      />
+                    )}
+
                     <button
                       type="submit"
                       disabled={isLoading || isSuccess}
@@ -885,6 +907,16 @@ export default function LoginPage() {
                       disabled={isLoading || isSuccess}
                       leftIcon={<Lock className="h-4 w-4" />}
                     />
+
+                    {TURNSTILE_SITE_KEY && (
+                      <TurnstileWidget
+                        ref={registerTurnstileRef}
+                        siteKey={TURNSTILE_SITE_KEY}
+                        action="signup"
+                        onToken={setRegisterTurnstileToken}
+                        onExpire={() => setRegisterTurnstileToken("")}
+                      />
+                    )}
 
                     <button
                       type="submit"

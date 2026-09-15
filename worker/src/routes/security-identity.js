@@ -10,6 +10,7 @@ import {
   revokePasskey
 } from "../services/webauthn-service.js";
 import { sendOtp, verifyOtp } from "../services/otp-service.js";
+import { verifyTurnstileToken } from "../services/turnstile-service.js";
 import { signServiceToken } from "../utils/jwt.js";
 import {
   getOrCreateDevice,
@@ -153,16 +154,22 @@ export async function passkeyRevokeRoute({ request, env, auth }) {
 // like applyAuthRateLimit already does for OTP, so the same brute-force/spam
 // guard now covers every auth entry point instead of just some of them.
 export async function authPrecheckRoute({ request, env }) {
-  const body = await readJsonBody(request, 2);
+  const body = await readJsonBody(request, 3);
   const email = requireField(body, "email", EMAIL_RE, 320);
   const action = fieldText(body, "action", /^[a-z_]{1,40}$/, 40, "generic");
+  const turnstileToken = requireField(body, "turnstileToken", /^\S{1,2048}$/, 2048);
+  const remoteip = request.headers.get("cf-connecting-ip") || undefined;
+  await verifyTurnstileToken(env, turnstileToken, action, remoteip);
   await applyAuthRateLimit({ request, env, route: { id: `auth.precheck.${action}` } }, email);
   return { data: { ok: true } };
 }
 
 export async function otpSendRoute({ request, env }) {
-  const body = await readJsonBody(request, 2);
+  const body = await readJsonBody(request, 3);
   const email = requireField(body, "email", EMAIL_RE, 320);
+  const turnstileToken = requireField(body, "turnstileToken", /^\S{1,2048}$/, 2048);
+  const remoteip = request.headers.get("cf-connecting-ip") || undefined;
+  await verifyTurnstileToken(env, turnstileToken, "login_otp", remoteip);
   await applyAuthRateLimit({ request, env, route: { id: "otp.send" } }, email);
   const userId = body.userId && UUID_RE.test(body.userId) ? body.userId : null;
   const acceptLanguage = request.headers.get("accept-language") || "";

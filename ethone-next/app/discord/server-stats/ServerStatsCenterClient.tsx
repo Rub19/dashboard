@@ -206,7 +206,7 @@ export default function ServerStatsCenterClient() {
             </div>
             <div>
               <h1 className="text-base font-semibold tracking-tight text-white">Server Stats</h1>
-              <p className="text-xs text-white/40">Salons compteurs : membres, boosts, en ligne…</p>
+              <p className="text-xs text-white/70">Salons compteurs : membres, boosts, en ligne…</p>
             </div>
           </div>
         </div>
@@ -229,7 +229,7 @@ export default function ServerStatsCenterClient() {
               <ChevronDown className="w-3.5 h-3.5 text-white/40 absolute right-2.5 top-1/2 -translate-y-1/2 pointer-events-none" />
             </div>
           ) : (
-            <span className="text-xs text-white/40">Aucun serveur administrable</span>
+            <span className="text-xs text-white/70">Aucun serveur administrable</span>
           )}
           <button onClick={load} className="p-2 rounded-xl bg-white/[0.04] hover:bg-white/[0.08] border border-[var(--panel-border)] text-white/70 hover:text-white transition-colors" title="Rafraîchir">
             <RefreshCw className={cn("w-4 h-4", loading && "animate-spin")} />
@@ -266,7 +266,7 @@ export default function ServerStatsCenterClient() {
               </button>
               <div className="min-w-0 flex-1">
                 <p className="text-sm font-semibold text-white">Module {enabled ? "actif" : "désactivé"}</p>
-                <p className="text-xs text-white/50">Rafraîchissement toutes les {interval} min (Discord limite les renommages à 2 / 10 min).</p>
+                <p className="text-xs text-white/70">Rafraîchissement toutes les {interval} min (Discord limite les renommages à 2 / 10 min).</p>
               </div>
               <div className="flex items-center gap-2">
                 <input type="range" min={10} max={60} value={interval} onChange={(e) => setIntervalMin(Number(e.target.value))} className="w-28 accent-[#5865F2]" />

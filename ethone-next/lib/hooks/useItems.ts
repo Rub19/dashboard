@@ -1,6 +1,6 @@
 "use client";
 
-import { useEffect, useState, useCallback, useMemo, useRef, useId } from "react";
+import { useEffect, useState, useCallback, useMemo, useRef } from "react";
 import { fetchWorker } from "../api";
 import { supabase } from "@/lib/supabase";
 import { activityJournal } from "@/lib/activity-journal";
@@ -31,6 +31,59 @@ const ITEMS_CACHE_TTL = 2500;
 
 function dbKindOf(kind: "notes" | "tasks" | "events") {
   return kind === "notes" ? "note" : kind === "tasks" ? "task" : "event";
+}
+
+// The dashboard also mounts ~5 components that each call useItems(kind) for
+// the same (userId, kind) — before this, each one independently opened its
+// OWN Supabase realtime channel subscribing to the exact same
+// postgres_changes feed, so N mounted instances meant N duplicate WebSocket
+// subscriptions all receiving and processing the identical event stream.
+// Share ONE channel per (userId, kind) instead: the first instance to mount
+// opens it, later instances just register their own listener, and the
+// underlying channel is only torn down once the last listener unmounts.
+// Each instance still applies incoming payloads to its own local
+// state/cache/tab-broadcast exactly as before -- only the WebSocket
+// connection itself is deduplicated, nothing about per-instance behavior
+// changes.
+type RealtimeListener = (payload: any) => void;
+const _realtimeSubscriptions = new Map<
+  string,
+  { channel: ReturnType<typeof supabase.channel>; listeners: Set<RealtimeListener> }
+>();
+
+function subscribeItemsRealtimeShared(
+  userId: string,
+  kind: "notes" | "tasks" | "events",
+  listener: RealtimeListener
+): () => void {
+  const key = `${userId}:${kind}`;
+  let entry = _realtimeSubscriptions.get(key);
+  if (!entry) {
+    const listeners = new Set<RealtimeListener>();
+    const channel = supabase
+      .channel(`items_realtime_${key}`)
+      .on(
+        "postgres_changes",
+        { event: "*", schema: "public", table: "ethone_items", filter: `user_id=eq.${userId}` },
+        (payload) => {
+          for (const fn of listeners) fn(payload);
+        }
+      );
+    channel.subscribe();
+    entry = { channel, listeners };
+    _realtimeSubscriptions.set(key, entry);
+  }
+  entry.listeners.add(listener);
+
+  return () => {
+    const current = _realtimeSubscriptions.get(key);
+    if (!current) return;
+    current.listeners.delete(listener);
+    if (current.listeners.size === 0) {
+      current.channel.unsubscribe();
+      _realtimeSubscriptions.delete(key);
+    }
+  };
 }
 
 async function loadItemRowsShared(
@@ -104,7 +157,6 @@ export function useItems(kind: "notes" | "tasks" | "events") {
   const cacheKey = currentUserId ? `ethone:items:${currentUserId}:${kind}` : `ethone:items:guest:${kind}`;
   const broadcastChannelName = `ethone_sync_${kind}_${currentUserId || "guest"}`;
   const channelRef = useRef<BroadcastChannel | null>(null);
-  const realtimeId = useId();
 
   const [items, setItems] = useState<Item[]>(() => {
     if (typeof window === "undefined") return DEFAULT_DEMO_ITEMS[kind] || [];
@@ -227,87 +279,77 @@ export function useItems(kind: "notes" | "tasks" | "events") {
     reload();
   }, [reload]);
 
-  // Realtime Supabase Subscription
+  // Realtime Supabase Subscription — shared per (userId, kind) across every
+  // mounted useItems(kind) instance, see subscribeItemsRealtimeShared above.
   useEffect(() => {
     if (typeof window === "undefined") return;
 
-    let sbChannel: ReturnType<typeof supabase.channel> | null = null;
     const dbKind = kind === "notes" ? "note" : kind === "tasks" ? "task" : "event";
+    let unsubscribe: (() => void) | null = null;
+    let cancelled = false;
 
     async function subscribeRealtime() {
       try {
         const { data: sessionData } = await supabase.auth.getSession().catch(() => ({ data: { session: null } }));
         const userId = sessionData?.session?.user?.id;
-        if (!userId) return;
+        if (!userId || cancelled) return;
 
-        sbChannel = supabase
-          .channel(`items_realtime_${kind}_${realtimeId}`)
-          .on(
-            "postgres_changes",
-            {
-              event: "*",
-              schema: "public",
-              table: "ethone_items",
-              filter: `user_id=eq.${userId}`,
-            },
-            (payload) => {
-              invalidateItemsCache();
-              setItems((prev) => {
-                let next = prev;
-                if (payload.eventType === "INSERT") {
-                  const r = payload.new as Record<string, unknown>;
-                  if (r.kind === dbKind) {
-                    const mappedItem: Item = {
-                      id: String(r.id),
-                      title: String(r.title || "Sans titre"),
-                      body: String(r.body || ""),
-                      done: r.done === true,
-                      startAt: r.start_at ? String(r.start_at) : undefined,
-                      endAt: r.end_at ? String(r.end_at) : undefined,
-                      data: (r.data as Record<string, unknown>) || {},
-                      createdAt: String(r.created_at || new Date().toISOString()),
-                      updatedAt: String(r.updated_at || new Date().toISOString()),
-                    };
-                    if (!prev.some((i) => i.id === mappedItem.id)) {
-                      next = [mappedItem, ...prev];
-                    }
-                  }
-                } else if (payload.eventType === "UPDATE") {
-                  const r = payload.new as Record<string, unknown>;
-                  next = prev.map((item) =>
-                    item.id === String(r.id)
-                      ? {
-                          ...item,
-                          title: String(r.title ?? item.title),
-                          body: String(r.body ?? item.body),
-                          done: r.done !== undefined ? r.done === true : item.done,
-                          updatedAt: String(r.updated_at || new Date().toISOString()),
-                        }
-                      : item
-                  );
-                } else if (payload.eventType === "DELETE") {
-                  const oldId = String((payload.old as { id: string })?.id);
-                  next = prev.filter((i) => i.id !== oldId);
+        unsubscribe = subscribeItemsRealtimeShared(userId, kind, (payload) => {
+          invalidateItemsCache();
+          setItems((prev) => {
+            let next = prev;
+            if (payload.eventType === "INSERT") {
+              const r = payload.new as Record<string, unknown>;
+              if (r.kind === dbKind) {
+                const mappedItem: Item = {
+                  id: String(r.id),
+                  title: String(r.title || "Sans titre"),
+                  body: String(r.body || ""),
+                  done: r.done === true,
+                  startAt: r.start_at ? String(r.start_at) : undefined,
+                  endAt: r.end_at ? String(r.end_at) : undefined,
+                  data: (r.data as Record<string, unknown>) || {},
+                  createdAt: String(r.created_at || new Date().toISOString()),
+                  updatedAt: String(r.updated_at || new Date().toISOString()),
+                };
+                if (!prev.some((i) => i.id === mappedItem.id)) {
+                  next = [mappedItem, ...prev];
                 }
-
-                try {
-                  localStorage.setItem(cacheKey, JSON.stringify(next));
-                } catch {}
-                notifyTabs(next);
-                return next;
-              });
+              }
+            } else if (payload.eventType === "UPDATE") {
+              const r = payload.new as Record<string, unknown>;
+              next = prev.map((item) =>
+                item.id === String(r.id)
+                  ? {
+                      ...item,
+                      title: String(r.title ?? item.title),
+                      body: String(r.body ?? item.body),
+                      done: r.done !== undefined ? r.done === true : item.done,
+                      updatedAt: String(r.updated_at || new Date().toISOString()),
+                    }
+                  : item
+              );
+            } else if (payload.eventType === "DELETE") {
+              const oldId = String((payload.old as { id: string })?.id);
+              next = prev.filter((i) => i.id !== oldId);
             }
-          );
 
-        await sbChannel.subscribe();
+            try {
+              localStorage.setItem(cacheKey, JSON.stringify(next));
+            } catch {}
+            notifyTabs(next);
+            return next;
+          });
+        });
       } catch {}
     }
 
     subscribeRealtime();
     return () => {
-      sbChannel?.unsubscribe();
+      cancelled = true;
+      unsubscribe?.();
     };
-  }, [kind, cacheKey, realtimeId, notifyTabs]);
+  }, [kind, cacheKey, notifyTabs]);
 
   const create = useCallback(
     async (input: Omit<Item, "id">) => {

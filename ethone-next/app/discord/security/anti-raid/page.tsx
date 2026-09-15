@@ -646,7 +646,7 @@ export default function AntiRaidDashboardPage() {
         <div className="flex items-center gap-3">
           <Link
             href="/discord"
-            className="p-1.5 rounded-lg text-white/50 hover:text-white hover:bg-white/5 transition-colors"
+            className="p-1.5 rounded-lg text-white/75 hover:text-white hover:bg-white/5 transition-colors"
             title="Retour au hub Discord"
           >
             <ArrowLeft className="w-5 h-5" />
@@ -662,7 +662,7 @@ export default function AntiRaidDashboardPage() {
                   Live Guard
                 </span>
               </div>
-              <p className="text-xs text-white/40">Détection multi-vecteurs, calcul du risque & riposte automatique</p>
+              <p className="text-xs text-white/70">Détection multi-vecteurs, calcul du risque & riposte automatique</p>
             </div>
           </div>
         </div>
@@ -688,7 +688,7 @@ export default function AntiRaidDashboardPage() {
               <ChevronDown className="w-3.5 h-3.5 text-white/40 absolute right-2.5 top-1/2 -translate-y-1/2 pointer-events-none" />
             </div>
           ) : (
-            <span className="text-xs text-white/40">Aucun serveur administrable</span>
+            <span className="text-xs text-white/70">Aucun serveur administrable</span>
           )}
 
           <button
@@ -721,7 +721,7 @@ export default function AntiRaidDashboardPage() {
         >
           <div>
             <p className="text-sm font-semibold text-white">Anti-Raid {settings.enabled ? "— actif" : "— désactivé"}</p>
-            <p className="text-xs text-white/50">
+            <p className="text-xs text-white/75">
               {settings.enabled
                 ? "Tous les détecteurs cochés ci-dessous sont appliqués (join raid, spam messages, mentions, bots…)."
                 : "Aucune détection ni sanction automatique. Les réglages sont conservés."}
@@ -761,7 +761,7 @@ export default function AntiRaidDashboardPage() {
               <div>
                 <div className="flex items-center gap-2 mb-1">
                   <span className="text-xl">{threat.icon}</span>
-                  <span className="text-xs font-semibold uppercase tracking-wider text-white/60">
+                  <span className="text-xs font-semibold uppercase tracking-wider text-white/75">
                     Statut de Sécurité Global
                   </span>
                   <span
@@ -780,9 +780,9 @@ export default function AntiRaidDashboardPage() {
                   <span className={cn("font-mono text-3xl", threat.text)}>
                     {metrics.currentRiskScore}
                   </span>
-                  <span className="text-white/40 text-base font-normal"> / 100</span>
+                  <span className="text-white/70 text-base font-normal"> / 100</span>
                 </h2>
-                <p className="text-xs text-white/60 mt-1 max-w-lg">
+                <p className="text-xs text-white/75 mt-1 max-w-lg">
                   {metrics.raidModeActive
                     ? "🚨 Mode Raid d'urgence actif. Les protections automatiques et les restrictions sont appliquées."
                     : metrics.currentRiskScore > 40
@@ -807,7 +807,7 @@ export default function AntiRaidDashboardPage() {
                   {metrics.raidModeActive ? "END RAID MODE" : "ACTIVATE RAID MODE"}
                 </button>
 
-                <div className="flex items-center justify-between text-[11px] text-white/50 px-1 font-mono">
+                <div className="flex items-center justify-between text-[11px] text-white/75 px-1 font-mono">
                   <span>Protection : ACTIVE</span>
                   <span>Auto-Exit : {settings.raidMode.autoExitMinutesWithoutActivity}m</span>
                 </div>
@@ -816,7 +816,7 @@ export default function AntiRaidDashboardPage() {
 
             {/* Score Progress Bar */}
             <div className="mt-4 pt-4 border-t border-[var(--panel-border)]">
-              <div className="flex justify-between text-[11px] text-white/40 mb-1.5 font-mono">
+              <div className="flex justify-between text-[11px] text-white/75 mb-1.5 font-mono">
                 <span>0 Safe</span>
                 <span>20 Suspicious</span>
                 <span>40 Elevated</span>
@@ -846,11 +846,11 @@ export default function AntiRaidDashboardPage() {
           {/* Quick Manual Security Controls */}
           <div className="rounded-[var(--panel-radius)] border border-[var(--panel-border)] bg-white/[0.03] p-5 backdrop-blur-xl flex flex-col justify-between space-y-3">
             <div>
-              <h3 className="text-xs font-semibold uppercase tracking-wider text-white/60 mb-1 flex items-center gap-1.5">
+              <h3 className="text-xs font-semibold uppercase tracking-wider text-white/75 mb-1 flex items-center gap-1.5">
                 <Zap className="w-3.5 h-3.5 text-amber-400" />
                 Contrôles Manuels d'Urgence
               </h3>
-              <p className="text-xs text-white/40">Interventions rapides applicables en un clic</p>
+              <p className="text-xs text-white/70">Interventions rapides applicables en un clic</p>
             </div>
 
             <div className="grid grid-cols-2 gap-2">
@@ -907,7 +907,7 @@ export default function AntiRaidDashboardPage() {
               </button>
             </div>
 
-            <div className="flex items-center justify-between text-[11px] text-white/40 pt-1 border-t border-[var(--panel-border)] font-mono">
+            <div className="flex items-center justify-between text-[11px] text-white/75 pt-1 border-t border-[var(--panel-border)] font-mono">
               <span>Salons verrouillés : {metrics.lockedChannelsCount}</span>
               <span>Quarantaine : {metrics.quarantinedMembersCount}</span>
             </div>
@@ -920,14 +920,14 @@ export default function AntiRaidDashboardPage() {
             <div className="flex items-center gap-2">
               <div className="w-2 h-2 rounded-full bg-emerald-400" />
               <h3 className="text-sm font-semibold text-white tracking-wide">Live Security Activity</h3>
-              <span className="text-xs text-white/40">(Fenêtre glissante 60s)</span>
+              <span className="text-xs text-white/70">(Fenêtre glissante 60s)</span>
             </div>
-            <span className="text-[11px] text-white/40 font-mono">Sync automatique 4s</span>
+            <span className="text-[11px] text-white/75 font-mono">Sync automatique 4s</span>
           </div>
 
           <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-5 gap-3">
             <div className="p-3 rounded-xl bg-white/[0.03] border border-[var(--panel-border)] flex flex-col justify-between">
-              <span className="text-[11px] text-white/50 uppercase font-medium">Joins / min</span>
+              <span className="text-[11px] text-white/75 uppercase font-medium">Joins / min</span>
               <div className="flex items-baseline justify-between mt-1">
                 <span className="text-xl font-bold text-white font-mono">{metrics.joinsPerMinute}</span>
                 <Users className="w-4 h-4 text-blue-400/60" />
@@ -935,7 +935,7 @@ export default function AntiRaidDashboardPage() {
             </div>
 
             <div className="p-3 rounded-xl bg-white/[0.03] border border-[var(--panel-border)] flex flex-col justify-between">
-              <span className="text-[11px] text-white/50 uppercase font-medium">Messages / min</span>
+              <span className="text-[11px] text-white/75 uppercase font-medium">Messages / min</span>
               <div className="flex items-baseline justify-between mt-1">
                 <span className="text-xl font-bold text-white font-mono">{metrics.messagesPerMinute}</span>
                 <Hash className="w-4 h-4 text-emerald-400/60" />
@@ -943,7 +943,7 @@ export default function AntiRaidDashboardPage() {
             </div>
 
             <div className="p-3 rounded-xl bg-white/[0.03] border border-[var(--panel-border)] flex flex-col justify-between">
-              <span className="text-[11px] text-white/50 uppercase font-medium">Mentions / min</span>
+              <span className="text-[11px] text-white/75 uppercase font-medium">Mentions / min</span>
               <div className="flex items-baseline justify-between mt-1">
                 <span className="text-xl font-bold text-white font-mono">{metrics.mentionsPerMinute}</span>
                 <Radio className="w-4 h-4 text-amber-400/60" />
@@ -951,7 +951,7 @@ export default function AntiRaidDashboardPage() {
             </div>
 
             <div className="p-3 rounded-xl bg-white/[0.03] border border-[var(--panel-border)] flex flex-col justify-between">
-              <span className="text-[11px] text-white/50 uppercase font-medium">Bans / min</span>
+              <span className="text-[11px] text-white/75 uppercase font-medium">Bans / min</span>
               <div className="flex items-baseline justify-between mt-1">
                 <span className="text-xl font-bold text-white font-mono">{metrics.bansPerMinute}</span>
                 <UserX className="w-4 h-4 text-red-400/60" />
@@ -959,7 +959,7 @@ export default function AntiRaidDashboardPage() {
             </div>
 
             <div className="p-3 rounded-xl bg-white/[0.03] border border-[var(--panel-border)] flex flex-col justify-between">
-              <span className="text-[11px] text-white/50 uppercase font-medium">Bots Ajoutés</span>
+              <span className="text-[11px] text-white/75 uppercase font-medium">Bots Ajoutés</span>
               <div className="flex items-baseline justify-between mt-1">
                 <span className="text-xl font-bold text-white font-mono">{metrics.botsAddedPerMinute}</span>
                 <Sparkles className="w-4 h-4 text-purple-400/60" />
@@ -967,7 +967,7 @@ export default function AntiRaidDashboardPage() {
             </div>
 
             <div className="p-3 rounded-xl bg-white/[0.03] border border-[var(--panel-border)] flex flex-col justify-between">
-              <span className="text-[11px] text-white/50 uppercase font-medium">Salons Modifiés</span>
+              <span className="text-[11px] text-white/75 uppercase font-medium">Salons Modifiés</span>
               <div className="flex items-baseline justify-between mt-1">
                 <span className="text-xl font-bold text-white font-mono">{metrics.channelsChangedPerMinute}</span>
                 <Layers className="w-4 h-4 text-cyan-400/60" />
@@ -975,7 +975,7 @@ export default function AntiRaidDashboardPage() {
             </div>
 
             <div className="p-3 rounded-xl bg-white/[0.03] border border-[var(--panel-border)] flex flex-col justify-between">
-              <span className="text-[11px] text-white/50 uppercase font-medium">Rôles Modifiés</span>
+              <span className="text-[11px] text-white/75 uppercase font-medium">Rôles Modifiés</span>
               <div className="flex items-baseline justify-between mt-1">
                 <span className="text-xl font-bold text-white font-mono">{metrics.rolesChangedPerMinute}</span>
                 <Shield className="w-4 h-4 text-indigo-400/60" />
@@ -983,7 +983,7 @@ export default function AntiRaidDashboardPage() {
             </div>
 
             <div className="p-3 rounded-xl bg-white/[0.03] border border-[var(--panel-border)] flex flex-col justify-between">
-              <span className="text-[11px] text-white/50 uppercase font-medium">Webhooks</span>
+              <span className="text-[11px] text-white/75 uppercase font-medium">Webhooks</span>
               <div className="flex items-baseline justify-between mt-1">
                 <span className="text-xl font-bold text-white font-mono">{metrics.webhooksChangedPerMinute}</span>
                 <Terminal className="w-4 h-4 text-yellow-400/60" />
@@ -991,7 +991,7 @@ export default function AntiRaidDashboardPage() {
             </div>
 
             <div className="p-3 rounded-xl bg-white/[0.03] border border-[var(--panel-border)] flex flex-col justify-between">
-              <span className="text-[11px] text-white/50 uppercase font-medium">Départs / min</span>
+              <span className="text-[11px] text-white/75 uppercase font-medium">Départs / min</span>
               <div className="flex items-baseline justify-between mt-1">
                 <span className="text-xl font-bold text-white font-mono">{metrics.leavesPerMinute}</span>
                 <Clock className="w-4 h-4 text-white/40" />
@@ -999,7 +999,7 @@ export default function AntiRaidDashboardPage() {
             </div>
 
             <div className="p-3 rounded-xl bg-white/[0.03] border border-[var(--panel-border)] flex flex-col justify-between">
-              <span className="text-[11px] text-white/50 uppercase font-medium">Score de Menace</span>
+              <span className="text-[11px] text-white/75 uppercase font-medium">Score de Menace</span>
               <div className="flex items-baseline justify-between mt-1">
                 <span className={cn("text-xl font-bold font-mono", threat.text)}>
                   {metrics.currentRiskScore}
@@ -1020,7 +1020,7 @@ export default function AntiRaidDashboardPage() {
                 "px-3 py-1.5 rounded-xl text-xs font-medium transition-all shrink-0",
                 activeTab === "overview"
                   ? "bg-white/10 text-white shadow-sm"
-                  : "text-white/50 hover:text-white hover:bg-white/5"
+                  : "text-white/75 hover:text-white hover:bg-white/5"
               )}
             >
               👥 Join Raid
@@ -1032,7 +1032,7 @@ export default function AntiRaidDashboardPage() {
                 "px-3 py-1.5 rounded-xl text-xs font-medium transition-all shrink-0",
                 activeTab === "message"
                   ? "bg-white/10 text-white shadow-sm"
-                  : "text-white/50 hover:text-white hover:bg-white/5"
+                  : "text-white/75 hover:text-white hover:bg-white/5"
               )}
             >
               💬 Message Spam
@@ -1044,7 +1044,7 @@ export default function AntiRaidDashboardPage() {
                 "px-3 py-1.5 rounded-xl text-xs font-medium transition-all shrink-0",
                 activeTab === "mention"
                   ? "bg-white/10 text-white shadow-sm"
-                  : "text-white/50 hover:text-white hover:bg-white/5"
+                  : "text-white/75 hover:text-white hover:bg-white/5"
               )}
             >
               🔔 Mention Raid
@@ -1056,7 +1056,7 @@ export default function AntiRaidDashboardPage() {
                 "px-3 py-1.5 rounded-xl text-xs font-medium transition-all shrink-0",
                 activeTab === "bots"
                   ? "bg-white/10 text-white shadow-sm"
-                  : "text-white/50 hover:text-white hover:bg-white/5"
+                  : "text-white/75 hover:text-white hover:bg-white/5"
               )}
             >
               🤖 Bot Raid
@@ -1068,7 +1068,7 @@ export default function AntiRaidDashboardPage() {
                 "px-3 py-1.5 rounded-xl text-xs font-medium transition-all shrink-0",
                 activeTab === "nuke"
                   ? "bg-white/10 text-white shadow-sm"
-                  : "text-white/50 hover:text-white hover:bg-white/5"
+                  : "text-white/75 hover:text-white hover:bg-white/5"
               )}
             >
               💥 Anti-Nuke
@@ -1080,7 +1080,7 @@ export default function AntiRaidDashboardPage() {
                 "px-3 py-1.5 rounded-xl text-xs font-medium transition-all shrink-0",
                 activeTab === "accountAge"
                   ? "bg-white/10 text-white shadow-sm"
-                  : "text-white/50 hover:text-white hover:bg-white/5"
+                  : "text-white/75 hover:text-white hover:bg-white/5"
               )}
             >
               🔐 Account Age
@@ -1092,7 +1092,7 @@ export default function AntiRaidDashboardPage() {
                 "px-3 py-1.5 rounded-xl text-xs font-medium transition-all shrink-0",
                 activeTab === "whitelist"
                   ? "bg-white/10 text-white shadow-sm"
-                  : "text-white/50 hover:text-white hover:bg-white/5"
+                  : "text-white/75 hover:text-white hover:bg-white/5"
               )}
             >
               🛡️ Whitelist
@@ -1104,7 +1104,7 @@ export default function AntiRaidDashboardPage() {
                 "px-3 py-1.5 rounded-xl text-xs font-medium transition-all shrink-0",
                 activeTab === "incidents"
                   ? "bg-white/10 text-white shadow-sm"
-                  : "text-white/50 hover:text-white hover:bg-white/5"
+                  : "text-white/75 hover:text-white hover:bg-white/5"
               )}
             >
               📜 Incidents & Dossiers ({incidents.length})
@@ -1119,7 +1119,7 @@ export default function AntiRaidDashboardPage() {
                 <div className="flex items-center justify-between pb-3 border-b border-[var(--panel-border)]">
                   <div>
                     <h4 className="text-sm font-semibold text-white">Protection contre les Join Raids</h4>
-                    <p className="text-xs text-white/40">
+                    <p className="text-xs text-white/70">
                       Détecte les vagues massives d'arrivées et les bots programmés pour envahir le serveur.
                     </p>
                   </div>
@@ -1154,7 +1154,7 @@ export default function AntiRaidDashboardPage() {
                       }
                       className="w-full bg-white/[0.04] border border-[var(--panel-border)] rounded-xl px-3 py-2 text-sm text-white focus:outline-none focus:border-red-500/50"
                     />
-                    <span className="text-[10px] text-white/40 mt-1 block">Ex: 10 membres</span>
+                    <span className="text-[10px] text-white/75 mt-1 block">Ex: 10 membres</span>
                   </div>
 
                   <div>
@@ -1174,7 +1174,7 @@ export default function AntiRaidDashboardPage() {
                       }
                       className="w-full bg-white/[0.04] border border-[var(--panel-border)] rounded-xl px-3 py-2 text-sm text-white focus:outline-none focus:border-red-500/50"
                     />
-                    <span className="text-[10px] text-white/40 mt-1 block">Ex: 10 secondes</span>
+                    <span className="text-[10px] text-white/75 mt-1 block">Ex: 10 secondes</span>
                   </div>
 
                   <div>
@@ -1194,7 +1194,7 @@ export default function AntiRaidDashboardPage() {
                       }
                       className="w-full bg-white/[0.04] border border-[var(--panel-border)] rounded-xl px-3 py-2 text-sm text-white focus:outline-none focus:border-red-500/50"
                     />
-                    <span className="text-[10px] text-white/40 mt-1 block">0 = désactivé</span>
+                    <span className="text-[10px] text-white/75 mt-1 block">0 = désactivé</span>
                   </div>
                 </div>
 
@@ -1226,7 +1226,7 @@ export default function AntiRaidDashboardPage() {
                 <div className="flex items-center justify-between pb-3 border-b border-[var(--panel-border)]">
                   <div>
                     <h4 className="text-sm font-semibold text-white">Protection Message & Spam Raid</h4>
-                    <p className="text-xs text-white/40">
+                    <p className="text-xs text-white/70">
                       Surveille les cadences excessives de messages et la répétition en boucle de textes identiques.
                     </p>
                   </div>
@@ -1310,7 +1310,7 @@ export default function AntiRaidDashboardPage() {
                 <div className="flex items-center justify-between pb-3 border-b border-[var(--panel-border)]">
                   <div>
                     <h4 className="text-sm font-semibold text-white">Protection Mention Raid & Mass Pings</h4>
-                    <p className="text-xs text-white/40">
+                    <p className="text-xs text-white/70">
                       Interdit les pings de masse (@everyone, @here, ou listes de dizaines de membres).
                     </p>
                   </div>
@@ -1374,7 +1374,7 @@ export default function AntiRaidDashboardPage() {
                 <div className="flex items-center justify-between pb-3 border-b border-[var(--panel-border)]">
                   <div>
                     <h4 className="text-sm font-semibold text-white">Protection Bot Raid</h4>
-                    <p className="text-xs text-white/40">
+                    <p className="text-xs text-white/70">
                       Empêche l'ajout de faux bots ou bots malveillants par des utilisateurs compromis.
                     </p>
                   </div>
@@ -1396,7 +1396,7 @@ export default function AntiRaidDashboardPage() {
                     <span className="text-xs font-semibold text-white block">
                       Expulsion automatique des bots non-whitelistés
                     </span>
-                    <span className="text-[11px] text-white/40">
+                    <span className="text-[11px] text-white/75">
                       Tout bot rejoignant sans figurer dans la whitelist sera expulsé sur-le-champ.
                     </span>
                   </div>
@@ -1421,7 +1421,7 @@ export default function AntiRaidDashboardPage() {
                 <div className="flex items-center justify-between pb-3 border-b border-[var(--panel-border)]">
                   <div>
                     <h4 className="text-sm font-semibold text-white">Protection Server Nuke & Anti-Détournement</h4>
-                    <p className="text-xs text-white/40">
+                    <p className="text-xs text-white/70">
                       Détecte les suppressions en rafale de salons, de rôles ou l'attribution illégitime de permissions d'Admin.
                     </p>
                   </div>
@@ -1509,7 +1509,7 @@ export default function AntiRaidDashboardPage() {
                 <div className="flex items-center justify-between pb-3 border-b border-[var(--panel-border)]">
                   <div>
                     <h4 className="text-sm font-semibold text-white">Paliers d'ancienneté de compte</h4>
-                    <p className="text-xs text-white/40">
+                    <p className="text-xs text-white/70">
                       Applique des actions graduées selon l'âge du compte Discord lors de l'arrivée.
                     </p>
                   </div>
@@ -1558,7 +1558,7 @@ export default function AntiRaidDashboardPage() {
               <div className="space-y-5">
                 <div className="pb-3 border-b border-[var(--panel-border)]">
                   <h4 className="text-sm font-semibold text-white">Gestion de la Whitelist & Confiance</h4>
-                  <p className="text-xs text-white/40">
+                  <p className="text-xs text-white/70">
                     Les utilisateurs, rôles et bots de confiance sont exemptés des restrictions de spam standard.
                   </p>
                 </div>
@@ -1625,13 +1625,13 @@ export default function AntiRaidDashboardPage() {
                 <div className="pb-3 border-b border-[var(--panel-border)] flex items-center justify-between">
                   <div>
                     <h4 className="text-sm font-semibold text-white">Journal des Incidents Anti-Raid</h4>
-                    <p className="text-xs text-white/40">Historique des attaques et dossiers d'investigation</p>
+                    <p className="text-xs text-white/70">Historique des attaques et dossiers d'investigation</p>
                   </div>
-                  <span className="text-xs text-white/40 font-mono">{incidents.length} incident(s) enregistré(s)</span>
+                  <span className="text-xs text-white/70 font-mono">{incidents.length} incident(s) enregistré(s)</span>
                 </div>
 
                 {incidents.length === 0 ? (
-                  <div className="py-12 text-center text-white/30 text-xs">
+                  <div className="py-12 text-center text-white/70 text-xs">
                     Aucun incident enregistré sur ce serveur.
                   </div>
                 ) : (
@@ -1647,12 +1647,12 @@ export default function AntiRaidDashboardPage() {
                             <span className="text-xs px-2 py-0.5 rounded-full bg-red-500/20 text-red-300 font-bold">
                               {inc.type}
                             </span>
-                            <span className="text-xs text-white/40 font-mono">
+                            <span className="text-xs text-white/70 font-mono">
                               Max Risk: {inc.maxRiskScore}/100
                             </span>
                           </div>
                           <p className="text-xs text-white/70">{inc.triggerReason}</p>
-                          <span className="text-[11px] text-white/40 font-mono mt-1 block">
+                          <span className="text-[11px] text-white/75 font-mono mt-1 block">
                             {new Date(inc.startedAt).toLocaleString("fr-FR")} • {inc.affectedCount} membres impliqués
                           </span>
                         </div>
@@ -1685,12 +1685,12 @@ export default function AntiRaidDashboardPage() {
                 </div>
                 <div>
                   <h3 className="text-base font-bold text-white">Dossier d'Investigation #{selectedIncident.id}</h3>
-                  <span className="text-xs text-white/40">Type : {selectedIncident.type}</span>
+                  <span className="text-xs text-white/70">Type : {selectedIncident.type}</span>
                 </div>
               </div>
               <button
                 onClick={() => setSelectedIncident(null)}
-                className="p-1 rounded-lg text-white/40 hover:text-white hover:bg-white/10"
+                className="p-1 rounded-lg text-white/70 hover:text-white hover:bg-white/10"
               >
                 ✕
               </button>
@@ -1698,21 +1698,21 @@ export default function AntiRaidDashboardPage() {
 
             <div className="grid grid-cols-3 gap-2 text-center text-xs font-mono">
               <div className="p-2.5 rounded-xl bg-white/[0.03] border border-[var(--panel-border)]">
-                <span className="text-white/40 block text-[10px]">MAX RISK SCORE</span>
+                <span className="text-white/75 block text-[10px]">MAX RISK SCORE</span>
                 <span className="text-red-400 font-bold text-base">{selectedIncident.maxRiskScore}/100</span>
               </div>
               <div className="p-2.5 rounded-xl bg-white/[0.03] border border-[var(--panel-border)]">
-                <span className="text-white/40 block text-[10px]">MEMBRES TOUCHÉS</span>
+                <span className="text-white/75 block text-[10px]">MEMBRES TOUCHÉS</span>
                 <span className="text-white font-bold text-base">{selectedIncident.affectedCount}</span>
               </div>
               <div className="p-2.5 rounded-xl bg-white/[0.03] border border-[var(--panel-border)]">
-                <span className="text-white/40 block text-[10px]">RÉSOLUTION</span>
+                <span className="text-white/75 block text-[10px]">RÉSOLUTION</span>
                 <span className="text-emerald-400 font-bold text-base">{selectedIncident.status}</span>
               </div>
             </div>
 
             <div>
-              <h4 className="text-xs font-semibold uppercase tracking-wider text-white/50 mb-1.5">
+              <h4 className="text-xs font-semibold uppercase tracking-wider text-white/75 mb-1.5">
                 Signaux Déclencheurs
               </h4>
               <div className="p-3 rounded-xl bg-white/[0.03] border border-[var(--panel-border)] text-xs text-white/70 space-y-1">
@@ -1726,7 +1726,7 @@ export default function AntiRaidDashboardPage() {
             </div>
 
             <div>
-              <h4 className="text-xs font-semibold uppercase tracking-wider text-white/50 mb-1.5">
+              <h4 className="text-xs font-semibold uppercase tracking-wider text-white/75 mb-1.5">
                 Membres Impliqués ({selectedIncident.involvedMembers.length})
               </h4>
               <div className="space-y-1.5 max-h-48 overflow-y-auto os-scroll">
@@ -1737,8 +1737,8 @@ export default function AntiRaidDashboardPage() {
                   >
                     <div>
                       <span className="font-semibold text-white">{m.userTag}</span>
-                      <span className="text-[10px] text-white/40 font-mono ml-2">ID: {m.userId}</span>
-                      <div className="text-[10px] text-white/50">
+                      <span className="text-[10px] text-white/75 font-mono ml-2">ID: {m.userId}</span>
+                      <div className="text-[10px] text-white/75">
                         Âge du compte : {m.accountAgeDays}j • Avatar : {m.hasDefaultAvatar ? "Défaut (Aucun)" : "Présent"}
                       </div>
                     </div>
@@ -1767,7 +1767,7 @@ export default function AntiRaidDashboardPage() {
         <div className="fixed inset-0 z-50 bg-black/80 backdrop-blur-md flex items-center justify-center p-4 animate-fadeIn">
           <div className="w-full max-w-md bg-[var(--bg-surface-elevated)] border border-[var(--panel-border)] rounded-2xl p-6 shadow-2xl space-y-4">
             <h3 className="text-base font-bold text-white">{confirmModal.title}</h3>
-            <p className="text-xs text-white/60">{confirmModal.description}</p>
+            <p className="text-xs text-white/75">{confirmModal.description}</p>
             <div className="flex items-center justify-end gap-2 pt-2">
               <button
                 onClick={() => setConfirmModal((prev) => ({ ...prev, open: false }))}

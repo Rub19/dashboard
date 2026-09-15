@@ -58,7 +58,7 @@ export default function VersionUpdateToast() {
             animate={{ opacity: 1, y: 0, scale: 1 }}
             exit={{ opacity: 0, y: 16, scale: 0.96 }}
             transition={{ duration: 0.22, ease: [0.16, 1, 0.3, 1] }}
-            className="fixed inset-x-4 bottom-[calc(1rem+env(safe-area-inset-bottom))] z-[var(--z-critical)] mx-auto max-w-[23rem] select-none sm:inset-x-auto sm:left-auto sm:right-6 sm:bottom-[calc(1.5rem+env(safe-area-inset-bottom))] sm:mx-0"
+            className="fixed inset-x-4 bottom-[calc(1rem+env(safe-area-inset-bottom))] z-[var(--z-critical)] mx-auto max-w-[23rem] select-none sm:inset-x-auto sm:left-auto sm:right-6 sm:bottom-[calc(1.5rem+env(safe-area-inset-bottom))] sm:mx-0 md:bottom-[calc(4.5rem+3rem+env(safe-area-inset-bottom))]"
             role="status"
             aria-live="polite"
           >

@@ -2,6 +2,9 @@
 
 import { useState, useMemo } from "react";
 import { useRouter, useSearchParams } from "next/navigation";
+import { motion, useReducedMotion } from "framer-motion";
+import { useSettings } from "@/components/SettingsProvider";
+import { EASE_OUT } from "@/lib/ease";
 import {
   Search,
   Sparkles,
@@ -53,6 +56,9 @@ type NavTab =
 type SortOption = "recommended" | "popular" | "newest" | "rating";
 
 export default function PluginsPage() {
+  const { settings } = useSettings();
+  const osReducedMotion = useReducedMotion();
+  const skipEntranceAnimation = Boolean(settings.reducedMotion) || Boolean(osReducedMotion);
 
   const [activeWorkspace] = useLocalStorage<string>("ethone-active-workspace", "personal");
   const [search, setSearch] = useState("");
@@ -440,27 +446,48 @@ export default function PluginsPage() {
                 )}
 
                 <div className="grid grid-cols-1 gap-3.5 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4">
-                  {displayedItems.map((item) => (
-                    <MarketplaceCard
-                      key={item.id}
-                      item={item}
-                      brainMatch={recommendationsMap.get(item.id)}
-                      isInstalled={isInstalled(item.id)}
-                      isFavorite={isFavorite(item.id)}
-                      isSaved={isSaved(item.id)}
-                      hasUpdate={updatesAvailable.includes(item.id)}
-                      onSelect={(target) => setSelectedItem(target)}
-                      onInstall={async (target) => {
-                        await install(target);
-                      }}
-                      onUninstall={async (target) => {
-                        await uninstall(target);
-                      }}
-                      onToggleFavorite={toggleFavorite}
-                      onToggleSaved={toggleSaved}
-                      onWhyBrain={(target, match) => setWhyBrainState({ item: target, match })}
-                    />
-                  ))}
+                  {displayedItems.map((item, index) => {
+                    const card = (
+                      <MarketplaceCard
+                        item={item}
+                        brainMatch={recommendationsMap.get(item.id)}
+                        isInstalled={isInstalled(item.id)}
+                        isFavorite={isFavorite(item.id)}
+                        isSaved={isSaved(item.id)}
+                        hasUpdate={updatesAvailable.includes(item.id)}
+                        onSelect={(target) => setSelectedItem(target)}
+                        onInstall={async (target) => {
+                          await install(target);
+                        }}
+                        onUninstall={async (target) => {
+                          await uninstall(target);
+                        }}
+                        onToggleFavorite={toggleFavorite}
+                        onToggleSaved={toggleSaved}
+                        onWhyBrain={(target, match) => setWhyBrainState({ item: target, match })}
+                      />
+                    );
+                    // Entrance animation is capped to the first screenful or
+                    // two (~24 cards): the marketplace grid can hold hundreds
+                    // of items, and mounting that many simultaneous
+                    // framer-motion instances on every filter/search change
+                    // would undo the large-list performance work done
+                    // elsewhere this session. Cards beyond the cap render
+                    // immediately, no animation wrapper at all.
+                    if (skipEntranceAnimation || index >= 24) {
+                      return <div key={item.id}>{card}</div>;
+                    }
+                    return (
+                      <motion.div
+                        key={item.id}
+                        initial={{ opacity: 0, y: 10 }}
+                        animate={{ opacity: 1, y: 0 }}
+                        transition={{ duration: 0.2, delay: Math.min(index * 0.02, 0.3), ease: EASE_OUT }}
+                      >
+                        {card}
+                      </motion.div>
+                    );
+                  })}
                 </div>
               </div>
             )}

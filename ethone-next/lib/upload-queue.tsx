@@ -1,6 +1,6 @@
 "use client";
 
-import { createContext, useContext, useRef, useState } from "react";
+import { createContext, useCallback, useContext, useMemo, useRef, useState } from "react";
 
 export type UploadStatus = "queued" | "uploading" | "completed" | "error";
 
@@ -25,35 +25,31 @@ const UploadQueueContext = createContext<UploadQueueContextValue | null>(null);
 let queueId = 0;
 
 function useSetItems() {
-  const [, setItems] = useState<UploadItem[]>([]);
+  const [items, setItems] = useState<UploadItem[]>([]);
   const itemsRef = useRef<UploadItem[]>([]);
 
-  function getItems() {
-    return itemsRef.current;
-  }
-
-  function setNextItems(next: UploadItem[] | ((prev: UploadItem[]) => UploadItem[])) {
+  const setNextItems = useCallback((next: UploadItem[] | ((prev: UploadItem[]) => UploadItem[])) => {
     itemsRef.current = typeof next === "function" ? next(itemsRef.current) : next;
     setItems(itemsRef.current);
-  }
+  }, []);
 
-  return { itemsRef, setNextItems, getItems };
+  return { items, itemsRef, setNextItems };
 }
 
 export function UploadQueueProvider({ children }: { children: React.ReactNode }) {
-  const { itemsRef, setNextItems } = useSetItems();
+  const { items, itemsRef, setNextItems } = useSetItems();
   const handlers = useRef(new Map<string, (file: File) => Promise<void>>());
 
-  function updateItem(id: string, patch: Partial<UploadItem>) {
+  const updateItem = useCallback((id: string, patch: Partial<UploadItem>) => {
     setNextItems((prev) => prev.map((it) => (it.id === id ? { ...it, ...patch } : it)));
-  }
+  }, [setNextItems]);
 
-  function removeItem(id: string) {
+  const removeItem = useCallback((id: string) => {
     setNextItems((prev) => prev.filter((it) => it.id !== id));
     handlers.current.delete(id);
-  }
+  }, [setNextItems]);
 
-  function startNext() {
+  const startNext = useCallback(() => {
     const next = itemsRef.current.find((it) => it.status === "queued");
     if (!next) return;
     const uploader = handlers.current.get(next.id);
@@ -108,9 +104,9 @@ export function UploadQueueProvider({ children }: { children: React.ReactNode })
         }
       })
       .finally(() => setTimeout(() => startNext(), 0));
-  }
+  }, [itemsRef, updateItem]);
 
-  function add(files: File[], uploader: (file: File) => Promise<void>) {
+  const add = useCallback((files: File[], uploader: (file: File) => Promise<void>) => {
     const newItems: UploadItem[] = [];
     for (const file of files) {
       queueId += 1;
@@ -120,32 +116,27 @@ export function UploadQueueProvider({ children }: { children: React.ReactNode })
     }
     setNextItems((prev) => [...prev, ...newItems]);
     setTimeout(() => startNext(), 0);
-  }
+  }, [setNextItems, startNext]);
 
-  function remove(id: string) {
+  const remove = useCallback((id: string) => {
     removeItem(id);
-  }
+  }, [removeItem]);
 
-  function retry(id: string) {
+  const retry = useCallback((id: string) => {
     const item = itemsRef.current.find((it) => it.id === id);
     if (!item || !handlers.current.has(id)) return;
     updateItem(id, { status: "queued", progress: 0, error: undefined });
     setTimeout(() => startNext(), 0);
-  }
+  }, [itemsRef, updateItem, startNext]);
 
-  function clearCompleted() {
+  const clearCompleted = useCallback(() => {
     setNextItems((prev) => prev.filter((it) => it.status !== "completed"));
-  }
+  }, [setNextItems]);
 
-  const value: UploadQueueContextValue = {
-    get items() {
-      return itemsRef.current;
-    },
-    add,
-    remove,
-    retry,
-    clearCompleted,
-  };
+  const value = useMemo<UploadQueueContextValue>(
+    () => ({ items, add, remove, retry, clearCompleted }),
+    [items, add, remove, retry, clearCompleted]
+  );
 
   return <UploadQueueContext.Provider value={value}>{children}</UploadQueueContext.Provider>;
 }

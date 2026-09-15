@@ -278,7 +278,7 @@ export default function StarboardCenterClient() {
                   Hall of Fame
                 </span>
               </div>
-              <p className="text-xs text-white/40">Les messages les plus appréciés, épinglés automatiquement</p>
+              <p className="text-xs text-white/70">Les messages les plus appréciés, épinglés automatiquement</p>
             </div>
           </div>
         </div>
@@ -303,7 +303,7 @@ export default function StarboardCenterClient() {
               <ChevronDown className="w-3.5 h-3.5 text-white/40 absolute right-2.5 top-1/2 -translate-y-1/2 pointer-events-none" />
             </div>
           ) : (
-            <span className="text-xs text-white/40">Aucun serveur administrable</span>
+            <span className="text-xs text-white/70">Aucun serveur administrable</span>
           )}
           <button
             onClick={load}

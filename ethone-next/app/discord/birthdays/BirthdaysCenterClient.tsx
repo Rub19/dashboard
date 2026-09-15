@@ -185,7 +185,7 @@ export default function BirthdaysCenterClient() {
             </div>
             <div>
               <h1 className="text-base font-semibold tracking-tight text-white">Birthdays</h1>
-              <p className="text-xs text-white/40">Annonce quotidienne des anniversaires + rôle du jour</p>
+              <p className="text-xs text-white/70">Annonce quotidienne des anniversaires + rôle du jour</p>
             </div>
           </div>
         </div>
@@ -208,7 +208,7 @@ export default function BirthdaysCenterClient() {
               <ChevronDown className="w-3.5 h-3.5 text-white/40 absolute right-2.5 top-1/2 -translate-y-1/2 pointer-events-none" />
             </div>
           ) : (
-            <span className="text-xs text-white/40">Aucun serveur administrable</span>
+            <span className="text-xs text-white/70">Aucun serveur administrable</span>
           )}
           <button onClick={load} className="p-2 rounded-xl bg-white/[0.04] hover:bg-white/[0.08] border border-[var(--panel-border)] text-white/70 hover:text-white transition-colors" title="Rafraîchir">
             <RefreshCw className={cn("w-4 h-4", loading && "animate-spin")} />

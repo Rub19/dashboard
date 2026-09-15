@@ -2,6 +2,18 @@
 
 Toutes les modifications notables de ce projet seront documentées dans ce fichier.
 
+## v1.24.0 — 2026-09-15
+
+**Fermeture de la liste : dédoublonnage temps réel, Marketplace, contraste exhaustif**
+
+- `components/VersionUpdateToast.tsx` : repositionnée pour ne plus chevaucher le Dock sur desktop.
+- `lib/hooks/useItems.ts` : souscriptions realtime dédoublonnées (un canal Supabase partagé par utilisateur+type au lieu d'un par widget monté) — changement le plus délicat de cette session, couvert par 4 nouveaux tests (`useItems.test.ts`) vérifiant le partage, la répartition des événements et le nettoyage.
+- `app/plugins/page.tsx` : animation d'apparition sur les cartes Marketplace, plafonnée aux ~24 premières pour ne pas pénaliser les grandes grilles.
+- Audit de contraste exhaustif (fichier par fichier) : ~70 corrections supplémentaires, principalement page Anti-Raid Discord + 7 pages d'administration Discord.
+- `components/WeatherPage.tsx` : dernières animations `left`/`width` converties en `transform`.
+- `lib/upload-queue.tsx` : mémoïsation corrigée avec précaution (état basé sur une ref, pas un state React classique).
+- Validation : `tsc`/`build`/`lint` (0 erreur)/`test:unit` 119/119 ✓ (4 nouveaux). `audit-security` PASS (1987 fichiers).
+
 ## v1.23.1 — 2026-09-15
 
 **Motion design : Matches, Interactions, Personas, Spaces**

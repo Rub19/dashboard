@@ -517,9 +517,9 @@ export default function WeatherPage() {
                           <div className="relative h-5">
                             <div className="absolute inset-y-0 left-0 right-0 rounded-full bg-[var(--text-primary)]/[0.04]" />
                             <motion.div
-                              className="absolute inset-y-0 rounded-full bg-[var(--accent-primary)]/[0.25]"
-                              initial={{ left: "0%", width: "0%" }}
-                              animate={{ left: `${left}%`, width: `${width}%` }}
+                              className="absolute inset-y-0 left-0 w-full origin-left rounded-full bg-[var(--accent-primary)]/[0.25]"
+                              initial={{ x: "0%", scaleX: 0 }}
+                              animate={{ x: `${left}%`, scaleX: width / 100 }}
                               transition={{ duration: 0.6, ease: "easeOut" }}
                             />
                             <span className="absolute left-2 top-1/2 -translate-y-1/2 text-[10px] tabular-nums text-[var(--text-muted)]">{Math.round(min)}°</span>
@@ -620,7 +620,7 @@ export default function WeatherPage() {
                       <span>{i18n("sunset", "Coucher")} {formatTime(sunset)}</span>
                     </div>
                     <div className="relative h-2 w-full rounded-full bg-[var(--text-primary)]/[0.06]">
-                      <div className="absolute left-0 top-0 h-full rounded-full bg-[var(--accent-primary)]/50" style={{ width: `${sunProgress ?? 0}%` }} />
+                      <div className="absolute left-0 top-0 h-full w-full origin-left rounded-full bg-[var(--accent-primary)]/50" style={{ transform: `scaleX(${(sunProgress ?? 0) / 100})` }} />
                       <div className="absolute top-1/2 h-2.5 w-2.5 -translate-x-1/2 -translate-y-1/2 rounded-full bg-[var(--accent-primary)]" style={{ left: `${sunProgress ?? 0}%` }} />
                     </div>
                     <p className="text-xs text-[var(--text-muted)]">{i18n("dayProgress", "Avancée de la journée")}</p>

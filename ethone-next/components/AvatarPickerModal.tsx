@@ -556,7 +556,7 @@ export default function AvatarPickerModal({
                         )}
                       >
                         <span className="text-xs font-bold text-white drop-shadow-md">{bg.name}</span>
-                        <span className="text-[10px] text-zinc-300/80 line-clamp-1 drop-shadow-sm">{bg.description}</span>
+                        <span className="text-[10px] text-zinc-100/95 line-clamp-1 drop-shadow-sm">{bg.description}</span>
                       </button>
                     );
                   })}

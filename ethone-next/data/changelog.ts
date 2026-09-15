@@ -28144,4 +28144,69 @@ CHANGELOG_BY_LANG.en.unshift(v1231_en);
 CHANGELOG_BY_LANG.es.unshift(v1231_es);
 CHANGELOG_BY_LANG.de.unshift(v1231_de);
 
+const v1240_fr: ChangelogEntry = {
+  version: "v1.24.0",
+  date: "2026-09-15",
+  title: "Fermeture de la liste : dédoublonnage temps réel, Marketplace, contraste exhaustif",
+  items: [
+    "Notification « Nouvelle mise à jour disponible » repositionnée : elle chevauchait le Dock sur desktop.",
+    "Dédoublonnage des souscriptions temps réel de `useItems` (Notes/Tâches/Événements) : les widgets qui affichent les mêmes données ouvraient chacun leur propre connexion à Supabase. Un seul canal est maintenant partagé par utilisateur et par type de données ; chaque widget continue de recevoir les mises à jour normalement. Couvert par 4 nouveaux tests dédiés (ouverture partagée, répartition d'un événement à toutes les instances, fermeture uniquement quand plus personne n'écoute, canaux séparés par type).",
+    "Motion design sur le Marketplace : animation d'apparition ajoutée, mais plafonnée aux ~24 premières cartes pour ne pas charger une grille pouvant contenir des centaines d'éléments.",
+    "Audit de contraste exhaustif (fichier par fichier cette fois, pas un échantillon) : ~70 nouveaux cas corrigés, principalement sur la page Anti-Raid Discord et 7 pages d'administration Discord partageant le même motif de texte trop transparent.",
+    "Animations `left`/`width` restantes sur la page Météo (courbe de prévisions, barre de progression solaire) converties en `transform`.",
+    "Mémoïsation propre de `lib/upload-queue.tsx` (attention particulière : son état utilisait un getter sur une ref plutôt qu'un vrai state React, une mémoïsation naïve aurait figé les barres de progression d'import).",
+    "Validation : `tsc`/`build`/`lint` (0 erreur, 0 nouveau warning)/`test:unit` 119/119 ✓ (4 nouveaux tests). `audit-security` PASS (1987 fichiers).",
+  ],
+};
+
+const v1240_en: ChangelogEntry = {
+  version: "v1.24.0",
+  date: "2026-09-15",
+  title: "Closing out the list: realtime dedup, Marketplace, exhaustive contrast",
+  items: [
+    "Repositioned the \"New update available\" toast -- it was overlapping the Dock on desktop.",
+    "Deduplicated `useItems`' (Notes/Tasks/Events) realtime subscriptions: widgets showing the same data each opened their own Supabase connection. One channel is now shared per user+data type; every widget still receives updates exactly as before. Covered by 4 new dedicated tests (shared open, event fan-out to every instance, teardown only once nobody's listening, separate channels per kind).",
+    "Marketplace motion design: entrance animation added, capped to roughly the first 24 cards so a grid that can hold hundreds of items doesn't pay for it.",
+    "Exhaustive contrast audit (file by file this time, not a sample): ~70 new fixes, mostly on the Discord Anti-Raid page and 7 Discord admin pages sharing the same too-transparent text pattern.",
+    "Remaining left/width animations on the Weather page (forecast range bar, sun progress bar) converted to transform.",
+    "Properly memoized lib/upload-queue.tsx (handled carefully: its state used a getter over a ref rather than real React state, so a naive memo would have frozen upload progress bars).",
+    "Validation: `tsc`/`build`/`lint` (0 errors, 0 new warnings)/`test:unit` 119/119 pass (4 new tests). `audit-security` PASS (1987 files).",
+  ],
+};
+
+const v1240_es: ChangelogEntry = {
+  version: "v1.24.0",
+  date: "2026-09-15",
+  title: "Cerrando la lista: deduplicación en tiempo real, Marketplace, contraste exhaustivo",
+  items: [
+    "Reposicionado el aviso \"Nueva actualización disponible\" -- se solapaba con el Dock en escritorio.",
+    "Deduplicadas las suscripciones en tiempo real de `useItems` (Notas/Tareas/Eventos): los widgets que muestran los mismos datos abrían cada uno su propia conexión a Supabase. Ahora se comparte un canal por usuario y tipo de dato; cada widget sigue recibiendo las actualizaciones igual que antes. Cubierto por 4 pruebas nuevas dedicadas (apertura compartida, reparto de un evento a todas las instancias, cierre solo cuando ya nadie escucha, canales separados por tipo).",
+    "Diseño de movimiento en Marketplace: animación de entrada añadida, limitada a las primeras ~24 tarjetas para que una cuadrícula que puede tener cientos de elementos no pague ese coste.",
+    "Auditoría de contraste exhaustiva (archivo por archivo esta vez, no una muestra): ~70 correcciones nuevas, sobre todo en la página Anti-Raid de Discord y 7 páginas de administración de Discord que comparten el mismo patrón de texto demasiado transparente.",
+    "Animaciones `left`/`width` restantes en la página del Tiempo (barra de rango de previsión, barra de progreso solar) convertidas a `transform`.",
+    "Memoización correcta de `lib/upload-queue.tsx` (con cuidado: su estado usaba un getter sobre una ref en vez de un estado React real, una memoización ingenua habría congelado las barras de progreso de subida).",
+    "Validación: `tsc`/`build`/`lint` (0 errores, 0 advertencias nuevas)/`test:unit` 119/119 ✓ (4 pruebas nuevas). `audit-security` PASS (1987 archivos).",
+  ],
+};
+
+const v1240_de: ChangelogEntry = {
+  version: "v1.24.0",
+  date: "2026-09-15",
+  title: "Liste abgeschlossen: Echtzeit-Deduplizierung, Marketplace, umfassender Kontrast",
+  items: [
+    "Die Meldung \"Neues Update verfügbar\" neu positioniert -- sie überlappte auf dem Desktop mit dem Dock.",
+    "Echtzeit-Abonnements von `useItems` (Notizen/Aufgaben/Termine) dedupliziert: Widgets, die dieselben Daten anzeigen, öffneten jeweils eine eigene Supabase-Verbindung. Jetzt wird ein Kanal pro Nutzer und Datentyp geteilt; jedes Widget erhält weiterhin Updates wie zuvor. Abgedeckt durch 4 neue dedizierte Tests (gemeinsames Öffnen, Verteilung eines Events an alle Instanzen, Abbau erst wenn niemand mehr zuhört, getrennte Kanäle pro Typ).",
+    "Motion Design im Marketplace: Eintritts-Animation ergänzt, auf die ersten ~24 Karten begrenzt, damit ein Raster mit potenziell Hunderten Elementen dafür nicht bezahlt.",
+    "Umfassendes Kontrast-Audit (diesmal Datei für Datei, keine Stichprobe): ~70 neue Korrekturen, hauptsächlich auf der Discord-Anti-Raid-Seite und 7 Discord-Admin-Seiten mit demselben zu transparenten Textmuster.",
+    "Verbliebene `left`/`width`-Animationen auf der Wetter-Seite (Prognose-Bereichsbalken, Sonnenfortschrittsbalken) auf `transform` umgestellt.",
+    "`lib/upload-queue.tsx` korrekt memoisiert (mit besonderer Vorsicht: sein Zustand nutzte einen Getter über eine Ref statt echten React-State, eine naive Memoisierung hätte die Upload-Fortschrittsbalken eingefroren).",
+    "Validierung: `tsc`/`build`/`lint` (0 Fehler, 0 neue Warnungen)/`test:unit` 119/119 bestanden (4 neue Tests). `audit-security` PASS (1987 Dateien).",
+  ],
+};
+
+CHANGELOG_BY_LANG.fr.unshift(v1240_fr);
+CHANGELOG_BY_LANG.en.unshift(v1240_en);
+CHANGELOG_BY_LANG.es.unshift(v1240_es);
+CHANGELOG_BY_LANG.de.unshift(v1240_de);
+
 export const CHANGELOG = CHANGELOG_BY_LANG.fr;

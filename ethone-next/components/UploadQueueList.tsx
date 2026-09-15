@@ -195,7 +195,7 @@ export default function UploadQueueList({
 
   return (
     <div className="space-y-3">
-      <div className="flex items-center justify-between rounded-2xl v8-panel px-4 py-3 backdrop-blur-2xl">
+      <div className="flex items-center justify-between rounded-2xl v8-panel px-4 py-3">
         <div className="flex items-center gap-2 text-sm font-medium text-[var(--text-primary)]">
           <span className="text-[var(--accent-primary)]">{i18n("uploadQueue", "File d’attente")}</span>
           <span className="text-[var(--text-muted)]">— {completed} / {tasks.length} {i18n("uploadCompleted", "terminé")}{tasks.length > 1 ? "s" : ""}</span>

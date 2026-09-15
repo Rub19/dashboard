@@ -98,9 +98,9 @@ export default function MediaProgress({
       >
         <div className="absolute inset-0 rounded-full bg-[var(--text-primary)]/[0.04] backdrop-blur-sm" />
         <div
-          className="pointer-events-none absolute left-0 top-0 h-full rounded-full transition-[width] duration-75 ease-out"
+          className="pointer-events-none absolute left-0 top-0 h-full w-full origin-left rounded-full transition-transform duration-75 ease-out"
           style={{
-            width: `${percentage}%`,
+            transform: `scaleX(${percentage / 100})`,
             backgroundColor: "color-mix(in srgb, var(--accent-color, var(--accent, #10b981)) 85%, transparent)",
             boxShadow: "0 0 10px color-mix(in srgb, var(--accent-color, var(--accent, #10b981)) 30%, transparent)",
           }}

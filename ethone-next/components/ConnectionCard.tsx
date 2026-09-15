@@ -117,7 +117,7 @@ export default function ConnectionCard({
         transition={{ duration: 0.15, ease: "easeOut" }}
         onClick={() => setDrawerOpen(true)}
         className={cn(
-          "group relative flex flex-col justify-between rounded-[var(--panel-radius)] border p-4.5 transition-all cursor-pointer shadow-lg backdrop-blur-2xl",
+          "group relative flex flex-col justify-between rounded-[var(--panel-radius)] border p-4.5 transition-all cursor-pointer shadow-lg backdrop-blur-[var(--panel-blur)]",
           isConnected
             ? "border-[var(--accent-primary)]/30 bg-gradient-to-b from-[var(--surface-raised)]/90 to-[var(--surface-raised)]/60 hover:border-[var(--accent-primary)]/60"
             : "border-[var(--panel-border)]/70 bg-[var(--surface-raised)]/50 hover:border-[var(--panel-border)] hover:bg-[var(--surface-raised)]/70"

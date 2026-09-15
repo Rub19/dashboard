@@ -104,7 +104,7 @@ export default function FocusPage() {
   return (
     <div className="flex h-full min-h-0 w-full flex-col overflow-hidden bg-transparent">
       {/* Top Bar Header */}
-      <header className="flex items-center justify-between border-b border-[var(--panel-border)]/60 bg-[var(--panel-bg)]/40 px-6 py-3.5 backdrop-blur-xl gap-3">
+      <header className="flex items-center justify-between border-b border-[var(--panel-border)]/60 bg-[var(--panel-bg)]/40 px-6 py-3.5 backdrop-blur-[var(--panel-blur)] gap-3">
         <div className="flex items-center gap-3">
           <div className="flex h-8 w-8 items-center justify-center rounded-xl bg-[var(--accent-primary)]/15 text-[var(--accent-primary)] font-bold">
             <Icon name="timer" className="h-4 w-4" />

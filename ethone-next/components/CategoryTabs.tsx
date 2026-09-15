@@ -51,7 +51,7 @@ export default function CategoryTabs({
       ref={tabsRef}
       role="tablist"
       aria-label={i18n("categories", "Catégories")}
-      className="flex items-center gap-1.5 overflow-x-auto p-1.5 no-scrollbar rounded-[var(--panel-radius)] bg-black/40 border border-[var(--panel-border)] backdrop-blur-xl"
+      className="flex items-center gap-1.5 overflow-x-auto p-1.5 no-scrollbar rounded-[var(--panel-radius)] bg-black/40 border border-[var(--panel-border)] backdrop-blur-[var(--panel-blur)]"
     >
       {tabs.map((cat) => {
         const isActive = active === cat.id;

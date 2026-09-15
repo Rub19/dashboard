@@ -2,6 +2,17 @@
 
 Toutes les modifications notables de ce projet seront documentées dans ce fichier.
 
+## v1.22.1 — 2026-09-15
+
+**Performance (suite) : flous d'arrière-plan redondants, animations qui recalculaient la mise en page, chargement paresseux**
+
+- ~25 usages de `backdrop-blur-xl/2xl` codés en dur supprimés (doublon avec `v8-panel`) ou alignés sur `var(--panel-blur)` (respect du réglage "Flou interface") à travers CalendarGrid, NotesPage, tracker (Lol/Tft/Valorant), BrainChat, Files, ConnectionCard et une quinzaine d'autres fichiers.
+- `LiveMediaProgress.tsx`, `MediaProgress.tsx` : barre de progression de lecture passée de `width` (recalcul de layout à chaque frame) à `transform: scaleX()` (GPU).
+- `components/motion/animated-sidebar.tsx` : retrait d'un `will-change-[width]` permanent et inefficace (width n'est pas une propriété accélérable). `components/mail/MailSidebar.tsx` : ajout du respect de "Réduire les animations".
+- `components/UserProfileDropdown.tsx`, `components/Shell.tsx` : `AvatarPickerModal` et `DynamicIslandContainer` passés en chargement différé (`next/dynamic`).
+- Dépendance morte `@base-ui-components/react` retirée.
+- Validation : `tsc`/`build`/`lint` (0 erreur)/`test:unit` 115/115 ✓. `audit-security` PASS (1986 fichiers). Vérifié visuellement sur le build de production réel.
+
 ## v1.22.0 — 2026-09-15
 
 **Performance : -8 Mo de JS par page, timer Focus qui figeait le dashboard, fuites en arrière-plan**

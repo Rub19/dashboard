@@ -1,6 +1,7 @@
 "use client";
 
 import { useCallback, useEffect, useMemo, useState } from "react";
+import dynamic from "next/dynamic";
 import ClientImage from "@/components/ClientImage";
 import { useRouter } from "next/navigation";
 import { ChevronRight, LogOut } from "lucide-react";
@@ -13,8 +14,13 @@ import { useI18n } from "@/lib/hooks/useI18n";
 import { useToast } from "@/components/ToastProvider";
 import { useCommandPalette } from "@/components/CommandPaletteProvider";
 import ChangelogModal from "@/components/ChangelogModal";
-import AvatarPickerModal from "@/components/AvatarPickerModal";
 import { useIdentity } from "@/lib/identity";
+
+// Lazy: only needed once the user actually opens the avatar picker, but
+// UserProfileDropdown itself is mounted on every page via Shell/TopBar.
+const AvatarPickerModal = dynamic(() => import("@/components/AvatarPickerModal"), {
+  ssr: false,
+});
 import {
   CHANGELOG,
   CHANGELOG_BY_LANG,
@@ -102,7 +108,7 @@ export default function UserProfileDropdown({ dataTestId = "user-profile-trigger
     return CHANGELOG_BY_LANG[settings.language] || CHANGELOG;
   }, [settings.language]);
 
-  const VERSION_LABEL = changelog[0]?.version || "v1.22.0";
+  const VERSION_LABEL = changelog[0]?.version || "v1.22.1";
 
   const menuItems = [
     {

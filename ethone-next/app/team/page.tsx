@@ -40,7 +40,7 @@ function StatCard({
   const borderColor = tone === "emerald" ? "hover:border-[var(--accent-primary)]" : tone === "amber" ? "hover:border-amber-500/30" : "hover:border-[var(--input-border-hover)]";
 
   return (
-    <div className={`v8-panel backdrop-blur-xl rounded-[var(--panel-radius)] p-4 flex items-center justify-between hover:border-[var(--input-border-hover)] transition-all ${borderColor}`}>
+    <div className={`v8-panel rounded-[var(--panel-radius)] p-4 flex items-center justify-between hover:border-[var(--input-border-hover)] transition-all ${borderColor}`}>
       <div>
         <p className="text-[10px] font-medium text-zinc-500 uppercase tracking-wider">{label}</p>
         <p className={`text-2xl font-bold font-mono ${valueColor} mt-0.5`}>{value}</p>

@@ -88,7 +88,7 @@ export default function FlowCard({
   const showFooter = onEdit || onDuplicate || onLogs || onRun || rightAction;
 
   return (
-    <div className="group relative flex flex-col overflow-hidden rounded-[var(--panel-radius)] v8-panel p-4 shadow-sm backdrop-blur-xl transition-all duration-200 hover:border-[var(--input-border-hover)] hover:shadow-2xl">
+    <div className="group relative flex flex-col overflow-hidden rounded-[var(--panel-radius)] v8-panel p-4 shadow-sm transition-all duration-200 hover:border-[var(--input-border-hover)] hover:shadow-2xl">
       <div className="flex items-start justify-between gap-3">
         <div className="flex items-start gap-3">
           <span

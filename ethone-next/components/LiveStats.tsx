@@ -40,7 +40,7 @@ const LiveStats = memo(function LiveStats({ records = [], updatedAt, loading, cl
 
   return (
     <div
-      className={`w-full rounded-2xl v8-panel p-3 shadow-xl backdrop-blur-2xl ${className}`}
+      className={`w-full rounded-2xl v8-panel p-3 shadow-xl ${className}`}
     >
       <div className="flex items-center justify-between gap-3 border-b border-[var(--text-primary)]/[0.04] pb-2">
         <div className="flex items-center gap-2">

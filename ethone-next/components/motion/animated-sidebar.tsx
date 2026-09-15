@@ -328,7 +328,7 @@ export const AnimatedSidebar = forwardRef<HTMLElement, AnimatedSidebarProps>(
         }
         style={style}
         className={cn(
-          "group/sidebar relative block h-auto shrink-0 will-change-[width]",
+          "group/sidebar relative block h-auto shrink-0",
           "peer",
           side === "right" && "order-last",
           className,

@@ -303,7 +303,7 @@ const SocialDiscordCard = memo(function SocialDiscordCard({
   return (
     <TiltCard
       className={cn(
-        "relative flex h-full min-h-0 flex-col overflow-hidden no-scrollbar select-none rounded-[var(--panel-radius)] border border-[var(--panel-border)] bg-[#0c0d14]/95 p-4 shadow-2xl backdrop-blur-2xl transition-all duration-300 hover:border-[var(--input-border-hover)] group",
+        "relative flex h-full min-h-0 flex-col overflow-hidden no-scrollbar select-none rounded-[var(--panel-radius)] border border-[var(--panel-border)] bg-[#0c0d14]/95 p-4 shadow-2xl backdrop-blur-[var(--panel-blur)] transition-all duration-300 hover:border-[var(--input-border-hover)] group",
         className
       )}
     >

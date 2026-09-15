@@ -142,7 +142,7 @@ const GamingCard = memo(function GamingCard({
   return (
     <TiltCard
       className={cn(
-        "relative flex h-full min-h-0 flex-col overflow-hidden no-scrollbar select-none rounded-[var(--panel-radius)] border border-emerald-500/20 bg-gradient-to-br from-[#1b2d18]/95 via-[#131d10]/98 to-[#0a0f08]/98 p-4 shadow-xl shadow-emerald-950/40 backdrop-blur-2xl transition-all duration-300 hover:border-emerald-500/40 group",
+        "relative flex h-full min-h-0 flex-col overflow-hidden no-scrollbar select-none rounded-[var(--panel-radius)] border border-emerald-500/20 bg-gradient-to-br from-[#1b2d18]/95 via-[#131d10]/98 to-[#0a0f08]/98 p-4 shadow-xl shadow-emerald-950/40 backdrop-blur-[var(--panel-blur)] transition-all duration-300 hover:border-emerald-500/40 group",
         className
       )}
     >

@@ -156,7 +156,7 @@ export default function BrainChat({
   return (
     <div className={cn("flex h-full min-h-0 flex-col bg-transparent", className)}>
       {/* Header with Brain Identity & Status Indicator */}
-      <header className="flex items-center justify-between border-b border-[var(--panel-border)] bg-[var(--panel-bg)]/60 px-4 py-3 backdrop-blur-xl">
+      <header className="flex items-center justify-between border-b border-[var(--panel-border)] bg-[var(--panel-bg)]/60 px-4 py-3 backdrop-blur-[var(--panel-blur)]">
         <div className="flex items-center gap-3">
           {onToggleSidebar && (
             <button
@@ -281,7 +281,7 @@ export default function BrainChat({
       </div>
 
       {/* Composer Input Area */}
-      <div className="border-t border-[var(--panel-border)] bg-[var(--panel-bg)]/60 backdrop-blur-2xl">
+      <div className="border-t border-[var(--panel-border)] bg-[var(--panel-bg)]/60 backdrop-blur-[var(--panel-blur)]">
         <BrainComposer
           onSend={(t) => brain.send(t)}
           loading={brain.loading}
@@ -383,7 +383,7 @@ export default function BrainChat({
             "relative rounded-3xl p-4 max-w-[85%] text-sm leading-relaxed shadow-md",
             isUser
               ? "bg-[var(--accent-primary)] text-[var(--accent-contrast)] rounded-br-sm"
-              : "border border-[var(--panel-border)] bg-[var(--surface-raised)]/70 text-[var(--text-primary)] rounded-bl-sm backdrop-blur-xl"
+              : "border border-[var(--panel-border)] bg-[var(--surface-raised)]/70 text-[var(--text-primary)] rounded-bl-sm backdrop-blur-[var(--panel-blur)]"
           )}
         >
           {/* Attachments if any */}

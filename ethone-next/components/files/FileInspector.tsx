@@ -68,7 +68,7 @@ export default function FileInspector({
   }
 
   return (
-    <div className="flex h-full w-full flex-col border-l border-[var(--panel-border)]/70 bg-[var(--panel-bg)]/95 backdrop-blur-xl p-4 overflow-y-auto os-scroll select-none">
+    <div className="flex h-full w-full flex-col border-l border-[var(--panel-border)]/70 bg-[var(--panel-bg)]/95 backdrop-blur-[var(--panel-blur)] p-4 overflow-y-auto os-scroll select-none">
       {/* Top Header */}
       <div className="flex items-center justify-between pb-3 border-b border-[var(--panel-border)]/60">
         <div className="flex items-center gap-2">

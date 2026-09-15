@@ -30,7 +30,7 @@ export default function AnimatedFilterTabs({
   return (
     <motion.div
       layoutRoot
-      className={`relative inline-flex items-center gap-1 p-1 v8-panel backdrop-blur-xl rounded-xl overflow-x-auto no-scrollbar ${className}`}
+      className={`relative inline-flex items-center gap-1 p-1 v8-panel rounded-xl overflow-x-auto no-scrollbar ${className}`}
     >
       {tabs.map((tab) => {
         const isActive = activeId === tab.id;

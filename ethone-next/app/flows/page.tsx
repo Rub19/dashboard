@@ -204,7 +204,7 @@ export default function FlowsPage() {
         {statCards.map((stat, i) => (
           <div
             key={i}
-            className="flex items-center justify-between rounded-[var(--panel-radius)] v8-panel p-4 backdrop-blur-xl transition-all hover:border-[var(--input-border-hover)]"
+            className="flex items-center justify-between rounded-[var(--panel-radius)] v8-panel p-4 transition-all hover:border-[var(--input-border-hover)]"
           >
             <div>
               <p className="text-2xl font-bold font-mono text-white">{stat.value}</p>

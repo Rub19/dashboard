@@ -108,7 +108,7 @@ export default function LolMatchRow({ match, index }: LolMatchRowProps) {
       initial={{ opacity: 0, y: 10 }}
       animate={{ opacity: 1, y: 0 }}
       transition={{ duration: 0.2, delay: Math.min(index * 0.03, 0.3) }}
-      className="overflow-hidden rounded-[var(--panel-radius)] border border-[var(--panel-border)] bg-[#0c1017]/85 backdrop-blur-xl transition-all duration-200 hover:border-[var(--input-border-hover)] hover:bg-[#0f141e]/95 shadow-sm"
+      className="overflow-hidden rounded-[var(--panel-radius)] border border-[var(--panel-border)] bg-[#0c1017]/85 backdrop-blur-[var(--panel-blur)] transition-all duration-200 hover:border-[var(--input-border-hover)] hover:bg-[#0f141e]/95 shadow-sm"
     >
       {/* Main Row (Matching Screenshot 1 & 3 Pixel-Perfect) */}
       <div
@@ -434,7 +434,7 @@ export default function LolMatchRow({ match, index }: LolMatchRowProps) {
             {/* Teams Overview Banner (Red Side vs Blue Side) */}
             <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
               {/* Red Side */}
-              <div className="rounded-[var(--panel-radius)] border border-rose-500/20 bg-rose-500/[0.04] p-3.5 backdrop-blur-xl">
+              <div className="rounded-[var(--panel-radius)] border border-rose-500/20 bg-rose-500/[0.04] p-3.5 backdrop-blur-[var(--panel-blur)]">
                 <div className="flex items-center justify-between">
                   <span className="text-xs font-black text-rose-400 uppercase tracking-wider">
                     RED SIDE
@@ -450,7 +450,7 @@ export default function LolMatchRow({ match, index }: LolMatchRowProps) {
               </div>
 
               {/* Blue Side */}
-              <div className="rounded-[var(--panel-radius)] border border-cyan-500/20 bg-cyan-500/[0.04] p-3.5 backdrop-blur-xl">
+              <div className="rounded-[var(--panel-radius)] border border-cyan-500/20 bg-cyan-500/[0.04] p-3.5 backdrop-blur-[var(--panel-blur)]">
                 <div className="flex items-center justify-between">
                   <span className="text-xs font-black text-cyan-400 uppercase tracking-wider">
                     BLUE SIDE

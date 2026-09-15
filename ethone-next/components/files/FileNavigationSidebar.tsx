@@ -78,7 +78,7 @@ export default function FileNavigationSidebar({
   ];
 
   return (
-    <div className="flex h-full w-60 shrink-0 flex-col border-r border-[var(--panel-border)]/70 bg-[var(--panel-bg)]/80 backdrop-blur-xl p-3 select-none">
+    <div className="flex h-full w-60 shrink-0 flex-col border-r border-[var(--panel-border)]/70 bg-[var(--panel-bg)]/80 backdrop-blur-[var(--panel-blur)] p-3 select-none">
       {/* Action Buttons */}
       <div className="flex items-center gap-2 pb-3 border-b border-[var(--panel-border)]/60">
         <button

@@ -70,7 +70,7 @@ export default function ValorantMatchRow({ match, index }: ValorantMatchRowProps
       initial={{ opacity: 0, y: 10 }}
       animate={{ opacity: 1, y: 0 }}
       transition={{ duration: 0.2, delay: Math.min(index * 0.03, 0.3) }}
-      className="overflow-hidden rounded-[var(--panel-radius)] border border-[var(--panel-border)] bg-[#0c1017]/85 backdrop-blur-xl transition-all duration-200 hover:border-[var(--input-border-hover)] hover:bg-[#0f141e]/95 shadow-sm"
+      className="overflow-hidden rounded-[var(--panel-radius)] border border-[var(--panel-border)] bg-[#0c1017]/85 backdrop-blur-[var(--panel-blur)] transition-all duration-200 hover:border-[var(--input-border-hover)] hover:bg-[#0f141e]/95 shadow-sm"
     >
       {/* Main Row (Matching Screenshot 4 Pixel-Perfect) */}
       <div
@@ -543,7 +543,7 @@ export default function ValorantMatchRow({ match, index }: ValorantMatchRowProps
                       <div
                         key={pi}
                         className={cn(
-                          "rounded-[var(--panel-radius)] border p-3 flex items-center justify-between gap-3 backdrop-blur-xl",
+                          "rounded-[var(--panel-radius)] border p-3 flex items-center justify-between gap-3 backdrop-blur-[var(--panel-blur)]",
                           p.isMe
                             ? "border-amber-400/30 bg-amber-400/[0.08] text-white"
                             : "border-[var(--panel-border)] bg-white/[0.03] text-zinc-300"

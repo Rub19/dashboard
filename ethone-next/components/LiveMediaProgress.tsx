@@ -42,7 +42,7 @@ export default function LiveMediaProgress({
       const clamped = Math.min(durationMs, Math.max(0, value));
       setCurrentProgress(clamped);
       const pct = durationMs > 0 ? (clamped / durationMs) * 100 : 0;
-      if (fillRef.current) fillRef.current.style.width = `${pct}%`;
+      if (fillRef.current) fillRef.current.style.transform = `scaleX(${pct / 100})`;
       if (thumbRef.current) thumbRef.current.style.left = `${pct}%`;
     },
     [durationMs]
@@ -142,13 +142,13 @@ export default function LiveMediaProgress({
         <div className="absolute inset-0 rounded-full bg-white/[0.08] backdrop-blur-sm" />
         <div
           ref={fillRef}
-          className="pointer-events-none absolute left-0 top-0 h-full rounded-full bg-emerald-500 shadow-[0_0_12px_rgba(16,185,129,0.5)] transition-[width] duration-75 ease-out will-change-[width]"
-          style={{ width: "0%" }}
+          className="pointer-events-none absolute left-0 top-0 h-full w-full origin-left rounded-full bg-emerald-500 shadow-[0_0_12px_rgba(16,185,129,0.5)] transition-transform duration-75 ease-out will-change-transform"
+          style={{ transform: "scaleX(0)" }}
         />
         <div
           ref={thumbRef}
           className={cn(
-            "pointer-events-none absolute top-1/2 h-3.5 w-3.5 -translate-x-1/2 -translate-y-1/2 rounded-full border border-[var(--input-border-hover)] bg-white shadow-md shadow-emerald-500/40 transition-transform duration-150 will-change-[left]",
+            "pointer-events-none absolute top-1/2 h-3.5 w-3.5 -translate-x-1/2 -translate-y-1/2 rounded-full border border-[var(--input-border-hover)] bg-white shadow-md shadow-emerald-500/40 transition-transform duration-150",
             dragging || hovered ? "scale-125" : "scale-100"
           )}
           style={{ left: "0%" }}

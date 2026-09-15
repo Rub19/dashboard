@@ -27916,4 +27916,65 @@ CHANGELOG_BY_LANG.en.unshift(v1220_en);
 CHANGELOG_BY_LANG.es.unshift(v1220_es);
 CHANGELOG_BY_LANG.de.unshift(v1220_de);
 
+const v1221_fr: ChangelogEntry = {
+  version: "v1.22.1",
+  date: "2026-09-15",
+  title: "Performance (suite) : flous d'arrière-plan redondants, animations qui recalculaient la mise en page, chargement paresseux",
+  items: [
+    "~25 usages de flou d'arrière-plan codés en dur (`backdrop-blur-xl/2xl`) supprimés ou alignés sur `var(--panel-blur)` — soit ils faisaient doublon avec le flou déjà appliqué par les cartes du design system (calendrier, notes, facturation, cartes de suivi de jeu...), soit ils ignoraient le réglage « Flou interface » (Brain, Fichiers, en-têtes persistants, bulles de message).",
+    "La barre de progression de lecture en cours (dashboard + widget média) animait sa largeur en continu pendant la lecture, forçant un recalcul de mise en page à chaque image ; passée en `transform: scaleX()` (traité par la carte graphique, pas de recalcul).",
+    "La barre latérale de Mail (réduire/agrandir) ignorait le réglage « Réduire les animations ». La barre latérale principale gardait un indicateur de performance actif en permanence sur sa largeur alors qu'il ne sert à rien pour cette propriété (retiré).",
+    "`AvatarPickerModal` (sélecteur d'avatar) et `DynamicIslandContainer` (île dynamique) ne se chargent plus que lorsque nécessaire, au lieu d'être inclus dans le code de chaque page dès le départ.",
+    "Dépendance inutilisée `@base-ui-components/react` (paquet renommé, plus jamais importé) retirée.",
+    "Validation : `tsc`/`build`/`lint` (0 erreur, 0 nouveau warning)/`test:unit` 115/115 ✓. `audit-security` PASS (1986 fichiers). Vérifié sur le build de production réel qu'aucune page ne s'affiche cassée après ces changements (page de connexion, icônes, île dynamique).",
+  ],
+};
+
+const v1221_en: ChangelogEntry = {
+  version: "v1.22.1",
+  date: "2026-09-15",
+  title: "Performance (part 2): redundant background blur, layout-recalculating animations, lazy-loading",
+  items: [
+    "~25 hardcoded background-blur usages (`backdrop-blur-xl/2xl`) removed or aligned to `var(--panel-blur)` -- some duplicated the blur already applied by the design system's own cards (calendar, notes, billing, tracker match cards...), others silently ignored the \"Interface blur\" setting (Brain, Files, persistent headers, message bubbles).",
+    "The now-playing progress bar (dashboard + media widget) animated its width continuously during playback, forcing a layout recalculation every frame; switched to `transform: scaleX()` (GPU-composited, no layout recalculation).",
+    "Mail's sidebar (collapse/expand) ignored the \"Reduce motion\" setting. The main app sidebar kept a permanent performance hint active on its width even though that property can't benefit from it (removed).",
+    "`AvatarPickerModal` (avatar picker) and `DynamicIslandContainer` (dynamic island) now load only when actually needed, instead of being bundled into every page's code from the start.",
+    "Removed the unused `@base-ui-components/react` dependency (renamed package, no longer imported anywhere).",
+    "Validation: `tsc`/`build`/`lint` (0 errors, 0 new warnings)/`test:unit` 115/115 pass. `audit-security` PASS (1986 files). Verified on the real production build that no page renders broken after these changes (login page, icons, dynamic island).",
+  ],
+};
+
+const v1221_es: ChangelogEntry = {
+  version: "v1.22.1",
+  date: "2026-09-15",
+  title: "Rendimiento (parte 2): desenfoque de fondo redundante, animaciones que recalculaban el layout, carga diferida",
+  items: [
+    "~25 usos de desenfoque de fondo codificados (`backdrop-blur-xl/2xl`) eliminados o alineados con `var(--panel-blur)` -- algunos duplicaban el desenfoque que ya aplican las propias tarjetas del sistema de diseño (calendario, notas, facturación, tarjetas de partidas...), otros ignoraban silenciosamente el ajuste \"Desenfoque de interfaz\" (Brain, Archivos, cabeceras persistentes, burbujas de mensaje).",
+    "La barra de progreso de reproducción (panel + widget de medios) animaba su ancho continuamente durante la reproducción, forzando un recálculo de layout en cada fotograma; cambiado a `transform: scaleX()` (compuesto por GPU, sin recálculo de layout).",
+    "La barra lateral de Mail (colapsar/expandir) ignoraba el ajuste \"Reducir animaciones\". La barra lateral principal de la app mantenía una pista de rendimiento permanente activa sobre su ancho aunque esa propiedad no puede beneficiarse de ella (eliminada).",
+    "`AvatarPickerModal` (selector de avatar) y `DynamicIslandContainer` (isla dinámica) ahora solo se cargan cuando realmente se necesitan, en lugar de incluirse en el código de cada página desde el inicio.",
+    "Eliminada la dependencia no usada `@base-ui-components/react` (paquete renombrado, ya no se importa en ningún sitio).",
+    "Validación: `tsc`/`build`/`lint` (0 errores, 0 advertencias nuevas)/`test:unit` 115/115 ✓. `audit-security` PASS (1986 archivos). Verificado en el build de producción real que ninguna página se rompe tras estos cambios (login, iconos, isla dinámica).",
+  ],
+};
+
+const v1221_de: ChangelogEntry = {
+  version: "v1.22.1",
+  date: "2026-09-15",
+  title: "Performance (Teil 2): redundanter Hintergrund-Weichzeichner, Layout-neuberechnende Animationen, Lazy Loading",
+  items: [
+    "~25 fest codierte Hintergrund-Weichzeichner (`backdrop-blur-xl/2xl`) entfernt oder auf `var(--panel-blur)` umgestellt -- manche duplizierten den bereits von den Design-System-Karten selbst angewendeten Weichzeichner (Kalender, Notizen, Abrechnung, Tracker-Match-Karten...), andere ignorierten stillschweigend die Einstellung \"Oberflächen-Weichzeichner\" (Brain, Dateien, dauerhafte Header, Nachrichten-Bubbles).",
+    "Die Now-Playing-Fortschrittsleiste (Dashboard + Media-Widget) animierte ihre Breite fortlaufend während der Wiedergabe und erzwang so bei jedem Frame eine Layout-Neuberechnung; umgestellt auf `transform: scaleX()` (GPU-komponiert, keine Layout-Neuberechnung).",
+    "Die Mail-Seitenleiste (Ein-/Ausklappen) ignorierte die Einstellung \"Animationen reduzieren\". Die Haupt-App-Seitenleiste hielt dauerhaft einen Performance-Hinweis auf ihrer Breite aktiv, obwohl diese Eigenschaft davon nicht profitieren kann (entfernt).",
+    "`AvatarPickerModal` (Avatar-Auswahl) und `DynamicIslandContainer` (Dynamic Island) werden jetzt nur noch bei Bedarf geladen, statt von Anfang an in den Code jeder Seite eingebunden zu sein.",
+    "Ungenutzte Abhängigkeit `@base-ui-components/react` entfernt (umbenanntes Paket, wird nirgends mehr importiert).",
+    "Validierung: `tsc`/`build`/`lint` (0 Fehler, 0 neue Warnungen)/`test:unit` 115/115 bestanden. `audit-security` PASS (1986 Dateien). Am echten Produktions-Build verifiziert, dass nach diesen Änderungen keine Seite defekt ist (Login-Seite, Icons, Dynamic Island).",
+  ],
+};
+
+CHANGELOG_BY_LANG.fr.unshift(v1221_fr);
+CHANGELOG_BY_LANG.en.unshift(v1221_en);
+CHANGELOG_BY_LANG.es.unshift(v1221_es);
+CHANGELOG_BY_LANG.de.unshift(v1221_de);
+
 export const CHANGELOG = CHANGELOG_BY_LANG.fr;

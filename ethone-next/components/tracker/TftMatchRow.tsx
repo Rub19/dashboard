@@ -59,7 +59,7 @@ export default function TftMatchRow({ match }: { match: TftMatch }) {
   const ordinal = placement === 1 ? "1ère" : `${placement}e`;
 
   return (
-    <div className={cn("rounded-[var(--panel-radius)] border bg-white/[0.02] backdrop-blur-xl transition-colors", pc.border)}>
+    <div className={cn("rounded-[var(--panel-radius)] border bg-white/[0.02] backdrop-blur-[var(--panel-blur)] transition-colors", pc.border)}>
       {/* Collapsed header */}
       <button
         type="button"

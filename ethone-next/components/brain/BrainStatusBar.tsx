@@ -37,7 +37,7 @@ export const BrainStatusBar = memo(function BrainStatusBar({
   return (
     <div
       className={cn(
-        "relative flex flex-wrap items-center justify-between gap-3 rounded-[var(--panel-radius)] border border-[var(--panel-border)]/60 bg-[var(--surface-raised)]/30 px-4 py-2.5 backdrop-blur-md transition-all select-none",
+        "relative flex flex-wrap items-center justify-between gap-3 rounded-[var(--panel-radius)] border border-[var(--panel-border)]/60 bg-[var(--surface-raised)]/30 px-4 py-2.5 backdrop-blur-[var(--panel-blur)] transition-all select-none",
         className
       )}
     >

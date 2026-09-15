@@ -27,7 +27,7 @@ export default function BrainContextDrawer({
   return (
     <aside
       className={cn(
-        "flex h-full w-80 shrink-0 flex-col border-l border-[var(--panel-border)] bg-[var(--panel-bg)]/80 backdrop-blur-xl transition-all duration-300",
+        "flex h-full w-80 shrink-0 flex-col border-l border-[var(--panel-border)] bg-[var(--panel-bg)]/80 backdrop-blur-[var(--panel-blur)] transition-all duration-300",
         isOpen ? "translate-x-0" : "translate-x-full lg:translate-x-0 hidden lg:flex"
       )}
     >

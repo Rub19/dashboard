@@ -390,7 +390,7 @@ export default function InteractionsPage() {
         ].map((kpi) => (
           <div
             key={kpi.label}
-            className="flex flex-col gap-1 rounded-2xl v8-panel p-4 shadow-lg backdrop-blur-2xl"
+            className="flex flex-col gap-1 rounded-2xl v8-panel p-4 shadow-lg"
           >
             <div className="flex items-center justify-between text-zinc-400">
               <span className="text-[11px] font-semibold uppercase tracking-wider">{kpi.label}</span>
@@ -403,7 +403,7 @@ export default function InteractionsPage() {
       </div>
 
       {/* Heatmap */}
-      <div className="flex w-full flex-col gap-4 rounded-2xl v8-panel p-5 shadow-xl backdrop-blur-2xl">
+      <div className="flex w-full flex-col gap-4 rounded-2xl v8-panel p-5 shadow-xl">
         <div className="flex flex-col justify-between gap-3 border-b border-[var(--panel-border)] pb-3 sm:flex-row sm:items-center">
           <div className="flex items-center gap-2.5">
             <Flame className="h-4 w-4 text-[var(--accent-primary)]" />
@@ -507,7 +507,7 @@ export default function InteractionsPage() {
       {/* Bottom Bento row */}
       <div className="grid grid-cols-12 items-stretch gap-4">
         {/* Category breakdown */}
-        <div className="col-span-12 flex flex-col justify-between gap-4 rounded-2xl v8-panel p-5 shadow-xl backdrop-blur-2xl lg:col-span-7">
+        <div className="col-span-12 flex flex-col justify-between gap-4 rounded-2xl v8-panel p-5 shadow-xl lg:col-span-7">
           <div className="flex items-center justify-between">
             <div className="flex items-center gap-2">
               <Layers className="h-4 w-4 text-[var(--info)]" />
@@ -547,7 +547,7 @@ export default function InteractionsPage() {
         </div>
 
         {/* Live feed */}
-        <TiltCard className="col-span-12 flex h-full flex-col justify-between gap-3 v8-panel p-5 shadow-xl backdrop-blur-2xl lg:col-span-5">
+        <TiltCard className="col-span-12 flex h-full flex-col justify-between gap-3 v8-panel p-5 shadow-xl lg:col-span-5">
           <div className="flex items-center justify-between">
             <div className="flex items-center gap-2">
               <Zap className="h-4 w-4 text-amber-400" />

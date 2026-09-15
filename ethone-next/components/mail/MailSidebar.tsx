@@ -1,7 +1,7 @@
 "use client";
 
 import { useState } from "react";
-import { motion } from "framer-motion";
+import { motion, useReducedMotion } from "framer-motion";
 import {
   Inbox,
   Star,
@@ -19,6 +19,7 @@ import { useI18n } from "@/lib/hooks/useI18n";
 import MailProfileButton from "./MailProfileButton";
 import type { MailAlias, MailLabel } from "@/lib/hooks/useMail";
 import { cn } from "@/lib/utils";
+import { useSettings } from "@/components/SettingsProvider";
 
 export const FOLDERS = ["inbox", "starred", "sent", "drafts", "archive", "trash", "spam"] as const;
 export type MailFolder = (typeof FOLDERS)[number];
@@ -69,11 +70,14 @@ export default function MailSidebar({
 }: MailSidebarProps) {
   const i18n = useI18n();
   const [collapsed, setCollapsed] = useState(false);
+  const { settings } = useSettings();
+  const osReducedMotion = useReducedMotion();
+  const reducedMotion = Boolean(settings.reducedMotion) || Boolean(osReducedMotion);
 
   return (
     <motion.aside
       animate={{ width: collapsed ? "4rem" : "15rem" }}
-      transition={{ type: "spring", stiffness: 350, damping: 32 }}
+      transition={reducedMotion ? { duration: 0 } : { type: "spring", stiffness: 350, damping: 32 }}
       className="v8-panel relative flex h-full shrink-0 flex-col justify-between overflow-hidden p-2.5 select-none"
     >
       <div className="space-y-3">

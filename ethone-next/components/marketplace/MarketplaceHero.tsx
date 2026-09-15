@@ -27,7 +27,7 @@ export default function MarketplaceHero({
   const topPick = recommendations[0];
 
   return (
-    <div className="relative overflow-hidden rounded-[var(--panel-radius)] border border-[var(--panel-border)]/80 bg-gradient-to-br from-[var(--surface-raised)]/90 via-[var(--panel-bg)]/80 to-[var(--surface-raised)]/40 p-5 sm:p-7 shadow-lg backdrop-blur-xl">
+    <div className="relative overflow-hidden rounded-[var(--panel-radius)] border border-[var(--panel-border)]/80 bg-gradient-to-br from-[var(--surface-raised)]/90 via-[var(--panel-bg)]/80 to-[var(--surface-raised)]/40 p-5 sm:p-7 shadow-lg backdrop-blur-[var(--panel-blur)]">
       {/* Background Subtle Glow */}
       <div className="absolute -right-20 -top-20 h-64 w-64 rounded-full bg-[var(--accent-primary)]/10 blur-3xl pointer-events-none" />
 

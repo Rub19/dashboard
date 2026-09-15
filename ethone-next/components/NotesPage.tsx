@@ -159,14 +159,14 @@ export default function NotesPage() {
     <div className="h-full min-h-0 w-full grid grid-cols-12 items-stretch gap-5 overflow-hidden p-4">
       {/* Left: List & Search */}
       <div className="col-span-12 flex h-full min-h-0 flex-col gap-3 overflow-hidden lg:col-span-4">
-        <div className="shrink-0 rounded-2xl v8-panel p-4 backdrop-blur-2xl">
+        <div className="shrink-0 rounded-2xl v8-panel p-4">
           <h1 className="text-2xl font-bold text-[var(--text-primary)]">{i18n("notesTitle")}</h1>
           <p className="mt-0.5 text-xs text-[var(--text-muted)]">
             {stats.total} {i18n("notes")} · {stats.totalWords} {i18n("words")}
           </p>
         </div>
 
-        <div className="shrink-0 flex flex-wrap items-center gap-2 rounded-2xl v8-panel p-3 backdrop-blur-2xl">
+        <div className="shrink-0 flex flex-wrap items-center gap-2 rounded-2xl v8-panel p-3">
           <CustomCheckbox checked={isAllSelected} onChange={() => (isAllSelected ? clear() : selectAll())} label={i18n("selectAll")} />
           <div className="ml-auto flex items-center gap-2">
             <Input
@@ -209,7 +209,7 @@ export default function NotesPage() {
           className="min-h-0 flex-1 overflow-y-auto os-scroll space-y-3 pr-1 outline-none"
         >
           {loading && items.length === 0 && (
-            <div className="flex min-h-[160px] items-center justify-center rounded-2xl v8-panel p-4 backdrop-blur-2xl">
+            <div className="flex min-h-[160px] items-center justify-center rounded-2xl v8-panel p-4">
               <Icon name="loader-2" className="h-5 w-5 animate-spin text-[var(--text-muted)]" />
             </div>
           )}
@@ -228,7 +228,7 @@ export default function NotesPage() {
               data-context-id={note.id}
               data-active={index === activeIndex}
               className={cn(
-                "group rounded-[var(--panel-radius)] v8-panel p-3 backdrop-blur-2xl transition-colors hover:border-[var(--text-primary)]/[0.12]",
+                "group rounded-[var(--panel-radius)] v8-panel p-3 transition-colors hover:border-[var(--text-primary)]/[0.12]",
                 index === activeIndex && "border-[var(--accent-primary)]/40 bg-[var(--accent-primary)]/10"
               )}
             >
@@ -303,7 +303,7 @@ export default function NotesPage() {
       </div>
 
       {/* Right: Editor */}
-      <div className="col-span-12 flex h-full min-h-0 flex-col justify-between overflow-hidden rounded-2xl v8-panel p-6 backdrop-blur-2xl lg:col-span-8">
+      <div className="col-span-12 flex h-full min-h-0 flex-col justify-between overflow-hidden rounded-2xl v8-panel p-6 lg:col-span-8">
         <div className="shrink-0 mb-3">
           <Input
             type="text"

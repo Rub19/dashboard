@@ -33,7 +33,7 @@ const LiveWidget = dynamic(() => import("@/components/LiveWidget"), {
 const CosmicBackground = dynamic(() => import("@/components/CosmicBackground"), { ssr: false });
 const Spotlight = dynamic(() => import("@/components/Spotlight"), { ssr: false });
 const VisualHaptics = dynamic(() => import("@/components/VisualHaptics"), { ssr: false });
-import DynamicIslandContainer from "@/components/DynamicIslandContainer";
+const DynamicIslandContainer = dynamic(() => import("@/components/DynamicIslandContainer"), { ssr: false });
 const ShortcutsOverlay = dynamic(() => import("@/components/ShortcutsOverlay"), { ssr: false });
 const KeyboardShortcuts = dynamic(() => import("@/components/KeyboardShortcuts"), { ssr: false });
 

@@ -66,7 +66,7 @@ export default function BrainSidebar({
   return (
     <aside
       className={cn(
-        "flex h-full w-72 shrink-0 flex-col border-r border-[var(--panel-border)] bg-[var(--panel-bg)]/80 backdrop-blur-xl transition-all duration-300",
+        "flex h-full w-72 shrink-0 flex-col border-r border-[var(--panel-border)] bg-[var(--panel-bg)]/80 backdrop-blur-[var(--panel-blur)] transition-all duration-300",
         isOpen ? "translate-x-0" : "-translate-x-full md:translate-x-0 hidden md:flex"
       )}
     >

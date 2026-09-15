@@ -8,7 +8,7 @@ import { routeResult } from "../utils/response.js";
 // content-type instead. A plain fetch() is used (not utils/external-request.js's
 // requestExternal) because that helper unconditionally JSON-parses the
 // response body, which is wrong for raw HTML passthrough.
-const DINO_SOURCE = "https://raw.githubusercontent.com/Lehnoxzs/HAARPE-DINO-GAME/main/dino";
+const DINO_SOURCE = "https://raw.githubusercontent.com/Lehnoxzs/HAARPE-DINO-GAME/main/dino.html";
 
 export async function friendGameDinoRoute() {
   const loader = async () => {

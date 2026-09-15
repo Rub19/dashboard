@@ -1,5 +1,6 @@
-// Generic tracker.gg tracker — CS2, Rainbow Six, XDefiant, The Finals,
-// Splitgate, Rocket League, The Division 2, Battlefield 2042.
+// Generic tracker.gg tracker — CS2, Rainbow Six, The Finals, Splitgate,
+// Rocket League, The Division 2, Battlefield 2042. XDefiant was removed
+// after Ubisoft shut the game down (June 2025) — nothing left to track.
 // Goes through the ETHONE Worker (`/api/stats/tracker-*`), which holds the
 // TRACKER_API_KEY. Also accepts the user's own key via the `x-tracker-api-key`
 // header — kept server-side.
@@ -64,13 +65,6 @@ export const TRACKER_GAMES: TrackerGame[] = [
     idHint: "PseudoEmbark#1234",
   },
   {
-    id: "xdefiant",
-    label: "XDefiant",
-    platforms: [{ value: "ubi", label: "Ubisoft" }],
-    idLabel: "Nom Ubisoft",
-    idHint: "Ton pseudo Ubisoft Connect",
-  },
-  {
     id: "splitgate",
     label: "Splitgate",
     platforms: [{ value: "steam", label: "Steam" }, { value: "xbl", label: "Xbox" }, { value: "psn", label: "PSN" }],
@@ -90,6 +84,22 @@ export const TRACKER_GAMES: TrackerGame[] = [
     platforms: [{ value: "origin", label: "EA / Origin" }, { value: "psn", label: "PSN" }, { value: "xbl", label: "Xbox" }],
     idLabel: "Nom EA",
     idHint: "Ton pseudo EA",
+  },
+  // Already allow-listed server-side (worker/src/routes/tracker.js) but
+  // missing from this picker until now.
+  {
+    id: "marvel-rivals",
+    label: "Marvel Rivals",
+    platforms: [{ value: "steam", label: "Steam" }, { value: "epic", label: "Epic Games" }, { value: "psn", label: "PSN" }, { value: "xbl", label: "Xbox" }],
+    idLabel: "Nom",
+    idHint: "Ton pseudo",
+  },
+  {
+    id: "rocket-league",
+    label: "Rocket League",
+    platforms: [{ value: "steam", label: "Steam" }, { value: "epic", label: "Epic Games" }, { value: "psn", label: "PSN" }, { value: "xbl", label: "Xbox" }],
+    idLabel: "Nom",
+    idHint: "Ton pseudo",
   },
   // Slugs ci-dessous non vérifiés en direct (docs Tracker.gg bloquées aux
   // requêtes automatisées) — à tester réellement avec la clé API du serveur ;

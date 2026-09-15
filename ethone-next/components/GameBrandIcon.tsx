@@ -25,6 +25,10 @@ const BRANDS: { match: string; icon: string; color: string }[] = [
   // (Arcticons pack), used with the user's explicit sign-off.
   { match: "apex legends", icon: "arcticons:apex-legends", color: "#DA0000" },
   { match: "the finals", icon: "simple-icons:thefinals", color: "#FFDE00" },
+  // Same situation as Apex above: no official Ubisoft/Bungie mark exists in
+  // any indexed icon library, only community-drawn substitutes.
+  { match: "rainbow six siege", icon: "arcticons:guide-for-rainbow-six-siege", color: "#E8A33D" },
+  { match: "destiny 2", icon: "arcticons:destiny-2", color: "#C9A227" },
   { match: "counter-strike", icon: "simple-icons:counterstrike", color: "#F7A800" },
   { match: "cs2", icon: "simple-icons:counterstrike", color: "#F7A800" },
   { match: "cs:go", icon: "simple-icons:counterstrike", color: "#F7A800" },

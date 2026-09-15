@@ -12,16 +12,23 @@ import { cachedLoad } from "../utils/cache.js";
 import { routeResult } from "../utils/response.js";
 
 // tracker.gg v2 game slugs we expose beyond the dedicated Valorant/LoL/Apex tabs.
+// Must stay in sync with ethone-next/lib/tracker-gg.ts's TRACKER_GAMES list —
+// a game missing here fails with "Jeu non pris en charge" before it ever
+// reaches tracker.gg, regardless of whether the frontend slug is correct.
 const TRACKER_GAMES = new Set([
   "csgo", // Counter-Strike 2
   "division-2",
   "splitgate",
   "the-finals",
-  "xdefiant",
+  // xdefiant removed: Ubisoft shut the game down in June 2025.
   "marvel-rivals",
   "rocket-league",
   "bf2042",
   "apex",
+  "fortnite",
+  "r6siege",
+  "destiny-2",
+  "warzone",
 ]);
 
 async function ownKeyTracker(env, auth, request) {
@@ -134,7 +141,7 @@ export async function trackerApexMatchesRoute({ env, url, auth, request }) {
   return routeResult(result.data, { source: "tracker", cached: result.cached });
 }
 
-// --- Generic tracker.gg (CS2, R6/XDefiant, The Finals, Rocket League, …) -------
+// --- Generic tracker.gg (CS2, R6 Siege, The Finals, Rocket League, …) -------
 
 function readGameQuery(url) {
   const game = queryText(url, "game", { max: 24 });

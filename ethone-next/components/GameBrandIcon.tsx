@@ -16,7 +16,15 @@ type GameBrandIconProps = {
 const BRANDS: { match: string; icon: string; color: string }[] = [
   { match: "valorant", icon: "simple-icons:valorant", color: "#FF4655" },
   { match: "league of legends", icon: "simple-icons:leagueoflegends", color: "#C89B3C" },
+  // Riot markets TFT under the League of Legends identity and no icon library
+  // (Simple Icons, Arcticons, or otherwise) has a dedicated TFT mark, so this
+  // reuse is intentional, not a placeholder.
   { match: "teamfight tactics", icon: "simple-icons:leagueoflegends", color: "#C89B3C" },
+  // No official EA/Respawn Apex Legends mark exists in any indexed icon
+  // library either — this is a community-drawn minimalist substitute
+  // (Arcticons pack), used with the user's explicit sign-off.
+  { match: "apex legends", icon: "arcticons:apex-legends", color: "#DA0000" },
+  { match: "the finals", icon: "simple-icons:thefinals", color: "#FFDE00" },
   { match: "counter-strike", icon: "simple-icons:counterstrike", color: "#F7A800" },
   { match: "cs2", icon: "simple-icons:counterstrike", color: "#F7A800" },
   { match: "cs:go", icon: "simple-icons:counterstrike", color: "#F7A800" },

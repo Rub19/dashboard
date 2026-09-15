@@ -10,6 +10,7 @@ import {
   type TrackerProfile,
   type TrackerMatch,
 } from "@/lib/tracker-gg";
+import GameBrandIcon from "@/components/GameBrandIcon";
 import { cn } from "@/lib/utils";
 
 const CACHE_TTL_MS = 15 * 60 * 1000;
@@ -252,7 +253,10 @@ export default function TrackerGgView() {
           )}
           <div className="min-w-0">
             <p className="truncate text-sm font-bold text-white">{profile.handle || profile.identifier}</p>
-            <p className="text-[11px] text-zinc-400">{game.label} · {profile.platform}</p>
+            <p className="flex items-center gap-1.5 text-[11px] text-zinc-400">
+              <GameBrandIcon name={game.label} className="h-3.5 w-3.5" />
+              {game.label} · {profile.platform}
+            </p>
           </div>
         </div>
       )}

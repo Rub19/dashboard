@@ -2,6 +2,7 @@
 
 import { useState, useEffect, useMemo, useCallback } from "react";
 import { RefreshCw, Search, Clock, AlertCircle, User, Gamepad2, BarChart3, Star } from "lucide-react";
+import Select, { type SelectOption } from "@/components/ui/Select";
 import {
   TRACKER_GAMES,
   fetchTrackerProfile,
@@ -61,6 +62,29 @@ export default function TrackerGgView() {
   }, [favorites]);
 
   const isFavorite = favorites.includes(gameId);
+
+  const gameOptions: SelectOption[] = useMemo(
+    () =>
+      orderedGames.map((g) => {
+        const fav = favorites.includes(g.id);
+        return {
+          id: g.id,
+          label: (
+            <span className="flex min-w-0 items-center gap-2">
+              <GameBrandIcon name={g.label} className="h-4 w-4 shrink-0" />
+              <span className="truncate">{g.label}</span>
+              {fav && <Star className="h-3 w-3 shrink-0 fill-amber-400 text-amber-400" aria-hidden="true" />}
+            </span>
+          ),
+        };
+      }),
+    [orderedGames, favorites]
+  );
+
+  const platformOptions: SelectOption[] = useMemo(
+    () => game.platforms.map((p) => ({ id: p.value, label: p.label })),
+    [game.platforms]
+  );
   const [platform, setPlatform] = useState(game.platforms[0].value);
   const [identifier, setIdentifier] = useState("");
   const [profile, setProfile] = useState<TrackerProfile | null>(null);
@@ -162,21 +186,19 @@ export default function TrackerGgView() {
       {/* Controls */}
       <div className="shrink-0 rounded-[var(--panel-radius)] border border-[var(--panel-border)] bg-[#0c0d14]/90 p-4 backdrop-blur-2xl shadow-lg">
         <form onSubmit={handleSubmit} className="flex flex-col gap-3 lg:flex-row lg:items-center">
-          <div className="flex items-center gap-2 rounded-[var(--panel-radius)] border border-[var(--panel-border)] bg-black/40 px-3 py-2 shrink-0">
-            <Gamepad2 className="h-4 w-4 text-zinc-400 shrink-0" />
-            <select
-              value={gameId}
-              onChange={(e) => setGameId(e.target.value)}
-              className="bg-transparent text-xs font-bold text-white outline-none [&>option]:bg-[#0c0d14]"
-            >
-              {orderedGames.map((g) => (
-                <option key={g.id} value={g.id}>{favorites.includes(g.id) ? `★ ${g.label}` : g.label}</option>
-              ))}
-            </select>
+          <div className="flex items-center gap-2 shrink-0">
+            <div className="w-56">
+              <Select
+                value={gameId}
+                onChange={setGameId}
+                options={gameOptions}
+                aria-label="Choisir un jeu"
+              />
+            </div>
             <button
               type="button"
               onClick={() => toggleFavorite(gameId)}
-              className="shrink-0 text-zinc-500 hover:text-amber-400 active:scale-90 transition-all cursor-pointer"
+              className="flex h-11 w-11 shrink-0 items-center justify-center rounded-xl border border-[var(--panel-border)] bg-black/40 text-zinc-500 hover:text-amber-400 hover:border-amber-400/40 active:scale-90 transition-all cursor-pointer"
               title={isFavorite ? "Retirer des favoris" : "Ajouter aux favoris"}
               aria-label={isFavorite ? "Retirer des favoris" : "Ajouter aux favoris"}
               aria-pressed={isFavorite}
@@ -186,16 +208,13 @@ export default function TrackerGgView() {
           </div>
 
           {game.platforms.length > 1 && (
-            <div className="flex items-center gap-2 rounded-[var(--panel-radius)] border border-[var(--panel-border)] bg-black/40 px-3 py-2 shrink-0">
-              <select
+            <div className="w-40 shrink-0">
+              <Select
                 value={platform}
-                onChange={(e) => setPlatform(e.target.value)}
-                className="bg-transparent text-xs font-bold text-white outline-none [&>option]:bg-[#0c0d14]"
-              >
-                {game.platforms.map((p) => (
-                  <option key={p.value} value={p.value}>{p.label}</option>
-                ))}
-              </select>
+                onChange={setPlatform}
+                options={platformOptions}
+                aria-label="Choisir une plateforme"
+              />
             </div>
           )}
 

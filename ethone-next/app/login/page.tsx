@@ -99,7 +99,7 @@ export default function LoginPage() {
   const i18n = useI18n();
   const router = useRouter();
   const { success } = useToast();
-  const { session, signInOtp, verifyOtp } = useAuth();
+  const { session, loading: authLoading, signInOtp, verifyOtp } = useAuth();
   const reduced = !!useReducedMotion();
 
   const [mode, setMode] = useState<AuthMode>("password");
@@ -138,6 +138,21 @@ export default function LoginPage() {
     const timer = setInterval(() => setResendIn((v) => v - 1), 1000);
     return () => clearInterval(timer);
   }, [resendIn]);
+
+  // A signed-in user landing here directly (bookmark, back button, a stale
+  // tab) previously saw the login form rendered right over the live app
+  // shell instead of being sent back to it — this only fires for that
+  // "arrived already authenticated" case (authState stays "idle" the whole
+  // time), never for the fresh-login success flow below, which drives its
+  // own redirect through authState transitioning to "success".
+  useEffect(() => {
+    if (!authLoading && session && authState === "idle" && !successRedirected.current) {
+      successRedirected.current = true;
+      const nextParam = typeof window !== "undefined" ? new URLSearchParams(window.location.search).get("next") || "" : "";
+      const safeNext = nextParam.startsWith("/spaces/join") ? nextParam : "/";
+      router.replace(safeNext);
+    }
+  }, [authLoading, session, authState, router]);
 
   useEffect(() => {
     if (authState === "success" && session && !successRedirected.current) {

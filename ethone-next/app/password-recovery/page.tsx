@@ -1,8 +1,10 @@
 "use client";
 
-import { useRef, useState } from "react";
+import { useEffect, useRef, useState } from "react";
+import { useRouter } from "next/navigation";
 import { useI18n } from "@/lib/hooks/useI18n";
 import { resetPassword } from "@/lib/auth";
+import { useAuth } from "@/components/AuthProvider";
 import { useToast } from "@/components/ToastProvider";
 import FlatCard from "@/components/FlatCard";
 import Input from "@/components/Input";
@@ -13,12 +15,23 @@ const TURNSTILE_SITE_KEY = process.env.NEXT_PUBLIC_TURNSTILE_SITE_KEY || "";
 
 export default function PasswordRecoveryPage() {
   const i18n = useI18n();
+  const router = useRouter();
+  const { session, loading: authLoading } = useAuth();
   const { success, error: showError } = useToast();
   const [email, setEmail] = useState("");
   const [sent, setSent] = useState(false);
   const [loading, setLoading] = useState(false);
   const [turnstileToken, setTurnstileToken] = useState("");
   const turnstileRef = useRef<TurnstileWidgetHandle>(null);
+
+  // Same guard as /login: a signed-in user landing here directly previously
+  // saw this form rendered over the live app shell instead of being sent
+  // back to it.
+  useEffect(() => {
+    if (!authLoading && session) {
+      router.replace("/");
+    }
+  }, [authLoading, session, router]);
 
   async function handleSubmit(e: React.FormEvent) {
     e.preventDefault();

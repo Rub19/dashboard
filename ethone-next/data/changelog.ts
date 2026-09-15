@@ -27977,4 +27977,53 @@ CHANGELOG_BY_LANG.en.unshift(v1221_en);
 CHANGELOG_BY_LANG.es.unshift(v1221_es);
 CHANGELOG_BY_LANG.de.unshift(v1221_de);
 
+const v1222_fr: ChangelogEntry = {
+  version: "v1.22.2",
+  date: "2026-09-15",
+  title: "Performance : Réglages découpés par catégorie (chargement à la demande)",
+  items: [
+    "Les 15 catégories de la page Réglages (Apparence, Thèmes, Île Dynamique, Dock, Sécurité, Sessions, Raccourcis, Performance, Confidentialité...) étaient toutes chargées d'un coup dès l'ouverture de la page, même si l'utilisateur n'en consulte qu'une seule à la fois. Chaque catégorie a désormais son propre morceau de code, chargé uniquement quand on l'ouvre.",
+    "Non traité pour l'instant, documenté volontairement : le dédoublonnage des souscriptions temps réel de `useItems` (Notes/Tâches/Événements) — plusieurs widgets ouvrent chacun leur propre connexion pour les mêmes données. Corrigeable, mais risque de bug de synchronisation en direct difficile à vérifier sans session utilisateur réelle ; à faire dans une passe dédiée avec test approfondi plutôt que livré à l'aveugle.",
+    "Validation : `tsc`/`build`/`lint` (0 erreur, 0 nouveau warning)/`test:unit` 115/115 ✓. `audit-security` PASS (1986 fichiers). Poids JS de la page Réglages mesuré sur le build de production réel après le changement.",
+  ],
+};
+
+const v1222_en: ChangelogEntry = {
+  version: "v1.22.2",
+  date: "2026-09-15",
+  title: "Performance: Settings split by category (loads on demand)",
+  items: [
+    "The Settings page's 15 categories (Appearance, Themes, Dynamic Island, Dock, Security, Sessions, Shortcuts, Performance, Privacy...) all loaded at once as soon as the page opened, even though the user only ever looks at one at a time. Each category now has its own code chunk, loaded only when opened.",
+    "Deliberately not touched yet, documented instead: deduplicating `useItems`' (Notes/Tasks/Events) realtime subscriptions -- several widgets each open their own connection for the same data. Fixable, but carries a real-time sync bug risk that's hard to verify without a live user session; better done as its own dedicated pass with thorough testing than shipped unverified.",
+    "Validation: `tsc`/`build`/`lint` (0 errors, 0 new warnings)/`test:unit` 115/115 pass. `audit-security` PASS (1986 files). Settings page JS weight measured on the real production build after the change.",
+  ],
+};
+
+const v1222_es: ChangelogEntry = {
+  version: "v1.22.2",
+  date: "2026-09-15",
+  title: "Rendimiento: Ajustes dividido por categoría (carga bajo demanda)",
+  items: [
+    "Las 15 categorías de la página de Ajustes (Apariencia, Temas, Isla Dinámica, Dock, Seguridad, Sesiones, Atajos, Rendimiento, Privacidad...) se cargaban todas de golpe al abrir la página, aunque el usuario solo mira una a la vez. Cada categoría tiene ahora su propio fragmento de código, cargado solo al abrirla.",
+    "Deliberadamente no tocado aún, documentado en su lugar: deduplicar las suscripciones en tiempo real de `useItems` (Notas/Tareas/Eventos) -- varios widgets abren cada uno su propia conexión para los mismos datos. Solucionable, pero conlleva un riesgo real de bug de sincronización en vivo difícil de verificar sin una sesión de usuario real; mejor hacerlo como pasada dedicada con pruebas exhaustivas que lanzarlo sin verificar.",
+    "Validación: `tsc`/`build`/`lint` (0 errores, 0 advertencias nuevas)/`test:unit` 115/115 ✓. `audit-security` PASS (1986 archivos). Peso de JS de la página de Ajustes medido en el build de producción real tras el cambio.",
+  ],
+};
+
+const v1222_de: ChangelogEntry = {
+  version: "v1.22.2",
+  date: "2026-09-15",
+  title: "Performance: Einstellungen nach Kategorie aufgeteilt (Laden bei Bedarf)",
+  items: [
+    "Die 15 Kategorien der Einstellungsseite (Erscheinungsbild, Themes, Dynamic Island, Dock, Sicherheit, Sitzungen, Tastenkürzel, Performance, Datenschutz...) wurden beim Öffnen der Seite alle auf einmal geladen, obwohl der Nutzer immer nur eine ansieht. Jede Kategorie hat jetzt ihr eigenes Code-Chunk, das nur beim Öffnen geladen wird.",
+    "Bewusst noch nicht angefasst, stattdessen dokumentiert: die Deduplizierung der Echtzeit-Abonnements von `useItems` (Notizen/Aufgaben/Termine) -- mehrere Widgets öffnen jeweils eine eigene Verbindung für dieselben Daten. Behebbar, birgt aber ein echtes Risiko für Sync-Bugs in Echtzeit, das ohne echte Nutzersitzung schwer zu verifizieren ist; besser als eigener Durchgang mit gründlichem Testen statt ungeprüft ausgeliefert.",
+    "Validierung: `tsc`/`build`/`lint` (0 Fehler, 0 neue Warnungen)/`test:unit` 115/115 bestanden. `audit-security` PASS (1986 Dateien). JS-Gewicht der Einstellungsseite am echten Produktions-Build nach der Änderung gemessen.",
+  ],
+};
+
+CHANGELOG_BY_LANG.fr.unshift(v1222_fr);
+CHANGELOG_BY_LANG.en.unshift(v1222_en);
+CHANGELOG_BY_LANG.es.unshift(v1222_es);
+CHANGELOG_BY_LANG.de.unshift(v1222_de);
+
 export const CHANGELOG = CHANGELOG_BY_LANG.fr;

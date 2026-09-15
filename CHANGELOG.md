@@ -2,6 +2,14 @@
 
 Toutes les modifications notables de ce projet seront documentées dans ce fichier.
 
+## v1.22.2 — 2026-09-15
+
+**Performance : Réglages découpés par catégorie (chargement à la demande)**
+
+- `components/settings/SettingsContent.tsx` : les 15 composants de catégorie (Apparence, Thèmes, Île Dynamique, Dock, Sécurité, Sessions, Raccourcis, Performance, Confidentialité...) étaient tous importés statiquement, donc tous chargés dès l'ouverture de `/settings` peu importe l'onglet visité. Passés en `next/dynamic` avec repli `SkeletonCard`, même pattern déjà utilisé pour AiProviderPanel/LiveSettings/IntegrationsSettings.
+- Non fait volontairement, documenté : dédoublonnage des souscriptions realtime `useItems` (Notes/Tâches/Événements) — trop risqué à livrer sans pouvoir tester en session réelle.
+- Validation : `tsc`/`build`/`lint` (0 erreur)/`test:unit` 115/115 ✓. `audit-security` PASS (1986 fichiers).
+
 ## v1.22.1 — 2026-09-15
 
 **Performance (suite) : flous d'arrière-plan redondants, animations qui recalculaient la mise en page, chargement paresseux**

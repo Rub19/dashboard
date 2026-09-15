@@ -24,6 +24,7 @@ import dynamic from "next/dynamic";
 import AiProviderPanelSkeleton from "@/components/AiProviderPanelSkeleton";
 import LiveSettingsSkeleton from "@/components/LiveSettingsSkeleton";
 import IntegrationsSettingsSkeleton from "@/components/IntegrationsSettingsSkeleton";
+import { SkeletonCard } from "@/components/Skeleton";
 import Input from "@/components/Input";
 
 const AiProviderPanel = dynamic(() => import("@/components/AiProviderPanel").then((m) => m.AiProviderPanel), {
@@ -43,22 +44,28 @@ import SettingField, { type FieldDef } from "./SettingField";
 import { useSettingsForm } from "./SettingsFormContext";
 import SettingsErrorBoundary from "./primitives/SettingsErrorBoundary";
 import { useModifiedCount } from "./useModifiedCount";
-import AppearanceSettings from "./AppearanceSettings";
-import UserProfileCard from "./UserProfileCard";
-import MaintenancePanel from "./MaintenancePanel";
-import LanguageControl from "./LanguageControl";
-import SoundPackControl from "./SoundPackControl";
 import AmbientSoundControl from "@/components/AmbientSoundControl";
-import SettingsOverview from "./SettingsOverview";
-import SoundscapeMixer from "./SoundscapeMixer";
-import DynamicIslandSettings from "./DynamicIslandSettings";
-import DockSettings from "./DockSettings";
-import ShortcutsSettings from "./ShortcutsSettings";
-import PerformanceSettings from "./PerformanceSettings";
-import PrivacySecuritySettings from "./PrivacySecuritySettings";
-import SecurityAuthManager from "./SecurityAuthManager";
-import SessionsManager from "./SessionsManager";
 import { CATEGORY_ORDER, sectionCategory } from "./SettingsNavigation";
+
+// Only one category panel is ever mounted at a time (the settings page
+// renders one section based on the active category), but all of these were
+// statically imported into SettingsContent's own chunk regardless of which
+// one the user actually opens -- code-split them so each category's JS
+// loads only when that category is visited.
+const AppearanceSettings = dynamic(() => import("./AppearanceSettings"), { ssr: false, loading: () => <SkeletonCard /> });
+const UserProfileCard = dynamic(() => import("./UserProfileCard"), { ssr: false, loading: () => <SkeletonCard /> });
+const MaintenancePanel = dynamic(() => import("./MaintenancePanel"), { ssr: false, loading: () => <SkeletonCard /> });
+const LanguageControl = dynamic(() => import("./LanguageControl"), { ssr: false, loading: () => <SkeletonCard /> });
+const SoundPackControl = dynamic(() => import("./SoundPackControl"), { ssr: false, loading: () => <SkeletonCard /> });
+const SettingsOverview = dynamic(() => import("./SettingsOverview"), { ssr: false, loading: () => <SkeletonCard /> });
+const SoundscapeMixer = dynamic(() => import("./SoundscapeMixer"), { ssr: false, loading: () => <SkeletonCard /> });
+const DynamicIslandSettings = dynamic(() => import("./DynamicIslandSettings"), { ssr: false, loading: () => <SkeletonCard /> });
+const DockSettings = dynamic(() => import("./DockSettings"), { ssr: false, loading: () => <SkeletonCard /> });
+const ShortcutsSettings = dynamic(() => import("./ShortcutsSettings"), { ssr: false, loading: () => <SkeletonCard /> });
+const PerformanceSettings = dynamic(() => import("./PerformanceSettings"), { ssr: false, loading: () => <SkeletonCard /> });
+const PrivacySecuritySettings = dynamic(() => import("./PrivacySecuritySettings"), { ssr: false, loading: () => <SkeletonCard /> });
+const SecurityAuthManager = dynamic(() => import("./SecurityAuthManager"), { ssr: false, loading: () => <SkeletonCard /> });
+const SessionsManager = dynamic(() => import("./SessionsManager"), { ssr: false, loading: () => <SkeletonCard /> });
 
 const THEMES = [
   { id: "dyno-rose", label: "Dyno Rose" },
@@ -1404,7 +1411,7 @@ export default function SettingsContent({
                 <p className="text-xs text-[var(--text-muted)]">
                   {i18n("aboutVersionLine", "Version {{version}} (Turbopack / Next.js 16.3.3)").replace(
                     "{{version}}",
-                    CHANGELOG[0]?.version || "v1.22.1"
+                    CHANGELOG[0]?.version || "v1.22.2"
                   )}
                 </p>
               </div>

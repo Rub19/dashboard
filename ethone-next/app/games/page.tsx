@@ -18,7 +18,7 @@ export const dynamic = "force-static";
 
 export default function GamesPage() {
   return (
-    <div className="flex h-full min-h-0 w-full flex-1 flex-col overflow-hidden p-2 sm:p-4">
+    <div className="flex h-full min-h-0 w-full flex-1 flex-col overflow-hidden p-0 md:p-4">
       <GameFrame src={`${WORKER_URL}/api/games/dino`} title="Dino Corridor" />
     </div>
   );

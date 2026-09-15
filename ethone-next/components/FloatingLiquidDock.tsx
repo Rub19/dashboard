@@ -10,6 +10,7 @@ import BrandMark from "@/components/BrandMark";
 import { NAVIGATION_ITEMS, isActiveRoute } from "@/lib/navigation";
 import { hapticLightImpact, hapticMediumImpact } from "@/lib/haptics";
 import { useAnimatedSidebar } from "@/components/motion/animated-sidebar";
+import DiscordIcon from "@/components/DiscordIcon";
 import {
   MoreHorizontal,
   Search,
@@ -33,6 +34,10 @@ import {
   Users,
   Settings,
   User,
+  LineChart,
+  Flame,
+  Gamepad2,
+  Swords,
 } from "lucide-react";
 import { useCommandPalette } from "@/components/CommandPaletteProvider";
 import { useFocus } from "@/components/FocusProvider";
@@ -61,6 +66,11 @@ const APP_ICONS: Record<string, React.ComponentType<{ className?: string }>> = {
   team: Users,
   settings: Settings,
   profile: User,
+  analytics: LineChart,
+  interactions: Flame,
+  discord: DiscordIcon,
+  games: Gamepad2,
+  matches: Swords,
 };
 
 export default function FloatingLiquidDock() {

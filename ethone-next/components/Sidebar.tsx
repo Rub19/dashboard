@@ -18,6 +18,7 @@ import {
   Plug,
   Blocks,
   Gamepad2,
+  Swords,
   BarChart3,
   LineChart,
   Settings,
@@ -84,6 +85,7 @@ const APPS: AppItem[] = [
   { id: "discord", href: "/discord/", icon: DiscordIcon },
   { id: "plugins", href: "/plugins/", icon: Blocks },
   { id: "games", href: "/games/", icon: Gamepad2 },
+  { id: "matches", href: "/matches/", icon: Swords },
   { id: "admin", href: "/admin/", icon: BarChart3 },
   { id: "settings", href: "/settings/", icon: Settings },
 ];

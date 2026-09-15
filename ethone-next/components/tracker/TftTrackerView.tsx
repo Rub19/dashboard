@@ -214,7 +214,7 @@ export default function TftTrackerView() {
             <p className="text-sm">Entre ton Riot ID pour voir ton historique Teamfight Tactics.</p>
           </div>
         ) : (
-          matches.map((m) => <TftMatchRow key={m.id} match={m} />)
+          matches.map((m, index) => <TftMatchRow key={m.id} match={m} index={index} />)
         )}
       </div>
     </div>

@@ -1,7 +1,7 @@
 "use client";
 
 import { useState, useMemo } from "react";
-import { motion, AnimatePresence } from "framer-motion";
+import { motion, AnimatePresence, useReducedMotion } from "framer-motion";
 import {
   MoreVertical,
   Shield,
@@ -20,6 +20,8 @@ import {
 } from "@/lib/lol-tracker";
 import { computePartyMap } from "@/lib/party-helper";
 import { cn } from "@/lib/utils";
+import { EASE_OUT } from "@/lib/ease";
+import { useSettings } from "@/components/SettingsProvider";
 
 interface LolMatchRowProps {
   match: LolMatch;
@@ -29,6 +31,9 @@ interface LolMatchRowProps {
 export default function LolMatchRow({ match, index }: LolMatchRowProps) {
   const [expanded, setExpanded] = useState(false);
   const [activeTab, setActiveTab] = useState<"scoreboard" | "charts" | "matchups">("scoreboard");
+  const { settings } = useSettings();
+  const osReducedMotion = useReducedMotion();
+  const skipEntranceAnimation = Boolean(settings.reducedMotion) || Boolean(osReducedMotion);
 
   const meta = match.metadata;
   const isWin = meta?.result?.toLowerCase() === "victory";
@@ -105,9 +110,13 @@ export default function LolMatchRow({ match, index }: LolMatchRowProps) {
 
   return (
     <motion.div
-      initial={{ opacity: 0, y: 10 }}
+      initial={skipEntranceAnimation ? false : { opacity: 0, y: 10 }}
       animate={{ opacity: 1, y: 0 }}
-      transition={{ duration: 0.2, delay: Math.min(index * 0.03, 0.3) }}
+      transition={
+        skipEntranceAnimation
+          ? { duration: 0 }
+          : { duration: 0.2, delay: Math.min(index * 0.03, 0.3), ease: EASE_OUT }
+      }
       className="overflow-hidden rounded-[var(--panel-radius)] border border-[var(--panel-border)] bg-[#0c1017]/85 backdrop-blur-[var(--panel-blur)] transition-all duration-200 hover:border-[var(--input-border-hover)] hover:bg-[#0f141e]/95 shadow-sm"
     >
       {/* Main Row (Matching Screenshot 1 & 3 Pixel-Perfect) */}

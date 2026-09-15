@@ -2,12 +2,15 @@
 
 import { useState } from "react";
 import { useRouter } from "next/navigation";
+import { motion, useReducedMotion } from "framer-motion";
 import { Users, Plus, Crown, Trash2 } from "lucide-react";
 import { useSharedSpaces } from "@/lib/hooks/useSharedSpaces";
 import FlatCard from "@/components/FlatCard";
 import Input from "@/components/Input";
 import Button from "@/components/ui/Button";
 import { useToast } from "@/components/ToastProvider";
+import { useSettings } from "@/components/SettingsProvider";
+import { EASE_OUT } from "@/lib/ease";
 
 export default function SharedSpacesTab() {
   const router = useRouter();
@@ -15,6 +18,9 @@ export default function SharedSpacesTab() {
   const { spaces, loading, error, createSpace, deleteSpace } = useSharedSpaces();
   const [name, setName] = useState("");
   const [creating, setCreating] = useState(false);
+  const { settings } = useSettings();
+  const osReducedMotion = useReducedMotion();
+  const skipEntranceAnimation = Boolean(settings.reducedMotion) || Boolean(osReducedMotion);
 
   async function add() {
     const trimmed = name.trim();
@@ -75,38 +81,49 @@ export default function SharedSpacesTab() {
       )}
 
       <div className="grid grid-cols-1 gap-4 sm:grid-cols-2 lg:grid-cols-3">
-        {spaces.map((space) => (
-          <FlatCard key={space.id} className="cursor-pointer" onClick={() => router.push(`/spaces/${space.id}`)}>
-            <div className="flex items-start justify-between">
-              <div className="flex items-center gap-3">
-                <span className="flex h-10 w-10 shrink-0 items-center justify-center rounded-[var(--panel-radius)] bg-[var(--accent-primary)]/10 text-[var(--accent-primary)]">
-                  <Users className="h-5 w-5" />
-                </span>
-                <div>
-                  <p className="font-medium">{space.name}</p>
-                  <p className="flex items-center gap-1 text-xs text-[var(--muted)]">
-                    {space.role === "owner" ? (
-                      <>
-                        <Crown className="h-3 w-3" /> Propriétaire
-                      </>
-                    ) : (
-                      "Membre"
-                    )}
-                  </p>
+        {spaces.map((space, index) => (
+          <motion.div
+            key={space.id}
+            initial={skipEntranceAnimation ? false : { opacity: 0, y: 10 }}
+            animate={{ opacity: 1, y: 0 }}
+            transition={
+              skipEntranceAnimation
+                ? { duration: 0 }
+                : { duration: 0.2, delay: Math.min(index * 0.03, 0.3), ease: EASE_OUT }
+            }
+          >
+            <FlatCard className="cursor-pointer" onClick={() => router.push(`/spaces/${space.id}`)}>
+              <div className="flex items-start justify-between">
+                <div className="flex items-center gap-3">
+                  <span className="flex h-10 w-10 shrink-0 items-center justify-center rounded-[var(--panel-radius)] bg-[var(--accent-primary)]/10 text-[var(--accent-primary)]">
+                    <Users className="h-5 w-5" />
+                  </span>
+                  <div>
+                    <p className="font-medium">{space.name}</p>
+                    <p className="flex items-center gap-1 text-xs text-[var(--muted)]">
+                      {space.role === "owner" ? (
+                        <>
+                          <Crown className="h-3 w-3" /> Propriétaire
+                        </>
+                      ) : (
+                        "Membre"
+                      )}
+                    </p>
+                  </div>
                 </div>
+                {space.role === "owner" && (
+                  <button
+                    type="button"
+                    aria-label="Supprimer"
+                    onClick={(e) => remove(space.id, e)}
+                    className="text-[var(--muted)] hover:text-[var(--danger)]"
+                  >
+                    <Trash2 className="h-4 w-4" />
+                  </button>
+                )}
               </div>
-              {space.role === "owner" && (
-                <button
-                  type="button"
-                  aria-label="Supprimer"
-                  onClick={(e) => remove(space.id, e)}
-                  className="text-[var(--muted)] hover:text-[var(--danger)]"
-                >
-                  <Trash2 className="h-4 w-4" />
-                </button>
-              )}
-            </div>
-          </FlatCard>
+            </FlatCard>
+          </motion.div>
         ))}
       </div>
     </div>

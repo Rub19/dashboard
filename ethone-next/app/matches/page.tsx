@@ -1,7 +1,9 @@
 "use client";
 
 import { useState, useMemo } from "react";
+import { motion, useReducedMotion } from "framer-motion";
 import { useTracker } from "@/lib/hooks/useTracker";
+import { EASE_OUT } from "@/lib/ease";
 import FlatCard from "@/components/FlatCard";
 import LiquidSidebar from "@/components/LiquidSidebar";
 import ValorantTrackerView from "@/components/tracker/ValorantTrackerView";
@@ -31,6 +33,8 @@ const APEX_PLATFORMS = ["origin", "xbl", "psn"] as const;
 export default function MatchesPage() {
   const i18n = useI18n();
   const { settings, update } = useSettings();
+  const osReducedMotion = useReducedMotion();
+  const skipEntranceAnimation = Boolean(settings.reducedMotion) || Boolean(osReducedMotion);
   const { success, error: showError } = useToast();
   const [tab, setTab] = useState("valorant");
   const [name, setName] = useState(settings.liveTrackerRiotName);
@@ -181,12 +185,23 @@ export default function MatchesPage() {
               ) : items && items.length > 0 ? (
                 <div className="grid grid-cols-1 gap-4 sm:grid-cols-2 lg:grid-cols-3">
                   {items.map((match, i) => (
-                    <FlatCard key={match.id || i}>
-                      <div className="space-y-2">
-                        <p className="font-bold text-white">{match.map || match.mode || "Match"}</p>
-                        <p className="text-xs text-zinc-400 font-mono">{match.kills ?? "-"}/{match.deaths ?? "-"}/{match.assists ?? "-"}</p>
-                      </div>
-                    </FlatCard>
+                    <motion.div
+                      key={match.id || i}
+                      initial={skipEntranceAnimation ? false : { opacity: 0, y: 10 }}
+                      animate={{ opacity: 1, y: 0 }}
+                      transition={
+                        skipEntranceAnimation
+                          ? { duration: 0 }
+                          : { duration: 0.2, delay: Math.min(i * 0.03, 0.3), ease: EASE_OUT }
+                      }
+                    >
+                      <FlatCard>
+                        <div className="space-y-2">
+                          <p className="font-bold text-white">{match.map || match.mode || "Match"}</p>
+                          <p className="text-xs text-zinc-400 font-mono">{match.kills ?? "-"}/{match.deaths ?? "-"}/{match.assists ?? "-"}</p>
+                        </div>
+                      </FlatCard>
+                    </motion.div>
                   ))}
                 </div>
               ) : (

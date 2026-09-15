@@ -1,7 +1,7 @@
 "use client";
 
 import { useState } from "react";
-import { motion, AnimatePresence } from "framer-motion";
+import { motion, AnimatePresence, useReducedMotion } from "framer-motion";
 import {
   MoreVertical,
   ChevronUp,
@@ -17,6 +17,8 @@ import {
 import { getValorantRankStyle } from "@/components/RiotGamingCard";
 import { computePartyMap } from "@/lib/party-helper";
 import { cn } from "@/lib/utils";
+import { EASE_OUT } from "@/lib/ease";
+import { useSettings } from "@/components/SettingsProvider";
 
 interface ValorantMatchRowProps {
   match: ValorantMatch;
@@ -26,6 +28,9 @@ interface ValorantMatchRowProps {
 export default function ValorantMatchRow({ match, index }: ValorantMatchRowProps) {
   const [expanded, setExpanded] = useState(false);
   const [activeTab, setActiveTab] = useState<"scoreboard" | "performance" | "economy">("scoreboard");
+  const { settings } = useSettings();
+  const osReducedMotion = useReducedMotion();
+  const skipEntranceAnimation = Boolean(settings.reducedMotion) || Boolean(osReducedMotion);
 
   const players = match.scoreboard?.players || [];
   const partyMap = computePartyMap(players);
@@ -67,9 +72,13 @@ export default function ValorantMatchRow({ match, index }: ValorantMatchRowProps
 
   return (
     <motion.div
-      initial={{ opacity: 0, y: 10 }}
+      initial={skipEntranceAnimation ? false : { opacity: 0, y: 10 }}
       animate={{ opacity: 1, y: 0 }}
-      transition={{ duration: 0.2, delay: Math.min(index * 0.03, 0.3) }}
+      transition={
+        skipEntranceAnimation
+          ? { duration: 0 }
+          : { duration: 0.2, delay: Math.min(index * 0.03, 0.3), ease: EASE_OUT }
+      }
       className="overflow-hidden rounded-[var(--panel-radius)] border border-[var(--panel-border)] bg-[#0c1017]/85 backdrop-blur-[var(--panel-blur)] transition-all duration-200 hover:border-[var(--input-border-hover)] hover:bg-[#0f141e]/95 shadow-sm"
     >
       {/* Main Row (Matching Screenshot 4 Pixel-Perfect) */}

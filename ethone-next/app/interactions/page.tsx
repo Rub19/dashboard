@@ -390,7 +390,7 @@ export default function InteractionsPage() {
         ].map((kpi) => (
           <div
             key={kpi.label}
-            className="flex flex-col gap-1 rounded-2xl v8-panel p-4 shadow-lg"
+            className="flex flex-col gap-1 rounded-2xl v8-panel p-4 shadow-lg transition-[border-color,box-shadow] duration-200 hover:border-[var(--accent-primary)]/20"
           >
             <div className="flex items-center justify-between text-zinc-400">
               <span className="text-[11px] font-semibold uppercase tracking-wider">{kpi.label}</span>
@@ -507,7 +507,7 @@ export default function InteractionsPage() {
       {/* Bottom Bento row */}
       <div className="grid grid-cols-12 items-stretch gap-4">
         {/* Category breakdown */}
-        <div className="col-span-12 flex flex-col justify-between gap-4 rounded-2xl v8-panel p-5 shadow-xl lg:col-span-7">
+        <div className="col-span-12 flex flex-col justify-between gap-4 rounded-2xl v8-panel p-5 shadow-xl transition-[border-color,box-shadow] duration-200 hover:border-[var(--accent-primary)]/20 lg:col-span-7">
           <div className="flex items-center justify-between">
             <div className="flex items-center gap-2">
               <Layers className="h-4 w-4 text-[var(--info)]" />

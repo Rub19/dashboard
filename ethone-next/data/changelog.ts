@@ -28087,4 +28087,61 @@ CHANGELOG_BY_LANG.en.unshift(v1230_en);
 CHANGELOG_BY_LANG.es.unshift(v1230_es);
 CHANGELOG_BY_LANG.de.unshift(v1230_de);
 
+const v1231_fr: ChangelogEntry = {
+  version: "v1.23.1",
+  date: "2026-09-15",
+  title: "Motion design : Matches, Interactions, Personas, Spaces",
+  items: [
+    "Suite de l'audit motion design : les lignes de match Valorant/LoL/TFT (page Matches) animaient déjà leur apparition mais ignoraient le réglage « Réduire les animations » et n'utilisaient pas la courbe d'accélération partagée du reste de l'app. TFT n'avait aucune animation ni survol du tout — ajoutés.",
+    "Page Interactions : les cartes de statistiques et le panneau « Répartition par source » ne réagissaient pas du tout au survol, contrairement au reste de l'app.",
+    "Personas, Spaces (personnels et partagés) : ajout de l'animation d'apparition échelonnée déjà utilisée ailleurs (Mail, Tasks, Notes), plafonnée pour ne pas s'accumuler sur une longue liste.",
+    "Volontairement pas touché : la grille du Marketplace, qui peut contenir des centaines d'éléments — y ajouter une animation par carte irait à l'encontre du travail de performance fait plus tôt cette session sur les grandes listes.",
+    "Validation : `tsc`/`build`/`lint` (0 erreur, 0 nouveau warning)/`test:unit` 115/115 ✓. `audit-security` PASS (1986 fichiers).",
+  ],
+};
+
+const v1231_en: ChangelogEntry = {
+  version: "v1.23.1",
+  date: "2026-09-15",
+  title: "Motion design: Matches, Interactions, Personas, Spaces",
+  items: [
+    "Continuing the motion-design audit: Valorant/LoL/TFT match rows (Matches page) already animated in but ignored the \"Reduce motion\" setting and didn't use the app's shared easing curve. TFT had no entrance animation or hover feedback at all -- added.",
+    "Interactions page: the stat cards and the \"Répartition par source\" panel had zero hover feedback, unlike the rest of the app.",
+    "Personas, Spaces (personal and shared): added the same staggered entrance animation already used elsewhere (Mail, Tasks, Notes), capped so it doesn't stack up on a long list.",
+    "Deliberately left untouched: the Marketplace grid, which can hold hundreds of items -- adding a per-card animation there would work against the large-list performance work done earlier this session.",
+    "Validation: `tsc`/`build`/`lint` (0 errors, 0 new warnings)/`test:unit` 115/115 pass. `audit-security` PASS (1986 files).",
+  ],
+};
+
+const v1231_es: ChangelogEntry = {
+  version: "v1.23.1",
+  date: "2026-09-15",
+  title: "Diseño de movimiento: Matches, Interactions, Personas, Spaces",
+  items: [
+    "Continuación de la auditoría de motion design: las filas de partidas de Valorant/LoL/TFT (página Matches) ya animaban su entrada pero ignoraban el ajuste \"Reducir animaciones\" y no usaban la curva de aceleración compartida de la app. TFT no tenía animación de entrada ni respuesta al pasar el cursor -- añadidas.",
+    "Página Interactions: las tarjetas de estadísticas y el panel \"Répartition par source\" no respondían en absoluto al pasar el cursor, a diferencia del resto de la app.",
+    "Personas, Spaces (personales y compartidos): añadida la misma animación de entrada escalonada ya usada en otros sitios (Mail, Tasks, Notes), limitada para que no se acumule en una lista larga.",
+    "Dejado sin tocar deliberadamente: la cuadrícula de Marketplace, que puede contener cientos de elementos -- añadir una animación por tarjeta iría en contra del trabajo de rendimiento para listas grandes hecho antes en esta sesión.",
+    "Validación: `tsc`/`build`/`lint` (0 errores, 0 advertencias nuevas)/`test:unit` 115/115 ✓. `audit-security` PASS (1986 archivos).",
+  ],
+};
+
+const v1231_de: ChangelogEntry = {
+  version: "v1.23.1",
+  date: "2026-09-15",
+  title: "Motion Design: Matches, Interactions, Personas, Spaces",
+  items: [
+    "Fortsetzung des Motion-Design-Audits: Valorant/LoL/TFT-Matchzeilen (Matches-Seite) animierten bereits beim Erscheinen, ignorierten aber die Einstellung \"Animationen reduzieren\" und nutzten nicht die gemeinsame Easing-Kurve der App. TFT hatte gar keine Eintritts-Animation oder Hover-Feedback -- ergänzt.",
+    "Interactions-Seite: Die Statistik-Karten und das \"Répartition par source\"-Panel reagierten überhaupt nicht auf Hover, anders als der Rest der App.",
+    "Personas, Spaces (persönlich und geteilt): Dieselbe gestaffelte Eintritts-Animation ergänzt, die bereits anderswo (Mail, Tasks, Notes) verwendet wird, gedeckelt, damit sie sich bei einer langen Liste nicht aufsummiert.",
+    "Bewusst unangetastet gelassen: das Marketplace-Raster, das Hunderte von Elementen enthalten kann -- eine Animation pro Karte würde der Performance-Arbeit für große Listen aus dieser Sitzung entgegenwirken.",
+    "Validierung: `tsc`/`build`/`lint` (0 Fehler, 0 neue Warnungen)/`test:unit` 115/115 bestanden. `audit-security` PASS (1986 Dateien).",
+  ],
+};
+
+CHANGELOG_BY_LANG.fr.unshift(v1231_fr);
+CHANGELOG_BY_LANG.en.unshift(v1231_en);
+CHANGELOG_BY_LANG.es.unshift(v1231_es);
+CHANGELOG_BY_LANG.de.unshift(v1231_de);
+
 export const CHANGELOG = CHANGELOG_BY_LANG.fr;

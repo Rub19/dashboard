@@ -2,6 +2,16 @@
 
 Toutes les modifications notables de ce projet seront documentées dans ce fichier.
 
+## v1.23.1 — 2026-09-15
+
+**Motion design : Matches, Interactions, Personas, Spaces**
+
+- Tracker (Valorant/LoL/TFT) : respect de "Réduire les animations" + courbe d'easing partagée ; TFT avait zéro animation/survol, ajoutés.
+- Interactions : hover ajouté sur les cartes de stats et le panneau de répartition.
+- Personas, Spaces (perso + partagés) : animation d'apparition échelonnée, plafonnée.
+- Marketplace volontairement laissé de côté (grille potentiellement massive, cohérent avec le travail de performance de cette session).
+- Validation : `tsc`/`build`/`lint` (0 erreur)/`test:unit` 115/115 ✓. `audit-security` PASS (1986 fichiers).
+
 ## v1.23.0 — 2026-09-15
 
 **Sécurité : anti-abus sur l'inscription/mot de passe oublié ; contraste corrigé sur 3 thèmes + placeholders**

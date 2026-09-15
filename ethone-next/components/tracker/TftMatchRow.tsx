@@ -1,8 +1,11 @@
 "use client";
 
 import { useState } from "react";
+import { motion, useReducedMotion } from "framer-motion";
 import { ChevronDown, Swords, Coins, Skull, Clock } from "lucide-react";
 import { cn } from "@/lib/utils";
+import { EASE_OUT } from "@/lib/ease";
+import { useSettings } from "@/components/SettingsProvider";
 import {
   type TftMatch,
   type TftTrait,
@@ -51,15 +54,27 @@ function UnitIcon({ unit, size = "h-7 w-7" }: { unit: TftUnit; size?: string }) 
   );
 }
 
-export default function TftMatchRow({ match }: { match: TftMatch }) {
+export default function TftMatchRow({ match, index = 0 }: { match: TftMatch; index?: number }) {
   const [open, setOpen] = useState(false);
   const me = match.me;
   const placement = me?.placement ?? 8;
   const pc = tftPlacementColor(placement);
   const ordinal = placement === 1 ? "1ère" : `${placement}e`;
+  const { settings } = useSettings();
+  const osReducedMotion = useReducedMotion();
+  const skipEntranceAnimation = Boolean(settings.reducedMotion) || Boolean(osReducedMotion);
 
   return (
-    <div className={cn("rounded-[var(--panel-radius)] border bg-white/[0.02] backdrop-blur-[var(--panel-blur)] transition-colors", pc.border)}>
+    <motion.div
+      initial={skipEntranceAnimation ? false : { opacity: 0, y: 10 }}
+      animate={{ opacity: 1, y: 0 }}
+      transition={
+        skipEntranceAnimation
+          ? { duration: 0 }
+          : { duration: 0.2, delay: Math.min(index * 0.03, 0.3), ease: EASE_OUT }
+      }
+      className={cn("rounded-[var(--panel-radius)] border bg-white/[0.02] backdrop-blur-[var(--panel-blur)] transition-colors hover:border-[var(--accent-primary)]/20", pc.border)}
+    >
       {/* Collapsed header */}
       <button
         type="button"
@@ -147,6 +162,6 @@ export default function TftMatchRow({ match }: { match: TftMatch }) {
           </div>
         </div>
       )}
-    </div>
+    </motion.div>
   );
 }

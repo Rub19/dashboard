@@ -1,6 +1,8 @@
 "use client";
 
 import { useState } from "react";
+import { motion, useReducedMotion } from "framer-motion";
+import { EASE_OUT } from "@/lib/ease";
 import FlatCard from "@/components/FlatCard";
 import { useI18n } from "@/lib/hooks/useI18n";
 import { useUserData, type UserDataRecord } from "@/lib/hooks/useUserData";
@@ -90,7 +92,9 @@ function getWorkspace(item: UserDataRecord, i18n: (k: string) => string) {
 
 export default function SpacesPage() {
   const i18n = useI18n();
-  const { update } = useSettings();
+  const { settings, update } = useSettings();
+  const osReducedMotion = useReducedMotion();
+  const skipEntranceAnimation = Boolean(settings.reducedMotion) || Boolean(osReducedMotion);
   const { success, error: showError } = useToast();
   const { items: spaces, loading, error, create, remove } = useUserData("space");
   const [name, setName] = useState("");
@@ -266,11 +270,21 @@ export default function SpacesPage() {
       </FlatCard>
 
       <div className="grid grid-cols-1 gap-4 sm:grid-cols-2 lg:grid-cols-4">
-        {spaces.map((space) => {
+        {spaces.map((space, index) => {
           const workspace = getWorkspace(space, i18n);
           const isActive = workspace?.id === activeSpace;
           return (
-            <FlatCard key={space.id}>
+            <motion.div
+              key={space.id}
+              initial={skipEntranceAnimation ? false : { opacity: 0, y: 10 }}
+              animate={{ opacity: 1, y: 0 }}
+              transition={
+                skipEntranceAnimation
+                  ? { duration: 0 }
+                  : { duration: 0.2, delay: Math.min(index * 0.03, 0.3), ease: EASE_OUT }
+              }
+            >
+            <FlatCard>
               <div className="space-y-3">
                 <div className="flex items-start justify-between">
                   <div className="flex items-center gap-3">
@@ -328,6 +342,7 @@ export default function SpacesPage() {
                 )}
               </div>
             </FlatCard>
+            </motion.div>
           );
         })}
       </div>

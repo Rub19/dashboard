@@ -1,6 +1,8 @@
 "use client";
 
 import { useState } from "react";
+import { motion, useReducedMotion } from "framer-motion";
+import { EASE_OUT } from "@/lib/ease";
 import FlatCard from "@/components/FlatCard";
 import Input from "@/components/Input";
 import { useUserData } from "@/lib/hooks/useUserData";
@@ -26,7 +28,9 @@ export default function PersonasPage() {
   const i18n = useI18n();
   const { success, error: showError } = useToast();
   const { items: personas, create, update, remove } = useUserData("persona");
-  const { update: updateSettings } = useSettings();
+  const { settings, update: updateSettings } = useSettings();
+  const osReducedMotion = useReducedMotion();
+  const skipEntranceAnimation = Boolean(settings.reducedMotion) || Boolean(osReducedMotion);
   const [label, setLabel] = useState("");
   const [theme, setTheme] = useState<(typeof THEMES)[number]>("obsidian");
   const [editing, setEditing] = useState<string | null>(null);
@@ -119,11 +123,21 @@ export default function PersonasPage() {
       </FlatCard>
 
       <div className="grid grid-cols-1 gap-4 sm:grid-cols-2 lg:grid-cols-3">
-        {personas.map((p) => {
+        {personas.map((p, index) => {
           const data = p.data as { theme?: string };
           const isEditing = editing === p.id;
           return (
-            <FlatCard key={p.id}>
+            <motion.div
+              key={p.id}
+              initial={skipEntranceAnimation ? false : { opacity: 0, y: 10 }}
+              animate={{ opacity: 1, y: 0 }}
+              transition={
+                skipEntranceAnimation
+                  ? { duration: 0 }
+                  : { duration: 0.2, delay: Math.min(index * 0.03, 0.3), ease: EASE_OUT }
+              }
+            >
+            <FlatCard>
               {isEditing ? (
                 <div className="space-y-3">
                   <Input
@@ -169,6 +183,7 @@ export default function PersonasPage() {
                 </div>
               )}
             </FlatCard>
+            </motion.div>
           );
         })}
       </div>

@@ -2514,6 +2514,29 @@ html[data-zen-mode="true"] [data-v8-main] {
   padding-bottom: 1.5rem !important;
 }
 
+/* ============================================================
+   Game immersive mode (mobile) — set directly by GameFrame.tsx,
+   independent of the persisted zenMode setting above.
+   ============================================================ */
+
+html[data-game-immersive="true"] [data-v8-rail],
+html[data-game-immersive="true"] header[data-v8-topbar],
+html[data-game-immersive="true"] .v8-floating-dock,
+html[data-game-immersive="true"] [data-dock],
+html[data-game-immersive="true"] [data-v8-status-bar],
+html[data-game-immersive="true"] [data-zen-hidden] {
+  display: none !important;
+}
+
+html[data-game-immersive="true"] [data-v8-shell] {
+  margin-left: 0 !important;
+  transition: none;
+}
+
+html[data-game-immersive="true"] [data-v8-main] {
+  padding-bottom: 0 !important;
+}
+
 /* Global icon/control radius */
 .v8-icon-radius {
   border-radius: var(--icon-radius, 0.5rem);

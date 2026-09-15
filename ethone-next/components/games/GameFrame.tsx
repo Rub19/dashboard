@@ -2,12 +2,10 @@
 
 import { useEffect, useRef, useState } from "react";
 import { Maximize2, Minimize2 } from "lucide-react";
-import { useZenMode } from "@/lib/hooks/useZenMode";
 
 export default function GameFrame({ src, title }: { src: string; title: string }) {
   const iframeRef = useRef<HTMLIFrameElement>(null);
   const [isFullscreen, setIsFullscreen] = useState(false);
-  const { zenMode, enable: enableZen, disable: disableZen } = useZenMode();
 
   useEffect(() => {
     const onChange = () => setIsFullscreen(document.fullscreenElement === iframeRef.current);
@@ -15,19 +13,25 @@ export default function GameFrame({ src, title }: { src: string; title: string }
     return () => document.removeEventListener("fullscreenchange", onChange);
   }, []);
 
-  // On mobile, auto-enter zen mode (hides the floating dock/topbar/rail via
-  // globals.css's [data-zen-mode="true"] rules) so the game gets the whole
-  // screen the moment the page opens, without needing a tap — the native
+  // On mobile, hide the floating dock/topbar/rail (via globals.css's
+  // [data-game-immersive="true"] rules) so the game gets the whole screen
+  // the moment the page opens, without needing a tap — the native
   // Fullscreen API can't be invoked without a user gesture, so it can't do
-  // this part on its own. Restores whatever zen mode was set to before.
+  // this part on its own.
+  //
+  // This sets a DOM attribute directly instead of going through the
+  // persisted `zenMode` setting: SettingsProvider reloads settings from
+  // local storage and then from the server asynchronously right after
+  // mount, and that reload was clobbering an `update({ zenMode: true })`
+  // call made here milliseconds earlier, so the dock never actually
+  // stayed hidden. A dedicated attribute nothing else writes to has no
+  // such race.
   useEffect(() => {
     if (typeof window === "undefined" || !window.matchMedia("(max-width: 767px)").matches) return;
-    const wasZen = zenMode;
-    enableZen();
+    document.documentElement.setAttribute("data-game-immersive", "true");
     return () => {
-      if (!wasZen) disableZen();
+      document.documentElement.removeAttribute("data-game-immersive");
     };
-    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
 
   function toggleFullscreen() {

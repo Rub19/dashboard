@@ -18,6 +18,8 @@ export const NAVIGATION_ITEMS: NavigationItem[] = [
   { id: "connections", label: "connections", icon: "connections", actionId: "v8.connections.open", href: "/connections/" },
   { id: "discord", label: "discord", icon: "discord", actionId: "v8.discord.open", href: "/discord/" },
   { id: "plugins", label: "plugins", icon: "plugins", actionId: "v8.plugins.open", href: "/plugins/" },
+  { id: "games", label: "games", icon: "gamepad-2", actionId: "v8.games.open", href: "/games/" },
+  { id: "matches", label: "matches", icon: "swords", actionId: "v8.matches.open", href: "/matches/" },
   { id: "spaces", label: "spaces", icon: "spaces", actionId: "v8.spaces.open", href: "/spaces/" },
   { id: "flows", label: "flowsTitle", icon: "flows", actionId: "v8.flows.open", href: "/flows/" },
   { id: "brain", label: "brain", icon: "brain", actionId: "v8.brain.open", href: "/brain/" },

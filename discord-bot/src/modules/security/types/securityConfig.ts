@@ -9,6 +9,24 @@ export type AntiNukeAction = z.infer<typeof AntiNukeActionSchema>;
 export const AntiSpamActionSchema = z.enum(['warn', 'delete', 'timeout']);
 export type AntiSpamAction = z.infer<typeof AntiSpamActionSchema>;
 
+// Extracted as its own named schema (rather than inlined in
+// SecurityConfigSchema below) so routes/commands touching only Anti-Nuke can
+// call AntiNukeConfigSchema.partial() directly — z.object(...).default({})
+// wraps the object in a ZodDefault, which has no .partial() of its own.
+export const AntiNukeConfigSchema = z.object({
+  enabled: z.boolean().default(true),
+  maxBans: z.number().min(2).max(20).default(4),
+  maxKicks: z.number().min(2).max(20).default(4),
+  maxChannelDeletes: z.number().min(2).max(10).default(3),
+  maxChannelCreates: z.number().min(3).max(15).default(5),
+  maxRoleDeletes: z.number().min(2).max(10).default(3),
+  maxRoleCreates: z.number().min(3).max(15).default(5),
+  timeWindowSeconds: z.number().min(5).max(60).default(10),
+  action: AntiNukeActionSchema.default('strip_roles'),
+  alertOnDangerousPermissions: z.boolean().default(true),
+  blockUnknownWebhooks: z.boolean().default(true),
+});
+
 export const SecurityConfigSchema = z.object({
   // 1. Anti-Raid
   antiRaid: z
@@ -24,21 +42,7 @@ export const SecurityConfigSchema = z.object({
     .default({}),
 
   // 2. Anti-Nuke
-  antiNuke: z
-    .object({
-      enabled: z.boolean().default(true),
-      maxBans: z.number().min(2).max(20).default(4),
-      maxKicks: z.number().min(2).max(20).default(4),
-      maxChannelDeletes: z.number().min(2).max(10).default(3),
-      maxChannelCreates: z.number().min(3).max(15).default(5),
-      maxRoleDeletes: z.number().min(2).max(10).default(3),
-      maxRoleCreates: z.number().min(3).max(15).default(5),
-      timeWindowSeconds: z.number().min(5).max(60).default(10),
-      action: AntiNukeActionSchema.default('strip_roles'),
-      alertOnDangerousPermissions: z.boolean().default(true),
-      blockUnknownWebhooks: z.boolean().default(true),
-    })
-    .default({}),
+  antiNuke: AntiNukeConfigSchema.default({}),
 
   // 3. Anti-Spam & Contenu
   antiSpam: z

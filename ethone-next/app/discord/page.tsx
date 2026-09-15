@@ -6,6 +6,7 @@ import { useRouter } from "next/navigation";
 import {
   ShieldCheck,
   ShieldAlert,
+  Bomb,
   Shield,
   Key,
   BarChart3,
@@ -1175,6 +1176,26 @@ export default function DiscordDashboardPage() {
                       >
                         <ShieldAlert className="h-4 w-4" />
                         <span>Ouvrir Anti-Raid</span>
+                        <ChevronRight className="h-3.5 w-3.5" />
+                      </Link>
+                    </div>
+
+                    {/* Anti-Nuke Command Center Gateway */}
+                    <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-3 rounded-[var(--panel-radius)] border border-[var(--panel-border)] bg-white/[0.03] p-4">
+                      <div>
+                        <div className="flex items-center gap-2">
+                          <p className="text-xs font-bold text-white">Centre Anti-Nuke</p>
+                        </div>
+                        <p className="text-[11px] text-zinc-300 mt-0.5">
+                          Détection des bannissements massifs et suppressions de salons/rôles, sanction automatique configurable sur l'auteur.
+                        </p>
+                      </div>
+                      <Link
+                        href={`/discord/security/anti-nuke?guildId=${selectedGuild.id}`}
+                        className="flex h-9 shrink-0 items-center gap-2 rounded-xl bg-red-600 px-4 text-xs font-semibold text-white transition-colors hover:bg-red-500 active:scale-95"
+                      >
+                        <Bomb className="h-4 w-4" />
+                        <span>Ouvrir Anti-Nuke</span>
                         <ChevronRight className="h-3.5 w-3.5" />
                       </Link>
                     </div>

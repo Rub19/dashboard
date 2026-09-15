@@ -1,4 +1,4 @@
-import { assertAllowedQuery, PATTERNS, queryText } from "../middleware/validation.js";
+import { assertAllowedQuery, PATTERNS, queryText, queryInteger } from "../middleware/validation.js";
 import {
   getTrackerApexProfile,
   getTrackerApexMatches,
@@ -100,13 +100,14 @@ export async function trackerLolRoute({ env, url, auth, request }) {
 }
 
 export async function trackerValorantMatchesRoute({ env, url, auth, request }) {
-  assertAllowedQuery(url, ["name", "tag", "mode", "region", "_t", "t", "force"]);
+  assertAllowedQuery(url, ["name", "tag", "mode", "region", "startIndex", "_t", "t", "force"]);
   const name = queryText(url, "name", { pattern: PATTERNS.playerName, max: 32 });
   const tag = queryText(url, "tag", { pattern: PATTERNS.playerTag, max: 10 }).replace(/^#/, "");
   const mode = queryText(url, "mode", { max: 32, required: false }) || "all";
+  const startIndex = queryInteger(url, "startIndex", { required: false, fallback: 0, min: 0, max: 500 });
   const riotId = `${name}#${tag}`;
-  const loader = async () => getValorantMatches(env, riotId, mode, await ownKeyHenrik(env, auth, request));
-  const result = await cachedLoad(`tracker:valorant:matches:${name.toLowerCase()}:${tag.toLowerCase()}:${mode}`, 600, loader);
+  const loader = async () => getValorantMatches(env, riotId, mode, await ownKeyHenrik(env, auth, request), startIndex);
+  const result = await cachedLoad(`tracker:valorant:matches:${name.toLowerCase()}:${tag.toLowerCase()}:${mode}:${startIndex}`, 600, loader);
   return routeResult(result.data, { source: "henrikdev", cached: result.cached });
 }
 

@@ -47,6 +47,7 @@ export default function ValorantTrackerView() {
   const [matches, setMatches] = useState<ValorantMatch[]>([]);
   const [loading, setLoading] = useState(false);
   const [syncing, setSyncing] = useState(false);
+  const [loadingMore, setLoadingMore] = useState(false);
   const [lastSyncTime, setLastSyncTime] = useState<Date | null>(null);
   const [errorMsg, setErrorMsg] = useState<string | null>(null);
   const [activeReportIndex, setActiveReportIndex] = useState<number | null>(null);
@@ -150,6 +151,65 @@ export default function ValorantTrackerView() {
     },
     [riotName, riotTag, selectedMode, cacheKey, success, showError]
   );
+
+  // Experimental: HenrikDev's v3 matches endpoint caps at ~25 matches per
+  // request with no documented way to page further back. `startIndex` here
+  // is an unverified guess — if the endpoint ignores it, the response comes
+  // back as a pure duplicate of what we already have, which is detected
+  // below and surfaced honestly instead of silently doing nothing.
+  const loadMoreMatches = useCallback(async () => {
+    const cleanName = riotName.trim();
+    const cleanTag = riotTag.trim().replace(/^#/, "");
+    if (!cleanName || !cleanTag || loadingMore) return;
+
+    setLoadingMore(true);
+    let henrikApiKey =
+      typeof window !== "undefined"
+        ? localStorage.getItem("ethone:cred:riot:henrikApiKey") ||
+          localStorage.getItem("ethone:cred:valorant:apiKey") ||
+          localStorage.getItem("ethone:cred:henrik:apiKey") ||
+          localStorage.getItem("HENRIK_API_KEY")
+        : null;
+    if (!henrikApiKey && typeof window !== "undefined") {
+      const generic = localStorage.getItem("ethone:cred:riot:apiKey");
+      if (generic && generic.startsWith("HDEV-")) henrikApiKey = generic;
+    }
+
+    try {
+      let newMatches: ValorantMatch[] = [];
+      try {
+        newMatches = await fetchValorantMatchesDirect(cleanName, cleanTag, selectedMode, henrikApiKey, matches.length);
+      } catch {
+        try {
+          const modeParam = selectedMode !== "all" ? `&mode=${encodeURIComponent(selectedMode)}` : "";
+          const res = await fetchWorker(
+            `/api/stats/valorant-matches?name=${encodeURIComponent(cleanName)}&tag=${encodeURIComponent(cleanTag)}${modeParam}&startIndex=${matches.length}`
+          );
+          const rawList = (res?.data?.matches || res?.data || res?.matches || res || []) as ValorantMatch[];
+          newMatches = Array.isArray(rawList) ? rawList : [];
+        } catch {
+          newMatches = [];
+        }
+      }
+
+      const existingIds = new Set(matches.map((m) => m.id));
+      const uniqueNew = newMatches.filter((m) => !existingIds.has(m.id));
+
+      if (uniqueNew.length === 0) {
+        showError("L'API ne permet pas de charger un historique plus ancien pour ce compte (pagination non supportée).");
+        return;
+      }
+
+      const merged = [...matches, ...uniqueNew];
+      setMatches(merged);
+      try {
+        localStorage.setItem(cacheKey, JSON.stringify({ matches: merged, timestamp: Date.now() }));
+      } catch {}
+      success(`${uniqueNew.length} partie${uniqueNew.length > 1 ? "s" : ""} supplémentaire${uniqueNew.length > 1 ? "s" : ""} chargée${uniqueNew.length > 1 ? "s" : ""}`);
+    } finally {
+      setLoadingMore(false);
+    }
+  }, [riotName, riotTag, selectedMode, matches, cacheKey, success, showError, loadingMore]);
 
   // Load once on mount or when account changes (using cache)
   useEffect(() => {
@@ -519,6 +579,21 @@ export default function ValorantTrackerView() {
               </div>
             </div>
           ))
+        )}
+
+        {!loading && !errorMsg && matches.length > 0 && (
+          <div className="flex flex-col items-center gap-1.5 pt-2">
+            <button
+              type="button"
+              onClick={loadMoreMatches}
+              disabled={loadingMore}
+              className="flex items-center gap-1.5 rounded-xl border border-[var(--panel-border)] bg-white/5 px-3.5 py-2 text-xs font-bold text-zinc-300 hover:bg-white/10 hover:text-white active:scale-95 transition-all cursor-pointer disabled:opacity-50"
+            >
+              <RefreshCw className={cn("h-3.5 w-3.5", loadingMore && "animate-spin")} />
+              <span>{loadingMore ? "Chargement..." : "Charger plus de parties"}</span>
+            </button>
+            <p className="text-[10px] text-zinc-600">Expérimental — peut ne rien trouver de plus selon les limites de l'API</p>
+          </div>
         )}
       </div>
 

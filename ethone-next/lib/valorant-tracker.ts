@@ -560,7 +560,8 @@ export async function fetchValorantMatchesDirect(
   name: string,
   tag: string,
   mode: string = "all",
-  apiKey?: string | null
+  apiKey?: string | null,
+  startIndex: number = 0
 ): Promise<ValorantMatch[]> {
   const cleanName = name.trim();
   const cleanTag = tag.trim().replace(/^#/, "");
@@ -573,8 +574,13 @@ export async function fetchValorantMatchesDirect(
 
   // Henrik v3 returns the most recent matches; `size` widens the window
   // (25 is the practical ceiling the endpoint honours with an API key).
-  const modeFilter = mode !== "all" ? `?filter=${encodeURIComponent(mode)}&size=40` : "?size=40";
-  const url = `https://api.henrikdev.xyz/valorant/v3/matches/eu/${encodeURIComponent(cleanName)}/${encodeURIComponent(cleanTag)}${modeFilter}`;
+  // `startIndex` for paging further back is UNDOCUMENTED and unverified —
+  // if the endpoint ignores it, "load more" will just re-return the same
+  // batch; ValorantTrackerView detects that case and tells the user.
+  const params = new URLSearchParams({ size: "25" });
+  if (mode !== "all") params.set("filter", mode);
+  if (startIndex > 0) params.set("startIndex", String(startIndex));
+  const url = `https://api.henrikdev.xyz/valorant/v3/matches/eu/${encodeURIComponent(cleanName)}/${encodeURIComponent(cleanTag)}?${params.toString()}`;
 
   const res = await fetch(url, { headers });
   if (!res.ok) {

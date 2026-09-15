@@ -110,22 +110,27 @@ export async function getValorantProfile(env, riotId, apiKeyOverride) {
   });
 }
 
-export async function getValorantMatches(env, riotId, mode, apiKeyOverride) {
+export async function getValorantMatches(env, riotId, mode, apiKeyOverride, startIndex = 0) {
   const apiKey = apiKeyOverride || requireSecret(env, "HENRIK_API_KEY");
   const [name, tag] = riotId.split("#");
-  
+
   const account = await getAccount(env, name, tag, apiKey);
   if (!account) return [];
-  
+
   const region = account.region || "eu";
-  
+
   const matchesUrl = new URL(`/valorant/v3/matches/${region}/${encodeURIComponent(name)}/${encodeURIComponent(tag)}`, ORIGIN);
-  matchesUrl.searchParams.set("size", "40");
+  // 25 is the practical ceiling this endpoint honours per request regardless
+  // of a higher size. `startIndex` for paging further back is UNDOCUMENTED
+  // and unverified — the frontend detects an all-duplicate response and
+  // tells the user it isn't supported rather than silently looping.
+  matchesUrl.searchParams.set("size", "25");
   if (mode && mode !== "all") {
     const slug = encodeURIComponent(mode);
     matchesUrl.searchParams.set("mode", slug);
     matchesUrl.searchParams.set("filter", slug);
   }
+  if (startIndex > 0) matchesUrl.searchParams.set("startIndex", String(startIndex));
 
   const headers = {};
   if (apiKey) headers["Authorization"] = apiKey;
@@ -134,7 +139,7 @@ export async function getValorantMatches(env, riotId, mode, apiKeyOverride) {
     env,
     expectedOrigin: ORIGIN,
     service: "tracker",
-    dedupeKey: `henrik:matches:${region}:${name.toLowerCase()}:${tag.toLowerCase()}:${mode || "all"}:40`,
+    dedupeKey: `henrik:matches:${region}:${name.toLowerCase()}:${tag.toLowerCase()}:${mode || "all"}:${startIndex}`,
     headers,
     retries: 1,
     maxBytes: 8388608

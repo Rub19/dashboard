@@ -21,14 +21,14 @@ const TRACKER_GAMES = new Set([
   "splitgate",
   "the-finals",
   // xdefiant removed: Ubisoft shut the game down in June 2025.
-  "marvel-rivals",
-  "rocket-league",
+  // fortnite, r6siege, destiny-2, warzone, marvel-rivals and rocket-league
+  // were added earlier this session but were never actually verified —
+  // tracker.gg's public developer API (public-api.tracker.gg) does not
+  // document or support any of these titles as of Sept 2026, only Apex,
+  // CS2, Division 2, Splitgate and The Finals. They were removed rather
+  // than left in place returning permanently broken results.
   "bf2042",
   "apex",
-  "fortnite",
-  "r6siege",
-  "destiny-2",
-  "warzone",
 ]);
 
 async function ownKeyTracker(env, auth, request) {

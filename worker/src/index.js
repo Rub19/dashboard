@@ -16,8 +16,14 @@ function securityHeaders(response, route) {
   // marked embeddable (route.js's `embeddable: true`, currently only the
   // friend-game iframe embed) gets a narrow exception instead: framing is
   // allowed, but only from ETHONE's own origins, never left wide open.
+  // That route serves a full self-contained HTML/CSS/JS page (the game
+  // itself, not JSON), so it also needs script-src/style-src to allow its
+  // own inline <script>/<style> to actually run — default-src 'none' was
+  // silently blocking both, leaving an unstyled, non-functional page
+  // rendered inside the iframe. The game has no external resource loads
+  // (no images, fetches, or storage), so nothing else needs opening up.
   if (route?.embeddable === true) {
-    headers.set("content-security-policy", "default-src 'none'; frame-ancestors https://ethone.dev https://*.pages.dev; base-uri 'none'; form-action 'none'");
+    headers.set("content-security-policy", "default-src 'none'; script-src 'unsafe-inline'; style-src 'unsafe-inline'; frame-ancestors https://ethone.dev https://*.pages.dev; base-uri 'none'; form-action 'none'");
   } else {
     headers.set("content-security-policy", "default-src 'none'; frame-ancestors 'none'; base-uri 'none'; form-action 'none'");
     headers.set("x-frame-options", "DENY");

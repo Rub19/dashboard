@@ -107,16 +107,16 @@ function defaultIconFor(type: ToastType) {
   // from RichToast's icon wrapper (`color: var(--…)`).
   switch (type) {
     case "success":
-      return <Icon name="check" pack="phosphor" className="h-5 w-5" />;
+      return <Icon name="check" pack="lucide" className="h-5 w-5" />;
     case "error":
-      return <Icon name="x" pack="phosphor" className="h-5 w-5" />;
+      return <Icon name="x" pack="lucide" className="h-5 w-5" />;
     case "warning":
-      return <Icon name="warning" pack="phosphor" className="h-5 w-5" />;
+      return <Icon name="warning" pack="lucide" className="h-5 w-5" />;
     case "loading":
-      return <Icon name="loader-2" pack="phosphor" className="h-5 w-5 animate-spin" />;
+      return <Icon name="loader-2" pack="lucide" className="h-5 w-5 animate-spin" />;
     case "info":
     default:
-      return <Icon name="info" pack="phosphor" className="h-5 w-5" />;
+      return <Icon name="info" pack="lucide" className="h-5 w-5" />;
   }
 }
 
@@ -206,7 +206,7 @@ export function ToastProvider({ children }: { children: React.ReactNode }) {
         description,
         type: "success",
         action,
-        icon: <Icon name="check" pack="phosphor" className="h-5 w-5 text-emerald-400" />,
+        icon: <Icon name="check" pack="lucide" className="h-5 w-5 text-emerald-400" />,
       }),
     [show]
   );
@@ -217,7 +217,7 @@ export function ToastProvider({ children }: { children: React.ReactNode }) {
         title,
         description,
         type: "error",
-        icon: <Icon name="x" pack="phosphor" className="h-5 w-5 text-rose-400" />,
+        icon: <Icon name="x" pack="lucide" className="h-5 w-5 text-rose-400" />,
       }),
     [show]
   );
@@ -228,7 +228,7 @@ export function ToastProvider({ children }: { children: React.ReactNode }) {
         title,
         description,
         type: "info",
-        icon: <Icon name="info" pack="phosphor" className="h-5 w-5 text-cyan-400" />,
+        icon: <Icon name="info" pack="lucide" className="h-5 w-5 text-cyan-400" />,
       }),
     [show]
   );
@@ -239,7 +239,7 @@ export function ToastProvider({ children }: { children: React.ReactNode }) {
         title,
         description,
         type: "warning",
-        icon: <Icon name="warning" pack="phosphor" className="h-5 w-5 text-amber-400" />,
+        icon: <Icon name="warning" pack="lucide" className="h-5 w-5 text-amber-400" />,
       }),
     [show]
   );
@@ -250,7 +250,7 @@ export function ToastProvider({ children }: { children: React.ReactNode }) {
         title,
         description,
         type: "loading",
-        icon: <Icon name="loader-2" pack="phosphor" className="h-5 w-5 animate-spin text-[var(--accent-primary)]" />,
+        icon: <Icon name="loader-2" pack="lucide" className="h-5 w-5 animate-spin text-[var(--accent-primary)]" />,
       }),
     [show]
   );
@@ -299,7 +299,7 @@ export function ToastProvider({ children }: { children: React.ReactNode }) {
           type: "info",
           variant: "warning",
           title: i18n("disconnectSuccess", "Déconnecté de Discord"),
-          icon: <Icon name="unlink" pack="phosphor" className="h-5 w-5 text-amber-400" />,
+          icon: <Icon name="unlink" pack="lucide" className="h-5 w-5 text-amber-400" />,
           duration: 3000,
           dedupKey: "discord-toast",
           badge: "DISCORD",
@@ -311,7 +311,7 @@ export function ToastProvider({ children }: { children: React.ReactNode }) {
           variant: "success",
           title: title || i18n("settingsSaved", "Préférences sauvegardées"),
           description: description || i18n("syncedViaWorker", "Synchronisées via le Worker"),
-          icon: <Icon name="cloud" pack="phosphor" className="h-5 w-5 text-emerald-400" />,
+          icon: <Icon name="cloud" pack="lucide" className="h-5 w-5 text-emerald-400" />,
           duration: 3000,
           dedupKey: "sync-toast",
           badge: "CLOUD",
@@ -323,7 +323,7 @@ export function ToastProvider({ children }: { children: React.ReactNode }) {
           variant: "warning",
           title: i18n("settingsReset", "Paramètres rétablis"),
           description: i18n("defaultPreferencesRestored", "Valeurs par défaut restaurées"),
-          icon: <Icon name="check" pack="phosphor" className="h-5 w-5 text-amber-400" />,
+          icon: <Icon name="check" pack="lucide" className="h-5 w-5 text-amber-400" />,
           duration: 3000,
           dedupKey: "reset-toast",
           badge: "RESET",
@@ -335,7 +335,7 @@ export function ToastProvider({ children }: { children: React.ReactNode }) {
           variant: "success",
           title: i18n("noteCreated", "Note créée"),
           description: noteTitle || "Note enregistrée dans votre espace.",
-          icon: <Icon name="file-text" pack="phosphor" className="h-5 w-5 text-emerald-400" />,
+          icon: <Icon name="file-text" pack="lucide" className="h-5 w-5 text-emerald-400" />,
           duration: 3000,
           dedupKey: "note-created-toast",
           badge: "NOTE",
@@ -347,7 +347,7 @@ export function ToastProvider({ children }: { children: React.ReactNode }) {
           variant: "warning",
           title: `${i18n("deleted", "Supprimée")}${count > 1 ? ` (${count})` : ""}`,
           description: `${count} note(s) supprimée(s).`,
-          icon: <Icon name="trash-2" pack="phosphor" className="h-5 w-5 text-rose-400" />,
+          icon: <Icon name="trash-2" pack="lucide" className="h-5 w-5 text-rose-400" />,
           duration: 3000,
           dedupKey: "note-deleted-toast",
           badge: "SUPPRESSION",
@@ -359,7 +359,7 @@ export function ToastProvider({ children }: { children: React.ReactNode }) {
           variant: "success",
           title: i18n("added", "Tâche ajoutée"),
           description: taskTitle || "Tâche planifiée avec succès.",
-          icon: <Icon name="check-square" pack="phosphor" className="h-5 w-5 text-emerald-400" />,
+          icon: <Icon name="check-square" pack="lucide" className="h-5 w-5 text-emerald-400" />,
           duration: 3000,
           dedupKey: "task-added-toast",
           badge: "TÂCHE",
@@ -370,7 +370,7 @@ export function ToastProvider({ children }: { children: React.ReactNode }) {
           type: "info",
           variant: "warning",
           title: i18n("deleted", "Tâche supprimée"),
-          icon: <Icon name="trash-2" pack="phosphor" className="h-5 w-5 text-amber-400" />,
+          icon: <Icon name="trash-2" pack="lucide" className="h-5 w-5 text-amber-400" />,
           duration: 3000,
           dedupKey: "task-deleted-toast",
           badge: "TÂCHE",
@@ -381,7 +381,7 @@ export function ToastProvider({ children }: { children: React.ReactNode }) {
           type: "success",
           variant: "success",
           title: i18n("copied", "Copié dans le presse-papiers"),
-          icon: <Icon name="clipboard-check" pack="phosphor" className="h-5 w-5 text-emerald-400" />,
+          icon: <Icon name="clipboard-check" pack="lucide" className="h-5 w-5 text-emerald-400" />,
           duration: 2200,
           dedupKey: "clipboard-toast",
           badge: "COPIE",
@@ -429,7 +429,7 @@ export function ToastProvider({ children }: { children: React.ReactNode }) {
           variant: "version",
           title: "Version actuelle",
           description: `${version} ${commit ? `· #${commit}` : ""}`,
-          icon: <Icon name="tag" pack="phosphor" className="h-5 w-5 text-emerald-400" />,
+          icon: <Icon name="tag" pack="lucide" className="h-5 w-5 text-emerald-400" />,
           duration: 3500,
           dedupKey: "current-version-toast",
           badge: "SYSTÈME",

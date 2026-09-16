@@ -2,7 +2,6 @@ import { GuildMember, EmbedBuilder, TextChannel, ChannelType } from 'discord.js'
 import { guildConfigService } from '../services/guildConfigService.js';
 import { welcomeService } from '../modules/welcome/services/welcomeService.js';
 import { autoRoleService } from '../modules/roles/services/autoRoleService.js';
-import { antiRaidService } from '../modules/security/services/antiRaidService.js';
 import { raidDetectionService } from '../modules/antiRaid/services/raidDetectionService.js';
 import { autoModService } from '../modules/automod/services/autoModService.js';
 import { analyticsService } from '../modules/analytics/services/analyticsService.js';
@@ -18,8 +17,11 @@ export async function onGuildMemberAdd(member: GuildMember): Promise<void> {
     await inviteTrackingService.handleMemberJoin(member);
 
     // 1. Module Security & Anti-Raid 2.0 (Vérification Bot, Âge de compte, Mass Joins, Quarantaine)
+    // modules/security's own antiRaidService used to also run here, invisibly:
+    // it has no command and no dashboard page, so it acted on hardcoded
+    // defaults (kick/ban/timeout/lockdown) that no admin could see or turn
+    // off, duplicating this exposed, configurable engine. Removed.
     await raidDetectionService.handleMemberJoin(member);
-    await antiRaidService.handleMemberJoin(member);
 
     // AutoMod 2.0 (Vérification profil, pseudo & nom d'affichage)
     await autoModService.handleMemberProfile(member);

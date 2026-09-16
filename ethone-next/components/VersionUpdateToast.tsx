@@ -1,6 +1,7 @@
 "use client";
 
-import { useState, useMemo } from "react";
+import { useState } from "react";
+import dynamic from "next/dynamic";
 import { motion, AnimatePresence } from "framer-motion";
 import { ArrowUpCircle, RefreshCw, X, Sparkles } from "lucide-react";
 import { useVersionChecker } from "@/lib/hooks/useVersionChecker";
@@ -9,9 +10,17 @@ import { useSettings } from "@/components/SettingsProvider";
 import { forceAppReload } from "@/lib/force-reload";
 import { formatVersion } from "@/lib/version";
 import { hapticSuccessPattern, hapticLightImpact } from "@/lib/haptics";
-import ChangelogModal from "@/components/ChangelogModal";
-import { CHANGELOG, CHANGELOG_BY_LANG, type ChangelogEntry } from "@/data/changelog";
+import type { ChangelogEntry } from "@/data/changelog";
 import { cn } from "@/lib/utils";
+
+// This component is mounted unconditionally on every page (app/layout.tsx),
+// including pre-auth ones like /login — but the changelog itself (data/changelog.ts,
+// the full ETHONE version history, ~1.5MB) and the modal that displays it are
+// only ever needed on the rare click on "Voir le journal des modifications".
+// Both were static imports here, so every page paid that cost just for this
+// toast to exist, whether or not an update was even available. Loaded lazily
+// instead, on demand.
+const ChangelogModal = dynamic(() => import("@/components/ChangelogModal"));
 
 export default function VersionUpdateToast() {
   const i18n = useI18n();
@@ -19,12 +28,9 @@ export default function VersionUpdateToast() {
   const { hasUpdate, newVersion, newData, dismiss } = useVersionChecker();
   const [isUpdating, setIsUpdating] = useState(false);
   const [showChangelog, setShowChangelog] = useState(false);
+  const [changelog, setChangelog] = useState<ChangelogEntry[]>([]);
 
   const versionLabel = formatVersion(newVersion);
-
-  const changelog = useMemo<ChangelogEntry[]>(() => {
-    return CHANGELOG_BY_LANG[settings.language] || CHANGELOG;
-  }, [settings.language]);
 
   function handleUpdate() {
     hapticSuccessPattern();
@@ -39,8 +45,10 @@ export default function VersionUpdateToast() {
     dismiss();
   }
 
-  function handleOpenChangelog() {
+  async function handleOpenChangelog() {
     hapticLightImpact();
+    const { CHANGELOG, CHANGELOG_BY_LANG } = await import("@/data/changelog");
+    setChangelog(CHANGELOG_BY_LANG[settings.language] || CHANGELOG);
     setShowChangelog(true);
   }
 

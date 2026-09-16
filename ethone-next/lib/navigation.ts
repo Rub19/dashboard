@@ -27,6 +27,7 @@ export const NAVIGATION_ITEMS: NavigationItem[] = [
   { id: "mail", label: "mail", icon: "mail", actionId: "v8.mail.open", href: "/mail/" },
   { id: "focus", label: "focus", icon: "focus", actionId: "v8.focus.open", href: "/focus/" },
   { id: "weather", label: "weather", icon: "cloudSun", actionId: "v8.weather.open", href: "/weather/" },
+  { id: "admin", label: "admin", icon: "admin", actionId: "v8.admin.open", href: "/admin/" },
   { id: "settings", label: "settings", icon: "settings", actionId: "v8.settings.open", href: "/settings/" },
 ];
 

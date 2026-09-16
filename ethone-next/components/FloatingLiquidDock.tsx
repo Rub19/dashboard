@@ -38,11 +38,14 @@ import {
   Flame,
   Gamepad2,
   Swords,
+  BarChart3,
 } from "lucide-react";
 import { useCommandPalette } from "@/components/CommandPaletteProvider";
 import { useFocus } from "@/components/FocusProvider";
 import { useFocusTrap } from "@/lib/hooks/useFocusTrap";
 import { useSettings } from "@/components/SettingsProvider";
+import { useAuth } from "@/components/AuthProvider";
+import { ADMIN_EMAIL } from "@/lib/admin";
 import { PREMIUM_THEMES, resolvePremiumTheme } from "@/lib/theme-engine";
 import { cn } from "@/lib/utils";
 
@@ -71,6 +74,7 @@ const APP_ICONS: Record<string, React.ComponentType<{ className?: string }>> = {
   discord: DiscordIcon,
   games: Gamepad2,
   matches: Swords,
+  admin: BarChart3,
 };
 
 export default function FloatingLiquidDock() {
@@ -82,6 +86,8 @@ export default function FloatingLiquidDock() {
   const { setOpen: setCommandOpen } = useCommandPalette();
   const focus = useFocus();
   const { settings, update: updateSettings } = useSettings();
+  const { user } = useAuth();
+  const isAdmin = useMemo(() => user?.email?.toLowerCase() === ADMIN_EMAIL.toLowerCase(), [user?.email]);
 
   let animatedSidebar: ReturnType<typeof useAnimatedSidebar> | null = null;
   try {
@@ -112,11 +118,11 @@ export default function FloatingLiquidDock() {
 
   const allItems = useMemo(
     () =>
-      NAVIGATION_ITEMS.map((item) => ({
+      NAVIGATION_ITEMS.filter((item) => item.id !== "admin" || isAdmin).map((item) => ({
         ...item,
         label: i18n(item.label) || item.label,
       })),
-    [i18n]
+    [i18n, isAdmin]
   );
 
   const visibleItems = useMemo(

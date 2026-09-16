@@ -13,24 +13,11 @@ export default function GameFrame({ src, title }: { src: string; title: string }
     return () => document.removeEventListener("fullscreenchange", onChange);
   }, []);
 
-  // Best-effort: browsers only allow requestFullscreen() during a window of
-  // "user activation" left over from a real tap/click. Navigating to this
-  // page (tapping a nav link) is itself such a gesture, and on some mobile
-  // browsers that activation is still live by the time this effect runs, so
-  // this can silently succeed and open the game fullscreen with no extra
-  // tap needed. When it doesn't (activation already expired), the promise
-  // just rejects and is swallowed — the iframe renders exactly as it always
-  // did, manual button included. This can only help, never break anything.
-  useEffect(() => {
-    if (typeof window === "undefined" || !window.matchMedia("(max-width: 767px)").matches) return;
-    iframeRef.current?.requestFullscreen().catch(() => {});
-  }, []);
-
   function toggleFullscreen() {
     if (!iframeRef.current) return;
     if (document.fullscreenElement) {
       document.exitFullscreen().catch(() => {});
-    } else {
+    } else if (typeof iframeRef.current.requestFullscreen === "function") {
       iframeRef.current.requestFullscreen().catch(() => {});
     }
   }

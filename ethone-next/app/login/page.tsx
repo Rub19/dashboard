@@ -51,12 +51,12 @@ import {
 const TURNSTILE_SITE_KEY = process.env.NEXT_PUBLIC_TURNSTILE_SITE_KEY || "";
 
 const HERO_FEATURES = [
-  { icon: StickyNote, label: "Notes" },
-  { icon: ListChecks, label: "Tâches" },
-  { icon: CalendarDays, label: "Calendrier" },
-  { icon: Wallet, label: "Finances" },
-  { icon: Music2, label: "Musique" },
-  { icon: Brain, label: "IA locale" },
+  { icon: StickyNote, labelKey: "loginFeatureNotes", fallback: "Notes" },
+  { icon: ListChecks, labelKey: "loginFeatureTasks", fallback: "Tâches" },
+  { icon: CalendarDays, labelKey: "loginFeatureCalendar", fallback: "Calendrier" },
+  { icon: Wallet, labelKey: "loginFeatureFinances", fallback: "Finances" },
+  { icon: Music2, labelKey: "loginFeatureMusic", fallback: "Musique" },
+  { icon: Brain, labelKey: "loginFeatureLocalAi", fallback: "IA locale" },
 ] as const;
 
 type AuthMode = "password" | "otp" | "register";
@@ -189,7 +189,7 @@ export default function LoginPage() {
 
   const handleSendOtp = async (e?: FormEvent) => {
     e?.preventDefault();
-    const emailErr = validate(email, [required("L'adresse e-mail est requise"), emailValidator("E-mail invalide")]);
+    const emailErr = validate(email, [required(i18n("errorEmailRequired", "L'adresse e-mail est requise")), emailValidator(i18n("errorEmailInvalid", "E-mail invalide"))]);
     if (emailErr) {
       setError(emailErr);
       triggerHaptic("error");
@@ -209,7 +209,7 @@ export default function LoginPage() {
       setResendIn(60);
       setAuthState("idle");
       triggerHaptic("success");
-      success("Code de sécurité envoyé", "Consultez votre boîte de réception.");
+      success(i18n("toastOtpSentTitle", "Code de sécurité envoyé"), i18n("toastOtpSentDesc", "Consultez votre boîte de réception."));
       return;
     }
 
@@ -237,13 +237,13 @@ export default function LoginPage() {
 
     setAuthState("success");
     triggerHaptic("success");
-    success("Connexion réussie", "Bienvenue sur ETHONE.");
+    success(i18n("toastLoginSuccessTitle", "Connexion réussie"), i18n("toastWelcomeDesc", "Bienvenue sur ETHONE."));
   };
 
   const handlePasswordLogin = async (e?: FormEvent) => {
     e?.preventDefault();
-    const emailErr = validate(email, [required("L'adresse e-mail est requise"), emailValidator("E-mail invalide")]);
-    const passErr = validate(password, [required("Le mot de passe est requis")]);
+    const emailErr = validate(email, [required(i18n("errorEmailRequired", "L'adresse e-mail est requise")), emailValidator(i18n("errorEmailInvalid", "E-mail invalide"))]);
+    const passErr = validate(password, [required(i18n("errorPasswordRequired", "Le mot de passe est requis"))]);
     if (emailErr || passErr) {
       setError(emailErr || passErr);
       triggerHaptic("error");
@@ -263,21 +263,21 @@ export default function LoginPage() {
 
     setAuthState("success");
     triggerHaptic("success");
-    success("Connexion réussie", "Bienvenue sur ETHONE.");
+    success(i18n("toastLoginSuccessTitle", "Connexion réussie"), i18n("toastWelcomeDesc", "Bienvenue sur ETHONE."));
   };
 
   const handleRegister = async (e?: FormEvent) => {
     e?.preventDefault();
     const usernameErr = validate(username.trim(), [
-      required("Le nom d'utilisateur est requis"),
-      minLength(2, "2 caractères minimum"),
-      maxLength(32, "32 caractères maximum"),
+      required(i18n("errorUsernameRequired", "Le nom d'utilisateur est requis")),
+      minLength(2, i18n("errorMinLength2", "2 caractères minimum")),
+      maxLength(32, i18n("errorMaxLength32", "32 caractères maximum")),
     ]);
-    const emailErr = validate(email, [required("L'adresse e-mail est requise"), emailValidator("E-mail invalide")]);
-    const passErr = validate(password, [required("Le mot de passe est requis"), passwordStrength(i18n("passwordRequirement"))]);
+    const emailErr = validate(email, [required(i18n("errorEmailRequired", "L'adresse e-mail est requise")), emailValidator(i18n("errorEmailInvalid", "E-mail invalide"))]);
+    const passErr = validate(password, [required(i18n("errorPasswordRequired", "Le mot de passe est requis")), passwordStrength(i18n("passwordRequirement"))]);
     const confirmErr = validate(confirmPassword, [
-      required("Confirmez votre mot de passe"),
-      match(() => password, "Les mots de passe ne correspondent pas"),
+      required(i18n("errorConfirmPasswordRequired", "Confirmez votre mot de passe")),
+      match(() => password, i18n("errorPasswordMismatch", "Les mots de passe ne correspondent pas")),
     ]);
 
     const firstErr = usernameErr || emailErr || passErr || confirmErr;
@@ -303,11 +303,11 @@ export default function LoginPage() {
     if (newSession) {
       setAuthState("success");
       triggerHaptic("success");
-      success("Compte créé", "Bienvenue sur ETHONE.");
+      success(i18n("toastAccountCreatedTitle", "Compte créé"), i18n("toastWelcomeDesc", "Bienvenue sur ETHONE."));
     } else {
       setAuthState("idle");
       triggerHaptic("success");
-      success("E-mail de confirmation envoyé", "Vérifiez vos e-mails pour activer votre compte.");
+      success(i18n("toastConfirmEmailSentTitle", "E-mail de confirmation envoyé"), i18n("toastConfirmEmailSentDesc", "Vérifiez vos e-mails pour activer votre compte."));
     }
   };
 
@@ -330,7 +330,7 @@ export default function LoginPage() {
 
   const handlePasskey = async () => {
     if (!passkeyReady) return;
-    const emailErr = validate(email, [required("L'adresse e-mail est requise"), emailValidator("E-mail invalide")]);
+    const emailErr = validate(email, [required(i18n("errorEmailRequired", "L'adresse e-mail est requise")), emailValidator(i18n("errorEmailInvalid", "E-mail invalide"))]);
     if (emailErr) {
       setError(emailErr);
       triggerHaptic("error");
@@ -346,7 +346,7 @@ export default function LoginPage() {
       if (!ok || err) throw err || new Error("Passkey failed");
       setAuthState("success");
       triggerHaptic("success");
-      success("Passkey validé", "Connexion à ETHONE...");
+      success(i18n("toastPasskeyValidTitle", "Passkey validé"), i18n("toastConnectingEthone", "Connexion à ETHONE..."));
     } catch (err) {
       setAuthState("error");
       triggerHaptic("error");
@@ -359,26 +359,28 @@ export default function LoginPage() {
 
   const headerTitle = useMemo(() => {
     if (mode === "otp") {
-      return otpStep === "code" ? "Vérification du code" : "Connexion sans mot de passe";
+      return otpStep === "code"
+        ? i18n("loginTitleOtpVerify", "Vérification du code")
+        : i18n("loginTitleOtp", "Connexion sans mot de passe");
     }
     if (mode === "register") {
-      return "Créer votre espace";
+      return i18n("loginTitleRegister", "Créer votre espace");
     }
-    return "Bienvenue sur ETHONE";
-  }, [mode, otpStep]);
+    return i18n("loginTitleDefault", "Bienvenue sur ETHONE");
+  }, [mode, otpStep, i18n]);
 
   const headerSubtitle = useMemo(() => {
     if (mode === "otp" && otpStep === "code") {
-      return `Code sécurisé envoyé à ${maskedEmail}`;
+      return `${i18n("loginSubtitleOtpCodePrefix", "Code sécurisé envoyé à")} ${maskedEmail}`;
     }
     if (mode === "otp") {
-      return "Recevez un code instantané à 6 chiffres par e-mail.";
+      return i18n("loginSubtitleOtp", "Recevez un code instantané à 6 chiffres par e-mail.");
     }
     if (mode === "register") {
-      return "Configurez votre profil pour démarrer sur l'OS.";
+      return i18n("loginSubtitleRegister", "Configurez votre profil pour démarrer sur l'OS.");
     }
-    return "Connectez-vous à votre environnement numérique unifié.";
-  }, [mode, otpStep, maskedEmail]);
+    return i18n("loginSubtitleDefault", "Connectez-vous à votre environnement numérique unifié.");
+  }, [mode, otpStep, maskedEmail, i18n]);
 
   return (
     <div className="relative flex min-h-dvh w-full overflow-hidden bg-[var(--bg-main,#0E1015)] text-white selection:bg-[var(--accent-primary,#C1234F)]/30 selection:text-white">
@@ -438,28 +440,28 @@ export default function LoginPage() {
         <div className="z-10 max-w-lg space-y-4">
           <div className="inline-flex items-center gap-2 rounded-full border border-[var(--panel-border)] bg-white/[0.03] px-3.5 py-1 text-[11px] font-medium tracking-wide text-zinc-300 backdrop-blur-md">
             <Sparkles className="h-3.5 w-3.5 text-[var(--accent-primary,#C1234F)]" />
-            <span>Environnement personnel unifié</span>
+            <span>{i18n("loginHeroBadge", "Environnement personnel unifié")}</span>
           </div>
 
           <h1 className="text-4xl font-extrabold tracking-tight text-white sm:text-5xl xl:text-6xl leading-[1.1]">
-            Votre espace, <br />
+            {i18n("loginHeroHeadlineLine1", "Votre espace,")} <br />
             <span className="bg-gradient-to-r from-[var(--accent-primary,#C1234F)] via-[#E03365] to-rose-400 bg-clip-text text-transparent">
-              réinventé pour vous.
+              {i18n("loginHeroHeadlineLine2", "réinventé pour vous.")}
             </span>
           </h1>
 
           <p className="text-base text-zinc-400 font-light leading-relaxed">
-            Notes, tâches, calendrier, finances, musique, fichiers et IA locale réunis dans un système fluide et instantané.
+            {i18n("loginHeroDescription", "Notes, tâches, calendrier, finances, musique, fichiers et IA locale réunis dans un système fluide et instantané.")}
           </p>
 
           <div className="grid grid-cols-3 gap-2.5 pt-2">
-            {HERO_FEATURES.map(({ icon: Icon, label }) => (
+            {HERO_FEATURES.map(({ icon: Icon, labelKey, fallback }) => (
               <div
-                key={label}
+                key={labelKey}
                 className="flex items-center gap-2 rounded-[var(--inset-radius)] border border-[var(--panel-border)] bg-white/[0.03] px-3 py-2.5 backdrop-blur-md"
               >
                 <Icon className="h-4 w-4 shrink-0 text-[var(--accent-primary,#C1234F)]" />
-                <span className="truncate text-[12.5px] font-medium text-zinc-300">{label}</span>
+                <span className="truncate text-[12.5px] font-medium text-zinc-300">{i18n(labelKey, fallback)}</span>
               </div>
             ))}
           </div>
@@ -471,7 +473,7 @@ export default function LoginPage() {
             <span className="relative flex h-2 w-2">
               <span className="relative inline-flex rounded-full h-2 w-2 bg-emerald-400 shadow-[0_0_5px_var(--glow-color)]" />
             </span>
-            <span className="font-mono text-[11px] text-zinc-300">ETHONE Cloud & IA opérationnels</span>
+            <span className="font-mono text-[11px] text-zinc-300">{i18n("loginStatusOperational", "ETHONE Cloud & IA opérationnels")}</span>
           </div>
         </div>
       </div>
@@ -529,10 +531,10 @@ export default function LoginPage() {
                     const active = mode === m;
                     const label =
                       m === "password"
-                        ? "Mot de passe"
+                        ? i18n("tabPassword", "Mot de passe")
                         : m === "otp"
-                        ? "Code OTP"
-                        : "S'inscrire";
+                        ? i18n("tabOtp", "Code OTP")
+                        : i18n("tabRegister", "S'inscrire");
 
                     return (
                       <button
@@ -602,7 +604,7 @@ export default function LoginPage() {
                   >
                     <AuthInputField
                       id="login-email"
-                      label="Adresse e-mail"
+                      label={i18n("fieldEmail", "Adresse e-mail")}
                       type="email"
                       autoComplete="email"
                       placeholder="nom@exemple.com"
@@ -615,7 +617,7 @@ export default function LoginPage() {
 
                     <AuthInputField
                       id="login-password"
-                      label="Mot de passe"
+                      label={i18n("tabPassword", "Mot de passe")}
                       type={showPassword ? "text" : "password"}
                       autoComplete="current-password"
                       placeholder="••••••••"
@@ -631,7 +633,7 @@ export default function LoginPage() {
                             setShowPassword((v) => !v);
                           }}
                           className="text-zinc-400 hover:text-white transition-colors p-1"
-                          aria-label="Afficher ou masquer le mot de passe"
+                          aria-label={i18n("togglePasswordVisibility", "Afficher ou masquer le mot de passe")}
                         >
                           {showPassword ? (
                             <EyeOff className="h-4 w-4" />
@@ -647,7 +649,7 @@ export default function LoginPage() {
                         id="remember-me-toggle"
                         checked={rememberMe}
                         onChange={setRememberMe}
-                        label="Rester connecté"
+                        label={i18n("rememberMe", "Rester connecté")}
                         size="md"
                       />
                       <button
@@ -655,7 +657,7 @@ export default function LoginPage() {
                         onClick={() => router.push("/password-recovery")}
                         className="text-xs text-zinc-400 hover:text-[var(--accent-primary,#C1234F)] transition-colors"
                       >
-                        Mot de passe oublié ?
+                        {i18n("forgotPassword", "Mot de passe oublié ?")}
                       </button>
                     </div>
 
@@ -673,16 +675,16 @@ export default function LoginPage() {
                       {isLoading ? (
                         <>
                           <Loader2 className="h-4 w-4 animate-spin" />
-                          <span>Connexion en cours...</span>
+                          <span>{i18n("loginSubmitLoading", "Connexion en cours...")}</span>
                         </>
                       ) : isSuccess ? (
                         <>
                           <Check className="h-4 w-4" />
-                          <span>Connecté !</span>
+                          <span>{i18n("loginSubmitSuccess", "Connecté !")}</span>
                         </>
                       ) : (
                         <>
-                          <span>Se connecter</span>
+                          <span>{i18n("loginSubmit", "Se connecter")}</span>
                           <ArrowRight className="h-4 w-4" />
                         </>
                       )}
@@ -703,7 +705,7 @@ export default function LoginPage() {
                   >
                     <AuthInputField
                       id="otp-email"
-                      label="Adresse e-mail"
+                      label={i18n("fieldEmail", "Adresse e-mail")}
                       type="email"
                       autoComplete="email"
                       placeholder="nom@exemple.com"
@@ -719,7 +721,7 @@ export default function LoginPage() {
                         id="remember-me-otp"
                         checked={rememberMe}
                         onChange={setRememberMe}
-                        label="Rester connecté sur cet appareil"
+                        label={i18n("rememberMeDevice", "Rester connecté sur cet appareil")}
                         size="md"
                       />
                     </div>
@@ -746,11 +748,11 @@ export default function LoginPage() {
                       {isLoading ? (
                         <>
                           <Loader2 className="h-4 w-4 animate-spin" />
-                          <span>Envoi du code...</span>
+                          <span>{i18n("otpSendLoading", "Envoi du code...")}</span>
                         </>
                       ) : (
                         <>
-                          <span>Recevoir le code de connexion</span>
+                          <span>{i18n("otpSend", "Recevoir le code de connexion")}</span>
                           <ArrowRight className="h-4 w-4" />
                         </>
                       )}
@@ -790,7 +792,7 @@ export default function LoginPage() {
                         className="flex items-center gap-1 text-zinc-400 hover:text-white transition-colors cursor-pointer"
                       >
                         <ChevronLeft className="h-3.5 w-3.5" />
-                        <span>Modifier l&apos;adresse</span>
+                        <span>{i18n("otpEditEmail", "Modifier l'adresse")}</span>
                       </button>
 
                       <button
@@ -804,7 +806,7 @@ export default function LoginPage() {
                             : "text-[var(--accent-primary,#C1234F)] hover:brightness-110 font-medium"
                         )}
                       >
-                        {resendIn > 0 ? `Renvoyer (${resendIn}s)` : "Renvoyer le code"}
+                        {resendIn > 0 ? `${i18n("otpResendPrefix", "Renvoyer")} (${resendIn}s)` : i18n("otpResend", "Renvoyer le code")}
                       </button>
                     </div>
 
@@ -823,17 +825,17 @@ export default function LoginPage() {
                       {authState === "verifying" ? (
                         <>
                           <Loader2 className="h-4 w-4 animate-spin" />
-                          <span>Vérification du code...</span>
+                          <span>{i18n("otpVerifyLoading", "Vérification du code...")}</span>
                         </>
                       ) : isSuccess ? (
                         <>
                           <Check className="h-4 w-4" />
-                          <span>Code accepté !</span>
+                          <span>{i18n("otpVerifySuccess", "Code accepté !")}</span>
                         </>
                       ) : (
                         <>
                           <ShieldCheck className="h-4 w-4" />
-                          <span>Valider le code</span>
+                          <span>{i18n("otpVerify", "Valider le code")}</span>
                         </>
                       )}
                     </button>
@@ -853,7 +855,7 @@ export default function LoginPage() {
                   >
                     <AuthInputField
                       id="register-username"
-                      label="Nom d'utilisateur"
+                      label={i18n("fieldUsername", "Nom d'utilisateur")}
                       type="text"
                       autoComplete="username"
                       placeholder="alex2026"
@@ -865,7 +867,7 @@ export default function LoginPage() {
 
                     <AuthInputField
                       id="register-email"
-                      label="Adresse e-mail"
+                      label={i18n("fieldEmail", "Adresse e-mail")}
                       type="email"
                       autoComplete="email"
                       placeholder="nom@exemple.com"
@@ -878,7 +880,7 @@ export default function LoginPage() {
                     <div className="space-y-1.5">
                       <AuthInputField
                         id="register-password"
-                        label="Mot de passe"
+                        label={i18n("tabPassword", "Mot de passe")}
                         type={showPassword ? "text" : "password"}
                         autoComplete="new-password"
                         placeholder="••••••••"
@@ -894,7 +896,7 @@ export default function LoginPage() {
                               setShowPassword((v) => !v);
                             }}
                             className="text-zinc-400 hover:text-white transition-colors p-1"
-                            aria-label="Afficher ou masquer le mot de passe"
+                            aria-label={i18n("togglePasswordVisibility", "Afficher ou masquer le mot de passe")}
                           >
                             {showPassword ? (
                               <EyeOff className="h-4 w-4" />
@@ -913,7 +915,7 @@ export default function LoginPage() {
 
                     <AuthInputField
                       id="register-confirm-password"
-                      label="Confirmer le mot de passe"
+                      label={i18n("fieldConfirmPassword", "Confirmer le mot de passe")}
                       type="password"
                       autoComplete="new-password"
                       placeholder="••••••••"
@@ -947,16 +949,16 @@ export default function LoginPage() {
                       {isLoading ? (
                         <>
                           <Loader2 className="h-4 w-4 animate-spin" />
-                          <span>Création en cours...</span>
+                          <span>{i18n("registerSubmitLoading", "Création en cours...")}</span>
                         </>
                       ) : isSuccess ? (
                         <>
                           <Check className="h-4 w-4" />
-                          <span>Espace créé !</span>
+                          <span>{i18n("registerSubmitSuccess", "Espace créé !")}</span>
                         </>
                       ) : (
                         <>
-                          <span>Créer mon espace ETHONE</span>
+                          <span>{i18n("registerSubmit", "Créer mon espace ETHONE")}</span>
                           <ArrowRight className="h-4 w-4" />
                         </>
                       )}
@@ -972,7 +974,7 @@ export default function LoginPage() {
                 <div className="relative flex items-center">
                   <div className="flex-1 border-t border-[var(--panel-border)]" />
                   <span className="px-3 text-[11px] font-medium text-zinc-500 uppercase tracking-wider">
-                    ou continuer avec
+                    {i18n("orContinueWith", "ou continuer avec")}
                   </span>
                   <div className="flex-1 border-t border-[var(--panel-border)]" />
                 </div>
@@ -1029,7 +1031,7 @@ export default function LoginPage() {
                     className="flex h-11 w-full items-center justify-center gap-2 rounded-[var(--inset-radius)] border border-[var(--panel-border)] bg-white/[0.03] px-4 text-xs font-medium text-zinc-300 transition-all duration-150 hover:bg-white/[0.06] hover:text-white active:scale-[0.98] disabled:opacity-50 cursor-pointer"
                   >
                     <KeyRound className="h-4 w-4 text-[var(--accent-primary,#C1234F)]" />
-                    <span>Se connecter avec une clé de sécurité (Passkey)</span>
+                    <span>{i18n("passkeyLogin", "Se connecter avec une clé de sécurité (Passkey)")}</span>
                   </button>
                 )}
               </div>
@@ -1047,7 +1049,7 @@ export default function LoginPage() {
                   disabled={isLoading}
                   className="text-[var(--accent-primary,#C1234F)] hover:brightness-110 font-medium transition-colors cursor-pointer"
                 >
-                  Déjà un compte ? Se connecter
+                  {i18n("alreadyHaveAccount", "Déjà un compte ? Se connecter")}
                 </button>
               ) : (
                 <button
@@ -1059,8 +1061,8 @@ export default function LoginPage() {
                   disabled={isLoading}
                   className="text-zinc-400 hover:text-[var(--accent-primary,#C1234F)] transition-colors cursor-pointer"
                 >
-                  Pas encore de compte ?{" "}
-                  <span className="text-[var(--accent-primary,#C1234F)] font-medium">Créer un compte</span>
+                  {i18n("noAccountYet", "Pas encore de compte ?")}{" "}
+                  <span className="text-[var(--accent-primary,#C1234F)] font-medium">{i18n("createAccount", "Créer un compte")}</span>
                 </button>
               )}
             </div>

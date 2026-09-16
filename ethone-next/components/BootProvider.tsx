@@ -10,12 +10,26 @@ import {
   type ReactNode,
 } from "react";
 import { usePathname, useRouter } from "next/navigation";
+import dynamic from "next/dynamic";
 import { useAuth } from "@/components/AuthProvider";
 import { useActiveProfile } from "@/components/SettingsProvider";
 import Loading from "@/components/Loading";
 import BrandMark from "@/components/BrandMark";
-import Shell from "@/components/Shell";
 import { motion } from "framer-motion";
+
+// Shell (sidebar, topbar, floating dock, command palette, live widgets, and
+// everything else the authenticated app pulls in) was a static import here,
+// so its entire bundle shipped on every route below — including /login and
+// the other PUBLIC_ROUTES, which never render it at all (see the
+// `publicRoute` branch below). It was never part of the statically exported
+// HTML anyway: this component only ever reaches the "authenticated" state
+// client-side, after a real session resolves, which can't happen during the
+// build's prerender pass. Making it a dynamic import removes ~2MB of JS from
+// every public page's initial load without changing when/whether it renders.
+const Shell = dynamic(() => import("@/components/Shell"), {
+  ssr: false,
+  loading: () => <Loading message="Initialisation d'ETHONE" progress={100} />,
+});
 
 export type BootState =
   | "booting"

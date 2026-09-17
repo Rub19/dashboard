@@ -1,8 +1,8 @@
 "use client";
 
-import React, { useState } from "react";
+import React, { useCallback, useEffect, useState } from "react";
 import Link from "next/link";
-import { useParams, useRouter } from "next/navigation";
+import { useParams, useRouter, useSearchParams } from "next/navigation";
 import {
   Settings,
   ArrowLeft,
@@ -13,11 +13,29 @@ import {
   Check,
   FileText,
 } from "lucide-react";
+import { useDiscordOAuth } from "@/lib/hooks/useDiscordOAuth";
+
+const BOT_API_URL = process.env.NEXT_PUBLIC_DISCORD_BOT_API || "";
+
+function toDateInput(iso: string): string {
+  return new Date(iso).toISOString().slice(0, 10);
+}
+function toTimeInput(iso: string): string {
+  return new Date(iso).toISOString().slice(11, 16);
+}
+function combine(date: string, time: string): string {
+  return new Date(`${date}T${time}:00`).toISOString();
+}
 
 export default function EventSettingsClient() {
   const params = useParams();
   const router = useRouter();
+  const searchParams = useSearchParams();
+  const { profile } = useDiscordOAuth();
   const eventId = (params?.eventId as string) || "evt-gaming-night";
+  const guildParam = searchParams.get("guildId") || profile?.guilds?.[0]?.id || "123456789012345678";
+  const base = `${BOT_API_URL}/api/guilds/${guildParam}/events/${eventId}`;
+  const isDemo = !BOT_API_URL || guildParam === "123456789012345678";
 
   const [title, setTitle] = useState("Friday Gaming Night — Valorant & Lethal Company");
   const [description, setDescription] = useState(
@@ -31,15 +49,86 @@ export default function EventSettingsClient() {
   const [maxCapacity, setMaxCapacity] = useState(30);
   const [waitlistEnabled, setWaitlistEnabled] = useState(true);
   const [savedToast, setSavedToast] = useState(false);
+  const [saveError, setSaveError] = useState("");
   const [showCancelModal, setShowCancelModal] = useState(false);
+  // Fields we don't expose an editor for but must round-trip back on save,
+  // since the backend's updateEvent() does a shallow Object.assign — sending
+  // a partial location/capacity object would silently wipe the rest of it.
+  const [rawLocation, setRawLocation] = useState<Record<string, any>>({ type: "VOICE" });
+  const [rawCapacity, setRawCapacity] = useState<Record<string, any>>({ unlimited: false });
 
-  const handleSave = () => {
-    setSavedToast(true);
-    setTimeout(() => setSavedToast(false), 2000);
+  const loadEvent = useCallback(async () => {
+    if (isDemo) return;
+    try {
+      const res = await fetch(base, { credentials: "include" });
+      const data = await res.json().catch(() => null);
+      if (res.ok && data?.event) {
+        const e = data.event;
+        setTitle(e.title || "");
+        setDescription(e.description || "");
+        setStartDate(toDateInput(e.startDate));
+        setStartTime(toTimeInput(e.startDate));
+        setEndDate(toDateInput(e.endDate));
+        setEndTime(toTimeInput(e.endDate));
+        setChannelName(e.location?.channelName || "");
+        setMaxCapacity(Number(e.capacity?.maxParticipants) || 0);
+        setWaitlistEnabled(Boolean(e.capacity?.waitlistEnabled));
+        setRawLocation(e.location || { type: "VOICE" });
+        setRawCapacity(e.capacity || { unlimited: false });
+      }
+    } catch {
+      // Keep the current (demo) values on failure.
+    }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [guildParam, eventId, isDemo]);
+
+  useEffect(() => {
+    loadEvent();
+  }, [loadEvent]);
+
+  const handleSave = async () => {
+    setSaveError("");
+    if (isDemo) {
+      setSavedToast(true);
+      setTimeout(() => setSavedToast(false), 2000);
+      return;
+    }
+    try {
+      const res = await fetch(base, {
+        method: "PUT",
+        credentials: "include",
+        headers: { "content-type": "application/json" },
+        body: JSON.stringify({
+          title,
+          description,
+          startDate: combine(startDate, startTime),
+          endDate: combine(endDate, endTime),
+          location: { ...rawLocation, channelName },
+          capacity: { ...rawCapacity, maxParticipants: maxCapacity, waitlistEnabled },
+        }),
+      });
+      if (!res.ok) throw new Error("save failed");
+      setSavedToast(true);
+      setTimeout(() => setSavedToast(false), 2000);
+    } catch {
+      setSaveError("Échec de l'enregistrement. Réessayez.");
+    }
   };
 
-  const handleCancelEvent = () => {
+  const handleCancelEvent = async () => {
     setShowCancelModal(false);
+    if (!isDemo) {
+      try {
+        await fetch(base, {
+          method: "DELETE",
+          credentials: "include",
+          headers: { "content-type": "application/json" },
+          body: JSON.stringify({ reason: "Annulé depuis le Dashboard" }),
+        });
+      } catch {
+        // Navigate away regardless — the event list will show the real state on reload.
+      }
+    }
     router.push("/discord/events");
   };
 
@@ -65,16 +154,20 @@ export default function EventSettingsClient() {
             </h1>
             <p className="text-xs text-slate-400 mt-1">
               Modifiez les horaires, les limites de participants et les options de diffusion Discord.
+              {isDemo && <span className="text-amber-400"> (mode démonstration — rien n'est sauvegardé)</span>}
             </p>
           </div>
 
-          <button
-            onClick={handleSave}
-            className="inline-flex items-center gap-2 px-5 py-2.5 rounded-xl text-xs font-semibold bg-indigo-600 hover:brightness-110 text-white shadow-sm transition-all self-start sm:self-auto"
-          >
-            {savedToast ? <Check className="w-4 h-4 text-emerald-300" /> : <Save className="w-4 h-4" />}
-            {savedToast ? "Modifications Enregistrées !" : "Enregistrer les modifications"}
-          </button>
+          <div className="flex flex-col items-end gap-1.5">
+            <button
+              onClick={handleSave}
+              className="inline-flex items-center gap-2 px-5 py-2.5 rounded-xl text-xs font-semibold bg-indigo-600 hover:brightness-110 text-white shadow-sm transition-all self-start sm:self-auto"
+            >
+              {savedToast ? <Check className="w-4 h-4 text-emerald-300" /> : <Save className="w-4 h-4" />}
+              {savedToast ? "Modifications Enregistrées !" : "Enregistrer les modifications"}
+            </button>
+            {saveError && <span className="text-[11px] text-rose-400">{saveError}</span>}
+          </div>
         </div>
 
         {/* Settings Sections */}

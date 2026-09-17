@@ -3,6 +3,7 @@
 import React, { useState, useEffect } from "react";
 import Link from "next/link";
 import { useRouter, useSearchParams } from "next/navigation";
+import { useDiscordOAuth } from "@/lib/hooks/useDiscordOAuth";
 import {
   Clock,
   ArrowLeft,
@@ -102,15 +103,27 @@ const STEPS = [
   { id: 8, title: "Vérification", icon: CheckCircle2 },
 ];
 
+const BOT_API_URL = process.env.NEXT_PUBLIC_DISCORD_BOT_API || "";
+
+function combine(date: string, time: string): string {
+  return new Date(`${date}T${time}:00`).toISOString();
+}
+
 export default function EventCreateClient() {
   const router = useRouter();
   const searchParams = useSearchParams();
+  const { profile } = useDiscordOAuth();
   const templateParam = searchParams.get("template");
+  const guildParam = searchParams.get("guildId") || profile?.guilds?.[0]?.id || "123456789012345678";
+  const isDemo = !BOT_API_URL || guildParam === "123456789012345678";
+  const eventsBase = `${BOT_API_URL}/api/guilds/${guildParam}/events`;
 
   const [step, setStep] = useState(1);
   const [form, setForm] = useState<WizardFormState>(DEFAULT_FORM);
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [saveToast, setSaveToast] = useState(false);
+  const [publishError, setPublishError] = useState("");
+  const [draftEventId, setDraftEventId] = useState<string | null>(null);
 
   // Template prefill
   useEffect(() => {
@@ -155,18 +168,127 @@ export default function EventCreateClient() {
     setForm((prev) => ({ ...prev, [key]: value }));
   };
 
+  function buildEventPayload(status: "DRAFT" | "SCHEDULED") {
+    const reminders = [
+      form.reminders.at24h && { id: `rem-24h`, triggerMinutesBefore: 1440, channel: "DISCORD_CHANNEL" as const, executed: false },
+      form.reminders.at1h && { id: `rem-1h`, triggerMinutesBefore: 60, channel: "DISCORD_CHANNEL" as const, executed: false },
+      form.reminders.at15m && { id: `rem-15m`, triggerMinutesBefore: 15, channel: "DISCORD_CHANNEL" as const, executed: false },
+      form.reminders.atStart && { id: `rem-start`, triggerMinutesBefore: 0, channel: "DISCORD_CHANNEL" as const, executed: false },
+    ].filter(Boolean);
+
+    const automations = [
+      form.automations.createDiscussionThread && {
+        id: "auto-thread",
+        trigger: "ON_START" as const,
+        actions: [{ type: "CREATE_THREAD" as const }],
+        enabled: true,
+      },
+      form.automations.assignRoleOnRSVP && {
+        id: "auto-assign-role",
+        trigger: "ON_RSVP" as const,
+        actions: [{ type: "ASSIGN_ROLE" as const, targetId: form.automations.roleIdToAssign }],
+        enabled: true,
+      },
+      form.automations.assignRoleOnRSVP && form.automations.removeRoleAfterEvent && {
+        id: "auto-remove-role",
+        trigger: "ON_END" as const,
+        actions: [{ type: "REMOVE_ROLE" as const, targetId: form.automations.roleIdToAssign }],
+        enabled: true,
+      },
+    ].filter(Boolean);
+
+    return {
+      title: form.title,
+      description: form.description,
+      category: form.category,
+      status,
+      emoji: form.emoji,
+      imageUrl: form.imageUrl || undefined,
+      startDate: combine(form.startDate, form.startTime),
+      endDate: combine(form.endDate, form.endTime),
+      timezone: form.timezone,
+      recurrence: form.recurrence === "NONE" ? undefined : { frequency: form.recurrence, endType: "NEVER" as const },
+      location: {
+        type: form.locationType,
+        channelName: form.channelName,
+        externalUrl: form.externalUrl || undefined,
+      },
+      capacity: {
+        unlimited: form.unlimitedCapacity,
+        maxParticipants: form.maxParticipants,
+        waitlistEnabled: form.waitlistEnabled,
+      },
+      reminders,
+      automations,
+      syncToDiscord: form.syncToDiscordScheduled,
+    };
+  }
+
+  async function persistEvent(status: "DRAFT" | "SCHEDULED"): Promise<boolean> {
+    const payload = buildEventPayload(status);
+    try {
+      if (draftEventId) {
+        const res = await fetch(`${eventsBase}/${draftEventId}`, {
+          method: "PUT",
+          credentials: "include",
+          headers: { "content-type": "application/json" },
+          body: JSON.stringify(payload),
+        });
+        return res.ok;
+      }
+      const res = await fetch(eventsBase, {
+        method: "POST",
+        credentials: "include",
+        headers: { "content-type": "application/json" },
+        body: JSON.stringify(payload),
+      });
+      const data = await res.json().catch(() => null);
+      if (res.ok && data?.event?.id) {
+        setDraftEventId(data.event.id);
+        return true;
+      }
+      return false;
+    } catch {
+      return false;
+    }
+  }
+
   const handlePublish = async () => {
+    if (!form.title.trim()) {
+      setPublishError("Le titre de l'événement est requis.");
+      return;
+    }
+    setPublishError("");
     setIsSubmitting(true);
-    // Simulate server POST
-    setTimeout(() => {
-      setIsSubmitting(false);
+    if (isDemo) {
+      setTimeout(() => {
+        setIsSubmitting(false);
+        router.push("/discord/events");
+      }, 1200);
+      return;
+    }
+    const ok = await persistEvent("SCHEDULED");
+    setIsSubmitting(false);
+    if (ok) {
       router.push("/discord/events");
-    }, 1200);
+    } else {
+      setPublishError("Échec de la publication. Vérifiez les champs et réessayez.");
+    }
   };
 
-  const handleSaveDraft = () => {
-    setSaveToast(true);
-    setTimeout(() => setSaveToast(false), 2000);
+  const handleSaveDraft = async () => {
+    if (isDemo) {
+      setSaveToast(true);
+      setTimeout(() => setSaveToast(false), 2000);
+      return;
+    }
+    const ok = await persistEvent("DRAFT");
+    if (ok) {
+      setSaveToast(true);
+      setTimeout(() => setSaveToast(false), 2000);
+    } else {
+      setPublishError("Échec de l'enregistrement du brouillon.");
+    }
   };
 
   return (
@@ -696,6 +818,12 @@ export default function EventCreateClient() {
                     <span className="text-white font-semibold">{form.unlimitedCapacity ? "Illimitée" : `${form.maxParticipants} max`}</span>
                   </div>
                 </div>
+              </div>
+            )}
+
+            {publishError && (
+              <div className="mt-6 p-3 rounded-xl bg-rose-500/10 border border-rose-500/20 text-xs text-rose-400">
+                {publishError}
               </div>
             )}
 

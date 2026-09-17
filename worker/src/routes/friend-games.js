@@ -1,6 +1,7 @@
 import { httpError } from "../middleware/errors.js";
 import { cachedLoad } from "../utils/cache.js";
 import { routeResult } from "../utils/response.js";
+import { DINO_FALLBACK_HTML } from "../assets/dinoFallback.js";
 
 // raw.githubusercontent.com serves this as text/plain regardless of the
 // file's actual content, so it can never be embedded directly as an iframe
@@ -13,10 +14,11 @@ const REPO_NAME = "HAARPE-DINO-GAME";
 const REPO_BRANCH = "main";
 // Absolute last resort if discovery has never once succeeded since this
 // isolate started (see lastKnownGoodUrl below) — a filename guess that WILL
-// go stale again whenever the friend renames the file, same as it already
-// did once (dino.html -> majdino.html). Kept only so the game isn't fully
-// broken on a cold isolate during a GitHub outage.
-const FALLBACK_FILE = "majdino.html";
+// go stale again whenever the friend renames the file, as it already has
+// twice (dino.html -> majdino.html -> dino.html). Barely matters now: even
+// if this guess is wrong or the file it points to is incomplete,
+// isCompleteHtml() below catches it and DINO_FALLBACK_HTML takes over.
+const FALLBACK_FILE = "dino.html";
 const GITHUB_API_HEADERS = { accept: "application/vnd.github+json", "user-agent": "ethone-worker" };
 
 // Updated every time discovery (or a direct content fetch) succeeds, so a
@@ -92,19 +94,15 @@ async function resolveSourceUrl() {
   }
 }
 
-function unavailablePage() {
-  return `<!DOCTYPE html><html lang="fr"><head><meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1">
-<title>Jeu indisponible</title>
-<style>
-  html,body{margin:0;height:100%;display:flex;align-items:center;justify-content:center;
-    background:#0a0806;color:#e5e5e5;font-family:system-ui,sans-serif;text-align:center;padding:24px;box-sizing:border-box}
-  button{margin-top:16px;padding:10px 20px;border-radius:10px;border:1px solid #444;background:#1a1a1a;color:#fff;font-size:14px;cursor:pointer}
-  button:active{transform:scale(0.97)}
-</style></head><body><div>
-  <p>Le jeu est temporairement indisponible.</p>
-  <button onclick="location.reload()">Reessayer</button>
-</div></body></html>`;
+// Guards against exactly the failure mode that kept recurring: the friend's
+// repo has now been observed with a truncated file (cut off mid-tag, no
+// closing </html>) on three separate pushes. Rather than serve broken HTML
+// into the game's iframe, anything that doesn't look like a complete
+// document is treated as a fetch failure and falls through to
+// DINO_FALLBACK_HTML below.
+function isCompleteHtml(text) {
+  if (typeof text !== "string" || text.length < 500) return false;
+  return /<\/html\s*>\s*$/i.test(text.trim());
 }
 
 export async function friendGameDinoRoute() {
@@ -113,6 +111,7 @@ export async function friendGameDinoRoute() {
     const res = await fetch(sourceUrl, { headers: { accept: "text/plain" } });
     if (!res.ok) throw httpError("UPSTREAM_UNAVAILABLE", 503);
     const text = await res.text();
+    if (!isCompleteHtml(text)) throw httpError("UPSTREAM_INVALID_RESPONSE", 502);
     lastKnownGoodUrl = sourceUrl;
     return text;
   };
@@ -128,13 +127,14 @@ export async function friendGameDinoRoute() {
       }),
     });
   } catch {
-    // Surface a small styled HTML page instead of raw JSON error text —
-    // this response is rendered directly inside the game's iframe, and a
-    // bare {"ok":false,...} blob on a black background looks broken rather
-    // than temporarily unavailable.
+    // The live file is unreachable or came back incomplete — serve the
+    // known-good bundled snapshot instead of either broken HTML or a bare
+    // error page. Still re-tried live on every future request (nothing here
+    // is cached as a failure), so a properly re-pushed file on the friend's
+    // side is picked up again automatically, no redeploy needed.
     return routeResult(null, {}, {
       raw: true,
-      response: new Response(unavailablePage(), {
+      response: new Response(DINO_FALLBACK_HTML, {
         status: 200,
         headers: { "content-type": "text/html; charset=utf-8", "cache-control": "no-store" },
       }),

@@ -1,9 +1,10 @@
 "use client";
 
-import { useEffect } from "react";
+import { useEffect, useRef } from "react";
 import { useRouter } from "next/navigation";
 import { useSettings } from "@/components/SettingsProvider";
 import { useCommandPalette } from "@/components/CommandPaletteProvider";
+import { useItems } from "@/lib/hooks/useItems";
 import { onAppUrlOpen, initializePushAndLocalNotifications, updateStatusBar } from "@/lib/native";
 import { configurePurchases } from "@/lib/purchases";
 import { isNativeIOS } from "@/lib/apple";
@@ -21,6 +22,15 @@ export default function NativeIntegration() {
   const router = useRouter();
   const { settings } = useSettings();
   const { setOpen } = useCommandPalette();
+  const tasks = useItems("tasks");
+  // Read via a ref rather than adding `tasks` to the notification effect's
+  // deps below — useItems' return identity changes on every task update, and
+  // this effect re-registering the native push/notification listeners on
+  // every task edit (rather than once) risks stacking duplicate handlers.
+  const tasksRef = useRef(tasks);
+  useEffect(() => {
+    tasksRef.current = tasks;
+  }, [tasks]);
 
   useQuickActions(router, () => setOpen(true));
 
@@ -113,7 +123,12 @@ export default function NativeIntegration() {
         const route = data?.route;
         if (route) router.push(route);
         if (action.actionId === "ETHONE_TASK_DONE" && data?.taskId) {
-          // TODO: mark task done via API
+          const taskId = String(data.taskId);
+          const current = tasksRef.current;
+          const item = current.items.find((t) => t.id === taskId);
+          if (item && !item.done) {
+            current.update(taskId, { done: true }).catch(() => {});
+          }
         }
       }
     );

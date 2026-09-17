@@ -1,5 +1,5 @@
 import type { Metadata } from "next";
-import GameFrame from "@/components/games/GameFrame";
+import GameSelector from "@/components/games/GameSelector";
 
 // This is a Server Component (it exports `metadata`, which Client Components
 // can't do) — it must NOT import WORKER_URL from lib/api.ts ("use client").
@@ -16,10 +16,15 @@ export const metadata: Metadata = {
 
 export const dynamic = "force-static";
 
+const GAMES = [
+  { id: "dino", label: "Dino Corridor", src: `${WORKER_URL}/api/games/dino` },
+  { id: "breach", label: "ETHONE: BREACH", src: `${WORKER_URL}/api/games/breach` },
+];
+
 export default function GamesPage() {
   return (
     <div className="flex h-full min-h-0 w-full flex-1 flex-col overflow-hidden p-2 sm:p-4">
-      <GameFrame src={`${WORKER_URL}/api/games/dino`} title="Dino Corridor" />
+      <GameSelector games={GAMES} />
     </div>
   );
 }

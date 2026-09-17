@@ -110,7 +110,7 @@ async function resolveSourceUrl() {
 // into the game's iframe, anything that doesn't look like a complete
 // document is treated as a fetch failure and falls through to
 // DINO_FALLBACK_HTML below.
-function isCompleteHtml(text) {
+export function isCompleteHtml(text) {
   if (typeof text !== "string" || text.length < 500) return false;
   return /<\/html\s*>\s*$/i.test(text.trim());
 }

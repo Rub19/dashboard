@@ -118,11 +118,13 @@ export default function FloatingLiquidDock() {
 
   const allItems = useMemo(
     () =>
-      NAVIGATION_ITEMS.filter((item) => item.id !== "admin" || isAdmin).map((item) => ({
-        ...item,
-        label: i18n(item.label) || item.label,
-      })),
-    [i18n, isAdmin]
+      NAVIGATION_ITEMS.filter((item) => item.id !== "admin" || isAdmin)
+        .filter((item) => item.id === "home" || item.id === "settings" || settings.sidebarItems.includes(item.id))
+        .map((item) => ({
+          ...item,
+          label: i18n(item.label) || item.label,
+        })),
+    [i18n, isAdmin, settings.sidebarItems]
   );
 
   const visibleItems = useMemo(

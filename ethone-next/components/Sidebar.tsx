@@ -355,8 +355,18 @@ function Sidebar() {
   const pathname = usePathname() ?? "/";
   const { setOpen } = useAnimatedSidebar();
   const { user } = useAuth();
+  const { settings } = useSettings();
   const isAdmin = useMemo(() => user?.email?.toLowerCase() === ADMIN_EMAIL.toLowerCase(), [user?.email]);
-  const visibleApps = useMemo(() => APPS.filter((app) => app.id !== "admin" || isAdmin), [isAdmin]);
+  // "home" and "settings" are never hideable — they're the sidebar's own
+  // built-in guarantee that the user can always reach the screen that lets
+  // them re-enable anything they hid.
+  const visibleApps = useMemo(
+    () =>
+      APPS.filter((app) => app.id !== "admin" || isAdmin).filter(
+        (app) => app.id === "home" || app.id === "settings" || settings.sidebarItems.includes(app.id)
+      ),
+    [isAdmin, settings.sidebarItems]
+  );
 
   function isActive(app: AppItem) {
     if (app.href === "/") return pathname === "/";

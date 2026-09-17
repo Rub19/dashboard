@@ -195,34 +195,42 @@ export default function LolTrackerView() {
   let sumAssists = 0;
   let sumGpm = 0;
   let sumGoldTotal = 0;
+  // Matches missing a given field are excluded from that field's average
+  // instead of being backfilled with a plausible-looking made-up number
+  // (e.g. "400" dpm) — that used to silently pull every average toward a
+  // fake baseline whenever the API didn't report a stat.
+  let dpmCount = 0;
+  let damageCount = 0;
+  let gpmCount = 0;
+  let goldCount = 0;
 
   matches.forEach((m) => {
     const me = m.scoreboard?.players?.find((p) => p.isMe) || m.scoreboard?.players?.[0];
     const k = me?.stats?.kills || m.segments?.[0]?.stats?.kills?.value || 0;
     const d = me?.stats?.deaths || m.segments?.[0]?.stats?.deaths?.value || 0;
     const a = me?.stats?.assists || m.segments?.[0]?.stats?.assists?.value || 0;
-    const dpm = me?.stats?.damagePerMin || m.segments?.[0]?.stats?.damagePerMin?.value || 400;
-    const dmg = me?.stats?.damage || m.segments?.[0]?.stats?.totalDamageDealtToChampions?.value || 15000;
-    const gpm = me?.stats?.goldPerMin || m.segments?.[0]?.stats?.goldPerMin?.value || 350;
-    const gold = me?.stats?.gold || 10000;
+    const dpm = me?.stats?.damagePerMin ?? m.segments?.[0]?.stats?.damagePerMin?.value;
+    const dmg = me?.stats?.damage ?? m.segments?.[0]?.stats?.totalDamageDealtToChampions?.value;
+    const gpm = me?.stats?.goldPerMin ?? m.segments?.[0]?.stats?.goldPerMin?.value;
+    const gold = me?.stats?.gold;
 
     sumKills += k;
     sumDeaths += d;
     sumAssists += a;
-    sumDpm += dpm;
-    sumDamageTotal += dmg;
-    sumGpm += gpm;
-    sumGoldTotal += gold;
+    if (typeof dpm === "number") { sumDpm += dpm; dpmCount++; }
+    if (typeof dmg === "number") { sumDamageTotal += dmg; damageCount++; }
+    if (typeof gpm === "number") { sumGpm += gpm; gpmCount++; }
+    if (typeof gold === "number") { sumGoldTotal += gold; goldCount++; }
   });
 
-  const avgDpm = totalCount > 0 ? Math.round(sumDpm / totalCount) : 0;
-  const avgDmgMatch = totalCount > 0 ? (sumDamageTotal / totalCount).toFixed(1) : "0";
+  const avgDpm = dpmCount > 0 ? Math.round(sumDpm / dpmCount) : 0;
+  const avgDmgMatch = damageCount > 0 ? (sumDamageTotal / damageCount).toFixed(1) : "0";
   const avgKills = totalCount > 0 ? (sumKills / totalCount).toFixed(1) : "0";
   const avgDeaths = totalCount > 0 ? (sumDeaths / totalCount).toFixed(1) : "0";
   const avgAssists = totalCount > 0 ? (sumAssists / totalCount).toFixed(1) : "0";
   const avgKda = sumDeaths === 0 ? (sumKills + sumAssists).toFixed(2) : ((sumKills + sumAssists) / sumDeaths).toFixed(2);
-  const avgGpm = totalCount > 0 ? Math.round(sumGpm / totalCount) : 0;
-  const avgGoldMatch = totalCount > 0 ? (sumGoldTotal / totalCount).toFixed(1) : "0";
+  const avgGpm = gpmCount > 0 ? Math.round(sumGpm / gpmCount) : 0;
+  const avgGoldMatch = goldCount > 0 ? (sumGoldTotal / goldCount).toFixed(1) : "0";
 
   return (
     <div className="flex min-h-0 w-full flex-1 flex-col overflow-hidden space-y-4">

@@ -11,8 +11,8 @@ function safeEmail(value) {
   return /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email) ? email : "";
 }
 
-export async function teamInviteRoute(request, env) {
-  if (request.method !== "POST") throw httpError("METHOD_NOT_ALLOWED", 405);
+export async function teamInviteRoute({ request, env, auth }) {
+  if (!auth?.userId) throw httpError("AUTH_REQUIRED", 401);
 
   const body = await request.json().catch(() => ({}));
   const email = safeEmail(body.email);

@@ -76,6 +76,7 @@ import { youtubeActivityRoute, youtubeOAuthDisconnectRoute, youtubeOAuthExchange
 import { rssRoute } from "./routes/rss.js";
 import { signOutRoute } from "./routes/signout.js";
 import { teamMembersRoute } from "./routes/team.js";
+import { teamInviteRoute } from "./routes/team-invite.js";
 import {
   sharedSpacesRoute,
   sharedSpaceMembersRoute,
@@ -296,6 +297,7 @@ export const ROUTES = Object.freeze([
   route("team.members.post", "/api/team/members", teamMembersRoute, { method: "POST", service: "team", rateLimit: "strict" }),
   route("team.members.patch", "/api/team/members", teamMembersRoute, { method: "PATCH", service: "team", rateLimit: "strict" }),
   route("team.members.delete", "/api/team/members", teamMembersRoute, { method: "DELETE", service: "team", rateLimit: "strict" }),
+  route("team.invite.send", "/api/team/invite", teamInviteRoute, { method: "POST", service: "team", rateLimit: "strict" }),
 
   // Shared Spaces
   route("shared-spaces.get", "/api/shared-spaces", sharedSpacesRoute, { service: "shared-spaces" }),

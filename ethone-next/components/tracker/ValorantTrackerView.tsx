@@ -292,9 +292,10 @@ export default function ValorantTrackerView() {
   }, [matches]);
 
   const avgAcs = useMemo(() => {
-    if (matches.length === 0) return 0;
-    const sum = matches.reduce((acc, m) => acc + (m.segments?.[0]?.stats?.scorePerRound?.value || 210), 0);
-    return Math.round(sum / matches.length);
+    const withAcs = matches.filter((m) => typeof m.segments?.[0]?.stats?.scorePerRound?.value === "number");
+    if (withAcs.length === 0) return 0;
+    const sum = withAcs.reduce((acc, m) => acc + (m.segments?.[0]?.stats?.scorePerRound?.value ?? 0), 0);
+    return Math.round(sum / withAcs.length);
   }, [matches]);
 
   const [apiKeyModalOpen, setApiKeyModalOpen] = useState(false);

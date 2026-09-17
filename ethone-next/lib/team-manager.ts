@@ -234,6 +234,18 @@ export function createTeamManager(ownerId: string): TeamManager {
       saveLocal(members);
       notify();
       const url = inviteUrl(serverMember.inviteToken);
+      // Best-effort: the invite link itself is already valid and shareable
+      // manually, so a failed/unconfigured email send doesn't block the
+      // invite — it just means the admin has to send the link themselves.
+      fetchWorker("/api/team/invite", {
+        method: "POST",
+        body: JSON.stringify({
+          email: safeEmail,
+          display_name: cleanText(displayName, 80),
+          invite_url: url,
+          token: serverMember.inviteToken,
+        }),
+      }).catch(() => {});
       return { ok: true, status: "invited", member: serverMember, url, token: serverMember.inviteToken };
     } catch (err) {
       syncError = err instanceof Error ? err.message : "Échec de l'invitation.";

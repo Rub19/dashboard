@@ -134,6 +134,7 @@ export type Settings = {
   layoutPreset: "default" | "minimal" | "dock-only" | "sidebar-only";
   sidebarVisible: boolean;
   sidebarIcons: boolean;
+  sidebarItems: string[];
   masterVolume: boolean;
   soundEffects: boolean;
   soundPack: SoundPack;
@@ -319,6 +320,11 @@ export const DEFAULTS: Settings = {
   layoutPreset: "default",
   sidebarVisible: true,
   sidebarIcons: true,
+  sidebarItems: [
+    "notes", "tasks", "calendar", "files", "mail", "brain", "focus", "weather",
+    "activity", "analytics", "interactions", "connections", "discord", "plugins",
+    "games", "matches", "spaces", "flows", "team",
+  ],
   masterVolume: true,
   soundEffects: true,
   soundPack: "ethone",

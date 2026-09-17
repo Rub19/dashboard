@@ -367,7 +367,7 @@ export default function ValorantMatchRow({ match, index }: ValorantMatchRowProps
                             const pDiff = p.stats.kills - p.stats.deaths;
                             const pIcon = getAgentIcon(p.character, p.assets?.agent?.small);
                             const pParty = partyMap.getParty(p, pi + (gi * 5));
-                            const pAcs = p.stats.score ? Math.round(p.stats.score / (meta.score.roundsPlayed || 6)) : (260 - pi * 30);
+                            const pAcs = p.stats.score ? Math.round(p.stats.score / (meta.score.roundsPlayed || 6)) : 0;
                             const pTrs = Math.max(100, Math.round(pAcs * 2.2 + p.stats.kills * 12));
                             const pDda = (p.stats.damageMade || 0) - (p.stats.damageReceived || 0);
 
@@ -515,17 +515,17 @@ export default function ValorantMatchRow({ match, index }: ValorantMatchRowProps
                                     pDda >= 0 ? "text-emerald-400" : "text-rose-400"
                                   )}
                                 >
-                                  {pDda >= 0 ? `+${pDda}` : pDda || "+12"}
+                                  {pDda >= 0 ? `+${pDda}` : pDda}
                                 </td>
 
                                 {/* ADR */}
                                 <td className="py-2 text-center font-mono text-zinc-300">
-                                  {p.stats.adr || 145.2}
+                                  {typeof p.stats.adr === "number" ? p.stats.adr : "—"}
                                 </td>
 
                                 {/* HS% */}
                                 <td className="py-2 text-center font-mono font-bold text-white">
-                                  {p.stats.headshots || 25}%
+                                  {typeof p.stats.headshots === "number" ? `${p.stats.headshots}%` : "—"}
                                 </td>
                               </tr>
                             );
@@ -546,7 +546,7 @@ export default function ValorantMatchRow({ match, index }: ValorantMatchRowProps
                   {players.map((p, pi) => {
                     const pIcon = getAgentIcon(p.character, p.assets?.agent?.small);
                     const pKd = p.stats.deaths === 0 ? p.stats.kills : Number((p.stats.kills / p.stats.deaths).toFixed(2));
-                    const pDamage = p.stats.damageMade || p.stats.score * 2 || 1200;
+                    const pDamage = typeof p.stats.damageMade === "number" ? p.stats.damageMade : "—";
 
                     return (
                       <div
@@ -584,7 +584,7 @@ export default function ValorantMatchRow({ match, index }: ValorantMatchRowProps
                           </div>
                           <div>
                             <span className="block text-[9px] text-zinc-500 uppercase font-bold">HS%</span>
-                            <span className="font-bold text-amber-300">{p.stats.headshots || 25}%</span>
+                            <span className="font-bold text-amber-300">{typeof p.stats.headshots === "number" ? `${p.stats.headshots}%` : "—"}</span>
                           </div>
                         </div>
                       </div>

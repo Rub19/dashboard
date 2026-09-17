@@ -234,6 +234,31 @@ const NAV_ITEMS = [
   { id: "settings", label: "settings" },
 ] as const;
 
+// The sidebar's own full app list (Sidebar.tsx's APPS), minus "home" and
+// "settings" — those two must always stay reachable so hiding items here
+// can never lock the user out of the one screen that lets them undo it.
+const SIDEBAR_NAV_ITEMS = [
+  { id: "notes", label: "notes" },
+  { id: "tasks", label: "tasks" },
+  { id: "calendar", label: "calendar" },
+  { id: "files", label: "files" },
+  { id: "mail", label: "mail" },
+  { id: "brain", label: "brain" },
+  { id: "focus", label: "focus" },
+  { id: "weather", label: "weather" },
+  { id: "activity", label: "activity" },
+  { id: "analytics", label: "analytics" },
+  { id: "interactions", label: "interactions" },
+  { id: "connections", label: "connections" },
+  { id: "discord", label: "discord" },
+  { id: "plugins", label: "plugins" },
+  { id: "games", label: "games" },
+  { id: "matches", label: "matches" },
+  { id: "spaces", label: "spaces" },
+  { id: "flows", label: "flows" },
+  { id: "team", label: "team" },
+] as const;
+
 const BRAIN_PERMISSION_IDS = [
   "notes",
   "tasks",
@@ -1091,6 +1116,13 @@ export default function SettingsContent({
         type: "checkbox-list",
         options: NAV_ITEMS.map((item) => ({ id: item.id, label: i18n(item.label) })),
         keywords: ["workspace", "dock", "apps", "éléments"],
+      },
+      {
+        key: "sidebarItems",
+        label: i18n("sidebarItems", "Catégories de la sidebar"),
+        type: "checkbox-list",
+        options: SIDEBAR_NAV_ITEMS.map((item) => ({ id: item.id, label: i18n(item.label) })),
+        keywords: ["sidebar", "catégories", "masquer", "menu"],
       },
     ],
     [i18n, makeOptions, brainPermissionFields, brainMemoryFields]

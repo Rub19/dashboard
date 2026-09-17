@@ -8,6 +8,7 @@ import { useI18n } from "@/lib/hooks/useI18n";
 import { TiltCard } from "@/components/ui/TiltCard";
 import GameIcon from "@/components/icons/GameIcon";
 import { cn } from "@/lib/utils";
+import { WORKER_URL } from "@/lib/api";
 
 type RiotMatch = Record<string, unknown>;
 
@@ -155,13 +156,13 @@ export const RiotGamingCardContent = memo(function RiotGamingCardContent({
 
     const profileEndpoint =
       game === "valorant"
-        ? `https://raspy-fog-bf5b.rub19-mailpro.workers.dev/api/stats/valorant-profile?name=${encodeURIComponent(cleanName)}&tag=${encodeURIComponent(cleanTag)}`
-        : `https://raspy-fog-bf5b.rub19-mailpro.workers.dev/api/stats/lol-profile?name=${encodeURIComponent(cleanName)}&tag=${encodeURIComponent(cleanTag)}`;
+        ? `${WORKER_URL}/api/stats/valorant-profile?name=${encodeURIComponent(cleanName)}&tag=${encodeURIComponent(cleanTag)}`
+        : `${WORKER_URL}/api/stats/lol-profile?name=${encodeURIComponent(cleanName)}&tag=${encodeURIComponent(cleanTag)}`;
 
     const matchesEndpoint =
       game === "valorant"
-        ? `https://raspy-fog-bf5b.rub19-mailpro.workers.dev/api/stats/valorant-matches?name=${encodeURIComponent(cleanName)}&tag=${encodeURIComponent(cleanTag)}`
-        : `https://raspy-fog-bf5b.rub19-mailpro.workers.dev/api/stats/lol-matches?name=${encodeURIComponent(cleanName)}&tag=${encodeURIComponent(cleanTag)}`;
+        ? `${WORKER_URL}/api/stats/valorant-matches?name=${encodeURIComponent(cleanName)}&tag=${encodeURIComponent(cleanTag)}`
+        : `${WORKER_URL}/api/stats/lol-matches?name=${encodeURIComponent(cleanName)}&tag=${encodeURIComponent(cleanTag)}`;
 
     Promise.allSettled([
       fetch(profileEndpoint).then((r) => r.json()),

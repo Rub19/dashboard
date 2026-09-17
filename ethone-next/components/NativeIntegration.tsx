@@ -112,7 +112,16 @@ export default function NativeIntegration() {
   useEffect(() => {
     initializePushAndLocalNotifications(
       (token) => {
-        console.log("Push token:", token);
+        // TODO: no backend endpoint exists yet to register native (APNs/FCM)
+        // device tokens — this is a different delivery channel from the web
+        // push subscription in lib/push.ts (VAPID endpoint+keys), which IS
+        // fully wired. Sending server-triggered push to the native apps
+        // needs a dedicated worker route plus APNs/FCM credentials before
+        // this token is useful; logging it only in dev avoids leaking a
+        // device identifier to the production console in the meantime.
+        if (process.env.NODE_ENV !== "production") {
+          console.log("Push token:", token);
+        }
       },
       (notification) => {
         const route = notification.data?.route;

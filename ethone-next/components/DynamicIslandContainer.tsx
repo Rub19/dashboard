@@ -1023,7 +1023,7 @@ export default function DynamicIslandContainer() {
                   <p className="text-xs text-[var(--text-muted)]">
                     {pendingCount > 0
                       ? i18n("itemsPending", "{count} éléments en attente").replace("{count}", String(pendingCount))
-                      : i18n("allUpToDate", "Tout est à jour")}
+                      : i18n("allCaughtUp", "Tout est à jour")}
                   </p>
                   {lastSync && !syncing && pendingCount === 0 && (
                     <p className="mt-0.5 text-[10px] text-[var(--text-muted)]">

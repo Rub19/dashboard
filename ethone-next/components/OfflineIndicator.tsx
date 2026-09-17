@@ -60,7 +60,7 @@ export default function OfflineIndicator() {
     syncing: {
       icon: <Loader2 className="h-3.5 w-3.5 shrink-0 animate-spin text-[var(--info)]" />,
       dot: "bg-[var(--info)] animate-pulse",
-      label: i18n("syncing", "Synchronisation..."),
+      label: i18n("journalSyncing", "Synchronisation..."),
       role: "status" as const,
     },
     online: {

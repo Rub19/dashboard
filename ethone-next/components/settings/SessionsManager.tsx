@@ -230,7 +230,7 @@ export default function SessionsManager() {
                 isLoading={revokingAll}
                 disabled={otherActiveCount === 0}
               >
-                {i18n("signOutAll", "Déconnecter")}
+                {i18n("disconnect", "Déconnecter")}
               </Button>
             </div>
           </SettingsDangerZone>

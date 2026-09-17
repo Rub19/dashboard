@@ -117,7 +117,7 @@ export default function VersionUpdateToast() {
                       className="flex shrink-0 items-center gap-1.5 rounded-[var(--inset-radius)] bg-[var(--accent-primary)] px-3 py-1.5 text-[11px] font-medium text-[var(--accent-contrast)] transition-[filter] hover:brightness-110 active:scale-95 disabled:opacity-50 cursor-pointer"
                     >
                       <RefreshCw className={cn("h-3 w-3", isUpdating && "animate-spin")} />
-                      <span>{isUpdating ? "Mise à jour..." : i18n("updateNow", "Mettre à jour")}</span>
+                      <span>{isUpdating ? "Mise à jour..." : i18n("update", "Mettre à jour")}</span>
                     </button>
                   </div>
                 </div>

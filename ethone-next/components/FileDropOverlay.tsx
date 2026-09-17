@@ -27,7 +27,7 @@ export default function FileDropOverlay({ onDrop, disabled }: FileDropOverlayPro
       setFileCount(items.length);
       const file = items[0].getAsFile?.();
       if (file) return { name: file.name, size: file.size, type: file.type };
-      return { name: items[0].type || i18n("file", "Fichier") };
+      return { name: items[0].type || i18n("journalTypeFile", "Fichier") };
     }
 
     function handleDragEnter(e: DragEvent) {

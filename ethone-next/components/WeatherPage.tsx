@@ -331,7 +331,7 @@ export default function WeatherPage() {
                   <h1 className="text-lg font-bold tracking-tight text-[var(--text-primary)]">{i18n("weather", "Météo")}</h1>
                   <span className="inline-flex items-center gap-1.5 rounded-full border border-[var(--panel-border)] bg-[var(--surface-2)]/40 px-2.5 py-0.5 text-[10px] font-medium text-[var(--text-muted)]">
                     <span className="h-1.5 w-1.5 rounded-full bg-[var(--success)]" />
-                    <span>{i18n("lastUpdated", "Mis à jour")} : <strong className="text-[var(--text-primary)] font-semibold">{lastUpdatedText}</strong></span>
+                    <span>{i18n("updated", "Mis à jour")} : <strong className="text-[var(--text-primary)] font-semibold">{lastUpdatedText}</strong></span>
                   </span>
                 </div>
                 <p className="text-xs text-[var(--text-muted)] mt-0.5">{i18n("weatherDescription", "Météo actuelle et prévisions en temps réel")}</p>
@@ -461,7 +461,7 @@ export default function WeatherPage() {
                 variants={itemVariants}
               >
                 <Card variant="default" padding="md">
-                  <h3 className="mb-3 text-sm font-semibold text-[var(--text-primary)]">{i18n("hourlyForecast", "Aujourd'hui")}</h3>
+                  <h3 className="mb-3 text-sm font-semibold text-[var(--text-primary)]">{i18n("today", "Aujourd'hui")}</h3>
                   <div className="-mx-1 flex gap-2 overflow-x-auto os-scroll px-1 pb-1">
                     {hourly.length ? (
                       hourly.map((h, i) => {
@@ -472,7 +472,7 @@ export default function WeatherPage() {
                             key={h.time}
                             className="flex min-w-[4.5rem] flex-col items-center gap-1.5 rounded-[var(--inset-radius)] border border-[var(--panel-border)] bg-[var(--panel-bg)] p-2 text-center transition-colors hover:bg-[var(--text-primary)]/[0.03]"
                           >
-                            <span className="text-[10px] font-medium text-[var(--text-muted)]">{i === 0 ? i18n("now", "Maintenant") : formatHour(h.time)}</span>
+                            <span className="text-[10px] font-medium text-[var(--text-muted)]">{i === 0 ? i18n("daystreamNow", "Maintenant") : formatHour(h.time)}</span>
                             <Icon pack="phosphor" name={hIcon} className={cn("h-5 w-5", hColor)} />
                             <span className="text-xs font-semibold text-[var(--text-primary)]">
                               {h.temperature !== undefined ? `${Math.round(h.temperature)}°` : "—"}

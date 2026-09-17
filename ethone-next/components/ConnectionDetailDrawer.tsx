@@ -171,7 +171,7 @@ export default function ConnectionDetailDrawer({
     isConnected
       ? i18n("connected", "Connecté")
       : status === "error"
-      ? i18n("connectionFailed", "Erreur")
+      ? i18n("error", "Erreur")
       : i18n("notConfigured", "Non configuré");
 
   const logs = useMemo(() => {

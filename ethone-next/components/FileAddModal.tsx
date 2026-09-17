@@ -87,7 +87,7 @@ export default function FileAddModal({
     { id: "upload", label: i18n("importFile", "Téléverser"), desc: i18n("importFileDesc", "Depuis l'appareil"), icon: <UploadCloud className="h-5 w-5" /> },
     { id: "link", label: i18n("addLink", "Lien / URL"), desc: i18n("addLinkDesc", "Doc externe, web"), icon: <LinkIcon className="h-5 w-5" /> },
     { id: "folder", label: i18n("createFolder", "Nouveau dossier"), desc: i18n("createFolderDesc", "Organiser l'espace"), icon: <FolderPlus className="h-5 w-5" /> },
-    { id: "drive", label: i18n("drive", "Google Drive"), desc: i18n("driveDesc", clientId ? "Connecté" : "Non relié"), icon: <Cloud className="h-5 w-5" /> },
+    { id: "drive", label: i18n("googleDrive", "Google Drive"), desc: i18n("driveDesc", clientId ? "Connecté" : "Non relié"), icon: <Cloud className="h-5 w-5" /> },
   ];
 
   return (

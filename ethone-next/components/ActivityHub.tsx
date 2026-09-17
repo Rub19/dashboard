@@ -17,28 +17,7 @@ import Card from "@/components/ui/Card";
 import Button from "@/components/ui/Button";
 import Modal from "@/components/ui/Modal";
 import { useToast } from "@/components/ToastProvider";
-import ActivityHeatmap from "./ActivityHeatmap";
-
-function dateKey(iso = ""): string {
-  const d = new Date(iso);
-  if (Number.isNaN(d.getTime())) return "";
-  return `${d.getFullYear()}-${String(d.getMonth() + 1).padStart(2, "0")}-${String(d.getDate()).padStart(2, "0")}`;
-}
-
-function startOfWeek(d: Date): Date {
-  const copy = new Date(d);
-  const day = copy.getDay();
-  const diff = (day + 6) % 7;
-  copy.setDate(copy.getDate() - diff);
-  copy.setHours(0, 0, 0, 0);
-  return copy;
-}
-
-function addDays(d: Date, days: number): Date {
-  const copy = new Date(d);
-  copy.setDate(copy.getDate() + days);
-  return copy;
-}
+import ActivityHeatmap, { dateKey, startOfWeek, addDays } from "./ActivityHeatmap";
 
 function capitalize(s: string): string {
   return s.charAt(0).toUpperCase() + s.slice(1);
@@ -663,7 +642,7 @@ export default function ActivityHub() {
               {syncing ? (
                 <span className="inline-flex items-center gap-1.5 text-[11px] text-[var(--text-muted)]">
                   <Loader2 className="h-3 w-3 animate-spin" />
-                  {i18n("syncing", "Synchronisation...")}
+                  {i18n("journalSyncing", "Synchronisation...")}
                 </span>
               ) : (
                 <span className="inline-flex items-center gap-1.5 text-[11px] text-[var(--success)]">
@@ -971,7 +950,7 @@ export default function ActivityHub() {
                 {i18n("export", "Exporter")}
               </Button>
               <Button size="sm" variant="danger" leftIcon={<Trash2 className="h-3.5 w-3.5" />} onClick={() => setClearOpen(true)}>
-                {i18n("clearHistory", "Effacer")}
+                {i18n("clear", "Effacer")}
               </Button>
             </div>
           </Card>
@@ -1109,7 +1088,7 @@ export default function ActivityHub() {
         size="sm"
         variant="danger"
         onConfirm={handleClear}
-        confirmLabel={i18n("confirmClear", "Supprimer")}
+        confirmLabel={i18n("delete", "Supprimer")}
         cancelLabel={i18n("cancel", "Annuler")}
       />
     </div>

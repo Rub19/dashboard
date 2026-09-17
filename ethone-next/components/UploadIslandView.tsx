@@ -51,7 +51,7 @@ const UploadIslandView = memo(function UploadIslandView() {
             onClick={clearCompleted}
             className="text-[10px] text-[var(--text-muted)] hover:text-[var(--text-primary)]"
           >
-            {i18n("clearCompleted", "Effacer")}
+            {i18n("clear", "Effacer")}
           </button>
         )}
       </div>

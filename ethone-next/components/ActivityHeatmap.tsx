@@ -20,7 +20,7 @@ const CELL = 12;
 const GAP = 5;
 const COL = CELL + GAP;
 
-function startOfWeek(d: Date): Date {
+export function startOfWeek(d: Date): Date {
   const copy = new Date(d);
   copy.setHours(0, 0, 0, 0);
   const day = copy.getDay();
@@ -29,7 +29,7 @@ function startOfWeek(d: Date): Date {
   return copy;
 }
 
-function addDays(d: Date, days: number): Date {
+export function addDays(d: Date, days: number): Date {
   const copy = new Date(d);
   copy.setDate(copy.getDate() + days);
   return copy;
@@ -39,7 +39,7 @@ function isSameDay(d1: Date, d2: Date): boolean {
   return d1.getFullYear() === d2.getFullYear() && d1.getMonth() === d2.getMonth() && d1.getDate() === d2.getDate();
 }
 
-function dateKey(iso = ""): string {
+export function dateKey(iso = ""): string {
   const d = new Date(iso);
   if (Number.isNaN(d.getTime())) return "";
   return `${d.getFullYear()}-${String(d.getMonth() + 1).padStart(2, "0")}-${String(d.getDate()).padStart(2, "0")}`;

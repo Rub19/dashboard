@@ -182,19 +182,19 @@ export default function SecurityAuthManager() {
       case "enabled":
         return (
           <Button type="button" variant="danger" size="sm" onClick={handleDisable}>
-            {i18n("totpDisable", "Désactiver")}
+            {i18n("disable", "Désactiver")}
           </Button>
         );
       case "disabling":
         return (
           <Button type="button" variant="danger" size="sm" isLoading>
-            {i18n("totpDisable", "Désactiver")}
+            {i18n("disable", "Désactiver")}
           </Button>
         );
       case "checking":
         return (
           <Button type="button" variant="secondary" size="sm" isLoading>
-            {i18n("totpConfigure", "Configurer")}
+            {i18n("configure", "Configurer")}
           </Button>
         );
       case "setup":
@@ -208,7 +208,7 @@ export default function SecurityAuthManager() {
       default:
         return (
           <Button type="button" variant="secondary" size="sm" onClick={openTotpFlow}>
-            {i18n("totpConfigure", "Configurer")}
+            {i18n("configure", "Configurer")}
           </Button>
         );
     }
@@ -283,7 +283,7 @@ export default function SecurityAuthManager() {
                   className="w-28"
                 />
                 <Button type="button" variant="primary" size="sm" onClick={handleVerify} isLoading={totpStep === "verifying"}>
-                  {i18n("totpActivate", "Activer")}
+                  {i18n("enable", "Activer")}
                 </Button>
               </div>
               {codeError && <p className="mt-1.5 text-xs text-[var(--danger)]">{codeError}</p>}

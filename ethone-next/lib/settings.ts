@@ -133,6 +133,7 @@ export type Settings = {
   wallpaper: "none" | "aurora" | "nebula" | "mesh" | "noise" | "grain" | "mineral";
   layoutPreset: "default" | "minimal" | "dock-only" | "sidebar-only";
   sidebarVisible: boolean;
+  sidebarIcons: boolean;
   masterVolume: boolean;
   soundEffects: boolean;
   soundPack: SoundPack;
@@ -317,6 +318,7 @@ export const DEFAULTS: Settings = {
   wallpaper: "none",
   layoutPreset: "default",
   sidebarVisible: true,
+  sidebarIcons: true,
   masterVolume: true,
   soundEffects: true,
   soundPack: "ethone",

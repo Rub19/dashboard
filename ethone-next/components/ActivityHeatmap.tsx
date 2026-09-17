@@ -67,7 +67,7 @@ export default function ActivityHeatmap({ entries, weeks = 53 }: ActivityHeatmap
     return d;
   }, []);
 
-  const endDate = addDays(startOfWeek(today), (weeks - 1) * 7 + 6);
+  const endDate = addDays(startOfWeek(today), 6);
   const startDate = addDays(endDate, -(weeks * 7) + 1);
 
   const counts = useMemo(() => {

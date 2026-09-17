@@ -30,12 +30,15 @@ import {
   Loader2,
   AlertCircle,
   WifiOff,
+  Image as ImageIcon,
+  ImageOff,
   LucideIcon,
 } from "lucide-react";
 import { useI18n } from "@/lib/hooks/useI18n";
 import { useModKey, applyModKey } from "@/lib/hooks/useModKey";
 import { useUserIdentity } from "@/lib/hooks/useUserIdentity";
 import { useAuth } from "@/components/AuthProvider";
+import { useSettings } from "@/components/SettingsProvider";
 import { ADMIN_EMAIL } from "@/lib/admin";
 import { useSyncStore } from "@/lib/stores/sync";
 import { cn } from "@/lib/utils";
@@ -246,6 +249,7 @@ const SidebarFooter = memo(function SidebarFooter() {
   const router = useRouter();
   const { setOpen } = useAnimatedSidebar();
   const { collapsed } = useAnimatedSidebarPanel();
+  const { settings, update } = useSettings();
 
   return (
     <div className="flex flex-col gap-3">
@@ -258,6 +262,20 @@ const SidebarFooter = memo(function SidebarFooter() {
         )}
       >
         <SyncBadge collapsed={collapsed} />
+
+        <button
+          type="button"
+          onClick={() => update({ sidebarIcons: !settings.sidebarIcons })}
+          className="flex h-9 w-9 shrink-0 items-center justify-center rounded-[var(--inset-radius)] border-transparent bg-transparent text-[var(--text-muted)] transition-colors hover:border-[var(--panel-border)] hover:bg-[var(--text-primary)]/[0.06] hover:text-[var(--text-primary)] cursor-pointer"
+          aria-label={settings.sidebarIcons ? i18n("hideSidebarIcons", "Masquer les icônes") : i18n("showSidebarIcons", "Afficher les icônes")}
+          title={settings.sidebarIcons ? i18n("hideSidebarIcons", "Masquer les icônes") : i18n("showSidebarIcons", "Afficher les icônes")}
+        >
+          {settings.sidebarIcons ? (
+            <ImageIcon className="h-4.5 w-4.5" strokeWidth={1.85} />
+          ) : (
+            <ImageOff className="h-4.5 w-4.5" strokeWidth={1.85} />
+          )}
+        </button>
 
         <button
           type="button"
@@ -283,8 +301,55 @@ const SidebarFooter = memo(function SidebarFooter() {
   );
 });
 
-function Sidebar() {
+const SidebarNavList = memo(function SidebarNavList({
+  visibleApps,
+  isActive,
+  mod,
+  onSelect,
+  onPrefetch,
+}: {
+  visibleApps: AppItem[];
+  isActive: (app: AppItem) => boolean;
+  mod: "⌘" | "Ctrl";
+  onSelect: (href: string) => void;
+  onPrefetch: (href: string) => void;
+}) {
   const i18n = useI18n();
+  const { settings } = useSettings();
+  const { collapsed } = useAnimatedSidebarPanel();
+  // The icon rail (collapsed state) has nothing else to show per row, so the
+  // "hide icons" preference only applies while the sidebar is expanded.
+  const showIcons = settings.sidebarIcons || collapsed;
+
+  return (
+    <AnimatedSidebarMenu>
+      {visibleApps.map((app) => {
+        const IconComponent = app.icon;
+        return (
+          <AnimatedSidebarMenuItem key={app.id} onMouseEnter={() => onPrefetch(app.href)}>
+            <AnimatedSidebarMenuButton
+              isActive={isActive(app)}
+              icon={
+                showIcons ? (
+                  <IconComponent
+                    className="h-[21px] w-[21px] transition-transform duration-200 group-hover:scale-110"
+                    strokeWidth={1.9}
+                  />
+                ) : undefined
+              }
+              shortcut={SHORTCUTS[app.id] ? applyModKey(SHORTCUTS[app.id], mod) : undefined}
+              onSelect={() => onSelect(app.href)}
+            >
+              {i18n(app.id, app.id === "admin" ? "Admin" : app.id)}
+            </AnimatedSidebarMenuButton>
+          </AnimatedSidebarMenuItem>
+        );
+      })}
+    </AnimatedSidebarMenu>
+  );
+});
+
+function Sidebar() {
   const mod = useModKey();
   const router = useRouter();
   const pathname = usePathname() ?? "/";
@@ -336,28 +401,13 @@ function Sidebar() {
           <SidebarBrand />
         </AnimatedSidebarHeader>
         <AnimatedSidebarContent>
-          <AnimatedSidebarMenu>
-            {visibleApps.map((app) => {
-              const IconComponent = app.icon;
-              return (
-                <AnimatedSidebarMenuItem key={app.id} onMouseEnter={() => router.prefetch(app.href)}>
-                  <AnimatedSidebarMenuButton
-                    isActive={isActive(app)}
-                    icon={
-                      <IconComponent
-                        className="h-[21px] w-[21px] transition-transform duration-200 group-hover:scale-110"
-                        strokeWidth={1.9}
-                      />
-                    }
-                    shortcut={SHORTCUTS[app.id] ? applyModKey(SHORTCUTS[app.id], mod) : undefined}
-                    onSelect={() => router.push(app.href)}
-                  >
-                    {i18n(app.id, app.id === "admin" ? "Admin" : app.id)}
-                  </AnimatedSidebarMenuButton>
-                </AnimatedSidebarMenuItem>
-              );
-            })}
-          </AnimatedSidebarMenu>
+          <SidebarNavList
+            visibleApps={visibleApps}
+            isActive={isActive}
+            mod={mod}
+            onSelect={(href) => router.push(href)}
+            onPrefetch={(href) => router.prefetch(href)}
+          />
         </AnimatedSidebarContent>
         <AnimatedSidebarFooter className="mb-3 border-t border-[var(--panel-border)] pt-3">
           <SidebarFooter />

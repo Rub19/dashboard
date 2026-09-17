@@ -2,6 +2,16 @@ import { httpError } from "../middleware/errors.js";
 import { cachedLoad } from "../utils/cache.js";
 import { routeResult } from "../utils/response.js";
 import { DINO_FALLBACK_HTML } from "../assets/dinoFallback.js";
+import { ADMIN_EMAILS } from "./admin.js";
+
+// KV-backed manual override: lets the admin paste a known-good HTML file
+// from the dashboard (/admin) when the friend's GitHub repo is broken,
+// without needing a code change + redeploy each time (unlike
+// DINO_FALLBACK_HTML below, which is static and baked into the Worker
+// bundle). Sits between the live GitHub fetch and that static bundle in
+// priority — see friendGameDinoRoute.
+const OVERRIDE_KV_KEY = "dino";
+const MAX_OVERRIDE_BYTES = 2 * 1024 * 1024;
 
 // raw.githubusercontent.com serves this as text/plain regardless of the
 // file's actual content, so it can never be embedded directly as an iframe
@@ -105,7 +115,16 @@ function isCompleteHtml(text) {
   return /<\/html\s*>\s*$/i.test(text.trim());
 }
 
-export async function friendGameDinoRoute() {
+function requireAdmin(auth) {
+  if (!auth?.userId) throw httpError("AUTH_REQUIRED", 401);
+  if (!ADMIN_EMAILS.has(String(auth.email || "").toLowerCase())) throw httpError("FORBIDDEN", 403);
+}
+
+// Priority order: live GitHub (self-heals automatically the moment the
+// friend pushes a complete file, no admin action needed) > the admin's
+// KV-stored override (dashboard-editable, survives without a redeploy) >
+// the static bundle baked into the Worker (last resort, never fails).
+export async function friendGameDinoRoute({ env }) {
   const sourceUrl = await resolveSourceUrl();
   const loader = async () => {
     const res = await fetch(sourceUrl, { headers: { accept: "text/plain" } });
@@ -127,17 +146,47 @@ export async function friendGameDinoRoute() {
       }),
     });
   } catch {
-    // The live file is unreachable or came back incomplete — serve the
-    // known-good bundled snapshot instead of either broken HTML or a bare
-    // error page. Still re-tried live on every future request (nothing here
-    // is cached as a failure), so a properly re-pushed file on the friend's
-    // side is picked up again automatically, no redeploy needed.
+    // The live file is unreachable or came back incomplete. Nothing here is
+    // cached as a failure, so a properly re-pushed file on the friend's side
+    // is picked up again automatically on the very next request.
+    let overrideHtml = null;
+    try {
+      overrideHtml = await env.GAME_OVERRIDES?.get(OVERRIDE_KV_KEY);
+    } catch {}
+    const html = isCompleteHtml(overrideHtml) ? overrideHtml : DINO_FALLBACK_HTML;
     return routeResult(null, {}, {
       raw: true,
-      response: new Response(DINO_FALLBACK_HTML, {
+      response: new Response(html, {
         status: 200,
         headers: { "content-type": "text/html; charset=utf-8", "cache-control": "no-store" },
       }),
     });
   }
+}
+
+export async function gameDinoOverrideSetRoute({ request, env, auth }) {
+  requireAdmin(auth);
+  const text = await request.text();
+  if (!text || text.length > MAX_OVERRIDE_BYTES) throw httpError("INVALID_REQUEST", 413);
+  if (!isCompleteHtml(text)) {
+    throw httpError("INVALID_REQUEST", 400, {
+      detail: "Fichier incomplet : il doit se terminer par une balise </html> fermante.",
+    });
+  }
+  await env.GAME_OVERRIDES.put(OVERRIDE_KV_KEY, text, {
+    metadata: { uploadedAt: new Date().toISOString(), uploadedBy: auth.email, sizeBytes: text.length },
+  });
+  return { data: { ok: true, sizeBytes: text.length } };
+}
+
+export async function gameDinoOverrideClearRoute({ env, auth }) {
+  requireAdmin(auth);
+  await env.GAME_OVERRIDES.delete(OVERRIDE_KV_KEY);
+  return { data: { ok: true } };
+}
+
+export async function gameDinoOverrideStatusRoute({ env, auth }) {
+  requireAdmin(auth);
+  const { value, metadata } = await env.GAME_OVERRIDES.getWithMetadata(OVERRIDE_KV_KEY);
+  return { data: { active: !!value, ...(metadata || {}) } };
 }

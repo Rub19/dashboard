@@ -34,7 +34,11 @@ function securityHeaders(response, route) {
 }
 
 function isUploadRoute(route) {
-  return route && (route.id === "google-drive.upload" || route.id === "google-drive.upload.chunk");
+  return route && (
+    route.id === "google-drive.upload" ||
+    route.id === "google-drive.upload.chunk" ||
+    route.id === "games.dino.override.set"
+  );
 }
 
 function validateRequestShape(request, url, route) {

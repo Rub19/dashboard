@@ -2,7 +2,7 @@ import { httpError } from "../middleware/errors.js";
 import { requestExternal } from "../utils/external-request.js";
 import { safeText } from "../utils/normalize.js";
 
-const ADMIN_EMAILS = new Set(["rub19.mailpro@gmail.com"]);
+export const ADMIN_EMAILS = new Set(["rub19.mailpro@gmail.com"]);
 
 function projectOrigin(env) {
   try {

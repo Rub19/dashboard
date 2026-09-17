@@ -62,7 +62,12 @@ import { steamRoute } from "./routes/steam.js";
 import { supabaseRoute } from "./routes/supabase.js";
 import { todoistOAuthDisconnectRoute, todoistOAuthExchangeRoute, todoistTasksRoute } from "./routes/todoist-oauth.js";
 import { trackerLolRoute, trackerRoute, trackerValorantRoute, trackerValorantMatchesRoute, trackerLolMatchesRoute, trackerTftMatchesRoute, trackerApexMatchesRoute, trackerGameProfileRoute, trackerGameMatchesRoute } from "./routes/tracker.js";
-import { friendGameDinoRoute } from "./routes/friend-games.js";
+import {
+  friendGameDinoRoute,
+  gameDinoOverrideSetRoute,
+  gameDinoOverrideClearRoute,
+  gameDinoOverrideStatusRoute,
+} from "./routes/friend-games.js";
 import { twitchRoute } from "./routes/twitch.js";
 import { weatherRoute, geocodeRoute } from "./routes/weather.js";
 import { billsScanRoute } from "./routes/bills-scan.js";
@@ -170,6 +175,9 @@ export const ROUTES = Object.freeze([
   route("tracker.game-profile", "/api/stats/tracker-profile", trackerGameProfileRoute, { public: true, service: "tracker", rateLimit: "edge" }),
   route("tracker.game-matches", "/api/stats/tracker-matches", trackerGameMatchesRoute, { public: true, service: "tracker", rateLimit: "edge" }),
   route("games.dino", "/api/games/dino", friendGameDinoRoute, { public: true, service: "games", rateLimit: "edge", embeddable: true }),
+  route("games.dino.override.set", "/api/games/dino/override", gameDinoOverrideSetRoute, { method: "PUT", service: "games", rateLimit: "strict" }),
+  route("games.dino.override.clear", "/api/games/dino/override", gameDinoOverrideClearRoute, { method: "DELETE", service: "games", rateLimit: "strict" }),
+  route("games.dino.override.status", "/api/games/dino/override", gameDinoOverrideStatusRoute, { method: "GET", service: "games", rateLimit: "standard" }),
   route("twitch.channel", "/api/twitch/channel", twitchRoute, { public: true, service: "twitch", rateLimit: "edge" }),
   route("lastfm.recent-tracks", "/api/lastfm/recent-tracks", lastFmRoute, { public: true, service: "lastfm", action: "recent-tracks", rateLimit: "edge" }),
   route("lastfm.top-artists", "/api/lastfm/top-artists", lastFmRoute, { public: true, service: "lastfm", action: "top-artists", rateLimit: "edge" }),

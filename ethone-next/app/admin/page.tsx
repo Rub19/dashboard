@@ -1,15 +1,16 @@
 "use client";
 
-import { useCallback, useEffect, useMemo, useState } from "react";
+import { useCallback, useEffect, useMemo, useRef, useState } from "react";
 import { useAuth } from "@/components/AuthProvider";
 import { useI18n } from "@/lib/hooks/useI18n";
-import { fetchWorker } from "@/lib/api";
+import { fetchWorker, WorkerError } from "@/lib/api";
 import { useItems } from "@/lib/hooks/useItems";
 import { useCloudFiles } from "@/lib/hooks/useCloudFiles";
+import { useToast } from "@/components/ToastProvider";
 import { ADMIN_EMAIL } from "@/lib/admin";
 import { Icon } from "@/lib/icons";
 import { cn } from "@/lib/utils";
-import { RefreshCw, Lock, Users, Layers, HardDrive, Mail, Activity, BarChart3 } from "lucide-react";
+import { RefreshCw, Lock, Users, Layers, HardDrive, Mail, Activity, BarChart3, Gamepad2, Upload, Trash2 } from "lucide-react";
 
 const adminCardClass =
   "min-w-0 overflow-hidden rounded-[var(--panel-radius)] border border-[var(--panel-border)] bg-[var(--panel-bg)] transition-colors duration-150 hover:border-[var(--accent)]/30";
@@ -131,9 +132,71 @@ export default function AdminPage() {
     }
   }, [localStats]);
 
+  // Manual override for the Dino Corridor game (/games/): the friend's
+  // GitHub repo has repeatedly served a truncated file, so the worker
+  // already falls back to a bundled snapshot — this lets the admin push a
+  // fresher one from the dashboard instead of asking for a code change each
+  // time. Priority on the worker side is live GitHub > this override > the
+  // bundled snapshot.
+  const { success: notifySuccess, error: notifyError } = useToast();
+  const [gameOverride, setGameOverride] = useState<{ active: boolean; uploadedAt?: string; sizeBytes?: number } | null>(null);
+  const [gameOverrideLoading, setGameOverrideLoading] = useState(false);
+  const fileInputRef = useRef<HTMLInputElement>(null);
+
+  const loadGameOverride = useCallback(async () => {
+    try {
+      const res = await fetchWorker("/api/games/dino/override");
+      setGameOverride(res?.data || null);
+    } catch {
+      setGameOverride(null);
+    }
+  }, []);
+
+  const handleGameFileSelected = useCallback(
+    async (file: File | undefined) => {
+      if (!file) return;
+      setGameOverrideLoading(true);
+      try {
+        const text = await file.text();
+        await fetchWorker("/api/games/dino/override", {
+          method: "PUT",
+          headers: { "Content-Type": "text/html; charset=utf-8" },
+          body: text,
+        });
+        notifySuccess(i18n("gameOverrideUploaded", "Jeu mis à jour"));
+        await loadGameOverride();
+      } catch (err) {
+        const message = err instanceof WorkerError || err instanceof Error ? err.message : String(err);
+        notifyError(i18n("gameOverrideUploadFailed", "Échec de la mise à jour"), message);
+      } finally {
+        setGameOverrideLoading(false);
+        if (fileInputRef.current) fileInputRef.current.value = "";
+      }
+    },
+    [i18n, notifySuccess, notifyError, loadGameOverride]
+  );
+
+  const handleGameOverrideClear = useCallback(async () => {
+    setGameOverrideLoading(true);
+    try {
+      await fetchWorker("/api/games/dino/override", { method: "DELETE" });
+      notifySuccess(i18n("gameOverrideCleared", "Version manuelle retirée"));
+      await loadGameOverride();
+    } catch (err) {
+      const message = err instanceof WorkerError || err instanceof Error ? err.message : String(err);
+      notifyError(i18n("gameOverrideClearFailed", "Échec de la suppression"), message);
+    } finally {
+      setGameOverrideLoading(false);
+    }
+  }, [i18n, notifySuccess, notifyError, loadGameOverride]);
+
   useEffect(() => {
     if (isAdmin) load();
   }, [isAdmin, load]);
+
+  useEffect(() => {
+    if (isAdmin) loadGameOverride();
+  }, [isAdmin, loadGameOverride]);
 
   if (!isAdmin) {
     return (
@@ -265,6 +328,75 @@ export default function AdminPage() {
             </div>
           </>
         )}
+
+        <div className={adminCardClass}>
+          <div className="space-y-3 p-4">
+            <div className="flex items-center gap-2 text-sm font-semibold text-[var(--foreground)]">
+              <Gamepad2 className="h-4 w-4 text-[var(--accent)]" />
+              {i18n("gameOverrideTitle", "Jeu — mise à jour manuelle")}
+            </div>
+            <p className="text-xs text-[var(--muted)]">
+              {i18n(
+                "gameOverrideHint",
+                "Le fichier du dépôt GitHub de ton pote est repris automatiquement dès qu'il est complet. Si ce n'est pas le cas, envoie un fichier .html ici — il sera servi à la place tant qu'un fichier GitHub valide n'est pas détecté."
+              )}
+            </p>
+
+            <div className="flex items-center justify-between gap-3 rounded-[var(--inset-radius)] border border-[var(--panel-border)] bg-[var(--panel-bg)]/50 p-3">
+              <div className="flex items-center gap-2.5">
+                <span
+                  className={cn(
+                    "h-2 w-2 shrink-0 rounded-full",
+                    gameOverride?.active ? "bg-emerald-400" : "bg-[var(--muted)]"
+                  )}
+                />
+                <div className="text-xs">
+                  <p className="font-medium text-[var(--foreground)]">
+                    {gameOverride?.active
+                      ? i18n("gameOverrideActive", "Version manuelle active")
+                      : i18n("gameOverrideInactive", "Aucune version manuelle")}
+                  </p>
+                  {gameOverride?.active && (
+                    <p className="text-[var(--muted)]">
+                      {gameOverride.sizeBytes ? `${Math.round(gameOverride.sizeBytes / 1024)} Ko` : ""}
+                      {gameOverride.uploadedAt ? ` · ${new Date(gameOverride.uploadedAt).toLocaleString()}` : ""}
+                    </p>
+                  )}
+                </div>
+              </div>
+              {gameOverride?.active && (
+                <button
+                  type="button"
+                  onClick={handleGameOverrideClear}
+                  disabled={gameOverrideLoading}
+                  className="flex h-8 items-center gap-1.5 rounded-[var(--inset-radius)] border border-[var(--panel-border)] bg-[var(--panel-bg)] px-2.5 text-xs font-medium text-rose-400 transition-colors hover:bg-rose-500/10 disabled:opacity-50"
+                >
+                  <Trash2 className="h-3.5 w-3.5" />
+                  {i18n("gameOverrideClear", "Retirer")}
+                </button>
+              )}
+            </div>
+
+            <input
+              ref={fileInputRef}
+              type="file"
+              accept=".html,text/html"
+              className="hidden"
+              onChange={(e) => handleGameFileSelected(e.target.files?.[0])}
+            />
+            <button
+              type="button"
+              onClick={() => fileInputRef.current?.click()}
+              disabled={gameOverrideLoading}
+              className="flex h-10 w-full items-center justify-center gap-2 rounded-[var(--inset-radius)] border border-[var(--panel-border)] bg-[var(--panel-bg)] text-sm font-medium text-[var(--foreground)] transition-colors hover:bg-[var(--text-primary)]/[0.06] disabled:opacity-50"
+            >
+              <Upload className={cn("h-4 w-4", gameOverrideLoading && "animate-pulse")} />
+              {gameOverrideLoading
+                ? i18n("gameOverrideUploading", "Envoi en cours...")
+                : i18n("gameOverrideUploadButton", "Envoyer un fichier .html")}
+            </button>
+          </div>
+        </div>
       </div>
     </div>
   );

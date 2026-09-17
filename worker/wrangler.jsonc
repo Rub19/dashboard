@@ -44,6 +44,12 @@
   "ai": {
     "binding": "AI"
   },
+  "kv_namespaces": [
+    {
+      "binding": "GAME_OVERRIDES",
+      "id": "8737ce9fd69a407cacf086bed44b4422"
+    }
+  ],
   "durable_objects": {
     "bindings": [
       {

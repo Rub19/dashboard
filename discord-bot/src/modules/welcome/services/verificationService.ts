@@ -1,5 +1,6 @@
 import { GuildMember, PermissionFlagsBits } from 'discord.js';
 import { welcomeRepository } from '../storage/welcomeRepository.js';
+import { autoRoleService } from '../../roles/services/autoRoleService.js';
 import { logService } from '../../logs/services/logService.js';
 import { logger } from '../../../utils/logger.js';
 
@@ -38,7 +39,12 @@ export class VerificationService {
         }
       }
 
-      // 3. Enregistrer l'événement Analytics & Funnel
+      // 3. Attribuer les rôles automatiques normaux, retenus à l'arrivée en
+      // attendant cette vérification (guildMemberAdd.ts). Sans effet si le
+      // membre les a déjà (idempotent côté Discord).
+      await autoRoleService.assignOnJoin(member);
+
+      // 3b. Enregistrer l'événement Analytics & Funnel
       welcomeRepository.recordEvent({
         type: 'VERIFICATION_PASS',
         userId: member.id,

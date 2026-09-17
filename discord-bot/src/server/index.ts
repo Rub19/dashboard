@@ -21,6 +21,7 @@ import { createAntiRaidRouter } from './routes/antiRaidRoutes.js';
 import { createAntiNukeRouter } from './routes/antiNukeRoutes.js';
 import { createAutoModRouter } from './routes/autoModRoutes.js';
 import { createLevelingRouter } from './routes/levelingRoutes.js';
+import { createEconomyRouter } from './routes/economyRoutes.js';
 import { createGiveawayRouter } from './routes/giveawayRoutes.js';
 import { createSharedSpaceRouter } from './routes/sharedSpaceRoutes.js';
 import { createInternalSharedSpaceRouter } from './routes/internalSharedSpaceRoutes.js';
@@ -145,6 +146,12 @@ export function startWebServer(client: Client): http.Server {
     authMiddleware,
     createGuildAuthMiddleware(client),
     createLevelingRouter(client)
+  );
+  app.use(
+    '/api/guilds/:guildId/economy',
+    authMiddleware,
+    createGuildAuthMiddleware(client),
+    createEconomyRouter(client)
   );
   app.use(
     '/api/guilds/:guildId/giveaways',

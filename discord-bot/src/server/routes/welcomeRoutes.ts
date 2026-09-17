@@ -7,6 +7,7 @@ import { WelcomeCardGenerator } from '../../modules/welcome/images/welcomeCardGe
 import { VariableContext } from '../../modules/welcome/types/variables.js';
 import { logger } from '../../utils/logger.js';
 import { rateLimit, idempotent, guildLock } from '../middleware/antiAbuseMiddleware.js';
+import { emitConfigUpdated } from '../../services/syncConfigEmitter.js';
 
 export function createWelcomeRouter(discordClient: Client) {
   const router = express.Router({ mergeParams: true });
@@ -99,6 +100,7 @@ export function createWelcomeRouter(discordClient: Client) {
     const guildId = String(req.params.guildId);
     try {
       welcomeRepository.saveVerificationConfig(guildId, { ...req.body, guildId });
+      emitConfigUpdated('welcomeVerification', guildId, req.body, 'DASHBOARD', req.user?.id);
       res.json({ success: true, verification: req.body });
     } catch (err: any) {
       res.status(400).json({ error: err.message || 'Données de vérification invalides' });

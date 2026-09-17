@@ -128,31 +128,15 @@ export function createBotControlRouter(client: Client): Router {
     }
   });
 
-  // Performance Telemetry (multi-window historical charts)
+  // Performance Telemetry (multi-window historical charts) — real sampled
+  // points from BotTelemetryService's ring buffer (one sample every ~30s),
+  // not generated. A freshly started bot will have a short history until
+  // the buffer fills up; that's an honest gap, not something to backfill
+  // with fabricated points.
   router.get('/performance', (req: Request, res: Response) => {
     try {
       const windowParam = (req.query.window as string) || '1h';
-      const count = windowParam === '5m' ? 12 : windowParam === '1h' ? 24 : 30;
-
-      // Generate realistic smoothed historical telemetry points
-      const points = [];
-      const now = Date.now();
-      const stepMs = windowParam === '5m' ? 25000 : windowParam === '1h' ? 150000 : 2880000;
-
-      for (let i = count; i >= 0; i--) {
-        const time = new Date(now - i * stepMs).toISOString();
-        const basePing = 20 + Math.sin(i * 0.4) * 4;
-        points.push({
-          timestamp: time,
-          pingMs: Math.round(basePing + Math.random() * 3),
-          p95Ms: Math.round(basePing * 1.5 + Math.random() * 4),
-          p99Ms: Math.round(basePing * 2.2 + Math.random() * 6),
-          heapUsedMb: Math.round((78 + Math.sin(i * 0.2) * 8 + Math.random() * 4) * 10) / 10,
-          cpuPercent: Math.round((1.8 + Math.random() * 0.8) * 10) / 10,
-          eventsPerMin: Math.round(140 + Math.random() * 25),
-        });
-      }
-
+      const points = telemetryService.getPerformanceHistory(windowParam);
       res.json({ success: true, data: { window: windowParam, points } });
     } catch (err: any) {
       res.status(500).json({ success: false, error: err.message });

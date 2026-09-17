@@ -881,6 +881,16 @@ export default function BotControlClient({ initialTab = "overview" }: BotControl
             userCount: snapshot?.cachedUsersCount ?? prev.userCount,
             shardsCount: snapshot?.shardsCount ?? prev.shardsCount,
           }));
+          if (snapshot?.memory) {
+            setPerfMetrics((prev) => ({
+              ...prev,
+              heapUsedMb: snapshot.memory.heapUsedMb ?? prev.heapUsedMb,
+              heapTotalMb: snapshot.memory.heapTotalMb ?? prev.heapTotalMb,
+              rssMb: snapshot.memory.rssMb ?? prev.rssMb,
+              cpuUsagePercent: snapshot.cpuPercent ?? prev.cpuUsagePercent,
+              eventLoopLagMs: snapshot.eventLoopDelayMs ?? prev.eventLoopLagMs,
+            }));
+          }
           if (globalStatus?.subsystems) {
             const labels: Record<string, string> = {
               gateway: "Gateway WebSocket",

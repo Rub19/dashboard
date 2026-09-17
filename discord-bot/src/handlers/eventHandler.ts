@@ -34,6 +34,7 @@ import { inviteSnapshotService } from '../modules/invites/services/inviteSnapsho
 import { voiceService } from '../modules/voice/services/voiceService.js';
 import { starboardService } from '../modules/starboard/services/starboardService.js';
 import { healthStatusService } from '../services/resilience/healthStatusService.js';
+import { BotTelemetryService } from '../modules/botControl/services/botTelemetryService.js';
 import { logger } from '../utils/logger.js';
 
 let isEventsRegistered = false;
@@ -44,6 +45,17 @@ export function registerEvents(client: Client): void {
     return;
   }
   isEventsRegistered = true;
+
+  // Single wiring point for the Bot Control Performance tab's real
+  // "events/minute" throughput figure — counts every gateway event the
+  // client actually emits, rather than instrumenting each handler below
+  // individually. Pure pass-through wrapper, doesn't change dispatch order.
+  const botTelemetryService = BotTelemetryService.getInstance();
+  const originalEmit = client.emit.bind(client);
+  client.emit = ((event: string, ...args: unknown[]) => {
+    botTelemetryService.incrementEventCount();
+    return originalEmit(event, ...args);
+  }) as typeof client.emit;
 
   // Gateway Lifecycle & Resilience Events
   client.on(Events.ShardDisconnect, (event, shardId) => {

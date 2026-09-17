@@ -40,9 +40,11 @@ import { baseEmbed } from '../utils/embeds.js';
 import { HelpPanel } from '../commands/general/helpPanel.js';
 import { syncEngine } from '../services/syncEngine.js';
 import { BotCommandStatsService } from '../modules/botControl/services/botCommandStatsService.js';
+import { BotTelemetryService } from '../modules/botControl/services/botTelemetryService.js';
 import { logger } from '../utils/logger.js';
 
 const botCommandStatsService = BotCommandStatsService.getInstance();
+const botTelemetryService = BotTelemetryService.getInstance();
 import { formatString, getTranslation } from '../utils/i18n.js';
 
 // Component/modal handlers (buttons, select menus, modals) previously ran
@@ -328,9 +330,11 @@ export async function onInteractionCreate(interaction: Interaction) {
     }
     await command.execute(context);
     botCommandStatsService.recordCommandExecution(command.name, Date.now() - commandStartedAt, true);
+    botTelemetryService.incrementCommandCount();
     logger.info(`[INTERACTION SUCCES] /${command.name} exécutée avec succès pour ${interaction.user.tag}`);
   } catch (error) {
     botCommandStatsService.recordCommandExecution(command.name, Date.now() - commandStartedAt, false, error instanceof Error ? error.message : String(error));
+    botTelemetryService.incrementCommandCount();
     logger.error(`[INTERACTION ERREUR] Erreur lors de l'exécution de /${command.name} :`, error);
 
     const errorMessage = `${guildConfig.emojis.error} Une erreur interne est survenue lors de l'exécution de la commande.`;

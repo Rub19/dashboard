@@ -6,6 +6,15 @@ import {
   SubsystemStatus,
 } from '../types/index.js';
 
+export interface BotPerformanceSample {
+  timestamp: string;
+  pingMs: number;
+  heapUsedMb: number;
+  cpuPercent: number;
+  eventLoopLagMs: number;
+  eventsPerMin: number;
+}
+
 export class BotTelemetryService {
   private static instance: BotTelemetryService;
   private pingHistory: number[] = [18, 22, 19, 25, 20, 24, 21, 23, 22, 26, 21, 19];
@@ -14,14 +23,53 @@ export class BotTelemetryService {
   private eventCounter = 0;
   private commandCounter = 0;
   private lastThroughputReset = Date.now();
-  private currentEventsPerMin = 142;
-  private currentCommandsPerMin = 18;
+  private currentEventsPerMin = 0;
+  private currentCommandsPerMin = 0;
+  private lastEventLoopLagMs = 0;
+  // Ring buffer of real sampled points, one every ~30s — bounded at 24h of
+  // history (2880 * 30s). Replaces the previous sine-wave-generated fake
+  // history in GET /api/bot/performance.
+  private performanceHistory: BotPerformanceSample[] = [];
+  private readonly maxPerformanceSamples = 2880;
 
   private constructor() {
     // Collect rolling ping samples periodically
     setInterval(() => {
       this.refreshThroughput();
     }, 60000);
+    setInterval(() => {
+      this.samplePerformance();
+    }, 30000);
+  }
+
+  private samplePerformance() {
+    const mem = process.memoryUsage();
+    const heapUsedMb = Math.round((mem.heapUsed / 1024 / 1024) * 10) / 10;
+    const cpuUsage = process.cpuUsage();
+    const cpuPercent = Math.min(100, Math.round(((cpuUsage.user + cpuUsage.system) / 1000000 / Math.max(1, process.uptime())) * 1000) / 10);
+    const lastPing = this.pingHistory[this.pingHistory.length - 1] ?? 0;
+    const measureStartedAt = Date.now();
+    // setImmediate fires after the current event-loop phase drains — the
+    // extra delay beyond 0ms is real, current event-loop lag.
+    setImmediate(() => {
+      this.lastEventLoopLagMs = Date.now() - measureStartedAt;
+      this.performanceHistory.push({
+        timestamp: new Date().toISOString(),
+        pingMs: lastPing,
+        heapUsedMb,
+        cpuPercent,
+        eventLoopLagMs: this.lastEventLoopLagMs,
+        eventsPerMin: this.currentEventsPerMin,
+      });
+      if (this.performanceHistory.length > this.maxPerformanceSamples) {
+        this.performanceHistory.shift();
+      }
+    });
+  }
+
+  public getPerformanceHistory(windowParam: string): BotPerformanceSample[] {
+    const count = windowParam === '5m' ? 10 : windowParam === '1h' ? 120 : this.maxPerformanceSamples;
+    return this.performanceHistory.slice(-count);
   }
 
   public static getInstance(): BotTelemetryService {
@@ -155,7 +203,7 @@ export class BotTelemetryService {
         externalMb,
       },
       cpuPercent: cpuPercent || 1.8,
-      eventLoopDelayMs: 1.2,
+      eventLoopDelayMs: this.lastEventLoopLagMs,
       latency: {
         p50Ms: percentiles.p50,
         p95Ms: percentiles.p95,
@@ -164,10 +212,14 @@ export class BotTelemetryService {
         avgPingMs: percentiles.avg,
       },
       throughput: {
-        eventsPerMinute: Math.max(120, this.currentEventsPerMin),
-        commandsPerMinute: Math.max(14, this.currentCommandsPerMin),
-        dbQueriesPerMinute: 88,
-        aiTokensPerMinute: 450,
+        eventsPerMinute: this.currentEventsPerMin,
+        commandsPerMinute: this.currentCommandsPerMin,
+        // Not tracked: no unified DB query wrapper exists to hook a counter
+        // into (same gap as the security audit's incident aggregation) —
+        // left as a disclosed static placeholder rather than fabricated
+        // per-minute noise.
+        dbQueriesPerMinute: 0,
+        aiTokensPerMinute: 0,
       },
       guildsCount: client?.guilds.cache.size || 1,
       cachedUsersCount: client?.users.cache.size || 48,

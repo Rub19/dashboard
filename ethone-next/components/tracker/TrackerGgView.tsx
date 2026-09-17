@@ -33,6 +33,17 @@ function fmtStat(k: string): string {
   return k.replace(/([A-Z])/g, " $1").replace(/^./, (c) => c.toUpperCase()).trim();
 }
 
+// tracker.gg doesn't always send a pre-formatted displayValue — when it's
+// missing, the raw value can be a long float (e.g. headshot % computed as
+// hits/shots*100). Round it so the fallback never shows 15 decimal places.
+function fmtStatValue(stat: { value?: number; displayValue?: string }): string {
+  if (stat.displayValue) return stat.displayValue;
+  if (typeof stat.value === "number" && Number.isFinite(stat.value)) {
+    return String(Math.round(stat.value));
+  }
+  return "—";
+}
+
 export default function TrackerGgView() {
   const [gameId, setGameId] = useState(TRACKER_GAMES[0].id);
   const game = useMemo(() => TRACKER_GAMES.find((g) => g.id === gameId) ?? TRACKER_GAMES[0], [gameId]);
@@ -325,7 +336,7 @@ export default function TrackerGgView() {
                     {Object.entries(seg.stats).slice(0, 16).map(([k, stat]) => (
                       <div key={k}>
                         <p className="text-[11px] text-zinc-500">{fmtStat(k)}</p>
-                        <p className="text-sm font-bold text-white">{stat.displayValue ?? String(stat.value ?? "—")}</p>
+                        <p className="text-sm font-bold text-white">{fmtStatValue(stat)}</p>
                       </div>
                     ))}
                   </div>

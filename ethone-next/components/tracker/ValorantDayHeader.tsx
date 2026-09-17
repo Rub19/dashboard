@@ -76,7 +76,7 @@ export default function ValorantDayHeader({ group, onViewReport }: ValorantDayHe
         {/* HS% */}
         <div className="text-right min-w-[28px]">
           <span className="block text-[8px] font-extrabold uppercase text-zinc-500">HS%</span>
-          <span className="font-mono text-xs font-bold text-white">{group.avgHsPercent}</span>
+          <span className="font-mono text-xs font-bold text-white">{Math.round(group.avgHsPercent)}</span>
         </div>
 
         {/* ACS */}

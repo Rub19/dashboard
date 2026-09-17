@@ -47,8 +47,8 @@ export default function DailyReportModal({
     const prevKd = isVal ? prevVal?.avgKd || null : prevLol?.avgKda || null;
     const kdDiff = prevKd !== null ? Number((kd - prevKd).toFixed(2)) : null;
 
-    const hs = isVal ? valGroup?.avgHsPercent || 0 : 0;
-    const prevHs = prevVal?.avgHsPercent || null;
+    const hs = isVal ? Math.round(valGroup?.avgHsPercent || 0) : 0;
+    const prevHs = prevVal?.avgHsPercent != null ? Math.round(prevVal.avgHsPercent) : null;
     const hsDiff = prevHs !== null ? hs - prevHs : null;
 
     const acs = isVal ? valGroup?.avgAcs || 0 : lolGroup?.avgDpm || 0;

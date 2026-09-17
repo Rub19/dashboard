@@ -1,6 +1,7 @@
 "use client";
 
-import React, { useState, useMemo } from "react";
+import { useState, useMemo, useEffect, useCallback } from "react";
+import { useSearchParams } from "next/navigation";
 import {
   Award,
   Zap,
@@ -9,192 +10,374 @@ import {
   Search,
   Plus,
   Trash2,
-  CheckCircle2,
-  Eye,
   Hash,
   RefreshCw,
   Palette,
   Lock,
   X,
   Edit2,
+  Eye,
 } from "lucide-react";
+import { useToast } from "@/components/ToastProvider";
+import { useDiscordOAuth } from "@/lib/hooks/useDiscordOAuth";
+import { cn } from "@/lib/utils";
 
-interface MemberRank {
-  id: string;
-  rank: number;
+const BOT_API_URL = process.env.NEXT_PUBLIC_DISCORD_BOT_API || "";
+
+// Mirrors discord-bot/src/modules/leveling/types/*.ts — this page reads and
+// writes the real backend shape, not a made-up one.
+interface LeaderboardEntry {
+  userId: string;
   username: string;
-  avatar: string;
-  level: number;
-  currentXp: number;
-  targetXp: number;
+  avatarUrl: string | null;
   totalXp: number;
+  level: number;
   messagesCount: number;
-  roleReward?: string;
+  rank: number;
+  currentLevelXp: number;
+  nextLevelXp: number;
+  progressPercentage: number;
 }
 
-interface RoleReward {
+interface LevelReward {
+  id: string;
+  guildId: string;
   level: number;
-  roleName: string;
-  roleColor: string;
-  membersCount: number;
+  roleId: string;
+  message: string | null;
+  enabled: boolean;
 }
+
+interface XpBoost {
+  id: string;
+  guildId: string;
+  name: string;
+  multiplier: number;
+  targetType: "role" | "channel" | "server" | "event";
+  targetId: string | null;
+  startTime: string | null;
+  endTime: string | null;
+  enabled: boolean;
+}
+
+interface LevelingConfig {
+  enabled: boolean;
+  minXp: number;
+  maxXp: number;
+  cooldownSeconds: number;
+  minMessageLength: number;
+  levelUpChannelType: "same_channel" | "specific_channel" | "dm" | "disabled";
+  levelUpChannelId: string | null;
+  levelUpMessage: string;
+  rewardType: "cumulative" | "progressive";
+  excludedChannelIds: string[];
+  excludedRoleIds: string[];
+  allowBots: boolean;
+}
+
+const DEFAULT_CONFIG: LevelingConfig = {
+  enabled: true,
+  minXp: 15,
+  maxXp: 30,
+  cooldownSeconds: 60,
+  minMessageLength: 5,
+  levelUpChannelType: "same_channel",
+  levelUpChannelId: null,
+  levelUpMessage: "🎉 Félicitations {user} ! Vous venez d'atteindre le **niveau {level}** !",
+  rewardType: "cumulative",
+  excludedChannelIds: [],
+  excludedRoleIds: [],
+  allowBots: false,
+};
+
+const DEMO_MEMBERS: LeaderboardEntry[] = [
+  { userId: "demo-1", username: "Nocturne", avatarUrl: null, totalXp: 142500, level: 34, messagesCount: 7120, rank: 1, currentLevelXp: 800, nextLevelXp: 1200, progressPercentage: 66 },
+  { userId: "demo-2", username: "AlexDev", avatarUrl: null, totalXp: 118400, level: 31, messagesCount: 5920, rank: 2, currentLevelXp: 400, nextLevelXp: 1100, progressPercentage: 36 },
+  { userId: "demo-3", username: "ShadowGamer", avatarUrl: null, totalXp: 82100, level: 26, messagesCount: 4105, rank: 3, currentLevelXp: 300, nextLevelXp: 950, progressPercentage: 31 },
+];
 
 export default function LevelingCenterClient() {
+  const searchParams = useSearchParams();
+  const rawGuildId = searchParams.get("guildId");
+  const { profile } = useDiscordOAuth();
+  const { success, error: toastError } = useToast();
+
+  const activeGuild = useMemo(() => {
+    if (rawGuildId && profile?.guilds) {
+      return profile.guilds.find((g) => g.id === rawGuildId) || profile.guilds[0];
+    }
+    return profile?.guilds?.[0] || null;
+  }, [rawGuildId, profile?.guilds]);
+
+  const currentGuildId = activeGuild?.id || "123456789012345678";
+  const base = `${BOT_API_URL}/api/guilds/${currentGuildId}/leveling`;
+  const isRealGuild = Boolean(BOT_API_URL) && currentGuildId !== "123456789012345678";
+
   const [activeTab, setActiveTab] = useState<
-    "leaderboard" | "card_designer" | "rewards" | "rates" | "blacklist"
+    "leaderboard" | "card_designer" | "rewards" | "boosts" | "blacklist"
   >("leaderboard");
 
-  // Leaderboard Data
-  const [members, setMembers] = useState<MemberRank[]>([
-    {
-      id: "usr-1",
-      rank: 1,
-      username: "Nocturne#4412",
-      avatar: "https://images.unsplash.com/photo-1534528741775-53994a69daeb?w=60&auto=format&fit=crop&q=80",
-      level: 74,
-      currentXp: 1840,
-      targetXp: 2500,
-      totalXp: 142500,
-      messagesCount: 7120,
-      roleReward: "Mythique",
-    },
-    {
-      id: "usr-2",
-      rank: 2,
-      username: "AlexDev#0001",
-      avatar: "https://images.unsplash.com/photo-1507003211169-0a1dd7228f2d?w=60&auto=format&fit=crop&q=80",
-      level: 68,
-      currentXp: 950,
-      targetXp: 2300,
-      totalXp: 118400,
-      messagesCount: 5920,
-      roleReward: "Légende",
-    },
-    {
-      id: "usr-3",
-      rank: 3,
-      username: "ShadowGamer#1337",
-      avatar: "https://images.unsplash.com/photo-1535713875002-d1d0cf377fde?w=60&auto=format&fit=crop&q=80",
-      level: 55,
-      currentXp: 1200,
-      targetXp: 1900,
-      totalXp: 82100,
-      messagesCount: 4105,
-      roleReward: "Légende",
-    },
-    {
-      id: "usr-4",
-      rank: 4,
-      username: "Sarah_T#2048",
-      avatar: "https://images.unsplash.com/photo-1494790108377-be9c29b29330?w=60&auto=format&fit=crop&q=80",
-      level: 42,
-      currentXp: 780,
-      targetXp: 1500,
-      totalXp: 53400,
-      messagesCount: 2670,
-      roleReward: "Vétéran",
-    },
-    {
-      id: "usr-5",
-      rank: 5,
-      username: "Kylian_Gamer#9912",
-      avatar: "https://images.unsplash.com/photo-1570295999919-56ceb5ecca61?w=60&auto=format&fit=crop&q=80",
-      level: 38,
-      currentXp: 340,
-      targetXp: 1350,
-      totalXp: 41200,
-      messagesCount: 2060,
-      roleReward: "Vétéran",
-    },
-    {
-      id: "usr-6",
-      rank: 6,
-      username: "Lucas92#4412",
-      avatar: "https://images.unsplash.com/photo-1500648767791-00dcc994a43e?w=60&auto=format&fit=crop&q=80",
-      level: 26,
-      currentXp: 610,
-      targetXp: 1100,
-      totalXp: 24300,
-      messagesCount: 1215,
-      roleReward: "Habitué",
-    },
-    {
-      id: "usr-7",
-      rank: 7,
-      username: "Elena_Design#0077",
-      avatar: "https://images.unsplash.com/photo-1438761681033-6461ffad8d80?w=60&auto=format&fit=crop&q=80",
-      level: 19,
-      currentXp: 820,
-      targetXp: 950,
-      totalXp: 15800,
-      messagesCount: 790,
-      roleReward: "Initié",
-    },
-  ]);
+  const [isDemo, setIsDemo] = useState(true);
+  const [loading, setLoading] = useState(false);
+  const [savingConfig, setSavingConfig] = useState(false);
 
+  const [overview, setOverview] = useState<{
+    activeMembersCount: number;
+    totalXpDistributed: number;
+    totalLevels: number;
+    topUser: { username: string; level: number } | null;
+  }>({ activeMembersCount: 0, totalXpDistributed: 0, totalLevels: 0, topUser: null });
+
+  const [config, setConfig] = useState<LevelingConfig>(DEFAULT_CONFIG);
+  const [members, setMembers] = useState<LeaderboardEntry[]>(DEMO_MEMBERS);
+  const [rewards, setRewards] = useState<LevelReward[]>([]);
+  const [boosts, setBoosts] = useState<XpBoost[]>([]);
   const [searchQuery, setSearchQuery] = useState("");
 
-  // Role Rewards
-  const [roleRewards, setRoleRewards] = useState<RoleReward[]>([
-    { level: 5, roleName: "Initié", roleColor: "#60A5FA", membersCount: 142 },
-    { level: 15, roleName: "Habitué", roleColor: "#34D399", membersCount: 88 },
-    { level: 30, roleName: "Vétéran", roleColor: "#F59E0B", membersCount: 34 },
-    { level: 50, roleName: "Légende", roleColor: "#EC4899", membersCount: 12 },
-    { level: 75, roleName: "Mythique", roleColor: "#8B5CF6", membersCount: 3 },
-  ]);
+  const load = useCallback(async () => {
+    if (!isRealGuild) {
+      setIsDemo(true);
+      return;
+    }
+    setLoading(true);
+    try {
+      const [overviewRes, leaderboardRes, rewardsRes, boostsRes] = await Promise.all([
+        fetch(`${base}/overview`, { credentials: "include" }),
+        fetch(`${base}/leaderboard`, { credentials: "include" }),
+        fetch(`${base}/rewards`, { credentials: "include" }),
+        fetch(`${base}/boosts`, { credentials: "include" }),
+      ]);
+      const overviewData = await overviewRes.json().catch(() => null);
+      const leaderboardData = await leaderboardRes.json().catch(() => null);
+      const rewardsData = await rewardsRes.json().catch(() => null);
+      const boostsData = await boostsRes.json().catch(() => null);
 
-  // Card Designer State
-  const [cardAccentColor, setCardAccentColor] = useState("#D946EF");
-  const [cardBgTheme, setCardBgTheme] = useState<"dark" | "cyber" | "sunset" | "neon">("cyber");
-  const [cardShowBadge, setCardShowBadge] = useState(true);
-  const [cardCustomBannerUrl, setCardCustomBannerUrl] = useState("");
+      if (overviewRes.ok && overviewData?.config) {
+        setConfig(overviewData.config);
+        setOverview({
+          activeMembersCount: overviewData.activeMembersCount ?? 0,
+          totalXpDistributed: overviewData.totalXpDistributed ?? 0,
+          totalLevels: overviewData.totalLevels ?? 0,
+          topUser: overviewData.topUser,
+        });
+        setIsDemo(false);
+      } else {
+        setIsDemo(true);
+        return;
+      }
+      if (leaderboardRes.ok && Array.isArray(leaderboardData?.leaderboard)) {
+        setMembers(leaderboardData.leaderboard);
+      }
+      if (rewardsRes.ok && Array.isArray(rewardsData?.rewards)) {
+        setRewards(rewardsData.rewards);
+      }
+      if (boostsRes.ok && Array.isArray(boostsData?.boosts)) {
+        setBoosts(boostsData.boosts);
+      }
+    } catch {
+      setIsDemo(true);
+    } finally {
+      setLoading(false);
+    }
+  }, [base, isRealGuild]);
 
-  // XP Rates & Settings
-  const [xpPerMessage, setXpPerMessage] = useState(20);
-  const [xpCooldownSeconds, setXpCooldownSeconds] = useState(60);
-  const [vocalXpPerMinute, setVocalXpPerMinute] = useState(10);
-  const [boosterMultiplier, setBoosterMultiplier] = useState(1.5);
-  const [levelUpChannel, setLevelUpChannel] = useState("niveaux-xp");
-  const [levelUpMode, setLevelUpMode] = useState<"CHANNEL" | "CURRENT" | "DM">("CHANNEL");
-
-  // Admin XP Edit Modal
-  const [selectedMember, setSelectedMember] = useState<MemberRank | null>(null);
-  const [xpDelta, setXpDelta] = useState(100);
-  const [toastMsg, setToastMsg] = useState<string | null>(null);
-
-  const showToast = (msg: string) => {
-    setToastMsg(msg);
-    setTimeout(() => setToastMsg(null), 3000);
-  };
+  useEffect(() => {
+    load();
+  }, [load]);
 
   const filteredMembers = useMemo(() => {
     if (!searchQuery.trim()) return members;
-    return members.filter((m) =>
-      m.username.toLowerCase().includes(searchQuery.toLowerCase())
-    );
+    return members.filter((m) => m.username.toLowerCase().includes(searchQuery.toLowerCase()));
   }, [members, searchQuery]);
 
-  const handleAdjustXp = (isAdd: boolean) => {
-    if (!selectedMember) return;
-    const change = isAdd ? xpDelta : -xpDelta;
-    setMembers((prev) =>
-      prev.map((m) => {
-        if (m.id === selectedMember.id) {
-          const newTotal = Math.max(0, m.totalXp + change);
-          const newLevel = Math.floor(Math.sqrt(newTotal / 25));
-          return {
-            ...m,
-            totalXp: newTotal,
-            level: newLevel,
-            currentXp: Math.max(0, m.currentXp + change),
-          };
-        }
-        return m;
-      })
-    );
-    showToast(`XP de ${selectedMember.username} mis à jour (${isAdd ? "+" : "-"}${xpDelta} XP) !`);
-    setSelectedMember(null);
+  const saveConfig = async (patch: Partial<LevelingConfig>) => {
+    const next = { ...config, ...patch };
+    setConfig(next);
+    if (isDemo || !BOT_API_URL) {
+      success("Configuration enregistrée (démo).");
+      return;
+    }
+    setSavingConfig(true);
+    try {
+      const res = await fetch(`${base}/config`, {
+        method: "PATCH",
+        credentials: "include",
+        headers: { "content-type": "application/json" },
+        body: JSON.stringify(patch),
+      });
+      if (!res.ok) throw new Error("save failed");
+      const data = await res.json();
+      setConfig(data.config);
+      success("Réglages du système de niveaux enregistrés.");
+    } catch {
+      toastError("Échec de l'enregistrement des réglages.");
+    } finally {
+      setSavingConfig(false);
+    }
   };
+
+  // Admin XP Adjust Modal
+  const [selectedMember, setSelectedMember] = useState<LeaderboardEntry | null>(null);
+  const [xpDelta, setXpDelta] = useState(100);
+  const [adjustSubmitting, setAdjustSubmitting] = useState(false);
+
+  const handleAdjustXp = async (isAdd: boolean) => {
+    if (!selectedMember) return;
+    const delta = isAdd ? xpDelta : -xpDelta;
+    if (isDemo || !BOT_API_URL) {
+      setMembers((prev) =>
+        prev.map((m) =>
+          m.userId === selectedMember.userId
+            ? { ...m, totalXp: Math.max(0, m.totalXp + delta) }
+            : m
+        )
+      );
+      success(`XP de ${selectedMember.username} mis à jour (démo).`);
+      setSelectedMember(null);
+      return;
+    }
+    setAdjustSubmitting(true);
+    try {
+      const res = await fetch(`${base}/users/${selectedMember.userId}/adjust`, {
+        method: "POST",
+        credentials: "include",
+        headers: { "content-type": "application/json" },
+        body: JSON.stringify({ delta }),
+      });
+      if (!res.ok) throw new Error("adjust failed");
+      const data = await res.json();
+      setMembers((prev) =>
+        prev
+          .map((m) => (m.userId === selectedMember.userId ? { ...m, ...data.user } : m))
+          .sort((a, b) => b.totalXp - a.totalXp)
+          .map((m, idx) => ({ ...m, rank: idx + 1 }))
+      );
+      success(`XP de ${selectedMember.username} mis à jour (${isAdd ? "+" : "-"}${xpDelta} XP).`);
+      setSelectedMember(null);
+    } catch {
+      toastError("Échec de la modification d'XP.");
+    } finally {
+      setAdjustSubmitting(false);
+    }
+  };
+
+  // Role Rewards
+  const [newReward, setNewReward] = useState({ level: 10, roleId: "", message: "" });
+  const addReward = async () => {
+    if (!newReward.roleId.trim()) {
+      toastError("ID de rôle requis.");
+      return;
+    }
+    if (isDemo || !BOT_API_URL) {
+      setRewards((prev) => [
+        ...prev,
+        { id: `demo-${Date.now()}`, guildId: currentGuildId, level: newReward.level, roleId: newReward.roleId, message: newReward.message || null, enabled: true },
+      ]);
+      setNewReward({ level: 10, roleId: "", message: "" });
+      success("Récompense ajoutée (démo).");
+      return;
+    }
+    try {
+      const res = await fetch(`${base}/rewards`, {
+        method: "POST",
+        credentials: "include",
+        headers: { "content-type": "application/json" },
+        body: JSON.stringify(newReward),
+      });
+      if (!res.ok) throw new Error("save failed");
+      const data = await res.json();
+      setRewards((prev) => [...prev, data.reward].sort((a, b) => a.level - b.level));
+      setNewReward({ level: 10, roleId: "", message: "" });
+      success("Rôle récompense ajouté.");
+    } catch {
+      toastError("Échec de l'ajout du rôle récompense.");
+    }
+  };
+
+  const removeReward = async (id: string) => {
+    setRewards((prev) => prev.filter((r) => r.id !== id));
+    if (isDemo || !BOT_API_URL) return;
+    try {
+      await fetch(`${base}/rewards/${id}`, { method: "DELETE", credentials: "include" });
+    } catch {
+      toastError("Échec de la suppression — rechargez la page.");
+    }
+  };
+
+  // XP Boosts
+  const [newBoost, setNewBoost] = useState({ name: "", multiplier: 1.5, targetType: "server" as XpBoost["targetType"], targetId: "" });
+  const addBoost = async () => {
+    if (!newBoost.name.trim()) {
+      toastError("Nom du boost requis.");
+      return;
+    }
+    if (isDemo || !BOT_API_URL) {
+      setBoosts((prev) => [
+        ...prev,
+        { id: `demo-${Date.now()}`, guildId: currentGuildId, name: newBoost.name, multiplier: newBoost.multiplier, targetType: newBoost.targetType, targetId: newBoost.targetId || null, startTime: null, endTime: null, enabled: true },
+      ]);
+      setNewBoost({ name: "", multiplier: 1.5, targetType: "server", targetId: "" });
+      success("Boost ajouté (démo).");
+      return;
+    }
+    try {
+      const res = await fetch(`${base}/boosts`, {
+        method: "POST",
+        credentials: "include",
+        headers: { "content-type": "application/json" },
+        body: JSON.stringify({ ...newBoost, targetId: newBoost.targetId || null }),
+      });
+      if (!res.ok) throw new Error("save failed");
+      const data = await res.json();
+      setBoosts((prev) => [...prev, data.boost]);
+      setNewBoost({ name: "", multiplier: 1.5, targetType: "server", targetId: "" });
+      success("Boost XP ajouté.");
+    } catch {
+      toastError("Échec de l'ajout du boost.");
+    }
+  };
+
+  const removeBoost = async (id: string) => {
+    setBoosts((prev) => prev.filter((b) => b.id !== id));
+    if (isDemo || !BOT_API_URL) return;
+    try {
+      await fetch(`${base}/boosts/${id}`, { method: "DELETE", credentials: "include" });
+    } catch {
+      toastError("Échec de la suppression — rechargez la page.");
+    }
+  };
+
+  // Excluded channels/roles (blacklist) — plain ID inputs, same convention
+  // as GiveawaysCenterClient's role fields: no live Discord role/channel
+  // picker is wired on this page, so IDs are entered directly.
+  const [newExcludedChannelId, setNewExcludedChannelId] = useState("");
+  const [newExcludedRoleId, setNewExcludedRoleId] = useState("");
+
+  const addExcludedChannel = () => {
+    const id = newExcludedChannelId.trim();
+    if (!id || config.excludedChannelIds.includes(id)) return;
+    saveConfig({ excludedChannelIds: [...config.excludedChannelIds, id] });
+    setNewExcludedChannelId("");
+  };
+  const removeExcludedChannel = (id: string) => {
+    saveConfig({ excludedChannelIds: config.excludedChannelIds.filter((c) => c !== id) });
+  };
+  const addExcludedRole = () => {
+    const id = newExcludedRoleId.trim();
+    if (!id || config.excludedRoleIds.includes(id)) return;
+    saveConfig({ excludedRoleIds: [...config.excludedRoleIds, id] });
+    setNewExcludedRoleId("");
+  };
+  const removeExcludedRole = (id: string) => {
+    saveConfig({ excludedRoleIds: config.excludedRoleIds.filter((r) => r !== id) });
+  };
+
+  // Card Designer — local preview only. /rank replies with a plain Discord
+  // embed (see discord-bot/src/modules/leveling/commands/rank.ts), there is
+  // no server-side rank card image renderer to save this design to, so no
+  // "saved" claim is made here.
+  const [cardAccentColor, setCardAccentColor] = useState("#D946EF");
+  const [cardBgTheme, setCardBgTheme] = useState<"dark" | "cyber" | "sunset" | "neon">("cyber");
 
   return (
     <div className="h-full overflow-y-auto os-scroll [overscroll-behavior:contain] bg-[var(--bg-main)] text-neutral-100 p-4 md:p-8">
@@ -209,12 +392,10 @@ export default function LevelingCenterClient() {
               <div>
                 <h1 className="text-2xl font-bold text-white tracking-tight flex items-center gap-2">
                   ETHONE Leveling & Rôles XP
-                  <span className="px-2 py-0.5 rounded text-[11px] font-semibold bg-emerald-500/10 text-emerald-400 border border-emerald-500/20">
-                    ⚡ Moteur XP v2.4
-                  </span>
                 </h1>
                 <p className="text-xs text-neutral-400">
-                  Progression d'activité communautaire, classement dynamique, récompenses de rôles et carte de profil personnalisée.
+                  Progression d'activité communautaire, classement dynamique et récompenses de rôles.
+                  {isDemo && <span className="text-amber-400"> (données de démonstration)</span>}
                 </p>
               </div>
             </div>
@@ -229,64 +410,40 @@ export default function LevelingCenterClient() {
               Rank Card Designer
             </button>
             <button
-              onClick={() => showToast("Classement synchronisé avec la base Discord en temps réel !")}
-              className="px-4 py-2 rounded-xl bg-fuchsia-600 hover:bg-fuchsia-500 text-white text-xs font-semibold flex items-center gap-2 shadow-sm transition-all cursor-pointer"
+              onClick={load}
+              disabled={loading}
+              className="px-4 py-2 rounded-xl bg-fuchsia-600 hover:bg-fuchsia-500 text-white text-xs font-semibold flex items-center gap-2 shadow-sm transition-all cursor-pointer disabled:opacity-50"
             >
-              <RefreshCw className="w-4 h-4" />
-              Synchroniser Discord
+              <RefreshCw className={cn("w-4 h-4", loading && "animate-spin")} />
+              Actualiser
             </button>
           </div>
         </div>
 
-        {/* Toast */}
-        {toastMsg && (
-          <div className="p-3 bg-emerald-500/10 border border-emerald-500/30 rounded-xl flex items-center justify-between text-xs text-emerald-300 animate-fadeIn">
-            <span className="flex items-center gap-2 font-medium">
-              <CheckCircle2 className="w-4 h-4 text-emerald-400" />
-              {toastMsg}
-            </span>
-            <button onClick={() => setToastMsg(null)} className="text-emerald-400 hover:text-white">
-              <X className="w-4 h-4" />
-            </button>
-          </div>
-        )}
-
-        {/* 6 Metric KPI Cards */}
-        <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-6 gap-3">
+        {/* 4 Metric KPI Cards (real) */}
+        <div className="grid grid-cols-2 sm:grid-cols-4 gap-3">
           <div className="bg-neutral-900 border border-neutral-800 rounded-2xl p-4 space-y-1">
             <span className="text-xs text-neutral-500 font-medium">Membres Classés</span>
-            <p className="text-2xl font-bold text-white">1,420</p>
-            <span className="text-[11px] text-emerald-400">Actifs dans le ranking</span>
+            <p className="text-2xl font-bold text-white">{overview.activeMembersCount.toLocaleString()}</p>
           </div>
 
           <div className="bg-neutral-900 border border-neutral-800 rounded-2xl p-4 space-y-1">
             <span className="text-xs text-neutral-500 font-medium">Niveau Max Atteint</span>
-            <p className="text-2xl font-bold text-fuchsia-400">Lvl 74</p>
-            <span className="text-[11px] text-neutral-400">Nocturne#4412</span>
+            <p className="text-2xl font-bold text-fuchsia-400">
+              {overview.topUser ? `Lvl ${overview.topUser.level}` : "—"}
+            </p>
+            <span className="text-[11px] text-neutral-400">{overview.topUser?.username || "Aucun membre actif"}</span>
           </div>
 
           <div className="bg-neutral-900 border border-neutral-800 rounded-2xl p-4 space-y-1">
             <span className="text-xs text-neutral-500 font-medium">XP Total Distribué</span>
-            <p className="text-2xl font-bold text-purple-400">842.5k</p>
-            <span className="text-[11px] text-emerald-400">+18% ce mois-ci</span>
+            <p className="text-2xl font-bold text-purple-400">{overview.totalXpDistributed.toLocaleString()}</p>
           </div>
 
           <div className="bg-neutral-900 border border-neutral-800 rounded-2xl p-4 space-y-1">
             <span className="text-xs text-neutral-500 font-medium">Paliers de Rôles</span>
-            <p className="text-2xl font-bold text-amber-400">{roleRewards.length}</p>
-            <span className="text-[11px] text-neutral-400">Rôles configurés</span>
-          </div>
-
-          <div className="bg-neutral-900 border border-neutral-800 rounded-2xl p-4 space-y-1">
-            <span className="text-xs text-neutral-500 font-medium">Gain / Message</span>
-            <p className="text-2xl font-bold text-emerald-400">{xpPerMessage} XP</p>
-            <span className="text-[11px] text-neutral-400">Cooldown: {xpCooldownSeconds}s</span>
-          </div>
-
-          <div className="bg-neutral-900 border border-neutral-800 rounded-2xl p-4 space-y-1">
-            <span className="text-xs text-neutral-500 font-medium">Multiplicateur Boost</span>
-            <p className="text-2xl font-bold text-cyan-400">{boosterMultiplier}x</p>
-            <span className="text-[11px] text-cyan-400">Pour Nitro Boosters</span>
+            <p className="text-2xl font-bold text-amber-400">{rewards.length}</p>
+            <span className="text-[11px] text-neutral-400">{boosts.length} boost(s) actif(s)</span>
           </div>
         </div>
 
@@ -296,7 +453,7 @@ export default function LevelingCenterClient() {
             { id: "leaderboard", label: "Classement & Leaderboard", icon: Trophy },
             { id: "card_designer", label: "Rank Card Designer", icon: Palette },
             { id: "rewards", label: "Rôles Récompenses", icon: Award },
-            { id: "rates", label: "Multiplicateurs & Gain XP", icon: Zap },
+            { id: "boosts", label: "Boosts & Réglages XP", icon: Zap },
             { id: "blacklist", label: "Salons & Rôles Exclus", icon: Lock },
           ].map((tab) => {
             const Icon = tab.icon;
@@ -334,21 +491,20 @@ export default function LevelingCenterClient() {
               </div>
 
               <span className="text-xs text-neutral-500 font-medium">
-                Affichage des {filteredMembers.length} premiers membres
+                Affichage de {filteredMembers.length} membre(s)
               </span>
             </div>
 
             <div className="bg-neutral-900 border border-neutral-800 rounded-2xl overflow-hidden shadow-xl">
-              <div className="divide-y divide-neutral-800">
-                {filteredMembers.map((member) => {
-                  const progressPct = Math.min(
-                    100,
-                    Math.round((member.currentXp / member.targetXp) * 100)
-                  );
-
-                  return (
+              {filteredMembers.length === 0 ? (
+                <p className="text-xs text-neutral-500 py-10 text-center">
+                  Aucun membre n'a encore gagné d'XP sur ce serveur.
+                </p>
+              ) : (
+                <div className="divide-y divide-neutral-800">
+                  {filteredMembers.map((member) => (
                     <div
-                      key={member.id}
+                      key={member.userId}
                       className="p-4 flex flex-col md:flex-row md:items-center justify-between gap-4 hover:bg-neutral-800/40 transition-colors"
                     >
                       <div className="flex items-center gap-4">
@@ -356,46 +512,41 @@ export default function LevelingCenterClient() {
                           {member.rank === 1 && <span className="text-xl">🥇</span>}
                           {member.rank === 2 && <span className="text-xl">🥈</span>}
                           {member.rank === 3 && <span className="text-xl">🥉</span>}
-                          {member.rank > 3 && (
-                            <span className="text-neutral-500 text-xs">#{member.rank}</span>
-                          )}
+                          {member.rank > 3 && <span className="text-neutral-500 text-xs">#{member.rank}</span>}
                         </div>
 
-                        <img
-                          src={member.avatar}
-                          alt={member.username}
-                          className="w-10 h-10 rounded-full border border-neutral-700 object-cover"
-                        />
+                        {member.avatarUrl ? (
+                          <img
+                            src={member.avatarUrl}
+                            alt={member.username}
+                            className="w-10 h-10 rounded-full border border-neutral-700 object-cover"
+                          />
+                        ) : (
+                          <div className="w-10 h-10 rounded-full border border-neutral-700 bg-neutral-800 flex items-center justify-center text-[11px] font-bold text-neutral-400">
+                            {member.username.slice(0, 2).toUpperCase()}
+                          </div>
+                        )}
 
                         <div>
-                          <div className="flex items-center gap-2">
-                            <span className="text-sm font-bold text-white">{member.username}</span>
-                            {member.roleReward && (
-                              <span className="px-2 py-0.5 rounded text-[10px] font-bold bg-fuchsia-500/10 text-fuchsia-400 border border-fuchsia-500/20">
-                                {member.roleReward}
-                              </span>
-                            )}
-                          </div>
+                          <span className="text-sm font-bold text-white">{member.username}</span>
                           <p className="text-[11px] text-neutral-400">
-                            {member.messagesCount.toLocaleString()} messages &bull;{" "}
-                            {member.totalXp.toLocaleString()} XP total
+                            {member.messagesCount.toLocaleString()} messages &bull; {member.totalXp.toLocaleString()} XP total
                           </p>
                         </div>
                       </div>
 
                       <div className="flex items-center gap-6">
-                        {/* XP Progress Bar */}
                         <div className="w-full md:w-56 space-y-1">
                           <div className="flex justify-between text-[11px] font-mono">
                             <span className="text-fuchsia-400 font-bold">Niveau {member.level}</span>
                             <span className="text-neutral-400">
-                              {member.currentXp} / {member.targetXp} XP ({progressPct}%)
+                              {member.currentLevelXp} / {member.nextLevelXp} XP ({member.progressPercentage}%)
                             </span>
                           </div>
                           <div className="h-2 w-full bg-neutral-950 rounded-full overflow-hidden border border-neutral-800">
                             <div
                               className="h-full bg-fuchsia-500 rounded-full transition-all duration-500"
-                              style={{ width: `${progressPct}%` }}
+                              style={{ width: `${member.progressPercentage}%` }}
                             />
                           </div>
                         </div>
@@ -409,28 +560,29 @@ export default function LevelingCenterClient() {
                         </button>
                       </div>
                     </div>
-                  );
-                })}
-              </div>
+                  ))}
+                </div>
+              )}
             </div>
           </div>
         )}
 
-        {/* TAB 2: Rank Card Designer */}
+        {/* TAB 2: Rank Card Designer (local preview only, not persisted) */}
         {activeTab === "card_designer" && (
           <div className="grid grid-cols-1 lg:grid-cols-12 gap-6">
-            {/* Customizer Controls */}
             <div className="lg:col-span-6 bg-neutral-900 border border-neutral-800 rounded-2xl p-6 space-y-5">
               <div className="flex items-center gap-2">
                 <Palette className="w-5 h-5 text-fuchsia-400" />
-                <h3 className="text-base font-bold text-white">Personnalisation de la Rank Card</h3>
+                <h3 className="text-base font-bold text-white">Aperçu visuel de carte de rang</h3>
               </div>
+              <p className="text-[11px] text-amber-400/90 bg-amber-500/10 border border-amber-500/20 rounded-xl p-3">
+                Aperçu local uniquement — la commande /rank répond avec un embed Discord standard,
+                il n'existe pas (encore) de rendu d'image de carte personnalisée côté bot à sauvegarder.
+              </p>
 
               <div className="space-y-4 text-xs">
                 <div>
-                  <label className="block font-semibold text-neutral-300 mb-1.5">
-                    Thème d'Arrière-Plan
-                  </label>
+                  <label className="block font-semibold text-neutral-300 mb-1.5">Thème d'Arrière-Plan</label>
                   <div className="grid grid-cols-2 sm:grid-cols-4 gap-2">
                     {[
                       { id: "cyber", label: "Cyberpunk", bg: "bg-gradient-to-r from-purple-900 to-indigo-950" },
@@ -456,9 +608,7 @@ export default function LevelingCenterClient() {
                 </div>
 
                 <div>
-                  <label className="block font-semibold text-neutral-300 mb-1.5">
-                    Couleur d'Accent / Barre de progression
-                  </label>
+                  <label className="block font-semibold text-neutral-300 mb-1.5">Couleur d'Accent</label>
                   <div className="flex items-center gap-2">
                     {["#D946EF", "#6366F1", "#06B6D4", "#10B981", "#F59E0B", "#EF4444"].map((col) => (
                       <button
@@ -473,56 +623,15 @@ export default function LevelingCenterClient() {
                     ))}
                   </div>
                 </div>
-
-                <div>
-                  <label className="block font-semibold text-neutral-300 mb-1">
-                    URL d'Image de Bannière Personnalisée (Optionnel)
-                  </label>
-                  <input
-                    type="url"
-                    placeholder="https://..."
-                    value={cardCustomBannerUrl}
-                    onChange={(e) => setCardCustomBannerUrl(e.target.value)}
-                    className="w-full h-10 rounded-xl bg-neutral-950 border border-neutral-800 px-3 text-xs text-white placeholder-neutral-500 focus:outline-none focus:border-fuchsia-500"
-                  />
-                </div>
-
-                <div className="flex items-center justify-between p-3 rounded-xl bg-neutral-950 border border-neutral-800">
-                  <div>
-                    <span className="font-bold text-white block">Afficher les badges & distinctions</span>
-                    <span className="text-neutral-500 text-[11px]">Badge VIP, Booster et Trophées</span>
-                  </div>
-                  <button
-                    type="button"
-                    onClick={() => setCardShowBadge(!cardShowBadge)}
-                    className={`px-3 py-1 rounded-lg text-xs font-bold cursor-pointer ${
-                      cardShowBadge ? "bg-fuchsia-500 text-white" : "bg-neutral-800 text-neutral-400"
-                    }`}
-                  >
-                    {cardShowBadge ? "Activé" : "Désactivé"}
-                  </button>
-                </div>
-
-                <div className="pt-2">
-                  <button
-                    type="button"
-                    onClick={() => showToast("Design de la Rank Card sauvegardé pour le serveur !")}
-                    className="w-full h-10 rounded-xl bg-fuchsia-600 hover:bg-fuchsia-500 text-white font-bold text-xs shadow-sm transition-all cursor-pointer"
-                  >
-                    Enregistrer le modèle de carte
-                  </button>
-                </div>
               </div>
             </div>
 
-            {/* Live Visual Preview of Rank Card */}
             <div className="lg:col-span-6 space-y-3">
               <span className="text-xs font-bold text-neutral-400 flex items-center gap-1.5">
                 <Eye className="w-4 h-4 text-fuchsia-400" />
-                Rendu de la Carte Discord (/rank)
+                Rendu indicatif (concept, pas le vrai /rank)
               </span>
 
-              {/* Card Canvas Mockup */}
               <div
                 className={`w-full rounded-2xl p-6 border border-neutral-700/80 shadow-2xl relative overflow-hidden font-sans ${
                   cardBgTheme === "cyber"
@@ -533,79 +642,28 @@ export default function LevelingCenterClient() {
                     ? "bg-gradient-to-r from-emerald-950 via-teal-950 to-neutral-950"
                     : "bg-neutral-900"
                 }`}
-                style={
-                  cardCustomBannerUrl
-                    ? { backgroundImage: `url(${cardCustomBannerUrl})`, backgroundSize: "cover" }
-                    : {}
-                }
               >
-                {/* Background overlay for readability */}
-
                 <div className="relative z-10 space-y-5">
                   <div className="flex items-center justify-between">
-                    <div className="flex items-center gap-4">
-                      <div className="relative">
-                        <img
-                          src="https://images.unsplash.com/photo-1534528741775-53994a69daeb?w=120&auto=format&fit=crop&q=80"
-                          alt="Avatar"
-                          className="w-16 h-16 rounded-full border-2 border-[var(--input-border-hover)] object-cover shadow-xl"
-                        />
-                        <span className="absolute bottom-0 right-0 w-4 h-4 bg-emerald-500 border-2 border-neutral-950 rounded-full" />
-                      </div>
-
-                      <div>
-                        <div className="flex items-center gap-2">
-                          <h4 className="text-lg font-extrabold text-white">Nocturne</h4>
-                          <span className="text-xs text-neutral-400 font-semibold">#4412</span>
-                        </div>
-                        <div className="flex items-center gap-1.5 mt-1">
-                          <span className="px-2 py-0.5 rounded text-[10px] font-bold bg-white/10 text-white border border-[var(--input-border-hover)]">
-                            👑 ETHONE VIP
-                          </span>
-                          {cardShowBadge && (
-                            <span className="px-2 py-0.5 rounded text-[10px] font-bold bg-fuchsia-500/20 text-fuchsia-300 border border-fuchsia-500/30">
-                              💎 Booster
-                            </span>
-                          )}
-                        </div>
-                      </div>
+                    <div>
+                      <h4 className="text-lg font-extrabold text-white">
+                        {overview.topUser?.username || "Membre"}
+                      </h4>
                     </div>
-
                     <div className="text-right">
-                      <div className="flex items-baseline gap-1 justify-end">
-                        <span className="text-xs text-neutral-400 font-bold">RANG</span>
-                        <span className="text-xl font-black text-amber-400 font-mono">#1</span>
-                      </div>
-                      <div className="flex items-baseline gap-1 justify-end">
-                        <span className="text-xs text-neutral-400 font-bold">NIVEAU</span>
-                        <span
-                          className="text-2xl font-black font-mono"
-                          style={{ color: cardAccentColor }}
-                        >
-                          74
-                        </span>
-                      </div>
-                    </div>
-                  </div>
-
-                  {/* Progress Bar in Card */}
-                  <div className="space-y-1.5">
-                    <div className="flex justify-between text-xs font-mono text-neutral-300">
-                      <span>Progression Palier</span>
-                      <span>
-                        <strong>1,840</strong> / 2,500 XP
+                      <span
+                        className="text-2xl font-black font-mono"
+                        style={{ color: cardAccentColor }}
+                      >
+                        Lvl {overview.topUser?.level ?? 0}
                       </span>
                     </div>
-                    <div className="h-3 w-full bg-black/50 rounded-full overflow-hidden border border-[var(--panel-border)] p-0.5">
-                      <div
-                        className="h-full rounded-full transition-all duration-300"
-                        style={{
-                          width: "73%",
-                          backgroundColor: cardAccentColor,
-                          boxShadow: `0 0 12px ${cardAccentColor}`,
-                        }}
-                      />
-                    </div>
+                  </div>
+                  <div className="h-3 w-full bg-black/50 rounded-full overflow-hidden border border-[var(--panel-border)] p-0.5">
+                    <div
+                      className="h-full rounded-full transition-all duration-300"
+                      style={{ width: "60%", backgroundColor: cardAccentColor, boxShadow: `0 0 12px ${cardAccentColor}` }}
+                    />
                   </div>
                 </div>
               </div>
@@ -616,153 +674,213 @@ export default function LevelingCenterClient() {
         {/* TAB 3: Role Rewards */}
         {activeTab === "rewards" && (
           <div className="space-y-4">
-            <div className="flex items-center justify-between">
-              <h2 className="text-sm font-bold text-white flex items-center gap-2">
-                <Award className="w-4 h-4 text-fuchsia-400" />
-                Rôles débloqués automatiquement par niveau ({roleRewards.length})
-              </h2>
-              <button
-                onClick={() => {
-                  const newLvl = (roleRewards[roleRewards.length - 1]?.level || 0) + 10;
-                  setRoleRewards([
-                    ...roleRewards,
-                    { level: newLvl, roleName: `Palier ${newLvl}`, roleColor: "#A855F7", membersCount: 0 },
-                  ]);
-                  showToast(`Nouveau palier niveau ${newLvl} ajouté !`);
-                }}
-                className="px-3.5 py-1.5 rounded-xl bg-fuchsia-600 hover:bg-fuchsia-500 text-white text-xs font-semibold flex items-center gap-1.5 transition-all cursor-pointer"
-              >
-                <Plus className="w-4 h-4" />
-                Ajouter un Rôle Récompense
-              </button>
+            <div className="bg-neutral-900 border border-neutral-800 rounded-2xl p-5 space-y-3">
+              <h3 className="text-xs font-bold text-white">Ajouter un rôle récompense</h3>
+              <div className="grid grid-cols-1 sm:grid-cols-4 gap-2">
+                <input
+                  type="number"
+                  min={1}
+                  placeholder="Niveau"
+                  value={newReward.level}
+                  onChange={(e) => setNewReward((p) => ({ ...p, level: Number(e.target.value) }))}
+                  className="h-10 rounded-xl bg-neutral-950 border border-neutral-800 px-3 text-xs text-white"
+                />
+                <input
+                  type="text"
+                  placeholder="ID du rôle Discord"
+                  value={newReward.roleId}
+                  onChange={(e) => setNewReward((p) => ({ ...p, roleId: e.target.value }))}
+                  className="h-10 rounded-xl bg-neutral-950 border border-neutral-800 px-3 text-xs text-white sm:col-span-2"
+                />
+                <button
+                  onClick={addReward}
+                  className="h-10 rounded-xl bg-fuchsia-600 hover:bg-fuchsia-500 text-white text-xs font-semibold flex items-center justify-center gap-1.5 cursor-pointer"
+                >
+                  <Plus className="w-4 h-4" />
+                  Ajouter
+                </button>
+              </div>
+              <p className="text-[10px] text-neutral-500">
+                Clic droit sur un rôle dans Discord (mode développeur activé) → Copier l'identifiant.
+              </p>
             </div>
 
             <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
-              {roleRewards.map((rw, idx) => (
-                <div
-                  key={idx}
-                  className="bg-neutral-900 border border-neutral-800 rounded-2xl p-5 space-y-3 shadow-lg"
-                >
-                  <div className="flex items-center justify-between">
-                    <span className="px-2.5 py-1 rounded-lg bg-neutral-950 border border-neutral-800 font-mono font-bold text-xs text-fuchsia-400">
-                      Niveau {rw.level}+
-                    </span>
-                    <button
-                      onClick={() => {
-                        setRoleRewards(roleRewards.filter((_, i) => i !== idx));
-                        showToast(`Rôle ${rw.roleName} supprimé.`);
-                      }}
-                      className="text-neutral-500 hover:text-rose-400 transition-colors p-1"
-                    >
-                      <Trash2 className="w-4 h-4" />
-                    </button>
+              {rewards.length === 0 ? (
+                <p className="text-xs text-neutral-500 col-span-full text-center py-6">
+                  Aucun palier de rôle configuré.
+                </p>
+              ) : (
+                rewards.map((rw) => (
+                  <div key={rw.id} className="bg-neutral-900 border border-neutral-800 rounded-2xl p-5 space-y-3 shadow-lg">
+                    <div className="flex items-center justify-between">
+                      <span className="px-2.5 py-1 rounded-lg bg-neutral-950 border border-neutral-800 font-mono font-bold text-xs text-fuchsia-400">
+                        Niveau {rw.level}+
+                      </span>
+                      <button
+                        onClick={() => removeReward(rw.id)}
+                        className="text-neutral-500 hover:text-rose-400 transition-colors p-1"
+                      >
+                        <Trash2 className="w-4 h-4" />
+                      </button>
+                    </div>
+                    <p className="text-xs font-mono text-neutral-300">Rôle #{rw.roleId}</p>
+                    {rw.message && <p className="text-[11px] text-neutral-500">{rw.message}</p>}
                   </div>
-
-                  <div className="flex items-center gap-2.5">
-                    <span
-                      className="w-3.5 h-3.5 rounded-full shrink-0"
-                      style={{ backgroundColor: rw.roleColor }}
-                    />
-                    <h3 className="text-base font-bold text-white">@{rw.roleName}</h3>
-                  </div>
-
-                  <div className="pt-2 border-t border-neutral-800/80 flex items-center justify-between text-xs text-neutral-400">
-                    <span>Membres titulaires</span>
-                    <span className="font-semibold text-white font-mono">{rw.membersCount} membres</span>
-                  </div>
-                </div>
-              ))}
+                ))
+              )}
             </div>
           </div>
         )}
 
-        {/* TAB 4: Rates & Settings */}
-        {activeTab === "rates" && (
-          <div className="bg-neutral-900 border border-neutral-800 rounded-2xl p-6 space-y-6 max-w-2xl">
-            <h3 className="text-base font-bold text-white flex items-center gap-2">
-              <Sliders className="w-4 h-4 text-fuchsia-400" />
-              Réglages des Gains d'XP & Cooldowns
-            </h3>
+        {/* TAB 4: Boosts & XP Settings */}
+        {activeTab === "boosts" && (
+          <div className="space-y-6 max-w-2xl">
+            <div className="bg-neutral-900 border border-neutral-800 rounded-2xl p-6 space-y-6">
+              <h3 className="text-base font-bold text-white flex items-center gap-2">
+                <Sliders className="w-4 h-4 text-fuchsia-400" />
+                Réglages des Gains d'XP & Cooldowns
+              </h3>
 
-            <div className="space-y-4 text-xs">
-              <div className="flex items-center justify-between p-3.5 rounded-xl bg-neutral-950 border border-neutral-800">
-                <div>
-                  <span className="font-bold text-white block">XP par message</span>
-                  <span className="text-neutral-500 text-[11px]">Points attribués pour chaque message textuel valide</span>
+              <div className="space-y-4 text-xs">
+                <div className="flex items-center justify-between p-3.5 rounded-xl bg-neutral-950 border border-neutral-800">
+                  <div>
+                    <span className="font-bold text-white block">XP par message (min / max)</span>
+                    <span className="text-neutral-500 text-[11px]">Un montant aléatoire est tiré entre ces deux bornes</span>
+                  </div>
+                  <div className="flex items-center gap-1.5">
+                    <input
+                      type="number"
+                      min={1}
+                      max={100}
+                      value={config.minXp}
+                      onChange={(e) => setConfig((p) => ({ ...p, minXp: Number(e.target.value) }))}
+                      onBlur={() => saveConfig({ minXp: config.minXp })}
+                      className="w-16 h-9 rounded-xl bg-neutral-900 border border-neutral-700 text-center text-xs font-bold text-fuchsia-400"
+                    />
+                    <span className="text-neutral-500">—</span>
+                    <input
+                      type="number"
+                      min={5}
+                      max={200}
+                      value={config.maxXp}
+                      onChange={(e) => setConfig((p) => ({ ...p, maxXp: Number(e.target.value) }))}
+                      onBlur={() => saveConfig({ maxXp: config.maxXp })}
+                      className="w-16 h-9 rounded-xl bg-neutral-900 border border-neutral-700 text-center text-xs font-bold text-fuchsia-400"
+                    />
+                  </div>
                 </div>
-                <div className="flex items-center gap-2">
-                  <input
-                    type="number"
-                    min={5}
-                    max={100}
-                    value={xpPerMessage}
-                    onChange={(e) => setXpPerMessage(Number(e.target.value))}
-                    className="w-20 h-9 rounded-xl bg-neutral-900 border border-neutral-700 text-center text-xs font-bold text-fuchsia-400"
-                  />
-                  <span className="text-neutral-400">XP</span>
-                </div>
-              </div>
 
-              <div className="flex items-center justify-between p-3.5 rounded-xl bg-neutral-950 border border-neutral-800">
-                <div>
-                  <span className="font-bold text-white block">Cooldown Anti-Spam</span>
-                  <span className="text-neutral-500 text-[11px]">Délai minimum en secondes entre deux gains d'XP</span>
-                </div>
-                <div className="flex items-center gap-2">
+                <div className="flex items-center justify-between p-3.5 rounded-xl bg-neutral-950 border border-neutral-800">
+                  <div>
+                    <span className="font-bold text-white block">Cooldown Anti-Spam</span>
+                    <span className="text-neutral-500 text-[11px]">Délai minimum en secondes entre deux gains d'XP</span>
+                  </div>
                   <input
                     type="number"
                     min={5}
                     max={300}
-                    value={xpCooldownSeconds}
-                    onChange={(e) => setXpCooldownSeconds(Number(e.target.value))}
+                    value={config.cooldownSeconds}
+                    onChange={(e) => setConfig((p) => ({ ...p, cooldownSeconds: Number(e.target.value) }))}
+                    onBlur={() => saveConfig({ cooldownSeconds: config.cooldownSeconds })}
                     className="w-20 h-9 rounded-xl bg-neutral-900 border border-neutral-700 text-center text-xs font-bold text-fuchsia-400"
                   />
-                  <span className="text-neutral-400">sec</span>
                 </div>
-              </div>
 
-              <div className="flex items-center justify-between p-3.5 rounded-xl bg-neutral-950 border border-neutral-800">
                 <div>
-                  <span className="font-bold text-white block">XP Vocal par minute</span>
-                  <span className="text-neutral-500 text-[11px]">Gain continu pour les membres actifs dans les salons vocaux</span>
+                  <label className="block font-semibold text-neutral-300 mb-1">Salon d'annonce de Level-Up</label>
+                  <select
+                    value={config.levelUpChannelType}
+                    onChange={(e) => saveConfig({ levelUpChannelType: e.target.value as LevelingConfig["levelUpChannelType"] })}
+                    className="w-full h-10 rounded-xl bg-neutral-950 border border-neutral-800 px-3 text-xs text-white mb-2"
+                  >
+                    <option value="same_channel">Salon du message</option>
+                    <option value="specific_channel">Salon spécifique</option>
+                    <option value="dm">Message privé</option>
+                    <option value="disabled">Désactivé</option>
+                  </select>
+                  {config.levelUpChannelType === "specific_channel" && (
+                    <div className="relative">
+                      <Hash className="w-4 h-4 absolute left-3 top-1/2 -translate-y-1/2 text-neutral-500" />
+                      <input
+                        type="text"
+                        value={config.levelUpChannelId || ""}
+                        onChange={(e) => setConfig((p) => ({ ...p, levelUpChannelId: e.target.value }))}
+                        onBlur={() => saveConfig({ levelUpChannelId: config.levelUpChannelId })}
+                        placeholder="ID du salon Discord"
+                        className="w-full h-10 rounded-xl bg-neutral-950 border border-neutral-800 pl-9 pr-3 text-xs text-white"
+                      />
+                    </div>
+                  )}
                 </div>
-                <div className="flex items-center gap-2">
-                  <input
-                    type="number"
-                    min={0}
-                    max={50}
-                    value={vocalXpPerMinute}
-                    onChange={(e) => setVocalXpPerMinute(Number(e.target.value))}
-                    className="w-20 h-9 rounded-xl bg-neutral-900 border border-neutral-700 text-center text-xs font-bold text-cyan-400"
-                  />
-                  <span className="text-neutral-400">XP/min</span>
+
+                <div className="flex items-center justify-between p-3.5 rounded-xl bg-neutral-950 border border-neutral-800">
+                  <div>
+                    <span className="font-bold text-white block">Autoriser les bots à gagner de l'XP</span>
+                  </div>
+                  <button
+                    type="button"
+                    onClick={() => saveConfig({ allowBots: !config.allowBots })}
+                    className={`px-3 py-1 rounded-lg text-xs font-bold cursor-pointer ${
+                      config.allowBots ? "bg-fuchsia-500 text-white" : "bg-neutral-800 text-neutral-400"
+                    }`}
+                  >
+                    {config.allowBots ? "Activé" : "Désactivé"}
+                  </button>
                 </div>
               </div>
+              {savingConfig && <p className="text-[10px] text-neutral-500">Enregistrement...</p>}
+            </div>
 
-              <div>
-                <label className="block font-semibold text-neutral-300 mb-1">
-                  Salon d'annonce de Level-Up
-                </label>
-                <div className="relative">
-                  <Hash className="w-4 h-4 absolute left-3 top-1/2 -translate-y-1/2 text-neutral-500" />
-                  <input
-                    type="text"
-                    value={levelUpChannel}
-                    onChange={(e) => setLevelUpChannel(e.target.value)}
-                    placeholder="niveaux-xp"
-                    className="w-full h-10 rounded-xl bg-neutral-950 border border-neutral-800 pl-9 pr-3 text-xs text-white"
-                  />
-                </div>
-              </div>
+            <div className="bg-neutral-900 border border-neutral-800 rounded-2xl p-6 space-y-4">
+              <h3 className="text-base font-bold text-white flex items-center gap-2">
+                <Zap className="w-4 h-4 text-cyan-400" />
+                Multiplicateurs XP (Boosts)
+              </h3>
 
-              <div className="pt-2">
+              <div className="grid grid-cols-1 sm:grid-cols-4 gap-2">
+                <input
+                  type="text"
+                  placeholder="Nom du boost"
+                  value={newBoost.name}
+                  onChange={(e) => setNewBoost((p) => ({ ...p, name: e.target.value }))}
+                  className="h-10 rounded-xl bg-neutral-950 border border-neutral-800 px-3 text-xs text-white sm:col-span-2"
+                />
+                <input
+                  type="number"
+                  min={1.1}
+                  max={10}
+                  step={0.1}
+                  value={newBoost.multiplier}
+                  onChange={(e) => setNewBoost((p) => ({ ...p, multiplier: Number(e.target.value) }))}
+                  className="h-10 rounded-xl bg-neutral-950 border border-neutral-800 px-3 text-xs text-white text-center font-mono"
+                />
                 <button
-                  type="button"
-                  onClick={() => showToast("Paramètres d'XP sauvegardés avec succès !")}
-                  className="px-5 py-2.5 rounded-xl bg-fuchsia-600 hover:bg-fuchsia-500 text-white font-bold text-xs transition-colors cursor-pointer"
+                  onClick={addBoost}
+                  className="h-10 rounded-xl bg-cyan-600 hover:bg-cyan-500 text-white text-xs font-semibold flex items-center justify-center gap-1.5 cursor-pointer"
                 >
-                  Enregistrer les modifications
+                  <Plus className="w-4 h-4" />
+                  Ajouter
                 </button>
+              </div>
+
+              <div className="space-y-2">
+                {boosts.length === 0 ? (
+                  <p className="text-xs text-neutral-500 text-center py-4">Aucun boost actif.</p>
+                ) : (
+                  boosts.map((b) => (
+                    <div key={b.id} className="p-3 rounded-xl bg-neutral-950 border border-neutral-800 flex items-center justify-between text-xs">
+                      <div>
+                        <span className="font-bold text-white">{b.name}</span>
+                        <span className="text-cyan-400 font-mono ml-2">{b.multiplier}x</span>
+                        <span className="text-neutral-500 ml-2">({b.targetType})</span>
+                      </div>
+                      <button onClick={() => removeBoost(b.id)} className="text-neutral-500 hover:text-rose-400 transition-colors p-1">
+                        <Trash2 className="w-3.5 h-3.5" />
+                      </button>
+                    </div>
+                  ))
+                )}
               </div>
             </div>
           </div>
@@ -770,27 +888,71 @@ export default function LevelingCenterClient() {
 
         {/* TAB 5: Blacklist */}
         {activeTab === "blacklist" && (
-          <div className="bg-neutral-900 border border-neutral-800 rounded-2xl p-6 space-y-4 max-w-2xl">
-            <h3 className="text-base font-bold text-white flex items-center gap-2">
-              <Lock className="w-4 h-4 text-rose-400" />
-              Salons & Rôles Exemptés d'XP
-            </h3>
-            <p className="text-xs text-neutral-400 leading-relaxed">
-              Les messages envoyés dans ces salons ne rapporteront aucun point d'XP pour éviter le farming abusif.
-            </p>
+          <div className="grid grid-cols-1 sm:grid-cols-2 gap-6 max-w-4xl">
+            <div className="bg-neutral-900 border border-neutral-800 rounded-2xl p-6 space-y-4">
+              <h3 className="text-sm font-bold text-white flex items-center gap-2">
+                <Lock className="w-4 h-4 text-rose-400" />
+                Salons Exemptés d'XP
+              </h3>
+              <div className="flex gap-2">
+                <input
+                  type="text"
+                  placeholder="ID du salon"
+                  value={newExcludedChannelId}
+                  onChange={(e) => setNewExcludedChannelId(e.target.value)}
+                  className="flex-1 h-9 rounded-xl bg-neutral-950 border border-neutral-800 px-3 text-xs text-white"
+                />
+                <button onClick={addExcludedChannel} className="px-3 h-9 rounded-xl bg-rose-600/20 hover:bg-rose-500/30 text-rose-400 border border-rose-500/30 text-xs font-bold cursor-pointer">
+                  <Plus className="w-3.5 h-3.5" />
+                </button>
+              </div>
+              <div className="space-y-2">
+                {config.excludedChannelIds.length === 0 ? (
+                  <p className="text-[11px] text-neutral-500">Aucun salon exclu.</p>
+                ) : (
+                  config.excludedChannelIds.map((id) => (
+                    <div key={id} className="p-2.5 rounded-xl bg-neutral-950 border border-neutral-800 flex items-center justify-between text-xs">
+                      <span className="font-mono text-neutral-300">#{id}</span>
+                      <button onClick={() => removeExcludedChannel(id)} className="text-neutral-500 hover:text-rose-400">
+                        <X className="w-3.5 h-3.5" />
+                      </button>
+                    </div>
+                  ))
+                )}
+              </div>
+            </div>
 
-            <div className="space-y-2">
-              {["#spam", "#bot-commands", "#publicité", "#compteur"].map((ch, idx) => (
-                <div
-                  key={idx}
-                  className="p-3 rounded-xl bg-neutral-950 border border-neutral-800 flex items-center justify-between text-xs"
-                >
-                  <span className="font-mono text-neutral-300">{ch}</span>
-                  <span className="px-2 py-0.5 rounded text-[10px] font-bold bg-rose-500/10 text-rose-400 border border-rose-500/20">
-                    XP Désactivé
-                  </span>
-                </div>
-              ))}
+            <div className="bg-neutral-900 border border-neutral-800 rounded-2xl p-6 space-y-4">
+              <h3 className="text-sm font-bold text-white flex items-center gap-2">
+                <Lock className="w-4 h-4 text-rose-400" />
+                Rôles Exemptés d'XP
+              </h3>
+              <div className="flex gap-2">
+                <input
+                  type="text"
+                  placeholder="ID du rôle"
+                  value={newExcludedRoleId}
+                  onChange={(e) => setNewExcludedRoleId(e.target.value)}
+                  className="flex-1 h-9 rounded-xl bg-neutral-950 border border-neutral-800 px-3 text-xs text-white"
+                />
+                <button onClick={addExcludedRole} className="px-3 h-9 rounded-xl bg-rose-600/20 hover:bg-rose-500/30 text-rose-400 border border-rose-500/30 text-xs font-bold cursor-pointer">
+                  <Plus className="w-3.5 h-3.5" />
+                </button>
+              </div>
+              <div className="space-y-2">
+                {config.excludedRoleIds.length === 0 ? (
+                  <p className="text-[11px] text-neutral-500">Aucun rôle exclu.</p>
+                ) : (
+                  config.excludedRoleIds.map((id) => (
+                    <div key={id} className="p-2.5 rounded-xl bg-neutral-950 border border-neutral-800 flex items-center justify-between text-xs">
+                      <span className="font-mono text-neutral-300">@{id}</span>
+                      <button onClick={() => removeExcludedRole(id)} className="text-neutral-500 hover:text-rose-400">
+                        <X className="w-3.5 h-3.5" />
+                      </button>
+                    </div>
+                  ))
+                )}
+              </div>
             </div>
           </div>
         )}
@@ -819,9 +981,7 @@ export default function LevelingCenterClient() {
               </div>
 
               <div>
-                <label className="block text-xs font-semibold text-neutral-300 mb-1">
-                  Quantité d'XP à ajuster
-                </label>
+                <label className="block text-xs font-semibold text-neutral-300 mb-1">Quantité d'XP à ajuster</label>
                 <input
                   type="number"
                   min={10}
@@ -835,15 +995,17 @@ export default function LevelingCenterClient() {
               <div className="flex gap-2 pt-2">
                 <button
                   type="button"
+                  disabled={adjustSubmitting}
                   onClick={() => handleAdjustXp(false)}
-                  className="flex-1 py-2.5 rounded-xl bg-rose-600/20 hover:bg-rose-500/30 text-rose-400 border border-rose-500/30 text-xs font-bold transition-all cursor-pointer"
+                  className="flex-1 py-2.5 rounded-xl bg-rose-600/20 hover:bg-rose-500/30 text-rose-400 border border-rose-500/30 text-xs font-bold transition-all cursor-pointer disabled:opacity-50"
                 >
                   - Retirer {xpDelta} XP
                 </button>
                 <button
                   type="button"
+                  disabled={adjustSubmitting}
                   onClick={() => handleAdjustXp(true)}
-                  className="flex-1 py-2.5 rounded-xl bg-fuchsia-600 hover:bg-fuchsia-500 text-white text-xs font-bold shadow-sm transition-all cursor-pointer"
+                  className="flex-1 py-2.5 rounded-xl bg-fuchsia-600 hover:bg-fuchsia-500 text-white text-xs font-bold shadow-sm transition-all cursor-pointer disabled:opacity-50"
                 >
                   + Ajouter {xpDelta} XP
                 </button>

@@ -47,6 +47,29 @@ export function createLevelingRouter(discordClient: Client) {
     });
   });
 
+  // Admin XP adjustment (dashboard "Gérer XP" action) — delta can be
+  // positive or negative, clamped so totalXp never goes below 0.
+  router.post('/users/:userId/adjust', rateLimit('CONFIG', { byGuild: true, actionName: 'leveling_xp_adjust' }), async (req: Request, res: Response): Promise<void> => {
+    const guildId = String(req.params.guildId);
+    const userId = String(req.params.userId);
+    const delta = Number(req.body?.delta);
+
+    if (!Number.isFinite(delta) || delta === 0) {
+      res.status(400).json({ error: 'delta invalide' });
+      return;
+    }
+
+    const user = xpWriteBuffer.getUser(guildId, userId);
+    const totalXp = Math.max(0, user.totalXp + delta);
+    const level = LevelCalculator.calculateLevel(totalXp);
+    const updated = { ...user, totalXp, level };
+    xpWriteBuffer.updateUser(updated);
+    xpWriteBuffer.flushNow();
+
+    const progress = LevelCalculator.getProgress(totalXp);
+    res.json({ success: true, user: { ...updated, ...progress } });
+  });
+
   // 4. Configuration Leveling
   router.get('/config', async (req: Request, res: Response): Promise<void> => {
     const guildId = String(req.params.guildId);

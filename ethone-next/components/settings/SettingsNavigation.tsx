@@ -241,7 +241,7 @@ export default function SettingsNavigation({
   return (
     <nav
       aria-label="Catégories de paramètres"
-      className={cn("flex h-full w-full flex-col", className)}
+      className={cn("flex w-full flex-col", className)}
       onKeyDown={handleKeyDown}
     >
       <div className="flex flex-col gap-1 pr-1">

@@ -1,4 +1,5 @@
 import { Interaction } from 'discord.js';
+import { config } from '../config.js';
 import { commandRegistry } from '../handlers/commandHandler.js';
 import {
   handleSettingsButton,
@@ -41,6 +42,36 @@ import { syncEngine } from '../services/syncEngine.js';
 import { logger } from '../utils/logger.js';
 import { formatString, getTranslation } from '../utils/i18n.js';
 
+// Component/modal handlers (buttons, select menus, modals) previously ran
+// with no try/catch at all, unlike the slash-command path below — a throw
+// inside one of them left the interaction hanging ("This interaction
+// failed" in Discord) with no reply and no error logged with context.
+async function safeHandleComponent(
+  interaction: Interaction,
+  label: string,
+  handler: () => Promise<unknown>
+): Promise<void> {
+  try {
+    await handler();
+  } catch (error) {
+    logger.error(`[INTERACTION ERREUR] Erreur lors du traitement de "${label}" (customId=${(interaction as any).customId}) :`, error);
+    const errorMessage = 'Une erreur interne est survenue lors du traitement de cette action.';
+    try {
+      if (interaction.isRepliable()) {
+        if (interaction.deferred || interaction.replied) {
+          // followUp posts a new ephemeral message instead of overwriting
+          // whatever the original reply already showed.
+          await interaction.followUp({ content: errorMessage, ephemeral: true });
+        } else {
+          await interaction.reply({ content: errorMessage, ephemeral: true });
+        }
+      }
+    } catch (replyError) {
+      logger.error(`[INTERACTION ERREUR] Échec de la réponse d'erreur pour "${label}" :`, replyError);
+    }
+  }
+}
+
 export async function onInteractionCreate(interaction: Interaction) {
   // Diffusion temps réel dans le Sync Engine
   syncEngine.emit(
@@ -58,76 +89,78 @@ export async function onInteractionCreate(interaction: Interaction) {
   // 1. Gestion des composants d'interaction (Boutons, Menus déroulants, Modals)
   if (interaction.isAnySelectMenu()) {
     if (interaction.customId === 'settings_select_category' && interaction.isStringSelectMenu()) {
-      await handleSettingsSelectMenu(interaction);
+      await safeHandleComponent(interaction, 'settings_select_category', () => handleSettingsSelectMenu(interaction));
     } else if (interaction.customId === 'help_select_category' && interaction.isStringSelectMenu()) {
-      await HelpPanel.handleSelectMenu(interaction);
+      await safeHandleComponent(interaction, 'help_select_category', () => HelpPanel.handleSelectMenu(interaction));
     } else if (interaction.customId.startsWith('role_select:') && interaction.isStringSelectMenu()) {
-      await handleRoleSelect(interaction);
+      await safeHandleComponent(interaction, 'role_select', () => handleRoleSelect(interaction));
     } else if (interaction.customId.startsWith('voice_')) {
-      await DiscordVoicePanel.handleSelectMenu(interaction);
+      await safeHandleComponent(interaction, 'voice_select', () => DiscordVoicePanel.handleSelectMenu(interaction));
     } else if (interaction.customId.startsWith('logs_')) {
-      await handleLogsInteraction(interaction);
+      await safeHandleComponent(interaction, 'logs_select', () => handleLogsInteraction(interaction));
     }
     return;
   }
 
   if (interaction.isButton()) {
     if (interaction.customId === 'ping_retest') {
-      const gConf = guildConfigService.getConfig(interaction.guildId);
-      const start = Date.now();
-      const latency = Math.max(1, Date.now() - start);
-      const payload = buildPingMessage(interaction.client, gConf, latency);
-      await interaction.update(payload);
+      await safeHandleComponent(interaction, 'ping_retest', async () => {
+        const gConf = guildConfigService.getConfig(interaction.guildId);
+        const start = Date.now();
+        const latency = Math.max(1, Date.now() - start);
+        const payload = buildPingMessage(interaction.client, gConf, latency);
+        await interaction.update(payload);
+      });
     } else if (interaction.customId.startsWith('apply_preset_')) {
-      await handlePermissionPresetButton(interaction);
+      await safeHandleComponent(interaction, 'apply_preset', () => handlePermissionPresetButton(interaction));
     } else if (interaction.customId.startsWith('settings_') || interaction.customId.startsWith('set_lang_')) {
-      await handleSettingsButton(interaction);
+      await safeHandleComponent(interaction, 'settings_button', () => handleSettingsButton(interaction));
     } else if (interaction.customId.startsWith('help_btn_')) {
-      await HelpPanel.handleButton(interaction);
+      await safeHandleComponent(interaction, 'help_btn', () => HelpPanel.handleButton(interaction));
     } else if (interaction.customId.startsWith('ticket_')) {
-      await handleTicketButton(interaction);
+      await safeHandleComponent(interaction, 'ticket_button', () => handleTicketButton(interaction));
     } else if (interaction.customId.startsWith('role_btn:')) {
-      await handleRoleButton(interaction);
+      await safeHandleComponent(interaction, 'role_button', () => handleRoleButton(interaction));
     } else if (interaction.customId.startsWith('giveaway_')) {
-      await handleGiveawayButton(interaction);
+      await safeHandleComponent(interaction, 'giveaway_button', () => handleGiveawayButton(interaction));
     } else if (interaction.customId.startsWith('sugg_')) {
-      await handleSuggestionButton(interaction);
+      await safeHandleComponent(interaction, 'suggestion_button', () => handleSuggestionButton(interaction));
     } else if (interaction.customId.startsWith('music_')) {
-      await DiscordMusicPanel.handleButtonInteraction(interaction);
+      await safeHandleComponent(interaction, 'music_button', () => DiscordMusicPanel.handleButtonInteraction(interaction));
     } else if (interaction.customId.startsWith('welcome_')) {
-      await WelcomeInteractionHandler.handleButton(interaction);
+      await safeHandleComponent(interaction, 'welcome_button', () => WelcomeInteractionHandler.handleButton(interaction));
     } else if (interaction.customId.startsWith('voice_')) {
-      await DiscordVoicePanel.handleButton(interaction);
+      await safeHandleComponent(interaction, 'voice_button', () => DiscordVoicePanel.handleButton(interaction));
     } else if (interaction.customId.startsWith('ai_')) {
-      await DiscordAiPanel.handleButton(interaction);
+      await safeHandleComponent(interaction, 'ai_button', () => DiscordAiPanel.handleButton(interaction));
     } else if (interaction.customId.startsWith('form_')) {
-      await discordFormPanel.handleButton(interaction);
+      await safeHandleComponent(interaction, 'form_button', () => discordFormPanel.handleButton(interaction));
     } else if (interaction.customId.startsWith('poll_')) {
-      await discordPollPanel.handleButton(interaction);
+      await safeHandleComponent(interaction, 'poll_button', () => discordPollPanel.handleButton(interaction));
     } else if (interaction.customId.startsWith('event_')) {
-      await handleEventButton(interaction);
+      await safeHandleComponent(interaction, 'event_button', () => handleEventButton(interaction));
     } else if (interaction.customId.startsWith('owner_presence_')) {
-      await discordOwnerPanel.handleButton(interaction);
+      await safeHandleComponent(interaction, 'owner_presence_button', () => discordOwnerPanel.handleButton(interaction));
     } else if (interaction.customId.startsWith('logs_')) {
-      await handleLogsInteraction(interaction);
+      await safeHandleComponent(interaction, 'logs_button', () => handleLogsInteraction(interaction));
     }
     return;
   }
 
   if (interaction.isModalSubmit()) {
     if (interaction.customId.startsWith('modal_settings_')) {
-      await handleSettingsModal(interaction);
+      await safeHandleComponent(interaction, 'modal_settings', () => handleSettingsModal(interaction));
     } else if (interaction.customId.startsWith('modal_ticket_')) {
-      await handleTicketModal(interaction);
+      await safeHandleComponent(interaction, 'modal_ticket', () => handleTicketModal(interaction));
     } else if (
       interaction.customId.startsWith('modal_sugg_') ||
       interaction.customId === 'modal_suggest_create'
     ) {
-      await handleSuggestionModal(interaction);
+      await safeHandleComponent(interaction, 'modal_suggestion', () => handleSuggestionModal(interaction));
     } else if (interaction.customId.startsWith('modal_voice_')) {
-      await DiscordVoicePanel.handleModal(interaction);
+      await safeHandleComponent(interaction, 'modal_voice', () => DiscordVoicePanel.handleModal(interaction));
     } else if (interaction.customId.startsWith('form_modal_submit:')) {
-      await discordFormPanel.handleModalSubmit(interaction);
+      await safeHandleComponent(interaction, 'modal_form', () => discordFormPanel.handleModalSubmit(interaction));
     }
     return;
   }
@@ -236,7 +269,7 @@ export async function onInteractionCreate(interaction: Interaction) {
   }
 
   // Contrôle d'accès centralisé : Administration & Modération
-  const isBotOwner = interaction.user.id === '825124006209388616';
+  const isBotOwner = interaction.user.id === config.botOwnerId;
   const isGuildOwner = Boolean(interaction.guild && interaction.user.id === interaction.guild.ownerId);
   const hasAdminPerm = Boolean(interaction.memberPermissions && interaction.memberPermissions.has('Administrator'));
 

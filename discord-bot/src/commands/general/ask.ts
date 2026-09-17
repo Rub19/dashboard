@@ -8,6 +8,15 @@ import { DiscordAiPanel } from '../../modules/ai/ui/discordAiPanel.js';
 import { logger } from '../../utils/logger.js';
 import { getTranslation } from '../../utils/i18n.js';
 import { baseEmbed } from '../../utils/embeds.js';
+import { cooldownService } from '../../services/cooldownService.js';
+
+// A guild's generic commandCooldown setting defaults to 0 (disabled) and
+// caps at 15s — nowhere near enough to stop a user from hammering a real
+// LLM call, which costs real tokens/money. This is a separate, always-on
+// floor specific to AI commands, tracked under its own key ('ai-ask') so
+// it doesn't collide with the generic per-command cooldown check that
+// already ran in interactionCreate.ts before execute() was called.
+const AI_COMMAND_COOLDOWN_SECONDS = 10;
 
 export const askCommand: Command = {
   name: 'ask',
@@ -39,6 +48,25 @@ export const askCommand: Command = {
       if (!question || !question.trim()) {
         await ctx.reply({
           embeds: [baseEmbed('error').setDescription('❌ Veuillez préciser votre question. Exemple : `/ask question:Comment obtenir le rôle VIP ?`')],
+          ephemeral: true,
+        });
+        return;
+      }
+
+      const authorId = ctx.author?.id || ctx.interaction?.user?.id || '';
+      const isStaffOrAdmin = Boolean(
+        ctx.member?.permissions?.has('ManageGuild') || ctx.member?.permissions?.has('Administrator')
+      );
+      const { onCooldown, remainingSeconds } = cooldownService.checkAndApply(
+        ctx.guild?.id || ctx.interaction?.guildId || 'dm',
+        authorId,
+        'ai-ask',
+        AI_COMMAND_COOLDOWN_SECONDS,
+        isStaffOrAdmin
+      );
+      if (onCooldown) {
+        await ctx.reply({
+          embeds: [baseEmbed('warning').setDescription(`⏳ Merci de patienter encore ${remainingSeconds}s avant de reposer une question à l'assistant IA.`)],
           ephemeral: true,
         });
         return;

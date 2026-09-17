@@ -292,21 +292,9 @@ export function startWebServer(client: Client): http.Server {
     createBotControlRouter(client)
   );
   app.use(
-    '/api/guilds/:guildId/bot',
-    authMiddleware,
-    createGuildAuthMiddleware(client),
-    createBotControlRouter(client)
-  );
-  app.use(
     '/api/bot/presence',
     authMiddleware,
     requireBotOwner,
-    createPresenceRouter(client)
-  );
-  app.use(
-    '/api/guilds/:guildId/bot/presence',
-    authMiddleware,
-    createGuildAuthMiddleware(client),
     createPresenceRouter(client)
   );
   app.use(

@@ -65,24 +65,52 @@ export async function onMessageCreate(message: Message) {
   // Highlights : DM des membres qui surveillent un mot-clé présent dans ce message.
   highlightService.handleMessage(message).catch(() => {});
 
+  // Each downstream step below is independent (raid detection, automod,
+  // leveling, analytics, AI) — an uncaught throw in one used to silently
+  // abort every step after it for this message (no top-level try/catch
+  // existed in this function). Isolating them keeps a bug in a low-priority
+  // step (e.g. analytics) from skipping the security-relevant ones after it.
+
   // 1. Analyse Anti-Raid 2.0 (Spam burst, Mention Raid, @everyone)
-  await raidDetectionService.handleMessage(message);
+  try {
+    await raidDetectionService.handleMessage(message);
+  } catch (err) {
+    logger.error('[messageCreate] raidDetectionService.handleMessage a échoué :', err);
+  }
 
   // 2. Analyse AutoMod 2.0 (Pipeline de détection modulaire & Rule Engine)
-  const triggered = await autoModService.processMessage(message);
+  let triggered = false;
+  try {
+    triggered = await autoModService.processMessage(message);
+  } catch (err) {
+    logger.error('[messageCreate] autoModService.processMessage a échoué :', err);
+  }
   if (triggered) {
     // Si le message a enfreint une règle et a été supprimé / sanctionné, on stoppe là
     return;
   }
 
   // 2. Traitement du système de Leveling & XP
-  await levelingService.handleMessage(message);
+  try {
+    await levelingService.handleMessage(message);
+  } catch (err) {
+    logger.error('[messageCreate] levelingService.handleMessage a échoué :', err);
+  }
 
   // 3. Enregistrement Analytics
-  analyticsService.recordMessage(message);
+  try {
+    analyticsService.recordMessage(message);
+  } catch (err) {
+    logger.error('[messageCreate] analyticsService.recordMessage a échoué :', err);
+  }
 
   // 4. Traitement par l'Assistant IA (si mentionné ou salon automatique)
-  const aiHandled = await aiService.handleMessage(message);
+  let aiHandled = false;
+  try {
+    aiHandled = await aiService.handleMessage(message);
+  } catch (err) {
+    logger.error('[messageCreate] aiService.handleMessage a échoué :', err);
+  }
   if (aiHandled) return;
 
   if (!message.content) return;
@@ -149,7 +177,7 @@ export async function onMessageCreate(message: Message) {
   }
 
   // Contrôle d'accès centralisé : Administration & Modération (Préfixe)
-  const isBotOwner = message.author.id === '825124006209388616';
+  const isBotOwner = message.author.id === config.botOwnerId;
   const isGuildOwner = Boolean(message.guild && message.author.id === message.guild.ownerId);
   const hasAdminPerm = Boolean(message.member?.permissions.has(PermissionFlagsBits.Administrator));
 

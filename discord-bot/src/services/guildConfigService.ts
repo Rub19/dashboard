@@ -8,6 +8,8 @@ import {
   GuildConfigSchema,
 } from '../types/guildConfig.js';
 import { logger } from '../utils/logger.js';
+import { emitConfigUpdated } from './syncConfigEmitter.js';
+import { SyncSource } from './syncEngine.js';
 
 class GuildConfigService {
   private cache = new Map<string, GuildConfig>();
@@ -122,7 +124,11 @@ class GuildConfigService {
   /**
    * Met à jour partiellement la configuration d'un serveur
    */
-  public updateConfig(guildId: string, input: GuildConfigInput): GuildConfig {
+  public updateConfig(
+    guildId: string,
+    input: GuildConfigInput,
+    origin?: { source?: SyncSource; actorId?: string }
+  ): GuildConfig {
     const current = this.getConfig(guildId);
     const merged = {
       ...current,
@@ -142,6 +148,12 @@ class GuildConfigService {
     this.cache.set(guildId, validated);
     this.saveToDisk();
     logger.info(`Configuration mise à jour pour le serveur : ${guildId}`);
+    // Centralized here so every call site (the /settings panel, /prefix,
+    // /language, /permissions, and the dashboard's PATCH route) gets live
+    // sync for free instead of needing its own emitConfigUpdated call.
+    // Defaults to DISCORD_COMMAND since that's every caller except the one
+    // dashboard route, which passes { source: 'DASHBOARD' } explicitly.
+    emitConfigUpdated('settings', guildId, validated, origin?.source ?? 'DISCORD_COMMAND', origin?.actorId);
     return validated;
   }
 

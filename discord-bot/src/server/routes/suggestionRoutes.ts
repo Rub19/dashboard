@@ -4,6 +4,8 @@ import { suggestionStorage } from '../../modules/suggestions/storage/suggestionS
 import { SuggestionService } from '../../modules/suggestions/services/suggestionService.js';
 import { SuggestionCommentService } from '../../modules/suggestions/services/suggestionCommentService.js';
 import { SuggestionPriority, SuggestionStatus } from '../../modules/suggestions/types/suggestion.js';
+import { emitConfigUpdated } from '../../services/syncConfigEmitter.js';
+import { rateLimit } from '../middleware/antiAbuseMiddleware.js';
 
 export function createSuggestionRouter(discordClient: Client) {
   const router = express.Router({ mergeParams: true });
@@ -173,9 +175,10 @@ export function createSuggestionRouter(discordClient: Client) {
     res.json(config);
   });
 
-  router.put('/config/settings', async (req: Request, res: Response): Promise<void> => {
+  router.put('/config/settings', rateLimit('CONFIG', { byGuild: true, actionName: 'suggestion_settings' }), async (req: Request, res: Response): Promise<void> => {
     const guildId = String(req.params.guildId);
     const updated = suggestionStorage.updateConfig(guildId, req.body);
+    emitConfigUpdated('suggestions', guildId, updated, 'DASHBOARD', req.user?.id);
     res.json({ success: true, config: updated });
   });
 

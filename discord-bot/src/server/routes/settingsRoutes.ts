@@ -66,7 +66,10 @@ export function createSettingsRouter(client: Client): express.Router {
     }
 
     try {
-      const updated = guildConfigService.updateConfig(guildId, parsed.data);
+      const updated = guildConfigService.updateConfig(guildId, parsed.data, {
+        source: 'DASHBOARD',
+        actorId: req.user?.id,
+      });
       res.json({ success: true, config: updated });
     } catch (err) {
       res.status(500).json({ error: 'Erreur lors de la sauvegarde des paramètres' });

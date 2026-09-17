@@ -9,6 +9,7 @@ import {
 } from '../../modules/moderation/types/case.js';
 import { logger } from '../../utils/logger.js';
 import { rateLimit, idempotent, guildLock } from '../middleware/antiAbuseMiddleware.js';
+import { emitConfigUpdated } from '../../services/syncConfigEmitter.js';
 
 export function createModerationRouter(discordClient: Client) {
   ModerationService.initialize(discordClient);
@@ -392,10 +393,11 @@ export function createModerationRouter(discordClient: Client) {
     }
   });
 
-  router.put('/settings', async (req: Request, res: Response): Promise<void> => {
+  router.put('/settings', rateLimit('CONFIG', { byGuild: true, actionName: 'moderation_settings' }), async (req: Request, res: Response): Promise<void> => {
     const guildId = String(req.params.guildId);
     try {
       const updated = ModerationService.updateSettings(guildId, req.body);
+      emitConfigUpdated('moderation', guildId, updated, 'DASHBOARD', req.user?.id);
       res.json({ success: true, settings: updated });
     } catch (err: any) {
       res.status(500).json({ error: err.message || 'Erreur mise à jour configuration' });

@@ -92,10 +92,6 @@ class SanctionService {
     const merged = {
       ...current,
       ...update,
-      autoMod: {
-        ...current.autoMod,
-        ...(update.autoMod || {}),
-      },
       warningEscalation: {
         ...current.warningEscalation,
         ...(update.warningEscalation || {}),

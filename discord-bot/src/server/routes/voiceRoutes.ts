@@ -7,6 +7,8 @@ import { TemporaryVoiceService } from '../../modules/voice/services/temporaryVoi
 import { VoiceSessionService } from '../../modules/voice/services/voiceSessionService.js';
 import { VoiceHub } from '../../modules/voice/types/index.js';
 import { logger } from '../../utils/logger.js';
+import { emitConfigUpdated } from '../../services/syncConfigEmitter.js';
+import { rateLimit } from '../middleware/antiAbuseMiddleware.js';
 
 export function createVoiceRouter(client: Client): Router {
   const router = Router({ mergeParams: true });
@@ -478,10 +480,11 @@ export function createVoiceRouter(client: Client): Router {
   });
 
   // PUT /api/guilds/:guildId/voice/settings
-  router.put('/settings', (req: Request, res: Response) => {
+  router.put('/settings', rateLimit('CONFIG', { byGuild: true, actionName: 'voice_settings' }), (req: Request, res: Response) => {
     try {
       const guildId = req.params.guildId as string;
       const updated = voiceRepository.updateSettings(guildId, req.body);
+      emitConfigUpdated('voice', guildId, updated, 'DASHBOARD', req.user?.id);
       res.json({ settings: updated });
     } catch (err: any) {
       logger.error('Erreur update voice/settings :', err);

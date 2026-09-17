@@ -3,6 +3,9 @@ import { Command, CommandContext } from '../../types/command.js';
 import { AIImageService } from '../../modules/ai/services/aiImageService.js';
 import { aiRepository } from '../../modules/ai/storage/aiRepository.js';
 import { baseEmbed } from '../../utils/embeds.js';
+import { cooldownService } from '../../services/cooldownService.js';
+
+const AI_COMMAND_COOLDOWN_SECONDS = 15;
 
 export const imagineCommand: Command = {
   name: 'imagine',
@@ -27,6 +30,25 @@ export const imagineCommand: Command = {
     if (!prompt || prompt.trim().length < 3) {
       await ctx.reply({
         embeds: [baseEmbed('error').setDescription('❌ Veuillez fournir une description d\'image valide (au moins 3 caractères).\n*Exemple : `/imagine un astronaute explorant une forêt de néon cyberpunk`*')],
+        ephemeral: true,
+      });
+      return;
+    }
+
+    const authorId = ctx.author?.id || ctx.interaction?.user?.id || '';
+    const isStaffOrAdmin = Boolean(
+      ctx.member?.permissions?.has('ManageGuild') || ctx.member?.permissions?.has('Administrator')
+    );
+    const { onCooldown, remainingSeconds } = cooldownService.checkAndApply(
+      ctx.guild?.id || ctx.interaction?.guildId || 'dm',
+      authorId,
+      'ai-imagine',
+      AI_COMMAND_COOLDOWN_SECONDS,
+      isStaffOrAdmin
+    );
+    if (onCooldown) {
+      await ctx.reply({
+        embeds: [baseEmbed('warning').setDescription(`⏳ Merci de patienter encore ${remainingSeconds}s avant de générer une nouvelle image.`)],
         ephemeral: true,
       });
       return;

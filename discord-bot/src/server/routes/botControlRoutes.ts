@@ -253,14 +253,11 @@ export function createBotControlRouter(client: Client): Router {
     }
   });
 
-  // Remote Restart (Strictly Owner authorized)
+  // Remote Restart — authorization is enforced upstream by requireBotOwner
+  // (index.ts), which checks the signed session's user id against
+  // config.botOwnerId. A client-supplied header/body field must never be
+  // trusted for this: it can be set to anything by the caller.
   router.post('/restart', (req: Request, res: Response) => {
-    const ownerHeader = req.headers['x-bot-owner'];
-    if (ownerHeader !== '825124006209388616' && req.body?.email !== 'rub19.mailpro@gmail.com') {
-      res.status(403).json({ success: false, error: 'Unauthorized: Bot Owner only' });
-      return;
-    }
-
     res.json({ success: true, message: 'Bot restart scheduled in 1 second' });
 
     setTimeout(() => {
@@ -268,14 +265,8 @@ export function createBotControlRouter(client: Client): Router {
     }, 1000);
   });
 
-  // Remote Update (Strictly Owner authorized)
+  // Remote Update — see /restart above for the authorization note.
   router.post('/update', (req: Request, res: Response) => {
-    const ownerHeader = req.headers['x-bot-owner'];
-    if (ownerHeader !== '825124006209388616' && req.body?.email !== 'rub19.mailpro@gmail.com') {
-      res.status(403).json({ success: false, error: 'Unauthorized: Bot Owner only' });
-      return;
-    }
-
     res.json({ success: true, message: 'Update command received' });
   });
 

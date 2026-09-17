@@ -3,6 +3,8 @@ import { Client } from 'discord.js';
 import { levelingStorage } from '../../modules/leveling/storage/levelingStorage.js';
 import { xpWriteBuffer } from '../../modules/leveling/storage/xpWriteBuffer.js';
 import { LevelCalculator } from '../../modules/leveling/services/levelCalculator.js';
+import { emitConfigUpdated } from '../../services/syncConfigEmitter.js';
+import { rateLimit } from '../middleware/antiAbuseMiddleware.js';
 
 export function createLevelingRouter(discordClient: Client) {
   const router = express.Router({ mergeParams: true });
@@ -52,10 +54,11 @@ export function createLevelingRouter(discordClient: Client) {
     res.json({ config });
   });
 
-  router.patch('/config', async (req: Request, res: Response): Promise<void> => {
+  router.patch('/config', rateLimit('CONFIG', { byGuild: true, actionName: 'leveling_config' }), async (req: Request, res: Response): Promise<void> => {
     const guildId = String(req.params.guildId);
     try {
       const updated = levelingStorage.updateConfig(guildId, req.body);
+      emitConfigUpdated('leveling', guildId, updated, 'DASHBOARD', req.user?.id);
       res.json({ success: true, config: updated });
     } catch (err: any) {
       res.status(400).json({ error: err.message || 'Configuration invalide' });

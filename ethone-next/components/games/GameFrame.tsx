@@ -29,7 +29,7 @@ export default function GameFrame({ src, title }: { src: string; title: string }
         src={src}
         title={title}
         className="h-full w-full flex-1 rounded-[var(--panel-radius)] border border-[var(--panel-border)] bg-black"
-        sandbox="allow-scripts allow-same-origin"
+        sandbox="allow-scripts allow-same-origin allow-pointer-lock"
         loading="lazy"
       />
       <button

@@ -302,7 +302,10 @@ export default function BotControlClient({ initialTab = "overview" }: BotControl
     enablePrefix: true,
     autoReconnect: true,
     language: "fr" as "fr" | "en" | "es" | "de",
-    themePreset: "DEFAULT" as "DEFAULT" | "CYBER_NEON" | "EMERALD" | "CRIMSON" | "SUNSET" | "AMETHYST",
+    // Values must match discord-bot's GuildConfigSchema.themePreset enum
+    // exactly (DEFAULT/CYBERPUNK/EMERALD/SUNSET/DARK) — the PATCH /settings
+    // route rejects anything else.
+    themePreset: "DEFAULT" as "DEFAULT" | "CYBERPUNK" | "EMERALD" | "SUNSET" | "DARK",
     commandCooldown: 0,
     musicDefaultVolume: 80,
     autoDeleteCommands: false,
@@ -324,7 +327,10 @@ export default function BotControlClient({ initialTab = "overview" }: BotControl
     }
   }, [servers, settingsGuildId]);
 
-  // Load that guild's real, persisted language whenever the selection changes.
+  // Load that guild's real, persisted Configuration fields whenever the
+  // selection changes — previously only `language` was read back, silently
+  // discarding botPersonality/prefix/commandCooldown/themePreset from the
+  // response even though the backend already returns and persists them.
   useEffect(() => {
     if (!settingsGuildId || !BOT_API_URL) return;
     let cancelled = false;
@@ -333,10 +339,18 @@ export default function BotControlClient({ initialTab = "overview" }: BotControl
       .then((r) => r.json())
       .then((res) => {
         if (cancelled) return;
-        const lang = res?.data?.language;
-        if (lang === "fr" || lang === "en" || lang === "es" || lang === "de") {
-          setBotSettings((s) => ({ ...s, language: lang }));
-        }
+        const data = res?.data;
+        if (!data) return;
+        setBotSettings((s) => ({
+          ...s,
+          language: ["fr", "en", "es", "de"].includes(data.language) ? data.language : s.language,
+          botPersonality: ["FRIENDLY", "PROFESSIONAL", "HUMOROUS", "CONCISE", "CYBER"].includes(data.botPersonality) ? data.botPersonality : s.botPersonality,
+          defaultPrefix: typeof data.prefix === "string" ? data.prefix : s.defaultPrefix,
+          commandCooldown: typeof data.commandCooldown === "number" ? data.commandCooldown : s.commandCooldown,
+          themePreset: ["DEFAULT", "CYBERPUNK", "EMERALD", "SUNSET", "DARK"].includes(data.themePreset) ? data.themePreset : s.themePreset,
+          enableSlash: typeof data.slashCommandsEnabled === "boolean" ? data.slashCommandsEnabled : s.enableSlash,
+          enablePrefix: typeof data.prefixCommandsEnabled === "boolean" ? data.prefixCommandsEnabled : s.enablePrefix,
+        }));
       })
       .catch(() => {})
       .finally(() => {
@@ -433,15 +447,25 @@ export default function BotControlClient({ initialTab = "overview" }: BotControl
   };
 
   // AI Assistant Telemetry State
+  // Seeded with plausible placeholders until fetchData's GET /api/bot/ai
+  // response lands — that response is the real, live-tracked source now
+  // (see discord-bot's botAiMonitorService.ts), not a static mock.
   const [aiTelemetry, setAiTelemetry] = useState({
-    dailyRequests: 284,
-    dailyTokens: 38420,
+    dailyRequests: 0,
+    dailyTokens: 0,
     maxTokens: 100000,
-    activeModel: "DeepSeek V3 / Free Built-in",
-    avgLatencyMs: 780,
-    successRate: 99.4,
+    activeModel: "OpenRouter (Claude 3.5 Haiku)",
+    avgLatencyMs: 0,
+    successRate: 100,
     safetyShield: true,
     ragSources: 3,
+  });
+
+  // Seeded empty until fetchData's GET /api/bot/security response lands.
+  const [securityAudit, setSecurityAudit] = useState({
+    score: 100,
+    intents: { guildMembers: true, messageContent: true, guildPresences: true },
+    adminGuildsCount: 0,
   });
 
   // Dedicated AI Channel, Humeur du Thon & Banned Words State
@@ -611,14 +635,26 @@ export default function BotControlClient({ initialTab = "overview" }: BotControl
   const handleSaveSettings = async () => {
     setSavingSettings(true);
     try {
-      // Only `language` is backed by a real per-guild endpoint today; the rest of
-      // this panel remains local-only until each field gets its own wired backend.
+      // botPersonality/commandCooldown/themePreset now round-trip too — they
+      // were already correctly read/written by guildConfigService, just
+      // missing from the dashboard's PATCH schema (settingsRoutes.ts) until
+      // now, which silently stripped them before they reached the service.
+      // maintenanceMode/customBotName/musicDefaultVolume/autoDeleteCommands
+      // still aren't backed by a real per-guild field and remain local-only.
       if (settingsGuildId && BOT_API_URL) {
         const res = await fetch(`${BOT_API_URL}/api/guilds/${settingsGuildId}/settings`, {
           method: "PATCH",
           headers: { "Content-Type": "application/json" },
           credentials: "include",
-          body: JSON.stringify({ language: botSettings.language }),
+          body: JSON.stringify({
+            language: botSettings.language,
+            botPersonality: botSettings.botPersonality,
+            prefix: botSettings.defaultPrefix,
+            commandCooldown: botSettings.commandCooldown,
+            themePreset: botSettings.themePreset,
+            slashCommandsEnabled: botSettings.enableSlash,
+            prefixCommandsEnabled: botSettings.enablePrefix,
+          }),
         });
         if (!res.ok) throw new Error(`HTTP ${res.status}`);
       }
@@ -732,7 +768,27 @@ export default function BotControlClient({ initialTab = "overview" }: BotControl
     { name: "/imagine prompt:... [style:...] [ratio:...]", desc: "Génération d'images haute fidélité via IA sécurisée (Flux/Pollinations)", cat: "Intelligence Artificielle", perm: "Tous" },
     { name: "/ai-setup [salon:channel] [humeur:...] [images:bool] [bannir_mot:...]", desc: "Configuration du salon IA dédié, humeur du Thon, génération d'images et mots interdits", cat: "Administration", perm: "Administrateur" },
     { name: "/permissions [action:analyser|preset_strict|preset_equilibre|preset_communaute]", desc: "Analyse multilingue des rôles et configuration des permissions en 1 clic", cat: "Administration", perm: "Administrateur" },
+    { name: "/economy balance|daily|pay|leaderboard|gamble|shop|buy", desc: "Économie virtuelle du serveur : Crédits ETHONE, quotidien, transferts, paris et boutique de rôles", cat: "Communauté", perm: "Tous" },
+    { name: "/verification status|toggle", desc: "Consulte ou active la porte de vérification anti-bot à l'arrivée des membres", cat: "Administration", perm: "Gérer le serveur" },
   ], []);
+
+  // Real per-command usage stats (GET /api/bot/commands, see
+  // botCommandStatsService.ts) keyed by bare command name — the static
+  // catalog above keeps richer name/description/permission metadata than
+  // the stats endpoint has, so the two are merged for display rather than
+  // one replacing the other.
+  const commandStatsByKey = useMemo(() => {
+    const map = new Map<string, any>();
+    for (const c of commands) {
+      if (c?.name) map.set(String(c.name).toLowerCase(), c);
+    }
+    return map;
+  }, [commands]);
+
+  const commandKeyFromCatalogName = (name: string) => {
+    const match = name.match(/^\/([a-z0-9_-]+)/i);
+    return match ? match[1].toLowerCase() : "";
+  };
 
   const filteredCommands = useMemo(() => {
     return officialCommands.filter((c) => {
@@ -797,12 +853,14 @@ export default function BotControlClient({ initialTab = "overview" }: BotControl
   const fetchData = useCallback(async () => {
     try {
       setRefreshing(true);
-      const [overviewRes, presenceRes, serversRes, commandsRes, errorsRes] = await Promise.allSettled([
+      const [overviewRes, presenceRes, serversRes, commandsRes, errorsRes, aiRes, securityRes] = await Promise.allSettled([
         fetch(`${BOT_API_URL}/api/bot/overview`).then((r) => r.json()),
         fetch(`${BOT_API_URL}/api/bot/presence`).then((r) => r.json()),
         fetch(`${BOT_API_URL}/api/bot/presence/servers`).then((r) => r.json()),
         fetch(`${BOT_API_URL}/api/bot/commands`).then((r) => r.json()),
         fetch(`${BOT_API_URL}/api/bot/errors`).then((r) => r.json()),
+        fetch(`${BOT_API_URL}/api/bot/ai`).then((r) => r.json()),
+        fetch(`${BOT_API_URL}/api/bot/security`).then((r) => r.json()),
       ]);
 
       if (overviewRes.status === "fulfilled" && overviewRes.value?.success) {
@@ -885,6 +943,31 @@ export default function BotControlClient({ initialTab = "overview" }: BotControl
         const e = errorsRes.value.data?.incidents;
         if (Array.isArray(e)) {
           setErrors(e);
+        }
+      }
+
+      if (aiRes.status === "fulfilled" && aiRes.value?.success) {
+        const a = aiRes.value.data;
+        if (a) {
+          setAiTelemetry((prev) => ({
+            ...prev,
+            dailyRequests: a.requests24h ?? prev.dailyRequests,
+            dailyTokens: a.totalTokens24h ?? prev.dailyTokens,
+            activeModel: a.provider || prev.activeModel,
+            avgLatencyMs: a.avgInferenceLatencyMs ?? prev.avgLatencyMs,
+            successRate: a.successRate ?? prev.successRate,
+          }));
+        }
+      }
+
+      if (securityRes.status === "fulfilled" && securityRes.value?.success) {
+        const s = securityRes.value.data;
+        if (s) {
+          setSecurityAudit({
+            score: s.score ?? 100,
+            intents: s.intents || { guildMembers: false, messageContent: false, guildPresences: false },
+            adminGuildsCount: s.adminGuildsCount ?? 0,
+          });
         }
       }
     } catch {
@@ -2039,11 +2122,10 @@ export default function BotControlClient({ initialTab = "overview" }: BotControl
                 <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-6 gap-2.5 pt-1">
                   {[
                     { id: "DEFAULT", name: "Discord Blurple", hex: "#5865F2", secondary: "#4752C4" },
-                    { id: "CYBER_NEON", name: "Cyber Neon", hex: "#00F0FF", secondary: "#7000FF" },
+                    { id: "CYBERPUNK", name: "Cyberpunk Neon", hex: "#00F0FF", secondary: "#7000FF" },
                     { id: "EMERALD", name: "Emerald Green", hex: "#10B981", secondary: "#047857" },
-                    { id: "CRIMSON", name: "Crimson Red", hex: "#EF4444", secondary: "#B91C1C" },
                     { id: "SUNSET", name: "Sunset Gold", hex: "#F59E0B", secondary: "#D97706" },
-                    { id: "AMETHYST", name: "Amethyst Violet", hex: "#8B5CF6", secondary: "#6D28D9" },
+                    { id: "DARK", name: "Obsidian Dark", hex: "#27272A", secondary: "#18181B" },
                   ].map((theme) => {
                     const isSelected = botSettings.themePreset === theme.id;
                     return (
@@ -2718,30 +2800,44 @@ export default function BotControlClient({ initialTab = "overview" }: BotControl
                     Surveillance des privilèges, intégrité du jeton Discord et protection contre les abus
                   </p>
                 </div>
-                <span className="px-3 py-1 rounded-full text-xs font-semibold bg-emerald-500/10 text-emerald-400 border border-emerald-500/20">
-                  Score de Sécurité : 98/100 (Optimal)
+                <span
+                  className={cn(
+                    "px-3 py-1 rounded-full text-xs font-semibold border",
+                    securityAudit.score >= 90
+                      ? "bg-emerald-500/10 text-emerald-400 border-emerald-500/20"
+                      : securityAudit.score >= 70
+                      ? "bg-amber-500/10 text-amber-400 border-amber-500/20"
+                      : "bg-rose-500/10 text-rose-400 border-rose-500/20"
+                  )}
+                >
+                  Score de Sécurité : {securityAudit.score}/100 ({securityAudit.score >= 90 ? "Optimal" : securityAudit.score >= 70 ? "Correct" : "À corriger"})
                 </span>
               </div>
 
-              {/* Security Shield Grid */}
+              {/* Security Shield Grid — dots reflect the intents the bot actually
+                  has enabled with Discord, read live from the client (see
+                  botSecurityAuditService.ts). Encryption card stays static —
+                  it's a fixed architectural fact (JWT HMAC-SHA256), not a metric. */}
               <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
                 <div className="p-4 rounded-xl bg-zinc-950/60 border border-zinc-800/80 space-y-1.5">
                   <div className="flex items-center justify-between">
                     <span className="text-xs font-bold text-white">Protection Anti-Raid</span>
-                    <span className="w-2 h-2 rounded-full bg-emerald-400" />
+                    <span className={cn("w-2 h-2 rounded-full", securityAudit.intents.guildMembers ? "bg-emerald-400" : "bg-rose-400")} />
                   </div>
                   <p className="text-[11px] text-zinc-400">
                     Détection instantanée des vagues d'arrivées massives et verrouillage préventif
+                    {!securityAudit.intents.guildMembers && " — intent GuildMembers désactivé, détection dégradée"}
                   </p>
                 </div>
 
                 <div className="p-4 rounded-xl bg-zinc-950/60 border border-zinc-800/80 space-y-1.5">
                   <div className="flex items-center justify-between">
                     <span className="text-xs font-bold text-white">AutoMod & Anti-Spam</span>
-                    <span className="w-2 h-2 rounded-full bg-emerald-400" />
+                    <span className={cn("w-2 h-2 rounded-full", securityAudit.intents.messageContent ? "bg-emerald-400" : "bg-rose-400")} />
                   </div>
                   <p className="text-[11px] text-zinc-400">
                     Filtrage des mentions abusives, liens malveillants et discord invites
+                    {!securityAudit.intents.messageContent && " — intent MessageContent désactivé, filtrage désactivé"}
                   </p>
                 </div>
 
@@ -2754,6 +2850,11 @@ export default function BotControlClient({ initialTab = "overview" }: BotControl
                     Sessions JWT HMAC-SHA256 et hashs sécurisés pour toutes les configurations
                   </p>
                 </div>
+              </div>
+
+              <div className="flex items-center justify-between pt-4 border-t border-zinc-800 text-[11px] text-zinc-400">
+                <span>Présence (intent GuildPresences) : {securityAudit.intents.guildPresences ? "Activé" : "Désactivé"}</span>
+                <span>{securityAudit.adminGuildsCount} serveur(s) surveillé(s)</span>
               </div>
             </div>
           </div>
@@ -2990,24 +3091,33 @@ export default function BotControlClient({ initialTab = "overview" }: BotControl
             </div>
 
             <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-3 text-xs pt-2">
-              {filteredCommands.map((cmd) => (
-                <div
-                  key={cmd.name}
-                  className="p-3.5 rounded-xl bg-zinc-950/60 border border-zinc-800/80 hover:border-zinc-700 transition-all space-y-2"
-                >
-                  <div className="flex items-center justify-between gap-2">
-                    <code className="text-indigo-400 font-mono font-bold">{cmd.name}</code>
-                    <span className="px-1.5 py-0.2 rounded text-[10px] bg-zinc-900 border border-zinc-800 text-zinc-400 font-medium shrink-0">
-                      {cmd.perm}
-                    </span>
+              {filteredCommands.map((cmd) => {
+                const stat = commandStatsByKey.get(commandKeyFromCatalogName(cmd.name));
+                return (
+                  <div
+                    key={cmd.name}
+                    className="p-3.5 rounded-xl bg-zinc-950/60 border border-zinc-800/80 hover:border-zinc-700 transition-all space-y-2"
+                  >
+                    <div className="flex items-center justify-between gap-2">
+                      <code className="text-indigo-400 font-mono font-bold">{cmd.name}</code>
+                      <span className="px-1.5 py-0.2 rounded text-[10px] bg-zinc-900 border border-zinc-800 text-zinc-400 font-medium shrink-0">
+                        {cmd.perm}
+                      </span>
+                    </div>
+                    <p className="text-[11px] text-zinc-400 leading-relaxed">{cmd.desc}</p>
+                    <div className="pt-1.5 border-t border-zinc-900 flex items-center justify-between text-[10px]">
+                      <span className="text-zinc-500">{cmd.cat}</span>
+                      {stat ? (
+                        <span className="text-emerald-400 font-mono">
+                          {stat.executions24h ?? 0}× / 24h · {stat.avgLatencyMs ?? 0}ms
+                        </span>
+                      ) : (
+                        <span className="text-zinc-500 font-mono">Aucune exécution récente</span>
+                      )}
+                    </div>
                   </div>
-                  <p className="text-[11px] text-zinc-400 leading-relaxed">{cmd.desc}</p>
-                  <div className="pt-1.5 border-t border-zinc-900 flex items-center justify-between text-[10px]">
-                    <span className="text-zinc-500">{cmd.cat}</span>
-                    <span className="text-emerald-400 font-mono">Slash + Préfixe</span>
-                  </div>
-                </div>
-              ))}
+                );
+              })}
             </div>
           </div>
         )}

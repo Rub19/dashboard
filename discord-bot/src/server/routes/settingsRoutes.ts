@@ -23,6 +23,14 @@ const PatchSettingsSchema = z.object({
   slashCommandsEnabled: z.boolean().optional(),
   language: z.enum(['fr', 'en', 'es', 'de']).optional(),
   timezone: z.string().optional(),
+  // These 3 already existed on GuildConfigSchema/guildConfigService and were
+  // already read/written correctly server-side — they were just missing from
+  // this PATCH schema, so z.object() silently stripped them before they ever
+  // reached updateConfig(), making every Configuration-tab field except
+  // language a silent no-op from the dashboard.
+  botPersonality: z.enum(['FRIENDLY', 'PROFESSIONAL', 'HUMOROUS', 'CONCISE', 'CYBER']).optional(),
+  commandCooldown: z.number().min(0).max(60).optional(),
+  themePreset: z.enum(['DEFAULT', 'CYBERPUNK', 'EMERALD', 'SUNSET', 'DARK']).optional(),
   emojis: z
     .object({
       success: z.string().optional(),

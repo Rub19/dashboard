@@ -69,7 +69,7 @@ export interface BotCommandStat {
   avgLatencyMs: number;
   p95LatencyMs: number;
   p99LatencyMs: number;
-  lastExecutedAt?: string;
+  lastExecutedAt: string | null;
   lastError?: string;
 }
 

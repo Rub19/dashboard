@@ -9,6 +9,9 @@ import { logger } from '../../utils/logger.js';
 import { getTranslation } from '../../utils/i18n.js';
 import { baseEmbed } from '../../utils/embeds.js';
 import { cooldownService } from '../../services/cooldownService.js';
+import { BotAiMonitorService } from '../../modules/botControl/services/botAiMonitorService.js';
+
+const botAiMonitorService = BotAiMonitorService.getInstance();
 
 // A guild's generic commandCooldown setting defaults to 0 (disabled) and
 // caps at 15s — nowhere near enough to stop a user from hammering a real
@@ -113,6 +116,7 @@ export const askCommand: Command = {
         ctx.guild?.name || 'Serveur Discord'
       );
 
+      const aiCallStartedAt = Date.now();
       const completion = await AIProviderService.generateWithIntent({
         settings,
         baseSystemPrompt: systemPrompt,
@@ -120,6 +124,7 @@ export const askCommand: Command = {
         knowledgeContext: knowledge.contextText,
         history: [],
       });
+      botAiMonitorService.recordAiUsage(completion.tokensUsed || 0, Date.now() - aiCallStartedAt, true);
 
       const embed = DiscordAiPanel.buildResponseEmbed({
         settings,

@@ -39,7 +39,10 @@ import { handlePermissionPresetButton } from '../commands/admin/permissionsComma
 import { baseEmbed } from '../utils/embeds.js';
 import { HelpPanel } from '../commands/general/helpPanel.js';
 import { syncEngine } from '../services/syncEngine.js';
+import { BotCommandStatsService } from '../modules/botControl/services/botCommandStatsService.js';
 import { logger } from '../utils/logger.js';
+
+const botCommandStatsService = BotCommandStatsService.getInstance();
 import { formatString, getTranslation } from '../utils/i18n.js';
 
 // Component/modal handlers (buttons, select menus, modals) previously ran
@@ -311,6 +314,7 @@ export async function onInteractionCreate(interaction: Interaction) {
     guildConfig,
   });
 
+  const commandStartedAt = Date.now();
   try {
     statsService.recordCommand(
       interaction.guildId || 'dm',
@@ -323,8 +327,10 @@ export async function onInteractionCreate(interaction: Interaction) {
       analyticsService.recordCommand(interaction.guildId, command.name, interaction.user.id);
     }
     await command.execute(context);
+    botCommandStatsService.recordCommandExecution(command.name, Date.now() - commandStartedAt, true);
     logger.info(`[INTERACTION SUCCES] /${command.name} exécutée avec succès pour ${interaction.user.tag}`);
   } catch (error) {
+    botCommandStatsService.recordCommandExecution(command.name, Date.now() - commandStartedAt, false, error instanceof Error ? error.message : String(error));
     logger.error(`[INTERACTION ERREUR] Erreur lors de l'exécution de /${command.name} :`, error);
 
     const errorMessage = `${guildConfig.emojis.error} Une erreur interne est survenue lors de l'exécution de la commande.`;

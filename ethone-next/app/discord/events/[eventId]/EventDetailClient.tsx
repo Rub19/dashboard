@@ -1,8 +1,8 @@
 "use client";
 
-import React, { useState, useEffect } from "react";
+import React, { useCallback, useEffect, useState } from "react";
 import Link from "next/link";
-import { useParams } from "next/navigation";
+import { useParams, useSearchParams } from "next/navigation";
 import {
   Clock,
   Volume2,
@@ -17,6 +17,9 @@ import {
   Check,
   Shield,
 } from "lucide-react";
+import { useDiscordOAuth } from "@/lib/hooks/useDiscordOAuth";
+
+const BOT_API_URL = process.env.NEXT_PUBLIC_DISCORD_BOT_API || "";
 
 interface EventDetailData {
   id: string;
@@ -84,18 +87,60 @@ const DEFAULT_EVENT: EventDetailData = {
   },
 };
 
+function mapEvent(raw: Record<string, any>, id: string): EventDetailData {
+  return {
+    id,
+    title: raw.title || DEFAULT_EVENT.title,
+    description: raw.description || "",
+    category: raw.category || "GAMING",
+    status: (raw.status as EventDetailData["status"]) || "SCHEDULED",
+    startDate: raw.startDate || DEFAULT_EVENT.startDate,
+    endDate: raw.endDate || DEFAULT_EVENT.endDate,
+    location: {
+      type: raw.location?.type || "VOICE",
+      channelName: raw.location?.channelName || "Salon Discord",
+      channelId: raw.location?.channelId,
+    },
+    capacity: {
+      unlimited: Boolean(raw.capacity?.unlimited),
+      maxParticipants: Number(raw.capacity?.maxParticipants) || 0,
+      waitlistEnabled: Boolean(raw.capacity?.waitlistEnabled),
+    },
+    stats: {
+      goingCount: Number(raw.stats?.goingCount) || 0,
+      maybeCount: Number(raw.stats?.maybeCount) || 0,
+      notGoingCount: Number(raw.stats?.notGoingCount) || 0,
+      waitlistCount: Number(raw.stats?.waitlistCount) || 0,
+      attendedCount: Number(raw.stats?.attendedCount) || 0,
+    },
+    imageUrl: raw.imageUrl || raw.thumbnailUrl,
+    emoji: raw.emoji || "🎮",
+    organizer: {
+      username: raw.organizer?.username || "Staff",
+      avatarUrl: raw.organizer?.avatarUrl || "",
+    },
+  };
+}
+
 export default function EventDetailClient() {
   const params = useParams();
+  const searchParams = useSearchParams();
+  const { profile } = useDiscordOAuth();
   const eventId = (params?.eventId as string) || "evt-gaming-night";
+  const guildParam = searchParams.get("guildId") || profile?.guilds?.[0]?.id || "123456789012345678";
+  const base = `${BOT_API_URL}/api/guilds/${guildParam}/events/${eventId}`;
 
   const [event, setEvent] = useState<EventDetailData>({
     ...DEFAULT_EVENT,
     id: eventId,
   });
+  const [isDemo, setIsDemo] = useState(true);
 
   const [userRsvp, setUserRsvp] = useState<"GOING" | "MAYBE" | "NOT_GOING" | null>(null);
   const [isCheckedIn, setIsCheckedIn] = useState(false);
   const [copied, setCopied] = useState(false);
+  const [rsvpPending, setRsvpPending] = useState(false);
+  const [checkinPending, setCheckinPending] = useState(false);
 
   // Live countdown
   const [timeLeft, setTimeLeft] = useState<{ days: number; hours: number; minutes: number; seconds: number }>({
@@ -104,6 +149,30 @@ export default function EventDetailClient() {
     minutes: 0,
     seconds: 0,
   });
+
+  const loadEvent = useCallback(async () => {
+    if (!BOT_API_URL || guildParam === "123456789012345678") {
+      setIsDemo(true);
+      return;
+    }
+    try {
+      const res = await fetch(base, { credentials: "include" });
+      const data = await res.json().catch(() => null);
+      if (res.ok && data?.event) {
+        setEvent(mapEvent(data.event, eventId));
+        setIsDemo(false);
+      } else {
+        setIsDemo(true);
+      }
+    } catch {
+      setIsDemo(true);
+    }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [guildParam, eventId]);
+
+  useEffect(() => {
+    loadEvent();
+  }, [loadEvent]);
 
   useEffect(() => {
     const calculateTime = () => {
@@ -125,7 +194,9 @@ export default function EventDetailClient() {
     return () => clearInterval(interval);
   }, [event.startDate]);
 
-  const handleRSVP = (status: "GOING" | "MAYBE" | "NOT_GOING") => {
+  const handleRSVP = async (status: "GOING" | "MAYBE" | "NOT_GOING") => {
+    const previousRsvp = userRsvp;
+    const previousStats = event.stats;
     setUserRsvp(status);
     setEvent((prev) => {
       const stats = { ...prev.stats };
@@ -134,14 +205,65 @@ export default function EventDetailClient() {
       if (status === "NOT_GOING") stats.notGoingCount++;
       return { ...prev, stats };
     });
+
+    if (isDemo || !profile?.user?.id) return;
+    setRsvpPending(true);
+    try {
+      const res = await fetch(`${base}/participants/rsvp`, {
+        method: "POST",
+        credentials: "include",
+        headers: { "content-type": "application/json" },
+        body: JSON.stringify({
+          userId: profile.user.id,
+          username: profile.user.username,
+          displayName: profile.user.displayName || profile.user.globalName,
+          avatarUrl: profile.user.avatarUrl,
+          status,
+        }),
+      });
+      if (!res.ok) throw new Error("rsvp failed");
+      await loadEvent();
+    } catch {
+      // Roll back the optimistic update if the real RSVP didn't take.
+      setUserRsvp(previousRsvp);
+      setEvent((prev) => ({ ...prev, stats: previousStats }));
+    } finally {
+      setRsvpPending(false);
+    }
   };
 
-  const handleCheckin = () => {
+  const handleCheckin = async () => {
     setIsCheckedIn(true);
     setEvent((prev) => ({
       ...prev,
       stats: { ...prev.stats, attendedCount: prev.stats.attendedCount + 1 },
     }));
+
+    if (isDemo || !profile?.user?.id) return;
+    setCheckinPending(true);
+    try {
+      const res = await fetch(`${base}/participants/${profile.user.id}/checkin`, {
+        method: "POST",
+        credentials: "include",
+        headers: { "content-type": "application/json" },
+        body: JSON.stringify({
+          username: profile.user.username,
+          displayName: profile.user.displayName || profile.user.globalName,
+          avatarUrl: profile.user.avatarUrl,
+          method: "MANUAL_STAFF",
+        }),
+      });
+      if (!res.ok) throw new Error("checkin failed");
+      await loadEvent();
+    } catch {
+      setIsCheckedIn(false);
+      setEvent((prev) => ({
+        ...prev,
+        stats: { ...prev.stats, attendedCount: Math.max(0, prev.stats.attendedCount - 1) },
+      }));
+    } finally {
+      setCheckinPending(false);
+    }
   };
 
   const handleCopyLink = () => {
@@ -231,6 +353,12 @@ export default function EventDetailClient() {
                 <span className="text-xs text-slate-400">
                   Organisé par <strong className="text-white">{event.organizer.username}</strong>
                 </span>
+
+                {isDemo && (
+                  <span className="px-2.5 py-0.5 rounded-full text-[10px] font-bold uppercase tracking-wider bg-amber-500/10 text-amber-400 border border-amber-500/20">
+                    Démo
+                  </span>
+                )}
               </div>
 
               <h1 className="text-2xl sm:text-4xl font-extrabold text-white tracking-tight leading-tight">
@@ -273,7 +401,8 @@ export default function EventDetailClient() {
             <div className="flex items-center gap-2 w-full sm:w-auto">
               <button
                 onClick={() => handleRSVP("GOING")}
-                className={`flex-1 sm:flex-initial px-5 py-2.5 rounded-xl text-xs font-bold transition-all flex items-center justify-center gap-2 ${
+                disabled={rsvpPending}
+                className={`flex-1 sm:flex-initial px-5 py-2.5 rounded-xl text-xs font-bold transition-all flex items-center justify-center gap-2 disabled:opacity-60 ${
                   userRsvp === "GOING"
                     ? "bg-emerald-500 text-white shadow-sm"
                     : "bg-emerald-500/10 hover:bg-emerald-500/20 text-emerald-400 border border-emerald-500/20"
@@ -285,7 +414,8 @@ export default function EventDetailClient() {
 
               <button
                 onClick={() => handleRSVP("MAYBE")}
-                className={`flex-1 sm:flex-initial px-4 py-2.5 rounded-xl text-xs font-bold transition-all ${
+                disabled={rsvpPending}
+                className={`flex-1 sm:flex-initial px-4 py-2.5 rounded-xl text-xs font-bold transition-all disabled:opacity-60 ${
                   userRsvp === "MAYBE"
                     ? "bg-amber-500 text-white shadow-sm"
                     : "bg-white/5 hover:bg-white/10 text-slate-300 border border-[var(--panel-border)]"
@@ -296,7 +426,8 @@ export default function EventDetailClient() {
 
               <button
                 onClick={() => handleRSVP("NOT_GOING")}
-                className={`flex-1 sm:flex-initial px-4 py-2.5 rounded-xl text-xs font-bold transition-all ${
+                disabled={rsvpPending}
+                className={`flex-1 sm:flex-initial px-4 py-2.5 rounded-xl text-xs font-bold transition-all disabled:opacity-60 ${
                   userRsvp === "NOT_GOING"
                     ? "bg-red-500 text-white"
                     : "bg-white/5 hover:bg-white/10 text-slate-400 border border-[var(--panel-border)]"
@@ -309,8 +440,8 @@ export default function EventDetailClient() {
             <div className="flex items-center gap-3 w-full sm:w-auto justify-end">
               <button
                 onClick={handleCheckin}
-                disabled={isCheckedIn}
-                className={`px-4 py-2.5 rounded-xl text-xs font-bold transition-all flex items-center gap-2 ${
+                disabled={isCheckedIn || checkinPending}
+                className={`px-4 py-2.5 rounded-xl text-xs font-bold transition-all flex items-center gap-2 disabled:opacity-80 ${
                   isCheckedIn
                     ? "bg-indigo-500/20 text-indigo-300 border border-indigo-500/30 cursor-default"
                     : "bg-indigo-600 hover:bg-indigo-500 text-white shadow-sm"

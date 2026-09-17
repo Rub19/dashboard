@@ -10,6 +10,7 @@ export const NAVIGATION_ITEMS: NavigationItem[] = [
   { id: "home", label: "home", icon: "home", actionId: "v8.home.open", href: "/" },
   { id: "notes", label: "notes", icon: "notes", actionId: "v8.notes.open", href: "/notes/" },
   { id: "tasks", label: "tasks", icon: "tasks", actionId: "v8.tasks.open", href: "/tasks/" },
+  { id: "habits", label: "habits", icon: "habits", actionId: "v8.habits.open", href: "/habits/" },
   { id: "calendar", label: "calendar", icon: "calendar", actionId: "v8.calendar.open", href: "/calendar/" },
   { id: "files", label: "files", icon: "files", actionId: "v8.files.open", href: "/files/" },
   { id: "activity", label: "activity", icon: "activity", actionId: "v8.activity.open", href: "/activity/" },

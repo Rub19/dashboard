@@ -240,6 +240,7 @@ const NAV_ITEMS = [
 const SIDEBAR_NAV_ITEMS = [
   { id: "notes", label: "notes" },
   { id: "tasks", label: "tasks" },
+  { id: "habits", label: "habits" },
   { id: "calendar", label: "calendar" },
   { id: "files", label: "files" },
   { id: "mail", label: "mail" },

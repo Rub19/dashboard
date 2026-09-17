@@ -321,7 +321,7 @@ export const DEFAULTS: Settings = {
   sidebarVisible: true,
   sidebarIcons: true,
   sidebarItems: [
-    "notes", "tasks", "calendar", "files", "mail", "brain", "focus", "weather",
+    "notes", "tasks", "habits", "calendar", "files", "mail", "brain", "focus", "weather",
     "activity", "analytics", "interactions", "connections", "discord", "plugins",
     "games", "matches", "spaces", "flows", "team",
   ],

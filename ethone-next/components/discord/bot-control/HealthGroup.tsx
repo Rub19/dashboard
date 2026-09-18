@@ -2,6 +2,7 @@
 
 import { Cpu, Server, Activity, RefreshCw, CheckCircle2 } from "lucide-react";
 import { cn } from "@/lib/utils";
+import Card from "@/components/ui/Card";
 import type { BotTab } from "@/app/discord/bot/BotControlClient";
 
 interface HealthGroupProps {
@@ -35,7 +36,7 @@ export default function HealthGroup({
     <>
       {activeTab === "health" && (
         <div className="space-y-6">
-          <div className="p-6 rounded-2xl bg-zinc-900/60 border border-zinc-800 space-y-4">
+          <Card variant="default" padding="none" className="p-6 space-y-4">
             <h3 className="text-sm font-bold text-white flex items-center gap-2">
               <Cpu className="w-4 h-4 text-emerald-400" />
               Télémétrie des Sous-Systèmes
@@ -45,7 +46,7 @@ export default function HealthGroup({
               {subsystems.map((sub) => {
                 const cfg = subsystemStatusConfig[sub.status] || subsystemStatusConfig.operational;
                 return (
-                  <div key={sub.id} className="p-4 rounded-xl bg-zinc-950/60 border border-zinc-800/80 space-y-2">
+                  <Card key={sub.id} variant="widget" padding="md" className="space-y-2">
                     <div className="flex items-center justify-between">
                       <span className="text-xs font-bold text-white">{sub.name}</span>
                       <span className={cn("w-2 h-2 rounded-full", cfg.dot)} />
@@ -54,17 +55,17 @@ export default function HealthGroup({
                       <span className="text-zinc-400">Statut :</span>
                       <span className={cn("font-mono font-bold", cfg.text)}>{cfg.label}</span>
                     </div>
-                  </div>
+                  </Card>
                 );
               })}
             </div>
-          </div>
+          </Card>
         </div>
       )}
 
       {activeTab === "servers" && (
         <div className="space-y-6">
-          <div className="p-6 rounded-2xl bg-zinc-900/60 border border-zinc-800 space-y-4">
+          <Card variant="default" padding="none" className="p-6 space-y-4">
             <h3 className="text-sm font-bold text-white flex items-center gap-2">
               <Server className="w-4 h-4 text-purple-400" />
               Serveurs Discord Installés ({servers.length})
@@ -72,9 +73,11 @@ export default function HealthGroup({
 
             <div className="space-y-3">
               {servers.map((s) => (
-                <div
+                <Card
                   key={s.id}
-                  className="p-4 rounded-xl bg-zinc-950/60 border border-zinc-800/80 flex items-center justify-between gap-4"
+                  variant="widget"
+                  padding="md"
+                  className="flex items-center justify-between gap-4"
                 >
                   <div className="flex items-center gap-3">
                     <div className="w-10 h-10 rounded-full bg-zinc-800 border border-zinc-700 flex items-center justify-center font-bold text-white">
@@ -92,16 +95,16 @@ export default function HealthGroup({
                       Connecté
                     </span>
                   </div>
-                </div>
+                </Card>
               ))}
             </div>
-          </div>
+          </Card>
         </div>
       )}
 
       {activeTab === "performance" && (
         <div className="space-y-6">
-          <div className="p-6 rounded-2xl bg-zinc-900/60 border border-zinc-800 space-y-6">
+          <Card variant="default" padding="none" className="p-6 space-y-6">
             <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 pb-4 border-b border-zinc-800">
               <div>
                 <h3 className="text-base font-bold text-white flex items-center gap-2">
@@ -210,13 +213,13 @@ export default function HealthGroup({
                 <span className="text-sm font-bold font-mono text-white">{perfMetrics.aiTokensPerMinute}/min</span>
               </div>
             </div>
-          </div>
+          </Card>
         </div>
       )}
 
       {activeTab === "diagnostics" && (
         <div className="space-y-6">
-          <div className="p-6 rounded-2xl bg-zinc-900/60 border border-zinc-800 space-y-6">
+          <Card variant="default" padding="none" className="p-6 space-y-6">
             <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 pb-4 border-b border-zinc-800">
               <div>
                 <h3 className="text-base font-bold text-white flex items-center gap-2">
@@ -267,7 +270,7 @@ export default function HealthGroup({
                 );
               })}
             </div>
-          </div>
+          </Card>
         </div>
       )}
     </>

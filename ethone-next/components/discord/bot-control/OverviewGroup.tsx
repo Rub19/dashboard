@@ -3,6 +3,7 @@
 import Link from "next/link";
 import { Sparkles, Cpu, Server, Layers, Search, ArrowRight } from "lucide-react";
 import { cn } from "@/lib/utils";
+import Card from "@/components/ui/Card";
 import type { BotTab } from "@/app/discord/bot/BotControlClient";
 
 interface OverviewGroupProps {
@@ -55,7 +56,7 @@ export default function OverviewGroup({
           {/* Quick Summary Grid */}
           <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
             {/* Presence summary card */}
-            <div className="p-6 rounded-2xl bg-zinc-900/60 border border-zinc-800 space-y-4">
+            <Card variant="default" padding="none" className="p-6 space-y-4">
               <div className="flex items-center justify-between">
                 <h3 className="text-xs font-bold text-zinc-300 uppercase tracking-wider flex items-center gap-2">
                   <Sparkles className="w-4 h-4 text-indigo-400" />
@@ -70,7 +71,7 @@ export default function OverviewGroup({
                 </Link>
               </div>
 
-              <div className="p-4 rounded-xl bg-zinc-950/60 border border-zinc-800/80 space-y-2">
+              <Card variant="widget" padding="md" className="space-y-2">
                 <div className="flex items-center gap-2">
                   <span className={cn("w-2.5 h-2.5 rounded-full", currentCfg.dot)} />
                   <span className="text-sm font-bold text-white">{currentCfg.label}</span>
@@ -82,11 +83,11 @@ export default function OverviewGroup({
                 <span className="text-[11px] text-zinc-400 block pt-1">
                   Portée : Globale sur la connexion Gateway
                 </span>
-              </div>
-            </div>
+              </Card>
+            </Card>
 
             {/* Subsystems summary card */}
-            <div className="p-6 rounded-2xl bg-zinc-900/60 border border-zinc-800 space-y-4">
+            <Card variant="default" padding="none" className="p-6 space-y-4">
               <div className="flex items-center justify-between">
                 <h3 className="text-xs font-bold text-zinc-300 uppercase tracking-wider flex items-center gap-2">
                   <Cpu className="w-4 h-4 text-emerald-400" />
@@ -105,23 +106,25 @@ export default function OverviewGroup({
                 {subsystems.slice(0, 3).map((s) => {
                   const cfg = subsystemStatusConfig[s.status] || subsystemStatusConfig.operational;
                   return (
-                    <div
+                    <Card
                       key={s.id}
-                      className="px-3 py-2 rounded-xl bg-zinc-950/60 border border-zinc-800/80 flex items-center justify-between text-xs"
+                      variant="widget"
+                      padding="none"
+                      className="px-3 py-2 flex items-center justify-between text-xs"
                     >
                       <span className="text-zinc-300 font-medium">{s.name}</span>
                       <span className={cn("font-mono font-bold flex items-center gap-1.5", cfg.text)}>
                         <span className={cn("w-1.5 h-1.5 rounded-full", cfg.dot)} />
                         {cfg.label}
                       </span>
-                    </div>
+                    </Card>
                   );
                 })}
               </div>
-            </div>
+            </Card>
 
             {/* Installed guilds summary card */}
-            <div className="p-6 rounded-2xl bg-zinc-900/60 border border-zinc-800 space-y-4">
+            <Card variant="default" padding="none" className="p-6 space-y-4">
               <div className="flex items-center justify-between">
                 <h3 className="text-xs font-bold text-zinc-300 uppercase tracking-wider flex items-center gap-2">
                   <Server className="w-4 h-4 text-purple-400" />
@@ -138,9 +141,11 @@ export default function OverviewGroup({
 
               <div className="space-y-2">
                 {servers.map((g) => (
-                  <div
+                  <Card
                     key={g.id}
-                    className="px-3 py-2 rounded-xl bg-zinc-950/60 border border-zinc-800/80 flex items-center justify-between text-xs"
+                    variant="widget"
+                    padding="none"
+                    className="px-3 py-2 flex items-center justify-between text-xs"
                   >
                     <div className="flex items-center gap-2">
                       <div className="w-6 h-6 rounded-full bg-zinc-800 flex items-center justify-center text-[10px] font-bold text-white">
@@ -149,14 +154,14 @@ export default function OverviewGroup({
                       <span className="text-zinc-200 font-medium truncate max-w-[140px]">{g.name}</span>
                     </div>
                     <span className="text-zinc-400 font-mono text-[11px]">{g.memberCount} membres</span>
-                  </div>
+                  </Card>
                 ))}
               </div>
-            </div>
+            </Card>
           </div>
 
           {/* Modules Grid — real per-guild toggles, same data as /module on Discord */}
-          <div className="p-6 rounded-2xl bg-zinc-900/60 border border-zinc-800 space-y-4">
+          <Card variant="default" padding="none" className="p-6 space-y-4">
             <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4">
               <div>
                 <h3 className="text-sm font-bold text-white flex items-center gap-2">
@@ -216,9 +221,11 @@ export default function OverviewGroup({
                   const ModIcon = MODULE_ICONS[m.icon] || Layers;
                   const disabled = m.available === false || togglingModuleId === m.id;
                   return (
-                    <div
+                    <Card
                       key={m.id}
-                      className="p-4 rounded-xl bg-zinc-950/60 border border-zinc-800/80 hover:border-zinc-700 transition-all flex flex-col justify-between gap-3"
+                      variant="widget"
+                      padding="md"
+                      className="hover:border-[var(--accent-primary)]/20 transition-all flex flex-col justify-between gap-3"
                     >
                       <div>
                         <div className="flex items-center justify-between gap-2 mb-1.5">
@@ -251,17 +258,17 @@ export default function OverviewGroup({
                         </div>
                         <p className="text-[11px] text-zinc-400 line-clamp-2">{m.description}</p>
                       </div>
-                    </div>
+                    </Card>
                   );
                 })}
               </div>
             )}
-          </div>
+          </Card>
         </div>
       )}
 
       {activeTab === "presence" && (
-        <div className="p-8 rounded-2xl bg-zinc-900/60 border border-zinc-800 text-center space-y-4">
+        <Card variant="default" padding="none" className="p-8 text-center space-y-4">
           <div className="w-12 h-12 rounded-xl bg-indigo-500/10 text-indigo-400 flex items-center justify-center mx-auto">
             <Sparkles className="w-6 h-6" />
           </div>
@@ -278,7 +285,7 @@ export default function OverviewGroup({
             <span>Accéder au Centre de Présence</span>
             <ArrowRight className="w-4 h-4" />
           </Link>
-        </div>
+        </Card>
       )}
     </>
   );

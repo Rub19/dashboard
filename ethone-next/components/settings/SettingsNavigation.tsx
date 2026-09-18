@@ -178,7 +178,7 @@ export default function SettingsNavigation({
               : "bg-[var(--surface-raised)]/70 text-[var(--text-muted)] group-hover:text-[var(--text-primary)]"
           )}
         >
-          <Icon name={cat.icon} className="h-4 w-4" aria-hidden="true" />
+          <Icon name={cat.icon} className="h-[18px] w-[18px]" aria-hidden="true" />
         </span>
         <span className="relative z-10 flex min-w-0 flex-1 flex-col items-start text-left">
           <span className="truncate text-[13px] leading-tight">{cat.label}</span>

@@ -2,6 +2,7 @@
 
 import { Radio, Wifi, AlertCircle, RefreshCw, ListRestart, Terminal, Search } from "lucide-react";
 import { cn } from "@/lib/utils";
+import Card from "@/components/ui/Card";
 import type { BotTab } from "@/app/discord/bot/BotControlClient";
 
 interface OperationsGroupProps {
@@ -63,7 +64,7 @@ export default function OperationsGroup({
     <>
       {activeTab === "events" && (
         <div className="space-y-6">
-          <div className="p-6 rounded-2xl bg-zinc-900/60 border border-zinc-800 space-y-4">
+          <Card variant="default" padding="none" className="p-6 space-y-4">
             <div className="flex items-center justify-between">
               <div>
                 <h3 className="text-sm font-bold text-white flex items-center gap-2">
@@ -98,13 +99,13 @@ export default function OperationsGroup({
                 </div>
               ))}
             </div>
-          </div>
+          </Card>
         </div>
       )}
 
       {activeTab === "integrations" && (
         <div className="space-y-6">
-          <div className="p-6 rounded-2xl bg-zinc-900/60 border border-zinc-800 space-y-6">
+          <Card variant="default" padding="none" className="p-6 space-y-6">
             <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 pb-4 border-b border-zinc-800">
               <div>
                 <h3 className="text-base font-bold text-white flex items-center gap-2">
@@ -189,13 +190,13 @@ export default function OperationsGroup({
                 })}
               </div>
             )}
-          </div>
+          </Card>
         </div>
       )}
 
       {activeTab === "jobs" && (
         <div className="space-y-6">
-          <div className="p-6 rounded-2xl bg-zinc-900/60 border border-zinc-800 space-y-6">
+          <Card variant="default" padding="none" className="p-6 space-y-6">
             <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 pb-4 border-b border-zinc-800">
               <div>
                 <h3 className="text-base font-bold text-white flex items-center gap-2">
@@ -279,12 +280,12 @@ export default function OperationsGroup({
                 ))}
               </div>
             )}
-          </div>
+          </Card>
         </div>
       )}
 
       {activeTab === "commands" && (
-        <div className="p-6 rounded-2xl bg-zinc-900/60 border border-zinc-800 space-y-4">
+        <Card variant="default" padding="none" className="p-6 space-y-4">
           <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4">
             <div>
               <h3 className="text-sm font-bold text-white flex items-center gap-2">
@@ -352,7 +353,7 @@ export default function OperationsGroup({
               );
             })}
           </div>
-        </div>
+        </Card>
       )}
     </>
   );

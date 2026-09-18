@@ -186,6 +186,30 @@ export default function HealthGroup({
                 </span>
               </div>
             </div>
+
+            {/* Live Throughput — events/commands come from real counters wired
+                into the gateway/command dispatch; DB queries counts real
+                fs.readFileSync/writeFileSync calls (this bot persists to JSON
+                files, not a SQL database); AI tokens comes from the real
+                per-request AI usage tracker. */}
+            <div className="grid grid-cols-2 lg:grid-cols-4 gap-4">
+              <div className="p-4 rounded-xl bg-zinc-950/60 border border-zinc-800/80 space-y-1">
+                <span className="text-[10px] text-zinc-400 block">Événements Gateway</span>
+                <span className="text-sm font-bold font-mono text-white">{perfMetrics.eventsPerMinute}/min</span>
+              </div>
+              <div className="p-4 rounded-xl bg-zinc-950/60 border border-zinc-800/80 space-y-1">
+                <span className="text-[10px] text-zinc-400 block">Commandes Exécutées</span>
+                <span className="text-sm font-bold font-mono text-white">{perfMetrics.commandsPerMinute}/min</span>
+              </div>
+              <div className="p-4 rounded-xl bg-zinc-950/60 border border-zinc-800/80 space-y-1">
+                <span className="text-[10px] text-zinc-400 block">Lectures/Écritures Fichiers</span>
+                <span className="text-sm font-bold font-mono text-white">{perfMetrics.dbQueriesPerMinute}/min</span>
+              </div>
+              <div className="p-4 rounded-xl bg-zinc-950/60 border border-zinc-800/80 space-y-1">
+                <span className="text-[10px] text-zinc-400 block">Tokens IA Consommés</span>
+                <span className="text-sm font-bold font-mono text-white">{perfMetrics.aiTokensPerMinute}/min</span>
+              </div>
+            </div>
           </div>
         </div>
       )}

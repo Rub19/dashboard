@@ -12,6 +12,15 @@ export class BotAiMonitorService {
   private latencySumMs = 0;
   private failuresToday = 0;
   private fallbackActive = false;
+  private tokensThisMinute = 0;
+  private currentTokensPerMin = 0;
+
+  private constructor() {
+    setInterval(() => {
+      this.currentTokensPerMin = this.tokensThisMinute;
+      this.tokensThisMinute = 0;
+    }, 60000);
+  }
 
   public static getInstance(): BotAiMonitorService {
     if (!BotAiMonitorService.instance) {
@@ -24,7 +33,12 @@ export class BotAiMonitorService {
     this.totalTokensToday += totalTokens;
     this.requestsToday++;
     this.latencySumMs += latencyMs;
+    this.tokensThisMinute += totalTokens;
     if (!success) this.failuresToday++;
+  }
+
+  public getTokensPerMinute(): number {
+    return this.currentTokensPerMin;
   }
 
   public setFallbackActive(active: boolean) {

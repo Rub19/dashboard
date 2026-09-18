@@ -559,6 +559,10 @@ export default function BotControlClient({ initialTab = "overview" }: BotControl
     cpuUsagePercent: 1.4,
     eventLoopLagMs: 0.8,
     activeAudioStreams: 0,
+    eventsPerMinute: 0,
+    commandsPerMinute: 0,
+    dbQueriesPerMinute: 0,
+    aiTokensPerMinute: 0,
   });
   const [optimizingMemory, setOptimizingMemory] = useState(false);
 
@@ -945,6 +949,10 @@ export default function BotControlClient({ initialTab = "overview" }: BotControl
               rssMb: snapshot.memory.rssMb ?? prev.rssMb,
               cpuUsagePercent: snapshot.cpuPercent ?? prev.cpuUsagePercent,
               eventLoopLagMs: snapshot.eventLoopDelayMs ?? prev.eventLoopLagMs,
+              eventsPerMinute: snapshot.throughput?.eventsPerMinute ?? prev.eventsPerMinute,
+              commandsPerMinute: snapshot.throughput?.commandsPerMinute ?? prev.commandsPerMinute,
+              dbQueriesPerMinute: snapshot.throughput?.dbQueriesPerMinute ?? prev.dbQueriesPerMinute,
+              aiTokensPerMinute: snapshot.throughput?.aiTokensPerMinute ?? prev.aiTokensPerMinute,
             }));
           }
           if (globalStatus?.subsystems) {

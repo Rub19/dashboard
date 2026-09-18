@@ -5,6 +5,7 @@ import {
   BotTelemetrySnapshot,
   SubsystemStatus,
 } from '../types/index.js';
+import { BotAiMonitorService } from './botAiMonitorService.js';
 
 export interface BotPerformanceSample {
   timestamp: string;
@@ -22,9 +23,11 @@ export class BotTelemetryService {
   private startTime = Date.now();
   private eventCounter = 0;
   private commandCounter = 0;
+  private dbQueryCounter = 0;
   private lastThroughputReset = Date.now();
   private currentEventsPerMin = 0;
   private currentCommandsPerMin = 0;
+  private currentDbQueriesPerMin = 0;
   private lastEventLoopLagMs = 0;
   // Ring buffer of real sampled points, one every ~30s — bounded at 24h of
   // history (2880 * 30s). Replaces the previous sine-wave-generated fake
@@ -96,12 +99,23 @@ export class BotTelemetryService {
     this.commandCounter++;
   }
 
+  // Called from utils/fsActivityCounter.ts's fs.readFileSync/writeFileSync
+  // patch — this bot persists everything as JSON files, not a SQL/Mongo
+  // database, so a real file-read/write count is the honest equivalent of
+  // "DB queries" here. See that file for why a global patch was used
+  // instead of instrumenting ~30 storage classes individually.
+  public incrementDbQueryCount() {
+    this.dbQueryCounter++;
+  }
+
   private refreshThroughput() {
     const elapsedMinutes = Math.max(1, (Date.now() - this.lastThroughputReset) / 60000);
     this.currentEventsPerMin = Math.round(this.eventCounter / elapsedMinutes);
     this.currentCommandsPerMin = Math.round(this.commandCounter / elapsedMinutes);
+    this.currentDbQueriesPerMin = Math.round(this.dbQueryCounter / elapsedMinutes);
     this.eventCounter = 0;
     this.commandCounter = 0;
+    this.dbQueryCounter = 0;
     this.lastThroughputReset = Date.now();
   }
 
@@ -214,12 +228,8 @@ export class BotTelemetryService {
       throughput: {
         eventsPerMinute: this.currentEventsPerMin,
         commandsPerMinute: this.currentCommandsPerMin,
-        // Not tracked: no unified DB query wrapper exists to hook a counter
-        // into (same gap as the security audit's incident aggregation) —
-        // left as a disclosed static placeholder rather than fabricated
-        // per-minute noise.
-        dbQueriesPerMinute: 0,
-        aiTokensPerMinute: 0,
+        dbQueriesPerMinute: this.currentDbQueriesPerMin,
+        aiTokensPerMinute: BotAiMonitorService.getInstance().getTokensPerMinute(),
       },
       guildsCount: client?.guilds.cache.size || 1,
       cachedUsersCount: client?.users.cache.size || 48,

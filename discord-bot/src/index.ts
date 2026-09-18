@@ -1,3 +1,4 @@
+import './utils/fsActivityCounter.js';
 import { Client, GatewayIntentBits, Partials } from 'discord.js';
 import { config } from './config.js';
 import { registerEvents } from './handlers/eventHandler.js';

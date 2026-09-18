@@ -143,6 +143,34 @@ export function createBotControlRouter(client: Client): Router {
     }
   });
 
+  // Memory optimization — triggers a real V8 GC pass when the process was
+  // started with --expose-gc (the pm2/node start command doesn't pass that
+  // flag by default, so gcTriggered will usually be false; either way the
+  // before/after numbers reported back are real process.memoryUsage(), not
+  // a fabricated shrink).
+  router.post('/performance/optimize', (req: Request, res: Response) => {
+    try {
+      const before = process.memoryUsage();
+      const gcTriggered = typeof global.gc === 'function';
+      if (gcTriggered) {
+        global.gc!();
+      }
+      const after = process.memoryUsage();
+      res.json({
+        success: true,
+        data: {
+          gcTriggered,
+          heapUsedMbBefore: Math.round((before.heapUsed / 1024 / 1024) * 10) / 10,
+          heapUsedMbAfter: Math.round((after.heapUsed / 1024 / 1024) * 10) / 10,
+          heapTotalMbAfter: Math.round((after.heapTotal / 1024 / 1024) * 10) / 10,
+          rssMbAfter: Math.round((after.rss / 1024 / 1024) * 10) / 10,
+        },
+      });
+    } catch (err: any) {
+      res.status(500).json({ success: false, error: err.message });
+    }
+  });
+
   // AI Center
   router.get('/ai', (req: Request, res: Response) => {
     try {

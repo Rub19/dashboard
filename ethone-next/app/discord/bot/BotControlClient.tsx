@@ -466,6 +466,8 @@ export default function BotControlClient({ initialTab = "overview" }: BotControl
     score: 100,
     intents: { guildMembers: true, messageContent: true, guildPresences: true },
     adminGuildsCount: 0,
+    suspiciousRoleCreations24h: 0,
+    unauthorizedAttempts24h: 0,
   });
 
   // Dedicated AI Channel, Humeur du Thon & Banned Words State
@@ -719,14 +721,25 @@ export default function BotControlClient({ initialTab = "overview" }: BotControl
   const handleOptimizeMemory = async () => {
     setOptimizingMemory(true);
     try {
-      await new Promise((r) => setTimeout(r, 800));
+      if (!BOT_API_URL) throw new Error("no backend configured");
+      const res = await fetch(`${BOT_API_URL}/api/bot/performance/optimize`, {
+        method: "POST",
+        credentials: "include",
+      });
+      const data = await res.json();
+      if (!res.ok || !data?.success) throw new Error("optimize failed");
+      const d = data.data;
       setPerfMetrics((prev) => ({
         ...prev,
-        heapUsedMb: Math.max(32, +(prev.heapUsedMb * 0.85).toFixed(1)),
-        rssMb: Math.max(65, +(prev.rssMb * 0.9).toFixed(1)),
+        heapUsedMb: d.heapUsedMbAfter ?? prev.heapUsedMb,
+        heapTotalMb: d.heapTotalMbAfter ?? prev.heapTotalMb,
+        rssMb: d.rssMbAfter ?? prev.rssMb,
       }));
-      (toast as any)?.success?.("Cache optimisé et mémoire RAM défragmentée !") ||
-      (toast as any)?.info?.("Mémoire optimisée avec succès !");
+      if (d.gcTriggered) {
+        (toast as any)?.success?.("Garbage collection forcé — mémoire réellement libérée.");
+      } else {
+        (toast as any)?.info?.("Chiffres actualisés (GC non exposé sur ce process, aucune mémoire forcée à libérer).");
+      }
     } catch {
       (toast as any)?.error?.("Erreur lors de l'optimisation.");
     } finally {
@@ -977,6 +990,8 @@ export default function BotControlClient({ initialTab = "overview" }: BotControl
             score: s.score ?? 100,
             intents: s.intents || { guildMembers: false, messageContent: false, guildPresences: false },
             adminGuildsCount: s.adminGuildsCount ?? 0,
+            suspiciousRoleCreations24h: s.suspiciousRoleCreations24h ?? 0,
+            unauthorizedAttempts24h: s.unauthorizedAttempts24h ?? 0,
           });
         }
       }
@@ -2865,6 +2880,20 @@ export default function BotControlClient({ initialTab = "overview" }: BotControl
               <div className="flex items-center justify-between pt-4 border-t border-zinc-800 text-[11px] text-zinc-400">
                 <span>Présence (intent GuildPresences) : {securityAudit.intents.guildPresences ? "Activé" : "Désactivé"}</span>
                 <span>{securityAudit.adminGuildsCount} serveur(s) surveillé(s)</span>
+              </div>
+              <div className="grid grid-cols-2 gap-4 text-[11px]">
+                <div className="p-3 rounded-xl bg-zinc-950/60 border border-zinc-800/80 flex items-center justify-between">
+                  <span className="text-zinc-400">Créations de rôles suspectes (24h)</span>
+                  <span className={cn("font-mono font-bold", securityAudit.suspiciousRoleCreations24h > 0 ? "text-amber-400" : "text-emerald-400")}>
+                    {securityAudit.suspiciousRoleCreations24h}
+                  </span>
+                </div>
+                <div className="p-3 rounded-xl bg-zinc-950/60 border border-zinc-800/80 flex items-center justify-between">
+                  <span className="text-zinc-400">Tentatives non autorisées (24h)</span>
+                  <span className={cn("font-mono font-bold", securityAudit.unauthorizedAttempts24h > 0 ? "text-amber-400" : "text-emerald-400")}>
+                    {securityAudit.unauthorizedAttempts24h}
+                  </span>
+                </div>
               </div>
             </div>
           </div>

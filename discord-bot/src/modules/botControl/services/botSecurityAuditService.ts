@@ -1,13 +1,25 @@
 import { Client, GatewayIntentBits } from 'discord.js';
 import { BotSecurityAuditReport } from '../types/index.js';
+import { securityStorage } from '../../security/storage/securityStorage.js';
 
-// suspiciousRoleCreations24h/unauthorizedAttempts24h/tokenLeakedInLogs are
-// NOT wired to real detection here — doing so properly means aggregating
-// modules/security's per-guild incident storage across every guild the bot
-// is in (no cross-guild aggregation point exists today), and log-scanning
-// for leaked tokens is a genuinely separate feature. Left as explicit,
-// disclosed zeros/false rather than a fabricated non-zero number. intents
-// and score below ARE real — no reason those needed to stay fake too.
+const UNAUTHORIZED_ATTEMPT_TYPES = new Set([
+  'MASS_BAN',
+  'MASS_KICK',
+  'MASS_CHANNEL_DELETE',
+  'MASS_ROLE_DELETE',
+  'SUSPICIOUS_BOT',
+  'DANGEROUS_PERMS',
+]);
+
+const DAY_MS = 24 * 60 * 60 * 1000;
+
+// tokenLeakedInLogs is NOT wired to real detection here — that needs actual
+// log-scanning infrastructure (persisted, queryable logs), which doesn't
+// exist today; a genuinely separate feature. Left as an explicit, disclosed
+// false rather than a fabricated value. Everything else below is real:
+// intents, score, and (via modules/security's per-guild incident storage,
+// aggregated across every guild the client is currently in) the role
+// creation / unauthorized attempt counts.
 export class BotSecurityAuditService {
   private static instance: BotSecurityAuditService;
 
@@ -28,8 +40,10 @@ export class BotSecurityAuditService {
       guildPresences: enabledIntents?.has(GatewayIntentBits.GuildPresences) ?? false,
     };
 
-    const suspiciousRoleCreations24h = 0;
-    const unauthorizedAttempts24h = 0;
+    const guildIds = client ? Array.from(client.guilds.cache.keys()) : [];
+    const recentIncidents = securityStorage.getIncidentsAcrossGuilds(guildIds, DAY_MS);
+    const suspiciousRoleCreations24h = recentIncidents.filter((i) => i.type === 'MASS_ROLE_CREATE').length;
+    const unauthorizedAttempts24h = recentIncidents.filter((i) => UNAUTHORIZED_ATTEMPT_TYPES.has(i.type)).length;
     const tokenLeakedInLogs = false;
 
     // 100 minus a real deduction per missing intent the bot actually relies

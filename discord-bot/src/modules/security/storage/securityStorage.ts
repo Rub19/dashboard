@@ -100,6 +100,25 @@ class SecurityStorage {
     return list;
   }
 
+  // Cross-guild aggregation for the Bot Control security audit (see
+  // botSecurityAuditService.ts) — only guilds the client is currently in are
+  // scanned, so a guild the bot was kicked from doesn't keep inflating the
+  // count forever.
+  public getIncidentsAcrossGuilds(guildIds: string[], sinceMs: number): SecurityIncident[] {
+    const cutoff = Date.now() - sinceMs;
+    const result: SecurityIncident[] = [];
+    for (const guildId of guildIds) {
+      const list = this.incidents.get(guildId);
+      if (!list) continue;
+      for (const inc of list) {
+        if (new Date(inc.createdAt).getTime() >= cutoff) {
+          result.push(inc);
+        }
+      }
+    }
+    return result;
+  }
+
   public addIncident(
     guildId: string,
     incidentData: Omit<SecurityIncident, 'id' | 'createdAt' | 'perpetratorId' | 'perpetratorTag' | 'resolvedAt'> & {

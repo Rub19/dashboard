@@ -25,23 +25,33 @@ import { logger } from '../../../utils/logger.js';
  *                         datacenter traffic.
  */
 
-const YT_DLP_PATH = process.env.YT_DLP_PATH || 'yt-dlp';
-const COOKIES_FILE = process.env.YT_DLP_COOKIES_FILE || '';
-// Free-form extra flags, e.g. `--extractor-args youtube:player_client=tv,web_safari`
-// when YouTube breaks the default client ("The page needs to be reloaded").
-// Split on whitespace; quote-free values only.
-export const EXTRA_ARGS = (process.env.YT_DLP_EXTRA_ARGS || '').split(/\s+/).filter(Boolean);
-// YouTube now gates format URLs behind an "n" JavaScript challenge; yt-dlp only
-// enables the Deno runtime by default and silently ends up with zero formats
-// ("The page needs to be reloaded") without one. The bot already runs under
-// Node, so hand yt-dlp our own binary (override with YT_DLP_JS_RUNTIME, e.g.
-// "deno", or set it to "off" to opt out). The challenge-solver scripts are
-// fetched once from GitHub and cached by yt-dlp (YT_DLP_REMOTE_EJS=0 to skip).
-const JS_RUNTIME = process.env.YT_DLP_JS_RUNTIME || `node:${process.execPath}`;
-export const EJS_ARGS =
-  JS_RUNTIME === 'off'
-    ? []
-    : ['--js-runtimes', JS_RUNTIME, ...(process.env.YT_DLP_REMOTE_EJS === '0' ? [] : ['--remote-components', 'ejs:github'])];
+// Everything below reads process.env *at call time*, never at import time:
+// this module can be pulled in (via the telemetry fs patch → services graph)
+// before config.ts has run dotenv.config(), in which case module-level
+// constants would freeze YT_DLP_COOKIES_FILE as '' for the whole process —
+// the bot then hits YouTube's bot wall while `npm run music:doctor` (env
+// passed explicitly) works fine.
+const ytDlpPath = (): string => process.env.YT_DLP_PATH || 'yt-dlp';
+const cookiesArgs = (): string[] => (process.env.YT_DLP_COOKIES_FILE ? ['--cookies', process.env.YT_DLP_COOKIES_FILE] : []);
+// Free-form extra flags, e.g. `--extractor-args youtube:player_client=default,web_embedded`
+// when YouTube breaks the default client. Split on whitespace; quote-free values only.
+export const extraArgs = (): string[] => (process.env.YT_DLP_EXTRA_ARGS || '').split(/\s+/).filter(Boolean);
+// YouTube gates format URLs behind an "n" JavaScript challenge; yt-dlp only
+// enables the Deno runtime by default and ends up with zero formats ("The page
+// needs to be reloaded") without one. The bot already runs under Node, so hand
+// yt-dlp our own binary (override with YT_DLP_JS_RUNTIME, e.g. "deno", or "off").
+// The challenge-solver scripts are fetched once from GitHub and cached by
+// yt-dlp (YT_DLP_REMOTE_EJS=0 to skip).
+export const ejsArgs = (): string[] => {
+  const runtime = process.env.YT_DLP_JS_RUNTIME || `node:${process.execPath}`;
+  if (runtime === 'off') return [];
+  return ['--js-runtimes', runtime, ...(process.env.YT_DLP_REMOTE_EJS === '0' ? [] : ['--remote-components', 'ejs:github'])];
+};
+
+/** What the bot will actually pass to yt-dlp — surfaced in logs at startup. */
+export function describeYtDlpConfig(): string {
+  return `binaire=${ytDlpPath()} cookies=${process.env.YT_DLP_COOKIES_FILE || 'AUCUN'} js=${process.env.YT_DLP_JS_RUNTIME || `node:${process.execPath}`} extra=${extraArgs().join(' ') || '-'}`;
+}
 
 let availabilityProbe: Promise<boolean> | null = null;
 
@@ -50,7 +60,7 @@ export function ytDlpAvailable(): Promise<boolean> {
   if (!availabilityProbe) {
     availabilityProbe = new Promise<boolean>((resolve) => {
       try {
-        const proc = spawn(YT_DLP_PATH, ['--version'], { stdio: 'ignore' });
+        const proc = spawn(ytDlpPath(), ['--version'], { stdio: 'ignore' });
         proc.on('error', () => resolve(false));
         proc.on('close', (code) => resolve(code === 0));
       } catch {
@@ -59,7 +69,7 @@ export function ytDlpAvailable(): Promise<boolean> {
     }).then((ok) => {
       if (!ok) {
         logger.error(
-          `[ytdlp] Binaire "${YT_DLP_PATH}" introuvable ou non exécutable. La lecture de musique ne fonctionnera pas — installe-le sur le serveur (apt install yt-dlp / pipx install yt-dlp) ou définis YT_DLP_PATH.`,
+          `[ytdlp] Binaire "${ytDlpPath()}" introuvable ou non exécutable. La lecture de musique ne fonctionnera pas — installe-le sur le serveur (apt install yt-dlp / pipx install yt-dlp) ou définis YT_DLP_PATH.`,
         );
       }
       return ok;
@@ -118,12 +128,12 @@ export async function ytDlpLookup(input: string, limit = 5): Promise<YtDlpEntry[
     String(Math.max(1, limit)),
     '--socket-timeout',
     '15',
-    ...(COOKIES_FILE ? ['--cookies', COOKIES_FILE] : []),
-    ...EXTRA_ARGS,
+    ...cookiesArgs(),
+    ...extraArgs(),
     input,
   ];
   const json = await new Promise<string>((resolve) => {
-    const proc = spawn(YT_DLP_PATH, args, { stdio: ['ignore', 'pipe', 'pipe'] });
+    const proc = spawn(ytDlpPath(), args, { stdio: ['ignore', 'pipe', 'pipe'] });
     let out = '';
     let err = '';
     proc.stdout?.on('data', (c: Buffer) => (out += c.toString()));
@@ -174,16 +184,16 @@ export async function createYtDlpStream(input: string): Promise<Readable | null>
     '3',
     '--socket-timeout',
     '15',
-    ...(COOKIES_FILE ? ['--cookies', COOKIES_FILE] : []),
-    ...EJS_ARGS,
-    ...EXTRA_ARGS,
+    ...cookiesArgs(),
+    ...ejsArgs(),
+    ...extraArgs(),
     // Stream to stdout.
     '-o',
     '-',
     input,
   ];
 
-  const proc = spawn(YT_DLP_PATH, args, { stdio: ['ignore', 'pipe', 'pipe'] });
+  const proc = spawn(ytDlpPath(), args, { stdio: ['ignore', 'pipe', 'pipe'] });
 
   let stderrTail = '';
   let bytesOut = 0;

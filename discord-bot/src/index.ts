@@ -1,6 +1,8 @@
+// config.js runs dotenv.config() — it MUST be evaluated before any module that
+// reads process.env at import time, so it stays the very first import.
+import { config } from './config.js';
 import './utils/fsActivityCounter.js';
 import { Client, GatewayIntentBits, Partials } from 'discord.js';
-import { config } from './config.js';
 import { registerEvents } from './handlers/eventHandler.js';
 import { startWebServer } from './server/index.js';
 import { logger } from './utils/logger.js';

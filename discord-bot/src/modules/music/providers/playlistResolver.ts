@@ -4,8 +4,9 @@ import { logger } from '../../../utils/logger.js';
 import type { Track, TrackRequester } from '../types/music.js';
 import { ytDlpAvailable } from './ytdlpStream.js';
 
-const YT_DLP_PATH = process.env.YT_DLP_PATH || 'yt-dlp';
-const COOKIES_FILE = process.env.YT_DLP_COOKIES_FILE || '';
+// Read at call time (see ytdlpStream.ts: dotenv may run after this import).
+const ytDlpPath = (): string => process.env.YT_DLP_PATH || 'yt-dlp';
+const cookiesArgs = (): string[] => (process.env.YT_DLP_COOKIES_FILE ? ['--cookies', process.env.YT_DLP_COOKIES_FILE] : []);
 // Guard rails so one `/play <playlist>` can't enqueue thousands of tracks.
 const MAX_PLAYLIST_TRACKS = 100;
 
@@ -51,10 +52,10 @@ export async function expandYouTubePlaylist(url: string, requestedBy: TrackReque
       '--quiet',
       '--playlist-end',
       String(MAX_PLAYLIST_TRACKS),
-      ...(COOKIES_FILE ? ['--cookies', COOKIES_FILE] : []),
+      ...cookiesArgs(),
       url,
     ];
-    const proc = spawn(YT_DLP_PATH, args, { stdio: ['ignore', 'pipe', 'ignore'] });
+    const proc = spawn(ytDlpPath(), args, { stdio: ['ignore', 'pipe', 'ignore'] });
     let out = '';
     proc.stdout?.on('data', (c: Buffer) => (out += c.toString()));
     proc.on('error', () => resolve(''));

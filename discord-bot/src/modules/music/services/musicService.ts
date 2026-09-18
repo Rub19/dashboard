@@ -3,6 +3,7 @@ import { GuildMusicPlayer } from './guildMusicPlayer.js';
 import { GuildMusicState, MusicPlaylist, MusicSettings, MusicStats, RepeatMode, Track } from '../types/music.js';
 import { musicPersistence } from '../storage/musicPersistence.js';
 import { musicProviderManager } from '../providers/musicProvider.js';
+import { describeYtDlpConfig } from '../providers/ytdlpStream.js';
 import { MusicPermissionService } from './musicPermissionService.js';
 import { musicEventBus } from './musicEventBus.js';
 import { logger } from '../../../utils/logger.js';
@@ -14,6 +15,7 @@ class MusicService {
   public async initialize(client: Client): Promise<void> {
     this.client = client;
     logger.info('[MusicService] Initialisé et synchronisé avec le client Discord.');
+    logger.info(`[MusicService] yt-dlp → ${describeYtDlpConfig()}`);
     await this.restoreQueuesFromDisk(client);
   }
 

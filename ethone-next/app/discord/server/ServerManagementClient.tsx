@@ -1163,7 +1163,12 @@ export default function ServerManagementClient({
     setDebugging(true);
     try {
       if (BOT_API_URL) {
-        const res = await fetch(`${BOT_API_URL}/api/guilds/${guildId}/server/permissions/debug?userId=${debugUserId}&channelId=${debugChannelId}&permission=${debugPermKey}`, { credentials: "include" });
+        const res = await fetch(`${BOT_API_URL}/api/guilds/${guildId}/server/permissions/debug`, {
+          method: "POST",
+          credentials: "include",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify({ userId: debugUserId, channelId: debugChannelId, permission: debugPermKey }),
+        });
         if (res.ok) {
           const json = await res.json();
           setDebugResult(json);
@@ -1285,7 +1290,7 @@ export default function ServerManagementClient({
       if (BOT_API_URL) {
         const res = await fetch(`${BOT_API_URL}/api/guilds/${guildId}/server/settings`, {
           credentials: "include",
-          method: "PATCH",
+          method: "PUT",
           headers: { "Content-Type": "application/json" },
           body: JSON.stringify(settings),
         });

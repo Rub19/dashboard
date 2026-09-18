@@ -297,7 +297,15 @@ async function runResilienceTests() {
 
     assert(reconReport.divergences.length > 0, 'Ghost resource detected during reconciliation');
     assert(reconReport.divergences[0].type === 'MISSING_DISCORD_RESOURCE', 'Divergence correctly typed as MISSING_DISCORD_RESOURCE');
-    assert(reconReport.repairedCount > 0, 'Ghost resource automatically repaired');
+
+    // reconcileGuild() only detects — it never mutates state on its own (by
+    // design: no silent auto-repair without an explicit, logged action).
+    // The actual repair is a separate, deliberate call.
+    const repairResult = await reconciliationEngine.executeRepair(GUILD_ID, {
+      module: 'welcome',
+      action: 'UNLINK_CHANNEL',
+    });
+    assert(repairResult.repaired === true, 'Ghost resource repaired via explicit executeRepair() call');
 
     const configAfterRecon = welcomeRepository.getConfig(GUILD_ID);
     assert(configAfterRecon.welcome.channelId === null, 'Invalid channel cleared from DB to prevent runtime crash');
@@ -465,9 +473,7 @@ async function runResilienceTests() {
   console.log(`🏁 RESILIENCE TEST SUMMARY: ${passedTests} PASSED, ${failedTests} FAILED`);
   console.log('================================================================\n');
 
-  if (failedTests > 0) {
-    process.exit(1);
-  }
+  process.exit(failedTests > 0 ? 1 : 0);
 }
 
 runResilienceTests().catch((err) => {

@@ -36,13 +36,16 @@ export class BotTelemetryService {
   private readonly maxPerformanceSamples = 2880;
 
   private constructor() {
-    // Collect rolling ping samples periodically
+    // .unref() on both — same convention as xpWriteBuffer.ts's flush timer:
+    // these are live-telemetry conveniences, not work the process needs to
+    // stay alive for, so they shouldn't block a clean exit (a test script,
+    // a graceful shutdown, etc.).
     setInterval(() => {
       this.refreshThroughput();
-    }, 60000);
+    }, 60000).unref();
     setInterval(() => {
       this.samplePerformance();
-    }, 30000);
+    }, 30000).unref();
   }
 
   private samplePerformance() {

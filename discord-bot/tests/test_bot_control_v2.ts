@@ -9,6 +9,7 @@ import { BotIntegrationsService } from '../src/modules/botControl/services/botIn
 import { BotSecurityAuditService } from '../src/modules/botControl/services/botSecurityAuditService.js';
 import { BotConfigService } from '../src/modules/botControl/services/botConfigService.js';
 import { createBotControlRouter } from '../src/server/routes/botControlRoutes.js';
+import { GatewayIntentBits } from 'discord.js';
 import express from 'express';
 
 async function runTests() {
@@ -35,7 +36,12 @@ async function runTests() {
   const snapshot = telemetry.getTelemetrySnapshot();
   assert(snapshot.memory.heapUsedMb > 0, 'Heap memory telemetry is positive number');
   assert(snapshot.latency.p50Ms > 0 && snapshot.latency.p95Ms >= snapshot.latency.p50Ms, 'P50 and P95 latency percentiles calculated correctly');
-  assert(snapshot.throughput.eventsPerMinute > 0, 'Event throughput is recorded');
+  // Real throughput (no more fake floor) only refreshes on a 60s interval
+  // (see botTelemetryService.ts's refreshThroughput), so a freshly started
+  // instance legitimately reads 0 here rather than a synchronously-testable
+  // positive number — asserting the field is a valid, well-formed reading is
+  // what's actually testable without a 60s sleep.
+  assert(snapshot.throughput.eventsPerMinute >= 0, 'Event throughput field is a valid non-negative reading');
 
   const subsystems = telemetry.getSubsystemsHealth();
   assert(subsystems.gateway === 'operational', 'Gateway health is operational');
@@ -115,13 +121,46 @@ async function runTests() {
   const pinged = await integrations.testIntegration('integ_discord_rest');
   assert(pinged.latencyMs > 0, 'Live integration ping returns latency');
 
+  // Realistic mock Client — a real discord.js Client's guilds.cache is a
+  // Collection (extends Map, has .keys()/.get()/.size) and options.intents
+  // is an IntentsBitField (has .has()). Reused below for the HTTP route
+  // tests too, so both exercise the same real, non-trivial shape instead of
+  // a bag of plain fields that happens to satisfy only the routes that
+  // don't touch .keys()/.has().
+  const mockGuildsCache = new Map([
+    ['111111111111111111', { id: '111111111111111111', name: 'Test Guild 1' }],
+    ['222222222222222222', { id: '222222222222222222', name: 'Test Guild 2' }],
+  ]);
+  const mockClient = {
+    ws: { ping: 22, shards: { size: 1 } },
+    guilds: { cache: mockGuildsCache },
+    users: { cache: { size: 64 } },
+    options: {
+      intents: {
+        has: (bit: number) =>
+          bit === GatewayIntentBits.GuildMembers || bit === GatewayIntentBits.MessageContent,
+      },
+    },
+  } as any;
+
   // 10. BotSecurityAuditService Tests
   console.log('\n--- 10. Testing BotSecurityAuditService ---');
   const security = BotSecurityAuditService.getInstance();
-  const audit = security.getSecurityAudit();
+  const audit = security.getSecurityAudit(mockClient);
   assert(audit.intents.guildMembers === true, 'Privileged Guild Members intent validated');
   assert(audit.intents.messageContent === true, 'Privileged Message Content intent validated');
+  assert(audit.intents.guildPresences === false, 'Non-granted Guild Presences intent correctly reported as false');
+  assert(audit.adminGuildsCount === 2, 'Guild count reflects the real mock guilds.cache size');
   assert(audit.tokenLeakedInLogs === false, 'Zero leak audit confirms tokens are scrubbed');
+
+  // getSecurityAudit() must also stay safe with no client at all (e.g. before
+  // the gateway has connected) — defaults to the most-restrictive false
+  // rather than throwing or fabricating true.
+  const auditNoClient = security.getSecurityAudit();
+  assert(
+    auditNoClient.intents.guildMembers === false && auditNoClient.intents.messageContent === false,
+    'getSecurityAudit() with no client defaults intents to false, not fabricated true'
+  );
 
   // 11. BotConfigService Tests
   console.log('\n--- 11. Testing BotConfigService ---');
@@ -133,14 +172,11 @@ async function runTests() {
   assert(updatedSettings.maintenanceMode === true && updatedSettings.logLevel === 'debug', 'Bot settings updated successfully');
   configService.updateSettings({ maintenanceMode: false, logLevel: 'info' }); // restore
 
-  // 12. BotControlRouter HTTP Route Tests
+  // 12. BotControlRouter HTTP Route Tests — reuses the same mockClient
+  // constructed above (real Map-backed guilds.cache + a working
+  // options.intents.has()) so the /security route exercises the exact same
+  // shape the assertions above already validated.
   console.log('\n--- 12. Testing BotControlRouter Express Endpoints ---');
-  const mockClient = {
-    ws: { ping: 22, shards: { size: 1 } },
-    guilds: { cache: { size: 2 } },
-    users: { cache: { size: 64 } },
-  } as any;
-
   const app = express();
   app.use(express.json());
   app.use('/api/bot', createBotControlRouter(mockClient));
@@ -176,9 +212,7 @@ async function runTests() {
   console.log(`🏁 TESTS FINISHED: ${passed} PASSED, ${failed} FAILED`);
   console.log('====================================================\n');
 
-  if (failed > 0) {
-    process.exit(1);
-  }
+  process.exit(failed > 0 ? 1 : 0);
 }
 
 runTests().catch((err) => {

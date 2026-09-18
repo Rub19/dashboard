@@ -40,7 +40,10 @@ export class BotSecurityAuditService {
       guildPresences: enabledIntents?.has(GatewayIntentBits.GuildPresences) ?? false,
     };
 
-    const guildIds = client ? Array.from(client.guilds.cache.keys()) : [];
+    const guildIds =
+      client && typeof client.guilds?.cache?.keys === 'function'
+        ? Array.from(client.guilds.cache.keys())
+        : [];
     const recentIncidents = securityStorage.getIncidentsAcrossGuilds(guildIds, DAY_MS);
     const suspiciousRoleCreations24h = recentIncidents.filter((i) => i.type === 'MASS_ROLE_CREATE').length;
     const unauthorizedAttempts24h = recentIncidents.filter((i) => UNAUTHORIZED_ATTEMPT_TYPES.has(i.type)).length;

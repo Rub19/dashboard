@@ -48,3 +48,13 @@ jobs:
       - name: Type-check (tsc)
         run: npm run node:build
         working-directory: discord-bot
+
+      - name: Run test scripts
+        run: npm test
+        working-directory: discord-bot
+        env:
+          # Dummy values — config.ts's zod schema requires these to be
+          # present to boot at all, but the test scripts never make a real
+          # Discord connection with them.
+          DISCORD_TOKEN: ci-placeholder-token
+          CLIENT_ID: '000000000000000000'

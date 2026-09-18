@@ -50,12 +50,17 @@ export function registerEvents(client: Client): void {
   // "events/minute" throughput figure — counts every gateway event the
   // client actually emits, rather than instrumenting each handler below
   // individually. Pure pass-through wrapper, doesn't change dispatch order.
-  const botTelemetryService = BotTelemetryService.getInstance();
-  const originalEmit = client.emit.bind(client);
-  client.emit = ((event: string, ...args: unknown[]) => {
-    botTelemetryService.incrementEventCount();
-    return originalEmit(event, ...args);
-  }) as typeof client.emit;
+  // Guarded: a real discord.js Client always has .emit (it extends
+  // EventEmitter), but a simplified test mock might not — skip patching
+  // rather than throw in that case.
+  if (typeof client.emit === 'function') {
+    const botTelemetryService = BotTelemetryService.getInstance();
+    const originalEmit = client.emit.bind(client);
+    client.emit = ((event: string, ...args: unknown[]) => {
+      botTelemetryService.incrementEventCount();
+      return originalEmit(event, ...args);
+    }) as typeof client.emit;
+  }
 
   // Gateway Lifecycle & Resilience Events
   client.on(Events.ShardDisconnect, (event, shardId) => {

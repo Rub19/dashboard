@@ -16,10 +16,13 @@ export class BotAiMonitorService {
   private currentTokensPerMin = 0;
 
   private constructor() {
+    // .unref() — same convention as xpWriteBuffer.ts's flush timer; this is
+    // a live-telemetry convenience, not work the process needs to stay
+    // alive for.
     setInterval(() => {
       this.currentTokensPerMin = this.tokensThisMinute;
       this.tokensThisMinute = 0;
-    }, 60000);
+    }, 60000).unref();
   }
 
   public static getInstance(): BotAiMonitorService {

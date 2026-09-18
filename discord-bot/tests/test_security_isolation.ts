@@ -560,9 +560,7 @@ async function runSecurityAuditTests() {
   console.log(`🏁 SECURITY AUDIT SUMMARY: ${passedTests} PASSED, ${failedTests} FAILED`);
   console.log('================================================================\n');
 
-  if (failedTests > 0) {
-    process.exit(1);
-  }
+  process.exit(failedTests > 0 ? 1 : 0);
 }
 
 runSecurityAuditTests().catch((err) => {

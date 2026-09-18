@@ -1,6 +1,7 @@
 "use client";
 
-import React, { useState, useMemo } from "react";
+import { useState, useMemo, useEffect, useCallback } from "react";
+import { useSearchParams } from "next/navigation";
 import {
   Lightbulb,
   ThumbsUp,
@@ -12,349 +13,567 @@ import {
   Send,
   MessageSquare,
   Crown,
-  ShieldCheck,
   Hash,
   RefreshCw,
   Kanban,
   X,
+  Trash2,
+  Plus,
 } from "lucide-react";
+import { useToast } from "@/components/ToastProvider";
+import { useDiscordOAuth } from "@/lib/hooks/useDiscordOAuth";
+import { cn } from "@/lib/utils";
 
+const BOT_API_URL = process.env.NEXT_PUBLIC_DISCORD_BOT_API || "";
+
+// Mirrors discord-bot/src/modules/suggestions/types/suggestion.ts — this page
+// reads and writes the real backend shape, not a made-up one.
 type SuggestionStatus =
-  | "PENDING"
-  | "DISCUSSION"
-  | "APPROVED"
-  | "IN_PROGRESS"
-  | "COMPLETED"
-  | "REJECTED";
+  | "pending"
+  | "under_review"
+  | "planned"
+  | "accepted"
+  | "in_progress"
+  | "completed"
+  | "rejected"
+  | "duplicate"
+  | "on_hold";
 
-interface SuggestionItem {
+type SuggestionPriority = "low" | "normal" | "high" | "critical";
+
+interface SuggestionComment {
   id: string;
-  number: number;
+  userId: string;
+  userTag: string;
+  avatarUrl: string | null;
+  content: string;
+  isStaff: boolean;
+  timestamp: string;
+}
+
+interface Suggestion {
+  id: string;
+  numericId: number;
+  guildId: string;
+  authorId: string;
+  authorTag: string;
+  authorAvatarUrl: string | null;
   title: string;
   description: string;
-  author: {
-    username: string;
-    avatar: string;
-  };
-  category: "GÉNÉRAL" | "BOT" | "ÉVÉNEMENTS" | "VOCAL" | "RÈGLEMENT";
+  category: string;
+  tags: string[];
   status: SuggestionStatus;
-  upvotes: number;
-  downvotes: number;
+  priority: SuggestionPriority;
+  upvotesCount: number;
+  downvotesCount: number;
+  score: number;
+  comments: SuggestionComment[];
+  staffResponse: string | null;
+  staffResponderTag: string | null;
   createdAt: string;
-  staffComment?: string;
-  staffAuthor?: string;
+  updatedAt: string;
+}
+
+interface SuggestionOverview {
+  totalCount: number;
+  pendingCount: number;
+  underReviewCount: number;
+  acceptedCount: number;
+  completedCount: number;
+  rejectedCount: number;
+  totalVotes: number;
+  totalComments: number;
+  statusDistribution: Record<string, number>;
+  categoryDistribution: Record<string, number>;
+}
+
+interface SuggestionConfig {
+  enabled: boolean;
+  channelId: string | null;
+  autoThread: boolean;
+  categories: string[];
+  cooldownMinutes: number;
+  dmNotifications: boolean;
+}
+
+const STATUS_META: Record<SuggestionStatus, { label: string; cls: string }> = {
+  pending: { label: "En attente", cls: "bg-amber-500/10 text-amber-400 border-amber-500/20" },
+  under_review: { label: "En discussion", cls: "bg-blue-500/10 text-blue-400 border-blue-500/20" },
+  planned: { label: "Planifiée", cls: "bg-indigo-500/10 text-indigo-400 border-indigo-500/20" },
+  accepted: { label: "Approuvée", cls: "bg-emerald-500/10 text-emerald-400 border-emerald-500/20" },
+  in_progress: { label: "En développement", cls: "bg-purple-500/10 text-purple-400 border-purple-500/20" },
+  completed: { label: "Réalisée", cls: "bg-cyan-500/10 text-cyan-400 border-cyan-500/20" },
+  rejected: { label: "Rejetée", cls: "bg-rose-500/10 text-rose-400 border-rose-500/20" },
+  duplicate: { label: "Doublon", cls: "bg-neutral-500/10 text-neutral-300 border-neutral-500/20" },
+  on_hold: { label: "En pause", cls: "bg-orange-500/10 text-orange-400 border-orange-500/20" },
+};
+
+const PRIORITY_META: Record<SuggestionPriority, { label: string; cls: string }> = {
+  low: { label: "Basse", cls: "text-neutral-400" },
+  normal: { label: "Normale", cls: "text-neutral-300" },
+  high: { label: "Haute", cls: "text-amber-400" },
+  critical: { label: "Critique", cls: "text-rose-400" },
+};
+
+const KANBAN_COLUMNS: Array<{ id: string; label: string; statuses: SuggestionStatus[] }> = [
+  { id: "todo", label: "À examiner", statuses: ["pending", "under_review", "on_hold"] },
+  { id: "doing", label: "Validées / En cours", statuses: ["planned", "accepted", "in_progress"] },
+  { id: "done", label: "Réalisées", statuses: ["completed"] },
+  { id: "closed", label: "Rejetées / Doublons", statuses: ["rejected", "duplicate"] },
+];
+
+const DEFAULT_CONFIG: SuggestionConfig = {
+  enabled: true,
+  channelId: null,
+  autoThread: true,
+  categories: ["Général", "Serveur", "Bot", "Événements", "Communauté"],
+  cooldownMinutes: 5,
+  dmNotifications: true,
+};
+
+const EMPTY_OVERVIEW: SuggestionOverview = {
+  totalCount: 0,
+  pendingCount: 0,
+  underReviewCount: 0,
+  acceptedCount: 0,
+  completedCount: 0,
+  rejectedCount: 0,
+  totalVotes: 0,
+  totalComments: 0,
+  statusDistribution: {},
+  categoryDistribution: {},
+};
+
+const DEMO_SUGGESTIONS: Suggestion[] = [
+  {
+    id: "demo-1", numericId: 142, guildId: "demo", authorId: "u1", authorTag: "AlexDev", authorAvatarUrl: null,
+    title: "Salon vocal permanent pour le gaming nocturne", description: "Un salon « Noctambules » sans limite de participants pour les sessions tardives.",
+    category: "Serveur", tags: [], status: "accepted", priority: "normal", upvotesCount: 68, downvotesCount: 4, score: 64, comments: [],
+    staffResponse: "Approuvé, configuré ce week-end.", staffResponderTag: "Staff", createdAt: new Date(Date.now() - 2 * 86400000).toISOString(), updatedAt: new Date().toISOString(),
+  },
+  {
+    id: "demo-2", numericId: 143, guildId: "demo", authorId: "u2", authorTag: "Kylian", authorAvatarUrl: null,
+    title: "Tournoi mensuel Rocket League 2v2", description: "Chaque premier samedi du mois, tableau éliminatoire et cast en direct.",
+    category: "Événements", tags: [], status: "pending", priority: "high", upvotesCount: 94, downvotesCount: 6, score: 88, comments: [],
+    staffResponse: null, staffResponderTag: null, createdAt: new Date(Date.now() - 3 * 86400000).toISOString(), updatedAt: new Date().toISOString(),
+  },
+];
+
+function formatRelative(iso: string): string {
+  const minutes = Math.round((Date.now() - new Date(iso).getTime()) / 60000);
+  if (minutes < 1) return "à l'instant";
+  if (minutes < 60) return `il y a ${minutes} min`;
+  const hours = Math.round(minutes / 60);
+  if (hours < 24) return `il y a ${hours} h`;
+  const days = Math.round(hours / 24);
+  if (days < 30) return `il y a ${days} j`;
+  return new Date(iso).toLocaleDateString("fr-FR");
 }
 
 export default function SuggestionsCenterClient() {
-  const [activeTab, setActiveTab] = useState<
-    "kanban" | "response_studio" | "settings" | "hall_of_fame"
-  >("kanban");
+  const searchParams = useSearchParams();
+  const rawGuildId = searchParams.get("guildId");
+  const { profile } = useDiscordOAuth();
+  const { success, error: toastError } = useToast();
 
-  const [suggestions, setSuggestions] = useState<SuggestionItem[]>([
-    {
-      id: "sug-1",
-      number: 142,
-      title: "Ajouter un salon vocal permanent pour le gaming nocturne",
-      description: "Créer un salon 'Noctambules' avec un bitrate de 128 kbps et pas de limite de participants pour les sessions tardives.",
-      author: {
-        username: "AlexDev#0001",
-        avatar: "https://images.unsplash.com/photo-1507003211169-0a1dd7228f2d?w=60&auto=format&fit=crop&q=80",
-      },
-      category: "VOCAL",
-      status: "APPROVED",
-      upvotes: 68,
-      downvotes: 4,
-      createdAt: "Il y a 2 jours",
-      staffComment: "Excellente idée ! Le salon a été approuvé et sera configuré ce week-end par l'équipe d'administration.",
-      staffAuthor: "Staff ETHONE",
-    },
-    {
-      id: "sug-2",
-      number: 143,
-      title: "Tournoi mensuel Rocket League 2v2 avec récompense Nitro",
-      description: "Organiser chaque premier samedi du mois un mini-tournoi avec tableau éliminatoire et cast en direct sur Discord.",
-      author: {
-        username: "Kylian_Gamer#9912",
-        avatar: "https://images.unsplash.com/photo-1570295999919-56ceb5ecca61?w=60&auto=format&fit=crop&q=80",
-      },
-      category: "ÉVÉNEMENTS",
-      status: "IN_PROGRESS",
-      upvotes: 94,
-      downvotes: 6,
-      createdAt: "Il y a 3 jours",
-      staffComment: "En cours d'organisation avec les animateurs pour la première édition le mois prochain.",
-      staffAuthor: "Event Manager",
-    },
-    {
-      id: "sug-3",
-      number: 144,
-      title: "Système de stickers personnalisés créés par la communauté",
-      description: "Permettre aux membres d'envoyer leurs créations de stickers via un formulaire et voter chaque mois pour les 5 meilleurs.",
-      author: {
-        username: "Elena_Design#0077",
-        avatar: "https://images.unsplash.com/photo-1438761681033-6461ffad8d80?w=60&auto=format&fit=crop&q=80",
-      },
-      category: "GÉNÉRAL",
-      status: "COMPLETED",
-      upvotes: 112,
-      downvotes: 3,
-      createdAt: "Il y a 1 semaine",
-      staffComment: "Implémenté ! 5 nouveaux stickers créés par Elena ont été ajoutés sur le Discord.",
-      staffAuthor: "Owner ETHONE",
-    },
-    {
-      id: "sug-4",
-      number: 145,
-      title: "Intégrer une commande /spotify pour afficher ce qu'on écoute",
-      description: "Permettre d'afficher la musique actuelle sous forme d'embed élégant avec la pochette d'album.",
-      author: {
-        username: "Sarah_T#2048",
-        avatar: "https://images.unsplash.com/photo-1494790108377-be9c29b29330?w=60&auto=format&fit=crop&q=80",
-      },
-      category: "BOT",
-      status: "PENDING",
-      upvotes: 35,
-      downvotes: 8,
-      createdAt: "Il y a 5 heures",
-    },
-    {
-      id: "sug-5",
-      number: 146,
-      title: "Supprimer la restriction de lenteur (slowmode) dans #gaming",
-      description: "Le slowmode de 10s casse le rythme des discussions lors des parties en direct.",
-      author: {
-        username: "Lucas92#4412",
-        avatar: "https://images.unsplash.com/photo-1500648767791-00dcc994a43e?w=60&auto=format&fit=crop&q=80",
-      },
-      category: "RÈGLEMENT",
-      status: "DISCUSSION",
-      upvotes: 22,
-      downvotes: 19,
-      createdAt: "Hier",
-      staffComment: "Débat en cours avec les modérateurs pour trouver un compromis (slowmode réduit à 3s).",
-      staffAuthor: "Mod Lead",
-    },
-    {
-      id: "sug-6",
-      number: 147,
-      title: "Autoriser les liens TikTok et Instagram dans le salon général",
-      description: "Pouvoir partager des vidéos drôles directement sans passer par un salon média.",
-      author: {
-        username: "TrollMaster#9999",
-        avatar: "https://images.unsplash.com/photo-1535713875002-d1d0cf377fde?w=60&auto=format&fit=crop&q=80",
-      },
-      category: "RÈGLEMENT",
-      status: "REJECTED",
-      upvotes: 5,
-      downvotes: 88,
-      createdAt: "Il y a 4 jours",
-      staffComment: "Refusé pour éviter le spam de contenu et préserver la clarté des discussions du salon général. Utilisez #médias.",
-      staffAuthor: "Staff ETHONE",
-    },
-  ]);
+  const activeGuild = useMemo(() => {
+    if (rawGuildId && profile?.guilds) {
+      return profile.guilds.find((g) => g.id === rawGuildId) || profile.guilds[0];
+    }
+    return profile?.guilds?.[0] || null;
+  }, [rawGuildId, profile?.guilds]);
 
-  // Filters
+  const currentGuildId = activeGuild?.id || "123456789012345678";
+  const base = `${BOT_API_URL}/api/guilds/${currentGuildId}/suggestions`;
+  const isRealGuild = Boolean(BOT_API_URL) && currentGuildId !== "123456789012345678";
+
+  const [activeTab, setActiveTab] = useState<"kanban" | "response_studio" | "hall_of_fame" | "settings">("kanban");
+  const [isDemo, setIsDemo] = useState(true);
+  const [loading, setLoading] = useState(false);
+  const [suggestions, setSuggestions] = useState<Suggestion[]>(DEMO_SUGGESTIONS);
+  const [overview, setOverview] = useState<SuggestionOverview>(EMPTY_OVERVIEW);
+  const [config, setConfig] = useState<SuggestionConfig>(DEFAULT_CONFIG);
+  const [savingConfig, setSavingConfig] = useState(false);
+
   const [searchFilter, setSearchFilter] = useState("");
   const [categoryFilter, setCategoryFilter] = useState<string>("ALL");
 
-  // Response Studio Modal
-  const [selectedSug, setSelectedSug] = useState<SuggestionItem | null>(null);
+  // Studio de réponse
+  const [selectedId, setSelectedId] = useState<string | null>(null);
   const [staffReplyText, setStaffReplyText] = useState("");
-  const [newStatus, setNewStatus] = useState<SuggestionStatus>("APPROVED");
-  const [rewardAuthorXp, setRewardAuthorXp] = useState(true);
+  const [newStatus, setNewStatus] = useState<SuggestionStatus>("accepted");
+  const [newPriority, setNewPriority] = useState<SuggestionPriority>("normal");
+  const [commentText, setCommentText] = useState("");
+  const [submitting, setSubmitting] = useState(false);
 
-  // Settings State
-  const [suggestionChannel, setSuggestionChannel] = useState("boîte-à-idées");
-  const [cooldownMinutes, setCooldownMinutes] = useState(60);
-  const [minChars, setMinChars] = useState(25);
-  const [autoThread, setAutoThread] = useState(true);
-  const [toastMsg, setToastMsg] = useState<string | null>(null);
+  // Création depuis le dashboard
+  const [newTitle, setNewTitle] = useState("");
+  const [newDescription, setNewDescription] = useState("");
+  const [newCategory, setNewCategory] = useState("Général");
 
-  const showToast = (msg: string) => {
-    setToastMsg(msg);
-    setTimeout(() => setToastMsg(null), 3000);
-  };
+  const selected = useMemo(() => suggestions.find((s) => s.id === selectedId) || null, [suggestions, selectedId]);
+
+  const computeOverview = useCallback((list: Suggestion[]): SuggestionOverview => {
+    const statusDistribution: Record<string, number> = {};
+    const categoryDistribution: Record<string, number> = {};
+    let totalVotes = 0;
+    let totalComments = 0;
+    for (const s of list) {
+      statusDistribution[s.status] = (statusDistribution[s.status] || 0) + 1;
+      categoryDistribution[s.category] = (categoryDistribution[s.category] || 0) + 1;
+      totalVotes += s.upvotesCount + s.downvotesCount;
+      totalComments += s.comments.length;
+    }
+    return {
+      totalCount: list.length,
+      pendingCount: statusDistribution.pending || 0,
+      underReviewCount: statusDistribution.under_review || 0,
+      acceptedCount: statusDistribution.accepted || 0,
+      completedCount: statusDistribution.completed || 0,
+      rejectedCount: statusDistribution.rejected || 0,
+      totalVotes,
+      totalComments,
+      statusDistribution,
+      categoryDistribution,
+    };
+  }, []);
+
+  const load = useCallback(async () => {
+    if (!isRealGuild) {
+      setIsDemo(true);
+      setOverview(computeOverview(DEMO_SUGGESTIONS));
+      return;
+    }
+    setLoading(true);
+    try {
+      const [listRes, overviewRes, configRes] = await Promise.all([
+        fetch(`${base}/list`, { credentials: "include" }),
+        fetch(`${base}/overview`, { credentials: "include" }),
+        fetch(`${base}/config/settings`, { credentials: "include" }),
+      ]);
+      const listData = await listRes.json().catch(() => null);
+      const overviewData = await overviewRes.json().catch(() => null);
+      const configData = await configRes.json().catch(() => null);
+      if (!listRes.ok || !Array.isArray(listData?.suggestions)) {
+        setIsDemo(true);
+        return;
+      }
+      setIsDemo(false);
+      setSuggestions(listData.suggestions);
+      setOverview(overviewRes.ok && overviewData ? overviewData : computeOverview(listData.suggestions));
+      if (configRes.ok && configData && typeof configData.enabled === "boolean") {
+        setConfig({
+          enabled: configData.enabled,
+          channelId: configData.channelId ?? null,
+          autoThread: configData.autoThread ?? true,
+          categories: Array.isArray(configData.categories) ? configData.categories : DEFAULT_CONFIG.categories,
+          cooldownMinutes: configData.cooldownMinutes ?? 5,
+          dmNotifications: configData.dmNotifications ?? true,
+        });
+      }
+    } catch {
+      setIsDemo(true);
+    } finally {
+      setLoading(false);
+    }
+  }, [base, isRealGuild, computeOverview]);
+
+  useEffect(() => {
+    load();
+  }, [load]);
+
+  const categories = useMemo(() => {
+    const set = new Set<string>(config.categories);
+    for (const s of suggestions) set.add(s.category);
+    return Array.from(set);
+  }, [config.categories, suggestions]);
 
   const filteredSuggestions = useMemo(() => {
+    const q = searchFilter.toLowerCase();
     return suggestions.filter((s) => {
       const matchSearch =
-        s.title.toLowerCase().includes(searchFilter.toLowerCase()) ||
-        s.description.toLowerCase().includes(searchFilter.toLowerCase()) ||
-        s.author.username.toLowerCase().includes(searchFilter.toLowerCase());
+        !q || s.title.toLowerCase().includes(q) || s.description.toLowerCase().includes(q) || s.authorTag.toLowerCase().includes(q);
       const matchCat = categoryFilter === "ALL" || s.category === categoryFilter;
       return matchSearch && matchCat;
     });
   }, [suggestions, searchFilter, categoryFilter]);
 
-  const handleOpenStaffReply = (sug: SuggestionItem) => {
-    setSelectedSug(sug);
-    setNewStatus(sug.status);
-    setStaffReplyText(sug.staffComment || "");
+  const topIdeas = useMemo(() => [...suggestions].sort((a, b) => b.score - a.score).slice(0, 6), [suggestions]);
+
+  const patchLocal = (id: string, patch: Partial<Suggestion>) => {
+    setSuggestions((prev) => {
+      const next = prev.map((s) => (s.id === id ? { ...s, ...patch, updatedAt: new Date().toISOString() } : s));
+      setOverview(computeOverview(next));
+      return next;
+    });
   };
 
-  const handleSaveStaffReply = () => {
-    if (!selectedSug) return;
-    setSuggestions((prev) =>
-      prev.map((s) => {
-        if (s.id === selectedSug.id) {
-          return {
-            ...s,
-            status: newStatus,
-            staffComment: staffReplyText.trim() || undefined,
-            staffAuthor: "Staff ETHONE",
-          };
-        }
-        return s;
-      })
-    );
-    showToast(
-      `Suggestion #${selectedSug.number} mise à jour en statut "${newStatus}" avec succès !`
-    );
-    setSelectedSug(null);
+  const openStudio = (s: Suggestion) => {
+    setSelectedId(s.id);
+    setNewStatus(s.status);
+    setNewPriority(s.priority);
+    setStaffReplyText(s.staffResponse || "");
+    setCommentText("");
+    setActiveTab("response_studio");
   };
 
-  const getStatusBadge = (status: SuggestionStatus) => {
-    switch (status) {
-      case "PENDING":
-        return { label: "En Attente", bg: "bg-amber-500/10 text-amber-400 border-amber-500/20" };
-      case "DISCUSSION":
-        return { label: "En Discussion", bg: "bg-blue-500/10 text-blue-400 border-blue-500/20" };
-      case "APPROVED":
-        return { label: "Approuvée", bg: "bg-emerald-500/10 text-emerald-400 border-emerald-500/20" };
-      case "IN_PROGRESS":
-        return { label: "En Développement", bg: "bg-purple-500/10 text-purple-400 border-purple-500/20" };
-      case "COMPLETED":
-        return { label: "Réalisée", bg: "bg-cyan-500/10 text-cyan-400 border-cyan-500/20" };
-      case "REJECTED":
-        return { label: "Rejetée", bg: "bg-rose-500/10 text-rose-400 border-rose-500/20" };
+  const saveStatus = async () => {
+    if (!selected) return;
+    if (isDemo) {
+      patchLocal(selected.id, { status: newStatus, staffResponse: staffReplyText.trim() || null, staffResponderTag: "Staff" });
+      success(`Suggestion #${selected.numericId} mise à jour (démo).`);
+      return;
+    }
+    setSubmitting(true);
+    try {
+      const res = await fetch(`${base}/${selected.id}/status`, {
+        method: "POST",
+        credentials: "include",
+        headers: { "content-type": "application/json" },
+        body: JSON.stringify({ status: newStatus, staffResponse: staffReplyText.trim() || undefined }),
+      });
+      const data = await res.json().catch(() => null);
+      if (!res.ok || !data?.suggestion) throw new Error(data?.error || "save failed");
+      patchLocal(selected.id, data.suggestion);
+      success(`Suggestion #${selected.numericId} : statut « ${STATUS_META[newStatus].label} » publié sur Discord.`);
+    } catch (e: any) {
+      toastError(e?.message || "Échec de la mise à jour du statut.");
+    } finally {
+      setSubmitting(false);
     }
   };
+
+  const savePriority = async (priority: SuggestionPriority) => {
+    if (!selected) return;
+    setNewPriority(priority);
+    if (isDemo) {
+      patchLocal(selected.id, { priority });
+      return;
+    }
+    try {
+      const res = await fetch(`${base}/${selected.id}/priority`, {
+        method: "POST",
+        credentials: "include",
+        headers: { "content-type": "application/json" },
+        body: JSON.stringify({ priority }),
+      });
+      if (!res.ok) throw new Error("priority failed");
+      patchLocal(selected.id, { priority });
+    } catch {
+      toastError("Échec du changement de priorité.");
+    }
+  };
+
+  const addComment = async () => {
+    if (!selected || !commentText.trim()) return;
+    if (isDemo) {
+      patchLocal(selected.id, {
+        comments: [
+          ...selected.comments,
+          { id: `c-${Date.now()}`, userId: "staff", userTag: "Staff", avatarUrl: null, content: commentText.trim(), isStaff: true, timestamp: new Date().toISOString() },
+        ],
+      });
+      setCommentText("");
+      return;
+    }
+    setSubmitting(true);
+    try {
+      const res = await fetch(`${base}/${selected.id}/comment`, {
+        method: "POST",
+        credentials: "include",
+        headers: { "content-type": "application/json" },
+        body: JSON.stringify({ content: commentText.trim() }),
+      });
+      const data = await res.json().catch(() => null);
+      if (!res.ok || !data?.suggestion) throw new Error(data?.error || "comment failed");
+      patchLocal(selected.id, data.suggestion);
+      setCommentText("");
+      success("Commentaire staff publié.");
+    } catch (e: any) {
+      toastError(e?.message || "Échec de l'ajout du commentaire.");
+    } finally {
+      setSubmitting(false);
+    }
+  };
+
+  const deleteSuggestion = async (s: Suggestion) => {
+    if (!confirm(`Supprimer définitivement la suggestion #${s.numericId} ?`)) return;
+    setSuggestions((prev) => {
+      const next = prev.filter((x) => x.id !== s.id);
+      setOverview(computeOverview(next));
+      return next;
+    });
+    if (selectedId === s.id) setSelectedId(null);
+    if (isDemo) return;
+    try {
+      await fetch(`${base}/${s.id}`, { method: "DELETE", credentials: "include" });
+    } catch {
+      toastError("Échec de la suppression — rechargez la page.");
+    }
+  };
+
+  const createSuggestion = async () => {
+    if (!newTitle.trim() || !newDescription.trim()) {
+      toastError("Titre et description requis.");
+      return;
+    }
+    if (isDemo) {
+      const s: Suggestion = {
+        id: `demo-${Date.now()}`, numericId: (suggestions[0]?.numericId || 100) + 1, guildId: currentGuildId, authorId: "dashboard", authorTag: "Dashboard", authorAvatarUrl: null,
+        title: newTitle.trim(), description: newDescription.trim(), category: newCategory, tags: [], status: "pending", priority: "normal",
+        upvotesCount: 0, downvotesCount: 0, score: 0, comments: [], staffResponse: null, staffResponderTag: null, createdAt: new Date().toISOString(), updatedAt: new Date().toISOString(),
+      };
+      setSuggestions((prev) => {
+        const next = [s, ...prev];
+        setOverview(computeOverview(next));
+        return next;
+      });
+      setNewTitle("");
+      setNewDescription("");
+      success("Suggestion créée (démo).");
+      return;
+    }
+    setSubmitting(true);
+    try {
+      const res = await fetch(`${base}/create`, {
+        method: "POST",
+        credentials: "include",
+        headers: { "content-type": "application/json" },
+        body: JSON.stringify({ title: newTitle.trim(), description: newDescription.trim(), category: newCategory }),
+      });
+      const data = await res.json().catch(() => null);
+      if (!res.ok || !data?.suggestion) throw new Error(data?.error || "create failed");
+      setSuggestions((prev) => {
+        const next = [data.suggestion, ...prev];
+        setOverview(computeOverview(next));
+        return next;
+      });
+      setNewTitle("");
+      setNewDescription("");
+      success("Suggestion publiée dans le salon Discord.");
+    } catch (e: any) {
+      toastError(e?.message || "Échec de la création.");
+    } finally {
+      setSubmitting(false);
+    }
+  };
+
+  const saveConfig = async (patch: Partial<SuggestionConfig>) => {
+    const next = { ...config, ...patch };
+    setConfig(next);
+    if (isDemo) {
+      success("Paramètres enregistrés (démo).");
+      return;
+    }
+    setSavingConfig(true);
+    try {
+      const res = await fetch(`${base}/config/settings`, {
+        method: "PUT",
+        credentials: "include",
+        headers: { "content-type": "application/json" },
+        body: JSON.stringify(patch),
+      });
+      if (!res.ok) throw new Error("save failed");
+      success("Paramètres des suggestions enregistrés.");
+    } catch {
+      toastError("Échec de l'enregistrement des paramètres.");
+    } finally {
+      setSavingConfig(false);
+    }
+  };
+
+  const adoptionRate = useMemo(() => {
+    const decided = (overview.acceptedCount || 0) + (overview.completedCount || 0) + (overview.rejectedCount || 0) + (overview.statusDistribution.in_progress || 0) + (overview.statusDistribution.planned || 0);
+    if (decided === 0) return null;
+    const kept = decided - (overview.rejectedCount || 0);
+    return Math.round((kept / decided) * 100);
+  }, [overview]);
+
+  const inProgressCount = (overview.statusDistribution.in_progress || 0) + (overview.statusDistribution.planned || 0) + (overview.acceptedCount || 0);
 
   return (
     <div className="h-full overflow-y-auto os-scroll [overscroll-behavior:contain] bg-[var(--bg-main)] text-neutral-100 p-4 md:p-8">
       <div className="max-w-7xl mx-auto space-y-8">
-        {/* Top Header */}
+        {/* Header */}
         <div className="flex flex-col md:flex-row md:items-center justify-between gap-4">
-          <div>
-            <div className="flex items-center gap-3">
-              <div className="p-2.5 bg-amber-500/15 text-amber-400 rounded-xl border border-amber-500/30 shadow-sm">
-                <Lightbulb className="w-6 h-6" />
-              </div>
-              <div>
-                <h1 className="text-2xl font-bold text-white tracking-tight flex items-center gap-2">
-                  ETHONE Boîte à Suggestions
-                  <span className="px-2 py-0.5 rounded text-[11px] font-semibold bg-emerald-500/10 text-emerald-400 border border-emerald-500/20">
-                    Boîte Ouverte v2.4
-                  </span>
-                </h1>
-                <p className="text-xs text-neutral-400">
-                  Idées communautaires, votes interactifs, Kanban de traitement staff et réponses officielles.
-                </p>
-              </div>
+          <div className="flex items-center gap-3">
+            <div className="p-2.5 bg-amber-500/15 text-amber-400 rounded-xl border border-amber-500/30 shadow-sm">
+              <Lightbulb className="w-6 h-6" />
+            </div>
+            <div>
+              <h1 className="text-2xl font-bold text-white tracking-tight">ETHONE Boîte à Suggestions</h1>
+              <p className="text-xs text-neutral-400">
+                Idées communautaires, votes Discord, Kanban de traitement et réponses officielles.
+                {isDemo && <span className="text-amber-400"> (données de démonstration)</span>}
+              </p>
             </div>
           </div>
-
           <div className="flex items-center gap-2.5 flex-wrap">
             <button
               onClick={() => setActiveTab("settings")}
               className="px-3.5 py-2 rounded-xl border border-neutral-800 bg-neutral-900 hover:bg-neutral-800 text-xs font-semibold text-neutral-200 flex items-center gap-2 transition-colors cursor-pointer"
             >
               <Sliders className="w-4 h-4 text-amber-400" />
-              Paramètres Salon & Embed
+              Paramètres
             </button>
             <button
-              onClick={() => showToast("Synchronisation des votes Discord effectuée !")}
-              className="px-4 py-2 rounded-xl bg-amber-600 hover:bg-amber-500 text-white text-xs font-semibold flex items-center gap-2 shadow-sm transition-all cursor-pointer"
+              onClick={load}
+              disabled={loading}
+              className="px-4 py-2 rounded-xl bg-amber-600 hover:bg-amber-500 text-white text-xs font-semibold flex items-center gap-2 shadow-sm transition-all cursor-pointer disabled:opacity-50"
             >
-              <RefreshCw className="w-4 h-4" />
-              Actualiser les Votes
+              <RefreshCw className={cn("w-4 h-4", loading && "animate-spin")} />
+              Actualiser
             </button>
           </div>
         </div>
 
-        {/* Toast */}
-        {toastMsg && (
-          <div className="p-3 bg-emerald-500/10 border border-emerald-500/30 rounded-xl flex items-center justify-between text-xs text-emerald-300 animate-fadeIn">
-            <span className="flex items-center gap-2 font-medium">
-              <CheckCircle2 className="w-4 h-4 text-emerald-400" />
-              {toastMsg}
-            </span>
-            <button onClick={() => setToastMsg(null)} className="text-emerald-400 hover:text-white">
-              <X className="w-4 h-4" />
-            </button>
-          </div>
-        )}
-
-        {/* 6 Metric KPI Cards */}
+        {/* KPI (réels) */}
         <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-6 gap-3">
-          <div className="bg-neutral-900 border border-neutral-800 rounded-2xl p-4 space-y-1">
-            <span className="text-xs text-neutral-500 font-medium">Suggestions Totales</span>
-            <p className="text-2xl font-bold text-white">156</p>
-            <span className="text-[11px] text-emerald-400">+22 ce mois</span>
-          </div>
-
-          <div className="bg-neutral-900 border border-neutral-800 rounded-2xl p-4 space-y-1">
-            <span className="text-xs text-neutral-500 font-medium">En Attente Staff</span>
-            <p className="text-2xl font-bold text-amber-400">18</p>
-            <span className="text-[11px] text-amber-400">À examiner</span>
-          </div>
-
-          <div className="bg-neutral-900 border border-neutral-800 rounded-2xl p-4 space-y-1">
-            <span className="text-xs text-neutral-500 font-medium">Approuvées / En Cours</span>
-            <p className="text-2xl font-bold text-emerald-400">42</p>
-            <span className="text-[11px] text-neutral-400">Validées par le staff</span>
-          </div>
-
-          <div className="bg-neutral-900 border border-neutral-800 rounded-2xl p-4 space-y-1">
-            <span className="text-xs text-neutral-500 font-medium">Réalisées & Livrées</span>
-            <p className="text-2xl font-bold text-cyan-400">64</p>
-            <span className="text-[11px] text-cyan-400">En ligne sur Discord</span>
-          </div>
-
-          <div className="bg-neutral-900 border border-neutral-800 rounded-2xl p-4 space-y-1">
-            <span className="text-xs text-neutral-500 font-medium">Total Votes</span>
-            <p className="text-2xl font-bold text-purple-400">3,890</p>
-            <span className="text-[11px] text-neutral-400">👍 / 👎 cumulés</span>
-          </div>
-
-          <div className="bg-neutral-900 border border-neutral-800 rounded-2xl p-4 space-y-1">
-            <span className="text-xs text-neutral-500 font-medium">Taux d'Adoption</span>
-            <p className="text-2xl font-bold text-rose-400">68%</p>
-            <span className="text-[11px] text-emerald-400">Idées retenues</span>
-          </div>
+          {[
+            { label: "Suggestions totales", value: overview.totalCount, cls: "text-white", sub: `${Object.keys(overview.categoryDistribution).length} catégorie(s)` },
+            { label: "En attente staff", value: overview.pendingCount + overview.underReviewCount, cls: "text-amber-400", sub: "À examiner" },
+            { label: "Approuvées / En cours", value: inProgressCount, cls: "text-emerald-400", sub: "Validées par le staff" },
+            { label: "Réalisées", value: overview.completedCount, cls: "text-cyan-400", sub: "Livrées sur Discord" },
+            { label: "Total votes", value: overview.totalVotes, cls: "text-purple-400", sub: "👍 / 👎 cumulés" },
+            { label: "Taux d'adoption", value: adoptionRate === null ? "—" : `${adoptionRate}%`, cls: "text-rose-400", sub: adoptionRate === null ? "Aucune décision encore" : "Idées retenues" },
+          ].map((k) => (
+            <div key={k.label} className="bg-neutral-900 border border-neutral-800 rounded-2xl p-4 space-y-1">
+              <span className="text-xs text-neutral-500 font-medium">{k.label}</span>
+              <p className={cn("text-2xl font-bold", k.cls)}>{typeof k.value === "number" ? k.value.toLocaleString("fr-FR") : k.value}</p>
+              <span className="text-[11px] text-neutral-400">{k.sub}</span>
+            </div>
+          ))}
         </div>
 
-        {/* Navigation Tabs */}
+        {/* Tabs */}
         <div className="flex border-b border-neutral-800 gap-2 overflow-x-auto pb-1">
           {[
-            { id: "kanban", label: "Tableau Kanban & Suggestions", icon: Kanban },
-            { id: "response_studio", label: "Modération & Réponse Staff", icon: MessageSquare },
-            { id: "hall_of_fame", label: "Top Idées & Hall of Fame", icon: Sparkles },
-            { id: "settings", label: "Paramètres Salon & Anti-Spam", icon: Sliders },
+            { id: "kanban", label: "Kanban & Suggestions", icon: Kanban },
+            { id: "response_studio", label: "Réponse Staff", icon: MessageSquare },
+            { id: "hall_of_fame", label: "Top Idées", icon: Sparkles },
+            { id: "settings", label: "Paramètres & Anti-Spam", icon: Sliders },
           ].map((tab) => {
             const Icon = tab.icon;
             const isActive = activeTab === tab.id;
             return (
               <button
                 key={tab.id}
-                onClick={() => setActiveTab(tab.id as any)}
-                className={`px-4 py-2.5 text-xs font-semibold rounded-t-xl transition-colors flex items-center gap-2 whitespace-nowrap cursor-pointer ${
-                  isActive
-                    ? "bg-neutral-900 text-white border-b-2 border-amber-500"
-                    : "text-neutral-400 hover:text-white"
-                }`}
+                onClick={() => setActiveTab(tab.id as typeof activeTab)}
+                className={cn(
+                  "px-4 py-2.5 text-xs font-semibold rounded-t-xl transition-colors flex items-center gap-2 whitespace-nowrap cursor-pointer",
+                  isActive ? "bg-neutral-900 text-white border-b-2 border-amber-500" : "text-neutral-400 hover:text-white"
+                )}
               >
-                <Icon className={`w-4 h-4 ${isActive ? "text-amber-400" : "text-neutral-500"}`} />
+                <Icon className={cn("w-4 h-4", isActive ? "text-amber-400" : "text-neutral-500")} />
                 {tab.label}
               </button>
             );
           })}
         </div>
 
-        {/* TAB 1: Kanban & Suggestions */}
+        {/* TAB: Kanban */}
         {activeTab === "kanban" && (
           <div className="space-y-4">
-            {/* Filters */}
             <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-3">
               <div className="flex items-center gap-2 flex-wrap w-full sm:w-auto">
                 <div className="relative w-full sm:w-72">
@@ -367,393 +586,311 @@ export default function SuggestionsCenterClient() {
                     className="w-full h-9 rounded-xl bg-neutral-900 border border-neutral-800 pl-9 pr-3 text-xs text-white focus:outline-none focus:border-amber-500"
                   />
                 </div>
-
-                <div className="flex items-center gap-1 bg-neutral-900 p-1 rounded-xl border border-neutral-800 text-xs">
-                  {["ALL", "GÉNÉRAL", "BOT", "ÉVÉNEMENTS", "VOCAL"].map((cat) => (
+                <div className="flex items-center gap-1 bg-neutral-900 p-1 rounded-xl border border-neutral-800 text-xs flex-wrap">
+                  {["ALL", ...categories].map((cat) => (
                     <button
                       key={cat}
                       onClick={() => setCategoryFilter(cat)}
-                      className={`px-2.5 py-1 rounded-lg font-semibold transition-all cursor-pointer ${
-                        categoryFilter === cat
-                          ? "bg-amber-500 text-white shadow-sm"
-                          : "text-neutral-400 hover:text-white"
-                      }`}
+                      className={cn(
+                        "px-2.5 py-1 rounded-lg font-semibold transition-all cursor-pointer",
+                        categoryFilter === cat ? "bg-amber-500 text-white shadow-sm" : "text-neutral-400 hover:text-white"
+                      )}
                     >
-                      {cat === "ALL" ? "Tous" : cat}
+                      {cat === "ALL" ? "Toutes" : cat}
                     </button>
                   ))}
                 </div>
               </div>
-
-              <span className="text-xs text-neutral-500">
-                {filteredSuggestions.length} suggestions répertoriées
-              </span>
+              <span className="text-xs text-neutral-500">{filteredSuggestions.length} suggestion(s)</span>
             </div>
 
-            {/* Suggestions Cards Grid */}
-            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
-              {filteredSuggestions.map((sug) => {
-                const statusBadge = getStatusBadge(sug.status);
-                const totalVotes = sug.upvotes + sug.downvotes;
-                const approvalRate =
-                  totalVotes > 0 ? Math.round((sug.upvotes / totalVotes) * 100) : 50;
+            {/* Création rapide */}
+            <div className="bg-neutral-900 border border-neutral-800 rounded-2xl p-4 grid grid-cols-1 md:grid-cols-12 gap-2 items-end">
+              <div className="md:col-span-4">
+                <label className="text-[11px] text-neutral-400 block mb-1">Titre</label>
+                <input value={newTitle} onChange={(e) => setNewTitle(e.target.value)} placeholder="Nouvelle idée..." className="w-full h-9 rounded-xl bg-neutral-950 border border-neutral-800 px-3 text-xs text-white" />
+              </div>
+              <div className="md:col-span-5">
+                <label className="text-[11px] text-neutral-400 block mb-1">Description</label>
+                <input value={newDescription} onChange={(e) => setNewDescription(e.target.value)} placeholder="Pourquoi, comment..." className="w-full h-9 rounded-xl bg-neutral-950 border border-neutral-800 px-3 text-xs text-white" />
+              </div>
+              <div className="md:col-span-2">
+                <label className="text-[11px] text-neutral-400 block mb-1">Catégorie</label>
+                <select value={newCategory} onChange={(e) => setNewCategory(e.target.value)} className="w-full h-9 rounded-xl bg-neutral-950 border border-neutral-800 px-2 text-xs text-white">
+                  {categories.map((c) => <option key={c} value={c}>{c}</option>)}
+                </select>
+              </div>
+              <button onClick={createSuggestion} disabled={submitting} className="md:col-span-1 h-9 rounded-xl bg-amber-600 hover:bg-amber-500 text-white text-xs font-semibold flex items-center justify-center gap-1 disabled:opacity-50 cursor-pointer">
+                <Plus className="w-4 h-4" />
+              </button>
+            </div>
 
-                return (
-                  <div
-                    key={sug.id}
-                    className="bg-neutral-900 border border-neutral-800 hover:border-amber-500/30 rounded-2xl p-5 space-y-4 transition-all shadow-lg flex flex-col justify-between"
-                  >
-                    <div className="space-y-3">
-                      <div className="flex items-center justify-between gap-2">
-                        <div className="flex items-center gap-2">
-                          <span className="font-mono text-xs font-bold text-amber-400">
-                            #{sug.number}
-                          </span>
-                          <span className="px-2 py-0.5 rounded text-[10px] font-bold bg-neutral-800 text-neutral-300 border border-neutral-700">
-                            {sug.category}
-                          </span>
-                        </div>
-                        <span
-                          className={`px-2 py-0.5 rounded text-[10px] font-bold border ${statusBadge.bg}`}
-                        >
-                          {statusBadge.label}
-                        </span>
+            {filteredSuggestions.length === 0 ? (
+              <div className="bg-neutral-900 border border-neutral-800 rounded-2xl p-10 text-center text-xs text-neutral-500">
+                Aucune suggestion pour ce filtre. Les membres peuvent en proposer sur Discord via <code className="text-neutral-300">/suggest</code>.
+              </div>
+            ) : (
+              <div className="grid grid-cols-1 lg:grid-cols-4 gap-4">
+                {KANBAN_COLUMNS.map((col) => {
+                  const items = filteredSuggestions.filter((s) => col.statuses.includes(s.status));
+                  return (
+                    <div key={col.id} className="space-y-3">
+                      <div className="flex items-center justify-between px-1">
+                        <span className="text-xs font-bold text-neutral-300 uppercase tracking-wider">{col.label}</span>
+                        <span className="text-[10px] font-mono px-1.5 py-0.5 rounded bg-neutral-800 text-neutral-400">{items.length}</span>
                       </div>
-
-                      <div>
-                        <h3 className="text-sm font-bold text-white leading-snug">
-                          {sug.title}
-                        </h3>
-                        <p className="text-xs text-neutral-400 line-clamp-3 mt-1.5 leading-relaxed">
-                          {sug.description}
-                        </p>
-                      </div>
-
-                      {/* Staff official reply if present */}
-                      {sug.staffComment && (
-                        <div className="p-3 rounded-xl bg-neutral-950 border border-neutral-800 space-y-1">
-                          <div className="flex items-center gap-1.5 text-[10px] font-bold text-amber-300">
-                            <ShieldCheck className="w-3 h-3" />
-                            <span>Réponse officielle ({sug.staffAuthor}) :</span>
+                      {items.map((sug) => {
+                        const meta = STATUS_META[sug.status];
+                        const total = sug.upvotesCount + sug.downvotesCount;
+                        const approval = total > 0 ? Math.round((sug.upvotesCount / total) * 100) : null;
+                        return (
+                          <div key={sug.id} className="bg-neutral-900 border border-neutral-800 hover:border-amber-500/30 rounded-2xl p-4 space-y-3 transition-all shadow-lg">
+                            <div className="flex items-center justify-between gap-2">
+                              <div className="flex items-center gap-2 min-w-0">
+                                <span className="font-mono text-xs font-bold text-amber-400 shrink-0">#{sug.numericId}</span>
+                                <span className="px-2 py-0.5 rounded text-[10px] font-bold bg-neutral-800 text-neutral-300 border border-neutral-700 truncate">{sug.category}</span>
+                              </div>
+                              <span className={cn("px-2 py-0.5 rounded text-[10px] font-bold border shrink-0", meta.cls)}>{meta.label}</span>
+                            </div>
+                            <div>
+                              <h3 className="text-sm font-bold text-white leading-snug">{sug.title}</h3>
+                              <p className="text-xs text-neutral-400 line-clamp-3 mt-1.5 leading-relaxed">{sug.description}</p>
+                            </div>
+                            <div className="flex items-center justify-between text-[11px] text-neutral-400">
+                              <span className="flex items-center gap-1.5 min-w-0">
+                                {sug.authorAvatarUrl ? (
+                                  <img src={sug.authorAvatarUrl} alt="" className="w-5 h-5 rounded-full object-cover" />
+                                ) : (
+                                  <span className="w-5 h-5 rounded-full bg-neutral-800 flex items-center justify-center text-[9px] font-bold">{sug.authorTag.slice(0, 2).toUpperCase()}</span>
+                                )}
+                                <span className="truncate">{sug.authorTag}</span>
+                              </span>
+                              <span>{formatRelative(sug.createdAt)}</span>
+                            </div>
+                            <div className="space-y-1">
+                              <div className="flex items-center justify-between text-[11px]">
+                                <span className="flex items-center gap-2">
+                                  <span className="flex items-center gap-1 text-emerald-400"><ThumbsUp className="w-3 h-3" />{sug.upvotesCount}</span>
+                                  <span className="flex items-center gap-1 text-rose-400"><ThumbsDown className="w-3 h-3" />{sug.downvotesCount}</span>
+                                  {sug.comments.length > 0 && <span className="flex items-center gap-1 text-neutral-400"><MessageSquare className="w-3 h-3" />{sug.comments.length}</span>}
+                                </span>
+                                <span className={cn("font-semibold", PRIORITY_META[sug.priority].cls)}>{PRIORITY_META[sug.priority].label}</span>
+                              </div>
+                              {approval !== null && (
+                                <div className="h-1.5 w-full bg-neutral-950 rounded-full overflow-hidden border border-neutral-800">
+                                  <div className="h-full bg-emerald-500 rounded-full" style={{ width: `${approval}%` }} />
+                                </div>
+                              )}
+                            </div>
+                            {sug.staffResponse && (
+                              <div className="p-2.5 rounded-xl bg-amber-500/5 border border-amber-500/20 text-[11px] text-neutral-300">
+                                <span className="font-bold text-amber-400 flex items-center gap-1 mb-1"><Crown className="w-3 h-3" />{sug.staffResponderTag || "Staff"}</span>
+                                <p className="line-clamp-2">{sug.staffResponse}</p>
+                              </div>
+                            )}
+                            <div className="flex gap-2 pt-1">
+                              <button onClick={() => openStudio(sug)} className="flex-1 py-1.5 rounded-xl bg-neutral-800 hover:bg-amber-600 text-neutral-200 hover:text-white text-[11px] font-semibold transition-colors cursor-pointer">
+                                Répondre / Statut
+                              </button>
+                              <button onClick={() => deleteSuggestion(sug)} className="px-2.5 py-1.5 rounded-xl border border-neutral-800 text-neutral-500 hover:text-rose-400 hover:border-rose-500/40 transition-colors cursor-pointer" title="Supprimer">
+                                <Trash2 className="w-3.5 h-3.5" />
+                              </button>
+                            </div>
                           </div>
-                          <p className="text-[11px] text-neutral-300 italic">
-                            "{sug.staffComment}"
-                          </p>
-                        </div>
-                      )}
+                        );
+                      })}
                     </div>
+                  );
+                })}
+              </div>
+            )}
+          </div>
+        )}
 
-                    <div className="pt-3 border-t border-neutral-800 space-y-3">
-                      {/* Upvotes & Author */}
-                      <div className="flex items-center justify-between">
-                        <div className="flex items-center gap-2">
-                          <img
-                            src={sug.author.avatar}
-                            alt={sug.author.username}
-                            className="w-5 h-5 rounded-full border border-neutral-700 object-cover"
-                          />
-                          <span className="text-[11px] text-neutral-400 font-medium">
-                            {sug.author.username}
-                          </span>
-                        </div>
+        {/* TAB: Studio de réponse */}
+        {activeTab === "response_studio" && (
+          <div className="grid grid-cols-1 lg:grid-cols-12 gap-6">
+            <div className="lg:col-span-4 bg-neutral-900 border border-neutral-800 rounded-2xl p-4 space-y-2 max-h-[70vh] overflow-y-auto">
+              <span className="text-xs font-bold text-neutral-300 uppercase tracking-wider">Sélectionner une suggestion</span>
+              {suggestions.length === 0 && <p className="text-xs text-neutral-500">Aucune suggestion.</p>}
+              {suggestions.map((s) => (
+                <button
+                  key={s.id}
+                  onClick={() => openStudio(s)}
+                  className={cn(
+                    "w-full text-left p-3 rounded-xl border transition-colors cursor-pointer",
+                    selectedId === s.id ? "bg-amber-500/10 border-amber-500/40" : "bg-neutral-950 border-neutral-800 hover:border-neutral-700"
+                  )}
+                >
+                  <div className="flex items-center justify-between gap-2">
+                    <span className="text-xs font-bold text-white truncate">#{s.numericId} · {s.title}</span>
+                    <span className={cn("px-1.5 py-0.5 rounded text-[9px] font-bold border shrink-0", STATUS_META[s.status].cls)}>{STATUS_META[s.status].label}</span>
+                  </div>
+                  <span className="text-[10px] text-neutral-500">{s.authorTag} · 👍 {s.upvotesCount} 👎 {s.downvotesCount}</span>
+                </button>
+              ))}
+            </div>
 
-                        <div className="flex items-center gap-2 text-xs font-bold">
-                          <span className="text-emerald-400 flex items-center gap-1">
-                            <ThumbsUp className="w-3.5 h-3.5" />
-                            {sug.upvotes}
-                          </span>
-                          <span className="text-rose-400 flex items-center gap-1">
-                            <ThumbsDown className="w-3.5 h-3.5" />
-                            {sug.downvotes}
-                          </span>
-                          <span className="text-neutral-500 font-mono text-[10px]">
-                            ({approvalRate}%)
-                          </span>
-                        </div>
+            <div className="lg:col-span-8 bg-neutral-900 border border-neutral-800 rounded-2xl p-6 space-y-5">
+              {!selected ? (
+                <p className="text-xs text-neutral-500">Choisis une suggestion à gauche pour publier une réponse officielle, changer son statut ou sa priorité.</p>
+              ) : (
+                <>
+                  <div>
+                    <div className="flex items-center gap-2 mb-1">
+                      <span className="font-mono text-xs font-bold text-amber-400">#{selected.numericId}</span>
+                      <span className="px-2 py-0.5 rounded text-[10px] font-bold bg-neutral-800 text-neutral-300 border border-neutral-700">{selected.category}</span>
+                    </div>
+                    <h3 className="text-base font-bold text-white">{selected.title}</h3>
+                    <p className="text-xs text-neutral-400 mt-1 leading-relaxed">{selected.description}</p>
+                    <p className="text-[11px] text-neutral-500 mt-2">par {selected.authorTag} · {formatRelative(selected.createdAt)} · 👍 {selected.upvotesCount} / 👎 {selected.downvotesCount}</p>
+                  </div>
+
+                  <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+                    <div>
+                      <label className="text-xs font-semibold text-neutral-300 block mb-1.5">Nouveau statut</label>
+                      <select value={newStatus} onChange={(e) => setNewStatus(e.target.value as SuggestionStatus)} className="w-full h-10 rounded-xl bg-neutral-950 border border-neutral-800 px-3 text-xs text-white">
+                        {(Object.keys(STATUS_META) as SuggestionStatus[]).map((s) => <option key={s} value={s}>{STATUS_META[s].label}</option>)}
+                      </select>
+                    </div>
+                    <div>
+                      <label className="text-xs font-semibold text-neutral-300 block mb-1.5">Priorité interne</label>
+                      <div className="flex gap-1.5">
+                        {(Object.keys(PRIORITY_META) as SuggestionPriority[]).map((p) => (
+                          <button key={p} onClick={() => savePriority(p)} className={cn("flex-1 h-10 rounded-xl border text-[11px] font-semibold cursor-pointer transition-colors", newPriority === p ? "bg-amber-500/15 border-amber-500 text-white" : "bg-neutral-950 border-neutral-800 text-neutral-400 hover:text-white")}>
+                            {PRIORITY_META[p].label}
+                          </button>
+                        ))}
                       </div>
-
-                      <button
-                        onClick={() => handleOpenStaffReply(sug)}
-                        className="w-full h-8 rounded-xl bg-neutral-800 hover:bg-neutral-700 text-white text-xs font-semibold flex items-center justify-center gap-1.5 transition-colors cursor-pointer"
-                      >
-                        <MessageSquare className="w-3.5 h-3.5 text-amber-400" />
-                        Gérer & Répondre (Staff)
-                      </button>
                     </div>
                   </div>
-                );
-              })}
-            </div>
-          </div>
-        )}
 
-        {/* TAB 2: Response Studio */}
-        {activeTab === "response_studio" && (
-          <div className="bg-neutral-900 border border-neutral-800 rounded-2xl p-6 space-y-6 max-w-2xl">
-            <div className="flex items-center gap-2">
-              <MessageSquare className="w-5 h-5 text-amber-400" />
-              <h3 className="text-base font-bold text-white">
-                Studio de Traitement des Suggestions
-              </h3>
-            </div>
-            <p className="text-xs text-neutral-400 leading-relaxed">
-              Sélectionnez une suggestion depuis le tableau pour publier une décision officielle et mettre à jour le salon Discord en temps réel.
-            </p>
+                  <div>
+                    <label className="text-xs font-semibold text-neutral-300 block mb-1.5">Réponse officielle (visible sur Discord)</label>
+                    <textarea value={staffReplyText} onChange={(e) => setStaffReplyText(e.target.value)} rows={4} placeholder="Explique la décision au membre..." className="w-full rounded-xl bg-neutral-950 border border-neutral-800 px-3 py-2 text-xs text-white resize-none" />
+                  </div>
 
-            <div className="space-y-3">
-              <span className="text-xs font-semibold text-neutral-300">Suggestions en attente d'une décision staff :</span>
-              <div className="divide-y divide-neutral-800 bg-neutral-950 rounded-xl border border-neutral-800 max-h-80 overflow-y-auto">
-                {suggestions
-                  .filter((s) => s.status === "PENDING" || s.status === "DISCUSSION")
-                  .map((s) => (
-                    <div
-                      key={s.id}
-                      onClick={() => handleOpenStaffReply(s)}
-                      className="p-3 hover:bg-neutral-900/60 cursor-pointer flex items-center justify-between text-xs transition-colors"
-                    >
-                      <div className="space-y-0.5">
-                        <span className="font-bold text-white">#{s.number} - {s.title}</span>
-                        <p className="text-neutral-400 text-[11px] truncate max-w-md">{s.description}</p>
-                      </div>
-                      <span className="text-amber-400 font-semibold px-2 py-0.5 rounded bg-amber-500/10 text-[10px]">
-                        Examiner
-                      </span>
+                  <button onClick={saveStatus} disabled={submitting} className="px-5 py-2.5 rounded-xl bg-amber-600 hover:bg-amber-500 text-white text-xs font-semibold flex items-center gap-2 disabled:opacity-50 cursor-pointer">
+                    <Send className="w-4 h-4" />
+                    Publier le statut & la réponse
+                  </button>
+
+                  <div className="pt-4 border-t border-neutral-800 space-y-3">
+                    <span className="text-xs font-bold text-neutral-300 flex items-center gap-1.5"><MessageSquare className="w-3.5 h-3.5" /> Commentaires ({selected.comments.length})</span>
+                    <div className="space-y-2 max-h-56 overflow-y-auto">
+                      {selected.comments.length === 0 && <p className="text-[11px] text-neutral-500">Aucun commentaire.</p>}
+                      {selected.comments.map((c) => (
+                        <div key={c.id} className={cn("p-2.5 rounded-xl border text-[11px]", c.isStaff ? "bg-amber-500/5 border-amber-500/20" : "bg-neutral-950 border-neutral-800")}>
+                          <span className="font-bold text-white">{c.userTag}</span>
+                          {c.isStaff && <span className="ml-1.5 text-[9px] px-1 py-0.5 rounded bg-amber-500/20 text-amber-300">STAFF</span>}
+                          <span className="text-neutral-500 ml-2">{formatRelative(c.timestamp)}</span>
+                          <p className="text-neutral-300 mt-1">{c.content}</p>
+                        </div>
+                      ))}
                     </div>
-                  ))}
-              </div>
+                    <div className="flex gap-2">
+                      <input value={commentText} onChange={(e) => setCommentText(e.target.value)} onKeyDown={(e) => e.key === "Enter" && addComment()} placeholder="Ajouter un commentaire staff..." className="flex-1 h-9 rounded-xl bg-neutral-950 border border-neutral-800 px-3 text-xs text-white" />
+                      <button onClick={addComment} disabled={submitting || !commentText.trim()} className="px-3 h-9 rounded-xl bg-neutral-800 hover:bg-neutral-700 text-white text-xs font-semibold disabled:opacity-50 cursor-pointer">Envoyer</button>
+                    </div>
+                  </div>
+                </>
+              )}
             </div>
           </div>
         )}
 
-        {/* TAB 3: Hall of Fame */}
+        {/* TAB: Top idées */}
         {activeTab === "hall_of_fame" && (
           <div className="space-y-4">
-            <h2 className="text-sm font-bold text-white flex items-center gap-2">
-              <Crown className="w-4 h-4 text-amber-400" />
-              Top Suggestions Historiques les Plus Plébiscitées
-            </h2>
-
-            <div className="bg-neutral-900 border border-neutral-800 rounded-2xl overflow-hidden">
-              <div className="divide-y divide-neutral-800">
-                {[...suggestions]
-                  .sort((a, b) => b.upvotes - a.upvotes)
-                  .map((s, idx) => (
-                    <div
-                      key={s.id}
-                      className="p-4 flex flex-col sm:flex-row sm:items-center justify-between gap-4"
-                    >
-                      <div className="flex items-center gap-3">
-                        <span className="w-6 font-mono font-bold text-amber-400 text-sm">
-                          #{idx + 1}
-                        </span>
-                        <div>
-                          <h4 className="text-sm font-bold text-white">{s.title}</h4>
-                          <span className="text-[11px] text-neutral-400">
-                            Par {s.author.username} &bull; Catégorie {s.category}
-                          </span>
-                        </div>
-                      </div>
-
-                      <div className="flex items-center gap-3">
-                        <span className="px-3 py-1 rounded-xl bg-emerald-500/10 text-emerald-400 border border-emerald-500/20 text-xs font-bold flex items-center gap-1.5">
-                          <ThumbsUp className="w-3.5 h-3.5" />
-                          {s.upvotes} upvotes
-                        </span>
-                        <span
-                          className={`px-2.5 py-1 rounded-xl text-xs font-bold border ${
-                            getStatusBadge(s.status).bg
-                          }`}
-                        >
-                          {getStatusBadge(s.status).label}
-                        </span>
-                      </div>
+            <h2 className="text-sm font-bold text-white flex items-center gap-2"><Sparkles className="w-4 h-4 text-amber-400" /> Les idées les mieux notées (score = 👍 − 👎)</h2>
+            {topIdeas.length === 0 ? (
+              <p className="text-xs text-neutral-500">Pas encore de suggestion votée.</p>
+            ) : (
+              <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
+                {topIdeas.map((s, i) => (
+                  <div key={s.id} className="bg-neutral-900 border border-neutral-800 rounded-2xl p-5 space-y-2">
+                    <div className="flex items-center justify-between">
+                      <span className="text-xl">{["🥇", "🥈", "🥉"][i] || `#${i + 1}`}</span>
+                      <span className={cn("px-2 py-0.5 rounded text-[10px] font-bold border", STATUS_META[s.status].cls)}>{STATUS_META[s.status].label}</span>
                     </div>
-                  ))}
-              </div>
-            </div>
-          </div>
-        )}
-
-        {/* TAB 4: Settings */}
-        {activeTab === "settings" && (
-          <div className="bg-neutral-900 border border-neutral-800 rounded-2xl p-6 space-y-6 max-w-2xl">
-            <h3 className="text-base font-bold text-white flex items-center gap-2">
-              <Sliders className="w-4 h-4 text-amber-400" />
-              Configuration du Salon & Anti-Spam
-            </h3>
-
-            <div className="space-y-4 text-xs">
-              <div>
-                <label className="block font-semibold text-neutral-300 mb-1">
-                  Salon Discord dédié aux suggestions
-                </label>
-                <div className="relative">
-                  <Hash className="w-4 h-4 absolute left-3 top-1/2 -translate-y-1/2 text-neutral-500" />
-                  <input
-                    type="text"
-                    value={suggestionChannel}
-                    onChange={(e) => setSuggestionChannel(e.target.value)}
-                    placeholder="boîte-à-idées"
-                    className="w-full h-10 rounded-xl bg-neutral-950 border border-neutral-800 pl-9 pr-3 text-xs text-white focus:outline-none focus:border-amber-500"
-                  />
-                </div>
-              </div>
-
-              <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
-                <div>
-                  <label className="block font-semibold text-neutral-300 mb-1">
-                    Délai entre deux suggestions (Cooldown)
-                  </label>
-                  <input
-                    type="number"
-                    min={5}
-                    max={1440}
-                    value={cooldownMinutes}
-                    onChange={(e) => setCooldownMinutes(Number(e.target.value))}
-                    className="w-full h-10 rounded-xl bg-neutral-950 border border-neutral-800 px-3 text-xs text-white"
-                  />
-                  <span className="text-[10px] text-neutral-500">En minutes (ex: 60 = 1 heure)</span>
-                </div>
-
-                <div>
-                  <label className="block font-semibold text-neutral-300 mb-1">
-                    Longueur minimale du texte
-                  </label>
-                  <input
-                    type="number"
-                    min={10}
-                    max={200}
-                    value={minChars}
-                    onChange={(e) => setMinChars(Number(e.target.value))}
-                    className="w-full h-10 rounded-xl bg-neutral-950 border border-neutral-800 px-3 text-xs text-white"
-                  />
-                  <span className="text-[10px] text-neutral-500">Caractères minimums requis</span>
-                </div>
-              </div>
-
-              <div className="flex items-center justify-between p-3.5 rounded-xl bg-neutral-950 border border-neutral-800">
-                <div>
-                  <span className="font-bold text-white block">Créer un fil de discussion (Thread) automatique</span>
-                  <span className="text-neutral-500 text-[11px]">Permet aux membres de débattre sous chaque suggestion</span>
-                </div>
-                <button
-                  type="button"
-                  onClick={() => setAutoThread(!autoThread)}
-                  className={`px-3 py-1 rounded-lg text-xs font-bold cursor-pointer ${
-                    autoThread ? "bg-amber-500 text-white" : "bg-neutral-800 text-neutral-400"
-                  }`}
-                >
-                  {autoThread ? "Activé" : "Désactivé"}
-                </button>
-              </div>
-
-              <div className="pt-2">
-                <button
-                  type="button"
-                  onClick={() => showToast("Paramètres des suggestions sauvegardés !")}
-                  className="px-5 py-2.5 rounded-xl bg-amber-600 hover:bg-amber-500 text-white font-bold text-xs shadow-sm transition-all cursor-pointer"
-                >
-                  Enregistrer les modifications
-                </button>
-              </div>
-            </div>
-          </div>
-        )}
-
-        {/* Staff Reply Modal */}
-        {selectedSug && (
-          <div className="fixed inset-0 z-50 bg-black/80 backdrop-blur-sm flex items-center justify-center p-4">
-            <div className="bg-neutral-900 border border-neutral-800 rounded-2xl max-w-lg w-full p-6 space-y-4 shadow-2xl">
-              <div className="flex items-center justify-between">
-                <div className="flex items-center gap-2 text-amber-400 font-bold text-sm">
-                  <ShieldCheck className="w-4 h-4" />
-                  <span>Décision Staff - Suggestion #{selectedSug.number}</span>
-                </div>
-                <button onClick={() => setSelectedSug(null)} className="text-neutral-500 hover:text-white">
-                  <X className="w-4 h-4" />
-                </button>
-              </div>
-
-              <div className="p-3 rounded-xl bg-neutral-950 border border-neutral-800 text-xs space-y-1">
-                <h4 className="font-bold text-white">{selectedSug.title}</h4>
-                <p className="text-neutral-400 text-[11px]">{selectedSug.description}</p>
-                <p className="text-[10px] text-neutral-500 pt-1">
-                  Proposé par {selectedSug.author.username} &bull; {selectedSug.upvotes} 👍 / {selectedSug.downvotes} 👎
-                </p>
-              </div>
-
-              <div className="space-y-3 text-xs">
-                <div>
-                  <label className="block font-semibold text-neutral-300 mb-1.5">
-                    Nouveau statut de la suggestion
-                  </label>
-                  <div className="grid grid-cols-2 sm:grid-cols-3 gap-2">
-                    {[
-                      { id: "PENDING", label: "En Attente" },
-                      { id: "DISCUSSION", label: "En Discussion" },
-                      { id: "APPROVED", label: "Approuvée" },
-                      { id: "IN_PROGRESS", label: "En Développement" },
-                      { id: "COMPLETED", label: "Réalisée" },
-                      { id: "REJECTED", label: "Rejetée" },
-                    ].map((st) => (
-                      <button
-                        key={st.id}
-                        type="button"
-                        onClick={() => setNewStatus(st.id as SuggestionStatus)}
-                        className={`p-2 rounded-xl border text-center font-semibold text-xs transition-all cursor-pointer ${
-                          newStatus === st.id
-                            ? "bg-amber-500 text-white border-amber-400 shadow-sm"
-                            : "bg-neutral-950 border-neutral-800 text-neutral-400 hover:text-white"
-                        }`}
-                      >
-                        {st.label}
-                      </button>
-                    ))}
+                    <h3 className="text-sm font-bold text-white">{s.title}</h3>
+                    <p className="text-[11px] text-neutral-400">{s.authorTag} · score <span className="text-emerald-400 font-bold">{s.score}</span> · 👍 {s.upvotesCount} / 👎 {s.downvotesCount}</p>
                   </div>
-                </div>
-
-                <div>
-                  <label className="block font-semibold text-neutral-300 mb-1">
-                    Commentaire / Explication officielle du Staff
-                  </label>
-                  <textarea
-                    rows={3}
-                    placeholder="Expliquez la décision pour la communauté (sera affiché dans l'embed Discord)..."
-                    value={staffReplyText}
-                    onChange={(e) => setStaffReplyText(e.target.value)}
-                    className="w-full rounded-xl bg-neutral-950 border border-neutral-800 p-3 text-xs text-white placeholder-neutral-500 focus:outline-none focus:border-amber-500"
-                  />
-                </div>
-
-                <div className="flex items-center justify-between p-3 rounded-xl bg-neutral-950 border border-neutral-800">
-                  <span className="text-neutral-300">Attribuer +50 XP bonus à l'auteur de l'idée</span>
-                  <input
-                    type="checkbox"
-                    checked={rewardAuthorXp}
-                    onChange={(e) => setRewardAuthorXp(e.target.checked)}
-                    className="w-4 h-4 rounded text-amber-500"
-                  />
-                </div>
+                ))}
               </div>
+            )}
+          </div>
+        )}
 
-              <div className="flex justify-end gap-2 pt-2">
-                <button
-                  type="button"
-                  onClick={() => setSelectedSug(null)}
-                  className="px-4 py-2 rounded-xl text-xs font-semibold text-neutral-400 hover:text-white bg-neutral-800"
-                >
-                  Annuler
-                </button>
-                <button
-                  type="button"
-                  onClick={handleSaveStaffReply}
-                  className="px-4 py-2 rounded-xl text-xs font-bold text-white bg-amber-600 hover:bg-amber-500 shadow-sm flex items-center gap-1.5 cursor-pointer"
-                >
-                  <Send className="w-4 h-4" />
-                  Publier la décision
-                </button>
+        {/* TAB: Paramètres */}
+        {activeTab === "settings" && (
+          <div className="bg-neutral-900 border border-neutral-800 rounded-2xl p-6 space-y-5 max-w-2xl">
+            <h3 className="text-base font-bold text-white flex items-center gap-2"><Sliders className="w-4 h-4 text-amber-400" /> Salon, anti-spam & notifications</h3>
+
+            <div className="flex items-center justify-between p-3.5 rounded-xl bg-neutral-950 border border-neutral-800">
+              <div>
+                <span className="font-bold text-white text-xs block">Module activé</span>
+                <span className="text-neutral-500 text-[11px]">Autorise /suggest et les votes sur Discord</span>
+              </div>
+              <button onClick={() => saveConfig({ enabled: !config.enabled })} className={cn("px-3 py-1 rounded-lg text-xs font-bold cursor-pointer", config.enabled ? "bg-amber-500 text-white" : "bg-neutral-800 text-neutral-400")}>
+                {config.enabled ? "Activé" : "Désactivé"}
+              </button>
+            </div>
+
+            <div>
+              <label className="block text-xs font-semibold text-neutral-300 mb-1">Salon des suggestions (ID)</label>
+              <div className="relative">
+                <Hash className="w-4 h-4 absolute left-3 top-1/2 -translate-y-1/2 text-neutral-500" />
+                <input
+                  type="text"
+                  value={config.channelId || ""}
+                  onChange={(e) => setConfig((p) => ({ ...p, channelId: e.target.value || null }))}
+                  onBlur={() => saveConfig({ channelId: config.channelId })}
+                  placeholder="Clic droit sur le salon → Copier l'identifiant"
+                  className="w-full h-10 rounded-xl bg-neutral-950 border border-neutral-800 pl-9 pr-3 text-xs text-white"
+                />
               </div>
             </div>
+
+            <div className="flex items-center justify-between p-3.5 rounded-xl bg-neutral-950 border border-neutral-800">
+              <div>
+                <span className="font-bold text-white text-xs block">Cooldown entre deux suggestions</span>
+                <span className="text-neutral-500 text-[11px]">Minutes minimum par membre (anti-spam)</span>
+              </div>
+              <input type="number" min={0} max={1440} value={config.cooldownMinutes} onChange={(e) => setConfig((p) => ({ ...p, cooldownMinutes: Number(e.target.value) }))} onBlur={() => saveConfig({ cooldownMinutes: config.cooldownMinutes })} className="w-20 h-9 rounded-xl bg-neutral-900 border border-neutral-700 text-center text-xs font-bold text-amber-400" />
+            </div>
+
+            <div className="flex items-center justify-between p-3.5 rounded-xl bg-neutral-950 border border-neutral-800">
+              <div>
+                <span className="font-bold text-white text-xs block">Fil de discussion automatique</span>
+                <span className="text-neutral-500 text-[11px]">Crée un thread sous chaque suggestion</span>
+              </div>
+              <button onClick={() => saveConfig({ autoThread: !config.autoThread })} className={cn("px-3 py-1 rounded-lg text-xs font-bold cursor-pointer", config.autoThread ? "bg-amber-500 text-white" : "bg-neutral-800 text-neutral-400")}>
+                {config.autoThread ? "Activé" : "Désactivé"}
+              </button>
+            </div>
+
+            <div className="flex items-center justify-between p-3.5 rounded-xl bg-neutral-950 border border-neutral-800">
+              <div>
+                <span className="font-bold text-white text-xs block">Notifier l'auteur en MP</span>
+                <span className="text-neutral-500 text-[11px]">À chaque changement de statut</span>
+              </div>
+              <button onClick={() => saveConfig({ dmNotifications: !config.dmNotifications })} className={cn("px-3 py-1 rounded-lg text-xs font-bold cursor-pointer", config.dmNotifications ? "bg-amber-500 text-white" : "bg-neutral-800 text-neutral-400")}>
+                {config.dmNotifications ? "Activé" : "Désactivé"}
+              </button>
+            </div>
+
+            <div>
+              <label className="block text-xs font-semibold text-neutral-300 mb-1">Catégories (séparées par des virgules)</label>
+              <input
+                type="text"
+                value={config.categories.join(", ")}
+                onChange={(e) => setConfig((p) => ({ ...p, categories: e.target.value.split(",").map((c) => c.trim()).filter(Boolean) }))}
+                onBlur={() => saveConfig({ categories: config.categories })}
+                className="w-full h-10 rounded-xl bg-neutral-950 border border-neutral-800 px-3 text-xs text-white"
+              />
+            </div>
+            {savingConfig && <p className="text-[10px] text-neutral-500">Enregistrement...</p>}
           </div>
         )}
       </div>

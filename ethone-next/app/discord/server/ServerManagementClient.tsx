@@ -39,6 +39,7 @@ import {
   Wifi,
 } from "lucide-react";
 import { useToast } from "@/components/ToastProvider";
+import { Tabs, TabsList, TabsTrigger } from "@/components/ui/Tabs";
 import { cn } from "@/lib/utils";
 
 // ==========================================
@@ -1430,37 +1431,33 @@ export default function ServerManagementClient({
           </div>
 
           {/* Navigation Tabs Bar */}
-          <div className="flex items-center gap-1 mt-4 overflow-x-auto pb-1 scrollbar-none border-t border-[var(--panel-border)] pt-3">
-            {[
-              { id: "overview", label: "Vue d'ensemble", icon: BarChart3 },
-              { id: "members", label: "Membres", icon: Users },
-              { id: "channels", label: "Salons", icon: Hash },
-              { id: "roles", label: "Rôles", icon: Shield },
-              { id: "permissions", label: "Permissions & Debugger", icon: Key },
-              { id: "emojis", label: "Emojis & Stickers", icon: Smile },
-              { id: "webhooks", label: "Webhooks", icon: Webhook },
-              { id: "settings", label: "Paramètres Serveur", icon: Settings },
-              { id: "audit", label: "Journal d'Audit", icon: FileText },
-              { id: "health", label: "Diagnostic Santé", icon: Activity },
-            ].map((tab) => {
-              const Icon = tab.icon;
-              const isActive = activeTab === tab.id;
-              return (
-                <button
-                  key={tab.id}
-                  onClick={() => handleTabChange(tab.id as ServerTab)}
-                  className={cn(
-                    "flex items-center gap-2 px-3 py-1.5 rounded-xl text-xs font-semibold whitespace-nowrap transition-all cursor-pointer",
-                    isActive
-                      ? "bg-indigo-600 text-white shadow-sm"
-                      : "text-zinc-400 hover:text-zinc-200 hover:bg-white/5"
-                  )}
-                >
-                  <Icon className={cn("h-3.5 w-3.5", isActive ? "text-white" : "text-zinc-400")} />
-                  <span>{tab.label}</span>
-                </button>
-              );
-            })}
+          <div className="mt-4 overflow-x-auto pb-1 scrollbar-none border-t border-[var(--panel-border)] pt-3">
+            <Tabs value={activeTab} onValueChange={(v) => handleTabChange(v as ServerTab)} variant="pill">
+              <TabsList className="w-max">
+                {[
+                  { id: "overview", label: "Vue d'ensemble", icon: BarChart3 },
+                  { id: "members", label: "Membres", icon: Users },
+                  { id: "channels", label: "Salons", icon: Hash },
+                  { id: "roles", label: "Rôles", icon: Shield },
+                  { id: "permissions", label: "Permissions & Debugger", icon: Key },
+                  { id: "emojis", label: "Emojis & Stickers", icon: Smile },
+                  { id: "webhooks", label: "Webhooks", icon: Webhook },
+                  { id: "settings", label: "Paramètres Serveur", icon: Settings },
+                  { id: "audit", label: "Journal d'Audit", icon: FileText },
+                  { id: "health", label: "Diagnostic Santé", icon: Activity },
+                ].map((tab) => {
+                  const Icon = tab.icon;
+                  return (
+                    <TabsTrigger key={tab.id} value={tab.id}>
+                      <span className="flex items-center gap-2 whitespace-nowrap">
+                        <Icon className="h-3.5 w-3.5" />
+                        {tab.label}
+                      </span>
+                    </TabsTrigger>
+                  );
+                })}
+              </TabsList>
+            </Tabs>
           </div>
         </div>
       </header>

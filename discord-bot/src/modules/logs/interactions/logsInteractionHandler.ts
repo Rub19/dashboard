@@ -15,16 +15,24 @@ import { auditRepository } from '../storage/auditRepository.js';
 import type { AuditChannelRouting, AuditSettings, ChannelLogThreshold } from '../types/auditEvent.js';
 import { baseEmbed } from '../../../utils/embeds.js';
 import { logger } from '../../../utils/logger.js';
+import { emitConfigUpdated } from '../../../services/syncConfigEmitter.js';
 
 /**
  * `auditRepository.updateConfig` fusionne `routing` au runtime, mais son type
  * attend un `AuditChannelRouting` complet. Ce helper concentre le cast.
  */
-export function patchLogRouting(guildId: string, patch: Partial<AuditChannelRouting>, extra: Partial<AuditSettings> = {}) {
-  return auditRepository.updateConfig(guildId, {
+export function patchLogRouting(
+  guildId: string,
+  patch: Partial<AuditChannelRouting>,
+  extra: Partial<AuditSettings> = {},
+  actorId?: string
+) {
+  const updated = auditRepository.updateConfig(guildId, {
     ...extra,
     routing: patch as AuditChannelRouting,
   });
+  emitConfigUpdated('logs', guildId, updated, 'DISCORD_COMMAND', actorId);
+  return updated;
 }
 
 /**
@@ -183,14 +191,15 @@ export async function handleLogsInteraction(
     if (interaction.isChannelSelectMenu() && id.startsWith('logs_pick:')) {
       const bucket = id.split(':')[1] as LogBucket;
       const picked = interaction.values[0] ?? null;
-      patchLogRouting(guildId, { [channelIdKey(bucket)]: picked }, picked ? { enabled: true } : {});
+      patchLogRouting(guildId, { [channelIdKey(bucket)]: picked }, picked ? { enabled: true } : {}, interaction.user.id);
       await interaction.update(buildLogsPanel(interaction.guild, bucket));
       return;
     }
 
     // Sélecteur de rétention
     if (interaction.isStringSelectMenu() && id === 'logs_retention') {
-      auditRepository.updateConfig(guildId, { retentionDays: Number(interaction.values[0]) });
+      const updated = auditRepository.updateConfig(guildId, { retentionDays: Number(interaction.values[0]) });
+      emitConfigUpdated('logs', guildId, updated, 'DISCORD_COMMAND', interaction.user.id);
       await interaction.update(buildLogsPanel(interaction.guild, 'general'));
       return;
     }
@@ -203,13 +212,14 @@ export async function handleLogsInteraction(
       }
       if (id === 'logs_toggle') {
         const cur = auditRepository.getConfig(guildId);
-        auditRepository.updateConfig(guildId, { enabled: !cur.enabled });
+        const updated = auditRepository.updateConfig(guildId, { enabled: !cur.enabled });
+        emitConfigUpdated('logs', guildId, updated, 'DISCORD_COMMAND', interaction.user.id);
         await interaction.update(buildLogsPanel(interaction.guild, 'general'));
         return;
       }
       if (id.startsWith('logs_clear:')) {
         const bucket = id.split(':')[1] as LogBucket;
-        patchLogRouting(guildId, { [channelIdKey(bucket)]: null });
+        patchLogRouting(guildId, { [channelIdKey(bucket)]: null }, {}, interaction.user.id);
         await interaction.update(buildLogsPanel(interaction.guild, bucket));
         return;
       }
@@ -219,7 +229,7 @@ export async function handleLogsInteraction(
         const key = `${bucket}Threshold` as keyof AuditChannelRouting;
         const currentThr = cur.routing[key] as ChannelLogThreshold;
         const next = THRESHOLD_CYCLE[(THRESHOLD_CYCLE.indexOf(currentThr) + 1) % THRESHOLD_CYCLE.length];
-        patchLogRouting(guildId, { [key]: next });
+        patchLogRouting(guildId, { [key]: next }, {}, interaction.user.id);
         await interaction.update(buildLogsPanel(interaction.guild, bucket));
         return;
       }

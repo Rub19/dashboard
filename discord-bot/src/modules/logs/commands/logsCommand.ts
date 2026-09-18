@@ -148,7 +148,8 @@ export const logsCommand: Command = {
           automodChannelId: channel.id,
           raidChannelId: channel.id,
         },
-        { enabled: true }
+        { enabled: true },
+        ctx.author.id
       );
       await ctx.reply({
         embeds: [
@@ -166,7 +167,7 @@ export const logsCommand: Command = {
     if (sub === 'route') {
       const bucket = ctx.interaction.options.getString('categorie', true) as LogBucket;
       const channel = ctx.interaction.options.getChannel('salon') as TextChannel | null;
-      patchLogRouting(guild.id, { [key(bucket)]: channel?.id ?? null }, channel ? { enabled: true } : {});
+      patchLogRouting(guild.id, { [key(bucket)]: channel?.id ?? null }, channel ? { enabled: true } : {}, ctx.author.id);
       await ctx.reply({
         embeds: [
           ctx
@@ -184,7 +185,7 @@ export const logsCommand: Command = {
     if (sub === 'verbosite') {
       const bucket = ctx.interaction.options.getString('categorie', true) as LogBucket;
       const level = ctx.interaction.options.getString('niveau', true) as ChannelLogThreshold;
-      patchLogRouting(guild.id, { [thrKey(bucket)]: level });
+      patchLogRouting(guild.id, { [thrKey(bucket)]: level }, {}, ctx.author.id);
       await ctx.reply({
         embeds: [
           ctx

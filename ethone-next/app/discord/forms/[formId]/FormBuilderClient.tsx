@@ -1,8 +1,11 @@
 "use client";
 
-import { useState, useMemo } from "react";
+import { useState, useMemo, useEffect, useCallback } from "react";
 import Link from "next/link";
 import { useParams, useSearchParams } from "next/navigation";
+import { useDiscordOAuth } from "@/lib/hooks/useDiscordOAuth";
+
+const BOT_API_URL = process.env.NEXT_PUBLIC_DISCORD_BOT_API || "";
 import {
   Plus,
   Trash2,
@@ -119,106 +122,90 @@ interface FormCondition {
 }
 
 const DEFAULT_SECTIONS: BuilderSection[] = [
-  { id: "sec-1", title: "Étape 1 : Identité & Profil", description: "Informations de base" },
-  { id: "sec-2", title: "Étape 2 : Compétences & Motivations", description: "Détaillez vos aptitudes" },
-];
-
-const DEFAULT_FIELDS: BuilderField[] = [
-  {
-    id: "f-age",
-    type: "NUMBER",
-    label: "Quel est votre âge ?",
-    description: "Âge minimum requis : 16 ans",
-    placeholder: "18",
-    required: true,
-    min: 14,
-    max: 99,
-    options: [],
-    sectionId: "sec-1",
-  },
-  {
-    id: "f-exp",
-    type: "YES_NO",
-    label: "Avez-vous déjà été modérateur sur un serveur Discord ?",
-    description: "Expérience préalable sur un serveur de plus de 500 membres",
-    placeholder: "",
-    required: true,
-    options: [
-      { id: "opt-1", label: "Oui", value: "yes", points: 25 },
-      { id: "opt-2", label: "Non", value: "no", points: 5 },
-    ],
-    sectionId: "sec-1",
-  },
-  {
-    id: "f-exp-desc",
-    type: "LONG_TEXT",
-    label: "Décrivez votre expérience passée",
-    description: "Précisez les types de serveurs et outils utilisés",
-    placeholder: "J'ai modéré le serveur X pendant 8 mois...",
-    required: false,
-    minLength: 20,
-    maxLength: 1000,
-    options: [],
-    sectionId: "sec-1",
-  },
-  {
-    id: "f-hours",
-    type: "SELECT",
-    label: "Disponibilité hebdomadaire",
-    description: "Temps moyen que vous pouvez consacrer au staff",
-    placeholder: "Sélectionnez une tranche",
-    required: true,
-    options: [
-      { id: "h-1", label: "Moins de 5h / sem", value: "less_5", points: 5 },
-      { id: "h-2", label: "5 à 15h / sem", value: "5_15", points: 15 },
-      { id: "h-3", label: "15 à 25h / sem", value: "15_25", points: 25 },
-      { id: "h-4", label: "Plus de 25h / sem", value: "more_25", points: 30 },
-    ],
-    sectionId: "sec-2",
-  },
-  {
-    id: "f-motivation",
-    type: "LONG_TEXT",
-    label: "Quelles sont vos motivations pour rejoindre ETHONE ?",
-    description: "Ce que vous pouvez apporter à l'équipe",
-    placeholder: "Je souhaite aider les membres et assurer la tranquillité...",
-    required: true,
-    minLength: 30,
-    maxLength: 1500,
-    options: [],
-    sectionId: "sec-2",
-  },
+  { id: "sec-1", title: "Informations générales", description: "" },
 ];
 
 export default function FormBuilderClient() {
   const params = useParams();
   const searchParams = useSearchParams();
   const formId = (params?.formId as string) || "demo";
-  const rawGuildId = searchParams.get("guildId") || "123456789012345678";
-  const { success } = useToast();
+  const urlGuildId = searchParams.get("guildId");
+  const { profile } = useDiscordOAuth();
+  const { success, error: showError } = useToast();
 
-  const [formTitle, setFormTitle] = useState("Candidature Modérateur / Staff 2026");
-  const [formDescription, setFormDescription] = useState(
-    "Rejoignez notre équipe de modération. Remplissez ce formulaire complet."
-  );
+  const activeGuild = useMemo(() => {
+    if (urlGuildId && profile?.guilds) {
+      return profile.guilds.find((g) => g.id === urlGuildId) || profile.guilds[0];
+    }
+    return profile?.guilds?.[0] || null;
+  }, [urlGuildId, profile?.guilds]);
+  const rawGuildId = activeGuild?.id || urlGuildId || "123456789012345678";
+  const isRealGuild = Boolean(BOT_API_URL) && rawGuildId !== "123456789012345678";
+  const formUrl = `${BOT_API_URL}/api/guilds/${rawGuildId}/forms/${formId}`;
+
+  const [formTitle, setFormTitle] = useState("");
+  const [formDescription, setFormDescription] = useState("");
+  const [formStatus, setFormStatus] = useState<"DRAFT" | "PUBLISHED" | "CLOSED" | "ARCHIVED">("DRAFT");
+  const [formVersion, setFormVersion] = useState(1);
   const [sections, setSections] = useState<BuilderSection[]>(DEFAULT_SECTIONS);
   const [activeSectionId, setActiveSectionId] = useState<string>("sec-1");
-  const [fields, setFields] = useState<BuilderField[]>(DEFAULT_FIELDS);
-  const [selectedFieldId, setSelectedFieldId] = useState<string | null>("f-age");
-  const [conditions, setConditions] = useState<FormCondition[]>([
-    {
-      id: "c-1",
-      sourceFieldId: "f-exp",
-      operator: "EQUALS",
-      value: "yes",
-      action: "SHOW_FIELD",
-    },
-  ]);
+  const [fields, setFields] = useState<BuilderField[]>([]);
+  const [selectedFieldId, setSelectedFieldId] = useState<string | null>(null);
+  const [conditions, setConditions] = useState<FormCondition[]>([]);
+  const [loading, setLoading] = useState(true);
+  const [loadError, setLoadError] = useState<string | null>(null);
+  const [dirty, setDirty] = useState(false);
 
   // View mode
   const [previewMode, setPreviewMode] = useState<"edit" | "desktop" | "mobile" | "discord">("edit");
-  const [previewAnswers, setPreviewAnswers] = useState<Record<string, any>>({});
   const [isSaving, setIsSaving] = useState(false);
+
+  // Real form from the bot. Every mutation below marks the builder dirty; the
+  // header "Enregistrer" PUTs the whole structure back.
+  const load = useCallback(async () => {
+    if (!isRealGuild) {
+      setLoading(false);
+      setLoadError("Connecte un serveur avec le bot pour éditer un formulaire.");
+      return;
+    }
+    setLoading(true);
+    try {
+      const res = await fetch(formUrl, { credentials: "include" });
+      const data = await res.json().catch(() => null);
+      if (!res.ok || !data?.form) throw new Error(data?.error || "Formulaire introuvable");
+      const f = data.form;
+      setFormTitle(f.title || "");
+      setFormDescription(f.description || "");
+      setFormStatus(f.status || "DRAFT");
+      setFormVersion(f.version || 1);
+      const secs: BuilderSection[] = Array.isArray(f.sections) && f.sections.length > 0
+        ? [...f.sections].sort((a: any, b: any) => (a.order || 0) - (b.order || 0)).map((s: any) => ({ id: s.id, title: s.title, description: s.description || "" }))
+        : DEFAULT_SECTIONS;
+      setSections(secs);
+      setActiveSectionId(secs[0].id);
+      const flds: BuilderField[] = (Array.isArray(f.fields) ? [...f.fields] : [])
+        .sort((a: any, b: any) => (a.order || 0) - (b.order || 0))
+        .map((x: any) => ({ id: x.id, type: x.type, label: x.label, description: x.description || "", placeholder: x.placeholder || "", required: Boolean(x.required), min: x.min, max: x.max, minLength: x.minLength, maxLength: x.maxLength, options: Array.isArray(x.options) ? x.options : [], sectionId: secs.some((s) => s.id === x.sectionId) ? x.sectionId : secs[0].id }));
+      setFields(flds);
+      setSelectedFieldId(flds[0]?.id || null);
+      setConditions(Array.isArray(f.conditions) ? f.conditions : []);
+      setDirty(false);
+      setLoadError(null);
+    } catch (e: any) {
+      setLoadError(e?.message || "Impossible de charger le formulaire.");
+    } finally {
+      setLoading(false);
+    }
+  }, [formUrl, isRealGuild]);
+
+  useEffect(() => {
+    load();
+  }, [load]);
+
+  useEffect(() => {
+    if (!loading) setDirty(true);
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [formTitle, formDescription, sections, fields, conditions]);
 
   // Selected Field
   const selectedField = useMemo(() => {
@@ -305,14 +292,68 @@ export default function FormBuilderClient() {
     success("Étape ajoutée", "Une nouvelle page multi-step a été créée.");
   };
 
-  // Save changes
-  const handleSave = () => {
+  const buildPayload = () => ({
+    title: formTitle.trim() || "Formulaire sans titre",
+    description: formDescription,
+    sections: sections.map((s, i) => ({ id: s.id, title: s.title, description: s.description, order: i })),
+    fields: fields.map((f, i) => ({ ...f, order: i })),
+    conditions,
+  });
+
+  // Save changes → PUT the whole structure to the bot.
+  const handleSave = async (): Promise<boolean> => {
+    if (!isRealGuild) {
+      showError("Serveur requis", "Connecte un serveur avec le bot.");
+      return false;
+    }
     setIsSaving(true);
-    setTimeout(() => {
+    try {
+      const res = await fetch(formUrl, { method: "PUT", credentials: "include", headers: { "content-type": "application/json" }, body: JSON.stringify(buildPayload()) });
+      const data = await res.json().catch(() => null);
+      if (!res.ok || !data?.form) throw new Error(data?.error || "save failed");
+      setFormVersion(data.form.version || formVersion);
+      setDirty(false);
+      success("Formulaire enregistré", `${fields.length} champ(s) sur ${sections.length} étape(s).`);
+      return true;
+    } catch (e: any) {
+      showError("Échec de l'enregistrement", e?.message || "Le bot n'a pas répondu.");
+      return false;
+    } finally {
       setIsSaving(false);
-      success("Formulaire sauvegardé", "Toutes les modifications ont été enregistrées localement.");
-    }, 400);
+    }
   };
+
+  // Publish: save first, then flip the status so members can submit.
+  const handlePublish = async () => {
+    if (fields.length === 0) {
+      showError("Formulaire vide", "Ajoute au moins un champ avant de publier.");
+      return;
+    }
+    const saved = await handleSave();
+    if (!saved) return;
+    try {
+      const res = await fetch(`${formUrl}/publish`, { method: "POST", credentials: "include" });
+      const data = await res.json().catch(() => null);
+      if (!res.ok || !data?.form) throw new Error(data?.error || "publish failed");
+      setFormStatus(data.form.status || "PUBLISHED");
+      setFormVersion(data.form.version || formVersion);
+      success("Formulaire publié", "Publie maintenant le panneau Discord depuis Paramètres & Discord.");
+    } catch (e: any) {
+      showError("Échec de la publication", e?.message || "Le bot n'a pas répondu.");
+    }
+  };
+
+  if (loading) {
+    return <div className="min-h-screen bg-black text-xs text-zinc-400 flex items-center justify-center">Chargement du formulaire...</div>;
+  }
+  if (loadError) {
+    return (
+      <div className="min-h-screen bg-black text-white p-8 space-y-4">
+        <Link href={`/discord/forms?guildId=${rawGuildId}`} className="inline-flex items-center gap-2 text-sm text-zinc-400 hover:text-white"><ArrowLeft className="h-4 w-4" /> Retour aux formulaires</Link>
+        <div className="rounded-2xl border border-rose-500/30 bg-rose-500/10 p-4 text-xs text-rose-300">{loadError}</div>
+      </div>
+    );
+  }
 
   return (
     <div className="min-h-screen bg-black text-white flex flex-col">
@@ -333,9 +374,10 @@ export default function FormBuilderClient() {
               onChange={(e) => setFormTitle(e.target.value)}
               className="bg-transparent text-sm font-bold text-white border-b border-transparent hover:border-[var(--input-border-hover)] focus:border-indigo-500 outline-none px-1 py-0.5 rounded transition-colors"
             />
-            <span className="text-[10px] font-bold uppercase tracking-wider px-2 py-0.5 rounded-full bg-amber-500/20 text-amber-300 border border-amber-500/30">
-              Brouillon v2
+            <span className={cn("text-[10px] font-bold uppercase tracking-wider px-2 py-0.5 rounded-full border", formStatus === "PUBLISHED" ? "bg-emerald-500/20 text-emerald-300 border-emerald-500/30" : formStatus === "DRAFT" ? "bg-amber-500/20 text-amber-300 border-amber-500/30" : "bg-zinc-700/40 text-zinc-300 border-zinc-600")}>
+              {formStatus === "PUBLISHED" ? "Publié" : formStatus === "DRAFT" ? "Brouillon" : formStatus === "CLOSED" ? "Fermé" : "Archivé"} v{formVersion}
             </span>
+            {dirty && <span className="text-[10px] text-amber-400">• non enregistré</span>}
           </div>
         </div>
 
@@ -394,12 +436,22 @@ export default function FormBuilderClient() {
           </Link>
           <button
             onClick={handleSave}
-            disabled={isSaving}
-            className="flex h-8 items-center gap-1.5 px-3.5 rounded-xl bg-indigo-600 text-xs font-bold text-white shadow hover:bg-indigo-500 transition-all cursor-pointer active:scale-95"
+            disabled={isSaving || !dirty}
+            className="flex h-8 items-center gap-1.5 px-3.5 rounded-xl border border-[var(--panel-border)] bg-white/5 text-xs font-bold text-white hover:bg-white/10 transition-all cursor-pointer active:scale-95 disabled:opacity-50"
           >
             <Save className="h-3.5 w-3.5" />
-            <span>{isSaving ? "Sauvegarde..." : "Publier"}</span>
+            <span>{isSaving ? "Sauvegarde..." : "Enregistrer"}</span>
           </button>
+          {formStatus !== "PUBLISHED" && (
+            <button
+              onClick={handlePublish}
+              disabled={isSaving}
+              className="flex h-8 items-center gap-1.5 px-3.5 rounded-xl bg-indigo-600 text-xs font-bold text-white shadow hover:bg-indigo-500 transition-all cursor-pointer active:scale-95 disabled:opacity-50"
+            >
+              <CheckCircle2 className="h-3.5 w-3.5" />
+              <span>Publier</span>
+            </button>
+          )}
         </div>
       </header>
 
@@ -888,10 +940,12 @@ export default function FormBuilderClient() {
 
             <div className="mt-6 pt-4 border-t border-[var(--panel-border)] flex justify-end">
               <button
-                onClick={() => success("Simulation de soumission", "Test de formulaire exécuté sans impacter les analytics réelles.")}
-                className="h-9 px-4 rounded-xl bg-indigo-600 text-xs font-bold text-white hover:bg-indigo-500 shadow cursor-pointer active:scale-95"
+                type="button"
+                disabled
+                title="Aperçu seulement — les membres répondent via le panneau Discord ou le portail web"
+                className="h-9 px-4 rounded-xl bg-indigo-600/60 text-xs font-bold text-white shadow cursor-not-allowed"
               >
-                Envoyer la candidature
+                Envoyer (aperçu)
               </button>
             </div>
           </div>

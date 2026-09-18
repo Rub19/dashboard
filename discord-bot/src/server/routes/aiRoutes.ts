@@ -46,8 +46,32 @@ export function createAiRouter(client: Client): Router {
   });
 
   // 2b. Réglages de comportement (mode global, anti-hallucination, sources,
-  // mémoire, budget) — whitelist explicite pour ne jamais laisser le dashboard
+  // mémoire, budget, salon IA dédié, génération d'images, humeur du Thon,
+  // mots bannis) — whitelist explicite pour ne jamais laisser le dashboard
   // toucher provider/model/clés via cette route.
+  const BEHAVIOR_FIELDS = (settings: ReturnType<typeof aiRepository.getSettings>) => ({
+    enabled: settings.enabled,
+    defaultMode: settings.defaultMode,
+    hallucinationMode: settings.hallucinationMode,
+    showSources: settings.showSources,
+    memory: settings.memory,
+    dailyBudgetTokens: settings.dailyBudgetTokens,
+    dedicatedChannelId: settings.dedicatedChannelId ?? null,
+    allowImageGeneration: settings.allowImageGeneration ?? false,
+    bannedWords: settings.bannedWords ?? [],
+    thonMood: settings.thonMood ?? 'SAGE',
+  });
+
+  router.get('/settings', (req: Request, res: Response) => {
+    try {
+      const guildId = requireStringParam(req.params.guildId, 'guildId');
+      res.json(BEHAVIOR_FIELDS(aiRepository.getSettings(guildId)));
+    } catch (err: any) {
+      logger.error('Erreur GET /ai/settings :', err);
+      res.status(500).json({ error: err.message || 'Erreur serveur' });
+    }
+  });
+
   router.put('/settings', (req: Request, res: Response) => {
     try {
       const guildId = requireStringParam(req.params.guildId, 'guildId');
@@ -62,16 +86,19 @@ export function createAiRouter(client: Client): Router {
         const current = aiRepository.getSettings(guildId).memory;
         patch.memory = { ...current, ...body.memory };
       }
+      if (typeof body.dedicatedChannelId === 'string' || body.dedicatedChannelId === null) {
+        patch.dedicatedChannelId = body.dedicatedChannelId;
+      }
+      if (typeof body.allowImageGeneration === 'boolean') patch.allowImageGeneration = body.allowImageGeneration;
+      if (Array.isArray(body.bannedWords) && body.bannedWords.every((w: unknown) => typeof w === 'string')) {
+        patch.bannedWords = body.bannedWords.slice(0, 200);
+      }
+      if (['SAGE', 'GAMER_SARCASTIQUE', 'PROTECTEUR', 'CYBERPUNK', 'CUSTOM'].includes(body.thonMood)) {
+        patch.thonMood = body.thonMood;
+      }
       const updated = aiRepository.saveSettings(guildId, patch as any);
       emitConfigUpdated('ai', guildId, updated, 'DASHBOARD', req.user?.id);
-      res.json({
-        enabled: updated.enabled,
-        defaultMode: updated.defaultMode,
-        hallucinationMode: updated.hallucinationMode,
-        showSources: updated.showSources,
-        memory: updated.memory,
-        dailyBudgetTokens: updated.dailyBudgetTokens,
-      });
+      res.json(BEHAVIOR_FIELDS(updated));
     } catch (err: any) {
       logger.error('Erreur PUT /ai/settings :', err);
       res.status(500).json({ error: err.message || 'Erreur serveur' });
@@ -83,7 +110,15 @@ export function createAiRouter(client: Client): Router {
     try {
       const guildId = requireStringParam(req.params.guildId, 'guildId');
       const settings = aiRepository.getSettings(guildId);
+      const guild = client.guilds.cache.get(guildId);
+      const textChannels = guild
+        ? guild.channels.cache
+            .filter((c) => c.isTextBased() && !c.isThread())
+            .map((c) => ({ id: c.id, name: c.name }))
+            .sort((a, b) => a.name.localeCompare(b.name))
+        : [];
       res.json({
+        textChannels,
         defaultMode: settings.defaultMode,
         channelRules: settings.channelRules,
         allowedChannels: settings.allowedChannelIds,

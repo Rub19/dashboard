@@ -51,11 +51,11 @@ interface ConfigurationGroupProps {
   // AI
   aiTelemetry: any;
   dedicatedAiChannelEnabled: boolean;
-  setDedicatedAiChannelEnabled: (updater: (v: boolean) => boolean) => void;
+  setDedicatedAiChannelEnabled: (v: boolean) => void;
   dedicatedAiChannel: string;
   setDedicatedAiChannel: (v: string) => void;
   allowImageGen: boolean;
-  setAllowImageGen: (updater: (v: boolean) => boolean) => void;
+  setAllowImageGen: (v: boolean) => void;
   thonMood: string;
   setThonMood: (v: any) => void;
   newBannedWordInput: string;
@@ -63,6 +63,8 @@ interface ConfigurationGroupProps {
   handleAddBannedWord: () => void;
   bannedWordsList: string[];
   handleRemoveBannedWord: (word: string) => void;
+  saveAiBehaviorSettings: (patch: Record<string, unknown>) => void;
+  aiTextChannels: { id: string; name: string }[];
   toast: any;
 }
 
@@ -100,6 +102,8 @@ export default function ConfigurationGroup({
   handleAddBannedWord,
   bannedWordsList,
   handleRemoveBannedWord,
+  saveAiBehaviorSettings,
+  aiTextChannels,
   toast,
 }: ConfigurationGroupProps) {
   return (
@@ -847,9 +851,11 @@ export default function ConfigurationGroup({
                   </span>
                   <button
                     onClick={() => {
-                      setDedicatedAiChannelEnabled((v: boolean) => !v);
+                      const nextEnabled = !dedicatedAiChannelEnabled;
+                      setDedicatedAiChannelEnabled(nextEnabled);
+                      saveAiBehaviorSettings({ dedicatedChannelId: nextEnabled ? dedicatedAiChannel || null : null });
                       toast?.success?.(
-                        !dedicatedAiChannelEnabled
+                        nextEnabled
                           ? "Salon IA public activé !"
                           : "Salon IA public désactivé."
                       );
@@ -874,13 +880,27 @@ export default function ConfigurationGroup({
                   <label className="text-[11px] font-semibold text-zinc-300 block mb-1.5">
                     Canal Textuel Dédié
                   </label>
-                  <input
-                    type="text"
+                  <select
                     value={dedicatedAiChannel}
-                    onChange={(e) => setDedicatedAiChannel(e.target.value)}
-                    placeholder="#salon-ia-general"
-                    className="w-full px-3 py-2 rounded-xl bg-zinc-900 border border-zinc-800 text-white text-xs font-mono focus:outline-none focus:border-purple-500"
-                  />
+                    onChange={(e) => {
+                      const channelId = e.target.value;
+                      setDedicatedAiChannel(channelId);
+                      if (dedicatedAiChannelEnabled) {
+                        saveAiBehaviorSettings({ dedicatedChannelId: channelId || null });
+                      }
+                    }}
+                    disabled={aiTextChannels.length === 0}
+                    className="w-full px-3 py-2 rounded-xl bg-zinc-900 border border-zinc-800 text-white text-xs font-mono focus:outline-none focus:border-purple-500 disabled:opacity-50"
+                  >
+                    <option value="" className="bg-zinc-900">
+                      {aiTextChannels.length === 0 ? "Chargement des salons…" : "Sélectionner un salon"}
+                    </option>
+                    {aiTextChannels.map((c) => (
+                      <option key={c.id} value={c.id} className="bg-zinc-900">
+                        #{c.name}
+                      </option>
+                    ))}
+                  </select>
                   <span className="text-[10px] text-zinc-400 mt-1 block">
                     Les membres peuvent converser librement et demander des images directement ici.
                   </span>
@@ -895,8 +915,10 @@ export default function ConfigurationGroup({
                   </div>
                   <button
                     onClick={() => {
-                      setAllowImageGen((v: boolean) => !v);
-                      toast?.info?.(!allowImageGen ? "Génération d'images activée" : "Génération d'images désactivée");
+                      const next = !allowImageGen;
+                      setAllowImageGen(next);
+                      saveAiBehaviorSettings({ allowImageGeneration: next });
+                      toast?.info?.(next ? "Génération d'images activée" : "Génération d'images désactivée");
                     }}
                     className={cn(
                       "w-10 h-5 rounded-full transition-colors relative p-0.5",
@@ -937,6 +959,7 @@ export default function ConfigurationGroup({
                     key={moodItem.id}
                     onClick={() => {
                       setThonMood(moodItem.id as any);
+                      saveAiBehaviorSettings({ thonMood: moodItem.id });
                       toast?.success?.(`Humeur du Thon définie sur : ${moodItem.name}`);
                     }}
                     className={cn(

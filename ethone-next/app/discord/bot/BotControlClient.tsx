@@ -406,6 +406,72 @@ export default function BotControlClient({ initialTab = "overview" }: BotControl
     };
   }, [settingsGuildId]);
 
+  // Salon IA dédié, génération d'images, humeur du Thon & mots bannis étaient
+  // de l'état local pur (jamais chargés ni sauvegardés) : les toggles et le
+  // bouton "Bannir le mot" affichaient un toast de succès sans rien
+  // persister, donc tout redisparaissait au rechargement de la page.
+  // GET /api/guilds/:guildId/ai/settings renvoie ces 4 champs (déjà présents
+  // sur AISettings côté bot, juste jamais exposés au dashboard).
+  useEffect(() => {
+    if (!settingsGuildId || !BOT_API_URL) return;
+    let cancelled = false;
+    fetch(`${BOT_API_URL}/api/guilds/${settingsGuildId}/ai/settings`, { credentials: "include" })
+      .then((r) => (r.ok ? r.json() : null))
+      .then((data) => {
+        if (cancelled || !data) return;
+        setDedicatedAiChannel(typeof data.dedicatedChannelId === "string" ? data.dedicatedChannelId : "");
+        setDedicatedAiChannelEnabled(Boolean(data.dedicatedChannelId));
+        setAllowImageGen(Boolean(data.allowImageGeneration));
+        setThonMood(["SAGE", "GAMER_SARCASTIQUE", "PROTECTEUR", "CYBERPUNK", "CUSTOM"].includes(data.thonMood) ? data.thonMood : "SAGE");
+        setBannedWordsList(Array.isArray(data.bannedWords) ? data.bannedWords : []);
+      })
+      .catch(() => {});
+    return () => {
+      cancelled = true;
+    };
+  }, [settingsGuildId]);
+
+  // Real text channels for the dedicated-channel picker below — it used to be
+  // a free-text field pre-filled with a fake name ("salon-ia-general"), which
+  // could never resolve to a real Discord channel ID.
+  const [aiTextChannels, setAiTextChannels] = useState<{ id: string; name: string }[]>([]);
+  useEffect(() => {
+    if (!settingsGuildId || !BOT_API_URL) {
+      setAiTextChannels([]);
+      return;
+    }
+    let cancelled = false;
+    fetch(`${BOT_API_URL}/api/guilds/${settingsGuildId}/ai/channels`, { credentials: "include" })
+      .then((r) => (r.ok ? r.json() : null))
+      .then((data) => {
+        if (cancelled) return;
+        setAiTextChannels(Array.isArray(data?.textChannels) ? data.textChannels : []);
+      })
+      .catch(() => {
+        if (!cancelled) setAiTextChannels([]);
+      });
+    return () => {
+      cancelled = true;
+    };
+  }, [settingsGuildId]);
+
+  const saveAiBehaviorSettings = useCallback(
+    async (patch: Record<string, unknown>) => {
+      if (!settingsGuildId || !BOT_API_URL) return;
+      try {
+        await fetch(`${BOT_API_URL}/api/guilds/${settingsGuildId}/ai/settings`, {
+          method: "PUT",
+          credentials: "include",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify(patch),
+        });
+      } catch {
+        toast?.error?.("Échec de la sauvegarde du réglage IA.");
+      }
+    },
+    [settingsGuildId, toast]
+  );
+
   // Load the real per-guild module toggles (GET /api/guilds/:guildId/modules) whenever
   // the selected server changes.
   const loadModules = useCallback(async () => {
@@ -516,11 +582,11 @@ export default function BotControlClient({ initialTab = "overview" }: BotControl
   });
 
   // Dedicated AI Channel, Humeur du Thon & Banned Words State
-  const [dedicatedAiChannel, setDedicatedAiChannel] = useState("salon-ia-general");
-  const [dedicatedAiChannelEnabled, setDedicatedAiChannelEnabled] = useState(true);
+  const [dedicatedAiChannel, setDedicatedAiChannel] = useState("");
+  const [dedicatedAiChannelEnabled, setDedicatedAiChannelEnabled] = useState(false);
   const [thonMood, setThonMood] = useState<"SAGE" | "GAMER_SARCASTIQUE" | "PROTECTEUR" | "CYBERPUNK" | "CUSTOM">("SAGE");
-  const [allowImageGen, setAllowImageGen] = useState(true);
-  const [bannedWordsList, setBannedWordsList] = useState<string[]>(["nsfw", "scam", "doxx", "leak", "nitro-free"]);
+  const [allowImageGen, setAllowImageGen] = useState(false);
+  const [bannedWordsList, setBannedWordsList] = useState<string[]>([]);
   const [newBannedWordInput, setNewBannedWordInput] = useState("");
 
   // Role Permissions & Presets State
@@ -537,14 +603,18 @@ export default function BotControlClient({ initialTab = "overview" }: BotControl
     if (!newBannedWordInput.trim()) return;
     const word = newBannedWordInput.trim().toLowerCase();
     if (!bannedWordsList.includes(word)) {
-      setBannedWordsList((prev) => [...prev, word]);
+      const next = [...bannedWordsList, word];
+      setBannedWordsList(next);
+      saveAiBehaviorSettings({ bannedWords: next });
       toast?.success?.(`Mot banni "${word}" ajouté à l'AutoMod.`);
     }
     setNewBannedWordInput("");
   };
 
   const handleRemoveBannedWord = (word: string) => {
-    setBannedWordsList((prev) => prev.filter((w) => w !== word));
+    const next = bannedWordsList.filter((w) => w !== word);
+    setBannedWordsList(next);
+    saveAiBehaviorSettings({ bannedWords: next });
     toast?.info?.(`Mot banni "${word}" retiré.`);
   };
 
@@ -1565,6 +1635,8 @@ export default function BotControlClient({ initialTab = "overview" }: BotControl
             handleAddBannedWord={handleAddBannedWord}
             bannedWordsList={bannedWordsList}
             handleRemoveBannedWord={handleRemoveBannedWord}
+            saveAiBehaviorSettings={saveAiBehaviorSettings}
+            aiTextChannels={aiTextChannels}
             toast={toast}
           />
         )}

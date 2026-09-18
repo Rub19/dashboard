@@ -55,6 +55,8 @@ func _add_wall_cube(x: int, y: int, color: Color) -> void:
 	body.position = Vector3(x * CELL_SIZE, WALL_HEIGHT / 2.0, y * CELL_SIZE)
 	add_child(body)
 
+const FLOOR_THICKNESS := 0.2
+
 func _add_floor_tile(x: int, y: int) -> void:
 	var mesh_instance := MeshInstance3D.new()
 	var plane := PlaneMesh.new()
@@ -65,3 +67,17 @@ func _add_floor_tile(x: int, y: int) -> void:
 	mesh_instance.mesh = plane
 	mesh_instance.position = Vector3(x * CELL_SIZE, 0.0, y * CELL_SIZE)
 	add_child(mesh_instance)
+
+	# Bug: this tile used to be visual-only (MeshInstance3D with no physics
+	# body), so is_on_floor() in Player.gd never became true and gravity
+	# just fell forever ("tombe dans le vide"). A thin StaticBody3D box
+	# whose top face sits at y=0 — same plane as the visual mesh above —
+	# fixes that, same pattern as _add_wall_cube()'s collision.
+	var body := StaticBody3D.new()
+	var shape := CollisionShape3D.new()
+	var box_shape := BoxShape3D.new()
+	box_shape.size = Vector3(CELL_SIZE, FLOOR_THICKNESS, CELL_SIZE)
+	shape.shape = box_shape
+	body.add_child(shape)
+	body.position = Vector3(x * CELL_SIZE, -FLOOR_THICKNESS / 2.0, y * CELL_SIZE)
+	add_child(body)

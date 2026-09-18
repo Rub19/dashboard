@@ -1,73 +1,116 @@
 class_name Player
 extends CharacterBody3D
-## Contrôleur FPS du joueur.
-## Portage direct de la logique update()/mouseLook du prototype HTML :
-## - même schéma d'accélération/décélération exponentielle (fonction approach()
-##   du JS) pour un déplacement fluide, sans départ/arrêt instantané ;
-## - la souris pilote directement le regard (yaw sur le corps, pitch sur la
-##   caméra), pas de zones de clic comme dans l'ancien système web ;
-## - le clavier lit les touches brutes (pas de mappage "input actions" à
-##   configurer dans l'éditeur -> rien à casser côté projet).
+## Contrôleur FPS du joueur — portage de la logique du prototype HTML :
+## - déplacement lissé (accélération/décélération exponentielle = approach() du JS),
+## - souris = regard direct (yaw sur le corps, pitch sur la caméra),
+## - tir : sélection de la cible par hurtbox angulaire + test d'occlusion par
+##   les murs, exactement comme shoot() côté prototype,
+## - vie / arme / recharge de tir.
+## Les touches sont lues par POSITION physique : ZQSD sur AZERTY, WASD sur
+## QWERTY, sans rien configurer.
 
-@export var move_speed: float = 4.8       # unités Godot/s (équivalent MOVE_SPEED=2.4 du prototype, x2 car CELL_SIZE=2)
-@export var move_accel: float = 16.0      # identique en proportion à MOVE_ACCEL du prototype
-@export var move_decel: float = 11.0      # identique en proportion à MOVE_DECEL du prototype
-@export var mouse_sens_x: float = 0.0022  # même valeur par défaut que MOUSE_SENS_X côté HTML
+signal damaged(health: float)
+signal died
+signal weapon_changed(weapon: String)
+signal dino_hit(dino: Dino)
+
+const CELL_SIZE := 2.0
+const HIT_PADDING := 0.10 * CELL_SIZE
+
+@export var move_speed: float = 4.8       # 2.4 cases/s du prototype x CELL_SIZE
+@export var move_accel: float = 16.0
+@export var move_decel: float = 11.0
+@export var mouse_sens_x: float = 0.0022
 @export var mouse_sens_y: float = 0.0018
 @export var invert_y: bool = false
-@export var pitch_limit_deg: float = 80.0 # évite de pouvoir retourner la caméra à 180°
+@export var pitch_limit_deg: float = 80.0
+
+var health := 100.0
+var weapon := "pistol"
+var fire_cooldown := 0.0
+var controls_enabled := false
+var sfx: Sfx
 
 var velocity_h: Vector3 = Vector3.ZERO
 var camera: Camera3D
 
 func _ready() -> void:
-	camera = get_node_or_null("Camera3D")
-	Input.mouse_mode = Input.MOUSE_MODE_CAPTURED
+	# Couche 1 (monde) ; entre en collision avec les murs (1) et les dinos (2).
+	collision_layer = 1
+	collision_mask = 3
+
+	var collider := CollisionShape3D.new()
+	var capsule := CapsuleShape3D.new()
+	capsule.radius = 0.35
+	capsule.height = 1.6
+	collider.shape = capsule
+	collider.position.y = 0.8
+	add_child(collider)
+
+	camera = Camera3D.new()
+	camera.name = "Camera3D"
+	camera.position = Vector3(0, 0.7, 0) # hauteur des yeux
+	camera.current = true
+	add_child(camera)
+
+func reset_state() -> void:
+	health = 100.0
+	weapon = "pistol"
+	fire_cooldown = 0.0
+	velocity = Vector3.ZERO
+	velocity_h = Vector3.ZERO
+	if camera:
+		camera.rotation.x = 0.0
+	weapon_changed.emit(weapon)
+	damaged.emit(health)
+
+func set_weapon(new_weapon: String) -> void:
+	weapon = new_weapon
+	weapon_changed.emit(weapon)
+
+func take_damage(amount: float) -> void:
+	if health <= 0.0:
+		return
+	health -= amount
+	if sfx:
+		sfx.play("hurt", -2.0)
+	damaged.emit(health)
+	if health <= 0.0:
+		died.emit()
 
 func _unhandled_input(event: InputEvent) -> void:
-	# Échap : libère la souris (équivalent du menu pause qui rendait la main
-	# au curseur classique dans la version HTML). Un clic sur la fenêtre la
-	# recapture (comportement standard des jeux FPS).
-	if event is InputEventKey and event.pressed and event.keycode == KEY_ESCAPE:
-		Input.mouse_mode = Input.MOUSE_MODE_VISIBLE
+	if not controls_enabled or Input.mouse_mode != Input.MOUSE_MODE_CAPTURED:
 		return
-	if event is InputEventMouseButton and event.pressed:
-		if Input.mouse_mode != Input.MOUSE_MODE_CAPTURED:
-			Input.mouse_mode = Input.MOUSE_MODE_CAPTURED
-			return
-
-	if event is InputEventMouseMotion and Input.mouse_mode == Input.MOUSE_MODE_CAPTURED:
-		# Horizontal : on tourne le corps entier (comme dirX/dirY dans le raycaster JS)
+	if event is InputEventMouseMotion:
+		# Horizontal : on tourne le corps entier ; vertical : seulement la caméra.
 		rotate_y(-event.relative.x * mouse_sens_x)
-		# Vertical : seulement la caméra, avec la même idée de limite que le
-		# "pitch" cosmétique du prototype (sauf qu'ici c'est une vraie caméra 3D)
 		if camera:
 			var dy: float = event.relative.y if not invert_y else -event.relative.y
 			camera.rotate_x(-dy * mouse_sens_y)
 			camera.rotation.x = clampf(camera.rotation.x, deg_to_rad(-pitch_limit_deg), deg_to_rad(pitch_limit_deg))
+	elif event is InputEventMouseButton and event.pressed and event.button_index == MOUSE_BUTTON_LEFT:
+		shoot()
 
 func _physics_process(delta: float) -> void:
-	# Lecture clavier brute : WASD + flèches, exactement comme GAME_KEYS côté HTML
-	# is_physical_key_pressed() reads the KEYBOARD POSITION, not the character
-	# it produces — so KEY_W/A/S/D always means "the keys where WASD sit on a
-	# US/QWERTY board", which is the Z/Q/S/D position on an AZERTY (French)
-	# keyboard. Bug: this used to be is_key_pressed(), which reads the
-	# produced character instead, so on AZERTY it required literally pressing
-	# W/A/S/D (a different, cramped position) instead of the conventional
-	# ZQSD spot every AZERTY FPS uses.
+	if fire_cooldown > 0.0:
+		fire_cooldown -= delta
+
 	var fwd := 0.0
 	var strafe := 0.0
-	if Input.is_physical_key_pressed(KEY_W) or Input.is_physical_key_pressed(KEY_UP):
-		fwd += 1.0
-	if Input.is_physical_key_pressed(KEY_S) or Input.is_physical_key_pressed(KEY_DOWN):
-		fwd -= 1.0
-	if Input.is_physical_key_pressed(KEY_D) or Input.is_physical_key_pressed(KEY_RIGHT):
-		strafe += 1.0
-	if Input.is_physical_key_pressed(KEY_A) or Input.is_physical_key_pressed(KEY_LEFT):
-		strafe -= 1.0
+	if controls_enabled:
+		# is_physical_key_pressed() lit la POSITION de la touche, pas le
+		# caractère produit : KEY_W/A/S/D = l'emplacement de WASD sur un clavier
+		# QWERTY, c'est-à-dire ZQSD sur un AZERTY.
+		if Input.is_physical_key_pressed(KEY_W) or Input.is_physical_key_pressed(KEY_UP):
+			fwd += 1.0
+		if Input.is_physical_key_pressed(KEY_S) or Input.is_physical_key_pressed(KEY_DOWN):
+			fwd -= 1.0
+		if Input.is_physical_key_pressed(KEY_D) or Input.is_physical_key_pressed(KEY_RIGHT):
+			strafe += 1.0
+		if Input.is_physical_key_pressed(KEY_A) or Input.is_physical_key_pressed(KEY_LEFT):
+			strafe -= 1.0
 
-	# Normalise la diagonale (même correctif que sur la version HTML : on
-	# n'avance pas plus vite en diagonale qu'en ligne droite)
+	# Normalise la diagonale
 	var input_len := Vector2(strafe, fwd).length()
 	if input_len > 1.0:
 		fwd /= input_len
@@ -77,7 +120,7 @@ func _physics_process(delta: float) -> void:
 	var right: Vector3 = global_transform.basis.x
 	var target_h: Vector3 = (forward * fwd + right * strafe) * move_speed
 
-	# Lissage exponentiel indépendant du framerate == fonction approach() du JS
+	# Lissage exponentiel indépendant du framerate == approach() du JS
 	var rate: float = move_accel if target_h.length() > velocity_h.length() else move_decel
 	var t: float = 1.0 - exp(-rate * delta)
 	velocity_h = velocity_h.lerp(target_h, t)
@@ -85,11 +128,57 @@ func _physics_process(delta: float) -> void:
 	velocity.x = velocity_h.x
 	velocity.z = velocity_h.z
 
-	# Gravité simple pour rester collé au sol (le prototype HTML était en 2D pure,
-	# ici on est en vraie 3D donc il faut un minimum de gravité)
 	if not is_on_floor():
 		velocity.y -= 20.0 * delta
 	else:
 		velocity.y = 0.0
 
 	move_and_slide()
+
+## Portage de shoot() : parmi les dinos vivants devant la caméra, garde le plus
+## proche dont le corps tombe dans le cône de visée (hurtbox angulaire = demi-
+## largeur du corps à cette distance + latitude de l'arme) et qu'aucun mur ne
+## cache. Un dino lointain, petit à l'écran, a donc une hurtbox plus stricte
+## qu'un dino proche : on vise le corps, pas une boîte fixe.
+func shoot() -> void:
+	if fire_cooldown > 0.0 or camera == null:
+		return
+	var w := Weapons.get_data(weapon)
+	fire_cooldown = float(w.cooldown)
+	if sfx:
+		sfx.play(Weapons.sound(weapon))
+
+	var cam_inv := camera.global_transform.affine_inverse()
+	var space := get_world_3d().direct_space_state
+	var best_depth := INF
+	var target: Dino = null
+
+	for node in get_tree().get_nodes_in_group("dinos"):
+		var dino := node as Dino
+		if dino == null or not dino.alive:
+			continue
+		var center: Vector3 = dino.global_position + Vector3(0, 0.9, 0)
+		var local: Vector3 = cam_inv * center
+		var depth := -local.z
+		if depth <= 0.15 * CELL_SIZE:
+			continue
+		if bool(w.melee) and depth > float(w.melee_range) * CELL_SIZE:
+			continue
+		var hurt_half_width := (dino.hurt_radius + HIT_PADDING) / depth
+		var angle_ratio := absf(local.x / depth)
+		if angle_ratio > hurt_half_width + float(w.angle_tol):
+			continue
+		# Occlusion : seuls les murs (couche 1) bloquent le tir, comme le z-buffer
+		# du prototype qui ne contenait que les murs.
+		var query := PhysicsRayQueryParameters3D.create(camera.global_position, center, 1, [get_rid()])
+		if not space.intersect_ray(query).is_empty():
+			continue
+		if depth < best_depth:
+			best_depth = depth
+			target = dino
+
+	if target:
+		target.take_damage(Weapons.damage(weapon, target.max_hp))
+		if sfx:
+			sfx.play("hit", -4.0)
+		dino_hit.emit(target)

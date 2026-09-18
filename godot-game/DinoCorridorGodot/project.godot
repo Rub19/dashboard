@@ -1,14 +1,18 @@
-; Configuration minimale d'un projet Godot 4.x — volontairement simple pour
-; éviter tout format finement sérialisé (input map, etc.) que je ne peux pas
-; tester ici. À ouvrir tel quel avec l'éditeur Godot 4 (gratuit, godotengine.org).
+; Projet Godot 4.x — Dino Corridor (portage natif du prototype HTML).
+; Phase 2 : dinosaures, armes, HUD, score, menus, sons procéduraux.
 
 config_version=5
 
 [application]
 
 config/name="Dino Corridor"
-config/description="Portage natif (Godot) du prototype raycasting HTML — Phase 1 : moteur (déplacement + caméra + niveau 3D)."
+config/description="Portage natif (Godot) du prototype raycasting HTML : couloirs, dinosaures, armes, score et niveaux progressifs."
 run/main_scene="res://Main.tscn"
+
+[display]
+
+window/size/viewport_width=1280
+window/size/viewport_height=720
 
 [rendering]
 

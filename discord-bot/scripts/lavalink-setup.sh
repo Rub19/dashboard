@@ -46,8 +46,17 @@ printf '%s' "$LAVALINK_PASSWORD" > "$LL_DIR/.password"
 # 4) application.yml depuis le template du repo (+ mot de passe, + refresh token)
 sed "s/CHANGE_ME/$LAVALINK_PASSWORD/" "$TEMPLATE" > "$LL_DIR/application.yml"
 if [ -n "${LAVALINK_YT_REFRESH_TOKEN:-}" ]; then
-  sed -i "s|# refreshToken: \"1//0...\"|refreshToken: \"$LAVALINK_YT_REFRESH_TOKEN\"|; s|# skipInitialization: true|skipInitialization: true|" "$LL_DIR/application.yml"
-  echo "-- Refresh token YouTube injecté"
+  # Un vrai refresh token Google commence par "1//" et fait 60+ caractères sans
+  # espace. Tout le reste (code d'appairage XXX-XXX-XXXX, valeur tronquée…)
+  # ferait boucler Lavalink au démarrage avec "oauth2 token fetch: 400".
+  TOKEN="$(printf '%s' "$LAVALINK_YT_REFRESH_TOKEN" | tr -d '[:space:]"'"'")"
+  if ! printf '%s' "$TOKEN" | grep -Eq '^1//[A-Za-z0-9_-]{40,}$'; then
+    echo "!! LAVALINK_YT_REFRESH_TOKEN ne ressemble pas à un refresh token Google (attendu : 1//0… , 60+ caractères)."
+    echo "   Reçu : ${TOKEN:0:6}… (${#TOKEN} caractères). Token ignoré — relance sans, puis refais l'appairage."
+    exit 1
+  fi
+  sed -i "s|# refreshToken: \"1//0...\"|refreshToken: \"$TOKEN\"|; s|# skipInitialization: true|skipInitialization: true|" "$LL_DIR/application.yml"
+  echo "-- Refresh token YouTube injecté (${#TOKEN} caractères)"
 fi
 
 # 5) .env du bot : backend + accès Lavalink (ajout ou mise à jour)

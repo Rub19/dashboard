@@ -255,9 +255,7 @@ export default function ModerationCenterPage() {
     const timer = setTimeout(async () => {
       setIsSearchingMember(true);
       try {
-        const res = await fetch(
-          `${BOT_API_URL}/api/guilds/${selectedGuild.id}/moderation/search?q=${encodeURIComponent(memberSearchQuery.trim())}`
-        );
+        const res = await fetch(`${BOT_API_URL}/api/guilds/${selectedGuild.id}/moderation/search?q=${encodeURIComponent(memberSearchQuery.trim())}`, { credentials: "include" });
         if (res.ok) {
           const data = await res.json();
           setMemberSearchResults(data.results || []);
@@ -303,7 +301,7 @@ export default function ModerationCenterPage() {
     if (BOT_API_URL) {
       try {
         // 1. Overview stats
-        const ovRes = await fetch(`${BOT_API_URL}/api/guilds/${selectedGuild.id}/moderation/overview`);
+        const ovRes = await fetch(`${BOT_API_URL}/api/guilds/${selectedGuild.id}/moderation/overview`, { credentials: "include" });
         if (ovRes.ok) {
           const data = await ovRes.json();
           if (data.stats) setStats(data.stats);
@@ -342,7 +340,7 @@ export default function ModerationCenterPage() {
     setInspectedUserId(userId);
     setIsLoadingProfile(true);
     try {
-      const res = await fetch(`${BOT_API_URL}/api/guilds/${selectedGuild.id}/moderation/users/${userId}/profile`);
+      const res = await fetch(`${BOT_API_URL}/api/guilds/${selectedGuild.id}/moderation/users/${userId}/profile`, { credentials: "include" });
       if (res.ok) {
         const data = await res.json();
         if (data.profile) {
@@ -386,6 +384,7 @@ export default function ModerationCenterPage() {
     setIsSubmittingSanction(true);
     try {
       const res = await fetch(`${BOT_API_URL}/api/guilds/${selectedGuild.id}/moderation/cases`, {
+        credentials: "include",
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({
@@ -424,6 +423,7 @@ export default function ModerationCenterPage() {
       const res = await fetch(
         `${BOT_API_URL}/api/guilds/${selectedGuild.id}/moderation/cases/${revertingCase.caseNumber}/revert`,
         {
+          credentials: "include",
           method: "POST",
           headers: { "Content-Type": "application/json" },
           body: JSON.stringify({ reason: revertReason || "Pardon accordé" }),

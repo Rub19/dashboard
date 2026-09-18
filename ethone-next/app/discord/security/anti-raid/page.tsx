@@ -392,7 +392,7 @@ export default function AntiRaidDashboardPage() {
   const fetchLiveStatus = useCallback(async () => {
     if (!selectedGuild) return;
     try {
-      const res = await fetch(`${BOT_API_URL}/api/guilds/${selectedGuild.id}/anti-raid/status`);
+      const res = await fetch(`${BOT_API_URL}/api/guilds/${selectedGuild.id}/anti-raid/status`, { credentials: "include" });
       if (res.ok) {
         const data = await res.json();
         if (data.metrics) {
@@ -407,7 +407,7 @@ export default function AntiRaidDashboardPage() {
   const fetchConfig = useCallback(async () => {
     if (!selectedGuild) return;
     try {
-      const res = await fetch(`${BOT_API_URL}/api/guilds/${selectedGuild.id}/anti-raid/config`);
+      const res = await fetch(`${BOT_API_URL}/api/guilds/${selectedGuild.id}/anti-raid/config`, { credentials: "include" });
       if (res.ok) {
         const data = await res.json();
         if (data.config) {
@@ -441,7 +441,7 @@ export default function AntiRaidDashboardPage() {
   const fetchIncidents = useCallback(async () => {
     if (!selectedGuild) return;
     try {
-      const res = await fetch(`${BOT_API_URL}/api/guilds/${selectedGuild.id}/anti-raid/incidents?limit=20`);
+      const res = await fetch(`${BOT_API_URL}/api/guilds/${selectedGuild.id}/anti-raid/incidents?limit=20`, { credentials: "include" });
       if (res.ok) {
         const data = await res.json();
         if (data.incidents) {
@@ -521,6 +521,7 @@ export default function AntiRaidDashboardPage() {
     setIsSaving(true);
     try {
       const res = await fetch(`${BOT_API_URL}/api/guilds/${selectedGuild.id}/anti-raid/config`, {
+        credentials: "include",
         method: "PUT",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify(settings),
@@ -554,6 +555,7 @@ export default function AntiRaidDashboardPage() {
         setIsActionLoading(true);
         try {
           const res = await fetch(`${BOT_API_URL}/api/guilds/${selectedGuild.id}/anti-raid/raid-mode`, {
+            credentials: "include",
             method: "POST",
             headers: { "Content-Type": "application/json" },
             body: JSON.stringify({ active: targetState, reason: "Action manuelle depuis le Dashboard ETHONE" }),
@@ -601,6 +603,7 @@ export default function AntiRaidDashboardPage() {
         setIsActionLoading(true);
         try {
           const res = await fetch(`${BOT_API_URL}/api/guilds/${selectedGuild.id}/anti-raid/lockdown`, {
+            credentials: "include",
             method: "POST",
             headers: { "Content-Type": "application/json" },
             body: JSON.stringify({ active: targetState, reason: "Lockdown manuel déclenché depuis ETHONE" }),
@@ -634,6 +637,7 @@ export default function AntiRaidDashboardPage() {
     setIsActionLoading(true);
     try {
       const res = await fetch(`${BOT_API_URL}/api/guilds/${selectedGuild.id}/anti-raid/quarantine-all`, {
+        credentials: "include",
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({ seconds: 60 }),

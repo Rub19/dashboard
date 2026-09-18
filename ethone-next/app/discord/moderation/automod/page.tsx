@@ -465,7 +465,7 @@ export default function AutoModCommandCenterPage() {
     if (BOT_API_URL) {
       try {
         // 1. Overview
-        const ovRes = await fetch(`${BOT_API_URL}/api/guilds/${selectedGuild.id}/automod/overview`);
+        const ovRes = await fetch(`${BOT_API_URL}/api/guilds/${selectedGuild.id}/automod/overview`, { credentials: "include" });
         if (ovRes.ok) {
           const ovData = await ovRes.json();
           setOverviewMetrics({
@@ -479,7 +479,7 @@ export default function AutoModCommandCenterPage() {
         }
 
         // 2. Config
-        const cfgRes = await fetch(`${BOT_API_URL}/api/guilds/${selectedGuild.id}/automod/config`);
+        const cfgRes = await fetch(`${BOT_API_URL}/api/guilds/${selectedGuild.id}/automod/config`, { credentials: "include" });
         if (cfgRes.ok) {
           const cfgData = await cfgRes.json();
           if (cfgData.config) {
@@ -488,7 +488,7 @@ export default function AutoModCommandCenterPage() {
         }
 
         // 3. Rules
-        const rulesRes = await fetch(`${BOT_API_URL}/api/guilds/${selectedGuild.id}/automod/rules`);
+        const rulesRes = await fetch(`${BOT_API_URL}/api/guilds/${selectedGuild.id}/automod/rules`, { credentials: "include" });
         if (rulesRes.ok) {
           const rulesData = await rulesRes.json();
           if (rulesData.rules) {
@@ -497,7 +497,7 @@ export default function AutoModCommandCenterPage() {
         }
 
         // 4. Incidents
-        const incRes = await fetch(`${BOT_API_URL}/api/guilds/${selectedGuild.id}/automod/history?limit=25`);
+        const incRes = await fetch(`${BOT_API_URL}/api/guilds/${selectedGuild.id}/automod/history?limit=25`, { credentials: "include" });
         if (incRes.ok) {
           const incData = await incRes.json();
           if (incData.incidents) {
@@ -547,6 +547,7 @@ export default function AutoModCommandCenterPage() {
     setIsSaving(true);
     try {
       const res = await fetch(`${BOT_API_URL}/api/guilds/${selectedGuild.id}/automod/config`, {
+        credentials: "include",
         method: "PUT",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify(config),
@@ -577,6 +578,7 @@ export default function AutoModCommandCenterPage() {
     if (selectedGuild && BOT_API_URL) {
       try {
         const res = await fetch(`${BOT_API_URL}/api/guilds/${selectedGuild.id}/automod/config`, {
+          credentials: "include",
           method: "PUT",
           headers: { "Content-Type": "application/json" },
           body: JSON.stringify({ enabled: nextState }),
@@ -602,6 +604,7 @@ export default function AutoModCommandCenterPage() {
     if (selectedGuild && BOT_API_URL) {
       try {
         const res = await fetch(`${BOT_API_URL}/api/guilds/${selectedGuild.id}/automod/config`, {
+          credentials: "include",
           method: "PUT",
           headers: { "Content-Type": "application/json" },
           body: JSON.stringify({ smartMode: nextState }),
@@ -627,6 +630,7 @@ export default function AutoModCommandCenterPage() {
     setSandboxResult(null);
     try {
       const res = await fetch(`${BOT_API_URL}/api/guilds/${selectedGuild.id}/automod/test-rule`, {
+        credentials: "include",
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({
@@ -696,8 +700,8 @@ export default function AutoModCommandCenterPage() {
     setIsLoadingProfile(true);
     try {
       const [strikesRes, profileRes] = await Promise.all([
-        fetch(`${BOT_API_URL}/api/guilds/${selectedGuild.id}/automod/strikes/${userId}`),
-        fetch(`${BOT_API_URL}/api/guilds/${selectedGuild.id}/automod/users/${userId}/profile`),
+        fetch(`${BOT_API_URL}/api/guilds/${selectedGuild.id}/automod/strikes/${userId}`, { credentials: "include" }),
+        fetch(`${BOT_API_URL}/api/guilds/${selectedGuild.id}/automod/users/${userId}/profile`, { credentials: "include" }),
       ]);
 
       if (!strikesRes.ok || !profileRes.ok) {
@@ -771,6 +775,7 @@ export default function AutoModCommandCenterPage() {
     if (!selectedGuild) return;
     try {
       const res = await fetch(`${BOT_API_URL}/api/guilds/${selectedGuild.id}/automod/strikes/clear`, {
+        credentials: "include",
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({ userId }),
@@ -827,6 +832,7 @@ export default function AutoModCommandCenterPage() {
     if (!selectedGuild) return;
     try {
       await fetch(`${BOT_API_URL}/api/guilds/${selectedGuild.id}/automod/rules/${ruleId}`, {
+        credentials: "include",
         method: "DELETE",
       });
       const filtered = rules.filter((r) => r.id !== ruleId);

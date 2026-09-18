@@ -52,79 +52,67 @@ export default function VersionUpdateToast() {
     setShowChangelog(true);
   }
 
-  // Positioned to match this app's one established toast convention
-  // (bottom-right on desktop, bottom-center on mobile — see
-  // context/ToastContext.tsx's Toaster) instead of a bespoke bottom-center
-  // banner, and sized close to RichToast's own footprint (max-w-[23rem],
-  // p-3.5) so it reads as part of the same system rather than a one-off.
-  // No extra bottom clearance is reserved for FloatingLiquidDock — that
-  // dock is md:hidden and centered, so it never shares screen space with
-  // this bottom-right toast at any breakpoint where both could render.
+  // Moved off the bottom-right corner and condensed to one row (2026-09-19):
+  // the old bottom-right card collided with the Dock toggle and the status
+  // bar on desktop, and with the sign-in card's "OU CONTINUER AVEC" row on
+  // /login. A full-height card anchored top-right also clipped the /login
+  // title (that card's heading starts ~136px down on a 768px-tall viewport).
+  // A single slim row fits the gap below the top bar on every page instead
+  // of needing one.
   return (
     <>
       <AnimatePresence>
         {hasUpdate && (
           <motion.aside
-            initial={{ opacity: 0, y: 24, scale: 0.96 }}
+            initial={{ opacity: 0, y: -12, scale: 0.97 }}
             animate={{ opacity: 1, y: 0, scale: 1 }}
-            exit={{ opacity: 0, y: 16, scale: 0.96 }}
+            exit={{ opacity: 0, y: -8, scale: 0.97 }}
             transition={{ duration: 0.22, ease: [0.16, 1, 0.3, 1] }}
-            className="fixed inset-x-4 bottom-[calc(1rem+env(safe-area-inset-bottom))] z-[var(--z-critical)] mx-auto max-w-[23rem] select-none sm:inset-x-auto sm:left-auto sm:right-6 sm:bottom-[calc(1.5rem+env(safe-area-inset-bottom))] sm:mx-0"
+            className="fixed inset-x-4 top-[calc(4.5rem+env(safe-area-inset-top))] z-[var(--z-critical)] mx-auto w-fit max-w-[calc(100vw-2rem)] select-none sm:inset-x-auto sm:left-auto sm:right-6 sm:mx-0"
             role="status"
             aria-live="polite"
           >
-            <div className="v8-panel relative overflow-hidden p-3.5 shadow-2xl before:absolute before:inset-x-0 before:top-0 before:h-px before:bg-gradient-to-r before:from-transparent before:via-[var(--accent-primary)]/50 before:to-transparent">
-              <div className="flex items-start gap-3">
-                <div className="flex h-9 w-9 shrink-0 items-center justify-center rounded-[var(--inset-radius)] border border-[var(--accent-primary)]/25 bg-[var(--accent-primary)]/10 text-[var(--accent-primary)]">
-                  <ArrowUpCircle className="h-4.5 w-4.5" />
-                </div>
-
-                <div className="min-w-0 flex-1 pt-0.5">
-                  <div className="flex items-center justify-between gap-2">
-                    <h4 className="truncate text-xs font-semibold text-[var(--text-primary)]">
-                      {i18n("updateAvailable", "Nouvelle mise à jour disponible")}
-                    </h4>
-                    <button
-                      type="button"
-                      onClick={handleDismiss}
-                      aria-label={i18n("later", "Plus tard")}
-                      title={i18n("later", "Plus tard")}
-                      className="shrink-0 rounded p-0.5 text-[var(--text-muted)] transition-colors hover:bg-[var(--text-primary)]/6 hover:text-[var(--text-primary)] cursor-pointer"
-                    >
-                      <X className="h-3.5 w-3.5" />
-                    </button>
-                  </div>
-
-                  <p className="mt-1 text-[11px] leading-relaxed text-[var(--text-muted)]">
-                    {i18n("updateDescription", "Une nouvelle version d'ETHONE OS est prête.")}
-                  </p>
-
-                  <div className="mt-2.5 flex items-center justify-between gap-2">
-                    {versionLabel ? (
-                      <button
-                        type="button"
-                        onClick={handleOpenChangelog}
-                        title="Voir le journal des modifications"
-                        className="flex items-center gap-1 rounded-md border border-[var(--panel-border)] px-1.5 py-0.5 text-[10px] font-medium text-[var(--text-muted)] transition-colors hover:text-[var(--accent-primary)] cursor-pointer"
-                      >
-                        <span>{versionLabel}</span>
-                        <Sparkles className="h-2.5 w-2.5" />
-                      </button>
-                    ) : (
-                      <span />
-                    )}
-                    <button
-                      type="button"
-                      onClick={handleUpdate}
-                      disabled={isUpdating}
-                      className="flex shrink-0 items-center gap-1.5 rounded-[var(--inset-radius)] bg-[var(--accent-primary)] px-3 py-1.5 text-[11px] font-medium text-[var(--accent-contrast)] transition-[filter] hover:brightness-110 active:scale-95 disabled:opacity-50 cursor-pointer"
-                    >
-                      <RefreshCw className={cn("h-3 w-3", isUpdating && "animate-spin")} />
-                      <span>{isUpdating ? "Mise à jour..." : i18n("update", "Mettre à jour")}</span>
-                    </button>
-                  </div>
-                </div>
+            <div className="v8-panel relative flex items-center gap-2.5 overflow-hidden py-2 pl-2.5 pr-2 shadow-2xl before:absolute before:inset-x-0 before:top-0 before:h-px before:bg-gradient-to-r before:from-transparent before:via-[var(--accent-primary)]/50 before:to-transparent">
+              <div className="flex h-7 w-7 shrink-0 items-center justify-center rounded-[var(--inset-radius)] border border-[var(--accent-primary)]/25 bg-[var(--accent-primary)]/10 text-[var(--accent-primary)]">
+                <ArrowUpCircle className="h-3.5 w-3.5" />
               </div>
+
+              <button
+                type="button"
+                onClick={handleOpenChangelog}
+                title="Voir le journal des modifications"
+                className="min-w-0 cursor-pointer text-left"
+              >
+                <span className="block truncate text-[11px] font-semibold leading-tight text-[var(--text-primary)]">
+                  {i18n("updateAvailable", "Mise à jour disponible")}
+                </span>
+                {versionLabel ? (
+                  <span className="flex items-center gap-1 text-[10px] leading-tight text-[var(--text-muted)]">
+                    {versionLabel}
+                    <Sparkles className="h-2.5 w-2.5" />
+                  </span>
+                ) : null}
+              </button>
+
+              <button
+                type="button"
+                onClick={handleUpdate}
+                disabled={isUpdating}
+                className="ml-1 flex shrink-0 items-center gap-1.5 rounded-[var(--inset-radius)] bg-[var(--accent-primary)] px-2.5 py-1.5 text-[11px] font-medium text-[var(--accent-contrast)] transition-[filter] hover:brightness-110 active:scale-95 disabled:opacity-50 cursor-pointer"
+              >
+                <RefreshCw className={cn("h-3 w-3", isUpdating && "animate-spin")} />
+                <span className="hidden sm:inline">{isUpdating ? "Mise à jour..." : i18n("update", "Mettre à jour")}</span>
+              </button>
+
+              <button
+                type="button"
+                onClick={handleDismiss}
+                aria-label={i18n("later", "Plus tard")}
+                title={i18n("later", "Plus tard")}
+                className="shrink-0 rounded p-1 text-[var(--text-muted)] transition-colors hover:bg-[var(--text-primary)]/6 hover:text-[var(--text-primary)] cursor-pointer"
+              >
+                <X className="h-3.5 w-3.5" />
+              </button>
             </div>
           </motion.aside>
         )}

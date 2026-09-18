@@ -96,7 +96,7 @@ export default function VoiceRoomDetailClient({ roomId }: { roomId: string }) {
   const fetchData = useCallback(async () => {
     if (BOT_API_URL) {
       try {
-        const res = await fetch(`${BOT_API_URL}/api/guilds/${guildId}/voice/rooms/${roomId}/details`);
+        const res = await fetch(`${BOT_API_URL}/api/guilds/${guildId}/voice/rooms/${roomId}/details`, { credentials: "include" });
         if (res.ok) {
           const data = await res.json();
           setRoom(data.room);
@@ -177,6 +177,7 @@ export default function VoiceRoomDetailClient({ roomId }: { roomId: string }) {
   const handleAction = async (action: string, value?: any, targetUser?: string) => {
     try {
       const res = await fetch(`${BOT_API_URL}/api/guilds/${guildId}/voice/rooms/${roomId}/action`, {
+        credentials: "include",
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({ action, value, targetUserId: targetUser }),
@@ -209,6 +210,7 @@ export default function VoiceRoomDetailClient({ roomId }: { roomId: string }) {
   const handleWhitelist = async (userId: string, action: "add" | "remove") => {
     try {
       const res = await fetch(`${BOT_API_URL}/api/guilds/${guildId}/voice/rooms/${roomId}/whitelist`, {
+        credentials: "include",
         method: "PUT",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({ userId, action }),
@@ -236,6 +238,7 @@ export default function VoiceRoomDetailClient({ roomId }: { roomId: string }) {
   const handleBanlist = async (userId: string, action: "add" | "remove") => {
     try {
       const res = await fetch(`${BOT_API_URL}/api/guilds/${guildId}/voice/rooms/${roomId}/banlist`, {
+        credentials: "include",
         method: "PUT",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({ userId, action }),

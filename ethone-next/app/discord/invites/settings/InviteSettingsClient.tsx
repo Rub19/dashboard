@@ -44,7 +44,7 @@ export default function InviteSettingsClient() {
       return;
     }
     try {
-      const res = await fetch(`${API_BASE}/api/guilds/${guildId}/invites/settings`);
+      const res = await fetch(`${API_BASE}/api/guilds/${guildId}/invites/settings`, { credentials: "include" });
       if (res.ok) {
         const data = await res.json();
         const s = data.settings;
@@ -78,6 +78,7 @@ export default function InviteSettingsClient() {
     setSaving(true);
     try {
       const res = await fetch(`${API_BASE}/api/guilds/${guildId}/invites/settings`, {
+        credentials: "include",
         method: "PUT",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({

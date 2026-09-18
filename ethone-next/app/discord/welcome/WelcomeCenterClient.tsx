@@ -210,13 +210,13 @@ export function WelcomeCenterClient() {
 
     try {
       const [cfgRes, ovRes, obRes, verRes, tplRes, chRes, roRes] = await Promise.all([
-        fetch(`${API_BASE}/api/guilds/${currentGuildId}/welcome`).catch(() => null),
-        fetch(`${API_BASE}/api/guilds/${currentGuildId}/welcome/overview`).catch(() => null),
-        fetch(`${API_BASE}/api/guilds/${currentGuildId}/welcome/onboarding`).catch(() => null),
-        fetch(`${API_BASE}/api/guilds/${currentGuildId}/welcome/verification`).catch(() => null),
-        fetch(`${API_BASE}/api/guilds/${currentGuildId}/welcome/templates`).catch(() => null),
-        fetch(`${API_BASE}/api/guilds/${currentGuildId}/welcome/channels`).catch(() => null),
-        fetch(`${API_BASE}/api/guilds/${currentGuildId}/welcome/roles`).catch(() => null),
+        fetch(`${API_BASE}/api/guilds/${currentGuildId}/welcome`, { credentials: "include" }).catch(() => null),
+        fetch(`${API_BASE}/api/guilds/${currentGuildId}/welcome/overview`, { credentials: "include" }).catch(() => null),
+        fetch(`${API_BASE}/api/guilds/${currentGuildId}/welcome/onboarding`, { credentials: "include" }).catch(() => null),
+        fetch(`${API_BASE}/api/guilds/${currentGuildId}/welcome/verification`, { credentials: "include" }).catch(() => null),
+        fetch(`${API_BASE}/api/guilds/${currentGuildId}/welcome/templates`, { credentials: "include" }).catch(() => null),
+        fetch(`${API_BASE}/api/guilds/${currentGuildId}/welcome/channels`, { credentials: "include" }).catch(() => null),
+        fetch(`${API_BASE}/api/guilds/${currentGuildId}/welcome/roles`, { credentials: "include" }).catch(() => null),
       ]);
 
       if (cfgRes && cfgRes.ok) {
@@ -281,6 +281,7 @@ export function WelcomeCenterClient() {
     try {
       setSaving(true);
       const res = await fetch(`${API_BASE}/api/guilds/${currentGuildId}/welcome`, {
+        credentials: "include",
         method: "PATCH",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify(payload),
@@ -306,6 +307,7 @@ export function WelcomeCenterClient() {
     try {
       setSaving(true);
       const res = await fetch(`${API_BASE}/api/guilds/${currentGuildId}/welcome/onboarding`, {
+        credentials: "include",
         method: "PUT",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify(flowData),
@@ -330,6 +332,7 @@ export function WelcomeCenterClient() {
     try {
       setSaving(true);
       const res = await fetch(`${API_BASE}/api/guilds/${currentGuildId}/welcome/verification`, {
+        credentials: "include",
         method: "PUT",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify(verifData),
@@ -353,6 +356,7 @@ export function WelcomeCenterClient() {
     try {
       setSaving(true);
       const res = await fetch(`${API_BASE}/api/guilds/${currentGuildId}/welcome/templates/apply`, {
+        credentials: "include",
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({ templateId }),
@@ -383,6 +387,7 @@ export function WelcomeCenterClient() {
     try {
       setTestRunning(true);
       const res = await fetch(`${API_BASE}/api/guilds/${currentGuildId}/welcome/test`, {
+        credentials: "include",
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({ type: testType, target: testTarget }),

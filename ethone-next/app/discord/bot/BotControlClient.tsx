@@ -180,6 +180,7 @@ export default function BotControlClient({ initialTab = "overview" }: BotControl
     setRestartingBot(true);
     try {
       await fetch(`${BOT_API_URL}/api/bot/restart`, {
+        credentials: "include",
         method: "POST",
         headers: { "Content-Type": "application/json", "x-bot-owner": "825124006209388616" },
         body: JSON.stringify({ reason: "Dashboard Remote Owner Restart", email: "rub19.mailpro@gmail.com" }),
@@ -213,6 +214,7 @@ export default function BotControlClient({ initialTab = "overview" }: BotControl
     setUpdatingBot(true);
     try {
       await fetch(`${BOT_API_URL}/api/bot/update`, {
+        credentials: "include",
         method: "POST",
         headers: { "Content-Type": "application/json", "x-bot-owner": "825124006209388616" },
         body: JSON.stringify({ reason: "Dashboard Remote Owner Update", email: "rub19.mailpro@gmail.com" }),
@@ -471,9 +473,9 @@ export default function BotControlClient({ initialTab = "overview" }: BotControl
     setModules((prev) => prev.map((m) => (m.id === moduleId ? { ...m, enabled: nextEnabled } : m)));
     try {
       const res = await fetch(`${BOT_API_URL}/api/guilds/${settingsGuildId}/modules/${moduleId}`, {
+        credentials: "include",
         method: "PATCH",
         headers: { "Content-Type": "application/json" },
-        credentials: "include",
         body: JSON.stringify({ enabled: nextEnabled }),
       });
       const data = await res.json().catch(() => null);
@@ -592,7 +594,7 @@ export default function BotControlClient({ initialTab = "overview" }: BotControl
     setIntegrationsLoading(true);
     setIntegrationsError(false);
     try {
-      const res = await fetch(`${BOT_API_URL}/api/bot/integrations`);
+      const res = await fetch(`${BOT_API_URL}/api/bot/integrations`, { credentials: "include" });
       const json = await res.json().catch(() => null);
       if (res.ok && json?.success && Array.isArray(json.data)) {
         setIntegrations(json.data);
@@ -610,7 +612,7 @@ export default function BotControlClient({ initialTab = "overview" }: BotControl
     if (!BOT_API_URL) return;
     setTestingIntegrationId(id);
     try {
-      const res = await fetch(`${BOT_API_URL}/api/bot/integrations/${id}/test`, { method: "POST" });
+      const res = await fetch(`${BOT_API_URL}/api/bot/integrations/${id}/test`, { credentials: "include", method: "POST" });
       const json = await res.json().catch(() => null);
       if (res.ok && json?.success && json.data) {
         setIntegrations((prev) => prev.map((i) => (i.id === id ? json.data : i)));
@@ -636,7 +638,7 @@ export default function BotControlClient({ initialTab = "overview" }: BotControl
     setJobsLoading(true);
     setJobsError(false);
     try {
-      const res = await fetch(`${BOT_API_URL}/api/bot/jobs`);
+      const res = await fetch(`${BOT_API_URL}/api/bot/jobs`, { credentials: "include" });
       const json = await res.json().catch(() => null);
       if (res.ok && json?.success && Array.isArray(json.data)) {
         setJobs(json.data);
@@ -654,7 +656,7 @@ export default function BotControlClient({ initialTab = "overview" }: BotControl
     if (!BOT_API_URL) return;
     setRunningJobId(jobId);
     try {
-      const res = await fetch(`${BOT_API_URL}/api/bot/jobs/${jobId}/run`, { method: "POST" });
+      const res = await fetch(`${BOT_API_URL}/api/bot/jobs/${jobId}/run`, { credentials: "include", method: "POST" });
       const json = await res.json().catch(() => null);
       if (res.ok && json?.success && json.data) {
         setJobs((prev) => prev.map((j) => (j.id === jobId ? json.data : j)));
@@ -692,9 +694,9 @@ export default function BotControlClient({ initialTab = "overview" }: BotControl
       // still aren't backed by a real per-guild field and remain local-only.
       if (settingsGuildId && BOT_API_URL) {
         const res = await fetch(`${BOT_API_URL}/api/guilds/${settingsGuildId}/settings`, {
+          credentials: "include",
           method: "PATCH",
           headers: { "Content-Type": "application/json" },
-          credentials: "include",
           body: JSON.stringify({
             language: botSettings.language,
             botPersonality: botSettings.botPersonality,
@@ -724,7 +726,7 @@ export default function BotControlClient({ initialTab = "overview" }: BotControl
     setDiagnosticsRunning(true);
     try {
       if (BOT_API_URL) {
-        const res = await fetch(`${BOT_API_URL}/api/bot/diagnostics/run`, { method: "POST" });
+        const res = await fetch(`${BOT_API_URL}/api/bot/diagnostics/run`, { credentials: "include", method: "POST" });
         const json = await res.json().catch(() => null);
         if (res.ok && json?.success && Array.isArray(json.data?.checks)) {
           const statusMap: Record<string, string> = { pass: "passed", warn: "warning", critical: "critical" };
@@ -770,8 +772,8 @@ export default function BotControlClient({ initialTab = "overview" }: BotControl
     try {
       if (!BOT_API_URL) throw new Error("no backend configured");
       const res = await fetch(`${BOT_API_URL}/api/bot/performance/optimize`, {
-        method: "POST",
         credentials: "include",
+        method: "POST",
       });
       const data = await res.json();
       if (!res.ok || !data?.success) throw new Error("optimize failed");
@@ -914,13 +916,13 @@ export default function BotControlClient({ initialTab = "overview" }: BotControl
     try {
       setRefreshing(true);
       const [overviewRes, presenceRes, serversRes, commandsRes, errorsRes, aiRes, securityRes] = await Promise.allSettled([
-        fetch(`${BOT_API_URL}/api/bot/overview`).then((r) => r.json()),
-        fetch(`${BOT_API_URL}/api/bot/presence`).then((r) => r.json()),
-        fetch(`${BOT_API_URL}/api/bot/presence/servers`).then((r) => r.json()),
-        fetch(`${BOT_API_URL}/api/bot/commands`).then((r) => r.json()),
-        fetch(`${BOT_API_URL}/api/bot/errors`).then((r) => r.json()),
-        fetch(`${BOT_API_URL}/api/bot/ai`).then((r) => r.json()),
-        fetch(`${BOT_API_URL}/api/bot/security`).then((r) => r.json()),
+        fetch(`${BOT_API_URL}/api/bot/overview`, { credentials: "include" }).then((r) => r.json()),
+        fetch(`${BOT_API_URL}/api/bot/presence`, { credentials: "include" }).then((r) => r.json()),
+        fetch(`${BOT_API_URL}/api/bot/presence/servers`, { credentials: "include" }).then((r) => r.json()),
+        fetch(`${BOT_API_URL}/api/bot/commands`, { credentials: "include" }).then((r) => r.json()),
+        fetch(`${BOT_API_URL}/api/bot/errors`, { credentials: "include" }).then((r) => r.json()),
+        fetch(`${BOT_API_URL}/api/bot/ai`, { credentials: "include" }).then((r) => r.json()),
+        fetch(`${BOT_API_URL}/api/bot/security`, { credentials: "include" }).then((r) => r.json()),
       ]);
 
       if (overviewRes.status === "fulfilled" && overviewRes.value?.success) {

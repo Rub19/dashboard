@@ -106,7 +106,7 @@ export default function ReportsCenterClient() {
       try {
         let url = `${BOT_API_URL}/api/guilds/${selectedGuild.id}/moderation/reports`;
         if (selectedStatus !== "ALL") url += `?status=${selectedStatus}`;
-        const res = await fetch(url);
+        const res = await fetch(url, { credentials: "include" });
         if (res.ok) {
           const data = await res.json();
           if (data.reports) {
@@ -151,6 +151,7 @@ export default function ReportsCenterClient() {
       const res = await fetch(
         `${BOT_API_URL}/api/guilds/${selectedGuild.id}/moderation/reports/${reportId}/assign`,
         {
+          credentials: "include",
           method: "POST",
           headers: { "Content-Type": "application/json" },
           body: JSON.stringify({
@@ -179,6 +180,7 @@ export default function ReportsCenterClient() {
       const res = await fetch(
         `${BOT_API_URL}/api/guilds/${selectedGuild.id}/moderation/reports/${dismissingReport.id}`,
         {
+          credentials: "include",
           method: "PATCH",
           headers: { "Content-Type": "application/json" },
           body: JSON.stringify({
@@ -210,6 +212,7 @@ export default function ReportsCenterClient() {
       const res = await fetch(
         `${BOT_API_URL}/api/guilds/${selectedGuild.id}/moderation/reports`,
         {
+          credentials: "include",
           method: "POST",
           headers: { "Content-Type": "application/json" },
           body: JSON.stringify({

@@ -252,7 +252,7 @@ export default function BotPresenceClient({ initialTab = "overview" }: BotPresen
     }
     try {
       setRefreshing(true);
-      const res = await fetch(`${BOT_API_URL}/api/bot/presence`);
+      const res = await fetch(`${BOT_API_URL}/api/bot/presence`, { credentials: "include" });
       if (res.ok) {
         const json = await res.json();
         if (json.success && json.data) {
@@ -277,7 +277,7 @@ export default function BotPresenceClient({ initialTab = "overview" }: BotPresen
       }
 
       // Fetch profiles
-      const profRes = await fetch(`${BOT_API_URL}/api/bot/presence/profiles`);
+      const profRes = await fetch(`${BOT_API_URL}/api/bot/presence/profiles`, { credentials: "include" });
       if (profRes.ok) {
         const pJson = await profRes.json();
         if (pJson.success && pJson.data) {
@@ -286,7 +286,7 @@ export default function BotPresenceClient({ initialTab = "overview" }: BotPresen
       }
 
       // Fetch servers
-      const srvRes = await fetch(`${BOT_API_URL}/api/bot/presence/servers`);
+      const srvRes = await fetch(`${BOT_API_URL}/api/bot/presence/servers`, { credentials: "include" });
       if (srvRes.ok) {
         const sJson = await srvRes.json();
         if (sJson.success && sJson.data) {
@@ -295,7 +295,7 @@ export default function BotPresenceClient({ initialTab = "overview" }: BotPresen
       }
 
       // Fetch identity
-      const idRes = await fetch(`${BOT_API_URL}/api/bot/presence/identity`);
+      const idRes = await fetch(`${BOT_API_URL}/api/bot/presence/identity`, { credentials: "include" });
       if (idRes.ok) {
         const idJson = await idRes.json();
         if (idJson.success && idJson.data) {
@@ -305,7 +305,7 @@ export default function BotPresenceClient({ initialTab = "overview" }: BotPresen
       }
 
       // Fetch history
-      const histRes = await fetch(`${BOT_API_URL}/api/bot/presence/history`);
+      const histRes = await fetch(`${BOT_API_URL}/api/bot/presence/history`, { credentials: "include" });
       if (histRes.ok) {
         const hJson = await histRes.json();
         if (hJson.success && hJson.data) {
@@ -345,6 +345,7 @@ export default function BotPresenceClient({ initialTab = "overview" }: BotPresen
       };
 
       const res = await fetch(`${BOT_API_URL}/api/bot/presence`, {
+        credentials: "include",
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify(payload),
@@ -380,7 +381,7 @@ export default function BotPresenceClient({ initialTab = "overview" }: BotPresen
   const handleApplyProfile = async (profileId: string) => {
     try {
       setSaving(true);
-      const res = await fetch(`${BOT_API_URL}/api/bot/presence/profiles/${profileId}/apply`, { method: "POST" });
+      const res = await fetch(`${BOT_API_URL}/api/bot/presence/profiles/${profileId}/apply`, { credentials: "include", method: "POST" });
       const json = await res.json().catch(() => null);
       if (res.ok && json?.success) {
         toast.success("Profil de présence activé avec succès !");
@@ -407,6 +408,7 @@ export default function BotPresenceClient({ initialTab = "overview" }: BotPresen
     const nextState = !rotationConfig.enabled;
     try {
       const res = await fetch(`${BOT_API_URL}/api/bot/presence/rotation`, {
+        credentials: "include",
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({ enabled: nextState }),
@@ -456,6 +458,7 @@ export default function BotPresenceClient({ initialTab = "overview" }: BotPresen
     try {
       setSaving(true);
       const res = await fetch(`${BOT_API_URL}/api/bot/presence/rotation`, {
+        credentials: "include",
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify(rotationConfig),
@@ -495,6 +498,7 @@ export default function BotPresenceClient({ initialTab = "overview" }: BotPresen
     try {
       setSaving(true);
       const res = await fetch(`${BOT_API_URL}/api/bot/presence/identity/username`, {
+        credentials: "include",
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({ username: editUsername.trim() }),
@@ -528,6 +532,7 @@ export default function BotPresenceClient({ initialTab = "overview" }: BotPresen
       });
 
       const res = await fetch(`${BOT_API_URL}/api/bot/presence/identity/avatar`, {
+        credentials: "include",
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({ avatarUrl: dataUrl }),

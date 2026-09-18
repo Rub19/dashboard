@@ -67,7 +67,7 @@ export default function VoiceSettingsClient() {
   const fetchSettings = useCallback(async () => {
     if (BOT_API_URL) {
       try {
-        const res = await fetch(`${BOT_API_URL}/api/guilds/${guildId}/voice/settings`);
+        const res = await fetch(`${BOT_API_URL}/api/guilds/${guildId}/voice/settings`, { credentials: "include" });
         if (res.ok) {
           const data = await res.json();
           setSettings({ ...DEFAULT_SETTINGS, ...(data.settings || {}) });
@@ -87,6 +87,7 @@ export default function VoiceSettingsClient() {
     setIsSaving(true);
     try {
       const res = await fetch(`${BOT_API_URL}/api/guilds/${guildId}/voice/settings`, {
+        credentials: "include",
         method: "PUT",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify(settings),

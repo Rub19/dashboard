@@ -78,7 +78,7 @@ export default function InviteUserDetailClient() {
       return;
     }
     try {
-      const res = await fetch(`${API_BASE}/api/guilds/${guildId}/invites/users/${userId}`);
+      const res = await fetch(`${API_BASE}/api/guilds/${guildId}/invites/users/${userId}`, { credentials: "include" });
       if (res.ok) {
         const data = await res.json();
         setProfile(data.profile);

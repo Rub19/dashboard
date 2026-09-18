@@ -378,7 +378,7 @@ export default function ServerManagementClient({
   const fetchOverview = useCallback(async () => {
     if (BOT_API_URL) {
       try {
-        const res = await fetch(`${BOT_API_URL}/api/guilds/${guildId}/server/overview`);
+        const res = await fetch(`${BOT_API_URL}/api/guilds/${guildId}/server/overview`, { credentials: "include" });
         if (res.ok) {
           const json = await res.json();
           setOverview(json);
@@ -496,7 +496,7 @@ export default function ServerManagementClient({
       try {
         const filterParam = memberFilter !== "all" ? `&filter=${memberFilter}` : "";
         const searchParam = memberSearch ? `&search=${encodeURIComponent(memberSearch)}` : "";
-        const res = await fetch(`${BOT_API_URL}/api/guilds/${guildId}/server/members?page=1&limit=50${filterParam}${searchParam}`);
+        const res = await fetch(`${BOT_API_URL}/api/guilds/${guildId}/server/members?page=1&limit=50${filterParam}${searchParam}`, { credentials: "include" });
         if (res.ok) {
           const json = await res.json();
           setMembers(json.members || []);
@@ -566,7 +566,7 @@ export default function ServerManagementClient({
     setLoadingMemberProfile(true);
     if (BOT_API_URL) {
       try {
-        const res = await fetch(`${BOT_API_URL}/api/guilds/${guildId}/server/members/${userId}`);
+        const res = await fetch(`${BOT_API_URL}/api/guilds/${guildId}/server/members/${userId}`, { credentials: "include" });
         if (res.ok) {
           const json = await res.json();
           setSelectedMember(json);
@@ -628,7 +628,7 @@ export default function ServerManagementClient({
   const fetchChannels = useCallback(async () => {
     if (BOT_API_URL) {
       try {
-        const res = await fetch(`${BOT_API_URL}/api/guilds/${guildId}/server/channels`);
+        const res = await fetch(`${BOT_API_URL}/api/guilds/${guildId}/server/channels`, { credentials: "include" });
         if (res.ok) {
           const json = await res.json();
           setChannelTree(json);
@@ -680,7 +680,7 @@ export default function ServerManagementClient({
   const fetchRoles = useCallback(async () => {
     if (BOT_API_URL) {
       try {
-        const res = await fetch(`${BOT_API_URL}/api/guilds/${guildId}/server/roles`);
+        const res = await fetch(`${BOT_API_URL}/api/guilds/${guildId}/server/roles`, { credentials: "include" });
         if (res.ok) {
           const json = await res.json();
           setRoles(json.roles || []);
@@ -762,7 +762,7 @@ export default function ServerManagementClient({
   const fetchPermissions = useCallback(async () => {
     if (BOT_API_URL) {
       try {
-        const res = await fetch(`${BOT_API_URL}/api/guilds/${guildId}/server/permissions/matrix`);
+        const res = await fetch(`${BOT_API_URL}/api/guilds/${guildId}/server/permissions/matrix`, { credentials: "include" });
         if (res.ok) {
           const json = await res.json();
           setPermMatrix(json.matrix || []);
@@ -827,7 +827,7 @@ export default function ServerManagementClient({
   const fetchEmojis = useCallback(async () => {
     if (BOT_API_URL) {
       try {
-        const res = await fetch(`${BOT_API_URL}/api/guilds/${guildId}/server/emojis`);
+        const res = await fetch(`${BOT_API_URL}/api/guilds/${guildId}/server/emojis`, { credentials: "include" });
         if (res.ok) {
           const json = await res.json();
           setEmojis(json.emojis || []);
@@ -861,7 +861,7 @@ export default function ServerManagementClient({
   const fetchWebhooks = useCallback(async () => {
     if (BOT_API_URL) {
       try {
-        const res = await fetch(`${BOT_API_URL}/api/guilds/${guildId}/server/webhooks`);
+        const res = await fetch(`${BOT_API_URL}/api/guilds/${guildId}/server/webhooks`, { credentials: "include" });
         if (res.ok) {
           const json = await res.json();
           setWebhooks(json.webhooks || []);
@@ -895,7 +895,7 @@ export default function ServerManagementClient({
   const fetchSettings = useCallback(async () => {
     if (BOT_API_URL) {
       try {
-        const res = await fetch(`${BOT_API_URL}/api/guilds/${guildId}/server/settings`);
+        const res = await fetch(`${BOT_API_URL}/api/guilds/${guildId}/server/settings`, { credentials: "include" });
         if (res.ok) {
           const json = await res.json();
           setSettings(json.settings || null);
@@ -928,7 +928,7 @@ export default function ServerManagementClient({
   const fetchAuditLogs = useCallback(async () => {
     if (BOT_API_URL) {
       try {
-        const res = await fetch(`${BOT_API_URL}/api/guilds/${guildId}/server/audit`);
+        const res = await fetch(`${BOT_API_URL}/api/guilds/${guildId}/server/audit`, { credentials: "include" });
         if (res.ok) {
           const json = await res.json();
           setAuditLogs(json.logs || []);
@@ -956,7 +956,7 @@ export default function ServerManagementClient({
     setIsSearching(true);
     if (BOT_API_URL) {
       try {
-        const res = await fetch(`${BOT_API_URL}/api/guilds/${guildId}/server/search?q=${encodeURIComponent(val)}`);
+        const res = await fetch(`${BOT_API_URL}/api/guilds/${guildId}/server/search?q=${encodeURIComponent(val)}`, { credentials: "include" });
         if (res.ok) {
           const json = await res.json();
           setSearchResults(json);
@@ -1028,6 +1028,7 @@ export default function ServerManagementClient({
     try {
       if (BOT_API_URL) {
         const res = await fetch(`${BOT_API_URL}/api/guilds/${guildId}/server/members/${selectedMember.id}/action`, {
+          credentials: "include",
           method: "POST",
           headers: { "Content-Type": "application/json" },
           body: JSON.stringify({ action, ...payload }),
@@ -1061,6 +1062,7 @@ export default function ServerManagementClient({
     try {
       if (BOT_API_URL) {
         const res = await fetch(`${BOT_API_URL}/api/guilds/${guildId}/server/channels`, {
+          credentials: "include",
           method: "POST",
           headers: { "Content-Type": "application/json" },
           body: JSON.stringify({
@@ -1096,6 +1098,7 @@ export default function ServerManagementClient({
     try {
       if (BOT_API_URL) {
         const res = await fetch(`${BOT_API_URL}/api/guilds/${guildId}/server/channels/${channelId}`, {
+          credentials: "include",
           method: "DELETE",
         });
         if (res.ok) {
@@ -1123,6 +1126,7 @@ export default function ServerManagementClient({
     try {
       if (BOT_API_URL) {
         const res = await fetch(`${BOT_API_URL}/api/guilds/${guildId}/server/roles`, {
+          credentials: "include",
           method: "POST",
           headers: { "Content-Type": "application/json" },
           body: JSON.stringify({
@@ -1159,9 +1163,7 @@ export default function ServerManagementClient({
     setDebugging(true);
     try {
       if (BOT_API_URL) {
-        const res = await fetch(
-          `${BOT_API_URL}/api/guilds/${guildId}/server/permissions/debug?userId=${debugUserId}&channelId=${debugChannelId}&permission=${debugPermKey}`
-        );
+        const res = await fetch(`${BOT_API_URL}/api/guilds/${guildId}/server/permissions/debug?userId=${debugUserId}&channelId=${debugChannelId}&permission=${debugPermKey}`, { credentials: "include" });
         if (res.ok) {
           const json = await res.json();
           setDebugResult(json);
@@ -1238,6 +1240,7 @@ export default function ServerManagementClient({
     try {
       if (BOT_API_URL) {
         const res = await fetch(`${BOT_API_URL}/api/guilds/${guildId}/server/webhooks`, {
+          credentials: "include",
           method: "POST",
           headers: { "Content-Type": "application/json" },
           body: JSON.stringify({ name: newWebhookName.trim(), channelId: newWebhookChannel }),
@@ -1265,7 +1268,7 @@ export default function ServerManagementClient({
     if (!confirm("Voulez-vous supprimer ce webhook ?")) return;
     try {
       if (BOT_API_URL) {
-        await fetch(`${BOT_API_URL}/api/guilds/${guildId}/server/webhooks/${webhookId}`, { method: "DELETE" });
+        await fetch(`${BOT_API_URL}/api/guilds/${guildId}/server/webhooks/${webhookId}`, { credentials: "include", method: "DELETE" });
       }
       success("Webhook supprimé");
       fetchWebhooks();
@@ -1281,6 +1284,7 @@ export default function ServerManagementClient({
     try {
       if (BOT_API_URL) {
         const res = await fetch(`${BOT_API_URL}/api/guilds/${guildId}/server/settings`, {
+          credentials: "include",
           method: "PATCH",
           headers: { "Content-Type": "application/json" },
           body: JSON.stringify(settings),

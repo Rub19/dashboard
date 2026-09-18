@@ -123,7 +123,7 @@ export default function InvitesCenterClient() {
     }
     try {
       // 1. Overview
-      const ovRes = await fetch(`${API_BASE}/api/guilds/${currentGuildId}/invites/overview`).catch(() => null);
+      const ovRes = await fetch(`${API_BASE}/api/guilds/${currentGuildId}/invites/overview`, { credentials: "include" }).catch(() => null);
       if (ovRes && ovRes.ok) {
         const ovData = await ovRes.json();
         setOverview(ovData);
@@ -153,9 +153,7 @@ export default function InvitesCenterClient() {
       }
 
       // 2. Leaderboard
-      const lbRes = await fetch(
-        `${API_BASE}/api/guilds/${currentGuildId}/invites/leaderboard?period=${period}&search=${encodeURIComponent(searchQuery)}`
-      ).catch(() => null);
+      const lbRes = await fetch(`${API_BASE}/api/guilds/${currentGuildId}/invites/leaderboard?period=${period}&search=${encodeURIComponent(searchQuery)}`, { credentials: "include" }).catch(() => null);
       if (lbRes && lbRes.ok) {
         const lbData = await lbRes.json();
         setLeaderboard(lbData.leaderboard || []);
@@ -170,7 +168,7 @@ export default function InvitesCenterClient() {
       }
 
       // 3. Links
-      const linksRes = await fetch(`${API_BASE}/api/guilds/${currentGuildId}/invites/links`).catch(() => null);
+      const linksRes = await fetch(`${API_BASE}/api/guilds/${currentGuildId}/invites/links`, { credentials: "include" }).catch(() => null);
       if (linksRes && linksRes.ok) {
         const linksData = await linksRes.json();
         setLinks(linksData.links || []);
@@ -183,7 +181,7 @@ export default function InvitesCenterClient() {
       }
 
       // 4. Rewards
-      const rewRes = await fetch(`${API_BASE}/api/guilds/${currentGuildId}/invites/rewards`).catch(() => null);
+      const rewRes = await fetch(`${API_BASE}/api/guilds/${currentGuildId}/invites/rewards`, { credentials: "include" }).catch(() => null);
       if (rewRes && rewRes.ok) {
         const rewData = await rewRes.json();
         setRewards(rewData.rewards || []);
@@ -196,7 +194,7 @@ export default function InvitesCenterClient() {
       }
 
       // 5. Campaigns
-      const campRes = await fetch(`${API_BASE}/api/guilds/${currentGuildId}/invites/campaigns`).catch(() => null);
+      const campRes = await fetch(`${API_BASE}/api/guilds/${currentGuildId}/invites/campaigns`, { credentials: "include" }).catch(() => null);
       if (campRes && campRes.ok) {
         const campData = await campRes.json();
         setCampaigns(campData.campaigns || []);
@@ -234,7 +232,7 @@ export default function InvitesCenterClient() {
       return;
     }
     try {
-      const res = await fetch(`${API_BASE}/api/guilds/${currentGuildId}/invites/sync`, { method: "POST" });
+      const res = await fetch(`${API_BASE}/api/guilds/${currentGuildId}/invites/sync`, { credentials: "include", method: "POST" });
       if (res.ok) {
         success("Synchronisation effectuée", "Les invitations Discord ont été rafraîchies depuis l'API Gateway.");
         fetchAllData();
@@ -269,6 +267,7 @@ export default function InvitesCenterClient() {
     }
     try {
       const res = await fetch(`${API_BASE}/api/guilds/${currentGuildId}/invites/rewards`, {
+        credentials: "include",
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({
@@ -297,7 +296,7 @@ export default function InvitesCenterClient() {
       return;
     }
     try {
-      await fetch(`${API_BASE}/api/guilds/${currentGuildId}/invites/rewards/${id}`, { method: "DELETE" });
+      await fetch(`${API_BASE}/api/guilds/${currentGuildId}/invites/rewards/${id}`, { credentials: "include", method: "DELETE" });
       success("Récompense supprimée", "Le palier de parrainage a été retiré.");
       fetchAllData();
     } catch {

@@ -255,7 +255,7 @@ export function AuditCenterClient() {
       return;
     }
     try {
-      const res = await fetch(`${API_BASE}/api/guilds/${selectedGuild.id}/logs/overview`);
+      const res = await fetch(`${API_BASE}/api/guilds/${selectedGuild.id}/logs/overview`, { credentials: "include" });
       if (res.ok) {
         const data = await res.json();
         setOverview(data);
@@ -286,7 +286,7 @@ export function AuditCenterClient() {
       if (searchQuery.trim()) query.set("search", searchQuery.trim());
       query.set("limit", "100");
 
-      const res = await fetch(`${API_BASE}/api/guilds/${selectedGuild.id}/logs/events?${query.toString()}`);
+      const res = await fetch(`${API_BASE}/api/guilds/${selectedGuild.id}/logs/events?${query.toString()}`, { credentials: "include" });
       if (res.ok) {
         const data = await res.json();
         setEvents(data.events || []);
@@ -309,7 +309,7 @@ export function AuditCenterClient() {
   const fetchConfig = useCallback(async () => {
     if (!selectedGuild || !API_BASE) return;
     try {
-      const res = await fetch(`${API_BASE}/api/guilds/${selectedGuild.id}/logs/config`);
+      const res = await fetch(`${API_BASE}/api/guilds/${selectedGuild.id}/logs/config`, { credentials: "include" });
       if (res.ok) {
         const data = await res.json();
         if (data.config) {
@@ -401,7 +401,7 @@ export function AuditCenterClient() {
       return;
     }
     try {
-      const res = await fetch(`${API_BASE}/api/guilds/${selectedGuild.id}/logs/events/${eventId}/investigate`);
+      const res = await fetch(`${API_BASE}/api/guilds/${selectedGuild.id}/logs/events/${eventId}/investigate`, { credentials: "include" });
       if (res.ok) {
         const data = await res.json();
         setInvestigationData(data);
@@ -425,6 +425,7 @@ export function AuditCenterClient() {
     setSavingConfig(true);
     try {
       const res = await fetch(`${API_BASE}/api/guilds/${selectedGuild.id}/logs/config`, {
+        credentials: "include",
         method: "PUT",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({

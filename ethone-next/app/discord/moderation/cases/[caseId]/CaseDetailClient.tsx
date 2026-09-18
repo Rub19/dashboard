@@ -96,7 +96,7 @@ export default function CaseDetailClient() {
     try {
       if (BOT_API_URL) {
       try {
-        const res = await fetch(`${BOT_API_URL}/api/guilds/${guildId}/moderation/cases/${caseNumber}`);
+        const res = await fetch(`${BOT_API_URL}/api/guilds/${guildId}/moderation/cases/${caseNumber}`, { credentials: "include" });
         if (res.ok) {
           const data = await res.json();
           if (data.case) {
@@ -152,6 +152,7 @@ export default function CaseDetailClient() {
       const res = await fetch(
         `${BOT_API_URL}/api/guilds/${guildId}/moderation/cases/${caseNumber}/notes`,
         {
+          credentials: "include",
           method: "POST",
           headers: { "Content-Type": "application/json" },
           body: JSON.stringify({ content: newNoteContent.trim() }),
@@ -181,6 +182,7 @@ export default function CaseDetailClient() {
       const res = await fetch(
         `${BOT_API_URL}/api/guilds/${guildId}/moderation/cases/${caseNumber}/evidence`,
         {
+          credentials: "include",
           method: "POST",
           headers: { "Content-Type": "application/json" },
           body: JSON.stringify({
@@ -214,6 +216,7 @@ export default function CaseDetailClient() {
       const res = await fetch(
         `${BOT_API_URL}/api/guilds/${guildId}/moderation/cases/${caseNumber}/revert`,
         {
+          credentials: "include",
           method: "POST",
           headers: { "Content-Type": "application/json" },
           body: JSON.stringify({ reason: revertReason || "Pardon accordé" }),

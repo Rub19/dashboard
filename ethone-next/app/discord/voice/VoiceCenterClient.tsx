@@ -126,7 +126,7 @@ export default function VoiceCenterClient() {
   const fetchOverview = useCallback(async () => {
     if (BOT_API_URL) {
       try {
-        const res = await fetch(`${BOT_API_URL}/api/guilds/${guildId}/voice/overview`);
+        const res = await fetch(`${BOT_API_URL}/api/guilds/${guildId}/voice/overview`, { credentials: "include" });
         if (res.ok) {
           const json = await res.json();
           setData(json);
@@ -270,6 +270,7 @@ export default function VoiceCenterClient() {
   const handleRoomAction = async (roomId: string, action: string, value?: any) => {
     try {
       const res = await fetch(`${BOT_API_URL}/api/guilds/${guildId}/voice/rooms/${roomId}/action`, {
+        credentials: "include",
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({ action, value }),
@@ -304,6 +305,7 @@ export default function VoiceCenterClient() {
     setIsPublishing(true);
     try {
       const res = await fetch(`${BOT_API_URL}/api/guilds/${guildId}/voice/panel/publish`, {
+        credentials: "include",
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({ channelId: panelChannelId || undefined }),

@@ -2,6 +2,7 @@ import express, { Request, Response } from 'express';
 import { Client } from 'discord.js';
 import { securityStorage } from '../../modules/security/storage/securityStorage.js';
 import { securityEngine } from '../../modules/security/services/securityEngine.js';
+import { emitConfigUpdated } from '../../services/syncConfigEmitter.js';
 
 export function createSecurityRouter(discordClient: Client) {
   const router = express.Router({ mergeParams: true });
@@ -33,6 +34,7 @@ export function createSecurityRouter(discordClient: Client) {
     const guildId = String(req.params.guildId);
     try {
       const updated = securityStorage.updateConfig(guildId, req.body);
+      emitConfigUpdated('security', guildId, updated, 'DASHBOARD', req.user?.id);
       res.json({ success: true, config: updated });
     } catch (err: any) {
       res.status(400).json({ error: err.message || 'Configuration de sécurité invalide.' });

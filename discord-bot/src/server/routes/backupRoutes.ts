@@ -5,6 +5,7 @@ import { backupRepository } from '../../modules/backup/storage/backupRepository.
 import { logger } from '../../utils/logger.js';
 import { requireStringParam } from '../utils/params.js';
 import { rateLimit, idempotent, guildLock } from '../middleware/antiAbuseMiddleware.js';
+import { emitConfigUpdated } from '../../services/syncConfigEmitter.js';
 
 export function createBackupRouter(client: Client): Router {
   const router = Router({ mergeParams: true });
@@ -127,6 +128,7 @@ export function createBackupRouter(client: Client): Router {
     try {
       const guildId = requireStringParam(req.params.guildId, 'guildId');
       const updated = backupRepository.saveSettings(guildId, req.body);
+      emitConfigUpdated('backups', guildId, updated, 'DASHBOARD', req.user?.id);
       res.json(updated);
     } catch (err: any) {
       logger.error('Erreur PUT /backups/settings :', err);

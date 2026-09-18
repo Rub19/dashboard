@@ -8,6 +8,7 @@ import { ServerPermissionDebugger } from '../../modules/server/services/serverPe
 import { ServerEmojiService } from '../../modules/server/services/serverEmojiService.js';
 import { ServerWebhookService } from '../../modules/server/services/serverWebhookService.js';
 import { ServerSettingsService } from '../../modules/server/services/serverSettingsService.js';
+import { emitConfigUpdated } from '../../services/syncConfigEmitter.js';
 import { logStorage } from '../../modules/logs/storage/logStorage.js';
 import { logger } from '../../utils/logger.js';
 
@@ -419,6 +420,7 @@ export function createServerRouter(client: Client): Router {
       if (!result.success) {
         return res.status(400).json({ error: result.error });
       }
+      emitConfigUpdated('server', guildId, result.settings, 'DASHBOARD', req.user?.id);
       res.json(result);
     } catch (err: any) {
       logger.error('Erreur mise à jour server/settings :', err);

@@ -6,6 +6,7 @@ import { CUSTOM_COMMAND_TEMPLATES } from '../../modules/customCommands/services/
 import { CommandVariableEngine } from '../../modules/customCommands/services/commandVariableEngine.js';
 import { CommandActionExecutor } from '../../modules/customCommands/services/commandActionExecutor.js';
 import { logger } from '../../utils/logger.js';
+import { emitConfigUpdated } from '../../services/syncConfigEmitter.js';
 
 const MAX_COMMANDS_PER_GUILD = 50;
 
@@ -65,6 +66,7 @@ export function createCustomCommandRouter(client: Client) {
 
     try {
       const cmd = customCommandStorage.create({ ...req.body, guildId });
+      emitConfigUpdated('customCommands', guildId, cmd, 'DASHBOARD', req.user?.id);
       res.json({ success: true, command: cmd });
     } catch (err: any) {
       res.status(400).json({ error: err.message || 'Données de commande invalides' });
@@ -90,6 +92,7 @@ export function createCustomCommandRouter(client: Client) {
 
     try {
       const cmd = customCommandStorage.create({ ...tpl, name, guildId });
+      emitConfigUpdated('customCommands', guildId, cmd, 'DASHBOARD', req.user?.id);
       res.json({ success: true, command: cmd });
     } catch (err: any) {
       res.status(400).json({ error: err.message || 'Erreur création depuis template' });
@@ -109,6 +112,7 @@ export function createCustomCommandRouter(client: Client) {
 
     try {
       const updated = customCommandStorage.update(id, req.body);
+      emitConfigUpdated('customCommands', guildId, updated, 'DASHBOARD', req.user?.id);
       res.json({ success: true, command: updated });
     } catch (err: any) {
       res.status(400).json({ error: err.message || 'Données invalides' });
@@ -132,6 +136,7 @@ export function createCustomCommandRouter(client: Client) {
       return;
     }
 
+    emitConfigUpdated('customCommands', guildId, dup, 'DASHBOARD', req.user?.id);
     res.json({ success: true, command: dup });
   });
 
@@ -147,6 +152,7 @@ export function createCustomCommandRouter(client: Client) {
     }
 
     const updated = customCommandStorage.update(id, { enabled: !existing.enabled });
+    emitConfigUpdated('customCommands', guildId, updated, 'DASHBOARD', req.user?.id);
     res.json({ success: true, command: updated });
   });
 

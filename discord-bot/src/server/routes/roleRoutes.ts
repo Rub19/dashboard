@@ -4,6 +4,7 @@ import { autoRoleService } from '../../modules/roles/services/autoRoleService.js
 import { rolePanelService } from '../../modules/roles/services/rolePanelService.js';
 import { logger } from '../../utils/logger.js';
 import { rateLimit, idempotent } from '../middleware/antiAbuseMiddleware.js';
+import { emitConfigUpdated } from '../../services/syncConfigEmitter.js';
 
 export function createRoleRouter(discordClient: Client) {
   const router = express.Router({ mergeParams: true });
@@ -23,6 +24,7 @@ export function createRoleRouter(discordClient: Client) {
       const guildId = String(req.params.guildId);
       try {
         const updated = autoRoleService.updateConfig(guildId, req.body);
+        emitConfigUpdated('autorole', guildId, updated, 'DASHBOARD', req.user?.id);
         res.json({ success: true, config: updated });
       } catch (err: any) {
         res.status(400).json({ error: err.message || 'Données invalides' });
@@ -46,6 +48,7 @@ export function createRoleRouter(discordClient: Client) {
       const guildId = String(req.params.guildId);
       try {
         const saved = rolePanelService.savePanel(guildId, req.body);
+        emitConfigUpdated('rolePanels', guildId, saved, 'DASHBOARD', req.user?.id);
         res.json({ success: true, panel: saved });
       } catch (err: any) {
         res.status(400).json({ error: err.message || 'Données de panel invalides' });

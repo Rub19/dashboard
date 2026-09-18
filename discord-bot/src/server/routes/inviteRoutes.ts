@@ -4,6 +4,7 @@ import { inviteRepository } from '../../modules/invites/storage/inviteRepository
 import { inviteSnapshotService } from '../../modules/invites/services/inviteSnapshotService.js';
 import { logger } from '../../utils/logger.js';
 import { requireStringParam } from '../utils/params.js';
+import { emitConfigUpdated } from '../../services/syncConfigEmitter.js';
 
 export function createInviteRouter(client: Client): Router {
   const router = Router({ mergeParams: true });
@@ -247,6 +248,7 @@ export function createInviteRouter(client: Client): Router {
     try {
       const guildId = requireStringParam(req.params.guildId, 'guildId');
       const updated = inviteRepository.updateSettings(guildId, req.body);
+      emitConfigUpdated('invites', guildId, updated, 'DASHBOARD', req.user?.id);
       res.json({ success: true, settings: updated });
     } catch (err: any) {
       res.status(500).json({ error: err.message });

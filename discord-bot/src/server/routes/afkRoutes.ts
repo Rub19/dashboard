@@ -2,6 +2,7 @@ import express, { Request, Response } from 'express';
 import { Client } from 'discord.js';
 import { afkStorage } from '../../modules/afk/storage/afkStorage.js';
 import { AfkConfigSchema } from '../../modules/afk/types/afk.js';
+import { emitConfigUpdated } from '../../services/syncConfigEmitter.js';
 
 /**
  * API Dashboard du module AFK.
@@ -26,7 +27,9 @@ export function createAfkRouter(_client: Client) {
       res.status(400).json({ error: 'Configuration invalide', details: parsed.error.flatten() });
       return;
     }
-    res.json({ success: true, config: afkStorage.updateConfig(guildId, parsed.data) });
+    const updated = afkStorage.updateConfig(guildId, parsed.data);
+    emitConfigUpdated('afk', guildId, updated, 'DASHBOARD', req.user?.id);
+    res.json({ success: true, config: updated });
   });
 
   // Retirer manuellement le statut AFK d'un membre.

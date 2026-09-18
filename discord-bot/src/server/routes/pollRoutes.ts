@@ -7,6 +7,7 @@ import { pollResultService } from '../../modules/polls/services/pollResultServic
 import { discordPollPanel } from '../../modules/polls/ui/discordPollPanel.js';
 import { DiscordPoll } from '../../modules/polls/types/index.js';
 import { requireStringParam } from '../utils/params.js';
+import { emitConfigUpdated } from '../../services/syncConfigEmitter.js';
 
 export function createPollRouter(client: Client): Router {
   const router = Router({ mergeParams: true });
@@ -118,6 +119,7 @@ export function createPollRouter(client: Client): Router {
 
     try {
       const saved = pollRepository.savePoll(newPoll);
+      emitConfigUpdated('polls', guildId, saved, 'DASHBOARD', req.user?.id);
       res.json({ success: true, poll: saved });
     } catch (err: any) {
       res.status(500).json({ success: false, error: err.message });
@@ -156,6 +158,7 @@ export function createPollRouter(client: Client): Router {
     };
 
     const saved = pollRepository.savePoll(updated);
+    emitConfigUpdated('polls', guildId, saved, 'DASHBOARD', req.user?.id);
     res.json({ success: true, poll: saved });
   });
 

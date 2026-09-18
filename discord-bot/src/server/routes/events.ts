@@ -5,6 +5,7 @@ import { EventService } from '../../modules/events/eventsService.js';
 import { EventRSVPService } from '../../modules/events/eventsRsvpService.js';
 import { EventsCheckinService } from '../../modules/events/eventsCheckinService.js';
 import { RSVPStatus, AttendanceStatus } from '../../modules/events/eventsTypes.js';
+import { emitConfigUpdated } from '../../services/syncConfigEmitter.js';
 
 export function createEventRouter(client?: Client): Router {
   const router = Router({ mergeParams: true });
@@ -90,6 +91,7 @@ export function createEventRouter(client?: Client): Router {
         await EventService.syncToDiscordScheduledEvent(created, client).catch(() => null);
       }
 
+      emitConfigUpdated('events', guildId, created, 'DASHBOARD', req.user?.id);
       res.status(201).json({ success: true, event: created });
     } catch (err: any) {
       res.status(500).json({ success: false, error: err.message });
@@ -108,6 +110,7 @@ export function createEventRouter(client?: Client): Router {
         return res.status(404).json({ success: false, error: 'Event not found' });
       }
 
+      emitConfigUpdated('events', guildId, updated, 'DASHBOARD', req.user?.id);
       res.json({ success: true, event: updated });
     } catch (err: any) {
       res.status(500).json({ success: false, error: err.message });

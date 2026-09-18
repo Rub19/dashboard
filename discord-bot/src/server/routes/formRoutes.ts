@@ -5,6 +5,7 @@ import { formService } from '../../modules/forms/services/formService.js';
 import { discordFormPanel } from '../../modules/forms/ui/discordFormPanel.js';
 import { DiscordFormSchema } from '../../modules/forms/types/index.js';
 import { requireStringParam } from '../utils/params.js';
+import { emitConfigUpdated } from '../../services/syncConfigEmitter.js';
 
 export function createFormRouter(client: Client): Router {
   const router = Router({ mergeParams: true });
@@ -98,6 +99,7 @@ export function createFormRouter(client: Client): Router {
 
     try {
       const saved = formRepository.saveForm(newForm as any);
+      emitConfigUpdated('forms', guildId, saved, 'DASHBOARD', req.user?.id);
       res.json({ success: true, form: saved });
     } catch (err: any) {
       res.status(400).json({ success: false, error: err?.message || 'Erreur validation formulaire' });
@@ -132,6 +134,7 @@ export function createFormRouter(client: Client): Router {
         guildId,
         updatedAt: new Date().toISOString(),
       });
+      emitConfigUpdated('forms', guildId, updated, 'DASHBOARD', req.user?.id);
       res.json({ success: true, form: updated });
     } catch (err: any) {
       res.status(400).json({ success: false, error: err?.message || 'Erreur mise à jour' });

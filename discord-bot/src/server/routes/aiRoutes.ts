@@ -4,6 +4,7 @@ import { aiService } from '../../modules/ai/services/aiService.js';
 import { aiRepository } from '../../modules/ai/storage/aiRepository.js';
 import { logger } from '../../utils/logger.js';
 import { requireStringParam } from '../utils/params.js';
+import { emitConfigUpdated } from '../../services/syncConfigEmitter.js';
 
 export function createAiRouter(client: Client): Router {
   const router = Router({ mergeParams: true });
@@ -36,6 +37,7 @@ export function createAiRouter(client: Client): Router {
     try {
       const guildId = requireStringParam(req.params.guildId, 'guildId');
       const updated = aiService.updatePersonality(guildId, req.body);
+      emitConfigUpdated('ai', guildId, updated, 'DASHBOARD', req.user?.id);
       res.json(updated.personality);
     } catch (err: any) {
       logger.error('Erreur PUT /ai/personality :', err);
@@ -61,6 +63,7 @@ export function createAiRouter(client: Client): Router {
         patch.memory = { ...current, ...body.memory };
       }
       const updated = aiRepository.saveSettings(guildId, patch as any);
+      emitConfigUpdated('ai', guildId, updated, 'DASHBOARD', req.user?.id);
       res.json({
         enabled: updated.enabled,
         defaultMode: updated.defaultMode,
@@ -100,6 +103,7 @@ export function createAiRouter(client: Client): Router {
         return res.status(400).json({ error: 'Règle de salon invalide' });
       }
       const updated = aiService.updateChannelRule(guildId, rule);
+      emitConfigUpdated('ai', guildId, updated, 'DASHBOARD', req.user?.id);
       res.json(updated.channelRules);
     } catch (err: any) {
       logger.error('Erreur PUT /ai/channels :', err);
@@ -180,6 +184,7 @@ export function createAiRouter(client: Client): Router {
     try {
       const guildId = requireStringParam(req.params.guildId, 'guildId');
       const updated = aiService.updateTools(guildId, req.body);
+      emitConfigUpdated('ai', guildId, updated, 'DASHBOARD', req.user?.id);
       res.json(updated.tools);
     } catch (err: any) {
       logger.error('Erreur PUT /ai/tools :', err);

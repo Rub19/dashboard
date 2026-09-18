@@ -13,6 +13,7 @@ import {
 import { ticketService } from '../../modules/tickets/services/ticketService.js';
 import { TicketPriority, TicketStatus } from '../../modules/tickets/types/ticket.js';
 import { logger } from '../../utils/logger.js';
+import { emitConfigUpdated } from '../../services/syncConfigEmitter.js';
 import { rateLimit, idempotent } from '../middleware/antiAbuseMiddleware.js';
 
 export function createTicketRouter(discordClient: Client) {
@@ -520,6 +521,7 @@ export function createTicketRouter(discordClient: Client) {
       const current = ticketService.getConfig(guildId);
       const updated = { ...current, ...req.body, guildId };
       ticketService.saveConfig(guildId, updated);
+      emitConfigUpdated('tickets', guildId, updated, 'DASHBOARD', req.user?.id);
       res.json({ success: true, config: updated });
     } catch (err: any) {
       res.status(400).json({ error: err.message || 'Données invalides' });

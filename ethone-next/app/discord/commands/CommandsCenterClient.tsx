@@ -1,6 +1,7 @@
 "use client";
 
-import React, { useState } from "react";
+import React, { useState, useMemo, useEffect, useCallback } from "react";
+import { useSearchParams } from "next/navigation";
 import {
   Code2,
   Terminal,
@@ -9,788 +10,662 @@ import {
   Sparkles,
   Plus,
   Trash2,
-  CheckCircle2,
   Eye,
   Layers,
   ShieldCheck,
   Hash,
   ExternalLink,
-  X,
+  RefreshCw,
+  Copy,
+  LayoutTemplate,
 } from "lucide-react";
+import { useToast } from "@/components/ToastProvider";
+import { useDiscordOAuth } from "@/lib/hooks/useDiscordOAuth";
+import { cn } from "@/lib/utils";
 
-interface CommandItem {
-  id: string;
-  name: string;
-  description: string;
-  type: "SLASH" | "PREFIX" | "BOTH";
-  prefix?: string;
-  responseType: "TEXT" | "EMBED";
-  rawText?: string;
-  embedData?: {
-    title: string;
-    description: string;
-    color: string;
-    footer?: string;
-    thumbnailUrl?: string;
-    fields?: { name: string; value: string; inline: boolean }[];
-  };
-  allowedRoles: string[];
-  cooldownSeconds: number;
-  usageCount: number;
-  enabled: boolean;
-  buttons?: { label: string; url?: string; style: "PRIMARY" | "LINK" | "SUCCESS" }[];
+const BOT_API_URL = process.env.NEXT_PUBLIC_DISCORD_BOT_API || "";
+
+// Mirrors discord-bot/src/modules/customCommands/types/customCommand.ts.
+type TriggerType = "slash" | "prefix" | "both";
+
+interface CustomEmbed {
+  title?: string;
+  description?: string;
+  color: string;
+  thumbnailUrl?: string;
+  imageUrl?: string;
+  footerText?: string;
+  fields: { name: string; value: string; inline: boolean }[];
 }
 
+interface CustomButton {
+  label: string;
+  url?: string;
+  style: "link" | "primary" | "secondary" | "success" | "danger";
+}
+
+interface ResponseBlock {
+  content?: string;
+  embed?: CustomEmbed;
+  buttons: CustomButton[];
+}
+
+interface CommandAction {
+  type: "send_response" | "add_role" | "remove_role" | "delete_trigger" | "send_dm";
+  roleId?: string;
+  response?: ResponseBlock;
+}
+
+interface CustomCommand {
+  id: string;
+  guildId: string;
+  name: string;
+  description: string;
+  category: string;
+  triggerType: TriggerType;
+  enabled: boolean;
+  cooldownSeconds: number;
+  requiredRoleIds: string[];
+  requiredPermission?: string;
+  arguments: { name: string; description: string; type: string; required: boolean }[];
+  conditions: unknown[];
+  defaultActions: CommandAction[];
+  usageCount: number;
+  createdAt: string;
+  updatedAt: string;
+}
+
+interface CommandTemplate {
+  name: string;
+  description?: string;
+  category?: string;
+}
+
+interface Preview {
+  content: string | null;
+  embed: { title?: string; description?: string; color?: number; footer?: { text: string } } | null;
+  buttons: boolean;
+}
+
+/** First send_response block of a command (what the catalog/simulator display). */
+function primaryResponse(cmd: CustomCommand): ResponseBlock | null {
+  const a = cmd.defaultActions.find((x) => x.type === "send_response" && x.response);
+  return a?.response || null;
+}
+
+function triggerLabel(cmd: CustomCommand): string {
+  if (cmd.triggerType === "slash") return `/${cmd.name}`;
+  if (cmd.triggerType === "prefix") return `!${cmd.name}`;
+  return `/${cmd.name} ou !${cmd.name}`;
+}
+
+const DEMO_COMMANDS: CustomCommand[] = [
+  {
+    id: "demo-1", guildId: "demo", name: "regles", description: "Affiche les règles du serveur.", category: "Serveur", triggerType: "both", enabled: true,
+    cooldownSeconds: 15, requiredRoleIds: [], arguments: [], conditions: [], usageCount: 1420, createdAt: new Date().toISOString(), updatedAt: new Date().toISOString(),
+    defaultActions: [{ type: "send_response", response: { embed: { title: "📜 Règlement de {server}", description: "1. Respect mutuel\n2. Pas de spam\n3. Respectez les salons", color: "#6366F1", footerText: "ETHONE", fields: [] }, buttons: [] } }],
+  },
+  {
+    id: "demo-2", guildId: "demo", name: "site", description: "Lien vers la plateforme.", category: "Serveur", triggerType: "both", enabled: true,
+    cooldownSeconds: 10, requiredRoleIds: [], arguments: [], conditions: [], usageCount: 2310, createdAt: new Date().toISOString(), updatedAt: new Date().toISOString(),
+    defaultActions: [{ type: "send_response", response: { content: "Découvrez notre plateforme sur https://ethone.dev — merci {user} !", buttons: [] } }],
+  },
+];
+
+const VARIABLES = [
+  { v: "{user}", desc: "Mention" },
+  { v: "{username}", desc: "Pseudo" },
+  { v: "{server}", desc: "Serveur" },
+  { v: "{member_count}", desc: "Membres" },
+  { v: "{channel}", desc: "Salon" },
+  { v: "{date}", desc: "Date" },
+];
+
 export default function CommandsCenterClient() {
-  const [activeTab, setActiveTab] = useState<
-    "catalog" | "builder" | "simulator" | "permissions" | "logs"
-  >("catalog");
+  const searchParams = useSearchParams();
+  const rawGuildId = searchParams.get("guildId");
+  const { profile } = useDiscordOAuth();
+  const { success, error: toastError } = useToast();
 
-  const [commands, setCommands] = useState<CommandItem[]>([
-    {
-      id: "cmd-1",
-      name: "regles",
-      description: "Affiche les règles principales et les consignes du serveur.",
-      type: "BOTH",
-      prefix: "!",
-      responseType: "EMBED",
-      embedData: {
-        title: "📜 Règlement Officiel du Serveur",
-        description: "Bienvenue sur **{server.name}** ! Pour garantir une ambiance agréable, merci de respecter ces consignes :\n\n1. Respect mutuel et courtoisie\n2. Pas de spam ni de publicité non sollicitée\n3. Respectez les thématiques de chaque salon.",
-        color: "#6366F1",
-        footer: "ETHONE Security & Moderation",
-      },
-      allowedRoles: ["Tous les membres"],
-      cooldownSeconds: 15,
-      usageCount: 1420,
-      enabled: true,
-      buttons: [{ label: "Lire le règlement complet", url: "https://ethone.dev/rules", style: "LINK" }],
-    },
-    {
-      id: "cmd-2",
-      name: "vip",
-      description: "Consulter les avantages du statut VIP et les critères d'obtention.",
-      type: "SLASH",
-      responseType: "EMBED",
-      embedData: {
-        title: "👑 Club VIP & Nitro Boosters",
-        description: "Les membres VIP profitent de salons réservés, de badges exclusifs et d'un bitrate audio amélioré à 128 kbps !\n\nVous êtes actuellement **{server.member_count}** membres sur le serveur.",
-        color: "#F59E0B",
-        footer: "Programme VIP ETHONE",
-      },
-      allowedRoles: ["Tous les membres"],
-      cooldownSeconds: 30,
-      usageCount: 890,
-      enabled: true,
-    },
-    {
-      id: "cmd-3",
-      name: "site",
-      description: "Lien vers la plateforme et les services officiels.",
-      type: "BOTH",
-      prefix: "!",
-      responseType: "TEXT",
-      rawText: "Découvrez notre plateforme et nos tutoriels complets sur : https://ethone.dev ! Merci à vous, {user} !",
-      allowedRoles: ["Tous les membres"],
-      cooldownSeconds: 10,
-      usageCount: 2310,
-      enabled: true,
-    },
-    {
-      id: "cmd-4",
-      name: "staff-clear",
-      description: "Nettoyer rapidement les derniers messages d'un salon.",
-      type: "SLASH",
-      responseType: "TEXT",
-      rawText: "🧹 Nettoyage de messages exécuté avec succès par {user} à {time}.",
-      allowedRoles: ["Modérateur", "Administrateur"],
-      cooldownSeconds: 5,
-      usageCount: 142,
-      enabled: true,
-    },
-  ]);
+  const activeGuild = useMemo(() => {
+    if (rawGuildId && profile?.guilds) {
+      return profile.guilds.find((g) => g.id === rawGuildId) || profile.guilds[0];
+    }
+    return profile?.guilds?.[0] || null;
+  }, [rawGuildId, profile?.guilds]);
 
-  // Command Studio Builder State
+  const currentGuildId = activeGuild?.id || "123456789012345678";
+  const base = `${BOT_API_URL}/api/guilds/${currentGuildId}/custom-commands`;
+  const isRealGuild = Boolean(BOT_API_URL) && currentGuildId !== "123456789012345678";
+
+  const [activeTab, setActiveTab] = useState<"catalog" | "builder" | "simulator" | "templates">("catalog");
+  const [isDemo, setIsDemo] = useState(true);
+  const [loading, setLoading] = useState(false);
+  const [commands, setCommands] = useState<CustomCommand[]>(DEMO_COMMANDS);
+  const [templates, setTemplates] = useState<CommandTemplate[]>([]);
+  const [submitting, setSubmitting] = useState(false);
+
+  // Builder
   const [builderName, setBuilderName] = useState("");
   const [builderDesc, setBuilderDesc] = useState("");
-  const [builderType, setBuilderType] = useState<"SLASH" | "PREFIX" | "BOTH">("BOTH");
+  const [builderType, setBuilderType] = useState<TriggerType>("both");
   const [builderResponseType, setBuilderResponseType] = useState<"TEXT" | "EMBED">("EMBED");
   const [builderRawText, setBuilderRawText] = useState("");
   const [builderEmbedTitle, setBuilderEmbedTitle] = useState("");
   const [builderEmbedDesc, setBuilderEmbedDesc] = useState("");
   const [builderEmbedColor, setBuilderEmbedColor] = useState("#6366F1");
-  const [builderEmbedFooter, setBuilderEmbedFooter] = useState("Serveur Discord Officiel");
-  const [builderCooldown, setBuilderCooldown] = useState(15);
-  const [builderAllowedRole, setBuilderAllowedRole] = useState("Tous les membres");
+  const [builderEmbedFooter, setBuilderEmbedFooter] = useState("");
+  const [builderCooldown, setBuilderCooldown] = useState(5);
+  const [builderRoleIds, setBuilderRoleIds] = useState("");
+  const [builderButtonLabel, setBuilderButtonLabel] = useState("");
+  const [builderButtonUrl, setBuilderButtonUrl] = useState("");
 
-  // Simulator State
+  // Simulator
   const [simInput, setSimInput] = useState("/regles");
-  const [simOutput, setSimOutput] = useState<{
-    text?: string;
-    embed?: CommandItem["embedData"];
-    buttons?: CommandItem["buttons"];
-  } | null>({
-    embed: commands[0].embedData,
-    buttons: commands[0].buttons,
-  });
+  const [simOutput, setSimOutput] = useState<Preview[] | { error: string } | null>(null);
 
-  const [toastMsg, setToastMsg] = useState<string | null>(null);
+  const load = useCallback(async () => {
+    if (!isRealGuild) {
+      setIsDemo(true);
+      return;
+    }
+    setLoading(true);
+    try {
+      const [listRes, tplRes] = await Promise.all([
+        fetch(`${base}/list`, { credentials: "include" }),
+        fetch(`${base}/templates`, { credentials: "include" }),
+      ]);
+      const listData = await listRes.json().catch(() => null);
+      const tplData = await tplRes.json().catch(() => null);
+      if (!listRes.ok || !Array.isArray(listData?.commands)) {
+        setIsDemo(true);
+        return;
+      }
+      setIsDemo(false);
+      setCommands(listData.commands);
+      if (tplRes.ok && Array.isArray(tplData?.templates)) setTemplates(tplData.templates);
+    } catch {
+      setIsDemo(true);
+    } finally {
+      setLoading(false);
+    }
+  }, [base, isRealGuild]);
 
-  const showToast = (msg: string) => {
-    setToastMsg(msg);
-    setTimeout(() => setToastMsg(null), 3000);
-  };
+  useEffect(() => {
+    load();
+  }, [load]);
 
-  const handleCreateCommand = (e: React.FormEvent) => {
-    e.preventDefault();
-    if (!builderName.trim()) return;
+  const totalUsage = commands.reduce((acc, c) => acc + (c.usageCount || 0), 0);
+  const restricted = commands.filter((c) => c.requiredRoleIds.length > 0 || c.requiredPermission).length;
 
-    const newCmd: CommandItem = {
-      id: `cmd-${Date.now().toString(36)}`,
-      name: builderName.toLowerCase().replace(/[^a-z0-9_-]/g, ""),
-      description: builderDesc || "Commande personnalisée ETHONE",
-      type: builderType,
-      prefix: "!",
-      responseType: builderResponseType,
-      rawText: builderResponseType === "TEXT" ? builderRawText : undefined,
-      embedData:
-        builderResponseType === "EMBED"
-          ? {
-              title: builderEmbedTitle || `Commande ${builderName}`,
-              description: builderEmbedDesc || "Message automatique du serveur.",
-              color: builderEmbedColor,
-              footer: builderEmbedFooter,
-            }
-          : undefined,
-      allowedRoles: [builderAllowedRole],
-      cooldownSeconds: builderCooldown,
-      usageCount: 0,
-      enabled: true,
-    };
-
-    setCommands([newCmd, ...commands]);
+  const resetBuilder = () => {
     setBuilderName("");
     setBuilderDesc("");
     setBuilderRawText("");
     setBuilderEmbedTitle("");
     setBuilderEmbedDesc("");
-    setActiveTab("catalog");
-    showToast(`Commande "/${newCmd.name}" créée et prête pour Discord !`);
+    setBuilderEmbedFooter("");
+    setBuilderButtonLabel("");
+    setBuilderButtonUrl("");
+    setBuilderRoleIds("");
+  };
+
+  const handleCreateCommand = async (e: React.FormEvent) => {
+    e.preventDefault();
+    const name = builderName.toLowerCase().replace(/[^a-z0-9_-]/g, "");
+    if (!name) return;
+
+    const response: ResponseBlock = {
+      content: builderResponseType === "TEXT" ? builderRawText : undefined,
+      embed:
+        builderResponseType === "EMBED"
+          ? { title: builderEmbedTitle || `Commande ${name}`, description: builderEmbedDesc || "Message automatique du serveur.", color: builderEmbedColor, footerText: builderEmbedFooter || undefined, fields: [] }
+          : undefined,
+      buttons: builderButtonLabel && builderButtonUrl ? [{ label: builderButtonLabel, url: builderButtonUrl, style: "link" }] : [],
+    };
+    const payload = {
+      name,
+      description: builderDesc || "Commande personnalisée ETHONE",
+      triggerType: builderType,
+      cooldownSeconds: builderCooldown,
+      requiredRoleIds: builderRoleIds.split(",").map((s) => s.trim()).filter(Boolean),
+      defaultActions: [{ type: "send_response", response }],
+    };
+
+    if (isDemo) {
+      const cmd: CustomCommand = {
+        id: `demo-${Date.now()}`, guildId: currentGuildId, category: "Personnalisé", enabled: true, arguments: [], conditions: [], usageCount: 0,
+        createdAt: new Date().toISOString(), updatedAt: new Date().toISOString(), ...payload, defaultActions: payload.defaultActions as CommandAction[],
+      };
+      setCommands((prev) => [cmd, ...prev]);
+      resetBuilder();
+      setActiveTab("catalog");
+      success(`Commande /${name} créée (démo).`);
+      return;
+    }
+    setSubmitting(true);
+    try {
+      const res = await fetch(`${base}/create`, {
+        method: "POST",
+        credentials: "include",
+        headers: { "content-type": "application/json" },
+        body: JSON.stringify(payload),
+      });
+      const data = await res.json().catch(() => null);
+      if (!res.ok || !data?.command) throw new Error(data?.error || "create failed");
+      setCommands((prev) => [data.command, ...prev]);
+      resetBuilder();
+      setActiveTab("catalog");
+      success(`Commande /${name} créée et active sur Discord.`);
+    } catch (err: any) {
+      toastError(err?.message || "Échec de la création.");
+    } finally {
+      setSubmitting(false);
+    }
+  };
+
+  const toggleCommand = async (cmd: CustomCommand) => {
+    setCommands((prev) => prev.map((c) => (c.id === cmd.id ? { ...c, enabled: !c.enabled } : c)));
+    if (isDemo) return;
+    try {
+      const res = await fetch(`${base}/${cmd.id}/toggle`, { method: "POST", credentials: "include" });
+      const data = await res.json().catch(() => null);
+      if (!res.ok || !data?.command) throw new Error();
+      setCommands((prev) => prev.map((c) => (c.id === cmd.id ? data.command : c)));
+    } catch {
+      toastError("Échec du changement d'état — rechargez la page.");
+    }
+  };
+
+  const deleteCommand = async (cmd: CustomCommand) => {
+    if (!confirm(`Supprimer la commande /${cmd.name} ?`)) return;
+    setCommands((prev) => prev.filter((c) => c.id !== cmd.id));
+    if (isDemo) return;
+    try {
+      await fetch(`${base}/${cmd.id}`, { method: "DELETE", credentials: "include" });
+      success(`Commande /${cmd.name} supprimée.`);
+    } catch {
+      toastError("Échec de la suppression — rechargez la page.");
+    }
+  };
+
+  const duplicateCommand = async (cmd: CustomCommand) => {
+    if (isDemo) {
+      setCommands((prev) => [{ ...cmd, id: `demo-${Date.now()}`, name: `${cmd.name}_copy`, usageCount: 0 }, ...prev]);
+      return;
+    }
+    try {
+      const res = await fetch(`${base}/${cmd.id}/duplicate`, { method: "POST", credentials: "include" });
+      const data = await res.json().catch(() => null);
+      if (!res.ok || !data?.command) throw new Error(data?.error);
+      setCommands((prev) => [data.command, ...prev]);
+      success(`Commande dupliquée : /${data.command.name}.`);
+    } catch (err: any) {
+      toastError(err?.message || "Échec de la duplication.");
+    }
+  };
+
+  const createFromTemplate = async (templateName: string) => {
+    if (isDemo) {
+      toastError("Les templates nécessitent un serveur connecté au bot.");
+      return;
+    }
+    setSubmitting(true);
+    try {
+      const res = await fetch(`${base}/from-template`, {
+        method: "POST",
+        credentials: "include",
+        headers: { "content-type": "application/json" },
+        body: JSON.stringify({ templateName }),
+      });
+      const data = await res.json().catch(() => null);
+      if (!res.ok || !data?.command) throw new Error(data?.error || "template failed");
+      setCommands((prev) => [data.command, ...prev]);
+      setActiveTab("catalog");
+      success(`Commande /${data.command.name} créée depuis le template.`);
+    } catch (err: any) {
+      toastError(err?.message || "Échec de la création depuis le template.");
+    } finally {
+      setSubmitting(false);
+    }
+  };
+
+  const localPreview = (cmd: CustomCommand): Preview[] => {
+    const r = primaryResponse(cmd);
+    if (!r) return [{ content: "(aucune réponse configurée)", embed: null, buttons: false }];
+    const sub = (s?: string) => (s || "").replace(/\{user\}/g, "@Vous").replace(/\{username\}/g, "Vous").replace(/\{server\}/g, activeGuild?.name || "Mon Serveur").replace(/\{member_count\}/g, "128");
+    return [{
+      content: r.content ? sub(r.content) : null,
+      embed: r.embed ? { title: sub(r.embed.title), description: sub(r.embed.description), color: parseInt(r.embed.color.replace("#", ""), 16), footer: r.embed.footerText ? { text: sub(r.embed.footerText) } : undefined } : null,
+      buttons: r.buttons.length > 0,
+    }];
+  };
+
+  const runSimulation = async (nameRaw: string) => {
+    const clean = nameRaw.trim().replace(/^[/!]/, "").toLowerCase();
+    const found = commands.find((c) => c.name.toLowerCase() === clean);
+    if (!found) {
+      setSimOutput({ error: `Commande inconnue « ${nameRaw} ». Commandes disponibles : ${commands.map((c) => `/${c.name}`).join(", ") || "aucune"}.` });
+      return;
+    }
+    if (isDemo) {
+      setSimOutput(localPreview(found));
+      return;
+    }
+    try {
+      const res = await fetch(`${base}/${found.id}/test`, {
+        method: "POST",
+        credentials: "include",
+        headers: { "content-type": "application/json" },
+        body: JSON.stringify({ args: {} }),
+      });
+      const data = await res.json().catch(() => null);
+      if (!res.ok || !Array.isArray(data?.previews)) throw new Error(data?.error || "test failed");
+      setSimOutput(data.previews.length > 0 ? data.previews : localPreview(found));
+    } catch (err: any) {
+      setSimOutput({ error: err?.message || "Échec de la simulation côté bot." });
+    }
   };
 
   const handleSimulate = (e: React.FormEvent) => {
     e.preventDefault();
-    const clean = simInput.trim().replace(/^[/!]/, "").toLowerCase();
-    const found = commands.find((c) => c.name.toLowerCase() === clean);
-
-    if (found) {
-      if (found.responseType === "EMBED") {
-        setSimOutput({
-          embed: {
-            title: (found.embedData?.title || "").replace("{user}", "AlexDev").replace("{server.name}", "ETHONE Hub"),
-            description: (found.embedData?.description || "")
-              .replace("{user}", "@AlexDev")
-              .replace("{server.name}", "ETHONE Hub")
-              .replace("{server.member_count}", "5,412")
-              .replace("{time}", new Date().toLocaleTimeString()),
-            color: found.embedData?.color || "#6366F1",
-            footer: found.embedData?.footer,
-          },
-          buttons: found.buttons,
-        });
-      } else {
-        setSimOutput({
-          text: (found.rawText || "")
-            .replace("{user}", "@AlexDev")
-            .replace("{server.name}", "ETHONE Hub")
-            .replace("{server.member_count}", "5,412")
-            .replace("{time}", new Date().toLocaleTimeString()),
-        });
-      }
-    } else {
-      setSimOutput({
-        text: `❌ Commande inconnue "${simInput}". Tapez /regles, /vip, !site pour tester.`,
-      });
-    }
+    runSimulation(simInput);
   };
 
   const insertVariable = (variable: string) => {
-    if (builderResponseType === "TEXT") {
-      setBuilderRawText((p) => p + " " + variable);
-    } else {
-      setBuilderEmbedDesc((p) => p + " " + variable);
-    }
+    if (builderResponseType === "TEXT") setBuilderRawText((p) => `${p} ${variable}`);
+    else setBuilderEmbedDesc((p) => `${p} ${variable}`);
+  };
+
+  const colorToHex = (c?: number | string) => {
+    if (typeof c === "string") return c;
+    if (typeof c === "number") return `#${c.toString(16).padStart(6, "0")}`;
+    return "#6366F1";
   };
 
   return (
     <div className="h-full overflow-y-auto os-scroll [overscroll-behavior:contain] bg-[var(--bg-main)] text-neutral-100 p-4 md:p-8">
       <div className="max-w-7xl mx-auto space-y-8">
-        {/* Top Header */}
+        {/* Header */}
         <div className="flex flex-col md:flex-row md:items-center justify-between gap-4">
-          <div>
-            <div className="flex items-center gap-3">
-              <div className="p-2.5 bg-indigo-500/15 text-indigo-400 rounded-xl border border-indigo-500/30 shadow-sm">
-                <Code2 className="w-6 h-6" />
-              </div>
-              <div>
-                <h1 className="text-2xl font-bold text-white tracking-tight flex items-center gap-2">
-                  ETHONE Command Studio & Builder
-                  <span className="px-2 py-0.5 rounded text-[11px] font-semibold bg-emerald-500/10 text-emerald-400 border border-emerald-500/20">
-                    ⚙️ Engine v2.4
-                  </span>
-                </h1>
-                <p className="text-xs text-neutral-400">
-                  Création no-code de commandes Discord (Slash / & Préfixe !), embeds riches, variables dynamiques et simulateur live.
-                </p>
-              </div>
+          <div className="flex items-center gap-3">
+            <div className="p-2.5 bg-indigo-500/15 text-indigo-400 rounded-xl border border-indigo-500/30 shadow-sm">
+              <Code2 className="w-6 h-6" />
+            </div>
+            <div>
+              <h1 className="text-2xl font-bold text-white tracking-tight">ETHONE Command Studio</h1>
+              <p className="text-xs text-neutral-400">
+                Commandes personnalisées (Slash / et Préfixe !), embeds, boutons et simulateur branché sur le bot.
+                {isDemo && <span className="text-amber-400"> (données de démonstration)</span>}
+              </p>
             </div>
           </div>
-
           <div className="flex items-center gap-2.5 flex-wrap">
-            <button
-              onClick={() => setActiveTab("simulator")}
-              className="px-3.5 py-2 rounded-xl border border-neutral-800 bg-neutral-900 hover:bg-neutral-800 text-xs font-semibold text-neutral-200 flex items-center gap-2 transition-colors cursor-pointer"
-            >
-              <Terminal className="w-4 h-4 text-emerald-400" />
-              Simulateur Discord
+            <button onClick={load} disabled={loading} className="px-3.5 py-2 rounded-xl border border-neutral-800 bg-neutral-900 hover:bg-neutral-800 text-xs font-semibold text-neutral-200 flex items-center gap-2 transition-colors cursor-pointer disabled:opacity-50">
+              <RefreshCw className={cn("w-4 h-4 text-indigo-400", loading && "animate-spin")} />
+              Actualiser
             </button>
-            <button
-              onClick={() => setActiveTab("builder")}
-              className="px-4 py-2 rounded-xl bg-indigo-600 hover:bg-indigo-500 text-white text-xs font-semibold flex items-center gap-2 shadow-sm transition-all cursor-pointer"
-            >
+            <button onClick={() => setActiveTab("builder")} className="px-4 py-2 rounded-xl bg-indigo-600 hover:bg-indigo-500 text-white text-xs font-semibold flex items-center gap-2 shadow-sm transition-all cursor-pointer">
               <Plus className="w-4 h-4" />
               Créer une Commande
             </button>
           </div>
         </div>
 
-        {/* Toast */}
-        {toastMsg && (
-          <div className="p-3 bg-emerald-500/10 border border-emerald-500/30 rounded-xl flex items-center justify-between text-xs text-emerald-300 animate-fadeIn">
-            <span className="flex items-center gap-2 font-medium">
-              <CheckCircle2 className="w-4 h-4 text-emerald-400" />
-              {toastMsg}
-            </span>
-            <button onClick={() => setToastMsg(null)} className="text-emerald-400 hover:text-white">
-              <X className="w-4 h-4" />
-            </button>
-          </div>
-        )}
-
-        {/* 6 Metric KPI Cards */}
+        {/* KPI réels */}
         <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-6 gap-3">
-          <div className="bg-neutral-900 border border-neutral-800 rounded-2xl p-4 space-y-1">
-            <span className="text-xs text-neutral-500 font-medium">Commandes Actives</span>
-            <p className="text-2xl font-bold text-indigo-400">{commands.length}</p>
-            <span className="text-[11px] text-emerald-400">Prêtes à l'emploi</span>
-          </div>
-
-          <div className="bg-neutral-900 border border-neutral-800 rounded-2xl p-4 space-y-1">
-            <span className="text-xs text-neutral-500 font-medium">Exécutions (30j)</span>
-            <p className="text-2xl font-bold text-white">18,420</p>
-            <span className="text-[11px] text-emerald-400">+24% d'appels</span>
-          </div>
-
-          <div className="bg-neutral-900 border border-neutral-800 rounded-2xl p-4 space-y-1">
-            <span className="text-xs text-neutral-500 font-medium">Slash Commands</span>
-            <p className="text-2xl font-bold text-cyan-400">
-              {commands.filter((c) => c.type === "SLASH" || c.type === "BOTH").length}
-            </p>
-            <span className="text-[11px] text-cyan-400">Natif Discord (/)</span>
-          </div>
-
-          <div className="bg-neutral-900 border border-neutral-800 rounded-2xl p-4 space-y-1">
-            <span className="text-xs text-neutral-500 font-medium">Commandes Préfixe</span>
-            <p className="text-2xl font-bold text-purple-400">
-              {commands.filter((c) => c.type === "PREFIX" || c.type === "BOTH").length}
-            </p>
-            <span className="text-[11px] text-neutral-400">Préfixe (!)</span>
-          </div>
-
-          <div className="bg-neutral-900 border border-neutral-800 rounded-2xl p-4 space-y-1">
-            <span className="text-xs text-neutral-500 font-medium">Restreintes Staff</span>
-            <p className="text-2xl font-bold text-amber-400">
-              {commands.filter((c) => !c.allowedRoles.includes("Tous les membres")).length}
-            </p>
-            <span className="text-[11px] text-amber-400">Sécurisées par rôles</span>
-          </div>
-
-          <div className="bg-neutral-900 border border-neutral-800 rounded-2xl p-4 space-y-1">
-            <span className="text-xs text-neutral-500 font-medium">Taux de Succès</span>
-            <p className="text-2xl font-bold text-emerald-400">99.8%</p>
-            <span className="text-[11px] text-emerald-400">Latence &lt; 50ms</span>
-          </div>
+          {[
+            { label: "Commandes", value: commands.length, cls: "text-indigo-400", sub: `${commands.filter((c) => c.enabled).length} active(s)` },
+            { label: "Exécutions totales", value: totalUsage, cls: "text-white", sub: "Cumul depuis la création" },
+            { label: "Slash (/)", value: commands.filter((c) => c.triggerType !== "prefix").length, cls: "text-cyan-400", sub: "Natif Discord" },
+            { label: "Préfixe (!)", value: commands.filter((c) => c.triggerType !== "slash").length, cls: "text-purple-400", sub: "Message texte" },
+            { label: "Restreintes", value: restricted, cls: "text-amber-400", sub: "Rôle / permission requis" },
+            { label: "Templates", value: templates.length, cls: "text-emerald-400", sub: "Prêts à installer" },
+          ].map((k) => (
+            <div key={k.label} className="bg-neutral-900 border border-neutral-800 rounded-2xl p-4 space-y-1">
+              <span className="text-xs text-neutral-500 font-medium">{k.label}</span>
+              <p className={cn("text-2xl font-bold", k.cls)}>{k.value.toLocaleString("fr-FR")}</p>
+              <span className="text-[11px] text-neutral-400">{k.sub}</span>
+            </div>
+          ))}
         </div>
 
-        {/* Navigation Tabs */}
+        {/* Tabs */}
         <div className="flex border-b border-neutral-800 gap-2 overflow-x-auto pb-1">
           {[
             { id: "catalog", label: `Catalogue (${commands.length})`, icon: Layers },
             { id: "builder", label: "Studio & Embed Builder", icon: Sliders },
-            { id: "simulator", label: "Simulateur Discord Live", icon: Terminal },
-            { id: "permissions", label: "Permissions & Cooldowns", icon: ShieldCheck },
+            { id: "simulator", label: "Simulateur", icon: Terminal },
+            { id: "templates", label: `Templates (${templates.length})`, icon: LayoutTemplate },
           ].map((tab) => {
             const Icon = tab.icon;
             const isActive = activeTab === tab.id;
             return (
-              <button
-                key={tab.id}
-                onClick={() => setActiveTab(tab.id as any)}
-                className={`px-4 py-2.5 text-xs font-semibold rounded-t-xl transition-colors flex items-center gap-2 whitespace-nowrap cursor-pointer ${
-                  isActive
-                    ? "bg-neutral-900 text-white border-b-2 border-indigo-500"
-                    : "text-neutral-400 hover:text-white"
-                }`}
-              >
-                <Icon className={`w-4 h-4 ${isActive ? "text-indigo-400" : "text-neutral-500"}`} />
+              <button key={tab.id} onClick={() => setActiveTab(tab.id as typeof activeTab)} className={cn("px-4 py-2.5 text-xs font-semibold rounded-t-xl transition-colors flex items-center gap-2 whitespace-nowrap cursor-pointer", isActive ? "bg-neutral-900 text-white border-b-2 border-indigo-500" : "text-neutral-400 hover:text-white")}>
+                <Icon className={cn("w-4 h-4", isActive ? "text-indigo-400" : "text-neutral-500")} />
                 {tab.label}
               </button>
             );
           })}
         </div>
 
-        {/* TAB 1: Catalog */}
+        {/* Catalogue */}
         {activeTab === "catalog" && (
           <div className="space-y-4">
-            <div className="flex items-center justify-between">
-              <h2 className="text-sm font-bold text-white flex items-center gap-2">
-                <Code2 className="w-4 h-4 text-indigo-400" />
-                Commandes actives sur le serveur ({commands.length})
-              </h2>
-              <button
-                onClick={() => setActiveTab("builder")}
-                className="px-3 py-1.5 rounded-xl bg-indigo-600 hover:bg-indigo-500 text-white text-xs font-semibold flex items-center gap-1.5 transition-colors cursor-pointer"
-              >
-                <Plus className="w-4 h-4" />
-                Nouvelle Commande
-              </button>
-            </div>
-
-            <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-              {commands.map((cmd) => (
-                <div
-                  key={cmd.id}
-                  className="bg-neutral-900 border border-neutral-800 hover:border-indigo-500/40 rounded-2xl p-5 space-y-4 transition-all shadow-lg flex flex-col justify-between"
-                >
-                  <div className="space-y-3">
-                    <div className="flex items-center justify-between">
-                      <div className="flex items-center gap-2">
-                        <span className="font-mono font-bold text-sm text-indigo-400 bg-neutral-950 px-2.5 py-1 rounded-lg border border-neutral-800">
-                          {cmd.type === "SLASH" ? `/${cmd.name}` : cmd.type === "PREFIX" ? `!${cmd.name}` : `/${cmd.name} ou !${cmd.name}`}
-                        </span>
-                        <span className="px-2 py-0.5 rounded text-[10px] font-bold bg-neutral-800 text-neutral-300">
-                          {cmd.responseType === "EMBED" ? "Embed Rich" : "Texte Brut"}
-                        </span>
+            {commands.length === 0 ? (
+              <div className="bg-neutral-900 border border-neutral-800 rounded-2xl p-10 text-center text-xs text-neutral-500">
+                Aucune commande personnalisée. Crée-en une dans le Studio ou installe un template.
+              </div>
+            ) : (
+              <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                {commands.map((cmd) => {
+                  const r = primaryResponse(cmd);
+                  return (
+                    <div key={cmd.id} className="bg-neutral-900 border border-neutral-800 hover:border-indigo-500/40 rounded-2xl p-5 space-y-4 transition-all shadow-lg flex flex-col justify-between">
+                      <div className="space-y-3">
+                        <div className="flex items-center justify-between gap-2">
+                          <div className="flex items-center gap-2 min-w-0">
+                            <span className="font-mono font-bold text-sm text-indigo-400 bg-neutral-950 px-2.5 py-1 rounded-lg border border-neutral-800 truncate">{triggerLabel(cmd)}</span>
+                            <span className="px-2 py-0.5 rounded text-[10px] font-bold bg-neutral-800 text-neutral-300 shrink-0">{r?.embed ? "Embed" : "Texte"}</span>
+                          </div>
+                          <button type="button" onClick={() => toggleCommand(cmd)} className={cn("px-2.5 py-1 rounded-lg text-[10px] font-bold cursor-pointer transition-colors shrink-0", cmd.enabled ? "bg-emerald-500/10 text-emerald-400 border border-emerald-500/20" : "bg-neutral-800 text-neutral-400")}>
+                            {cmd.enabled ? "🟢 Active" : "⚪ Désactivée"}
+                          </button>
+                        </div>
+                        <p className="text-xs text-neutral-400">{cmd.description}</p>
+                        <div className="p-3 rounded-xl bg-neutral-950 border border-neutral-800/80 text-[11px] text-neutral-300 font-mono line-clamp-2">
+                          {r?.embed ? `[Embed] ${r.embed.title || ""} — ${r.embed.description || ""}` : r?.content || "(actions sans réponse)"}
+                        </div>
+                        <div className="grid grid-cols-3 gap-2 text-[11px] text-neutral-400 pt-1">
+                          <div>
+                            <span className="text-neutral-500 block text-[10px] uppercase">Accès</span>
+                            <span className="text-white font-medium truncate block">{cmd.requiredRoleIds.length > 0 ? `${cmd.requiredRoleIds.length} rôle(s)` : cmd.requiredPermission || "Tous"}</span>
+                          </div>
+                          <div>
+                            <span className="text-neutral-500 block text-[10px] uppercase">Cooldown</span>
+                            <span className="text-white font-medium font-mono">{cmd.cooldownSeconds}s</span>
+                          </div>
+                          <div>
+                            <span className="text-neutral-500 block text-[10px] uppercase">Utilisations</span>
+                            <span className="text-indigo-400 font-bold font-mono">{(cmd.usageCount || 0).toLocaleString("fr-FR")}</span>
+                          </div>
+                        </div>
                       </div>
-
-                      <button
-                        type="button"
-                        onClick={() => {
-                          setCommands(
-                            commands.map((c) =>
-                              c.id === cmd.id ? { ...c, enabled: !c.enabled } : c
-                            )
-                          );
-                          showToast(`Commande "${cmd.name}" ${!cmd.enabled ? "activée" : "désactivée"}.`);
-                        }}
-                        className={`px-2.5 py-1 rounded-lg text-[10px] font-bold cursor-pointer transition-colors ${
-                          cmd.enabled
-                            ? "bg-emerald-500/10 text-emerald-400 border border-emerald-500/20"
-                            : "bg-neutral-800 text-neutral-400"
-                        }`}
-                      >
-                        {cmd.enabled ? "🟢 Active" : "⚪ Désactivée"}
-                      </button>
-                    </div>
-
-                    <p className="text-xs text-neutral-400">{cmd.description}</p>
-
-                    {/* Preview of content */}
-                    <div className="p-3 rounded-xl bg-neutral-950 border border-neutral-800/80 text-[11px] text-neutral-300 font-mono line-clamp-2">
-                      {cmd.responseType === "EMBED"
-                        ? `[Embed] ${cmd.embedData?.title} - ${cmd.embedData?.description}`
-                        : cmd.rawText}
-                    </div>
-
-                    <div className="grid grid-cols-3 gap-2 text-[11px] text-neutral-400 pt-1">
-                      <div>
-                        <span className="text-neutral-500 block text-[10px] uppercase">Rôles</span>
-                        <span className="text-white font-medium truncate block">
-                          {cmd.allowedRoles.join(", ")}
-                        </span>
-                      </div>
-                      <div>
-                        <span className="text-neutral-500 block text-[10px] uppercase">Cooldown</span>
-                        <span className="text-white font-medium font-mono">{cmd.cooldownSeconds}s</span>
-                      </div>
-                      <div>
-                        <span className="text-neutral-500 block text-[10px] uppercase">Utilisations</span>
-                        <span className="text-indigo-400 font-bold font-mono">
-                          {cmd.usageCount.toLocaleString()}
-                        </span>
+                      <div className="pt-3 border-t border-neutral-800 flex items-center justify-between gap-2">
+                        <button onClick={() => { setSimInput(`/${cmd.name}`); setActiveTab("simulator"); runSimulation(cmd.name); }} className="px-3 py-1.5 rounded-lg bg-neutral-800 hover:bg-neutral-700 text-neutral-200 text-xs font-semibold flex items-center gap-1.5 transition-colors cursor-pointer">
+                          <Terminal className="w-3.5 h-3.5 text-emerald-400" />
+                          Tester
+                        </button>
+                        <div className="flex items-center gap-1">
+                          <button onClick={() => duplicateCommand(cmd)} className="p-1.5 rounded-lg text-neutral-500 hover:text-indigo-400 hover:bg-indigo-500/10 transition-colors cursor-pointer" title="Dupliquer">
+                            <Copy className="w-4 h-4" />
+                          </button>
+                          <button onClick={() => deleteCommand(cmd)} className="p-1.5 rounded-lg text-neutral-500 hover:text-rose-400 hover:bg-rose-500/10 transition-colors cursor-pointer" title="Supprimer">
+                            <Trash2 className="w-4 h-4" />
+                          </button>
+                        </div>
                       </div>
                     </div>
-                  </div>
-
-                  <div className="pt-3 border-t border-neutral-800 flex items-center justify-between">
-                    <button
-                      onClick={() => {
-                        setSimInput(`/${cmd.name}`);
-                        setActiveTab("simulator");
-                        handleSimulate({ preventDefault: () => {} } as any);
-                      }}
-                      className="px-3 py-1.5 rounded-lg bg-neutral-800 hover:bg-neutral-700 text-neutral-200 text-xs font-semibold flex items-center gap-1.5 transition-colors cursor-pointer"
-                    >
-                      <Terminal className="w-3.5 h-3.5 text-emerald-400" />
-                      Tester dans le simulateur
-                    </button>
-
-                    <button
-                      onClick={() => {
-                        setCommands(commands.filter((c) => c.id !== cmd.id));
-                        showToast(`Commande "/${cmd.name}" supprimée.`);
-                      }}
-                      className="p-1.5 rounded-lg text-neutral-500 hover:text-rose-400 hover:bg-rose-500/10 transition-colors cursor-pointer"
-                      title="Supprimer la commande"
-                    >
-                      <Trash2 className="w-4 h-4" />
-                    </button>
-                  </div>
-                </div>
-              ))}
-            </div>
+                  );
+                })}
+              </div>
+            )}
           </div>
         )}
 
-        {/* TAB 2: Studio & Embed Builder */}
+        {/* Builder */}
         {activeTab === "builder" && (
           <div className="grid grid-cols-1 lg:grid-cols-12 gap-6">
-            {/* Controls Form */}
-            <form
-              onSubmit={handleCreateCommand}
-              className="lg:col-span-7 bg-neutral-900 border border-neutral-800 rounded-2xl p-6 space-y-5"
-            >
+            <form onSubmit={handleCreateCommand} className="lg:col-span-7 bg-neutral-900 border border-neutral-800 rounded-2xl p-6 space-y-5">
               <div className="flex items-center gap-2">
                 <Sparkles className="w-5 h-5 text-indigo-400" />
-                <h3 className="text-base font-bold text-white">Créateur de Commande & Embed Studio</h3>
+                <h3 className="text-base font-bold text-white">Créateur de Commande</h3>
               </div>
-
               <div className="space-y-4 text-xs">
                 <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
                   <div>
-                    <label className="block font-semibold text-neutral-300 mb-1">
-                      Nom du déclencheur (sans slash) *
-                    </label>
-                    <input
-                      type="text"
-                      required
-                      placeholder="ex: ip, boutique, vocal..."
-                      value={builderName}
-                      onChange={(e) => setBuilderName(e.target.value)}
-                      className="w-full h-10 rounded-xl bg-neutral-950 border border-neutral-800 px-3 text-xs text-white placeholder-neutral-500 focus:outline-none focus:border-indigo-500 font-mono"
-                    />
+                    <label className="block font-semibold text-neutral-300 mb-1">Nom (sans slash) *</label>
+                    <input type="text" required placeholder="ex: ip, boutique, vocal..." value={builderName} onChange={(e) => setBuilderName(e.target.value)} className="w-full h-10 rounded-xl bg-neutral-950 border border-neutral-800 px-3 text-xs text-white placeholder-neutral-500 focus:outline-none focus:border-indigo-500 font-mono" />
                   </div>
-
                   <div>
-                    <label className="block font-semibold text-neutral-300 mb-1">Type de déclencheur</label>
+                    <label className="block font-semibold text-neutral-300 mb-1">Déclencheur</label>
                     <div className="flex gap-1.5">
-                      {[
-                        { id: "BOTH", label: "Les Deux (/ et !)" },
-                        { id: "SLASH", label: "Slash (/)" },
-                        { id: "PREFIX", label: "Préfixe (!)" },
-                      ].map((t) => (
-                        <button
-                          key={t.id}
-                          type="button"
-                          onClick={() => setBuilderType(t.id as any)}
-                          className={`flex-1 h-10 rounded-xl text-[11px] font-semibold transition-all cursor-pointer ${
-                            builderType === t.id
-                              ? "bg-indigo-600 text-white"
-                              : "bg-neutral-950 border border-neutral-800 text-neutral-400"
-                          }`}
-                        >
+                      {([{ id: "both", label: "/ et !" }, { id: "slash", label: "Slash (/)" }, { id: "prefix", label: "Préfixe (!)" }] as { id: TriggerType; label: string }[]).map((t) => (
+                        <button key={t.id} type="button" onClick={() => setBuilderType(t.id)} className={cn("flex-1 h-10 rounded-xl text-[11px] font-semibold transition-all cursor-pointer", builderType === t.id ? "bg-indigo-600 text-white" : "bg-neutral-950 border border-neutral-800 text-neutral-400")}>
                           {t.label}
                         </button>
                       ))}
                     </div>
                   </div>
                 </div>
-
                 <div>
                   <label className="block font-semibold text-neutral-300 mb-1">Description</label>
-                  <input
-                    type="text"
-                    placeholder="Courte explication affichée dans le menu Discord..."
-                    value={builderDesc}
-                    onChange={(e) => setBuilderDesc(e.target.value)}
-                    className="w-full h-10 rounded-xl bg-neutral-950 border border-neutral-800 px-3 text-xs text-white"
-                  />
+                  <input type="text" placeholder="Affichée dans le menu Discord..." value={builderDesc} onChange={(e) => setBuilderDesc(e.target.value)} className="w-full h-10 rounded-xl bg-neutral-950 border border-neutral-800 px-3 text-xs text-white" />
                 </div>
-
-                {/* Variable Pills Inserter */}
+                <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+                  <div>
+                    <label className="block font-semibold text-neutral-300 mb-1">Cooldown (secondes)</label>
+                    <input type="number" min={0} value={builderCooldown} onChange={(e) => setBuilderCooldown(Number(e.target.value) || 0)} className="w-full h-10 rounded-xl bg-neutral-950 border border-neutral-800 px-3 text-xs text-white" />
+                  </div>
+                  <div>
+                    <label className="block font-semibold text-neutral-300 mb-1">Rôles autorisés (IDs, virgules)</label>
+                    <input type="text" placeholder="vide = tout le monde" value={builderRoleIds} onChange={(e) => setBuilderRoleIds(e.target.value)} className="w-full h-10 rounded-xl bg-neutral-950 border border-neutral-800 px-3 text-xs text-white font-mono" />
+                  </div>
+                </div>
                 <div>
-                  <label className="block font-semibold text-neutral-300 mb-1.5">
-                    Insérer une variable dynamique en un clic :
-                  </label>
+                  <label className="block font-semibold text-neutral-300 mb-1.5">Variables dynamiques :</label>
                   <div className="flex flex-wrap gap-1.5">
-                    {[
-                      { v: "{user}", desc: "Mention" },
-                      { v: "{user.name}", desc: "Pseudo" },
-                      { v: "{server.name}", desc: "Serveur" },
-                      { v: "{server.member_count}", desc: "Membres" },
-                      { v: "{time}", desc: "Heure" },
-                      { v: "{random.1-100}", desc: "Hasard" },
-                    ].map((item) => (
-                      <button
-                        key={item.v}
-                        type="button"
-                        onClick={() => insertVariable(item.v)}
-                        className="px-2.5 py-1 rounded-lg bg-neutral-950 border border-neutral-800 hover:border-indigo-500/50 text-indigo-300 font-mono text-[11px] transition-colors cursor-pointer"
-                        title={item.desc}
-                      >
+                    {VARIABLES.map((item) => (
+                      <button key={item.v} type="button" onClick={() => insertVariable(item.v)} className="px-2.5 py-1 rounded-lg bg-neutral-950 border border-neutral-800 hover:border-indigo-500/50 text-indigo-300 font-mono text-[11px] transition-colors cursor-pointer" title={item.desc}>
                         {item.v}
                       </button>
                     ))}
                   </div>
                 </div>
-
-                {/* Response Mode Selector */}
                 <div>
-                  <label className="block font-semibold text-neutral-300 mb-1">
-                    Format de réponse du bot
-                  </label>
+                  <label className="block font-semibold text-neutral-300 mb-1">Format de réponse</label>
                   <div className="flex gap-2">
-                    <button
-                      type="button"
-                      onClick={() => setBuilderResponseType("EMBED")}
-                      className={`flex-1 py-2.5 rounded-xl text-xs font-bold transition-all cursor-pointer ${
-                        builderResponseType === "EMBED"
-                          ? "bg-indigo-600 text-white shadow-sm"
-                          : "bg-neutral-950 border border-neutral-800 text-neutral-400"
-                      }`}
-                    >
-                      🎨 Embed Discord Rich (Recommandé)
-                    </button>
-                    <button
-                      type="button"
-                      onClick={() => setBuilderResponseType("TEXT")}
-                      className={`flex-1 py-2.5 rounded-xl text-xs font-bold transition-all cursor-pointer ${
-                        builderResponseType === "TEXT"
-                          ? "bg-indigo-600 text-white shadow-sm"
-                          : "bg-neutral-950 border border-neutral-800 text-neutral-400"
-                      }`}
-                    >
-                      📝 Message Texte Brut
-                    </button>
+                    <button type="button" onClick={() => setBuilderResponseType("EMBED")} className={cn("flex-1 py-2.5 rounded-xl text-xs font-bold transition-all cursor-pointer", builderResponseType === "EMBED" ? "bg-indigo-600 text-white shadow-sm" : "bg-neutral-950 border border-neutral-800 text-neutral-400")}>🎨 Embed</button>
+                    <button type="button" onClick={() => setBuilderResponseType("TEXT")} className={cn("flex-1 py-2.5 rounded-xl text-xs font-bold transition-all cursor-pointer", builderResponseType === "TEXT" ? "bg-indigo-600 text-white shadow-sm" : "bg-neutral-950 border border-neutral-800 text-neutral-400")}>📝 Texte</button>
                   </div>
                 </div>
-
                 {builderResponseType === "TEXT" ? (
-                  <div>
-                    <label className="block font-semibold text-neutral-300 mb-1">
-                      Message renvoyé par le bot
-                    </label>
-                    <textarea
-                      rows={4}
-                      placeholder="Texte de réponse... Vous pouvez utiliser {user} et les variables."
-                      value={builderRawText}
-                      onChange={(e) => setBuilderRawText(e.target.value)}
-                      className="w-full rounded-xl bg-neutral-950 border border-neutral-800 p-3 text-xs text-white"
-                    />
-                  </div>
+                  <textarea rows={4} placeholder="Texte de réponse... {user}, {server}..." value={builderRawText} onChange={(e) => setBuilderRawText(e.target.value)} className="w-full rounded-xl bg-neutral-950 border border-neutral-800 p-3 text-xs text-white" />
                 ) : (
                   <div className="p-4 rounded-xl bg-neutral-950 border border-neutral-800 space-y-3">
-                    <h4 className="font-bold text-white flex items-center gap-1.5">
-                      <Sliders className="w-3.5 h-3.5 text-indigo-400" />
-                      Champs de l'Embed
-                    </h4>
-
-                    <div>
-                      <label className="block text-neutral-400 text-[11px] mb-1">Titre de l'Embed</label>
-                      <input
-                        type="text"
-                        placeholder="ex: 🚀 Informations Serveur"
-                        value={builderEmbedTitle}
-                        onChange={(e) => setBuilderEmbedTitle(e.target.value)}
-                        className="w-full h-9 rounded-xl bg-neutral-900 border border-neutral-800 px-3 text-xs text-white"
-                      />
-                    </div>
-
-                    <div>
-                      <label className="block text-neutral-400 text-[11px] mb-1">Description / Corps</label>
-                      <textarea
-                        rows={3}
-                        placeholder="Contenu détaillé... Supporte le Markdown Discord (**gras**, *italique*, [liens](...))"
-                        value={builderEmbedDesc}
-                        onChange={(e) => setBuilderEmbedDesc(e.target.value)}
-                        className="w-full rounded-xl bg-neutral-900 border border-neutral-800 p-3 text-xs text-white"
-                      />
-                    </div>
-
+                    <input type="text" placeholder="Titre de l'embed" value={builderEmbedTitle} onChange={(e) => setBuilderEmbedTitle(e.target.value)} className="w-full h-9 rounded-xl bg-neutral-900 border border-neutral-800 px-3 text-xs text-white" />
+                    <textarea rows={3} placeholder="Description (Markdown Discord supporté)" value={builderEmbedDesc} onChange={(e) => setBuilderEmbedDesc(e.target.value)} className="w-full rounded-xl bg-neutral-900 border border-neutral-800 p-3 text-xs text-white" />
                     <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
-                      <div>
-                        <label className="block text-neutral-400 text-[11px] mb-1">Couleur de bordure</label>
-                        <div className="flex items-center gap-2">
-                          <input
-                            type="color"
-                            value={builderEmbedColor}
-                            onChange={(e) => setBuilderEmbedColor(e.target.value)}
-                            className="w-8 h-8 rounded-lg border-0 cursor-pointer bg-transparent"
-                          />
-                          <input
-                            type="text"
-                            value={builderEmbedColor}
-                            onChange={(e) => setBuilderEmbedColor(e.target.value)}
-                            className="flex-1 h-9 rounded-xl bg-neutral-900 border border-neutral-800 px-3 text-xs text-white font-mono"
-                          />
-                        </div>
+                      <div className="flex items-center gap-2">
+                        <input type="color" value={builderEmbedColor} onChange={(e) => setBuilderEmbedColor(e.target.value)} className="w-8 h-8 rounded-lg border-0 cursor-pointer bg-transparent" />
+                        <input type="text" value={builderEmbedColor} onChange={(e) => setBuilderEmbedColor(e.target.value)} className="flex-1 h-9 rounded-xl bg-neutral-900 border border-neutral-800 px-3 text-xs text-white font-mono" />
                       </div>
-
-                      <div>
-                        <label className="block text-neutral-400 text-[11px] mb-1">Texte de bas de page (Footer)</label>
-                        <input
-                          type="text"
-                          value={builderEmbedFooter}
-                          onChange={(e) => setBuilderEmbedFooter(e.target.value)}
-                          className="w-full h-9 rounded-xl bg-neutral-900 border border-neutral-800 px-3 text-xs text-white"
-                        />
-                      </div>
+                      <input type="text" placeholder="Footer" value={builderEmbedFooter} onChange={(e) => setBuilderEmbedFooter(e.target.value)} className="w-full h-9 rounded-xl bg-neutral-900 border border-neutral-800 px-3 text-xs text-white" />
                     </div>
                   </div>
                 )}
+                <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
+                  <input type="text" placeholder="Bouton lien : libellé (optionnel)" value={builderButtonLabel} onChange={(e) => setBuilderButtonLabel(e.target.value)} className="w-full h-9 rounded-xl bg-neutral-950 border border-neutral-800 px-3 text-xs text-white" />
+                  <input type="url" placeholder="https://..." value={builderButtonUrl} onChange={(e) => setBuilderButtonUrl(e.target.value)} className="w-full h-9 rounded-xl bg-neutral-950 border border-neutral-800 px-3 text-xs text-white font-mono" />
+                </div>
               </div>
-
-              <button
-                type="submit"
-                className="w-full h-11 rounded-xl bg-indigo-600 hover:bg-indigo-500 text-white font-bold text-xs flex items-center justify-center gap-2 shadow-sm transition-all cursor-pointer"
-              >
+              <button type="submit" disabled={submitting} className="w-full h-11 rounded-xl bg-indigo-600 hover:bg-indigo-500 text-white font-bold text-xs flex items-center justify-center gap-2 shadow-sm transition-all cursor-pointer disabled:opacity-50">
                 <Plus className="w-4 h-4" />
-                Enregistrer & Déployer la commande
+                Enregistrer & déployer sur Discord
               </button>
             </form>
 
-            {/* Live Visual Preview */}
             <div className="lg:col-span-5 space-y-3">
-              <span className="text-xs font-bold text-neutral-400 flex items-center gap-1.5">
-                <Eye className="w-4 h-4 text-indigo-400" />
-                Aperçu en Direct Discord
-              </span>
-
+              <span className="text-xs font-bold text-neutral-400 flex items-center gap-1.5"><Eye className="w-4 h-4 text-indigo-400" /> Aperçu Discord</span>
               <div className="bg-[#2B2D31] rounded-2xl p-4 space-y-3 border border-neutral-800 shadow-2xl font-sans">
                 <div className="flex items-center gap-2">
-                  <div className="w-8 h-8 rounded-full bg-gradient-to-tr from-indigo-500 to-purple-500 flex items-center justify-center text-white font-bold text-xs">
-                    ET
-                  </div>
+                  <div className="w-8 h-8 rounded-full bg-gradient-to-tr from-indigo-500 to-purple-500 flex items-center justify-center text-white font-bold text-xs">ET</div>
                   <div>
                     <div className="flex items-center gap-1.5">
                       <span className="text-xs font-bold text-white">ETHONE Bot</span>
                       <span className="bg-[#5865F2] text-white text-[9px] font-bold px-1 rounded">BOT</span>
                     </div>
-                    <span className="text-[10px] text-neutral-400">Aujourd'hui à 15:45</span>
+                    <span className="text-[10px] text-neutral-400">À l'instant</span>
                   </div>
                 </div>
-
                 {builderResponseType === "TEXT" ? (
-                  <p className="text-xs text-neutral-200 whitespace-pre-wrap">
-                    {builderRawText || "Texte de la réponse en attente..."}
-                  </p>
+                  <p className="text-xs text-neutral-200 whitespace-pre-wrap">{builderRawText || "Texte de la réponse..."}</p>
                 ) : (
-                  <div
-                    className="border-l-4 rounded-r-xl p-3.5 space-y-2 bg-[#1E1F22]"
-                    style={{ borderColor: builderEmbedColor }}
-                  >
-                    <h4 className="text-sm font-bold text-white">
-                      {builderEmbedTitle || "Titre de l'Embed"}
-                    </h4>
-                    <p className="text-xs text-neutral-300 leading-relaxed whitespace-pre-wrap">
-                      {builderEmbedDesc || "Description de l'embed affichée ici."}
-                    </p>
-                    <p className="text-[10px] text-neutral-400 pt-1 border-t border-neutral-800">
-                      {builderEmbedFooter}
-                    </p>
+                  <div className="border-l-4 rounded-r-xl p-3.5 space-y-2 bg-[#1E1F22]" style={{ borderColor: builderEmbedColor }}>
+                    <h4 className="text-sm font-bold text-white">{builderEmbedTitle || "Titre de l'Embed"}</h4>
+                    <p className="text-xs text-neutral-300 leading-relaxed whitespace-pre-wrap">{builderEmbedDesc || "Description de l'embed."}</p>
+                    {builderEmbedFooter && <p className="text-[10px] text-neutral-400 pt-1 border-t border-neutral-800">{builderEmbedFooter}</p>}
                   </div>
+                )}
+                {builderButtonLabel && (
+                  <button type="button" className="px-3 py-1.5 rounded bg-neutral-700 text-white text-xs font-bold flex items-center gap-1">
+                    <span>{builderButtonLabel}</span>
+                    <ExternalLink className="w-3 h-3" />
+                  </button>
                 )}
               </div>
             </div>
           </div>
         )}
 
-        {/* TAB 3: Simulator */}
+        {/* Simulateur */}
         {activeTab === "simulator" && (
           <div className="grid grid-cols-1 lg:grid-cols-12 gap-6">
             <div className="lg:col-span-7 bg-neutral-900 border border-neutral-800 rounded-2xl p-6 space-y-4">
               <div className="flex items-center justify-between">
-                <h3 className="text-base font-bold text-white flex items-center gap-2">
-                  <Terminal className="w-5 h-5 text-emerald-400" />
-                  Terminal de Simulation Discord
-                </h3>
-                <span className="text-xs text-neutral-500 font-mono">Sandbox Local</span>
+                <h3 className="text-base font-bold text-white flex items-center gap-2"><Terminal className="w-5 h-5 text-emerald-400" /> Simulateur</h3>
+                <span className="text-xs text-neutral-500 font-mono">{isDemo ? "Aperçu local" : "Rendu par le bot (dry-run)"}</span>
               </div>
               <p className="text-xs text-neutral-400 leading-relaxed">
-                Testez vos commandes exactement comme un utilisateur le ferait sur votre serveur Discord.
+                {isDemo ? "Aperçu calculé localement." : "Le bot rend la réponse avec ses vraies variables, sans exécuter les actions de rôle."}
               </p>
-
               <form onSubmit={handleSimulate} className="flex gap-2">
-                <input
-                  type="text"
-                  value={simInput}
-                  onChange={(e) => setSimInput(e.target.value)}
-                  placeholder="/regles ou !site"
-                  className="flex-1 h-11 rounded-xl bg-neutral-950 border border-neutral-800 px-3.5 text-xs text-white font-mono focus:outline-none focus:border-indigo-500"
-                />
-                <button
-                  type="submit"
-                  className="px-5 h-11 rounded-xl bg-emerald-600 hover:bg-emerald-500 text-white font-bold text-xs flex items-center gap-2 transition-colors cursor-pointer"
-                >
+                <input type="text" value={simInput} onChange={(e) => setSimInput(e.target.value)} placeholder="/regles ou !site" className="flex-1 h-11 rounded-xl bg-neutral-950 border border-neutral-800 px-3.5 text-xs text-white font-mono focus:outline-none focus:border-indigo-500" />
+                <button type="submit" className="px-5 h-11 rounded-xl bg-emerald-600 hover:bg-emerald-500 text-white font-bold text-xs flex items-center gap-2 transition-colors cursor-pointer">
                   <Play className="w-4 h-4" />
                   Exécuter
                 </button>
               </form>
-
-              <div className="pt-2 flex items-center gap-2 text-xs text-neutral-400">
-                <span>Raccourcis rapides :</span>
+              <div className="pt-2 flex items-center gap-2 text-xs text-neutral-400 flex-wrap">
+                <span>Raccourcis :</span>
                 {commands.map((c) => (
-                  <button
-                    key={c.id}
-                    type="button"
-                    onClick={() => {
-                      setSimInput(`/${c.name}`);
-                      setTimeout(() => {
-                        // simulate
-                        if (c.responseType === "EMBED") {
-                          setSimOutput({
-                            embed: c.embedData,
-                            buttons: c.buttons,
-                          });
-                        } else {
-                          setSimOutput({ text: c.rawText });
-                        }
-                      }, 50);
-                    }}
-                    className="px-2.5 py-1 rounded-lg bg-neutral-950 border border-neutral-800 hover:border-indigo-500 text-indigo-400 font-mono cursor-pointer"
-                  >
+                  <button key={c.id} type="button" onClick={() => { setSimInput(`/${c.name}`); runSimulation(c.name); }} className="px-2.5 py-1 rounded-lg bg-neutral-950 border border-neutral-800 hover:border-indigo-500 text-indigo-400 font-mono cursor-pointer">
                     /{c.name}
                   </button>
                 ))}
               </div>
             </div>
-
-            {/* Simulator Output Screen */}
             <div className="lg:col-span-5 bg-[#2B2D31] rounded-2xl p-5 border border-neutral-800 shadow-2xl space-y-4 font-sans min-h-[280px]">
               <div className="flex items-center justify-between border-b border-neutral-700/60 pb-2.5">
-                <span className="text-xs font-bold text-white flex items-center gap-1.5">
-                  <Hash className="w-3.5 h-3.5 text-neutral-400" />
-                  salon-test-bot
-                </span>
-                <span className="text-[10px] text-neutral-400">Connecté</span>
+                <span className="text-xs font-bold text-white flex items-center gap-1.5"><Hash className="w-3.5 h-3.5 text-neutral-400" /> salon-test-bot</span>
+                <span className="text-[10px] text-neutral-400">{isDemo ? "Démo" : "Connecté"}</span>
               </div>
-
-              {simOutput && (
-                <div className="space-y-3">
+              {!simOutput && <p className="text-xs text-neutral-500">Lance une commande pour voir le rendu.</p>}
+              {simOutput && "error" in simOutput && <p className="text-xs text-rose-300">❌ {simOutput.error}</p>}
+              {simOutput && Array.isArray(simOutput) && simOutput.map((p, i) => (
+                <div key={i} className="space-y-3">
                   <div className="flex items-center gap-2">
-                    <div className="w-8 h-8 rounded-full bg-gradient-to-tr from-indigo-500 to-purple-500 flex items-center justify-center text-white font-bold text-xs">
-                      ET
-                    </div>
+                    <div className="w-8 h-8 rounded-full bg-gradient-to-tr from-indigo-500 to-purple-500 flex items-center justify-center text-white font-bold text-xs">ET</div>
                     <div>
                       <div className="flex items-center gap-1.5">
                         <span className="text-xs font-bold text-white">ETHONE Bot</span>
@@ -799,79 +674,44 @@ export default function CommandsCenterClient() {
                       <span className="text-[10px] text-neutral-400">À l'instant</span>
                     </div>
                   </div>
-
-                  {simOutput.text && (
-                    <p className="text-xs text-neutral-200 whitespace-pre-wrap">
-                      {simOutput.text}
-                    </p>
-                  )}
-
-                  {simOutput.embed && (
-                    <div
-                      className="border-l-4 rounded-r-xl p-3.5 space-y-2 bg-[#1E1F22]"
-                      style={{ borderColor: simOutput.embed.color || "#6366F1" }}
-                    >
-                      <h4 className="text-sm font-bold text-white">{simOutput.embed.title}</h4>
-                      <p className="text-xs text-neutral-300 leading-relaxed whitespace-pre-wrap">
-                        {simOutput.embed.description}
-                      </p>
-                      {simOutput.embed.footer && (
-                        <p className="text-[10px] text-neutral-400 pt-1 border-t border-neutral-800">
-                          {simOutput.embed.footer}
-                        </p>
-                      )}
+                  {p.content && <p className="text-xs text-neutral-200 whitespace-pre-wrap">{p.content}</p>}
+                  {p.embed && (
+                    <div className="border-l-4 rounded-r-xl p-3.5 space-y-2 bg-[#1E1F22]" style={{ borderColor: colorToHex(p.embed.color) }}>
+                      {p.embed.title && <h4 className="text-sm font-bold text-white">{p.embed.title}</h4>}
+                      {p.embed.description && <p className="text-xs text-neutral-300 leading-relaxed whitespace-pre-wrap">{p.embed.description}</p>}
+                      {p.embed.footer?.text && <p className="text-[10px] text-neutral-400 pt-1 border-t border-neutral-800">{p.embed.footer.text}</p>}
                     </div>
                   )}
-
-                  {simOutput.buttons && simOutput.buttons.length > 0 && (
-                    <div className="flex gap-2 pt-1">
-                      {simOutput.buttons.map((btn, idx) => (
-                        <button
-                          key={idx}
-                          type="button"
-                          className="px-3 py-1.5 rounded bg-[#5865F2] hover:bg-[#4752C4] text-white text-xs font-bold flex items-center gap-1"
-                        >
-                          <span>{btn.label}</span>
-                          <ExternalLink className="w-3 h-3" />
-                        </button>
-                      ))}
-                    </div>
-                  )}
+                  {p.buttons && <span className="text-[10px] text-neutral-400">+ boutons</span>}
                 </div>
-              )}
+              ))}
             </div>
           </div>
         )}
 
-        {/* TAB 4: Permissions */}
-        {activeTab === "permissions" && (
-          <div className="bg-neutral-900 border border-neutral-800 rounded-2xl p-6 space-y-6 max-w-2xl">
-            <h3 className="text-base font-bold text-white flex items-center gap-2">
-              <ShieldCheck className="w-4 h-4 text-indigo-400" />
-              Permissions Globales & Sécurité
-            </h3>
-
-            <div className="space-y-4 text-xs">
-              <div className="p-3.5 rounded-xl bg-neutral-950 border border-neutral-800 flex items-center justify-between">
-                <div>
-                  <span className="font-bold text-white block">Restriction stricte des commandes Staff</span>
-                  <span className="text-neutral-500 text-[11px]">
-                    Empêche les membres ordinaires d'exécuter des commandes de gestion
-                  </span>
-                </div>
-                <span className="text-emerald-400 font-bold">Actif</span>
+        {/* Templates */}
+        {activeTab === "templates" && (
+          <div className="space-y-4">
+            <h2 className="text-sm font-bold text-white flex items-center gap-2"><LayoutTemplate className="w-4 h-4 text-indigo-400" /> Templates prêts à l'emploi</h2>
+            {templates.length === 0 ? (
+              <p className="text-xs text-neutral-500">{isDemo ? "Connecte un serveur pour charger les templates du bot." : "Aucun template disponible."}</p>
+            ) : (
+              <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
+                {templates.map((t) => (
+                  <div key={t.name} className="bg-neutral-900 border border-neutral-800 rounded-2xl p-5 space-y-3">
+                    <div className="flex items-center justify-between">
+                      <span className="font-mono font-bold text-sm text-indigo-400">/{t.name}</span>
+                      <span className="px-2 py-0.5 rounded text-[10px] font-bold bg-neutral-800 text-neutral-300">{t.category || "Général"}</span>
+                    </div>
+                    <p className="text-xs text-neutral-400">{t.description || "Template de commande."}</p>
+                    <button onClick={() => createFromTemplate(t.name)} disabled={submitting} className="w-full py-2 rounded-xl bg-indigo-600 hover:bg-indigo-500 text-white text-xs font-semibold flex items-center justify-center gap-1.5 cursor-pointer disabled:opacity-50">
+                      <Plus className="w-3.5 h-3.5" />
+                      Installer
+                    </button>
+                  </div>
+                ))}
               </div>
-
-              <div className="p-3.5 rounded-xl bg-neutral-950 border border-neutral-800 flex items-center justify-between">
-                <div>
-                  <span className="font-bold text-white block">Protection Anti-Flood de Commandes</span>
-                  <span className="text-neutral-500 text-[11px]">
-                    Limite à 5 commandes par 10 secondes par utilisateur
-                  </span>
-                </div>
-                <span className="text-emerald-400 font-bold">Actif</span>
-              </div>
-            </div>
+            )}
           </div>
         )}
       </div>

@@ -1,7 +1,8 @@
 "use client";
 
-import React, { useState } from "react";
+import React, { useState, useMemo, useEffect, useCallback, useRef } from "react";
 import Link from "next/link";
+import { useSearchParams } from "next/navigation";
 import {
   Archive,
   ShieldCheck,
@@ -17,29 +18,117 @@ import {
   AlertTriangle,
   Settings,
   X,
+  RefreshCw,
+  Download,
 } from "lucide-react";
+import { useToast } from "@/components/ToastProvider";
+import { useDiscordOAuth } from "@/lib/hooks/useDiscordOAuth";
+import { cn } from "@/lib/utils";
+
+const BOT_API_URL = process.env.NEXT_PUBLIC_DISCORD_BOT_API || "";
+
+// Mirrors discord-bot/src/modules/backup/types/index.ts (BackupSnapshot minus `data`).
+type BackupType = "FULL" | "PARTIAL" | "PRE_CHANGE" | "ROLLBACK";
+type BackupStatus = "COMPLETED" | "IN_PROGRESS" | "FAILED" | "CORRUPTED";
+type SafetyLevel = "SAFE" | "STANDARD" | "DESTRUCTIVE";
+type BackupComponent = "ROLES" | "CATEGORIES" | "CHANNELS" | "PERMISSIONS" | "SERVER_CONFIG" | "EMOJIS" | "ETHONE_CONFIG";
 
 interface BackupItem {
-  id: string;
+  backupId: string;
   name: string;
   description?: string;
   createdAt: string;
   createdBy: { tag: string; id: string };
-  type: "FULL" | "PARTIAL" | "PRE_CHANGE" | "ROLLBACK";
+  type: BackupType;
+  status: BackupStatus;
   isProtected: boolean;
-  status: "COMPLETED" | "IN_PROGRESS" | "FAILED";
   sizeBytes: number;
   checksum: string;
-  counts: {
-    categories: number;
-    channels: number;
-    roles: number;
-    permissions: number;
-    ethone: number;
-  };
+  includedComponents: BackupComponent[];
+  objectCounts: { categories: number; channels: number; roles: number; permissions: number; emojis: number; ethoneModules: number };
+}
+
+interface BackupKpis {
+  totalBackups: number;
+  lastBackupAt: string | null;
+  storageUsedBytes: number;
+  scheduledEnabled: boolean;
+  frequency: string;
+  protectedCount: number;
+  healthStatus: "HEALTHY" | "WARNING" | "CRITICAL";
+  nextScheduledAt: string | null;
+  verifiedCount: number;
+}
+
+interface RestorePlan {
+  counts: { willCreate: number; willModify: number; willDelete: number; willSkip: number };
+  actions: { action: string; type: string; name: string; reason?: string }[];
+}
+
+interface RestoreJob {
+  jobId: string;
+  status: string;
+  currentStep: string;
+  progressPercent: number;
+  errors: string[];
+}
+
+interface TestResult {
+  valid: boolean;
+  checksum: string;
+  schemaVersion: number;
+  readiness: "READY" | "WARNING" | "CORRUPTED";
+  notes: string[];
+  objectCounts: BackupItem["objectCounts"];
+}
+
+const EMPTY_KPIS: BackupKpis = {
+  totalBackups: 0, lastBackupAt: null, storageUsedBytes: 0, scheduledEnabled: false, frequency: "daily", protectedCount: 0, healthStatus: "WARNING", nextScheduledAt: null, verifiedCount: 0,
+};
+
+const DEMO_BACKUPS: BackupItem[] = [
+  {
+    backupId: "BKP-DEMO-FULL", name: "Snapshot complet (démo)", description: "Exemple de sauvegarde", createdAt: new Date(Date.now() - 7200000).toISOString(),
+    createdBy: { tag: "Dashboard", id: "demo" }, type: "FULL", status: "COMPLETED", isProtected: true, sizeBytes: 1843200, checksum: "a7c93e4f8812bf095d3e871239cd8410",
+    includedComponents: ["ROLES", "CATEGORIES", "CHANNELS", "PERMISSIONS", "SERVER_CONFIG", "ETHONE_CONFIG"], objectCounts: { categories: 3, channels: 18, roles: 12, permissions: 24, emojis: 6, ethoneModules: 14 },
+  },
+];
+
+const FREQ_LABEL: Record<string, string> = { "6h": "Toutes les 6h", "12h": "Toutes les 12h", daily: "Quotidien", weekly: "Hebdomadaire" };
+
+function relative(iso: string | null): string {
+  if (!iso) return "Jamais";
+  const min = Math.round((Date.now() - new Date(iso).getTime()) / 60000);
+  if (min < 1) return "À l'instant";
+  if (min < 60) return `Il y a ${min} min`;
+  const h = Math.round(min / 60);
+  if (h < 24) return `Il y a ${h}h`;
+  return `Il y a ${Math.round(h / 24)} j`;
 }
 
 export default function BackupsCenterClient() {
+  const searchParams = useSearchParams();
+  const rawGuildId = searchParams.get("guildId");
+  const { profile } = useDiscordOAuth();
+  const { success, error: toastError } = useToast();
+
+  const activeGuild = useMemo(() => {
+    if (rawGuildId && profile?.guilds) {
+      return profile.guilds.find((g) => g.id === rawGuildId) || profile.guilds[0];
+    }
+    return profile?.guilds?.[0] || null;
+  }, [rawGuildId, profile?.guilds]);
+
+  const currentGuildId = activeGuild?.id || "123456789012345678";
+  const base = `${BOT_API_URL}/api/guilds/${currentGuildId}/backups`;
+  const isRealGuild = Boolean(BOT_API_URL) && currentGuildId !== "123456789012345678";
+  const guildQuery = activeGuild ? `?guildId=${activeGuild.id}` : "";
+
+  const [isDemo, setIsDemo] = useState(true);
+  const [loading, setLoading] = useState(false);
+  const [backups, setBackups] = useState<BackupItem[]>(DEMO_BACKUPS);
+  const [kpis, setKpis] = useState<BackupKpis>(EMPTY_KPIS);
+
   const [searchQuery, setSearchQuery] = useState("");
   const [selectedType, setSelectedType] = useState<string>("ALL");
   const [showCreateModal, setShowCreateModal] = useState(false);
@@ -47,205 +136,251 @@ export default function BackupsCenterClient() {
   const [showTestModal, setShowTestModal] = useState(false);
   const [selectedBackupForAction, setSelectedBackupForAction] = useState<BackupItem | null>(null);
 
-  // Formulaire Create Wizard
-  const [wizardStep, setWizardStep] = useState(1);
+  // Create wizard
   const [backupName, setBackupName] = useState("");
   const [backupDesc, setBackupDesc] = useState("");
   const [backupProtect, setBackupProtect] = useState(false);
-  const [backupType, setBackupType] = useState<"FULL" | "PARTIAL">("FULL");
-  const [included, setIncluded] = useState({
-    roles: true,
-    categories: true,
-    channels: true,
-    permissions: true,
-    serverConfig: true,
-    emojis: true,
-    ethoneConfig: true,
+  const [included, setIncluded] = useState<Record<BackupComponent, boolean>>({
+    ROLES: true, CATEGORIES: true, CHANNELS: true, PERMISSIONS: true, SERVER_CONFIG: true, EMOJIS: true, ETHONE_CONFIG: true,
   });
-  const [createProgress, setCreateProgress] = useState(0);
-  const [createStepName, setCreateStepName] = useState("");
   const [isCreating, setIsCreating] = useState(false);
 
-  // Restore Wizard State
-  const [restoreLevel, setRestoreLevel] = useState<"SAFE" | "STANDARD" | "DESTRUCTIVE">("SAFE");
+  // Restore wizard
+  const [restoreLevel, setRestoreLevel] = useState<SafetyLevel>("SAFE");
   const [confirmServerName, setConfirmServerName] = useState("");
-  const [isRestoring, setIsRestoring] = useState(false);
-  const [restoreProgress, setRestoreProgress] = useState(0);
-  const [restoreStepName, setRestoreStepName] = useState("");
+  const [restorePlan, setRestorePlan] = useState<RestorePlan | null>(null);
+  const [planLoading, setPlanLoading] = useState(false);
+  const [restoreJob, setRestoreJob] = useState<RestoreJob | null>(null);
+  const pollRef = useRef<ReturnType<typeof setInterval> | null>(null);
 
-  const [backups, setBackups] = useState<BackupItem[]>([
-    {
-      id: "BKP-20260904-143000-FULL",
-      name: "Full Production Snapshot #42",
-      description: "Sauvegarde complète hebdomadaire de la structure Discord et des modules ETHONE",
-      createdAt: "2026-09-04T12:30:00.000Z",
-      createdBy: { tag: "AlexDev#0001", id: "999888777666" },
-      type: "FULL",
-      isProtected: true,
-      status: "COMPLETED",
-      sizeBytes: 1843200,
-      checksum: "a7c93e4f8812bf095d3e871239cd841029abce5123984019283401928301293a",
-      counts: { categories: 3, channels: 18, roles: 12, permissions: 24, ethone: 14 },
-    },
-    {
-      id: "BKP-20260904-100000-PRE",
-      name: "Pre-Rollout Auto-Snapshot",
-      description: "Capture automatique avant déploiement du module Voice Channels",
-      createdAt: "2026-09-04T08:00:00.000Z",
-      createdBy: { tag: "ETHONE Bot#0000", id: "bot" },
-      type: "PRE_CHANGE",
-      isProtected: false,
-      status: "COMPLETED",
-      sizeBytes: 945000,
-      checksum: "f83b129840182390192830192840192830192830192830192830192830192830",
-      counts: { categories: 2, channels: 15, roles: 12, permissions: 20, ethone: 12 },
-    },
-    {
-      id: "BKP-20260901-000000-WEEKLY",
-      name: "Weekly Scheduled Archive #41",
-      description: "Sauvegarde automatique planifiée",
-      createdAt: "2026-09-01T00:00:00.000Z",
-      createdBy: { tag: "ETHONE AutoScheduler", id: "bot" },
-      type: "FULL",
-      isProtected: true,
-      status: "COMPLETED",
-      sizeBytes: 1720000,
-      checksum: "c384918230192830192830192830192830192830192830192830192830192830",
-      counts: { categories: 3, channels: 17, roles: 11, permissions: 22, ethone: 14 },
-    },
-    {
-      id: "BKP-20260828-192000-ROLL",
-      name: "Rollback auto avant restauration de Hotfix",
-      description: "Snapshot de secours automatique",
-      createdAt: "2026-08-28T19:20:00.000Z",
-      createdBy: { tag: "ETHONE Disaster Recovery", id: "bot" },
-      type: "ROLLBACK",
-      isProtected: false,
-      status: "COMPLETED",
-      sizeBytes: 1680000,
-      checksum: "d492019283019283019283019283019283019283019283019283019283019283",
-      counts: { categories: 3, channels: 17, roles: 11, permissions: 22, ethone: 13 },
-    },
-  ]);
+  // Test modal
+  const [testResult, setTestResult] = useState<TestResult | null>(null);
+  const [testLoading, setTestLoading] = useState(false);
 
-  const handleToggleProtect = (id: string) => {
-    setBackups((prev) =>
-      prev.map((b) => (b.id === id ? { ...b, isProtected: !b.isProtected } : b))
-    );
-  };
+  const computeKpis = useCallback((list: BackupItem[]): BackupKpis => ({
+    totalBackups: list.length,
+    lastBackupAt: list[0]?.createdAt || null,
+    storageUsedBytes: list.reduce((a, b) => a + b.sizeBytes, 0),
+    scheduledEnabled: false,
+    frequency: "daily",
+    protectedCount: list.filter((b) => b.isProtected).length,
+    healthStatus: list.length > 0 ? "HEALTHY" : "WARNING",
+    nextScheduledAt: null,
+    verifiedCount: list.filter((b) => b.status === "COMPLETED").length,
+  }), []);
 
-  const handleDelete = (id: string) => {
-    const item = backups.find((b) => b.id === id);
-    if (!item) return;
-    if (item.isProtected) {
-      alert("Impossible de supprimer une sauvegarde protégée. Retirez la protection d'abord.");
+  const load = useCallback(async () => {
+    if (!isRealGuild) {
+      setIsDemo(true);
+      setKpis(computeKpis(DEMO_BACKUPS));
       return;
     }
-    if (confirm(`Confirmez-vous la suppression définitive du snapshot "${item.name}" ?`)) {
-      setBackups((prev) => prev.filter((b) => b.id !== id));
+    setLoading(true);
+    try {
+      const [listRes, overviewRes] = await Promise.all([
+        fetch(base, { credentials: "include" }),
+        fetch(`${base}/overview`, { credentials: "include" }),
+      ]);
+      const listData = await listRes.json().catch(() => null);
+      const overviewData = await overviewRes.json().catch(() => null);
+      if (!listRes.ok || !Array.isArray(listData?.backups)) {
+        setIsDemo(true);
+        return;
+      }
+      setIsDemo(false);
+      setBackups(listData.backups);
+      setKpis(overviewRes.ok && overviewData?.kpis ? overviewData.kpis : computeKpis(listData.backups));
+    } catch {
+      setIsDemo(true);
+    } finally {
+      setLoading(false);
+    }
+  }, [base, isRealGuild, computeKpis]);
+
+  useEffect(() => {
+    load();
+  }, [load]);
+
+  useEffect(() => () => { if (pollRef.current) clearInterval(pollRef.current); }, []);
+
+  const handleToggleProtect = async (bkp: BackupItem) => {
+    const next = !bkp.isProtected;
+    setBackups((prev) => prev.map((b) => (b.backupId === bkp.backupId ? { ...b, isProtected: next } : b)));
+    if (isDemo) return;
+    try {
+      const res = await fetch(`${base}/${bkp.backupId}/protect`, {
+        method: "PATCH", credentials: "include", headers: { "content-type": "application/json" }, body: JSON.stringify({ isProtected: next }),
+      });
+      if (!res.ok) throw new Error();
+      success(next ? "Snapshot protégé." : "Protection retirée.");
+    } catch {
+      setBackups((prev) => prev.map((b) => (b.backupId === bkp.backupId ? { ...b, isProtected: !next } : b)));
+      toastError("Échec du changement de protection.");
+    }
+  };
+
+  const handleDelete = async (bkp: BackupItem) => {
+    if (bkp.isProtected) {
+      toastError("Impossible de supprimer une sauvegarde protégée. Retirez la protection d'abord.");
+      return;
+    }
+    if (!confirm(`Supprimer définitivement le snapshot « ${bkp.name} » ?`)) return;
+    if (isDemo) {
+      setBackups((prev) => prev.filter((b) => b.backupId !== bkp.backupId));
+      return;
+    }
+    try {
+      const res = await fetch(`${base}/${bkp.backupId}`, { method: "DELETE", credentials: "include" });
+      const data = await res.json().catch(() => null);
+      if (!res.ok) throw new Error(data?.error);
+      setBackups((prev) => prev.filter((b) => b.backupId !== bkp.backupId));
+      success("Sauvegarde supprimée.");
+      load();
+    } catch (e: any) {
+      toastError(e?.message || "Échec de la suppression.");
     }
   };
 
   const handleStartCreateWizard = () => {
-    setWizardStep(1);
-    setBackupName(`Snapshot Manuel — ${new Date().toLocaleDateString("fr-FR")}`);
+    setBackupName(`Snapshot manuel — ${new Date().toLocaleDateString("fr-FR")}`);
     setBackupDesc("Sauvegarde manuelle déclenchée depuis le dashboard");
     setBackupProtect(false);
-    setBackupType("FULL");
     setIsCreating(false);
-    setCreateProgress(0);
     setShowCreateModal(true);
   };
 
-  const handleExecuteCreate = () => {
+  const handleExecuteCreate = async () => {
+    const includedComponents = (Object.keys(included) as BackupComponent[]).filter((k) => included[k]);
+    if (includedComponents.length === 0) {
+      toastError("Sélectionne au moins un composant.");
+      return;
+    }
+    const type: BackupType = includedComponents.length === 7 ? "FULL" : "PARTIAL";
+    if (isDemo) {
+      setBackups((prev) => [{ ...DEMO_BACKUPS[0], backupId: `BKP-DEMO-${Date.now()}`, name: backupName, description: backupDesc, createdAt: new Date().toISOString(), isProtected: backupProtect, type, includedComponents }, ...prev]);
+      setShowCreateModal(false);
+      success("Sauvegarde créée (démo).");
+      return;
+    }
     setIsCreating(true);
-    setCreateProgress(15);
-    setCreateStepName("Scanning server...");
-
-    setTimeout(() => {
-      setCreateProgress(35);
-      setCreateStepName("Collecting roles...");
-    }, 600);
-
-    setTimeout(() => {
-      setCreateProgress(60);
-      setCreateStepName("Collecting channels & categories...");
-    }, 1200);
-
-    setTimeout(() => {
-      setCreateProgress(85);
-      setCreateStepName("Collecting ETHONE configs & checksum...");
-    }, 1800);
-
-    setTimeout(() => {
-      setCreateProgress(100);
-      setCreateStepName("Sauvegarde créée avec succès !");
-
-      const newBkp: BackupItem = {
-        id: `BKP-${Date.now()}`,
-        name: backupName,
-        description: backupDesc,
-        createdAt: new Date().toISOString(),
-        createdBy: { tag: "Vous (Dashboard)", id: "user" },
-        type: backupType,
-        isProtected: backupProtect,
-        status: "COMPLETED",
-        sizeBytes: 1850000,
-        checksum: "e9f0182390192830192830192830192830192830192830192830192830192830",
-        counts: { categories: 3, channels: 18, roles: 12, permissions: 24, ethone: 14 },
-      };
-
-      setBackups((prev) => [newBkp, ...prev]);
-
-      setTimeout(() => {
-        setShowCreateModal(false);
-        setIsCreating(false);
-      }, 1000);
-    }, 2400);
+    try {
+      const res = await fetch(base, {
+        method: "POST", credentials: "include", headers: { "content-type": "application/json", "x-idempotency-key": `backup-${Date.now()}` },
+        body: JSON.stringify({ name: backupName, description: backupDesc, type, isProtected: backupProtect, includedComponents }),
+      });
+      const data = await res.json().catch(() => null);
+      if (!res.ok || !data?.backupId) throw new Error(data?.error || "create failed");
+      setShowCreateModal(false);
+      success(`Snapshot « ${data.name} » créé (${(data.sizeBytes / 1024).toFixed(0)} Ko).`);
+      load();
+    } catch (e: any) {
+      toastError(e?.message || "Échec de la création de la sauvegarde.");
+    } finally {
+      setIsCreating(false);
+    }
   };
+
+  const fetchPlan = useCallback(async (bkp: BackupItem, level: SafetyLevel) => {
+    if (isDemo) {
+      setRestorePlan({ counts: { willCreate: 2, willModify: 4, willDelete: level === "DESTRUCTIVE" ? 1 : 0, willSkip: 2 }, actions: [] });
+      return;
+    }
+    setPlanLoading(true);
+    try {
+      const res = await fetch(`${base}/${bkp.backupId}/preview-restore`, {
+        method: "POST", credentials: "include", headers: { "content-type": "application/json" },
+        body: JSON.stringify({ safetyLevel: level, mode: "FULL", selectedComponents: bkp.includedComponents }),
+      });
+      const data = await res.json().catch(() => null);
+      if (!res.ok || !data?.counts) throw new Error(data?.error);
+      setRestorePlan(data);
+    } catch (e: any) {
+      setRestorePlan(null);
+      toastError(e?.message || "Impossible de prévisualiser la restauration.");
+    } finally {
+      setPlanLoading(false);
+    }
+  }, [base, isDemo, toastError]);
 
   const handleOpenRestore = (bkp: BackupItem) => {
     setSelectedBackupForAction(bkp);
     setRestoreLevel("SAFE");
     setConfirmServerName("");
-    setIsRestoring(false);
-    setRestoreProgress(0);
+    setRestoreJob(null);
+    setRestorePlan(null);
     setShowRestoreModal(true);
+    fetchPlan(bkp, "SAFE");
   };
 
-  const handleExecuteRestore = () => {
-    if (restoreLevel === "DESTRUCTIVE" && confirmServerName !== "ETHONE Gaming & Tech") {
-      alert('Veuillez saisir le nom exact du serveur "ETHONE Gaming & Tech" pour confirmer.');
+  const changeRestoreLevel = (level: SafetyLevel) => {
+    setRestoreLevel(level);
+    if (selectedBackupForAction) fetchPlan(selectedBackupForAction, level);
+  };
+
+  const pollJob = (jobId: string) => {
+    if (pollRef.current) clearInterval(pollRef.current);
+    pollRef.current = setInterval(async () => {
+      try {
+        const res = await fetch(`${base}/jobs/${jobId}`, { credentials: "include" });
+        const job = await res.json().catch(() => null);
+        if (!res.ok || !job?.jobId) return;
+        setRestoreJob(job);
+        if (["COMPLETED", "PARTIAL", "FAILED", "ROLLED_BACK"].includes(job.status)) {
+          if (pollRef.current) clearInterval(pollRef.current);
+          pollRef.current = null;
+          if (job.status === "COMPLETED") success("Restauration terminée.");
+          else toastError(`Restauration : ${job.status} — ${job.errors?.[0] || "voir les logs"}`);
+          load();
+        }
+      } catch { /* retry next tick */ }
+    }, 1500);
+  };
+
+  const handleExecuteRestore = async () => {
+    const bkp = selectedBackupForAction;
+    if (!bkp) return;
+    if (restoreLevel === "DESTRUCTIVE" && activeGuild && confirmServerName !== activeGuild.name) {
+      toastError(`Saisis le nom exact du serveur « ${activeGuild.name} » pour confirmer.`);
       return;
     }
+    if (isDemo) {
+      setRestoreJob({ jobId: "demo", status: "COMPLETED", currentStep: "Restauration simulée", progressPercent: 100, errors: [] });
+      return;
+    }
+    try {
+      const res = await fetch(`${base}/${bkp.backupId}/restore`, {
+        method: "POST", credentials: "include", headers: { "content-type": "application/json", "x-idempotency-key": `restore-${bkp.backupId}-${Date.now()}` },
+        body: JSON.stringify({ safetyLevel: restoreLevel, mode: "FULL", selectedComponents: bkp.includedComponents, confirmServerName }),
+      });
+      const job = await res.json().catch(() => null);
+      if (!res.ok || !job?.jobId) throw new Error(job?.error || "restore failed");
+      setRestoreJob(job);
+      pollJob(job.jobId);
+    } catch (e: any) {
+      toastError(e?.message || "Échec du lancement de la restauration.");
+    }
+  };
 
-    setIsRestoring(true);
-    setRestoreProgress(15);
-    setRestoreStepName("Capture du Rollback automatique de sécurité...");
-
-    setTimeout(() => {
-      setRestoreProgress(45);
-      setRestoreStepName("Restauration et alignement des rôles...");
-    }, 800);
-
-    setTimeout(() => {
-      setRestoreProgress(75);
-      setRestoreStepName("Restauration des salons et permissions...");
-    }, 1600);
-
-    setTimeout(() => {
-      setRestoreProgress(95);
-      setRestoreStepName("Réapplication des configurations ETHONE...");
-    }, 2400);
-
-    setTimeout(() => {
-      setRestoreProgress(100);
-      setRestoreStepName("Restauration terminée avec succès !");
-      setTimeout(() => {
-        setShowRestoreModal(false);
-        setIsRestoring(false);
-      }, 1200);
-    }, 3200);
+  const openTest = async (bkp: BackupItem) => {
+    setSelectedBackupForAction(bkp);
+    setTestResult(null);
+    setShowTestModal(true);
+    if (isDemo) {
+      setTestResult({ valid: true, checksum: bkp.checksum, schemaVersion: 2, readiness: "READY", notes: ["Intégrité simulée (démo)."], objectCounts: bkp.objectCounts });
+      return;
+    }
+    setTestLoading(true);
+    try {
+      const res = await fetch(`${base}/${bkp.backupId}/test`, { method: "POST", credentials: "include" });
+      const data = await res.json().catch(() => null);
+      if (!res.ok || typeof data?.valid !== "boolean") throw new Error(data?.error);
+      setTestResult(data);
+    } catch (e: any) {
+      toastError(e?.message || "Échec du test d'intégrité.");
+      setShowTestModal(false);
+    } finally {
+      setTestLoading(false);
+    }
   };
 
   const filteredBackups = backups.filter((b) => {
@@ -253,188 +388,124 @@ export default function BackupsCenterClient() {
     if (selectedType !== "ALL" && selectedType !== "PROTECTED" && b.type !== selectedType) return false;
     if (searchQuery) {
       const q = searchQuery.toLowerCase();
-      return (
-        b.name.toLowerCase().includes(q) ||
-        b.id.toLowerCase().includes(q) ||
-        b.createdBy.tag.toLowerCase().includes(q)
-      );
+      return b.name.toLowerCase().includes(q) || b.backupId.toLowerCase().includes(q) || b.createdBy.tag.toLowerCase().includes(q);
     }
     return true;
   });
 
-  const totalStorageMb = (
-    backups.reduce((acc, b) => acc + b.sizeBytes, 0) /
-    1024 /
-    1024
-  ).toFixed(1);
+  const totalObjects = (b: BackupItem) => b.objectCounts.channels + b.objectCounts.roles + b.objectCounts.categories;
+  const healthy = kpis.healthStatus === "HEALTHY";
+
+  const TYPE_BADGE: Record<BackupType, string> = {
+    FULL: "bg-indigo-500/20 text-indigo-300 border-indigo-500/30",
+    PARTIAL: "bg-cyan-500/20 text-cyan-300 border-cyan-500/30",
+    PRE_CHANGE: "bg-amber-500/20 text-amber-300 border-amber-500/30",
+    ROLLBACK: "bg-rose-500/20 text-rose-300 border-rose-500/30",
+  };
 
   return (
     <div className="h-full overflow-y-auto os-scroll [overscroll-behavior:contain] bg-[var(--bg-main)] text-neutral-100 p-4 md:p-8">
       <div className="max-w-7xl mx-auto space-y-8">
-        {/* Top Header */}
+        {/* Header */}
         <div className="flex flex-col md:flex-row md:items-center justify-between gap-4">
-          <div>
-            <div className="flex items-center gap-3">
-              <div className="p-2.5 bg-indigo-500/10 text-indigo-400 rounded-xl border border-indigo-500/20">
-                <Archive className="w-6 h-6" />
-              </div>
-              <div>
-                <h1 className="text-2xl font-bold text-white tracking-tight flex items-center gap-2">
-                  Server Backup & Disaster Recovery
-                  <span className="px-2 py-0.5 rounded text-[11px] font-semibold bg-emerald-500/10 text-emerald-400 border border-emerald-500/20">
-                    Live Engine
-                  </span>
-                </h1>
-                <p className="text-xs text-neutral-400">
-                  Protect your server configuration and restore it when you need it.
-                </p>
-              </div>
+          <div className="flex items-center gap-3">
+            <div className="p-2.5 bg-indigo-500/10 text-indigo-400 rounded-xl border border-indigo-500/20">
+              <Archive className="w-6 h-6" />
+            </div>
+            <div>
+              <h1 className="text-2xl font-bold text-white tracking-tight">Sauvegardes & Disaster Recovery</h1>
+              <p className="text-xs text-neutral-400">
+                Snapshots signés SHA-256 de la structure Discord et des modules ETHONE.
+                {isDemo && <span className="text-amber-400"> (données de démonstration)</span>}
+              </p>
             </div>
           </div>
-
           <div className="flex items-center gap-2.5 flex-wrap">
-            <Link
-              href="/discord/backups/compare"
-              className="px-3.5 py-2 rounded-xl border border-neutral-800 bg-neutral-900 hover:bg-neutral-800 text-xs font-semibold text-neutral-200 flex items-center gap-2 transition-colors"
-            >
+            <button onClick={load} disabled={loading} className="px-3.5 py-2 rounded-xl border border-neutral-800 bg-neutral-900 hover:bg-neutral-800 text-xs font-semibold text-neutral-200 flex items-center gap-2 transition-colors cursor-pointer disabled:opacity-50">
+              <RefreshCw className={cn("w-4 h-4 text-indigo-400", loading && "animate-spin")} />
+              Actualiser
+            </button>
+            <Link href={`/discord/backups/compare${guildQuery}`} className="px-3.5 py-2 rounded-xl border border-neutral-800 bg-neutral-900 hover:bg-neutral-800 text-xs font-semibold text-neutral-200 flex items-center gap-2 transition-colors">
               <GitCompare className="w-4 h-4 text-indigo-400" />
               Comparer
             </Link>
-
-            <Link
-              href="/discord/backups/settings"
-              className="px-3.5 py-2 rounded-xl border border-neutral-800 bg-neutral-900 hover:bg-neutral-800 text-xs font-semibold text-neutral-200 flex items-center gap-2 transition-colors"
-            >
+            <Link href={`/discord/backups/settings${guildQuery}`} className="px-3.5 py-2 rounded-xl border border-neutral-800 bg-neutral-900 hover:bg-neutral-800 text-xs font-semibold text-neutral-200 flex items-center gap-2 transition-colors">
               <Settings className="w-4 h-4 text-neutral-400" />
               Paramètres
             </Link>
-
-            <button
-              onClick={handleStartCreateWizard}
-              className="px-4 py-2 rounded-xl bg-indigo-600 hover:bg-indigo-500 text-white text-xs font-semibold flex items-center gap-2 shadow-sm transition-all"
-            >
+            <button onClick={handleStartCreateWizard} className="px-4 py-2 rounded-xl bg-indigo-600 hover:bg-indigo-500 text-white text-xs font-semibold flex items-center gap-2 shadow-sm transition-all cursor-pointer">
               <Plus className="w-4 h-4" />
               Créer une Sauvegarde
             </button>
           </div>
         </div>
 
-        {/* 6 Key Metric KPIs */}
+        {/* KPI réels */}
         <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-6 gap-3">
-          <div className="bg-neutral-900 border border-neutral-800 rounded-2xl p-4 space-y-1">
-            <span className="text-xs text-neutral-500 font-medium">Total Sauvegardes</span>
-            <p className="text-2xl font-bold text-white">{backups.length}</p>
-            <span className="text-[11px] text-neutral-400">Snapshots actifs</span>
-          </div>
-
-          <div className="bg-neutral-900 border border-neutral-800 rounded-2xl p-4 space-y-1">
-            <span className="text-xs text-neutral-500 font-medium">Dernière Sauvegarde</span>
-            <p className="text-2xl font-bold text-emerald-400">Il y a 2h</p>
-            <span className="text-[11px] text-neutral-400">Aujourd&apos;hui 14:30</span>
-          </div>
-
-          <div className="bg-neutral-900 border border-neutral-800 rounded-2xl p-4 space-y-1">
-            <span className="text-xs text-neutral-500 font-medium">Stockage Utilisé</span>
-            <p className="text-2xl font-bold text-indigo-400">{totalStorageMb} MB</p>
-            <span className="text-[11px] text-neutral-400">Quota: 50 MB (4%)</span>
-          </div>
-
-          <div className="bg-neutral-900 border border-neutral-800 rounded-2xl p-4 space-y-1">
-            <span className="text-xs text-neutral-500 font-medium">Planification</span>
-            <p className="text-2xl font-bold text-amber-400">Quotidien</p>
-            <span className="text-[11px] text-neutral-400">Chaque nuit à 03:00</span>
-          </div>
-
-          <div className="bg-neutral-900 border border-neutral-800 rounded-2xl p-4 space-y-1">
-            <span className="text-xs text-neutral-500 font-medium">Objets Protégés</span>
-            <p className="text-2xl font-bold text-rose-400">54</p>
-            <span className="text-[11px] text-neutral-400">Salons & Rôles</span>
-          </div>
-
-          <div className="bg-neutral-900 border border-neutral-800 rounded-2xl p-4 space-y-1">
-            <span className="text-xs text-neutral-500 font-medium">Santé Disaster Recovery</span>
-            <p className="text-2xl font-bold text-emerald-400 flex items-center gap-1.5">
-              <ShieldCheck className="w-5 h-5" /> Protégé
-            </p>
-            <span className="text-[11px] text-emerald-500">100% Vérifié</span>
-          </div>
+          {[
+            { label: "Total sauvegardes", value: String(kpis.totalBackups), cls: "text-white", sub: `${kpis.verifiedCount} vérifiée(s)` },
+            { label: "Dernière sauvegarde", value: relative(kpis.lastBackupAt), cls: "text-emerald-400", sub: kpis.lastBackupAt ? new Date(kpis.lastBackupAt).toLocaleString("fr-FR", { dateStyle: "short", timeStyle: "short" }) : "Aucune" },
+            { label: "Stockage utilisé", value: `${(kpis.storageUsedBytes / 1024 / 1024).toFixed(2)} MB`, cls: "text-indigo-400", sub: "Fichiers JSON signés" },
+            { label: "Planification", value: kpis.scheduledEnabled ? FREQ_LABEL[kpis.frequency] || kpis.frequency : "Désactivée", cls: "text-amber-400", sub: kpis.nextScheduledAt ? `Prochaine : ${new Date(kpis.nextScheduledAt).toLocaleString("fr-FR", { dateStyle: "short", timeStyle: "short" })}` : "Aucune auto-sauvegarde" },
+            { label: "Snapshots protégés", value: String(kpis.protectedCount), cls: "text-rose-400", sub: "Exclus de la rétention" },
+            { label: "Santé DR", value: healthy ? "Protégé" : kpis.healthStatus === "WARNING" ? "À surveiller" : "Critique", cls: healthy ? "text-emerald-400" : kpis.healthStatus === "WARNING" ? "text-amber-400" : "text-rose-400", sub: healthy ? "Snapshot récent valide" : "Crée une sauvegarde" },
+          ].map((k) => (
+            <div key={k.label} className="bg-neutral-900 border border-neutral-800 rounded-2xl p-4 space-y-1">
+              <span className="text-xs text-neutral-500 font-medium">{k.label}</span>
+              <p className={cn("text-xl font-bold truncate", k.cls)}>{k.value}</p>
+              <span className="text-[11px] text-neutral-400 block truncate">{k.sub}</span>
+            </div>
+          ))}
         </div>
 
-        {/* Disaster Recovery Health Banner */}
-        <div className="bg-gradient-to-r from-indigo-950/40 via-neutral-900 to-emerald-950/40 border border-neutral-800 rounded-2xl p-6 relative overflow-hidden">
+        {/* Bandeau santé */}
+        <div className={cn("border border-neutral-800 rounded-2xl p-6 relative overflow-hidden bg-gradient-to-r via-neutral-900", healthy ? "from-indigo-950/40 to-emerald-950/40" : "from-amber-950/40 to-rose-950/30")}>
           <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4">
             <div className="flex items-center gap-4">
-              <div className="w-12 h-12 rounded-2xl bg-emerald-500/10 border border-emerald-500/20 flex items-center justify-center text-emerald-400 shrink-0">
-                <ShieldCheck className="w-6 h-6" />
+              <div className={cn("w-12 h-12 rounded-2xl border flex items-center justify-center shrink-0", healthy ? "bg-emerald-500/10 border-emerald-500/20 text-emerald-400" : "bg-amber-500/10 border-amber-500/20 text-amber-400")}>
+                {healthy ? <ShieldCheck className="w-6 h-6" /> : <AlertTriangle className="w-6 h-6" />}
               </div>
               <div>
-                <h3 className="text-base font-bold text-white flex items-center gap-2">
-                  Votre serveur Discord est entièrement protégé
-                </h3>
+                <h3 className="text-base font-bold text-white">{healthy ? "Ton serveur Discord est protégé" : "Aucune sauvegarde récente"}</h3>
                 <p className="text-xs text-neutral-400 mt-0.5">
-                  Dernier snapshot validé cryptographiquement (SHA-256). Prochaine sauvegarde automatique programmée demain à 03:00.
+                  {healthy
+                    ? `Dernier snapshot ${relative(kpis.lastBackupAt).toLowerCase()}, signé SHA-256.${kpis.scheduledEnabled ? " Auto-sauvegarde active." : " Active la planification dans les paramètres."}`
+                    : "Crée un snapshot maintenant pour pouvoir restaurer salons, rôles et configuration ETHONE en cas d'incident."}
                 </p>
               </div>
             </div>
-
             <div className="flex items-center gap-2">
-              <button
-                onClick={() => {
-                  setSelectedBackupForAction(backups[0]);
-                  setShowTestModal(true);
-                }}
-                className="px-3.5 py-1.5 rounded-xl border border-neutral-700 bg-neutral-800 hover:bg-neutral-700 text-xs font-semibold text-neutral-200 transition-colors"
-              >
-                Tester Intégrité
-              </button>
-              <button
-                onClick={handleStartCreateWizard}
-                className="px-3.5 py-1.5 rounded-xl bg-indigo-600 hover:bg-indigo-500 text-xs font-semibold text-white transition-colors"
-              >
-                Sauvegarder Maintenant
+              {backups[0] && (
+                <button onClick={() => openTest(backups[0])} className="px-3.5 py-1.5 rounded-xl border border-neutral-700 bg-neutral-800 hover:bg-neutral-700 text-xs font-semibold text-neutral-200 transition-colors cursor-pointer">
+                  Tester intégrité
+                </button>
+              )}
+              <button onClick={handleStartCreateWizard} className="px-3.5 py-1.5 rounded-xl bg-indigo-600 hover:bg-indigo-500 text-xs font-semibold text-white transition-colors cursor-pointer">
+                Sauvegarder maintenant
               </button>
             </div>
           </div>
         </div>
 
-        {/* Search & Filter Bar */}
+        {/* Filtres */}
         <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3">
           <div className="relative flex-1 max-w-md">
             <Search className="w-4 h-4 text-neutral-500 absolute left-3.5 top-1/2 -translate-y-1/2" />
-            <input
-              type="text"
-              placeholder="Rechercher par nom, ID ou créateur..."
-              value={searchQuery}
-              onChange={(e) => setSearchQuery(e.target.value)}
-              className="w-full bg-neutral-900 border border-neutral-800 rounded-xl pl-10 pr-4 py-2 text-xs text-white placeholder-neutral-500 focus:outline-none focus:border-indigo-500 transition-colors"
-            />
+            <input type="text" placeholder="Rechercher par nom, ID ou créateur..." value={searchQuery} onChange={(e) => setSearchQuery(e.target.value)} className="w-full bg-neutral-900 border border-neutral-800 rounded-xl pl-10 pr-4 py-2 text-xs text-white placeholder-neutral-500 focus:outline-none focus:border-indigo-500 transition-colors" />
           </div>
-
           <div className="flex flex-wrap items-center gap-1.5">
             {[
-              { id: "ALL", label: "Toutes" },
-              { id: "FULL", label: "Complètes" },
-              { id: "PARTIAL", label: "Partielles" },
-              { id: "PRE_CHANGE", label: "Pre-Change" },
-              { id: "ROLLBACK", label: "Rollback" },
-              { id: "PROTECTED", label: "🔒 Protégées" },
+              { id: "ALL", label: "Toutes" }, { id: "FULL", label: "Complètes" }, { id: "PARTIAL", label: "Partielles" },
+              { id: "PRE_CHANGE", label: "Pre-Change" }, { id: "ROLLBACK", label: "Rollback" }, { id: "PROTECTED", label: "🔒 Protégées" },
             ].map((tab) => (
-              <button
-                key={tab.id}
-                onClick={() => setSelectedType(tab.id)}
-                className={`px-3 py-1.5 rounded-lg text-xs font-medium transition-colors ${
-                  selectedType === tab.id
-                    ? "bg-indigo-600 text-white"
-                    : "bg-neutral-900 border border-neutral-800 text-neutral-400 hover:text-white"
-                }`}
-              >
+              <button key={tab.id} onClick={() => setSelectedType(tab.id)} className={cn("px-3 py-1.5 rounded-lg text-xs font-medium transition-colors cursor-pointer", selectedType === tab.id ? "bg-indigo-600 text-white" : "bg-neutral-900 border border-neutral-800 text-neutral-400 hover:text-white")}>
                 {tab.label}
               </button>
             ))}
           </div>
         </div>
 
-        {/* Backups List Table */}
+        {/* Table */}
         <div className="bg-neutral-900 border border-neutral-800 rounded-2xl overflow-hidden">
           <div className="overflow-x-auto">
             <table className="w-full text-left text-xs">
@@ -442,152 +513,62 @@ export default function BackupsCenterClient() {
                 <tr>
                   <th className="px-5 py-3.5">Sauvegarde</th>
                   <th className="px-4 py-3.5">Type</th>
-                  <th className="px-4 py-3.5">Objets Inclus</th>
+                  <th className="px-4 py-3.5">Objets</th>
                   <th className="px-4 py-3.5">Taille</th>
                   <th className="px-4 py-3.5">Créateur & Date</th>
-                  <th className="px-4 py-3.5">Intégrité</th>
+                  <th className="px-4 py-3.5">Statut</th>
                   <th className="px-5 py-3.5 text-right">Actions</th>
                 </tr>
               </thead>
               <tbody className="divide-y divide-neutral-800/60">
+                {filteredBackups.length === 0 && (
+                  <tr><td colSpan={7} className="px-5 py-10 text-center text-neutral-500">Aucune sauvegarde pour ce filtre.</td></tr>
+                )}
                 {filteredBackups.map((bkp) => (
-                  <tr
-                    key={bkp.id}
-                    className="hover:bg-neutral-800/30 transition-colors group"
-                  >
-                    {/* Name & ID */}
+                  <tr key={bkp.backupId} className="hover:bg-neutral-800/30 transition-colors group">
                     <td className="px-5 py-4">
                       <div className="space-y-0.5">
                         <div className="flex items-center gap-2">
-                          <Link
-                            href={`/discord/backups/${bkp.id}`}
-                            className="font-semibold text-white hover:text-indigo-400 transition-colors text-sm"
-                          >
-                            {bkp.name}
-                          </Link>
-                          {bkp.isProtected && (
-                            <span className="p-1 rounded bg-amber-500/10 text-amber-400 border border-amber-500/20" title="Protégé contre la suppression">
-                              <Lock className="w-3 h-3" />
-                            </span>
-                          )}
+                          <Link href={`/discord/backups/${bkp.backupId}${guildQuery}`} className="font-semibold text-white hover:text-indigo-400 transition-colors text-sm">{bkp.name}</Link>
+                          {bkp.isProtected && <span className="p-1 rounded bg-amber-500/10 text-amber-400 border border-amber-500/20" title="Protégé"><Lock className="w-3 h-3" /></span>}
                         </div>
-                        <p className="font-mono text-[11px] text-neutral-500">{bkp.id}</p>
+                        <p className="font-mono text-[11px] text-neutral-500">{bkp.backupId}</p>
                       </div>
                     </td>
-
-                    {/* Type Badge */}
                     <td className="px-4 py-4">
-                      {bkp.type === "FULL" && (
-                        <span className="px-2.5 py-0.5 rounded-full text-[10px] font-bold bg-indigo-500/20 text-indigo-300 border border-indigo-500/30">
-                          FULL
-                        </span>
-                      )}
-                      {bkp.type === "PARTIAL" && (
-                        <span className="px-2.5 py-0.5 rounded-full text-[10px] font-bold bg-cyan-500/20 text-cyan-300 border border-cyan-500/30">
-                          PARTIEL
-                        </span>
-                      )}
-                      {bkp.type === "PRE_CHANGE" && (
-                        <span className="px-2.5 py-0.5 rounded-full text-[10px] font-bold bg-amber-500/20 text-amber-300 border border-amber-500/30">
-                          PRE-CHANGE
-                        </span>
-                      )}
-                      {bkp.type === "ROLLBACK" && (
-                        <span className="px-2.5 py-0.5 rounded-full text-[10px] font-bold bg-rose-500/20 text-rose-300 border border-rose-500/30">
-                          ROLLBACK
-                        </span>
-                      )}
+                      <span className={cn("px-2.5 py-0.5 rounded-full text-[10px] font-bold border", TYPE_BADGE[bkp.type])}>{bkp.type.replace("_", "-")}</span>
                     </td>
-
-                    {/* Objects */}
                     <td className="px-4 py-4 text-neutral-300">
                       <div className="flex items-center gap-1.5 flex-wrap">
-                        <span className="px-1.5 py-0.5 rounded bg-neutral-800 text-[10px] text-neutral-400">
-                          {bkp.counts.channels} ch
-                        </span>
-                        <span className="px-1.5 py-0.5 rounded bg-neutral-800 text-[10px] text-neutral-400">
-                          {bkp.counts.roles} rôles
-                        </span>
-                        <span className="px-1.5 py-0.5 rounded bg-neutral-800 text-[10px] text-neutral-400">
-                          {bkp.counts.ethone} ETH
-                        </span>
+                        <span className="px-1.5 py-0.5 rounded bg-neutral-800 text-[10px] text-neutral-400">{bkp.objectCounts.channels} salons</span>
+                        <span className="px-1.5 py-0.5 rounded bg-neutral-800 text-[10px] text-neutral-400">{bkp.objectCounts.roles} rôles</span>
+                        <span className="px-1.5 py-0.5 rounded bg-neutral-800 text-[10px] text-neutral-400">{bkp.objectCounts.ethoneModules} modules</span>
                       </div>
                     </td>
-
-                    {/* Size */}
-                    <td className="px-4 py-4 font-mono text-neutral-400">
-                      {(bkp.sizeBytes / 1024 / 1024).toFixed(2)} MB
-                    </td>
-
-                    {/* Creator & Date */}
+                    <td className="px-4 py-4 font-mono text-neutral-400">{(bkp.sizeBytes / 1024).toFixed(0)} Ko</td>
                     <td className="px-4 py-4">
-                      <div className="space-y-0.5">
-                        <span className="text-neutral-300 font-medium block">
-                          {bkp.createdBy.tag}
-                        </span>
-                        <span className="text-neutral-500 text-[11px]">
-                          {new Date(bkp.createdAt).toLocaleDateString("fr-FR")} à{" "}
-                          {new Date(bkp.createdAt).toLocaleTimeString("fr-FR", {
-                            hour: "2-digit",
-                            minute: "2-digit",
-                          })}
-                        </span>
-                      </div>
+                      <span className="text-neutral-300 font-medium block">{bkp.createdBy.tag}</span>
+                      <span className="text-neutral-500 text-[11px]">{new Date(bkp.createdAt).toLocaleString("fr-FR", { dateStyle: "short", timeStyle: "short" })}</span>
                     </td>
-
-                    {/* Integrity Checksum */}
                     <td className="px-4 py-4">
-                      <span className="inline-flex items-center gap-1 px-2 py-0.5 rounded-full text-[10px] font-semibold bg-emerald-500/10 text-emerald-400 border border-emerald-500/20">
-                        <CheckCircle2 className="w-3 h-3" /> Vérifié
-                      </span>
+                      {bkp.status === "COMPLETED" ? (
+                        <span className="inline-flex items-center gap-1 px-2 py-0.5 rounded-full text-[10px] font-semibold bg-emerald-500/10 text-emerald-400 border border-emerald-500/20"><CheckCircle2 className="w-3 h-3" /> Vérifié</span>
+                      ) : (
+                        <span className="inline-flex items-center gap-1 px-2 py-0.5 rounded-full text-[10px] font-semibold bg-rose-500/10 text-rose-400 border border-rose-500/20"><AlertTriangle className="w-3 h-3" /> {bkp.status}</span>
+                      )}
                     </td>
-
-                    {/* Actions Menu */}
                     <td className="px-5 py-4 text-right">
                       <div className="flex items-center justify-end gap-1.5">
-                        <Link
-                          href={`/discord/backups/${bkp.id}`}
-                          className="p-1.5 rounded-lg bg-neutral-800 hover:bg-neutral-700 text-neutral-300 hover:text-white transition-colors"
-                          title="Inspecter en détail"
-                        >
-                          <Eye className="w-3.5 h-3.5" />
-                        </Link>
-
-                        <button
-                          onClick={() => handleOpenRestore(bkp)}
-                          className="p-1.5 rounded-lg bg-emerald-600/20 hover:bg-emerald-500/30 text-emerald-400 border border-emerald-500/30 transition-colors"
-                          title="Restaurer ce snapshot"
-                        >
-                          <RotateCcw className="w-3.5 h-3.5" />
+                        <Link href={`/discord/backups/${bkp.backupId}${guildQuery}`} className="p-1.5 rounded-lg bg-neutral-800 hover:bg-neutral-700 text-neutral-300 hover:text-white transition-colors" title="Inspecter"><Eye className="w-3.5 h-3.5" /></Link>
+                        {!isDemo && (
+                          <a href={`${base}/${bkp.backupId}/download`} className="p-1.5 rounded-lg bg-neutral-800 hover:bg-neutral-700 text-neutral-300 hover:text-white transition-colors" title="Télécharger (.ethone-backup.json)"><Download className="w-3.5 h-3.5" /></a>
+                        )}
+                        <button onClick={() => handleOpenRestore(bkp)} className="p-1.5 rounded-lg bg-emerald-600/20 hover:bg-emerald-500/30 text-emerald-400 border border-emerald-500/30 transition-colors cursor-pointer" title="Restaurer"><RotateCcw className="w-3.5 h-3.5" /></button>
+                        <Link href={`/discord/backups/compare?backupA=${bkp.backupId}&backupB=LIVE${activeGuild ? `&guildId=${activeGuild.id}` : ""}`} className="p-1.5 rounded-lg bg-indigo-500/20 hover:bg-indigo-500/30 text-indigo-400 border border-indigo-500/30 transition-colors" title="Comparer avec le direct"><GitCompare className="w-3.5 h-3.5" /></Link>
+                        <button onClick={() => handleToggleProtect(bkp)} className="p-1.5 rounded-lg bg-neutral-800 hover:bg-neutral-700 text-neutral-400 hover:text-white transition-colors cursor-pointer" title={bkp.isProtected ? "Retirer protection" : "Protéger"}>
+                          {bkp.isProtected ? <Unlock className="w-3.5 h-3.5" /> : <Lock className="w-3.5 h-3.5" />}
                         </button>
-
-                        <Link
-                          href={`/discord/backups/compare?backupA=${bkp.id}&backupB=LIVE`}
-                          className="p-1.5 rounded-lg bg-indigo-500/20 hover:bg-indigo-500/30 text-indigo-400 border border-indigo-500/30 transition-colors"
-                          title="Comparer avec le direct"
-                        >
-                          <GitCompare className="w-3.5 h-3.5" />
-                        </Link>
-
-                        <button
-                          onClick={() => handleToggleProtect(bkp.id)}
-                          className="p-1.5 rounded-lg bg-neutral-800 hover:bg-neutral-700 text-neutral-400 hover:text-white transition-colors"
-                          title={bkp.isProtected ? "Retirer protection" : "Protéger"}
-                        >
-                          {bkp.isProtected ? (
-                            <Unlock className="w-3.5 h-3.5" />
-                          ) : (
-                            <Lock className="w-3.5 h-3.5" />
-                          )}
-                        </button>
-
-                        <button
-                          onClick={() => handleDelete(bkp.id)}
-                          className="p-1.5 rounded-lg bg-neutral-800 hover:bg-rose-500/20 text-neutral-400 hover:text-rose-400 transition-colors"
-                          title="Supprimer"
-                        >
-                          <Trash2 className="w-3.5 h-3.5" />
-                        </button>
+                        <button onClick={() => handleDelete(bkp)} className="p-1.5 rounded-lg bg-neutral-800 hover:bg-rose-500/20 text-neutral-400 hover:text-rose-400 transition-colors cursor-pointer" title="Supprimer"><Trash2 className="w-3.5 h-3.5" /></button>
                       </div>
                     </td>
                   </tr>
@@ -597,356 +578,188 @@ export default function BackupsCenterClient() {
           </div>
         </div>
 
-        {/* MODAL 1: Create Backup Wizard */}
+        {/* MODAL: création */}
         {showCreateModal && (
           <div className="fixed inset-0 z-50 bg-black/80 backdrop-blur-sm flex items-center justify-center p-4">
             <div className="bg-neutral-900 border border-neutral-800 rounded-2xl max-w-xl w-full p-6 space-y-6 relative">
-              <button
-                onClick={() => setShowCreateModal(false)}
-                className="absolute top-4 right-4 text-neutral-400 hover:text-white"
-              >
-                <X className="w-5 h-5" />
-              </button>
-
+              <button onClick={() => !isCreating && setShowCreateModal(false)} className="absolute top-4 right-4 text-neutral-400 hover:text-white cursor-pointer"><X className="w-5 h-5" /></button>
               <div className="flex items-center gap-3">
-                <div className="p-2.5 bg-indigo-500/10 text-indigo-400 rounded-xl border border-indigo-500/20">
-                  <Archive className="w-5 h-5" />
-                </div>
+                <div className="p-2.5 bg-indigo-500/10 text-indigo-400 rounded-xl border border-indigo-500/20"><Archive className="w-5 h-5" /></div>
                 <div>
                   <h3 className="text-lg font-bold text-white">Créer une Sauvegarde</h3>
-                  <p className="text-xs text-neutral-400">
-                    Capture instantanée de la configuration Discord et des modules ETHONE.
-                  </p>
+                  <p className="text-xs text-neutral-400">Le bot capture la structure Discord et les modules ETHONE en temps réel.</p>
                 </div>
               </div>
-
               {!isCreating ? (
                 <div className="space-y-4">
                   <div className="space-y-1.5">
-                    <label className="text-xs font-semibold text-neutral-300">
-                      Nom du Snapshot
-                    </label>
-                    <input
-                      type="text"
-                      value={backupName}
-                      onChange={(e) => setBackupName(e.target.value)}
-                      className="w-full bg-neutral-950 border border-neutral-800 rounded-xl px-3.5 py-2 text-sm text-white focus:outline-none focus:border-indigo-500"
-                    />
+                    <label className="text-xs font-semibold text-neutral-300">Nom du snapshot</label>
+                    <input type="text" value={backupName} onChange={(e) => setBackupName(e.target.value)} className="w-full bg-neutral-950 border border-neutral-800 rounded-xl px-3.5 py-2 text-sm text-white focus:outline-none focus:border-indigo-500" />
                   </div>
-
                   <div className="space-y-1.5">
-                    <label className="text-xs font-semibold text-neutral-300">
-                      Description optionnelle
-                    </label>
-                    <input
-                      type="text"
-                      value={backupDesc}
-                      onChange={(e) => setBackupDesc(e.target.value)}
-                      placeholder="Raison ou contexte de la sauvegarde..."
-                      className="w-full bg-neutral-950 border border-neutral-800 rounded-xl px-3.5 py-2 text-sm text-white focus:outline-none focus:border-indigo-500"
-                    />
+                    <label className="text-xs font-semibold text-neutral-300">Description</label>
+                    <input type="text" value={backupDesc} onChange={(e) => setBackupDesc(e.target.value)} className="w-full bg-neutral-950 border border-neutral-800 rounded-xl px-3.5 py-2 text-sm text-white focus:outline-none focus:border-indigo-500" />
                   </div>
-
-                  {/* Component Selection Checkboxes */}
                   <div className="space-y-2 pt-2 border-t border-neutral-800">
-                    <label className="text-xs font-semibold text-neutral-300 block">
-                      Contenu à Sauvegarder :
-                    </label>
+                    <label className="text-xs font-semibold text-neutral-300 block">Composants inclus :</label>
                     <div className="grid grid-cols-2 gap-2 text-xs">
-                      {[
-                        { key: "roles", label: "Rôles & Hiérarchie" },
-                        { key: "categories", label: "Catégories" },
-                        { key: "channels", label: "Salons Texte & Vocaux" },
-                        { key: "permissions", label: "Permissions Overwrites" },
-                        { key: "serverConfig", label: "Configuration Serveur" },
-                        { key: "ethoneConfig", label: "Modules ETHONE" },
-                      ].map((item) => (
-                        <label
-                          key={item.key}
-                          className="flex items-center gap-2 p-2 bg-neutral-950 rounded-lg border border-neutral-800/80 cursor-pointer"
-                        >
-                          <input
-                            type="checkbox"
-                            checked={(included as any)[item.key]}
-                            onChange={(e) =>
-                              setIncluded((prev) => ({
-                                ...prev,
-                                [item.key]: e.target.checked,
-                              }))
-                            }
-                            className="rounded text-indigo-600 focus:ring-indigo-500 bg-neutral-900 border-neutral-700"
-                          />
-                          <span className="text-neutral-300">{item.label}</span>
+                      {([
+                        ["ROLES", "Rôles & hiérarchie"], ["CATEGORIES", "Catégories"], ["CHANNELS", "Salons texte & vocaux"], ["PERMISSIONS", "Permissions"],
+                        ["SERVER_CONFIG", "Configuration serveur"], ["EMOJIS", "Emojis"], ["ETHONE_CONFIG", "Modules ETHONE"],
+                      ] as [BackupComponent, string][]).map(([key, label]) => (
+                        <label key={key} className="flex items-center gap-2 p-2 bg-neutral-950 rounded-lg border border-neutral-800/80 cursor-pointer">
+                          <input type="checkbox" checked={included[key]} onChange={(e) => setIncluded((prev) => ({ ...prev, [key]: e.target.checked }))} className="rounded text-indigo-600 bg-neutral-900 border-neutral-700" />
+                          <span className="text-neutral-300">{label}</span>
                         </label>
                       ))}
                     </div>
                   </div>
-
                   <div className="flex items-center justify-between p-3 bg-neutral-950 rounded-xl border border-neutral-800">
-                    <div className="space-y-0.5">
-                      <span className="text-xs font-semibold text-white flex items-center gap-1.5">
-                        <Lock className="w-3.5 h-3.5 text-amber-400" /> Protéger ce Snapshot
-                      </span>
-                      <p className="text-[11px] text-neutral-400">
-                        Empêche la suppression manuelle ou la purge automatique de rétention.
-                      </p>
+                    <div>
+                      <span className="text-xs font-semibold text-white flex items-center gap-1.5"><Lock className="w-3.5 h-3.5 text-amber-400" /> Protéger ce snapshot</span>
+                      <p className="text-[11px] text-neutral-400">Exclu de la suppression manuelle et de la rétention automatique.</p>
                     </div>
-                    <input
-                      type="checkbox"
-                      checked={backupProtect}
-                      onChange={(e) => setBackupProtect(e.target.checked)}
-                      className="w-4 h-4 rounded text-indigo-600 focus:ring-indigo-500 bg-neutral-900 border-neutral-700"
-                    />
+                    <input type="checkbox" checked={backupProtect} onChange={(e) => setBackupProtect(e.target.checked)} className="w-4 h-4 rounded text-indigo-600 bg-neutral-900 border-neutral-700" />
                   </div>
-
                   <div className="flex justify-end gap-2 pt-2">
-                    <button
-                      onClick={() => setShowCreateModal(false)}
-                      className="px-4 py-2 rounded-xl bg-neutral-800 hover:bg-neutral-700 text-xs font-semibold text-neutral-300 transition-colors"
-                    >
-                      Annuler
-                    </button>
-                    <button
-                      onClick={handleExecuteCreate}
-                      className="px-5 py-2 rounded-xl bg-indigo-600 hover:bg-indigo-500 text-xs font-semibold text-white shadow-sm transition-all"
-                    >
-                      Lancer la Sauvegarde
-                    </button>
+                    <button onClick={() => setShowCreateModal(false)} className="px-4 py-2 rounded-xl bg-neutral-800 hover:bg-neutral-700 text-xs font-semibold text-neutral-300 transition-colors cursor-pointer">Annuler</button>
+                    <button onClick={handleExecuteCreate} className="px-5 py-2 rounded-xl bg-indigo-600 hover:bg-indigo-500 text-xs font-semibold text-white shadow-sm transition-all cursor-pointer">Lancer la sauvegarde</button>
                   </div>
                 </div>
               ) : (
-                /* Live Scanning Progress Screen */
-                <div className="py-8 space-y-5 text-center">
-                  <div className="w-14 h-14 mx-auto rounded-full bg-indigo-500/10 border border-indigo-500/20 flex items-center justify-center text-indigo-400 animate-pulse">
-                    <Archive className="w-7 h-7" />
-                  </div>
-                  <div className="space-y-1">
-                    <p className="text-sm font-bold text-white">{createStepName}</p>
-                    <p className="text-xs text-neutral-400 font-mono">Progression : {createProgress}%</p>
-                  </div>
-                  <div className="w-full bg-neutral-950 h-2.5 rounded-full overflow-hidden border border-neutral-800 max-w-md mx-auto">
-                    <div
-                      className="bg-indigo-600 h-full transition-all duration-300 rounded-full"
-                      style={{ width: `${createProgress}%` }}
-                    />
-                  </div>
+                <div className="py-8 space-y-4 text-center">
+                  <div className="w-14 h-14 mx-auto rounded-full bg-indigo-500/10 border border-indigo-500/20 flex items-center justify-center text-indigo-400 animate-pulse"><Archive className="w-7 h-7" /></div>
+                  <p className="text-sm font-bold text-white">Le bot scanne le serveur et signe le snapshot...</p>
+                  <p className="text-xs text-neutral-400">Quelques secondes selon la taille du serveur.</p>
                 </div>
               )}
             </div>
           </div>
         )}
 
-        {/* MODAL 2: Restore Wizard Modal */}
+        {/* MODAL: restauration */}
         {showRestoreModal && selectedBackupForAction && (
           <div className="fixed inset-0 z-50 bg-black/80 backdrop-blur-sm flex items-center justify-center p-4">
             <div className="bg-neutral-900 border border-neutral-800 rounded-2xl max-w-xl w-full p-6 space-y-6 relative">
-              <button
-                onClick={() => setShowRestoreModal(false)}
-                className="absolute top-4 right-4 text-neutral-400 hover:text-white"
-              >
-                <X className="w-5 h-5" />
-              </button>
-
+              <button onClick={() => setShowRestoreModal(false)} className="absolute top-4 right-4 text-neutral-400 hover:text-white cursor-pointer"><X className="w-5 h-5" /></button>
               <div className="flex items-center gap-3">
-                <div className="p-2.5 bg-emerald-500/10 text-emerald-400 rounded-xl border border-emerald-500/20">
-                  <RotateCcw className="w-5 h-5" />
-                </div>
+                <div className="p-2.5 bg-emerald-500/10 text-emerald-400 rounded-xl border border-emerald-500/20"><RotateCcw className="w-5 h-5" /></div>
                 <div>
-                  <h3 className="text-lg font-bold text-white">Restaurer le Serveur</h3>
-                  <p className="text-xs text-neutral-400">
-                    Cible : <strong>{selectedBackupForAction.name}</strong>
-                  </p>
+                  <h3 className="text-lg font-bold text-white">Restaurer le serveur</h3>
+                  <p className="text-xs text-neutral-400">Cible : <strong>{selectedBackupForAction.name}</strong></p>
                 </div>
               </div>
 
-              {!isRestoring ? (
+              {!restoreJob ? (
                 <div className="space-y-4">
-                  {/* Warning Box */}
                   <div className="p-3.5 bg-amber-500/10 border border-amber-500/20 rounded-xl flex items-start gap-3">
                     <AlertTriangle className="w-5 h-5 text-amber-400 shrink-0 mt-0.5" />
                     <div className="space-y-1 text-xs">
-                      <p className="font-semibold text-amber-300">Avertissement de Restauration</p>
-                      <p className="text-amber-400/90">
-                        La restauration peut modifier vos salons, rôles et permissions. Un snapshot Rollback de secours sera automatiquement créé avant l&apos;application.
-                      </p>
+                      <p className="font-semibold text-amber-300">Avertissement</p>
+                      <p className="text-amber-400/90">La restauration modifie salons, rôles et permissions. Un snapshot ROLLBACK est créé automatiquement avant application.</p>
                     </div>
                   </div>
-
-                  {/* Safety Mode Selector */}
                   <div className="space-y-2">
-                    <label className="text-xs font-semibold text-neutral-300">
-                      Niveau de Sécurité :
-                    </label>
+                    <label className="text-xs font-semibold text-neutral-300">Niveau de sécurité :</label>
                     <div className="grid grid-cols-1 sm:grid-cols-3 gap-2">
-                      <button
-                        onClick={() => setRestoreLevel("SAFE")}
-                        className={`p-3 rounded-xl border text-left transition-colors ${
-                          restoreLevel === "SAFE"
-                            ? "bg-emerald-500/10 border-emerald-500/30 text-emerald-300"
-                            : "bg-neutral-950 border-neutral-800 text-neutral-400"
-                        }`}
-                      >
-                        <span className="font-bold text-xs block">🛡️ Safe</span>
-                        <span className="text-[10px] text-neutral-400">
-                          Re-crée ce qui manque, ne supprime rien.
-                        </span>
-                      </button>
-
-                      <button
-                        onClick={() => setRestoreLevel("STANDARD")}
-                        className={`p-3 rounded-xl border text-left transition-colors ${
-                          restoreLevel === "STANDARD"
-                            ? "bg-indigo-500/10 border-indigo-500/30 text-indigo-300"
-                            : "bg-neutral-950 border-neutral-800 text-neutral-400"
-                        }`}
-                      >
-                        <span className="font-bold text-xs block">⚖️ Standard</span>
-                        <span className="text-[10px] text-neutral-400">
-                          Synchronise salons et propriétés.
-                        </span>
-                      </button>
-
-                      <button
-                        onClick={() => setRestoreLevel("DESTRUCTIVE")}
-                        className={`p-3 rounded-xl border text-left transition-colors ${
-                          restoreLevel === "DESTRUCTIVE"
-                            ? "bg-rose-500/10 border-rose-500/30 text-rose-300"
-                            : "bg-neutral-950 border-neutral-800 text-neutral-400"
-                        }`}
-                      >
-                        <span className="font-bold text-xs block">⚠️ Destructif</span>
-                        <span className="text-[10px] text-neutral-400">
-                          Supprime les salons absents du snapshot.
-                        </span>
-                      </button>
+                      {([
+                        ["SAFE", "🛡️ Safe", "Re-crée ce qui manque, ne supprime rien.", "bg-emerald-500/10 border-emerald-500/30 text-emerald-300"],
+                        ["STANDARD", "⚖️ Standard", "Synchronise salons et propriétés.", "bg-indigo-500/10 border-indigo-500/30 text-indigo-300"],
+                        ["DESTRUCTIVE", "⚠️ Destructif", "Supprime ce qui n'est pas dans le snapshot.", "bg-rose-500/10 border-rose-500/30 text-rose-300"],
+                      ] as [SafetyLevel, string, string, string][]).map(([lvl, label, desc, activeCls]) => (
+                        <button key={lvl} onClick={() => changeRestoreLevel(lvl)} className={cn("p-3 rounded-xl border text-left transition-colors cursor-pointer", restoreLevel === lvl ? activeCls : "bg-neutral-950 border-neutral-800 text-neutral-400")}>
+                          <span className="font-bold text-xs block">{label}</span>
+                          <span className="text-[10px] text-neutral-400">{desc}</span>
+                        </button>
+                      ))}
                     </div>
                   </div>
-
-                  {/* Preview of changes */}
                   <div className="bg-neutral-950 p-3.5 rounded-xl border border-neutral-800 space-y-2 text-xs">
-                    <span className="font-semibold text-neutral-300 block">
-                      Aperçu de la restauration :
-                    </span>
+                    <span className="font-semibold text-neutral-300 block">Plan calculé par le bot {planLoading && <span className="text-neutral-500">(calcul...)</span>} :</span>
                     <div className="grid grid-cols-4 gap-2 text-center">
-                      <div className="p-2 rounded bg-emerald-500/10 text-emerald-400 border border-emerald-500/20">
-                        <span className="block font-bold">2</span>
-                        <span className="text-[10px]">Créés</span>
-                      </div>
-                      <div className="p-2 rounded bg-amber-500/10 text-amber-400 border border-amber-500/20">
-                        <span className="block font-bold">4</span>
-                        <span className="text-[10px]">Modifiés</span>
-                      </div>
-                      <div className="p-2 rounded bg-rose-500/10 text-rose-400 border border-rose-500/20">
-                        <span className="block font-bold">
-                          {restoreLevel === "DESTRUCTIVE" ? "1" : "0"}
-                        </span>
-                        <span className="text-[10px]">Supprimés</span>
-                      </div>
-                      <div className="p-2 rounded bg-neutral-800 text-neutral-400">
-                        <span className="block font-bold">2</span>
-                        <span className="text-[10px]">Ignorés</span>
-                      </div>
+                      {[
+                        ["Créés", restorePlan?.counts.willCreate, "bg-emerald-500/10 text-emerald-400 border-emerald-500/20"],
+                        ["Modifiés", restorePlan?.counts.willModify, "bg-amber-500/10 text-amber-400 border-amber-500/20"],
+                        ["Supprimés", restorePlan?.counts.willDelete, "bg-rose-500/10 text-rose-400 border-rose-500/20"],
+                        ["Ignorés", restorePlan?.counts.willSkip, "bg-neutral-800 text-neutral-400 border-neutral-800"],
+                      ].map(([label, val, cls]) => (
+                        <div key={String(label)} className={cn("p-2 rounded border", String(cls))}>
+                          <span className="block font-bold">{val ?? "—"}</span>
+                          <span className="text-[10px]">{label}</span>
+                        </div>
+                      ))}
                     </div>
+                    {restorePlan && restorePlan.actions.length > 0 && (
+                      <div className="max-h-28 overflow-y-auto space-y-0.5 pt-1 border-t border-neutral-800 font-mono text-[10px] text-neutral-400">
+                        {restorePlan.actions.slice(0, 40).map((a, i) => (
+                          <div key={i}><span className={cn("font-bold", a.action === "DELETE" ? "text-rose-400" : a.action === "CREATE" ? "text-emerald-400" : a.action === "MODIFY" ? "text-amber-400" : "text-neutral-500")}>{a.action}</span> {a.type.toLowerCase()} · {a.name}</div>
+                        ))}
+                      </div>
+                    )}
                   </div>
-
-                  {/* Extra confirmation for destructive */}
                   {restoreLevel === "DESTRUCTIVE" && (
                     <div className="space-y-1.5 p-3 bg-rose-500/10 border border-rose-500/20 rounded-xl text-xs">
-                      <label className="font-bold text-rose-300 block">
-                        Confirmation requise : saisissez &quot;ETHONE Gaming &amp; Tech&quot;
-                      </label>
-                      <input
-                        type="text"
-                        value={confirmServerName}
-                        onChange={(e) => setConfirmServerName(e.target.value)}
-                        placeholder="ETHONE Gaming & Tech"
-                        className="w-full bg-neutral-950 border border-rose-500/40 rounded-lg px-3 py-1.5 text-xs text-white focus:outline-none focus:border-rose-500"
-                      />
+                      <label className="font-bold text-rose-300 block">Confirmation : saisis « {activeGuild?.name || "le nom du serveur"} »</label>
+                      <input type="text" value={confirmServerName} onChange={(e) => setConfirmServerName(e.target.value)} placeholder={activeGuild?.name || ""} className="w-full bg-neutral-950 border border-rose-500/40 rounded-lg px-3 py-1.5 text-xs text-white focus:outline-none focus:border-rose-500" />
                     </div>
                   )}
-
                   <div className="flex justify-end gap-2 pt-2">
-                    <button
-                      onClick={() => setShowRestoreModal(false)}
-                      className="px-4 py-2 rounded-xl bg-neutral-800 hover:bg-neutral-700 text-xs font-semibold text-neutral-300 transition-colors"
-                    >
-                      Annuler
-                    </button>
-                    <button
-                      onClick={handleExecuteRestore}
-                      className="px-5 py-2 rounded-xl bg-emerald-600 hover:bg-emerald-500 text-xs font-semibold text-white shadow-sm transition-all"
-                    >
-                      Confirmer &amp; Appliquer la Restauration
-                    </button>
+                    <button onClick={() => setShowRestoreModal(false)} className="px-4 py-2 rounded-xl bg-neutral-800 hover:bg-neutral-700 text-xs font-semibold text-neutral-300 transition-colors cursor-pointer">Annuler</button>
+                    <button onClick={handleExecuteRestore} disabled={planLoading} className="px-5 py-2 rounded-xl bg-emerald-600 hover:bg-emerald-500 text-xs font-semibold text-white shadow-sm transition-all cursor-pointer disabled:opacity-50">Confirmer & restaurer</button>
                   </div>
                 </div>
               ) : (
-                /* Live Progress Screen */
-                <div className="py-8 space-y-5 text-center">
-                  <div className="w-14 h-14 mx-auto rounded-full bg-emerald-500/10 border border-emerald-500/20 flex items-center justify-center text-emerald-400 animate-spin">
-                    <RotateCcw className="w-7 h-7" />
+                <div className="py-6 space-y-5 text-center">
+                  <div className={cn("w-14 h-14 mx-auto rounded-full border flex items-center justify-center", restoreJob.status === "COMPLETED" ? "bg-emerald-500/10 border-emerald-500/20 text-emerald-400" : ["FAILED", "ROLLED_BACK"].includes(restoreJob.status) ? "bg-rose-500/10 border-rose-500/20 text-rose-400" : "bg-emerald-500/10 border-emerald-500/20 text-emerald-400 animate-spin")}>
+                    {restoreJob.status === "COMPLETED" ? <CheckCircle2 className="w-7 h-7" /> : <RotateCcw className="w-7 h-7" />}
                   </div>
                   <div className="space-y-1">
-                    <p className="text-sm font-bold text-white">{restoreStepName}</p>
-                    <p className="text-xs text-neutral-400 font-mono">{restoreProgress}%</p>
+                    <p className="text-sm font-bold text-white">{restoreJob.currentStep}</p>
+                    <p className="text-xs text-neutral-400 font-mono">{restoreJob.status} · {restoreJob.progressPercent}%</p>
                   </div>
                   <div className="w-full bg-neutral-950 h-2.5 rounded-full overflow-hidden border border-neutral-800 max-w-md mx-auto">
-                    <div
-                      className="bg-emerald-600 h-full transition-all duration-300 rounded-full"
-                      style={{ width: `${restoreProgress}%` }}
-                    />
+                    <div className="bg-emerald-600 h-full transition-all duration-300 rounded-full" style={{ width: `${restoreJob.progressPercent}%` }} />
                   </div>
+                  {restoreJob.errors?.length > 0 && <p className="text-[11px] text-rose-300 text-left max-h-24 overflow-y-auto">{restoreJob.errors.join("\n")}</p>}
+                  {["COMPLETED", "PARTIAL", "FAILED", "ROLLED_BACK"].includes(restoreJob.status) && (
+                    <button onClick={() => setShowRestoreModal(false)} className="px-4 py-2 rounded-xl bg-neutral-800 hover:bg-neutral-700 text-xs font-semibold text-white transition-colors cursor-pointer">Fermer</button>
+                  )}
                 </div>
               )}
             </div>
           </div>
         )}
 
-        {/* MODAL 3: Test Snapshot Modal */}
+        {/* MODAL: test intégrité */}
         {showTestModal && selectedBackupForAction && (
           <div className="fixed inset-0 z-50 bg-black/80 backdrop-blur-sm flex items-center justify-center p-4">
             <div className="bg-neutral-900 border border-neutral-800 rounded-2xl max-w-md w-full p-6 space-y-5 relative">
-              <button
-                onClick={() => setShowTestModal(false)}
-                className="absolute top-4 right-4 text-neutral-400 hover:text-white"
-              >
-                <X className="w-5 h-5" />
-              </button>
-
+              <button onClick={() => setShowTestModal(false)} className="absolute top-4 right-4 text-neutral-400 hover:text-white cursor-pointer"><X className="w-5 h-5" /></button>
               <div className="flex items-center gap-3">
-                <div className="p-2.5 bg-indigo-500/10 text-indigo-400 rounded-xl border border-indigo-500/20">
-                  <ShieldCheck className="w-5 h-5" />
-                </div>
+                <div className="p-2.5 bg-indigo-500/10 text-indigo-400 rounded-xl border border-indigo-500/20"><ShieldCheck className="w-5 h-5" /></div>
                 <div>
-                  <h3 className="text-base font-bold text-white">Test d&apos;Intégrité Snapshot</h3>
+                  <h3 className="text-base font-bold text-white">Test d'intégrité</h3>
                   <p className="text-xs text-neutral-400">Dry-run sans impact sur le serveur</p>
                 </div>
               </div>
-
-              <div className="space-y-3 text-xs">
-                <div className="p-3 bg-emerald-500/10 border border-emerald-500/20 rounded-xl space-y-1">
-                  <span className="font-bold text-emerald-400 flex items-center gap-1.5">
-                    <CheckCircle2 className="w-4 h-4" /> Prêt pour Restauration (READY)
-                  </span>
-                  <p className="text-neutral-300">
-                    Signature SHA-256 valide et schéma v2 compatible avec le moteur de Disaster Recovery.
-                  </p>
+              {testLoading && <p className="text-xs text-neutral-400">Vérification de la signature...</p>}
+              {testResult && (
+                <div className="space-y-3 text-xs">
+                  <div className={cn("p-3 border rounded-xl space-y-1", testResult.valid ? "bg-emerald-500/10 border-emerald-500/20" : "bg-rose-500/10 border-rose-500/20")}>
+                    <span className={cn("font-bold flex items-center gap-1.5", testResult.valid ? "text-emerald-400" : "text-rose-400")}>
+                      {testResult.valid ? <CheckCircle2 className="w-4 h-4" /> : <AlertTriangle className="w-4 h-4" />} {testResult.readiness}
+                    </span>
+                    {testResult.notes.map((n, i) => <p key={i} className="text-neutral-300">{n}</p>)}
+                  </div>
+                  <div className="bg-neutral-950 p-3 rounded-xl border border-neutral-800 font-mono text-[11px] text-neutral-400 space-y-1">
+                    <p>ID : {selectedBackupForAction.backupId}</p>
+                    <p className="truncate">SHA-256 : {testResult.checksum}</p>
+                    <p>Schéma v{testResult.schemaVersion} · {testResult.objectCounts.channels} salons, {testResult.objectCounts.roles} rôles, {testResult.objectCounts.ethoneModules} modules</p>
+                  </div>
                 </div>
-
-                <div className="bg-neutral-950 p-3 rounded-xl border border-neutral-800 font-mono text-[11px] text-neutral-400 space-y-1">
-                  <p>ID: {selectedBackupForAction.id}</p>
-                  <p className="truncate">Hash: {selectedBackupForAction.checksum}</p>
-                  <p>Objets vérifiés : 54 éléments</p>
-                </div>
-              </div>
-
+              )}
               <div className="flex justify-end">
-                <button
-                  onClick={() => setShowTestModal(false)}
-                  className="px-4 py-2 rounded-xl bg-neutral-800 hover:bg-neutral-700 text-xs font-semibold text-white transition-colors"
-                >
-                  Fermer
-                </button>
+                <button onClick={() => setShowTestModal(false)} className="px-4 py-2 rounded-xl bg-neutral-800 hover:bg-neutral-700 text-xs font-semibold text-white transition-colors cursor-pointer">Fermer</button>
               </div>
             </div>
           </div>

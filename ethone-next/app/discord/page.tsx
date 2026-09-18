@@ -65,6 +65,7 @@ import { cn } from "@/lib/utils";
 import { useDiscordOnboarding } from "@/lib/hooks/useDiscordOnboarding";
 import DiscordOnboardingModal from "@/components/discord/onboarding/DiscordOnboardingModal";
 import { Checkbox } from "@/components/ui/Checkbox";
+import GuildLiveStats from "@/components/discord/GuildLiveStats";
 
 const BOT_CLIENT_ID = "1545139931154878464";
 const BOT_INVITE_URL = `https://discord.com/oauth2/authorize?client_id=${BOT_CLIENT_ID}&permissions=8&scope=bot%20applications.commands`;
@@ -1132,28 +1133,7 @@ export default function DiscordDashboardPage() {
                       </Link>
                     </div>
 
-                    <div className="grid grid-cols-2 sm:grid-cols-4 gap-3">
-                      <div className="rounded-[var(--inset-radius)] border border-[var(--panel-border)] bg-white/[0.02] p-3">
-                        <p className="text-[10px] text-zinc-400 font-medium uppercase tracking-wider">Statut & Membres</p>
-                        <p className="text-lg font-bold text-cyan-400 mt-1">En direct</p>
-                        <p className="text-[10px] text-zinc-400 mt-0.5">Uptime, ping, membres réels</p>
-                      </div>
-                      <div className="rounded-[var(--inset-radius)] border border-[var(--panel-border)] bg-white/[0.02] p-3">
-                        <p className="text-[10px] text-zinc-400 font-medium uppercase tracking-wider">Modération & Sécurité</p>
-                        <p className="text-lg font-bold text-blue-400 mt-1">Cas récents</p>
-                        <p className="text-[10px] text-zinc-400 mt-0.5">Incidents & sanctions réels</p>
-                      </div>
-                      <div className="rounded-[var(--inset-radius)] border border-[var(--panel-border)] bg-white/[0.02] p-3">
-                        <p className="text-[10px] text-zinc-400 font-medium uppercase tracking-wider">Musique, Tickets, Giveaways</p>
-                        <p className="text-lg font-bold text-purple-400 mt-1">Actifs maintenant</p>
-                        <p className="text-[10px] text-zinc-400 mt-0.5">Lecture en cours, files réelles</p>
-                      </div>
-                      <div className="rounded-[var(--inset-radius)] border border-[var(--panel-border)] bg-white/[0.02] p-3">
-                        <p className="text-[10px] text-zinc-400 font-medium uppercase tracking-wider">Backups & Activité</p>
-                        <p className="text-lg font-bold text-emerald-400 mt-1">Historique réel</p>
-                        <p className="text-[10px] text-zinc-400 mt-0.5">Dernière sauvegarde, commandes récentes</p>
-                      </div>
-                    </div>
+                    <GuildLiveStats guildId={selectedGuild.id} />
                   </div>
                 )}
 

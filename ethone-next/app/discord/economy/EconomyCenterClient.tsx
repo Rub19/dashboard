@@ -12,6 +12,7 @@ import {
   Plus,
   RefreshCw,
   Save,
+  History,
 } from "lucide-react";
 import { useToast } from "@/components/ToastProvider";
 import { useDiscordOAuth } from "@/lib/hooks/useDiscordOAuth";
@@ -44,7 +45,59 @@ interface EconomyConfig {
   gambleWinMultiplier: number;
   transfersEnabled: boolean;
   leaderboardSize: number;
+  dailyStreakBonus: number;
+  dailyStreakMaxBonus: number;
+  passiveEarnEnabled: boolean;
+  passiveEarnMin: number;
+  passiveEarnMax: number;
+  passiveEarnCooldownSeconds: number;
+  workEnabled: boolean;
+  workAmountMin: number;
+  workAmountMax: number;
+  workCooldownMinutes: number;
+  robEnabled: boolean;
+  robSuccessRate: number;
+  robMaxStealPercent: number;
+  robFailPenaltyPercent: number;
+  robCooldownMinutes: number;
 }
+
+type TransactionType =
+  | "daily" | "passive" | "work" | "rob_gain" | "rob_loss" | "rob_fine"
+  | "transfer_in" | "transfer_out" | "gamble_win" | "gamble_loss" | "purchase" | "admin";
+
+interface Transaction {
+  id: string;
+  guildId: string;
+  userId: string;
+  type: TransactionType;
+  amount: number;
+  balanceAfter: number;
+  counterpartyId: string | null;
+  note: string | null;
+  createdAt: string;
+}
+
+interface Activity {
+  transactions24h: number;
+  volume24h: number;
+  totalCirculating: number;
+}
+
+const TX_META: Record<TransactionType, { label: string; icon: string }> = {
+  daily: { label: "Quotidien", icon: "🎁" },
+  passive: { label: "Activité chat", icon: "💬" },
+  work: { label: "Travail", icon: "💼" },
+  rob_gain: { label: "Vol réussi", icon: "🕵️" },
+  rob_loss: { label: "Volé", icon: "😱" },
+  rob_fine: { label: "Amende (vol raté)", icon: "🚔" },
+  transfer_in: { label: "Reçu", icon: "📥" },
+  transfer_out: { label: "Envoyé", icon: "📤" },
+  gamble_win: { label: "Pari gagné", icon: "🪙" },
+  gamble_loss: { label: "Pari perdu", icon: "🎲" },
+  purchase: { label: "Achat boutique", icon: "🛍️" },
+  admin: { label: "Ajustement staff", icon: "🛠️" },
+};
 
 interface ShopItem {
   id: string;
@@ -69,7 +122,28 @@ const DEFAULT_CONFIG: EconomyConfig = {
   gambleWinMultiplier: 1.9,
   transfersEnabled: true,
   leaderboardSize: 10,
+  dailyStreakBonus: 10,
+  dailyStreakMaxBonus: 100,
+  passiveEarnEnabled: true,
+  passiveEarnMin: 1,
+  passiveEarnMax: 4,
+  passiveEarnCooldownSeconds: 60,
+  workEnabled: true,
+  workAmountMin: 20,
+  workAmountMax: 60,
+  workCooldownMinutes: 30,
+  robEnabled: true,
+  robSuccessRate: 0.35,
+  robMaxStealPercent: 20,
+  robFailPenaltyPercent: 10,
+  robCooldownMinutes: 120,
 };
+
+const DEMO_TRANSACTIONS: Transaction[] = [
+  { id: "t1", guildId: "demo", userId: "demo-1", type: "daily", amount: 120, balanceAfter: 8420, counterpartyId: null, note: "Série 4 j", createdAt: new Date(Date.now() - 3600000).toISOString() },
+  { id: "t2", guildId: "demo", userId: "demo-2", type: "work", amount: 45, balanceAfter: 5310, counterpartyId: null, note: "Barista", createdAt: new Date(Date.now() - 7200000).toISOString() },
+  { id: "t3", guildId: "demo", userId: "demo-3", type: "gamble_loss", amount: -200, balanceAfter: 2140, counterpartyId: null, note: null, createdAt: new Date(Date.now() - 10800000).toISOString() },
+];
 
 const DEMO_LEADERBOARD: Wallet[] = [
   { userId: "demo-1", guildId: "demo", username: "Nocturne", avatarUrl: null, balance: 8420, lastDailyClaimAt: null, totalEarned: 9200, totalSpent: 780, rank: 1 },
@@ -80,6 +154,29 @@ const DEMO_LEADERBOARD: Wallet[] = [
 const DEMO_SHOP: ShopItem[] = [
   { id: "demo-shop-1", roleId: "0", roleName: "VIP", label: "Rôle VIP", description: "Accès aux salons exclusifs", price: 2500, enabled: true },
 ];
+
+function NumberField({ label, value, onChange }: { label: string; value: number; onChange: (v: number) => void }) {
+  return (
+    <div>
+      <label className="block text-[11px] font-semibold text-slate-400 mb-1">{label}</label>
+      <input
+        type="number"
+        value={Number.isFinite(value) ? value : 0}
+        onChange={(e) => onChange(parseInt(e.target.value, 10) || 0)}
+        className="w-full px-3 py-2 rounded-lg bg-black/40 border border-[var(--panel-border)] text-xs text-white"
+      />
+    </div>
+  );
+}
+
+function ToggleRow({ label, checked, onChange }: { label: string; checked: boolean; onChange: (v: boolean) => void }) {
+  return (
+    <div className="flex items-center justify-between">
+      <span className="text-xs font-semibold text-slate-300">{label}</span>
+      <input type="checkbox" checked={checked} onChange={(e) => onChange(e.target.checked)} className="w-4 h-4 rounded text-indigo-500" />
+    </div>
+  );
+}
 
 export default function EconomyCenterClient() {
   const searchParams = useSearchParams();
@@ -100,6 +197,9 @@ export default function EconomyCenterClient() {
   const [config, setConfig] = useState<EconomyConfig>(DEFAULT_CONFIG);
   const [leaderboard, setLeaderboard] = useState<Wallet[]>(DEMO_LEADERBOARD);
   const [shopItems, setShopItems] = useState<ShopItem[]>(DEMO_SHOP);
+  const [transactions, setTransactions] = useState<Transaction[]>(DEMO_TRANSACTIONS);
+  const [activity, setActivity] = useState<Activity>({ transactions24h: 3, volume24h: 365, totalCirculating: 15870 });
+  const [txFilter, setTxFilter] = useState<"ALL" | TransactionType>("ALL");
   const [isDemo, setIsDemo] = useState(true);
   const [loading, setLoading] = useState(false);
   const [savingConfig, setSavingConfig] = useState(false);
@@ -112,17 +212,21 @@ export default function EconomyCenterClient() {
     }
     setLoading(true);
     try {
-      const [overviewRes, leaderboardRes, shopRes] = await Promise.all([
+      const [overviewRes, leaderboardRes, shopRes, txRes, activityRes] = await Promise.all([
         fetch(`${base}/overview`, { credentials: "include" }),
         fetch(`${base}/leaderboard`, { credentials: "include" }),
         fetch(`${base}/shop`, { credentials: "include" }),
+        fetch(`${base}/transactions?limit=100`, { credentials: "include" }),
+        fetch(`${base}/activity`, { credentials: "include" }),
       ]);
       const overviewData = await overviewRes.json().catch(() => null);
       const leaderboardData = await leaderboardRes.json().catch(() => null);
       const shopData = await shopRes.json().catch(() => null);
+      const txData = await txRes.json().catch(() => null);
+      const activityData = await activityRes.json().catch(() => null);
 
       if (overviewRes.ok && overviewData?.config) {
-        setConfig(overviewData.config);
+        setConfig({ ...DEFAULT_CONFIG, ...overviewData.config });
         setIsDemo(false);
       } else {
         setIsDemo(true);
@@ -133,6 +237,14 @@ export default function EconomyCenterClient() {
       }
       if (shopRes.ok && Array.isArray(shopData?.items)) {
         setShopItems(shopData.items);
+      }
+      if (txRes.ok && Array.isArray(txData?.transactions)) {
+        setTransactions(txData.transactions);
+      } else {
+        setTransactions([]);
+      }
+      if (activityRes.ok && activityData?.activity) {
+        setActivity(activityData.activity);
       }
     } catch {
       setIsDemo(true);
@@ -236,6 +348,22 @@ export default function EconomyCenterClient() {
           </button>
         </div>
 
+        {/* Activité (réelle) */}
+        <div className="grid grid-cols-2 lg:grid-cols-4 gap-3">
+          {[
+            { label: "Masse en circulation", value: `${activity.totalCirculating.toLocaleString("fr-FR")} ${config.currencySymbol}`, cls: "text-amber-300", sub: "Somme de tous les soldes" },
+            { label: "Volume 24h", value: `${activity.volume24h.toLocaleString("fr-FR")} ${config.currencySymbol}`, cls: "text-emerald-400", sub: "Montants échangés" },
+            { label: "Mouvements 24h", value: activity.transactions24h.toLocaleString("fr-FR"), cls: "text-indigo-400", sub: "Transactions enregistrées" },
+            { label: "Membres actifs", value: leaderboard.length.toLocaleString("fr-FR"), cls: "text-white", sub: "Avec un portefeuille" },
+          ].map((k) => (
+            <div key={k.label} className="p-4 rounded-2xl bg-white/[0.02] border border-[var(--panel-border)] space-y-1">
+              <span className="text-[11px] text-slate-500 font-medium">{k.label}</span>
+              <p className={cn("text-xl font-bold truncate", k.cls)}>{k.value}</p>
+              <span className="text-[11px] text-slate-500">{k.sub}</span>
+            </div>
+          ))}
+        </div>
+
         {/* Leaderboard */}
         <div className="p-6 rounded-2xl bg-white/[0.02] border border-[var(--panel-border)] backdrop-blur-xl">
           <h2 className="text-sm font-bold text-white mb-4 flex items-center gap-2">
@@ -257,6 +385,62 @@ export default function EconomyCenterClient() {
                   <span className="text-sm font-bold text-amber-300">{w.balance.toLocaleString("fr-FR")} {config.currencySymbol}</span>
                 </div>
               ))}
+            </div>
+          )}
+        </div>
+
+        {/* Historique des transactions */}
+        <div className="p-6 rounded-2xl bg-white/[0.02] border border-[var(--panel-border)] backdrop-blur-xl space-y-4">
+          <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3">
+            <h2 className="text-sm font-bold text-white flex items-center gap-2">
+              <History className="w-4 h-4 text-indigo-400" />
+              Historique des transactions
+              <span className="text-[11px] font-normal text-slate-500">({transactions.length} dernières)</span>
+            </h2>
+            <select
+              value={txFilter}
+              onChange={(e) => setTxFilter(e.target.value as typeof txFilter)}
+              className="h-8 px-2 rounded-lg bg-black/40 border border-[var(--panel-border)] text-xs text-white"
+            >
+              <option value="ALL">Tous les types</option>
+              {(Object.keys(TX_META) as TransactionType[]).map((t) => (
+                <option key={t} value={t}>{TX_META[t].icon} {TX_META[t].label}</option>
+              ))}
+            </select>
+          </div>
+          {transactions.length === 0 ? (
+            <p className="text-xs text-slate-500 py-6 text-center">Aucune transaction enregistrée pour l'instant — elles apparaissent dès qu'un membre utilise /economy.</p>
+          ) : (
+            <div className="space-y-1.5 max-h-96 overflow-y-auto pr-1">
+              {transactions
+                .filter((t) => txFilter === "ALL" || t.type === txFilter)
+                .map((t) => {
+                  const meta = TX_META[t.type] || { label: t.type, icon: "•" };
+                  const who = leaderboard.find((w) => w.userId === t.userId)?.username || t.userId;
+                  const other = t.counterpartyId ? leaderboard.find((w) => w.userId === t.counterpartyId)?.username || t.counterpartyId : null;
+                  return (
+                    <div key={t.id} className="flex items-center justify-between gap-3 p-2.5 rounded-xl bg-black/30 border border-[var(--panel-border)]">
+                      <div className="flex items-center gap-3 min-w-0">
+                        <span className="text-base w-6 text-center shrink-0">{meta.icon}</span>
+                        <div className="min-w-0">
+                          <p className="text-xs font-semibold text-white truncate">
+                            {who} <span className="text-slate-500 font-normal">· {meta.label}{other ? ` ↔ ${other}` : ""}</span>
+                          </p>
+                          <p className="text-[10px] text-slate-500 truncate">
+                            {new Date(t.createdAt).toLocaleString("fr-FR", { dateStyle: "short", timeStyle: "short" })}
+                            {t.note ? ` · ${t.note}` : ""}
+                          </p>
+                        </div>
+                      </div>
+                      <div className="text-right shrink-0">
+                        <p className={cn("text-xs font-bold font-mono", t.amount >= 0 ? "text-emerald-400" : "text-rose-400")}>
+                          {t.amount >= 0 ? "+" : ""}{t.amount.toLocaleString("fr-FR")} {config.currencySymbol}
+                        </p>
+                        <p className="text-[10px] text-slate-500 font-mono">solde {t.balanceAfter.toLocaleString("fr-FR")}</p>
+                      </div>
+                    </div>
+                  );
+                })}
             </div>
           )}
         </div>
@@ -371,6 +555,36 @@ export default function EconomyCenterClient() {
                 onChange={(e) => setConfig((p) => ({ ...p, dailyAmountMax: parseInt(e.target.value, 10) || 0 }))}
                 className="w-full px-3 py-2 rounded-lg bg-black/40 border border-[var(--panel-border)] text-xs text-white"
               />
+            </div>
+          </div>
+
+          {/* Gains & jeux — mêmes champs que economyConfig.ts côté bot */}
+          <div className="pt-3 border-t border-[var(--panel-border)] space-y-4">
+            <div className="grid grid-cols-2 gap-3">
+              <NumberField label="Bonus série quotidienne (/jour)" value={config.dailyStreakBonus} onChange={(v) => setConfig((p) => ({ ...p, dailyStreakBonus: v }))} />
+              <NumberField label="Bonus série max" value={config.dailyStreakMaxBonus} onChange={(v) => setConfig((p) => ({ ...p, dailyStreakMaxBonus: v }))} />
+            </div>
+
+            <ToggleRow label="Gains passifs en discutant" checked={config.passiveEarnEnabled} onChange={(v) => setConfig((p) => ({ ...p, passiveEarnEnabled: v }))} />
+            <div className="grid grid-cols-3 gap-3">
+              <NumberField label="Gain min / message" value={config.passiveEarnMin} onChange={(v) => setConfig((p) => ({ ...p, passiveEarnMin: v }))} />
+              <NumberField label="Gain max / message" value={config.passiveEarnMax} onChange={(v) => setConfig((p) => ({ ...p, passiveEarnMax: v }))} />
+              <NumberField label="Cooldown (s)" value={config.passiveEarnCooldownSeconds} onChange={(v) => setConfig((p) => ({ ...p, passiveEarnCooldownSeconds: v }))} />
+            </div>
+
+            <ToggleRow label="Commande /economy work" checked={config.workEnabled} onChange={(v) => setConfig((p) => ({ ...p, workEnabled: v }))} />
+            <div className="grid grid-cols-3 gap-3">
+              <NumberField label="Salaire min" value={config.workAmountMin} onChange={(v) => setConfig((p) => ({ ...p, workAmountMin: v }))} />
+              <NumberField label="Salaire max" value={config.workAmountMax} onChange={(v) => setConfig((p) => ({ ...p, workAmountMax: v }))} />
+              <NumberField label="Cooldown (min)" value={config.workCooldownMinutes} onChange={(v) => setConfig((p) => ({ ...p, workCooldownMinutes: v }))} />
+            </div>
+
+            <ToggleRow label="Commande /economy rob (vol entre membres)" checked={config.robEnabled} onChange={(v) => setConfig((p) => ({ ...p, robEnabled: v }))} />
+            <div className="grid grid-cols-2 sm:grid-cols-4 gap-3">
+              <NumberField label="Taux de réussite (%)" value={Math.round(config.robSuccessRate * 100)} onChange={(v) => setConfig((p) => ({ ...p, robSuccessRate: Math.min(100, Math.max(0, v)) / 100 }))} />
+              <NumberField label="Vol max (% du solde)" value={config.robMaxStealPercent} onChange={(v) => setConfig((p) => ({ ...p, robMaxStealPercent: v }))} />
+              <NumberField label="Amende échec (%)" value={config.robFailPenaltyPercent} onChange={(v) => setConfig((p) => ({ ...p, robFailPenaltyPercent: v }))} />
+              <NumberField label="Cooldown (min)" value={config.robCooldownMinutes} onChange={(v) => setConfig((p) => ({ ...p, robCooldownMinutes: v }))} />
             </div>
           </div>
 

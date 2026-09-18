@@ -1,5 +1,5 @@
 import { Client } from 'discord.js';
-import { Connectors, LoadType, Node, Player, Shoukaku, Track as LLTrack } from 'shoukaku';
+import { Connectors, Constants, LoadType, Node, NodeOption, Player, Shoukaku, Track as LLTrack } from 'shoukaku';
 import { config } from '../../../config.js';
 import { logger } from '../../../utils/logger.js';
 import type { Track, TrackRequester } from '../types/music.js';
@@ -22,16 +22,18 @@ class LavalinkManager {
   }
 
   public get ready(): boolean {
-    return Boolean(this.getNode()?.state === 2 /* CONNECTED */ || this.getNode()?.state === 3 /* NEARLY */) ;
+    return this.getNode()?.state === Constants.State.CONNECTED;
   }
 
   public initialize(client: Client): void {
     if (!this.enabled || this.shoukaku) return;
     this.client = client;
     const { host, port, password, secure } = config.lavalink;
+    const nodes: NodeOption[] = [{ name: 'ethone', url: `${host}:${port}`, auth: password, secure }];
+    const connector = new Connectors.DiscordJS(client);
     this.shoukaku = new Shoukaku(
-      new Connectors.DiscordJS(client),
-      [{ name: 'ethone', url: `${host}:${port}`, auth: password, secure }],
+      connector,
+      nodes,
       {
         resume: true,
         resumeTimeout: 30,
@@ -48,6 +50,25 @@ class LavalinkManager {
     this.shoukaku.on('disconnect', (name, count) => logger.warn(`[Lavalink] Nœud "${name}" déconnecté (${count} lecteur(s) affecté(s)) — reconnexion…`));
     this.shoukaku.on('reconnecting', (name, left, interval) => logger.info(`[Lavalink] Reconnexion à "${name}" dans ${interval}s (${left === Infinity ? '∞' : left} essais restants)`));
     logger.info(`[Lavalink] Backend actif → ${secure ? 'wss' : 'ws'}://${host}:${port}`);
+
+    // Shoukaku's discord.js connector only opens the node websocket on
+    // `client.once('clientReady')`. We are initialised FROM the ready handler,
+    // so that event has already fired and the node would never connect
+    // ("Impossible de se connecter au salon vocal" on every /play). Kick the
+    // connector's ready path ourselves when the client is already logged in.
+    if (client.isReady()) {
+      (connector as unknown as { ready(n: NodeOption[]): void }).ready(nodes);
+    }
+  }
+
+  /** Resolves once a node is CONNECTED (or after `timeoutMs`, with false). */
+  public async waitForNode(timeoutMs = 10_000): Promise<boolean> {
+    const deadline = Date.now() + timeoutMs;
+    while (Date.now() < deadline) {
+      if (this.ready) return true;
+      await new Promise((r) => setTimeout(r, 250));
+    }
+    return this.ready;
   }
 
   public getNode(): Node | undefined {
@@ -56,6 +77,10 @@ class LavalinkManager {
 
   public async join(guildId: string, channelId: string): Promise<Player | null> {
     if (!this.shoukaku || !this.client) return null;
+    if (!(await this.waitForNode())) {
+      logger.error(`[Lavalink] Nœud non connecté (état ${this.getNode()?.state ?? 'absent'}) — impossible de rejoindre le vocal. Lavalink tourne-t-il ? (pm2 logs lavalink)`);
+      return null;
+    }
     const existing = this.shoukaku.players.get(guildId);
     if (existing) {
       const conn = this.shoukaku.connections.get(guildId);
@@ -88,6 +113,7 @@ class LavalinkManager {
    * plain YouTube. Playlists expand up to `maxPlaylist` entries.
    */
   public async resolve(query: string, requestedBy: TrackRequester, opts?: { limit?: number; maxPlaylist?: number }): Promise<Track[]> {
+    await this.waitForNode(5_000);
     const node = this.getNode();
     if (!node) {
       logger.error('[Lavalink] Aucun nœud disponible — le serveur Lavalink est-il démarré ? (pm2 logs lavalink)');

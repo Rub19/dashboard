@@ -81,6 +81,48 @@ export default function RootLayout({
       suppressHydrationWarning
     >
       <head>
+        {/* Discord "Component Link Embeds" — when someone pastes an ethone.dev
+            link in Discord, this replaces the classic OpenGraph card with a
+            Components V2 layout. Must be static, server-rendered markup:
+            Discord's crawler reads the raw HTML and never executes JS. See
+            https://github.com/discord/discord-api-docs/pull/8606. */}
+        <script
+          id="discord:component-embed"
+          type="application/json"
+          dangerouslySetInnerHTML={{
+            __html: JSON.stringify({
+              component: {
+                type: 17,
+                accent_color: 12657487,
+                components: [
+                  {
+                    type: 9,
+                    components: [
+                      { type: 10, content: "# ETHONE" },
+                      {
+                        type: 10,
+                        content:
+                          "Dashboard Discord tout-en-un : modules, automatisations et pilotage en temps réel.",
+                      },
+                    ],
+                    accessory: {
+                      type: 11,
+                      media: { url: "https://ethone.dev/icons/ethone-icon-192.png" },
+                      description: "Logo ETHONE",
+                    },
+                  },
+                  { type: 14, divider: true, spacing: 1 },
+                  {
+                    type: 1,
+                    components: [
+                      { type: 2, style: 5, label: "Ouvrir le Dashboard", url: "https://ethone.dev/login" },
+                    ],
+                  },
+                ],
+              },
+            }),
+          }}
+        />
         <script
           dangerouslySetInnerHTML={{
             __html: `(function(){try{var s=localStorage.getItem('ethone_settings_v8')||localStorage.getItem('dashboard_settings');var theme='dyno-rose';var accent='#C1234F';if(s){var p=JSON.parse(s);if(p.theme)theme=p.theme;if(p.accentColor==='custom'&&p.customAccent)accent=p.customAccent;else if(p.accentColor){var m={dyno:'#C1234F',violet:'#8b5cf6',blue:'#3b82f6',cyan:'#06b6d4',pink:'#ec4899',red:'#ef4444',orange:'#f97316',green:'#10b981',mint:'#34d399',amber:'#f59e0b',sky:'#38bdf8',teal:'#14b8a6',rose:'#f43f5e'};if(m[p.accentColor])accent=m[p.accentColor];}}var isLight=theme==='arctic'||(theme==='auto'&&window.matchMedia&&window.matchMedia('(prefers-color-scheme: light)').matches);var root=document.documentElement;var bgMap={'dyno-rose':'#0E1015',obsidian:'#08080a',midnight:'#000000',aurora:'#051014','purple-space':'#0a0614',arctic:'#f8fafc',carbon:'#0c0d10','cyber-neon':'#090611',minimal:'#121214',glass:'#06070a',forest:'#050f0a',sunset:'#100806',rose:'#12060a'};var bg=bgMap[theme]||'#0E1015';root.setAttribute('data-theme',theme);root.setAttribute('data-color-scheme',isLight?'light':'dark');root.style.colorScheme=isLight?'light':'dark';root.style.setProperty('--accent',accent);root.style.setProperty('--accent-primary',accent);root.style.setProperty('--glow-color','color-mix(in srgb, '+accent+' 25%, transparent)');root.style.setProperty('--background',bg);root.style.setProperty('--bg-main',bg);}catch(e){}})();`,

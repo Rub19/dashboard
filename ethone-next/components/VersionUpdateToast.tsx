@@ -57,6 +57,9 @@ export default function VersionUpdateToast() {
   // context/ToastContext.tsx's Toaster) instead of a bespoke bottom-center
   // banner, and sized close to RichToast's own footprint (max-w-[23rem],
   // p-3.5) so it reads as part of the same system rather than a one-off.
+  // No extra bottom clearance is reserved for FloatingLiquidDock — that
+  // dock is md:hidden and centered, so it never shares screen space with
+  // this bottom-right toast at any breakpoint where both could render.
   return (
     <>
       <AnimatePresence>
@@ -66,7 +69,7 @@ export default function VersionUpdateToast() {
             animate={{ opacity: 1, y: 0, scale: 1 }}
             exit={{ opacity: 0, y: 16, scale: 0.96 }}
             transition={{ duration: 0.22, ease: [0.16, 1, 0.3, 1] }}
-            className="fixed inset-x-4 bottom-[calc(1rem+env(safe-area-inset-bottom))] z-[var(--z-critical)] mx-auto max-w-[23rem] select-none sm:inset-x-auto sm:left-auto sm:right-6 sm:bottom-[calc(1.5rem+env(safe-area-inset-bottom))] sm:mx-0 md:bottom-[calc(4.5rem+3rem+env(safe-area-inset-bottom))]"
+            className="fixed inset-x-4 bottom-[calc(1rem+env(safe-area-inset-bottom))] z-[var(--z-critical)] mx-auto max-w-[23rem] select-none sm:inset-x-auto sm:left-auto sm:right-6 sm:bottom-[calc(1.5rem+env(safe-area-inset-bottom))] sm:mx-0"
             role="status"
             aria-live="polite"
           >

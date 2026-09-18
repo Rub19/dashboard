@@ -65,8 +65,10 @@ if (v.status !== 0) {
 
   // 4. Test réel : récupérer 3 s d’audio d’une vidéo connue
   console.log('\n4) Test de flux réel (YouTube, 8 s max)');
+  const extra = (process.env.YT_DLP_EXTRA_ARGS || '').split(/\s+/).filter(Boolean);
+  if (extra.length) ok(`Options supplémentaires : ${extra.join(' ')}`);
   const args = ['--no-playlist', '--no-warnings', '--quiet', '-f', 'bestaudio[acodec=opus]/bestaudio/best', '--socket-timeout', '10',
-    ...(process.env.YT_DLP_COOKIES_FILE ? ['--cookies', process.env.YT_DLP_COOKIES_FILE] : []), '-o', '-', 'https://www.youtube.com/watch?v=jNQXAC9IVRw'];
+    ...(process.env.YT_DLP_COOKIES_FILE ? ['--cookies', process.env.YT_DLP_COOKIES_FILE] : []), ...extra, '-o', '-', 'https://www.youtube.com/watch?v=jNQXAC9IVRw'];
   const result = await new Promise((resolve) => {
     const p = spawn(YT, args, { stdio: ['ignore', 'pipe', 'pipe'] });
     let bytes = 0; let err = '';
@@ -81,7 +83,10 @@ if (v.status !== 0) {
     ko(`Aucun audio reçu (${result.bytes} octets${result.timeout ? ', timeout' : ''}).`);
     if (result.err) console.log(`     stderr : ${result.err.trim().split('\n').slice(-3).join(' | ')}`);
     if (/sign in|confirm you.re not a bot|cookies/i.test(result.err)) console.log('     → YouTube bloque l’IP du VPS : exporte des cookies (extension « Get cookies.txt LOCALLY ») et lance le bot avec YT_DLP_COOKIES_FILE=/chemin/cookies.txt');
-    else if (/Unable to extract|Requested format|nsig/i.test(result.err)) console.log('     → yt-dlp obsolète : yt-dlp -U');
+    else if (/Unable to extract|Requested format|nsig|needs to be reloaded/i.test(result.err)) {
+      console.log('     → Extracteur YouTube cassé/obsolète. 1) mets à jour : sudo yt-dlp -U  (ou réinstalle le binaire depuis GitHub)');
+      console.log('       2) si ça persiste, force un autre client dans .env : YT_DLP_EXTRA_ARGS="--extractor-args youtube:player_client=tv,web_safari"');
+    }
     problems++;
   }
 }

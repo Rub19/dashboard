@@ -27,6 +27,10 @@ import { logger } from '../../../utils/logger.js';
 
 const YT_DLP_PATH = process.env.YT_DLP_PATH || 'yt-dlp';
 const COOKIES_FILE = process.env.YT_DLP_COOKIES_FILE || '';
+// Free-form extra flags, e.g. `--extractor-args youtube:player_client=tv,web_safari`
+// when YouTube breaks the default client ("The page needs to be reloaded").
+// Split on whitespace; quote-free values only.
+export const EXTRA_ARGS = (process.env.YT_DLP_EXTRA_ARGS || '').split(/\s+/).filter(Boolean);
 
 let availabilityProbe: Promise<boolean> | null = null;
 
@@ -78,6 +82,7 @@ export async function createYtDlpStream(input: string): Promise<Readable | null>
     '--socket-timeout',
     '15',
     ...(COOKIES_FILE ? ['--cookies', COOKIES_FILE] : []),
+    ...EXTRA_ARGS,
     // Stream to stdout.
     '-o',
     '-',

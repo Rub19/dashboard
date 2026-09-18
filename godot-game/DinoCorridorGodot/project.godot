@@ -1,0 +1,15 @@
+; Configuration minimale d'un projet Godot 4.x — volontairement simple pour
+; éviter tout format finement sérialisé (input map, etc.) que je ne peux pas
+; tester ici. À ouvrir tel quel avec l'éditeur Godot 4 (gratuit, godotengine.org).
+
+config_version=5
+
+[application]
+
+config/name="Dino Corridor"
+config/description="Portage natif (Godot) du prototype raycasting HTML — Phase 1 : moteur (déplacement + caméra + niveau 3D)."
+run/main_scene="res://Main.tscn"
+
+[rendering]
+
+renderer/rendering_method="mobile"

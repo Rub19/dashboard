@@ -1,6 +1,6 @@
 "use client";
 
-import { useState, useEffect, useCallback } from "react";
+import { useState, useEffect, useCallback, useMemo } from "react";
 import Link from "next/link";
 import { useSearchParams } from "next/navigation";
 import {
@@ -29,6 +29,7 @@ import {
   Disc,
 } from "lucide-react";
 import { useToast } from "@/components/ToastProvider";
+import { useDiscordOAuth } from "@/lib/hooks/useDiscordOAuth";
 import { cn } from "@/lib/utils";
 
 interface Track {
@@ -98,11 +99,34 @@ interface MusicStats {
 }
 
 const BOT_API_URL = process.env.NEXT_PUBLIC_DISCORD_BOT_API || "";
+const FETCH_OPTS: RequestInit = { credentials: "include" };
+const jsonOpts = (method: string, body: unknown): RequestInit => ({
+  method,
+  credentials: "include",
+  headers: { "Content-Type": "application/json" },
+  body: JSON.stringify(body),
+});
 
 export default function MusicCenterClient() {
   const searchParams = useSearchParams();
-  const guildId = searchParams.get("guildId") || "1128633164290596884";
+  const rawGuildId = searchParams.get("guildId");
+  const { profile } = useDiscordOAuth();
   const { success, error: showError } = useToast();
+
+  // Même résolution de serveur que le reste du dashboard : l'ID de l'URL
+  // s'il correspond à un de mes serveurs, sinon le premier serveur connu —
+  // jamais un ID de test codé en dur (l'ancien fallback pointait vers un
+  // serveur précis et, combiné à l'absence de cookies sur les requêtes
+  // ci-dessous, faisait que cette page n'a jamais vraiment fonctionné en
+  // production : chaque appel à l'API du bot recevait 401 en silence).
+  const activeGuild = useMemo(() => {
+    if (rawGuildId && profile?.guilds) {
+      return profile.guilds.find((g) => g.id === rawGuildId) || profile.guilds[0];
+    }
+    return profile?.guilds?.[0] || null;
+  }, [rawGuildId, profile?.guilds]);
+  const guildId = activeGuild?.id || null;
+  const isReady = Boolean(guildId && BOT_API_URL);
 
   const [activeTab, setActiveTab] = useState<"queue" | "playlists" | "favorites" | "history" | "settings" | "stats">("queue");
   const [musicState, setMusicState] = useState<GuildMusicState | null>(null);
@@ -133,12 +157,12 @@ export default function MusicCenterClient() {
 
   // Fetch Music State
   const fetchState = useCallback(async () => {
-    if (!guildId || !BOT_API_URL) {
+    if (!isReady) {
       setLoading(false);
       return;
     }
     try {
-      const res = await fetch(`${BOT_API_URL}/api/guilds/${guildId}/music/state`);
+      const res = await fetch(`${BOT_API_URL}/api/guilds/${guildId}/music/state`, FETCH_OPTS);
       if (res.ok) {
         const data = await res.json();
         setMusicState(data.state);
@@ -151,18 +175,18 @@ export default function MusicCenterClient() {
     } finally {
       setLoading(false);
     }
-  }, [guildId, isScrubbing]);
+  }, [guildId, isReady, isScrubbing]);
 
   // Polling state every 3 seconds for live sync
   useEffect(() => {
-    if (!BOT_API_URL) {
+    if (!isReady) {
       setLoading(false);
       return;
     }
     fetchState();
     const interval = setInterval(fetchState, 3000);
     return () => clearInterval(interval);
-  }, [fetchState]);
+  }, [fetchState, isReady]);
 
   // Local ticker for progress bar when playing
   useEffect(() => {
@@ -178,43 +202,43 @@ export default function MusicCenterClient() {
 
   // Load ancillary tab data
   useEffect(() => {
-    if (!guildId || !BOT_API_URL) return;
+    if (!isReady) return;
 
     if (activeTab === "playlists") {
-      fetch(`${BOT_API_URL}/api/guilds/${guildId}/music/playlists`)
+      fetch(`${BOT_API_URL}/api/guilds/${guildId}/music/playlists`, FETCH_OPTS)
         .then((r) => r.json())
         .then((d) => setPlaylists(d.playlists || []))
         .catch(() => {});
     } else if (activeTab === "favorites") {
-      fetch(`${BOT_API_URL}/api/guilds/${guildId}/music/favorites`)
+      fetch(`${BOT_API_URL}/api/guilds/${guildId}/music/favorites`, FETCH_OPTS)
         .then((r) => r.json())
         .then((d) => setFavorites(d.favorites || []))
         .catch(() => {});
     } else if (activeTab === "history") {
-      fetch(`${BOT_API_URL}/api/guilds/${guildId}/music/history`)
+      fetch(`${BOT_API_URL}/api/guilds/${guildId}/music/history`, FETCH_OPTS)
         .then((r) => r.json())
         .then((d) => setHistory(d.history || []))
         .catch(() => {});
     } else if (activeTab === "settings") {
-      fetch(`${BOT_API_URL}/api/guilds/${guildId}/music/settings`)
+      fetch(`${BOT_API_URL}/api/guilds/${guildId}/music/settings`, FETCH_OPTS)
         .then((r) => r.json())
         .then((d) => setSettings(d.settings || null))
         .catch(() => {});
     } else if (activeTab === "stats") {
-      fetch(`${BOT_API_URL}/api/guilds/${guildId}/music/stats`)
+      fetch(`${BOT_API_URL}/api/guilds/${guildId}/music/stats`, FETCH_OPTS)
         .then((r) => r.json())
         .then((d) => setStats(d.stats || null))
         .catch(() => {});
     }
-  }, [guildId, activeTab]);
+  }, [guildId, isReady, activeTab]);
 
   // Search handler
   const handleSearch = async (e: React.FormEvent) => {
     e.preventDefault();
-    if (!searchQuery.trim()) return;
+    if (!searchQuery.trim() || !isReady) return;
     setIsSearching(true);
     try {
-      const res = await fetch(`${BOT_API_URL}/api/guilds/${guildId}/music/search?q=${encodeURIComponent(searchQuery.trim())}`);
+      const res = await fetch(`${BOT_API_URL}/api/guilds/${guildId}/music/search?q=${encodeURIComponent(searchQuery.trim())}`, FETCH_OPTS);
       if (res.ok) {
         const data = await res.json();
         setSearchResults(data.results || []);
@@ -228,12 +252,9 @@ export default function MusicCenterClient() {
 
   // Playback Control Actions
   const handlePlayQuery = async (query: string, playNext = false) => {
+    if (!isReady) return;
     try {
-      const res = await fetch(`${BOT_API_URL}/api/guilds/${guildId}/music/play`, {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ query, playNext }),
-      });
+      const res = await fetch(`${BOT_API_URL}/api/guilds/${guildId}/music/play`, jsonOpts("POST", { query, playNext }));
       const data = await res.json();
       if (res.ok && data.success) {
         success("Musique lancée", data.track ? `Ajouté : ${data.track.title}` : "Titre en cours de lecture.");
@@ -247,11 +268,11 @@ export default function MusicCenterClient() {
   };
 
   const handlePlayPause = async () => {
-    if (!musicState) return;
+    if (!musicState || !isReady) return;
     const isPlaying = musicState.status === "PLAYING";
     const endpoint = isPlaying ? "pause" : "resume";
     try {
-      await fetch(`${BOT_API_URL}/api/guilds/${guildId}/music/${endpoint}`, { method: "POST" });
+      await fetch(`${BOT_API_URL}/api/guilds/${guildId}/music/${endpoint}`, { method: "POST", credentials: "include" });
       fetchState();
     } catch {
       showError("Erreur", "Action impossible.");
@@ -259,8 +280,9 @@ export default function MusicCenterClient() {
   };
 
   const handleSkip = async () => {
+    if (!isReady) return;
     try {
-      const res = await fetch(`${BOT_API_URL}/api/guilds/${guildId}/music/skip`, { method: "POST" });
+      const res = await fetch(`${BOT_API_URL}/api/guilds/${guildId}/music/skip`, { method: "POST", credentials: "include" });
       const data = await res.json();
       if (data.nextTrack) {
         success("Piste suivante", data.nextTrack.title);
@@ -274,8 +296,9 @@ export default function MusicCenterClient() {
   };
 
   const handlePrevious = async () => {
+    if (!isReady) return;
     try {
-      const res = await fetch(`${BOT_API_URL}/api/guilds/${guildId}/music/previous`, { method: "POST" });
+      const res = await fetch(`${BOT_API_URL}/api/guilds/${guildId}/music/previous`, { method: "POST", credentials: "include" });
       const data = await res.json();
       if (data.prevTrack) {
         success("Piste précédente", data.prevTrack.title);
@@ -287,8 +310,9 @@ export default function MusicCenterClient() {
   };
 
   const handleStop = async () => {
+    if (!isReady) return;
     try {
-      await fetch(`${BOT_API_URL}/api/guilds/${guildId}/music/stop`, { method: "POST" });
+      await fetch(`${BOT_API_URL}/api/guilds/${guildId}/music/stop`, { method: "POST", credentials: "include" });
       success("Lecteur arrêté", "La musique a été stoppée et la file réinitialisée.");
       fetchState();
     } catch {
@@ -297,13 +321,10 @@ export default function MusicCenterClient() {
   };
 
   const handleSeek = async (val: number) => {
+    if (!isReady) return;
     setScrubberPos(val);
     try {
-      await fetch(`${BOT_API_URL}/api/guilds/${guildId}/music/seek`, {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ position: val }),
-      });
+      await fetch(`${BOT_API_URL}/api/guilds/${guildId}/music/seek`, jsonOpts("POST", { position: val }));
       fetchState();
     } catch {
       showError("Erreur", "Seek indisponible.");
@@ -311,12 +332,9 @@ export default function MusicCenterClient() {
   };
 
   const handleVolume = async (vol: number) => {
+    if (!isReady) return;
     try {
-      await fetch(`${BOT_API_URL}/api/guilds/${guildId}/music/volume`, {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ volume: vol }),
-      });
+      await fetch(`${BOT_API_URL}/api/guilds/${guildId}/music/volume`, jsonOpts("POST", { volume: vol }));
       fetchState();
     } catch {
       showError("Erreur", "Impossible de changer le volume.");
@@ -324,8 +342,9 @@ export default function MusicCenterClient() {
   };
 
   const handleMute = async () => {
+    if (!isReady) return;
     try {
-      await fetch(`${BOT_API_URL}/api/guilds/${guildId}/music/mute`, { method: "POST" });
+      await fetch(`${BOT_API_URL}/api/guilds/${guildId}/music/mute`, { method: "POST", credentials: "include" });
       fetchState();
     } catch {
       showError("Erreur", "Action muet impossible.");
@@ -333,9 +352,10 @@ export default function MusicCenterClient() {
   };
 
   const handleShuffle = async () => {
+    if (!isReady) return;
     try {
-      await fetch(`${BOT_API_URL}/api/guilds/${guildId}/music/shuffle`, { method: "POST" });
-      success("File mélangée", "L'ordre des pistes a été réorganisé aléatoirement.");
+      await fetch(`${BOT_API_URL}/api/guilds/${guildId}/music/shuffle`, { method: "POST", credentials: "include" });
+      success("File mélangée", "L'ordre des pistes a été réorganisée aléatoirement.");
       fetchState();
     } catch {
       showError("Erreur", "Impossible de mélanger la file.");
@@ -343,14 +363,10 @@ export default function MusicCenterClient() {
   };
 
   const handleCycleRepeat = async () => {
-    if (!musicState) return;
+    if (!musicState || !isReady) return;
     const nextMode = musicState.repeatMode === "OFF" ? "SONG" : musicState.repeatMode === "SONG" ? "QUEUE" : "OFF";
     try {
-      await fetch(`${BOT_API_URL}/api/guilds/${guildId}/music/repeat`, {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ mode: nextMode }),
-      });
+      await fetch(`${BOT_API_URL}/api/guilds/${guildId}/music/repeat`, jsonOpts("POST", { mode: nextMode }));
       fetchState();
     } catch {
       showError("Erreur", "Impossible de changer la répétition.");
@@ -358,12 +374,9 @@ export default function MusicCenterClient() {
   };
 
   const handleToggleFavorite = async (track: Track) => {
+    if (!isReady) return;
     try {
-      const res = await fetch(`${BOT_API_URL}/api/guilds/${guildId}/music/favorites`, {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ track, userId: "dashboard" }),
-      });
+      const res = await fetch(`${BOT_API_URL}/api/guilds/${guildId}/music/favorites`, jsonOpts("POST", { track, userId: "dashboard" }));
       const data = await res.json();
       if (data.isFavorite) {
         success("Favori ajouté", `"${track.title}" a été ajouté à vos favoris ❤️.`);
@@ -387,15 +400,12 @@ export default function MusicCenterClient() {
 
   const handleDrop = async (e: React.DragEvent, toIndex: number) => {
     e.preventDefault();
+    if (!isReady) return;
     const fromIndex = parseInt(e.dataTransfer.getData("text/plain"), 10);
     if (isNaN(fromIndex) || fromIndex === toIndex) return;
 
     try {
-      await fetch(`${BOT_API_URL}/api/guilds/${guildId}/music/queue/reorder`, {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ fromIndex, toIndex }),
-      });
+      await fetch(`${BOT_API_URL}/api/guilds/${guildId}/music/queue/reorder`, jsonOpts("POST", { fromIndex, toIndex }));
       fetchState();
     } catch {
       showError("Erreur", "Impossible de déplacer le titre.");
@@ -403,8 +413,9 @@ export default function MusicCenterClient() {
   };
 
   const handleRemoveQueueItem = async (index: number) => {
+    if (!isReady) return;
     try {
-      await fetch(`${BOT_API_URL}/api/guilds/${guildId}/music/queue/${index}`, { method: "DELETE" });
+      await fetch(`${BOT_API_URL}/api/guilds/${guildId}/music/queue/${index}`, { method: "DELETE", credentials: "include" });
       fetchState();
     } catch {
       showError("Erreur", "Impossible de retirer le titre.");
@@ -412,8 +423,9 @@ export default function MusicCenterClient() {
   };
 
   const handleClearQueue = async () => {
+    if (!isReady) return;
     try {
-      await fetch(`${BOT_API_URL}/api/guilds/${guildId}/music/queue/clear`, { method: "POST" });
+      await fetch(`${BOT_API_URL}/api/guilds/${guildId}/music/queue/clear`, { method: "POST", credentials: "include" });
       success("File vidée", "Tous les titres en attente ont été retirés.");
       setIsClearConfirmOpen(false);
       fetchState();
@@ -425,13 +437,12 @@ export default function MusicCenterClient() {
   // Playlist create
   const handleCreatePlaylist = async (e: React.FormEvent) => {
     e.preventDefault();
-    if (!newPlaylistName.trim()) return;
+    if (!newPlaylistName.trim() || !isReady) return;
     try {
-      const res = await fetch(`${BOT_API_URL}/api/guilds/${guildId}/music/playlists`, {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ name: newPlaylistName.trim(), tracks: musicState?.queue || [] }),
-      });
+      const res = await fetch(
+        `${BOT_API_URL}/api/guilds/${guildId}/music/playlists`,
+        jsonOpts("POST", { name: newPlaylistName.trim(), tracks: musicState?.queue || [] }),
+      );
       if (res.ok) {
         const data = await res.json();
         setPlaylists((p) => [...p, data.playlist]);
@@ -445,8 +456,9 @@ export default function MusicCenterClient() {
   };
 
   const handlePlayPlaylist = async (playlistId: string) => {
+    if (!isReady) return;
     try {
-      const res = await fetch(`${BOT_API_URL}/api/guilds/${guildId}/music/playlists/${playlistId}/play`, { method: "POST" });
+      const res = await fetch(`${BOT_API_URL}/api/guilds/${guildId}/music/playlists/${playlistId}/play`, { method: "POST", credentials: "include" });
       const data = await res.json();
       if (data.success) {
         success("Playlist lancée", `${data.count} titre(s) chargé(s) dans le lecteur.`);
@@ -458,8 +470,9 @@ export default function MusicCenterClient() {
   };
 
   const handleDeletePlaylist = async (playlistId: string) => {
+    if (!isReady) return;
     try {
-      await fetch(`${BOT_API_URL}/api/guilds/${guildId}/music/playlists/${playlistId}`, { method: "DELETE" });
+      await fetch(`${BOT_API_URL}/api/guilds/${guildId}/music/playlists/${playlistId}`, { method: "DELETE", credentials: "include" });
       setPlaylists((prev) => prev.filter((p) => p.id !== playlistId));
       success("Playlist supprimée", "La playlist a été retirée.");
     } catch {
@@ -469,12 +482,9 @@ export default function MusicCenterClient() {
 
   // Save Settings
   const handleSaveSettings = async (patch: Partial<MusicSettings>) => {
+    if (!isReady) return;
     try {
-      const res = await fetch(`${BOT_API_URL}/api/guilds/${guildId}/music/settings`, {
-        method: "PUT",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify(patch),
-      });
+      const res = await fetch(`${BOT_API_URL}/api/guilds/${guildId}/music/settings`, jsonOpts("PUT", patch));
       if (res.ok) {
         const data = await res.json();
         setSettings(data.settings);
@@ -503,7 +513,7 @@ export default function MusicCenterClient() {
         <div className="max-w-7xl mx-auto flex items-center justify-between">
           <div className="flex items-center gap-3">
             <Link
-              href={`/discord?guildId=${guildId}`}
+              href={`/discord${guildId ? `?guildId=${guildId}` : ""}`}
               className="flex h-9 w-9 items-center justify-center rounded-[var(--panel-radius)] border border-[var(--panel-border)] bg-white/5 text-zinc-400 hover:text-white hover:bg-white/10 transition-all cursor-pointer"
             >
               <ArrowLeft className="h-4 w-4" />
@@ -531,6 +541,11 @@ export default function MusicCenterClient() {
                     🔊 {musicState.voiceChannel.name}
                   </span>
                 )}
+                {activeGuild && (
+                  <span className="text-[10px] font-mono px-2 py-0.5 rounded bg-white/5 text-zinc-400 border border-[var(--panel-border)] hidden sm:inline">
+                    {activeGuild.name}
+                  </span>
+                )}
               </div>
               <p className="text-xs text-zinc-400">
                 Lecteur audio haute performance synchronisé en direct avec Discord
@@ -541,7 +556,8 @@ export default function MusicCenterClient() {
           <div className="flex items-center gap-2">
             <button
               onClick={fetchState}
-              className="flex h-8 w-8 items-center justify-center rounded-[var(--inset-radius)] border border-[var(--panel-border)] bg-white/5 text-zinc-400 hover:text-white hover:bg-white/10 transition-all cursor-pointer"
+              disabled={!isReady}
+              className="flex h-8 w-8 items-center justify-center rounded-[var(--inset-radius)] border border-[var(--panel-border)] bg-white/5 text-zinc-400 hover:text-white hover:bg-white/10 disabled:opacity-40 transition-all cursor-pointer"
               title="Rafraîchir"
             >
               <RefreshCw className="h-3.5 w-3.5" />
@@ -549,6 +565,12 @@ export default function MusicCenterClient() {
           </div>
         </div>
       </header>
+
+      {!activeGuild && !loading && (
+        <div className="shrink-0 mx-4 sm:mx-6 mt-4 rounded-xl border border-amber-500/30 bg-amber-500/10 px-4 py-2.5 text-xs text-amber-300">
+          Connecte ton compte Discord et sélectionne un serveur pour piloter le lecteur en direct.
+        </div>
+      )}
 
       {/* SCROLLABLE MAIN CONTENT */}
       <main className="flex-1 min-h-0 overflow-y-auto pb-36 px-4 sm:px-6 py-6 scrollbar-thin scrollbar-thumb-white/10">
@@ -774,7 +796,7 @@ export default function MusicCenterClient() {
               </div>
               <button
                 type="submit"
-                disabled={isSearching || !searchQuery.trim()}
+                disabled={isSearching || !searchQuery.trim() || !isReady}
                 className="flex h-10 items-center gap-1.5 rounded-xl bg-violet-600 px-5 text-xs font-bold text-white shadow-sm hover:bg-violet-500 disabled:opacity-50 transition-all cursor-pointer"
               >
                 {isSearching ? <RefreshCw className="h-3.5 w-3.5 animate-spin" /> : <Search className="h-3.5 w-3.5" />}

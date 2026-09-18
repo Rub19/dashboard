@@ -1,6 +1,5 @@
 import {
   ChatInputCommandInteraction,
-  EmbedBuilder,
   PermissionFlagsBits,
   SlashCommandBuilder,
 } from 'discord.js';
@@ -10,7 +9,7 @@ import { raidConfigService } from '../services/raidConfigService.js';
 import { raidModeService } from '../services/raidModeService.js';
 import { raidActionService } from '../services/raidActionService.js';
 import { formatString, getTranslation } from '../../../utils/i18n.js';
-import { BRAND_COLORS } from '../../../utils/embeds.js';
+import { BRAND_COLORS, baseEmbed } from '../../../utils/embeds.js';
 import { emitConfigUpdated } from '../../../services/syncConfigEmitter.js';
 
 export const antiraidCommand: Command = {
@@ -109,13 +108,11 @@ export const antiraidCommand: Command = {
       if (!raidCfg.enabled) {
         await ctx.reply({
           embeds: [
-            new EmbedBuilder()
-              .setColor(BRAND_COLORS.neutral)
+            baseEmbed('neutral')
               .setAuthor({ name: `Anti-Raid — ${ctx.guild.name}`, iconURL: ctx.guild.iconURL({ size: 128 }) ?? undefined })
               .setDescription(
                 '## ⚪ Désactivé\nAucune détection ni sanction automatique sur ce serveur. Les réglages sont conservés.\n\n**Réactiver :** `/antiraid toggle actif:True`'
-              )
-              .setTimestamp(),
+              ),
           ],
         });
         return;
@@ -140,8 +137,7 @@ export const antiraidCommand: Command = {
       detectors.push(d(raidCfg.serverNuke.enabled, 'Nuke serveur'));
       detectors.push(d(raidCfg.accountAge.enabled, 'Comptes récents'));
 
-      const embed = new EmbedBuilder()
-        .setColor(levelColors[metrics.threatLevel] || BRAND_COLORS.success)
+      const embed = baseEmbed('default', { color: levelColors[metrics.threatLevel] || BRAND_COLORS.success })
         .setAuthor({ name: `Anti-Raid — ${ctx.guild.name}`, iconURL: ctx.guild.iconURL({ size: 128 }) ?? undefined })
         .setDescription(`**${threatLine}** · Risk Score **${metrics.currentRiskScore}/100**`)
         .addFields(
@@ -168,8 +164,7 @@ export const antiraidCommand: Command = {
             inline: false,
           }
         )
-        .setFooter({ text: '/antiraid toggle · botprotection · trustbot · raidmode · lockdown' })
-        .setTimestamp();
+        .setFooter({ text: '/antiraid toggle · botprotection · trustbot · raidmode · lockdown' });
 
       await ctx.reply({ embeds: [embed] });
       return;

@@ -1,5 +1,6 @@
-import { GuildMember, EmbedBuilder, TextChannel, ChannelType, PartialGuildMember, AuditLogEvent } from 'discord.js';
+import { GuildMember, TextChannel, ChannelType, PartialGuildMember, AuditLogEvent } from 'discord.js';
 import { guildConfigService } from '../services/guildConfigService.js';
+import { baseEmbed } from '../utils/embeds.js';
 import { welcomeService } from '../modules/welcome/services/welcomeService.js';
 import { analyticsService } from '../modules/analytics/services/analyticsService.js';
 import { raidDetectionService } from '../modules/antiRaid/services/raidDetectionService.js';
@@ -66,12 +67,9 @@ export async function onGuildMemberRemove(member: GuildMember | PartialGuildMemb
       ) as TextChannel | undefined;
 
       if (logChannel && logChannel.permissionsFor(member.guild.members.me!)?.has('SendMessages')) {
-        const logEmbed = new EmbedBuilder()
-          .setColor(config.errorColor as `#${string}`)
+        const logEmbed = baseEmbed('error', { color: config.errorColor, footerText: config.botName })
           .setTitle('📤 Départ d’un membre')
-          .setDescription(`**${member.user?.tag || 'Membre inconnu'}** (${member.id}) a quitté le serveur.`)
-          .setFooter({ text: `${config.botName}` })
-          .setTimestamp();
+          .setDescription(`**${member.user?.tag || 'Membre inconnu'}** (${member.id}) a quitté le serveur.`);
 
         await logChannel.send({ embeds: [logEmbed] });
       }

@@ -1,10 +1,11 @@
-import { Colors, EmbedBuilder, Guild, TextChannel } from 'discord.js';
+import { Colors, Guild, TextChannel } from 'discord.js';
 import { RaidAction, ThreatLevel } from '../types/antiRaid.js';
 import { raidConfigService } from './raidConfigService.js';
 import { logService } from '../../logs/services/logService.js';
 import { logger } from '../../../utils/logger.js';
 import { guildConfigService } from '../../../services/guildConfigService.js';
 import { formatString, getTranslation } from '../../../utils/i18n.js';
+import { baseEmbed } from '../../../utils/embeds.js';
 
 interface AlertParams {
   guild: Guild;
@@ -42,20 +43,17 @@ class RaidAlertService {
     const actionList = actionsTaken.map((a) => `✓ \`${a}\``).join('\n') || t.antiraid_alert_actions_none;
     const signalsList = signals.map((s) => `• ${s}`).join('\n') || t.antiraid_alert_signals_none;
 
-    const embed = new EmbedBuilder()
+    const embed = baseEmbed('default', {
+      color: embedColor,
+      footerText: incidentId ? formatString(t.antiraid_alert_footer, { incidentId }) : undefined,
+    })
       .setTitle(`🛡️ ${title}`)
-      .setColor(embedColor)
       .setDescription(formatString(t.antiraid_alert_desc, { threatLevel, riskScore }))
       .addFields(
         { name: t.antiraid_alert_field_reason, value: reason, inline: false },
         { name: t.antiraid_alert_field_signals, value: signalsList, inline: false },
         { name: t.antiraid_alert_field_actions, value: actionList, inline: false }
-      )
-      .setTimestamp();
-
-    if (incidentId) {
-      embed.setFooter({ text: formatString(t.antiraid_alert_footer, { incidentId }) });
-    }
+      );
 
     // 1. Envoyer dans le salon d'alerte configuré
     if (config.alerts.channelId) {

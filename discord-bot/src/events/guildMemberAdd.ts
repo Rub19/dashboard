@@ -1,5 +1,6 @@
-import { GuildMember, EmbedBuilder, TextChannel, ChannelType, PermissionFlagsBits } from 'discord.js';
+import { GuildMember, TextChannel, ChannelType, PermissionFlagsBits } from 'discord.js';
 import { guildConfigService } from '../services/guildConfigService.js';
+import { baseEmbed } from '../utils/embeds.js';
 import { welcomeService } from '../modules/welcome/services/welcomeService.js';
 import { welcomeRepository } from '../modules/welcome/storage/welcomeRepository.js';
 import { autoRoleService } from '../modules/roles/services/autoRoleService.js';
@@ -106,8 +107,7 @@ export async function onGuildMemberAdd(member: GuildMember): Promise<void> {
       ) as TextChannel | undefined;
 
       if (logChannel && logChannel.permissionsFor(member.guild.members.me!)?.has('SendMessages')) {
-        const logEmbed = new EmbedBuilder()
-          .setColor(config.infoColor as `#${string}`)
+        const logEmbed = baseEmbed('info', { color: config.infoColor, footerText: config.botName })
           .setTitle('📥 Arrivée d’un membre')
           .setDescription(`**${member.user.tag}** (${member.id}) a rejoint le serveur.`)
           .addFields([
@@ -117,9 +117,7 @@ export async function onGuildMemberAdd(member: GuildMember): Promise<void> {
               inline: true,
             },
           ])
-          .setThumbnail(member.user.displayAvatarURL())
-          .setFooter({ text: `${config.botName}` })
-          .setTimestamp();
+          .setThumbnail(member.user.displayAvatarURL());
 
         await logChannel.send({ embeds: [logEmbed] });
       }

@@ -2,6 +2,8 @@
 
 import { useRouter } from "next/navigation";
 import { Icon } from "@/lib/icons";
+import ClientImage from "@/components/ClientImage";
+import { useUserIdentity } from "@/lib/hooks/useUserIdentity";
 import { useSettings } from "@/components/SettingsProvider";
 import { useI18n } from "@/lib/hooks/useI18n";
 import { useSound } from "@/lib/sound";
@@ -19,6 +21,7 @@ export default function SettingsOverview({ onNavigate }: SettingsOverviewProps) 
   const i18n = useI18n();
   const { settings } = useSettings();
   const { ambientSound } = useSound();
+  const { displayName, avatarUrl, email, initials } = useUserIdentity();
 
   const userStatus = USER_STATUS_CONFIG[settings.status] || USER_STATUS_CONFIG.online;
   const syncStatus = useSyncStore((s) => s.status);
@@ -88,8 +91,24 @@ export default function SettingsOverview({ onNavigate }: SettingsOverviewProps) 
       <div className="relative overflow-hidden rounded-[var(--panel-radius)] border border-[var(--panel-border)] bg-gradient-to-br from-[var(--surface-raised)] to-[var(--panel-bg)] p-5 shadow-lg">
         <div className="relative z-10 flex flex-col gap-4 sm:flex-row sm:items-center sm:justify-between">
           <div className="flex items-center gap-4">
-            <div className="relative flex h-14 w-14 shrink-0 items-center justify-center rounded-2xl bg-[var(--accent-primary)]/15 text-[var(--accent-primary)] ring-2 ring-[var(--accent-primary)]/30">
-              <Icon name="user" className="h-7 w-7" />
+            {/* Same identity source as the TopBar profile menu (useUserIdentity +
+                ClientImage), so the real profile picture / name / email show here
+                instead of a generic user glyph. */}
+            <div className="relative h-14 w-14 shrink-0">
+              <div className="flex h-full w-full items-center justify-center overflow-hidden rounded-2xl bg-[var(--accent-primary)]/15 text-[var(--accent-primary)] ring-2 ring-[var(--accent-primary)]/30 text-lg font-bold">
+                {avatarUrl ? (
+                  <ClientImage
+                    src={avatarUrl}
+                    alt=""
+                    width={56}
+                    height={56}
+                    className="h-full w-full object-cover"
+                    fallback={<span>{initials}</span>}
+                  />
+                ) : (
+                  <span>{initials}</span>
+                )}
+              </div>
               <span
                 className={cn(
                   "absolute -bottom-1 -right-1 h-4 w-4 rounded-full border-2 border-[var(--bg-main)]",
@@ -98,16 +117,17 @@ export default function SettingsOverview({ onNavigate }: SettingsOverviewProps) 
                 title={userStatus.presence}
               />
             </div>
-            <div>
-              <div className="flex items-center gap-2">
-                <h2 className="text-lg font-bold text-[var(--text-primary)]">
-                  ETHONE Control Center
+            <div className="min-w-0">
+              <div className="flex flex-wrap items-center gap-2">
+                <h2 className="truncate text-lg font-bold text-[var(--text-primary)]">
+                  {displayName}
                 </h2>
                 <span className="rounded-full bg-[var(--accent-primary)]/15 px-2 py-0.5 text-[10px] font-semibold text-[var(--accent-primary)]">
-                  {CHANGELOG[0]?.version || "v1.24.0"}
+                  ETHONE Control Center · {CHANGELOG[0]?.version || "v1.24.0"}
                 </span>
               </div>
-              <p className="text-xs text-[var(--text-muted)]">
+              <p className="truncate text-xs text-[var(--text-muted)]">
+                {email ? <>{email} · </> : null}
                 Statut : <span className={userStatus.text}>{i18n(userStatus.labelKey, settings.status)}</span> · Mode {settings.sessionMode}
               </p>
             </div>

@@ -28,7 +28,18 @@ export type UnifiedReplyOptions =
       Omit<InteractionEditReplyOptions, 'flags'> &
       Omit<MessageReplyOptions, 'flags'> & {
         ephemeral?: boolean;
+        /** Réponse en Components V2 (ContainerBuilder & co) : pose le flag
+         *  IsComponentsV2 requis par Discord, sur slash comme sur préfixe. */
+        componentsV2?: boolean;
       });
+
+/** Convertit nos options unifiées (ephemeral/componentsV2) en flags Discord. */
+function buildFlags(raw: any, isEphemeral: boolean): number {
+  let flags = Number(raw.flags || 0);
+  if (isEphemeral) flags |= MessageFlags.Ephemeral;
+  if (raw.componentsV2) flags |= MessageFlags.IsComponentsV2;
+  return flags;
+}
 
 export class CommandContext {
   public readonly isSlash: boolean;
@@ -182,10 +193,29 @@ export class CommandContext {
   /**
    * Répond à la commande (Slash ou Message)
    */
+  /** Normalise un UnifiedReplyOptions objet : retire nos clés maison et pose les flags. */
+  private normalizePayload(content: Exclude<UnifiedReplyOptions, string | MessagePayload>, forEdit: boolean): any {
+    const raw = { ...content } as any;
+    const defaultEphemeral = this.guildConfig?.responseVisibility === 'EPHEMERAL';
+    // L'éphémère ne peut pas être changé après coup sur un editReply : on ne
+    // le pose qu'à la création. IsComponentsV2 lui doit être présent aussi à
+    // l'édition, sinon Discord rejette les composants V2.
+    const isEphemeral = !forEdit && (raw.ephemeral !== undefined ? Boolean(raw.ephemeral) : defaultEphemeral);
+    const flags = buildFlags(raw, isEphemeral);
+    delete raw.ephemeral;
+    delete raw.componentsV2;
+    if (flags) raw.flags = flags;
+    else delete raw.flags;
+    return raw;
+  }
+
   public async reply(content: UnifiedReplyOptions): Promise<void> {
     if (this.isSlash && this.interaction) {
       if (this.interaction.deferred || this.interaction.replied) {
-        await this.interaction.editReply(content as string | MessagePayload | InteractionEditReplyOptions);
+        const payload = typeof content === 'string' || content instanceof MessagePayload
+          ? content
+          : this.normalizePayload(content, true);
+        await this.interaction.editReply(payload as string | MessagePayload | InteractionEditReplyOptions);
       } else {
         const defaultEphemeral = this.guildConfig?.responseVisibility === 'EPHEMERAL';
         let payload: any;
@@ -194,22 +224,23 @@ export class CommandContext {
             content,
             ...(defaultEphemeral ? { flags: MessageFlags.Ephemeral } : {}),
           };
+        } else if (content instanceof MessagePayload) {
+          payload = content;
         } else {
-          const raw = { ...content } as any;
-          const isEphemeral = raw.ephemeral !== undefined ? Boolean(raw.ephemeral) : defaultEphemeral;
-          delete raw.ephemeral;
-          payload = {
-            ...raw,
-            ...(isEphemeral ? { flags: (raw.flags || 0) | MessageFlags.Ephemeral } : {}),
-          };
+          payload = this.normalizePayload(content, false);
         }
         await this.interaction.reply(payload as InteractionReplyOptions);
       }
     } else if (this.message) {
+      // Commande préfixe : pas d'éphémère possible, mais IsComponentsV2 doit
+      // quand même être posé pour les réponses en conteneurs.
+      const payload = typeof content === 'string' || content instanceof MessagePayload
+        ? content
+        : this.normalizePayload(content, true);
       if (this.repliedMessage) {
-        await this.repliedMessage.edit(content as string | MessagePayload);
+        await this.repliedMessage.edit(payload as string | MessagePayload);
       } else {
-        this.repliedMessage = await this.message.reply(content as string | MessagePayload | MessageReplyOptions);
+        this.repliedMessage = await this.message.reply(payload as string | MessagePayload | MessageReplyOptions);
       }
     }
   }
@@ -218,12 +249,15 @@ export class CommandContext {
    * Modifie la réponse existante
    */
   public async editReply(content: UnifiedReplyOptions): Promise<void> {
+    const payload = typeof content === 'string' || content instanceof MessagePayload
+      ? content
+      : this.normalizePayload(content, true);
     if (this.isSlash && this.interaction) {
-      await this.interaction.editReply(content as string | MessagePayload | InteractionEditReplyOptions);
+      await this.interaction.editReply(payload as string | MessagePayload | InteractionEditReplyOptions);
     } else if (this.repliedMessage) {
-      await this.repliedMessage.edit(content as string | MessagePayload);
+      await this.repliedMessage.edit(payload as string | MessagePayload);
     } else if (this.message) {
-      this.repliedMessage = await this.message.reply(content as string | MessagePayload | MessageReplyOptions);
+      this.repliedMessage = await this.message.reply(payload as string | MessagePayload | MessageReplyOptions);
     }
   }
 

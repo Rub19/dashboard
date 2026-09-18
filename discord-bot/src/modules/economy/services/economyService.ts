@@ -5,7 +5,7 @@ import { logger } from '../../../utils/logger.js';
 type UserRef = { id: string; username: string; avatarUrl?: string | null };
 
 export type DailyClaimResult =
-  | { ok: true; amount: number; balance: number }
+  | { ok: true; amount: number; streak: number; streakBonus: number; balance: number }
   | { ok: false; reason: 'disabled' | 'cooldown'; remainingMs?: number };
 
 export type TransferResult =
@@ -20,6 +20,33 @@ export type PurchaseResult =
   | { ok: true; item: { label: string; price: number }; balance: number }
   | { ok: false; reason: 'not_found' | 'insufficient_funds' | 'already_owned' | 'role_unavailable' };
 
+export type WorkResult =
+  | { ok: true; amount: number; job: string; balance: number }
+  | { ok: false; reason: 'disabled' | 'cooldown'; remainingMs?: number };
+
+export type RobResult =
+  | { ok: true; success: true; amount: number; balance: number }
+  | { ok: true; success: false; fine: number; balance: number }
+  | { ok: false; reason: 'disabled' | 'cooldown' | 'self' | 'target_too_poor' | 'no_funds'; remainingMs?: number };
+
+// Petits boulots de /work : purement cosmétique, le montant vient de la config.
+const WORK_JOBS = [
+  'livreur de pizzas 🍕',
+  'modérateur de nuit 🌙',
+  'développeur freelance 💻',
+  'barista 🎧',
+  'chasseur de bugs 🐛',
+  'DJ de la soirée 🎶',
+  'jardinier du serveur 🌱',
+  'streamer du dimanche 🎥',
+];
+
+function remaining(lastIso: string | null, cooldownMs: number): number {
+  if (!lastIso) return 0;
+  const elapsed = Date.now() - new Date(lastIso).getTime();
+  return elapsed >= cooldownMs ? 0 : cooldownMs - elapsed;
+}
+
 class EconomyService {
   public claimDaily(guildId: string, user: UserRef): DailyClaimResult {
     const config = economyStorage.getConfig(guildId);
@@ -27,25 +54,101 @@ class EconomyService {
 
     const wallet = economyStorage.getWallet(guildId, user.id, { username: user.username, avatarUrl: user.avatarUrl });
     const cooldownMs = config.dailyCooldownHours * 60 * 60 * 1000;
+    const left = remaining(wallet.lastDailyClaimAt, cooldownMs);
+    if (left > 0) return { ok: false, reason: 'cooldown', remainingMs: left };
+
+    // Série : conservée si la réclamation arrive avant 2x le cooldown (un jour
+    // sauté = série perdue), sinon repart de 1.
+    let streak = 1;
     if (wallet.lastDailyClaimAt) {
       const elapsed = Date.now() - new Date(wallet.lastDailyClaimAt).getTime();
-      if (elapsed < cooldownMs) {
-        return { ok: false, reason: 'cooldown', remainingMs: cooldownMs - elapsed };
-      }
+      if (elapsed < cooldownMs * 2) streak = wallet.dailyStreak + 1;
     }
+    const streakBonus = Math.min(config.dailyStreakMaxBonus, (streak - 1) * config.dailyStreakBonus);
+    const base = Math.floor(config.dailyAmountMin + Math.random() * (config.dailyAmountMax - config.dailyAmountMin));
+    const amount = base + streakBonus;
 
-    const amount = Math.floor(config.dailyAmountMin + Math.random() * (config.dailyAmountMax - config.dailyAmountMin));
     // lastDailyClaimAt is set BEFORE the balance write completes below, both
     // synchronously with no await between them — a rapid double-click can't
     // slip through a gap where the cooldown hasn't landed yet.
-    economyStorage.setLastDailyClaim(guildId, user.id, new Date().toISOString());
+    economyStorage.updateWalletFields(guildId, user.id, { lastDailyClaimAt: new Date().toISOString(), dailyStreak: streak });
     const updated = economyStorage.applyDelta(guildId, user.id, amount, {
       username: user.username,
       avatarUrl: user.avatarUrl,
       trackEarned: true,
     });
+    economyStorage.recordTransaction(guildId, user.id, 'daily', amount, updated.balance, {
+      note: streak > 1 ? `Série de ${streak} jours (+${streakBonus})` : null,
+    });
 
-    return { ok: true, amount, balance: updated.balance };
+    return { ok: true, amount, streak, streakBonus, balance: updated.balance };
+  }
+
+  /** Gain passif par message (appelé depuis messageCreate). Renvoie le montant crédité, 0 si rien. */
+  public earnPassive(guildId: string, user: UserRef, messageLength: number): number {
+    const config = economyStorage.getConfig(guildId);
+    if (!config.enabled || !config.passiveEarnEnabled) return 0;
+    if (messageLength < config.passiveEarnMinMessageLength) return 0;
+
+    const wallet = economyStorage.getWallet(guildId, user.id, { username: user.username, avatarUrl: user.avatarUrl });
+    if (remaining(wallet.lastPassiveEarnAt, config.passiveEarnCooldownSeconds * 1000) > 0) return 0;
+
+    const amount = Math.floor(config.passiveEarnMin + Math.random() * (config.passiveEarnMax - config.passiveEarnMin + 1));
+    if (amount <= 0) return 0;
+
+    economyStorage.updateWalletFields(guildId, user.id, { lastPassiveEarnAt: new Date().toISOString() });
+    const updated = economyStorage.applyDelta(guildId, user.id, amount, { username: user.username, avatarUrl: user.avatarUrl, trackEarned: true });
+    // Pas de ligne de transaction par message : ça noierait l'historique. Le
+    // total passif reste visible via totalEarned.
+    return updated.balance >= 0 ? amount : 0;
+  }
+
+  public work(guildId: string, user: UserRef): WorkResult {
+    const config = economyStorage.getConfig(guildId);
+    if (!config.enabled || !config.workEnabled) return { ok: false, reason: 'disabled' };
+
+    const wallet = economyStorage.getWallet(guildId, user.id, { username: user.username, avatarUrl: user.avatarUrl });
+    const left = remaining(wallet.lastWorkAt, config.workCooldownMinutes * 60 * 1000);
+    if (left > 0) return { ok: false, reason: 'cooldown', remainingMs: left };
+
+    const amount = Math.floor(config.workAmountMin + Math.random() * (config.workAmountMax - config.workAmountMin + 1));
+    const job = WORK_JOBS[Math.floor(Math.random() * WORK_JOBS.length)];
+    economyStorage.updateWalletFields(guildId, user.id, { lastWorkAt: new Date().toISOString() });
+    const updated = economyStorage.applyDelta(guildId, user.id, amount, { username: user.username, avatarUrl: user.avatarUrl, trackEarned: true });
+    economyStorage.recordTransaction(guildId, user.id, 'work', amount, updated.balance, { note: job });
+    return { ok: true, amount, job, balance: updated.balance };
+  }
+
+  public rob(guildId: string, thief: UserRef, target: UserRef): RobResult {
+    const config = economyStorage.getConfig(guildId);
+    if (!config.enabled || !config.robEnabled) return { ok: false, reason: 'disabled' };
+    if (thief.id === target.id) return { ok: false, reason: 'self' };
+
+    const thiefWallet = economyStorage.getWallet(guildId, thief.id, { username: thief.username, avatarUrl: thief.avatarUrl });
+    const left = remaining(thiefWallet.lastRobAt, config.robCooldownMinutes * 60 * 1000);
+    if (left > 0) return { ok: false, reason: 'cooldown', remainingMs: left };
+
+    const targetWallet = economyStorage.getWallet(guildId, target.id, { username: target.username, avatarUrl: target.avatarUrl });
+    if (targetWallet.balance < config.robMinTargetBalance) return { ok: false, reason: 'target_too_poor' };
+    if (thiefWallet.balance <= 0) return { ok: false, reason: 'no_funds' };
+
+    economyStorage.updateWalletFields(guildId, thief.id, { lastRobAt: new Date().toISOString() });
+
+    if (Math.random() < config.robSuccessRate) {
+      const maxSteal = Math.floor(targetWallet.balance * (config.robMaxStealPercent / 100));
+      const amount = Math.max(1, Math.floor(maxSteal * (0.5 + Math.random() * 0.5)));
+      // Débit + crédit dans le même bloc synchrone (même garantie que /pay).
+      const victim = economyStorage.applyDelta(guildId, target.id, -amount, { trackSpent: false });
+      const gained = economyStorage.applyDelta(guildId, thief.id, amount, { trackEarned: true });
+      economyStorage.recordTransaction(guildId, thief.id, 'rob_gain', amount, gained.balance, { counterpartyId: target.id });
+      economyStorage.recordTransaction(guildId, target.id, 'rob_loss', -amount, victim.balance, { counterpartyId: thief.id });
+      return { ok: true, success: true, amount, balance: gained.balance };
+    }
+
+    const fine = Math.max(1, Math.floor(thiefWallet.balance * (config.robFailPenaltyPercent / 100)));
+    const fined = economyStorage.applyDelta(guildId, thief.id, -fine, { trackSpent: true });
+    economyStorage.recordTransaction(guildId, thief.id, 'rob_fine', -fine, fined.balance, { counterpartyId: target.id, note: 'Tentative de vol ratée' });
+    return { ok: true, success: false, fine, balance: fined.balance };
   }
 
   public transfer(guildId: string, from: UserRef, to: UserRef, amount: number): TransferResult {
@@ -66,6 +169,8 @@ class EconomyService {
       avatarUrl: to.avatarUrl,
       trackEarned: true,
     });
+    economyStorage.recordTransaction(guildId, from.id, 'transfer_out', -amount, debited.balance, { counterpartyId: to.id });
+    economyStorage.recordTransaction(guildId, to.id, 'transfer_in', amount, credited.balance, { counterpartyId: from.id });
 
     return { ok: true, fromBalance: debited.balance, toBalance: credited.balance };
   }
@@ -86,6 +191,7 @@ class EconomyService {
       trackEarned: won,
       trackSpent: !won,
     });
+    economyStorage.recordTransaction(guildId, user.id, won ? 'gamble_win' : 'gamble_loss', delta, updated.balance, { note: `Mise ${clampedBet}` });
 
     return { ok: true, won, amount: clampedBet, payout: won ? delta : 0, balance: updated.balance };
   }
@@ -119,6 +225,7 @@ class EconomyService {
     }
 
     const updated = economyStorage.applyDelta(guildId, member.id, -item.price, { trackSpent: true });
+    economyStorage.recordTransaction(guildId, member.id, 'purchase', -item.price, updated.balance, { note: item.label });
     return { ok: true, item: { label: item.label, price: item.price }, balance: updated.balance };
   }
 }

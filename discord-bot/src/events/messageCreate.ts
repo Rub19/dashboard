@@ -6,6 +6,7 @@ import { cooldownService } from '../services/cooldownService.js';
 import { CommandContext } from '../types/command.js';
 import { autoModService } from '../modules/automod/services/autoModService.js';
 import { levelingService } from '../modules/leveling/services/levelingService.js';
+import { economyService } from '../modules/economy/services/economyService.js';
 import { analyticsService } from '../modules/analytics/services/analyticsService.js';
 import { customCommandStorage } from '../modules/customCommands/storage/customCommandStorage.js';
 import { CustomCommandService } from '../modules/customCommands/services/customCommandService.js';
@@ -95,6 +96,20 @@ export async function onMessageCreate(message: Message) {
     await levelingService.handleMessage(message);
   } catch (err) {
     logger.error('[messageCreate] levelingService.handleMessage a échoué :', err);
+  }
+
+  // 2b. Gain passif d'économie (même principe que l'XP : cooldown par membre,
+  // longueur minimale, pas de bots) — silencieux, pas de message envoyé.
+  if (message.guild && !message.author.bot) {
+    try {
+      economyService.earnPassive(
+        message.guild.id,
+        { id: message.author.id, username: message.author.username, avatarUrl: message.author.displayAvatarURL() },
+        message.content.trim().length
+      );
+    } catch (err) {
+      logger.error('[messageCreate] economyService.earnPassive a échoué :', err);
+    }
   }
 
   // 3. Enregistrement Analytics

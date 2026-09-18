@@ -2,6 +2,7 @@ import { SlashCommandBuilder } from 'discord.js';
 import { Command, CommandContext } from '../../../types/command.js';
 import { levelingStorage } from '../storage/levelingStorage.js';
 import { formatString, getTranslation } from '../../../utils/i18n.js';
+import { container, separator, text, footer, progressBar, toneToColor } from '../../../utils/components.js';
 
 export const leaderboardCommand: Command = {
   name: 'leaderboard',
@@ -36,21 +37,23 @@ export const leaderboardCommand: Command = {
     }
 
     const medals = ['🥇', '🥈', '🥉'];
-
     const lines = topUsers.map((user, idx) => {
       const medal = medals[idx] || `**#${idx + 1}**`;
-      return formatString(t.leveling_leaderboard_line, { medal, userId: user.userId, level: user.level, xp: user.totalXp.toLocaleString() });
+      const bar = progressBar(user.progressPercentage, 8);
+      return `${medal} <@${user.userId}> — **${t.leveling_field_level} ${user.level}** · ${user.totalXp.toLocaleString('fr-FR')} XP\n\`${bar}\` ${user.progressPercentage}%`;
     });
 
-    // Ton "warning" = ambre doré, couleur de marque du module Niveaux (cf. catégorie
-    // "leveling" dans helpPanel.ts) — pas un vrai avertissement, juste le ton le plus
-    // proche de l'accent ambré déjà établi pour ce module.
-    const embed = ctx
-      .createEmbed('warning')
-      .setTitle(formatString(t.leveling_leaderboard_title, { guildName: guild.name }))
-      .setDescription(lines.join('\n\n'))
-      .setFooter({ text: t.leveling_leaderboard_footer });
+    // Podium + barres de progression par membre, en Components V2 — même
+    // accent ambré que le module Niveaux.
+    const card = container(toneToColor('warning'), [
+      text(`## 🏆 ${formatString(t.leveling_leaderboard_title, { guildName: guild.name })}`),
+      separator(),
+      text(lines.slice(0, 3).join('\n\n')),
+      ...(lines.length > 3 ? [separator(false), text(lines.slice(3).join('\n\n'))] : []),
+      separator(false),
+      footer(t.leveling_leaderboard_footer),
+    ]);
 
-    await ctx.reply({ embeds: [embed] });
+    await ctx.reply({ components: [card], componentsV2: true });
   },
 };

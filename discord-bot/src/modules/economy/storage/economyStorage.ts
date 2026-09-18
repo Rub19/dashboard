@@ -1,9 +1,13 @@
 import fs from 'fs';
 import path from 'path';
 import { EconomyConfig, EconomyConfigSchema } from '../types/economyConfig.js';
-import { Wallet, WalletSchema, EconomyLeaderboardEntry } from '../types/wallet.js';
+import { Wallet, WalletSchema, EconomyLeaderboardEntry, Transaction, TransactionSchema, TransactionType } from '../types/wallet.js';
 import { ShopItem, ShopItemSchema } from '../types/shopItem.js';
 import { logger } from '../../../utils/logger.js';
+
+// Historique borné par serveur : assez pour le dashboard et les audits
+// récents, sans faire grossir le JSON indéfiniment.
+const MAX_TRANSACTIONS_PER_GUILD = 500;
 
 // Synchronous write-on-mutation (unlike leveling's xpWriteBuffer), on purpose:
 // balance changes here come from discrete, cooldown-gated, user-initiated
@@ -23,6 +27,8 @@ class EconomyStorage {
   // to go out of sync).
   private wallets = new Map<string, Wallet>();
   private shopItems = new Map<string, ShopItem[]>(); // guildId -> items
+  private transactionsPath = path.resolve(process.cwd(), 'data', 'economy_transactions.json');
+  private transactions = new Map<string, Transaction[]>(); // guildId -> newest first
 
   constructor() {
     this.ensureDirectory();
@@ -70,6 +76,31 @@ class EconomyStorage {
       }
     } catch (err) {
       logger.error('Erreur chargement economy_shop.json :', err);
+    }
+
+    try {
+      if (fs.existsSync(this.transactionsPath)) {
+        const parsed = JSON.parse(fs.readFileSync(this.transactionsPath, 'utf-8'));
+        for (const [gid, list] of Object.entries(parsed)) {
+          const valid: Transaction[] = [];
+          for (const raw of list as unknown[]) {
+            const res = TransactionSchema.safeParse(raw);
+            if (res.success) valid.push(res.data);
+          }
+          this.transactions.set(gid, valid.slice(0, MAX_TRANSACTIONS_PER_GUILD));
+        }
+      }
+    } catch (err) {
+      logger.error('Erreur chargement economy_transactions.json :', err);
+    }
+  }
+
+  private saveTransactions() {
+    try {
+      const obj = Object.fromEntries(this.transactions.entries());
+      fs.writeFileSync(this.transactionsPath, JSON.stringify(obj, null, 2), 'utf-8');
+    } catch (err) {
+      logger.error('Erreur sauvegarde economy_transactions.json :', err);
     }
   }
 
@@ -174,6 +205,62 @@ class EconomyStorage {
     wallet.lastDailyClaimAt = iso;
     this.wallets.set(this.walletKey(guildId, userId), wallet);
     this.saveWallets();
+  }
+
+  /** Met à jour des champs de suivi (séries, horodatages de cooldown) sans toucher au solde. */
+  public updateWalletFields(guildId: string, userId: string, fields: Partial<Pick<Wallet, 'dailyStreak' | 'lastDailyClaimAt' | 'lastPassiveEarnAt' | 'lastWorkAt' | 'lastRobAt'>>): Wallet {
+    const wallet = this.getWallet(guildId, userId);
+    Object.assign(wallet, fields);
+    this.wallets.set(this.walletKey(guildId, userId), wallet);
+    this.saveWallets();
+    return wallet;
+  }
+
+  // ==========================================
+  // Transactions (historique)
+  // ==========================================
+  public recordTransaction(
+    guildId: string,
+    userId: string,
+    type: TransactionType,
+    amount: number,
+    balanceAfter: number,
+    extra?: { counterpartyId?: string | null; note?: string | null }
+  ): Transaction {
+    const tx = TransactionSchema.parse({
+      id: `tx_${Date.now().toString(36)}_${Math.random().toString(36).slice(2, 8)}`,
+      guildId,
+      userId,
+      type,
+      amount,
+      balanceAfter: Math.max(0, balanceAfter),
+      counterpartyId: extra?.counterpartyId ?? null,
+      note: extra?.note ?? null,
+      createdAt: new Date().toISOString(),
+    });
+    const list = this.transactions.get(guildId) || [];
+    list.unshift(tx);
+    if (list.length > MAX_TRANSACTIONS_PER_GUILD) list.length = MAX_TRANSACTIONS_PER_GUILD;
+    this.transactions.set(guildId, list);
+    this.saveTransactions();
+    return tx;
+  }
+
+  public getTransactions(guildId: string, limit = 50, userId?: string): Transaction[] {
+    const list = this.transactions.get(guildId) || [];
+    const filtered = userId ? list.filter((t) => t.userId === userId || t.counterpartyId === userId) : list;
+    return filtered.slice(0, limit);
+  }
+
+  /** Volume total échangé sur 24h et nombre de mouvements — pour l'aperçu dashboard. */
+  public getActivitySummary(guildId: string): { transactions24h: number; volume24h: number; totalCirculating: number } {
+    const cutoff = Date.now() - 24 * 60 * 60 * 1000;
+    const recent = (this.transactions.get(guildId) || []).filter((t) => new Date(t.createdAt).getTime() >= cutoff);
+    const volume24h = recent.reduce((sum, t) => sum + Math.abs(t.amount), 0);
+    const totalCirculating = Array.from(this.wallets.values())
+      .filter((w) => w.guildId === guildId)
+      .reduce((sum, w) => sum + w.balance, 0);
+    return { transactions24h: recent.length, volume24h, totalCirculating };
   }
 
   public getLeaderboard(guildId: string, limit = 10): EconomyLeaderboardEntry[] {

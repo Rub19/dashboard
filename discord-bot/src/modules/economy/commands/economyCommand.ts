@@ -1,13 +1,14 @@
 import {
+  ButtonBuilder,
+  ButtonStyle,
   ChatInputCommandInteraction,
-  EmbedBuilder,
   SlashCommandBuilder,
 } from 'discord.js';
 import { Command, CommandContext } from '../../../types/command.js';
 import { economyStorage } from '../storage/economyStorage.js';
 import { economyService } from '../services/economyService.js';
 import { cooldownService } from '../../../services/cooldownService.js';
-import { BRAND_COLORS } from '../../../utils/embeds.js';
+import { buttonRow, container, footer, sectionWithThumbnail, separator, text, toneToColor } from '../../../utils/components.js';
 
 // /pay gets its own small fixed cooldown independent of the guild's
 // admin-configurable commandCooldown (which defaults to disabled) — this one
@@ -18,9 +19,25 @@ function fmt(amount: number, symbol: string): string {
   return `${amount.toLocaleString('fr-FR')} ${symbol}`;
 }
 
+function humanDuration(ms: number): string {
+  const totalMin = Math.ceil(ms / 60000);
+  if (totalMin < 60) return `${totalMin} min`;
+  const h = Math.floor(totalMin / 60);
+  const m = totalMin % 60;
+  return m > 0 ? `${h}h${String(m).padStart(2, '0')}` : `${h}h`;
+}
+
+const QUICK_ROW = () =>
+  buttonRow(
+    new ButtonBuilder().setCustomId('eco_btn_daily').setLabel('Quotidien').setEmoji('🎁').setStyle(ButtonStyle.Success),
+    new ButtonBuilder().setCustomId('eco_btn_work').setLabel('Travailler').setEmoji('💼').setStyle(ButtonStyle.Primary),
+    new ButtonBuilder().setCustomId('eco_btn_leaderboard').setLabel('Classement').setEmoji('🏆').setStyle(ButtonStyle.Secondary),
+    new ButtonBuilder().setCustomId('eco_btn_shop').setLabel('Boutique').setEmoji('🛍️').setStyle(ButtonStyle.Secondary)
+  );
+
 export const economyCommand: Command = {
   name: 'economy',
-  description: 'Économie du serveur : solde, quotidien, transfert, classement, pari, boutique',
+  description: 'Économie du serveur : solde, quotidien, travail, vol, transfert, classement, pari, boutique',
   category: 'Général',
   aliases: ['eco'],
   slashData: new SlashCommandBuilder()
@@ -32,7 +49,14 @@ export const economyCommand: Command = {
         .setDescription('Affiche votre solde (ou celui d’un membre)')
         .addUserOption((opt) => opt.setName('membre').setDescription('Membre à consulter').setRequired(false))
     )
-    .addSubcommand((sub) => sub.setName('daily').setDescription('Réclame votre bonus quotidien'))
+    .addSubcommand((sub) => sub.setName('daily').setDescription('Réclame votre bonus quotidien (série = bonus)'))
+    .addSubcommand((sub) => sub.setName('work').setDescription('Fais un petit boulot pour gagner des crédits'))
+    .addSubcommand((sub) =>
+      sub
+        .setName('rob')
+        .setDescription('Tente de voler un membre (risqué : amende en cas d’échec)')
+        .addUserOption((opt) => opt.setName('membre').setDescription('Cible').setRequired(true))
+    )
     .addSubcommand((sub) =>
       sub
         .setName('pay')
@@ -65,6 +89,8 @@ export const economyCommand: Command = {
     const config = economyStorage.getConfig(guildId);
     const interaction = ctx.interaction as ChatInputCommandInteraction;
     const sub = ctx.isSlash ? interaction.options.getSubcommand() : (ctx.args[0]?.toLowerCase() || 'balance');
+    const sym = config.currencySymbol;
+    const me = { id: ctx.author.id, username: ctx.author.username, avatarUrl: ctx.author.displayAvatarURL() };
 
     if (!config.enabled && sub !== 'shop') {
       await ctx.reply({ embeds: [ctx.createEmbed('neutral').setDescription('⚪ L’économie est désactivée sur ce serveur.')], ephemeral: true });
@@ -75,34 +101,96 @@ export const economyCommand: Command = {
       const targetUser = ctx.isSlash ? interaction.options.getUser('membre') : null;
       const target = targetUser || ctx.author;
       const wallet = economyStorage.getWallet(guildId, target.id, { username: target.username, avatarUrl: target.displayAvatarURL() });
-      await ctx.reply({
-        embeds: [
-          ctx.createEmbed('info')
-            .setAuthor({ name: target.username, iconURL: target.displayAvatarURL() })
-            .setDescription(`💰 Solde : **${fmt(wallet.balance, config.currencySymbol)}**`),
-        ],
-      });
+      const rank = economyStorage.getLeaderboard(guildId, 1000).findIndex((w) => w.userId === target.id) + 1;
+      const card = container(toneToColor('info', ctx.guildConfig.infoColor), [
+        sectionWithThumbnail(
+          [
+            `## 💰 ${target.username}`,
+            `**Solde** ${fmt(wallet.balance, sym)}${rank > 0 ? `   ·   **Rang** #${rank}` : ''}`,
+            `**Gagné** ${fmt(wallet.totalEarned, sym)}   ·   **Dépensé** ${fmt(wallet.totalSpent, sym)}${wallet.dailyStreak > 1 ? `   ·   🔥 Série ${wallet.dailyStreak} j` : ''}`,
+          ],
+          target.displayAvatarURL({ size: 256 }),
+          target.username
+        ),
+        separator(false),
+        QUICK_ROW(),
+        footer(`${config.currencyName} • ${ctx.guildConfig.botName}`),
+      ]);
+      await ctx.reply({ components: [card], componentsV2: true });
       return;
     }
 
     if (sub === 'daily') {
-      const result = economyService.claimDaily(guildId, { id: ctx.author.id, username: ctx.author.username, avatarUrl: ctx.author.displayAvatarURL() });
+      const result = economyService.claimDaily(guildId, me);
       if (!result.ok) {
         if (result.reason === 'cooldown') {
-          const hours = Math.ceil((result.remainingMs || 0) / 3600000);
-          await ctx.reply({ embeds: [ctx.createEmbed('warning').setDescription(`⏳ Vous avez déjà réclamé votre bonus. Revenez dans environ **${hours}h**.`)], ephemeral: true });
+          await ctx.reply({ embeds: [ctx.createEmbed('warning').setDescription(`⏳ Vous avez déjà réclamé votre bonus. Revenez dans environ **${humanDuration(result.remainingMs || 0)}**.`)], ephemeral: true });
         } else {
           await ctx.reply({ embeds: [ctx.createEmbed('neutral').setDescription('⚪ L’économie est désactivée sur ce serveur.')], ephemeral: true });
         }
         return;
       }
-      await ctx.reply({
-        embeds: [
-          ctx.createEmbed('success').setDescription(
-            `🎁 Vous avez réclamé **${fmt(result.amount, config.currencySymbol)}** !\nNouveau solde : **${fmt(result.balance, config.currencySymbol)}**`
-          ),
-        ],
-      });
+      const card = container(toneToColor('success', ctx.guildConfig.successColor), [
+        text(`## 🎁 Bonus quotidien réclamé !`),
+        text(`**+${fmt(result.amount, sym)}**${result.streakBonus > 0 ? ` (dont 🔥 série ${result.streak} j : +${fmt(result.streakBonus, sym)})` : ''}\nNouveau solde : **${fmt(result.balance, sym)}**`),
+        separator(false),
+        footer(result.streak > 1 ? `Reviens demain pour garder ta série de ${result.streak} jours` : 'Reviens demain pour démarrer une série et gagner des bonus'),
+      ]);
+      await ctx.reply({ components: [card], componentsV2: true });
+      return;
+    }
+
+    if (sub === 'work') {
+      const result = economyService.work(guildId, me);
+      if (!result.ok) {
+        if (result.reason === 'cooldown') {
+          await ctx.reply({ embeds: [ctx.createEmbed('warning').setDescription(`⏳ Tu as déjà travaillé récemment. Prochain boulot dans **${humanDuration(result.remainingMs || 0)}**.`)], ephemeral: true });
+        } else {
+          await ctx.reply({ embeds: [ctx.createEmbed('neutral').setDescription('⚪ Le travail est désactivé sur ce serveur.')], ephemeral: true });
+        }
+        return;
+      }
+      const card = container(toneToColor('primary', ctx.guildConfig.primaryColor), [
+        text(`## 💼 Petit boulot : ${result.job}`),
+        text(`Tu as gagné **${fmt(result.amount, sym)}**.\nNouveau solde : **${fmt(result.balance, sym)}**`),
+        separator(false),
+        footer(`Prochain boulot possible dans ${config.workCooldownMinutes} min`),
+      ]);
+      await ctx.reply({ components: [card], componentsV2: true });
+      return;
+    }
+
+    if (sub === 'rob') {
+      const targetUser = interaction.options.getUser('membre', true);
+      const result = economyService.rob(guildId, me, { id: targetUser.id, username: targetUser.username, avatarUrl: targetUser.displayAvatarURL() });
+      if (!result.ok) {
+        const messages: Record<string, string> = {
+          disabled: '⚪ Le vol est désactivé sur ce serveur.',
+          self: '❌ Tu ne peux pas te voler toi-même.',
+          target_too_poor: `❌ Cette cible n’a pas assez de crédits (minimum ${fmt(config.robMinTargetBalance, sym)}).`,
+          no_funds: '❌ Il te faut au moins quelques crédits pour tenter un vol (l’amende doit pouvoir tomber).',
+          cooldown: `⏳ Tu as déjà tenté un vol récemment. Réessaie dans **${humanDuration(result.remainingMs || 0)}**.`,
+        };
+        await ctx.reply({ embeds: [ctx.createEmbed('error').setDescription(messages[result.reason])], ephemeral: true });
+        return;
+      }
+      if (result.success) {
+        const card = container(toneToColor('success', ctx.guildConfig.successColor), [
+          text(`## 🕵️ Vol réussi !`),
+          text(`Tu as dérobé **${fmt(result.amount, sym)}** à ${targetUser}.\nNouveau solde : **${fmt(result.balance, sym)}**`),
+          separator(false),
+          footer(`Taux de réussite : ${Math.round(config.robSuccessRate * 100)}% · prochain essai dans ${humanDuration(config.robCooldownMinutes * 60000)}`),
+        ]);
+        await ctx.reply({ components: [card], componentsV2: true });
+      } else {
+        const card = container(toneToColor('error', ctx.guildConfig.errorColor), [
+          text(`## 🚔 Pris la main dans le sac !`),
+          text(`${targetUser} t’a repéré. Amende : **-${fmt(result.fine, sym)}**.\nNouveau solde : **${fmt(result.balance, sym)}**`),
+          separator(false),
+          footer(`Prochain essai dans ${humanDuration(config.robCooldownMinutes * 60000)}`),
+        ]);
+        await ctx.reply({ components: [card], componentsV2: true });
+      }
       return;
     }
 
@@ -115,12 +203,7 @@ export const economyCommand: Command = {
 
       const targetUser = interaction.options.getUser('membre', true);
       const amount = interaction.options.getInteger('montant', true);
-      const result = economyService.transfer(
-        guildId,
-        { id: ctx.author.id, username: ctx.author.username, avatarUrl: ctx.author.displayAvatarURL() },
-        { id: targetUser.id, username: targetUser.username, avatarUrl: targetUser.displayAvatarURL() },
-        amount
-      );
+      const result = economyService.transfer(guildId, me, { id: targetUser.id, username: targetUser.username, avatarUrl: targetUser.displayAvatarURL() }, amount);
 
       const messages: Record<string, string> = {
         disabled: '⚪ Les transferts sont désactivés sur ce serveur.',
@@ -132,13 +215,11 @@ export const economyCommand: Command = {
         await ctx.reply({ embeds: [ctx.createEmbed('error').setDescription(messages[result.reason])], ephemeral: true });
         return;
       }
-      await ctx.reply({
-        embeds: [
-          ctx.createEmbed('success').setDescription(
-            `💸 **${fmt(amount, config.currencySymbol)}** transférés à ${targetUser}.\nVotre nouveau solde : **${fmt(result.fromBalance, config.currencySymbol)}**`
-          ),
-        ],
-      });
+      const card = container(toneToColor('success', ctx.guildConfig.successColor), [
+        text(`## 💸 Transfert effectué`),
+        text(`**${fmt(amount, sym)}** envoyés à ${targetUser}.\nVotre nouveau solde : **${fmt(result.fromBalance, sym)}**`),
+      ]);
+      await ctx.reply({ components: [card], componentsV2: true });
       return;
     }
 
@@ -149,39 +230,42 @@ export const economyCommand: Command = {
         return;
       }
       const medals = ['🥇', '🥈', '🥉'];
-      const lines = entries.map((e, i) => `${medals[i] || `**${e.rank}.**`} <@${e.userId}> — ${fmt(e.balance, config.currencySymbol)}`);
-      await ctx.reply({
-        embeds: [
-          new EmbedBuilder()
-            .setColor(BRAND_COLORS.success)
-            .setTitle(`🏆 Classement — ${config.currencyName}`)
-            .setDescription(lines.join('\n'))
-            .setTimestamp(),
-        ],
-      });
+      const lines = entries.map((e, i) => `${medals[i] || `**${e.rank}.**`} <@${e.userId}> — **${fmt(e.balance, sym)}**`);
+      const activity = economyStorage.getActivitySummary(guildId);
+      const card = container(toneToColor('success', ctx.guildConfig.successColor), [
+        text(`## 🏆 Classement — ${config.currencyName}`),
+        separator(),
+        text(lines.slice(0, 3).join('\n')),
+        ...(lines.length > 3 ? [separator(false), text(lines.slice(3).join('\n'))] : []),
+        separator(),
+        footer(`${fmt(activity.totalCirculating, sym)} en circulation · ${activity.transactions24h} mouvements sur 24h`),
+      ]);
+      await ctx.reply({ components: [card], componentsV2: true });
       return;
     }
 
     if (sub === 'gamble') {
       const bet = interaction.options.getInteger('mise', true);
-      const result = economyService.gamble(guildId, { id: ctx.author.id, username: ctx.author.username, avatarUrl: ctx.author.displayAvatarURL() }, bet);
+      const result = economyService.gamble(guildId, me, bet);
       if (!result.ok) {
         const messages: Record<string, string> = {
-          invalid_bet: `❌ La mise doit être d’au moins ${fmt(config.gambleMinBet, config.currencySymbol)}.`,
+          invalid_bet: `❌ La mise doit être d’au moins ${fmt(config.gambleMinBet, sym)}.`,
           insufficient_funds: '❌ Solde insuffisant pour cette mise.',
         };
         await ctx.reply({ embeds: [ctx.createEmbed('error').setDescription(messages[result.reason])], ephemeral: true });
         return;
       }
-      await ctx.reply({
-        embeds: [
-          ctx.createEmbed(result.won ? 'success' : 'error').setDescription(
-            result.won
-              ? `🪙 Pile ou face... **Gagné !** +${fmt(result.payout, config.currencySymbol)}\nNouveau solde : **${fmt(result.balance, config.currencySymbol)}**`
-              : `🪙 Pile ou face... **Perdu.** -${fmt(result.amount, config.currencySymbol)}\nNouveau solde : **${fmt(result.balance, config.currencySymbol)}**`
-          ),
-        ],
-      });
+      const card = container(toneToColor(result.won ? 'success' : 'error', result.won ? ctx.guildConfig.successColor : ctx.guildConfig.errorColor), [
+        text(result.won ? `## 🪙 Pile ou face… **Gagné !**` : `## 🪙 Pile ou face… **Perdu.**`),
+        text(
+          result.won
+            ? `**+${fmt(result.payout, sym)}** (mise ${fmt(result.amount, sym)})\nNouveau solde : **${fmt(result.balance, sym)}**`
+            : `**-${fmt(result.amount, sym)}**\nNouveau solde : **${fmt(result.balance, sym)}**`
+        ),
+        separator(false),
+        buttonRow(new ButtonBuilder().setCustomId(`eco_btn_gamble_${result.amount}`).setLabel('Rejouer la même mise').setEmoji('🎲').setStyle(ButtonStyle.Secondary)),
+      ]);
+      await ctx.reply({ components: [card], componentsV2: true });
       return;
     }
 
@@ -191,16 +275,20 @@ export const economyCommand: Command = {
         await ctx.reply({ embeds: [ctx.createEmbed('info').setDescription('La boutique est vide pour le moment.')] });
         return;
       }
-      const lines = items.map((i) => `**${i.label}** — ${fmt(i.price, config.currencySymbol)}\n\`${i.id}\` · ${i.description || 'Rôle exclusif'}`);
-      await ctx.reply({
-        embeds: [
-          new EmbedBuilder()
-            .setColor(BRAND_COLORS.info)
-            .setTitle('🛍️ Boutique')
-            .setDescription(lines.join('\n\n'))
-            .setFooter({ text: 'Achetez avec /economy buy id:<identifiant>' }),
-        ],
+      const wallet = economyStorage.getWallet(guildId, ctx.author.id, me);
+      const lines = items.map((i) => {
+        const affordable = wallet.balance >= i.price;
+        return `${affordable ? '🟢' : '🔴'} **${i.label}** — ${fmt(i.price, sym)}\n-# \`${i.id}\` · ${i.description || 'Rôle exclusif'}`;
       });
+      const card = container(toneToColor('info', ctx.guildConfig.infoColor), [
+        text(`## 🛍️ Boutique`),
+        text(`Ton solde : **${fmt(wallet.balance, sym)}**`),
+        separator(),
+        text(lines.join('\n\n')),
+        separator(false),
+        footer('Achète avec /economy buy id:<identifiant> · 🟢 = dans tes moyens'),
+      ]);
+      await ctx.reply({ components: [card], componentsV2: true });
       return;
     }
 
@@ -217,13 +305,11 @@ export const economyCommand: Command = {
         await ctx.reply({ embeds: [ctx.createEmbed('error').setDescription(messages[result.reason])], ephemeral: true });
         return;
       }
-      await ctx.reply({
-        embeds: [
-          ctx.createEmbed('success').setDescription(
-            `✅ Achat réussi : **${result.item.label}** (-${fmt(result.item.price, config.currencySymbol)})\nNouveau solde : **${fmt(result.balance, config.currencySymbol)}**`
-          ),
-        ],
-      });
+      const card = container(toneToColor('success', ctx.guildConfig.successColor), [
+        text(`## ✅ Achat réussi`),
+        text(`**${result.item.label}** (-${fmt(result.item.price, sym)})\nNouveau solde : **${fmt(result.balance, sym)}**`),
+      ]);
+      await ctx.reply({ components: [card], componentsV2: true });
       return;
     }
   },

@@ -1,4 +1,6 @@
 import {
+  ButtonBuilder,
+  ButtonStyle,
   ChatInputCommandInteraction,
   SlashCommandBuilder,
 } from 'discord.js';
@@ -7,6 +9,7 @@ import { xpWriteBuffer } from '../storage/xpWriteBuffer.js';
 import { LevelCalculator } from '../services/levelCalculator.js';
 import { levelingStorage } from '../storage/levelingStorage.js';
 import { formatString, getTranslation } from '../../../utils/i18n.js';
+import { container, sectionWithThumbnail, separator, text, footer, progressBar, toneToColor, buttonRow } from '../../../utils/components.js';
 
 export const rankCommand: Command = {
   name: 'rank',
@@ -44,35 +47,31 @@ export const rankCommand: Command = {
     const progress = LevelCalculator.getProgress(userData.totalXp);
     const leaderboard = levelingStorage.getLeaderboard(guild.id);
     const userRank = leaderboard.findIndex((u) => u.userId === targetUser.id) + 1 || leaderboard.length + 1;
-    const progressBar = LevelCalculator.renderProgressBar(progress.progressPercentage, 12);
+    const bar = progressBar(progress.progressPercentage, 14);
+    const medal = userRank === 1 ? '🥇' : userRank === 2 ? '🥈' : userRank === 3 ? '🥉' : '🏅';
 
-    // Même ton "warning" (ambre) que /leaderboard : les deux commandes du module
-    // Niveaux partagent désormais le même accent de marque.
-    const embed = ctx
-      .createEmbed('warning')
-      .setAuthor({
-        name: formatString(t.leveling_rank_author, { username: targetUser.username }),
-        iconURL: targetUser.displayAvatarURL(),
-      })
-      .setThumbnail(targetUser.displayAvatarURL())
-      .addFields(
-        { name: t.leveling_field_rank, value: `#${userRank}`, inline: true },
-        { name: t.leveling_field_level, value: `${progress.level}`, inline: true },
-        { name: t.leveling_field_messages, value: `${userData.messagesCount.toLocaleString()}`, inline: true },
-        {
-          name: t.leveling_field_progress,
-          value: formatString(t.leveling_progress_value, {
-            bar: progressBar,
-            percent: progress.progressPercentage,
-            cur: progress.currentLevelXp.toLocaleString(),
-            next: progress.nextLevelXp.toLocaleString(),
-            total: userData.totalXp.toLocaleString(),
-          }),
-          inline: false,
-        }
-      )
-      .setFooter({ text: formatString(t.leveling_rank_footer, { guildName: guild.name }) });
+    // Carte de rang en Components V2 : avatar en vignette, stats en colonnes,
+    // barre de progression, pied de page. Même accent ambré que le module
+    // Niveaux (ton "warning" des embeds historiques).
+    const card = container(toneToColor('warning'), [
+      sectionWithThumbnail(
+        [
+          `## ${medal} ${formatString(t.leveling_rank_author, { username: targetUser.username })}`,
+          `**${t.leveling_field_rank}** #${userRank} / ${Math.max(leaderboard.length, 1)}   ·   **${t.leveling_field_level}** ${progress.level}`,
+          `**${t.leveling_field_messages}** ${userData.messagesCount.toLocaleString('fr-FR')}   ·   **XP** ${userData.totalXp.toLocaleString('fr-FR')}`,
+        ],
+        targetUser.displayAvatarURL({ size: 256 }),
+        targetUser.username
+      ),
+      separator(),
+      text(`**${t.leveling_field_progress}** — ${progress.progressPercentage}%\n\`${bar}\` ${progress.currentLevelXp.toLocaleString('fr-FR')} / ${progress.nextLevelXp.toLocaleString('fr-FR')} XP`),
+      separator(false),
+      buttonRow(
+        new ButtonBuilder().setCustomId('rank_btn_leaderboard').setLabel('Classement').setEmoji('🏆').setStyle(ButtonStyle.Secondary)
+      ),
+      footer(formatString(t.leveling_rank_footer, { guildName: guild.name })),
+    ]);
 
-    await ctx.reply({ embeds: [embed] });
+    await ctx.reply({ components: [card], componentsV2: true });
   },
 };

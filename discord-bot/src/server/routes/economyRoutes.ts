@@ -35,6 +35,20 @@ export function createEconomyRouter(_discordClient: Client) {
     res.json({ wallet: economyStorage.getWallet(guildId, userId) });
   });
 
+  // 3b. Historique des transactions (dashboard) — optionnellement filtré par membre
+  router.get('/transactions', async (req: Request, res: Response): Promise<void> => {
+    const guildId = String(req.params.guildId);
+    const limit = Math.min(500, req.query.limit ? parseInt(String(req.query.limit), 10) || 50 : 50);
+    const userId = req.query.userId ? String(req.query.userId) : undefined;
+    res.json({ transactions: economyStorage.getTransactions(guildId, limit, userId) });
+  });
+
+  // 3c. Activité (volume 24h, mouvements 24h, masse monétaire en circulation)
+  router.get('/activity', async (req: Request, res: Response): Promise<void> => {
+    const guildId = String(req.params.guildId);
+    res.json({ activity: economyStorage.getActivitySummary(guildId) });
+  });
+
   // 4. Configuration
   router.get('/config', async (req: Request, res: Response): Promise<void> => {
     const guildId = String(req.params.guildId);

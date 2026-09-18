@@ -100,7 +100,7 @@ export default function TicketDetailClient() {
       return;
     }
     try {
-      const res = await fetch(`${API_BASE}/api/guilds/${guildId}/tickets/tickets/${ticketId}`);
+      const res = await fetch(`${API_BASE}/api/guilds/${guildId}/tickets/tickets/${ticketId}`, { credentials: "include" });
       if (!res.ok) {
         throw new Error("Ticket introuvable");
       }
@@ -128,6 +128,7 @@ export default function TicketDetailClient() {
     try {
       setActionLoading(true);
       const res = await fetch(`${API_BASE}/api/guilds/${guildId}/tickets/tickets/${ticketId}/claim`, {
+        credentials: "include",
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({
@@ -154,6 +155,7 @@ export default function TicketDetailClient() {
     try {
       setActionLoading(true);
       const res = await fetch(`${API_BASE}/api/guilds/${guildId}/tickets/tickets/${ticketId}/unclaim`, {
+        credentials: "include",
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({
@@ -190,6 +192,7 @@ export default function TicketDetailClient() {
     try {
       setActionLoading(true);
       const res = await fetch(`${API_BASE}/api/guilds/${guildId}/tickets/tickets/${ticketId}/notes`, {
+        credentials: "include",
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({
@@ -218,6 +221,7 @@ export default function TicketDetailClient() {
     try {
       setActionLoading(true);
       const res = await fetch(`${API_BASE}/api/guilds/${guildId}/tickets/tickets/${ticketId}/close`, {
+        credentials: "include",
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({
@@ -245,6 +249,7 @@ export default function TicketDetailClient() {
     try {
       setActionLoading(true);
       const res = await fetch(`${API_BASE}/api/guilds/${guildId}/tickets/tickets/${ticketId}/reopen`, {
+        credentials: "include",
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({
@@ -272,6 +277,7 @@ export default function TicketDetailClient() {
     try {
       setActionLoading(true);
       const res = await fetch(`${API_BASE}/api/guilds/${guildId}/tickets/tickets/${ticketId}/link-case`, {
+        credentials: "include",
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({
@@ -298,6 +304,7 @@ export default function TicketDetailClient() {
     try {
       setActionLoading(true);
       const res = await fetch(`${API_BASE}/api/guilds/${guildId}/tickets/tickets/${ticketId}/priority`, {
+        credentials: "include",
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({
@@ -322,6 +329,7 @@ export default function TicketDetailClient() {
     try {
       setActionLoading(true);
       const res = await fetch(`${API_BASE}/api/guilds/${guildId}/tickets/tickets/${ticketId}/status`, {
+        credentials: "include",
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({

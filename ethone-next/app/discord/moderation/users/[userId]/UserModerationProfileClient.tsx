@@ -124,27 +124,21 @@ export default function UserModerationProfileClient() {
       if (BOT_API_URL) {
       try {
         // 1. Profil
-        const profRes = await fetch(
-          `${BOT_API_URL}/api/guilds/${selectedGuild.id}/moderation/users/${targetUserId}/profile`
-        );
+        const profRes = await fetch(`${BOT_API_URL}/api/guilds/${selectedGuild.id}/moderation/users/${targetUserId}/profile`, { credentials: "include" });
         if (profRes.ok) {
           const pData = await profRes.json();
           if (pData.profile) setUserProfile(pData.profile);
         }
 
         // 2. Timeline unifiée
-        const timeRes = await fetch(
-          `${BOT_API_URL}/api/guilds/${selectedGuild.id}/moderation/users/${targetUserId}/timeline`
-        );
+        const timeRes = await fetch(`${BOT_API_URL}/api/guilds/${selectedGuild.id}/moderation/users/${targetUserId}/timeline`, { credentials: "include" });
         if (timeRes.ok) {
           const tData = await timeRes.json();
           if (tData.timeline) setTimeline(tData.timeline);
         }
 
         // 3. Reports
-        const repRes = await fetch(
-          `${BOT_API_URL}/api/guilds/${selectedGuild.id}/moderation/reports?reportedUserId=${targetUserId}`
-        );
+        const repRes = await fetch(`${BOT_API_URL}/api/guilds/${selectedGuild.id}/moderation/reports?reportedUserId=${targetUserId}`, { credentials: "include" });
         if (repRes.ok) {
           const rData = await repRes.json();
           if (rData.reports) setReports(rData.reports);
@@ -224,6 +218,7 @@ export default function UserModerationProfileClient() {
       const durationSeconds = activeActionModal === "TIMEOUT" ? parseInt(timeoutDuration, 10) : null;
 
       const res = await fetch(`${BOT_API_URL}/api/guilds/${selectedGuild.id}/moderation/cases`, {
+        credentials: "include",
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({
@@ -271,6 +266,7 @@ export default function UserModerationProfileClient() {
       const res = await fetch(
         `${BOT_API_URL}/api/guilds/${selectedGuild.id}/moderation/cases/${caseNumber}/notes`,
         {
+          credentials: "include",
           method: "POST",
           headers: { "Content-Type": "application/json" },
           body: JSON.stringify({ content: newNoteContent.trim() }),
@@ -299,6 +295,7 @@ export default function UserModerationProfileClient() {
       const res = await fetch(
         `${BOT_API_URL}/api/guilds/${selectedGuild.id}/moderation/cases/${revertingCase.caseNumber}/revert`,
         {
+          credentials: "include",
           method: "POST",
           headers: { "Content-Type": "application/json" },
           body: JSON.stringify({ reason: revertReason.trim() || "Pardon accordé par le staff" }),

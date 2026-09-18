@@ -375,18 +375,16 @@ export function TicketCenterClient() {
 
     try {
       const [ovRes, tRes, cRes, pRes, tmRes, aRes, cfgRes, dcRes] = await Promise.all([
-        fetch(`${API_BASE}/api/guilds/${currentGuildId}/tickets/overview`).catch(() => null),
-        fetch(
-          `${API_BASE}/api/guilds/${currentGuildId}/tickets/tickets?status=${statusFilter}&priority=${priorityFilter}&categoryId=${categoryFilter}&search=${encodeURIComponent(
+        fetch(`${API_BASE}/api/guilds/${currentGuildId}/tickets/overview`, { credentials: "include" }).catch(() => null),
+        fetch(`${API_BASE}/api/guilds/${currentGuildId}/tickets/tickets?status=${statusFilter}&priority=${priorityFilter}&categoryId=${categoryFilter}&search=${encodeURIComponent(
             searchQuery
-          )}&period=${periodFilter}&limit=100`
-        ).catch(() => null),
-        fetch(`${API_BASE}/api/guilds/${currentGuildId}/tickets/categories`).catch(() => null),
-        fetch(`${API_BASE}/api/guilds/${currentGuildId}/tickets/panels`).catch(() => null),
-        fetch(`${API_BASE}/api/guilds/${currentGuildId}/tickets/teams`).catch(() => null),
-        fetch(`${API_BASE}/api/guilds/${currentGuildId}/tickets/automations`).catch(() => null),
-        fetch(`${API_BASE}/api/guilds/${currentGuildId}/tickets/config`).catch(() => null),
-        fetch(`${API_BASE}/api/guilds/${currentGuildId}/tickets/discord-categories`).catch(() => null),
+          )}&period=${periodFilter}&limit=100`, { credentials: "include" }).catch(() => null),
+        fetch(`${API_BASE}/api/guilds/${currentGuildId}/tickets/categories`, { credentials: "include" }).catch(() => null),
+        fetch(`${API_BASE}/api/guilds/${currentGuildId}/tickets/panels`, { credentials: "include" }).catch(() => null),
+        fetch(`${API_BASE}/api/guilds/${currentGuildId}/tickets/teams`, { credentials: "include" }).catch(() => null),
+        fetch(`${API_BASE}/api/guilds/${currentGuildId}/tickets/automations`, { credentials: "include" }).catch(() => null),
+        fetch(`${API_BASE}/api/guilds/${currentGuildId}/tickets/config`, { credentials: "include" }).catch(() => null),
+        fetch(`${API_BASE}/api/guilds/${currentGuildId}/tickets/discord-categories`, { credentials: "include" }).catch(() => null),
       ]);
 
       if (ovRes && ovRes.ok) {
@@ -468,6 +466,7 @@ export function TicketCenterClient() {
     try {
       setActionLoading(true);
       const res = await fetch(`${API_BASE}/api/guilds/${currentGuildId}/tickets/tickets/${ticket.id}/claim`, {
+        credentials: "include",
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({
@@ -503,6 +502,7 @@ export function TicketCenterClient() {
     try {
       setActionLoading(true);
       const res = await fetch(`${API_BASE}/api/guilds/${currentGuildId}/tickets/tickets/${ticket.id}/priority`, {
+        credentials: "include",
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({
@@ -536,6 +536,7 @@ export function TicketCenterClient() {
     try {
       setActionLoading(true);
       const res = await fetch(`${API_BASE}/api/guilds/${currentGuildId}/tickets/tickets/${ticketToClose.id}/close`, {
+        credentials: "include",
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({
@@ -583,6 +584,7 @@ export function TicketCenterClient() {
     try {
       setActionLoading(true);
       const res = await fetch(`${API_BASE}/api/guilds/${currentGuildId}/tickets/categories`, {
+        credentials: "include",
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify(payload),
@@ -608,6 +610,7 @@ export function TicketCenterClient() {
     }
     try {
       const res = await fetch(`${API_BASE}/api/guilds/${currentGuildId}/tickets/categories/${catId}`, {
+        credentials: "include",
         method: "DELETE",
       });
       if (!res.ok) throw new Error("Échec suppression");
@@ -648,6 +651,7 @@ export function TicketCenterClient() {
     try {
       setActionLoading(true);
       const res = await fetch(`${API_BASE}/api/guilds/${currentGuildId}/tickets/panels`, {
+        credentials: "include",
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify(payload),
@@ -676,6 +680,7 @@ export function TicketCenterClient() {
     try {
       setActionLoading(true);
       const res = await fetch(`${API_BASE}/api/guilds/${currentGuildId}/tickets/panels/${panelId}/publish`, {
+        credentials: "include",
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({ channelId: targetChannelId }),
@@ -701,6 +706,7 @@ export function TicketCenterClient() {
     try {
       setActionLoading(true);
       const res = await fetch(`${API_BASE}/api/guilds/${currentGuildId}/tickets/config`, {
+        credentials: "include",
         method: "PATCH",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify(newCfg),
@@ -1411,6 +1417,7 @@ export function TicketCenterClient() {
                   actions: [{ type: "ASSIGN_TEAM", payload: { teamId: "team-support" } }],
                 };
                 fetch(`${API_BASE}/api/guilds/${currentGuildId}/tickets/automations`, {
+                  credentials: "include",
                   method: "POST",
                   headers: { "Content-Type": "application/json" },
                   body: JSON.stringify(newRule),
@@ -1454,6 +1461,7 @@ export function TicketCenterClient() {
                   <button
                     onClick={() => {
                       fetch(`${API_BASE}/api/guilds/${currentGuildId}/tickets/automations/${a.id}`, {
+                        credentials: "include",
                         method: "DELETE",
                       }).then(() => fetchAllData());
                     }}

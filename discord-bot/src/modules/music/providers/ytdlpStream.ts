@@ -1,6 +1,9 @@
 import { spawn } from 'node:child_process';
+import { createRequire } from 'node:module';
 import type { Readable } from 'node:stream';
 import { logger } from '../../../utils/logger.js';
+
+const require = createRequire(import.meta.url);
 
 /**
  * Audio streaming through yt-dlp instead of play-dl.
@@ -234,4 +237,99 @@ export async function createYtDlpStream(input: string): Promise<Readable | null>
   });
 
   return proc.stdout ?? null;
+}
+
+/**
+ * yt-dlp → our own ffmpeg → 48 kHz stereo signed-16 PCM (StreamType.Raw).
+ *
+ * Why not let @discordjs/voice run ffmpeg (StreamType.Arbitrary)? Because it
+ * spawns it with `-loglevel 0`: when the transcode yields nothing the player
+ * just flips playing → idle after ~100 ms with playbackDuration 0 and no
+ * clue why. Here ffmpeg's stderr is logged, byte counts on both hops are
+ * logged, and an ffmpeg that produces no PCM is surfaced as a stream error.
+ */
+export async function createYtDlpPcmStream(input: string): Promise<Readable | null> {
+  const source = await createYtDlpStream(input);
+  if (!source) return null;
+
+  const ffmpegBin = resolveFfmpeg();
+  const ff = spawn(
+    ffmpegBin,
+    [
+      '-hide_banner',
+      '-loglevel', 'warning',
+      '-nostdin',
+      '-analyzeduration', '0',
+      '-i', 'pipe:0',
+      '-vn',
+      '-f', 's16le',
+      '-ar', '48000',
+      '-ac', '2',
+      'pipe:1',
+    ],
+    { stdio: ['pipe', 'pipe', 'pipe'] },
+  );
+
+  let ffErr = '';
+  let pcmBytes = 0;
+  let inBytes = 0;
+  let firstPcmLogged = false;
+  const label = input.length > 80 ? `${input.slice(0, 77)}…` : input;
+
+  source.on('data', (c: Buffer) => {
+    inBytes += c.length;
+  });
+  ff.stdout.on('data', (c: Buffer) => {
+    pcmBytes += c.length;
+    if (!firstPcmLogged) {
+      firstPcmLogged = true;
+      logger.info(`[ffmpeg] premiers échantillons PCM pour "${label}" (entrée ${Math.round(inBytes / 1024)} Ko)`);
+    }
+  });
+  ff.stderr.on('data', (c: Buffer) => {
+    ffErr = (ffErr + c.toString()).slice(-2000);
+  });
+  ff.on('error', (err) => {
+    logger.error(`[ffmpeg] impossible de lancer ${ffmpegBin} :`, err);
+    ff.stdout.destroy(err);
+  });
+  ff.on('close', (code) => {
+    const tail = ffErr.trim().split('\n').slice(-3).join(' | ');
+    if (pcmBytes === 0) {
+      logger.error(`[ffmpeg] aucun PCM produit pour "${label}" (code ${code}, ${Math.round(inBytes / 1024)} Ko reçus de yt-dlp) : ${tail || 'aucun message'}`);
+      ff.stdout.destroy(new Error(`ffmpeg: ${tail || `code ${code}`}`));
+    } else if (code && code !== 0) {
+      logger.warn(`[ffmpeg] sortie ${code} pour "${label}" après ${Math.round(pcmBytes / 1024)} Ko PCM : ${tail}`);
+    } else {
+      logger.info(`[ffmpeg] fin "${label}" — ${Math.round(inBytes / 1024)} Ko in → ${Math.round(pcmBytes / 1024)} Ko PCM`);
+    }
+  });
+
+  // Plumbing: yt-dlp → ffmpeg stdin. EPIPE when ffmpeg dies first is expected.
+  ff.stdin.on('error', () => {});
+  source.on('error', (err) => {
+    logger.warn(`[ffmpeg] source yt-dlp en erreur pour "${label}" : ${err.message}`);
+    ff.stdin.destroy();
+  });
+  source.pipe(ff.stdin);
+
+  // Consumer gone (skip/stop) → tear down both processes.
+  ff.stdout.once('close', () => {
+    if (!ff.killed) ff.kill('SIGKILL');
+    source.destroy();
+  });
+
+  return ff.stdout;
+}
+
+function resolveFfmpeg(): string {
+  if (process.env.FFMPEG_PATH) return process.env.FFMPEG_PATH;
+  try {
+    // eslint-disable-next-line @typescript-eslint/no-require-imports
+    const p = (require('ffmpeg-static') as string | null) || '';
+    if (p) return p;
+  } catch {
+    /* fall through */
+  }
+  return 'ffmpeg';
 }

@@ -1,7 +1,7 @@
 import { AudioResource, createAudioResource, StreamType } from '@discordjs/voice';
 import { Track, TrackRequester } from '../types/music.js';
 import { logger } from '../../../utils/logger.js';
-import { createYtDlpStream, ytDlpLookup, ytDlpSearch, YtDlpEntry } from './ytdlpStream.js';
+import { createYtDlpPcmStream, ytDlpLookup, ytDlpSearch, YtDlpEntry } from './ytdlpStream.js';
 import { expandPlaylist, isPlaylistUrl, getSpotifyToken } from './playlistResolver.js';
 
 /**
@@ -13,9 +13,11 @@ import { expandPlaylist, isPlaylistUrl, getSpotifyToken } from './playlistResolv
  */
 async function streamWithYtDlp(input: string, label: string): Promise<AudioResource | null> {
   try {
-    const stream = await createYtDlpStream(input);
+    // 48 kHz s16le stereo from our own ffmpeg (see createYtDlpPcmStream) —
+    // @discordjs/voice only has to Opus-encode it, nothing hidden in between.
+    const stream = await createYtDlpPcmStream(input);
     if (!stream) return null;
-    return createAudioResource(stream, { inputType: StreamType.Arbitrary });
+    return createAudioResource(stream, { inputType: StreamType.Raw, inlineVolume: true });
   } catch (err) {
     logger.warn(`[${label}] yt-dlp stream error :`, err);
     return null;

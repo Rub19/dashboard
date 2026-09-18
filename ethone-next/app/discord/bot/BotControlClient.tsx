@@ -46,6 +46,7 @@ import {
   Zap,
 } from "lucide-react";
 import { useToast } from "@/components/ToastProvider";
+import { Tabs, TabsList, TabsTrigger } from "@/components/ui/Tabs";
 import { useAuth } from "@/components/AuthProvider";
 import { supabase } from "@/lib/supabase";
 import { cn } from "@/lib/utils";
@@ -71,6 +72,34 @@ export type BotTab =
 interface BotControlClientProps {
   initialTab?: BotTab;
 }
+
+// Regroups the 15 flat tabs into 5 top-level categories for navigation —
+// each tab's own content/JSX is unchanged, only how you get to it.
+const TAB_GROUPS: { id: string; label: string; icon: any; tabs: BotTab[] }[] = [
+  { id: "overview", label: "Vue d'ensemble", icon: BarChart3, tabs: ["overview", "presence"] },
+  { id: "configuration", label: "Configuration", icon: Settings, tabs: ["settings", "ai", "modules"] },
+  { id: "health", label: "Santé & Performance", icon: Activity, tabs: ["performance", "diagnostics", "health", "servers"] },
+  { id: "security", label: "Sécurité", icon: ShieldCheck, tabs: ["security", "errors"] },
+  { id: "operations", label: "Opérations", icon: Wifi, tabs: ["integrations", "jobs", "commands", "events"] },
+];
+
+const TAB_META: Record<BotTab, { label: string; icon: any }> = {
+  overview: { label: "Vue Générale", icon: BarChart3 },
+  presence: { label: "Présence & Activité", icon: Sparkles },
+  settings: { label: "Configuration & Confidentialité", icon: Settings },
+  ai: { label: "Assistant IA & Tokens", icon: Bot },
+  performance: { label: "Performances & RAM", icon: Activity },
+  diagnostics: { label: "Diagnostics 1-Clic", icon: CheckCircle2 },
+  security: { label: "Sécurité & Audit", icon: ShieldCheck },
+  integrations: { label: "Intégrations", icon: Wifi },
+  jobs: { label: "Tâches Planifiées", icon: ListRestart },
+  commands: { label: "Commandes", icon: Terminal },
+  health: { label: "Sous-Systèmes", icon: Cpu },
+  servers: { label: "Serveurs Installés", icon: Server },
+  modules: { label: "Modules Actifs", icon: Layers },
+  events: { label: "Flux d'Événements", icon: Radio },
+  errors: { label: "Incidents & Erreurs", icon: ShieldAlert },
+};
 
 // Maps the `icon` string returned by GET /api/guilds/:guildId/modules (moduleRoutes.ts'
 // AVAILABLE_MODULES catalog) to an actual lucide component.
@@ -98,6 +127,15 @@ export default function BotControlClient({ initialTab = "overview" }: BotControl
 
   const handleTabChange = (tab: BotTab) => {
     router.push(`/discord/bot?tab=${tab}`);
+  };
+
+  const activeGroupId = useMemo(
+    () => TAB_GROUPS.find((g) => g.tabs.includes(activeTab))?.id || "overview",
+    [activeTab]
+  );
+  const handleGroupChange = (groupId: string) => {
+    const group = TAB_GROUPS.find((g) => g.id === groupId);
+    if (group) handleTabChange(group.tabs[0]);
   };
 
   // Owner Authentication (Strictly rub19.mailpro@gmail.com)
@@ -1207,55 +1245,72 @@ export default function BotControlClient({ initialTab = "overview" }: BotControl
           </div>
         </div>
 
-        {/* TABS NAVIGATION */}
-        <div className="max-w-7xl mx-auto px-6 flex items-center gap-1 overflow-x-auto scrollbar-none border-t border-zinc-800/50 pt-1">
-          {[
-            { id: "overview", label: "Vue Générale", icon: BarChart3 },
-            { id: "presence", label: "Présence & Activité", icon: Sparkles },
-            { id: "settings", label: "Configuration & Confidentialité", icon: Settings },
-            { id: "ai", label: "Assistant IA & Tokens", icon: Bot },
-            { id: "performance", label: "Performances & RAM", icon: Activity },
-            { id: "diagnostics", label: "Diagnostics 1-Clic", icon: CheckCircle2 },
-            { id: "security", label: "Sécurité & Audit", icon: ShieldCheck },
-            { id: "integrations", label: "Intégrations", icon: Wifi, count: integrations.length },
-            { id: "jobs", label: "Tâches Planifiées", icon: ListRestart, count: jobs.length },
-            { id: "commands", label: "Commandes", icon: Terminal, count: officialCommands.length },
-            { id: "health", label: "Sous-Systèmes", icon: Cpu },
-            { id: "servers", label: "Serveurs Installés", icon: Server, count: servers.length },
-            { id: "modules", label: "Modules Actifs", icon: Layers, count: modules.length },
-            { id: "events", label: "Flux d'Événements", icon: Radio, count: recentEvents.length },
-            { id: "errors", label: "Incidents & Erreurs", icon: ShieldAlert, count: errors.length },
-          ].map((tab) => {
-            const Icon = tab.icon;
-            const isActive = activeTab === tab.id;
-            return (
-              <button
-                key={tab.id}
-                onClick={() => handleTabChange(tab.id as BotTab)}
-                className={cn(
-                  "px-3.5 py-2.5 text-xs font-medium border-b-2 flex items-center gap-2 transition-all whitespace-nowrap",
-                  isActive
-                    ? "border-indigo-500 text-white bg-indigo-500/5 font-semibold"
-                    : "border-transparent text-zinc-400 hover:text-zinc-200 hover:border-zinc-700"
-                )}
-              >
-                <Icon className={cn("w-4 h-4", isActive ? "text-indigo-400" : "text-zinc-400")} />
-                <span>{tab.label}</span>
-                {tab.count !== undefined && (
-                  <span
-                    className={cn(
-                      "px-1.5 py-0.2 rounded-full text-[10px] font-mono",
-                      isActive
-                        ? "bg-indigo-500/20 text-indigo-300"
-                        : "bg-zinc-800 text-zinc-400"
-                    )}
-                  >
-                    {tab.count}
-                  </span>
-                )}
-              </button>
-            );
-          })}
+        {/* GROUP NAVIGATION (5 categories) */}
+        <div className="max-w-7xl mx-auto px-6 border-t border-zinc-800/50 pt-3">
+          <Tabs value={activeGroupId} onValueChange={handleGroupChange} variant="segment">
+            <TabsList className="w-full flex-wrap sm:w-auto">
+              {TAB_GROUPS.map((group) => {
+                const GroupIcon = group.icon;
+                return (
+                  <TabsTrigger key={group.id} value={group.id}>
+                    <span className="flex items-center gap-1.5">
+                      <GroupIcon className="w-3.5 h-3.5" />
+                      {group.label}
+                    </span>
+                  </TabsTrigger>
+                );
+              })}
+            </TabsList>
+          </Tabs>
+        </div>
+
+        {/* TAB NAVIGATION (within the active group) */}
+        <div className="max-w-7xl mx-auto px-6 flex items-center gap-1 overflow-x-auto scrollbar-none pt-2">
+          {(() => {
+            const tabCounts: Partial<Record<BotTab, number>> = {
+              integrations: integrations.length,
+              jobs: jobs.length,
+              commands: officialCommands.length,
+              servers: servers.length,
+              modules: modules.length,
+              events: recentEvents.length,
+              errors: errors.length,
+            };
+            const groupTabs = TAB_GROUPS.find((g) => g.id === activeGroupId)?.tabs || [];
+            return groupTabs.map((tabId) => {
+              const meta = TAB_META[tabId];
+              const Icon = meta.icon;
+              const isActive = activeTab === tabId;
+              const count = tabCounts[tabId];
+              return (
+                <button
+                  key={tabId}
+                  onClick={() => handleTabChange(tabId)}
+                  className={cn(
+                    "px-3.5 py-2.5 text-xs font-medium border-b-2 flex items-center gap-2 transition-all whitespace-nowrap",
+                    isActive
+                      ? "border-indigo-500 text-white bg-indigo-500/5 font-semibold"
+                      : "border-transparent text-zinc-400 hover:text-zinc-200 hover:border-zinc-700"
+                  )}
+                >
+                  <Icon className={cn("w-4 h-4", isActive ? "text-indigo-400" : "text-zinc-400")} />
+                  <span>{meta.label}</span>
+                  {count !== undefined && (
+                    <span
+                      className={cn(
+                        "px-1.5 py-0.2 rounded-full text-[10px] font-mono",
+                        isActive
+                          ? "bg-indigo-500/20 text-indigo-300"
+                          : "bg-zinc-800 text-zinc-400"
+                      )}
+                    >
+                      {count}
+                    </span>
+                  )}
+                </button>
+              );
+            });
+          })()}
         </div>
       </div>
 

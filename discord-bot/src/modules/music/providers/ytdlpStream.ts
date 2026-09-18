@@ -87,15 +87,34 @@ export async function createYtDlpStream(input: string): Promise<Readable | null>
   const proc = spawn(YT_DLP_PATH, args, { stdio: ['ignore', 'pipe', 'pipe'] });
 
   let stderrTail = '';
+  let bytesOut = 0;
+  proc.stdout?.on('data', (chunk: Buffer) => {
+    bytesOut += chunk.length;
+  });
   proc.stderr?.on('data', (chunk: Buffer) => {
     stderrTail = (stderrTail + chunk.toString()).slice(-2000);
   });
   proc.on('error', (err) => {
     logger.warn(`[ytdlp] spawn error pour "${input}" :`, err);
+    proc.stdout?.destroy(err);
   });
   proc.on('close', (code) => {
     if (code && code !== 0) {
-      logger.warn(`[ytdlp] sortie ${code} pour "${input}" : ${stderrTail.trim().split('\n').pop() || 'aucun détail'}`);
+      const lastLine = stderrTail.trim().split('\n').pop() || 'aucun détail';
+      // Exit without ever producing audio = the classic "bot joins but stays
+      // silent". Surface it as a stream error (the player listens for it and
+      // skips/idles with a loud log) instead of letting ffmpeg see a clean EOF.
+      if (bytesOut === 0) {
+        const hint = /sign in|confirm you.re not a bot|cookies/i.test(stderrTail)
+          ? ' — YouTube bloque l’IP du serveur : définis YT_DLP_COOKIES_FILE (cookies.txt d’une session connectée).'
+          : /Unable to extract|nsig|Requested format is not available/i.test(stderrTail)
+            ? ' — yt-dlp obsolète : lance `yt-dlp -U` sur le serveur.'
+            : '';
+        logger.error(`[ytdlp] aucun audio produit pour "${input}" (code ${code}) : ${lastLine}${hint}`);
+        proc.stdout?.destroy(new Error(`yt-dlp: ${lastLine}${hint}`));
+      } else {
+        logger.warn(`[ytdlp] sortie ${code} pour "${input}" après ${Math.round(bytesOut / 1024)} Ko : ${lastLine}`);
+      }
     }
   });
 

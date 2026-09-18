@@ -280,14 +280,16 @@ export class AIRepository {
     const existing = this.analyticsCache.get(guildId);
     if (existing) return existing;
 
+    // Real guilds start at zero — the dashboard KPIs are only meaningful if
+    // they reflect actual usage, not a seeded "42 requests" placeholder.
     const defaultAnalytics: AIAnalytics = {
-      requestsToday: 42,
-      activeConversations: 7,
-      tokensConsumed: 38400,
-      helpfulCount: 39,
-      unhelpfulCount: 3,
-      handoffCount: 2,
-      avgResponseTimeMs: 480,
+      requestsToday: 0,
+      activeConversations: 0,
+      tokensConsumed: 0,
+      helpfulCount: 0,
+      unhelpfulCount: 0,
+      handoffCount: 0,
+      avgResponseTimeMs: 0,
     };
     this.analyticsCache.set(guildId, defaultAnalytics);
     this.persistAnalytics();

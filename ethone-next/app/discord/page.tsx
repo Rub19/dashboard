@@ -421,29 +421,10 @@ export default function DiscordDashboardPage() {
   // every server "à ajouter".
   const [botGuildIds, setBotGuildIds] = useState<Set<string>>(new Set());
   const [botPresenceKnown, setBotPresenceKnown] = useState(false);
+  const [botGuildMeta, setBotGuildMeta] = useState<Record<string, { memberCount: number | null }>>({});
   // Preview toggles shown on the Logs module gateway card (informational —
   // the real per-event routing lives in the Audit Center at /discord/logs).
   const [logsPreview, setLogsPreview] = useState({ messages: true, roles: true, members: true });
-
-  useEffect(() => {
-    const api = process.env.NEXT_PUBLIC_DISCORD_BOT_API || "";
-    if (!api) return;
-    let cancelled = false;
-    fetch(`${api}/api/bot/presence/servers`, { credentials: "include" })
-      .then((r) => (r.ok ? r.json() : Promise.reject(new Error(String(r.status)))))
-      .then((res) => {
-        if (cancelled) return;
-        const list = Array.isArray(res?.data) ? res.data : [];
-        setBotGuildIds(new Set(list.map((g: { guildId?: string; id?: string }) => String(g.guildId ?? g.id))));
-        setBotPresenceKnown(true);
-      })
-      .catch(() => {
-        if (!cancelled) setBotPresenceKnown(false);
-      });
-    return () => {
-      cancelled = true;
-    };
-  }, []);
 
   // Serveurs réels de l'utilisateur (ZÉRO FAKE INFO)
   const allGuilds: DiscordGuild[] = useMemo(() => {
@@ -459,6 +440,36 @@ export default function DiscordDashboardPage() {
     }
     return [];
   }, [profile?.guilds]);
+
+  // Où le bot est-il installé parmi MES serveurs ? L'ancien appel
+  // (/api/bot/presence/servers) était réservé au bot owner → 403 pour tout
+  // autre compte, donc aucun serveur n'était jamais marqué. /api/guild-presence
+  // ne demande qu'une session valide et ne renvoie que l'intersection.
+  useEffect(() => {
+    const api = process.env.NEXT_PUBLIC_DISCORD_BOT_API || "";
+    if (!api || allGuilds.length === 0) return;
+    let cancelled = false;
+    const ids = allGuilds.map((g) => g.id).join(",");
+    fetch(`${api}/api/guild-presence?ids=${encodeURIComponent(ids)}`, { credentials: "include" })
+      .then((r) => (r.ok ? r.json() : Promise.reject(new Error(String(r.status)))))
+      .then((res) => {
+        if (cancelled) return;
+        const present: string[] = Array.isArray(res?.present) ? res.present.map(String) : [];
+        setBotGuildIds(new Set(present));
+        const meta: Record<string, { memberCount: number | null }> = {};
+        for (const d of Array.isArray(res?.details) ? res.details : []) {
+          meta[String(d.id)] = { memberCount: typeof d.memberCount === "number" ? d.memberCount : null };
+        }
+        setBotGuildMeta(meta);
+        setBotPresenceKnown(true);
+      })
+      .catch(() => {
+        if (!cancelled) setBotPresenceKnown(false);
+      });
+    return () => {
+      cancelled = true;
+    };
+  }, [allGuilds]);
 
   // Filtrage : uniquement les serveurs où l'utilisateur est Admin / Owner
   const displayGuilds: DiscordGuild[] = useMemo(() => {
@@ -479,6 +490,10 @@ export default function DiscordDashboardPage() {
       return ai - bi;
     });
   }, [displayGuilds, searchQuery, botGuildIds]);
+
+  // Two visual groups in the sidebar once presence is known.
+  const guildsWithBot = useMemo(() => filteredGuilds.filter((g) => botGuildIds.has(g.id)), [filteredGuilds, botGuildIds]);
+  const guildsWithoutBot = useMemo(() => filteredGuilds.filter((g) => !botGuildIds.has(g.id)), [filteredGuilds, botGuildIds]);
 
   // Sélection automatique du premier serveur réel
   useEffect(() => {
@@ -813,95 +828,150 @@ export default function DiscordDashboardPage() {
                 )}
               </div>
             ) : (
-              filteredGuilds.map((guild) => {
-                const isSelected = selectedGuild?.id === guild.id;
-                const isOwner = guild.owner;
-                const isManager = canManageGuild(guild);
-                const hasBot = botGuildIds.has(guild.id);
-                // Only dim / flag rows once we actually know where the bot is.
-                const botAbsent = botPresenceKnown && !hasBot;
-                const initials = guild.name
-                  .split(" ")
-                  .map((n) => n[0])
-                  .join("")
-                  .slice(0, 2)
-                  .toUpperCase();
+              (() => {
+                const renderGuild = (guild: DiscordGuild) => {
+                  const isSelected = selectedGuild?.id === guild.id;
+                  const isOwner = guild.owner;
+                  const isManager = canManageGuild(guild);
+                  const hasBot = botGuildIds.has(guild.id);
+                  // Only dim / flag rows once we actually know where the bot is.
+                  const botAbsent = botPresenceKnown && !hasBot;
+                  const memberCount = botGuildMeta[guild.id]?.memberCount ?? null;
+                  const initials = guild.name
+                    .split(" ")
+                    .map((n) => n[0])
+                    .join("")
+                    .slice(0, 2)
+                    .toUpperCase();
 
-                return (
-                  <div
-                    key={guild.id}
-                    className={cn(
-                      "flex w-full items-stretch gap-1 rounded-[var(--inset-radius)] border transition-all duration-150",
-                      isSelected
-                        ? "border-[#5865F2]/50 bg-[#5865F2]/15 shadow-md shadow-[#5865F2]/10"
-                        : botAbsent
-                        ? "border-[var(--panel-border)] bg-white/[0.015] hover:border-[var(--input-border-hover)] hover:bg-white/[0.03]"
-                        : "border-[var(--panel-border)] bg-white/[0.03] hover:border-[var(--input-border-hover)] hover:bg-white/[0.05]"
-                    )}
-                  >
-                    <button
-                      onClick={() => setSelectedGuild(guild)}
-                      className="flex min-w-0 flex-1 items-center gap-2.5 p-2 text-left cursor-pointer"
+                  return (
+                    <div
+                      key={guild.id}
+                      className={cn(
+                        "group/guild relative flex w-full items-stretch gap-1 rounded-[var(--inset-radius)] border transition-all duration-150",
+                        isSelected
+                          ? hasBot
+                            ? "border-emerald-500/40 bg-gradient-to-r from-emerald-500/15 to-[#5865F2]/10 shadow-md shadow-emerald-500/10"
+                            : "border-[#5865F2]/50 bg-[#5865F2]/15 shadow-md shadow-[#5865F2]/10"
+                          : botAbsent
+                          ? "border-dashed border-[var(--panel-border)] bg-transparent hover:border-[#5865F2]/40 hover:bg-white/[0.03]"
+                          : hasBot
+                          ? "border-emerald-500/20 bg-emerald-500/[0.04] hover:border-emerald-500/40 hover:bg-emerald-500/[0.08]"
+                          : "border-[var(--panel-border)] bg-white/[0.03] hover:border-[var(--input-border-hover)] hover:bg-white/[0.05]"
+                      )}
                     >
-                      <div className={cn(
-                        "flex h-9 w-9 shrink-0 items-center justify-center overflow-hidden rounded-xl border bg-zinc-800 font-bold text-xs text-white shadow-inner",
-                        hasBot ? "border-emerald-500/40" : botAbsent ? "border-[var(--panel-border)] opacity-70" : "border-[var(--panel-border)]"
-                      )}>
-                        {guild.iconUrl ? (
-                          <img src={guild.iconUrl} alt={guild.name} className="h-full w-full object-cover rounded-xl" />
-                        ) : (
-                          <span>{initials}</span>
-                        )}
-                      </div>
-
-                      <div className="min-w-0 flex-1">
-                        <p className={cn("truncate text-xs font-semibold", botAbsent ? "text-zinc-300" : "text-white")}>
-                          {guild.name}
-                        </p>
-                        <div className="flex items-center gap-1.5 mt-0.5">
-                          {isOwner ? (
-                            <span className="inline-flex items-center gap-1 rounded bg-amber-500/15 border border-amber-500/30 px-1.5 py-0.2 text-[9px] font-semibold text-amber-300">
-                              <Crown className="h-2.5 w-2.5" />
-                              Propriétaire
-                            </span>
-                          ) : isManager ? (
-                            <span className="inline-flex items-center gap-1 rounded bg-emerald-500/15 border border-emerald-500/30 px-1.5 py-0.2 text-[9px] font-semibold text-emerald-300">
-                              <ShieldCheck className="h-2.5 w-2.5" />
-                              Gérer
-                            </span>
-                          ) : (
-                            <span className="text-[10px] text-zinc-500">Membre</span>
-                          )}
+                      {isSelected && <span className={cn("absolute left-0 top-2 bottom-2 w-0.5 rounded-full", hasBot ? "bg-emerald-400" : "bg-[#5865F2]")} />}
+                      <button
+                        onClick={() => setSelectedGuild(guild)}
+                        className="flex min-w-0 flex-1 items-center gap-2.5 p-2 text-left cursor-pointer"
+                      >
+                        <div className="relative shrink-0">
+                          <div className={cn(
+                            "flex h-9 w-9 items-center justify-center overflow-hidden rounded-xl border bg-zinc-800 font-bold text-xs text-white shadow-inner",
+                            hasBot ? "border-emerald-500/50" : botAbsent ? "border-[var(--panel-border)] opacity-60 grayscale-[35%]" : "border-[var(--panel-border)]"
+                          )}>
+                            {guild.iconUrl ? (
+                              <img src={guild.iconUrl} alt={guild.name} className="h-full w-full object-cover rounded-xl" />
+                            ) : (
+                              <span>{initials}</span>
+                            )}
+                          </div>
                           {hasBot && (
-                            <span className="inline-flex items-center gap-1 text-[9px] font-semibold text-emerald-400">
-                              <span className="h-1.5 w-1.5 rounded-full bg-emerald-400" />
-                              Bot actif
+                            <span
+                              className="absolute -bottom-1 -right-1 flex h-4 w-4 items-center justify-center rounded-full border-2 border-[var(--bg-main)] bg-emerald-500 text-white"
+                              title="ETHONE Bot est installé sur ce serveur"
+                            >
+                              <Bot className="h-2.5 w-2.5" />
                             </span>
                           )}
                         </div>
-                      </div>
-                    </button>
 
-                    <div className="flex shrink-0 items-center pr-2">
-                      {hasBot ? (
-                        <span className={cn("h-2 w-2 rounded-full", isSelected ? "bg-emerald-400" : "bg-emerald-500/40")} />
-                      ) : botPresenceKnown ? (
-                        <a
-                          href={`${BOT_INVITE_URL}&guild_id=${guild.id}`}
-                          target="_blank"
-                          rel="noopener noreferrer"
-                          onClick={(e) => e.stopPropagation()}
-                          title="Inviter le bot sur ce serveur"
-                          className="inline-flex items-center gap-1 rounded-lg border border-[#5865F2]/40 bg-[#5865F2]/15 px-2 py-1 text-[10px] font-semibold text-[#a9b2ff] transition-colors hover:bg-[#5865F2]/25 hover:text-white"
-                        >
-                          <Plus className="h-3 w-3" />
-                          Ajouter
-                        </a>
-                      ) : null}
+                        <div className="min-w-0 flex-1">
+                          <p className={cn("truncate text-xs font-semibold", botAbsent ? "text-zinc-400" : "text-white")}>
+                            {guild.name}
+                          </p>
+                          <div className="flex items-center gap-1.5 mt-0.5 flex-wrap">
+                            {isOwner ? (
+                              <span className="inline-flex items-center gap-1 rounded bg-amber-500/15 border border-amber-500/30 px-1.5 py-0.2 text-[9px] font-semibold text-amber-300">
+                                <Crown className="h-2.5 w-2.5" />
+                                Propriétaire
+                              </span>
+                            ) : isManager ? (
+                              <span className="inline-flex items-center gap-1 rounded bg-emerald-500/15 border border-emerald-500/30 px-1.5 py-0.2 text-[9px] font-semibold text-emerald-300">
+                                <ShieldCheck className="h-2.5 w-2.5" />
+                                Gérer
+                              </span>
+                            ) : (
+                              <span className="text-[10px] text-zinc-500">Membre</span>
+                            )}
+                            {hasBot && memberCount !== null && (
+                              <span className="inline-flex items-center gap-1 text-[9px] text-zinc-400">
+                                <Users className="h-2.5 w-2.5" />
+                                {memberCount.toLocaleString("fr-FR")}
+                              </span>
+                            )}
+                            {botAbsent && (
+                              <span className="text-[9px] text-zinc-500">Bot non installé</span>
+                            )}
+                          </div>
+                        </div>
+                      </button>
+
+                      <div className="flex shrink-0 items-center pr-2">
+                        {hasBot ? (
+                          <span className="inline-flex items-center gap-1 rounded-md bg-emerald-500/15 px-1.5 py-0.5 text-[9px] font-bold text-emerald-300">
+                            <span className="h-1.5 w-1.5 rounded-full bg-emerald-400 animate-pulse" />
+                            ACTIF
+                          </span>
+                        ) : botPresenceKnown ? (
+                          <a
+                            href={`${BOT_INVITE_URL}&guild_id=${guild.id}`}
+                            target="_blank"
+                            rel="noopener noreferrer"
+                            onClick={(e) => e.stopPropagation()}
+                            title="Inviter le bot sur ce serveur"
+                            className="inline-flex items-center gap-1 rounded-lg border border-[#5865F2]/40 bg-[#5865F2]/15 px-2 py-1 text-[10px] font-semibold text-[#a9b2ff] transition-colors hover:bg-[#5865F2] hover:text-white"
+                          >
+                            <Plus className="h-3 w-3" />
+                            Ajouter
+                          </a>
+                        ) : null}
+                      </div>
                     </div>
-                  </div>
+                  );
+                };
+
+                if (!botPresenceKnown) return filteredGuilds.map(renderGuild);
+
+                return (
+                  <>
+                    <div className="flex items-center justify-between px-1 pt-0.5 pb-1">
+                      <span className="inline-flex items-center gap-1.5 text-[10px] font-bold uppercase tracking-wider text-emerald-400">
+                        <Bot className="h-3 w-3" />
+                        Bot installé
+                      </span>
+                      <span className="rounded bg-emerald-500/15 px-1.5 text-[10px] font-semibold text-emerald-300">{guildsWithBot.length}</span>
+                    </div>
+                    {guildsWithBot.length === 0 ? (
+                      <p className="px-2 pb-2 text-[11px] text-zinc-500">Le bot n&apos;est encore sur aucun de ces serveurs — ajoute-le ci-dessous.</p>
+                    ) : (
+                      guildsWithBot.map(renderGuild)
+                    )}
+                    {guildsWithoutBot.length > 0 && (
+                      <>
+                        <div className="flex items-center justify-between px-1 pt-3 pb-1">
+                          <span className="inline-flex items-center gap-1.5 text-[10px] font-bold uppercase tracking-wider text-zinc-500">
+                            <Plus className="h-3 w-3" />
+                            Sans le bot
+                          </span>
+                          <span className="rounded bg-white/[0.06] px-1.5 text-[10px] font-semibold text-zinc-400">{guildsWithoutBot.length}</span>
+                        </div>
+                        {guildsWithoutBot.map(renderGuild)}
+                      </>
+                    )}
+                  </>
                 );
-              })
+              })()
             )}
           </div>
 

@@ -292,6 +292,21 @@ export function startWebServer(client: Client): http.Server {
     createGuildAuthMiddleware(client),
     createServerRouter(client)
   );
+  // Présence du bot dans une liste de serveurs — accessible à tout utilisateur
+  // connecté (pas seulement le bot owner) : le dashboard s'en sert pour
+  // marquer/trier les serveurs de l'utilisateur. On ne renvoie que
+  // l'intersection avec les ids demandés, jamais la liste complète des guilds.
+  app.get('/api/guild-presence', authMiddleware, (req, res) => {
+    const raw = String(req.query.ids || '');
+    const ids = raw.split(',').map((s) => s.trim()).filter((s) => /^\d{15,22}$/.test(s)).slice(0, 200);
+    const present = ids.filter((id) => client.guilds.cache.has(id));
+    const details = present.map((id) => {
+      const g = client.guilds.cache.get(id)!;
+      return { id, memberCount: g.memberCount ?? null, joinedAt: g.joinedAt?.toISOString() ?? null };
+    });
+    res.json({ present, details });
+  });
+
   app.use(
     '/api/bot',
     authMiddleware,

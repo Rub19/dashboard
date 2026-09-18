@@ -43,6 +43,38 @@ export function createAiRouter(client: Client): Router {
     }
   });
 
+  // 2b. Réglages de comportement (mode global, anti-hallucination, sources,
+  // mémoire, budget) — whitelist explicite pour ne jamais laisser le dashboard
+  // toucher provider/model/clés via cette route.
+  router.put('/settings', (req: Request, res: Response) => {
+    try {
+      const guildId = requireStringParam(req.params.guildId, 'guildId');
+      const body = req.body || {};
+      const patch: Record<string, unknown> = {};
+      if (typeof body.enabled === 'boolean') patch.enabled = body.enabled;
+      if (typeof body.defaultMode === 'string') patch.defaultMode = body.defaultMode;
+      if (typeof body.hallucinationMode === 'string') patch.hallucinationMode = body.hallucinationMode;
+      if (typeof body.showSources === 'string') patch.showSources = body.showSources;
+      if (typeof body.dailyBudgetTokens === 'number' && body.dailyBudgetTokens >= 0) patch.dailyBudgetTokens = body.dailyBudgetTokens;
+      if (body.memory && typeof body.memory === 'object') {
+        const current = aiRepository.getSettings(guildId).memory;
+        patch.memory = { ...current, ...body.memory };
+      }
+      const updated = aiRepository.saveSettings(guildId, patch as any);
+      res.json({
+        enabled: updated.enabled,
+        defaultMode: updated.defaultMode,
+        hallucinationMode: updated.hallucinationMode,
+        showSources: updated.showSources,
+        memory: updated.memory,
+        dailyBudgetTokens: updated.dailyBudgetTokens,
+      });
+    } catch (err: any) {
+      logger.error('Erreur PUT /ai/settings :', err);
+      res.status(500).json({ error: err.message || 'Erreur serveur' });
+    }
+  });
+
   // 3. Salons & Overrides
   router.get('/channels', (req: Request, res: Response) => {
     try {

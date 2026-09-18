@@ -3,6 +3,8 @@ import { Track, TrackRequester } from '../types/music.js';
 import { logger } from '../../../utils/logger.js';
 import { createYtDlpPcmStream, ytDlpLookup, ytDlpSearch, YtDlpEntry } from './ytdlpStream.js';
 import { expandPlaylist, isPlaylistUrl, getSpotifyToken } from './playlistResolver.js';
+import { config } from '../../../config.js';
+import { lavalinkManager } from '../services/lavalinkManager.js';
 
 /**
  * Every "real" source goes through yt-dlp, both for metadata (search /
@@ -214,8 +216,13 @@ export class SpotifyBridgeProvider implements IMusicProvider {
       }
       if (!fullTitle) return null;
 
-      // Spotify serves no audio: find the same song on YouTube.
-      const [hit] = await ytDlpSearch(`${fullTitle} ${artist || ''}`.trim(), 1);
+      // Spotify serves no audio: find the same song on YouTube — through
+      // Lavalink when that backend is active, yt-dlp otherwise.
+      const q = `${fullTitle} ${artist || ''}`.trim();
+      const [hit] =
+        config.musicBackend === 'lavalink'
+          ? await lavalinkManager.resolve(q, requestedBy, { limit: 1 }).then((ts) => ts.map((t) => ({ url: t.url, artist: t.artist, duration: t.duration, thumbnail: t.thumbnail, encoded: t.encoded })))
+          : await ytDlpSearch(q, 1);
       if (!hit) return null;
       return {
         id: `sp-${trackId || Date.now().toString(36)}`,
@@ -226,6 +233,7 @@ export class SpotifyBridgeProvider implements IMusicProvider {
         thumbnail: thumbnail || hit.thumbnail || THUMB_FALLBACK,
         url: hit.url,
         source: 'SPOTIFY',
+        ...('encoded' in hit && hit.encoded ? { encoded: hit.encoded } : {}),
         ...stamp(requestedBy),
       };
     } catch (err) {
@@ -349,6 +357,10 @@ class MusicProviderManager {
 
   public async search(query: string, requestedBy: TrackRequester, limit: number = 8): Promise<Track[]> {
     if (!query.trim()) return curated(requestedBy, limit);
+    if (config.musicBackend === 'lavalink') {
+      const hits = await lavalinkManager.resolve(query, requestedBy, { limit, maxPlaylist: limit });
+      return hits.length > 0 ? hits : [];
+    }
 
     for (const provider of this.providers) {
       if (provider.canHandle(query)) {
@@ -369,6 +381,18 @@ class MusicProviderManager {
    * plays the first and queues the rest.
    */
   public async resolveMany(query: string, requestedBy: TrackRequester): Promise<Track[]> {
+    if (config.musicBackend === 'lavalink') {
+      // Spotify collections still go through the Spotify API → each track is
+      // then encoded by Lavalink at play time (ensureEncoded).
+      if (/open\.spotify\.com\/(?:[a-z-]+\/)?(playlist|album)\//i.test(query)) {
+        return expandPlaylist(query, requestedBy);
+      }
+      if (/^(https?:\/\/)?(open\.)?spotify\.com\/track\//i.test(query)) {
+        const t = await new SpotifyBridgeProvider().resolveTrack(query, requestedBy);
+        return t ? [t] : [];
+      }
+      return lavalinkManager.resolve(query, requestedBy, { limit: 1, maxPlaylist: 100 });
+    }
     if (isPlaylistUrl(query)) {
       const tracks = await expandPlaylist(query, requestedBy);
       if (tracks.length > 0) return tracks;

@@ -16,6 +16,41 @@ let problems = 0;
 console.log('\n=== ETHONE music doctor ===\n');
 console.log(`Node ${process.version} · ${process.platform}/${process.arch}\n`);
 
+// Charge le .env du bot pour voir la même config que lui.
+try { (await import('dotenv')).default.config(); } catch {}
+
+// 0. Backend Lavalink — si activé, c'est lui qui joue : on le teste en premier.
+if (process.env.MUSIC_BACKEND === 'lavalink') {
+  console.log('0) Backend Lavalink (MUSIC_BACKEND=lavalink)');
+  const host = process.env.LAVALINK_HOST || '127.0.0.1';
+  const port = process.env.LAVALINK_PORT || '2333';
+  const secure = process.env.LAVALINK_SECURE === 'true' || process.env.LAVALINK_SECURE === '1';
+  const base = `${secure ? 'https' : 'http'}://${host}:${port}`;
+  const headers = { Authorization: process.env.LAVALINK_PASSWORD || '' };
+  try {
+    const v = await fetch(`${base}/version`, { headers, signal: AbortSignal.timeout(5000) });
+    if (v.status === 401) { ko('Mot de passe Lavalink refusé (LAVALINK_PASSWORD ≠ application.yml)'); problems++; }
+    else if (!v.ok) { ko(`Lavalink répond ${v.status}`); problems++; }
+    else {
+      ok(`Lavalink ${await v.text()} joignable sur ${base}`);
+      const info = await fetch(`${base}/v4/info`, { headers, signal: AbortSignal.timeout(5000) }).then((r) => r.json()).catch(() => null);
+      const plugins = Array.isArray(info?.plugins) ? info.plugins : [];
+      const yt = plugins.find((p) => /youtube/i.test(p.name));
+      if (yt) ok(`Plugin YouTube ${yt.version}`); else { ko('Plugin youtube-source absent — YouTube ne marchera pas (relance scripts/lavalink-setup.sh)'); problems++; }
+      const srcs = Array.isArray(info?.sourceManagers) ? info.sourceManagers : [];
+      console.log(`     sources : ${srcs.join(', ') || '?'}`);
+      const r = await fetch(`${base}/v4/loadtracks?identifier=${encodeURIComponent('ytsearch:another love tom odell')}`, { headers, signal: AbortSignal.timeout(15000) }).then((x) => x.json()).catch((e) => ({ loadType: 'error', data: { message: e.message } }));
+      if (r.loadType === 'search' && r.data?.length) ok(`Recherche YouTube OK → « ${r.data[0].info.title} » (${r.data[0].info.author})`);
+      else { ko(`Recherche YouTube KO (${r.loadType}) ${r.data?.message || ''}`); console.log('     → OAuth pas encore fait ? pm2 logs lavalink --lines 60 --nostream | grep -iE "google.com/device|refresh token|error"'); problems++; }
+    }
+  } catch (e) {
+    ko(`Lavalink injoignable sur ${base} : ${e.message}`);
+    console.log('     → pm2 logs lavalink --lines 40 --nostream   (ou lance : bash scripts/lavalink-setup.sh)');
+    problems++;
+  }
+  console.log('\n   (les sections suivantes concernent le backend natif, non utilisé quand Lavalink est actif)');
+}
+
 // 1. @discordjs/voice dependency report
 console.log('1) Dépendances @discordjs/voice');
 try {

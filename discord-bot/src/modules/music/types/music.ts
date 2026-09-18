@@ -21,6 +21,8 @@ export interface Track {
   source: MusicSource;
   requestedBy: TrackRequester;
   addedAt: string; // ISO
+  /** Lavalink backend only: the server-side encoded track, ready to play. */
+  encoded?: string;
 }
 
 export interface VoiceChannelInfo {

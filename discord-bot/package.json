@@ -38,6 +38,7 @@
     "libsodium-wrappers": "^0.8.4",
     "opusscript": "^0.1.1",
     "play-dl": "^1.9.7",
+    "shoukaku": "^4.3.0",
     "zod": "^3.24.2"
   },
   "devDependencies": {

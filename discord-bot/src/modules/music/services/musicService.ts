@@ -1,5 +1,8 @@
 import { Client, Guild, GuildMember, VoiceBasedChannel } from 'discord.js';
-import { GuildMusicPlayer } from './guildMusicPlayer.js';
+import { GuildMusicPlayer, IGuildMusicPlayer } from './guildMusicPlayer.js';
+import { LavalinkMusicPlayer } from './lavalinkMusicPlayer.js';
+import { lavalinkManager } from './lavalinkManager.js';
+import { config } from '../../../config.js';
 import { GuildMusicState, MusicPlaylist, MusicSettings, MusicStats, RepeatMode, Track } from '../types/music.js';
 import { musicPersistence } from '../storage/musicPersistence.js';
 import { musicProviderManager } from '../providers/musicProvider.js';
@@ -10,12 +13,16 @@ import { logger } from '../../../utils/logger.js';
 
 class MusicService {
   private client: Client | null = null;
-  private players = new Map<string, GuildMusicPlayer>();
+  private players = new Map<string, IGuildMusicPlayer>();
 
   public async initialize(client: Client): Promise<void> {
     this.client = client;
-    logger.info('[MusicService] Initialisé et synchronisé avec le client Discord.');
-    logger.info(`[MusicService] yt-dlp → ${describeYtDlpConfig()}`);
+    logger.info(`[MusicService] Initialisé — backend audio : ${config.musicBackend}`);
+    if (config.musicBackend === 'lavalink') {
+      lavalinkManager.initialize(client);
+    } else {
+      logger.info(`[MusicService] yt-dlp → ${describeYtDlpConfig()}`);
+    }
     await this.restoreQueuesFromDisk(client);
   }
 
@@ -60,12 +67,11 @@ class MusicService {
     }
   }
 
-  public getPlayer(guildId: string, autoCreate: boolean = true): GuildMusicPlayer | null {
+  public getPlayer(guildId: string, autoCreate: boolean = true): IGuildMusicPlayer | null {
     let player = this.players.get(guildId);
     if (!player && autoCreate) {
-      player = new GuildMusicPlayer(guildId, (state) => {
-        musicEventBus.emitStateUpdate(state);
-      });
+      const onState = (state: GuildMusicState) => musicEventBus.emitStateUpdate(state);
+      player = config.musicBackend === 'lavalink' ? new LavalinkMusicPlayer(guildId, onState) : new GuildMusicPlayer(guildId, onState);
       this.players.set(guildId, player);
     }
     return player || null;

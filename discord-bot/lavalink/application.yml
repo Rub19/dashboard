@@ -1,0 +1,90 @@
+# Lavalink 4 — configuration ETHONE
+# Installé par scripts/lavalink-setup.sh dans ~/lavalink/application.yml.
+# Doc : https://lavalink.dev/configuration/  ·  plugin YouTube :
+# https://github.com/lavalink-devs/youtube-source
+
+server:
+  port: 2333
+  address: 127.0.0.1   # jamais exposé sur Internet : le bot tourne sur la même machine
+
+lavalink:
+  plugins:
+    - dependency: "dev.lavalink.youtube:youtube-plugin:1.18.2"
+      snapshot: false
+  server:
+    password: "CHANGE_ME"   # remplacé par le script avec LAVALINK_PASSWORD
+    sources:
+      youtube: false        # OBLIGATOIRE : la source YouTube intégrée est morte, le plugin la remplace
+      bandcamp: true
+      soundcloud: true
+      twitch: true
+      vimeo: true
+      nico: false
+      http: true            # flux directs (SomaFM, mp3…)
+      local: false
+    filters:
+      volume: true
+      equalizer: true
+      karaoke: true
+      timescale: true
+      tremolo: true
+      vibrato: true
+      distortion: true
+      rotation: true
+      channelMix: true
+      lowPass: true
+    bufferDurationMs: 400
+    frameBufferDurationMs: 5000
+    opusEncodingQuality: 10
+    resamplingQuality: HIGH
+    trackStuckThresholdMs: 10000
+    useSeekGhosting: true
+    youtubePlaylistLoadLimit: 6
+    playerUpdateInterval: 5
+    youtubeSearchEnabled: true
+    soundcloudSearchEnabled: true
+    gc-warnings: true
+
+plugins:
+  youtube:
+    enabled: true
+    allowSearch: true
+    allowDirectVideoIds: true
+    allowDirectPlaylistIds: true
+    # Ordre recommandé par le plugin : MUSIC pour la recherche, ANDROID_VR
+    # pour la lecture (pas de PO token exigé), WEB/WEBEMBEDDED en secours.
+    clients:
+      - MUSIC
+      - ANDROID_VR
+      - WEB
+      - WEBEMBEDDED
+    oauth:
+      # Au premier démarrage, Lavalink affiche dans ses logs un lien
+      # https://www.google.com/device + un code : ouvre-le avec un COMPTE
+      # GOOGLE JETABLE. Le refresh token apparaît ensuite dans les logs —
+      # colle-le ci-dessous (ou dans LAVALINK_YT_REFRESH_TOKEN pour le script)
+      # pour ne plus jamais refaire la manip.
+      enabled: true
+      # refreshToken: "1//0..."
+      # skipInitialization: true
+
+metrics:
+  prometheus:
+    enabled: false
+
+sentry:
+  dsn: ""
+
+logging:
+  file:
+    path: ./logs/
+  level:
+    root: INFO
+    lavalink: INFO
+    dev.lavalink.youtube: INFO   # nécessaire pour voir le code OAuth et le refresh token
+  request:
+    enabled: false
+  logback:
+    rollingpolicy:
+      max-file-size: 25MB
+      max-history: 7

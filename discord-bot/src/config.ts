@@ -25,6 +25,21 @@ const envSchema = z.object({
   // des Espaces Partagés (POST /api/internal/shared-spaces/notify). Vide =
   // fonctionnalité désactivée (la route interne refuse tout appel).
   SHARED_SPACES_BOT_KEY: z.string().optional().default(''),
+  // Backend audio de la musique :
+  //  - "native"   : @discordjs/voice + yt-dlp + ffmpeg dans le process du bot.
+  //  - "lavalink" : serveur audio Lavalink (Java) séparé, comme la majorité
+  //                 des bots musique — YouTube via le plugin youtube-source
+  //                 (OAuth compte jetable), zéro ffmpeg/opus côté Node.
+  //                 Voir discord-bot/lavalink/README.md.
+  MUSIC_BACKEND: z.enum(['native', 'lavalink']).optional().default('native'),
+  LAVALINK_HOST: z.string().optional().default('127.0.0.1'),
+  LAVALINK_PORT: z.coerce.number().optional().default(2333),
+  LAVALINK_PASSWORD: z.string().optional().default('youshallnotpass'),
+  LAVALINK_SECURE: z
+    .string()
+    .optional()
+    .default('false')
+    .transform((v) => v === 'true' || v === '1'),
 });
 
 const parsed = envSchema.safeParse(process.env);
@@ -48,4 +63,11 @@ export const config = {
   spotifyClientId: parsed.data.SPOTIFY_CLIENT_ID,
   spotifyClientSecret: parsed.data.SPOTIFY_CLIENT_SECRET,
   sharedSpacesBotKey: parsed.data.SHARED_SPACES_BOT_KEY,
+  musicBackend: parsed.data.MUSIC_BACKEND,
+  lavalink: {
+    host: parsed.data.LAVALINK_HOST,
+    port: parsed.data.LAVALINK_PORT,
+    password: parsed.data.LAVALINK_PASSWORD,
+    secure: parsed.data.LAVALINK_SECURE,
+  },
 };

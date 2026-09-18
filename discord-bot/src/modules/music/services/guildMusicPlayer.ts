@@ -49,7 +49,30 @@ export function prefetchDelayMs(track: Pick<Track, 'duration'>): number {
   return Math.max(0, track.duration * 1000 - PREFETCH_LEAD_MS);
 }
 
-export class GuildMusicPlayer {
+/**
+ * Backend-agnostic contract shared by the native (@discordjs/voice) and the
+ * Lavalink players — everything above this layer (musicService, routes,
+ * commands, dashboard) only ever talks to this interface.
+ */
+export interface IGuildMusicPlayer {
+  readonly guildId: string;
+  readonly queue: MusicQueue;
+  setStateCallback(cb: (state: GuildMusicState) => void): void;
+  getState(): GuildMusicState;
+  connect(channel: VoiceBasedChannel): Promise<boolean>;
+  playTrack(track: Track): Promise<boolean>;
+  pause(): boolean;
+  resume(): boolean;
+  skip(): Promise<Track | null>;
+  previous(): Promise<Track | null>;
+  stop(): void;
+  seek(positionSeconds: number): boolean;
+  setVolume(vol: number): void;
+  toggleMute(): void;
+  disconnect(): void;
+}
+
+export class GuildMusicPlayer implements IGuildMusicPlayer {
   public readonly guildId: string;
   public readonly queue: MusicQueue;
 

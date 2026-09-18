@@ -68,6 +68,88 @@ export function ytDlpAvailable(): Promise<boolean> {
   return availabilityProbe;
 }
 
+/** Normalised metadata for one video/track as yt-dlp reports it (flat, no formats). */
+export interface YtDlpEntry {
+  id: string;
+  url: string;
+  title: string;
+  artist: string;
+  duration: number;
+  thumbnail: string | null;
+  extractor: string;
+}
+
+function normaliseEntry(e: any): YtDlpEntry | null {
+  if (!e || typeof e !== 'object') return null;
+  const id = String(e.id || '');
+  const extractor = String(e.ie_key || e.extractor_key || e.extractor || '').toLowerCase();
+  let url: string = typeof e.webpage_url === 'string' ? e.webpage_url : typeof e.url === 'string' && /^https?:/.test(e.url) ? e.url : '';
+  if (!url && id && extractor.includes('youtube')) url = `https://www.youtube.com/watch?v=${id}`;
+  if (!url) return null;
+  const thumbs = Array.isArray(e.thumbnails) ? e.thumbnails : [];
+  const thumb =
+    (typeof e.thumbnail === 'string' && e.thumbnail) ||
+    (thumbs.length > 0 && typeof thumbs[thumbs.length - 1]?.url === 'string' ? thumbs[thumbs.length - 1].url : null) ||
+    (id && extractor.includes('youtube') ? `https://i.ytimg.com/vi/${id}/mqdefault.jpg` : null);
+  return {
+    id: id || url,
+    url,
+    title: String(e.title || e.track || 'Titre inconnu'),
+    artist: String(e.artist || e.uploader || e.channel || e.creator || (extractor.includes('soundcloud') ? 'SoundCloud' : 'YouTube')),
+    duration: Math.round(Number(e.duration) || 0),
+    thumbnail: thumb,
+    extractor,
+  };
+}
+
+/**
+ * Runs yt-dlp in metadata-only mode (`--dump-single-json --flat-playlist`)
+ * on a URL or a `ytsearchN:` / `scsearchN:` query and returns the entries.
+ * A single video comes back as one entry; a search/playlist as its list.
+ */
+export async function ytDlpLookup(input: string, limit = 5): Promise<YtDlpEntry[]> {
+  if (!(await ytDlpAvailable())) return [];
+  const args = [
+    '--dump-single-json',
+    '--flat-playlist',
+    '--no-warnings',
+    '--quiet',
+    '--playlist-end',
+    String(Math.max(1, limit)),
+    '--socket-timeout',
+    '15',
+    ...(COOKIES_FILE ? ['--cookies', COOKIES_FILE] : []),
+    ...EXTRA_ARGS,
+    input,
+  ];
+  const json = await new Promise<string>((resolve) => {
+    const proc = spawn(YT_DLP_PATH, args, { stdio: ['ignore', 'pipe', 'pipe'] });
+    let out = '';
+    let err = '';
+    proc.stdout?.on('data', (c: Buffer) => (out += c.toString()));
+    proc.stderr?.on('data', (c: Buffer) => (err = (err + c.toString()).slice(-1000)));
+    proc.on('error', () => resolve(''));
+    proc.on('close', (code) => {
+      if (code !== 0 && !out.trim()) logger.warn(`[ytdlp] lookup "${input}" a échoué (code ${code}) : ${err.trim().split('\n').pop() || 'aucun détail'}`);
+      resolve(out);
+    });
+  });
+  if (!json.trim()) return [];
+  try {
+    const parsed = JSON.parse(json);
+    const raw: any[] = Array.isArray(parsed?.entries) ? parsed.entries : [parsed];
+    return raw.map(normaliseEntry).filter((e): e is YtDlpEntry => e !== null).slice(0, limit);
+  } catch {
+    logger.warn(`[ytdlp] JSON illisible pour "${input}"`);
+    return [];
+  }
+}
+
+/** Text search on YouTube through yt-dlp. */
+export function ytDlpSearch(query: string, limit = 5): Promise<YtDlpEntry[]> {
+  return ytDlpLookup(`ytsearch${Math.max(1, limit)}:${query.trim()}`, limit);
+}
+
 /**
  * Spawns yt-dlp and returns its raw audio bytes on stdout as a Readable.
  * The container (webm/opus, m4a, mp3...) is left as-is — @discordjs/voice

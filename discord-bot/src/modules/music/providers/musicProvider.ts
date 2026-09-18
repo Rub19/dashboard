@@ -1,16 +1,15 @@
 import { AudioResource, createAudioResource, StreamType } from '@discordjs/voice';
-import play from 'play-dl';
 import { Track, TrackRequester } from '../types/music.js';
 import { logger } from '../../../utils/logger.js';
-import { createYtDlpStream } from './ytdlpStream.js';
+import { createYtDlpStream, ytDlpLookup, ytDlpSearch, YtDlpEntry } from './ytdlpStream.js';
 import { expandPlaylist, isPlaylistUrl, getSpotifyToken } from './playlistResolver.js';
 
 /**
- * Single audio path for every "real" provider (Spotify bridge, YouTube,
- * SoundCloud): pull the bytes with yt-dlp, hand them to ffmpeg via
- * @discordjs/voice. Replaces play.stream(), which no longer returns usable
- * audio (see ytdlpStream.ts). Returns null if yt-dlp isn't installed or the
- * extraction failed, so the caller can fall back.
+ * Every "real" source goes through yt-dlp, both for metadata (search /
+ * lookup) and for audio. play-dl is gone entirely: its SoundCloud search
+ * returned wrong tracks ("Love Can Do" for "another love") with dead
+ * api.soundcloud.com URLs that produced 0 ms of audio — the exact
+ * "bot joins, Now Playing looks fine, no sound" report.
  */
 async function streamWithYtDlp(input: string, label: string): Promise<AudioResource | null> {
   try {
@@ -21,6 +20,33 @@ async function streamWithYtDlp(input: string, label: string): Promise<AudioResou
     logger.warn(`[${label}] yt-dlp stream error :`, err);
     return null;
   }
+}
+
+const THUMB_FALLBACK = 'https://images.unsplash.com/photo-1511671782779-c97d3d27a1d4?w=500&auto=format&fit=crop&q=80';
+
+function stamp(requestedBy: TrackRequester): Pick<Track, 'requestedBy' | 'addedAt'> {
+  return { requestedBy, addedAt: new Date().toISOString() };
+}
+
+function entryToTrack(e: YtDlpEntry, requestedBy: TrackRequester, source: Track['source'], album: string): Track {
+  return {
+    id: `${source.toLowerCase()}-${e.id}`,
+    title: e.title,
+    artist: e.artist,
+    album,
+    duration: e.duration,
+    thumbnail: e.thumbnail || THUMB_FALLBACK,
+    url: e.url,
+    source,
+    ...stamp(requestedBy),
+  };
+}
+
+// Words that make a YouTube search return the *song* rather than a live,
+// a 10-hour loop or a reaction video. Applied only to free-text queries.
+function musicQuery(query: string): string {
+  const q = query.trim();
+  return /\b(official|audio|lyrics|live|cover|remix|mix|radio|album|full)\b/i.test(q) ? q : `${q} official audio`;
 }
 
 export interface IMusicProvider {
@@ -85,19 +111,8 @@ const CURATED_TRACKS: Array<Omit<Track, 'requestedBy' | 'addedAt'>> = [
   },
 ];
 
-let soundCloudClientReady = false;
-
-async function ensureSoundCloud(): Promise<boolean> {
-  if (soundCloudClientReady) return true;
-  try {
-    const clientId = await play.getFreeClientID();
-    await play.setToken({ soundcloud: { client_id: clientId } });
-    soundCloudClientReady = true;
-    return true;
-  } catch (err) {
-    logger.warn('[MusicProvider] Impossible de récupérer le client ID SoundCloud :', err);
-    return false;
-  }
+function curated(requestedBy: TrackRequester, limit: number): Track[] {
+  return CURATED_TRACKS.slice(0, limit).map((t) => ({ ...t, ...stamp(requestedBy) }));
 }
 
 // --- 1. Direct Stream Provider (HTTP MP3/WAV/OGG/Icecast) ---
@@ -119,7 +134,6 @@ export class DirectStreamProvider implements IMusicProvider {
       const urlObj = new URL(query);
       const filename = urlObj.pathname.split('/').pop() || 'Audio Stream';
       const cleanTitle = decodeURIComponent(filename).replace(/\.[^/.]+$/, '') || 'Direct Audio Stream';
-
       return {
         id: `direct-${Date.now().toString(36)}`,
         title: cleanTitle,
@@ -129,8 +143,7 @@ export class DirectStreamProvider implements IMusicProvider {
         thumbnail: 'https://images.unsplash.com/photo-1470225620780-dba8ba36b745?w=500&auto=format&fit=crop&q=80',
         url: query,
         source: 'DIRECT',
-        requestedBy,
-        addedAt: new Date().toISOString(),
+        ...stamp(requestedBy),
       };
     } catch {
       return null;
@@ -147,7 +160,7 @@ export class DirectStreamProvider implements IMusicProvider {
   }
 }
 
-// --- 2. Spotify Bridge Provider (oEmbed + SoundCloud Playback) ---
+// --- 2. Spotify Bridge Provider (Spotify metadata → YouTube audio) ---
 export class SpotifyBridgeProvider implements IMusicProvider {
   public name = 'Spotify';
 
@@ -155,17 +168,12 @@ export class SpotifyBridgeProvider implements IMusicProvider {
     return /^(https?:\/\/)?(open\.)?spotify\.com\/(track|playlist|album)\/.+$/i.test(query);
   }
 
-  public async search(query: string, requestedBy: TrackRequester, limit: number = 5): Promise<Track[]> {
+  public async search(query: string, requestedBy: TrackRequester): Promise<Track[]> {
     const track = await this.resolveTrack(query, requestedBy);
     return track ? [track] : [];
   }
 
   public async resolveTrack(query: string, requestedBy: TrackRequester): Promise<Track | null> {
-    // Real Spotify Web API metadata (real album name, real duration, real
-    // album art) when SPOTIFY_CLIENT_ID/SECRET are configured — same
-    // client-credentials token already used for playlist/album import.
-    // Falls back to the public oEmbed endpoint (title/author/thumbnail only,
-    // no duration, no album) when credentials aren't set, same as before.
     const trackId = query.match(/open\.spotify\.com\/(?:[a-z-]+\/)?track\/([A-Za-z0-9]+)/i)?.[1];
     let fullTitle: string | null = null;
     let artist: string | null = null;
@@ -177,16 +185,9 @@ export class SpotifyBridgeProvider implements IMusicProvider {
       try {
         const token = await getSpotifyToken();
         if (token) {
-          const res = await fetch(`https://api.spotify.com/v1/tracks/${trackId}`, {
-            headers: { Authorization: `Bearer ${token}` },
-          });
+          const res = await fetch(`https://api.spotify.com/v1/tracks/${trackId}`, { headers: { Authorization: `Bearer ${token}` } });
           if (res.ok) {
-            const data = (await res.json()) as {
-              name?: string;
-              duration_ms?: number;
-              artists?: Array<{ name?: string }>;
-              album?: { name?: string; images?: Array<{ url?: string }> };
-            };
+            const data = (await res.json()) as { name?: string; duration_ms?: number; artists?: Array<{ name?: string }>; album?: { name?: string; images?: Array<{ url?: string }> } };
             fullTitle = data.name || null;
             artist = (data.artists || []).map((a) => a.name).filter(Boolean).join(', ') || null;
             album = data.album?.name || null;
@@ -201,38 +202,30 @@ export class SpotifyBridgeProvider implements IMusicProvider {
 
     try {
       if (!fullTitle || !artist) {
-        const oembedUrl = `https://open.spotify.com/oembed?url=${encodeURIComponent(query)}`;
-        const res = await fetch(oembedUrl);
+        const res = await fetch(`https://open.spotify.com/oembed?url=${encodeURIComponent(query)}`);
         if (res.ok) {
           const data = (await res.json()) as any;
-          fullTitle = fullTitle || data.title || 'Spotify Track';
-          artist = artist || data.author_name || 'Spotify Artist';
+          fullTitle = fullTitle || data.title || null;
+          artist = artist || data.author_name || null;
           thumbnail = thumbnail || data.thumbnail_url || null;
         }
       }
       if (!fullTitle) return null;
 
-      await ensureSoundCloud();
-      const scResults = await play.search(`${fullTitle} ${artist}`, {
-        source: { soundcloud: 'tracks' },
-        limit: 1,
-      });
-
-      if (scResults && scResults.length > 0) {
-        const sc = scResults[0];
-        return {
-          id: `sp-${Date.now().toString(36)}`,
-          title: fullTitle,
-          artist: artist || 'Spotify Artist',
-          album: album || 'Spotify',
-          duration: durationSeconds || sc.durationInSec || 210,
-          thumbnail: thumbnail || sc.thumbnail || 'https://images.unsplash.com/photo-1511671782779-c97d3d27a1d4?w=500&auto=format&fit=crop&q=80',
-          url: sc.url,
-          source: 'SPOTIFY',
-          requestedBy,
-          addedAt: new Date().toISOString(),
-        };
-      }
+      // Spotify serves no audio: find the same song on YouTube.
+      const [hit] = await ytDlpSearch(`${fullTitle} ${artist || ''}`.trim(), 1);
+      if (!hit) return null;
+      return {
+        id: `sp-${trackId || Date.now().toString(36)}`,
+        title: fullTitle,
+        artist: artist || hit.artist,
+        album: album || 'Spotify',
+        duration: durationSeconds || hit.duration,
+        thumbnail: thumbnail || hit.thumbnail || THUMB_FALLBACK,
+        url: hit.url,
+        source: 'SPOTIFY',
+        ...stamp(requestedBy),
+      };
     } catch (err) {
       logger.warn('[SpotifyBridgeProvider] Erreur résolution Spotify :', err);
     }
@@ -244,57 +237,34 @@ export class SpotifyBridgeProvider implements IMusicProvider {
   }
 }
 
-// --- 3. YouTube Music Provider (Metadata + SoundCloud Playback Bridge) ---
+// --- 3. YouTube URL Provider ---
 export class YouTubeMusicProvider implements IMusicProvider {
   public name = 'YouTube';
 
   public canHandle(query: string): boolean {
-    return /^(https?:\/\/)?(www\.)?(youtube\.com|youtu\.be)\/.+$/i.test(query);
+    return /^(https?:\/\/)?(www\.|m\.|music\.)?(youtube\.com|youtu\.be)\/.+$/i.test(query);
   }
 
-  public async search(query: string, requestedBy: TrackRequester, limit: number = 5): Promise<Track[]> {
+  public async search(query: string, requestedBy: TrackRequester): Promise<Track[]> {
     const track = await this.resolveTrack(query, requestedBy);
     return track ? [track] : [];
   }
 
   public async resolveTrack(query: string, requestedBy: TrackRequester): Promise<Track | null> {
-    try {
-      let title = query;
-      let artist = 'YouTube Music';
-      let duration = 210;
-      let thumbnail = 'https://images.unsplash.com/photo-1511671782779-c97d3d27a1d4?w=500&auto=format&fit=crop&q=80';
-
-      try {
-        const info = await play.video_basic_info(query);
-        if (info && info.video_details) {
-          title = info.video_details.title || title;
-          artist = info.video_details.channel?.name || artist;
-          duration = info.video_details.durationInSec || duration;
-          thumbnail = info.video_details.thumbnails?.[0]?.url || thumbnail;
-        }
-      } catch (infoErr) {
-        logger.warn('[YouTubeMusicProvider] video_basic_info notice :', infoErr);
-      }
-
-      // Keep the real YouTube URL — yt-dlp streams the actual video's audio
-      // directly now, so there's no reason to bridge to a SoundCloud search
-      // result (which was often a cover, a remix, or nothing).
-      return {
-        id: `yt-${Date.now().toString(36)}`,
-        title,
-        artist,
-        album: 'YouTube Music',
-        duration,
-        thumbnail,
-        url: query,
-        source: 'YOUTUBE',
-        requestedBy,
-        addedAt: new Date().toISOString(),
-      };
-    } catch (err) {
-      logger.warn('[YouTubeMusicProvider] Erreur résolution YouTube :', err);
-    }
-    return null;
+    const [info] = await ytDlpLookup(query, 1);
+    if (info) return entryToTrack(info, requestedBy, 'YOUTUBE', 'YouTube');
+    // Metadata lookup failed but yt-dlp may still stream it — keep the URL.
+    return {
+      id: `yt-${Date.now().toString(36)}`,
+      title: query,
+      artist: 'YouTube',
+      album: 'YouTube',
+      duration: 0,
+      thumbnail: THUMB_FALLBACK,
+      url: query,
+      source: 'YOUTUBE',
+      ...stamp(requestedBy),
+    };
   }
 
   public async getStream(track: Track): Promise<AudioResource | null> {
@@ -302,84 +272,22 @@ export class YouTubeMusicProvider implements IMusicProvider {
   }
 }
 
-// --- 4. SoundCloud Provider (Full Search & Real Streaming) ---
+// --- 4. SoundCloud URL Provider ---
 export class SoundCloudProvider implements IMusicProvider {
   public name = 'SoundCloud';
 
   public canHandle(query: string): boolean {
-    return (
-      /^(https?:\/\/)?(www\.)?soundcloud\.com\/.+$/i.test(query) ||
-      !query.startsWith('http') // Any free-text query (e.g. "Drive by", "Lofi beats")
-    );
+    return /^(https?:\/\/)?((www|m|on)\.)?soundcloud\.com\/.+$/i.test(query);
   }
 
-  public async search(query: string, requestedBy: TrackRequester, limit: number = 5): Promise<Track[]> {
-    const qLower = query.toLowerCase().trim();
-
-    // Check curated tracks first if user specifically types "lofi", "ambient", etc.
-    const matchedCurated = CURATED_TRACKS.filter(
-      (t) => t.title.toLowerCase().includes(qLower) || t.artist.toLowerCase().includes(qLower)
-    );
-
-    if (matchedCurated.length > 0) {
-      return matchedCurated.slice(0, limit).map((t) => ({
-        ...t,
-        requestedBy,
-        addedAt: new Date().toISOString(),
-      }));
-    }
-
-    const ok = await ensureSoundCloud();
-    if (!ok) return [];
-
-    try {
-      const tracks = await play.search(query, {
-        source: { soundcloud: 'tracks' },
-        limit,
-      });
-
-      if (!tracks || tracks.length === 0) return [];
-
-      return tracks.map((t: any, idx: number) => ({
-        id: `sc-${t.id || Date.now().toString(36) + idx}`,
-        title: t.name || 'Titre inconnu',
-        artist: t.user?.name || 'SoundCloud Artist',
-        album: 'SoundCloud',
-        duration: t.durationInSec || 180,
-        thumbnail: t.thumbnail || 'https://images.unsplash.com/photo-1511671782779-c97d3d27a1d4?w=500&auto=format&fit=crop&q=80',
-        url: t.url,
-        source: 'SOUNDCLOUD',
-        requestedBy,
-        addedAt: new Date().toISOString(),
-      }));
-    } catch (err) {
-      logger.warn(`[SoundCloudProvider] Erreur recherche "${query}" :`, err);
-      return [];
-    }
+  public async search(query: string, requestedBy: TrackRequester): Promise<Track[]> {
+    const track = await this.resolveTrack(query, requestedBy);
+    return track ? [track] : [];
   }
 
   public async resolveTrack(query: string, requestedBy: TrackRequester): Promise<Track | null> {
-    const results = await this.search(query, requestedBy, 1);
-    if (results.length > 0) return results[0];
-
-    // SoundCloud search found nothing (or its free client id is dead) — hand
-    // the query to yt-dlp's YouTube search instead of dropping to the SomaFM
-    // fallback. yt-dlp resolves `ytsearch1:` and streams the top hit.
-    if (query.trim() && !query.startsWith('http')) {
-      return {
-        id: `yts-${Date.now().toString(36)}`,
-        title: query.trim(),
-        artist: 'YouTube',
-        album: 'Recherche',
-        duration: 0,
-        thumbnail: 'https://images.unsplash.com/photo-1511671782779-c97d3d27a1d4?w=500&auto=format&fit=crop&q=80',
-        url: `ytsearch1:${query.trim()}`,
-        source: 'YOUTUBE',
-        requestedBy,
-        addedAt: new Date().toISOString(),
-      };
-    }
-    return null;
+    const [info] = await ytDlpLookup(query, 1);
+    return info ? entryToTrack(info, requestedBy, 'SOUNDCLOUD', 'SoundCloud') : null;
   }
 
   public async getStream(track: Track): Promise<AudioResource | null> {
@@ -387,23 +295,58 @@ export class SoundCloudProvider implements IMusicProvider {
   }
 }
 
-// --- 5. Central Provider Manager ---
+// --- 5. Free-text search → YouTube (via yt-dlp) ---
+export class YouTubeSearchProvider implements IMusicProvider {
+  public name = 'YouTubeSearch';
+
+  public canHandle(query: string): boolean {
+    return !/^https?:\/\//i.test(query.trim()) && query.trim().length > 0;
+  }
+
+  public async search(query: string, requestedBy: TrackRequester, limit: number = 5): Promise<Track[]> {
+    const q = query.trim();
+    // "radio", "lofi radio"… → the curated 24/7 streams, otherwise YouTube.
+    if (/^(radio|lofi radio|somafm)$/i.test(q)) return curated(requestedBy, limit);
+
+    const hits = await ytDlpSearch(musicQuery(q), limit);
+    return hits.map((h) => entryToTrack(h, requestedBy, 'YOUTUBE', 'YouTube'));
+  }
+
+  public async resolveTrack(query: string, requestedBy: TrackRequester): Promise<Track | null> {
+    const results = await this.search(query, requestedBy, 1);
+    if (results.length > 0) return results[0];
+    // yt-dlp missing or search failed — let yt-dlp resolve at stream time
+    // (ytsearch1:) so /play still works even without metadata.
+    return {
+      id: `yts-${Date.now().toString(36)}`,
+      title: query.trim(),
+      artist: 'YouTube',
+      album: 'Recherche',
+      duration: 0,
+      thumbnail: THUMB_FALLBACK,
+      url: `ytsearch1:${musicQuery(query)}`,
+      source: 'YOUTUBE',
+      ...stamp(requestedBy),
+    };
+  }
+
+  public async getStream(track: Track): Promise<AudioResource | null> {
+    return streamWithYtDlp(track.url, 'YouTubeSearchProvider');
+  }
+}
+
+// --- 6. Central Provider Manager ---
 class MusicProviderManager {
   private providers: IMusicProvider[] = [
     new DirectStreamProvider(),
     new SpotifyBridgeProvider(),
     new YouTubeMusicProvider(),
     new SoundCloudProvider(),
+    new YouTubeSearchProvider(),
   ];
 
   public async search(query: string, requestedBy: TrackRequester, limit: number = 8): Promise<Track[]> {
-    if (!query.trim()) {
-      return CURATED_TRACKS.slice(0, limit).map((t) => ({
-        ...t,
-        requestedBy,
-        addedAt: new Date().toISOString(),
-      }));
-    }
+    if (!query.trim()) return curated(requestedBy, limit);
 
     for (const provider of this.providers) {
       if (provider.canHandle(query)) {
@@ -415,13 +358,7 @@ class MusicProviderManager {
         }
       }
     }
-
-    // Default curated search
-    return CURATED_TRACKS.slice(0, limit).map((t) => ({
-      ...t,
-      requestedBy,
-      addedAt: new Date().toISOString(),
-    }));
+    return curated(requestedBy, limit);
   }
 
   /**
@@ -433,8 +370,6 @@ class MusicProviderManager {
     if (isPlaylistUrl(query)) {
       const tracks = await expandPlaylist(query, requestedBy);
       if (tracks.length > 0) return tracks;
-      // Expansion failed (yt-dlp / Spotify creds missing) — for a
-      // watch?v=...&list=... URL we can still play the single video.
       const single = query.match(/[?&]v=([A-Za-z0-9_-]{6,})/);
       if (single) return this.resolveMany(`https://www.youtube.com/watch?v=${single[1]}`, requestedBy);
       return [];
@@ -454,18 +389,15 @@ class MusicProviderManager {
         }
       }
     }
-    const defaultTrack = CURATED_TRACKS[0];
-    return {
-      ...defaultTrack,
-      requestedBy,
-      addedAt: new Date().toISOString(),
-    };
+    // Nothing could resolve it (yt-dlp missing) — never silently play the
+    // wrong thing: fall back to the first curated stream but say so.
+    logger.warn(`[MusicProviderManager] "${query}" non résolu — lecture du flux radio de secours.`);
+    return { ...CURATED_TRACKS[0], ...stamp(requestedBy) };
   }
 
   public async createAudioResource(track: Track): Promise<AudioResource | null> {
-    // 1. Try appropriate provider
     for (const provider of this.providers) {
-      if (provider.canHandle(track.url)) {
+      if (provider.canHandle(track.url) || (track.url.startsWith('ytsearch') && provider.name === 'YouTubeSearch')) {
         try {
           const resource = await provider.getStream(track);
           if (resource) return resource;
@@ -475,17 +407,11 @@ class MusicProviderManager {
       }
     }
 
-    // 2. Direct playable stream attempt — ONLY if the URL is an actual direct audio
-    // file/stream (mp3/wav/ogg/etc. or a known Icecast stream). Feeding a webpage URL
-    // (e.g. a soundcloud.com/spotify.com track page returned when the real provider's
-    // getStream() failed above) straight into ffmpeg produces no usable audio: ffmpeg
-    // receives HTML, not a media stream, so the resource "succeeds" (no thrown error)
-    // while producing silence — exactly the "Now Playing looks correct but no sound"
-    // symptom. Only take this shortcut for URLs that are provably real audio.
+    // Only a provably-direct audio URL may be handed straight to ffmpeg: a
+    // webpage URL would "succeed" while producing silence.
     const isDirectAudioUrl =
       !!track.url &&
-      (/^https?:\/\/.*\.(mp3|wav|ogg|m4a|aac|flac)(\?.*)?$/i.test(track.url) ||
-        /^https?:\/\/.*somafm\.com/i.test(track.url));
+      (/^https?:\/\/.*\.(mp3|wav|ogg|m4a|aac|flac)(\?.*)?$/i.test(track.url) || /^https?:\/\/.*somafm\.com/i.test(track.url));
     if (isDirectAudioUrl) {
       try {
         return createAudioResource(track.url, { inputType: StreamType.Arbitrary });
@@ -494,14 +420,8 @@ class MusicProviderManager {
       }
     }
 
-    // 3. Final bulletproof fallback: SomaFM curated stream
-    try {
-      const fallbackUrl = CURATED_TRACKS[0].url;
-      return createAudioResource(fallbackUrl, { inputType: StreamType.Arbitrary });
-    } catch (fallbackErr) {
-      logger.error('[MusicProviderManager] Erreur critique fallback audio :', fallbackErr);
-      return null;
-    }
+    logger.error(`[MusicProviderManager] Aucun flux audio pour "${track.title}" (${track.url}) — vérifie yt-dlp (npm run music:doctor).`);
+    return null;
   }
 }
 

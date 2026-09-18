@@ -44,6 +44,15 @@ umask 077
 printf '%s' "$LAVALINK_PASSWORD" > "$LL_DIR/.password"
 
 # 4) application.yml depuis le template du repo (+ mot de passe, + refresh token)
+# Sans LAVALINK_YT_REFRESH_TOKEN, on conserve le token déjà présent dans la
+# config précédente (sinon chaque relance du script obligerait à ré-appairer).
+if [ -z "${LAVALINK_YT_REFRESH_TOKEN:-}" ] && [ -f "$LL_DIR/application.yml" ]; then
+  EXISTING_TOKEN="$(grep -oE 'refreshToken: "1//[A-Za-z0-9_-]+"' "$LL_DIR/application.yml" | head -1 | sed -E 's/refreshToken: "(.*)"/\1/')"
+  if [ -n "$EXISTING_TOKEN" ]; then
+    LAVALINK_YT_REFRESH_TOKEN="$EXISTING_TOKEN"
+    echo "-- Refresh token YouTube existant conservé"
+  fi
+fi
 sed "s/CHANGE_ME/$LAVALINK_PASSWORD/" "$TEMPLATE" > "$LL_DIR/application.yml"
 if [ -n "${LAVALINK_YT_REFRESH_TOKEN:-}" ]; then
   # Un vrai refresh token Google commence par "1//" et fait 60+ caractères sans

@@ -65,7 +65,9 @@ static func _to_wav(samples: PackedFloat32Array) -> AudioStreamWAV:
 static func _noise(rng: RandomNumberGenerator) -> float:
 	return rng.randf_range(-1.0, 1.0)
 
-## Détonation : souffle de bruit blanc à décroissance rapide + coup sourd grave.
+## Détonation : souffle de bruit blanc à décroissance rapide + coup sourd grave
+## + un "crack" initial (bruit à peine filtré, décroissance très rapide) qui
+## donne l'attaque sèche d'un vrai coup de feu au lieu d'un simple "pschht".
 static func _gen_gun(dur: float, decay: float, thump_hz: float, gain: float) -> PackedFloat32Array:
 	var n := int(dur * RATE)
 	var out := PackedFloat32Array()
@@ -73,6 +75,7 @@ static func _gen_gun(dur: float, decay: float, thump_hz: float, gain: float) -> 
 	var rng := RandomNumberGenerator.new()
 	rng.seed = 1337
 	var prev := 0.0
+	var crack_prev := 0.0
 	for i in n:
 		var t := float(i) / RATE
 		var env := exp(-decay * t)
@@ -80,10 +83,14 @@ static func _gen_gun(dur: float, decay: float, thump_hz: float, gain: float) -> 
 		# Filtre passe-bas 1 pôle : bruit moins "aigu/criard"
 		prev = prev + (raw - prev) * 0.35
 		var thump := sin(TAU * thump_hz * t) * exp(-18.0 * t) * 0.8
-		out[i] = clampf((prev * env + thump) * gain, -1.0, 1.0)
+		crack_prev = crack_prev + (raw - crack_prev) * 0.85
+		var crack := crack_prev * exp(-decay * 6.0 * t) * 0.6
+		out[i] = clampf((prev * env + thump + crack) * gain, -1.0, 1.0)
 	return out
 
-## Sifflement d'épée : bruit filtré avec une enveloppe en cloche.
+## Sifflement d'épée : bruit filtré avec une enveloppe en cloche, plus un
+## léger "shing" métallique (deux partiels aigus à décroissance rapide) pour
+## donner une identité de lame plutôt qu'un simple souffle d'air.
 static func _gen_whoosh(dur: float) -> PackedFloat32Array:
 	var n := int(dur * RATE)
 	var out := PackedFloat32Array()
@@ -95,9 +102,10 @@ static func _gen_whoosh(dur: float) -> PackedFloat32Array:
 		var t := float(i) / RATE
 		var x := t / dur
 		var env := sin(PI * x)
-		var cutoff := 0.08 + 0.4 * env
+		var cutoff := 0.08 + 0.5 * env
 		prev = prev + (_noise(rng) - prev) * cutoff
-		out[i] = prev * env * 0.9
+		var shing := (sin(TAU * 3200.0 * t) + 0.5 * sin(TAU * 4700.0 * t)) * exp(-14.0 * t) * 0.18
+		out[i] = clampf(prev * env * 0.85 + shing, -1.0, 1.0)
 	return out
 
 ## Petit "tic" tonal (impact réussi, clic d'interface).

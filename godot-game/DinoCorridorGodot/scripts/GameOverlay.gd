@@ -33,6 +33,18 @@ func _ready() -> void:
 	_root.set_anchors_preset(Control.PRESET_FULL_RECT)
 	add_child(_root)
 
+	# Fond d'ambiance : silhouette d'un dinosaure du jeu, très assombrie, pour
+	# que l'écran de démarrage ne soit plus un simple panneau flottant sur du
+	# noir uni.
+	var bg := TextureRect.new()
+	bg.texture = load("res://assets/trex.png")
+	bg.set_anchors_preset(Control.PRESET_FULL_RECT)
+	bg.expand_mode = TextureRect.EXPAND_IGNORE_SIZE
+	bg.stretch_mode = TextureRect.STRETCH_KEEP_ASPECT_COVERED
+	bg.modulate = Color(1.0, 0.75, 0.6, 0.14)
+	bg.mouse_filter = Control.MOUSE_FILTER_IGNORE
+	_root.add_child(bg)
+
 	var dim := ColorRect.new()
 	dim.set_anchors_preset(Control.PRESET_FULL_RECT)
 	dim.color = Color(0.02, 0.015, 0.01, 0.86)
@@ -45,13 +57,16 @@ func _ready() -> void:
 	var panel := PanelContainer.new()
 	var sb := StyleBoxFlat.new()
 	sb.bg_color = Color(0.07, 0.055, 0.04, 0.97)
-	sb.border_color = Color(0.91, 0.86, 0.78, 0.18)
 	sb.set_border_width_all(1)
+	sb.border_width_top = 3
+	sb.border_color = EMBER
 	sb.set_corner_radius_all(14)
 	sb.content_margin_left = 28
 	sb.content_margin_right = 28
 	sb.content_margin_top = 24
 	sb.content_margin_bottom = 24
+	sb.shadow_color = Color(0.0, 0.0, 0.0, 0.45)
+	sb.shadow_size = 22
 	panel.add_theme_stylebox_override("panel", sb)
 	panel.custom_minimum_size = Vector2(520, 0)
 	center.add_child(panel)
@@ -61,11 +76,23 @@ func _ready() -> void:
 	panel.add_child(col)
 
 	_title = Label.new()
-	_title.text = "DINO CORRIDOR"
+	_title.text = "🦖 DINO CORRIDOR"
 	_title.horizontal_alignment = HORIZONTAL_ALIGNMENT_CENTER
-	_title.add_theme_font_size_override("font_size", 34)
+	_title.add_theme_font_size_override("font_size", 36)
 	_title.add_theme_color_override("font_color", CREAM)
+	_title.add_theme_color_override("font_shadow_color", Color(0.0, 0.0, 0.0, 0.6))
+	_title.add_theme_constant_override("shadow_offset_x", 0)
+	_title.add_theme_constant_override("shadow_offset_y", 3)
 	col.add_child(_title)
+
+	var subtitle := Label.new()
+	subtitle.text = "SURVIS · TIRE · PROGRESSE"
+	subtitle.horizontal_alignment = HORIZONTAL_ALIGNMENT_CENTER
+	subtitle.add_theme_font_size_override("font_size", 11)
+	subtitle.add_theme_color_override("font_color", EMBER)
+	col.add_child(subtitle)
+
+	col.add_child(HSeparator.new())
 
 	_text = Label.new()
 	_text.horizontal_alignment = HORIZONTAL_ALIGNMENT_CENTER
@@ -86,17 +113,19 @@ func _ready() -> void:
 	for i in LevelData.LEVELS.size():
 		var lvl: Dictionary = LevelData.LEVELS[i]
 		var b := Button.new()
-		b.text = "%d. %s   —   %d dinos · %d PV · dégâts %d" % [i + 1, lvl.name, lvl.enemy_count, lvl.enemy_hp, lvl.enemy_dmg]
+		b.text = "🦴 %d. %s   —   %d dinos · %d PV · dégâts %d" % [i + 1, lvl.name, lvl.enemy_count, lvl.enemy_hp, lvl.enemy_dmg]
 		b.alignment = HORIZONTAL_ALIGNMENT_LEFT
 		b.focus_mode = Control.FOCUS_NONE
 		b.pressed.connect(_on_level_pressed.bind(i))
 		_level_box.add_child(b)
 		_level_buttons.append(b)
 
-	_start_btn = _big_button(col, "COMMENCER")
+	col.add_child(HSeparator.new())
+
+	_start_btn = _big_button(col, "▶  COMMENCER")
 	_start_btn.pressed.connect(func() -> void: start_requested.emit(selected_level))
 
-	_resume_btn = _big_button(col, "REPRENDRE")
+	_resume_btn = _big_button(col, "▶  REPRENDRE")
 	_resume_btn.pressed.connect(func() -> void: resume_pressed.emit())
 
 	_primary_btn = _big_button(col, "REESSAYER")
@@ -169,7 +198,7 @@ func _refresh_level_buttons() -> void:
 # ---------- API ----------
 
 func show_main_menu(profile_text: String, can_resume: bool) -> void:
-	_title.text = "DINO CORRIDOR"
+	_title.text = "🦖 DINO CORRIDOR"
 	_text.text = "Partie interrompue." if can_resume else "Survis aux couloirs, élimine tous les dinosaures pour passer au niveau suivant. ZQSD / WASD pour bouger, souris pour viser, clic gauche pour tirer."
 	_profile.text = profile_text
 	_level_box.visible = true

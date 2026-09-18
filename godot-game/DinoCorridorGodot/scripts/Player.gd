@@ -33,6 +33,7 @@ var sfx: Sfx
 
 var velocity_h: Vector3 = Vector3.ZERO
 var camera: Camera3D
+var weapon_view: WeaponView
 
 func _ready() -> void:
 	# Couche 1 (monde) ; entre en collision avec les murs (1) et les dinos (2).
@@ -53,6 +54,9 @@ func _ready() -> void:
 	camera.current = true
 	add_child(camera)
 
+	weapon_view = WeaponView.new()
+	camera.add_child(weapon_view)
+
 func reset_state() -> void:
 	health = 100.0
 	weapon = "pistol"
@@ -61,11 +65,15 @@ func reset_state() -> void:
 	velocity_h = Vector3.ZERO
 	if camera:
 		camera.rotation.x = 0.0
+	if weapon_view:
+		weapon_view.set_weapon(weapon)
 	weapon_changed.emit(weapon)
 	damaged.emit(health)
 
 func set_weapon(new_weapon: String) -> void:
 	weapon = new_weapon
+	if weapon_view:
+		weapon_view.set_weapon(weapon)
 	weapon_changed.emit(weapon)
 
 func take_damage(amount: float) -> void:
@@ -147,6 +155,8 @@ func shoot() -> void:
 	fire_cooldown = float(w.cooldown)
 	if sfx:
 		sfx.play(Weapons.sound(weapon))
+	if weapon_view:
+		weapon_view.play_fire()
 
 	var cam_inv := camera.global_transform.affine_inverse()
 	var space := get_world_3d().direct_space_state

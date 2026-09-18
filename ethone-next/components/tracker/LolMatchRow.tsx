@@ -38,7 +38,7 @@ export default function LolMatchRow({ match, index }: LolMatchRowProps) {
   const meta = match.metadata;
   const isWin = meta?.result?.toLowerCase() === "victory";
 
-  const players = match.scoreboard?.players || [];
+  const players = useMemo(() => match.scoreboard?.players || [], [match.scoreboard?.players]);
   const partyMap = useMemo(() => computePartyMap(players), [players]);
   const me: LolPlayer | undefined =
     players.find((p) => p.isMe) || players[0];

@@ -5,6 +5,7 @@ import { sanctionService } from '../sanctions/sanctionService.js';
 import { ModLogger } from '../logs/modLogger.js';
 import { formatString, getTranslation } from '../../../utils/i18n.js';
 import { buildSanctionDmEmbed } from '../utils/sanctionDmEmbed.js';
+import { buildSanctionCard } from '../utils/sanctionCard.js';
 
 export const warnCommand: Command = {
   name: 'warn',
@@ -91,31 +92,20 @@ export const warnCommand: Command = {
       embeds: [buildSanctionDmEmbed('warn', t, { guildName: ctx.guild.name, reason, moderatorTag: ctx.author.tag })],
     }).catch(() => {});
 
-    // Réponse
-    const embed = ctx
-      .createEmbed('info')
-      .setTitle(formatString(t.warn_title, { id: sanction.id }))
-      .setDescription(
-        formatString(t.warn_desc, { target: targetMember.toString(), reason, moderator: ctx.author.toString() })
-      );
-
-    // Auto-escalade
-    if (escalationTriggered && escalationAction) {
-      embed.addFields([
-        {
-          name: t.warn_escalation_field_name,
-          value: formatString(t.warn_escalation_field_value, { action: escalationAction }),
-        },
-      ]);
-    }
-
-    // Mode test (Bot Owner qui s'auto-cible) : un avertissement n'a aucun effet
-    // punitif réel (pas de mute/kick/ban), donc rien à sauter ici — juste un
-    // rappel visuel que c'est un auto-test.
-    if (check.dryRun) {
-      embed.addFields([{ name: '🧪 Mode Test (God Mode)', value: 'Auto-ciblage détecté : ceci est un aperçu, sans conséquence réelle.' }]);
-    }
-
-    await ctx.reply({ embeds: [embed] });
+    // Réponse : carte V2 (même chrome que /rank, /economy), avec bouton Historique.
+    const card = buildSanctionCard({
+      guildConfig: conf,
+      type: 'warn',
+      sanctionId: sanction.id,
+      targetTag: targetMember.user.tag,
+      targetMention: targetMember.toString(),
+      targetAvatarUrl: targetMember.user.displayAvatarURL(),
+      moderatorMention: ctx.author.toString(),
+      reason,
+      totalSanctions: sanctionService.getUserSanctions(ctx.guild.id, targetMember.id).length,
+      escalation: escalationTriggered && escalationAction ? formatString(t.warn_escalation_field_value, { action: escalationAction }) : null,
+      dryRun: check.dryRun,
+    });
+    await ctx.reply({ components: [card], componentsV2: true });
   },
 };

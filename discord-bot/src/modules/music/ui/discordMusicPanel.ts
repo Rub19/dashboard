@@ -3,134 +3,172 @@ import {
   ButtonBuilder,
   ButtonInteraction,
   ButtonStyle,
-  Guild,
-  MessageCreateOptions,
+  ContainerBuilder,
+  MessageActionRowComponentBuilder,
 } from 'discord.js';
-import { GuildMusicState } from '../types/music.js';
+import { GuildMusicState, Track } from '../types/music.js';
 import { musicService } from '../services/musicService.js';
 import { guildConfigService } from '../../../services/guildConfigService.js';
 import { formatString, getTranslation } from '../../../utils/i18n.js';
 import { baseEmbed } from '../../../utils/embeds.js';
+import {
+  container,
+  footer,
+  formatDuration,
+  sectionWithThumbnail,
+  separator,
+  statsLine,
+  text,
+  toneToColor,
+  V2_EPHEMERAL_FLAGS,
+  V2_FLAGS,
+} from '../../../utils/components.js';
 
+const FALLBACK_THUMB = 'https://images.unsplash.com/photo-1511671782779-c97d3d27a1d4?w=500&auto=format&fit=crop&q=80';
+
+/** Payload V2 prêt pour ctx.reply({ ...payload, componentsV2: true }) ou interaction.editReply({ ...payload, flags }). */
+export interface V2Payload {
+  components: ContainerBuilder[];
+}
+
+/**
+ * Cartes Components V2 du lecteur musique : "Lecture en cours" avec les
+ * boutons de contrôle, "Ajouté à la file", "File d'attente". Même accent
+ * que le module (vert = lecture, ambre = pause, indigo = idle).
+ */
 export class DiscordMusicPanel {
-  public static createProgressBar(currentSec: number, totalSec: number, length: number = 14): string {
-    if (!totalSec || totalSec <= 0) return '─'.repeat(length);
+  public static createProgressBar(currentSec: number, totalSec: number, length: number = 16): string {
+    if (!totalSec || totalSec <= 0) return '━'.repeat(Math.floor(length / 2)) + '●' + '━'.repeat(Math.ceil(length / 2) - 1);
     const ratio = Math.min(1, Math.max(0, currentSec / totalSec));
     const filled = Math.round(ratio * length);
-    const empty = Math.max(0, length - filled);
-
-    return '━'.repeat(Math.max(0, filled - 1)) + '●' + '━'.repeat(empty);
+    return '━'.repeat(Math.max(0, filled - 1)) + '●' + '━'.repeat(Math.max(0, length - filled));
   }
 
   public static formatTime(seconds: number): string {
-    const mins = Math.floor(seconds / 60);
-    const secs = Math.floor(seconds % 60);
-    return `${mins.toString().padStart(2, '0')}:${secs.toString().padStart(2, '0')}`;
+    return formatDuration(seconds);
   }
 
-  public static buildPanelMessage(state: GuildMusicState): MessageCreateOptions {
-    const t = getTranslation(guildConfigService.getConfig(state.guildId).language);
-    let embed;
+  private static sourceBadge(source: string): string {
+    const map: Record<string, string> = { YOUTUBE: '▶️ YouTube', SPOTIFY: '🟢 Spotify', SOUNDCLOUD: '🟠 SoundCloud', DIRECT: '📻 Flux direct' };
+    return map[source] || source;
+  }
 
-    if (!state.currentTrack) {
-      embed = baseEmbed('primary', { footerText: t.music_panel_footer_idle })
-        .setTitle(t.music_panel_title)
-        .setDescription(t.music_panel_idle_desc)
-        .addFields(
-          { name: t.music_panel_field_voice_channel, value: state.voiceChannel ? `<#${state.voiceChannel.id}>` : t.music_panel_disconnected, inline: true },
-          { name: t.music_panel_field_queue, value: formatString(t.music_panel_queue_value, { count: state.queueLength }), inline: true }
-        );
-    } else {
-      const track = state.currentTrack;
-      const progress = this.createProgressBar(state.position, state.duration, 14);
-      const currentTime = this.formatTime(state.position);
-      const totalTime = this.formatTime(state.duration);
-
-      embed = baseEmbed(state.status === 'PLAYING' ? 'success' : 'warning', {
-        footerText: t.music_panel_footer_active,
-      })
-        .setTitle(`${state.status === 'PLAYING' ? '▶️' : '⏸️'} ${track.title}`)
-        .setURL(track.url && track.url.startsWith('http') ? track.url : 'https://ethone.dev')
-        .setDescription(
-          `**${t.music_panel_label_artist} :** ${track.artist}\n` +
-          `**${t.music_panel_label_source} :** \`${track.source}\`\n\n` +
-          `\`${currentTime}\` ${progress} \`${totalTime}\``
-        )
-        .addFields(
-          { name: t.music_panel_field_requested_by, value: `${track.requestedBy.tag}`, inline: true },
-          { name: t.music_panel_field_volume, value: `${state.muted ? `0% (${t.music_panel_muted})` : `${state.volume}%`}`, inline: true },
-          { name: t.music_panel_field_repeat, value: `\`${state.repeatMode}\``, inline: true },
-          { name: t.music_panel_field_queue, value: formatString(t.music_panel_queue_value, { count: state.queueLength }), inline: true },
-          { name: t.music_panel_field_shuffle, value: state.shuffle ? t.music_panel_active : t.music_panel_inactive, inline: true },
-          { name: t.music_panel_field_voice, value: state.voiceChannel ? `<#${state.voiceChannel.id}>` : t.music_panel_unknown, inline: true }
-        );
-
-      if (track.thumbnail) {
-        embed.setThumbnail(track.thumbnail);
-      }
-    }
-
-    // Boutons de contrôle
-    const row1 = new ActionRowBuilder<ButtonBuilder>().addComponents(
-      new ButtonBuilder()
-        .setCustomId('music_prev')
-        .setEmoji('⏮️')
-        .setStyle(ButtonStyle.Secondary)
-        .setDisabled(!state.history || state.history.length === 0),
+  private static controlRows(state: GuildMusicState): ActionRowBuilder<MessageActionRowComponentBuilder>[] {
+    const row1 = new ActionRowBuilder<MessageActionRowComponentBuilder>().addComponents(
+      new ButtonBuilder().setCustomId('music_prev').setEmoji('⏮️').setStyle(ButtonStyle.Secondary).setDisabled(!state.history || state.history.length === 0),
       new ButtonBuilder()
         .setCustomId('music_playpause')
         .setEmoji(state.status === 'PLAYING' ? '⏸️' : '▶️')
         .setStyle(state.status === 'PLAYING' ? ButtonStyle.Primary : ButtonStyle.Success)
         .setDisabled(!state.currentTrack),
-      new ButtonBuilder()
-        .setCustomId('music_skip')
-        .setEmoji('⏭️')
-        .setStyle(ButtonStyle.Secondary)
-        .setDisabled(!state.currentTrack),
-      new ButtonBuilder()
-        .setCustomId('music_stop')
-        .setEmoji('⏹️')
-        .setStyle(ButtonStyle.Danger)
-        .setDisabled(!state.currentTrack && state.queueLength === 0),
-      new ButtonBuilder()
-        .setCustomId('music_shuffle')
-        .setEmoji('🔀')
-        .setStyle(state.shuffle ? ButtonStyle.Success : ButtonStyle.Secondary)
-        .setDisabled(state.queueLength < 2)
+      new ButtonBuilder().setCustomId('music_skip').setEmoji('⏭️').setStyle(ButtonStyle.Secondary).setDisabled(!state.currentTrack),
+      new ButtonBuilder().setCustomId('music_stop').setEmoji('⏹️').setStyle(ButtonStyle.Danger).setDisabled(!state.currentTrack && state.queueLength === 0),
+      new ButtonBuilder().setCustomId('music_shuffle').setEmoji('🔀').setStyle(state.shuffle ? ButtonStyle.Success : ButtonStyle.Secondary).setDisabled(state.queueLength < 2),
     );
-
-    const row2 = new ActionRowBuilder<ButtonBuilder>().addComponents(
-      new ButtonBuilder()
-        .setCustomId('music_repeat')
-        .setLabel(`Loop: ${state.repeatMode}`)
-        .setEmoji('🔁')
-        .setStyle(state.repeatMode !== 'OFF' ? ButtonStyle.Success : ButtonStyle.Secondary),
-      new ButtonBuilder()
-        .setCustomId('music_voldown')
-        .setEmoji('🔉')
-        .setStyle(ButtonStyle.Secondary)
-        .setDisabled(state.volume <= 0),
-      new ButtonBuilder()
-        .setCustomId('music_volup')
-        .setEmoji('🔊')
-        .setStyle(ButtonStyle.Secondary)
-        .setDisabled(state.volume >= 100),
-      new ButtonBuilder()
-        .setCustomId('music_queue')
-        .setLabel(`Queue (${state.queueLength})`)
-        .setEmoji('📜')
-        .setStyle(ButtonStyle.Secondary),
-      new ButtonBuilder()
-        .setCustomId('music_fav')
-        .setEmoji('❤️')
-        .setStyle(ButtonStyle.Secondary)
-        .setDisabled(!state.currentTrack)
+    const row2 = new ActionRowBuilder<MessageActionRowComponentBuilder>().addComponents(
+      new ButtonBuilder().setCustomId('music_repeat').setLabel(state.repeatMode === 'OFF' ? 'Loop' : state.repeatMode === 'SONG' ? 'Titre' : 'File').setEmoji('🔁').setStyle(state.repeatMode !== 'OFF' ? ButtonStyle.Success : ButtonStyle.Secondary),
+      new ButtonBuilder().setCustomId('music_voldown').setEmoji('🔉').setStyle(ButtonStyle.Secondary).setDisabled(state.volume <= 0),
+      new ButtonBuilder().setCustomId('music_volup').setEmoji('🔊').setStyle(ButtonStyle.Secondary).setDisabled(state.volume >= 100),
+      new ButtonBuilder().setCustomId('music_queue').setLabel(`File (${state.queueLength})`).setEmoji('📜').setStyle(ButtonStyle.Secondary),
+      new ButtonBuilder().setCustomId('music_fav').setEmoji('❤️').setStyle(ButtonStyle.Secondary).setDisabled(!state.currentTrack),
     );
+    return [row1, row2];
+  }
 
-    return {
-      embeds: [embed],
-      components: [row1, row2],
-    };
+  /** Carte principale : lecture en cours (ou lecteur inactif) + contrôles. */
+  public static buildPanelMessage(state: GuildMusicState): V2Payload {
+    const gConf = guildConfigService.getConfig(state.guildId);
+    const t = getTranslation(gConf.language);
+    const track = state.currentTrack;
+
+    if (!track) {
+      const card = container(toneToColor('primary', gConf.primaryColor), [
+        text(`## 🎵 ${t.music_panel_title}`),
+        text(t.music_panel_idle_desc),
+        separator(),
+        statsLine([
+          `🎙️ ${state.voiceChannel ? `<#${state.voiceChannel.id}>` : t.music_panel_disconnected}`,
+          `📜 ${formatString(t.music_panel_queue_value, { count: state.queueLength })}`,
+          `🔊 ${state.volume}%`,
+        ]),
+        ...this.controlRows(state),
+        footer(t.music_panel_footer_idle),
+      ]);
+      return { components: [card] };
+    }
+
+    const playing = state.status === 'PLAYING';
+    const progress = this.createProgressBar(state.position, state.duration);
+    const titleLink = track.url && track.url.startsWith('http') ? `[${track.title}](${track.url})` : track.title;
+    const card = container(toneToColor(playing ? 'success' : 'warning', playing ? gConf.successColor : null), [
+      sectionWithThumbnail(
+        [
+          `## ${playing ? '▶️' : '⏸️'} ${titleLink}`,
+          `**${track.artist}** · ${this.sourceBadge(track.source)}`,
+          `-# ${t.music_panel_field_requested_by} ${track.requestedBy.tag}`,
+        ],
+        track.thumbnail || FALLBACK_THUMB,
+        track.title,
+      ),
+      text(`\`${this.formatTime(state.position)}\` ${progress} \`${this.formatTime(state.duration)}\``),
+      separator(),
+      statsLine([
+        `🔊 ${state.muted ? `0% (${t.music_panel_muted})` : `${state.volume}%`}`,
+        `🔁 ${state.repeatMode}`,
+        `🔀 ${state.shuffle ? t.music_panel_active : t.music_panel_inactive}`,
+        `📜 ${formatString(t.music_panel_queue_value, { count: state.queueLength })}`,
+        state.voiceChannel ? `🎙️ <#${state.voiceChannel.id}>` : null,
+      ]),
+      ...this.controlRows(state),
+      footer(t.music_panel_footer_active),
+    ]);
+    return { components: [card] };
+  }
+
+  /** Carte "Ajouté à la file" (ou "Playlist ajoutée"). */
+  public static buildQueuedCard(track: Track, position: number, guildId: string, playlistCount?: number): V2Payload {
+    const gConf = guildConfigService.getConfig(guildId);
+    const t = getTranslation(gConf.language);
+    const titleLink = track.url && track.url.startsWith('http') ? `[${track.title}](${track.url})` : track.title;
+    const lines = playlistCount && playlistCount > 1
+      ? [`## 🎶 Playlist ajoutée`, `**${playlistCount}** titres dans la file`, `-# ${position === 0 ? 'Lecture' : 'Prochain'} : ${titleLink}`]
+      : [`## ➕ ${t.music_added_queue_title.replace(/^[^\w]*/u, '')}`, titleLink, `-# ${track.artist} · ${this.formatTime(track.duration)} · position **#${position}**`];
+    const card = container(toneToColor('info', gConf.infoColor), [
+      sectionWithThumbnail(lines, track.thumbnail || FALLBACK_THUMB, track.title),
+      new ActionRowBuilder<MessageActionRowComponentBuilder>().addComponents(
+        new ButtonBuilder().setCustomId('music_queue').setLabel('Voir la file').setEmoji('📜').setStyle(ButtonStyle.Secondary),
+        new ButtonBuilder().setCustomId('music_panel').setLabel('Lecteur').setEmoji('🎛️').setStyle(ButtonStyle.Primary),
+      ),
+    ]);
+    return { components: [card] };
+  }
+
+  /** Carte "File d'attente" : titre en cours + 10 prochains + total. */
+  public static buildQueueCard(state: GuildMusicState): V2Payload {
+    const gConf = guildConfigService.getConfig(state.guildId);
+    const t = getTranslation(gConf.language);
+    const queue = state.queue || [];
+    const total = queue.reduce((a, q) => a + (q.duration || 0), 0);
+    const shown = queue.slice(0, 10);
+    const lines = shown.map((q, i) => `**${i + 1}.** ${q.url?.startsWith('http') ? `[${q.title}](${q.url})` : q.title} — ${q.artist} \`${this.formatTime(q.duration)}\``);
+
+    const card = container(toneToColor('primary', gConf.primaryColor), [
+      text(`## 📜 File d'attente (${queue.length})`),
+      state.currentTrack
+        ? text(`${state.status === 'PLAYING' ? '▶️' : '⏸️'} **En cours :** ${state.currentTrack.title} — ${state.currentTrack.artist} \`${this.formatTime(state.position)} / ${this.formatTime(state.duration)}\``)
+        : text(t.music_panel_idle_desc),
+      separator(),
+      queue.length === 0 ? text('*Aucun titre en attente — ajoute-en avec `/music play`.*') : text(lines.join('\n')),
+      queue.length > shown.length ? text(`-# … et **${queue.length - shown.length}** autre(s)`) : null,
+      separator(false),
+      statsLine([`⏱️ Total ${this.formatTime(total)}`, `🔁 ${state.repeatMode}`, `🔀 ${state.shuffle ? t.music_panel_active : t.music_panel_inactive}`]),
+      new ActionRowBuilder<MessageActionRowComponentBuilder>().addComponents(
+        new ButtonBuilder().setCustomId('music_shuffle').setLabel('Mélanger').setEmoji('🔀').setStyle(ButtonStyle.Secondary).setDisabled(queue.length < 2),
+        new ButtonBuilder().setCustomId('music_skip').setLabel('Passer').setEmoji('⏭️').setStyle(ButtonStyle.Secondary).setDisabled(!state.currentTrack),
+        new ButtonBuilder().setCustomId('music_panel').setLabel('Lecteur').setEmoji('🎛️').setStyle(ButtonStyle.Primary),
+      ),
+    ]);
+    return { components: [card] };
   }
 
   public static async handleButtonInteraction(interaction: ButtonInteraction): Promise<void> {
@@ -140,27 +178,27 @@ export class DiscordMusicPanel {
     const guild = interaction.guild;
     const member = interaction.member && 'voice' in interaction.member ? (interaction.member as any) : null;
     if (!guild) return;
+    const t = getTranslation(guildConfigService.getConfig(guild.id).language);
 
-    // Vérification du salon vocal pour les boutons de contrôle musical
-    if (customId !== 'music_queue') {
-      const t = getTranslation(guildConfigService.getConfig(guild.id).language);
-      const userVoice = member?.voice?.channel;
-      if (!userVoice) {
-        await interaction.reply({
-          embeds: [baseEmbed('error').setDescription(t.voice_required)],
-          ephemeral: true,
-        });
-        return;
-      }
+    // Lecture seule : réponses éphémères, pas besoin d'être en vocal.
+    if (customId === 'music_queue') {
+      await interaction.reply({ ...this.buildQueueCard(musicService.getState(guild.id)), flags: V2_EPHEMERAL_FLAGS });
+      return;
+    }
+    if (customId === 'music_panel') {
+      await interaction.reply({ ...this.buildPanelMessage(musicService.getState(guild.id)), flags: V2_EPHEMERAL_FLAGS });
+      return;
+    }
 
-      const botVoice = guild.members.me?.voice?.channel;
-      if (botVoice && botVoice.id !== userVoice.id) {
-        await interaction.reply({
-          embeds: [baseEmbed('error').setDescription(formatString(t.voice_different, { channel: `<#${botVoice.id}>` }))],
-          ephemeral: true,
-        });
-        return;
-      }
+    const userVoice = member?.voice?.channel;
+    if (!userVoice) {
+      await interaction.reply({ embeds: [baseEmbed('error').setDescription(t.voice_required)], ephemeral: true });
+      return;
+    }
+    const botVoice = guild.members.me?.voice?.channel;
+    if (botVoice && botVoice.id !== userVoice.id) {
+      await interaction.reply({ embeds: [baseEmbed('error').setDescription(formatString(t.voice_different, { channel: `<#${botVoice.id}>` }))], ephemeral: true });
+      return;
     }
 
     await interaction.deferUpdate().catch(() => {});
@@ -168,11 +206,8 @@ export class DiscordMusicPanel {
     switch (customId) {
       case 'music_playpause': {
         const state = musicService.getState(guild.id);
-        if (state.status === 'PLAYING') {
-          musicService.pause(guild.id, member);
-        } else {
-          musicService.resume(guild.id, member);
-        }
+        if (state.status === 'PLAYING') musicService.pause(guild.id, member);
+        else musicService.resume(guild.id, member);
         break;
       }
       case 'music_skip':
@@ -205,18 +240,18 @@ export class DiscordMusicPanel {
       }
       case 'music_fav': {
         const state = musicService.getState(guild.id);
-        if (state.currentTrack) {
-          musicService.toggleFavorite(guild.id, interaction.user.id, state.currentTrack);
-        }
+        if (state.currentTrack) musicService.toggleFavorite(guild.id, interaction.user.id, state.currentTrack);
         break;
       }
-      case 'music_queue':
-        // No-op or updates panel
-        break;
     }
 
-    const updatedState = musicService.getState(guild.id);
-    const updatedPanel = this.buildPanelMessage(updatedState);
-    await interaction.editReply(updatedPanel as any).catch(() => {});
+    // Petite latence pour laisser le lecteur (Lavalink) refléter la nouvelle
+    // piste avant de redessiner la carte.
+    await new Promise((r) => setTimeout(r, 300));
+    const updated = this.buildPanelMessage(musicService.getState(guild.id));
+    await interaction.editReply({ ...updated, embeds: [], content: null, flags: V2_FLAGS } as any).catch(async () => {
+      // Message d'avant migration (embed classique) : Discord refuse le passage en V2 → on répond à côté.
+      await interaction.followUp({ ...updated, flags: V2_EPHEMERAL_FLAGS }).catch(() => {});
+    });
   }
 }

@@ -42,6 +42,7 @@ import { syncEngine } from '../services/syncEngine.js';
 import { BotCommandStatsService } from '../modules/botControl/services/botCommandStatsService.js';
 import { BotTelemetryService } from '../modules/botControl/services/botTelemetryService.js';
 import { handleEconomyButton, handleRankButton } from '../modules/economy/interactions/economyButtonHandler.js';
+import { handleModButton } from '../modules/moderation/interactions/modButtonHandler.js';
 import { logger } from '../utils/logger.js';
 
 const botCommandStatsService = BotCommandStatsService.getInstance();
@@ -153,6 +154,8 @@ export async function onInteractionCreate(interaction: Interaction) {
       await safeHandleComponent(interaction, 'economy_button', () => handleEconomyButton(interaction));
     } else if (interaction.customId.startsWith('rank_btn_')) {
       await safeHandleComponent(interaction, 'rank_button', () => handleRankButton(interaction));
+    } else if (interaction.customId.startsWith('mod_btn_')) {
+      await safeHandleComponent(interaction, 'mod_button', () => handleModButton(interaction));
     }
     return;
   }

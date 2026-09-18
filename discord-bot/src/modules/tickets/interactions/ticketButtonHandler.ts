@@ -150,6 +150,25 @@ export async function handleTicketButton(interaction: ButtonInteraction): Promis
     return;
   }
 
+  // 3b. Fermeture d'un ticket "simple" (/ticket → salon privé sans dossier
+  // dans ticketService) : on supprime le salon après un court délai.
+  if (customId.startsWith('ticket_close_simple:')) {
+    const channelId = customId.split(':')[1];
+    const channel = guild.channels.cache.get(channelId);
+    const member = interaction.member;
+    const isStaff = member && 'permissions' in member && typeof member.permissions !== 'string' && member.permissions.has('ManageChannels');
+    const isOwner = channel && 'name' in channel && channel.name === `ticket-${interaction.user.username.toLowerCase().replace(/[^a-z0-9]/g, '')}`;
+    if (!channel || (!isStaff && !isOwner)) {
+      await interaction.reply({ embeds: [baseEmbed('error').setDescription('Seul l’auteur du ticket ou le staff peut le fermer.')], ephemeral: true });
+      return;
+    }
+    await interaction.reply({ embeds: [baseEmbed('warning').setDescription(`🔒 Ticket fermé par ${interaction.user}. Suppression du salon dans 5 secondes…`)] }).catch(() => {});
+    setTimeout(() => {
+      channel.delete(`Ticket fermé par ${interaction.user.tag}`).catch(() => {});
+    }, 5_000);
+    return;
+  }
+
   // 4. Fermeture du ticket
   if (customId.startsWith('ticket_close:')) {
     const ticketId = customId.split(':')[1];

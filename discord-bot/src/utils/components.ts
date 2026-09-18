@@ -2,12 +2,18 @@ import {
   ActionRowBuilder,
   ButtonBuilder,
   ContainerBuilder,
+  MessageActionRowComponentBuilder,
+  MessageFlags,
   SectionBuilder,
   SeparatorBuilder,
   SeparatorSpacingSize,
   TextDisplayBuilder,
   ThumbnailBuilder,
 } from 'discord.js';
+
+/** Flags à passer à interaction.reply()/editReply()/update() pour un message V2. */
+export const V2_FLAGS = MessageFlags.IsComponentsV2;
+export const V2_EPHEMERAL_FLAGS = MessageFlags.IsComponentsV2 | MessageFlags.Ephemeral;
 import { BRAND_COLORS } from './embeds.js';
 import { resolveHexColor } from '../types/guildConfig.js';
 
@@ -70,18 +76,39 @@ export function buttonRow(...buttons: ButtonBuilder[]): ActionRowBuilder<ButtonB
  * Conteneur avec barre d'accent colorée. `parts` accepte les builders V2
  * (TextDisplay, Section, Separator, ActionRow) dans l'ordre d'affichage.
  */
-export function container(
-  color: number,
-  parts: Array<TextDisplayBuilder | SectionBuilder | SeparatorBuilder | ActionRowBuilder<ButtonBuilder>>
-): ContainerBuilder {
+export type ContainerPart =
+  | TextDisplayBuilder
+  | SectionBuilder
+  | SeparatorBuilder
+  | ActionRowBuilder<MessageActionRowComponentBuilder>
+  | null
+  | false
+  | undefined;
+
+export function container(color: number, parts: ContainerPart[]): ContainerBuilder {
   const c = new ContainerBuilder().setAccentColor(color);
   for (const part of parts) {
+    if (!part) continue;
     if (part instanceof TextDisplayBuilder) c.addTextDisplayComponents(part);
     else if (part instanceof SectionBuilder) c.addSectionComponents(part);
     else if (part instanceof SeparatorBuilder) c.addSeparatorComponents(part);
-    else if (part instanceof ActionRowBuilder) c.addActionRowComponents(part);
+    else if (part instanceof ActionRowBuilder) c.addActionRowComponents(part as ActionRowBuilder<MessageActionRowComponentBuilder>);
   }
   return c;
+}
+
+/** Ligne "clé · clé · clé" en petit texte, pour les stats sous un titre. */
+export function statsLine(items: Array<string | null | undefined | false>): TextDisplayBuilder {
+  return text(items.filter(Boolean).join('  ·  '));
+}
+
+/** mm:ss (ou h:mm:ss au-delà d'une heure). */
+export function formatDuration(seconds: number): string {
+  if (!seconds || seconds <= 0) return '∞';
+  const h = Math.floor(seconds / 3600);
+  const m = Math.floor((seconds % 3600) / 60);
+  const s = Math.floor(seconds % 60);
+  return h > 0 ? `${h}:${String(m).padStart(2, '0')}:${String(s).padStart(2, '0')}` : `${String(m).padStart(2, '0')}:${String(s).padStart(2, '0')}`;
 }
 
 /** Barre de progression textuelle (même rendu que LevelCalculator.renderProgressBar, mais ici pour tout le bot). */

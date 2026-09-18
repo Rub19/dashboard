@@ -1,10 +1,16 @@
 import {
-  SlashCommandBuilder,
-  PermissionFlagsBits,
+  ActionRowBuilder,
+  ButtonBuilder,
+  ButtonStyle,
   ChannelType,
+  MessageActionRowComponentBuilder,
+  MessageFlags,
+  PermissionFlagsBits,
+  SlashCommandBuilder,
 } from 'discord.js';
 import { Command, CommandContext } from '../../types/command.js';
 import { formatString, getTranslation } from '../../utils/i18n.js';
+import { container, footer, sectionWithThumbnail, separator, text, toneToColor } from '../../utils/components.js';
 
 export const ticketCommand: Command = {
   name: 'ticket',
@@ -90,19 +96,39 @@ export const ticketCommand: Command = {
         ],
       });
 
-      const ticketEmbed = ctx
-        .createEmbed('default')
-        .setTitle(formatString(t.ticket_channel_embed_title, { user: ctx.author.username }))
-        .setDescription(
-          `${formatString(t.ticket_welcome, { user: ctx.author.toString() })}\n\n` +
-          (subject ? `${formatString(t.ticket_subject_label, { subject })}\n\n` : '') +
-          t.ticket_detail_prompt
-        );
-
-      await ticketChannel.send({ content: `${ctx.author}`, embeds: [ticketEmbed] });
+      // Carte d'accueil V2 dans le salon du ticket (avatar du demandeur,
+      // sujet, consignes) + bouton de fermeture.
+      const welcome = container(toneToColor('primary', config.primaryColor), [
+        sectionWithThumbnail(
+          [
+            `## 🎫 ${formatString(t.ticket_channel_embed_title, { user: ctx.author.username })}`,
+            formatString(t.ticket_welcome, { user: ctx.author.toString() }),
+            `-# Ouvert <t:${Math.floor(Date.now() / 1000)}:R>`,
+          ],
+          ctx.author.displayAvatarURL(),
+          ctx.author.username,
+        ),
+        subject ? text(`**${formatString(t.ticket_subject_label, { subject })}**`) : null,
+        separator(),
+        text(t.ticket_detail_prompt),
+        new ActionRowBuilder<MessageActionRowComponentBuilder>().addComponents(
+          new ButtonBuilder().setCustomId(`ticket_close_simple:${ticketChannel.id}`).setLabel('Fermer le ticket').setEmoji('🔒').setStyle(ButtonStyle.Danger),
+        ),
+        footer(`${config.botName} · Support`),
+      ]);
+      await ticketChannel.send({ content: `${ctx.author}`, components: [welcome], flags: MessageFlags.IsComponentsV2 });
 
       await ctx.reply({
-        embeds: [ctx.createEmbed('success').setDescription(formatString(t.ticket_created, { channel: ticketChannel.toString() }))],
+        components: [
+          container(toneToColor('success', config.successColor), [
+            text(`## ✅ Ticket ouvert`),
+            text(formatString(t.ticket_created, { channel: ticketChannel.toString() })),
+            new ActionRowBuilder<MessageActionRowComponentBuilder>().addComponents(
+              new ButtonBuilder().setLabel('Ouvrir le ticket').setEmoji('🎫').setStyle(ButtonStyle.Link).setURL(`https://discord.com/channels/${ctx.guild.id}/${ticketChannel.id}`),
+            ),
+          ]),
+        ],
+        componentsV2: true,
         ephemeral: true,
       });
     } catch {

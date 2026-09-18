@@ -2,6 +2,7 @@ import { SlashCommandBuilder, PermissionFlagsBits } from 'discord.js';
 import { Command, CommandContext } from '../../../types/command.js';
 import { sanctionService } from '../sanctions/sanctionService.js';
 import { formatString, getTranslation } from '../../../utils/i18n.js';
+import { buildSanctionHistoryCard } from '../utils/sanctionCard.js';
 
 export const warningsCommand: Command = {
   name: 'warnings',
@@ -43,45 +44,18 @@ export const warningsCommand: Command = {
 
     const sanctions = sanctionService.getUserSanctions(ctx.guild.id, targetId);
     const targetUser = await ctx.client.users.fetch(targetId).catch(() => null);
-    const targetName = targetUser?.tag || targetId;
 
-    if (sanctions.length === 0) {
-      const emptyEmbed = ctx
-        .createEmbed('success')
-        .setTitle(formatString(t.warnings_empty_title, { target: targetName }))
-        .setDescription(t.warnings_empty_desc);
-      await ctx.reply({ embeds: [emptyEmbed] });
-      return;
-    }
-
-    const embed = ctx
-      .createEmbed('default')
-      .setTitle(formatString(t.warnings_title, { target: targetName }))
-      .setDescription(formatString(t.warnings_total, { count: sanctions.length }));
-
-    // Afficher les 10 sanctions les plus récentes
-    for (const s of sanctions.slice(0, 10)) {
-      const typeIcons: Record<string, string> = {
-        warn: '⚠️ Warning',
-        timeout: '🔇 Timeout',
-        kick: '👢 Kick',
-        ban: '🔨 Ban',
-        unban: '🔓 Unban',
-        untimeout: '🔊 Untimeout',
-      };
-
-      const typeLabel = typeIcons[s.type] || s.type.toUpperCase();
-      const dateStr = new Date(s.timestamp).toLocaleDateString();
-
-      embed.addFields([
-        {
-          name: `${typeLabel} • #${s.id}`,
-          value: formatString(t.warnings_field_value, { reason: s.reason, moderator: s.moderatorTag, date: dateStr }),
-          inline: false,
-        },
-      ]);
-    }
-
-    await ctx.reply({ embeds: [embed] });
+    await ctx.reply({
+      components: [
+        buildSanctionHistoryCard({
+          guildConfig: conf,
+          targetTag: targetUser?.tag || targetId,
+          targetId,
+          targetAvatarUrl: targetUser?.displayAvatarURL() || null,
+          sanctions,
+        }),
+      ],
+      componentsV2: true,
+    });
   },
 };

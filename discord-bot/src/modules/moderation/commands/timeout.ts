@@ -2,6 +2,7 @@ import { SlashCommandBuilder, PermissionFlagsBits } from 'discord.js';
 import { Command, CommandContext } from '../../../types/command.js';
 import { checkHierarchy } from '../permissions/hierarchy.js';
 import { sanctionService } from '../sanctions/sanctionService.js';
+import { buildSanctionCard } from '../utils/sanctionCard.js';
 import { ModLogger } from '../logs/modLogger.js';
 import { formatString, getTranslation } from '../../../utils/i18n.js';
 
@@ -111,15 +112,21 @@ export const timeoutCommand: Command = {
 
       await ModLogger.logSanction(ctx.guild, sanction);
 
-      const embed = ctx
-        .createEmbed('info')
-        .setTitle(formatString(t.timeout_title, { id: sanction.id }))
-        .setDescription(
-          formatString(t.timeout_desc, { target: targetMember.toString(), duration: durationStr, reason, moderator: ctx.author.toString() }) +
-            (check.dryRun ? '\n\n🧪 **Mode test (God Mode)** : aucune sourdine réelle n\'a été appliquée.' : '')
-        );
-
-      await ctx.reply({ embeds: [embed] });
+      const card = buildSanctionCard({
+        guildConfig: ctx.guildConfig,
+        type: 'timeout',
+        sanctionId: sanction.id,
+        targetTag: targetMember.user.tag,
+        targetMention: targetMember.toString(),
+        targetAvatarUrl: targetMember.user.displayAvatarURL(),
+        moderatorMention: ctx.author.toString(),
+        reason,
+        durationSeconds: seconds,
+        totalSanctions: sanctionService.getUserSanctions(ctx.guild.id, targetMember.id).length,
+        extraNote: `🔓 Fin de la sourdine : <t:${Math.floor(Date.now() / 1000) + seconds}:R>`,
+        dryRun: check.dryRun,
+      });
+      await ctx.reply({ components: [card], componentsV2: true });
     } catch {
       await ctx.reply({ embeds: [ctx.createEmbed('error').setDescription(t.timeout_fail)] });
     }

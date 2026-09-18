@@ -2,6 +2,7 @@ import { SlashCommandBuilder, PermissionFlagsBits } from 'discord.js';
 import { Command, CommandContext } from '../../../types/command.js';
 import { checkHierarchy } from '../permissions/hierarchy.js';
 import { sanctionService } from '../sanctions/sanctionService.js';
+import { buildSanctionCard } from '../utils/sanctionCard.js';
 import { ModLogger } from '../logs/modLogger.js';
 import { formatString, getTranslation } from '../../../utils/i18n.js';
 import { buildSanctionDmEmbed } from '../utils/sanctionDmEmbed.js';
@@ -86,15 +87,19 @@ export const kickCommand: Command = {
 
       await ModLogger.logSanction(ctx.guild, sanction);
 
-      const embed = ctx
-        .createEmbed('info')
-        .setTitle(formatString(t.kick_title, { id: sanction.id }))
-        .setDescription(
-          formatString(t.kick_desc, { userTag: targetMember.user.tag, reason, moderator: ctx.author.toString() }) +
-            (check.dryRun ? '\n\n🧪 **Mode test (God Mode)** : aucune expulsion réelle n\'a été appliquée.' : '')
-        );
-
-      await ctx.reply({ embeds: [embed] });
+      const card = buildSanctionCard({
+        guildConfig: ctx.guildConfig,
+        type: 'kick',
+        sanctionId: sanction.id,
+        targetTag: targetMember.user.tag,
+        targetMention: `<@${targetMember.id}>`,
+        targetAvatarUrl: targetMember.user.displayAvatarURL(),
+        moderatorMention: ctx.author.toString(),
+        reason,
+        totalSanctions: sanctionService.getUserSanctions(ctx.guild.id, targetMember.id).length,
+        dryRun: check.dryRun,
+      });
+      await ctx.reply({ components: [card], componentsV2: true });
     } catch {
       await ctx.reply({ embeds: [ctx.createEmbed('error').setDescription(t.kick_fail)] });
     }

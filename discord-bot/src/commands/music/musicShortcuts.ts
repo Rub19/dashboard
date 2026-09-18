@@ -122,20 +122,14 @@ export const playCommand: Command = {
     }
 
     const track = res.track;
-    if (res.queuePosition === 0) {
-      const embed = ctx
-        .createEmbed('success')
-        .setTitle(t.music_now_playing_title)
-        .setDescription(formatString(t.music_now_playing_desc, { title: track.title, url: track.url, artist: track.artist, duration: DiscordMusicPanel.formatTime(track.duration) }))
-        .setThumbnail(track.thumbnail);
-      await ctx.reply({ embeds: [embed] });
+    if (res.playlistCount && res.playlistCount > 1) {
+      await ctx.reply({ ...DiscordMusicPanel.buildQueuedCard(track, res.queuePosition ?? 0, ctx.guild!.id, res.playlistCount), componentsV2: true });
+    } else if (res.queuePosition === 0) {
+      // Carte "Lecture en cours" complète avec les contrôles (cf. /music panel).
+      await new Promise((r) => setTimeout(r, 400));
+      await ctx.reply({ ...DiscordMusicPanel.buildPanelMessage(musicService.getState(ctx.guild!.id)), componentsV2: true });
     } else {
-      const embed = ctx
-        .createEmbed('info')
-        .setTitle(t.music_added_queue_title)
-        .setDescription(formatString(t.music_added_queue_desc, { title: track.title, url: track.url, position: res.queuePosition ?? 0 }))
-        .setThumbnail(track.thumbnail);
-      await ctx.reply({ embeds: [embed] });
+      await ctx.reply({ ...DiscordMusicPanel.buildQueuedCard(track, res.queuePosition ?? 0, ctx.guild!.id), componentsV2: true });
     }
   },
 };
@@ -240,29 +234,7 @@ export const queueCommand: Command = {
       return;
     }
 
-    const current = q.currentTrack;
-    let desc = `**En cours :** [${current.title}](${current.url}) \`[${DiscordMusicPanel.formatTime(current.duration)}]\`\n\n`;
-
-    if (q.queue.length === 0) {
-      desc += '*La file d\'attente est vide. Ajoutez des titres avec `/play <titre>` !*';
-    } else {
-      desc += `**À suivre (${q.queue.length}) :**\n`;
-      const nextTracks = q.queue.slice(0, 10);
-      nextTracks.forEach((t, i) => {
-        desc += `\`${i + 1}.\` [${t.title}](${t.url}) — \`${DiscordMusicPanel.formatTime(t.duration)}\`\n`;
-      });
-      if (q.queue.length > 10) {
-        desc += `\n*... et ${q.queue.length - 10} autre(s) morceau(x)*`;
-      }
-    }
-
-    const embed = ctx
-      .createEmbed('info')
-      .setTitle(`🎶 File d'attente • ${ctx.guild.name}`)
-      .setDescription(desc)
-      .setFooter({ text: `Mode répétition : ${q.repeatMode} • Volume : ${q.volume}%` });
-
-    await ctx.reply({ embeds: [embed] });
+    await ctx.reply({ ...DiscordMusicPanel.buildQueueCard(q), componentsV2: true });
   },
 };
 
@@ -282,27 +254,7 @@ export const nowPlayingCommand: Command = {
       return;
     }
 
-    const track = q.currentTrack;
-    const progress = q.position || 0;
-    const total = track.duration || 180;
-    const percent = Math.min(1, Math.max(0, progress / total));
-    const totalBars = 16;
-    const filledBars = Math.round(percent * totalBars);
-    const progressBar = '▬'.repeat(filledBars) + '🔘' + '▬'.repeat(Math.max(0, totalBars - filledBars));
-
-    const embed = ctx
-      .createEmbed('info')
-      .setTitle('🎧 Titre en cours de lecture')
-      .setDescription(
-        `**[${track.title}](${track.url})**\n` +
-        `Artiste : \`${track.artist}\`\n\n` +
-        `\`${DiscordMusicPanel.formatTime(progress)}\` ${progressBar} \`${DiscordMusicPanel.formatTime(total)}\`\n\n` +
-        `• **Demandé par :** <@${track.requestedBy}>\n` +
-        `• **Volume :** \`${q.volume}%\` • **Répétition :** \`${q.repeatMode}\``
-      )
-      .setThumbnail(track.thumbnail);
-
-    await ctx.reply({ embeds: [embed] });
+    await ctx.reply({ ...DiscordMusicPanel.buildPanelMessage(q), componentsV2: true });
   },
 };
 

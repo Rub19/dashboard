@@ -2,6 +2,7 @@ import { SlashCommandBuilder, PermissionFlagsBits } from 'discord.js';
 import { Command, CommandContext } from '../../../types/command.js';
 import { checkHierarchy } from '../permissions/hierarchy.js';
 import { sanctionService } from '../sanctions/sanctionService.js';
+import { buildSanctionCard } from '../utils/sanctionCard.js';
 import { ModLogger } from '../logs/modLogger.js';
 import { formatString, getTranslation } from '../../../utils/i18n.js';
 import { buildSanctionDmEmbed } from '../utils/sanctionDmEmbed.js';
@@ -101,15 +102,20 @@ export const banCommand: Command = {
 
       await ModLogger.logSanction(ctx.guild, sanction);
 
-      const embed = ctx
-        .createEmbed('error')
-        .setTitle(formatString(t.ban_title, { id: sanction.id }))
-        .setDescription(
-          formatString(t.ban_desc, { userTag, reason, moderator: ctx.author.toString() }) +
-            (dryRun ? '\n\n🧪 **Mode test (God Mode)** : aucun bannissement réel n\'a été appliqué.' : '')
-        );
-
-      await ctx.reply({ embeds: [embed] });
+      const card = buildSanctionCard({
+        guildConfig: ctx.guildConfig,
+        type: 'ban',
+        sanctionId: sanction.id,
+        targetTag: userTag,
+        targetMention: `<@${targetId}>`,
+        targetAvatarUrl: targetUser?.displayAvatarURL() || null,
+        moderatorMention: ctx.author.toString(),
+        reason,
+        totalSanctions: sanctionService.getUserSanctions(ctx.guild.id, targetId).length,
+        extraNote: deleteDays > 0 ? `🧹 Messages des **${deleteDays}** dernier(s) jour(s) supprimés.` : null,
+        dryRun,
+      });
+      await ctx.reply({ components: [card], componentsV2: true });
     } catch {
       await ctx.reply({ embeds: [ctx.createEmbed('error').setDescription(t.ban_fail)] });
     }

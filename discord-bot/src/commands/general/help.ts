@@ -1,6 +1,8 @@
-import { SlashCommandBuilder, ActionRowBuilder, ButtonBuilder, ButtonStyle } from 'discord.js';
+import { SlashCommandBuilder, ActionRowBuilder, ButtonBuilder, ButtonStyle, MessageActionRowComponentBuilder } from 'discord.js';
 import { Command, CommandContext } from '../../types/command.js';
 import { HelpPanel, HELP_CATEGORIES, getCommandSubcommandNames } from './helpPanel.js';
+import { container, footer, sectionWithThumbnail, separator, text } from '../../utils/components.js';
+import { BRAND_COLORS } from '../../utils/embeds.js';
 
 export const helpCommand: Command = {
   name: 'help',
@@ -69,47 +71,24 @@ export const helpCommand: Command = {
                 : '')
             : `• \`/${cmd.name}\`\n• \`${prefix}${cmd.name}\``;
 
-        const embed = ctx
-          .createEmbed('info')
-          .setTitle(`📖 Fiche Commande • \`${prefix}${cmd.name}\` & \`/${cmd.name}\``)
-          .setDescription(cmd.description || 'Aucune description fournie.')
-          .addFields(
-            {
-              name: '🏷️ Catégorie',
-              value: `**${cmd.category || 'Général'}**`,
-              inline: true,
-            },
-            {
-              name: '🔀 Alias disponibles',
-              value: aliasesText,
-              inline: true,
-            },
-            {
-              name: '🔑 Permissions nécessaires',
-              value: permissionsText,
-              inline: false,
-            },
-            {
-              name: '💡 Exemples d\'invocation',
-              value: examplesText,
-              inline: false,
-            }
-          )
-          .setFooter({
-            text: `${ctx.guildConfig.botName} • Tapez /help pour explorer tout le catalogue`,
-            iconURL: ctx.client.user?.displayAvatarURL(),
-          })
-          .setTimestamp();
-
-        const row = new ActionRowBuilder<ButtonBuilder>().addComponents(
-          new ButtonBuilder()
-            .setCustomId('help_btn_home')
-            .setLabel('Catalogue Complet')
-            .setEmoji('📚')
-            .setStyle(ButtonStyle.Primary)
-        );
-
-        await ctx.reply({ embeds: [embed], components: [row] });
+        const cat = HELP_CATEGORIES.find((c) => c.commandNames.includes(cmd.name));
+        const card = container(cat?.color ?? BRAND_COLORS.info, [
+          sectionWithThumbnail(
+            [`## 📖 /${cmd.name}`, cmd.description || 'Aucune description fournie.', `-# ${cat ? `${cat.emoji} ${cat.name}` : cmd.category || 'Général'}`],
+            ctx.client.user?.displayAvatarURL() || 'https://cdn.discordapp.com/embed/avatars/0.png',
+            cmd.name,
+          ),
+          separator(),
+          text(`**🔀 Alias :** ${aliasesText}\n**🔑 Permissions :** ${permissionsText}`),
+          text(`**💡 Exemples**\n${examplesText}`),
+          separator(false),
+          new ActionRowBuilder<MessageActionRowComponentBuilder>().addComponents(
+            new ButtonBuilder().setCustomId('help_btn_home').setLabel('Catalogue complet').setEmoji('📚').setStyle(ButtonStyle.Primary),
+            ...(cat ? [new ButtonBuilder().setCustomId(`help_btn_nav:${cat.id}`).setLabel(cat.name).setEmoji(cat.emoji).setStyle(ButtonStyle.Secondary)] : []),
+          ),
+          footer(`${ctx.guildConfig.botName} · /help pour explorer tout le catalogue`),
+        ]);
+        await ctx.reply({ components: [card], componentsV2: true });
         return;
       }
     }
@@ -134,10 +113,7 @@ export const helpCommand: Command = {
       commands: commandRegistry.getAllCommands(),
     });
 
-    await ctx.reply({
-      embeds: view.embeds,
-      components: view.components,
-    });
+    await ctx.reply({ components: view.components, componentsV2: true });
   },
 };
 

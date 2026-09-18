@@ -152,31 +152,15 @@ export const musicCommand: Command = {
 
         const track = res.track!;
         if (res.playlistCount && res.playlistCount > 1) {
-          const embed = ctx
-            .createEmbed('success')
-            .setTitle('🎶 Playlist ajoutée')
-            .setDescription(
-              `**${res.playlistCount}** titres ajoutés à la file.\n` +
-                (res.queuePosition === 0
-                  ? `▶️ Lecture : [${track.title}](${track.url})`
-                  : `Prochain : [${track.title}](${track.url})`),
-            )
-            .setThumbnail(track.thumbnail);
-          await ctx.reply({ embeds: [embed] });
+          await ctx.reply({ ...DiscordMusicPanel.buildQueuedCard(track, res.queuePosition ?? 0, guild.id, res.playlistCount), componentsV2: true });
         } else if (res.queuePosition === 0) {
-          const embed = ctx
-            .createEmbed('success')
-            .setTitle(t.music_now_playing_title)
-            .setDescription(formatString(t.music_now_playing_desc, { title: track.title, url: track.url, artist: track.artist, duration: DiscordMusicPanel.formatTime(track.duration) }))
-            .setThumbnail(track.thumbnail);
-          await ctx.reply({ embeds: [embed] });
+          // Lecture immédiate : la carte "Lecture en cours" complète, avec les
+          // contrôles — même rendu que /music panel. Petite latence pour que le
+          // lecteur (Lavalink) ait le temps de remonter la piste.
+          await new Promise((r) => setTimeout(r, 400));
+          await ctx.reply({ ...DiscordMusicPanel.buildPanelMessage(musicService.getState(guild.id)), componentsV2: true });
         } else {
-          const embed = ctx
-            .createEmbed('info')
-            .setTitle(t.music_added_queue_title)
-            .setDescription(formatString(t.music_added_queue_desc, { title: track.title, url: track.url, position: res.queuePosition ?? 0 }))
-            .setThumbnail(track.thumbnail);
-          await ctx.reply({ embeds: [embed] });
+          await ctx.reply({ ...DiscordMusicPanel.buildQueuedCard(track, res.queuePosition ?? 0, guild.id), componentsV2: true });
         }
         break;
       }
@@ -315,19 +299,17 @@ export const musicCommand: Command = {
         break;
       }
 
-      case 'nowplaying':
-      case 'np': {
-        const state = musicService.getState(guild.id);
-        const panel = DiscordMusicPanel.buildPanelMessage(state);
-        await ctx.reply(panel);
+      case 'queue':
+      case 'q': {
+        await ctx.reply({ ...DiscordMusicPanel.buildQueueCard(musicService.getState(guild.id)), componentsV2: true });
         break;
       }
 
+      case 'nowplaying':
+      case 'np':
       case 'panel':
       default: {
-        const state = musicService.getState(guild.id);
-        const panel = DiscordMusicPanel.buildPanelMessage(state);
-        await ctx.reply(panel);
+        await ctx.reply({ ...DiscordMusicPanel.buildPanelMessage(musicService.getState(guild.id)), componentsV2: true });
         break;
       }
     }

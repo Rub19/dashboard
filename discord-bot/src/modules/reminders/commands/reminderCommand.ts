@@ -2,6 +2,7 @@ import { SlashCommandBuilder } from 'discord.js';
 import { Command, CommandContext } from '../../../types/command.js';
 import { reminderStorage } from '../storage/reminderStorage.js';
 import { parseDuration } from '../services/reminderService.js';
+import { emitConfigUpdated } from '../../../services/syncConfigEmitter.js';
 
 const MAX_PER_USER = 25;
 
@@ -111,6 +112,7 @@ export const reminderCommand: Command = {
         remindAt: remindAt.toISOString(),
         recurrence,
       });
+      emitConfigUpdated('reminders', guildId, reminder, 'DISCORD_COMMAND', userId);
 
       const unix = Math.floor(remindAt.getTime() / 1000);
       await ctx.reply({

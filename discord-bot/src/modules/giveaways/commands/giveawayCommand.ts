@@ -8,6 +8,7 @@ import { Command, CommandContext } from '../../../types/command.js';
 import { giveawayService } from '../services/giveawayService.js';
 import { giveawayStorage } from '../storage/giveawayStorage.js';
 import { formatString, getTranslation } from '../../../utils/i18n.js';
+import { emitConfigUpdated } from '../../../services/syncConfigEmitter.js';
 
 export const giveawayCommand: Command = {
   name: 'giveaway',
@@ -126,6 +127,7 @@ export const giveawayCommand: Command = {
         hostedByTag: ctx.author.tag,
       });
 
+      emitConfigUpdated('giveaways', guild.id, gw, 'DISCORD_COMMAND', ctx.author.id);
       await ctx.reply({
         embeds: [ctx.createEmbed('success').setDescription(formatString(t.giveaway_start_success, { prize, channelId: gw.channelId, id: gw.id }))],
         ephemeral: true,

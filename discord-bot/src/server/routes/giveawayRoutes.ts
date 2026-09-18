@@ -2,6 +2,7 @@ import express, { Request, Response } from 'express';
 import { ChannelType, Client } from 'discord.js';
 import { giveawayStorage } from '../../modules/giveaways/storage/giveawayStorage.js';
 import { giveawayService } from '../../modules/giveaways/services/giveawayService.js';
+import { emitConfigUpdated } from '../../services/syncConfigEmitter.js';
 
 export function createGiveawayRouter(discordClient: Client) {
   const router = express.Router({ mergeParams: true });
@@ -86,6 +87,7 @@ export function createGiveawayRouter(discordClient: Client) {
         claimTimeoutHours: Number(claimTimeoutHours) || 24,
       });
 
+      emitConfigUpdated('giveaways', guildId, giveaway, 'DASHBOARD', (req as any).user?.id);
       res.json({ success: true, giveaway });
     } catch (err: any) {
       res.status(500).json({ error: err.message || 'Erreur lors de la création du giveaway' });

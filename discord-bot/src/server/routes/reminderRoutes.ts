@@ -2,6 +2,7 @@ import express, { Request, Response } from 'express';
 import { ChannelType, Client } from 'discord.js';
 import { reminderStorage } from '../../modules/reminders/storage/reminderStorage.js';
 import { parseDuration } from '../../modules/reminders/services/reminderService.js';
+import { emitConfigUpdated } from '../../services/syncConfigEmitter.js';
 
 const MAX_PER_USER = 25;
 
@@ -71,6 +72,7 @@ export function createReminderRouter(client: Client) {
       remindAt: new Date(Date.now() + ms).toISOString(),
       recurrence: rec,
     });
+    emitConfigUpdated('reminders', guildId, reminder, 'DASHBOARD', userId);
     res.json({ success: true, reminder });
   });
 

@@ -31,6 +31,17 @@ const COOKIES_FILE = process.env.YT_DLP_COOKIES_FILE || '';
 // when YouTube breaks the default client ("The page needs to be reloaded").
 // Split on whitespace; quote-free values only.
 export const EXTRA_ARGS = (process.env.YT_DLP_EXTRA_ARGS || '').split(/\s+/).filter(Boolean);
+// YouTube now gates format URLs behind an "n" JavaScript challenge; yt-dlp only
+// enables the Deno runtime by default and silently ends up with zero formats
+// ("The page needs to be reloaded") without one. The bot already runs under
+// Node, so hand yt-dlp our own binary (override with YT_DLP_JS_RUNTIME, e.g.
+// "deno", or set it to "off" to opt out). The challenge-solver scripts are
+// fetched once from GitHub and cached by yt-dlp (YT_DLP_REMOTE_EJS=0 to skip).
+const JS_RUNTIME = process.env.YT_DLP_JS_RUNTIME || `node:${process.execPath}`;
+export const EJS_ARGS =
+  JS_RUNTIME === 'off'
+    ? []
+    : ['--js-runtimes', JS_RUNTIME, ...(process.env.YT_DLP_REMOTE_EJS === '0' ? [] : ['--remote-components', 'ejs:github'])];
 
 let availabilityProbe: Promise<boolean> | null = null;
 
@@ -82,6 +93,7 @@ export async function createYtDlpStream(input: string): Promise<Readable | null>
     '--socket-timeout',
     '15',
     ...(COOKIES_FILE ? ['--cookies', COOKIES_FILE] : []),
+    ...EJS_ARGS,
     ...EXTRA_ARGS,
     // Stream to stdout.
     '-o',

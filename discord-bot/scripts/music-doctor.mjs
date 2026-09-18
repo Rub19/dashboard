@@ -67,8 +67,11 @@ if (v.status !== 0) {
   console.log('\n4) Test de flux réel (YouTube, 8 s max)');
   const extra = (process.env.YT_DLP_EXTRA_ARGS || '').split(/\s+/).filter(Boolean);
   if (extra.length) ok(`Options supplémentaires : ${extra.join(' ')}`);
-  const args = ['--no-playlist', '--no-warnings', '--quiet', '-f', 'bestaudio[acodec=opus]/bestaudio/best', '--socket-timeout', '10',
-    ...(process.env.YT_DLP_COOKIES_FILE ? ['--cookies', process.env.YT_DLP_COOKIES_FILE] : []), ...extra, '-o', '-', 'https://www.youtube.com/watch?v=jNQXAC9IVRw'];
+  const jsRuntime = process.env.YT_DLP_JS_RUNTIME || `node:${process.execPath}`;
+  const ejs = jsRuntime === 'off' ? [] : ['--js-runtimes', jsRuntime, ...(process.env.YT_DLP_REMOTE_EJS === '0' ? [] : ['--remote-components', 'ejs:github'])];
+  if (ejs.length) ok(`Moteur JS pour le défi YouTube : ${jsRuntime}`); else warn('Défi JS désactivé (YT_DLP_JS_RUNTIME=off) — YouTube ne livrera probablement aucun format.');
+  const args = ['--no-playlist', '-f', 'bestaudio[acodec=opus]/bestaudio/best', '--socket-timeout', '10',
+    ...(process.env.YT_DLP_COOKIES_FILE ? ['--cookies', process.env.YT_DLP_COOKIES_FILE] : []), ...ejs, ...extra, '-o', '-', 'https://www.youtube.com/watch?v=jNQXAC9IVRw'];
   const result = await new Promise((resolve) => {
     const p = spawn(YT, args, { stdio: ['ignore', 'pipe', 'pipe'] });
     let bytes = 0; let err = '';
@@ -81,8 +84,9 @@ if (v.status !== 0) {
   if (result.bytes > 20_000) ok(`${(result.bytes / 1024).toFixed(0)} Ko reçus — yt-dlp sort bien de l’audio`);
   else {
     ko(`Aucun audio reçu (${result.bytes} octets${result.timeout ? ', timeout' : ''}).`);
-    if (result.err) console.log(`     stderr : ${result.err.trim().split('\n').slice(-3).join(' | ')}`);
-    if (/sign in|confirm you.re not a bot|cookies/i.test(result.err)) console.log('     → YouTube bloque l’IP du VPS : exporte des cookies (extension « Get cookies.txt LOCALLY ») et lance le bot avec YT_DLP_COOKIES_FILE=/chemin/cookies.txt');
+    if (result.err) console.log(`     stderr : ${result.err.trim().split('\n').slice(-4).join(' | ')}`);
+    if (/n challenge solving failed|JavaScript runtime|challenge solver/i.test(result.err)) console.log('     → Le défi JS YouTube n’est pas résolu : vérifie que node est exécutable par yt-dlp (YT_DLP_JS_RUNTIME=node:/chemin/node) et que le VPS peut joindre github.com (téléchargement du solveur). Alternative : installe Deno (curl -fsSL https://deno.land/install.sh | sh) et YT_DLP_JS_RUNTIME=deno.');
+    else if (/sign in|confirm you.re not a bot|cookies/i.test(result.err)) console.log('     → YouTube bloque l’IP du VPS : exporte des cookies (extension « Get cookies.txt LOCALLY ») et lance le bot avec YT_DLP_COOKIES_FILE=/chemin/cookies.txt');
     else if (/Unable to extract|Requested format|nsig|needs to be reloaded/i.test(result.err)) {
       console.log('     → Extracteur YouTube cassé/obsolète. 1) mets à jour : sudo yt-dlp -U  (ou réinstalle le binaire depuis GitHub)');
       console.log('       2) si ça persiste, force un autre client dans .env : YT_DLP_EXTRA_ARGS="--extractor-args youtube:player_client=tv,web_safari"');

@@ -48,15 +48,22 @@ func _unhandled_input(event: InputEvent) -> void:
 
 func _physics_process(delta: float) -> void:
 	# Lecture clavier brute : WASD + flèches, exactement comme GAME_KEYS côté HTML
+	# is_physical_key_pressed() reads the KEYBOARD POSITION, not the character
+	# it produces — so KEY_W/A/S/D always means "the keys where WASD sit on a
+	# US/QWERTY board", which is the Z/Q/S/D position on an AZERTY (French)
+	# keyboard. Bug: this used to be is_key_pressed(), which reads the
+	# produced character instead, so on AZERTY it required literally pressing
+	# W/A/S/D (a different, cramped position) instead of the conventional
+	# ZQSD spot every AZERTY FPS uses.
 	var fwd := 0.0
 	var strafe := 0.0
-	if Input.is_key_pressed(KEY_W) or Input.is_key_pressed(KEY_UP):
+	if Input.is_physical_key_pressed(KEY_W) or Input.is_physical_key_pressed(KEY_UP):
 		fwd += 1.0
-	if Input.is_key_pressed(KEY_S) or Input.is_key_pressed(KEY_DOWN):
+	if Input.is_physical_key_pressed(KEY_S) or Input.is_physical_key_pressed(KEY_DOWN):
 		fwd -= 1.0
-	if Input.is_key_pressed(KEY_D) or Input.is_key_pressed(KEY_RIGHT):
+	if Input.is_physical_key_pressed(KEY_D) or Input.is_physical_key_pressed(KEY_RIGHT):
 		strafe += 1.0
-	if Input.is_key_pressed(KEY_A) or Input.is_key_pressed(KEY_LEFT):
+	if Input.is_physical_key_pressed(KEY_A) or Input.is_physical_key_pressed(KEY_LEFT):
 		strafe -= 1.0
 
 	# Normalise la diagonale (même correctif que sur la version HTML : on

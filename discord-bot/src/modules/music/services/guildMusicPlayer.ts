@@ -165,6 +165,22 @@ export class GuildMusicPlayer {
           this.currentVoiceChannel = null;
           this.emitState();
         });
+
+        // Diagnostic trail for "joined but silent" reports: every voice
+        // connection transition + the UDP/DAVE details once Ready.
+        connection.on('stateChange', (oldState, newState) => {
+          logger.info(`[MusicPlayer] Voice ${oldState.status} → ${newState.status} (guild ${this.guildId})`);
+          if (newState.status === VoiceConnectionStatus.Ready) {
+            const net = (newState as any).networking?.state;
+            const udp = net?.udp?.remote;
+            logger.info(
+              `[MusicPlayer] Voice Ready — encryption=${net?.connectionData?.encryptionMode ?? '?'} udp=${udp ? `${udp.ip}:${udp.port}` : '?'} dave=${(newState as any).dave ? 'oui' : 'non'} (guild ${this.guildId})`,
+            );
+          }
+        });
+        connection.on('error', (err) => {
+          logger.error(`[MusicPlayer] Erreur connexion vocale (guild ${this.guildId}) :`, err);
+        });
       }
 
       this.connection = connection;
@@ -228,6 +244,10 @@ export class GuildMusicPlayer {
       this.player.on('error', (err) => {
         logger.error(`Erreur AudioPlayer guild ${this.guildId} :`, err);
         this.handleTrackEnd();
+      });
+
+      this.player.on('stateChange', (oldState, newState) => {
+        logger.info(`[MusicPlayer] Player ${oldState.status} → ${newState.status} (guild ${this.guildId})`);
       });
     }
 
@@ -336,6 +356,21 @@ export class GuildMusicPlayer {
       });
 
       this.player.play(resource);
+      logger.info(
+        `[MusicPlayer] play() "${track.title}" — url=${track.url} inputType=${resource.playStream?.constructor?.name ?? '?'} subscribers=${this.player.playable.length} (guild ${this.guildId})`,
+      );
+      // 5 s later: did any audio actually get encoded/sent? playbackDuration
+      // stuck at 0 = ffmpeg produced nothing (bad input); >0 with no sound on
+      // Discord = the packets leave the box but never arrive (UDP/encryption).
+      const probe = setTimeout(() => {
+        const st = this.player?.state;
+        const res = st && 'resource' in st ? (st as any).resource : null;
+        const conn = this.connection?.state.status;
+        logger.info(
+          `[MusicPlayer] +5s "${track.title}" — player=${st?.status} playbackDuration=${res?.playbackDuration ?? 0}ms readable=${res?.readable ?? '?'} ended=${res?.ended ?? '?'} voice=${conn} (guild ${this.guildId})`,
+        );
+      }, 5_000);
+      probe.unref();
       musicPersistence.addHistory(this.guildId, track);
       this.status = 'PLAYING';
       this.playbackStartTime = Date.now();

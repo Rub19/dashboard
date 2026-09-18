@@ -5,17 +5,20 @@ import {
   EmbedBuilder,
 } from 'discord.js';
 import { LogEntry } from '../types/logEvent.js';
+import { baseEmbed } from '../../../utils/embeds.js';
 
 export class LogEmbedFormatter {
   public static format(entry: LogEntry): {
     embed: EmbedBuilder;
     components?: ActionRowBuilder<ButtonBuilder>[];
   } {
-    const embed = new EmbedBuilder()
-      .setColor(entry.color as `#${string}`)
+    const embed = baseEmbed('default', {
+      color: entry.color,
+      footerText: `ID: ${entry.id} • ${entry.category.toUpperCase()}`,
+      timestamp: new Date(entry.createdAt),
+    })
       .setTitle(entry.title)
-      .setDescription(entry.description || null)
-      .setTimestamp(new Date(entry.createdAt));
+      .setDescription(entry.description || null);
 
     // Ajout des champs
     if (entry.fields && entry.fields.length > 0) {
@@ -27,10 +30,6 @@ export class LogEmbedFormatter {
         }))
       );
     }
-
-    embed.setFooter({
-      text: `ID: ${entry.id} • ${entry.category.toUpperCase()}`,
-    });
 
     const components: ActionRowBuilder<ButtonBuilder>[] = [];
 

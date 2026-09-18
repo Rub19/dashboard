@@ -1,5 +1,6 @@
-import { ChannelType, Client, EmbedBuilder, Guild, PermissionFlagsBits, TextChannel, Webhook } from 'discord.js';
+import { ChannelType, Client, Guild, PermissionFlagsBits, TextChannel, Webhook } from 'discord.js';
 import { logger } from '../../../utils/logger.js';
+import { baseEmbed } from '../../../utils/embeds.js';
 
 const WEBHOOK_NAME = 'ETHONE Espaces';
 
@@ -37,11 +38,9 @@ export class SharedSpaceNotifyService {
 
       const kindLabel = KIND_LABEL[payload.kind] || payload.kind;
       const actionLabel = ACTION_LABEL[payload.action] || payload.action;
-      const embed = new EmbedBuilder()
-        .setColor(0xc1234f)
-        .setDescription(`**${kindLabel}** ${actionLabel} dans **${payload.spaceName}** par ${payload.actorName}\n> ${payload.title}`)
-        .setFooter({ text: 'ETHONE Espaces' })
-        .setTimestamp(new Date());
+      const embed = baseEmbed('default', { footerText: 'ETHONE Espaces' }).setDescription(
+        `**${kindLabel}** ${actionLabel} dans **${payload.spaceName}** par ${payload.actorName}\n> ${payload.title}`
+      );
 
       const webhook = await this.getWebhook(textChannel, me);
       if (webhook) {

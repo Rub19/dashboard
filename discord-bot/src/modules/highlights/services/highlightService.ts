@@ -1,4 +1,5 @@
-import { EmbedBuilder, Message } from 'discord.js';
+import { Message } from 'discord.js';
+import { baseEmbed } from '../../../utils/embeds.js';
 import { highlightStorage } from '../storage/highlightStorage.js';
 import { boldKeyword, matchesKeyword } from './matching.js';
 import { logger } from '../../../utils/logger.js';
@@ -65,8 +66,7 @@ class HighlightService {
       ? `${message.content.slice(0, MAX_CONTENT_PREVIEW)}…`
       : message.content;
 
-    const embed = new EmbedBuilder()
-      .setColor('#5865F2')
+    const embed = baseEmbed('default', { timestamp: message.createdAt })
       .setAuthor({ name: message.author.tag, iconURL: message.author.displayAvatarURL() })
       .setTitle(`👁️ Mot-clé surveillé : "${keyword}"`)
       .setDescription(boldKeyword(preview, keyword))
@@ -74,8 +74,7 @@ class HighlightService {
         { name: 'Serveur', value: message.guild!.name, inline: true },
         { name: 'Salon', value: `<#${message.channelId}>`, inline: true }
       )
-      .addFields({ name: 'Lien', value: `[Aller au message](${message.url})` })
-      .setTimestamp(message.createdAt);
+      .addFields({ name: 'Lien', value: `[Aller au message](${message.url})` });
 
     // Fermé aux DM, permissions manquantes, utilisateur bloqué le bot… on échoue en silence.
     await user.send({ embeds: [embed] }).catch(() => {});

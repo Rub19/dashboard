@@ -9,6 +9,7 @@ import {
 import { Ticket } from '../types/ticket.js';
 import { guildConfigService } from '../../../services/guildConfigService.js';
 import { logger } from '../../../utils/logger.js';
+import { baseEmbed } from '../../../utils/embeds.js';
 
 export class TicketLogger {
   private static getLogChannel(guild: Guild, configuredLogChannelId?: string | null): TextChannel | null {
@@ -41,12 +42,9 @@ export class TicketLogger {
       }
 
       const guildConfig = guildConfigService.getConfig(guild.id);
-      const embed = new EmbedBuilder()
-        .setColor(color as `#${string}`)
+      const embed = baseEmbed('default', { color, footerText: `${guildConfig.botName} • Support Tickets` })
         .setTitle(title)
-        .addFields(fields)
-        .setFooter({ text: `${guildConfig.botName} • Support Tickets` })
-        .setTimestamp();
+        .addFields(fields);
 
       const payload: { embeds: EmbedBuilder[]; files?: AttachmentBuilder[] } = {
         embeds: [embed],

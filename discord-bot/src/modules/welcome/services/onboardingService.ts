@@ -2,7 +2,6 @@ import {
   ActionRowBuilder,
   ButtonBuilder,
   ButtonStyle,
-  EmbedBuilder,
   GuildMember,
   PermissionFlagsBits,
   TextChannel,
@@ -11,6 +10,7 @@ import { welcomeRepository } from '../storage/welcomeRepository.js';
 import { OnboardingFlow, OnboardingStep } from '../types/onboarding.js';
 import { logService } from '../../logs/services/logService.js';
 import { logger } from '../../../utils/logger.js';
+import { baseEmbed } from '../../../utils/embeds.js';
 
 export class OnboardingService {
   public static async startOnboarding(member: GuildMember): Promise<void> {
@@ -94,11 +94,9 @@ export class OnboardingService {
 
         await member.send({
           embeds: [
-            new EmbedBuilder()
-              .setColor(0x10b981)
+            baseEmbed('success', { footerText: member.guild.name })
               .setTitle('🎉 Onboarding terminé avec succès !')
-              .setDescription(rendered)
-              .setFooter({ text: member.guild.name }),
+              .setDescription(rendered),
           ],
         });
       } catch {

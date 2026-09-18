@@ -1,9 +1,10 @@
-import { Colors, EmbedBuilder, Guild, TextChannel } from 'discord.js';
+import { Colors, Guild, TextChannel } from 'discord.js';
 import { AutoModAction, AutoModConfig, AutoModRiskLevel } from '../types/autoMod.js';
 import { logService } from '../../logs/services/logService.js';
 import { logger } from '../../../utils/logger.js';
 import { guildConfigService } from '../../../services/guildConfigService.js';
 import { formatString, getTranslation } from '../../../utils/i18n.js';
+import { baseEmbed } from '../../../utils/embeds.js';
 
 interface AlertParams {
   guild: Guild;
@@ -53,18 +54,15 @@ export class AutoModAlertService {
 
     const t = getTranslation(guildConfigService.getConfig(guild.id).language);
 
-    const embed = new EmbedBuilder()
+    const embed = baseEmbed('default', { color, footerText: t.automod_alert_footer })
       .setTitle(formatString(t.automod_alert_title, { rule: ruleOrDetector }))
-      .setColor(color)
       .addFields(
         { name: t.automod_alert_field_user, value: `**${userTag}** (<@${userId}>)`, inline: true },
         { name: t.automod_alert_field_channel, value: `<#${channelId}>`, inline: true },
         { name: t.automod_alert_field_risk, value: `\`${riskScore}/100\` (${riskLevel})`, inline: true },
         { name: t.automod_alert_field_actions, value: actionsTaken.map((a) => `\`${a}\``).join(', ') || t.automod_alert_action_none, inline: true },
         { name: t.automod_alert_field_strikes, value: `\`${strikesCount}\``, inline: true }
-      )
-      .setFooter({ text: t.automod_alert_footer })
-      .setTimestamp();
+      );
 
     if (content) {
       const preview = content.length > 250 ? `${content.slice(0, 250)}...` : content;

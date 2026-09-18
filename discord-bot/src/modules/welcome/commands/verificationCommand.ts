@@ -1,12 +1,10 @@
 import {
   ChatInputCommandInteraction,
-  EmbedBuilder,
   PermissionFlagsBits,
   SlashCommandBuilder,
 } from 'discord.js';
 import { Command, CommandContext } from '../../../types/command.js';
 import { welcomeRepository } from '../storage/welcomeRepository.js';
-import { BRAND_COLORS } from '../../../utils/embeds.js';
 import { emitConfigUpdated } from '../../../services/syncConfigEmitter.js';
 
 // Only status/toggle here — channel, verified/unverified roles, and the
@@ -67,8 +65,8 @@ export const verificationCommand: Command = {
 
     // status
     const config = welcomeRepository.getVerificationConfig(guildId);
-    const embed = new EmbedBuilder()
-      .setColor(config.enabled ? BRAND_COLORS.success : BRAND_COLORS.neutral)
+    const embed = ctx
+      .createEmbed(config.enabled ? 'success' : 'neutral')
       .setAuthor({ name: `Vérification — ${ctx.guild.name}`, iconURL: ctx.guild.iconURL({ size: 128 }) ?? undefined })
       .setDescription(config.enabled ? '🟢 **Activée**' : '⚪ **Désactivée**')
       .addFields(
@@ -76,8 +74,7 @@ export const verificationCommand: Command = {
         { name: 'Rôle vérifié', value: config.verifiedRoleId ? `<@&${config.verifiedRoleId}>` : 'Non défini', inline: true },
         { name: 'Rôle non-vérifié', value: config.unverifiedRoleId ? `<@&${config.unverifiedRoleId}>` : 'Non défini', inline: true }
       )
-      .setFooter({ text: 'Réglages détaillés (salon, rôles, texte) : Dashboard → Discord → Bienvenue' })
-      .setTimestamp();
+      .setFooter({ text: 'Réglages détaillés (salon, rôles, texte) : Dashboard → Discord → Bienvenue' });
 
     await ctx.reply({ embeds: [embed] });
   },

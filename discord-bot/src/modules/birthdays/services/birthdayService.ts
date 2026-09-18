@@ -1,4 +1,5 @@
-import { Client, EmbedBuilder, NewsChannel, PermissionFlagsBits, TextChannel, ThreadChannel } from 'discord.js';
+import { Client, NewsChannel, PermissionFlagsBits, TextChannel, ThreadChannel } from 'discord.js';
+import { baseEmbed } from '../../../utils/embeds.js';
 import { birthdayStorage } from '../storage/birthdayStorage.js';
 import { BirthdayConfig } from '../types/birthday.js';
 import { logger } from '../../../utils/logger.js';
@@ -113,8 +114,7 @@ class BirthdayService {
         .trim();
     });
 
-    const embed = new EmbedBuilder()
-      .setColor('#FF6BAA')
+    const embed = baseEmbed('default', { color: '#FF6BAA' })
       .setTitle('🎂 Anniversaire du jour')
       .setDescription(lines.join('\n'));
 

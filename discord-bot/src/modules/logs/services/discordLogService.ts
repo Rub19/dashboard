@@ -10,6 +10,7 @@ import {
 import { AuditEvent, AuditModule, AuditSeverity, ChannelLogThreshold } from '../types/auditEvent.js';
 import { auditRepository } from '../storage/auditRepository.js';
 import { logger } from '../../../utils/logger.js';
+import { baseEmbed } from '../../../utils/embeds.js';
 
 const WEBHOOK_NAME = 'ETHONE Logs';
 
@@ -188,13 +189,17 @@ export class DiscordLogService {
       (event.target?.type === 'USER' ? `<@${event.target.id}>` : event.target?.id) ||
       '';
 
-    const embed = new EmbedBuilder()
-      .setColor(colorMap[event.severity] || 0x2b2d31)
-      .setAuthor({
-        name: targetName ? `${prettyType} — ${targetName}` : prettyType,
-        iconURL: event.target?.avatar || undefined,
-      })
-      .setTimestamp(new Date(event.timestamp));
+    const footerBits = [`${iconMap[event.module] || '📜'} ${event.module}`, event.severity];
+    if (event.actor?.id && event.actor.id.length > 5) footerBits.push(`ID ${event.id}`);
+
+    const embed = baseEmbed('default', {
+      color: colorMap[event.severity] || 0x2b2d31,
+      footerText: footerBits.join(' • '),
+      timestamp: new Date(event.timestamp),
+    }).setAuthor({
+      name: targetName ? `${prettyType} — ${targetName}` : prettyType,
+      iconURL: event.target?.avatar || undefined,
+    });
 
     // Corps narratif : cible + acteur + salon.
     const parts: string[] = [];
@@ -230,10 +235,6 @@ export class DiscordLogService {
 
     if (event.caseId) embed.addFields({ name: 'Dossier', value: `Case #${event.caseId}`, inline: true });
     if (event.incidentId) embed.addFields({ name: 'Incident', value: `${event.incidentId}`, inline: true });
-
-    const footerBits = [`${iconMap[event.module] || '📜'} ${event.module}`, event.severity];
-    if (event.actor?.id && event.actor.id.length > 5) footerBits.push(`ID ${event.id}`);
-    embed.setFooter({ text: footerBits.join(' • ') });
 
     return embed;
   }

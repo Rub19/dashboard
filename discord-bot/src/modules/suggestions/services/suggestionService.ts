@@ -14,6 +14,7 @@ import { logService } from '../../logs/services/logService.js';
 import { logger } from '../../../utils/logger.js';
 import { guildConfigService } from '../../../services/guildConfigService.js';
 import { formatString, getTranslation, SupportedLanguage } from '../../../utils/i18n.js';
+import { baseEmbed } from '../../../utils/embeds.js';
 
 export class SuggestionService {
   /**
@@ -57,8 +58,11 @@ export class SuggestionService {
     const t = getTranslation(language);
     const meta = this.getStatusMeta(suggestion.status, language);
 
-    const embed = new EmbedBuilder()
-      .setColor(meta.color)
+    const embed = baseEmbed('default', {
+      color: meta.color,
+      footerText: formatString(t.suggest_embed_footer, { id: suggestion.id, count: suggestion.comments.length }),
+      timestamp: new Date(suggestion.createdAt),
+    })
       .setAuthor({
         name: formatString(t.suggest_embed_author, { numericId: suggestion.numericId, authorTag: suggestion.authorTag }),
         iconURL: suggestion.authorAvatarUrl || undefined,
@@ -106,10 +110,6 @@ export class SuggestionService {
         },
       ]);
     }
-
-    embed
-      .setFooter({ text: formatString(t.suggest_embed_footer, { id: suggestion.id, count: suggestion.comments.length }) })
-      .setTimestamp(new Date(suggestion.createdAt));
 
     return embed;
   }

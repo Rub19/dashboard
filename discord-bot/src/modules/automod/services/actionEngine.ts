@@ -1,5 +1,6 @@
-import { Colors, EmbedBuilder, Guild, GuildMember, Message, TextChannel } from 'discord.js';
+import { Guild, GuildMember, Message, TextChannel } from 'discord.js';
 import { AutoModAction, AutoModConfig } from '../types/autoMod.js';
+import { baseEmbed } from '../../../utils/embeds.js';
 import { StrikeService } from './strikeService.js';
 import { raidActionService } from '../../antiRaid/services/raidActionService.js';
 import { CaseService } from '../../moderation/services/caseService.js';
@@ -65,12 +66,9 @@ export class ActionEngine {
     // 3. WARN
     if (uniqueActions.includes('WARN')) {
       try {
-        const warnEmbed = new EmbedBuilder()
-          .setColor(Colors.Orange)
+        const warnEmbed = baseEmbed('warning', { footerText: `Strikes actifs : ${activeStrikesCount}` })
           .setTitle('⚠️ Avertissement AutoMod')
-          .setDescription(`Votre message sur **${guild.name}** a enfreint les règles du serveur.\n**Motif :** ${reason}`)
-          .setFooter({ text: `Strikes actifs : ${activeStrikesCount}` })
-          .setTimestamp();
+          .setDescription(`Votre message sur **${guild.name}** a enfreint les règles du serveur.\n**Motif :** ${reason}`);
 
         // Tenter en MP, sinon message éphémère dans le salon
         await member.send({ embeds: [warnEmbed] }).catch(async () => {

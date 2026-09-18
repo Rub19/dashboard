@@ -1,4 +1,5 @@
 import { Client, EmbedBuilder, NewsChannel, TextChannel, ThreadChannel } from 'discord.js';
+import { baseEmbed } from '../../../utils/embeds.js';
 import { reminderStorage } from '../storage/reminderStorage.js';
 import { Reminder, ReminderRecurrence } from '../types/reminder.js';
 import { logger } from '../../../utils/logger.js';
@@ -64,16 +65,14 @@ class ReminderService {
   }
 
   private buildEmbed(reminder: Reminder): EmbedBuilder {
-    return new EmbedBuilder()
-      .setColor('#F5B301')
+    return baseEmbed('warning', {
+      footerText:
+        reminder.recurrence === 'none'
+          ? `Programmé le ${new Date(reminder.createdAt).toLocaleString('fr-FR')}`
+          : `Rappel ${reminder.recurrence === 'daily' ? 'quotidien' : 'hebdomadaire'}`,
+    })
       .setTitle('⏰ Rappel')
-      .setDescription(reminder.message)
-      .setFooter({
-        text:
-          reminder.recurrence === 'none'
-            ? `Programmé le ${new Date(reminder.createdAt).toLocaleString('fr-FR')}`
-            : `Rappel ${reminder.recurrence === 'daily' ? 'quotidien' : 'hebdomadaire'}`,
-      });
+      .setDescription(reminder.message);
   }
 
   async tick(): Promise<{ delivered: number; pruned: number }> {

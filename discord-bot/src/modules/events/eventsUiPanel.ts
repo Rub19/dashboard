@@ -1,5 +1,4 @@
 import {
-  EmbedBuilder,
   ActionRowBuilder,
   ButtonBuilder,
   ButtonStyle,
@@ -7,7 +6,7 @@ import {
 } from 'discord.js';
 import { DiscordEvent } from './eventsTypes.js';
 import { formatString, getTranslation, SupportedLanguage } from '../../utils/i18n.js';
-import { BRAND_COLORS } from '../../utils/embeds.js';
+import { BRAND_COLORS, baseEmbed } from '../../utils/embeds.js';
 
 export function buildEventDiscordPanel(
   event: DiscordEvent,
@@ -51,10 +50,14 @@ export function buildEventDiscordPanel(
     ? `${event.stats.goingCount} / ${maxCap} ${isFull ? t.events_capacity_full_suffix : '🟢'}`
     : formatString(t.events_participants_suffix, { count: event.stats.goingCount });
 
-  const embed = new EmbedBuilder()
+  const embed = baseEmbed('default', {
+    color,
+    footerText: formatString(t.events_panel_footer, { id: event.id }),
+    footerIconURL: 'https://ethone.app/favicon.ico',
+    timestamp: new Date(event.startDate),
+  })
     .setTitle(`${event.emoji ? `${event.emoji} ` : ''}${event.title}`)
     .setDescription(event.description || t.events_panel_no_description)
-    .setColor(color)
     .addFields(
       {
         name: t.events_panel_field_datetime,
@@ -73,12 +76,7 @@ export function buildEventDiscordPanel(
           (event.stats.waitlistCount ? formatString(t.events_panel_waitlist_line, { count: event.stats.waitlistCount }) : ''),
         inline: false,
       }
-    )
-    .setFooter({
-      text: formatString(t.events_panel_footer, { id: event.id }),
-      iconURL: 'https://ethone.app/favicon.ico',
-    })
-    .setTimestamp(new Date(event.startDate));
+    );
 
   if (event.imageUrl) {
     embed.setImage(event.imageUrl);

@@ -1,4 +1,5 @@
-import { Client, EmbedBuilder, Colors, TextChannel } from 'discord.js';
+import { Client, Colors, TextChannel } from 'discord.js';
+import { baseEmbed } from '../../../utils/embeds.js';
 import { CaseAction } from '../types/case.js';
 import { moderationRepository } from '../storage/moderationRepository.js';
 import { securityEventBus } from '../../automod/services/securityEventBus.js';
@@ -107,8 +108,7 @@ export class StaffAbuseDetector {
     const channel = guild.channels.cache.get(settings.logChannelId);
     if (!channel || !channel.isTextBased()) return;
 
-    const embed = new EmbedBuilder()
-      .setColor(Colors.DarkRed)
+    const embed = baseEmbed('default', { color: Colors.DarkRed, footerText: 'Staff Abuse Guard • ETHONE Security' })
       .setTitle('🚨 ALERTE SÉCURITÉ STAFF — Activité de Modération Anormale')
       .setDescription(
         `Le modérateur <@${moderatorId}> (**${moderatorTag}**) a effectué une vague inhabituelle d'actions disciplinaires.`
@@ -117,9 +117,7 @@ export class StaffAbuseDetector {
         { name: 'Détail de la détection', value: details, inline: false },
         { name: 'Niveau de Risque', value: '🔥 **CRITIQUE**', inline: true },
         { name: 'Recommandation', value: 'Vérifier si le compte du modérateur est compromis.', inline: true }
-      )
-      .setFooter({ text: 'Staff Abuse Guard • ETHONE Security' })
-      .setTimestamp();
+      );
 
     await (channel as TextChannel).send({
       content: '@everyone 🚨 **ALERTE SÉCURITÉ MODÉRATION**',

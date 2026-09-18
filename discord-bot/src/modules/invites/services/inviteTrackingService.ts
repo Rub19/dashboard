@@ -1,4 +1,5 @@
-import { GuildMember, EmbedBuilder, TextChannel, ChannelType } from 'discord.js';
+import { GuildMember, TextChannel, ChannelType } from 'discord.js';
+import { baseEmbed } from '../../../utils/embeds.js';
 import { inviteSnapshotService } from './inviteSnapshotService.js';
 import { referralRiskService } from './referralRiskService.js';
 import { referralRewardService } from './referralRewardService.js';
@@ -94,8 +95,7 @@ export class InviteTrackingService {
 
             await channel.send({ content: msg }).catch(() => null);
           } else if (risk.suspicious && settings.notificationEvents.onSuspiciousJoin) {
-            const warnEmbed = new EmbedBuilder()
-              .setColor('#F43F5E')
+            const warnEmbed = baseEmbed('error')
               .setTitle('⚠️ Invitation Suspecte Interceptée')
               .setDescription(
                 `**${member.user.tag}** a rejoint avec le code \`\`${inviteCode}\`\` (Inviteur: <@${inviterId}>).`
@@ -103,8 +103,7 @@ export class InviteTrackingService {
               .addFields([
                 { name: 'Risk Score', value: `**${risk.riskScore} / 100** (${risk.riskLevel})`, inline: true },
                 { name: 'Motif', value: risk.reason || 'Comportement suspect', inline: true },
-              ])
-              .setTimestamp();
+              ]);
 
             await channel.send({ embeds: [warnEmbed] }).catch(() => null);
           }

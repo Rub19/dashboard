@@ -1,8 +1,8 @@
-import { Client, EmbedBuilder, Colors, TextChannel } from 'discord.js';
+import { Client, Colors, TextChannel } from 'discord.js';
 import { ModerationCase } from '../types/case.js';
 import { moderationRepository } from '../storage/moderationRepository.js';
 import { logger } from '../../../utils/logger.js';
-import { successEmbed } from '../../../utils/embeds.js';
+import { baseEmbed, successEmbed } from '../../../utils/embeds.js';
 
 export class ModerationLogger {
   public static async logCase(discordClient: Client, modCase: ModerationCase): Promise<void> {
@@ -27,8 +27,11 @@ export class ModerationLogger {
         ? `${Math.round(modCase.durationSeconds / 60)} min`
         : 'Permanent';
 
-      const embed = new EmbedBuilder()
-        .setColor(color)
+      const embed = baseEmbed('default', {
+        color,
+        footerText: `ID: ${modCase.id} • ETHONE Moderation Center 2.0`,
+        timestamp: new Date(modCase.createdAt),
+      })
         .setTitle(`👮 Case #${modCase.caseNumber} — ${modCase.action}`)
         .setDescription(`Sanction appliquée à <@${modCase.userId}> (${modCase.userTag})`)
         .addFields(
@@ -48,9 +51,6 @@ export class ModerationLogger {
           inline: true,
         });
       }
-
-      embed.setFooter({ text: `ID: ${modCase.id} • ETHONE Moderation Center 2.0` });
-      embed.setTimestamp(new Date(modCase.createdAt));
 
       await (channel as TextChannel).send({ embeds: [embed] });
     } catch (err) {

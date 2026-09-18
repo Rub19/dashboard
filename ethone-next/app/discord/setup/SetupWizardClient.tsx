@@ -25,6 +25,19 @@ import DiscordIcon from "@/components/DiscordIcon";
 
 const BOT_CLIENT_ID = "1545139931154878464";
 const BOT_INVITE_URL = `https://discord.com/oauth2/authorize?client_id=${BOT_CLIENT_ID}&permissions=8&scope=bot%20applications.commands`;
+const API_BASE = process.env.NEXT_PUBLIC_DISCORD_BOT_API || "";
+const TIMEOUT_DURATION_SECONDS: Record<string, number> = { "5m": 300, "10m": 600, "1h": 3600 };
+
+interface GuildChannel {
+  id: string;
+  name: string;
+}
+
+interface GuildRole {
+  id: string;
+  name: string;
+  color: string;
+}
 
 const STEPS = [
   { id: 1, title: "Serveur Discord", desc: "Sélection du serveur", icon: Server },
@@ -42,15 +55,20 @@ export default function SetupWizardClient() {
   const [selectedGuild, setSelectedGuild] = useState<DiscordGuild | null>(null);
 
   // Moderation form state
-  const [modLogChannel, setModLogChannel] = useState("mod-logs");
+  const [modLogChannelId, setModLogChannelId] = useState<string | null>(null);
   const [antiSpamEnabled, setAntiSpamEnabled] = useState(true);
   const [timeoutDuration, setTimeoutDuration] = useState("10m");
 
   // Welcome form state
   const [welcomeEnabled, setWelcomeEnabled] = useState(true);
-  const [welcomeChannel, setWelcomeChannel] = useState("bienvenue");
+  const [welcomeChannelId, setWelcomeChannelId] = useState<string | null>(null);
   const [welcomeMessage, setWelcomeMessage] = useState("Bienvenue {user} sur {server} ! N'hésite pas à lire les règles.");
-  const [autoRoleName, setAutoRoleName] = useState("Membre");
+  const [autoRoleId, setAutoRoleId] = useState<string | null>(null);
+
+  // Real guild channels/roles, fetched from the bot API (used to resolve names to Discord IDs)
+  const [guildChannels, setGuildChannels] = useState<GuildChannel[]>([]);
+  const [guildRoles, setGuildRoles] = useState<GuildRole[]>([]);
+  const [isLoadingGuildData, setIsLoadingGuildData] = useState(false);
 
   const [isSaving, setIsSaving] = useState(false);
 
@@ -72,6 +90,60 @@ export default function SetupWizardClient() {
     }
   }, [manageableGuilds, selectedGuild]);
 
+  // Load real channels/roles for the selected guild so the moderation & welcome
+  // steps can resolve to actual Discord IDs instead of free-text names.
+  useEffect(() => {
+    if (!selectedGuild || !API_BASE) {
+      setGuildChannels([]);
+      setGuildRoles([]);
+      return;
+    }
+
+    let cancelled = false;
+    setIsLoadingGuildData(true);
+
+    (async () => {
+      const [chRes, roRes] = await Promise.all([
+        fetch(`${API_BASE}/api/guilds/${selectedGuild.id}/welcome/channels`, { credentials: "include" }).catch(() => null),
+        fetch(`${API_BASE}/api/guilds/${selectedGuild.id}/welcome/roles`, { credentials: "include" }).catch(() => null),
+      ]);
+
+      if (cancelled) return;
+
+      if (chRes && chRes.ok) {
+        const d = await chRes.json();
+        setGuildChannels(Array.isArray(d.channels) ? d.channels : []);
+      } else {
+        setGuildChannels([]);
+      }
+
+      if (roRes && roRes.ok) {
+        const d = await roRes.json();
+        setGuildRoles(Array.isArray(d.roles) ? d.roles : []);
+      } else {
+        setGuildRoles([]);
+      }
+
+      setIsLoadingGuildData(false);
+    })();
+
+    return () => {
+      cancelled = true;
+    };
+  }, [selectedGuild]);
+
+  // Reset previously-selected channel/role IDs when they no longer belong to the loaded guild data
+  useEffect(() => {
+    if (guildChannels.length === 0) return;
+    if (modLogChannelId && !guildChannels.some((c) => c.id === modLogChannelId)) setModLogChannelId(null);
+    if (welcomeChannelId && !guildChannels.some((c) => c.id === welcomeChannelId)) setWelcomeChannelId(null);
+  }, [guildChannels, modLogChannelId, welcomeChannelId]);
+
+  useEffect(() => {
+    if (guildRoles.length === 0) return;
+    if (autoRoleId && !guildRoles.some((r) => r.id === autoRoleId)) setAutoRoleId(null);
+  }, [guildRoles, autoRoleId]);
+
   const handleNext = () => {
     if (currentStep === 1 && !selectedGuild) {
       showError("Sélection requise", "Veuillez sélectionner un serveur Discord pour continuer.");
@@ -90,33 +162,67 @@ export default function SetupWizardClient() {
 
   const handleSaveAndFinish = async () => {
     if (!selectedGuild) return;
+
+    if (!API_BASE) {
+      showError("Configuration indisponible", "L'API du bot n'est pas configurée pour ce déploiement.");
+      return;
+    }
+
     setIsSaving(true);
 
     try {
-      // 1. Save moderation settings
-      await fetch(`/api/discord/settings/${selectedGuild.id}`, {
-        method: "PUT",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({
-          antiSpamEnabled,
-          modLogChannel,
-          defaultTimeout: timeoutDuration,
+      const requests: Promise<Response>[] = [
+        // Anti-spam toggle + auto-timeout duration (real anti-raid message-flood module)
+        fetch(`${API_BASE}/api/guilds/${selectedGuild.id}/anti-raid/config`, {
+          method: "PUT",
+          credentials: "include",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify({
+            messageRaid: {
+              enabled: antiSpamEnabled,
+              timeoutDurationSeconds: TIMEOUT_DURATION_SECONDS[timeoutDuration] ?? 600,
+            },
+          }),
         }),
-      }).catch(() => null);
-
-      // 2. Save welcome settings
-      await fetch(`/api/discord/welcome/${selectedGuild.id}`, {
-        method: "PUT",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({
-          welcomeEnabled,
-          welcomeChannel,
-          welcomeMessage,
-          autoRoleName,
+        // Welcome message + auto-role
+        fetch(`${API_BASE}/api/guilds/${selectedGuild.id}/welcome`, {
+          method: "PUT",
+          credentials: "include",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify({
+            welcome: {
+              enabled: welcomeEnabled,
+              channelId: welcomeChannelId,
+              messageContent: welcomeMessage,
+              autoRoleIds: autoRoleId ? [autoRoleId] : [],
+            },
+          }),
         }),
-      }).catch(() => null);
+      ];
 
-      success("Configuration terminée !", "Votre serveur est maintenant prêt à utiliser ETHONE Bot.");
+      // Mod-log channel only has somewhere real to go once one is actually picked
+      if (modLogChannelId) {
+        requests.push(
+          fetch(`${API_BASE}/api/guilds/${selectedGuild.id}/moderation/settings`, {
+            method: "PUT",
+            credentials: "include",
+            headers: { "Content-Type": "application/json" },
+            body: JSON.stringify({ logChannelId: modLogChannelId }),
+          })
+        );
+      }
+
+      const results = await Promise.allSettled(requests);
+      const anyFailed = results.some((r) => r.status === "rejected" || (r.status === "fulfilled" && !r.value.ok));
+
+      if (anyFailed) {
+        showError(
+          "Sauvegarde partielle",
+          "Certains réglages n'ont pas pu être enregistrés. Vérifiez la connexion au bot et réessayez depuis les centres de modération/welcome."
+        );
+      } else {
+        success("Configuration terminée !", "Votre serveur est maintenant prêt à utiliser ETHONE Bot.");
+      }
       setCurrentStep(5);
     } catch {
       showError("Erreur de sauvegarde", "Impossible de sauvegarder la configuration.");
@@ -391,14 +497,26 @@ export default function SetupWizardClient() {
                     Salon des logs de modération
                   </label>
                   <div className="flex items-center gap-2 p-2.5 rounded-xl bg-zinc-950 border border-zinc-800">
-                    <Hash className="w-4 h-4 text-zinc-500" />
-                    <input
-                      type="text"
-                      value={modLogChannel}
-                      onChange={(e) => setModLogChannel(e.target.value)}
-                      placeholder="mod-logs"
-                      className="bg-transparent text-xs text-white focus:outline-none flex-1"
-                    />
+                    <Hash className="w-4 h-4 text-zinc-500 shrink-0" />
+                    <select
+                      value={modLogChannelId ?? ""}
+                      onChange={(e) => setModLogChannelId(e.target.value || null)}
+                      disabled={isLoadingGuildData || guildChannels.length === 0}
+                      className="bg-transparent text-xs text-white focus:outline-none flex-1 disabled:opacity-50"
+                    >
+                      <option value="" className="bg-zinc-950">
+                        {isLoadingGuildData
+                          ? "Chargement des salons…"
+                          : guildChannels.length === 0
+                          ? "Aucun salon disponible"
+                          : "Sélectionner un salon"}
+                      </option>
+                      {guildChannels.map((c) => (
+                        <option key={c.id} value={c.id} className="bg-zinc-950">
+                          #{c.name}
+                        </option>
+                      ))}
+                    </select>
                   </div>
                 </div>
 
@@ -486,14 +604,26 @@ export default function SetupWizardClient() {
                     Salon d'accueil
                   </label>
                   <div className="flex items-center gap-2 p-2.5 rounded-xl bg-zinc-950 border border-zinc-800">
-                    <Hash className="w-4 h-4 text-zinc-500" />
-                    <input
-                      type="text"
-                      value={welcomeChannel}
-                      onChange={(e) => setWelcomeChannel(e.target.value)}
-                      placeholder="bienvenue"
-                      className="bg-transparent text-xs text-white focus:outline-none flex-1"
-                    />
+                    <Hash className="w-4 h-4 text-zinc-500 shrink-0" />
+                    <select
+                      value={welcomeChannelId ?? ""}
+                      onChange={(e) => setWelcomeChannelId(e.target.value || null)}
+                      disabled={isLoadingGuildData || guildChannels.length === 0}
+                      className="bg-transparent text-xs text-white focus:outline-none flex-1 disabled:opacity-50"
+                    >
+                      <option value="" className="bg-zinc-950">
+                        {isLoadingGuildData
+                          ? "Chargement des salons…"
+                          : guildChannels.length === 0
+                          ? "Aucun salon disponible"
+                          : "Sélectionner un salon"}
+                      </option>
+                      {guildChannels.map((c) => (
+                        <option key={c.id} value={c.id} className="bg-zinc-950">
+                          #{c.name}
+                        </option>
+                      ))}
+                    </select>
                   </div>
                 </div>
 
@@ -520,13 +650,25 @@ export default function SetupWizardClient() {
                   <label className="text-xs font-semibold text-zinc-300 block mb-1.5">
                     Rôle attribué automatiquement
                   </label>
-                  <input
-                    type="text"
-                    value={autoRoleName}
-                    onChange={(e) => setAutoRoleName(e.target.value)}
-                    placeholder="Membre"
-                    className="w-full p-2.5 rounded-xl bg-zinc-950 border border-zinc-800 text-xs text-white focus:outline-none"
-                  />
+                  <select
+                    value={autoRoleId ?? ""}
+                    onChange={(e) => setAutoRoleId(e.target.value || null)}
+                    disabled={isLoadingGuildData || guildRoles.length === 0}
+                    className="w-full p-2.5 rounded-xl bg-zinc-950 border border-zinc-800 text-xs text-white focus:outline-none disabled:opacity-50"
+                  >
+                    <option value="" className="bg-zinc-950">
+                      {isLoadingGuildData
+                        ? "Chargement des rôles…"
+                        : guildRoles.length === 0
+                        ? "Aucun rôle disponible"
+                        : "Aucun (ne pas attribuer de rôle)"}
+                    </option>
+                    {guildRoles.map((r) => (
+                      <option key={r.id} value={r.id} className="bg-zinc-950">
+                        {r.name}
+                      </option>
+                    ))}
+                  </select>
                 </div>
               </div>
             </div>

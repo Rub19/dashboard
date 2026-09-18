@@ -116,6 +116,7 @@ export default function RootLayout({
                     type: 1,
                     components: [
                       { type: 2, style: 5, label: "Ouvrir le Dashboard", url: "https://ethone.dev/login" },
+                      { type: 2, style: 5, label: "Rejoindre le Discord", url: "https://discord.gg/WvEcyBuP45" },
                     ],
                   },
                 ],

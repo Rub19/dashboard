@@ -508,34 +508,113 @@ export default function DiscordDashboardPage() {
   const [guildSettings, setGuildSettings] = useState<GuildSettings>(DEFAULT_SETTINGS);
   const [isSaving, setIsSaving] = useState(false);
 
-  // Charger les paramètres du serveur sélectionné
+  // Charger les paramètres du serveur sélectionné : préfixe + anti-raid depuis
+  // le bot quand il est joignable, sinon la copie locale. Avant, TOUT venait du
+  // localStorage et « Enregistrer » n'envoyait jamais rien au bot.
   useEffect(() => {
     if (!selectedGuild) return;
+    const api = process.env.NEXT_PUBLIC_DISCORD_BOT_API || "";
+    let local: GuildSettings = DEFAULT_SETTINGS;
     try {
       const saved = localStorage.getItem(`ethone:discord:settings:${selectedGuild.id}`);
-      if (saved) {
-        setGuildSettings(JSON.parse(saved));
-      } else {
-        setGuildSettings(DEFAULT_SETTINGS);
-      }
-    } catch {
-      setGuildSettings(DEFAULT_SETTINGS);
-    }
+      if (saved) local = { ...DEFAULT_SETTINGS, ...JSON.parse(saved) };
+    } catch {}
+    setGuildSettings(local);
+    if (!api) return;
+    let cancelled = false;
+    const base = `${api}/api/guilds/${selectedGuild.id}`;
+    Promise.all([
+      fetch(`${base}/settings`, { credentials: "include" }).then((r) => (r.ok ? r.json() : null)).catch(() => null),
+      fetch(`${base}/anti-raid/config`, { credentials: "include" }).then((r) => (r.ok ? r.json() : null)).catch(() => null),
+    ]).then(([settingsRes, raidRes]) => {
+      if (cancelled) return;
+      setGuildSettings((prev) => ({
+        ...prev,
+        ...(settingsRes?.config?.prefix ? { prefix: settingsRes.config.prefix } : {}),
+        ...(raidRes?.config
+          ? {
+              antiRaidEnabled: Boolean(raidRes.config.enabled),
+              antiSpamEnabled: Boolean(raidRes.config.messageRaid?.enabled),
+              mentionLimit: Number(raidRes.config.mentionRaid?.maxMentionsPerMessage) || prev.mentionLimit,
+            }
+          : {}),
+      }));
+    });
+    return () => {
+      cancelled = true;
+    };
   }, [selectedGuild]);
 
-  // Sauvegarder les paramètres pour ce serveur
-  const handleSaveSettings = useCallback(() => {
+  // Sauvegarder : préfixe → PATCH /settings, anti-raid/anti-spam/mentions →
+  // PUT /anti-raid/config. Les champs sans backend (salons de logs, XP…)
+  // restent en copie locale.
+  const handleSaveSettings = useCallback(async () => {
     if (!selectedGuild) return;
     setIsSaving(true);
+    const api = process.env.NEXT_PUBLIC_DISCORD_BOT_API || "";
     try {
       localStorage.setItem(`ethone:discord:settings:${selectedGuild.id}`, JSON.stringify(guildSettings));
-      success("Configuration enregistrée", `Réglages mis à jour pour "${selectedGuild.name}".`);
+    } catch {}
+    if (!api) {
+      success("Configuration enregistrée (local)", "API du bot non configurée — réglages gardés dans ce navigateur.");
+      setIsSaving(false);
+      return;
+    }
+    const base = `${api}/api/guilds/${selectedGuild.id}`;
+    try {
+      const [settingsRes, raidRes] = await Promise.all([
+        fetch(`${base}/settings`, {
+          method: "PATCH", credentials: "include", headers: { "content-type": "application/json" },
+          body: JSON.stringify({ prefix: guildSettings.prefix }),
+        }),
+        fetch(`${base}/anti-raid/config`, {
+          method: "PUT", credentials: "include", headers: { "content-type": "application/json" },
+          body: JSON.stringify({
+            enabled: guildSettings.antiRaidEnabled,
+            messageRaid: { enabled: guildSettings.antiSpamEnabled },
+            mentionRaid: { maxMentionsPerMessage: guildSettings.mentionLimit },
+          }),
+        }),
+      ]);
+      const failed: string[] = [];
+      if (!settingsRes.ok) failed.push(`préfixe (${(await settingsRes.json().catch(() => null))?.error || settingsRes.status})`);
+      if (!raidRes.ok) failed.push(`anti-raid (${(await raidRes.json().catch(() => null))?.error || raidRes.status})`);
+      if (failed.length > 0) {
+        showError("Enregistrement partiel", `Échec : ${failed.join(", ")}.`);
+      } else {
+        success("Configuration enregistrée", `Préfixe et protections appliqués sur "${selectedGuild.name}".`);
+      }
     } catch {
-      showError("Erreur de sauvegarde", "Impossible d'enregistrer les paramètres localement.");
+      showError("Erreur de sauvegarde", "Le bot n'a pas répondu — réglages gardés localement.");
     } finally {
       setIsSaving(false);
     }
   }, [selectedGuild, guildSettings, success, showError]);
+
+  // Lockdown d'urgence : action immédiate côté bot (verrouille les salons),
+  // pas un simple flag local.
+  const handleToggleLockdown = useCallback(async () => {
+    if (!selectedGuild) return;
+    const api = process.env.NEXT_PUBLIC_DISCORD_BOT_API || "";
+    const next = !guildSettings.emergencyLockdown;
+    if (!api) {
+      setGuildSettings((p) => ({ ...p, emergencyLockdown: next }));
+      return;
+    }
+    if (next && !confirm(`Verrouiller immédiatement les salons de « ${selectedGuild.name} » ?`)) return;
+    try {
+      const res = await fetch(`${api}/api/guilds/${selectedGuild.id}/anti-raid/lockdown`, {
+        method: "POST", credentials: "include", headers: { "content-type": "application/json" },
+        body: JSON.stringify({ active: next, reason: "Action manuelle depuis le Dashboard ETHONE" }),
+      });
+      const data = await res.json().catch(() => null);
+      if (!res.ok) throw new Error(data?.error || `HTTP ${res.status}`);
+      setGuildSettings((p) => ({ ...p, emergencyLockdown: Boolean(data?.lockdownActive) }));
+      success(data?.lockdownActive ? "Lockdown activé" : "Lockdown levé", `${data?.affectedChannelsCount ?? 0} salon(s) concerné(s).`);
+    } catch (e: any) {
+      showError("Lockdown impossible", e?.message || "Le bot n'a pas répondu.");
+    }
+  }, [selectedGuild, guildSettings.emergencyLockdown, success, showError]);
 
   // Gestion de création d'une nouvelle commande personnalisée
   const [newCmdName, setNewCmdName] = useState("");
@@ -1319,7 +1398,7 @@ export default function DiscordDashboardPage() {
                       </div>
                       <button
                         type="button"
-                        onClick={() => setGuildSettings((p) => ({ ...p, emergencyLockdown: !p.emergencyLockdown }))}
+                        onClick={handleToggleLockdown}
                         className={cn(
                           "rounded-xl px-3 py-1.5 text-xs font-semibold transition-all cursor-pointer",
                           guildSettings.emergencyLockdown

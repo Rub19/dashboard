@@ -591,13 +591,8 @@ export default function BotControlClient({ initialTab = "overview" }: BotControl
 
   // Role Permissions & Presets State
   const [activeRolePreset, setActiveRolePreset] = useState<string>("PRESET_BALANCED");
-  const [detectedRolesList] = useState<any[]>([
-    { id: "1", name: "👑 Fondateur / Owner", color: "#f59e0b", category: "OWNER", members: 1, recommendation: "Contrôle Total Suprême (Toutes les permissions)", badge: "👑 OWNER" },
-    { id: "2", name: "🛡️ Administrateur", color: "#ef4444", category: "ADMIN", members: 3, recommendation: "Administration Complète (Config bot, modération & sécurité)", badge: "🛡️ ADMIN" },
-    { id: "3", name: "⚔️ Modérateur / Staff", color: "#3b82f6", category: "MODERATOR", members: 6, recommendation: "Modération Standard (Sanctions, timeouts, clear)", badge: "⚔️ MOD" },
-    { id: "4", name: "💎 Server Booster / VIP", color: "#ec4899", category: "VIP", members: 12, recommendation: "Avantages VIP (Priorité musique & quotas IA étendus)", badge: "💎 VIP" },
-    { id: "5", name: "👥 @everyone (Membres)", color: "#9ca3af", category: "MEMBER", members: 48, recommendation: "Accès Membre (Commandes publiques & salon IA dédié)", badge: "👥 PUBLIC" },
-  ]);
+  const [detectedRolesList, setDetectedRolesList] = useState<any[]>([]);
+  const [applyingRolePreset, setApplyingRolePreset] = useState(false);
 
   const handleAddBannedWord = () => {
     if (!newBannedWordInput.trim()) return;
@@ -618,9 +613,68 @@ export default function BotControlClient({ initialTab = "overview" }: BotControl
     toast?.info?.(`Mot banni "${word}" retiré.`);
   };
 
-  const handleApplyRolePreset = (presetId: string, label: string) => {
-    setActiveRolePreset(presetId);
-    toast?.success?.(`Préset "${label}" appliqué avec succès.`);
+  // Rôles détectés & présets de permissions : même moteur que /permissions côté
+  // Discord (RolePermissionService), jamais exposé au dashboard avant — cette
+  // section affichait 5 rôles inventés et "appliquer un préset" ne faisait que
+  // changer une pastille locale.
+  useEffect(() => {
+    if (!settingsGuildId || !BOT_API_URL) {
+      setDetectedRolesList([]);
+      return;
+    }
+    let cancelled = false;
+    fetch(`${BOT_API_URL}/api/guilds/${settingsGuildId}/roles/permissions/presets`, { credentials: "include" })
+      .then((r) => (r.ok ? r.json() : null))
+      .then((data) => {
+        if (cancelled || !data) return;
+        const categoryBadges: Record<string, string> = {
+          OWNER: "👑 OWNER",
+          ADMIN: "🛡️ ADMIN",
+          MODERATOR: "⚔️ MOD",
+          VIP: "💎 VIP",
+          BOT: "🤖 BOT",
+          MEMBER: "👥 MEMBER",
+        };
+        const roles = Array.isArray(data.detectedRoles)
+          ? data.detectedRoles.map((r: any) => ({
+              id: r.roleId,
+              name: r.roleName,
+              color: r.roleColor ? `#${r.roleColor.toString(16).padStart(6, "0")}` : "#99a1af",
+              category: r.detectedCategory,
+              members: r.memberCount,
+              recommendation: r.recommendationLabel,
+              badge: categoryBadges[r.detectedCategory] || r.detectedCategory,
+            }))
+          : [];
+        setDetectedRolesList(roles);
+        if (typeof data.activePreset === "string") setActiveRolePreset(data.activePreset);
+      })
+      .catch(() => {
+        if (!cancelled) setDetectedRolesList([]);
+      });
+    return () => {
+      cancelled = true;
+    };
+  }, [settingsGuildId]);
+
+  const handleApplyRolePreset = async (presetId: string, label: string) => {
+    if (!settingsGuildId || !BOT_API_URL) return;
+    setApplyingRolePreset(true);
+    try {
+      const res = await fetch(`${BOT_API_URL}/api/guilds/${settingsGuildId}/roles/permissions/apply-preset`, {
+        method: "POST",
+        credentials: "include",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ presetId }),
+      });
+      if (!res.ok) throw new Error(String(res.status));
+      setActiveRolePreset(presetId);
+      toast?.success?.(`Préset "${label}" appliqué avec succès.`);
+    } catch {
+      toast?.error?.("Échec de l'application du préset.");
+    } finally {
+      setApplyingRolePreset(false);
+    }
   };
 
   // Performance & RAM State
@@ -1620,6 +1674,7 @@ export default function BotControlClient({ initialTab = "overview" }: BotControl
             loadingGuildSettings={loadingGuildSettings}
             activeRolePreset={activeRolePreset}
             handleApplyRolePreset={handleApplyRolePreset}
+            applyingRolePreset={applyingRolePreset}
             detectedRolesList={detectedRolesList}
             aiTelemetry={aiTelemetry}
             dedicatedAiChannelEnabled={dedicatedAiChannelEnabled}

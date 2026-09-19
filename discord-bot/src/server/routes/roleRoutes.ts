@@ -2,6 +2,8 @@ import express, { Request, Response } from 'express';
 import { Client } from 'discord.js';
 import { autoRoleService } from '../../modules/roles/services/autoRoleService.js';
 import { rolePanelService } from '../../modules/roles/services/rolePanelService.js';
+import { RolePermissionService } from '../../modules/roles/services/rolePermissionService.js';
+import { guildConfigService } from '../../services/guildConfigService.js';
 import { logger } from '../../utils/logger.js';
 import { rateLimit, idempotent } from '../middleware/antiAbuseMiddleware.js';
 import { emitConfigUpdated } from '../../services/syncConfigEmitter.js';
@@ -140,6 +142,59 @@ export function createRoleRouter(discordClient: Client) {
       res.json({ success: deleted });
     } catch (err: any) {
       res.status(500).json({ error: err.message || 'Erreur suppression.' });
+    }
+  });
+
+  // 8. Détection auto des rôles + présets de permissions (même moteur que /permissions
+  // côté Discord — cf. commands/admin/permissionsCommand.ts). Le dashboard n'exposait
+  // rien de ceci jusqu'ici : Bot Control > Configuration affichait 5 rôles inventés.
+  router.get('/permissions/presets', (req: Request, res: Response): void => {
+    const guildId = String(req.params.guildId);
+    const guild = discordClient.guilds.cache.get(guildId);
+    if (!guild) {
+      res.status(404).json({ error: 'Serveur introuvable.' });
+      return;
+    }
+    try {
+      const detectedRoles = RolePermissionService.analyzeGuildRoles(guild);
+      const presets = RolePermissionService.generatePresets(guild);
+      const activePreset = guildConfigService.getConfig(guildId).activePreset || 'PRESET_BALANCED';
+      res.json({ detectedRoles, presets, activePreset });
+    } catch (err: any) {
+      res.status(500).json({ error: err.message || "Erreur d'analyse des rôles." });
+    }
+  });
+
+  // 9. Appliquer un préset (même écriture que le bouton Discord : guildConfigService
+  // émet déjà la sync live, pas besoin d'un emitConfigUpdated séparé ici).
+  router.post('/permissions/apply-preset', (req: Request, res: Response): void => {
+    const guildId = String(req.params.guildId);
+    const guild = discordClient.guilds.cache.get(guildId);
+    if (!guild) {
+      res.status(404).json({ error: 'Serveur introuvable.' });
+      return;
+    }
+    const presetId = String(req.body?.presetId || '');
+    const presets = RolePermissionService.generatePresets(guild);
+    const selected = presets.find((p) => p.id === presetId);
+    if (!selected) {
+      res.status(400).json({ error: 'Préset invalide.' });
+      return;
+    }
+    try {
+      guildConfigService.updateConfig(
+        guildId,
+        {
+          adminRoles: selected.adminRoles,
+          modRoles: selected.modRoles,
+          vipRoles: selected.vipRoles,
+          activePreset: selected.id,
+        },
+        { source: 'DASHBOARD', actorId: req.user?.id }
+      );
+      res.json({ success: true, preset: selected });
+    } catch (err: any) {
+      res.status(500).json({ error: err.message || "Erreur lors de l'application du préset." });
     }
   });
 

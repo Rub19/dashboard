@@ -47,6 +47,7 @@ interface ConfigurationGroupProps {
   loadingGuildSettings: boolean;
   activeRolePreset: string;
   handleApplyRolePreset: (presetId: string, label: string) => void;
+  applyingRolePreset: boolean;
   detectedRolesList: any[];
   // AI
   aiTelemetry: any;
@@ -87,6 +88,7 @@ export default function ConfigurationGroup({
   loadingGuildSettings,
   activeRolePreset,
   handleApplyRolePreset,
+  applyingRolePreset,
   detectedRolesList,
   aiTelemetry,
   dedicatedAiChannelEnabled,
@@ -671,8 +673,9 @@ export default function ConfigurationGroup({
                     <button
                       key={preset.id}
                       onClick={() => handleApplyRolePreset(preset.id, preset.name)}
+                      disabled={applyingRolePreset}
                       className={cn(
-                        "p-3 rounded-xl text-left border transition-all space-y-1.5",
+                        "p-3 rounded-xl text-left border transition-all space-y-1.5 disabled:opacity-50 disabled:cursor-not-allowed",
                         activeRolePreset === preset.id
                           ? "bg-indigo-950/40 border-indigo-500/60 shadow-sm"
                           : "bg-zinc-900/60 border-zinc-800/80 hover:bg-zinc-900 hover:border-zinc-700"

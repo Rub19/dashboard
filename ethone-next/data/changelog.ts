@@ -28209,4 +28209,81 @@ CHANGELOG_BY_LANG.en.unshift(v1240_en);
 CHANGELOG_BY_LANG.es.unshift(v1240_es);
 CHANGELOG_BY_LANG.de.unshift(v1240_de);
 
+const v1250_fr: ChangelogEntry = {
+  version: "v1.25.0",
+  date: "2026-09-20",
+  title: "Thème unifié, sons naturels (pluie & orage stéréo), musique Spotify, Music Center relié au bot",
+  items: [
+    "Moteur de thème : l'accent n'a plus qu'une seule source de calcul (`resolveAccent`). « Auto » (nouveau défaut) suit le thème choisi ; un accent nommé ou personnalisé reste un choix explicite. Fin des boutons verts sous Dyno Rose : la synchro de profil n'écrase plus l'accent, et les anciens réglages (`dyno`, accent perso identique au thème) sont migrés vers « Auto ».",
+    "Sélecteur de thème de la barre du haut refait : grille de cartes avec mini-aperçu (fond, barre latérale, pastille d'accent) de chaque thème.",
+    "Sons d'interface : le pack « Ethone » joue désormais des gouttes d'eau, du bois et des cloches de verre (gamme pentatonique, petite réverbération de pièce) au lieu de bips d'oscillateurs ; les erreurs deviennent deux coups sourds et doux.",
+    "Ambiances : pluie et orage entièrement refaits — stéréo décorrélé, gouttes en impacts qui résonnent, vrai tonnerre (craquement puis grondement qui roule), rafales de vent, boucle sans couture, mise en cache. Le filtre du lecteur (2,2 kHz) qui étouffait les gouttes est relevé. 6 tests couvrent stéréo, absence de saut, tonnerre et temps de rendu.",
+    "Réglages Audio & Sons refaits en cartes : sons de l'interface (activation, volume, 6 styles écoutables), mixage par catégorie avec bouton « Tester », comportement (son général, baisse si média, audio spatial), accès rapide « Pluie pour dormir » / « Orage lointain », et écoute de tous les sons. Traduit fr/en/es/de/ja.",
+    "Démarrage : l'écran de chargement restait bloqué dans un onglet ouvert en arrière-plan (la progression ne reposait que sur `requestAnimationFrame`, suspendu quand l'onglet est caché). Un minuteur prend le relais.",
+    "Music Center : nouvel onglet « Importer une playlist » (liste de tous les titres Spotify/YouTube, lecture d'un titre, « Tout jouer », « Tout mélanger »), choix d'un serveur où le bot est présent par défaut, erreurs explicites au lieu d'un état « IDLE » silencieux.",
+    "Connexion du bot : le lien OAuth pointait vers `localhost:3001` et renvoyait 401 sur toutes les pages Discord. Il utilise maintenant l'adresse réelle du bot, revient sur le site, et un bandeau « Connecte le bot à ton compte Discord » apparaît quand la session du bot manque. La liste des serveurs marque désormais « ACTIF » ceux où le bot est installé.",
+    "Bot musique : repli SoundCloud automatique quand YouTube refuse le flux (choix par titre + artiste + durée, plusieurs essais, vrais titres affichés), lecture des playlists Spotify sans clés API (page embed) jusqu'à 500 titres, `/playlist` (menu pour choisir un titre, tout jouer, tout mélanger), `/player`, options `melanger` et `suivant` sur `/play`, `/play` corrigé quand le bot est déjà en vocal, doublons de commandes supprimés, Lavalink allégé (tas fixe, buffers plus larges).",
+    "Modules : l'activation d'un module reste isolée par serveur (vérifié en direct), la synchro temps réel est étiquetée « DASHBOARD », et « Musique & Vocal » n'est plus marqué « Bientôt disponible ».",
+  ],
+};
+
+const v1250_en: ChangelogEntry = {
+  version: "v1.25.0",
+  date: "2026-09-20",
+  title: "Unified theme, natural sounds (stereo rain & storm), Spotify music, Music Center linked to the bot",
+  items: [
+    "Theme engine: the accent now has a single source of truth (`resolveAccent`). \"Auto\" (new default) follows the chosen theme; a named or custom accent stays an explicit choice. No more green buttons under Dyno Rose: profile sync no longer overwrites the accent, and legacy settings (`dyno`, a custom accent equal to the theme's) migrate to \"Auto\".",
+    "Top-bar theme picker rebuilt: a grid of cards with a mini preview (background, sidebar, accent pill) of each theme.",
+    "Interface sounds: the \"Ethone\" pack now plays water drops, wood and glass bells (pentatonic scale, small room reverb) instead of raw oscillator beeps; errors become two soft, dull thuds.",
+    "Ambiences: rain and storm fully rebuilt — decorrelated stereo, drops as resonating impacts, real thunder (a crack, then a rolling rumble), wind gusts, seamless loop, caching. The player filter (2.2 kHz) that muffled the drops is raised. 6 tests cover stereo, no seam, thunder and render time.",
+    "Audio & Sounds settings rebuilt as cards: interface sounds (toggle, volume, 6 listenable styles), per-category mix with a \"Test\" button, behavior (master sound, duck on media, spatial audio), one-click \"Rain for sleep\" / \"Distant storm\", and a listen-to-everything panel. Translated fr/en/es/de/ja.",
+    "Startup: the loading screen stayed stuck in a tab opened in the background (progress relied only on `requestAnimationFrame`, which is suspended in hidden tabs). A timer now takes over.",
+    "Music Center: new \"Import a playlist\" tab (lists every Spotify/YouTube track, play one, \"Play all\", \"Shuffle all\"), defaults to a server where the bot is present, explicit errors instead of a silent \"IDLE\" state.",
+    "Bot connection: the OAuth link pointed to `localhost:3001` and every Discord page returned 401. It now uses the bot's real address, returns to the site, and a \"Connect the bot to your Discord account\" banner shows when the bot session is missing. The server list now marks servers where the bot is installed as \"ACTIVE\".",
+    "Music bot: automatic SoundCloud fallback when YouTube refuses the stream (matched by title + artist + duration, several attempts, real titles shown), Spotify playlists without API keys (embed page) up to 500 tracks, `/playlist` (menu to pick a track, play all, shuffle all), `/player`, `melanger` and `suivant` options on `/play`, `/play` fixed when the bot is already in voice, duplicated commands removed, lighter Lavalink (fixed heap, larger buffers).",
+    "Modules: enabling a module stays isolated per server (verified live), realtime sync is labelled \"DASHBOARD\", and \"Music & Voice\" is no longer marked \"Coming soon\".",
+  ],
+};
+
+const v1250_es: ChangelogEntry = {
+  version: "v1.25.0",
+  date: "2026-09-20",
+  title: "Tema unificado, sonidos naturales (lluvia y tormenta estéreo), música de Spotify, Music Center conectado al bot",
+  items: [
+    "Motor de temas: el acento tiene ahora una única fuente de cálculo (`resolveAccent`). \"Auto\" (nuevo valor por defecto) sigue el tema elegido; un acento con nombre o personalizado sigue siendo una elección explícita. Se acabaron los botones verdes con Dyno Rose: la sincronización de perfil ya no sobrescribe el acento y los ajustes antiguos se migran a \"Auto\".",
+    "Selector de temas de la barra superior rehecho: cuadrícula de tarjetas con una miniatura (fondo, barra lateral, píldora de acento) de cada tema.",
+    "Sonidos de la interfaz: el pack \"Ethone\" reproduce ahora gotas de agua, madera y campanas de cristal (escala pentatónica, pequeña reverberación de sala) en lugar de pitidos de osciladores; los errores son dos golpes sordos y suaves.",
+    "Ambientes: lluvia y tormenta totalmente rehechas — estéreo decorrelacionado, gotas como impactos resonantes, trueno real (un chasquido y un retumbo que rueda), ráfagas de viento, bucle sin costuras y caché. Se eleva el filtro del reproductor (2,2 kHz) que apagaba las gotas. 6 pruebas cubren estéreo, ausencia de salto, trueno y tiempo de renderizado.",
+    "Ajustes de Audio y Sonidos rehechos en tarjetas: sonidos de la interfaz (activación, volumen, 6 estilos que se pueden escuchar), mezcla por categoría con botón \"Probar\", comportamiento (sonido general, bajar con medios, audio espacial), acceso rápido \"Lluvia para dormir\" / \"Tormenta lejana\" y escucha de todos los sonidos. Traducido fr/en/es/de/ja.",
+    "Arranque: la pantalla de carga se quedaba bloqueada en una pestaña abierta en segundo plano (el progreso dependía solo de `requestAnimationFrame`, suspendido en pestañas ocultas). Ahora un temporizador toma el relevo.",
+    "Music Center: nueva pestaña \"Importar una playlist\" (lista todas las pistas de Spotify/YouTube, reproducir una, \"Reproducir todo\", \"Mezclar todo\"), selección por defecto de un servidor con el bot, errores explícitos en lugar de un estado \"IDLE\" silencioso.",
+    "Conexión del bot: el enlace OAuth apuntaba a `localhost:3001` y todas las páginas de Discord devolvían 401. Ahora usa la dirección real del bot, vuelve al sitio y aparece un aviso \"Conecta el bot a tu cuenta de Discord\" cuando falta la sesión del bot. La lista de servidores marca como \"ACTIVO\" los que tienen el bot instalado.",
+    "Bot de música: repliegue automático a SoundCloud cuando YouTube rechaza el flujo (por título + artista + duración, varios intentos, títulos reales), playlists de Spotify sin claves API (página embed) hasta 500 pistas, `/playlist`, `/player`, opciones `melanger` y `suivant` en `/play`, `/play` corregido con el bot ya en voz, comandos duplicados eliminados y Lavalink más ligero.",
+    "Módulos: activar un módulo sigue aislado por servidor (verificado en directo), la sincronización en tiempo real se etiqueta \"DASHBOARD\" y \"Música y Voz\" ya no figura como \"Próximamente\".",
+  ],
+};
+
+const v1250_de: ChangelogEntry = {
+  version: "v1.25.0",
+  date: "2026-09-20",
+  title: "Einheitliches Theme, natürliche Klänge (Stereo-Regen & Gewitter), Spotify-Musik, Music Center mit dem Bot verbunden",
+  items: [
+    "Theme-Engine: Die Akzentfarbe hat nur noch eine Berechnungsquelle (`resolveAccent`). „Auto“ (neuer Standard) folgt dem gewählten Theme; ein benannter oder eigener Akzent bleibt eine ausdrückliche Wahl. Keine grünen Buttons mehr unter Dyno Rose: Die Profilsynchronisierung überschreibt den Akzent nicht mehr, alte Einstellungen werden auf „Auto“ migriert.",
+    "Theme-Auswahl in der oberen Leiste neu gestaltet: Kartenraster mit Miniaturvorschau (Hintergrund, Seitenleiste, Akzent) jedes Themes.",
+    "Oberflächen-Sounds: Das Pack „Ethone“ spielt jetzt Wassertropfen, Holz und Glasglocken (Pentatonik, kleiner Raumhall) statt roher Oszillator-Pieptöne; Fehler klingen wie zwei weiche, dumpfe Schläge.",
+    "Ambiences: Regen und Gewitter komplett neu — dekorreliertes Stereo, Tropfen als nachschwingende Impulse, echter Donner (Knall, dann rollendes Grollen), Windböen, nahtlose Schleife, Caching. Der Player-Filter (2,2 kHz), der die Tropfen dämpfte, wurde angehoben. 6 Tests decken Stereo, Nahtlosigkeit, Donner und Renderzeit ab.",
+    "Audio- & Klang-Einstellungen als Karten neu gebaut: Oberflächen-Sounds (Schalter, Lautstärke, 6 anhörbare Stile), Mix pro Kategorie mit „Testen“-Button, Verhalten (Gesamtton, Absenken bei Medien, räumlicher Klang), „Regen zum Einschlafen“ / „Fernes Gewitter“ mit einem Klick und Anhören aller Sounds. Übersetzt fr/en/es/de/ja.",
+    "Start: Der Ladebildschirm blieb in einem im Hintergrund geöffneten Tab hängen (der Fortschritt hing nur an `requestAnimationFrame`, das in versteckten Tabs pausiert). Jetzt übernimmt ein Timer.",
+    "Music Center: neuer Tab „Playlist importieren“ (listet alle Spotify/YouTube-Titel, einen Titel abspielen, „Alle abspielen“, „Alle mischen“), standardmäßig ein Server mit Bot, klare Fehlermeldungen statt stillem „IDLE“.",
+    "Bot-Verbindung: Der OAuth-Link zeigte auf `localhost:3001`, alle Discord-Seiten lieferten 401. Jetzt wird die echte Bot-Adresse genutzt, es geht zurück zur Seite, und ein Hinweis „Verbinde den Bot mit deinem Discord-Konto“ erscheint, wenn die Bot-Sitzung fehlt. Die Serverliste markiert Server mit installiertem Bot als „AKTIV“.",
+    "Musik-Bot: automatischer SoundCloud-Fallback, wenn YouTube den Stream verweigert (Titel + Künstler + Dauer, mehrere Versuche, echte Titel), Spotify-Playlists ohne API-Schlüssel (Embed-Seite) bis 500 Titel, `/playlist`, `/player`, Optionen `melanger` und `suivant` bei `/play`, `/play` korrigiert, wenn der Bot schon im Sprachkanal ist, doppelte Befehle entfernt, schlankeres Lavalink.",
+    "Module: Das Aktivieren eines Moduls bleibt pro Server isoliert (live geprüft), die Echtzeit-Synchronisierung ist als „DASHBOARD“ gekennzeichnet, und „Musik & Sprache“ ist nicht mehr „Demnächst“.",
+  ],
+};
+
+CHANGELOG_BY_LANG.fr.unshift(v1250_fr);
+CHANGELOG_BY_LANG.en.unshift(v1250_en);
+CHANGELOG_BY_LANG.es.unshift(v1250_es);
+CHANGELOG_BY_LANG.de.unshift(v1250_de);
+
 export const CHANGELOG = CHANGELOG_BY_LANG.fr;

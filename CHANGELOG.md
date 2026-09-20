@@ -2,6 +2,21 @@
 
 Toutes les modifications notables de ce projet seront documentées dans ce fichier.
 
+## v1.25.0 — 2026-09-20
+
+**Thème unifié, sons naturels (pluie & orage stéréo), musique Spotify, Music Center relié au bot**
+
+- Moteur de thème : l'accent n'a plus qu'une seule source de calcul (`resolveAccent`). « Auto » (nouveau défaut) suit le thème choisi ; un accent nommé ou personnalisé reste un choix explicite. Fin des boutons verts sous Dyno Rose : la synchro de profil n'écrase plus l'accent, et les anciens réglages (`dyno`, accent perso identique au thème) sont migrés vers « Auto ».
+- Sélecteur de thème de la barre du haut refait : grille de cartes avec mini-aperçu (fond, barre latérale, pastille d'accent) de chaque thème.
+- Sons d'interface : le pack « Ethone » joue désormais des gouttes d'eau, du bois et des cloches de verre (gamme pentatonique, petite réverbération de pièce) au lieu de bips d'oscillateurs ; les erreurs deviennent deux coups sourds et doux.
+- Ambiances : pluie et orage entièrement refaits — stéréo décorrélé, gouttes en impacts qui résonnent, vrai tonnerre (craquement puis grondement qui roule), rafales de vent, boucle sans couture, mise en cache. Le filtre du lecteur (2,2 kHz) qui étouffait les gouttes est relevé. 6 tests couvrent stéréo, absence de saut, tonnerre et temps de rendu.
+- Réglages Audio & Sons refaits en cartes : sons de l'interface (activation, volume, 6 styles écoutables), mixage par catégorie avec bouton « Tester », comportement (son général, baisse si média, audio spatial), accès rapide « Pluie pour dormir » / « Orage lointain », et écoute de tous les sons. Traduit fr/en/es/de/ja.
+- Démarrage : l'écran de chargement restait bloqué dans un onglet ouvert en arrière-plan (la progression ne reposait que sur `requestAnimationFrame`, suspendu quand l'onglet est caché). Un minuteur prend le relais.
+- Music Center : nouvel onglet « Importer une playlist » (liste de tous les titres Spotify/YouTube, lecture d'un titre, « Tout jouer », « Tout mélanger »), choix d'un serveur où le bot est présent par défaut, erreurs explicites au lieu d'un état « IDLE » silencieux.
+- Connexion du bot : le lien OAuth pointait vers `localhost:3001` et renvoyait 401 sur toutes les pages Discord. Il utilise maintenant l'adresse réelle du bot, revient sur le site, et un bandeau « Connecte le bot à ton compte Discord » apparaît quand la session du bot manque. La liste des serveurs marque désormais « ACTIF » ceux où le bot est installé.
+- Bot musique : repli SoundCloud automatique quand YouTube refuse le flux (choix par titre + artiste + durée, plusieurs essais, vrais titres affichés), lecture des playlists Spotify sans clés API (page embed) jusqu'à 500 titres, `/playlist` (menu pour choisir un titre, tout jouer, tout mélanger), `/player`, options `melanger` et `suivant` sur `/play`, `/play` corrigé quand le bot est déjà en vocal, doublons de commandes supprimés, Lavalink allégé (tas fixe, buffers plus larges).
+- Modules : l'activation d'un module reste isolée par serveur (vérifié en direct), la synchro temps réel est étiquetée « DASHBOARD », et « Musique & Vocal » n'est plus marqué « Bientôt disponible ».
+
 ## v1.24.0 — 2026-09-15
 
 **Fermeture de la liste : dédoublonnage temps réel, Marketplace, contraste exhaustif**

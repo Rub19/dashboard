@@ -226,7 +226,7 @@ function IslandExpandedHeader({
       <Icon name="sparkles" pack="phosphor" className="h-3.5 w-3.5 text-[var(--text-muted)]" />
     );
   return (
-    <div className={cn("-mx-6 -mt-4 mb-4 flex w-full items-center justify-between gap-3 border-b border-[var(--text-primary)]/[0.06] px-6 pt-4 pb-3", className)}>
+    <div className={cn("flex w-full items-center justify-between gap-3 border-b border-[var(--panel-border)]/60 px-0.5 pb-2.5", className)}>
       <div className="flex items-center gap-1.5 text-[var(--text-primary)]">
         {icon}
         <span className="text-[10px] font-medium tabular-nums">{viewLabel(selected, i18n)}</span>
@@ -399,7 +399,11 @@ export default function DynamicIslandContainer() {
       setMode("EXPANDED");
       return;
     }
-    setMode((m) => (m === "COMPACT" ? "EXPANDED" : "COMPACT"));
+    // Avec une souris, le survol a déjà déployé l'île : un clic ne doit PAS la refermer
+    // (c'était la cause des « ça se ferme tout seul quand je clique sur le bord »). Sur écran
+    // tactile (pas de survol), le clic reste un vrai bascule.
+    const canHover = typeof window !== "undefined" && window.matchMedia?.("(hover: hover)").matches;
+    setMode((m) => (m === "COMPACT" ? "EXPANDED" : canHover ? m : "COMPACT"));
   }, [selectedView]);
 
   const islandEnterTimer = useRef<number | null>(null);
@@ -790,16 +794,21 @@ export default function DynamicIslandContainer() {
                   onSelect={selectView}
                 />
 
-                {/* Sub-Header: Source Badge & Live Time */}
-                <div className="flex items-center justify-between gap-2">
-                  <div className="flex items-center gap-1.5 rounded-full border border-[var(--accent-primary)]/30 bg-[var(--accent-primary)]/10 px-2.5 py-1 text-[10px] font-bold text-[var(--accent-primary)] shadow-xs">
-                    <span className={cn("h-1.5 w-1.5 rounded-full bg-[var(--accent-primary)]", nowPlaying?.isPlaying && "animate-pulse")} />
-                    <span>{nowPlaying?.source || "Spotify"}</span>
-                    <span className="text-[var(--accent-primary)]/50">•</span>
-                    <span className="font-normal opacity-90">{nowPlaying?.isPlaying ? "Lecture en cours" : isSpotifyConnected ? "Connecté" : "Prêt"}</span>
-                  </div>
-
-                  <IslandLiveClock />
+                {/* État : source + lecture, égaliseur à droite (l'horloge est déjà dans la barre) */}
+                <div className="flex items-center gap-2 px-0.5 text-[11px] font-medium text-[var(--text-muted)]">
+                  <span className={cn("h-1.5 w-1.5 rounded-full bg-[var(--accent-primary)]", nowPlaying?.isPlaying && "animate-pulse")} />
+                  <span className="capitalize text-[var(--text-primary)]">{nowPlaying?.source || "Spotify"}</span>
+                  <span>·</span>
+                  <span>{nowPlaying?.isPlaying ? "Lecture en cours" : isSpotifyConnected ? "Connecté" : "Prêt"}</span>
+                  <AudioVisualizer
+                    seed={nowPlaying?.id || nowPlaying?.title || "spotify"}
+                    isPlaying={!!nowPlaying?.isPlaying}
+                    bars={9}
+                    barWidth={2}
+                    gap={1.5}
+                    className="ml-auto h-3 w-[26px] opacity-90"
+                    color="var(--accent-primary)"
+                  />
                 </div>
 
                 {/* Main Track Details Card */}
@@ -867,19 +876,6 @@ export default function DynamicIslandContainer() {
                   </motion.div>
                 </AnimatePresence>
 
-                {/* Animated Audio Equalizer */}
-                <div className="py-0.5">
-                  <AudioVisualizer
-                    seed={nowPlaying?.id || nowPlaying?.title || "spotify"}
-                    isPlaying={!!nowPlaying?.isPlaying}
-                    bars={24}
-                    barWidth={2}
-                    gap={2}
-                    className="h-3.5 opacity-90 drop-shadow-[0_0_6px_var(--glow-color)]"
-                    color="var(--accent-primary)"
-                  />
-                </div>
-
                 {/* Progress Slider with Timestamps */}
                 {nowPlaying?.durationMs !== undefined && (
                   <div className="space-y-1" onPointerDown={stopPropagation}>
@@ -893,13 +889,12 @@ export default function DynamicIslandContainer() {
                   </div>
                 )}
 
-                {/* Volume Slider */}
-                <div className="flex items-center justify-center pt-0.5" onPointerDown={stopPropagation}>
+                {/* Contrôles : volume à gauche, lecture au centre */}
+                <div className="grid grid-cols-[1fr_auto_1fr] items-center gap-3 pt-0.5">
+                <div className="flex items-center justify-start" onPointerDown={stopPropagation}>
                   <VolumeSlider value={localVolume} onChange={onSpotifyVolume} data-testid="dynamic-island-volume" />
                 </div>
-
-                {/* Media Playback Controls */}
-                <div className="flex items-center justify-center gap-5 pt-1">
+                <div className="flex items-center justify-center gap-4">
                   <button
                     type="button"
                     onClick={() => spotifyControl("previous")}
@@ -936,6 +931,8 @@ export default function DynamicIslandContainer() {
                   >
                     <Icon name="skipForward" pack="phosphor" className="h-5 w-5" />
                   </button>
+                </div>
+                <div aria-hidden />
                 </div>
               </div>
             </DynamicIslandView>

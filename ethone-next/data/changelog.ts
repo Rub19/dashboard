@@ -28584,4 +28584,57 @@ CHANGELOG_BY_LANG.en.unshift(v1256_en);
 CHANGELOG_BY_LANG.es.unshift(v1256_es);
 CHANGELOG_BY_LANG.de.unshift(v1256_de);
 
+const v1257_fr: ChangelogEntry = {
+  version: "v1.25.7",
+  date: "2026-09-20",
+  title: "Dynamic Island retravaillée, Brain crée enfin des notes propres",
+  items: [
+    "Dynamic Island (vue Spotify) : la barre de progression suit maintenant la couleur d'accent du thème (elle était verte quel que soit le thème) ; le bandeau « badge + horloge » redondant devient une ligne d'état compacte (source · lecture en cours + égaliseur) ; le volume passe à côté des boutons de lecture, ce qui raccourcit le panneau ; l'en-tête n'utilise plus de marges négatives, ce qui faisait déborder la ligne de séparation.",
+    "Dynamic Island : avec une souris, un clic sur l'île déployée ne la referme plus (le survol l'avait déjà ouverte, le clic la refermait aussitôt) ; sur écran tactile le clic reste une bascule. Échap referme toujours.",
+    "Brain : « Crée une note intitulée Test Brain avec la liste : lait, pain, œufs » produisait une note nommée « Intitulée Test Brain avec la liste : lait, pain, œufs » dont le corps était la réponse de conversation de l'IA. Un nouvel analyseur (`lib/brain/note-intent.ts`, 6 tests) extrait le vrai titre (« Test Brain ») et le contenu demandé (liste à puces) ; la réponse de l'IA n'est utilisée que lorsqu'aucun contenu n'est fourni.",
+    "Vérifié en direct : la note de test créée par Brain a été supprimée.",
+  ],
+};
+
+const v1257_en: ChangelogEntry = {
+  version: "v1.25.7",
+  date: "2026-09-20",
+  title: "Dynamic Island reworked, Brain finally creates clean notes",
+  items: [
+    "Dynamic Island (Spotify view): the progress bar now follows the theme accent color (it was green whatever the theme); the redundant \"badge + clock\" strip becomes a compact status line (source · now playing + equalizer); the volume moves next to the playback buttons, shortening the panel; the header no longer uses negative margins, which made the separator line overflow.",
+    "Dynamic Island: with a mouse, clicking the expanded island no longer closes it (hover had already opened it, the click closed it right away); on touch screens a click remains a toggle. Escape still closes it.",
+    "Brain: \"Create a note titled Test Brain with the list: milk, bread, eggs\" produced a note named \"Intitulée Test Brain avec la liste : …\" whose body was the AI's chat reply. A new parser (`lib/brain/note-intent.ts`, 6 tests) extracts the real title (\"Test Brain\") and the requested content (bullet list); the AI's reply is only used when no content is given.",
+    "Verified live: the test note created by Brain was deleted.",
+  ],
+};
+
+const v1257_es: ChangelogEntry = {
+  version: "v1.25.7",
+  date: "2026-09-20",
+  title: "Dynamic Island renovada, Brain crea por fin notas limpias",
+  items: [
+    "Dynamic Island (vista Spotify): la barra de progreso sigue ahora el color de acento del tema (era verde con cualquier tema); la franja redundante \"insignia + reloj\" pasa a ser una línea de estado compacta (fuente · reproduciendo + ecualizador); el volumen se coloca junto a los botones de reproducción, acortando el panel; la cabecera ya no usa márgenes negativos, que hacían desbordar la línea separadora.",
+    "Dynamic Island: con ratón, hacer clic en la isla desplegada ya no la cierra (el hover ya la había abierto y el clic la cerraba enseguida); en pantallas táctiles el clic sigue alternando. Escape la cierra siempre.",
+    "Brain: \"Crea una nota titulada Test Brain con la lista: leche, pan, huevos\" producía una nota llamada \"Intitulée Test Brain avec la liste : …\" cuyo cuerpo era la respuesta de conversación de la IA. Un nuevo analizador (`lib/brain/note-intent.ts`, 6 pruebas) extrae el título real (\"Test Brain\") y el contenido pedido (lista con viñetas); la respuesta de la IA solo se usa cuando no se da contenido.",
+    "Verificado en directo: la nota de prueba creada por Brain se eliminó.",
+  ],
+};
+
+const v1257_de: ChangelogEntry = {
+  version: "v1.25.7",
+  date: "2026-09-20",
+  title: "Dynamic Island überarbeitet, Brain erstellt endlich saubere Notizen",
+  items: [
+    "Dynamic Island (Spotify-Ansicht): Der Fortschrittsbalken folgt jetzt der Akzentfarbe des Themes (er war bei jedem Theme grün); der redundante Streifen „Badge + Uhr“ wird zu einer kompakten Statuszeile (Quelle · Wiedergabe + Equalizer); die Lautstärke wandert neben die Wiedergabe-Buttons und verkürzt das Panel; der Kopf nutzt keine negativen Ränder mehr, die die Trennlinie überstehen ließen.",
+    "Dynamic Island: Mit der Maus schließt ein Klick die aufgeklappte Insel nicht mehr (das Überfahren hatte sie schon geöffnet, der Klick schloss sie sofort wieder); auf Touchscreens bleibt der Klick ein Umschalter. Esc schließt weiterhin.",
+    "Brain: „Erstelle eine Notiz mit dem Titel Test Brain und der Liste: Milch, Brot, Eier“ erzeugte eine Notiz „Intitulée Test Brain avec la liste : …“, deren Inhalt die Chat-Antwort der KI war. Ein neuer Parser (`lib/brain/note-intent.ts`, 6 Tests) extrahiert den echten Titel („Test Brain“) und den gewünschten Inhalt (Aufzählung); die KI-Antwort wird nur genutzt, wenn kein Inhalt angegeben ist.",
+    "Live geprüft: Die von Brain erstellte Testnotiz wurde gelöscht.",
+  ],
+};
+
+CHANGELOG_BY_LANG.fr.unshift(v1257_fr);
+CHANGELOG_BY_LANG.en.unshift(v1257_en);
+CHANGELOG_BY_LANG.es.unshift(v1257_es);
+CHANGELOG_BY_LANG.de.unshift(v1257_de);
+
 export const CHANGELOG = CHANGELOG_BY_LANG.fr;

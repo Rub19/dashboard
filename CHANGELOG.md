@@ -2,6 +2,15 @@
 
 Toutes les modifications notables de ce projet seront documentées dans ce fichier.
 
+## v1.25.7 — 2026-09-20
+
+**Dynamic Island retravaillée, Brain crée enfin des notes propres**
+
+- Dynamic Island (vue Spotify) : la barre de progression suit maintenant la couleur d'accent du thème (elle était verte quel que soit le thème) ; le bandeau « badge + horloge » redondant devient une ligne d'état compacte (source · lecture en cours + égaliseur) ; le volume passe à côté des boutons de lecture, ce qui raccourcit le panneau ; l'en-tête n'utilise plus de marges négatives, ce qui faisait déborder la ligne de séparation.
+- Dynamic Island : avec une souris, un clic sur l'île déployée ne la referme plus (le survol l'avait déjà ouverte, le clic la refermait aussitôt) ; sur écran tactile le clic reste une bascule. Échap referme toujours.
+- Brain : « Crée une note intitulée Test Brain avec la liste : lait, pain, œufs » produisait une note nommée « Intitulée Test Brain avec la liste : lait, pain, œufs » dont le corps était la réponse de conversation de l'IA. Un nouvel analyseur (`lib/brain/note-intent.ts`, 6 tests) extrait le vrai titre (« Test Brain ») et le contenu demandé (liste à puces) ; la réponse de l'IA n'est utilisée que lorsqu'aucun contenu n'est fourni.
+- Vérifié en direct : la note de test créée par Brain a été supprimée.
+
 ## v1.25.6 — 2026-09-20
 
 **Dynamic Island dans la barre du haut, page Brain épurée**

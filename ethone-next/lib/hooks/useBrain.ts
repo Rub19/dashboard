@@ -1,5 +1,6 @@
 "use client";
 
+import { parseNoteRequest } from "@/lib/brain/note-intent";
 import { useEffect, useMemo, useRef, useState, useCallback } from "react";
 import { useRouter } from "next/navigation";
 import { useSettings } from "@/components/SettingsProvider";
@@ -314,6 +315,7 @@ export function useBrain(mailClient?: BrainMailClient) {
     const lower = promptText.toLowerCase();
     let actionPlan: ActionExecution | undefined = undefined;
     let pendingNoteTitle: string | null = null;
+    let pendingNoteBody: string | null = null;
 
     if (
       lower.includes("crée une note") ||
@@ -322,10 +324,10 @@ export function useBrain(mailClient?: BrainMailClient) {
       lower.includes("ajoute une note") ||
       lower.startsWith("note :")
     ) {
-      const topic = promptText
-        .replace(/^(peux-tu|tu peux|stp|s'il te plaît|s'il te plait|merci de)?\s*(créer|crée|ajouter|ajoute|faire|fais)\s*(moi)?\s*(une|la)?\s*note\s*(sur|pour|concernant|:)?/i, "")
-        .trim();
-      pendingNoteTitle = topic || "Nouvelle note Brain";
+      // Titre propre + contenu explicite éventuel (voir lib/brain/note-intent.ts)
+      const parsedNote = parseNoteRequest(promptText);
+      pendingNoteTitle = parsedNote.title;
+      pendingNoteBody = parsedNote.content;
       actionPlan = {
         id: `act-${Date.now()}`,
         type: "note",
@@ -467,9 +469,10 @@ Voici les informations EN DIRECT sur l'utilisateur et son système ETHONE OS :
       // If this was a note creation prompt, save the full generated markdown content to Notes
       if (pendingNoteTitle) {
         try {
+          // Contenu demandé par l'utilisateur en priorité ; sinon le texte rédigé par l'IA.
           await notes.create({
             title: pendingNoteTitle,
-            body: content,
+            body: pendingNoteBody ?? content,
           });
         } catch (nErr) {
           console.warn("Error creating note from AI response:", nErr);

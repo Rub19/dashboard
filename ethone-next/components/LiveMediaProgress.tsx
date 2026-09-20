@@ -142,13 +142,13 @@ export default function LiveMediaProgress({
         <div className="absolute inset-0 rounded-full bg-white/[0.08] backdrop-blur-sm" />
         <div
           ref={fillRef}
-          className="pointer-events-none absolute left-0 top-0 h-full w-full origin-left rounded-full bg-emerald-500 shadow-[0_0_12px_rgba(16,185,129,0.5)] transition-transform duration-75 ease-out will-change-transform"
+          className="pointer-events-none absolute left-0 top-0 h-full w-full origin-left rounded-full bg-[var(--accent-primary)] shadow-[0_0_10px_var(--glow-color)] transition-transform duration-75 ease-out will-change-transform"
           style={{ transform: "scaleX(0)" }}
         />
         <div
           ref={thumbRef}
           className={cn(
-            "pointer-events-none absolute top-1/2 h-3.5 w-3.5 -translate-x-1/2 -translate-y-1/2 rounded-full border border-[var(--input-border-hover)] bg-white shadow-md shadow-emerald-500/40 transition-transform duration-150",
+            "pointer-events-none absolute top-1/2 h-3 w-3 -translate-x-1/2 -translate-y-1/2 rounded-full border border-[var(--input-border-hover)] bg-white shadow-md shadow-[var(--glow-color)] transition-transform duration-150",
             dragging || hovered ? "scale-125" : "scale-100"
           )}
           style={{ left: "0%" }}

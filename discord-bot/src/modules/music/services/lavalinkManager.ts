@@ -205,17 +205,43 @@ class LavalinkManager {
   ): Promise<Track[]> {
     const node = this.getNode();
     if (!node) return [];
-    const q = `${track.artist} ${track.title}`.replace(/(.*?)|[.*?]/g, ' ').replace(/s+/g, ' ').trim();
+    const q = `${track.artist} ${track.title}`.replace(/\(.*?\)|\[.*?\]/g, ' ').replace(/\s+/g, ' ').trim();
     try {
       const res = await node.rest.resolve(`scsearch:${q}`);
       if (res?.loadType !== LoadType.SEARCH || res.data.length === 0) return [];
       const target = track.duration || 0;
-      return res.data
+      const norm = (v: string): string =>
+        v.toLowerCase().normalize('NFD').replace(/[̀-ͯ]/g, '').replace(/\(.*?\)|\[.*?\]/g, ' ').replace(/[^a-z0-9]+/g, ' ').trim();
+      const titleTokens = norm(track.title).split(' ').filter((w) => w.length >= 2);
+      const artistTokens = norm(track.artist).split(' ').filter((w) => w.length >= 3);
+      // Variantes qu'on ne veut pas si elles ne sont pas dans le titre demandé.
+      const variants = /\b(slowed|reverb|sped up|speed up|nightcore|remix|cover|karaoke|instrumental|8d|bass boosted|mashup|acoustic|live|edit)\bb/;
+      const wantedVariants = norm(`${track.title}`) + ' ' + track.title.toLowerCase();
+
+      const scored = res.data
         .map((d) => this.toTrack(d, requestedBy))
         .filter((c) => !exclude.has(c.url) && (!target || c.duration === 0 || c.duration >= target * 0.7))
-        .sort((a, b) => (target ? Math.abs(a.duration - target) - Math.abs(b.duration - target) : 0))
+        .map((c) => {
+          const text = norm(`${c.title} ${c.artist}`);
+          const titleOk = titleTokens.length === 0 || titleTokens.every((w) => text.includes(w));
+          const artistOk = artistTokens.length === 0 || artistTokens.some((w) => text.includes(w));
+          // Test sur le titre brut (les parenthèses « (Slowed + Reverb) » sont retirées par norm()).
+          const rawText = `${c.title} ${c.artist}`.toLowerCase();
+          const badVariant = variants.test(rawText) && !variants.test(wantedVariants);
+          const diff = target && c.duration ? Math.abs(c.duration - target) : 0;
+          const durOk = !target || !c.duration || diff <= Math.max(15, target * 0.12);
+          return { c, titleOk, artistOk, badVariant, diff, durOk };
+        });
+
+      // 1) titre + artiste + durée cohérents, sans variante ; 2) idem sans exiger l'artiste.
+      // Aucun candidat correct → on préfère échouer que jouer un autre morceau.
+      const pick = (pred: (x: (typeof scored)[number]) => boolean) => scored.filter(pred).sort((x, y) => x.diff - y.diff);
+      const best = pick((x) => x.titleOk && x.artistOk && !x.badVariant && x.durOk);
+      const relaxed = best.length ? best : pick((x) => x.titleOk && !x.badVariant && x.durOk);
+      return relaxed
         .slice(0, max)
-        .map((c) => ({ ...c, id: track.id, thumbnail: track.thumbnail || c.thumbnail, title: track.title, artist: track.artist }));
+        // Titre/artiste RÉELS du résultat (pas ceux demandés) : le panneau ne ment plus.
+        .map((x) => ({ ...x.c, id: track.id, thumbnail: track.thumbnail || x.c.thumbnail }));
     } catch (err) {
       logger.warn(`[Lavalink] scsearch:${q} :`, err);
       return [];

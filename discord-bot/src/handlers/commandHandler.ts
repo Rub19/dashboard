@@ -53,6 +53,7 @@ import {
   shuffleCommand,
   previousCommand,
   clearQueueCommand,
+  playerCommand,
 } from '../commands/music/musicShortcuts.js';
 import { pollCommand } from '../modules/polls/commands/pollCommand.js';
 import { eventCommand } from '../modules/events/eventsCommand.js';
@@ -142,6 +143,7 @@ class CommandRegistry {
     this.register(shuffleCommand);
     this.register(previousCommand);
     this.register(clearQueueCommand);
+    this.register(playerCommand);
 
     // Sondages & Votes 2.0 (Polls Center)
     this.register(pollCommand);

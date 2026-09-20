@@ -73,7 +73,7 @@ export const HELP_CATEGORIES: HelpCategoryMeta[] = [
     emoji: '🎧',
     color: 0x10b981,
     description: "Lecteur musical (file, boucle, volume) et salons vocaux temporaires",
-    commandNames: ['music', 'play', 'skip', 'previous', 'pause', 'resume', 'stop', 'queue', 'clearqueue', 'shuffle', 'loop', 'volume', 'nowplaying', 'voice'],
+    commandNames: ['music', 'player', 'play', 'skip', 'previous', 'pause', 'resume', 'stop', 'queue', 'clearqueue', 'shuffle', 'loop', 'volume', 'nowplaying', 'voice'],
   },
   {
     id: 'support',

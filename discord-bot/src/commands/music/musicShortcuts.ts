@@ -441,3 +441,17 @@ export const clearQueueCommand: Command = {
     }
   },
 };
+
+export const playerCommand: Command = {
+  name: 'player',
+  description: 'Ouvre le centre de contrôle musical (lecteur, file, volume, boucle…)',
+  category: 'Musique',
+  aliases: ['musique', 'mc'],
+  slashData: new SlashCommandBuilder()
+    .setName('player')
+    .setDescription('Ouvre le centre de contrôle musical (lecteur, file, volume, boucle…)'),
+  execute: async (ctx: CommandContext) => {
+    if (!ctx.guild) return;
+    await ctx.reply({ ...DiscordMusicPanel.buildPanelMessage(musicService.getState(ctx.guild.id)), componentsV2: true });
+  },
+};

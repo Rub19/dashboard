@@ -173,6 +173,27 @@ class LavalinkManager {
     };
   }
 
+  /**
+   * Repli quand YouTube refuse de streamer (IP de datacenter bloquée, login
+   * exigé…) : la recherche a réussi (métadonnées OK) mais la lecture échoue.
+   * SoundCloud ne demande aucune connexion, on cherche donc "artiste titre" là-bas.
+   */
+  public async resolveSoundCloudFallback(track: Track, requestedBy: TrackRequester): Promise<Track | null> {
+    const node = this.getNode();
+    if (!node) return null;
+    const q = `${track.artist} ${track.title}`.replace(/\(.*?\)|\[.*?\]/g, ' ').replace(/\s+/g, ' ').trim();
+    try {
+      const res = await node.rest.resolve(`scsearch:${q}`);
+      if (res?.loadType === LoadType.SEARCH && res.data.length > 0) {
+        const found = this.toTrack(res.data[0], requestedBy);
+        return { ...found, thumbnail: track.thumbnail || found.thumbnail, title: track.title, artist: track.artist };
+      }
+    } catch (err) {
+      logger.warn(`[Lavalink] scsearch:${q} :`, err);
+    }
+    return null;
+  }
+
   /** Re-encode a track that came from persistence/playlists without `encoded`. */
   public async ensureEncoded(track: Track, requestedBy: TrackRequester): Promise<Track | null> {
     if (track.encoded) return track;

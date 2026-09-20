@@ -29,6 +29,8 @@ export class LavalinkMusicPlayer implements IGuildMusicPlayer {
   private disconnectTimer: NodeJS.Timeout | null = null;
   private onStateChangeCallback?: (state: GuildMusicState) => void;
   private listenersBound = false;
+  private lastException = '';
+  private fallbackTried = new Set<string>();
 
   constructor(guildId: string, onStateChange?: (state: GuildMusicState) => void) {
     this.guildId = guildId;
@@ -125,18 +127,18 @@ export class LavalinkMusicPlayer implements IGuildMusicPlayer {
       // both are driven by us, only natural ends advance the queue.
       if (data.reason === 'replaced' || data.reason === 'stopped' || data.reason === 'cleanup') return;
       if (data.reason === 'loadFailed') {
-        logger.error(`[Lavalink] Chargement impossible pour "${data.track.info.title}" (guild ${this.guildId}) — titre suivant.`);
+        logger.error(`[Lavalink] Chargement impossible pour "${data.track.info.title}" (guild ${this.guildId}).`);
+        void this.recoverFromLoadFailure();
+        return;
       }
       void this.handleTrackEnd();
     });
 
     player.on('exception', (data) => {
       logger.error(`[Lavalink] Exception (${data.exception.severity}) guild ${this.guildId} : ${data.exception.message} — ${data.exception.cause}`);
-      void musicNotifier.error(
-        this.guildId,
-        this.queue.getCurrentTrack()?.title ?? 'Titre inconnu',
-        `${data.exception.message}${data.exception.cause ? ` — ${data.exception.cause}` : ''}`
-      );
+      // Pas de message ici : le 'end' (loadFailed) qui suit tente d'abord un
+      // repli SoundCloud et n'alerte que si celui-ci échoue aussi.
+      this.lastException = `${data.exception.message}${data.exception.cause ? ` — ${data.exception.cause}` : ''}`;
     });
 
     player.on('stuck', (data) => {
@@ -184,6 +186,40 @@ export class LavalinkMusicPlayer implements IGuildMusicPlayer {
       void this.handleTrackEnd();
       return false;
     }
+  }
+
+  /**
+   * YouTube a trouvé le titre mais refuse de le streamer (IP de datacenter
+   * bloquée, connexion exigée…). On retente une fois sur SoundCloud, qui n'a
+   * pas ce blocage ; si ça échoue aussi, on prévient dans le salon et on passe
+   * au titre suivant.
+   */
+  private async recoverFromLoadFailure(): Promise<void> {
+    const current = this.queue.getCurrentTrack();
+    if (current && current.source === 'YOUTUBE' && this.player && !this.fallbackTried.has(current.id)) {
+      this.fallbackTried.add(current.id);
+      if (this.fallbackTried.size > 50) this.fallbackTried.clear();
+      const alt = await lavalinkManager.resolveSoundCloudFallback(current, current.requestedBy);
+      if (alt?.encoded) {
+        try {
+          this.queue.setCurrentTrack(alt);
+          this.position = 0;
+          this.positionAt = Date.now();
+          await this.player.playTrack({ track: { encoded: alt.encoded } });
+          logger.info(`[Lavalink] Repli SoundCloud pour "${current.title}" (guild ${this.guildId})`);
+          void musicNotifier.notice(
+            this.guildId,
+            current.title,
+            "YouTube refuse le streaming depuis ce serveur — lecture via SoundCloud à la place."
+          );
+          return;
+        } catch (err) {
+          logger.warn('[Lavalink] Repli SoundCloud impossible :', err);
+        }
+      }
+    }
+    void musicNotifier.error(this.guildId, current?.title ?? 'Titre inconnu', this.lastException || 'Chargement impossible.');
+    void this.handleTrackEnd();
   }
 
   private async handleTrackEnd(): Promise<void> {

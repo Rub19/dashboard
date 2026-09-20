@@ -184,6 +184,7 @@ export default function FloatingLiquidDock() {
       <nav
         data-zen-hidden
         data-liquid-dock
+        data-chrome="dock"
         aria-label="Navigation principale mobile"
         className={cn(
           "fixed bottom-3 left-1/2 z-[var(--z-dock)] flex h-[62px] w-[94%] max-w-[420px] -translate-x-1/2 flex-row items-center justify-around rounded-[var(--panel-radius)] border border-[var(--panel-border)]/80 bg-[#0a0c12]/90 px-1.5 shadow-[0_12px_40px_rgba(0,0,0,0.8),0_0_0_1px_rgba(255,255,255,0.06)] backdrop-blur-2xl md:hidden transition-all duration-200 select-none pb-[env(safe-area-inset-bottom)]",

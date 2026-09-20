@@ -25,6 +25,7 @@ import NativeIntegration from "@/components/NativeIntegration";
 import PrivacyShield from "@/components/PrivacyShield";
 
 import LiveWidgetSkeleton from "@/components/LiveWidgetSkeleton";
+import ModalAwareChrome from "@/components/ModalAwareChrome";
 
 const LiveWidget = dynamic(() => import("@/components/LiveWidget"), {
   ssr: false,
@@ -80,6 +81,7 @@ export default function Shell({ children }: { children: ReactNode }) {
                 </PrivacyShield>
               </div>
             </AnimatedSidebarProvider>
+            <ModalAwareChrome />
             <DynamicIslandContainer />
             <FloatingLiquidDock />
             <Dock />

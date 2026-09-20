@@ -28772,4 +28772,53 @@ CHANGELOG_BY_LANG.en.unshift(v12510_en);
 CHANGELOG_BY_LANG.es.unshift(v12510_es);
 CHANGELOG_BY_LANG.de.unshift(v12510_de);
 
+const v12511_fr: ChangelogEntry = {
+  version: "v1.25.11",
+  date: "2026-09-20",
+  title: "Le Dock et la Dynamic Island s'effacent devant les modales et sur les jeux",
+  items: [
+    "Cause : le Dock et la Dynamic Island sont dessinés hors de la zone principale (contexte d'empilement différent), donc un z-index plus fort sur une modale ne les recouvrait jamais. Le Dock masquait par exemple le bouton « Compris » du journal des versions.",
+    "Nouveau composant `ModalAwareChrome` : dès qu'une boîte de dialogue modale est ouverte (attributs `role=dialog` + `aria-modal`, ou fond noir plein écran pour les modales plus anciennes comme la palette de commandes, la composition de mail, la tâche IA ou le rapport quotidien), le Dock et l'île s'effacent en fondu, puis reviennent à la fermeture.",
+    "Cas par cas : sur `/games`, où le jeu occupe tout l'écran, le Dock (qui recouvrait le bouton « SOLO ») et l'île (qui recouvrait le haut du canvas) sont masqués en permanence. Les autres pages (Brain, Focus, Navigateur, Fichiers…) ont été passées en revue et gardent leurs deux éléments.",
+  ],
+};
+
+const v12511_en: ChangelogEntry = {
+  version: "v1.25.11",
+  date: "2026-09-20",
+  title: "Dock and Dynamic Island fade out for modals and on games",
+  items: [
+    "Cause: the Dock and the Dynamic Island are drawn outside the main area (different stacking context), so a higher z-index on a modal never covered them. The Dock, for instance, hid the \"Got it\" button of the release notes.",
+    "New `ModalAwareChrome` component: as soon as a modal dialog is open (`role=dialog` + `aria-modal`, or a full-screen black backdrop for older modals such as the command palette, mail composer, AI task and daily report), the Dock and the island fade out, then return on close.",
+    "Case by case: on `/games`, where the game fills the screen, the Dock (which covered the \"SOLO\" button) and the island (which covered the top of the canvas) are hidden permanently. The other pages (Brain, Focus, Browser, Files…) were reviewed and keep both elements.",
+  ],
+};
+
+const v12511_es: ChangelogEntry = {
+  version: "v1.25.11",
+  date: "2026-09-20",
+  title: "El Dock y la Dynamic Island se desvanecen ante modales y en los juegos",
+  items: [
+    "Causa: el Dock y la Dynamic Island se dibujan fuera del área principal (otro contexto de apilamiento), así que un z-index mayor en una modal nunca los cubría. El Dock, por ejemplo, tapaba el botón \"Entendido\" de las notas de versión.",
+    "Nuevo componente `ModalAwareChrome`: en cuanto hay un diálogo modal abierto (`role=dialog` + `aria-modal`, o un fondo negro a pantalla completa en las modales antiguas como la paleta de comandos, la redacción de correo, la tarea IA y el informe diario), el Dock y la isla se desvanecen y vuelven al cerrar.",
+    "Caso por caso: en `/games`, donde el juego ocupa toda la pantalla, el Dock (que tapaba el botón \"SOLO\") y la isla (que tapaba la parte superior del canvas) se ocultan permanentemente. Las demás páginas (Brain, Focus, Navegador, Archivos…) se revisaron y conservan ambos elementos.",
+  ],
+};
+
+const v12511_de: ChangelogEntry = {
+  version: "v1.25.11",
+  date: "2026-09-20",
+  title: "Dock und Dynamic Island blenden sich bei Modalen und in Spielen aus",
+  items: [
+    "Ursache: Dock und Dynamic Island werden außerhalb des Hauptbereichs gezeichnet (anderer Stapelkontext), ein höherer z-index bei einem Modal überdeckte sie daher nie. Der Dock verdeckte z. B. den Button „Verstanden“ der Versionshinweise.",
+    "Neue Komponente `ModalAwareChrome`: Sobald ein modaler Dialog offen ist (`role=dialog` + `aria-modal`, oder ein schwarzer Vollbild-Hintergrund bei älteren Modalen wie Befehlspalette, Mail-Verfassen, KI-Aufgabe und Tagesbericht), blenden Dock und Insel aus und kehren beim Schließen zurück.",
+    "Von Fall zu Fall: Auf `/games`, wo das Spiel den ganzen Bildschirm füllt, sind der Dock (der den „SOLO“-Button verdeckte) und die Insel (die den oberen Canvas-Rand verdeckte) dauerhaft ausgeblendet. Die übrigen Seiten (Brain, Focus, Browser, Dateien …) wurden geprüft und behalten beide Elemente.",
+  ],
+};
+
+CHANGELOG_BY_LANG.fr.unshift(v12511_fr);
+CHANGELOG_BY_LANG.en.unshift(v12511_en);
+CHANGELOG_BY_LANG.es.unshift(v12511_es);
+CHANGELOG_BY_LANG.de.unshift(v12511_de);
+
 export const CHANGELOG = CHANGELOG_BY_LANG.fr;

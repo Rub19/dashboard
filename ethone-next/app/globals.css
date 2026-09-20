@@ -2883,3 +2883,16 @@ html, body {
   display: none;
 }
 
+
+/* Dock + Dynamic Island s'effacent quand une boîte de dialogue modale est ouverte
+   (posé par components/ModalAwareChrome.tsx) : ils ne masquent plus ses boutons. */
+[data-chrome] {
+  transition: opacity 150ms ease, visibility 0s linear 0s;
+}
+html[data-modal-open="true"] [data-chrome],
+html[data-hide-chrome="true"] [data-chrome] {
+  opacity: 0 !important;
+  visibility: hidden;
+  pointer-events: none !important;
+  transition: opacity 150ms ease, visibility 0s linear 150ms;
+}

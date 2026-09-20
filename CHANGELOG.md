@@ -2,6 +2,14 @@
 
 Toutes les modifications notables de ce projet seront documentées dans ce fichier.
 
+## v1.25.11 — 2026-09-20
+
+**Le Dock et la Dynamic Island s'effacent devant les modales et sur les jeux**
+
+- Cause : le Dock et la Dynamic Island sont dessinés hors de la zone principale (contexte d'empilement différent), donc un z-index plus fort sur une modale ne les recouvrait jamais. Le Dock masquait par exemple le bouton « Compris » du journal des versions.
+- Nouveau composant `ModalAwareChrome` : dès qu'une boîte de dialogue modale est ouverte (attributs `role=dialog` + `aria-modal`, ou fond noir plein écran pour les modales plus anciennes comme la palette de commandes, la composition de mail, la tâche IA ou le rapport quotidien), le Dock et l'île s'effacent en fondu, puis reviennent à la fermeture.
+- Cas par cas : sur `/games`, où le jeu occupe tout l'écran, le Dock (qui recouvrait le bouton « SOLO ») et l'île (qui recouvrait le haut du canvas) sont masqués en permanence. Les autres pages (Brain, Focus, Navigateur, Fichiers…) ont été passées en revue et gardent leurs deux éléments.
+
 ## v1.25.10 — 2026-09-20
 
 **Dynamic Island : icônes et textes nettoyés, CI GitHub de nouveau verte**

@@ -9,6 +9,7 @@ import { musicProviderManager } from '../providers/musicProvider.js';
 import { describeYtDlpConfig } from '../providers/ytdlpStream.js';
 import { MusicPermissionService } from './musicPermissionService.js';
 import { musicEventBus } from './musicEventBus.js';
+import { musicNotifier } from './musicNotifier.js';
 import { logger } from '../../../utils/logger.js';
 
 class MusicService {
@@ -17,6 +18,7 @@ class MusicService {
 
   public async initialize(client: Client): Promise<void> {
     this.client = client;
+    musicNotifier.initialize(client);
     logger.info(`[MusicService] Initialisé — backend audio : ${config.musicBackend}`);
     if (config.musicBackend === 'lavalink') {
       lavalinkManager.initialize(client);
@@ -86,8 +88,9 @@ class MusicService {
     guild: Guild,
     member: GuildMember | null,
     queryOrUrl: string,
-    options?: { playNext?: boolean; channelId?: string }
+    options?: { playNext?: boolean; channelId?: string; textChannelId?: string | null }
   ): Promise<{ success: boolean; track?: Track; queuePosition?: number; playlistCount?: number; error?: string }> {
+    musicNotifier.rememberChannel(guild.id, options?.textChannelId);
     // 1. Permissions
     const permCheck = MusicPermissionService.canExecuteAction(member, guild.id, 'PLAY');
     if (!permCheck.allowed) {

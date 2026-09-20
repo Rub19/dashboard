@@ -6,6 +6,7 @@ import { musicPersistence } from '../storage/musicPersistence.js';
 import { musicProviderManager } from '../providers/musicProvider.js';
 import { lavalinkManager } from './lavalinkManager.js';
 import { logger } from '../../../utils/logger.js';
+import { musicNotifier } from './musicNotifier.js';
 import type { IGuildMusicPlayer } from './guildMusicPlayer.js';
 
 /**
@@ -131,6 +132,11 @@ export class LavalinkMusicPlayer implements IGuildMusicPlayer {
 
     player.on('exception', (data) => {
       logger.error(`[Lavalink] Exception (${data.exception.severity}) guild ${this.guildId} : ${data.exception.message} — ${data.exception.cause}`);
+      void musicNotifier.error(
+        this.guildId,
+        this.queue.getCurrentTrack()?.title ?? 'Titre inconnu',
+        `${data.exception.message}${data.exception.cause ? ` — ${data.exception.cause}` : ''}`
+      );
     });
 
     player.on('stuck', (data) => {
@@ -160,6 +166,7 @@ export class LavalinkMusicPlayer implements IGuildMusicPlayer {
       const ready = await lavalinkManager.ensureEncoded(track, track.requestedBy);
       if (!ready?.encoded) {
         logger.error(`[Lavalink] Impossible d’encoder "${track.title}" (${track.url}) — titre suivant.`);
+        void musicNotifier.error(this.guildId, track.title, "Aucune source Lavalink n'a pu charger ce titre (recherche vide ou refusée).");
         void this.handleTrackEnd();
         return false;
       }

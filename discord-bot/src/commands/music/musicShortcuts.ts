@@ -115,7 +115,7 @@ export const playCommand: Command = {
     // ("Unknown interaction" / 10062) si on ne le fait pas.
     await ctx.deferReply();
 
-    const res = await musicService.play(ctx.guild!, ctx.member!, query);
+    const res = await musicService.play(ctx.guild!, ctx.member!, query, { textChannelId: ctx.channelId });
     if (!res.success || !res.track) {
       await replyError(ctx, res.error || t.music_play_failed);
       return;

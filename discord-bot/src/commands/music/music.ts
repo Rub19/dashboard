@@ -144,7 +144,7 @@ export const musicCommand: Command = {
           return;
         }
 
-        const res = await musicService.play(guild, member, queryArg);
+        const res = await musicService.play(guild, member, queryArg, { textChannelId: ctx.channelId });
         if (!res.success) {
           await replyError(ctx, res.error || t.music_play_failed);
           return;

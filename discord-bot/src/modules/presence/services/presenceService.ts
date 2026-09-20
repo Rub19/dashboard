@@ -18,8 +18,8 @@ export class PresenceService {
   private currentState: BotPresenceState = {
     status: 'online',
     activity: {
-      type: 'Playing',
-      name: 'Valorant',
+      type: 'Watching',
+      name: 'ETHONE • /help',
     },
     updatedAt: new Date().toISOString(),
     actor: 'System',
@@ -47,7 +47,7 @@ export class PresenceService {
       previousStatus: 'invisible',
       newStatus: 'online',
       previousActivity: 'None',
-      newActivity: 'Playing Valorant',
+      newActivity: 'Watching ETHONE • /help',
       reason: 'Initial bot gateway boot',
       scope: 'global',
     });

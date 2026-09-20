@@ -37,8 +37,8 @@ export class SmartPresenceEngine {
       presenceService.updatePresence(
         'online',
         {
-          type: 'Playing',
-          name: 'Valorant',
+          type: 'Watching',
+          name: 'ETHONE • /help',
         },
         'System Maintenance',
         'maintenance_trigger',

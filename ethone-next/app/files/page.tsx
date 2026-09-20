@@ -538,6 +538,45 @@ export default function FilesPage() {
                 )}
               </div>
 
+              {/* État vide : au lieu d'une page quasi blanche, un vrai point de départ */}
+              {!loading && files.filter((x) => !x.trashed).length === 0 && (
+                <div className="flex flex-col items-center rounded-[var(--panel-radius)] border border-dashed border-[var(--panel-border)] bg-[var(--surface-raised)]/30 px-6 py-14 text-center">
+                  <span className="mb-4 flex h-16 w-16 items-center justify-center rounded-2xl bg-[var(--accent-muted)] text-[var(--accent-primary)]">
+                    <UploadCloud className="h-8 w-8" />
+                  </span>
+                  <h3 className="text-base font-bold text-[var(--text-primary)]">Aucun fichier pour l&apos;instant</h3>
+                  <p className="mt-1.5 max-w-md text-sm text-[var(--text-muted)]">
+                    Glisse des fichiers n&apos;importe où sur cette page, ou importe-les avec le bouton ci-dessous.
+                    Ils sont conservés sur ton espace ETHONE et synchronisés avec Google Drive si tu le connectes.
+                  </p>
+                  <div className="mt-5 flex flex-wrap items-center justify-center gap-2">
+                    <Button
+                      variant="primary"
+                      size="sm"
+                      onClick={() => {
+                        setAddTab("upload");
+                        setAddOpen(true);
+                      }}
+                      leftIcon={<UploadCloud className="h-4 w-4" />}
+                    >
+                      Importer un fichier
+                    </Button>
+                  </div>
+                  <div className="mt-8 grid w-full max-w-xl grid-cols-1 gap-2 text-left sm:grid-cols-3">
+                    {[
+                      { t: "Glisser-déposer", d: "Dépose plusieurs fichiers d'un coup" },
+                      { t: "Recherche rapide", d: "Par nom, extension (pdf, *.png)…" },
+                      { t: "Google Drive", d: "Synchronise ton Drive existant" },
+                    ].map((tip) => (
+                      <div key={tip.t} className="rounded-xl border border-[var(--panel-border)]/60 bg-[var(--surface-raised)]/40 p-3">
+                        <p className="text-xs font-semibold text-[var(--text-primary)]">{tip.t}</p>
+                        <p className="mt-0.5 text-[11px] text-[var(--text-muted)]">{tip.d}</p>
+                      </div>
+                    ))}
+                  </div>
+                </div>
+              )}
+
               {/* Recent Files Shelf */}
               {recentFiles.length > 0 && (
                 <div>

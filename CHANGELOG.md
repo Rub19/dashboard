@@ -2,6 +2,13 @@
 
 Toutes les modifications notables de ce projet seront documentées dans ce fichier.
 
+## v1.25.4 — 2026-09-20
+
+**Fichiers : un vrai état vide au lieu d'une page quasi blanche**
+
+- Page Fichiers : quand aucun fichier n'existe encore, la vue d'accueil n'affiche plus qu'une petite carte perdue en haut à gauche. Elle propose maintenant un état vide complet (icône, explication, bouton « Importer un fichier », et trois repères : glisser-déposer, recherche rapide, Google Drive).
+- Revue visuelle de l'app connectée (Tâches, Notes, Fichiers, Calendrier, Mail, Brain, Habitudes, Profil) : seule la page Fichiers avait un vrai défaut de mise en page ; les autres pages sont cohérentes.
+
 ## v1.25.3 — 2026-09-20
 
 **Correctif : plus de faux « Hors ligne » dans la barre d'état**

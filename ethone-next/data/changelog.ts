@@ -28433,4 +28433,49 @@ CHANGELOG_BY_LANG.en.unshift(v1253_en);
 CHANGELOG_BY_LANG.es.unshift(v1253_es);
 CHANGELOG_BY_LANG.de.unshift(v1253_de);
 
+const v1254_fr: ChangelogEntry = {
+  version: "v1.25.4",
+  date: "2026-09-20",
+  title: "Fichiers : un vrai état vide au lieu d'une page quasi blanche",
+  items: [
+    "Page Fichiers : quand aucun fichier n'existe encore, la vue d'accueil n'affiche plus qu'une petite carte perdue en haut à gauche. Elle propose maintenant un état vide complet (icône, explication, bouton « Importer un fichier », et trois repères : glisser-déposer, recherche rapide, Google Drive).",
+    "Revue visuelle de l'app connectée (Tâches, Notes, Fichiers, Calendrier, Mail, Brain, Habitudes, Profil) : seule la page Fichiers avait un vrai défaut de mise en page ; les autres pages sont cohérentes.",
+  ],
+};
+
+const v1254_en: ChangelogEntry = {
+  version: "v1.25.4",
+  date: "2026-09-20",
+  title: "Files: a real empty state instead of a nearly blank page",
+  items: [
+    "Files page: when no file exists yet, the home view used to show only a small card lost at the top left. It now offers a complete empty state (icon, explanation, \"Import a file\" button, and three hints: drag and drop, quick search, Google Drive).",
+    "Visual review of the signed-in app (Tasks, Notes, Files, Calendar, Mail, Brain, Habits, Profile): only the Files page had a real layout flaw; the other pages are consistent.",
+  ],
+};
+
+const v1254_es: ChangelogEntry = {
+  version: "v1.25.4",
+  date: "2026-09-20",
+  title: "Archivos: un estado vacío real en lugar de una página casi en blanco",
+  items: [
+    "Página Archivos: cuando todavía no existe ningún archivo, la vista de inicio solo mostraba una tarjeta pequeña perdida arriba a la izquierda. Ahora ofrece un estado vacío completo (icono, explicación, botón \"Importar un archivo\" y tres pistas: arrastrar y soltar, búsqueda rápida, Google Drive).",
+    "Revisión visual de la app con sesión iniciada (Tareas, Notas, Archivos, Calendario, Correo, Brain, Hábitos, Perfil): solo la página Archivos tenía un fallo real de diseño; las demás son coherentes.",
+  ],
+};
+
+const v1254_de: ChangelogEntry = {
+  version: "v1.25.4",
+  date: "2026-09-20",
+  title: "Dateien: ein echter Leerzustand statt einer fast leeren Seite",
+  items: [
+    "Seite Dateien: Solange noch keine Datei existiert, zeigte die Startansicht nur eine kleine Karte oben links. Jetzt gibt es einen vollständigen Leerzustand (Symbol, Erklärung, Button „Datei importieren“ und drei Hinweise: Drag & Drop, Schnellsuche, Google Drive).",
+    "Visuelle Prüfung der angemeldeten App (Aufgaben, Notizen, Dateien, Kalender, Mail, Brain, Gewohnheiten, Profil): Nur die Dateien-Seite hatte einen echten Layout-Fehler; die übrigen Seiten sind stimmig.",
+  ],
+};
+
+CHANGELOG_BY_LANG.fr.unshift(v1254_fr);
+CHANGELOG_BY_LANG.en.unshift(v1254_en);
+CHANGELOG_BY_LANG.es.unshift(v1254_es);
+CHANGELOG_BY_LANG.de.unshift(v1254_de);
+
 export const CHANGELOG = CHANGELOG_BY_LANG.fr;

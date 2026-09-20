@@ -10,6 +10,7 @@ import { useSettings } from "@/components/SettingsProvider";
 import { useSettingsForm } from "./SettingsFormContext";
 import { ACCENTS } from "@/components/SettingsProvider";
 import { type Settings, DEFAULTS } from "@/lib/settings";
+import { resolveAccent } from "@/lib/theme-engine";
 import BentoCard from "@/components/ui/BentoCard";
 import ThemeStudio from "./ThemeStudio";
 import LiveThemePreview from "./LiveThemePreview";
@@ -18,6 +19,7 @@ import Select from "@/components/ui/Select";
 import Slider from "@/components/ui/Slider";
 
 const ACCENT_COLORS = [
+  { id: "auto", label: "Auto (suit le thème)" },
   { id: "dyno", label: "Rose Dyno" },
   { id: "violet", label: "Violet" },
   { id: "mint", label: "Menthe" },
@@ -239,7 +241,7 @@ export default function AppearanceSettings() {
                     </label>
                   );
                 }
-                const hex = ACCENTS[color.id] || "#8b5cf6";
+                const hex = color.id === "auto" ? resolveAccent(settings.theme, "auto", settings.customAccent, settings.customThemes) : ACCENTS[color.id] || "#8b5cf6";
                 const selected = currentAccent === color.id;
                 return (
                   <button

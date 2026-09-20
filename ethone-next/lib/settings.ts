@@ -2,6 +2,7 @@ import { supabase } from "./supabase";
 import {
   resolveLegacyTheme,
   PREMIUM_THEMES,
+  PRESET_THEMES,
   type PremiumTheme,
   type ThemeDefinition,
   type AccentId,
@@ -375,7 +376,7 @@ export const DEFAULTS: Settings = {
   islandShowUploads: true,
   dockPosition: "bottom",
   wallpaperUrl: null,
-  accentColor: "dyno",
+  accentColor: "auto",
   customAccent: "#C1234F",
   colorScheme: "dark",
   glassLevel: "medium",
@@ -512,6 +513,14 @@ export function migrateSettings(raw: Partial<Settings>): Partial<Settings> {
   }
   if (typeof raw.soundPack === "string" && !SOUND_PACKS.includes(raw.soundPack as SoundPack)) {
     next.soundPack = SOUND_PACK_LEGACY[raw.soundPack] ?? "ethone";
+  }
+  // Accent : l'ancien défaut « dyno » (et « custom » posé automatiquement par les anciens
+  // sélecteurs de thème, avec exactement l'accent du thème) deviennent « auto » = suit le thème.
+  if (raw.accentColor === "dyno") {
+    next.accentColor = "auto";
+  } else if (raw.accentColor === "custom" && typeof raw.customAccent === "string") {
+    const themeAccent = PRESET_THEMES[resolveLegacyTheme(String(raw.theme ?? "dyno-rose")) as keyof typeof PRESET_THEMES]?.accentPrimary;
+    if (themeAccent && themeAccent.toLowerCase() === raw.customAccent.toLowerCase()) next.accentColor = "auto";
   }
   if (raw.soundPack === "none") {
     next.soundPack = "silent";

@@ -145,6 +145,34 @@ export function applyAccent(root: HTMLElement, accent: string): void {
   root.style.setProperty("--accent-rgb", rgb);
 }
 
+/** Accent « automatique » : suit le thème actif (valeur par défaut). */
+export const AUTO_ACCENT = "auto";
+
+/**
+ * Source de vérité UNIQUE de la couleur d'accent. Avant, cinq endroits recopiaient chacun
+ * leur propre logique (et applyTheme recevait parfois un id comme "mint" qu'il ne savait pas
+ * convertir → rose par défaut). Règle :
+ *  - "auto" (ou vide / inconnu) → l'accent du thème lui-même ;
+ *  - "custom" → la couleur choisie ;
+ *  - un nom ("mint", "violet"…) → sa couleur.
+ */
+export function resolveAccent(
+  themeId: string,
+  accentColor?: string | null,
+  customAccent?: string | null,
+  customThemes?: ThemeDefinition[]
+): string {
+  if (accentColor === "custom" && customAccent && isValidHexColor(customAccent)) return customAccent;
+  if (accentColor && accentColor !== AUTO_ACCENT) {
+    if (isValidHexColor(accentColor)) return accentColor;
+    const named = UNIVERSAL_ACCENTS.find((a) => a.id === accentColor);
+    if (named) return named.hex;
+  }
+  const custom = customThemes?.find((t) => t.id === themeId);
+  if (custom?.accentPrimary) return custom.accentPrimary;
+  return PRESET_THEMES[resolvePremiumTheme(String(themeId || ""))]?.accentPrimary || "#C1234F";
+}
+
 export interface ApplyThemeOptions {
   accent?: string;
   customAccent?: string;
@@ -265,8 +293,8 @@ export function applyTheme(themeId: string, options?: ApplyThemeOptions): void {
   root.style.setProperty("--surface-active", def.bgSurfaceHover);
 
   // Apply custom/override accent if provided
-  if (options?.accent) {
-    const activeAccent = options.accent === "custom" && options.customAccent ? options.customAccent : options.accent;
-    applyAccent(root, activeAccent);
+  // « auto » : l'accent du thème a déjà été posé plus haut, rien à surcharger.
+  if (options?.accent && options.accent !== AUTO_ACCENT) {
+    applyAccent(root, resolveAccent(themeId, options.accent, options.customAccent, options.customThemes));
   }
 }

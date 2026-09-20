@@ -103,13 +103,8 @@ function ThemeToggle() {
   }, [open]);
 
   function pick(id: string) {
-    // Applying a theme must also reset the accent to that theme's own design,
-    // or a separately-stored accentColor keeps overriding it.
-    update({
-      theme: id,
-      accentColor: "custom",
-      customAccent: THEME_DEFINITIONS[id as keyof typeof THEME_DEFINITIONS]?.accentPrimary || settings.customAccent,
-    });
+    // Un thème suit son propre accent (« auto ») : plus de recopie ni de surcharge résiduelle.
+    update({ theme: id, accentColor: "auto" });
     setOpen(false);
   }
 

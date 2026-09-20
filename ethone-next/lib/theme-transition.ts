@@ -1,6 +1,7 @@
 import { startTransition } from "react";
 import {
   applyTheme,
+  resolveAccent,
   resolvePremiumTheme,
   PRESET_THEMES,
   UNIVERSAL_ACCENTS,
@@ -12,13 +13,7 @@ export function getEffectiveAccent(
   accentColor?: string,
   customAccent?: string
 ): string {
-  if (accentColor === "custom" && customAccent) return customAccent;
-  const match = UNIVERSAL_ACCENTS.find((a) => a.id === accentColor);
-  if (match) return match.hex;
-
-  const resolved = resolvePremiumTheme(String(themeId || ""));
-  const def = PRESET_THEMES[resolved];
-  return def?.accentPrimary || "#8b5cf6";
+  return resolveAccent(themeId, accentColor, customAccent);
 }
 
 function setNoTransitions(html: HTMLElement) {

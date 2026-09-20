@@ -103,10 +103,9 @@ export default function ThemeStudio({ className }: ThemeStudioProps) {
       setPreviewThemeId(null);
       transitionTheme(
         themeId,
-        (id) => update({ theme: id, accentColor: "custom", customAccent: themeAccent }),
+        (id) => update({ theme: id, accentColor: "auto" }),
         {
-          accentColor: "custom",
-          customAccent: themeAccent,
+          accentColor: "auto",
           glassLevel: settings.glassLevel,
           performanceMode: settings.performanceMode,
           customThemes: settings.customThemes,
@@ -118,8 +117,7 @@ export default function ThemeStudio({ className }: ThemeStudioProps) {
     } else {
       setPreviewThemeId(themeId);
       transitionTheme(themeId, () => {}, {
-        accentColor: "custom",
-        customAccent: themeAccent,
+        accentColor: "auto",
         glassLevel: settings.glassLevel,
         performanceMode: settings.performanceMode,
         customThemes: settings.customThemes,
@@ -183,19 +181,19 @@ export default function ThemeStudio({ className }: ThemeStudioProps) {
     if (previewThemeId) {
       const themeDef = PRESET_THEMES[previewThemeId as PremiumThemeId] || settings.customThemes?.find((t) => t.id === previewThemeId);
       const themeAccent = themeDef?.accentPrimary || settings.customAccent;
-      update({ theme: previewThemeId, accentColor: "custom", customAccent: themeAccent });
+      void themeAccent;
+      update({ theme: previewThemeId, accentColor: "auto" });
       setPreviewThemeId(null);
       originalThemeRef.current.theme = previewThemeId;
-      originalThemeRef.current.accentColor = "custom";
-      originalThemeRef.current.customAccent = themeAccent;
+      originalThemeRef.current.accentColor = "auto";
       success("Thème confirmé et enregistré");
     }
   };
 
   // Reset to default Dyno Rose
   const handleResetToDefault = () => {
-    transitionTheme("dyno-rose", (id) => update({ theme: id, accentColor: "dyno", customAccent: "#C1234F", glassLevel: "medium" }), {
-      accentColor: "dyno",
+    transitionTheme("dyno-rose", (id) => update({ theme: id, accentColor: "auto", customAccent: "#C1234F", glassLevel: "medium" }), {
+      accentColor: "auto",
       customAccent: "#C1234F",
       glassLevel: "medium",
       performanceMode: "normal",

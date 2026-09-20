@@ -198,9 +198,9 @@ export function useCommandItems(setOpen: (v: boolean) => void): CommandItem[] {
       // palette / settings correctly show the new theme's name.
       const themeDef = PRESET_THEMES[themeId as PremiumThemeId] || settings.customThemes?.find((t) => t.id === themeId);
       const themeAccent = themeDef?.accentPrimary || settings.customAccent;
-      transitionTheme(themeId, (id) => update({ theme: id, accentColor: "custom", customAccent: themeAccent }), {
-        accentColor: "custom",
-        customAccent: themeAccent,
+      void themeAccent;
+      transitionTheme(themeId, (id) => update({ theme: id, accentColor: "auto" }), {
+        accentColor: "auto",
         glassLevel: settings.glassLevel,
         performanceMode: settings.performanceMode,
         customThemes: settings.customThemes,

@@ -12,6 +12,7 @@ import {
   THEME_DEFINITIONS,
   applyTheme,
   applyAccent,
+  resolveAccent,
   resolveLegacyTheme,
   resolveTheme,
 } from "@/lib/theme-engine";
@@ -282,7 +283,7 @@ export default function SettingsProvider({
     root.style.setProperty("--border", def.borderSubtle);
     root.style.setProperty("--muted", def.textMuted);
 
-    const accent = settings.accentColor === "custom" ? settings.customAccent : (ACCENTS[settings.accentColor] || def.accentPrimary);
+    const accent = resolveAccent(settings.theme, settings.accentColor, settings.customAccent, settings.customThemes);
     applyAccent(root, accent);
 
     const glowColor = settings.uiGlow ? `color-mix(in srgb, ${accent} 35%, transparent)` : "transparent";

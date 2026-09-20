@@ -63,9 +63,9 @@ export default function ProfileSync() {
     if (JSON.stringify(current.dockItems) !== JSON.stringify(activeProfile.widgets)) {
       next.dockItems = activeProfile.widgets;
     }
-    if (current.accentColor !== activeProfile.accent) {
-      next.accentColor = activeProfile.accent as Settings["accentColor"];
-    }
+    // L'accent n'est volontairement PAS synchronisé depuis le profil : il appartient au
+    // thème choisi (Dyno Rose = rose…). L'écraser avec l'accent du profil (« mint » pour
+    // Personnel) rendait tous les boutons verts malgré le thème sélectionné.
     if (Object.keys(next).length) currentUpdate(next);
 
     return () => clearTimeout(t);

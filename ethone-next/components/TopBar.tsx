@@ -23,6 +23,7 @@ import SystemStatusPills from "@/components/SystemStatusPills";
 import UserProfileDropdownSkeleton from "@/components/UserProfileDropdownSkeleton";
 import BrandMark from "@/components/BrandMark";
 import Tooltip from "@/components/Tooltip";
+import ThemePicker from "@/components/ThemePicker";
 import { Icon } from "@/lib/icons";
 import { useI18n } from "@/lib/hooks/useI18n";
 import { useSettings } from "@/components/SettingsProvider";
@@ -132,39 +133,7 @@ function ThemeToggle() {
         </button>
       </Tooltip>
 
-      {open && (
-        <div
-          role="menu"
-          className="absolute right-0 top-full z-50 mt-2 max-h-[70vh] w-56 overflow-y-auto os-scroll rounded-[var(--panel-radius)] border border-[var(--panel-border)] bg-[var(--panel-bg)] p-1.5 shadow-2xl backdrop-blur-[var(--panel-blur)]"
-        >
-          {PREMIUM_THEMES.map((id) => {
-            const def = THEME_DEFINITIONS[id];
-            const active = id === resolved;
-            return (
-              <button
-                key={id}
-                type="button"
-                role="menuitemradio"
-                aria-checked={active}
-                onClick={() => pick(id)}
-                className={cn(
-                  "flex w-full items-center gap-2.5 rounded-xl px-2.5 py-2 text-left text-xs font-medium transition-colors cursor-pointer",
-                  active
-                    ? "bg-[var(--accent-muted)] text-[var(--text-primary)]"
-                    : "text-[var(--text-muted)] hover:bg-[var(--surface-hover)] hover:text-[var(--text-primary)]"
-                )}
-              >
-                <span
-                  className="h-4 w-4 shrink-0 rounded-full border border-[var(--panel-border)]"
-                  style={{ background: `linear-gradient(135deg, ${def?.accentPrimary ?? "#888"}, ${def?.accentSecondary ?? def?.accentPrimary ?? "#888"})` }}
-                />
-                <span className="min-w-0 flex-1 truncate">{def?.label ?? id}</span>
-                {active && <Check className="h-3.5 w-3.5 shrink-0 text-[var(--accent-primary)]" />}
-              </button>
-            );
-          })}
-        </div>
-      )}
+      {open && <ThemePicker activeId={resolved} activeLabel={themeLabel} onPick={pick} />}
     </div>
   );
 }

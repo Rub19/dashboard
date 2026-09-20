@@ -2,6 +2,12 @@
 
 Toutes les modifications notables de ce projet seront documentées dans ce fichier.
 
+## v1.25.9 — 2026-09-20
+
+**Dynamic Island : fin du grand vide sous les contrôles**
+
+- Dynamic Island : une fois déployée, la coque gardait une ancienne hauteur (416 px pour un contenu de 312 px), d'où un grand espace vide sous les boutons de lecture. La mesure de taille était retardée par un `requestAnimationFrame` annulable, qui pouvait perdre la dernière mesure (et ne s'exécute jamais dans un onglet en arrière-plan). La taille suit maintenant le contenu immédiatement via `ResizeObserver`.
+
 ## v1.25.8 — 2026-09-20
 
 **Brain : les tâches créées apparaissent enfin dans Tâches, avec date et priorité**

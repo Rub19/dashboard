@@ -28686,4 +28686,45 @@ CHANGELOG_BY_LANG.en.unshift(v1258_en);
 CHANGELOG_BY_LANG.es.unshift(v1258_es);
 CHANGELOG_BY_LANG.de.unshift(v1258_de);
 
+const v1259_fr: ChangelogEntry = {
+  version: "v1.25.9",
+  date: "2026-09-20",
+  title: "Dynamic Island : fin du grand vide sous les contrôles",
+  items: [
+    "Dynamic Island : une fois déployée, la coque gardait une ancienne hauteur (416 px pour un contenu de 312 px), d'où un grand espace vide sous les boutons de lecture. La mesure de taille était retardée par un `requestAnimationFrame` annulable, qui pouvait perdre la dernière mesure (et ne s'exécute jamais dans un onglet en arrière-plan). La taille suit maintenant le contenu immédiatement via `ResizeObserver`.",
+  ],
+};
+
+const v1259_en: ChangelogEntry = {
+  version: "v1.25.9",
+  date: "2026-09-20",
+  title: "Dynamic Island: no more big empty gap under the controls",
+  items: [
+    "Dynamic Island: once expanded, the shell kept an old height (416 px for 312 px of content), leaving a large empty space under the playback buttons. Size measurement was delayed by a cancellable `requestAnimationFrame`, which could drop the last measurement (and never runs in a background tab). The size now follows the content immediately through `ResizeObserver`.",
+  ],
+};
+
+const v1259_es: ChangelogEntry = {
+  version: "v1.25.9",
+  date: "2026-09-20",
+  title: "Dynamic Island: se acabó el gran vacío bajo los controles",
+  items: [
+    "Dynamic Island: una vez desplegada, la carcasa conservaba una altura antigua (416 px para 312 px de contenido), dejando un gran espacio vacío bajo los botones de reproducción. La medición de tamaño se retrasaba con un `requestAnimationFrame` cancelable, que podía perder la última medida (y nunca se ejecuta en una pestaña en segundo plano). Ahora el tamaño sigue al contenido de inmediato mediante `ResizeObserver`.",
+  ],
+};
+
+const v1259_de: ChangelogEntry = {
+  version: "v1.25.9",
+  date: "2026-09-20",
+  title: "Dynamic Island: keine große Leerfläche mehr unter den Steuerelementen",
+  items: [
+    "Dynamic Island: Aufgeklappt behielt die Hülle eine alte Höhe (416 px bei 312 px Inhalt) und ließ eine große Leerfläche unter den Wiedergabe-Buttons. Die Größenmessung wurde durch ein abbrechbares `requestAnimationFrame` verzögert, das die letzte Messung verlieren konnte (und in einem Hintergrund-Tab nie läuft). Die Größe folgt dem Inhalt jetzt sofort über `ResizeObserver`.",
+  ],
+};
+
+CHANGELOG_BY_LANG.fr.unshift(v1259_fr);
+CHANGELOG_BY_LANG.en.unshift(v1259_en);
+CHANGELOG_BY_LANG.es.unshift(v1259_es);
+CHANGELOG_BY_LANG.de.unshift(v1259_de);
+
 export const CHANGELOG = CHANGELOG_BY_LANG.fr;

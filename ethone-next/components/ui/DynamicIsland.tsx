@@ -50,7 +50,6 @@ const PILL_HEIGHT = 40;
 function useContentSize() {
   const ref = useRef<HTMLDivElement | null>(null);
   const [size, setSize] = useState<{ width: number; height: number } | null>(null);
-  const rafId = useRef<number | null>(null);
 
   useLayoutEffect(() => {
     const el = ref.current;
@@ -61,22 +60,19 @@ function useContentSize() {
   useEffect(() => {
     const el = ref.current;
     if (!el || typeof ResizeObserver === "undefined") return;
+    // Mise à jour IMMÉDIATE (sans requestAnimationFrame) : la version « debounced » gardait
+    // la coque à l'ancienne hauteur — un grand vide sous les contrôles — dès qu'une rafale de
+    // mesures survenait pendant la transition (et pour toujours si l'onglet était en arrière-plan,
+    // où requestAnimationFrame ne s'exécute pas).
     const observer = new ResizeObserver((entries) => {
-      if (rafId.current) cancelAnimationFrame(rafId.current);
-      rafId.current = requestAnimationFrame(() => {
-        const entry = entries[0];
-        if (entry) {
-          const w = Math.round(entry.contentRect.width || el.offsetWidth);
-          const h = Math.round(entry.contentRect.height || el.offsetHeight);
-          setSize((prev) => (prev?.width === w && prev?.height === h ? prev : { width: w, height: h }));
-        }
-      });
+      const entry = entries[entries.length - 1];
+      if (!entry) return;
+      const w = Math.round(entry.contentRect.width || el.offsetWidth);
+      const h = Math.round(entry.contentRect.height || el.offsetHeight);
+      setSize((prev) => (prev?.width === w && prev?.height === h ? prev : { width: w, height: h }));
     });
     observer.observe(el);
-    return () => {
-      observer.disconnect();
-      if (rafId.current) cancelAnimationFrame(rafId.current);
-    };
+    return () => observer.disconnect();
   }, []);
 
   return [ref, size] as const;

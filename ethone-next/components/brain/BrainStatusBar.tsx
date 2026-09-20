@@ -3,7 +3,6 @@
 import { memo, useState } from "react";
 import { motion, AnimatePresence } from "framer-motion";
 import {
-  Brain,
   Sparkles,
   Layers,
   Music,
@@ -37,73 +36,54 @@ export const BrainStatusBar = memo(function BrainStatusBar({
   return (
     <div
       className={cn(
-        "relative flex flex-wrap items-center justify-between gap-3 rounded-[var(--panel-radius)] border border-[var(--panel-border)]/60 bg-[var(--surface-raised)]/30 px-4 py-2.5 backdrop-blur-[var(--panel-blur)] transition-all select-none",
+        "relative flex flex-wrap items-center justify-between gap-2 px-1 py-1 select-none",
         className
       )}
     >
-      {/* Left: Status & AI Model Info */}
-      <div className="flex items-center gap-3">
-        <div className="relative flex h-8 w-8 items-center justify-center rounded-[var(--inset-radius)] bg-[var(--accent-primary)]/15 border border-[var(--accent-primary)]/30 text-[var(--accent-primary)] shadow-sm">
-          <Brain className={cn("h-4 w-4", loading ? "animate-pulse" : "")} />
+      {/* Gauche : l'en-tête de la page affiche déjà le nom, le modèle et l'état de Brain ;
+          cette ligne ne garde que ce qui est propre à la conversation : le contexte utilisé. */}
+      <div className="flex min-w-0 items-center gap-1.5 overflow-x-auto no-scrollbar">
+        <span className="inline-flex shrink-0 items-center gap-1.5 text-[11px] font-medium text-[var(--text-muted)]">
           <span
             className={cn(
-              "absolute -bottom-0.5 -right-0.5 h-2.5 w-2.5 rounded-full border-2 border-[var(--bg-surface)]",
-              loading ? "bg-amber-400 animate-ping" : "bg-emerald-500"
+              "h-1.5 w-1.5 rounded-full",
+              loading ? "animate-pulse bg-[var(--warning)]" : "bg-[var(--success)]"
             )}
           />
-        </div>
+          {loading ? "Brain analyse…" : "Contexte"}
+        </span>
 
-        <div>
-          <div className="flex items-center gap-2">
-            <span className="text-xs font-bold text-[var(--text-primary)]">
-              {loading ? "Brain analyse..." : "Brain is ready"}
-            </span>
-            <span className="rounded-md border border-[var(--panel-border)]/60 bg-[var(--surface-raised)]/60 px-1.5 py-0.2 font-mono text-[9px] font-semibold text-[var(--accent-primary)]">
-              {model}
-            </span>
-          </div>
-          <p className="text-[10px] text-[var(--text-muted)] flex items-center gap-1.5">
-            <span>Provider : {provider}</span>
-            <span>•</span>
-            <span className="text-emerald-400">Latence optimisée</span>
-          </p>
-        </div>
-      </div>
-
-      {/* Right: Live Context Badges & Explainability */}
-      <div className="flex items-center gap-1.5 overflow-x-auto no-scrollbar">
         {context?.route && (
-          <span className="inline-flex items-center gap-1 rounded-[var(--inset-radius)] border border-[var(--panel-border)]/40 bg-[var(--surface-raised)]/40 px-2 py-0.8 text-[10px] font-medium text-[var(--text-secondary)]">
+          <span className="inline-flex shrink-0 items-center gap-1 rounded-full bg-[var(--surface-raised)] px-2 py-0.5 text-[10px] font-medium text-[var(--text-secondary)]">
             <Layers className="h-3 w-3 text-[var(--accent-primary)]" />
             <span className="capitalize">{context.route.replace("/", "") || "Home"}</span>
           </span>
         )}
 
         {context?.focusActive && (
-          <span className="inline-flex items-center gap-1 rounded-[var(--inset-radius)] border border-amber-500/30 bg-amber-500/10 px-2 py-0.8 text-[10px] font-medium text-amber-400">
+          <span className="inline-flex shrink-0 items-center gap-1 rounded-full bg-[var(--warning)]/12 px-2 py-0.5 text-[10px] font-medium text-[var(--warning)]">
             <Clock className="h-3 w-3" />
             <span>Focus actif</span>
           </span>
         )}
 
         {context?.nowPlaying?.title && (
-          <span className="inline-flex items-center gap-1 rounded-[var(--inset-radius)] border border-emerald-500/30 bg-emerald-500/10 px-2 py-0.8 text-[10px] font-medium text-emerald-400 truncate max-w-[130px]">
+          <span className="inline-flex max-w-[160px] shrink-0 items-center gap-1 truncate rounded-full bg-[var(--success)]/12 px-2 py-0.5 text-[10px] font-medium text-[var(--success)]">
             <Music className="h-3 w-3 shrink-0" />
             <span className="truncate">{context.nowPlaying.title}</span>
           </span>
         )}
-
-        {/* Explainability Trigger Button */}
-        <button
-          type="button"
-          onClick={() => setShowExplanation(true)}
-          className="inline-flex items-center gap-1 rounded-[var(--inset-radius)] border border-[var(--panel-border)]/60 bg-[var(--surface-raised)]/50 px-2 py-0.8 text-[10px] font-semibold text-[var(--text-muted)] hover:text-[var(--text-primary)] hover:bg-[var(--surface-hover)] transition-all"
-          title="Pourquoi Brain a utilisé ce contexte ?"
-        >
-          <HelpCircle className="h-3 w-3 text-[var(--accent-primary)]" />
-          <span className="hidden sm:inline">Transparence</span>
-        </button>
       </div>
+
+      <button
+        type="button"
+        onClick={() => setShowExplanation(true)}
+        className="inline-flex shrink-0 items-center gap-1 rounded-full px-2 py-0.5 text-[10px] font-semibold text-[var(--text-muted)] transition-colors hover:bg-[var(--surface-hover)] hover:text-[var(--text-primary)] cursor-pointer"
+        title="Pourquoi Brain a utilisé ce contexte ?"
+      >
+        <HelpCircle className="h-3 w-3 text-[var(--accent-primary)]" />
+        <span className="hidden sm:inline">Pourquoi ce contexte ?</span>
+      </button>
 
       {/* Explainability Modal */}
       <AnimatePresence>

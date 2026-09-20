@@ -2,6 +2,15 @@
 
 Toutes les modifications notables de ce projet seront documentées dans ce fichier.
 
+## v1.25.6 — 2026-09-20
+
+**Dynamic Island dans la barre du haut, page Brain épurée**
+
+- Dynamic Island : sur les grands écrans, la capsule vit maintenant dans le centre libre de la barre du haut au lieu de flotter par-dessus l'en-tête de chaque page (elle masquait les boutons « Ajouter / Commandes » sur l'accueil et les onglets de Brain). Sur petits écrans elle garde sa position sous la barre.
+- Dynamic Island : le déploiement au survol demande maintenant une courte intention (180 ms), ce qui évite le boîtier sombre vide qui apparaissait quand la souris ne faisait que passer.
+- Page Brain : l'état de Brain était affiché trois fois (onglets, en-tête « Brain Assistant · Auto », puis une carte « Brain is ready » en anglais avec fournisseur et « Latence optimisée »). La carte redondante devient une ligne discrète « Contexte » (page, Focus, morceau en cours) avec « Pourquoi ce contexte ? », aux couleurs du thème au lieu d'émeraude/ambre codés en dur.
+- Brain testé en direct : envoi d'un message, réponse en ~1,7 s (routage automatique), actions « Copier / Créer une note / Créer une tâche » présentes ; la conversation de test a été effacée.
+
 ## v1.25.5 — 2026-09-20
 
 **Notes : bug du premier caractère, cases de tâches lisibles, toasts au-dessus de la barre d'état**

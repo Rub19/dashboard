@@ -28531,4 +28531,57 @@ CHANGELOG_BY_LANG.en.unshift(v1255_en);
 CHANGELOG_BY_LANG.es.unshift(v1255_es);
 CHANGELOG_BY_LANG.de.unshift(v1255_de);
 
+const v1256_fr: ChangelogEntry = {
+  version: "v1.25.6",
+  date: "2026-09-20",
+  title: "Dynamic Island dans la barre du haut, page Brain épurée",
+  items: [
+    "Dynamic Island : sur les grands écrans, la capsule vit maintenant dans le centre libre de la barre du haut au lieu de flotter par-dessus l'en-tête de chaque page (elle masquait les boutons « Ajouter / Commandes » sur l'accueil et les onglets de Brain). Sur petits écrans elle garde sa position sous la barre.",
+    "Dynamic Island : le déploiement au survol demande maintenant une courte intention (180 ms), ce qui évite le boîtier sombre vide qui apparaissait quand la souris ne faisait que passer.",
+    "Page Brain : l'état de Brain était affiché trois fois (onglets, en-tête « Brain Assistant · Auto », puis une carte « Brain is ready » en anglais avec fournisseur et « Latence optimisée »). La carte redondante devient une ligne discrète « Contexte » (page, Focus, morceau en cours) avec « Pourquoi ce contexte ? », aux couleurs du thème au lieu d'émeraude/ambre codés en dur.",
+    "Brain testé en direct : envoi d'un message, réponse en ~1,7 s (routage automatique), actions « Copier / Créer une note / Créer une tâche » présentes ; la conversation de test a été effacée.",
+  ],
+};
+
+const v1256_en: ChangelogEntry = {
+  version: "v1.25.6",
+  date: "2026-09-20",
+  title: "Dynamic Island in the top bar, tidier Brain page",
+  items: [
+    "Dynamic Island: on large screens the capsule now lives in the free center of the top bar instead of floating over each page's header (it hid the \"Add / Commands\" buttons on the home page and Brain's tabs). On small screens it keeps its position below the bar.",
+    "Dynamic Island: hover expansion now needs a short intent (180 ms), which avoids the empty dark box that flashed when the mouse merely passed by.",
+    "Brain page: Brain's status was shown three times (tabs, the \"Brain Assistant · Auto\" header, then an English \"Brain is ready\" card with provider and \"Optimized latency\"). The redundant card becomes a discreet \"Context\" line (page, Focus, current track) with \"Why this context?\", in theme colors instead of hardcoded emerald/amber.",
+    "Brain tested live: sent a message, reply in ~1.7 s (automatic routing), \"Copy / Create note / Create task\" actions present; the test conversation was cleared.",
+  ],
+};
+
+const v1256_es: ChangelogEntry = {
+  version: "v1.25.6",
+  date: "2026-09-20",
+  title: "Dynamic Island en la barra superior, página Brain más limpia",
+  items: [
+    "Dynamic Island: en pantallas grandes la cápsula vive ahora en el centro libre de la barra superior en lugar de flotar sobre la cabecera de cada página (tapaba los botones \"Añadir / Comandos\" en el inicio y las pestañas de Brain). En pantallas pequeñas mantiene su posición bajo la barra.",
+    "Dynamic Island: la expansión al pasar el cursor requiere ahora una breve intención (180 ms), lo que evita la caja oscura vacía que aparecía cuando el ratón solo pasaba.",
+    "Página Brain: el estado de Brain se mostraba tres veces (pestañas, cabecera \"Brain Assistant · Auto\" y una tarjeta \"Brain is ready\" en inglés con proveedor y \"Latencia optimizada\"). La tarjeta redundante pasa a ser una línea discreta \"Contexto\" (página, Focus, pista actual) con \"¿Por qué este contexto?\", con los colores del tema en lugar de esmeralda/ámbar fijos.",
+    "Brain probado en directo: envío de un mensaje, respuesta en ~1,7 s (enrutamiento automático), acciones \"Copiar / Crear nota / Crear tarea\" presentes; la conversación de prueba se borró.",
+  ],
+};
+
+const v1256_de: ChangelogEntry = {
+  version: "v1.25.6",
+  date: "2026-09-20",
+  title: "Dynamic Island in der oberen Leiste, aufgeräumte Brain-Seite",
+  items: [
+    "Dynamic Island: Auf großen Bildschirmen sitzt die Kapsel jetzt im freien Mittelteil der oberen Leiste, statt über dem Kopf jeder Seite zu schweben (sie verdeckte die Buttons „Hinzufügen / Befehle“ auf der Startseite und die Tabs von Brain). Auf kleinen Bildschirmen bleibt sie unter der Leiste.",
+    "Dynamic Island: Das Aufklappen beim Überfahren braucht jetzt eine kurze Absicht (180 ms), das vermeidet den leeren dunklen Kasten, der aufblitzte, wenn die Maus nur vorbeizog.",
+    "Brain-Seite: Der Brain-Status wurde dreimal angezeigt (Tabs, Kopf „Brain Assistant · Auto“, dann eine englische Karte „Brain is ready“ mit Anbieter und „Optimierte Latenz“). Die redundante Karte wird zu einer dezenten Zeile „Kontext“ (Seite, Focus, aktueller Titel) mit „Warum dieser Kontext?“, in Theme-Farben statt fest codiertem Smaragd/Amber.",
+    "Brain live getestet: Nachricht gesendet, Antwort in ~1,7 s (automatisches Routing), Aktionen „Kopieren / Notiz erstellen / Aufgabe erstellen“ vorhanden; die Testunterhaltung wurde gelöscht.",
+  ],
+};
+
+CHANGELOG_BY_LANG.fr.unshift(v1256_fr);
+CHANGELOG_BY_LANG.en.unshift(v1256_en);
+CHANGELOG_BY_LANG.es.unshift(v1256_es);
+CHANGELOG_BY_LANG.de.unshift(v1256_de);
+
 export const CHANGELOG = CHANGELOG_BY_LANG.fr;

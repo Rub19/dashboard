@@ -402,12 +402,16 @@ export default function DynamicIslandContainer() {
     setMode((m) => (m === "COMPACT" ? "EXPANDED" : "COMPACT"));
   }, [selectedView]);
 
+  const islandEnterTimer = useRef<number | null>(null);
+
   const onIslandEnter = useCallback(() => {
     if (islandLeaveTimer.current) window.clearTimeout(islandLeaveTimer.current);
-    setMode("EXPANDED");
+    if (islandEnterTimer.current) window.clearTimeout(islandEnterTimer.current);
+    islandEnterTimer.current = window.setTimeout(() => setMode("EXPANDED"), 180);
   }, []);
 
   const onIslandLeave = useCallback(() => {
+    if (islandEnterTimer.current) window.clearTimeout(islandEnterTimer.current);
     if (islandLeaveTimer.current) window.clearTimeout(islandLeaveTimer.current);
     islandLeaveTimer.current = window.setTimeout(() => {
       setMode(activeViews.length > 0 ? "COMPACT" : "IDLE");
@@ -760,7 +764,7 @@ export default function DynamicIslandContainer() {
           animate={{ opacity: 1, y: 0, scale: 1 }}
           exit={{ opacity: 0, y: -20, scale: 0.9 }}
           transition={{ duration: 0.25, ease: EASE_OUT }}
-          className="fixed left-0 right-0 top-[calc(3.5rem+env(safe-area-inset-top)+0.5rem)] z-[var(--z-dynamic-island)] flex justify-center pointer-events-none select-none"
+          className="fixed left-0 right-0 top-[calc(3.5rem+env(safe-area-inset-top)+0.5rem)] xl:top-[calc(0.4rem+env(safe-area-inset-top))] z-[var(--z-dynamic-island)] flex justify-center pointer-events-none select-none"
         >
           <DynamicIsland
             ref={islandRef}

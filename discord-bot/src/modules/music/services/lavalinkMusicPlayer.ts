@@ -220,7 +220,7 @@ export class LavalinkMusicPlayer implements IGuildMusicPlayer {
             this.positionAt = Date.now();
             await this.player.playTrack({ track: { encoded: alt.encoded } });
             lavalinkManager.markYoutubeBlocked();
-            logger.info(`[Lavalink] Repli SoundCloud pour "${current.title}" (guild ${this.guildId})`);
+            logger.info(`[Lavalink] Repli SoundCloud pour "${current.title}" → "${alt.title}" ${alt.duration}s ${alt.url} (guild ${this.guildId})`);
             if (firstAttempt) {
               void musicNotifier.notice(
                 this.guildId,

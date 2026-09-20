@@ -228,14 +228,18 @@ export default function SettingsProvider({
               }
             }
           );
+        // Un échec du canal temps réel (onglet en arrière-plan, websocket coupée, etc.) ne veut
+        // PAS dire « hors ligne » : les réglages continuent d'être enregistrés par l'API REST.
+        // Marquer "offline" ici affichait « Hors ligne » alors que tout fonctionnait, et ne se
+        // corrigeait jamais. On efface donc l'état quand le canal se (re)connecte, et on ne le
+        // positionne plus sur un simple échec temps réel.
         await channel.subscribe((status) => {
-          if (status === "CHANNEL_ERROR" || status === "TIMED_OUT") {
-            useSyncStore.getState().setStatus("user_settings", "offline");
+          if (status === "SUBSCRIBED") {
+            useSyncStore.getState().setStatus("user_settings", "idle");
           }
         });
       } catch {
-        // Table or realtime unavailable; local storage is the fallback.
-        useSyncStore.getState().setStatus("user_settings", "offline");
+        // Table or realtime unavailable; local storage + REST remain the source of truth.
       }
     }
 

@@ -28392,4 +28392,45 @@ CHANGELOG_BY_LANG.en.unshift(v1252_en);
 CHANGELOG_BY_LANG.es.unshift(v1252_es);
 CHANGELOG_BY_LANG.de.unshift(v1252_de);
 
+const v1253_fr: ChangelogEntry = {
+  version: "v1.25.3",
+  date: "2026-09-20",
+  title: "Correctif : plus de faux « Hors ligne » dans la barre d'état",
+  items: [
+    "La pastille « Hors ligne » du bas s'affichait alors que le réseau fonctionnait : un échec du canal temps réel des réglages (onglet en arrière-plan, websocket coupée) marquait la synchro « offline » sans jamais l'effacer. Un échec temps réel ne signifie plus « hors ligne » (les réglages passent par l'API REST), et l'état est remis à normal dès que le canal se reconnecte.",
+  ],
+};
+
+const v1253_en: ChangelogEntry = {
+  version: "v1.25.3",
+  date: "2026-09-20",
+  title: "Fix: no more false \"Offline\" in the status bar",
+  items: [
+    "The bottom \"Offline\" pill showed up while the network was fine: a failure of the settings realtime channel (background tab, dropped websocket) marked sync \"offline\" and never cleared it. A realtime failure no longer means \"offline\" (settings go through the REST API), and the state resets as soon as the channel reconnects.",
+  ],
+};
+
+const v1253_es: ChangelogEntry = {
+  version: "v1.25.3",
+  date: "2026-09-20",
+  title: "Corrección: se acabó el falso \"Sin conexión\" en la barra de estado",
+  items: [
+    "La píldora \"Sin conexión\" inferior aparecía aunque la red funcionaba: un fallo del canal en tiempo real de los ajustes (pestaña en segundo plano, websocket cortado) marcaba la sincronización como \"offline\" y nunca se borraba. Un fallo en tiempo real ya no significa \"sin conexión\" (los ajustes usan la API REST) y el estado se restablece cuando el canal se reconecta.",
+  ],
+};
+
+const v1253_de: ChangelogEntry = {
+  version: "v1.25.3",
+  date: "2026-09-20",
+  title: "Korrektur: kein falsches „Offline“ mehr in der Statusleiste",
+  items: [
+    "Die untere „Offline“-Pille erschien, obwohl das Netzwerk funktionierte: Ein Ausfall des Echtzeitkanals der Einstellungen (Hintergrund-Tab, getrennter Websocket) markierte die Synchronisierung als „offline“ und wurde nie zurückgesetzt. Ein Echtzeit-Ausfall bedeutet nicht mehr „offline“ (Einstellungen laufen über die REST-API), und der Zustand wird zurückgesetzt, sobald der Kanal wieder verbunden ist.",
+  ],
+};
+
+CHANGELOG_BY_LANG.fr.unshift(v1253_fr);
+CHANGELOG_BY_LANG.en.unshift(v1253_en);
+CHANGELOG_BY_LANG.es.unshift(v1253_es);
+CHANGELOG_BY_LANG.de.unshift(v1253_de);
+
 export const CHANGELOG = CHANGELOG_BY_LANG.fr;

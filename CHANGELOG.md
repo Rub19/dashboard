@@ -2,6 +2,12 @@
 
 Toutes les modifications notables de ce projet seront documentées dans ce fichier.
 
+## v1.25.3 — 2026-09-20
+
+**Correctif : plus de faux « Hors ligne » dans la barre d'état**
+
+- La pastille « Hors ligne » du bas s'affichait alors que le réseau fonctionnait : un échec du canal temps réel des réglages (onglet en arrière-plan, websocket coupée) marquait la synchro « offline » sans jamais l'effacer. Un échec temps réel ne signifie plus « hors ligne » (les réglages passent par l'API REST), et l'état est remis à normal dès que le canal se reconnecte.
+
 ## v1.25.2 — 2026-09-20
 
 **Ambiances naturelles : océan, feu de cheminée, vent, forêt et nuit refaits**

@@ -18,13 +18,43 @@ const TOKEN_COOKIE_OPTIONS = {
   maxAge: 7 * 24 * 60 * 60 * 1000,
 };
 
+const isLocalUrl = (u: string): boolean => /^https?:\/\/(localhost|127\.0\.0\.1)(:|\/|$)/i.test(u);
+
+/**
+ * URL publique de CE serveur (là où Discord renverra le code OAuth). DASHBOARD_URL
+ * n'est pas utilisable seul : par défaut il vaut http://localhost:3001, ce qui envoyait
+ * Discord vers localhost et empêchait toute connexion depuis le site en production.
+ * On utilise donc, dans l'ordre : BOT_PUBLIC_URL, DASHBOARD_URL si ce n'est pas du
+ * localhost, puis l'hôte réel de la requête (reverse proxy Caddy → bot.ethone.dev).
+ */
 function getRedirectUri(req: Request): string {
-  if (config.dashboardUrl && config.dashboardUrl.startsWith('http')) {
+  const explicit = process.env.BOT_PUBLIC_URL?.replace(/\/$/, '');
+  if (explicit) return `${explicit}/api/auth/callback`;
+  if (config.dashboardUrl && config.dashboardUrl.startsWith('http') && !isLocalUrl(config.dashboardUrl)) {
     return `${config.dashboardUrl}/api/auth/callback`;
   }
   const protocol = req.headers['x-forwarded-proto'] || req.protocol;
   const host = req.headers['x-forwarded-host'] || req.get('host');
   return `${protocol}://${host}/api/auth/callback`;
+}
+
+const ALLOWED_RETURN_ORIGINS = new Set(['https://ethone.dev', 'https://www.ethone.dev', 'http://localhost:3000', 'http://localhost:5173']);
+const RETURN_COOKIE = 'auth_return';
+
+/** Cookies posés selon le protocole RÉEL de la requête (HTTPS derrière Caddy), pas selon DASHBOARD_URL. */
+function cookieOptionsFor(req: Request) {
+  const https = String(req.headers['x-forwarded-proto'] || req.protocol) === 'https';
+  return { ...TOKEN_COOKIE_OPTIONS, secure: https, sameSite: (https ? 'none' : 'lax') as 'none' | 'lax' };
+}
+
+function safeReturnUrl(raw: unknown): string | null {
+  if (typeof raw !== 'string' || !raw) return null;
+  try {
+    const u = new URL(raw);
+    return ALLOWED_RETURN_ORIGINS.has(u.origin) ? u.toString() : null;
+  } catch {
+    return null;
+  }
 }
 
 /**
@@ -38,6 +68,9 @@ authRouter.get('/login', (req: Request, res: Response) => {
   }
 
   const redirectUri = getRedirectUri(req);
+  // Où ramener l'utilisateur après la connexion (le site, pas la racine du bot).
+  const returnTo = safeReturnUrl(req.query.return_to);
+  if (returnTo) res.cookie(RETURN_COOKIE, returnTo, { ...cookieOptionsFor(req), maxAge: 10 * 60 * 1000 });
   const discordAuthUrl =
     `https://discord.com/oauth2/authorize?client_id=${config.clientId}` +
     `&response_type=code&redirect_uri=${encodeURIComponent(redirectUri)}` +
@@ -144,9 +177,11 @@ authRouter.get('/callback', async (req: Request, res: Response): Promise<void> =
 
     const token = jwt.sign(payload, config.jwtSecret, { expiresIn: '7d' });
 
-    res.cookie('token', token, TOKEN_COOKIE_OPTIONS);
+    res.cookie('token', token, cookieOptionsFor(req));
 
-    res.redirect('/');
+    const returnTo = safeReturnUrl(req.cookies?.[RETURN_COOKIE]);
+    res.clearCookie(RETURN_COOKIE, { path: '/' });
+    res.redirect(returnTo ?? 'https://ethone.dev/discord');
   } catch (err) {
     logger.error('Erreur lors du callback OAuth2 :', err);
     res.redirect('/?error=server_error');

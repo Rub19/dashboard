@@ -421,6 +421,8 @@ export default function DiscordDashboardPage() {
   // every server "à ajouter".
   const [botGuildIds, setBotGuildIds] = useState<Set<string>>(new Set());
   const [botPresenceKnown, setBotPresenceKnown] = useState(false);
+  // 401 du bot : la session Discord du BOT (cookie) est absente, distincte de la session du site.
+  const [botAuthRequired, setBotAuthRequired] = useState(false);
   const [botGuildMeta, setBotGuildMeta] = useState<Record<string, { memberCount: number | null }>>({});
   // Preview toggles shown on the Logs module gateway card (informational —
   // the real per-event routing lives in the Audit Center at /discord/logs).
@@ -462,9 +464,12 @@ export default function DiscordDashboardPage() {
         }
         setBotGuildMeta(meta);
         setBotPresenceKnown(true);
+        setBotAuthRequired(false);
       })
-      .catch(() => {
-        if (!cancelled) setBotPresenceKnown(false);
+      .catch((err) => {
+        if (cancelled) return;
+        setBotPresenceKnown(false);
+        setBotAuthRequired(err instanceof Error && err.message === "401");
       });
     return () => {
       cancelled = true;
@@ -825,6 +830,20 @@ export default function DiscordDashboardPage() {
               {filteredGuilds.length}
             </span>
           </div>
+
+          {botAuthRequired && (
+            <a
+              href={`${process.env.NEXT_PUBLIC_DISCORD_BOT_API || ""}/api/auth/login?return_to=${encodeURIComponent(typeof window !== "undefined" ? `${window.location.origin}/discord` : "")}`}
+              className="mb-3 flex shrink-0 items-start gap-2 rounded-xl border border-[#5865F2]/40 bg-[#5865F2]/10 px-3 py-2 text-[11px] leading-snug text-[#c7ccff] transition-colors hover:bg-[#5865F2]/20"
+            >
+              <span aria-hidden>🔗</span>
+              <span>
+                <strong className="font-semibold text-white">Connecte le bot à ton compte Discord</strong>
+                <br />
+                Sans ça, le site ne voit ni les serveurs où le bot est actif, ni la musique en direct. Clique pour autoriser.
+              </span>
+            </a>
+          )}
 
           {/* Filter Toggle */}
           <div className="mb-3 flex items-center justify-between rounded-xl bg-white/[0.03] px-3 py-1.5 text-xs border border-[var(--panel-border)] shrink-0">

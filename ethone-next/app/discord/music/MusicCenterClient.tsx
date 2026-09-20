@@ -171,7 +171,7 @@ export default function MusicCenterClient() {
       if (!res.ok) {
         setStateError(
           res.status === 401 || res.status === 403
-            ? `Accès refusé par le bot (HTTP ${res.status}) — reconnecte-toi ou vérifie tes droits sur ce serveur.`
+            ? `Le bot ne te reconnaît pas (HTTP ${res.status}) : sa connexion Discord est distincte de celle du site.`
             : res.status === 404
               ? "Le bot ne connaît pas cette route (HTTP 404) — le bot n'a probablement pas été redéployé."
               : `Le bot a répondu une erreur (HTTP ${res.status}).`
@@ -604,6 +604,14 @@ export default function MusicCenterClient() {
               {stateError && (
                 <p role="alert" className="mt-1 text-xs text-amber-400">
                   ⚠ {stateError}
+                  {stateError.startsWith("Le bot ne te reconnaît pas") && (
+                    <a
+                      href={`${BOT_API_URL}/api/auth/login?return_to=${encodeURIComponent(typeof window !== "undefined" ? window.location.href : "")}`}
+                      className="ml-2 font-bold text-violet-300 underline underline-offset-2"
+                    >
+                      Connecter le bot à mon compte Discord
+                    </a>
+                  )}
                 </p>
               )}
             </div>

@@ -28821,4 +28821,45 @@ CHANGELOG_BY_LANG.en.unshift(v12511_en);
 CHANGELOG_BY_LANG.es.unshift(v12511_es);
 CHANGELOG_BY_LANG.de.unshift(v12511_de);
 
+const v12512_fr: ChangelogEntry = {
+  version: "v1.25.12",
+  date: "2026-09-20",
+  title: "Réglages : le bas de la liste n'est plus coupé",
+  items: [
+    "Réglages : la dernière entrée du menu de gauche (« À propos ») et le bas du contenu restaient coupés sous la barre d'état, on ne pouvait pas défiler jusqu'au bout (mesuré : le bas de la liste dépassait de 16 px sous la barre). Le menu et la zone de contenu ont maintenant une marge basse suffisante pour tout atteindre.",
+  ],
+};
+
+const v12512_en: ChangelogEntry = {
+  version: "v1.25.12",
+  date: "2026-09-20",
+  title: "Settings: the bottom of the list is no longer cut off",
+  items: [
+    "Settings: the last entry of the left menu (\"About\") and the bottom of the content stayed cut off under the status bar, so you could not scroll all the way (measured: the bottom of the list overflowed by 16 px under the bar). The menu and the content area now have enough bottom padding to reach everything.",
+  ],
+};
+
+const v12512_es: ChangelogEntry = {
+  version: "v1.25.12",
+  date: "2026-09-20",
+  title: "Ajustes: la parte inferior de la lista ya no queda cortada",
+  items: [
+    "Ajustes: la última entrada del menú izquierdo (\"Acerca de\") y el final del contenido quedaban cortados bajo la barra de estado, sin poder desplazarse hasta el final (medido: el final de la lista sobresalía 16 px bajo la barra). El menú y el área de contenido tienen ahora margen inferior suficiente para llegar a todo.",
+  ],
+};
+
+const v12512_de: ChangelogEntry = {
+  version: "v1.25.12",
+  date: "2026-09-20",
+  title: "Einstellungen: das Ende der Liste wird nicht mehr abgeschnitten",
+  items: [
+    "Einstellungen: Der letzte Eintrag des linken Menüs („Über“) und das Ende des Inhalts blieben unter der Statusleiste abgeschnitten, man konnte nicht ganz nach unten scrollen (gemessen: das Listenende ragte 16 px unter die Leiste). Menü und Inhaltsbereich haben jetzt genug unteren Abstand, um alles zu erreichen.",
+  ],
+};
+
+CHANGELOG_BY_LANG.fr.unshift(v12512_fr);
+CHANGELOG_BY_LANG.en.unshift(v12512_en);
+CHANGELOG_BY_LANG.es.unshift(v12512_es);
+CHANGELOG_BY_LANG.de.unshift(v12512_de);
+
 export const CHANGELOG = CHANGELOG_BY_LANG.fr;

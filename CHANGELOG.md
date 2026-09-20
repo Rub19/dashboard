@@ -2,6 +2,12 @@
 
 Toutes les modifications notables de ce projet seront documentées dans ce fichier.
 
+## v1.25.12 — 2026-09-20
+
+**Réglages : le bas de la liste n'est plus coupé**
+
+- Réglages : la dernière entrée du menu de gauche (« À propos ») et le bas du contenu restaient coupés sous la barre d'état, on ne pouvait pas défiler jusqu'au bout (mesuré : le bas de la liste dépassait de 16 px sous la barre). Le menu et la zone de contenu ont maintenant une marge basse suffisante pour tout atteindre.
+
 ## v1.25.11 — 2026-09-20
 
 **Le Dock et la Dynamic Island s'effacent devant les modales et sur les jeux**

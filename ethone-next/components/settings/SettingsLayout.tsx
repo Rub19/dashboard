@@ -291,7 +291,7 @@ export default function SettingsLayout({ initialSection }: { initialSection?: st
 
       {/* Split view with GPU-isolated smooth scrolling */}
       <div className="flex min-h-0 w-full flex-1 gap-4 overflow-hidden sm:gap-6">
-        <aside className="hidden h-full w-64 shrink-0 overflow-y-auto pr-1 no-scrollbar md:block">
+        <aside className="hidden h-full w-64 shrink-0 overflow-y-auto pb-24 pr-1 no-scrollbar md:block">
           <div className="sticky top-0">
             <SettingsNavigation
               active={activeCategory}
@@ -306,7 +306,7 @@ export default function SettingsLayout({ initialSection }: { initialSection?: st
             contentRef.current = el;
             registerContainerRef(el);
           }}
-          className="min-h-0 w-full flex-1 overflow-y-auto os-scroll pb-8 pr-1 pt-4 will-change-scroll transform-gpu overscroll-contain"
+          className="min-h-0 w-full flex-1 overflow-y-auto os-scroll pb-24 pr-1 pt-4 will-change-scroll transform-gpu overscroll-contain"
         >
           <SettingsContent
             activeCategory={activeCategory}

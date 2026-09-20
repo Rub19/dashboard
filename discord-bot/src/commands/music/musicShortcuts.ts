@@ -90,6 +90,12 @@ export const playCommand: Command = {
         .setDescription('Titre de musique ou lien YouTube / Spotify / SoundCloud')
         .setRequired(true)
         .setAutocomplete(true)
+    )
+    .addBooleanOption((opt) =>
+      opt.setName('melanger').setDescription('Playlist / album : mélanger les titres avant de les ajouter (mode aléatoire)')
+    )
+    .addBooleanOption((opt) =>
+      opt.setName('suivant').setDescription('Jouer ce titre juste après celui en cours (passe devant la file)')
     ),
   execute: async (ctx: CommandContext) => {
     if (!checkVoice(ctx)) return;
@@ -115,7 +121,12 @@ export const playCommand: Command = {
     // ("Unknown interaction" / 10062) si on ne le fait pas.
     await ctx.deferReply();
 
-    const res = await musicService.play(ctx.guild!, ctx.member!, query, { textChannelId: ctx.channelId });
+    const opts = ctx.isSlash && ctx.interaction ? (ctx.interaction as any).options : null;
+    const res = await musicService.play(ctx.guild!, ctx.member!, query, {
+      textChannelId: ctx.channelId,
+      shuffle: Boolean(opts?.getBoolean?.('melanger')),
+      playNext: Boolean(opts?.getBoolean?.('suivant')),
+    });
     if (!res.success || !res.track) {
       await replyError(ctx, res.error || t.music_play_failed);
       return;

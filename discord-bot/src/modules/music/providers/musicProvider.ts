@@ -391,7 +391,7 @@ class MusicProviderManager {
         const t = await new SpotifyBridgeProvider().resolveTrack(query, requestedBy);
         return t ? [t] : [];
       }
-      return lavalinkManager.resolve(query, requestedBy, { limit: 1, maxPlaylist: 100 });
+      return lavalinkManager.resolve(query, requestedBy, { limit: 1, maxPlaylist: 500 });
     }
     if (isPlaylistUrl(query)) {
       const tracks = await expandPlaylist(query, requestedBy);

@@ -13,7 +13,7 @@ import {
 import { logger } from '../../../utils/logger.js';
 
 export const DEFAULT_MUSIC_SETTINGS: MusicSettings = {
-  maxQueueSize: 100,
+  maxQueueSize: 500,
   allowDuplicates: true,
   allowUserRemoveOwn: true,
   allowUserSkip: true,

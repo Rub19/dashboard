@@ -88,7 +88,7 @@ class MusicService {
     guild: Guild,
     member: GuildMember | null,
     queryOrUrl: string,
-    options?: { playNext?: boolean; channelId?: string; textChannelId?: string | null }
+    options?: { playNext?: boolean; shuffle?: boolean; channelId?: string; textChannelId?: string | null }
   ): Promise<{ success: boolean; track?: Track; queuePosition?: number; playlistCount?: number; error?: string }> {
     musicNotifier.rememberChannel(guild.id, options?.textChannelId);
     // 1. Permissions
@@ -170,6 +170,13 @@ class MusicService {
       }
       return { success: false, error: 'Aucun titre correspondant trouvé.' };
     }
+    // Mode aléatoire : on mélange la playlist importée (Fisher-Yates) avant de la mettre en file.
+    if (options?.shuffle && tracks.length > 1) {
+      for (let i = tracks.length - 1; i > 0; i--) {
+        const j = Math.floor(Math.random() * (i + 1));
+        [tracks[i], tracks[j]] = [tracks[j], tracks[i]];
+      }
+    }
     const track = tracks[0];
     const isPlaylist = tracks.length > 1;
 
@@ -193,8 +200,11 @@ class MusicService {
 
     // 5. Reste de la playlist -> file d'attente (on s'arrête si elle est pleine).
     let queuedFromPlaylist = 0;
+    // L'ancienne limite par défaut (100) coupait les grosses playlists : pour un import
+    // on autorise jusqu'à 500 titres tant que l'admin n'a pas choisi une valeur plus haute.
+    const importCap = settings.maxQueueSize <= 100 ? 500 : settings.maxQueueSize;
     for (let i = 1; i < tracks.length; i++) {
-      const addRes = player.queue.add(tracks[i], settings.maxQueueSize, settings.allowDuplicates);
+      const addRes = player.queue.add(tracks[i], importCap, settings.allowDuplicates);
       if (!addRes.success) break;
       queuedFromPlaylist += 1;
     }

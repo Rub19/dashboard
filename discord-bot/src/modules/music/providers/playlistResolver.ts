@@ -8,7 +8,7 @@ import { ytDlpAvailable } from './ytdlpStream.js';
 const ytDlpPath = (): string => process.env.YT_DLP_PATH || 'yt-dlp';
 const cookiesArgs = (): string[] => (process.env.YT_DLP_COOKIES_FILE ? ['--cookies', process.env.YT_DLP_COOKIES_FILE] : []);
 // Guard rails so one `/play <playlist>` can't enqueue thousands of tracks.
-const MAX_PLAYLIST_TRACKS = 100;
+const MAX_PLAYLIST_TRACKS = 500;
 
 const THUMB_FALLBACK = 'https://images.unsplash.com/photo-1511671782779-c97d3d27a1d4?w=500&auto=format&fit=crop&q=80';
 

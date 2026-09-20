@@ -12,6 +12,7 @@ class MusicNotifier {
   private client: Client | null = null;
   private channels = new Map<string, string>();
   private lastSent = new Map<string, number>();
+  private lastNotice = new Map<string, number>();
 
   public initialize(client: Client): void {
     this.client = client;
@@ -46,6 +47,11 @@ class MusicNotifier {
   }
 
   public async notice(guildId: string, title: string, text: string): Promise<void> {
+    // Une seule info toutes les 10 min par serveur : sur une playlist entière, un
+    // message par titre serait du spam.
+    const nowTs = Date.now();
+    if (nowTs - (this.lastNotice.get(guildId) ?? 0) < 10 * 60_000) return;
+    this.lastNotice.set(guildId, nowTs);
     const channelId = this.channels.get(guildId);
     if (!this.client || !channelId) return;
     try {

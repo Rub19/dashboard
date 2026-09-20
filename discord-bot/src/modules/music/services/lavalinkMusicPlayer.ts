@@ -211,7 +211,7 @@ export class LavalinkMusicPlayer implements IGuildMusicPlayer {
           void musicNotifier.notice(
             this.guildId,
             current.title,
-            "YouTube refuse le streaming depuis ce serveur — lecture via SoundCloud à la place."
+            "Spotify et YouTube ne fournissent pas l'audio à ce serveur : le titre est joué depuis SoundCloud (même morceau, choisi par durée)."
           );
           return;
         } catch (err) {

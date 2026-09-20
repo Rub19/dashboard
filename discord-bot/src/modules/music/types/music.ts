@@ -111,7 +111,7 @@ export interface MusicStats {
 }
 
 export const MusicSettingsSchema = z.object({
-  maxQueueSize: z.number().min(5).max(500).default(100),
+  maxQueueSize: z.number().min(5).max(1000).default(500),
   allowDuplicates: z.boolean().default(true),
   allowUserRemoveOwn: z.boolean().default(true),
   allowUserSkip: z.boolean().default(true),

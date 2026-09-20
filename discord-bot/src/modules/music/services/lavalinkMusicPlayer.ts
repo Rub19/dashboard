@@ -196,7 +196,7 @@ export class LavalinkMusicPlayer implements IGuildMusicPlayer {
    */
   private async recoverFromLoadFailure(): Promise<void> {
     const current = this.queue.getCurrentTrack();
-    if (current && current.source === 'YOUTUBE' && this.player && !this.fallbackTried.has(current.id)) {
+    if (current && (current.source === 'YOUTUBE' || current.source === 'SPOTIFY') && this.player && !this.fallbackTried.has(current.id)) {
       this.fallbackTried.add(current.id);
       if (this.fallbackTried.size > 50) this.fallbackTried.clear();
       const alt = await lavalinkManager.resolveSoundCloudFallback(current, current.requestedBy);
@@ -206,6 +206,7 @@ export class LavalinkMusicPlayer implements IGuildMusicPlayer {
           this.position = 0;
           this.positionAt = Date.now();
           await this.player.playTrack({ track: { encoded: alt.encoded } });
+          lavalinkManager.markYoutubeBlocked();
           logger.info(`[Lavalink] Repli SoundCloud pour "${current.title}" (guild ${this.guildId})`);
           void musicNotifier.notice(
             this.guildId,

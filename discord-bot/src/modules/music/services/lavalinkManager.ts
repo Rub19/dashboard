@@ -202,9 +202,27 @@ class LavalinkManager {
     return null;
   }
 
+  private youtubeBlockedUntil = 0;
+
+  private get youtubeBlocked(): boolean {
+    return Date.now() < this.youtubeBlockedUntil;
+  }
+
+  /** Appelé quand un flux YouTube a échoué puis été remplacé par SoundCloud (30 min). */
+  public markYoutubeBlocked(): void {
+    this.youtubeBlockedUntil = Date.now() + 30 * 60_000;
+  }
+
   /** Re-encode a track that came from persistence/playlists without `encoded`. */
   public async ensureEncoded(track: Track, requestedBy: TrackRequester): Promise<Track | null> {
     if (track.encoded) return track;
+    // YouTube refuse déjà de streamer depuis ce serveur : inutile d'encoder un
+    // titre YouTube pour l'échec garanti, on va directement chez SoundCloud
+    // (choisi par durée) pour les titres issus de recherches / playlists Spotify.
+    if (this.youtubeBlocked && !/^https?:\/\/(?!open\.spotify)/i.test(track.url || '')) {
+      const sc = await this.resolveSoundCloudFallback(track, requestedBy);
+      if (sc?.encoded) return sc;
+    }
     // Persisted/imported tracks may carry a yt-dlp search pseudo-URL
     // (ytsearch1:…) or a Spotify page URL — neither is playable by Lavalink,
     // so fall back to a text search on title + artist.

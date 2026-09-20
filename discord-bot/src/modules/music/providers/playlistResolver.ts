@@ -132,6 +132,58 @@ interface SpotifyTrackObj {
   album?: { name?: string; images?: Array<{ url?: string }> };
 }
 
+interface EmbedTrack {
+  title?: string;
+  subtitle?: string;
+  duration?: number;
+}
+
+/** Fallback sans identifiants : parse le JSON embarqué dans open.spotify.com/embed/{kind}/{id}. */
+async function expandSpotifyViaEmbed(kind: string, id: string, requestedBy: TrackRequester): Promise<Track[]> {
+  try {
+    const res = await fetch(`https://open.spotify.com/embed/${kind}/${id}`, {
+      headers: {
+        'User-Agent': 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 Chrome/124 Safari/537.36',
+        'Accept-Language': 'en',
+      },
+    });
+    if (!res.ok) {
+      logger.warn(`[playlist] Spotify embed: HTTP ${res.status}`);
+      return [];
+    }
+    const html = await res.text();
+    const raw = html.match(/<script id="__NEXT_DATA__" type="application\/json">([\s\S]*?)<\/script>/)?.[1];
+    if (!raw) {
+      logger.warn('[playlist] Spotify embed: JSON introuvable dans la page');
+      return [];
+    }
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
+    const entity = (JSON.parse(raw) as any)?.props?.pageProps?.state?.data?.entity;
+    const list: EmbedTrack[] = entity?.trackList || [];
+    const cover: string = entity?.coverArt?.sources?.[0]?.url || entity?.visualIdentity?.image?.[0]?.url || THUMB_FALLBACK;
+    return list
+      .filter((t) => t.title)
+      .slice(0, MAX_PLAYLIST_TRACKS)
+      .map((t, i) => {
+        const artist = (t.subtitle || '').replace(/ /g, ' ').trim() || 'Spotify';
+        return {
+          id: `sppl-${id}-${i}`,
+          title: t.title as string,
+          artist,
+          album: entity?.name || 'Spotify',
+          duration: Math.round((t.duration || 0) / 1000),
+          thumbnail: cover,
+          url: `ytsearch1:${t.title} ${artist}`,
+          source: 'SPOTIFY' as const,
+          ...requester(requestedBy),
+        };
+      });
+  } catch (err) {
+    logger.warn('[playlist] Spotify embed error :', err);
+    return [];
+  }
+}
+
 export async function expandSpotifyCollection(url: string, requestedBy: TrackRequester): Promise<Track[]> {
   const match = url.match(/open\.spotify\.com\/(?:[a-z-]+\/)?(playlist|album)\/([A-Za-z0-9]+)/i);
   if (!match) return [];
@@ -139,8 +191,10 @@ export async function expandSpotifyCollection(url: string, requestedBy: TrackReq
 
   const token = await getSpotifyToken();
   if (!token) {
-    logger.warn('[playlist] Spotify: SPOTIFY_CLIENT_ID / SPOTIFY_CLIENT_SECRET manquants — playlist ignorée');
-    return [];
+    // Pas de clés API : on lit la page embed publique (jusqu'à ~100 titres),
+    // sans compte ni clé.
+    logger.info('[playlist] Spotify: pas de SPOTIFY_CLIENT_ID/SECRET — lecture via la page embed publique');
+    return expandSpotifyViaEmbed(kind, id, requestedBy);
   }
 
   const authHeaders = { Authorization: `Bearer ${token}` };

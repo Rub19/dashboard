@@ -185,7 +185,15 @@ class LavalinkManager {
     try {
       const res = await node.rest.resolve(`scsearch:${q}`);
       if (res?.loadType === LoadType.SEARCH && res.data.length > 0) {
-        const found = this.toTrack(res.data[0], requestedBy);
+        // SoundCloud often returns 30 s previews (Go+ tracks) or remixes first:
+        // prefer the result whose length is closest to the original and drop previews.
+        const candidates = res.data.map((d) => this.toTrack(d, requestedBy));
+        const target = track.duration || 0;
+        const ranked = candidates
+          .filter((c) => !target || c.duration === 0 || c.duration >= target * 0.7)
+          .sort((a, b) => (target ? Math.abs(a.duration - target) - Math.abs(b.duration - target) : 0));
+        const found = ranked[0];
+        if (!found) return null;
         return { ...found, thumbnail: track.thumbnail || found.thumbnail, title: track.title, artist: track.artist };
       }
     } catch (err) {

@@ -82,11 +82,8 @@ set_env LAVALINK_PASSWORD "$LAVALINK_PASSWORD"
 echo "-- .env du bot mis à jour (MUSIC_BACKEND=lavalink)"
 
 # 6) pm2
-if pm2 describe lavalink >/dev/null 2>&1; then
-  pm2 restart lavalink --update-env >/dev/null
-else
-  pm2 start java --name lavalink --cwd "$LL_DIR" -- -Xmx512m -jar "$JAR" >/dev/null
-fi
+pm2 delete lavalink >/dev/null 2>&1 || true   # recréé pour appliquer les flags JVM
+pm2 start java --name lavalink --cwd "$LL_DIR" -- -Xms128m -Xmx384m -XX:+UseSerialGC -XX:TieredStopAtLevel=1 -Xss512k -jar "$JAR" >/dev/null
 pm2 save >/dev/null 2>&1 || true
 
 echo

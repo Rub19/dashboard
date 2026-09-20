@@ -15,10 +15,10 @@ lavalink:
     password: "CHANGE_ME"   # remplacé par le script avec LAVALINK_PASSWORD
     sources:
       youtube: false        # OBLIGATOIRE : la source YouTube intégrée est morte, le plugin la remplace
-      bandcamp: true
+      bandcamp: false
       soundcloud: true
-      twitch: true
-      vimeo: true
+      twitch: false
+      vimeo: false
       nico: false
       http: true            # flux directs (SomaFM, mp3…)
       local: false
@@ -34,16 +34,16 @@ lavalink:
       channelMix: true
       lowPass: true
     bufferDurationMs: 400
-    frameBufferDurationMs: 5000
-    opusEncodingQuality: 10
-    resamplingQuality: HIGH
+    frameBufferDurationMs: 2000
+    opusEncodingQuality: 5      # 10 = max CPU ; 5 est inaudible en vocal Discord
+    resamplingQuality: LOW     # HIGH coûte cher en CPU pour rien sur Discord
     trackStuckThresholdMs: 10000
     useSeekGhosting: true
     youtubePlaylistLoadLimit: 6
     playerUpdateInterval: 5
     youtubeSearchEnabled: true
     soundcloudSearchEnabled: true
-    gc-warnings: true
+    gc-warnings: false
 
 plugins:
   youtube:

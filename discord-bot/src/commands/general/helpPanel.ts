@@ -48,8 +48,8 @@ export const HELP_CATEGORIES: HelpCategoryMeta[] = [
     name: 'Sécurité & Anti-Raid',
     emoji: '🚨',
     color: 0xf97316,
-    description: "Protection automatique contre les raids, le spam, les mentions et abus",
-    commandNames: ['antiraid', 'automod'],
+    description: "Anti-raid, anti-nuke, AutoMod, vérification des nouveaux membres et journaux d'audit",
+    commandNames: ['antiraid', 'antinuke', 'automod', 'verification', 'logs'],
   },
   {
     id: 'leveling',
@@ -64,16 +64,16 @@ export const HELP_CATEGORIES: HelpCategoryMeta[] = [
     name: 'Communauté & Loisirs',
     emoji: '🎉',
     color: 0xec4899,
-    description: "Giveaways automatiques, boîte à suggestions, sondages et événements",
-    commandNames: ['giveaway', 'suggest', 'poll', 'event'],
+    description: "Giveaways, suggestions, sondages, événements, anniversaires, starboard et messages épinglés",
+    commandNames: ['giveaway', 'suggest', 'poll', 'event', 'birthday', 'starboard', 'sticky', 'highlight'],
   },
   {
     id: 'voice_music',
     name: 'Musique & Salons Vocaux',
     emoji: '🎧',
     color: 0x10b981,
-    description: "Lecteur musical et salons vocaux temporaires personnalisés",
-    commandNames: ['music', 'play', 'skip', 'pause', 'resume', 'stop', 'queue', 'nowplaying', 'voice'],
+    description: "Lecteur musical (file, boucle, volume) et salons vocaux temporaires",
+    commandNames: ['music', 'play', 'skip', 'previous', 'pause', 'resume', 'stop', 'queue', 'clearqueue', 'shuffle', 'loop', 'volume', 'nowplaying', 'voice'],
   },
   {
     id: 'support',
@@ -89,7 +89,7 @@ export const HELP_CATEGORIES: HelpCategoryMeta[] = [
     emoji: '⚙️',
     color: 0x6366f1,
     description: "Configuration globale du serveur, gestion des préfixes et activation des modules",
-    commandNames: ['settings', 'prefix', 'language', 'permissions', 'ai-setup'],
+    commandNames: ['settings', 'prefix', 'language', 'permissions', 'ai-setup', 'module', 'serverstats', 'godmode'],
   },
   {
     id: 'general',
@@ -97,7 +97,7 @@ export const HELP_CATEGORIES: HelpCategoryMeta[] = [
     emoji: '⚡',
     color: 0x3b82f6,
     description: "Commandes générales, vérification de latence et aide du serveur",
-    commandNames: ['bot', 'help', 'ping'],
+    commandNames: ['bot', 'help', 'ping', 'status', 'afk', 'reminder', 'tag'],
   },
 ];
 

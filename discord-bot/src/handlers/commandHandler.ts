@@ -235,15 +235,16 @@ class CommandRegistry {
       );
       logger.success('Slash commands déployées globalement avec succès (tous les serveurs, propagation ~1h).');
 
-      // Déploiement additionnel, instantané, sur le serveur de dev le cas échéant
-      // (pratique pour itérer vite pendant le développement, sans attendre la
-      // propagation globale) — ne remplace jamais le déploiement global ci-dessus.
+      // Les commandes globales apparaissent déjà sur tous les serveurs, y compris
+      // celui de dev. Les enregistrer AUSSI en commandes de guilde les faisait
+      // apparaître en double dans le sélecteur Discord (/play x2, etc.) : on vide
+      // donc les commandes de guilde résiduelles au lieu de les dupliquer.
       if (config.devGuildId) {
         await rest.put(
           Routes.applicationGuildCommands(config.clientId, config.devGuildId),
-          { body: slashDataList }
+          { body: [] }
         );
-        logger.success(`Slash commands aussi déployées instantanément sur la Guild de dev : ${config.devGuildId}`);
+        logger.info(`Commandes de guilde de dev nettoyées (évite les doublons) : ${config.devGuildId}`);
       }
     } catch (error) {
       logger.error('Erreur lors du déploiement des slash commands :', error);

@@ -178,7 +178,7 @@ export class HelpPanel {
           }).join('\n'),
         ),
         separator(false),
-        text('**Raccourcis :** `/ask` assistant IA · `/rank` carte de niveau · `/music play` musique · `/ticket` support · `/settings` configuration'),
+        text('**Raccourcis :** `/ask` assistant IA · `/rank` carte de niveau · `/play` musique · `/ticket` support · `/settings` configuration'),
       );
     } else {
       const idx = HELP_CATEGORIES.findIndex((c) => c.id === categoryKey);

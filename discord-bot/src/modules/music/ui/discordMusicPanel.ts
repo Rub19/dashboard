@@ -44,6 +44,13 @@ export class DiscordMusicPanel {
     return '━'.repeat(Math.max(0, filled - 1)) + '●' + '━'.repeat(Math.max(0, length - filled));
   }
 
+  /** Barre de progression textuelle (12 segments). */
+  private static progressBar(position: number, duration: number, width = 12): string {
+    if (!duration || duration <= 0) return '▱'.repeat(width);
+    const filled = Math.max(0, Math.min(width, Math.round((position / duration) * width)));
+    return '▰'.repeat(filled) + '▱'.repeat(width - filled);
+  }
+
   public static formatTime(seconds: number): string {
     return formatDuration(seconds);
   }
@@ -155,10 +162,10 @@ export class DiscordMusicPanel {
     const card = container(toneToColor('primary', gConf.primaryColor), [
       text(`## 📜 File d'attente (${queue.length})`),
       state.currentTrack
-        ? text(`${state.status === 'PLAYING' ? '▶️' : '⏸️'} **En cours :** ${state.currentTrack.title} — ${state.currentTrack.artist} \`${this.formatTime(state.position)} / ${this.formatTime(state.duration)}\``)
+        ? text(`${state.status === 'PLAYING' ? '▶️' : '⏸️'} **${state.currentTrack.title}**\n-# ${state.currentTrack.artist}\n\`${this.formatTime(state.position)}\` ${this.progressBar(state.position, state.duration)} \`${this.formatTime(state.duration)}\``)
         : text(t.music_panel_idle_desc),
       separator(),
-      queue.length === 0 ? text('*Aucun titre en attente — ajoute-en avec `/music play`.*') : text(lines.join('\n')),
+      queue.length === 0 ? text('*Aucun titre en attente — ajoute-en avec `/play`.*') : text(lines.join('\n')),
       queue.length > shown.length ? text(`-# … et **${queue.length - shown.length}** autre(s)`) : null,
       separator(false),
       statsLine([`⏱️ Total ${this.formatTime(total)}`, `🔁 ${state.repeatMode}`, `🔀 ${state.shuffle ? t.music_panel_active : t.music_panel_inactive}`]),

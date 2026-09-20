@@ -28286,4 +28286,61 @@ CHANGELOG_BY_LANG.en.unshift(v1250_en);
 CHANGELOG_BY_LANG.es.unshift(v1250_es);
 CHANGELOG_BY_LANG.de.unshift(v1250_de);
 
+const v1251_fr: ChangelogEntry = {
+  version: "v1.25.1",
+  date: "2026-09-20",
+  title: "Barre du haut refaite : menu profil, notifications, toasts et pastilles",
+  items: [
+    "Menu profil refait : en-tête avec avatar (survol = changer d'avatar), nom, e-mail copiable et badge vérifié ; statut en contrôle segmenté ; entrées groupées « Compte » et « Application » sans descriptions tronquées ; stockage cloud et déconnexion (confirmation en ligne) en bas. Tous les fonds codés en dur (`#121319`) et le lien ambre sont remplacés par les jetons du thème, donc le menu suit maintenant chaque thème. Entièrement traduit fr/en/es/de/ja.",
+    "Centre de notifications refait : en-tête clair (icône, compteur de non lues, marquer tout / effacer), recherche adoucie, filtres en pastilles avec compteur sur « Non lues », état vide illustré, bannière Focus aux couleurs du thème, panneau plus large. Textes traduits.",
+    "Toasts refaits : liseré de couleur sémantique à gauche, icône ronde, badge teinté, description sur 3 lignes, barre de progression plus visible. La notification « Version actuelle » n'utilise plus une icône émeraude codée en dur mais la variante « version » (accent du thème).",
+    "Pastilles de la barre (espace de travail, synchro, météo, heure) : forme capsule, survol et appui plus nets, libellé de synchro coloré selon l'état (normal / en cours / hors ligne).",
+    "Sélecteur de langue : le titre suit la langue choisie.",
+  ],
+};
+
+const v1251_en: ChangelogEntry = {
+  version: "v1.25.1",
+  date: "2026-09-20",
+  title: "Top bar rebuilt: profile menu, notifications, toasts and pills",
+  items: [
+    "Profile menu rebuilt: header with avatar (hover = change avatar), name, copyable email and verified badge; status as a segmented control; entries grouped as \"Account\" and \"Application\" with no truncated descriptions; cloud storage and sign-out (inline confirmation) at the bottom. All hardcoded backgrounds (`#121319`) and the amber link are replaced by theme tokens, so the menu now follows every theme. Fully translated fr/en/es/de/ja.",
+    "Notification center rebuilt: clear header (icon, unread count, mark all / clear), softer search, pill filters with a counter on \"Unread\", an illustrated empty state, a Focus banner in theme colors, a wider panel. Texts translated.",
+    "Toasts rebuilt: semantic-color edge on the left, round icon, tinted badge, three-line description, more visible progress bar. The \"Current version\" notification no longer uses a hardcoded emerald icon but the \"version\" variant (theme accent).",
+    "Bar pills (workspace, sync, weather, clock): capsule shape, crisper hover and press, sync label colored by state (normal / syncing / offline).",
+    "Language switcher: the title follows the chosen language.",
+  ],
+};
+
+const v1251_es: ChangelogEntry = {
+  version: "v1.25.1",
+  date: "2026-09-20",
+  title: "Barra superior rehecha: menú de perfil, notificaciones, avisos y píldoras",
+  items: [
+    "Menú de perfil rehecho: cabecera con avatar (al pasar el cursor = cambiar avatar), nombre, correo copiable e insignia de verificado; estado como control segmentado; entradas agrupadas en \"Cuenta\" y \"Aplicación\" sin descripciones cortadas; almacenamiento en la nube y cierre de sesión (confirmación en línea) al final. Todos los fondos fijos (`#121319`) y el enlace ámbar se sustituyen por los tokens del tema, así que el menú sigue cada tema. Traducido a fr/en/es/de/ja.",
+    "Centro de notificaciones rehecho: cabecera clara (icono, contador de sin leer, marcar todo / borrar), búsqueda más suave, filtros en píldoras con contador en \"Sin leer\", estado vacío ilustrado, banner de Focus con los colores del tema y panel más ancho. Textos traducidos.",
+    "Avisos rehechos: borde de color semántico a la izquierda, icono redondo, insignia teñida, descripción de tres líneas y barra de progreso más visible. El aviso \"Versión actual\" ya no usa un icono esmeralda fijo sino la variante \"version\" (acento del tema).",
+    "Píldoras de la barra (espacio de trabajo, sincronización, tiempo, hora): forma de cápsula, hover y pulsación más nítidos, etiqueta de sincronización coloreada según el estado.",
+    "Selector de idioma: el título sigue el idioma elegido.",
+  ],
+};
+
+const v1251_de: ChangelogEntry = {
+  version: "v1.25.1",
+  date: "2026-09-20",
+  title: "Obere Leiste neu: Profilmenü, Benachrichtigungen, Toasts und Pillen",
+  items: [
+    "Profilmenü neu gebaut: Kopfbereich mit Avatar (Hover = Avatar ändern), Name, kopierbarer E-Mail und Verifiziert-Badge; Status als segmentierte Auswahl; Einträge gruppiert in „Konto“ und „Anwendung“ ohne abgeschnittene Beschreibungen; Cloud-Speicher und Abmeldung (Bestätigung inline) unten. Alle fest codierten Hintergründe (`#121319`) und der Amber-Link sind durch Theme-Tokens ersetzt, das Menü folgt jetzt jedem Theme. Vollständig übersetzt fr/en/es/de/ja.",
+    "Benachrichtigungszentrum neu gebaut: klarer Kopf (Symbol, Zähler ungelesen, alle markieren / löschen), sanftere Suche, Pillen-Filter mit Zähler bei „Ungelesen“, bebilderter Leerzustand, Focus-Banner in Theme-Farben, breiteres Panel. Texte übersetzt.",
+    "Toasts neu gebaut: semantische Farbkante links, rundes Symbol, getöntes Badge, dreizeilige Beschreibung, sichtbarere Fortschrittsleiste. Die Meldung „Aktuelle Version“ nutzt kein fest codiertes Smaragd-Symbol mehr, sondern die Variante „version“ (Theme-Akzent).",
+    "Leisten-Pillen (Arbeitsbereich, Sync, Wetter, Uhrzeit): Kapselform, klareres Hover und Drücken, Sync-Text nach Zustand eingefärbt.",
+    "Sprachauswahl: Der Titel folgt der gewählten Sprache.",
+  ],
+};
+
+CHANGELOG_BY_LANG.fr.unshift(v1251_fr);
+CHANGELOG_BY_LANG.en.unshift(v1251_en);
+CHANGELOG_BY_LANG.es.unshift(v1251_es);
+CHANGELOG_BY_LANG.de.unshift(v1251_de);
+
 export const CHANGELOG = CHANGELOG_BY_LANG.fr;

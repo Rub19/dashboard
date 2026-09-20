@@ -50,9 +50,10 @@ export default function VersionPill() {
     }
     show({
       type: "info",
+      variant: "version",
       title: i18n("currentVersion", "Version actuelle"),
       description: `${label} · ${buildInfo}`,
-      icon: <Tag className="h-5 w-5 text-emerald-400" />,
+      icon: <Tag className="h-5 w-5" />,
       duration: 3500,
       dedupKey: "current-version-toast",
     });

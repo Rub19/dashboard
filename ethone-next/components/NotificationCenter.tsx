@@ -27,15 +27,16 @@ import { Popover, PopoverTrigger, PopoverContent } from "@/components/motion/Pop
 import { cn } from "@/lib/utils";
 
 const FILTERS = [
-  { id: "all", label: "Toutes" },
-  { id: "unread", label: "Non lues" },
-  { id: "brain", label: "Brain" },
-  { id: "integration", label: "Intégrations" },
-  { id: "system", label: "Système" },
+  { id: "all", key: "tbFAll", label: "Toutes" },
+  { id: "unread", key: "tbFUnread", label: "Non lues" },
+  { id: "brain", key: "tbFBrain", label: "Brain" },
+  { id: "integration", key: "tbFInteg", label: "Intégrations" },
+  { id: "system", key: "tbFSystem", label: "Système" },
 ] as const;
 
 export default function NotificationCenter() {
   const router = useRouter();
+  const i18n = useI18n();
   const { success } = useToast();
   const { setNotification } = usePresence();
   const {
@@ -63,7 +64,7 @@ export default function NotificationCenter() {
     }
     function handleMarkAll() {
       markAllRead();
-      success("Toutes les notifications ont été marquées comme lues");
+      success(i18n("tbNotifMarked", "Notifications marquées comme lues"));
     }
     window.addEventListener("v8:open-notifications", handleToggleOpen);
     window.addEventListener("ethone:open-notifications", handleForceOpen);
@@ -140,37 +141,40 @@ export default function NotificationCenter() {
 
   function handleMarkAllRead() {
     markAllRead();
-    success("Toutes les notifications marquées comme lues");
+    success(i18n("tbNotifMarked", "Notifications marquées comme lues"));
   }
 
   function handleClear() {
     clear();
-    success("Toutes les notifications ont été effacées");
+    success(i18n("tbNotifCleared", "Notifications effacées"));
   }
 
   const content = (
     <div className="flex h-full flex-col gap-3 select-none">
-      {/* Header with Title & Action Controls */}
-      <div className="flex items-center justify-between border-b border-[var(--panel-border)]/60 pb-3">
-        <div>
-          <h3 className="text-sm font-bold text-[var(--text-primary)] flex items-center gap-1.5">
-            <Bell className="h-4 w-4 text-[var(--accent-primary)]" />
-            <span>Centre de Notifications</span>
-          </h3>
-          <p className="text-[11px] text-[var(--text-muted)] mt-0.5">
-            {unreadCount > 0
-              ? `${unreadCount} non lue${unreadCount > 1 ? "s" : ""}`
-              : "Toutes les notifications sont lues"}
-          </p>
+      {/* En-tête : titre, compteur de non lues, actions */}
+      <div className="flex items-center justify-between gap-3">
+        <div className="flex min-w-0 items-center gap-2.5">
+          <span className="flex h-9 w-9 shrink-0 items-center justify-center rounded-xl bg-[var(--accent-muted)] text-[var(--accent-primary)]">
+            <Bell className="h-[18px] w-[18px]" />
+          </span>
+          <div className="min-w-0">
+            <h3 className="truncate text-sm font-bold leading-tight text-[var(--text-primary)]">
+              {i18n("tbNotifTitle", "Notifications")}
+            </h3>
+            <p className="truncate text-[11px] text-[var(--text-muted)]">
+              {unreadCount > 0 ? `${unreadCount} ${i18n("tbNotifUnread", "non lue(s)")}` : i18n("tbNotifAllRead", "Tout est lu")}
+            </p>
+          </div>
         </div>
 
-        <div className="flex items-center gap-1.5">
+        <div className="flex shrink-0 items-center gap-1">
           <button
             type="button"
             onClick={handleMarkAllRead}
             disabled={unreadCount === 0}
-            className="flex h-8 w-8 items-center justify-center rounded-[var(--inset-radius)] border border-[var(--panel-border)] bg-[var(--surface-raised)]/60 text-[var(--text-muted)] hover:text-[var(--text-primary)] hover:border-[var(--accent-primary)]/40 transition-all active:scale-95 disabled:opacity-30 cursor-pointer shadow-xs"
-            title="Tout marquer comme lu"
+            className="flex h-8 w-8 items-center justify-center rounded-lg text-[var(--text-muted)] transition-colors hover:bg-[var(--surface-hover)] hover:text-[var(--text-primary)] disabled:pointer-events-none disabled:opacity-30 cursor-pointer"
+            title={i18n("tbNotifMarkAll", "Tout marquer comme lu")}
+            aria-label={i18n("tbNotifMarkAll", "Tout marquer comme lu")}
           >
             <Check className="h-4 w-4" />
           </button>
@@ -178,8 +182,9 @@ export default function NotificationCenter() {
             type="button"
             onClick={handleClear}
             disabled={activeItems.length === 0}
-            className="flex h-8 w-8 items-center justify-center rounded-[var(--inset-radius)] border border-[var(--panel-border)] bg-[var(--surface-raised)]/60 text-[var(--text-muted)] hover:text-rose-400 hover:border-rose-500/40 transition-all active:scale-95 disabled:opacity-30 cursor-pointer shadow-xs"
-            title="Tout effacer"
+            className="flex h-8 w-8 items-center justify-center rounded-lg text-[var(--text-muted)] transition-colors hover:bg-[var(--danger)]/10 hover:text-[var(--danger)] disabled:pointer-events-none disabled:opacity-30 cursor-pointer"
+            title={i18n("tbNotifClear", "Tout effacer")}
+            aria-label={i18n("tbNotifClear", "Tout effacer")}
           >
             <Trash2 className="h-4 w-4" />
           </button>
@@ -188,19 +193,19 @@ export default function NotificationCenter() {
 
       {/* Focus Digest Banner if accumulated */}
       {focusDigest.length > 0 && (
-        <div className="flex items-center justify-between gap-2 rounded-[var(--panel-radius)] border border-amber-500/30 bg-amber-500/10 p-2.5 text-xs text-amber-300">
+        <div className="flex items-center justify-between gap-2 rounded-xl border border-[var(--warning)]/30 bg-[var(--warning)]/10 p-2.5 text-xs text-[var(--warning)]">
           <div className="flex items-center gap-2 min-w-0">
-            <Sparkles className="h-4 w-4 text-amber-400 shrink-0" />
+            <Sparkles className="h-4 w-4 shrink-0" />
             <span className="truncate">
-              {focusDigest.length} notification{focusDigest.length > 1 ? "s" : ""} reportée{focusDigest.length > 1 ? "s" : ""} pendant Focus
+              {focusDigest.length} {i18n("tbNotifDigest", "notification(s) reportée(s) pendant Focus")}
             </span>
           </div>
           <button
             type="button"
             onClick={clearFocusDigest}
-            className="shrink-0 rounded-[var(--inset-radius)] border border-amber-500/40 bg-amber-500/20 px-2.5 py-1 text-[10px] font-bold text-amber-200 hover:bg-amber-500/30 transition-all"
+            className="shrink-0 rounded-lg border border-[var(--warning)]/40 bg-[var(--warning)]/15 px-2.5 py-1 text-[10px] font-bold hover:bg-[var(--warning)]/25 transition-all cursor-pointer"
           >
-            Tout voir
+            {i18n("tbNotifSeeAll", "Tout voir")}
           </button>
         </div>
       )}
@@ -213,28 +218,40 @@ export default function NotificationCenter() {
           type="text"
           value={query}
           onChange={(e) => setQuery(e.target.value)}
-          placeholder="Rechercher dans les notifications..."
-          className="w-full rounded-[var(--inset-radius)] border border-[var(--panel-border)] bg-[var(--surface-raised)]/60 py-1.5 pl-8 pr-2.5 text-xs text-[var(--text-primary)] placeholder-[var(--text-muted)] focus:border-[var(--accent-primary)] focus:outline-none"
+          placeholder={i18n("tbNotifSearch", "Rechercher une notification…")}
+          className="w-full rounded-xl border border-transparent bg-[var(--surface-raised)] py-2 pl-8 pr-2.5 text-xs text-[var(--text-primary)] placeholder-[var(--text-muted)] transition-colors focus:border-[var(--accent-primary)]/60 focus:outline-none"
         />
       </div>
 
       {/* Filter Tabs */}
-      <div className="flex items-center gap-1 overflow-x-auto pb-1 no-scrollbar">
+      <div className="-mx-1 flex items-center gap-1 overflow-x-auto px-1 pb-0.5 no-scrollbar" role="tablist">
         {FILTERS.map((f) => {
           const active = filter === f.id;
           return (
             <button
               key={f.id}
               type="button"
+              role="tab"
+              aria-selected={active}
               onClick={() => setFilter(f.id)}
               className={cn(
-                "rounded-xl px-2.5 py-1 text-[11px] font-semibold whitespace-nowrap transition-all cursor-pointer",
+                "inline-flex shrink-0 items-center gap-1.5 rounded-full px-3 py-1 text-[11px] font-semibold whitespace-nowrap transition-all cursor-pointer",
                 active
-                  ? "bg-[var(--accent-primary)] text-[var(--accent-contrast)] shadow-sm"
-                  : "border border-[var(--panel-border)]/60 bg-[var(--surface-raised)]/30 text-[var(--text-muted)] hover:text-[var(--text-primary)] hover:bg-[var(--surface-hover)]"
+                  ? "bg-[var(--accent-primary)] text-[var(--accent-contrast)]"
+                  : "bg-[var(--surface-raised)] text-[var(--text-muted)] hover:text-[var(--text-primary)]"
               )}
             >
-              {f.label}
+              {i18n(f.key, f.label)}
+              {f.id === "unread" && unreadCount > 0 && (
+                <span
+                  className={cn(
+                    "rounded-full px-1.5 text-[10px] font-bold leading-4",
+                    active ? "bg-black/20" : "bg-[var(--accent-primary)] text-[var(--accent-contrast)]"
+                  )}
+                >
+                  {unreadCount}
+                </span>
+              )}
             </button>
           );
         })}
@@ -251,9 +268,11 @@ export default function NotificationCenter() {
               exit={{ opacity: 0 }}
               className="flex h-40 flex-col items-center justify-center gap-2 text-center text-xs text-[var(--text-muted)]"
             >
-              <BellOff className="h-7 w-7 opacity-50 text-[var(--text-muted)]" />
-              <span className="font-semibold text-white/70">Aucune notification</span>
-              <p className="text-[11px] text-[var(--text-muted)]">Vous êtes à jour</p>
+              <span className="flex h-12 w-12 items-center justify-center rounded-2xl bg-[var(--surface-raised)]">
+                <BellOff className="h-6 w-6 text-[var(--text-muted)]" />
+              </span>
+              <span className="text-[13px] font-semibold text-[var(--text-primary)]">{i18n("tbNotifEmpty", "Aucune notification")}</span>
+              <p className="text-[11px] text-[var(--text-muted)]">{i18n("tbNotifEmptyDesc", "Vous êtes à jour")}</p>
             </motion.div>
           ) : (
             filteredItems.map((item) => {
@@ -278,7 +297,7 @@ export default function NotificationCenter() {
                             {item.source}
                           </p>
                           <p className="text-[10px] text-[var(--text-muted)] truncate">
-                            {item.count} activités récentes ({item.unreadCount} non lue{item.unreadCount > 1 ? "s" : ""})
+                            {item.count} {i18n("tbNotifGroupRecent", "activités récentes")} · {item.unreadCount} {i18n("tbNotifUnread", "non lue(s)")}
                           </p>
                         </div>
                       </div>
@@ -328,7 +347,8 @@ export default function NotificationCenter() {
               ? "border-[var(--accent-primary)]/40 bg-[var(--accent-primary)]/15 text-[var(--accent-primary)] hover:bg-[var(--accent-primary)]/25"
               : "border-[var(--panel-border)] bg-[var(--surface-raised)]/60 text-[var(--text-muted)] hover:text-[var(--text-primary)]"
           )}
-          title="Centre de notifications"
+          title={i18n("tbNotifBell", "Centre de notifications")}
+          aria-label={i18n("tbNotifBell", "Centre de notifications")}
         >
           <Bell className="h-4 w-4" />
           {unreadCount > 0 && (
@@ -339,7 +359,7 @@ export default function NotificationCenter() {
         </button>
       </PopoverTrigger>
 
-      <PopoverContent className="w-[380px] max-w-[95vw] rounded-[var(--panel-radius)] border border-[var(--panel-border)] bg-[var(--panel-bg)]/95 p-4 shadow-2xl backdrop-blur-2xl">
+      <PopoverContent className="w-[400px] max-w-[calc(100vw-1.5rem)] rounded-[var(--panel-radius)] border border-[var(--panel-border)] bg-[var(--bg-surface-elevated)] p-4 shadow-2xl backdrop-blur-2xl">
         {content}
       </PopoverContent>
     </Popover>

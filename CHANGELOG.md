@@ -2,6 +2,16 @@
 
 Toutes les modifications notables de ce projet seront documentées dans ce fichier.
 
+## v1.25.1 — 2026-09-20
+
+**Barre du haut refaite : menu profil, notifications, toasts et pastilles**
+
+- Menu profil refait : en-tête avec avatar (survol = changer d'avatar), nom, e-mail copiable et badge vérifié ; statut en contrôle segmenté ; entrées groupées « Compte » et « Application » sans descriptions tronquées ; stockage cloud et déconnexion (confirmation en ligne) en bas. Tous les fonds codés en dur (`#121319`) et le lien ambre sont remplacés par les jetons du thème, donc le menu suit maintenant chaque thème. Entièrement traduit fr/en/es/de/ja.
+- Centre de notifications refait : en-tête clair (icône, compteur de non lues, marquer tout / effacer), recherche adoucie, filtres en pastilles avec compteur sur « Non lues », état vide illustré, bannière Focus aux couleurs du thème, panneau plus large. Textes traduits.
+- Toasts refaits : liseré de couleur sémantique à gauche, icône ronde, badge teinté, description sur 3 lignes, barre de progression plus visible. La notification « Version actuelle » n'utilise plus une icône émeraude codée en dur mais la variante « version » (accent du thème).
+- Pastilles de la barre (espace de travail, synchro, météo, heure) : forme capsule, survol et appui plus nets, libellé de synchro coloré selon l'état (normal / en cours / hors ligne).
+- Sélecteur de langue : le titre suit la langue choisie.
+
 ## v1.25.0 — 2026-09-20
 
 **Thème unifié, sons naturels (pluie & orage stéréo), musique Spotify, Music Center relié au bot**

@@ -4,7 +4,7 @@ import { useCallback, useEffect, useMemo, useState } from "react";
 import dynamic from "next/dynamic";
 import ClientImage from "@/components/ClientImage";
 import { useRouter } from "next/navigation";
-import { ChevronRight, LogOut } from "lucide-react";
+import { LogOut } from "lucide-react";
 import { Icon } from "@/lib/icons";
 import { useAuth } from "@/components/AuthProvider";
 import { useUserIdentity } from "@/lib/hooks/useUserIdentity";
@@ -90,11 +90,11 @@ export default function UserProfileDropdown({ dataTestId = "user-profile-trigger
       try {
         await navigator.clipboard.writeText(email);
       } catch {}
-      toast.success("Adresse e-mail copiée !");
+      toast.success(i18n("tbCopied", "Adresse e-mail copiée"));
       setCopied(true);
       setTimeout(() => setCopied(false), 1500);
     },
-    [email, toast]
+    [email, toast, i18n]
   );
 
   const handleStatusChange = useCallback(
@@ -108,50 +108,101 @@ export default function UserProfileDropdown({ dataTestId = "user-profile-trigger
     return CHANGELOG_BY_LANG[settings.language] || CHANGELOG;
   }, [settings.language]);
 
-  const VERSION_LABEL = changelog[0]?.version || "v1.24.0";
+  const VERSION_LABEL = changelog[0]?.version || "v1.25.1";
 
-  const menuItems = [
+  type MenuItem = {
+    id: string;
+    label: string;
+    description: string;
+    icon: string;
+    action: () => void;
+    kbd?: string;
+    badge?: string;
+    badgeTone?: "success" | "accent";
+  };
+
+  const accountItems: MenuItem[] = [
     {
       id: "profile",
-      label: "Mon Profil",
-      description: "Identité, statut & personnalisation",
+      label: i18n("tbProfile", "Mon profil"),
+      description: i18n("tbProfileDesc", "Identité et statut"),
       icon: "user",
       action: () => router.push("/profile"),
     },
     {
+      id: "security",
+      label: i18n("tbSecurity", "Sécurité"),
+      description: i18n("tbSecurityDesc", "Appareils et connexions"),
+      icon: "shield",
+      badge: i18n("tbActive", "Actif"),
+      badgeTone: "success",
+      action: () => router.push("/settings?category=security"),
+    },
+  ];
+
+  const appItems: MenuItem[] = [
+    {
       id: "settings",
-      label: "Réglages Système",
-      description: "Centre de contrôle & personnalisation",
-      kbd: "⌘,",
+      label: i18n("tbSettings", "Réglages"),
+      description: i18n("tbSettingsDesc", "Apparence, son, système"),
       icon: "sliders-horizontal",
+      kbd: "⌘,",
       action: () => router.push("/settings"),
     },
     {
-      id: "security",
-      label: "Sécurité & Sessions",
-      description: "Appareils connectés & authentification",
-      badge: "Actif",
-      badgeTone: "success" as const,
-      icon: "shield",
-      action: () => router.push("/settings?category=security"),
-    },
-    {
       id: "shortcuts",
-      label: "Command Palette",
-      description: "Recherche globale & raccourcis",
-      kbd: "⌘K",
+      label: i18n("tbPalette", "Palette de commandes"),
+      description: i18n("tbPaletteDesc", "Recherche et raccourcis"),
       icon: "terminal",
+      kbd: "⌘K",
       action: () => setCommandOpen(true),
     },
     {
       id: "changelog",
-      label: "Notes de version",
-      description: "Nouveautés et journal des modifications",
-      badge: VERSION_LABEL,
+      label: i18n("tbChangelog", "Notes de version"),
+      description: i18n("tbChangelogDesc", "Les nouveautés d'ETHONE"),
       icon: "sparkles",
+      badge: VERSION_LABEL,
       action: () => setIsChangelogOpen(true),
     },
   ];
+
+  const renderRow = (item: MenuItem) => (
+    <button
+      key={item.id}
+      type="button"
+      onClick={() => {
+        setOpen(false);
+        item.action();
+      }}
+      className="group flex w-full items-center gap-3 rounded-xl px-2 py-2 text-left transition-colors hover:bg-[var(--surface-hover)] focus-visible:bg-[var(--surface-hover)] focus-visible:outline-none cursor-pointer"
+    >
+      <span className="flex h-9 w-9 shrink-0 items-center justify-center rounded-[10px] bg-[var(--surface-raised)] text-[var(--text-muted)] transition-colors group-hover:bg-[var(--accent-muted)] group-hover:text-[var(--accent-primary)]">
+        <Icon name={item.icon} className="h-[18px] w-[18px]" />
+      </span>
+      <span className="min-w-0 flex-1">
+        <span className="block truncate text-[13px] font-semibold leading-tight text-[var(--text-primary)]">{item.label}</span>
+        <span className="block truncate text-[11px] leading-snug text-[var(--text-muted)]">{item.description}</span>
+      </span>
+      {item.badge && (
+        <span
+          className={cn(
+            "shrink-0 rounded-full px-2 py-0.5 font-mono text-[10px] font-bold",
+            item.badgeTone === "success"
+              ? "bg-[var(--success)]/15 text-[var(--success)]"
+              : "bg-[var(--accent-muted)] text-[var(--accent-primary)]"
+          )}
+        >
+          {item.badge}
+        </span>
+      )}
+      {item.kbd && (
+        <kbd className="shrink-0 rounded-md border border-[var(--panel-border)] bg-[var(--surface-raised)] px-1.5 py-0.5 font-mono text-[10px] text-[var(--text-muted)]">
+          {item.kbd}
+        </kbd>
+      )}
+    </button>
+  );
 
   const storagePercent = Math.min(
     100,
@@ -178,7 +229,7 @@ export default function UserProfileDropdown({ dataTestId = "user-profile-trigger
           <button
             type="button"
             data-testid={dataTestId}
-            aria-label="Menu profil utilisateur"
+            aria-label={i18n("tbProfileMenu", "Menu du profil")}
             aria-expanded={open}
             className="group relative flex h-9 items-center gap-2 rounded-[var(--inset-radius)] border border-[var(--panel-border)]/70 bg-[var(--surface-raised)]/60 px-2 text-[var(--text-primary)] hover:border-[var(--accent-primary)]/40 hover:bg-[var(--surface-hover)] transition-all active:scale-95 cursor-pointer select-none shadow-sm"
           >
@@ -230,197 +281,159 @@ export default function UserProfileDropdown({ dataTestId = "user-profile-trigger
             which is colorMix(bgSurface, transparent, glassOpacity) and made
             this text-heavy menu hard to read over the busy dashboard behind
             it). Blur kept only for the frosting at the rounded edges. */}
-        <PopoverContent className="w-[340px] max-w-[calc(100vw-2rem)] overflow-hidden rounded-[var(--panel-radius)] border border-[var(--panel-border)] bg-[var(--bg-surface-elevated)] backdrop-blur-2xl p-3.5 shadow-2xl z-[var(--z-dropdown)]">
-          <div className="flex w-full flex-col gap-3 select-none">
-            {/* User Header Profile */}
-            <div className="flex items-center gap-3 rounded-[var(--inset-radius)] border border-[var(--panel-border)]/70 bg-[#121319] p-2.5 shadow-xs">
+        <PopoverContent className="w-[336px] max-w-[calc(100vw-1.5rem)] overflow-hidden rounded-[var(--panel-radius)] border border-[var(--panel-border)] bg-[var(--bg-surface-elevated)] p-0 shadow-2xl backdrop-blur-2xl z-[var(--z-dropdown)]">
+          <div className="flex w-full flex-col select-none">
+            {/* En-tête : avatar, nom, e-mail (copiable), badge vérifié */}
+            <div className="flex items-center gap-3 px-4 pb-3 pt-4">
               <button
                 type="button"
                 onClick={() => {
                   setOpen(false);
                   setIsAvatarPickerOpen(true);
                 }}
-                className="relative group flex h-11 w-11 shrink-0 items-center justify-center cursor-pointer rounded-xl overflow-hidden ring-1 ring-white/10 hover:ring-amber-400 transition-all"
-                title="Changer d'avatar (Netflix, Crunchyroll, Gaming...)"
+                className="group relative h-12 w-12 shrink-0 cursor-pointer overflow-hidden rounded-2xl ring-1 ring-[var(--panel-border)] transition-all hover:ring-[var(--accent-primary)]"
+                title={i18n("tbChangeAvatar", "Changer d'avatar")}
+                aria-label={i18n("tbChangeAvatar", "Changer d'avatar")}
               >
-                <div className="flex h-full w-full items-center justify-center overflow-hidden rounded-xl bg-[var(--accent-primary)]/20 text-[var(--accent-primary)] font-bold text-sm">
+                <span className="flex h-full w-full items-center justify-center bg-[var(--accent-primary)]/15 text-base font-bold text-[var(--accent-primary)]">
                   {avatarUrl ? (
                     <ClientImage
                       src={avatarUrl}
                       alt=""
-                      width={44}
-                      height={44}
-                      className="h-full w-full object-cover transition-transform group-hover:scale-110"
+                      width={48}
+                      height={48}
+                      className="h-full w-full object-cover"
                       fallback={<span>{initials}</span>}
                     />
                   ) : (
                     <span>{initials}</span>
                   )}
-                </div>
+                </span>
+                <span className="absolute inset-0 flex items-center justify-center bg-black/55 opacity-0 transition-opacity group-hover:opacity-100">
+                  <Icon name="camera" className="h-4 w-4 text-white" />
+                </span>
               </button>
 
-              <div className="flex min-w-0 flex-1 flex-col gap-0.5">
-                <div className="flex items-center gap-1.5 flex-wrap">
-                  <span className="truncate text-xs font-bold text-[var(--text-primary)]">
-                    {displayName}
-                  </span>
+              <div className="min-w-0 flex-1">
+                <div className="flex items-center gap-1.5">
+                  <span className="truncate text-sm font-bold text-[var(--text-primary)]">{displayName}</span>
                   {identity?.badge_ids?.includes("verified") && (
-                    <span className="rounded-full bg-[var(--success)]/15 px-1.5 py-0.2 text-[9px] font-bold text-[var(--success)]">
-                      ✓ Vérifié
+                    <span className="shrink-0 rounded-full bg-[var(--success)]/15 px-1.5 py-px text-[9px] font-bold text-[var(--success)]">
+                      ✓ {i18n("tbVerified", "Vérifié")}
                     </span>
                   )}
                 </div>
-
+                {email && (
+                  <button
+                    type="button"
+                    onClick={copyEmail}
+                    title={i18n("tbCopyEmail", "Copier l'adresse e-mail")}
+                    className="mt-0.5 flex max-w-full items-center gap-1 text-left text-[11px] text-[var(--text-muted)] transition-colors hover:text-[var(--text-primary)] cursor-pointer"
+                  >
+                    <span className="truncate">{email}</span>
+                    <Icon name={copied ? "check" : "copy"} className="h-3 w-3 shrink-0" />
+                  </button>
+                )}
                 {identity?.bio && (
-                  <p className="truncate text-[10px] text-[var(--text-muted)]" title={identity.bio}>
+                  <p className="mt-0.5 truncate text-[11px] text-[var(--text-muted)]" title={identity.bio}>
                     {identity.bio}
                   </p>
                 )}
-
-                <button
-                  type="button"
-                  onClick={() => {
-                    setOpen(false);
-                    setIsAvatarPickerOpen(true);
-                  }}
-                  className="text-left text-[10px] font-semibold text-amber-400 hover:text-amber-300 transition-colors cursor-pointer"
-                >
-                  Changer d&apos;avatar (Netflix, Anime...)
-                </button>
               </div>
             </div>
 
-            {/* Status Selector Bar */}
-            <div className="grid grid-cols-5 gap-1 rounded-[var(--inset-radius)] border border-[var(--panel-border)]/70 bg-[#121319] p-1 shadow-xs">
-              {STATUS_KEYS.map((st) => {
-                const cfg = USER_STATUS_CONFIG[st];
-                const isSelected = currentStatus === st;
-                return (
-                  <button
-                    key={st}
-                    type="button"
-                    onClick={() => handleStatusChange(st)}
-                    className={cn(
-                      "flex flex-col items-center justify-center gap-1 rounded-lg py-1.5 text-[10px] font-semibold transition-all cursor-pointer",
-                      isSelected
-                        ? "bg-[var(--surface-raised)] text-[var(--text-primary)] shadow-sm scale-100"
-                        : "text-[var(--text-muted)] hover:bg-[var(--surface-hover)] hover:text-[var(--text-primary)] hover:scale-105"
-                    )}
-                  >
-                    <span className={cn("h-2 w-2 rounded-full", cfg.dot)} />
-                    <span className="truncate">{i18n(cfg.labelKey)}</span>
-                  </button>
-                );
-              })}
-            </div>
-
-            {/* Storage Estimation Bar */}
-            <div className="flex flex-col gap-1 rounded-[var(--inset-radius)] border border-[var(--panel-border)]/70 bg-[#121319] p-2.5 shadow-xs">
-              <div className="flex items-center justify-between text-xs">
-                <span className="font-semibold text-[11px] text-[var(--text-primary)]">
-                  Stockage Cloud
-                </span>
-                <span className="font-mono text-[10px] text-[var(--text-muted)]">
-                  {storage.used.toFixed(1)} Go / {storage.total} Go
-                </span>
-              </div>
-              <div className="h-1.5 w-full overflow-hidden rounded-full bg-black/40">
-                <div
-                  className="h-full rounded-full bg-[var(--accent-primary)] transition-all duration-300"
-                  style={{ width: `${storagePercent}%` }}
-                />
+            {/* Statut : contrôle segmenté */}
+            <div className="px-4 pb-3">
+              <p className="mb-1.5 text-[10px] font-bold uppercase tracking-wider text-[var(--text-muted)]">
+                {i18n("tbStatus", "Statut")}
+              </p>
+              <div className="grid grid-cols-5 gap-0.5 rounded-xl bg-[var(--surface-raised)] p-0.5">
+                {STATUS_KEYS.map((st) => {
+                  const cfg = USER_STATUS_CONFIG[st];
+                  const isSelected = currentStatus === st;
+                  return (
+                    <button
+                      key={st}
+                      type="button"
+                      onClick={() => handleStatusChange(st)}
+                      aria-pressed={isSelected}
+                      className={cn(
+                        "flex flex-col items-center justify-center gap-1 rounded-[10px] py-1.5 text-[10px] font-semibold transition-all cursor-pointer",
+                        isSelected
+                          ? "bg-[var(--bg-surface-elevated)] text-[var(--text-primary)] shadow-sm ring-1 ring-[var(--panel-border)]"
+                          : "text-[var(--text-muted)] hover:text-[var(--text-primary)]"
+                      )}
+                    >
+                      <span className={cn("h-2 w-2 rounded-full", cfg.dot)} />
+                      <span className="max-w-full truncate px-0.5">{i18n(cfg.labelKey)}</span>
+                    </button>
+                  );
+                })}
               </div>
             </div>
 
-            {/* Navigation Menu List with Distinct Hover Indicators */}
-            <div className="space-y-1">
-              {menuItems.map((item) => (
-                <button
-                  key={item.id}
-                  type="button"
-                  onClick={() => {
-                    setOpen(false);
-                    item.action();
-                  }}
-                  className="group relative flex w-full items-center justify-between rounded-[var(--inset-radius)] border border-transparent p-2.5 text-xs text-[var(--text-muted)] transition-all duration-150 hover:border-[var(--accent-primary)]/40 hover:bg-gradient-to-r hover:from-[var(--accent-primary)]/10 hover:via-[#161720] hover:to-transparent hover:text-[var(--text-primary)] hover:shadow-xs cursor-pointer overflow-hidden"
-                >
-                  {/* Left glowing hover pill */}
-                  <div className="absolute left-0 top-2 bottom-2 w-1 rounded-r-full bg-[var(--accent-primary)] opacity-0 shadow-[0_0_8px_var(--glow-color)] transition-all duration-150 group-hover:opacity-100" />
+            <div className="h-px bg-[var(--panel-border)]/70" />
 
-                  <div className="flex items-center gap-2.5 min-w-0 pl-1">
-                    <div className="flex h-7 w-7 shrink-0 items-center justify-center rounded-lg bg-[#14151e] text-[var(--text-muted)] transition-all duration-150 group-hover:scale-110 group-hover:bg-[var(--accent-primary)]/20 group-hover:text-[var(--accent-primary)] shadow-xs">
-                      <Icon name={item.icon} className="h-4 w-4" />
-                    </div>
-                    <div className="flex flex-col text-left min-w-0">
-                      <span className="font-bold text-[var(--text-primary)] group-hover:text-white transition-colors truncate">
-                        {item.label}
-                      </span>
-                      <span className="text-[10px] text-[var(--text-muted)] group-hover:text-[var(--text-muted)]/90 truncate">
-                        {item.description}
-                      </span>
-                    </div>
-                  </div>
-
-                  <div className="flex items-center gap-1.5 shrink-0">
-                    {item.badge && (
-                      <span
-                        className={cn(
-                          "rounded-md border px-1.5 py-0.5 font-mono text-[9px] font-bold",
-                          item.badgeTone === "success"
-                            ? "border-[var(--success)]/30 bg-[var(--success)]/10 text-[var(--success)]"
-                            : "border-[var(--accent-primary)]/30 bg-[var(--accent-primary)]/10 text-[var(--accent-primary)]"
-                        )}
-                      >
-                        {item.badge}
-                      </span>
-                    )}
-                    {item.kbd && (
-                      <kbd className="rounded-[var(--inset-radius)] border border-[var(--panel-border)]/60 bg-[#14151e] px-1.5 py-0.5 font-mono text-[10px] text-[var(--text-muted)] transition-colors group-hover:border-[var(--accent-primary)]/40 group-hover:text-[var(--accent-primary)]">
-                        {item.kbd}
-                      </kbd>
-                    )}
-                    <ChevronRight className="h-3.5 w-3.5 text-[var(--accent-primary)] opacity-0 -translate-x-1 transition-all duration-150 group-hover:opacity-100 group-hover:translate-x-0" />
-                  </div>
-                </button>
-              ))}
+            {/* Groupes de navigation */}
+            <div className="px-2 py-2">
+              <p className="px-2 pb-1 pt-1 text-[10px] font-bold uppercase tracking-wider text-[var(--text-muted)]">
+                {i18n("tbAccount", "Compte")}
+              </p>
+              {accountItems.map(renderRow)}
+              <p className="px-2 pb-1 pt-3 text-[10px] font-bold uppercase tracking-wider text-[var(--text-muted)]">
+                {i18n("tbApp", "Application")}
+              </p>
+              {appItems.map(renderRow)}
             </div>
 
-            {/* Sign Out Section */}
-            <div className="border-t border-[var(--panel-border)]/60 pt-2">
+            <div className="h-px bg-[var(--panel-border)]/70" />
+
+            {/* Stockage + déconnexion */}
+            <div className="flex flex-col gap-3 px-4 py-3">
+              <div>
+                <div className="mb-1 flex items-center justify-between text-[11px]">
+                  <span className="font-semibold text-[var(--text-primary)]">{i18n("tbStorage", "Stockage cloud")}</span>
+                  <span className="font-mono text-[10px] text-[var(--text-muted)]">
+                    {storage.used.toFixed(1)} / {storage.total} Go
+                  </span>
+                </div>
+                <div className="h-1.5 w-full overflow-hidden rounded-full bg-[var(--surface-raised)]">
+                  <div
+                    className="h-full rounded-full bg-[var(--accent-primary)] transition-all duration-300"
+                    style={{ width: `${storagePercent}%` }}
+                  />
+                </div>
+              </div>
+
               {!confirmSignOut ? (
                 <button
                   type="button"
                   onClick={() => setConfirmSignOut(true)}
-                  className="group relative flex w-full items-center justify-between rounded-[var(--inset-radius)] border border-transparent p-2.5 text-xs font-semibold text-[var(--danger)] transition-all duration-150 hover:border-[var(--danger)]/30 hover:bg-[var(--danger)]/10 cursor-pointer overflow-hidden"
+                  className="flex w-full items-center justify-center gap-2 rounded-xl border border-[var(--danger)]/25 px-3 py-2 text-xs font-semibold text-[var(--danger)] transition-colors hover:bg-[var(--danger)]/10 cursor-pointer"
                 >
-                  <div className="absolute left-0 top-2 bottom-2 w-1 rounded-r-full bg-[var(--danger)] opacity-0 shadow-[0_0_8px_rgba(239,68,68,0.5)] transition-all duration-150 group-hover:opacity-100" />
-                  <div className="flex items-center gap-2.5 pl-1">
-                    <div className="flex h-7 w-7 shrink-0 items-center justify-center rounded-lg bg-[var(--danger)]/15 text-[var(--danger)] transition-transform duration-150 group-hover:scale-110">
-                      <LogOut className="h-4 w-4" />
-                    </div>
-                    <span>Se déconnecter</span>
-                  </div>
-                  <ChevronRight className="h-3.5 w-3.5 text-[var(--danger)] opacity-0 -translate-x-1 transition-all duration-150 group-hover:opacity-100 group-hover:translate-x-0" />
+                  <LogOut className="h-3.5 w-3.5" />
+                  {i18n("tbSignOut", "Se déconnecter")}
                 </button>
               ) : (
-                <div className="flex flex-col gap-2 rounded-[var(--inset-radius)] border border-[var(--danger)]/30 bg-[var(--danger)]/10 p-2.5">
-                  <span className="text-xs font-bold text-[var(--danger)]">
-                    Confirmer la déconnexion ?
-                  </span>
-                  <div className="flex items-center gap-2">
+                <div className="rounded-xl border border-[var(--danger)]/30 bg-[var(--danger)]/10 p-3">
+                  <p className="text-xs font-bold text-[var(--danger)]">{i18n("tbSignOutConfirm", "Se déconnecter ?")}</p>
+                  <p className="mt-0.5 text-[11px] text-[var(--text-muted)]">
+                    {i18n("tbSignOutBody", "Tu devras te reconnecter pour retrouver tes données.")}
+                  </p>
+                  <div className="mt-2.5 flex items-center gap-2">
                     <button
                       type="button"
                       onClick={() => setConfirmSignOut(false)}
-                      className="flex-1 rounded-[var(--inset-radius)] border border-[var(--panel-border)] py-1 text-xs font-medium text-[var(--text-primary)] hover:bg-[var(--surface-hover)] cursor-pointer"
+                      className="flex-1 rounded-lg border border-[var(--panel-border)] py-1.5 text-xs font-medium text-[var(--text-primary)] hover:bg-[var(--surface-hover)] cursor-pointer"
                     >
-                      Annuler
+                      {i18n("tbCancel", "Annuler")}
                     </button>
                     <button
                       type="button"
                       onClick={handleSignOut}
-                      className="flex-1 rounded-lg bg-[var(--danger)] py-1 text-xs font-bold text-[var(--accent-contrast)] hover:opacity-90 cursor-pointer"
+                      className="flex-1 rounded-lg bg-[var(--danger)] py-1.5 text-xs font-bold text-white hover:opacity-90 cursor-pointer"
                     >
-                      Déconnexion
+                      {i18n("tbConfirm", "Déconnexion")}
                     </button>
                   </div>
                 </div>

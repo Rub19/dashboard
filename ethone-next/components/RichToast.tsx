@@ -60,20 +60,20 @@ export default function RichToast({
       exit={{ opacity: 0, y: 16, scale: 0.97 }}
       transition={{ duration: 0.24, ease: [0.16, 1, 0.3, 1] }}
       className={cn(
-        "v8-panel relative flex w-full flex-col overflow-hidden p-3.5 select-none shadow-lg",
+        "v8-panel relative flex w-full max-w-[22rem] flex-col overflow-hidden py-3 pl-4 pr-3.5 select-none shadow-xl",
         className
       )}
+      style={{ boxShadow: `inset 3px 0 0 ${cfg.color}, 0 12px 32px -12px rgba(0,0,0,0.5)` }}
       onMouseEnter={() => setPlayState("paused")}
       onMouseLeave={() => setPlayState("running")}
     >
       <div className="flex w-full items-start gap-3">
         {/* Icon */}
         <div
-          className="flex h-9 w-9 shrink-0 items-center justify-center rounded-[var(--inset-radius)] border"
+          className="flex h-10 w-10 shrink-0 items-center justify-center rounded-full"
           style={{
             color: cfg.color,
-            borderColor: `color-mix(in srgb, ${cfg.color} 25%, transparent)`,
-            backgroundColor: `color-mix(in srgb, ${cfg.color} 10%, transparent)`,
+            backgroundColor: `color-mix(in srgb, ${cfg.color} 14%, transparent)`,
           }}
         >
           {icon}
@@ -83,22 +83,21 @@ export default function RichToast({
         <div className="min-w-0 flex-1 pt-0.5">
           <div className="flex items-center justify-between gap-2">
             <div className="flex min-w-0 items-center gap-1.5">
-              <span
-                className="inline-flex h-1.5 w-1.5 shrink-0 rounded-full"
-                style={{ backgroundColor: cfg.color }}
-              />
-              <p className="truncate text-xs font-semibold leading-tight text-[var(--text-primary)]">{title}</p>
+              <p className="truncate text-[13px] font-semibold leading-tight text-[var(--text-primary)]">{title}</p>
             </div>
 
             {displayBadge && (
-              <span className="shrink-0 rounded-md border border-[var(--panel-border)] px-1.5 py-0.5 text-[10px] font-medium text-[var(--text-muted)]">
+              <span
+                className="shrink-0 rounded-full px-2 py-0.5 text-[10px] font-semibold"
+                style={{ color: cfg.color, backgroundColor: `color-mix(in srgb, ${cfg.color} 12%, transparent)` }}
+              >
                 {displayBadge}
               </span>
             )}
           </div>
 
           {description ? (
-            <p className="mt-1 line-clamp-2 text-[11px] leading-relaxed text-[var(--text-muted)]">{description}</p>
+            <p className="mt-1 line-clamp-3 text-xs leading-relaxed text-[var(--text-muted)]">{description}</p>
           ) : null}
 
           {action ? (
@@ -117,7 +116,7 @@ export default function RichToast({
 
       {/* Progress bar */}
       {showProgress && (
-        <div className="relative mt-3 h-[2px] w-full overflow-hidden rounded-full bg-[var(--panel-border)]">
+        <div className="relative mt-2.5 h-[3px] w-full overflow-hidden rounded-full bg-[var(--panel-border)]/60">
           <div
             className="toast-progress h-full w-full origin-left rounded-full"
             style={{

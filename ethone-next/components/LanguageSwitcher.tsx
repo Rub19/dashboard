@@ -57,7 +57,7 @@ export default function LanguageSwitcher() {
         <div role="listbox" aria-label={i18n("language")} className="space-y-1">
           <div className="px-2.5 py-1.5 border-b border-[var(--panel-border)]/50">
             <span className="text-[10px] font-bold uppercase tracking-wider text-[var(--text-muted)]">
-              Langue de l&apos;interface
+              {i18n("language")}
             </span>
           </div>
 

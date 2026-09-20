@@ -39,8 +39,8 @@ function StatusPill({ icon, children, onClick, title }: StatusPillProps) {
       type={onClick ? "button" : undefined}
       onClick={onClick}
       title={title}
-      className={`flex items-center gap-1.5 rounded-lg px-2.5 py-1 text-[11px] font-medium text-[var(--text-muted)] transition-[color,background-color,opacity] ${
-        onClick ? "hover:bg-[var(--text-primary)]/[0.06] hover:text-[var(--text-primary)] cursor-pointer" : ""
+      className={`flex items-center gap-1.5 rounded-full px-2.5 py-1 text-[11px] font-medium text-[var(--text-muted)] transition-[color,background-color,opacity,transform] ${
+        onClick ? "hover:bg-[var(--surface-hover)] hover:text-[var(--text-primary)] active:scale-95 cursor-pointer" : ""
       }`}
     >
       <span className="shrink-0">{icon}</span>
@@ -50,7 +50,7 @@ function StatusPill({ icon, children, onClick, title }: StatusPillProps) {
 }
 
 function Separator() {
-  return <span className="h-3 w-[1px] bg-[var(--text-primary)]/10" />;
+  return <span aria-hidden className="h-3 w-px bg-[var(--panel-border)]" />;
 }
 
 function WeatherStatusPill() {
@@ -96,7 +96,7 @@ function SystemStatusPills() {
   const syncLabel = syncing ? i18n("v8Syncing") || "Sync" : online ? i18n("v8Synced") || "Sync" : i18n("v8Offline") || "Offline";
 
   return (
-    <div className="hidden items-center gap-1.5 rounded-[var(--inset-radius)] border border-[var(--text-primary)]/[0.06] bg-[var(--text-primary)]/[0.03] p-1 md:flex">
+    <div className="hidden items-center gap-0.5 rounded-full border border-[var(--panel-border)]/70 bg-[var(--surface-raised)]/50 p-0.5 md:flex">
       <StatusPill icon={<Briefcase className="h-3 w-3 text-[var(--text-muted)]" />} title={i18n("workspace")}>
         {workspaceLabel}
       </StatusPill>
@@ -110,7 +110,7 @@ function SystemStatusPills() {
         }}
         title={i18n("sync")}
       >
-        {syncLabel}
+        <span className={syncing ? "text-[var(--info)]" : online ? "text-[var(--text-primary)]" : "text-[var(--danger)]"}>{syncLabel}</span>
       </StatusPill>
 
       <Separator />
@@ -119,7 +119,7 @@ function SystemStatusPills() {
 
       <Separator />
 
-      <div className="flex items-center gap-1.5 rounded-lg px-2.5 py-1 text-[11px] font-medium text-[var(--text-muted)]">
+      <div className="flex items-center gap-1.5 rounded-full px-2.5 py-1 text-[11px] font-medium text-[var(--text-muted)]">
         <Clock />
       </div>
     </div>

@@ -237,7 +237,22 @@ class LavalinkManager {
       // Aucun candidat correct → on préfère échouer que jouer un autre morceau.
       const pick = (pred: (x: (typeof scored)[number]) => boolean) => scored.filter(pred).sort((x, y) => x.diff - y.diff);
       const best = pick((x) => x.titleOk && x.artistOk && !x.badVariant && x.durOk);
-      const relaxed = best.length ? best : pick((x) => x.titleOk && !x.badVariant && x.durOk);
+      // Paliers de plus en plus tolérants : mieux vaut une autre version du BON titre que le silence.
+      const relaxed = best.length
+        ? best
+        : pick((x) => x.titleOk && !x.badVariant && x.durOk).length
+          ? pick((x) => x.titleOk && !x.badVariant && x.durOk)
+          : pick((x) => x.titleOk && !x.badVariant).length
+            ? pick((x) => x.titleOk && !x.badVariant)
+            : pick((x) => x.titleOk);
+      if (relaxed.length === 0) {
+        logger.warn(
+          `[Lavalink] SoundCloud : aucun résultat exploitable pour "${q}" — reçus : ${scored
+            .slice(0, 5)
+            .map((x) => `"${x.c.title}" (${x.c.artist}, ${x.c.duration}s)`)
+            .join(' | ')}`
+        );
+      }
       return relaxed
         .slice(0, max)
         // Titre/artiste RÉELS du résultat (pas ceux demandés) : le panneau ne ment plus.

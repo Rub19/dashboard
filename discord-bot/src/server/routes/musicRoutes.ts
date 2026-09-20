@@ -2,6 +2,7 @@ import express, { Request, Response } from 'express';
 import { Client } from 'discord.js';
 import { musicService } from '../../modules/music/services/musicService.js';
 import { RepeatMode, Track } from '../../modules/music/types/music.js';
+import { musicProviderManager } from '../../modules/music/providers/musicProvider.js';
 import { emitConfigUpdated } from '../../services/syncConfigEmitter.js';
 
 export function createMusicRouter(discordClient: Client) {
@@ -17,7 +18,7 @@ export function createMusicRouter(discordClient: Client) {
   // 2. Lancer une musique / ajouter à la file
   router.post('/play', async (req: Request, res: Response): Promise<void> => {
     const guildId = String(req.params.guildId);
-    const { query, playNext, channelId } = req.body;
+    const { query, playNext, channelId, shuffle } = req.body;
 
     if (!query || typeof query !== 'string') {
       res.status(400).json({ error: 'Paramètre "query" manquant ou invalide.' });
@@ -48,6 +49,7 @@ export function createMusicRouter(discordClient: Client) {
 
     const result = await musicService.play(guild, null, query, {
       playNext: Boolean(playNext),
+      shuffle: Boolean(shuffle),
       channelId: channelId ? String(channelId) : undefined,
     });
 
@@ -189,6 +191,33 @@ export function createMusicRouter(discordClient: Client) {
     const limit = rawLimit ? parseInt(Array.isArray(rawLimit) ? String(rawLimit[0]) : String(rawLimit), 10) : 8;
     const results = await musicService.search(q, null, isNaN(limit) ? 8 : limit);
     res.json({ results });
+  });
+
+  // 16b. Aperçu d'une playlist / album (Spotify, YouTube…) SANS la jouer : liste les titres
+  // pour que le site puisse en lancer un seul, ou tout.
+  router.get('/import', async (req: Request, res: Response): Promise<void> => {
+    const url = String(req.query.url || '').trim();
+    if (!/^https?:\/\//i.test(url)) {
+      res.status(400).json({ error: 'Colle un lien de playlist / album (Spotify, YouTube…).' });
+      return;
+    }
+    try {
+      const tracks = await musicProviderManager.resolveMany(url, { id: 'dashboard', tag: 'Dashboard User', avatar: null });
+      res.json({
+        url,
+        total: tracks.length,
+        tracks: tracks.slice(0, 500).map((t) => ({
+          title: t.title,
+          artist: t.artist,
+          album: t.album,
+          duration: t.duration,
+          thumbnail: t.thumbnail,
+          source: t.source,
+        })),
+      });
+    } catch {
+      res.status(502).json({ error: 'Impossible de lire cette playlist pour le moment.' });
+    }
   });
 
   // 17. Playlists

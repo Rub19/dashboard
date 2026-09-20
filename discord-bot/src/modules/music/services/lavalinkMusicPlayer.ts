@@ -30,7 +30,8 @@ export class LavalinkMusicPlayer implements IGuildMusicPlayer {
   private onStateChangeCallback?: (state: GuildMusicState) => void;
   private listenersBound = false;
   private lastException = '';
-  private fallbackTried = new Set<string>();
+  /** URLs déjà essayées (et mortes) par titre : évite de reboucler sur le même résultat SoundCloud. */
+  private triedUrls = new Map<string, Set<string>>();
 
   constructor(guildId: string, onStateChange?: (state: GuildMusicState) => void) {
     this.guildId = guildId;
@@ -172,6 +173,7 @@ export class LavalinkMusicPlayer implements IGuildMusicPlayer {
         void this.handleTrackEnd();
         return false;
       }
+      if (ready.source === 'SOUNDCLOUD' && ready.url) this.markTried(track.id, ready.url);
       this.queue.setCurrentTrack(ready);
       this.position = 0;
       this.positionAt = Date.now();
@@ -194,28 +196,44 @@ export class LavalinkMusicPlayer implements IGuildMusicPlayer {
    * pas ce blocage ; si ça échoue aussi, on prévient dans le salon et on passe
    * au titre suivant.
    */
+  private markTried(id: string, url: string): void {
+    if (this.triedUrls.size > 100) this.triedUrls.clear();
+    const set = this.triedUrls.get(id) ?? new Set<string>();
+    set.add(url);
+    this.triedUrls.set(id, set);
+  }
+
   private async recoverFromLoadFailure(): Promise<void> {
     const current = this.queue.getCurrentTrack();
-    if (current && (current.source === 'YOUTUBE' || current.source === 'SPOTIFY') && this.player && !this.fallbackTried.has(current.id)) {
-      this.fallbackTried.add(current.id);
-      if (this.fallbackTried.size > 50) this.fallbackTried.clear();
-      const alt = await lavalinkManager.resolveSoundCloudFallback(current, current.requestedBy);
-      if (alt?.encoded) {
-        try {
-          this.queue.setCurrentTrack(alt);
-          this.position = 0;
-          this.positionAt = Date.now();
-          await this.player.playTrack({ track: { encoded: alt.encoded } });
-          lavalinkManager.markYoutubeBlocked();
-          logger.info(`[Lavalink] Repli SoundCloud pour "${current.title}" (guild ${this.guildId})`);
-          void musicNotifier.notice(
-            this.guildId,
-            current.title,
-            "Spotify et YouTube ne fournissent pas l'audio à ce serveur : le titre est joué depuis SoundCloud (même morceau, choisi par durée)."
-          );
-          return;
-        } catch (err) {
-          logger.warn('[Lavalink] Repli SoundCloud impossible :', err);
+    if (current && current.source !== 'DIRECT' && this.player) {
+      const tried = this.triedUrls.get(current.id) ?? new Set<string>();
+      const firstAttempt = tried.size === 0;
+      if (current.url) this.markTried(current.id, current.url);
+      // Jusqu'à 4 essais par titre : YouTube refusé → 1er résultat SoundCloud → 404/mort → suivant…
+      if (tried.size < 4) {
+        const [alt] = await lavalinkManager.resolveSoundCloudCandidates(current, current.requestedBy, this.triedUrls.get(current.id) ?? tried, 3);
+        if (alt?.encoded) {
+          try {
+            this.markTried(current.id, alt.url);
+            this.queue.setCurrentTrack(alt);
+            this.position = 0;
+            this.positionAt = Date.now();
+            await this.player.playTrack({ track: { encoded: alt.encoded } });
+            lavalinkManager.markYoutubeBlocked();
+            logger.info(`[Lavalink] Repli SoundCloud pour "${current.title}" (guild ${this.guildId})`);
+            if (firstAttempt) {
+              void musicNotifier.notice(
+                this.guildId,
+                current.title,
+                current.source === 'SPOTIFY'
+                  ? "Spotify ne fournit pas l'audio : le morceau est joué depuis SoundCloud (même titre, choisi par durée)."
+                  : 'YouTube refuse le streaming depuis ce serveur — lecture via SoundCloud à la place.'
+              );
+            }
+            return;
+          } catch (err) {
+            logger.warn('[Lavalink] Repli SoundCloud impossible :', err);
+          }
         }
       }
     }

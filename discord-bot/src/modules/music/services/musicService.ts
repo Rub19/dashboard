@@ -121,9 +121,12 @@ class MusicService {
         }
 
         // En mode dashboard externe sans membre explicite, chercher un salon vocal accessible
-        const defaultVoice = guild.channels.cache.find(
-          (c) => c.isVoiceBased() && c.permissionsFor(guild.members.me!)?.has('Connect')
-        );
+        // On privilégie le salon où il y a le plus de monde (celui de la personne qui
+        // clique sur le site), sinon le premier salon accessible.
+        const defaultVoice = guild.channels.cache
+          .filter((c) => c.isVoiceBased() && c.permissionsFor(guild.members.me!)?.has('Connect'))
+          .sort((x, y) => (y.isVoiceBased() ? y.members.filter((m) => !m.user.bot).size : 0) - (x.isVoiceBased() ? x.members.filter((m) => !m.user.bot).size : 0))
+          .first();
         if (defaultVoice && defaultVoice.isVoiceBased()) {
           voiceChannel = defaultVoice;
         } else {

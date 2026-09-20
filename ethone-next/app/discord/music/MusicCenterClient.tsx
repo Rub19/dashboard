@@ -128,7 +128,11 @@ export default function MusicCenterClient() {
   const guildId = activeGuild?.id || null;
   const isReady = Boolean(guildId && BOT_API_URL);
 
-  const [activeTab, setActiveTab] = useState<"queue" | "playlists" | "favorites" | "history" | "settings" | "stats">("queue");
+  const [activeTab, setActiveTab] = useState<"queue" | "import" | "playlists" | "favorites" | "history" | "settings" | "stats">("queue");
+  const [importUrl, setImportUrl] = useState("");
+  const [importLoading, setImportLoading] = useState(false);
+  const [importTracks, setImportTracks] = useState<Array<{ title: string; artist: string; album?: string | null; duration: number; thumbnail?: string }>>([]);
+  const [importedUrl, setImportedUrl] = useState("");
   const [musicState, setMusicState] = useState<GuildMusicState | null>(null);
   const [stateError, setStateError] = useState<string | null>(null);
   const [loading, setLoading] = useState(true);
@@ -272,6 +276,42 @@ export default function MusicCenterClient() {
         fetchState();
       } else {
         showError("Erreur lecture", data.error || "Impossible de lire ce titre.");
+      }
+    } catch {
+      showError("Erreur réseau", "Impossible d'envoyer la commande de lecture.");
+    }
+  };
+
+  const handleImportPreview = async () => {
+    if (!isReady || !importUrl.trim()) return;
+    setImportLoading(true);
+    try {
+      const res = await fetch(`${BOT_API_URL}/api/guilds/${guildId}/music/import?url=${encodeURIComponent(importUrl.trim())}`, FETCH_OPTS);
+      const data = await res.json();
+      if (res.ok) {
+        setImportTracks(data.tracks || []);
+        setImportedUrl(data.url || importUrl.trim());
+        if (!data.tracks?.length) showError("Playlist vide", "Aucun titre trouvé (playlist privée ou vide ?).");
+      } else {
+        showError("Import impossible", data.error || "Impossible de lire cette playlist.");
+      }
+    } catch {
+      showError("Erreur réseau", "Impossible de contacter le bot.");
+    } finally {
+      setImportLoading(false);
+    }
+  };
+
+  const handleImportPlayAll = async (shuffle: boolean) => {
+    if (!isReady || !importedUrl) return;
+    try {
+      const res = await fetch(`${BOT_API_URL}/api/guilds/${guildId}/music/play`, jsonOpts("POST", { query: importedUrl, shuffle }));
+      const data = await res.json();
+      if (res.ok && data.success) {
+        success(shuffle ? "Playlist mélangée lancée" : "Playlist lancée", `${importTracks.length} titres ajoutés à la file.`);
+        fetchState();
+      } else {
+        showError("Erreur lecture", data.error || "Impossible de lancer la playlist.");
       }
     } catch {
       showError("Erreur réseau", "Impossible d'envoyer la commande de lecture.");
@@ -879,6 +919,7 @@ export default function MusicCenterClient() {
           <div className="flex items-center gap-2 border-b border-[var(--panel-border)] pb-2 overflow-x-auto scrollbar-none">
             {[
               { id: "queue", label: `File d'attente (${musicState?.queueLength || 0})`, icon: ListMusic },
+              { id: "import", label: "Importer une playlist", icon: Disc },
               { id: "playlists", label: `Playlists (${playlists.length})`, icon: Disc },
               { id: "favorites", label: `Favoris (${favorites.length})`, icon: Heart },
               { id: "history", label: `Historique (${history.length})`, icon: Clock },
@@ -988,6 +1029,63 @@ export default function MusicCenterClient() {
           )}
 
           {/* TAB 2: PLAYLISTS */}
+          {/* TAB: IMPORT (Spotify / YouTube playlists) */}
+          {activeTab === "import" && (
+            <div className="space-y-4">
+              <div>
+                <h3 className="text-sm font-bold text-white">Importer une playlist Spotify ou YouTube</h3>
+                <p className="text-xs text-zinc-400">Colle le lien : tous les titres s'affichent, clique sur un titre pour le jouer, ou lance toute la playlist (dans l'ordre ou mélangée).</p>
+              </div>
+              <div className="flex gap-2">
+                <input
+                  value={importUrl}
+                  onChange={(e) => setImportUrl(e.target.value)}
+                  onKeyDown={(e) => e.key === "Enter" && handleImportPreview()}
+                  placeholder="https://open.spotify.com/playlist/…"
+                  className="flex-1 rounded-xl border border-[var(--panel-border)] bg-black/30 px-4 py-2.5 text-sm text-white outline-none focus:border-violet-500/50"
+                />
+                <button
+                  onClick={handleImportPreview}
+                  disabled={importLoading || !importUrl.trim()}
+                  className="rounded-xl bg-violet-600 px-4 py-2.5 text-xs font-bold text-white disabled:opacity-50 cursor-pointer"
+                >
+                  {importLoading ? "Chargement…" : "Afficher les titres"}
+                </button>
+              </div>
+              {importTracks.length > 0 && (
+                <>
+                  <div className="flex flex-wrap items-center justify-between gap-2">
+                    <span className="text-xs font-bold text-zinc-300">{importTracks.length} titres</span>
+                    <div className="flex gap-2">
+                      <button onClick={() => handleImportPlayAll(false)} className="rounded-xl bg-emerald-600/20 border border-emerald-500/30 px-3 py-1.5 text-xs font-bold text-emerald-300 cursor-pointer">Tout jouer</button>
+                      <button onClick={() => handleImportPlayAll(true)} className="rounded-xl bg-violet-600/20 border border-violet-500/30 px-3 py-1.5 text-xs font-bold text-violet-300 cursor-pointer">Tout mélanger</button>
+                    </div>
+                  </div>
+                  <div className="max-h-[32rem] overflow-y-auto space-y-1.5 pr-1">
+                    {importTracks.map((tr, i) => (
+                      <button
+                        key={`${tr.title}-${i}`}
+                        onClick={() => handlePlayQuery(`${tr.title} ${tr.artist}`)}
+                        className="flex w-full items-center gap-3 rounded-[var(--inset-radius)] border border-[var(--panel-border)] bg-white/[0.02] p-2.5 text-left hover:border-violet-500/40 hover:bg-white/[0.04] transition-all cursor-pointer"
+                      >
+                        <span className="w-8 text-right text-[11px] font-mono text-zinc-500">{i + 1}</span>
+                        {tr.thumbnail && <img src={tr.thumbnail} alt="" className="h-9 w-9 rounded-md object-cover shrink-0" />}
+                        <span className="min-w-0 flex-1">
+                          <span className="block truncate text-sm font-semibold text-white">{tr.title}</span>
+                          <span className="block truncate text-xs text-zinc-400">{tr.artist}</span>
+                        </span>
+                        <span className="text-[11px] font-mono text-zinc-500">
+                          {tr.duration > 0 ? `${Math.floor(tr.duration / 60)}:${String(tr.duration % 60).padStart(2, "0")}` : "—"}
+                        </span>
+                        <Play className="h-3.5 w-3.5 text-violet-300 shrink-0" />
+                      </button>
+                    ))}
+                  </div>
+                </>
+              )}
+            </div>
+          )}
+
           {activeTab === "playlists" && (
             <div className="space-y-4">
               <div className="flex items-center justify-between">

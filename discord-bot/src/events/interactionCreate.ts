@@ -25,6 +25,7 @@ import { CustomCommandService } from '../modules/customCommands/services/customC
 import { guildConfigService } from '../services/guildConfigService.js';
 import { statsService } from '../services/statsService.js';
 import { CommandContext } from '../types/command.js';
+import { handlePlaylistBrowser } from '../commands/music/playlistBrowser.js';
 import { DiscordMusicPanel } from '../modules/music/ui/discordMusicPanel.js';
 import { WelcomeInteractionHandler } from '../modules/welcome/interactions/welcomeInteractionHandler.js';
 import { DiscordVoicePanel } from '../modules/voice/ui/discordVoicePanel.js';
@@ -95,6 +96,10 @@ export async function onInteractionCreate(interaction: Interaction) {
   );
   // 1. Gestion des composants d'interaction (Boutons, Menus déroulants, Modals)
   if (interaction.isAnySelectMenu()) {
+    if (interaction.customId.startsWith('plbrowse:') && interaction.isStringSelectMenu()) {
+      await safeHandleComponent(interaction, 'playlist_browser', () => handlePlaylistBrowser(interaction));
+      return;
+    }
     if (interaction.customId === 'settings_select_category' && interaction.isStringSelectMenu()) {
       await safeHandleComponent(interaction, 'settings_select_category', () => handleSettingsSelectMenu(interaction));
     } else if (interaction.customId === 'help_select_category' && interaction.isStringSelectMenu()) {
@@ -110,6 +115,10 @@ export async function onInteractionCreate(interaction: Interaction) {
   }
 
   if (interaction.isButton()) {
+    if (interaction.customId.startsWith('plbrowse:')) {
+      await safeHandleComponent(interaction, 'playlist_browser', () => handlePlaylistBrowser(interaction));
+      return;
+    }
     if (interaction.customId === 'ping_retest') {
       await safeHandleComponent(interaction, 'ping_retest', async () => {
         const gConf = guildConfigService.getConfig(interaction.guildId);

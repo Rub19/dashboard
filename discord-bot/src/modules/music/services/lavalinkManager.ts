@@ -189,27 +189,37 @@ class LavalinkManager {
    * SoundCloud ne demande aucune connexion, on cherche donc "artiste titre" là-bas.
    */
   public async resolveSoundCloudFallback(track: Track, requestedBy: TrackRequester): Promise<Track | null> {
+    return (await this.resolveSoundCloudCandidates(track, requestedBy, new Set(), 1))[0] ?? null;
+  }
+
+  /**
+   * Résultats SoundCloud classés par proximité de durée (les extraits de 30 s et
+   * les URLs déjà essayées sont écartés). Les candidats gardent l'id du titre
+   * d'origine : si l'un d'eux est mort (404), on passe au suivant.
+   */
+  public async resolveSoundCloudCandidates(
+    track: Track,
+    requestedBy: TrackRequester,
+    exclude: Set<string> = new Set(),
+    max = 3
+  ): Promise<Track[]> {
     const node = this.getNode();
-    if (!node) return null;
-    const q = `${track.artist} ${track.title}`.replace(/\(.*?\)|\[.*?\]/g, ' ').replace(/\s+/g, ' ').trim();
+    if (!node) return [];
+    const q = `${track.artist} ${track.title}`.replace(/(.*?)|[.*?]/g, ' ').replace(/s+/g, ' ').trim();
     try {
       const res = await node.rest.resolve(`scsearch:${q}`);
-      if (res?.loadType === LoadType.SEARCH && res.data.length > 0) {
-        // SoundCloud often returns 30 s previews (Go+ tracks) or remixes first:
-        // prefer the result whose length is closest to the original and drop previews.
-        const candidates = res.data.map((d) => this.toTrack(d, requestedBy));
-        const target = track.duration || 0;
-        const ranked = candidates
-          .filter((c) => !target || c.duration === 0 || c.duration >= target * 0.7)
-          .sort((a, b) => (target ? Math.abs(a.duration - target) - Math.abs(b.duration - target) : 0));
-        const found = ranked[0];
-        if (!found) return null;
-        return { ...found, thumbnail: track.thumbnail || found.thumbnail, title: track.title, artist: track.artist };
-      }
+      if (res?.loadType !== LoadType.SEARCH || res.data.length === 0) return [];
+      const target = track.duration || 0;
+      return res.data
+        .map((d) => this.toTrack(d, requestedBy))
+        .filter((c) => !exclude.has(c.url) && (!target || c.duration === 0 || c.duration >= target * 0.7))
+        .sort((a, b) => (target ? Math.abs(a.duration - target) - Math.abs(b.duration - target) : 0))
+        .slice(0, max)
+        .map((c) => ({ ...c, id: track.id, thumbnail: track.thumbnail || c.thumbnail, title: track.title, artist: track.artist }));
     } catch (err) {
       logger.warn(`[Lavalink] scsearch:${q} :`, err);
+      return [];
     }
-    return null;
   }
 
   private youtubeBlockedUntil = 0;

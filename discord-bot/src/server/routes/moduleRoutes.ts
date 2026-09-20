@@ -63,7 +63,7 @@ export const AVAILABLE_MODULES: ModuleDefinition[] = [
     name: 'Musique & Vocal',
     description: 'Lecture audio en streaming haute fidélité dans les salons vocaux.',
     icon: 'Music',
-    available: false, // Bientôt disponible
+    available: true,
   },
 ];
 
@@ -111,11 +111,15 @@ export function createModuleRouter(client: Client): express.Router {
     }
 
     try {
-      const updated = guildConfigService.updateConfig(guildId, {
-        modules: {
-          [moduleId]: enabled,
+      const updated = guildConfigService.updateConfig(
+        guildId,
+        {
+          modules: {
+            [moduleId]: enabled,
+          },
         },
-      });
+        { source: 'DASHBOARD', actorId: req.user?.id }
+      );
       emitConfigUpdated('modules', guildId, updated.modules, 'DASHBOARD', req.user?.id);
 
       res.json({

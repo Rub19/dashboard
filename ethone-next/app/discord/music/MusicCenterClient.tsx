@@ -119,12 +119,32 @@ export default function MusicCenterClient() {
   // serveur précis et, combiné à l'absence de cookies sur les requêtes
   // ci-dessous, faisait que cette page n'a jamais vraiment fonctionné en
   // production : chaque appel à l'API du bot recevait 401 en silence).
+  // Sans ID valide dans l'URL, on préfère un serveur OÙ LE BOT EST PRÉSENT : le premier
+  // serveur de la liste n'a souvent pas le bot, et la page restait alors vide.
+  const [botGuildIds, setBotGuildIds] = useState<string[] | null>(null);
+  useEffect(() => {
+    if (!BOT_API_URL || !profile?.guilds?.length) return;
+    let cancelled = false;
+    const ids = profile.guilds.map((g) => g.id).join(",");
+    fetch(`${BOT_API_URL}/api/guild-presence?ids=${encodeURIComponent(ids)}`, FETCH_OPTS)
+      .then((r) => (r.ok ? r.json() : null))
+      .then((res) => {
+        if (!cancelled && Array.isArray(res?.present)) setBotGuildIds(res.present.map(String));
+      })
+      .catch(() => {});
+    return () => {
+      cancelled = true;
+    };
+  }, [profile?.guilds]);
+
   const activeGuild = useMemo(() => {
-    if (rawGuildId && profile?.guilds) {
-      return profile.guilds.find((g) => g.id === rawGuildId) || profile.guilds[0];
-    }
-    return profile?.guilds?.[0] || null;
-  }, [rawGuildId, profile?.guilds]);
+    const guilds = profile?.guilds;
+    if (!guilds?.length) return null;
+    const fromUrl = rawGuildId ? guilds.find((g) => g.id === rawGuildId) : undefined;
+    if (fromUrl) return fromUrl;
+    const withBot = botGuildIds ? guilds.find((g) => botGuildIds.includes(g.id)) : undefined;
+    return withBot || guilds[0];
+  }, [rawGuildId, profile?.guilds, botGuildIds]);
   const guildId = activeGuild?.id || null;
   const isReady = Boolean(guildId && BOT_API_URL);
 
@@ -173,7 +193,7 @@ export default function MusicCenterClient() {
           res.status === 401 || res.status === 403
             ? `Le bot ne te reconnaît pas (HTTP ${res.status}) : sa connexion Discord est distincte de celle du site.`
             : res.status === 404
-              ? "Le bot ne connaît pas cette route (HTTP 404) — le bot n'a probablement pas été redéployé."
+              ? "Le bot n'est pas présent sur ce serveur (ou le bot n'a pas été redéployé) — choisis un serveur où il est actif."
               : `Le bot a répondu une erreur (HTTP ${res.status}).`
         );
       } else {

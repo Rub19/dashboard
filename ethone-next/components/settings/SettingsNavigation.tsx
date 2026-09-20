@@ -181,8 +181,11 @@ export default function SettingsNavigation({
           <Icon name={cat.icon} className="h-[18px] w-[18px]" aria-hidden="true" />
         </span>
         <span className="relative z-10 flex min-w-0 flex-1 flex-col items-start text-left">
-          <span className="truncate text-[13px] leading-tight">{cat.label}</span>
-          <span className="truncate text-[11px] font-normal text-[var(--text-muted)] group-hover:text-[var(--text-secondary)]">
+          <span className="w-full truncate text-[13px] leading-tight">{cat.label}</span>
+          <span
+            title={i18n(cat.descriptionKey || "", cat.description)}
+            className="w-full truncate text-[11px] font-normal text-[var(--text-muted)] group-hover:text-[var(--text-secondary)]"
+          >
             {i18n(cat.descriptionKey || "", cat.description)}
           </span>
         </span>

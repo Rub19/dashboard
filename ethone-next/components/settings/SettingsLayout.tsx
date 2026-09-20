@@ -2,7 +2,7 @@
 
 import { useCallback, useEffect, useRef, useState } from "react";
 import { useParams, useSearchParams } from "next/navigation";
-import { RotateCcw, Save, X, ChevronRight } from "lucide-react";
+import { RotateCcw, Save, X } from "lucide-react";
 import { useI18n } from "@/lib/hooks/useI18n";
 import Input from "@/components/Input";
 import { useSettings } from "@/components/SettingsProvider";
@@ -14,7 +14,7 @@ import { Icon } from "@/lib/icons";
 import { cn } from "@/lib/utils";
 import Button from "@/components/ui/Button";
 import Modal from "@/components/ui/Modal";
-import SettingsNavigation, { CATEGORY_ORDER } from "./SettingsNavigation";
+import SettingsNavigation from "./SettingsNavigation";
 import SettingsContent from "./SettingsContent";
 import { useSettingsNavigation, resolveCategory } from "./useSettingsNavigation";
 
@@ -308,29 +308,6 @@ export default function SettingsLayout({ initialSection }: { initialSection?: st
           }}
           className="min-h-0 w-full flex-1 overflow-y-auto os-scroll pb-8 pr-1 pt-4 will-change-scroll transform-gpu overscroll-contain"
         >
-          {/* Breadcrumb */}
-          <nav
-            aria-label="Breadcrumb"
-            className="mb-4 flex items-center gap-1.5 text-xs text-[var(--text-muted)]"
-          >
-            <ol className="flex items-center gap-1.5">
-              <li>
-                <span>{i18n("settingsTitle") || "Paramètres"}</span>
-              </li>
-              <li aria-hidden="true">
-                <ChevronRight className="h-3.5 w-3.5 shrink-0 opacity-50" />
-              </li>
-              <li>
-                <span
-                  className="font-medium text-[var(--text-primary)]"
-                  aria-current="page"
-                >
-                  {CATEGORY_ORDER.find((c) => c.id === activeCategory)?.label ?? activeCategory}
-                </span>
-              </li>
-            </ol>
-          </nav>
-
           <SettingsContent
             activeCategory={activeCategory}
             contentRef={contentRef}

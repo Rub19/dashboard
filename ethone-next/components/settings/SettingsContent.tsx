@@ -1641,19 +1641,17 @@ export default function SettingsContent({
       )}
 
       {!isSearching && activeCategoryDef && (
-        <div className="rounded-[var(--panel-radius)] border border-[var(--panel-border)] bg-[var(--panel-bg)]/80 p-4 sm:p-5 shadow-xs backdrop-blur-[var(--panel-blur)]">
-          <div className="flex items-center gap-3.5">
-            <div className="flex h-10 w-10 shrink-0 items-center justify-center rounded-xl bg-[var(--accent-primary)]/10 text-[var(--accent-primary)]">
-              <Icon name={activeCategoryDef.icon} className="h-5 w-5" />
-            </div>
-            <div className="min-w-0 flex-1">
-              <h2 className="text-base sm:text-lg font-bold text-[var(--text-primary)] truncate">
-                {activeCategoryDef.label}
-              </h2>
-              <p className="text-xs text-[var(--text-muted)] truncate">
-                {activeCategoryDef.description}
-              </p>
-            </div>
+        <div className="flex items-center gap-3 px-1">
+          <div className="flex h-9 w-9 shrink-0 items-center justify-center rounded-xl bg-[var(--accent-primary)]/10 text-[var(--accent-primary)]">
+            <Icon name={activeCategoryDef.icon} className="h-[18px] w-[18px]" />
+          </div>
+          <div className="min-w-0 flex-1">
+            <h2 className="truncate text-base font-bold leading-tight text-[var(--text-primary)]">
+              {activeCategoryDef.label}
+            </h2>
+            <p className="truncate text-xs text-[var(--text-muted)]">
+              {i18n(activeCategoryDef.descriptionKey || "", activeCategoryDef.description)}
+            </p>
           </div>
         </div>
       )}

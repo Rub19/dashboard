@@ -243,6 +243,13 @@ export async function expandSpotifyCollection(url: string, requestedBy: TrackReq
     logger.warn('[playlist] Spotify fetch error :', err);
   }
 
+  if (collected.length === 0) {
+    // API refusée (403/404 : playlists éditoriales, playlist privée, app en mode
+    // développement…) : on retente via la page embed publique.
+    logger.info('[playlist] Spotify API: 0 titre — repli sur la page embed publique');
+    return expandSpotifyViaEmbed(kind, id, requestedBy);
+  }
+
   return collected.slice(0, MAX_PLAYLIST_TRACKS).map((t, i) => {
     const artist = (t.artists || []).map((a) => a.name).filter(Boolean).join(', ') || 'Spotify';
     return {

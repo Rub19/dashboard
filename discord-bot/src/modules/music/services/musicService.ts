@@ -165,7 +165,7 @@ class MusicService {
         return {
           success: false,
           error:
-            "Lecture de playlists Spotify indisponible : SPOTIFY_CLIENT_ID / SPOTIFY_CLIENT_SECRET ne sont pas configurés côté bot (mêmes valeurs que le dashboard ETHONE).",
+            "Impossible de lire cette playlist/album Spotify (privée, vide ou inaccessible). Vérifie qu'elle est publique et réessaie.",
         };
       }
       return { success: false, error: 'Aucun titre correspondant trouvé.' };

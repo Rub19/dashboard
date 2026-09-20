@@ -2,6 +2,12 @@
 
 Toutes les modifications notables de ce projet seront documentées dans ce fichier.
 
+## v1.25.13 — 2026-09-20
+
+**Réglages : l'icône n'est plus collée au bord de l'en-tête**
+
+- Réglages : l'en-tête (icône + « Réglages » + description) recevait un fond translucide sans aucune marge intérieure, ce qui collait l'icône au bord gauche. Il devient une vraie carte arrondie avec bordure et espacement (16–20 px).
+
 ## v1.25.12 — 2026-09-20
 
 **Réglages : le bas de la liste n'est plus coupé**

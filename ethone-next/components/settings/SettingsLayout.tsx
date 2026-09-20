@@ -175,7 +175,7 @@ export default function SettingsLayout({ initialSection }: { initialSection?: st
   return (
     <div className="flex h-full min-h-0 w-full flex-col overflow-hidden p-4 pb-[calc(1rem+env(safe-area-inset-bottom))] sm:p-6 sm:pb-[calc(1.5rem+env(safe-area-inset-bottom))]">
       {/* Header */}
-      <header className="mb-4 shrink-0">
+      <header className="mb-4 shrink-0 rounded-[var(--panel-radius)] border border-[var(--panel-border)]/60 px-4 py-3.5 sm:px-5">
         <div className="flex w-full min-w-0 max-w-full flex-col gap-4 sm:flex-row sm:items-start sm:justify-between">
           <div className="flex min-w-0 items-center gap-3">
             <div className="flex h-9 w-9 shrink-0 items-center justify-center rounded-[var(--panel-radius)] bg-[var(--accent-primary)]/10 text-[var(--accent-primary)]">

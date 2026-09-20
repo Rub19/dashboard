@@ -28862,4 +28862,45 @@ CHANGELOG_BY_LANG.en.unshift(v12512_en);
 CHANGELOG_BY_LANG.es.unshift(v12512_es);
 CHANGELOG_BY_LANG.de.unshift(v12512_de);
 
+const v12513_fr: ChangelogEntry = {
+  version: "v1.25.13",
+  date: "2026-09-20",
+  title: "Réglages : l'icône n'est plus collée au bord de l'en-tête",
+  items: [
+    "Réglages : l'en-tête (icône + « Réglages » + description) recevait un fond translucide sans aucune marge intérieure, ce qui collait l'icône au bord gauche. Il devient une vraie carte arrondie avec bordure et espacement (16–20 px).",
+  ],
+};
+
+const v12513_en: ChangelogEntry = {
+  version: "v1.25.13",
+  date: "2026-09-20",
+  title: "Settings: the icon is no longer glued to the header edge",
+  items: [
+    "Settings: the header (icon + \"Settings\" + description) received a translucent background with no inner padding, gluing the icon to the left edge. It is now a proper rounded card with a border and spacing (16–20 px).",
+  ],
+};
+
+const v12513_es: ChangelogEntry = {
+  version: "v1.25.13",
+  date: "2026-09-20",
+  title: "Ajustes: el icono ya no está pegado al borde de la cabecera",
+  items: [
+    "Ajustes: la cabecera (icono + \"Ajustes\" + descripción) recibía un fondo translúcido sin margen interior, lo que pegaba el icono al borde izquierdo. Ahora es una tarjeta redondeada con borde y espaciado (16–20 px).",
+  ],
+};
+
+const v12513_de: ChangelogEntry = {
+  version: "v1.25.13",
+  date: "2026-09-20",
+  title: "Einstellungen: das Symbol klebt nicht mehr am Rand des Kopfbereichs",
+  items: [
+    "Einstellungen: Der Kopfbereich (Symbol + „Einstellungen“ + Beschreibung) bekam einen durchscheinenden Hintergrund ohne Innenabstand, wodurch das Symbol am linken Rand klebte. Er ist jetzt eine abgerundete Karte mit Rahmen und Abstand (16–20 px).",
+  ],
+};
+
+CHANGELOG_BY_LANG.fr.unshift(v12513_fr);
+CHANGELOG_BY_LANG.en.unshift(v12513_en);
+CHANGELOG_BY_LANG.es.unshift(v12513_es);
+CHANGELOG_BY_LANG.de.unshift(v12513_de);
+
 export const CHANGELOG = CHANGELOG_BY_LANG.fr;

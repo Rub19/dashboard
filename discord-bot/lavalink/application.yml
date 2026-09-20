@@ -33,8 +33,8 @@ lavalink:
       rotation: true
       channelMix: true
       lowPass: true
-    bufferDurationMs: 400
-    frameBufferDurationMs: 2000
+    bufferDurationMs: 800
+    frameBufferDurationMs: 5000   # buffer large : évite les saccades quand le CPU du VPS est chargé
     opusEncodingQuality: 5      # 10 = max CPU ; 5 est inaudible en vocal Discord
     resamplingQuality: LOW     # HIGH coûte cher en CPU pour rien sur Discord
     trackStuckThresholdMs: 10000

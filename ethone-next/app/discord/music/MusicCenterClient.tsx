@@ -130,6 +130,7 @@ export default function MusicCenterClient() {
 
   const [activeTab, setActiveTab] = useState<"queue" | "playlists" | "favorites" | "history" | "settings" | "stats">("queue");
   const [musicState, setMusicState] = useState<GuildMusicState | null>(null);
+  const [stateError, setStateError] = useState<string | null>(null);
   const [loading, setLoading] = useState(true);
 
   // Search & Add
@@ -163,7 +164,16 @@ export default function MusicCenterClient() {
     }
     try {
       const res = await fetch(`${BOT_API_URL}/api/guilds/${guildId}/music/state`, FETCH_OPTS);
-      if (res.ok) {
+      if (!res.ok) {
+        setStateError(
+          res.status === 401 || res.status === 403
+            ? `Accès refusé par le bot (HTTP ${res.status}) — reconnecte-toi ou vérifie tes droits sur ce serveur.`
+            : res.status === 404
+              ? "Le bot ne connaît pas cette route (HTTP 404) — le bot n'a probablement pas été redéployé."
+              : `Le bot a répondu une erreur (HTTP ${res.status}).`
+        );
+      } else {
+        setStateError(null);
         const data = await res.json();
         setMusicState(data.state);
         if (!isScrubbing) {
@@ -172,6 +182,7 @@ export default function MusicCenterClient() {
       }
     } catch (err) {
       console.warn("Erreur chargement state musique :", err);
+      setStateError("Bot injoignable — le site n'arrive pas à contacter le bot (bot arrêté, redémarrage en cours ou URL de l'API incorrecte).");
     } finally {
       setLoading(false);
     }
@@ -550,6 +561,11 @@ export default function MusicCenterClient() {
               <p className="text-xs text-zinc-400">
                 Lecteur audio haute performance synchronisé en direct avec Discord
               </p>
+              {stateError && (
+                <p role="alert" className="mt-1 text-xs text-amber-400">
+                  ⚠ {stateError}
+                </p>
+              )}
             </div>
           </div>
 

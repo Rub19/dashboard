@@ -47,6 +47,7 @@ export const SOUNDSCAPE_PRESETS = [
 
 export default function SoundscapeMixer() {
   const { settings, update } = useSettings();
+  const i18n = useI18n();
   const { ambientLayers, playAmbientLayer, stopAmbientLayer, stopAmbient, setAmbientLayerVolume } = useSound();
 
   // The mixer's own source of truth is the engine's live layer map, so the UI can
@@ -117,12 +118,12 @@ export default function SoundscapeMixer() {
                 {isPlayingAny && (
                   <span className="flex items-center gap-1 rounded-full bg-[var(--accent-primary)]/15 px-2 py-0.5 text-[10px] font-semibold text-[var(--accent-primary)] animate-pulse">
                     <span className="h-1.5 w-1.5 rounded-full bg-[var(--accent-primary)]" />
-                    En cours
+                    {i18n("sMixRunning", "En cours")}
                   </span>
                 )}
               </div>
               <p className="text-xs text-[var(--text-muted)]">
-                14 ambiances continues haute fidélité avec mixeur multi-couches
+                {i18n("sMixSubtitle", "14 ambiances continues haute fidélité avec mixeur multi-couches")}
               </p>
             </div>
           </div>
@@ -134,7 +135,7 @@ export default function SoundscapeMixer() {
               className="flex items-center gap-1.5 rounded-[var(--inset-radius)] border border-[var(--panel-border)] bg-[var(--panel-bg)] px-3 py-2 text-xs font-semibold text-[var(--text-primary)] hover:border-[var(--accent-primary)]/50 hover:bg-[var(--surface-hover)] transition-all active:scale-95"
             >
               <Icon name="sparkles" className="h-3.5 w-3.5 text-[var(--accent-primary)]" />
-              🎲 Ambiance aléatoire
+              🎲 {i18n("sMixRandom", "Ambiance aléatoire")}
             </button>
             {isPlayingAny && (
               <button
@@ -143,7 +144,7 @@ export default function SoundscapeMixer() {
                 className="flex items-center gap-1.5 rounded-[var(--inset-radius)] border border-[var(--danger)]/30 bg-[var(--danger)]/10 px-3 py-2 text-xs font-semibold text-[var(--danger)] hover:bg-[var(--danger)]/20 transition-all active:scale-95"
               >
                 <Icon name="x" className="h-3.5 w-3.5" />
-                Tout couper
+                {i18n("sMixStopAll", "Tout couper")}
               </button>
             )}
           </div>
@@ -152,7 +153,7 @@ export default function SoundscapeMixer() {
         {/* Master Volume Bar */}
         <div className="mt-4 flex items-center gap-3 border-t border-[var(--panel-border)]/50 pt-4">
           <Icon name="speaker-high" className="h-4 w-4 text-[var(--text-muted)]" />
-          <span className="text-xs font-medium text-[var(--text-muted)]">Volume général</span>
+          <span className="text-xs font-medium text-[var(--text-muted)]">{i18n("sMixMaster", "Volume général")}</span>
           <input
             type="range"
             min="0"
@@ -170,7 +171,7 @@ export default function SoundscapeMixer() {
       {/* Presets Row */}
       <div className="flex flex-col gap-2.5">
         <h4 className="text-xs font-semibold uppercase tracking-wider text-[var(--text-muted)]">
-          Presets d&apos;ambiance recommandés
+          {i18n("sMixPresets", "Presets d'ambiance recommandés")}
         </h4>
         <div className="grid grid-cols-2 gap-2 sm:grid-cols-4 lg:grid-cols-8">
           {SOUNDSCAPE_PRESETS.map((preset) => (
@@ -196,11 +197,11 @@ export default function SoundscapeMixer() {
       <div className="flex items-center gap-1.5 overflow-x-auto no-scrollbar border-b border-[var(--panel-border)] pb-2">
         {(
           [
-            { id: "all", label: "Toutes les ambiances (14)" },
-            { id: "weather", label: "Météo & Éléments" },
-            { id: "nature", label: "Nature & Écosystèmes" },
-            { id: "ambient", label: "Lieux & Atmosphères" },
-            { id: "focus", label: "Concentration & Étude" },
+            { id: "all", label: i18n("sMixTabAll", "Toutes les ambiances (14)") },
+            { id: "weather", label: i18n("sMixTabWeather", "Météo & Éléments") },
+            { id: "nature", label: i18n("sMixTabNature", "Nature & Écosystèmes") },
+            { id: "ambient", label: i18n("sMixTabAmbient", "Lieux & Atmosphères") },
+            { id: "focus", label: i18n("sMixTabFocus", "Concentration & Étude") },
           ] as const
         ).map((tab) => (
           <button
@@ -251,10 +252,10 @@ export default function SoundscapeMixer() {
                   </button>
                   <div>
                     <h5 className="text-sm font-semibold text-[var(--text-primary)]">
-                      {sound.label}
+                      {i18n(`sSnd_${sound.id}`, sound.label)}
                     </h5>
                     <p className="line-clamp-1 text-[11px] text-[var(--text-muted)]">
-                      {sound.description}
+                      {i18n(`sSndD_${sound.id}`, sound.description)}
                     </p>
                   </div>
                 </div>
@@ -308,16 +309,16 @@ export default function SoundscapeMixer() {
       {/* Smart Soundscape Preferences */}
       <div className="rounded-[var(--panel-radius)] border border-[var(--panel-border)] bg-[var(--panel-bg)] p-4 flex flex-col gap-3">
         <h4 className="text-xs font-semibold uppercase tracking-wider text-[var(--text-muted)]">
-          Comportement & Options de mixage
+          {i18n("sMixBehavior", "Comportement & Options de mixage")}
         </h4>
         <div className="grid grid-cols-1 gap-3 sm:grid-cols-2">
           <label className="flex items-center justify-between gap-3 rounded-[var(--inset-radius)] border border-[var(--panel-border)]/50 bg-[var(--surface-raised)]/40 p-3">
             <div>
               <p className="text-xs font-semibold text-[var(--text-primary)]">
-                Couper lors de la lecture musicale
+                {i18n("sMixDuckMusic", "Couper lors de la lecture musicale")}
               </p>
               <p className="text-[10px] text-[var(--text-muted)]">
-                Met en pause les soundscapes dès que Spotify est actif
+                {i18n("sMixDuckMusicDesc", "Met en pause les soundscapes dès que Spotify est actif")}
               </p>
             </div>
             <input
@@ -331,10 +332,10 @@ export default function SoundscapeMixer() {
           <label className="flex items-center justify-between gap-3 rounded-[var(--inset-radius)] border border-[var(--panel-border)]/50 bg-[var(--surface-raised)]/40 p-3">
             <div>
               <p className="text-xs font-semibold text-[var(--text-primary)]">
-                Atténuation sur notifications
+                {i18n("sMixDuckNotif", "Atténuation sur notifications")}
               </p>
               <p className="text-[10px] text-[var(--text-muted)]">
-                Baisse temporairement le volume lors d&apos;une alerte sonore
+                {i18n("sMixDuckNotifDesc", "Baisse temporairement le volume lors d'une alerte sonore")}
               </p>
             </div>
             <input

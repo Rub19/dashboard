@@ -26,60 +26,60 @@ export default function SettingsOverview({ onNavigate }: SettingsOverviewProps) 
   const userStatus = USER_STATUS_CONFIG[settings.status] || USER_STATUS_CONFIG.online;
   const syncStatus = useSyncStore((s) => s.status);
   const SYNC_STATUS_CONFIG = {
-    idle: { label: "Connecté", detail: "Supabase actif", color: "text-[var(--success)]" },
-    syncing: { label: "Synchronisation...", detail: "Supabase actif", color: "text-[var(--info)]" },
-    offline: { label: "Hors ligne", detail: "En attente de connexion", color: "text-[var(--warning)]" },
-    error: { label: "Erreur de sync", detail: "Voir Synchronisation Cloud", color: "text-[var(--danger)]" },
+    idle: { label: i18n("sOvConnected", "Connecté"), detail: i18n("sOvSupabaseActive", "Supabase actif"), color: "text-[var(--success)]" },
+    syncing: { label: i18n("sOvSyncing", "Synchronisation..."), detail: i18n("sOvSupabaseActive", "Supabase actif"), color: "text-[var(--info)]" },
+    offline: { label: i18n("sOvOffline", "Hors ligne"), detail: i18n("sOvWaiting", "En attente de connexion"), color: "text-[var(--warning)]" },
+    error: { label: i18n("sOvSyncError", "Erreur de sync"), detail: i18n("sOvSeeCloudSync", "Voir Synchronisation Cloud"), color: "text-[var(--danger)]" },
   }[syncStatus];
 
   const quickActions = [
     {
       id: "discord-onboarding",
-      label: "Onboarding Discord Bot",
-      desc: "Revoir l'introduction interactive 2.0",
+      label: i18n("sOvQaDiscord", "Onboarding Discord Bot"),
+      desc: i18n("sOvQaDiscordDesc", "Revoir l'introduction interactive 2.0"),
       icon: "sparkles",
       color: "#5865F2",
       onClick: () => router.push("/discord?onboarding=true"),
     },
     {
       id: "appearance",
-      label: "Personnaliser l'apparence",
-      desc: "Thèmes, couleurs d'accent & rayon",
+      label: i18n("sOvQaAppearance", "Personnaliser l'apparence"),
+      desc: i18n("sOvQaAppearanceDesc", "Thèmes, couleurs d'accent & rayon"),
       icon: "palette",
       color: "var(--accent-primary)",
     },
     {
       id: "soundscapes",
-      label: "Soundscapes & Mixeur",
-      desc: "14 ambiances sonores & presets",
+      label: i18n("sOvQaSound", "Soundscapes & Mixeur"),
+      desc: i18n("sOvQaSoundDesc", "14 ambiances sonores & presets"),
       icon: "cloud-rain",
       color: "var(--info)",
     },
     {
       id: "dynamic-island",
-      label: "Dynamic Island",
-      desc: "Comportement & prévisualisation",
+      label: i18n("sOvQaIsland", "Dynamic Island"),
+      desc: i18n("sOvQaIslandDesc", "Comportement & prévisualisation"),
       icon: "disc",
       color: "var(--accent-secondary)",
     },
     {
       id: "dock",
-      label: "Personnaliser le Dock",
-      desc: "Échelle, position & transparence",
+      label: i18n("sOvQaDock", "Personnaliser le Dock"),
+      desc: i18n("sOvQaDockDesc", "Échelle, position & transparence"),
       icon: "credit-card",
       color: "var(--accent-primary)",
     },
     {
       id: "connections",
-      label: "Gérer les connexions",
-      desc: "Spotify, Drive, Discord & APIs",
+      label: i18n("sOvQaConnections", "Gérer les connexions"),
+      desc: i18n("sOvQaConnectionsDesc", "Spotify, Drive, Discord & APIs"),
       icon: "plug",
       color: "var(--warning)",
     },
     {
       id: "privacy",
-      label: "Confidentialité & Sécurité",
-      desc: "Sessions, passkeys & télémétrie",
+      label: i18n("sOvQaPrivacy", "Confidentialité & Sécurité"),
+      desc: i18n("sOvQaPrivacyDesc", "Sessions, passkeys & télémétrie"),
       icon: "shield",
       color: "var(--success)",
     },
@@ -128,7 +128,7 @@ export default function SettingsOverview({ onNavigate }: SettingsOverviewProps) 
               </div>
               <p className="truncate text-xs text-[var(--text-muted)]">
                 {email ? <>{email} · </> : null}
-                Statut : <span className={userStatus.text}>{i18n(userStatus.labelKey, settings.status)}</span> · Mode {settings.sessionMode}
+                {i18n("sOvStatus", "Statut")} : <span className={userStatus.text}>{i18n(userStatus.labelKey, settings.status)}</span> · {i18n("sOvMode", "Mode")} {settings.sessionMode}
               </p>
             </div>
           </div>
@@ -140,7 +140,7 @@ export default function SettingsOverview({ onNavigate }: SettingsOverviewProps) 
               className="flex items-center gap-1.5 rounded-[var(--inset-radius)] border border-[var(--panel-border)] bg-[var(--panel-bg)] px-3 py-1.5 text-xs font-medium text-[var(--text-primary)] hover:border-[var(--accent-primary)]/50 transition-colors"
             >
               <Icon name="user" className="h-3.5 w-3.5 text-[var(--accent-primary)]" />
-              Gérer le profil
+              {i18n("sOvManageProfile", "Gérer le profil")}
             </button>
             <button
               type="button"
@@ -148,7 +148,7 @@ export default function SettingsOverview({ onNavigate }: SettingsOverviewProps) 
               className="flex items-center gap-1.5 rounded-[var(--inset-radius)] border border-[var(--panel-border)] bg-[var(--panel-bg)] px-3 py-1.5 text-xs font-medium text-[var(--text-primary)] hover:border-[var(--accent-primary)]/50 transition-colors"
             >
               <Icon name="cpu" className="h-3.5 w-3.5 text-[var(--info)]" />
-              Diagnostic
+              {i18n("sOvDiagnostic", "Diagnostic")}
             </button>
           </div>
         </div>
@@ -165,14 +165,14 @@ export default function SettingsOverview({ onNavigate }: SettingsOverviewProps) 
           className="group flex cursor-pointer flex-col justify-between rounded-[var(--inset-radius)] border border-[var(--panel-border)] bg-[var(--panel-bg)] p-3 transition-all hover:border-[var(--accent-primary)]/40 hover:shadow-md"
         >
           <div className="flex items-center justify-between">
-            <span className="text-[11px] font-medium text-[var(--text-muted)]">Thème</span>
+            <span className="text-[11px] font-medium text-[var(--text-muted)]">{i18n("sOvTheme", "Thème")}</span>
             <Icon name="palette" className="h-4 w-4 text-[var(--accent-primary)]" />
           </div>
           <div className="mt-2">
             <p className="text-xs font-semibold capitalize text-[var(--text-primary)]">
               {settings.theme}
             </p>
-            <span className="text-[10px] text-[var(--text-muted)]">Accent {settings.accentColor}</span>
+            <span className="text-[10px] text-[var(--text-muted)]">{i18n("sOvAccent", "Accent")} {settings.accentColor}</span>
           </div>
         </div>
 
@@ -182,7 +182,7 @@ export default function SettingsOverview({ onNavigate }: SettingsOverviewProps) 
           className="group flex cursor-pointer flex-col justify-between rounded-[var(--inset-radius)] border border-[var(--panel-border)] bg-[var(--panel-bg)] p-3 transition-all hover:border-[var(--accent-primary)]/40 hover:shadow-md"
         >
           <div className="flex items-center justify-between">
-            <span className="text-[11px] font-medium text-[var(--text-muted)]">Sync Cloud</span>
+            <span className="text-[11px] font-medium text-[var(--text-muted)]">{i18n("sOvSyncCloud", "Sync Cloud")}</span>
             <Icon
               name="arrows-clockwise"
               className={cn("h-4 w-4", SYNC_STATUS_CONFIG.color, syncStatus === "syncing" ? "animate-spin" : "")}
@@ -202,14 +202,14 @@ export default function SettingsOverview({ onNavigate }: SettingsOverviewProps) 
           className="group flex cursor-pointer flex-col justify-between rounded-[var(--inset-radius)] border border-[var(--panel-border)] bg-[var(--panel-bg)] p-3 transition-all hover:border-[var(--accent-primary)]/40 hover:shadow-md"
         >
           <div className="flex items-center justify-between">
-            <span className="text-[11px] font-medium text-[var(--text-muted)]">Ambiance</span>
+            <span className="text-[11px] font-medium text-[var(--text-muted)]">{i18n("sOvAmbience", "Ambiance")}</span>
             <Icon name="cloud-rain" className="h-4 w-4 text-[var(--info)]" />
           </div>
           <div className="mt-2">
             <p className="text-xs font-semibold capitalize text-[var(--text-primary)]">
-              {ambientSound !== "none" ? ambientSound : "Désactivé"}
+              {ambientSound !== "none" ? ambientSound : i18n("sOvSoundOff", "Désactivé")}
             </p>
-            <span className="text-[10px] text-[var(--text-muted)]">14 soundscapes</span>
+            <span className="text-[10px] text-[var(--text-muted)]">{i18n("sOvSoundscapes", "14 soundscapes")}</span>
           </div>
         </div>
 
@@ -219,14 +219,14 @@ export default function SettingsOverview({ onNavigate }: SettingsOverviewProps) 
           className="group flex cursor-pointer flex-col justify-between rounded-[var(--inset-radius)] border border-[var(--panel-border)] bg-[var(--panel-bg)] p-3 transition-all hover:border-[var(--accent-primary)]/40 hover:shadow-md"
         >
           <div className="flex items-center justify-between">
-            <span className="text-[11px] font-medium text-[var(--text-muted)]">Island</span>
+            <span className="text-[11px] font-medium text-[var(--text-muted)]">{i18n("sOvIsland", "Island")}</span>
             <Icon name="disc" className="h-4 w-4 text-[var(--accent-secondary)]" />
           </div>
           <div className="mt-2">
             <p className="text-xs font-semibold text-[var(--text-primary)]">
-              {settings.dynamicIslandVisible ? "Active" : "Masquée"}
+              {settings.dynamicIslandVisible ? i18n("sOvIslandActive", "Active") : i18n("sOvIslandHidden", "Masquée")}
             </p>
-            <span className="text-[10px] text-[var(--text-muted)]">Preview live</span>
+            <span className="text-[10px] text-[var(--text-muted)]">{i18n("sOvPreviewLive", "Preview live")}</span>
           </div>
         </div>
 
@@ -236,12 +236,12 @@ export default function SettingsOverview({ onNavigate }: SettingsOverviewProps) 
           className="group flex cursor-pointer flex-col justify-between rounded-[var(--inset-radius)] border border-[var(--panel-border)] bg-[var(--panel-bg)] p-3 transition-all hover:border-[var(--accent-primary)]/40 hover:shadow-md"
         >
           <div className="flex items-center justify-between">
-            <span className="text-[11px] font-medium text-[var(--text-muted)]">Dock</span>
+            <span className="text-[11px] font-medium text-[var(--text-muted)]">{i18n("sOvDock", "Dock")}</span>
             <Icon name="credit-card" className="h-4 w-4 text-[var(--accent-primary)]" />
           </div>
           <div className="mt-2">
             <p className="text-xs font-semibold text-[var(--text-primary)]">
-              {settings.dockVisible ? "Visible" : "Masqué"}
+              {settings.dockVisible ? i18n("sOvDockVisible", "Visible") : i18n("sOvDockHidden", "Masqué")}
             </p>
             <span className="text-[10px] text-[var(--text-muted)]">{settings.dockScale}</span>
           </div>
@@ -253,7 +253,7 @@ export default function SettingsOverview({ onNavigate }: SettingsOverviewProps) 
           className="group flex cursor-pointer flex-col justify-between rounded-[var(--inset-radius)] border border-[var(--panel-border)] bg-[var(--panel-bg)] p-3 transition-all hover:border-[var(--accent-primary)]/40 hover:shadow-md"
         >
           <div className="flex items-center justify-between">
-            <span className="text-[11px] font-medium text-[var(--text-muted)]">Langue</span>
+            <span className="text-[11px] font-medium text-[var(--text-muted)]">{i18n("sOvLanguage", "Langue")}</span>
             <Icon name="globe" className="h-4 w-4 text-[var(--warning)]" />
           </div>
           <div className="mt-2">
@@ -270,7 +270,7 @@ export default function SettingsOverview({ onNavigate }: SettingsOverviewProps) 
       {/* Quick Action Shortcuts */}
       <div className="flex flex-col gap-3">
         <h3 className="text-xs font-semibold uppercase tracking-wider text-[var(--text-muted)]">
-          Raccourcis de configuration rapide
+          {i18n("sOvQuickTitle", "Raccourcis de configuration rapide")}
         </h3>
         <div className="grid grid-cols-1 gap-3 sm:grid-cols-2 lg:grid-cols-3">
           {quickActions.map((action) => (

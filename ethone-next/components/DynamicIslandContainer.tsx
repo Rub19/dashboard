@@ -232,7 +232,7 @@ function IslandExpandedHeader({
         <span className="text-[10px] font-medium tabular-nums">{viewLabel(selected, i18n)}</span>
       </div>
       <div className="flex items-center gap-1.5">
-        {activeViews.map((v) => (
+        {activeViews.length > 1 && activeViews.map((v) => (
           <IslandBubble
             key={v}
             view={v}
@@ -797,9 +797,7 @@ export default function DynamicIslandContainer() {
                 {/* État : source + lecture, égaliseur à droite (l'horloge est déjà dans la barre) */}
                 <div className="flex items-center gap-2 px-0.5 text-[11px] font-medium text-[var(--text-muted)]">
                   <span className={cn("h-1.5 w-1.5 rounded-full bg-[var(--accent-primary)]", nowPlaying?.isPlaying && "animate-pulse")} />
-                  <span className="capitalize text-[var(--text-primary)]">{nowPlaying?.source || "Spotify"}</span>
-                  <span>·</span>
-                  <span>{nowPlaying?.isPlaying ? "Lecture en cours" : isSpotifyConnected ? "Connecté" : "Prêt"}</span>
+                  <span className="text-[var(--text-primary)]">{nowPlaying?.isPlaying ? "Lecture en cours" : isSpotifyConnected ? "En pause" : "Prêt"}</span>
                   <AudioVisualizer
                     seed={nowPlaying?.id || nowPlaying?.title || "spotify"}
                     isPlaying={!!nowPlaying?.isPlaying}
@@ -837,11 +835,6 @@ export default function DynamicIslandContainer() {
                       ) : (
                         <div className="flex h-[68px] w-[68px] items-center justify-center rounded-xl bg-[var(--surface-raised)] ring-1 ring-[var(--panel-border)] shadow-lg">
                           <ServiceIcon id="spotify" icon="music" className="h-9 w-9" colored />
-                        </div>
-                      )}
-                      {nowPlaying?.isPlaying && (
-                        <div className="absolute -bottom-1 -right-1 flex h-4 w-4 items-center justify-center rounded-full bg-[var(--panel-bg)] border border-[var(--accent-primary)]/40">
-                          <span className="h-2 w-2 rounded-full bg-[var(--accent-primary)] animate-ping" />
                         </div>
                       )}
                     </div>
@@ -903,7 +896,7 @@ export default function DynamicIslandContainer() {
                     aria-label={i18n("previous")}
                     title="Piste précédente"
                   >
-                    <Icon name="skipBack" pack="phosphor" className="h-5 w-5" />
+                    <Icon name="skipBack" pack="phosphor" className="h-[18px] w-[18px]" />
                   </button>
 
                   <button
@@ -929,7 +922,7 @@ export default function DynamicIslandContainer() {
                     aria-label={i18n("next")}
                     title="Piste suivante"
                   >
-                    <Icon name="skipForward" pack="phosphor" className="h-5 w-5" />
+                    <Icon name="skipForward" pack="phosphor" className="h-[18px] w-[18px]" />
                   </button>
                 </div>
                 <div aria-hidden />

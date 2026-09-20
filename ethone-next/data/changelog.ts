@@ -28727,4 +28727,49 @@ CHANGELOG_BY_LANG.en.unshift(v1259_en);
 CHANGELOG_BY_LANG.es.unshift(v1259_es);
 CHANGELOG_BY_LANG.de.unshift(v1259_de);
 
+const v12510_fr: ChangelogEntry = {
+  version: "v1.25.10",
+  date: "2026-09-20",
+  title: "Dynamic Island : icônes et textes nettoyés, CI GitHub de nouveau verte",
+  items: [
+    "Dynamic Island (Spotify) : la bulle d'icône musique en haut à droite est masquée quand il n'y a qu'une vue active (elle doublait le libellé « Spotify ») ; la ligne d'état ne répète plus « Spotify » ; le point clignotant collé au coin de la pochette est supprimé (l'égaliseur indique déjà la lecture) ; les temps ne chevauchent plus la barre de progression (espacement, chiffres tabulaires, temps écoulé mis en avant) ; les icônes précédent/suivant ont la même taille.",
+    "CI GitHub : les builds « Build Web (Next.js) » échouaient depuis la v1.25.4 à cause d'un test de durée trop strict (`soundscape-render.test.ts` : 6,9 s mesurés pour un budget de 6 s sur les machines de CI). Il teste maintenant la charge réelle de l'app (24 kHz, 24 s) avec un budget large, uniquement pour détecter une vraie régression.",
+  ],
+};
+
+const v12510_en: ChangelogEntry = {
+  version: "v1.25.10",
+  date: "2026-09-20",
+  title: "Dynamic Island: icons and text cleaned up, GitHub CI green again",
+  items: [
+    "Dynamic Island (Spotify): the music icon bubble at the top right is hidden when only one view is active (it duplicated the \"Spotify\" label); the status line no longer repeats \"Spotify\"; the blinking dot stuck to the cover corner is removed (the equalizer already shows playback); times no longer overlap the progress bar (spacing, tabular digits, elapsed time emphasized); the previous/next icons share the same size.",
+    "GitHub CI: the \"Build Web (Next.js)\" builds had been failing since v1.25.4 because of an overly strict timing test (`soundscape-render.test.ts`: 6.9 s measured against a 6 s budget on CI machines). It now tests the app's real workload (24 kHz, 24 s) with a generous budget, only to catch a genuine regression.",
+  ],
+};
+
+const v12510_es: ChangelogEntry = {
+  version: "v1.25.10",
+  date: "2026-09-20",
+  title: "Dynamic Island: iconos y textos limpiados, CI de GitHub en verde otra vez",
+  items: [
+    "Dynamic Island (Spotify): la burbuja del icono de música arriba a la derecha se oculta cuando solo hay una vista activa (duplicaba la etiqueta \"Spotify\"); la línea de estado ya no repite \"Spotify\"; se elimina el punto parpadeante pegado a la esquina de la portada (el ecualizador ya indica la reproducción); los tiempos ya no se solapan con la barra de progreso (espaciado, cifras tabulares, tiempo transcurrido resaltado); los iconos anterior/siguiente tienen el mismo tamaño.",
+    "CI de GitHub: las compilaciones \"Build Web (Next.js)\" fallaban desde la v1.25.4 por una prueba de tiempo demasiado estricta (`soundscape-render.test.ts`: 6,9 s medidos frente a un presupuesto de 6 s en las máquinas de CI). Ahora prueba la carga real de la app (24 kHz, 24 s) con un presupuesto amplio, solo para detectar una regresión real.",
+  ],
+};
+
+const v12510_de: ChangelogEntry = {
+  version: "v1.25.10",
+  date: "2026-09-20",
+  title: "Dynamic Island: Symbole und Texte aufgeräumt, GitHub-CI wieder grün",
+  items: [
+    "Dynamic Island (Spotify): Die Musik-Symbolblase oben rechts wird ausgeblendet, wenn nur eine Ansicht aktiv ist (sie doppelte das Label „Spotify“); die Statuszeile wiederholt „Spotify“ nicht mehr; der blinkende Punkt an der Cover-Ecke entfällt (der Equalizer zeigt die Wiedergabe bereits); Zeiten überlappen den Fortschrittsbalken nicht mehr (Abstand, tabellarische Ziffern, verstrichene Zeit hervorgehoben); die Vor-/Zurück-Symbole haben dieselbe Größe.",
+    "GitHub-CI: Die Builds „Build Web (Next.js)“ schlugen seit v1.25.4 wegen eines zu strengen Zeittests fehl (`soundscape-render.test.ts`: 6,9 s gemessen bei 6 s Budget auf CI-Rechnern). Er prüft jetzt die reale App-Last (24 kHz, 24 s) mit großzügigem Budget, nur um eine echte Regression zu erkennen.",
+  ],
+};
+
+CHANGELOG_BY_LANG.fr.unshift(v12510_fr);
+CHANGELOG_BY_LANG.en.unshift(v12510_en);
+CHANGELOG_BY_LANG.es.unshift(v12510_es);
+CHANGELOG_BY_LANG.de.unshift(v12510_de);
+
 export const CHANGELOG = CHANGELOG_BY_LANG.fr;

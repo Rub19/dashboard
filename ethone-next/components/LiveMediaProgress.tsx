@@ -124,7 +124,7 @@ export default function LiveMediaProgress({
   );
 
   return (
-    <div className={cn("space-y-1.5 w-full select-none", className)} data-testid={testId}>
+    <div className={cn("w-full select-none", className)} data-testid={testId}>
       {/* Progress Track */}
       <div
         ref={trackRef}
@@ -156,8 +156,8 @@ export default function LiveMediaProgress({
       </div>
 
       {/* Timestamps */}
-      <div className="flex justify-between items-center text-[10px] font-mono text-[var(--text-muted)] px-0.5">
-        <span className="font-semibold">{formatMs(currentProgress)}</span>
+      <div className="mt-2.5 flex items-center justify-between px-0.5 text-[11px] font-medium tabular-nums text-[var(--text-muted)]">
+        <span className="text-[var(--text-primary)]">{formatMs(currentProgress)}</span>
         <span>{formatMs(durationMs)}</span>
       </div>
     </div>

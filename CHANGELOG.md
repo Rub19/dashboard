@@ -2,6 +2,13 @@
 
 Toutes les modifications notables de ce projet seront documentées dans ce fichier.
 
+## v1.25.10 — 2026-09-20
+
+**Dynamic Island : icônes et textes nettoyés, CI GitHub de nouveau verte**
+
+- Dynamic Island (Spotify) : la bulle d'icône musique en haut à droite est masquée quand il n'y a qu'une vue active (elle doublait le libellé « Spotify ») ; la ligne d'état ne répète plus « Spotify » ; le point clignotant collé au coin de la pochette est supprimé (l'égaliseur indique déjà la lecture) ; les temps ne chevauchent plus la barre de progression (espacement, chiffres tabulaires, temps écoulé mis en avant) ; les icônes précédent/suivant ont la même taille.
+- CI GitHub : les builds « Build Web (Next.js) » échouaient depuis la v1.25.4 à cause d'un test de durée trop strict (`soundscape-render.test.ts` : 6,9 s mesurés pour un budget de 6 s sur les machines de CI). Il teste maintenant la charge réelle de l'app (24 kHz, 24 s) avec un budget large, uniquement pour détecter une vraie régression.
+
 ## v1.25.9 — 2026-09-20
 
 **Dynamic Island : fin du grand vide sous les contrôles**

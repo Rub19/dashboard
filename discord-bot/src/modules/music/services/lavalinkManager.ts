@@ -62,7 +62,7 @@ class LavalinkManager {
   }
 
   /** Resolves once a node is CONNECTED (or after `timeoutMs`, with false). */
-  public async waitForNode(timeoutMs = 10_000): Promise<boolean> {
+  public async waitForNode(timeoutMs = 25_000): Promise<boolean> {
     const deadline = Date.now() + timeoutMs;
     while (Date.now() < deadline) {
       if (this.ready) return true;

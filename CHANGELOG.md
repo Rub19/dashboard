@@ -2,6 +2,14 @@
 
 Toutes les modifications notables de ce projet seront documentées dans ce fichier.
 
+## v1.25.2 — 2026-09-20
+
+**Ambiances naturelles : océan, feu de cheminée, vent, forêt et nuit refaits**
+
+- Cinq ambiances passent au même rendu stéréo naturel que la pluie et l'orage : océan (houles asymétriques qui montent, déferlent et se retirent, avec écume), feu de cheminée (ronflement grave + crépitements, claquements et grappes de braises), vent (rafales et léger sifflement qui dérive), forêt (feuillage et oiseaux qui se répondent) et nuit (grillons en trains d'impulsions).
+- Boucles sans couture, rendu mis en cache (un seul calcul par ambiance), et les filtres de lecture qui étouffaient les crépitements, les oiseaux et les grillons (1,2 à 3,2 kHz) sont relevés.
+- 8 tests supplémentaires : signal fini et sans saturation, stéréo, boucle sans saut, feu plus impulsif et plus brillant que l'océan, houle qui monte et redescend, grillons plus aigus que le vent.
+
 ## v1.25.1 — 2026-09-20
 
 **Barre du haut refaite : menu profil, notifications, toasts et pastilles**

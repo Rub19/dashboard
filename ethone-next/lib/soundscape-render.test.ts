@@ -93,3 +93,68 @@ describe("soundscape-render", () => {
     expect(Date.now() - t0).toBeLessThan(6000);
   });
 });
+
+import { renderOcean, renderFireplace, renderWind, renderForest, renderNight } from "./soundscape-render";
+
+function crest(a: Float32Array): number {
+  let peak = 0;
+  for (let i = 0; i < a.length; i++) peak = Math.max(peak, Math.abs(a[i]));
+  return peak / (rms(a) || 1);
+}
+
+/** Part d'énergie « haute fréquence » (différence première = passe-haut grossier). */
+function highShare(a: Float32Array): number {
+  let hi = 0;
+  let all = 0;
+  for (let i = 1; i < a.length; i++) {
+    const d = a[i] - a[i - 1];
+    hi += d * d;
+    all += a[i] * a[i];
+  }
+  return hi / (all || 1);
+}
+
+describe("other natural soundscapes", () => {
+  const kinds: Array<[string, () => [Float32Array, Float32Array]]> = [
+    ["ocean", () => renderOcean(SR, 16, mulberry32(11))],
+    ["fireplace", () => renderFireplace(SR, 16, mulberry32(12))],
+    ["wind", () => renderWind(SR, 16, mulberry32(13))],
+    ["forest", () => renderForest(SR, 16, mulberry32(14))],
+    ["night", () => renderNight(SR, 16, mulberry32(15))],
+  ];
+  const out = Object.fromEntries(kinds.map(([k, f]) => [k, f()]));
+
+  it.each(kinds.map(([k]) => k))("%s: finite, in range, stereo, seamless", (k) => {
+    const [l, r] = out[k];
+    let peak = 0;
+    let finite = true;
+    for (let i = 0; i < l.length; i++) {
+      if (!Number.isFinite(l[i]) || !Number.isFinite(r[i])) finite = false;
+      peak = Math.max(peak, Math.abs(l[i]), Math.abs(r[i]));
+    }
+    expect(finite).toBe(true);
+    expect(peak).toBeLessThanOrEqual(0.99);
+    expect(peak).toBeGreaterThan(0.2);
+    expect(Math.abs(correlation(l, r))).toBeLessThan(0.9);
+    const start = rms(l, 0, SR);
+    const end = rms(l, l.length - SR, l.length);
+    expect(end / start).toBeGreaterThan(0.35);
+    expect(end / start).toBeLessThan(2.8);
+  });
+
+  it("the fireplace is crackly: impulsive and brighter than the ocean", () => {
+    expect(crest(out.fireplace[0])).toBeGreaterThan(crest(out.ocean[0]) * 1.3);
+    expect(highShare(out.fireplace[0])).toBeGreaterThan(highShare(out.ocean[0]));
+  });
+
+  it("the ocean breathes: loudness swells and recedes", () => {
+    const seg = Math.floor(SR * 0.5);
+    const lv: number[] = [];
+    for (let i = 0; i + seg <= out.ocean[0].length; i += seg) lv.push(rms(out.ocean[0], i, i + seg));
+    expect(Math.max(...lv) / Math.min(...lv)).toBeGreaterThan(1.6);
+  });
+
+  it("crickets add high-frequency content that wind lacks", () => {
+    expect(highShare(out.night[0])).toBeGreaterThan(highShare(out.wind[0]));
+  });
+});

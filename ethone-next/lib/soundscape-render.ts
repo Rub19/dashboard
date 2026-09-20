@@ -252,3 +252,230 @@ export function renderStorm(sr: number, seconds = 30, rng: Rng = Math.random): S
   peakNormalize(outL, outR, 0.88);
   return [outL, outR];
 }
+
+/* -------------------------------------------------------------------------- */
+/*  Autres ambiances naturelles : océan, feu de cheminée, vent, forêt, nuit   */
+/* -------------------------------------------------------------------------- */
+
+function allocStereo(sr: number, seconds: number): { n: number; fade: number; l: Float32Array; r: Float32Array } {
+  const n = Math.floor(sr * seconds);
+  const fade = Math.floor(sr * 2);
+  return { n, fade, l: new Float32Array(n + fade), r: new Float32Array(n + fade) };
+}
+
+function finish(l: Float32Array, r: Float32Array, n: number, fade: number, peak: number): StereoBuffer {
+  const outL = makeSeamless(l, n, fade);
+  const outR = makeSeamless(r, n, fade);
+  peakNormalize(outL, outR, peak);
+  return [outL, outR];
+}
+
+/** Océan : houles asymétriques (montée lente, déferlement, écume qui se retire), stéréo décalé. */
+export function renderOcean(sr: number, seconds = 30, rng: Rng = Math.random): StereoBuffer {
+  const { n, fade, l, r } = allocStereo(sr, seconds);
+  const total = n + fade;
+  const pinkL = makePink(rng), pinkR = makePink(rng), foamL = makePink(rng), foamR = makePink(rng);
+  const lpL = onePoleLp(420, sr), lpR = onePoleLp(420, sr);
+  const fhL = onePoleHp(1400, sr), fhR = onePoleHp(1400, sr);
+  const flL = onePoleLp(5200, sr), flR = onePoleLp(5200, sr);
+
+  // Une enveloppe de houle par oreille ; chaque houle : montée ~3 s puis retrait ~4,5 s.
+  const swells = (offsetShare: number): Float32Array => {
+    const env = new Float32Array(total);
+    const period = 8.5 + rng() * 2.5;
+    let t = rng() * 4 + offsetShare * period;
+    while (t < seconds + fade / sr + 8) {
+      const amp = 0.55 + rng() * 0.45;
+      const up = 2.8 + rng() * 1.2;
+      const down = 4 + rng() * 1.8;
+      const s0 = Math.floor(t * sr);
+      const len = Math.floor((up + down) * sr);
+      for (let i = 0; i < len && s0 + i < total; i++) {
+        if (s0 + i < 0) continue;
+        const x = i / sr;
+        const v = x < up ? Math.pow(x / up, 1.6) : Math.exp(-(x - up) / (down * 0.42));
+        env[s0 + i] = Math.max(env[s0 + i], v * amp);
+      }
+      t += period * (0.8 + rng() * 0.4);
+    }
+    return env;
+  };
+  const eL = swells(0);
+  const eR = swells(0.18);
+
+  for (let i = 0; i < total; i++) {
+    const wl = 0.28 + 0.72 * eL[i];
+    const wr = 0.28 + 0.72 * eR[i];
+    l[i] = lpL(pinkL()) * 5.5 * wl + flL(fhL(foamL())) * 3.2 * eL[i] * eL[i];
+    r[i] = lpR(pinkR()) * 5.5 * wr + flR(fhR(foamR())) * 3.2 * eR[i] * eR[i];
+  }
+  return finish(l, r, n, fade, 0.85);
+}
+
+/** Feu de cheminée : ronflement grave continu + crépitements (clics, claquements, braises). */
+export function renderFireplace(sr: number, seconds = 30, rng: Rng = Math.random): StereoBuffer {
+  const { n, fade, l, r } = allocStereo(sr, seconds);
+  const total = n + fade;
+  const bedL = makePink(rng), bedR = makePink(rng);
+  const lpL = onePoleLp(260, sr), lpR = onePoleLp(260, sr);
+  const roarL = makePink(rng), roarR = makePink(rng);
+  const rbL = onePoleLp(2400, sr), rbR = onePoleLp(2400, sr);
+  const rhL = onePoleHp(500, sr), rhR = onePoleHp(500, sr);
+  const cyc = Math.max(1, Math.round(seconds / 7));
+  for (let i = 0; i < total; i++) {
+    const t = i / total;
+    const flick = 0.8 + 0.2 * Math.sin(TWO_PI * cyc * t) * Math.sin(TWO_PI * cyc * 1.7 * t + 0.5);
+    l[i] = lpL(bedL()) * 3.2 * flick + rhL(rbL(roarL())) * 0.55 * flick;
+    r[i] = lpR(bedR()) * 3.2 * flick + rhR(rbR(roarR())) * 0.55 * flick;
+  }
+  const dur = seconds + fade / sr;
+  // Crépitements : petits clics (majorité), claquements plus graves, et grappes.
+  const count = Math.floor(dur * 26);
+  for (let k = 0; k < count; k++) {
+    const start = Math.floor(rng() * (total - sr * 0.06));
+    const loud = Math.pow(rng(), 2.6);
+    const kind = rng();
+    const pan = rng() * 2 - 1;
+    if (kind < 0.7) {
+      addImpact(l, r, start, 2200 + rng() * 3800, 0.0015 + rng() * 0.003, 0.05 + loud * 0.32, pan, sr, rng);
+    } else if (kind < 0.93) {
+      addImpact(l, r, start, 900 + rng() * 1300, 0.006 + rng() * 0.008, 0.08 + loud * 0.4, pan, sr, rng);
+    } else {
+      const burst = 3 + Math.floor(rng() * 4);
+      for (let b = 0; b < burst; b++) {
+        const s = start + Math.floor(rng() * sr * 0.07);
+        if (s < total - sr * 0.03) addImpact(l, r, s, 1500 + rng() * 3000, 0.002 + rng() * 0.004, 0.06 + rng() * 0.22, pan, sr, rng);
+      }
+    }
+  }
+  // quelques gros « pops » de bûche
+  const pops = Math.floor(dur * 0.35);
+  for (let k = 0; k < pops; k++) {
+    const start = Math.floor(rng() * (total - sr * 0.1));
+    addImpact(l, r, start, 420 + rng() * 380, 0.018 + rng() * 0.02, 0.45 + rng() * 0.35, rng() * 1.2 - 0.6, sr, rng);
+  }
+  return finish(l, r, n, fade, 0.85);
+}
+
+/** Vent : souffle large modulé par des rafales + léger sifflement qui monte et descend. */
+export function renderWind(sr: number, seconds = 30, rng: Rng = Math.random): StereoBuffer {
+  const { n, fade, l, r } = allocStereo(sr, seconds);
+  const total = n + fade;
+  const pL = makePink(rng), pR = makePink(rng);
+  const lpL = onePoleLp(900, sr), lpR = onePoleLp(900, sr);
+  const hpL = onePoleHp(110, sr), hpR = onePoleHp(110, sr);
+  const g1 = Math.max(1, Math.round(seconds / 8));
+  const g2 = Math.max(1, Math.round(seconds / 13));
+  const g3 = Math.max(1, Math.round(seconds / 5));
+  let y1L = 0, y2L = 0, y1R = 0, y2R = 0;
+  let c1 = 0, c2 = 0;
+  const rad = 0.9985;
+  for (let i = 0; i < total; i++) {
+    const t = i / total;
+    if ((i & 255) === 0) {
+      const f = 720 + 380 * Math.sin(TWO_PI * g2 * t + 1.1) + 120 * Math.sin(TWO_PI * g3 * t);
+      c1 = 2 * rad * Math.cos((TWO_PI * f) / sr);
+      c2 = -rad * rad;
+    }
+    const gust = 0.35 + 0.65 * Math.pow(0.5 + 0.5 * Math.sin(TWO_PI * g1 * t + 0.4), 1.6);
+    const gustR = 0.35 + 0.65 * Math.pow(0.5 + 0.5 * Math.sin(TWO_PI * g1 * t + 0.9), 1.6);
+    const nl = pL();
+    const nr = pR();
+    const yl = c1 * y1L + c2 * y2L + nl * 0.05;
+    y2L = y1L;
+    y1L = yl;
+    const yr = c1 * y1R + c2 * y2R + nr * 0.05;
+    y2R = y1R;
+    y1R = yr;
+    const whistle = Math.pow(gust, 2.2) * 0.22;
+    l[i] = hpL(lpL(nl)) * 6 * gust + yl * whistle * 3;
+    r[i] = hpR(lpR(nr)) * 6 * gustR + yr * whistle * 3;
+  }
+  return finish(l, r, n, fade, 0.8);
+}
+
+/** Un « pépiement » : série de courtes notes glissées (FM douce), enveloppe en cloche. */
+function addBird(l: Float32Array, r: Float32Array, start: number, sr: number, rng: Rng, gain: number): void {
+  const notes = 2 + Math.floor(rng() * 5);
+  const base = 2400 + rng() * 2600;
+  const pan = rng() * 1.6 - 0.8;
+  const gl = Math.cos(((pan + 1) * Math.PI) / 4);
+  const gr = Math.sin(((pan + 1) * Math.PI) / 4);
+  let pos = start;
+  for (let k = 0; k < notes; k++) {
+    const len = Math.floor(sr * (0.045 + rng() * 0.07));
+    const f0 = base * (0.85 + rng() * 0.5);
+    const glide = (rng() < 0.5 ? 1 : -1) * (300 + rng() * 900);
+    let phase = 0;
+    for (let i = 0; i < len && pos + i < l.length; i++) {
+      const x = i / len;
+      const env = Math.sin(Math.PI * x) ** 2;
+      const f = f0 + glide * x + 90 * Math.sin(TWO_PI * 38 * (i / sr));
+      phase += (TWO_PI * f) / sr;
+      const v = Math.sin(phase) * env * gain;
+      l[pos + i] += v * gl;
+      r[pos + i] += v * gr;
+    }
+    pos += len + Math.floor(sr * (0.03 + rng() * 0.06));
+  }
+}
+
+/** Forêt : vent dans le feuillage (très doux) + oiseaux qui se répondent. */
+export function renderForest(sr: number, seconds = 30, rng: Rng = Math.random): StereoBuffer {
+  const { n, fade, l, r } = allocStereo(sr, seconds);
+  const total = n + fade;
+  const pL = makePink(rng), pR = makePink(rng);
+  const lpL = onePoleLp(3200, sr), lpR = onePoleLp(3200, sr);
+  const hpL = onePoleHp(380, sr), hpR = onePoleHp(380, sr);
+  const c1 = Math.max(1, Math.round(seconds / 10));
+  const c2 = Math.max(1, Math.round(seconds / 17));
+  for (let i = 0; i < total; i++) {
+    const t = i / total;
+    const rustle = 0.55 + 0.25 * Math.sin(TWO_PI * c1 * t) + 0.2 * Math.sin(TWO_PI * c2 * t + 2);
+    l[i] = hpL(lpL(pL())) * 2.6 * rustle;
+    r[i] = hpR(lpR(pR())) * 2.6 * rustle;
+  }
+  const dur = seconds + fade / sr;
+  const calls = Math.floor(dur / 2.4);
+  for (let k = 0; k < calls; k++) {
+    const start = Math.floor(rng() * (total - sr * 0.8));
+    addBird(l, r, start, sr, rng, 0.05 + rng() * 0.09);
+  }
+  return finish(l, r, n, fade, 0.8);
+}
+
+/** Nuit : grillons (trains d'impulsions modulés en amplitude) + air nocturne très bas. */
+export function renderNight(sr: number, seconds = 30, rng: Rng = Math.random): StereoBuffer {
+  const { n, fade, l, r } = allocStereo(sr, seconds);
+  const total = n + fade;
+  const pL = makePink(rng), pR = makePink(rng);
+  const lpL = onePoleLp(500, sr), lpR = onePoleLp(500, sr);
+  for (let i = 0; i < total; i++) {
+    l[i] = lpL(pL()) * 0.9;
+    r[i] = lpR(pR()) * 0.9;
+  }
+  const crickets = 5;
+  for (let c = 0; c < crickets; c++) {
+    const carrier = 4100 + rng() * 1400;
+    const pulseHz = 24 + rng() * 14;
+    const groupPeriod = 0.55 + rng() * 0.5;
+    const pan = rng() * 1.8 - 0.9;
+    const gl = Math.cos(((pan + 1) * Math.PI) / 4);
+    const gr = Math.sin(((pan + 1) * Math.PI) / 4);
+    const level = 0.05 + rng() * 0.05;
+    const offset = rng() * groupPeriod;
+    let phase = 0;
+    for (let i = 0; i < total; i++) {
+      const t = i / sr;
+      const gp = ((t + offset) % groupPeriod) / groupPeriod;
+      const inChirp = gp < 0.55 ? Math.sin((Math.PI * gp) / 0.55) : 0;
+      if (inChirp <= 0) continue;
+      const pulse = Math.max(0, Math.sin(TWO_PI * pulseHz * t));
+      phase += (TWO_PI * carrier) / sr;
+      const v = Math.sin(phase) * pulse * pulse * inChirp * level;
+      l[i] += v * gl;
+      r[i] += v * gr;
+    }
+  }
+  return finish(l, r, n, fade, 0.7);
+}

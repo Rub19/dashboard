@@ -28343,4 +28343,53 @@ CHANGELOG_BY_LANG.en.unshift(v1251_en);
 CHANGELOG_BY_LANG.es.unshift(v1251_es);
 CHANGELOG_BY_LANG.de.unshift(v1251_de);
 
+const v1252_fr: ChangelogEntry = {
+  version: "v1.25.2",
+  date: "2026-09-20",
+  title: "Ambiances naturelles : océan, feu de cheminée, vent, forêt et nuit refaits",
+  items: [
+    "Cinq ambiances passent au même rendu stéréo naturel que la pluie et l'orage : océan (houles asymétriques qui montent, déferlent et se retirent, avec écume), feu de cheminée (ronflement grave + crépitements, claquements et grappes de braises), vent (rafales et léger sifflement qui dérive), forêt (feuillage et oiseaux qui se répondent) et nuit (grillons en trains d'impulsions).",
+    "Boucles sans couture, rendu mis en cache (un seul calcul par ambiance), et les filtres de lecture qui étouffaient les crépitements, les oiseaux et les grillons (1,2 à 3,2 kHz) sont relevés.",
+    "8 tests supplémentaires : signal fini et sans saturation, stéréo, boucle sans saut, feu plus impulsif et plus brillant que l'océan, houle qui monte et redescend, grillons plus aigus que le vent.",
+  ],
+};
+
+const v1252_en: ChangelogEntry = {
+  version: "v1.25.2",
+  date: "2026-09-20",
+  title: "Natural ambiences: ocean, fireplace, wind, forest and night rebuilt",
+  items: [
+    "Five ambiences move to the same natural stereo rendering as rain and storm: ocean (asymmetric swells that rise, break and recede, with foam), fireplace (low roar + crackles, pops and ember clusters), wind (gusts and a faint drifting whistle), forest (foliage and birds answering each other) and night (crickets as pulse trains).",
+    "Seamless loops, cached rendering (one computation per ambience), and the playback filters that muffled crackles, birds and crickets (1.2 to 3.2 kHz) are raised.",
+    "8 more tests: finite, non-clipping signal, stereo, loop without a jump, fire more impulsive and brighter than the ocean, a swell that rises and falls, crickets brighter than wind.",
+  ],
+};
+
+const v1252_es: ChangelogEntry = {
+  version: "v1.25.2",
+  date: "2026-09-20",
+  title: "Ambientes naturales: océano, chimenea, viento, bosque y noche rehechos",
+  items: [
+    "Cinco ambientes pasan al mismo renderizado estéreo natural que la lluvia y la tormenta: océano (oleaje asimétrico que sube, rompe y se retira, con espuma), chimenea (rugido grave + crepitar, chasquidos y racimos de brasas), viento (ráfagas y un leve silbido que deriva), bosque (follaje y pájaros que se responden) y noche (grillos en trenes de pulsos).",
+    "Bucles sin costuras, renderizado en caché (un solo cálculo por ambiente) y se elevan los filtros de reproducción que apagaban crepitares, pájaros y grillos (1,2 a 3,2 kHz).",
+    "8 pruebas más: señal finita y sin saturación, estéreo, bucle sin salto, fuego más impulsivo y brillante que el océano, oleaje que sube y baja, grillos más agudos que el viento.",
+  ],
+};
+
+const v1252_de: ChangelogEntry = {
+  version: "v1.25.2",
+  date: "2026-09-20",
+  title: "Natürliche Ambiences: Ozean, Kamin, Wind, Wald und Nacht neu gebaut",
+  items: [
+    "Fünf Ambiences nutzen jetzt dasselbe natürliche Stereo-Rendering wie Regen und Gewitter: Ozean (asymmetrische Wellen, die ansteigen, brechen und zurückweichen, mit Schaum), Kamin (tiefes Brausen + Knistern, Knacken und Glutgruppen), Wind (Böen und ein leises, wanderndes Pfeifen), Wald (Laub und einander antwortende Vögel) und Nacht (Grillen als Impulsfolgen).",
+    "Nahtlose Schleifen, gecachtes Rendering (eine Berechnung pro Ambience) und die Wiedergabefilter, die Knistern, Vögel und Grillen dämpften (1,2 bis 3,2 kHz), wurden angehoben.",
+    "8 weitere Tests: endliches, nicht übersteuertes Signal, Stereo, Schleife ohne Sprung, Feuer impulsiver und heller als der Ozean, an- und abschwellende Welle, Grillen heller als Wind.",
+  ],
+};
+
+CHANGELOG_BY_LANG.fr.unshift(v1252_fr);
+CHANGELOG_BY_LANG.en.unshift(v1252_en);
+CHANGELOG_BY_LANG.es.unshift(v1252_es);
+CHANGELOG_BY_LANG.de.unshift(v1252_de);
+
 export const CHANGELOG = CHANGELOG_BY_LANG.fr;

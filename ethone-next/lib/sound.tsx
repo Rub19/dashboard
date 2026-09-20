@@ -13,7 +13,15 @@ import {
 import { useSettings } from "@/components/SettingsProvider";
 import type { SoundAmbient } from "@/lib/settings";
 import { scheduleVoice } from "@/lib/sound-voices";
-import { renderRain as renderNaturalRain, renderStorm as renderNaturalStorm } from "@/lib/soundscape-render";
+import {
+  renderRain as renderNaturalRain,
+  renderStorm as renderNaturalStorm,
+  renderOcean as renderNaturalOcean,
+  renderFireplace as renderNaturalFireplace,
+  renderWind as renderNaturalWind,
+  renderForest as renderNaturalForest,
+  renderNight as renderNaturalNight,
+} from "@/lib/soundscape-render";
 
 export type { SoundAmbient };
 
@@ -620,10 +628,25 @@ type AmbientState = {
 const NATURAL_RENDER_SR = 24000;
 const naturalCache = new Map<string, [Float32Array, Float32Array]>();
 
-function createNaturalBuffer(ctx: BaseAudioContext, type: "rain" | "storm"): AudioBuffer {
+type NaturalType = "rain" | "storm" | "ocean" | "fireplace" | "wind" | "forest" | "night";
+const NATURAL_RENDERERS: Record<NaturalType, (sr: number, seconds: number) => [Float32Array, Float32Array]> = {
+  rain: renderNaturalRain,
+  storm: renderNaturalStorm,
+  ocean: renderNaturalOcean,
+  fireplace: renderNaturalFireplace,
+  wind: renderNaturalWind,
+  forest: renderNaturalForest,
+  night: renderNaturalNight,
+};
+
+function isNaturalType(type: string): type is NaturalType {
+  return Object.prototype.hasOwnProperty.call(NATURAL_RENDERERS, type);
+}
+
+function createNaturalBuffer(ctx: BaseAudioContext, type: NaturalType): AudioBuffer {
   let pair = naturalCache.get(type);
   if (!pair) {
-    pair = type === "rain" ? renderNaturalRain(NATURAL_RENDER_SR, 24) : renderNaturalStorm(NATURAL_RENDER_SR, 24);
+    pair = NATURAL_RENDERERS[type](NATURAL_RENDER_SR, 24);
     naturalCache.set(type, pair);
   }
   const buffer = ctx.createBuffer(2, pair[0].length, NATURAL_RENDER_SR);
@@ -633,7 +656,7 @@ function createNaturalBuffer(ctx: BaseAudioContext, type: "rain" | "storm"): Aud
 }
 
 function createAmbientBuffer(ctx: BaseAudioContext, type: SoundAmbient): AudioBuffer {
-  if (type === "rain" || type === "storm") return createNaturalBuffer(ctx, type);
+  if (isNaturalType(type)) return createNaturalBuffer(ctx, type);
   const duration = ["rain", "storm", "blizzard", "train", "ocean", "space"].includes(type) ? 16 : 6;
   const length = Math.floor(ctx.sampleRate * duration);
   const buffer = ctx.createBuffer(1, length, ctx.sampleRate);
@@ -647,12 +670,6 @@ function createAmbientBuffer(ctx: BaseAudioContext, type: SoundAmbient): AudioBu
     renderPinkNoise(data, 0.11);
   } else if (type === "brown") {
     renderBrownNoise(data, 0.6);
-  } else if (type === "fireplace") {
-    renderFireplace(data, ctx.sampleRate);
-  } else if (type === "ocean") {
-    renderOcean(data, ctx.sampleRate);
-  } else if (type === "wind") {
-    renderWind(data, ctx.sampleRate);
   } else if (type === "blizzard") {
     renderBlizzard(data, ctx.sampleRate);
   } else if (type === "train") {
@@ -697,52 +714,6 @@ function renderPinkNoise(data: Float32Array, scale = 0.22): void {
     const out = (b0 + b1 + b2 + b3 + b4 + b5 + b6 + white * 0.5362) * scale;
     b6 = white * 0.115926;
     data[i] = out;
-  }
-}
-
-function renderFireplace(data: Float32Array, sampleRate: number): void {
-  renderBrownNoise(data, 0.6);
-  const length = data.length;
-  const crackles: { start: number; amp: number; decay: number }[] = [];
-  let t = Math.floor(sampleRate * 0.2);
-  while (t < length) {
-    t += Math.floor(sampleRate * (0.15 + Math.random() * 1.1));
-    if (t >= length) break;
-    crackles.push({ start: t, amp: 0.4 + Math.random() * 0.6, decay: Math.exp(-1 / (sampleRate * 0.018)) });
-  }
-  crackles.sort((a, b) => a.start - b.start);
-  let next = 0;
-  let env = 0;
-  for (let i = 0; i < length; i++) {
-    while (next < crackles.length && i >= crackles[next].start) {
-      env += crackles[next].amp;
-      next++;
-    }
-    env *= crackles[next - 1]?.decay ?? 0.95;
-    const snap = (Math.random() * 2 - 1) * env * 0.9;
-    data[i] = Math.max(-1, Math.min(1, data[i] * (1 + env * 0.4) + snap));
-  }
-}
-
-function renderOcean(data: Float32Array, sampleRate: number): void {
-  renderPinkNoise(data, 0.22);
-  const length = data.length;
-  for (let i = 0; i < length; i++) {
-    const t = i / sampleRate;
-    const wave = 0.4 + 0.6 * Math.sin(t * 0.12) * (0.7 + 0.3 * Math.sin(t * 0.04));
-    data[i] *= wave;
-  }
-}
-
-function renderWind(data: Float32Array, sampleRate: number): void {
-  renderPinkNoise(data, 0.24);
-  const length = data.length;
-  let gust = 0;
-  for (let i = 0; i < length; i++) {
-    const t = i / sampleRate;
-    const target = 0.6 + 0.4 * Math.sin(t * 0.2) + 0.2 * Math.sin(t * 1.1) + (Math.random() - 0.5) * 0.15;
-    gust += (target - gust) * 0.0015;
-    data[i] *= Math.max(0.3, gust);
   }
 }
 
@@ -853,13 +824,13 @@ const AMBIENT_FILTER_FREQ: Record<SoundAmbient, number> = {
   brown: 800,
   white: 3500,
   pink: 2800,
-  fireplace: 1400,
-  ocean: 1200,
-  wind: 2200,
+  fireplace: 7000, // crépitements
+  ocean: 5200,
+  wind: 4500,
   blizzard: 2400,
-  forest: 3200,
+  forest: 9000, // oiseaux
   cafe: 3500,
-  night: 2600,
+  night: 9000, // grillons
   train: 1800,
   city: 1600,
   library: 2800,

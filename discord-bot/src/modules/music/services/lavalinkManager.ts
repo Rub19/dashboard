@@ -84,14 +84,24 @@ class LavalinkManager {
     const existing = this.shoukaku.players.get(guildId);
     if (existing) {
       const conn = this.shoukaku.connections.get(guildId);
-      if (conn && conn.channelId !== channelId) {
-        await this.shoukaku.leaveVoiceChannel(guildId);
-      } else {
-        return existing;
-      }
+      // Déjà connecté dans le bon salon (ou état de connexion absent) : on réutilise.
+      if (!conn || conn.channelId === channelId) return existing;
+      await this.shoukaku.leaveVoiceChannel(guildId).catch(() => {});
     }
     const guild = this.client.guilds.cache.get(guildId);
-    return this.shoukaku.joinVoiceChannel({ guildId, channelId, shardId: guild?.shardId ?? 0, deaf: true });
+    const options = { guildId, channelId, shardId: guild?.shardId ?? 0, deaf: true };
+    try {
+      return await this.shoukaku.joinVoiceChannel(options);
+    } catch (err) {
+      // Connexion fantôme (le bot apparaît déjà dans le vocal après un redémarrage,
+      // ou Shoukaku garde une session orpheline) : on nettoie puis on réessaie une fois.
+      logger.warn(`[Lavalink] joinVoiceChannel a échoué (guild ${guildId}) — nettoyage et nouvel essai :`, err);
+      const stale = this.shoukaku.players.get(guildId);
+      if (stale && this.shoukaku.connections.get(guildId)?.channelId === channelId) return stale;
+      await this.shoukaku.leaveVoiceChannel(guildId).catch(() => {});
+      await new Promise((r) => setTimeout(r, 500));
+      return this.shoukaku.joinVoiceChannel(options);
+    }
   }
 
   public async leave(guildId: string): Promise<void> {

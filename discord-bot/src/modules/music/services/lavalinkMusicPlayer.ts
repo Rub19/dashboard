@@ -93,7 +93,7 @@ export class LavalinkMusicPlayer implements IGuildMusicPlayer {
       this.player = player;
       this.currentVoiceChannel = { id: channel.id, name: channel.name };
       this.bindListeners(player);
-      await player.setGlobalVolume(this.muted ? 0 : this.volume);
+      await player.setGlobalVolume(this.muted ? 0 : this.volume).catch((err) => logger.warn(`[Lavalink] setGlobalVolume a échoué (guild ${this.guildId}) :`, err));
       this.cancelDisconnectTimer();
       this.emitState();
       logger.info(`[Lavalink] Connecté à "${channel.name}" (guild ${this.guildId}, ping ${player.ping} ms)`);

@@ -66,3 +66,65 @@ export function parseNoteRequest(prompt: string): NoteRequest {
     content: content ? toMarkdown(content) : null,
   };
 }
+
+/* -------------------------------------------------------------------------- */
+/*  Tâches : « Crée une tâche appeler le plombier demain, c'est urgent »       */
+/* -------------------------------------------------------------------------- */
+
+export interface TaskRequest {
+  title: string;
+  priority: "low" | "medium" | "high" | "urgent";
+  /** Échéance ISO (midi, heure locale) ou null si aucune date n'est mentionnée. */
+  dueDate: string | null;
+}
+
+const TASK_LEAD =
+  /^(?:peux-tu|peux tu|tu peux|pourrais-tu|stp|s'il te pla[iî]t|merci de|je voudrais|je veux)?\s*(?:cr[ée]{1,2}r?|ajoute[r]?|faire|fais)\s*(?:moi)?\s*(?:une|la)?\s*(?:nouvelle\s+)?t[aâ]che\s*(?:sur|pour|concernant|:)?\s*/i;
+
+const WEEKDAYS = ["dimanche", "lundi", "mardi", "mercredi", "jeudi", "vendredi", "samedi"];
+
+function atNoon(base: Date, plusDays: number): string {
+  const d = new Date(base.getFullYear(), base.getMonth(), base.getDate() + plusDays, 12, 0, 0, 0);
+  return d.toISOString();
+}
+
+export function parseTaskRequest(prompt: string, now: Date = new Date()): TaskRequest {
+  let rest = prompt.replace(TASK_LEAD, "").trim();
+  let dueDate: string | null = null;
+
+  const dateRules: Array<[RegExp, () => string]> = [
+    [/\baujourd['’]?hui\b|\bce soir\b|\bce matin\b|\bcet apr[eè]s-midi\b/i, () => atNoon(now, 0)],
+    [/\bapr[eè]s[- ]demain\b/i, () => atNoon(now, 2)],
+    [/\bdemain\b/i, () => atNoon(now, 1)],
+  ];
+  for (const [re, fn] of dateRules) {
+    if (re.test(rest)) {
+      dueDate = fn();
+      rest = rest.replace(re, " ");
+      break;
+    }
+  }
+  if (!dueDate) {
+    const day = rest.match(/\b(?:ce |ce prochain |prochain )?(dimanche|lundi|mardi|mercredi|jeudi|vendredi|samedi)\b/i);
+    if (day) {
+      const target = WEEKDAYS.indexOf(day[1].toLowerCase());
+      let delta = (target - now.getDay() + 7) % 7;
+      if (delta === 0) delta = 7;
+      dueDate = atNoon(now, delta);
+      rest = rest.replace(day[0], " ");
+    }
+  }
+
+  let priority: TaskRequest["priority"] = "medium";
+  if (/\burgent(?:e)?\b|\basap\b|\btr[eè]s important\b/i.test(rest)) priority = "urgent";
+  else if (/\bimportant(?:e)?\b|\bprioritaire\b|\bpriorit[ée]\b/i.test(rest)) priority = "high";
+  else if (/\bpas press[ée]e?\b|\bquand j['’]ai le temps\b/i.test(rest)) priority = "low";
+  rest = rest
+    .replace(/[,;]?\s*(?:c['’]est\s+|c'est\s+)?(?:tr[eè]s\s+)?(?:urgent(?:e)?|asap|important(?:e)?|prioritaire|pas press[ée]e?|quand j['’]ai le temps)\b/gi, " ")
+    .replace(/\s+/g, " ")
+    .replace(/^[\s,;:.\-–]+|[\s,;:.\-–]+$/g, "")
+    .trim();
+
+  const title = (rest ? rest.charAt(0).toUpperCase() + rest.slice(1) : "Nouvelle tâche Brain").slice(0, 120);
+  return { title, priority, dueDate };
+}

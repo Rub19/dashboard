@@ -2,6 +2,14 @@
 
 Toutes les modifications notables de ce projet seront documentées dans ce fichier.
 
+## v1.25.8 — 2026-09-20
+
+**Brain : les tâches créées apparaissent enfin dans Tâches, avec date et priorité**
+
+- Brain affichait « Tâche créée » mais rien n'apparaissait dans la page Tâches : Brain écrivait dans le magasin générique `useItems("tasks")` alors que la page Tâches lit les tâches cloud (`useCloudTasks`). Brain utilise maintenant le même magasin, y compris pour l'action « task.create » et « terminer une tâche ».
+- Nouvel analyseur de tâches (`parseTaskRequest`, 5 tests) : « Crée une tâche appeler le plombier demain, c'est urgent » donne le titre « Appeler le plombier », l'échéance de demain et la priorité urgente, au lieu d'un titre brut contenant toute la phrase. Reconnaît aujourd'hui / demain / après-demain / jours de la semaine et urgent / important / pas pressé.
+- Testé en direct sur le site : création d'une note puis d'une tâche par Brain, suppression des éléments de test.
+
 ## v1.25.7 — 2026-09-20
 
 **Dynamic Island retravaillée, Brain crée enfin des notes propres**

@@ -1,12 +1,13 @@
 "use client";
 
-import { parseNoteRequest } from "@/lib/brain/note-intent";
+import { parseNoteRequest, parseTaskRequest } from "@/lib/brain/note-intent";
 import { useEffect, useMemo, useRef, useState, useCallback } from "react";
 import { useRouter } from "next/navigation";
 import { useSettings } from "@/components/SettingsProvider";
 import { activityJournal } from "@/lib/activity-journal";
 import { useBrainContext } from "./useBrainContext";
 import { useItems } from "./useItems";
+import { useCloudTasks } from "./useCloudTasks";
 import {
   type BrainPreferences,
   loadBrainPreferences,
@@ -84,7 +85,7 @@ export function useBrain(mailClient?: BrainMailClient) {
   const router = useRouter();
   const { settings, update: updateSettings } = useSettings();
   const notes = useItems("notes");
-  const tasks = useItems("tasks");
+  const tasks = useCloudTasks();
   const events = useItems("events");
   const { nowPlaying } = useNowPlaying(3000);
   const [preferences, setPreferences] = useState<BrainPreferences>(DEFAULT_BRAIN_PREFERENCES);
@@ -200,7 +201,13 @@ export function useBrain(mailClient?: BrainMailClient) {
       permissions: preferences.permissions,
       createNote: (input: { title: string; body: string }) => notes.create(input as never),
       updateNote: (id: string, patch: { title?: string; body?: string }) => notes.update(id, patch as never),
-      createTask: (input: { title: string; priority?: string; due?: string }) => tasks.create(input as never),
+      createTask: (input: { title: string; priority?: string; due?: string }) =>
+        tasks.create({
+          title: input.title,
+          body: "",
+          done: false,
+          data: { category: "Général", priority: input.priority || "medium", dueDate: input.due || new Date().toISOString() },
+        } as never),
       completeTask: async (id: string) => {
         const item = tasks.items.find((t) => t.id === id);
         if (item?.done) return;
@@ -341,14 +348,20 @@ export function useBrain(mailClient?: BrainMailClient) {
       lower.includes("ajoute une tâche") ||
       lower.includes("nouvelle tâche")
     ) {
-      const taskTopic = promptText
-        .replace(/^(peux-tu|tu peux|stp|s'il te plaît|s'il te plait|merci de)?\s*(créer|crée|ajouter|ajoute|faire|fais)\s*(moi)?\s*(une|la)?\s*tâche\s*(sur|pour|concernant|:)?/i, "")
-        .trim() || "Nouvelle tâche Brain";
+      // Titre propre (sans « demain », « urgent »…), échéance et priorité lues dans la phrase.
+      const parsedTask = parseTaskRequest(promptText);
+      const taskTopic = parsedTask.title;
       try {
         await tasks.create({
           title: taskTopic,
           body: "Créée par Brain IA",
-        });
+          done: false,
+          data: {
+            category: "Général",
+            priority: parsedTask.priority,
+            dueDate: parsedTask.dueDate ?? new Date().toISOString(),
+          },
+        } as never);
       } catch {}
       actionPlan = {
         id: `act-${Date.now()}`,

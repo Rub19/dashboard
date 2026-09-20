@@ -28637,4 +28637,53 @@ CHANGELOG_BY_LANG.en.unshift(v1257_en);
 CHANGELOG_BY_LANG.es.unshift(v1257_es);
 CHANGELOG_BY_LANG.de.unshift(v1257_de);
 
+const v1258_fr: ChangelogEntry = {
+  version: "v1.25.8",
+  date: "2026-09-20",
+  title: "Brain : les tâches créées apparaissent enfin dans Tâches, avec date et priorité",
+  items: [
+    "Brain affichait « Tâche créée » mais rien n'apparaissait dans la page Tâches : Brain écrivait dans le magasin générique `useItems(\"tasks\")` alors que la page Tâches lit les tâches cloud (`useCloudTasks`). Brain utilise maintenant le même magasin, y compris pour l'action « task.create » et « terminer une tâche ».",
+    "Nouvel analyseur de tâches (`parseTaskRequest`, 5 tests) : « Crée une tâche appeler le plombier demain, c'est urgent » donne le titre « Appeler le plombier », l'échéance de demain et la priorité urgente, au lieu d'un titre brut contenant toute la phrase. Reconnaît aujourd'hui / demain / après-demain / jours de la semaine et urgent / important / pas pressé.",
+    "Testé en direct sur le site : création d'une note puis d'une tâche par Brain, suppression des éléments de test.",
+  ],
+};
+
+const v1258_en: ChangelogEntry = {
+  version: "v1.25.8",
+  date: "2026-09-20",
+  title: "Brain: created tasks finally show up in Tasks, with date and priority",
+  items: [
+    "Brain showed \"Task created\" but nothing appeared on the Tasks page: Brain wrote to the generic `useItems(\"tasks\")` store while the Tasks page reads cloud tasks (`useCloudTasks`). Brain now uses the same store, including for the \"task.create\" action and \"complete a task\".",
+    "New task parser (`parseTaskRequest`, 5 tests): \"Create a task call the plumber tomorrow, it's urgent\" yields the title \"Call the plumber\", tomorrow's due date and urgent priority, instead of a raw title holding the whole sentence. Understands today / tomorrow / the day after / weekdays and urgent / important / not in a hurry.",
+    "Tested live on the site: Brain creating a note then a task, and the test items deleted.",
+  ],
+};
+
+const v1258_es: ChangelogEntry = {
+  version: "v1.25.8",
+  date: "2026-09-20",
+  title: "Brain: las tareas creadas por fin aparecen en Tareas, con fecha y prioridad",
+  items: [
+    "Brain mostraba \"Tarea creada\" pero nada aparecía en la página Tareas: Brain escribía en el almacén genérico `useItems(\"tasks\")` mientras que la página Tareas lee las tareas en la nube (`useCloudTasks`). Ahora Brain usa el mismo almacén, incluida la acción \"task.create\" y \"completar una tarea\".",
+    "Nuevo analizador de tareas (`parseTaskRequest`, 5 pruebas): \"Crea una tarea llamar al fontanero mañana, es urgente\" da el título \"Llamar al fontanero\", la fecha de mañana y prioridad urgente, en lugar de un título en bruto con toda la frase. Reconoce hoy / mañana / pasado mañana / días de la semana y urgente / importante / sin prisa.",
+    "Probado en directo en el sitio: Brain creando una nota y luego una tarea, y los elementos de prueba eliminados.",
+  ],
+};
+
+const v1258_de: ChangelogEntry = {
+  version: "v1.25.8",
+  date: "2026-09-20",
+  title: "Brain: erstellte Aufgaben erscheinen endlich unter Aufgaben, mit Datum und Priorität",
+  items: [
+    "Brain zeigte „Aufgabe erstellt“, aber auf der Aufgaben-Seite erschien nichts: Brain schrieb in den generischen Speicher `useItems(\"tasks\")`, während die Aufgaben-Seite Cloud-Aufgaben (`useCloudTasks`) liest. Brain nutzt jetzt denselben Speicher, auch für die Aktion „task.create“ und „Aufgabe erledigen“.",
+    "Neuer Aufgaben-Parser (`parseTaskRequest`, 5 Tests): „Erstelle eine Aufgabe Klempner anrufen morgen, dringend“ ergibt den Titel „Klempner anrufen“, das morgige Fälligkeitsdatum und dringende Priorität, statt eines Rohtitels mit dem ganzen Satz. Versteht heute / morgen / übermorgen / Wochentage und dringend / wichtig / keine Eile.",
+    "Live auf der Seite getestet: Brain erstellt eine Notiz und dann eine Aufgabe, die Testeinträge wurden gelöscht.",
+  ],
+};
+
+CHANGELOG_BY_LANG.fr.unshift(v1258_fr);
+CHANGELOG_BY_LANG.en.unshift(v1258_en);
+CHANGELOG_BY_LANG.es.unshift(v1258_es);
+CHANGELOG_BY_LANG.de.unshift(v1258_de);
+
 export const CHANGELOG = CHANGELOG_BY_LANG.fr;

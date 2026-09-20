@@ -33,3 +33,38 @@ describe("parseNoteRequest", () => {
     expect(parseNoteRequest("crée une note sur " + "x".repeat(200)).title.length).toBeLessThanOrEqual(80);
   });
 });
+
+import { parseTaskRequest } from "./note-intent";
+
+describe("parseTaskRequest", () => {
+  const now = new Date(2026, 8, 20, 10, 0, 0); // dimanche 20 septembre 2026
+
+  it("cleans the title, capitalizes it and reads 'demain'", () => {
+    const r = parseTaskRequest("Crée une tâche appeler le plombier demain", now);
+    expect(r.title).toBe("Appeler le plombier");
+    expect(new Date(r.dueDate as string).getDate()).toBe(21);
+    expect(r.priority).toBe("medium");
+  });
+
+  it("reads urgency and removes it from the title", () => {
+    const r = parseTaskRequest("ajoute une tâche payer la facture, c'est urgent", now);
+    expect(r.title).toBe("Payer la facture");
+    expect(r.priority).toBe("urgent");
+  });
+
+  it("reads a weekday as the next occurrence", () => {
+    const r = parseTaskRequest("crée une tâche réunion équipe vendredi", now);
+    expect(r.title).toBe("Réunion équipe");
+    expect(new Date(r.dueDate as string).getDay()).toBe(5);
+  });
+
+  it("handles no date and no priority", () => {
+    const r = parseTaskRequest("créer une tâche ranger le bureau", now);
+    expect(r.title).toBe("Ranger le bureau");
+    expect(r.dueDate).toBeNull();
+  });
+
+  it("falls back to a default title", () => {
+    expect(parseTaskRequest("crée une tâche", now).title).toBe("Nouvelle tâche Brain");
+  });
+});

@@ -8,17 +8,18 @@ import { cn } from "@/lib/utils";
 import type { DockScale, DockGlass } from "@/lib/settings";
 
 const DOCK_PREVIEW_ICONS = [
-  { id: "home", label: "Accueil", icon: "house" },
+  { id: "home", labelKey: "home", label: "Accueil", icon: "house" },
   { id: "brain", label: "Brain", icon: "brain" },
   { id: "mail", label: "Mail", icon: "envelope-simple" },
-  { id: "files", label: "Fichiers", icon: "folder-simple" },
-  { id: "notes", label: "Notes", icon: "note" },
-  { id: "tasks", label: "Tâches", icon: "check-circle" },
-  { id: "settings", label: "Réglages", icon: "gear-six" },
+  { id: "files", labelKey: "files", label: "Fichiers", icon: "folder-simple" },
+  { id: "notes", labelKey: "notes", label: "Notes", icon: "note" },
+  { id: "tasks", labelKey: "tasks", label: "Tâches", icon: "check-circle" },
+  { id: "settings", labelKey: "settingsTitle", label: "Réglages", icon: "gear-six" },
 ];
 
 export default function DockSettings() {
   const { settings, update } = useSettings();
+  const i18n = useI18n();
 
   const scaleClass = useMemo(() => {
     switch (settings.dockScale) {
@@ -63,7 +64,7 @@ export default function DockSettings() {
         <div className="absolute left-4 top-4 flex items-center gap-2">
           <span className="flex h-2 w-2 rounded-full bg-[var(--accent-primary)]" />
           <span className="text-[11px] font-semibold text-[var(--text-muted)] uppercase tracking-wider">
-            Aperçu en direct du Dock
+            {i18n("sDockLivePreview", "Aperçu en direct du Dock")}
           </span>
         </div>
 
@@ -83,7 +84,7 @@ export default function DockSettings() {
                   itemSizeClass,
                   item.id === "settings" && "ring-1 ring-[var(--accent-primary)]/50 text-[var(--accent-primary)]"
                 )}
-                title={item.label}
+                title={item.labelKey ? i18n(item.labelKey, item.label) : item.label}
               >
                 <Icon name={item.icon} className="h-5 w-5" />
               </div>
@@ -97,14 +98,14 @@ export default function DockSettings() {
         {/* Scale Selector */}
         <div className="flex flex-col gap-2 rounded-[var(--panel-radius)] border border-[var(--panel-border)] bg-[var(--panel-bg)] p-4">
           <label className="text-sm font-semibold text-[var(--text-primary)]">
-            Taille du Dock
+            {i18n("sDockSize", "Taille du Dock")}
           </label>
           <div className="grid grid-cols-3 gap-2">
             {(
               [
-                { id: "compact", label: "Compact" },
-                { id: "normal", label: "Normal" },
-                { id: "large", label: "Grand" },
+                { id: "compact", label: i18n("sDockSizeCompact", "Compact") },
+                { id: "normal", label: i18n("sDockSizeNormal", "Normal") },
+                { id: "large", label: i18n("sDockSizeLarge", "Grand") },
               ] as const
             ).map((s) => (
               <button
@@ -127,14 +128,14 @@ export default function DockSettings() {
         {/* Glass Style Selector */}
         <div className="flex flex-col gap-2 rounded-[var(--panel-radius)] border border-[var(--panel-border)] bg-[var(--panel-bg)] p-4">
           <label className="text-sm font-semibold text-[var(--text-primary)]">
-            Translucidité & Verre
+            {i18n("sDockGlass", "Translucidité & Verre")}
           </label>
           <div className="grid grid-cols-3 gap-2">
             {(
               [
-                { id: "vitrified", label: "Vitrifié" },
-                { id: "ultra-blur", label: "Ultra Flou" },
-                { id: "sober", label: "Sobre" },
+                { id: "vitrified", label: i18n("sDockGlassVitrified", "Vitrifié") },
+                { id: "ultra-blur", label: i18n("sDockGlassUltra", "Ultra Flou") },
+                { id: "sober", label: i18n("sDockGlassSober", "Sobre") },
               ] as const
             ).map((g) => (
               <button
@@ -158,10 +159,10 @@ export default function DockSettings() {
         <label className="flex items-center justify-between gap-3 rounded-[var(--panel-radius)] border border-[var(--panel-border)] bg-[var(--panel-bg)] p-4">
           <div>
             <p className="text-sm font-semibold text-[var(--text-primary)]">
-              Afficher le Dock
+              {i18n("sDockShow", "Afficher le Dock")}
             </p>
             <p className="text-xs text-[var(--text-muted)]">
-              Conserver la barre d&apos;accès rapide en bas d&apos;écran
+              {i18n("sDockShowDesc", "Conserver la barre d’accès rapide en bas d’écran")}
             </p>
           </div>
           <input
@@ -175,10 +176,10 @@ export default function DockSettings() {
         <label className="flex items-center justify-between gap-3 rounded-[var(--panel-radius)] border border-[var(--panel-border)] bg-[var(--panel-bg)] p-4">
           <div>
             <p className="text-sm font-semibold text-[var(--text-primary)]">
-              Masquage automatique
+              {i18n("sDockAutoHide", "Masquage automatique")}
             </p>
             <p className="text-xs text-[var(--text-muted)]">
-              Révèle le Dock uniquement au survol du bord inférieur
+              {i18n("sDockAutoHideDesc", "Révèle le Dock uniquement au survol du bord inférieur")}
             </p>
           </div>
           <input
@@ -192,10 +193,10 @@ export default function DockSettings() {
         <label className="flex items-center justify-between gap-3 rounded-[var(--panel-radius)] border border-[var(--panel-border)] bg-[var(--panel-bg)] p-4">
           <div>
             <p className="text-sm font-semibold text-[var(--text-primary)]">
-              Effet de grossissement (Magnify)
+              {i18n("sDockMagnify", "Effet de grossissement (Magnify)")}
             </p>
             <p className="text-xs text-[var(--text-muted)]">
-              Agrandit les icônes de manière fluide lors du survol
+              {i18n("sDockMagnifyDesc", "Agrandit les icônes de manière fluide lors du survol")}
             </p>
           </div>
           <input
@@ -209,10 +210,10 @@ export default function DockSettings() {
         <label className="flex items-center justify-between gap-3 rounded-[var(--panel-radius)] border border-[var(--panel-border)] bg-[var(--panel-bg)] p-4">
           <div>
             <p className="text-sm font-semibold text-[var(--text-primary)]">
-              Bouton flottant d&apos;enregistrement
+              {i18n("sDockFloatingSave", "Bouton flottant d’enregistrement")}
             </p>
             <p className="text-xs text-[var(--text-muted)]">
-              Affiche une barre flottante lors de modifications
+              {i18n("sDockFloatingSaveDesc", "Affiche une barre flottante lors de modifications")}
             </p>
           </div>
           <input

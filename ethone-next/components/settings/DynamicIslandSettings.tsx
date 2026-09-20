@@ -12,6 +12,7 @@ type PreviewState = "spotify" | "mail" | "upload" | "sync" | "brain" | "pomodoro
 
 export default function DynamicIslandSettings() {
   const { settings, update } = useSettings();
+  const i18n = useI18n();
   const [previewState, setPreviewState] = useState<PreviewState>("spotify");
   const [isExpanded, setIsExpanded] = useState(false);
 
@@ -22,7 +23,7 @@ export default function DynamicIslandSettings() {
         <div className="absolute left-4 top-4 flex items-center gap-2">
           <span className="flex h-2 w-2 rounded-full bg-[var(--accent-primary)] shadow-[0_0_5px_var(--glow-color)]" />
           <span className="text-[11px] font-semibold text-[var(--text-muted)] uppercase tracking-wider">
-            Simulateur en direct
+            {i18n("sIslandSimulator", "Simulateur en direct")}
           </span>
         </div>
 
@@ -59,7 +60,7 @@ export default function DynamicIslandSettings() {
                       <div className="h-6 w-6 rounded-lg bg-[var(--accent-primary)]/20 flex items-center justify-center text-[var(--accent-primary)] animate-pulse">
                         <Icon name="envelope-simple" className="h-3.5 w-3.5" />
                       </div>
-                      <span className="truncate text-xs font-semibold">Équipe ETHONE</span>
+                      <span className="truncate text-xs font-semibold">{i18n("sIslandMailSender", "Équipe ETHONE")}</span>
                       <span className="ml-auto rounded-full bg-[var(--accent-primary)] px-1.5 py-0.2 text-[10px] font-bold text-[var(--accent-contrast)]">
                         1
                       </span>
@@ -75,13 +76,13 @@ export default function DynamicIslandSettings() {
                   {previewState === "sync" && (
                     <>
                       <Icon name="arrows-clockwise" className="h-4 w-4 text-[var(--info)] animate-spin" />
-                      <span className="truncate text-xs font-semibold">Synchronisation</span>
+                      <span className="truncate text-xs font-semibold">{i18n("sIslandSync", "Synchronisation")}</span>
                     </>
                   )}
                   {previewState === "brain" && (
                     <>
                       <Icon name="brain" className="h-4 w-4 text-[var(--accent-secondary)] animate-pulse" />
-                      <span className="truncate text-xs font-semibold">Génération en cours...</span>
+                      <span className="truncate text-xs font-semibold">{i18n("sIslandGenerating", "Génération en cours...")}</span>
                     </>
                   )}
                   {previewState === "pomodoro" && (
@@ -103,7 +104,7 @@ export default function DynamicIslandSettings() {
                     <span className="text-[10px] font-bold uppercase tracking-wider text-[var(--accent-primary)]">
                       {previewState}
                     </span>
-                    <span className="text-[10px] text-[var(--text-muted)]">Cliquez pour refermer</span>
+                    <span className="text-[10px] text-[var(--text-muted)]">{i18n("sIslandTapToClose", "Cliquez pour refermer")}</span>
                   </div>
                   <div className="flex items-center gap-3">
                     <div className="h-12 w-12 rounded-xl bg-[var(--surface-raised)] flex items-center justify-center text-[var(--accent-primary)]">
@@ -111,10 +112,10 @@ export default function DynamicIslandSettings() {
                     </div>
                     <div>
                       <p className="text-sm font-bold text-[var(--text-primary)]">
-                        {previewState === "spotify" ? "Midnight City" : previewState === "mail" ? "Nouveau message" : "Tâche en cours"}
+                        {previewState === "spotify" ? "Midnight City" : previewState === "mail" ? i18n("sIslandNewMessage", "Nouveau message") : i18n("sIslandTaskRunning", "Tâche en cours")}
                       </p>
                       <p className="text-xs text-[var(--text-muted)]">
-                        {previewState === "spotify" ? "M83 — Hurry Up, We're Dreaming" : "Cliquez pour ouvrir l'application"}
+                        {previewState === "spotify" ? "M83 — Hurry Up, We're Dreaming" : i18n("sIslandTapToOpen", "Cliquez pour ouvrir l'application")}
                       </p>
                     </div>
                   </div>
@@ -159,17 +160,17 @@ export default function DynamicIslandSettings() {
       {/* Dynamic Island Settings Controls */}
       <div className="flex flex-col gap-4">
         <h4 className="text-xs font-semibold uppercase tracking-wider text-[var(--text-muted)]">
-          Options de comportement
+          {i18n("sIslandBehavior", "Options de comportement")}
         </h4>
 
         <div className="grid grid-cols-1 gap-3 sm:grid-cols-2">
           <label className="flex items-center justify-between gap-3 rounded-[var(--panel-radius)] border border-[var(--panel-border)] bg-[var(--panel-bg)] p-4">
             <div>
               <p className="text-sm font-semibold text-[var(--text-primary)]">
-                Activer la Dynamic Island
+                {i18n("sIslandEnable", "Activer la Dynamic Island")}
               </p>
               <p className="text-xs text-[var(--text-muted)]">
-                Affiche la capsule intelligente en haut de l&apos;écran
+                {i18n("sIslandEnableDesc", "Affiche la capsule intelligente en haut de l'écran")}
               </p>
             </div>
             <input
@@ -183,10 +184,10 @@ export default function DynamicIslandSettings() {
           <label className="flex items-center justify-between gap-3 rounded-[var(--panel-radius)] border border-[var(--panel-border)] bg-[var(--panel-bg)] p-4">
             <div>
               <p className="text-sm font-semibold text-[var(--text-primary)]">
-                Afficher le lecteur Spotify
+                {i18n("sIslandSpotify", "Afficher le lecteur Spotify")}
               </p>
               <p className="text-xs text-[var(--text-muted)]">
-                Montre automatiquement le titre et le visualiseur en lecture
+                {i18n("sIslandSpotifyDesc", "Montre automatiquement le titre et le visualiseur en lecture")}
               </p>
             </div>
             <input
@@ -200,10 +201,10 @@ export default function DynamicIslandSettings() {
           <label className="flex items-center justify-between gap-3 rounded-[var(--panel-radius)] border border-[var(--panel-border)] bg-[var(--panel-bg)] p-4">
             <div>
               <p className="text-sm font-semibold text-[var(--text-primary)]">
-                Notifications et alertes
+                {i18n("sIslandNotifs", "Notifications et alertes")}
               </p>
               <p className="text-xs text-[var(--text-muted)]">
-                Afficher les nouveaux messages et alertes système dans la capsule
+                {i18n("sIslandNotifsDesc", "Afficher les nouveaux messages et alertes système dans la capsule")}
               </p>
             </div>
             <input
@@ -217,10 +218,10 @@ export default function DynamicIslandSettings() {
           <label className="flex items-center justify-between gap-3 rounded-[var(--panel-radius)] border border-[var(--panel-border)] bg-[var(--panel-bg)] p-4">
             <div>
               <p className="text-sm font-semibold text-[var(--text-primary)]">
-                Progression des uploads et synchro
+                {i18n("sIslandUploads", "Progression des uploads et synchro")}
               </p>
               <p className="text-xs text-[var(--text-muted)]">
-                Indicateur de transfert de fichiers en temps réel
+                {i18n("sIslandUploadsDesc", "Indicateur de transfert de fichiers en temps réel")}
               </p>
             </div>
             <input

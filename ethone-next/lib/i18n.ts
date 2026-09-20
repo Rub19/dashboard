@@ -7573,13 +7573,16 @@ export const CATALOG: Record<string, Record<string, string>> = {
 };
 
 import { EXTRAS } from "./i18n-extras";
+import { SETTINGS_I18N } from "./i18n-settings";
 
 export function t(lang: string, key: string, fallback?: string) {
   return (
     CATALOG[lang]?.[key] ||
     EXTRAS[lang]?.[key] ||
+    SETTINGS_I18N[lang]?.[key] ||
     CATALOG.fr[key] ||
     EXTRAS.fr?.[key] ||
+    SETTINGS_I18N.fr?.[key] ||
     CATALOG.en[key] ||
     EXTRAS.en?.[key] ||
     fallback ||

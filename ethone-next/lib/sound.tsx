@@ -12,6 +12,8 @@ import {
 } from "react";
 import { useSettings } from "@/components/SettingsProvider";
 import type { SoundAmbient } from "@/lib/settings";
+import { scheduleVoice } from "@/lib/sound-voices";
+import { renderRain as renderNaturalRain, renderStorm as renderNaturalStorm } from "@/lib/soundscape-render";
 
 export type { SoundAmbient };
 
@@ -216,6 +218,8 @@ type ToneRecipe = BaseTone & {
 };
 
 type PackConfig = {
+  /** Sons naturels (gouttes, bois, cloches de verre) au lieu de bips d'oscillateurs. */
+  voice?: boolean;
   pitch: number;
   harmonic: number;
   harmonicGain: number;
@@ -226,6 +230,7 @@ type PackConfig = {
 };
 
 type PackProfile = {
+  voice?: boolean;
   pitch: number;
   harmonic: number;
   harmonicGain: number;
@@ -260,6 +265,7 @@ const BASE_TONES: Record<SoundType, BaseTone> = {
 
 const PACK_PROFILES: Record<string, PackProfile> = {
   ethone: {
+    voice: true,
     pitch: 1,
     harmonic: 1.5,
     harmonicGain: 0.12,
@@ -377,6 +383,7 @@ function buildPack(profile: PackProfile): PackConfig {
   }, {} as Record<SoundType, ToneRecipe>);
 
   return {
+    voice: profile.voice,
     pitch: profile.pitch,
     harmonic: profile.harmonic,
     harmonicGain: profile.harmonicGain,
@@ -436,6 +443,8 @@ function scheduleSound(
 
   const peak = master * categoryVolume * recipe.volume;
   if (peak <= 0.0001) return null;
+
+  if (pack.voice) return scheduleVoice(ctx, dest, type, startTime, peak, panValue);
 
   const duration = Math.max(0.01, recipe.duration);
   const release = Math.max(0.01, recipe.release ?? pack.release);
@@ -605,7 +614,26 @@ type AmbientState = {
   volumeScale: number;
 };
 
+// Pluie / orage : rendu stéréo naturel (lib/soundscape-render.ts). Rendu à 24 kHz (le
+// contenu utile est sous 12 kHz) pour rester léger, puis mis en cache : basculer d'une
+// ambiance à l'autre ne recalcule rien.
+const NATURAL_RENDER_SR = 24000;
+const naturalCache = new Map<string, [Float32Array, Float32Array]>();
+
+function createNaturalBuffer(ctx: BaseAudioContext, type: "rain" | "storm"): AudioBuffer {
+  let pair = naturalCache.get(type);
+  if (!pair) {
+    pair = type === "rain" ? renderNaturalRain(NATURAL_RENDER_SR, 24) : renderNaturalStorm(NATURAL_RENDER_SR, 24);
+    naturalCache.set(type, pair);
+  }
+  const buffer = ctx.createBuffer(2, pair[0].length, NATURAL_RENDER_SR);
+  buffer.copyToChannel(new Float32Array(pair[0]), 0);
+  buffer.copyToChannel(new Float32Array(pair[1]), 1);
+  return buffer;
+}
+
 function createAmbientBuffer(ctx: BaseAudioContext, type: SoundAmbient): AudioBuffer {
+  if (type === "rain" || type === "storm") return createNaturalBuffer(ctx, type);
   const duration = ["rain", "storm", "blizzard", "train", "ocean", "space"].includes(type) ? 16 : 6;
   const length = Math.floor(ctx.sampleRate * duration);
   const buffer = ctx.createBuffer(1, length, ctx.sampleRate);
@@ -619,10 +647,6 @@ function createAmbientBuffer(ctx: BaseAudioContext, type: SoundAmbient): AudioBu
     renderPinkNoise(data, 0.11);
   } else if (type === "brown") {
     renderBrownNoise(data, 0.6);
-  } else if (type === "rain") {
-    renderRainLayer(data, ctx.sampleRate);
-  } else if (type === "storm") {
-    renderStorm(data, ctx.sampleRate);
   } else if (type === "fireplace") {
     renderFireplace(data, ctx.sampleRate);
   } else if (type === "ocean") {
@@ -648,159 +672,6 @@ function createAmbientBuffer(ctx: BaseAudioContext, type: SoundAmbient): AudioBu
   }
 
   return buffer;
-}
-
-/**
- * Ultra-high quality ASMR Sleep Rain:
- * - Warm velvet low-pass rain bed (rooftop/window acoustics, zero harsh hiss).
- * - Organic acoustic micro-droplets on glass/leaves with resonant damping.
- * - Slow ambient breathing envelope for soothing, deeply relaxing sleep ASMR.
- */
-function renderRainLayer(data: Float32Array, sampleRate: number): void {
-  const length = data.length;
-
-  // 1. Warm Pink-Brown noise cascade (Bed of rain on rooftop)
-  let p0 = 0, p1 = 0, p2 = 0, p3 = 0, p4 = 0, p5 = 0, p6 = 0;
-  let brown = 0;
-  let lpBed = 0;
-  const lpBedCoeff = Math.exp(-2 * Math.PI * 1100 / sampleRate);
-
-  // 2. ASMR Micro-Droplets (individual soothing impacts on window pane)
-  const dropCount = Math.floor((length / sampleRate) * 55); // ~55 organic drops/sec
-  const dropStarts = new Float32Array(dropCount);
-  const dropFreqs = new Float32Array(dropCount);
-  const dropAmps = new Float32Array(dropCount);
-  const dropDecays = new Float32Array(dropCount);
-
-  for (let d = 0; d < dropCount; d++) {
-    dropStarts[d] = Math.floor(Math.random() * (length - sampleRate * 0.05));
-    // Resonant frequencies of raindrops on glass/wood (1200Hz - 3400Hz)
-    dropFreqs[d] = 1200 + Math.random() * 2200;
-    dropAmps[d] = 0.08 + Math.random() * 0.22;
-    // Fast tactile ASMR decay (6ms - 22ms)
-    const decaySec = 0.006 + Math.random() * 0.016;
-    dropDecays[d] = Math.exp(-1 / (sampleRate * decaySec));
-  }
-
-  // Active droplet state tracking
-  let activeDropPhase = 0;
-  let activeDropFreq = 1800;
-  let activeDropEnv = 0;
-  let activeDropDecay = 0.95;
-
-  // Pre-sort drop starts for sequential activation
-  const sortedDropIndices = Array.from({ length: dropCount }, (_, i) => i).sort(
-    (a, b) => dropStarts[a] - dropStarts[b]
-  );
-  let nextDropIdx = 0;
-
-  for (let i = 0; i < length; i++) {
-    const white = Math.random() * 2 - 1;
-
-    // Pink noise filter (Paul Kellet's refined 6-pole filter)
-    p0 = 0.99886 * p0 + white * 0.0555179;
-    p1 = 0.99332 * p1 + white * 0.0750759;
-    p2 = 0.969 * p2 + white * 0.153852;
-    p3 = 0.8665 * p3 + white * 0.3104856;
-    p4 = 0.55 * p4 + white * 0.5329522;
-    p5 = -0.7616 * p5 - white * 0.016898;
-    const pink = (p0 + p1 + p2 + p3 + p4 + p5 + p6 + white * 0.5362) * 0.16;
-    p6 = white * 0.115926;
-
-    // Brown noise integration (deep soothing warmth)
-    brown = (brown + 0.035 * white) / 1.035;
-
-    // Smooth low-pass the bed to remove all abrasive white hiss
-    const rawBed = brown * 0.55 + pink * 0.45;
-    lpBed = (1 - lpBedCoeff) * rawBed + lpBedCoeff * lpBed;
-
-    // Activate new raindrop impacts
-    while (
-      nextDropIdx < dropCount &&
-      i >= dropStarts[sortedDropIndices[nextDropIdx]]
-    ) {
-      const idx = sortedDropIndices[nextDropIdx];
-      activeDropEnv += dropAmps[idx];
-      activeDropFreq = dropFreqs[idx];
-      activeDropDecay = dropDecays[idx];
-      nextDropIdx++;
-    }
-
-    // Synthesize organic drop impact (resonant ping + micro texture)
-    let dropletSound = 0;
-    if (activeDropEnv > 0.0005) {
-      activeDropPhase += (2 * Math.PI * activeDropFreq) / sampleRate;
-      const dropSine = Math.sin(activeDropPhase);
-      dropletSound = activeDropEnv * (dropSine * 0.65 + white * 0.35);
-      activeDropEnv *= activeDropDecay;
-    }
-
-    // Ultra-smooth ASMR natural breathing modulation (14s and 26s gentle cycles)
-    const t = i / sampleRate;
-    const swell = 0.92 + 0.08 * Math.sin(t * (2 * Math.PI / 14)) + 0.04 * Math.sin(t * (2 * Math.PI / 26));
-
-    // Combine warm bed + tactile ASMR patter
-    const combined = (lpBed * 0.72 + dropletSound * 0.38) * swell;
-    data[i] = Math.max(-0.95, Math.min(0.95, combined * 0.92));
-  }
-}
-
-/**
- * Heavy Thunderstorm:
- * - Heavy torrential downpour bed with gusting wind.
- * - Deep visceral rolling thunder rumbles with low-frequency sub-bass reverberation (32Hz-80Hz).
- */
-function renderStorm(data: Float32Array, sampleRate: number): void {
-  const length = data.length;
-
-  // 1. Heavy torrential rain bed with wind surge
-  let brown = 0;
-  let p0 = 0, p1 = 0, p2 = 0, p3 = 0, p4 = 0;
-  for (let i = 0; i < length; i++) {
-    const white = Math.random() * 2 - 1;
-    brown = (brown + 0.06 * white) / 1.06;
-    p0 = 0.99886 * p0 + white * 0.0555;
-    p1 = 0.99332 * p1 + white * 0.075;
-    p2 = 0.969 * p2 + white * 0.153;
-    p3 = 0.8665 * p3 + white * 0.31;
-    p4 = 0.55 * p4 + white * 0.53;
-    const pink = (p0 + p1 + p2 + p3 + p4 + white * 0.53) * 0.18;
-
-    const t = i / sampleRate;
-    const gust = 0.75 + 0.25 * Math.sin(t * 0.3) + 0.15 * Math.sin(t * 0.85);
-    data[i] = (brown * 0.5 + pink * 0.5) * gust * 0.7;
-  }
-
-  // 2. Realistic rolling thunder strikes
-  const thunderEvents = [
-    { start: Math.floor(sampleRate * 2.2), duration: Math.floor(sampleRate * 4.2), intensity: 0.95, pitch: 42 },
-    { start: Math.floor(sampleRate * 9.8), duration: Math.floor(sampleRate * 5.0), intensity: 1.0, pitch: 36 },
-  ];
-
-  for (const thunder of thunderEvents) {
-    let rumbleNoise = 0;
-    for (let i = 0; i < thunder.duration && thunder.start + i < length; i++) {
-      const idx = thunder.start + i;
-      const t = i / sampleRate;
-
-      // Realistic thunder envelope: sharp rolling rise (0.15s), prolonged deep rolling tail
-      const attack = Math.min(1, t / 0.2);
-      const decay = Math.exp(-t * 0.65);
-      const envelope = attack * decay * thunder.intensity;
-
-      // Multi-harmonic sub-bass rolling rumble
-      const sub1 = Math.sin(2 * Math.PI * thunder.pitch * t + Math.sin(t * 2.5) * 1.5) * 0.45;
-      const sub2 = Math.sin(2 * Math.PI * (thunder.pitch * 1.7) * t) * 0.3;
-      const sub3 = Math.sin(2 * Math.PI * (thunder.pitch * 2.4) * t) * 0.18;
-
-      // Low-frequency crackle and turbulent atmospheric rolling tail
-      const white = Math.random() * 2 - 1;
-      rumbleNoise = (rumbleNoise + 0.08 * white) / 1.08;
-
-      const rollingClap = (sub1 + sub2 + sub3 + rumbleNoise * 0.4) * envelope;
-      data[idx] = Math.max(-0.98, Math.min(0.98, data[idx] * 0.75 + rollingClap * 0.75));
-    }
-  }
 }
 
 function renderBrownNoise(data: Float32Array, scale = 0.7): number {
@@ -976,8 +847,8 @@ function renderNature(data: Float32Array, sampleRate: number): void {
 
 const AMBIENT_FILTER_FREQ: Record<SoundAmbient, number> = {
   none: 1800,
-  rain: 2200,
-  storm: 1800,
+  rain: 8000, // le rendu est déjà façonné : un passe-bas à 2,2 kHz étouffait toutes les gouttes
+  storm: 6000,
   drone: 550,
   brown: 800,
   white: 3500,

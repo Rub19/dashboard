@@ -242,6 +242,17 @@ export default function BootProvider({ children }: { children: ReactNode }) {
 
     bootStartRef.current = bootStartRef.current ?? Date.now();
     let raf = 0;
+    let timer: ReturnType<typeof setTimeout> | null = null;
+    // requestAnimationFrame est totalement suspendu dans un onglet en arrière-plan : un
+    // onglet ouvert « en arrière-plan » restait bloqué sur l'écran de chargement (jusqu'à
+    // l'erreur de délai) alors que tout était prêt. Onglet caché → minuteur à la place.
+    const schedule = () => {
+      if (typeof document !== "undefined" && document.hidden) {
+        timer = setTimeout(tick, 200);
+      } else {
+        raf = requestAnimationFrame(tick);
+      }
+    };
 
     const tick = () => {
       if (bootReadyRef.current) return;
@@ -287,11 +298,14 @@ export default function BootProvider({ children }: { children: ReactNode }) {
         return;
       }
 
-      raf = requestAnimationFrame(tick);
+      schedule();
     };
 
-    raf = requestAnimationFrame(tick);
-    return () => cancelAnimationFrame(raf);
+    schedule();
+    return () => {
+      cancelAnimationFrame(raf);
+      if (timer) clearTimeout(timer);
+    };
   }, [publicRoute, state, authLoading, authError, profileLoaded]);
 
   if (state === "error") {

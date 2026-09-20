@@ -60,6 +60,7 @@ const SoundPackControl = dynamic(() => import("./SoundPackControl"), { ssr: fals
 const SettingsOverview = dynamic(() => import("./SettingsOverview"), { ssr: false, loading: () => <SkeletonCard /> });
 const SoundscapeMixer = dynamic(() => import("./SoundscapeMixer"), { ssr: false, loading: () => <SkeletonCard /> });
 const DynamicIslandSettings = dynamic(() => import("./DynamicIslandSettings"), { ssr: false, loading: () => <SkeletonCard /> });
+const SoundSettings = dynamic(() => import("./SoundSettings"), { ssr: false, loading: () => <SkeletonCard /> });
 const DockSettings = dynamic(() => import("./DockSettings"), { ssr: false, loading: () => <SkeletonCard /> });
 const ShortcutsSettings = dynamic(() => import("./ShortcutsSettings"), { ssr: false, loading: () => <SkeletonCard /> });
 const PerformanceSettings = dynamic(() => import("./PerformanceSettings"), { ssr: false, loading: () => <SkeletonCard /> });
@@ -1266,8 +1267,9 @@ export default function SettingsContent({
         label: i18n("sound"),
         icon: "volume-2",
         category: "audio",
-        keywords: ["préférences", "son", "volume", "haptique", "packs"],
-        fields: soundFields,
+        keywords: ["préférences", "son", "volume", "haptique", "packs", "effets", "sons", "spatial", "mixage"],
+        fields: [],
+        children: <SoundSettings />,
       },
       {
         id: "soundscapes",

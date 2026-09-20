@@ -175,6 +175,48 @@ const BLOCK_TOOLS = [
   { command: "formatBlock", value: "PRE", label: "Bloc de code" },
 ];
 
+/** Position du curseur, en nombre de caractères depuis le début de l'éditeur (ou -1). */
+function caretOffset(root: HTMLElement): number {
+  const sel = window.getSelection();
+  if (!sel || sel.rangeCount === 0 || !root.contains(sel.anchorNode)) return -1;
+  const range = sel.getRangeAt(0).cloneRange();
+  range.selectNodeContents(root);
+  range.setEnd(sel.anchorNode as Node, sel.anchorOffset);
+  return range.toString().length;
+}
+
+/** Replace le curseur à `offset` caractères du début (fin du texte si dépassement). */
+function restoreCaret(root: HTMLElement, offset: number): void {
+  if (offset < 0) return;
+  const walker = document.createTreeWalker(root, NodeFilter.SHOW_TEXT);
+  let remaining = offset;
+  let node = walker.nextNode();
+  let last: Node | null = null;
+  while (node) {
+    const len = node.textContent?.length ?? 0;
+    if (remaining <= len) {
+      const range = document.createRange();
+      range.setStart(node, remaining);
+      range.collapse(true);
+      const sel = window.getSelection();
+      sel?.removeAllRanges();
+      sel?.addRange(range);
+      return;
+    }
+    remaining -= len;
+    last = node;
+    node = walker.nextNode();
+  }
+  if (last) {
+    const range = document.createRange();
+    range.setStart(last, last.textContent?.length ?? 0);
+    range.collapse(true);
+    const sel = window.getSelection();
+    sel?.removeAllRanges();
+    sel?.addRange(range);
+  }
+}
+
 export default function RichTextEditor({
   defaultValue = "",
   onChange,
@@ -263,7 +305,14 @@ export default function RichTextEditor({
   function handleInput() {
     if (ref.current) {
       const clean = sanitizeHtml(ref.current.innerHTML);
-      if (ref.current.innerHTML !== clean) ref.current.innerHTML = clean;
+      if (ref.current.innerHTML !== clean) {
+        // Réécrire innerHTML remet le curseur au début : le premier caractère tapé se
+        // retrouvait à la FIN du texte (« Contenu » devenait « ontenuC »). On sauvegarde
+        // et on restaure la position.
+        const caret = caretOffset(ref.current);
+        ref.current.innerHTML = clean;
+        restoreCaret(ref.current, caret);
+      }
       onChange?.(clean);
       setEmpty(clean === "" || clean === "<br>");
       updateFormat();

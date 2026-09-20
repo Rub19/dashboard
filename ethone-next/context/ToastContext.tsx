@@ -464,7 +464,7 @@ export function ToastProvider({ children }: { children: React.ReactNode }) {
         closeButton={false}
         expand
         visibleToasts={4}
-        offset="1.25rem"
+        offset={isMobile ? "1.25rem" : "3.25rem"}
         gap={10}
         toastOptions={{
           unstyled: true,

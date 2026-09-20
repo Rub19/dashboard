@@ -28478,4 +28478,57 @@ CHANGELOG_BY_LANG.en.unshift(v1254_en);
 CHANGELOG_BY_LANG.es.unshift(v1254_es);
 CHANGELOG_BY_LANG.de.unshift(v1254_de);
 
+const v1255_fr: ChangelogEntry = {
+  version: "v1.25.5",
+  date: "2026-09-20",
+  title: "Notes : bug du premier caractère, cases de tâches lisibles, toasts au-dessus de la barre d'état",
+  items: [
+    "Notes : le premier caractère tapé dans l'éditeur de texte riche se retrouvait à la fin (« Contenu » devenait « ontenuC »). Le HTML nettoyé était réécrit à la première frappe, ce qui renvoyait le curseur au début ; la position du curseur est maintenant sauvegardée puis restaurée.",
+    "Tâches : la case à cocher était presque invisible (bordure trop discrète). Elle est ronde, à bordure plus marquée, avec un survol aux couleurs de l'accent, et expose son état aux lecteurs d'écran (`role=checkbox`, `aria-checked`).",
+    "Toasts : en bas à droite, ils recouvraient la barre d'état (ping, « Opérationnel »). Ils sont remontés au-dessus.",
+    "Vérifié en direct sur le site connecté : création, complétion et suppression d'une tâche, d'une habitude (série et historique) et d'une note ; les éléments de test ont été supprimés.",
+  ],
+};
+
+const v1255_en: ChangelogEntry = {
+  version: "v1.25.5",
+  date: "2026-09-20",
+  title: "Notes: first-character bug, readable task checkboxes, toasts above the status bar",
+  items: [
+    "Notes: the first character typed in the rich-text editor ended up at the end (\"Contenu\" became \"ontenuC\"). The cleaned HTML was rewritten on the first keystroke, sending the caret back to the start; the caret position is now saved and restored.",
+    "Tasks: the checkbox was almost invisible (border too faint). It is now round with a stronger border and an accent-colored hover, and exposes its state to screen readers (`role=checkbox`, `aria-checked`).",
+    "Toasts: at the bottom right they covered the status bar (ping, \"Operational\"). They now sit above it.",
+    "Verified live on the signed-in site: creating, completing and deleting a task, a habit (streak and history) and a note; the test items were deleted.",
+  ],
+};
+
+const v1255_es: ChangelogEntry = {
+  version: "v1.25.5",
+  date: "2026-09-20",
+  title: "Notas: error del primer carácter, casillas de tareas legibles, avisos sobre la barra de estado",
+  items: [
+    "Notas: el primer carácter escrito en el editor de texto enriquecido acababa al final (\"Contenu\" pasaba a \"ontenuC\"). El HTML limpio se reescribía con la primera pulsación y el cursor volvía al inicio; ahora se guarda y restaura la posición del cursor.",
+    "Tareas: la casilla era casi invisible (borde demasiado tenue). Ahora es redonda, con borde más marcado y hover con el color de acento, y expone su estado a los lectores de pantalla (`role=checkbox`, `aria-checked`).",
+    "Avisos: abajo a la derecha tapaban la barra de estado (ping, \"Operativo\"). Ahora quedan por encima.",
+    "Verificado en directo en el sitio con sesión: crear, completar y borrar una tarea, un hábito (racha e historial) y una nota; los elementos de prueba se eliminaron.",
+  ],
+};
+
+const v1255_de: ChangelogEntry = {
+  version: "v1.25.5",
+  date: "2026-09-20",
+  title: "Notizen: Fehler beim ersten Zeichen, lesbare Aufgaben-Kästchen, Toasts über der Statusleiste",
+  items: [
+    "Notizen: Das erste im Rich-Text-Editor getippte Zeichen landete am Ende („Contenu“ wurde zu „ontenuC“). Das bereinigte HTML wurde beim ersten Tastendruck neu geschrieben und setzte den Cursor an den Anfang; die Cursorposition wird jetzt gespeichert und wiederhergestellt.",
+    "Aufgaben: Das Kästchen war fast unsichtbar (Rahmen zu blass). Es ist jetzt rund, mit kräftigerem Rahmen und Akzent-Hover, und meldet seinen Zustand an Screenreader (`role=checkbox`, `aria-checked`).",
+    "Toasts: Unten rechts verdeckten sie die Statusleiste (Ping, „Betriebsbereit“). Sie liegen jetzt darüber.",
+    "Live auf der angemeldeten Seite geprüft: Anlegen, Erledigen und Löschen einer Aufgabe, einer Gewohnheit (Serie und Verlauf) und einer Notiz; die Testeinträge wurden gelöscht.",
+  ],
+};
+
+CHANGELOG_BY_LANG.fr.unshift(v1255_fr);
+CHANGELOG_BY_LANG.en.unshift(v1255_en);
+CHANGELOG_BY_LANG.es.unshift(v1255_es);
+CHANGELOG_BY_LANG.de.unshift(v1255_de);
+
 export const CHANGELOG = CHANGELOG_BY_LANG.fr;

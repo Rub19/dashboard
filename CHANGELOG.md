@@ -2,6 +2,15 @@
 
 Toutes les modifications notables de ce projet seront documentées dans ce fichier.
 
+## v1.25.5 — 2026-09-20
+
+**Notes : bug du premier caractère, cases de tâches lisibles, toasts au-dessus de la barre d'état**
+
+- Notes : le premier caractère tapé dans l'éditeur de texte riche se retrouvait à la fin (« Contenu » devenait « ontenuC »). Le HTML nettoyé était réécrit à la première frappe, ce qui renvoyait le curseur au début ; la position du curseur est maintenant sauvegardée puis restaurée.
+- Tâches : la case à cocher était presque invisible (bordure trop discrète). Elle est ronde, à bordure plus marquée, avec un survol aux couleurs de l'accent, et expose son état aux lecteurs d'écran (`role=checkbox`, `aria-checked`).
+- Toasts : en bas à droite, ils recouvraient la barre d'état (ping, « Opérationnel »). Ils sont remontés au-dessus.
+- Vérifié en direct sur le site connecté : création, complétion et suppression d'une tâche, d'une habitude (série et historique) et d'une note ; les éléments de test ont été supprimés.
+
 ## v1.25.4 — 2026-09-20
 
 **Fichiers : un vrai état vide au lieu d'une page quasi blanche**

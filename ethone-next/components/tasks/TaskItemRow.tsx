@@ -113,11 +113,14 @@ export const TaskItemRow = memo(function TaskItemRow({
             handleToggle();
           }}
           className={cn(
-            "mt-0.5 flex h-6 w-6 shrink-0 items-center justify-center rounded-[var(--inset-radius)] border transition-colors duration-150 cursor-pointer",
+            "mt-0.5 flex h-6 w-6 shrink-0 items-center justify-center rounded-full border-2 transition-colors duration-150 cursor-pointer",
             task.done
               ? "border-[var(--success)] bg-[var(--success)] text-[var(--bg-main)]"
-              : "border-[var(--panel-border)] bg-[var(--surface-2)] text-transparent hover:border-[var(--accent-primary)]"
+              : "border-[var(--text-muted)]/55 bg-transparent text-transparent hover:border-[var(--accent-primary)] hover:bg-[var(--accent-muted)]"
           )}
+          role="checkbox"
+          aria-checked={task.done}
+          aria-label={task.title}
         >
           <Check className={cn("h-3.5 w-3.5 stroke-[3]", task.done ? "opacity-100" : "opacity-0")} />
         </button>

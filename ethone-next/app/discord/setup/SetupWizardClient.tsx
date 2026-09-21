@@ -20,6 +20,7 @@ import {
   LayoutDashboard,
 } from "lucide-react";
 import { useDiscordOAuth, type DiscordGuild } from "@/lib/hooks/useDiscordOAuth";
+import { useBotGuildIds, pickBotGuild } from "@/lib/hooks/useBotGuildIds";
 import { useToast } from "@/components/ToastProvider";
 import DiscordIcon from "@/components/DiscordIcon";
 
@@ -49,6 +50,7 @@ const STEPS = [
 
 export default function SetupWizardClient() {
   const { profile, connect } = useDiscordOAuth();
+  const botGuildIds = useBotGuildIds(profile?.guilds);
   const { success, error: showError } = useToast();
 
   const [currentStep, setCurrentStep] = useState(1);
@@ -83,12 +85,12 @@ export default function SetupWizardClient() {
     });
   }, [profile?.guilds]);
 
-  // Default select first guild
+  // Serveur par défaut : le premier où le bot est présent (sinon le premier de la liste)
   useEffect(() => {
-    if (!selectedGuild && manageableGuilds.length > 0) {
-      setSelectedGuild(manageableGuilds[0]);
+    if (!selectedGuild && manageableGuilds.length > 0 && botGuildIds !== null) {
+      setSelectedGuild(pickBotGuild(manageableGuilds, botGuildIds)!);
     }
-  }, [manageableGuilds, selectedGuild]);
+  }, [manageableGuilds, selectedGuild, botGuildIds]);
 
   // Load real channels/roles for the selected guild so the moderation & welcome
   // steps can resolve to actual Discord IDs instead of free-text names.

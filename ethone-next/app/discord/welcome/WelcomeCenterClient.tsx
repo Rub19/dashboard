@@ -191,7 +191,7 @@ export function WelcomeCenterClient() {
     }
   }, [guildIdParam, guilds, selectedGuild]);
 
-  const currentGuildId = selectedGuild?.id || guildIdParam || "1128633164290596884";
+  const currentGuildId = selectedGuild?.id || guildIdParam || "";
 
   // Chargement global des données
   const fetchAllData = useCallback(async () => {
@@ -527,7 +527,7 @@ export function WelcomeCenterClient() {
             <span>Taux de Vérification</span>
             <Shield className="h-4 w-4 text-blue-400" />
           </div>
-          <p className="text-2xl font-bold text-white mt-1">{overview?.verificationRate || "78%"}</p>
+          <p className="text-2xl font-bold text-white mt-1">{overview?.verificationRate ?? "—"}</p>
           <p className="text-[10px] text-blue-300/80 mt-1">Membres ayant validé le règlement</p>
         </div>
 
@@ -536,7 +536,7 @@ export function WelcomeCenterClient() {
             <span>Complétion Onboarding</span>
             <Users className="h-4 w-4 text-purple-400" />
           </div>
-          <p className="text-2xl font-bold text-white mt-1">{overview?.onboardingCompletionRate || "73%"}</p>
+          <p className="text-2xl font-bold text-white mt-1">{overview?.onboardingCompletionRate ?? "—"}</p>
           <p className="text-[10px] text-purple-300/80 mt-1">Parcours terminé avec rôles</p>
         </div>
 

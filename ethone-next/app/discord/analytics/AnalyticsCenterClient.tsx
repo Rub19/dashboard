@@ -23,6 +23,7 @@ import {
   User as UserIcon,
 } from "lucide-react";
 import { useDiscordOAuth, type DiscordGuild } from "@/lib/hooks/useDiscordOAuth";
+import { useBotGuildIds, pickBotGuild } from "@/lib/hooks/useBotGuildIds";
 
 const BOT_API_URL = process.env.NEXT_PUBLIC_DISCORD_BOT_API || "";
 
@@ -151,6 +152,7 @@ const INSIGHT_ICON: Record<AutomaticInsight["type"], typeof TrendingUp> = {
 export default function AnalyticsCenterClient() {
   const searchParams = useSearchParams();
   const { profile } = useDiscordOAuth();
+  const botGuildIds = useBotGuildIds(profile?.guilds);
 
   const manageableGuilds: DiscordGuild[] = useMemo(() => {
     if (!profile?.guilds) return [];
@@ -174,8 +176,8 @@ export default function AnalyticsCenterClient() {
         return;
       }
     }
-    if (!selectedGuild) setSelectedGuild(manageableGuilds[0]);
-  }, [manageableGuilds, queryGuildId, selectedGuild]);
+    if (!selectedGuild && botGuildIds !== null) setSelectedGuild(pickBotGuild(manageableGuilds, botGuildIds)!);
+  }, [manageableGuilds, queryGuildId, selectedGuild, botGuildIds]);
 
   const [activeTab, setActiveTab] = useState<
     "messages" | "growth" | "heatmap" | "channels" | "insights"

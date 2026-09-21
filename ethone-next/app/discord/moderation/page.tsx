@@ -33,6 +33,7 @@ import {
 } from "lucide-react";
 import { useToast } from "@/components/ToastProvider";
 import { useDiscordOAuth, type DiscordGuild } from "@/lib/hooks/useDiscordOAuth";
+import { useBotGuildIds, pickBotGuild } from "@/lib/hooks/useBotGuildIds";
 import { cn } from "@/lib/utils";
 
 // ==========================================
@@ -194,6 +195,7 @@ export default function ModerationCenterPage() {
   const searchParams = useSearchParams();
   const { success, error: showError } = useToast();
   const { profile } = useDiscordOAuth();
+  const botGuildIds = useBotGuildIds(profile?.guilds);
 
   // Filtrer les serveurs où l'utilisateur est admin ou propriétaire
   const manageableGuilds: DiscordGuild[] = useMemo(() => {
@@ -219,10 +221,10 @@ export default function ModerationCenterPage() {
         return;
       }
     }
-    if (!selectedGuild) {
-      setSelectedGuild(manageableGuilds[0]);
+    if (!selectedGuild && botGuildIds !== null) {
+      setSelectedGuild(pickBotGuild(manageableGuilds, botGuildIds)!);
     }
-  }, [manageableGuilds, queryGuildId, selectedGuild]);
+  }, [manageableGuilds, queryGuildId, selectedGuild, botGuildIds]);
 
   // Onglet principal
   const [activeTab, setActiveTab] = useState<

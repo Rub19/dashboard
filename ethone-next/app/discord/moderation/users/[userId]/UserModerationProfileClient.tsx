@@ -24,6 +24,7 @@ import {
 } from "lucide-react";
 import { useToast } from "@/components/ToastProvider";
 import { useDiscordOAuth, type DiscordGuild } from "@/lib/hooks/useDiscordOAuth";
+import { useBotGuildIds, pickBotGuild } from "@/lib/hooks/useBotGuildIds";
 import { cn } from "@/lib/utils";
 
 const BOT_API_URL = process.env.NEXT_PUBLIC_DISCORD_BOT_API || "";
@@ -45,6 +46,7 @@ export default function UserModerationProfileClient() {
   const searchParams = useSearchParams();
   const { success, error: showError } = useToast();
   const { profile } = useDiscordOAuth();
+  const botGuildIds = useBotGuildIds(profile?.guilds);
 
   const rawUserId = String(params?.userId || "");
   const queryUserId = searchParams.get("userId");
@@ -73,10 +75,10 @@ export default function UserModerationProfileClient() {
         return;
       }
     }
-    if (!selectedGuild) {
-      setSelectedGuild(manageableGuilds[0]);
+    if (!selectedGuild && botGuildIds !== null) {
+      setSelectedGuild(pickBotGuild(manageableGuilds, botGuildIds)!);
     }
-  }, [manageableGuilds, queryGuildId, selectedGuild]);
+  }, [manageableGuilds, queryGuildId, selectedGuild, botGuildIds]);
 
   // Onglet actif
   const [activeTab, setActiveTab] = useState<

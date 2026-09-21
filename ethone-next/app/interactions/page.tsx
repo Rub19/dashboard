@@ -27,6 +27,8 @@ import {
 import { useI18n } from "@/lib/hooks/useI18n";
 import { useSettings } from "@/components/SettingsProvider";
 import { useUserData, type UserDataRecord } from "@/lib/hooks/useUserData";
+import { useActivityJournal } from "@/lib/hooks/useActivityJournal";
+import type { ActivityEntry } from "@/lib/activity-journal";
 import { InteractionsHeatmap } from "@/lib/interactions-heatmap";
 import Tooltip from "@/components/Tooltip";
 import { TiltCard } from "@/components/ui/TiltCard";
@@ -56,6 +58,43 @@ const WEEKDAY_KEYS = [
   "dayShortSat",
   "dayShortSun",
 ];
+
+// Le journal d'activité du site (notes, tâches, fichiers, espaces, thème…) est la vraie source des
+// interactions : plus rien n'écrit d'enregistrements « interaction » côté Worker, la heatmap restait
+// donc vide. On traduit chaque entrée du journal vers les actions connues de cette page.
+const JOURNAL_ACTION: Record<string, string> = {
+  "v8.notes.new": "note_create",
+  "v8.notes.save": "note_save",
+  "v8.tasks.create": "task_create",
+  "v8.tasks.complete": "task_complete",
+  "v8.calendar.create": "event_create",
+  "v8.files.create": "file_create",
+  "v8.space.personal": "space_switch",
+  "v8.space.focus": "space_switch",
+  "v8.space.studio": "space_switch",
+  "v8.sync.refresh": "sync",
+  "v8.theme.toggle": "ui_customize",
+  "v8.appearance.cycle": "ui_customize",
+  "derived:note": "note_create",
+  "derived:task": "task_create",
+  "derived:event": "event_create",
+  "derived:file": "file_create",
+};
+
+function journalToRecord(e: ActivityEntry): UserDataRecord {
+  const eventType = e.eventType || "";
+  const action = JOURNAL_ACTION[eventType] || (eventType.startsWith("route:") ? "space_switch" : "sync");
+  return {
+    id: `journal-${e.id}`,
+    kind: "interaction",
+    slug: eventType || e.id,
+    label: e.title,
+    data: { action },
+    count: 1,
+    created_at: e.timestamp,
+    updated_at: e.timestamp,
+  };
+}
 
 function getKind(record: UserDataRecord): string {
   const data = record.data || {};
@@ -111,11 +150,11 @@ function timeAgo(iso: string, locale = "fr"): string {
 function getHeatmapColor(level: number) {
   switch (level) {
     case 1:
-      return "bg-[var(--accent-primary)] border border-[var(--accent-primary)]";
+      return "bg-[color-mix(in_srgb,var(--accent-primary)_28%,transparent)] border border-[color-mix(in_srgb,var(--accent-primary)_35%,transparent)]";
     case 2:
-      return "bg-[var(--accent-primary)] border border-[var(--accent-primary)]";
+      return "bg-[color-mix(in_srgb,var(--accent-primary)_50%,transparent)] border border-[color-mix(in_srgb,var(--accent-primary)_55%,transparent)]";
     case 3:
-      return "bg-[var(--accent-primary)] border border-[var(--accent-primary)]";
+      return "bg-[color-mix(in_srgb,var(--accent-primary)_75%,transparent)] border border-[color-mix(in_srgb,var(--accent-primary)_80%,transparent)]";
     case 4:
       return "bg-[var(--accent-primary)] shadow-[0_0_8px_var(--glow-color)] border border-[var(--input-border-hover)]";
     default:
@@ -276,7 +315,13 @@ function iconForKind(kind: string): { icon: React.ElementType; color: string; la
 export default function InteractionsPage() {
   const i18n = useI18n();
   const { settings } = useSettings();
-  const { items: reactions, loading, error } = useUserData("interaction");
+  const { items: storedReactions, loading, error } = useUserData("interaction");
+  const { entries: journalEntries } = useActivityJournal();
+  const reactions = useMemo<UserDataRecord[]>(() => {
+    const seen = new Set(storedReactions.map((r) => r.id));
+    const fromJournal = journalEntries.map(journalToRecord).filter((r) => !seen.has(r.id));
+    return [...storedReactions, ...fromJournal];
+  }, [storedReactions, journalEntries]);
   const currentYear = new Date().getFullYear();
   const [selectedYear, setSelectedYear] = useState(currentYear);
 
@@ -442,13 +487,13 @@ export default function InteractionsPage() {
           <div className="h-48 w-full animate-pulse rounded-xl bg-white/[0.03]" />
         ) : (
           <div className="overflow-x-auto pb-2 scrollbar-none">
-            <div className="flex min-w-max gap-1 sm:gap-1.5" style={{ minWidth: `${weeks.length * 24}px` }}>
+            <div className="flex min-w-max gap-1 [--stride:16px] sm:gap-1.5 sm:[--stride:20px]" style={{ minWidth: `calc(${weeks.length} * var(--stride) + 40px)` }}>
               {/* Day labels */}
-              <div className="flex w-8 flex-col gap-1 pt-5 sm:gap-1.5">
+              <div className="flex w-9 shrink-0 flex-col gap-1 pt-5 sm:gap-1.5">
                 {weekdays.map((d, i) => (
                   <div
                     key={i}
-                    className="flex h-3 w-3 items-center justify-end text-[10px] text-zinc-500 sm:h-3.5 sm:w-3.5"
+                    className="flex h-3 w-full items-center justify-end whitespace-nowrap pr-1 text-[10px] leading-none text-zinc-500 sm:h-3.5"
                   >
                     {i % 2 === 0 ? d : ""}
                   </div>
@@ -462,7 +507,7 @@ export default function InteractionsPage() {
                     <div
                       key={i}
                       className="absolute text-[10px] text-zinc-500"
-                      style={{ left: `${m.index * 19}px` }}
+                      style={{ left: `calc(${m.index} * var(--stride))` }}
                     >
                       {m.label}
                     </div>

@@ -28,6 +28,7 @@ import {
 import { useAuth } from "@/components/AuthProvider";
 import { useToast } from "@/components/ToastProvider";
 import { useDiscordOAuth, type DiscordGuild } from "@/lib/hooks/useDiscordOAuth";
+import { useBotGuildIds, pickBotGuild } from "@/lib/hooks/useBotGuildIds";
 import { useDiscordSync } from "@/lib/useDiscordSync";
 import { cn } from "@/lib/utils";
 
@@ -314,6 +315,7 @@ export default function AntiRaidDashboardPage() {
   const searchParams = useSearchParams();
   const { success } = useToast();
   const { profile } = useDiscordOAuth();
+  const botGuildIds = useBotGuildIds(profile?.guilds);
 
   // Serveurs gérables (Admin / Owner)
   const manageableGuilds: DiscordGuild[] = useMemo(() => {
@@ -339,10 +341,10 @@ export default function AntiRaidDashboardPage() {
         return;
       }
     }
-    if (!selectedGuild) {
-      setSelectedGuild(manageableGuilds[0]);
+    if (!selectedGuild && botGuildIds !== null) {
+      setSelectedGuild(pickBotGuild(manageableGuilds, botGuildIds)!);
     }
-  }, [manageableGuilds, queryGuildId, selectedGuild]);
+  }, [manageableGuilds, queryGuildId, selectedGuild, botGuildIds]);
 
   // Onglet de configuration actif
   const [activeTab, setActiveTab] = useState<

@@ -17,6 +17,7 @@ import {
 } from "lucide-react";
 import { useToast } from "@/components/ToastProvider";
 import { useDiscordOAuth, type DiscordGuild } from "@/lib/hooks/useDiscordOAuth";
+import { useBotGuildIds, pickBotGuild } from "@/lib/hooks/useBotGuildIds";
 import { useDiscordSync } from "@/lib/useDiscordSync";
 import { cn } from "@/lib/utils";
 
@@ -97,6 +98,7 @@ export default function StickyCenterClient() {
   const searchParams = useSearchParams();
   const { success, error: showError } = useToast();
   const { profile, loading: discordLoading } = useDiscordOAuth();
+  const botGuildIds = useBotGuildIds(profile?.guilds);
 
   const manageableGuilds: DiscordGuild[] = useMemo(() => {
     if (!profile?.guilds) return [];
@@ -120,8 +122,8 @@ export default function StickyCenterClient() {
         return;
       }
     }
-    if (!selectedGuild) setSelectedGuild(manageableGuilds[0]);
-  }, [manageableGuilds, queryGuildId, selectedGuild]);
+    if (!selectedGuild && botGuildIds !== null) setSelectedGuild(pickBotGuild(manageableGuilds, botGuildIds)!);
+  }, [manageableGuilds, queryGuildId, selectedGuild, botGuildIds]);
 
   const [overview, setOverview] = useState<StickyOverview | null>(null);
   const [channels, setChannels] = useState<GuildChannel[]>([]);

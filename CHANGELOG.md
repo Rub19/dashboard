@@ -2,6 +2,15 @@
 
 Toutes les modifications notables de ce projet seront documentées dans ce fichier.
 
+## v1.26.1 — 2026-09-21
+
+**Dashboard Discord : le bon serveur par défaut, synchro corrigée, heatmap des interactions rétablie**
+
+- Les pages Discord (Onboarding, Server Stats, AFK, Analytics, Anniversaires, Giveaways, Highlights, Modération, Anti-nuke, Anti-raid, Vue d'ensemble, Rappels, Assistant de configuration, Starboard, Sticky, Tags…) sélectionnaient le premier serveur de ta liste, même quand le bot n'y est pas : le bot répondait 404, et la page affichait « serveur du bot injoignable » avec des salons et des rôles vides. Elles choisissent maintenant un serveur où le bot est présent (le bon serveur reste respecté quand il figure dans l'adresse ou dans le sélecteur).
+- Synchronisation en direct : le flux SSE était ouvert sans envoyer le cookie de session du bot (401 permanents) et se rouvrait à chaque rendu de la page, jusqu'à des centaines de requêtes qui faisaient limiter le site par le bot (429). Le cookie est maintenant envoyé, les rappels ne relancent plus la connexion, et le délai de reconnexion monte jusqu'à 30 s.
+- Heatmap des interactions : elle lisait des enregistrements que plus rien n'écrit et restait vide. Elle s'appuie maintenant sur le journal d'activité du site (notes, tâches, événements, fichiers, changements d'espace, thème, synchronisation…). Les niveaux d'intensité 1 à 3 avaient la même couleur, ils forment maintenant un vrai dégradé, et les libellés des jours (« Lun », « Mer »…) ne sont plus coupés ni les mois décalés.
+- Page Bienvenue & Onboarding : les taux de vérification (« 78% ») et d'onboarding (« 73% ») affichés quand aucune donnée n'arrivait étaient inventés ; ils affichent maintenant « — ». L'identifiant de serveur de test codé en dur a été retiré.
+
 ## v1.26.0 — 2026-09-21
 
 **Bot musique : /join, /disconnect et /voice-status — le bot peut rester 24h/24 dans un salon vocal**

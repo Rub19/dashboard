@@ -19,6 +19,7 @@ import {
   ChevronRight,
 } from "lucide-react";
 import { useDiscordOAuth, type DiscordGuild } from "@/lib/hooks/useDiscordOAuth";
+import { useBotGuildIds, pickBotGuild } from "@/lib/hooks/useBotGuildIds";
 import { useGuildOverview } from "@/lib/hooks/useGuildOverview";
 
 const BOT_API_URL = process.env.NEXT_PUBLIC_DISCORD_BOT_API || "";
@@ -93,6 +94,7 @@ function CardError() {
 export default function OverviewClient() {
   const searchParams = useSearchParams();
   const { profile } = useDiscordOAuth();
+  const botGuildIds = useBotGuildIds(profile?.guilds);
 
   const manageableGuilds: DiscordGuild[] = useMemo(() => {
     if (!profile?.guilds) return [];
@@ -111,8 +113,8 @@ export default function OverviewClient() {
         return;
       }
     }
-    if (!selectedGuild) setSelectedGuild(manageableGuilds[0]);
-  }, [manageableGuilds, queryGuildId, selectedGuild]);
+    if (!selectedGuild && botGuildIds !== null) setSelectedGuild(pickBotGuild(manageableGuilds, botGuildIds)!);
+  }, [manageableGuilds, queryGuildId, selectedGuild, botGuildIds]);
 
   const { guild, botWide, moderation, music, tickets, giveaways, security, backups, refresh } = useGuildOverview(
     selectedGuild?.id || null

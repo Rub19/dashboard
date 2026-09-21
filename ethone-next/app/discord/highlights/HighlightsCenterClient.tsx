@@ -6,6 +6,7 @@ import { useSearchParams } from "next/navigation";
 import { Eye, ArrowLeft, RefreshCw, Plus, X, ChevronDown, AlertTriangle, Hash } from "lucide-react";
 import { useToast } from "@/components/ToastProvider";
 import { useDiscordOAuth, type DiscordGuild } from "@/lib/hooks/useDiscordOAuth";
+import { useBotGuildIds, pickBotGuild } from "@/lib/hooks/useBotGuildIds";
 import { useDiscordSync } from "@/lib/useDiscordSync";
 import { cn } from "@/lib/utils";
 
@@ -57,6 +58,7 @@ export default function HighlightsCenterClient() {
   const searchParams = useSearchParams();
   const { success, error: showError } = useToast();
   const { profile, loading: discordLoading } = useDiscordOAuth();
+  const botGuildIds = useBotGuildIds(profile?.guilds);
 
   const manageableGuilds: DiscordGuild[] = useMemo(() => {
     if (!profile?.guilds) return [];
@@ -75,8 +77,8 @@ export default function HighlightsCenterClient() {
         return;
       }
     }
-    if (!selectedGuild) setSelectedGuild(manageableGuilds[0]);
-  }, [manageableGuilds, queryGuildId, selectedGuild]);
+    if (!selectedGuild && botGuildIds !== null) setSelectedGuild(pickBotGuild(manageableGuilds, botGuildIds)!);
+  }, [manageableGuilds, queryGuildId, selectedGuild, botGuildIds]);
 
   const [config, setConfig] = useState<HighlightConfig | null>(null);
   const [keywords, setKeywords] = useState<HighlightKeyword[]>([]);

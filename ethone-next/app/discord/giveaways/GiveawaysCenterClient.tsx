@@ -20,6 +20,7 @@ import {
 } from "lucide-react";
 import { useToast } from "@/components/ToastProvider";
 import { useDiscordOAuth, type DiscordGuild } from "@/lib/hooks/useDiscordOAuth";
+import { useBotGuildIds, pickBotGuild } from "@/lib/hooks/useBotGuildIds";
 
 const BOT_API_URL = process.env.NEXT_PUBLIC_DISCORD_BOT_API || "";
 
@@ -100,6 +101,7 @@ export default function GiveawaysCenterClient() {
   const searchParams = useSearchParams();
   const { success, error: showError } = useToast();
   const { profile } = useDiscordOAuth();
+  const botGuildIds = useBotGuildIds(profile?.guilds);
 
   const manageableGuilds: DiscordGuild[] = useMemo(() => {
     if (!profile?.guilds) return [];
@@ -123,8 +125,8 @@ export default function GiveawaysCenterClient() {
         return;
       }
     }
-    if (!selectedGuild) setSelectedGuild(manageableGuilds[0]);
-  }, [manageableGuilds, queryGuildId, selectedGuild]);
+    if (!selectedGuild && botGuildIds !== null) setSelectedGuild(pickBotGuild(manageableGuilds, botGuildIds)!);
+  }, [manageableGuilds, queryGuildId, selectedGuild, botGuildIds]);
 
   const [activeTab, setActiveTab] = useState<"active" | "create" | "history" | "fairness">("active");
   const [overview, setOverview] = useState<GiveawayOverview | null>(null);

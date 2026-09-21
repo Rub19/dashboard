@@ -29348,4 +29348,57 @@ CHANGELOG_BY_LANG.en.unshift(v1260_en);
 CHANGELOG_BY_LANG.es.unshift(v1260_es);
 CHANGELOG_BY_LANG.de.unshift(v1260_de);
 
+const v1261_fr: ChangelogEntry = {
+  version: "v1.26.1",
+  date: "2026-09-21",
+  title: "Dashboard Discord : le bon serveur par défaut, synchro corrigée, heatmap des interactions rétablie",
+  items: [
+    "Les pages Discord (Onboarding, Server Stats, AFK, Analytics, Anniversaires, Giveaways, Highlights, Modération, Anti-nuke, Anti-raid, Vue d'ensemble, Rappels, Assistant de configuration, Starboard, Sticky, Tags…) sélectionnaient le premier serveur de ta liste, même quand le bot n'y est pas : le bot répondait 404, et la page affichait « serveur du bot injoignable » avec des salons et des rôles vides. Elles choisissent maintenant un serveur où le bot est présent (le bon serveur reste respecté quand il figure dans l'adresse ou dans le sélecteur).",
+    "Synchronisation en direct : le flux SSE était ouvert sans envoyer le cookie de session du bot (401 permanents) et se rouvrait à chaque rendu de la page, jusqu'à des centaines de requêtes qui faisaient limiter le site par le bot (429). Le cookie est maintenant envoyé, les rappels ne relancent plus la connexion, et le délai de reconnexion monte jusqu'à 30 s.",
+    "Heatmap des interactions : elle lisait des enregistrements que plus rien n'écrit et restait vide. Elle s'appuie maintenant sur le journal d'activité du site (notes, tâches, événements, fichiers, changements d'espace, thème, synchronisation…). Les niveaux d'intensité 1 à 3 avaient la même couleur, ils forment maintenant un vrai dégradé, et les libellés des jours (« Lun », « Mer »…) ne sont plus coupés ni les mois décalés.",
+    "Page Bienvenue & Onboarding : les taux de vérification (« 78% ») et d'onboarding (« 73% ») affichés quand aucune donnée n'arrivait étaient inventés ; ils affichent maintenant « — ». L'identifiant de serveur de test codé en dur a été retiré.",
+  ],
+};
+
+const v1261_en: ChangelogEntry = {
+  version: "v1.26.1",
+  date: "2026-09-21",
+  title: "Discord dashboard: the right default server, sync fixed, interactions heatmap restored",
+  items: [
+    "Discord pages (Onboarding, Server Stats, AFK, Analytics, Birthdays, Giveaways, Highlights, Moderation, Anti-nuke, Anti-raid, Overview, Reminders, Setup wizard, Starboard, Sticky, Tags…) picked the first server in your list even when the bot is not there: the bot answered 404 and the page showed \"bot server unreachable\" with empty channels and roles. They now pick a server where the bot is present (the right server is still respected when it is in the address or the selector).",
+    "Live sync: the SSE stream was opened without sending the bot's session cookie (permanent 401s) and reopened on every page render, up to hundreds of requests that got the site rate-limited by the bot (429). The cookie is now sent, callbacks no longer restart the connection, and the reconnect delay grows up to 30 s.",
+    "Interactions heatmap: it read records that nothing writes any more and stayed empty. It now uses the site's activity journal (notes, tasks, events, files, space changes, theme, sync…). Intensity levels 1 to 3 had the same colour; they are now a real gradient, and the weekday labels (\"Mon\", \"Wed\"…) are no longer cut off nor the months misaligned.",
+    "Welcome & Onboarding page: the verification (\"78%\") and onboarding (\"73%\") rates shown when no data arrived were made up; they now show \"—\". The hard-coded test server id was removed.",
+  ],
+};
+
+const v1261_es: ChangelogEntry = {
+  version: "v1.26.1",
+  date: "2026-09-21",
+  title: "Panel de Discord: el servidor correcto por defecto, sincronización corregida y mapa de calor de interacciones restaurado",
+  items: [
+    "Las páginas de Discord (Onboarding, Server Stats, AFK, Analytics, Cumpleaños, Sorteos, Highlights, Moderación, Anti-nuke, Anti-raid, Resumen, Recordatorios, Asistente de configuración, Starboard, Sticky, Tags…) elegían el primer servidor de tu lista aunque el bot no estuviera en él: el bot respondía 404 y la página mostraba « servidor del bot inaccesible » con canales y roles vacíos. Ahora eligen un servidor donde el bot está presente (se sigue respetando el servidor correcto cuando figura en la dirección o en el selector).",
+    "Sincronización en directo: el flujo SSE se abría sin enviar la cookie de sesión del bot (401 permanentes) y se reabría en cada renderizado, hasta cientos de peticiones que hacían que el bot limitara el sitio (429). Ahora se envía la cookie, los callbacks ya no reinician la conexión y el retardo de reconexión crece hasta 30 s.",
+    "Mapa de calor de interacciones: leía registros que ya nada escribe y se quedaba vacío. Ahora usa el diario de actividad del sitio (notas, tareas, eventos, archivos, cambios de espacio, tema, sincronización…). Los niveles de intensidad 1 a 3 tenían el mismo color; ahora forman un degradado real, y las etiquetas de los días (« Lun », « Mié »…) ya no se cortan ni los meses se desalinean.",
+    "Página Bienvenida y Onboarding: las tasas de verificación (« 78% ») y de onboarding (« 73% ») que se mostraban sin datos eran inventadas; ahora muestran « — ». Se eliminó el identificador de servidor de prueba escrito a mano.",
+  ],
+};
+
+const v1261_de: ChangelogEntry = {
+  version: "v1.26.1",
+  date: "2026-09-21",
+  title: "Discord-Dashboard: der richtige Standardserver, Synchronisierung repariert, Interaktions-Heatmap wiederhergestellt",
+  items: [
+    "Discord-Seiten (Onboarding, Server Stats, AFK, Analytics, Geburtstage, Giveaways, Highlights, Moderation, Anti-Nuke, Anti-Raid, Übersicht, Erinnerungen, Einrichtungsassistent, Starboard, Sticky, Tags …) wählten den ersten Server deiner Liste, auch wenn der Bot dort nicht ist: Der Bot antwortete 404, und die Seite zeigte „Bot-Server nicht erreichbar“ mit leeren Kanälen und Rollen. Sie wählen jetzt einen Server, auf dem der Bot vorhanden ist (der richtige Server bleibt respektiert, wenn er in der Adresse oder im Selektor steht).",
+    "Live-Synchronisierung: Der SSE-Stream wurde ohne das Sitzungs-Cookie des Bots geöffnet (dauerhafte 401) und bei jedem Rendern der Seite neu geöffnet, bis zu Hunderten Anfragen, wodurch der Bot die Seite drosselte (429). Das Cookie wird jetzt gesendet, Callbacks starten die Verbindung nicht mehr neu, und die Wiederverbindungsverzögerung wächst bis 30 s.",
+    "Interaktions-Heatmap: Sie las Einträge, die nichts mehr schreibt, und blieb leer. Sie nutzt jetzt das Aktivitätsjournal der Seite (Notizen, Aufgaben, Ereignisse, Dateien, Space-Wechsel, Design, Sync …). Die Intensitätsstufen 1 bis 3 hatten dieselbe Farbe, jetzt bilden sie einen echten Verlauf, und die Wochentagsbeschriftungen („Mo“, „Mi“ …) sind weder abgeschnitten noch die Monate verschoben.",
+    "Seite Willkommen & Onboarding: Die angezeigten Verifizierungs- („78%“) und Onboarding-Raten („73%“) ohne Daten waren erfunden; jetzt steht dort „—“. Die fest eincodierte Test-Server-ID wurde entfernt.",
+  ],
+};
+
+CHANGELOG_BY_LANG.fr.unshift(v1261_fr);
+CHANGELOG_BY_LANG.en.unshift(v1261_en);
+CHANGELOG_BY_LANG.es.unshift(v1261_es);
+CHANGELOG_BY_LANG.de.unshift(v1261_de);
+
 export const CHANGELOG = CHANGELOG_BY_LANG.fr;

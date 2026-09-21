@@ -47,6 +47,17 @@ export function useDiscordSync({
   const reconnectTimeoutRef = useRef<NodeJS.Timeout | null>(null);
   const retryCountRef = useRef(0);
 
+  // Les pages passent leurs rappels sous forme de fonctions écrites à la volée (nouvelle identité à
+  // chaque rendu). S'ils figuraient dans les dépendances de l'effet, chaque rendu fermerait et
+  // rouvrirait le flux SSE sans jamais attendre (des centaines de requêtes par seconde → 429 côté
+  // bot). On les range donc dans des refs : l'effet ne dépend plus que du serveur et de `enabled`.
+  const onEventRef = useRef(onEvent);
+  const onPresenceChangedRef = useRef(onPresenceChanged);
+  const onConfigUpdatedRef = useRef(onConfigUpdated);
+  onEventRef.current = onEvent;
+  onPresenceChangedRef.current = onPresenceChanged;
+  onConfigUpdatedRef.current = onConfigUpdated;
+
   // Émission d'une mutation avec tag de traçabilité anti-boucle
   const mutate = useCallback(
     async (module: string, path: string, value: any, previousValue?: any) => {
@@ -60,6 +71,7 @@ export function useDiscordSync({
           : `${BOT_API_URL}/api/sync/mutate`;
         const res = await fetch(endpoint, {
           method: "POST",
+          credentials: "include",
           headers: { "Content-Type": "application/json" },
           body: JSON.stringify({
             mutationId,
@@ -107,7 +119,7 @@ export function useDiscordSync({
         : `${BOT_API_URL}/api/sync/stream`;
 
       try {
-        const es = new EventSource(sseUrl);
+        const es = new EventSource(sseUrl, { withCredentials: true });
         eventSourceRef.current = es;
 
         es.onopen = () => {
@@ -130,12 +142,12 @@ export function useDiscordSync({
             setLastEvent(parsed);
             setEventsCount((c) => c + 1);
 
-            onEvent?.(parsed);
+            onEventRef.current?.(parsed);
 
             if (parsed.type === "PRESENCE_CHANGED") {
-              onPresenceChanged?.(parsed.payload);
+              onPresenceChangedRef.current?.(parsed.payload);
             } else if (parsed.type === "CONFIG_UPDATED") {
-              onConfigUpdated?.(parsed.payload?.module, parsed.payload?.config);
+              onConfigUpdatedRef.current?.(parsed.payload?.module, parsed.payload?.config);
             }
           } catch {
             // Ignorer JSON invalide ou heartbeat brut
@@ -156,8 +168,8 @@ export function useDiscordSync({
           setConnectionState("disconnected");
           es.close();
 
-          // Reconnexion avec backoff exponentiel (max 10s)
-          const backoff = Math.min(1000 * Math.pow(1.5, retryCountRef.current), 10000);
+          // Reconnexion avec backoff exponentiel (max 30 s : inutile de harceler un bot injoignable)
+          const backoff = Math.min(1000 * Math.pow(1.6, retryCountRef.current), 30000);
           retryCountRef.current++;
 
           reconnectTimeoutRef.current = setTimeout(() => {
@@ -179,7 +191,7 @@ export function useDiscordSync({
         eventSourceRef.current = null;
       }
     };
-  }, [guildId, enabled, onEvent, onPresenceChanged, onConfigUpdated]);
+  }, [guildId, enabled]);
 
   return {
     connectionState,

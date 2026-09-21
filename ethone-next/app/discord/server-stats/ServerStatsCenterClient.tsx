@@ -10,6 +10,7 @@ import { useBotGuildIds, pickBotGuild } from "@/lib/hooks/useBotGuildIds";
 import { useDiscordSync } from "@/lib/useDiscordSync";
 import { cn } from "@/lib/utils";
 import { GuildSelector } from "@/components/GuildSelector";
+import ChannelPicker from "@/components/discord/ChannelPicker";
 
 const BOT_API_URL = process.env.NEXT_PUBLIC_DISCORD_BOT_API || "";
 
@@ -299,12 +300,14 @@ export default function ServerStatsCenterClient() {
               <div className="grid grid-cols-1 sm:grid-cols-3 gap-3">
                 <div>
                   <label className="mb-1 block text-[11px] font-medium text-zinc-400">Salon</label>
-                  <select value={fChannel} onChange={(e) => setFChannel(e.target.value)} className="w-full rounded-[var(--inset-radius)] border border-[var(--panel-border)] bg-white/[0.04] px-3 py-2 text-xs text-white focus:outline-none focus:border-[#5865F2]/50 [&>option]:bg-[var(--bg-surface-elevated)]">
-                    <option value="">— Choisir —</option>
-                    {channels.filter((c) => !usedChannels.has(c.id)).map((c) => (
-                      <option key={c.id} value={c.id}>{c.type === "voice" ? "🔊 " : c.type === "stage" ? "🎙️ " : "# "}{c.name}</option>
-                    ))}
-                  </select>
+                  <ChannelPicker
+                    value={fChannel}
+                    onChange={(id) => setFChannel(id)}
+                    channels={channels.filter((c) => !usedChannels.has(c.id)).map((c) => ({ id: c.id, name: c.name }))}
+                    guildId={selectedGuild?.id}
+                    placeholder="Choisir un salon..."
+                    size="sm"
+                  />
                 </div>
                 <div>
                   <label className="mb-1 block text-[11px] font-medium text-zinc-400">Statistique</label>

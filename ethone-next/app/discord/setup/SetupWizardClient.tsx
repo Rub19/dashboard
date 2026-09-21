@@ -12,7 +12,6 @@ import {
   ChevronLeft,
   ArrowRight,
   ExternalLink,
-  Hash,
   Check,
   AlertTriangle,
   Rocket,
@@ -22,6 +21,7 @@ import { useDiscordOAuth, type DiscordGuild } from "@/lib/hooks/useDiscordOAuth"
 import { useBotGuildIds, pickBotGuild } from "@/lib/hooks/useBotGuildIds";
 import { useToast } from "@/components/ToastProvider";
 import DiscordIcon from "@/components/DiscordIcon";
+import ChannelPicker from "@/components/discord/ChannelPicker";
 
 const BOT_CLIENT_ID = "1545139931154878464";
 const BOT_INVITE_URL = `https://discord.com/oauth2/authorize?client_id=${BOT_CLIENT_ID}&permissions=8&scope=bot%20applications.commands`;
@@ -497,28 +497,13 @@ export default function SetupWizardClient() {
                   <label className="text-xs font-semibold text-zinc-300 block mb-1.5">
                     Salon des logs de modération
                   </label>
-                  <div className="flex items-center gap-2 p-2.5 rounded-xl bg-zinc-950 border border-zinc-800">
-                    <Hash className="w-4 h-4 text-zinc-500 shrink-0" />
-                    <select
-                      value={modLogChannelId ?? ""}
-                      onChange={(e) => setModLogChannelId(e.target.value || null)}
-                      disabled={isLoadingGuildData || guildChannels.length === 0}
-                      className="bg-transparent text-xs text-white focus:outline-none flex-1 disabled:opacity-50"
-                    >
-                      <option value="" className="bg-zinc-950">
-                        {isLoadingGuildData
-                          ? "Chargement des salons…"
-                          : guildChannels.length === 0
-                          ? "Aucun salon disponible"
-                          : "Sélectionner un salon"}
-                      </option>
-                      {guildChannels.map((c) => (
-                        <option key={c.id} value={c.id} className="bg-zinc-950">
-                          #{c.name}
-                        </option>
-                      ))}
-                    </select>
-                  </div>
+                  <ChannelPicker
+                    value={modLogChannelId ?? ""}
+                    onChange={(id) => setModLogChannelId(id || null)}
+                    channels={guildChannels}
+                    placeholder="Sélectionner ou saisir un ID..."
+                    disabled={isLoadingGuildData}
+                  />
                 </div>
 
                 {/* Anti-spam Toggle */}
@@ -604,28 +589,13 @@ export default function SetupWizardClient() {
                   <label className="text-xs font-semibold text-zinc-300 block mb-1.5">
                     Salon d'accueil
                   </label>
-                  <div className="flex items-center gap-2 p-2.5 rounded-xl bg-zinc-950 border border-zinc-800">
-                    <Hash className="w-4 h-4 text-zinc-500 shrink-0" />
-                    <select
-                      value={welcomeChannelId ?? ""}
-                      onChange={(e) => setWelcomeChannelId(e.target.value || null)}
-                      disabled={isLoadingGuildData || guildChannels.length === 0}
-                      className="bg-transparent text-xs text-white focus:outline-none flex-1 disabled:opacity-50"
-                    >
-                      <option value="" className="bg-zinc-950">
-                        {isLoadingGuildData
-                          ? "Chargement des salons…"
-                          : guildChannels.length === 0
-                          ? "Aucun salon disponible"
-                          : "Sélectionner un salon"}
-                      </option>
-                      {guildChannels.map((c) => (
-                        <option key={c.id} value={c.id} className="bg-zinc-950">
-                          #{c.name}
-                        </option>
-                      ))}
-                    </select>
-                  </div>
+                  <ChannelPicker
+                    value={welcomeChannelId ?? ""}
+                    onChange={(id) => setWelcomeChannelId(id || null)}
+                    channels={guildChannels}
+                    placeholder="Sélectionner ou saisir un ID..."
+                    disabled={isLoadingGuildData}
+                  />
                 </div>
 
                 {/* Welcome Message */}

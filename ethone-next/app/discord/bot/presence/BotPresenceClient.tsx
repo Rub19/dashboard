@@ -154,16 +154,17 @@ export default function BotPresenceClient({ initialTab = "overview" }: BotPresen
   // Telemetry variables for preview
   const previewContext = useMemo(() => {
     const now = new Date();
+    const totalUsers = guilds.reduce((acc, g) => acc + (g.memberCount || g.approximateMemberCount || 0), 0);
     return {
-      guildCount: guilds.length || 1,
-      userCount: 48,
-      ping: 21,
-      uptime: 144,
-      version: "v2.4.0",
+      guildCount: guilds.length,
+      userCount: totalUsers,
+      ping: 0,
+      uptime: Math.round(stats.currentUptimeHours * 60),
+      version: "v1.27.14",
       time: now.toLocaleTimeString("fr-FR", { hour: "2-digit", minute: "2-digit" }),
       date: now.toLocaleDateString("fr-FR"),
     };
-  }, [guilds]);
+  }, [guilds, stats.currentUptimeHours]);
 
   // Resolved dynamic activity text preview
   const resolvedPreviewText = useMemo(() => {

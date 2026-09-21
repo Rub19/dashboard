@@ -160,7 +160,8 @@ export function createPresenceRouter(client: Client): Router {
       const guilds = rawGuilds.map((g: any) => ({
         guildId: g.id,
         guildName: g.name,
-        icon: typeof g.iconURL === 'function' ? g.iconURL() : null,
+        icon: typeof g.iconURL === 'function' ? g.iconURL() : (g.icon ?? null),
+        memberCount: typeof g.memberCount === 'number' ? g.memberCount : (g.members?.cache?.size ?? 0),
         botPresent: true,
         preferredProfileId: guildPreferences.get(g.id) || 'prof_community',
         updatedAt: new Date().toISOString(),

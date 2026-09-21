@@ -1126,8 +1126,9 @@ export default function BotControlClient({ initialTab = "overview" }: BotControl
             s.map((g: any) => ({
               id: g.guildId,
               name: g.guildName,
-              memberCount: 48,
-              owner: "Staff",
+              icon: g.icon || null,
+              memberCount: typeof g.memberCount === "number" ? g.memberCount : 0,
+              owner: g.owner || "Staff",
               botJoinedAt: g.updatedAt,
               status: "connected",
             }))

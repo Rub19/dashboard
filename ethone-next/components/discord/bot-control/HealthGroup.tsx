@@ -80,8 +80,13 @@ export default function HealthGroup({
                   className="flex items-center justify-between gap-4"
                 >
                   <div className="flex items-center gap-3">
-                    <div className="w-10 h-10 rounded-full bg-zinc-800 border border-zinc-700 flex items-center justify-center font-bold text-white">
-                      {s.name?.charAt(0) || "?"}
+                    <div className="w-10 h-10 rounded-full bg-zinc-800 border border-zinc-700 flex items-center justify-center font-bold text-white overflow-hidden shrink-0">
+                      {s.icon ? (
+                        // eslint-disable-next-line @next/next/no-img-element
+                        <img src={s.icon} alt={s.name} className="w-full h-full object-cover" />
+                      ) : (
+                        s.name?.charAt(0) || "?"
+                      )}
                     </div>
                     <div>
                       <h4 className="text-sm font-bold text-white">{s.name}</h4>
@@ -90,7 +95,11 @@ export default function HealthGroup({
                   </div>
 
                   <div className="flex items-center gap-4 text-xs">
-                    <span className="text-zinc-300 font-mono">{s.memberCount} membres</span>
+                    <span className="text-zinc-300 font-mono">
+                      {typeof s.memberCount === "number"
+                        ? `${s.memberCount} membre${s.memberCount > 1 ? "s" : ""}`
+                        : "—"}
+                    </span>
                     <span className="px-2 py-0.5 rounded-full bg-emerald-500/10 text-emerald-400 border border-emerald-500/20 font-medium">
                       Connecté
                     </span>

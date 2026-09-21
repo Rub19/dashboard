@@ -32,6 +32,15 @@ export class LavalinkMusicPlayer implements IGuildMusicPlayer {
   private lastException = '';
   /** URLs déjà essayées (et mortes) par titre : évite de reboucler sur le même résultat SoundCloud. */
   private triedUrls = new Map<string, Set<string>>();
+  /** Filet de sécurité : si un `exception` n'est suivi d'aucun `end`/`start`, on lance le repli nous-mêmes. */
+  private exceptionTimer: NodeJS.Timeout | null = null;
+
+  private clearExceptionTimer(): void {
+    if (this.exceptionTimer) {
+      clearTimeout(this.exceptionTimer);
+      this.exceptionTimer = null;
+    }
+  }
   /** Titres déjà relancés après un « stuck » (une seule reprise par titre). */
   private stuckRetried = new Set<string>();
 
@@ -112,6 +121,7 @@ export class LavalinkMusicPlayer implements IGuildMusicPlayer {
     this.listenersBound = true;
 
     player.on('start', (data) => {
+      this.clearExceptionTimer();
       this.status = 'PLAYING';
       this.position = 0;
       this.positionAt = Date.now();
@@ -126,6 +136,7 @@ export class LavalinkMusicPlayer implements IGuildMusicPlayer {
     });
 
     player.on('end', (data) => {
+      this.clearExceptionTimer();
       // 'replaced' = we called playTrack again, 'stopped' = we called stop():
       // both are driven by us, only natural ends advance the queue.
       if (data.reason === 'replaced' || data.reason === 'stopped' || data.reason === 'cleanup') return;
@@ -158,6 +169,17 @@ export class LavalinkMusicPlayer implements IGuildMusicPlayer {
       // Pas de message ici : le 'end' (loadFailed) qui suit tente d'abord un
       // repli SoundCloud et n'alerte que si celui-ci échoue aussi.
       this.lastException = `${data.exception.message}${data.exception.cause ? ` — ${data.exception.cause}` : ''}`;
+      // Normalement Lavalink envoie ensuite un `end` (loadFailed) qui déclenche le repli. On a vu
+      // des cas où il n'arrive pas : après 4 s sans `end` ni `start`, on lance le repli.
+      this.clearExceptionTimer();
+      const trackId = this.queue.getCurrentTrack()?.id;
+      this.exceptionTimer = setTimeout(() => {
+        this.exceptionTimer = null;
+        if (this.queue.getCurrentTrack()?.id !== trackId) return;
+        logger.warn(`[Lavalink] Aucun \`end\` après l'exception (guild ${this.guildId}) — repli forcé.`);
+        void this.recoverFromLoadFailure();
+      }, 4000);
+      this.exceptionTimer.unref?.();
     });
 
     player.on('stuck', (data) => {

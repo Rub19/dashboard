@@ -29001,4 +29001,53 @@ CHANGELOG_BY_LANG.en.unshift(v12515_en);
 CHANGELOG_BY_LANG.es.unshift(v12515_es);
 CHANGELOG_BY_LANG.de.unshift(v12515_de);
 
+const v12516_fr: ChangelogEntry = {
+  version: "v1.25.16",
+  date: "2026-09-21",
+  title: "Bot musique : reconnexion automatique à Lavalink et repli forcé si l'événement de fin manque",
+  items: [
+    "Quand Lavalink redémarrait pendant que le bot tentait de se reconnecter (« Websocket closed before a connection was established »), le nœud pouvait être abandonné : le bot répondait « Impossible de se connecter au salon vocal » jusqu'à son propre redémarrage. Un garde-fou vérifie maintenant toutes les 10 s que le nœud existe et le recrée sinon.",
+    "Repli SoundCloud : si Lavalink signale une exception de lecture mais n'envoie jamais l'événement de fin qui déclenche normalement le repli (cas observé en production : YouTube échoue, puis silence total), le bot lance le repli de lui-même après 4 s.",
+    "Nouveau dans le script `lavalink-setup.sh` : proxy HTTP sortant optionnel et persistant (`LAVALINK_HTTP_PROXY=host:port`, `off` pour le retirer), en préparation d'un passage par Cloudflare WARP ou un proxy.",
+  ],
+};
+
+const v12516_en: ChangelogEntry = {
+  version: "v1.25.16",
+  date: "2026-09-21",
+  title: "Music bot: automatic Lavalink reconnection and forced fallback when the end event is missing",
+  items: [
+    "When Lavalink restarted while the bot was trying to reconnect (\"Websocket closed before a connection was established\"), the node could be dropped: the bot answered \"Unable to connect to the voice channel\" until its own restart. A watchdog now checks every 10 s that the node exists and recreates it otherwise.",
+    "SoundCloud fallback: if Lavalink reports a playback exception but never sends the end event that normally triggers the fallback (observed in production: YouTube fails, then total silence), the bot starts the fallback itself after 4 s.",
+    "New in `lavalink-setup.sh`: optional, persistent outbound HTTP proxy (`LAVALINK_HTTP_PROXY=host:port`, `off` to remove it), preparing for Cloudflare WARP or a proxy.",
+  ],
+};
+
+const v12516_es: ChangelogEntry = {
+  version: "v1.25.16",
+  date: "2026-09-21",
+  title: "Bot de música: reconexión automática a Lavalink y repliegue forzado si falta el evento de fin",
+  items: [
+    "Cuando Lavalink se reiniciaba mientras el bot intentaba reconectarse (\"Websocket closed before a connection was established\"), el nodo podía abandonarse: el bot respondía \"No se pudo conectar al canal de voz\" hasta su propio reinicio. Un vigilante comprueba ahora cada 10 s que el nodo existe y lo recrea si no.",
+    "Repliegue a SoundCloud: si Lavalink notifica una excepción de reproducción pero nunca envía el evento de fin que normalmente activa el repliegue (caso visto en producción: YouTube falla y luego silencio total), el bot lanza el repliegue por sí mismo tras 4 s.",
+    "Novedad en `lavalink-setup.sh`: proxy HTTP saliente opcional y persistente (`LAVALINK_HTTP_PROXY=host:port`, `off` para quitarlo), como preparación para Cloudflare WARP o un proxy.",
+  ],
+};
+
+const v12516_de: ChangelogEntry = {
+  version: "v1.25.16",
+  date: "2026-09-21",
+  title: "Musik-Bot: automatische Lavalink-Wiederverbindung und erzwungener Fallback bei fehlendem Ende-Ereignis",
+  items: [
+    "Wenn Lavalink neu startete, während der Bot sich wieder verbinden wollte („Websocket closed before a connection was established“), konnte der Knoten aufgegeben werden: Der Bot antwortete „Verbindung zum Sprachkanal nicht möglich“ bis zu seinem eigenen Neustart. Ein Wächter prüft jetzt alle 10 s, ob der Knoten existiert, und legt ihn sonst neu an.",
+    "SoundCloud-Fallback: Meldet Lavalink eine Wiedergabe-Ausnahme, sendet aber nie das Ende-Ereignis, das den Fallback normalerweise auslöst (in Produktion beobachtet: YouTube scheitert, danach völlige Stille), startet der Bot den Fallback nach 4 s selbst.",
+    "Neu in `lavalink-setup.sh`: optionaler, dauerhafter ausgehender HTTP-Proxy (`LAVALINK_HTTP_PROXY=host:port`, `off` zum Entfernen), als Vorbereitung für Cloudflare WARP oder einen Proxy.",
+  ],
+};
+
+CHANGELOG_BY_LANG.fr.unshift(v12516_fr);
+CHANGELOG_BY_LANG.en.unshift(v12516_en);
+CHANGELOG_BY_LANG.es.unshift(v12516_es);
+CHANGELOG_BY_LANG.de.unshift(v12516_de);
+
 export const CHANGELOG = CHANGELOG_BY_LANG.fr;

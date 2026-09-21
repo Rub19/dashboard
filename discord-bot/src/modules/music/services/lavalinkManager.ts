@@ -15,6 +15,7 @@ import type { Track, TrackRequester } from '../types/music.js';
  */
 class LavalinkManager {
   private shoukaku: Shoukaku | null = null;
+  private watchdog: ReturnType<typeof setInterval> | null = null;
   private client: Client | null = null;
 
   public get enabled(): boolean {
@@ -59,6 +60,23 @@ class LavalinkManager {
     if (client.isReady()) {
       (connector as unknown as { ready(n: NodeOption[]): void }).ready(nodes);
     }
+
+    // Garde-fou : quand Lavalink redémarre pendant que le bot tente de se reconnecter
+    // (« Websocket closed before a connection was established »), Shoukaku peut ABANDONNER
+    // le nœud — le bot répondait ensuite « Impossible de se connecter au salon vocal »
+    // jusqu'à son propre redémarrage. Toutes les 10 s on vérifie que le nœud existe et on le
+    // recrée sinon.
+    this.watchdog = setInterval(() => {
+      const sk = this.shoukaku;
+      if (!sk || sk.nodes.has(nodes[0].name)) return;
+      logger.warn('[Lavalink] Nœud absent — recréation automatique.');
+      try {
+        sk.addNode(nodes[0]);
+      } catch (err) {
+        logger.warn('[Lavalink] Recréation du nœud impossible :', err);
+      }
+    }, 10_000);
+    this.watchdog.unref?.();
   }
 
   /** Resolves once a node is CONNECTED (or after `timeoutMs`, with false). */

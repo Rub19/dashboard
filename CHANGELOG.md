@@ -2,6 +2,14 @@
 
 Toutes les modifications notables de ce projet seront documentées dans ce fichier.
 
+## v1.25.16 — 2026-09-21
+
+**Bot musique : reconnexion automatique à Lavalink et repli forcé si l'événement de fin manque**
+
+- Quand Lavalink redémarrait pendant que le bot tentait de se reconnecter (« Websocket closed before a connection was established »), le nœud pouvait être abandonné : le bot répondait « Impossible de se connecter au salon vocal » jusqu'à son propre redémarrage. Un garde-fou vérifie maintenant toutes les 10 s que le nœud existe et le recrée sinon.
+- Repli SoundCloud : si Lavalink signale une exception de lecture mais n'envoie jamais l'événement de fin qui déclenche normalement le repli (cas observé en production : YouTube échoue, puis silence total), le bot lance le repli de lui-même après 4 s.
+- Nouveau dans le script `lavalink-setup.sh` : proxy HTTP sortant optionnel et persistant (`LAVALINK_HTTP_PROXY=host:port`, `off` pour le retirer), en préparation d'un passage par Cloudflare WARP ou un proxy.
+
 ## v1.25.15 — 2026-09-21
 
 **Bot musique : les extraits SoundCloud « défectueux » sont écartés avant la lecture**

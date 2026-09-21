@@ -29862,4 +29862,49 @@ CHANGELOG_BY_LANG.en.unshift(v1274_en);
 CHANGELOG_BY_LANG.es.unshift(v1274_es);
 CHANGELOG_BY_LANG.de.unshift(v1274_de);
 
+const v1275_fr: ChangelogEntry = {
+  version: "v1.27.5",
+  date: "2026-09-21",
+  title: "Musique : chronométrage du lancement, passation",
+  items: [
+    "Musique : chaque lancement de morceau journalise maintenant le temps passé par étape (recherche Spotify, recherche Lavalink, flux yt-dlp/chargement) dans les logs du bot, pour repérer précisément ce qui ralentit la réponse.",
+    "Ajout de HANDOFF.md à la racine : état du projet, ce qui reste à faire et recommandations pour la suite.",
+  ],
+};
+
+const v1275_en: ChangelogEntry = {
+  version: "v1.27.5",
+  date: "2026-09-21",
+  title: "Music: launch timing, handoff",
+  items: [
+    "Music: each track launch now logs the time spent per step (Spotify search, Lavalink search, yt-dlp stream/load) in the bot logs, to pinpoint what slows the response.",
+    "Added HANDOFF.md at the repo root: project state, remaining work and recommendations.",
+  ],
+};
+
+const v1275_es: ChangelogEntry = {
+  version: "v1.27.5",
+  date: "2026-09-21",
+  title: "Música: cronometraje del inicio, traspaso",
+  items: [
+    "Música: cada inicio de canción registra ahora el tiempo por etapa (búsqueda en Spotify, búsqueda en Lavalink, flujo yt-dlp/carga) en los logs del bot, para localizar qué ralentiza la respuesta.",
+    "Añadido HANDOFF.md en la raíz: estado del proyecto, tareas pendientes y recomendaciones.",
+  ],
+};
+
+const v1275_de: ChangelogEntry = {
+  version: "v1.27.5",
+  date: "2026-09-21",
+  title: "Musik: Start-Zeitmessung, Übergabe",
+  items: [
+    "Musik: Jeder Titelstart protokolliert jetzt die Zeit pro Schritt (Spotify-Suche, Lavalink-Suche, yt-dlp-Stream/Laden) in den Bot-Logs, um die Verzögerung genau zu finden.",
+    "HANDOFF.md im Repo-Stamm hinzugefügt: Projektstand, offene Aufgaben und Empfehlungen.",
+  ],
+};
+
+CHANGELOG_BY_LANG.fr.unshift(v1275_fr);
+CHANGELOG_BY_LANG.en.unshift(v1275_en);
+CHANGELOG_BY_LANG.es.unshift(v1275_es);
+CHANGELOG_BY_LANG.de.unshift(v1275_de);
+
 export const CHANGELOG = CHANGELOG_BY_LANG.fr;

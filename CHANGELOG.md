@@ -2,6 +2,13 @@
 
 Toutes les modifications notables de ce projet seront documentées dans ce fichier.
 
+## v1.27.5 — 2026-09-21
+
+**Musique : chronométrage du lancement, passation**
+
+- Musique : chaque lancement de morceau journalise maintenant le temps passé par étape (recherche Spotify, recherche Lavalink, flux yt-dlp/chargement) dans les logs du bot, pour repérer précisément ce qui ralentit la réponse.
+- Ajout de HANDOFF.md à la racine : état du projet, ce qui reste à faire et recommandations pour la suite.
+
 ## v1.27.4 — 2026-09-21
 
 **Centre de contrôle du bot : plus aucune fausse statistique**

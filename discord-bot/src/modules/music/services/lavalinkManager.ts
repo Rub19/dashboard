@@ -180,7 +180,9 @@ class LavalinkManager {
     // audio — `encoded` est calculé à la lecture par ensureEncoded, qui passe `spotify: false`
     // pour ne pas relancer cette recherche). Aucun résultat proche → recherche YouTube ci-dessous.
     if (!isUrl && q && opts?.spotify !== false) {
+      const spStart = Date.now();
       const sp = await searchSpotifyTracks(q, requestedBy, limit);
+      logger.info(`[Lavalink] Recherche Spotify « ${q} » : ${Date.now() - spStart} ms, ${sp.length} résultat(s)`);
       if (sp.length > 0) return sp.slice(0, limit);
     }
 
@@ -462,10 +464,14 @@ class LavalinkManager {
     // (ytsearch1:…) or a Spotify page URL — neither is playable by Lavalink,
     // so fall back to a text search on title + artist.
     const usable = track.url && /^https?:\/\//i.test(track.url) && !/spotify\.com/i.test(track.url) ? track.url : `${track.title} ${track.artist}`.trim();
+    const t0 = Date.now();
     const [resolved] = await this.resolve(usable, requestedBy, { limit: 1, spotify: false });
+    const t1 = Date.now();
     if (!resolved) return null;
     // Titre venu d'une recherche texte / Spotify : `resolved` est un titre YouTube → flux direct si possible.
     const direct = await this.directYoutube(resolved);
+    // Chronométrage par étape : sert à repérer ce qui ralentit le lancement d'un morceau.
+    logger.info(`[Lavalink] Préparation « ${track.title} » : recherche ${t1 - t0} ms, flux yt-dlp/chargement ${Date.now() - t1} ms (total ${Date.now() - t0} ms)`);
     return { ...track, encoded: direct.encoded, source: resolved.source, url: track.url || resolved.url, duration: track.duration || resolved.duration };
   }
 }

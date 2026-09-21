@@ -284,7 +284,7 @@ export default function HighlightsCenterClient() {
         </div>
       </div>
 
-      <div className="flex-1 min-h-0 overflow-y-auto os-scroll space-y-4 pb-6">
+      <div className="flex-1 min-h-0 overflow-y-auto os-scroll space-y-4 pb-44 [overscroll-behavior:contain]">
         {!discordLoading && manageableGuilds.length === 0 && (
           <div className="v8-panel flex flex-col items-center justify-center p-12 text-center">
             <p className="text-sm text-[var(--text-muted)]">Connecte-toi avec Discord pour gérer tes highlights.</p>

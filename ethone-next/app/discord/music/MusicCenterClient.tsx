@@ -676,9 +676,11 @@ export default function MusicCenterClient() {
           <div className="flex items-center gap-3">
             <Link
               href={`/discord${guildId ? `?guildId=${guildId}` : ""}`}
-              className="flex h-9 w-9 items-center justify-center rounded-[var(--panel-radius)] border border-[var(--panel-border)] bg-white/5 text-zinc-400 hover:text-white hover:bg-white/10 transition-all cursor-pointer"
+              className="flex h-8 items-center gap-1.5 px-2.5 rounded-[var(--panel-radius)] border border-[var(--panel-border)] bg-white/5 text-zinc-400 hover:text-white hover:bg-white/10 transition-all cursor-pointer"
+              title="Retour au hub Discord"
             >
               <ArrowLeft className="h-4 w-4" />
+              <span className="text-xs font-medium hidden sm:inline">Retour Discord</span>
             </Link>
             <div>
               <div className="flex items-center gap-2">

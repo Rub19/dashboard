@@ -889,10 +889,11 @@ export default function AutoModCommandCenterPage() {
           <div className="flex items-center gap-3">
             <Link
               href={selectedGuild ? `/discord?guildId=${selectedGuild.id}` : "/discord"}
-              className="flex h-8 w-8 items-center justify-center rounded-[var(--inset-radius)] border border-[var(--panel-border)] bg-white/5 text-zinc-400 hover:text-white hover:bg-white/10 transition-all active:scale-95"
+              className="flex h-8 items-center gap-1.5 px-2.5 rounded-[var(--inset-radius)] border border-[var(--panel-border)] bg-white/5 text-zinc-400 hover:text-white hover:bg-white/10 transition-all active:scale-95"
               title="Retour au dashboard Discord"
             >
               <ArrowLeft className="h-4 w-4" />
+              <span className="text-xs font-medium hidden sm:inline">Retour Discord</span>
             </Link>
 
             <div className="flex items-center gap-2.5">

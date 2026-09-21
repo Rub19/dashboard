@@ -187,7 +187,7 @@ export default function EventParticipantsClient() {
   };
 
   return (
-    <div className="h-full overflow-y-auto os-scroll [overscroll-behavior:contain] bg-[var(--bg-main)] text-slate-100 pb-20 selection:bg-indigo-500/30">
+    <div className="h-full overflow-y-auto os-scroll [overscroll-behavior:contain] bg-[var(--bg-main)] text-slate-100 pb-44 selection:bg-indigo-500/30">
       {/* Glow */}
       <div className="fixed inset-0 pointer-events-none overflow-hidden">
       </div>

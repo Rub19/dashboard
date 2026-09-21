@@ -126,7 +126,7 @@ export default function EventAnalyticsClient() {
   const timelineMax = Math.max(stats.maxCapacity || 0, ...stats.registrationTimeline.map((t) => t.count), 1);
 
   return (
-    <div className="h-full overflow-y-auto os-scroll [overscroll-behavior:contain] bg-[var(--bg-main)] text-slate-100 pb-20 selection:bg-indigo-500/30">
+    <div className="h-full overflow-y-auto os-scroll [overscroll-behavior:contain] bg-[var(--bg-main)] text-slate-100 pb-44 selection:bg-indigo-500/30">
       {/* Glow */}
       <div className="fixed inset-0 pointer-events-none overflow-hidden">
       </div>

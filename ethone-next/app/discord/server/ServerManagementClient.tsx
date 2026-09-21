@@ -37,6 +37,7 @@ import {
   Cpu,
   Database,
   Wifi,
+  ArrowLeft,
 } from "lucide-react";
 import { useToast } from "@/components/ToastProvider";
 import { Tabs, TabsList, TabsTrigger } from "@/components/ui/Tabs";
@@ -508,26 +509,7 @@ export default function ServerManagementClient({
       } catch {}
     }
 
-    setWebhooks([
-      {
-        id: "wh-1",
-        name: "GitHub Releases Notifier",
-        channelId: "c-2",
-        channelName: "annonces",
-        avatarUrl: null,
-        creatorTag: "Alexandre#0001",
-        createdAt: "2024-02-01T10:00:00.000Z",
-      },
-      {
-        id: "wh-2",
-        name: "Statuspage Uptime",
-        channelId: "c-1",
-        channelName: "règlement",
-        avatarUrl: null,
-        creatorTag: "ETHONE Bot",
-        createdAt: "2024-02-15T15:00:00.000Z",
-      },
-    ]);
+    setWebhooks([]);
   }, [guildId]);
 
   const fetchSettings = useCallback(async () => {
@@ -575,12 +557,7 @@ export default function ServerManagementClient({
       } catch {}
     }
 
-    setAuditLogs([
-      { id: "aud-1", type: "MEMBER_TIMEOUT", actor: "Sophie [Mod Lead]", target: "NouveauMembre99", details: "Timeout 10m pour spam", createdAt: new Date(Date.now() - 10 * 60000).toISOString(), severity: "MEDIUM" },
-      { id: "aud-2", type: "CHANNEL_UPDATE", actor: "Alexandre | Fondateur", target: "#général", details: "Modification du slowmode à 5s", createdAt: new Date(Date.now() - 40 * 60000).toISOString(), severity: "LOW" },
-      { id: "aud-3", type: "ROLE_CREATE", actor: "Alexandre | Fondateur", target: "@Event Winner", details: "Création du nouveau rôle d'événement", createdAt: new Date(Date.now() - 120 * 60000).toISOString(), severity: "LOW" },
-      { id: "aud-4", type: "MEMBER_BAN", actor: "ETHONE Guard", target: "MaliciousBot#1928", details: "Anti-Raid ban automatique : compte créé il y a 2 minutes", createdAt: new Date(Date.now() - 360 * 60000).toISOString(), severity: "HIGH" },
-    ]);
+    setAuditLogs([]);
   }, [guildId]);
 
   // Global Search Handler
@@ -947,6 +924,13 @@ export default function ServerManagementClient({
           <div className="flex flex-col md:flex-row items-start md:items-center justify-between gap-4">
             {/* Server Identity */}
             <div className="flex items-center gap-3.5">
+              <Link
+                href={guildId ? `/discord?guildId=${guildId}` : "/discord"}
+                className="flex h-8 w-8 shrink-0 items-center justify-center rounded-[var(--inset-radius)] border border-[var(--panel-border)] bg-white/5 text-zinc-400 hover:text-white hover:bg-white/10 transition-all active:scale-95"
+                title="Retour au dashboard Discord"
+              >
+                <ArrowLeft className="h-4 w-4" />
+              </Link>
               <div className="h-12 w-12 rounded-2xl bg-indigo-600 flex items-center justify-center font-bold text-lg shadow-sm border border-[var(--input-border-hover)] overflow-hidden">
                 {overview?.guild.icon ? (
                   <img src={overview.guild.icon} alt={overview.guild.name} className="h-full w-full object-cover" />
@@ -959,10 +943,12 @@ export default function ServerManagementClient({
                   <h1 className="text-lg font-bold text-white flex items-center gap-1.5">
                     {overview?.guild.name || "Chargement..."}
                   </h1>
-                  <span className="px-2 py-0.5 rounded-full text-[10px] font-semibold bg-indigo-500/20 text-indigo-300 border border-indigo-500/30 flex items-center gap-1">
-                    <Crown className="h-3 w-3 text-amber-400" />
-                    {overview?.guild.ownerTag || "Alexandre#0001"}
-                  </span>
+                  {overview?.guild.ownerTag && (
+                    <span className="px-2 py-0.5 rounded-full text-[10px] font-semibold bg-indigo-500/20 text-indigo-300 border border-indigo-500/30 flex items-center gap-1">
+                      <Crown className="h-3 w-3 text-amber-400" />
+                      {overview.guild.ownerTag}
+                    </span>
+                  )}
                   {overview?.kpis && (
                     <span className="px-2 py-0.5 rounded-full text-[10px] font-semibold bg-purple-500/20 text-purple-300 border border-purple-500/30 flex items-center gap-1">
                       <Sparkles className="h-3 w-3 text-purple-400" />

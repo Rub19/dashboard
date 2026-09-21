@@ -1,4 +1,4 @@
-# ETHONE — passation à une autre IA (état au 2026-09-21, version 1.27.7)
+# ETHONE — passation à une autre IA (état au 2026-09-21, version 1.27.9)
 
 ## Prompt à coller à la prochaine IA
 
@@ -31,6 +31,8 @@
 - À revérifier après le prochain redéploiement du bot : `/api/bot/events` doit partir de 0 et monter avec l'activité ; `/api/bot/overview` ne doit plus dire « degraded » sans raison.
 
 ## Passe Chrome par module (en cours, méthode : naviguer + lire `performance.getEntriesByType('resource')` filtré sur bot.ethone.dev + `innerText` ; les iframes sont bloquées en cross-origin)
+- v1.27.8 : données inventées retirées des pages Événements (+ participants), Gestion du serveur (8 « seeds » de secours), détail invitations, profil de modération, valeurs initiales du centre de contrôle. v1.27.9 : marges horizontales des 3 pages vocales (mesure Chrome : position du texte vs bord de `main`, un écart 0 = collé ; les autres pages OK).
+- Restent des données factices côté site à chercher : grep `unsplash`, `Seed`, `INITIAL_`, `mock` dans `ethone-next/app/discord/**` (dernier passage : Événements, Serveur, profils). `musicProvider.ts` : les `CURATED_TRACKS` sont de vraies radios web (OK), les images unsplash sont des pochettes par défaut.
 - Niveaux : réel (1 membre, 34 XP). Vocal : données de démonstration trouvées et retirées en 1.27.7 (`voiceRepository.purgeDemoData`). Événements et invitations : idem (v1.27.7).
 - **Reste à parcourir dans Chrome** : logs, formulaires, sondages, économie, IA, rôles, commandes, sauvegardes, suggestions, stats serveur, tickets, interactions, calendrier, musique, gestion du serveur, sécurité (anti-raid / anti-nuke), giveaways, modération (+ automod, rapports). Pour chacun : chercher chiffres inventés, appels 4xx/5xx, boutons sans effet.
 - **Trou connu** : `events/eventsRepository.ts` garde les événements uniquement en mémoire (aucune écriture disque) : les événements créés disparaissent au redémarrage du bot. À persister (JSON dans `data/` comme les autres dépôts).

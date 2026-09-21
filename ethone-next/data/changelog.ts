@@ -30417,6 +30417,67 @@ CHANGELOG_BY_LANG.en.unshift(v12715_en);
 CHANGELOG_BY_LANG.es.unshift(v12715_es);
 CHANGELOG_BY_LANG.de.unshift(v12715_de);
 
+const v12716_fr: ChangelogEntry = {
+  version: "v1.27.16",
+  date: "2026-09-21",
+  title: "Gestionnaire complet de Concours / Giveaways",
+  items: [
+    "Commande Discord : ajout de la sous-commande /giveaway extend pour prolonger la durée d'un concours actif directement depuis Discord.",
+    "Traductions i18n : intégration complète des messages de prolongation en 4 langues (fr, en, es, de).",
+    "Dashboard — Prolongation : modal avec raccourcis rapides (+1h, +6h, +24h, +3j) ou durée personnalisée.",
+    "Dashboard — Modération : modal de consultation des participants avec filtrage, statut d'éligibilité et disqualification en direct.",
+    "Dashboard — Bannières : support d'une URL de bannière avec aperçu en temps réel dans l'embed Discord.",
+    "Dashboard — Historique & recherche : filtres par statut (actifs, terminés, annulés) et recherche par nom de lot ou organisateur.",
+  ],
+};
+
+const v12716_en: ChangelogEntry = {
+  version: "v1.27.16",
+  date: "2026-09-21",
+  title: "Complete Giveaway & Contest Manager",
+  items: [
+    "Discord command: added /giveaway extend subcommand to prolong active giveaways directly from Discord.",
+    "i18n translations: complete extension messages in 4 languages (fr, en, es, de).",
+    "Dashboard — Extension: modal with quick presets (+1h, +6h, +24h, +3d) or custom duration.",
+    "Dashboard — Moderation: participants drawer with search, eligibility badges, and real-time disqualification.",
+    "Dashboard — Banners: visual banner URL support with live preview inside the Discord embed mockup.",
+    "Dashboard — History & search: filter by status (active, ended, cancelled) and instant search by prize or host.",
+  ],
+};
+
+const v12716_es: ChangelogEntry = {
+  version: "v1.27.16",
+  date: "2026-09-21",
+  title: "Gestor completo de Sorteos / Giveaways",
+  items: [
+    "Comando de Discord: nuevo subcomando /giveaway extend para prolongar sorteos activos directamente desde Discord.",
+    "Traducciones i18n: soporte completo de extensión en 4 idiomas (fr, en, es, de).",
+    "Panel — Extensión: modal con atajos rápidos (+1h, +6h, +24h, +3d) o duración personalizada.",
+    "Panel — Moderación: lista de participantes con búsqueda, insignias de elegibilidad y descalificación en tiempo real.",
+    "Panel — Banners: soporte de imagen de banner con vista previa en vivo en el mensaje de Discord.",
+    "Panel — Historial y búsqueda: filtros por estado (activos, finalizados, cancelados) y búsqueda por premio o creador.",
+  ],
+};
+
+const v12716_de: ChangelogEntry = {
+  version: "v1.27.16",
+  date: "2026-09-21",
+  title: "Vollständiger Giveaway- & Gewinnspiel-Manager",
+  items: [
+    "Discord-Befehl: Neuer Unterbefehl /giveaway extend zum direkten Verlängern aktiver Giveaways in Discord.",
+    "i18n-Übersetzungen: Vollständige Verlängerungsmeldungen in 4 Sprachen (fr, en, es, de).",
+    "Dashboard — Verlängerung: Modal mit Schnellwahltasten (+1h, +6h, +24h, +3d) oder benutzerdefinierter Dauer.",
+    "Dashboard — Moderation: Teilnehmerliste mit Suche, Teilnahmeberechtigungs-Badges und Echtzeit-Disqualifikation.",
+    "Dashboard — Banner: Unterstützung für Banner-URLs mit Live-Vorschau im Discord-Embed.",
+    "Dashboard — Verlauf & Suche: Filter nach Status (aktiv, beendet, abgebrochen) und Sofortsuche nach Preis oder Ersteller.",
+  ],
+};
+
+CHANGELOG_BY_LANG.fr.unshift(v12716_fr);
+CHANGELOG_BY_LANG.en.unshift(v12716_en);
+CHANGELOG_BY_LANG.es.unshift(v12716_es);
+CHANGELOG_BY_LANG.de.unshift(v12716_de);
+
 export const CHANGELOG = CHANGELOG_BY_LANG.fr;
 
 

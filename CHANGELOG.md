@@ -2,6 +2,17 @@
 
 Toutes les modifications notables de ce projet seront documentées dans ce fichier.
 
+## v1.27.16 — 2026-09-21
+
+**Gestionnaire complet de Concours / Giveaways**
+
+- Commande Discord : ajout de la sous-commande `/giveaway extend` permettant de prolonger un concours directement depuis Discord avec calcul dynamique de la date de fin.
+- Internationalisation : traductions complètes de l'extension de concours en 4 langues (`fr`, `en`, `es`, `de`).
+- Dashboard — Prolongation : ajout d'une modal de prolongation avec raccourcis rapides (+1h, +6h, +24h, +3j) ou durée personnalisée (`POST /:id/extend`).
+- Dashboard — Modération des participants : modal dédiée listant tous les inscrits réels avec avatar, date, statut d'éligibilité et bouton de disqualification en temps réel (`DELETE /:id/participants/:userId`).
+- Dashboard — Bannières visuelles : support des images et bannières personnalisées à la création avec rendu en direct dans l'aperçu du message Discord.
+- Dashboard — Historique & recherche : intégration des concours annulés aux côtés des terminés, filtres par statut et barre de recherche instantanée.
+
 ## v1.27.15 — 2026-09-21
 
 **Enrichissement de l'économie : raccourcis Discord et boutique web**

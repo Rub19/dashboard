@@ -525,6 +525,8 @@ export interface TranslationDictionary {
   giveaway_announce_winners: string;
   giveaway_announce_no_winner: string;
   giveaway_dm_winner: string;
+  giveaway_extend_success: string;
+  giveaway_extend_invalid: string;
 
   // Suggestions
   suggest_slash_only: string;
@@ -1146,6 +1148,8 @@ const translations: Record<SupportedLanguage, TranslationDictionary> = {
     giveaway_announce_winners: '🎉 Félicitations {mentions} ! Vous avez remporté le giveaway pour **{prize}** ! 🎁',
     giveaway_announce_no_winner: '⚠️ Aucun gagnant n\'a pu être sélectionné pour le giveaway **{prize}** (aucun participant éligible).',
     giveaway_dm_winner: '🎉 **Félicitations !** Vous avez remporté le giveaway **{prize}** sur le serveur **{guildName}** !',
+    giveaway_extend_success: '⏱️ Le giveaway a été prolongé de **{minutes} minutes** (nouvelle fin : <t:{end}:R>).',
+    giveaway_extend_invalid: '❌ Durée de prolongation invalide ou giveaway introuvable / déjà terminé.',
 
     suggest_slash_only: 'Veuillez utiliser la commande Slash `/suggest` pour proposer une idée.',
     suggest_module_disabled: '❌ Le système de suggestions est actuellement désactivé sur ce serveur.',
@@ -1762,6 +1766,8 @@ const translations: Record<SupportedLanguage, TranslationDictionary> = {
     giveaway_announce_winners: '🎉 Congratulations {mentions}! You won the giveaway for **{prize}**! 🎁',
     giveaway_announce_no_winner: '⚠️ No winner could be selected for the **{prize}** giveaway (no eligible participants).',
     giveaway_dm_winner: '🎉 **Congratulations!** You won the **{prize}** giveaway on **{guildName}**!',
+    giveaway_extend_success: '⏱️ The giveaway has been extended by **{minutes} minutes** (new end: <t:{end}:R>).',
+    giveaway_extend_invalid: '❌ Invalid extension duration or giveaway not found / already ended.',
 
     suggest_slash_only: 'Please use the `/suggest` Slash Command to submit an idea.',
     suggest_module_disabled: '❌ The suggestions system is currently disabled on this server.',
@@ -2378,6 +2384,8 @@ const translations: Record<SupportedLanguage, TranslationDictionary> = {
     giveaway_announce_winners: '🎉 ¡Felicidades {mentions}! ¡Has ganado el sorteo de **{prize}**! 🎁',
     giveaway_announce_no_winner: '⚠️ No se pudo seleccionar ningún ganador para el sorteo **{prize}** (ningún participante elegible).',
     giveaway_dm_winner: '🎉 **¡Felicidades!** ¡Has ganado el sorteo **{prize}** en **{guildName}**!',
+    giveaway_extend_success: '⏱️ El sorteo se ha extendido **{minutes} minutos** (nuevo final: <t:{end}:R>).',
+    giveaway_extend_invalid: '❌ Duración de extensión inválida o sorteo no encontrado / ya finalizado.',
 
     suggest_slash_only: 'Usa el comando Slash `/suggest` para proponer una idea.',
     suggest_module_disabled: '❌ El sistema de sugerencias está actualmente desactivado en este servidor.',
@@ -2994,6 +3002,8 @@ const translations: Record<SupportedLanguage, TranslationDictionary> = {
     giveaway_announce_winners: '🎉 Glückwunsch {mentions}! Du hast das Gewinnspiel für **{prize}** gewonnen! 🎁',
     giveaway_announce_no_winner: '⚠️ Für das Gewinnspiel **{prize}** konnte kein Gewinner ausgewählt werden (keine berechtigten Teilnehmer).',
     giveaway_dm_winner: '🎉 **Glückwunsch!** Du hast das Gewinnspiel **{prize}** auf **{guildName}** gewonnen!',
+    giveaway_extend_success: '⏱️ Das Gewinnspiel wurde um **{minutes} Minuten** verlängert (neues Ende: <t:{end}:R>).',
+    giveaway_extend_invalid: '❌ Ungültige Verlängerungsdauer oder Gewinnspiel nicht gefunden / bereits beendet.',
 
     suggest_slash_only: 'Bitte nutze den Slash-Befehl `/suggest`, um eine Idee einzureichen.',
     suggest_module_disabled: '❌ Das Vorschlagssystem ist auf diesem Server derzeit deaktiviert.',

@@ -81,6 +81,21 @@ export const giveawayCommand: Command = {
         )
     )
     .addSubcommand((sub) =>
+      sub
+        .setName('extend')
+        .setDescription('Prolonge la durée d\'un giveaway actif')
+        .addStringOption((opt) =>
+          opt.setName('id').setDescription('Identifiant du giveaway').setRequired(true)
+        )
+        .addIntegerOption((opt) =>
+          opt
+            .setName('minutes')
+            .setDescription('Durée additionnelle en minutes (ex: 60, 1440)')
+            .setRequired(true)
+            .setMinValue(1)
+        )
+    )
+    .addSubcommand((sub) =>
       sub.setName('list').setDescription('Liste les giveaways actifs du serveur')
     ),
 
@@ -183,6 +198,29 @@ export const giveawayCommand: Command = {
       await ctx.deferReply(true);
       await giveawayService.cancelGiveaway(id, interaction.client);
       await ctx.reply({ embeds: [ctx.createEmbed('success').setDescription(t.giveaway_cancel_success)], ephemeral: true });
+    } else if (sub === 'extend') {
+      const id = interaction.options.getString('id', true);
+      const minutes = interaction.options.getInteger('minutes', true);
+      const gw = giveawayStorage.getById(id);
+
+      if (!gw || gw.guildId !== guild.id) {
+        await ctx.reply({ embeds: [ctx.createEmbed('error').setDescription(t.giveaway_not_found)], ephemeral: true });
+        return;
+      }
+
+      await ctx.deferReply(true);
+      const ok = await giveawayService.extendGiveaway(id, minutes, interaction.client);
+      if (!ok) {
+        await ctx.reply({ embeds: [ctx.createEmbed('error').setDescription(t.giveaway_extend_invalid)], ephemeral: true });
+        return;
+      }
+
+      const updated = giveawayStorage.getById(id);
+      const endTimestamp = updated ? Math.floor(new Date(updated.endsAt).getTime() / 1000) : 0;
+      await ctx.reply({
+        embeds: [ctx.createEmbed('success').setDescription(formatString(t.giveaway_extend_success, { minutes, end: endTimestamp }))],
+        ephemeral: true,
+      });
     } else if (sub === 'list') {
       const list = giveawayStorage.getForGuild(guild.id).filter((g) => g.status === 'active');
 

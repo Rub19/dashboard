@@ -2,6 +2,15 @@
 
 Toutes les modifications notables de ce projet seront documentées dans ce fichier.
 
+## v1.27.13 — 2026-09-21
+
+**Entonnoir dynamique et suppression des utilisateurs fictifs**
+
+- Salons vocaux : suppression du salon de test factice (Alex#0001, Lucas#1234) sur la page de détail d'un salon vocal.
+- Invitations : suppression du fallback 'usr_alex' dans le détail des utilisateurs.
+- Entonnoir d'invitations : calcul dynamique des étapes de conversion basé sur les données réelles de la guilde.
+- Activité en direct : remplacement du flux d'invitations codé en dur par un état d'attente d'événements temps réel neutre.
+
 ## v1.27.12 — 2026-09-21
 
 **Suppression des données fictives et assainissement des dépôts**

@@ -219,6 +219,19 @@ export default function InvitesCenterClient() {
     topInviter: null,
   };
 
+  const funnel = overview?.funnel || {
+    invitationsTracked: 0,
+    totalJoins: 0,
+    validJoins: 0,
+    retainedMembers: 0,
+    rewardedMembers: 0,
+  };
+  const trackedCount = funnel.invitationsTracked || 0;
+  const joinsPct = trackedCount > 0 ? Math.round(((funnel.totalJoins || kpis.totalInvites) / trackedCount) * 100) : 0;
+  const validPct = trackedCount > 0 ? Math.round(((funnel.validJoins || kpis.validInvites) / trackedCount) * 100) : 0;
+  const retainedPct = trackedCount > 0 ? Math.round(((funnel.retainedMembers || kpis.retainedMembers) / trackedCount) * 100) : 0;
+  const rewardedPct = trackedCount > 0 ? Math.round((funnel.rewardedMembers / trackedCount) * 100) : 0;
+
   return (
     <div className="h-full overflow-y-auto os-scroll [overscroll-behavior:contain] bg-[var(--bg-main)] text-white flex flex-col p-4 sm:p-8 pb-36 max-w-7xl mx-auto">
       {/* Top Header */}
@@ -363,32 +376,32 @@ export default function InvitesCenterClient() {
           <div className="grid grid-cols-5 gap-2 text-center">
             <div className="p-3 rounded-2xl bg-zinc-950 border border-zinc-800">
               <div className="text-[10px] text-zinc-500 font-mono mb-0.5">1. INVITATIONS</div>
-              <div className="text-sm font-bold text-white font-mono">2,000</div>
+              <div className="text-sm font-bold text-white font-mono">{funnel.invitationsTracked}</div>
               <div className="text-[10px] text-zinc-400">100%</div>
             </div>
 
             <div className="p-3 rounded-2xl bg-zinc-950 border border-zinc-800">
               <div className="text-[10px] text-zinc-500 font-mono mb-0.5">2. ARRIVÉES</div>
-              <div className="text-sm font-bold text-white font-mono">{kpis.totalInvites}</div>
-              <div className="text-[10px] text-zinc-400">64%</div>
+              <div className="text-sm font-bold text-white font-mono">{funnel.totalJoins || kpis.totalInvites}</div>
+              <div className="text-[10px] text-zinc-400">{joinsPct}%</div>
             </div>
 
             <div className="p-3 rounded-2xl bg-zinc-950 border border-emerald-500/20">
               <div className="text-[10px] text-emerald-400 font-mono mb-0.5">3. VALIDÉES</div>
-              <div className="text-sm font-bold text-emerald-400 font-mono">{kpis.validInvites}</div>
-              <div className="text-[10px] text-zinc-400">55%</div>
+              <div className="text-sm font-bold text-emerald-400 font-mono">{funnel.validJoins || kpis.validInvites}</div>
+              <div className="text-[10px] text-zinc-400">{validPct}%</div>
             </div>
 
             <div className="p-3 rounded-2xl bg-zinc-950 border border-pink-500/20">
               <div className="text-[10px] text-pink-400 font-mono mb-0.5">4. RETENUES &gt;7J</div>
-              <div className="text-sm font-bold text-pink-400 font-mono">{kpis.retainedMembers}</div>
-              <div className="text-[10px] text-zinc-400">46%</div>
+              <div className="text-sm font-bold text-pink-400 font-mono">{funnel.retainedMembers || kpis.retainedMembers}</div>
+              <div className="text-[10px] text-zinc-400">{retainedPct}%</div>
             </div>
 
             <div className="p-3 rounded-2xl bg-zinc-950 border border-indigo-500/20">
               <div className="text-[10px] text-indigo-400 font-mono mb-0.5">5. RÉCOMPENSES</div>
-              <div className="text-sm font-bold text-indigo-400 font-mono">147</div>
-              <div className="text-[10px] text-zinc-400">12%</div>
+              <div className="text-sm font-bold text-indigo-400 font-mono">{funnel.rewardedMembers}</div>
+              <div className="text-[10px] text-zinc-400">{rewardedPct}%</div>
             </div>
           </div>
         </div>
@@ -404,30 +417,10 @@ export default function InvitesCenterClient() {
               <span className="text-[10px] text-zinc-500">Temps réel</span>
             </div>
 
-            <div className="space-y-2">
-              <div className="p-2.5 rounded-xl bg-zinc-950 border border-zinc-800/80 flex items-center justify-between text-xs">
-                <div className="flex items-center gap-2 truncate">
-                  <span className="w-2 h-2 rounded-full bg-emerald-400 shrink-0" />
-                  <span className="text-zinc-300 font-medium truncate">Alex a invité Lucas#1234</span>
-                </div>
-                <span className="text-[10px] text-emerald-400 font-mono font-bold shrink-0">+1 Valide</span>
-              </div>
-
-              <div className="p-2.5 rounded-xl bg-zinc-950 border border-zinc-800/80 flex items-center justify-between text-xs">
-                <div className="flex items-center gap-2 truncate">
-                  <span className="w-2 h-2 rounded-full bg-rose-400 shrink-0" />
-                  <span className="text-zinc-300 font-medium truncate">Lucas a invité SpamBot#00</span>
-                </div>
-                <span className="text-[10px] text-rose-400 font-mono font-bold shrink-0">Risk 85</span>
-              </div>
-
-              <div className="p-2.5 rounded-xl bg-zinc-950 border border-zinc-800/80 flex items-center justify-between text-xs">
-                <div className="flex items-center gap-2 truncate">
-                  <span className="w-2 h-2 rounded-full bg-emerald-400 shrink-0" />
-                  <span className="text-zinc-300 font-medium truncate">Emma a invité Max#4567</span>
-                </div>
-                <span className="text-[10px] text-emerald-400 font-mono font-bold shrink-0">+1 Valide</span>
-              </div>
+            <div className="p-6 rounded-2xl bg-zinc-950/60 border border-zinc-800/80 text-center flex flex-col items-center justify-center min-h-[120px]">
+              <Radio className="w-5 h-5 text-zinc-600 mb-2 animate-pulse" />
+              <p className="text-xs text-zinc-400 font-medium">En attente d'événements en direct</p>
+              <p className="text-[10px] text-zinc-500 mt-0.5">Les nouvelles arrivées s'afficheront ici en temps réel.</p>
             </div>
           </div>
 

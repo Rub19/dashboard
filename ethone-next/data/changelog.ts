@@ -30258,4 +30258,58 @@ CHANGELOG_BY_LANG.en.unshift(v12712_en);
 CHANGELOG_BY_LANG.es.unshift(v12712_es);
 CHANGELOG_BY_LANG.de.unshift(v12712_de);
 
+const v12713_fr: ChangelogEntry = {
+  version: "v1.27.13",
+  date: "2026-09-21",
+  title: "Entonnoir dynamique et suppression des utilisateurs fictifs",
+  items: [
+    "Salons vocaux : suppression du salon de test factice (Alex#0001, Lucas#1234) sur la page de détail d'un salon vocal.",
+    "Invitations : suppression du fallback 'usr_alex' dans le détail des utilisateurs.",
+    "Entonnoir d'invitations : calcul dynamique des étapes de conversion basé sur les données réelles de la guilde.",
+    "Activité en direct : remplacement du flux d'invitations codé en dur par un état d'attente d'événements temps réel neutre.",
+  ],
+};
+
+const v12713_en: ChangelogEntry = {
+  version: "v1.27.13",
+  date: "2026-09-21",
+  title: "Dynamic invite funnel and mock user removal",
+  items: [
+    "Voice rooms: removed hardcoded demo test room (Alex#0001, Lucas#1234) on voice room detail page.",
+    "Invites: removed 'usr_alex' fallback in user detail view.",
+    "Invite funnel: dynamic conversion step calculations driven by real guild metrics.",
+    "Live activity: replaced hardcoded fake ticker with a clean real-time waiting state.",
+  ],
+};
+
+const v12713_es: ChangelogEntry = {
+  version: "v1.27.13",
+  date: "2026-09-21",
+  title: "Embudo dinámico y eliminación de usuarios simulados",
+  items: [
+    "Salas de voz: eliminación de la sala de prueba ficticia (Alex#0001, Lucas#1234) en la página de detalles.",
+    "Invitaciones: eliminación del valor por defecto 'usr_alex' en la vista de usuario.",
+    "Embudo de invitaciones: cálculo dinámico de las etapas de conversión basado en datos reales del servidor.",
+    "Actividad en vivo: sustitución de las notificaciones simuladas por un estado de espera en tiempo real neutro.",
+  ],
+};
+
+const v12713_de: ChangelogEntry = {
+  version: "v1.27.13",
+  date: "2026-09-21",
+  title: "Dynamischer Einladungs-Funnel und Entfernung von Scheinbenutzern",
+  items: [
+    "Sprachkanäle: Hardcodierten Testraum (Alex#0001, Lucas#1234) auf der Detailseite entfernt.",
+    "Einladungen: 'usr_alex'-Fallback in der Benutzerdetailansicht entfernt.",
+    "Einladungs-Funnel: Dynamische Berechnung der Konversionsschritte basierend auf echten Servermetriken.",
+    "Live-Aktivität: Fest codierten Schein-Ticker durch neutralen Echtzeit-Wartezustand ersetzt.",
+  ],
+};
+
+CHANGELOG_BY_LANG.fr.unshift(v12713_fr);
+CHANGELOG_BY_LANG.en.unshift(v12713_en);
+CHANGELOG_BY_LANG.es.unshift(v12713_es);
+CHANGELOG_BY_LANG.de.unshift(v12713_de);
+
 export const CHANGELOG = CHANGELOG_BY_LANG.fr;
+

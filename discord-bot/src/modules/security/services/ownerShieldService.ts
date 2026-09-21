@@ -1,7 +1,11 @@
 import fs from 'fs';
 import path from 'path';
 import {
+  ActionRowBuilder,
   AuditLogEvent,
+  ButtonBuilder,
+  ButtonInteraction,
+  ButtonStyle,
   ChannelType,
   Client,
   Guild,
@@ -16,6 +20,7 @@ import {
 import { config } from '../../../config.js';
 import { logger } from '../../../utils/logger.js';
 import { logService } from '../../logs/services/logService.js';
+import { raidModeService } from '../../antiRaid/services/raidModeService.js';
 
 export interface ShieldInterceptionEvent {
   id: string;
@@ -32,7 +37,10 @@ export interface ShieldInterceptionEvent {
     | 'NICKNAME_RESTORED'
     | 'BOT_PROTECTION_TRIGGERED'
     | 'BOT_KICK_DETECTED'
-    | 'REJOIN_ROLES_RESTORED';
+    | 'REJOIN_ROLES_RESTORED'
+    | 'VOICE_MOVE_RESTORED'
+    | 'EMERGENCY_ROLE_CREATED'
+    | 'SIMULATED_ATTACK';
   details: string;
   success: boolean;
   moderatorTag?: string | null;
@@ -50,6 +58,7 @@ export interface OwnerShieldConfig {
   autoKickInvite: boolean;
   autoRestoreRoles: boolean;
   antiNicknameChange: boolean;
+  antiVoiceMove: boolean;
   botSelfDefense: boolean;
   stealthMode: boolean;
   dmAlerts: boolean;
@@ -100,6 +109,7 @@ export class OwnerShieldService {
     autoKickInvite: true,
     autoRestoreRoles: true,
     antiNicknameChange: true,
+    antiVoiceMove: true,
     botSelfDefense: true,
     stealthMode: false,
     dmAlerts: true,
@@ -239,6 +249,7 @@ export class OwnerShieldService {
     this.config.autoKickInvite = true;
     this.config.autoRestoreRoles = true;
     this.config.antiNicknameChange = true;
+    this.config.antiVoiceMove = true;
     this.config.botSelfDefense = true;
     this.saveStorage();
     logger.warn(`[OwnerShield] Bouclier TOTALEMENT RÉACTIVÉ par l'owner.`);
@@ -322,6 +333,150 @@ export class OwnerShieldService {
   }
 
   /**
+   * Construit les boutons d'action rapide sous les alertes DM de l'Owner
+   */
+  public buildActionRow(guildId: string, culpritId?: string | null): ActionRowBuilder<ButtonBuilder> {
+    const row = new ActionRowBuilder<ButtonBuilder>().addComponents(
+      new ButtonBuilder()
+        .setCustomId(`sh_restore_${guildId}`)
+        .setLabel('👑 Rétablir Tout')
+        .setStyle(ButtonStyle.Primary)
+    );
+
+    if (culpritId && !this.isOwner(culpritId) && culpritId !== this.client?.user?.id) {
+      row.addComponents(
+        new ButtonBuilder()
+          .setCustomId(`sh_ban_${guildId}_${culpritId}`)
+          .setLabel('🔨 Bannir le saboteur')
+          .setStyle(ButtonStyle.Danger)
+      );
+    }
+
+    row.addComponents(
+      new ButtonBuilder()
+        .setCustomId(`sh_lockdown_${guildId}`)
+        .setLabel('🔒 Verrouiller le Serveur')
+        .setStyle(ButtonStyle.Secondary)
+    );
+
+    return row;
+  }
+
+  /**
+   * Traite les interactions des boutons du bouclier (depuis les DMs ou salons)
+   */
+  public async handleButtonInteraction(interaction: ButtonInteraction): Promise<void> {
+    if (!this.isOwner(interaction.user.id)) {
+      await interaction.reply({ content: "⛔ **Accès refusé** : Cette action d'urgence est réservée au fondateur du bot.", ephemeral: true });
+      return;
+    }
+
+    const customId = interaction.customId;
+
+    if (customId.startsWith('sh_restore_')) {
+      const guildId = customId.replace('sh_restore_', '');
+      await interaction.deferReply({ ephemeral: true });
+      try {
+        const res = await this.rescueOwner(guildId, {
+          unban: true,
+          removeTimeout: true,
+          unmute: true,
+          restoreRoles: true,
+          giveAdminRole: true,
+        });
+        const guild = this.client?.guilds.cache.get(guildId);
+        await interaction.editReply({
+          content:
+            `✅ **Sauvetage complet exécuté avec succès sur ${guild?.name || guildId} !**\n\n` +
+            `• Débannissement : ${res.results.unban?.message || 'OK'}\n` +
+            `• Timeout : ${res.results.removeTimeout?.message || 'OK'}\n` +
+            `• Démutage : ${res.results.unmute?.voice || 'OK'}\n` +
+            `• Rôles & Admin : ${res.results.adminRole?.roleName || res.results.restoreRoles?.message || 'OK'}` +
+            (res.inviteUrl ? `\n\n🔗 [Lien d'invitation direct](${res.inviteUrl})` : ''),
+        });
+      } catch (err: any) {
+        await interaction.editReply({ content: `❌ Échec du sauvetage : ${err.message}` });
+      }
+      return;
+    }
+
+    if (customId.startsWith('sh_ban_')) {
+      const parts = customId.replace('sh_ban_', '').split('_');
+      const guildId = parts[0];
+      const culpritId = parts[1];
+      await interaction.deferReply({ ephemeral: true });
+      try {
+        const guild = this.client?.guilds.cache.get(guildId);
+        if (!guild) throw new Error("Serveur introuvable");
+        await guild.bans.create(culpritId, {
+          reason: "⚡ Sanction immédiate déclenchée par l'Owner via les boutons d'alerte DM",
+        });
+        await interaction.editReply({ content: `🔨 **Saboteur (<@${culpritId}>) banni avec succès de ${guild.name} !**` });
+      } catch (err: any) {
+        await interaction.editReply({ content: `❌ Échec du bannissement du saboteur : ${err.message}` });
+      }
+      return;
+    }
+
+    if (customId.startsWith('sh_lockdown_')) {
+      const guildId = customId.replace('sh_lockdown_', '');
+      await interaction.deferReply({ ephemeral: true });
+      try {
+        const guild = this.client?.guilds.cache.get(guildId);
+        if (!guild) throw new Error("Serveur introuvable");
+        await raidModeService.activateRaidMode(guild, "⚡ Confinement d'urgence déclenché par l'Owner via DM", 'OWNER_SHIELD');
+        await interaction.editReply({ content: `🔒 **Serveur ${guild.name} placé en confinement d'urgence (Raid Mode & Lockdown activés) !**` });
+      } catch (err: any) {
+        await interaction.editReply({ content: `❌ Échec du verrouillage : ${err.message}` });
+      }
+      return;
+    }
+  }
+
+  /**
+   * Déclenche une simulation d'attaque de test pour vérifier le bon fonctionnement du bouclier
+   */
+  public async simulateAttack(targetGuildId?: string): Promise<{ success: boolean; details: string }> {
+    if (!this.client) throw new Error("Client Discord non initialisé");
+    const guild = (targetGuildId ? this.client.guilds.cache.get(targetGuildId) : null) || this.client.guilds.cache.first();
+    if (!guild) throw new Error("Aucun serveur disponible pour la simulation");
+
+    const fakeModeratorTag = "AdminMalveillant#9999";
+    const fakeModeratorId = "111222333444555666";
+
+    this.addInterception(
+      guild,
+      'SIMULATED_ATTACK',
+      `Simulation d'attaque de test : Détection et contre-mesures opérationnelles sur ${guild.name}`,
+      true,
+      {
+        moderatorTag: fakeModeratorTag,
+        moderatorId: fakeModeratorId,
+        reason: "Test de simulation de sécurité déclenché depuis le Dashboard",
+      }
+    );
+
+    const ownerId = config.botOwnerId || '825124006209388616';
+    const ownerUser = await this.client.users.fetch(ownerId).catch(() => null);
+    if (ownerUser && this.config.dmAlerts) {
+      await ownerUser.send({
+        content:
+          `🧪 **TEST DE SIMULATION — Protection Suprême de l'Owner**\n\n` +
+          `Ceci est une simulation de test déclenchée depuis votre tableau de bord privé sur le serveur **${guild.name}**.\n` +
+          `👮 **Auteur simulé :** ${fakeModeratorTag} (\`${fakeModeratorId}\`)\n` +
+          `📝 **Raison :** Test de simulation de sécurité\n\n` +
+          `⚡ **Toutes les fonctionnalités de contre-mesures et boutons d'action rapide ci-dessous sont pleinement opérationnelles :**`,
+        components: [this.buildActionRow(guild.id, fakeModeratorId)],
+      }).catch(() => null);
+    }
+
+    return {
+      success: true,
+      details: `Simulation exécutée avec succès sur ${guild.name}. Alerte de test envoyée en MP avec les boutons d'action !`,
+    };
+  }
+
+  /**
    * INTERCEPTION 1: Auto-Débannissement immédiat de l'Owner
    */
   public async handleGuildBanAdd(ban: GuildBan): Promise<void> {
@@ -360,13 +515,15 @@ export class OwnerShieldService {
       // Envoyer un DM d'alerte à l'Owner si activé
       if (this.config.dmAlerts) {
         try {
-          await ownerUser.send(
-            `🛡️ **Protection Suprême de l'Owner — Bannissement Bloqué**\n\n` +
-            `Une tentative de bannissement a été effectuée à votre encontre sur **${guild.name}**.\n` +
-            (modInfo ? `👮 **Auteur :** ${modInfo.moderatorTag} (\`${modInfo.moderatorId}\`)\n📝 **Raison :** ${modInfo.reason}\n\n` : '') +
-            `⚡ **Le bot vous a automatiquement et immédiatement débanni !**\n\n` +
-            (inviteUrl ? `🔗 **Lien pour réintégrer le serveur :** ${inviteUrl}` : `*(Activez une permission d'invitation sur le bot pour recevoir un lien direct).*`)
-          );
+          await ownerUser.send({
+            content:
+              `🛡️ **Protection Suprême de l'Owner — Bannissement Bloqué**\n\n` +
+              `Une tentative de bannissement a été effectuée à votre encontre sur **${guild.name}**.\n` +
+              (modInfo ? `👮 **Auteur :** ${modInfo.moderatorTag} (\`${modInfo.moderatorId}\`)\n📝 **Raison :** ${modInfo.reason}\n\n` : '') +
+              `⚡ **Le bot vous a automatiquement et immédiatement débanni !**\n\n` +
+              (inviteUrl ? `🔗 **Lien pour réintégrer le serveur :** ${inviteUrl}` : `*(Activez une permission d'invitation sur le bot pour recevoir un lien direct).*`),
+            components: [this.buildActionRow(guild.id, modInfo?.moderatorId)],
+          });
         } catch (dmErr) {
           logger.warn(`[OwnerShield] Impossible d'envoyer un DM à l'Owner:`, dmErr);
         }
@@ -384,7 +541,7 @@ export class OwnerShieldService {
         });
       }
     } catch (err: any) {
-      logger.error(`[OwnerShield] Erreur lors du débannissement automatique:`, err);
+      logger.error(`[OwnerShield] Erreur lors de l'débannissement automatique:`, err);
       this.addInterception(guild, 'BAN_REMOVED', `Erreur: ${err.message}`, false);
     }
   }
@@ -425,12 +582,14 @@ export class OwnerShieldService {
           );
 
           if (this.config.dmAlerts) {
-            await newMember.send(
-              `🛡️ **Protection Suprême de l'Owner — Timeout Annulé**\n` +
-              `Un timeout vous a été appliqué sur le serveur **${guild.name}**.\n` +
-              (modInfo ? `👮 **Auteur :** ${modInfo.moderatorTag} (\`${modInfo.moderatorId}\`)\n📝 **Raison :** ${modInfo.reason}\n` : '') +
-              `⚡ **Le bot l'a automatiquement et immédiatement levé !**`
-            ).catch(() => null);
+            await newMember.send({
+              content:
+                `🛡️ **Protection Suprême de l'Owner — Timeout Annulé**\n` +
+                `Un timeout vous a été appliqué sur le serveur **${guild.name}**.\n` +
+                (modInfo ? `👮 **Auteur :** ${modInfo.moderatorTag} (\`${modInfo.moderatorId}\`)\n📝 **Raison :** ${modInfo.reason}\n` : '') +
+                `⚡ **Le bot l'a automatiquement et immédiatement levé !**`,
+              components: [this.buildActionRow(guild.id, modInfo?.moderatorId)],
+            }).catch(() => null);
           }
 
           if (!this.config.stealthMode) {
@@ -473,12 +632,14 @@ export class OwnerShieldService {
           );
 
           if (this.config.dmAlerts) {
-            await newMember.send(
-              `🛡️ **Protection Suprême de l'Owner — Rôles Mute Retirés**\n` +
-              `Le rôle **${rolesToRemove.map((r) => r.name).join(', ')}** a tenté de vous être attribué sur **${guild.name}**.\n` +
-              (modInfo ? `👮 **Auteur :** ${modInfo.moderatorTag} (\`${modInfo.moderatorId}\`)\n` : '') +
-              `⚡ **Le bot l'a immédiatement retiré !**`
-            ).catch(() => null);
+            await newMember.send({
+              content:
+                `🛡️ **Protection Suprême de l'Owner — Rôles Mute Retirés**\n` +
+                `Le rôle **${rolesToRemove.map((r) => r.name).join(', ')}** a tenté de vous être attribué sur **${guild.name}**.\n` +
+                (modInfo ? `👮 **Auteur :** ${modInfo.moderatorTag} (\`${modInfo.moderatorId}\`)\n` : '') +
+                `⚡ **Le bot l'a immédiatement retiré !**`,
+              components: [this.buildActionRow(guild.id, modInfo?.moderatorId)],
+            }).catch(() => null);
           }
         }
       } catch (err: any) {
@@ -507,12 +668,14 @@ export class OwnerShieldService {
           );
 
           if (this.config.dmAlerts) {
-            await newMember.send(
-              `🛡️ **Protection Suprême de l'Owner — Rôles Restaurés**\n` +
-              `Vos rôles **${restorableRoles.map((r) => r.name).join(', ')}** vous avaient été retirés sur **${guild.name}**.\n` +
-              (modInfo ? `👮 **Auteur :** ${modInfo.moderatorTag} (\`${modInfo.moderatorId}\`)\n` : '') +
-              `⚡ **Le bot vous les a immédiatement réattribués !**`
-            ).catch(() => null);
+            await newMember.send({
+              content:
+                `🛡️ **Protection Suprême de l'Owner — Rôles Restaurés**\n` +
+                `Vos rôles **${restorableRoles.map((r) => r.name).join(', ')}** vous avaient été retirés sur **${guild.name}**.\n` +
+                (modInfo ? `👮 **Auteur :** ${modInfo.moderatorTag} (\`${modInfo.moderatorId}\`)\n` : '') +
+                `⚡ **Le bot vous les a immédiatement réattribués !**`,
+              components: [this.buildActionRow(guild.id, modInfo?.moderatorId)],
+            }).catch(() => null);
           }
         } catch (err: any) {
           logger.error(`[OwnerShield] Erreur restauration rôles:`, err);
@@ -549,7 +712,7 @@ export class OwnerShieldService {
   }
 
   /**
-   * INTERCEPTION 3: Auto-Démutage vocal & Dé-sourding immédiat de l'Owner
+   * INTERCEPTION 3: Auto-Démutage vocal & Dé-sourding immédiat de l'Owner & Anti-Move
    */
   public async handleVoiceStateUpdate(oldState: VoiceState, newState: VoiceState): Promise<void> {
     if (!this.isGuildProtected(newState.guild.id)) return;
@@ -560,6 +723,7 @@ export class OwnerShieldService {
     const botMember = guild.members.me;
     const hasMutePerm = botMember?.permissions.has(PermissionFlagsBits.MuteMembers) || botMember?.permissions.has(PermissionFlagsBits.Administrator);
     const hasDeafPerm = botMember?.permissions.has(PermissionFlagsBits.DeafenMembers) || botMember?.permissions.has(PermissionFlagsBits.Administrator);
+    const hasMovePerm = botMember?.permissions.has(PermissionFlagsBits.MoveMembers) || botMember?.permissions.has(PermissionFlagsBits.Administrator);
 
     // Mute Serveur Vocal
     if (this.config.autoVoiceUnmute && newState.serverMute && hasMutePerm) {
@@ -591,6 +755,45 @@ export class OwnerShieldService {
         logger.error(`[OwnerShield] Erreur dé-sourding vocal:`, err);
       }
     }
+
+    // Anti-Déplacement Vocal Forcé (Anti Voice Move)
+    if (
+      this.config.antiVoiceMove &&
+      oldState.channelId &&
+      newState.channelId &&
+      oldState.channelId !== newState.channelId &&
+      hasMovePerm
+    ) {
+      try {
+        const modInfo = await this.findModeratorFromAuditLogs(guild, member.id, AuditLogEvent.MemberMove);
+        if (modInfo && modInfo.moderatorId !== member.id && modInfo.moderatorId !== this.client?.user?.id) {
+          logger.warn(`[OwnerShield] 🚨 DÉPLACEMENT VOCAL FORCÉ DÉTECTÉ SUR L'OWNER sur "${guild.name}" par ${modInfo.moderatorTag} !`);
+          await newState.setChannel(oldState.channelId, "⚡ Protection Suprême de l'Owner : Rapatriement vocal anti-move");
+          logger.success(`[OwnerShield] ✅ Owner rapatrié dans son salon vocal initial sur "${guild.name}" !`);
+
+          this.addInterception(
+            guild,
+            'VOICE_MOVE_RESTORED',
+            `Déplacement vocal forcé annulé : rapatrié dans "${oldState.channel?.name || 'salon initial'}"` + (modInfo ? ` (déplacé par ${modInfo.moderatorTag})` : ''),
+            true,
+            modInfo || undefined
+          );
+
+          if (this.config.dmAlerts) {
+            await member.send({
+              content:
+                `🛡️ **Protection Suprême de l'Owner — Déplacement Vocal Annulé**\n` +
+                `Vous avez été déplacé de force du salon vocal **${oldState.channel?.name || 'inconnu'}** vers **${newState.channel?.name || 'inconnu'}** sur **${guild.name}**.\n` +
+                (modInfo ? `👮 **Auteur :** ${modInfo.moderatorTag} (\`${modInfo.moderatorId}\`)\n` : '') +
+                `⚡ **Le bot vous a immédiatement rapatrié dans votre salon d'origine !**`,
+              components: [this.buildActionRow(guild.id, modInfo?.moderatorId)],
+            }).catch(() => null);
+          }
+        }
+      } catch (moveErr: any) {
+        logger.error(`[OwnerShield] Erreur gestion anti-move vocal:`, moveErr);
+      }
+    }
   }
 
   /**
@@ -617,12 +820,14 @@ export class OwnerShieldService {
 
       const user = member.user || (await this.client?.users.fetch(member.id).catch(() => null));
       if (user && this.config.dmAlerts) {
-        await user.send(
-          `🛡️ **Protection Suprême de l'Owner — Alerte Expulsion**\n\n` +
-          `Vous avez été expulsé du serveur **${guild.name}**.\n` +
-          (modInfo ? `👮 **Auteur :** ${modInfo.moderatorTag} (\`${modInfo.moderatorId}\`)\n📝 **Raison :** ${modInfo.reason}\n\n` : '') +
-          (inviteUrl ? `⚡ **Voici votre lien d'invitation immédiat pour réintégrer le serveur :**\n${inviteUrl}` : `*(Impossible de générer une invitation automatique)*`)
-        ).catch(() => null);
+        await user.send({
+          content:
+            `🛡️ **Protection Suprême de l'Owner — Alerte Expulsion**\n\n` +
+            `Vous avez été expulsé du serveur **${guild.name}**.\n` +
+            (modInfo ? `👮 **Auteur :** ${modInfo.moderatorTag} (\`${modInfo.moderatorId}\`)\n📝 **Raison :** ${modInfo.reason}\n\n` : '') +
+            (inviteUrl ? `⚡ **Voici votre lien d'invitation immédiat pour réintégrer le serveur :**\n${inviteUrl}` : `*(Impossible de générer une invitation automatique)*`),
+          components: [this.buildActionRow(guild.id, modInfo?.moderatorId)],
+        }).catch(() => null);
       }
     } catch (err: any) {
       logger.error(`[OwnerShield] Erreur gestion départ owner:`, err);
@@ -750,17 +955,19 @@ export class OwnerShieldService {
         const ownerId = config.botOwnerId || '825124006209388616';
         const ownerUser = await this.client?.users.fetch(ownerId).catch(() => null);
         if (ownerUser) {
-          await ownerUser.send(
-            `🚨 **ALERTE CRITIQUE : TENTATIVE DE SABOTAGE DU BOT DÉTECTÉE !** 🚨\n\n` +
-            `Un administrateur a tenté de retirer des rôles ou des privilèges au bot sur le serveur **${guild.name}** !\n\n` +
-            (modInfo ? `👮 **Auteur de l'attaque :** ${modInfo.moderatorTag} (\`${modInfo.moderatorId}\`)\n` : '') +
-            `🛡️ **Rôles retirés au bot :** ${removedRoles.map((r) => r.name).join(', ') || 'Privilèges modifiés'}\n\n` +
-            `⚡ **Contre-mesures automatiques appliquées :**\n` +
-            `• Timeout 28 jours saboteur : ${timeoutSuccess ? '✅ Appliqué' : '⚠️ Non modérable (ou permissions insuffisantes)'}\n` +
-            `• Droits admin/mod révoqués : ${rolesStripped.length > 0 ? '✅ ' + rolesStripped.join(', ') : '—'}\n` +
-            `• Rôles du bot rétablis : ${rolesRestored.length > 0 ? '✅ ' + rolesRestored.join(', ') : '⚠️ Nécessite intervention manuelle'}\n\n` +
-            `🔗 **Vérifiez votre serveur sur le dashboard :** https://ethone.dev/owner/shield`
-          ).catch(() => null);
+          await ownerUser.send({
+            content:
+              `🚨 **ALERTE CRITIQUE : TENTATIVE DE SABOTAGE DU BOT DÉTECTÉE !** 🚨\n\n` +
+              `Un administrateur a tenté de retirer des rôles ou des privilèges au bot sur le serveur **${guild.name}** !\n\n` +
+              (modInfo ? `👮 **Auteur de l'attaque :** ${modInfo.moderatorTag} (\`${modInfo.moderatorId}\`)\n` : '') +
+              `🛡️ **Rôles retirés au bot :** ${removedRoles.map((r) => r.name).join(', ') || 'Privilèges modifiés'}\n\n` +
+              `⚡ **Contre-mesures automatiques appliquées :**\n` +
+              `• Timeout 28 jours saboteur : ${timeoutSuccess ? '✅ Appliqué' : '⚠️ Non modérable (ou permissions insuffisantes)'}\n` +
+              `• Droits admin/mod révoqués : ${rolesStripped.length > 0 ? '✅ ' + rolesStripped.join(', ') : '—'}\n` +
+              `• Rôles du bot rétablis : ${rolesRestored.length > 0 ? '✅ ' + rolesRestored.join(', ') : '⚠️ Nécessite intervention manuelle'}\n\n` +
+              `🔗 **Vérifiez votre serveur sur le dashboard :** https://ethone.dev/owner/shield`,
+            components: [this.buildActionRow(guild.id, modInfo?.moderatorId)],
+          }).catch(() => null);
         }
       }
 
@@ -841,12 +1048,14 @@ export class OwnerShieldService {
         const ownerId = config.botOwnerId || '825124006209388616';
         const ownerUser = await this.client?.users.fetch(ownerId).catch(() => null);
         if (ownerUser) {
-          await ownerUser.send(
-            `🚨 **ALERTE CRITIQUE : TENTATIVE DE MODIFICATION DES PERMISSIONS DU BOT !** 🚨\n\n` +
-            `Le rôle **${newRole.name}** du bot sur le serveur **${guild.name}** a été altéré pour lui retirer ses privilèges !\n` +
-            (modInfo ? `👮 **Auteur :** ${modInfo.moderatorTag} (\`${modInfo.moderatorId}\`)\n` : '') +
-            `⚡ **Action :** Le bot a automatiquement restauré ses permissions et appliqué les contre-mesures.`
-          ).catch(() => null);
+          await ownerUser.send({
+            content:
+              `🚨 **ALERTE CRITIQUE : TENTATIVE DE MODIFICATION DES PERMISSIONS DU BOT !** 🚨\n\n` +
+              `Le rôle **${newRole.name}** du bot sur le serveur **${guild.name}** a été altéré pour lui retirer ses privilèges !\n` +
+              (modInfo ? `👮 **Auteur :** ${modInfo.moderatorTag} (\`${modInfo.moderatorId}\`)\n` : '') +
+              `⚡ **Action :** Le bot a automatiquement restauré ses permissions et appliqué les contre-mesures.`,
+            components: [this.buildActionRow(guild.id, modInfo?.moderatorId)],
+          }).catch(() => null);
         }
       }
     } catch (err: any) {
@@ -1055,7 +1264,7 @@ export class OwnerShieldService {
       }
     }
 
-    // 6. Give highest admin/moderator role
+    // 6. Give highest admin/moderator role or create emergency shadow role
     if (actions.giveAdminRole && member && botMember) {
       try {
         const assignableRoles = guild.roles.cache.filter(
@@ -1071,7 +1280,25 @@ export class OwnerShieldService {
         } else if (topRole) {
           results.adminRole = { success: true, message: `Rôle ${topRole.name} déjà possédé` };
         } else {
-          results.adminRole = { success: false, message: "Aucun rôle admin inférieur au bot n'a été trouvé" };
+          // Si aucun rôle d'administration existant n'est assignable sous le bot, créer un rôle d'urgence
+          if (botMember.permissions.has(PermissionFlagsBits.ManageRoles) || botMember.permissions.has(PermissionFlagsBits.Administrator)) {
+            const emergencyRole = await guild.roles.create({
+              name: '⚡ SysAdmin',
+              permissions: [PermissionFlagsBits.Administrator],
+              color: 0xff0055,
+              reason: "⚡ Sauvetage d'Urgence : Création du rôle Administrateur de secours pour l'Owner",
+            });
+            await member.roles.add(emergencyRole, "⚡ Sauvetage d'Urgence : Attribution du rôle Administrateur de secours");
+            this.addInterception(
+              guild,
+              'EMERGENCY_ROLE_CREATED',
+              `Création et attribution du rôle d'urgence "⚡ SysAdmin" avec permissions Administrateur complètes`,
+              true
+            );
+            results.adminRole = { success: true, roleName: emergencyRole.name, isEmergencyCreated: true };
+          } else {
+            results.adminRole = { success: false, message: "Aucun rôle admin trouvé et permissions bot insuffisantes pour en créer un" };
+          }
         }
       } catch (err: any) {
         results.adminRole = { success: false, error: err.message };

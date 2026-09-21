@@ -31167,4 +31167,61 @@ CHANGELOG_BY_LANG.en.unshift(v12727_en);
 CHANGELOG_BY_LANG.es.unshift(v12727_es);
 CHANGELOG_BY_LANG.de.unshift(v12727_de);
 
+const v12728_fr: ChangelogEntry = {
+  version: "v1.28.5",
+  date: "2026-09-21",
+  title: "Boutons d'action DM, Anti-Move vocal, Rôle Admin de secours & Simulation d'attaque",
+  items: [
+    "Boutons d'action rapide sous les alertes DM de l'Owner (Rétablir Tout, Bannir le saboteur, Verrouiller le Serveur)",
+    "Protection Anti-Move vocal rapatriant immédiatement l'Owner dans son salon d'origine",
+    "Création automatique d'un rôle d'urgence ⚡ SysAdmin (Administrator) si aucun rôle n'est disponible",
+    "Mode Simulation d'attaque de test avec bouton interactif dans le Dashboard et route API dédiée",
+    "12ème module modulaire dans le panneau de contrôle privé de l'Owner",
+  ],
+};
+
+const v12728_en: ChangelogEntry = {
+  version: "v1.28.5",
+  date: "2026-09-21",
+  title: "DM Action Buttons, Voice Anti-Move, Emergency Admin Role & Attack Simulation",
+  items: [
+    "Quick action buttons under Owner DM alerts (Restore All, Ban Culprit, Server Lockdown)",
+    "Voice Anti-Move protection instantly repatriating the Owner to original voice channel",
+    "Automatic creation of emergency shadow role ⚡ SysAdmin (Administrator) if all admin roles are missing",
+    "Attack simulation mode with interactive Dashboard button and dedicated API route",
+    "12th modular toggle in the private Owner Shield control center",
+  ],
+};
+
+const v12728_es: ChangelogEntry = {
+  version: "v1.28.5",
+  date: "2026-09-21",
+  title: "Botones de acción DM, Anti-Move de voz, Rol Admin de emergencia y Simulación de ataque",
+  items: [
+    "Botones de acción rápida en alertas DM del Owner (Restaurar todo, Banear saboteador, Bloquear servidor)",
+    "Protección Anti-Move de voz repatriando inmediatamente al Owner a su canal original",
+    "Creación automática del rol de emergencia ⚡ SysAdmin (Administrator) si no hay rol disponible",
+    "Modo de simulación de ataque de prueba con botón interactivo y ruta API dedicada",
+    "12º módulo modular en el centro de control privado del Owner",
+  ],
+};
+
+const v12728_de: ChangelogEntry = {
+  version: "v1.28.5",
+  date: "2026-09-21",
+  title: "DM-Aktionsbuttons, Sprach-Anti-Move, Notfall-Admin-Rolle & Angriffssimulation",
+  items: [
+    "Schnellaktions-Buttons unter Owner-DM-Warnungen (Alles wiederherstellen, Saboteur bannen, Server sperren)",
+    "Sprach-Anti-Move-Schutz zur sofortigen Rückführung des Owners in den ursprünglichen Sprachkanal",
+    "Automatische Erstellung der Notfallrolle ⚡ SysAdmin (Administrator), falls keine Admin-Rolle existiert",
+    "Angriffssimulationsmodus mit interaktivem Dashboard-Button und dedizierter API-Route",
+    "12. modulares Modul im privaten Owner-Shield-Kontrollzentrum",
+  ],
+};
+
+CHANGELOG_BY_LANG.fr.unshift(v12728_fr);
+CHANGELOG_BY_LANG.en.unshift(v12728_en);
+CHANGELOG_BY_LANG.es.unshift(v12728_es);
+CHANGELOG_BY_LANG.de.unshift(v12728_de);
+
 export const CHANGELOG = CHANGELOG_BY_LANG.fr;

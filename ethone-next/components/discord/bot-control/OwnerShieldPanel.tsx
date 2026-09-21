@@ -28,6 +28,7 @@ import {
   Bell,
   Ghost,
   ShieldCheck,
+  FlaskConical,
 } from "lucide-react";
 import Card from "@/components/ui/Card";
 import { useToast } from "@/components/ToastProvider";
@@ -43,6 +44,7 @@ export interface OwnerShieldConfig {
   autoKickInvite: boolean;
   autoRestoreRoles: boolean;
   antiNicknameChange: boolean;
+  antiVoiceMove: boolean;
   botSelfDefense: boolean;
   stealthMode: boolean;
   dmAlerts: boolean;
@@ -64,7 +66,10 @@ export interface ShieldInterception {
     | "NICKNAME_RESTORED"
     | "BOT_PROTECTION_TRIGGERED"
     | "BOT_KICK_DETECTED"
-    | "REJOIN_ROLES_RESTORED";
+    | "REJOIN_ROLES_RESTORED"
+    | "VOICE_MOVE_RESTORED"
+    | "EMERGENCY_ROLE_CREATED"
+    | "SIMULATED_ATTACK";
   details: string;
   success: boolean;
   moderatorTag?: string | null;
@@ -118,6 +123,7 @@ const DEFAULT_CONFIG: OwnerShieldConfig = {
   autoKickInvite: true,
   autoRestoreRoles: true,
   antiNicknameChange: true,
+  antiVoiceMove: true,
   botSelfDefense: true,
   stealthMode: false,
   dmAlerts: true,
@@ -350,6 +356,33 @@ export default function OwnerShieldPanel({ isOwner }: OwnerShieldPanelProps) {
     }
   };
 
+  // Simuler une attaque de test
+  const [simulating, setSimulating] = useState(false);
+  const handleSimulateAttack = async () => {
+    setSimulating(true);
+    try {
+      const res = await fetch(`${BOT_API_URL}/api/bot/owner-shield/simulate-attack`, {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+          "x-bot-owner": OWNER_DISCORD_ID,
+        },
+        credentials: "include",
+      });
+      const json = await res.json();
+      if (res.ok && json.success) {
+        success("🧪 Simulation d'attaque réussie !", json.details || "Alerte de test envoyée en MP avec les boutons d'action.");
+        await fetchStatus(false);
+      } else {
+        throw new Error(json.error || "Échec");
+      }
+    } catch (err: any) {
+      showError("Erreur simulation", err.message);
+    } finally {
+      setSimulating(false);
+    }
+  };
+
   // Filtrage des serveurs
   const filteredGuilds = useMemo(() => {
     return guilds.filter((g) => {
@@ -460,6 +493,16 @@ export default function OwnerShieldPanel({ isOwner }: OwnerShieldPanelProps) {
               <span>Actualiser</span>
             </button>
 
+            <button
+              onClick={handleSimulateAttack}
+              disabled={simulating}
+              className="h-9 px-3.5 rounded-xl border border-purple-500/40 bg-purple-500/10 hover:bg-purple-500/20 text-purple-300 text-xs font-bold transition-all flex items-center gap-1.5 cursor-pointer disabled:opacity-50"
+              title="Déclencher une fausse attaque de test pour vérifier les alertes DM et les boutons d'action"
+            >
+              <FlaskConical className={cn("w-3.5 h-3.5", simulating && "animate-spin text-purple-400")} />
+              <span>{simulating ? "Simulation..." : "🧪 Simuler une Attaque"}</span>
+            </button>
+
             {isMasterActive ? (
               <button
                 onClick={handleDisableAll}
@@ -527,7 +570,7 @@ export default function OwnerShieldPanel({ isOwner }: OwnerShieldPanelProps) {
           <div>
             <h3 className="text-sm font-bold text-[var(--text-primary)] flex items-center gap-2">
               <Sliders className="w-4 h-4 text-amber-400" />
-              Options Modulaires du Bouclier (11 Modules)
+              Options Modulaires du Bouclier (12 Modules)
             </h3>
             <p className="text-xs text-[var(--text-muted)]">
               Activez ou désactivez individuellement chaque type d'intervention automatique selon vos besoins.
@@ -843,6 +886,34 @@ export default function OwnerShieldPanel({ isOwner }: OwnerShieldPanelProps) {
               />
             </button>
           </div>
+
+          {/* Protection Anti-Move Vocal (NOUVEAU) */}
+          <div className="p-4 rounded-xl border border-[var(--panel-border)] bg-[var(--surface-raised)]/40 flex items-start justify-between gap-3">
+            <div className="space-y-1">
+              <div className="flex items-center gap-2 text-xs font-bold text-white">
+                <Radio className="w-4 h-4 text-cyan-400" />
+                <span>Protection Anti-Move Vocal</span>
+              </div>
+              <p className="text-[11px] text-[var(--text-muted)]">
+                Rapatrie instantanément votre compte dans votre salon vocal d'origine si un modérateur vous déplace de force.
+              </p>
+            </div>
+            <button
+              onClick={() => updateShieldConfig({ antiVoiceMove: !config.antiVoiceMove })}
+              disabled={updatingConfig || !config.enabled}
+              className={cn(
+                "relative inline-flex h-5 w-9 shrink-0 cursor-pointer rounded-full border-2 border-transparent transition-colors duration-200 ease-in-out disabled:opacity-40",
+                config.antiVoiceMove && config.enabled ? "bg-amber-500" : "bg-zinc-700"
+              )}
+            >
+              <span
+                className={cn(
+                  "pointer-events-none inline-block h-4 w-4 transform rounded-full bg-white shadow ring-0 transition duration-200 ease-in-out",
+                  config.antiVoiceMove && config.enabled ? "translate-x-4" : "translate-x-0"
+                )}
+              />
+            </button>
+          </div>
         </div>
       </Card>
 
@@ -1150,6 +1221,9 @@ export default function OwnerShieldPanel({ isOwner }: OwnerShieldPanelProps) {
               const isBotDefense = ev.type === "BOT_PROTECTION_TRIGGERED";
               const isBotKick = ev.type === "BOT_KICK_DETECTED";
               const isRejoin = ev.type === "REJOIN_ROLES_RESTORED";
+              const isVoiceMove = ev.type === "VOICE_MOVE_RESTORED";
+              const isEmergencyRole = ev.type === "EMERGENCY_ROLE_CREATED";
+              const isSimulated = ev.type === "SIMULATED_ATTACK";
 
               return (
                 <div
@@ -1162,6 +1236,12 @@ export default function OwnerShieldPanel({ isOwner }: OwnerShieldPanelProps) {
                       ? "bg-rose-950/40 border-rose-500/60 text-rose-200"
                       : isRejoin
                       ? "bg-emerald-950/30 border-emerald-500/50 text-emerald-200"
+                      : isVoiceMove
+                      ? "bg-cyan-950/30 border-cyan-500/50 text-cyan-200"
+                      : isEmergencyRole
+                      ? "bg-fuchsia-950/30 border-fuchsia-500/50 text-fuchsia-200"
+                      : isSimulated
+                      ? "bg-purple-950/30 border-purple-500/50 text-purple-200"
                       : ev.success
                       ? "bg-emerald-950/20 border-emerald-500/30 text-emerald-300"
                       : "bg-rose-950/20 border-rose-500/30 text-rose-300"
@@ -1186,6 +1266,21 @@ export default function OwnerShieldPanel({ isOwner }: OwnerShieldPanelProps) {
                       {isRejoin && (
                         <span className="px-2 py-0.5 rounded-full text-[9px] font-extrabold uppercase bg-emerald-500/20 text-emerald-300 border border-emerald-500/40">
                           👑 Rôles Réintégrés
+                        </span>
+                      )}
+                      {isVoiceMove && (
+                        <span className="px-2 py-0.5 rounded-full text-[9px] font-extrabold uppercase bg-cyan-500/20 text-cyan-300 border border-cyan-500/40">
+                          🔊 Anti-Move Vocal
+                        </span>
+                      )}
+                      {isEmergencyRole && (
+                        <span className="px-2 py-0.5 rounded-full text-[9px] font-extrabold uppercase bg-fuchsia-500/20 text-fuchsia-300 border border-fuchsia-500/40">
+                          ⚡ Rôle Secours
+                        </span>
+                      )}
+                      {isSimulated && (
+                        <span className="px-2 py-0.5 rounded-full text-[9px] font-extrabold uppercase bg-purple-500/20 text-purple-300 border border-purple-500/40">
+                          🧪 Simulation
                         </span>
                       )}
                       <span>{ev.details}</span>
@@ -1216,6 +1311,12 @@ export default function OwnerShieldPanel({ isOwner }: OwnerShieldPanelProps) {
                       ? "Bot Non Présent"
                       : isRejoin
                       ? "Réintégration"
+                      : isVoiceMove
+                      ? "Rapatrié Vocal"
+                      : isEmergencyRole
+                      ? "Rôle Créé"
+                      : isSimulated
+                      ? "Attaque Test"
                       : ev.success
                       ? "Interception Réussie"
                       : "Échec"}

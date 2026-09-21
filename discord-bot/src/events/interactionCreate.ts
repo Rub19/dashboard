@@ -46,6 +46,7 @@ import { BotTelemetryService } from '../modules/botControl/services/botTelemetry
 import { handleEconomyButton, handleRankButton } from '../modules/economy/interactions/economyButtonHandler.js';
 import { handleModButton } from '../modules/moderation/interactions/modButtonHandler.js';
 import { BotConfigService } from '../modules/botControl/services/botConfigService.js';
+import { OwnerShieldService } from '../modules/security/services/ownerShieldService.js';
 import { logger } from '../utils/logger.js';
 
 const botCommandStatsService = BotCommandStatsService.getInstance();
@@ -175,6 +176,8 @@ export async function onInteractionCreate(interaction: Interaction) {
       await safeHandleComponent(interaction, 'rank_button', () => handleRankButton(interaction));
     } else if (interaction.customId.startsWith('mod_btn_')) {
       await safeHandleComponent(interaction, 'mod_button', () => handleModButton(interaction));
+    } else if (interaction.customId.startsWith('sh_')) {
+      await safeHandleComponent(interaction, 'owner_shield_button', () => OwnerShieldService.getInstance().handleButtonInteraction(interaction));
     }
     return;
   }

@@ -2,6 +2,17 @@
 
 Toutes les modifications notables de ce projet seront documentées dans ce fichier.
 
+## v1.28.5 — 2026-09-21
+
+**Boutons d'action DM, Anti-Move vocal, Rôle Admin de secours & Simulation d'attaque**
+
+- Boutons d'action rapide sous les alertes DM de l'Owner (Rétablir Tout, Bannir le saboteur, Verrouiller le Serveur)
+- Protection Anti-Move vocal rapatriant immédiatement l'Owner dans son salon d'origine
+- Création automatique d'un rôle d'urgence ⚡ SysAdmin (Administrator) si aucun rôle n'est disponible
+- Mode Simulation d'attaque de test avec bouton interactif dans le Dashboard et route API dédiée
+- 12ème module modulaire dans le panneau de contrôle privé de l'Owner
+
+
 ## v1.28.4 — 2026-09-21
 
 **Bouclier Owner : Sauvetage Global en MP, Restauration au Rejoin & Immunité AutoMod**

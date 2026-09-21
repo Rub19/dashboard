@@ -184,5 +184,20 @@ export function createOwnerShieldRouter(client: Client): Router {
     }
   });
 
+  /**
+   * POST /api/bot/owner-shield/simulate-attack
+   * Déclenche une attaque de test simulée pour tester le bouclier et les alertes DM avec boutons.
+   */
+  router.post('/simulate-attack', async (req: Request, res: Response) => {
+    try {
+      const { guildId } = req.body;
+      const result = await ownerShieldService.simulateAttack(guildId);
+      res.json(result);
+    } catch (err: any) {
+      logger.error('[OwnerShieldRoute] Erreur POST /simulate-attack:', err);
+      res.status(500).json({ success: false, error: err.message });
+    }
+  });
+
   return router;
 }

@@ -75,7 +75,7 @@ export default function InviteSettingsClient() {
 
   const handleSave = async () => {
     if (!API_BASE) {
-      success("Paramètres enregistrés", "Mode démo : La configuration d'Invite Tracker a été mise à jour.");
+      showError("Bot injoignable", "Rien n'a été enregistré.");
       return;
     }
     setSaving(true);

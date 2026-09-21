@@ -2,6 +2,14 @@
 
 Toutes les modifications notables de ce projet seront documentées dans ce fichier.
 
+## v1.26.3 — 2026-09-21
+
+**Dashboard Discord : fin des faux succès et des faux contenus sur toutes les pages restantes**
+
+- Environ quarante actions annonçaient un succès sans rien faire quand le bot était injoignable (« Enregistré (mode démo) », « Ticket clôturé », « Panel publié sur Discord ! », « Export simulé prêt », « Action exécutée avec succès »…), certaines en modifiant même l'affichage local (un ticket passait à « clôturé » sans l'être). Elles affichent maintenant « Bot injoignable — rien n'a été enregistré » et ne changent plus rien. Pages concernées : Tickets (liste et détail), IA, Logs (enquête, configuration, export), AFK, Anniversaires, Highlights, Rappels, Server Stats, Starboard, Sticky, Tags, Suggestions, Économie, Rôles, Invitations, AutoMod, Anti-raid, gestion du serveur, salons vocaux.
+- Plus de contenu inventé : faux tickets, catégories, panneaux et équipes (Tickets), statistiques et événements d'audit (Logs), faux événement « Friday Gaming Night » et ses statistiques (Événements), serveurs, profils, identité et historique fictifs du bot (Présence, qui affichait aussi « Valorant » par défaut), diagnostic du bot qui affichait tout en réussite avec des latences aléatoires quand il était hors ligne.
+- Six pages avaient encore un identifiant de serveur codé en dur (invitations, gestion du serveur, tickets, événements) : elles utilisent maintenant le serveur de l'adresse, sinon un serveur où le bot est présent. Les boutons musique de la page d'accueil du bot n'envoyaient pas le cookie de session (401) ; c'est corrigé.
+
 ## v1.26.2 — 2026-09-21
 
 **Dashboard Discord : fin des fausses données sur Onboarding, Salons vocaux, Leveling, Sauvegardes, Commandes et Rôles**

@@ -313,7 +313,7 @@ const BOT_API_URL = process.env.NEXT_PUBLIC_DISCORD_BOT_API || "";
 
 export default function AntiRaidDashboardPage() {
   const searchParams = useSearchParams();
-  const { success } = useToast();
+  const { success, error: showError } = useToast();
   const { profile } = useDiscordOAuth();
   const botGuildIds = useBotGuildIds(profile?.guilds);
 
@@ -402,7 +402,7 @@ export default function AntiRaidDashboardPage() {
         }
       }
     } catch {
-      // Offline fallback: métriques simulées basées sur les paramètres locaux
+      // Bot injoignable : on garde les dernières métriques reçues, aucune valeur inventée.
     }
   }, [selectedGuild]);
 
@@ -517,7 +517,7 @@ export default function AntiRaidDashboardPage() {
   const handleSaveConfig = async () => {
     if (!selectedGuild) return;
     if (!BOT_API_URL) {
-      success("Configuration anti-raid enregistrée ! (Mode démo)");
+      showError("Bot injoignable : la configuration anti-raid n'a pas été enregistrée.");
       return;
     }
     setIsSaving(true);

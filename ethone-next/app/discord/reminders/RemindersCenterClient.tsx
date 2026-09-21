@@ -144,7 +144,7 @@ export default function RemindersCenterClient() {
     if (!fChannel) return showError("Choisis un salon", "Où le rappel doit être posté.");
     if (!fMessage.trim()) return showError("Message vide", "Écris de quoi te rappeler.");
     if (!/\d+\s*(s|m|h|d|j|w)/i.test(fDelay)) return showError("Délai invalide", "Ex : 10m, 2h, 1d, 1h30m.");
-    if (!BOT_API_URL) return success("Créé (mode démo)", "Le serveur du bot n'est pas joignable ici.");
+    if (!BOT_API_URL) return showError("Bot injoignable", "Rien n'a été enregistré.");
     setSaving(true);
     try {
       const res = await fetch(`${BOT_API_URL}/api/guilds/${selectedGuild.id}/reminders`, {

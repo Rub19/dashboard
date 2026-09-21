@@ -540,10 +540,7 @@ export default function AutoModCommandCenterPage() {
   const handleSaveConfig = async () => {
     if (!selectedGuild) return;
     if (!BOT_API_URL) {
-      try {
-        localStorage.setItem(`ethone:automod:cfg:${selectedGuild.id}`, JSON.stringify(config));
-      } catch {}
-      success("AutoMod mis à jour", "Mode démo : Les configurations ont été enregistrées localement.");
+      showError("Bot injoignable", "Rien n'a été enregistré.");
       return;
     }
     setIsSaving(true);

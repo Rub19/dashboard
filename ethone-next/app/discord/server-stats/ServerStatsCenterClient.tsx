@@ -141,7 +141,7 @@ export default function ServerStatsCenterClient() {
   const usedChannels = new Set(overview?.channels.map((c) => c.channelId) ?? []);
 
   const saveConfig = async () => {
-    if (!selectedGuild || !BOT_API_URL) return success("Enregistré (mode démo)", "");
+    if (!selectedGuild || !BOT_API_URL) return showError("Bot injoignable", "Rien n'a été enregistré.");
     setSaving(true);
     try {
       const res = await fetch(`${BOT_API_URL}/api/guilds/${selectedGuild.id}/server-stats/config`, {
@@ -164,7 +164,7 @@ export default function ServerStatsCenterClient() {
     if (!selectedGuild) return;
     if (!fChannel) return showError("Choisis un salon", "Un salon vocal verrouillé est idéal.");
     if (fType === "roleMembers" && !fRole) return showError("Rôle requis", "Le type « Membres d'un rôle » a besoin d'un rôle.");
-    if (!BOT_API_URL) return success("Ajouté (mode démo)", "");
+    if (!BOT_API_URL) return showError("Bot injoignable", "Rien n'a été enregistré.");
     try {
       const res = await fetch(`${BOT_API_URL}/api/guilds/${selectedGuild.id}/server-stats/channels/${fChannel}`, {
         method: "PUT",

@@ -221,7 +221,7 @@ export default function StarboardCenterClient() {
       return;
     }
     if (!BOT_API_URL) {
-      success("Configuration enregistrée (mode démo)", "Le serveur du bot n'est pas joignable depuis cet environnement.");
+      showError("Bot injoignable", "Rien n'a été enregistré.");
       return;
     }
     setSaving(true);

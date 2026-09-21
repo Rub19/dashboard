@@ -364,10 +364,7 @@ export function TicketCenterClient() {
   // Actions Tickets rapides
   const handleQuickClaim = async (ticket: TicketItem) => {
     if (!API_BASE) {
-      setTickets((prev) =>
-        prev.map((t) => (t.id === ticket.id ? { ...t, claimedBy: { id: "admin-dash", tag: "Staff ETHONE" } } : t))
-      );
-      success("Ticket pris en charge", `Mode démo : Vous avez pris en charge le ticket #${ticket.id}.`);
+      showError("Bot injoignable", "Rien n'a été enregistré.");
       return;
     }
     try {
@@ -400,10 +397,7 @@ export function TicketCenterClient() {
     };
     const nextPriority = cycle[ticket.priority] || "NORMAL";
     if (!API_BASE) {
-      setTickets((prev) =>
-        prev.map((t) => (t.id === ticket.id ? { ...t, priority: nextPriority } : t))
-      );
-      info("Priorité modifiée", `Mode démo : Priorité passée à ${nextPriority} pour #${ticket.id}.`);
+      showError("Bot injoignable", "Rien n'a été enregistré.");
       return;
     }
     try {
@@ -430,14 +424,7 @@ export function TicketCenterClient() {
   const handleConfirmClose = async () => {
     if (!ticketToClose) return;
     if (!API_BASE) {
-      setTickets((prev) =>
-        prev.map((t) =>
-          t.id === ticketToClose.id ? { ...t, status: "CLOSED" as TicketStatus, closeReason } : t
-        )
-      );
-      success("Ticket clôturé", `Mode démo : Le ticket #${ticketToClose.id} a été clôturé.`);
-      setShowCloseModal(false);
-      setTicketToClose(null);
+      showError("Bot injoignable", "Rien n'a été enregistré.");
       return;
     }
     try {
@@ -474,18 +461,7 @@ export function TicketCenterClient() {
       color: cat.color || "#3B82F6",
     };
     if (!API_BASE) {
-      setCategories((prev) => {
-        const idx = prev.findIndex((c) => c.id === id);
-        if (idx >= 0) {
-          const copy = [...prev];
-          copy[idx] = payload;
-          return copy;
-        }
-        return [...prev, payload];
-      });
-      setShowCategoryModal(false);
-      setEditingCategory(null);
-      success("Catégorie enregistrée", `Mode démo : Catégorie "${payload.name}" mise à jour.`);
+      showError("Bot injoignable", "Rien n'a été enregistré.");
       return;
     }
     try {
@@ -511,8 +487,7 @@ export function TicketCenterClient() {
   const handleDeleteCategory = async (catId: string) => {
     if (!confirm("Voulez-vous vraiment supprimer cette catégorie de ticket ?")) return;
     if (!API_BASE) {
-      setCategories((prev) => prev.filter((c) => c.id !== catId));
-      success("Catégorie supprimée", "Mode démo : La catégorie a été retirée.");
+      showError("Bot injoignable", "Rien n'a été enregistré.");
       return;
     }
     try {
@@ -541,18 +516,7 @@ export function TicketCenterClient() {
       color: panel.color || "#5865F2",
     };
     if (!API_BASE) {
-      setPanels((prev) => {
-        const idx = prev.findIndex((p) => p.id === id);
-        if (idx >= 0) {
-          const copy = [...prev];
-          copy[idx] = payload;
-          return copy;
-        }
-        return [...prev, payload];
-      });
-      setShowPanelModal(false);
-      setEditingPanel(null);
-      success("Panel enregistré", `Mode démo : Panel "${payload.title}" mis à jour.`);
+      showError("Bot injoignable", "Rien n'a été enregistré.");
       return;
     }
     try {
@@ -581,7 +545,7 @@ export function TicketCenterClient() {
       return;
     }
     if (!API_BASE) {
-      success("Panel publié sur Discord !", "Mode démo : Le panneau interactif a été posté.");
+      showError("Bot injoignable", "Rien n'a été enregistré.");
       return;
     }
     try {
@@ -606,8 +570,7 @@ export function TicketCenterClient() {
   // Sauvegarde Config globale
   const handleSaveConfig = async (newCfg: any) => {
     if (!API_BASE) {
-      setConfig((p: any) => ({ ...p, ...newCfg }));
-      success("Configuration enregistrée", "Mode démo : Les paramètres ont été appliqués.");
+      showError("Bot injoignable", "Rien n'a été enregistré.");
       return;
     }
     try {

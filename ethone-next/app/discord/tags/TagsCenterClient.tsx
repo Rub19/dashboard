@@ -135,7 +135,7 @@ export default function TagsCenterClient() {
     const name = editName.trim().toLowerCase();
     if (!NAME_RE.test(name)) return showError("Nom invalide", "a-z, 0-9, _ ou - (32 max), sans espace.");
     if (!editContent.trim()) return showError("Contenu vide", "Écris le texte du tag.");
-    if (!BOT_API_URL) return success("Enregistré (mode démo)", "Le serveur du bot n'est pas joignable ici.");
+    if (!BOT_API_URL) return showError("Bot injoignable", "Rien n'a été enregistré.");
     setSaving(true);
     try {
       const res = await fetch(`${BOT_API_URL}/api/guilds/${selectedGuild.id}/tags/${encodeURIComponent(name)}`, {

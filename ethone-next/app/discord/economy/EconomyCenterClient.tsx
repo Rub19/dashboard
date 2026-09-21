@@ -249,7 +249,7 @@ export default function EconomyCenterClient() {
 
   const saveConfig = async () => {
     if (isDemo || !BOT_API_URL) {
-      success("Configuration enregistrée (démo).");
+      toastError("Bot injoignable", "Rien n'a été enregistré.");
       return;
     }
     setSavingConfig(true);
@@ -277,12 +277,7 @@ export default function EconomyCenterClient() {
       return;
     }
     if (isDemo || !BOT_API_URL) {
-      setShopItems((prev) => [
-        ...prev,
-        { id: `demo-${Date.now()}`, roleId: newItem.roleId, roleName: newItem.label, label: newItem.label, description: newItem.description, price: newItem.price, enabled: true },
-      ]);
-      setNewItem({ roleId: "", label: "", price: 100, description: "" });
-      success("Article ajouté (démo).");
+      toastError("Bot injoignable", "Rien n'a été enregistré.");
       return;
     }
     try {

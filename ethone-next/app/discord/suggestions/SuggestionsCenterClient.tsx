@@ -307,8 +307,7 @@ export default function SuggestionsCenterClient() {
   const saveStatus = async () => {
     if (!selected) return;
     if (isDemo) {
-      patchLocal(selected.id, { status: newStatus, staffResponse: staffReplyText.trim() || null, staffResponderTag: "Staff" });
-      success(`Suggestion #${selected.numericId} mise à jour (démo).`);
+      toastError("Bot injoignable", "Rien n'a été enregistré.");
       return;
     }
     setSubmitting(true);
@@ -405,19 +404,7 @@ export default function SuggestionsCenterClient() {
       return;
     }
     if (isDemo) {
-      const s: Suggestion = {
-        id: `demo-${Date.now()}`, numericId: (suggestions[0]?.numericId || 100) + 1, guildId: currentGuildId, authorId: "dashboard", authorTag: "Dashboard", authorAvatarUrl: null,
-        title: newTitle.trim(), description: newDescription.trim(), category: newCategory, tags: [], status: "pending", priority: "normal",
-        upvotesCount: 0, downvotesCount: 0, score: 0, comments: [], staffResponse: null, staffResponderTag: null, createdAt: new Date().toISOString(), updatedAt: new Date().toISOString(),
-      };
-      setSuggestions((prev) => {
-        const next = [s, ...prev];
-        setOverview(computeOverview(next));
-        return next;
-      });
-      setNewTitle("");
-      setNewDescription("");
-      success("Suggestion créée (démo).");
+      toastError("Bot injoignable", "Rien n'a été enregistré.");
       return;
     }
     setSubmitting(true);
@@ -449,7 +436,7 @@ export default function SuggestionsCenterClient() {
     const next = { ...config, ...patch };
     setConfig(next);
     if (isDemo) {
-      success("Paramètres enregistrés (démo).");
+      toastError("Bot injoignable", "Rien n'a été enregistré.");
       return;
     }
     setSavingConfig(true);

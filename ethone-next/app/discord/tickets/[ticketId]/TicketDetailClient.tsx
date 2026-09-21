@@ -79,8 +79,7 @@ export default function TicketDetailClient() {
   // Actions
   const handleClaim = async () => {
     if (!API_BASE) {
-      setTicket((prev: any) => (prev ? { ...prev, claimedBy: { id: "admin-dash", tag: "Staff ETHONE" } } : prev));
-      success("Ticket pris en charge", "Mode démo : Vous êtes désormais assigné à ce ticket.");
+      showError("Bot injoignable", "Rien n'a été enregistré.");
       return;
     }
     try {
@@ -106,8 +105,7 @@ export default function TicketDetailClient() {
 
   const handleUnclaim = async () => {
     if (!API_BASE) {
-      setTicket((prev: any) => (prev ? { ...prev, claimedBy: null } : prev));
-      info("Prise en charge abandonnée", "Mode démo : Le ticket est de nouveau ouvert à tous.");
+      showError("Bot injoignable", "Rien n'a été enregistré.");
       return;
     }
     try {
@@ -135,16 +133,7 @@ export default function TicketDetailClient() {
     e.preventDefault();
     if (!noteContent.trim()) return;
     if (!API_BASE) {
-      const newNote = {
-        id: `note-${Date.now()}`,
-        content: noteContent.trim(),
-        authorId: "admin-dash",
-        authorTag: "Staff ETHONE",
-        createdAt: new Date().toISOString(),
-      };
-      setTicket((prev: any) => (prev ? { ...prev, notes: [...(prev.notes || []), newNote] } : prev));
-      setNoteContent("");
-      success("Note ajoutée", "Mode démo : Note enregistrée.");
+      showError("Bot injoignable", "Rien n'a été enregistré.");
       return;
     }
     try {
@@ -171,9 +160,7 @@ export default function TicketDetailClient() {
 
   const handleCloseTicket = async () => {
     if (!API_BASE) {
-      setTicket((prev: any) => (prev ? { ...prev, status: "CLOSED", closeReason } : prev));
-      setShowCloseModal(false);
-      success("Ticket clôturé", "Mode démo : Le ticket a été fermé avec succès.");
+      showError("Bot injoignable", "Rien n'a été enregistré.");
       return;
     }
     try {
@@ -200,8 +187,7 @@ export default function TicketDetailClient() {
 
   const handleReopenTicket = async () => {
     if (!API_BASE) {
-      setTicket((prev: any) => (prev ? { ...prev, status: "OPEN" } : prev));
-      success("Ticket réouvert", "Mode démo : Le ticket a été rouvert avec succès.");
+      showError("Bot injoignable", "Rien n'a été enregistré.");
       return;
     }
     try {
@@ -227,9 +213,7 @@ export default function TicketDetailClient() {
   const handleLinkCase = async () => {
     if (!caseIdToLink.trim()) return;
     if (!API_BASE) {
-      setTicket((prev: any) => (prev ? { ...prev, relatedCaseId: caseIdToLink.trim() } : prev));
-      setShowLinkCaseModal(false);
-      success("Cas de modération lié", `Mode démo : Liaison effectuée avec le Dossier #${caseIdToLink}.`);
+      showError("Bot injoignable", "Rien n'a été enregistré.");
       return;
     }
     try {

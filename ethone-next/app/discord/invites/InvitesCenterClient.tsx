@@ -228,10 +228,7 @@ export default function InvitesCenterClient() {
   const handleSyncDiscord = async () => {
     setSyncing(true);
     if (!API_BASE) {
-      setTimeout(() => {
-        setSyncing(false);
-        success("Synchronisation effectuée", "Mode démo : Les invitations Discord sont à jour.");
-      }, 400);
+      showError("Bot injoignable", "Rien n'a été enregistré.");
       return;
     }
     try {
@@ -253,19 +250,7 @@ export default function InvitesCenterClient() {
       return;
     }
     if (!API_BASE) {
-      const newRew = {
-        id: `rew_${Date.now()}`,
-        name: newRewardName,
-        requiredValidInvites: newRewardInvites,
-        roleName: newRewardRole,
-        xpAmount: newRewardXp,
-        rewardBadge: "✨ Palier Démo",
-        enabled: true,
-      };
-      setRewards((prev) => [...prev, newRew]);
-      success("Récompense créée", `Mode démo : Palier ${newRewardInvites} invitations ajouté.`);
-      setShowRewardModal(false);
-      setNewRewardName("");
+      showError("Bot injoignable", "Rien n'a été enregistré.");
       return;
     }
     try {
@@ -294,8 +279,7 @@ export default function InvitesCenterClient() {
 
   const handleDeleteReward = async (id: string) => {
     if (!API_BASE) {
-      setRewards((prev) => prev.filter((r) => r.id !== id));
-      success("Récompense supprimée", "Mode démo : Le palier a été retiré.");
+      showError("Bot injoignable", "Rien n'a été enregistré.");
       return;
     }
     try {

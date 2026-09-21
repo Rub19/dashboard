@@ -29454,4 +29454,53 @@ CHANGELOG_BY_LANG.en.unshift(v1262_en);
 CHANGELOG_BY_LANG.es.unshift(v1262_es);
 CHANGELOG_BY_LANG.de.unshift(v1262_de);
 
+const v1263_fr: ChangelogEntry = {
+  version: "v1.26.3",
+  date: "2026-09-21",
+  title: "Dashboard Discord : fin des faux succès et des faux contenus sur toutes les pages restantes",
+  items: [
+    "Environ quarante actions annonçaient un succès sans rien faire quand le bot était injoignable (« Enregistré (mode démo) », « Ticket clôturé », « Panel publié sur Discord ! », « Export simulé prêt », « Action exécutée avec succès »…), certaines en modifiant même l'affichage local (un ticket passait à « clôturé » sans l'être). Elles affichent maintenant « Bot injoignable — rien n'a été enregistré » et ne changent plus rien. Pages concernées : Tickets (liste et détail), IA, Logs (enquête, configuration, export), AFK, Anniversaires, Highlights, Rappels, Server Stats, Starboard, Sticky, Tags, Suggestions, Économie, Rôles, Invitations, AutoMod, Anti-raid, gestion du serveur, salons vocaux.",
+    "Plus de contenu inventé : faux tickets, catégories, panneaux et équipes (Tickets), statistiques et événements d'audit (Logs), faux événement « Friday Gaming Night » et ses statistiques (Événements), serveurs, profils, identité et historique fictifs du bot (Présence, qui affichait aussi « Valorant » par défaut), diagnostic du bot qui affichait tout en réussite avec des latences aléatoires quand il était hors ligne.",
+    "Six pages avaient encore un identifiant de serveur codé en dur (invitations, gestion du serveur, tickets, événements) : elles utilisent maintenant le serveur de l'adresse, sinon un serveur où le bot est présent. Les boutons musique de la page d'accueil du bot n'envoyaient pas le cookie de session (401) ; c'est corrigé.",
+  ],
+};
+
+const v1263_en: ChangelogEntry = {
+  version: "v1.26.3",
+  date: "2026-09-21",
+  title: "Discord dashboard: no more fake successes or fake content on the remaining pages",
+  items: [
+    "About forty actions announced a success while doing nothing when the bot was unreachable (\"Saved (demo mode)\", \"Ticket closed\", \"Panel published on Discord!\", \"Simulated export ready\", \"Action executed successfully\"…), some even changing the local display (a ticket turned \"closed\" without being so). They now show \"Bot unreachable — nothing was saved\" and change nothing. Pages affected: Tickets (list and detail), AI, Logs (investigation, configuration, export), AFK, Birthdays, Highlights, Reminders, Server Stats, Starboard, Sticky, Tags, Suggestions, Economy, Roles, Invites, AutoMod, Anti-raid, server management, voice rooms.",
+    "No more invented content: fake tickets, categories, panels and teams (Tickets), audit statistics and events (Logs), the fake \"Friday Gaming Night\" event and its statistics (Events), fictitious servers, profiles, identity and history of the bot (Presence, which also showed \"Valorant\" by default), the bot diagnostic that showed everything passing with random latencies when offline.",
+    "Six pages still had a hard-coded server id (invites, server management, tickets, events): they now use the server from the address, otherwise a server where the bot is present. The music buttons on the bot's home page did not send the session cookie (401); fixed.",
+  ],
+};
+
+const v1263_es: ChangelogEntry = {
+  version: "v1.26.3",
+  date: "2026-09-21",
+  title: "Panel de Discord: se acabaron los éxitos y contenidos falsos en las páginas restantes",
+  items: [
+    "Unas cuarenta acciones anunciaban un éxito sin hacer nada cuando el bot no respondía (« Guardado (modo demo) », « Ticket cerrado », « ¡Panel publicado en Discord! », « Exportación simulada lista », « Acción ejecutada con éxito »…), algunas incluso cambiando la vista local (un ticket pasaba a « cerrado » sin serlo). Ahora muestran « Bot inaccesible — no se guardó nada » y no cambian nada. Páginas afectadas: Tickets (lista y detalle), IA, Logs (investigación, configuración, exportación), AFK, Cumpleaños, Highlights, Recordatorios, Server Stats, Starboard, Sticky, Tags, Sugerencias, Economía, Roles, Invitaciones, AutoMod, Anti-raid, gestión del servidor, salas de voz.",
+    "Ya no hay contenido inventado: tickets, categorías, paneles y equipos falsos (Tickets), estadísticas y eventos de auditoría (Logs), el evento falso « Friday Gaming Night » y sus estadísticas (Eventos), servidores, perfiles, identidad e historial ficticios del bot (Presencia, que además mostraba « Valorant » por defecto), y el diagnóstico del bot que mostraba todo correcto con latencias aleatorias cuando estaba desconectado.",
+    "Seis páginas aún tenían un identificador de servidor escrito a mano (invitaciones, gestión del servidor, tickets, eventos): ahora usan el servidor de la dirección o, si no, uno donde el bot está presente. Los botones de música de la página de inicio del bot no enviaban la cookie de sesión (401); corregido.",
+  ],
+};
+
+const v1263_de: ChangelogEntry = {
+  version: "v1.26.3",
+  date: "2026-09-21",
+  title: "Discord-Dashboard: keine falschen Erfolgsmeldungen und keine Fake-Inhalte mehr auf den übrigen Seiten",
+  items: [
+    "Rund vierzig Aktionen meldeten einen Erfolg, ohne etwas zu tun, wenn der Bot nicht erreichbar war („Gespeichert (Demo-Modus)“, „Ticket geschlossen“, „Panel auf Discord veröffentlicht!“, „Simulierter Export bereit“, „Aktion erfolgreich ausgeführt“ …), manche änderten sogar die lokale Anzeige (ein Ticket wurde „geschlossen“, ohne es zu sein). Sie zeigen jetzt „Bot nicht erreichbar — nichts wurde gespeichert“ und ändern nichts mehr. Betroffene Seiten: Tickets (Liste und Detail), KI, Logs (Untersuchung, Konfiguration, Export), AFK, Geburtstage, Highlights, Erinnerungen, Server Stats, Starboard, Sticky, Tags, Vorschläge, Wirtschaft, Rollen, Einladungen, AutoMod, Anti-Raid, Serververwaltung, Sprachräume.",
+    "Keine erfundenen Inhalte mehr: Fake-Tickets, -Kategorien, -Panels und -Teams (Tickets), Audit-Statistiken und -Ereignisse (Logs), das Fake-Event „Friday Gaming Night“ samt Statistiken (Ereignisse), fiktive Server, Profile, Identität und Verlauf des Bots (Präsenz, die außerdem standardmäßig „Valorant“ zeigte), die Bot-Diagnose, die offline alles bestanden mit zufälligen Latenzen anzeigte.",
+    "Sechs Seiten hatten noch eine fest eincodierte Server-ID (Einladungen, Serververwaltung, Tickets, Ereignisse): Sie nutzen jetzt den Server aus der Adresse, sonst einen Server, auf dem der Bot vorhanden ist. Die Musik-Schaltflächen der Startseite des Bots sendeten das Sitzungs-Cookie nicht (401); behoben.",
+  ],
+};
+
+CHANGELOG_BY_LANG.fr.unshift(v1263_fr);
+CHANGELOG_BY_LANG.en.unshift(v1263_en);
+CHANGELOG_BY_LANG.es.unshift(v1263_es);
+CHANGELOG_BY_LANG.de.unshift(v1263_de);
+
 export const CHANGELOG = CHANGELOG_BY_LANG.fr;

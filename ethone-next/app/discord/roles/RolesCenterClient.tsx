@@ -260,7 +260,7 @@ export default function RolesCenterClient() {
 
   const syncPanel = async (p: RolePanel) => {
     if (isDemo) {
-      success("Synchronisé (démo).");
+      toastError("Bot injoignable", "Rien n'a été enregistré.");
       return;
     }
     setBusyPanelId(p.id);
@@ -311,7 +311,7 @@ export default function RolesCenterClient() {
   const saveAutoRole = async (next: AutoRoleConfig) => {
     setAutoRole(next);
     if (isDemo) {
-      success("Auto-rôles enregistrés (démo).");
+      toastError("Bot injoignable", "Rien n'a été enregistré.");
       return;
     }
     setSavingAutoRole(true);

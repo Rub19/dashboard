@@ -132,7 +132,7 @@ export default function AfkCenterClient() {
 
   const handleSave = async () => {
     if (!selectedGuild) return;
-    if (!BOT_API_URL) return success("Enregistré (mode démo)", "Le serveur du bot n'est pas joignable ici.");
+    if (!BOT_API_URL) return showError("Bot injoignable", "Rien n'a été enregistré.");
     setSaving(true);
     try {
       const res = await fetch(`${BOT_API_URL}/api/guilds/${selectedGuild.id}/afk/config`, {

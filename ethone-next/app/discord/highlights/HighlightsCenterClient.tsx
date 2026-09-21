@@ -137,7 +137,7 @@ export default function HighlightsCenterClient() {
   const handleToggleEnabled = async (value: boolean) => {
     if (!selectedGuild) return;
     setConfig((c) => (c ? { ...c, enabled: value } : c));
-    if (!BOT_API_URL) return success("Enregistré (mode démo)", "Le serveur du bot n'est pas joignable ici.");
+    if (!BOT_API_URL) return showError("Bot injoignable", "Rien n'a été enregistré.");
     try {
       const res = await fetch(`${BOT_API_URL}/api/guilds/${selectedGuild.id}/highlights/mine/config`, {
         method: "PUT",
@@ -168,7 +168,7 @@ export default function HighlightsCenterClient() {
       showError("Limite atteinte", `Maximum ${MAX_KEYWORDS} mots-clés par serveur.`);
       return;
     }
-    if (!BOT_API_URL) return success("Ajouté (mode démo)", "Le serveur du bot n'est pas joignable ici.");
+    if (!BOT_API_URL) return showError("Bot injoignable", "Rien n'a été enregistré.");
     setAdding(true);
     try {
       const res = await fetch(`${BOT_API_URL}/api/guilds/${selectedGuild.id}/highlights/mine/keywords`, {

@@ -68,6 +68,25 @@ if [ -n "${LAVALINK_YT_REFRESH_TOKEN:-}" ]; then
   echo "-- Refresh token YouTube injecté (${#TOKEN} caractères)"
 fi
 
+# 4b) Proxy HTTP sortant de Lavalink (ex. Cloudflare WARP via privoxy : 127.0.0.1:8118).
+# Persistant : LAVALINK_HTTP_PROXY=host:port l'enregistre dans ~/lavalink/http-proxy ;
+# LAVALINK_HTTP_PROXY=off le supprime. Sans proxy, Lavalink sort directement par l'IP du VPS.
+if [ "${LAVALINK_HTTP_PROXY:-}" = "off" ]; then rm -f "$LL_DIR/http-proxy"; echo "-- Proxy Lavalink désactivé"; fi
+if [ -n "${LAVALINK_HTTP_PROXY:-}" ] && [ "${LAVALINK_HTTP_PROXY}" != "off" ]; then
+  printf '%s' "$LAVALINK_HTTP_PROXY" > "$LL_DIR/http-proxy"
+fi
+if [ -f "$LL_DIR/http-proxy" ]; then
+  PROXY="$(tr -d '[:space:]' < "$LL_DIR/http-proxy")"
+  PROXY_HOST="${PROXY%:*}"; PROXY_PORT="${PROXY##*:}"
+  if printf '%s' "$PROXY_PORT" | grep -Eq '^[0-9]{2,5}$' && [ -n "$PROXY_HOST" ]; then
+    # lavalink.server est le SEUL bloc « server: » indenté de 2 espaces dans le template.
+    sed -i "s|^  server:\$|  server:\n    httpConfig:\n      proxyHost: \"$PROXY_HOST\"\n      proxyPort: $PROXY_PORT|" "$LL_DIR/application.yml"
+    echo "-- Proxy HTTP de Lavalink : $PROXY_HOST:$PROXY_PORT"
+  else
+    echo "!! $LL_DIR/http-proxy invalide (attendu host:port) — ignoré."
+  fi
+fi
+
 # 5) .env du bot : backend + accès Lavalink (ajout ou mise à jour)
 ENV_FILE="$BOT_DIR/.env"
 touch "$ENV_FILE"

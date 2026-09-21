@@ -1,4 +1,4 @@
-import { PermissionFlagsBits, type Client, type Guild, type VoiceBasedChannel } from 'discord.js';
+import { PermissionFlagsBits, type Client, type Guild, type VoiceBasedChannel, type VoiceState } from 'discord.js';
 import { config } from '../../../config.js';
 import { logger } from '../../../utils/logger.js';
 import { musicPersistence } from '../storage/musicPersistence.js';
@@ -28,6 +28,8 @@ class VoiceStayService {
   private nextTryAt = new Map<string, number>();
   private busy = new Set<string>();
   private warned = new Set<string>();
+  /** Retours programmés après une sortie / un déplacement du bot (un seul en attente par serveur). */
+  private pending = new Map<string, NodeJS.Timeout>();
 
   public start(client: Client, getPlayer: PlayerGetter): void {
     if (this.timer) return;
@@ -37,6 +39,47 @@ class VoiceStayService {
     this.timer = setInterval(() => void this.tick(), CHECK_INTERVAL_MS);
     this.timer.unref?.();
     logger.info('[VoiceStay] Surveillance du mode 24h/24 démarrée.');
+  }
+
+  /**
+   * Mémorise le salon où le bot vient d'arriver (n'importe quel moyen : /join, /play, dashboard…) :
+   * à partir de là il y revient tout seul, et ne le quitte que sur /disconnect. Sans effet si un salon
+   * est déjà mémorisé (un déplacement voulu passe par /join).
+   */
+  public remember(guildId: string, channelId: string): void {
+    if (this.getStayChannelId(guildId)) return;
+    try {
+      musicPersistence.updateSettings(guildId, { stayChannelId: channelId });
+    } catch (err) {
+      logger.warn(`[VoiceStay] Salon non mémorisé (guild ${guildId}) :`, err);
+    }
+  }
+
+  /**
+   * Réaction immédiate quand le bot est exclu ou déplacé (par un modérateur, ou par Discord vers le
+   * salon AFK) : il revient dans son salon en ~1,5 s au lieu d'attendre le prochain contrôle (30 s).
+   */
+  public onVoiceStateUpdate(_old: VoiceState, next: VoiceState): void {
+    const client = this.client;
+    if (!client?.user || next.id !== client.user.id) return;
+    const guild = next.guild;
+    const stayId = this.getStayChannelId(guild.id);
+    if (!stayId) return;
+
+    if (next.channelId === stayId) {
+      if (!this.joinedAt.has(guild.id)) this.markJoined(guild.id);
+      return;
+    }
+    this.joinedAt.delete(guild.id);
+    const previous = this.pending.get(guild.id);
+    if (previous) clearTimeout(previous);
+    const timer = setTimeout(() => {
+      this.pending.delete(guild.id);
+      this.nextTryAt.delete(guild.id);
+      void this.ensure(guild, stayId).catch((err) => logger.warn(`[VoiceStay] Retour impossible (guild ${guild.id}) :`, err));
+    }, 1500);
+    timer.unref?.();
+    this.pending.set(guild.id, timer);
   }
 
   public getStayChannelId(guildId: string): string | null {
@@ -54,6 +97,9 @@ class VoiceStayService {
   }
 
   public markLeft(guildId: string): void {
+    const timer = this.pending.get(guildId);
+    if (timer) clearTimeout(timer);
+    this.pending.delete(guildId);
     this.joinedAt.delete(guildId);
     this.failures.delete(guildId);
     this.nextTryAt.delete(guildId);

@@ -6,6 +6,7 @@ import { musicPersistence } from '../storage/musicPersistence.js';
 import { musicProviderManager } from '../providers/musicProvider.js';
 import { lavalinkManager } from './lavalinkManager.js';
 import { logger } from '../../../utils/logger.js';
+import { voiceStayService } from './voiceStayService.js';
 import { musicNotifier } from './musicNotifier.js';
 import type { IGuildMusicPlayer } from './guildMusicPlayer.js';
 
@@ -114,6 +115,8 @@ export class LavalinkMusicPlayer implements IGuildMusicPlayer {
       this.cancelDisconnectTimer();
       this.emitState();
       logger.info(`[Lavalink] Connecté à "${channel.name}" (guild ${this.guildId}, ping ${player.ping} ms)`);
+      // Le bot revient dans ce salon s'il en est exclu ou déplacé ; seul /disconnect l'en fait partir.
+      voiceStayService.remember(this.guildId, channel.id);
       return true;
     } catch (err) {
       logger.error(`[Lavalink] Erreur connexion vocale guild ${this.guildId} :`, err);

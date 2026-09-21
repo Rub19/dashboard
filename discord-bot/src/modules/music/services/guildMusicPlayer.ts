@@ -16,6 +16,7 @@ import { MusicQueue } from './musicQueue.js';
 import { musicPersistence } from '../storage/musicPersistence.js';
 import { musicProviderManager } from '../providers/musicProvider.js';
 import { logger } from '../../../utils/logger.js';
+import { voiceStayService } from './voiceStayService.js';
 
 // How long before a track is expected to end that the NEXT track's audio
 // resource gets prefetched. Deliberately short (not "as soon as the current
@@ -160,6 +161,7 @@ export class GuildMusicPlayer implements IGuildMusicPlayer {
   public async connect(channel: VoiceBasedChannel): Promise<boolean> {
     try {
       this.currentVoiceChannel = { id: channel.id, name: channel.name };
+      voiceStayService.remember(this.guildId, channel.id);
 
       let connection = getVoiceConnection(this.guildId);
       if (!connection || connection.state.status === VoiceConnectionStatus.Destroyed) {

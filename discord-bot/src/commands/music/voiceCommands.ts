@@ -80,12 +80,6 @@ export const joinCommand: Command = {
         .setDescription('Salon vocal à rejoindre (par défaut : celui où tu es)')
         .addChannelTypes(ChannelType.GuildVoice, ChannelType.GuildStageVoice)
         .setRequired(false)
-    )
-    .addBooleanOption((opt) =>
-      opt
-        .setName('permanent')
-        .setDescription('Rester en permanence dans le salon, même sans musique (24h/24) — activé par défaut')
-        .setRequired(false)
     ),
   execute: async (ctx: CommandContext) => {
     if (!ctx.guild || !ctx.member) return;
@@ -112,7 +106,7 @@ export const joinCommand: Command = {
       return;
     }
 
-    const permanent = ctx.interaction?.options.getBoolean('permanent') ?? true;
+    const permanent = true; // le bot ne quitte le vocal que sur /disconnect
     await ctx.deferReply();
 
     const player = musicService.getPlayer(ctx.guild.id, true);

@@ -50,7 +50,7 @@ export interface WelcomeButton {
 
 export interface OnboardingStep {
   id: string;
-  type: "WELCOME" | "RULES" | "ROLE_SELECTION" | "QUESTION" | "VERIFICATION" | "COMPLETION";
+  type: "WELCOME" | "RULES" | "ROLE_SELECTION" | "QUESTION" | "VERIFICATION" | "CHANNEL_SELECTION" | "COMPLETION";
   title: string;
   description: string;
   required: boolean;
@@ -59,6 +59,7 @@ export interface OnboardingStep {
   maxRoleSelections?: number;
   rulesList: string[];
   questionText?: string | null;
+  questionPlaceholder?: string | null;
 }
 
 export interface OnboardingFlow {
@@ -98,6 +99,309 @@ export interface RoleItem {
   manageable: boolean;
 }
 
+
+const STEP_TYPES: Array<{ type: OnboardingStep["type"]; label: string; icon: string; hint: string }> = [
+  { type: "WELCOME", label: "Bienvenue", icon: "👋", hint: "Message d'accueil, avec la carte « BIENVENUE » en première étape." },
+  { type: "RULES", label: "Règlement", icon: "📜", hint: "Liste de règles à accepter." },
+  { type: "ROLE_SELECTION", label: "Choix de rôles", icon: "🎭", hint: "Le membre choisit ses rôles dans un menu." },
+  { type: "QUESTION", label: "Question", icon: "❓", hint: "Une question ouverte ; la réponse est enregistrée dans les logs." },
+  { type: "VERIFICATION", label: "Vérification", icon: "🛡️", hint: "Lance la vérification configurée dans l'onglet Vérification." },
+  { type: "CHANNEL_SELECTION", label: "Salons", icon: "📍", hint: "Présente les salons importants." },
+  { type: "COMPLETION", label: "Fin", icon: "🎉", hint: "Termine le parcours : rôle de fin et message privé." },
+];
+
+const STEP_DEFAULTS: Record<OnboardingStep["type"], { title: string; description: string }> = {
+  WELCOME: { title: "👋 Bienvenue {username} !", description: "Ravi de t'accueillir sur **{server}**. Quelques étapes rapides et tu pourras profiter de la communauté." },
+  RULES: { title: "📜 Règlement du serveur", description: "Prends connaissance des règles pour participer sereinement." },
+  ROLE_SELECTION: { title: "🎭 Choisis tes rôles", description: "Sélectionne ce qui te correspond dans la liste." },
+  QUESTION: { title: "❓ Petite question", description: "Dis-nous en un peu plus sur toi." },
+  VERIFICATION: { title: "🛡️ Vérification", description: "Clique sur le bouton pour valider ton entrée et débloquer les salons." },
+  CHANNEL_SELECTION: { title: "📍 Les salons à connaître", description: "Voici où retrouver l'essentiel du serveur." },
+  COMPLETION: { title: "🎉 C'est terminé !", description: "Tu fais maintenant partie de la communauté. Bonne visite !" },
+};
+
+const fieldClass =
+  "w-full rounded-[var(--inset-radius)] border border-[var(--panel-border)] bg-zinc-950/70 px-3 py-2 text-xs text-white outline-none focus:border-teal-500";
+
+function OnboardingEditor({
+  onboarding,
+  setOnboarding,
+  channels,
+  roles,
+  onSave,
+  onPreview,
+  saving,
+  previewing,
+}: {
+  onboarding: OnboardingFlow;
+  setOnboarding: (updater: (prev: any) => any) => void;
+  channels: ChannelItem[];
+  roles: RoleItem[];
+  onSave: () => void;
+  onPreview: () => void;
+  saving: boolean;
+  previewing: boolean;
+}) {
+  const patchFlow = (patch: Partial<OnboardingFlow>) => setOnboarding((p: any) => ({ ...p, ...patch }));
+  const patchStep = (idx: number, patch: Partial<OnboardingStep>) =>
+    setOnboarding((p: any) => ({ ...p, steps: p.steps.map((s: OnboardingStep, i: number) => (i === idx ? { ...s, ...patch } : s)) }));
+  const moveStep = (idx: number, dir: -1 | 1) =>
+    setOnboarding((p: any) => {
+      const steps = [...p.steps];
+      const target = idx + dir;
+      if (target < 0 || target >= steps.length) return p;
+      [steps[idx], steps[target]] = [steps[target], steps[idx]];
+      return { ...p, steps: steps.map((s: OnboardingStep, i: number) => ({ ...s, order: i })) };
+    });
+  const removeStep = (idx: number) =>
+    setOnboarding((p: any) => ({ ...p, steps: p.steps.filter((_: unknown, i: number) => i !== idx).map((s: OnboardingStep, i: number) => ({ ...s, order: i })) }));
+  const addStep = (type: OnboardingStep["type"]) =>
+    setOnboarding((p: any) => ({
+      ...p,
+      steps: [
+        ...p.steps,
+        {
+          id: `step-${Date.now()}-${Math.random().toString(36).slice(2, 6)}`,
+          type,
+          ...STEP_DEFAULTS[type],
+          required: type === "RULES" || type === "VERIFICATION" || type === "QUESTION",
+          order: p.steps.length,
+          roleChoices: [],
+          maxRoleSelections: 1,
+          rulesList: type === "RULES" ? ["1. Respecter tous les membres.", "2. Pas de spam ni de publicité.", "3. Rester dans les salons adaptés."] : [],
+          questionText: type === "QUESTION" ? "Comment as-tu découvert le serveur ?" : null,
+          questionPlaceholder: type === "QUESTION" ? "Une amie, un réseau social…" : null,
+        },
+      ],
+    }));
+
+  return (
+    <div className="mt-6 max-w-3xl space-y-5">
+      <div className="flex flex-wrap items-center justify-between gap-3">
+        <div>
+          <h2 className="text-base font-bold text-white">Parcours d&apos;Onboarding</h2>
+          <p className="text-xs text-zinc-400">
+            Chaque nouvel arrivant reçoit ces étapes en message privé (ou dans le salon de secours si ses messages privés sont fermés), avec des boutons.
+          </p>
+        </div>
+        <div className="flex gap-2">
+          <button
+            type="button"
+            onClick={onPreview}
+            disabled={previewing || onboarding.steps.length === 0}
+            className="rounded-xl border border-[var(--panel-border)] bg-white/5 px-4 py-2 text-xs font-bold text-zinc-200 hover:bg-white/10 disabled:opacity-50 cursor-pointer"
+            title="Reçois le parcours en message privé, tel que le verrait un nouvel arrivant"
+          >
+            {previewing ? "Envoi…" : "M'envoyer un aperçu"}
+          </button>
+          <button
+            type="button"
+            onClick={onSave}
+            disabled={saving}
+            className="rounded-xl bg-teal-600 px-4 py-2 text-xs font-bold text-white hover:bg-teal-500 disabled:opacity-60 cursor-pointer"
+          >
+            {saving ? "Enregistrement..." : "Enregistrer le parcours"}
+          </button>
+        </div>
+      </div>
+
+      {/* Réglages généraux */}
+      <div className="space-y-4 rounded-[var(--panel-radius)] border border-[var(--panel-border)] bg-white/[0.02] p-4">
+        <label className="flex cursor-pointer items-center justify-between gap-3">
+          <div>
+            <p className="text-xs font-bold text-white">Activer le parcours</p>
+            <p className="text-[11px] text-zinc-400">Envoyé automatiquement à chaque nouveau membre (les bots sont ignorés).</p>
+          </div>
+          <input type="checkbox" checked={onboarding.enabled} onChange={(e) => patchFlow({ enabled: e.target.checked })} className="h-4 w-4 accent-teal-500" />
+        </label>
+
+        <div className="grid gap-3 sm:grid-cols-2">
+          <label className="space-y-1">
+            <span className="text-[11px] font-semibold text-zinc-300">Salon de secours (si messages privés fermés)</span>
+            <select value={onboarding.channelId || ""} onChange={(e) => patchFlow({ channelId: e.target.value || null })} className={fieldClass}>
+              <option value="">— Aucun —</option>
+              {channels.filter((c) => c.canSend).map((c) => (
+                <option key={c.id} value={c.id}>
+                  # {c.name}
+                </option>
+              ))}
+            </select>
+          </label>
+          <label className="space-y-1">
+            <span className="text-[11px] font-semibold text-zinc-300">Rôle donné à la fin du parcours</span>
+            <select value={onboarding.completionRoleId || ""} onChange={(e) => patchFlow({ completionRoleId: e.target.value || null })} className={fieldClass}>
+              <option value="">— Aucun —</option>
+              {roles.filter((r) => r.manageable).map((r) => (
+                <option key={r.id} value={r.id}>
+                  {r.name}
+                </option>
+              ))}
+            </select>
+          </label>
+        </div>
+
+        <div className="space-y-2">
+          <label className="flex cursor-pointer items-center gap-2">
+            <input type="checkbox" checked={onboarding.sendDmOnCompletion} onChange={(e) => patchFlow({ sendDmOnCompletion: e.target.checked })} className="h-4 w-4 accent-teal-500" />
+            <span className="text-xs font-bold text-white">Envoyer un message privé de félicitations à la fin</span>
+          </label>
+          {onboarding.sendDmOnCompletion && (
+            <textarea
+              rows={2}
+              value={onboarding.completionDmMessage}
+              onChange={(e) => patchFlow({ completionDmMessage: e.target.value })}
+              placeholder="Variables : {user} {username} {server}"
+              className={fieldClass}
+            />
+          )}
+        </div>
+      </div>
+
+      {/* Étapes */}
+      <div className="space-y-3">
+        {onboarding.steps.length === 0 && (
+          <p className="rounded-xl border border-dashed border-[var(--panel-border)] p-6 text-center text-xs text-zinc-400">
+            Aucune étape pour l&apos;instant : ajoute-en une ci-dessous.
+          </p>
+        )}
+        {onboarding.steps.map((step, idx) => {
+          const meta = STEP_TYPES.find((s) => s.type === step.type);
+          return (
+            <div key={step.id} className="space-y-3 rounded-[var(--panel-radius)] border border-[var(--panel-border)] bg-white/[0.02] p-4">
+              <div className="flex items-center justify-between gap-2">
+                <div className="flex min-w-0 items-center gap-2">
+                  <span className="flex h-6 w-6 shrink-0 items-center justify-center rounded-lg bg-teal-500/20 text-xs font-bold text-teal-300">{idx + 1}</span>
+                  <select
+                    value={step.type}
+                    onChange={(e) => patchStep(idx, { type: e.target.value as OnboardingStep["type"] })}
+                    className="rounded-lg border border-[var(--panel-border)] bg-zinc-950/70 px-2 py-1 text-[11px] font-bold text-white outline-none"
+                  >
+                    {STEP_TYPES.map((s) => (
+                      <option key={s.type} value={s.type}>
+                        {s.icon} {s.label}
+                      </option>
+                    ))}
+                  </select>
+                </div>
+                <div className="flex items-center gap-1">
+                  <button type="button" disabled={idx === 0} onClick={() => moveStep(idx, -1)} className="p-1 text-zinc-400 hover:text-white disabled:opacity-30" title="Monter">
+                    <ChevronUp className="h-4 w-4" />
+                  </button>
+                  <button type="button" disabled={idx === onboarding.steps.length - 1} onClick={() => moveStep(idx, 1)} className="p-1 text-zinc-400 hover:text-white disabled:opacity-30" title="Descendre">
+                    <ChevronDown className="h-4 w-4" />
+                  </button>
+                  <button type="button" onClick={() => removeStep(idx)} className="p-1 text-rose-400 hover:text-rose-300" title="Supprimer l'étape">
+                    <Trash2 className="h-4 w-4" />
+                  </button>
+                </div>
+              </div>
+              {meta && <p className="text-[11px] text-zinc-500">{meta.hint}</p>}
+
+              <input type="text" value={step.title} onChange={(e) => patchStep(idx, { title: e.target.value })} placeholder="Titre de l'étape" className={fieldClass} />
+              <textarea rows={2} value={step.description} onChange={(e) => patchStep(idx, { description: e.target.value })} placeholder="Description (variables : {user} {username} {server} {membercount})" className={fieldClass} />
+
+              {(step.type === "RULES" || step.type === "ROLE_SELECTION" || step.type === "QUESTION" || step.type === "VERIFICATION") && (
+                <label className="flex cursor-pointer items-center gap-2 text-[11px] text-zinc-300">
+                  <input type="checkbox" checked={step.required} onChange={(e) => patchStep(idx, { required: e.target.checked })} className="h-3.5 w-3.5 accent-teal-500" />
+                  Étape obligatoire
+                  {step.type === "QUESTION" && <span className="text-zinc-500">(sinon un bouton « Passer » est proposé)</span>}
+                  {step.type === "ROLE_SELECTION" && <span className="text-zinc-500">(sinon le membre peut continuer sans choisir)</span>}
+                </label>
+              )}
+
+              {step.type === "RULES" && (
+                <label className="block space-y-1">
+                  <span className="text-[11px] font-semibold text-zinc-300">Règles (une par ligne)</span>
+                  <textarea
+                    rows={5}
+                    value={(step.rulesList || []).join("\n")}
+                    onChange={(e) => patchStep(idx, { rulesList: e.target.value.split("\n").filter((l) => l.trim() !== "") })}
+                    className={fieldClass}
+                  />
+                </label>
+              )}
+
+              {step.type === "QUESTION" && (
+                <div className="grid gap-2 sm:grid-cols-2">
+                  <input type="text" value={step.questionText || ""} onChange={(e) => patchStep(idx, { questionText: e.target.value })} placeholder="La question posée" className={fieldClass} />
+                  <input type="text" value={step.questionPlaceholder || ""} onChange={(e) => patchStep(idx, { questionPlaceholder: e.target.value })} placeholder="Exemple de réponse (optionnel)" className={fieldClass} />
+                </div>
+              )}
+
+              {step.type === "ROLE_SELECTION" && (
+                <div className="space-y-2">
+                  <label className="flex items-center gap-2 text-[11px] text-zinc-300">
+                    Nombre maximum de rôles choisis
+                    <input
+                      type="number"
+                      min={1}
+                      max={25}
+                      value={step.maxRoleSelections || 1}
+                      onChange={(e) => patchStep(idx, { maxRoleSelections: Math.max(1, Math.min(25, Number(e.target.value) || 1)) })}
+                      className="w-16 rounded-lg border border-[var(--panel-border)] bg-zinc-950/70 px-2 py-1 text-xs text-white outline-none"
+                    />
+                  </label>
+                  {(step.roleChoices || []).map((choice, ci) => (
+                    <div key={ci} className="grid grid-cols-[minmax(0,1.3fr)_minmax(0,1fr)_3.5rem_minmax(0,1fr)_auto] items-center gap-1.5">
+                      <select
+                        value={choice.roleId}
+                        onChange={(e) => {
+                          const role = roles.find((r) => r.id === e.target.value);
+                          patchStep(idx, { roleChoices: step.roleChoices.map((c, i) => (i === ci ? { ...c, roleId: e.target.value, label: c.label || role?.name || "" } : c)) });
+                        }}
+                        className={fieldClass}
+                      >
+                        <option value="">Rôle…</option>
+                        {roles.filter((r) => r.manageable).map((r) => (
+                          <option key={r.id} value={r.id}>
+                            {r.name}
+                          </option>
+                        ))}
+                      </select>
+                      <input type="text" value={choice.label} placeholder="Libellé" onChange={(e) => patchStep(idx, { roleChoices: step.roleChoices.map((c, i) => (i === ci ? { ...c, label: e.target.value } : c)) })} className={fieldClass} />
+                      <input type="text" value={choice.emoji || ""} placeholder="😀" maxLength={8} onChange={(e) => patchStep(idx, { roleChoices: step.roleChoices.map((c, i) => (i === ci ? { ...c, emoji: e.target.value || null } : c)) })} className={fieldClass} />
+                      <input type="text" value={choice.description || ""} placeholder="Description" onChange={(e) => patchStep(idx, { roleChoices: step.roleChoices.map((c, i) => (i === ci ? { ...c, description: e.target.value || null } : c)) })} className={fieldClass} />
+                      <button type="button" onClick={() => patchStep(idx, { roleChoices: step.roleChoices.filter((_, i) => i !== ci) })} className="p-1 text-rose-400 hover:text-rose-300">
+                        <Trash2 className="h-3.5 w-3.5" />
+                      </button>
+                    </div>
+                  ))}
+                  <button
+                    type="button"
+                    onClick={() => patchStep(idx, { roleChoices: [...(step.roleChoices || []), { roleId: "", label: "", emoji: null, description: null }] })}
+                    className="text-[11px] font-semibold text-teal-300 hover:text-teal-200"
+                  >
+                    + Ajouter un rôle à proposer
+                  </button>
+                  {(step.roleChoices || []).length === 0 && <p className="text-[11px] text-amber-300">Sans rôle proposé, le menu de choix n&apos;apparaît pas.</p>}
+                </div>
+              )}
+            </div>
+          );
+        })}
+      </div>
+
+      {/* Ajouter une étape */}
+      <div className="space-y-2 rounded-[var(--panel-radius)] border border-dashed border-[var(--panel-border)] p-3">
+        <p className="text-[11px] font-semibold text-zinc-300">Ajouter une étape</p>
+        <div className="flex flex-wrap gap-1.5">
+          {STEP_TYPES.map((s) => (
+            <button
+              key={s.type}
+              type="button"
+              onClick={() => addStep(s.type)}
+              title={s.hint}
+              className="rounded-lg border border-[var(--panel-border)] bg-white/5 px-2.5 py-1.5 text-[11px] font-semibold text-zinc-200 hover:bg-white/10 cursor-pointer"
+            >
+              {s.icon} {s.label}
+            </button>
+          ))}
+        </div>
+      </div>
+    </div>
+  );
+}
+
 export function WelcomeCenterClient() {
   const searchParams = useSearchParams();
   const guildIdParam = searchParams.get("guildId");
@@ -133,6 +437,7 @@ export function WelcomeCenterClient() {
   const [loading, setLoading] = useState(true);
   const [loadFailed, setLoadFailed] = useState(false);
   const [saving, setSaving] = useState(false);
+  const [previewing, setPreviewing] = useState(false);
 
   // Modals
   const [showTestModal, setShowTestModal] = useState(false);
@@ -271,13 +576,37 @@ export function WelcomeCenterClient() {
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify(flowData),
       });
-      if (!res.ok) throw new Error("Échec de sauvegarde onboarding");
-      setOnboarding(flowData);
+      const saved = await res.json().catch(() => null);
+      if (!res.ok) throw new Error(saved?.error || "Échec de sauvegarde onboarding");
+      setOnboarding(saved?.flow || flowData);
       success("Onboarding mis à jour", "Le parcours d'onboarding a été enregistré.");
     } catch (err: any) {
       showError("Erreur", err.message);
     } finally {
       setSaving(false);
+    }
+  };
+
+  // Aperçu : le bot envoie le parcours à l'utilisateur connecté (message privé, ou salon de secours)
+  const handlePreviewOnboarding = async () => {
+    if (!API_BASE) {
+      showError("Bot injoignable", "Aucun aperçu envoyé.");
+      return;
+    }
+    try {
+      setPreviewing(true);
+      if (onboarding) await handleSaveOnboarding(onboarding);
+      const res = await fetch(`${API_BASE}/api/guilds/${currentGuildId}/welcome/onboarding/preview`, { credentials: "include", method: "POST" });
+      const data = await res.json().catch(() => null);
+      if (res.ok && data?.success) {
+        success("Aperçu envoyé", data.via === "dm" ? "Regarde tes messages privés Discord." : "Regarde le salon de secours.");
+      } else {
+        showError("Aperçu impossible", data?.error || "Le bot n'a pas pu envoyer l'aperçu.");
+      }
+    } catch {
+      showError("Erreur réseau", "Le bot n'a pas répondu.");
+    } finally {
+      setPreviewing(false);
     }
   };
 
@@ -1369,146 +1698,16 @@ export function WelcomeCenterClient() {
 
       {/* TAB 5: ONBOARDING FLOW */}
       {activeTab === "onboarding" && onboarding && (
-        <div className="space-y-5 mt-6 max-w-3xl">
-          <div className="flex items-center justify-between">
-            <div>
-              <h2 className="text-base font-bold text-white">Parcours d&apos;Onboarding Multi-Étapes</h2>
-              <p className="text-xs text-zinc-400">
-                Guidez les nouveaux membres : mot d&apos;accueil, acceptation des règles et sélection de rôles personnalisés.
-              </p>
-            </div>
-            <button
-              onClick={() => handleSaveOnboarding(onboarding)}
-              disabled={saving}
-              className="rounded-xl bg-teal-600 px-4 py-2 text-xs font-bold text-white hover:bg-teal-500 transition-all cursor-pointer"
-            >
-              {saving ? "Enregistrement..." : "Enregistrer le parcours"}
-            </button>
-          </div>
-
-          <label className="flex items-center justify-between rounded-[var(--inset-radius)] border border-[var(--panel-border)] bg-white/[0.02] p-4 cursor-pointer">
-            <div>
-              <p className="text-xs font-bold text-white">Activer le flux d&apos;Onboarding</p>
-              <p className="text-[11px] text-zinc-400">Déclenche automatiquement les étapes pour les nouveaux arrivants.</p>
-            </div>
-            <input
-              type="checkbox"
-              checked={onboarding.enabled}
-              onChange={(e) => setOnboarding((p: any) => ({ ...p, enabled: e.target.checked }))}
-              className="h-4 w-4 rounded border-zinc-700 accent-teal-500"
-            />
-          </label>
-
-          {/* Steps List */}
-          <div className="space-y-3">
-            {onboarding.steps.map((step, idx) => (
-              <div
-                key={step.id}
-                className="rounded-[var(--panel-radius)] border border-[var(--panel-border)] bg-white/[0.02] p-4 space-y-3 hover:border-teal-500/30 transition-colors"
-              >
-                <div className="flex items-center justify-between">
-                  <div className="flex items-center gap-2">
-                    <span className="flex h-6 w-6 items-center justify-center rounded-lg bg-teal-500/20 text-xs font-bold text-teal-300">
-                      {idx + 1}
-                    </span>
-                    <span className="font-bold text-white text-xs">{step.title}</span>
-                    <span className="rounded bg-white/10 px-1.5 py-0.2 text-[9px] uppercase font-bold text-zinc-300">
-                      {step.type}
-                    </span>
-                  </div>
-
-                  <div className="flex items-center gap-1">
-                    {idx > 0 && (
-                      <button
-                        type="button"
-                        onClick={() => {
-                          const updated = [...onboarding.steps];
-                          const tmp = updated[idx - 1];
-                          updated[idx - 1] = updated[idx];
-                          updated[idx] = tmp;
-                          setOnboarding((p: any) => ({ ...p, steps: updated }));
-                        }}
-                        className="p-1 text-zinc-400 hover:text-white"
-                        title="Monter"
-                      >
-                        <ChevronUp className="h-4 w-4" />
-                      </button>
-                    )}
-                    {idx < onboarding.steps.length - 1 && (
-                      <button
-                        type="button"
-                        onClick={() => {
-                          const updated = [...onboarding.steps];
-                          const tmp = updated[idx + 1];
-                          updated[idx + 1] = updated[idx];
-                          updated[idx] = tmp;
-                          setOnboarding((p: any) => ({ ...p, steps: updated }));
-                        }}
-                        className="p-1 text-zinc-400 hover:text-white"
-                        title="Descendre"
-                      >
-                        <ChevronDown className="h-4 w-4" />
-                      </button>
-                    )}
-                    <button
-                      type="button"
-                      onClick={() => {
-                        const updated = onboarding.steps.filter((_, i) => i !== idx);
-                        setOnboarding((p: any) => ({ ...p, steps: updated }));
-                      }}
-                      className="p-1 text-rose-400 hover:text-rose-300"
-                    >
-                      <Trash2 className="h-4 w-4" />
-                    </button>
-                  </div>
-                </div>
-
-                <input
-                  type="text"
-                  value={step.title}
-                  onChange={(e) => {
-                    const updated = [...onboarding.steps];
-                    updated[idx].title = e.target.value;
-                    setOnboarding((p: any) => ({ ...p, steps: updated }));
-                  }}
-                  className="h-8 w-full rounded-[var(--inset-radius)] border border-[var(--panel-border)] bg-zinc-900 px-2.5 text-xs text-white"
-                />
-
-                <textarea
-                  rows={2}
-                  value={step.description}
-                  onChange={(e) => {
-                    const updated = [...onboarding.steps];
-                    updated[idx].description = e.target.value;
-                    setOnboarding((p: any) => ({ ...p, steps: updated }));
-                  }}
-                  className="w-full rounded-[var(--inset-radius)] border border-[var(--panel-border)] bg-zinc-900 p-2 text-xs text-white resize-none"
-                />
-              </div>
-            ))}
-
-            <button
-              type="button"
-              onClick={() => {
-                const newStep: OnboardingStep = {
-                  id: `step-${Date.now()}`,
-                  type: "ROLE_SELECTION",
-                  title: "Choix de rôles supplémentaires",
-                  description: "Sélectionnez vos badges et préférences.",
-                  required: false,
-                  order: onboarding.steps.length,
-                  roleChoices: [],
-                  rulesList: [],
-                };
-                setOnboarding((p: any) => ({ ...p, steps: [...p.steps, newStep] }));
-              }}
-              className="flex items-center justify-center gap-1.5 w-full rounded-xl border border-dashed border-[var(--input-border-hover)] py-3 text-xs font-bold text-zinc-300 hover:border-teal-500 hover:text-teal-300 transition-all cursor-pointer"
-            >
-              <Plus className="h-4 w-4" />
-              <span>Ajouter une étape au parcours</span>
-            </button>
-          </div>
-        </div>
+        <OnboardingEditor
+          onboarding={onboarding}
+          setOnboarding={setOnboarding as (updater: (prev: any) => any) => void}
+          channels={channels}
+          roles={roles}
+          onSave={() => handleSaveOnboarding(onboarding)}
+          onPreview={handlePreviewOnboarding}
+          saving={saving}
+          previewing={previewing}
+        />
       )}
 
       {/* TAB 6: VÉRIFICATION & RÈGLES */}

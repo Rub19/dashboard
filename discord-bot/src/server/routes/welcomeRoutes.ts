@@ -3,6 +3,8 @@ import { ChannelType, Client, PermissionFlagsBits } from 'discord.js';
 import { welcomeService } from '../../modules/welcome/services/welcomeService.js';
 import { welcomeRepository } from '../../modules/welcome/storage/welcomeRepository.js';
 import { PREBUILT_TEMPLATES } from '../../modules/welcome/types/templates.js';
+import { OnboardingFlowSchema } from '../../modules/welcome/types/onboarding.js';
+import { OnboardingRunner } from '../../modules/welcome/services/onboardingRunner.js';
 import { WelcomeCardGenerator } from '../../modules/welcome/images/welcomeCardGenerator.js';
 import { VariableContext } from '../../modules/welcome/types/variables.js';
 import { logger } from '../../utils/logger.js';
@@ -82,10 +84,51 @@ export function createWelcomeRouter(discordClient: Client) {
   router.put('/onboarding', async (req: Request, res: Response): Promise<void> => {
     const guildId = String(req.params.guildId);
     try {
-      welcomeRepository.saveOnboardingFlow(guildId, { ...req.body, guildId });
-      res.json({ success: true, flow: req.body });
+      // Validation (avant, le corps était enregistré tel quel) et numérotation des étapes selon leur
+      // position dans la liste : c'est l'ordre choisi dans l'éditeur qui fait foi.
+      const parsed = OnboardingFlowSchema.parse({ ...req.body, guildId });
+      const steps = parsed.steps.map((s, i) => ({ ...s, order: i }));
+      const flow = { ...parsed, steps };
+      welcomeRepository.saveOnboardingFlow(guildId, flow);
+      emitConfigUpdated('welcome', guildId, { onboarding: flow }, 'DASHBOARD', req.user?.id);
+      res.json({ success: true, flow });
     } catch (err: any) {
-      res.status(400).json({ error: err.message || 'Données onboarding invalides' });
+      const issues = Array.isArray(err?.issues) ? err.issues.map((i: { path: unknown[]; message: string }) => `${i.path.join('.')} : ${i.message}`).join(' ; ') : '';
+      res.status(400).json({ error: issues || err.message || 'Données onboarding invalides' });
+    }
+  });
+
+  // POST /api/guilds/:guildId/welcome/onboarding/preview
+  // Envoie à l'utilisateur connecté au dashboard (s'il est membre du serveur) le parcours tel que le
+  // verrait un nouvel arrivant — même si le parcours n'est pas encore activé.
+  router.post('/onboarding/preview', async (req: Request, res: Response): Promise<void> => {
+    const guildId = String(req.params.guildId);
+    const userId = req.user?.id;
+    if (!userId) {
+      res.status(401).json({ error: 'Session du bot requise.' });
+      return;
+    }
+    try {
+      const guild = discordClient.guilds.cache.get(guildId);
+      const member = guild ? await guild.members.fetch(userId).catch(() => null) : null;
+      if (!guild || !member) {
+        res.status(404).json({ error: 'Tu dois être membre de ce serveur pour recevoir l\'aperçu.' });
+        return;
+      }
+      const flow = welcomeRepository.getOnboardingFlow(guildId);
+      const via = await OnboardingRunner.start(member, { ...flow, enabled: true });
+      if (via === 'none') {
+        res.status(409).json({
+          success: false,
+          via,
+          error: 'Impossible de t\'envoyer l\'aperçu : tes messages privés sont fermés et aucun salon de secours n\'est configuré.',
+        });
+        return;
+      }
+      res.json({ success: true, via });
+    } catch (err: any) {
+      logger.error('Erreur welcome/onboarding/preview :', err);
+      res.status(500).json({ error: err.message || 'Aperçu impossible.' });
     }
   });
 

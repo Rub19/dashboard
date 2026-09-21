@@ -11,17 +11,31 @@ import { OnboardingFlow, OnboardingStep } from '../types/onboarding.js';
 import { logService } from '../../logs/services/logService.js';
 import { logger } from '../../../utils/logger.js';
 import { baseEmbed } from '../../../utils/embeds.js';
+import { OnboardingRunner } from './onboardingRunner.js';
 
 export class OnboardingService {
   public static async startOnboarding(member: GuildMember): Promise<void> {
     const flow = welcomeRepository.getOnboardingFlow(member.guild.id);
     if (!flow.enabled || flow.steps.length === 0) return;
 
+    // Présente réellement le parcours au membre (message privé, sinon salon d'onboarding).
+    let via: 'dm' | 'channel' | 'none' = 'none';
+    try {
+      via = await OnboardingRunner.start(member, flow);
+    } catch (err) {
+      logger.error(`[Onboarding] Envoi du parcours impossible pour ${member.user.tag} :`, err);
+    }
+
     welcomeRepository.recordEvent({
       type: 'ONBOARDING_START',
       userId: member.id,
       userTag: member.user.tag,
-      detail: 'Démarrage du parcours d’onboarding.',
+      detail:
+        via === 'dm'
+          ? 'Parcours d’onboarding envoyé en message privé.'
+          : via === 'channel'
+            ? 'Parcours d’onboarding envoyé dans le salon (messages privés fermés).'
+            : 'Parcours d’onboarding non envoyé (messages privés fermés et aucun salon configuré).',
     });
 
     logService.emit({
@@ -30,7 +44,10 @@ export class OnboardingService {
       type: 'ONBOARDING_START',
       actor: { id: member.id, tag: member.user.tag },
       target: { id: member.id, type: 'USER', name: member.user.tag },
-      reason: 'Lancement de l’onboarding de bienvenue',
+      reason:
+        via === 'none'
+          ? 'Onboarding non envoyé : messages privés fermés et aucun salon d’onboarding configuré'
+          : `Lancement de l’onboarding de bienvenue (${via === 'dm' ? 'message privé' : 'salon'})`,
     });
   }
 

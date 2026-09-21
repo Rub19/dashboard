@@ -28,6 +28,7 @@ import { CommandContext } from '../types/command.js';
 import { handlePlaylistBrowser } from '../commands/music/playlistBrowser.js';
 import { DiscordMusicPanel } from '../modules/music/ui/discordMusicPanel.js';
 import { WelcomeInteractionHandler } from '../modules/welcome/interactions/welcomeInteractionHandler.js';
+import { OnboardingRunner } from '../modules/welcome/services/onboardingRunner.js';
 import { DiscordVoicePanel } from '../modules/voice/ui/discordVoicePanel.js';
 import { DiscordAiPanel } from '../modules/ai/ui/discordAiPanel.js';
 import { discordFormPanel } from '../modules/forms/ui/discordFormPanel.js';
@@ -100,6 +101,10 @@ export async function onInteractionCreate(interaction: Interaction) {
       await safeHandleComponent(interaction, 'playlist_browser', () => handlePlaylistBrowser(interaction));
       return;
     }
+    if (interaction.customId.startsWith('onb:') && interaction.isStringSelectMenu()) {
+      await safeHandleComponent(interaction, 'onboarding_select', () => OnboardingRunner.handleSelect(interaction));
+      return;
+    }
     if (interaction.customId === 'settings_select_category' && interaction.isStringSelectMenu()) {
       await safeHandleComponent(interaction, 'settings_select_category', () => handleSettingsSelectMenu(interaction));
     } else if (interaction.customId === 'help_select_category' && interaction.isStringSelectMenu()) {
@@ -117,6 +122,10 @@ export async function onInteractionCreate(interaction: Interaction) {
   if (interaction.isButton()) {
     if (interaction.customId.startsWith('plbrowse:')) {
       await safeHandleComponent(interaction, 'playlist_browser', () => handlePlaylistBrowser(interaction));
+      return;
+    }
+    if (interaction.customId.startsWith('onb:')) {
+      await safeHandleComponent(interaction, 'onboarding_button', () => OnboardingRunner.handleButton(interaction));
       return;
     }
     if (interaction.customId === 'ping_retest') {
@@ -170,7 +179,9 @@ export async function onInteractionCreate(interaction: Interaction) {
   }
 
   if (interaction.isModalSubmit()) {
-    if (interaction.customId.startsWith('modal_settings_')) {
+    if (interaction.customId.startsWith('onb_modal:')) {
+      await safeHandleComponent(interaction, 'onboarding_modal', () => OnboardingRunner.handleModal(interaction));
+    } else if (interaction.customId.startsWith('modal_settings_')) {
       await safeHandleComponent(interaction, 'modal_settings', () => handleSettingsModal(interaction));
     } else if (interaction.customId.startsWith('modal_ticket_')) {
       await safeHandleComponent(interaction, 'modal_ticket', () => handleTicketModal(interaction));

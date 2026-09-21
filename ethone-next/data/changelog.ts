@@ -29654,4 +29654,57 @@ CHANGELOG_BY_LANG.en.unshift(v1270_en);
 CHANGELOG_BY_LANG.es.unshift(v1270_es);
 CHANGELOG_BY_LANG.de.unshift(v1270_de);
 
+const v1271_fr: ChangelogEntry = {
+  version: "v1.27.1",
+  date: "2026-09-21",
+  title: "Onboarding qui fonctionne vraiment, et le bot revient tout seul dans son salon vocal",
+  items: [
+    "Onboarding : le parcours configuré n'était jamais présenté aux nouveaux membres — le bot se contentait d'enregistrer un événement et d'écrire un log. Il envoie maintenant chaque étape en message privé (ou dans le salon de secours si les messages privés sont fermés), avec des boutons : bienvenue (avec la carte « BIENVENUE » du serveur), règlement à accepter, choix de rôles dans un menu (avec limite et rôles déjà possédés pré-cochés), question avec réponse enregistrée dans les logs, vérification, salons, puis fin (rôle de fin et message privé de félicitations). Seul le membre concerné peut utiliser ses boutons, et ils survivent à un redémarrage du bot.",
+    "L'éditeur du parcours sur le site est reconstruit : il ne permettait de modifier que le titre et la description de chaque étape. On peut maintenant choisir le type de chaque étape, la rendre obligatoire, saisir les règles, proposer des rôles (rôle, libellé, émoji, description, maximum), poser une question, régler le salon de secours, le rôle de fin et le message privé de fin, et recevoir un aperçu en message privé avec « M'envoyer un aperçu ».",
+    "Correctifs : monter ou descendre une étape ne changeait pas son ordre réel côté bot (le champ d'ordre n'était pas mis à jour) ; et le bot enregistrait le parcours sans aucune validation, il refuse désormais les données invalides avec un message précis et numérote les étapes selon leur position.",
+    "Vocal : le bot mémorise le salon où il arrive (par `/join`, `/play` ou le dashboard) et y revient en moins de 2 secondes s'il est exclu ou déplacé (par un modérateur, ou par Discord vers le salon AFK) ; il ne quitte le vocal que sur `/disconnect`. L'option `permanent` de `/join` est supprimée, devenue inutile.",
+  ],
+};
+
+const v1271_en: ChangelogEntry = {
+  version: "v1.27.1",
+  date: "2026-09-21",
+  title: "Onboarding that really works, and the bot returns to its voice channel by itself",
+  items: [
+    "Onboarding: the configured flow was never shown to new members — the bot only recorded an event and wrote a log. It now sends each step by direct message (or in the fallback channel if DMs are closed), with buttons: welcome (with the server's \"WELCOME\" card), rules to accept, role choice in a menu (with a limit and already-held roles pre-checked), a question whose answer is recorded in the logs, verification, channels, then the end (final role and congratulation DM). Only the member concerned can use their buttons, and they survive a bot restart.",
+    "The flow editor on the site is rebuilt: it only allowed editing each step's title and description. You can now pick each step's type, make it mandatory, enter the rules, offer roles (role, label, emoji, description, maximum), ask a question, set the fallback channel, the final role and the final DM, and receive a preview by DM with \"Send me a preview\".",
+    "Fixes: moving a step up or down did not change its real order on the bot (the order field was not updated); and the bot saved the flow with no validation — it now refuses invalid data with a precise message and numbers steps by their position.",
+    "Voice: the bot remembers the channel it arrives in (via `/join`, `/play` or the dashboard) and comes back within 2 seconds if it is kicked or moved (by a moderator, or by Discord to the AFK channel); it only leaves voice on `/disconnect`. The `permanent` option of `/join` is removed as it is no longer needed.",
+  ],
+};
+
+const v1271_es: ChangelogEntry = {
+  version: "v1.27.1",
+  date: "2026-09-21",
+  title: "Onboarding que funciona de verdad, y el bot vuelve solo a su canal de voz",
+  items: [
+    "Onboarding: el recorrido configurado nunca se mostraba a los nuevos miembros: el bot solo registraba un evento y escribía un log. Ahora envía cada paso por mensaje privado (o en el canal de respaldo si los mensajes privados están cerrados), con botones: bienvenida (con la tarjeta « BIENVENIDA » del servidor), reglas que aceptar, elección de roles en un menú (con límite y roles ya poseídos marcados), una pregunta cuya respuesta se guarda en los logs, verificación, canales y, al final, rol final y mensaje privado de felicitación. Solo el miembro afectado puede usar sus botones, y sobreviven a un reinicio del bot.",
+    "El editor del recorrido en el sitio se reconstruye: solo permitía editar el título y la descripción de cada paso. Ahora se puede elegir el tipo de cada paso, hacerlo obligatorio, escribir las reglas, ofrecer roles (rol, etiqueta, emoji, descripción, máximo), hacer una pregunta, ajustar el canal de respaldo, el rol final y el mensaje privado final, y recibir una vista previa por mensaje privado con « Enviarme una vista previa ».",
+    "Correcciones: subir o bajar un paso no cambiaba su orden real en el bot (el campo de orden no se actualizaba); y el bot guardaba el recorrido sin ninguna validación: ahora rechaza los datos no válidos con un mensaje preciso y numera los pasos según su posición.",
+    "Voz: el bot recuerda el canal al que llega (con `/join`, `/play` o el panel) y vuelve en menos de 2 segundos si lo expulsan o lo mueven (un moderador, o Discord hacia el canal AFK); solo sale de la voz con `/disconnect`. La opción `permanent` de `/join` se elimina por innecesaria.",
+  ],
+};
+
+const v1271_de: ChangelogEntry = {
+  version: "v1.27.1",
+  date: "2026-09-21",
+  title: "Onboarding, das wirklich funktioniert, und der Bot kehrt von selbst in seinen Sprachkanal zurück",
+  items: [
+    "Onboarding: Der konfigurierte Ablauf wurde neuen Mitgliedern nie gezeigt — der Bot speicherte nur ein Ereignis und schrieb ein Log. Er sendet jetzt jeden Schritt per Direktnachricht (oder im Ausweichkanal, wenn DMs geschlossen sind), mit Schaltflächen: Willkommen (mit der „WILLKOMMEN“-Karte des Servers), zu akzeptierende Regeln, Rollenauswahl in einem Menü (mit Limit und bereits vorhandenen, vorausgewählten Rollen), eine Frage, deren Antwort in den Logs gespeichert wird, Verifizierung, Kanäle und schließlich Abschlussrolle und Glückwunsch-DM. Nur das betroffene Mitglied kann seine Schaltflächen nutzen, und sie überstehen einen Neustart des Bots.",
+    "Der Ablauf-Editor auf der Seite wurde neu gebaut: Er erlaubte nur, Titel und Beschreibung jedes Schritts zu ändern. Jetzt kannst du den Typ jedes Schritts wählen, ihn verpflichtend machen, die Regeln eingeben, Rollen anbieten (Rolle, Bezeichnung, Emoji, Beschreibung, Maximum), eine Frage stellen, den Ausweichkanal, die Abschlussrolle und die Abschluss-DM festlegen und mit „Vorschau senden“ eine Vorschau per DM erhalten.",
+    "Korrekturen: Einen Schritt nach oben oder unten zu verschieben änderte die echte Reihenfolge im Bot nicht (das Reihenfolgefeld wurde nicht aktualisiert); und der Bot speicherte den Ablauf ohne jede Validierung — er lehnt jetzt ungültige Daten mit präziser Meldung ab und nummeriert Schritte nach ihrer Position.",
+    "Sprache: Der Bot merkt sich den Kanal, in den er kommt (per `/join`, `/play` oder Dashboard), und kehrt innerhalb von 2 Sekunden zurück, wenn er rausgeworfen oder verschoben wird (durch einen Moderator oder von Discord in den AFK-Kanal); er verlässt den Sprachkanal nur mit `/disconnect`. Die Option `permanent` von `/join` entfällt, da unnötig.",
+  ],
+};
+
+CHANGELOG_BY_LANG.fr.unshift(v1271_fr);
+CHANGELOG_BY_LANG.en.unshift(v1271_en);
+CHANGELOG_BY_LANG.es.unshift(v1271_es);
+CHANGELOG_BY_LANG.de.unshift(v1271_de);
+
 export const CHANGELOG = CHANGELOG_BY_LANG.fr;

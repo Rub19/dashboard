@@ -127,6 +127,59 @@ async function runTests() {
   voiceStayService.markLeft('g-out');
   assert(voiceStayService.getJoinedAt('g-out') === null, 'markLeft efface l\'heure d\'arrivée');
 
+  console.log('\n⚡ 4. Retour automatique (exclusion / déplacement):');
+  const wait = (ms: number) => new Promise((r) => setTimeout(r, ms));
+  (voiceStayService as unknown as { client: unknown }).client = { user: { id: 'bot-1' }, isReady: () => true, guilds: { cache: new Map() } };
+  const stateFor = (guild: unknown, channelId: string | null) => ({ id: 'bot-1', guild, channelId }) as never;
+
+  // mémorisation automatique du salon quand le bot arrive quelque part
+  const gAuto = 'guild-auto-stay-0001';
+  assert(voiceStayService.getStayChannelId(gAuto) === null, 'aucun salon mémorisé au départ');
+  voiceStayService.remember(gAuto, 'c-first');
+  assert(voiceStayService.getStayChannelId(gAuto) === 'c-first', 'le salon où le bot arrive est mémorisé automatiquement');
+  voiceStayService.remember(gAuto, 'c-other');
+  assert(voiceStayService.getStayChannelId(gAuto) === 'c-first', 'un salon déjà mémorisé n\'est pas écrasé (déplacement = /join)');
+
+  // exclu du vocal → il revient
+  connectCalls = 0;
+  connectResult = true;
+  const kicked = fakeGuild({ id: 'g-kick', botChannelId: null, channelId: 'c-kick' });
+  musicPersistence.updateSettings('g-kick', { stayChannelId: 'c-kick' });
+  voiceStayService.onVoiceStateUpdate(stateFor(kicked.guild, 'c-kick'), stateFor(kicked.guild, null));
+  assert(connectCalls === 0, 'pas de reconnexion instantanée (petit délai anti-rebond)');
+  await wait(1900);
+  assert(connectCalls === 1, 'exclu du vocal → le bot revient en moins de 2 secondes');
+
+  // déplacé (par un modérateur ou vers le salon AFK) → il revient dans son salon
+  connectCalls = 0;
+  const moved = fakeGuild({ id: 'g-move', botChannelId: 'c-afk', channelId: 'c-home' });
+  musicPersistence.updateSettings('g-move', { stayChannelId: 'c-home' });
+  voiceStayService.onVoiceStateUpdate(stateFor(moved.guild, 'c-home'), stateFor(moved.guild, 'c-afk'));
+  await wait(1900);
+  assert(connectCalls === 1, 'déplacé ailleurs → le bot retourne dans son salon');
+
+  // arrivée normale dans son salon : rien à faire
+  connectCalls = 0;
+  const same = fakeGuild({ id: 'g-same', botChannelId: 'c-same', channelId: 'c-same' });
+  musicPersistence.updateSettings('g-same', { stayChannelId: 'c-same' });
+  voiceStayService.onVoiceStateUpdate(stateFor(same.guild, null), stateFor(same.guild, 'c-same'));
+  await wait(1900);
+  assert(connectCalls === 0, 'le bot est dans son salon → aucune reconnexion');
+
+  // /disconnect : plus de salon mémorisé → il ne revient pas
+  connectCalls = 0;
+  const left = fakeGuild({ id: 'g-left', botChannelId: null, channelId: 'c-left' });
+  musicPersistence.updateSettings('g-left', { stayChannelId: null });
+  voiceStayService.onVoiceStateUpdate(stateFor(left.guild, 'c-left'), stateFor(left.guild, null));
+  await wait(1900);
+  assert(connectCalls === 0, 'après /disconnect (salon retiré) → le bot ne revient pas');
+
+  // un événement concernant un autre membre est ignoré
+  connectCalls = 0;
+  voiceStayService.onVoiceStateUpdate(stateFor(kicked.guild, 'c-kick'), { id: 'someone-else', guild: kicked.guild, channelId: null } as never);
+  await wait(1900);
+  assert(connectCalls === 0, 'le départ d\'un autre membre ne déclenche rien');
+
   console.log('\n==================================================');
   console.log(`✅ Passed: ${passed}  ❌ Failed: ${failed}`);
   console.log('==================================================');

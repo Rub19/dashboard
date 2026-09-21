@@ -2,6 +2,15 @@
 
 Toutes les modifications notables de ce projet seront documentées dans ce fichier.
 
+## v1.27.1 — 2026-09-21
+
+**Onboarding qui fonctionne vraiment, et le bot revient tout seul dans son salon vocal**
+
+- Onboarding : le parcours configuré n'était jamais présenté aux nouveaux membres — le bot se contentait d'enregistrer un événement et d'écrire un log. Il envoie maintenant chaque étape en message privé (ou dans le salon de secours si les messages privés sont fermés), avec des boutons : bienvenue (avec la carte « BIENVENUE » du serveur), règlement à accepter, choix de rôles dans un menu (avec limite et rôles déjà possédés pré-cochés), question avec réponse enregistrée dans les logs, vérification, salons, puis fin (rôle de fin et message privé de félicitations). Seul le membre concerné peut utiliser ses boutons, et ils survivent à un redémarrage du bot.
+- L'éditeur du parcours sur le site est reconstruit : il ne permettait de modifier que le titre et la description de chaque étape. On peut maintenant choisir le type de chaque étape, la rendre obligatoire, saisir les règles, proposer des rôles (rôle, libellé, émoji, description, maximum), poser une question, régler le salon de secours, le rôle de fin et le message privé de fin, et recevoir un aperçu en message privé avec « M'envoyer un aperçu ».
+- Correctifs : monter ou descendre une étape ne changeait pas son ordre réel côté bot (le champ d'ordre n'était pas mis à jour) ; et le bot enregistrait le parcours sans aucune validation, il refuse désormais les données invalides avec un message précis et numérote les étapes selon leur position.
+- Vocal : le bot mémorise le salon où il arrive (par `/join`, `/play` ou le dashboard) et y revient en moins de 2 secondes s'il est exclu ou déplacé (par un modérateur, ou par Discord vers le salon AFK) ; il ne quitte le vocal que sur `/disconnect`. L'option `permanent` de `/join` est supprimée, devenue inutile.
+
 ## v1.27.0 — 2026-09-21
 
 **Logs : un webhook nommé par catégorie (« vocals », « mod »…), un salon par catégorie, avec bouton de test**

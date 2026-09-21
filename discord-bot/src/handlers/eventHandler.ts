@@ -26,6 +26,7 @@ import {
   handleChannelUpdate,
 } from '../modules/logs/events/channelLogs.js';
 import { handleVoiceStateUpdate } from '../modules/logs/events/voiceLogs.js';
+import { voiceStayService } from '../modules/music/services/voiceStayService.js';
 import { handleGuildUpdate } from '../modules/logs/events/serverLogs.js';
 import { antiNukeService } from '../modules/security/services/antiNukeService.js';
 import { raidDetectionService } from '../modules/antiRaid/services/raidDetectionService.js';
@@ -221,6 +222,7 @@ export function registerEvents(client: Client): void {
   client.on(Events.VoiceStateUpdate, (oldState, newState) => {
     handleVoiceStateUpdate(oldState, newState);
     voiceService.handleVoiceStateUpdate(oldState, newState);
+    voiceStayService.onVoiceStateUpdate(oldState, newState);
   });
 
   // Logs : Serveur

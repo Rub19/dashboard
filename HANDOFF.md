@@ -1,4 +1,4 @@
-# ETHONE — passation à une autre IA (état au 2026-09-21, version 1.27.5)
+# ETHONE — passation à une autre IA (état au 2026-09-21, version 1.27.6)
 
 ## Prompt à coller à la prochaine IA
 
@@ -23,10 +23,18 @@
 - Centre de contrôle du bot sans fausses stats : diagnostics réels, intégrations sondées, registre de tâches (`BotJobSchedulerService.track`, 14 minuteries branchées), incidents alimentés par `logger.error`, télémétrie sans valeurs par défaut.
 - Chronométrage par étape des lancements de musique (logs `[Lavalink] Recherche Spotify…` et `[Lavalink] Préparation…`).
 
+## Vérifié en direct (Chrome, site déployé + bot redéployé, 2026-09-21)
+- Sélecteur de serveur : le choix change bien malgré `?guildId=` dans l'adresse.
+- API du bot en ligne : `/api/bot/integrations` (Discord, Lavalink, yt-dlp : sains), `/jobs` (14 tâches réelles), `/errors` (vide = aucune erreur depuis le démarrage), `/telemetry`, `/security` (score 95, intent Présences non demandé), `/performance` : données cohérentes.
+- Accueil de « Rub19's server » : 0 / « — » partout (réel). Les barres de l'entonnoir étaient forcées à 5 % minimum : corrigé en 1.27.6.
+- Trouvé puis corrigé en 1.27.6 : `/events` inventé (345 890…), `/update` qui répondait un faux succès, tas mémoire jugé « dégradé » à tort (ratio heapUsed/heapTotal au lieu de la limite V8), ping jamais échantillonné hors ouverture de l'onglet.
+- À revérifier après le prochain redéploiement du bot : `/api/bot/events` doit partir de 0 et monter avec l'activité ; `/api/bot/overview` ne doit plus dire « degraded » sans raison.
+
 ## Reste à faire (par priorité)
 1. **Latence au lancement d'une musique** (demande de l'utilisateur, non résolue). Après redéploiement du bot, lancer `/play` et lire `pm2 logs ethone-bot | grep Lavalink` : les lignes de chronométrage disent si le temps part dans Spotify, la recherche Lavalink ou yt-dlp (`directYoutube`, timeout 25 s). Pistes : réponse immédiate `deferReply` puis « ajouté » sans attendre le flux ; lancer la préparation du flux du titre suivant en avance ; cache/pré-résolution côté `resolver.py` (options yt-dlp `player_client`, pas de format lourd) ; exécuter la recherche `ytmsearch` et `ytsearch` en parallèle plutôt qu'en séquence ; réutiliser le résultat de la recherche Spotify pour ne pas refaire une recherche texte dans `ensureEncoded`.
 2. **Redéployer le bot** (rien de ce qui est côté bot n'agit tant que ce n'est pas fait) puis vérifier dans Chrome : sélecteur de serveur (choix qui change vraiment), page Accueil (activité du bon serveur), onglets du centre de contrôle (Diagnostics, Intégrations, Tâches, Incidents).
 3. **Côté site du centre de contrôle** (`ethone-next/app/discord/bot/BotControlClient.tsx`, ~3000 lignes) : vérifier que chaque onglet gère bien les nouvelles réponses (liste d'intégrations variable, type `lavalink`, tâches à 0 exécution, `latency` à 0 → afficher « — », `version` du bot, ligne 284 contient encore `version: "2.4.0"` en dur à supprimer). Le module « Sécurité & Audit » et « Performance » ont été corrigés côté bot mais pas revérifiés visuellement.
+3bis. **Paramètres du bot (`botConfigService.ts`, `GET/PUT /api/bot/settings`)** : valeurs par défaut en mémoire, jamais persistées ni appliquées (mode maintenance, niveau de log, rétention, limite de dépense IA, webhook d'alerte masqué en dur). Le PUT répond un succès alors que rien ne change au comportement du bot : soit persister et appliquer réellement (au moins `maintenanceMode` et `logLevel`), soit retirer l'écran. `POST /api/bot/restart` fait un `process.exit(0)` (pm2 relance) : réel.
 4. **IA (`botAiMonitorService.ts`)** : le fournisseur/modèle affichés sont des libellés fixes, le coût est une estimation (répartition 50/50 prompt/completion, tarifs supposés), `successRate` vaut 100 % sans requête, et les compteurs « 24 h » ne sont jamais remis à zéro. À rendre honnête (afficher « estimation », « — » sans requête, vraie fenêtre glissante, vrai modèle utilisé).
 5. **Boutons non testés en direct** : tous les boutons de toutes les pages n'ont pas été cliqués. Formulaires et sondages n'ont eu que le nettoyage des faux contenus. À faire : passe de tests en direct avec Chrome (serveur de test `1128633164290596884`).
 6. **Plan non exécuté** (`C:\Users\storm\.claude\plans\vivid-percolating-quasar.md`, hors dépôt) : porte de vérification anti-bot à l'arrivée (`guildMemberAdd`), module économie « Crédits ETHONE », suivi d'habitudes (Supabase), refonte du centre de contrôle en 5 groupes. À confirmer avec l'utilisateur avant d'y toucher : certains points ont pu être faits entre-temps (vérifier le code).

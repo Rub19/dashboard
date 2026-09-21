@@ -31,53 +31,8 @@ export default function InviteUserDetailClient() {
   const fetchData = async () => {
     setLoading(true);
     if (!API_BASE) {
-      setProfile({
-        rank: 1,
-        userId,
-        userTag: "Alex#0001",
-        totalInvites: 184,
-        validInvites: 162,
-        leftMembers: 14,
-        suspiciousInvites: 8,
-        retentionRate: 91,
-        rewardsEarned: 3,
-      });
-      setReferrals([
-        {
-          id: "ref_1",
-          invitedUserId: "usr_lucas",
-          invitedUserTag: "Lucas#1234",
-          inviteCode: "ethone-dev",
-          joinedAt: new Date(Date.now() - 1000 * 60 * 60 * 3).toISOString(),
-          accountAgeDays: 120,
-          status: "VALID",
-          riskScore: 5,
-          riskLevel: "Safe",
-        },
-        {
-          id: "ref_2",
-          invitedUserId: "usr_emma",
-          invitedUserTag: "Emma#5678",
-          inviteCode: "ethone-dev",
-          joinedAt: new Date(Date.now() - 1000 * 60 * 60 * 24 * 2).toISOString(),
-          accountAgeDays: 350,
-          status: "VALID",
-          riskScore: 2,
-          riskLevel: "Safe",
-        },
-        {
-          id: "ref_3",
-          invitedUserId: "usr_ghost",
-          invitedUserTag: "GhostLeaver#7777",
-          inviteCode: "ethone-dev",
-          joinedAt: new Date(Date.now() - 1000 * 60 * 60 * 24 * 5).toISOString(),
-          accountAgeDays: 45,
-          status: "LEFT",
-          riskScore: 18,
-          riskLevel: "Safe",
-        },
-      ]);
-      setLoading(false);
+      setProfile(null);
+      setReferrals([]);      setLoading(false);
       return;
     }
     try {
@@ -90,66 +45,9 @@ export default function InviteUserDetailClient() {
         throw new Error("Erreur serveur");
       }
     } catch {
-      // Fallback demo data
-      setProfile({
-        rank: 1,
-        userId,
-        userTag: "Alex#0001",
-        totalInvites: 184,
-        validInvites: 162,
-        leftMembers: 14,
-        suspiciousInvites: 8,
-        retentionRate: 91,
-        rewardsEarned: 3,
-      });
-      setReferrals([
-        {
-          id: "ref_1",
-          invitedUserId: "usr_lucas",
-          invitedUserTag: "Lucas#1234",
-          inviteCode: "ethone-dev",
-          joinedAt: new Date(Date.now() - 1000 * 60 * 60 * 3).toISOString(),
-          accountAgeDays: 120,
-          status: "VALID",
-          riskScore: 5,
-          riskLevel: "Safe",
-        },
-        {
-          id: "ref_2",
-          invitedUserId: "usr_emma",
-          invitedUserTag: "Emma#5678",
-          inviteCode: "ethone-dev",
-          joinedAt: new Date(Date.now() - 1000 * 60 * 60 * 24 * 2).toISOString(),
-          accountAgeDays: 350,
-          status: "VALID",
-          riskScore: 2,
-          riskLevel: "Safe",
-        },
-        {
-          id: "ref_3",
-          invitedUserId: "usr_ghost",
-          invitedUserTag: "GhostLeaver#7777",
-          inviteCode: "ethone-dev",
-          joinedAt: new Date(Date.now() - 1000 * 60 * 60 * 24 * 5).toISOString(),
-          accountAgeDays: 45,
-          status: "LEFT",
-          riskScore: 18,
-          riskLevel: "Safe",
-        },
-        {
-          id: "ref_4",
-          invitedUserId: "usr_bot",
-          invitedUserTag: "SpamBot#0000",
-          inviteCode: "ethone-dev",
-          joinedAt: new Date(Date.now() - 1000 * 60 * 30).toISOString(),
-          accountAgeDays: 0,
-          status: "SUSPICIOUS",
-          suspiciousReason: "Compte créé il y a moins de 2 heures",
-          riskScore: 88,
-          riskLevel: "High Risk",
-        },
-      ]);
-    } finally {
+      // Bot injoignable : aucun profil inventé.
+      setProfile(null);
+      setReferrals([]);    } finally {
       setLoading(false);
     }
   };
@@ -197,7 +95,7 @@ export default function InviteUserDetailClient() {
                 {profile?.userTag || "Utilisateur"}
               </h2>
               <span className="px-2.5 py-0.5 rounded-full bg-pink-500/20 border border-pink-500/30 text-pink-300 text-xs font-bold font-mono">
-                Rang #{profile?.rank || 1}
+                {profile?.rank ? `Rang #${profile.rank}` : "Rang —"}
               </span>
             </div>
             <p className="text-xs text-zinc-400 font-mono">ID Discord : {userId}</p>

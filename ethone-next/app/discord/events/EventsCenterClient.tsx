@@ -97,74 +97,20 @@ interface EventItem {
   };
 }
 
-const INITIAL_EVENTS: EventItem[] = [
-  {
-    id: "evt-gaming-night",
-    title: "Friday Gaming Night — Valorant & Lethal Company",
-    description: "Rejoignez la communauté ce vendredi pour 3 heures de sessions gaming intenses ! Des salons vocaux dédiés seront créés pour chaque escouade.",
-    category: "GAMING",
-    status: "SCHEDULED",
-    startDate: new Date(Date.now() + 86400000 * 2 + 3600000 * 3).toISOString(),
-    endDate: new Date(Date.now() + 86400000 * 2 + 3600000 * 6).toISOString(),
-    location: { type: "VOICE", channelName: "🎮 Vocal Gaming #1" },
-    capacity: { unlimited: false, maxParticipants: 30, waitlistEnabled: true },
-    stats: { goingCount: 22, maybeCount: 6, waitlistCount: 2, attendedCount: 0 },
-    emoji: "🎮",
-    imageUrl: "https://images.unsplash.com/photo-1542751371-adc38448a05e?w=800&auto=format&fit=crop&q=80",
-    organizer: { username: "ETHONE Staff", avatarUrl: "https://images.unsplash.com/photo-1534528741775-53994a69daeb?w=60" },
-  },
-  {
-    id: "evt-rocket-tournament",
-    title: "Tournoi Rocket League 2v2 Community Cup",
-    description: "Double élimination, cashprize de 100€ + rôles exclusifs Champion discord. Check-in obligatoire 30 minutes avant le premier match.",
-    category: "TOURNAMENT",
-    status: "SCHEDULED",
-    startDate: new Date(Date.now() + 86400000 * 5).toISOString(),
-    endDate: new Date(Date.now() + 86400000 * 5 + 3600000 * 4).toISOString(),
-    location: { type: "STAGE", channelName: "🏆 Scène Tournois" },
-    capacity: { unlimited: false, maxParticipants: 16, waitlistEnabled: true },
-    stats: { goingCount: 16, maybeCount: 4, waitlistCount: 5, attendedCount: 0 },
-    emoji: "🏆",
-    imageUrl: "https://images.unsplash.com/photo-1511512578047-dfb367046420?w=800&auto=format&fit=crop&q=80",
-    organizer: { username: "TournamentBot", avatarUrl: "https://images.unsplash.com/photo-1507003211169-0a1dd7228f2d?w=60" },
-  },
-  {
-    id: "evt-staff-sync",
-    title: "Réunion Générale Staff & Modération",
-    description: "Revue mensuelle des métriques de modération, nouvelles règles Anti-Raid et planification des prochains concours du mois.",
-    category: "STAFF",
-    status: "SCHEDULED",
-    startDate: new Date(Date.now() + 86400000 * 1).toISOString(),
-    endDate: new Date(Date.now() + 86400000 * 1 + 3600000 * 1.5).toISOString(),
-    location: { type: "VOICE", channelName: "🔒 Salon Staff Privé" },
-    capacity: { unlimited: true, maxParticipants: 0, waitlistEnabled: false },
-    stats: { goingCount: 12, maybeCount: 2, waitlistCount: 0, attendedCount: 0 },
-    emoji: "🛡️",
-    organizer: { username: "Admin_Prime", avatarUrl: "https://images.unsplash.com/photo-1535713875002-d1d0cf377fde?w=60" },
-  },
-  {
-    id: "evt-watch-party",
-    title: "Watch Party Solo Leveling Épisodes 9-10",
-    description: "Projection partagée en streaming avec salon de discussion direct et salon audio chill réservé aux spectateurs.",
-    category: "WATCH_PARTY",
-    status: "COMPLETED",
-    startDate: new Date(Date.now() - 86400000 * 1).toISOString(),
-    endDate: new Date(Date.now() - 86400000 * 1 + 3600000 * 2.5).toISOString(),
-    location: { type: "VOICE", channelName: "🍿 Cinéma Communautaire" },
-    capacity: { unlimited: true, maxParticipants: 0, waitlistEnabled: false },
-    stats: { goingCount: 42, maybeCount: 8, waitlistCount: 0, attendedCount: 38 },
-    emoji: "🍿",
-    imageUrl: "https://images.unsplash.com/photo-1574375927938-d5a98e8ffe85?w=800&auto=format&fit=crop&q=80",
-    organizer: { username: "CommunityLead", avatarUrl: "https://images.unsplash.com/photo-1494790108377-be9c29b29330?w=60" },
-  },
-];
-
 const TEMPLATES = [
   { id: "tpl-gaming", name: "Gaming Night", emoji: "🎮", category: "GAMING", desc: "Sessions jeux multijoueurs avec attribution vocale", color: "from-purple-500/20 to-indigo-500/10 border-purple-500/30" },
   { id: "tpl-tournament", name: "Tournoi Compétitif", emoji: "🏆", category: "TOURNAMENT", desc: "Tournoi avec jauge stricte et liste d'attente", color: "from-amber-500/20 to-orange-500/10 border-amber-500/30" },
   { id: "tpl-watchparty", name: "Watch Party Anime/Film", emoji: "🍿", category: "WATCH_PARTY", desc: "Projection live et synchronisation vocale", color: "from-pink-500/20 to-rose-500/10 border-pink-500/30" },
   { id: "tpl-meeting", name: "Réunion Staff / AMA", emoji: "🎙️", category: "MEETING", desc: "Scène conférence avec questions en direct", color: "from-cyan-500/20 to-blue-500/10 border-cyan-500/30" },
 ];
+
+/** Taux de présence réel : présents / inscrits sur les événements terminés ("—" sans donnée). */
+function attendanceRate(list: EventItem[]): string {
+    const done = list.filter((e) => e.status === "COMPLETED");
+    const going = done.reduce((a, e) => a + e.stats.goingCount, 0);
+    const attended = done.reduce((a, e) => a + e.stats.attendedCount, 0);
+    return going > 0 ? `${Math.min(100, Math.round((attended / going) * 100))}%` : "—";
+}
 
 export default function EventsCenterClient() {
   const searchParams = useSearchParams();
@@ -173,7 +119,7 @@ export default function EventsCenterClient() {
   const guildParam =
     useResolvedGuildId(searchParams.get("guildId"), profile?.guilds);
 
-  const [events, setEvents] = useState<EventItem[]>(INITIAL_EVENTS);
+  const [events, setEvents] = useState<EventItem[]>([]);
   const [isDemo, setIsDemo] = useState(true);
   const [loading, setLoading] = useState(false);
   const [selectedFilter, setSelectedFilter] = useState<string>("ALL");
@@ -249,7 +195,7 @@ export default function EventsCenterClient() {
       upcoming,
       active,
       totalRegistrations,
-      avgAttendance: "92%",
+      avgAttendance: attendanceRate(events),
     };
   }, [events]);
 
@@ -323,7 +269,7 @@ export default function EventsCenterClient() {
               </span>
               {isDemo ? (
                 <span className="inline-flex items-center gap-1.5 px-2.5 py-0.5 rounded-full text-xs font-medium bg-amber-500/10 text-amber-300 border border-amber-500/30">
-                  Données de démonstration
+                  Bot injoignable
                 </span>
               ) : (
                 <span className="inline-flex items-center gap-1.5 px-2.5 py-0.5 rounded-full text-xs font-medium bg-emerald-500/10 text-emerald-400 border border-emerald-500/20">

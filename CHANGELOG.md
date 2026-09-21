@@ -2,6 +2,15 @@
 
 Toutes les modifications notables de ce projet seront documentées dans ce fichier.
 
+## v1.27.8 — 2026-09-21
+
+**Fin des données inventées sur Événements, Gestion du serveur et profils**
+
+- Événements : la page affichait quatre événements inventés (Friday Gaming Night, tournoi…) au chargement et quand le bot était injoignable, et « 92 % de présence » codé en dur. Elle part maintenant de zéro : événements réels seulement, taux de présence calculé sur les événements terminés (« — » sans donnée). Même nettoyage pour la liste des participants (neuf inscrits inventés).
+- Gestion du serveur : quand le bot ne répondait pas, la page fabriquait un serveur « ETHONE Prime Community », des membres (alexandre_owner…), salons, rôles, permissions, émojis et stickers d'exemple, et un résultat de test de permission simulé. Elle affiche maintenant du vide (ou une erreur claire), jamais de données inventées.
+- Profils : le détail d'invitation d'un membre affichait « Alex#0001, 184 invitations » et le profil de modération « Utilisateur#0000, 2 avertissements » quand le bot était injoignable ; ils sont supprimés. « Rang #1 » par défaut remplacé par « Rang — ».
+- Centre de contrôle : les valeurs affichées avant la réponse du bot (score de sécurité 100, intents actifs, 3 sources RAG, version 2.4.0…) sont remplacées par des valeurs neutres.
+
 ## v1.27.7 — 2026-09-21
 
 **Fin des données de démonstration injectées par le bot (vocal, événements, invitations)**

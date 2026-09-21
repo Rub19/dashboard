@@ -281,7 +281,7 @@ export default function BotControlClient({ initialTab = "overview" }: BotControl
     name: "Ethone Bot",
     discriminator: "9861",
     avatarUrl: "https://cdn.discordapp.com/embed/avatars/0.png",
-    version: "2.4.0",
+    version: "—",
     gatewayConnected: true,
     status: "online",
     activity: { type: "Playing", name: "Valorant" },
@@ -558,24 +558,24 @@ export default function BotControlClient({ initialTab = "overview" }: BotControl
   };
 
   // AI Assistant Telemetry State
-  // Seeded with plausible placeholders until fetchData's GET /api/bot/ai
+  // Neutral values (no invented numbers) until fetchData's GET /api/bot/ai
   // response lands — that response is the real, live-tracked source now
   // (see discord-bot's botAiMonitorService.ts), not a static mock.
   const [aiTelemetry, setAiTelemetry] = useState({
     dailyRequests: 0,
     dailyTokens: 0,
     maxTokens: 100000,
-    activeModel: "OpenRouter (Claude 3.5 Haiku)",
+    activeModel: "—",
     avgLatencyMs: 0,
-    successRate: 100,
-    safetyShield: true,
-    ragSources: 3,
+    successRate: 0,
+    safetyShield: false,
+    ragSources: 0,
   });
 
   // Seeded empty until fetchData's GET /api/bot/security response lands.
   const [securityAudit, setSecurityAudit] = useState({
-    score: 100,
-    intents: { guildMembers: true, messageContent: true, guildPresences: true },
+    score: 0,
+    intents: { guildMembers: false, messageContent: false, guildPresences: false },
     adminGuildsCount: 0,
     suspiciousRoleCreations24h: 0,
     unauthorizedAttempts24h: 0,

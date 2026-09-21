@@ -49,75 +49,14 @@ interface Participant {
   waitlistPosition?: number;
 }
 
-const INITIAL_PARTICIPANTS: Participant[] = [
-  {
-    id: "p1",
-    userId: "usr-1",
-    username: "Nocturne#4412",
-    displayName: "Nocturne",
-    avatarUrl: "https://images.unsplash.com/photo-1534528741775-53994a69daeb?w=60",
-    rsvp: "GOING",
-    attendance: "ATTENDED",
-    ticketNumber: "#EVT-1001",
-    joinedAt: new Date(Date.now() - 86400000 * 2).toISOString(),
-    checkedInAt: new Date().toISOString(),
-  },
-  {
-    id: "p2",
-    userId: "usr-2",
-    username: "AlexDev#0001",
-    displayName: "AlexDev",
-    avatarUrl: "https://images.unsplash.com/photo-1507003211169-0a1dd7228f2d?w=60",
-    rsvp: "GOING",
-    attendance: "ATTENDED",
-    ticketNumber: "#EVT-1002",
-    joinedAt: new Date(Date.now() - 86400000 * 1.5).toISOString(),
-    checkedInAt: new Date().toISOString(),
-  },
-  {
-    id: "p3",
-    userId: "usr-3",
-    username: "ShadowGamer#1337",
-    displayName: "Shadow",
-    avatarUrl: "https://images.unsplash.com/photo-1535713875002-d1d0cf377fde?w=60",
-    rsvp: "GOING",
-    attendance: "REGISTERED",
-    ticketNumber: "#EVT-1003",
-    joinedAt: new Date(Date.now() - 86400000).toISOString(),
-  },
-  {
-    id: "p4",
-    userId: "usr-4",
-    username: "Sarah_T#2048",
-    displayName: "Sarah",
-    avatarUrl: "https://images.unsplash.com/photo-1494790108377-be9c29b29330?w=60",
-    rsvp: "MAYBE",
-    attendance: "REGISTERED",
-    ticketNumber: "#EVT-1004",
-    joinedAt: new Date(Date.now() - 43200000).toISOString(),
-  },
-  {
-    id: "p5",
-    userId: "usr-5",
-    username: "Zephyr#0042",
-    displayName: "Zephyr",
-    avatarUrl: "https://images.unsplash.com/photo-1570295999919-56ceb5ecca61?w=60",
-    rsvp: "WAITLIST",
-    attendance: "REGISTERED",
-    ticketNumber: "#EVT-1005",
-    joinedAt: new Date(Date.now() - 21600000).toISOString(),
-    waitlistPosition: 1,
-  },
-];
-
 export default function EventParticipantsClient() {
   const params = useParams();
   const searchParams = useSearchParams();
   const { profile } = useDiscordOAuth();
-  const eventId = (params?.eventId as string) || "evt-gaming-night";
+  const eventId = (params?.eventId as string) || "";
   const guildParam = useResolvedGuildId(searchParams.get("guildId"), profile?.guilds);
 
-  const [participants, setParticipants] = useState<Participant[]>(INITIAL_PARTICIPANTS);
+  const [participants, setParticipants] = useState<Participant[]>([]);
   const [isDemo, setIsDemo] = useState(true);
   const [loading, setLoading] = useState(false);
   const [filterRsvp, setFilterRsvp] = useState<string>("ALL");
@@ -268,7 +207,7 @@ export default function EventParticipantsClient() {
               Participants
               {isDemo && (
                 <span className="rounded-full border border-amber-500/30 bg-amber-500/10 px-2 py-0.5 text-[11px] font-semibold text-amber-300">
-                  Démo
+                  Bot injoignable
                 </span>
               )}
             </h1>

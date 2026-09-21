@@ -393,106 +393,8 @@ export default function ServerManagementClient({
       }
     }
 
-    // High fidelity seed fallback
-    setOverview({
-      guild: {
-        id: guildId,
-        name: "ETHONE Prime Community",
-        icon: null,
-        banner: null,
-        description: "Serveur officiel de la communauté ETHONE — Gaming, Web3 et Développement.",
-        ownerId: "1234567890",
-        ownerTag: "Alexandre#0001",
-        createdAt: "2024-01-15T12:00:00.000Z",
-        preferredLocale: "fr",
-        verificationLevel: 2,
-      },
-      kpis: {
-        totalMembers: 1420,
-        humans: 1385,
-        bots: 35,
-        onlineMembers: 480,
-        channelsCount: 42,
-        categoriesCount: 6,
-        textChannelsCount: 28,
-        voiceChannelsCount: 14,
-        rolesCount: 24,
-        activeVoiceUsers: 18,
-        activeInvitesCount: 8,
-        serverBoostLevel: 2,
-        boostCount: 9,
-        emojisCount: 46,
-        stickersCount: 12,
-        activeModerationCases: 3,
-        securityScore: 88,
-        healthScore: 96,
-      },
-      security: {
-        score: 88,
-        status: "EXCELLENT",
-        factors: [
-          {
-            title: "Système Anti-Raid actif",
-            impact: 15,
-            positive: true,
-            description: "Protection contre les raids, mass joins et attaques automatisées activée.",
-          },
-          {
-            title: "AutoMod actif",
-            impact: 15,
-            positive: true,
-            description: "Filtre automatique de liens malveillants, spam et insultes activé.",
-          },
-          {
-            title: "Niveau de vérification : Moyen",
-            impact: 5,
-            positive: true,
-            description: "Exige un compte Discord enregistré depuis plus de 5 minutes.",
-          },
-          {
-            title: "Filtre de contenu explicite Discord actif",
-            impact: 10,
-            positive: true,
-            description: "Analyse automatique des images pour tout le monde.",
-          },
-        ],
-      },
-      health: {
-        score: 96,
-        status: "HEALTHY",
-        components: {
-          discordGateway: { status: "HEALTHY", pingMs: 38 },
-          database: { status: "HEALTHY", latencyMs: 2 },
-          realtime: { status: "HEALTHY", connected: true },
-          eventBus: { status: "HEALTHY", queueLength: 0 },
-          scheduler: { status: "HEALTHY", activeJobs: 5 },
-          memory: { status: "HEALTHY", heapUsedMb: 142, heapTotalMb: 310 },
-        },
-      },
-      recentActivity: [
-        {
-          id: "act-1",
-          timestamp: new Date(Date.now() - 5 * 60000).toISOString(),
-          type: "MEMBER_JOIN",
-          actor: { id: "u-1", tag: "Kylian#4412" },
-          details: "A rejoint le serveur via l'invitation discord.gg/ethone",
-        },
-        {
-          id: "act-2",
-          timestamp: new Date(Date.now() - 25 * 60000).toISOString(),
-          type: "ROLE_UPDATE",
-          actor: { id: "u-2", tag: "Staff_Sophie#1002" },
-          details: "Attribution du rôle VIP à Marc_Dev",
-        },
-        {
-          id: "act-3",
-          timestamp: new Date(Date.now() - 55 * 60000).toISOString(),
-          type: "AUTOMOD_ALERT",
-          actor: { id: "u-3", tag: "ETHONE Guard" },
-          details: "Suppression de lien d'invitation externe dans #général",
-        },
-      ],
-    });
+    // Bot injoignable : pas de vue d'ensemble inventée.
+    setOverview(null);
   }, [guildId]);
 
   const fetchMembers = useCallback(async () => {
@@ -509,61 +411,7 @@ export default function ServerManagementClient({
       } catch {}
     }
 
-    // Seed members
-    setMembers([
-      {
-        id: "1234567890",
-        username: "alexandre_owner",
-        displayName: "Alexandre | Fondateur",
-        avatar: "https://images.unsplash.com/photo-1534528741775-53994a69daeb?w=100&auto=format&fit=crop&q=80",
-        bot: false,
-        joinedAt: "2024-01-15T12:00:00.000Z",
-        roles: [{ id: "r-admin", name: "Administrateur", color: "#EF4444", position: 20 }],
-        isOwner: true,
-        isAdmin: true,
-        isTimedOut: false,
-        riskScore: 0,
-      },
-      {
-        id: "2345678901",
-        username: "sophie_lead",
-        displayName: "Sophie [Mod Lead]",
-        avatar: "https://images.unsplash.com/photo-1494790108377-be9c29b29330?w=100&auto=format&fit=crop&q=80",
-        bot: false,
-        joinedAt: "2024-02-10T14:30:00.000Z",
-        roles: [{ id: "r-mod", name: "Modérateur", color: "#10B981", position: 15 }],
-        isOwner: false,
-        isAdmin: false,
-        isTimedOut: false,
-        riskScore: 5,
-      },
-      {
-        id: "3456789012",
-        username: "ethone_bot",
-        displayName: "ETHONE Bot",
-        avatar: "https://images.unsplash.com/photo-1618005182384-a83a8bd57fbe?w=100&auto=format&fit=crop&q=80",
-        bot: true,
-        joinedAt: "2024-01-15T12:05:00.000Z",
-        roles: [{ id: "r-bot", name: "Bot Officiel", color: "#5865F2", position: 18 }],
-        isOwner: false,
-        isAdmin: true,
-        isTimedOut: false,
-        riskScore: 0,
-      },
-      {
-        id: "4567890123",
-        username: "fresh_user_99",
-        displayName: "NouveauMembre99",
-        avatar: "",
-        bot: false,
-        joinedAt: new Date(Date.now() - 3600000).toISOString(),
-        roles: [],
-        isOwner: false,
-        isAdmin: false,
-        isTimedOut: false,
-        riskScore: 75,
-      },
-    ]);
+    setMembers([]);
   }, [guildId, memberFilter, memberSearch]);
 
   const fetchMemberProfile = useCallback(async (userId: string) => {
@@ -580,52 +428,7 @@ export default function ServerManagementClient({
       } catch {}
     }
 
-    // Seed profile fallback
-    const base = members.find((m) => m.id === userId);
-    setSelectedMember({
-      id: userId,
-      username: base?.username || "utilisateur_demo",
-      displayName: base?.displayName || "Utilisateur Démo",
-      avatar: base?.avatar || "",
-      bot: base?.bot || false,
-      joinedAt: base?.joinedAt || new Date().toISOString(),
-      createdAt: "2023-08-20T08:00:00.000Z",
-      roles: base?.roles || [{ id: "r-member", name: "Membre", color: "#9CA3AF", position: 1 }],
-      permissions: ["ViewChannel", "SendMessages", "Connect", "Speak"],
-      isOwner: base?.isOwner || false,
-      isAdmin: base?.isAdmin || false,
-      isTimedOut: base?.isTimedOut || false,
-      riskScore: base?.riskScore || 10,
-      timedOutUntil: null,
-      voice: {
-        channelId: "vc-1",
-        channelName: "Général Vocal",
-        muted: false,
-        deafened: false,
-        streaming: false,
-      },
-      moderationHistory: {
-        warningsCount: 1,
-        timeoutsCount: 0,
-        kicksCount: 0,
-        bansCount: 0,
-        recentCases: [
-          {
-            id: "CASE-104",
-            type: "WARN",
-            reason: "Spam d'emojis dans #général",
-            moderatorTag: "Sophie [Mod Lead]",
-            createdAt: new Date(Date.now() - 86400000).toISOString(),
-          },
-        ],
-      },
-      security: {
-        accountAgeDays: 520,
-        serverStayDays: 140,
-        riskScore: base?.riskScore || 10,
-        flags: base?.riskScore && base.riskScore > 50 ? ["Compte récent créé il y a moins de 7 jours", "Pas d'avatar personnalisé"] : [],
-      },
-    });
+    setSelectedMember(null);
     setLoadingMemberProfile(false);
   }, [guildId, members]);
 
@@ -641,44 +444,7 @@ export default function ServerManagementClient({
       } catch {}
     }
 
-    // Seed channels
-    setChannelTree({
-      categories: [
-        {
-          id: "cat-1",
-          name: "ACCUEIL & INFORMATIONS",
-          position: 0,
-          channels: [
-            { id: "c-1", name: "règlement", type: 0, typeName: "text", position: 0, topic: "Règles du serveur", nsfw: false, overwritesCount: 2 },
-            { id: "c-2", name: "annonces", type: 5, typeName: "announcement", position: 1, topic: "Annonces officielles", nsfw: false, overwritesCount: 1 },
-            { id: "c-3", name: "bienvenue", type: 0, typeName: "text", position: 2, topic: "Arrivées des nouveaux membres", nsfw: false },
-          ],
-        },
-        {
-          id: "cat-2",
-          name: "ESPACE COMMUNAUTAIRE",
-          position: 1,
-          channels: [
-            { id: "c-4", name: "général", type: 0, typeName: "text", position: 0, topic: "Discussions libres", rateLimitPerUser: 5, nsfw: false },
-            { id: "c-5", name: "médias-et-créations", type: 0, typeName: "text", position: 1, topic: "Partagez vos créations", nsfw: false },
-            { id: "c-6", name: "questions-aide", type: 15, typeName: "forum", position: 2, topic: "Forum d'entraide", nsfw: false },
-          ],
-        },
-        {
-          id: "cat-3",
-          name: "SALONS VOCAUX",
-          position: 2,
-          channels: [
-            { id: "c-7", name: "Salon Vocal 1", type: 2, typeName: "voice", position: 0, bitrate: 96000, userLimit: 10 },
-            { id: "c-8", name: "Salon Vocal 2", type: 2, typeName: "voice", position: 1, bitrate: 64000, userLimit: 5 },
-            { id: "c-9", name: "Scène Conférence", type: 13, typeName: "stage", position: 2, userLimit: 0 },
-          ],
-        },
-      ],
-      orphanChannels: [
-        { id: "c-10", name: "salon-sans-catégorie", type: 0, typeName: "text", position: 99, topic: "Divers", nsfw: false },
-      ],
-    });
+    setChannelTree({ categories: [], orphanChannels: [] });
   }, [guildId]);
 
   const fetchRoles = useCallback(async () => {
@@ -693,74 +459,7 @@ export default function ServerManagementClient({
       } catch {}
     }
 
-    // Seed roles
-    setRoles([
-      {
-        id: "r-admin",
-        name: "Administrateur",
-        color: "#EF4444",
-        position: 15,
-        hoist: true,
-        mentionable: true,
-        managed: false,
-        isBotRole: false,
-        memberCount: 2,
-        permissions: ["Administrator"],
-        isEditableByBot: false,
-      },
-      {
-        id: "r-bot",
-        name: "ETHONE Bot",
-        color: "#5865F2",
-        position: 12,
-        hoist: true,
-        mentionable: false,
-        managed: true,
-        isBotRole: true,
-        memberCount: 1,
-        permissions: ["Administrator"],
-        isEditableByBot: false,
-      },
-      {
-        id: "r-mod",
-        name: "Modérateur",
-        color: "#10B981",
-        position: 10,
-        hoist: true,
-        mentionable: true,
-        managed: false,
-        isBotRole: false,
-        memberCount: 5,
-        permissions: ["KickMembers", "BanMembers", "ManageMessages", "ModerateMembers"],
-        isEditableByBot: true,
-      },
-      {
-        id: "r-vip",
-        name: "VIP",
-        color: "#F59E0B",
-        position: 6,
-        hoist: true,
-        mentionable: false,
-        managed: false,
-        isBotRole: false,
-        memberCount: 28,
-        permissions: ["AttachFiles", "EmbedLinks"],
-        isEditableByBot: true,
-      },
-      {
-        id: "r-everyone",
-        name: "@everyone",
-        color: "#9CA3AF",
-        position: 0,
-        hoist: false,
-        mentionable: false,
-        managed: false,
-        isBotRole: false,
-        memberCount: 1420,
-        permissions: ["ViewChannel", "SendMessages", "Connect", "Speak"],
-        isEditableByBot: false,
-      },
-    ]);
+    setRoles([]);
   }, [guildId]);
 
   const fetchPermissions = useCallback(async () => {
@@ -775,57 +474,7 @@ export default function ServerManagementClient({
       } catch {}
     }
 
-    // Seed matrix
-    setPermMatrix([
-      {
-        permission: "Administrator",
-        name: "Administrateur",
-        category: "Advanced",
-        roles: { "r-admin": true, "r-bot": true, "r-mod": false, "r-vip": false, "r-everyone": false },
-      },
-      {
-        permission: "ManageGuild",
-        name: "Gérer le serveur",
-        category: "Management",
-        roles: { "r-admin": true, "r-bot": true, "r-mod": false, "r-vip": false, "r-everyone": false },
-      },
-      {
-        permission: "ManageChannels",
-        name: "Gérer les salons",
-        category: "Management",
-        roles: { "r-admin": true, "r-bot": true, "r-mod": false, "r-vip": false, "r-everyone": false },
-      },
-      {
-        permission: "KickMembers",
-        name: "Expulser des membres",
-        category: "Moderation",
-        roles: { "r-admin": true, "r-bot": true, "r-mod": true, "r-vip": false, "r-everyone": false },
-      },
-      {
-        permission: "BanMembers",
-        name: "Bannir des membres",
-        category: "Moderation",
-        roles: { "r-admin": true, "r-bot": true, "r-mod": true, "r-vip": false, "r-everyone": false },
-      },
-      {
-        permission: "ModerateMembers",
-        name: "Exclusion temporaire (Timeout)",
-        category: "Moderation",
-        roles: { "r-admin": true, "r-bot": true, "r-mod": true, "r-vip": false, "r-everyone": false },
-      },
-      {
-        permission: "ViewChannel",
-        name: "Voir les salons",
-        category: "General",
-        roles: { "r-admin": true, "r-bot": true, "r-mod": true, "r-vip": true, "r-everyone": true },
-      },
-      {
-        permission: "SendMessages",
-        name: "Envoyer des messages",
-        category: "Text",
-        roles: { "r-admin": true, "r-bot": true, "r-mod": true, "r-vip": true, "r-everyone": true },
-      },
-    ]);
+    setPermMatrix([]);
   }, [guildId]);
 
   const fetchEmojis = useCallback(async () => {
@@ -842,24 +491,9 @@ export default function ServerManagementClient({
       } catch {}
     }
 
-    // Seed emojis
-    setEmojis([
-      { id: "e-1", name: "ethone_logo", animated: false, url: "https://images.unsplash.com/photo-1618005182384-a83a8bd57fbe?w=64&auto=format&fit=crop&q=80", managed: false, roles: [], createdAt: "2024-01-15T12:00:00Z" },
-      { id: "e-2", name: "pepe_hype", animated: true, url: "https://images.unsplash.com/photo-1563089145-599997674d42?w=64&auto=format&fit=crop&q=80", managed: false, roles: [], createdAt: "2024-02-01T12:00:00Z" },
-      { id: "e-3", name: "vip_gem", animated: false, url: "https://images.unsplash.com/photo-1579783902614-a3fb3927b675?w=64&auto=format&fit=crop&q=80", managed: false, roles: ["r-vip"], createdAt: "2024-02-15T12:00:00Z" },
-    ]);
-    setStickers([
-      { id: "s-1", name: "ETHONE GG", description: "Félicitations officiel", tags: "gg, bravo", url: "https://images.unsplash.com/photo-1579783902614-a3fb3927b675?w=128&auto=format&fit=crop&q=80" },
-    ]);
-    setEmojiQuota({
-      usedStatic: 14,
-      usedAnimated: 8,
-      maxStatic: 100,
-      maxAnimated: 100,
-      usedStickers: 4,
-      maxStickers: 15,
-      boostTier: 2,
-    });
+    setEmojis([]);
+    setStickers([]);
+    setEmojiQuota(null);
   }, [guildId]);
 
   const fetchWebhooks = useCallback(async () => {
@@ -1182,58 +816,7 @@ export default function ServerManagementClient({
         }
       }
 
-      // Seed debug result fallback
-      const m = members.find((x) => x.id === debugUserId);
-      const ch = [...channelTree.categories.flatMap((c) => c.channels), ...channelTree.orphanChannels].find(
-        (x) => x.id === debugChannelId
-      );
-      const isOwner = m?.isOwner || false;
-      const isAdmin = m?.isAdmin || false;
-      const allowed = isOwner || isAdmin || debugPermKey === "ViewChannel";
-
-      setDebugResult({
-        userId: debugUserId,
-        userTag: m?.displayName || "Utilisateur Démo",
-        channelId: debugChannelId,
-        channelName: ch?.name || "salon-test",
-        permission: debugPermKey,
-        isAllowed: allowed,
-        reason: isOwner
-          ? "Le propriétaire du serveur détient toutes les permissions de façon inconditionnelle."
-          : isAdmin
-          ? "Permission Administrateur active sur un des rôles du membre."
-          : "Permission standard accordée par les rôles de base.",
-        steps: [
-          {
-            step: "1. Propriétaire du serveur",
-            level: "SERVER_OWNER",
-            effect: isOwner ? "ALLOW" : "NEUTRAL",
-            description: isOwner
-              ? "Le membre est le propriétaire du serveur. Accès absolu accordé."
-              : "Le membre n'est pas le propriétaire du serveur. Vérification suivante...",
-          },
-          {
-            step: "2. Privilège Administrateur",
-            level: "ADMINISTRATOR",
-            effect: isAdmin ? "ALLOW" : "NEUTRAL",
-            description: isAdmin
-              ? "Un rôle du membre possède la permission globale Administrateur."
-              : "Aucun rôle Administrateur détecté.",
-          },
-          {
-            step: "3. Rôle de base @everyone",
-            level: "ROLE_PERMISSIONS",
-            effect: debugPermKey === "ViewChannel" ? "ALLOW" : "NEUTRAL",
-            description: "Permissions globales accordées à @everyone.",
-          },
-          {
-            step: "4. Overwrites spécifiques au salon",
-            level: "CHANNEL_OVERWRITES",
-            effect: "ALLOW",
-            description: "Aucun refus explicite configuré sur ce salon pour ce membre.",
-          },
-        ],
-      });
+      showError("Bot injoignable : impossible de calculer cette permission.");
       setDebugging(false);
     } catch (err: any) {
       showError(err.message);

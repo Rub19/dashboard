@@ -156,23 +156,7 @@ export default function UserModerationProfileClient() {
       }
     }
       // Offline fallback mock
-      setUserProfile({
-        userId: targetUserId,
-        userTag: "Utilisateur#0000",
-        username: "Utilisateur",
-        avatarUrl: null,
-        joinedServerAt: new Date(Date.now() - 60 * 86400000).toISOString(),
-        accountCreatedAt: new Date(Date.now() - 365 * 86400000).toISOString(),
-        roles: [{ id: "1", name: "Membre", color: "#10B981" }],
-        stats: { warnings: 2, timeouts: 1, kicks: 0, bans: 0, quarantines: 0, totalCases: 3, activeSanctionsCount: 0 },
-        calculatedRiskScore: 32,
-        trustLevel: "LOW",
-        riskBreakdown: { sanctions: 20, warnings: 20, autoModTriggers: 0, reportsCount: 0, recidivismPenalty: 0 },
-        recentIncidentsCount: 0,
-        activeSanctions: [],
-        timeline: [],
-        notes: [],
-      });
+      setUserProfile(null);
     } finally {
       setIsLoading(false);
     }

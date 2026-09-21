@@ -30009,4 +30009,57 @@ CHANGELOG_BY_LANG.en.unshift(v1277_en);
 CHANGELOG_BY_LANG.es.unshift(v1277_es);
 CHANGELOG_BY_LANG.de.unshift(v1277_de);
 
+const v1278_fr: ChangelogEntry = {
+  version: "v1.27.8",
+  date: "2026-09-21",
+  title: "Fin des données inventées sur Événements, Gestion du serveur et profils",
+  items: [
+    "Événements : la page affichait quatre événements inventés (Friday Gaming Night, tournoi…) au chargement et quand le bot était injoignable, et « 92 % de présence » codé en dur. Elle part maintenant de zéro : événements réels seulement, taux de présence calculé sur les événements terminés (« — » sans donnée). Même nettoyage pour la liste des participants (neuf inscrits inventés).",
+    "Gestion du serveur : quand le bot ne répondait pas, la page fabriquait un serveur « ETHONE Prime Community », des membres (alexandre_owner…), salons, rôles, permissions, émojis et stickers d'exemple, et un résultat de test de permission simulé. Elle affiche maintenant du vide (ou une erreur claire), jamais de données inventées.",
+    "Profils : le détail d'invitation d'un membre affichait « Alex#0001, 184 invitations » et le profil de modération « Utilisateur#0000, 2 avertissements » quand le bot était injoignable ; ils sont supprimés. « Rang #1 » par défaut remplacé par « Rang — ».",
+    "Centre de contrôle : les valeurs affichées avant la réponse du bot (score de sécurité 100, intents actifs, 3 sources RAG, version 2.4.0…) sont remplacées par des valeurs neutres.",
+  ],
+};
+
+const v1278_en: ChangelogEntry = {
+  version: "v1.27.8",
+  date: "2026-09-21",
+  title: "End of invented data on Events, Server management and profiles",
+  items: [
+    "Events: the page showed four invented events (Friday Gaming Night, tournament…) on load and when the bot was unreachable, and a hard-coded \"92 % attendance\". It now starts empty: real events only, attendance rate computed from completed events (\"—\" without data). Same cleanup for the participants list (nine invented registrants).",
+    "Server management: when the bot did not answer, the page fabricated an \"ETHONE Prime Community\" server, sample members (alexandre_owner…), channels, roles, permissions, emojis and stickers, and a simulated permission-test result. It now shows empty states (or a clear error), never invented data.",
+    "Profiles: a member's invite detail showed \"Alex#0001, 184 invites\" and the moderation profile \"Utilisateur#0000, 2 warnings\" when the bot was unreachable; both removed. Default \"Rank #1\" replaced by \"Rank —\".",
+    "Control center: values displayed before the bot answered (security score 100, active intents, 3 RAG sources, version 2.4.0…) are replaced by neutral values.",
+  ],
+};
+
+const v1278_es: ChangelogEntry = {
+  version: "v1.27.8",
+  date: "2026-09-21",
+  title: "Fin de los datos inventados en Eventos, Gestión del servidor y perfiles",
+  items: [
+    "Eventos: la página mostraba cuatro eventos inventados (Friday Gaming Night, torneo…) al cargar y cuando el bot no respondía, y un « 92 % de asistencia » fijo. Ahora empieza vacía: solo eventos reales, tasa de asistencia calculada sobre eventos terminados (« — » sin datos). Misma limpieza para la lista de participantes (nueve inscritos inventados).",
+    "Gestión del servidor: cuando el bot no respondía, la página fabricaba un servidor « ETHONE Prime Community », miembros de ejemplo (alexandre_owner…), canales, roles, permisos, emojis y stickers, y un resultado de prueba de permisos simulado. Ahora muestra vacío (o un error claro), nunca datos inventados.",
+    "Perfiles: el detalle de invitaciones de un miembro mostraba « Alex#0001, 184 invitaciones » y el perfil de moderación « Utilisateur#0000, 2 avisos » con el bot inaccesible; eliminados. « Rango #1 » por defecto sustituido por « Rango — ».",
+    "Centro de control: los valores mostrados antes de la respuesta del bot (puntuación de seguridad 100, intents activos, 3 fuentes RAG, versión 2.4.0…) se sustituyen por valores neutros.",
+  ],
+};
+
+const v1278_de: ChangelogEntry = {
+  version: "v1.27.8",
+  date: "2026-09-21",
+  title: "Ende erfundener Daten bei Events, Serververwaltung und Profilen",
+  items: [
+    "Events: Die Seite zeigte beim Laden und bei nicht erreichbarem Bot vier erfundene Events (Friday Gaming Night, Turnier…) und fest codierte „92 % Anwesenheit“. Sie startet jetzt leer: nur echte Events, Anwesenheitsquote aus beendeten Events („—“ ohne Daten). Gleiche Bereinigung für die Teilnehmerliste (neun erfundene Anmeldungen).",
+    "Serververwaltung: Antwortete der Bot nicht, erfand die Seite einen Server „ETHONE Prime Community“, Beispiel-Mitglieder (alexandre_owner…), Kanäle, Rollen, Berechtigungen, Emojis und Sticker sowie ein simuliertes Berechtigungstest-Ergebnis. Jetzt gibt es leere Zustände (oder eine klare Fehlermeldung), nie erfundene Daten.",
+    "Profile: Die Einladungsdetails eines Mitglieds zeigten „Alex#0001, 184 Einladungen“ und das Moderationsprofil „Utilisateur#0000, 2 Verwarnungen“, wenn der Bot nicht erreichbar war; beides entfernt. Standard „Rang #1“ durch „Rang —“ ersetzt.",
+    "Kontrollzentrum: Werte, die vor der Antwort des Bots angezeigt wurden (Sicherheitswert 100, aktive Intents, 3 RAG-Quellen, Version 2.4.0…), sind durch neutrale Werte ersetzt.",
+  ],
+};
+
+CHANGELOG_BY_LANG.fr.unshift(v1278_fr);
+CHANGELOG_BY_LANG.en.unshift(v1278_en);
+CHANGELOG_BY_LANG.es.unshift(v1278_es);
+CHANGELOG_BY_LANG.de.unshift(v1278_de);
+
 export const CHANGELOG = CHANGELOG_BY_LANG.fr;

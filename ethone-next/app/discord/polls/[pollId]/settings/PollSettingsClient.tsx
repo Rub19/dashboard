@@ -1,6 +1,6 @@
 "use client";
 
-import { useState, useEffect } from "react";
+import { useState, useEffect, useCallback } from "react";
 import Link from "next/link";
 import { useParams, useRouter, useSearchParams } from "next/navigation";
 import {
@@ -9,10 +9,12 @@ import {
   Trash2,
   AlertTriangle,
   RotateCcw,
+  RefreshCw,
 } from "lucide-react";
 import { useToast } from "@/components/ToastProvider";
 import { useDiscordOAuth } from "@/lib/hooks/useDiscordOAuth";
 import { useResolvedGuildId } from "@/lib/hooks/useBotGuildIds";
+import { cn } from "@/lib/utils";
 
 const BOT_API_URL =
   process.env.NEXT_PUBLIC_DISCORD_BOT_API_URL ||
@@ -25,11 +27,14 @@ export default function PollSettingsClient() {
   const router = useRouter();
   const pollId = (params?.pollId as string) || "community-game-night";
   const { success: toastSuccess, error: toastError, info: toastInfo } = useToast();
-  const showToast = (msg: string, type?: string) => {
-    if (type === "error") toastError(msg);
-    else if (type === "info") toastInfo(msg);
-    else toastSuccess(msg);
-  };
+  const showToast = useCallback(
+    (msg: string, type?: string) => {
+      if (type === "error") toastError(msg);
+      else if (type === "info") toastInfo(msg);
+      else toastSuccess(msg);
+    },
+    [toastError, toastInfo, toastSuccess]
+  );
   const { profile } = useDiscordOAuth();
   const searchParams = useSearchParams();
   const guildParam = useResolvedGuildId(searchParams.get("guildId"), profile?.guilds);
@@ -54,20 +59,20 @@ export default function PollSettingsClient() {
   const [isSaving, setIsSaving] = useState(false);
 
   // Fetch real guild text channels
-  useEffect(() => {
-    if (!guildParam || !BOT_API_URL) return;
-    let cancelled = false;
-    setChannelsLoading(true);
+  const fetchChannels = useCallback(
+    async (notify = false) => {
+      if (!guildParam || !BOT_API_URL) return;
+      setChannelsLoading(true);
 
-    const fetchChannels = async () => {
       try {
         const res = await fetch(`${BOT_API_URL}/api/guilds/${guildParam}/polls/channels`, { credentials: "include" });
         if (res.ok) {
           const data = await res.json();
-          if (!cancelled && Array.isArray(data?.channels) && data.channels.length > 0) {
+          if (Array.isArray(data?.channels) && data.channels.length > 0) {
             setChannels(data.channels);
             setTargetChannel((prev) => (prev ? prev : data.channels[0].id));
             setChannelsLoading(false);
+            if (notify) showToast("Salons actualisés avec succès !", "success");
             return;
           }
         }
@@ -81,20 +86,24 @@ export default function PollSettingsClient() {
           const textChannels = list
             .filter((c: any) => c.type === 0 || c.type === "GUILD_TEXT" || !c.type)
             .map((c: any) => ({ id: String(c.id), name: String(c.name) }));
-          if (!cancelled && textChannels.length > 0) {
+          if (textChannels.length > 0) {
             setChannels(textChannels);
             setTargetChannel((prev) => (prev ? prev : textChannels[0].id));
+            if (notify) showToast("Salons actualisés avec succès !", "success");
           }
         }
-      } catch {}
-      if (!cancelled) setChannelsLoading(false);
-    };
+      } catch {
+        if (notify) showToast("Erreur lors de l'actualisation des salons.", "error");
+      } finally {
+        setChannelsLoading(false);
+      }
+    },
+    [guildParam, showToast]
+  );
 
-    fetchChannels();
-    return () => {
-      cancelled = true;
-    };
-  }, [guildParam]);
+  useEffect(() => {
+    fetchChannels(false);
+  }, [fetchChannels]);
 
   const handleSaveSettings = async () => {
     setIsSaving(true);
@@ -173,14 +182,26 @@ export default function PollSettingsClient() {
             </p>
           </div>
 
-          <button
-            onClick={handleSaveSettings}
-            disabled={isSaving}
-            className="inline-flex items-center gap-2 rounded-xl bg-indigo-600 px-4 py-2 text-xs font-semibold text-white shadow-sm hover:bg-indigo-500 disabled:opacity-50"
-          >
-            <Save className="h-3.5 w-3.5" />
-            {isSaving ? "Enregistrement..." : "Enregistrer les modifications"}
-          </button>
+          <div className="flex items-center gap-2">
+            <button
+              type="button"
+              onClick={() => fetchChannels(true)}
+              disabled={channelsLoading}
+              className="inline-flex items-center gap-1.5 rounded-xl border border-zinc-800 bg-zinc-900 px-3 py-2 text-xs font-medium text-zinc-300 hover:text-white hover:bg-zinc-800 transition-all disabled:opacity-50"
+              title="Rafraîchir les salons Discord"
+            >
+              <RefreshCw className={cn("h-3.5 w-3.5", channelsLoading && "animate-spin text-indigo-400")} />
+              <span>Rafraîchir</span>
+            </button>
+            <button
+              onClick={handleSaveSettings}
+              disabled={isSaving}
+              className="inline-flex items-center gap-2 rounded-xl bg-indigo-600 px-4 py-2 text-xs font-semibold text-white shadow-sm hover:bg-indigo-500 disabled:opacity-50"
+            >
+              <Save className="h-3.5 w-3.5" />
+              {isSaving ? "Enregistrement..." : "Enregistrer les modifications"}
+            </button>
+          </div>
         </div>
 
         <div className="space-y-6">
@@ -323,9 +344,21 @@ export default function PollSettingsClient() {
               </div>
 
               <div>
-                <label className="block text-xs font-medium text-zinc-300 mb-1">
-                  Salon Discord cible
-                </label>
+                <div className="flex items-center justify-between mb-1">
+                  <label className="text-xs font-medium text-zinc-300">
+                    Salon Discord cible
+                  </label>
+                  <button
+                    type="button"
+                    onClick={() => fetchChannels(true)}
+                    disabled={channelsLoading}
+                    className="inline-flex items-center gap-1 text-[11px] font-medium text-zinc-400 hover:text-indigo-400 transition-colors disabled:opacity-50"
+                    title="Rafraîchir les salons"
+                  >
+                    <RefreshCw className={cn("h-3 w-3", channelsLoading && "animate-spin text-indigo-400")} />
+                    <span>Rafraîchir</span>
+                  </button>
+                </div>
                 <select
                   value={targetChannel}
                   onChange={(e) => setTargetChannel(e.target.value)}

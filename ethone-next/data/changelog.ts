@@ -30797,9 +30797,53 @@ const v12723_de: ChangelogEntry = {
   ],
 };
 
-CHANGELOG_BY_LANG.fr.unshift(v12723_fr, v12722_fr, v12721_fr, v12720_fr);
-CHANGELOG_BY_LANG.en.unshift(v12723_en, v12722_en, v12721_en, v12720_en);
-CHANGELOG_BY_LANG.es.unshift(v12723_es, v12722_es, v12721_es, v12720_es);
-CHANGELOG_BY_LANG.de.unshift(v12723_de, v12722_de, v12721_de, v12720_de);
+const v12724_fr: ChangelogEntry = {
+  version: "v1.27.24",
+  date: "2026-09-21",
+  title: "Options de rafraîchissement direct des salons et rôles sur toutes les pages Discord",
+  items: [
+    "Sondages & Votes (/discord/polls, /discord/polls/create, /discord/polls/[id]/settings) : boutons de rafraîchissement instantané des salons et rôles dans l'en-tête, les formulaires et les modales de déploiement avec retours visuels (icône rotative et toasts).",
+    "Gestion Serveur (/discord/server) : boutons 'Rafraîchir' directs avec feedback de chargement dans la barre d'outils des salons et des rôles.",
+    "Centre Musique (/discord/music) : bouton de synchronisation à la demande des salons vocaux et rôles DJ dans l'onglet Paramètres & Mode DJ.",
+  ],
+};
+
+const v12724_en: ChangelogEntry = {
+  version: "v1.27.24",
+  date: "2026-09-21",
+  title: "On-demand channel and role refresh options across Discord pages",
+  items: [
+    "Polls & Votes (/discord/polls, /discord/polls/create, /discord/polls/[id]/settings): instant refresh buttons for Discord channels and roles in headers, forms, and deploy modals with visual spinner and toast feedback.",
+    "Server Management (/discord/server): direct 'Refresh' action buttons with spinning indicator in the channels and roles toolbars.",
+    "Music Center (/discord/music): on-demand synchronization button for voice channels and DJ roles in the Settings & DJ Mode tab.",
+  ],
+};
+
+const v12724_es: ChangelogEntry = {
+  version: "v1.27.24",
+  date: "2026-09-21",
+  title: "Opciones de actualización directa de canales y roles en todas las páginas Discord",
+  items: [
+    "Encuestas y Votaciones (/discord/polls, /discord/polls/create, /discord/polls/[id]/settings): botones de actualización instantánea para canales y roles en encabezados, formularios y modales con indicador de giro y notificaciones toast.",
+    "Gestión del Servidor (/discord/server): botones 'Actualizar' directos con indicador de carga en las barras de herramientas de canales y roles.",
+    "Centro de Música (/discord/music): botón de sincronización bajo demanda para canales de voz y roles de DJ en la pestaña de Ajustes y Modo DJ.",
+  ],
+};
+
+const v12724_de: ChangelogEntry = {
+  version: "v1.27.24",
+  date: "2026-09-21",
+  title: "Optionen zur direkten Aktualisierung von Kanälen und Rollen auf allen Discord-Seiten",
+  items: [
+    "Umfragen & Abstimmungen (/discord/polls, /discord/polls/create, /discord/polls/[id]/settings): Sofortige Aktualisierungs-Buttons für Discord-Kanäle und Rollen in Headern, Formularen und Bereitstellungs-Modals mit Dreh-Indikator und Toast-Feedback.",
+    "Server-Verwaltung (/discord/server): Direkte 'Aktualisieren'-Schaltflächen mit Ladeanzeige in den Symbolleisten für Kanäle und Rollen.",
+    "Musik-Center (/discord/music): Bedarfsgesteuerte Synchronisationsschaltfläche für Sprachkanäle und DJ-Rollen im Reiter Einstellungen & DJ-Modus.",
+  ],
+};
+
+CHANGELOG_BY_LANG.fr.unshift(v12724_fr, v12723_fr, v12722_fr, v12721_fr, v12720_fr);
+CHANGELOG_BY_LANG.en.unshift(v12724_en, v12723_en, v12722_en, v12721_en, v12720_en);
+CHANGELOG_BY_LANG.es.unshift(v12724_es, v12723_es, v12722_es, v12721_es, v12720_es);
+CHANGELOG_BY_LANG.de.unshift(v12724_de, v12723_de, v12722_de, v12721_de, v12720_de);
 
 export const CHANGELOG = CHANGELOG_BY_LANG.fr;

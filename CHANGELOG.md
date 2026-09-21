@@ -2,6 +2,14 @@
 
 Toutes les modifications notables de ce projet seront documentées dans ce fichier.
 
+## v1.27.24 — 2026-09-21
+
+**Options de rafraîchissement direct des salons et rôles sur toutes les pages Discord**
+
+- Sondages & Votes (`/discord/polls`, `/discord/polls/create`, `/discord/polls/[id]/settings`) : ajout de boutons d'actualisation instantanée à la demande pour les salons et rôles Discord dans l'en-tête, les formulaires de configuration (onglets Informations, Rôles et Panneau) et la modale de déploiement, avec retours visuels (indicateurs animés `RefreshCw` et notifications toast).
+- Gestion Serveur (`/discord/server`) : ajout d'actions directes « Rafraîchir » dans la barre d'outils de l'onglet Salons et de l'onglet Rôles pour synchroniser instantanément la hiérarchie et les catégories Discord.
+- Centre Musique (`/discord/music`) : ajout d'un bouton dédié « Rafraîchir salons & rôles » dans l'en-tête de l'onglet Paramètres & Mode DJ pour actualiser à la volée les salons vocaux 24/7 et les rôles DJ.
+
 ## v1.27.23 — 2026-09-21
 
 **Choix du salon Discord pour la diffusion des sondages et votes**

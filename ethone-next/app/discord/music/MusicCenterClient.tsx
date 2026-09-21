@@ -175,6 +175,7 @@ export default function MusicCenterClient() {
   const [guildRoles, setGuildRoles] = useState<Array<{ id: string; name: string; color?: string }>>([]);
   const [voiceChannels, setVoiceChannels] = useState<Array<{ id: string; name: string }>>([]);
   const [tabError, setTabError] = useState<string | null>(null);
+  const [refreshingMeta, setRefreshingMeta] = useState(false);
 
   // New Playlist Modal
   const [isNewPlaylistOpen, setIsNewPlaylistOpen] = useState(false);
@@ -218,6 +219,45 @@ export default function MusicCenterClient() {
       setLoading(false);
     }
   }, [guildId, isReady, isScrubbing]);
+
+  // Vraies listes pour le rôle DJ et le salon 24h/24
+  const fetchRolesAndChannels = useCallback(
+    async (notify = false) => {
+      if (!guildId || !BOT_API_URL) return;
+      setRefreshingMeta(true);
+      try {
+        await Promise.all([
+          fetch(`${BOT_API_URL}/api/guilds/${guildId}/server/roles`, FETCH_OPTS)
+            .then((r) => (r.ok ? r.json() : null))
+            .then((d) => {
+              const roles = (d?.roles || []) as Array<{ id: string; name: string; color?: string; managed?: boolean; position?: number }>;
+              setGuildRoles(
+                roles
+                  .filter((role) => !role.managed && role.name !== "@everyone")
+                  .sort((x, y) => (y.position ?? 0) - (x.position ?? 0))
+                  .map(({ id, name, color }) => ({ id, name, color }))
+              );
+            }),
+          fetch(`${BOT_API_URL}/api/guilds/${guildId}/server/channels`, FETCH_OPTS)
+            .then((r) => (r.ok ? r.json() : null))
+            .then((d) => {
+              const all = [...(d?.categories || []).flatMap((c: { channels?: unknown[] }) => c.channels || []), ...(d?.orphanChannels || [])] as Array<{
+                id: string;
+                name: string;
+                type: number;
+              }>;
+              setVoiceChannels(all.filter((ch) => ch.type === 2 || ch.type === 13).map(({ id, name }) => ({ id, name })));
+            }),
+        ]);
+        if (notify) success("Salons et rôles actualisés avec succès !");
+      } catch {
+        if (notify) showError("Erreur lors de l'actualisation des salons et rôles.");
+      } finally {
+        setRefreshingMeta(false);
+      }
+    },
+    [guildId, success, showError]
+  );
 
   // Polling state every 3 seconds for live sync
   useEffect(() => {
@@ -270,30 +310,7 @@ export default function MusicCenterClient() {
         })
         .then((d) => setSettings(d.settings || null))
         .catch(() => setTabError("Impossible de lire les réglages musicaux de ce serveur."));
-      // Vraies listes pour le rôle DJ et le salon 24h/24 (au lieu de saisir des identifiants à la main).
-      fetch(`${BOT_API_URL}/api/guilds/${guildId}/server/roles`, FETCH_OPTS)
-        .then((r) => (r.ok ? r.json() : null))
-        .then((d) => {
-          const roles = (d?.roles || []) as Array<{ id: string; name: string; color?: string; managed?: boolean; position?: number }>;
-          setGuildRoles(
-            roles
-              .filter((role) => !role.managed && role.name !== "@everyone")
-              .sort((x, y) => (y.position ?? 0) - (x.position ?? 0))
-              .map(({ id, name, color }) => ({ id, name, color }))
-          );
-        })
-        .catch(() => {});
-      fetch(`${BOT_API_URL}/api/guilds/${guildId}/server/channels`, FETCH_OPTS)
-        .then((r) => (r.ok ? r.json() : null))
-        .then((d) => {
-          const all = [...(d?.categories || []).flatMap((c: { channels?: unknown[] }) => c.channels || []), ...(d?.orphanChannels || [])] as Array<{
-            id: string;
-            name: string;
-            type: number;
-          }>;
-          setVoiceChannels(all.filter((ch) => ch.type === 2 || ch.type === 13).map(({ id, name }) => ({ id, name })));
-        })
-        .catch(() => {});
+      fetchRolesAndChannels(false);
     } else if (activeTab === "stats") {
       setTabError(null);
       fetch(`${BOT_API_URL}/api/guilds/${guildId}/music/stats`, FETCH_OPTS)
@@ -1380,9 +1397,21 @@ export default function MusicCenterClient() {
           {/* TAB 5: DJ MODE & SETTINGS */}
           {activeTab === "settings" && settings && (
             <div className="space-y-4 max-w-2xl">
-              <div>
-                <h3 className="text-sm font-bold text-white">Configuration du Lecteur & Mode DJ</h3>
-                <p className="text-xs text-zinc-400">Gérez les permissions et le comportement du bot audio.</p>
+              <div className="flex items-center justify-between">
+                <div>
+                  <h3 className="text-sm font-bold text-white">Configuration du Lecteur & Mode DJ</h3>
+                  <p className="text-xs text-zinc-400">Gérez les permissions et le comportement du bot audio.</p>
+                </div>
+                <button
+                  type="button"
+                  onClick={() => fetchRolesAndChannels(true)}
+                  disabled={refreshingMeta}
+                  className="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-[var(--inset-radius)] border border-[var(--panel-border)] bg-white/5 hover:bg-white/10 text-xs font-semibold text-zinc-300 hover:text-white transition-all disabled:opacity-50 cursor-pointer"
+                  title="Rafraîchir les salons vocaux et rôles du serveur"
+                >
+                  <RefreshCw className={cn("h-3.5 w-3.5", refreshingMeta && "animate-spin text-violet-400")} />
+                  <span>Rafraîchir salons & rôles</span>
+                </button>
               </div>
 
               <div className="rounded-[var(--panel-radius)] border border-[var(--panel-border)] bg-white/[0.02] p-4 space-y-4">

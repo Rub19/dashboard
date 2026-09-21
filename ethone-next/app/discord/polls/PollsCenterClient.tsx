@@ -32,7 +32,11 @@ import { useDiscordOAuth } from "@/lib/hooks/useDiscordOAuth";
 import { cn } from "@/lib/utils";
 import { useResolvedGuildId } from "@/lib/hooks/useBotGuildIds";
 
-const BOT_API_URL = process.env.NEXT_PUBLIC_DISCORD_BOT_API || "";
+const BOT_API_URL =
+  process.env.NEXT_PUBLIC_DISCORD_BOT_API_URL ||
+  process.env.NEXT_PUBLIC_BOT_URL ||
+  process.env.NEXT_PUBLIC_DISCORD_BOT_API ||
+  "";
 
 function mapPoll(raw: Record<string, unknown>): PollSummary {
   const r = raw as Record<string, any>;
@@ -102,11 +106,14 @@ const TYPE_CONFIG: Record<string, { label: string; color: string; icon: any }> =
 
 export default function PollsCenterClient() {
   const { success: toastSuccess, error: toastError, info: toastInfo } = useToast();
-  const showToast = (msg: string, type?: string) => {
-    if (type === "error") toastError(msg);
-    else if (type === "info") toastInfo(msg);
-    else toastSuccess(msg);
-  };
+  const showToast = useCallback(
+    (msg: string, type?: string) => {
+      if (type === "error") toastError(msg);
+      else if (type === "info") toastInfo(msg);
+      else toastSuccess(msg);
+    },
+    [toastError, toastInfo, toastSuccess]
+  );
   const { profile } = useDiscordOAuth();
   const searchParams = useSearchParams();
   const guildParam = useResolvedGuildId(searchParams.get("guildId"), profile?.guilds);
@@ -124,20 +131,20 @@ export default function PollsCenterClient() {
   const [channelsLoading, setChannelsLoading] = useState(false);
 
   // Fetch real guild text channels for deploy modal
-  useEffect(() => {
-    if (!guildParam || !BOT_API_URL) return;
-    let cancelled = false;
-    setChannelsLoading(true);
+  const fetchChannels = useCallback(
+    async (notify = false) => {
+      if (!guildParam || !BOT_API_URL) return;
+      setChannelsLoading(true);
 
-    const fetchChannels = async () => {
       try {
         const res = await fetch(`${BOT_API_URL}/api/guilds/${guildParam}/polls/channels`, { credentials: "include" });
         if (res.ok) {
           const data = await res.json();
-          if (!cancelled && Array.isArray(data?.channels) && data.channels.length > 0) {
+          if (Array.isArray(data?.channels) && data.channels.length > 0) {
             setChannels(data.channels);
             setTargetChannelId((prev) => prev || data.channels[0].id);
             setChannelsLoading(false);
+            if (notify) showToast("Salons actualisés avec succès !", "success");
             return;
           }
         }
@@ -151,20 +158,24 @@ export default function PollsCenterClient() {
           const textChannels = list
             .filter((c: any) => c.type === 0 || c.type === "GUILD_TEXT" || !c.type)
             .map((c: any) => ({ id: String(c.id), name: String(c.name) }));
-          if (!cancelled && textChannels.length > 0) {
+          if (textChannels.length > 0) {
             setChannels(textChannels);
             setTargetChannelId((prev) => prev || textChannels[0].id);
+            if (notify) showToast("Salons actualisés avec succès !", "success");
           }
         }
-      } catch {}
-      if (!cancelled) setChannelsLoading(false);
-    };
+      } catch {
+        if (notify) showToast("Erreur lors de l'actualisation des salons.", "error");
+      } finally {
+        setChannelsLoading(false);
+      }
+    },
+    [guildParam, showToast]
+  );
 
-    fetchChannels();
-    return () => {
-      cancelled = true;
-    };
-  }, [guildParam]);
+  useEffect(() => {
+    fetchChannels(false);
+  }, [fetchChannels]);
 
   const categories = useMemo(() => {
     const set = new Set(polls.map((p) => p.category));
@@ -220,6 +231,11 @@ export default function PollsCenterClient() {
       setLoading(false);
     }
   }, [guildParam]);
+
+  const handleRefreshAll = useCallback(async () => {
+    await Promise.all([loadPolls(), fetchChannels(false)]);
+    showToast("Sondages et salons actualisés avec succès !", "success");
+  }, [loadPolls, fetchChannels, showToast]);
 
   useEffect(() => {
     loadPolls();
@@ -365,12 +381,12 @@ export default function PollsCenterClient() {
 
           <div className="flex items-center gap-2">
             <button
-              onClick={loadPolls}
-              disabled={loading}
+              onClick={handleRefreshAll}
+              disabled={loading || channelsLoading}
               className="inline-flex items-center justify-center rounded-xl border border-zinc-800 bg-zinc-900 p-2.5 text-zinc-400 transition-colors hover:text-white hover:bg-zinc-800 disabled:opacity-50"
-              title="Rafraîchir"
+              title="Rafraîchir les sondages et salons"
             >
-              <RefreshCw className={cn("h-4 w-4", loading && "animate-spin")} />
+              <RefreshCw className={cn("h-4 w-4", (loading || channelsLoading) && "animate-spin text-indigo-400")} />
             </button>
             <Link
               href={`/discord/polls/create?guildId=${guildParam}`}
@@ -743,9 +759,21 @@ export default function PollsCenterClient() {
             </p>
 
             <div className="space-y-3 mb-5">
-              <label className="block text-xs font-medium text-zinc-300">
-                Salon Discord de destination
-              </label>
+              <div className="flex items-center justify-between">
+                <label className="block text-xs font-medium text-zinc-300">
+                  Salon Discord de destination
+                </label>
+                <button
+                  type="button"
+                  onClick={() => fetchChannels(true)}
+                  disabled={channelsLoading}
+                  className="inline-flex items-center gap-1 text-[11px] font-medium text-zinc-400 hover:text-indigo-400 transition-colors disabled:opacity-50"
+                  title="Rafraîchir les salons"
+                >
+                  <RefreshCw className={cn("h-3 w-3", channelsLoading && "animate-spin text-indigo-400")} />
+                  <span>Rafraîchir</span>
+                </button>
+              </div>
               <select
                 value={targetChannelId}
                 onChange={(e) => setTargetChannelId(e.target.value)}

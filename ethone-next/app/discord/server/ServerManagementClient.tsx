@@ -299,6 +299,8 @@ export default function ServerManagementClient({
   const [overview, setOverview] = useState<ServerOverviewData | null>(null);
   const [loading, setLoading] = useState(true);
   const [refreshing, setRefreshing] = useState(false);
+  const [refreshingChannels, setRefreshingChannels] = useState(false);
+  const [refreshingRoles, setRefreshingRoles] = useState(false);
 
   // Global search
   const [searchQuery, setSearchQuery] = useState("");
@@ -462,6 +464,20 @@ export default function ServerManagementClient({
 
     setRoles([]);
   }, [guildId]);
+
+  const handleRefreshChannels = useCallback(async () => {
+    setRefreshingChannels(true);
+    await fetchChannels();
+    setRefreshingChannels(false);
+    success("Salons actualisés avec succès !");
+  }, [fetchChannels, success]);
+
+  const handleRefreshRoles = useCallback(async () => {
+    setRefreshingRoles(true);
+    await fetchRoles();
+    setRefreshingRoles(false);
+    success("Rôles actualisés avec succès !");
+  }, [fetchRoles, success]);
 
   const fetchPermissions = useCallback(async () => {
     if (BOT_API_URL) {
@@ -1775,13 +1791,25 @@ export default function ServerManagementClient({
                 />
               </div>
 
-              <button
-                onClick={() => setIsCreateChannelOpen(true)}
-                className="px-4 py-2 rounded-xl bg-indigo-600 hover:bg-indigo-500 text-white text-xs font-bold flex items-center gap-2 shadow-sm cursor-pointer shrink-0"
-              >
-                <Plus className="h-4 w-4" />
-                <span>Créer un salon</span>
-              </button>
+              <div className="flex items-center gap-2 shrink-0">
+                <button
+                  type="button"
+                  onClick={handleRefreshChannels}
+                  disabled={refreshingChannels}
+                  className="px-3 py-2 rounded-xl bg-zinc-900 border border-[var(--panel-border)] text-zinc-300 hover:text-white hover:bg-zinc-800 text-xs font-semibold flex items-center gap-1.5 transition-all cursor-pointer disabled:opacity-50"
+                  title="Rafraîchir les salons"
+                >
+                  <RefreshCw className={cn("h-3.5 w-3.5", refreshingChannels && "animate-spin text-indigo-400")} />
+                  <span>Rafraîchir</span>
+                </button>
+                <button
+                  onClick={() => setIsCreateChannelOpen(true)}
+                  className="px-4 py-2 rounded-xl bg-indigo-600 hover:bg-indigo-500 text-white text-xs font-bold flex items-center gap-2 shadow-sm cursor-pointer shrink-0"
+                >
+                  <Plus className="h-4 w-4" />
+                  <span>Créer un salon</span>
+                </button>
+              </div>
             </div>
 
             {/* Visual Channel Tree */}
@@ -1998,13 +2026,25 @@ export default function ServerManagementClient({
                 />
               </div>
 
-              <button
-                onClick={() => setIsCreateRoleOpen(true)}
-                className="px-4 py-2 rounded-xl bg-purple-600 hover:bg-purple-500 text-white text-xs font-bold flex items-center gap-2 shadow-sm cursor-pointer shrink-0"
-              >
-                <Plus className="h-4 w-4" />
-                <span>Nouveau Rôle</span>
-              </button>
+              <div className="flex items-center gap-2 shrink-0">
+                <button
+                  type="button"
+                  onClick={handleRefreshRoles}
+                  disabled={refreshingRoles}
+                  className="px-3 py-2 rounded-xl bg-zinc-900 border border-[var(--panel-border)] text-zinc-300 hover:text-white hover:bg-zinc-800 text-xs font-semibold flex items-center gap-1.5 transition-all cursor-pointer disabled:opacity-50"
+                  title="Rafraîchir les rôles"
+                >
+                  <RefreshCw className={cn("h-3.5 w-3.5", refreshingRoles && "animate-spin text-purple-400")} />
+                  <span>Rafraîchir</span>
+                </button>
+                <button
+                  onClick={() => setIsCreateRoleOpen(true)}
+                  className="px-4 py-2 rounded-xl bg-purple-600 hover:bg-purple-500 text-white text-xs font-bold flex items-center gap-2 shadow-sm cursor-pointer shrink-0"
+                >
+                  <Plus className="h-4 w-4" />
+                  <span>Nouveau Rôle</span>
+                </button>
+              </div>
             </div>
 
             {/* Role Ceiling Info Alert */}

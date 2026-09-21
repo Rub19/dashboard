@@ -1,6 +1,6 @@
 "use client";
 
-import { useState, useEffect } from "react";
+import { useState, useEffect, useCallback } from "react";
 import Link from "next/link";
 import { useRouter, useSearchParams } from "next/navigation";
 import {
@@ -17,6 +17,7 @@ import {
   Eye,
   Zap,
   Hash,
+  RefreshCw,
 } from "lucide-react";
 import { useToast } from "@/components/ToastProvider";
 import { useDiscordOAuth } from "@/lib/hooks/useDiscordOAuth";
@@ -51,11 +52,14 @@ interface QuestionItem {
 export default function PollCreateClient() {
   const router = useRouter();
   const { success: toastSuccess, error: toastError, info: toastInfo } = useToast();
-  const showToast = (msg: string, type?: string) => {
-    if (type === "error") toastError(msg);
-    else if (type === "info") toastInfo(msg);
-    else toastSuccess(msg);
-  };
+  const showToast = useCallback(
+    (msg: string, type?: string) => {
+      if (type === "error") toastError(msg);
+      else if (type === "info") toastInfo(msg);
+      else toastSuccess(msg);
+    },
+    [toastError, toastInfo, toastSuccess]
+  );
   const { profile } = useDiscordOAuth();
   const searchParams = useSearchParams();
   const guildParam = useResolvedGuildId(searchParams.get("guildId"), profile?.guilds);
@@ -75,37 +79,89 @@ export default function PollCreateClient() {
   const [targetChannel, setTargetChannel] = useState<string>("");
   const [isSubmitting, setIsSubmitting] = useState(false);
 
+  // Roles state
+  const [roles, setRoles] = useState<{ id: string; name: string; color?: string }[]>([]);
+  const [rolesLoading, setRolesLoading] = useState(false);
+  const [isRefreshing, setIsRefreshing] = useState(false);
+
   // Load real guild text channels
-  useEffect(() => {
-    if (!guildParam || !BOT_API_URL) return;
-    let cancelled = false;
-    setChannelsLoading(true);
-    fetch(`${BOT_API_URL}/api/guilds/${guildParam}/polls/channels`, { credentials: "include" })
-      .then((r) => (r.ok ? r.json() : null))
-      .then(async (data) => {
-        if (cancelled) return;
-        let list = Array.isArray(data?.channels) ? data.channels : [];
+  const fetchChannelsList = useCallback(
+    async (notify = false) => {
+      if (!guildParam || !BOT_API_URL) return;
+      setChannelsLoading(true);
+      try {
+        let list: { id: string; name: string }[] = [];
+        const res = await fetch(`${BOT_API_URL}/api/guilds/${guildParam}/polls/channels`, { credentials: "include" });
+        if (res.ok) {
+          const data = await res.json().catch(() => null);
+          if (Array.isArray(data?.channels) && data.channels.length > 0) {
+            list = data.channels;
+          }
+        }
         if (list.length === 0) {
           const fallback = await fetch(`${BOT_API_URL}/api/guilds/${guildParam}/server/channels`, { credentials: "include" })
             .then((r) => (r.ok ? r.json() : null))
             .catch(() => null);
-          if (Array.isArray(fallback?.channels)) list = fallback.channels;
-        }
-        if (!cancelled) {
-          setChannels(list);
-          if (list.length > 0) {
-            setTargetChannel((prev) => (prev ? prev : list[0].id));
+          if (Array.isArray(fallback?.channels)) {
+            list = fallback.channels
+              .filter((c: any) => c.type === 0 || c.type === "GUILD_TEXT" || !c.type)
+              .map((c: any) => ({ id: String(c.id), name: String(c.name) }));
           }
         }
-      })
-      .catch(() => {})
-      .finally(() => {
-        if (!cancelled) setChannelsLoading(false);
-      });
-    return () => {
-      cancelled = true;
-    };
-  }, [guildParam]);
+        setChannels(list);
+        if (list.length > 0) {
+          setTargetChannel((prev) => (prev ? prev : list[0].id));
+        }
+        if (notify) {
+          showToast("Salons actualisés avec succès !", "success");
+        }
+      } catch {
+        if (notify) showToast("Erreur lors de l'actualisation des salons.", "error");
+      } finally {
+        setChannelsLoading(false);
+      }
+    },
+    [guildParam, showToast]
+  );
+
+  // Load real guild roles
+  const fetchRolesList = useCallback(
+    async (notify = false) => {
+      if (!guildParam || !BOT_API_URL) return;
+      setRolesLoading(true);
+      try {
+        const res = await fetch(`${BOT_API_URL}/api/guilds/${guildParam}/server/roles`, { credentials: "include" });
+        if (res.ok) {
+          const data = await res.json().catch(() => null);
+          const rList = Array.isArray(data?.roles) ? data.roles : [];
+          const formatted = rList
+            .filter((r: any) => !r.managed && r.name !== "@everyone")
+            .map((r: any) => ({ id: String(r.id), name: String(r.name), color: r.color }));
+          setRoles(formatted);
+          if (notify) {
+            showToast("Rôles actualisés avec succès !", "success");
+          }
+        }
+      } catch {
+        if (notify) showToast("Erreur lors de l'actualisation des rôles.", "error");
+      } finally {
+        setRolesLoading(false);
+      }
+    },
+    [guildParam, showToast]
+  );
+
+  const handleRefreshAll = async () => {
+    setIsRefreshing(true);
+    await Promise.all([fetchChannelsList(false), fetchRolesList(false)]);
+    setIsRefreshing(false);
+    showToast("Salons et rôles actualisés avec succès !", "success");
+  };
+
+  useEffect(() => {
+    fetchChannelsList();
+    fetchRolesList();
+  }, [fetchChannelsList, fetchRolesList]);
 
   // Questions state
   const [questions, setQuestions] = useState<QuestionItem[]>([
@@ -316,7 +372,17 @@ export default function PollCreateClient() {
             </p>
           </div>
 
-          <div className="flex items-center gap-3">
+          <div className="flex items-center gap-2 sm:gap-3">
+            <button
+              type="button"
+              onClick={handleRefreshAll}
+              disabled={isRefreshing || channelsLoading || rolesLoading}
+              className="inline-flex items-center gap-1.5 rounded-xl border border-zinc-800 bg-zinc-900/80 px-3 py-2.5 text-xs font-semibold text-zinc-300 hover:bg-zinc-800 hover:text-white transition-all disabled:opacity-50"
+              title="Rafraîchir les salons et rôles du serveur"
+            >
+              <RefreshCw className={cn("h-3.5 w-3.5", (isRefreshing || channelsLoading || rolesLoading) && "animate-spin text-indigo-400")} />
+              <span className="hidden sm:inline">Rafraîchir</span>
+            </button>
             <button
               onClick={() => handleSave(false)}
               disabled={isSubmitting}
@@ -426,10 +492,22 @@ export default function PollCreateClient() {
                   </div>
 
                   <div>
-                    <label className="block text-xs font-medium text-zinc-300 mb-1.5 flex items-center gap-1.5">
-                      <Hash className="h-3.5 w-3.5 text-indigo-400" />
-                      Salon Discord de diffusion <span className="text-rose-400">*</span>
-                    </label>
+                    <div className="flex items-center justify-between mb-1.5">
+                      <label className="text-xs font-medium text-zinc-300 flex items-center gap-1.5">
+                        <Hash className="h-3.5 w-3.5 text-indigo-400" />
+                        Salon Discord de diffusion <span className="text-rose-400">*</span>
+                      </label>
+                      <button
+                        type="button"
+                        onClick={() => fetchChannelsList(true)}
+                        disabled={channelsLoading}
+                        className="inline-flex items-center gap-1 text-[11px] font-medium text-zinc-400 hover:text-indigo-400 transition-colors disabled:opacity-50"
+                        title="Rafraîchir la liste des salons"
+                      >
+                        <RefreshCw className={cn("h-3 w-3", channelsLoading && "animate-spin text-indigo-400")} />
+                        <span>Rafraîchir</span>
+                      </button>
+                    </div>
                     <select
                       value={targetChannel}
                       onChange={(e) => setTargetChannel(e.target.value)}
@@ -773,7 +851,19 @@ export default function PollCreateClient() {
 
             {/* Role Weights Multiplier */}
             <div className="rounded-2xl border border-zinc-800/80 bg-zinc-900/40 p-6 backdrop-blur-xl">
-              <h3 className="text-base font-bold text-white mb-2">Pondération des Voix par Rôle</h3>
+              <div className="flex items-center justify-between mb-2">
+                <h3 className="text-base font-bold text-white">Pondération des Voix par Rôle</h3>
+                <button
+                  type="button"
+                  onClick={() => fetchRolesList(true)}
+                  disabled={rolesLoading}
+                  className="inline-flex items-center gap-1.5 text-xs font-medium text-zinc-400 hover:text-indigo-400 transition-colors disabled:opacity-50"
+                  title="Rafraîchir les rôles du serveur"
+                >
+                  <RefreshCw className={cn("h-3 w-3", rolesLoading && "animate-spin text-indigo-400")} />
+                  <span>Rafraîchir les rôles</span>
+                </button>
+              </div>
               <p className="text-xs text-zinc-400 mb-4">
                 Attribuez un coefficient multiplicateur aux votes exprimés par certains rôles (ex: Boosters 2x, Vétérans 2x, Staff 3x).
               </p>
@@ -803,10 +893,49 @@ export default function PollCreateClient() {
                         className="w-16 rounded-lg border border-zinc-800 bg-zinc-900 px-2 py-1 text-xs text-center text-indigo-400 font-bold focus:outline-none"
                       />
                       <span className="text-xs font-semibold text-indigo-400">x</span>
+                      <button
+                        type="button"
+                        onClick={() => setRoleWeights((prev) => prev.filter((_, i) => i !== index))}
+                        className="text-zinc-500 hover:text-rose-400 p-1"
+                        title="Retirer ce rôle"
+                      >
+                        <Trash2 className="h-3.5 w-3.5" />
+                      </button>
                     </div>
                   </div>
                 ))}
               </div>
+
+              {roles.length > 0 && (
+                <div className="mt-4 pt-4 border-t border-zinc-800 flex items-center gap-2">
+                  <select
+                    className="flex-1 rounded-xl border border-zinc-800 bg-zinc-900 px-3 py-2 text-xs text-white focus:outline-none"
+                    defaultValue=""
+                    onChange={(e) => {
+                      const selectedId = e.target.value;
+                      if (!selectedId) return;
+                      const roleObj = roles.find((r) => r.id === selectedId);
+                      if (roleObj && !roleWeights.some((rw) => rw.roleId === selectedId)) {
+                        setRoleWeights((prev) => [
+                          ...prev,
+                          { roleId: roleObj.id, roleName: roleObj.name, weightMultiplier: 2 },
+                        ]);
+                        showToast(`Rôle @${roleObj.name} ajouté aux coefficients.`, "info");
+                      }
+                      e.target.value = "";
+                    }}
+                  >
+                    <option value="">+ Ajouter un rôle du serveur...</option>
+                    {roles
+                      .filter((r) => !roleWeights.some((rw) => rw.roleId === r.id))
+                      .map((r) => (
+                        <option key={r.id} value={r.id}>
+                          @{r.name}
+                        </option>
+                      ))}
+                  </select>
+                </div>
+              )}
             </div>
           </div>
         )}
@@ -925,9 +1054,21 @@ export default function PollCreateClient() {
                 </div>
 
                 <div>
-                  <label className="block text-xs font-medium text-zinc-300 mb-1">
-                    Salon Discord par défaut
-                  </label>
+                  <div className="flex items-center justify-between mb-1">
+                    <label className="text-xs font-medium text-zinc-300">
+                      Salon Discord par défaut
+                    </label>
+                    <button
+                      type="button"
+                      onClick={() => fetchChannelsList(true)}
+                      disabled={channelsLoading}
+                      className="inline-flex items-center gap-1 text-[11px] font-medium text-zinc-400 hover:text-indigo-400 transition-colors disabled:opacity-50"
+                      title="Rafraîchir la liste des salons"
+                    >
+                      <RefreshCw className={cn("h-3 w-3", channelsLoading && "animate-spin text-indigo-400")} />
+                      <span>Rafraîchir</span>
+                    </button>
+                  </div>
                   <select
                     value={targetChannel}
                     onChange={(e) => setTargetChannel(e.target.value)}

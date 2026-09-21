@@ -29907,4 +29907,57 @@ CHANGELOG_BY_LANG.en.unshift(v1275_en);
 CHANGELOG_BY_LANG.es.unshift(v1275_es);
 CHANGELOG_BY_LANG.de.unshift(v1275_de);
 
+const v1276_fr: ChangelogEntry = {
+  version: "v1.27.6",
+  date: "2026-09-21",
+  title: "Barres à 0 % vraiment vides, événements du bot réels",
+  items: [
+    "Accueil : les barres de l'entonnoir gardaient une largeur minimale de 5 % même à 0 membre, ce qui donnait l'impression de données. Une barre à 0 % est maintenant vide.",
+    "Centre de contrôle : les événements (345 890 traités, 3,4/s, liste fixe) étaient inventés. Ils viennent maintenant du vrai flux d'événements du bot, avec un débit calculé sur les 60 dernières secondes.",
+    "Mémoire : le tas était jugé à 94-96 % (donc « dégradé ») parce qu'il était comparé à sa taille courante ; il est maintenant comparé à sa vraie limite. Le ping est échantillonné en continu, pas seulement quand l'onglet est ouvert.",
+    "Le bouton « Mise à jour » du bot répondait un succès sans rien faire ; il renvoie maintenant que la mise à jour à distance n'est pas prise en charge.",
+  ],
+};
+
+const v1276_en: ChangelogEntry = {
+  version: "v1.27.6",
+  date: "2026-09-21",
+  title: "0 % bars really empty, real bot events",
+  items: [
+    "Welcome: funnel bars kept a 5 % minimum width even at 0 members, which looked like data. A 0 % bar is now empty.",
+    "Control center: events (345,890 processed, 3.4/s, fixed list) were invented. They now come from the bot's real event stream, with throughput computed over the last 60 seconds.",
+    "Memory: the heap was judged at 94-96 % (so \"degraded\") because it was compared to its current size; it is now compared to its real limit. Ping is sampled continuously, not only when the tab is open.",
+    "The bot's \"Update\" button answered success without doing anything; it now says remote update is not supported.",
+  ],
+};
+
+const v1276_es: ChangelogEntry = {
+  version: "v1.27.6",
+  date: "2026-09-21",
+  title: "Barras al 0 % realmente vacías, eventos reales del bot",
+  items: [
+    "Bienvenida: las barras del embudo mantenían un ancho mínimo del 5 % incluso con 0 miembros, lo que parecía datos. Una barra al 0 % está ahora vacía.",
+    "Centro de control: los eventos (345 890 procesados, 3,4/s, lista fija) eran inventados. Ahora vienen del flujo real de eventos del bot, con el caudal calculado sobre los últimos 60 segundos.",
+    "Memoria: el heap se juzgaba al 94-96 % (« degradado ») porque se comparaba con su tamaño actual; ahora se compara con su límite real. El ping se muestrea de forma continua, no solo con la pestaña abierta.",
+    "El botón « Actualizar » del bot respondía éxito sin hacer nada; ahora indica que la actualización remota no está soportada.",
+  ],
+};
+
+const v1276_de: ChangelogEntry = {
+  version: "v1.27.6",
+  date: "2026-09-21",
+  title: "0-%-Balken wirklich leer, echte Bot-Ereignisse",
+  items: [
+    "Willkommen: Die Trichter-Balken behielten selbst bei 0 Mitgliedern eine Mindestbreite von 5 %, was nach Daten aussah. Ein 0-%-Balken ist jetzt leer.",
+    "Kontrollzentrum: Die Ereignisse (345.890 verarbeitet, 3,4/s, feste Liste) waren erfunden. Sie stammen jetzt aus dem echten Ereignisstrom des Bots, der Durchsatz wird über die letzten 60 Sekunden berechnet.",
+    "Speicher: Der Heap wurde mit 94-96 % („beeinträchtigt“) bewertet, weil er mit seiner aktuellen Größe verglichen wurde; jetzt mit seinem echten Limit. Der Ping wird laufend gemessen, nicht nur bei geöffnetem Tab.",
+    "Die Schaltfläche „Update“ des Bots meldete Erfolg, ohne etwas zu tun; sie meldet jetzt, dass Remote-Updates nicht unterstützt werden.",
+  ],
+};
+
+CHANGELOG_BY_LANG.fr.unshift(v1276_fr);
+CHANGELOG_BY_LANG.en.unshift(v1276_en);
+CHANGELOG_BY_LANG.es.unshift(v1276_es);
+CHANGELOG_BY_LANG.de.unshift(v1276_de);
+
 export const CHANGELOG = CHANGELOG_BY_LANG.fr;

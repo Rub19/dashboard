@@ -980,7 +980,7 @@ export function WelcomeCenterClient() {
                   <div className="h-3 w-full rounded-full bg-white/5 overflow-hidden">
                     <div
                       className="h-full bg-teal-500 rounded-full transition-all duration-500"
-                      style={{ width: `${Math.max(5, stage.percentage)}%` }}
+                      style={{ width: `${Math.min(100, Math.max(0, stage.percentage))}%` }}
                     />
                   </div>
                 </div>

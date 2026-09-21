@@ -36,6 +36,7 @@ import { voiceService } from '../modules/voice/services/voiceService.js';
 import { starboardService } from '../modules/starboard/services/starboardService.js';
 import { healthStatusService } from '../services/resilience/healthStatusService.js';
 import { BotTelemetryService } from '../modules/botControl/services/botTelemetryService.js';
+import { BotEventBusService } from '../modules/botControl/services/botEventBusService.js';
 import { logger } from '../utils/logger.js';
 
 let isEventsRegistered = false;
@@ -56,10 +57,22 @@ export function registerEvents(client: Client): void {
   // rather than throw in that case.
   if (typeof client.emit === 'function') {
     const botTelemetryService = BotTelemetryService.getInstance();
-    const originalEmit = client.emit.bind(client);
+    const originalEmit = client.emit.bind(client) as (event: string, ...args: unknown[]) => boolean;
+    const eventBus = BotEventBusService.getInstance();
     client.emit = ((event: string, ...args: unknown[]) => {
       botTelemetryService.incrementEventCount();
-      return originalEmit(event, ...args);
+      // « debug » et « raw » sont du bruit interne de discord.js, pas des événements métier.
+      if (event === 'debug' || event === 'raw') return originalEmit(event, ...args);
+      const started = performance.now();
+      let ok = true;
+      try {
+        return originalEmit(event, ...args);
+      } catch (err) {
+        ok = false;
+        throw err;
+      } finally {
+        eventBus.recordEvent(String(event), Math.round((performance.now() - started) * 10) / 10, ok);
+      }
     }) as typeof client.emit;
   }
 

@@ -6,6 +6,7 @@ import {
   SubsystemStatus,
 } from '../types/index.js';
 import fs from 'node:fs';
+import v8 from 'node:v8';
 import path from 'node:path';
 import { fileURLToPath } from 'node:url';
 import { BotAiMonitorService } from './botAiMonitorService.js';
@@ -58,6 +59,7 @@ export class BotTelemetryService {
   private lastCpu = process.cpuUsage();
   private lastCpuAt = Date.now();
   private lastCpuPercent = 0;
+  private client: Client | null = null;
   // Ring buffer of real sampled points, one every ~30s — bounded at 24h of
   // history (2880 * 30s). Replaces the previous sine-wave-generated fake
   // history in GET /api/bot/performance.
@@ -77,7 +79,20 @@ export class BotTelemetryService {
     }, 30000).unref();
   }
 
+  /** Le client sert à échantillonner le ping de la passerelle en continu (et pas seulement quand l'onglet est ouvert). */
+  public attachClient(client: Client) {
+    this.client = client;
+  }
+
+  /** Part du tas utilisée par rapport à sa LIMITE réelle (heapTotal grandit à la demande : le ratio y est trompeur). */
+  public static heapPercent(): number {
+    const limit = v8.getHeapStatistics().heap_size_limit;
+    return Math.round((process.memoryUsage().heapUsed / limit) * 1000) / 10;
+  }
+
   private samplePerformance() {
+    const livePing = this.client?.ws.ping ?? -1;
+    if (livePing > 0) this.recordPing(livePing);
     const mem = process.memoryUsage();
     const heapUsedMb = Math.round((mem.heapUsed / 1024 / 1024) * 10) / 10;
     const cpuPercent = this.measureCpuPercent();
@@ -181,7 +196,7 @@ export class BotTelemetryService {
     const wsPing = client?.ws.ping ?? -1;
     const gatewayUp = Boolean(client?.isReady());
     const mem = process.memoryUsage();
-    const heapPercent = (mem.heapUsed / mem.heapTotal) * 100;
+    const heapPercent = BotTelemetryService.heapPercent();
 
     const dataOk = this.dataDirWritable();
     const jobs = BotJobSchedulerService.getInstance().getAllJobs();
@@ -249,7 +264,7 @@ export class BotTelemetryService {
     const heapTotalMb = Math.round((mem.heapTotal / 1024 / 1024) * 100) / 100;
     const rssMb = Math.round((mem.rss / 1024 / 1024) * 100) / 100;
     const externalMb = Math.round((mem.external / 1024 / 1024) * 100) / 100;
-    const heapPercent = Math.round((heapUsedMb / Math.max(1, heapTotalMb)) * 100);
+    const heapPercent = Math.round(BotTelemetryService.heapPercent());
 
     const clientPing = client?.ws.ping ?? -1;
     if (clientPing > 0) {

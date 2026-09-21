@@ -20,6 +20,7 @@ export function createBotControlRouter(client: Client): Router {
   const eventBus = BotEventBusService.getInstance();
   const jobScheduler = BotJobSchedulerService.getInstance();
   const errorIncidents = BotErrorIncidentService.getInstance();
+  BotTelemetryService.getInstance().attachClient(client);
   const diagnosticsService = BotDiagnosticsService.getInstance();
   const aiMonitor = BotAiMonitorService.getInstance();
   const integrationsService = BotIntegrationsService.getInstance();
@@ -279,7 +280,8 @@ export function createBotControlRouter(client: Client): Router {
 
   // Remote Update — see /restart above for the authorization note.
   router.post('/update', (req: Request, res: Response) => {
-    res.json({ success: true, message: 'Update command received' });
+    // Le bot ne peut pas se mettre à jour lui-même : la mise à jour se fait par git pull + pm2 restart sur le serveur.
+    res.status(501).json({ success: false, error: 'Mise à jour à distance non prise en charge : utilise git pull puis pm2 restart sur le serveur.' });
   });
 
   return router;

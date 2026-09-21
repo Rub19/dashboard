@@ -1,5 +1,6 @@
 import fs from 'node:fs';
 import path from 'node:path';
+import v8 from 'node:v8';
 import { Client, GatewayIntentBits, IntentsBitField } from 'discord.js';
 import { BotDiagnosticResult } from '../types/index.js';
 import { BotIntegrationsService } from './botIntegrationsService.js';
@@ -66,14 +67,15 @@ export class BotDiagnosticsService {
 
     // 3. Mémoire
     const mem = process.memoryUsage();
-    const heapPct = Math.round((mem.heapUsed / mem.heapTotal) * 100);
+    const heapLimit = v8.getHeapStatistics().heap_size_limit;
+    const heapPct = Math.round((mem.heapUsed / heapLimit) * 100);
     results.push({
       id: 'diag_memory_heap',
       name: 'Mémoire Node.js (tas V8)',
       category: 'core',
       status: heapPct < 80 ? 'pass' : heapPct < 90 ? 'warn' : 'critical',
       latencyMs: 0,
-      message: `Tas à ${heapPct} % (${mb(mem.heapUsed)} Mo / ${mb(mem.heapTotal)} Mo).`,
+      message: `Tas à ${heapPct} % de sa limite (${mb(mem.heapUsed)} Mo / ${mb(heapLimit)} Mo).`,
       details: `RSS : ${mb(mem.rss)} Mo, externe : ${mb(mem.external)} Mo.`,
     });
 

@@ -2,6 +2,15 @@
 
 Toutes les modifications notables de ce projet seront documentées dans ce fichier.
 
+## v1.27.6 — 2026-09-21
+
+**Barres à 0 % vraiment vides, événements du bot réels**
+
+- Accueil : les barres de l'entonnoir gardaient une largeur minimale de 5 % même à 0 membre, ce qui donnait l'impression de données. Une barre à 0 % est maintenant vide.
+- Centre de contrôle : les événements (345 890 traités, 3,4/s, liste fixe) étaient inventés. Ils viennent maintenant du vrai flux d'événements du bot, avec un débit calculé sur les 60 dernières secondes.
+- Mémoire : le tas était jugé à 94-96 % (donc « dégradé ») parce qu'il était comparé à sa taille courante ; il est maintenant comparé à sa vraie limite. Le ping est échantillonné en continu, pas seulement quand l'onglet est ouvert.
+- Le bouton « Mise à jour » du bot répondait un succès sans rien faire ; il renvoie maintenant que la mise à jour à distance n'est pas prise en charge.
+
 ## v1.27.5 — 2026-09-21
 
 **Musique : chronométrage du lancement, passation**

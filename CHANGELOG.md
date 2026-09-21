@@ -2,6 +2,15 @@
 
 Toutes les modifications notables de ce projet seront documentées dans ce fichier.
 
+## v1.26.4 — 2026-09-21
+
+**Music Center : recherche en direct, mode DJ avec vrai choix du rôle, salon 24h/24, statistiques enrichies**
+
+- Recherche : elle se lance toute seule pendant la frappe (après 350 ms) et annule les requêtes périmées. Avant, une réponse vide ou refusée ne montrait strictement rien ; elle affiche maintenant « Aucun résultat », ou la vraie raison (session du bot expirée, bot absent du serveur, bot injoignable). Un titre Spotify est lancé par son titre et son artiste (le bot en retrouve le son) plutôt que par un lien Spotify sans audio.
+- Mode DJ & réglages : le rôle DJ se choisit dans la liste réelle des rôles du serveur (au lieu de saisir un identifiant à la main), avec un avertissement si aucun rôle n'est choisi alors que le mode DJ est actif ; un nouveau réglage « Rester dans un salon vocal 24h/24 » (équivalent de `/join`) ; et un enregistrement refusé par le bot n'échoue plus en silence.
+- Bot : les réglages musicaux n'étaient pas validés — une valeur du mauvais type comme `djMode: "oui"` était enregistrée telle quelle. Les types et les bornes sont maintenant vérifiés (erreur explicite sinon) et les clés inconnues ignorées.
+- Statistiques : l'onglet restait vide sans explication quand le chargement échouait ; il affiche maintenant un message clair, et un classement des membres les plus actifs avec barres de proportion vient compléter les titres les plus écoutés.
+
 ## v1.26.3 — 2026-09-21
 
 **Dashboard Discord : fin des faux succès et des faux contenus sur toutes les pages restantes**

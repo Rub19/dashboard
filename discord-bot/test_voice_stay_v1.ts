@@ -56,6 +56,27 @@ async function runTests() {
   musicPersistence.updateSettings(gid, { stayChannelId: null });
   assert(voiceStayService.getStayChannelId(gid) === null, 'et retiré par /disconnect');
 
+  console.log('\n🧪 1b. Validation des réglages:');
+  let rejected = false;
+  try {
+    musicPersistence.updateSettings(gid, { djMode: 'oui' } as never);
+  } catch {
+    rejected = true;
+  }
+  assert(rejected, 'une valeur du mauvais type (djMode: "oui") est refusée');
+  assert(musicPersistence.getSettings(gid).djMode === false, 'et les réglages restent inchangés');
+  musicPersistence.updateSettings(gid, { defaultVolume: 40, inconnu: 'x' } as never);
+  const after = musicPersistence.getSettings(gid) as unknown as Record<string, unknown>;
+  assert(after.defaultVolume === 40, 'une valeur valide est enregistrée');
+  assert(!('inconnu' in after), 'une clé inconnue est ignorée');
+  let outOfRange = false;
+  try {
+    musicPersistence.updateSettings(gid, { defaultVolume: 900 });
+  } catch {
+    outOfRange = true;
+  }
+  assert(outOfRange, 'un volume hors bornes (900) est refusé');
+
   console.log('\n🔌 2. Reconnexion:');
   let connectCalls = 0;
   let connectResult = true;

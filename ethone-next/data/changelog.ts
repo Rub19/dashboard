@@ -29503,4 +29503,57 @@ CHANGELOG_BY_LANG.en.unshift(v1263_en);
 CHANGELOG_BY_LANG.es.unshift(v1263_es);
 CHANGELOG_BY_LANG.de.unshift(v1263_de);
 
+const v1264_fr: ChangelogEntry = {
+  version: "v1.26.4",
+  date: "2026-09-21",
+  title: "Music Center : recherche en direct, mode DJ avec vrai choix du rôle, salon 24h/24, statistiques enrichies",
+  items: [
+    "Recherche : elle se lance toute seule pendant la frappe (après 350 ms) et annule les requêtes périmées. Avant, une réponse vide ou refusée ne montrait strictement rien ; elle affiche maintenant « Aucun résultat », ou la vraie raison (session du bot expirée, bot absent du serveur, bot injoignable). Un titre Spotify est lancé par son titre et son artiste (le bot en retrouve le son) plutôt que par un lien Spotify sans audio.",
+    "Mode DJ & réglages : le rôle DJ se choisit dans la liste réelle des rôles du serveur (au lieu de saisir un identifiant à la main), avec un avertissement si aucun rôle n'est choisi alors que le mode DJ est actif ; un nouveau réglage « Rester dans un salon vocal 24h/24 » (équivalent de `/join`) ; et un enregistrement refusé par le bot n'échoue plus en silence.",
+    "Bot : les réglages musicaux n'étaient pas validés — une valeur du mauvais type comme `djMode: \"oui\"` était enregistrée telle quelle. Les types et les bornes sont maintenant vérifiés (erreur explicite sinon) et les clés inconnues ignorées.",
+    "Statistiques : l'onglet restait vide sans explication quand le chargement échouait ; il affiche maintenant un message clair, et un classement des membres les plus actifs avec barres de proportion vient compléter les titres les plus écoutés.",
+  ],
+};
+
+const v1264_en: ChangelogEntry = {
+  version: "v1.26.4",
+  date: "2026-09-21",
+  title: "Music Center: live search, DJ mode with a real role picker, 24/7 channel, richer statistics",
+  items: [
+    "Search: it now runs by itself while you type (after 350 ms) and cancels stale requests. Before, an empty or refused answer showed nothing at all; it now shows \"No results\", or the real reason (bot session expired, bot not on the server, bot unreachable). A Spotify track is played by its title and artist (the bot finds the audio) rather than by a Spotify link that has no audio.",
+    "DJ mode & settings: the DJ role is picked from the server's real role list (instead of typing an id by hand), with a warning if no role is chosen while DJ mode is on; a new \"Stay in a voice channel 24/7\" setting (equivalent of `/join`); and a save refused by the bot no longer fails silently.",
+    "Bot: music settings were not validated — a wrongly typed value such as `djMode: \"yes\"` was stored as is. Types and bounds are now checked (explicit error otherwise) and unknown keys ignored.",
+    "Statistics: the tab stayed empty without explanation when loading failed; it now shows a clear message, and a ranking of the most active members with proportion bars completes the most played tracks.",
+  ],
+};
+
+const v1264_es: ChangelogEntry = {
+  version: "v1.26.4",
+  date: "2026-09-21",
+  title: "Music Center: búsqueda en directo, modo DJ con selector de rol real, canal 24/7 y estadísticas enriquecidas",
+  items: [
+    "Búsqueda: se lanza sola mientras escribes (tras 350 ms) y cancela las peticiones obsoletas. Antes, una respuesta vacía o rechazada no mostraba nada; ahora muestra « Sin resultados » o el motivo real (sesión del bot caducada, bot ausente del servidor, bot inaccesible). Una canción de Spotify se reproduce por su título y artista (el bot encuentra el audio) en lugar de por un enlace de Spotify sin audio.",
+    "Modo DJ y ajustes: el rol de DJ se elige en la lista real de roles del servidor (en lugar de escribir un identificador a mano), con una advertencia si no hay rol elegido mientras el modo DJ está activo; un nuevo ajuste « Permanecer en un canal de voz 24/7 » (equivalente a `/join`); y un guardado rechazado por el bot ya no falla en silencio.",
+    "Bot: los ajustes de música no se validaban: un valor de tipo incorrecto como `djMode: \"sí\"` se guardaba tal cual. Ahora se comprueban los tipos y los límites (error explícito en caso contrario) y se ignoran las claves desconocidas.",
+    "Estadísticas: la pestaña quedaba vacía sin explicación si la carga fallaba; ahora muestra un mensaje claro, y una clasificación de los miembros más activos con barras de proporción completa las canciones más escuchadas.",
+  ],
+};
+
+const v1264_de: ChangelogEntry = {
+  version: "v1.26.4",
+  date: "2026-09-21",
+  title: "Music Center: Live-Suche, DJ-Modus mit echter Rollenauswahl, 24/7-Kanal, umfangreichere Statistiken",
+  items: [
+    "Suche: Sie startet jetzt von selbst während des Tippens (nach 350 ms) und bricht veraltete Anfragen ab. Zuvor zeigte eine leere oder abgelehnte Antwort gar nichts; jetzt erscheint „Keine Ergebnisse“ oder der echte Grund (Bot-Sitzung abgelaufen, Bot nicht auf dem Server, Bot nicht erreichbar). Ein Spotify-Titel wird über Titel und Künstler abgespielt (der Bot findet den Ton) statt über einen Spotify-Link ohne Audio.",
+    "DJ-Modus & Einstellungen: Die DJ-Rolle wird aus der echten Rollenliste des Servers gewählt (statt eine ID von Hand einzutippen), mit einer Warnung, wenn bei aktivem DJ-Modus keine Rolle gewählt ist; eine neue Einstellung „Rund um die Uhr in einem Sprachkanal bleiben“ (entspricht `/join`); und ein vom Bot abgelehntes Speichern schlägt nicht mehr stillschweigend fehl.",
+    "Bot: Die Musikeinstellungen wurden nicht validiert — ein Wert des falschen Typs wie `djMode: \"ja\"` wurde unverändert gespeichert. Typen und Grenzen werden jetzt geprüft (sonst explizite Fehlermeldung), unbekannte Schlüssel werden ignoriert.",
+    "Statistiken: Der Tab blieb bei einem Ladefehler ohne Erklärung leer; jetzt erscheint eine klare Meldung, und eine Rangliste der aktivsten Mitglieder mit Anteilsbalken ergänzt die meistgespielten Titel.",
+  ],
+};
+
+CHANGELOG_BY_LANG.fr.unshift(v1264_fr);
+CHANGELOG_BY_LANG.en.unshift(v1264_en);
+CHANGELOG_BY_LANG.es.unshift(v1264_es);
+CHANGELOG_BY_LANG.de.unshift(v1264_de);
+
 export const CHANGELOG = CHANGELOG_BY_LANG.fr;

@@ -1,6 +1,6 @@
 "use client";
 
-import { useState, useEffect, useCallback, useMemo } from "react";
+import { useState, useEffect, useCallback, useMemo, useRef } from "react";
 import Link from "next/link";
 import { useSearchParams } from "next/navigation";
 import {
@@ -87,6 +87,7 @@ interface MusicSettings {
   djMode: boolean;
   djRoleId: string | null;
   autoDisconnectSeconds: number;
+  stayChannelId?: string | null;
   autoplay: boolean;
   defaultVolume: number;
 }
@@ -161,6 +162,9 @@ export default function MusicCenterClient() {
   const [searchQuery, setSearchQuery] = useState("");
   const [searchResults, setSearchResults] = useState<Track[]>([]);
   const [isSearching, setIsSearching] = useState(false);
+  const [searchDone, setSearchDone] = useState(false);
+  const [searchError, setSearchError] = useState<string | null>(null);
+  const searchAbort = useRef<AbortController | null>(null);
 
   // Playlists, Favorites, History, Settings, Stats
   const [playlists, setPlaylists] = useState<Playlist[]>([]);
@@ -168,6 +172,9 @@ export default function MusicCenterClient() {
   const [history, setHistory] = useState<Track[]>([]);
   const [settings, setSettings] = useState<MusicSettings | null>(null);
   const [stats, setStats] = useState<MusicStats | null>(null);
+  const [guildRoles, setGuildRoles] = useState<Array<{ id: string; name: string; color?: string }>>([]);
+  const [voiceChannels, setVoiceChannels] = useState<Array<{ id: string; name: string }>>([]);
+  const [tabError, setTabError] = useState<string | null>(null);
 
   // New Playlist Modal
   const [isNewPlaylistOpen, setIsNewPlaylistOpen] = useState(false);
@@ -255,34 +262,115 @@ export default function MusicCenterClient() {
         .then((d) => setHistory(d.history || []))
         .catch(() => {});
     } else if (activeTab === "settings") {
+      setTabError(null);
       fetch(`${BOT_API_URL}/api/guilds/${guildId}/music/settings`, FETCH_OPTS)
-        .then((r) => r.json())
+        .then(async (r) => {
+          if (!r.ok) throw new Error(String(r.status));
+          return r.json();
+        })
         .then((d) => setSettings(d.settings || null))
+        .catch(() => setTabError("Impossible de lire les réglages musicaux de ce serveur."));
+      // Vraies listes pour le rôle DJ et le salon 24h/24 (au lieu de saisir des identifiants à la main).
+      fetch(`${BOT_API_URL}/api/guilds/${guildId}/server/roles`, FETCH_OPTS)
+        .then((r) => (r.ok ? r.json() : null))
+        .then((d) => {
+          const roles = (d?.roles || []) as Array<{ id: string; name: string; color?: string; managed?: boolean; position?: number }>;
+          setGuildRoles(
+            roles
+              .filter((role) => !role.managed && role.name !== "@everyone")
+              .sort((x, y) => (y.position ?? 0) - (x.position ?? 0))
+              .map(({ id, name, color }) => ({ id, name, color }))
+          );
+        })
+        .catch(() => {});
+      fetch(`${BOT_API_URL}/api/guilds/${guildId}/server/channels`, FETCH_OPTS)
+        .then((r) => (r.ok ? r.json() : null))
+        .then((d) => {
+          const all = [...(d?.categories || []).flatMap((c: { channels?: unknown[] }) => c.channels || []), ...(d?.orphanChannels || [])] as Array<{
+            id: string;
+            name: string;
+            type: number;
+          }>;
+          setVoiceChannels(all.filter((ch) => ch.type === 2 || ch.type === 13).map(({ id, name }) => ({ id, name })));
+        })
         .catch(() => {});
     } else if (activeTab === "stats") {
+      setTabError(null);
       fetch(`${BOT_API_URL}/api/guilds/${guildId}/music/stats`, FETCH_OPTS)
-        .then((r) => r.json())
+        .then(async (r) => {
+          if (!r.ok) throw new Error(String(r.status));
+          return r.json();
+        })
         .then((d) => setStats(d.stats || null))
-        .catch(() => {});
+        .catch(() => setTabError("Impossible de lire les statistiques musicales de ce serveur."));
     }
   }, [guildId, isReady, activeTab]);
 
-  // Search handler
-  const handleSearch = async (e: React.FormEvent) => {
-    e.preventDefault();
-    if (!searchQuery.trim() || !isReady) return;
-    setIsSearching(true);
-    try {
-      const res = await fetch(`${BOT_API_URL}/api/guilds/${guildId}/music/search?q=${encodeURIComponent(searchQuery.trim())}`, FETCH_OPTS);
-      if (res.ok) {
-        const data = await res.json();
-        setSearchResults(data.results || []);
+  // Recherche : automatique pendant la frappe (350 ms), les requêtes périmées sont annulées, et
+  // chaque cas (erreur, aucun résultat) est signalé — avant, une réponse refusée ou vide ne
+  // montrait strictement rien.
+  const runSearch = useCallback(
+    async (q: string) => {
+      const query = q.trim();
+      if (!query || !isReady) {
+        setSearchResults([]);
+        setSearchError(null);
+        setSearchDone(false);
+        return;
       }
-    } catch {
-      showError("Recherche échouée", "Impossible de joindre le service audio.");
-    } finally {
+      searchAbort.current?.abort();
+      const ctrl = new AbortController();
+      searchAbort.current = ctrl;
+      setIsSearching(true);
+      setSearchError(null);
+      try {
+        const res = await fetch(`${BOT_API_URL}/api/guilds/${guildId}/music/search?q=${encodeURIComponent(query)}`, {
+          ...FETCH_OPTS,
+          signal: ctrl.signal,
+        });
+        if (!res.ok) {
+          setSearchResults([]);
+          setSearchError(
+            res.status === 401
+              ? "Session du bot expirée : reconnecte le bot pour rechercher."
+              : res.status === 404
+                ? "Le bot n'est pas présent sur ce serveur."
+                : `Le bot a répondu une erreur (${res.status}).`
+          );
+        } else {
+          const data = await res.json();
+          setSearchResults(Array.isArray(data.results) ? data.results : []);
+        }
+        setSearchDone(true);
+      } catch (err) {
+        if ((err as Error)?.name === "AbortError") return;
+        setSearchResults([]);
+        setSearchError("Impossible de joindre le bot.");
+        setSearchDone(true);
+      } finally {
+        if (searchAbort.current === ctrl) setIsSearching(false);
+      }
+    },
+    [guildId, isReady]
+  );
+
+  useEffect(() => {
+    const q = searchQuery.trim();
+    if (q.length < 2) {
+      searchAbort.current?.abort();
+      setSearchResults([]);
+      setSearchDone(false);
+      setSearchError(null);
       setIsSearching(false);
+      return;
     }
+    const timer = setTimeout(() => void runSearch(q), 350);
+    return () => clearTimeout(timer);
+  }, [searchQuery, runSearch]);
+
+  const handleSearch = (e: React.FormEvent) => {
+    e.preventDefault();
+    void runSearch(searchQuery);
   };
 
   // Playback Control Actions
@@ -560,6 +648,9 @@ export default function MusicCenterClient() {
         const data = await res.json();
         setSettings(data.settings);
         success("Configuration enregistrée", "Paramètres musicaux mis à jour.");
+      } else {
+        const data = await res.json().catch(() => null);
+        showError("Réglage refusé", data?.error || `Le bot a répondu une erreur (${res.status}).`);
       }
     } catch {
       showError("Erreur", "Impossible d'enregistrer les paramètres.");
@@ -884,19 +975,21 @@ export default function MusicCenterClient() {
               </div>
               <button
                 type="submit"
-                disabled={isSearching || !searchQuery.trim() || !isReady}
+                disabled={!searchQuery.trim() || !isReady}
                 className="flex h-10 items-center gap-1.5 rounded-xl bg-violet-600 px-5 text-xs font-bold text-white shadow-sm hover:bg-violet-500 disabled:opacity-50 transition-all cursor-pointer"
               >
                 {isSearching ? <RefreshCw className="h-3.5 w-3.5 animate-spin" /> : <Search className="h-3.5 w-3.5" />}
-                <span>Rechercher</span>
+                <span>{isSearching ? "Recherche…" : "Rechercher"}</span>
               </button>
             </form>
 
             {/* Quick Search Results Dropdown */}
-            {searchResults.length > 0 && (
+            {(searchResults.length > 0 || searchError || (searchDone && !isSearching)) && (
               <div className="mt-4 border-t border-[var(--panel-border)] pt-4 space-y-2">
                 <div className="flex items-center justify-between">
-                  <span className="text-xs font-bold text-zinc-400">Résultats de recherche ({searchResults.length})</span>
+                  <span className="text-xs font-bold text-zinc-400">
+                    {searchError ? "Recherche impossible" : searchResults.length > 0 ? `Résultats de recherche (${searchResults.length})` : "Aucun résultat"}
+                  </span>
                   <button
                     onClick={() => setSearchResults([])}
                     className="text-[11px] text-zinc-500 hover:text-zinc-300 cursor-pointer"
@@ -904,6 +997,10 @@ export default function MusicCenterClient() {
                     Fermer
                   </button>
                 </div>
+                {searchError && <p className="rounded-lg border border-amber-500/30 bg-amber-500/10 px-3 py-2 text-xs text-amber-200">{searchError}</p>}
+                {!searchError && searchResults.length === 0 && (
+                  <p className="text-xs text-zinc-500">Rien trouvé pour « {searchQuery.trim()} ». Essaie un autre titre, ou colle un lien YouTube, Spotify ou SoundCloud.</p>
+                )}
                 <div className="grid grid-cols-1 sm:grid-cols-2 gap-2.5 max-h-72 overflow-y-auto">
                   {searchResults.map((tr) => (
                     <div
@@ -925,14 +1022,14 @@ export default function MusicCenterClient() {
                       </div>
                       <div className="flex items-center gap-1.5 shrink-0">
                         <button
-                          onClick={() => handlePlayQuery(tr.url || tr.title, false)}
+                          onClick={() => handlePlayQuery(tr.source === "SPOTIFY" ? `${tr.title} ${tr.artist}` : tr.url || tr.title, false)}
                           className="flex h-7 items-center gap-1 rounded-lg bg-violet-600 px-2.5 text-[11px] font-bold text-white hover:bg-violet-500 transition-all cursor-pointer"
                         >
                           <Play className="h-3 w-3 fill-white" />
                           <span>Lire</span>
                         </button>
                         <button
-                          onClick={() => handlePlayQuery(tr.url || tr.title, true)}
+                          onClick={() => handlePlayQuery(tr.source === "SPOTIFY" ? `${tr.title} ${tr.artist}` : tr.url || tr.title, true)}
                           className="flex h-7 items-center gap-1 rounded-[var(--inset-radius)] border border-[var(--panel-border)] bg-white/5 px-2 text-[11px] text-zinc-300 hover:text-white hover:bg-white/10 transition-all cursor-pointer"
                           title="Jouer juste après"
                         >
@@ -1312,15 +1409,33 @@ export default function MusicCenterClient() {
                 {/* DJ Role ID */}
                 {settings.djMode && (
                   <div className="space-y-1.5 pb-3 border-b border-[var(--panel-border)]">
-                    <label className="text-xs font-medium text-zinc-300">ID du rôle DJ</label>
-                    <input
-                      type="text"
-                      value={settings.djRoleId || ""}
-                      onChange={(e) => setSettings({ ...settings, djRoleId: e.target.value })}
-                      onBlur={() => handleSaveSettings({ djRoleId: settings.djRoleId })}
-                      placeholder="Ex: 112233445566778899"
-                      className="h-8 w-full rounded-[var(--inset-radius)] border border-[var(--panel-border)] bg-black/40 px-3 text-xs text-white outline-none focus:border-violet-500"
-                    />
+                    <label className="text-xs font-medium text-zinc-300">Rôle DJ</label>
+                    {guildRoles.length > 0 ? (
+                      <select
+                        value={settings.djRoleId || ""}
+                        onChange={(e) => handleSaveSettings({ djRoleId: e.target.value || null })}
+                        className="h-8 w-full rounded-[var(--inset-radius)] border border-[var(--panel-border)] bg-black/40 px-3 text-xs text-white outline-none"
+                      >
+                        <option value="">— Choisir un rôle —</option>
+                        {guildRoles.map((role) => (
+                          <option key={role.id} value={role.id}>
+                            {role.name}
+                          </option>
+                        ))}
+                      </select>
+                    ) : (
+                      <input
+                        type="text"
+                        value={settings.djRoleId || ""}
+                        onChange={(e) => setSettings({ ...settings, djRoleId: e.target.value })}
+                        onBlur={() => handleSaveSettings({ djRoleId: settings.djRoleId || null })}
+                        placeholder="Identifiant du rôle"
+                        className="h-8 w-full rounded-[var(--inset-radius)] border border-[var(--panel-border)] bg-black/40 px-3 text-xs text-white outline-none"
+                      />
+                    )}
+                    {!settings.djRoleId && (
+                      <p className="text-[11px] text-amber-300">Sans rôle choisi, personne ne pourra contrôler la musique tant que le mode DJ est actif.</p>
+                    )}
                   </div>
                 )}
 
@@ -1365,6 +1480,26 @@ export default function MusicCenterClient() {
                   />
                 </div>
 
+                {/* Mode 24h/24 */}
+                <div className="space-y-1.5 pb-3 border-b border-[var(--panel-border)]">
+                  <p className="text-xs font-bold text-white">Rester dans un salon vocal 24h/24</p>
+                  <p className="text-[11px] text-zinc-400">
+                    Le bot rejoint ce salon et y revient tout seul s'il en est sorti. Équivalent de la commande <code>/join</code>.
+                  </p>
+                  <select
+                    value={settings.stayChannelId || ""}
+                    onChange={(e) => handleSaveSettings({ stayChannelId: e.target.value || null })}
+                    className="h-8 w-full rounded-[var(--inset-radius)] border border-[var(--panel-border)] bg-black/40 px-3 text-xs text-white outline-none"
+                  >
+                    <option value="">Désactivé (quitte après inactivité)</option>
+                    {voiceChannels.map((ch) => (
+                      <option key={ch.id} value={ch.id}>
+                        🔊 {ch.name}
+                      </option>
+                    ))}
+                  </select>
+                </div>
+
                 {/* Auto Disconnect */}
                 <div className="flex items-center justify-between">
                   <div>
@@ -1398,6 +1533,18 @@ export default function MusicCenterClient() {
           )}
 
           {/* TAB 6: STATS */}
+          {activeTab === "settings" && !settings && (
+            <p className="rounded-xl border border-amber-500/30 bg-amber-500/10 px-4 py-3 text-xs text-amber-200">
+              {tabError || "Chargement des réglages…"}
+            </p>
+          )}
+
+          {activeTab === "stats" && !stats && (
+            <p className="rounded-xl border border-amber-500/30 bg-amber-500/10 px-4 py-3 text-xs text-amber-200">
+              {tabError || "Chargement des statistiques…"}
+            </p>
+          )}
+
           {activeTab === "stats" && stats && (
             <div className="space-y-6">
               <div>
@@ -1449,6 +1596,34 @@ export default function MusicCenterClient() {
                   </div>
                 ) : (
                   <p className="text-xs text-zinc-500 italic">Pas encore assez de données d'écoute.</p>
+                )}
+              </div>
+
+              {/* Top membres */}
+              <div className="rounded-[var(--panel-radius)] border border-[var(--panel-border)] bg-white/[0.02] p-5 space-y-3">
+                <h4 className="text-xs font-bold uppercase tracking-wider text-zinc-400">Membres les plus actifs</h4>
+                {stats.topRequesters.length > 0 ? (
+                  <div className="space-y-2.5">
+                    {stats.topRequesters.slice(0, 5).map((m, idx) => {
+                      const max = Math.max(1, stats.topRequesters[0]?.count || 1);
+                      return (
+                        <div key={m.userId || idx} className="space-y-1">
+                          <div className="flex items-center justify-between text-xs">
+                            <span className="font-bold text-white">
+                              <span className="mr-2 font-mono text-zinc-500">#{idx + 1}</span>
+                              {m.userTag}
+                            </span>
+                            <span className="font-mono font-bold text-violet-400">{m.count} demandes</span>
+                          </div>
+                          <div className="h-1.5 w-full overflow-hidden rounded-full bg-white/10">
+                            <div className="h-full rounded-full bg-gradient-to-r from-violet-500 to-fuchsia-500" style={{ width: `${(m.count / max) * 100}%` }} />
+                          </div>
+                        </div>
+                      );
+                    })}
+                  </div>
+                ) : (
+                  <p className="text-xs text-zinc-500 italic">Personne n'a encore demandé de titre.</p>
                 )}
               </div>
             </div>

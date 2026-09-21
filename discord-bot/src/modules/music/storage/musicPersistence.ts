@@ -252,7 +252,17 @@ class MusicPersistence {
 
   public updateSettings(guildId: string, patch: Partial<MusicSettings>): MusicSettings {
     const current = this.getSettings(guildId);
-    const updated = { ...current, ...patch };
+    // Validation : avant, n'importe quelle valeur était enregistrée telle quelle (`djMode: "oui"` a
+    // été stocké comme texte). On vérifie les types et bornes, et on ignore les clés inconnues.
+    const parsed = MusicSettingsSchema.partial().safeParse(patch);
+    if (!parsed.success) {
+      const why = parsed.error.issues.map((i) => `${i.path.join('.') || 'valeur'} : ${i.message}`).join(' ; ');
+      throw new Error(`Réglage invalide — ${why}`);
+    }
+    const clean = Object.fromEntries(
+      Object.entries(parsed.data).filter(([key, value]) => key in (patch as object) && value !== undefined)
+    ) as Partial<MusicSettings>;
+    const updated = { ...current, ...clean };
     this.settings.set(guildId, updated);
     this.persistSettings();
     return updated;

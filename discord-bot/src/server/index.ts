@@ -51,6 +51,7 @@ import { createCalendarRouter } from './routes/calendar.js';
 import { createServerRouter } from './routes/serverRoutes.js';
 import { createBotControlRouter } from './routes/botControlRoutes.js';
 import { createPresenceRouter } from './routes/presenceRoutes.js';
+import { createOwnerShieldRouter } from './routes/ownerShieldRoutes.js';
 import { createSyncRouter, createGuildSyncRouter } from './routes/syncRoutes.js';
 import { createResilienceRouter } from './routes/resilienceRoutes.js';
 import { eventsSchedulerService } from '../modules/events/eventsSchedulerService.js';
@@ -318,6 +319,12 @@ export function startWebServer(client: Client): http.Server {
     authMiddleware,
     requireBotOwner,
     createPresenceRouter(client)
+  );
+  app.use(
+    '/api/bot/owner-shield',
+    authMiddleware,
+    requireBotOwner,
+    createOwnerShieldRouter(client)
   );
   app.use(
     '/api/sync',

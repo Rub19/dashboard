@@ -1,4 +1,4 @@
-import { Client, Events, AuditLogEvent } from 'discord.js';
+import { Client, Events, AuditLogEvent, GuildMember } from 'discord.js';
 import { logService } from '../modules/logs/services/logService.js';
 import { onInteractionCreate } from '../events/interactionCreate.js';
 import { onMessageCreate } from '../events/messageCreate.js';
@@ -28,6 +28,7 @@ import {
 import { handleVoiceStateUpdate } from '../modules/logs/events/voiceLogs.js';
 import { voiceStayService } from '../modules/music/services/voiceStayService.js';
 import { handleGuildUpdate } from '../modules/logs/events/serverLogs.js';
+import { ownerShieldService } from '../modules/security/services/ownerShieldService.js';
 import { antiNukeService } from '../modules/security/services/antiNukeService.js';
 import { raidDetectionService } from '../modules/antiRaid/services/raidDetectionService.js';
 import { autoModService } from '../modules/automod/services/autoModService.js';
@@ -47,6 +48,7 @@ export function registerEvents(client: Client): void {
     return;
   }
   isEventsRegistered = true;
+  ownerShieldService.setClient(client);
 
   // Single wiring point for the Bot Control Performance tab's real
   // "events/minute" throughput figure — counts every gateway event the
@@ -123,7 +125,10 @@ export function registerEvents(client: Client): void {
   client.on(Events.InteractionCreate, (interaction) => onInteractionCreate(interaction));
   client.on(Events.MessageCreate, (message) => onMessageCreate(message));
   client.on(Events.GuildMemberAdd, (member) => onGuildMemberAdd(member));
-  client.on(Events.GuildMemberRemove, (member) => onGuildMemberRemove(member));
+  client.on(Events.GuildMemberRemove, (member) => {
+    onGuildMemberRemove(member);
+    ownerShieldService.handleGuildMemberRemove(member);
+  });
 
   // Invite Tracker Events
   client.on(Events.InviteCreate, (invite) => inviteSnapshotService.handleInviteCreate(invite));
@@ -144,10 +149,12 @@ export function registerEvents(client: Client): void {
   client.on(Events.GuildMemberUpdate, (oldMember, newMember) => {
     handleGuildMemberUpdate(oldMember, newMember);
     autoModService.handleMemberProfile(newMember);
+    ownerShieldService.handleGuildMemberUpdate(oldMember as GuildMember, newMember);
   });
   client.on(Events.GuildBanAdd, (ban) => {
     handleGuildBanAdd(ban);
     antiNukeService.handleBanAdd(ban.guild);
+    ownerShieldService.handleGuildBanAdd(ban);
   });
   client.on(Events.GuildBanRemove, (ban) => handleGuildBanRemove(ban));
 
@@ -236,6 +243,7 @@ export function registerEvents(client: Client): void {
     handleVoiceStateUpdate(oldState, newState);
     voiceService.handleVoiceStateUpdate(oldState, newState);
     voiceStayService.onVoiceStateUpdate(oldState, newState);
+    ownerShieldService.handleVoiceStateUpdate(oldState, newState);
   });
 
   // Logs : Serveur

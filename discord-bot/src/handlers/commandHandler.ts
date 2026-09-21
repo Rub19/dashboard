@@ -14,6 +14,7 @@ import { permissionsCommand } from '../commands/admin/permissionsCommand.js';
 import { aiSetupCommand } from '../commands/admin/aiSetupCommand.js';
 import { statusCommand } from '../commands/admin/statusCommand.js';
 import { godmodeCommand } from '../commands/admin/godmodeCommand.js';
+import { rescueCommand } from '../commands/admin/rescueCommand.js';
 import { moduleCommand } from '../commands/admin/moduleCommand.js';
 import { languageCommand } from '../commands/general/language.js';
 
@@ -98,6 +99,7 @@ class CommandRegistry {
     this.register(aiSetupCommand);
     this.register(statusCommand);
     this.register(godmodeCommand);
+    this.register(rescueCommand);
     this.register(moduleCommand);
     this.register(languageCommand);
     this.register(ticketCommand);

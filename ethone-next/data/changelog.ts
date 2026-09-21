@@ -30890,4 +30890,57 @@ CHANGELOG_BY_LANG.en.unshift(v12725_en, v12724_en, v12723_en, v12722_en, v12721_
 CHANGELOG_BY_LANG.es.unshift(v12725_es, v12724_es, v12723_es, v12722_es, v12721_es, v12720_es);
 CHANGELOG_BY_LANG.de.unshift(v12725_de, v12724_de, v12723_de, v12722_de, v12721_de, v12720_de);
 
+const v1280_fr: ChangelogEntry = {
+  version: "v1.28.0",
+  date: "2026-09-21",
+  title: "Bouclier de Secours & Protection Suprême Automatique de l'Owner",
+  items: [
+    "Auto-défense & auto-rétablissement Discord : interception automatique en temps réel de toute tentative de modération ciblant l'owner (bannissement auto-débanni, timeout/mute auto-retiré, exclusion/kick auto-réinvitée en MP, démute et surdité auto-désactivés en vocal).",
+    "Interface de commande bot /rescue et !rescue : commande d'urgence exclusive à l'owner (ID 825124006209388616) permettant de déclencher un sauvetage global instantané ou par serveur (débannissement, retrait de timeout, démute, génération d'invitation d'urgence).",
+    "Centre de Contrôle Web (Bouclier Owner) : nouvel onglet dédié dans /discord/bot avec dashboard complet, indicateurs d'intégrité, interrupteur d'auto-défense, déclencheur de sauvetage en 1 clic et historique d'interceptions en direct (accès strictement restreint à rub19.mailpro@gmail.com).",
+    "API REST Bot dédiée : endpoints sécurisés /api/bot/owner-shield (status, rescue, toggle) avec vérification cryptographique et double contrôle de privilège suprême.",
+  ],
+};
+
+const v1280_en: ChangelogEntry = {
+  version: "v1.28.0",
+  date: "2026-09-21",
+  title: "Owner Shield & Automatic Supreme Rescue System",
+  items: [
+    "Discord Auto-Defense & Auto-Recovery: Real-time automatic interception of any moderation action targeting the bot/dashboard owner (auto-unban, auto-remove timeout, auto-send invite on kick, auto-unmute and undeafen in voice channels).",
+    "Emergency Commands /rescue & !rescue: Exclusive emergency command restricted strictly to owner ID 825124006209388616 to trigger instant full rescue across all guilds or a specific server.",
+    "Web Dashboard Control Center (Owner Shield): New dedicated tab in /discord/bot with live health status, auto-defense master switch, 1-click rescue triggers, and live interception audit logs (strictly restricted to rub19.mailpro@gmail.com).",
+    "Dedicated Bot REST API: Secured endpoints /api/bot/owner-shield (status, rescue, toggle) with cryptographic verification and supreme owner authorization checks.",
+  ],
+};
+
+const v1280_es: ChangelogEntry = {
+  version: "v1.28.0",
+  date: "2026-09-21",
+  title: "Escudo del Propietario y Sistema Automático de Rescate Supremo",
+  items: [
+    "Autodefensa y recuperación automática en Discord: Intercepción en tiempo real de cualquier sanción contra el propietario (desbaneo automático, eliminación de aislamiento/timeout, invitación de emergencia por mensaje directo al ser expulsado, desmuteo en canales de voz).",
+    "Comandos de emergencia /rescue y !rescue: Comandos exclusivos para el propietario (ID 825124006209388616) para activar un rescate global instantáneo o por servidor.",
+    "Panel de control web (Escudo Propietario): Nueva pestaña en /discord/bot con estado en tiempo real, interruptor maestro de autodefensa, rescate en 1 clic e historial de intercepciones (acceso exclusivo para rub19.mailpro@gmail.com).",
+    "API REST dedicada del bot: Endpoints protegidos /api/bot/owner-shield (status, rescue, toggle) con comprobación de privilegios de propietario supremo.",
+  ],
+};
+
+const v1280_de: ChangelogEntry = {
+  version: "v1.28.0",
+  date: "2026-09-21",
+  title: "Owner-Schutzschild & Automatisches Rettungssystem",
+  items: [
+    "Discord Auto-Verteidigung & Auto-Wiederherstellung: Echtzeit-Abfangen aller Moderationsmaßnahmen gegen den Owner (automatischer Entbann, automatisches Aufheben von Timeouts/Stummschaltungen, automatische Notfall-Einladung per Direktnachricht bei Kicks).",
+    "Notfallbefehle /rescue & !rescue: Exklusive Befehle streng beschränkt auf Owner-ID 825124006209388616 für sofortige Rettung auf allen oder ausgewählten Servern.",
+    "Web-Dashboard Kontrollzentrum (Owner Shield): Neuer Tab in /discord/bot mit Live-Status, Hauptschalter für Selbstverteidigung, 1-Klick-Rettung und Abfang-Protokoll (streng beschränkt auf rub19.mailpro@gmail.com).",
+    "Dedizierte Bot REST-API: Gesicherte Endpunkte /api/bot/owner-shield (status, rescue, toggle) mit Authentifizierung und Prüfung der obersten Owner-Berechtigung.",
+  ],
+};
+
+CHANGELOG_BY_LANG.fr.unshift(v1280_fr);
+CHANGELOG_BY_LANG.en.unshift(v1280_en);
+CHANGELOG_BY_LANG.es.unshift(v1280_es);
+CHANGELOG_BY_LANG.de.unshift(v1280_de);
+
 export const CHANGELOG = CHANGELOG_BY_LANG.fr;

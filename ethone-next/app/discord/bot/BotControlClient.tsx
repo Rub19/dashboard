@@ -62,19 +62,20 @@ export type BotTab =
   | "jobs"
   | "performance"
   | "security"
+  | "shield"
   | "settings";
 
 interface BotControlClientProps {
   initialTab?: BotTab;
 }
 
-// Regroups the 15 flat tabs into 5 top-level categories for navigation —
+// Regroups the 16 flat tabs into 5 top-level categories for navigation —
 // each tab's own content/JSX is unchanged, only how you get to it.
 const TAB_GROUPS: { id: string; label: string; icon: any; tabs: BotTab[] }[] = [
   { id: "overview", label: "Vue d'ensemble", icon: BarChart3, tabs: ["overview", "presence"] },
   { id: "configuration", label: "Configuration", icon: Settings, tabs: ["settings", "ai", "modules"] },
   { id: "health", label: "Santé & Performance", icon: Activity, tabs: ["performance", "diagnostics", "health", "servers"] },
-  { id: "security", label: "Sécurité", icon: ShieldCheck, tabs: ["security", "errors"] },
+  { id: "security", label: "Sécurité", icon: ShieldCheck, tabs: ["security", "shield", "errors"] },
   { id: "operations", label: "Opérations", icon: Wifi, tabs: ["integrations", "jobs", "commands", "events"] },
 ];
 
@@ -86,6 +87,7 @@ const TAB_META: Record<BotTab, { label: string; icon: any }> = {
   performance: { label: "Performances & RAM", icon: Activity },
   diagnostics: { label: "Diagnostics 1-Clic", icon: CheckCircle2 },
   security: { label: "Sécurité & Audit", icon: ShieldCheck },
+  shield: { label: "Bouclier Owner ⚡", icon: ShieldAlert },
   integrations: { label: "Intégrations", icon: Wifi },
   jobs: { label: "Tâches Planifiées", icon: ListRestart },
   commands: { label: "Commandes", icon: Terminal },
@@ -1697,8 +1699,8 @@ export default function BotControlClient({ initialTab = "overview" }: BotControl
           />
         )}
 
-        {(activeTab === "security" || activeTab === "errors") && (
-          <SecurityGroup activeTab={activeTab} securityAudit={securityAudit} errors={errors} />
+        {(activeTab === "security" || activeTab === "shield" || activeTab === "errors") && (
+          <SecurityGroup activeTab={activeTab} securityAudit={securityAudit} errors={errors} isOwner={isOwner} />
         )}
       </div>
     </div>

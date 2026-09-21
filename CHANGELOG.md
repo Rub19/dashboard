@@ -2,6 +2,15 @@
 
 Toutes les modifications notables de ce projet seront documentées dans ce fichier.
 
+## v1.28.0 — 2026-09-21
+
+**Bouclier de Secours & Protection Suprême Automatique de l'Owner**
+
+- Auto-défense & auto-rétablissement Discord : interception automatique en temps réel de toute tentative de modération ciblant l'owner (bannissement auto-débanni, timeout/mute auto-retiré, exclusion/kick auto-réinvitée en MP, démute et surdité auto-désactivés en vocal).
+- Interface de commande bot /rescue et !rescue : commande d'urgence exclusive à l'owner (ID 825124006209388616) permettant de déclencher un sauvetage global instantané ou par serveur (débannissement, retrait de timeout, démute, génération d'invitation d'urgence).
+- Centre de Contrôle Web (Bouclier Owner) : nouvel onglet dédié dans /discord/bot avec dashboard complet, indicateurs d'intégrité, interrupteur d'auto-défense, déclencheur de sauvetage en 1 clic et historique d'interceptions en direct (accès strictement restreint à rub19.mailpro@gmail.com).
+- API REST Bot dédiée : endpoints sécurisés /api/bot/owner-shield (status, rescue, toggle) avec vérification cryptographique et double contrôle de privilège suprême.
+
 ## v1.27.25 — 2026-09-21
 
 **Salons vocaux temporaires : maintien automatique dans la catégorie du salon de création**

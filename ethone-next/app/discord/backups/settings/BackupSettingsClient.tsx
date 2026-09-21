@@ -7,6 +7,7 @@ import { ArrowLeft, Settings, Clock, Archive, Shield, Lock, Unlock, Save, Zap, H
 import { useToast } from "@/components/ToastProvider";
 import { useDiscordOAuth } from "@/lib/hooks/useDiscordOAuth";
 import { cn } from "@/lib/utils";
+import { useResolvedGuildId } from "@/lib/hooks/useBotGuildIds";
 
 const BOT_API_URL = process.env.NEXT_PUBLIC_DISCORD_BOT_API || "";
 
@@ -58,9 +59,9 @@ export default function BackupSettingsClient() {
     return profile?.guilds?.[0] || null;
   }, [rawGuildId, profile?.guilds]);
 
-  const currentGuildId = activeGuild?.id || "123456789012345678";
+  const currentGuildId = useResolvedGuildId(rawGuildId, profile?.guilds);
   const base = `${BOT_API_URL}/api/guilds/${currentGuildId}/backups`;
-  const isRealGuild = Boolean(BOT_API_URL) && currentGuildId !== "123456789012345678";
+  const isRealGuild = Boolean(BOT_API_URL) && Boolean(currentGuildId);
   const guildQuery = activeGuild ? `?guildId=${activeGuild.id}` : "";
 
   const [isDemo, setIsDemo] = useState(true);

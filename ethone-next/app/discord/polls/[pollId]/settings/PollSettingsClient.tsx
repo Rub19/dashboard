@@ -12,6 +12,7 @@ import {
 } from "lucide-react";
 import { useToast } from "@/components/ToastProvider";
 import { useDiscordOAuth } from "@/lib/hooks/useDiscordOAuth";
+import { useResolvedGuildId } from "@/lib/hooks/useBotGuildIds";
 
 export default function PollSettingsClient() {
   const params = useParams();
@@ -25,7 +26,7 @@ export default function PollSettingsClient() {
   };
   const { profile } = useDiscordOAuth();
   const searchParams = useSearchParams();
-  const guildParam = searchParams.get("guildId") || profile?.guilds?.[0]?.id || "123456789012345678";
+  const guildParam = useResolvedGuildId(searchParams.get("guildId"), profile?.guilds);
 
   const [title, setTitle] = useState(
     pollId === "staff-decision-01"

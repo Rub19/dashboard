@@ -13,6 +13,7 @@ import {
 import { useToast } from "@/components/ToastProvider";
 import { useDiscordOAuth } from "@/lib/hooks/useDiscordOAuth";
 import { cn } from "@/lib/utils";
+import { useResolvedGuildId } from "@/lib/hooks/useBotGuildIds";
 
 const BOT_API_URL = process.env.NEXT_PUBLIC_DISCORD_BOT_API || "";
 
@@ -76,7 +77,7 @@ export default function FormResponsesClient() {
   const searchParams = useSearchParams();
   const { profile } = useDiscordOAuth();
   const formId = (params?.formId as string) || "demo";
-  const rawGuildId = searchParams.get("guildId") || profile?.guilds?.[0]?.id || "123456789012345678";
+  const rawGuildId = useResolvedGuildId(searchParams.get("guildId"), profile?.guilds);
   const { success, error: showError } = useToast();
 
   const [responses, setResponses] = useState<ResponseItem[]>(DEMO_RESPONSES);
@@ -89,7 +90,7 @@ export default function FormResponsesClient() {
   const base = `${BOT_API_URL}/api/guilds/${rawGuildId}/forms/${formId}`;
 
   const loadResponses = useCallback(async () => {
-    if (!BOT_API_URL || rawGuildId === "123456789012345678") {
+    if (!BOT_API_URL) {
       setIsDemo(true);
       return;
     }

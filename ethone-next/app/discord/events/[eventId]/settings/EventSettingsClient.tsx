@@ -14,6 +14,7 @@ import {
   FileText,
 } from "lucide-react";
 import { useDiscordOAuth } from "@/lib/hooks/useDiscordOAuth";
+import { useResolvedGuildId } from "@/lib/hooks/useBotGuildIds";
 
 const BOT_API_URL = process.env.NEXT_PUBLIC_DISCORD_BOT_API || "";
 
@@ -33,9 +34,9 @@ export default function EventSettingsClient() {
   const searchParams = useSearchParams();
   const { profile } = useDiscordOAuth();
   const eventId = (params?.eventId as string) || "evt-gaming-night";
-  const guildParam = searchParams.get("guildId") || profile?.guilds?.[0]?.id || "123456789012345678";
+  const guildParam = useResolvedGuildId(searchParams.get("guildId"), profile?.guilds);
   const base = `${BOT_API_URL}/api/guilds/${guildParam}/events/${eventId}`;
-  const isDemo = !BOT_API_URL || guildParam === "123456789012345678";
+  const isDemo = !BOT_API_URL || !guildParam;
 
   const [title, setTitle] = useState("Friday Gaming Night — Valorant & Lethal Company");
   const [description, setDescription] = useState(
@@ -89,8 +90,7 @@ export default function EventSettingsClient() {
   const handleSave = async () => {
     setSaveError("");
     if (isDemo) {
-      setSavedToast(true);
-      setTimeout(() => setSavedToast(false), 2000);
+      setSaveError("Bot injoignable : rien n'a été enregistré.");
       return;
     }
     try {
@@ -117,6 +117,10 @@ export default function EventSettingsClient() {
 
   const handleCancelEvent = async () => {
     setShowCancelModal(false);
+    if (isDemo) {
+      setSaveError("Bot injoignable : l'événement n'a pas été annulé.");
+      return;
+    }
     if (!isDemo) {
       try {
         await fetch(base, {

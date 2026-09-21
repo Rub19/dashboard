@@ -14,6 +14,7 @@ import {
   RefreshCw,
 } from "lucide-react";
 import { useDiscordOAuth } from "@/lib/hooks/useDiscordOAuth";
+import { useResolvedGuildId } from "@/lib/hooks/useBotGuildIds";
 
 const BOT_API_URL = process.env.NEXT_PUBLIC_DISCORD_BOT_API || "";
 
@@ -114,7 +115,7 @@ export default function EventParticipantsClient() {
   const searchParams = useSearchParams();
   const { profile } = useDiscordOAuth();
   const eventId = (params?.eventId as string) || "evt-gaming-night";
-  const guildParam = searchParams.get("guildId") || profile?.guilds?.[0]?.id || "123456789012345678";
+  const guildParam = useResolvedGuildId(searchParams.get("guildId"), profile?.guilds);
 
   const [participants, setParticipants] = useState<Participant[]>(INITIAL_PARTICIPANTS);
   const [isDemo, setIsDemo] = useState(true);
@@ -125,7 +126,7 @@ export default function EventParticipantsClient() {
   const base = `${BOT_API_URL}/api/guilds/${guildParam}/events/${eventId}`;
 
   const loadParticipants = useCallback(async () => {
-    if (!BOT_API_URL || guildParam === "123456789012345678") {
+    if (!BOT_API_URL) {
       setIsDemo(true);
       return;
     }

@@ -26,6 +26,7 @@ import {
 } from "lucide-react";
 import { useDiscordOAuth } from "@/lib/hooks/useDiscordOAuth";
 import { useToast } from "@/components/ToastProvider";
+import { useResolvedGuildId } from "@/lib/hooks/useBotGuildIds";
 
 const BOT_API_URL = process.env.NEXT_PUBLIC_DISCORD_BOT_API || "";
 
@@ -170,7 +171,7 @@ export default function EventsCenterClient() {
   const { profile } = useDiscordOAuth();
   const { success, error: showError } = useToast();
   const guildParam =
-    searchParams.get("guildId") || profile?.guilds?.[0]?.id || "123456789012345678";
+    useResolvedGuildId(searchParams.get("guildId"), profile?.guilds);
 
   const [events, setEvents] = useState<EventItem[]>(INITIAL_EVENTS);
   const [isDemo, setIsDemo] = useState(true);
@@ -180,7 +181,7 @@ export default function EventsCenterClient() {
   const [copiedId, setCopiedId] = useState<string | null>(null);
 
   const loadEvents = useCallback(async () => {
-    if (!BOT_API_URL || !guildParam || guildParam === "123456789012345678") {
+    if (!BOT_API_URL || !guildParam) {
       setIsDemo(true);
       return;
     }
@@ -207,7 +208,7 @@ export default function EventsCenterClient() {
 
   const eventAction = useCallback(
     async (eventId: string, path: string, method: "POST" | "DELETE" = "POST", body?: Record<string, unknown>): Promise<boolean> => {
-      if (isDemo || !BOT_API_URL) return true;
+      if (isDemo || !BOT_API_URL) return false;
       try {
         const res = await fetch(`${BOT_API_URL}/api/guilds/${guildParam}/events/${eventId}${path}`, {
           method,
@@ -259,6 +260,10 @@ export default function EventsCenterClient() {
   };
 
   const handleQuickRSVP = async (eventId: string) => {
+    if (isDemo || !BOT_API_URL) {
+      showError("Bot injoignable : l'inscription n'a pas été enregistrée.");
+      return;
+    }
     setEvents((prev) =>
       prev.map((ev) => (ev.id === eventId ? { ...ev, stats: { ...ev.stats, goingCount: ev.stats.goingCount + 1 } } : ev))
     );

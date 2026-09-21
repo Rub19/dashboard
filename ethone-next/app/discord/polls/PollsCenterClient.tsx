@@ -29,6 +29,7 @@ import {
 import { useToast } from "@/components/ToastProvider";
 import { useDiscordOAuth } from "@/lib/hooks/useDiscordOAuth";
 import { cn } from "@/lib/utils";
+import { useResolvedGuildId } from "@/lib/hooks/useBotGuildIds";
 
 const BOT_API_URL = process.env.NEXT_PUBLIC_DISCORD_BOT_API || "";
 
@@ -107,7 +108,7 @@ export default function PollsCenterClient() {
   };
   const { profile } = useDiscordOAuth();
   const searchParams = useSearchParams();
-  const guildParam = searchParams.get("guildId") || profile?.guilds?.[0]?.id || "123456789012345678";
+  const guildParam = useResolvedGuildId(searchParams.get("guildId"), profile?.guilds);
 
   const [polls, setPolls] = useState<PollSummary[]>(DEMO_POLLS);
   const [isDemo, setIsDemo] = useState(true);
@@ -153,7 +154,7 @@ export default function PollsCenterClient() {
   }, [polls]);
 
   const loadPolls = useCallback(async () => {
-    if (!BOT_API_URL || !guildParam || guildParam === "123456789012345678") {
+    if (!BOT_API_URL || !guildParam) {
       setIsDemo(true);
       return;
     }

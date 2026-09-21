@@ -22,6 +22,7 @@ import {
 import { useToast } from "@/components/ToastProvider";
 import { useDiscordOAuth } from "@/lib/hooks/useDiscordOAuth";
 import { cn } from "@/lib/utils";
+import { useResolvedGuildId } from "@/lib/hooks/useBotGuildIds";
 
 const BOT_API_URL = process.env.NEXT_PUBLIC_DISCORD_BOT_API || "";
 
@@ -119,16 +120,9 @@ export default function FormsCenterClient() {
   const searchParams = useSearchParams();
   const rawGuildId = searchParams.get("guildId");
   const { profile } = useDiscordOAuth();
-  const { success } = useToast();
+  const { success, error: showError } = useToast();
 
-  const activeGuild = useMemo(() => {
-    if (rawGuildId && profile?.guilds) {
-      return profile.guilds.find((g) => g.id === rawGuildId) || profile.guilds[0];
-    }
-    return profile?.guilds?.[0] || null;
-  }, [rawGuildId, profile?.guilds]);
-
-  const currentGuildId = activeGuild?.id || "123456789012345678";
+  const currentGuildId = useResolvedGuildId(rawGuildId, profile?.guilds);
 
   const [forms, setForms] = useState<FormItem[]>(DEMO_FORMS);
   const [isDemo, setIsDemo] = useState(true);
@@ -139,14 +133,9 @@ export default function FormsCenterClient() {
   const [isTemplateModalOpen, setIsTemplateModalOpen] = useState(false);
 
   const loadForms = useCallback(async () => {
-    if (!BOT_API_URL || !currentGuildId || currentGuildId === "123456789012345678") {
-      // No live server: keep the per-guild local list (or the demo set).
-      try {
-        const saved = localStorage.getItem(`ethone:forms:${currentGuildId}`);
-        setForms(saved ? JSON.parse(saved) : DEMO_FORMS);
-      } catch {
-        setForms(DEMO_FORMS);
-      }
+    if (!BOT_API_URL || !currentGuildId) {
+      // Pas de bot joignable : aucune liste locale ni inventée.
+      setForms([]);
       setIsDemo(true);
       return;
     }
@@ -175,18 +164,13 @@ export default function FormsCenterClient() {
   const saveFormsList = useCallback(
     (updated: FormItem[]) => {
       setForms(updated);
-      if (isDemo) {
-        try {
-          localStorage.setItem(`ethone:forms:${currentGuildId}`, JSON.stringify(updated));
-        } catch {}
-      }
     },
-    [isDemo, currentGuildId]
+    []
   );
 
   const formAction = useCallback(
     async (formId: string, path: string, method: "POST" | "DELETE" = "POST"): Promise<boolean> => {
-      if (isDemo || !BOT_API_URL) return true;
+      if (isDemo || !BOT_API_URL) return false;
       try {
         const res = await fetch(`${BOT_API_URL}/api/guilds/${currentGuildId}/forms/${formId}${path}`, {
           method,
@@ -242,21 +226,7 @@ export default function FormsCenterClient() {
   // Actions
   const handleDuplicate = async (form: FormItem) => {
     if (isDemo || !BOT_API_URL) {
-      saveFormsList([
-        {
-          ...form,
-          id: `form-${Date.now().toString(36)}`,
-          title: `${form.title} (Copie)`,
-          status: "DRAFT",
-          version: 1,
-          responsesCount: 0,
-          pendingCount: 0,
-          completionRate: 0,
-          updatedAt: new Date().toISOString(),
-        },
-        ...forms,
-      ]);
-      success("Formulaire dupliqué", `"${form.title}" a été créé en brouillon.`);
+      showError("Bot injoignable : le formulaire n'a pas été dupliqué.");
       return;
     }
     const ok = await formAction(form.id, "/duplicate");
@@ -311,7 +281,7 @@ export default function FormsCenterClient() {
                 <span>Formulaires</span>
                 {isDemo && (
                   <span className="text-[10px] font-semibold px-2 py-0.5 rounded-full bg-amber-500/10 text-amber-300 border border-amber-500/30">
-                    Données de démonstration
+                    Bot injoignable ou absent de ce serveur
                   </span>
                 )}
               </h1>

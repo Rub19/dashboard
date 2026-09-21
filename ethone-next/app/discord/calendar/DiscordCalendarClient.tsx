@@ -17,6 +17,7 @@ import {
   RefreshCw,
 } from "lucide-react";
 import { useDiscordOAuth } from "@/lib/hooks/useDiscordOAuth";
+import { useResolvedGuildId } from "@/lib/hooks/useBotGuildIds";
 
 const BOT_API_URL = process.env.NEXT_PUBLIC_DISCORD_BOT_API || "";
 
@@ -60,7 +61,7 @@ type ViewMode = "MONTH" | "WEEK" | "DAY" | "AGENDA";
 export default function DiscordCalendarClient() {
   const searchParams = useSearchParams();
   const { profile } = useDiscordOAuth();
-  const guildParam = searchParams.get("guildId") || profile?.guilds?.[0]?.id || "123456789012345678";
+  const guildParam = useResolvedGuildId(searchParams.get("guildId"), profile?.guilds);
 
   const [currentDate, setCurrentDate] = useState(new Date());
   const [viewMode, setViewMode] = useState<ViewMode>("MONTH");
@@ -71,7 +72,7 @@ export default function DiscordCalendarClient() {
   const [loading, setLoading] = useState(false);
 
   const loadEvents = useCallback(async () => {
-    if (!BOT_API_URL || !guildParam || guildParam === "123456789012345678") {
+    if (!BOT_API_URL || !guildParam) {
       setIsDemo(true);
       return;
     }

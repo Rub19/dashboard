@@ -65,8 +65,8 @@ export default function FormSettingsClient() {
     }
     return profile?.guilds?.[0] || null;
   }, [urlGuildId, profile?.guilds]);
-  const rawGuildId = activeGuild?.id || urlGuildId || "123456789012345678";
-  const isRealGuild = Boolean(BOT_API_URL) && rawGuildId !== "123456789012345678";
+  const rawGuildId = activeGuild?.id || urlGuildId || "";
+  const isRealGuild = Boolean(BOT_API_URL) && Boolean(rawGuildId);
   const formUrl = `${BOT_API_URL}/api/guilds/${rawGuildId}/forms/${formId}`;
 
   const [activeTab, setActiveTab] = useState<"discord" | "antispam" | "scoring" | "automations">("discord");

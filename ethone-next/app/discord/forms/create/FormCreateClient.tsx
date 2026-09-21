@@ -98,8 +98,8 @@ export default function FormCreateClient() {
     }
     return profile?.guilds?.[0] || null;
   }, [rawGuildId, profile?.guilds]);
-  const guildId = activeGuild?.id || rawGuildId || "123456789012345678";
-  const isRealGuild = Boolean(BOT_API_URL) && guildId !== "123456789012345678";
+  const guildId = activeGuild?.id || rawGuildId || "";
+  const isRealGuild = Boolean(BOT_API_URL) && Boolean(guildId);
 
   const [selectedTemplate, setSelectedTemplate] = useState<string>(defaultTemplate);
   const [formTitle, setFormTitle] = useState("");

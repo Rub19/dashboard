@@ -14,6 +14,7 @@ import {
 import { useToast } from "@/components/ToastProvider";
 import { useDiscordOAuth } from "@/lib/hooks/useDiscordOAuth";
 import { cn } from "@/lib/utils";
+import { useResolvedGuildId } from "@/lib/hooks/useBotGuildIds";
 
 export default function PollVoteClient() {
   const params = useParams();
@@ -26,7 +27,7 @@ export default function PollVoteClient() {
   };
   const { profile } = useDiscordOAuth();
   const searchParams = useSearchParams();
-  const guildParam = searchParams.get("guildId") || profile?.guilds?.[0]?.id || "123456789012345678";
+  const guildParam = useResolvedGuildId(searchParams.get("guildId"), profile?.guilds);
 
   const isStaffPoll = pollId === "staff-decision-01";
 

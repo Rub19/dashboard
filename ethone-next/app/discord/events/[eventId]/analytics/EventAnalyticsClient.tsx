@@ -54,7 +54,7 @@ export default function EventAnalyticsClient() {
   const searchParams = useSearchParams();
   const { profile } = useDiscordOAuth();
   const eventId = (params?.eventId as string) || "evt-gaming-night";
-  const guildParam = useResolvedGuildId(searchParams.get("guildId"), profile?.guilds) || "123456789012345678";
+  const guildParam = useResolvedGuildId(searchParams.get("guildId"), profile?.guilds);
 
   const [stats, setStats] = useState<Stats>(DEMO_STATS);
   const [isDemo, setIsDemo] = useState(true);
@@ -63,7 +63,7 @@ export default function EventAnalyticsClient() {
   const base = `${BOT_API_URL}/api/guilds/${guildParam}/events/${eventId}`;
 
   const loadAnalytics = useCallback(async () => {
-    if (!BOT_API_URL || guildParam === "123456789012345678") {
+    if (!BOT_API_URL) {
       setIsDemo(true);
       return;
     }

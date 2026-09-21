@@ -29556,4 +29556,49 @@ CHANGELOG_BY_LANG.en.unshift(v1264_en);
 CHANGELOG_BY_LANG.es.unshift(v1264_es);
 CHANGELOG_BY_LANG.de.unshift(v1264_de);
 
+const v1265_fr: ChangelogEntry = {
+  version: "v1.26.5",
+  date: "2026-09-21",
+  title: "Dashboard Discord : plus de « mode local » sur Événements, Formulaires et Calendrier, et fin du faux serveur",
+  items: [
+    "Événements (création, réglages, liste), Formulaires et Calendrier gardaient tes modifications dans le navigateur quand le bot était injoignable, en annonçant parfois un succès : publier un événement affichait « publié » puis redirigeait, enregistrer les réglages affichait « enregistré », une inscription incrémentait le compteur, dupliquer un formulaire en créait un local. Ces actions affichent maintenant que le bot est injoignable et ne changent rien ; la liste locale des formulaires (mémorisée dans le navigateur) a disparu.",
+    "Un identifiant de serveur factice (`123456789012345678`) servait de marqueur « aucun serveur » dans 22 pages (IA, Sauvegardes, Commandes, Économie, Rôles, Suggestions, Formulaires, Sondages, Événements, Calendrier…). Ces pages utilisent maintenant le serveur de l'adresse, sinon un serveur où le bot est présent, et affichent un état « bot injoignable » quand il n'y en a aucun.",
+  ],
+};
+
+const v1265_en: ChangelogEntry = {
+  version: "v1.26.5",
+  date: "2026-09-21",
+  title: "Discord dashboard: no more \"local mode\" on Events, Forms and Calendar, and the fake server is gone",
+  items: [
+    "Events (creation, settings, list), Forms and Calendar kept your changes in the browser when the bot was unreachable, sometimes announcing a success: publishing an event showed \"published\" then redirected, saving settings showed \"saved\", an RSVP bumped the counter, duplicating a form created a local one. These actions now say the bot is unreachable and change nothing; the local list of forms (kept in the browser) is gone.",
+    "A dummy server id (`123456789012345678`) served as a \"no server\" marker in 22 pages (AI, Backups, Commands, Economy, Roles, Suggestions, Forms, Polls, Events, Calendar…). These pages now use the server from the address, otherwise a server where the bot is present, and show a \"bot unreachable\" state when there is none.",
+  ],
+};
+
+const v1265_es: ChangelogEntry = {
+  version: "v1.26.5",
+  date: "2026-09-21",
+  title: "Panel de Discord: se acabó el « modo local » en Eventos, Formularios y Calendario, y el servidor falso",
+  items: [
+    "Eventos (creación, ajustes, lista), Formularios y Calendario guardaban tus cambios en el navegador cuando el bot no respondía, a veces anunciando un éxito: publicar un evento mostraba « publicado » y redirigía, guardar los ajustes mostraba « guardado », una inscripción incrementaba el contador, duplicar un formulario creaba uno local. Ahora estas acciones indican que el bot es inaccesible y no cambian nada; la lista local de formularios (guardada en el navegador) desapareció.",
+    "Un identificador de servidor ficticio (`123456789012345678`) servía de marcador « ningún servidor » en 22 páginas (IA, Copias, Comandos, Economía, Roles, Sugerencias, Formularios, Encuestas, Eventos, Calendario…). Ahora usan el servidor de la dirección o, si no, uno donde el bot está presente, y muestran « bot inaccesible » cuando no hay ninguno.",
+  ],
+};
+
+const v1265_de: ChangelogEntry = {
+  version: "v1.26.5",
+  date: "2026-09-21",
+  title: "Discord-Dashboard: kein „lokaler Modus“ mehr bei Ereignissen, Formularen und Kalender, und der Fake-Server ist weg",
+  items: [
+    "Ereignisse (Erstellen, Einstellungen, Liste), Formulare und Kalender behielten deine Änderungen im Browser, wenn der Bot nicht erreichbar war, und meldeten teils einen Erfolg: Ein Ereignis zu veröffentlichen zeigte „veröffentlicht“ und leitete weiter, Einstellungen zu speichern zeigte „gespeichert“, eine Anmeldung erhöhte den Zähler, ein Formular zu duplizieren erzeugte ein lokales. Diese Aktionen melden jetzt, dass der Bot nicht erreichbar ist, und ändern nichts; die lokale Formularliste (im Browser gespeichert) entfällt.",
+    "Eine Platzhalter-Server-ID (`123456789012345678`) diente in 22 Seiten als „kein Server“-Marker (KI, Backups, Befehle, Wirtschaft, Rollen, Vorschläge, Formulare, Umfragen, Ereignisse, Kalender …). Diese Seiten nutzen jetzt den Server aus der Adresse, sonst einen Server, auf dem der Bot vorhanden ist, und zeigen „Bot nicht erreichbar“, wenn es keinen gibt.",
+  ],
+};
+
+CHANGELOG_BY_LANG.fr.unshift(v1265_fr);
+CHANGELOG_BY_LANG.en.unshift(v1265_en);
+CHANGELOG_BY_LANG.es.unshift(v1265_es);
+CHANGELOG_BY_LANG.de.unshift(v1265_de);
+
 export const CHANGELOG = CHANGELOG_BY_LANG.fr;

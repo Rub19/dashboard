@@ -2,6 +2,13 @@
 
 Toutes les modifications notables de ce projet seront documentées dans ce fichier.
 
+## v1.26.5 — 2026-09-21
+
+**Dashboard Discord : plus de « mode local » sur Événements, Formulaires et Calendrier, et fin du faux serveur**
+
+- Événements (création, réglages, liste), Formulaires et Calendrier gardaient tes modifications dans le navigateur quand le bot était injoignable, en annonçant parfois un succès : publier un événement affichait « publié » puis redirigeait, enregistrer les réglages affichait « enregistré », une inscription incrémentait le compteur, dupliquer un formulaire en créait un local. Ces actions affichent maintenant que le bot est injoignable et ne changent rien ; la liste locale des formulaires (mémorisée dans le navigateur) a disparu.
+- Un identifiant de serveur factice (`123456789012345678`) servait de marqueur « aucun serveur » dans 22 pages (IA, Sauvegardes, Commandes, Économie, Rôles, Suggestions, Formulaires, Sondages, Événements, Calendrier…). Ces pages utilisent maintenant le serveur de l'adresse, sinon un serveur où le bot est présent, et affichent un état « bot injoignable » quand il n'y en a aucun.
+
 ## v1.26.4 — 2026-09-21
 
 **Music Center : recherche en direct, mode DJ avec vrai choix du rôle, salon 24h/24, statistiques enrichies**

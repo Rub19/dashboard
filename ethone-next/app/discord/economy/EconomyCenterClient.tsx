@@ -17,6 +17,7 @@ import {
 import { useToast } from "@/components/ToastProvider";
 import { useDiscordOAuth } from "@/lib/hooks/useDiscordOAuth";
 import { cn } from "@/lib/utils";
+import { useResolvedGuildId } from "@/lib/hooks/useBotGuildIds";
 
 const BOT_API_URL = process.env.NEXT_PUBLIC_DISCORD_BOT_API || "";
 
@@ -181,7 +182,7 @@ export default function EconomyCenterClient() {
     return profile?.guilds?.[0] || null;
   }, [rawGuildId, profile?.guilds]);
 
-  const currentGuildId = activeGuild?.id || "123456789012345678";
+  const currentGuildId = useResolvedGuildId(rawGuildId, profile?.guilds);
   const base = `${BOT_API_URL}/api/guilds/${currentGuildId}/economy`;
 
   const [config, setConfig] = useState<EconomyConfig>(DEFAULT_CONFIG);
@@ -196,7 +197,7 @@ export default function EconomyCenterClient() {
   const [newItem, setNewItem] = useState({ roleId: "", label: "", price: 100, description: "" });
 
   const load = useCallback(async () => {
-    if (!BOT_API_URL || !currentGuildId || currentGuildId === "123456789012345678") {
+    if (!BOT_API_URL || !currentGuildId) {
       setIsDemo(true);
       return;
     }

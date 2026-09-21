@@ -4,6 +4,7 @@ import React, { useState, useEffect } from "react";
 import Link from "next/link";
 import { useRouter, useSearchParams } from "next/navigation";
 import { useDiscordOAuth } from "@/lib/hooks/useDiscordOAuth";
+import { useResolvedGuildId } from "@/lib/hooks/useBotGuildIds";
 import {
   Clock,
   ArrowLeft,
@@ -114,8 +115,8 @@ export default function EventCreateClient() {
   const searchParams = useSearchParams();
   const { profile } = useDiscordOAuth();
   const templateParam = searchParams.get("template");
-  const guildParam = searchParams.get("guildId") || profile?.guilds?.[0]?.id || "123456789012345678";
-  const isDemo = !BOT_API_URL || guildParam === "123456789012345678";
+  const guildParam = useResolvedGuildId(searchParams.get("guildId"), profile?.guilds);
+  const isDemo = !BOT_API_URL || !guildParam;
   const eventsBase = `${BOT_API_URL}/api/guilds/${guildParam}/events`;
 
   const [step, setStep] = useState(1);
@@ -261,10 +262,8 @@ export default function EventCreateClient() {
     setPublishError("");
     setIsSubmitting(true);
     if (isDemo) {
-      setTimeout(() => {
-        setIsSubmitting(false);
-        router.push("/discord/events");
-      }, 1200);
+      setIsSubmitting(false);
+      setPublishError("Bot injoignable : l'événement n'a pas été publié.");
       return;
     }
     const ok = await persistEvent("SCHEDULED");
@@ -278,8 +277,7 @@ export default function EventCreateClient() {
 
   const handleSaveDraft = async () => {
     if (isDemo) {
-      setSaveToast(true);
-      setTimeout(() => setSaveToast(false), 2000);
+      setPublishError("Bot injoignable : le brouillon n'a pas été enregistré.");
       return;
     }
     const ok = await persistEvent("DRAFT");

@@ -20,6 +20,7 @@ import {
 import { useToast } from "@/components/ToastProvider";
 import { useDiscordOAuth } from "@/lib/hooks/useDiscordOAuth";
 import { cn } from "@/lib/utils";
+import { useResolvedGuildId } from "@/lib/hooks/useBotGuildIds";
 
 interface OptionItem {
   id: string;
@@ -50,7 +51,7 @@ export default function PollCreateClient() {
   };
   const { profile } = useDiscordOAuth();
   const searchParams = useSearchParams();
-  const guildParam = searchParams.get("guildId") || profile?.guilds?.[0]?.id || "123456789012345678";
+  const guildParam = useResolvedGuildId(searchParams.get("guildId"), profile?.guilds);
 
   const [activeTab, setActiveTab] = useState<"general" | "questions" | "eligibility" | "quorum" | "panel">("general");
 

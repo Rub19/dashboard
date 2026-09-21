@@ -5,6 +5,7 @@ import { AIMemoryService } from './src/modules/ai/services/aiMemoryService.js';
 import { AIProviderService } from './src/modules/ai/services/aiProviderService.js';
 import { AIToolService } from './src/modules/ai/services/aiToolService.js';
 import { aiService } from './src/modules/ai/services/aiService.js';
+import { AIKnowledgeSource } from './src/modules/ai/types/index.js';
 
 let passed = 0;
 let total = 0;
@@ -20,10 +21,66 @@ function assert(condition: boolean, name: string) {
   }
 }
 
+function setupTestFixtures(guildId: string) {
+  const sources: AIKnowledgeSource[] = [
+    {
+      id: 'kn-rules',
+      guildId,
+      title: 'Règlement Officiel ETHONE',
+      type: 'TEXT',
+      content: `1. Respectez tous les membres. Aucun harcèlement, insulte ou provocation.
+2. Pas de spam, de flood ou de mentions inutiles (@everyone réservé au staff).
+3. Publicité interdite en salons publics ou en messages privés sans accord préalable.
+4. Salons vocaux : micro correct exigé, pas de soundboard intempestif ni de cris.
+5. Tout signalement doit être effectué via le salon #support ou la commande /ticket.`,
+      scope: 'GLOBAL',
+      tokenCount: 150,
+      status: 'READY',
+      updatedAt: new Date().toISOString(),
+    },
+    {
+      id: 'kn-vip',
+      guildId,
+      title: 'Guide des Rôles & Avantages VIP',
+      type: 'DOC',
+      content: `Rôles disponibles sur le serveur :
+- Membre : rôle de base attribué après vérification.
+- Actif : niveau 5 de leveling (/rank pour voir votre progression).
+- VIP Elite : accessible avec 5 invitations validées ou soutien boost. Accès aux salons vocaux 128 kbps et salons exclusifs.
+- Modérateur : recrutement lors des sessions annoncées dans #annonces.`,
+      scope: 'GLOBAL',
+      tokenCount: 120,
+      status: 'READY',
+      updatedAt: new Date().toISOString(),
+    },
+    {
+      id: 'kn-faq',
+      guildId,
+      title: 'FAQ Support & Tickets',
+      type: 'FAQ',
+      content: `Q: Comment ouvrir un ticket ?
+R: Rendez-vous dans le salon #support et cliquez sur "Ouvrir un ticket" ou tapez la commande /ticket create.
+Q: Quels sont les horaires du staff ?
+R: L'équipe modératrice est active de 09:00 à 23:00 tous les jours. En cas d'urgence la nuit, l'anti-raid automatique protège le serveur.
+Q: Comment réinitialiser son niveau ?
+R: Seuls les administrateurs peuvent modifier les données de leveling.`,
+      scope: 'GLOBAL',
+      tokenCount: 140,
+      status: 'READY',
+      updatedAt: new Date().toISOString(),
+    },
+  ];
+
+  for (const s of sources) {
+    aiRepository.saveKnowledgeSource(s);
+  }
+}
+
 async function runTests() {
   console.log('\n=== [ETHONE AI ASSISTANT 2.0 — TEST SUITE] ===\n');
 
   const testGuildId = '123456789012345678';
+  setupTestFixtures(testGuildId);
 
   // 1. Repository CRUD & Seed Data
   console.log('--- 1. Storage & Settings ---');

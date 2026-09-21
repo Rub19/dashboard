@@ -73,54 +73,11 @@ export default function InvitesCenterClient() {
   const fetchAllData = useCallback(async () => {
     setLoading(true);
     if (!API_BASE) {
-      setOverview({
-        kpis: {
-          totalInvites: 1284,
-          validInvites: 932,
-          fakeJoins: 142,
-          leftMembers: 92,
-          retainedMembers: 840,
-          retentionRate: 73,
-          conversionRate: 72,
-          joinsToday: 24,
-          joinsThisWeek: 168,
-          topInviter: { userId: "usr_alex", tag: "Alex#0001", invites: 184 },
-        },
-        funnel: {
-          invitationsTracked: 2000,
-          totalJoins: 1284,
-          validJoins: 1102,
-          retainedMembers: 932,
-          rewardedMembers: 147,
-        },
-      });
-      setLeaderboard([
-        { rank: 1, userId: "usr_alex", tag: "Alex#0001", total: 184, valid: 162, left: 14, fake: 8, retentionRate: 91, rewardsCount: 3 },
-        { rank: 2, userId: "usr_emma", tag: "Emma_Music#2026", total: 142, valid: 120, left: 18, fake: 4, retentionRate: 85, rewardsCount: 2 },
-        { rank: 3, userId: "usr_lucas", tag: "Lucas_FR#9999", total: 98, valid: 81, left: 12, fake: 5, retentionRate: 83, rewardsCount: 1 },
-      ]);
-      setLinks([
-        { code: "ethone-dev", inviterTag: "ETHONE Sentinel", uses: 412, maxUses: 0, expiresAt: null, channelName: "bienvenue", isVanity: true },
-        { code: "alex-gaming", inviterTag: "Alex#0001", uses: 184, maxUses: 250, expiresAt: new Date(Date.now() + 1000 * 60 * 60 * 24 * 7).toISOString(), channelName: "général", isVanity: false },
-      ]);
-      setRewards([
-        { id: "rew_1", name: "Rôle Supporter Actif", requiredValidInvites: 5, roleName: "Supporter", xpAmount: 250, rewardBadge: "🥉 Supporter", enabled: true },
-        { id: "rew_2", name: "Rôle VIP Argent", requiredValidInvites: 15, roleName: "VIP Argent", xpAmount: 600, rewardBadge: "🥈 VIP", enabled: true },
-        { id: "rew_3", name: "Rôle VIP Ambassadeur", requiredValidInvites: 30, roleName: "Ambassadeur VIP", xpAmount: 1500, rewardBadge: "👑 Ambassadeur", enabled: true },
-      ]);
-      setCampaigns([
-        {
-          id: "camp_1",
-          name: "Campagne de Croissance Printemps 2026",
-          description: "Aidez la communauté à grandir et débloquez le rôle exclusif Ambassadeur ainsi que 1,000 XP.",
-          startDate: new Date(Date.now() - 1000 * 60 * 60 * 24 * 10).toISOString(),
-          endDate: new Date(Date.now() + 1000 * 60 * 60 * 24 * 20).toISOString(),
-          inviteTarget: 500,
-          currentInvites: 184,
-          rewards: ["Rôle @Ambassadeur", "1,000 XP"],
-          status: "ACTIVE",
-        },
-      ]);
+      setOverview(null);
+      setLeaderboard([]);
+      setLinks([]);
+      setRewards([]);
+      setCampaigns([]);
       setLoading(false);
       return;
     }
@@ -131,28 +88,7 @@ export default function InvitesCenterClient() {
         const ovData = await ovRes.json();
         setOverview(ovData);
       } else {
-        // Mock fallback
-        setOverview({
-          kpis: {
-            totalInvites: 1284,
-            validInvites: 932,
-            fakeJoins: 142,
-            leftMembers: 92,
-            retainedMembers: 840,
-            retentionRate: 73,
-            conversionRate: 72,
-            joinsToday: 24,
-            joinsThisWeek: 168,
-            topInviter: { userId: "usr_alex", tag: "Alex#0001", invites: 184 },
-          },
-          funnel: {
-            invitationsTracked: 2000,
-            totalJoins: 1284,
-            validJoins: 1102,
-            retainedMembers: 932,
-            rewardedMembers: 147,
-          },
-        });
+        setOverview(null);
       }
 
       // 2. Leaderboard
@@ -161,13 +97,7 @@ export default function InvitesCenterClient() {
         const lbData = await lbRes.json();
         setLeaderboard(lbData.leaderboard || []);
       } else {
-        setLeaderboard([
-          { rank: 1, userId: "usr_alex", userTag: "Alex#0001", totalInvites: 184, validInvites: 162, leftMembers: 14, suspiciousInvites: 8, retentionRate: 91, rewardsEarned: 3 },
-          { rank: 2, userId: "usr_lucas", userTag: "Lucas#1234", totalInvites: 142, validInvites: 118, leftMembers: 16, suspiciousInvites: 8, retentionRate: 83, rewardsEarned: 2 },
-          { rank: 3, userId: "usr_emma", userTag: "Emma#5678", totalInvites: 97, validInvites: 89, leftMembers: 5, suspiciousInvites: 3, retentionRate: 94, rewardsEarned: 2 },
-          { rank: 4, userId: "usr_noah", userTag: "Noah#9012", totalInvites: 64, validInvites: 51, leftMembers: 9, suspiciousInvites: 4, retentionRate: 79, rewardsEarned: 1 },
-          { rank: 5, userId: "usr_lea", userTag: "Léa#3456", totalInvites: 42, validInvites: 38, leftMembers: 2, suspiciousInvites: 2, retentionRate: 95, rewardsEarned: 1 },
-        ]);
+        setLeaderboard([]);
       }
 
       // 3. Links
@@ -176,11 +106,7 @@ export default function InvitesCenterClient() {
         const linksData = await linksRes.json();
         setLinks(linksData.links || []);
       } else {
-        setLinks([
-          { code: "ethone-dev", creator: "Alex#0001", uses: 184, maxUses: "Illimité", expires: "Jamais", temporary: false, url: "https://discord.gg/ethone-dev", status: "Actif" },
-          { code: "gaming-vip", creator: "Lucas#1234", uses: 142, maxUses: "500", expires: "31/12/2026", temporary: false, url: "https://discord.gg/gaming-vip", status: "Actif" },
-          { code: "welcome-hub", creator: "Emma#5678", uses: 97, maxUses: "Illimité", expires: "Jamais", temporary: false, url: "https://discord.gg/welcome-hub", status: "Actif" },
-        ]);
+        setLinks([]);
       }
 
       // 4. Rewards
@@ -189,11 +115,7 @@ export default function InvitesCenterClient() {
         const rewData = await rewRes.json();
         setRewards(rewData.rewards || []);
       } else {
-        setRewards([
-          { id: "rew_1", name: "Rôle Bronze Initié", requiredValidInvites: 5, roleName: "Bronze Supporter", xpAmount: 150, rewardBadge: "🥉 Bronze", enabled: true },
-          { id: "rew_2", name: "Rôle Silver Recruteur", requiredValidInvites: 15, roleName: "Silver Recruteur", xpAmount: 500, rewardBadge: "🥈 Silver", enabled: true },
-          { id: "rew_3", name: "Rôle VIP Ambassadeur", requiredValidInvites: 30, roleName: "Ambassadeur VIP", xpAmount: 1500, rewardBadge: "👑 Ambassadeur", enabled: true },
-        ]);
+        setRewards([]);
       }
 
       // 5. Campaigns
@@ -202,19 +124,7 @@ export default function InvitesCenterClient() {
         const campData = await campRes.json();
         setCampaigns(campData.campaigns || []);
       } else {
-        setCampaigns([
-          {
-            id: "camp_1",
-            name: "Campagne de Croissance Printemps 2026",
-            description: "Aidez la communauté à grandir et débloquez le rôle exclusif Ambassadeur ainsi que 1,000 XP.",
-            startDate: new Date(Date.now() - 1000 * 60 * 60 * 24 * 10).toISOString(),
-            endDate: new Date(Date.now() + 1000 * 60 * 60 * 24 * 20).toISOString(),
-            inviteTarget: 500,
-            currentInvites: 184,
-            rewards: ["Rôle @Ambassadeur", "1,000 XP"],
-            status: "ACTIVE",
-          },
-        ]);
+        setCampaigns([]);
       }
     } finally {
       setLoading(false);

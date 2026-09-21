@@ -2,6 +2,16 @@
 
 Toutes les modifications notables de ce projet seront documentées dans ce fichier.
 
+## v1.27.12 — 2026-09-21
+
+**Suppression des données fictives et assainissement des dépôts**
+
+- Automod : suppression du profil de secours 'STRIKE-MOCK' et des faux strikes en cas d'erreur de chargement.
+- Invitations : remplacement des données fictives (Alex#0001, 1284 invitations) par des états vides neutres en mode hors ligne ou en cas de panne réseau.
+- Profils de modération : assainissement des états hors ligne sans fausses données résiduelles.
+- Dépôts du bot (Formulaires, Sondages, IA) : suppression des graines et données de démonstration codées en dur sur la guilde de test, remplacées par des fixtures de test isolées.
+- Sondages : suppression du taux de participation codé en dur à 68.4%.
+
 ## v1.27.11 — 2026-09-21
 
 **Latence musicale réduite, persistance des événements et paramètres réels**

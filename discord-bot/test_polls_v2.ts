@@ -4,7 +4,7 @@ import { pollVotingService } from './src/modules/polls/services/pollVotingServic
 import { pollResultService } from './src/modules/polls/services/pollResultService.js';
 import { pollService } from './src/modules/polls/services/pollService.js';
 import { discordPollPanel } from './src/modules/polls/ui/discordPollPanel.js';
-import { DiscordPoll } from './src/modules/polls/types/index.js';
+import { DiscordPoll, PollVote } from './src/modules/polls/types/index.js';
 
 let passed = 0;
 let failed = 0;
@@ -19,10 +19,267 @@ function assert(condition: boolean, msg: string) {
   }
 }
 
+function setupTestFixtures(guildId: string) {
+  const demoPolls: DiscordPoll[] = [
+    {
+      id: 'community-game-night',
+      guildId,
+      title: 'Soirée Gaming Communautaire — Choix du Jeu',
+      description: 'Votez pour le jeu principal de notre stream communautaire de vendredi soir !',
+      category: 'Événements & Jeux',
+      type: 'SINGLE_CHOICE',
+      status: 'ACTIVE',
+      creatorId: '123456789012345678',
+      creatorTag: 'Admin#0001',
+      anonymity: 'PUBLIC',
+      resultsVisibility: 'LIVE',
+      allowVoteChange: true,
+      allowVoteRetract: false,
+      questions: [
+        {
+          id: 'q-game',
+          title: 'À quel jeu souhaitez-vous jouer ce vendredi ?',
+          description: 'Une seule réponse possible',
+          type: 'SINGLE_CHOICE',
+          required: true,
+          minSelections: 1,
+          maxSelections: 1,
+          order: 0,
+          options: [
+            { id: 'opt-valo', label: 'Valorant (Custom 5v5)', emoji: '🎯', description: 'Tournoi amical inter-membres', color: '#f43f5e', imageUrl: '', weight: 1, votesCount: 52, points: 52 },
+            { id: 'opt-mc', label: 'Minecraft (Mini-jeux Bedwars)', emoji: '⛏️', description: 'Serveur privé dédié', color: '#10b981', imageUrl: '', weight: 1, votesCount: 41, points: 41 },
+            { id: 'opt-lethal', label: 'Lethal Company', emoji: '👽', description: 'Escouades vocales de 4', color: '#f59e0b', imageUrl: '', weight: 1, votesCount: 22, points: 22 },
+            { id: 'opt-rocket', label: 'Rocket League (Tournoi 2v2)', emoji: '⚽', description: 'Matches à élimination directe', color: '#3b82f6', imageUrl: '', weight: 1, votesCount: 13, points: 13 },
+          ],
+        },
+      ],
+      eligibility: {
+        allowedRoleIds: [],
+        forbiddenRoleIds: [],
+        minAccountAgeDays: 0,
+        minGuildMembershipDays: 0,
+        specificUserIds: [],
+        logicGate: 'ANY',
+      },
+      roleWeights: [
+        { roleId: 'role-vip', roleName: 'VIP', weightMultiplier: 2 },
+        { roleId: 'role-booster', roleName: 'Server Booster', weightMultiplier: 2 },
+      ],
+      quorum: {
+        enabled: false,
+        minParticipantsCount: 0,
+        minParticipationPercentage: 0,
+        approvalThresholdPercentage: 50,
+      },
+      automations: [
+        {
+          id: 'auto-winner-announce',
+          name: 'Annonce automatique du jeu gagnant',
+          enabled: true,
+          trigger: 'POLL_ENDED',
+          actions: [
+            {
+              type: 'ANNOUNCE_WINNER',
+              messageTemplate: '🏆 **Le vote est terminé !** Le jeu retenu pour ce soir est **{winner}** avec {votes} votes ! Rendez-vous en vocal à 21h.',
+            },
+          ],
+        },
+      ],
+      panelConfig: {
+        channelId: '123456789012345688',
+        embedTitle: '🎮 Choix du Jeu — Vendredi Soir',
+        embedDescription: 'Quel titre préférez-vous pour notre soirée communautaire ? Votez avec les boutons ci-dessous.',
+        embedColor: '#8b5cf6',
+        thumbnailUrl: '',
+        imageUrl: '',
+        footerText: 'ETHONE Community Poll • Fin des votes vendredi à 18h',
+        buttonText: 'Voter',
+        showLiveResultsButton: true,
+      },
+      startsAt: new Date(Date.now() - 86400000).toISOString(),
+      endsAt: new Date(Date.now() + 86400000).toISOString(),
+      createdAt: new Date(Date.now() - 86400000).toISOString(),
+      updatedAt: new Date().toISOString(),
+    },
+    {
+      id: 'staff-decision-01',
+      guildId,
+      title: 'Décision Staff : Révision des Sanctions AutoMod',
+      description: "Vote interne de l'équipe de modération pour adopter le nouveau barème de sanctions progressives.",
+      category: 'Décisions Staff',
+      type: 'APPROVAL',
+      status: 'ACTIVE',
+      creatorId: '123456789012345678',
+      creatorTag: 'Admin#0001',
+      anonymity: 'ANONYMOUS',
+      resultsVisibility: 'STAFF_ONLY',
+      allowVoteChange: false,
+      allowVoteRetract: false,
+      questions: [
+        {
+          id: 'q-approval',
+          title: 'Approuvez-vous la mise en place du barème AutoMod 2.0 ?',
+          description: 'Quorum requis de 60% et majorité qualifiée de 66% pour adoption.',
+          type: 'APPROVAL',
+          required: true,
+          minSelections: 1,
+          maxSelections: 1,
+          order: 0,
+          options: [
+            { id: 'opt-approve', label: 'Approuver (Pour)', emoji: '✅', description: 'Adopter la réforme immédiatement', color: '#10b981', imageUrl: '', weight: 1, votesCount: 8, points: 8 },
+            { id: 'opt-reject', label: 'Rejeter (Contre)', emoji: '❌', description: "Conserver l'ancien barème", color: '#f43f5e', imageUrl: '', weight: 1, votesCount: 2, points: 2 },
+            { id: 'opt-abstain', label: 'Abstention', emoji: '⚪', description: 'Ne prend pas parti', color: '#71717a', imageUrl: '', weight: 1, votesCount: 1, points: 1 },
+          ],
+        },
+      ],
+      eligibility: {
+        allowedRoleIds: ['role-staff', 'role-mod', 'role-admin'],
+        forbiddenRoleIds: [],
+        minAccountAgeDays: 30,
+        minGuildMembershipDays: 14,
+        specificUserIds: [],
+        logicGate: 'ANY',
+      },
+      roleWeights: [],
+      quorum: {
+        enabled: true,
+        minParticipantsCount: 10,
+        minParticipationPercentage: 60,
+        approvalThresholdPercentage: 66,
+      },
+      automations: [],
+      panelConfig: {
+        channelId: '123456789012345689',
+        embedTitle: '⚖️ Vote Staff Privé — AutoMod 2.0',
+        embedDescription: "Vote anonyme à bulletin secret réservé à l'équipe de modération.",
+        embedColor: '#6366f1',
+        thumbnailUrl: '',
+        imageUrl: '',
+        footerText: 'ETHONE Staff Governance • Quorum 60%',
+        buttonText: 'Voter à bulletin secret',
+        showLiveResultsButton: false,
+      },
+      startsAt: new Date(Date.now() - 172800000).toISOString(),
+      endsAt: new Date(Date.now() + 86400000).toISOString(),
+      createdAt: new Date(Date.now() - 172800000).toISOString(),
+      updatedAt: new Date().toISOString(),
+    },
+    {
+      id: 'feedback-event-01',
+      guildId,
+      title: 'Note & Feedback Tournoi Printemps',
+      description: 'Sondage de satisfaction après la clôture de notre tournoi communautaire.',
+      category: 'Satisfaction & Feedback',
+      type: 'RATING',
+      status: 'ENDED',
+      creatorId: '123456789012345678',
+      creatorTag: 'Admin#0001',
+      anonymity: 'PUBLIC',
+      resultsVisibility: 'LIVE',
+      allowVoteChange: false,
+      allowVoteRetract: false,
+      questions: [
+        {
+          id: 'q-rating',
+          title: "Comment notez-vous l'organisation globale du tournoi ?",
+          description: 'De 1 (très décevant) à 5 (excellent)',
+          type: 'RATING',
+          required: true,
+          minSelections: 1,
+          maxSelections: 1,
+          order: 0,
+          options: [
+            { id: 'star-5', label: '⭐⭐⭐⭐⭐ 5 étoiles (Excellent)', emoji: '⭐', description: '', imageUrl: '', color: '#f59e0b', weight: 1, votesCount: 38, points: 190 },
+            { id: 'star-4', label: '⭐⭐⭐⭐ 4 étoiles (Très bon)', emoji: '⭐', description: '', imageUrl: '', color: '#10b981', weight: 1, votesCount: 24, points: 96 },
+            { id: 'star-3', label: '⭐⭐⭐ 3 étoiles (Correct)', emoji: '⭐', description: '', imageUrl: '', color: '#3b82f6', weight: 1, votesCount: 8, points: 24 },
+            { id: 'star-2', label: '⭐⭐ 2 étoiles (Moyen)', emoji: '⭐', description: '', imageUrl: '', color: '#f97316', weight: 1, votesCount: 2, points: 4 },
+            { id: 'star-1', label: '⭐ 1 étoile (À améliorer)', emoji: '⭐', description: '', imageUrl: '', color: '#ef4444', weight: 1, votesCount: 1, points: 1 },
+          ],
+        },
+      ],
+      eligibility: {
+        allowedRoleIds: [],
+        forbiddenRoleIds: [],
+        minAccountAgeDays: 0,
+        minGuildMembershipDays: 0,
+        specificUserIds: [],
+        logicGate: 'ANY',
+      },
+      roleWeights: [],
+      quorum: { enabled: false, minParticipantsCount: 0, minParticipationPercentage: 0, approvalThresholdPercentage: 50 },
+      automations: [],
+      panelConfig: {
+        channelId: '123456789012345688',
+        embedTitle: '📊 Bilan Tournoi — Résultats',
+        embedDescription: 'Merci à tous les participants ! Découvrez les retours de la communauté.',
+        embedColor: '#f59e0b',
+        thumbnailUrl: '',
+        imageUrl: '',
+        footerText: 'Sondage clos • Score moyen : 4.4 / 5',
+        buttonText: 'Voir les résultats',
+        showLiveResultsButton: true,
+      },
+      startsAt: new Date(Date.now() - 7 * 86400000).toISOString(),
+      endsAt: new Date(Date.now() - 2 * 86400000).toISOString(),
+      endedAt: new Date(Date.now() - 2 * 86400000).toISOString(),
+      createdAt: new Date(Date.now() - 7 * 86400000).toISOString(),
+      updatedAt: new Date().toISOString(),
+    },
+  ];
+
+  for (const p of demoPolls) {
+    pollRepository.savePoll(p);
+  }
+
+  const demoVotes: PollVote[] = [
+    {
+      id: 'vote-1',
+      pollId: 'community-game-night',
+      guildId,
+      userId: 'user-alpha-1',
+      userTag: 'SkyWalker#0001',
+      userAvatar: 'https://cdn.discordapp.com/embed/avatars/0.png',
+      questionId: 'q-game',
+      selectedOptionIds: ['opt-valo'],
+      weight: 1,
+      votedAt: new Date(Date.now() - 3600000).toISOString(),
+    },
+    {
+      id: 'vote-2',
+      pollId: 'community-game-night',
+      guildId,
+      userId: 'user-alpha-2',
+      userTag: 'VIP_Gamer#7777',
+      userAvatar: 'https://cdn.discordapp.com/embed/avatars/1.png',
+      questionId: 'q-game',
+      selectedOptionIds: ['opt-valo'],
+      weight: 2,
+      votedAt: new Date(Date.now() - 7200000).toISOString(),
+    },
+    {
+      id: 'vote-3',
+      pollId: 'community-game-night',
+      guildId,
+      userId: 'user-alpha-3',
+      userTag: 'CraftBuilder#4040',
+      userAvatar: 'https://cdn.discordapp.com/embed/avatars/2.png',
+      questionId: 'q-game',
+      selectedOptionIds: ['opt-mc'],
+      weight: 1,
+      votedAt: new Date(Date.now() - 10800000).toISOString(),
+    },
+  ];
+
+  for (const v of demoVotes) {
+    pollRepository.saveVote(v);
+  }
+}
+
 async function runTests() {
   console.log('🧪 Starting ETHONE Polls & Voting 2.0 Test Suite...\n');
   const testGuildId = '123456789012345678';
   const otherGuildId = '999999999999999999';
+  setupTestFixtures(testGuildId);
 
   // 1. Repository Tests
   console.log('📦 1. Poll Repository & Multi-Guild Isolation:');

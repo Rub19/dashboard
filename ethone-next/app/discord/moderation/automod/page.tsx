@@ -745,28 +745,32 @@ export default function AutoModCommandCenterPage() {
       });
       return;
     } catch {
-      // Profil de secours
+      // Profil de secours sans fausses données
       const userIncidents = incidents.filter((i) => i.userId === userId);
+      const calculatedRisk =
+        userIncidents.length > 0
+          ? Math.round(
+              userIncidents.reduce((sum, i) => sum + (i.totalRiskScore || 0), 0) / userIncidents.length
+            )
+          : 0;
       setInspectedProfile({
         userId,
-        activeStrikesCount: 1,
-        activeStrikes: [
-          {
-            id: "STRIKE-MOCK",
-            guildId: selectedGuild.id,
-            userId,
-            reason: "Infraction répétée AutoMod",
-            addedBy: "AUTOMOD",
-            createdAt: new Date().toISOString(),
-            expiresAt: new Date(Date.now() + 7 * 86400000).toISOString(),
-            active: true,
-          },
-        ],
+        activeStrikesCount: 0,
+        activeStrikes: [],
         strikeHistory: [],
         incidentCount: userIncidents.length,
         recentIncidents: userIncidents,
-        currentCalculatedRisk: userIncidents.length * 20,
-        riskLevel: userIncidents.length >= 3 ? "HIGH" : userIncidents.length >= 1 ? "MEDIUM" : "LOW",
+        currentCalculatedRisk: calculatedRisk,
+        riskLevel:
+          calculatedRisk >= 75
+            ? "CRITICAL"
+            : calculatedRisk >= 55
+            ? "HIGH"
+            : calculatedRisk >= 30
+            ? "MEDIUM"
+            : calculatedRisk > 0
+            ? "LOW"
+            : "SAFE",
       });
     } finally {
       setIsLoadingProfile(false);

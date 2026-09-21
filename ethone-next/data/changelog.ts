@@ -30201,4 +30201,61 @@ CHANGELOG_BY_LANG.en.unshift(v12711_en);
 CHANGELOG_BY_LANG.es.unshift(v12711_es);
 CHANGELOG_BY_LANG.de.unshift(v12711_de);
 
+const v12712_fr: ChangelogEntry = {
+  version: "v1.27.12",
+  date: "2026-09-21",
+  title: "Suppression des données fictives et assainissement des dépôts",
+  items: [
+    "Automod : suppression du profil de secours 'STRIKE-MOCK' et des faux strikes en cas d'erreur de chargement.",
+    "Invitations : remplacement des données fictives (Alex#0001, 1284 invitations) par des états vides neutres en mode hors ligne ou en cas de panne réseau.",
+    "Profils de modération : assainissement des états hors ligne sans fausses données résiduelles.",
+    "Dépôts du bot (Formulaires, Sondages, IA) : suppression des graines et données de démonstration codées en dur sur la guilde de test, remplacées par des fixtures de test isolées.",
+    "Sondages : suppression du taux de participation codé en dur à 68.4%.",
+  ],
+};
+
+const v12712_en: ChangelogEntry = {
+  version: "v1.27.12",
+  date: "2026-09-21",
+  title: "Mock data purge and bot repository hygiene",
+  items: [
+    "Automod: removed 'STRIKE-MOCK' and fabricated fallback strikes upon profile fetch failure.",
+    "Invites: replaced mock fallback data (Alex#0001, 1,284 invites) with clean neutral empty states during network failures.",
+    "Moderation profiles: cleaned up offline fallback states with zero fabricated entries.",
+    "Bot repositories (Forms, Polls, AI): removed hardcoded demo seeds on test guild, replaced with self-contained test fixtures.",
+    "Polls: removed hardcoded 68.4% participation rate.",
+  ],
+};
+
+const v12712_es: ChangelogEntry = {
+  version: "v1.27.12",
+  date: "2026-09-21",
+  title: "Purga de datos simulados y saneamiento de repositorios del bot",
+  items: [
+    "Automod: eliminación de 'STRIKE-MOCK' y strikes falsos en caso de fallo de red.",
+    "Invitaciones: sustitución de datos simulados de respaldo (Alex#0001, 1284 invitaciones) por estados vacíos neutros.",
+    "Perfiles de moderación: saneamiento de estados sin conexión sin datos fabricados.",
+    "Repositorios del bot (Formularios, Encuestas, IA): eliminación de datos semilla de demostración en el servidor de pruebas.",
+    "Encuestas: eliminación de la tasa de participación fijada en 68.4%.",
+  ],
+};
+
+const v12712_de: ChangelogEntry = {
+  version: "v1.27.12",
+  date: "2026-09-21",
+  title: "Bereinigung von Mock-Daten und Bot-Repository-Hygiene",
+  items: [
+    "Automod: 'STRIKE-MOCK' und erfundene Fallback-Strikes bei Ladefehlern entfernt.",
+    "Einladungen: Simulierte Fallback-Daten (Alex#0001, 1284 Einladungen) durch neutrale leere Zustände bei Netzwerkausfällen ersetzt.",
+    "Moderationsprofile: Bereinigung von Offline-Zuständen ohne fabrizierte Daten.",
+    "Bot-Repositories (Formulare, Umfragen, KI): Fest codierte Demo-Seeds auf dem Testserver entfernt und durch isolierte Test-Fixtures ersetzt.",
+    "Umfragen: Fest codierte Beteiligungsquote von 68.4% entfernt.",
+  ],
+};
+
+CHANGELOG_BY_LANG.fr.unshift(v12712_fr);
+CHANGELOG_BY_LANG.en.unshift(v12712_en);
+CHANGELOG_BY_LANG.es.unshift(v12712_es);
+CHANGELOG_BY_LANG.de.unshift(v12712_de);
+
 export const CHANGELOG = CHANGELOG_BY_LANG.fr;

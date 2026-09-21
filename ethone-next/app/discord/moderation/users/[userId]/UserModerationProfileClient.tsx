@@ -152,10 +152,9 @@ export default function UserModerationProfileClient() {
         setIsLoading(false);
         return;
       } catch {
-        // Offline fallback mock
+        // Erreur réseau ou bot hors ligne
       }
     }
-      // Offline fallback mock
       setUserProfile(null);
     } finally {
       setIsLoading(false);

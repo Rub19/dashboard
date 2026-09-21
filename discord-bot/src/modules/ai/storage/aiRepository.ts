@@ -43,8 +43,6 @@ export class AIRepository {
         const raw = fs.readFileSync(this.configsFile, 'utf-8');
         const list = JSON.parse(raw) as AISettings[];
         for (const c of list) this.configsCache.set(c.guildId, c);
-      } else {
-        this.seedDemoData();
       }
 
       if (fs.existsSync(this.knowledgeFile)) {
@@ -84,7 +82,6 @@ export class AIRepository {
       }
     } catch (err) {
       logger.error('[AIRepository] Erreur lors du chargement des fichiers :', err);
-      this.seedDemoData();
     }
   }
 
@@ -298,142 +295,6 @@ export class AIRepository {
 
   public saveAnalytics(guildId: string, a: AIAnalytics): void {
     this.analyticsCache.set(guildId, a);
-    this.persistAnalytics();
-  }
-
-  private seedDemoData(): void {
-    const demoGuildId = '123456789012345678';
-
-    const settings: AISettings = {
-      guildId: demoGuildId,
-      enabled: true,
-      defaultMode: 'MENTION_ONLY',
-      personality: {
-        name: 'ETHONE Assistant',
-        description: 'Assistant intelligent officiel de la communauté.',
-        tone: 'FRIENDLY',
-        sliders: {
-          friendly: 85,
-          humor: 35,
-          formality: 60,
-          verbosity: 40,
-          creativity: 60,
-        },
-        systemInstructions:
-          "Tu es l'assistant IA officiel du serveur Discord ETHONE Gaming & Tech. Tu réponds avec bienveillance, politesse et concision. Tu aides les membres sur les questions relatives au serveur, aux règles et aux tickets.",
-        language: 'auto',
-        replyInUserLanguage: true,
-      },
-      hallucinationMode: 'BALANCED',
-      showSources: 'WHEN_USED',
-      tools: {
-        readKnowledge: true,
-        readAllowedChannels: true,
-        createThreads: true,
-        sendMessages: true,
-        ticketHandoff: true,
-        summarizeChannels: true,
-        moderationAssist: false,
-      },
-      memory: {
-        enabled: true,
-        contextLength: 20,
-        retentionHours: 24,
-        userCanForget: true,
-      },
-      allowedRoleIds: [],
-      blockedRoleIds: [],
-      allowedChannelIds: [],
-      blockedChannelIds: [],
-      channelRules: {
-        'chan-ai': {
-          channelId: 'chan-ai',
-          channelName: 'ai-chat',
-          isCategory: false,
-          mode: 'AUTOMATIC',
-          knowledgeSourceIds: ['kn-rules', 'kn-faq'],
-          threadModeEnabled: true,
-          maxHistoryMessages: 20,
-        },
-        'chan-support': {
-          channelId: 'chan-support',
-          channelName: 'support',
-          isCategory: false,
-          mode: 'MENTION_ONLY',
-          knowledgeSourceIds: ['kn-faq', 'kn-vip'],
-          threadModeEnabled: false,
-          maxHistoryMessages: 15,
-        },
-        'chan-general': {
-          channelId: 'chan-general',
-          channelName: 'general-chat',
-          isCategory: false,
-          mode: 'DISABLED',
-          knowledgeSourceIds: [],
-          threadModeEnabled: false,
-          maxHistoryMessages: 0,
-        },
-      },
-      provider: 'BUILTIN',
-      model: 'deepseek/deepseek-chat:free',
-      dailyBudgetTokens: 100000,
-      publishedVersion: 1,
-      lastPublishedAt: new Date().toISOString(),
-    };
-
-    const sources: AIKnowledgeSource[] = [
-      {
-        id: 'kn-rules',
-        guildId: demoGuildId,
-        title: 'Règlement Officiel ETHONE',
-        type: 'TEXT',
-        content: `1. Respectez tous les membres. Aucun harcèlement, insulte ou provocation.
-2. Pas de spam, de flood ou de mentions inutiles (@everyone réservé au staff).
-3. Publicité interdite en salons publics ou en messages privés sans accord préalable.
-4. Salons vocaux : micro correct exigé, pas de soundboard intempestif ni de cris.
-5. Tout signalement doit être effectué via le salon #support ou la commande /ticket.`,
-        scope: 'GLOBAL',
-        tokenCount: 150,
-        status: 'READY',
-        updatedAt: new Date().toISOString(),
-      },
-      {
-        id: 'kn-vip',
-        guildId: demoGuildId,
-        title: 'Guide des Rôles & Avantages VIP',
-        type: 'DOC',
-        content: `Rôles disponibles sur le serveur :
-- Membre : rôle de base attribué après vérification.
-- Actif : niveau 5 de leveling (/rank pour voir votre progression).
-- VIP Elite : accessible avec 5 invitations validées ou soutien boost. Accès aux salons vocaux 128 kbps et salons exclusifs.
-- Modérateur : recrutement lors des sessions annoncées dans #annonces.`,
-        scope: 'GLOBAL',
-        tokenCount: 120,
-        status: 'READY',
-        updatedAt: new Date().toISOString(),
-      },
-      {
-        id: 'kn-faq',
-        guildId: demoGuildId,
-        title: 'FAQ Support & Tickets',
-        type: 'FAQ',
-        content: `Q: Comment ouvrir un ticket ?
-R: Rendez-vous dans le salon #support et cliquez sur "Ouvrir un ticket" ou tapez la commande /ticket create.
-Q: Quels sont les horaires du staff ?
-R: L'équipe modératrice est active de 09:00 à 23:00 tous les jours. En cas d'urgence la nuit, l'anti-raid automatique protège le serveur.
-Q: Comment réinitialiser son niveau ?
-R: Seuls les administrateurs peuvent modifier les données de leveling.`,
-        scope: 'GLOBAL',
-        tokenCount: 140,
-        status: 'READY',
-        updatedAt: new Date().toISOString(),
-      },
-    ];
-
-    this.configsCache.set(demoGuildId, settings);
-    this.knowledgeCache.set(demoGuildId, sources);
-    this.persistConfigs();
-    this.persistKnowledge();
   }
 }
 

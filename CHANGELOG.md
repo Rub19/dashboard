@@ -2,6 +2,14 @@
 
 Toutes les modifications notables de ce projet seront documentées dans ce fichier.
 
+## v1.25.20 — 2026-09-21
+
+**Bot musique : le service yt-dlp vérifie ses adresses de flux et se corrige seul en cas de refus**
+
+- Une adresse de flux YouTube renvoyée par le service yt-dlp était parfois refusée par Lavalink (« Something went wrong while looking up the track »), ce qui renvoyait la lecture sur SoundCloud alors que la même demande réussissait un instant plus tard. Le service vérifie maintenant lui-même chaque adresse (lecture de 2 octets) avant de la renvoyer, en redemande une autre jusqu'à 3 fois si elle est refusée, et ne met en cache que des adresses vérifiées.
+- Côté bot : si Lavalink refuse quand même l'adresse, le bot en redemande une toute fraîche (sans cache) avant de retomber sur SoundCloud, et les logs indiquent désormais la vraie raison du refus ainsi que le format et le client choisis par le service.
+- Pour appliquer le correctif du service sur la machine de Lavalink : télécharger à nouveau `resolver.py` puis `docker restart yt-resolver` (voir `discord-bot/lavalink/yt-resolver/README.md`).
+
 ## v1.25.19 — 2026-09-21
 
 **Bot musique : lecture YouTube via un service yt-dlp installé à côté de Lavalink**

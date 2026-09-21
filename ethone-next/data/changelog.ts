@@ -29197,4 +29197,53 @@ CHANGELOG_BY_LANG.en.unshift(v12519_en);
 CHANGELOG_BY_LANG.es.unshift(v12519_es);
 CHANGELOG_BY_LANG.de.unshift(v12519_de);
 
+const v12520_fr: ChangelogEntry = {
+  version: "v1.25.20",
+  date: "2026-09-21",
+  title: "Bot musique : le service yt-dlp vérifie ses adresses de flux et se corrige seul en cas de refus",
+  items: [
+    "Une adresse de flux YouTube renvoyée par le service yt-dlp était parfois refusée par Lavalink (« Something went wrong while looking up the track »), ce qui renvoyait la lecture sur SoundCloud alors que la même demande réussissait un instant plus tard. Le service vérifie maintenant lui-même chaque adresse (lecture de 2 octets) avant de la renvoyer, en redemande une autre jusqu'à 3 fois si elle est refusée, et ne met en cache que des adresses vérifiées.",
+    "Côté bot : si Lavalink refuse quand même l'adresse, le bot en redemande une toute fraîche (sans cache) avant de retomber sur SoundCloud, et les logs indiquent désormais la vraie raison du refus ainsi que le format et le client choisis par le service.",
+    "Pour appliquer le correctif du service sur la machine de Lavalink : télécharger à nouveau `resolver.py` puis `docker restart yt-resolver` (voir `discord-bot/lavalink/yt-resolver/README.md`).",
+  ],
+};
+
+const v12520_en: ChangelogEntry = {
+  version: "v1.25.20",
+  date: "2026-09-21",
+  title: "Music bot: the yt-dlp service checks its stream addresses and corrects itself when refused",
+  items: [
+    "A YouTube stream address returned by the yt-dlp service was sometimes refused by Lavalink (\"Something went wrong while looking up the track\"), sending playback back to SoundCloud even though the same request succeeded a moment later. The service now checks each address itself (reading 2 bytes) before returning it, asks for another one up to 3 times if it is refused, and only caches verified addresses.",
+    "Bot side: if Lavalink still refuses the address, the bot asks for a brand-new one (no cache) before falling back to SoundCloud, and the logs now show the real reason for the refusal along with the format and client chosen by the service.",
+    "To apply the service fix on the Lavalink machine: download `resolver.py` again, then `docker restart yt-resolver` (see `discord-bot/lavalink/yt-resolver/README.md`).",
+  ],
+};
+
+const v12520_es: ChangelogEntry = {
+  version: "v1.25.20",
+  date: "2026-09-21",
+  title: "Bot de música: el servicio yt-dlp comprueba sus direcciones de flujo y se corrige solo si son rechazadas",
+  items: [
+    "Una dirección de flujo de YouTube devuelta por el servicio yt-dlp era a veces rechazada por Lavalink (« Something went wrong while looking up the track »), lo que enviaba la reproducción a SoundCloud aunque la misma petición funcionaba un momento después. Ahora el servicio comprueba cada dirección (lectura de 2 bytes) antes de devolverla, pide otra hasta 3 veces si es rechazada y solo guarda en caché direcciones verificadas.",
+    "Lado bot: si Lavalink rechaza igualmente la dirección, el bot pide una nueva (sin caché) antes de recurrir a SoundCloud, y los registros indican ahora el motivo real del rechazo junto con el formato y el cliente elegidos por el servicio.",
+    "Para aplicar la corrección del servicio en la máquina de Lavalink: descargar de nuevo `resolver.py` y luego `docker restart yt-resolver` (véase `discord-bot/lavalink/yt-resolver/README.md`).",
+  ],
+};
+
+const v12520_de: ChangelogEntry = {
+  version: "v1.25.20",
+  date: "2026-09-21",
+  title: "Musik-Bot: Der yt-dlp-Dienst prüft seine Stream-Adressen und korrigiert sich bei Ablehnung selbst",
+  items: [
+    "Eine vom yt-dlp-Dienst gelieferte YouTube-Stream-Adresse wurde von Lavalink manchmal abgelehnt („Something went wrong while looking up the track“), wodurch die Wiedergabe auf SoundCloud auswich, obwohl dieselbe Anfrage kurz darauf gelang. Der Dienst prüft jetzt jede Adresse selbst (Lesen von 2 Bytes), bevor er sie zurückgibt, fordert bei Ablehnung bis zu 3-mal eine andere an und cached nur geprüfte Adressen.",
+    "Bot-Seite: Lehnt Lavalink die Adresse dennoch ab, fordert der Bot eine völlig neue an (ohne Cache), bevor er auf SoundCloud ausweicht, und die Logs zeigen jetzt den wahren Ablehnungsgrund sowie das vom Dienst gewählte Format und den Client.",
+    "Um die Korrektur des Dienstes auf der Lavalink-Maschine anzuwenden: `resolver.py` erneut herunterladen, dann `docker restart yt-resolver` (siehe `discord-bot/lavalink/yt-resolver/README.md`).",
+  ],
+};
+
+CHANGELOG_BY_LANG.fr.unshift(v12520_fr);
+CHANGELOG_BY_LANG.en.unshift(v12520_en);
+CHANGELOG_BY_LANG.es.unshift(v12520_es);
+CHANGELOG_BY_LANG.de.unshift(v12520_de);
+
 export const CHANGELOG = CHANGELOG_BY_LANG.fr;

@@ -381,38 +381,44 @@ class LavalinkManager {
     const id = this.youtubeIdOf(t.url || '') ?? (/^ll-[A-Za-z0-9_-]{11}$/.test(t.id) ? t.id.slice(3) : null);
     if (!id) return t;
 
-    try {
-      const cached = this.directCache.get(id);
-      let url = cached && Date.now() - cached.at < 10 * 60_000 ? cached.url : null;
-      if (!url) {
-        const res = await fetch(`${config.ytResolverUrl}/resolve?id=${id}`, {
-          headers: { Authorization: config.ytResolverToken },
-          signal: AbortSignal.timeout(20_000),
-        });
-        if (!res.ok) {
-          logger.warn(`[Lavalink] Service yt-dlp : HTTP ${res.status} pour ${id}`);
-          return t;
+    // 1er essai avec le cache éventuel ; si Lavalink refuse l'adresse (intermittent), un 2e essai
+    // avec une adresse toute fraîche (le service la revérifie lui-même avant de la renvoyer).
+    for (const fresh of [false, true]) {
+      try {
+        const cached = this.directCache.get(id);
+        let url = !fresh && cached && Date.now() - cached.at < 10 * 60_000 ? cached.url : null;
+        if (!url) {
+          const res = await fetch(`${config.ytResolverUrl}/resolve?id=${id}${fresh ? '&fresh=1' : ''}`, {
+            headers: { Authorization: config.ytResolverToken },
+            signal: AbortSignal.timeout(25_000),
+          });
+          if (!res.ok) {
+            logger.warn(`[Lavalink] Service yt-dlp : HTTP ${res.status} pour ${id}`);
+            return t;
+          }
+          url = ((await res.json()) as { url?: string }).url ?? null;
+          if (!url) return t;
+          if (this.directCache.size > 200) this.directCache.clear();
+          this.directCache.set(id, { url, at: Date.now() });
         }
-        url = ((await res.json()) as { url?: string }).url ?? null;
-        if (!url) return t;
-        if (this.directCache.size > 200) this.directCache.clear();
-        this.directCache.set(id, { url, at: Date.now() });
-      }
-      const node = this.getNode();
-      if (!node) return t;
-      const loaded = await node.rest.resolve(url);
-      if (loaded?.loadType !== LoadType.TRACK) {
-        logger.warn(`[Lavalink] Flux yt-dlp refusé par Lavalink pour ${id} (${loaded?.loadType ?? 'aucune réponse'}).`);
+        const node = this.getNode();
+        if (!node) return t;
+        const loaded = await node.rest.resolve(url);
+        if (loaded?.loadType === LoadType.TRACK) {
+          if (this.directEncoded.size > 200) this.directEncoded.clear();
+          this.directEncoded.set(loaded.data.encoded, Date.now());
+          logger.info(`[Lavalink] YouTube via yt-dlp : ${id}${fresh ? ' (adresse renouvelée)' : ''}`);
+          return { ...t, encoded: loaded.data.encoded };
+        }
+        const why = loaded?.loadType === LoadType.ERROR ? `${loaded.data.message}${loaded.data.cause ? ` — ${loaded.data.cause}` : ''}` : (loaded?.loadType ?? 'aucune réponse');
+        logger.warn(`[Lavalink] Flux yt-dlp refusé par Lavalink pour ${id} : ${why}${fresh ? '' : ' — nouvel essai avec une adresse fraîche'}`);
+        this.directCache.delete(id);
+      } catch (err) {
+        logger.warn(`[Lavalink] Service yt-dlp indisponible (${id}) :`, (err as Error)?.message ?? err);
         return t;
       }
-      if (this.directEncoded.size > 200) this.directEncoded.clear();
-      this.directEncoded.set(loaded.data.encoded, Date.now());
-      logger.info(`[Lavalink] YouTube via yt-dlp : ${id}`);
-      return { ...t, encoded: loaded.data.encoded };
-    } catch (err) {
-      logger.warn(`[Lavalink] Service yt-dlp indisponible (${id}) :`, (err as Error)?.message ?? err);
-      return t;
     }
+    return t;
   }
 
   /** Re-encode a track that came from persistence/playlists without `encoded`. */

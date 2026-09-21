@@ -30144,4 +30144,61 @@ CHANGELOG_BY_LANG.en.unshift(v12710_en);
 CHANGELOG_BY_LANG.es.unshift(v12710_es);
 CHANGELOG_BY_LANG.de.unshift(v12710_de);
 
+const v12711_fr: ChangelogEntry = {
+  version: "v1.27.11",
+  date: "2026-09-21",
+  title: "Latence musicale réduite, persistance des événements et paramètres réels",
+  items: [
+    "Musique : accélération du lancement d'un morceau en parallélisant les recherches YouTube Music et YouTube, suppression d'un délai d'attente de 400 ms et pré-chargement en arrière-plan du titre suivant dans la file d'attente.",
+    "Événements : les événements et participants créés sont maintenant persistés sur disque au format JSON dans data/ et survivent aux redémarrages du bot ; le taux de présence factice de 88% par défaut a été remplacé par 0%.",
+    "Paramètres du bot : les modifications de configuration globale (mode maintenance et niveau de log) sont validées avec Zod, persistées sur disque et appliquées immédiatement au comportement du bot.",
+    "Centre de contrôle : suppression des valeurs initiales factices (latence 22 ms, ping, compteurs inventés) au chargement de la page.",
+    "IA : le moniteur IA utilise désormais une fenêtre glissante réelle de 24h, affiche le modèle et le fournisseur réellement utilisés, et ne revendique plus 100% de succès sans aucune requête.",
+  ],
+};
+
+const v12711_en: ChangelogEntry = {
+  version: "v1.27.11",
+  date: "2026-09-21",
+  title: "Reduced music latency, event persistence, and real bot settings",
+  items: [
+    "Music: faster track playback by parallelizing YouTube Music and YouTube searches, removing an artificial 400ms delay, and background pre-fetching the next queued track.",
+    "Events: created events and participants are now persisted to JSON files in data/ and survive bot restarts; the hardcoded 88% default attendance rate has been replaced by 0%.",
+    "Bot settings: global configuration changes (maintenance mode and log level) are validated with Zod, persisted to disk, and immediately enforced in bot behavior.",
+    "Control center: removed fake default starter values (22ms latency, fake ping, invented counters) during initial page load.",
+    "AI: the AI telemetry monitor now uses a true 24h sliding window, reports the actual model and provider used, and no longer claims 100% success rate with zero requests.",
+  ],
+};
+
+const v12711_es: ChangelogEntry = {
+  version: "v1.27.11",
+  date: "2026-09-21",
+  title: "Latencia musical reducida, persistencia de eventos y ajustes reales",
+  items: [
+    "Música: inicio de reproducción más rápido al paralelizar las búsquedas de YouTube Music y YouTube, eliminando un retraso de 400 ms y precargando la siguiente pista en cola.",
+    "Eventos: los eventos y participantes creados ahora se guardan en disco en formato JSON en data/ y sobreviven a los reinicios del bot; la tasa de asistencia predeterminada del 88% se reemplazó por 0%.",
+    "Ajustes del bot: los cambios de configuración global (modo mantenimiento y nivel de registro) se validan con Zod, se guardan en disco y se aplican de inmediato.",
+    "Centro de control: eliminación de valores iniciales ficticios (latencia de 22 ms, ping y contadores inventados) al cargar la página.",
+    "IA: el monitor de IA ahora utiliza una ventana deslizante real de 24 horas, muestra el modelo y proveedor reales, y ya no muestra un 100% de éxito sin solicitudes.",
+  ],
+};
+
+const v12711_de: ChangelogEntry = {
+  version: "v1.27.11",
+  date: "2026-09-21",
+  title: "Geringere Musiklatenz, Ereignis-Persistenz und echte Bot-Einstellungen",
+  items: [
+    "Musik: schnellerer Start der Wiedergabe durch parallele Suche auf YouTube Music und YouTube, Entfernung einer 400ms-Verzögerung und Hintergrund-Vorabladen des nächsten Titels.",
+    "Ereignisse: erstellte Events und Teilnehmer werden nun als JSON-Dateien in data/ gespeichert und überstehen Bot-Neustarts; die künstliche Anwesenheitsrate von 88% wurde durch 0% ersetzt.",
+    "Bot-Einstellungen: globale Konfigurationsänderungen (Wartungsmodus und Log-Level) werden mit Zod validiert, auf der Festplatte gespeichert und sofort im Bot durchgesetzt.",
+    "Kontrollzentrum: Entfernung gefälschter Startwerte (22ms Latenz, Ping, erfundene Zähler) beim Laden der Seite.",
+    "KI: der KI-Monitor verwendet nun ein echtes gleitendes 24-Stunden-Fenster, zeigt das tatsächlich genutzte Modell und den Anbieter an und meldet ohne Anfragen keine 100% Erfolgsquote mehr.",
+  ],
+};
+
+CHANGELOG_BY_LANG.fr.unshift(v12711_fr);
+CHANGELOG_BY_LANG.en.unshift(v12711_en);
+CHANGELOG_BY_LANG.es.unshift(v12711_es);
+CHANGELOG_BY_LANG.de.unshift(v12711_de);
+
 export const CHANGELOG = CHANGELOG_BY_LANG.fr;

@@ -1,3 +1,6 @@
+import fs from 'fs';
+import path from 'path';
+import { logger } from '../../utils/logger.js';
 import {
   DiscordEvent,
   EventParticipant,
@@ -8,12 +11,87 @@ import {
 } from './eventsTypes.js';
 
 class EventRepository {
+  private eventsPath = path.resolve(process.cwd(), 'data', 'events.json');
+  private participantsPath = path.resolve(process.cwd(), 'data', 'event_participants.json');
   private eventsByGuild = new Map<string, Map<string, DiscordEvent>>();
   private participantsByEvent = new Map<string, Map<string, EventParticipant>>();
   private templates: EventTemplate[] = [];
 
   constructor() {
+    this.ensureDirectory();
+    this.loadData();
     this.seedTemplates();
+  }
+
+  private ensureDirectory(): void {
+    const dir = path.dirname(this.eventsPath);
+    if (!fs.existsSync(dir)) {
+      fs.mkdirSync(dir, { recursive: true });
+    }
+  }
+
+  private loadData(): void {
+    try {
+      if (fs.existsSync(this.eventsPath)) {
+        const raw = fs.readFileSync(this.eventsPath, 'utf-8');
+        const parsed = JSON.parse(raw);
+        for (const [guildId, events] of Object.entries(parsed)) {
+          const map = new Map<string, DiscordEvent>();
+          if (Array.isArray(events)) {
+            for (const ev of events) {
+              map.set((ev as DiscordEvent).id, ev as DiscordEvent);
+            }
+          }
+          this.eventsByGuild.set(guildId, map);
+        }
+      }
+    } catch (err) {
+      logger.error('Erreur chargement events.json :', err);
+    }
+
+    try {
+      if (fs.existsSync(this.participantsPath)) {
+        const raw = fs.readFileSync(this.participantsPath, 'utf-8');
+        const parsed = JSON.parse(raw);
+        for (const [eventId, participants] of Object.entries(parsed)) {
+          const map = new Map<string, EventParticipant>();
+          if (Array.isArray(participants)) {
+            for (const p of participants) {
+              map.set((p as EventParticipant).userId, p as EventParticipant);
+            }
+          }
+          this.participantsByEvent.set(eventId, map);
+        }
+      }
+    } catch (err) {
+      logger.error('Erreur chargement event_participants.json :', err);
+    }
+  }
+
+  private persistEvents(): void {
+    try {
+      this.ensureDirectory();
+      const obj: Record<string, DiscordEvent[]> = {};
+      for (const [guildId, map] of this.eventsByGuild.entries()) {
+        obj[guildId] = Array.from(map.values());
+      }
+      fs.writeFileSync(this.eventsPath, JSON.stringify(obj, null, 2), 'utf-8');
+    } catch (err) {
+      logger.error('Erreur sauvegarde events.json :', err);
+    }
+  }
+
+  private persistParticipants(): void {
+    try {
+      this.ensureDirectory();
+      const obj: Record<string, EventParticipant[]> = {};
+      for (const [eventId, map] of this.participantsByEvent.entries()) {
+        obj[eventId] = Array.from(map.values());
+      }
+      fs.writeFileSync(this.participantsPath, JSON.stringify(obj, null, 2), 'utf-8');
+    } catch (err) {
+      logger.error('Erreur sauvegarde event_participants.json :', err);
+    }
   }
 
   private seedTemplates() {
@@ -122,12 +200,17 @@ class EventRepository {
     const map = this.getGuildEventsMap(event.guildId);
     event.updatedAt = new Date().toISOString();
     map.set(event.id, event);
+    this.persistEvents();
   }
 
   public deleteEvent(guildId: string, eventId: string): boolean {
     const map = this.getGuildEventsMap(guildId);
     const deleted = map.delete(eventId);
     this.participantsByEvent.delete(eventId);
+    if (deleted) {
+      this.persistEvents();
+      this.persistParticipants();
+    }
     return deleted;
   }
 
@@ -151,12 +234,15 @@ class EventRepository {
       this.participantsByEvent.set(eventId, new Map());
     }
     this.participantsByEvent.get(eventId)!.set(participant.userId, participant);
+    this.persistParticipants();
   }
 
   public removeParticipant(eventId: string, userId: string): boolean {
     const map = this.participantsByEvent.get(eventId);
     if (!map) return false;
-    return map.delete(userId);
+    const deleted = map.delete(userId);
+    if (deleted) this.persistParticipants();
+    return deleted;
   }
 
   // Templates
@@ -197,7 +283,7 @@ class EventRepository {
               0
             ) / completedWithAttendance.length
           )
-        : 88;
+        : 0;
 
     return {
       upcomingCount,

@@ -2,6 +2,16 @@
 
 Toutes les modifications notables de ce projet seront documentées dans ce fichier.
 
+## v1.27.11 — 2026-09-21
+
+**Latence musicale réduite, persistance des événements et paramètres réels**
+
+- Musique : accélération du lancement d'un morceau en parallélisant les recherches YouTube Music et YouTube, suppression d'un délai d'attente de 400 ms et pré-chargement en arrière-plan du titre suivant dans la file d'attente.
+- Événements : les événements et participants créés sont maintenant persistés sur disque au format JSON dans data/ et survivent aux redémarrages du bot ; le taux de présence factice de 88% par défaut a été remplacé par 0%.
+- Paramètres du bot : les modifications de configuration globale (mode maintenance et niveau de log) sont validées avec Zod, persistées sur disque et appliquées immédiatement au comportement du bot.
+- Centre de contrôle : suppression des valeurs initiales factices (latence 22 ms, ping, compteurs inventés) au chargement de la page.
+- IA : le moniteur IA utilise désormais une fenêtre glissante réelle de 24h, affiche le modèle et le fournisseur réellement utilisés, et ne revendique plus 100% de succès sans aucune requête.
+
 ## v1.27.10 — 2026-09-21
 
 **Le thème est de retour sur Formulaires, Sondages, Événements…**

@@ -1,27 +1,28 @@
 import { BotAiStats } from '../types/index.js';
 
+interface AiRequestRecord {
+  timestamp: number;
+  tokens: number;
+  latencyMs: number;
+  success: boolean;
+  model?: string;
+  provider?: string;
+}
+
 export class BotAiMonitorService {
   private static instance: BotAiMonitorService;
-  // Starts at zero — no seeded fake baseline. AIProviderService only ever
-  // returns a single combined tokensUsed total per call (no separate
-  // prompt/completion breakdown from most providers), so real usage is
-  // tracked as a total and split 50/50 for display — an honest estimate of
-  // a real number, not a fabricated one.
-  private totalTokensToday = 0;
-  private requestsToday = 0;
-  private latencySumMs = 0;
-  private failuresToday = 0;
+  private requestHistory: AiRequestRecord[] = [];
   private fallbackActive = false;
   private tokensThisMinute = 0;
   private currentTokensPerMin = 0;
+  private lastModelUsed: string = '—';
+  private lastProviderUsed: string = '—';
 
   private constructor() {
-    // .unref() — same convention as xpWriteBuffer.ts's flush timer; this is
-    // a live-telemetry convenience, not work the process needs to stay
-    // alive for.
     setInterval(() => {
       this.currentTokensPerMin = this.tokensThisMinute;
       this.tokensThisMinute = 0;
+      this.pruneOldRecords();
     }, 60000).unref();
   }
 
@@ -32,12 +33,26 @@ export class BotAiMonitorService {
     return BotAiMonitorService.instance;
   }
 
-  public recordAiUsage(totalTokens: number, latencyMs = 0, success = true) {
-    this.totalTokensToday += totalTokens;
-    this.requestsToday++;
-    this.latencySumMs += latencyMs;
+  private pruneOldRecords(): void {
+    const cutoff = Date.now() - 24 * 3600_000;
+    this.requestHistory = this.requestHistory.filter((r) => r.timestamp >= cutoff);
+  }
+
+  public recordAiUsage(totalTokens: number, latencyMs = 0, success = true, model?: string, provider?: string) {
+    const now = Date.now();
     this.tokensThisMinute += totalTokens;
-    if (!success) this.failuresToday++;
+    if (model) this.lastModelUsed = model;
+    if (provider) this.lastProviderUsed = provider;
+
+    this.requestHistory.push({
+      timestamp: now,
+      tokens: totalTokens,
+      latencyMs,
+      success,
+      model,
+      provider,
+    });
+    this.pruneOldRecords();
   }
 
   public getTokensPerMinute(): number {
@@ -49,30 +64,45 @@ export class BotAiMonitorService {
   }
 
   public getAiStats(): BotAiStats {
-    const total = this.totalTokensToday;
-    const promptEstimate = Math.round(total * 0.5);
-    const completionEstimate = total - promptEstimate;
-    // Estimated costs: ~$0.80 per 1M prompt tokens, ~$4 per 1M completion tokens for Claude Haiku/OpenRouter
+    this.pruneOldRecords();
+    const cutoff = Date.now() - 24 * 3600_000;
+    const records24h = this.requestHistory.filter((r) => r.timestamp >= cutoff);
+
+    const requests24h = records24h.length;
+    const failures24h = records24h.filter((r) => !r.success).length;
+    const totalTokens24h = records24h.reduce((acc, r) => acc + r.tokens, 0);
+    const latencySumMs = records24h.reduce((acc, r) => acc + r.latencyMs, 0);
+
+    const promptEstimate = Math.round(totalTokens24h * 0.5);
+    const completionEstimate = totalTokens24h - promptEstimate;
+    // Coût estimé : ~$0.80 par 1M prompt tokens, ~$4 par 1M completion tokens pour Claude Haiku/OpenRouter
     const cost = (promptEstimate * 0.0000008) + (completionEstimate * 0.000004);
-    const dailyBudget = 5.0; // $5 USD daily cap
+    const dailyBudget = 5.0; // $5 USD cap quotidien
     const budgetUsedPercent = Math.min(100, Math.round((cost / dailyBudget) * 100));
-    const successRate = this.requestsToday > 0
-      ? Math.round(((this.requestsToday - this.failuresToday) / this.requestsToday) * 1000) / 10
-      : 100;
+    const successRate = requests24h > 0
+      ? Math.round(((requests24h - failures24h) / requests24h) * 1000) / 10
+      : 0;
+
+    const activeModel = this.lastModelUsed !== '—'
+      ? this.lastModelUsed
+      : (process.env.OPENROUTER_MODEL || 'anthropic/claude-3.5-haiku');
+    const provider = this.lastProviderUsed !== '—'
+      ? this.lastProviderUsed
+      : (process.env.OPENROUTER_API_KEY ? 'OpenRouter' : 'Local Context');
 
     return {
-      provider: 'OpenRouter (Claude 3.5 Haiku)',
-      activeModel: 'anthropic/claude-3.5-haiku',
+      provider,
+      activeModel,
       fallbackModel: 'openai/gpt-4o-mini',
       fallbackActive: this.fallbackActive,
       promptTokens24h: promptEstimate,
       completionTokens24h: completionEstimate,
-      totalTokens24h: total,
+      totalTokens24h: totalTokens24h,
       estimatedCostTodayUsd: Math.round(cost * 1000) / 1000,
       dailyBudgetUsd: dailyBudget,
       budgetUsedPercent,
-      avgInferenceLatencyMs: this.requestsToday > 0 ? Math.round(this.latencySumMs / this.requestsToday) : 0,
-      requests24h: this.requestsToday,
+      avgInferenceLatencyMs: requests24h > 0 ? Math.round(latencySumMs / requests24h) : 0,
+      requests24h,
       successRate,
     };
   }

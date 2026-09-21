@@ -42,6 +42,8 @@ export const askCommand: Command = {
         .setRequired(false)
     ),
   execute: async (ctx: CommandContext) => {
+    let settings: any = null;
+    let aiCallStartedAt = 0;
     try {
       const question =
         (ctx.interaction ? ctx.interaction.options.getString('question') : null) ||
@@ -85,7 +87,8 @@ export const askCommand: Command = {
       }
 
       const guildId = ctx.guild?.id || ctx.interaction?.guildId || ctx.guildConfig.guildId || '123456789012345678';
-      const settings = aiRepository.getSettings(guildId);
+      settings = aiRepository.getSettings(guildId);
+      aiCallStartedAt = Date.now();
 
       if (!settings.enabled) {
         const t = getTranslation(ctx.guildConfig.language);
@@ -116,7 +119,7 @@ export const askCommand: Command = {
         ctx.guild?.name || 'Serveur Discord'
       );
 
-      const aiCallStartedAt = Date.now();
+      aiCallStartedAt = Date.now();
       const completion = await AIProviderService.generateWithIntent({
         settings,
         baseSystemPrompt: systemPrompt,
@@ -124,7 +127,13 @@ export const askCommand: Command = {
         knowledgeContext: knowledge.contextText,
         history: [],
       });
-      botAiMonitorService.recordAiUsage(completion.tokensUsed || 0, Date.now() - aiCallStartedAt, true);
+      botAiMonitorService.recordAiUsage(
+        completion.tokensUsed || 0,
+        Date.now() - aiCallStartedAt,
+        true,
+        completion.model,
+        settings.provider
+      );
 
       const embed = DiscordAiPanel.buildResponseEmbed({
         settings,
@@ -153,6 +162,7 @@ export const askCommand: Command = {
         logger.warn('[askCommand] Impossible de mettre à jour les statistiques IA :', analyticsErr);
       }
     } catch (error: any) {
+      botAiMonitorService.recordAiUsage(0, Date.now() - aiCallStartedAt, false, undefined, settings.provider);
       logger.error('[askCommand] Erreur lors de l\'exécution de /ask :', error);
       const errorMsg = `❌ Une erreur est survenue lors du traitement par l'assistant IA.`;
       if (ctx.interaction?.deferred || ctx.interaction?.replied) {

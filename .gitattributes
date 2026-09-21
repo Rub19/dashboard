@@ -13,6 +13,7 @@
 CNAME text eol=lf
 _headers text eol=lf
 .nojekyll text eol=lf
+*.py text eol=lf
 *.ps1 text eol=crlf
 *.png binary
 *.ico binary

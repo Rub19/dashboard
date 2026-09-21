@@ -236,8 +236,7 @@ export class LavalinkMusicPlayer implements IGuildMusicPlayer {
         return false;
       }
       if (ready.source === 'SOUNDCLOUD' && ready.url) this.markTried(track.id, ready.url);
-      // Titre YouTube : flux direct via le service yt-dlp quand il est configuré (sinon inchangé).
-      const toPlay = await lavalinkManager.directYoutube(ready);
+      const toPlay = ready;
       this.queue.setCurrentTrack(toPlay);
       this.position = 0;
       this.positionAt = Date.now();
@@ -246,12 +245,29 @@ export class LavalinkMusicPlayer implements IGuildMusicPlayer {
       musicPersistence.addHistory(this.guildId, ready);
       this.status = 'PLAYING';
       this.emitState();
+      this.preloadNextTrack();
       return true;
     } catch (err) {
       logger.error(`[Lavalink] Erreur lecture "${track.title}" guild ${this.guildId} :`, err);
       void this.handleTrackEnd();
       return false;
     }
+  }
+
+  public preloadNextTrack(): void {
+    const next = this.queue.peek();
+    if (!next || next.encoded) return;
+    lavalinkManager.ensureEncoded(next, next.requestedBy).then((ready) => {
+      if (ready?.encoded) {
+        next.encoded = ready.encoded;
+        next.source = ready.source;
+        next.url = ready.url || next.url;
+        next.duration = ready.duration || next.duration;
+        logger.info(`[Lavalink] Pré-chargement réussi pour "${next.title}" (guild ${this.guildId})`);
+      }
+    }).catch((err) => {
+      logger.warn(`[Lavalink] Échec pré-chargement pour "${next.title}" :`, err);
+    });
   }
 
   /**

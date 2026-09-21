@@ -155,9 +155,7 @@ export const musicCommand: Command = {
           await ctx.reply({ ...DiscordMusicPanel.buildQueuedCard(track, res.queuePosition ?? 0, guild.id, res.playlistCount), componentsV2: true });
         } else if (res.queuePosition === 0) {
           // Lecture immédiate : la carte "Lecture en cours" complète, avec les
-          // contrôles — même rendu que /music panel. Petite latence pour que le
-          // lecteur (Lavalink) ait le temps de remonter la piste.
-          await new Promise((r) => setTimeout(r, 400));
+          // contrôles — même rendu que /music panel.
           await ctx.reply({ ...DiscordMusicPanel.buildPanelMessage(musicService.getState(guild.id)), componentsV2: true });
         } else {
           await ctx.reply({ ...DiscordMusicPanel.buildQueuedCard(track, res.queuePosition ?? 0, guild.id), componentsV2: true });

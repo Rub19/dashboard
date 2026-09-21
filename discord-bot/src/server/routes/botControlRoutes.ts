@@ -11,6 +11,7 @@ import { requireStringParam } from '../utils/params.js';
 import { BotIntegrationsService } from '../../modules/botControl/services/botIntegrationsService.js';
 import { BotSecurityAuditService } from '../../modules/botControl/services/botSecurityAuditService.js';
 import { BotConfigService } from '../../modules/botControl/services/botConfigService.js';
+import { z } from 'zod';
 import { rateLimit, idempotent } from '../middleware/antiAbuseMiddleware.js';
 
 export function createBotControlRouter(client: Client): Router {
@@ -253,18 +254,34 @@ export function createBotControlRouter(client: Client): Router {
     }
   });
 
+  const BotSettingsSchema = z.object({
+    maintenanceMode: z.boolean().optional(),
+    maintenanceReason: z.string().max(200).optional(),
+    logLevel: z.enum(['debug', 'info', 'warn', 'error']).optional(),
+    telemetrySampleRatePercent: z.number().min(0).max(100).optional(),
+    retentionDays: z.number().min(1).max(365).optional(),
+    slowQueryThresholdMs: z.number().min(10).max(10000).optional(),
+    aiDailySpendLimitUsd: z.number().min(0).max(1000).optional(),
+  });
+
   router.put(
     '/settings',
     rateLimit('CONFIG', { actionName: 'bot_settings' }),
     idempotent({ scopePrefix: 'bot_settings' }),
     (req: Request, res: Response) => {
-    try {
-      const updated = configService.updateSettings(req.body);
-      res.json({ success: true, data: updated });
-    } catch (err: any) {
-      res.status(400).json({ success: false, error: err.message });
+      try {
+        const parsed = BotSettingsSchema.safeParse(req.body);
+        if (!parsed.success) {
+          res.status(400).json({ success: false, error: parsed.error.errors[0]?.message || 'Données invalides' });
+          return;
+        }
+        const updated = configService.updateSettings(parsed.data);
+        res.json({ success: true, data: updated });
+      } catch (err: any) {
+        res.status(400).json({ success: false, error: err.message });
+      }
     }
-  });
+  );
 
   // Remote Restart — authorization is enforced upstream by requireBotOwner
   // (index.ts), which checks the signed session's user id against

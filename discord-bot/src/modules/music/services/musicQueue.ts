@@ -94,6 +94,13 @@ export class MusicQueue {
     this.queue.unshift(track);
   }
 
+  public peek(): Track | null {
+    if (this.repeatMode === 'SONG' && this.currentTrack) {
+      return this.currentTrack;
+    }
+    return this.queue[0] || null;
+  }
+
   public next(): Track | null {
     // 1. REPEAT SONG : Rejoue le même titre
     if (this.repeatMode === 'SONG' && this.currentTrack) {

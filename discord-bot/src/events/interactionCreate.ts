@@ -45,6 +45,7 @@ import { BotCommandStatsService } from '../modules/botControl/services/botComman
 import { BotTelemetryService } from '../modules/botControl/services/botTelemetryService.js';
 import { handleEconomyButton, handleRankButton } from '../modules/economy/interactions/economyButtonHandler.js';
 import { handleModButton } from '../modules/moderation/interactions/modButtonHandler.js';
+import { BotConfigService } from '../modules/botControl/services/botConfigService.js';
 import { logger } from '../utils/logger.js';
 
 const botCommandStatsService = BotCommandStatsService.getInstance();
@@ -245,6 +246,20 @@ export async function onInteractionCreate(interaction: Interaction) {
   if (!interaction.isChatInputCommand()) return;
 
   logger.info(`[INTERACTION RECUE] /${interaction.commandName} par ${interaction.user.tag} dans ${interaction.guild?.name || 'DM'}`);
+
+  // Mode maintenance global : seules les commandes du propriétaire sont acceptées
+  const botGlobalSettings = BotConfigService.getInstance().getSettings();
+  if (botGlobalSettings.maintenanceMode && interaction.user.id !== config.botOwnerId) {
+    await interaction.reply({
+      embeds: [
+        baseEmbed('warning')
+          .setTitle('🛠️ Bot en maintenance')
+          .setDescription(botGlobalSettings.maintenanceReason || 'Le bot est actuellement en maintenance. Veuillez réessayer plus tard.')
+      ],
+      ephemeral: true,
+    });
+    return;
+  }
 
   const guildConfig = guildConfigService.getConfig(interaction.guildId);
 

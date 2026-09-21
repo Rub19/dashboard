@@ -58,6 +58,7 @@ def extract(video_id: str) -> dict:
         "socket_timeout": 15,
         # Opus (251) de préférence, puis un autre audio seul, puis AAC (140).
         "format": "251/bestaudio[ext=webm]/140/bestaudio",
+        "extractor_args": {"youtube": {"player_client": ["android", "web"]}},
     }
     with yt_dlp.YoutubeDL(opts) as ydl:
         info = ydl.extract_info(f"https://www.youtube.com/watch?v={video_id}", download=False)

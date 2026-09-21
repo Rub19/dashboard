@@ -192,35 +192,56 @@ class LavalinkManager {
       logger.error('[Lavalink] Aucun nœud disponible — le serveur Lavalink est-il démarré ? (pm2 logs lavalink)');
       return [];
     }
-    const identifiers = isUrl ? [q] : [`ytmsearch:${q}`, `ytsearch:${q}`];
-
-    for (const identifier of identifiers) {
-      let res;
+    if (isUrl) {
       try {
-        res = await node.rest.resolve(identifier);
+        const res = await node.rest.resolve(q);
+        return this.parseResolveResult(res, requestedBy, limit, opts?.maxPlaylist ?? 100);
       } catch (err) {
-        logger.warn(`[Lavalink] resolve(${identifier}) :`, err);
-        continue;
+        logger.warn(`[Lavalink] resolve(${q}) :`, err);
+        return [];
       }
-      if (!res) continue;
-      switch (res.loadType) {
-        case LoadType.TRACK:
-          return [this.toTrack(res.data, requestedBy)];
-        case LoadType.SEARCH:
-          if (res.data.length > 0) return res.data.slice(0, limit).map((t) => this.toTrack(t, requestedBy));
-          break;
-        case LoadType.PLAYLIST: {
-          const max = opts?.maxPlaylist ?? 100;
-          const start = Math.max(0, res.data.info.selectedTrack);
-          return res.data.tracks.slice(start, start + max).map((t) => this.toTrack(t, requestedBy, res.data.info.name));
-        }
-        case LoadType.ERROR:
-          logger.warn(`[Lavalink] ${identifier} → ${res.data.severity}: ${res.data.message} (${res.data.cause})`);
-          break;
-        case LoadType.EMPTY:
-        default:
-          break;
+    }
+
+    // Recherche texte : lancer ytmsearch et ytsearch EN PARALLÈLE pour diviser le temps de latence
+    const [ytmSettled, ytSettled] = await Promise.allSettled([
+      node.rest.resolve(`ytmsearch:${q}`),
+      node.rest.resolve(`ytsearch:${q}`),
+    ]);
+
+    const ytmTracks = ytmSettled.status === 'fulfilled' && ytmSettled.value
+      ? this.parseResolveResult(ytmSettled.value, requestedBy, limit, opts?.maxPlaylist ?? 100)
+      : [];
+    if (ytmTracks.length > 0) return ytmTracks;
+
+    const ytTracks = ytSettled.status === 'fulfilled' && ytSettled.value
+      ? this.parseResolveResult(ytSettled.value, requestedBy, limit, opts?.maxPlaylist ?? 100)
+      : [];
+    return ytTracks;
+  }
+
+  private parseResolveResult(
+    res: any,
+    requestedBy: TrackRequester,
+    limit: number,
+    maxPlaylist: number
+  ): Track[] {
+    if (!res) return [];
+    switch (res.loadType) {
+      case LoadType.TRACK:
+        return [this.toTrack(res.data, requestedBy)];
+      case LoadType.SEARCH:
+        if (res.data.length > 0) return res.data.slice(0, limit).map((t: LLTrack) => this.toTrack(t, requestedBy));
+        break;
+      case LoadType.PLAYLIST: {
+        const start = Math.max(0, res.data.info.selectedTrack);
+        return res.data.tracks.slice(start, start + maxPlaylist).map((t: LLTrack) => this.toTrack(t, requestedBy, res.data.info.name));
       }
+      case LoadType.ERROR:
+        logger.warn(`[Lavalink] resolve → ${res.data.severity}: ${res.data.message} (${res.data.cause})`);
+        break;
+      case LoadType.EMPTY:
+      default:
+        break;
     }
     return [];
   }

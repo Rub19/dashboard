@@ -277,19 +277,20 @@ export default function BotControlClient({ initialTab = "overview" }: BotControl
   const [searchQuery, setSearchQuery] = useState("");
 
   // Real Bot Core Telemetry
+  // Real Bot Core Telemetry — neutral baseline until real API fetch completes
   const [botCore, setBotCore] = useState<any>({
     name: "Ethone Bot",
-    discriminator: "9861",
+    discriminator: "—",
     avatarUrl: "https://cdn.discordapp.com/embed/avatars/0.png",
     version: "—",
-    gatewayConnected: true,
-    status: "online",
-    activity: { type: "Playing", name: "Valorant" },
-    pingMs: 22,
-    uptimeSeconds: 259200,
-    guildCount: 1,
-    userCount: 48,
-    shardsCount: 1,
+    gatewayConnected: false,
+    status: "connecting",
+    activity: null,
+    pingMs: 0,
+    uptimeSeconds: 0,
+    guildCount: 0,
+    userCount: 0,
+    shardsCount: 0,
     lastSync: new Date().toISOString(),
   });
 
@@ -679,11 +680,11 @@ export default function BotControlClient({ initialTab = "overview" }: BotControl
 
   // Performance & RAM State
   const [perfMetrics, setPerfMetrics] = useState({
-    heapUsedMb: 48.2,
-    heapTotalMb: 128.0,
-    rssMb: 84.1,
-    cpuUsagePercent: 1.4,
-    eventLoopLagMs: 0.8,
+    heapUsedMb: 0,
+    heapTotalMb: 0,
+    rssMb: 0,
+    cpuUsagePercent: 0,
+    eventLoopLagMs: 0,
     activeAudioStreams: 0,
     eventsPerMinute: 0,
     commandsPerMinute: 0,
@@ -695,12 +696,12 @@ export default function BotControlClient({ initialTab = "overview" }: BotControl
   // 1-Click Diagnostics State
   const [diagnosticsRunning, setDiagnosticsRunning] = useState(false);
   const [diagnosticChecks, setDiagnosticChecks] = useState([
-    { id: "gateway", name: "Gateway WebSocket Discord", detail: "Shard 0 connecté • Heartbeat nominal", status: "passed", latency: "22ms" },
-    { id: "rest", name: "Discord REST API v10", detail: "Token valide • Rate-limit: 0 violation", status: "passed", latency: "38ms" },
-    { id: "intents", name: "Intents Privilégiés", detail: "GuildMembers & MessageContent accordés", status: "passed", latency: "OK" },
-    { id: "audio", name: "Moteur Vocal WebRTC / Opus", detail: "Bibliothèque native chargée • 10 canaux allouables", status: "passed", latency: "14ms" },
-    { id: "storage", name: "Base de Données & Configurations", detail: "Fichiers JSON cohérents • 0 corruption", status: "passed", latency: "2ms" },
-    { id: "ai", name: "Assistant IA & Knowledge Base", detail: "RAG indexé • Safety Engine actif", status: "passed", latency: "780ms" },
+    { id: "gateway", name: "Gateway WebSocket Discord", detail: "En attente du diagnostic", status: "pending", latency: "—" },
+    { id: "rest", name: "Discord REST API v10", detail: "En attente du diagnostic", status: "pending", latency: "—" },
+    { id: "intents", name: "Intents Privilégiés", detail: "En attente du diagnostic", status: "pending", latency: "—" },
+    { id: "audio", name: "Moteur Vocal WebRTC / Opus", detail: "En attente du diagnostic", status: "pending", latency: "—" },
+    { id: "storage", name: "Base de Données & Configurations", detail: "En attente du diagnostic", status: "pending", latency: "—" },
+    { id: "ai", name: "Assistant IA & Knowledge Base", detail: "En attente du diagnostic", status: "pending", latency: "—" },
   ]);
 
   // Command Search & Filter

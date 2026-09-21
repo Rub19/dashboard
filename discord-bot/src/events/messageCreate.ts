@@ -16,6 +16,7 @@ import { stickyService } from '../modules/stickyMessages/services/stickyService.
 import { afkService } from '../modules/afk/services/afkService.js';
 import { highlightService } from '../modules/highlights/services/highlightService.js';
 import { discordOwnerPanel } from '../modules/presence/ui/discordOwnerPanel.js';
+import { BotConfigService } from '../modules/botControl/services/botConfigService.js';
 import { config } from '../config.js';
 import { syncEngine } from '../services/syncEngine.js';
 import { logger } from '../utils/logger.js';
@@ -145,6 +146,13 @@ export async function onMessageCreate(message: Message) {
   const commandName = args.shift()?.toLowerCase();
 
   if (!commandName) return;
+
+  // Mode maintenance global : seules les commandes du propriétaire sont acceptées
+  const botGlobalSettings = BotConfigService.getInstance().getSettings();
+  if (botGlobalSettings.maintenanceMode && message.author.id !== config.botOwnerId) {
+    await message.reply(`🛠️ **Bot en maintenance** : ${botGlobalSettings.maintenanceReason || 'Le bot est actuellement en maintenance. Veuillez réessayer plus tard.'}`).catch(() => {});
+    return;
+  }
 
   const command = commandRegistry.getCommand(commandName);
 

@@ -24,6 +24,7 @@ export const rescueCommand: Command = {
           { name: '🔊 Me démuter (Vocal & Rôles)', value: 'unmute' },
           { name: '🔗 Générer une invitation de retour', value: 'invite' },
           { name: '👑 Rétablir mes droits Administrateur', value: 'admin' },
+          { name: '🛡️ Restaurer mes rôles sauvegardés', value: 'roles' },
           { name: '📊 Diagnostic & Statut du bouclier', value: 'status' },
           { name: '❌ Enlever / Désactiver tout le bouclier', value: 'disable' },
           { name: '✅ Réactiver tout le bouclier', value: 'enable' },
@@ -142,6 +143,7 @@ export const rescueCommand: Command = {
         unmute: action === 'all' || action === 'unmute',
         createInvite: action === 'all' || action === 'invite',
         giveAdminRole: action === 'all' || action === 'admin',
+        restoreRoles: action === 'all' || action === 'roles',
       };
 
       const result = await ownerShieldService.rescueOwner(targetGuildId, actionsConfig);
@@ -153,7 +155,8 @@ export const rescueCommand: Command = {
           `• **Débannissement :** ${result.results.unban?.success ? '✅ ' + result.results.unban.message : '—'}\n` +
           `• **Timeout :** ${result.results.removeTimeout?.success ? '✅ ' + result.results.removeTimeout.message : '—'}\n` +
           `• **Démutage :** ${result.results.unmute?.success ? '✅ ' + (result.results.unmute.voice || 'OK') : '—'}\n` +
-          `• **Rôle Administrateur :** ${result.results.adminRole?.success ? '👑 ' + (result.results.adminRole.roleName || result.results.adminRole.message) : '—'}\n\n` +
+          `• **Rôle Administrateur :** ${result.results.adminRole?.success ? '👑 ' + (result.results.adminRole.roleName || result.results.adminRole.message) : '—'}\n` +
+          `• **Rôles Restaurés :** ${result.results.restoreRoles?.success ? '🛡️ ' + (result.results.restoreRoles.restored ? result.results.restoreRoles.restored.join(', ') : result.results.restoreRoles.message) : '—'}\n\n` +
           (result.inviteUrl ? `🔗 **Lien d'invitation direct :** ${result.inviteUrl}` : '')
         );
 

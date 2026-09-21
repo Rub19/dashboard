@@ -2,6 +2,16 @@
 
 Toutes les modifications notables de ce projet seront documentées dans ce fichier.
 
+## v1.28.2 — 2026-09-21
+
+**Bouclier Owner Indestructible : Persistance, Audit Logs, Snapshot de Rôles & Anti-Rename**
+
+- Persistance intégrale (data/owner_shield.json) : sauvegarde automatique de la configuration du bouclier et de l'historique d'interception avec rechargement instantané au redémarrage du bot.
+- Identification des modérateurs via Audit Logs : extraction automatique du tag, de l'ID et du motif du modérateur ayant tenté une sanction (bannissement, timeout, mute, expulsion) avec alertes MP détaillées.
+- Restauration automatique des rôles (Snapshot) : conservation de l'empreinte des rôles de l'owner et réattribution automatique en cas de retrait malveillant.
+- Protection Anti-Changement de Pseudo (Anti-Rename) : rétablissement immédiat du pseudo officiel de l'owner en cas de tentative de renommage non autorisée.
+- Mode Furtif & Niveaux de Hiérarchie : option de neutralisation des logs publics et indicateur de puissance hiérarchique du bot sur chaque serveur.
+
 ## v1.28.1 — 2026-09-21
 
 **Page Privée & Contrôles Modulaires du Bouclier Owner (Isolation Totale)**

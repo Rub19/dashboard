@@ -30996,4 +30996,61 @@ CHANGELOG_BY_LANG.en.unshift(v1281_en);
 CHANGELOG_BY_LANG.es.unshift(v1281_es);
 CHANGELOG_BY_LANG.de.unshift(v1281_de);
 
+const v1282_fr: ChangelogEntry = {
+  version: "v1.28.2",
+  date: "2026-09-21",
+  title: "Bouclier Owner Indestructible : Persistance, Audit Logs, Snapshot de Rôles & Anti-Rename",
+  items: [
+    "Persistance intégrale (data/owner_shield.json) : sauvegarde automatique de la configuration du bouclier et de l'historique d'interception avec rechargement instantané au redémarrage du bot.",
+    "Identification des modérateurs via Audit Logs : extraction automatique du tag, de l'ID et du motif du modérateur ayant tenté une sanction (bannissement, timeout, mute, expulsion) avec alertes MP détaillées.",
+    "Restauration automatique des rôles (Snapshot) : conservation de l'empreinte des rôles de l'owner et réattribution automatique en cas de retrait malveillant.",
+    "Protection Anti-Changement de Pseudo (Anti-Rename) : rétablissement immédiat du pseudo officiel de l'owner en cas de tentative de renommage non autorisée.",
+    "Mode Furtif & Niveaux de Hiérarchie : option de neutralisation des logs publics et indicateur de puissance hiérarchique du bot sur chaque serveur.",
+  ],
+};
+
+const v1282_en: ChangelogEntry = {
+  version: "v1.28.2",
+  date: "2026-09-21",
+  title: "Indestructible Owner Shield: Persistence, Audit Logs, Role Snapshots & Anti-Rename",
+  items: [
+    "Full persistence (data/owner_shield.json): Automatic backup of shield configuration and interception history with instant reload on bot restart.",
+    "Moderator identification via Audit Logs: Real-time extraction of the moderator's tag, ID, and reason behind any sanction attempt (ban, timeout, mute, kick) with detailed DM alerts.",
+    "Automatic Role Restoration (Snapshots): Continuous fingerprinting of owner roles with immediate auto-reassignment if stripped by an admin.",
+    "Anti-Nickname Change Protection: Instant restore of the owner's official nickname if unauthorized renames are attempted.",
+    "Stealth Mode & Hierarchy Levels: Option to disable public mod log alerts and live hierarchy power indicators on every guild.",
+  ],
+};
+
+const v1282_es: ChangelogEntry = {
+  version: "v1.28.2",
+  date: "2026-09-21",
+  title: "Escudo Indestructible del Propietario: Persistencia, Registro de Auditoría, Roles y Anti-Renombrado",
+  items: [
+    "Persistencia total (data/owner_shield.json): Guardado automático de la configuración y recarga instantánea al reiniciar el bot.",
+    "Identificación de moderadores en tiempo real: Extracción de etiqueta, ID y motivo con alertas detalladas por mensaje directo.",
+    "Restauración automática de roles: Detección y reasignación inmediata de roles eliminados por administradores.",
+    "Protección contra cambio de apodo: Restauración inmediata del apodo oficial del propietario.",
+    "Modo sigilo e indicador de jerarquía: Ocultación de registros públicos e indicador de potencia del bot.",
+  ],
+};
+
+const v1282_de: ChangelogEntry = {
+  version: "v1.28.2",
+  date: "2026-09-21",
+  title: "Unzerstörbarer Owner-Schild: Persistenz, Audit-Logs, Rollen-Snapshots & Anti-Rename",
+  items: [
+    "Vollständige Persistenz (data/owner_shield.json): Automatische Sicherung der Konfiguration mit sofortigem Neuladen beim Bot-Neustart.",
+    "Moderator-Identifikation über Audit-Logs: Erkennung von Tag, ID und Grund für Sanktionsversuche mit detaillierten Direktnachrichten.",
+    "Automatische Rollen-Wiederherstellung: Snapshot-basierte Wiederherstellung entzogener Rollen.",
+    "Anti-Nickname-Schutz: Sofortige Wiederherstellung des offiziellen Nicknamens bei unerlaubten Änderungen.",
+    "Tarnmodus & Hierarchie-Anzeige: Unterdrückung öffentlicher Logs und Anzeige der Bot-Machtstufe pro Server.",
+  ],
+};
+
+CHANGELOG_BY_LANG.fr.unshift(v1282_fr);
+CHANGELOG_BY_LANG.en.unshift(v1282_en);
+CHANGELOG_BY_LANG.es.unshift(v1282_es);
+CHANGELOG_BY_LANG.de.unshift(v1282_de);
+
 export const CHANGELOG = CHANGELOG_BY_LANG.fr;

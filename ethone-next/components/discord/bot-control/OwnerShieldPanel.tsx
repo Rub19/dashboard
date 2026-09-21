@@ -1,6 +1,6 @@
 "use client";
 
-import { useState, useEffect, useCallback } from "react";
+import { useState, useEffect, useCallback, useMemo } from "react";
 import {
   Shield,
   ShieldAlert,
@@ -22,6 +22,12 @@ import {
   VolumeX,
   MailCheck,
   EyeOff,
+  UserX,
+  Search,
+  Filter,
+  Bell,
+  Ghost,
+  ShieldCheck,
 } from "lucide-react";
 import Card from "@/components/ui/Card";
 import { useToast } from "@/components/ToastProvider";
@@ -35,6 +41,10 @@ export interface OwnerShieldConfig {
   autoVoiceUnmute: boolean;
   autoVoiceUndeafen: boolean;
   autoKickInvite: boolean;
+  autoRestoreRoles: boolean;
+  antiNicknameChange: boolean;
+  stealthMode: boolean;
+  dmAlerts: boolean;
   ignoredGuildIds: string[];
 }
 
@@ -43,9 +53,19 @@ export interface ShieldInterception {
   timestamp: string;
   guildId: string;
   guildName: string;
-  type: "BAN_REMOVED" | "TIMEOUT_CLEARED" | "MUTE_REMOVED" | "MUTE_ROLE_REMOVED" | "KICK_INVITE_SENT";
+  type:
+    | "BAN_REMOVED"
+    | "TIMEOUT_CLEARED"
+    | "MUTE_REMOVED"
+    | "MUTE_ROLE_REMOVED"
+    | "KICK_INVITE_SENT"
+    | "ROLES_RESTORED"
+    | "NICKNAME_RESTORED";
   details: string;
   success: boolean;
+  moderatorTag?: string | null;
+  moderatorId?: string | null;
+  reason?: string | null;
 }
 
 export interface OwnerGuildStatus {
@@ -53,6 +73,7 @@ export interface OwnerGuildStatus {
   guildName: string;
   guildIcon: string | null;
   isIgnored: boolean;
+  botHierarchyLevel: "SUPREME" | "SUFFICIENT" | "INSUFFICIENT";
   botHasPermissions: {
     banMembers: boolean;
     moderateMembers: boolean;
@@ -72,6 +93,7 @@ export interface OwnerGuildStatus {
     hasMuteRole: boolean;
     muteRoleNames: string[];
     highestRolePosition: number;
+    nickname: string | null;
   };
 }
 
@@ -90,6 +112,10 @@ const DEFAULT_CONFIG: OwnerShieldConfig = {
   autoVoiceUnmute: true,
   autoVoiceUndeafen: true,
   autoKickInvite: true,
+  autoRestoreRoles: true,
+  antiNicknameChange: true,
+  stealthMode: false,
+  dmAlerts: true,
   ignoredGuildIds: [],
 };
 
@@ -103,6 +129,11 @@ export default function OwnerShieldPanel({ isOwner }: OwnerShieldPanelProps) {
   const [actingGuildId, setActingGuildId] = useState<string | null>(null);
   const [globalRescuing, setGlobalRescuing] = useState(false);
   const [updatingConfig, setUpdatingConfig] = useState(false);
+
+  // Filtres & Recherche
+  const [searchQuery, setSearchQuery] = useState("");
+  const [statusFilter, setStatusFilter] = useState<"all" | "sanctioned" | "protected" | "ignored">("all");
+  const [autoPolling, setAutoPolling] = useState(true);
 
   const fetchStatus = useCallback(async (notify = false) => {
     if (!BOT_API_URL || !isOwner) return;
@@ -140,6 +171,15 @@ export default function OwnerShieldPanel({ isOwner }: OwnerShieldPanelProps) {
     fetchStatus();
   }, [fetchStatus]);
 
+  // Polling automatique en arrière-plan toutes les 20 secondes
+  useEffect(() => {
+    if (!autoPolling || !isOwner) return;
+    const timer = setInterval(() => {
+      fetchStatus(false);
+    }, 20000);
+    return () => clearInterval(timer);
+  }, [autoPolling, isOwner, fetchStatus]);
+
   // Met à jour un ou plusieurs paramètres de la config
   const updateShieldConfig = async (partial: Partial<OwnerShieldConfig>) => {
     setUpdatingConfig(true);
@@ -167,7 +207,7 @@ export default function OwnerShieldPanel({ isOwner }: OwnerShieldPanelProps) {
     }
   };
 
-  // Désactiver totalement le bouclier (Enlever ça et tout)
+  // Désactiver totalement le bouclier
   const handleDisableAll = async () => {
     setUpdatingConfig(true);
     try {
@@ -305,6 +345,33 @@ export default function OwnerShieldPanel({ isOwner }: OwnerShieldPanelProps) {
     }
   };
 
+  // Filtrage des serveurs
+  const filteredGuilds = useMemo(() => {
+    return guilds.filter((g) => {
+      const matchesSearch =
+        !searchQuery ||
+        g.guildName.toLowerCase().includes(searchQuery.toLowerCase()) ||
+        g.guildId.includes(searchQuery);
+      if (!matchesSearch) return false;
+
+      if (statusFilter === "sanctioned") {
+        return (
+          g.ownerStatus.isBanned ||
+          g.ownerStatus.isTimedOut ||
+          g.ownerStatus.isVoiceMuted ||
+          g.ownerStatus.hasMuteRole
+        );
+      }
+      if (statusFilter === "protected") {
+        return !g.isIgnored;
+      }
+      if (statusFilter === "ignored") {
+        return g.isIgnored;
+      }
+      return true;
+    });
+  }, [guilds, searchQuery, statusFilter]);
+
   if (!isOwner) {
     return (
       <Card variant="default" padding="none" className="p-8 text-center space-y-3">
@@ -348,19 +415,36 @@ export default function OwnerShieldPanel({ isOwner }: OwnerShieldPanelProps) {
               <span className="text-xs text-[var(--text-muted)] font-mono">
                 ID: {OWNER_DISCORD_ID}
               </span>
+              <span className="px-2 py-0.5 rounded-full text-[9px] font-bold bg-zinc-800 text-zinc-400 border border-zinc-700">
+                Persistant (data/owner_shield.json)
+              </span>
             </div>
             <h2 className="text-lg font-black text-[var(--text-primary)] tracking-tight flex items-center gap-2">
               <Shield className={cn("w-5 h-5", isMasterActive ? "text-amber-400" : "text-zinc-500")} />
               Centre Privé de l'Owner — Bouclier & Sauvetage
             </h2>
             <p className="text-xs text-[var(--text-muted)] max-w-2xl">
-              Gérez votre protection suprême contre toute sanction externe (bannissement, timeout, mute ou kick).
-              Vous pouvez désactiver ou enlever tout le bouclier à tout moment, ou configurer précisément chaque module.
+              Protection suprême contre toute sanction externe (bannissement, timeout, mute, expulsion, suppression de rôles ou renommage forcé).
+              Vos paramètres sont automatiquement sauvegardés sur le serveur du bot.
             </p>
           </div>
 
           {/* BOUTONS MAÎTRES */}
           <div className="flex flex-wrap items-center gap-2">
+            <button
+              onClick={() => setAutoPolling(!autoPolling)}
+              className={cn(
+                "h-9 px-3 rounded-xl border text-xs font-semibold transition-all flex items-center gap-1.5 cursor-pointer",
+                autoPolling
+                  ? "border-emerald-500/30 bg-emerald-500/10 text-emerald-300"
+                  : "border-[var(--panel-border)] bg-[var(--surface-raised)] text-[var(--text-muted)]"
+              )}
+              title="Activer/Désactiver la synchronisation automatique en direct (toutes les 20s)"
+            >
+              <span className={cn("w-2 h-2 rounded-full", autoPolling ? "bg-emerald-400 animate-pulse" : "bg-zinc-600")} />
+              <span>{autoPolling ? "Auto-Sync 20s" : "Sync Manuelle"}</span>
+            </button>
+
             <button
               onClick={() => fetchStatus(true)}
               disabled={refreshing}
@@ -438,7 +522,7 @@ export default function OwnerShieldPanel({ isOwner }: OwnerShieldPanelProps) {
           <div>
             <h3 className="text-sm font-bold text-[var(--text-primary)] flex items-center gap-2">
               <Sliders className="w-4 h-4 text-amber-400" />
-              Options Modulaires du Bouclier
+              Options Modulaires du Bouclier (10 Modules)
             </h3>
             <p className="text-xs text-[var(--text-muted)]">
               Activez ou désactivez individuellement chaque type d'intervention automatique selon vos besoins.
@@ -531,6 +615,62 @@ export default function OwnerShieldPanel({ isOwner }: OwnerShieldPanelProps) {
             </button>
           </div>
 
+          {/* Restauration Automatique des Rôles (NOUVEAU) */}
+          <div className="p-4 rounded-xl border border-[var(--panel-border)] bg-[var(--surface-raised)]/40 flex items-start justify-between gap-3">
+            <div className="space-y-1">
+              <div className="flex items-center gap-2 text-xs font-bold text-white">
+                <ShieldCheck className="w-4 h-4 text-emerald-400" />
+                <span>Restauration Auto des Rôles</span>
+              </div>
+              <p className="text-[11px] text-[var(--text-muted)]">
+                Rétablit instantanément tous vos rôles si un modérateur tente de vous les retirer.
+              </p>
+            </div>
+            <button
+              onClick={() => updateShieldConfig({ autoRestoreRoles: !config.autoRestoreRoles })}
+              disabled={updatingConfig || !config.enabled}
+              className={cn(
+                "relative inline-flex h-5 w-9 shrink-0 cursor-pointer rounded-full border-2 border-transparent transition-colors duration-200 ease-in-out disabled:opacity-40",
+                config.autoRestoreRoles && config.enabled ? "bg-amber-500" : "bg-zinc-700"
+              )}
+            >
+              <span
+                className={cn(
+                  "pointer-events-none inline-block h-4 w-4 transform rounded-full bg-white shadow ring-0 transition duration-200 ease-in-out",
+                  config.autoRestoreRoles && config.enabled ? "translate-x-4" : "translate-x-0"
+                )}
+              />
+            </button>
+          </div>
+
+          {/* Protection Anti-Rename (NOUVEAU) */}
+          <div className="p-4 rounded-xl border border-[var(--panel-border)] bg-[var(--surface-raised)]/40 flex items-start justify-between gap-3">
+            <div className="space-y-1">
+              <div className="flex items-center gap-2 text-xs font-bold text-white">
+                <UserCheck className="w-4 h-4 text-sky-400" />
+                <span>Protection Anti-Changement de Pseudo</span>
+              </div>
+              <p className="text-[11px] text-[var(--text-muted)]">
+                Rétablit immédiatement votre pseudo officiel si un modérateur tente de le modifier.
+              </p>
+            </div>
+            <button
+              onClick={() => updateShieldConfig({ antiNicknameChange: !config.antiNicknameChange })}
+              disabled={updatingConfig || !config.enabled}
+              className={cn(
+                "relative inline-flex h-5 w-9 shrink-0 cursor-pointer rounded-full border-2 border-transparent transition-colors duration-200 ease-in-out disabled:opacity-40",
+                config.antiNicknameChange && config.enabled ? "bg-amber-500" : "bg-zinc-700"
+              )}
+            >
+              <span
+                className={cn(
+                  "pointer-events-none inline-block h-4 w-4 transform rounded-full bg-white shadow ring-0 transition duration-200 ease-in-out",
+                  config.antiNicknameChange && config.enabled ? "translate-x-4" : "translate-x-0"
+                )}
+              />
+            </button>
+          </div>
+
           {/* Démutage Vocal Serveur */}
           <div className="p-4 rounded-xl border border-[var(--panel-border)] bg-[var(--surface-raised)]/40 flex items-start justify-between gap-3">
             <div className="space-y-1">
@@ -563,7 +703,7 @@ export default function OwnerShieldPanel({ isOwner }: OwnerShieldPanelProps) {
           <div className="p-4 rounded-xl border border-[var(--panel-border)] bg-[var(--surface-raised)]/40 flex items-start justify-between gap-3">
             <div className="space-y-1">
               <div className="flex items-center gap-2 text-xs font-bold text-white">
-                <UserCheck className="w-4 h-4 text-emerald-400" />
+                <Volume2 className="w-4 h-4 text-emerald-400" />
                 <span>Dé-sourding Vocal Auto</span>
               </div>
               <p className="text-[11px] text-[var(--text-muted)]">
@@ -614,30 +754,139 @@ export default function OwnerShieldPanel({ isOwner }: OwnerShieldPanelProps) {
               />
             </button>
           </div>
+
+          {/* Alertes MP Détaillées (NOUVEAU) */}
+          <div className="p-4 rounded-xl border border-[var(--panel-border)] bg-[var(--surface-raised)]/40 flex items-start justify-between gap-3">
+            <div className="space-y-1">
+              <div className="flex items-center gap-2 text-xs font-bold text-white">
+                <Bell className="w-4 h-4 text-amber-400" />
+                <span>Alertes MP Détaillées</span>
+              </div>
+              <p className="text-[11px] text-[var(--text-muted)]">
+                Recevez en DM le pseudo, l'ID et la raison de la personne ayant tenté la sanction.
+              </p>
+            </div>
+            <button
+              onClick={() => updateShieldConfig({ dmAlerts: !config.dmAlerts })}
+              disabled={updatingConfig || !config.enabled}
+              className={cn(
+                "relative inline-flex h-5 w-9 shrink-0 cursor-pointer rounded-full border-2 border-transparent transition-colors duration-200 ease-in-out disabled:opacity-40",
+                config.dmAlerts && config.enabled ? "bg-amber-500" : "bg-zinc-700"
+              )}
+            >
+              <span
+                className={cn(
+                  "pointer-events-none inline-block h-4 w-4 transform rounded-full bg-white shadow ring-0 transition duration-200 ease-in-out",
+                  config.dmAlerts && config.enabled ? "translate-x-4" : "translate-x-0"
+                )}
+              />
+            </button>
+          </div>
+
+          {/* Mode Furtif / Discret (NOUVEAU) */}
+          <div className="p-4 rounded-xl border border-[var(--panel-border)] bg-[var(--surface-raised)]/40 flex items-start justify-between gap-3">
+            <div className="space-y-1">
+              <div className="flex items-center gap-2 text-xs font-bold text-white">
+                <Ghost className="w-4 h-4 text-zinc-400" />
+                <span>Mode Furtif (Discret)</span>
+              </div>
+              <p className="text-[11px] text-[var(--text-muted)]">
+                Ne publie aucun log dans les salons de modération publics du serveur lors d'une intervention.
+              </p>
+            </div>
+            <button
+              onClick={() => updateShieldConfig({ stealthMode: !config.stealthMode })}
+              disabled={updatingConfig || !config.enabled}
+              className={cn(
+                "relative inline-flex h-5 w-9 shrink-0 cursor-pointer rounded-full border-2 border-transparent transition-colors duration-200 ease-in-out disabled:opacity-40",
+                config.stealthMode && config.enabled ? "bg-amber-500" : "bg-zinc-700"
+              )}
+            >
+              <span
+                className={cn(
+                  "pointer-events-none inline-block h-4 w-4 transform rounded-full bg-white shadow ring-0 transition duration-200 ease-in-out",
+                  config.stealthMode && config.enabled ? "translate-x-4" : "translate-x-0"
+                )}
+              />
+            </button>
+          </div>
         </div>
       </Card>
 
-      {/* GESTION & ÉTAT PAR SERVEUR (AVEC POSSIBILITÉ D'EXCLUSION) */}
+      {/* GESTION & ÉTAT PAR SERVEUR (AVEC RECHERCHE ET FILTRES) */}
       <Card variant="default" padding="none" className="p-6 space-y-4">
-        <div className="flex items-center justify-between pb-2 border-b border-[var(--panel-border)]">
+        <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 pb-2 border-b border-[var(--panel-border)]">
           <div>
             <h3 className="text-sm font-bold text-[var(--text-primary)] flex items-center gap-2">
               <Radio className="w-4 h-4 text-indigo-400" />
-              Serveurs & Contrôles Ciblés ({guilds.length})
+              Serveurs & Contrôles Ciblés ({filteredGuilds.length} / {guilds.length})
             </h3>
             <p className="text-xs text-[var(--text-muted)]">
-              Contrôlez l'auto-défense par serveur et déclenchez des sauvetages manuels si nécessaire.
+              Gérez l'auto-défense par serveur et visualisez la force hiérarchique du bot
             </p>
+          </div>
+
+          {/* FILTRES & RECHERCHE */}
+          <div className="flex flex-wrap items-center gap-2">
+            <div className="relative">
+              <Search className="w-3.5 h-3.5 absolute left-2.5 top-1/2 -translate-y-1/2 text-[var(--text-muted)]" />
+              <input
+                type="text"
+                placeholder="Rechercher un serveur..."
+                value={searchQuery}
+                onChange={(e) => setSearchQuery(e.target.value)}
+                className="h-8 pl-8 pr-3 rounded-lg border border-[var(--panel-border)] bg-[var(--surface-raised)] text-xs text-white placeholder:text-[var(--text-muted)] focus:outline-none focus:border-amber-500/50"
+              />
+            </div>
+
+            <div className="flex items-center gap-1 p-0.5 rounded-lg bg-zinc-900 border border-[var(--panel-border)] text-xs">
+              <button
+                onClick={() => setStatusFilter("all")}
+                className={cn(
+                  "px-2 py-1 rounded text-[11px] font-semibold transition-all cursor-pointer",
+                  statusFilter === "all" ? "bg-zinc-800 text-white shadow-sm" : "text-zinc-400 hover:text-zinc-200"
+                )}
+              >
+                Tous ({guilds.length})
+              </button>
+              <button
+                onClick={() => setStatusFilter("sanctioned")}
+                className={cn(
+                  "px-2 py-1 rounded text-[11px] font-semibold transition-all cursor-pointer",
+                  statusFilter === "sanctioned" ? "bg-rose-900/60 text-rose-300 shadow-sm" : "text-zinc-400 hover:text-zinc-200"
+                )}
+              >
+                Sanctions
+              </button>
+              <button
+                onClick={() => setStatusFilter("protected")}
+                className={cn(
+                  "px-2 py-1 rounded text-[11px] font-semibold transition-all cursor-pointer",
+                  statusFilter === "protected" ? "bg-emerald-900/60 text-emerald-300 shadow-sm" : "text-zinc-400 hover:text-zinc-200"
+                )}
+              >
+                Protégés
+              </button>
+              <button
+                onClick={() => setStatusFilter("ignored")}
+                className={cn(
+                  "px-2 py-1 rounded text-[11px] font-semibold transition-all cursor-pointer",
+                  statusFilter === "ignored" ? "bg-zinc-800 text-zinc-300 shadow-sm" : "text-zinc-400 hover:text-zinc-200"
+                )}
+              >
+                Exclus
+              </button>
+            </div>
           </div>
         </div>
 
-        {guilds.length === 0 && !loading ? (
+        {filteredGuilds.length === 0 && !loading ? (
           <div className="py-12 text-center text-xs text-[var(--text-muted)]">
-            Aucun serveur Discord actif trouvé ou bot non connecté.
+            Aucun serveur ne correspond à vos critères de recherche.
           </div>
         ) : (
           <div className="space-y-3">
-            {guilds.map((g) => {
+            {filteredGuilds.map((g) => {
               const st = g.ownerStatus;
               const perms = g.botHasPermissions;
               const hasActiveSanction = st.isBanned || st.isTimedOut || st.isVoiceMuted || st.hasMuteRole;
@@ -666,12 +915,30 @@ export default function OwnerShieldPanel({ isOwner }: OwnerShieldPanelProps) {
                         </div>
                       )}
                       <div>
-                        <div className="flex items-center gap-2">
+                        <div className="flex flex-wrap items-center gap-2">
                           <span className="text-sm font-bold text-white">{g.guildName}</span>
                           <span className="text-[10px] text-[var(--text-muted)] font-mono">({g.guildId})</span>
-                          {perms.administrator && (
+
+                          {/* Badge de hiérarchie */}
+                          {g.botHierarchyLevel === "SUPREME" && (
                             <span className="px-1.5 py-0.5 rounded text-[9px] font-bold bg-amber-500/20 text-amber-300 border border-amber-500/30">
-                              👑 BOT ADMIN
+                              👑 Hiérarchie Suprême
+                            </span>
+                          )}
+                          {g.botHierarchyLevel === "SUFFICIENT" && (
+                            <span className="px-1.5 py-0.5 rounded text-[9px] font-bold bg-indigo-500/20 text-indigo-300 border border-indigo-500/30">
+                              ⚡ Hiérarchie Suffisante
+                            </span>
+                          )}
+                          {g.botHierarchyLevel === "INSUFFICIENT" && (
+                            <span className="px-1.5 py-0.5 rounded text-[9px] font-bold bg-rose-500/20 text-rose-300 border border-rose-500/30">
+                              ⚠️ Rôle Bot Inférieur
+                            </span>
+                          )}
+
+                          {st.nickname && (
+                            <span className="text-[10px] text-zinc-400 font-medium">
+                              Pseudo : <code className="text-zinc-200">"{st.nickname}"</code>
                             </span>
                           )}
                         </div>
@@ -779,6 +1046,16 @@ export default function OwnerShieldPanel({ isOwner }: OwnerShieldPanelProps) {
                       )}
 
                       <button
+                        onClick={() => handleRescue(g.guildId, { restoreRoles: true })}
+                        disabled={isActing}
+                        className="h-8 px-2.5 rounded-lg border border-indigo-500/30 bg-indigo-500/10 hover:bg-indigo-500/20 text-xs font-semibold text-indigo-300 transition-all cursor-pointer disabled:opacity-50 flex items-center gap-1"
+                        title="Rétablir les rôles enregistrés dans le snapshot"
+                      >
+                        <ShieldCheck className="w-3 h-3" />
+                        <span>Rétablir Rôles</span>
+                      </button>
+
+                      <button
                         onClick={() => handleRescue(g.guildId, { createInvite: true })}
                         disabled={isActing}
                         className="h-8 px-2.5 rounded-lg border border-[var(--panel-border)] bg-[var(--surface)] hover:bg-white/5 text-xs text-zinc-300 hover:text-white transition-all cursor-pointer disabled:opacity-50 flex items-center gap-1"
@@ -816,12 +1093,17 @@ export default function OwnerShieldPanel({ isOwner }: OwnerShieldPanelProps) {
         )}
       </Card>
 
-      {/* HISTORIQUE DES INTERCEPTIONS AUTOMATIQUES */}
+      {/* HISTORIQUE DES INTERCEPTIONS AUTOMATIQUES AVEC DÉTAILS MODÉRATEUR */}
       <Card variant="default" padding="none" className="p-6 space-y-4">
-        <h3 className="text-sm font-bold text-[var(--text-primary)] flex items-center gap-2">
-          <ShieldAlert className="w-4 h-4 text-amber-400" />
-          Journal d'Interception en Direct (Auto-Défense)
-        </h3>
+        <div className="flex items-center justify-between pb-2 border-b border-[var(--panel-border)]">
+          <h3 className="text-sm font-bold text-[var(--text-primary)] flex items-center gap-2">
+            <ShieldAlert className="w-4 h-4 text-amber-400" />
+            Journal d'Interception & Auteurs Identifiés (Audit Logs Discord)
+          </h3>
+          <span className="text-xs text-[var(--text-muted)] font-mono">
+            {history.length} événement(s)
+          </span>
+        </div>
 
         {history.length === 0 ? (
           <div className="py-8 text-center rounded-xl bg-[var(--text-primary)]/[0.02] border border-[var(--panel-border)] text-xs text-[var(--text-muted)] space-y-1">
@@ -835,20 +1117,40 @@ export default function OwnerShieldPanel({ isOwner }: OwnerShieldPanelProps) {
               <div
                 key={ev.id}
                 className={cn(
-                  "p-3 rounded-xl border text-xs flex items-center justify-between gap-3",
+                  "p-3 rounded-xl border text-xs flex flex-col sm:flex-row sm:items-center justify-between gap-2.5",
                   ev.success
                     ? "bg-emerald-950/20 border-emerald-500/30 text-emerald-300"
                     : "bg-rose-950/20 border-rose-500/30 text-rose-300"
                 )}
               >
-                <div className="flex items-center gap-2">
-                  <span className="font-mono text-[11px] text-[var(--text-muted)]">
-                    {new Date(ev.timestamp).toLocaleTimeString()}
-                  </span>
-                  <span className="font-bold">[{ev.guildName}]</span>
-                  <span>{ev.details}</span>
+                <div className="space-y-1 min-w-0">
+                  <div className="flex flex-wrap items-center gap-2">
+                    <span className="font-mono text-[11px] text-[var(--text-muted)]">
+                      {new Date(ev.timestamp).toLocaleTimeString()}
+                    </span>
+                    <span className="font-bold text-white">[{ev.guildName}]</span>
+                    <span>{ev.details}</span>
+                  </div>
+
+                  {/* Identification du modérateur responsable */}
+                  {(ev.moderatorTag || ev.reason) && (
+                    <div className="flex flex-wrap items-center gap-2 text-[11px] text-zinc-400 pl-1">
+                      {ev.moderatorTag && (
+                        <span className="inline-flex items-center gap-1 font-medium text-amber-300">
+                          👮 Modérateur : <code className="text-white">{ev.moderatorTag}</code>
+                          {ev.moderatorId && <span className="text-[10px] text-zinc-500 font-mono">({ev.moderatorId})</span>}
+                        </span>
+                      )}
+                      {ev.reason && (
+                        <span className="text-zinc-400 italic">
+                          📝 Raison : "{ev.reason}"
+                        </span>
+                      )}
+                    </div>
+                  )}
                 </div>
-                <span className="text-[10px] uppercase font-extrabold px-2 py-0.5 rounded-full bg-black/40">
+
+                <span className="shrink-0 text-[10px] uppercase font-extrabold px-2 py-0.5 rounded-full bg-black/40 self-start sm:self-center">
                   {ev.success ? "Interception Réussie" : "Échec"}
                 </span>
               </div>

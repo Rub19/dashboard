@@ -15,6 +15,7 @@ import {
   RefreshCw,
 } from "lucide-react";
 import { useDiscordOAuth } from "@/lib/hooks/useDiscordOAuth";
+import { useResolvedGuildId } from "@/lib/hooks/useBotGuildIds";
 
 const BOT_API_URL = process.env.NEXT_PUBLIC_DISCORD_BOT_API || "";
 
@@ -34,24 +35,18 @@ type Stats = {
 };
 
 const DEMO_STATS: Stats = {
-  title: "Friday Gaming Night — Valorant & Lethal Company",
-  totalRegistrations: 28,
-  goingCount: 22,
-  maybeCount: 6,
-  waitlistCount: 2,
-  attendedCount: 19,
-  attendanceRate: 86,
-  noShowRate: 14,
-  peakVoiceCount: 24,
-  maxCapacity: 30,
-  fillRate: 73,
-  registrationTimeline: [
-    { day: "J-5", count: 4 },
-    { day: "J-4", count: 7 },
-    { day: "J-3", count: 12 },
-    { day: "J-2", count: 18 },
-    { day: "J-1", count: 22 },
-  ],
+  title: "Événement",
+  totalRegistrations: 0,
+  goingCount: 0,
+  maybeCount: 0,
+  waitlistCount: 0,
+  attendedCount: 0,
+  attendanceRate: 0,
+  noShowRate: 0,
+  peakVoiceCount: 0,
+  maxCapacity: 0,
+  fillRate: 0,
+  registrationTimeline: [],
 };
 
 export default function EventAnalyticsClient() {
@@ -59,7 +54,7 @@ export default function EventAnalyticsClient() {
   const searchParams = useSearchParams();
   const { profile } = useDiscordOAuth();
   const eventId = (params?.eventId as string) || "evt-gaming-night";
-  const guildParam = searchParams.get("guildId") || profile?.guilds?.[0]?.id || "123456789012345678";
+  const guildParam = useResolvedGuildId(searchParams.get("guildId"), profile?.guilds) || "123456789012345678";
 
   const [stats, setStats] = useState<Stats>(DEMO_STATS);
   const [isDemo, setIsDemo] = useState(true);
@@ -152,7 +147,7 @@ export default function EventAnalyticsClient() {
             </h1>
             <p className="text-xs text-slate-400 mt-1">
               Rapport complet de fréquentation, taux de conversion et engagement vocal pour <strong className="text-white">{stats.title}</strong>
-              {isDemo && <span className="text-amber-400"> (données de démonstration)</span>}.
+              {isDemo && <span className="text-amber-400"> (bot injoignable ou absent de ce serveur)</span>}.
             </p>
           </div>
           <button

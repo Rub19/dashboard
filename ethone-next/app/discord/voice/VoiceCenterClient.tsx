@@ -220,7 +220,7 @@ export default function VoiceCenterClient() {
       const errJson = await res.json().catch(() => ({}));
       showError(errJson.error || "Impossible de publier le panneau.");
     } catch {
-      success("Panneau interactif simulé avec succès sur Discord !");
+      showError("Bot injoignable : le panneau n'a pas été publié.");
     } finally {
       setIsPublishing(false);
     }

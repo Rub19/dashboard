@@ -11,6 +11,8 @@ import {
   Search,
 } from "lucide-react";
 import { useToast } from "@/components/ToastProvider";
+import { useDiscordOAuth } from "@/lib/hooks/useDiscordOAuth";
+import { useResolvedGuildId } from "@/lib/hooks/useBotGuildIds";
 
 const API_BASE = process.env.NEXT_PUBLIC_DISCORD_BOT_API || "";
 
@@ -18,7 +20,8 @@ export default function InviteUserDetailClient() {
   const params = useParams();
   const searchParams = useSearchParams();
   const userId = (params?.userId as string) || "usr_alex";
-  const guildId = searchParams.get("guildId") || "1128633164290596884";
+  const { profile: oauthProfile } = useDiscordOAuth();
+  const guildId = useResolvedGuildId(searchParams.get("guildId"), oauthProfile?.guilds);
 
   const [loading, setLoading] = useState(true);
   const [profile, setProfile] = useState<any>(null);

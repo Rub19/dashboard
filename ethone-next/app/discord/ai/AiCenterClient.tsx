@@ -243,9 +243,7 @@ export default function AiCenterClient() {
   /** Persists personality, tools, memory/behaviour settings in one go, then bumps the published version. */
   const handlePublish = async () => {
     if (isDemo) {
-      setSettings((s) => ({ ...s, publishedVersion: s.publishedVersion + 1, lastPublishedAt: new Date().toISOString() }));
-      setDirty(false);
-      success("Configuration publiée (démo).");
+      toastError("Bot injoignable : rien n'a été enregistré.");
       return;
     }
     setSaving(true);
@@ -279,10 +277,8 @@ export default function AiCenterClient() {
     setIsPlaying(true);
     setPlayResult(null);
     if (isDemo) {
-      setTimeout(() => {
-        setPlayResult({ answer: `Bonjour ! Je suis ${personality.name}. (Mode démo : connecte un serveur pour une vraie réponse du modèle.)`, sourcesUsed: [], retrievedContext: "", tokensUsed: 0, model: "demo" });
-        setIsPlaying(false);
-      }, 500);
+      toastError("Bot injoignable : le modèle ne peut pas répondre.");
+      setIsPlaying(false);
       return;
     }
     try {
@@ -300,10 +296,7 @@ export default function AiCenterClient() {
   const handleAddKnowledge = async () => {
     if (!newKnTitle.trim() || !newKnContent.trim()) return;
     if (isDemo) {
-      setKnowledgeList((prev) => [{ id: `kn-${Date.now()}`, title: newKnTitle, type: newKnType, scope: "GLOBAL", tokenCount: Math.ceil(newKnContent.length / 4), status: "READY", updatedAt: new Date().toISOString() }, ...prev]);
-      setShowAddKnowledgeModal(false);
-      setNewKnTitle("");
-      setNewKnContent("");
+      toastError("Bot injoignable : rien n'a été enregistré.");
       return;
     }
     try {
@@ -356,8 +349,7 @@ export default function AiCenterClient() {
     const id = userToForgetId.trim();
     if (!id) return;
     if (isDemo) {
-      success("Mémoire purgée (démo).");
-      setUserToForgetId("");
+      toastError("Bot injoignable : rien n'a été enregistré.");
       return;
     }
     try {
@@ -392,7 +384,7 @@ export default function AiCenterClient() {
               </h1>
               <p className="text-xs text-neutral-400">
                 Personnalité, base de connaissances RAG, règles par salon et playground branché sur le vrai modèle.
-                {isDemo && <span className="text-amber-400"> (données de démonstration)</span>}
+                {isDemo && <span className="text-amber-400"> (bot injoignable ou absent de ce serveur)</span>}
               </p>
             </div>
           </div>
@@ -478,7 +470,7 @@ export default function AiCenterClient() {
                   <h3 className="text-base font-bold text-white flex items-center gap-2"><Zap className="w-4 h-4 text-amber-400" /> Playground</h3>
                   <p className="text-xs text-neutral-400">Teste une question : le bot applique ton prompt, tes sources RAG et le shield anti-injection, exactement comme sur Discord.</p>
                 </div>
-                <span className="px-2.5 py-0.5 rounded-full text-[10px] font-bold bg-amber-500/10 text-amber-400 border border-amber-500/20">{isDemo ? "Démo" : "Modèle réel"}</span>
+                <span className="px-2.5 py-0.5 rounded-full text-[10px] font-bold bg-amber-500/10 text-amber-400 border border-amber-500/20">{isDemo ? "Hors ligne" : "Modèle réel"}</span>
               </div>
               <form onSubmit={handlePlaygroundSubmit} className="space-y-3">
                 <div className="relative">

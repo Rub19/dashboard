@@ -54,36 +54,36 @@ interface EventDetailData {
   };
 }
 
+// Valeur neutre affichée tant que l'événement n'est pas chargé (ou s'il est introuvable) :
+// aucun contenu inventé.
 const DEFAULT_EVENT: EventDetailData = {
-  id: "evt-gaming-night",
-  title: "Friday Gaming Night — Valorant & Lethal Company",
-  description: "Rejoignez toute la communauté pour une session intense de 3 heures ! Nous diviserons les salons en escouades de 5 joueurs pour Valorant et 4 joueurs pour Lethal Company. Rôles et canaux vocaux temporaires synchronisés par ETHONE Bot.",
-  category: "GAMING",
+  id: "",
+  title: "Événement introuvable",
+  description: "Impossible de charger cet événement. Le bot n'est peut-être pas sur ce serveur, ou l'événement a été supprimé.",
+  category: "OTHER",
   status: "SCHEDULED",
-  startDate: new Date(Date.now() + 86400000 * 2 + 3600000 * 4).toISOString(),
-  endDate: new Date(Date.now() + 86400000 * 2 + 3600000 * 7).toISOString(),
+  startDate: new Date().toISOString(),
+  endDate: new Date().toISOString(),
   location: {
     type: "VOICE",
-    channelName: "🎮 Vocal Gaming #1",
-    channelId: "1128633164290596884",
+    channelName: "—",
   },
   capacity: {
-    unlimited: false,
-    maxParticipants: 30,
-    waitlistEnabled: true,
+    unlimited: true,
+    maxParticipants: 0,
+    waitlistEnabled: false,
   },
   stats: {
-    goingCount: 22,
-    maybeCount: 6,
-    notGoingCount: 1,
-    waitlistCount: 2,
+    goingCount: 0,
+    maybeCount: 0,
+    notGoingCount: 0,
+    waitlistCount: 0,
     attendedCount: 0,
   },
-  imageUrl: "https://images.unsplash.com/photo-1542751371-adc38448a05e?w=1200&auto=format&fit=crop&q=80",
-  emoji: "🎮",
+  emoji: "📅",
   organizer: {
-    username: "ETHONE Staff",
-    avatarUrl: "https://images.unsplash.com/photo-1534528741775-53994a69daeb?w=60",
+    username: "—",
+    avatarUrl: "",
   },
 };
 

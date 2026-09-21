@@ -27,6 +27,7 @@ import {
 } from "lucide-react";
 import { useDiscordOAuth } from "@/lib/hooks/useDiscordOAuth";
 import { useToast } from "@/components/ToastProvider";
+import { useResolvedGuildId } from "@/lib/hooks/useBotGuildIds";
 
 const API_BASE = process.env.NEXT_PUBLIC_DISCORD_BOT_API || "";
 
@@ -35,9 +36,11 @@ export default function InvitesCenterClient() {
   const { profile } = useDiscordOAuth();
   const { success, error: showError } = useToast();
 
-  const [currentGuildId, setCurrentGuildId] = useState<string>(
-    searchParams.get("guildId") || "1128633164290596884"
-  );
+  const resolvedGuildId = useResolvedGuildId(searchParams.get("guildId"), profile?.guilds);
+  const [currentGuildId, setCurrentGuildId] = useState<string>(searchParams.get("guildId") || "");
+  useEffect(() => {
+    if (!currentGuildId && resolvedGuildId) setCurrentGuildId(resolvedGuildId);
+  }, [currentGuildId, resolvedGuildId]);
   const [activeTab, setActiveTab] = useState<"leaderboard" | "links" | "rewards" | "campaigns" | "analytics">("leaderboard");
   const [loading, setLoading] = useState(false);
   const [syncing, setSyncing] = useState(false);
@@ -362,7 +365,7 @@ export default function InvitesCenterClient() {
                 </option>
               ))
             ) : (
-              <option value="1128633164290596884">Serveur Discord Principal</option>
+              <option value="">Aucun serveur</option>
             )}
           </select>
 

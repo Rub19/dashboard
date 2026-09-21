@@ -41,6 +41,8 @@ import {
 import { useToast } from "@/components/ToastProvider";
 import { Tabs, TabsList, TabsTrigger } from "@/components/ui/Tabs";
 import { cn } from "@/lib/utils";
+import { useDiscordOAuth } from "@/lib/hooks/useDiscordOAuth";
+import { useResolvedGuildId } from "@/lib/hooks/useBotGuildIds";
 
 // ==========================================
 // Types
@@ -288,7 +290,8 @@ export default function ServerManagementClient({
   openedChannelId,
 }: Props) {
   const searchParams = useSearchParams();
-  const guildId = searchParams.get("guildId") || "1128633164290596884";
+  const { profile: oauthProfile } = useDiscordOAuth();
+  const guildId = useResolvedGuildId(searchParams.get("guildId"), oauthProfile?.guilds);
   const { success, error: showError } = useToast();
 
   const [activeTab, setActiveTab] = useState<ServerTab>(initialTab);
@@ -1042,7 +1045,8 @@ export default function ServerManagementClient({
           return;
         }
       } else {
-        success(`Action ${action} simulée avec succès`);
+        showError("Bot injoignable : l'action n'a pas été exécutée.");
+        return;
       }
 
       setIsTimeoutModalOpen(false);

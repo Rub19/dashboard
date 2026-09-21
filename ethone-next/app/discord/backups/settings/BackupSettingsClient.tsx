@@ -109,8 +109,7 @@ export default function BackupSettingsClient() {
 
   const handleSave = async () => {
     if (isDemo) {
-      setDirty(false);
-      success("Paramètres enregistrés (démo).");
+      toastError("Bot injoignable : rien n'a été enregistré.");
       return;
     }
     setSaving(true);
@@ -169,7 +168,7 @@ export default function BackupSettingsClient() {
           </h1>
           <p className="text-sm text-neutral-400 mt-1">
             Planification automatique, conservation et garde-fous de restauration.
-            {isDemo && <span className="text-amber-400"> (données de démonstration)</span>}
+            {isDemo && <span className="text-amber-400"> (bot injoignable ou absent de ce serveur)</span>}
           </p>
         </div>
 

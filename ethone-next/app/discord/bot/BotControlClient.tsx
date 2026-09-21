@@ -874,16 +874,15 @@ export default function BotControlClient({ initialTab = "overview" }: BotControl
           return;
         }
       }
-      // Fallback simulation (no BOT_API_URL configured, or the request failed)
-      await new Promise((r) => setTimeout(r, 1200));
+      // Bot injoignable : on le dit (aucun succès ni latence inventés).
       setDiagnosticChecks((prev) =>
         prev.map((c) => ({
           ...c,
-          status: "passed",
-          latency: `${Math.floor(Math.random() * 15 + 15)}ms`,
+          status: "critical",
+          latency: "—",
         }))
       );
-      toast?.info?.("Bot hors-ligne : diagnostic simulé localement.");
+      toast?.error?.("Bot injoignable : diagnostic impossible.");
     } catch {
       toast?.error?.("Erreur lors du diagnostic.");
     } finally {

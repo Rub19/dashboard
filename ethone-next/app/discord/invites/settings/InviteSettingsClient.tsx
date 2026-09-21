@@ -13,12 +13,15 @@ import {
   Hash,
 } from "lucide-react";
 import { useToast } from "@/components/ToastProvider";
+import { useDiscordOAuth } from "@/lib/hooks/useDiscordOAuth";
+import { useResolvedGuildId } from "@/lib/hooks/useBotGuildIds";
 
 const API_BASE = process.env.NEXT_PUBLIC_DISCORD_BOT_API || "";
 
 export default function InviteSettingsClient() {
   const searchParams = useSearchParams();
-  const guildId = searchParams.get("guildId") || "1128633164290596884";
+  const { profile: oauthProfile } = useDiscordOAuth();
+  const guildId = useResolvedGuildId(searchParams.get("guildId"), oauthProfile?.guilds);
   const { success, error: showError } = useToast();
 
   const [loading, setLoading] = useState(true);
@@ -117,7 +120,7 @@ export default function InviteSettingsClient() {
 
   const handleExport = (format: "csv" | "json") => {
     if (!API_BASE) {
-      success("Export prêt", `Mode démo : Export ${format.toUpperCase()} simulé.`);
+      showError("Bot injoignable", "Aucun export disponible.");
       return;
     }
     window.open(`${API_BASE}/api/guilds/${guildId}/invites/export?format=${format}`, "_blank");

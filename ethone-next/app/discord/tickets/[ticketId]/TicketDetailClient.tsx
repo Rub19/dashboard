@@ -23,48 +23,6 @@ import { cn } from "@/lib/utils";
 
 const API_BASE = process.env.NEXT_PUBLIC_DISCORD_BOT_API || "";
 
-function getDemoTicket(ticketId: string, guildId: string) {
-  return {
-    id: ticketId,
-    guildId,
-    channelId: "1128633164290596999",
-    userId: "284729104817293810",
-    userTag: "Alex_Dev#1337",
-    userAvatar: null,
-    categoryId: "cat-1",
-    categoryName: "Support Technique",
-    status: "OPEN",
-    priority: "NORMAL",
-    tags: ["Demo", "Support"],
-    claimedBy: null,
-    answers: {
-      "Sujet de la demande": "Configuration et test de l'environnement ETHONE",
-      "Description détaillée": "Démonstration du système de tickets temps réel ETHONE OS.",
-      "Priorité ressentie": "Normale",
-    },
-    notes: [
-      {
-        id: "note-1",
-        authorId: "admin-1",
-        authorTag: "Staff ETHONE",
-        content: "Ticket de démonstration initialisé.",
-        createdAt: new Date().toISOString(),
-      },
-    ],
-    activityTimeline: [
-      {
-        id: "act-1",
-        type: "CREATED",
-        actorTag: "Alex_Dev#1337",
-        description: "Ouverture du ticket",
-        timestamp: new Date().toISOString(),
-      },
-    ],
-    createdAt: new Date().toISOString(),
-    updatedAt: new Date().toISOString(),
-  };
-}
-
 export default function TicketDetailClient() {
   const params = useParams();
   const searchParams = useSearchParams();
@@ -95,7 +53,7 @@ export default function TicketDetailClient() {
   const fetchTicket = useCallback(async () => {
     setLoading(true);
     if (!API_BASE) {
-      setTicket(getDemoTicket(ticketId, guildId));
+      setTicket(null);
       setLoading(false);
       return;
     }
@@ -105,10 +63,10 @@ export default function TicketDetailClient() {
         throw new Error("Ticket introuvable");
       }
       const data = await res.json();
-      setTicket(data.ticket || getDemoTicket(ticketId, guildId));
+      setTicket(data.ticket || null);
     } catch (err: any) {
-      console.warn("API non joignable, fallback démo :", err);
-      setTicket(getDemoTicket(ticketId, guildId));
+      console.warn("Ticket illisible :", err);
+      setTicket(null);
     } finally {
       setLoading(false);
     }
@@ -454,7 +412,7 @@ export default function TicketDetailClient() {
             onClick={(e) => {
               if (!API_BASE) {
                 e.preventDefault();
-                info("Mode Démo", "Transcript simulé prêt.");
+                info("Bot injoignable", "Le transcript n'est pas disponible.");
               }
             }}
             target={API_BASE ? "_blank" : undefined}

@@ -94,8 +94,8 @@ export default function BotPresenceClient({ initialTab = "overview" }: BotPresen
   // Presence state
   const [currentStatus, setCurrentStatus] = useState<DiscordStatus>("online");
   const [activityType, setActivityType] = useState<DiscordActivityType>("Playing");
-  const [activityName, setActivityName] = useState("Valorant");
-  const [streamUrl, setStreamUrl] = useState("https://twitch.tv/ethone");
+  const [activityName, setActivityName] = useState("");
+  const [streamUrl, setStreamUrl] = useState("");
   const [presenceSource, setPresenceSource] = useState("manual");
   const [lastUpdated, setLastUpdated] = useState<string>(new Date().toISOString());
   const [rateLimited, setRateLimited] = useState(false);
@@ -106,102 +106,38 @@ export default function BotPresenceClient({ initialTab = "overview" }: BotPresen
     enabled: false,
     intervalSeconds: 60,
     order: "sequential" as "sequential" | "random" | "weighted",
-    activities: [
-      { id: "1", type: "Playing" as DiscordActivityType, text: "Valorant — Compétitif", weight: 20 },
-      { id: "2", type: "Watching" as DiscordActivityType, text: "{guildCount} serveurs & {userCount} utilisateurs", weight: 30 },
-      { id: "3", type: "Listening" as DiscordActivityType, text: "Spotify | Lo-Fi Beats", weight: 25 },
-      { id: "4", type: "Competing" as DiscordActivityType, text: "Tournoi Discord ETHONE", weight: 15 },
-      { id: "5", type: "Streaming" as DiscordActivityType, text: "Live Dev ETHONE", url: "https://twitch.tv/ethone", weight: 10 },
-    ],
+    activities: [] as Array<{ id: string; type: DiscordActivityType; text: string; url?: string; weight: number }>,
     nextRotationAt: null as string | null,
   });
 
   // Schedule & Presets state
-  const [profiles, setProfiles] = useState<any[]>([
-    {
-      id: "prof_gaming",
-      name: "Gaming Session",
-      status: "online",
-      activity: { type: "Playing", name: "Valorant" },
-      description: "Ambiance chill & jeux vidéo",
-    },
-    {
-      id: "prof_music",
-      name: "Music Lounge",
-      status: "online",
-      activity: { type: "Listening", name: "Spotify (Lo-Fi Chill)" },
-      description: "Pour les salons vocaux et d'écoute",
-    },
-    {
-      id: "prof_maintenance",
-      name: "Maintenance Système",
-      status: "dnd",
-      activity: { type: "Watching", name: "Maintenance technique ETHONE" },
-      description: "Alerte de maintenance programmée",
-    },
-    {
-      id: "prof_night",
-      name: "Mode Nuit",
-      status: "idle",
-      activity: { type: "Listening", name: "Deep Sleep & Chill Radio" },
-      description: "Activité nocturne discrète",
-    },
-    {
-      id: "prof_community",
-      name: "Surveillance Communauté",
-      status: "online",
-      activity: { type: "Watching", name: "{guildCount} serveurs | ETHONE" },
-      description: "Affichage des compteurs officiels",
-    },
-  ]);
+  const [profiles, setProfiles] = useState<any[]>([]);
 
   // Guilds state
-  const [guilds, setGuilds] = useState<any[]>([
-    {
-      guildId: "1128633164290596884",
-      guildName: "ETHONE HQ",
-      icon: null,
-      botPresent: true,
-      preferredProfileId: "prof_community",
-      updatedAt: new Date().toISOString(),
-      updatedBy: "Bot Owner",
-    },
-  ]);
+  const [guilds, setGuilds] = useState<any[]>([]);
 
   // Identity state
   const [identity, setIdentity] = useState({
-    botId: "1545139931154878464",
-    username: "Ethone Bot",
-    discriminator: "9861",
-    avatarUrl: "https://cdn.discordapp.com/embed/avatars/0.png",
-    ownerId: "825124006209388616",
-    avatarChangesRemaining: 2,
-    avatarResetInSeconds: 3600,
-    usernameChangesRemaining: 2,
-    usernameResetInSeconds: 7200,
+    botId: "",
+    username: "",
+    discriminator: "",
+    avatarUrl: "",
+    ownerId: "",
+    avatarChangesRemaining: 0,
+    avatarResetInSeconds: 0,
+    usernameChangesRemaining: 0,
+    usernameResetInSeconds: 0,
   });
 
   // Audit history & stats state
-  const [auditHistory, setAuditHistory] = useState<any[]>([
-    {
-      id: "aud_1",
-      timestamp: new Date().toISOString(),
-      actor: "Bot Owner (Dashboard)",
-      previousStatus: "idle",
-      newStatus: "online",
-      previousActivity: "Watching Maintenance",
-      newActivity: "Playing Valorant",
-      reason: "Mise à jour directe",
-      scope: "global",
-    },
-  ]);
+  const [auditHistory, setAuditHistory] = useState<any[]>([]);
 
   const [stats, setStats] = useState({
-    totalChanges: 42,
-    rotationsExecuted: 18,
+    totalChanges: 0,
+    rotationsExecuted: 0,
     rateLimitHits: 0,
     failedUpdates: 0,
-    currentUptimeHours: 72,
+    currentUptimeHours: 0,
   });
 
   // New activity form in rotation tab

@@ -703,11 +703,11 @@ export default function DiscordDashboardPage() {
   const handleMusicSkip = async () => {
     if (!selectedGuild) return;
     if (!BOT_API_URL) {
-      info("Musique", "Mode démo : Piste suivante simulée.");
+      showError("Musique", "Bot injoignable.");
       return;
     }
     try {
-      await fetch(`${BOT_API_URL}/api/guilds/${selectedGuild.id}/music/skip`, { method: "POST" });
+      await fetch(`${BOT_API_URL}/api/guilds/${selectedGuild.id}/music/skip`, { method: "POST", credentials: "include" });
       fetchLiveMusic();
     } catch {
       showError("Action impossible", "Erreur lors du passage de piste.");
@@ -717,11 +717,11 @@ export default function DiscordDashboardPage() {
   const handleMusicPrev = async () => {
     if (!selectedGuild) return;
     if (!BOT_API_URL) {
-      info("Musique", "Mode démo : Piste précédente simulée.");
+      showError("Musique", "Bot injoignable.");
       return;
     }
     try {
-      await fetch(`${BOT_API_URL}/api/guilds/${selectedGuild.id}/music/previous`, { method: "POST" });
+      await fetch(`${BOT_API_URL}/api/guilds/${selectedGuild.id}/music/previous`, { method: "POST", credentials: "include" });
       fetchLiveMusic();
     } catch {
       showError("Action impossible", "Erreur lors du retour en arrière.");

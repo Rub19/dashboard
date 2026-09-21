@@ -31,115 +31,32 @@ import { cn } from "@/lib/utils";
 
 const API_BASE = process.env.NEXT_PUBLIC_DISCORD_BOT_API || "";
 
-function getDemoOverview(): TicketOverview {
+function emptyOverview(): TicketOverview {
+  // Aucune statistique inventée : tout à zéro tant que le bot ne répond pas.
   return {
-    open: 3,
-    pending: 1,
-    closedToday: 12,
-    totalTickets: 42,
-    averageResponseTime: "3m 42s",
-    resolutionRate: "95%",
-    byPriority: { LOW: 1, NORMAL: 3, HIGH: 2, URGENT: 0 },
-    byCategory: { "cat-tech": 4, "cat-vip": 1, "cat-report": 1 },
-    byStatus: { OPEN: 3, PENDING: 1, CLOSED: 12 },
+    open: 0,
+    pending: 0,
+    closedToday: 0,
+    totalTickets: 0,
+    averageResponseTime: "—",
+    resolutionRate: "—",
+    byPriority: {},
+    byCategory: {},
+    byStatus: {},
     recentTickets: [],
-  };
+  } as unknown as TicketOverview;
 }
 
-function getDemoTickets(guildId: string): TicketItem[] {
-  return [
-    {
-      id: "1",
-      guildId,
-      channelId: "1128633164290596999",
-      userId: "284729104817293810",
-      userTag: "Alex_Dev#1337",
-      categoryId: "cat-tech",
-      categoryName: "Support Technique",
-      status: "OPEN",
-      priority: "NORMAL",
-      tags: ["Web", "API"],
-      answers: { Sujet: "Accès Dashboard", Description: "Configuration initiale du serveur Discord" },
-      createdAt: new Date().toISOString(),
-      updatedAt: new Date().toISOString(),
-    },
-    {
-      id: "2",
-      guildId,
-      channelId: "1128633164290596998",
-      userId: "394829104817293821",
-      userTag: "Sarah_Gamer#4040",
-      categoryId: "cat-vip",
-      categoryName: "Abonnement VIP",
-      status: "WAITING_USER",
-      priority: "HIGH",
-      tags: ["Billing"],
-      answers: { Sujet: "Rôle Boost non reçu", Description: "J'ai boosté le serveur mais mon badge n'apparaît pas." },
-      createdAt: new Date(Date.now() - 3600000).toISOString(),
-      updatedAt: new Date().toISOString(),
-    },
-    {
-      id: "3",
-      guildId,
-      channelId: "1128633164290596997",
-      userId: "482910481729381023",
-      userTag: "Lucas_FR#9999",
-      categoryId: "cat-report",
-      categoryName: "Signalement",
-      status: "RESOLVED",
-      priority: "LOW",
-      tags: ["Modération"],
-      answers: { Sujet: "Signalement spammer", Description: "Spam dans le salon vocal" },
-      createdAt: new Date(Date.now() - 86400000).toISOString(),
-      updatedAt: new Date().toISOString(),
-    },
-  ];
+function noTickets(_guildId: string): TicketItem[] {
+  return [];
 }
 
-function getDemoCategories(guildId: string): TicketCategoryItem[] {
-  return [
-    {
-      id: "cat-tech",
-      guildId,
-      name: "Support Technique",
-      emoji: "🛠️",
-      description: "Aide pour les bugs et intégrations",
-      color: "#10B981",
-      defaultPriority: "NORMAL",
-    },
-    {
-      id: "cat-vip",
-      guildId,
-      name: "Abonnement VIP",
-      emoji: "💎",
-      description: "Facturation, boost et avantages premium",
-      color: "#8B5CF6",
-      defaultPriority: "HIGH",
-    },
-    {
-      id: "cat-report",
-      guildId,
-      name: "Signalements",
-      emoji: "🚨",
-      description: "Infractions aux règles et comportements suspects",
-      color: "#EF4444",
-      defaultPriority: "URGENT",
-    },
-  ];
+function noCategories(_guildId: string): TicketCategoryItem[] {
+  return [];
 }
 
-function getDemoPanels(guildId: string): TicketPanelItem[] {
-  return [
-    {
-      id: "panel-main",
-      guildId,
-      channelId: "1128633164290596884",
-      title: "Centre d'Assistance ETHONE",
-      description: "Cliquez sur le bouton correspondant à votre demande pour créer un ticket privé.",
-      color: "#10B981",
-      categoryIds: ["cat-tech", "cat-vip", "cat-report"],
-    },
-  ];
+function noPanels(_guildId: string): TicketPanelItem[] {
+  return [];
 }
 
 export type TicketPriority = "LOW" | "NORMAL" | "HIGH" | "URGENT";
@@ -341,7 +258,7 @@ export function TicketCenterClient() {
     }
   }, [guildIdParam, guilds, selectedGuild]);
 
-  const currentGuildId = selectedGuild?.id || guildIdParam || "1128633164290596884";
+  const currentGuildId = selectedGuild?.id || guildIdParam || "";
 
   // Chargement global des données
   const fetchAllData = useCallback(async () => {
@@ -349,26 +266,16 @@ export function TicketCenterClient() {
     setLoading(true);
 
     if (!API_BASE) {
-      setOverview(getDemoOverview());
-      const demoTickets = getDemoTickets(currentGuildId);
+      setOverview(emptyOverview());
+      const demoTickets = noTickets(currentGuildId);
       setTickets(demoTickets);
       setTotalTickets(demoTickets.length);
-      setCategories(getDemoCategories(currentGuildId));
-      setPanels(getDemoPanels(currentGuildId));
-      setTeams([
-        {
-          id: "team-staff",
-          guildId: currentGuildId,
-          name: "Modérateurs & Admins",
-          color: "#10B981",
-          roleIds: ["1", "2"],
-          memberIds: ["1"],
-          categoryIds: ["cat-tech", "cat-vip", "cat-report"],
-        },
-      ]);
+      setCategories(noCategories(currentGuildId));
+      setPanels(noPanels(currentGuildId));
+      setTeams([]);
       setAutomations([]);
       setConfig({});
-      setDiscordCats([{ id: "1128633164290596884", name: "Support Tickets" }]);
+      setDiscordCats([]);
       setLoading(false);
       return;
     }
@@ -391,7 +298,7 @@ export function TicketCenterClient() {
         const ovData = await ovRes.json();
         setOverview(ovData);
       } else {
-        setOverview(getDemoOverview());
+        setOverview(emptyOverview());
       }
 
       if (tRes && tRes.ok) {
@@ -399,7 +306,7 @@ export function TicketCenterClient() {
         setTickets(tData.tickets || []);
         setTotalTickets(tData.total || 0);
       } else {
-        const demoTickets = getDemoTickets(currentGuildId);
+        const demoTickets = noTickets(currentGuildId);
         setTickets(demoTickets);
         setTotalTickets(demoTickets.length);
       }
@@ -408,14 +315,14 @@ export function TicketCenterClient() {
         const cData = await cRes.json();
         setCategories(cData.categories || []);
       } else {
-        setCategories(getDemoCategories(currentGuildId));
+        setCategories(noCategories(currentGuildId));
       }
 
       if (pRes && pRes.ok) {
         const pData = await pRes.json();
         setPanels(pData.panels || []);
       } else {
-        setPanels(getDemoPanels(currentGuildId));
+        setPanels(noPanels(currentGuildId));
       }
 
       if (tmRes && tmRes.ok) {
@@ -439,12 +346,12 @@ export function TicketCenterClient() {
       }
     } catch (err: any) {
       console.warn("Erreur chargement Tickets Center, fallback démo :", err);
-      setOverview(getDemoOverview());
-      const demoTickets = getDemoTickets(currentGuildId);
+      setOverview(emptyOverview());
+      const demoTickets = noTickets(currentGuildId);
       setTickets(demoTickets);
       setTotalTickets(demoTickets.length);
-      setCategories(getDemoCategories(currentGuildId));
-      setPanels(getDemoPanels(currentGuildId));
+      setCategories(noCategories(currentGuildId));
+      setPanels(noPanels(currentGuildId));
     } finally {
       setLoading(false);
     }

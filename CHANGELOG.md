@@ -2,6 +2,14 @@
 
 Toutes les modifications notables de ce projet seront documentées dans ce fichier.
 
+## v1.25.18 — 2026-09-21
+
+**Bot musique : plus de silence après un redémarrage de Lavalink, et une vraie autocomplétion pour /play**
+
+- Correctif majeur : quand Lavalink redémarrait, le bot se reconnectait avec un nouveau lecteur mais ne lui rattachait pas ses écouteurs d'événements. Résultat : aucun événement de démarrage, de fin ou d'erreur n'était traité — pas de repli SoundCloud, pas de passage au titre suivant, la lecture restait muette jusqu'au redémarrage du bot. Les écouteurs sont maintenant rattachés à chaque nouveau lecteur.
+- Autocomplétion de `/play` : elle affichait une liste générique sans rapport (« lofi hip hop radio », « synthwave mix »…) dès que l'appel aux suggestions YouTube échouait, ce qui arrive depuis un serveur d'hébergeur. Elle propose maintenant de vrais morceaux (« Titre — Artiste ») issus de Spotify, y compris avec des fautes de frappe (« antoehr love » → Another Love) ; sans identifiants Spotify, elle retombe sur YouTube puis sur ta propre saisie, jamais sur une liste sans rapport.
+- Ajout d'un message de diagnostic quand un repli est demandé alors qu'aucun titre n'est en cours, pour repérer plus facilement ce type de blocage.
+
 ## v1.25.17 — 2026-09-21
 
 **Bot musique : la recherche texte passe par les métadonnées Spotify, et les versions « slowed / remix » sont enfin écartées**

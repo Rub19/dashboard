@@ -29099,4 +29099,53 @@ CHANGELOG_BY_LANG.en.unshift(v12517_en);
 CHANGELOG_BY_LANG.es.unshift(v12517_es);
 CHANGELOG_BY_LANG.de.unshift(v12517_de);
 
+const v12518_fr: ChangelogEntry = {
+  version: "v1.25.18",
+  date: "2026-09-21",
+  title: "Bot musique : plus de silence après un redémarrage de Lavalink, et une vraie autocomplétion pour /play",
+  items: [
+    "Correctif majeur : quand Lavalink redémarrait, le bot se reconnectait avec un nouveau lecteur mais ne lui rattachait pas ses écouteurs d'événements. Résultat : aucun événement de démarrage, de fin ou d'erreur n'était traité — pas de repli SoundCloud, pas de passage au titre suivant, la lecture restait muette jusqu'au redémarrage du bot. Les écouteurs sont maintenant rattachés à chaque nouveau lecteur.",
+    "Autocomplétion de `/play` : elle affichait une liste générique sans rapport (« lofi hip hop radio », « synthwave mix »…) dès que l'appel aux suggestions YouTube échouait, ce qui arrive depuis un serveur d'hébergeur. Elle propose maintenant de vrais morceaux (« Titre — Artiste ») issus de Spotify, y compris avec des fautes de frappe (« antoehr love » → Another Love) ; sans identifiants Spotify, elle retombe sur YouTube puis sur ta propre saisie, jamais sur une liste sans rapport.",
+    "Ajout d'un message de diagnostic quand un repli est demandé alors qu'aucun titre n'est en cours, pour repérer plus facilement ce type de blocage.",
+  ],
+};
+
+const v12518_en: ChangelogEntry = {
+  version: "v1.25.18",
+  date: "2026-09-21",
+  title: "Music bot: no more silence after a Lavalink restart, and a real autocomplete for /play",
+  items: [
+    "Major fix: when Lavalink restarted, the bot reconnected with a new player but did not attach its event listeners to it. As a result no start, end or error event was handled — no SoundCloud fallback, no move to the next track, playback stayed silent until the bot itself was restarted. Listeners are now attached to every new player.",
+    "`/play` autocomplete: it showed an unrelated generic list (\"lofi hip hop radio\", \"synthwave mix\"…) whenever the YouTube suggestions call failed, which happens from a hosting provider. It now suggests real songs (\"Title — Artist\") from Spotify, even with typos (\"antoehr love\" → Another Love); without Spotify credentials it falls back to YouTube, then to what you typed — never an unrelated list.",
+    "Added a diagnostic message when a fallback is requested while no track is playing, to spot this kind of stall more easily.",
+  ],
+};
+
+const v12518_es: ChangelogEntry = {
+  version: "v1.25.18",
+  date: "2026-09-21",
+  title: "Bot de música: se acabó el silencio tras reiniciar Lavalink, y un autocompletado real para /play",
+  items: [
+    "Corrección importante: cuando Lavalink se reiniciaba, el bot se reconectaba con un reproductor nuevo pero no le asociaba sus escuchadores de eventos. Por eso no se trataba ningún evento de inicio, fin o error: sin repliegue a SoundCloud, sin pasar a la siguiente canción, la reproducción quedaba muda hasta reiniciar el bot. Ahora los escuchadores se asocian a cada reproductor nuevo.",
+    "Autocompletado de `/play`: mostraba una lista genérica sin relación (« lofi hip hop radio », « synthwave mix »…) cuando fallaba la llamada de sugerencias de YouTube, algo habitual desde un servidor de alojamiento. Ahora sugiere canciones reales (« Título — Artista ») de Spotify, incluso con erratas (« antoehr love » → Another Love); sin credenciales de Spotify recurre a YouTube y luego a lo que has escrito, nunca a una lista sin relación.",
+    "Se añade un mensaje de diagnóstico cuando se pide un repliegue sin ninguna canción en curso, para detectar más fácilmente este tipo de bloqueo.",
+  ],
+};
+
+const v12518_de: ChangelogEntry = {
+  version: "v1.25.18",
+  date: "2026-09-21",
+  title: "Musik-Bot: keine Stille mehr nach einem Lavalink-Neustart, und eine echte Autovervollständigung für /play",
+  items: [
+    "Wichtige Korrektur: Wenn Lavalink neu startete, verband sich der Bot mit einem neuen Player, hängte aber seine Event-Listener nicht daran an. Dadurch wurde kein Start-, Ende- oder Fehlerereignis verarbeitet — kein SoundCloud-Fallback, kein Wechsel zum nächsten Titel, die Wiedergabe blieb stumm, bis der Bot selbst neu gestartet wurde. Die Listener werden jetzt an jeden neuen Player angehängt.",
+    "`/play`-Autovervollständigung: Sie zeigte eine unpassende generische Liste („lofi hip hop radio“, „synthwave mix“ …), sobald der Aufruf der YouTube-Vorschläge scheiterte, was bei einem Hosting-Server vorkommt. Jetzt schlägt sie echte Songs („Titel — Künstler“) von Spotify vor, auch bei Tippfehlern („antoehr love“ → Another Love); ohne Spotify-Zugangsdaten greift sie auf YouTube und dann auf deine Eingabe zurück, nie auf eine unpassende Liste.",
+    "Eine Diagnosemeldung wurde ergänzt, wenn ein Fallback angefordert wird, obwohl kein Titel läuft, damit sich solche Hänger leichter erkennen lassen.",
+  ],
+};
+
+CHANGELOG_BY_LANG.fr.unshift(v12518_fr);
+CHANGELOG_BY_LANG.en.unshift(v12518_en);
+CHANGELOG_BY_LANG.es.unshift(v12518_es);
+CHANGELOG_BY_LANG.de.unshift(v12518_de);
+
 export const CHANGELOG = CHANGELOG_BY_LANG.fr;

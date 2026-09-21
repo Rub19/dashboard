@@ -102,6 +102,11 @@ export class LavalinkMusicPlayer implements IGuildMusicPlayer {
         logger.error(`[Lavalink] Impossible de rejoindre ${channel.name} (guild ${this.guildId}) — nœud absent ?`);
         return false;
       }
+      // Après un redémarrage de Lavalink (ou une perte du nœud), Shoukaku détruit l'ancien lecteur
+      // et `join` en renvoie un NOUVEAU : sans ce reset, `listenersBound` restait à true et le
+      // nouveau lecteur n'avait aucun écouteur (ni start/end/exception → pas de repli SoundCloud,
+      // pas de passage au titre suivant).
+      if (this.player !== player) this.listenersBound = false;
       this.player = player;
       this.currentVoiceChannel = { id: channel.id, name: channel.name };
       this.bindListeners(player);
@@ -258,6 +263,9 @@ export class LavalinkMusicPlayer implements IGuildMusicPlayer {
 
   private async recoverFromLoadFailure(): Promise<void> {
     const current = this.queue.getCurrentTrack();
+    if (!current) {
+      logger.warn(`[Lavalink] Repli demandé mais aucun titre courant (guild ${this.guildId}) — rien à remplacer.`);
+    }
     if (current && current.source !== 'DIRECT' && this.player) {
       const tried = this.triedUrls.get(current.id) ?? new Set<string>();
       const firstAttempt = tried.size === 0;

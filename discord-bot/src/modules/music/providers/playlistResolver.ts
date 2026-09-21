@@ -149,7 +149,7 @@ export async function searchSpotifyTracks(query: string, requestedBy: TrackReque
 
   try {
     const cap = Math.min(Math.max(limit, 1), 10);
-    const res = await fetch(`https://api.spotify.com/v1/search?type=track&limit=${cap}&q=${encodeURIComponent(query)}`, {
+    const res = await fetch(`https://api.spotify.com/v1/search?type=track&limit=${cap}&q=${encodeURIComponent(query.replace(/[–—]/g, ' '))}`, {
       headers: { Authorization: `Bearer ${token}` },
       signal: AbortSignal.timeout(3000),
     });

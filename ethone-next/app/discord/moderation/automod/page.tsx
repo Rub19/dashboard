@@ -2,7 +2,7 @@
 
 import { useState, useEffect, useMemo, useCallback, useRef } from "react";
 import Link from "next/link";
-import { useRouter, useSearchParams } from "next/navigation";
+import { useSearchParams } from "next/navigation";
 import {
   ShieldAlert,
   ShieldCheck,
@@ -17,7 +17,6 @@ import {
   Sliders,
   Search,
   CheckCircle2,
-  ChevronDown,
   ArrowLeft,
   ExternalLink,
   Eye,
@@ -40,7 +39,6 @@ import {
   X,
   SlidersHorizontal,
 } from "lucide-react";
-import { useAuth } from "@/components/AuthProvider";
 import { useToast } from "@/components/ToastProvider";
 import { useDiscordOAuth, type DiscordGuild } from "@/lib/hooks/useDiscordOAuth";
 import { useBotGuildIds, pickBotGuild } from "@/lib/hooks/useBotGuildIds";

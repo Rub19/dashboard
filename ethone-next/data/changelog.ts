@@ -30633,4 +30633,49 @@ CHANGELOG_BY_LANG.en.unshift(v12719_en);
 CHANGELOG_BY_LANG.es.unshift(v12719_es);
 CHANGELOG_BY_LANG.de.unshift(v12719_de);
 
+const v12720_fr: ChangelogEntry = {
+  version: "v1.27.20",
+  date: "2026-09-21",
+  title: "Notifications ON/OFF et correction des toggles du dashboard",
+  items: [
+    "Notifications de bascule ON / OFF : ajout de toast.toggle() affichant un badge dynamique avec puce pulsante verte ● ON ou puce neutre ○ OFF pour chaque réglage ou module basculé (Anti-Raid, blocage invitations, modules bot, surveillance spams, maintenance, IA, etc.).",
+    "Correction des toggles : résolution du bogue d'alignement et de débordement du curseur sur les interrupteurs (Anti-Raid, compteurs de serveur, AFK, Sticky, Starboard, Anniversaires, Highlights) avec structure flex centrée et transitions fluides 200ms.",
+  ],
+};
+
+const v12720_en: ChangelogEntry = {
+  version: "v1.27.20",
+  date: "2026-09-21",
+  title: "ON/OFF notification indicators and dashboard toggle fixes",
+  items: [
+    "ON / OFF toggle notifications: added toast.toggle() featuring a dynamic badge with pulsing green dot ● ON or neutral dot ○ OFF for every toggled setting or bot module (Anti-Raid, invite blocking, bot modules, spam monitoring, maintenance, AI, etc.).",
+    "Toggle switch fixes: resolved thumb alignment and overflow issues across switch components (Anti-Raid, server counters, AFK, Sticky, Starboard, Birthdays, Highlights) with centered flex structure and smooth 200ms transitions.",
+  ],
+};
+
+const v12720_es: ChangelogEntry = {
+  version: "v1.27.20",
+  date: "2026-09-21",
+  title: "Indicadores ON/OFF en notificaciones y corrección de toggles",
+  items: [
+    "Notificaciones ON / OFF: añadido toast.toggle() con indicador dinámico con punto verde pulsante ● ON o neutro ○ OFF para cada parámetro o módulo del bot.",
+    "Corrección de toggles: resolución del error de desbordamiento y alineación en interruptores (Anti-Raid, contadores, AFK, Sticky, Starboard, Cumpleaños, Highlights).",
+  ],
+};
+
+const v12720_de: ChangelogEntry = {
+  version: "v1.27.20",
+  date: "2026-09-21",
+  title: "ON/OFF Benachrichtigungsanzeige und Toggle-Korrekturen",
+  items: [
+    "ON / OFF Umschalt-Benachrichtigungen: toast.toggle() mit dynamischem Badge hinzugefügt (pulsierender grüner Punkt ● ON oder neutraler Punkt ○ OFF für alle Dashboard-Einstellungen).",
+    "Toggle-Fixes: Ausrichtungs- und Überlaufprobleme bei Schaltern behoben (Anti-Raid, Serverzähler, AFK, Sticky, Starboard, Geburtstage, Highlights).",
+  ],
+};
+
+CHANGELOG_BY_LANG.fr.unshift(v12720_fr);
+CHANGELOG_BY_LANG.en.unshift(v12720_en);
+CHANGELOG_BY_LANG.es.unshift(v12720_es);
+CHANGELOG_BY_LANG.de.unshift(v12720_de);
+
 export const CHANGELOG = CHANGELOG_BY_LANG.fr;

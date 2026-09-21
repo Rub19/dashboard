@@ -11,7 +11,6 @@ import {
   EyeOff,
   MessageSquare,
   ChevronRight,
-  Check,
 } from "lucide-react";
 import { useAnimatedSidebar } from "@/components/motion/animated-sidebar";
 import { useModKey } from "@/lib/hooks/useModKey";
@@ -29,7 +28,7 @@ import { useI18n } from "@/lib/hooks/useI18n";
 import { useSettings } from "@/components/SettingsProvider";
 import { useFocus } from "@/components/FocusProvider";
 import { useDynamicIslandStore } from "@/lib/stores/dynamic-island";
-import { PREMIUM_THEMES, THEME_DEFINITIONS, resolvePremiumTheme } from "@/lib/theme-engine";
+import { THEME_DEFINITIONS, resolvePremiumTheme } from "@/lib/theme-engine";
 import { cn } from "@/lib/utils";
 
 const UserProfileDropdown = dynamic(() => import("@/components/UserProfileDropdown"), {

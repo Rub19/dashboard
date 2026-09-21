@@ -5,10 +5,8 @@ import Link from "next/link";
 import { useSearchParams, useRouter } from "next/navigation";
 import {
   Activity,
-  AlertCircle,
   AlertTriangle,
   ArrowLeft,
-  ArrowRight,
   Award,
   BarChart3,
   Bot,
@@ -16,19 +14,14 @@ import {
   CheckCircle2,
   Cpu,
   Crown,
-  Database,
   Gamepad2,
-  Globe,
   Layers,
   ListRestart,
-  Lock,
   Music,
-  Palette,
   Power,
   Radio,
   RefreshCw,
   Scroll,
-  Search,
   Server,
   Settings,
   Shield,
@@ -37,14 +30,10 @@ import {
   Sparkles,
   Terminal,
   Ticket,
-  Timer,
   Trash2,
   UserPlus,
-  Volume2,
   Wifi,
-  X,
   XCircle,
-  Zap,
 } from "lucide-react";
 import { useToast } from "@/components/ToastProvider";
 import { Tabs, TabsList, TabsTrigger } from "@/components/ui/Tabs";
@@ -550,7 +539,8 @@ export default function BotControlClient({ initialTab = "overview" }: BotControl
       if (!res.ok || data?.success === false) {
         throw new Error(data?.error || `HTTP ${res.status}`);
       }
-      toast?.success?.(`Module ${nextEnabled ? "activé" : "désactivé"} avec succès.`);
+      const mod = modules.find((m) => m.id === moduleId);
+      toast?.toggle?.(mod?.name || "Module", nextEnabled, `Module ${nextEnabled ? "activé" : "désactivé"} avec succès.`);
     } catch (err: any) {
       setModules(previousModules);
       toast?.error?.(err?.message || "Erreur lors de la mise à jour du module.");

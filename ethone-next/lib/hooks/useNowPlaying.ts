@@ -3,7 +3,6 @@
 import { useCallback, useEffect, useRef, useState } from "react";
 import { useSettings } from "@/components/SettingsProvider";
 import { OAUTH_APP_CLIENT_IDS } from "@/lib/oauth";
-import { fetchWorker } from "@/lib/api";
 import { fetchWorkerCached } from "@/lib/hooks/useCachedFetch";
 import { fetchLanyardCached } from "@/lib/lanyard-client";
 import type { NowPlaying } from "@/lib/hooks/useLiveData";

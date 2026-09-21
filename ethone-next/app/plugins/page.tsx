@@ -1,7 +1,6 @@
 "use client";
 
 import { useState, useMemo } from "react";
-import { useRouter, useSearchParams } from "next/navigation";
 import { motion, useReducedMotion } from "framer-motion";
 import { useSettings } from "@/components/SettingsProvider";
 import { EASE_OUT } from "@/lib/ease";
@@ -19,7 +18,6 @@ import {
   RefreshCw,
   X,
 } from "lucide-react";
-import { useI18n } from "@/lib/hooks/useI18n";
 import { cn } from "@/lib/utils";
 import {
   MARKETPLACE_ITEMS,

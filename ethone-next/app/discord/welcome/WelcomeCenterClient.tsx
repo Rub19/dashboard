@@ -5,7 +5,6 @@ import Link from "next/link";
 import { useSearchParams } from "next/navigation";
 import {
   Sparkles,
-  Plus,
   RefreshCw,
   Sliders,
   Users,

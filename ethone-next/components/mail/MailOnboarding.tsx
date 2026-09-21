@@ -13,7 +13,6 @@ import {
   Server,
   Zap,
 } from "lucide-react";
-import { useI18n } from "@/lib/hooks/useI18n";
 import Button from "@/components/ui/Button";
 import Input from "@/components/Input";
 import FormField from "@/components/FormField";

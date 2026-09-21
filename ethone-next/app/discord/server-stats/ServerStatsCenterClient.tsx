@@ -3,7 +3,7 @@
 import { useCallback, useEffect, useMemo, useState, useRef } from "react";
 import Link from "next/link";
 import { useSearchParams } from "next/navigation";
-import { BarChart3, ArrowLeft, RefreshCw, Save, ChevronDown, Plus, Trash2, AlertTriangle } from "lucide-react";
+import { BarChart3, ArrowLeft, RefreshCw, Save, Plus, Trash2, AlertTriangle } from "lucide-react";
 import { useToast } from "@/components/ToastProvider";
 import { useDiscordOAuth, type DiscordGuild } from "@/lib/hooks/useDiscordOAuth";
 import { useBotGuildIds, pickBotGuild } from "@/lib/hooks/useBotGuildIds";
@@ -47,7 +47,7 @@ interface Target {
 
 export default function ServerStatsCenterClient() {
   const searchParams = useSearchParams();
-  const { success, error: showError } = useToast();
+  const { success, error: showError, toggle } = useToast();
   const { profile, loading: discordLoading } = useDiscordOAuth();
   const botGuildIds = useBotGuildIds(profile?.guilds);
 
@@ -263,10 +263,22 @@ export default function ServerStatsCenterClient() {
                 type="button"
                 role="switch"
                 aria-checked={enabled}
-                onClick={() => setEnabled((v) => !v)}
-                className={cn("relative h-6 w-11 shrink-0 rounded-full transition-colors", enabled ? "bg-emerald-500" : "bg-white/20")}
+                onClick={() => {
+                  const next = !enabled;
+                  setEnabled(next);
+                  toggle("Compteurs de serveur", next, next ? "Module activé." : "Module désactivé.");
+                }}
+                className={cn(
+                  "relative inline-flex h-6 w-11 shrink-0 cursor-pointer items-center rounded-full p-0.5 transition-colors duration-200 outline-none select-none",
+                  enabled ? "bg-emerald-500 shadow-[0_0_12px_rgba(16,185,129,0.3)]" : "bg-white/20 border border-white/10"
+                )}
               >
-                <span className={cn("absolute top-0.5 h-5 w-5 rounded-full bg-white transition-transform", enabled ? "translate-x-5" : "translate-x-0.5")} />
+                <span
+                  className={cn(
+                    "pointer-events-none block h-5 w-5 rounded-full bg-white shadow-md transition-transform duration-200",
+                    enabled ? "translate-x-5" : "translate-x-0"
+                  )}
+                />
               </button>
               <div className="min-w-0 flex-1">
                 <p className="text-sm font-semibold text-white">Module {enabled ? "actif" : "désactivé"}</p>

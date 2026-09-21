@@ -5,7 +5,6 @@ import { useRouter } from "next/navigation";
 import { useSettings } from "@/components/SettingsProvider";
 import type { Settings } from "@/lib/settings";
 import { useAuth } from "@/components/AuthProvider";
-import { useUserData } from "@/lib/hooks/useUserData";
 import { useWindowManager } from "@/components/WindowManagerProvider";
 import { useProfiles } from "@/lib/hooks/useProfiles";
 import { PRESETS } from "@/lib/presets";

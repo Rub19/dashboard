@@ -6,7 +6,6 @@ import { useSearchParams } from "next/navigation";
 import {
   Bomb,
   ShieldCheck,
-  ChevronDown,
   ArrowLeft,
   RefreshCw,
   AlertTriangle,

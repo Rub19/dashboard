@@ -17,7 +17,7 @@ export type Item = {
   updatedAt?: string;
 };
 
-/* eslint-disable @typescript-eslint/no-explicit-any */
+ 
 type RawRow = Record<string, any>;
 
 // The dashboard mounts ~5 components that each call useItems(kind) for the same

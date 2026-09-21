@@ -12,7 +12,6 @@ import {
   Minimize2,
   Clock,
 } from "lucide-react";
-import { useI18n } from "@/lib/hooks/useI18n";
 import Button from "@/components/ui/Button";
 import Select, { type SelectOption } from "@/components/ui/Select";
 import Input from "@/components/Input";

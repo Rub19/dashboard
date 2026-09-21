@@ -8,7 +8,6 @@ import {
   SlidersHorizontal,
   Loader2,
 } from "lucide-react";
-import { useI18n } from "@/lib/hooks/useI18n";
 import { useSettings } from "@/components/SettingsProvider";
 import { useToast } from "@/components/ToastProvider";
 import { startOAuthConnect, PROVIDERS as OAUTH_PROVIDERS, OAUTH_APP_CLIENT_IDS } from "@/lib/oauth";

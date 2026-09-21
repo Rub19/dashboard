@@ -4,7 +4,7 @@ import { memo } from "react";
 import { Checkbox } from "@/components/ui/Checkbox";
 import { Icon } from "@/lib/icons";
 import { cn } from "@/lib/utils";
-import { formatBytes, mimeIcon, getFileExtension, getFileCategory } from "@/lib/files";
+import { formatBytes, mimeIcon, getFileExtension } from "@/lib/files";
 import { useI18n } from "@/lib/hooks/useI18n";
 import SafeImage from "@/components/SafeImage";
 import type { CloudFile } from "@/lib/hooks/useCloudFiles";

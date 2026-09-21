@@ -13,7 +13,6 @@ import {
   RefreshCw,
 } from "lucide-react";
 import { useAuth } from "@/components/AuthProvider";
-import { useToast } from "@/components/ToastProvider";
 import Modal from "@/components/ui/Modal";
 
 interface ProfileSecurityAndDataProps {

@@ -1,7 +1,7 @@
 "use client";
 
 import { useEffect, useState } from "react";
-import { useSettings, ACCENTS } from "@/components/SettingsProvider";
+import { useSettings } from "@/components/SettingsProvider";
 import { useLocalStorage } from "@/lib/hooks/useLocalStorage";
 import { resolveDensity, applyDensityVariables, getViewportSnapshot } from "@/lib/density-engine";
 import { useAmbientEngine } from "@/lib/hooks/useAmbientEngine";

@@ -20,9 +20,8 @@ import { Icon } from "@/lib/icons";
 import { useI18n } from "@/lib/hooks/useI18n";
 import { useWindowManager } from "./WindowManagerProvider";
 import { useLayer } from "./LayerProvider";
-import { useSettings, useActiveProfile } from "@/components/SettingsProvider";
+import { useActiveProfile } from "@/components/SettingsProvider";
 import { useLiveData } from "@/lib/hooks/useLiveData";
-import { useBrain } from "@/lib/hooks/useBrain";
 import { hapticLightImpact } from "@/lib/haptics";
 import { cn } from "@/lib/utils";
 

@@ -14,7 +14,6 @@ import {
   Layers,
   Trash2,
 } from "lucide-react";
-import { useI18n } from "@/lib/hooks/useI18n";
 import { useToast } from "@/components/ToastProvider";
 import { useSettings } from "@/components/SettingsProvider";
 import {

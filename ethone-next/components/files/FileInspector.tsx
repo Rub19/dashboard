@@ -20,7 +20,6 @@ import {
   Calendar,
   Layers,
 } from "lucide-react";
-import { useI18n } from "@/lib/hooks/useI18n";
 import { formatBytes, getFileExtension, getFileCategory } from "@/lib/files";
 import SafeImage from "@/components/SafeImage";
 import Button from "@/components/ui/Button";

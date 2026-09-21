@@ -2,7 +2,7 @@
 
 import { useState, useEffect, useMemo, useCallback, useRef } from "react";
 import Link from "next/link";
-import { useRouter, useSearchParams } from "next/navigation";
+import { useSearchParams } from "next/navigation";
 import {
   Shield,
   ShieldAlert,
@@ -16,7 +16,6 @@ import {
   RefreshCw,
   Settings,
   Search,
-  ChevronDown,
   ChevronRight,
   ArrowLeft,
   Eye,

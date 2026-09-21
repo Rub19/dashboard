@@ -21,7 +21,6 @@ import {
   ArrowLeft,
 } from "lucide-react";
 import { useNotifications, type Notification, type SnoozeDuration } from "@/lib/hooks/useNotifications";
-import { useI18n } from "@/lib/hooks/useI18n";
 import { useToast } from "@/components/ToastProvider";
 import { cn } from "@/lib/utils";
 import {

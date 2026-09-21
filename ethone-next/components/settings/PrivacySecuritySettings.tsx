@@ -3,7 +3,6 @@
 import { useState } from "react";
 import { Icon } from "@/lib/icons";
 import { useSettings } from "@/components/SettingsProvider";
-import { useI18n } from "@/lib/hooks/useI18n";
 import { useToast } from "@/components/ToastProvider";
 
 export default function PrivacySecuritySettings() {

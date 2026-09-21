@@ -3,7 +3,7 @@
 import { useCallback, useEffect, useMemo, useState, useRef } from "react";
 import Link from "next/link";
 import { useSearchParams } from "next/navigation";
-import { Hash, ArrowLeft, RefreshCw, Plus, Trash2, AlertTriangle, ChevronDown } from "lucide-react";
+import { Hash, ArrowLeft, RefreshCw, Plus, Trash2, AlertTriangle } from "lucide-react";
 import { useToast } from "@/components/ToastProvider";
 import { useDiscordOAuth, type DiscordGuild } from "@/lib/hooks/useDiscordOAuth";
 import { useBotGuildIds, pickBotGuild } from "@/lib/hooks/useBotGuildIds";

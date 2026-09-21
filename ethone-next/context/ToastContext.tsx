@@ -51,6 +51,7 @@ export type NotifyApi = {
   themeSwitched: (themeName: string) => string;
   workspaceSwitched: (space: string) => string;
   versionInfo: (version: string, commit?: string) => string;
+  toggle: (title: string, state: boolean, description?: string) => string;
 };
 
 interface ToastApi {
@@ -60,6 +61,7 @@ interface ToastApi {
   info: (title: string, description?: string) => string;
   warning: (title: string, description?: string) => string;
   loading: (title: string, description?: string) => string;
+  toggle: (title: string, state: boolean, description?: string) => string;
   remove: (id: string) => void;
   dismiss: (id: string) => void;
   notify: NotifyApi;
@@ -255,6 +257,30 @@ export function ToastProvider({ children }: { children: React.ReactNode }) {
     [show]
   );
 
+  const toggle = useCallback(
+    (title: string, state: boolean, description?: string) => {
+      const badge = state ? "ON" : "OFF";
+      const desc =
+        description ??
+        (state
+          ? "Le paramètre est maintenant activé."
+          : "Le paramètre est maintenant désactivé.");
+      return show({
+        title,
+        description: desc,
+        type: state ? "success" : "info",
+        variant: state ? "success" : "neutral",
+        badge,
+        icon: state ? (
+          <Icon name="check" pack="lucide" className="h-5 w-5 text-emerald-400" />
+        ) : (
+          <Icon name="power-off" pack="lucide" className="h-5 w-5 text-zinc-400" />
+        ),
+      });
+    },
+    [show]
+  );
+
   const remove = useCallback((id: string) => {
     sonnerToast.dismiss(id);
   }, []);
@@ -434,8 +460,11 @@ export function ToastProvider({ children }: { children: React.ReactNode }) {
           dedupKey: "current-version-toast",
           badge: "SYSTÈME",
         }),
+
+      toggle: (title: string, state: boolean, description?: string) =>
+        toggle(title, state, description),
     }),
-    [i18n, show]
+    [i18n, show, toggle]
   );
 
   const api = useMemo<ToastApi>(() => {
@@ -446,6 +475,7 @@ export function ToastProvider({ children }: { children: React.ReactNode }) {
       info,
       warning,
       loading,
+      toggle,
       remove,
       dismiss,
       notify,
@@ -454,7 +484,7 @@ export function ToastProvider({ children }: { children: React.ReactNode }) {
       },
     };
     return self;
-  }, [show, success, error, info, warning, loading, remove, dismiss, notify]);
+  }, [show, success, error, info, warning, loading, toggle, remove, dismiss, notify]);
 
   return (
     <ToastContext.Provider value={api}>

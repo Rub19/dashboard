@@ -8,7 +8,6 @@ import {
   ArrowLeft,
   RefreshCw,
   Save,
-  ChevronDown,
   Hash,
   Sparkles,
   Trophy,
@@ -106,14 +105,14 @@ function Switch({
       </span>
       <span
         className={cn(
-          "relative mt-0.5 h-5 w-9 shrink-0 rounded-full transition-colors",
+          "relative inline-flex mt-0.5 h-5 w-9 shrink-0 cursor-pointer items-center rounded-full p-0.5 transition-colors duration-200",
           checked ? "bg-amber-500" : "bg-white/15"
         )}
       >
         <span
           className={cn(
-            "absolute top-0.5 h-4 w-4 rounded-full bg-white transition-transform",
-            checked ? "translate-x-4" : "translate-x-0.5"
+            "pointer-events-none block h-4 w-4 rounded-full bg-white shadow transition-transform duration-200",
+            checked ? "translate-x-4" : "translate-x-0"
           )}
         />
       </span>

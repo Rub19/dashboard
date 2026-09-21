@@ -11,7 +11,6 @@ import {
 import { Calendar, type CalendarMarker } from "@/components/ui/calendar";
 import CalendarBillingPanel from "@/components/CalendarBillingPanel";
 import BrainFinanceAssistant from "@/components/calendar/BrainFinanceAssistant";
-import { useI18n } from "@/lib/hooks/useI18n";
 import {
   listBills,
   getNextDueDate,

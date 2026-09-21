@@ -48,8 +48,18 @@ function Switch({ checked, onChange, label, hint }: { checked: boolean; onChange
         <span className="block text-xs font-semibold text-[var(--text-primary)]">{label}</span>
         {hint && <span className="mt-0.5 block text-[11px] leading-snug text-[var(--text-muted)]">{hint}</span>}
       </span>
-      <span className={cn("relative mt-0.5 h-5 w-9 shrink-0 rounded-full transition-colors", checked ? "bg-[var(--accent-primary)]" : "bg-[var(--panel-border)]")}>
-        <span className={cn("absolute top-0.5 h-4 w-4 rounded-full bg-[var(--accent-contrast)] transition-transform", checked ? "translate-x-4" : "translate-x-0.5")} />
+      <span
+        className={cn(
+          "relative inline-flex mt-0.5 h-5 w-9 shrink-0 cursor-pointer items-center rounded-full p-0.5 transition-colors duration-200",
+          checked ? "bg-[var(--accent-primary)]" : "bg-[var(--panel-border)]"
+        )}
+      >
+        <span
+          className={cn(
+            "pointer-events-none block h-4 w-4 rounded-full bg-[var(--accent-contrast)] shadow transition-transform duration-200",
+            checked ? "translate-x-4" : "translate-x-0"
+          )}
+        />
       </span>
     </button>
   );

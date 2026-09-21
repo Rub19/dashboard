@@ -1,11 +1,8 @@
 "use client";
 
 import { useEffect, useMemo, useState, useCallback } from "react";
-import { useRouter } from "next/navigation";
 import { useCloudFiles, type CloudFile } from "@/lib/hooks/useCloudFiles";
 import { useUserState } from "@/lib/hooks/useUserState";
-import { useShares } from "@/lib/hooks/useShares";
-import { useI18n } from "@/lib/hooks/useI18n";
 import { useToast } from "@/components/ToastProvider";
 import { useIsMobile } from "@/lib/hooks/useMediaQuery";
 import { cn } from "@/lib/utils";

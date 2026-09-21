@@ -10,7 +10,6 @@ import {
   Plus,
   Trash2,
   AlertTriangle,
-  ChevronDown,
   Repeat,
   Hash,
 } from "lucide-react";

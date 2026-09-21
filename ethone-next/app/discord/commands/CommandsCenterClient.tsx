@@ -13,7 +13,6 @@ import {
   Trash2,
   Eye,
   Layers,
-  ShieldCheck,
   Hash,
   ExternalLink,
   RefreshCw,

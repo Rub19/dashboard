@@ -262,9 +262,19 @@ export default function ConfigurationGroup({
                   </p>
                 </div>
                 <button
-                  onClick={() => setBotSettings((s: any) => ({ ...s, maintenanceMode: !s.maintenanceMode }))}
+                  role="switch"
+                  aria-checked={botSettings.maintenanceMode}
+                  onClick={() => {
+                    const next = !botSettings.maintenanceMode;
+                    setBotSettings((s: any) => ({ ...s, maintenanceMode: next }));
+                    toast?.toggle?.(
+                      "Mode Maintenance",
+                      next,
+                      next ? "Activé — Seuls les administrateurs peuvent exécuter les commandes." : "Désactivé — Le bot est opérationnel pour tous."
+                    );
+                  }}
                   className={cn(
-                    "w-12 h-6 rounded-full transition-colors relative p-0.5",
+                    "w-12 h-6 rounded-full transition-colors relative p-0.5 cursor-pointer",
                     botSettings.maintenanceMode ? "bg-amber-500" : "bg-zinc-800"
                   )}
                 >
@@ -288,9 +298,19 @@ export default function ConfigurationGroup({
                   </p>
                 </div>
                 <button
-                  onClick={() => setBotSettings((s: any) => ({ ...s, autoReconnect: !s.autoReconnect }))}
+                  role="switch"
+                  aria-checked={botSettings.autoReconnect}
+                  onClick={() => {
+                    const next = !botSettings.autoReconnect;
+                    setBotSettings((s: any) => ({ ...s, autoReconnect: next }));
+                    toast?.toggle?.(
+                      "Auto-Reconnexion Gateway",
+                      next,
+                      next ? "Activée — Rétablissement instantané en cas de coupure." : "Désactivée."
+                    );
+                  }}
                   className={cn(
-                    "w-12 h-6 rounded-full transition-colors relative p-0.5",
+                    "w-12 h-6 rounded-full transition-colors relative p-0.5 cursor-pointer",
                     botSettings.autoReconnect ? "bg-emerald-500" : "bg-zinc-800"
                   )}
                 >
@@ -612,9 +632,19 @@ export default function ConfigurationGroup({
                 </p>
               </div>
               <button
-                onClick={() => setBotSettings((s: any) => ({ ...s, autoDeleteCommands: !s.autoDeleteCommands }))}
+                role="switch"
+                aria-checked={botSettings.autoDeleteCommands}
+                onClick={() => {
+                  const next = !botSettings.autoDeleteCommands;
+                  setBotSettings((s: any) => ({ ...s, autoDeleteCommands: next }));
+                  toast?.toggle?.(
+                    "Suppression auto des commandes",
+                    next,
+                    next ? "Activée — Le message source de l'invocation sera nettoyé." : "Désactivée."
+                  );
+                }}
                 className={cn(
-                  "w-12 h-6 rounded-full transition-colors relative p-0.5",
+                  "w-12 h-6 rounded-full transition-colors relative p-0.5 cursor-pointer",
                   botSettings.autoDeleteCommands ? "bg-rose-500" : "bg-zinc-800"
                 )}
               >
@@ -853,18 +883,22 @@ export default function ConfigurationGroup({
                     {dedicatedAiChannelEnabled ? "🟢 Salon Actif" : "⚪ Désactivé"}
                   </span>
                   <button
+                    role="switch"
+                    aria-checked={dedicatedAiChannelEnabled}
                     onClick={() => {
                       const nextEnabled = !dedicatedAiChannelEnabled;
                       setDedicatedAiChannelEnabled(nextEnabled);
                       saveAiBehaviorSettings({ dedicatedChannelId: nextEnabled ? dedicatedAiChannel || null : null });
-                      toast?.success?.(
+                      toast?.toggle?.(
+                        "Salon IA Dédié",
+                        nextEnabled,
                         nextEnabled
-                          ? "Salon IA public activé !"
-                          : "Salon IA public désactivé."
+                          ? "Activé — Les membres peuvent converser et générer des images ici."
+                          : "Désactivé."
                       );
                     }}
                     className={cn(
-                      "w-10 h-5 rounded-full transition-colors relative p-0.5",
+                      "w-10 h-5 rounded-full transition-colors relative p-0.5 cursor-pointer",
                       dedicatedAiChannelEnabled ? "bg-purple-600" : "bg-zinc-800"
                     )}
                   >
@@ -917,14 +951,20 @@ export default function ConfigurationGroup({
                     </span>
                   </div>
                   <button
+                    role="switch"
+                    aria-checked={allowImageGen}
                     onClick={() => {
                       const next = !allowImageGen;
                       setAllowImageGen(next);
                       saveAiBehaviorSettings({ allowImageGeneration: next });
-                      toast?.info?.(next ? "Génération d'images activée" : "Génération d'images désactivée");
+                      toast?.toggle?.(
+                        "Génération d'images (/imagine)",
+                        next,
+                        next ? "Activée avec protection ToS." : "Désactivée."
+                      );
                     }}
                     className={cn(
-                      "w-10 h-5 rounded-full transition-colors relative p-0.5",
+                      "w-10 h-5 rounded-full transition-colors relative p-0.5 cursor-pointer",
                       allowImageGen ? "bg-emerald-600" : "bg-zinc-800"
                     )}
                   >

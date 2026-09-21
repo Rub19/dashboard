@@ -2,6 +2,13 @@
 
 Toutes les modifications notables de ce projet seront documentées dans ce fichier.
 
+## v1.27.20 — 2026-09-21
+
+**Notifications ON/OFF et correction des toggles du dashboard**
+
+- Notifications de bascule ON / OFF : ajout de `toast.toggle()` affichant un badge dynamique avec puce pulsante verte `● ON` ou puce neutre `○ OFF` pour chaque réglage ou module basculé (Anti-Raid, blocage invitations, modules bot, surveillance spams, maintenance, IA, etc.).
+- Correction des toggles : résolution du bogue d'alignement et de débordement du curseur sur les interrupteurs (Anti-Raid, compteurs de serveur, AFK, Sticky, Starboard, Anniversaires, Highlights) avec structure flex centrée et transitions fluides 200ms.
+
 ## v1.27.19 — 2026-09-21
 
 **Harmonisation finale : boutons retour (server, music, automod), nettoyage données mock et pb-44 universel**

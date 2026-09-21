@@ -19,7 +19,6 @@ import {
   type NotificationListItem,
 } from "@/lib/hooks/useNotifications";
 import { useI18n } from "@/lib/hooks/useI18n";
-import { useIsMobile } from "@/lib/hooks/useMediaQuery";
 import { usePresence } from "@/components/PresenceProvider";
 import { useToast } from "@/components/ToastProvider";
 import NotificationItem from "@/components/NotificationItem";

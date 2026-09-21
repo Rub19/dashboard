@@ -16,7 +16,6 @@ import {
   Brain,
 } from "lucide-react";
 import { useCommandPalette } from "@/components/CommandPaletteProvider";
-import { useI18n } from "@/lib/hooks/useI18n";
 import { useCommandItems, type CommandItem } from "@/lib/commands";
 import {
   searchCommands,

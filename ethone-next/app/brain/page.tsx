@@ -1,7 +1,6 @@
 "use client";
 
 import { useState, useEffect, useMemo } from "react";
-import { useI18n } from "@/lib/hooks/useI18n";
 import { useBrain } from "@/lib/hooks/useBrain";
 import { useMail } from "@/lib/hooks/useMail";
 import { usePresence } from "@/components/PresenceProvider";

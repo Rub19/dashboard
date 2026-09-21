@@ -14,7 +14,6 @@ import {
   RefreshCw,
   Save,
   History,
-  Sparkles,
   Wallet as WalletIcon,
   ArrowLeft,
 } from "lucide-react";

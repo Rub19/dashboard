@@ -1,9 +1,8 @@
 "use client";
 
-import { memo, useCallback } from "react";
+import { memo } from "react";
 import { useRouter } from "next/navigation";
 import LiveStats from "@/components/LiveStats";
-import { useI18n } from "@/lib/hooks/useI18n";
 import type { WidgetStateType } from "@/components/WidgetState";
 import GamingCard from "@/components/GamingCard";
 import SocialDiscordCard from "@/components/SocialDiscordCard";

@@ -2,7 +2,6 @@
 
 import { useState, useMemo } from "react";
 import { Icon } from "@/lib/icons";
-import { useI18n } from "@/lib/hooks/useI18n";
 import { cn } from "@/lib/utils";
 import type { BrainConversation } from "@/lib/hooks/useBrain";
 

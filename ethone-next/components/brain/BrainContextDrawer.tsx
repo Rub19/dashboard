@@ -1,7 +1,6 @@
 "use client";
 
 import { Icon } from "@/lib/icons";
-import { useI18n } from "@/lib/hooks/useI18n";
 import { useSettings } from "@/components/SettingsProvider";
 import { useLocalStorage } from "@/lib/hooks/useLocalStorage";
 import ServiceIcon from "@/components/ServiceIcon";

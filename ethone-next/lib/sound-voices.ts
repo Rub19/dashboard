@@ -205,7 +205,7 @@ export function scheduleVoice(
   lp.type = "lowpass";
   lp.frequency.value = 7000;
   lp.Q.value = 0.5;
-  let out: AudioNode = lp;
+  const out: AudioNode = lp;
   if (panValue != null && typeof ctx.createStereoPanner === "function") {
     const panner = ctx.createStereoPanner();
     panner.pan.value = Math.max(-0.5, Math.min(0.5, panValue * 4));

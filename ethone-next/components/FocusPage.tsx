@@ -1,7 +1,6 @@
 "use client";
 
 import { useEffect, useRef, useState } from "react";
-import { useI18n } from "@/lib/hooks/useI18n";
 import { useToast } from "@/components/ToastProvider";
 import { useFocus } from "@/components/FocusProvider";
 import { triggerPomodoroCompletedNotification } from "@/lib/local-notifications";

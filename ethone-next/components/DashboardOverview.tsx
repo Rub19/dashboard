@@ -37,7 +37,7 @@ import { useCloudTasks } from "@/lib/hooks/useCloudTasks";
 import { useHomeData } from "@/lib/hooks/useDashboard";
 import { useLiveData } from "@/lib/hooks/useLiveData";
 import { useItems } from "@/lib/hooks/useItems";
-import { useSettings, useActiveProfile } from "@/components/SettingsProvider";
+import { useSettings } from "@/components/SettingsProvider";
 import { useUserIdentity } from "@/lib/hooks/useUserIdentity";
 import { useI18n } from "@/lib/hooks/useI18n";
 import FocusModeStatusButton from "@/components/FocusModeStatusButton";

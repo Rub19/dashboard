@@ -52,6 +52,10 @@ export default function RichToast({
   const showProgress = typeof duration === "number" && duration > 0 && duration !== Infinity;
   const cfg = VARIANT_CONFIG[variant] || VARIANT_CONFIG.neutral;
   const displayBadge = badge || cfg.defaultBadge;
+  const isToggleOn = displayBadge === "ON" || displayBadge === "Actif";
+  const isToggleOff = displayBadge === "OFF" || displayBadge === "Inactif";
+  const isToggle = isToggleOn || isToggleOff;
+  const accentColor = isToggleOn ? "#10b981" : isToggleOff ? "#71717a" : cfg.color;
 
   return (
     <motion.div
@@ -63,7 +67,7 @@ export default function RichToast({
         "v8-panel relative flex w-full max-w-[22rem] flex-col overflow-hidden py-3 pl-4 pr-3.5 select-none shadow-xl",
         className
       )}
-      style={{ boxShadow: `inset 3px 0 0 ${cfg.color}, 0 12px 32px -12px rgba(0,0,0,0.5)` }}
+      style={{ boxShadow: `inset 3px 0 0 ${accentColor}, 0 12px 32px -12px rgba(0,0,0,0.5)` }}
       onMouseEnter={() => setPlayState("paused")}
       onMouseLeave={() => setPlayState("running")}
     >
@@ -72,8 +76,8 @@ export default function RichToast({
         <div
           className="flex h-10 w-10 shrink-0 items-center justify-center rounded-full"
           style={{
-            color: cfg.color,
-            backgroundColor: `color-mix(in srgb, ${cfg.color} 14%, transparent)`,
+            color: accentColor,
+            backgroundColor: `color-mix(in srgb, ${accentColor} 14%, transparent)`,
           }}
         >
           {icon}
@@ -88,9 +92,26 @@ export default function RichToast({
 
             {displayBadge && (
               <span
-                className="shrink-0 rounded-full px-2 py-0.5 text-[10px] font-semibold"
-                style={{ color: cfg.color, backgroundColor: `color-mix(in srgb, ${cfg.color} 12%, transparent)` }}
+                className={cn(
+                  "shrink-0 rounded-full px-2 py-0.5 text-[10px] font-semibold transition-all",
+                  isToggleOn
+                    ? "flex items-center gap-1.5 bg-emerald-500/20 text-emerald-400 border border-emerald-500/40 shadow-[0_0_8px_rgba(16,185,129,0.25)] font-bold tracking-wider"
+                    : isToggleOff
+                    ? "flex items-center gap-1.5 bg-zinc-800 text-zinc-400 border border-zinc-700/60 font-bold tracking-wider"
+                    : ""
+                )}
+                style={
+                  !isToggle
+                    ? { color: cfg.color, backgroundColor: `color-mix(in srgb, ${cfg.color} 12%, transparent)` }
+                    : undefined
+                }
               >
+                {isToggleOn && (
+                  <span className="inline-block h-1.5 w-1.5 rounded-full bg-emerald-400 animate-pulse" />
+                )}
+                {isToggleOff && (
+                  <span className="inline-block h-1.5 w-1.5 rounded-full bg-zinc-500" />
+                )}
                 {displayBadge}
               </span>
             )}

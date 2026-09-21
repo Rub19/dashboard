@@ -2,7 +2,7 @@
 
 import { useState, useEffect, useMemo, useCallback, useRef } from "react";
 import Link from "next/link";
-import { useRouter, useSearchParams } from "next/navigation";
+import { useSearchParams } from "next/navigation";
 import {
   ShieldAlert,
   Shield,
@@ -16,7 +16,6 @@ import {
   Activity,
   RefreshCw,
   Radio,
-  ChevronDown,
   ArrowLeft,
   Eye,
   Sparkles,
@@ -25,7 +24,6 @@ import {
   Layers,
   Save,
 } from "lucide-react";
-import { useAuth } from "@/components/AuthProvider";
 import { useToast } from "@/components/ToastProvider";
 import { useDiscordOAuth, type DiscordGuild } from "@/lib/hooks/useDiscordOAuth";
 import { useBotGuildIds, pickBotGuild } from "@/lib/hooks/useBotGuildIds";
@@ -314,7 +312,7 @@ const BOT_API_URL = process.env.NEXT_PUBLIC_DISCORD_BOT_API || "";
 
 export default function AntiRaidDashboardPage() {
   const searchParams = useSearchParams();
-  const { success, error: showError } = useToast();
+  const { success, error: showError, toggle } = useToast();
   const { profile } = useDiscordOAuth();
   const botGuildIds = useBotGuildIds(profile?.guilds);
 
@@ -737,16 +735,26 @@ export default function AntiRaidDashboardPage() {
             type="button"
             role="switch"
             aria-checked={settings.enabled}
-            onClick={() => setSettings((prev) => ({ ...prev, enabled: !prev.enabled }))}
+            onClick={() => {
+              const next = !settings.enabled;
+              setSettings((prev) => ({ ...prev, enabled: next }));
+              toggle(
+                "Protection Anti-Raid",
+                next,
+                next
+                  ? "Activée — Les détecteurs configurés surveillent activement le serveur."
+                  : "Désactivée — Surveillance en pause, aucune sanction automatique."
+              );
+            }}
             className={cn(
-              "relative h-6 w-11 shrink-0 rounded-full transition-colors",
-              settings.enabled ? "bg-emerald-500" : "bg-white/20"
+              "relative inline-flex h-6 w-11 shrink-0 cursor-pointer items-center rounded-full p-0.5 transition-colors duration-200 outline-none select-none",
+              settings.enabled ? "bg-emerald-500 shadow-[0_0_12px_rgba(16,185,129,0.3)]" : "bg-white/20 border border-white/10"
             )}
           >
             <span
               className={cn(
-                "absolute top-0.5 h-5 w-5 rounded-full bg-white transition-transform",
-                settings.enabled ? "translate-x-5" : "translate-x-0.5"
+                "pointer-events-none block h-5 w-5 rounded-full bg-white shadow-md transition-transform duration-200",
+                settings.enabled ? "translate-x-5" : "translate-x-0"
               )}
             />
           </button>
@@ -885,21 +893,28 @@ export default function AntiRaidDashboardPage() {
 
               <button
                 onClick={() => {
+                  const next = !settings.raidMode.blockAllInvites;
                   setSettings((prev) => ({
                     ...prev,
-                    raidMode: { ...prev.raidMode, blockAllInvites: !prev.raidMode.blockAllInvites },
+                    raidMode: { ...prev.raidMode, blockAllInvites: next },
                   }));
-                  success("Blocage des invitations", "Le paramètre a été basculé.");
+                  toggle(
+                    "Blocage des invitations",
+                    next,
+                    next
+                      ? "Activé — Toutes les invitations vers le serveur sont temporairement bloquées."
+                      : "Désactivé — Les invitations vers le serveur sont de nouveau actives."
+                  );
                 }}
                 className={cn(
-                  "px-3 py-2 rounded-xl text-xs font-semibold border transition-all flex items-center justify-center gap-1.5",
+                  "px-3 py-2 rounded-xl text-xs font-semibold border transition-all flex items-center justify-center gap-1.5 cursor-pointer",
                   settings.raidMode.blockAllInvites
                     ? "bg-purple-500/10 border-purple-500/30 text-purple-300"
                     : "bg-white/[0.04] border-[var(--panel-border)] text-white/70 hover:bg-white/[0.08]"
                 )}
               >
                 <Radio className="w-3.5 h-3.5" />
-                {settings.raidMode.blockAllInvites ? "Invites Bloquées" : "Bloquer Invites"}
+                {settings.raidMode.blockAllInvites ? "Invites Bloquées (ON)" : "Bloquer Invites (OFF)"}
               </button>
 
               <button
@@ -1132,12 +1147,14 @@ export default function AntiRaidDashboardPage() {
                   <input
                     type="checkbox"
                     checked={settings.joinRaid.enabled}
-                    onChange={(e) =>
+                    onChange={(e) => {
+                      const next = e.target.checked;
                       setSettings((prev) => ({
                         ...prev,
-                        joinRaid: { ...prev.joinRaid, enabled: e.target.checked },
-                      }))
-                    }
+                        joinRaid: { ...prev.joinRaid, enabled: next },
+                      }));
+                      toggle("Détection Join Raid", next, next ? "Protection active." : "Protection désactivée.");
+                    }}
                     className="w-4 h-4 accent-red-500 rounded cursor-pointer"
                   />
                 </div>
@@ -1210,12 +1227,14 @@ export default function AntiRaidDashboardPage() {
                       type="checkbox"
                       id="penalizeNoAvatar"
                       checked={settings.joinRaid.penalizeNoAvatar}
-                      onChange={(e) =>
+                      onChange={(e) => {
+                        const next = e.target.checked;
                         setSettings((prev) => ({
                           ...prev,
-                          joinRaid: { ...prev.joinRaid, penalizeNoAvatar: e.target.checked },
-                        }))
-                      }
+                          joinRaid: { ...prev.joinRaid, penalizeNoAvatar: next },
+                        }));
+                        toggle("Pénalité sans avatar", next, next ? "Pénalité active." : "Pénalité désactivée.");
+                      }}
                       className="w-4 h-4 accent-red-500 rounded cursor-pointer"
                     />
                     <label htmlFor="penalizeNoAvatar" className="text-xs text-white/80 cursor-pointer">
@@ -1239,12 +1258,14 @@ export default function AntiRaidDashboardPage() {
                   <input
                     type="checkbox"
                     checked={settings.messageRaid.enabled}
-                    onChange={(e) =>
+                    onChange={(e) => {
+                      const next = e.target.checked;
                       setSettings((prev) => ({
                         ...prev,
-                        messageRaid: { ...prev.messageRaid, enabled: e.target.checked },
-                      }))
-                    }
+                        messageRaid: { ...prev.messageRaid, enabled: next },
+                      }));
+                      toggle("Détection Spam Messages", next, next ? "Protection active." : "Protection désactivée.");
+                    }}
                     className="w-4 h-4 accent-red-500 rounded cursor-pointer"
                   />
                 </div>
@@ -1323,12 +1344,14 @@ export default function AntiRaidDashboardPage() {
                   <input
                     type="checkbox"
                     checked={settings.mentionRaid.enabled}
-                    onChange={(e) =>
+                    onChange={(e) => {
+                      const next = e.target.checked;
                       setSettings((prev) => ({
                         ...prev,
-                        mentionRaid: { ...prev.mentionRaid, enabled: e.target.checked },
-                      }))
-                    }
+                        mentionRaid: { ...prev.mentionRaid, enabled: next },
+                      }));
+                      toggle("Détection Mass Mentions", next, next ? "Protection active." : "Protection désactivée.");
+                    }}
                     className="w-4 h-4 accent-red-500 rounded cursor-pointer"
                   />
                 </div>
@@ -1358,12 +1381,14 @@ export default function AntiRaidDashboardPage() {
                       type="checkbox"
                       id="blockEveryone"
                       checked={settings.mentionRaid.blockEveryoneHere}
-                      onChange={(e) =>
+                      onChange={(e) => {
+                        const next = e.target.checked;
                         setSettings((prev) => ({
                           ...prev,
-                          mentionRaid: { ...prev.mentionRaid, blockEveryoneHere: e.target.checked },
-                        }))
-                      }
+                          mentionRaid: { ...prev.mentionRaid, blockEveryoneHere: next },
+                        }));
+                        toggle("Blocage @everyone / @here", next, next ? "Protection active." : "Protection désactivée.");
+                      }}
                       className="w-4 h-4 accent-red-500 rounded cursor-pointer"
                     />
                     <label htmlFor="blockEveryone" className="text-xs text-white/80 ml-2 cursor-pointer">
@@ -1387,12 +1412,14 @@ export default function AntiRaidDashboardPage() {
                   <input
                     type="checkbox"
                     checked={settings.botRaid.enabled}
-                    onChange={(e) =>
+                    onChange={(e) => {
+                      const next = e.target.checked;
                       setSettings((prev) => ({
                         ...prev,
-                        botRaid: { ...prev.botRaid, enabled: e.target.checked },
-                      }))
-                    }
+                        botRaid: { ...prev.botRaid, enabled: next },
+                      }));
+                      toggle("Protection Bot Raid", next, next ? "Protection active." : "Protection désactivée.");
+                    }}
                     className="w-4 h-4 accent-red-500 rounded cursor-pointer"
                   />
                 </div>
@@ -1409,12 +1436,14 @@ export default function AntiRaidDashboardPage() {
                   <input
                     type="checkbox"
                     checked={settings.botRaid.blockUnwhitelistedBots}
-                    onChange={(e) =>
+                    onChange={(e) => {
+                      const next = e.target.checked;
                       setSettings((prev) => ({
                         ...prev,
-                        botRaid: { ...prev.botRaid, blockUnwhitelistedBots: e.target.checked },
-                      }))
-                    }
+                        botRaid: { ...prev.botRaid, blockUnwhitelistedBots: next },
+                      }));
+                      toggle("Expulsion des bots non-whitelistés", next, next ? "Expulsion auto active." : "Expulsion auto désactivée.");
+                    }}
                     className="w-4 h-4 accent-red-500 rounded cursor-pointer"
                   />
                 </div>
@@ -1434,12 +1463,14 @@ export default function AntiRaidDashboardPage() {
                   <input
                     type="checkbox"
                     checked={settings.serverNuke.enabled}
-                    onChange={(e) =>
+                    onChange={(e) => {
+                      const next = e.target.checked;
                       setSettings((prev) => ({
                         ...prev,
-                        serverNuke: { ...prev.serverNuke, enabled: e.target.checked },
-                      }))
-                    }
+                        serverNuke: { ...prev.serverNuke, enabled: next },
+                      }));
+                      toggle("Protection Anti-Nuke", next, next ? "Protection active." : "Protection désactivée.");
+                    }}
                     className="w-4 h-4 accent-red-500 rounded cursor-pointer"
                   />
                 </div>

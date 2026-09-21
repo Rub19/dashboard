@@ -2,7 +2,6 @@
 
 import { useState, useMemo, useEffect, useCallback } from "react";
 import Link from "next/link";
-import { useRouter } from "next/navigation";
 import {
   ShieldCheck,
   ShieldAlert,
@@ -57,7 +56,6 @@ import {
   Eye,
   LayoutDashboard,
 } from "lucide-react";
-import { useAuth } from "@/components/AuthProvider";
 import { useToast } from "@/components/ToastProvider";
 import { useDiscordOAuth, type DiscordGuild } from "@/lib/hooks/useDiscordOAuth";
 import DiscordIcon from "@/components/DiscordIcon";
@@ -399,7 +397,7 @@ const DEFAULT_SETTINGS: GuildSettings = {
 };
 
 export default function DiscordDashboardPage() {
-  const { success, info, error: showError } = useToast();
+  const { success, info, error: showError, toggle } = useToast();
   const { profile, loading: discordLoading, connect } = useDiscordOAuth();
   const {
     isOpen: isOnboardingOpen,
@@ -1355,7 +1353,17 @@ export default function DiscordDashboardPage() {
                       </div>
                       <button
                         type="button"
-                        onClick={() => setGuildSettings((p) => ({ ...p, antiRaidEnabled: !p.antiRaidEnabled }))}
+                        role="switch"
+                        aria-checked={guildSettings.antiRaidEnabled}
+                        onClick={() => {
+                          const next = !guildSettings.antiRaidEnabled;
+                          setGuildSettings((p) => ({ ...p, antiRaidEnabled: next }));
+                          toggle(
+                            "Protection Anti-Raid",
+                            next,
+                            next ? "Activée sur ce serveur." : "Désactivée sur ce serveur."
+                          );
+                        }}
                         className={cn(
                           "flex h-6 w-11 shrink-0 rounded-full border-2 border-transparent transition-colors duration-200 cursor-pointer",
                           guildSettings.antiRaidEnabled ? "bg-emerald-500" : "bg-zinc-700"
@@ -1372,7 +1380,17 @@ export default function DiscordDashboardPage() {
                       </div>
                       <button
                         type="button"
-                        onClick={() => setGuildSettings((p) => ({ ...p, antiSpamEnabled: !p.antiSpamEnabled }))}
+                        role="switch"
+                        aria-checked={guildSettings.antiSpamEnabled}
+                        onClick={() => {
+                          const next = !guildSettings.antiSpamEnabled;
+                          setGuildSettings((p) => ({ ...p, antiSpamEnabled: next }));
+                          toggle(
+                            "Filtre Anti-Spam",
+                            next,
+                            next ? "Activé sur ce serveur." : "Désactivé sur ce serveur."
+                          );
+                        }}
                         className={cn(
                           "flex h-6 w-11 shrink-0 rounded-full border-2 border-transparent transition-colors duration-200 cursor-pointer",
                           guildSettings.antiSpamEnabled ? "bg-emerald-500" : "bg-zinc-700"

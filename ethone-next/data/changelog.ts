@@ -29960,4 +29960,53 @@ CHANGELOG_BY_LANG.en.unshift(v1276_en);
 CHANGELOG_BY_LANG.es.unshift(v1276_es);
 CHANGELOG_BY_LANG.de.unshift(v1276_de);
 
+const v1277_fr: ChangelogEntry = {
+  version: "v1.27.7",
+  date: "2026-09-21",
+  title: "Fin des données de démonstration injectées par le bot (vocal, événements, invitations)",
+  items: [
+    "Vocal : le bot avait créé dans ton vrai serveur des hubs « Gaming Hub / Chill & Talk / Ranked / VIP », des salons et sessions d'Alex, Lucas, Sarah…, un « pic de 14 » et une « durée moyenne de 24 min » forcés. Ces données sont supprimées au démarrage (uniquement les entrées factices repérées par leurs identifiants) et le pic et la durée sont maintenant calculés sur les vraies sessions.",
+    "Événements : le bot injectait quatre événements d'exemple (Gaming Night, tournoi, réunion staff, soirée anime) et neuf participants inventés dans CHAQUE serveur qui ouvrait la page. Plus rien n'est injecté : un serveur neuf n'a aucun événement.",
+    "Invitations : les parrainages, récompenses et la campagne d'exemple (usr_alex, usr_lucas…) enregistrés dans ton serveur sont supprimés au démarrage, et le bot n'en crée plus.",
+  ],
+};
+
+const v1277_en: ChangelogEntry = {
+  version: "v1.27.7",
+  date: "2026-09-21",
+  title: "End of demo data injected by the bot (voice, events, invites)",
+  items: [
+    "Voice: the bot had created in your real server \"Gaming Hub / Chill & Talk / Ranked / VIP\" hubs, rooms and sessions for Alex, Lucas, Sarah…, and a forced \"peak of 14\" and \"average duration of 24 min\". This data is removed at startup (only the fake entries identified by their ids) and the peak and duration are now computed from real sessions.",
+    "Events: the bot injected four sample events (Gaming Night, tournament, staff sync, anime night) and nine invented participants into EVERY server that opened the page. Nothing is injected anymore: a new server has no events.",
+    "Invites: the sample referrals, rewards and campaign (usr_alex, usr_lucas…) stored in your server are removed at startup, and the bot no longer creates them.",
+  ],
+};
+
+const v1277_es: ChangelogEntry = {
+  version: "v1.27.7",
+  date: "2026-09-21",
+  title: "Fin de los datos de demostración inyectados por el bot (voz, eventos, invitaciones)",
+  items: [
+    "Voz: el bot había creado en tu servidor real hubs « Gaming Hub / Chill & Talk / Ranked / VIP », salas y sesiones de Alex, Lucas, Sarah…, un « pico de 14 » y una « duración media de 24 min » forzados. Estos datos se eliminan al arrancar (solo las entradas falsas identificadas por sus id) y el pico y la duración se calculan ahora con sesiones reales.",
+    "Eventos: el bot inyectaba cuatro eventos de ejemplo (Gaming Night, torneo, reunión de staff, noche de anime) y nueve participantes inventados en CADA servidor que abría la página. Ya no se inyecta nada: un servidor nuevo no tiene eventos.",
+    "Invitaciones: las referencias, recompensas y la campaña de ejemplo (usr_alex, usr_lucas…) guardadas en tu servidor se eliminan al arrancar y el bot ya no las crea.",
+  ],
+};
+
+const v1277_de: ChangelogEntry = {
+  version: "v1.27.7",
+  date: "2026-09-21",
+  title: "Ende der vom Bot eingespielten Demodaten (Sprache, Events, Einladungen)",
+  items: [
+    "Sprache: Der Bot hatte in deinem echten Server Hubs „Gaming Hub / Chill & Talk / Ranked / VIP“, Räume und Sitzungen von Alex, Lucas, Sarah…, einen erzwungenen „Spitzenwert 14“ und eine „Durchschnittsdauer 24 Min“ angelegt. Diese Daten werden beim Start entfernt (nur die falschen, an ihren IDs erkennbaren Einträge); Spitze und Dauer werden jetzt aus echten Sitzungen berechnet.",
+    "Events: Der Bot spielte vier Beispiel-Events (Gaming Night, Turnier, Staff-Sync, Anime-Abend) und neun erfundene Teilnehmer in JEDEN Server ein, der die Seite öffnete. Es wird nichts mehr eingespielt: Ein neuer Server hat keine Events.",
+    "Einladungen: Die Beispiel-Empfehlungen, -Belohnungen und -Kampagne (usr_alex, usr_lucas…) in deinem Server werden beim Start entfernt, und der Bot legt sie nicht mehr an.",
+  ],
+};
+
+CHANGELOG_BY_LANG.fr.unshift(v1277_fr);
+CHANGELOG_BY_LANG.en.unshift(v1277_en);
+CHANGELOG_BY_LANG.es.unshift(v1277_es);
+CHANGELOG_BY_LANG.de.unshift(v1277_de);
+
 export const CHANGELOG = CHANGELOG_BY_LANG.fr;

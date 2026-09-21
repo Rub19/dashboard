@@ -60,7 +60,7 @@ export class VoiceRepository {
   constructor() {
     this.ensureDir();
     this.loadData();
-    this.seedDemoDataIfEmpty();
+    this.purgeDemoData();
   }
 
   private ensureDir() {
@@ -116,278 +116,33 @@ export class VoiceRepository {
     }
   }
 
-  private seedDemoDataIfEmpty() {
-    if (this.hubs.length === 0) {
-      const demoGuild = '1128633164290596884';
-      const now = Date.now();
+  /**
+   * Anciennes versions du bot injectaient des données de démonstration (hubs « Gaming Hub », salons et
+   * sessions d'Alex/Lucas/Sarah, etc.) dans le serveur réel. On retire ces entrées précises, repérées
+   * par leurs identifiants factices, et on ne crée plus rien tout seul.
+   */
+  private purgeDemoData() {
+    const demoHubIds = new Set(['hub_gaming', 'hub_chill', 'hub_ranked', 'hub_vip']);
+    const demoRoomIds = new Set(['room_alex_gaming', 'room_chill_lounge']);
+    const demoSessionIds = new Set(['sess_1', 'sess_2']);
+    const demoTimelineIds = new Set(['tl_1', 'tl_2', 'tl_3', 'tl_4', 'tl_5']);
+    const before = this.hubs.length + this.rooms.length + this.sessions.length + this.timeline.length;
 
-      // Sample Hubs
-      this.hubs = [
-        {
-          id: 'hub_gaming',
-          guildId: demoGuild,
-          name: 'Gaming Hub',
-          categoryId: 'cat_gaming',
-          channelId: 'vc_create_gaming',
-          type: 'voice',
-          namingTemplate: "🎮 {username}'s Room",
-          userLimit: 5,
-          bitrate: 96000,
-          region: null,
-          allowedRoles: [],
-          excludedRoles: [],
-          roleRequirementMode: 'any',
-          accessMode: 'public',
-          autoNumbering: true,
-          enabled: true,
-          createdAt: new Date(now - 1000 * 60 * 60 * 24 * 7).toISOString(),
-        },
-        {
-          id: 'hub_chill',
-          guildId: demoGuild,
-          name: 'Chill & Talk',
-          categoryId: 'cat_chill',
-          channelId: 'vc_create_chill',
-          type: 'voice',
-          namingTemplate: '💬 Salon de {displayName}',
-          userLimit: 10,
-          bitrate: 64000,
-          region: null,
-          allowedRoles: [],
-          excludedRoles: [],
-          roleRequirementMode: 'any',
-          accessMode: 'public',
-          autoNumbering: true,
-          enabled: true,
-          createdAt: new Date(now - 1000 * 60 * 60 * 24 * 7).toISOString(),
-        },
-        {
-          id: 'hub_ranked',
-          guildId: demoGuild,
-          name: 'Ranked / Tryhard Hub',
-          categoryId: 'cat_gaming',
-          channelId: 'vc_create_ranked',
-          type: 'voice',
-          namingTemplate: '🏆 Ranked #{number}',
-          userLimit: 3,
-          bitrate: 128000,
-          region: null,
-          allowedRoles: [],
-          excludedRoles: [],
-          roleRequirementMode: 'any',
-          accessMode: 'public',
-          autoNumbering: true,
-          enabled: true,
-          createdAt: new Date(now - 1000 * 60 * 60 * 24 * 5).toISOString(),
-        },
-        {
-          id: 'hub_vip',
-          guildId: demoGuild,
-          name: 'Salon VIP Privé',
-          categoryId: 'cat_vip',
-          channelId: 'vc_create_vip',
-          type: 'voice',
-          namingTemplate: '👑 VIP — {username}',
-          userLimit: 0,
-          bitrate: 128000,
-          region: null,
-          allowedRoles: ['role_vip'],
-          excludedRoles: [],
-          roleRequirementMode: 'any',
-          accessMode: 'role_only',
-          autoNumbering: false,
-          enabled: true,
-          createdAt: new Date(now - 1000 * 60 * 60 * 24 * 3).toISOString(),
-        },
-      ];
+    this.hubs = this.hubs.filter((h) => !(demoHubIds.has(h.id) && String(h.channelId).startsWith('vc_create_')));
+    this.rooms = this.rooms.filter((r) => !demoRoomIds.has(r.id));
+    this.sessions = this.sessions.filter((s) => !demoSessionIds.has(s.id));
+    this.timeline = this.timeline.filter((e) => !demoTimelineIds.has(e.id));
 
-      // Sample Active Rooms
-      this.rooms = [
-        {
-          id: 'room_alex_gaming',
-          guildId: demoGuild,
-          hubId: 'hub_gaming',
-          hubName: 'Gaming Hub',
-          name: "🎮 Alex's Room #1",
-          ownerId: 'usr_alex',
-          ownerTag: 'Alex#0001',
-          userLimit: 5,
-          bitrate: 96000,
-          isLocked: false,
-          isHidden: false,
-          allowedUserIds: ['usr_lucas', 'usr_sarah'],
-          blockedUserIds: [],
-          whitelist: ['usr_lucas', 'usr_sarah'],
-          banlist: [],
-          createdAt: new Date(now - 1000 * 60 * 45).toISOString(),
-          lastEmptyAt: null,
-          status: 'ACTIVE',
-          currentUsers: [
-            {
-              id: 'usr_alex',
-              tag: 'Alex#0001',
-              joinedAt: new Date(now - 1000 * 60 * 45).toISOString(),
-              isMuted: false,
-              isDeafened: false,
-              isStreaming: true,
-            },
-            {
-              id: 'usr_lucas',
-              tag: 'Lucas#1234',
-              joinedAt: new Date(now - 1000 * 60 * 25).toISOString(),
-              isMuted: false,
-              isDeafened: false,
-              isStreaming: false,
-            },
-            {
-              id: 'usr_sarah',
-              tag: 'Sarah#5678',
-              joinedAt: new Date(now - 1000 * 60 * 12).toISOString(),
-              isMuted: true,
-              isDeafened: false,
-              isStreaming: false,
-            },
-          ],
-          peakUsers: 4,
-          totalSecondsActive: 2700,
-        },
-        {
-          id: 'room_chill_lounge',
-          guildId: demoGuild,
-          hubId: 'hub_chill',
-          hubName: 'Chill & Talk',
-          name: '💬 Salon de Marie #1',
-          ownerId: 'usr_marie',
-          ownerTag: 'Marie#9999',
-          userLimit: 10,
-          bitrate: 64000,
-          isLocked: true,
-          isHidden: false,
-          allowedUserIds: ['usr_thomas'],
-          blockedUserIds: ['usr_troll'],
-          whitelist: ['usr_thomas'],
-          banlist: ['usr_troll'],
-          createdAt: new Date(now - 1000 * 60 * 90).toISOString(),
-          lastEmptyAt: null,
-          status: 'ACTIVE',
-          currentUsers: [
-            {
-              id: 'usr_marie',
-              tag: 'Marie#9999',
-              joinedAt: new Date(now - 1000 * 60 * 90).toISOString(),
-              isMuted: false,
-              isDeafened: false,
-              isStreaming: false,
-            },
-            {
-              id: 'usr_thomas',
-              tag: 'Thomas#4321',
-              joinedAt: new Date(now - 1000 * 60 * 40).toISOString(),
-              isMuted: false,
-              isDeafened: false,
-              isStreaming: false,
-            },
-          ],
-          peakUsers: 2,
-          totalSecondsActive: 5400,
-        },
-      ];
-
-      // Sample Timeline Events
-      this.timeline = [
-        {
-          id: 'tl_1',
-          roomId: 'room_alex_gaming',
-          guildId: demoGuild,
-          type: 'ROOM_CREATED',
-          timestamp: new Date(now - 1000 * 60 * 45).toISOString(),
-          actorId: 'usr_alex',
-          actorTag: 'Alex#0001',
-          details: 'Création via Panneau Personnel (Gaming Hub)',
-        },
-        {
-          id: 'tl_2',
-          roomId: 'room_alex_gaming',
-          guildId: demoGuild,
-          type: 'USER_JOINED',
-          timestamp: new Date(now - 1000 * 60 * 25).toISOString(),
-          actorId: 'usr_lucas',
-          actorTag: 'Lucas#1234',
-        },
-        {
-          id: 'tl_3',
-          roomId: 'room_alex_gaming',
-          guildId: demoGuild,
-          type: 'USER_JOINED',
-          timestamp: new Date(now - 1000 * 60 * 12).toISOString(),
-          actorId: 'usr_sarah',
-          actorTag: 'Sarah#5678',
-        },
-        {
-          id: 'tl_4',
-          roomId: 'room_chill_lounge',
-          guildId: demoGuild,
-          type: 'ROOM_CREATED',
-          timestamp: new Date(now - 1000 * 60 * 90).toISOString(),
-          actorId: 'usr_marie',
-          actorTag: 'Marie#9999',
-        },
-        {
-          id: 'tl_5',
-          roomId: 'room_chill_lounge',
-          guildId: demoGuild,
-          type: 'ROOM_LOCKED',
-          timestamp: new Date(now - 1000 * 60 * 50).toISOString(),
-          actorId: 'usr_marie',
-          actorTag: 'Marie#9999',
-          details: 'Verrouillé par le propriétaire',
-        },
-      ];
-
-      // Sample Historical Sessions
-      this.sessions = [
-        {
-          id: 'sess_1',
-          guildId: demoGuild,
-          channelId: 'room_alex_gaming',
-          roomName: "🎮 Alex's Room #1",
-          hubId: 'hub_gaming',
-          userId: 'usr_alex',
-          userTag: 'Alex#0001',
-          joinedAt: new Date(now - 1000 * 60 * 45).toISOString(),
-          leftAt: null,
-          durationSeconds: 2700,
-        },
-        {
-          id: 'sess_2',
-          guildId: demoGuild,
-          channelId: 'room_alex_gaming',
-          roomName: "🎮 Alex's Room #1",
-          hubId: 'hub_gaming',
-          userId: 'usr_lucas',
-          userTag: 'Lucas#1234',
-          joinedAt: new Date(now - 1000 * 60 * 25).toISOString(),
-          leftAt: null,
-          durationSeconds: 1500,
-        },
-      ];
-
-      this.settings.set(demoGuild, {
-        ...DEFAULT_VOICE_SETTINGS,
-        creationTextChannelId: 'chan_voice_panel',
-        defaultRoomNameTemplate: '🎮 Salon de {username}',
-      });
-
-      this.userPreferences.set('usr_alex', {
-        userId: 'usr_alex',
-        defaultName: "🎮 Repaire d'Alex",
-        defaultLimit: 6,
-        defaultLocked: false,
-        defaultHidden: false,
-        defaultBitrate: 96000,
-        updatedAt: new Date().toISOString(),
-      });
-
+    let changed = before !== this.hubs.length + this.rooms.length + this.sessions.length + this.timeline.length;
+    if (this.userPreferences.delete('usr_alex')) changed = true;
+    for (const [guildId, s] of this.settings) {
+      if (s.creationTextChannelId === 'chan_voice_panel') {
+        this.settings.set(guildId, { ...s, creationTextChannelId: null });
+        changed = true;
+      }
+    }
+    if (changed) {
+      logger.info('[VoiceRepository] Données de démonstration retirées.');
       this.saveData();
     }
   }
@@ -656,9 +411,9 @@ export class VoiceRepository {
         usersInVoiceCount: usersInVoice,
         temporaryChannelsCount: activeChannels,
         sessionsTodayCount: todaySessions.length,
-        peakConcurrentUsers: Math.max(usersInVoice, 14),
+        peakConcurrentUsers: Math.max(usersInVoice, ...this.rooms.filter((r) => r.guildId === guildId).map((r) => r.peakUsers || 0)),
         totalVoiceTimeMinutes: Math.round(totalSeconds / 60),
-        averageSessionMinutes: avgMinutes || 24,
+        averageSessionMinutes: avgMinutes,
       },
       hubs,
       activeRooms,

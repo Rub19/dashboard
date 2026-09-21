@@ -2,6 +2,14 @@
 
 Toutes les modifications notables de ce projet seront documentées dans ce fichier.
 
+## v1.27.7 — 2026-09-21
+
+**Fin des données de démonstration injectées par le bot (vocal, événements, invitations)**
+
+- Vocal : le bot avait créé dans ton vrai serveur des hubs « Gaming Hub / Chill & Talk / Ranked / VIP », des salons et sessions d'Alex, Lucas, Sarah…, un « pic de 14 » et une « durée moyenne de 24 min » forcés. Ces données sont supprimées au démarrage (uniquement les entrées factices repérées par leurs identifiants) et le pic et la durée sont maintenant calculés sur les vraies sessions.
+- Événements : le bot injectait quatre événements d'exemple (Gaming Night, tournoi, réunion staff, soirée anime) et neuf participants inventés dans CHAQUE serveur qui ouvrait la page. Plus rien n'est injecté : un serveur neuf n'a aucun événement.
+- Invitations : les parrainages, récompenses et la campagne d'exemple (usr_alex, usr_lucas…) enregistrés dans ton serveur sont supprimés au démarrage, et le bot n'en crée plus.
+
 ## v1.27.6 — 2026-09-21
 
 **Barres à 0 % vraiment vides, événements du bot réels**

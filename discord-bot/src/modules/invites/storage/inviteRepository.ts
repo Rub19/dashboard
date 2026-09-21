@@ -50,7 +50,7 @@ export class InviteRepository {
   constructor() {
     this.ensureDir();
     this.loadData();
-    this.seedDemoDataIfEmpty();
+    this.purgeDemoData();
   }
 
   private ensureDir() {
@@ -87,6 +87,23 @@ export class InviteRepository {
     }
   }
 
+  /**
+   * Anciennes versions du bot injectaient des invitations, récompenses et campagnes d'exemple
+   * (usr_alex, usr_lucas…) dans le serveur réel. On retire ces entrées précises et on ne crée plus rien.
+   */
+  private purgeDemoData() {
+    const before = this.referrals.length + this.rewards.length + this.campaigns.length;
+    const refIds = new Set(['ref_1', 'ref_2', 'ref_3', 'ref_4']);
+    const rewIds = new Set(['rew_1', 'rew_2', 'rew_3']);
+    this.referrals = this.referrals.filter((r) => !(refIds.has(r.id) && String(r.inviterId).startsWith('usr_')));
+    this.rewards = this.rewards.filter((r) => !rewIds.has(r.id));
+    this.campaigns = this.campaigns.filter((c) => c.id !== 'camp_1');
+    if (before !== this.referrals.length + this.rewards.length + this.campaigns.length) {
+      logger.info("[InviteRepository] Données de démonstration retirées.");
+      this.saveData();
+    }
+  }
+
   private saveData() {
     try {
       this.ensureDir();
@@ -107,163 +124,6 @@ export class InviteRepository {
       fs.writeFileSync(this.snapshotsPath, JSON.stringify(snapObj, null, 2), 'utf8');
     } catch (e) {
       logger.error('[InviteRepository] Erreur lors de la sauvegarde des données:', e);
-    }
-  }
-
-  private seedDemoDataIfEmpty() {
-    if (this.referrals.length === 0) {
-      const demoGuild = '1128633164290596884';
-      const now = Date.now();
-
-      // Sample Referrals
-      this.referrals = [
-        {
-          id: 'ref_1',
-          guildId: demoGuild,
-          inviterId: 'usr_alex',
-          inviterTag: 'Alex#0001',
-          invitedUserId: 'usr_lucas',
-          invitedUserTag: 'Lucas#1234',
-          inviteCode: 'ethone-dev',
-          source: 'invite_link',
-          joinedAt: new Date(now - 1000 * 60 * 30).toISOString(),
-          accountCreatedAt: new Date(now - 1000 * 60 * 60 * 24 * 120).toISOString(),
-          accountAgeDays: 120,
-          status: 'VALID',
-          suspicious: false,
-          riskScore: 5,
-          riskLevel: 'Safe',
-          retentionStatus: { h1: true, d1: true, d3: true, d7: true, d30: false },
-          rewardStatus: 'REWARDED',
-          createdAt: new Date(now - 1000 * 60 * 30).toISOString(),
-        },
-        {
-          id: 'ref_2',
-          guildId: demoGuild,
-          inviterId: 'usr_alex',
-          inviterTag: 'Alex#0001',
-          invitedUserId: 'usr_emma',
-          invitedUserTag: 'Emma#5678',
-          inviteCode: 'ethone-dev',
-          source: 'invite_link',
-          joinedAt: new Date(now - 1000 * 60 * 60 * 2).toISOString(),
-          accountCreatedAt: new Date(now - 1000 * 60 * 60 * 24 * 350).toISOString(),
-          accountAgeDays: 350,
-          status: 'VALID',
-          suspicious: false,
-          riskScore: 2,
-          riskLevel: 'Safe',
-          retentionStatus: { h1: true, d1: true, d3: true, d7: true, d30: true },
-          rewardStatus: 'PENDING',
-          createdAt: new Date(now - 1000 * 60 * 60 * 2).toISOString(),
-        },
-        {
-          id: 'ref_3',
-          guildId: demoGuild,
-          inviterId: 'usr_lucas',
-          inviterTag: 'Lucas#1234',
-          invitedUserId: 'usr_bot1',
-          invitedUserTag: 'SuspiciousUser#9999',
-          inviteCode: 'gaming-vip',
-          source: 'invite_link',
-          joinedAt: new Date(now - 1000 * 60 * 15).toISOString(),
-          accountCreatedAt: new Date(now - 1000 * 60 * 60 * 1).toISOString(),
-          accountAgeDays: 0,
-          status: 'SUSPICIOUS',
-          suspicious: true,
-          suspiciousReason: 'Compte créé il y a moins de 2 heures',
-          riskScore: 85,
-          riskLevel: 'High Risk',
-          retentionStatus: { h1: false, d1: false, d3: false, d7: false, d30: false },
-          rewardStatus: 'INELIGIBLE',
-          createdAt: new Date(now - 1000 * 60 * 15).toISOString(),
-        },
-        {
-          id: 'ref_4',
-          guildId: demoGuild,
-          inviterId: 'usr_emma',
-          inviterTag: 'Emma#5678',
-          invitedUserId: 'usr_leaver',
-          invitedUserTag: 'DepartedMember#4321',
-          inviteCode: 'welcome-hub',
-          source: 'invite_link',
-          joinedAt: new Date(now - 1000 * 60 * 60 * 24 * 4).toISOString(),
-          accountCreatedAt: new Date(now - 1000 * 60 * 60 * 24 * 80).toISOString(),
-          accountAgeDays: 80,
-          status: 'LEFT',
-          suspicious: false,
-          riskScore: 12,
-          riskLevel: 'Safe',
-          leftAt: new Date(now - 1000 * 60 * 60 * 24 * 1).toISOString(),
-          retentionStatus: { h1: true, d1: true, d3: false, d7: false, d30: false },
-          rewardStatus: 'REVOKED',
-          createdAt: new Date(now - 1000 * 60 * 60 * 24 * 4).toISOString(),
-        },
-      ];
-
-      // Sample Rewards
-      this.rewards = [
-        {
-          id: 'rew_1',
-          guildId: demoGuild,
-          name: 'Rôle Bronze Initié',
-          requiredValidInvites: 5,
-          roleId: 'role_bronze',
-          roleName: 'Bronze Supporter',
-          xpAmount: 150,
-          rewardBadge: '🥉 Bronze',
-          message: 'Félicitations pour tes 5 invitations valides !',
-          enabled: true,
-          createdAt: new Date().toISOString(),
-        },
-        {
-          id: 'rew_2',
-          guildId: demoGuild,
-          name: 'Rôle Silver Recruteur',
-          requiredValidInvites: 15,
-          roleId: 'role_silver',
-          roleName: 'Silver Recruteur',
-          xpAmount: 500,
-          rewardBadge: '🥈 Silver',
-          message: 'Tu as dépassé 15 membres actifs invités !',
-          enabled: true,
-          createdAt: new Date().toISOString(),
-        },
-        {
-          id: 'rew_3',
-          guildId: demoGuild,
-          name: 'Rôle VIP Ambassadeur',
-          requiredValidInvites: 30,
-          roleId: 'role_vip',
-          roleName: 'Ambassadeur VIP',
-          xpAmount: 1500,
-          rewardBadge: '👑 Ambassadeur',
-          message: 'Accès au salon VIP débloqué !',
-          enabled: true,
-          createdAt: new Date().toISOString(),
-        },
-      ];
-
-      // Sample Campaign
-      this.campaigns = [
-        {
-          id: 'camp_1',
-          guildId: demoGuild,
-          name: 'Campagne de Croissance Printemps 2026',
-          description: 'Aidez notre communauté à atteindre 2,000 membres et débloquez le grade VIP spécial.',
-          startDate: new Date(now - 1000 * 60 * 60 * 24 * 10).toISOString(),
-          endDate: new Date(now + 1000 * 60 * 60 * 24 * 20).toISOString(),
-          inviteTarget: 500,
-          currentInvites: 184,
-          rewards: ['Rôle Saisonnier @Ambassadeur', '1,000 XP'],
-          minimumRetentionDays: 3,
-          minimumAccountAgeDays: 3,
-          status: 'ACTIVE',
-        },
-      ];
-
-      this.settings.set(demoGuild, DEFAULT_SETTINGS);
-      this.saveData();
     }
   }
 

@@ -11,10 +11,10 @@ async function runTests() {
 
   const testGuildId = 'test-guild-777';
 
-  // 1. Initial seeded events
+  // 1. Un serveur neuf n'a aucun événement (plus d'événements de démonstration injectés)
   const initialEvents = eventRepository.getEventsByGuild(testGuildId);
-  assert(initialEvents.length >= 4, 'Should have seeded events for test guild');
-  console.log(`✅ Seeded events loaded: ${initialEvents.length} events found.`);
+  assert(initialEvents.length === 0, 'A new guild must start with no events');
+  console.log('✅ Nouveau serveur : aucun événement inventé.');
 
   // 2. Create Event
   const now = new Date();

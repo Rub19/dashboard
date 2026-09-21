@@ -374,11 +374,11 @@ class LavalinkManager {
    * machine que Lavalink. Au moindre échec on renvoie le titre inchangé (repli SoundCloud ensuite).
    */
   public async directYoutube(t: Track): Promise<Track> {
-    if (!config.ytResolverUrl || t.source !== 'YOUTUBE' || !t.encoded) return t;
+    if (!config.ytResolverUrl || !t.encoded) return t;
     // Flux direct encore frais (les adresses YouTube expirent au bout de quelques heures) : on garde.
     const fetchedAt = this.directEncoded.get(t.encoded);
     if (fetchedAt && Date.now() - fetchedAt < 4 * 3600_000) return t;
-    const id = this.youtubeIdOf(t.url || '') ?? (/^ll-[A-Za-z0-9_-]{11}$/.test(t.id) ? t.id.slice(3) : null);
+    const id = this.youtubeIdOf(t.url || '') ?? (t.source === 'YOUTUBE' && /^ll-[A-Za-z0-9_-]{11}$/.test(t.id) ? t.id.slice(3) : null);
     if (!id) return t;
 
     // 1er essai avec le cache éventuel ; si Lavalink refuse l'adresse (intermittent), un 2e essai
@@ -408,7 +408,8 @@ class LavalinkManager {
           if (this.directEncoded.size > 200) this.directEncoded.clear();
           this.directEncoded.set(loaded.data.encoded, Date.now());
           logger.info(`[Lavalink] YouTube via yt-dlp : ${id}${fresh ? ' (adresse renouvelée)' : ''}`);
-          return { ...t, encoded: loaded.data.encoded };
+          // Le son vient bien de YouTube (le titre, lui, peut venir des métadonnées Spotify).
+          return { ...t, encoded: loaded.data.encoded, source: 'YOUTUBE' };
         }
         const why = loaded?.loadType === LoadType.ERROR ? `${loaded.data.message}${loaded.data.cause ? ` — ${loaded.data.cause}` : ''}` : (loaded?.loadType ?? 'aucune réponse');
         logger.warn(`[Lavalink] Flux yt-dlp refusé par Lavalink pour ${id} : ${why}${fresh ? '' : ' — nouvel essai avec une adresse fraîche'}`);
@@ -439,7 +440,7 @@ class LavalinkManager {
     if (!resolved) return null;
     // Titre venu d'une recherche texte / Spotify : `resolved` est un titre YouTube → flux direct si possible.
     const direct = await this.directYoutube(resolved);
-    return { ...track, encoded: direct.encoded, url: track.url || resolved.url, duration: track.duration || resolved.duration };
+    return { ...track, encoded: direct.encoded, source: resolved.source, url: track.url || resolved.url, duration: track.duration || resolved.duration };
   }
 }
 

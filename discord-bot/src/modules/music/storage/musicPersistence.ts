@@ -21,6 +21,7 @@ export const DEFAULT_MUSIC_SETTINGS: MusicSettings = {
   djMode: false,
   djRoleId: null,
   autoDisconnectSeconds: 300,
+  stayChannelId: null,
   autoplay: false,
   defaultVolume: 75,
 };

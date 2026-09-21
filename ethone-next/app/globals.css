@@ -2896,3 +2896,100 @@ html[data-hide-chrome="true"] [data-chrome] {
   pointer-events: none !important;
   transition: opacity 150ms ease, visibility 0s linear 150ms;
 }
+
+/* Curseurs du lecteur musique (progression + volume) : piste épaisse avec remplissage en dégradé,
+   poignée qui apparaît au survol. `--pct` (0–100%) est posé en style inline par le composant. */
+.ethone-seek {
+  --pct: 0%;
+  --seek-h: 6px;
+  --seek-from: #8b5cf6;
+  --seek-to: #d946ef;
+  -webkit-appearance: none;
+  appearance: none;
+  width: 100%;
+  height: 22px;
+  margin: 0;
+  background: transparent;
+  cursor: pointer;
+  outline: none;
+}
+.ethone-seek--sm {
+  --seek-h: 4px;
+  height: 18px;
+}
+.ethone-seek:hover,
+.ethone-seek:active,
+.ethone-seek:focus-visible {
+  --seek-h: 8px;
+}
+.ethone-seek--sm:hover,
+.ethone-seek--sm:active,
+.ethone-seek--sm:focus-visible {
+  --seek-h: 6px;
+}
+.ethone-seek::-webkit-slider-runnable-track {
+  height: var(--seek-h);
+  border-radius: 999px;
+  background:
+    linear-gradient(90deg, var(--seek-from), var(--seek-to)) 0 0 / var(--pct) 100% no-repeat,
+    rgba(255, 255, 255, 0.16);
+  transition: height 150ms ease;
+}
+.ethone-seek::-webkit-slider-thumb {
+  -webkit-appearance: none;
+  appearance: none;
+  width: 14px;
+  height: 14px;
+  margin-top: calc((var(--seek-h) - 14px) / 2);
+  border: 0;
+  border-radius: 50%;
+  background: #fff;
+  box-shadow: 0 0 0 3px rgba(139, 92, 246, 0.4), 0 2px 8px rgba(0, 0, 0, 0.55);
+  transform: scale(0);
+  transition: transform 150ms ease;
+}
+.ethone-seek::-moz-range-track {
+  height: var(--seek-h);
+  border-radius: 999px;
+  background: rgba(255, 255, 255, 0.16);
+}
+.ethone-seek::-moz-range-progress {
+  height: var(--seek-h);
+  border-radius: 999px;
+  background: linear-gradient(90deg, var(--seek-from), var(--seek-to));
+}
+.ethone-seek::-moz-range-thumb {
+  width: 14px;
+  height: 14px;
+  border: 0;
+  border-radius: 50%;
+  background: #fff;
+  box-shadow: 0 0 0 3px rgba(139, 92, 246, 0.4), 0 2px 8px rgba(0, 0, 0, 0.55);
+  transform: scale(0);
+  transition: transform 150ms ease;
+}
+.ethone-seek:hover::-webkit-slider-thumb,
+.ethone-seek:active::-webkit-slider-thumb,
+.ethone-seek:focus-visible::-webkit-slider-thumb {
+  transform: scale(1);
+}
+.ethone-seek:hover::-moz-range-thumb,
+.ethone-seek:active::-moz-range-thumb,
+.ethone-seek:focus-visible::-moz-range-thumb {
+  transform: scale(1);
+}
+/* Écrans tactiles : pas de survol, la poignée reste visible. */
+@media (hover: none) {
+  .ethone-seek::-webkit-slider-thumb,
+  .ethone-seek::-moz-range-thumb {
+    transform: scale(1);
+  }
+}
+.ethone-seek:disabled {
+  opacity: 0.4;
+  cursor: not-allowed;
+}
+.ethone-seek:disabled::-webkit-slider-thumb,
+.ethone-seek:disabled::-moz-range-thumb {
+  transform: scale(0);
+}

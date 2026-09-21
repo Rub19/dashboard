@@ -29246,4 +29246,53 @@ CHANGELOG_BY_LANG.en.unshift(v12520_en);
 CHANGELOG_BY_LANG.es.unshift(v12520_es);
 CHANGELOG_BY_LANG.de.unshift(v12520_de);
 
+const v12521_fr: ChangelogEntry = {
+  version: "v1.25.21",
+  date: "2026-09-21",
+  title: "Lecteur musique : barre de progression lisible, et la vraie source du son est affichée",
+  items: [
+    "Site (Music Center) : la barre de progression et le volume étaient des curseurs natifs sans style — une ligne grise fine, sans remplissage ni poignée. Ils ont maintenant une piste plus épaisse avec un remplissage en dégradé violet, une poignée qui apparaît au survol (toujours visible sur écran tactile), et des temps plus lisibles (temps courant en blanc gras).",
+    "Bot et site : un titre trouvé via les métadonnées Spotify affichait « Spotify » comme source alors que le son vient de YouTube ou de SoundCloud. L'étiquette indique maintenant la vraie source du son ; le titre, l'artiste et la pochette restent ceux de Spotify.",
+    "Bot : le journal affichait « Unknown title » pour un flux YouTube lu via le service yt-dlp (nom donné par Lavalink à un flux HTTP) ; il affiche maintenant le vrai titre. Les titres issus d'un lien Spotify passent eux aussi par le service yt-dlp.",
+  ],
+};
+
+const v12521_en: ChangelogEntry = {
+  version: "v1.25.21",
+  date: "2026-09-21",
+  title: "Music player: readable progress bar, and the real audio source is shown",
+  items: [
+    "Website (Music Center): the progress bar and volume were unstyled native sliders — a thin grey line with no fill or handle. They now have a thicker track with a violet gradient fill, a handle that appears on hover (always visible on touch screens), and more readable times (current time in bold white).",
+    "Bot and website: a track found through Spotify metadata showed \"Spotify\" as its source although the audio comes from YouTube or SoundCloud. The label now shows the real audio source; title, artist and artwork remain Spotify's.",
+    "Bot: the log showed \"Unknown title\" for a YouTube stream played through the yt-dlp service (the name Lavalink gives an HTTP stream); it now shows the real title. Tracks coming from a Spotify link also go through the yt-dlp service.",
+  ],
+};
+
+const v12521_es: ChangelogEntry = {
+  version: "v1.25.21",
+  date: "2026-09-21",
+  title: "Reproductor de música: barra de progreso legible y se muestra la fuente real del audio",
+  items: [
+    "Sitio web (Music Center): la barra de progreso y el volumen eran controles nativos sin estilo: una línea gris fina sin relleno ni tirador. Ahora tienen una pista más gruesa con relleno en degradado violeta, un tirador que aparece al pasar el cursor (siempre visible en pantallas táctiles) y tiempos más legibles (el tiempo actual en blanco y negrita).",
+    "Bot y sitio web: un título encontrado mediante los metadatos de Spotify mostraba « Spotify » como fuente aunque el audio venga de YouTube o SoundCloud. La etiqueta indica ahora la fuente real del audio; el título, el artista y la carátula siguen siendo los de Spotify.",
+    "Bot: el registro mostraba « Unknown title » para un flujo de YouTube reproducido mediante el servicio yt-dlp (el nombre que Lavalink da a un flujo HTTP); ahora muestra el título real. Las canciones procedentes de un enlace de Spotify también pasan por el servicio yt-dlp.",
+  ],
+};
+
+const v12521_de: ChangelogEntry = {
+  version: "v1.25.21",
+  date: "2026-09-21",
+  title: "Musik-Player: gut lesbarer Fortschrittsbalken, und die echte Audioquelle wird angezeigt",
+  items: [
+    "Website (Music Center): Fortschrittsbalken und Lautstärke waren ungestylte native Regler — eine dünne graue Linie ohne Füllung und Griff. Sie haben jetzt eine dickere Spur mit violettem Farbverlauf, einen Griff, der beim Überfahren erscheint (auf Touchscreens immer sichtbar), und besser lesbare Zeiten (aktuelle Zeit fett in Weiß).",
+    "Bot und Website: Ein über Spotify-Metadaten gefundener Titel zeigte „Spotify“ als Quelle, obwohl der Ton von YouTube oder SoundCloud kommt. Das Label zeigt jetzt die echte Audioquelle; Titel, Künstler und Cover bleiben die von Spotify.",
+    "Bot: Das Log zeigte „Unknown title“ für einen über den yt-dlp-Dienst abgespielten YouTube-Stream (der Name, den Lavalink einem HTTP-Stream gibt); jetzt erscheint der echte Titel. Auch Titel aus einem Spotify-Link laufen über den yt-dlp-Dienst.",
+  ],
+};
+
+CHANGELOG_BY_LANG.fr.unshift(v12521_fr);
+CHANGELOG_BY_LANG.en.unshift(v12521_en);
+CHANGELOG_BY_LANG.es.unshift(v12521_es);
+CHANGELOG_BY_LANG.de.unshift(v12521_de);
+
 export const CHANGELOG = CHANGELOG_BY_LANG.fr;

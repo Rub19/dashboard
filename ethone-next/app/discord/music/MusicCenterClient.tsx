@@ -736,7 +736,7 @@ export default function MusicCenterClient() {
                 </div>
 
                 {/* SEEK SCRUBBER */}
-                <div className="space-y-1.5 pt-1">
+                <div className="space-y-0.5 pt-1">
                   <div className="relative flex items-center">
                     <input
                       type="range"
@@ -755,12 +755,14 @@ export default function MusicCenterClient() {
                       }}
                       onChange={(e) => setScrubberPos(Number(e.target.value))}
                       disabled={!currentTrack}
-                      className="w-full h-1.5 rounded-full bg-white/10 appearance-none cursor-pointer accent-violet-500 focus:outline-none disabled:opacity-40"
+                      aria-label="Position dans le titre"
+                      style={{ "--pct": `${duration > 0 ? Math.min(100, (scrubberPos / duration) * 100) : 0}%` } as React.CSSProperties}
+                      className="ethone-seek"
                     />
                   </div>
-                  <div className="flex justify-between text-[11px] font-mono text-zinc-400">
-                    <span>{formatTime(scrubberPos)}</span>
-                    <span>{formatTime(duration)}</span>
+                  <div className="flex justify-between text-xs font-mono tabular-nums">
+                    <span className="font-semibold text-zinc-100">{formatTime(scrubberPos)}</span>
+                    <span className="text-zinc-400">{formatTime(duration)}</span>
                   </div>
                 </div>
 
@@ -854,7 +856,9 @@ export default function MusicCenterClient() {
                       max={100}
                       value={musicState?.muted ? 0 : musicState?.volume || 75}
                       onChange={(e) => handleVolume(Number(e.target.value))}
-                      className="w-24 h-1 rounded-full bg-white/10 appearance-none cursor-pointer accent-violet-500"
+                      aria-label="Volume"
+                      style={{ "--pct": `${musicState?.muted ? 0 : musicState?.volume || 75}%` } as React.CSSProperties}
+                      className="ethone-seek ethone-seek--sm w-24"
                     />
                     <span className="w-9 text-right font-mono text-xs font-bold text-zinc-300">
                       {musicState?.muted ? "0%" : `${musicState?.volume || 75}%`}

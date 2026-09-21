@@ -131,7 +131,8 @@ export class LavalinkMusicPlayer implements IGuildMusicPlayer {
       this.position = 0;
       this.positionAt = Date.now();
       this.cancelDisconnectTimer();
-      logger.info(`[Lavalink] ▶ "${data.track.info.title}" (guild ${this.guildId})`);
+      // Un flux HTTP direct (yt-dlp) s'appelle « Unknown title » côté Lavalink : on affiche le vrai titre.
+      logger.info(`[Lavalink] ▶ "${this.queue.getCurrentTrack()?.title ?? data.track.info.title}" (guild ${this.guildId})`);
       this.emitState();
     });
 
@@ -425,6 +426,7 @@ export class LavalinkMusicPlayer implements IGuildMusicPlayer {
   private scheduleDisconnect(): void {
     this.cancelDisconnectTimer();
     const settings = musicPersistence.getSettings(this.guildId);
+    if (settings.stayChannelId) return; // mode 24h/24 : on reste dans le vocal
     if (!settings.autoDisconnectSeconds || settings.autoDisconnectSeconds <= 0) return;
     this.disconnectTimer = setTimeout(() => {
       if (this.status === 'IDLE' && this.queue.isEmpty()) {

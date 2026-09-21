@@ -2,6 +2,14 @@
 
 Toutes les modifications notables de ce projet seront documentées dans ce fichier.
 
+## v1.25.21 — 2026-09-21
+
+**Lecteur musique : barre de progression lisible, et la vraie source du son est affichée**
+
+- Site (Music Center) : la barre de progression et le volume étaient des curseurs natifs sans style — une ligne grise fine, sans remplissage ni poignée. Ils ont maintenant une piste plus épaisse avec un remplissage en dégradé violet, une poignée qui apparaît au survol (toujours visible sur écran tactile), et des temps plus lisibles (temps courant en blanc gras).
+- Bot et site : un titre trouvé via les métadonnées Spotify affichait « Spotify » comme source alors que le son vient de YouTube ou de SoundCloud. L'étiquette indique maintenant la vraie source du son ; le titre, l'artiste et la pochette restent ceux de Spotify.
+- Bot : le journal affichait « Unknown title » pour un flux YouTube lu via le service yt-dlp (nom donné par Lavalink à un flux HTTP) ; il affiche maintenant le vrai titre. Les titres issus d'un lien Spotify passent eux aussi par le service yt-dlp.
+
 ## v1.25.20 — 2026-09-21
 
 **Bot musique : le service yt-dlp vérifie ses adresses de flux et se corrige seul en cas de refus**

@@ -86,6 +86,8 @@ export interface MusicSettings {
   djMode: boolean;
   djRoleId: string | null;
   autoDisconnectSeconds: number; // 0 = disabled, 300 = 5 min
+  /** Salon vocal où le bot doit rester en permanence (mode 24h/24) ; null = mode désactivé. */
+  stayChannelId: string | null;
   autoplay: boolean;
   defaultVolume: number;
 }
@@ -119,6 +121,7 @@ export const MusicSettingsSchema = z.object({
   djMode: z.boolean().default(false),
   djRoleId: z.string().nullable().default(null),
   autoDisconnectSeconds: z.number().min(0).max(3600).default(300),
+  stayChannelId: z.string().nullable().default(null),
   autoplay: z.boolean().default(false),
   defaultVolume: z.number().min(0).max(100).default(75),
 });

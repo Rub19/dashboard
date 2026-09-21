@@ -546,6 +546,7 @@ export class GuildMusicPlayer implements IGuildMusicPlayer {
   private scheduleDisconnect(): void {
     this.cancelDisconnectTimer();
     const settings = musicPersistence.getSettings(this.guildId);
+    if (settings.stayChannelId) return; // mode 24h/24 : on reste dans le vocal
     if (!settings.autoDisconnectSeconds || settings.autoDisconnectSeconds <= 0) return;
 
     this.disconnectTimer = setTimeout(() => {

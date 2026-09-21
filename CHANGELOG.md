@@ -2,6 +2,14 @@
 
 Toutes les modifications notables de ce projet seront documentées dans ce fichier.
 
+## v1.25.15 — 2026-09-21
+
+**Bot musique : les extraits SoundCloud « défectueux » sont écartés avant la lecture**
+
+- Les titres SoundCloud « Go+ » annoncent leur durée complète mais ne diffusent qu'un extrait d'environ 30 s : le morceau démarrait puis coupait. SoundCloud le signale dans la page publique de la piste (`"policy":"SNIP"`). Avant de choisir un résultat de repli, le bot vérifie maintenant cette politique sur les meilleurs candidats et écarte les extraits (résultat mis en cache) ; il ne garde un extrait que s'il n'existe rien d'autre.
+- Vérifié sur « Another Love » : la piste officielle de l'artiste est un extrait (`SNIP`), la version publiée par un utilisateur est complète (`MONETIZE`, 230 s) ; le bot choisit désormais directement la seconde.
+- En complément (v1.25.14), une piste qui se termine quand même trop tôt est mémorisée et n'est plus jamais proposée.
+
 ## v1.25.14 — 2026-09-21
 
 **Bot musique : détection des coupures après ~10 s et reprise automatique**

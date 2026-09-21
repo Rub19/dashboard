@@ -28952,4 +28952,53 @@ CHANGELOG_BY_LANG.en.unshift(v12514_en);
 CHANGELOG_BY_LANG.es.unshift(v12514_es);
 CHANGELOG_BY_LANG.de.unshift(v12514_de);
 
+const v12515_fr: ChangelogEntry = {
+  version: "v1.25.15",
+  date: "2026-09-21",
+  title: "Bot musique : les extraits SoundCloud « défectueux » sont écartés avant la lecture",
+  items: [
+    "Les titres SoundCloud « Go+ » annoncent leur durée complète mais ne diffusent qu'un extrait d'environ 30 s : le morceau démarrait puis coupait. SoundCloud le signale dans la page publique de la piste (`\"policy\":\"SNIP\"`). Avant de choisir un résultat de repli, le bot vérifie maintenant cette politique sur les meilleurs candidats et écarte les extraits (résultat mis en cache) ; il ne garde un extrait que s'il n'existe rien d'autre.",
+    "Vérifié sur « Another Love » : la piste officielle de l'artiste est un extrait (`SNIP`), la version publiée par un utilisateur est complète (`MONETIZE`, 230 s) ; le bot choisit désormais directement la seconde.",
+    "En complément (v1.25.14), une piste qui se termine quand même trop tôt est mémorisée et n'est plus jamais proposée.",
+  ],
+};
+
+const v12515_en: ChangelogEntry = {
+  version: "v1.25.15",
+  date: "2026-09-21",
+  title: "Music bot: \"defective\" SoundCloud snippets are skipped before playback",
+  items: [
+    "SoundCloud \"Go+\" tracks announce their full length but only stream a snippet of about 30 s: the song would start then cut off. SoundCloud flags this in the track's public page (`\"policy\":\"SNIP\"`). Before choosing a fallback result, the bot now checks this policy on the best candidates and skips snippets (result cached); it only keeps a snippet when nothing else exists.",
+    "Verified on \"Another Love\": the artist's official track is a snippet (`SNIP`), the user-uploaded version is complete (`MONETIZE`, 230 s); the bot now picks the second one directly.",
+    "In addition (v1.25.14), a track that still ends too early is remembered and never offered again.",
+  ],
+};
+
+const v12515_es: ChangelogEntry = {
+  version: "v1.25.15",
+  date: "2026-09-21",
+  title: "Bot de música: los fragmentos \"defectuosos\" de SoundCloud se descartan antes de reproducir",
+  items: [
+    "Las pistas \"Go+\" de SoundCloud anuncian su duración completa pero solo emiten un fragmento de unos 30 s: la canción empezaba y se cortaba. SoundCloud lo indica en la página pública de la pista (`\"policy\":\"SNIP\"`). Antes de elegir un resultado de repliegue, el bot comprueba ahora esta política en los mejores candidatos y descarta los fragmentos (resultado en caché); solo conserva un fragmento si no hay nada más.",
+    "Verificado con \"Another Love\": la pista oficial del artista es un fragmento (`SNIP`), la versión subida por un usuario es completa (`MONETIZE`, 230 s); el bot elige ahora directamente la segunda.",
+    "Además (v1.25.14), una pista que aun así termina demasiado pronto se memoriza y no se vuelve a ofrecer.",
+  ],
+};
+
+const v12515_de: ChangelogEntry = {
+  version: "v1.25.15",
+  date: "2026-09-21",
+  title: "Musik-Bot: „defekte“ SoundCloud-Ausschnitte werden vor der Wiedergabe übersprungen",
+  items: [
+    "SoundCloud-„Go+“-Titel melden die volle Länge, streamen aber nur einen Ausschnitt von etwa 30 s: Das Lied startete und brach dann ab. SoundCloud kennzeichnet das auf der öffentlichen Seite des Titels (`\"policy\":\"SNIP\"`). Vor der Wahl eines Fallback-Ergebnisses prüft der Bot diese Richtlinie jetzt bei den besten Kandidaten und überspringt Ausschnitte (Ergebnis gecacht); ein Ausschnitt bleibt nur, wenn es nichts anderes gibt.",
+    "Geprüft an „Another Love“: Der offizielle Titel des Künstlers ist ein Ausschnitt (`SNIP`), die von einem Nutzer hochgeladene Version ist vollständig (`MONETIZE`, 230 s); der Bot wählt jetzt direkt die zweite.",
+    "Zusätzlich (v1.25.14): Ein Titel, der trotzdem zu früh endet, wird gemerkt und nie wieder angeboten.",
+  ],
+};
+
+CHANGELOG_BY_LANG.fr.unshift(v12515_fr);
+CHANGELOG_BY_LANG.en.unshift(v12515_en);
+CHANGELOG_BY_LANG.es.unshift(v12515_es);
+CHANGELOG_BY_LANG.de.unshift(v12515_de);
+
 export const CHANGELOG = CHANGELOG_BY_LANG.fr;

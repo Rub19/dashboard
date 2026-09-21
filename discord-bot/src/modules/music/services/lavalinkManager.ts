@@ -253,7 +253,14 @@ class LavalinkManager {
             .join(' | ')}`
         );
       }
-      return relaxed
+      // Écarte AVANT lecture les extraits (« SNIP », ~30 s) : la page publique de la piste indique
+      // sa politique. Sans ça, le morceau démarrait puis coupait au bout de quelques secondes.
+      const shortlist = relaxed.slice(0, Math.max(max, 4));
+      const verdicts = await Promise.all(shortlist.map((x) => this.isSoundCloudSnip(x.c.url)));
+      const playable = shortlist.filter((_, i) => !verdicts[i]);
+      // Si TOUT est un extrait, mieux vaut un extrait que le silence : on garde la liste d'origine.
+      const finalList = playable.length > 0 ? playable : shortlist;
+      return finalList
         .slice(0, max)
         // Titre/artiste RÉELS du résultat (pas ceux demandés) : le panneau ne ment plus.
         .map((x) => ({ ...x.c, id: track.id, thumbnail: track.thumbnail || x.c.thumbnail }));
@@ -267,6 +274,38 @@ class LavalinkManager {
 
   /** URLs SoundCloud qui se sont arrêtées trop tôt (extraits ~30 s) : plus jamais proposées. */
   private previewUrls = new Set<string>();
+
+  private snipCache = new Map<string, boolean>();
+
+  /**
+   * SoundCloud marque les titres « Go+ » avec `"policy":"SNIP"` dans le JSON de leur page
+   * publique : le flux n'est alors qu'un extrait de ~30 s alors que la durée annoncée est
+   * complète. Résultat mis en cache ; en cas d'échec réseau on suppose « lisible ».
+   */
+  private async isSoundCloudSnip(url: string): Promise<boolean> {
+    if (!url || !/^https?:\/\/(www\.)?soundcloud\.com\//i.test(url)) return false;
+    if (this.previewUrls.has(url)) return true;
+    const cached = this.snipCache.get(url);
+    if (cached !== undefined) return cached;
+    try {
+      const res = await fetch(url, {
+        headers: { 'User-Agent': 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 Chrome/124 Safari/537.36' },
+        signal: AbortSignal.timeout(4000),
+      });
+      if (!res.ok) return false;
+      const html = await res.text();
+      const snip = /"policy":"SNIP"/.test(html);
+      if (this.snipCache.size > 500) this.snipCache.clear();
+      this.snipCache.set(url, snip);
+      if (snip) {
+        this.markPreviewUrl(url);
+        logger.info(`[Lavalink] SoundCloud : "${url}" est un extrait (SNIP) — écarté.`);
+      }
+      return snip;
+    } catch {
+      return false;
+    }
+  }
 
   public markPreviewUrl(url: string): void {
     if (!url) return;

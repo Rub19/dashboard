@@ -1,6 +1,7 @@
 "use client";
 
 import React, { useState, useMemo, useEffect, useCallback } from "react";
+import Link from "next/link";
 import { useSearchParams } from "next/navigation";
 import {
   ShieldCheck,
@@ -15,6 +16,7 @@ import {
   Copy,
   Save,
   Edit3,
+  ArrowLeft,
 } from "lucide-react";
 import { useToast } from "@/components/ToastProvider";
 import { useDiscordOAuth } from "@/lib/hooks/useDiscordOAuth";
@@ -337,11 +339,18 @@ export default function RolesCenterClient() {
   const totalRoles = panels.reduce((a, p) => a + p.items.length, 0);
 
   return (
-    <div className="h-full overflow-y-auto os-scroll [overscroll-behavior:contain] bg-[var(--bg-main)] text-neutral-100 p-4 md:p-8">
+    <div className="h-full overflow-y-auto os-scroll [overscroll-behavior:contain] bg-[var(--bg-main)] text-neutral-100 p-4 pb-44 md:p-8 md:pb-44">
       <div className="max-w-7xl mx-auto space-y-8">
         {/* Header */}
         <div className="flex flex-col md:flex-row md:items-center justify-between gap-4">
           <div className="flex items-center gap-3">
+            <Link
+              href={`/discord${currentGuildId ? `?guildId=${currentGuildId}` : ""}`}
+              className="flex h-9 items-center gap-1.5 rounded-[var(--inset-radius)] border border-neutral-800 bg-neutral-900 px-3 text-xs font-semibold text-neutral-200 hover:bg-neutral-800 hover:text-white transition-all cursor-pointer"
+            >
+              <ArrowLeft className="h-4 w-4" />
+              <span>Retour Discord</span>
+            </Link>
             <div className="p-2.5 bg-pink-500/15 text-pink-400 rounded-xl border border-pink-500/30 shadow-sm">
               <Tag className="w-6 h-6" />
             </div>

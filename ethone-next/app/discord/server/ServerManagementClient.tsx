@@ -940,7 +940,7 @@ export default function ServerManagementClient({
   };
 
   return (
-    <div className="min-h-screen bg-[var(--bg-main)] text-white selection:bg-indigo-500 selection:text-white">
+    <div className="h-full overflow-y-auto os-scroll [overscroll-behavior:contain] bg-[var(--bg-main)] text-white selection:bg-indigo-500 selection:text-white">
       {/* Top Banner & Header */}
       <header className="border-b border-[var(--panel-border)] bg-zinc-950/60 backdrop-blur-xl sticky top-0 z-30">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-4">
@@ -1135,7 +1135,7 @@ export default function ServerManagementClient({
       )}
 
       {/* Main Tab Content */}
-      <main className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-6">
+      <main className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-6 pb-44 md:pb-44">
         {/* ========================================================================= */}
         {/* TAB 1: OVERVIEW */}
         {/* ========================================================================= */}

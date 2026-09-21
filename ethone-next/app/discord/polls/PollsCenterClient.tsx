@@ -24,6 +24,7 @@ import {
   Calendar,
   Square,
   CopyPlus,
+  ArrowLeft,
   RefreshCw,
 } from "lucide-react";
 import { useToast } from "@/components/ToastProvider";
@@ -269,16 +270,20 @@ export default function PollsCenterClient() {
   };
 
   return (
-    <div className="min-h-screen bg-[var(--bg-main)] text-white selection:bg-indigo-500/30">
+    <div className="h-full overflow-y-auto os-scroll [overscroll-behavior:contain] bg-[var(--bg-main)] text-white selection:bg-indigo-500/30">
       {/* Top Background Glow */}
       <div className="pointer-events-none fixed inset-0 z-0 overflow-hidden opacity-30">
       </div>
 
-      <div className="relative z-10 mx-auto max-w-7xl px-4 py-8 sm:px-6 lg:px-8">
+      <div className="relative z-10 mx-auto max-w-7xl px-4 py-8 sm:px-6 lg:px-8 pb-44 md:pb-44">
         {/* Navigation Breadcrumb */}
         <div className="mb-6 flex items-center gap-2 text-xs text-zinc-400">
-          <Link href={`/discord?guildId=${guildParam}`} className="hover:text-white transition-colors">
-            Discord Center
+          <Link
+            href={`/discord${guildParam ? `?guildId=${guildParam}` : ""}`}
+            className="flex items-center gap-1.5 hover:text-white transition-colors"
+          >
+            <ArrowLeft className="h-3.5 w-3.5" />
+            <span>Retour Discord</span>
           </Link>
           <ChevronRight className="h-3 w-3 text-zinc-600" />
           <span className="text-zinc-200 font-medium">Sondages & Votes</span>

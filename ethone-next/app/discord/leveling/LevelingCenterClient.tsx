@@ -1,6 +1,7 @@
 "use client";
 
 import { useState, useMemo, useEffect, useCallback } from "react";
+import Link from "next/link";
 import { useSearchParams } from "next/navigation";
 import {
   Award,
@@ -17,6 +18,7 @@ import {
   X,
   Edit2,
   Eye,
+  ArrowLeft,
 } from "lucide-react";
 import { useToast } from "@/components/ToastProvider";
 import { useDiscordOAuth } from "@/lib/hooks/useDiscordOAuth";
@@ -350,11 +352,21 @@ export default function LevelingCenterClient() {
   const [cardBgTheme, setCardBgTheme] = useState<"dark" | "cyber" | "sunset" | "neon">("cyber");
 
   return (
-    <div className="h-full overflow-y-auto os-scroll [overscroll-behavior:contain] bg-[var(--bg-main)] text-neutral-100 p-4 md:p-8">
+    <div className="h-full overflow-y-auto os-scroll [overscroll-behavior:contain] bg-[var(--bg-main)] text-neutral-100 p-4 md:p-8 pb-44 md:pb-44">
       <div className="max-w-7xl mx-auto space-y-8">
         {/* Top Header */}
         <div className="flex flex-col md:flex-row md:items-center justify-between gap-4">
           <div>
+            <div className="flex flex-wrap items-center gap-2.5 mb-2">
+              <Link
+                href={`/discord${currentGuildId ? `?guildId=${currentGuildId}` : ""}`}
+                className="inline-flex h-8 items-center gap-1.5 rounded-xl bg-zinc-900 border border-zinc-800 px-3 text-xs font-semibold text-zinc-300 hover:text-white hover:bg-zinc-800 transition-all cursor-pointer shadow-sm"
+                title="Retour au hub Discord"
+              >
+                <ArrowLeft className="h-3.5 w-3.5 text-zinc-400" />
+                <span>Retour Discord</span>
+              </Link>
+            </div>
             <div className="flex items-center gap-3">
               <div className="p-2.5 bg-fuchsia-500/15 text-fuchsia-400 rounded-xl border border-fuchsia-500/30 shadow-sm">
                 <Award className="w-6 h-6" />

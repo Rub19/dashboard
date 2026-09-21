@@ -15,6 +15,7 @@ import {
   Sliders,
   Sparkles,
   Layers,
+  ArrowLeft,
   ArrowRight,
   Trash2,
   RefreshCw,
@@ -268,10 +269,17 @@ export default function FormsCenterClient() {
   };
 
   return (
-    <div className="min-h-screen bg-[var(--bg-main)] text-white p-4 sm:p-6 lg:p-8 space-y-6">
+    <div className="h-full overflow-y-auto os-scroll [overscroll-behavior:contain] bg-[var(--bg-main)] text-white p-4 sm:p-6 lg:p-8 pb-44 md:pb-44 space-y-6">
       {/* Top Header */}
       <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 border-b border-[var(--panel-border)] pb-5">
-        <div>
+        <div className="flex flex-wrap items-center gap-3">
+          <Link
+            href={`/discord${currentGuildId ? `?guildId=${currentGuildId}` : ""}`}
+            className="flex h-9 items-center gap-1.5 rounded-[var(--inset-radius)] border border-[var(--panel-border)] bg-white/5 px-3 text-xs font-semibold text-zinc-300 hover:bg-white/10 hover:text-white transition-all cursor-pointer"
+          >
+            <ArrowLeft className="h-4 w-4" />
+            <span>Retour Discord</span>
+          </Link>
           <div className="flex items-center gap-2.5">
             <div className="flex h-10 w-10 items-center justify-center rounded-2xl bg-white/[0.04] border border-[var(--panel-border)] text-zinc-300">
               <FileText className="h-5 w-5" />

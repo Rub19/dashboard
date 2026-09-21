@@ -24,6 +24,7 @@ import {
   Layers,
   Radio,
   Lightbulb,
+  ArrowLeft,
 } from "lucide-react";
 import { useDiscordOAuth } from "@/lib/hooks/useDiscordOAuth";
 import { useToast } from "@/components/ToastProvider";
@@ -233,7 +234,7 @@ export default function InvitesCenterClient() {
   const rewardedPct = trackedCount > 0 ? Math.round((funnel.rewardedMembers / trackedCount) * 100) : 0;
 
   return (
-    <div className="h-full overflow-y-auto os-scroll [overscroll-behavior:contain] bg-[var(--bg-main)] text-white flex flex-col p-4 sm:p-8 pb-36 max-w-7xl mx-auto">
+    <div className="h-full overflow-y-auto os-scroll [overscroll-behavior:contain] bg-[var(--bg-main)] text-white flex flex-col p-4 sm:p-8 pb-44 md:pb-44 max-w-7xl mx-auto">
       {/* Top Header */}
       <div className="flex flex-col md:flex-row md:items-center justify-between gap-4 mb-6 pb-6 border-b border-zinc-800">
         <div>
@@ -301,7 +302,8 @@ export default function InvitesCenterClient() {
             href={`/discord?guildId=${currentGuildId}`}
             className="flex h-9 items-center gap-1.5 px-3 rounded-xl bg-zinc-900 hover:bg-zinc-800 border border-zinc-800 text-xs font-medium text-zinc-300 hover:text-white transition"
           >
-            <span>Retour Bot</span>
+            <ArrowLeft className="w-3.5 h-3.5" />
+            <span>Retour Discord</span>
           </Link>
         </div>
       </div>

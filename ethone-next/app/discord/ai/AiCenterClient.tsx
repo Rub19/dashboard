@@ -1,6 +1,7 @@
 "use client";
 
 import React, { useState, useMemo, useEffect, useCallback } from "react";
+import Link from "next/link";
 import { useSearchParams } from "next/navigation";
 import {
   Bot,
@@ -25,6 +26,7 @@ import {
   X,
   RefreshCw,
   Save,
+  ArrowLeft,
 } from "lucide-react";
 import { useToast } from "@/components/ToastProvider";
 import { useDiscordOAuth } from "@/lib/hooks/useDiscordOAuth";
@@ -368,25 +370,37 @@ export default function AiCenterClient() {
   const satisfaction = analytics.helpfulCount + analytics.unhelpfulCount > 0 ? Math.round((analytics.helpfulCount / (analytics.helpfulCount + analytics.unhelpfulCount)) * 100) : null;
 
   return (
-    <div className="h-full overflow-y-auto os-scroll [overscroll-behavior:contain] bg-[var(--bg-main)] text-neutral-100 p-4 md:p-8">
+    <div className="h-full overflow-y-auto os-scroll [overscroll-behavior:contain] bg-[var(--bg-main)] text-neutral-100 p-4 md:p-8 pb-44 md:pb-44">
       <div className="max-w-7xl mx-auto space-y-8">
         {/* Header */}
         <div className="flex flex-col md:flex-row md:items-center justify-between gap-4">
-          <div className="flex items-center gap-3">
-            <div className="p-2.5 bg-indigo-500/15 text-indigo-400 rounded-xl border border-indigo-500/30 shadow-sm">
-              <Bot className="w-6 h-6" />
+          <div>
+            <div className="flex flex-wrap items-center gap-2.5 mb-2">
+              <Link
+                href={`/discord${currentGuildId ? `?guildId=${currentGuildId}` : ""}`}
+                className="inline-flex h-8 items-center gap-1.5 rounded-xl bg-zinc-900 border border-zinc-800 px-3 text-xs font-semibold text-zinc-300 hover:text-white hover:bg-zinc-800 transition-all cursor-pointer shadow-sm"
+                title="Retour au hub Discord"
+              >
+                <ArrowLeft className="h-3.5 w-3.5 text-zinc-400" />
+                <span>Retour Discord</span>
+              </Link>
             </div>
-            <div>
-              <h1 className="text-2xl font-bold text-white tracking-tight flex items-center gap-2">
-                ETHONE AI Assistant
-                <span className={cn("px-2 py-0.5 rounded text-[11px] font-semibold border", settings.enabled ? "bg-emerald-500/10 text-emerald-400 border-emerald-500/20" : "bg-neutral-800 text-neutral-400 border-neutral-700")}>
-                  {settings.enabled ? "🟢 Activé" : "⚪ Désactivé"}
-                </span>
-              </h1>
-              <p className="text-xs text-neutral-400">
-                Personnalité, base de connaissances RAG, règles par salon et playground branché sur le vrai modèle.
-                {isDemo && <span className="text-amber-400"> (bot injoignable ou absent de ce serveur)</span>}
-              </p>
+            <div className="flex items-center gap-3">
+              <div className="p-2.5 bg-indigo-500/15 text-indigo-400 rounded-xl border border-indigo-500/30 shadow-sm">
+                <Bot className="w-6 h-6" />
+              </div>
+              <div>
+                <h1 className="text-2xl font-bold text-white tracking-tight flex items-center gap-2">
+                  ETHONE AI Assistant
+                  <span className={cn("px-2 py-0.5 rounded text-[11px] font-semibold border", settings.enabled ? "bg-emerald-500/10 text-emerald-400 border-emerald-500/20" : "bg-neutral-800 text-neutral-400 border-neutral-700")}>
+                    {settings.enabled ? "🟢 Activé" : "⚪ Désactivé"}
+                  </span>
+                </h1>
+                <p className="text-xs text-neutral-400">
+                  Personnalité, base de connaissances RAG, règles par salon et playground branché sur le vrai modèle.
+                  {isDemo && <span className="text-amber-400"> (bot injoignable ou absent de ce serveur)</span>}
+                </p>
+              </div>
             </div>
           </div>
           <div className="flex items-center gap-2.5 flex-wrap">

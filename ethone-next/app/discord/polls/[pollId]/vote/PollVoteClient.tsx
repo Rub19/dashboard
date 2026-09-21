@@ -105,12 +105,12 @@ export default function PollVoteClient() {
   };
 
   return (
-    <div className="min-h-screen bg-[var(--bg-main)] text-white selection:bg-indigo-500/30 flex flex-col justify-between">
+    <div className="h-full overflow-y-auto os-scroll [overscroll-behavior:contain] bg-[var(--bg-main)] text-white selection:bg-indigo-500/30 flex flex-col justify-between">
       {/* Background Glow */}
       <div className="pointer-events-none fixed inset-0 z-0 overflow-hidden opacity-25">
       </div>
 
-      <div className="relative z-10 mx-auto w-full max-w-2xl px-4 py-12 sm:px-6">
+      <div className="relative z-10 mx-auto w-full max-w-2xl px-4 py-12 sm:px-6 pb-44 md:pb-44">
         {/* Portal Header */}
         <div className="text-center mb-8">
           <div className="inline-flex items-center gap-2 rounded-full border border-indigo-500/30 bg-indigo-500/10 px-3.5 py-1 text-xs font-semibold text-indigo-400 mb-3">

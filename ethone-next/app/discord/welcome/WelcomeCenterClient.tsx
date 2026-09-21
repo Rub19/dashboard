@@ -25,6 +25,7 @@ import {
   UserPlus,
   UserMinus,
   Mail,
+  ArrowLeft,
 } from "lucide-react";
 import { useDiscordOAuth, type DiscordGuild } from "@/lib/hooks/useDiscordOAuth";
 import { useToast } from "@/components/ToastProvider";
@@ -744,10 +745,17 @@ export function WelcomeCenterClient() {
   }
 
   return (
-    <div className="h-full overflow-y-auto os-scroll [overscroll-behavior:contain] bg-[var(--bg-main)] text-white px-4 sm:px-8 py-6 pb-36">
+    <div className="h-full overflow-y-auto os-scroll [overscroll-behavior:contain] bg-[var(--bg-main)] text-white px-4 sm:px-8 py-6 pb-44 md:pb-44">
       {/* Top Bar / Guild Selector */}
       <div className="flex flex-col md:flex-row md:items-center justify-between gap-4 border-b border-[var(--panel-border)] pb-6">
         <div className="flex items-center gap-3">
+          <Link
+            href={`/discord${currentGuildId ? `?guildId=${currentGuildId}` : ""}`}
+            className="flex h-9 items-center gap-1.5 rounded-[var(--inset-radius)] border border-[var(--panel-border)] bg-white/5 px-3 text-xs font-semibold text-zinc-300 hover:bg-white/10 hover:text-white transition-all cursor-pointer"
+          >
+            <ArrowLeft className="h-4 w-4" />
+            <span>Retour Discord</span>
+          </Link>
           <div className="flex h-12 w-12 items-center justify-center rounded-2xl bg-teal-600 shadow-sm">
             <Sparkles className="h-6 w-6 text-white" />
           </div>

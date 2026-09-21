@@ -62,12 +62,12 @@ export default function PollSettingsClient() {
   };
 
   return (
-    <div className="min-h-screen bg-[var(--bg-main)] text-white selection:bg-indigo-500/30">
+    <div className="h-full overflow-y-auto os-scroll [overscroll-behavior:contain] bg-[var(--bg-main)] text-white selection:bg-indigo-500/30">
       {/* Top Glow Background */}
       <div className="pointer-events-none fixed inset-0 z-0 overflow-hidden opacity-30">
       </div>
 
-      <div className="relative z-10 mx-auto max-w-5xl px-4 py-8 sm:px-6 lg:px-8">
+      <div className="relative z-10 mx-auto max-w-5xl px-4 py-8 sm:px-6 lg:px-8 pb-44 md:pb-44">
         {/* Breadcrumb */}
         <div className="mb-6 flex items-center gap-2 text-xs text-zinc-400">
           <Link href={`/discord?guildId=${guildParam}`} className="hover:text-white transition-colors">

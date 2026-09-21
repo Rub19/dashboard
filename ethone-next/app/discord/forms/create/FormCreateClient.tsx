@@ -156,7 +156,7 @@ export default function FormCreateClient() {
   };
 
   return (
-    <div className="min-h-screen bg-[var(--bg-main)] text-white p-4 sm:p-6 lg:p-8 space-y-6 max-w-5xl mx-auto">
+    <div className="h-full overflow-y-auto os-scroll [overscroll-behavior:contain] bg-[var(--bg-main)] text-white p-4 sm:p-6 lg:p-8 pb-44 md:pb-44 space-y-6 max-w-5xl mx-auto">
       <div className="flex items-center gap-3 border-b border-[var(--panel-border)] pb-4">
         <Link href={`/discord/forms?guildId=${guildId}`} className="flex h-9 w-9 items-center justify-center rounded-[var(--inset-radius)] border border-[var(--panel-border)] bg-white/5 text-zinc-400 hover:text-white hover:bg-white/10 transition-all cursor-pointer">
           <ArrowLeft className="h-4 w-4" />

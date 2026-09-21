@@ -1,6 +1,7 @@
 "use client";
 
 import { useState, useMemo, useEffect, useCallback } from "react";
+import Link from "next/link";
 import { useSearchParams } from "next/navigation";
 import {
   Coins,
@@ -15,6 +16,7 @@ import {
   History,
   Sparkles,
   Wallet as WalletIcon,
+  ArrowLeft,
 } from "lucide-react";
 import { useToast } from "@/components/ToastProvider";
 import { useDiscordOAuth } from "@/lib/hooks/useDiscordOAuth";
@@ -376,11 +378,21 @@ export default function EconomyCenterClient() {
   };
 
   return (
-    <div className="h-full overflow-y-auto os-scroll [overscroll-behavior:contain] bg-[var(--bg-main)] text-slate-100 pb-20">
+    <div className="h-full overflow-y-auto os-scroll [overscroll-behavior:contain] bg-[var(--bg-main)] text-slate-100 pb-44">
       <div className="relative max-w-6xl mx-auto px-4 sm:px-6 lg:px-8 pt-8 space-y-8">
         {/* Header */}
         <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 pb-6 border-b border-[var(--panel-border)]">
           <div>
+            <div className="flex flex-wrap items-center gap-2.5 mb-2">
+              <Link
+                href={`/discord${currentGuildId ? `?guildId=${currentGuildId}` : ""}`}
+                className="inline-flex h-8 items-center gap-1.5 rounded-xl bg-zinc-900 border border-zinc-800 px-3 text-xs font-semibold text-zinc-300 hover:text-white hover:bg-zinc-800 transition-all cursor-pointer shadow-sm"
+                title="Retour au hub Discord"
+              >
+                <ArrowLeft className="h-3.5 w-3.5 text-zinc-400" />
+                <span>Retour Discord</span>
+              </Link>
+            </div>
             <h1 className="text-2xl sm:text-3xl font-extrabold text-white flex items-center gap-3">
               <Coins className="w-7 h-7 text-amber-400" />
               Économie — {config.currencyName}

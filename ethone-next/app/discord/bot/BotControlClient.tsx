@@ -7,6 +7,7 @@ import {
   Activity,
   AlertCircle,
   AlertTriangle,
+  ArrowLeft,
   ArrowRight,
   Award,
   BarChart3,
@@ -1231,7 +1232,7 @@ export default function BotControlClient({ initialTab = "overview" }: BotControl
   }, [modules, searchQuery]);
 
   return (
-    <div className="h-full overflow-y-auto os-scroll [overscroll-behavior:contain] bg-[var(--bg-main)] text-zinc-100 font-sans pb-24">
+    <div className="h-full overflow-y-auto os-scroll [overscroll-behavior:contain] bg-[var(--bg-main)] text-zinc-100 font-sans pb-44 md:pb-44">
       {/* TOP COMPACT SYNC BAR */}
       <div className="border-b border-zinc-800/60 bg-zinc-950/40 px-6 py-2">
         <div className="max-w-7xl mx-auto flex flex-wrap items-center justify-between gap-3 text-xs">
@@ -1240,8 +1241,8 @@ export default function BotControlClient({ initialTab = "overview" }: BotControl
               href="/discord"
               className="text-zinc-400 hover:text-white transition-colors flex items-center gap-1.5"
             >
-              <Bot className="w-3.5 h-3.5 text-indigo-400" />
-              <span>Accueil Discord</span>
+              <ArrowLeft className="w-3.5 h-3.5" />
+              <span>Retour Discord</span>
             </Link>
             <span className="text-zinc-600">•</span>
             <span className="text-zinc-300 font-medium">Bot Control Center</span>

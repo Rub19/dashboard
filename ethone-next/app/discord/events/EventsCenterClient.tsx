@@ -23,6 +23,7 @@ import {
   CopyPlus,
   X,
   RefreshCw,
+  ArrowLeft,
 } from "lucide-react";
 import { useDiscordOAuth } from "@/lib/hooks/useDiscordOAuth";
 import { useToast } from "@/components/ToastProvider";
@@ -257,12 +258,20 @@ export default function EventsCenterClient() {
   };
 
   return (
-    <div className="h-full overflow-y-auto os-scroll [overscroll-behavior:contain] bg-[var(--bg-main)] text-slate-100 pb-20 selection:bg-indigo-500/30">
+    <div className="h-full overflow-y-auto os-scroll [overscroll-behavior:contain] bg-[var(--bg-main)] text-slate-100 pb-44 selection:bg-indigo-500/30">
       <div className="relative max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 pt-8">
         {/* Navigation & Header */}
         <div className="flex flex-col md:flex-row md:items-center justify-between gap-6 pb-8 border-b border-[var(--panel-border)]">
           <div>
-            <div className="flex items-center gap-3 mb-2">
+            <div className="flex flex-wrap items-center gap-2.5 mb-2">
+              <Link
+                href={`/discord${guildParam ? `?guildId=${guildParam}` : ""}`}
+                className="inline-flex h-8 items-center gap-1.5 rounded-xl bg-zinc-900 border border-zinc-800 px-3 text-xs font-semibold text-zinc-300 hover:text-white hover:bg-zinc-800 transition-all cursor-pointer shadow-sm"
+                title="Retour au hub Discord"
+              >
+                <ArrowLeft className="h-3.5 w-3.5 text-zinc-400" />
+                <span>Retour Discord</span>
+              </Link>
               <span className="inline-flex items-center gap-1.5 px-3 py-1 rounded-full text-xs font-semibold bg-indigo-500/10 text-indigo-400 border border-indigo-500/20">
                 <Calendar className="w-3.5 h-3.5" />
                 Événements

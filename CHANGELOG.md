@@ -2,6 +2,14 @@
 
 Toutes les modifications notables de ce projet seront documentées dans ce fichier.
 
+## v1.27.18 — 2026-09-21
+
+**Navigation & accessibilité : défilement complet, marge basse et bouton retour**
+
+- Défilement complet des pages : élimination du blocage de scroll en remplaçant les conteneurs rigides `min-h-screen` par `h-full overflow-y-auto os-scroll [overscroll-behavior:contain]` sur l'ensemble des modules Discord (formulaires, sondages, économie, voix, événements, etc.).
+- Marge basse sous le dock : standardisation de `pb-44 md:pb-44` garantissant que le bas des listes, cartes et boutons n'est plus jamais masqué par le dock liquide flottant ou la barre d'état.
+- Bouton retour au hub : ajout d'un bouton de retour direct "Retour Discord" avec icône flèche sur tous les en-têtes de sous-pages préservant le serveur actif (`?guildId=...`).
+
 ## v1.27.17 — 2026-09-21
 
 **Assistant IA : calculs arithmétiques, logo du bot et stabilisation CI**

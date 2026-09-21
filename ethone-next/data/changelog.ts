@@ -30531,6 +30531,55 @@ CHANGELOG_BY_LANG.en.unshift(v12717_en);
 CHANGELOG_BY_LANG.es.unshift(v12717_es);
 CHANGELOG_BY_LANG.de.unshift(v12717_de);
 
+const v12718_fr: ChangelogEntry = {
+  version: "v1.27.18",
+  date: "2026-09-21",
+  title: "Navigation & accessibilité : défilement complet, marge basse et bouton retour",
+  items: [
+    "Défilement complet des pages : élimination du blocage de scroll en remplaçant les conteneurs rigides min-h-screen par h-full overflow-y-auto os-scroll [overscroll-behavior:contain] sur l'ensemble des modules Discord (formulaires, sondages, économie, voix, événements, etc.).",
+    "Marge basse sous le dock : standardisation de pb-44 md:pb-44 garantissant que le bas des listes, cartes et boutons n'est plus jamais masqué par le dock liquide flottant ou la barre d'état.",
+    "Bouton retour au hub : ajout d'un bouton de retour direct 'Retour Discord' avec icône flèche sur tous les en-têtes de sous-pages préservant le serveur actif (?guildId=...).",
+  ],
+};
+
+const v12718_en: ChangelogEntry = {
+  version: "v1.27.18",
+  date: "2026-09-21",
+  title: "Navigation & accessibility: full page scrolling, bottom margin and back button",
+  items: [
+    "Full page scrolling: resolved scroll traps by replacing rigid min-h-screen containers with h-full overflow-y-auto os-scroll [overscroll-behavior:contain] across all Discord modules (forms, polls, economy, voice, events, etc.).",
+    "Bottom margin under dock: standardized pb-44 md:pb-44 ensuring lists, cards, and bottom buttons are never clipped or obscured behind the floating dock or status bar.",
+    "Hub back button: added a 'Retour Discord' back button with arrow icon on all sub-page headers preserving the active server (?guildId=...).",
+  ],
+};
+
+const v12718_es: ChangelogEntry = {
+  version: "v1.27.18",
+  date: "2026-09-21",
+  title: "Navegación y accesibilidad: desplazamiento completo, margen inferior y botón volver",
+  items: [
+    "Desplazamiento completo: corrección del bloqueo de scroll sustituyendo los contenedores min-h-screen por h-full overflow-y-auto os-scroll [overscroll-behavior:contain] en todos los módulos de Discord.",
+    "Margen inferior bajo el dock: estandarización de pb-44 md:pb-44 asegurando que ningún contenido quede oculto tras el dock flotante o la barra de estado.",
+    "Botón volver al hub: adición del botón 'Retour Discord' con icono de flecha en los encabezados preservando el servidor seleccionado (?guildId=...).",
+  ],
+};
+
+const v12718_de: ChangelogEntry = {
+  version: "v1.27.18",
+  date: "2026-09-21",
+  title: "Navigation & Barrierefreiheit: Vollständiges Scrollen, unterer Abstand und Zurück-Button",
+  items: [
+    "Vollständiges Scrollen: Behebung von Scroll-Fallen durch Ersetzen starrer min-h-screen Container durch h-full overflow-y-auto os-scroll [overscroll-behavior:contain] in allen Discord-Modulen.",
+    "Unterer Abstand unter dem Dock: Vereinheitlichung auf pb-44 md:pb-44, damit keine Inhalte durch das schwebende Dock oder die Statusleiste verdeckt werden.",
+    "Zurück zum Hub: Hinzufügen eines 'Retour Discord'-Buttons mit Pfeilsymbol in allen Modul-Kopfzeilen mit Erhalt des aktiven Servers (?guildId=...).",
+  ],
+};
+
+CHANGELOG_BY_LANG.fr.unshift(v12718_fr);
+CHANGELOG_BY_LANG.en.unshift(v12718_en);
+CHANGELOG_BY_LANG.es.unshift(v12718_es);
+CHANGELOG_BY_LANG.de.unshift(v12718_de);
+
 export const CHANGELOG = CHANGELOG_BY_LANG.fr;
 
 

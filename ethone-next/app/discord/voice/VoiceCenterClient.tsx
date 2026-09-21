@@ -25,6 +25,7 @@ import {
   Search,
   Send,
   UserX,
+  ArrowLeft,
 } from "lucide-react";
 import { useToast } from "@/components/ToastProvider";
 import { cn } from "@/lib/utils";
@@ -233,13 +234,23 @@ export default function VoiceCenterClient() {
   );
 
   return (
-    <div className="space-y-8 px-4 sm:px-6 lg:px-10 pt-6 pb-24">
+    <div className="h-full overflow-y-auto os-scroll [overscroll-behavior:contain] bg-[var(--bg-main)] text-white space-y-8 px-4 sm:px-6 lg:px-10 pt-6 pb-44 selection:bg-indigo-500/30">
       {/* Header */}
       <div className="flex flex-col lg:flex-row lg:items-center lg:justify-between gap-4">
         <div>
-          <div className="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-emerald-500/10 border border-emerald-500/20 text-emerald-400 text-xs font-semibold mb-2">
-            <Radio className="h-3.5 w-3.5" />
-            <span>Personal Voice Rooms • 100% Interactif</span>
+          <div className="flex flex-wrap items-center gap-2.5 mb-2">
+            <Link
+              href={`/discord${guildId ? `?guildId=${guildId}` : ""}`}
+              className="inline-flex h-8 items-center gap-1.5 rounded-xl bg-zinc-900 border border-zinc-800 px-3 text-xs font-semibold text-zinc-300 hover:text-white hover:bg-zinc-800 transition-all cursor-pointer shadow-sm"
+              title="Retour au hub Discord"
+            >
+              <ArrowLeft className="h-3.5 w-3.5 text-zinc-400" />
+              <span>Retour Discord</span>
+            </Link>
+            <div className="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-emerald-500/10 border border-emerald-500/20 text-emerald-400 text-xs font-semibold">
+              <Radio className="h-3.5 w-3.5" />
+              <span>Personal Voice Rooms • 100% Interactif</span>
+            </div>
           </div>
           <h1 className="text-3xl font-black tracking-tight text-white flex items-center gap-3">
             <span>Salons Vocaux Personnalisés</span>

@@ -141,7 +141,7 @@ export default function OverviewClient() {
   const gid = selectedGuild?.id || "";
 
   return (
-    <div className="h-full overflow-y-auto os-scroll bg-[var(--bg-main)] p-4 text-[var(--text-primary)] md:p-8">
+    <div className="h-full overflow-y-auto os-scroll [overscroll-behavior:contain] bg-[var(--bg-main)] p-4 pb-44 text-[var(--text-primary)] md:p-8 md:pb-44">
       <div className="mx-auto max-w-7xl space-y-6">
         {/* Header */}
         <div className="flex flex-col justify-between gap-4 md:flex-row md:items-center">

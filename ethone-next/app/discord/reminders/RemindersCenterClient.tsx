@@ -216,7 +216,7 @@ export default function RemindersCenterClient() {
         </div>
       </div>
 
-      <div className="flex-1 overflow-y-auto os-scroll px-4 sm:px-6 py-6 pb-36 space-y-6 [overscroll-behavior:contain]">
+      <div className="flex-1 overflow-y-auto os-scroll px-4 sm:px-6 py-6 pb-44 md:pb-44 space-y-6 [overscroll-behavior:contain]">
         {!discordLoading && manageableGuilds.length === 0 && (
           <div className="rounded-[var(--panel-radius)] border border-[var(--panel-border)] bg-white/[0.02] p-6 text-center text-sm text-zinc-400">
             Connectez un serveur Discord où vous êtes administrateur.

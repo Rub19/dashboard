@@ -15,6 +15,7 @@ import {
   ExternalLink,
   Volume2,
   RefreshCw,
+  ArrowLeft,
 } from "lucide-react";
 import { useDiscordOAuth } from "@/lib/hooks/useDiscordOAuth";
 import { useResolvedGuildId } from "@/lib/hooks/useBotGuildIds";
@@ -205,7 +206,7 @@ export default function DiscordCalendarClient() {
   const monthLabel = currentDate.toLocaleDateString("fr-FR", { month: "long", year: "numeric" });
 
   return (
-    <div className="h-full min-h-0 overflow-y-auto os-scroll bg-[var(--bg-main)] text-slate-100 pb-24 selection:bg-indigo-500/30 [overscroll-behavior:contain]">
+    <div className="h-full min-h-0 overflow-y-auto os-scroll bg-[var(--bg-main)] text-slate-100 pb-44 selection:bg-indigo-500/30 [overscroll-behavior:contain]">
       {/* Glow Effects */}
       <div className="fixed inset-0 pointer-events-none overflow-hidden">
       </div>
@@ -214,18 +215,28 @@ export default function DiscordCalendarClient() {
         {/* Header */}
         <div className="flex flex-col md:flex-row md:items-center justify-between gap-6 pb-6 border-b border-[var(--panel-border)]">
           <div>
-            <div className="flex items-center gap-2 mb-2 text-xs text-indigo-400 font-semibold uppercase tracking-wider">
-              <Link href="/discord/events" className="hover:underline flex items-center gap-1">
-                <CalendarIcon className="w-3.5 h-3.5" />
-                Événements Hub
+            <div className="flex flex-wrap items-center gap-2.5 mb-2">
+              <Link
+                href={`/discord${guildParam ? `?guildId=${guildParam}` : ""}`}
+                className="inline-flex h-8 items-center gap-1.5 rounded-xl bg-zinc-900 border border-zinc-800 px-3 text-xs font-semibold text-zinc-300 hover:text-white hover:bg-zinc-800 transition-all cursor-pointer shadow-sm"
+                title="Retour au hub Discord"
+              >
+                <ArrowLeft className="h-3.5 w-3.5 text-zinc-400" />
+                <span>Retour Discord</span>
               </Link>
-              <span>/</span>
-              <span className="text-slate-400">Calendrier</span>
-              {isDemo && (
-                <span className="normal-case rounded-full border border-amber-500/30 bg-amber-500/10 px-2 py-0.5 text-[10px] font-semibold text-amber-300">
-                  Démo
-                </span>
-              )}
+              <div className="flex items-center gap-2 text-xs text-indigo-400 font-semibold uppercase tracking-wider">
+                <Link href={`/discord/events${guildParam ? `?guildId=${guildParam}` : ""}`} className="hover:underline flex items-center gap-1">
+                  <CalendarIcon className="w-3.5 h-3.5" />
+                  Événements Hub
+                </Link>
+                <span>/</span>
+                <span className="text-slate-400">Calendrier</span>
+                {isDemo && (
+                  <span className="normal-case rounded-full border border-amber-500/30 bg-amber-500/10 px-2 py-0.5 text-[10px] font-semibold text-amber-300">
+                    Démo
+                  </span>
+                )}
+              </div>
             </div>
             <h1 className="text-3xl font-extrabold text-white flex items-center gap-3 capitalize">
               {monthLabel}

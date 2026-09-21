@@ -356,7 +356,7 @@ export default function FormBuilderClient() {
   }
 
   return (
-    <div className="min-h-screen bg-[var(--bg-main)] text-white flex flex-col">
+    <div className="h-full min-h-0 bg-[var(--bg-main)] text-white flex flex-col overflow-hidden">
       {/* Top Builder Navbar */}
       <header className="h-14 border-b border-[var(--panel-border)] bg-zinc-950/90 backdrop-blur-md px-4 flex items-center justify-between gap-4 shrink-0">
         <div className="flex items-center gap-3">
@@ -459,7 +459,7 @@ export default function FormBuilderClient() {
       {previewMode === "edit" ? (
         <div className="flex-1 flex overflow-hidden">
           {/* LEFT PALETTE (Fields Library) */}
-          <aside className="w-64 border-r border-[var(--panel-border)] bg-zinc-950/60 p-4 overflow-y-auto shrink-0 hidden md:block space-y-5">
+          <aside className="w-64 border-r border-[var(--panel-border)] bg-zinc-950/60 p-4 overflow-y-auto shrink-0 hidden md:block space-y-5 pb-44">
             <div>
               <h2 className="text-[11px] font-bold uppercase tracking-wider text-zinc-400">Bibliothèque de Champs</h2>
               <p className="text-[10px] text-zinc-500 mt-0.5">Cliquez sur un élément pour l&apos;ajouter à l&apos;étape active.</p>
@@ -497,7 +497,7 @@ export default function FormBuilderClient() {
           </aside>
 
           {/* CENTER CANVAS (Form Preview & Step Navigation) */}
-          <main className="flex-1 overflow-y-auto p-4 sm:p-6 lg:p-8 bg-black/50 flex flex-col items-center">
+          <main className="flex-1 overflow-y-auto os-scroll [overscroll-behavior:contain] p-4 sm:p-6 lg:p-8 pb-44 md:pb-44 bg-black/50 flex flex-col items-center">
             <div className="w-full max-w-2xl space-y-5">
               {/* Multi-step Header Navigation */}
               <div className="flex items-center justify-between gap-2 border-b border-[var(--panel-border)] pb-3">
@@ -702,7 +702,7 @@ export default function FormBuilderClient() {
           </main>
 
           {/* RIGHT SIDEBAR (Field Settings & Logic) */}
-          <aside className="w-72 border-l border-[var(--panel-border)] bg-zinc-950/60 p-4 overflow-y-auto shrink-0 hidden lg:block space-y-4">
+          <aside className="w-72 border-l border-[var(--panel-border)] bg-zinc-950/60 p-4 overflow-y-auto shrink-0 hidden lg:block space-y-4 pb-44">
             <div>
               <h2 className="text-[11px] font-bold uppercase tracking-wider text-zinc-400">Configuration</h2>
               <p className="text-[10px] text-zinc-500 mt-0.5">Propriétés et règles du champ sélectionné.</p>

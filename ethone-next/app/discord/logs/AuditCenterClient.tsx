@@ -555,7 +555,7 @@ export function AuditCenterClient() {
   };
 
   return (
-    <div className="h-full overflow-y-auto os-scroll [overscroll-behavior:contain] bg-[var(--bg-main)] text-white selection:bg-indigo-500 selection:text-white pb-36">
+    <div className="h-full overflow-y-auto os-scroll [overscroll-behavior:contain] bg-[var(--bg-main)] text-white selection:bg-indigo-500 selection:text-white pb-44 md:pb-44">
       {/* HEADER TOP BAR */}
       <div className="sticky top-0 z-40 border-b border-[var(--panel-border)] bg-zinc-950/80 backdrop-blur-xl">
         <div className="mx-auto flex max-w-7xl items-center justify-between px-4 py-3 sm:px-6">

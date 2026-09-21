@@ -748,7 +748,7 @@ export default function MusicCenterClient() {
       )}
 
       {/* SCROLLABLE MAIN CONTENT */}
-      <main className="flex-1 min-h-0 overflow-y-auto pb-36 px-4 sm:px-6 py-6 scrollbar-thin scrollbar-thumb-white/10">
+      <main className="flex-1 min-h-0 overflow-y-auto os-scroll [overscroll-behavior:contain] pb-44 md:pb-44 px-4 sm:px-6 py-6 scrollbar-thin scrollbar-thumb-white/10">
         <div className="max-w-7xl mx-auto space-y-6">
 
           {/* NOW PLAYING HERO BANNER */}

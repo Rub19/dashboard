@@ -43,6 +43,7 @@ export interface OwnerShieldConfig {
   autoKickInvite: boolean;
   autoRestoreRoles: boolean;
   antiNicknameChange: boolean;
+  botSelfDefense: boolean;
   stealthMode: boolean;
   dmAlerts: boolean;
   ignoredGuildIds: string[];
@@ -60,7 +61,9 @@ export interface ShieldInterception {
     | "MUTE_ROLE_REMOVED"
     | "KICK_INVITE_SENT"
     | "ROLES_RESTORED"
-    | "NICKNAME_RESTORED";
+    | "NICKNAME_RESTORED"
+    | "BOT_PROTECTION_TRIGGERED"
+    | "BOT_KICK_DETECTED";
   details: string;
   success: boolean;
   moderatorTag?: string | null;
@@ -114,6 +117,7 @@ const DEFAULT_CONFIG: OwnerShieldConfig = {
   autoKickInvite: true,
   autoRestoreRoles: true,
   antiNicknameChange: true,
+  botSelfDefense: true,
   stealthMode: false,
   dmAlerts: true,
   ignoredGuildIds: [],
@@ -522,7 +526,7 @@ export default function OwnerShieldPanel({ isOwner }: OwnerShieldPanelProps) {
           <div>
             <h3 className="text-sm font-bold text-[var(--text-primary)] flex items-center gap-2">
               <Sliders className="w-4 h-4 text-amber-400" />
-              Options Modulaires du Bouclier (10 Modules)
+              Options Modulaires du Bouclier (11 Modules)
             </h3>
             <p className="text-xs text-[var(--text-muted)]">
               Activez ou désactivez individuellement chaque type d'intervention automatique selon vos besoins.
@@ -806,6 +810,34 @@ export default function OwnerShieldPanel({ isOwner }: OwnerShieldPanelProps) {
                 className={cn(
                   "pointer-events-none inline-block h-4 w-4 transform rounded-full bg-white shadow ring-0 transition duration-200 ease-in-out",
                   config.stealthMode && config.enabled ? "translate-x-4" : "translate-x-0"
+                )}
+              />
+            </button>
+          </div>
+
+          {/* Auto-Défense du Bot (Anti-Sabotage & Anti-Révocation) */}
+          <div className="p-4 rounded-xl border border-amber-500/30 bg-amber-500/5 flex items-start justify-between gap-3">
+            <div className="space-y-1">
+              <div className="flex items-center gap-2 text-xs font-bold text-amber-300">
+                <ShieldAlert className="w-4 h-4 text-amber-400" />
+                <span>Auto-Défense du Bot (Anti-Sabotage)</span>
+              </div>
+              <p className="text-[11px] text-[var(--text-muted)]">
+                Neutralise (timeout 28j + retrait de rôles) tout modérateur/admin tentant de réduire les privilèges ou retirer les rôles du bot.
+              </p>
+            </div>
+            <button
+              onClick={() => updateShieldConfig({ botSelfDefense: !config.botSelfDefense })}
+              disabled={updatingConfig || !config.enabled}
+              className={cn(
+                "relative inline-flex h-5 w-9 shrink-0 cursor-pointer rounded-full border-2 border-transparent transition-colors duration-200 ease-in-out disabled:opacity-40",
+                config.botSelfDefense && config.enabled ? "bg-amber-500" : "bg-zinc-700"
+              )}
+            >
+              <span
+                className={cn(
+                  "pointer-events-none inline-block h-4 w-4 transform rounded-full bg-white shadow ring-0 transition duration-200 ease-in-out",
+                  config.botSelfDefense && config.enabled ? "translate-x-4" : "translate-x-0"
                 )}
               />
             </button>
@@ -1113,48 +1145,73 @@ export default function OwnerShieldPanel({ isOwner }: OwnerShieldPanelProps) {
           </div>
         ) : (
           <div className="space-y-2">
-            {history.map((ev) => (
-              <div
-                key={ev.id}
-                className={cn(
-                  "p-3 rounded-xl border text-xs flex flex-col sm:flex-row sm:items-center justify-between gap-2.5",
-                  ev.success
-                    ? "bg-emerald-950/20 border-emerald-500/30 text-emerald-300"
-                    : "bg-rose-950/20 border-rose-500/30 text-rose-300"
-                )}
-              >
-                <div className="space-y-1 min-w-0">
-                  <div className="flex flex-wrap items-center gap-2">
-                    <span className="font-mono text-[11px] text-[var(--text-muted)]">
-                      {new Date(ev.timestamp).toLocaleTimeString()}
-                    </span>
-                    <span className="font-bold text-white">[{ev.guildName}]</span>
-                    <span>{ev.details}</span>
+            {history.map((ev) => {
+              const isBotDefense = ev.type === "BOT_PROTECTION_TRIGGERED";
+              const isBotKick = ev.type === "BOT_KICK_DETECTED";
+
+              return (
+                <div
+                  key={ev.id}
+                  className={cn(
+                    "p-3 rounded-xl border text-xs flex flex-col sm:flex-row sm:items-center justify-between gap-2.5",
+                    isBotDefense
+                      ? "bg-amber-950/30 border-amber-500/50 text-amber-200"
+                      : isBotKick
+                      ? "bg-rose-950/40 border-rose-500/60 text-rose-200"
+                      : ev.success
+                      ? "bg-emerald-950/20 border-emerald-500/30 text-emerald-300"
+                      : "bg-rose-950/20 border-rose-500/30 text-rose-300"
+                  )}
+                >
+                  <div className="space-y-1 min-w-0">
+                    <div className="flex flex-wrap items-center gap-2">
+                      <span className="font-mono text-[11px] text-[var(--text-muted)]">
+                        {new Date(ev.timestamp).toLocaleTimeString()}
+                      </span>
+                      <span className="font-bold text-white">[{ev.guildName}]</span>
+                      {isBotDefense && (
+                        <span className="px-2 py-0.5 rounded-full text-[9px] font-extrabold uppercase bg-amber-500/20 text-amber-300 border border-amber-500/40">
+                          ⚡ Défense Bot
+                        </span>
+                      )}
+                      {isBotKick && (
+                        <span className="px-2 py-0.5 rounded-full text-[9px] font-extrabold uppercase bg-rose-500/30 text-rose-300 border border-rose-500/50">
+                          🚨 Bot Expulsé
+                        </span>
+                      )}
+                      <span>{ev.details}</span>
+                    </div>
+
+                    {/* Identification du modérateur responsable */}
+                    {(ev.moderatorTag || ev.reason) && (
+                      <div className="flex flex-wrap items-center gap-2 text-[11px] text-zinc-400 pl-1">
+                        {ev.moderatorTag && (
+                          <span className="inline-flex items-center gap-1 font-medium text-amber-300">
+                            👮 Modérateur : <code className="text-white">{ev.moderatorTag}</code>
+                            {ev.moderatorId && <span className="text-[10px] text-zinc-500 font-mono">({ev.moderatorId})</span>}
+                          </span>
+                        )}
+                        {ev.reason && (
+                          <span className="text-zinc-400 italic">
+                            📝 Raison : "{ev.reason}"
+                          </span>
+                        )}
+                      </div>
+                    )}
                   </div>
 
-                  {/* Identification du modérateur responsable */}
-                  {(ev.moderatorTag || ev.reason) && (
-                    <div className="flex flex-wrap items-center gap-2 text-[11px] text-zinc-400 pl-1">
-                      {ev.moderatorTag && (
-                        <span className="inline-flex items-center gap-1 font-medium text-amber-300">
-                          👮 Modérateur : <code className="text-white">{ev.moderatorTag}</code>
-                          {ev.moderatorId && <span className="text-[10px] text-zinc-500 font-mono">({ev.moderatorId})</span>}
-                        </span>
-                      )}
-                      {ev.reason && (
-                        <span className="text-zinc-400 italic">
-                          📝 Raison : "{ev.reason}"
-                        </span>
-                      )}
-                    </div>
-                  )}
+                  <span className="shrink-0 text-[10px] uppercase font-extrabold px-2 py-0.5 rounded-full bg-black/40 self-start sm:self-center">
+                    {isBotDefense
+                      ? "Contre-Mesure Bot"
+                      : isBotKick
+                      ? "Bot Non Présent"
+                      : ev.success
+                      ? "Interception Réussie"
+                      : "Échec"}
+                  </span>
                 </div>
-
-                <span className="shrink-0 text-[10px] uppercase font-extrabold px-2 py-0.5 rounded-full bg-black/40 self-start sm:self-center">
-                  {ev.success ? "Interception Réussie" : "Échec"}
-                </span>
-              </div>
-            ))}
+              );
+            })}
           </div>
         )}
       </Card>

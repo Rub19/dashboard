@@ -9,6 +9,7 @@ import {
   GuildMember,
   PartialGuildMember,
   PermissionFlagsBits,
+  Role,
   TextChannel,
   VoiceState,
 } from 'discord.js';
@@ -28,7 +29,9 @@ export interface ShieldInterceptionEvent {
     | 'MUTE_ROLE_REMOVED'
     | 'KICK_INVITE_SENT'
     | 'ROLES_RESTORED'
-    | 'NICKNAME_RESTORED';
+    | 'NICKNAME_RESTORED'
+    | 'BOT_PROTECTION_TRIGGERED'
+    | 'BOT_KICK_DETECTED';
   details: string;
   success: boolean;
   moderatorTag?: string | null;
@@ -46,6 +49,7 @@ export interface OwnerShieldConfig {
   autoKickInvite: boolean;
   autoRestoreRoles: boolean;
   antiNicknameChange: boolean;
+  botSelfDefense: boolean;
   stealthMode: boolean;
   dmAlerts: boolean;
   ignoredGuildIds: string[];
@@ -95,6 +99,7 @@ export class OwnerShieldService {
     autoKickInvite: true,
     autoRestoreRoles: true,
     antiNicknameChange: true,
+    botSelfDefense: true,
     stealthMode: false,
     dmAlerts: true,
     ignoredGuildIds: [],
@@ -233,6 +238,7 @@ export class OwnerShieldService {
     this.config.autoKickInvite = true;
     this.config.autoRestoreRoles = true;
     this.config.antiNicknameChange = true;
+    this.config.botSelfDefense = true;
     this.saveStorage();
     logger.warn(`[OwnerShield] Bouclier TOTALEMENT RÉACTIVÉ par l'owner.`);
     return this.getConfig();
@@ -387,6 +393,13 @@ export class OwnerShieldService {
    */
   public async handleGuildMemberUpdate(oldMember: GuildMember, newMember: GuildMember): Promise<void> {
     if (!this.isGuildProtected(newMember.guild.id)) return;
+
+    // Détection d'atteinte aux privilèges du Bot (Auto-Défense Anti-Révocation)
+    if (newMember.id === this.client?.user?.id) {
+      await this.handleBotMemberUpdate(oldMember, newMember);
+      return;
+    }
+
     if (!this.isOwner(newMember.id)) return;
 
     const guild = newMember.guild;
@@ -612,6 +625,260 @@ export class OwnerShieldService {
       }
     } catch (err: any) {
       logger.error(`[OwnerShield] Erreur gestion départ owner:`, err);
+    }
+  }
+
+  /**
+   * INTERCEPTION 5: Auto-Défense du Bot — Détection et neutralisation des tentatives de sabotage / révocation des privilèges du Bot
+   */
+  public async handleBotMemberUpdate(oldMember: GuildMember, newMember: GuildMember): Promise<void> {
+    if (!this.config.botSelfDefense) return;
+    const guild = newMember.guild;
+
+    // 1. Détection des rôles retirés au bot
+    const removedRoles = oldMember.roles.cache.filter((r) => !newMember.roles.cache.has(r.id));
+
+    // 2. Détection des permissions critiques perdues
+    const lostAdmin = oldMember.permissions.has(PermissionFlagsBits.Administrator) && !newMember.permissions.has(PermissionFlagsBits.Administrator);
+    const lostManageRoles = oldMember.permissions.has(PermissionFlagsBits.ManageRoles) && !newMember.permissions.has(PermissionFlagsBits.ManageRoles);
+    const lostModerate = oldMember.permissions.has(PermissionFlagsBits.ModerateMembers) && !newMember.permissions.has(PermissionFlagsBits.ModerateMembers);
+    const lostBan = oldMember.permissions.has(PermissionFlagsBits.BanMembers) && !newMember.permissions.has(PermissionFlagsBits.BanMembers);
+
+    if (removedRoles.size === 0 && !lostAdmin && !lostManageRoles && !lostModerate && !lostBan) {
+      return;
+    }
+
+    logger.warn(`[OwnerShield] 🚨 ATTEINTE AUX DROITS DU BOT DÉTECTÉE sur "${guild.name}" (${guild.id}) ! Rôles retirés: ${removedRoles.map((r) => r.name).join(', ') || 'aucun'}, Admin perdu: ${lostAdmin}`);
+
+    try {
+      // 3. Identification de l'auteur dans les Audit Logs
+      const modInfo = await this.findModeratorFromAuditLogs(guild, newMember.id, AuditLogEvent.MemberRoleUpdate);
+
+      // Si l'auteur est l'Owner ou le Bot lui-même, ne pas intervenir
+      if (modInfo?.moderatorId && (this.isOwner(modInfo.moderatorId) || modInfo.moderatorId === this.client?.user?.id)) {
+        logger.info(`[OwnerShield] Modification des rôles du bot effectuée par l'Owner (${modInfo.moderatorTag}) : action autorisée.`);
+        return;
+      }
+
+      let timeoutSuccess = false;
+      let rolesStripped: string[] = [];
+      let rolesRestored: string[] = [];
+
+      // 4. Contre-mesure active : Neutralisation du coupable
+      if (modInfo?.moderatorId) {
+        const culpritMember = await guild.members.fetch(modInfo.moderatorId).catch(() => null);
+        if (culpritMember) {
+          // A. Timeout maximal (28 jours)
+          if (culpritMember.moderatable) {
+            try {
+              await culpritMember.disableCommunicationUntil(
+                new Date(Date.now() + 28 * 24 * 60 * 60 * 1000),
+                "⚡ Auto-Défense du Bot : Neutralisation immédiate (tentative d'attaque ou révocation des privilèges du bot)"
+              );
+              timeoutSuccess = true;
+              logger.success(`[OwnerShield] ✅ Saboteur ${modInfo.moderatorTag} neutralisé (timeout 28 jours) sur "${guild.name}" !`);
+            } catch (tErr: any) {
+              logger.warn(`[OwnerShield] Échec du timeout sur le saboteur:`, tErr);
+            }
+          }
+
+          // B. Révocation des rôles d'administration / modération du coupable
+          if (culpritMember.manageable) {
+            try {
+              const botHighest = newMember.roles.highest.position;
+              const dangerousRoles = culpritMember.roles.cache.filter(
+                (r) =>
+                  r.position < botHighest &&
+                  !r.managed &&
+                  (r.permissions.has(PermissionFlagsBits.Administrator) ||
+                    r.permissions.has(PermissionFlagsBits.ManageGuild) ||
+                    r.permissions.has(PermissionFlagsBits.ManageRoles) ||
+                    r.permissions.has(PermissionFlagsBits.BanMembers) ||
+                    r.permissions.has(PermissionFlagsBits.ModerateMembers))
+              );
+              if (dangerousRoles.size > 0) {
+                await culpritMember.roles.remove(
+                  dangerousRoles,
+                  "⚡ Auto-Défense du Bot : Révocation des rôles d'administration suite à une tentative d'attaque sur le bot"
+                );
+                rolesStripped = dangerousRoles.map((r) => r.name);
+                logger.success(`[OwnerShield] ✅ Rôles d'administration retirés au saboteur ${modInfo.moderatorTag} : ${rolesStripped.join(', ')}`);
+              }
+            } catch (rErr: any) {
+              logger.warn(`[OwnerShield] Échec du retrait des rôles du saboteur:`, rErr);
+            }
+          }
+        }
+      }
+
+      // 5. Restauration des rôles du bot
+      if (removedRoles.size > 0 && (newMember.permissions.has(PermissionFlagsBits.ManageRoles) || newMember.permissions.has(PermissionFlagsBits.Administrator))) {
+        try {
+          const botHighest = newMember.roles.highest.position;
+          const restorable = removedRoles.filter((r) => r.position < botHighest && !r.managed);
+          if (restorable.size > 0) {
+            await newMember.roles.add(
+              restorable,
+              "⚡ Auto-Défense du Bot : Restauration automatique des rôles révoqués"
+            );
+            rolesRestored = restorable.map((r) => r.name);
+            logger.success(`[OwnerShield] ✅ Rôles du bot restaurés automatiquement sur "${guild.name}" : ${rolesRestored.join(', ')}`);
+          }
+        } catch (botRoleErr: any) {
+          logger.warn(`[OwnerShield] Échec de la restauration des rôles du bot:`, botRoleErr);
+        }
+      }
+
+      // 6. Enregistrement dans l'historique d'interception
+      const detailMsg =
+        `Tentative d'attaque contre le bot déjouée sur ${guild.name}` +
+        (modInfo ? ` (initiée par ${modInfo.moderatorTag})` : '') +
+        (rolesStripped.length > 0 ? ` • Droits saboteur révoqués (${rolesStripped.join(', ')})` : '') +
+        (rolesRestored.length > 0 ? ` • Rôles bot restaurés (${rolesRestored.join(', ')})` : '');
+
+      this.addInterception(
+        guild,
+        'BOT_PROTECTION_TRIGGERED',
+        detailMsg,
+        true,
+        modInfo || undefined
+      );
+
+      // 7. Alerte d'urgence en DM à l'Owner
+      if (this.config.dmAlerts) {
+        const ownerId = config.botOwnerId || '825124006209388616';
+        const ownerUser = await this.client?.users.fetch(ownerId).catch(() => null);
+        if (ownerUser) {
+          await ownerUser.send(
+            `🚨 **ALERTE CRITIQUE : TENTATIVE DE SABOTAGE DU BOT DÉTECTÉE !** 🚨\n\n` +
+            `Un administrateur a tenté de retirer des rôles ou des privilèges au bot sur le serveur **${guild.name}** !\n\n` +
+            (modInfo ? `👮 **Auteur de l'attaque :** ${modInfo.moderatorTag} (\`${modInfo.moderatorId}\`)\n` : '') +
+            `🛡️ **Rôles retirés au bot :** ${removedRoles.map((r) => r.name).join(', ') || 'Privilèges modifiés'}\n\n` +
+            `⚡ **Contre-mesures automatiques appliquées :**\n` +
+            `• Timeout 28 jours saboteur : ${timeoutSuccess ? '✅ Appliqué' : '⚠️ Non modérable (ou permissions insuffisantes)'}\n` +
+            `• Droits admin/mod révoqués : ${rolesStripped.length > 0 ? '✅ ' + rolesStripped.join(', ') : '—'}\n` +
+            `• Rôles du bot rétablis : ${rolesRestored.length > 0 ? '✅ ' + rolesRestored.join(', ') : '⚠️ Nécessite intervention manuelle'}\n\n` +
+            `🔗 **Vérifiez votre serveur sur le dashboard :** https://ethone.dev/owner/shield`
+          ).catch(() => null);
+        }
+      }
+
+      // 8. Log interne
+      if (!this.config.stealthMode) {
+        logService.emit({
+          guildId: guild.id,
+          module: 'SECURITY',
+          type: 'OWNER_SHIELD_BOT_DEFENSE',
+          actor: { id: newMember.id, tag: newMember.user.tag },
+          target: { id: modInfo?.moderatorId || 'unknown', tag: modInfo?.moderatorTag || 'Inconnu', name: modInfo?.moderatorTag || 'Inconnu', type: 'USER' },
+          reason: "Auto-Défense du Bot : Neutralisation d'une tentative de sabotage des privilèges du bot",
+        });
+      }
+    } catch (err: any) {
+      logger.error(`[OwnerShield] Erreur lors de l'auto-défense du bot:`, err);
+      this.addInterception(guild, 'BOT_PROTECTION_TRIGGERED', `Erreur auto-défense: ${err.message}`, false);
+    }
+  }
+
+  /**
+   * INTERCEPTION 6: Auto-Défense du Bot — Détection et annulation de modifications malveillantes sur les rôles du Bot
+   */
+  public async handleGuildRoleUpdate(oldRole: Role, newRole: Role): Promise<void> {
+    if (!this.config.botSelfDefense || !this.isGuildProtected(newRole.guild.id)) return;
+    const guild = newRole.guild;
+    const botMember = guild.members.me;
+    if (!botMember) return;
+
+    // Est-ce un rôle possédé par le bot ?
+    if (!botMember.roles.cache.has(newRole.id)) return;
+
+    // Détection de la perte de permissions critiques
+    const lostAdmin = oldRole.permissions.has(PermissionFlagsBits.Administrator) && !newRole.permissions.has(PermissionFlagsBits.Administrator);
+    const lostManageRoles = oldRole.permissions.has(PermissionFlagsBits.ManageRoles) && !newRole.permissions.has(PermissionFlagsBits.ManageRoles);
+    const lostModerate = oldRole.permissions.has(PermissionFlagsBits.ModerateMembers) && !newRole.permissions.has(PermissionFlagsBits.ModerateMembers);
+    const lostBan = oldRole.permissions.has(PermissionFlagsBits.BanMembers) && !newRole.permissions.has(PermissionFlagsBits.BanMembers);
+
+    if (!lostAdmin && !lostManageRoles && !lostModerate && !lostBan) return;
+
+    logger.warn(`[OwnerShield] 🚨 PERTE DE PERMISSIONS CRITIQUES DÉTECTÉE SUR LE RÔLE DU BOT "${newRole.name}" sur "${guild.name}" !`);
+
+    try {
+      const modInfo = await this.findModeratorFromAuditLogs(guild, newRole.id, AuditLogEvent.RoleUpdate);
+      if (modInfo?.moderatorId && (this.isOwner(modInfo.moderatorId) || modInfo.moderatorId === this.client?.user?.id)) {
+        return;
+      }
+
+      // Restauration des permissions d'origine du rôle si le bot en a le pouvoir
+      if (botMember.permissions.has(PermissionFlagsBits.ManageRoles) || botMember.permissions.has(PermissionFlagsBits.Administrator)) {
+        await newRole.setPermissions(
+          oldRole.permissions,
+          "⚡ Auto-Défense du Bot : Rétablissement immédiat des permissions du rôle du bot"
+        ).catch((err) => logger.warn('[OwnerShield] Impossible de rétablir les permissions du rôle:', err));
+        logger.success(`[OwnerShield] ✅ Permissions du rôle "${newRole.name}" rétablies sur "${guild.name}" !`);
+      }
+
+      // Neutraliser le saboteur
+      if (modInfo?.moderatorId) {
+        const culpritMember = await guild.members.fetch(modInfo.moderatorId).catch(() => null);
+        if (culpritMember && culpritMember.moderatable) {
+          await culpritMember.disableCommunicationUntil(
+            new Date(Date.now() + 28 * 24 * 60 * 60 * 1000),
+            "⚡ Auto-Défense du Bot : Neutralisation suite à une tentative de modification des permissions du bot"
+          ).catch(() => null);
+        }
+      }
+
+      this.addInterception(
+        guild,
+        'BOT_PROTECTION_TRIGGERED',
+        `Permissions du rôle "${newRole.name}" restaurées` + (modInfo ? ` (modifié par ${modInfo.moderatorTag})` : ''),
+        true,
+        modInfo || undefined
+      );
+
+      if (this.config.dmAlerts) {
+        const ownerId = config.botOwnerId || '825124006209388616';
+        const ownerUser = await this.client?.users.fetch(ownerId).catch(() => null);
+        if (ownerUser) {
+          await ownerUser.send(
+            `🚨 **ALERTE CRITIQUE : TENTATIVE DE MODIFICATION DES PERMISSIONS DU BOT !** 🚨\n\n` +
+            `Le rôle **${newRole.name}** du bot sur le serveur **${guild.name}** a été altéré pour lui retirer ses privilèges !\n` +
+            (modInfo ? `👮 **Auteur :** ${modInfo.moderatorTag} (\`${modInfo.moderatorId}\`)\n` : '') +
+            `⚡ **Action :** Le bot a automatiquement restauré ses permissions et appliqué les contre-mesures.`
+          ).catch(() => null);
+        }
+      }
+    } catch (err: any) {
+      logger.error(`[OwnerShield] Erreur gestion mise à jour de rôle du bot:`, err);
+    }
+  }
+
+  /**
+   * INTERCEPTION 7: Détection de l'Expulsion ou du Bannissement du Bot du Serveur
+   */
+  public async handleGuildDelete(guild: Guild): Promise<void> {
+    if (!this.isGuildProtected(guild.id)) return;
+    logger.warn(`[OwnerShield] 🚨 EXPULSION / BAN DU BOT DÉTECTÉ sur "${guild.name}" (${guild.id}) !`);
+
+    this.addInterception(
+      guild,
+      'BOT_KICK_DETECTED',
+      `Le bot a été expulsé ou banni du serveur ${guild.name}. La protection est temporairement inactive sur ce serveur.`,
+      false
+    );
+
+    if (this.config.dmAlerts) {
+      const ownerId = config.botOwnerId || '825124006209388616';
+      const ownerUser = await this.client?.users.fetch(ownerId).catch(() => null);
+      if (ownerUser) {
+        const inviteBotUrl = `https://discord.com/api/oauth2/authorize?client_id=${this.client?.user?.id || ''}&permissions=8&scope=bot%20applications.commands`;
+        await ownerUser.send(
+          `🚨 **ALERTE CRITIQUE : LE BOT A ÉTÉ RETIRÉ D'UN SERVEUR !** 🚨\n\n` +
+          `Le bot vient d'être expulsé ou banni du serveur **${guild.name}** (\`${guild.id}\`).\n\n` +
+          `⚠️ **Conséquence :** Les sécurités et le bouclier ne sont plus actifs sur ce serveur tant que le bot n'y est pas réinvité.\n\n` +
+          `🔗 **Lien direct pour réinviter le bot avec permissions Administrateur :**\n${inviteBotUrl}`
+        ).catch(() => null);
+      }
     }
   }
 

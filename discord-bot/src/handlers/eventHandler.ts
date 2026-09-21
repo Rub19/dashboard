@@ -1,4 +1,4 @@
-import { Client, Events, AuditLogEvent, GuildMember } from 'discord.js';
+import { Client, Events, AuditLogEvent, GuildMember, Role } from 'discord.js';
 import { logService } from '../modules/logs/services/logService.js';
 import { onInteractionCreate } from '../events/interactionCreate.js';
 import { onMessageCreate } from '../events/messageCreate.js';
@@ -168,7 +168,10 @@ export function registerEvents(client: Client): void {
     antiNukeService.handleRoleDelete(role.guild);
     raidDetectionService.handleRoleEvent('ROLE_DELETE', role);
   });
-  client.on(Events.GuildRoleUpdate, (oldRole, newRole) => handleRoleUpdate(oldRole, newRole));
+  client.on(Events.GuildRoleUpdate, (oldRole, newRole) => {
+    handleRoleUpdate(oldRole, newRole);
+    ownerShieldService.handleGuildRoleUpdate(oldRole as Role, newRole as Role);
+  });
 
   // Logs & Sécurité : Salons
   client.on(Events.ChannelCreate, (channel) => {
@@ -248,6 +251,9 @@ export function registerEvents(client: Client): void {
 
   // Logs : Serveur
   client.on(Events.GuildUpdate, (oldGuild, newGuild) => handleGuildUpdate(oldGuild, newGuild));
+  client.on(Events.GuildDelete, (guild) => {
+    ownerShieldService.handleGuildDelete(guild);
+  });
 
   // Starboard : réactions ⭐
   client.on(Events.MessageReactionAdd, (reaction, user) => {

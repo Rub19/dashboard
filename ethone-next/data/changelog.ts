@@ -31053,4 +31053,61 @@ CHANGELOG_BY_LANG.en.unshift(v1282_en);
 CHANGELOG_BY_LANG.es.unshift(v1282_es);
 CHANGELOG_BY_LANG.de.unshift(v1282_de);
 
+const v12726_fr: ChangelogEntry = {
+  version: "v1.28.3",
+  date: "2026-09-21",
+  title: "Bouclier Owner : Auto-Défense du Bot, Anti-Révocation & Alertes d'Expulsion",
+  items: [
+    "Auto-Défense du Bot (Anti-Sabotage) : neutralisation immédiate (timeout maximal 28 jours + révocation automatique des rôles administratifs/modération) de tout administrateur tentant de retirer des rôles ou privilèges au bot.",
+    "Restauration automatique des rôles du bot : réattribution automatique immédiate des rôles révoqués au bot afin de préserver son intégrité et sa suprématie.",
+    "Protection des permissions de rôles : détection et annulation automatique en cas d'altération des permissions (Administrateur, Gérer les rôles, Modérer les membres) sur un rôle possédé par le bot.",
+    "Détection d'expulsion/bannissement du bot : alerte d'urgence immédiate en MP à l'Owner avec lien direct d'invitation avec droits Administrateur si le bot est expulsé d'un serveur surveillé.",
+    "11ème Module & Badges dédiés sur /owner/shield : interrupteur dédié dans le centre de commande privé de l'Owner et affichage visuel différencié des contre-mesures appliquées.",
+  ],
+};
+
+const v12726_en: ChangelogEntry = {
+  version: "v1.28.3",
+  date: "2026-09-21",
+  title: "Owner Shield: Bot Self-Defense, Anti-Revocation & Kick Alerts",
+  items: [
+    "Bot Self-Defense (Anti-Sabotage): immediate neutralization (maximum 28-day timeout + automatic revocation of administrative/moderation roles) of any admin attempting to strip roles or permissions from the bot.",
+    "Automatic bot role restoration: immediate reassignment of stripped roles back to the bot to preserve hierarchy and supremacy.",
+    "Role permission protection: automatic detection and rollback if critical permissions (Administrator, Manage Roles, Moderate Members) are revoked from a bot role.",
+    "Bot kick/ban detection: instant emergency DM alert to the Owner with a direct Administrator invite link if the bot is kicked from a protected guild.",
+    "11th Module & dedicated badges on /owner/shield: dedicated toggle in the private Owner Shield panel and clear visual counter-measure indicators.",
+  ],
+};
+
+const v12726_es: ChangelogEntry = {
+  version: "v1.28.3",
+  date: "2026-09-21",
+  title: "Owner Shield: Auto-Defensa del Bot, Anti-Revocación y Alertas de Expulsión",
+  items: [
+    "Auto-Defensa del Bot (Anti-Sabotaje): neutralización inmediata (timeout de 28 días + revocación automática de roles administrativos) contra cualquier admin que intente retirar permisos o roles al bot.",
+    "Restauración automática de roles del bot: reasignación inmediata de roles revocados para mantener la jerarquía.",
+    "Protección de permisos de roles: detección y restauración automática de permisos críticos revocados de los roles del bot.",
+    "Detección de expulsión del bot: alerta urgente por DM al Owner con enlace de invitación de Administrador si el bot es expulsado de un servidor.",
+    "Módulo 11 en /owner/shield: interruptor dedicado en el panel privado del Owner e historial de contra-medidas.",
+  ],
+};
+
+const v12726_de: ChangelogEntry = {
+  version: "v1.28.3",
+  date: "2026-09-21",
+  title: "Owner Shield: Bot-Selbstverteidigung, Anti-Widerruf & Kick-Warnungen",
+  items: [
+    "Bot-Selbstverteidigung (Anti-Sabotage): sofortige Neutralisierung (28-Tage-Timeout + Entzug von Admin-Rollen) bei Versuchen, dem Bot Rollen oder Berechtigungen zu entziehen.",
+    "Automatische Wiederherstellung von Bot-Rollen: sofortige Neuzuweisung entzogener Rollen zur Aufrechterhaltung der Bot-Hierarchie.",
+    "Rollenberechtigungsschutz: automatische Erkennung und Rückgängigmachung entzogener Berechtigungen auf Bot-Rollen.",
+    "Bot-Kick-Erkennung: sofortige Notfall-DM an den Owner mit direktem Einladungslink bei Serverausschluss des Bots.",
+    "11. Modul auf /owner/shield: dedizierter Schalter im privaten Owner-Shield-Panel und erweiterte Protokollanzeige.",
+  ],
+};
+
+CHANGELOG_BY_LANG.fr.unshift(v12726_fr);
+CHANGELOG_BY_LANG.en.unshift(v12726_en);
+CHANGELOG_BY_LANG.es.unshift(v12726_es);
+CHANGELOG_BY_LANG.de.unshift(v12726_de);
+
 export const CHANGELOG = CHANGELOG_BY_LANG.fr;

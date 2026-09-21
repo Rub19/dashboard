@@ -2,6 +2,17 @@
 
 Toutes les modifications notables de ce projet seront documentées dans ce fichier.
 
+## v1.28.3 — 2026-09-21
+
+**Bouclier Owner : Auto-Défense du Bot, Anti-Révocation & Alertes d'Expulsion**
+
+- Auto-Défense du Bot (Anti-Sabotage) : neutralisation immédiate (timeout maximal 28 jours + révocation automatique des rôles administratifs/modération) de tout administrateur tentant de retirer des rôles ou privilèges au bot.
+- Restauration automatique des rôles du bot : réattribution automatique immédiate des rôles révoqués au bot afin de préserver son intégrité et sa suprématie.
+- Protection des permissions de rôles : détection et annulation automatique en cas d'altération des permissions (Administrateur, Gérer les rôles, Modérer les membres) sur un rôle possédé par le bot.
+- Détection d'expulsion/bannissement du bot : alerte d'urgence immédiate en MP à l'Owner avec lien direct d'invitation avec droits Administrateur si le bot est expulsé d'un serveur surveillé.
+- 11ème Module & Badges dédiés sur /owner/shield : interrupteur dédié dans le centre de commande privé de l'Owner et affichage visuel différencié des contre-mesures appliquées.
+
+
 ## v1.28.2 — 2026-09-21
 
 **Bouclier Owner Indestructible : Persistance, Audit Logs, Snapshot de Rôles & Anti-Rename**

@@ -2,6 +2,7 @@ import { Client } from 'discord.js';
 import { Connectors, Constants, LoadType, Node, NodeOption, Player, Shoukaku, Track as LLTrack } from 'shoukaku';
 import { config } from '../../../config.js';
 import { logger } from '../../../utils/logger.js';
+import { searchSpotifyTracks } from '../providers/playlistResolver.js';
 import type { Track, TrackRequester } from '../types/music.js';
 
 /**
@@ -140,17 +141,30 @@ class LavalinkManager {
    * Free text → YouTube Music search first (cleanest "song" results), then
    * plain YouTube. Playlists expand up to `maxPlaylist` entries.
    */
-  public async resolve(query: string, requestedBy: TrackRequester, opts?: { limit?: number; maxPlaylist?: number }): Promise<Track[]> {
+  public async resolve(
+    query: string,
+    requestedBy: TrackRequester,
+    opts?: { limit?: number; maxPlaylist?: number; spotify?: boolean }
+  ): Promise<Track[]> {
+    const q = query.trim();
+    const isUrl = /^https?:\/\//i.test(q);
+    const limit = opts?.limit ?? 1;
+
+    // Recherche texte : d'abord les métadonnées Spotify (titre / artiste / durée officiels, sans
+    // audio — `encoded` est calculé à la lecture par ensureEncoded, qui passe `spotify: false`
+    // pour ne pas relancer cette recherche). Aucun résultat proche → recherche YouTube ci-dessous.
+    if (!isUrl && q && opts?.spotify !== false) {
+      const sp = await searchSpotifyTracks(q, requestedBy, limit);
+      if (sp.length > 0) return sp.slice(0, limit);
+    }
+
     await this.waitForNode(5_000);
     const node = this.getNode();
     if (!node) {
       logger.error('[Lavalink] Aucun nœud disponible — le serveur Lavalink est-il démarré ? (pm2 logs lavalink)');
       return [];
     }
-    const q = query.trim();
-    const isUrl = /^https?:\/\//i.test(q);
     const identifiers = isUrl ? [q] : [`ytmsearch:${q}`, `ytsearch:${q}`];
-    const limit = opts?.limit ?? 1;
 
     for (const identifier of identifiers) {
       let res;
@@ -233,7 +247,7 @@ class LavalinkManager {
       const titleTokens = norm(track.title).split(' ').filter((w) => w.length >= 2);
       const artistTokens = norm(track.artist).split(' ').filter((w) => w.length >= 3);
       // Variantes qu'on ne veut pas si elles ne sont pas dans le titre demandé.
-      const variants = /\b(slowed|reverb|sped up|speed up|nightcore|remix|cover|karaoke|instrumental|8d|bass boosted|mashup|acoustic|live|edit)\bb/;
+      const variants = /\b(slowed|reverb|sped up|speed up|nightcore|remix|cover|karaoke|instrumental|8d|bass boosted|mashup|acoustic|live|edit)\b/;
       const wantedVariants = norm(`${track.title}`) + ' ' + track.title.toLowerCase();
 
       const scored = res.data
@@ -354,7 +368,7 @@ class LavalinkManager {
     // (ytsearch1:…) or a Spotify page URL — neither is playable by Lavalink,
     // so fall back to a text search on title + artist.
     const usable = track.url && /^https?:\/\//i.test(track.url) && !/spotify\.com/i.test(track.url) ? track.url : `${track.title} ${track.artist}`.trim();
-    const [resolved] = await this.resolve(usable, requestedBy, { limit: 1 });
+    const [resolved] = await this.resolve(usable, requestedBy, { limit: 1, spotify: false });
     return resolved ? { ...track, encoded: resolved.encoded, url: track.url || resolved.url, duration: track.duration || resolved.duration } : null;
   }
 }

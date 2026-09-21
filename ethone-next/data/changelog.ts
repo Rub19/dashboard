@@ -29050,4 +29050,53 @@ CHANGELOG_BY_LANG.en.unshift(v12516_en);
 CHANGELOG_BY_LANG.es.unshift(v12516_es);
 CHANGELOG_BY_LANG.de.unshift(v12516_de);
 
+const v12517_fr: ChangelogEntry = {
+  version: "v1.25.17",
+  date: "2026-09-21",
+  title: "Bot musique : la recherche texte passe par les métadonnées Spotify, et les versions « slowed / remix » sont enfin écartées",
+  items: [
+    "Recherche texte (`/play Another Love`, autocomplétion, autoplay) : le bot interroge d'abord Spotify pour obtenir le titre, l'artiste et la durée officiels, puis cherche ce morceau précis (avec contrôle de durée et rejet des extraits de 30 s) au lieu de se fier au premier résultat brut. Si Spotify ne trouve rien de proche (faute de frappe, titre de vidéo, radio…) ou si les identifiants Spotify ne sont pas configurés, le comportement précédent est conservé.",
+    "Correctif : dans le choix du repli SoundCloud, la détection des versions indésirables (« slowed », « reverb », « nightcore », « remix », « cover », « karaoke », « 8D », « live »…) ne s'appliquait jamais à cause d'une expression régulière mal terminée (`\\bb` au lieu de `\\b`). Ces versions sont maintenant écartées quand elles ne sont pas demandées.",
+    "Spotify ne fournit aucun audio : seules les métadonnées sont utilisées, le son est toujours cherché ailleurs.",
+  ],
+};
+
+const v12517_en: ChangelogEntry = {
+  version: "v1.25.17",
+  date: "2026-09-21",
+  title: "Music bot: text search now goes through Spotify metadata, and \"slowed / remix\" versions are finally skipped",
+  items: [
+    "Text search (`/play Another Love`, autocomplete, autoplay): the bot now asks Spotify first for the official title, artist and duration, then looks for that exact song (with duration check and rejection of 30 s snippets) instead of trusting the first raw result. If Spotify finds nothing close (typo, video title, radio…) or Spotify credentials are not configured, the previous behaviour is kept.",
+    "Fix: when picking the SoundCloud fallback, detection of unwanted versions (\"slowed\", \"reverb\", \"nightcore\", \"remix\", \"cover\", \"karaoke\", \"8D\", \"live\"…) never applied because of a badly terminated regular expression (`\\bb` instead of `\\b`). These versions are now skipped unless requested.",
+    "Spotify provides no audio: only its metadata is used, the sound is still fetched elsewhere.",
+  ],
+};
+
+const v12517_es: ChangelogEntry = {
+  version: "v1.25.17",
+  date: "2026-09-21",
+  title: "Bot de música: la búsqueda de texto usa los metadatos de Spotify y por fin se descartan las versiones « slowed / remix »",
+  items: [
+    "Búsqueda de texto (`/play Another Love`, autocompletado, autoplay): el bot consulta primero Spotify para obtener el título, el artista y la duración oficiales, y luego busca esa canción exacta (con control de duración y rechazo de fragmentos de 30 s) en lugar de fiarse del primer resultado en bruto. Si Spotify no encuentra nada cercano (errata, título de vídeo, radio…) o no hay credenciales de Spotify configuradas, se mantiene el comportamiento anterior.",
+    "Corrección: al elegir el repliegue a SoundCloud, la detección de versiones no deseadas (« slowed », « reverb », « nightcore », « remix », « cover », « karaoke », « 8D », « live »…) nunca se aplicaba por una expresión regular mal terminada (`\\bb` en lugar de `\\b`). Ahora se descartan esas versiones cuando no se piden.",
+    "Spotify no proporciona audio: solo se usan sus metadatos, el sonido se sigue buscando en otro sitio.",
+  ],
+};
+
+const v12517_de: ChangelogEntry = {
+  version: "v1.25.17",
+  date: "2026-09-21",
+  title: "Musik-Bot: Textsuche nutzt Spotify-Metadaten, und „Slowed / Remix“-Versionen werden endlich aussortiert",
+  items: [
+    "Textsuche (`/play Another Love`, Autovervollständigung, Autoplay): Der Bot fragt jetzt zuerst Spotify nach dem offiziellen Titel, Künstler und der Dauer und sucht dann genau diesen Song (mit Längenprüfung und Aussortieren von 30-s-Ausschnitten), statt dem ersten Rohergebnis zu vertrauen. Findet Spotify nichts Passendes (Tippfehler, Videotitel, Radio …) oder sind keine Spotify-Zugangsdaten konfiguriert, bleibt das bisherige Verhalten erhalten.",
+    "Korrektur: Bei der Wahl des SoundCloud-Fallbacks griff die Erkennung unerwünschter Versionen („slowed“, „reverb“, „nightcore“, „remix“, „cover“, „karaoke“, „8D“, „live“ …) nie, wegen eines falsch abgeschlossenen regulären Ausdrucks (`\\bb` statt `\\b`). Diese Versionen werden nun übersprungen, sofern sie nicht gewünscht sind.",
+    "Spotify liefert kein Audio: Nur die Metadaten werden genutzt, der Ton wird weiterhin anderswo gesucht.",
+  ],
+};
+
+CHANGELOG_BY_LANG.fr.unshift(v12517_fr);
+CHANGELOG_BY_LANG.en.unshift(v12517_en);
+CHANGELOG_BY_LANG.es.unshift(v12517_es);
+CHANGELOG_BY_LANG.de.unshift(v12517_de);
+
 export const CHANGELOG = CHANGELOG_BY_LANG.fr;

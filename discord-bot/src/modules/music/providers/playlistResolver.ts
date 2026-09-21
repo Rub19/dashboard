@@ -125,6 +125,76 @@ export async function getSpotifyToken(): Promise<string | null> {
   }
 }
 
+const normSpotify = (v: string): string =>
+  v
+    .toLowerCase()
+    .normalize('NFD')
+    .replace(/[̀-ͯ]/g, '')
+    .replace(/[^a-z0-9]+/g, ' ')
+    .trim();
+
+/**
+ * Recherche texte via l'API Spotify : titre, artiste, album et durée officiels (Spotify ne
+ * fournit aucun audio — le son est cherché ailleurs à la lecture). Ne garde que les résultats
+ * dont le titre + l'artiste contiennent l'essentiel de la requête ; sinon renvoie [] et
+ * l'appelant retombe sur la recherche YouTube (fautes de frappe, titres de vidéos, radios…).
+ */
+export async function searchSpotifyTracks(query: string, requestedBy: TrackRequester, limit = 5): Promise<Track[]> {
+  const token = await getSpotifyToken();
+  if (!token) return [];
+  const wanted = normSpotify(query)
+    .split(' ')
+    .filter((w) => w.length >= 2);
+  if (wanted.length === 0) return [];
+
+  try {
+    const cap = Math.min(Math.max(limit, 1), 10);
+    const res = await fetch(`https://api.spotify.com/v1/search?type=track&limit=${cap}&q=${encodeURIComponent(query)}`, {
+      headers: { Authorization: `Bearer ${token}` },
+      signal: AbortSignal.timeout(3000),
+    });
+    if (!res.ok) {
+      logger.warn(`[playlist] Spotify recherche : HTTP ${res.status}`);
+      return [];
+    }
+    const json = (await res.json()) as {
+      tracks?: {
+        items?: Array<{
+          id?: string;
+          name?: string;
+          duration_ms?: number;
+          external_urls?: { spotify?: string };
+          artists?: Array<{ name?: string }>;
+          album?: { name?: string; images?: Array<{ url?: string }> };
+        }>;
+      };
+    };
+    const out: Track[] = [];
+    for (const item of json.tracks?.items || []) {
+      if (!item.id || !item.name) continue;
+      const artist = (item.artists || []).map((a) => a.name).filter(Boolean).join(', ') || 'Spotify';
+      const haystack = normSpotify(`${item.name} ${artist}`);
+      const hits = wanted.filter((w) => haystack.includes(w)).length;
+      if (hits / wanted.length < 0.75) continue;
+      out.push({
+        id: `sp-${item.id}`,
+        title: item.name,
+        artist,
+        album: item.album?.name || 'Spotify',
+        duration: Math.round((item.duration_ms || 0) / 1000),
+        thumbnail: item.album?.images?.[1]?.url || item.album?.images?.[0]?.url || THUMB_FALLBACK,
+        url: item.external_urls?.spotify || `https://open.spotify.com/track/${item.id}`,
+        source: 'SPOTIFY' as const,
+        ...requester(requestedBy),
+      });
+    }
+    return out;
+  } catch (err) {
+    logger.warn('[playlist] Spotify recherche :', err);
+    return [];
+  }
+}
+
 interface SpotifyTrackObj {
   name?: string;
   duration_ms?: number;

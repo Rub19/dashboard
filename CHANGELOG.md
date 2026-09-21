@@ -2,6 +2,14 @@
 
 Toutes les modifications notables de ce projet seront documentées dans ce fichier.
 
+## v1.25.17 — 2026-09-21
+
+**Bot musique : la recherche texte passe par les métadonnées Spotify, et les versions « slowed / remix » sont enfin écartées**
+
+- Recherche texte (`/play Another Love`, autocomplétion, autoplay) : le bot interroge d'abord Spotify pour obtenir le titre, l'artiste et la durée officiels, puis cherche ce morceau précis (avec contrôle de durée et rejet des extraits de 30 s) au lieu de se fier au premier résultat brut. Si Spotify ne trouve rien de proche (faute de frappe, titre de vidéo, radio…) ou si les identifiants Spotify ne sont pas configurés, le comportement précédent est conservé.
+- Correctif : dans le choix du repli SoundCloud, la détection des versions indésirables (« slowed », « reverb », « nightcore », « remix », « cover », « karaoke », « 8D », « live »…) ne s'appliquait jamais à cause d'une expression régulière mal terminée (`\bb` au lieu de `\b`). Ces versions sont maintenant écartées quand elles ne sont pas demandées.
+- Spotify ne fournit aucun audio : seules les métadonnées sont utilisées, le son est toujours cherché ailleurs.
+
 ## v1.25.16 — 2026-09-21
 
 **Bot musique : reconnexion automatique à Lavalink et repli forcé si l'événement de fin manque**

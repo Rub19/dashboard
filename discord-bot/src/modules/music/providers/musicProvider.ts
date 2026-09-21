@@ -221,7 +221,7 @@ export class SpotifyBridgeProvider implements IMusicProvider {
       const q = `${fullTitle} ${artist || ''}`.trim();
       const [hit] =
         config.musicBackend === 'lavalink'
-          ? await lavalinkManager.resolve(q, requestedBy, { limit: 1 }).then((ts) => ts.map((t) => ({ url: t.url, artist: t.artist, duration: t.duration, thumbnail: t.thumbnail, encoded: t.encoded })))
+          ? await lavalinkManager.resolve(q, requestedBy, { limit: 1, spotify: false }).then((ts) => ts.map((t) => ({ url: t.url, artist: t.artist, duration: t.duration, thumbnail: t.thumbnail, encoded: t.encoded })))
           : await ytDlpSearch(q, 1);
       if (!hit) return null;
       return {

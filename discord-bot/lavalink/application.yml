@@ -19,7 +19,7 @@ lavalink:
       soundcloud: true
       twitch: false
       vimeo: false
-      nico: false
+      nico: true
       http: true            # flux directs (SomaFM, mp3…)
       local: false
     filters:
@@ -51,15 +51,47 @@ plugins:
     allowSearch: true
     allowDirectVideoIds: true
     allowDirectPlaylistIds: true
-    # D'après le tableau du plugin : MUSIC = recherche uniquement ; TV = le
-    # SEUL client qui utilise le token OAuth (lecture) ; ANDROID_VR et
-    # TVHTML5_SIMPLY = lecture sans token ni PO token (secours). WEB/WEBEMBEDDED
-    # exigent un PO token depuis une IP de datacenter → volontairement absents.
+    # Clients essayés dans l'ordre. MUSIC = recherche ; TV = utilise le token OAuth ;
+    # ANDROID_VR / TVHTML5_SIMPLY = secours sans token ; WEB / WEBEMBEDDED ne lisent
+    # depuis une IP de datacenter qu'avec un PO token (sinon ils échouent vite, sans gravité).
     clients:
       - MUSIC
-      - TV
+      - WEB
+      - WEBEMBEDDED
       - ANDROID_VR
+      - TV
       - TVHTML5_SIMPLY
+    clientOptions:
+      MUSIC:
+        searching: true
+        videoLoading: false
+        playlistLoading: false
+        playback: false
+      WEB:
+        searching: true
+        videoLoading: true
+        playlistLoading: true
+        playback: true
+      WEBEMBEDDED:
+        searching: false
+        videoLoading: true
+        playlistLoading: false
+        playback: true
+      ANDROID_VR:
+        searching: true
+        videoLoading: true
+        playlistLoading: true
+        playback: true
+      TV:
+        searching: false
+        videoLoading: false
+        playlistLoading: false
+        playback: true
+      TVHTML5_SIMPLY:
+        searching: true
+        videoLoading: true
+        playlistLoading: false
+        playback: true
     oauth:
       # Au premier démarrage, Lavalink affiche dans ses logs un lien
       # https://www.google.com/device + un code : ouvre-le avec un COMPTE

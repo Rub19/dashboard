@@ -10,6 +10,7 @@ import { describeYtDlpConfig } from '../providers/ytdlpStream.js';
 import { MusicPermissionService } from './musicPermissionService.js';
 import { musicEventBus } from './musicEventBus.js';
 import { musicNotifier } from './musicNotifier.js';
+import { voiceStayService } from './voiceStayService.js';
 import { logger } from '../../../utils/logger.js';
 
 class MusicService {
@@ -26,6 +27,8 @@ class MusicService {
       logger.info(`[MusicService] yt-dlp → ${describeYtDlpConfig()}`);
     }
     await this.restoreQueuesFromDisk(client);
+    // Mode 24h/24 (/join) : remet le bot dans son salon au démarrage puis toutes les 30 s si besoin.
+    voiceStayService.start(client, (guildId) => this.getPlayer(guildId, true));
   }
 
   // Restart survival: reload every guild's saved queue into memory, and for

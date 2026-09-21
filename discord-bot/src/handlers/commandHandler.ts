@@ -56,6 +56,7 @@ import {
   playerCommand,
 } from '../commands/music/musicShortcuts.js';
 import { playlistCommand } from '../commands/music/playlistBrowser.js';
+import { joinCommand, disconnectCommand, voiceStatusCommand } from '../commands/music/voiceCommands.js';
 import { pollCommand } from '../modules/polls/commands/pollCommand.js';
 import { eventCommand } from '../modules/events/eventsCommand.js';
 import { voiceCommand } from '../modules/voice/commands/voiceCommand.js';
@@ -133,6 +134,9 @@ class CommandRegistry {
     // Musique 2.0 (Music Center & Shortcuts)
     this.register(musicCommand);
     this.register(playCommand);
+    this.register(joinCommand);
+    this.register(disconnectCommand);
+    this.register(voiceStatusCommand);
     this.register(skipCommand);
     this.register(pauseCommand);
     this.register(resumeCommand);

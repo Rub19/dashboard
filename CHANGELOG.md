@@ -2,6 +2,15 @@
 
 Toutes les modifications notables de ce projet seront documentées dans ce fichier.
 
+## v1.26.0 — 2026-09-21
+
+**Bot musique : /join, /disconnect et /voice-status — le bot peut rester 24h/24 dans un salon vocal**
+
+- Nouvelle commande `/join` : fait rejoindre le bot dans le salon vocal où tu es, ou dans un salon choisi avec l'option `salon` (vocal ou scène). Par défaut le bot y reste **24h/24** (option `permanent`, désactivable) : il ne quitte plus après l'inactivité, et si quelque chose le déconnecte (redémarrage du bot ou de Lavalink, déplacement ou exclusion par un modérateur, coupure réseau) il revient tout seul dans son salon dans la minute, avec des essais espacés en cas d'échec.
+- Nouvelle commande `/disconnect` : déconnecte le bot du vocal, vide la file d'attente et désactive le mode 24h/24. L'embed indique la durée de présence et le nombre de titres retirés.
+- Nouvelle commande `/voice-status` : un embed avec l'état de connexion, le salon, le mode 24h/24, la durée de présence, le nombre d'auditeurs, le titre en cours avec sa barre de progression et sa source réelle, le volume, la répétition, la file, la latence Discord et vocale, l'état du serveur audio Lavalink (durée de fonctionnement, mémoire, processeur, lecteurs actifs) et les statistiques du bot. (`/status` existe déjà : c'est la commande réservée au propriétaire pour la présence du bot.)
+- `/join` et `/disconnect` demandent la permission « Déplacer des membres » ou « Gérer le serveur » ; `/voice-status` est ouvert à tous. Le salon 24h/24 est mémorisé par serveur dans les réglages musique (`stayChannelId`).
+
 ## v1.25.21 — 2026-09-21
 
 **Lecteur musique : barre de progression lisible, et la vraie source du son est affichée**

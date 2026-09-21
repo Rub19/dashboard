@@ -136,6 +136,32 @@ class LavalinkManager {
     return this.shoukaku?.players.get(guildId);
   }
 
+  /** Dernières statistiques envoyées par le serveur Lavalink (null tant qu'il n'en a pas envoyé). */
+  public getNodeStats(): {
+    connected: boolean;
+    players: number;
+    playing: number;
+    uptimeMs: number;
+    memoryUsed: number;
+    memoryAllocated: number;
+    cpuLavalink: number;
+    cpuSystem: number;
+  } | null {
+    const node = this.getNode();
+    if (!node) return null;
+    const st = node.stats;
+    return {
+      connected: node.state === Constants.State.CONNECTED,
+      players: st?.players ?? 0,
+      playing: st?.playingPlayers ?? 0,
+      uptimeMs: st?.uptime ?? 0,
+      memoryUsed: st?.memory.used ?? 0,
+      memoryAllocated: st?.memory.allocated ?? 0,
+      cpuLavalink: st?.cpu.lavalinkLoad ?? 0,
+      cpuSystem: st?.cpu.systemLoad ?? 0,
+    };
+  }
+
   /**
    * Resolve a URL or free-text query into ETHONE tracks (with `encoded`).
    * Free text → YouTube Music search first (cleanest "song" results), then

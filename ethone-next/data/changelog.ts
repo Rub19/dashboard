@@ -29295,4 +29295,57 @@ CHANGELOG_BY_LANG.en.unshift(v12521_en);
 CHANGELOG_BY_LANG.es.unshift(v12521_es);
 CHANGELOG_BY_LANG.de.unshift(v12521_de);
 
+const v1260_fr: ChangelogEntry = {
+  version: "v1.26.0",
+  date: "2026-09-21",
+  title: "Bot musique : /join, /disconnect et /voice-status — le bot peut rester 24h/24 dans un salon vocal",
+  items: [
+    "Nouvelle commande `/join` : fait rejoindre le bot dans le salon vocal où tu es, ou dans un salon choisi avec l'option `salon` (vocal ou scène). Par défaut le bot y reste **24h/24** (option `permanent`, désactivable) : il ne quitte plus après l'inactivité, et si quelque chose le déconnecte (redémarrage du bot ou de Lavalink, déplacement ou exclusion par un modérateur, coupure réseau) il revient tout seul dans son salon dans la minute, avec des essais espacés en cas d'échec.",
+    "Nouvelle commande `/disconnect` : déconnecte le bot du vocal, vide la file d'attente et désactive le mode 24h/24. L'embed indique la durée de présence et le nombre de titres retirés.",
+    "Nouvelle commande `/voice-status` : un embed avec l'état de connexion, le salon, le mode 24h/24, la durée de présence, le nombre d'auditeurs, le titre en cours avec sa barre de progression et sa source réelle, le volume, la répétition, la file, la latence Discord et vocale, l'état du serveur audio Lavalink (durée de fonctionnement, mémoire, processeur, lecteurs actifs) et les statistiques du bot. (`/status` existe déjà : c'est la commande réservée au propriétaire pour la présence du bot.)",
+    "`/join` et `/disconnect` demandent la permission « Déplacer des membres » ou « Gérer le serveur » ; `/voice-status` est ouvert à tous. Le salon 24h/24 est mémorisé par serveur dans les réglages musique (`stayChannelId`).",
+  ],
+};
+
+const v1260_en: ChangelogEntry = {
+  version: "v1.26.0",
+  date: "2026-09-21",
+  title: "Music bot: /join, /disconnect and /voice-status — the bot can stay in a voice channel 24/7",
+  items: [
+    "New `/join` command: makes the bot join the voice channel you are in, or one chosen with the `salon` option (voice or stage). By default the bot stays there **24/7** (`permanent` option, can be turned off): it no longer leaves after inactivity, and if something disconnects it (bot or Lavalink restart, being moved or kicked by a moderator, network drop) it comes back to its channel on its own within a minute, with spaced-out retries on failure.",
+    "New `/disconnect` command: disconnects the bot from voice, clears the queue and turns off 24/7 mode. The embed shows how long it stayed and how many tracks were removed.",
+    "New `/voice-status` command: an embed with connection state, channel, 24/7 mode, time connected, listener count, the current track with its progress bar and real source, volume, repeat, queue, Discord and voice latency, the state of the Lavalink audio server (uptime, memory, CPU, active players) and bot statistics. (`/status` already exists: it is the owner-only command for the bot's presence.)",
+    "`/join` and `/disconnect` require the \"Move Members\" or \"Manage Server\" permission; `/voice-status` is open to everyone. The 24/7 channel is stored per server in the music settings (`stayChannelId`).",
+  ],
+};
+
+const v1260_es: ChangelogEntry = {
+  version: "v1.26.0",
+  date: "2026-09-21",
+  title: "Bot de música: /join, /disconnect y /voice-status — el bot puede quedarse 24/7 en un canal de voz",
+  items: [
+    "Nuevo comando `/join`: hace que el bot entre en el canal de voz en el que estás, o en uno elegido con la opción `salon` (voz o escenario). Por defecto el bot se queda **24/7** (opción `permanent`, desactivable): ya no se va tras un periodo de inactividad y, si algo lo desconecta (reinicio del bot o de Lavalink, movimiento o expulsión por un moderador, corte de red), vuelve solo a su canal en menos de un minuto, con reintentos espaciados si falla.",
+    "Nuevo comando `/disconnect`: desconecta al bot de la voz, vacía la cola y desactiva el modo 24/7. El embed indica cuánto tiempo estuvo y cuántas canciones se quitaron.",
+    "Nuevo comando `/voice-status`: un embed con el estado de conexión, el canal, el modo 24/7, el tiempo conectado, los oyentes, la canción actual con su barra de progreso y su fuente real, el volumen, la repetición, la cola, la latencia de Discord y de voz, el estado del servidor de audio Lavalink (tiempo activo, memoria, CPU, reproductores activos) y estadísticas del bot. (`/status` ya existe: es el comando exclusivo del propietario para la presencia del bot.)",
+    "`/join` y `/disconnect` requieren el permiso « Mover miembros » o « Administrar servidor »; `/voice-status` es para todos. El canal 24/7 se guarda por servidor en los ajustes de música (`stayChannelId`).",
+  ],
+};
+
+const v1260_de: ChangelogEntry = {
+  version: "v1.26.0",
+  date: "2026-09-21",
+  title: "Musik-Bot: /join, /disconnect und /voice-status — der Bot kann rund um die Uhr in einem Sprachkanal bleiben",
+  items: [
+    "Neuer Befehl `/join`: Lässt den Bot in den Sprachkanal, in dem du bist, oder in einen mit der Option `salon` gewählten (Sprach- oder Bühnenkanal) kommen. Standardmäßig bleibt der Bot dort **rund um die Uhr** (Option `permanent`, abschaltbar): Er verlässt den Kanal nicht mehr nach Inaktivität, und wenn ihn etwas trennt (Neustart von Bot oder Lavalink, Verschieben oder Rauswurf durch einen Moderator, Netzausfall), kehrt er innerhalb einer Minute von selbst zurück, mit gestaffelten Wiederholungen bei Fehlern.",
+    "Neuer Befehl `/disconnect`: Trennt den Bot vom Sprachkanal, leert die Warteschlange und schaltet den 24/7-Modus aus. Das Embed zeigt, wie lange er blieb und wie viele Titel entfernt wurden.",
+    "Neuer Befehl `/voice-status`: Ein Embed mit Verbindungsstatus, Kanal, 24/7-Modus, Verbindungsdauer, Zuhörerzahl, dem aktuellen Titel mit Fortschrittsbalken und echter Quelle, Lautstärke, Wiederholung, Warteschlange, Discord- und Sprachlatenz, dem Zustand des Lavalink-Audioservers (Laufzeit, Speicher, CPU, aktive Player) und Bot-Statistiken. (`/status` gibt es schon: Das ist der Befehl nur für den Besitzer für die Präsenz des Bots.)",
+    "`/join` und `/disconnect` erfordern die Berechtigung „Mitglieder verschieben“ oder „Server verwalten“; `/voice-status` steht allen offen. Der 24/7-Kanal wird pro Server in den Musikeinstellungen gespeichert (`stayChannelId`).",
+  ],
+};
+
+CHANGELOG_BY_LANG.fr.unshift(v1260_fr);
+CHANGELOG_BY_LANG.en.unshift(v1260_en);
+CHANGELOG_BY_LANG.es.unshift(v1260_es);
+CHANGELOG_BY_LANG.de.unshift(v1260_de);
+
 export const CHANGELOG = CHANGELOG_BY_LANG.fr;

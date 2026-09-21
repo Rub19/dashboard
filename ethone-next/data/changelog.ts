@@ -29601,4 +29601,57 @@ CHANGELOG_BY_LANG.en.unshift(v1265_en);
 CHANGELOG_BY_LANG.es.unshift(v1265_es);
 CHANGELOG_BY_LANG.de.unshift(v1265_de);
 
+const v1270_fr: ChangelogEntry = {
+  version: "v1.27.0",
+  date: "2026-09-21",
+  title: "Logs : un webhook nommé par catégorie (« vocals », « mod »…), un salon par catégorie, avec bouton de test",
+  items: [
+    "Chaque catégorie de journaux (modération, sécurité, anti-raid, AutoMod, vocal, membres, messages, rôles, salons, serveur, webhooks, bots, système) est envoyée par un webhook qui porte son propre nom. Les noms par défaut sont courts et en minuscules : « vocals » pour le vocal, « mod » pour la modération, « anti-raid », « members »… Tu peux les renommer dans le dashboard (Logs, onglet Routage, « Webhooks par catégorie »). Discord refusant les noms contenant « discord » ou « clyde », ces mots sont retirés automatiquement.",
+    "Chaque catégorie peut aussi avoir son propre salon (avant, les logs vocaux, de messages, de rôles ou de membres partaient tous dans le même salon général). Le salon dédié est prioritaire sur le routage existant, qui reste le repli. Le salon de l'anti-raid n'avait aucun champ dans l'interface : il est maintenant configurable.",
+    "Un bouton « Tester » par catégorie envoie un message d'exemple et dit précisément ce qui a été fait, ou pourquoi rien n'est parti (aucun salon configuré, permission manquante, journaux désactivés).",
+    "Les salons de destination se choisissent dans une liste des vrais salons du serveur, au lieu de taper un identifiant à la main.",
+  ],
+};
+
+const v1270_en: ChangelogEntry = {
+  version: "v1.27.0",
+  date: "2026-09-21",
+  title: "Logs: a named webhook per category (\"vocals\", \"mod\"…), one channel per category, with a test button",
+  items: [
+    "Each log category (moderation, security, anti-raid, AutoMod, voice, members, messages, roles, channels, server, webhooks, bots, system) is sent through a webhook carrying its own name. Default names are short and lowercase: \"vocals\" for voice, \"mod\" for moderation, \"anti-raid\", \"members\"… You can rename them in the dashboard (Logs, Routing tab, \"Webhooks per category\"). Since Discord rejects names containing \"discord\" or \"clyde\", those words are removed automatically.",
+    "Each category can also have its own channel (before, voice, message, role and member logs all went to the same general channel). The dedicated channel takes priority over the existing routing, which remains the fallback. The anti-raid channel had no field in the interface: it is now configurable.",
+    "A \"Test\" button per category sends a sample message and says exactly what was done, or why nothing was sent (no channel configured, missing permission, logs disabled).",
+    "Destination channels are picked from a list of the server's real channels instead of typing an id by hand.",
+  ],
+};
+
+const v1270_es: ChangelogEntry = {
+  version: "v1.27.0",
+  date: "2026-09-21",
+  title: "Logs: un webhook con nombre por categoría (« vocals », « mod »…), un canal por categoría, con botón de prueba",
+  items: [
+    "Cada categoría de registros (moderación, seguridad, anti-raid, AutoMod, voz, miembros, mensajes, roles, canales, servidor, webhooks, bots, sistema) se envía mediante un webhook con su propio nombre. Los nombres por defecto son cortos y en minúsculas: « vocals » para voz, « mod » para moderación, « anti-raid », « members »… Puedes renombrarlos en el panel (Logs, pestaña Enrutamiento, « Webhooks por categoría »). Como Discord rechaza los nombres que contienen « discord » o « clyde », esas palabras se eliminan automáticamente.",
+    "Cada categoría también puede tener su propio canal (antes, los registros de voz, mensajes, roles o miembros iban todos al mismo canal general). El canal dedicado tiene prioridad sobre el enrutamiento existente, que sigue como alternativa. El canal de anti-raid no tenía ningún campo en la interfaz: ahora es configurable.",
+    "Un botón « Probar » por categoría envía un mensaje de ejemplo y dice exactamente qué se hizo, o por qué no salió nada (ningún canal configurado, permiso ausente, registros desactivados).",
+    "Los canales de destino se eligen en una lista de los canales reales del servidor en lugar de escribir un identificador a mano.",
+  ],
+};
+
+const v1270_de: ChangelogEntry = {
+  version: "v1.27.0",
+  date: "2026-09-21",
+  title: "Logs: ein benannter Webhook pro Kategorie („vocals“, „mod“ …), ein Kanal pro Kategorie, mit Test-Schaltfläche",
+  items: [
+    "Jede Log-Kategorie (Moderation, Sicherheit, Anti-Raid, AutoMod, Sprache, Mitglieder, Nachrichten, Rollen, Kanäle, Server, Webhooks, Bots, System) wird über einen Webhook mit eigenem Namen gesendet. Die Standardnamen sind kurz und kleingeschrieben: „vocals“ für Sprache, „mod“ für Moderation, „anti-raid“, „members“ … Du kannst sie im Dashboard umbenennen (Logs, Tab Routing, „Webhooks pro Kategorie“). Da Discord Namen mit „discord“ oder „clyde“ ablehnt, werden diese Wörter automatisch entfernt.",
+    "Jede Kategorie kann außerdem einen eigenen Kanal haben (zuvor gingen Sprach-, Nachrichten-, Rollen- und Mitglieder-Logs alle in denselben allgemeinen Kanal). Der dedizierte Kanal hat Vorrang vor dem bestehenden Routing, das als Rückfall bleibt. Für den Anti-Raid-Kanal gab es kein Feld in der Oberfläche: Er ist jetzt konfigurierbar.",
+    "Eine „Testen“-Schaltfläche pro Kategorie sendet eine Beispielnachricht und sagt genau, was getan wurde oder warum nichts gesendet wurde (kein Kanal konfiguriert, fehlende Berechtigung, Logs deaktiviert).",
+    "Zielkanäle werden aus einer Liste der echten Kanäle des Servers gewählt, statt eine ID von Hand einzutippen.",
+  ],
+};
+
+CHANGELOG_BY_LANG.fr.unshift(v1270_fr);
+CHANGELOG_BY_LANG.en.unshift(v1270_en);
+CHANGELOG_BY_LANG.es.unshift(v1270_es);
+CHANGELOG_BY_LANG.de.unshift(v1270_de);
+
 export const CHANGELOG = CHANGELOG_BY_LANG.fr;

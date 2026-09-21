@@ -1,6 +1,7 @@
 import fs from 'fs';
 import path from 'path';
 import { AuditEvent, AuditModule, AuditSeverity, AuditSettings } from '../types/auditEvent.js';
+import { DEFAULT_CATEGORY_NAME, isLogCategoryKey, sanitizeWebhookName } from '../services/logCategories.js';
 import { logger } from '../../../utils/logger.js';
 
 export interface AuditQueryOptions {
@@ -321,11 +322,47 @@ export class AuditRepository {
         ...existing.privacy,
         ...(partial.privacy || {}),
       },
+      webhookNames: this.mergeWebhookNames(existing.webhookNames, partial.webhookNames),
+      categoryChannels: this.mergeCategoryChannels(existing.categoryChannels, partial.categoryChannels),
       updatedAt: new Date().toISOString(),
     };
     this.configs.set(guildId, updated);
     this.saveConfigs();
     return updated;
+  }
+
+  /** Noms de webhook : catégories connues uniquement, nettoyés ; une valeur vide rétablit le nom par défaut. */
+  private mergeWebhookNames(
+    existing: AuditSettings['webhookNames'],
+    incoming: AuditSettings['webhookNames']
+  ): AuditSettings['webhookNames'] {
+    const out: NonNullable<AuditSettings['webhookNames']> = { ...(existing || {}) };
+    for (const [key, value] of Object.entries(incoming || {})) {
+      if (!isLogCategoryKey(key)) continue;
+      if (typeof value !== 'string' || value.trim() === '') {
+        delete out[key];
+        continue;
+      }
+      out[key] = sanitizeWebhookName(value, DEFAULT_CATEGORY_NAME[key]);
+    }
+    return out;
+  }
+
+  /** Salons par catégorie : identifiants Discord uniquement ; null ou vide retire la redirection. */
+  private mergeCategoryChannels(
+    existing: AuditSettings['categoryChannels'],
+    incoming: AuditSettings['categoryChannels']
+  ): AuditSettings['categoryChannels'] {
+    const out: NonNullable<AuditSettings['categoryChannels']> = { ...(existing || {}) };
+    for (const [key, value] of Object.entries(incoming || {})) {
+      if (!isLogCategoryKey(key)) continue;
+      if (value === null || value === '') {
+        delete out[key];
+        continue;
+      }
+      if (typeof value === 'string' && /^\d{5,25}$/.test(value)) out[key] = value;
+    }
+    return out;
   }
 
   public purgeOlderThanDays(days: number): number {

@@ -70,6 +70,9 @@ export interface AuditEvent {
 
 export type ChannelLogThreshold = 'OFF' | 'ALL' | 'IMPORTANT' | 'CRITICAL_ONLY';
 
+/** Catégorie de journal configurable : un module d'audit, ou « RAID » (détection de raid). */
+export type LogCategoryKey = AuditModule | 'RAID';
+
 export interface AuditChannelRouting {
   generalChannelId?: string | null;
   generalThreshold: ChannelLogThreshold;
@@ -105,6 +108,10 @@ export interface AuditSettings {
   /** Livrer les logs via un webhook (username = catégorie) plutôt que via le bot. Défaut : true. */
   useWebhooks?: boolean;
   routing: AuditChannelRouting;
+  /** Nom du webhook (username affiché) par catégorie — « vocals », « mod »… Défaut : voir logCategories.ts. */
+  webhookNames?: Partial<Record<LogCategoryKey, string>>;
+  /** Salon dédié par catégorie ; sinon le routage général s'applique. */
+  categoryChannels?: Partial<Record<LogCategoryKey, string | null>>;
   retentionDays: number; // 7, 30, 90, 180, 365, 0 (forever)
   notificationRules: AuditNotificationRule[];
   privacy: {

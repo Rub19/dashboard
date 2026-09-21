@@ -7,32 +7,21 @@ import {
   TextChannel,
   Webhook,
 } from 'discord.js';
-import { AuditEvent, AuditModule, AuditSeverity, ChannelLogThreshold } from '../types/auditEvent.js';
+import { AuditEvent, AuditModule, AuditSeverity, AuditSettings, ChannelLogThreshold, LogCategoryKey } from '../types/auditEvent.js';
+import { DEFAULT_CATEGORY_NAME, categoryKeyOf, sanitizeWebhookName } from './logCategories.js';
 import { auditRepository } from '../storage/auditRepository.js';
 import { logger } from '../../../utils/logger.js';
 import { baseEmbed } from '../../../utils/embeds.js';
 
 const WEBHOOK_NAME = 'ETHONE Logs';
 
-/** Nom affiché (username du webhook) par catégorie de log — comme les gros bots. */
-const CATEGORY_LABEL: Partial<Record<AuditModule, string>> = {
-  MODERATION: 'Modération',
-  SECURITY: 'Sécurité',
-  AUTOMOD: 'AutoMod',
-  VOICE: 'Vocal',
-  MEMBERS: 'Membres',
-  MESSAGES: 'Messages',
-  ROLES: 'Rôles',
-  CHANNELS: 'Salons',
-  SERVER: 'Serveur',
-  WEBHOOKS: 'Webhooks',
-  BOTS: 'Bots',
-  SYSTEM: 'Système',
-};
-
-function categoryLabel(event: AuditEvent): string {
-  if (event.module === 'SECURITY' && event.type.includes('RAID')) return 'Anti-Raid';
-  return CATEGORY_LABEL[event.module] || 'Journal';
+/** Résultat d'une livraison (utilisé par le message de test du dashboard). */
+export interface DeliveryResult {
+  ok: boolean;
+  reason?: 'bot_offline' | 'guild_not_found' | 'disabled' | 'no_channel' | 'no_permission' | 'error';
+  name: string;
+  channelId?: string;
+  via?: 'webhook' | 'bot';
 }
 
 export class DiscordLogService {
@@ -45,30 +34,62 @@ export class DiscordLogService {
   }
 
   public static async dispatchToDiscord(event: AuditEvent): Promise<void> {
-    if (!this.discordClient) return;
+    await this.deliver(event, false);
+  }
+
+  /** Nom du webhook pour cet événement : celui choisi dans le dashboard, sinon « vocals », « mod »… */
+  public static webhookNameFor(config: AuditSettings, key: LogCategoryKey): string {
+    return sanitizeWebhookName(config.webhookNames?.[key], DEFAULT_CATEGORY_NAME[key]);
+  }
+
+  /**
+   * Envoie un message de test pour une catégorie (ignore le seuil de sévérité) et dit précisément ce
+   * qui a été fait, ou pourquoi rien n'est parti.
+   */
+  public static async sendTest(guildId: string, key: LogCategoryKey): Promise<DeliveryResult> {
+    const event: AuditEvent = {
+      id: 'AUD-TEST',
+      guildId,
+      module: key === 'RAID' ? 'SECURITY' : key,
+      type: key === 'RAID' ? 'RAID_TEST' : 'LOG_TEST',
+      severity: 'INFO',
+      actor: { id: 'ETHONE_ADMIN', tag: 'Test depuis le dashboard' },
+      reason: 'Message de test : si tu le vois, cette catégorie est bien branchée.',
+      timestamp: new Date().toISOString(),
+    };
+    return this.deliver(event, true);
+  }
+
+  private static async deliver(event: AuditEvent, force: boolean): Promise<DeliveryResult> {
+    const key = categoryKeyOf(event);
+    if (!this.discordClient) return { ok: false, reason: 'bot_offline', name: DEFAULT_CATEGORY_NAME[key] };
 
     try {
       const guild = this.discordClient.guilds.cache.get(event.guildId);
-      if (!guild) return;
+      if (!guild) return { ok: false, reason: 'guild_not_found', name: DEFAULT_CATEGORY_NAME[key] };
 
       const config = auditRepository.getConfig(event.guildId);
-      if (!config.enabled) return;
+      const name = this.webhookNameFor(config, key);
+      if (!config.enabled && !force) return { ok: false, reason: 'disabled', name };
 
-      const targetChannel = this.resolveChannel(guild, event, config.routing);
-      if (!targetChannel) return;
+      const targetChannel = this.resolveChannel(guild, event, config, force);
+      if (!targetChannel) return { ok: false, reason: 'no_channel', name };
 
       const me = guild.members.me;
-      if (!me || !targetChannel.permissionsFor(me)?.has(PermissionFlagsBits.SendMessages)) return;
+      if (!me || !targetChannel.permissionsFor(me)?.has(PermissionFlagsBits.SendMessages)) {
+        return { ok: false, reason: 'no_permission', name, channelId: targetChannel.id };
+      }
 
       const embed = this.createEmbed(event);
 
-      // Livraison via webhook (username = catégorie) sauf si explicitement désactivé.
+      // Livraison via webhook (username = nom de la catégorie) sauf si explicitement désactivé.
       if (config.useWebhooks !== false) {
         const webhook = await this.getWebhook(targetChannel, me);
         if (webhook) {
+          let fallback = false;
           await webhook
             .send({
-              username: `${categoryLabel(event)}`,
+              username: name,
               avatarURL: guild.client.user?.displayAvatarURL(),
               embeds: [embed],
               allowedMentions: { parse: [] },
@@ -77,15 +98,18 @@ export class DiscordLogService {
               // Webhook invalide (supprimé côté Discord) → on purge et on retombe sur le bot.
               logger.warn('[Logs] Envoi webhook échoué, fallback bot :', err);
               this.webhookCache.delete(targetChannel.id);
+              fallback = true;
               await targetChannel.send({ embeds: [embed], allowedMentions: { parse: [] } }).catch(() => {});
             });
-          return;
+          return { ok: true, name, channelId: targetChannel.id, via: fallback ? 'bot' : 'webhook' };
         }
       }
 
       await targetChannel.send({ embeds: [embed], allowedMentions: { parse: [] } });
+      return { ok: true, name, channelId: targetChannel.id, via: 'bot' };
     } catch (err) {
       logger.error('Erreur dans DiscordLogService.dispatchToDiscord :', err);
+      return { ok: false, reason: 'error', name: DEFAULT_CATEGORY_NAME[key] };
     }
   }
 
@@ -119,11 +143,8 @@ export class DiscordLogService {
     }
   }
 
-  private static resolveChannel(
-    guild: Guild,
-    event: AuditEvent,
-    routing: ReturnType<typeof auditRepository.getConfig>['routing']
-  ): TextChannel | null {
+  private static resolveChannel(guild: Guild, event: AuditEvent, config: AuditSettings, force = false): TextChannel | null {
+    const routing = config.routing;
     let channelId: string | null | undefined = null;
     let threshold: ChannelLogThreshold = 'IMPORTANT';
 
@@ -146,12 +167,16 @@ export class DiscordLogService {
       threshold = routing.generalThreshold;
     }
 
+    // Salon dédié à cette catégorie (choisi dans le dashboard) : prioritaire sur le routage ci-dessus.
+    const dedicated = config.categoryChannels?.[categoryKeyOf(event)];
+    if (dedicated) channelId = dedicated;
+
     if (!channelId) {
       channelId = routing.generalChannelId;
       threshold = routing.generalThreshold;
     }
 
-    if (!this.shouldSend(event.severity, threshold)) return null;
+    if (!force && !this.shouldSend(event.severity, threshold)) return null;
     if (!channelId) return null;
 
     const channel = guild.channels.cache.get(channelId);

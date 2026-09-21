@@ -2,6 +2,15 @@
 
 Toutes les modifications notables de ce projet seront documentées dans ce fichier.
 
+## v1.27.0 — 2026-09-21
+
+**Logs : un webhook nommé par catégorie (« vocals », « mod »…), un salon par catégorie, avec bouton de test**
+
+- Chaque catégorie de journaux (modération, sécurité, anti-raid, AutoMod, vocal, membres, messages, rôles, salons, serveur, webhooks, bots, système) est envoyée par un webhook qui porte son propre nom. Les noms par défaut sont courts et en minuscules : « vocals » pour le vocal, « mod » pour la modération, « anti-raid », « members »… Tu peux les renommer dans le dashboard (Logs, onglet Routage, « Webhooks par catégorie »). Discord refusant les noms contenant « discord » ou « clyde », ces mots sont retirés automatiquement.
+- Chaque catégorie peut aussi avoir son propre salon (avant, les logs vocaux, de messages, de rôles ou de membres partaient tous dans le même salon général). Le salon dédié est prioritaire sur le routage existant, qui reste le repli. Le salon de l'anti-raid n'avait aucun champ dans l'interface : il est maintenant configurable.
+- Un bouton « Tester » par catégorie envoie un message d'exemple et dit précisément ce qui a été fait, ou pourquoi rien n'est parti (aucun salon configuré, permission manquante, journaux désactivés).
+- Les salons de destination se choisissent dans une liste des vrais salons du serveur, au lieu de taper un identifiant à la main.
+
 ## v1.26.5 — 2026-09-21
 
 **Dashboard Discord : plus de « mode local » sur Événements, Formulaires et Calendrier, et fin du faux serveur**

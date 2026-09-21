@@ -141,6 +141,51 @@ export interface InvestigationResult {
   }[];
 }
 
+
+const LOG_CATEGORIES: Array<{ key: string; label: string; icon: string; defaultName: string }> = [
+  { key: "MODERATION", label: "Modération", icon: "👮", defaultName: "mod" },
+  { key: "SECURITY", label: "Sécurité", icon: "🛡️", defaultName: "security" },
+  { key: "RAID", label: "Anti-raid", icon: "🚨", defaultName: "anti-raid" },
+  { key: "AUTOMOD", label: "AutoMod", icon: "⚡", defaultName: "automod" },
+  { key: "VOICE", label: "Vocal", icon: "🔊", defaultName: "vocals" },
+  { key: "MEMBERS", label: "Membres", icon: "👤", defaultName: "members" },
+  { key: "MESSAGES", label: "Messages", icon: "💬", defaultName: "messages" },
+  { key: "ROLES", label: "Rôles", icon: "🎭", defaultName: "roles" },
+  { key: "CHANNELS", label: "Salons", icon: "📁", defaultName: "channels" },
+  { key: "SERVER", label: "Serveur", icon: "🌐", defaultName: "server" },
+  { key: "WEBHOOKS", label: "Webhooks", icon: "🔗", defaultName: "webhooks" },
+  { key: "BOTS", label: "Bots", icon: "🤖", defaultName: "bots" },
+  { key: "SYSTEM", label: "Système", icon: "⚙️", defaultName: "system" },
+];
+
+/** Liste déroulante des salons texte du serveur (à la place d'un identifiant à taper à la main). */
+function ChannelSelect({
+  value,
+  onChange,
+  channels,
+  emptyLabel,
+  className,
+}: {
+  value: string;
+  onChange: (id: string) => void;
+  channels: Array<{ id: string; name: string }>;
+  emptyLabel: string;
+  className?: string;
+}) {
+  const known = channels.some((c) => c.id === value);
+  return (
+    <select value={value} onChange={(e) => onChange(e.target.value)} className={className}>
+      <option value="">{emptyLabel}</option>
+      {value && !known && <option value={value}>Salon inconnu ({value})</option>}
+      {channels.map((c) => (
+        <option key={c.id} value={c.id}>
+          # {c.name}
+        </option>
+      ))}
+    </select>
+  );
+}
+
 export function AuditCenterClient() {
   const searchParams = useSearchParams();
   const guildParam = searchParams.get("guildId");
@@ -187,6 +232,10 @@ export function AuditCenterClient() {
     retentionDays: 90,
   });
   const [savingConfig, setSavingConfig] = useState(false);
+  const [textChannels, setTextChannels] = useState<Array<{ id: string; name: string }>>([]);
+  const [webhookNames, setWebhookNames] = useState<Record<string, string>>({});
+  const [categoryChannels, setCategoryChannels] = useState<Record<string, string>>({});
+  const [testingCategory, setTestingCategory] = useState<string | null>(null);
 
   // Résolution du serveur
   useEffect(() => {
@@ -282,7 +331,18 @@ export function AuditCenterClient() {
             raidThreshold: data.config.routing?.raidThreshold || "CRITICAL_ONLY",
             retentionDays: data.config.retentionDays ?? 90,
           });
+          setWebhookNames(data.config.webhookNames || {});
+          setCategoryChannels(
+            Object.fromEntries(Object.entries(data.config.categoryChannels || {}).map(([k, v]) => [k, String(v || "")]))
+          );
         }
+      }
+      // Vrais salons du serveur pour les listes déroulantes.
+      const chRes = await fetch(`${API_BASE}/api/guilds/${selectedGuild.id}/server/channels`, { credentials: "include" });
+      if (chRes.ok) {
+        const chData = await chRes.json();
+        const all = [...(chData.categories || []).flatMap((c: { channels?: unknown[] }) => c.channels || []), ...(chData.orphanChannels || [])] as Array<{ id: string; name: string; type: number }>;
+        setTextChannels(all.filter((c) => c.type === 0 || c.type === 5).map(({ id, name }) => ({ id, name })));
       }
     } catch {}
   }, [selectedGuild]);
@@ -307,6 +367,10 @@ export function AuditCenterClient() {
         raidThreshold: updatedConfig.routing?.raidThreshold || "CRITICAL_ONLY",
         retentionDays: updatedConfig.retentionDays ?? 90,
       });
+      setWebhookNames(updatedConfig.webhookNames || {});
+      setCategoryChannels(
+        Object.fromEntries(Object.entries(updatedConfig.categoryChannels || {}).map(([k, v]) => [k, String(v || "")]))
+      );
     },
   });
 
@@ -354,6 +418,35 @@ export function AuditCenterClient() {
     }
   };
 
+  // Envoie un message de test pour une catégorie (enregistre d'abord pour tester la config affichée)
+  const handleTestCategory = async (key: string) => {
+    if (!selectedGuild) return;
+    if (!API_BASE) {
+      showError("Bot injoignable : aucun test possible.");
+      return;
+    }
+    setTestingCategory(key);
+    try {
+      await handleSaveConfig();
+      const res = await fetch(`${API_BASE}/api/guilds/${selectedGuild.id}/logs/config/test`, {
+        credentials: "include",
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ category: key }),
+      });
+      const data = await res.json().catch(() => null);
+      if (res.ok && data?.success) {
+        success(`Message de test envoyé par « ${data.name} »`, data.channelId ? "Regarde le salon choisi." : "");
+      } else {
+        showError(data?.error || "Le test a échoué.");
+      }
+    } catch {
+      showError("Erreur réseau pendant le test.");
+    } finally {
+      setTestingCategory(null);
+    }
+  };
+
   // Sauvegarder la configuration de routage
   const handleSaveConfig = async () => {
     if (!selectedGuild) return;
@@ -381,6 +474,9 @@ export function AuditCenterClient() {
             raidThreshold: configRouting.raidThreshold,
           },
           retentionDays: configRouting.retentionDays,
+          // Chaîne vide = retire le nom personnalisé / le salon dédié (le bot revient au défaut).
+          webhookNames: Object.fromEntries(LOG_CATEGORIES.map((c) => [c.key, (webhookNames[c.key] || "").trim()])),
+          categoryChannels: Object.fromEntries(LOG_CATEGORIES.map((c) => [c.key, categoryChannels[c.key] || null])),
         }),
       });
       if (res.ok) {
@@ -1039,11 +1135,11 @@ export function AuditCenterClient() {
                 {/* Salon Général */}
                 <div className="rounded-[var(--inset-radius)] border border-[var(--panel-border)] bg-white/[0.02] p-3 space-y-2">
                   <span className="font-bold text-white">Logs Généraux & Serveur</span>
-                  <input
-                    type="text"
+                  <ChannelSelect
                     value={configRouting.generalChannelId}
-                    onChange={(e) => setConfigRouting({ ...configRouting, generalChannelId: e.target.value })}
-                    placeholder="ID du salon (ex: 123456789...)"
+                    onChange={(id) => setConfigRouting({ ...configRouting, generalChannelId: id })}
+                    channels={textChannels}
+                    emptyLabel="— Aucun (salon général) —"
                     className="h-9 w-full rounded-[var(--inset-radius)] border border-[var(--panel-border)] bg-zinc-950/80 px-3 text-white outline-none focus:border-indigo-500"
                   />
                   <div className="flex items-center justify-between text-[11px] text-zinc-400">
@@ -1064,11 +1160,11 @@ export function AuditCenterClient() {
                 {/* Salon Modération */}
                 <div className="rounded-[var(--inset-radius)] border border-[var(--panel-border)] bg-white/[0.02] p-3 space-y-2">
                   <span className="font-bold text-orange-400">Logs de Modération (Cases)</span>
-                  <input
-                    type="text"
+                  <ChannelSelect
                     value={configRouting.moderationChannelId}
-                    onChange={(e) => setConfigRouting({ ...configRouting, moderationChannelId: e.target.value })}
-                    placeholder="ID du salon mod-logs"
+                    onChange={(id) => setConfigRouting({ ...configRouting, moderationChannelId: id })}
+                    channels={textChannels}
+                    emptyLabel="— Aucun (salon général) —"
                     className="h-9 w-full rounded-[var(--inset-radius)] border border-[var(--panel-border)] bg-zinc-950/80 px-3 text-white outline-none focus:border-orange-500"
                   />
                   <div className="flex items-center justify-between text-[11px] text-zinc-400">
@@ -1089,11 +1185,11 @@ export function AuditCenterClient() {
                 {/* Salon Sécurité */}
                 <div className="rounded-[var(--inset-radius)] border border-[var(--panel-border)] bg-white/[0.02] p-3 space-y-2">
                   <span className="font-bold text-rose-400">Logs Sécurité & Anti-Raid</span>
-                  <input
-                    type="text"
+                  <ChannelSelect
                     value={configRouting.securityChannelId}
-                    onChange={(e) => setConfigRouting({ ...configRouting, securityChannelId: e.target.value })}
-                    placeholder="ID du salon security-alerts"
+                    onChange={(id) => setConfigRouting({ ...configRouting, securityChannelId: id })}
+                    channels={textChannels}
+                    emptyLabel="— Aucun (salon général) —"
                     className="h-9 w-full rounded-[var(--inset-radius)] border border-[var(--panel-border)] bg-zinc-950/80 px-3 text-white outline-none focus:border-rose-500"
                   />
                   <div className="flex items-center justify-between text-[11px] text-zinc-400">
@@ -1114,11 +1210,11 @@ export function AuditCenterClient() {
                 {/* Salon AutoMod */}
                 <div className="rounded-[var(--inset-radius)] border border-[var(--panel-border)] bg-white/[0.02] p-3 space-y-2">
                   <span className="font-bold text-amber-400">Logs Détections AutoMod</span>
-                  <input
-                    type="text"
+                  <ChannelSelect
                     value={configRouting.automodChannelId}
-                    onChange={(e) => setConfigRouting({ ...configRouting, automodChannelId: e.target.value })}
-                    placeholder="ID du salon automod-logs"
+                    onChange={(id) => setConfigRouting({ ...configRouting, automodChannelId: id })}
+                    channels={textChannels}
+                    emptyLabel="— Aucun (salon général) —"
                     className="h-9 w-full rounded-[var(--inset-radius)] border border-[var(--panel-border)] bg-zinc-950/80 px-3 text-white outline-none focus:border-amber-500"
                   />
                   <div className="flex items-center justify-between text-[11px] text-zinc-400">
@@ -1136,6 +1232,67 @@ export function AuditCenterClient() {
                   </div>
                 </div>
               </div>
+            </div>
+
+            {/* WEBHOOKS PAR CATÉGORIE */}
+            <div className="rounded-[var(--panel-radius)] border border-[var(--panel-border)] bg-zinc-900/60 p-5 backdrop-blur-xl space-y-4">
+              <div className="flex flex-col gap-3 border-b border-[var(--panel-border)] pb-3 sm:flex-row sm:items-center sm:justify-between">
+                <div>
+                  <h3 className="text-sm font-bold text-white">Webhooks par catégorie</h3>
+                  <p className="text-xs text-zinc-400">
+                    Chaque catégorie de logs est envoyée par un webhook qui porte le nom que tu choisis (« vocals », « mod »…), dans son propre salon si tu en indiques un.
+                  </p>
+                </div>
+                <button
+                  type="button"
+                  onClick={handleSaveConfig}
+                  disabled={savingConfig}
+                  className="flex items-center gap-2 self-start rounded-xl bg-indigo-600 px-4 py-2 text-xs font-bold text-white shadow-sm hover:bg-indigo-500 transition-all cursor-pointer disabled:opacity-60"
+                >
+                  <CheckCircle2 className="h-4 w-4" />
+                  <span>{savingConfig ? "Sauvegarde..." : "Enregistrer"}</span>
+                </button>
+              </div>
+
+              <div className="space-y-2">
+                {LOG_CATEGORIES.map((cat) => (
+                  <div
+                    key={cat.key}
+                    className="grid grid-cols-1 items-center gap-2 rounded-[var(--inset-radius)] border border-[var(--panel-border)] bg-white/[0.02] p-2.5 text-xs sm:grid-cols-[9rem_minmax(0,1fr)_minmax(0,1fr)_auto]"
+                  >
+                    <span className="font-bold text-white">
+                      <span className="mr-1.5">{cat.icon}</span>
+                      {cat.label}
+                    </span>
+                    <input
+                      type="text"
+                      maxLength={80}
+                      value={webhookNames[cat.key] || ""}
+                      onChange={(e) => setWebhookNames({ ...webhookNames, [cat.key]: e.target.value })}
+                      placeholder={`Nom du webhook (défaut : ${cat.defaultName})`}
+                      className="h-9 w-full rounded-[var(--inset-radius)] border border-[var(--panel-border)] bg-zinc-950/80 px-3 text-white outline-none focus:border-indigo-500"
+                    />
+                    <ChannelSelect
+                      value={categoryChannels[cat.key] || ""}
+                      onChange={(id) => setCategoryChannels({ ...categoryChannels, [cat.key]: id })}
+                      channels={textChannels}
+                      emptyLabel="Salon par défaut (routage ci-dessus)"
+                      className="h-9 w-full rounded-[var(--inset-radius)] border border-[var(--panel-border)] bg-zinc-950/80 px-2 text-white outline-none focus:border-indigo-500"
+                    />
+                    <button
+                      type="button"
+                      onClick={() => handleTestCategory(cat.key)}
+                      disabled={testingCategory !== null}
+                      className="h-9 rounded-[var(--inset-radius)] border border-[var(--panel-border)] bg-white/5 px-3 text-[11px] font-semibold text-zinc-300 hover:bg-white/10 hover:text-white disabled:opacity-50 cursor-pointer"
+                    >
+                      {testingCategory === cat.key ? "Envoi…" : "Tester"}
+                    </button>
+                  </div>
+                ))}
+              </div>
+              <p className="text-[11px] text-zinc-500">
+                Discord n&apos;accepte pas les noms contenant « discord » ou « clyde » : ces mots sont retirés automatiquement. Un nom vide rétablit le nom par défaut.
+              </p>
             </div>
 
             {/* RÉTENTION DES LOGS */}

@@ -7,6 +7,8 @@ import { LogExportService } from '../../modules/logs/services/logExportService.j
 import { logService } from '../../modules/logs/services/logService.js';
 import { AuditModule, AuditSeverity } from '../../modules/logs/types/auditEvent.js';
 import { emitConfigUpdated } from '../../services/syncConfigEmitter.js';
+import { DiscordLogService } from '../../modules/logs/services/discordLogService.js';
+import { isLogCategoryKey } from '../../modules/logs/services/logCategories.js';
 
 export function createLogRouter(discordClient: Client) {
   const router = express.Router({ mergeParams: true });
@@ -160,6 +162,29 @@ export function createLogRouter(discordClient: Client) {
     } catch (err: any) {
       res.status(400).json({ error: err.message || 'Données de configuration invalides' });
     }
+  });
+
+  // POST /api/guilds/:guildId/logs/config/test  { category: 'VOICE' | 'MODERATION' | 'RAID' … }
+  router.post('/config/test', async (req: Request, res: Response): Promise<void> => {
+    const guildId = String(req.params.guildId);
+    const category = req.body?.category;
+    if (!isLogCategoryKey(category)) {
+      res.status(400).json({ error: 'Catégorie inconnue.' });
+      return;
+    }
+    const result = await DiscordLogService.sendTest(guildId, category);
+    if (result.ok) {
+      res.json({ success: true, ...result });
+      return;
+    }
+    const messages: Record<string, string> = {
+      no_channel: 'Aucun salon configuré pour cette catégorie (ni salon général).',
+      no_permission: 'Le bot ne peut pas écrire dans ce salon.',
+      disabled: 'Les journaux sont désactivés sur ce serveur.',
+      guild_not_found: 'Le bot n\'est pas sur ce serveur.',
+      bot_offline: 'Le bot n\'est pas prêt.',
+    };
+    res.status(409).json({ success: false, ...result, error: messages[result.reason || ''] || 'Envoi impossible.' });
   });
 
   router.patch('/config', async (req: Request, res: Response): Promise<void> => {

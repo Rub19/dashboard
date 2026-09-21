@@ -86,13 +86,7 @@ const EMPTY_KPIS: BackupKpis = {
   totalBackups: 0, lastBackupAt: null, storageUsedBytes: 0, scheduledEnabled: false, frequency: "daily", protectedCount: 0, healthStatus: "WARNING", nextScheduledAt: null, verifiedCount: 0,
 };
 
-const DEMO_BACKUPS: BackupItem[] = [
-  {
-    backupId: "BKP-DEMO-FULL", name: "Snapshot complet (démo)", description: "Exemple de sauvegarde", createdAt: new Date(Date.now() - 7200000).toISOString(),
-    createdBy: { tag: "Dashboard", id: "demo" }, type: "FULL", status: "COMPLETED", isProtected: true, sizeBytes: 1843200, checksum: "a7c93e4f8812bf095d3e871239cd8410",
-    includedComponents: ["ROLES", "CATEGORIES", "CHANNELS", "PERMISSIONS", "SERVER_CONFIG", "ETHONE_CONFIG"], objectCounts: { categories: 3, channels: 18, roles: 12, permissions: 24, emojis: 6, ethoneModules: 14 },
-  },
-];
+const DEMO_BACKUPS: BackupItem[] = [];
 
 const FREQ_LABEL: Record<string, string> = { "6h": "Toutes les 6h", "12h": "Toutes les 12h", daily: "Quotidien", weekly: "Hebdomadaire" };
 
@@ -257,9 +251,7 @@ export default function BackupsCenterClient() {
     }
     const type: BackupType = includedComponents.length === 7 ? "FULL" : "PARTIAL";
     if (isDemo) {
-      setBackups((prev) => [{ ...DEMO_BACKUPS[0], backupId: `BKP-DEMO-${Date.now()}`, name: backupName, description: backupDesc, createdAt: new Date().toISOString(), isProtected: backupProtect, type, includedComponents }, ...prev]);
-      setShowCreateModal(false);
-      success("Sauvegarde créée (démo).");
+      toastError("Bot injoignable : rien n'a été enregistré.");
       return;
     }
     setIsCreating(true);
@@ -344,7 +336,7 @@ export default function BackupsCenterClient() {
       return;
     }
     if (isDemo) {
-      setRestoreJob({ jobId: "demo", status: "COMPLETED", currentStep: "Restauration simulée", progressPercent: 100, errors: [] });
+      toastError("Bot injoignable : rien n'a été enregistré.");
       return;
     }
     try {
@@ -366,7 +358,7 @@ export default function BackupsCenterClient() {
     setTestResult(null);
     setShowTestModal(true);
     if (isDemo) {
-      setTestResult({ valid: true, checksum: bkp.checksum, schemaVersion: 2, readiness: "READY", notes: ["Intégrité simulée (démo)."], objectCounts: bkp.objectCounts });
+      toastError("Bot injoignable : rien n'a été enregistré.");
       return;
     }
     setTestLoading(true);
@@ -416,7 +408,7 @@ export default function BackupsCenterClient() {
               <h1 className="text-2xl font-bold text-white tracking-tight">Sauvegardes & Disaster Recovery</h1>
               <p className="text-xs text-neutral-400">
                 Snapshots signés SHA-256 de la structure Discord et des modules ETHONE.
-                {isDemo && <span className="text-amber-400"> (données de démonstration)</span>}
+                {isDemo && <span className="text-amber-400"> (bot injoignable ou absent de ce serveur)</span>}
               </p>
             </div>
           </div>

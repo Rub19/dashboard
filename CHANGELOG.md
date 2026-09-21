@@ -2,6 +2,15 @@
 
 Toutes les modifications notables de ce projet seront documentées dans ce fichier.
 
+## v1.26.2 — 2026-09-21
+
+**Dashboard Discord : fin des fausses données sur Onboarding, Salons vocaux, Leveling, Sauvegardes, Commandes et Rôles**
+
+- Bienvenue & Onboarding : la page se remplissait de fausses données (salon « bienvenue », rôles « Membre / VIP », statistiques inventées) et affichait « Enregistré (mode démo) » sans rien enregistrer quand le bot était injoignable. Sa configuration de démonstration n'avait pas la même forme que la vraie, ce qui faisait planter la page (« Quelque chose s'est mal passé »). Elle affiche maintenant un écran d'erreur clair, avec le sélecteur de serveur et un bouton « Réessayer », et les actions refusent honnêtement au lieu de simuler un succès.
+- Salons vocaux personnalisés : plus de faux salons (« Alex's Room », « Salon de Marie ») ni de fausses statistiques ; la page lit les vraies données du bot (aperçu et sessions, cette dernière route n'était jamais appelée) et signale clairement quand elle n'y arrive pas.
+- Leveling : plus de faux classement (« ShadowGamer »…), plus d'identifiant de serveur factice, et les actions (XP, récompenses, boosts, réglages) ne prétendent plus réussir quand le bot est injoignable.
+- Sauvegardes, Commandes, Formulaires, Rôles, Sondages, Suggestions, Économie, Calendrier et Réponses de formulaires : les jeux de données de démonstration ont été vidés, et pour Sauvegardes, Commandes et Rôles les actions qui fabriquaient un faux élément localement (créer, dupliquer, publier, restaurer) affichent maintenant une erreur claire. La mention « (données de démonstration) » devient « (bot injoignable ou absent de ce serveur) ».
+
 ## v1.26.1 — 2026-09-21
 
 **Dashboard Discord : le bon serveur par défaut, synchro corrigée, heatmap des interactions rétablie**

@@ -20,6 +20,7 @@ import {
 } from "lucide-react";
 import { useToast } from "@/components/ToastProvider";
 import { useDiscordOAuth } from "@/lib/hooks/useDiscordOAuth";
+import { useResolvedGuildId } from "@/lib/hooks/useBotGuildIds";
 import { cn } from "@/lib/utils";
 
 const BOT_API_URL = process.env.NEXT_PUBLIC_DISCORD_BOT_API || "";
@@ -90,28 +91,15 @@ const DEFAULT_CONFIG: LevelingConfig = {
   allowBots: false,
 };
 
-const DEMO_MEMBERS: LeaderboardEntry[] = [
-  { userId: "demo-1", username: "Nocturne", avatarUrl: null, totalXp: 142500, level: 34, messagesCount: 7120, rank: 1, currentLevelXp: 800, nextLevelXp: 1200, progressPercentage: 66 },
-  { userId: "demo-2", username: "AlexDev", avatarUrl: null, totalXp: 118400, level: 31, messagesCount: 5920, rank: 2, currentLevelXp: 400, nextLevelXp: 1100, progressPercentage: 36 },
-  { userId: "demo-3", username: "ShadowGamer", avatarUrl: null, totalXp: 82100, level: 26, messagesCount: 4105, rank: 3, currentLevelXp: 300, nextLevelXp: 950, progressPercentage: 31 },
-];
-
 export default function LevelingCenterClient() {
   const searchParams = useSearchParams();
   const rawGuildId = searchParams.get("guildId");
   const { profile } = useDiscordOAuth();
   const { success, error: toastError } = useToast();
 
-  const activeGuild = useMemo(() => {
-    if (rawGuildId && profile?.guilds) {
-      return profile.guilds.find((g) => g.id === rawGuildId) || profile.guilds[0];
-    }
-    return profile?.guilds?.[0] || null;
-  }, [rawGuildId, profile?.guilds]);
-
-  const currentGuildId = activeGuild?.id || "123456789012345678";
+  const currentGuildId = useResolvedGuildId(rawGuildId, profile?.guilds);
   const base = `${BOT_API_URL}/api/guilds/${currentGuildId}/leveling`;
-  const isRealGuild = Boolean(BOT_API_URL) && currentGuildId !== "123456789012345678";
+  const isRealGuild = Boolean(BOT_API_URL) && Boolean(currentGuildId);
 
   const [activeTab, setActiveTab] = useState<
     "leaderboard" | "card_designer" | "rewards" | "boosts" | "blacklist"
@@ -129,7 +117,7 @@ export default function LevelingCenterClient() {
   }>({ activeMembersCount: 0, totalXpDistributed: 0, totalLevels: 0, topUser: null });
 
   const [config, setConfig] = useState<LevelingConfig>(DEFAULT_CONFIG);
-  const [members, setMembers] = useState<LeaderboardEntry[]>(DEMO_MEMBERS);
+  const [members, setMembers] = useState<LeaderboardEntry[]>([]);
   const [rewards, setRewards] = useState<LevelReward[]>([]);
   const [boosts, setBoosts] = useState<XpBoost[]>([]);
   const [searchQuery, setSearchQuery] = useState("");
@@ -194,7 +182,7 @@ export default function LevelingCenterClient() {
     const next = { ...config, ...patch };
     setConfig(next);
     if (isDemo || !BOT_API_URL) {
-      success("Configuration enregistrée (démo).");
+      toastError("Bot injoignable : rien n'a été enregistré.");
       return;
     }
     setSavingConfig(true);
@@ -225,15 +213,7 @@ export default function LevelingCenterClient() {
     if (!selectedMember) return;
     const delta = isAdd ? xpDelta : -xpDelta;
     if (isDemo || !BOT_API_URL) {
-      setMembers((prev) =>
-        prev.map((m) =>
-          m.userId === selectedMember.userId
-            ? { ...m, totalXp: Math.max(0, m.totalXp + delta) }
-            : m
-        )
-      );
-      success(`XP de ${selectedMember.username} mis à jour (démo).`);
-      setSelectedMember(null);
+      toastError("Bot injoignable : l'XP n'a pas été modifiée.");
       return;
     }
     setAdjustSubmitting(true);
@@ -269,12 +249,7 @@ export default function LevelingCenterClient() {
       return;
     }
     if (isDemo || !BOT_API_URL) {
-      setRewards((prev) => [
-        ...prev,
-        { id: `demo-${Date.now()}`, guildId: currentGuildId, level: newReward.level, roleId: newReward.roleId, message: newReward.message || null, enabled: true },
-      ]);
-      setNewReward({ level: 10, roleId: "", message: "" });
-      success("Récompense ajoutée (démo).");
+      toastError("Bot injoignable : la récompense n'a pas été ajoutée.");
       return;
     }
     try {
@@ -312,12 +287,7 @@ export default function LevelingCenterClient() {
       return;
     }
     if (isDemo || !BOT_API_URL) {
-      setBoosts((prev) => [
-        ...prev,
-        { id: `demo-${Date.now()}`, guildId: currentGuildId, name: newBoost.name, multiplier: newBoost.multiplier, targetType: newBoost.targetType, targetId: newBoost.targetId || null, startTime: null, endTime: null, enabled: true },
-      ]);
-      setNewBoost({ name: "", multiplier: 1.5, targetType: "server", targetId: "" });
-      success("Boost ajouté (démo).");
+      toastError("Bot injoignable : le boost n'a pas été ajouté.");
       return;
     }
     try {
@@ -395,7 +365,7 @@ export default function LevelingCenterClient() {
                 </h1>
                 <p className="text-xs text-neutral-400">
                   Progression d'activité communautaire, classement dynamique et récompenses de rôles.
-                  {isDemo && <span className="text-amber-400"> (données de démonstration)</span>}
+                  {isDemo && <span className="text-amber-400"> (bot injoignable ou absent de ce serveur)</span>}
                 </p>
               </div>
             </div>

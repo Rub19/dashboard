@@ -76,3 +76,15 @@ export function pickBotGuild<T extends GuildLike>(guilds: T[], botGuildIds: stri
   const withBot = botGuildIds ? guilds.find((g) => botGuildIds.includes(g.id)) : undefined;
   return withBot ?? guilds[0];
 }
+
+/**
+ * Serveur à utiliser pour une page qui n'a pas de sélecteur : celui de l'adresse (`?guildId=`),
+ * sinon le premier serveur où le bot est présent. Renvoie "" tant que la liste n'est pas connue :
+ * la page ne doit alors rien appeler.
+ */
+export function useResolvedGuildId(param: string | null | undefined, guilds: GuildLike[] | undefined | null): string {
+  const botGuildIds = useBotGuildIds(guilds);
+  if (param) return param;
+  if (botGuildIds === null) return "";
+  return pickBotGuild(guilds ?? [], botGuildIds)?.id ?? "";
+}

@@ -99,18 +99,7 @@ function triggerLabel(cmd: CustomCommand): string {
   return `/${cmd.name} ou !${cmd.name}`;
 }
 
-const DEMO_COMMANDS: CustomCommand[] = [
-  {
-    id: "demo-1", guildId: "demo", name: "regles", description: "Affiche les règles du serveur.", category: "Serveur", triggerType: "both", enabled: true,
-    cooldownSeconds: 15, requiredRoleIds: [], arguments: [], conditions: [], usageCount: 1420, createdAt: new Date().toISOString(), updatedAt: new Date().toISOString(),
-    defaultActions: [{ type: "send_response", response: { embed: { title: "📜 Règlement de {server}", description: "1. Respect mutuel\n2. Pas de spam\n3. Respectez les salons", color: "#6366F1", footerText: "ETHONE", fields: [] }, buttons: [] } }],
-  },
-  {
-    id: "demo-2", guildId: "demo", name: "site", description: "Lien vers la plateforme.", category: "Serveur", triggerType: "both", enabled: true,
-    cooldownSeconds: 10, requiredRoleIds: [], arguments: [], conditions: [], usageCount: 2310, createdAt: new Date().toISOString(), updatedAt: new Date().toISOString(),
-    defaultActions: [{ type: "send_response", response: { content: "Découvrez notre plateforme sur https://ethone.dev — merci {user} !", buttons: [] } }],
-  },
-];
+const DEMO_COMMANDS: CustomCommand[] = [];
 
 const VARIABLES = [
   { v: "{user}", desc: "Mention" },
@@ -233,14 +222,7 @@ export default function CommandsCenterClient() {
     };
 
     if (isDemo) {
-      const cmd: CustomCommand = {
-        id: `demo-${Date.now()}`, guildId: currentGuildId, category: "Personnalisé", enabled: true, arguments: [], conditions: [], usageCount: 0,
-        createdAt: new Date().toISOString(), updatedAt: new Date().toISOString(), ...payload, defaultActions: payload.defaultActions as CommandAction[],
-      };
-      setCommands((prev) => [cmd, ...prev]);
-      resetBuilder();
-      setActiveTab("catalog");
-      success(`Commande /${name} créée (démo).`);
+      toastError("Bot injoignable : rien n'a été enregistré.");
       return;
     }
     setSubmitting(true);
@@ -291,7 +273,7 @@ export default function CommandsCenterClient() {
 
   const duplicateCommand = async (cmd: CustomCommand) => {
     if (isDemo) {
-      setCommands((prev) => [{ ...cmd, id: `demo-${Date.now()}`, name: `${cmd.name}_copy`, usageCount: 0 }, ...prev]);
+      toastError("Bot injoignable : rien n'a été enregistré.");
       return;
     }
     try {
@@ -396,7 +378,7 @@ export default function CommandsCenterClient() {
               <h1 className="text-2xl font-bold text-white tracking-tight">ETHONE Command Studio</h1>
               <p className="text-xs text-neutral-400">
                 Commandes personnalisées (Slash / et Préfixe !), embeds, boutons et simulateur branché sur le bot.
-                {isDemo && <span className="text-amber-400"> (données de démonstration)</span>}
+                {isDemo && <span className="text-amber-400"> (bot injoignable ou absent de ce serveur)</span>}
               </p>
             </div>
           </div>

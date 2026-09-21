@@ -144,20 +144,7 @@ const EMPTY_OVERVIEW: SuggestionOverview = {
   categoryDistribution: {},
 };
 
-const DEMO_SUGGESTIONS: Suggestion[] = [
-  {
-    id: "demo-1", numericId: 142, guildId: "demo", authorId: "u1", authorTag: "AlexDev", authorAvatarUrl: null,
-    title: "Salon vocal permanent pour le gaming nocturne", description: "Un salon « Noctambules » sans limite de participants pour les sessions tardives.",
-    category: "Serveur", tags: [], status: "accepted", priority: "normal", upvotesCount: 68, downvotesCount: 4, score: 64, comments: [],
-    staffResponse: "Approuvé, configuré ce week-end.", staffResponderTag: "Staff", createdAt: new Date(Date.now() - 2 * 86400000).toISOString(), updatedAt: new Date().toISOString(),
-  },
-  {
-    id: "demo-2", numericId: 143, guildId: "demo", authorId: "u2", authorTag: "Kylian", authorAvatarUrl: null,
-    title: "Tournoi mensuel Rocket League 2v2", description: "Chaque premier samedi du mois, tableau éliminatoire et cast en direct.",
-    category: "Événements", tags: [], status: "pending", priority: "high", upvotesCount: 94, downvotesCount: 6, score: 88, comments: [],
-    staffResponse: null, staffResponderTag: null, createdAt: new Date(Date.now() - 3 * 86400000).toISOString(), updatedAt: new Date().toISOString(),
-  },
-];
+const DEMO_SUGGESTIONS: Suggestion[] = [];
 
 function formatRelative(iso: string): string {
   const minutes = Math.round((Date.now() - new Date(iso).getTime()) / 60000);
@@ -504,7 +491,7 @@ export default function SuggestionsCenterClient() {
               <h1 className="text-2xl font-bold text-white tracking-tight">ETHONE Boîte à Suggestions</h1>
               <p className="text-xs text-neutral-400">
                 Idées communautaires, votes Discord, Kanban de traitement et réponses officielles.
-                {isDemo && <span className="text-amber-400"> (données de démonstration)</span>}
+                {isDemo && <span className="text-amber-400"> (bot injoignable ou absent de ce serveur)</span>}
               </p>
             </div>
           </div>

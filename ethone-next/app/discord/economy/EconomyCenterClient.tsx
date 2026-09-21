@@ -139,21 +139,11 @@ const DEFAULT_CONFIG: EconomyConfig = {
   robCooldownMinutes: 120,
 };
 
-const DEMO_TRANSACTIONS: Transaction[] = [
-  { id: "t1", guildId: "demo", userId: "demo-1", type: "daily", amount: 120, balanceAfter: 8420, counterpartyId: null, note: "Série 4 j", createdAt: new Date(Date.now() - 3600000).toISOString() },
-  { id: "t2", guildId: "demo", userId: "demo-2", type: "work", amount: 45, balanceAfter: 5310, counterpartyId: null, note: "Barista", createdAt: new Date(Date.now() - 7200000).toISOString() },
-  { id: "t3", guildId: "demo", userId: "demo-3", type: "gamble_loss", amount: -200, balanceAfter: 2140, counterpartyId: null, note: null, createdAt: new Date(Date.now() - 10800000).toISOString() },
-];
+const DEMO_TRANSACTIONS: Transaction[] = [];
 
-const DEMO_LEADERBOARD: Wallet[] = [
-  { userId: "demo-1", guildId: "demo", username: "Nocturne", avatarUrl: null, balance: 8420, lastDailyClaimAt: null, totalEarned: 9200, totalSpent: 780, rank: 1 },
-  { userId: "demo-2", guildId: "demo", username: "AlexDev", avatarUrl: null, balance: 5310, lastDailyClaimAt: null, totalEarned: 6000, totalSpent: 690, rank: 2 },
-  { userId: "demo-3", guildId: "demo", username: "Shadow", avatarUrl: null, balance: 2140, lastDailyClaimAt: null, totalEarned: 2500, totalSpent: 360, rank: 3 },
-];
+const DEMO_LEADERBOARD: Wallet[] = [];
 
-const DEMO_SHOP: ShopItem[] = [
-  { id: "demo-shop-1", roleId: "0", roleName: "VIP", label: "Rôle VIP", description: "Accès aux salons exclusifs", price: 2500, enabled: true },
-];
+const DEMO_SHOP: ShopItem[] = [];
 
 function NumberField({ label, value, onChange }: { label: string; value: number; onChange: (v: number) => void }) {
   return (
@@ -334,7 +324,7 @@ export default function EconomyCenterClient() {
             </h1>
             <p className="text-xs text-slate-400 mt-1">
               Soldes, classement et boutique de rôles.
-              {isDemo && <span className="text-amber-400"> (données de démonstration)</span>}
+              {isDemo && <span className="text-amber-400"> (bot injoignable ou absent de ce serveur)</span>}
             </p>
           </div>
           <button

@@ -80,17 +80,7 @@ const STYLE_CLS: Record<ItemStyle, string> = {
   Danger: "bg-[#DA373C] text-white",
 };
 
-const DEMO_PANELS: RolePanel[] = [
-  {
-    id: "demo-1", guildId: "demo", name: "Notifications", channelId: null, messageId: null, componentType: "buttons", placeholder: "Sélectionnez vos rôles...",
-    title: "🔔 Notifications & Alertes", description: "Choisis les annonces que tu veux recevoir.", color: "#5865F2", footer: "Système de Rôles",
-    items: [
-      { id: "i1", roleId: "0", label: "Annonces", emoji: "📢", description: null, style: "Primary", prerequisiteRoleId: null, mutuallyExclusiveRoleIds: [] },
-      { id: "i2", roleId: "0", label: "Giveaways", emoji: "🎉", description: null, style: "Success", prerequisiteRoleId: null, mutuallyExclusiveRoleIds: [] },
-    ],
-    groups: [], status: "draft", lastSyncAt: null, createdAt: new Date().toISOString(), updatedAt: new Date().toISOString(),
-  },
-];
+const DEMO_PANELS: RolePanel[] = [];
 
 const newItem = (n: number): PanelItem => ({ id: `item-${Date.now().toString(36)}-${n}`, roleId: "", label: `Rôle ${n}`, emoji: "⭐", description: null, style: "Secondary", prerequisiteRoleId: null, mutuallyExclusiveRoleIds: [] });
 
@@ -222,11 +212,7 @@ export default function RolesCenterClient() {
     };
 
     if (isDemo) {
-      const p: RolePanel = { ...DEMO_PANELS[0], ...payload, id: editingId || `demo-${Date.now()}`, guildId: currentGuildId, channelId: payload.channelId, status: "draft", messageId: null, lastSyncAt: null, updatedAt: new Date().toISOString() };
-      setPanels((prev) => (editingId ? prev.map((x) => (x.id === editingId ? p : x)) : [p, ...prev]));
-      resetBuilder();
-      setActiveTab("panels");
-      success("Panneau enregistré (démo).");
+      toastError("Bot injoignable : rien n'a été enregistré.");
       return;
     }
     setSubmitting(true);
@@ -252,8 +238,7 @@ export default function RolesCenterClient() {
     const channelId = p.channelId || prompt("ID du salon Discord où publier ce panneau :")?.trim();
     if (!channelId) return;
     if (isDemo) {
-      setPanels((prev) => prev.map((x) => (x.id === p.id ? { ...x, status: "active", channelId, messageId: "demo", lastSyncAt: new Date().toISOString() } : x)));
-      success("Panneau publié (démo).");
+      toastError("Bot injoignable : rien n'a été enregistré.");
       return;
     }
     setBusyPanelId(p.id);
@@ -294,7 +279,7 @@ export default function RolesCenterClient() {
 
   const duplicatePanel = async (p: RolePanel) => {
     if (isDemo) {
-      setPanels((prev) => [{ ...p, id: `demo-${Date.now()}`, name: `${p.name} (copie)`, status: "draft", messageId: null }, ...prev]);
+      toastError("Bot injoignable : rien n'a été enregistré.");
       return;
     }
     try {
@@ -363,7 +348,7 @@ export default function RolesCenterClient() {
               <h1 className="text-2xl font-bold text-white tracking-tight">Reaction Roles & Auto-Rôles</h1>
               <p className="text-xs text-neutral-400">
                 Panneaux boutons / menus publiés par le bot, et rôles automatiques à l'arrivée.
-                {isDemo && <span className="text-amber-400"> (données de démonstration)</span>}
+                {isDemo && <span className="text-amber-400"> (bot injoignable ou absent de ce serveur)</span>}
               </p>
             </div>
           </div>

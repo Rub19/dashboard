@@ -32,46 +32,6 @@ import { cn } from "@/lib/utils";
 
 const API_BASE = process.env.NEXT_PUBLIC_DISCORD_BOT_API || "";
 
-function getDemoWelcomeConfig() {
-  return {
-    welcomeEnabled: true,
-    welcomeChannelId: "1128633164290596884",
-    welcomeEmbed: {
-      title: "Bienvenue sur notre serveur !",
-      description: "Nous sommes ravis de vous accueillir. N'hésitez pas à consulter le règlement.",
-      color: "#10B981",
-      fields: [],
-    },
-    goodbyeEnabled: false,
-    dmEnabled: false,
-  };
-}
-
-function getDemoWelcomeOverview() {
-  return {
-    joinsToday: 14,
-    leavesToday: 2,
-    retentionRate: "88%",
-    verifiedMembers: 1250,
-  };
-}
-
-function getDemoChannels(): ChannelItem[] {
-  return [
-    { id: "1128633164290596884", name: "bienvenue", canSend: true, canEmbed: true, canAttach: false },
-    { id: "1128633164290596885", name: "general", canSend: true, canEmbed: true, canAttach: true },
-    { id: "1128633164290596886", name: "annonces", canSend: false, canEmbed: false, canAttach: false },
-  ];
-}
-
-function getDemoRoles(): RoleItem[] {
-  return [
-    { id: "1", name: "Membre", color: "#2ECC71", position: 1, manageable: true },
-    { id: "2", name: "VIP", color: "#F1C40F", position: 2, manageable: true },
-    { id: "3", name: "Modérateur", color: "#1ABC9C", position: 3, manageable: false },
-  ];
-}
-
 export interface EmbedField {
   id: string;
   name: string;
@@ -171,6 +131,7 @@ export function WelcomeCenterClient() {
   const [channels, setChannels] = useState<ChannelItem[]>([]);
   const [roles, setRoles] = useState<RoleItem[]>([]);
   const [loading, setLoading] = useState(true);
+  const [loadFailed, setLoadFailed] = useState(false);
   const [saving, setSaving] = useState(false);
 
   // Modals
@@ -199,11 +160,7 @@ export function WelcomeCenterClient() {
     setLoading(true);
 
     if (!API_BASE) {
-      setConfig(getDemoWelcomeConfig());
-      setOverview(getDemoWelcomeOverview());
-      setChannels(getDemoChannels());
-      setRoles(getDemoRoles());
-      setTemplates([]);
+      setLoadFailed(true);
       setLoading(false);
       return;
     }
@@ -222,14 +179,17 @@ export function WelcomeCenterClient() {
       if (cfgRes && cfgRes.ok) {
         const d = await cfgRes.json();
         setConfig(d.config);
+        setLoadFailed(false);
       } else {
-        setConfig(getDemoWelcomeConfig());
+        // Le bot n'est pas sur ce serveur, ou la session du bot a expiré : rien n'est inventé.
+        setConfig(null);
+        setLoadFailed(true);
       }
       if (ovRes && ovRes.ok) {
         const d = await ovRes.json();
         setOverview(d);
       } else {
-        setOverview(getDemoWelcomeOverview());
+        setOverview(null);
       }
       if (obRes && obRes.ok) {
         const d = await obRes.json();
@@ -247,20 +207,21 @@ export function WelcomeCenterClient() {
         const d = await chRes.json();
         setChannels(d.channels || []);
       } else {
-        setChannels(getDemoChannels());
+        setChannels([]);
       }
       if (roRes && roRes.ok) {
         const d = await roRes.json();
         setRoles(d.roles || []);
       } else {
-        setRoles(getDemoRoles());
+        setRoles([]);
       }
     } catch (err: any) {
-      console.warn("Erreur chargement Welcome, fallback démo :", err);
-      setConfig(getDemoWelcomeConfig());
-      setOverview(getDemoWelcomeOverview());
-      setChannels(getDemoChannels());
-      setRoles(getDemoRoles());
+      console.warn("Erreur chargement Welcome :", err);
+      setConfig(null);
+      setOverview(null);
+      setChannels([]);
+      setRoles([]);
+      setLoadFailed(true);
     } finally {
       setLoading(false);
     }
@@ -274,8 +235,7 @@ export function WelcomeCenterClient() {
   const handleSaveConfig = async (partialUpdate?: any) => {
     const payload = partialUpdate ? { ...config, ...partialUpdate } : config;
     if (!API_BASE) {
-      setConfig(payload);
-      success("Modifications enregistrées", "Mode démo : La configuration a été synchronisée.");
+      showError("Bot injoignable", "Rien n'a été enregistré.");
       return;
     }
     try {
@@ -300,8 +260,7 @@ export function WelcomeCenterClient() {
   // Sauvegarde de l'Onboarding
   const handleSaveOnboarding = async (flowData: OnboardingFlow) => {
     if (!API_BASE) {
-      setOnboarding(flowData);
-      success("Onboarding mis à jour", "Mode démo : Le parcours d'onboarding a été enregistré.");
+      showError("Bot injoignable", "Le parcours n'a pas été enregistré.");
       return;
     }
     try {
@@ -325,8 +284,7 @@ export function WelcomeCenterClient() {
   // Sauvegarde de la Vérification
   const handleSaveVerification = async (verifData: VerificationConfig) => {
     if (!API_BASE) {
-      setVerification(verifData);
-      success("Vérification enregistrée", "Mode démo : Les réglages de vérification ont été appliqués.");
+      showError("Bot injoignable", "Les réglages de vérification n'ont pas été enregistrés.");
       return;
     }
     try {
@@ -350,7 +308,7 @@ export function WelcomeCenterClient() {
   // Appliquer un Template
   const handleApplyTemplate = async (templateId: string) => {
     if (!API_BASE) {
-      success("Template appliqué", `Mode démo : Le modèle "${templateId}" est désormais actif.`);
+      showError("Bot injoignable", "Le modèle n'a pas été appliqué.");
       return;
     }
     try {
@@ -375,13 +333,7 @@ export function WelcomeCenterClient() {
   // Envoi d'un message de test
   const handleRunTest = async () => {
     if (!API_BASE) {
-      success(
-        "Test envoyé avec succès !",
-        testTarget === "dm"
-          ? "Mode démo : Un message privé a été simulé sur Discord."
-          : "Mode démo : Le message a été simulé dans le salon."
-      );
-      setShowTestModal(false);
+      showError("Bot injoignable", "Aucun message de test n'a été envoyé.");
       return;
     }
     try {
@@ -434,6 +386,43 @@ export function WelcomeCenterClient() {
       .replace(/\{accountage\}/gi, previewContext.accountAge)
       .replace(/\{channel\}/gi, previewContext.channel);
   };
+
+  if (!loading && (loadFailed || !config?.welcome || !config?.goodbye)) {
+    return (
+      <div className="h-full overflow-y-auto os-scroll bg-[var(--bg-main)] px-4 py-10 text-white sm:px-8">
+        <div className="mx-auto max-w-xl space-y-4 rounded-2xl border border-amber-500/30 bg-amber-500/5 p-6">
+          <h1 className="text-lg font-bold">Bienvenue &amp; Onboarding</h1>
+          <p className="text-sm text-amber-100/90">
+            Impossible de charger la configuration de ce serveur. Le bot n&apos;y est peut-être pas installé, ou ta
+            session du bot a expiré (reconnecte-toi depuis la page Musique ou le centre de contrôle du bot).
+          </p>
+          {guilds.length > 0 && (
+            <select
+              value={currentGuildId}
+              onChange={(e) => {
+                const g = guilds.find((item: DiscordGuild) => item.id === e.target.value);
+                if (g) setSelectedGuild(g);
+              }}
+              className="h-9 w-full rounded-[var(--inset-radius)] border border-[var(--panel-border)] bg-zinc-900/90 px-3 text-xs text-white outline-none"
+            >
+              {guilds.map((g: DiscordGuild) => (
+                <option key={g.id} value={g.id}>
+                  {g.name}
+                </option>
+              ))}
+            </select>
+          )}
+          <button
+            type="button"
+            onClick={() => fetchAllData()}
+            className="rounded-xl bg-teal-600 px-4 py-2 text-xs font-bold text-white hover:bg-teal-500"
+          >
+            Réessayer
+          </button>
+        </div>
+      </div>
+    );
+  }
 
   return (
     <div className="h-full overflow-y-auto os-scroll [overscroll-behavior:contain] bg-[var(--bg-main)] text-white px-4 sm:px-8 py-6 pb-36">

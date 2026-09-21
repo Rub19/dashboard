@@ -84,57 +84,7 @@ export interface PollSummary {
   updatedAt: string;
 }
 
-const DEMO_POLLS: PollSummary[] = [
-  {
-    id: "community-game-night",
-    title: "Sondage Communautaire : Soirée Jeux du Vendredi",
-    description: "Choix du jeu officiel pour le grand tournoi amical de la communauté ETHONE avec attribution automatique du rôle d'équipe.",
-    category: "Communauté",
-    type: "SINGLE_CHOICE",
-    status: "ACTIVE",
-    anonymity: "PUBLIC",
-    resultsVisibility: "LIVE",
-    totalVotes: 128,
-    uniqueVoters: 114,
-    participationRate: 76.2,
-    questionsCount: 1,
-    endsAt: "Dans 2 jours",
-    updatedAt: "Il y a 10 min",
-  },
-  {
-    id: "staff-decision-01",
-    title: "Décision Staff : Révision des Sanctions AutoMod",
-    description: "Vote confidentiel interne de l'équipe de modération pour valider le nouveau barème des avertissements et expulsions temporaires.",
-    category: "Décisions Staff",
-    type: "APPROVAL",
-    status: "ACTIVE",
-    anonymity: "ANONYMOUS",
-    resultsVisibility: "STAFF_ONLY",
-    totalVotes: 11,
-    uniqueVoters: 11,
-    participationRate: 91.6,
-    questionsCount: 1,
-    quorumMet: true,
-    quorumPercentage: 88.0,
-    endsAt: "Ce soir à 23h59",
-    updatedAt: "Il y a 1 heure",
-  },
-  {
-    id: "feedback-event-01",
-    title: "Satisfaction & Retours : Tournoi PvP Saison 4",
-    description: "Évaluation de l'arbitrage, de l'organisation et notation sur 5 étoiles de l'événement communautaire.",
-    category: "Feedback",
-    type: "SATISFACTION_RATING",
-    status: "ENDED",
-    anonymity: "FULLY_ANONYMOUS",
-    resultsVisibility: "LIVE",
-    totalVotes: 82,
-    uniqueVoters: 82,
-    participationRate: 64.0,
-    questionsCount: 2,
-    updatedAt: "Hier",
-  },
-];
+const DEMO_POLLS: PollSummary[] = [];
 
 const TYPE_CONFIG: Record<string, { label: string; color: string; icon: any }> = {
   SINGLE_CHOICE: { label: "Choix Unique", color: "bg-indigo-500/10 text-indigo-400 border-indigo-500/30", icon: Vote },

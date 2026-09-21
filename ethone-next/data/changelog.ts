@@ -29401,4 +29401,57 @@ CHANGELOG_BY_LANG.en.unshift(v1261_en);
 CHANGELOG_BY_LANG.es.unshift(v1261_es);
 CHANGELOG_BY_LANG.de.unshift(v1261_de);
 
+const v1262_fr: ChangelogEntry = {
+  version: "v1.26.2",
+  date: "2026-09-21",
+  title: "Dashboard Discord : fin des fausses données sur Onboarding, Salons vocaux, Leveling, Sauvegardes, Commandes et Rôles",
+  items: [
+    "Bienvenue & Onboarding : la page se remplissait de fausses données (salon « bienvenue », rôles « Membre / VIP », statistiques inventées) et affichait « Enregistré (mode démo) » sans rien enregistrer quand le bot était injoignable. Sa configuration de démonstration n'avait pas la même forme que la vraie, ce qui faisait planter la page (« Quelque chose s'est mal passé »). Elle affiche maintenant un écran d'erreur clair, avec le sélecteur de serveur et un bouton « Réessayer », et les actions refusent honnêtement au lieu de simuler un succès.",
+    "Salons vocaux personnalisés : plus de faux salons (« Alex's Room », « Salon de Marie ») ni de fausses statistiques ; la page lit les vraies données du bot (aperçu et sessions, cette dernière route n'était jamais appelée) et signale clairement quand elle n'y arrive pas.",
+    "Leveling : plus de faux classement (« ShadowGamer »…), plus d'identifiant de serveur factice, et les actions (XP, récompenses, boosts, réglages) ne prétendent plus réussir quand le bot est injoignable.",
+    "Sauvegardes, Commandes, Formulaires, Rôles, Sondages, Suggestions, Économie, Calendrier et Réponses de formulaires : les jeux de données de démonstration ont été vidés, et pour Sauvegardes, Commandes et Rôles les actions qui fabriquaient un faux élément localement (créer, dupliquer, publier, restaurer) affichent maintenant une erreur claire. La mention « (données de démonstration) » devient « (bot injoignable ou absent de ce serveur) ».",
+  ],
+};
+
+const v1262_en: ChangelogEntry = {
+  version: "v1.26.2",
+  date: "2026-09-21",
+  title: "Discord dashboard: no more fake data on Onboarding, Voice rooms, Leveling, Backups, Commands and Roles",
+  items: [
+    "Welcome & Onboarding: the page filled itself with fake data (a \"bienvenue\" channel, \"Member / VIP\" roles, made-up statistics) and showed \"Saved (demo mode)\" without saving anything when the bot was unreachable. Its demo configuration had a different shape from the real one, which crashed the page (\"Something went wrong\"). It now shows a clear error screen with the server selector and a \"Retry\" button, and actions refuse honestly instead of faking success.",
+    "Personal voice rooms: no more fake rooms (\"Alex's Room\", \"Marie's room\") or fake statistics; the page reads the bot's real data (overview and sessions, the latter route was never called) and clearly says when it cannot.",
+    "Leveling: no more fake leaderboard (\"ShadowGamer\"…), no more dummy server id, and actions (XP, rewards, boosts, settings) no longer pretend to succeed when the bot is unreachable.",
+    "Backups, Commands, Forms, Roles, Polls, Suggestions, Economy, Calendar and Form responses: the demo datasets were emptied, and for Backups, Commands and Roles the actions that built a fake item locally (create, duplicate, publish, restore) now show a clear error. The \"(demo data)\" notice becomes \"(bot unreachable or not on this server)\".",
+  ],
+};
+
+const v1262_es: ChangelogEntry = {
+  version: "v1.26.2",
+  date: "2026-09-21",
+  title: "Panel de Discord: se acabaron los datos falsos en Onboarding, Salas de voz, Leveling, Copias, Comandos y Roles",
+  items: [
+    "Bienvenida y Onboarding: la página se llenaba de datos falsos (un canal « bienvenue », roles « Miembro / VIP », estadísticas inventadas) y mostraba « Guardado (modo demo) » sin guardar nada cuando el bot no respondía. Su configuración de demostración tenía otra forma que la real, lo que hacía fallar la página (« Algo salió mal »). Ahora muestra una pantalla de error clara, con el selector de servidor y un botón « Reintentar », y las acciones se niegan honestamente en lugar de simular un éxito.",
+    "Salas de voz personalizadas: ya no hay salas falsas (« Alex's Room », « Sala de Marie ») ni estadísticas falsas; la página lee los datos reales del bot (resumen y sesiones; esta última ruta nunca se llamaba) e indica claramente cuando no puede.",
+    "Leveling: ya no hay clasificación falsa (« ShadowGamer »…), ni identificador de servidor ficticio, y las acciones (XP, recompensas, boosts, ajustes) ya no fingen tener éxito cuando el bot no responde.",
+    "Copias de seguridad, Comandos, Formularios, Roles, Encuestas, Sugerencias, Economía, Calendario y Respuestas de formularios: se vaciaron los conjuntos de datos de demostración, y en Copias, Comandos y Roles las acciones que fabricaban un elemento falso localmente (crear, duplicar, publicar, restaurar) muestran ahora un error claro. El aviso « (datos de demostración) » pasa a « (bot inaccesible o ausente de este servidor) ».",
+  ],
+};
+
+const v1262_de: ChangelogEntry = {
+  version: "v1.26.2",
+  date: "2026-09-21",
+  title: "Discord-Dashboard: keine Fake-Daten mehr bei Onboarding, Sprachräumen, Leveling, Backups, Befehlen und Rollen",
+  items: [
+    "Willkommen & Onboarding: Die Seite füllte sich mit Fake-Daten (ein Kanal „bienvenue“, Rollen „Mitglied / VIP“, erfundene Statistiken) und zeigte „Gespeichert (Demo-Modus)“, ohne etwas zu speichern, wenn der Bot nicht erreichbar war. Ihre Demo-Konfiguration hatte eine andere Form als die echte, was die Seite abstürzen ließ („Etwas ist schiefgelaufen“). Jetzt erscheint ein klarer Fehlerbildschirm mit Serverauswahl und „Erneut versuchen“-Schaltfläche, und Aktionen lehnen ehrlich ab, statt Erfolg vorzutäuschen.",
+    "Persönliche Sprachräume: keine Fake-Räume („Alex' Raum“, „Maries Raum“) und keine Fake-Statistiken mehr; die Seite liest die echten Daten des Bots (Übersicht und Sitzungen — letztere Route wurde nie aufgerufen) und sagt klar, wenn es nicht klappt.",
+    "Leveling: keine Fake-Rangliste („ShadowGamer“ …), keine Platzhalter-Server-ID mehr, und Aktionen (XP, Belohnungen, Boosts, Einstellungen) täuschen keinen Erfolg mehr vor, wenn der Bot nicht erreichbar ist.",
+    "Backups, Befehle, Formulare, Rollen, Umfragen, Vorschläge, Wirtschaft, Kalender und Formularantworten: Die Demo-Datensätze wurden geleert, und bei Backups, Befehlen und Rollen zeigen Aktionen, die lokal ein Fake-Element bauten (erstellen, duplizieren, veröffentlichen, wiederherstellen), jetzt einen klaren Fehler. Der Hinweis „(Demodaten)“ wird zu „(Bot nicht erreichbar oder nicht auf diesem Server)“.",
+  ],
+};
+
+CHANGELOG_BY_LANG.fr.unshift(v1262_fr);
+CHANGELOG_BY_LANG.en.unshift(v1262_en);
+CHANGELOG_BY_LANG.es.unshift(v1262_es);
+CHANGELOG_BY_LANG.de.unshift(v1262_de);
+
 export const CHANGELOG = CHANGELOG_BY_LANG.fr;

@@ -62,67 +62,7 @@ interface FormItem {
   updatedAt: string;
 }
 
-const DEMO_FORMS: FormItem[] = [
-  {
-    id: "staff-app",
-    title: "Candidature Modérateur / Staff 2026",
-    description: "Recrutement officiel pour l'équipe de modération ETHONE. Questions situationnelles, expérience et disponibilités.",
-    category: "Staff & Modération",
-    status: "PUBLISHED",
-    version: 2,
-    sectionsCount: 3,
-    fieldsCount: 5,
-    responsesCount: 24,
-    pendingCount: 4,
-    completionRate: 92.5,
-    lastResponseAt: "Il y a 2 heures",
-    updatedAt: "2026-09-04T12:00:00Z",
-  },
-  {
-    id: "partner-app",
-    title: "Demande de Partenariat ETHONE",
-    description: "Formulaire d'évaluation des serveurs Discord partenaires. Statistiques, communauté et engagements.",
-    category: "Partenariats & Réseaux",
-    status: "PUBLISHED",
-    version: 1,
-    sectionsCount: 1,
-    fieldsCount: 4,
-    responsesCount: 18,
-    pendingCount: 2,
-    completionRate: 88.0,
-    lastResponseAt: "Hier à 18:30",
-    updatedAt: "2026-09-03T10:00:00Z",
-  },
-  {
-    id: "feedback-commu",
-    title: "Feedback Communautaire & Boîte à Idées",
-    description: "Questionnaire de satisfaction trimestriel et recueil de suggestions d'animations et événements.",
-    category: "Communauté",
-    status: "DRAFT",
-    version: 1,
-    sectionsCount: 2,
-    fieldsCount: 6,
-    responsesCount: 0,
-    pendingCount: 0,
-    completionRate: 0,
-    updatedAt: "2026-09-04T08:15:00Z",
-  },
-  {
-    id: "whitelist-event",
-    title: "Inscription Tournoi eSport Inter-Serveurs",
-    description: "Enregistrement des équipes, pseudos Discord, rangs compétitifs et capitaines.",
-    category: "Événements & Tournois",
-    status: "CLOSED",
-    version: 3,
-    sectionsCount: 2,
-    fieldsCount: 7,
-    responsesCount: 42,
-    pendingCount: 0,
-    completionRate: 98.2,
-    lastResponseAt: "Il y a 3 jours",
-    updatedAt: "2026-08-30T14:20:00Z",
-  },
-];
+const DEMO_FORMS: FormItem[] = [];
 
 const TEMPLATES = [
   {

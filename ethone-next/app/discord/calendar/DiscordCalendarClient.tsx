@@ -53,62 +53,7 @@ interface CalendarEvent {
   maxCapacity?: number;
 }
 
-const DEMO_CALENDAR_EVENTS: CalendarEvent[] = [
-  {
-    id: "evt-gaming-night",
-    title: "Friday Gaming Night — Valorant & Lethal Company",
-    description: "Soirée jeux communautaires avec escouades vocales automatiques.",
-    category: "GAMING",
-    status: "SCHEDULED",
-    startDate: new Date(Date.now() + 86400000 * 2).toISOString(),
-    endDate: new Date(Date.now() + 86400000 * 2 + 3600000 * 3).toISOString(),
-    color: "#8B5CF6",
-    emoji: "🎮",
-    location: "Vocal Gaming #1",
-    attendeesCount: 22,
-    maxCapacity: 30,
-  },
-  {
-    id: "evt-rocket-tournament",
-    title: "Tournoi Rocket League 2v2 Community Cup",
-    description: "Championnat 2v2 avec cashprize et rôles exclusifs.",
-    category: "TOURNAMENT",
-    status: "SCHEDULED",
-    startDate: new Date(Date.now() + 86400000 * 5).toISOString(),
-    endDate: new Date(Date.now() + 86400000 * 5 + 3600000 * 4).toISOString(),
-    color: "#F59E0B",
-    emoji: "🏆",
-    location: "Scène Tournois",
-    attendeesCount: 16,
-    maxCapacity: 16,
-  },
-  {
-    id: "evt-staff-sync",
-    title: "Réunion Générale Staff & Modération",
-    description: "Revue mensuelle et nouvelles règles Anti-Raid.",
-    category: "STAFF",
-    status: "SCHEDULED",
-    startDate: new Date(Date.now() + 86400000 * 1).toISOString(),
-    endDate: new Date(Date.now() + 86400000 * 1 + 3600000 * 1.5).toISOString(),
-    color: "#3B82F6",
-    emoji: "🛡️",
-    location: "Salon Staff Privé",
-    attendeesCount: 12,
-  },
-  {
-    id: "evt-watch-party",
-    title: "Watch Party Solo Leveling Ép. 9-10",
-    description: "Diffusion live communautaire et discussion anime.",
-    category: "WATCH_PARTY",
-    status: "COMPLETED",
-    startDate: new Date(Date.now() - 86400000 * 1).toISOString(),
-    endDate: new Date(Date.now() - 86400000 * 1 + 3600000 * 2).toISOString(),
-    color: "#EC4899",
-    emoji: "🍿",
-    location: "Cinéma Communautaire",
-    attendeesCount: 42,
-  },
-];
+const DEMO_CALENDAR_EVENTS: CalendarEvent[] = [];
 
 type ViewMode = "MONTH" | "WEEK" | "DAY" | "AGENDA";
 

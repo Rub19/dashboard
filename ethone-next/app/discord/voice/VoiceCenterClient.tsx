@@ -1,5 +1,7 @@
 "use client";
 
+import { useDiscordOAuth } from "@/lib/hooks/useDiscordOAuth";
+import { useResolvedGuildId } from "@/lib/hooks/useBotGuildIds";
 import { useState, useEffect, useCallback } from "react";
 import Link from "next/link";
 import { useSearchParams } from "next/navigation";
@@ -101,7 +103,9 @@ const BOT_API_URL = process.env.NEXT_PUBLIC_DISCORD_BOT_API || "";
 
 export default function VoiceCenterClient() {
   const searchParams = useSearchParams();
-  const guildId = searchParams.get("guildId") || "1128633164290596884";
+  const { profile } = useDiscordOAuth();
+  const guildId = useResolvedGuildId(searchParams.get("guildId"), profile?.guilds);
+  const [loadError, setLoadError] = useState(false);
   const { success, error: showError } = useToast();
 
   const [activeTab, setActiveTab] = useState<"overview" | "hubs" | "rooms" | "analytics">("overview");
@@ -124,142 +128,38 @@ export default function VoiceCenterClient() {
 
   // Fetch Voice Overview
   const fetchOverview = useCallback(async () => {
-    if (BOT_API_URL) {
-      try {
-        const res = await fetch(`${BOT_API_URL}/api/guilds/${guildId}/voice/overview`, { credentials: "include" });
-        if (res.ok) {
-          const json = await res.json();
-          setData(json);
-          return;
-        }
-      } catch {
-        // Fallback below
+    if (!guildId) return;
+    try {
+      if (!BOT_API_URL) throw new Error("bot");
+      const [ovRes, sessRes] = await Promise.all([
+        fetch(`${BOT_API_URL}/api/guilds/${guildId}/voice/overview`, { credentials: "include" }),
+        fetch(`${BOT_API_URL}/api/guilds/${guildId}/voice/sessions`, { credentials: "include" }).catch(() => null),
+      ]);
+      if (!ovRes.ok) throw new Error(String(ovRes.status));
+      setData(await ovRes.json());
+      if (sessRes?.ok) {
+        const sj = await sessRes.json();
+        setSessions(Array.isArray(sj?.sessions) ? sj.sessions : []);
       }
+      setLoadError(false);
+    } catch {
+      // Aucune donnée inventée : état vide + bandeau d'erreur.
+      setData({
+        kpis: {
+          activeVoiceChannelsCount: 0,
+          usersInVoiceCount: 0,
+          temporaryChannelsCount: 0,
+          sessionsTodayCount: 0,
+          peakConcurrentUsers: 0,
+          totalVoiceTimeMinutes: 0,
+          averageSessionMinutes: 0,
+        },
+        hubs: [],
+        activeRooms: [],
+      });
+      setSessions([]);
+      setLoadError(true);
     }
-
-    // Default Seed Data Fallback
-    const now = Date.now();
-    setData({
-      kpis: {
-        activeVoiceChannelsCount: 2,
-        usersInVoiceCount: 5,
-        temporaryChannelsCount: 2,
-        sessionsTodayCount: 28,
-        peakConcurrentUsers: 14,
-        totalVoiceTimeMinutes: 1840,
-        averageSessionMinutes: 42,
-      },
-      hubs: [
-        {
-          id: "hub_gaming",
-          name: "Gaming Hub",
-          channelId: "vc_create_gaming",
-          type: "voice",
-          namingTemplate: "🎮 {username}'s Room",
-          userLimit: 5,
-          bitrate: 96000,
-          accessMode: "public",
-          autoNumbering: true,
-          enabled: true,
-        },
-        {
-          id: "hub_chill",
-          name: "Chill & Talk",
-          channelId: "vc_create_chill",
-          type: "voice",
-          namingTemplate: "💬 Salon de {displayName}",
-          userLimit: 10,
-          bitrate: 64000,
-          accessMode: "public",
-          autoNumbering: true,
-          enabled: true,
-        },
-      ],
-      activeRooms: [
-        {
-          id: "room_alex_gaming",
-          guildId,
-          hubId: "personal_voice_2",
-          hubName: "Personal Voice",
-          name: "🎮 Alex's Room #1",
-          ownerId: "usr_alex",
-          ownerTag: "Alex#0001",
-          userLimit: 5,
-          bitrate: 96000,
-          isLocked: false,
-          isHidden: false,
-          allowedUserIds: ["usr_lucas", "usr_sarah"],
-          blockedUserIds: [],
-          whitelist: ["usr_lucas", "usr_sarah"],
-          banlist: [],
-          createdAt: new Date(now - 1000 * 60 * 45).toISOString(),
-          status: "ACTIVE",
-          currentUsers: [
-            {
-              id: "usr_alex",
-              tag: "Alex#0001",
-              joinedAt: new Date(now - 1000 * 60 * 45).toISOString(),
-              isMuted: false,
-              isDeafened: false,
-              isStreaming: true,
-            },
-            {
-              id: "usr_lucas",
-              tag: "Lucas#1234",
-              joinedAt: new Date(now - 1000 * 60 * 25).toISOString(),
-              isMuted: false,
-              isDeafened: false,
-              isStreaming: false,
-            },
-          ],
-          peakUsers: 4,
-          totalSecondsActive: 2700,
-        },
-        {
-          id: "room_chill_lounge",
-          guildId,
-          hubId: "personal_voice_2",
-          hubName: "Personal Voice",
-          name: "💬 Salon de Marie #1",
-          ownerId: "usr_marie",
-          ownerTag: "Marie#9999",
-          userLimit: 10,
-          bitrate: 64000,
-          isLocked: true,
-          isHidden: false,
-          allowedUserIds: ["usr_thomas"],
-          blockedUserIds: ["usr_troll"],
-          whitelist: ["usr_thomas"],
-          banlist: ["usr_troll"],
-          createdAt: new Date(now - 1000 * 60 * 90).toISOString(),
-          status: "ACTIVE",
-          currentUsers: [
-            {
-              id: "usr_marie",
-              tag: "Marie#9999",
-              joinedAt: new Date(now - 1000 * 60 * 90).toISOString(),
-              isMuted: false,
-              isDeafened: false,
-              isStreaming: false,
-            },
-          ],
-          peakUsers: 2,
-          totalSecondsActive: 5400,
-        },
-      ],
-    });
-
-    setSessions([
-      {
-        id: "sess_1",
-        userId: "usr_alex",
-        userTag: "Alex#0001",
-        roomName: "🎮 Alex's Room #1",
-        hubId: "hub_gaming",
-        joinedAt: new Date(now - 1000 * 60 * 45).toISOString(),
-        durationSeconds: 2700,
-      },
-    ]);
   }, [guildId]);
 
   useEffect(() => {
@@ -533,6 +433,13 @@ export default function VoiceCenterClient() {
       </div>
 
       {/* TAB CONTENT: Overview & Active Rooms */}
+      {loadError && (
+        <div className="mb-4 rounded-xl border border-amber-500/30 bg-amber-500/10 px-4 py-3 text-xs text-amber-200">
+          Impossible de lire les salons vocaux de ce serveur : le bot n&apos;y est peut-être pas présent, ou ta session
+          du bot a expiré. Choisis un serveur où le bot est installé, puis rafraîchis.
+        </div>
+      )}
+
       {activeTab === "overview" && (
         <div className="space-y-6">
           <div className="flex items-center justify-between">

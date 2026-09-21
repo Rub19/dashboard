@@ -182,9 +182,9 @@ export function createBotControlRouter(client: Client): Router {
   });
 
   // Integrations Center
-  router.get('/integrations', (req: Request, res: Response) => {
+  router.get('/integrations', async (req: Request, res: Response) => {
     try {
-      const list = integrationsService.getAllIntegrations();
+      const list = await integrationsService.getAllIntegrations(client);
       res.json({ success: true, data: list });
     } catch (err: any) {
       res.status(500).json({ success: false, error: err.message });
@@ -194,7 +194,7 @@ export function createBotControlRouter(client: Client): Router {
   router.post('/integrations/:id/test', async (req: Request, res: Response) => {
     try {
       const id = requireStringParam(req.params.id, 'id');
-      const tested = await integrationsService.testIntegration(id);
+      const tested = await integrationsService.testIntegration(id, client);
       res.json({ success: true, data: tested });
     } catch (err: any) {
       res.status(400).json({ success: false, error: err.message });

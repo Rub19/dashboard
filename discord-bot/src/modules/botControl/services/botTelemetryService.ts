@@ -5,7 +5,32 @@ import {
   BotTelemetrySnapshot,
   SubsystemStatus,
 } from '../types/index.js';
+import fs from 'node:fs';
+import path from 'node:path';
+import { fileURLToPath } from 'node:url';
 import { BotAiMonitorService } from './botAiMonitorService.js';
+import { BotJobSchedulerService } from './botJobSchedulerService.js';
+import { BotIntegrationsService } from './botIntegrationsService.js';
+import { lavalinkManager } from '../../music/services/lavalinkManager.js';
+
+function readPackageVersion(): string {
+  try {
+    const pkg = JSON.parse(fs.readFileSync(path.resolve(process.cwd(), 'package.json'), 'utf8'));
+    return String(pkg.version || 'inconnue');
+  } catch {
+    return 'inconnue';
+  }
+}
+
+/** Nombre de modules réellement présents dans le dossier `modules` du bot (pas un chiffre codé en dur). */
+function countModules(): number {
+  try {
+    const dir = path.resolve(path.dirname(fileURLToPath(import.meta.url)), '../..');
+    return fs.readdirSync(dir, { withFileTypes: true }).filter((d) => d.isDirectory()).length;
+  } catch {
+    return 0;
+  }
+}
 
 export interface BotPerformanceSample {
   timestamp: string;
@@ -18,7 +43,8 @@ export interface BotPerformanceSample {
 
 export class BotTelemetryService {
   private static instance: BotTelemetryService;
-  private pingHistory: number[] = [18, 22, 19, 25, 20, 24, 21, 23, 22, 26, 21, 19];
+  // Vide au démarrage : rempli uniquement par de vraies mesures du ping de la passerelle.
+  private pingHistory: number[] = [];
   private maxHistorySamples = 100;
   private startTime = Date.now();
   private eventCounter = 0;
@@ -29,6 +55,9 @@ export class BotTelemetryService {
   private currentCommandsPerMin = 0;
   private currentDbQueriesPerMin = 0;
   private lastEventLoopLagMs = 0;
+  private lastCpu = process.cpuUsage();
+  private lastCpuAt = Date.now();
+  private lastCpuPercent = 0;
   // Ring buffer of real sampled points, one every ~30s — bounded at 24h of
   // history (2880 * 30s). Replaces the previous sine-wave-generated fake
   // history in GET /api/bot/performance.
@@ -51,8 +80,8 @@ export class BotTelemetryService {
   private samplePerformance() {
     const mem = process.memoryUsage();
     const heapUsedMb = Math.round((mem.heapUsed / 1024 / 1024) * 10) / 10;
-    const cpuUsage = process.cpuUsage();
-    const cpuPercent = Math.min(100, Math.round(((cpuUsage.user + cpuUsage.system) / 1000000 / Math.max(1, process.uptime())) * 1000) / 10);
+    const cpuPercent = this.measureCpuPercent();
+    this.lastCpuPercent = cpuPercent;
     const lastPing = this.pingHistory[this.pingHistory.length - 1] ?? 0;
     const measureStartedAt = Date.now();
     // setImmediate fires after the current event-loop phase drains — the
@@ -71,6 +100,17 @@ export class BotTelemetryService {
         this.performanceHistory.shift();
       }
     });
+  }
+
+  /** CPU utilisé par le processus depuis la mesure précédente (et non la moyenne depuis le démarrage). */
+  private measureCpuPercent(): number {
+    const now = Date.now();
+    const usage = process.cpuUsage();
+    const cpuMicros = usage.user + usage.system - (this.lastCpu.user + this.lastCpu.system);
+    const elapsedMicros = Math.max(1, now - this.lastCpuAt) * 1000;
+    this.lastCpu = usage;
+    this.lastCpuAt = now;
+    return Math.min(100, Math.round((cpuMicros / elapsedMicros) * 1000) / 10);
   }
 
   public getPerformanceHistory(windowParam: string): BotPerformanceSample[] {
@@ -122,44 +162,55 @@ export class BotTelemetryService {
     this.lastThroughputReset = Date.now();
   }
 
+  /** Percentiles du ping mesuré. Sans aucune mesure : 0 partout (pas de valeurs plausibles inventées). */
   public getLatencyPercentiles(): { p50: number; p95: number; p99: number; avg: number } {
     if (this.pingHistory.length === 0) {
-      return { p50: 22, p95: 35, p99: 45, avg: 22 };
+      return { p50: 0, p95: 0, p99: 0, avg: 0 };
     }
     const sorted = [...this.pingHistory].sort((a, b) => a - b);
-    const p50Idx = Math.floor(sorted.length * 0.5);
-    const p95Idx = Math.floor(sorted.length * 0.95);
-    const p99Idx = Math.floor(sorted.length * 0.99);
+    const at = (q: number) => sorted[Math.min(sorted.length - 1, Math.floor(sorted.length * q))];
     const sum = sorted.reduce((acc, val) => acc + val, 0);
+    return { p50: at(0.5), p95: at(0.95), p99: at(0.99), avg: Math.round(sum / sorted.length) };
+  }
+
+  /**
+   * Santé des sous-systèmes, déduite de mesures réelles. Un sous-système qu'on ne sait pas mesurer
+   * n'est pas déclaré « opérationnel » : il est simplement déduit de ce qui l'alimente.
+   */
+  public getSubsystemsHealth(client?: Client): BotSubsystemHealth {
+    const wsPing = client?.ws.ping ?? -1;
+    const gatewayUp = Boolean(client?.isReady());
+    const mem = process.memoryUsage();
+    const heapPercent = (mem.heapUsed / mem.heapTotal) * 100;
+
+    const dataOk = this.dataDirWritable();
+    const jobs = BotJobSchedulerService.getInstance().getAllJobs();
+    const jobFailing = jobs.some((j) => j.status === 'failed');
+    const ai = BotIntegrationsService.getInstance().lastStatus('ai_gateway');
+
+    let voice: SubsystemStatus = 'operational';
+    if (lavalinkManager.enabled && !lavalinkManager.ready) voice = 'critical';
 
     return {
-      p50: sorted[p50Idx] || 20,
-      p95: sorted[p95Idx] || 32,
-      p99: sorted[p99Idx] || 42,
-      avg: Math.round(sum / sorted.length),
+      gateway: !gatewayUp || wsPing < 0 ? 'critical' : wsPing >= 250 ? 'degraded' : 'operational',
+      restApi: gatewayUp ? 'operational' : 'critical',
+      database: dataOk ? 'operational' : 'critical',
+      cache: heapPercent < 90 ? 'operational' : 'degraded',
+      eventBus: heapPercent < 85 ? 'operational' : 'degraded',
+      jobScheduler: jobFailing ? 'degraded' : 'operational',
+      aiProvider: ai === 'offline' ? 'degraded' : ai === 'degraded' ? 'degraded' : 'operational',
+      storage: dataOk ? 'operational' : 'critical',
+      voiceEngine: voice,
     };
   }
 
-  public getSubsystemsHealth(client?: Client): BotSubsystemHealth {
-    const wsPing = client?.ws.ping ?? 22;
-    const isGatewayHealthy = wsPing >= 0 && wsPing < 250;
-    const isGatewayDegraded = wsPing >= 250;
-
-    const mem = process.memoryUsage();
-    const heapPercent = (mem.heapUsed / mem.heapTotal) * 100;
-    const isMemHealthy = heapPercent < 85;
-
-    return {
-      gateway: isGatewayHealthy ? 'operational' : isGatewayDegraded ? 'degraded' : 'critical',
-      restApi: 'operational',
-      database: 'operational',
-      cache: 'operational',
-      eventBus: isMemHealthy ? 'operational' : 'degraded',
-      jobScheduler: 'operational',
-      aiProvider: 'operational',
-      storage: 'operational',
-      voiceEngine: 'operational',
-    };
+  private dataDirWritable(): boolean {
+    try {
+      fs.accessSync(path.resolve(process.cwd(), 'data'), fs.constants.W_OK);
+      return true;
+    } catch {
+      return false;
+    }
   }
 
   public getGlobalStatus(client?: Client, activeIncidentsCount = 0): BotGlobalStatus {
@@ -167,14 +218,14 @@ export class BotTelemetryService {
     const statuses = Object.values(subsystems);
 
     let global: 'operational' | 'degraded' | 'critical' = 'operational';
-    let statusMessage = 'All bot systems operating normally';
+    let statusMessage = 'Tous les sous-systèmes mesurés fonctionnent normalement';
 
     if (statuses.includes('critical') || activeIncidentsCount > 1) {
       global = 'critical';
-      statusMessage = 'Critical subsystem failure detected';
+      statusMessage = 'Un sous-système est en panne';
     } else if (statuses.includes('degraded') || activeIncidentsCount > 0) {
       global = 'degraded';
-      statusMessage = 'System operating with degraded performance';
+      statusMessage = 'Un sous-système est dégradé';
     }
 
     const uptimeSeconds = Math.floor((Date.now() - this.startTime) / 1000);
@@ -186,9 +237,9 @@ export class BotTelemetryService {
       uptimeSeconds,
       lastHeartbeat: new Date().toISOString(),
       activeIncidentsCount,
-      activeModulesCount: 22,
-      totalModulesCount: 22,
-      version: '2.4.0-control',
+      activeModulesCount: countModules(),
+      totalModulesCount: countModules(),
+      version: readPackageVersion(),
     };
   }
 
@@ -200,15 +251,14 @@ export class BotTelemetryService {
     const externalMb = Math.round((mem.external / 1024 / 1024) * 100) / 100;
     const heapPercent = Math.round((heapUsedMb / Math.max(1, heapTotalMb)) * 100);
 
-    const clientPing = client?.ws.ping ?? 21;
+    const clientPing = client?.ws.ping ?? -1;
     if (clientPing > 0) {
       this.recordPing(clientPing);
     }
     const percentiles = this.getLatencyPercentiles();
 
     // CPU approximate usage
-    const cpuUsage = process.cpuUsage();
-    const cpuPercent = Math.min(100, Math.round(((cpuUsage.user + cpuUsage.system) / 1000000 / Math.max(1, process.uptime())) * 10) / 10);
+    const cpuPercent = this.lastCpuPercent;
 
     return {
       timestamp: new Date().toISOString(),
@@ -219,13 +269,13 @@ export class BotTelemetryService {
         rssMb,
         externalMb,
       },
-      cpuPercent: cpuPercent || 1.8,
+      cpuPercent,
       eventLoopDelayMs: this.lastEventLoopLagMs,
       latency: {
         p50Ms: percentiles.p50,
         p95Ms: percentiles.p95,
         p99Ms: percentiles.p99,
-        currentPingMs: clientPing,
+        currentPingMs: Math.max(0, clientPing),
         avgPingMs: percentiles.avg,
       },
       throughput: {
@@ -234,9 +284,9 @@ export class BotTelemetryService {
         dbQueriesPerMinute: this.currentDbQueriesPerMin,
         aiTokensPerMinute: BotAiMonitorService.getInstance().getTokensPerMinute(),
       },
-      guildsCount: client?.guilds.cache.size || 1,
-      cachedUsersCount: client?.users.cache.size || 48,
-      shardsCount: client?.ws.shards.size || 1,
+      guildsCount: client?.guilds.cache.size ?? 0,
+      cachedUsersCount: client?.users.cache.size ?? 0,
+      shardsCount: client?.ws.shards.size ?? 0,
     };
   }
 }

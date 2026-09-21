@@ -1,5 +1,6 @@
 import { auditRepository } from '../storage/auditRepository.js';
 import { logger } from '../../../utils/logger.js';
+import { BotJobSchedulerService } from '../../../modules/botControl/services/botJobSchedulerService.js';
 
 export class LogRetentionService {
   private static intervalTimer: NodeJS.Timeout | null = null;
@@ -7,9 +8,7 @@ export class LogRetentionService {
   public static startScheduler(): void {
     if (this.intervalTimer) return;
     // Exécution toutes les 12 heures
-    this.intervalTimer = setInterval(() => {
-      this.runRetentionCleanup();
-    }, 12 * 60 * 60 * 1000);
+    this.intervalTimer = setInterval(BotJobSchedulerService.getInstance().track('log_retention', () => this.runRetentionCleanup()), 12 * 60 * 60 * 1000);
   }
 
   public static runRetentionCleanup(): number {

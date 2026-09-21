@@ -2,6 +2,7 @@ import { Client, TextChannel } from 'discord.js';
 import { ticketRepository } from '../storage/ticketRepository.js';
 import { ticketService } from './ticketService.js';
 import { logger } from '../../../utils/logger.js';
+import { BotJobSchedulerService } from '../../../modules/botControl/services/botJobSchedulerService.js';
 
 export class TicketScheduler {
   private static timer: NodeJS.Timeout | null = null;
@@ -10,9 +11,7 @@ export class TicketScheduler {
     if (this.timer) return;
 
     // Exécution toutes les 5 minutes
-    this.timer = setInterval(() => {
-      this.checkInactivity(client);
-    }, 5 * 60 * 1000);
+    this.timer = setInterval(BotJobSchedulerService.getInstance().track('tickets_inactivity', () => this.checkInactivity(client)), 5 * 60 * 1000);
 
     logger.info('[TicketScheduler] Planificateur de tickets démarré (auto-close & rappels).');
   }

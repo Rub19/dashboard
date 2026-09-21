@@ -29801,4 +29801,65 @@ CHANGELOG_BY_LANG.en.unshift(v1273_en);
 CHANGELOG_BY_LANG.es.unshift(v1273_es);
 CHANGELOG_BY_LANG.de.unshift(v1273_de);
 
+const v1274_fr: ChangelogEntry = {
+  version: "v1.27.4",
+  date: "2026-09-21",
+  title: "Centre de contrôle du bot : plus aucune fausse statistique",
+  items: [
+    "Diagnostics : les contrôles étaient des « réussi » écrits à la main avec des latences inventées (base Supabase, chiffrement, règles AutoMod…). Ils sont remplacés par de vrais tests : passerelle et API Discord chronométrées, mémoire, retard de la boucle d'événements, CPU mesuré, écriture/lecture réelle du dossier de données, Lavalink, intégrations et tâches planifiées.",
+    "Intégrations : les cartes Supabase et stockage n'existaient pas côté bot. Chaque intégration réellement utilisée (Discord, OpenRouter si configuré, Lavalink, résolveur YouTube) est maintenant testée par une vraie requête chronométrée, avec un statut réel (sain, lent, hors ligne).",
+    "Tâches planifiées : les compteurs (28 400 exécutions, durées…) étaient inventés. Les 14 minuteries réelles du bot (statistiques, XP, sauvegardes, anniversaires, événements, rappels, tickets, vocal 24h/24…) sont maintenant mesurées : exécutions, échecs, durée, dernière et prochaine exécution ; « Lancer » exécute réellement la tâche.",
+    "Incidents : les deux erreurs affichées au démarrage étaient simulées. Toute erreur journalisée par le bot devient maintenant une empreinte réelle (module, occurrences, pile).",
+    "Télémétrie : historique de ping de départ inventé, valeurs par défaut (48 utilisateurs, 1,8 % de CPU, ping 21 ms, 22 modules, version 2.4.0) et statuts « opérationnel » écrits à la main supprimés ; CPU mesuré par intervalle, santé des sous-systèmes déduite de mesures réelles, version lue dans le package du bot.",
+    "Musique : lancer un morceau depuis le site pour un serveur inconnu renvoyait un faux morceau « Web Stream » et un succès simulé ; il renvoie maintenant une erreur claire.",
+  ],
+};
+
+const v1274_en: ChangelogEntry = {
+  version: "v1.27.4",
+  date: "2026-09-21",
+  title: "Bot control center: no more fake statistics",
+  items: [
+    "Diagnostics: checks were hand-written \"pass\" results with invented latencies (Supabase database, encryption, AutoMod rules…). They are replaced by real tests: timed Discord gateway and API, memory, event-loop lag, measured CPU, real read/write of the data folder, Lavalink, integrations and scheduled jobs.",
+    "Integrations: the Supabase and storage cards did not exist on the bot side. Every integration actually used (Discord, OpenRouter if configured, Lavalink, YouTube resolver) is now tested with a real timed request and a real status (healthy, slow, offline).",
+    "Scheduled jobs: counters (28,400 runs, durations…) were invented. The bot's 14 real timers (statistics, XP, backups, birthdays, events, reminders, tickets, 24/7 voice…) are now measured: runs, failures, duration, last and next run; \"Run\" really executes the task.",
+    "Incidents: the two errors shown at startup were simulated. Every error logged by the bot now becomes a real fingerprint (module, occurrences, stack).",
+    "Telemetry: invented starting ping history, default values (48 users, 1.8 % CPU, 21 ms ping, 22 modules, version 2.4.0) and hand-written \"operational\" statuses removed; CPU measured per interval, subsystem health derived from real measurements, version read from the bot's package.",
+    "Music: starting a track from the site for an unknown server returned a fake \"Web Stream\" track and a simulated success; it now returns a clear error.",
+  ],
+};
+
+const v1274_es: ChangelogEntry = {
+  version: "v1.27.4",
+  date: "2026-09-21",
+  title: "Centro de control del bot: sin estadísticas falsas",
+  items: [
+    "Diagnósticos: las comprobaciones eran « correcto » escritos a mano con latencias inventadas (base Supabase, cifrado, reglas AutoMod…). Se sustituyen por pruebas reales: pasarela y API de Discord cronometradas, memoria, retraso del bucle de eventos, CPU medida, lectura/escritura real de la carpeta de datos, Lavalink, integraciones y tareas programadas.",
+    "Integraciones: las tarjetas de Supabase y almacenamiento no existían en el bot. Cada integración realmente usada (Discord, OpenRouter si está configurado, Lavalink, resolutor de YouTube) se prueba ahora con una petición real cronometrada y un estado real (sana, lenta, desconectada).",
+    "Tareas programadas: los contadores (28 400 ejecuciones, duraciones…) eran inventados. Los 14 temporizadores reales del bot (estadísticas, XP, copias, cumpleaños, eventos, recordatorios, tickets, voz 24/7…) se miden ahora: ejecuciones, fallos, duración, última y próxima ejecución; « Ejecutar » ejecuta de verdad la tarea.",
+    "Incidentes: los dos errores mostrados al arrancar eran simulados. Todo error registrado por el bot pasa a ser una huella real (módulo, apariciones, pila).",
+    "Telemetría: eliminados el historial de ping inicial inventado, los valores por defecto (48 usuarios, 1,8 % de CPU, ping 21 ms, 22 módulos, versión 2.4.0) y los estados « operativo » escritos a mano; CPU medida por intervalo, salud de subsistemas deducida de mediciones reales, versión leída del paquete del bot.",
+    "Música: lanzar una canción desde el sitio para un servidor desconocido devolvía una pista falsa « Web Stream » y un éxito simulado; ahora devuelve un error claro.",
+  ],
+};
+
+const v1274_de: ChangelogEntry = {
+  version: "v1.27.4",
+  date: "2026-09-21",
+  title: "Bot-Kontrollzentrum: keine gefälschten Statistiken mehr",
+  items: [
+    "Diagnose: Die Prüfungen waren von Hand geschriebene „bestanden“-Ergebnisse mit erfundenen Latenzen (Supabase-Datenbank, Verschlüsselung, AutoMod-Regeln…). Sie sind durch echte Tests ersetzt: gemessenes Discord-Gateway und -API, Speicher, Event-Loop-Verzögerung, gemessene CPU, echtes Lesen/Schreiben des Datenordners, Lavalink, Integrationen und geplante Aufgaben.",
+    "Integrationen: Die Supabase- und Speicher-Karten gab es auf Bot-Seite nicht. Jede tatsächlich genutzte Integration (Discord, OpenRouter falls konfiguriert, Lavalink, YouTube-Resolver) wird jetzt mit einer echten, gemessenen Anfrage getestet und hat einen echten Status (gesund, langsam, offline).",
+    "Geplante Aufgaben: Die Zähler (28.400 Ausführungen, Dauern…) waren erfunden. Die 14 echten Timer des Bots (Statistiken, XP, Backups, Geburtstage, Events, Erinnerungen, Tickets, 24/7-Sprache…) werden jetzt gemessen: Ausführungen, Fehler, Dauer, letzte und nächste Ausführung; „Starten“ führt die Aufgabe wirklich aus.",
+    "Vorfälle: Die beim Start angezeigten zwei Fehler waren simuliert. Jeder vom Bot protokollierte Fehler wird jetzt zu einem echten Fingerabdruck (Modul, Anzahl, Stack).",
+    "Telemetrie: erfundener Start-Ping-Verlauf, Standardwerte (48 Nutzer, 1,8 % CPU, 21 ms Ping, 22 Module, Version 2.4.0) und von Hand geschriebene „betriebsbereit“-Status entfernt; CPU pro Intervall gemessen, Subsystem-Gesundheit aus echten Messungen abgeleitet, Version aus dem Paket des Bots gelesen.",
+    "Musik: Das Starten eines Titels von der Seite für einen unbekannten Server lieferte einen falschen „Web Stream“-Titel und einen simulierten Erfolg; jetzt kommt eine klare Fehlermeldung.",
+  ],
+};
+
+CHANGELOG_BY_LANG.fr.unshift(v1274_fr);
+CHANGELOG_BY_LANG.en.unshift(v1274_en);
+CHANGELOG_BY_LANG.es.unshift(v1274_es);
+CHANGELOG_BY_LANG.de.unshift(v1274_de);
+
 export const CHANGELOG = CHANGELOG_BY_LANG.fr;

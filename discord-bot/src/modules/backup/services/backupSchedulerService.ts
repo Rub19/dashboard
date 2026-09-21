@@ -2,6 +2,7 @@ import { Client } from 'discord.js';
 import { backupRepository } from '../storage/backupRepository.js';
 import { BackupCollectorService } from './backupCollectorService.js';
 import { logger } from '../../../utils/logger.js';
+import { BotJobSchedulerService } from '../../../modules/botControl/services/botJobSchedulerService.js';
 
 export class BackupSchedulerService {
   private intervalTimer: NodeJS.Timeout | null = null;
@@ -14,11 +15,7 @@ export class BackupSchedulerService {
     logger.info('[BackupScheduler] Démarrage du planificateur de sauvegardes automatiques & retention...');
 
     // Exécution toutes les 15 minutes
-    this.intervalTimer = setInterval(() => {
-      this.runScheduledCheck().catch((err) => {
-        logger.error('[BackupScheduler] Erreur cycle planifié :', err);
-      });
-    }, 15 * 60 * 1000);
+    this.intervalTimer = setInterval(BotJobSchedulerService.getInstance().track('backup_scheduler', () => this.runScheduledCheck()), 15 * 60 * 1000);
 
     // Première exécution rapide après 30 secondes
     setTimeout(() => {

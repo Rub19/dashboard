@@ -1,5 +1,6 @@
 import { HourlyBucket } from '../types/analytics.js';
 import { analyticsStorage } from './analyticsStorage.js';
+import { BotJobSchedulerService } from '../../../modules/botControl/services/botJobSchedulerService.js';
 
 class AnalyticsWriteBuffer {
   private activeBuckets = new Map<string, HourlyBucket>();
@@ -8,7 +9,7 @@ class AnalyticsWriteBuffer {
 
   constructor() {
     // Flush périodique toutes les 30 secondes
-    this.flushTimer = setInterval(() => this.flushNow(), 30000);
+    this.flushTimer = setInterval(BotJobSchedulerService.getInstance().track('analytics_buffer_flush', () => this.flushNow()), 30000);
     this.flushTimer.unref();
 
     process.on('SIGINT', () => this.flushNow());

@@ -2,6 +2,7 @@ import { ChannelType, Client, Guild } from 'discord.js';
 import { serverStatsStorage } from '../storage/serverStatsStorage.js';
 import { StatChannel, StatType } from '../types/serverStats.js';
 import { logger } from '../../../utils/logger.js';
+import { BotJobSchedulerService } from '../../../modules/botControl/services/botJobSchedulerService.js';
 
 export function computeStat(guild: Guild, type: StatType, roleId: string | null): number {
   const members = guild.members.cache;
@@ -46,9 +47,7 @@ class ServerStatsService {
     if (this.timer) clearInterval(this.timer);
     // On tick toutes les 5 min ; chaque guilde n'est traitée que si son
     // updateIntervalMinutes est écoulé (limite Discord : 2 renommages / 10 min).
-    this.timer = setInterval(() => {
-      this.tick().catch((err) => logger.error('[ServerStats] tick :', err));
-    }, 5 * 60 * 1000);
+    this.timer = setInterval(BotJobSchedulerService.getInstance().track('server_stats_tick', () => this.tick()), 5 * 60 * 1000);
     logger.info('[ServerStats] Scheduler actif (tick 5 min)');
   }
 

@@ -1,6 +1,7 @@
 import { PresenceProfile, ScheduledPresenceSlot } from '../types/index.js';
 import { PresenceService } from './presenceService.js';
 import { logger } from '../../../utils/logger.js';
+import { BotJobSchedulerService } from '../../../modules/botControl/services/botJobSchedulerService.js';
 
 export class PresenceSchedulerService {
   private static instance: PresenceSchedulerService;
@@ -100,9 +101,7 @@ export class PresenceSchedulerService {
 
   private constructor() {
     // Vérification du calendrier toutes les 5 minutes
-    this.timer = setInterval(() => {
-      this.evaluateActiveSlot();
-    }, 300000);
+    this.timer = setInterval(BotJobSchedulerService.getInstance().track('presence_schedule', () => this.evaluateActiveSlot()), 300000);
   }
 
   public static getInstance(): PresenceSchedulerService {

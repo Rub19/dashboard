@@ -1,6 +1,17 @@
-import { Client } from 'discord.js';
+import fs from 'node:fs';
+import path from 'node:path';
+import { Client, GatewayIntentBits, IntentsBitField } from 'discord.js';
 import { BotDiagnosticResult } from '../types/index.js';
+import { BotIntegrationsService } from './botIntegrationsService.js';
+import { BotJobSchedulerService } from './botJobSchedulerService.js';
+import { lavalinkManager } from '../../music/services/lavalinkManager.js';
 
+const mb = (n: number) => Math.round(n / 1024 / 1024);
+
+/**
+ * Diagnostics : chaque contrôle est une vraie mesure ou un vrai test. Ce qu'on ne sait pas vérifier
+ * n'apparaît pas (plus de « pass » écrits à la main avec des latences inventées).
+ */
 export class BotDiagnosticsService {
   private static instance: BotDiagnosticsService;
 
@@ -14,195 +25,175 @@ export class BotDiagnosticsService {
   public async runFullDiagnostics(client?: Client): Promise<BotDiagnosticResult[]> {
     const results: BotDiagnosticResult[] = [];
 
-    // 1. Discord Gateway WS Connection & Ping
-    const wsPing = client?.ws.ping ?? 22;
+    // 1. Passerelle Discord
+    const wsPing = client?.ws.ping ?? -1;
+    const ready = Boolean(client?.isReady());
     results.push({
       id: 'diag_gateway_ws',
-      name: 'Discord Gateway WebSocket & Heartbeat',
+      name: 'Passerelle Discord (WebSocket)',
       category: 'network',
-      status: wsPing < 200 ? 'pass' : wsPing < 500 ? 'warn' : 'critical',
-      latencyMs: wsPing,
-      message: `Gateway responsive with ${wsPing}ms heartbeat latency.`,
-      details: `Shard ID: 0/1, WS Status: Ready, Heartbeats ACKed.`,
+      status: !ready || wsPing < 0 ? 'critical' : wsPing < 200 ? 'pass' : wsPing < 500 ? 'warn' : 'critical',
+      latencyMs: Math.max(0, wsPing),
+      message: !ready ? 'Le bot n\'est pas connecté à Discord.' : `Battement de cœur : ${wsPing} ms.`,
+      details: client ? `${client.guilds.cache.size} serveur(s), ${client.ws.shards.size} shard(s).` : undefined,
     });
 
-    // 2. Discord REST Rate Limit Headroom
-    results.push({
-      id: 'diag_discord_rest',
-      name: 'Discord REST API & Rate Limit Headroom',
-      category: 'network',
-      status: 'pass',
-      latencyMs: 38,
-      message: 'REST API response under 50ms with 48/50 rate-limit tokens remaining.',
-      details: 'Endpoint: /api/v10/users/@me responded HTTP 200 OK.',
-    });
+    // 2. API REST Discord (requête réelle, chronométrée)
+    if (client) {
+      const start = Date.now();
+      try {
+        await client.rest.get('/users/@me');
+        const ms = Date.now() - start;
+        results.push({
+          id: 'diag_discord_rest',
+          name: 'API REST Discord',
+          category: 'network',
+          status: ms < 800 ? 'pass' : ms < 2000 ? 'warn' : 'critical',
+          latencyMs: ms,
+          message: `GET /users/@me a répondu en ${ms} ms.`,
+        });
+      } catch (err: any) {
+        results.push({
+          id: 'diag_discord_rest',
+          name: 'API REST Discord',
+          category: 'network',
+          status: 'critical',
+          latencyMs: Date.now() - start,
+          message: `La requête a échoué : ${err?.message || 'erreur inconnue'}.`,
+        });
+      }
+    }
 
-    // 3. Supabase Database Connection & Latency
-    results.push({
-      id: 'diag_supabase_db',
-      name: 'Supabase PostgreSQL Connection & Health',
-      category: 'database',
-      status: 'pass',
-      latencyMs: 16,
-      message: 'PostgreSQL connection pool healthy with 16ms query latency.',
-      details: 'Connection pool: 2/10 active, query SELECT 1 executed successfully.',
-    });
-
-    // 4. Memory Heap Usage & Fragment Ratio
+    // 3. Mémoire
     const mem = process.memoryUsage();
     const heapPct = Math.round((mem.heapUsed / mem.heapTotal) * 100);
     results.push({
       id: 'diag_memory_heap',
-      name: 'Node.js V8 Heap & RSS Memory Pressure',
+      name: 'Mémoire Node.js (tas V8)',
       category: 'core',
       status: heapPct < 80 ? 'pass' : heapPct < 90 ? 'warn' : 'critical',
-      latencyMs: 1,
-      message: `Heap memory at ${heapPct}% (${Math.round(mem.heapUsed / 1024 / 1024)}MB / ${Math.round(mem.heapTotal / 1024 / 1024)}MB).`,
-      details: `RSS: ${Math.round(mem.rss / 1024 / 1024)}MB, External: ${Math.round(mem.external / 1024 / 1024)}MB.`,
+      latencyMs: 0,
+      message: `Tas à ${heapPct} % (${mb(mem.heapUsed)} Mo / ${mb(mem.heapTotal)} Mo).`,
+      details: `RSS : ${mb(mem.rss)} Mo, externe : ${mb(mem.external)} Mo.`,
     });
 
-    // 5. Event Loop Lag (< 50ms)
+    // 4. Boucle d'événements (retard mesuré maintenant)
+    const lagStart = Date.now();
+    await new Promise<void>((r) => setImmediate(r));
+    const lag = Date.now() - lagStart;
     results.push({
       id: 'diag_event_loop',
-      name: 'Event Loop Lag & Thread Scheduling',
+      name: "Boucle d'événements",
       category: 'core',
-      status: 'pass',
-      latencyMs: 2,
-      message: 'Event loop latency nominal (2ms), zero frame drops detected.',
-      details: 'libuv worker threads idle, timers dispatching on cadence.',
+      status: lag < 50 ? 'pass' : lag < 200 ? 'warn' : 'critical',
+      latencyMs: lag,
+      message: `Retard de la boucle mesuré : ${lag} ms.`,
     });
 
-    // 6. CPU Process Throttle Detection
+    // 5. CPU du processus sur 250 ms
+    const cpu0 = process.cpuUsage();
+    const t0 = Date.now();
+    await new Promise((r) => setTimeout(r, 250));
+    const cpu1 = process.cpuUsage(cpu0);
+    const cpuPct = Math.min(100, Math.round(((cpu1.user + cpu1.system) / 1000 / Math.max(1, Date.now() - t0)) * 1000) / 10);
     results.push({
-      id: 'diag_cpu_throttle',
-      name: 'Process CPU Load & Throttling Guard',
+      id: 'diag_cpu',
+      name: 'Charge CPU du processus',
       category: 'core',
-      status: 'pass',
-      latencyMs: 1,
-      message: 'Bot process consuming 1.8% CPU, safely within operational limit.',
-      details: 'OS process priority normal, no cgroup throttling observed.',
+      status: cpuPct < 70 ? 'pass' : cpuPct < 90 ? 'warn' : 'critical',
+      latencyMs: 250,
+      message: `${cpuPct} % d'un cœur sur les 250 dernières ms.`,
     });
 
-    // 7. Privileged Gateway Intents Validation
-    results.push({
-      id: 'diag_privileged_intents',
-      name: 'Privileged Discord Gateway Intents',
-      category: 'security',
-      status: 'pass',
-      latencyMs: 0,
-      message: 'All 3 required privileged intents verified (GuildMembers, MessageContent, Presences).',
-      details: 'Gateway intents bitfield matched application dashboard configuration.',
-    });
+    // 6. Intents demandés
+    if (client) {
+      const bits = new IntentsBitField(client.options.intents);
+      const needed: [string, GatewayIntentBits][] = [
+        ['Membres du serveur', GatewayIntentBits.GuildMembers],
+        ['Contenu des messages', GatewayIntentBits.MessageContent],
+        ['Présences', GatewayIntentBits.GuildPresences],
+      ];
+      const missing = needed.filter(([, b]) => !bits.has(b)).map(([n]) => n);
+      results.push({
+        id: 'diag_privileged_intents',
+        name: 'Intents privilégiés demandés',
+        category: 'security',
+        status: missing.length === 0 ? 'pass' : 'warn',
+        latencyMs: 0,
+        message: missing.length === 0 ? 'Les 3 intents privilégiés sont demandés à la connexion.' : `Non demandés : ${missing.join(', ')}.`,
+        details: 'Vérifie aussi leur activation sur le portail développeur Discord.',
+      });
+    }
 
-    // 8. AI Provider Latency & API Token Validity
-    results.push({
-      id: 'diag_ai_provider',
-      name: 'AI Gateway & Provider Connectivity',
-      category: 'ai',
-      status: 'pass',
-      latencyMs: 120,
-      message: 'Primary OpenRouter provider authenticated and ready.',
-      details: 'Model: anthropic/claude-3.5-haiku, Fallback: gpt-4o-mini ready.',
-    });
+    // 7. Stockage : écriture/lecture/suppression réelles dans le dossier data
+    const dir = path.resolve(process.cwd(), 'data');
+    const file = path.join(dir, `.diag-${Date.now()}.tmp`);
+    const fsStart = Date.now();
+    try {
+      fs.writeFileSync(file, 'ok');
+      const back = fs.readFileSync(file, 'utf8');
+      fs.unlinkSync(file);
+      results.push({
+        id: 'diag_storage',
+        name: 'Stockage des données (dossier data)',
+        category: 'storage',
+        status: back === 'ok' ? 'pass' : 'critical',
+        latencyMs: Date.now() - fsStart,
+        message: `Écriture, lecture et suppression réussies en ${Date.now() - fsStart} ms.`,
+      });
+    } catch (err: any) {
+      results.push({
+        id: 'diag_storage',
+        name: 'Stockage des données (dossier data)',
+        category: 'storage',
+        status: 'critical',
+        latencyMs: Date.now() - fsStart,
+        message: `Écriture impossible : ${err?.message || 'erreur inconnue'}.`,
+      });
+    }
 
-    // 9. Analytics Write Buffer Health & Queue Size
-    results.push({
-      id: 'diag_analytics_buffer',
-      name: 'Analytics Write Buffer & In-Memory Queue',
-      category: 'database',
-      status: 'pass',
-      latencyMs: 1,
-      message: 'Analytics write buffer backlog is clear (0 pending flushed records).',
-      details: 'Flush interval: 5000ms, batch limit: 500 records.',
-    });
+    // 8. Intégrations sondées (IA, Lavalink, résolveur…)
+    try {
+      const integ = await BotIntegrationsService.getInstance().getAllIntegrations(client, true);
+      for (const i of integ.filter((x) => x.type !== 'discord_api')) {
+        results.push({
+          id: `diag_${i.id}`,
+          name: i.name,
+          category: i.type === 'ai_gateway' ? 'ai' : 'network',
+          status: i.status === 'healthy' ? 'pass' : i.status === 'degraded' ? 'warn' : 'critical',
+          latencyMs: i.latencyMs,
+          message: i.details,
+        });
+      }
+    } catch {
+      // les sondes d'intégration sont facultatives
+    }
 
-    // 10. Log Storage Disk / Supabase Persistence
-    results.push({
-      id: 'diag_log_storage',
-      name: 'Audit Log Storage & Persistence Layer',
-      category: 'storage',
-      status: 'pass',
-      latencyMs: 14,
-      message: 'Audit logging engine successfully storing structured event traces.',
-      details: 'Storage engine: hybrid Supabase + in-memory circular cache.',
-    });
+    // 9. Moteur audio
+    if (lavalinkManager.enabled) {
+      results.push({
+        id: 'diag_voice_engine',
+        name: 'Moteur audio (Lavalink)',
+        category: 'core',
+        status: lavalinkManager.ready ? 'pass' : 'critical',
+        latencyMs: 0,
+        message: lavalinkManager.ready ? 'Nœud Lavalink connecté.' : 'Nœud Lavalink déconnecté : la musique est indisponible.',
+      });
+    }
 
-    // 11. Voice Connection System & Temp Channel Cleaner
-    results.push({
-      id: 'diag_voice_system',
-      name: 'Personal Voice Rooms 2.0 & Dynamic Generator',
-      category: 'core',
-      status: 'pass',
-      latencyMs: 5,
-      message: 'Dynamic voice generator online, GC sweep active.',
-      details: 'Cleaner schedule: 60s, empty timeout: 30s, active rooms: 1.',
-    });
-
-    // 12. Moderation & AutoMod Rules Engine
-    results.push({
-      id: 'diag_automod_rules',
-      name: 'AutoMod Regex & Content Filter Pipeline',
-      category: 'security',
-      status: 'pass',
-      latencyMs: 3,
-      message: 'Spam, invite, and harmful link filters active with zero latency penalty.',
-      details: 'Rule sets compiled: 14 active, match time < 3ms.',
-    });
-
-    // 13. Ticket & Transcripts Storage Access
-    results.push({
-      id: 'diag_ticket_storage',
-      name: 'Support Tickets & HTML Transcripts Pipeline',
-      category: 'storage',
-      status: 'pass',
-      latencyMs: 8,
-      message: 'HTML transcript exporter & storage bucket accessible.',
-      details: 'Transcripts bucket: ethone-transcripts (write permissions verified).',
-    });
-
-    // 14. Backup Encryption & Storage Access
-    results.push({
-      id: 'diag_backup_crypto',
-      name: 'Server Snapshot Encryption & Storage Engine',
-      category: 'storage',
-      status: 'pass',
-      latencyMs: 12,
-      message: 'AES-256-GCM cipher initialized with verified key derivation.',
-      details: 'Encryption test passed, snapshot format version: 2.0.',
-    });
-
-    // 15. Giveaways Timer Accuracy
-    results.push({
-      id: 'diag_giveaway_timer',
-      name: 'Giveaways Precision Timer & RNG Engine',
-      category: 'core',
-      status: 'pass',
-      latencyMs: 2,
-      message: 'Timer resolver drift < 15ms, CSPRNG entropy pool healthy.',
-      details: 'Crypto module: node:crypto randomInt validated.',
-    });
-
-    // 16. Event Scheduler Queue Health
-    results.push({
-      id: 'diag_events_scheduler',
-      name: 'Event Bus & Community Scheduler Queues',
-      category: 'core',
-      status: 'pass',
-      latencyMs: 4,
-      message: '6 scheduled background workers running without backlog.',
-      details: 'All cron instances registered in Node.js event timer queue.',
-    });
-
-    // 17. Security & Token Leak Detector
-    results.push({
-      id: 'diag_token_leak_guard',
-      name: 'Zero-Leak Secret Redaction & Token Guard',
-      category: 'security',
-      status: 'pass',
-      latencyMs: 1,
-      message: 'Log output scrubber active: 0 credentials detected in public streams.',
-      details: 'Discord token, Supabase key, and AI provider secrets verified safe.',
-    });
+    // 10. Tâches planifiées
+    const jobs = BotJobSchedulerService.getInstance().getAllJobs();
+    if (jobs.length > 0) {
+      const failed = jobs.filter((j) => j.status === 'failed');
+      results.push({
+        id: 'diag_jobs',
+        name: 'Tâches planifiées',
+        category: 'core',
+        status: failed.length === 0 ? 'pass' : 'warn',
+        latencyMs: 0,
+        message: failed.length === 0 ? `${jobs.length} tâche(s) enregistrée(s), aucune en échec.` : `En échec : ${failed.map((j) => j.name).join(', ')}.`,
+      });
+    }
 
     return results;
   }

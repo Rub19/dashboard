@@ -1,6 +1,7 @@
 import { Client } from 'discord.js';
 import { inviteRepository } from '../storage/inviteRepository.js';
 import { logger } from '../../../utils/logger.js';
+import { BotJobSchedulerService } from '../../../modules/botControl/services/botJobSchedulerService.js';
 
 export class InviteScheduler {
   private interval: NodeJS.Timeout | null = null;
@@ -10,7 +11,7 @@ export class InviteScheduler {
 
     logger.info('[InviteScheduler] Démarrage du scheduler de rétention & campagnes');
     // Run every 10 minutes
-    this.interval = setInterval(() => this.runChecks(client), 10 * 60 * 1000);
+    this.interval = setInterval(BotJobSchedulerService.getInstance().track('invites_checks', () => this.runChecks(client)), 10 * 60 * 1000);
   }
 
   public stop(): void {

@@ -3,6 +3,7 @@ import { eventRepository } from './eventsRepository.js';
 import { DiscordEvent, EventRecurrence } from './eventsTypes.js';
 import { EventService } from './eventsService.js';
 import { logger } from '../../utils/logger.js';
+import { BotJobSchedulerService } from '../../modules/botControl/services/botJobSchedulerService.js';
 
 export class EventsSchedulerService {
   private client?: Client;
@@ -14,11 +15,7 @@ export class EventsSchedulerService {
     if (this.timer) {
       clearInterval(this.timer);
     }
-    this.timer = setInterval(() => {
-      this.runSchedulerTick().catch((err) => {
-        logger.error('[EventsSchedulerService] Erreur lors du tick:', err);
-      });
-    }, 60 * 1000);
+    this.timer = setInterval(BotJobSchedulerService.getInstance().track('events_scheduler', () => this.runSchedulerTick()), 60 * 1000);
     logger.info('[EventsSchedulerService] Initialisé et actif (intervalle 60s)');
   }
 

@@ -3,6 +3,7 @@ import { baseEmbed } from '../../../utils/embeds.js';
 import { birthdayStorage } from '../storage/birthdayStorage.js';
 import { BirthdayConfig } from '../types/birthday.js';
 import { logger } from '../../../utils/logger.js';
+import { BotJobSchedulerService } from '../../../modules/botControl/services/botJobSchedulerService.js';
 
 type SendableChannel = TextChannel | NewsChannel | ThreadChannel;
 
@@ -19,9 +20,7 @@ class BirthdayService {
     this.client = client;
     if (this.timer) clearInterval(this.timer);
     // Toutes les 15 min : suffisant pour attraper l'heure d'annonce configurée.
-    this.timer = setInterval(() => {
-      this.tick().catch((err) => logger.error('[Birthdays] tick :', err));
-    }, 15 * 60 * 1000);
+    this.timer = setInterval(BotJobSchedulerService.getInstance().track('birthdays_tick', () => this.tick()), 15 * 60 * 1000);
     logger.info('[Birthdays] Scheduler actif (intervalle 15 min)');
   }
 

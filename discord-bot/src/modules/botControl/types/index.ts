@@ -159,7 +159,7 @@ export interface BotAiStats {
 export interface BotIntegrationInfo {
   id: string;
   name: string;
-  type: 'discord_api' | 'supabase' | 'ai_gateway' | 'storage' | 'webhooks';
+  type: 'discord_api' | 'supabase' | 'ai_gateway' | 'storage' | 'webhooks' | 'lavalink';
   status: 'healthy' | 'degraded' | 'offline';
   latencyMs: number;
   lastCheckedAt: string;

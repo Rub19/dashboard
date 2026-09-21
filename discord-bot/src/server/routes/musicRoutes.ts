@@ -27,23 +27,7 @@ export function createMusicRouter(discordClient: Client) {
 
     const guild = discordClient.guilds.cache.get(guildId);
     if (!guild) {
-      // Mock / fallback pour les serveurs pas encore en cache
-      res.status(200).json({
-        success: true,
-        mock: true,
-        message: 'Commande envoyée au player.',
-        track: {
-          id: `track-${Date.now()}`,
-          title: query,
-          artist: 'Web Stream',
-          duration: 180,
-          thumbnail: 'https://images.unsplash.com/photo-1511671782779-c97d3d27a1d4?w=500&auto=format&fit=crop&q=80',
-          url: query,
-          source: 'DIRECT',
-          requestedBy: { id: 'dashboard', tag: 'Dashboard User' },
-          addedAt: new Date().toISOString(),
-        },
-      });
+      res.status(404).json({ error: "Le bot n'est pas présent sur ce serveur." });
       return;
     }
 

@@ -3,6 +3,7 @@ import { baseEmbed } from '../../../utils/embeds.js';
 import { reminderStorage } from '../storage/reminderStorage.js';
 import { Reminder, ReminderRecurrence } from '../types/reminder.js';
 import { logger } from '../../../utils/logger.js';
+import { BotJobSchedulerService } from '../../../modules/botControl/services/botJobSchedulerService.js';
 
 type SendableChannel = TextChannel | NewsChannel | ThreadChannel;
 
@@ -42,9 +43,7 @@ class ReminderService {
   initialize(client: Client): void {
     this.client = client;
     if (this.timer) clearInterval(this.timer);
-    this.timer = setInterval(() => {
-      this.tick().catch((err) => logger.error('[Reminders] tick :', err));
-    }, 30_000);
+    this.timer = setInterval(BotJobSchedulerService.getInstance().track('reminders_tick', () => this.tick()), 30_000);
     logger.info('[Reminders] Scheduler actif (intervalle 30s)');
   }
 

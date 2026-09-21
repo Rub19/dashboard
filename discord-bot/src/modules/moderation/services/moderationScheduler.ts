@@ -2,6 +2,7 @@ import { Client } from 'discord.js';
 import { moderationRepository } from '../storage/moderationRepository.js';
 import { ModerationLogger } from './moderationLogger.js';
 import { logger } from '../../../utils/logger.js';
+import { BotJobSchedulerService } from '../../../modules/botControl/services/botJobSchedulerService.js';
 
 export class ModerationScheduler {
   private static timer: NodeJS.Timeout | null = null;
@@ -17,9 +18,7 @@ export class ModerationScheduler {
     // Exécution initiale
     this.checkExpirations(discordClient);
 
-    this.timer = setInterval(() => {
-      this.checkExpirations(discordClient);
-    }, intervalMs);
+    this.timer = setInterval(BotJobSchedulerService.getInstance().track('moderation_expirations', () => this.checkExpirations(discordClient)), intervalMs);
   }
 
   public static stop(): void {

@@ -2,6 +2,17 @@
 
 Toutes les modifications notables de ce projet seront documentées dans ce fichier.
 
+## v1.27.4 — 2026-09-21
+
+**Centre de contrôle du bot : plus aucune fausse statistique**
+
+- Diagnostics : les contrôles étaient des « réussi » écrits à la main avec des latences inventées (base Supabase, chiffrement, règles AutoMod…). Ils sont remplacés par de vrais tests : passerelle et API Discord chronométrées, mémoire, retard de la boucle d'événements, CPU mesuré, écriture/lecture réelle du dossier de données, Lavalink, intégrations et tâches planifiées.
+- Intégrations : les cartes Supabase et stockage n'existaient pas côté bot. Chaque intégration réellement utilisée (Discord, OpenRouter si configuré, Lavalink, résolveur YouTube) est maintenant testée par une vraie requête chronométrée, avec un statut réel (sain, lent, hors ligne).
+- Tâches planifiées : les compteurs (28 400 exécutions, durées…) étaient inventés. Les 14 minuteries réelles du bot (statistiques, XP, sauvegardes, anniversaires, événements, rappels, tickets, vocal 24h/24…) sont maintenant mesurées : exécutions, échecs, durée, dernière et prochaine exécution ; « Lancer » exécute réellement la tâche.
+- Incidents : les deux erreurs affichées au démarrage étaient simulées. Toute erreur journalisée par le bot devient maintenant une empreinte réelle (module, occurrences, pile).
+- Télémétrie : historique de ping de départ inventé, valeurs par défaut (48 utilisateurs, 1,8 % de CPU, ping 21 ms, 22 modules, version 2.4.0) et statuts « opérationnel » écrits à la main supprimés ; CPU mesuré par intervalle, santé des sous-systèmes déduite de mesures réelles, version lue dans le package du bot.
+- Musique : lancer un morceau depuis le site pour un serveur inconnu renvoyait un faux morceau « Web Stream » et un succès simulé ; il renvoie maintenant une erreur claire.
+
 ## v1.27.3 — 2026-09-21
 
 **Le sélecteur de serveur change enfin de serveur**

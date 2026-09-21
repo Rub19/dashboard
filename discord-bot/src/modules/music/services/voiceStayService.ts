@@ -4,6 +4,7 @@ import { logger } from '../../../utils/logger.js';
 import { musicPersistence } from '../storage/musicPersistence.js';
 import type { IGuildMusicPlayer } from './guildMusicPlayer.js';
 import { lavalinkManager } from './lavalinkManager.js';
+import { BotJobSchedulerService } from '../../../modules/botControl/services/botJobSchedulerService.js';
 
 type PlayerGetter = (guildId: string) => IGuildMusicPlayer | null;
 
@@ -36,7 +37,7 @@ class VoiceStayService {
     this.client = client;
     this.getPlayer = getPlayer;
     setTimeout(() => void this.tick(), FIRST_CHECK_DELAY_MS).unref?.();
-    this.timer = setInterval(() => void this.tick(), CHECK_INTERVAL_MS);
+    this.timer = setInterval(BotJobSchedulerService.getInstance().track('voice_stay_watch', () => this.tick()), CHECK_INTERVAL_MS);
     this.timer.unref?.();
     logger.info('[VoiceStay] Surveillance du mode 24h/24 démarrée.');
   }

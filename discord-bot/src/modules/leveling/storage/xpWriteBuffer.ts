@@ -2,6 +2,7 @@ import fs from 'fs';
 import path from 'path';
 import { UserXpData, UserXpDataSchema } from '../types/userXp.js';
 import { logger } from '../../../utils/logger.js';
+import { BotJobSchedulerService } from '../../../modules/botControl/services/botJobSchedulerService.js';
 
 class XpWriteBuffer {
   private filePath = path.resolve(process.cwd(), 'data', 'leveling_users.json');
@@ -13,7 +14,7 @@ class XpWriteBuffer {
     this.ensureDirectory();
     this.loadData();
     // Flush périodique toutes les 10 secondes
-    this.flushTimer = setInterval(() => this.flushNow(), 10000);
+    this.flushTimer = setInterval(BotJobSchedulerService.getInstance().track('xp_buffer_flush', () => this.flushNow()), 10000);
     this.flushTimer.unref();
 
     // Flush lors de la fermeture du processus

@@ -1,4 +1,7 @@
 import { BotErrorFingerprint, BotIncident } from '../types/index.js';
+import { logger } from '../../../utils/logger.js';
+
+const MAX_FINGERPRINTS = 500;
 
 export class BotErrorIncidentService {
   private static instance: BotErrorIncidentService;
@@ -6,7 +9,14 @@ export class BotErrorIncidentService {
   private incidents: Map<string, BotIncident> = new Map();
 
   private constructor() {
-    this.initMocks();
+    // Toute erreur journalisée par le bot (logger.error) devient une empreinte : le module est lu dans le
+    // préfixe « [Module] » du message, la pile dans le premier argument de type Error.
+    logger.setErrorListener((message, args) => {
+      const module = /^\[([^\]]+)\]/.exec(message)?.[1] ?? 'bot';
+      const err = args.find((a): a is Error => a instanceof Error);
+      const detail = err ? ` ${err.message}` : '';
+      this.recordError(`${message}${detail}`.slice(0, 300), module, 'error', err?.stack?.split('\n').slice(0, 6).join('\n'));
+    });
   }
 
   public static getInstance(): BotErrorIncidentService {
@@ -14,23 +24,6 @@ export class BotErrorIncidentService {
       BotErrorIncidentService.instance = new BotErrorIncidentService();
     }
     return BotErrorIncidentService.instance;
-  }
-
-  private initMocks() {
-    // Seed common non-fatal fingerprints
-    this.recordError(
-      'DiscordAPIError[50013]: Missing Permissions on member timeout',
-      'moderation',
-      'warning',
-      'DiscordAPIError[50013]: Missing Permissions\n    at RequestHandler.execute (node_modules/discord.js/src/rest/RequestHandler.js:350:11)'
-    );
-
-    this.recordError(
-      'OpenRouter: Rate limit 429 received, fallback triggered',
-      'ai',
-      'info',
-      'AIProviderError: 429 Too Many Requests\n    at OpenRouterProvider.generateCompletion (src/modules/ai/aiProviderService.ts:88:14)'
-    );
   }
 
   private computeFingerprint(message: string, module: string): string {
@@ -79,6 +72,11 @@ export class BotErrorIncidentService {
     };
 
     this.fingerprints.set(fpId, newFp);
+    if (this.fingerprints.size > MAX_FINGERPRINTS) {
+      // On oublie la plus ancienne empreinte (une Map conserve l'ordre d'insertion).
+      const oldest = this.fingerprints.keys().next().value;
+      if (oldest !== undefined) this.fingerprints.delete(oldest);
+    }
     return newFp;
   }
 

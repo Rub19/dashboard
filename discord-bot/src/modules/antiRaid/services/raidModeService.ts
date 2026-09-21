@@ -5,6 +5,7 @@ import { raidCache } from './raidCache.js';
 import { raidRiskEngine } from './raidRiskEngine.js';
 import { securityEventBus } from '../../automod/services/securityEventBus.js';
 import { logger } from '../../../utils/logger.js';
+import { BotJobSchedulerService } from '../../../modules/botControl/services/botJobSchedulerService.js';
 
 interface RaidModeState {
   active: boolean;
@@ -20,7 +21,7 @@ class RaidModeService {
   private autoExitTimer: NodeJS.Timeout;
 
   constructor() {
-    this.autoExitTimer = setInterval(() => this.checkAutoExits(), 30000);
+    this.autoExitTimer = setInterval(BotJobSchedulerService.getInstance().track('raid_auto_exit', () => this.checkAutoExits()), 30000);
     this.autoExitTimer.unref();
 
     // Écouter les violations critiques venant d'AutoMod

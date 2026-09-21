@@ -81,6 +81,8 @@ export class TemporaryVoiceService {
       locked?: boolean;
       hidden?: boolean;
       bitrate?: number;
+      creationChannelId?: string;
+      categoryId?: string;
     }
   ): Promise<{ success: boolean; message?: string; channel?: VoiceChannel; room?: TemporaryVoiceRoom; alreadyExists?: boolean }> {
     const guild = member.guild;
@@ -184,17 +186,59 @@ export class TemporaryVoiceService {
         });
       }
 
-      // 7. Create Discord Channel
-      const targetCategory = settings.roomCategory || settings.defaultCategoryId || undefined;
-      const createdChannel = await guild.channels.create({
-        name: roomName,
-        type: ChannelType.GuildVoice,
-        parent: targetCategory,
-        userLimit: Math.min(Math.max(userLimit, 0), 99),
-        bitrate: Math.min(Math.max(bitrate, 8000), 384000),
-        permissionOverwrites: overwrites,
-        reason: `ETHONE Personal Voice: Créé par ${member.user.tag}`,
-      });
+      // 7. Determine target category (keep in same category as creation channel)
+      let targetCategory: string | undefined = customOptions?.categoryId;
+
+      // Priority 1: Check creation channel parentId (channel where button was clicked or command was run)
+      if (!targetCategory && customOptions?.creationChannelId) {
+        const creationChannel = guild.channels.cache.get(customOptions.creationChannelId)
+          || await guild.channels.fetch(customOptions.creationChannelId).catch(() => null);
+        if (creationChannel?.parentId) {
+          targetCategory = creationChannel.parentId;
+        }
+      }
+
+      // Priority 2: If member is currently in a voice channel with a category
+      if (!targetCategory && member.voice.channel?.parentId) {
+        targetCategory = member.voice.channel.parentId;
+      }
+
+      // Priority 3: Check configured creation panel channel category
+      if (!targetCategory && settings.creationTextChannelId) {
+        const panelChannel = guild.channels.cache.get(settings.creationTextChannelId)
+          || await guild.channels.fetch(settings.creationTextChannelId).catch(() => null);
+        if (panelChannel?.parentId) {
+          targetCategory = panelChannel.parentId;
+        }
+      }
+
+      // Priority 4: Fallback to configured roomCategory or defaultCategoryId
+      if (!targetCategory) {
+        targetCategory = settings.roomCategory || settings.defaultCategoryId || undefined;
+      }
+
+      let createdChannel: VoiceChannel;
+      try {
+        createdChannel = await guild.channels.create({
+          name: roomName,
+          type: ChannelType.GuildVoice,
+          parent: targetCategory,
+          userLimit: Math.min(Math.max(userLimit, 0), 99),
+          bitrate: Math.min(Math.max(bitrate, 8000), 384000),
+          permissionOverwrites: overwrites,
+          reason: `ETHONE Personal Voice: Créé par ${member.user.tag}`,
+        });
+      } catch (catErr: any) {
+        logger.warn(`[TemporaryVoice] Échec de création du salon dans la catégorie ${targetCategory}, tentative à la racine:`, catErr?.message);
+        createdChannel = await guild.channels.create({
+          name: roomName,
+          type: ChannelType.GuildVoice,
+          userLimit: Math.min(Math.max(userLimit, 0), 99),
+          bitrate: Math.min(Math.max(bitrate, 8000), 384000),
+          permissionOverwrites: overwrites,
+          reason: `ETHONE Personal Voice: Créé par ${member.user.tag} (fallback racine)`,
+        });
+      }
 
       this.userCooldowns.set(member.id, now);
 
@@ -358,15 +402,39 @@ export class TemporaryVoiceService {
 
       const overwrites = VoicePermissionService.buildInitialOverwrites(guild, hub, member);
 
-      const createdChannel = await guild.channels.create({
-        name: roomName,
-        type: ChannelType.GuildVoice,
-        parent: hub.categoryId || undefined,
-        userLimit: hub.userLimit || 0,
-        bitrate: Math.min(hub.bitrate || settings.defaultBitrate || 64000, 384000),
-        permissionOverwrites: overwrites,
-        reason: `ETHONE Temporary Voice: Join-to-Create par ${member.user.tag} (${hub.name})`,
-      });
+      // Determine category:
+      // Priority 1: Category where the creation channel (hub trigger channel) is located in Discord
+      const hubChannel = guild.channels.cache.get(hub.channelId) || await guild.channels.fetch(hub.channelId).catch(() => null);
+      const targetCategory = hubChannel?.parentId || hub.categoryId || settings.roomCategory || settings.defaultCategoryId || undefined;
+
+      // Keep hub.categoryId in sync if Discord category changed
+      if (hubChannel?.parentId && hub.categoryId !== hubChannel.parentId) {
+        hub.categoryId = hubChannel.parentId;
+        voiceRepository.saveHub(hub);
+      }
+
+      let createdChannel: VoiceChannel;
+      try {
+        createdChannel = await guild.channels.create({
+          name: roomName,
+          type: ChannelType.GuildVoice,
+          parent: targetCategory,
+          userLimit: hub.userLimit || 0,
+          bitrate: Math.min(hub.bitrate || settings.defaultBitrate || 64000, 384000),
+          permissionOverwrites: overwrites,
+          reason: `ETHONE Temporary Voice: Join-to-Create par ${member.user.tag} (${hub.name})`,
+        });
+      } catch (catErr: any) {
+        logger.warn(`[TemporaryVoice] Échec de création du salon dans la catégorie ${targetCategory}, tentative à la racine:`, catErr?.message);
+        createdChannel = await guild.channels.create({
+          name: roomName,
+          type: ChannelType.GuildVoice,
+          userLimit: hub.userLimit || 0,
+          bitrate: Math.min(hub.bitrate || settings.defaultBitrate || 64000, 384000),
+          permissionOverwrites: overwrites,
+          reason: `ETHONE Temporary Voice: Join-to-Create par ${member.user.tag} (${hub.name}) (fallback racine)`,
+        });
+      }
 
       this.userCooldowns.set(member.id, now);
 

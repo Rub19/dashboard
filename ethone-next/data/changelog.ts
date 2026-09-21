@@ -30841,9 +30841,53 @@ const v12724_de: ChangelogEntry = {
   ],
 };
 
-CHANGELOG_BY_LANG.fr.unshift(v12724_fr, v12723_fr, v12722_fr, v12721_fr, v12720_fr);
-CHANGELOG_BY_LANG.en.unshift(v12724_en, v12723_en, v12722_en, v12721_en, v12720_en);
-CHANGELOG_BY_LANG.es.unshift(v12724_es, v12723_es, v12722_es, v12721_es, v12720_es);
-CHANGELOG_BY_LANG.de.unshift(v12724_de, v12723_de, v12722_de, v12721_de, v12720_de);
+const v12725_fr: ChangelogEntry = {
+  version: "v1.27.25",
+  date: "2026-09-21",
+  title: "Salons vocaux temporaires : maintien automatique dans la catégorie du salon de création",
+  items: [
+    "Salons vocaux temporaires (Join-to-Create & Panneau) : les nouveaux salons créés sont désormais placés automatiquement dans la même catégorie Discord que le salon de création (salon déclencheur ou salon du panneau).",
+    "Résilience : synchronisation automatique de la catégorie du Hub si déplacé sur Discord, et repli sans catégorie en cas de catégorie saturée (limite Discord de 50 salons).",
+    "Paramètres vocaux (/discord/voice/settings) : ajout d'un sélecteur de catégorie Discord dynamique avec actualisation à la volée et option recommandée '⚡ Automatique : Même catégorie que le salon de création'.",
+  ],
+};
+
+const v12725_en: ChangelogEntry = {
+  version: "v1.27.25",
+  date: "2026-09-21",
+  title: "Temporary voice rooms: automatic placement in creation channel's category",
+  items: [
+    "Temporary voice rooms (Join-to-Create & Panel): new custom rooms are now automatically placed in the same Discord category as their creation trigger channel.",
+    "Resilience: automatic Hub category synchronization if moved in Discord, and graceful fallback to root if the category is full (Discord 50-channel limit).",
+    "Voice settings (/discord/voice/settings): dynamic Discord category selector with on-demand refresh and recommended '⚡ Automatic: Same category as creation channel' option.",
+  ],
+};
+
+const v12725_es: ChangelogEntry = {
+  version: "v1.27.25",
+  date: "2026-09-21",
+  title: "Salas de voz temporales: colocación automática en la categoría del canal de creación",
+  items: [
+    "Salas de voz temporales (Join-to-Create y Panel): las nuevas salas personalizadas se colocan automáticamente en la misma categoría Discord que su canal de creación.",
+    "Resiliencia: sincronización automática de categoría si el Hub se mueve en Discord, y repliegue a la raíz si la categoría está llena (límite de 50 canales).",
+    "Ajustes de voz (/discord/voice/settings): selector dinámico de categoría Discord con actualización bajo demanda y opción recomendada '⚡ Automático'.",
+  ],
+};
+
+const v12725_de: ChangelogEntry = {
+  version: "v1.27.25",
+  date: "2026-09-21",
+  title: "Temporäre Sprachkanäle: Automatische Platzierung in der Kategorie des Erstellungskanals",
+  items: [
+    "Temporäre Sprachkanäle (Join-to-Create & Panel): Neue benutzerdefinierte Kanäle werden automatisch in derselben Discord-Kategorie wie der Erstellungskanal platziert.",
+    "Resilienz: Automatische Hub-Kategoriensynchronisation beim Verschieben in Discord sowie Ausweichlösung bei voller Kategorie (Discord-Limit von 50 Kanälen).",
+    "Spracheinstellungen (/discord/voice/settings): Dynamische Discord-Kategorieauswahl mit Bedarfsaktualisierung und empfohlener '⚡ Automatisch'-Option.",
+  ],
+};
+
+CHANGELOG_BY_LANG.fr.unshift(v12725_fr, v12724_fr, v12723_fr, v12722_fr, v12721_fr, v12720_fr);
+CHANGELOG_BY_LANG.en.unshift(v12725_en, v12724_en, v12723_en, v12722_en, v12721_en, v12720_en);
+CHANGELOG_BY_LANG.es.unshift(v12725_es, v12724_es, v12723_es, v12722_es, v12721_es, v12720_es);
+CHANGELOG_BY_LANG.de.unshift(v12725_de, v12724_de, v12723_de, v12722_de, v12721_de, v12720_de);
 
 export const CHANGELOG = CHANGELOG_BY_LANG.fr;

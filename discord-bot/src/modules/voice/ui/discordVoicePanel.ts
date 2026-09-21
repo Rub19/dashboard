@@ -210,7 +210,9 @@ export class DiscordVoicePanel {
       }
 
       await interaction.deferReply({ ephemeral: true });
-      const result = await TemporaryVoiceService.createPersonalVoiceRoom(member);
+      const result = await TemporaryVoiceService.createPersonalVoiceRoom(member, {
+        creationChannelId: interaction.channelId,
+      });
 
       if (!result.success || !result.channel) {
         await interaction.editReply({

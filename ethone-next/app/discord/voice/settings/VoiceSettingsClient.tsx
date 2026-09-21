@@ -12,6 +12,7 @@ import {
   RefreshCw,
 } from "lucide-react";
 import { useToast } from "@/components/ToastProvider";
+import { cn } from "@/lib/utils";
 
 interface VoiceSettings {
   enabled: boolean;
@@ -61,8 +62,30 @@ export default function VoiceSettingsClient() {
   const { success } = useToast();
 
   const [settings, setSettings] = useState<VoiceSettings>(DEFAULT_SETTINGS);
+  const [categories, setCategories] = useState<Array<{ id: string; name: string }>>([]);
+  const [loadingCategories, setLoadingCategories] = useState(false);
   const [loading, setLoading] = useState(true);
   const [isSaving, setIsSaving] = useState(false);
+
+  const fetchCategories = useCallback(async (notify = false) => {
+    if (!BOT_API_URL || !guildId) return;
+    setLoadingCategories(true);
+    try {
+      const res = await fetch(`${BOT_API_URL}/api/guilds/${guildId}/server/channels`, { credentials: "include" });
+      if (res.ok) {
+        const data = await res.json();
+        const cats = Array.isArray(data?.categories)
+          ? data.categories.map((c: any) => ({ id: c.id, name: c.name }))
+          : [];
+        setCategories(cats);
+        if (notify) success("Catégories actualisées !");
+      }
+    } catch {
+      // ignore
+    } finally {
+      setLoadingCategories(false);
+    }
+  }, [guildId, success]);
 
   const fetchSettings = useCallback(async () => {
     if (BOT_API_URL) {
@@ -80,8 +103,8 @@ export default function VoiceSettingsClient() {
   }, [guildId]);
 
   useEffect(() => {
-    fetchSettings().finally(() => setLoading(false));
-  }, [fetchSettings]);
+    Promise.all([fetchSettings(), fetchCategories(false)]).finally(() => setLoading(false));
+  }, [fetchSettings, fetchCategories]);
 
   const handleSave = async () => {
     setIsSaving(true);
@@ -180,18 +203,46 @@ export default function VoiceSettingsClient() {
             </div>
 
             <div>
-              <label className="block text-zinc-300 font-semibold mb-1">
-                Catégorie Discord des Salons Créés
-              </label>
-              <input
-                type="text"
-                placeholder="ID de catégorie Discord (facultatif)"
-                value={settings.roomCategory || settings.defaultCategoryId || ""}
-                onChange={(e) => setSettings({ ...settings, roomCategory: e.target.value, defaultCategoryId: e.target.value })}
-                className="w-full h-10 px-3.5 rounded-xl bg-zinc-950 border border-zinc-800 text-white placeholder-zinc-500 focus:outline-none focus:border-indigo-500"
-              />
-              <span className="text-[11px] text-zinc-500 mt-1 block">
-                Tous les salons créés apparaîtront sous cette catégorie.
+              <div className="flex items-center justify-between mb-1">
+                <label className="block text-zinc-300 font-semibold text-xs">
+                  Catégorie Discord des Salons Créés
+                </label>
+                <button
+                  type="button"
+                  onClick={() => fetchCategories(true)}
+                  disabled={loadingCategories}
+                  className="inline-flex items-center gap-1 text-[11px] text-zinc-400 hover:text-white transition-colors cursor-pointer disabled:opacity-50"
+                  title="Rafraîchir les catégories Discord"
+                >
+                  <RefreshCw className={cn("h-3 w-3", loadingCategories && "animate-spin text-indigo-400")} />
+                  <span>Actualiser</span>
+                </button>
+              </div>
+
+              {categories.length > 0 ? (
+                <select
+                  value={settings.roomCategory || settings.defaultCategoryId || ""}
+                  onChange={(e) => setSettings({ ...settings, roomCategory: e.target.value, defaultCategoryId: e.target.value })}
+                  className="w-full h-10 px-3.5 rounded-xl bg-zinc-950 border border-zinc-800 text-white text-xs focus:outline-none focus:border-indigo-500 cursor-pointer"
+                >
+                  <option value="">⚡ Automatique : Même catégorie que le salon de création (Recommandé)</option>
+                  {categories.map((cat) => (
+                    <option key={cat.id} value={cat.id}>
+                      📁 {cat.name}
+                    </option>
+                  ))}
+                </select>
+              ) : (
+                <input
+                  type="text"
+                  placeholder="Laisser vide pour automatique, ou ID de catégorie (facultatif)"
+                  value={settings.roomCategory || settings.defaultCategoryId || ""}
+                  onChange={(e) => setSettings({ ...settings, roomCategory: e.target.value, defaultCategoryId: e.target.value })}
+                  className="w-full h-10 px-3.5 rounded-xl bg-zinc-950 border border-zinc-800 text-white placeholder-zinc-500 text-xs focus:outline-none focus:border-indigo-500"
+                />
+              )}
+              <span className="text-[11px] text-zinc-400 mt-1.5 block">
+                Par défaut (recommandé), le bot place automatiquement le salon vocal dans la même catégorie que le salon de création (salon déclencheur Join-to-Create ou panneau). Vous pouvez aussi forcer une catégorie spécifique.
               </span>
             </div>
 

@@ -2,6 +2,14 @@
 
 Toutes les modifications notables de ce projet seront documentées dans ce fichier.
 
+## v1.27.25 — 2026-09-21
+
+**Salons vocaux temporaires : maintien automatique dans la catégorie du salon de création**
+
+- Salons vocaux temporaires (Join-to-Create & Panneau) : les nouveaux salons vocaux créés sont désormais créés automatiquement dans la même catégorie Discord que le salon de création (salon déclencheur Join-to-Create ou salon du panneau de création).
+- Résilience et tolérance aux pannes : synchronisation automatique de l'identifiant de catégorie du Hub si le salon est déplacé sur Discord, et repli automatique sans catégorie en cas de catégorie saturée (limite Discord de 50 salons par catégorie).
+- Paramètres vocaux (`/discord/voice/settings`) : remplacement du champ texte brut par un sélecteur dynamique des catégories réelles du serveur avec rafraîchissement à la demande et sélection par défaut recommandée « ⚡ Automatique : Même catégorie que le salon de création ».
+
 ## v1.27.24 — 2026-09-21
 
 **Options de rafraîchissement direct des salons et rôles sur toutes les pages Discord**

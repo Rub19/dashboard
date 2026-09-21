@@ -126,6 +126,7 @@ export const voiceCommand: Command = {
         name: customName,
         limit: customLimit,
         locked: customLocked,
+        creationChannelId: ctx.channel?.id,
       });
 
       if (!result.success || !result.channel) {

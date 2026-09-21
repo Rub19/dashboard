@@ -76,11 +76,20 @@ export function createVoiceRouter(client: Client): Router {
       const guildId = req.params.guildId as string;
       const body = req.body;
 
+      let resolvedCategory = body.categoryId || null;
+      if (!resolvedCategory && body.channelId) {
+        const guild = client.guilds.cache.get(guildId);
+        const ch = guild?.channels.cache.get(body.channelId);
+        if (ch?.parentId) {
+          resolvedCategory = ch.parentId;
+        }
+      }
+
       const newHub: VoiceHub = {
         id: 'hub_' + Date.now().toString(36) + '_' + Math.random().toString(36).substring(2, 6),
         guildId,
         name: body.name || 'Nouveau Hub',
-        categoryId: body.categoryId || null,
+        categoryId: resolvedCategory,
         channelId: body.channelId || 'channel_trigger',
         type: body.type || 'voice',
         namingTemplate: body.namingTemplate || "🎮 {username}'s Room",
@@ -114,9 +123,20 @@ export function createVoiceRouter(client: Client): Router {
         return res.status(404).json({ error: 'Hub introuvable' });
       }
 
+      let resolvedCategory = req.body.categoryId !== undefined ? req.body.categoryId : existing.categoryId;
+      const targetChannelId = req.body.channelId || existing.channelId;
+      if (!resolvedCategory && targetChannelId) {
+        const guild = client.guilds.cache.get(guildId);
+        const ch = guild?.channels.cache.get(targetChannelId);
+        if (ch?.parentId) {
+          resolvedCategory = ch.parentId;
+        }
+      }
+
       const updated = voiceRepository.saveHub({
         ...existing,
         ...req.body,
+        categoryId: resolvedCategory,
         id,
         guildId,
       });

@@ -105,7 +105,7 @@ export default function PollVoteClient() {
   };
 
   return (
-    <div className="min-h-screen bg-black text-white selection:bg-indigo-500/30 flex flex-col justify-between">
+    <div className="min-h-screen bg-[var(--bg-main)] text-white selection:bg-indigo-500/30 flex flex-col justify-between">
       {/* Background Glow */}
       <div className="pointer-events-none fixed inset-0 z-0 overflow-hidden opacity-25">
       </div>

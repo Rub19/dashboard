@@ -344,11 +344,11 @@ export default function FormBuilderClient() {
   };
 
   if (loading) {
-    return <div className="min-h-screen bg-black text-xs text-zinc-400 flex items-center justify-center">Chargement du formulaire...</div>;
+    return <div className="min-h-screen bg-[var(--bg-main)] text-xs text-zinc-400 flex items-center justify-center">Chargement du formulaire...</div>;
   }
   if (loadError) {
     return (
-      <div className="min-h-screen bg-black text-white p-8 space-y-4">
+      <div className="min-h-screen bg-[var(--bg-main)] text-white p-8 space-y-4">
         <Link href={`/discord/forms?guildId=${rawGuildId}`} className="inline-flex items-center gap-2 text-sm text-zinc-400 hover:text-white"><ArrowLeft className="h-4 w-4" /> Retour aux formulaires</Link>
         <div className="rounded-2xl border border-rose-500/30 bg-rose-500/10 p-4 text-xs text-rose-300">{loadError}</div>
       </div>
@@ -356,7 +356,7 @@ export default function FormBuilderClient() {
   }
 
   return (
-    <div className="min-h-screen bg-black text-white flex flex-col">
+    <div className="min-h-screen bg-[var(--bg-main)] text-white flex flex-col">
       {/* Top Builder Navbar */}
       <header className="h-14 border-b border-[var(--panel-border)] bg-zinc-950/90 backdrop-blur-md px-4 flex items-center justify-between gap-4 shrink-0">
         <div className="flex items-center gap-3">
@@ -862,7 +862,7 @@ export default function FormBuilderClient() {
             className={cn(
               "w-full transition-all duration-200",
               previewMode === "desktop" && "max-w-2xl rounded-[var(--panel-radius)] border border-[var(--panel-border)] bg-black/60 p-6 sm:p-8 shadow-2xl backdrop-blur-xl",
-              previewMode === "mobile" && "max-w-sm rounded-[40px] border-4 border-zinc-800 bg-black p-6 shadow-2xl space-y-4",
+              previewMode === "mobile" && "max-w-sm rounded-[40px] border-4 border-zinc-800 bg-[var(--bg-main)] p-6 shadow-2xl space-y-4",
               previewMode === "discord" && "max-w-md rounded-2xl border border-indigo-500/40 bg-[#313338] p-5 shadow-2xl text-white"
             )}
           >

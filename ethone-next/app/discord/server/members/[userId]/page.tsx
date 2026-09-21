@@ -19,7 +19,7 @@ export function generateStaticParams() {
 export default async function MemberDetailPage({ params }: { params: Promise<{ userId: string }> }) {
   const resolved = await params;
   return (
-    <Suspense fallback={<div className="min-h-screen bg-black" />}>
+    <Suspense fallback={<div className="min-h-screen bg-[var(--bg-main)]" />}>
       <ServerManagementClient initialTab="members" openedMemberId={resolved.userId} />
     </Suspense>
   );

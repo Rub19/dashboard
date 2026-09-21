@@ -2,6 +2,12 @@
 
 Toutes les modifications notables de ce projet seront documentées dans ce fichier.
 
+## v1.27.10 — 2026-09-21
+
+**Le thème est de retour sur Formulaires, Sondages, Événements…**
+
+- Les pages Formulaires, Sondages, Événements, Économie, Calendrier et Gestion du serveur avaient un fond noir pur codé en dur qui ignorait le thème choisi (les autres pages suivaient le thème). Elles utilisent maintenant la couleur de fond du thème, comme le reste du dashboard (42 fichiers, y compris les écrans de chargement).
+
 ## v1.27.9 — 2026-09-21
 
 **Pages vocales décalées du bord**

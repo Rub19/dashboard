@@ -30103,4 +30103,45 @@ CHANGELOG_BY_LANG.en.unshift(v1279_en);
 CHANGELOG_BY_LANG.es.unshift(v1279_es);
 CHANGELOG_BY_LANG.de.unshift(v1279_de);
 
+const v12710_fr: ChangelogEntry = {
+  version: "v1.27.10",
+  date: "2026-09-21",
+  title: "Le thème est de retour sur Formulaires, Sondages, Événements…",
+  items: [
+    "Les pages Formulaires, Sondages, Événements, Économie, Calendrier et Gestion du serveur avaient un fond noir pur codé en dur qui ignorait le thème choisi (les autres pages suivaient le thème). Elles utilisent maintenant la couleur de fond du thème, comme le reste du dashboard (42 fichiers, y compris les écrans de chargement).",
+  ],
+};
+
+const v12710_en: ChangelogEntry = {
+  version: "v1.27.10",
+  date: "2026-09-21",
+  title: "Theme is back on Forms, Polls, Events…",
+  items: [
+    "The Forms, Polls, Events, Economy, Calendar and Server management pages had a hard-coded pure black background that ignored the chosen theme (other pages followed it). They now use the theme's background colour like the rest of the dashboard (42 files, including loading screens).",
+  ],
+};
+
+const v12710_es: ChangelogEntry = {
+  version: "v1.27.10",
+  date: "2026-09-21",
+  title: "El tema vuelve en Formularios, Encuestas, Eventos…",
+  items: [
+    "Las páginas Formularios, Encuestas, Eventos, Economía, Calendario y Gestión del servidor tenían un fondo negro puro fijo que ignoraba el tema elegido (las demás lo seguían). Ahora usan el color de fondo del tema como el resto del panel (42 archivos, incluidas las pantallas de carga).",
+  ],
+};
+
+const v12710_de: ChangelogEntry = {
+  version: "v1.27.10",
+  date: "2026-09-21",
+  title: "Das Theme ist zurück bei Formularen, Umfragen, Events…",
+  items: [
+    "Die Seiten Formulare, Umfragen, Events, Wirtschaft, Kalender und Serververwaltung hatten einen fest codierten reinschwarzen Hintergrund, der das gewählte Theme ignorierte (die anderen Seiten folgten ihm). Sie nutzen jetzt die Hintergrundfarbe des Themes wie der Rest des Dashboards (42 Dateien, inklusive Ladebildschirme).",
+  ],
+};
+
+CHANGELOG_BY_LANG.fr.unshift(v12710_fr);
+CHANGELOG_BY_LANG.en.unshift(v12710_en);
+CHANGELOG_BY_LANG.es.unshift(v12710_es);
+CHANGELOG_BY_LANG.de.unshift(v12710_de);
+
 export const CHANGELOG = CHANGELOG_BY_LANG.fr;

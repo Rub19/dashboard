@@ -62,7 +62,7 @@ export default function PollSettingsClient() {
   };
 
   return (
-    <div className="min-h-screen bg-black text-white selection:bg-indigo-500/30">
+    <div className="min-h-screen bg-[var(--bg-main)] text-white selection:bg-indigo-500/30">
       {/* Top Glow Background */}
       <div className="pointer-events-none fixed inset-0 z-0 overflow-hidden opacity-30">
       </div>

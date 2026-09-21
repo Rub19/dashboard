@@ -2,6 +2,13 @@
 
 Toutes les modifications notables de ce projet seront documentées dans ce fichier.
 
+## v1.27.21 — 2026-09-21
+
+**Option de désactivation de la limite de mentions (Spam libre)**
+
+- Limite de mentions par message : ajout d'une option « Désactivé (Spam) » dans le sélecteur moderne du dashboard Discord (`/discord`) permettant de lever toute restriction de mentions pour autoriser le spam libre sans sanction automatique.
+- Notification et synchronisation : intégration du toast `toast.toggle()` avec badge d'état ambre (« Désactivée (Spam libre) ») et synchronisation backend avec le service `mentionRaid` du bot (`enabled: false`, `maxMentionsPerMessage: 0`).
+
 ## v1.27.20 — 2026-09-21
 
 **Notifications ON/OFF et correction des toggles du dashboard**

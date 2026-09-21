@@ -538,7 +538,12 @@ export default function DiscordDashboardPage() {
           ? {
               antiRaidEnabled: Boolean(raidRes.config.enabled),
               antiSpamEnabled: Boolean(raidRes.config.messageRaid?.enabled),
-              mentionLimit: Number(raidRes.config.mentionRaid?.maxMentionsPerMessage) || prev.mentionLimit,
+              mentionLimit:
+                raidRes.config.mentionRaid?.enabled === false
+                  ? 0
+                  : typeof raidRes.config.mentionRaid?.maxMentionsPerMessage === "number"
+                  ? raidRes.config.mentionRaid.maxMentionsPerMessage
+                  : prev.mentionLimit,
             }
           : {}),
       }));
@@ -575,7 +580,10 @@ export default function DiscordDashboardPage() {
           body: JSON.stringify({
             enabled: guildSettings.antiRaidEnabled,
             messageRaid: { enabled: guildSettings.antiSpamEnabled },
-            mentionRaid: { maxMentionsPerMessage: guildSettings.mentionLimit },
+            mentionRaid: {
+              enabled: guildSettings.mentionLimit > 0,
+              maxMentionsPerMessage: guildSettings.mentionLimit > 0 ? guildSettings.mentionLimit : 0,
+            },
           }),
         }),
       ]);
@@ -1403,25 +1411,67 @@ export default function DiscordDashboardPage() {
                     {/* Mentions Limit (MODERN PILL SELECTOR - NO UGLY HTML SELECT) */}
                     <div className="flex flex-col gap-3 rounded-[var(--panel-radius)] border border-[var(--panel-border)] bg-white/[0.02] p-4 sm:flex-row sm:items-center sm:justify-between">
                       <div>
-                        <p className="text-xs font-bold text-white">Limite de mentions par message</p>
-                        <p className="text-[11px] text-zinc-400">Nombre maximum d'utilisateurs ou rôles mentionnables avant sanction.</p>
+                        <div className="flex items-center gap-2">
+                          <p className="text-xs font-bold text-white">Limite de mentions par message</p>
+                          {guildSettings.mentionLimit === 0 ? (
+                            <span className="inline-flex items-center gap-1 rounded-full bg-amber-500/10 border border-amber-500/30 px-2 py-0.5 text-[10px] font-semibold text-amber-300">
+                              <span className="h-1.5 w-1.5 rounded-full bg-amber-400" />
+                              Désactivée (Spam libre)
+                            </span>
+                          ) : (
+                            <span className="inline-flex items-center gap-1 rounded-full bg-emerald-500/10 border border-emerald-500/30 px-2 py-0.5 text-[10px] font-semibold text-emerald-300">
+                              <span className="h-1.5 w-1.5 rounded-full bg-emerald-400" />
+                              Actif ({guildSettings.mentionLimit}/msg)
+                            </span>
+                          )}
+                        </div>
+                        <p className="text-[11px] text-zinc-400">
+                          {guildSettings.mentionLimit === 0
+                            ? "Désactivée : aucune limite de mentions, les membres peuvent mentionner librement sans sanction (spam autorisé)."
+                            : "Nombre maximum d'utilisateurs ou rôles mentionnables avant sanction."}
+                        </p>
                       </div>
-                      <div className="flex items-center gap-1.5 rounded-xl bg-white/[0.04] p-1 border border-[var(--panel-border)]">
-                        {[3, 5, 10].map((val) => (
-                          <button
-                            key={val}
-                            type="button"
-                            onClick={() => setGuildSettings((p) => ({ ...p, mentionLimit: val }))}
-                            className={cn(
-                              "rounded-lg px-3 py-1.5 text-xs font-semibold transition-all cursor-pointer",
-                              guildSettings.mentionLimit === val
-                                ? "bg-emerald-500 text-white shadow-sm"
-                                : "text-zinc-400 hover:text-white hover:bg-white/5"
-                            )}
-                          >
-                            {val} mentions {val === 5 ? "(Recommandé)" : ""}
-                          </button>
-                        ))}
+                      <div className="flex flex-wrap items-center gap-1.5 rounded-xl bg-white/[0.04] p-1 border border-[var(--panel-border)]">
+                        {[
+                          { val: 3, label: "3 mentions" },
+                          { val: 5, label: "5 (Recommandé)" },
+                          { val: 10, label: "10 mentions" },
+                          { val: 0, label: "Désactivé (Spam)" },
+                        ].map(({ val, label }) => {
+                          const isActive = guildSettings.mentionLimit === val;
+                          return (
+                            <button
+                              key={val}
+                              type="button"
+                              onClick={() => {
+                                setGuildSettings((p) => ({ ...p, mentionLimit: val }));
+                                if (val === 0) {
+                                  toggle(
+                                    "Limite de mentions",
+                                    false,
+                                    "Désactivée — Les membres peuvent mentionner sans limite (spam libre)."
+                                  );
+                                } else {
+                                  toggle(
+                                    "Limite de mentions",
+                                    true,
+                                    `Activée à ${val} mentions maximum par message.`
+                                  );
+                                }
+                              }}
+                              className={cn(
+                                "rounded-lg px-3 py-1.5 text-xs font-semibold transition-all cursor-pointer",
+                                isActive
+                                  ? val === 0
+                                    ? "bg-amber-500/20 text-amber-300 border border-amber-500/40 shadow-sm"
+                                    : "bg-emerald-500 text-white shadow-sm"
+                                  : "text-zinc-400 hover:text-white hover:bg-white/5"
+                              )}
+                            >
+                              {label}
+                            </button>
+                          );
+                        })}
                       </div>
                     </div>
 

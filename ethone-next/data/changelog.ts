@@ -30673,9 +30673,49 @@ const v12720_de: ChangelogEntry = {
   ],
 };
 
-CHANGELOG_BY_LANG.fr.unshift(v12720_fr);
-CHANGELOG_BY_LANG.en.unshift(v12720_en);
-CHANGELOG_BY_LANG.es.unshift(v12720_es);
-CHANGELOG_BY_LANG.de.unshift(v12720_de);
+const v12721_fr: ChangelogEntry = {
+  version: "v1.27.21",
+  date: "2026-09-21",
+  title: "Option de désactivation de la limite de mentions (Spam libre)",
+  items: [
+    "Limite de mentions par message : ajout d'une option « Désactivé (Spam) » permettant de lever toute restriction de mentions pour autoriser le spam libre sans sanction automatique.",
+    "Notification et synchronisation : déclenchement d'un toast toggle ON/OFF avec badge d'état ambre (« Désactivée (Spam libre) ») et mise à jour de la configuration bot mentionRaid.",
+  ],
+};
+
+const v12721_en: ChangelogEntry = {
+  version: "v1.27.21",
+  date: "2026-09-21",
+  title: "Disable option for mention limit (Free spam)",
+  items: [
+    "Mention limit per message: added a \"Disabled (Spam)\" pill option to remove mention restrictions, allowing unrestricted mention spam without automated penalties.",
+    "Notifications & sync: integrated ON/OFF toggle toast notification with amber status badge (\"Disabled (Free spam)\") and automatic bot mentionRaid sync.",
+  ],
+};
+
+const v12721_es: ChangelogEntry = {
+  version: "v1.27.21",
+  date: "2026-09-21",
+  title: "Opción de desactivación del límite de menciones (Spam libre)",
+  items: [
+    "Límite de menciones por mensaje: añadida opción « Desactivado (Spam) » para permitir spam libre de menciones sin sanciones automáticas.",
+    "Notificaciones y sincronización: notificación toggle ON/OFF con distintivo ámbar (« Desactivada (Spam libre) ») y sincronización con mentionRaid.",
+  ],
+};
+
+const v12721_de: ChangelogEntry = {
+  version: "v1.27.21",
+  date: "2026-09-21",
+  title: "Option zur Deaktivierung des Erwähnungslimits (Freier Spam)",
+  items: [
+    "Erwähnungslimit pro Nachricht: Option « Deaktiviert (Spam) » hinzugefügt, um Einschränkungen aufzuheben und freien Mention-Spam ohne Strafen zu erlauben.",
+    "Benachrichtigung & Synchronisierung: ON/OFF Toggle-Toast mit bernsteinfarbenem Badge (« Deaktiviert (Freier Spam) ») und mentionRaid-Konfiguration.",
+  ],
+};
+
+CHANGELOG_BY_LANG.fr.unshift(v12721_fr, v12720_fr);
+CHANGELOG_BY_LANG.en.unshift(v12721_en, v12720_en);
+CHANGELOG_BY_LANG.es.unshift(v12721_es, v12720_es);
+CHANGELOG_BY_LANG.de.unshift(v12721_de, v12720_de);
 
 export const CHANGELOG = CHANGELOG_BY_LANG.fr;

@@ -2,6 +2,15 @@
 
 Toutes les modifications notables de ce projet seront documentées dans ce fichier.
 
+## v1.27.19 — 2026-09-21
+
+**Harmonisation finale : boutons retour (server, music, automod), nettoyage données mock et pb-44 universel**
+
+- Bouton retour `← Retour Discord` ajouté dans le header de `ServerManagementClient` (manquait totalement) ; label texte ajouté sur `MusicCenterClient` et `automod/page.tsx` (icône seule → icône + libellé visible sm+).
+- Suppression des données factices dans `ServerManagementClient` : `ownerTag` `"Alexandre#0001"` rendu conditionnel, fallback webhooks (2 faux) → tableau vide, logs d'audit fictifs (Alexandre | Fondateur, Sophie [Mod Lead]…) → tableau vide.
+- Marge basse `pb-44` universelle : corrigé `HighlightsCenterClient` (pb-6), 5 sous-pages events (pb-20), `BotPresenceClient` (pb-20), `VoiceSettingsClient` et `VoiceRoomDetailClient` (pb-24).
+- Build Next.js : exit 0. Tests worker : 258/258 passent après `npm install` (@simplewebauthn/server manquait localement).
+
 ## v1.27.18 — 2026-09-21
 
 **Navigation & accessibilité : défilement complet, marge basse et bouton retour**

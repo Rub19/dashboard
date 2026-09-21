@@ -30580,7 +30580,57 @@ CHANGELOG_BY_LANG.en.unshift(v12718_en);
 CHANGELOG_BY_LANG.es.unshift(v12718_es);
 CHANGELOG_BY_LANG.de.unshift(v12718_de);
 
+const v12719_fr: ChangelogEntry = {
+  version: "v1.27.19",
+  date: "2026-09-21",
+  title: "Harmonisation finale : boutons retour (server, music, automod), nettoyage données mock et pb-44 universel",
+  items: [
+    "Bouton retour 'Retour Discord' ajouté sur ServerManagementClient (manquait complètement), et label texte ajouté sur MusicCenterClient et automod/page.tsx (icône seule → icône + libellé, visible sm+).",
+    "Suppression des données factices dans ServerManagementClient : ownerTag 'Alexandre#0001' rendu conditionnel (affiché seulement si le bot répond), fallback webhooks faux (2 entrées) remplacé par tableau vide, logs d'audit fictifs (Alexandre | Fondateur, Sophie [Mod Lead]…) remplacés par tableau vide.",
+    "Marge basse pb-44 universelle : correction de HighlightsCenterClient (pb-6), EventDetailClient / EventCreateClient / EventSettingsClient / EventAnalyticsClient / EventParticipantsClient (pb-20), BotPresenceClient (pb-20), VoiceSettingsClient et VoiceRoomDetailClient (pb-24).",
+    "Build Next.js : exit 0. Tests worker : 258/258 passent après npm install (@simplewebauthn/server manquait localement).",
+  ],
+};
+
+const v12719_en: ChangelogEntry = {
+  version: "v1.27.19",
+  date: "2026-09-21",
+  title: "Final harmonization: back buttons (server, music, automod), mock data cleanup and universal pb-44",
+  items: [
+    "Added missing 'Retour Discord' back button to ServerManagementClient header; upgraded icon-only buttons in MusicCenterClient and automod/page.tsx to icon + text label (visible on sm+).",
+    "Removed hardcoded fake data from ServerManagementClient: ownerTag 'Alexandre#0001' is now conditional (only shown when bot responds), fake webhook fallback (2 entries) replaced with empty array, fake audit log entries (Alexandre | Fondateur, Sophie [Mod Lead]…) replaced with empty array.",
+    "Universal pb-44 bottom clearance: fixed HighlightsCenterClient (pb-6), EventDetailClient / EventCreateClient / EventSettingsClient / EventAnalyticsClient / EventParticipantsClient (pb-20), BotPresenceClient (pb-20), VoiceSettingsClient and VoiceRoomDetailClient (pb-24).",
+    "Next.js build: exit 0. Worker tests: 258/258 pass after npm install (@simplewebauthn/server was missing locally).",
+  ],
+};
+
+const v12719_es: ChangelogEntry = {
+  version: "v1.27.19",
+  date: "2026-09-21",
+  title: "Armonización final: botones volver (server, music, automod), limpieza de datos mock y pb-44 universal",
+  items: [
+    "Botón 'Retour Discord' añadido en ServerManagementClient (faltaba completamente); etiqueta de texto añadida en MusicCenterClient y automod/page.tsx (solo icono → icono + texto, visible en sm+).",
+    "Eliminación de datos ficticios en ServerManagementClient: ownerTag 'Alexandre#0001' ahora es condicional, webhooks falsos reemplazados por array vacío, logs de auditoría ficticios eliminados.",
+    "Margen inferior pb-44 universal: corregido en HighlightsCenterClient, EventDetailClient, EventCreateClient, EventSettingsClient, EventAnalyticsClient, EventParticipantsClient, BotPresenceClient, VoiceSettingsClient y VoiceRoomDetailClient.",
+    "Build Next.js: exit 0. Tests worker: 258/258 pasan tras npm install.",
+  ],
+};
+
+const v12719_de: ChangelogEntry = {
+  version: "v1.27.19",
+  date: "2026-09-21",
+  title: "Finale Harmonisierung: Zurück-Buttons (server, music, automod), Mock-Daten-Bereinigung und universelles pb-44",
+  items: [
+    "Fehlender 'Retour Discord'-Button in ServerManagementClient hinzugefügt; Icon-only-Buttons in MusicCenterClient und automod/page.tsx auf Icon + Text-Label erweitert (ab sm+ sichtbar).",
+    "Gefälschte Daten aus ServerManagementClient entfernt: ownerTag 'Alexandre#0001' jetzt konditional, gefälschte Webhooks durch leeres Array ersetzt, gefälschte Audit-Log-Einträge entfernt.",
+    "Universelles pb-44 unterer Abstand: Korrektur in HighlightsCenterClient, EventDetailClient, EventCreateClient, EventSettingsClient, EventAnalyticsClient, EventParticipantsClient, BotPresenceClient, VoiceSettingsClient und VoiceRoomDetailClient.",
+    "Next.js-Build: Exit 0. Worker-Tests: 258/258 bestehen nach npm install.",
+  ],
+};
+
+CHANGELOG_BY_LANG.fr.unshift(v12719_fr);
+CHANGELOG_BY_LANG.en.unshift(v12719_en);
+CHANGELOG_BY_LANG.es.unshift(v12719_es);
+CHANGELOG_BY_LANG.de.unshift(v12719_de);
+
 export const CHANGELOG = CHANGELOG_BY_LANG.fr;
-
-
-

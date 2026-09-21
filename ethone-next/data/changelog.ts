@@ -31333,6 +31333,64 @@ CHANGELOG_BY_LANG.en.unshift(v12827_en);
 CHANGELOG_BY_LANG.es.unshift(v12827_es);
 CHANGELOG_BY_LANG.de.unshift(v12827_de);
 
+const v12828_fr: ChangelogEntry = {
+  version: "v1.28.8",
+  date: "2026-09-22",
+  title: "Refonte Moderne du Bot Control Center (/discord/bot)",
+  items: [
+    "Nouveau Hero Bento Deck : présentation dynamique de l'identité du bot avec halo d'état animé, tag Discord BOT officiel et badge de version.",
+    "4 cartes Bento de télémétrie en temps réel : Latence Gateway (avec badge de qualité), Disponibilité (Uptime formaté), Serveurs connectés et Membres couverts.",
+    "Console Système Propriétaire (Executive Command Deck) rétractable : bandeau compact haute technologie avec accès instantané aux actions PM2 (redémarrage, mise à jour, purge cache) et volet dépliable pour la supervision et les logs Supabase.",
+    "Navigation unifiée à deux niveaux : 5 catégories segmentées et sous-onglets sous forme de pilules avec compteurs numériques réels en direct.",
+    "Modernisation visuelle des composants Overview, Santé & Performance, Sécurité et Opérations avec le design system Ethone.",
+  ],
+};
+
+const v12828_en: ChangelogEntry = {
+  version: "v1.28.8",
+  date: "2026-09-22",
+  title: "Modern Redesign of Bot Control Center (/discord/bot)",
+  items: [
+    "New Hero Bento Deck: dynamic bot identity presentation with animated status halo, official Discord BOT tag, and version badge.",
+    "4 real-time Bento telemetry cards: Gateway Latency (with quality badge), Availability (formatted uptime), Connected Servers, and Covered Members.",
+    "Collapsible Owner Executive Command Deck: high-tech compact banner with instant access to PM2 actions (restart, update, clear cache) and expandable drawer for supervision and Supabase logs.",
+    "Unified two-tier navigation: 5 segmented categories and pill sub-tabs with live real item count badges.",
+    "Visual overhaul of Overview, Health & Performance, Security, and Operations sub-panels with the Ethone design system.",
+  ],
+};
+
+const v12828_es: ChangelogEntry = {
+  version: "v1.28.8",
+  date: "2026-09-22",
+  title: "Rediseño Moderno del Centro de Control del Bot (/discord/bot)",
+  items: [
+    "Nuevo Hero Bento Deck: presentación dinámica de identidad del bot con halo de estado animado, etiqueta oficial Discord BOT e insignia de versión.",
+    "4 tarjetas Bento de telemetría en tiempo real: Latencia Gateway, Disponibilidad (uptime formateado), Servidores conectados y Miembros cubiertos.",
+    "Consola de Sistema Propietario (Executive Command Deck) retráctil: banner compacto con acceso instantáneo a acciones PM2 y panel desplegable para supervisión y registros Supabase.",
+    "Navegación unificada de dos niveles: 5 categorías segmentadas y pestañas secundarias tipo píldora con insignias de conteo real.",
+    "Modernización visual de los componentes de Vista General, Salud y Rendimiento, Seguridad y Operaciones.",
+  ],
+};
+
+const v12828_de: ChangelogEntry = {
+  version: "v1.28.8",
+  date: "2026-09-22",
+  title: "Modernes Redesign des Bot Control Centers (/discord/bot)",
+  items: [
+    "Neues Hero Bento Deck: dynamische Bot-Identitätspräsentation mit animiertem Status-Halo, offiziellem Discord-BOT-Tag und Versions-Badge.",
+    "4 Echtzeit-Bento-Telemetrie-Karten: Gateway-Latenz, Verfügbarkeit (formatierte Uptime), Verbundene Server und Abgedeckte Mitglieder.",
+    "Einklappbares Owner Executive Command Deck: kompaktes High-Tech-Banner mit Direktzugriff auf PM2-Aktionen und ausklappbarer Schublade für Überwachung und Supabase-Logs.",
+    "Einheitliche zweistufige Navigation: 5 segmentierte Kategorien und Pill-Untertabs mit echten Zähler-Badges.",
+    "Visuelle Überarbeitung der Komponenten Übersicht, Gesundheit & Leistung, Sicherheit und Operationen.",
+  ],
+};
+
+CHANGELOG_BY_LANG.fr.unshift(v12828_fr);
+CHANGELOG_BY_LANG.en.unshift(v12828_en);
+CHANGELOG_BY_LANG.es.unshift(v12828_es);
+CHANGELOG_BY_LANG.de.unshift(v12828_de);
+
+
 CHANGELOG_BY_LANG.fr.unshift(v12826_fr);
 CHANGELOG_BY_LANG.en.unshift(v12826_en);
 CHANGELOG_BY_LANG.es.unshift(v12826_es);

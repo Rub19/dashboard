@@ -2,6 +2,16 @@
 
 Toutes les modifications notables de ce projet seront documentées dans ce fichier.
 
+## v1.28.8 — 2026-09-22
+
+**Refonte Moderne du Bot Control Center (`/discord/bot`)**
+
+- Nouveau **Hero Bento Deck** : présentation dynamique de l'identité du bot avec halo d'état animé, tag Discord `BOT` officiel et badge de version `v1.28.8`.
+- 4 cartes Bento de télémétrie en temps réel : Latence Gateway (avec badge de qualité), Disponibilité (Uptime formaté), Serveurs connectés et Membres couverts.
+- **Console Système Propriétaire (Executive Command Deck)** rétractable : bandeau compact haute technologie avec accès instantané aux actions PM2 (redémarrage, mise à jour, purge cache) et volet dépliable pour la supervision et les logs Supabase.
+- **Navigation unifiée à deux niveaux** : 5 catégories segmentées et sous-onglets sous forme de pilules avec compteurs numériques réels en direct.
+- Modernisation visuelle des composants Overview, Santé & Performance, Sécurité et Opérations avec le design system Ethone.
+
 ## v1.28.7 — 2026-09-22
 
 **Sélecteur de Rôle Universel (RolePicker) & Harmonisation des Salons**

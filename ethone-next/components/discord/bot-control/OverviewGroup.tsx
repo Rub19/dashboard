@@ -52,11 +52,11 @@ export default function OverviewGroup({
   return (
     <>
       {activeTab === "overview" && (
-        <div className="space-y-8">
+        <div className="space-y-6 sm:space-y-8">
           {/* Quick Summary Grid */}
-          <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
+          <div className="grid grid-cols-1 md:grid-cols-3 gap-5">
             {/* Presence summary card */}
-            <Card variant="default" padding="none" className="p-6 space-y-4">
+            <Card variant="default" padding="none" className="p-5 sm:p-6 space-y-4 hover:border-zinc-700/80 transition-all shadow-sm">
               <div className="flex items-center justify-between">
                 <h3 className="text-xs font-bold text-zinc-300 uppercase tracking-wider flex items-center gap-2">
                   <Sparkles className="w-4 h-4 text-indigo-400" />
@@ -64,38 +64,46 @@ export default function OverviewGroup({
                 </h3>
                 <Link
                   href="/discord/bot/presence"
-                  className="text-xs text-indigo-400 hover:underline flex items-center gap-1"
+                  className="text-xs text-indigo-400 hover:text-indigo-300 font-medium flex items-center gap-1 transition-colors"
                 >
                   <span>Gérer</span>
                   <ArrowRight className="w-3 h-3" />
                 </Link>
               </div>
 
-              <Card variant="widget" padding="md" className="space-y-2">
-                <div className="flex items-center gap-2">
-                  <span className={cn("w-2.5 h-2.5 rounded-full", currentCfg.dot)} />
-                  <span className="text-sm font-bold text-white">{currentCfg.label}</span>
+              <Card variant="widget" padding="md" className="space-y-2.5 bg-zinc-950/60 border-zinc-800/80">
+                <div className="flex items-center justify-between">
+                  <div className="flex items-center gap-2">
+                    <span className={cn("w-2.5 h-2.5 rounded-full", currentCfg.dot)} />
+                    <span className="text-sm font-bold text-white">{currentCfg.label}</span>
+                  </div>
+                  <span className="text-[10px] font-mono px-2 py-0.5 rounded-full bg-zinc-900 text-zinc-400 border border-zinc-800">
+                    WebSocket
+                  </span>
                 </div>
+
                 {botCore?.activity ? (
-                  <div className="text-xs text-zinc-300">
+                  <div className="text-xs text-zinc-300 pt-1">
                     {botCore.activity.type && (
-                      <span className="text-indigo-400 font-semibold">{botCore.activity.type} </span>
+                      <span className="text-indigo-400 font-semibold text-[11px] uppercase tracking-wide">
+                        {botCore.activity.type}{" "}
+                      </span>
                     )}
-                    <strong>{botCore.activity.name || "Actif"}</strong>
+                    <strong className="text-white font-medium">{botCore.activity.name || "Actif"}</strong>
                   </div>
                 ) : (
-                  <div className="text-xs text-zinc-400">
+                  <div className="text-xs text-zinc-500 italic pt-1">
                     <span>Aucune activité définie</span>
                   </div>
                 )}
-                <span className="text-[11px] text-zinc-400 block pt-1">
-                  Portée : Globale sur la connexion Gateway
+                <span className="text-[11px] text-zinc-500 block pt-1 border-t border-zinc-800/60">
+                  Portée : Globale sur la connexion Gateway Discord
                 </span>
               </Card>
             </Card>
 
             {/* Subsystems summary card */}
-            <Card variant="default" padding="none" className="p-6 space-y-4">
+            <Card variant="default" padding="none" className="p-5 sm:p-6 space-y-4 hover:border-zinc-700/80 transition-all shadow-sm">
               <div className="flex items-center justify-between">
                 <h3 className="text-xs font-bold text-zinc-300 uppercase tracking-wider flex items-center gap-2">
                   <Cpu className="w-4 h-4 text-emerald-400" />
@@ -103,7 +111,7 @@ export default function OverviewGroup({
                 </h3>
                 <button
                   onClick={() => handleTabChange("health")}
-                  className="text-xs text-emerald-400 hover:underline flex items-center gap-1"
+                  className="text-xs text-emerald-400 hover:text-emerald-300 font-medium flex items-center gap-1 transition-colors cursor-pointer"
                 >
                   <span>Détails</span>
                   <ArrowRight className="w-3 h-3" />
@@ -118,9 +126,9 @@ export default function OverviewGroup({
                       key={s.id}
                       variant="widget"
                       padding="none"
-                      className="px-3 py-2 flex items-center justify-between text-xs"
+                      className="px-3.5 py-2.5 flex items-center justify-between text-xs bg-zinc-950/60 border-zinc-800/80 hover:border-zinc-700/60 transition-all"
                     >
-                      <span className="text-zinc-300 font-medium">{s.name}</span>
+                      <span className="text-zinc-200 font-medium">{s.name}</span>
                       <span className={cn("font-mono font-bold flex items-center gap-1.5", cfg.text)}>
                         <span className={cn("w-1.5 h-1.5 rounded-full", cfg.dot)} />
                         {cfg.label}
@@ -132,7 +140,7 @@ export default function OverviewGroup({
             </Card>
 
             {/* Installed guilds summary card */}
-            <Card variant="default" padding="none" className="p-6 space-y-4">
+            <Card variant="default" padding="none" className="p-5 sm:p-6 space-y-4 hover:border-zinc-700/80 transition-all shadow-sm">
               <div className="flex items-center justify-between">
                 <h3 className="text-xs font-bold text-zinc-300 uppercase tracking-wider flex items-center gap-2">
                   <Server className="w-4 h-4 text-purple-400" />
@@ -140,28 +148,33 @@ export default function OverviewGroup({
                 </h3>
                 <button
                   onClick={() => handleTabChange("servers")}
-                  className="text-xs text-purple-400 hover:underline flex items-center gap-1"
+                  className="text-xs text-purple-400 hover:text-purple-300 font-medium flex items-center gap-1 transition-colors cursor-pointer"
                 >
-                  <span>Explorer</span>
+                  <span>Explorer ({servers.length})</span>
                   <ArrowRight className="w-3 h-3" />
                 </button>
               </div>
 
               <div className="space-y-2">
-                {servers.map((g) => (
+                {servers.slice(0, 3).map((g) => (
                   <Card
                     key={g.id}
                     variant="widget"
                     padding="none"
-                    className="px-3 py-2 flex items-center justify-between text-xs"
+                    className="px-3.5 py-2.5 flex items-center justify-between text-xs bg-zinc-950/60 border-zinc-800/80 hover:border-zinc-700/60 transition-all"
                   >
-                    <div className="flex items-center gap-2">
-                      <div className="w-6 h-6 rounded-full bg-zinc-800 flex items-center justify-center text-[10px] font-bold text-white">
-                        {g.name?.charAt(0) || "?"}
+                    <div className="flex items-center gap-2.5 min-w-0">
+                      <div className="w-7 h-7 rounded-lg bg-zinc-800 border border-zinc-700/80 flex items-center justify-center text-[10px] font-bold text-white overflow-hidden shrink-0">
+                        {g.icon ? (
+                          // eslint-disable-next-line @next/next/no-img-element
+                          <img src={g.icon} alt={g.name} className="w-full h-full object-cover" />
+                        ) : (
+                          g.name?.charAt(0) || "?"
+                        )}
                       </div>
-                      <span className="text-zinc-200 font-medium truncate max-w-[140px]">{g.name}</span>
+                      <span className="text-zinc-200 font-medium truncate max-w-[130px]">{g.name}</span>
                     </div>
-                    <span className="text-zinc-400 font-mono text-[11px]">{g.memberCount} membres</span>
+                    <span className="text-zinc-400 font-mono text-[11px] shrink-0">{g.memberCount} membres</span>
                   </Card>
                 ))}
               </div>
@@ -169,25 +182,25 @@ export default function OverviewGroup({
           </div>
 
           {/* Modules Grid — real per-guild toggles, same data as /module on Discord */}
-          <Card variant="default" padding="none" className="p-6 space-y-4">
+          <Card variant="default" padding="none" className="p-5 sm:p-6 space-y-4 hover:border-zinc-700/80 transition-all shadow-sm">
             <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4">
               <div>
                 <h3 className="text-sm font-bold text-white flex items-center gap-2">
                   <Layers className="w-4 h-4 text-indigo-400" />
                   Modules du Bot Discord ({modules.length})
                 </h3>
-                <p className="text-xs text-zinc-400">
-                  État réel par serveur, identique à la commande Discord <code className="text-zinc-300">/module</code>
+                <p className="text-xs text-zinc-400 mt-0.5">
+                  État réel par serveur, identique à la commande Discord <code className="text-zinc-300 font-mono">/module</code>
                 </p>
               </div>
 
               {/* Guild selector + search */}
-              <div className="flex items-center gap-2.5">
+              <div className="flex flex-wrap items-center gap-2.5">
                 <select
                   value={settingsGuildId}
                   onChange={(e) => setSettingsGuildId(e.target.value)}
                   disabled={servers.length === 0}
-                  className="px-3 py-1.5 rounded-lg bg-zinc-950 border border-zinc-800 text-xs text-zinc-300 focus:outline-none focus:border-indigo-500 disabled:opacity-50"
+                  className="px-3 py-1.5 rounded-xl bg-zinc-900 border border-zinc-800 text-xs text-zinc-200 focus:outline-none focus:border-indigo-500 disabled:opacity-50 cursor-pointer"
                 >
                   {servers.length === 0 && <option value="">Aucun serveur détecté</option>}
                   {servers.map((s) => (
@@ -200,10 +213,10 @@ export default function OverviewGroup({
                   <Search className="w-3.5 h-3.5 absolute left-3 top-2.5 text-zinc-500" />
                   <input
                     type="text"
-                    placeholder="Filtrer..."
+                    placeholder="Filtrer un module..."
                     value={searchQuery}
                     onChange={(e) => setSearchQuery(e.target.value)}
-                    className="pl-8 pr-3 py-1.5 rounded-lg bg-zinc-950 border border-zinc-800 text-xs text-white placeholder-zinc-500 focus:outline-none focus:border-indigo-500 w-40"
+                    className="pl-8 pr-3 py-1.5 rounded-xl bg-zinc-900 border border-zinc-800 text-xs text-white placeholder-zinc-500 focus:outline-none focus:border-indigo-500 w-44"
                   />
                 </div>
               </div>
@@ -224,7 +237,7 @@ export default function OverviewGroup({
                 </button>
               </div>
             ) : (
-              <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-3 pt-2">
+              <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-3.5 pt-2">
                 {filteredModules.map((m) => {
                   const ModIcon = MODULE_ICONS[m.icon] || Layers;
                   const disabled = m.available === false || togglingModuleId === m.id;
@@ -233,16 +246,16 @@ export default function OverviewGroup({
                       key={m.id}
                       variant="widget"
                       padding="md"
-                      className="hover:border-[var(--accent-primary)]/20 transition-all flex flex-col justify-between gap-3"
+                      className="bg-zinc-950/60 border-zinc-800/80 hover:border-indigo-500/30 hover:bg-zinc-900/40 transition-all flex flex-col justify-between gap-3 group"
                     >
                       <div>
                         <div className="flex items-center justify-between gap-2 mb-1.5">
                           <span className="text-xs font-bold text-white truncate flex items-center gap-1.5">
-                            <ModIcon className="w-3.5 h-3.5 text-indigo-400 shrink-0" />
+                            <ModIcon className="w-3.5 h-3.5 text-indigo-400 shrink-0 group-hover:scale-110 transition-transform" />
                             {m.name}
                           </span>
                           {m.available === false ? (
-                            <span className="px-1.5 py-0.2 rounded text-[10px] font-semibold bg-zinc-700/40 text-zinc-400 border border-zinc-600/30 shrink-0">
+                            <span className="px-1.5 py-0.2 rounded text-[10px] font-semibold bg-zinc-800/60 text-zinc-400 border border-zinc-700/40 shrink-0">
                               Bientôt disponible
                             </span>
                           ) : (
@@ -251,20 +264,20 @@ export default function OverviewGroup({
                               disabled={disabled}
                               title={m.enabled ? "Désactiver ce module" : "Activer ce module"}
                               className={cn(
-                                "w-9 h-5 rounded-full transition-colors relative p-0.5 shrink-0 disabled:opacity-50",
-                                m.enabled ? "bg-emerald-500" : "bg-zinc-700"
+                                "w-9 h-5 rounded-full transition-colors relative p-0.5 shrink-0 disabled:opacity-50 cursor-pointer",
+                                m.enabled ? "bg-emerald-500 shadow-sm shadow-emerald-500/30" : "bg-zinc-700"
                               )}
                             >
                               <span
                                 className={cn(
-                                  "block w-4 h-4 rounded-full bg-white transition-transform",
+                                  "block w-4 h-4 rounded-full bg-white transition-transform shadow-sm",
                                   m.enabled ? "translate-x-4" : "translate-x-0"
                                 )}
                               />
                             </button>
                           )}
                         </div>
-                        <p className="text-[11px] text-zinc-400 line-clamp-2">{m.description}</p>
+                        <p className="text-[11px] text-zinc-400 line-clamp-2 leading-relaxed">{m.description}</p>
                       </div>
                     </Card>
                   );

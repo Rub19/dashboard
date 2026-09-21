@@ -32,6 +32,8 @@ export class LavalinkMusicPlayer implements IGuildMusicPlayer {
   private lastException = '';
   /** URLs déjà essayées (et mortes) par titre : évite de reboucler sur le même résultat SoundCloud. */
   private triedUrls = new Map<string, Set<string>>();
+  /** Titres déjà relancés après un « stuck » (une seule reprise par titre). */
+  private stuckRetried = new Set<string>();
 
   constructor(guildId: string, onStateChange?: (state: GuildMusicState) => void) {
     this.guildId = guildId;
@@ -132,6 +134,21 @@ export class LavalinkMusicPlayer implements IGuildMusicPlayer {
         void this.recoverFromLoadFailure();
         return;
       }
+      // Fin « naturelle » MAIS bien trop tôt : SoundCloud annonce la durée complète et ne sert
+      // souvent qu'un extrait (~30 s) ou coupe le flux. On le détecte (position finale très en
+      // dessous de la durée annoncée) et on passe au résultat SoundCloud suivant au lieu de
+      // laisser la musique s'arrêter en plein milieu.
+      const current = this.queue.getCurrentTrack();
+      if (data.reason === 'finished' && current && current.duration > 45) {
+        const playedSec = this.position / 1000;
+        if (playedSec > 0 && playedSec < current.duration - 20 && playedSec < current.duration * 0.85) {
+          logger.warn(
+            `[Lavalink] Fin prématurée de "${current.title}" à ${Math.round(playedSec)}s sur ${current.duration}s (${current.url}) — essai d'une autre source (guild ${this.guildId}).`
+          );
+          void this.recoverFromLoadFailure();
+          return;
+        }
+      }
       void this.handleTrackEnd();
     });
 
@@ -143,6 +160,19 @@ export class LavalinkMusicPlayer implements IGuildMusicPlayer {
     });
 
     player.on('stuck', (data) => {
+      const current = this.queue.getCurrentTrack();
+      const key = current?.id ?? data.track.info.identifier;
+      // Un blocage ponctuel (CPU du VPS saturé, réseau) ne doit pas sauter le morceau : on
+      // relance UNE fois au même endroit avant de passer au suivant.
+      if (current?.encoded && this.player && !this.stuckRetried.has(key)) {
+        this.stuckRetried.add(key);
+        if (this.stuckRetried.size > 50) this.stuckRetried.clear();
+        logger.warn(`[Lavalink] Lecture bloquée ${data.thresholdMs} ms sur "${data.track.info.title}" — reprise à ${Math.round(this.position / 1000)}s (guild ${this.guildId}).`);
+        void this.player
+          .playTrack({ track: { encoded: current.encoded }, position: Math.max(0, Math.floor(this.position)) })
+          .catch(() => void this.handleTrackEnd());
+        return;
+      }
       logger.warn(`[Lavalink] Lecture bloquée ${data.thresholdMs} ms sur "${data.track.info.title}" (guild ${this.guildId}) — titre suivant.`);
       void this.handleTrackEnd();
     });

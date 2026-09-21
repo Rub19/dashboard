@@ -2,6 +2,14 @@
 
 Toutes les modifications notables de ce projet seront documentées dans ce fichier.
 
+## v1.25.14 — 2026-09-21
+
+**Bot musique : détection des coupures après ~10 s et reprise automatique**
+
+- Une piste SoundCloud annonce souvent la durée complète mais ne sert qu'un extrait, ou coupe le flux : la musique s'arrêtait alors après 10 à 30 s sans aucune erreur. Le bot détecte maintenant une fin « naturelle » très en dessous de la durée annoncée et bascule automatiquement sur le résultat SoundCloud suivant (avec un log « Fin prématurée … essai d'une autre source »).
+- Blocage de lecture (`stuck`) : le bot relance maintenant UNE fois le morceau à la même position avant de passer au suivant, au lieu de sauter directement. Le seuil de blocage de Lavalink passe de 10 s à 30 s, car 10 s coupait dès qu'un buffer tardait sur un VPS chargé.
+- Le log du repli SoundCloud indique le titre réellement joué, sa durée et son lien, pour diagnostiquer plus vite.
+
 ## v1.25.13 — 2026-09-20
 
 **Réglages : l'icône n'est plus collée au bord de l'en-tête**

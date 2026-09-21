@@ -28903,4 +28903,53 @@ CHANGELOG_BY_LANG.en.unshift(v12513_en);
 CHANGELOG_BY_LANG.es.unshift(v12513_es);
 CHANGELOG_BY_LANG.de.unshift(v12513_de);
 
+const v12514_fr: ChangelogEntry = {
+  version: "v1.25.14",
+  date: "2026-09-21",
+  title: "Bot musique : détection des coupures après ~10 s et reprise automatique",
+  items: [
+    "Une piste SoundCloud annonce souvent la durée complète mais ne sert qu'un extrait, ou coupe le flux : la musique s'arrêtait alors après 10 à 30 s sans aucune erreur. Le bot détecte maintenant une fin « naturelle » très en dessous de la durée annoncée et bascule automatiquement sur le résultat SoundCloud suivant (avec un log « Fin prématurée … essai d'une autre source »).",
+    "Blocage de lecture (`stuck`) : le bot relance maintenant UNE fois le morceau à la même position avant de passer au suivant, au lieu de sauter directement. Le seuil de blocage de Lavalink passe de 10 s à 30 s, car 10 s coupait dès qu'un buffer tardait sur un VPS chargé.",
+    "Le log du repli SoundCloud indique le titre réellement joué, sa durée et son lien, pour diagnostiquer plus vite.",
+  ],
+};
+
+const v12514_en: ChangelogEntry = {
+  version: "v1.25.14",
+  date: "2026-09-21",
+  title: "Music bot: detect cut-offs after ~10 s and resume automatically",
+  items: [
+    "A SoundCloud track often announces its full length but only serves a snippet, or cuts the stream: the music then stopped after 10 to 30 s with no error at all. The bot now detects a \"natural\" end far below the announced duration and automatically switches to the next SoundCloud result (with a \"Premature end … trying another source\" log).",
+    "Playback stall (`stuck`): the bot now restarts the track once at the same position before moving on, instead of skipping right away. Lavalink's stuck threshold goes from 10 s to 30 s, because 10 s cut in whenever a buffer was late on a busy VPS.",
+    "The SoundCloud fallback log now shows the track actually played, its duration and its link, for faster diagnosis.",
+  ],
+};
+
+const v12514_es: ChangelogEntry = {
+  version: "v1.25.14",
+  date: "2026-09-21",
+  title: "Bot de música: detección de cortes tras ~10 s y reanudación automática",
+  items: [
+    "Una pista de SoundCloud suele anunciar la duración completa pero solo sirve un fragmento, o corta el flujo: la música se detenía a los 10-30 s sin ningún error. El bot detecta ahora un final \"natural\" muy por debajo de la duración anunciada y cambia automáticamente al siguiente resultado de SoundCloud (con un log \"Fin prematuro … probando otra fuente\").",
+    "Bloqueo de reproducción (`stuck`): el bot reinicia ahora UNA vez la pista en la misma posición antes de pasar a la siguiente, en lugar de saltarla directamente. El umbral de bloqueo de Lavalink pasa de 10 s a 30 s, porque 10 s cortaba en cuanto un búfer se retrasaba en un VPS cargado.",
+    "El log del repliegue a SoundCloud indica ahora la pista realmente reproducida, su duración y su enlace, para diagnosticar más rápido.",
+  ],
+};
+
+const v12514_de: ChangelogEntry = {
+  version: "v1.25.14",
+  date: "2026-09-21",
+  title: "Musik-Bot: Abbrüche nach ~10 s erkennen und automatisch fortsetzen",
+  items: [
+    "Ein SoundCloud-Titel meldet oft die volle Länge, liefert aber nur einen Ausschnitt oder bricht den Stream ab: Die Musik stoppte dann nach 10 bis 30 s ganz ohne Fehler. Der Bot erkennt jetzt ein „natürliches“ Ende weit unter der gemeldeten Dauer und wechselt automatisch zum nächsten SoundCloud-Ergebnis (mit Log „Vorzeitiges Ende … andere Quelle“).",
+    "Wiedergabe-Stau (`stuck`): Der Bot startet den Titel jetzt EINMAL an derselben Position neu, bevor er weiterspringt, statt sofort zu überspringen. Der Stuck-Schwellwert von Lavalink steigt von 10 s auf 30 s, weil 10 s bei einem ausgelasteten VPS schon bei einem verspäteten Puffer zuschlug.",
+    "Das Log des SoundCloud-Fallbacks zeigt jetzt den tatsächlich gespielten Titel, seine Dauer und seinen Link, für schnellere Diagnose.",
+  ],
+};
+
+CHANGELOG_BY_LANG.fr.unshift(v12514_fr);
+CHANGELOG_BY_LANG.en.unshift(v12514_en);
+CHANGELOG_BY_LANG.es.unshift(v12514_es);
+CHANGELOG_BY_LANG.de.unshift(v12514_de);
+
 export const CHANGELOG = CHANGELOG_BY_LANG.fr;

@@ -37,7 +37,7 @@ lavalink:
     frameBufferDurationMs: 5000   # buffer large : évite les saccades quand le CPU du VPS est chargé
     opusEncodingQuality: 5      # 10 = max CPU ; 5 est inaudible en vocal Discord
     resamplingQuality: LOW     # HIGH coûte cher en CPU pour rien sur Discord
-    trackStuckThresholdMs: 10000
+    trackStuckThresholdMs: 30000   # 10 s sautait le morceau dès qu'un buffer tardait (VPS chargé)
     useSeekGhosting: true
     youtubePlaylistLoadLimit: 6
     playerUpdateInterval: 5

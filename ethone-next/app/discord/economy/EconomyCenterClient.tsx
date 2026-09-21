@@ -13,6 +13,8 @@ import {
   RefreshCw,
   Save,
   History,
+  Sparkles,
+  Wallet as WalletIcon,
 } from "lucide-react";
 import { useToast } from "@/components/ToastProvider";
 import { useDiscordOAuth } from "@/lib/hooks/useDiscordOAuth";
@@ -28,6 +30,7 @@ interface Wallet {
   avatarUrl: string | null;
   balance: number;
   lastDailyClaimAt: string | null;
+  dailyStreak?: number;
   totalEarned: number;
   totalSpent: number;
   rank: number;
@@ -189,12 +192,15 @@ export default function EconomyCenterClient() {
   const [leaderboard, setLeaderboard] = useState<Wallet[]>(DEMO_LEADERBOARD);
   const [shopItems, setShopItems] = useState<ShopItem[]>(DEMO_SHOP);
   const [transactions, setTransactions] = useState<Transaction[]>(DEMO_TRANSACTIONS);
-  const [activity, setActivity] = useState<Activity>({ transactions24h: 3, volume24h: 365, totalCirculating: 15870 });
+  const [activity, setActivity] = useState<Activity>({ transactions24h: 0, volume24h: 0, totalCirculating: 0 });
   const [txFilter, setTxFilter] = useState<"ALL" | TransactionType>("ALL");
   const [isDemo, setIsDemo] = useState(true);
   const [loading, setLoading] = useState(false);
   const [savingConfig, setSavingConfig] = useState(false);
   const [newItem, setNewItem] = useState({ roleId: "", label: "", price: 100, description: "" });
+  const [myWallet, setMyWallet] = useState<Wallet | null>(null);
+  const [claimingDaily, setClaimingDaily] = useState(false);
+  const [purchasingItemId, setPurchasingItemId] = useState<string | null>(null);
 
   const load = useCallback(async () => {
     if (!BOT_API_URL || !currentGuildId) {
@@ -203,18 +209,24 @@ export default function EconomyCenterClient() {
     }
     setLoading(true);
     try {
-      const [overviewRes, leaderboardRes, shopRes, txRes, activityRes] = await Promise.all([
+      const fetches: Promise<any>[] = [
         fetch(`${base}/overview`, { credentials: "include" }),
         fetch(`${base}/leaderboard`, { credentials: "include" }),
         fetch(`${base}/shop`, { credentials: "include" }),
         fetch(`${base}/transactions?limit=100`, { credentials: "include" }),
         fetch(`${base}/activity`, { credentials: "include" }),
-      ]);
+      ];
+      if (profile?.user?.id) {
+        fetches.push(fetch(`${base}/wallet/${profile.user.id}`, { credentials: "include" }));
+      }
+
+      const [overviewRes, leaderboardRes, shopRes, txRes, activityRes, walletRes] = await Promise.all(fetches);
       const overviewData = await overviewRes.json().catch(() => null);
       const leaderboardData = await leaderboardRes.json().catch(() => null);
       const shopData = await shopRes.json().catch(() => null);
       const txData = await txRes.json().catch(() => null);
       const activityData = await activityRes.json().catch(() => null);
+      const walletData = walletRes ? await walletRes.json().catch(() => null) : null;
 
       if (overviewRes.ok && overviewData?.config) {
         setConfig({ ...DEFAULT_CONFIG, ...overviewData.config });
@@ -237,16 +249,71 @@ export default function EconomyCenterClient() {
       if (activityRes.ok && activityData?.activity) {
         setActivity(activityData.activity);
       }
+      if (walletData?.wallet) {
+        setMyWallet(walletData.wallet);
+      }
     } catch {
       setIsDemo(true);
     } finally {
       setLoading(false);
     }
-  }, [base, currentGuildId]);
+  }, [base, currentGuildId, profile?.user?.id]);
 
   useEffect(() => {
     load();
   }, [load]);
+
+  const handleClaimDaily = async () => {
+    if (!profile?.user?.id || isDemo || !BOT_API_URL) {
+      toastError("Action impossible", "Connexion au bot requise.");
+      return;
+    }
+    setClaimingDaily(true);
+    try {
+      const res = await fetch(`${base}/daily`, {
+        method: "POST",
+        credentials: "include",
+      });
+      const data = await res.json();
+      if (!res.ok || !data.success) {
+        throw new Error(data.error || "Impossible de réclamer le bonus quotidien.");
+      }
+      success("Bonus quotidien réclamé !", `+${data.amount} ${config.currencySymbol} ajoutés à votre solde.`);
+      load();
+    } catch (err: any) {
+      toastError("Erreur", err.message || "Échec de la réclamation du bonus.");
+    } finally {
+      setClaimingDaily(false);
+    }
+  };
+
+  const handleBuyShopItem = async (itemId: string, itemLabel: string, price: number) => {
+    if (!profile?.user?.id || isDemo || !BOT_API_URL) {
+      toastError("Action impossible", "Connexion au bot requise.");
+      return;
+    }
+    if (myWallet && myWallet.balance < price) {
+      toastError("Fonds insuffisants", `Il vous manque ${(price - myWallet.balance).toLocaleString("fr-FR")} ${config.currencySymbol}.`);
+      return;
+    }
+    setPurchasingItemId(itemId);
+    try {
+      const res = await fetch(`${base}/shop/${itemId}/buy`, {
+        method: "POST",
+        credentials: "include",
+      });
+      const data = await res.json();
+      if (!res.ok || !data.success) {
+        throw new Error(data.error || "Achat impossible.");
+      }
+      success("Rôle acheté avec succès !", `Vous avez obtenu le rôle "${itemLabel}".`);
+      load();
+    } catch (err: any) {
+      toastError("Échec de l'achat", err.message || "Une erreur est survenue lors de l'achat.");
+    } finally {
+      setPurchasingItemId(null);
+    }
+  };
 
   const saveConfig = async () => {
     if (isDemo || !BOT_API_URL) {
@@ -350,6 +417,47 @@ export default function EconomyCenterClient() {
           ))}
         </div>
 
+        {/* Mon portefeuille personnel */}
+        {profile?.user?.id && (
+          <div className="p-6 rounded-2xl bg-gradient-to-r from-indigo-950/40 via-purple-950/20 to-black/40 border border-indigo-500/20 backdrop-blur-xl flex flex-col sm:flex-row sm:items-center justify-between gap-4">
+            <div className="flex items-center gap-4">
+              <div className="w-12 h-12 rounded-2xl bg-indigo-600/20 border border-indigo-500/30 flex items-center justify-center shrink-0">
+                <WalletIcon className="w-6 h-6 text-indigo-400" />
+              </div>
+              <div>
+                <div className="flex items-center gap-2">
+                  <h3 className="text-base font-bold text-white">Mon Portefeuille</h3>
+                  {myWallet && myWallet.rank > 0 && (
+                    <span className="text-[10px] font-mono px-2 py-0.5 rounded-full bg-indigo-500/20 text-indigo-300 border border-indigo-500/30">
+                      Rang #{myWallet.rank}
+                    </span>
+                  )}
+                </div>
+                <div className="flex items-center gap-4 mt-1 text-xs text-slate-400">
+                  <span>
+                    Solde : <strong className="text-amber-300 font-mono text-sm">{myWallet ? myWallet.balance.toLocaleString("fr-FR") : "0"} {config.currencySymbol}</strong>
+                  </span>
+                  {myWallet && (myWallet.dailyStreak || 0) > 0 && (
+                    <span>
+                      🔥 Série : <strong className="text-orange-400">{myWallet.dailyStreak} j</strong>
+                    </span>
+                  )}
+                </div>
+              </div>
+            </div>
+
+            <button
+              type="button"
+              onClick={handleClaimDaily}
+              disabled={claimingDaily}
+              className="flex items-center justify-center gap-2 px-4 py-2.5 rounded-xl bg-gradient-to-r from-emerald-600 to-teal-600 hover:from-emerald-500 hover:to-teal-500 text-white text-xs font-bold shadow-lg shadow-emerald-900/20 disabled:opacity-50 transition shrink-0"
+            >
+              <Gift className={cn("w-4 h-4", claimingDaily && "animate-bounce")} />
+              {claimingDaily ? "Réclamation..." : "Réclamer mon quotidien"}
+            </button>
+          </div>
+        )}
+
         {/* Leaderboard */}
         <div className="p-6 rounded-2xl bg-white/[0.02] border border-[var(--panel-border)] backdrop-blur-xl">
           <h2 className="text-sm font-bold text-white mb-4 flex items-center gap-2">
@@ -445,8 +553,18 @@ export default function EconomyCenterClient() {
                   <span className="text-sm font-semibold text-white block">{item.label}</span>
                   <span className="text-[11px] text-slate-500">{item.description || `Rôle #${item.roleId}`}</span>
                 </div>
-                <div className="flex items-center gap-3">
-                  <span className="text-xs font-bold text-amber-300">{item.price.toLocaleString("fr-FR")} {config.currencySymbol}</span>
+                <div className="flex items-center gap-2">
+                  <span className="text-xs font-bold text-amber-300 mr-1">{item.price.toLocaleString("fr-FR")} {config.currencySymbol}</span>
+                  {profile?.user?.id && (
+                    <button
+                      type="button"
+                      onClick={() => handleBuyShopItem(item.id, item.label, item.price)}
+                      disabled={purchasingItemId === item.id || (myWallet !== null && myWallet.balance < item.price)}
+                      className="flex items-center gap-1 px-3 py-1.5 rounded-lg bg-emerald-600 hover:bg-emerald-500 text-white text-xs font-semibold disabled:opacity-40 disabled:cursor-not-allowed transition"
+                    >
+                      {purchasingItemId === item.id ? "Achat..." : "Acheter"}
+                    </button>
+                  )}
                   <button type="button" onClick={() => removeShopItem(item.id)} className="p-1.5 rounded-lg text-rose-400 hover:bg-rose-500/10">
                     <Trash2 className="w-3.5 h-3.5" />
                   </button>

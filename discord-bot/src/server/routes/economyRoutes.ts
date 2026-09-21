@@ -1,10 +1,11 @@
 import express, { Request, Response } from 'express';
 import { Client } from 'discord.js';
 import { economyStorage } from '../../modules/economy/storage/economyStorage.js';
+import { economyService } from '../../modules/economy/services/economyService.js';
 import { emitConfigUpdated } from '../../services/syncConfigEmitter.js';
 import { rateLimit } from '../middleware/antiAbuseMiddleware.js';
 
-export function createEconomyRouter(_discordClient: Client) {
+export function createEconomyRouter(discordClient: Client) {
   const router = express.Router({ mergeParams: true });
 
   // 1. Vue d'ensemble
@@ -87,6 +88,66 @@ export function createEconomyRouter(_discordClient: Client) {
     const itemId = String(req.params.itemId);
     economyStorage.deleteShopItem(guildId, itemId);
     res.json({ success: true });
+  });
+
+  // 6. Réclamer le bonus quotidien depuis le web
+  router.post('/daily', async (req: Request, res: Response): Promise<void> => {
+    const guildId = String(req.params.guildId);
+    const userId = req.user?.id;
+    if (!userId) {
+      res.status(401).json({ error: 'Session du bot requise.' });
+      return;
+    }
+    const guild = discordClient.guilds.cache.get(guildId);
+    const member = guild ? await guild.members.fetch(userId).catch(() => null) : null;
+    const userRef = {
+      id: userId,
+      username: member?.user.username || req.user?.username || 'Utilisateur',
+      avatarUrl: member?.user.displayAvatarURL() || null,
+    };
+    const result = economyService.claimDaily(guildId, userRef);
+    if (!result.ok) {
+      res.status(400).json({
+        error: result.reason === 'cooldown' ? 'Bonus déjà réclamé.' : 'L’économie est désactivée sur ce serveur.',
+        reason: result.reason,
+        remainingMs: result.remainingMs,
+      });
+      return;
+    }
+    res.json({ success: true, ...result });
+  });
+
+  // 7. Acheter un rôle de la boutique depuis le web
+  router.post('/shop/:itemId/buy', async (req: Request, res: Response): Promise<void> => {
+    const guildId = String(req.params.guildId);
+    const itemId = String(req.params.itemId);
+    const userId = req.user?.id;
+    if (!userId) {
+      res.status(401).json({ error: 'Session du bot requise.' });
+      return;
+    }
+    const guild = discordClient.guilds.cache.get(guildId);
+    if (!guild) {
+      res.status(404).json({ error: 'Serveur introuvable.' });
+      return;
+    }
+    const member = await guild.members.fetch(userId).catch(() => null);
+    if (!member) {
+      res.status(404).json({ error: 'Vous devez être membre de ce serveur pour effectuer un achat.' });
+      return;
+    }
+    const result = await economyService.purchaseRole(guildId, member, itemId);
+    if (!result.ok) {
+      const messages: Record<string, string> = {
+        not_found: 'Article introuvable dans la boutique.',
+        insufficient_funds: 'Solde insuffisant pour acheter ce rôle.',
+        already_owned: 'Vous possédez déjà ce rôle sur le serveur.',
+        role_unavailable: 'Le bot ne peut pas attribuer ce rôle (hiérarchie ou permissions insuffisantes).',
+      };
+      res.status(400).json({ error: messages[result.reason] || 'Achat impossible.' });
+      return;
+    }
+    res.json({ success: true, item: result.item, balance: result.balance });
   });
 
   return router;

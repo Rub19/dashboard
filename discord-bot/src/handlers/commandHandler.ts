@@ -37,6 +37,15 @@ import { suggestCommand } from '../modules/suggestions/commands/suggestCommand.j
 import { antiraidCommand } from '../modules/antiRaid/commands/antiraidCommand.js';
 import { verificationCommand } from '../modules/welcome/commands/verificationCommand.js';
 import { economyCommand } from '../modules/economy/commands/economyCommand.js';
+import {
+  dailyCommand,
+  workCommand,
+  balanceCommand,
+  payCommand,
+  gambleCommand,
+  robCommand,
+  shopCommand,
+} from '../modules/economy/commands/economyShortcuts.js';
 import { antinukeCommand } from '../modules/security/commands/antinukeCommand.js';
 import { automodCommand } from '../modules/automod/commands/automodCommand.js';
 import { musicCommand } from '../commands/music/music.js';
@@ -126,6 +135,13 @@ class CommandRegistry {
     this.register(antiraidCommand);
     this.register(verificationCommand);
     this.register(economyCommand);
+    this.register(dailyCommand);
+    this.register(workCommand);
+    this.register(balanceCommand);
+    this.register(payCommand);
+    this.register(gambleCommand);
+    this.register(robCommand);
+    this.register(shopCommand);
     this.register(antinukeCommand);
 
     // AutoMod 2.0 (Smart Moderation)

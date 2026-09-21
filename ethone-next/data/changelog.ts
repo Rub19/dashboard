@@ -30364,5 +30364,59 @@ CHANGELOG_BY_LANG.en.unshift(v12714_en);
 CHANGELOG_BY_LANG.es.unshift(v12714_es);
 CHANGELOG_BY_LANG.de.unshift(v12714_de);
 
+const v12715_fr: ChangelogEntry = {
+  version: "v1.27.15",
+  date: "2026-09-21",
+  title: "Enrichissement de l'économie : raccourcis Discord et boutique web",
+  items: [
+    "Commandes Discord : ajout de 7 raccourcis slash dédiés au premier niveau (/daily, /work, /balance, /pay, /gamble, /rob, /shop) pour une utilisation directe.",
+    "Boutique web : possibilité d'acheter des rôles Discord directement depuis le dashboard pour les membres connectés avec mise à jour immédiate du solde.",
+    "Portefeuille personnel : ajout d'une carte interactive sur le dashboard affichant le solde réel, le rang, la série actuelle et un bouton pour réclamer le bonus quotidien.",
+    "API du bot : nouvelles routes POST /api/guilds/:guildId/economy/daily et POST /api/guilds/:guildId/economy/shop/:itemId/buy avec vérification des permissions et de la hiérarchie des rôles.",
+  ],
+};
+
+const v12715_en: ChangelogEntry = {
+  version: "v1.27.15",
+  date: "2026-09-21",
+  title: "Economy enrichment: Discord shortcuts and web shop purchases",
+  items: [
+    "Discord commands: added 7 dedicated top-level slash shortcuts (/daily, /work, /balance, /pay, /gamble, /rob, /shop) for direct access.",
+    "Web shop: connected members can now purchase Discord roles directly from the dashboard with instant balance updates.",
+    "Personal wallet: added an interactive dashboard card displaying real balance, rank, daily streak, and a one-click daily claim button.",
+    "Bot API: new endpoints POST /api/guilds/:guildId/economy/daily and POST /api/guilds/:guildId/economy/shop/:itemId/buy with role hierarchy checks.",
+  ],
+};
+
+const v12715_es: ChangelogEntry = {
+  version: "v1.27.15",
+  date: "2026-09-21",
+  title: "Enriquecimiento de la economía: atajos de Discord y tienda web",
+  items: [
+    "Comandos de Discord: 7 nuevos comandos de barra directa (/daily, /work, /balance, /pay, /gamble, /rob, /shop).",
+    "Tienda web: compra directa de roles de Discord desde el panel para miembros conectados.",
+    "Billetera personal: tarjeta interactiva en el panel con saldo real, racha diaria y botón para reclamar el bono diario.",
+    "API del bot: nuevas rutas para reclamar el bono diario y comprar artículos de la tienda.",
+  ],
+};
+
+const v12715_de: ChangelogEntry = {
+  version: "v1.27.15",
+  date: "2026-09-21",
+  title: "Wirtschaftserweiterung: Discord-Shortcuts und Web-Shop-Kauf",
+  items: [
+    "Discord-Befehle: 7 dedizierte Slash-Shortcuts (/daily, /work, /balance, /pay, /gamble, /rob, /shop) hinzugefügt.",
+    "Web-Shop: Verbundene Mitglieder können Discord-Rollen direkt über das Dashboard kaufen.",
+    "Persönliche Wallet: Interaktive Karte im Dashboard mit echtem Guthaben, Streak und Ein-Klick-Tagesbelohnung.",
+    "Bot-API: Neue Endpunkte zum Abholen des täglichen Bonus und zum Kaufen von Shop-Rollen.",
+  ],
+};
+
+CHANGELOG_BY_LANG.fr.unshift(v12715_fr);
+CHANGELOG_BY_LANG.en.unshift(v12715_en);
+CHANGELOG_BY_LANG.es.unshift(v12715_es);
+CHANGELOG_BY_LANG.de.unshift(v12715_de);
+
 export const CHANGELOG = CHANGELOG_BY_LANG.fr;
+
 

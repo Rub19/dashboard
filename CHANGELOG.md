@@ -2,6 +2,15 @@
 
 Toutes les modifications notables de ce projet seront documentées dans ce fichier.
 
+## v1.27.15 — 2026-09-21
+
+**Enrichissement de l'économie : raccourcis Discord et boutique web**
+
+- Commandes Discord : ajout de 7 raccourcis slash dédiés au premier niveau (`/daily`, `/work`, `/balance`, `/pay`, `/gamble`, `/rob`, `/shop`) pour une utilisation directe.
+- Boutique web : possibilité d'acheter des rôles Discord directement depuis le dashboard pour les membres connectés avec mise à jour immédiate du solde.
+- Portefeuille personnel : ajout d'une carte interactive sur le dashboard affichant le solde réel, le rang, la série actuelle et un bouton pour réclamer le bonus quotidien.
+- API du bot : nouvelles routes `POST /api/guilds/:guildId/economy/daily` et `POST /api/guilds/:guildId/economy/shop/:itemId/buy` avec vérification des permissions et de la hiérarchie des rôles.
+
 ## v1.27.14 — 2026-09-21
 
 **Audit de 25 modules, nettoyage des signalements et redirection SPA**

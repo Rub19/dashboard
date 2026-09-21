@@ -2,6 +2,17 @@
 
 Toutes les modifications notables de ce projet seront documentées dans ce fichier.
 
+## v1.28.7 — 2026-09-22
+
+**Sélecteur de Rôle Universel (RolePicker) & Harmonisation des Salons**
+
+- Nouveau composant universel `RolePicker` : sélection visuelle de rôles Discord avec badge couleur ou bascule en saisie manuelle d'ID [ID] / [Liste].
+- Mise en cache mémoire partagée pour les rôles de serveur Discord, évitant les requêtes redondantes.
+- Intégration de `RolePicker` sur les pages clés : Niveaux (rôles récompenses et blacklist), Anniversaires (rôle jour J), Sorteos / Giveaways (rôle requis et rôle gagnant), Musique (rôle DJ), Statistiques Serveur (compteur de rôle) et Accueil / Welcome (fin de parcours et vérification).
+- Intégration de `ChannelPicker` sur le système de Niveaux (salon d'annonce de level-up et salons exclus) et sur le créateur d'Événements (salon vocal/scène/texte et salon d'annonce).
+- Nettoyage des avertissements ESLint sur les variables de changelog.
+
+
 ## v1.28.6 — 2026-09-22
 
 **Sélecteur de salon universel : liste déroulante ou saisie d'ID**

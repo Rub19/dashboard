@@ -31,6 +31,7 @@ import { useToast } from "@/components/ToastProvider";
 import { cn } from "@/lib/utils";
 import { GuildSelector } from "@/components/GuildSelector";
 import ChannelPicker from "@/components/discord/ChannelPicker";
+import RolePicker from "@/components/discord/RolePicker";
 
 const API_BASE = process.env.NEXT_PUBLIC_DISCORD_BOT_API || "";
 
@@ -228,17 +229,18 @@ function OnboardingEditor({
               size="sm"
             />
           </div>
-          <label className="space-y-1">
+          <div className="space-y-1">
             <span className="text-[11px] font-semibold text-zinc-300">Rôle donné à la fin du parcours</span>
-            <select value={onboarding.completionRoleId || ""} onChange={(e) => patchFlow({ completionRoleId: e.target.value || null })} className={fieldClass}>
-              <option value="">— Aucun —</option>
-              {roles.filter((r) => r.manageable).map((r) => (
-                <option key={r.id} value={r.id}>
-                  {r.name}
-                </option>
-              ))}
-            </select>
-          </label>
+            <RolePicker
+              value={onboarding.completionRoleId}
+              onChange={(id) => patchFlow({ completionRoleId: id || null })}
+              roles={roles.filter((r) => r.manageable)}
+              emptyLabel="— Aucun —"
+              placeholder="Sélectionner un rôle ou saisir un ID..."
+              allowClear
+              size="sm"
+            />
+          </div>
         </div>
 
         <div className="space-y-2">
@@ -1707,18 +1709,17 @@ export function WelcomeCenterClient() {
 
             <div>
               <label className="text-xs font-semibold text-zinc-300">Rôle attribué après vérification (Vérifié)</label>
-              <select
-                value={verification.verifiedRoleId || ""}
-                onChange={(e) => setVerification((p: any) => ({ ...p, verifiedRoleId: e.target.value || null }))}
-                className="mt-1 h-9 w-full rounded-[var(--inset-radius)] border border-[var(--panel-border)] bg-zinc-900 px-3 text-xs text-white outline-none focus:border-teal-500 cursor-pointer"
-              >
-                <option value="">Sélectionner un rôle...</option>
-                {roles.map((r) => (
-                  <option key={r.id} value={r.id}>
-                    @{r.name}
-                  </option>
-                ))}
-              </select>
+              <div className="mt-1">
+                <RolePicker
+                  value={verification.verifiedRoleId}
+                  onChange={(id) => setVerification((p: any) => ({ ...p, verifiedRoleId: id || null }))}
+                  roles={roles}
+                  guildId={currentGuildId}
+                  emptyLabel="Sélectionner un rôle..."
+                  placeholder="Sélectionner un rôle ou saisir un ID..."
+                  allowClear
+                />
+              </div>
             </div>
 
             <div>

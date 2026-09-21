@@ -23,6 +23,8 @@ import {
 import { useToast } from "@/components/ToastProvider";
 import { useDiscordOAuth } from "@/lib/hooks/useDiscordOAuth";
 import { useResolvedGuildId } from "@/lib/hooks/useBotGuildIds";
+import ChannelPicker from "@/components/discord/ChannelPicker";
+import RolePicker from "@/components/discord/RolePicker";
 import { cn } from "@/lib/utils";
 
 const BOT_API_URL = process.env.NEXT_PUBLIC_DISCORD_BOT_API || "";
@@ -667,13 +669,15 @@ export default function LevelingCenterClient() {
                   onChange={(e) => setNewReward((p) => ({ ...p, level: Number(e.target.value) }))}
                   className="h-10 rounded-xl bg-neutral-950 border border-neutral-800 px-3 text-xs text-white"
                 />
-                <input
-                  type="text"
-                  placeholder="ID du rôle Discord"
-                  value={newReward.roleId}
-                  onChange={(e) => setNewReward((p) => ({ ...p, roleId: e.target.value }))}
-                  className="h-10 rounded-xl bg-neutral-950 border border-neutral-800 px-3 text-xs text-white sm:col-span-2"
-                />
+                <div className="sm:col-span-2">
+                  <RolePicker
+                    value={newReward.roleId}
+                    onChange={(id) => setNewReward((p) => ({ ...p, roleId: id }))}
+                    guildId={currentGuildId}
+                    placeholder="Choisir un rôle récompense ou saisir un ID..."
+                    size="sm"
+                  />
+                </div>
                 <button
                   onClick={addReward}
                   className="h-10 rounded-xl bg-fuchsia-600 hover:bg-fuchsia-500 text-white text-xs font-semibold flex items-center justify-center gap-1.5 cursor-pointer"
@@ -782,15 +786,16 @@ export default function LevelingCenterClient() {
                     <option value="disabled">Désactivé</option>
                   </select>
                   {config.levelUpChannelType === "specific_channel" && (
-                    <div className="relative">
-                      <Hash className="w-4 h-4 absolute left-3 top-1/2 -translate-y-1/2 text-neutral-500" />
-                      <input
-                        type="text"
-                        value={config.levelUpChannelId || ""}
-                        onChange={(e) => setConfig((p) => ({ ...p, levelUpChannelId: e.target.value }))}
-                        onBlur={() => saveConfig({ levelUpChannelId: config.levelUpChannelId })}
-                        placeholder="ID du salon Discord"
-                        className="w-full h-10 rounded-xl bg-neutral-950 border border-neutral-800 pl-9 pr-3 text-xs text-white"
+                    <div className="mt-2">
+                      <ChannelPicker
+                        value={config.levelUpChannelId}
+                        onChange={(id) => {
+                          setConfig((p) => ({ ...p, levelUpChannelId: id || null }));
+                          saveConfig({ levelUpChannelId: id || null });
+                        }}
+                        guildId={currentGuildId}
+                        placeholder="Sélectionner un salon ou saisir un ID..."
+                        allowClear
                       />
                     </div>
                   )}
@@ -876,15 +881,22 @@ export default function LevelingCenterClient() {
                 <Lock className="w-4 h-4 text-rose-400" />
                 Salons Exemptés d'XP
               </h3>
-              <div className="flex gap-2">
-                <input
-                  type="text"
-                  placeholder="ID du salon"
-                  value={newExcludedChannelId}
-                  onChange={(e) => setNewExcludedChannelId(e.target.value)}
-                  className="flex-1 h-9 rounded-xl bg-neutral-950 border border-neutral-800 px-3 text-xs text-white"
-                />
-                <button onClick={addExcludedChannel} className="px-3 h-9 rounded-xl bg-rose-600/20 hover:bg-rose-500/30 text-rose-400 border border-rose-500/30 text-xs font-bold cursor-pointer">
+              <div className="flex items-center gap-2">
+                <div className="flex-1">
+                  <ChannelPicker
+                    value={newExcludedChannelId}
+                    onChange={(id) => setNewExcludedChannelId(id)}
+                    guildId={currentGuildId}
+                    placeholder="Choisir un salon à exclure..."
+                    size="sm"
+                  />
+                </div>
+                <button
+                  type="button"
+                  onClick={addExcludedChannel}
+                  disabled={!newExcludedChannelId.trim()}
+                  className="px-3 h-8 rounded-xl bg-rose-600/20 hover:bg-rose-500/30 text-rose-400 border border-rose-500/30 text-xs font-bold cursor-pointer disabled:opacity-40"
+                >
                   <Plus className="w-3.5 h-3.5" />
                 </button>
               </div>
@@ -909,15 +921,22 @@ export default function LevelingCenterClient() {
                 <Lock className="w-4 h-4 text-rose-400" />
                 Rôles Exemptés d'XP
               </h3>
-              <div className="flex gap-2">
-                <input
-                  type="text"
-                  placeholder="ID du rôle"
-                  value={newExcludedRoleId}
-                  onChange={(e) => setNewExcludedRoleId(e.target.value)}
-                  className="flex-1 h-9 rounded-xl bg-neutral-950 border border-neutral-800 px-3 text-xs text-white"
-                />
-                <button onClick={addExcludedRole} className="px-3 h-9 rounded-xl bg-rose-600/20 hover:bg-rose-500/30 text-rose-400 border border-rose-500/30 text-xs font-bold cursor-pointer">
+              <div className="flex items-center gap-2">
+                <div className="flex-1">
+                  <RolePicker
+                    value={newExcludedRoleId}
+                    onChange={(id) => setNewExcludedRoleId(id)}
+                    guildId={currentGuildId}
+                    placeholder="Choisir un rôle à exclure..."
+                    size="sm"
+                  />
+                </div>
+                <button
+                  type="button"
+                  onClick={addExcludedRole}
+                  disabled={!newExcludedRoleId.trim()}
+                  className="px-3 h-8 rounded-xl bg-rose-600/20 hover:bg-rose-500/30 text-rose-400 border border-rose-500/30 text-xs font-bold cursor-pointer disabled:opacity-40"
+                >
                   <Plus className="w-3.5 h-3.5" />
                 </button>
               </div>

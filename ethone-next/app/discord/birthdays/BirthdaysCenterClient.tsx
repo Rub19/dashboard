@@ -11,6 +11,7 @@ import { useDiscordSync } from "@/lib/useDiscordSync";
 import { cn } from "@/lib/utils";
 import { GuildSelector } from "@/components/GuildSelector";
 import ChannelPicker from "@/components/discord/ChannelPicker";
+import RolePicker from "@/components/discord/RolePicker";
 
 const BOT_API_URL = process.env.NEXT_PUBLIC_DISCORD_BOT_API || "";
 
@@ -304,14 +305,16 @@ export default function BirthdaysCenterClient() {
 
               <div className="rounded-[var(--panel-radius)] border border-[var(--panel-border)] bg-white/[0.02] p-3.5">
                 <label className="mb-1 block text-[11px] font-medium text-zinc-400">Rôle « Anniversaire » (attribué le jour J, retiré le lendemain)</label>
-                <select
-                  value={config.birthdayRoleId ?? ""}
-                  onChange={(e) => patch("birthdayRoleId", e.target.value || null)}
-                  className="w-full rounded-[var(--inset-radius)] border border-[var(--panel-border)] bg-white/[0.04] px-3 py-2 text-xs text-white focus:outline-none focus:border-[#5865F2]/50 [&>option]:bg-[var(--bg-surface-elevated)]"
-                >
-                  <option value="">— Aucun —</option>
-                  {roles.map((r) => <option key={r.id} value={r.id}>@{r.name}</option>)}
-                </select>
+                <RolePicker
+                  value={config.birthdayRoleId}
+                  onChange={(id) => patch("birthdayRoleId", id || null)}
+                  roles={roles}
+                  guildId={selectedGuild?.id}
+                  placeholder="Sélectionner un rôle ou saisir un ID..."
+                  emptyLabel="— Aucun —"
+                  allowClear
+                  size="sm"
+                />
                 <p className="mt-1 text-[10px] text-zinc-500">Le bot a besoin de la permission Gérer les rôles, et son rôle doit être au-dessus.</p>
               </div>
 

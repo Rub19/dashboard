@@ -11,6 +11,7 @@ import { useDiscordSync } from "@/lib/useDiscordSync";
 import { cn } from "@/lib/utils";
 import { GuildSelector } from "@/components/GuildSelector";
 import ChannelPicker from "@/components/discord/ChannelPicker";
+import RolePicker from "@/components/discord/RolePicker";
 
 const BOT_API_URL = process.env.NEXT_PUBLIC_DISCORD_BOT_API || "";
 
@@ -318,10 +319,14 @@ export default function ServerStatsCenterClient() {
                 {fType === "roleMembers" && (
                   <div>
                     <label className="mb-1 block text-[11px] font-medium text-zinc-400">Rôle</label>
-                    <select value={fRole} onChange={(e) => setFRole(e.target.value)} className="w-full rounded-[var(--inset-radius)] border border-[var(--panel-border)] bg-white/[0.04] px-3 py-2 text-xs text-white focus:outline-none focus:border-[#5865F2]/50 [&>option]:bg-[var(--bg-surface-elevated)]">
-                      <option value="">— Choisir —</option>
-                      {roles.map((r) => <option key={r.id} value={r.id}>@{r.name}</option>)}
-                    </select>
+                    <RolePicker
+                      value={fRole}
+                      onChange={(id) => setFRole(id)}
+                      roles={roles}
+                      guildId={selectedGuild?.id}
+                      placeholder="Choisir un rôle..."
+                      size="sm"
+                    />
                   </div>
                 )}
               </div>

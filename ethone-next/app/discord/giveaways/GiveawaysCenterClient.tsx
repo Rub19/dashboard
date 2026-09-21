@@ -29,6 +29,7 @@ import {
 import { useToast } from "@/components/ToastProvider";
 import { useDiscordOAuth, type DiscordGuild } from "@/lib/hooks/useDiscordOAuth";
 import ChannelPicker from "@/components/discord/ChannelPicker";
+import RolePicker from "@/components/discord/RolePicker";
 import { useBotGuildIds, pickBotGuild } from "@/lib/hooks/useBotGuildIds";
 import { GuildSelector } from "@/components/GuildSelector";
 
@@ -845,18 +846,16 @@ export default function GiveawaysCenterClient() {
                 <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
                   <div>
                     <label className="block text-[11px] text-[var(--text-muted)] mb-1">Rôle Discord requis</label>
-                    <select
+                    <RolePicker
                       value={formRequiredRoleId}
-                      onChange={(e) => setFormRequiredRoleId(e.target.value)}
-                      className="w-full h-9 rounded-[var(--inset-radius)] bg-[var(--surface)] border border-[var(--panel-border)] px-3 text-xs"
-                    >
-                      <option value="">Aucun (ouvert à tous)</option>
-                      {roles.map((r) => (
-                        <option key={r.id} value={r.id}>
-                          {r.name}
-                        </option>
-                      ))}
-                    </select>
+                      onChange={(id) => setFormRequiredRoleId(id)}
+                      roles={roles}
+                      guildId={selectedGuild?.id}
+                      emptyLabel="Aucun (ouvert à tous)"
+                      placeholder="Sélectionner ou saisir un ID..."
+                      allowClear
+                      size="sm"
+                    />
                   </div>
                   <div>
                     <label className="block text-[11px] text-[var(--text-muted)] mb-1">
@@ -884,18 +883,16 @@ export default function GiveawaysCenterClient() {
                     <label className="block text-[11px] text-[var(--text-muted)] mb-1">
                       Rôle automatique attribué au(x) gagnant(s)
                     </label>
-                    <select
+                    <RolePicker
                       value={formRewardRoleId}
-                      onChange={(e) => setFormRewardRoleId(e.target.value)}
-                      className="w-full h-9 rounded-[var(--inset-radius)] bg-[var(--surface)] border border-[var(--panel-border)] px-3 text-xs"
-                    >
-                      <option value="">Aucun</option>
-                      {roles.map((r) => (
-                        <option key={r.id} value={r.id}>
-                          {r.name}
-                        </option>
-                      ))}
-                    </select>
+                      onChange={(id) => setFormRewardRoleId(id)}
+                      roles={roles}
+                      guildId={selectedGuild?.id}
+                      emptyLabel="Aucun"
+                      placeholder="Sélectionner ou saisir un ID..."
+                      allowClear
+                      size="sm"
+                    />
                   </div>
                 </div>
               </div>

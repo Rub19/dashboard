@@ -20,6 +20,7 @@ import {
   FileText,
   Save,
 } from "lucide-react";
+import ChannelPicker from "@/components/discord/ChannelPicker";
 
 interface WizardFormState {
   title: string;
@@ -560,13 +561,23 @@ export default function EventCreateClient() {
                   <label className="block text-xs font-semibold text-slate-300 mb-1.5">
                     Nom ou Sélecteur de Salon Discord
                   </label>
-                  <input
-                    type="text"
-                    value={form.channelName}
-                    onChange={(e) => updateForm("channelName", e.target.value)}
-                    placeholder="Ex: 🎮 Vocal Gaming #1"
-                    className="w-full px-4 py-2.5 rounded-xl bg-black/40 border border-[var(--panel-border)] text-sm text-white"
-                  />
+                  {form.locationType === "EXTERNAL" ? (
+                    <input
+                      type="text"
+                      value={form.channelName}
+                      onChange={(e) => updateForm("channelName", e.target.value)}
+                      placeholder="Ex: Twitch / YouTube / Zoom"
+                      className="w-full px-4 py-2.5 rounded-xl bg-black/40 border border-[var(--panel-border)] text-sm text-white"
+                    />
+                  ) : (
+                    <ChannelPicker
+                      value={form.channelName}
+                      onChange={(id, ch) => updateForm("channelName", ch ? ch.name : id)}
+                      guildId={guildParam}
+                      placeholder={form.locationType === "VOICE" ? "Choisir un salon vocal ou saisir un nom..." : "Choisir un salon ou saisir un nom..."}
+                      allowClear
+                    />
+                  )}
                 </div>
               </div>
             )}
@@ -637,11 +648,12 @@ export default function EventCreateClient() {
                   <label className="block text-xs font-semibold text-slate-300 mb-1.5">
                     Salon d'Annonce de l'Événement
                   </label>
-                  <input
-                    type="text"
+                  <ChannelPicker
                     value={form.announcementChannel}
-                    onChange={(e) => updateForm("announcementChannel", e.target.value)}
-                    className="w-full px-4 py-2.5 rounded-xl bg-black/40 border border-[var(--panel-border)] text-sm text-white"
+                    onChange={(id, ch) => updateForm("announcementChannel", ch ? `#${ch.name}` : id)}
+                    guildId={guildParam}
+                    placeholder="Sélectionner un salon d'annonce ou saisir un ID..."
+                    allowClear
                   />
                 </div>
 

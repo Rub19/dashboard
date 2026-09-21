@@ -3610,7 +3610,7 @@ export type ChangelogEntry = {
 };
 
 
-const v12040_fr: ChangelogEntry = {
+const _v12040_fr: ChangelogEntry = {
   version: "v1.20.40",
   date: "2026-09-03",
   title: "ETHONE Profile & Personalization 2.0 — Identité Numérique & Moteur de Personnalisation",
@@ -3626,7 +3626,7 @@ const v12040_fr: ChangelogEntry = {
   ],
 };
 
-const v12040_en: ChangelogEntry = {
+const _v12040_en: ChangelogEntry = {
   version: "v1.20.40",
   date: "2026-09-03",
   title: "ETHONE Profile & Personalization 2.0 — Digital Identity & Personalization Engine",
@@ -3642,7 +3642,7 @@ const v12040_en: ChangelogEntry = {
   ],
 };
 
-const v12039_fr: ChangelogEntry = {
+const _v12039_fr: ChangelogEntry = {
   version: "v1.20.39",
   date: "2026-09-03",
   title: "ETHONE Marketplace Intelligence 2.0 — App Store Cognitif & Écosystème",
@@ -3658,7 +3658,7 @@ const v12039_fr: ChangelogEntry = {
   ],
 };
 
-const v12039_en: ChangelogEntry = {
+const _v12039_en: ChangelogEntry = {
   version: "v1.20.39",
   date: "2026-09-03",
   title: "ETHONE Marketplace Intelligence 2.0 — Cognitive App Store & Ecosystem",
@@ -3674,7 +3674,7 @@ const v12039_en: ChangelogEntry = {
   ],
 };
 
-const v12038_fr: ChangelogEntry = {
+const _v12038_fr: ChangelogEntry = {
   version: "v1.20.38",
   date: "2026-09-03",
   title: "AnimatedDropdown Rollout — Menus Fluides & Accessibles Partout",
@@ -3687,7 +3687,7 @@ const v12038_fr: ChangelogEntry = {
   ],
 };
 
-const v12038_en: ChangelogEntry = {
+const _v12038_en: ChangelogEntry = {
   version: "v1.20.38",
   date: "2026-09-03",
   title: "AnimatedDropdown Rollout — Fluid & Accessible Menus Across the OS",
@@ -3700,7 +3700,7 @@ const v12038_en: ChangelogEntry = {
   ],
 };
 
-const v12037_fr: ChangelogEntry = {
+const _v12037_fr: ChangelogEntry = {
   version: "v1.20.37",
   date: "2026-09-03",
   title: "Focus 2.0 — ETHONE Focus Engine & AnimatedDropdown",
@@ -3718,7 +3718,7 @@ const v12037_fr: ChangelogEntry = {
   ],
 };
 
-const v12037_en: ChangelogEntry = {
+const _v12037_en: ChangelogEntry = {
   version: "v1.20.37",
   date: "2026-09-03",
   title: "Focus 2.0 — ETHONE Focus Engine & AnimatedDropdown",
@@ -31276,9 +31276,67 @@ const v12826_de: ChangelogEntry = {
   ],
 };
 
+const v12827_fr: ChangelogEntry = {
+  version: "v1.28.7",
+  date: "2026-09-22",
+  title: "Sélecteur de Rôle Universel (RolePicker) & Harmonisation des Salons",
+  items: [
+    "Nouveau composant universel RolePicker : sélection visuelle de rôles Discord avec badge couleur ou bascule en saisie manuelle d'ID [ID] / [Liste].",
+    "Mise en cache mémoire partagée pour les rôles de serveur Discord, évitant les requêtes redondantes.",
+    "Intégration de RolePicker sur les pages Clés : Niveaux (rôles récompenses et blacklist), Anniversaires (rôle jour J), Sorteos / Giveaways (rôle requis et rôle gagnant), Musique (rôle DJ), Statistiques Serveur (compteur de rôle) et Accueil / Welcome (fin de parcours et vérification).",
+    "Intégration de ChannelPicker sur le système de Niveaux (salon d'annonce de level-up et salons exclus) et sur le créateur d'Événements (salon vocal/scène/texte et salon d'annonce).",
+    "Nettoyage des avertissements ESLint sur les variables de changelog.",
+  ],
+};
+
+const v12827_en: ChangelogEntry = {
+  version: "v1.28.7",
+  date: "2026-09-22",
+  title: "Universal Role Picker (RolePicker) & Channel Harmonization",
+  items: [
+    "New universal RolePicker component: visual Discord role selection with color dot/badge or instant toggle to manual ID input [ID] / [List].",
+    "Shared in-memory cache for Discord server roles, preventing duplicate network calls.",
+    "RolePicker deployed across key modules: Leveling (reward roles and blacklist), Birthdays (special day role), Giveaways (required role and winner role), Music (DJ role), Server Stats (role member counter), and Welcome (completion role and verified role).",
+    "ChannelPicker integrated on Leveling (level-up announcement channel and excluded channels) and Event Creator (location channel and announcement channel).",
+    "Cleaned up ESLint unused-variable warnings in changelog data.",
+  ],
+};
+
+const v12827_es: ChangelogEntry = {
+  version: "v1.28.7",
+  date: "2026-09-22",
+  title: "Selector de Rol Universal (RolePicker) y Armonización de Canales",
+  items: [
+    "Nuevo componente universal RolePicker: selección visual de roles Discord con insignia de color o alternancia a entrada manual de ID [ID] / [Lista].",
+    "Caché en memoria compartida para roles de servidor Discord, evitando llamadas de red redundantes.",
+    "RolePicker desplegado en módulos clave: Niveles (roles recompensa y lista negra), Cumpleaños (rol del día), Sorteos (rol requerido y rol ganador), Música (rol DJ), Estadísticas del Servidor (contador de miembros de rol) y Bienvenida (rol de finalización y verificado).",
+    "ChannelPicker integrado en Niveles (canal de anuncio de level-up y canales excluidos) y Creador de Eventos (canal de ubicación y canal de anuncio).",
+    "Limpieza de advertencias ESLint en datos de changelog.",
+  ],
+};
+
+const v12827_de: ChangelogEntry = {
+  version: "v1.28.7",
+  date: "2026-09-22",
+  title: "Universeller Rollen-Picker (RolePicker) & Kanal-Harmonisierung",
+  items: [
+    "Neue universelle RolePicker-Komponente: visuelle Discord-Rollenauswahl mit Farb-Badge oder Umschaltung auf manuelle ID-Eingabe [ID] / [Liste].",
+    "Gemeinsamer In-Memory-Cache für Discord-Serverrollen zur Vermeidung redundanter Netzwerkaufrufe.",
+    "RolePicker in Schlüsselmodulen bereitgestellt: Levelsystem (Belohnungsrollen und Blacklist), Geburtstage (Geburtstagsrolle), Giveaways (erforderliche Rolle und Gewinnerrolle), Musik (DJ-Rolle), Serverstatistiken (Rollenmitglieder-Zähler) und Willkommen (Abschlussrolle und verifizierte Rolle).",
+    "ChannelPicker in Levelsystem (Level-Up-Ankündigungskanal und ausgeschlossene Kanäle) und Event-Ersteller (Ort-Kanal und Ankündigungskanal) integriert.",
+    "Bereinigung von ESLint-Warnungen in Changelog-Daten.",
+  ],
+};
+
+CHANGELOG_BY_LANG.fr.unshift(v12827_fr);
+CHANGELOG_BY_LANG.en.unshift(v12827_en);
+CHANGELOG_BY_LANG.es.unshift(v12827_es);
+CHANGELOG_BY_LANG.de.unshift(v12827_de);
+
 CHANGELOG_BY_LANG.fr.unshift(v12826_fr);
 CHANGELOG_BY_LANG.en.unshift(v12826_en);
 CHANGELOG_BY_LANG.es.unshift(v12826_es);
 CHANGELOG_BY_LANG.de.unshift(v12826_de);
 
 export const CHANGELOG = CHANGELOG_BY_LANG.fr;
+

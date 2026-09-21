@@ -30,6 +30,8 @@ import {
 } from "lucide-react";
 import { useToast } from "@/components/ToastProvider";
 import { useDiscordOAuth } from "@/lib/hooks/useDiscordOAuth";
+import ChannelPicker from "@/components/discord/ChannelPicker";
+import RolePicker from "@/components/discord/RolePicker";
 import { cn } from "@/lib/utils";
 
 interface Track {
@@ -1440,30 +1442,16 @@ export default function MusicCenterClient() {
                 {/* DJ Role ID */}
                 {settings.djMode && (
                   <div className="space-y-1.5 pb-3 border-b border-[var(--panel-border)]">
-                    <label className="text-xs font-medium text-zinc-300">Rôle DJ</label>
-                    {guildRoles.length > 0 ? (
-                      <select
-                        value={settings.djRoleId || ""}
-                        onChange={(e) => handleSaveSettings({ djRoleId: e.target.value || null })}
-                        className="h-8 w-full rounded-[var(--inset-radius)] border border-[var(--panel-border)] bg-black/40 px-3 text-xs text-white outline-none"
-                      >
-                        <option value="">— Choisir un rôle —</option>
-                        {guildRoles.map((role) => (
-                          <option key={role.id} value={role.id}>
-                            {role.name}
-                          </option>
-                        ))}
-                      </select>
-                    ) : (
-                      <input
-                        type="text"
-                        value={settings.djRoleId || ""}
-                        onChange={(e) => setSettings({ ...settings, djRoleId: e.target.value })}
-                        onBlur={() => handleSaveSettings({ djRoleId: settings.djRoleId || null })}
-                        placeholder="Identifiant du rôle"
-                        className="h-8 w-full rounded-[var(--inset-radius)] border border-[var(--panel-border)] bg-black/40 px-3 text-xs text-white outline-none"
-                      />
-                    )}
+                    <RolePicker
+                      value={settings.djRoleId}
+                      onChange={(id) => handleSaveSettings({ djRoleId: id || null })}
+                      roles={guildRoles}
+                      guildId={guildId}
+                      emptyLabel="— Aucun (mode DJ sans restriction de rôle) —"
+                      placeholder="Choisir un rôle DJ ou saisir un ID..."
+                      allowClear
+                      size="sm"
+                    />
                     {!settings.djRoleId && (
                       <p className="text-[11px] text-amber-300">Sans rôle choisi, personne ne pourra contrôler la musique tant que le mode DJ est actif.</p>
                     )}
@@ -1517,18 +1505,16 @@ export default function MusicCenterClient() {
                   <p className="text-[11px] text-zinc-400">
                     Le bot rejoint ce salon et y revient tout seul s'il en est sorti. Équivalent de la commande <code>/join</code>.
                   </p>
-                  <select
-                    value={settings.stayChannelId || ""}
-                    onChange={(e) => handleSaveSettings({ stayChannelId: e.target.value || null })}
-                    className="h-8 w-full rounded-[var(--inset-radius)] border border-[var(--panel-border)] bg-black/40 px-3 text-xs text-white outline-none"
-                  >
-                    <option value="">Désactivé (quitte après inactivité)</option>
-                    {voiceChannels.map((ch) => (
-                      <option key={ch.id} value={ch.id}>
-                        🔊 {ch.name}
-                      </option>
-                    ))}
-                  </select>
+                  <ChannelPicker
+                    value={settings.stayChannelId}
+                    onChange={(id) => handleSaveSettings({ stayChannelId: id || null })}
+                    channels={voiceChannels.map((c) => ({ id: c.id, name: `🔊 ${c.name}` }))}
+                    guildId={guildId}
+                    emptyLabel="Désactivé (quitte après inactivité)"
+                    placeholder="Choisir un salon vocal ou saisir un ID..."
+                    allowClear
+                    size="sm"
+                  />
                 </div>
 
                 {/* Auto Disconnect */}

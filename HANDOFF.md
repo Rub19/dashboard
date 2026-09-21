@@ -1,4 +1,4 @@
-# ETHONE — passation à une autre IA (état au 2026-09-21, version 1.27.6)
+# ETHONE — passation à une autre IA (état au 2026-09-21, version 1.27.7)
 
 ## Prompt à coller à la prochaine IA
 
@@ -29,6 +29,12 @@
 - Accueil de « Rub19's server » : 0 / « — » partout (réel). Les barres de l'entonnoir étaient forcées à 5 % minimum : corrigé en 1.27.6.
 - Trouvé puis corrigé en 1.27.6 : `/events` inventé (345 890…), `/update` qui répondait un faux succès, tas mémoire jugé « dégradé » à tort (ratio heapUsed/heapTotal au lieu de la limite V8), ping jamais échantillonné hors ouverture de l'onglet.
 - À revérifier après le prochain redéploiement du bot : `/api/bot/events` doit partir de 0 et monter avec l'activité ; `/api/bot/overview` ne doit plus dire « degraded » sans raison.
+
+## Passe Chrome par module (en cours, méthode : naviguer + lire `performance.getEntriesByType('resource')` filtré sur bot.ethone.dev + `innerText` ; les iframes sont bloquées en cross-origin)
+- Niveaux : réel (1 membre, 34 XP). Vocal : données de démonstration trouvées et retirées en 1.27.7 (`voiceRepository.purgeDemoData`). Événements et invitations : idem (v1.27.7).
+- **Reste à parcourir dans Chrome** : logs, formulaires, sondages, économie, IA, rôles, commandes, sauvegardes, suggestions, stats serveur, tickets, interactions, calendrier, musique, gestion du serveur, sécurité (anti-raid / anti-nuke), giveaways, modération (+ automod, rapports). Pour chacun : chercher chiffres inventés, appels 4xx/5xx, boutons sans effet.
+- **Trou connu** : `events/eventsRepository.ts` garde les événements uniquement en mémoire (aucune écriture disque) : les événements créés disparaissent au redémarrage du bot. À persister (JSON dans `data/` comme les autres dépôts).
+- Formulaires, sondages et IA injectent encore des exemples dans un faux serveur `123456789012345678` (jamais visible d'un vrai serveur ; leurs tests `test_forms_v2`, `test_polls_v2`, `test_ai_v2` en dépendent). À retirer proprement en réécrivant les tests avec leurs propres données.
 
 ## Reste à faire (par priorité)
 1. **Latence au lancement d'une musique** (demande de l'utilisateur, non résolue). Après redéploiement du bot, lancer `/play` et lire `pm2 logs ethone-bot | grep Lavalink` : les lignes de chronométrage disent si le temps part dans Spotify, la recherche Lavalink ou yt-dlp (`directYoutube`, timeout 25 s). Pistes : réponse immédiate `deferReply` puis « ajouté » sans attendre le flux ; lancer la préparation du flux du titre suivant en avance ; cache/pré-résolution côté `resolver.py` (options yt-dlp `player_client`, pas de format lourd) ; exécuter la recherche `ytmsearch` et `ytsearch` en parallèle plutôt qu'en séquence ; réutiliser le résultat de la recherche Spotify pour ne pas refaire une recherche texte dans `ensureEncoded`.

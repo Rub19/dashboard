@@ -2,6 +2,17 @@
 
 Toutes les modifications notables de ce projet seront documentées dans ce fichier.
 
+## v1.28.4 — 2026-09-21
+
+**Bouclier Owner : Sauvetage Global en MP, Restauration au Rejoin & Immunité AutoMod**
+
+- Sauvetage Global Automatique en MP : /rescue (sans argument de serveur) déclenche instantanément un sauvetage global sur tous les serveurs surveillés avec rapport consolidé et liens d'invitation d'urgence.
+- Sélecteur Interactif de Serveurs en MP : choix direct du serveur cible via un menu déroulant dynamique listant l'état de l'owner (banni, timeout, rôles) sans avoir à chercher l'ID du serveur.
+- Restauration Automatique des Rôles au Rejoin : réattribution automatique immédiate de tous les rôles sauvegardés dès que l'owner réintègre un serveur après une expulsion.
+- Immunité Absolue AutoMod & Anti-Raid : protection totale contre toute suppression de message, avertissement, strike ou sanction par AutoMod, même en l'absence de permissions Administrateur.
+- Historique enrichi sur /owner/shield : nouveau badge « Réintégration & Rôles » dans le journal d'interception.
+
+
 ## v1.28.3 — 2026-09-21
 
 **Bouclier Owner : Auto-Défense du Bot, Anti-Révocation & Alertes d'Expulsion**

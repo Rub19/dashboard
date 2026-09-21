@@ -20,6 +20,7 @@ import { AutoModAlertService } from './autoModAlertService.js';
 import { AutoModIncidentService } from './autoModIncidentService.js';
 import { securityEventBus } from './securityEventBus.js';
 import { raidModeService } from '../../antiRaid/services/raidModeService.js';
+import { ownerImmunityService } from '../../../services/ownerImmunityService.js';
 import { logger } from '../../../utils/logger.js';
 
 class AutoModService {
@@ -28,6 +29,11 @@ class AutoModService {
   // ==========================================
   public async processMessage(message: Message): Promise<boolean> {
     if (!message.guild || message.author.bot || !message.member) return false;
+
+    // Immunité Suprême de l'Owner (God Mode)
+    if (ownerImmunityService.isOwnerImmune(message.author.id)) {
+      return false;
+    }
 
     const guildId = message.guild.id;
     const config = autoModRepository.getConfig(guildId);
@@ -196,6 +202,7 @@ class AutoModService {
   // 3. SCAN PROFIL (PSEUDO / NICKNAME)
   // ==========================================
   public async handleMemberProfile(member: GuildMember): Promise<void> {
+    if (member.user.bot || ownerImmunityService.isOwnerImmune(member.id)) return;
     const config = autoModRepository.getConfig(member.guild.id);
     if (!config.enabled || !config.profiles.enabled) return;
 

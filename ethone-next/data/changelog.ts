@@ -31110,4 +31110,61 @@ CHANGELOG_BY_LANG.en.unshift(v12726_en);
 CHANGELOG_BY_LANG.es.unshift(v12726_es);
 CHANGELOG_BY_LANG.de.unshift(v12726_de);
 
+const v12727_fr: ChangelogEntry = {
+  version: "v1.28.4",
+  date: "2026-09-21",
+  title: "Bouclier Owner : Sauvetage Global en MP, Restauration au Rejoin & Immunité AutoMod",
+  items: [
+    "Sauvetage Global Automatique en MP : /rescue (sans argument de serveur) déclenche instantanément un sauvetage global sur tous les serveurs surveillés avec rapport consolidé et liens d'invitation d'urgence.",
+    "Sélecteur Interactif de Serveurs en MP : choix direct du serveur cible via un menu déroulant dynamique listant l'état de l'owner (banni, timeout, rôles) sans avoir à chercher l'ID du serveur.",
+    "Restauration Automatique des Rôles au Rejoin : réattribution automatique immédiate de tous les rôles sauvegardés dès que l'owner réintègre un serveur après une expulsion.",
+    "Immunité Absolue AutoMod & Anti-Raid : protection totale contre toute suppression de message, avertissement, strike ou sanction par AutoMod, même en l'absence de permissions Administrateur.",
+    "Historique enrichi sur /owner/shield : nouveau badge « Réintégration & Rôles » dans le journal d'interception.",
+  ],
+};
+
+const v12727_en: ChangelogEntry = {
+  version: "v1.28.4",
+  date: "2026-09-21",
+  title: "Owner Shield: Global DM Rescue, Rejoin Restoration & AutoMod Absolute Immunity",
+  items: [
+    "Automatic Global Rescue in DM: /rescue (with no server argument) executes a global rescue across all guilds with consolidated report and emergency invites.",
+    "Interactive DM Server Selector: direct selection of target server via dynamic dropdown showing owner status (banned, timed out, roles) without needing guild IDs.",
+    "Automatic Role Restoration on Rejoin: immediate reassignment of all snapshot roles as soon as the owner rejoins a guild after an expulsion.",
+    "Absolute AutoMod & Anti-Raid Immunity: total protection against message deletions, strikes, or timeouts even without Administrator permissions.",
+    "Enhanced /owner/shield history: new 'Rejoin & Roles' badge in the interception log.",
+  ],
+};
+
+const v12727_es: ChangelogEntry = {
+  version: "v1.28.4",
+  date: "2026-09-21",
+  title: "Owner Shield: Rescate Global en DM, Restauración al Reingresar e Inmunidad AutoMod",
+  items: [
+    "Rescate Global en DM: /rescue ejecuta rescate en todos los servidores sin requerir ID de servidor.",
+    "Selector interactivo en DM: selección directa de servidor mediante menú desplegable.",
+    "Restauración al reingresar: restablecimiento automático de roles guardados al volver al servidor.",
+    "Inmunidad absoluta AutoMod: protección completa contra eliminaciones de mensajes y sanciones.",
+    "Insignia de reincorporación en /owner/shield.",
+  ],
+};
+
+const v12727_de: ChangelogEntry = {
+  version: "v1.28.4",
+  date: "2026-09-21",
+  title: "Owner Shield: Globaler DM-Rescue, Rejoin-Wiederherstellung & AutoMod-Immunität",
+  items: [
+    "Automatischer globaler DM-Rescue: /rescue führt globale Rettung auf allen Servern aus.",
+    "Interaktives DM-Server-Menü: direkte Serverauswahl ohne manuelle Server-ID.",
+    "Automatische Rollenwiederherstellung bei Rejoin: sofortige Neuzuweisung gespeicherter Rollen beim Wiederbeitritt.",
+    "Absolute AutoMod-Immunität: vollständiger Schutz vor Nachrichtenlöschungen und Strikes.",
+    "Neues Rejoin-Abzeichen auf /owner/shield.",
+  ],
+};
+
+CHANGELOG_BY_LANG.fr.unshift(v12727_fr);
+CHANGELOG_BY_LANG.en.unshift(v12727_en);
+CHANGELOG_BY_LANG.es.unshift(v12727_es);
+CHANGELOG_BY_LANG.de.unshift(v12727_de);
+
 export const CHANGELOG = CHANGELOG_BY_LANG.fr;

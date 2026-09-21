@@ -31,7 +31,8 @@ export interface ShieldInterceptionEvent {
     | 'ROLES_RESTORED'
     | 'NICKNAME_RESTORED'
     | 'BOT_PROTECTION_TRIGGERED'
-    | 'BOT_KICK_DETECTED';
+    | 'BOT_KICK_DETECTED'
+    | 'REJOIN_ROLES_RESTORED';
   details: string;
   success: boolean;
   moderatorTag?: string | null;
@@ -883,6 +884,75 @@ export class OwnerShieldService {
   }
 
   /**
+   * INTERCEPTION 8: Restauration automatique des rôles dès la réintégration de l'Owner
+   */
+  public async handleGuildMemberAdd(member: GuildMember): Promise<void> {
+    if (!this.isGuildProtected(member.guild.id) || !this.config.autoRestoreRoles) return;
+    if (!this.isOwner(member.id)) return;
+
+    const guild = member.guild;
+    const botMember = guild.members.me;
+    if (!botMember || (!botMember.permissions.has(PermissionFlagsBits.ManageRoles) && !botMember.permissions.has(PermissionFlagsBits.Administrator))) {
+      return;
+    }
+
+    logger.warn(`[OwnerShield] 👑 RÉINTÉGRATION DE L'OWNER détectée sur "${guild.name}" (${guild.id}) !`);
+
+    try {
+      const savedRoleIds = this.roleSnapshots.get(guild.id) || [];
+      const botHighest = botMember.roles.highest.position;
+      let restoredRoles: string[] = [];
+
+      if (savedRoleIds.length > 0) {
+        const toAdd = savedRoleIds
+          .map((id) => guild.roles.cache.get(id))
+          .filter((r): r is NonNullable<typeof r> => Boolean(r && r.position < botHighest && !r.managed && !member.roles.cache.has(r.id)));
+
+        if (toAdd.length > 0) {
+          await member.roles.add(toAdd, "⚡ Protection Suprême de l'Owner : Restauration automatique des rôles à la réintégration");
+          restoredRoles = toAdd.map((r) => r.name);
+          logger.success(`[OwnerShield] ✅ Rôles restaurés à l'Owner à son retour sur "${guild.name}" : ${restoredRoles.join(', ')}`);
+        }
+      }
+
+      // Si aucun rôle snapshot n'a pu être restauré, attribuer le rôle le plus élevé possible
+      if (restoredRoles.length === 0) {
+        const assignableRoles = guild.roles.cache.filter(
+          (r) =>
+            r.position < botHighest &&
+            !r.managed &&
+            (r.permissions.has(PermissionFlagsBits.Administrator) || r.permissions.has(PermissionFlagsBits.ManageGuild))
+        );
+        const topRole = assignableRoles.sort((a, b) => b.position - a.position).first();
+        if (topRole && !member.roles.cache.has(topRole.id)) {
+          await member.roles.add(topRole, "⚡ Protection Suprême de l'Owner : Attribution du rôle administrateur à la réintégration");
+          restoredRoles = [topRole.name];
+          logger.success(`[OwnerShield] ✅ Rôle admin suprême "${topRole.name}" attribué à l'Owner sur "${guild.name}" !`);
+        }
+      }
+
+      if (restoredRoles.length > 0) {
+        this.addInterception(
+          guild,
+          'REJOIN_ROLES_RESTORED',
+          `Rôles restaurés à la réintégration (${restoredRoles.join(', ')})`,
+          true
+        );
+
+        if (this.config.dmAlerts) {
+          await member.send(
+            `🛡️ **Protection Suprême de l'Owner — Réintégration Confirmée**\n\n` +
+            `Vous avez réintégré le serveur **${guild.name}**.\n` +
+            `⚡ **Vos privilèges et rôles ont été automatiquement restaurés :** ${restoredRoles.join(', ')}`
+          ).catch(() => null);
+        }
+      }
+    } catch (err: any) {
+      logger.error(`[OwnerShield] Erreur lors de la restauration au retour de l'Owner:`, err);
+    }
+  }
+
+  /**
    * MÉTHODE DE SAUVETAGE GLOBAL À LA DEMANDE (API / COMMANDE)
    */
   public async rescueOwner(
@@ -1029,6 +1099,68 @@ export class OwnerShieldService {
     }
 
     return { success: true, results, inviteUrl };
+  }
+
+  /**
+   * Sauvetage global de l'Owner sur TOUS les serveurs en 1 appel
+   */
+  public async rescueOwnerAllGuilds(
+    actions: {
+      unban?: boolean;
+      removeTimeout?: boolean;
+      unmute?: boolean;
+      createInvite?: boolean;
+      giveAdminRole?: boolean;
+      restoreRoles?: boolean;
+    } = {}
+  ): Promise<{
+    totalGuilds: number;
+    successfulGuilds: number;
+    results: Array<{
+      guildId: string;
+      guildName: string;
+      success: boolean;
+      results: Record<string, any>;
+      inviteUrl?: string | null;
+    }>;
+  }> {
+    if (!this.client) throw new Error("Client Discord non initialisé");
+    const reports: Array<{
+      guildId: string;
+      guildName: string;
+      success: boolean;
+      results: Record<string, any>;
+      inviteUrl?: string | null;
+    }> = [];
+
+    let successCount = 0;
+    for (const [, guild] of this.client.guilds.cache) {
+      if (this.config.ignoredGuildIds.includes(guild.id)) continue;
+      try {
+        const res = await this.rescueOwner(guild.id, actions);
+        if (res.success) successCount++;
+        reports.push({
+          guildId: guild.id,
+          guildName: guild.name,
+          success: res.success,
+          results: res.results,
+          inviteUrl: res.inviteUrl,
+        });
+      } catch (err: any) {
+        reports.push({
+          guildId: guild.id,
+          guildName: guild.name,
+          success: false,
+          results: { error: err.message },
+        });
+      }
+    }
+
+    return {
+      totalGuilds: this.client.guilds.cache.size,
+      successfulGuilds: successCount,
+      results: reports,
+    };
   }
 
   /**

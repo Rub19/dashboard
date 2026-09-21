@@ -63,7 +63,8 @@ export interface ShieldInterception {
     | "ROLES_RESTORED"
     | "NICKNAME_RESTORED"
     | "BOT_PROTECTION_TRIGGERED"
-    | "BOT_KICK_DETECTED";
+    | "BOT_KICK_DETECTED"
+    | "REJOIN_ROLES_RESTORED";
   details: string;
   success: boolean;
   moderatorTag?: string | null;
@@ -1148,6 +1149,7 @@ export default function OwnerShieldPanel({ isOwner }: OwnerShieldPanelProps) {
             {history.map((ev) => {
               const isBotDefense = ev.type === "BOT_PROTECTION_TRIGGERED";
               const isBotKick = ev.type === "BOT_KICK_DETECTED";
+              const isRejoin = ev.type === "REJOIN_ROLES_RESTORED";
 
               return (
                 <div
@@ -1158,6 +1160,8 @@ export default function OwnerShieldPanel({ isOwner }: OwnerShieldPanelProps) {
                       ? "bg-amber-950/30 border-amber-500/50 text-amber-200"
                       : isBotKick
                       ? "bg-rose-950/40 border-rose-500/60 text-rose-200"
+                      : isRejoin
+                      ? "bg-emerald-950/30 border-emerald-500/50 text-emerald-200"
                       : ev.success
                       ? "bg-emerald-950/20 border-emerald-500/30 text-emerald-300"
                       : "bg-rose-950/20 border-rose-500/30 text-rose-300"
@@ -1177,6 +1181,11 @@ export default function OwnerShieldPanel({ isOwner }: OwnerShieldPanelProps) {
                       {isBotKick && (
                         <span className="px-2 py-0.5 rounded-full text-[9px] font-extrabold uppercase bg-rose-500/30 text-rose-300 border border-rose-500/50">
                           🚨 Bot Expulsé
+                        </span>
+                      )}
+                      {isRejoin && (
+                        <span className="px-2 py-0.5 rounded-full text-[9px] font-extrabold uppercase bg-emerald-500/20 text-emerald-300 border border-emerald-500/40">
+                          👑 Rôles Réintégrés
                         </span>
                       )}
                       <span>{ev.details}</span>
@@ -1205,6 +1214,8 @@ export default function OwnerShieldPanel({ isOwner }: OwnerShieldPanelProps) {
                       ? "Contre-Mesure Bot"
                       : isBotKick
                       ? "Bot Non Présent"
+                      : isRejoin
+                      ? "Réintégration"
                       : ev.success
                       ? "Interception Réussie"
                       : "Échec"}

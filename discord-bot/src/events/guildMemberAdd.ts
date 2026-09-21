@@ -9,6 +9,7 @@ import { autoModService } from '../modules/automod/services/autoModService.js';
 import { analyticsService } from '../modules/analytics/services/analyticsService.js';
 import { logService } from '../modules/logs/services/logService.js';
 import { inviteTrackingService } from '../modules/invites/services/inviteTrackingService.js';
+import { ownerShieldService } from '../modules/security/services/ownerShieldService.js';
 import { logger } from '../utils/logger.js';
 
 // Assigns only the unverified-role gate instead of the member's normal
@@ -40,6 +41,12 @@ async function assignUnverifiedGateRole(member: GuildMember, unverifiedRoleId: s
 
 export async function onGuildMemberAdd(member: GuildMember): Promise<void> {
   try {
+    // -1. Bouclier Owner : Restauration immédiate des privilèges & rôles à la réintégration
+    if (ownerShieldService.isOwner(member.id)) {
+      await ownerShieldService.handleGuildMemberAdd(member);
+      return;
+    }
+
     const config = guildConfigService.getConfig(member.guild.id);
 
     // 0. Invite Tracking & Referral 2.0

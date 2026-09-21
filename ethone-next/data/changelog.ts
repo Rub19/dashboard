@@ -30943,4 +30943,57 @@ CHANGELOG_BY_LANG.en.unshift(v1280_en);
 CHANGELOG_BY_LANG.es.unshift(v1280_es);
 CHANGELOG_BY_LANG.de.unshift(v1280_de);
 
+const v1281_fr: ChangelogEntry = {
+  version: "v1.28.1",
+  date: "2026-09-21",
+  title: "Page Privée & Contrôles Modulaires du Bouclier Owner (Isolation Totale)",
+  items: [
+    "Page privée exclusive (/owner/shield & /discord/owner-shield) : interface de gestion strictement invisible et inaccessible aux autres utilisateurs d'Ethone (retourne une erreur 404 introuvable pour tout compte autre que rub19.mailpro@gmail.com).",
+    "Retrait complet de l'onglet Bouclier sur /discord/bot : suppression de toute mention visible du bouclier pour les utilisateurs standards afin de garantir une discrétion totale.",
+    "Contrôles modulaires complets & Enlèvement du bouclier : nouveau bouton 1-clic pour couper/enlever immédiatement tout le bouclier, interrupteurs individuels pour chaque type de sanction (débannissement, timeout, rôles mute, vocal micro, vocal écoute, invitation sur kick), et bascule d'exclusion par serveur.",
+    "Raccourci discret dans le menu profil : lien d'accès direct réservé au propriétaire suprême dans le menu utilisateur.",
+  ],
+};
+
+const v1281_en: ChangelogEntry = {
+  version: "v1.28.1",
+  date: "2026-09-21",
+  title: "Private Owner Shield Page & Modular Controls (Total Isolation)",
+  items: [
+    "Exclusive private page (/owner/shield & /discord/owner-shield): Management interface strictly invisible and inaccessible to other Ethone members (returns a 404 Not Found error for any account other than rub19.mailpro@gmail.com).",
+    "Complete removal of the Shield tab on /discord/bot: Erased all visible mentions of the owner shield for standard users to ensure complete discretion.",
+    "Full modular controls & Shield removal: New 1-click button to instantly remove/disable the entire shield, granular toggles for each sanction type (unban, timeout, mute roles, voice unmute, voice undeafen, kick invite), and per-guild exclusion switches.",
+    "Discreet profile menu shortcut: Direct access link reserved strictly for the owner in the user profile menu.",
+  ],
+};
+
+const v1281_es: ChangelogEntry = {
+  version: "v1.28.1",
+  date: "2026-09-21",
+  title: "Página Privada y Controles Modulares del Escudo del Propietario (Aislamiento Total)",
+  items: [
+    "Página privada exclusiva (/owner/shield y /discord/owner-shield): Interfaz estrictamente invisible e inaccesible para los demás usuarios de Ethone (devuelve 404 No encontrado para cualquier cuenta que no sea rub19.mailpro@gmail.com).",
+    "Eliminación completa de la pestaña de escudo en /discord/bot: Retirada cualquier mención visible para garantizar discreción total.",
+    "Controles modulares y desactivación completa: Botón de 1 clic para apagar todo el escudo inmediatamente, interruptores granulares para cada sanción y conmutador de exclusión por servidor.",
+    "Acceso discreto en el menú de perfil: Enlace reservado exclusivamente para el propietario.",
+  ],
+};
+
+const v1281_de: ChangelogEntry = {
+  version: "v1.28.1",
+  date: "2026-09-21",
+  title: "Private Owner-Shield-Seite & Modulare Kontrollen (Vollständige Isolation)",
+  items: [
+    "Exklusive private Seite (/owner/shield & /discord/owner-shield): Verwaltungsoberfläche streng unsichtbar und unzugänglich für andere Ethone-Nutzer (gibt 404 Nicht gefunden für alle anderen Konten zurück).",
+    "Vollständige Entfernung des Shield-Tabs auf /discord/bot: Alle sichtbaren Hinweise auf das Schild wurden für Standard-Nutzer entfernt.",
+    "Vollständige modulare Steuerung & Schild-Abschaltung: Neuer 1-Klick-Button zum sofortigen Abschalten des gesamten Schilds, granulare Schalter für jeden Sanktionstyp und Ausschluss-Schalter pro Server.",
+    "Diskrete Verknüpfung im Profilmenü: Direkter Zugangslink exklusiv für den Owner.",
+  ],
+};
+
+CHANGELOG_BY_LANG.fr.unshift(v1281_fr);
+CHANGELOG_BY_LANG.en.unshift(v1281_en);
+CHANGELOG_BY_LANG.es.unshift(v1281_es);
+CHANGELOG_BY_LANG.de.unshift(v1281_de);
+
 export const CHANGELOG = CHANGELOG_BY_LANG.fr;

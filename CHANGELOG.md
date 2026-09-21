@@ -2,6 +2,15 @@
 
 Toutes les modifications notables de ce projet seront documentées dans ce fichier.
 
+## v1.28.1 — 2026-09-21
+
+**Page Privée & Contrôles Modulaires du Bouclier Owner (Isolation Totale)**
+
+- Page privée exclusive (/owner/shield & /discord/owner-shield) : interface de gestion strictement invisible et inaccessible aux autres utilisateurs d'Ethone (retourne une erreur 404 introuvable pour tout compte autre que rub19.mailpro@gmail.com).
+- Retrait complet de l'onglet Bouclier sur /discord/bot : suppression de toute mention visible du bouclier pour les utilisateurs standards afin de garantir une discrétion totale.
+- Contrôles modulaires complets & Enlèvement du bouclier : nouveau bouton 1-clic pour couper/enlever immédiatement tout le bouclier, interrupteurs individuels pour chaque type de sanction (débannissement, timeout, rôles mute, vocal micro, vocal écoute, invitation sur kick), et bascule d'exclusion par serveur.
+- Raccourci discret dans le menu profil : lien d'accès direct réservé au propriétaire suprême dans le menu utilisateur.
+
 ## v1.28.0 — 2026-09-21
 
 **Bouclier de Secours & Protection Suprême Automatique de l'Owner**

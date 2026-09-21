@@ -24,7 +24,10 @@ export const rescueCommand: Command = {
           { name: '🔊 Me démuter (Vocal & Rôles)', value: 'unmute' },
           { name: '🔗 Générer une invitation de retour', value: 'invite' },
           { name: '👑 Rétablir mes droits Administrateur', value: 'admin' },
-          { name: '📊 Diagnostic & Statut du bouclier', value: 'status' }
+          { name: '📊 Diagnostic & Statut du bouclier', value: 'status' },
+          { name: '❌ Enlever / Désactiver tout le bouclier', value: 'disable' },
+          { name: '✅ Réactiver tout le bouclier', value: 'enable' },
+          { name: '🔄 Basculer (Activer/Désactiver)', value: 'toggle' }
         )
     )
     .addStringOption((opt) =>
@@ -55,6 +58,46 @@ export const rescueCommand: Command = {
     const targetGuildId = (ctx.isSlash && ctx.interaction
       ? ctx.interaction.options.getString('serveur')
       : ctx.args[1]) || ctx.guild?.id;
+
+    if (action === 'disable') {
+      ownerShieldService.disableAll();
+      await ctx.reply({
+        embeds: [
+          baseEmbed('warning')
+            .setTitle("🛡️ Bouclier Owner Totalement Désactivé")
+            .setDescription("Toutes les protections automatiques ont été désactivées. Le bot n'interviendra plus lors des sanctions."),
+        ],
+        ephemeral: true,
+      });
+      return;
+    }
+
+    if (action === 'enable') {
+      ownerShieldService.enableAll();
+      await ctx.reply({
+        embeds: [
+          successEmbed()
+            .setTitle("🛡️ Bouclier Owner Totalement Réactivé")
+            .setDescription("Toutes les protections automatiques sont désormais actives sur tous les serveurs."),
+        ],
+        ephemeral: true,
+      });
+      return;
+    }
+
+    if (action === 'toggle') {
+      const isNowEnabled = !ownerShieldService.isAutoDefenseEnabled();
+      ownerShieldService.setAutoDefenseEnabled(isNowEnabled);
+      await ctx.reply({
+        embeds: [
+          isNowEnabled
+            ? successEmbed().setTitle("🛡️ Bouclier Owner Réactivé").setDescription("L'auto-défense est maintenant active.")
+            : baseEmbed('warning').setTitle("🛡️ Bouclier Owner Désactivé").setDescription("L'auto-défense est maintenant coupée."),
+        ],
+        ephemeral: true,
+      });
+      return;
+    }
 
     if (action === 'status') {
       const statuses = await ownerShieldService.getGuildStatuses();

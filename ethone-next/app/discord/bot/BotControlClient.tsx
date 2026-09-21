@@ -75,7 +75,7 @@ const TAB_GROUPS: { id: string; label: string; icon: any; tabs: BotTab[] }[] = [
   { id: "overview", label: "Vue d'ensemble", icon: BarChart3, tabs: ["overview", "presence"] },
   { id: "configuration", label: "Configuration", icon: Settings, tabs: ["settings", "ai", "modules"] },
   { id: "health", label: "Santé & Performance", icon: Activity, tabs: ["performance", "diagnostics", "health", "servers"] },
-  { id: "security", label: "Sécurité", icon: ShieldCheck, tabs: ["security", "shield", "errors"] },
+  { id: "security", label: "Sécurité", icon: ShieldCheck, tabs: ["security", "errors"] },
   { id: "operations", label: "Opérations", icon: Wifi, tabs: ["integrations", "jobs", "commands", "events"] },
 ];
 
@@ -166,6 +166,16 @@ export default function BotControlClient({ initialTab = "overview" }: BotControl
       void loadOwnerLogs();
     }
   }, [isOwner, loadOwnerLogs]);
+
+  useEffect(() => {
+    if (activeTab === "shield") {
+      if (isOwner) {
+        router.replace("/owner/shield");
+      } else {
+        router.replace("/discord/bot?tab=security");
+      }
+    }
+  }, [activeTab, isOwner, router]);
 
   const handleRemoteRestart = async () => {
     if (!confirm("⚠️ Confirmation Propriétaire : Êtes-vous sûr de vouloir redémarrer le bot Discord à distance ?")) return;
@@ -1699,8 +1709,8 @@ export default function BotControlClient({ initialTab = "overview" }: BotControl
           />
         )}
 
-        {(activeTab === "security" || activeTab === "shield" || activeTab === "errors") && (
-          <SecurityGroup activeTab={activeTab} securityAudit={securityAudit} errors={errors} isOwner={isOwner} />
+        {(activeTab === "security" || activeTab === "errors") && (
+          <SecurityGroup activeTab={activeTab} securityAudit={securityAudit} errors={errors} />
         )}
       </div>
     </div>

@@ -4,7 +4,6 @@ import { ShieldCheck, ShieldAlert, CheckCircle2 } from "lucide-react";
 import { cn } from "@/lib/utils";
 import Card from "@/components/ui/Card";
 import type { BotTab } from "@/app/discord/bot/BotControlClient";
-import OwnerShieldPanel from "./OwnerShieldPanel";
 
 interface SecurityAudit {
   score: number;
@@ -23,10 +22,9 @@ interface SecurityGroupProps {
   activeTab: BotTab;
   securityAudit: SecurityAudit;
   errors: BotError[];
-  isOwner?: boolean;
 }
 
-export default function SecurityGroup({ activeTab, securityAudit, errors, isOwner }: SecurityGroupProps) {
+export default function SecurityGroup({ activeTab, securityAudit, errors }: SecurityGroupProps) {
   return (
     <>
       {activeTab === "security" && (
@@ -116,9 +114,6 @@ export default function SecurityGroup({ activeTab, securityAudit, errors, isOwne
         </div>
       )}
 
-      {activeTab === "shield" && (
-        <OwnerShieldPanel isOwner={Boolean(isOwner)} />
-      )}
 
       {activeTab === "errors" && (
         <Card variant="default" padding="none" className="p-6 space-y-4">

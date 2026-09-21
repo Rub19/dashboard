@@ -27,6 +27,7 @@ import {
   type ChangelogEntry,
 } from "@/data/changelog";
 import { USER_STATUS_CONFIG } from "@/lib/settings";
+import { ADMIN_EMAIL } from "@/lib/admin";
 import { Popover, PopoverTrigger, PopoverContent } from "@/components/motion/Popover";
 import { cn } from "@/lib/utils";
 
@@ -108,7 +109,7 @@ export default function UserProfileDropdown({ dataTestId = "user-profile-trigger
     return CHANGELOG_BY_LANG[settings.language] || CHANGELOG;
   }, [settings.language]);
 
-  const VERSION_LABEL = changelog[0]?.version || "v1.28.0";
+  const VERSION_LABEL = changelog[0]?.version || "v1.28.1";
 
   type MenuItem = {
     id: string;
@@ -120,6 +121,8 @@ export default function UserProfileDropdown({ dataTestId = "user-profile-trigger
     badge?: string;
     badgeTone?: "success" | "accent";
   };
+
+  const isOwner = Boolean(email && email.toLowerCase() === ADMIN_EMAIL.toLowerCase());
 
   const accountItems: MenuItem[] = [
     {
@@ -138,6 +141,19 @@ export default function UserProfileDropdown({ dataTestId = "user-profile-trigger
       badgeTone: "success",
       action: () => router.push("/settings?category=security"),
     },
+    ...(isOwner
+      ? [
+          {
+            id: "owner-shield",
+            label: "Bouclier Owner",
+            description: "Protection suprême & sauvetage",
+            icon: "shield",
+            badge: "Privé",
+            badgeTone: "accent" as const,
+            action: () => router.push("/owner/shield"),
+          },
+        ]
+      : []),
   ];
 
   const appItems: MenuItem[] = [

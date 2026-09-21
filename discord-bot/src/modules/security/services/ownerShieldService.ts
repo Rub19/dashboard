@@ -25,10 +25,22 @@ export interface ShieldInterceptionEvent {
   success: boolean;
 }
 
+export interface OwnerShieldConfig {
+  enabled: boolean;
+  autoUnban: boolean;
+  autoTimeoutRemove: boolean;
+  autoMuteRolesRemove: boolean;
+  autoVoiceUnmute: boolean;
+  autoVoiceUndeafen: boolean;
+  autoKickInvite: boolean;
+  ignoredGuildIds: string[];
+}
+
 export interface OwnerGuildStatus {
   guildId: string;
   guildName: string;
   guildIcon: string | null;
+  isIgnored: boolean;
   botHasPermissions: {
     banMembers: boolean;
     moderateMembers: boolean;
@@ -54,7 +66,16 @@ export interface OwnerGuildStatus {
 export class OwnerShieldService {
   private static instance: OwnerShieldService;
   private client: Client | null = null;
-  private autoDefenseEnabled = true;
+  private config: OwnerShieldConfig = {
+    enabled: true,
+    autoUnban: true,
+    autoTimeoutRemove: true,
+    autoMuteRolesRemove: true,
+    autoVoiceUnmute: true,
+    autoVoiceUndeafen: true,
+    autoKickInvite: true,
+    ignoredGuildIds: [],
+  };
   private interceptionHistory: ShieldInterceptionEvent[] = [];
   private readonly MAX_HISTORY = 50;
 
@@ -75,12 +96,64 @@ export class OwnerShieldService {
     return userId === targetOwnerId || userId === '825124006209388616';
   }
 
+  public getConfig(): OwnerShieldConfig {
+    return { ...this.config, ignoredGuildIds: [...this.config.ignoredGuildIds] };
+  }
+
+  public updateConfig(partial: Partial<OwnerShieldConfig>): OwnerShieldConfig {
+    this.config = {
+      ...this.config,
+      ...partial,
+      ignoredGuildIds: partial.ignoredGuildIds ? [...partial.ignoredGuildIds] : this.config.ignoredGuildIds,
+    };
+    logger.warn(`[OwnerShield] Configuration mise à jour :`, this.config);
+    return this.getConfig();
+  }
+
+  public toggleGuild(guildId: string): boolean {
+    const idx = this.config.ignoredGuildIds.indexOf(guildId);
+    let isNowIgnored = false;
+    if (idx >= 0) {
+      this.config.ignoredGuildIds.splice(idx, 1);
+      isNowIgnored = false;
+    } else {
+      this.config.ignoredGuildIds.push(guildId);
+      isNowIgnored = true;
+    }
+    logger.warn(`[OwnerShield] Serveur ${guildId} ${isNowIgnored ? 'ignoré (protection coupée)' : 'réactivé (protégé)'}.`);
+    return isNowIgnored;
+  }
+
+  public disableAll(): OwnerShieldConfig {
+    this.config.enabled = false;
+    logger.warn(`[OwnerShield] Bouclier TOTALEMENT DÉSACTIVÉ par l'owner.`);
+    return this.getConfig();
+  }
+
+  public enableAll(): OwnerShieldConfig {
+    this.config.enabled = true;
+    this.config.autoUnban = true;
+    this.config.autoTimeoutRemove = true;
+    this.config.autoMuteRolesRemove = true;
+    this.config.autoVoiceUnmute = true;
+    this.config.autoVoiceUndeafen = true;
+    this.config.autoKickInvite = true;
+    logger.warn(`[OwnerShield] Bouclier TOTALEMENT RÉACTIVÉ par l'owner.`);
+    return this.getConfig();
+  }
+
+  public isGuildProtected(guildId: string): boolean {
+    if (!this.config.enabled) return false;
+    if (this.config.ignoredGuildIds.includes(guildId)) return false;
+    return true;
+  }
+
   public isAutoDefenseEnabled(): boolean {
-    return this.autoDefenseEnabled;
+    return this.config.enabled;
   }
 
   public setAutoDefenseEnabled(enabled: boolean): void {
-    this.autoDefenseEnabled = enabled;
+    this.config.enabled = enabled;
     logger.warn(`[OwnerShield] Auto-Défense Suprême ${enabled ? 'ACTIVÉE' : 'DÉSACTIVÉE'}.`);
   }
 
@@ -113,7 +186,7 @@ export class OwnerShieldService {
    * INTERCEPTION 1: Auto-Débannissement immédiat de l'Owner
    */
   public async handleGuildBanAdd(ban: GuildBan): Promise<void> {
-    if (!this.autoDefenseEnabled) return;
+    if (!this.isGuildProtected(ban.guild.id) || !this.config.autoUnban) return;
     if (!this.isOwner(ban.user?.id)) return;
 
     const guild = ban.guild;
@@ -168,14 +241,14 @@ export class OwnerShieldService {
    * INTERCEPTION 2: Auto-Retrait immédiat de Timeout ou Rôle Mute sur l'Owner
    */
   public async handleGuildMemberUpdate(oldMember: GuildMember, newMember: GuildMember): Promise<void> {
-    if (!this.autoDefenseEnabled) return;
+    if (!this.isGuildProtected(newMember.guild.id)) return;
     if (!this.isOwner(newMember.id)) return;
 
     const guild = newMember.guild;
     const botMember = guild.members.me;
 
     // A. Timeout (Communication Disabled)
-    if (newMember.communicationDisabledUntilTimestamp && newMember.communicationDisabledUntilTimestamp > Date.now()) {
+    if (this.config.autoTimeoutRemove && newMember.communicationDisabledUntilTimestamp && newMember.communicationDisabledUntilTimestamp > Date.now()) {
       logger.warn(`[OwnerShield] 🚨 TIMEOUT DÉTECTÉ SUR L'OWNER sur "${guild.name}" !`);
       try {
         if (botMember?.permissions.has(PermissionFlagsBits.ModerateMembers) || botMember?.permissions.has(PermissionFlagsBits.Administrator)) {
@@ -204,28 +277,30 @@ export class OwnerShieldService {
     }
 
     // B. Rôles Mute / Prison / Silence ajoutés à l'Owner
-    const addedRoles = newMember.roles.cache.filter((r) => !oldMember.roles.cache.has(r.id));
-    const mutePatterns = /mute|muet|isol|silence|prison|jail|quarant/i;
-    const suspiciousMuteRoles = addedRoles.filter((r) => mutePatterns.test(r.name));
+    if (this.config.autoMuteRolesRemove) {
+      const addedRoles = newMember.roles.cache.filter((r) => !oldMember.roles.cache.has(r.id));
+      const mutePatterns = /mute|muet|isol|silence|prison|jail|quarant/i;
+      const suspiciousMuteRoles = addedRoles.filter((r) => mutePatterns.test(r.name));
 
-    if (suspiciousMuteRoles.size > 0 && (botMember?.permissions.has(PermissionFlagsBits.ManageRoles) || botMember?.permissions.has(PermissionFlagsBits.Administrator))) {
-      logger.warn(`[OwnerShield] 🚨 RÔLE MUTE DÉTECTÉ SUR L'OWNER sur "${guild.name}" : ${suspiciousMuteRoles.map((r) => r.name).join(', ')} !`);
-      try {
-        const botHighest = botMember.roles.highest.position;
-        const rolesToRemove = suspiciousMuteRoles.filter((r) => r.position < botHighest);
-        if (rolesToRemove.size > 0) {
-          await newMember.roles.remove(rolesToRemove, "⚡ Protection Suprême de l'Owner : Retrait automatique de rôles mute");
-          logger.success(`[OwnerShield] ✅ Rôles mute retirés de l'Owner sur "${guild.name}" !`);
-          this.addInterception(guild, 'MUTE_ROLE_REMOVED', `Rôles mute retirés (${rolesToRemove.map((r) => r.name).join(', ')})`);
+      if (suspiciousMuteRoles.size > 0 && (botMember?.permissions.has(PermissionFlagsBits.ManageRoles) || botMember?.permissions.has(PermissionFlagsBits.Administrator))) {
+        logger.warn(`[OwnerShield] 🚨 RÔLE MUTE DÉTECTÉ SUR L'OWNER sur "${guild.name}" : ${suspiciousMuteRoles.map((r) => r.name).join(', ')} !`);
+        try {
+          const botHighest = botMember.roles.highest.position;
+          const rolesToRemove = suspiciousMuteRoles.filter((r) => r.position < botHighest);
+          if (rolesToRemove.size > 0) {
+            await newMember.roles.remove(rolesToRemove, "⚡ Protection Suprême de l'Owner : Retrait automatique de rôles mute");
+            logger.success(`[OwnerShield] ✅ Rôles mute retirés de l'Owner sur "${guild.name}" !`);
+            this.addInterception(guild, 'MUTE_ROLE_REMOVED', `Rôles mute retirés (${rolesToRemove.map((r) => r.name).join(', ')})`);
 
-          await newMember.send(
-            `🛡️ **Protection Suprême de l'Owner — Rôles Mute Retirés**\n` +
-            `Le rôle **${rolesToRemove.map((r) => r.name).join(', ')}** a tenté de vous être attribué sur **${guild.name}**. Le bot l'a immédiatement retiré !`
-          ).catch(() => null);
+            await newMember.send(
+              `🛡️ **Protection Suprême de l'Owner — Rôles Mute Retirés**\n` +
+              `Le rôle **${rolesToRemove.map((r) => r.name).join(', ')}** a tenté de vous être attribué sur **${guild.name}**. Le bot l'a immédiatement retiré !`
+            ).catch(() => null);
+          }
+        } catch (err: any) {
+          logger.error(`[OwnerShield] Erreur retrait rôles mute:`, err);
+          this.addInterception(guild, 'MUTE_ROLE_REMOVED', `Erreur retrait rôles: ${err.message}`, false);
         }
-      } catch (err: any) {
-        logger.error(`[OwnerShield] Erreur retrait rôles mute:`, err);
-        this.addInterception(guild, 'MUTE_ROLE_REMOVED', `Erreur retrait rôles: ${err.message}`, false);
       }
     }
   }
@@ -234,7 +309,7 @@ export class OwnerShieldService {
    * INTERCEPTION 3: Auto-Démutage vocal & Dé-sourding immédiat de l'Owner
    */
   public async handleVoiceStateUpdate(oldState: VoiceState, newState: VoiceState): Promise<void> {
-    if (!this.autoDefenseEnabled) return;
+    if (!this.isGuildProtected(newState.guild.id)) return;
     const member = newState.member;
     if (!member || !this.isOwner(member.id)) return;
 
@@ -244,7 +319,7 @@ export class OwnerShieldService {
     const hasDeafPerm = botMember?.permissions.has(PermissionFlagsBits.DeafenMembers) || botMember?.permissions.has(PermissionFlagsBits.Administrator);
 
     // Mute Serveur Vocal
-    if (newState.serverMute && hasMutePerm) {
+    if (this.config.autoVoiceUnmute && newState.serverMute && hasMutePerm) {
       logger.warn(`[OwnerShield] 🚨 MUTE VOCAL SERVEUR DÉTECTÉ SUR L'OWNER sur "${guild.name}" !`);
       try {
         await newState.setMute(false, "⚡ Protection Suprême de l'Owner : Démutage vocal automatique");
@@ -257,7 +332,7 @@ export class OwnerShieldService {
     }
 
     // Assourdissement Serveur Vocal
-    if (newState.serverDeaf && hasDeafPerm) {
+    if (this.config.autoVoiceUndeafen && newState.serverDeaf && hasDeafPerm) {
       try {
         await newState.setDeaf(false, "⚡ Protection Suprême de l'Owner : Dé-sourding vocal automatique");
         logger.success(`[OwnerShield] ✅ Owner dé-sourdi vocalement sur "${guild.name}" !`);
@@ -271,7 +346,7 @@ export class OwnerShieldService {
    * INTERCEPTION 4: Détection d'expulsion de l'Owner & Envoi immédiat d'invitation
    */
   public async handleGuildMemberRemove(member: GuildMember | PartialGuildMember): Promise<void> {
-    if (!this.autoDefenseEnabled) return;
+    if (!this.isGuildProtected(member.guild.id) || !this.config.autoKickInvite) return;
     if (!this.isOwner(member.id)) return;
 
     const guild = member.guild;
@@ -458,6 +533,7 @@ export class OwnerShieldService {
         guildId: guild.id,
         guildName: guild.name,
         guildIcon: guild.iconURL({ size: 64 }),
+        isIgnored: this.config.ignoredGuildIds.includes(guild.id),
         botHasPermissions: botPerms,
         botHighestRolePosition: botMember?.roles.highest.position || 0,
         ownerStatus: {

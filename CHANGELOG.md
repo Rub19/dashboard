@@ -2,6 +2,15 @@
 
 Toutes les modifications notables de ce projet seront documentées dans ce fichier.
 
+## v1.27.14 — 2026-09-21
+
+**Audit de 25 modules, nettoyage des signalements et redirection SPA**
+
+- Signalements de modération : suppression du rapport de secours fictif (TrollAccount#1337, REP-101) en cas d'erreur de chargement, remplacé par une liste vide réelle.
+- Routage Cloudflare Pages : correction des règles de réécriture SPA dans `_redirects` pour les routes dynamiques (`/discord/moderation/cases`, `/discord/tickets`, `/discord/forms`, etc.).
+- Dette Git : ajout du fichier `.gitattributes` à la racine pour normaliser les fins de ligne CRLF/LF sous Windows.
+- Audit Chrome : inspection automatisée de 25 modules du dashboard avec 0 exception JavaScript et validation complète des états neutres.
+
 ## v1.27.13 — 2026-09-21
 
 **Entonnoir dynamique et suppression des utilisateurs fictifs**

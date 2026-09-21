@@ -125,22 +125,7 @@ export default function ReportsCenterClient() {
         // Offline fallback
       }
     }
-      // Offline fallback
-      setReports([
-        {
-          id: "REP-101",
-          guildId: selectedGuild.id,
-          reportedUserId: "456789012345678901",
-          reportedUserTag: "TrollAccount#1337",
-          reporterUserId: "123456789012345678",
-          reporterUserTag: "VictimMember#0001",
-          reason: "Harcèlement répété dans le salon #général et insultes par MP",
-          category: "Harassment",
-          status: "NEW",
-          createdAt: new Date(Date.now() - 3600000).toISOString(),
-          updatedAt: new Date(Date.now() - 3600000).toISOString(),
-        },
-      ]);
+      setReports([]);
     } finally {
       setIsLoading(false);
     }

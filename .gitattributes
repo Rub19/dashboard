@@ -1,20 +1,4 @@
 * text=auto
-*.mjs text eol=lf
-*.js text eol=lf
-*.ts text eol=lf
-*.tsx text eol=lf
-*.json text eol=lf
-*.css text eol=lf
-*.html text eol=lf
-*.md text eol=lf
-*.yml text eol=lf
-*.yaml text eol=lf
-.githooks/* text eol=lf
-CNAME text eol=lf
-_headers text eol=lf
-.nojekyll text eol=lf
-*.py text eol=lf
+*.bat text eol=crlf
 *.ps1 text eol=crlf
-*.png binary
-*.ico binary
-
+*.sh text eol=lf

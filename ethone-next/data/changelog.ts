@@ -30311,5 +30311,58 @@ CHANGELOG_BY_LANG.en.unshift(v12713_en);
 CHANGELOG_BY_LANG.es.unshift(v12713_es);
 CHANGELOG_BY_LANG.de.unshift(v12713_de);
 
+const v12714_fr: ChangelogEntry = {
+  version: "v1.27.14",
+  date: "2026-09-21",
+  title: "Audit de 25 modules, nettoyage des signalements et redirection SPA",
+  items: [
+    "Signalements de modération : suppression du rapport de secours fictif (TrollAccount#1337, REP-101) en cas d'erreur de chargement, remplacé par une liste vide réelle.",
+    "Routage Cloudflare Pages : correction des règles de réécriture SPA dans _redirects pour les routes dynamiques (/discord/moderation/cases, /discord/tickets, /discord/forms, etc.).",
+    "Dette Git : ajout du fichier .gitattributes à la racine pour normaliser les fins de ligne CRLF/LF sous Windows.",
+    "Audit Chrome : inspection automatisée de 25 modules du dashboard avec 0 exception JavaScript et validation complète des états neutres.",
+  ],
+};
+
+const v12714_en: ChangelogEntry = {
+  version: "v1.27.14",
+  date: "2026-09-21",
+  title: "25-module audit, moderation report purge, and SPA rewrites",
+  items: [
+    "Moderation reports: removed fake fallback report (TrollAccount#1337, REP-101) upon network error, replaced with a clean empty list.",
+    "Cloudflare Pages routing: fixed SPA rewrite rules in _redirects for dynamic routes (/discord/moderation/cases, /discord/tickets, /discord/forms, etc.).",
+    "Git hygiene: added root .gitattributes to normalize CRLF/LF line endings on Windows.",
+    "Chrome audit: automated inspection of 25 dashboard modules with 0 JavaScript exceptions and verified clean empty states.",
+  ],
+};
+
+const v12714_es: ChangelogEntry = {
+  version: "v1.27.14",
+  date: "2026-09-21",
+  title: "Auditoría de 25 módulos, limpieza de reportes y redirecciones SPA",
+  items: [
+    "Reportes de moderación: eliminación del reporte simulado de respaldo (TrollAccount#1337, REP-101) en caso de fallo de red.",
+    "Enrutamiento Cloudflare Pages: corrección de las reglas de reescritura SPA en _redirects para rutas dinámicas.",
+    "Higiene Git: añadido .gitattributes en la raíz para normalizar los saltos de línea CRLF/LF.",
+    "Auditoría Chrome: inspección automatizada de 25 módulos con 0 excepciones JavaScript.",
+  ],
+};
+
+const v12714_de: ChangelogEntry = {
+  version: "v1.27.14",
+  date: "2026-09-21",
+  title: "25-Module-Audit, Bereinigung der Berichte und SPA-Rewrites",
+  items: [
+    "Moderationsberichte: Hardcodierten Fallback-Bericht (TrollAccount#1337, REP-101) bei Netzwerkfehlern durch eine leere Liste ersetzt.",
+    "Cloudflare Pages Routing: SPA-Rewrite-Regeln in _redirects für dynamische Routen korrigiert.",
+    "Git-Hygiene: .gitattributes im Stammverzeichnis hinzugefügt, um Zeilenenden unter Windows zu normalisieren.",
+    "Chrome-Audit: Automatisierte Inspektion von 25 Dashboard-Modulen mit 0 JavaScript-Ausnahmen.",
+  ],
+};
+
+CHANGELOG_BY_LANG.fr.unshift(v12714_fr);
+CHANGELOG_BY_LANG.en.unshift(v12714_en);
+CHANGELOG_BY_LANG.es.unshift(v12714_es);
+CHANGELOG_BY_LANG.de.unshift(v12714_de);
+
 export const CHANGELOG = CHANGELOG_BY_LANG.fr;
 

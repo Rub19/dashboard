@@ -85,6 +85,7 @@ class WelcomeService {
 
     // 1. Enregistrement Analytics Funnel (JOINED)
     welcomeRepository.recordEvent({
+      guildId: member.guild.id,
       type: 'MEMBER_JOIN',
       userId: member.id,
       userTag: member.user.tag,
@@ -144,6 +145,7 @@ class WelcomeService {
 
     // 10. Enregistrement Analytics & Audit Center
     welcomeRepository.recordEvent({
+      guildId: member.guild.id,
       type: 'WELCOME_SENT',
       userId: member.id,
       userTag: member.user.tag,
@@ -160,6 +162,7 @@ class WelcomeService {
     const goodbyeConfig = this.getConfig(guild.id).goodbye;
 
     welcomeRepository.recordEvent({
+      guildId: member.guild.id,
       type: 'MEMBER_LEAVE',
       userId: member.id,
       userTag: member.user?.tag || member.id,
@@ -196,6 +199,7 @@ class WelcomeService {
     await this.sendMessage(channel, goodbyeConfig, ctx, avatarUrl);
 
     welcomeRepository.recordEvent({
+      guildId: member.guild.id,
       type: 'GOODBYE_SENT',
       userId: member.id,
       userTag: member.user?.tag || username,
@@ -306,6 +310,7 @@ class WelcomeService {
       await member.send(payload);
 
       welcomeRepository.recordEvent({
+        guildId: member.guild.id,
         type: 'DM_SENT',
         userId: member.id,
         userTag: member.user.tag,
@@ -314,6 +319,7 @@ class WelcomeService {
     } catch (err) {
       // Si les MP sont fermés, on log proprement sans planter
       welcomeRepository.recordEvent({
+        guildId: member.guild.id,
         type: 'DM_FAILED',
         userId: member.id,
         userTag: member.user.tag,

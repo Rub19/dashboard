@@ -9,6 +9,7 @@ import { useDiscordOAuth, type DiscordGuild } from "@/lib/hooks/useDiscordOAuth"
 import { useBotGuildIds, pickBotGuild } from "@/lib/hooks/useBotGuildIds";
 import { useDiscordSync } from "@/lib/useDiscordSync";
 import { cn } from "@/lib/utils";
+import { GuildSelector } from "@/components/GuildSelector";
 
 const BOT_API_URL = process.env.NEXT_PUBLIC_DISCORD_BOT_API || "";
 const MAX_KEYWORDS = 15;
@@ -266,21 +267,7 @@ export default function HighlightsCenterClient() {
 
         <div className="flex items-center gap-2">
           {manageableGuilds.length > 0 ? (
-            <div className="relative">
-              <select
-                value={selectedGuild?.id || ""}
-                onChange={(e) => {
-                  const g = manageableGuilds.find((item) => item.id === e.target.value);
-                  if (g) setSelectedGuild(g);
-                }}
-                className="cursor-pointer appearance-none rounded-xl border border-[var(--panel-border)] bg-transparent px-3 py-1.5 pr-8 text-xs font-medium text-[var(--text-primary)] outline-none hover:bg-[var(--surface-2)]"
-              >
-                {manageableGuilds.map((g) => (
-                  <option key={g.id} value={g.id} className="bg-[var(--panel-bg)] text-[var(--text-primary)]">{g.name}</option>
-                ))}
-              </select>
-              <ChevronDown className="pointer-events-none absolute right-2.5 top-1/2 h-3.5 w-3.5 -translate-y-1/2 text-[var(--text-muted)]" />
-            </div>
+            <GuildSelector guilds={manageableGuilds} value={selectedGuild?.id || ""} onChange={setSelectedGuild} />
           ) : (
             <span className="text-xs text-[var(--text-muted)]">Aucun serveur Discord connecté</span>
           )}

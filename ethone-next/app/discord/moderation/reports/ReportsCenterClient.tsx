@@ -16,6 +16,7 @@ import { useToast } from "@/components/ToastProvider";
 import { useDiscordOAuth, type DiscordGuild } from "@/lib/hooks/useDiscordOAuth";
 import { useBotGuildIds, pickBotGuild } from "@/lib/hooks/useBotGuildIds";
 import { cn } from "@/lib/utils";
+import { GuildSelector } from "@/components/GuildSelector";
 
 const BOT_API_URL = process.env.NEXT_PUBLIC_DISCORD_BOT_API || "";
 
@@ -288,20 +289,7 @@ export default function ReportsCenterClient() {
             </button>
 
             {manageableGuilds.length > 0 && (
-              <select
-                value={selectedGuild?.id || ""}
-                onChange={(e) => {
-                  const g = manageableGuilds.find((item) => item.id === e.target.value);
-                  if (g) setSelectedGuild(g);
-                }}
-                className="bg-slate-800/80 border border-[var(--panel-border)] text-white text-xs rounded-xl px-3 py-2 outline-none focus:border-ethone-accent"
-              >
-                {manageableGuilds.map((g) => (
-                  <option key={g.id} value={g.id}>
-                    {g.name}
-                  </option>
-                ))}
-              </select>
+              <GuildSelector guilds={manageableGuilds} value={selectedGuild?.id || ""} onChange={setSelectedGuild} />
             )}
           </div>
         </div>

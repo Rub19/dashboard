@@ -46,6 +46,7 @@ export class VerificationService {
 
       // 3b. Enregistrer l'événement Analytics & Funnel
       welcomeRepository.recordEvent({
+        guildId: member.guild.id,
         type: 'VERIFICATION_PASS',
         userId: member.id,
         userTag: member.user.tag,

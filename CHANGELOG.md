@@ -2,6 +2,15 @@
 
 Toutes les modifications notables de ce projet seront documentées dans ce fichier.
 
+## v1.27.2 — 2026-09-21
+
+**Sélecteur de serveur moderne, statistiques d'accueil réelles par serveur, boutons d'onboarding corrigés**
+
+- Nouveau sélecteur de serveur sur ~18 pages (giveaways, tickets, modération, sécurité, anniversaires, rappels, tags, starboard, accueil…) : icône du serveur, recherche instantanée, serveurs où le bot est présent en premier avec un badge « Bot présent » (les autres sont marqués « Sans le bot »), navigation au clavier (↑ ↓ Entrée Échap). Il remplace le menu natif du navigateur, illisible dès qu'on a beaucoup de serveurs.
+- Accueil : l'« Activité récente » affichait l'activité d'un autre serveur, car les événements n'étaient pas rattachés à un serveur. Chaque événement porte maintenant l'identifiant du serveur et la page n'affiche que celui choisi. Les anciens événements sans serveur ne sont plus comptés.
+- Accueil : les statistiques n'utilisent plus de chiffres inventés (planchers de 92 / 84 / 78 / 73 % dans l'entonnoir, rôles ×2,3, taux par défaut 96 / 78 / 73 %). Ce sont les vrais comptes, par membre distinct ; sans donnée, les taux affichent « — » et l'entonnoir 0 %.
+- Onboarding : le bouton « Commencer » répondait « Ce parcours a été modifié » quand le parcours était désactivé (cas de l'aperçu). Les messages d'un parcours désactivé ou d'un aperçu fonctionnent désormais ; seul un utilisateur qui n'est pas le destinataire, ou une étape réellement supprimée, est refusé.
+
 ## v1.27.1 — 2026-09-21
 
 **Onboarding qui fonctionne vraiment, et le bot revient tout seul dans son salon vocal**

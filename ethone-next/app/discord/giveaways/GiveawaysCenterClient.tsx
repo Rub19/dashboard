@@ -21,6 +21,7 @@ import {
 import { useToast } from "@/components/ToastProvider";
 import { useDiscordOAuth, type DiscordGuild } from "@/lib/hooks/useDiscordOAuth";
 import { useBotGuildIds, pickBotGuild } from "@/lib/hooks/useBotGuildIds";
+import { GuildSelector } from "@/components/GuildSelector";
 
 const BOT_API_URL = process.env.NEXT_PUBLIC_DISCORD_BOT_API || "";
 
@@ -348,21 +349,7 @@ export default function GiveawaysCenterClient() {
         </div>
 
         {manageableGuilds.length > 1 && (
-          <div className="flex flex-wrap gap-1.5">
-            {manageableGuilds.map((g) => (
-              <button
-                key={g.id}
-                onClick={() => setSelectedGuild(g)}
-                className={`px-3 py-1.5 rounded-[var(--inset-radius)] text-xs font-semibold cursor-pointer ${
-                  selectedGuild?.id === g.id
-                    ? "bg-[var(--accent-primary)] text-[var(--accent-contrast)]"
-                    : "border border-[var(--panel-border)] text-[var(--text-muted)] hover:text-[var(--text-primary)]"
-                }`}
-              >
-                {g.name}
-              </button>
-            ))}
-          </div>
+          <GuildSelector guilds={manageableGuilds} value={selectedGuild?.id || ""} onChange={setSelectedGuild} />
         )}
 
         {/* KPI tiles — only what's honestly computable from the real overview */}

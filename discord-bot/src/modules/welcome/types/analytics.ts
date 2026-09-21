@@ -7,6 +7,8 @@ export interface WelcomeFunnelStage {
 
 export interface WelcomeEventLog {
   id: string;
+  /** Serveur concerné. Les anciens événements n'en ont pas : ils ne sont plus comptés (attribution impossible). */
+  guildId: string;
   type:
     | 'MEMBER_JOIN'
     | 'WELCOME_SENT'

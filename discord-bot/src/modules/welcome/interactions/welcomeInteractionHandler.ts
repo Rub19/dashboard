@@ -73,6 +73,7 @@ export class WelcomeInteractionHandler {
     // 3. Acceptation des Règles
     if (customId.startsWith('welcome_rules_accept:')) {
       welcomeRepository.recordEvent({
+        guildId: member.guild.id,
         type: 'RULES_ACCEPTED',
         userId: member.id,
         userTag: member.user.tag,

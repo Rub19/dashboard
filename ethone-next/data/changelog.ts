@@ -29707,4 +29707,57 @@ CHANGELOG_BY_LANG.en.unshift(v1271_en);
 CHANGELOG_BY_LANG.es.unshift(v1271_es);
 CHANGELOG_BY_LANG.de.unshift(v1271_de);
 
+const v1272_fr: ChangelogEntry = {
+  version: "v1.27.2",
+  date: "2026-09-21",
+  title: "Sélecteur de serveur moderne, statistiques d'accueil réelles par serveur, boutons d'onboarding corrigés",
+  items: [
+    "Nouveau sélecteur de serveur sur ~18 pages (giveaways, tickets, modération, sécurité, anniversaires, rappels, tags, starboard, accueil…) : icône du serveur, recherche instantanée, serveurs où le bot est présent en premier avec un badge « Bot présent » (les autres sont marqués « Sans le bot »), navigation au clavier (↑ ↓ Entrée Échap). Il remplace le menu natif du navigateur, illisible dès qu'on a beaucoup de serveurs.",
+    "Accueil : l'« Activité récente » affichait l'activité d'un autre serveur, car les événements n'étaient pas rattachés à un serveur. Chaque événement porte maintenant l'identifiant du serveur et la page n'affiche que celui choisi. Les anciens événements sans serveur ne sont plus comptés.",
+    "Accueil : les statistiques n'utilisent plus de chiffres inventés (planchers de 92 / 84 / 78 / 73 % dans l'entonnoir, rôles ×2,3, taux par défaut 96 / 78 / 73 %). Ce sont les vrais comptes, par membre distinct ; sans donnée, les taux affichent « — » et l'entonnoir 0 %.",
+    "Onboarding : le bouton « Commencer » répondait « Ce parcours a été modifié » quand le parcours était désactivé (cas de l'aperçu). Les messages d'un parcours désactivé ou d'un aperçu fonctionnent désormais ; seul un utilisateur qui n'est pas le destinataire, ou une étape réellement supprimée, est refusé.",
+  ],
+};
+
+const v1272_en: ChangelogEntry = {
+  version: "v1.27.2",
+  date: "2026-09-21",
+  title: "Modern server selector, real per-server welcome statistics, onboarding buttons fixed",
+  items: [
+    "New server selector on ~18 pages (giveaways, tickets, moderation, security, birthdays, reminders, tags, starboard, welcome…): server icon, instant search, servers where the bot is present listed first with a \"Bot présent\" badge (others are marked \"Sans le bot\"), keyboard navigation (↑ ↓ Enter Esc). It replaces the native browser menu, which becomes unreadable with many servers.",
+    "Welcome: \"Recent activity\" showed another server's activity because events were not tied to a server. Every event now carries its server id and the page only shows the selected one. Old events without a server are no longer counted.",
+    "Welcome: statistics no longer use invented numbers (92 / 84 / 78 / 73 % funnel floors, roles ×2.3, default rates 96 / 78 / 73 %). They are real counts per distinct member; with no data, rates show \"—\" and the funnel 0 %.",
+    "Onboarding: the \"Commencer\" button answered \"This flow was modified\" when the flow was disabled (the preview case). Messages from a disabled flow or a preview now work; only a user who is not the recipient, or a step that was really removed, is refused.",
+  ],
+};
+
+const v1272_es: ChangelogEntry = {
+  version: "v1.27.2",
+  date: "2026-09-21",
+  title: "Selector de servidor moderno, estadísticas de bienvenida reales por servidor, botones de onboarding corregidos",
+  items: [
+    "Nuevo selector de servidor en ~18 páginas (sorteos, tickets, moderación, seguridad, cumpleaños, recordatorios, tags, starboard, bienvenida…): icono del servidor, búsqueda instantánea, servidores con el bot primero con la insignia « Bot présent » (los demás, « Sans le bot »), navegación con teclado (↑ ↓ Intro Esc). Sustituye el menú nativo del navegador, ilegible con muchos servidores.",
+    "Bienvenida: la « Actividad reciente » mostraba la de otro servidor porque los eventos no estaban ligados a un servidor. Cada evento lleva ahora el id del servidor y la página muestra solo el elegido. Los eventos antiguos sin servidor ya no se cuentan.",
+    "Bienvenida: las estadísticas ya no usan cifras inventadas (mínimos de 92 / 84 / 78 / 73 % en el embudo, roles ×2,3, tasas por defecto 96 / 78 / 73 %). Son recuentos reales por miembro distinto; sin datos, las tasas muestran « — » y el embudo 0 %.",
+    "Onboarding: el botón « Commencer » respondía « Este recorrido ha sido modificado » cuando el recorrido estaba desactivado (caso de la vista previa). Los mensajes de un recorrido desactivado o de una vista previa ya funcionan; solo se rechaza a quien no es el destinatario o un paso realmente eliminado.",
+  ],
+};
+
+const v1272_de: ChangelogEntry = {
+  version: "v1.27.2",
+  date: "2026-09-21",
+  title: "Moderner Server-Wähler, echte Willkommensstatistiken pro Server, Onboarding-Schaltflächen repariert",
+  items: [
+    "Neuer Server-Wähler auf ~18 Seiten (Gewinnspiele, Tickets, Moderation, Sicherheit, Geburtstage, Erinnerungen, Tags, Starboard, Willkommen…): Server-Symbol, Sofortsuche, Server mit Bot zuerst mit Badge „Bot présent“ (die anderen „Sans le bot“), Tastaturbedienung (↑ ↓ Enter Esc). Er ersetzt das native Browsermenü, das bei vielen Servern unlesbar wird.",
+    "Willkommen: Die „Letzte Aktivität“ zeigte die Aktivität eines anderen Servers, weil Ereignisse keinem Server zugeordnet waren. Jedes Ereignis trägt jetzt die Server-ID, und die Seite zeigt nur den gewählten. Alte Ereignisse ohne Server werden nicht mehr gezählt.",
+    "Willkommen: Die Statistiken verwenden keine erfundenen Zahlen mehr (Trichter-Untergrenzen 92 / 84 / 78 / 73 %, Rollen ×2,3, Standardraten 96 / 78 / 73 %). Es sind echte Zählungen pro unterschiedlichem Mitglied; ohne Daten zeigen die Raten „—“ und der Trichter 0 %.",
+    "Onboarding: Die Schaltfläche „Commencer“ antwortete „Dieser Ablauf wurde geändert“, wenn der Ablauf deaktiviert war (Vorschau-Fall). Nachrichten eines deaktivierten Ablaufs oder einer Vorschau funktionieren jetzt; abgelehnt wird nur, wer nicht der Empfänger ist, oder ein wirklich entfernter Schritt.",
+  ],
+};
+
+CHANGELOG_BY_LANG.fr.unshift(v1272_fr);
+CHANGELOG_BY_LANG.en.unshift(v1272_en);
+CHANGELOG_BY_LANG.es.unshift(v1272_es);
+CHANGELOG_BY_LANG.de.unshift(v1272_de);
+
 export const CHANGELOG = CHANGELOG_BY_LANG.fr;

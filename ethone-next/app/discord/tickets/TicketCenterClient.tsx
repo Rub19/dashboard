@@ -28,6 +28,7 @@ import {
 import { useDiscordOAuth, type DiscordGuild } from "@/lib/hooks/useDiscordOAuth";
 import { useToast } from "@/components/ToastProvider";
 import { cn } from "@/lib/utils";
+import { GuildSelector } from "@/components/GuildSelector";
 
 const API_BASE = process.env.NEXT_PUBLIC_DISCORD_BOT_API || "";
 
@@ -647,24 +648,7 @@ export function TicketCenterClient() {
 
         {/* Guild Selection & Refresh */}
         <div className="flex flex-wrap items-center gap-2.5">
-          <select
-            value={currentGuildId}
-            onChange={(e) => {
-              const g = guilds.find((item: DiscordGuild) => item.id === e.target.value);
-              if (g) setSelectedGuild(g);
-            }}
-            className="h-9 rounded-[var(--inset-radius)] border border-[var(--panel-border)] bg-zinc-900/90 px-3 text-xs text-white outline-none focus:border-emerald-500 cursor-pointer"
-          >
-            {guilds.length > 0 ? (
-              guilds.map((g: DiscordGuild) => (
-                <option key={g.id} value={g.id}>
-                  {g.name}
-                </option>
-              ))
-            ) : (
-              <option value="1128633164290596884">Serveur Principal Discord</option>
-            )}
-          </select>
+          <GuildSelector guilds={guilds} value={currentGuildId} onChange={setSelectedGuild} />
 
           <button
             onClick={fetchAllData}

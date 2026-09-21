@@ -215,59 +215,36 @@ export class WelcomeRepository {
     startOfToday.setHours(0, 0, 0, 0);
     const startTodayMs = startOfToday.getTime();
 
-    const todayEvents = this.events.filter(
-      (e) => new Date(e.timestamp).getTime() >= startTodayMs
-    );
+    // Uniquement les événements de CE serveur (le journal est commun à tous les serveurs du bot).
+    const guildEvents = this.events.filter((e) => e.guildId === guildId);
+    const todayEvents = guildEvents.filter((e) => new Date(e.timestamp).getTime() >= startTodayMs);
 
+    // Membres distincts par type d'événement : un membre qui clique deux fois ne compte qu'une fois.
+    const uniqueToday = (type: WelcomeEventLog['type']): number =>
+      new Set(todayEvents.filter((e) => e.type === type).map((e) => e.userId)).size;
+
+    const newMembersToday = uniqueToday('MEMBER_JOIN');
     const welcomeMessagesToday = todayEvents.filter((e) => e.type === 'WELCOME_SENT').length;
-    const newMembersToday = todayEvents.filter((e) => e.type === 'MEMBER_JOIN').length;
     const dmSentToday = todayEvents.filter((e) => e.type === 'DM_SENT').length;
     const dmFailedToday = todayEvents.filter((e) => e.type === 'DM_FAILED').length;
-    const verificationsToday = todayEvents.filter((e) => e.type === 'VERIFICATION_PASS').length;
-    const onboardingStartedToday = todayEvents.filter((e) => e.type === 'ONBOARDING_START').length;
-    const rulesAcceptedToday = todayEvents.filter((e) => e.type === 'RULES_ACCEPTED').length;
-    const onboardingCompletedToday = todayEvents.filter((e) => e.type === 'ONBOARDING_COMPLETE').length;
+    const verificationsToday = uniqueToday('VERIFICATION_PASS');
+    const onboardingStartedToday = uniqueToday('ONBOARDING_START');
+    const rulesAcceptedToday = uniqueToday('RULES_ACCEPTED');
+    const onboardingCompletedToday = uniqueToday('ONBOARDING_COMPLETE');
     const rolesDistributedToday = todayEvents.filter((e) => e.type === 'ROLE_ASSIGNED').length;
 
-    // Calcul du Funnel
-    const joinedCount = Math.max(newMembersToday, 1);
+    // Entonnoir : comptes RÉELS, en pourcentage des arrivées du jour (0 % quand personne n'est arrivé).
+    const pct = (n: number): number => (newMembersToday > 0 ? Math.min(100, Math.round((n / newMembersToday) * 100)) : 0);
     const funnel: WelcomeFunnelStage[] = [
-      {
-        stage: 'JOINED',
-        label: 'Membres arrivés',
-        count: joinedCount,
-        percentage: 100,
-      },
-      {
-        stage: 'STARTED_ONBOARDING',
-        label: 'Début onboarding',
-        count: Math.min(joinedCount, Math.max(onboardingStartedToday, Math.round(joinedCount * 0.92))),
-        percentage: Math.min(100, Math.round((Math.max(onboardingStartedToday, Math.round(joinedCount * 0.92)) / joinedCount) * 100)),
-      },
-      {
-        stage: 'ACCEPTED_RULES',
-        label: 'Règles acceptées',
-        count: Math.min(joinedCount, Math.max(rulesAcceptedToday, Math.round(joinedCount * 0.84))),
-        percentage: Math.min(100, Math.round((Math.max(rulesAcceptedToday, Math.round(joinedCount * 0.84)) / joinedCount) * 100)),
-      },
-      {
-        stage: 'VERIFIED',
-        label: 'Vérifiés',
-        count: Math.min(joinedCount, Math.max(verificationsToday, Math.round(joinedCount * 0.78))),
-        percentage: Math.min(100, Math.round((Math.max(verificationsToday, Math.round(joinedCount * 0.78)) / joinedCount) * 100)),
-      },
-      {
-        stage: 'COMPLETED',
-        label: 'Onboarding terminé',
-        count: Math.min(joinedCount, Math.max(onboardingCompletedToday, Math.round(joinedCount * 0.73))),
-        percentage: Math.min(100, Math.round((Math.max(onboardingCompletedToday, Math.round(joinedCount * 0.73)) / joinedCount) * 100)),
-      },
+      { stage: 'JOINED', label: 'Membres arrivés', count: newMembersToday, percentage: newMembersToday > 0 ? 100 : 0 },
+      { stage: 'STARTED_ONBOARDING', label: 'Début onboarding', count: onboardingStartedToday, percentage: pct(onboardingStartedToday) },
+      { stage: 'ACCEPTED_RULES', label: 'Règles acceptées', count: rulesAcceptedToday, percentage: pct(rulesAcceptedToday) },
+      { stage: 'VERIFIED', label: 'Vérifiés', count: verificationsToday, percentage: pct(verificationsToday) },
+      { stage: 'COMPLETED', label: 'Onboarding terminé', count: onboardingCompletedToday, percentage: pct(onboardingCompletedToday) },
     ];
 
     const dmTotal = dmSentToday + dmFailedToday;
-    const dmDeliveryRate = dmTotal > 0 ? `${Math.round((dmSentToday / dmTotal) * 100)}%` : '96%';
-    const verificationRate = joinedCount > 0 ? `${Math.round((funnel[3].count / joinedCount) * 100)}%` : '78%';
-    const onboardingCompletionRate = joinedCount > 0 ? `${Math.round((funnel[4].count / joinedCount) * 100)}%` : '73%';
+    const rate = (n: number, of: number): string => (of > 0 ? `${Math.min(100, Math.round((n / of) * 100))}%` : '—');
 
     return {
       guildId,
@@ -275,17 +252,17 @@ export class WelcomeRepository {
       goodbyeEnabled: welcomeCfg.goodbye.enabled,
       verificationEnabled: verificationCfg.enabled,
       onboardingEnabled: onboardingFlow.enabled,
-      welcomeMessagesToday: welcomeMessagesToday || newMembersToday,
+      welcomeMessagesToday,
       newMembersToday,
-      verificationsToday: funnel[3].count,
-      onboardingCompletedToday: funnel[4].count,
-      rolesDistributedToday: rolesDistributedToday || Math.round(funnel[4].count * 2.3),
-      onboardingDropoffsToday: Math.max(0, joinedCount - funnel[4].count),
-      dmDeliveryRate,
-      verificationRate,
-      onboardingCompletionRate,
+      verificationsToday,
+      onboardingCompletedToday,
+      rolesDistributedToday,
+      onboardingDropoffsToday: Math.max(0, onboardingStartedToday - onboardingCompletedToday),
+      dmDeliveryRate: rate(dmSentToday, dmTotal),
+      verificationRate: rate(verificationsToday, newMembersToday),
+      onboardingCompletionRate: rate(onboardingCompletedToday, onboardingStartedToday || newMembersToday),
       funnel,
-      recentEvents: this.events.slice(0, 15),
+      recentEvents: guildEvents.slice(0, 15),
     };
   }
 }

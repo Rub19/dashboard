@@ -7,6 +7,7 @@ const tmpDir = fs.mkdtempSync(path.join(os.tmpdir(), 'ethone-onboarding-'));
 process.chdir(tmpDir);
 const { OnboardingRunner, isOnboardingId } = await import('./src/modules/welcome/services/onboardingRunner.js');
 const { OnboardingFlowSchema, OnboardingStepSchema } = await import('./src/modules/welcome/types/onboarding.js');
+const { welcomeRepository } = await import('./src/modules/welcome/storage/welcomeRepository.js');
 
 let passed = 0;
 let failed = 0;
@@ -131,6 +132,51 @@ async function run() {
   const first = msg.embeds[0].toJSON();
   assert((first.title || '').includes('rub19') && !(first.title || '').includes('{username}'), 'les variables du titre sont remplacées');
   assert((first.description || '').includes('ETHONE Test'), '{server} est remplacé dans la description');
+
+  console.log('\n🖱️ 4. Clics (parcours désactivé, mauvais membre, étape supprimée):');
+  // Faux membre relié à un vrai « faux serveur » que le moteur peut retrouver via le client.
+  const world = fakeMember(['222222222']) as unknown as {
+    id: string;
+    guild: { id: string; members: { fetch: (id: string) => Promise<unknown>; cache: Map<string, unknown> } };
+  };
+  world.guild.members.fetch = async () => world as unknown;
+  const client = { guilds: { cache: new Map([[guildId, world.guild]]) } };
+
+  function clickFor(stepId: string, actorId = userId, action = 'next') {
+    const calls: { kind: string; payload: unknown }[] = [];
+    const interaction = {
+      customId: `onb:${action}:${guildId}:${userId}:${stepId}`,
+      user: { id: actorId },
+      client,
+      deferred: false,
+      isModalSubmit: () => false,
+      reply: async (payload: unknown) => calls.push({ kind: 'reply', payload }),
+      update: async (payload: unknown) => calls.push({ kind: 'update', payload }),
+      deferUpdate: async () => undefined,
+      followUp: async (payload: unknown) => calls.push({ kind: 'followUp', payload }),
+    };
+    return { interaction: interaction as never, calls };
+  }
+
+  // Parcours DÉSACTIVÉ (cas réel : aperçu envoyé depuis le dashboard) : le clic doit passer.
+  welcomeRepository.saveOnboardingFlow(guildId, { ...flow, enabled: false });
+  let click = clickFor('s-welcome');
+  await OnboardingRunner.handleButton(click.interaction);
+  const updated = click.calls.find((c) => c.kind === 'update')?.payload as { embeds?: Array<{ toJSON: () => { footer?: { text: string } } }> } | undefined;
+  assert(!!updated, 'un parcours désactivé (aperçu) répond au clic au lieu de « parcours modifié »');
+  assert(updated?.embeds?.[0].toJSON().footer?.text.startsWith('Étape 2/7') === true, 'le clic sur « Commencer » affiche l\'étape 2/7');
+
+  // Mauvais utilisateur
+  click = clickFor('s-welcome', 'un-autre-membre');
+  await OnboardingRunner.handleButton(click.interaction);
+  const wrong = JSON.stringify(click.calls.find((c) => c.kind === 'reply')?.payload ?? '');
+  assert(/destiné/.test(wrong) && !click.calls.some((c) => c.kind === 'update'), 'les boutons d\'un autre membre sont refusés');
+
+  // Étape supprimée depuis l'envoi du message
+  click = clickFor('etape-qui-nexiste-plus');
+  await OnboardingRunner.handleButton(click.interaction);
+  const gone = JSON.stringify(click.calls.find((c) => c.kind === 'reply')?.payload ?? '');
+  assert(/modifié/.test(gone), 'une étape supprimée donne « parcours modifié »');
 
   console.log('\n==================================================');
   console.log(`✅ Passed: ${passed}  ❌ Failed: ${failed}`);

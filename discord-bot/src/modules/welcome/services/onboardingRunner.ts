@@ -263,8 +263,10 @@ export class OnboardingRunner {
     const flow = welcomeRepository.getOnboardingFlow(guild.id);
     const steps = sortedSteps(flow);
     const index = steps.findIndex((s) => s.id === parsed.stepId);
-    if (!flow.enabled || index < 0) {
-      // Parcours modifié ou désactivé depuis l'envoi du message.
+    // Le parcours peut avoir été désactivé après l'envoi (ou n'être qu'un aperçu) : les messages déjà
+    // envoyés continuent de fonctionner. Seule la disparition de l'étape les rend caducs.
+    if (index < 0) {
+      // Étape supprimée ou remplacée depuis l'envoi du message.
       await interaction
         .reply({ content: 'Ce parcours a été modifié : demande à un administrateur de le relancer.', ephemeral: true })
         .catch(() => {});
@@ -348,6 +350,7 @@ export class OnboardingRunner {
 
     if (step.type === 'RULES') {
       welcomeRepository.recordEvent({
+        guildId: member.guild.id,
         type: 'RULES_ACCEPTED',
         userId: member.id,
         userTag: member.user.tag,
@@ -425,7 +428,13 @@ export class OnboardingRunner {
       try {
         if (chosen.has(role.id) && !has) {
           await member.roles.add(role, 'Onboarding : rôle choisi');
-          welcomeRepository.recordEvent({ type: 'ROLE_ASSIGNED', userId: member.id, userTag: member.user.tag, detail: `Rôle @${role.name} sélectionné.` });
+          welcomeRepository.recordEvent({
+            guildId: guild.id,
+            type: 'ROLE_ASSIGNED',
+            userId: member.id,
+            userTag: member.user.tag,
+            detail: `Rôle @${role.name} sélectionné.`,
+          });
         } else if (!chosen.has(role.id) && has) {
           await member.roles.remove(role, 'Onboarding : rôle retiré');
         }
@@ -453,6 +462,7 @@ export class OnboardingRunner {
 
     if (answer) {
       welcomeRepository.recordEvent({
+        guildId: member.guild.id,
         type: 'ONBOARDING_START',
         userId: member.id,
         userTag: member.user.tag,

@@ -31,6 +31,7 @@ import { useDiscordOAuth, type DiscordGuild } from "@/lib/hooks/useDiscordOAuth"
 import { useBotGuildIds, pickBotGuild } from "@/lib/hooks/useBotGuildIds";
 import { useDiscordSync } from "@/lib/useDiscordSync";
 import { cn } from "@/lib/utils";
+import { GuildSelector } from "@/components/GuildSelector";
 
 // Types Anti-Raid
 type ThreatLevel = "SAFE" | "SUSPICIOUS" | "ELEVATED" | "DANGEROUS" | "CRITICAL";
@@ -688,23 +689,7 @@ export default function AntiRaidDashboardPage() {
         {/* Server Selector & Quick Status */}
         <div className="flex items-center gap-2.5">
           {manageableGuilds.length > 0 ? (
-            <div className="relative">
-              <select
-                value={selectedGuild?.id || ""}
-                onChange={(e) => {
-                  const g = manageableGuilds.find((item) => item.id === e.target.value);
-                  if (g) setSelectedGuild(g);
-                }}
-                className="appearance-none bg-white/[0.04] border border-[var(--panel-border)] rounded-xl px-3 py-1.5 pr-8 text-xs font-medium text-white/90 focus:outline-none focus:border-red-500/50 hover:bg-white/[0.07] transition-all cursor-pointer"
-              >
-                {manageableGuilds.map((g) => (
-                  <option key={g.id} value={g.id} className="bg-[var(--bg-surface-elevated)] text-white">
-                    {g.name}
-                  </option>
-                ))}
-              </select>
-              <ChevronDown className="w-3.5 h-3.5 text-white/40 absolute right-2.5 top-1/2 -translate-y-1/2 pointer-events-none" />
-            </div>
+            <GuildSelector guilds={manageableGuilds} value={selectedGuild?.id || ""} onChange={setSelectedGuild} />
           ) : (
             <span className="text-xs text-white/70">Aucun serveur administrable</span>
           )}

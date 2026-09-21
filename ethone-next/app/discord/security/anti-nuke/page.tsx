@@ -20,6 +20,7 @@ import { useDiscordOAuth, type DiscordGuild } from "@/lib/hooks/useDiscordOAuth"
 import { useBotGuildIds, pickBotGuild } from "@/lib/hooks/useBotGuildIds";
 import { useDiscordSync } from "@/lib/useDiscordSync";
 import { cn } from "@/lib/utils";
+import { GuildSelector } from "@/components/GuildSelector";
 
 type AntiNukeAction = "alert" | "strip_roles" | "ban";
 
@@ -200,23 +201,7 @@ export default function AntiNukePage() {
 
           <div className="flex items-center flex-wrap gap-2 w-full sm:w-auto justify-end">
             {manageableGuilds.length > 0 && (
-              <div className="relative">
-                <select
-                  value={selectedGuild?.id || ""}
-                  onChange={(e) => {
-                    const g = manageableGuilds.find((item) => item.id === e.target.value);
-                    if (g) setSelectedGuild(g);
-                  }}
-                  className="h-8 rounded-[var(--inset-radius)] border border-[var(--panel-border)] bg-zinc-900/90 px-3 pr-8 text-xs font-medium text-white outline-none hover:border-[var(--input-border-hover)] focus:border-red-500 appearance-none cursor-pointer"
-                >
-                  {manageableGuilds.map((g) => (
-                    <option key={g.id} value={g.id} className="bg-zinc-900 text-white">
-                      {g.name}
-                    </option>
-                  ))}
-                </select>
-                <ChevronDown className="absolute right-2.5 top-1/2 -translate-y-1/2 h-3.5 w-3.5 text-zinc-400 pointer-events-none" />
-              </div>
+              <GuildSelector guilds={manageableGuilds} value={selectedGuild?.id || ""} onChange={setSelectedGuild} />
             )}
             <button
               onClick={fetchAllData}

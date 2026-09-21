@@ -27,6 +27,7 @@ export class OnboardingService {
     }
 
     welcomeRepository.recordEvent({
+      guildId: member.guild.id,
       type: 'ONBOARDING_START',
       userId: member.id,
       userTag: member.user.tag,
@@ -75,6 +76,7 @@ export class OnboardingService {
     } else {
       await member.roles.add(role, 'Sélection de rôle Onboarding (Attribution)');
       welcomeRepository.recordEvent({
+        guildId: member.guild.id,
         type: 'ROLE_ASSIGNED',
         userId: member.id,
         userTag: member.user.tag,
@@ -123,6 +125,7 @@ export class OnboardingService {
 
     // 3. Enregistrement Analytics
     welcomeRepository.recordEvent({
+      guildId: member.guild.id,
       type: 'ONBOARDING_COMPLETE',
       userId: member.id,
       userTag: member.user.tag,

@@ -21,6 +21,7 @@ import {
 import { useDiscordOAuth, type DiscordGuild } from "@/lib/hooks/useDiscordOAuth";
 import { useBotGuildIds, pickBotGuild } from "@/lib/hooks/useBotGuildIds";
 import { useGuildOverview } from "@/lib/hooks/useGuildOverview";
+import { GuildSelector } from "@/components/GuildSelector";
 
 const BOT_API_URL = process.env.NEXT_PUBLIC_DISCORD_BOT_API || "";
 
@@ -163,21 +164,7 @@ export default function OverviewClient() {
         </div>
 
         {manageableGuilds.length > 1 && (
-          <div className="flex flex-wrap gap-1.5">
-            {manageableGuilds.map((g) => (
-              <button
-                key={g.id}
-                onClick={() => setSelectedGuild(g)}
-                className={`cursor-pointer rounded-[var(--inset-radius)] px-3 py-1.5 text-xs font-semibold ${
-                  selectedGuild?.id === g.id
-                    ? "bg-[var(--accent-primary)] text-[var(--accent-contrast)]"
-                    : "border border-[var(--panel-border)] text-[var(--text-muted)] hover:text-[var(--text-primary)]"
-                }`}
-              >
-                {g.name}
-              </button>
-            ))}
-          </div>
+          <GuildSelector guilds={manageableGuilds} value={selectedGuild?.id || ""} onChange={setSelectedGuild} />
         )}
 
         {!selectedGuild ? (

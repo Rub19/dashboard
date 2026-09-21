@@ -22,6 +22,7 @@ import { useBotGuildIds, pickBotGuild } from "@/lib/hooks/useBotGuildIds";
 import { useDiscordSync } from "@/lib/useDiscordSync";
 import { cn } from "@/lib/utils";
 import { GuildSelector } from "@/components/GuildSelector";
+import ChannelPicker from "@/components/discord/ChannelPicker";
 
 const BOT_API_URL = process.env.NEXT_PUBLIC_DISCORD_BOT_API || "";
 
@@ -379,28 +380,16 @@ export default function StarboardCenterClient() {
                   <label className="mb-1.5 flex items-center gap-1.5 text-xs font-semibold text-white">
                     <Hash className="h-3.5 w-3.5 text-amber-400" /> Salon de publication
                   </label>
-                  {channels.length > 0 ? (
-                    <select
-                      value={config.channelId ?? ""}
-                      onChange={(e) => patch("channelId", e.target.value || null)}
-                      className="w-full appearance-none rounded-[var(--inset-radius)] border border-[var(--panel-border)] bg-white/[0.04] px-3 py-2 text-xs text-white focus:border-amber-500/50 focus:outline-none"
-                    >
-                      <option value="" className="bg-[var(--bg-surface-elevated)]">— Choisir un salon —</option>
-                      {channels.map((c) => (
-                        <option key={c.id} value={c.id} className="bg-[var(--bg-surface-elevated)]" disabled={!c.canSend || !c.canEmbed}>
-                          #{c.name}
-                          {(!c.canSend || !c.canEmbed) ? " (permissions manquantes)" : ""}
-                        </option>
-                      ))}
-                    </select>
-                  ) : (
-                    <input
-                      value={config.channelId ?? ""}
-                      onChange={(e) => patch("channelId", e.target.value.trim() || null)}
-                      placeholder="ID du salon (ex: 123456789012345678)"
-                      className="w-full rounded-[var(--inset-radius)] border border-[var(--panel-border)] bg-white/[0.04] px-3 py-2 text-xs text-white placeholder:text-zinc-500 focus:border-amber-500/50 focus:outline-none"
-                    />
-                  )}
+                  <ChannelPicker
+                    value={config.channelId ?? ""}
+                    onChange={(id) => patch("channelId", id || null)}
+                    channels={channels.map((c) => ({
+                      id: c.id,
+                      name: `${c.name}${(!c.canSend || !c.canEmbed) ? " (permissions manquantes)" : ""}`,
+                    }))}
+                    placeholder="ID du salon (ex: 123456789012345678)"
+                    emptyLabel="— Choisir un salon —"
+                  />
                   <p className="mt-1 text-[11px] text-zinc-500">Actuel : #{channelName(config.channelId)}</p>
                 </div>
 

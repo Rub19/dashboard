@@ -158,7 +158,9 @@ const LOG_CATEGORIES: Array<{ key: string; label: string; icon: string; defaultN
   { key: "SYSTEM", label: "Système", icon: "⚙️", defaultName: "system" },
 ];
 
-/** Liste déroulante des salons texte du serveur (à la place d'un identifiant à taper à la main). */
+import ChannelPicker from "@/components/discord/ChannelPicker";
+
+/** Sélecteur universel de salon (liste déroulante ou saisie directe de l'ID). */
 function ChannelSelect({
   value,
   onChange,
@@ -172,17 +174,15 @@ function ChannelSelect({
   emptyLabel: string;
   className?: string;
 }) {
-  const known = channels.some((c) => c.id === value);
   return (
-    <select value={value} onChange={(e) => onChange(e.target.value)} className={className}>
-      <option value="">{emptyLabel}</option>
-      {value && !known && <option value={value}>Salon inconnu ({value})</option>}
-      {channels.map((c) => (
-        <option key={c.id} value={c.id}>
-          # {c.name}
-        </option>
-      ))}
-    </select>
+    <ChannelPicker
+      value={value}
+      onChange={onChange}
+      channels={channels}
+      emptyLabel={emptyLabel}
+      inputClassName={className}
+      size="sm"
+    />
   );
 }
 

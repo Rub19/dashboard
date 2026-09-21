@@ -2,6 +2,17 @@
 
 Toutes les modifications notables de ce projet seront documentées dans ce fichier.
 
+## v1.28.6 — 2026-09-22
+
+**Sélecteur de salon universel : liste déroulante ou saisie d'ID**
+
+- Nouveau composant `ChannelPicker` (liste ⇄ saisie ID) déployé sur toutes les pages Discord : Bienvenue, Logs, Starboard, Sticky, Anniversaires, Giveaways, Formulaires, Sauvegardes, IA, Rappels, Sondages, Tickets, Vocal, Bot Control.
+- Basculement instantané entre dropdown de salons et champ ID monospace via bouton **[ID]** / **[Liste]**.
+- Auto-complétion du nom de salon dans les règles IA quand un salon est sélectionné via la liste.
+- Mise en cache mémoire partagée des salons pour éviter les appels API redondants.
+- Chaque panel Tickets a désormais son propre sélecteur de salon indépendant.
+
+
 ## v1.28.5 — 2026-09-21
 
 **Boutons d'action DM, Anti-Move vocal, Rôle Admin de secours & Simulation d'attaque**

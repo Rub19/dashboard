@@ -6,6 +6,7 @@ import { useParams, useSearchParams } from "next/navigation";
 import { ArrowLeft, Save, MessageSquare, Shield, Zap, Star, Plus, Trash2, Sliders, Send } from "lucide-react";
 import { useToast } from "@/components/ToastProvider";
 import { useDiscordOAuth } from "@/lib/hooks/useDiscordOAuth";
+import ChannelPicker from "@/components/discord/ChannelPicker";
 import { cn } from "@/lib/utils";
 
 const BOT_API_URL = process.env.NEXT_PUBLIC_DISCORD_BOT_API || "";
@@ -219,8 +220,13 @@ export default function FormSettingsClient() {
           <div className="rounded-[var(--panel-radius)] border border-[var(--panel-border)] bg-white/[0.02] p-5 space-y-4">
             <h3 className="text-xs font-bold uppercase tracking-wider text-zinc-400">Configuration de l'embed</h3>
             <div className="space-y-1.5">
-              <label className="text-xs font-semibold text-zinc-300">Salon de destination (ID)</label>
-              <input type="text" value={panel.channelId} onChange={(e) => patchPanel({ channelId: e.target.value })} placeholder="Clic droit sur le salon → Copier l'identifiant" className="h-9 w-full rounded-[var(--inset-radius)] border border-[var(--panel-border)] bg-zinc-900 px-3 text-xs text-white outline-none focus:border-indigo-500 font-mono" />
+              <label className="text-xs font-semibold text-zinc-300">Salon de destination</label>
+              <ChannelPicker
+                value={panel.channelId}
+                onChange={(id) => patchPanel({ channelId: id })}
+                guildId={rawGuildId}
+                placeholder="ID du salon ou sélection dans la liste"
+              />
               {panel.messageId && <p className="text-[10px] text-emerald-400">Panneau déjà posté (message {panel.messageId}) — republier en crée un nouveau.</p>}
             </div>
             <div className="space-y-1.5">
@@ -382,7 +388,17 @@ export default function FormSettingsClient() {
                       <input type="number" value={rule.conditions?.minScore ?? scoring.passScore} onChange={(e) => update({ conditions: { ...rule.conditions, minScore: Number(e.target.value) || 0 } })} placeholder="Score minimum" className="h-8 rounded-lg border border-[var(--panel-border)] bg-zinc-900 px-2 text-xs text-white" />
                     )}
                     {needsRole && <input type="text" value={action.targetRoleId || ""} onChange={(e) => setAction({ targetRoleId: e.target.value.trim() })} placeholder="ID du rôle" className="h-8 rounded-lg border border-[var(--panel-border)] bg-zinc-900 px-2 text-xs text-white font-mono" />}
-                    {needsChannel && <input type="text" value={action.targetChannelId || ""} onChange={(e) => setAction({ targetChannelId: e.target.value.trim() })} placeholder="ID du salon" className="h-8 rounded-lg border border-[var(--panel-border)] bg-zinc-900 px-2 text-xs text-white font-mono" />}
+                    {needsChannel && (
+                      <div className="col-span-full">
+                        <ChannelPicker
+                          value={action.targetChannelId || ""}
+                          onChange={(id) => setAction({ targetChannelId: id })}
+                          guildId={rawGuildId}
+                          size="sm"
+                          placeholder="ID du salon ou sélection"
+                        />
+                      </div>
+                    )}
                     {needsMessage && <input type="text" value={action.messageTemplate || ""} onChange={(e) => setAction({ messageTemplate: e.target.value })} placeholder="Message ({user}, {form}, {score})" className="h-8 rounded-lg border border-[var(--panel-border)] bg-zinc-900 px-2 text-xs text-white sm:col-span-2" />}
                   </div>
                 </div>

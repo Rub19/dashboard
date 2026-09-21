@@ -31224,4 +31224,61 @@ CHANGELOG_BY_LANG.en.unshift(v12728_en);
 CHANGELOG_BY_LANG.es.unshift(v12728_es);
 CHANGELOG_BY_LANG.de.unshift(v12728_de);
 
+const v12826_fr: ChangelogEntry = {
+  version: "v1.28.6",
+  date: "2026-09-22",
+  title: "Sélecteur de salon universel : liste déroulante ou saisie d'ID",
+  items: [
+    "Nouveau composant ChannelPicker (liste ⇄ saisie ID) déployé sur toutes les pages Discord : Bienvenue, Logs, Starboard, Sticky, Anniversaires, Giveaways, Formulaires, Sauvegardes, IA, Rappels, Sondages, Tickets, Vocal, Bot Control.",
+    "Basculement instantané entre dropdown de salons et champ ID monospace via bouton [ID] / [Liste].",
+    "Auto-complétion du nom de salon dans les règles IA quand un salon est sélectionné via la liste.",
+    "Mise en cache mémoire partagée des salons pour éviter les appels API redondants.",
+    "Chaque panel Tickets a désormais son propre sélecteur de salon indépendant.",
+  ],
+};
+
+const v12826_en: ChangelogEntry = {
+  version: "v1.28.6",
+  date: "2026-09-22",
+  title: "Universal Channel Picker: dropdown list or manual ID entry",
+  items: [
+    "New ChannelPicker component (list ⇄ ID entry) deployed on all Discord pages: Welcome, Logs, Starboard, Sticky, Birthdays, Giveaways, Forms, Backups, AI, Reminders, Polls, Tickets, Voice, Bot Control.",
+    "Instant switch between channel dropdown and monospace ID field via [ID] / [List] button.",
+    "Auto-fill channel name in AI rules when a channel is selected from the list.",
+    "Shared in-memory channel cache to avoid redundant API calls.",
+    "Each Ticket panel now has its own independent channel picker.",
+  ],
+};
+
+const v12826_es: ChangelogEntry = {
+  version: "v1.28.6",
+  date: "2026-09-22",
+  title: "Selector de canal universal: lista desplegable o entrada de ID",
+  items: [
+    "Nuevo componente ChannelPicker (lista ⇄ entrada de ID) desplegado en todas las páginas Discord: Bienvenida, Logs, Starboard, Sticky, Cumpleaños, Sorteos, Formularios, Copias de seguridad, IA, Recordatorios, Encuestas, Tickets, Voz, Bot Control.",
+    "Cambio instantáneo entre desplegable de canales y campo de ID monoespaciado con botón [ID] / [Lista].",
+    "Autocompletar el nombre del canal en reglas IA al seleccionar un canal de la lista.",
+    "Caché en memoria compartida de canales para evitar llamadas API redundantes.",
+    "Cada panel de Tickets tiene ahora su propio selector de canal independiente.",
+  ],
+};
+
+const v12826_de: ChangelogEntry = {
+  version: "v1.28.6",
+  date: "2026-09-22",
+  title: "Universeller Kanal-Picker: Dropdown-Liste oder manuelle ID-Eingabe",
+  items: [
+    "Neue ChannelPicker-Komponente (Liste ⇄ ID-Eingabe) auf allen Discord-Seiten: Willkommen, Logs, Starboard, Sticky, Geburtstage, Giveaways, Formulare, Backups, KI, Erinnerungen, Abstimmungen, Tickets, Sprache, Bot-Steuerung.",
+    "Sofortiger Wechsel zwischen Kanal-Dropdown und Monospace-ID-Feld über Schaltfläche [ID] / [Liste].",
+    "Automatisches Ausfüllen des Kanalnamens in KI-Regeln bei Auswahl aus der Liste.",
+    "Gemeinsamer In-Memory-Cache für Kanäle zur Vermeidung redundanter API-Aufrufe.",
+    "Jedes Ticket-Panel hat nun seinen eigenen unabhängigen Kanal-Picker.",
+  ],
+};
+
+CHANGELOG_BY_LANG.fr.unshift(v12826_fr);
+CHANGELOG_BY_LANG.en.unshift(v12826_en);
+CHANGELOG_BY_LANG.es.unshift(v12826_es);
+CHANGELOG_BY_LANG.de.unshift(v12826_de);
+
 export const CHANGELOG = CHANGELOG_BY_LANG.fr;

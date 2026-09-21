@@ -23,6 +23,7 @@ import { useToast } from "@/components/ToastProvider";
 import { useDiscordOAuth } from "@/lib/hooks/useDiscordOAuth";
 import { cn } from "@/lib/utils";
 import { useResolvedGuildId } from "@/lib/hooks/useBotGuildIds";
+import ChannelPicker from "@/components/discord/ChannelPicker";
 
 const BOT_API_URL =
   process.env.NEXT_PUBLIC_DISCORD_BOT_API_URL ||
@@ -508,24 +509,13 @@ export default function PollCreateClient() {
                         <span>Rafraîchir</span>
                       </button>
                     </div>
-                    <select
+                    <ChannelPicker
                       value={targetChannel}
-                      onChange={(e) => setTargetChannel(e.target.value)}
-                      disabled={channelsLoading}
-                      className="w-full rounded-xl border border-zinc-800 bg-zinc-900 px-3 py-2 text-xs text-white focus:border-indigo-500 focus:outline-none disabled:opacity-50"
-                    >
-                      {channelsLoading ? (
-                        <option value="">Chargement des salons...</option>
-                      ) : channels.length === 0 ? (
-                        <option value="">Aucun salon textuel trouvé</option>
-                      ) : (
-                        channels.map((ch) => (
-                          <option key={ch.id} value={ch.id}>
-                            #{ch.name}
-                          </option>
-                        ))
-                      )}
-                    </select>
+                      onChange={(id) => setTargetChannel(id)}
+                      channels={channels}
+                      guildId={guildParam}
+                      placeholder="Sélectionner un salon ou saisir un ID..."
+                    />
                     <p className="text-[11px] text-zinc-500 mt-1">
                       Le salon textuel où le bot publiera le message interactif avec les boutons de vote.
                     </p>

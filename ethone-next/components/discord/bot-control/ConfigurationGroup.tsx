@@ -25,6 +25,7 @@ import {
 import { cn } from "@/lib/utils";
 import Card from "@/components/ui/Card";
 import type { BotTab } from "@/app/discord/bot/BotControlClient";
+import ChannelPicker from "@/components/discord/ChannelPicker";
 
 interface ConfigurationGroupProps {
   activeTab: BotTab;
@@ -917,27 +918,17 @@ export default function ConfigurationGroup({
                   <label className="text-[11px] font-semibold text-zinc-300 block mb-1.5">
                     Canal Textuel Dédié
                   </label>
-                  <select
+                  <ChannelPicker
                     value={dedicatedAiChannel}
-                    onChange={(e) => {
-                      const channelId = e.target.value;
-                      setDedicatedAiChannel(channelId);
+                    onChange={(id) => {
+                      setDedicatedAiChannel(id);
                       if (dedicatedAiChannelEnabled) {
-                        saveAiBehaviorSettings({ dedicatedChannelId: channelId || null });
+                        saveAiBehaviorSettings({ dedicatedChannelId: id || null });
                       }
                     }}
-                    disabled={aiTextChannels.length === 0}
-                    className="w-full px-3 py-2 rounded-xl bg-zinc-900 border border-zinc-800 text-white text-xs font-mono focus:outline-none focus:border-purple-500 disabled:opacity-50"
-                  >
-                    <option value="" className="bg-zinc-900">
-                      {aiTextChannels.length === 0 ? "Chargement des salons…" : "Sélectionner un salon"}
-                    </option>
-                    {aiTextChannels.map((c) => (
-                      <option key={c.id} value={c.id} className="bg-zinc-900">
-                        #{c.name}
-                      </option>
-                    ))}
-                  </select>
+                    channels={aiTextChannels}
+                    placeholder="Sélectionner ou saisir l'ID..."
+                  />
                   <span className="text-[10px] text-zinc-400 mt-1 block">
                     Les membres peuvent converser librement et demander des images directement ici.
                   </span>

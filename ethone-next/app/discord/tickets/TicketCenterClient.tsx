@@ -29,6 +29,7 @@ import { useDiscordOAuth, type DiscordGuild } from "@/lib/hooks/useDiscordOAuth"
 import { useToast } from "@/components/ToastProvider";
 import { cn } from "@/lib/utils";
 import { GuildSelector } from "@/components/GuildSelector";
+import ChannelPicker from "@/components/discord/ChannelPicker";
 
 const API_BASE = process.env.NEXT_PUBLIC_DISCORD_BOT_API || "";
 
@@ -238,6 +239,7 @@ export function TicketCenterClient() {
   const [showPanelModal, setShowPanelModal] = useState(false);
   const [editingPanel, setEditingPanel] = useState<TicketPanelItem | null>(null);
   const [targetChannelId, setTargetChannelId] = useState("");
+  const [panelChannels, setPanelChannels] = useState<Record<string, string>>({});
 
   const [showTeamModal, setShowTeamModal] = useState(false);
   const [editingTeam, setEditingTeam] = useState<TicketTeamItem | null>(null);
@@ -543,8 +545,9 @@ export function TicketCenterClient() {
   };
 
   const handlePublishPanel = async (panelId: string) => {
-    if (!targetChannelId) {
-      showError("Salon requis", "Veuillez spécifier l'ID du salon textuel.");
+    const chId = (panelChannels[panelId] !== undefined ? panelChannels[panelId] : targetChannelId) || panels.find((p) => p.id === panelId)?.channelId;
+    if (!chId) {
+      showError("Salon requis", "Veuillez sélectionner ou spécifier l'ID du salon textuel.");
       return;
     }
     if (!API_BASE) {
@@ -557,7 +560,7 @@ export function TicketCenterClient() {
         credentials: "include",
         method: "POST",
         headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ channelId: targetChannelId }),
+        body: JSON.stringify({ channelId: chId }),
       });
       const data = await res.json();
       if (!res.ok) throw new Error(data.error || "Échec de publication");
@@ -1055,19 +1058,20 @@ export function TicketCenterClient() {
                 </div>
 
                 {/* Publication dans salon textuel */}
-                <div className="pt-2 border-t border-[var(--panel-border)] flex items-center justify-between gap-2">
-                  <div className="flex items-center gap-2">
-                    <input
-                      type="text"
-                      placeholder="ID Salon textuel"
-                      defaultValue={p.channelId || ""}
-                      onChange={(e) => setTargetChannelId(e.target.value)}
-                      className="h-8 w-36 rounded-[var(--inset-radius)] border border-[var(--panel-border)] bg-zinc-900 px-2.5 text-[11px] text-white outline-none focus:border-emerald-500"
+                <div className="pt-2 border-t border-[var(--panel-border)] flex flex-col sm:flex-row items-stretch sm:items-center justify-between gap-2">
+                  <div className="flex-1 min-w-0 flex items-center gap-2">
+                    <ChannelPicker
+                      value={panelChannels[p.id] !== undefined ? panelChannels[p.id] : (p.channelId || "")}
+                      onChange={(id) => setPanelChannels((prev) => ({ ...prev, [p.id]: id }))}
+                      guildId={currentGuildId}
+                      placeholder="Sélectionner ou saisir l'ID..."
+                      size="sm"
+                      className="flex-1"
                     />
                     <button
                       onClick={() => handlePublishPanel(p.id)}
                       disabled={actionLoading}
-                      className="flex h-8 items-center gap-1 rounded-lg bg-emerald-600 px-3 text-xs font-bold text-white hover:bg-emerald-500 transition-all cursor-pointer"
+                      className="flex h-8 items-center gap-1 rounded-lg bg-emerald-600 px-3 text-xs font-bold text-white hover:bg-emerald-500 transition-all cursor-pointer whitespace-nowrap shrink-0"
                     >
                       <Send className="h-3 w-3" />
                       <span>Publier</span>

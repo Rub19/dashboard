@@ -28,6 +28,7 @@ import {
   ArrowLeft,
 } from "lucide-react";
 import { useToast } from "@/components/ToastProvider";
+import ChannelPicker from "@/components/discord/ChannelPicker";
 import { cn } from "@/lib/utils";
 
 interface VoiceHub {
@@ -369,12 +370,12 @@ export default function VoiceCenterClient() {
           </div>
 
           <div className="flex flex-col sm:flex-row items-stretch sm:items-center gap-3 min-w-[320px]">
-            <input
-              type="text"
-              placeholder="ID du salon textuel (ex: #vocal-create)"
+            <ChannelPicker
               value={panelChannelId}
-              onChange={(e) => setPanelChannelId(e.target.value)}
-              className="h-10 px-4 rounded-xl bg-zinc-950/80 border border-zinc-700/80 text-xs text-white placeholder-zinc-500 focus:outline-none focus:border-indigo-500 transition-all flex-1"
+              onChange={(id) => setPanelChannelId(id)}
+              guildId={guildId}
+              placeholder="Sélectionner ou saisir l'ID..."
+              className="flex-1"
             />
             <button
               onClick={handlePublishPanel}

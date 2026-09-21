@@ -10,6 +10,7 @@ import { useBotGuildIds, pickBotGuild } from "@/lib/hooks/useBotGuildIds";
 import { useDiscordSync } from "@/lib/useDiscordSync";
 import { cn } from "@/lib/utils";
 import { GuildSelector } from "@/components/GuildSelector";
+import ChannelPicker from "@/components/discord/ChannelPicker";
 
 const BOT_API_URL = process.env.NEXT_PUBLIC_DISCORD_BOT_API || "";
 
@@ -287,15 +288,13 @@ export default function BirthdaysCenterClient() {
 
               <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
                 <div className="rounded-[var(--panel-radius)] border border-[var(--panel-border)] bg-white/[0.02] p-3.5">
-                  <label className="mb-1 block text-[11px] font-medium text-zinc-400">Salon d&apos;annonce</label>
-                  <select
+                  <label className="mb-1.5 block text-[11px] font-medium text-zinc-400">Salon d&apos;annonce</label>
+                  <ChannelPicker
                     value={config.announceChannelId ?? ""}
-                    onChange={(e) => patch("announceChannelId", e.target.value || null)}
-                    className="w-full rounded-[var(--inset-radius)] border border-[var(--panel-border)] bg-white/[0.04] px-3 py-2 text-xs text-white focus:outline-none focus:border-[#5865F2]/50 [&>option]:bg-[var(--bg-surface-elevated)]"
-                  >
-                    <option value="">— Choisir —</option>
-                    {channels.map((c) => <option key={c.id} value={c.id}>#{c.name}</option>)}
-                  </select>
+                    onChange={(id) => patch("announceChannelId", id || null)}
+                    channels={channels}
+                    emptyLabel="— Choisir —"
+                  />
                 </div>
                 <div className="rounded-[var(--panel-radius)] border border-[var(--panel-border)] bg-white/[0.02] p-3.5">
                   <label className="mb-1 block text-[11px] font-medium text-zinc-400">Heure d&apos;annonce : {config.announceHour}h</label>

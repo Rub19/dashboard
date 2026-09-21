@@ -30,6 +30,7 @@ import { useDiscordOAuth, type DiscordGuild } from "@/lib/hooks/useDiscordOAuth"
 import { useToast } from "@/components/ToastProvider";
 import { cn } from "@/lib/utils";
 import { GuildSelector } from "@/components/GuildSelector";
+import ChannelPicker from "@/components/discord/ChannelPicker";
 
 const API_BASE = process.env.NEXT_PUBLIC_DISCORD_BOT_API || "";
 
@@ -217,17 +218,16 @@ function OnboardingEditor({
         </label>
 
         <div className="grid gap-3 sm:grid-cols-2">
-          <label className="space-y-1">
+          <div className="space-y-1">
             <span className="text-[11px] font-semibold text-zinc-300">Salon de secours (si messages privés fermés)</span>
-            <select value={onboarding.channelId || ""} onChange={(e) => patchFlow({ channelId: e.target.value || null })} className={fieldClass}>
-              <option value="">— Aucun —</option>
-              {channels.filter((c) => c.canSend).map((c) => (
-                <option key={c.id} value={c.id}>
-                  # {c.name}
-                </option>
-              ))}
-            </select>
-          </label>
+            <ChannelPicker
+              value={onboarding.channelId || ""}
+              onChange={(id) => patchFlow({ channelId: id || null })}
+              channels={channels.filter((c) => c.canSend).map((c) => ({ id: c.id, name: c.name }))}
+              emptyLabel="— Aucun —"
+              size="sm"
+            />
+          </div>
           <label className="space-y-1">
             <span className="text-[11px] font-semibold text-zinc-300">Rôle donné à la fin du parcours</span>
             <select value={onboarding.completionRoleId || ""} onChange={(e) => patchFlow({ completionRoleId: e.target.value || null })} className={fieldClass}>
@@ -1567,24 +1567,18 @@ export function WelcomeCenterClient() {
             </label>
 
             <div>
-              <label className="text-xs font-semibold text-zinc-300">Salon de départ</label>
-              <select
+              <label className="text-xs font-semibold text-zinc-300 mb-1 block">Salon de départ</label>
+              <ChannelPicker
                 value={config.goodbye.channelId || ""}
-                onChange={(e) =>
+                onChange={(id) =>
                   setConfig((p: any) => ({
                     ...p,
-                    goodbye: { ...p.goodbye, channelId: e.target.value || null },
+                    goodbye: { ...p.goodbye, channelId: id || null },
                   }))
                 }
-                className="mt-1 h-9 w-full rounded-[var(--inset-radius)] border border-[var(--panel-border)] bg-zinc-900 px-3 text-xs text-white outline-none focus:border-teal-500 cursor-pointer"
-              >
-                <option value="">Sélectionner un salon...</option>
-                {channels.map((ch) => (
-                  <option key={ch.id} value={ch.id}>
-                    #{ch.name}
-                  </option>
-                ))}
-              </select>
+                channels={channels.map((ch) => ({ id: ch.id, name: ch.name }))}
+                emptyLabel="Sélectionner un salon..."
+              />
             </div>
 
             <div>
@@ -1924,24 +1918,18 @@ export function WelcomeCenterClient() {
 
           <div className="rounded-[var(--panel-radius)] border border-[var(--panel-border)] bg-white/[0.02] p-5 space-y-4">
             <div>
-              <label className="text-xs font-semibold text-zinc-300">Salon de bienvenue (Welcome Channel)</label>
-              <select
+              <label className="text-xs font-semibold text-zinc-300 mb-1 block">Salon de bienvenue (Welcome Channel)</label>
+              <ChannelPicker
                 value={config.welcome.channelId || ""}
-                onChange={(e) =>
+                onChange={(id) =>
                   setConfig((p: any) => ({
                     ...p,
-                    welcome: { ...p.welcome, channelId: e.target.value || null },
+                    welcome: { ...p.welcome, channelId: id || null },
                   }))
                 }
-                className="mt-1 h-9 w-full rounded-[var(--inset-radius)] border border-[var(--panel-border)] bg-zinc-900 px-3 text-xs text-white outline-none focus:border-teal-500 cursor-pointer"
-              >
-                <option value="">Sélectionner un salon...</option>
-                {channels.map((ch) => (
-                  <option key={ch.id} value={ch.id}>
-                    #{ch.name} {ch.canSend ? "✓" : "⚠️ Manque permission"}
-                  </option>
-                ))}
-              </select>
+                channels={channels.map((ch) => ({ id: ch.id, name: `${ch.name} ${ch.canSend ? '✓' : '⚠️'}` }))}
+                emptyLabel="Sélectionner un salon..."
+              />
             </div>
 
             <div className="space-y-2 pt-2 border-t border-[var(--panel-border)]">

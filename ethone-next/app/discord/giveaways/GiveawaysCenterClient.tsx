@@ -28,6 +28,7 @@ import {
 } from "lucide-react";
 import { useToast } from "@/components/ToastProvider";
 import { useDiscordOAuth, type DiscordGuild } from "@/lib/hooks/useDiscordOAuth";
+import ChannelPicker from "@/components/discord/ChannelPicker";
 import { useBotGuildIds, pickBotGuild } from "@/lib/hooks/useBotGuildIds";
 import { GuildSelector } from "@/components/GuildSelector";
 
@@ -772,18 +773,12 @@ export default function GiveawaysCenterClient() {
               <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
                 <div>
                   <label className="block text-xs font-semibold mb-1">Salon de publication *</label>
-                  <select
+                  <ChannelPicker
                     value={formChannelId}
-                    onChange={(e) => setFormChannelId(e.target.value)}
-                    className="w-full h-10 rounded-[var(--inset-radius)] bg-[var(--surface)] border border-[var(--panel-border)] px-3 text-xs focus:outline-none focus:border-rose-500"
-                  >
-                    <option value="">Sélectionner un salon</option>
-                    {channels.map((c) => (
-                      <option key={c.id} value={c.id}>
-                        #{c.name}
-                      </option>
-                    ))}
-                  </select>
+                    onChange={(id) => setFormChannelId(id)}
+                    channels={channels}
+                    emptyLabel="Sélectionner un salon"
+                  />
                 </div>
                 <div>
                   <label className="block text-xs font-semibold mb-1">Nombre de gagnants</label>

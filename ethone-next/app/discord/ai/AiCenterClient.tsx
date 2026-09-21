@@ -30,8 +30,9 @@ import {
 } from "lucide-react";
 import { useToast } from "@/components/ToastProvider";
 import { useDiscordOAuth } from "@/lib/hooks/useDiscordOAuth";
-import { cn } from "@/lib/utils";
 import { useResolvedGuildId } from "@/lib/hooks/useBotGuildIds";
+import ChannelPicker from "@/components/discord/ChannelPicker";
+import { cn } from "@/lib/utils";
 
 const BOT_API_URL = process.env.NEXT_PUBLIC_DISCORD_BOT_API || "";
 
@@ -720,15 +721,26 @@ export default function AiCenterClient() {
               ))}
             </div>
             <div className="grid grid-cols-1 sm:grid-cols-12 gap-2 items-end pt-2 border-t border-neutral-800">
-              <div className="sm:col-span-5">
-                <label className="text-[11px] text-neutral-400 block mb-1">ID du salon Discord</label>
-                <input value={newRuleChannelId} onChange={(e) => setNewRuleChannelId(e.target.value)} placeholder="Clic droit → Copier l'identifiant" className="w-full h-9 rounded-xl bg-neutral-950 border border-neutral-800 px-3 text-xs text-white font-mono" />
+              <div className="sm:col-span-6">
+                <label className="text-[11px] text-neutral-400 block mb-1">Salon Discord</label>
+                <ChannelPicker
+                  value={newRuleChannelId}
+                  onChange={(id, channel) => {
+                    setNewRuleChannelId(id);
+                    if (channel && !newRuleChannelName) {
+                      setNewRuleChannelName(channel.name);
+                    }
+                  }}
+                  guildId={currentGuildId}
+                  placeholder="Sélectionner ou saisir l'ID..."
+                  size="sm"
+                />
               </div>
-              <div className="sm:col-span-5">
+              <div className="sm:col-span-4">
                 <label className="text-[11px] text-neutral-400 block mb-1">Nom (affichage)</label>
-                <input value={newRuleChannelName} onChange={(e) => setNewRuleChannelName(e.target.value)} placeholder="ai-chat" className="w-full h-9 rounded-xl bg-neutral-950 border border-neutral-800 px-3 text-xs text-white" />
+                <input value={newRuleChannelName} onChange={(e) => setNewRuleChannelName(e.target.value)} placeholder="ai-chat" className="w-full h-8 rounded-xl bg-neutral-950 border border-neutral-800 px-3 text-xs text-white" />
               </div>
-              <button onClick={addChannelRule} className="sm:col-span-2 h-9 rounded-xl bg-indigo-600 hover:bg-indigo-500 text-white text-xs font-semibold flex items-center justify-center gap-1 cursor-pointer"><Plus className="w-3.5 h-3.5" /> Règle</button>
+              <button onClick={addChannelRule} className="sm:col-span-2 h-8 rounded-xl bg-indigo-600 hover:bg-indigo-500 text-white text-xs font-semibold flex items-center justify-center gap-1 cursor-pointer"><Plus className="w-3.5 h-3.5" /> Règle</button>
             </div>
           </div>
         )}

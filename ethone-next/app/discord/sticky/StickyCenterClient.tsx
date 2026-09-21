@@ -20,6 +20,7 @@ import { useBotGuildIds, pickBotGuild } from "@/lib/hooks/useBotGuildIds";
 import { useDiscordSync } from "@/lib/useDiscordSync";
 import { cn } from "@/lib/utils";
 import { GuildSelector } from "@/components/GuildSelector";
+import ChannelPicker from "@/components/discord/ChannelPicker";
 
 const BOT_API_URL = process.env.NEXT_PUBLIC_DISCORD_BOT_API || "";
 
@@ -414,19 +415,17 @@ export default function StickyCenterClient() {
 
                 <div>
                   <label className="mb-1 block text-[11px] font-medium text-zinc-400">Salon</label>
-                  <select
+                  <ChannelPicker
                     value={draft.channelId}
-                    onChange={(e) => patch("channelId", e.target.value)}
+                    onChange={(id) => patch("channelId", id)}
                     disabled={usedChannelIds.has(draft.channelId)}
-                    className="w-full rounded-[var(--inset-radius)] border border-[var(--panel-border)] bg-white/[0.04] px-3 py-2 text-xs text-white focus:outline-none focus:border-[#5865F2]/50 disabled:opacity-60 [&>option]:bg-[var(--bg-surface-elevated)]"
-                  >
-                    <option value="">— Choisir un salon —</option>
-                    {availableChannels.map((c) => (
-                      <option key={c.id} value={c.id}>
-                        #{c.name}{!c.canSend || !c.canManage ? " (permissions manquantes)" : ""}
-                      </option>
-                    ))}
-                  </select>
+                    channels={availableChannels.map((c) => ({
+                      id: c.id,
+                      name: `${c.name}${(!c.canSend || !c.canManage) ? " (permissions manquantes)" : ""}`,
+                    }))}
+                    placeholder="ID du salon (ex: 123456789012345678)"
+                    emptyLabel="— Choisir un salon —"
+                  />
                 </div>
 
                 <div>

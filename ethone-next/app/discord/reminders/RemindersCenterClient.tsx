@@ -18,6 +18,7 @@ import { useDiscordOAuth, type DiscordGuild } from "@/lib/hooks/useDiscordOAuth"
 import { useBotGuildIds, pickBotGuild } from "@/lib/hooks/useBotGuildIds";
 import { cn } from "@/lib/utils";
 import { GuildSelector } from "@/components/GuildSelector";
+import ChannelPicker from "@/components/discord/ChannelPicker";
 
 const BOT_API_URL = process.env.NEXT_PUBLIC_DISCORD_BOT_API || "";
 
@@ -256,10 +257,15 @@ export default function RemindersCenterClient() {
               <div className="grid grid-cols-1 sm:grid-cols-4 gap-3">
                 <div className="sm:col-span-1">
                   <label className="mb-1 block text-[11px] font-medium text-zinc-400">Salon</label>
-                  <select value={fChannel} onChange={(e) => setFChannel(e.target.value)} className="w-full rounded-[var(--inset-radius)] border border-[var(--panel-border)] bg-white/[0.04] px-3 py-2 text-xs text-white focus:outline-none focus:border-[#5865F2]/50 [&>option]:bg-[var(--bg-surface-elevated)]">
-                    <option value="">—</option>
-                    {channels.map((c) => <option key={c.id} value={c.id}>#{c.name}</option>)}
-                  </select>
+                  <ChannelPicker
+                    value={fChannel}
+                    onChange={(id) => setFChannel(id)}
+                    channels={channels}
+                    guildId={selectedGuild?.id}
+                    placeholder="Sélectionner ou ID..."
+                    allowClear
+                    emptyLabel="— Choisir un salon —"
+                  />
                 </div>
                 <div className="sm:col-span-1">
                   <label className="mb-1 block text-[11px] font-medium text-zinc-400">Délai</label>

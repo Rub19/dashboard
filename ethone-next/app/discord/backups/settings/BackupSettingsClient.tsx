@@ -8,6 +8,7 @@ import { useToast } from "@/components/ToastProvider";
 import { useDiscordOAuth } from "@/lib/hooks/useDiscordOAuth";
 import { cn } from "@/lib/utils";
 import { useResolvedGuildId } from "@/lib/hooks/useBotGuildIds";
+import ChannelPicker from "@/components/discord/ChannelPicker";
 
 const BOT_API_URL = process.env.NEXT_PUBLIC_DISCORD_BOT_API || "";
 
@@ -278,11 +279,14 @@ export default function BackupSettingsClient() {
                 </select>
               </div>
               <div className="space-y-1.5">
-                <label className="text-xs font-medium text-neutral-300">Salon de notification (ID, optionnel)</label>
-                <div className="relative">
-                  <Hash className="w-4 h-4 absolute left-3 top-1/2 -translate-y-1/2 text-neutral-500" />
-                  <input type="text" value={settings.notifyChannelId || ""} onChange={(e) => patch({ notifyChannelId: e.target.value })} placeholder="Résumé après chaque sauvegarde" className="w-full bg-neutral-950 border border-neutral-800 rounded-xl pl-9 pr-3 py-2 text-sm text-white font-mono" />
-                </div>
+                <label className="text-xs font-medium text-neutral-300">Salon de notification (optionnel)</label>
+                <ChannelPicker
+                  value={settings.notifyChannelId || ""}
+                  onChange={(id) => patch({ notifyChannelId: id })}
+                  guildId={currentGuildId}
+                  placeholder="Résumé après chaque sauvegarde"
+                  emptyLabel="— Aucun salon —"
+                />
               </div>
             </div>
           </div>

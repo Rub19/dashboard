@@ -30062,4 +30062,45 @@ CHANGELOG_BY_LANG.en.unshift(v1278_en);
 CHANGELOG_BY_LANG.es.unshift(v1278_es);
 CHANGELOG_BY_LANG.de.unshift(v1278_de);
 
+const v1279_fr: ChangelogEntry = {
+  version: "v1.27.9",
+  date: "2026-09-21",
+  title: "Pages vocales décalées du bord",
+  items: [
+    "Les pages Salons vocaux, Paramètres vocaux et détail d'un salon étaient collées au bord gauche, contre la barre latérale (aucune marge horizontale). Elles ont maintenant des marges comme les autres pages. Vérifié en mesurant la position du texte sur ~25 autres pages : aucune n'est collée.",
+  ],
+};
+
+const v1279_en: ChangelogEntry = {
+  version: "v1.27.9",
+  date: "2026-09-21",
+  title: "Voice pages moved off the edge",
+  items: [
+    "The Voice rooms, Voice settings and room detail pages were glued to the left edge, against the sidebar (no horizontal margin). They now have margins like the other pages. Verified by measuring text position on ~25 other pages: none is glued.",
+  ],
+};
+
+const v1279_es: ChangelogEntry = {
+  version: "v1.27.9",
+  date: "2026-09-21",
+  title: "Páginas de voz separadas del borde",
+  items: [
+    "Las páginas Salas de voz, Ajustes de voz y detalle de sala estaban pegadas al borde izquierdo, contra la barra lateral (sin margen horizontal). Ahora tienen márgenes como las demás. Verificado midiendo la posición del texto en ~25 páginas más: ninguna está pegada.",
+  ],
+};
+
+const v1279_de: ChangelogEntry = {
+  version: "v1.27.9",
+  date: "2026-09-21",
+  title: "Sprachseiten vom Rand abgerückt",
+  items: [
+    "Die Seiten Sprachräume, Spracheinstellungen und Raumdetails klebten am linken Rand, direkt an der Seitenleiste (kein horizontaler Abstand). Sie haben jetzt Abstände wie die anderen Seiten. Geprüft durch Messen der Textposition auf ~25 weiteren Seiten: keine klebt.",
+  ],
+};
+
+CHANGELOG_BY_LANG.fr.unshift(v1279_fr);
+CHANGELOG_BY_LANG.en.unshift(v1279_en);
+CHANGELOG_BY_LANG.es.unshift(v1279_es);
+CHANGELOG_BY_LANG.de.unshift(v1279_de);
+
 export const CHANGELOG = CHANGELOG_BY_LANG.fr;

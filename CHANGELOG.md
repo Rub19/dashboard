@@ -2,6 +2,12 @@
 
 Toutes les modifications notables de ce projet seront documentées dans ce fichier.
 
+## v1.27.9 — 2026-09-21
+
+**Pages vocales décalées du bord**
+
+- Les pages Salons vocaux, Paramètres vocaux et détail d'un salon étaient collées au bord gauche, contre la barre latérale (aucune marge horizontale). Elles ont maintenant des marges comme les autres pages. Vérifié en mesurant la position du texte sur ~25 autres pages : aucune n'est collée.
+
 ## v1.27.8 — 2026-09-21
 
 **Fin des données inventées sur Événements, Gestion du serveur et profils**

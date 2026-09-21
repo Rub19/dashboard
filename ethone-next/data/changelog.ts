@@ -30713,9 +30713,49 @@ const v12721_de: ChangelogEntry = {
   ],
 };
 
-CHANGELOG_BY_LANG.fr.unshift(v12721_fr, v12720_fr);
-CHANGELOG_BY_LANG.en.unshift(v12721_en, v12720_en);
-CHANGELOG_BY_LANG.es.unshift(v12721_es, v12720_es);
-CHANGELOG_BY_LANG.de.unshift(v12721_de, v12720_de);
+const v12722_fr: ChangelogEntry = {
+  version: "v1.27.22",
+  date: "2026-09-21",
+  title: "Correction critique : Crash au chargement du Bot Control Center",
+  items: [
+    "Bot Control Center (/discord/bot) : résolution du crash critique (écran d'erreur inattendue) survenant lors de l'accès à la console, causé par la lecture directe de l'activité de présence lorsque celle-ci est nulle.",
+    "Résilience & ErrorBoundary : ajout d'un ErrorBoundary dédié au Bot Control Center avec interface de secours et lien de retour Discord, et sécurisation par chaînage optionnel sur l'ensemble des modules de télémétrie et présence.",
+  ],
+};
+
+const v12722_en: ChangelogEntry = {
+  version: "v1.27.22",
+  date: "2026-09-21",
+  title: "Critical fix: Bot Control Center crash on launch",
+  items: [
+    "Bot Control Center (/discord/bot): resolved critical crash (unexpected error boundary screen) when opening the console, caused by unhandled null activity property accesses.",
+    "Resilience & ErrorBoundary: added dedicated BotControlErrorBoundary with in-place retry and back link, plus optional chaining across telemetry and presence modules.",
+  ],
+};
+
+const v12722_es: ChangelogEntry = {
+  version: "v1.27.22",
+  date: "2026-09-21",
+  title: "Corrección crítica: Error al abrir Bot Control Center",
+  items: [
+    "Bot Control Center (/discord/bot): resuelto error crítico (pantalla de error inesperado) al acceder a la consola por acceso a propiedades de actividad nulas.",
+    "Resiliencia y ErrorBoundary: añadido ErrorBoundary dedicado con botón de reintento y enlace de retorno, más encadenamiento opcional en telemetría y presencia.",
+  ],
+};
+
+const v12722_de: ChangelogEntry = {
+  version: "v1.27.22",
+  date: "2026-09-21",
+  title: "Kritischer Fix: Absturz beim Öffnen des Bot Control Centers",
+  items: [
+    "Bot Control Center (/discord/bot): Kritischer Absturz (Unerwarteter Fehler-Bildschirm) beim Öffnen der Konsole behoben (Null-Prüfung bei Anwesenheitsaktivität).",
+    "Stabilität & ErrorBoundary: Dediziertes BotControlErrorBoundary mit Wiederholungsoption und Rückkehr-Link sowie Optional Chaining in Telemetrie und Präsenz.",
+  ],
+};
+
+CHANGELOG_BY_LANG.fr.unshift(v12722_fr, v12721_fr, v12720_fr);
+CHANGELOG_BY_LANG.en.unshift(v12722_en, v12721_en, v12720_en);
+CHANGELOG_BY_LANG.es.unshift(v12722_es, v12721_es, v12720_es);
+CHANGELOG_BY_LANG.de.unshift(v12722_de, v12721_de, v12720_de);
 
 export const CHANGELOG = CHANGELOG_BY_LANG.fr;

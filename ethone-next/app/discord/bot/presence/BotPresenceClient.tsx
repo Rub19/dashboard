@@ -196,9 +196,11 @@ export default function BotPresenceClient({ initialTab = "overview" }: BotPresen
           const { state, stats: s, rotationEnabled, nextRotationAt } = json.data;
           if (state) {
             setCurrentStatus(state.status);
-            setActivityType(state.activity.type);
-            setActivityName(state.activity.name);
-            if (state.activity.url) setStreamUrl(state.activity.url);
+            if (state.activity) {
+              setActivityType(state.activity.type || "PLAYING");
+              setActivityName(state.activity.name || "");
+              if (state.activity.url) setStreamUrl(state.activity.url);
+            }
             setPresenceSource(state.source);
             setLastUpdated(state.updatedAt);
             setFallbackActive(state.fallbackActive || false);
@@ -293,8 +295,10 @@ export default function BotPresenceClient({ initialTab = "overview" }: BotPresen
       if (res.ok && json?.success) {
         toast.success("Présence Discord mise à jour sur la Gateway !");
         setCurrentStatus(payload.status);
-        setActivityType(payload.activity.type);
-        setActivityName(payload.activity.name);
+        if (payload.activity) {
+          setActivityType(payload.activity.type || "PLAYING");
+          setActivityName(payload.activity.name || "");
+        }
         setLastUpdated(new Date().toISOString());
         setRateLimited(false);
         fetchData();
@@ -328,8 +332,10 @@ export default function BotPresenceClient({ initialTab = "overview" }: BotPresen
         const p = profiles.find((x) => x.id === profileId);
         if (p) {
           setCurrentStatus(p.status);
-          setActivityType(p.activity.type);
-          setActivityName(p.activity.name);
+          if (p.activity) {
+            setActivityType(p.activity.type || "PLAYING");
+            setActivityName(p.activity.name || "");
+          }
           toast.success(`Profil "${p.name}" activé.`);
         }
       }
@@ -934,8 +940,8 @@ export default function BotPresenceClient({ initialTab = "overview" }: BotPresen
                     {profiles.map((p) => {
                       const isActive =
                         currentStatus === p.status &&
-                        activityName === p.activity.name &&
-                        activityType === p.activity.type;
+                        activityName === p.activity?.name &&
+                        activityType === p.activity?.type;
 
                       return (
                         <div
@@ -958,7 +964,7 @@ export default function BotPresenceClient({ initialTab = "overview" }: BotPresen
                               <h4 className="text-xs font-bold text-white truncate">{p.name}</h4>
                             </div>
                             <p className="text-[11px] text-zinc-400 mt-1 truncate">
-                              {p.activity.type} <strong>{p.activity.name}</strong>
+                              {p.activity?.type} <strong>{p.activity?.name}</strong>
                             </p>
                           </div>
 
@@ -1390,7 +1396,7 @@ export default function BotPresenceClient({ initialTab = "overview" }: BotPresen
                           >
                             {profiles.map((p) => (
                               <option key={p.id} value={p.id}>
-                                {p.name} ({p.activity.type})
+                                {p.name} ({p.activity?.type || "Activité"})
                               </option>
                             ))}
                           </select>

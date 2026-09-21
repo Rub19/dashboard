@@ -1260,7 +1260,7 @@ export default function BotControlClient({ initialTab = "overview" }: BotControl
             </div>
 
             <span className="text-zinc-500 font-mono text-[11px]">
-              Dernière synchro : {new Date(botCore.lastSync).toLocaleTimeString("fr-FR")}
+              Dernière synchro : {botCore?.lastSync ? new Date(botCore.lastSync).toLocaleTimeString("fr-FR") : "—"}
             </span>
           </div>
         </div>
@@ -1310,10 +1310,20 @@ export default function BotControlClient({ initialTab = "overview" }: BotControl
 
                   <span className="text-zinc-600">•</span>
 
-                  <div className="flex items-center gap-1.5 text-zinc-300">
-                    <span className="text-indigo-400 font-semibold">{botCore.activity.type}</span>
-                    <span className="truncate max-w-[240px] font-medium text-white">{botCore.activity.name}</span>
-                  </div>
+                  {botCore?.activity ? (
+                    <div className="flex items-center gap-1.5 text-zinc-300">
+                      {botCore.activity.type && (
+                        <span className="text-indigo-400 font-semibold">{botCore.activity.type}</span>
+                      )}
+                      <span className="truncate max-w-[240px] font-medium text-white">
+                        {botCore.activity.name || "Actif"}
+                      </span>
+                    </div>
+                  ) : (
+                    <div className="flex items-center gap-1.5 text-zinc-400">
+                      <span>Aucune activité</span>
+                    </div>
+                  )}
                 </div>
               </div>
             </div>

@@ -1,5 +1,6 @@
 import { Suspense } from "react";
 import BotControlClient from "./BotControlClient";
+import BotControlErrorBoundary from "./BotControlErrorBoundary";
 
 export const metadata = {
   title: "Bot Control Center — ETHONE",
@@ -10,8 +11,10 @@ export const dynamic = "force-static";
 
 export default function BotControlPage() {
   return (
-    <Suspense fallback={<div className="min-h-screen bg-[var(--bg-main)]" />}>
-      <BotControlClient initialTab="overview" />
-    </Suspense>
+    <BotControlErrorBoundary>
+      <Suspense fallback={<div className="min-h-screen bg-[var(--bg-main)]" />}>
+        <BotControlClient initialTab="overview" />
+      </Suspense>
+    </BotControlErrorBoundary>
   );
 }

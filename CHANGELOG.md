@@ -2,6 +2,13 @@
 
 Toutes les modifications notables de ce projet seront documentées dans ce fichier.
 
+## v1.27.22 — 2026-09-21
+
+**Correction critique : Crash au chargement du Bot Control Center**
+
+- Bot Control Center (`/discord/bot`) : résolution du crash critique (erreur inattendue) survenant au chargement de la console en raison de la lecture de propriétés d'activité sur `botCore.activity` alors que celle-ci était nulle au montage initial.
+- Résilience & ErrorBoundary : ajout d'un `BotControlErrorBoundary` dédié offrant une interface de secours avec retour au hub Discord et bouton « Réessayer », et protection systématique par chaînage optionnel sur l'ensemble des modules de présence et télémétrie.
+
 ## v1.27.21 — 2026-09-21
 
 **Option de désactivation de la limite de mentions (Spam libre)**

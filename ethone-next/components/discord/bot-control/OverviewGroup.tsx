@@ -76,10 +76,18 @@ export default function OverviewGroup({
                   <span className={cn("w-2.5 h-2.5 rounded-full", currentCfg.dot)} />
                   <span className="text-sm font-bold text-white">{currentCfg.label}</span>
                 </div>
-                <div className="text-xs text-zinc-300">
-                  <span className="text-indigo-400 font-semibold">{botCore.activity.type}</span>{" "}
-                  <strong>{botCore.activity.name}</strong>
-                </div>
+                {botCore?.activity ? (
+                  <div className="text-xs text-zinc-300">
+                    {botCore.activity.type && (
+                      <span className="text-indigo-400 font-semibold">{botCore.activity.type} </span>
+                    )}
+                    <strong>{botCore.activity.name || "Actif"}</strong>
+                  </div>
+                ) : (
+                  <div className="text-xs text-zinc-400">
+                    <span>Aucune activité définie</span>
+                  </div>
+                )}
                 <span className="text-[11px] text-zinc-400 block pt-1">
                   Portée : Globale sur la connexion Gateway
                 </span>
@@ -149,7 +157,7 @@ export default function OverviewGroup({
                   >
                     <div className="flex items-center gap-2">
                       <div className="w-6 h-6 rounded-full bg-zinc-800 flex items-center justify-center text-[10px] font-bold text-white">
-                        {g.name.charAt(0)}
+                        {g.name?.charAt(0) || "?"}
                       </div>
                       <span className="text-zinc-200 font-medium truncate max-w-[140px]">{g.name}</span>
                     </div>

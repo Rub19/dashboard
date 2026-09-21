@@ -62,22 +62,22 @@ export default function SecurityGroup({ activeTab, securityAudit, errors }: Secu
               <Card variant="widget" padding="md" className="space-y-1.5">
                 <div className="flex items-center justify-between">
                   <span className="text-xs font-bold text-[var(--text-primary)]">Protection Anti-Raid</span>
-                  <span className={cn("w-2 h-2 rounded-full", securityAudit.intents.guildMembers ? "bg-emerald-400" : "bg-rose-400")} />
+                  <span className={cn("w-2 h-2 rounded-full", securityAudit?.intents?.guildMembers ? "bg-emerald-400" : "bg-rose-400")} />
                 </div>
                 <p className="text-[11px] text-[var(--text-muted)]">
                   Détection instantanée des vagues d'arrivées massives et verrouillage préventif
-                  {!securityAudit.intents.guildMembers && " — intent GuildMembers désactivé, détection dégradée"}
+                  {!securityAudit?.intents?.guildMembers && " — intent GuildMembers désactivé, détection dégradée"}
                 </p>
               </Card>
 
               <Card variant="widget" padding="md" className="space-y-1.5">
                 <div className="flex items-center justify-between">
                   <span className="text-xs font-bold text-[var(--text-primary)]">AutoMod & Anti-Spam</span>
-                  <span className={cn("w-2 h-2 rounded-full", securityAudit.intents.messageContent ? "bg-emerald-400" : "bg-rose-400")} />
+                  <span className={cn("w-2 h-2 rounded-full", securityAudit?.intents?.messageContent ? "bg-emerald-400" : "bg-rose-400")} />
                 </div>
                 <p className="text-[11px] text-[var(--text-muted)]">
                   Filtrage des mentions abusives, liens malveillants et discord invites
-                  {!securityAudit.intents.messageContent && " — intent MessageContent désactivé, filtrage désactivé"}
+                  {!securityAudit?.intents?.messageContent && " — intent MessageContent désactivé, filtrage désactivé"}
                 </p>
               </Card>
 
@@ -93,7 +93,7 @@ export default function SecurityGroup({ activeTab, securityAudit, errors }: Secu
             </div>
 
             <div className="flex items-center justify-between pt-4 border-t border-[var(--panel-border)] text-[11px] text-[var(--text-muted)]">
-              <span>Présence (intent GuildPresences) : {securityAudit.intents.guildPresences ? "Activé" : "Désactivé"}</span>
+              <span>Présence (intent GuildPresences) : {securityAudit?.intents?.guildPresences ? "Activé" : "Désactivé"}</span>
               <span>{securityAudit.adminGuildsCount} serveur(s) surveillé(s)</span>
             </div>
             <div className="grid grid-cols-2 gap-4 text-[11px]">

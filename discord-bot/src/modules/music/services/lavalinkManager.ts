@@ -349,9 +349,70 @@ class LavalinkManager {
     return Date.now() < this.youtubeBlockedUntil;
   }
 
-  /** Appelé quand un flux YouTube a échoué puis été remplacé par SoundCloud (30 min). */
+  /**
+   * Appelé quand un flux YouTube a échoué puis été remplacé par SoundCloud. 30 min par défaut ;
+   * seulement 3 min quand le service yt-dlp est configuré (un échec y est souvent passager).
+   */
   public markYoutubeBlocked(): void {
-    this.youtubeBlockedUntil = Date.now() + 30 * 60_000;
+    this.youtubeBlockedUntil = Date.now() + (config.ytResolverUrl ? 3 : 30) * 60_000;
+  }
+
+  /** Encodages qui sont déjà des flux directs (issus du service yt-dlp) : inutile de les refaire. */
+  private directEncoded = new Map<string, number>();
+  private directCache = new Map<string, { url: string; at: number }>();
+
+  private youtubeIdOf(url: string): string | null {
+    const m = url.match(/(?:youtube\.com\/watch\?(?:[^#]*&)?v=|youtu\.be\/)([A-Za-z0-9_-]{11})/i);
+    return m?.[1] ?? null;
+  }
+
+  /**
+   * Les clients YouTube de Lavalink sont refusés (« Sign in to confirm you're not a bot »), alors
+   * que `yt-dlp` passe depuis une IP de particulier. Si YT_RESOLVER_URL est défini, on lui demande
+   * l'adresse directe du flux audio et on la fait charger par Lavalink comme un simple flux HTTP.
+   * Le flux n'est valable que pour l'IP qui l'a demandé : le service doit donc tourner sur la même
+   * machine que Lavalink. Au moindre échec on renvoie le titre inchangé (repli SoundCloud ensuite).
+   */
+  public async directYoutube(t: Track): Promise<Track> {
+    if (!config.ytResolverUrl || t.source !== 'YOUTUBE' || !t.encoded) return t;
+    // Flux direct encore frais (les adresses YouTube expirent au bout de quelques heures) : on garde.
+    const fetchedAt = this.directEncoded.get(t.encoded);
+    if (fetchedAt && Date.now() - fetchedAt < 4 * 3600_000) return t;
+    const id = this.youtubeIdOf(t.url || '') ?? (/^ll-[A-Za-z0-9_-]{11}$/.test(t.id) ? t.id.slice(3) : null);
+    if (!id) return t;
+
+    try {
+      const cached = this.directCache.get(id);
+      let url = cached && Date.now() - cached.at < 10 * 60_000 ? cached.url : null;
+      if (!url) {
+        const res = await fetch(`${config.ytResolverUrl}/resolve?id=${id}`, {
+          headers: { Authorization: config.ytResolverToken },
+          signal: AbortSignal.timeout(20_000),
+        });
+        if (!res.ok) {
+          logger.warn(`[Lavalink] Service yt-dlp : HTTP ${res.status} pour ${id}`);
+          return t;
+        }
+        url = ((await res.json()) as { url?: string }).url ?? null;
+        if (!url) return t;
+        if (this.directCache.size > 200) this.directCache.clear();
+        this.directCache.set(id, { url, at: Date.now() });
+      }
+      const node = this.getNode();
+      if (!node) return t;
+      const loaded = await node.rest.resolve(url);
+      if (loaded?.loadType !== LoadType.TRACK) {
+        logger.warn(`[Lavalink] Flux yt-dlp refusé par Lavalink pour ${id} (${loaded?.loadType ?? 'aucune réponse'}).`);
+        return t;
+      }
+      if (this.directEncoded.size > 200) this.directEncoded.clear();
+      this.directEncoded.set(loaded.data.encoded, Date.now());
+      logger.info(`[Lavalink] YouTube via yt-dlp : ${id}`);
+      return { ...t, encoded: loaded.data.encoded };
+    } catch (err) {
+      logger.warn(`[Lavalink] Service yt-dlp indisponible (${id}) :`, (err as Error)?.message ?? err);
+      return t;
+    }
   }
 
   /** Re-encode a track that came from persistence/playlists without `encoded`. */
@@ -369,7 +430,10 @@ class LavalinkManager {
     // so fall back to a text search on title + artist.
     const usable = track.url && /^https?:\/\//i.test(track.url) && !/spotify\.com/i.test(track.url) ? track.url : `${track.title} ${track.artist}`.trim();
     const [resolved] = await this.resolve(usable, requestedBy, { limit: 1, spotify: false });
-    return resolved ? { ...track, encoded: resolved.encoded, url: track.url || resolved.url, duration: track.duration || resolved.duration } : null;
+    if (!resolved) return null;
+    // Titre venu d'une recherche texte / Spotify : `resolved` est un titre YouTube → flux direct si possible.
+    const direct = await this.directYoutube(resolved);
+    return { ...track, encoded: direct.encoded, url: track.url || resolved.url, duration: track.duration || resolved.duration };
   }
 }
 

@@ -40,6 +40,12 @@ const envSchema = z.object({
     .optional()
     .default('false')
     .transform((v) => v === 'true' || v === '1'),
+  // Optionnel — service « yt-dlp » qui tourne sur la MÊME machine (même IP publique) que Lavalink :
+  // il renvoie l'adresse directe d'un flux audio YouTube, que Lavalink lit ensuite comme un simple
+  // flux HTTP. Vide = désactivé (YouTube passe alors uniquement par les clients de Lavalink).
+  // Voir discord-bot/lavalink/yt-resolver/README.md.
+  YT_RESOLVER_URL: z.string().optional().default(''),
+  YT_RESOLVER_TOKEN: z.string().optional().default(''),
 });
 
 const parsed = envSchema.safeParse(process.env);
@@ -70,4 +76,6 @@ export const config = {
     password: parsed.data.LAVALINK_PASSWORD,
     secure: parsed.data.LAVALINK_SECURE,
   },
+  ytResolverUrl: parsed.data.YT_RESOLVER_URL.replace(/\/+$/, ''),
+  ytResolverToken: parsed.data.YT_RESOLVER_TOKEN,
 };

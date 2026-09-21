@@ -2,6 +2,14 @@
 
 Toutes les modifications notables de ce projet seront documentées dans ce fichier.
 
+## v1.25.19 — 2026-09-21
+
+**Bot musique : lecture YouTube via un service yt-dlp installé à côté de Lavalink**
+
+- Les clients YouTube de Lavalink sont refusés (« Sign in to confirm you're not a bot ») même depuis une connexion de particulier, alors que `yt-dlp` obtient bien le flux audio depuis cette même connexion. Le bot peut maintenant demander l'adresse directe du flux à un petit service `yt-dlp` (dossier `discord-bot/lavalink/yt-resolver/`), qui tourne sur la même machine que Lavalink, puis la faire lire à Lavalink comme un simple flux HTTP.
+- Fonction optionnelle : elle n'est active que si `YT_RESOLVER_URL` et `YT_RESOLVER_TOKEN` sont renseignés dans le `.env` du bot. Sans eux, ou si le service ne répond pas, le comportement précédent est conservé (repli SoundCloud).
+- Le service n'écoute qu'en local, exige un jeton, limite à deux extractions simultanées, met les résultats en cache 5 minutes, et se met à jour en redémarrant son conteneur. Les adresses de flux sont redemandées passé 4 heures (pistes en boucle) et le blocage YouTube n'est retenu que 3 minutes (au lieu de 30) quand le service est configuré.
+
 ## v1.25.18 — 2026-09-21
 
 **Bot musique : plus de silence après un redémarrage de Lavalink, et une vraie autocomplétion pour /play**

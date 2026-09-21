@@ -29148,4 +29148,53 @@ CHANGELOG_BY_LANG.en.unshift(v12518_en);
 CHANGELOG_BY_LANG.es.unshift(v12518_es);
 CHANGELOG_BY_LANG.de.unshift(v12518_de);
 
+const v12519_fr: ChangelogEntry = {
+  version: "v1.25.19",
+  date: "2026-09-21",
+  title: "Bot musique : lecture YouTube via un service yt-dlp installé à côté de Lavalink",
+  items: [
+    "Les clients YouTube de Lavalink sont refusés (« Sign in to confirm you're not a bot ») même depuis une connexion de particulier, alors que `yt-dlp` obtient bien le flux audio depuis cette même connexion. Le bot peut maintenant demander l'adresse directe du flux à un petit service `yt-dlp` (dossier `discord-bot/lavalink/yt-resolver/`), qui tourne sur la même machine que Lavalink, puis la faire lire à Lavalink comme un simple flux HTTP.",
+    "Fonction optionnelle : elle n'est active que si `YT_RESOLVER_URL` et `YT_RESOLVER_TOKEN` sont renseignés dans le `.env` du bot. Sans eux, ou si le service ne répond pas, le comportement précédent est conservé (repli SoundCloud).",
+    "Le service n'écoute qu'en local, exige un jeton, limite à deux extractions simultanées, met les résultats en cache 5 minutes, et se met à jour en redémarrant son conteneur. Les adresses de flux sont redemandées passé 4 heures (pistes en boucle) et le blocage YouTube n'est retenu que 3 minutes (au lieu de 30) quand le service est configuré.",
+  ],
+};
+
+const v12519_en: ChangelogEntry = {
+  version: "v1.25.19",
+  date: "2026-09-21",
+  title: "Music bot: YouTube playback through a yt-dlp service next to Lavalink",
+  items: [
+    "Lavalink's YouTube clients are refused (\"Sign in to confirm you're not a bot\") even from a home connection, while `yt-dlp` gets the audio stream from that very connection. The bot can now ask a small `yt-dlp` service (folder `discord-bot/lavalink/yt-resolver/`), running on the same machine as Lavalink, for the direct stream address, and have Lavalink play it as a plain HTTP stream.",
+    "Optional feature: it is only active when `YT_RESOLVER_URL` and `YT_RESOLVER_TOKEN` are set in the bot's `.env`. Without them, or if the service does not answer, the previous behaviour is kept (SoundCloud fallback).",
+    "The service only listens locally, requires a token, limits itself to two simultaneous extractions, caches results for 5 minutes, and is updated by restarting its container. Stream addresses are requested again after 4 hours (looped tracks) and the YouTube block is only remembered for 3 minutes (instead of 30) when the service is configured.",
+  ],
+};
+
+const v12519_es: ChangelogEntry = {
+  version: "v1.25.19",
+  date: "2026-09-21",
+  title: "Bot de música: reproducción de YouTube mediante un servicio yt-dlp junto a Lavalink",
+  items: [
+    "Los clientes de YouTube de Lavalink son rechazados (« Sign in to confirm you're not a bot ») incluso desde una conexión doméstica, mientras que `yt-dlp` obtiene el audio desde esa misma conexión. El bot ahora puede pedir la dirección directa del flujo a un pequeño servicio `yt-dlp` (carpeta `discord-bot/lavalink/yt-resolver/`), que corre en la misma máquina que Lavalink, y hacer que Lavalink lo reproduzca como un simple flujo HTTP.",
+    "Función opcional: solo se activa si `YT_RESOLVER_URL` y `YT_RESOLVER_TOKEN` están definidos en el `.env` del bot. Sin ellos, o si el servicio no responde, se mantiene el comportamiento anterior (repliegue a SoundCloud).",
+    "El servicio solo escucha en local, exige un token, se limita a dos extracciones simultáneas, guarda los resultados 5 minutos en caché y se actualiza reiniciando su contenedor. Las direcciones de flujo se piden de nuevo pasadas 4 horas (pistas en bucle) y el bloqueo de YouTube solo se recuerda 3 minutos (en lugar de 30) cuando el servicio está configurado.",
+  ],
+};
+
+const v12519_de: ChangelogEntry = {
+  version: "v1.25.19",
+  date: "2026-09-21",
+  title: "Musik-Bot: YouTube-Wiedergabe über einen yt-dlp-Dienst neben Lavalink",
+  items: [
+    "Die YouTube-Clients von Lavalink werden abgelehnt („Sign in to confirm you're not a bot“), selbst von einer Privatverbindung aus, während `yt-dlp` über genau diese Verbindung den Audiostream erhält. Der Bot kann jetzt bei einem kleinen `yt-dlp`-Dienst (Ordner `discord-bot/lavalink/yt-resolver/`), der auf derselben Maschine wie Lavalink läuft, die direkte Stream-Adresse anfragen und Lavalink diese als einfachen HTTP-Stream abspielen lassen.",
+    "Optionale Funktion: Sie ist nur aktiv, wenn `YT_RESOLVER_URL` und `YT_RESOLVER_TOKEN` in der `.env` des Bots gesetzt sind. Ohne sie, oder wenn der Dienst nicht antwortet, bleibt das bisherige Verhalten erhalten (SoundCloud-Fallback).",
+    "Der Dienst lauscht nur lokal, verlangt ein Token, begrenzt sich auf zwei gleichzeitige Extraktionen, cached Ergebnisse 5 Minuten und wird durch Neustart seines Containers aktualisiert. Stream-Adressen werden nach 4 Stunden erneut angefordert (Endlosschleifen), und die YouTube-Sperre wird bei konfiguriertem Dienst nur 3 Minuten (statt 30) gemerkt.",
+  ],
+};
+
+CHANGELOG_BY_LANG.fr.unshift(v12519_fr);
+CHANGELOG_BY_LANG.en.unshift(v12519_en);
+CHANGELOG_BY_LANG.es.unshift(v12519_es);
+CHANGELOG_BY_LANG.de.unshift(v12519_de);
+
 export const CHANGELOG = CHANGELOG_BY_LANG.fr;

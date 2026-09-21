@@ -232,10 +232,12 @@ export class LavalinkMusicPlayer implements IGuildMusicPlayer {
         return false;
       }
       if (ready.source === 'SOUNDCLOUD' && ready.url) this.markTried(track.id, ready.url);
-      this.queue.setCurrentTrack(ready);
+      // Titre YouTube : flux direct via le service yt-dlp quand il est configuré (sinon inchangé).
+      const toPlay = await lavalinkManager.directYoutube(ready);
+      this.queue.setCurrentTrack(toPlay);
       this.position = 0;
       this.positionAt = Date.now();
-      await this.player.playTrack({ track: { encoded: ready.encoded } });
+      await this.player.playTrack({ track: { encoded: toPlay.encoded as string } });
       await this.player.setGlobalVolume(this.muted ? 0 : this.volume);
       musicPersistence.addHistory(this.guildId, ready);
       this.status = 'PLAYING';

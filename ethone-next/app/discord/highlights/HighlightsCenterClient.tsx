@@ -1,6 +1,6 @@
 "use client";
 
-import { useCallback, useEffect, useMemo, useState } from "react";
+import { useCallback, useEffect, useMemo, useState, useRef } from "react";
 import Link from "next/link";
 import { useSearchParams } from "next/navigation";
 import { Eye, ArrowLeft, RefreshCw, Plus, X, ChevronDown, AlertTriangle, Hash } from "lucide-react";
@@ -66,14 +66,17 @@ export default function HighlightsCenterClient() {
     return profile.guilds;
   }, [profile?.guilds]);
 
+  // Le paramètre d'URL n'est appliqué qu'une fois par valeur : sinon il annule le choix fait dans le sélecteur.
+  const appliedQueryGuild = useRef<string | null>(null);
   const queryGuildId = searchParams.get("guildId");
   const [selectedGuild, setSelectedGuild] = useState<DiscordGuild | null>(null);
 
   useEffect(() => {
     if (manageableGuilds.length === 0) return;
-    if (queryGuildId) {
+    if (queryGuildId && appliedQueryGuild.current !== queryGuildId) {
       const m = manageableGuilds.find((g) => g.id === queryGuildId);
       if (m) {
+        appliedQueryGuild.current = queryGuildId;
         setSelectedGuild(m);
         return;
       }

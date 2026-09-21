@@ -2,6 +2,12 @@
 
 Toutes les modifications notables de ce projet seront documentées dans ce fichier.
 
+## v1.27.3 — 2026-09-21
+
+**Le sélecteur de serveur change enfin de serveur**
+
+- Correctif : sur les pages ouvertes avec un serveur dans l'adresse (?guildId=…), choisir un autre serveur dans le sélecteur ne changeait rien : la page réappliquait aussitôt le serveur de l'adresse. Le paramètre d'adresse n'est désormais appliqué qu'une fois, le choix fait dans le sélecteur est conservé (18 pages : accueil, tickets, modération, sécurité, giveaways, rappels, tags…).
+
 ## v1.27.2 — 2026-09-21
 
 **Sélecteur de serveur moderne, statistiques d'accueil réelles par serveur, boutons d'onboarding corrigés**

@@ -1,6 +1,6 @@
 "use client";
 
-import { useState, useEffect, useMemo, useCallback } from "react";
+import { useState, useEffect, useMemo, useCallback, useRef } from "react";
 import Link from "next/link";
 import { useRouter, useSearchParams } from "next/navigation";
 import {
@@ -67,14 +67,17 @@ export default function ReportsCenterClient() {
     });
   }, [profile?.guilds]);
 
+  // Le paramètre d'URL n'est appliqué qu'une fois par valeur : sinon il annule le choix fait dans le sélecteur.
+  const appliedQueryGuild = useRef<string | null>(null);
   const queryGuildId = searchParams.get("guildId");
   const [selectedGuild, setSelectedGuild] = useState<DiscordGuild | null>(null);
 
   useEffect(() => {
     if (manageableGuilds.length === 0) return;
-    if (queryGuildId) {
+    if (queryGuildId && appliedQueryGuild.current !== queryGuildId) {
       const match = manageableGuilds.find((g) => g.id === queryGuildId);
       if (match) {
+        appliedQueryGuild.current = queryGuildId;
         setSelectedGuild(match);
         return;
       }

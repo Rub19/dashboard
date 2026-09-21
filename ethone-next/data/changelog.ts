@@ -29760,4 +29760,45 @@ CHANGELOG_BY_LANG.en.unshift(v1272_en);
 CHANGELOG_BY_LANG.es.unshift(v1272_es);
 CHANGELOG_BY_LANG.de.unshift(v1272_de);
 
+const v1273_fr: ChangelogEntry = {
+  version: "v1.27.3",
+  date: "2026-09-21",
+  title: "Le sélecteur de serveur change enfin de serveur",
+  items: [
+    "Correctif : sur les pages ouvertes avec un serveur dans l'adresse (?guildId=…), choisir un autre serveur dans le sélecteur ne changeait rien : la page réappliquait aussitôt le serveur de l'adresse. Le paramètre d'adresse n'est désormais appliqué qu'une fois, le choix fait dans le sélecteur est conservé (18 pages : accueil, tickets, modération, sécurité, giveaways, rappels, tags…).",
+  ],
+};
+
+const v1273_en: ChangelogEntry = {
+  version: "v1.27.3",
+  date: "2026-09-21",
+  title: "The server selector now actually switches server",
+  items: [
+    "Fix: on pages opened with a server in the address (?guildId=…), choosing another server in the selector did nothing: the page immediately re-applied the address's server. The address parameter is now applied only once and the selector's choice is kept (18 pages: welcome, tickets, moderation, security, giveaways, reminders, tags…).",
+  ],
+};
+
+const v1273_es: ChangelogEntry = {
+  version: "v1.27.3",
+  date: "2026-09-21",
+  title: "El selector de servidor por fin cambia de servidor",
+  items: [
+    "Corrección: en las páginas abiertas con un servidor en la dirección (?guildId=…), elegir otro servidor en el selector no hacía nada: la página reaplicaba enseguida el de la dirección. El parámetro de la dirección se aplica ahora una sola vez y se conserva la elección del selector (18 páginas: bienvenida, tickets, moderación, seguridad, sorteos, recordatorios, tags…).",
+  ],
+};
+
+const v1273_de: ChangelogEntry = {
+  version: "v1.27.3",
+  date: "2026-09-21",
+  title: "Der Server-Wähler wechselt jetzt wirklich den Server",
+  items: [
+    "Korrektur: Auf Seiten, die mit einem Server in der Adresse (?guildId=…) geöffnet wurden, bewirkte die Wahl eines anderen Servers nichts: Die Seite übernahm sofort wieder den Server der Adresse. Der Adressparameter wird jetzt nur einmal angewendet, die Auswahl bleibt erhalten (18 Seiten: Willkommen, Tickets, Moderation, Sicherheit, Gewinnspiele, Erinnerungen, Tags…).",
+  ],
+};
+
+CHANGELOG_BY_LANG.fr.unshift(v1273_fr);
+CHANGELOG_BY_LANG.en.unshift(v1273_en);
+CHANGELOG_BY_LANG.es.unshift(v1273_es);
+CHANGELOG_BY_LANG.de.unshift(v1273_de);
+
 export const CHANGELOG = CHANGELOG_BY_LANG.fr;

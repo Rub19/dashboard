@@ -1,6 +1,6 @@
 "use client";
 
-import { useState, useEffect, useCallback, useMemo } from "react";
+import { useState, useEffect, useCallback, useMemo, useRef } from "react";
 import Link from "next/link";
 import { useSearchParams } from "next/navigation";
 import {
@@ -191,6 +191,7 @@ export interface TicketOverview {
 
 export function TicketCenterClient() {
   const searchParams = useSearchParams();
+  const appliedQueryGuild = useRef<string | null>(null);
   const guildIdParam = searchParams.get("guildId");
   const tabParam = searchParams.get("tab");
 
@@ -249,9 +250,10 @@ export function TicketCenterClient() {
 
   // Sélection automatique de la guilde passée dans l'URL
   useEffect(() => {
-    if (guildIdParam && guilds.length > 0) {
+    if (guildIdParam && guilds.length > 0 && appliedQueryGuild.current !== guildIdParam) {
       const match = guilds.find((g: DiscordGuild) => g.id === guildIdParam);
-      if (match && selectedGuild?.id !== match.id) {
+      if (match) {
+        appliedQueryGuild.current = guildIdParam;
         setSelectedGuild(match);
       }
     } else if (guilds.length > 0 && !selectedGuild) {

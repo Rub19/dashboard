@@ -1,6 +1,6 @@
 "use client";
 
-import { useCallback, useEffect, useMemo, useState } from "react";
+import { useCallback, useEffect, useMemo, useState, useRef } from "react";
 import Link from "next/link";
 import { useSearchParams } from "next/navigation";
 import { BarChart3, ArrowLeft, RefreshCw, Save, ChevronDown, Plus, Trash2, AlertTriangle } from "lucide-react";
@@ -61,14 +61,17 @@ export default function ServerStatsCenterClient() {
     });
   }, [profile?.guilds]);
 
+  // Le paramètre d'URL n'est appliqué qu'une fois par valeur : sinon il annule le choix fait dans le sélecteur.
+  const appliedQueryGuild = useRef<string | null>(null);
   const queryGuildId = searchParams.get("guildId");
   const [selectedGuild, setSelectedGuild] = useState<DiscordGuild | null>(null);
 
   useEffect(() => {
     if (manageableGuilds.length === 0) return;
-    if (queryGuildId) {
+    if (queryGuildId && appliedQueryGuild.current !== queryGuildId) {
       const m = manageableGuilds.find((g) => g.id === queryGuildId);
       if (m) {
+        appliedQueryGuild.current = queryGuildId;
         setSelectedGuild(m);
         return;
       }

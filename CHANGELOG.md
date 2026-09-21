@@ -2,6 +2,14 @@
 
 Toutes les modifications notables de ce projet seront documentées dans ce fichier.
 
+## v1.27.23 — 2026-09-21
+
+**Choix du salon Discord pour la diffusion des sondages et votes**
+
+- Créateur de sondages (`/discord/polls/create`) : ajout d'un sélecteur dynamique de salons textuels Discord dans l'onglet « Informations Générales » et « Panneau Discord », avec affichage direct du salon choisi dans le résumé latéral.
+- Déploiement et paramètres : alimentation dynamique des salons Discord depuis l'API bot dans le modal de déploiement (`/discord/polls`) et dans les paramètres de sondage (`/discord/polls/[pollId]/settings`).
+- Backend bot : ajout de la route `GET /api/guilds/:guildId/polls/channels` listant les salons textuels éligibles du serveur pour la diffusion des scrutins.
+
 ## v1.27.22 — 2026-09-21
 
 **Correction critique : Crash au chargement du Bot Control Center**

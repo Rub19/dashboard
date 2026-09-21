@@ -1,6 +1,6 @@
 "use client";
 
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import Link from "next/link";
 import { useParams, useRouter, useSearchParams } from "next/navigation";
 import {
@@ -13,6 +13,12 @@ import {
 import { useToast } from "@/components/ToastProvider";
 import { useDiscordOAuth } from "@/lib/hooks/useDiscordOAuth";
 import { useResolvedGuildId } from "@/lib/hooks/useBotGuildIds";
+
+const BOT_API_URL =
+  process.env.NEXT_PUBLIC_DISCORD_BOT_API_URL ||
+  process.env.NEXT_PUBLIC_BOT_URL ||
+  process.env.NEXT_PUBLIC_DISCORD_BOT_API ||
+  "";
 
 export default function PollSettingsClient() {
   const params = useParams();
@@ -42,10 +48,83 @@ export default function PollSettingsClient() {
   const [allowVoteChange, setAllowVoteChange] = useState(true);
   const [allowVoteRetract, setAllowVoteRetract] = useState(false);
   const [panelColor, setPanelColor] = useState("#8b5cf6");
-  const [targetChannel, setTargetChannel] = useState("123456789012345688");
+  const [targetChannel, setTargetChannel] = useState("");
+  const [channels, setChannels] = useState<{ id: string; name: string }[]>([]);
+  const [channelsLoading, setChannelsLoading] = useState(false);
+  const [isSaving, setIsSaving] = useState(false);
 
-  const handleSaveSettings = () => {
-    showToast("Paramètres du sondage mis à jour avec succès !", "success");
+  // Fetch real guild text channels
+  useEffect(() => {
+    if (!guildParam || !BOT_API_URL) return;
+    let cancelled = false;
+    setChannelsLoading(true);
+
+    const fetchChannels = async () => {
+      try {
+        const res = await fetch(`${BOT_API_URL}/api/guilds/${guildParam}/polls/channels`, { credentials: "include" });
+        if (res.ok) {
+          const data = await res.json();
+          if (!cancelled && Array.isArray(data?.channels) && data.channels.length > 0) {
+            setChannels(data.channels);
+            setTargetChannel((prev) => (prev ? prev : data.channels[0].id));
+            setChannelsLoading(false);
+            return;
+          }
+        }
+      } catch {}
+
+      try {
+        const res = await fetch(`${BOT_API_URL}/api/guilds/${guildParam}/server/channels`, { credentials: "include" });
+        if (res.ok) {
+          const data = await res.json();
+          const list = Array.isArray(data?.channels) ? data.channels : (Array.isArray(data) ? data : []);
+          const textChannels = list
+            .filter((c: any) => c.type === 0 || c.type === "GUILD_TEXT" || !c.type)
+            .map((c: any) => ({ id: String(c.id), name: String(c.name) }));
+          if (!cancelled && textChannels.length > 0) {
+            setChannels(textChannels);
+            setTargetChannel((prev) => (prev ? prev : textChannels[0].id));
+          }
+        }
+      } catch {}
+      if (!cancelled) setChannelsLoading(false);
+    };
+
+    fetchChannels();
+    return () => {
+      cancelled = true;
+    };
+  }, [guildParam]);
+
+  const handleSaveSettings = async () => {
+    setIsSaving(true);
+    try {
+      if (BOT_API_URL && guildParam) {
+        await fetch(`${BOT_API_URL}/api/guilds/${guildParam}/polls/${pollId}`, {
+          method: "PATCH",
+          headers: { "Content-Type": "application/json" },
+          credentials: "include",
+          body: JSON.stringify({
+            title,
+            description,
+            category,
+            panelConfig: {
+              channelId: targetChannel,
+              color: panelColor,
+            },
+            securityConfig: {
+              anonymity,
+              resultsVisibility,
+              allowVoteChange,
+              allowVoteRetract,
+            },
+          }),
+        }).catch(() => {});
+      }
+      showToast("Paramètres du sondage mis à jour avec succès !", "success");
+    } finally {
+      setIsSaving(false);
+    }
   };
 
   const handleResetVotes = () => {
@@ -96,10 +175,11 @@ export default function PollSettingsClient() {
 
           <button
             onClick={handleSaveSettings}
-            className="inline-flex items-center gap-2 rounded-xl bg-indigo-600 px-4 py-2 text-xs font-semibold text-white shadow-sm hover:bg-indigo-500"
+            disabled={isSaving}
+            className="inline-flex items-center gap-2 rounded-xl bg-indigo-600 px-4 py-2 text-xs font-semibold text-white shadow-sm hover:bg-indigo-500 disabled:opacity-50"
           >
             <Save className="h-3.5 w-3.5" />
-            Enregistrer les modifications
+            {isSaving ? "Enregistrement..." : "Enregistrer les modifications"}
           </button>
         </div>
 
@@ -249,11 +329,20 @@ export default function PollSettingsClient() {
                 <select
                   value={targetChannel}
                   onChange={(e) => setTargetChannel(e.target.value)}
-                  className="w-full rounded-xl border border-zinc-800 bg-zinc-900 px-3 py-2 text-xs text-white focus:outline-none"
+                  disabled={channelsLoading}
+                  className="w-full rounded-xl border border-zinc-800 bg-zinc-900 px-3 py-2 text-xs text-white focus:outline-none disabled:opacity-50"
                 >
-                  <option value="123456789012345688"># sondages-communauté</option>
-                  <option value="123456789012345689"># staff-privé</option>
-                  <option value="123456789012345690"># annonces</option>
+                  {channelsLoading ? (
+                    <option value="">Chargement des salons...</option>
+                  ) : channels.length === 0 ? (
+                    <option value="">Aucun salon textuel trouvé</option>
+                  ) : (
+                    channels.map((ch) => (
+                      <option key={ch.id} value={ch.id}>
+                        #{ch.name}
+                      </option>
+                    ))
+                  )}
                 </select>
               </div>
             </div>

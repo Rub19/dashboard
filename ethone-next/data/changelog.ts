@@ -30753,9 +30753,53 @@ const v12722_de: ChangelogEntry = {
   ],
 };
 
-CHANGELOG_BY_LANG.fr.unshift(v12722_fr, v12721_fr, v12720_fr);
-CHANGELOG_BY_LANG.en.unshift(v12722_en, v12721_en, v12720_en);
-CHANGELOG_BY_LANG.es.unshift(v12722_es, v12721_es, v12720_es);
-CHANGELOG_BY_LANG.de.unshift(v12722_de, v12721_de, v12720_de);
+const v12723_fr: ChangelogEntry = {
+  version: "v1.27.23",
+  date: "2026-09-21",
+  title: "Choix du salon Discord pour la diffusion des sondages et votes",
+  items: [
+    "Créateur de sondages (/discord/polls/create) : ajout d'un sélecteur dynamique de salons Discord dans l'onglet Général et le panneau Discord avec affichage immédiat dans le résumé latéral.",
+    "Déploiement et paramètres : intégration dynamique des salons textuels réels dans le modal de déploiement et les réglages de scrutin.",
+    "API Bot Discord : route GET /api/guilds/:guildId/polls/channels listant les salons textuels éligibles pour la publication.",
+  ],
+};
+
+const v12723_en: ChangelogEntry = {
+  version: "v1.27.23",
+  date: "2026-09-21",
+  title: "Discord channel selector for poll and vote distribution",
+  items: [
+    "Poll creator (/discord/polls/create): added dynamic Discord channel selector in General Info and Discord Panel tabs with live sidebar summary reflection.",
+    "Deployment and settings: dynamic channel listing from bot API in deploy modal and poll settings.",
+    "Discord Bot API: added GET /api/guilds/:guildId/polls/channels returning eligible text channels.",
+  ],
+};
+
+const v12723_es: ChangelogEntry = {
+  version: "v1.27.23",
+  date: "2026-09-21",
+  title: "Selección de canal Discord para encuestas y votaciones",
+  items: [
+    "Creador de encuestas (/discord/polls/create): selector dinámico de canales Discord en la pestaña General y Panel con reflejo en el resumen lateral.",
+    "Despliegue y ajustes: canales reales en el modal de despliegue y la configuración de encuestas.",
+    "API Bot Discord: ruta GET /api/guilds/:guildId/polls/channels con canales de texto disponibles.",
+  ],
+};
+
+const v12723_de: ChangelogEntry = {
+  version: "v1.27.23",
+  date: "2026-09-21",
+  title: "Discord-Kanalauswahl für Umfragen und Abstimmungen",
+  items: [
+    "Umfrage-Ersteller (/discord/polls/create): Dynamische Discord-Kanalauswahl im Reiter Allgemein & Discord-Panel mit Anzeige in der Seitenleiste.",
+    "Bereitstellung & Einstellungen: Echte Textkanäle im Bereitstellungs-Modal und den Umfrage-Einstellungen.",
+    "Discord Bot API: Route GET /api/guilds/:guildId/polls/channels für berechtigte Textkanäle hinzugefügt.",
+  ],
+};
+
+CHANGELOG_BY_LANG.fr.unshift(v12723_fr, v12722_fr, v12721_fr, v12720_fr);
+CHANGELOG_BY_LANG.en.unshift(v12723_en, v12722_en, v12721_en, v12720_en);
+CHANGELOG_BY_LANG.es.unshift(v12723_es, v12722_es, v12721_es, v12720_es);
+CHANGELOG_BY_LANG.de.unshift(v12723_de, v12722_de, v12721_de, v12720_de);
 
 export const CHANGELOG = CHANGELOG_BY_LANG.fr;

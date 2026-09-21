@@ -1,6 +1,6 @@
 "use client";
 
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import Link from "next/link";
 import { useRouter, useSearchParams } from "next/navigation";
 import {
@@ -16,11 +16,18 @@ import {
   Send,
   Eye,
   Zap,
+  Hash,
 } from "lucide-react";
 import { useToast } from "@/components/ToastProvider";
 import { useDiscordOAuth } from "@/lib/hooks/useDiscordOAuth";
 import { cn } from "@/lib/utils";
 import { useResolvedGuildId } from "@/lib/hooks/useBotGuildIds";
+
+const BOT_API_URL =
+  process.env.NEXT_PUBLIC_DISCORD_BOT_API_URL ||
+  process.env.NEXT_PUBLIC_BOT_URL ||
+  process.env.NEXT_PUBLIC_DISCORD_BOT_API ||
+  "";
 
 interface OptionItem {
   id: string;
@@ -62,6 +69,44 @@ export default function PollCreateClient() {
   const [pollType, setPollType] = useState<string>("SINGLE_CHOICE");
   const [durationHours, setDurationHours] = useState(48);
 
+  // Channels state
+  const [channels, setChannels] = useState<{ id: string; name: string }[]>([]);
+  const [channelsLoading, setChannelsLoading] = useState(false);
+  const [targetChannel, setTargetChannel] = useState<string>("");
+  const [isSubmitting, setIsSubmitting] = useState(false);
+
+  // Load real guild text channels
+  useEffect(() => {
+    if (!guildParam || !BOT_API_URL) return;
+    let cancelled = false;
+    setChannelsLoading(true);
+    fetch(`${BOT_API_URL}/api/guilds/${guildParam}/polls/channels`, { credentials: "include" })
+      .then((r) => (r.ok ? r.json() : null))
+      .then(async (data) => {
+        if (cancelled) return;
+        let list = Array.isArray(data?.channels) ? data.channels : [];
+        if (list.length === 0) {
+          const fallback = await fetch(`${BOT_API_URL}/api/guilds/${guildParam}/server/channels`, { credentials: "include" })
+            .then((r) => (r.ok ? r.json() : null))
+            .catch(() => null);
+          if (Array.isArray(fallback?.channels)) list = fallback.channels;
+        }
+        if (!cancelled) {
+          setChannels(list);
+          if (list.length > 0) {
+            setTargetChannel((prev) => (prev ? prev : list[0].id));
+          }
+        }
+      })
+      .catch(() => {})
+      .finally(() => {
+        if (!cancelled) setChannelsLoading(false);
+      });
+    return () => {
+      cancelled = true;
+    };
+  }, [guildParam]);
+
   // Questions state
   const [questions, setQuestions] = useState<QuestionItem[]>([
     {
@@ -97,7 +142,6 @@ export default function PollCreateClient() {
 
   // Panel state
   const [panelColor, setPanelColor] = useState("#6366f1");
-  const [targetChannel, setTargetChannel] = useState("123456789012345688");
 
   // Question manipulations
   const handleAddQuestion = () => {
@@ -155,20 +199,90 @@ export default function PollCreateClient() {
     );
   };
 
-  const handleSave = (publish = false) => {
+  const handleSave = async (publish = false) => {
     if (!title.trim()) {
       showToast("Veuillez renseigner le titre du sondage.", "error");
       setActiveTab("general");
       return;
     }
 
-    showToast(
-      publish
-        ? "Sondage publié et déployé avec succès !"
-        : "Sondage enregistré comme brouillon.",
-      "success"
-    );
-    router.push(`/discord/polls?guildId=${guildParam}`);
+    setIsSubmitting(true);
+    try {
+      if (BOT_API_URL && guildParam) {
+        const payload = {
+          title: title.trim(),
+          description: description.trim(),
+          category,
+          pollType,
+          status: publish ? "ACTIVE" : "DRAFT",
+          endsAt: new Date(Date.now() + durationHours * 3600 * 1000).toISOString(),
+          questions: questions.map((q) => ({
+            title: q.title,
+            description: q.description,
+            required: q.required,
+            minSelections: q.minSelections,
+            maxSelections: q.maxSelections,
+            options: q.options.map((o) => ({
+              label: o.label,
+              emoji: o.emoji,
+              color: o.color,
+              description: o.description,
+              weight: o.weight,
+            })),
+          })),
+          panelConfig: {
+            channelId: targetChannel,
+            color: panelColor,
+          },
+          eligibilityRules: {
+            minAccountAgeDays,
+            minGuildMembershipDays,
+            roleWeights,
+          },
+          securityConfig: {
+            anonymity,
+            quorumEnabled,
+            minParticipantsCount,
+            approvalThreshold,
+          },
+        };
+
+        const res = await fetch(`${BOT_API_URL}/api/guilds/${guildParam}/polls`, {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          credentials: "include",
+          body: JSON.stringify(payload),
+        });
+
+        const data = await res.json().catch(() => ({}));
+        if (!res.ok) {
+          throw new Error(data.error || "Erreur lors de la sauvegarde du sondage.");
+        }
+
+        const createdPollId = data.poll?.id || data.id;
+
+        if (publish && createdPollId && targetChannel) {
+          await fetch(`${BOT_API_URL}/api/guilds/${guildParam}/polls/${createdPollId}/panel/deploy`, {
+            method: "POST",
+            headers: { "Content-Type": "application/json" },
+            credentials: "include",
+            body: JSON.stringify({ channelId: targetChannel }),
+          }).catch((err) => console.warn("Deploy error:", err));
+        }
+      }
+
+      showToast(
+        publish
+          ? "Sondage publié et déployé sur le salon avec succès !"
+          : "Sondage enregistré comme brouillon.",
+        "success"
+      );
+      router.push(`/discord/polls?guildId=${guildParam}`);
+    } catch (err: any) {
+      showToast(err?.message || "Une erreur est survenue lors de l'enregistrement.", "error");
+    } finally {
+      setIsSubmitting(false);
+    }
   };
 
   return (
@@ -205,17 +319,19 @@ export default function PollCreateClient() {
           <div className="flex items-center gap-3">
             <button
               onClick={() => handleSave(false)}
-              className="inline-flex items-center gap-2 rounded-xl border border-zinc-800 bg-zinc-900/80 px-4 py-2.5 text-xs font-semibold text-zinc-300 hover:bg-zinc-800 hover:text-white transition-all"
+              disabled={isSubmitting}
+              className="inline-flex items-center gap-2 rounded-xl border border-zinc-800 bg-zinc-900/80 px-4 py-2.5 text-xs font-semibold text-zinc-300 hover:bg-zinc-800 hover:text-white transition-all disabled:opacity-50"
             >
               <Save className="h-3.5 w-3.5" />
               Sauvegarder Brouillon
             </button>
             <button
               onClick={() => handleSave(true)}
-              className="inline-flex items-center gap-2 rounded-xl bg-indigo-600 px-4 py-2.5 text-xs font-semibold text-white shadow-sm hover:brightness-110 active:scale-[0.98] transition-all"
+              disabled={isSubmitting}
+              className="inline-flex items-center gap-2 rounded-xl bg-indigo-600 px-4 py-2.5 text-xs font-semibold text-white shadow-sm hover:brightness-110 active:scale-[0.98] transition-all disabled:opacity-50"
             >
               <Send className="h-3.5 w-3.5" />
-              Publier Immédiatement
+              {isSubmitting ? "Publication en cours..." : "Publier Immédiatement"}
             </button>
           </div>
         </div>
@@ -308,6 +424,34 @@ export default function PollCreateClient() {
                       />
                     </div>
                   </div>
+
+                  <div>
+                    <label className="block text-xs font-medium text-zinc-300 mb-1.5 flex items-center gap-1.5">
+                      <Hash className="h-3.5 w-3.5 text-indigo-400" />
+                      Salon Discord de diffusion <span className="text-rose-400">*</span>
+                    </label>
+                    <select
+                      value={targetChannel}
+                      onChange={(e) => setTargetChannel(e.target.value)}
+                      disabled={channelsLoading}
+                      className="w-full rounded-xl border border-zinc-800 bg-zinc-900 px-3 py-2 text-xs text-white focus:border-indigo-500 focus:outline-none disabled:opacity-50"
+                    >
+                      {channelsLoading ? (
+                        <option value="">Chargement des salons...</option>
+                      ) : channels.length === 0 ? (
+                        <option value="">Aucun salon textuel trouvé</option>
+                      ) : (
+                        channels.map((ch) => (
+                          <option key={ch.id} value={ch.id}>
+                            #{ch.name}
+                          </option>
+                        ))
+                      )}
+                    </select>
+                    <p className="text-[11px] text-zinc-500 mt-1">
+                      Le salon textuel où le bot publiera le message interactif avec les boutons de vote.
+                    </p>
+                  </div>
                 </div>
               </div>
 
@@ -360,6 +504,16 @@ export default function PollCreateClient() {
                   Résumé de Configuration
                 </h4>
                 <div className="space-y-2.5 text-xs text-zinc-300">
+                  <div className="flex justify-between border-b border-zinc-800 pb-2">
+                    <span className="text-zinc-500">Salon de diffusion :</span>
+                    <span className="font-semibold text-emerald-400">
+                      {channels.find((c) => c.id === targetChannel)
+                        ? `#${channels.find((c) => c.id === targetChannel)?.name}`
+                        : targetChannel
+                        ? `#${targetChannel}`
+                        : "Non sélectionné"}
+                    </span>
+                  </div>
                   <div className="flex justify-between border-b border-zinc-800 pb-2">
                     <span className="text-zinc-500">Type de scrutin :</span>
                     <span className="font-semibold text-indigo-400">{pollType}</span>
@@ -777,11 +931,20 @@ export default function PollCreateClient() {
                   <select
                     value={targetChannel}
                     onChange={(e) => setTargetChannel(e.target.value)}
-                    className="w-full rounded-xl border border-zinc-800 bg-zinc-900 px-3 py-2 text-xs text-white focus:outline-none"
+                    disabled={channelsLoading}
+                    className="w-full rounded-xl border border-zinc-800 bg-zinc-900 px-3 py-2 text-xs text-white focus:outline-none disabled:opacity-50"
                   >
-                    <option value="123456789012345688"># sondages-communauté</option>
-                    <option value="123456789012345689"># staff-privé</option>
-                    <option value="123456789012345690"># annonces</option>
+                    {channelsLoading ? (
+                      <option value="">Chargement des salons...</option>
+                    ) : channels.length === 0 ? (
+                      <option value="">Aucun salon textuel trouvé</option>
+                    ) : (
+                      channels.map((ch) => (
+                        <option key={ch.id} value={ch.id}>
+                          #{ch.name}
+                        </option>
+                      ))
+                    )}
                   </select>
                 </div>
               </div>

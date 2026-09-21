@@ -1,5 +1,5 @@
 import { Router, Request, Response } from 'express';
-import { Client } from 'discord.js';
+import { Client, ChannelType } from 'discord.js';
 import { pollRepository } from '../../modules/polls/storage/pollRepository.js';
 import { pollService } from '../../modules/polls/services/pollService.js';
 import { pollVotingService } from '../../modules/polls/services/pollVotingService.js';
@@ -12,6 +12,21 @@ import { emitConfigUpdated } from '../../services/syncConfigEmitter.js';
 export function createPollRouter(client: Client): Router {
   const router = Router({ mergeParams: true });
   discordPollPanel.initialize(client);
+
+  // GET /api/guilds/:guildId/polls/channels — Salons texte pour le dashboard
+  router.get('/channels', (req: Request, res: Response): void => {
+    const guildId = requireStringParam(req.params.guildId, 'guildId');
+    const guild = client.guilds.cache.get(guildId);
+    if (!guild) {
+      res.json({ success: true, channels: [] });
+      return;
+    }
+    const channels = guild.channels.cache
+      .filter((c) => c.type === ChannelType.GuildText || c.type === ChannelType.GuildAnnouncement)
+      .map((c) => ({ id: c.id, name: c.name }))
+      .sort((a, b) => a.name.localeCompare(b.name));
+    res.json({ success: true, channels });
+  });
 
   // GET /api/guilds/:guildId/polls/overview
   router.get('/overview', (req: Request, res: Response) => {

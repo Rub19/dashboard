@@ -120,6 +120,51 @@ export default function PollsCenterClient() {
   const [selectedCategory, setSelectedCategory] = useState<string>("ALL");
   const [deployModalPoll, setDeployModalPoll] = useState<PollSummary | null>(null);
   const [targetChannelId, setTargetChannelId] = useState("");
+  const [channels, setChannels] = useState<{ id: string; name: string }[]>([]);
+  const [channelsLoading, setChannelsLoading] = useState(false);
+
+  // Fetch real guild text channels for deploy modal
+  useEffect(() => {
+    if (!guildParam || !BOT_API_URL) return;
+    let cancelled = false;
+    setChannelsLoading(true);
+
+    const fetchChannels = async () => {
+      try {
+        const res = await fetch(`${BOT_API_URL}/api/guilds/${guildParam}/polls/channels`, { credentials: "include" });
+        if (res.ok) {
+          const data = await res.json();
+          if (!cancelled && Array.isArray(data?.channels) && data.channels.length > 0) {
+            setChannels(data.channels);
+            setTargetChannelId((prev) => prev || data.channels[0].id);
+            setChannelsLoading(false);
+            return;
+          }
+        }
+      } catch {}
+
+      try {
+        const res = await fetch(`${BOT_API_URL}/api/guilds/${guildParam}/server/channels`, { credentials: "include" });
+        if (res.ok) {
+          const data = await res.json();
+          const list = Array.isArray(data?.channels) ? data.channels : (Array.isArray(data) ? data : []);
+          const textChannels = list
+            .filter((c: any) => c.type === 0 || c.type === "GUILD_TEXT" || !c.type)
+            .map((c: any) => ({ id: String(c.id), name: String(c.name) }));
+          if (!cancelled && textChannels.length > 0) {
+            setChannels(textChannels);
+            setTargetChannelId((prev) => prev || textChannels[0].id);
+          }
+        }
+      } catch {}
+      if (!cancelled) setChannelsLoading(false);
+    };
+
+    fetchChannels();
+    return () => {
+      cancelled = true;
+    };
+  }, [guildParam]);
 
   const categories = useMemo(() => {
     const set = new Set(polls.map((p) => p.category));
@@ -258,14 +303,19 @@ export default function PollsCenterClient() {
 
   const handleDeployConfirm = async () => {
     if (!deployModalPoll) return;
+    if (!targetChannelId) {
+      showToast("Veuillez sélectionner un salon Discord.", "error");
+      return;
+    }
     const ok = await pollAction(deployModalPoll, "panel/deploy", {
-      channelId: targetChannelId || undefined,
+      channelId: targetChannelId,
     });
     if (!ok) {
       showToast("Échec du déploiement du panneau.", "error");
       return;
     }
-    showToast(`Panneau de vote déployé sur Discord (${targetChannelId || "#général"}).`, "success");
+    const channelName = channels.find((c) => c.id === targetChannelId)?.name || targetChannelId;
+    showToast(`Panneau de vote déployé sur Discord (#${channelName}).`, "success");
     setDeployModalPoll(null);
   };
 
@@ -699,12 +749,20 @@ export default function PollsCenterClient() {
               <select
                 value={targetChannelId}
                 onChange={(e) => setTargetChannelId(e.target.value)}
-                className="w-full rounded-xl border border-zinc-800 bg-zinc-900 px-3 py-2.5 text-xs text-white focus:border-indigo-500 focus:outline-none"
+                disabled={channelsLoading}
+                className="w-full rounded-xl border border-zinc-800 bg-zinc-900 px-3 py-2.5 text-xs text-white focus:border-indigo-500 focus:outline-none disabled:opacity-50"
               >
-                <option value=""># annonces-officielles</option>
-                <option value="123456789012345688"># sondages-communauté</option>
-                <option value="123456789012345689"># staff-privé</option>
-                <option value="123456789012345690"># général</option>
+                {channelsLoading ? (
+                  <option value="">Chargement des salons...</option>
+                ) : channels.length === 0 ? (
+                  <option value="">Aucun salon textuel trouvé</option>
+                ) : (
+                  channels.map((ch) => (
+                    <option key={ch.id} value={ch.id}>
+                      #{ch.name}
+                    </option>
+                  ))
+                )}
               </select>
             </div>
 

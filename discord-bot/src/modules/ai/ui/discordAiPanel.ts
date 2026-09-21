@@ -21,16 +21,22 @@ export class DiscordAiPanel {
     answer: string;
     sourcesUsed: string[];
     userTag: string;
+    botAvatarUrl?: string;
   }): EmbedBuilder {
-    const { settings, answer, sourcesUsed, userTag } = params;
+    const { settings, answer, sourcesUsed, userTag, botAvatarUrl } = params;
     const personality = settings.personality;
+    const fallbackAvatar = 'https://ethone.dev/icons/ethone-icon-512.png';
+    const rawAvatar = personality.avatarUrl;
+    const iconURL = (rawAvatar && !rawAvatar.includes('cdn.discordapp.com/embed/avatars'))
+      ? rawAvatar
+      : (botAvatarUrl || fallbackAvatar);
 
     const embed = baseEmbed('primary', {
       footerText: `Demandé par ${userTag} • ETHONE IA`,
     })
       .setAuthor({
         name: personality.name,
-        iconURL: personality.avatarUrl || 'https://cdn.discordapp.com/embed/avatars/0.png',
+        iconURL,
       })
       // La réponse du modèle n'est jamais garantie sous la limite de description d'un
       // embed Discord (4096 caractères) — sans troncature, une réponse trop longue fait

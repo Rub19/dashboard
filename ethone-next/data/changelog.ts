@@ -30478,6 +30478,60 @@ CHANGELOG_BY_LANG.en.unshift(v12716_en);
 CHANGELOG_BY_LANG.es.unshift(v12716_es);
 CHANGELOG_BY_LANG.de.unshift(v12716_de);
 
+const v12717_fr: ChangelogEntry = {
+  version: "v1.27.17",
+  date: "2026-09-21",
+  title: "Assistant IA : calculs arithmétiques, logo du bot et stabilisation CI",
+  items: [
+    "Assistant IA /ask : intégration d'un évaluateur arithmétique sécurisé sans eval() pour résoudre instantanément les calculs ('combien fait 1+1', 'calcule 25 * 4', etc.).",
+    "Assistant IA : réponses intégrées enrichies pour l'identité du bot, l'heure et la date courantes, la courtoisie et la présentation d'ETHONE.",
+    "Identité visuelle Discord : remplacement du logo bleu Discord par défaut par l'avatar réel du bot ou l'icône officielle ETHONE (512px) dans les embeds IA, aide et formulaires.",
+    "Suite de tests & CI : correction et stabilisation des tests de contrôle, événements et présence (31/31 scripts validés avec succès).",
+  ],
+};
+
+const v12717_en: ChangelogEntry = {
+  version: "v1.27.17",
+  date: "2026-09-21",
+  title: "AI Assistant: math calculations, bot logo and CI stabilization",
+  items: [
+    "AI Assistant /ask: integrated safe arithmetic evaluator without eval() to instantly answer math queries ('what is 1+1', 'calculate 25 * 4', etc.).",
+    "AI Assistant: enriched built-in responses for bot identity, current time & date, courtesy greetings, and ETHONE presentation.",
+    "Discord Visual Identity: replaced default blue Discord avatar with the bot's actual avatar or official ETHONE 512px icon in AI, help, and form embeds.",
+    "Test Suite & CI: fixed and stabilized bot control, events, and presence tests (all 31/31 scripts now pass).",
+  ],
+};
+
+const v12717_es: ChangelogEntry = {
+  version: "v1.27.17",
+  date: "2026-09-21",
+  title: "Asistente IA: cálculos matemáticos, logo del bot y estabilización CI",
+  items: [
+    "Asistente IA /ask: evaluador aritmético seguro sin eval() para resolver cálculos al instante ('cuánto es 1+1', 'calcula 25 * 4', etc.).",
+    "Asistente IA: respuestas integradas enriquecidas para identidad del bot, hora y fecha actual, saludos y presentación de ETHONE.",
+    "Identidad visual Discord: sustitución del logo azul predeterminado por el avatar real del bot o el icono oficial ETHONE en embeds de IA, ayuda y formularios.",
+    "Pruebas y CI: corrección y estabilización de pruebas de control, eventos y presencia (31/31 scripts aprobados con éxito).",
+  ],
+};
+
+const v12717_de: ChangelogEntry = {
+  version: "v1.27.17",
+  date: "2026-09-21",
+  title: "KI-Assistent: Rechenoperationen, Bot-Logo und CI-Stabilisierung",
+  items: [
+    "KI-Assistent /ask: Sicherer Arithmetik-Parser ohne eval() zur sofortigen Beantwortung von Rechenfragen ('was ist 1+1', 'berechne 25 * 4', etc.).",
+    "KI-Assistent: Erweiterte eingebaute Antworten für Bot-Identität, Uhrzeit/Datum, Höflichkeit und ETHONE-Präsentation.",
+    "Discord visuelle Identität: Standardmäßiges blaues Discord-Logo durch das echte Bot-Avatar oder offizielle ETHONE-Icon in KI-, Hilfe- und Formular-Embeds ersetzt.",
+    "Testsuite & CI: Korrektur und Stabilisierung der Bot-Control-, Event- und Präsenz-Tests (31/31 Skripte erfolgreich).",
+  ],
+};
+
+CHANGELOG_BY_LANG.fr.unshift(v12717_fr);
+CHANGELOG_BY_LANG.en.unshift(v12717_en);
+CHANGELOG_BY_LANG.es.unshift(v12717_es);
+CHANGELOG_BY_LANG.de.unshift(v12717_de);
+
 export const CHANGELOG = CHANGELOG_BY_LANG.fr;
+
 
 

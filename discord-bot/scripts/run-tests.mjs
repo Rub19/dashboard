@@ -41,7 +41,11 @@ for (const file of files) {
   const res = spawnSync(process.execPath, ['--import', 'tsx', join(root, file)], {
     cwd: root,
     stdio: 'inherit',
-    env: process.env,
+    env: {
+      ...process.env,
+      DISCORD_TOKEN: process.env.DISCORD_TOKEN || 'ci-placeholder-token',
+      CLIENT_ID: process.env.CLIENT_ID || '000000000000000000',
+    },
     timeout: PER_FILE_TIMEOUT_MS,
     killSignal: 'SIGKILL',
   });

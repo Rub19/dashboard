@@ -60,6 +60,7 @@ async function runTests() {
   rotationEngine.executeNextRotation();
   const rotatedState = presenceService.getCurrentState();
   assert(rotatedState.source === 'rotation', 'Rotation sets presence source to rotation');
+  rotationEngine.stopRotation();
 
   // 4. PresenceSchedulerService Tests
   console.log('\n--- 4. Testing PresenceSchedulerService ---');
@@ -157,7 +158,10 @@ async function runTests() {
   const rHist = await fetch(`${baseUrl}/history`).then((r) => r.json() as any);
   assert(rHist.success === true && rHist.data.length > 0, 'GET /api/bot/presence/history returns audit log');
 
-  server.close();
+  await new Promise<void>((resolve) => {
+    (server as any).closeAllConnections?.();
+    server.close(() => resolve());
+  });
 
   console.log('\n====================================================');
   console.log(`🏁 TESTS FINISHED: ${passed} PASSED, ${failed} FAILED`);

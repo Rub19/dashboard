@@ -2,6 +2,7 @@ import { AIMessage, AISettings } from '../types/index.js';
 import { logger } from '../../../utils/logger.js';
 import type { IntentResult } from './intentTypes.js';
 import { detectIntent, pickShortReply } from './intentDetector.js';
+import { MathEvaluator } from './mathEvaluator.js';
 
 export interface GenerateCompletionParams {
   settings: AISettings;
@@ -205,6 +206,17 @@ export class AIProviderService {
     let answer = '';
     const sourcesUsed: string[] = [];
 
+    // 0. Calculs et opérations arithmétiques (ex: "1+1", "combien fait 1+1", "calcule 25*4")
+    const mathResult = MathEvaluator.extractAndEvaluate(userQuery);
+    if (mathResult) {
+      return {
+        text: mathResult.formattedResult || 'Résultat introuvable.',
+        sourcesUsed: [],
+        tokensUsed: 25,
+        model: 'builtin-ethone-math',
+      };
+    }
+
     // 1. Détection de salutations courantes
     if (/^(bonjour|salut|hello|hi|hey|coucou|yo)/i.test(queryLower.trim())) {
       answer = `Bonjour ! Je suis **${personality.name}**, l'assistant du serveur. Comment puis-je vous aider aujourd'hui ? Vous pouvez me poser des questions sur les règles, les rôles, les tickets ou le fonctionnement de la communauté !`;
@@ -212,6 +224,64 @@ export class AIProviderService {
         text: answer,
         sourcesUsed: [],
         tokensUsed: 65,
+        model: 'builtin-ethone-v2',
+      };
+    }
+
+    // 1.1 Détection d'identité / nom du bot
+    if (/(qui (es-tu|t'es|t'a fait|t'a créé)|c'est quoi ton nom|comment tu t'appelles|who are you|what is your name)/i.test(queryLower)) {
+      answer = `Je suis **${personality.name}**, l'assistant officiel d'ETHONE pour ce serveur ! Je peux vous aider avec les règles, les rôles, les tickets, les sondages, les concours ou répondre à vos questions.`;
+      return {
+        text: answer,
+        sourcesUsed: [],
+        tokensUsed: 45,
+        model: 'builtin-ethone-v2',
+      };
+    }
+
+    // 1.2 Détection de l'heure / date
+    if (/(quelle heure|il est quelle heure|quel jour|quelle date|what time)/i.test(queryLower)) {
+      const now = new Date();
+      const timeStr = now.toLocaleTimeString('fr-FR', { timeZone: 'Europe/Paris', hour: '2-digit', minute: '2-digit' });
+      const dateStr = now.toLocaleDateString('fr-FR', { timeZone: 'Europe/Paris', weekday: 'long', day: 'numeric', month: 'long', year: 'numeric' });
+      answer = `Il est actuellement **${timeStr}** (heure de Paris) le **${dateStr}**.`;
+      return {
+        text: answer,
+        sourcesUsed: [],
+        tokensUsed: 35,
+        model: 'builtin-ethone-v2',
+      };
+    }
+
+    // 1.3 Détection de bienveillance / comment ça va
+    if (/^(comment (ça va|ca va|tu vas|allez-vous)|ça va|ca va|how are you)\b/i.test(queryLower.trim())) {
+      answer = `Tout va pour le mieux, merci ! Prêt à vous assister sur le serveur. Et vous, comment se passe votre journée ?`;
+      return {
+        text: answer,
+        sourcesUsed: [],
+        tokensUsed: 35,
+        model: 'builtin-ethone-v2',
+      };
+    }
+
+    // 1.4 Détection de remerciements
+    if (/^(merci|thanks|thank you|thx|gracias|danke)\b/i.test(queryLower.trim())) {
+      answer = `Avec grand plaisir ! N'hésitez pas si vous avez d'autres questions. 😊`;
+      return {
+        text: answer,
+        sourcesUsed: [],
+        tokensUsed: 25,
+        model: 'builtin-ethone-v2',
+      };
+    }
+
+    // 1.5 Présentation d'ETHONE
+    if (/(c'est quoi ethone|qu'est[- ]ce qu'?ethone|présente[- ]moi ethone|ethone c'est quoi)/i.test(queryLower)) {
+      answer = `**ETHONE** est un écosystème complet pour Discord combinant un bot intelligent et un dashboard web moderne (https://ethone.dev). Il propose la modération avancée, les tickets de support, des concours, de l'économie, des formulaires, des sondages et un assistant IA.`;
+      return {
+        text: answer,
+        sourcesUsed: [],
+        tokensUsed: 60,
         model: 'builtin-ethone-v2',
       };
     }

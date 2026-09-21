@@ -80,6 +80,7 @@ export class ActivityRotationEngine {
     this.timer = setInterval(() => {
       this.executeNextRotation();
     }, intervalMs);
+    this.timer.unref();
   }
 
   private pickNextItem(): RotationActivityItem | null {

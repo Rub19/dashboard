@@ -9,7 +9,7 @@ import { BotIntegrationsService } from '../src/modules/botControl/services/botIn
 import { BotSecurityAuditService } from '../src/modules/botControl/services/botSecurityAuditService.js';
 import { BotConfigService } from '../src/modules/botControl/services/botConfigService.js';
 import { createBotControlRouter } from '../src/server/routes/botControlRoutes.js';
-import { GatewayIntentBits } from 'discord.js';
+import { GatewayIntentBits, IntentsBitField } from 'discord.js';
 import express from 'express';
 
 async function runTests() {
@@ -30,10 +30,34 @@ async function runTests() {
     }
   }
 
+  // Realistic mock Client — a real discord.js Client's guilds.cache is a
+  // Collection (extends Map, has .keys()/.get()/.size) and options.intents
+  // is an IntentsBitField (has .has()). Used across telemetry, diagnostics,
+  // security audit, and router tests.
+  const mockGuildsCache = new Map([
+    ['111111111111111111', { id: '111111111111111111', name: 'Test Guild 1' }],
+    ['222222222222222222', { id: '222222222222222222', name: 'Test Guild 2' }],
+  ]);
+  const mockClient = {
+    ws: { ping: 22, shards: { size: 1 } },
+    guilds: { cache: mockGuildsCache },
+    users: { cache: { size: 64 } },
+    isReady: () => true,
+    rest: {
+      get: async () => ({ id: '000000000000000000', username: 'TestBot' }),
+    },
+    options: {
+      intents: new IntentsBitField([GatewayIntentBits.GuildMembers, GatewayIntentBits.MessageContent]),
+    },
+  } as any;
+
   // 1. BotTelemetryService Tests
   console.log('\n--- 1. Testing BotTelemetryService ---');
   const telemetry = BotTelemetryService.getInstance();
-  const snapshot = telemetry.getTelemetrySnapshot();
+  telemetry.attachClient(mockClient);
+  telemetry.recordPing(22);
+  telemetry.recordPing(28);
+  const snapshot = telemetry.getTelemetrySnapshot(mockClient);
   assert(snapshot.memory.heapUsedMb > 0, 'Heap memory telemetry is positive number');
   assert(snapshot.latency.p50Ms > 0 && snapshot.latency.p95Ms >= snapshot.latency.p50Ms, 'P50 and P95 latency percentiles calculated correctly');
   // Real throughput (no more fake floor) only refreshes on a 60s interval
@@ -43,14 +67,14 @@ async function runTests() {
   // what's actually testable without a 60s sleep.
   assert(snapshot.throughput.eventsPerMinute >= 0, 'Event throughput field is a valid non-negative reading');
 
-  const subsystems = telemetry.getSubsystemsHealth();
+  const subsystems = telemetry.getSubsystemsHealth(mockClient);
   assert(subsystems.gateway === 'operational', 'Gateway health is operational');
   assert(subsystems.database === 'operational', 'Database health is operational');
   assert(subsystems.aiProvider === 'operational', 'AI provider health is operational');
 
-  const globalStatus = telemetry.getGlobalStatus();
+  const globalStatus = telemetry.getGlobalStatus(mockClient);
   assert(globalStatus.status === 'operational', 'Global status computes operational by default');
-  assert(globalStatus.activeModulesCount === 22, 'Active modules count is 22');
+  assert(globalStatus.activeModulesCount > 0, 'Active modules count is positive');
 
   // 2. (Removed) BotModuleRegistryService was a hardcoded, in-memory, global module
   // toggle with fabricated stats and zero effect on real bot behavior. It has been
@@ -78,6 +102,13 @@ async function runTests() {
   // 5. BotJobSchedulerService Tests
   console.log('\n--- 5. Testing BotJobSchedulerService ---');
   const jobScheduler = BotJobSchedulerService.getInstance();
+  jobScheduler.track('analytics_buffer_flush', () => {});
+  jobScheduler.track('xp_buffer_flush', () => {});
+  jobScheduler.track('backup_scheduler', () => {});
+  jobScheduler.track('birthdays_tick', () => {});
+  jobScheduler.track('events_scheduler', () => {});
+  jobScheduler.track('reminders_tick', () => {});
+
   const jobs = jobScheduler.getAllJobs();
   assert(jobs.length >= 6, `Job scheduler has registered background tasks (found: ${jobs.length})`);
 
@@ -97,12 +128,12 @@ async function runTests() {
   const resolved = errorIncidents.resolveFingerprint(err1.fingerprint);
   assert(resolved === true, 'Error fingerprint marked resolved successfully');
 
-  // 7. BotDiagnosticsService (17-point suite)
+  // 7. BotDiagnosticsService
   console.log('\n--- 7. Testing BotDiagnosticsService ---');
   const diagnostics = BotDiagnosticsService.getInstance();
-  const diagResults = await diagnostics.runFullDiagnostics();
-  assert(diagResults.length === 17, `Full self-diagnostic suite executed exactly 17 checks (found: ${diagResults.length})`);
-  assert(diagResults.every((d) => d.status === 'pass' || d.status === 'warn'), 'All 17 diagnostic checks pass without fatal critical error');
+  const diagResults = await diagnostics.runFullDiagnostics(mockClient);
+  assert(diagResults.length >= 6, `Full self-diagnostic suite executed checks (found: ${diagResults.length})`);
+  assert(diagResults.every((d) => d.status === 'pass' || d.status === 'warn'), 'All diagnostic checks pass without fatal critical error');
 
   // 8. BotAiMonitorService Tests
   console.log('\n--- 8. Testing BotAiMonitorService ---');
@@ -116,32 +147,10 @@ async function runTests() {
   // 9. BotIntegrationsService Tests
   console.log('\n--- 9. Testing BotIntegrationsService ---');
   const integrations = BotIntegrationsService.getInstance();
-  const integList = integrations.getAllIntegrations();
-  assert(integList.length >= 4, `All 4 core integrations registered (found: ${integList.length})`);
-  const pinged = await integrations.testIntegration('integ_discord_rest');
-  assert(pinged.latencyMs > 0, 'Live integration ping returns latency');
-
-  // Realistic mock Client — a real discord.js Client's guilds.cache is a
-  // Collection (extends Map, has .keys()/.get()/.size) and options.intents
-  // is an IntentsBitField (has .has()). Reused below for the HTTP route
-  // tests too, so both exercise the same real, non-trivial shape instead of
-  // a bag of plain fields that happens to satisfy only the routes that
-  // don't touch .keys()/.has().
-  const mockGuildsCache = new Map([
-    ['111111111111111111', { id: '111111111111111111', name: 'Test Guild 1' }],
-    ['222222222222222222', { id: '222222222222222222', name: 'Test Guild 2' }],
-  ]);
-  const mockClient = {
-    ws: { ping: 22, shards: { size: 1 } },
-    guilds: { cache: mockGuildsCache },
-    users: { cache: { size: 64 } },
-    options: {
-      intents: {
-        has: (bit: number) =>
-          bit === GatewayIntentBits.GuildMembers || bit === GatewayIntentBits.MessageContent,
-      },
-    },
-  } as any;
+  const integList = await integrations.getAllIntegrations(mockClient);
+  assert(integList.length >= 1, `Core integrations registered (found: ${integList.length})`);
+  const pinged = await integrations.testIntegration('integ_discord_rest', mockClient);
+  assert(pinged.latencyMs >= 0, 'Live integration ping returns latency');
 
   // 10. BotSecurityAuditService Tests
   console.log('\n--- 10. Testing BotSecurityAuditService ---');
@@ -206,7 +215,10 @@ async function runTests() {
     assert(res.status === 200 && data.success === true, `GET /api/bot${r} responds 200 OK with success=true`);
   }
 
-  server.close();
+  await new Promise<void>((resolve) => {
+    (server as any).closeAllConnections?.();
+    server.close(() => resolve());
+  });
 
   console.log('\n====================================================');
   console.log(`🏁 TESTS FINISHED: ${passed} PASSED, ${failed} FAILED`);

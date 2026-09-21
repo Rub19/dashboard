@@ -41,7 +41,7 @@ export class BotIdentityService {
       username: user?.username || 'Ethone Bot',
       discriminator: user?.discriminator || '9861',
       tag: user?.tag || 'Ethone Bot#9861',
-      avatarUrl: user?.displayAvatarURL({ size: 512 }) || 'https://cdn.discordapp.com/embed/avatars/0.png',
+      avatarUrl: user?.displayAvatarURL({ size: 512 }) || 'https://ethone.dev/icons/ethone-icon-512.png',
       bannerUrl: null, // Discord Bot API ne permet pas de modifier la bannière sans Nitro application
       verified: true,
       bot: true,

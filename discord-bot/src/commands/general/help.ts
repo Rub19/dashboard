@@ -75,7 +75,7 @@ export const helpCommand: Command = {
         const card = container(cat?.color ?? BRAND_COLORS.info, [
           sectionWithThumbnail(
             [`## 📖 /${cmd.name}`, cmd.description || 'Aucune description fournie.', `-# ${cat ? `${cat.emoji} ${cat.name}` : cmd.category || 'Général'}`],
-            ctx.client.user?.displayAvatarURL() || 'https://cdn.discordapp.com/embed/avatars/0.png',
+            ctx.client.user?.displayAvatarURL() || 'https://ethone.dev/icons/ethone-icon-512.png',
             cmd.name,
           ),
           separator(),

@@ -153,7 +153,7 @@ export class HelpPanel {
     botAvatarUrl?: string;
     commands?: Command[];
   }): HelpView {
-    const { categoryKey = 'home', guildConfig, requesterTag, botAvatarUrl = 'https://cdn.discordapp.com/embed/avatars/0.png', commands = [] } = params;
+    const { categoryKey = 'home', guildConfig, requesterTag, botAvatarUrl = 'https://ethone.dev/icons/ethone-icon-512.png', commands = [] } = params;
     const prefix = guildConfig.prefix || '!';
     const isHome = categoryKey === 'home';
     const parts: Parameters<typeof container>[1] = [];

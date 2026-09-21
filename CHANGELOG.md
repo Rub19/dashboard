@@ -2,6 +2,15 @@
 
 Toutes les modifications notables de ce projet seront documentées dans ce fichier.
 
+## v1.27.17 — 2026-09-21
+
+**Assistant IA : calculs arithmétiques, logo du bot et stabilisation CI**
+
+- Assistant IA `/ask` : intégration d'un évaluateur arithmétique sécurisé sans `eval()` (`MathEvaluator`) pour résoudre instantanément les opérations mathématiques (`1+1`, `combien fait 1+1`, `calcule 25 * 4`, etc.) au lieu du message de doute générique.
+- Assistant IA : enrichissement des réponses intégrées pour les questions sur l'identité du bot (`qui es-tu`), la date et l'heure courantes, la politesse et la présentation générale d'ETHONE.
+- Identité visuelle Discord : remplacement systématique du logo bleu Discord par défaut (`cdn.discordapp.com/embed/avatars/0.png`) par l'avatar réel du bot ou l'icône officielle ETHONE (`https://ethone.dev/icons/ethone-icon-512.png`) dans les embeds d'IA, d'aide et de formulaires.
+- Tests & CI : correction des tests de contrôle du bot (`test_bot_control_v2.ts`), d'événements (`test_events_v2.ts`) et de présence (`test_presence_v2.ts`), avec validation complète des 31/31 scripts de test.
+
 ## v1.27.16 — 2026-09-21
 
 **Gestionnaire complet de Concours / Giveaways**

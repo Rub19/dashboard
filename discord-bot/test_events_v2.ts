@@ -9,7 +9,7 @@ import assert from 'assert';
 async function runTests() {
   console.log('🧪 Starting Events & Calendar 2.0 Test Suite...\n');
 
-  const testGuildId = 'test-guild-777';
+  const testGuildId = `test-guild-${Date.now()}-${Math.random().toString(36).slice(2, 6)}`;
 
   // 1. Un serveur neuf n'a aucun événement (plus d'événements de démonstration injectés)
   const initialEvents = eventRepository.getEventsByGuild(testGuildId);

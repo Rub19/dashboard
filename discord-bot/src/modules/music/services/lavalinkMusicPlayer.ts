@@ -145,6 +145,7 @@ export class LavalinkMusicPlayer implements IGuildMusicPlayer {
           logger.warn(
             `[Lavalink] Fin prématurée de "${current.title}" à ${Math.round(playedSec)}s sur ${current.duration}s (${current.url}) — essai d'une autre source (guild ${this.guildId}).`
           );
+          lavalinkManager.markPreviewUrl(current.url);
           void this.recoverFromLoadFailure();
           return;
         }

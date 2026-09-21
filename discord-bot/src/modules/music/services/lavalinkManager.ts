@@ -220,7 +220,7 @@ class LavalinkManager {
 
       const scored = res.data
         .map((d) => this.toTrack(d, requestedBy))
-        .filter((c) => !exclude.has(c.url) && (!target || c.duration === 0 || c.duration >= target * 0.7))
+        .filter((c) => !exclude.has(c.url) && !this.previewUrls.has(c.url) && (!target || c.duration === 0 || c.duration >= target * 0.7))
         .map((c) => {
           const text = norm(`${c.title} ${c.artist}`);
           const titleOk = titleTokens.length === 0 || titleTokens.every((w) => text.includes(w));
@@ -264,6 +264,15 @@ class LavalinkManager {
   }
 
   private youtubeBlockedUntil = 0;
+
+  /** URLs SoundCloud qui se sont arrêtées trop tôt (extraits ~30 s) : plus jamais proposées. */
+  private previewUrls = new Set<string>();
+
+  public markPreviewUrl(url: string): void {
+    if (!url) return;
+    if (this.previewUrls.size > 500) this.previewUrls.clear();
+    this.previewUrls.add(url);
+  }
 
   private get youtubeBlocked(): boolean {
     return Date.now() < this.youtubeBlockedUntil;

@@ -104,69 +104,12 @@ export default function VoiceRoomDetailClient({ roomId }: { roomId: string }) {
           return;
         }
       } catch {
-        // Fallback
+        // Erreur réseau ou bot hors ligne
       }
     }
 
-    // Demo fallback state
-    const now = Date.now();
-    setRoom({
-      id: roomId,
-      guildId,
-      hubId: "personal_voice_2",
-      hubName: "Personal Voice Rooms",
-      name: "🎮 Salon de Test",
-      ownerId: "usr_alex",
-      ownerTag: "Alex#0001",
-      userLimit: 5,
-      bitrate: 96000,
-      isLocked: false,
-      isHidden: false,
-      allowedUserIds: ["usr_lucas", "usr_sarah"],
-      blockedUserIds: ["usr_troll"],
-      whitelist: ["usr_lucas", "usr_sarah"],
-      banlist: ["usr_troll"],
-      createdAt: new Date(now - 1000 * 60 * 45).toISOString(),
-      status: "ACTIVE",
-      currentUsers: [
-        {
-          id: "usr_alex",
-          tag: "Alex#0001",
-          joinedAt: new Date(now - 1000 * 60 * 45).toISOString(),
-          isMuted: false,
-          isDeafened: false,
-          isStreaming: true,
-        },
-        {
-          id: "usr_lucas",
-          tag: "Lucas#1234",
-          joinedAt: new Date(now - 1000 * 60 * 25).toISOString(),
-          isMuted: false,
-          isDeafened: false,
-          isStreaming: false,
-        },
-      ],
-      peakUsers: 3,
-      totalSecondsActive: 2700,
-    });
-
-    setTimeline([
-      {
-        id: "tl_1",
-        type: "ROOM_CREATED",
-        timestamp: new Date(now - 1000 * 60 * 45).toISOString(),
-        actorId: "usr_alex",
-        actorTag: "Alex#0001",
-        details: "Création via Panneau de Création",
-      },
-      {
-        id: "tl_2",
-        type: "USER_JOINED",
-        timestamp: new Date(now - 1000 * 60 * 25).toISOString(),
-        actorId: "usr_lucas",
-        actorTag: "Lucas#1234",
-      },
-    ]);
+    setRoom(null);
+    setTimeline([]);
   }, [guildId, roomId]);
 
   useEffect(() => {

@@ -19,7 +19,7 @@ const API_BASE = process.env.NEXT_PUBLIC_DISCORD_BOT_API || "";
 export default function InviteUserDetailClient() {
   const params = useParams();
   const searchParams = useSearchParams();
-  const userId = (params?.userId as string) || "usr_alex";
+  const userId = (params?.userId as string) || "";
   const { profile: oauthProfile } = useDiscordOAuth();
   const guildId = useResolvedGuildId(searchParams.get("guildId"), oauthProfile?.guilds);
 
@@ -30,9 +30,10 @@ export default function InviteUserDetailClient() {
 
   const fetchData = async () => {
     setLoading(true);
-    if (!API_BASE) {
+    if (!userId || !API_BASE) {
       setProfile(null);
-      setReferrals([]);      setLoading(false);
+      setReferrals([]);
+      setLoading(false);
       return;
     }
     try {

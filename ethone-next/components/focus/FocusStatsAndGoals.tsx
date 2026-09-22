@@ -22,6 +22,8 @@ interface FocusStatsAndGoalsProps {
 }
 
 export default function FocusStatsAndGoals({
+  completedPomodoros,
+  totalFocusSeconds,
   completedBreaks = 0,
 }: FocusStatsAndGoalsProps) {
   const { state } = useFocus();
@@ -69,8 +71,9 @@ export default function FocusStatsAndGoals({
       ? Math.max(0, state.total - state.remaining)
       : 0;
 
-  const realTodaySeconds = todayStats.totalFocusSeconds + activeElapsed;
-  const realTodayPomodoros = todayStats.completedPomodoros;
+  const baseTodaySeconds = Math.max(totalFocusSeconds ?? 0, todayStats.totalFocusSeconds);
+  const realTodaySeconds = baseTodaySeconds + activeElapsed;
+  const realTodayPomodoros = Math.max(completedPomodoros ?? 0, todayStats.completedPomodoros);
   const realBreaks = state.completedBreaks ?? completedBreaks;
 
   const goalProgress = Math.min(100, Math.round((realTodaySeconds / (dailyGoalMinutes * 60)) * 100));

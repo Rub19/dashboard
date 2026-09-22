@@ -56,6 +56,8 @@ const ROUTE_LABELS: Record<string, string> = {
   "/bills": "Factures",
   "/activity": "Activité",
   "/security": "Sécurité",
+  "/discord": "Discord",
+  "/marketplace": "Marketplace",
 };
 
 function useBreadcrumb() {
@@ -137,13 +139,14 @@ function ThemeToggle() {
   );
 }
 
-function FocusLivePill() {
+function FocusLivePill({ mobile }: { mobile?: boolean } = {}) {
   const focus = useFocus();
   const [popoverOpen, setPopoverOpen] = useState(false);
   const { phase, remaining, total, paused, activePreset, goal } = focus.state;
   const isActive = phase !== "idle";
 
   if (!isActive) {
+    if (mobile) return null;
     return (
       <Tooltip label="Démarrer Focus (F2)" position="bottom">
         <button
@@ -353,6 +356,7 @@ function TopBar() {
         </div>
 
         <div className="flex items-center gap-1.5">
+          <FocusLivePill mobile />
           <CommandBarTrigger />
           <NotificationCenter />
           <UserProfileDropdown dataTestId="user-profile-trigger-mobile" />

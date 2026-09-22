@@ -32349,10 +32349,58 @@ const v12849_de: ChangelogEntry = {
   ],
 };
 
-CHANGELOG_BY_LANG.fr.unshift(v12849_fr, v12848_fr, v12847_fr, v12846_fr, v12845_fr, v12844_fr, v12843_fr, v12842_fr, v12841_fr, v12840_fr, v12839_fr, v12838_fr, v12837_fr, v12836_fr, v12835_fr, v12834_fr, v12833_fr);
-CHANGELOG_BY_LANG.en.unshift(v12849_en, v12848_en, v12847_en, v12846_en, v12845_en, v12844_en, v12843_en, v12842_en, v12841_en, v12840_en, v12839_en, v12838_en, v12837_en, v12836_en, v12835_en, v12834_en, v12833_en);
-CHANGELOG_BY_LANG.es.unshift(v12849_es, v12848_es, v12847_es, v12846_es, v12845_es, v12844_es, v12843_es, v12842_es, v12841_es, v12840_es, v12839_es, v12838_es, v12837_es, v12836_es, v12835_es, v12834_es, v12833_es);
-CHANGELOG_BY_LANG.de.unshift(v12849_de, v12848_de, v12847_de, v12846_de, v12845_de, v12844_de, v12843_de, v12842_de, v12841_de, v12840_de, v12839_de, v12838_de, v12837_de, v12836_de, v12835_de, v12834_de, v12833_de);
+const v12850_fr: ChangelogEntry = {
+  version: "v1.28.30",
+  date: "2026-09-22",
+  title: "Parité mobile TopBar, correction du modal Focus & synchronisation globale",
+  items: [
+    "Parité TopBar mobile & desktop : intégration réactive de FocusLivePill dans la TopBar mobile avec décompte en temps réel et popover de contrôle complet.",
+    "Correction du modal de complétion Focus : capture précise de la durée de concentration réelle via l'événement v8:focus-session-completed (au lieu de la durée de pause écrasée).",
+    "Harmonisation des statistiques Focus : prise en compte conjointe et cohérente des props et de l'historique calculé dans FocusStatsAndGoals.",
+    "Harmonisation des versions du workspace : synchronisation du package.json racine sur la version courante v1.28.30.",
+  ],
+};
+
+const v12850_en: ChangelogEntry = {
+  version: "v1.28.30",
+  date: "2026-09-22",
+  title: "Mobile TopBar Parity, Focus Modal Fix & Global Synchronization",
+  items: [
+    "Mobile & Desktop Parity: reactive integration of FocusLivePill in the mobile TopBar with live countdown and full control popover.",
+    "Focus Completion Modal Fix: accurate capture of the actual focus duration via the v8:focus-session-completed event (instead of the overwritten break duration).",
+    "Focus Statistics Harmonization: seamless combination of incoming props and calculated history in FocusStatsAndGoals.",
+    "Workspace Version Harmonization: synchronized root package.json with current version v1.28.30.",
+  ],
+};
+
+const v12850_es: ChangelogEntry = {
+  version: "v1.28.30",
+  date: "2026-09-22",
+  title: "Paridad móvil TopBar, corrección del modal Focus y sincronización global",
+  items: [
+    "Paridad móvil y de escritorio: integración reactiva de FocusLivePill en la TopBar móvil con cuenta regresiva y popover de control completo.",
+    "Corrección del modal de finalización de Focus: captura precisa de la duración real de concentración mediante el evento v8:focus-session-completed.",
+    "Armonización de estadísticas de Focus: combinación coherente de props y del historial en FocusStatsAndGoals.",
+    "Armonización de versiones del espacio de trabajo: sincronización de package.json raíz con la versión actual v1.28.30.",
+  ],
+};
+
+const v12850_de: ChangelogEntry = {
+  version: "v1.28.30",
+  date: "2026-09-22",
+  title: "Mobile TopBar-Parität, Focus-Modal-Korrektur & globale Synchronisation",
+  items: [
+    "Mobil- & Desktop-Parität: Reaktive Integration von FocusLivePill in die mobile TopBar mit Live-Countdown und vollständigem Steuerungs-Popover.",
+    "Korrektur des Focus-Abschluss-Modals: Präzise Erfassung der tatsächlichen Fokusdauer über das v8:focus-session-completed-Event.",
+    "Harmonisierung der Focus-Statistiken: Konsistente Verknüpfung von Props und berechnetem Verlauf in FocusStatsAndGoals.",
+    "Workspace-Versionsharmonisierung: Synchronisation der Stamm-package.json auf die aktuelle Version v1.28.30.",
+  ],
+};
+
+CHANGELOG_BY_LANG.fr.unshift(v12850_fr, v12849_fr, v12848_fr, v12847_fr, v12846_fr, v12845_fr, v12844_fr, v12843_fr, v12842_fr, v12841_fr, v12840_fr, v12839_fr, v12838_fr, v12837_fr, v12836_fr, v12835_fr, v12834_fr, v12833_fr);
+CHANGELOG_BY_LANG.en.unshift(v12850_en, v12849_en, v12848_en, v12847_en, v12846_en, v12845_en, v12844_en, v12843_en, v12842_en, v12841_en, v12840_en, v12839_en, v12838_en, v12837_en, v12836_en, v12835_en, v12834_en, v12833_en);
+CHANGELOG_BY_LANG.es.unshift(v12850_es, v12849_es, v12848_es, v12847_es, v12846_es, v12845_es, v12844_es, v12843_es, v12842_es, v12841_es, v12840_es, v12839_es, v12838_es, v12837_es, v12836_es, v12835_es, v12834_es, v12833_es);
+CHANGELOG_BY_LANG.de.unshift(v12850_de, v12849_de, v12848_de, v12847_de, v12846_de, v12845_de, v12844_de, v12843_de, v12842_de, v12841_de, v12840_de, v12839_de, v12838_de, v12837_de, v12836_de, v12835_de, v12834_de, v12833_de);
 
 export const CHANGELOG = CHANGELOG_BY_LANG.fr;
 

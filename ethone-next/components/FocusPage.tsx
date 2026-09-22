@@ -48,19 +48,22 @@ export default function FocusPage() {
   const [activeTab, setActiveTab] = useState<Tab>("focus");
   const prevPhase = useRef(state.phase);
 
-  // Phase change effects
+  // Phase change effects and completion listener
   useEffect(() => {
-    if (
-      prevPhase.current === "focus" &&
-      (state.phase === "shortBreak" || state.phase === "longBreak")
-    ) {
+    const handleCompleted = (e: Event) => {
+      const custom = e as CustomEvent<{ duration: number; goal?: string; preset?: string }>;
+      const d = custom.detail?.duration || state.total;
+      const g = custom.detail?.goal ?? state.goal;
+      const p = custom.detail?.preset || state.activePreset || "Focus";
       success("Cycle terminé ! Prenez une pause bien méritée.");
-      void triggerPomodoroCompletedNotification(state.activePreset || "Focus");
-      setCompletedSession({ duration: state.total, goal: state.goal });
+      void triggerPomodoroCompletedNotification(p);
+      setCompletedSession({ duration: d, goal: g });
       setShowCompletion(true);
-    }
-    prevPhase.current = state.phase;
-  }, [state.phase, state.activePreset, state.total, state.goal, success]);
+    };
+
+    window.addEventListener("v8:focus-session-completed", handleCompleted);
+    return () => window.removeEventListener("v8:focus-session-completed", handleCompleted);
+  }, [state.total, state.goal, state.activePreset, success]);
 
   // Sync goal to focus engine when goalInput changes
   useEffect(() => {

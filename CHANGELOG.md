@@ -2,6 +2,16 @@
 
 Toutes les modifications notables de ce projet seront documentées dans ce fichier.
 
+## v1.28.30 — 2026-09-22
+
+### Parité mobile TopBar, correction du modal Focus & synchronisation globale
+- **Parité mobile TopBar (`components/TopBar.tsx`)** : Intégration réactive de `FocusLivePill` dans la TopBar mobile (`FocusLivePill mobile`), affichant le compte à rebours en temps réel et le mini-contrôleur en popover dès qu'une session est active sans encombrer la barre en état inactif.
+- **Correction du modal de complétion Focus (`components/FocusPage.tsx`)** : Remplacement de la lecture tardive de `state.total` par l'écoute de l'événement `v8:focus-session-completed` pour capturer la durée exacte de concentration réalisée (au lieu d'afficher la durée de pause écrasée).
+- **Harmonisation des statistiques Focus (`components/focus/FocusStatsAndGoals.tsx`)** : Prise en charge conjointe et cohérente des props et des métriques calculées en direct depuis `ethone-focus-history`.
+- **Harmonisation globale des versions** : Synchronisation du `package.json` racine du workspace avec `ethone-next/package.json` sur la version `v1.28.30`.
+
+---
+
 ## v1.28.29 — 2026-09-22
 
 ### Focus Live Pill dans la TopBar, Préréglages d'ambiance 1-clic & Export d'historique

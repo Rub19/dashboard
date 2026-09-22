@@ -32305,10 +32305,54 @@ const v12848_de: ChangelogEntry = {
   ],
 };
 
-CHANGELOG_BY_LANG.fr.unshift(v12848_fr, v12847_fr, v12846_fr, v12845_fr, v12844_fr, v12843_fr, v12842_fr, v12841_fr, v12840_fr, v12839_fr, v12838_fr, v12837_fr, v12836_fr, v12835_fr, v12834_fr, v12833_fr);
-CHANGELOG_BY_LANG.en.unshift(v12848_en, v12847_en, v12846_en, v12845_en, v12844_en, v12843_en, v12842_en, v12841_en, v12840_en, v12839_en, v12838_en, v12837_en, v12836_en, v12835_en, v12834_en, v12833_en);
-CHANGELOG_BY_LANG.es.unshift(v12848_es, v12847_es, v12846_es, v12845_es, v12844_es, v12843_es, v12842_es, v12841_es, v12840_es, v12839_es, v12838_es, v12837_es, v12836_es, v12835_es, v12834_es, v12833_es);
-CHANGELOG_BY_LANG.de.unshift(v12848_de, v12847_de, v12846_de, v12845_de, v12844_de, v12843_de, v12842_de, v12841_de, v12840_de, v12839_de, v12838_de, v12837_de, v12836_de, v12835_de, v12834_de, v12833_de);
+const v12849_fr: ChangelogEntry = {
+  version: "v1.28.29",
+  date: "2026-09-22",
+  title: "Focus Live Pill dans la TopBar, Préréglages d'ambiance 1-clic & Export d'historique",
+  items: [
+    "Barre supérieure : nouveau mini-contrôleur dynamique FocusLivePill affichant le décompte en temps réel (ex. 24:15) avec pastille animée pulsante et popover de contrôle rapide (pause/reprise, +5m, passer, arrêt, lien plein écran).",
+    "Ambiances & Soundscapes : ajout de préréglages audio 1-clic combinant plusieurs pistes immersives (Café Lo-Fi, Nuit d'orage, Forêt Zen, Cosmos) et bouton 'Couper tout'.",
+    "Historique Focus : fonctionnalités d'exportation directe des sessions au format CSV et JSON avec filtres temporels et réactivité instantanée.",
+  ],
+};
+
+const v12849_en: ChangelogEntry = {
+  version: "v1.28.29",
+  date: "2026-09-22",
+  title: "TopBar Focus Live Pill, 1-Click Soundscape Presets & History Export",
+  items: [
+    "Top Bar: brand new dynamic FocusLivePill mini-controller showing live countdown (e.g. 24:15) with pulsing animated dot and quick control popover (pause/resume, +5m, skip, stop, fullscreen link).",
+    "Ambience & Soundscapes: added 1-click audio presets combining immersive layers (Lo-Fi Cafe, Stormy Night, Forest Zen, Cosmos) and a 'Mute All' button.",
+    "Focus History: direct export features to CSV and JSON formats with time filtering and real-time reactive updates.",
+  ],
+};
+
+const v12849_es: ChangelogEntry = {
+  version: "v1.28.29",
+  date: "2026-09-22",
+  title: "Focus Live Pill en TopBar, Ajustes de ambiente 1-clic y Exportación de historial",
+  items: [
+    "Barra superior: nuevo mini-controlador dinámico FocusLivePill con cuenta regresiva en vivo (ej. 24:15), punto animado y popover de control rápido (pausa/reanudar, +5m, saltar, detener, enlace a pantalla completa).",
+    "Ambiente y paisajes sonoros: nuevos ajustes predefinidos 1-clic que combinan pistas inmersivas (Café Lo-Fi, Noche de tormenta, Bosque Zen, Cosmos) y botón 'Silenciar todo'.",
+    "Historial Focus: funciones de exportación directa a formatos CSV y JSON con filtros de fecha y reactividad en tiempo real.",
+  ],
+};
+
+const v12849_de: ChangelogEntry = {
+  version: "v1.28.29",
+  date: "2026-09-22",
+  title: "TopBar Focus Live Pill, 1-Klick-Soundscape-Presets & Verlaufs-Export",
+  items: [
+    "Obere Leiste: Brandneuer dynamischer FocusLivePill Mini-Controller mit Live-Countdown (z.B. 24:15), pulsierendem Punkt und Schnellsteuerungs-Popover (Pause/Fortsetzen, +5m, Überspringen, Stopp, Vollbild-Link).",
+    "Ambiente & Soundscapes: 1-Klick-Audio-Presets mit immersiven Klangkombinationen (Lo-Fi Café, Gewitternacht, Zen-Wald, Kosmos) und 'Alles stummschalten'-Button.",
+    "Focus-Verlauf: Direkte Exportfunktionen in die Formate CSV und JSON mit Zeitfiltern und reaktiver Echtzeit-Aktualisierung.",
+  ],
+};
+
+CHANGELOG_BY_LANG.fr.unshift(v12849_fr, v12848_fr, v12847_fr, v12846_fr, v12845_fr, v12844_fr, v12843_fr, v12842_fr, v12841_fr, v12840_fr, v12839_fr, v12838_fr, v12837_fr, v12836_fr, v12835_fr, v12834_fr, v12833_fr);
+CHANGELOG_BY_LANG.en.unshift(v12849_en, v12848_en, v12847_en, v12846_en, v12845_en, v12844_en, v12843_en, v12842_en, v12841_en, v12840_en, v12839_en, v12838_en, v12837_en, v12836_en, v12835_en, v12834_en, v12833_en);
+CHANGELOG_BY_LANG.es.unshift(v12849_es, v12848_es, v12847_es, v12846_es, v12845_es, v12844_es, v12843_es, v12842_es, v12841_es, v12840_es, v12839_es, v12838_es, v12837_es, v12836_es, v12835_es, v12834_es, v12833_es);
+CHANGELOG_BY_LANG.de.unshift(v12849_de, v12848_de, v12847_de, v12846_de, v12845_de, v12844_de, v12843_de, v12842_de, v12841_de, v12840_de, v12839_de, v12838_de, v12837_de, v12836_de, v12835_de, v12834_de, v12833_de);
 
 export const CHANGELOG = CHANGELOG_BY_LANG.fr;
 

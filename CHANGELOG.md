@@ -2,6 +2,15 @@
 
 Toutes les modifications notables de ce projet seront documentées dans ce fichier.
 
+## v1.28.29 — 2026-09-22
+
+### Focus Live Pill dans la TopBar, Préréglages d'ambiance 1-clic & Export d'historique
+- **Barre supérieure (`components/TopBar.tsx`)** : Nouveau mini-contrôleur dynamique `FocusLivePill` affichant le décompte en temps réel (ex. `24:15`) avec pastille animée pulsante et popover de contrôle rapide (pause/reprise, `+5m`, passer la pause, arrêt, lien plein écran vers `/focus`).
+- **Ambiances & Soundscapes (`components/focus/FocusSoundscapeMixer.tsx`)** : Ajout de préréglages audio 1-clic combinant harmonieusement plusieurs pistes immersives (*Café Lo-Fi*, *Nuit d'orage*, *Forêt Zen*, *Cosmos*) et bouton "Couper tout" pour éteindre toutes les couches en un clic.
+- **Historique Focus (`components/focus/FocusHistoryView.tsx`)** : Nouvelles fonctionnalités d'exportation directe de l'historique filtré aux formats **CSV** et **JSON**, avec rafraîchissement réactif en temps réel lors de l'achèvement d'une session.
+
+---
+
 ## v1.28.28 — 2026-09-22
 
 ### Correction des statistiques Focus et objectif quotidien dynamique

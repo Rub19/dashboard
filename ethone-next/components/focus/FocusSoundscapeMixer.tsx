@@ -5,6 +5,40 @@ import { Icon } from "@/lib/icons";
 import { useSound, type SoundAmbient } from "@/lib/sound";
 import { cn } from "@/lib/utils";
 
+type SoundscapePreset = {
+  id: string;
+  label: string;
+  icon: string;
+  layers: Partial<Record<SoundAmbient, number>>;
+};
+
+const PRESETS: SoundscapePreset[] = [
+  {
+    id: "cafe-lofi",
+    label: "Café Lo-Fi",
+    icon: "coffee",
+    layers: { cafe: 60, rain: 40 },
+  },
+  {
+    id: "stormy-night",
+    label: "Nuit d'orage",
+    icon: "cloud-lightning",
+    layers: { storm: 60, rain: 50, fireplace: 35 },
+  },
+  {
+    id: "forest-zen",
+    label: "Forêt Zen",
+    icon: "tree",
+    layers: { forest: 65, wind: 35, nature: 50 },
+  },
+  {
+    id: "cosmos",
+    label: "Cosmos",
+    icon: "sparkles",
+    layers: { space: 75, night: 40 },
+  },
+];
+
 const SOUNDSCAPES: { id: SoundAmbient; label: string; icon: string }[] = [
   { id: "rain", label: "Pluie", icon: "cloud-rain" },
   { id: "storm", label: "Orage", icon: "cloud-lightning" },
@@ -21,8 +55,6 @@ const SOUNDSCAPES: { id: SoundAmbient; label: string; icon: string }[] = [
 
 export default function FocusSoundscapeMixer() {
   const { ambientLayers, playAmbientLayer, stopAmbientLayer, stopAmbient, setAmbientLayerVolume } = useSound();
-  // The engine's live layer map is the single source of truth, so a sound only ever
-  // shows as active here when it's genuinely part of the audio mix.
   const activeSounds = ambientLayers;
   const [masterMuted, setMasterMuted] = useState(false);
   const mutedSnapshotRef = useRef<Partial<Record<SoundAmbient, number>>>({});
@@ -53,6 +85,8 @@ export default function FocusSoundscapeMixer() {
     }
   };
 
+  const hasActiveSounds = Object.keys(activeSounds).length > 0;
+
   return (
     <div className="flex flex-col gap-3 rounded-[var(--panel-radius)] border border-[var(--panel-border)] bg-[var(--surface-raised)]/60 p-4 shadow-lg backdrop-blur-xl">
       <div className="flex items-center justify-between border-b border-[var(--panel-border)]/50 pb-2.5">
@@ -67,7 +101,7 @@ export default function FocusSoundscapeMixer() {
           type="button"
           onClick={toggleMasterMute}
           className={cn(
-            "flex items-center gap-1.5 rounded-[var(--inset-radius)] border px-2.5 py-1 text-xs font-semibold transition-all",
+            "flex items-center gap-1.5 rounded-[var(--inset-radius)] border px-2.5 py-1 text-xs font-semibold transition-all cursor-pointer",
             masterMuted
               ? "border-[var(--danger)]/40 bg-[var(--danger)]/15 text-[var(--danger)]"
               : "border-[var(--panel-border)] bg-[var(--surface-raised)] text-[var(--text-muted)] hover:text-[var(--text-primary)]"
@@ -76,6 +110,59 @@ export default function FocusSoundscapeMixer() {
           <Icon name={masterMuted ? "speaker-simple-slash" : "speaker-simple-high"} className="h-3.5 w-3.5" />
           <span>{masterMuted ? "Muet" : "Actif"}</span>
         </button>
+      </div>
+
+      {/* 1-Click Ambient Presets */}
+      <div className="flex flex-wrap items-center gap-1.5 pb-1">
+        <span className="text-[10px] font-bold uppercase tracking-wider text-[var(--text-muted)] mr-1">
+          Mix :
+        </span>
+        {PRESETS.map((preset) => {
+          const isPresetActive =
+            !masterMuted &&
+            Object.entries(preset.layers).every(
+              ([layerId]) => activeSounds[layerId as SoundAmbient] !== undefined
+            );
+
+          return (
+            <button
+              key={preset.id}
+              type="button"
+              onClick={() => {
+                if (isPresetActive) {
+                  stopAmbient();
+                } else {
+                  if (masterMuted) setMasterMuted(false);
+                  stopAmbient();
+                  Object.entries(preset.layers).forEach(([layerId, vol]) => {
+                    playAmbientLayer(layerId as SoundAmbient, vol);
+                  });
+                }
+              }}
+              className={cn(
+                "flex items-center gap-1.5 rounded-lg px-2.5 py-1 text-xs font-medium transition-all cursor-pointer",
+                isPresetActive
+                  ? "bg-[var(--accent-primary)] text-white shadow-xs"
+                  : "bg-[var(--surface-raised)] text-[var(--text-muted)] hover:text-[var(--text-primary)] hover:bg-[var(--surface-hover)] border border-[var(--panel-border)]/50"
+              )}
+            >
+              <Icon name={preset.icon} className="h-3 w-3" />
+              <span>{preset.label}</span>
+            </button>
+          );
+        })}
+
+        {hasActiveSounds && !masterMuted && (
+          <button
+            type="button"
+            onClick={() => stopAmbient()}
+            title="Couper toutes les ambiances"
+            className="flex items-center gap-1 rounded-lg px-2 py-1 text-[10px] font-semibold text-[var(--text-muted)] hover:text-[var(--danger)] hover:bg-[var(--danger)]/10 transition-colors cursor-pointer ml-auto"
+          >
+            <Icon name="x" className="h-2.5 w-2.5" />
+            <span>Couper tout</span>
+          </button>
+        )}
       </div>
 
       {/* Soundscape Pills Grid */}
@@ -95,7 +182,7 @@ export default function FocusSoundscapeMixer() {
               <button
                 type="button"
                 onClick={() => toggleSound(sound.id)}
-                className="flex items-center justify-between text-xs font-semibold"
+                className="flex items-center justify-between text-xs font-semibold cursor-pointer"
               >
                 <div className="flex items-center gap-1.5">
                   <Icon

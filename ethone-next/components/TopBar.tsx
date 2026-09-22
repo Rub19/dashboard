@@ -11,7 +11,12 @@ import {
   EyeOff,
   MessageSquare,
   ChevronRight,
+  Play,
+  Pause,
+  SkipForward,
+  Square,
 } from "lucide-react";
+import { Popover, PopoverTrigger, PopoverContent } from "@/components/motion/Popover";
 import { useAnimatedSidebar } from "@/components/motion/animated-sidebar";
 import { useModKey } from "@/lib/hooks/useModKey";
 import CommandBarTrigger from "@/components/CommandBarTrigger";
@@ -132,26 +137,165 @@ function ThemeToggle() {
   );
 }
 
-function FocusToggle() {
+function FocusLivePill() {
   const focus = useFocus();
-  const isActive = focus.state.phase !== "idle";
+  const [popoverOpen, setPopoverOpen] = useState(false);
+  const { phase, remaining, total, paused, activePreset, goal } = focus.state;
+  const isActive = phase !== "idle";
+
+  if (!isActive) {
+    return (
+      <Tooltip label="Démarrer Focus (F2)" position="bottom">
+        <button
+          type="button"
+          onClick={() => focus.start("pomodoro")}
+          className="inline-flex h-9 w-9 items-center justify-center rounded-[var(--inset-radius)] border border-[var(--panel-border)]/70 bg-[var(--surface-raised)]/60 text-[var(--text-muted)] hover:border-[var(--accent-primary)]/40 hover:bg-[var(--surface-hover)] hover:text-[var(--text-primary)] transition-all active:scale-95 cursor-pointer shadow-sm"
+          aria-label="Mode Focus"
+        >
+          <Timer className="h-4 w-4" />
+        </button>
+      </Tooltip>
+    );
+  }
+
+  const phaseLabel = phase === "focus" ? "Focus" : phase === "shortBreak" ? "Pause" : "Longue pause";
+  const dotColor =
+    phase === "focus"
+      ? "bg-[var(--accent-primary)]"
+      : phase === "shortBreak"
+      ? "bg-emerald-400"
+      : "bg-amber-400";
+  const progressPercent =
+    total > 0 ? Math.min(100, Math.round(((total - remaining) / total) * 100)) : 0;
 
   return (
-    <Tooltip label={isActive ? "Arrêter Focus (F2)" : "Démarrer Focus (F2)"} position="bottom">
-      <button
-        type="button"
-        onClick={() => (isActive ? focus.stop() : focus.start("pomodoro"))}
-        className={cn(
-          "inline-flex h-9 w-9 items-center justify-center rounded-[var(--inset-radius)] border transition-all active:scale-95 cursor-pointer shadow-sm",
-          isActive
-            ? "border-[var(--accent-primary)] bg-[var(--accent-primary)]/20 text-[var(--accent-primary)] shadow-sm shadow-[var(--accent-primary)]/20"
-            : "border-[var(--panel-border)]/70 bg-[var(--surface-raised)]/60 text-[var(--text-muted)] hover:border-[var(--accent-primary)]/40 hover:bg-[var(--surface-hover)] hover:text-[var(--text-primary)]"
-        )}
-        aria-label="Mode Focus"
-      >
-        <Timer className="h-4 w-4" />
-      </button>
-    </Tooltip>
+    <Popover
+      open={popoverOpen}
+      onOpenChange={setPopoverOpen}
+      trigger="click"
+      side="bottom"
+      align="end"
+      sideOffset={8}
+      panelRadius={18}
+      gooStrength={0}
+    >
+      <PopoverTrigger>
+        <button
+          type="button"
+          aria-label={`Mode Focus actif : ${phaseLabel} ${focus.format(remaining)}`}
+          className="group relative flex h-9 items-center gap-2 rounded-[var(--inset-radius)] border border-[var(--accent-primary)]/40 bg-[var(--accent-primary)]/15 px-2.5 text-[var(--text-primary)] hover:bg-[var(--accent-primary)]/25 transition-all active:scale-95 cursor-pointer shadow-sm"
+        >
+          <span className="relative flex h-2 w-2">
+            {!paused && (
+              <span
+                className={cn(
+                  "absolute inline-flex h-full w-full animate-ping rounded-full opacity-75",
+                  dotColor
+                )}
+              />
+            )}
+            <span className={cn("relative inline-flex h-2 w-2 rounded-full", dotColor)} />
+          </span>
+
+          <span className="text-xs font-bold font-mono text-[var(--accent-primary)]">
+            {focus.format(remaining)}
+          </span>
+
+          <span className="hidden xl:inline text-[11px] font-medium text-[var(--text-muted)]">
+            {phaseLabel}
+          </span>
+        </button>
+      </PopoverTrigger>
+
+      <PopoverContent className="w-64 overflow-hidden rounded-[18px] border border-[var(--panel-border)]/80 bg-[var(--bg-surface-elevated)] p-3.5 shadow-2xl backdrop-blur-2xl z-[var(--z-dropdown)]">
+        <div className="flex flex-col gap-3 select-none">
+          <div className="flex items-center justify-between">
+            <div className="flex items-center gap-2 min-w-0">
+              <span className={cn("h-2 w-2 rounded-full shrink-0", dotColor)} />
+              <span className="truncate text-xs font-bold text-[var(--text-primary)]">
+                {goal || (activePreset ? `Session · ${activePreset}` : phaseLabel)}
+              </span>
+            </div>
+            <Link
+              href="/focus"
+              onClick={() => setPopoverOpen(false)}
+              className="text-[10px] font-semibold text-[var(--accent-primary)] hover:underline shrink-0"
+            >
+              Plein écran →
+            </Link>
+          </div>
+
+          <div className="flex flex-col items-center justify-center py-2">
+            <span className="font-mono text-3xl font-extrabold tracking-tight text-[var(--text-primary)]">
+              {focus.format(remaining)}
+            </span>
+            <div className="mt-2 h-1.5 w-full overflow-hidden rounded-full bg-[var(--surface-raised)]">
+              <div
+                className="h-full rounded-full bg-[var(--accent-primary)] transition-all duration-300"
+                style={{ width: `${progressPercent}%` }}
+              />
+            </div>
+          </div>
+
+          {/* Quick Controls */}
+          <div className="grid grid-cols-4 gap-1.5 pt-1">
+            <button
+              type="button"
+              onClick={() => (paused ? focus.resume() : focus.pause())}
+              title={paused ? "Reprendre" : "Pause"}
+              className="flex h-8 items-center justify-center rounded-xl border border-[var(--panel-border)] bg-[var(--surface-raised)] text-[var(--text-primary)] hover:bg-[var(--surface-hover)] transition-all cursor-pointer"
+            >
+              {paused ? (
+                <Play className="h-3.5 w-3.5 fill-current" />
+              ) : (
+                <Pause className="h-3.5 w-3.5 fill-current" />
+              )}
+            </button>
+
+            <button
+              type="button"
+              onClick={() => focus.adjustTime(300)}
+              title="Ajouter 5 minutes"
+              className="flex h-8 items-center justify-center rounded-xl border border-[var(--panel-border)] bg-[var(--surface-raised)] text-xs font-bold font-mono text-[var(--text-primary)] hover:bg-[var(--surface-hover)] transition-all cursor-pointer"
+            >
+              +5m
+            </button>
+
+            {phase !== "focus" ? (
+              <button
+                type="button"
+                onClick={() => focus.skipBreak()}
+                title="Passer la pause"
+                className="flex h-8 items-center justify-center rounded-xl border border-[var(--panel-border)] bg-[var(--surface-raised)] text-[var(--text-primary)] hover:bg-[var(--surface-hover)] transition-all cursor-pointer"
+              >
+                <SkipForward className="h-3.5 w-3.5" />
+              </button>
+            ) : (
+              <button
+                type="button"
+                onClick={() => focus.adjustTime(-300)}
+                title="Retirer 5 minutes"
+                className="flex h-8 items-center justify-center rounded-xl border border-[var(--panel-border)] bg-[var(--surface-raised)] text-xs font-bold font-mono text-[var(--text-primary)] hover:bg-[var(--surface-hover)] transition-all cursor-pointer"
+              >
+                -5m
+              </button>
+            )}
+
+            <button
+              type="button"
+              onClick={() => {
+                setPopoverOpen(false);
+                focus.stop();
+              }}
+              title="Arrêter la session"
+              className="flex h-8 items-center justify-center rounded-xl border border-[var(--danger)]/30 bg-[var(--danger)]/10 text-[var(--danger)] hover:bg-[var(--danger)]/20 transition-all cursor-pointer"
+            >
+              <Square className="h-3.5 w-3.5 fill-current" />
+            </button>
+          </div>
+        </div>
+      </PopoverContent>
+    </Popover>
   );
 }
 
@@ -242,11 +386,13 @@ function TopBar() {
         {/* Right: Quick Tools & Unified Controls */}
         <div className="flex items-center justify-end gap-1.5 shrink-0 ml-auto">
           {/* Quick Tool Icons */}
-          <div className="hidden 2xl:flex items-center gap-1.5">
-            <FeedbackButton />
-            <FocusToggle />
-            <DynamicIslandToggle />
-            <ThemeToggle />
+          <div className="flex items-center gap-1.5">
+            <FocusLivePill />
+            <div className="hidden 2xl:flex items-center gap-1.5">
+              <FeedbackButton />
+              <DynamicIslandToggle />
+              <ThemeToggle />
+            </div>
           </div>
 
           <div className="hidden xl:inline-flex">

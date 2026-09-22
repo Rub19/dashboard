@@ -1,6 +1,6 @@
 "use client";
 
-import { useEffect, useState } from "react";
+import { useCallback, useEffect, useState } from "react";
 import { motion } from "framer-motion";
 import { Icon } from "@/lib/icons";
 import { cn } from "@/lib/utils";
@@ -57,23 +57,83 @@ export default function FocusHistoryView() {
   const [history, setHistory] = useState<HistoryEntry[]>([]);
   const [filter, setFilter] = useState<Filter>("week");
 
-  useEffect(() => {
+  const loadHistory = useCallback(() => {
     try {
       const raw = localStorage.getItem("ethone-focus-history") || "[]";
-      setHistory(JSON.parse(raw));
+      const parsed = JSON.parse(raw);
+      setHistory(Array.isArray(parsed) ? parsed : []);
     } catch {
       setHistory([]);
     }
   }, []);
+
+  useEffect(() => {
+    loadHistory();
+
+    const handleStorage = (e: StorageEvent) => {
+      if (e.key === "ethone-focus-history") loadHistory();
+    };
+    const handleCompleted = () => loadHistory();
+
+    window.addEventListener("storage", handleStorage);
+    window.addEventListener("v8:focus-session-completed", handleCompleted);
+    return () => {
+      window.removeEventListener("storage", handleStorage);
+      window.removeEventListener("v8:focus-session-completed", handleCompleted);
+    };
+  }, [loadHistory]);
 
   const filtered = history.filter((h) => isWithin(h.completedAt, filter));
 
   const totalFocused = filtered.reduce((acc, h) => acc + h.duration, 0);
   const todaySessions = history.filter((h) => isWithin(h.completedAt, "today")).length;
 
+  const exportCSV = () => {
+    if (filtered.length === 0) return;
+    const headers = ["Date", "Duree_secondes", "Duree_format", "Preset", "Objectif"];
+    const rows = filtered.map((e) => [
+      `"${new Date(e.completedAt).toLocaleString("fr-FR")}"`,
+      e.duration,
+      `"${formatDuration(e.duration)}"`,
+      `"${e.preset}"`,
+      `"${(e.goal || "").replace(/"/g, '""')}"`,
+    ]);
+
+    const csvContent = [headers.join(","), ...rows.map((r) => r.join(","))].join("\n");
+    const blob = new Blob([csvContent], { type: "text/csv;charset=utf-8;" });
+    const url = URL.createObjectURL(blob);
+    const link = document.createElement("a");
+    link.href = url;
+    link.setAttribute(
+      "download",
+      `ethone-focus-history-${filter}-${new Date().toISOString().slice(0, 10)}.csv`
+    );
+    document.body.appendChild(link);
+    link.click();
+    document.body.removeChild(link);
+    URL.revokeObjectURL(url);
+  };
+
+  const exportJSON = () => {
+    if (filtered.length === 0) return;
+    const jsonContent = JSON.stringify(filtered, null, 2);
+    const blob = new Blob([jsonContent], { type: "application/json;charset=utf-8;" });
+    const url = URL.createObjectURL(blob);
+    const link = document.createElement("a");
+    link.href = url;
+    link.setAttribute(
+      "download",
+      `ethone-focus-history-${filter}-${new Date().toISOString().slice(0, 10)}.json`
+    );
+    document.body.appendChild(link);
+    link.click();
+    document.body.removeChild(link);
+    URL.revokeObjectURL(url);
+  };
+
   return (
     <div className="rounded-[var(--panel-radius)] border border-[var(--panel-border)] bg-[var(--surface-raised)]/40 p-5 backdrop-blur-md">
-      <div className="flex items-center justify-between mb-4">
+      <div className="flex flex-wrap items-center justify-between gap-2 mb-4">
         <div className="flex items-center gap-2">
           <div className="flex h-7 w-7 items-center justify-center rounded-lg bg-[var(--accent-primary)]/15 text-[var(--accent-primary)]">
             <Icon name="clock" className="h-4 w-4" />
@@ -83,23 +143,49 @@ export default function FocusHistoryView() {
           </h3>
         </div>
 
-        {/* Filter Pills */}
-        <div className="flex gap-1">
-          {FILTERS.map((f) => (
-            <button
-              key={f.id}
-              type="button"
-              onClick={() => setFilter(f.id)}
-              className={cn(
-                "rounded-lg px-2.5 py-1 text-[10px] font-medium transition-all",
-                filter === f.id
-                  ? "bg-[var(--accent-primary)] text-white"
-                  : "text-[var(--text-muted)] hover:text-[var(--text-primary)] hover:bg-[var(--surface-hover)]/40"
-              )}
-            >
-              {f.label}
-            </button>
-          ))}
+        <div className="flex items-center gap-2">
+          {/* Export Buttons */}
+          {filtered.length > 0 && (
+            <div className="flex items-center gap-1">
+              <button
+                type="button"
+                onClick={exportCSV}
+                title="Exporter l'historique filtré en CSV"
+                className="flex items-center gap-1 rounded-lg border border-[var(--panel-border)]/60 bg-[var(--surface-raised)]/60 px-2 py-1 text-[10px] font-semibold text-[var(--text-muted)] hover:text-[var(--text-primary)] hover:border-[var(--accent-primary)]/40 transition-colors cursor-pointer"
+              >
+                <Icon name="download" className="h-3 w-3 text-[var(--accent-primary)]" />
+                <span>CSV</span>
+              </button>
+              <button
+                type="button"
+                onClick={exportJSON}
+                title="Exporter l'historique filtré en JSON"
+                className="flex items-center gap-1 rounded-lg border border-[var(--panel-border)]/60 bg-[var(--surface-raised)]/60 px-2 py-1 text-[10px] font-semibold text-[var(--text-muted)] hover:text-[var(--text-primary)] hover:border-[var(--accent-primary)]/40 transition-colors cursor-pointer"
+              >
+                <Icon name="download" className="h-3 w-3 text-[var(--accent-primary)]" />
+                <span>JSON</span>
+              </button>
+            </div>
+          )}
+
+          {/* Filter Pills */}
+          <div className="flex gap-1">
+            {FILTERS.map((f) => (
+              <button
+                key={f.id}
+                type="button"
+                onClick={() => setFilter(f.id)}
+                className={cn(
+                  "rounded-lg px-2.5 py-1 text-[10px] font-medium transition-all cursor-pointer",
+                  filter === f.id
+                    ? "bg-[var(--accent-primary)] text-white"
+                    : "text-[var(--text-muted)] hover:text-[var(--text-primary)] hover:bg-[var(--surface-hover)]/40"
+                )}
+              >
+                {f.label}
+              </button>
+            ))}
+          </div>
         </div>
       </div>
 

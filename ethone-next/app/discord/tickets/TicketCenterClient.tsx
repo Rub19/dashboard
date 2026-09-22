@@ -429,11 +429,14 @@ export function TicketCenterClient() {
           staffTag: "Staff ETHONE",
         }),
       });
-      if (!res.ok) throw new Error("Échec de la prise en charge");
+      if (!res.ok) {
+        const data = await res.json().catch(() => null);
+        throw new Error(data?.error || "Échec de la prise en charge");
+      }
       success("Ticket pris en charge", `Vous avez pris en charge le ticket #${ticket.id}.`);
       fetchAllData();
     } catch (err: any) {
-      showError("Erreur", err.message);
+      showError("Erreur", formatApiError(err, "Impossible de prendre en charge ce ticket"));
     } finally {
       setActionLoading(false);
     }
@@ -462,11 +465,14 @@ export function TicketCenterClient() {
           performedBy: { id: "admin-dash", tag: "Staff ETHONE" },
         }),
       });
-      if (!res.ok) throw new Error("Échec mise à jour priorité");
+      if (!res.ok) {
+        const data = await res.json().catch(() => null);
+        throw new Error(data?.error || "Échec mise à jour priorité");
+      }
       info("Priorité modifiée", `Priorité passée à ${nextPriority} pour #${ticket.id}.`);
       fetchAllData();
     } catch (err: any) {
-      showError("Erreur", err.message);
+      showError("Erreur", formatApiError(err, "Impossible de modifier la priorité"));
     } finally {
       setActionLoading(false);
     }
@@ -489,13 +495,16 @@ export function TicketCenterClient() {
           reason: closeReason,
         }),
       });
-      if (!res.ok) throw new Error("Échec de la fermeture");
+      if (!res.ok) {
+        const data = await res.json().catch(() => null);
+        throw new Error(data?.error || "Échec de la fermeture");
+      }
       success("Ticket clôturé", `Le ticket #${ticketToClose.id} a été clôturé avec succès.`);
       setShowCloseModal(false);
       setTicketToClose(null);
       fetchAllData();
     } catch (err: any) {
-      showError("Erreur", err.message);
+      showError("Erreur", formatApiError(err, "Impossible de clôturer le ticket"));
     } finally {
       setActionLoading(false);
     }
@@ -523,13 +532,16 @@ export function TicketCenterClient() {
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify(payload),
       });
-      if (!res.ok) throw new Error("Échec sauvegarde catégorie");
+      if (!res.ok) {
+        const data = await res.json().catch(() => null);
+        throw new Error(data?.error || "Échec sauvegarde catégorie");
+      }
       success("Catégorie enregistrée", `Catégorie "${payload.name}" mise à jour.`);
       setShowCategoryModal(false);
       setEditingCategory(null);
       fetchAllData();
     } catch (err: any) {
-      showError("Erreur", err.message);
+      showError("Erreur", formatApiError(err, "Impossible d'enregistrer la catégorie"));
     } finally {
       setActionLoading(false);
     }
@@ -546,11 +558,14 @@ export function TicketCenterClient() {
         credentials: "include",
         method: "DELETE",
       });
-      if (!res.ok) throw new Error("Échec suppression");
+      if (!res.ok) {
+        const data = await res.json().catch(() => null);
+        throw new Error(data?.error || "Échec suppression");
+      }
       success("Catégorie supprimée", "La catégorie a été retirée.");
       fetchAllData();
     } catch (err: any) {
-      showError("Erreur", err.message);
+      showError("Erreur", formatApiError(err, "Impossible de supprimer la catégorie"));
     }
   };
 
@@ -578,13 +593,16 @@ export function TicketCenterClient() {
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify(payload),
       });
-      if (!res.ok) throw new Error("Échec sauvegarde panel");
+      if (!res.ok) {
+        const data = await res.json().catch(() => null);
+        throw new Error(data?.error || "Échec sauvegarde panel");
+      }
       success("Panel enregistré", `Panel "${payload.title}" mis à jour.`);
       setShowPanelModal(false);
       setEditingPanel(null);
       fetchAllData();
     } catch (err: any) {
-      showError("Erreur", err.message);
+      showError("Erreur", formatApiError(err, "Impossible d'enregistrer le panel"));
     } finally {
       setActionLoading(false);
     }
@@ -608,12 +626,12 @@ export function TicketCenterClient() {
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({ channelId: chId }),
       });
-      const data = await res.json();
-      if (!res.ok) throw new Error(data.error || "Échec de publication");
-      success("Panel publié sur Discord !", `Le panneau interactif a été posté dans #${data.channelName}.`);
+      const data = await res.json().catch(() => null);
+      if (!res.ok) throw new Error(data?.error || "Échec de publication");
+      success("Panel publié sur Discord !", `Le panneau interactif a été posté dans #${data.channelName || "salon"}.`);
       fetchAllData();
     } catch (err: any) {
-      showError("Erreur", err.message);
+      showError("Erreur", formatApiError(err, "Impossible de publier le panel"));
     } finally {
       setActionLoading(false);
     }
@@ -671,13 +689,16 @@ export function TicketCenterClient() {
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify(payload),
       });
-      if (!res.ok) throw new Error("Échec sauvegarde équipe");
+      if (!res.ok) {
+        const data = await res.json().catch(() => null);
+        throw new Error(data?.error || "Échec sauvegarde équipe");
+      }
       success("Équipe enregistrée", `Équipe "${payload.name}" mise à jour.`);
       setShowTeamModal(false);
       setEditingTeam(null);
       fetchAllData();
     } catch (err: any) {
-      showError("Erreur", err.message);
+      showError("Erreur", formatApiError(err, "Impossible d'enregistrer l'équipe"));
     } finally {
       setActionLoading(false);
     }

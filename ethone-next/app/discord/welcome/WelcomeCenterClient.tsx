@@ -34,6 +34,7 @@ import { cn } from "@/lib/utils";
 import { GuildSelector } from "@/components/GuildSelector";
 import ChannelPicker from "@/components/discord/ChannelPicker";
 import RolePicker from "@/components/discord/RolePicker";
+import { formatApiError } from "@/lib/format-error";
 
 const BOT_CLIENT_ID = "1545139931154878464";
 const BOT_INVITE_URL = `https://discord.com/oauth2/authorize?client_id=${BOT_CLIENT_ID}&permissions=8&scope=bot%20applications.commands`;
@@ -599,12 +600,12 @@ export function WelcomeCenterClient() {
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify(payload),
       });
-      if (!res.ok) throw new Error("Échec de la sauvegarde");
-      const d = await res.json();
+      const d = await res.json().catch(() => null);
+      if (!res.ok) throw new Error(d?.error || "Échec de la sauvegarde");
       setConfig(d.config);
       success("Modifications enregistrées", "La configuration de bienvenue a été synchronisée.");
     } catch (err: any) {
-      showError("Erreur", err.message);
+      showError("Erreur", formatApiError(err, "Impossible d'enregistrer la configuration de bienvenue"));
     } finally {
       setSaving(false);
     }
@@ -629,7 +630,7 @@ export function WelcomeCenterClient() {
       setOnboarding(saved?.flow || flowData);
       success("Onboarding mis à jour", "Le parcours d'onboarding a été enregistré.");
     } catch (err: any) {
-      showError("Erreur", err.message);
+      showError("Erreur", formatApiError(err, "Impossible d'enregistrer l'onboarding"));
     } finally {
       setSaving(false);
     }
@@ -649,7 +650,7 @@ export function WelcomeCenterClient() {
       if (res.ok && data?.success) {
         success("Aperçu envoyé", data.via === "dm" ? "Regarde tes messages privés Discord." : "Regarde le salon de secours.");
       } else {
-        showError("Aperçu impossible", data?.error || "Le bot n'a pas pu envoyer l'aperçu.");
+        showError("Aperçu impossible", formatApiError(data?.error, "Le bot n'a pas pu envoyer l'aperçu."));
       }
     } catch {
       showError("Erreur réseau", "Le bot n'a pas répondu.");
@@ -672,11 +673,12 @@ export function WelcomeCenterClient() {
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify(verifData),
       });
-      if (!res.ok) throw new Error("Échec de sauvegarde vérification");
+      const saved = await res.json().catch(() => null);
+      if (!res.ok) throw new Error(saved?.error || "Échec de sauvegarde vérification");
       setVerification(verifData);
       success("Vérification enregistrée", "Les réglages de vérification ont été appliqués.");
     } catch (err: any) {
-      showError("Erreur", err.message);
+      showError("Erreur", formatApiError(err, "Impossible d'enregistrer la vérification"));
     } finally {
       setSaving(false);
     }
@@ -696,12 +698,12 @@ export function WelcomeCenterClient() {
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({ templateId }),
       });
-      if (!res.ok) throw new Error("Échec d'application du template");
-      const d = await res.json();
+      const d = await res.json().catch(() => null);
+      if (!res.ok) throw new Error(d?.error || "Échec d'application du template");
       setConfig(d.config);
-      success("Template appliqué", `Le modèle "${d.templateName}" est désormais actif.`);
+      success("Template appliqué", `Le modèle "${d.templateName || "modèle"}" est désormais actif.`);
     } catch (err: any) {
-      showError("Erreur", err.message);
+      showError("Erreur", formatApiError(err, "Impossible d'appliquer le modèle"));
     } finally {
       setSaving(false);
     }
@@ -721,17 +723,17 @@ export function WelcomeCenterClient() {
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({ type: testType, target: testTarget }),
       });
-      const data = await res.json();
-      if (!res.ok) throw new Error(data.error || "Échec du test");
+      const data = await res.json().catch(() => null);
+      if (!res.ok) throw new Error(data?.error || "Échec du test");
       success(
         "Test envoyé avec succès !",
         testTarget === "dm"
           ? "Un message privé a été envoyé sur votre compte Discord."
-          : `Le message a été posté dans #${data.channelName}.`
+          : `Le message a été posté dans #${data.channelName || "salon"}.`
       );
       setShowTestModal(false);
     } catch (err: any) {
-      showError("Erreur du test", err.message);
+      showError("Erreur du test", formatApiError(err, "Impossible d'envoyer le test"));
     } finally {
       setTestRunning(false);
     }

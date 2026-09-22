@@ -32,6 +32,7 @@ import {
 import { useToast } from "@/components/ToastProvider";
 import ChannelPicker from "@/components/discord/ChannelPicker";
 import { cn } from "@/lib/utils";
+import { formatApiError } from "@/lib/format-error";
 
 interface VoiceHub {
   id: string;
@@ -280,9 +281,9 @@ export default function VoiceCenterClient() {
         return;
       }
       const errJson = await res.json().catch(() => ({}));
-      showError(errJson.error || "Impossible de publier le panneau.");
-    } catch {
-      showError("Bot injoignable : le panneau n'a pas été publié.");
+      showError(formatApiError(errJson.error, "Impossible de publier le panneau."));
+    } catch (err: any) {
+      showError(formatApiError(err, "Bot injoignable : le panneau n'a pas été publié."));
     } finally {
       setIsPublishing(false);
     }

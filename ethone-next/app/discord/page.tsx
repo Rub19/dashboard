@@ -673,6 +673,15 @@ export default function DiscordDashboardPage() {
     }
     const base = `${api}/api/guilds/${selectedGuild.id}`;
     try {
+      let currentRaidConfig: any = null;
+      try {
+        const getRes = await fetch(`${base}/anti-raid/config`, { credentials: "include" });
+        if (getRes.ok) {
+          const data = await getRes.json().catch(() => null);
+          currentRaidConfig = data?.config;
+        }
+      } catch {}
+
       const [settingsRes, raidRes] = await Promise.all([
         fetch(`${base}/settings`, {
           method: "PATCH", credentials: "include", headers: { "content-type": "application/json" },
@@ -681,9 +690,14 @@ export default function DiscordDashboardPage() {
         fetch(`${base}/anti-raid/config`, {
           method: "PUT", credentials: "include", headers: { "content-type": "application/json" },
           body: JSON.stringify({
+            ...(currentRaidConfig || {}),
             enabled: guildSettings.antiRaidEnabled,
-            messageRaid: { enabled: guildSettings.antiSpamEnabled },
+            messageRaid: {
+              ...(currentRaidConfig?.messageRaid || {}),
+              enabled: guildSettings.antiSpamEnabled,
+            },
             mentionRaid: {
+              ...(currentRaidConfig?.mentionRaid || {}),
               enabled: guildSettings.mentionLimit > 0,
               maxMentionsPerMessage: guildSettings.mentionLimit >= 2 ? guildSettings.mentionLimit : 5,
             },

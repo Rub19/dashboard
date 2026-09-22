@@ -22,6 +22,7 @@ import {
 } from "lucide-react";
 import ChannelPicker from "@/components/discord/ChannelPicker";
 import RolePicker from "@/components/discord/RolePicker";
+import { formatApiError } from "@/lib/format-error";
 
 interface WizardFormState {
   title: string;
@@ -233,7 +234,7 @@ export default function EventCreateClient() {
     };
   }
 
-  async function persistEvent(status: "DRAFT" | "SCHEDULED"): Promise<boolean> {
+  async function persistEvent(status: "DRAFT" | "SCHEDULED"): Promise<{ ok: boolean; error?: string }> {
     const payload = buildEventPayload(status);
     try {
       if (draftEventId) {
@@ -243,7 +244,9 @@ export default function EventCreateClient() {
           headers: { "content-type": "application/json" },
           body: JSON.stringify(payload),
         });
-        return res.ok;
+        const data = await res.json().catch(() => null);
+        if (res.ok) return { ok: true };
+        return { ok: false, error: data?.error };
       }
       const res = await fetch(eventsBase, {
         method: "POST",
@@ -254,11 +257,11 @@ export default function EventCreateClient() {
       const data = await res.json().catch(() => null);
       if (res.ok && data?.event?.id) {
         setDraftEventId(data.event.id);
-        return true;
+        return { ok: true };
       }
-      return false;
-    } catch {
-      return false;
+      return { ok: false, error: data?.error };
+    } catch (err: any) {
+      return { ok: false, error: err?.message };
     }
   }
 
@@ -274,12 +277,12 @@ export default function EventCreateClient() {
       setPublishError("Bot injoignable : l'événement n'a pas été publié.");
       return;
     }
-    const ok = await persistEvent("SCHEDULED");
+    const result = await persistEvent("SCHEDULED");
     setIsSubmitting(false);
-    if (ok) {
+    if (result.ok) {
       router.push("/discord/events");
     } else {
-      setPublishError("Échec de la publication. Vérifiez les champs et réessayez.");
+      setPublishError(formatApiError(result.error, "Échec de la publication. Vérifiez les champs et réessayez."));
     }
   };
 
@@ -288,12 +291,12 @@ export default function EventCreateClient() {
       setPublishError("Bot injoignable : le brouillon n'a pas été enregistré.");
       return;
     }
-    const ok = await persistEvent("DRAFT");
-    if (ok) {
+    const result = await persistEvent("DRAFT");
+    if (result.ok) {
       setSaveToast(true);
       setTimeout(() => setSaveToast(false), 2000);
     } else {
-      setPublishError("Échec de l'enregistrement du brouillon.");
+      setPublishError(formatApiError(result.error, "Échec de l'enregistrement du brouillon."));
     }
   };
 

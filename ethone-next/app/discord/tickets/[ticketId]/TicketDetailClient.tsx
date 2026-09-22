@@ -20,6 +20,7 @@ import {
 } from "lucide-react";
 import { useToast } from "@/components/ToastProvider";
 import { cn } from "@/lib/utils";
+import { formatApiError } from "@/lib/format-error";
 
 const API_BASE = process.env.NEXT_PUBLIC_DISCORD_BOT_API || "";
 
@@ -93,11 +94,14 @@ export default function TicketDetailClient() {
           staffTag: "Staff ETHONE",
         }),
       });
-      if (!res.ok) throw new Error("Échec de la prise en charge");
+      if (!res.ok) {
+        const data = await res.json().catch(() => null);
+        throw new Error(data?.error || "Échec de la prise en charge");
+      }
       success("Ticket pris en charge", "Vous êtes désormais assigné à ce ticket.");
       fetchTicket();
     } catch (err: any) {
-      showError("Erreur", err.message);
+      showError("Erreur", formatApiError(err, "Impossible de prendre en charge ce ticket"));
     } finally {
       setActionLoading(false);
     }
@@ -119,11 +123,14 @@ export default function TicketDetailClient() {
           staffTag: "Staff ETHONE",
         }),
       });
-      if (!res.ok) throw new Error("Échec de l'abandon de prise en charge");
+      if (!res.ok) {
+        const data = await res.json().catch(() => null);
+        throw new Error(data?.error || "Échec de l'abandon de prise en charge");
+      }
       info("Prise en charge abandonnée", "Le ticket est de nouveau ouvert à tous.");
       fetchTicket();
     } catch (err: any) {
-      showError("Erreur", err.message);
+      showError("Erreur", formatApiError(err, "Impossible d'abandonner la prise en charge"));
     } finally {
       setActionLoading(false);
     }
@@ -147,12 +154,15 @@ export default function TicketDetailClient() {
           author: { id: "admin-dash", tag: "Staff ETHONE" },
         }),
       });
-      if (!res.ok) throw new Error("Échec ajout de note");
+      if (!res.ok) {
+        const data = await res.json().catch(() => null);
+        throw new Error(data?.error || "Échec ajout de note");
+      }
       success("Note ajoutée", "La note interne a été enregistrée.");
       setNoteContent("");
       fetchTicket();
     } catch (err: any) {
-      showError("Erreur", err.message);
+      showError("Erreur", formatApiError(err, "Impossible d'ajouter la note"));
     } finally {
       setActionLoading(false);
     }
@@ -174,12 +184,15 @@ export default function TicketDetailClient() {
           reason: closeReason,
         }),
       });
-      if (!res.ok) throw new Error("Échec de la fermeture");
+      if (!res.ok) {
+        const data = await res.json().catch(() => null);
+        throw new Error(data?.error || "Échec de la fermeture");
+      }
       success("Ticket clôturé", "Le ticket a été fermé avec succès.");
       setShowCloseModal(false);
       fetchTicket();
     } catch (err: any) {
-      showError("Erreur", err.message);
+      showError("Erreur", formatApiError(err, "Impossible de clôturer le ticket"));
     } finally {
       setActionLoading(false);
     }
@@ -200,11 +213,14 @@ export default function TicketDetailClient() {
           reopenedBy: { id: "admin-dash", tag: "Staff ETHONE" },
         }),
       });
-      if (!res.ok) throw new Error("Échec de la réouverture");
+      if (!res.ok) {
+        const data = await res.json().catch(() => null);
+        throw new Error(data?.error || "Échec de la réouverture");
+      }
       success("Ticket réouvert", "Le ticket a été rouvert avec succès.");
       fetchTicket();
     } catch (err: any) {
-      showError("Erreur", err.message);
+      showError("Erreur", formatApiError(err, "Impossible de rouvrir le ticket"));
     } finally {
       setActionLoading(false);
     }
@@ -227,12 +243,15 @@ export default function TicketDetailClient() {
           staffUser: { id: "admin-dash", tag: "Staff ETHONE" },
         }),
       });
-      if (!res.ok) throw new Error("Échec liaison avec le cas");
+      if (!res.ok) {
+        const data = await res.json().catch(() => null);
+        throw new Error(data?.error || "Échec liaison avec le cas");
+      }
       success("Cas de modération lié", `Liaison effectuée avec le Dossier #${caseIdToLink}.`);
       setShowLinkCaseModal(false);
       fetchTicket();
     } catch (err: any) {
-      showError("Erreur", err.message);
+      showError("Erreur", formatApiError(err, "Impossible de lier le cas"));
     } finally {
       setActionLoading(false);
     }
@@ -254,10 +273,13 @@ export default function TicketDetailClient() {
           performedBy: { id: "admin-dash", tag: "Staff ETHONE" },
         }),
       });
-      if (!res.ok) throw new Error("Échec modification priorité");
+      if (!res.ok) {
+        const data = await res.json().catch(() => null);
+        throw new Error(data?.error || "Échec modification priorité");
+      }
       fetchTicket();
     } catch (err: any) {
-      showError("Erreur", err.message);
+      showError("Erreur", formatApiError(err, "Impossible de modifier la priorité"));
     } finally {
       setActionLoading(false);
     }
@@ -279,10 +301,13 @@ export default function TicketDetailClient() {
           performedBy: { id: "admin-dash", tag: "Staff ETHONE" },
         }),
       });
-      if (!res.ok) throw new Error("Échec modification statut");
+      if (!res.ok) {
+        const data = await res.json().catch(() => null);
+        throw new Error(data?.error || "Échec modification statut");
+      }
       fetchTicket();
     } catch (err: any) {
-      showError("Erreur", err.message);
+      showError("Erreur", formatApiError(err, "Impossible de modifier le statut"));
     } finally {
       setActionLoading(false);
     }

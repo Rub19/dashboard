@@ -26,6 +26,7 @@ import { useDiscordOAuth, type DiscordGuild, canManageGuild, getStoredDiscordGui
 import { useBotGuildIds, pickBotGuild } from "@/lib/hooks/useBotGuildIds";
 import { GuildSelector } from "@/components/GuildSelector";
 import { cn } from "@/lib/utils";
+import { formatApiError } from "@/lib/format-error";
 
 const BOT_API_URL = process.env.NEXT_PUBLIC_DISCORD_BOT_API || "";
 const BOT_CLIENT_ID = "1545139931154878464";
@@ -278,7 +279,7 @@ export default function CommandsCenterClient() {
       setActiveTab("catalog");
       success(`Commande /${name} créée et active sur Discord.`);
     } catch (err: any) {
-      toastError(err?.message || "Échec de la création.");
+      toastError(formatApiError(err, "Échec de la création."));
     } finally {
       setSubmitting(false);
     }
@@ -290,10 +291,10 @@ export default function CommandsCenterClient() {
     try {
       const res = await fetch(`${base}/${cmd.id}/toggle`, { method: "POST", credentials: "include" });
       const data = await res.json().catch(() => null);
-      if (!res.ok || !data?.command) throw new Error();
+      if (!res.ok || !data?.command) throw new Error(data?.error);
       setCommands((prev) => prev.map((c) => (c.id === cmd.id ? data.command : c)));
-    } catch {
-      toastError("Échec du changement d'état — rechargez la page.");
+    } catch (err: any) {
+      toastError(formatApiError(err, "Échec du changement d'état — rechargez la page."));
     }
   };
 
@@ -302,10 +303,12 @@ export default function CommandsCenterClient() {
     setCommands((prev) => prev.filter((c) => c.id !== cmd.id));
     if (isDemo) return;
     try {
-      await fetch(`${base}/${cmd.id}`, { method: "DELETE", credentials: "include" });
+      const res = await fetch(`${base}/${cmd.id}`, { method: "DELETE", credentials: "include" });
+      const data = await res.json().catch(() => null);
+      if (!res.ok) throw new Error(data?.error);
       success(`Commande /${cmd.name} supprimée.`);
-    } catch {
-      toastError("Échec de la suppression — rechargez la page.");
+    } catch (err: any) {
+      toastError(formatApiError(err, "Échec de la suppression — rechargez la page."));
     }
   };
 
@@ -321,7 +324,7 @@ export default function CommandsCenterClient() {
       setCommands((prev) => [data.command, ...prev]);
       success(`Commande dupliquée : /${data.command.name}.`);
     } catch (err: any) {
-      toastError(err?.message || "Échec de la duplication.");
+      toastError(formatApiError(err, "Échec de la duplication."));
     }
   };
 
@@ -344,7 +347,7 @@ export default function CommandsCenterClient() {
       setActiveTab("catalog");
       success(`Commande /${data.command.name} créée depuis le template.`);
     } catch (err: any) {
-      toastError(err?.message || "Échec de la création depuis le template.");
+      toastError(formatApiError(err, "Échec de la création depuis le template."));
     } finally {
       setSubmitting(false);
     }

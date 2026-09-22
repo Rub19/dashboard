@@ -33,6 +33,7 @@ import ChannelPicker from "@/components/discord/ChannelPicker";
 import RolePicker from "@/components/discord/RolePicker";
 import { useBotGuildIds, pickBotGuild } from "@/lib/hooks/useBotGuildIds";
 import { GuildSelector } from "@/components/GuildSelector";
+import { formatApiError } from "@/lib/format-error";
 
 const BOT_CLIENT_ID = "1545139931154878464";
 const BOT_INVITE_URL = `https://discord.com/oauth2/authorize?client_id=${BOT_CLIENT_ID}&permissions=8&scope=bot%20applications.commands`;
@@ -312,7 +313,7 @@ export default function GiveawaysCenterClient() {
           claimTimeoutHours: formClaimTimeoutHours,
         }),
       });
-      const data = await res.json();
+      const data = await res.json().catch(() => null);
       if (!res.ok) throw new Error(data?.error || "Échec de la création");
       setFormPrize("");
       setFormDesc("");
@@ -321,7 +322,7 @@ export default function GiveawaysCenterClient() {
       success("Concours publié", `"${formPrize}" a été publié sur Discord.`);
       await load();
     } catch (err) {
-      showError("Échec", err instanceof Error ? err.message : "Impossible de créer le concours.");
+      showError("Échec", formatApiError(err, "Impossible de créer le concours."));
     } finally {
       setSaving(false);
     }
@@ -334,12 +335,12 @@ export default function GiveawaysCenterClient() {
         method: "POST",
         credentials: "include",
       });
-      const data = await res.json();
+      const data = await res.json().catch(() => null);
       if (!res.ok) throw new Error(data?.error);
       success("Concours clôturé", "Le(s) gagnant(s) ont été tirés au sort.");
       await load();
     } catch (err) {
-      showError("Échec", err instanceof Error ? err.message : "Impossible de clôturer le concours.");
+      showError("Échec", formatApiError(err, "Impossible de clôturer le concours."));
     }
   }
 
@@ -351,12 +352,12 @@ export default function GiveawaysCenterClient() {
         method: "POST",
         credentials: "include",
       });
-      const data = await res.json();
+      const data = await res.json().catch(() => null);
       if (!res.ok || !data?.success) throw new Error(data?.error);
       success("Concours annulé", `"${prize}" a été annulé.`);
       await load();
     } catch (err) {
-      showError("Échec", err instanceof Error ? err.message : "Impossible d'annuler le concours.");
+      showError("Échec", formatApiError(err, "Impossible d'annuler le concours."));
     }
   }
 
@@ -370,13 +371,13 @@ export default function GiveawaysCenterClient() {
         credentials: "include",
         body: JSON.stringify({ count }),
       });
-      const data = await res.json();
+      const data = await res.json().catch(() => null);
       if (!res.ok) throw new Error(data?.error);
       success("Nouveau tirage effectué", "Le(s) nouveau(x) gagnant(s) ont été annoncés sur Discord.");
       setRerollTarget(null);
       await load();
     } catch (err) {
-      showError("Échec du reroll", err instanceof Error ? err.message : "Impossible de retirer un gagnant.");
+      showError("Échec du reroll", formatApiError(err, "Impossible de retirer un gagnant."));
     } finally {
       setRerollBusy(false);
     }
@@ -398,7 +399,7 @@ export default function GiveawaysCenterClient() {
         credentials: "include",
         body: JSON.stringify({ minutes }),
       });
-      const data = await res.json();
+      const data = await res.json().catch(() => null);
       if (!res.ok || !data?.success) throw new Error(data?.error || "Échec de la prolongation");
       success(
         "Concours prolongé",
@@ -407,7 +408,7 @@ export default function GiveawaysCenterClient() {
       setExtendTarget(null);
       await load();
     } catch (err) {
-      showError("Échec de la prolongation", err instanceof Error ? err.message : "Impossible de prolonger le concours.");
+      showError("Échec de la prolongation", formatApiError(err, "Impossible de prolonger le concours."));
     } finally {
       setExtendBusy(false);
     }
@@ -443,7 +444,7 @@ export default function GiveawaysCenterClient() {
           credentials: "include",
         }
       );
-      const data = await res.json();
+      const data = await res.json().catch(() => null);
       if (!res.ok || !data?.success) throw new Error(data?.error || "Échec de la disqualification");
       setParticipantsList((prev) => prev.filter((p) => p.userId !== userId));
       setGiveaways((prev) =>
@@ -455,7 +456,7 @@ export default function GiveawaysCenterClient() {
       );
       success("Participant retiré", `@${username} a été retiré du concours.`);
     } catch (err) {
-      showError("Échec", err instanceof Error ? err.message : "Impossible de retirer ce participant.");
+      showError("Échec", formatApiError(err, "Impossible de retirer ce participant."));
     } finally {
       setDisqualifyBusy(null);
     }

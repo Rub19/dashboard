@@ -21,6 +21,7 @@ import { useBotGuildIds, pickBotGuild } from "@/lib/hooks/useBotGuildIds";
 import { useDiscordSync } from "@/lib/useDiscordSync";
 import { cn } from "@/lib/utils";
 import { GuildSelector } from "@/components/GuildSelector";
+import { formatApiError } from "@/lib/format-error";
 
 type AntiNukeAction = "alert" | "strip_roles" | "ban";
 
@@ -186,11 +187,12 @@ export default function AntiNukePage() {
         credentials: "include",
         body: JSON.stringify(clampedPatch),
       });
-      if (!res.ok) throw new Error("save failed");
+      const data = await res.json().catch(() => null);
+      if (!res.ok) throw new Error(data?.error || "save failed");
       success("Anti-Nuke mis à jour", "Configuration synchronisée avec le bot.");
-    } catch {
+    } catch (err: any) {
       setConfig(config);
-      showError("Erreur", "Impossible de synchroniser avec le bot.");
+      showError("Erreur", formatApiError(err, "Impossible de synchroniser avec le bot."));
     } finally {
       setIsSaving(false);
     }
@@ -203,12 +205,13 @@ export default function AntiNukePage() {
         `${BOT_API_URL}/api/guilds/${selectedGuild.id}/anti-nuke/incidents/${incidentId}/resolve`,
         { method: "POST", credentials: "include" }
       );
-      if (!res.ok) throw new Error("resolve failed");
+      const data = await res.json().catch(() => null);
+      if (!res.ok) throw new Error(data?.error || "resolve failed");
       setIncidents((prev) => prev.map((i) => (i.id === incidentId ? { ...i, status: "resolved" } : i)));
       setOpenCount((c) => Math.max(0, c - 1));
       success("Incident résolu");
-    } catch {
-      showError("Erreur", "Impossible de résoudre cet incident.");
+    } catch (err: any) {
+      showError("Erreur", formatApiError(err, "Impossible de résoudre cet incident."));
     }
   };
 

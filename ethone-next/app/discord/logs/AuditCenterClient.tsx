@@ -32,6 +32,7 @@ import { GuildSelector } from "@/components/GuildSelector";
 import { useToast } from "@/components/ToastProvider";
 import { useDiscordSync } from "@/lib/useDiscordSync";
 import { cn } from "@/lib/utils";
+import { formatApiError } from "@/lib/format-error";
 
 const API_BASE = process.env.NEXT_PUBLIC_DISCORD_BOT_API || "";
 const BOT_CLIENT_ID = "1545139931154878464";
@@ -475,10 +476,10 @@ export function AuditCenterClient() {
       if (res.ok && data?.success) {
         success(`Message de test envoyé par « ${data.name} »`, data.channelId ? "Regarde le salon choisi." : "");
       } else {
-        showError(data?.error || "Le test a échoué.");
+        showError(formatApiError(data?.error, "Le test a échoué."));
       }
-    } catch {
-      showError("Erreur réseau pendant le test.");
+    } catch (err: any) {
+      showError(formatApiError(err, "Erreur réseau pendant le test."));
     } finally {
       setTestingCategory(null);
     }
@@ -520,10 +521,11 @@ export function AuditCenterClient() {
         success("Configuration des logs et routage Discord mise à jour !");
         fetchOverview();
       } else {
-        showError("Échec de la sauvegarde.");
+        const data = await res.json().catch(() => null);
+        showError(formatApiError(data?.error, "Échec de la sauvegarde."));
       }
-    } catch {
-      showError("Erreur réseau.");
+    } catch (err: any) {
+      showError(formatApiError(err, "Erreur réseau."));
     } finally {
       setSavingConfig(false);
     }

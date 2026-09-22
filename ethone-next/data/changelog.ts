@@ -31943,10 +31943,54 @@ const v12839_de: ChangelogEntry = {
   ],
 };
 
-CHANGELOG_BY_LANG.fr.unshift(v12839_fr, v12838_fr, v12837_fr, v12836_fr, v12835_fr, v12834_fr, v12833_fr);
-CHANGELOG_BY_LANG.en.unshift(v12839_en, v12838_en, v12837_en, v12836_en, v12835_en, v12834_en, v12833_en);
-CHANGELOG_BY_LANG.es.unshift(v12839_es, v12838_es, v12837_es, v12836_es, v12835_es, v12834_es, v12833_es);
-CHANGELOG_BY_LANG.de.unshift(v12839_de, v12838_de, v12837_de, v12836_de, v12835_de, v12834_de, v12833_de);
+const v12840_fr: ChangelogEntry = {
+  version: "v1.28.20",
+  date: "2026-09-22",
+  title: "Fiabilisation Universelle des Actions et Formatage API Error",
+  items: [
+    "Gestion d'erreur unifiée (formatApiError) : extension du formateur universel d'erreurs API à l'ensemble des modules Discord : Tickets (détail et vue liste), Bienvenue & Onboarding, Journaux d'audit, Salons vocaux temporaires, Commandes personnalisées, Giveaways & Concours, Sécurité Anti-Nuke et Création d'événements.",
+    "Extraction systématique de data?.error : toutes les requêtes d'actions capturent désormais la charge utile d'erreur renvoyée par le bot et l'API pour afficher la cause précise (ex. validation Zod, permissions manquantes, contraintes métiers) plutôt qu'un message générique.",
+    "Préservation de la configuration Anti-Raid (/discord) : la sauvegarde rapide de l'interrupteur Anti-Raid fusionne désormais les sous-configurations (messageRaid, mentionRaid) avec la configuration existante au lieu de réinitialiser les seuils personnalisés du module Anti-Raid.",
+  ],
+};
+
+const v12840_en: ChangelogEntry = {
+  version: "v1.28.20",
+  date: "2026-09-22",
+  title: "Universal Action Hardening & API Error Formatting",
+  items: [
+    "Unified Error Handling (formatApiError): rolled out the universal API error formatter across all Discord modules: Tickets (detail and list views), Welcome & Onboarding, Audit Logs, Temporary Voice Channels, Custom Commands, Giveaways & Contests, Anti-Nuke Security, and Event Creation.",
+    "Systematic data?.error Extraction: all action requests now capture the error payload returned by the bot and API to display exact root causes (Zod schema validation, missing permissions, business constraints) instead of generic error toasts.",
+    "Anti-Raid Configuration Preservation (/discord): quick toggling of Anti-Raid from the main Discord dashboard now merges sub-configurations (messageRaid, mentionRaid) with the existing configuration to prevent overwriting custom thresholds.",
+  ],
+};
+
+const v12840_es: ChangelogEntry = {
+  version: "v1.28.20",
+  date: "2026-09-22",
+  title: "Robustecimiento Universal de Acciones y Formateo API Error",
+  items: [
+    "Gestión de errores unificada (formatApiError): integración del formateador universal en todos los módulos de Discord: Tickets, Bienvenida y Onboarding, Registros de auditoría, Canales de voz temporales, Comandos personalizados, Giveaways, Seguridad Anti-Nuke y Creación de eventos.",
+    "Extracción sistemática de data?.error: todas las acciones capturan el error devuelto por la API del bot para mostrar la razón exacta en los mensajes en lugar de errores genéricos.",
+    "Preservación de la configuración Anti-Raid (/discord): el interruptor rápido de Anti-Raid ahora combina las subconfiguraciones existentes para evitar restablecer umbrales personalizados.",
+  ],
+};
+
+const v12840_de: ChangelogEntry = {
+  version: "v1.28.20",
+  date: "2026-09-22",
+  title: "Universelle Aktionshärtung & API-Error-Formatierung",
+  items: [
+    "Einheitliche Fehlerbehandlung (formatApiError): Ausweitung des universellen API-Fehlerformatierers auf alle Discord-Module: Tickets, Willkommen & Onboarding, Audit-Logs, Temporäre Sprachkanäle, Eigene Befehle, Giveaways, Anti-Nuke-Sicherheit und Event-Erstellung.",
+    "Systematische Extraktion von data?.error: Alle Aktionen erfassen nun Fehlermeldungen des Bots und der API, um genaue Gründe anzuzeigen statt generischer Fehlermeldungen.",
+    "Erhalt der Anti-Raid-Konfiguration (/discord): Das Schnell-Aktivieren von Anti-Raid auf dem Dashboard führt nun bestehende Sub-Konfigurationen zusammen, um das Überschreiben benutzerdefinierter Schwellenwerte zu verhindern.",
+  ],
+};
+
+CHANGELOG_BY_LANG.fr.unshift(v12840_fr, v12839_fr, v12838_fr, v12837_fr, v12836_fr, v12835_fr, v12834_fr, v12833_fr);
+CHANGELOG_BY_LANG.en.unshift(v12840_en, v12839_en, v12838_en, v12837_en, v12836_en, v12835_en, v12834_en, v12833_en);
+CHANGELOG_BY_LANG.es.unshift(v12840_es, v12839_es, v12838_es, v12837_es, v12836_es, v12835_es, v12834_es, v12833_es);
+CHANGELOG_BY_LANG.de.unshift(v12840_de, v12839_de, v12838_de, v12837_de, v12836_de, v12835_de, v12834_de, v12833_de);
 
 export const CHANGELOG = CHANGELOG_BY_LANG.fr;
 

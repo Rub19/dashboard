@@ -2,6 +2,21 @@
 
 Toutes les modifications notables de ce projet seront documentées dans ce fichier.
 
+## v1.28.20 — 2026-09-22
+
+**Fiabilisation Universelle des Actions et Formatage API Error**
+
+- **Gestion d'erreur unifiée (`formatApiError`)** : extension systématique du formatage des erreurs d'API du bot sur tous les modules d'actions Discord :
+  - **Centre de Tickets (`/discord/tickets` et `/discord/tickets/[ticketId]`)** : prise en charge de `formatApiError` et parsing de `data?.error` sur toutes les actions (assignation rapide, changement de priorité, fermeture avec raison, sauvegarde/suppression de catégorie, sauvegarde/publication de panneau et création/édition d'équipe).
+  - **Centre de Bienvenue (`/discord/welcome`)** : capture des erreurs d'API et formatage propre sur la sauvegarde de bienvenue, l'onboarding, la prévisualisation, la vérification, l'application de modèles et l'exécution du test.
+  - **Journaux d'Audit (`/discord/logs`)** : capture et affichage lisible des erreurs sur le test de logs et la sauvegarde de la configuration de journalisation.
+  - **Salons Vocaux Temporaires (`/discord/voice`)** : intégration de `formatApiError` lors de la publication du panneau de contrôle vocal.
+  - **Commandes Personnalisées (`/discord/commands`)** : fiabilisation et affichage clair des erreurs lors de la création d'une commande, de la duplication et de l'instanciation à partir d'un modèle.
+  - **Giveaways & Concours (`/discord/giveaways`)** : capture des erreurs du bot lors de la création de concours, clôture anticipée, annulation, reroll, prolongation et disqualification de participants.
+  - **Sécurité Anti-Nuke (`/discord/security/anti-nuke`)** : formatage des erreurs d'API lors de la modification de la configuration et de la résolution d'incidents.
+  - **Création d'Événements (`/discord/events/create`)** : capture du détail de l'erreur API (`result.error`) lors de la publication ou de l'enregistrement de brouillon.
+- **Préservation de la configuration Anti-Raid (`/discord`)** : récupération préalable de la configuration existante (`GET /anti-raid/config`) avant envoi du `PUT` lors de l'activation/désactivation de l'interrupteur Anti-Raid pour éviter d'écraser les seuils et timeouts personnalisés configurés dans le module dédié.
+
 ## v1.28.19 — 2026-09-22
 
 **Barre d'Actions Serveur, Export/Import de Configuration et Harmonisation Overview**

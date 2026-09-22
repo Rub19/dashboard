@@ -31859,11 +31859,52 @@ const v12837_de: ChangelogEntry = {
   ],
 };
 
-CHANGELOG_BY_LANG.fr.unshift(v12837_fr, v12836_fr, v12835_fr, v12834_fr, v12833_fr);
-CHANGELOG_BY_LANG.en.unshift(v12837_en, v12836_en, v12835_en, v12834_en, v12833_en);
-CHANGELOG_BY_LANG.es.unshift(v12837_es, v12836_es, v12835_es, v12834_es, v12833_es);
-CHANGELOG_BY_LANG.de.unshift(v12837_de, v12836_de, v12835_de, v12834_de, v12833_de);
+const v12838_fr: ChangelogEntry = {
+  version: "v1.28.18",
+  date: "2026-09-22",
+  title: "Formatage Universel des Erreurs API et Toasts Intelligents",
+  items: [
+    "Utilitaire Universel formatApiError : création d'un parseur dédié dans lib/format-error.ts et lib/utils.ts avec gestion automatique des erreurs Zod sérialisées en JSON, des tableaux d'erreurs, des objets d'erreur imbriqués et des instances d'Error.",
+    "Fiabilisation des Toasts d'Erreur : intégration de formatApiError dans les modules Modération (/discord/moderation), Gestion de Serveur (/discord/server) et Musique (/discord/music) pour afficher des messages clairs et lisibles à la place de JSON bruts.",
+  ],
+};
+
+const v12838_en: ChangelogEntry = {
+  version: "v1.28.18",
+  date: "2026-09-22",
+  title: "Universal API Error Formatting & Smart Toasts",
+  items: [
+    "Universal formatApiError Utility: created a dedicated parser in lib/format-error.ts and lib/utils.ts with automatic handling of serialized Zod JSON issues, error arrays, nested error objects, and Error instances.",
+    "Error Toasts Hardening: integrated formatApiError into Moderation (/discord/moderation), Server Management (/discord/server), and Music (/discord/music) modules to display clean, human-readable messages instead of raw JSON dumps.",
+  ],
+};
+
+const v12838_es: ChangelogEntry = {
+  version: "v1.28.18",
+  date: "2026-09-22",
+  title: "Formato Universal de Errores API y Toasts Inteligentes",
+  items: [
+    "Utilidad Universal formatApiError: creación de un analizador dedicado en lib/format-error.ts y lib/utils.ts con soporte automático para errores Zod serializados en JSON, arrays de errores y objetos anidados.",
+    "Robustez en Toasts de Error: integración de formatApiError en Moderación (/discord/moderation), Gestión de Servidor (/discord/server) y Música (/discord/music) para mostrar mensajes claros en lugar de cadenas JSON brutas.",
+  ],
+};
+
+const v12838_de: ChangelogEntry = {
+  version: "v1.28.18",
+  date: "2026-09-22",
+  title: "Universelle API-Fehlerformatierung & Intelligente Toasts",
+  items: [
+    "Universelles formatApiError-Dienstprogramm: Erstellung eines dedizierten Parsers in lib/format-error.ts und lib/utils.ts mit automatischer Behandlung von serialisierten Zod-JSON-Fehlern, Fehler-Arrays und verschachtelten Objekten.",
+    "Zuverlässigere Fehler-Toasts: Integration von formatApiError in Moderation (/discord/moderation), Server-Verwaltung (/discord/server) und Musik (/discord/music), um saubere Fehlermeldungen statt rohem JSON anzuzeigen.",
+  ],
+};
+
+CHANGELOG_BY_LANG.fr.unshift(v12838_fr, v12837_fr, v12836_fr, v12835_fr, v12834_fr, v12833_fr);
+CHANGELOG_BY_LANG.en.unshift(v12838_en, v12837_en, v12836_en, v12835_en, v12834_en, v12833_en);
+CHANGELOG_BY_LANG.es.unshift(v12838_es, v12837_es, v12836_es, v12835_es, v12834_es, v12833_es);
+CHANGELOG_BY_LANG.de.unshift(v12838_de, v12837_de, v12836_de, v12835_de, v12834_de, v12833_de);
 
 export const CHANGELOG = CHANGELOG_BY_LANG.fr;
+
 
 

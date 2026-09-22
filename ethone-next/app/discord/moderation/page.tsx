@@ -36,6 +36,7 @@ import { useDiscordOAuth, type DiscordGuild, canManageGuild, getStoredDiscordGui
 import { useBotGuildIds, pickBotGuild } from "@/lib/hooks/useBotGuildIds";
 import { cn } from "@/lib/utils";
 import { GuildSelector } from "@/components/GuildSelector";
+import { formatApiError } from "@/lib/format-error";
 
 // ==========================================
 // TYPES MODERATION CENTER
@@ -425,7 +426,7 @@ export default function ModerationCenterPage() {
         fetchOverview();
       } else {
         const errData = await res.json();
-        showError("Échec de la sanction", errData.error || "Impossible d'appliquer la sanction.");
+        showError("Échec de la sanction", formatApiError(errData.error, "Impossible d'appliquer la sanction."));
       }
     } catch {
       showError("Erreur", "Le serveur Discord ou le bot n'est pas accessible.");
@@ -457,7 +458,7 @@ export default function ModerationCenterPage() {
         fetchOverview();
       } else {
         const err = await res.json();
-        showError("Échec", err.error || "Impossible de révoquer la case.");
+        showError("Échec", formatApiError(err.error, "Impossible de révoquer la case."));
       }
     } catch {
       showError("Erreur réseau", "Impossible de contacter l'API.");

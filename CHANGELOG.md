@@ -2,6 +2,13 @@
 
 Toutes les modifications notables de ce projet seront documentées dans ce fichier.
 
+## v1.28.18 — 2026-09-22
+
+**Formatage Universel des Erreurs API et Toasts Intelligents**
+
+- **Utilitaire universel `formatApiError` (`lib/format-error.ts` & `lib/utils.ts`)** : création d'un parseur dédié avec gestion automatique des erreurs Zod sérialisées en JSON (`[{"code": ...}]`), des tableaux d'erreurs, des objets d'erreur imbriqués et des instances d'`Error`. Couverture de tests unitaires dédiée dans `lib/format-error.test.ts`.
+- **Fiabilisation des notifications d'erreur (toasts)** : intégration de `formatApiError` dans les modules Modération (`/discord/moderation`), Gestion de Serveur (`/discord/server`) et Musique (`/discord/music`) pour afficher des messages clairs et lisibles à la place de JSON bruts lors des rejets de requêtes.
+
 ## v1.28.17 — 2026-09-22
 
 **Harmonisation des Centres Tickets et Bienvenue**

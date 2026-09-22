@@ -45,6 +45,7 @@ import { cn } from "@/lib/utils";
 import { useDiscordOAuth } from "@/lib/hooks/useDiscordOAuth";
 import { useResolvedGuildId } from "@/lib/hooks/useBotGuildIds";
 import ChannelPicker from "@/components/discord/ChannelPicker";
+import { formatApiError } from "@/lib/format-error";
 
 // ==========================================
 // Types
@@ -673,7 +674,7 @@ export default function ServerManagementClient({
         if (res.ok) {
           success(data.message || "Action exécutée avec succès");
         } else {
-          showError(data.error || "Échec de l'action");
+          showError(formatApiError(data.error, "Échec de l'action"));
           return;
         }
       } else {
@@ -715,7 +716,7 @@ export default function ServerManagementClient({
           success("Salon créé avec succès sur Discord");
         } else {
           const err = await res.json();
-          showError(err.error || "Impossible de créer le salon");
+          showError(formatApiError(err.error, "Impossible de créer le salon"));
           return;
         }
       } else {
@@ -742,7 +743,7 @@ export default function ServerManagementClient({
           success(`Salon #${channelName} supprimé`);
         } else {
           const err = await res.json();
-          showError(err.error || "Échec de suppression");
+          showError(formatApiError(err.error, "Échec de suppression"));
           return;
         }
       } else {
@@ -777,7 +778,7 @@ export default function ServerManagementClient({
           success("Rôle créé avec succès");
         } else {
           const err = await res.json();
-          showError(err.error || "Impossible de créer le rôle");
+          showError(formatApiError(err.error, "Impossible de créer le rôle"));
           return;
         }
       } else {
@@ -840,7 +841,7 @@ export default function ServerManagementClient({
           success("Webhook créé avec succès");
         } else {
           const err = await res.json();
-          showError(err.error || "Échec création webhook");
+          showError(formatApiError(err.error, "Échec création webhook"));
           return;
         }
       } else {
@@ -882,7 +883,7 @@ export default function ServerManagementClient({
         });
         if (!res.ok) {
           const err = await res.json();
-          showError(err.error || "Échec sauvegarde");
+          showError(formatApiError(err.error, "Échec sauvegarde"));
           setSavingSettings(false);
           return;
         }

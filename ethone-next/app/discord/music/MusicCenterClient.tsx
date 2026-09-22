@@ -36,6 +36,7 @@ import { GuildSelector } from "@/components/GuildSelector";
 import ChannelPicker from "@/components/discord/ChannelPicker";
 import RolePicker from "@/components/discord/RolePicker";
 import { cn } from "@/lib/utils";
+import { formatApiError } from "@/lib/format-error";
 
 interface Track {
   id: string;
@@ -418,7 +419,7 @@ export default function MusicCenterClient() {
         success("Musique lancée", data.track ? `Ajouté : ${data.track.title}` : "Titre en cours de lecture.");
         fetchState();
       } else {
-        showError("Erreur lecture", data.error || "Impossible de lire ce titre.");
+        showError("Erreur lecture", formatApiError(data.error, "Impossible de lire ce titre."));
       }
     } catch {
       showError("Erreur réseau", "Impossible d'envoyer la commande de lecture.");
@@ -436,7 +437,7 @@ export default function MusicCenterClient() {
         setImportedUrl(data.url || importUrl.trim());
         if (!data.tracks?.length) showError("Playlist vide", "Aucun titre trouvé (playlist privée ou vide ?).");
       } else {
-        showError("Import impossible", data.error || "Impossible de lire cette playlist.");
+        showError("Import impossible", formatApiError(data.error, "Impossible de lire cette playlist."));
       }
     } catch {
       showError("Erreur réseau", "Impossible de contacter le bot.");
@@ -454,7 +455,7 @@ export default function MusicCenterClient() {
         success(shuffle ? "Playlist mélangée lancée" : "Playlist lancée", `${importTracks.length} titres ajoutés à la file.`);
         fetchState();
       } else {
-        showError("Erreur lecture", data.error || "Impossible de lancer la playlist.");
+        showError("Erreur lecture", formatApiError(data.error, "Impossible de lancer la playlist."));
       }
     } catch {
       showError("Erreur réseau", "Impossible d'envoyer la commande de lecture.");
@@ -685,7 +686,7 @@ export default function MusicCenterClient() {
         success("Configuration enregistrée", "Paramètres musicaux mis à jour.");
       } else {
         const data = await res.json().catch(() => null);
-        showError("Réglage refusé", data?.error || `Le bot a répondu une erreur (${res.status}).`);
+        showError("Réglage refusé", formatApiError(data?.error, `Le bot a répondu une erreur (${res.status}).`));
       }
     } catch {
       showError("Erreur", "Impossible d'enregistrer les paramètres.");

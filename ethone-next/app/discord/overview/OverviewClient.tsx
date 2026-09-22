@@ -243,7 +243,7 @@ export default function OverviewClient() {
                 )}
               </OverviewCard>
 
-              <OverviewCard icon={<ShieldAlert className="h-4 w-4" />} color="bg-rose-500/15 text-rose-400" title="Sécurité" href={`/discord/security/anti-raid?guildId=${gid}`}>
+              <OverviewCard icon={<ShieldAlert className="h-4 w-4" />} color="bg-rose-500/15 text-rose-400" title="Sécurité" href={`/discord/security?guildId=${gid}`}>
                 {security.loading ? (
                   <CardSkeleton />
                 ) : security.error || !security.data ? (

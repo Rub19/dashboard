@@ -2,6 +2,15 @@
 
 Toutes les modifications notables de ce projet seront documentées dans ce fichier.
 
+## v1.28.12 — 2026-09-22
+
+**Navigation Hub Sécurité, Détection Bot Anti-Raid & RolePicker Onboarding**
+
+- **Anti-Raid (`/discord/security/anti-raid`)** : mise à jour du bouton retour pour pointer vers le hub `/discord/security` (au lieu de `/discord`), aligné avec le comportement de l'Anti-Nuke.
+- **Détection bot & bandeau d'invitation Anti-Raid** : affichage du panneau « Bot non installé » avec lien d'invitation OAuth direct lorsque le bot n'est pas présent sur le serveur sélectionné, et suspension du polling toutes les 4 secondes vers l'API du bot.
+- **Aperçu Discord (`/discord/overview`)** : redirection de la tuile « Sécurité » vers le hub centralisé `/discord/security` plutôt que directement sur l'Anti-Raid.
+- **Onboarding de bienvenue (`/discord/welcome`)** : modernisation de la sélection de rôle avec le composant universel `RolePicker` (recherche, pastille couleur) en remplacement du `<select>` natif HTML.
+
 ## v1.28.11 — 2026-09-22
 
 **Correction des Pièges d'Interface & Harmonisation des Configurations Discord**

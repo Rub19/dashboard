@@ -23,6 +23,7 @@ import {
   Hash,
   Layers,
   Save,
+  Bot,
 } from "lucide-react";
 import { useToast } from "@/components/ToastProvider";
 import { useDiscordOAuth, type DiscordGuild, canManageGuild, getStoredDiscordGuilds } from "@/lib/hooks/useDiscordOAuth";
@@ -30,6 +31,9 @@ import { useBotGuildIds, pickBotGuild } from "@/lib/hooks/useBotGuildIds";
 import { useDiscordSync } from "@/lib/useDiscordSync";
 import { cn } from "@/lib/utils";
 import { GuildSelector } from "@/components/GuildSelector";
+
+const BOT_CLIENT_ID = "1545139931154878464";
+const BOT_INVITE_URL = `https://discord.com/oauth2/authorize?client_id=${BOT_CLIENT_ID}&permissions=8&scope=bot%20applications.commands`;
 
 // Types Anti-Raid
 type ThreatLevel = "SAFE" | "SUSPICIOUS" | "ELEVATED" | "DANGEROUS" | "CRITICAL";
@@ -331,6 +335,7 @@ export default function AntiRaidDashboardPage() {
   // Serveur actif sélectionné
   // Le paramètre d'URL n'est appliqué qu'une fois par valeur : sinon il annule le choix fait dans le sélecteur.
   const appliedQueryGuild = useRef<string | null>(null);
+  const userSelectedRef = useRef(false);
   const queryGuildId = searchParams.get("guildId");
   const [selectedGuild, setSelectedGuild] = useState<DiscordGuild | null>(null);
 
@@ -344,8 +349,17 @@ export default function AntiRaidDashboardPage() {
         return;
       }
     }
-    if (!selectedGuild && botGuildIds !== null) {
-      setSelectedGuild(pickBotGuild(manageableGuilds, botGuildIds)!);
+    if (!userSelectedRef.current && !queryGuildId) {
+      if (!selectedGuild) {
+        if (botGuildIds !== null) {
+          setSelectedGuild(pickBotGuild(manageableGuilds, botGuildIds)!);
+        }
+      } else if (botGuildIds && botGuildIds.length > 0 && !botGuildIds.includes(selectedGuild.id)) {
+        const botGuild = pickBotGuild(manageableGuilds, botGuildIds);
+        if (botGuild && botGuild.id !== selectedGuild.id && botGuildIds.includes(botGuild.id)) {
+          setSelectedGuild(botGuild);
+        }
+      }
     }
   }, [manageableGuilds, queryGuildId, selectedGuild, botGuildIds]);
 
@@ -396,6 +410,7 @@ export default function AntiRaidDashboardPage() {
   // Charger la configuration et les métriques
   const fetchLiveStatus = useCallback(async () => {
     if (!selectedGuild) return;
+    if (botGuildIds !== null && !botGuildIds.includes(selectedGuild.id)) return;
     try {
       const res = await fetch(`${BOT_API_URL}/api/guilds/${selectedGuild.id}/anti-raid/status`, { credentials: "include" });
       if (res.ok) {
@@ -407,10 +422,23 @@ export default function AntiRaidDashboardPage() {
     } catch {
       // Bot injoignable : on garde les dernières métriques reçues, aucune valeur inventée.
     }
-  }, [selectedGuild]);
+  }, [selectedGuild, botGuildIds]);
 
   const fetchConfig = useCallback(async () => {
     if (!selectedGuild) return;
+
+    // Si le bot n'est pas installé, charger directement le cache local sans requête réseau
+    if (botGuildIds !== null && !botGuildIds.includes(selectedGuild.id)) {
+      try {
+        const saved = localStorage.getItem(`ethone:anti-raid:${selectedGuild.id}`);
+        if (saved) setSettings(JSON.parse(saved));
+        else setSettings(DEFAULT_ANTI_RAID_SETTINGS);
+      } catch {
+        setSettings(DEFAULT_ANTI_RAID_SETTINGS);
+      }
+      return;
+    }
+
     try {
       const res = await fetch(`${BOT_API_URL}/api/guilds/${selectedGuild.id}/anti-raid/config`, { credentials: "include" });
       if (res.ok) {
@@ -430,7 +458,7 @@ export default function AntiRaidDashboardPage() {
     } catch {
       setSettings(DEFAULT_ANTI_RAID_SETTINGS);
     }
-  }, [selectedGuild]);
+  }, [selectedGuild, botGuildIds]);
 
   // Reflète en direct les changements faits via la commande Discord /antiraid
   // (ou un autre onglet dashboard) sans attendre un rechargement manuel.
@@ -445,6 +473,10 @@ export default function AntiRaidDashboardPage() {
 
   const fetchIncidents = useCallback(async () => {
     if (!selectedGuild) return;
+    if (botGuildIds !== null && !botGuildIds.includes(selectedGuild.id)) {
+      setIncidents([]);
+      return;
+    }
     try {
       const res = await fetch(`${BOT_API_URL}/api/guilds/${selectedGuild.id}/anti-raid/incidents?limit=20`, { credentials: "include" });
       if (res.ok) {
@@ -456,65 +488,19 @@ export default function AntiRaidDashboardPage() {
       }
     } catch {}
 
-    // Fallback default incidents sample
-    setIncidents([
-      {
-        id: "INC-9481-421",
-        guildId: selectedGuild.id,
-        type: "JOIN_RAID",
-        threatLevel: "DANGEROUS",
-        maxRiskScore: 78,
-        triggerReason: "18 arrivées groupées en 8 secondes",
-        startedAt: new Date(Date.now() - 3600000 * 2).toISOString(),
-        resolvedAt: new Date(Date.now() - 3600000 * 2 + 300000).toISOString(),
-        durationSeconds: 300,
-        affectedCount: 18,
-        actionsExecuted: ["QUARANTINE", "ENABLE_RAID_MODE", "ALERT_STAFF"],
-        triggerSignals: [
-          "18 arrivées en 8s",
-          "12 comptes créés il y a <24h",
-          "9 comptes sans avatar",
-        ],
-        involvedMembers: [
-          {
-            userId: "1098234710129",
-            userTag: "RaidBot_01#4921",
-            joinedAt: new Date(Date.now() - 3600000 * 2).toISOString(),
-            accountCreatedAt: new Date(Date.now() - 3600000 * 24).toISOString(),
-            accountAgeDays: 0.8,
-            hasDefaultAvatar: true,
-            isBot: false,
-            actionTaken: "QUARANTINE",
-            riskContributions: ["Compte récent", "Pas d'avatar"],
-          },
-          {
-            userId: "1098234710130",
-            userTag: "SpamJoiner_22#9182",
-            joinedAt: new Date(Date.now() - 3600000 * 2 + 2000).toISOString(),
-            accountCreatedAt: new Date(Date.now() - 3600000 * 12).toISOString(),
-            accountAgeDays: 0.5,
-            hasDefaultAvatar: true,
-            isBot: false,
-            actionTaken: "QUARANTINE",
-            riskContributions: ["Compte récent"],
-          },
-        ],
-        status: "AUTO_RESOLVED",
-        resolvedBy: "Auto-Exit",
-      },
-    ]);
-  }, [selectedGuild]);
+    setIncidents([]);
+  }, [selectedGuild, botGuildIds]);
 
   // Polling automatique des métriques live toutes les 4 secondes
   useEffect(() => {
     fetchConfig();
     fetchIncidents();
-    if (!BOT_API_URL) return;
+    if (!BOT_API_URL || (botGuildIds !== null && selectedGuild && !botGuildIds.includes(selectedGuild.id))) return;
     fetchLiveStatus();
 
     const interval = setInterval(fetchLiveStatus, 4000);
     return () => clearInterval(interval);
-  }, [fetchLiveStatus, fetchConfig, fetchIncidents]);
+  }, [fetchLiveStatus, fetchConfig, fetchIncidents, selectedGuild, botGuildIds]);
 
   // Sauvegarde de la configuration
   const handleSaveConfig = async () => {
@@ -759,9 +745,9 @@ export default function AntiRaidDashboardPage() {
       <div className="shrink-0 border-b border-[var(--panel-border)] bg-[var(--bg-surface-elevated)]/80 backdrop-blur-md px-4 sm:px-6 py-3.5 flex flex-wrap items-center justify-between gap-3 z-20">
         <div className="flex items-center gap-3">
           <Link
-            href="/discord"
+            href={selectedGuild ? `/discord/security?guildId=${selectedGuild.id}` : "/discord/security"}
             className="p-1.5 rounded-lg text-white/75 hover:text-white hover:bg-white/5 transition-colors"
-            title="Retour au hub Discord"
+            title="Retour au hub Sécurité"
           >
             <ArrowLeft className="w-5 h-5" />
           </Link>
@@ -784,7 +770,14 @@ export default function AntiRaidDashboardPage() {
         {/* Server Selector & Quick Status */}
         <div className="flex items-center gap-2.5">
           {manageableGuilds.length > 0 ? (
-            <GuildSelector guilds={manageableGuilds} value={selectedGuild?.id || ""} onChange={setSelectedGuild} />
+            <GuildSelector
+              guilds={manageableGuilds}
+              value={selectedGuild?.id || ""}
+              onChange={(g) => {
+                userSelectedRef.current = true;
+                setSelectedGuild(g);
+              }}
+            />
           ) : (
             <span className="text-xs text-white/70">Aucun serveur administrable</span>
           )}
@@ -810,6 +803,30 @@ export default function AntiRaidDashboardPage() {
 
       {/* 2. SCROLLABLE CONTAINER (pb-36 clears bottom dock) */}
       <div className="flex-1 overflow-y-auto os-scroll px-4 sm:px-6 py-6 pb-36 space-y-6">
+        {selectedGuild && botGuildIds !== null && !botGuildIds.includes(selectedGuild.id) && (
+          <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 rounded-2xl border border-indigo-500/30 bg-indigo-500/10 p-4 text-xs text-indigo-200">
+            <div className="flex items-start gap-3">
+              <div className="p-2 rounded-xl bg-indigo-500/20 text-indigo-300 shrink-0 mt-0.5">
+                <Bot className="h-5 w-5" />
+              </div>
+              <div>
+                <p className="font-semibold text-white text-sm">Le bot ETHONE n&apos;est pas installé sur ce serveur</p>
+                <p className="mt-0.5 text-zinc-300">
+                  Invitez le bot sur « {selectedGuild.name} » pour activer la surveillance et les protections Anti-Raid en temps réel.
+                </p>
+              </div>
+            </div>
+            <a
+              href={`${BOT_INVITE_URL}&guild_id=${selectedGuild.id}`}
+              target="_blank"
+              rel="noopener noreferrer"
+              className="inline-flex items-center justify-center gap-1.5 rounded-xl bg-indigo-600 px-4 py-2 text-xs font-semibold text-white shadow-md hover:bg-indigo-500 transition-colors shrink-0"
+            >
+              Inviter le bot
+            </a>
+          </div>
+        )}
+
         {/* 2.0 INTERRUPTEUR MAÎTRE */}
         <div
           className={cn(

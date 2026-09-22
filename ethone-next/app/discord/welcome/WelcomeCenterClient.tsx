@@ -346,21 +346,21 @@ function OnboardingEditor({
                   </label>
                   {(step.roleChoices || []).map((choice, ci) => (
                     <div key={ci} className="grid grid-cols-[minmax(0,1.3fr)_minmax(0,1fr)_3.5rem_minmax(0,1fr)_auto] items-center gap-1.5">
-                      <select
+                      <RolePicker
                         value={choice.roleId}
-                        onChange={(e) => {
-                          const role = roles.find((r) => r.id === e.target.value);
-                          patchStep(idx, { roleChoices: step.roleChoices.map((c, i) => (i === ci ? { ...c, roleId: e.target.value, label: c.label || role?.name || "" } : c)) });
+                        onChange={(roleId, role) => {
+                          patchStep(idx, {
+                            roleChoices: step.roleChoices.map((c, i) =>
+                              i === ci ? { ...c, roleId, label: c.label || role?.name || "" } : c
+                            ),
+                          });
                         }}
-                        className={fieldClass}
-                      >
-                        <option value="">Rôle…</option>
-                        {roles.filter((r) => r.manageable).map((r) => (
-                          <option key={r.id} value={r.id}>
-                            {r.name}
-                          </option>
-                        ))}
-                      </select>
+                        roles={roles}
+                        guildId={onboarding.guildId}
+                        size="sm"
+                        placeholder="Rôle…"
+                        filterManageable
+                      />
                       <input type="text" value={choice.label} placeholder="Libellé" onChange={(e) => patchStep(idx, { roleChoices: step.roleChoices.map((c, i) => (i === ci ? { ...c, label: e.target.value } : c)) })} className={fieldClass} />
                       <input type="text" value={choice.emoji || ""} placeholder="😀" maxLength={8} onChange={(e) => patchStep(idx, { roleChoices: step.roleChoices.map((c, i) => (i === ci ? { ...c, emoji: e.target.value || null } : c)) })} className={fieldClass} />
                       <input type="text" value={choice.description || ""} placeholder="Description" onChange={(e) => patchStep(idx, { roleChoices: step.roleChoices.map((c, i) => (i === ci ? { ...c, description: e.target.value || null } : c)) })} className={fieldClass} />

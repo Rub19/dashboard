@@ -31574,5 +31574,58 @@ CHANGELOG_BY_LANG.en.unshift(v12831_en);
 CHANGELOG_BY_LANG.es.unshift(v12831_es);
 CHANGELOG_BY_LANG.de.unshift(v12831_de);
 
+const v12832_fr: ChangelogEntry = {
+  version: "v1.28.12",
+  date: "2026-09-22",
+  title: "Navigation Hub Sécurité, Détection Bot Anti-Raid & RolePicker Onboarding",
+  items: [
+    "Anti-Raid : mise à jour du bouton retour pour pointer vers le hub /discord/security (comme l'Anti-Nuke).",
+    "Anti-Raid : ajout de la bannière « Bot non installé » avec lien d'invitation direct et suspension du polling 4s lorsque le serveur sélectionné n'a pas le bot.",
+    "Aperçu général (/discord/overview) : redirection de la carte « Sécurité » vers le hub /discord/security.",
+    "Onboarding (/discord/welcome) : remplacement du sélecteur HTML natif par le composant moderne RolePicker (avec recherche et badges couleur).",
+  ],
+};
+
+const v12832_en: ChangelogEntry = {
+  version: "v1.28.12",
+  date: "2026-09-22",
+  title: "Security Hub Navigation, Anti-Raid Bot Detection & Onboarding RolePicker",
+  items: [
+    "Anti-Raid: updated back button to point directly to the /discord/security hub (matching Anti-Nuke).",
+    "Anti-Raid: added 'Bot not installed' banner with invite link and paused 4s polling when selected guild lacks the bot.",
+    "Overview (/discord/overview): redirected 'Security' card to the /discord/security hub.",
+    "Onboarding (/discord/welcome): replaced raw HTML select with the modern RolePicker component (with search and color badges).",
+  ],
+};
+
+const v12832_es: ChangelogEntry = {
+  version: "v1.28.12",
+  date: "2026-09-22",
+  title: "Navegación del Centro de Seguridad, Detección de Bot en Anti-Raid y RolePicker en Onboarding",
+  items: [
+    "Anti-Raid: botón de retorno actualizado para apuntar al centro /discord/security (igual que Anti-Nuke).",
+    "Anti-Raid: añadido panel de 'Bot no instalado' con enlace de invitación y pausa del sondeo de 4s en servidores sin el bot.",
+    "Resumen (/discord/overview): tarjeta de 'Seguridad' redirigida al centro /discord/security.",
+    "Onboarding (/discord/welcome): reemplazado el selector HTML nativo por el componente moderno RolePicker (con búsqueda y colores).",
+  ],
+};
+
+const v12832_de: ChangelogEntry = {
+  version: "v1.28.12",
+  date: "2026-09-22",
+  title: "Sicherheitshub-Navigation, Anti-Raid-Bot-Erkennung & Onboarding-RolePicker",
+  items: [
+    "Anti-Raid: Zurück-Button verlinkt nun direkt zum Hub /discord/security (wie bei Anti-Nuke).",
+    "Anti-Raid: Banner 'Bot nicht installiert' mit Einladungslink hinzugefügt und 4s-Polling pausiert, wenn der Bot auf dem Server fehlt.",
+    "Übersicht (/discord/overview): 'Sicherheit'-Karte führt nun zum Hub /discord/security.",
+    "Onboarding (/discord/welcome): natives HTML-Auswahlfeld durch moderne RolePicker-Komponente (mit Suche und Farb-Badges) ersetzt.",
+  ],
+};
+
+CHANGELOG_BY_LANG.fr.unshift(v12832_fr);
+CHANGELOG_BY_LANG.en.unshift(v12832_en);
+CHANGELOG_BY_LANG.es.unshift(v12832_es);
+CHANGELOG_BY_LANG.de.unshift(v12832_de);
+
 export const CHANGELOG = CHANGELOG_BY_LANG.fr;
 

@@ -2,6 +2,14 @@
 
 Toutes les modifications notables de ce projet seront documentées dans ce fichier.
 
+## v1.28.32 — 2026-09-23
+
+### Correction critique du crash au chargement (ReferenceError v12842)
+- **Résolution définitive du crash au chargement (`ethone-next/data/changelog.ts`)** : Élimination de la référence fantôme `v12842_fr` dans l'in-app changelog. Cette variable non déclarée levait une exception non gérée `ReferenceError: v12842_fr is not defined` à l'évaluation du bundle client, causant le basculement immédiat vers l'écran d'erreur global (`global-error.tsx`).
+- **Validation stricte TypeScript** : Exécution et validation sans faute de `tsc --noEmit` (0 erreur), garantissant l'intégrité de l'ensemble des références et des types du projet.
+
+---
+
 ## v1.28.31 — 2026-09-23
 
 ### Correction du crash au rafraîchissement & fiabilisation de l'hydratation Focus

@@ -32445,10 +32445,50 @@ const v12851_de: ChangelogEntry = {
   ],
 };
 
-CHANGELOG_BY_LANG.fr.unshift(v12851_fr, v12850_fr, v12849_fr, v12848_fr, v12847_fr, v12846_fr, v12845_fr, v12844_fr, v12843_fr, v12842_fr, v12841_fr, v12840_fr, v12839_fr, v12838_fr, v12837_fr, v12836_fr, v12835_fr, v12834_fr, v12833_fr);
-CHANGELOG_BY_LANG.en.unshift(v12851_en, v12850_en, v12849_en, v12848_en, v12847_en, v12846_en, v12845_en, v12844_en, v12843_en, v12842_en, v12841_en, v12840_en, v12839_en, v12838_en, v12837_en, v12836_en, v12835_en, v12834_en, v12833_en);
-CHANGELOG_BY_LANG.es.unshift(v12851_es, v12850_es, v12849_es, v12848_es, v12847_es, v12846_es, v12845_es, v12844_es, v12843_es, v12842_es, v12841_es, v12840_es, v12839_es, v12838_es, v12837_es, v12836_es, v12835_es, v12834_es, v12833_es);
-CHANGELOG_BY_LANG.de.unshift(v12851_de, v12850_de, v12849_de, v12848_de, v12847_de, v12846_de, v12845_de, v12844_de, v12843_de, v12842_de, v12841_de, v12840_de, v12839_de, v12838_de, v12837_de, v12836_de, v12835_de, v12834_de, v12833_de);
+const v12852_fr: ChangelogEntry = {
+  version: "v1.28.32",
+  date: "2026-09-23",
+  title: "Correction critique du crash au chargement (ReferenceError v12842)",
+  items: [
+    "Résolution définitive du crash au chargement (F5 / chargement initial) : suppression de la référence fantôme v12842_fr dans l'in-app changelog qui provoquait une ReferenceError non interceptée lors de l'évaluation du bundle client.",
+    "Vérification stricte TypeScript : validation complète de tsc --noEmit garantissant zéro référence indéfinie résiduelle dans tout le code source.",
+  ],
+};
+
+const v12852_en: ChangelogEntry = {
+  version: "v1.28.32",
+  date: "2026-09-23",
+  title: "Critical Load Crash Fix (ReferenceError v12842)",
+  items: [
+    "Definitive resolution of load crash (F5 / initial page load): removed phantom v12842_en reference in in-app changelog that caused an uncaught ReferenceError during client bundle evaluation.",
+    "Strict TypeScript Verification: full tsc --noEmit validation ensuring zero remaining undefined references in the entire codebase.",
+  ],
+};
+
+const v12852_es: ChangelogEntry = {
+  version: "v1.28.32",
+  date: "2026-09-23",
+  title: "Corrección crítica de bloqueo al cargar (ReferenceError v12842)",
+  items: [
+    "Resolución definitiva del error al cargar (F5 / carga inicial): eliminación de la referencia fantasma v12842_es en el registro de cambios in-app que provocaba un ReferenceError no capturado.",
+    "Verificación estricta de TypeScript: validación completa con tsc --noEmit garantizando cero referencias indefinidas.",
+  ],
+};
+
+const v12852_de: ChangelogEntry = {
+  version: "v1.28.32",
+  date: "2026-09-23",
+  title: "Kritische Behebung des Lade-Absturzes (ReferenceError v12842)",
+  items: [
+    "Endgültige Behebung des Absturzes beim Laden (F5 / erster Seitenaufruf): Entfernung der Phantom-Referenz v12842_de im In-App-Changelog, die einen unbehandelten ReferenceError bei der Auswertung des Client-Bundles verursachte.",
+    "Strikte TypeScript-Prüfung: Vollständige Validierung via tsc --noEmit gewährleistet null verbleibende undefinierte Referenzen.",
+  ],
+};
+
+CHANGELOG_BY_LANG.fr.unshift(v12852_fr, v12851_fr, v12850_fr, v12849_fr, v12848_fr, v12847_fr, v12846_fr, v12845_fr, v12844_fr, v12843_fr, v12841_fr, v12840_fr, v12839_fr, v12838_fr, v12837_fr, v12836_fr, v12835_fr, v12834_fr, v12833_fr);
+CHANGELOG_BY_LANG.en.unshift(v12852_en, v12851_en, v12850_en, v12849_en, v12848_en, v12847_en, v12846_en, v12845_en, v12844_en, v12843_en, v12841_en, v12840_en, v12839_en, v12838_en, v12837_en, v12836_en, v12835_en, v12834_en, v12833_en);
+CHANGELOG_BY_LANG.es.unshift(v12852_es, v12851_es, v12850_es, v12849_es, v12848_es, v12847_es, v12846_es, v12845_es, v12844_es, v12843_es, v12841_es, v12840_es, v12839_es, v12838_es, v12837_es, v12836_es, v12835_es, v12834_es, v12833_es);
+CHANGELOG_BY_LANG.de.unshift(v12852_de, v12851_de, v12850_de, v12849_de, v12848_de, v12847_de, v12846_de, v12845_de, v12844_de, v12843_de, v12841_de, v12840_de, v12839_de, v12838_de, v12837_de, v12836_de, v12835_de, v12834_de, v12833_de);
 
 export const CHANGELOG = CHANGELOG_BY_LANG.fr;
 

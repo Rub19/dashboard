@@ -208,8 +208,6 @@ export default function SuggestionsCenterClient() {
 
   const currentGuildId = selectedGuild?.id || rawGuildId || "";
   const isBotPresent = Boolean(currentGuildId && botGuildIds && botGuildIds.includes(currentGuildId));
-  const activeGuild = selectedGuild;
-
   const base = `${BOT_API_URL}/api/guilds/${currentGuildId}/suggestions`;
   const isRealGuild = Boolean(BOT_API_URL) && Boolean(currentGuildId);
 
@@ -424,19 +422,25 @@ export default function SuggestionsCenterClient() {
 
   const deleteSuggestion = async (s: Suggestion) => {
     if (!confirm(`Supprimer définitivement la suggestion #${s.numericId} ?`)) return;
+    if (isDemo) return;
     setSuggestions((prev) => {
       const next = prev.filter((x) => x.id !== s.id);
       setOverview(computeOverview(next));
       return next;
     });
     if (selectedId === s.id) setSelectedId(null);
-    if (isDemo) return;
     try {
       const res = await fetch(`${base}/${s.id}`, { method: "DELETE", credentials: "include" });
       const data = await res.json().catch(() => null);
       if (!res.ok) throw new Error(data?.error || "delete failed");
     } catch (e: any) {
-      toastError(formatApiError(e, "Échec de la suppression — rechargez la page."));
+      // Rollback : on remet la suggestion dans la liste
+      setSuggestions((prev) => {
+        const next = [...prev, s].sort((a, b) => b.numericId - a.numericId);
+        setOverview(computeOverview(next));
+        return next;
+      });
+      toastError(formatApiError(e, "Échec de la suppression."));
     }
   };
 
@@ -475,12 +479,9 @@ export default function SuggestionsCenterClient() {
   };
 
   const saveConfig = async (patch: Partial<SuggestionConfig>) => {
-    const next = { ...config, ...patch };
-    setConfig(next);
-    if (isDemo) {
-      toastError("Bot injoignable", "Rien n'a été enregistré.");
-      return;
-    }
+    if (isDemo) { toastError("Bot injoignable", "Rien n'a été enregistré."); return; }
+    const previous = config;
+    setConfig({ ...config, ...patch });
     setSavingConfig(true);
     try {
       const res = await fetch(`${base}/config/settings`, {
@@ -493,6 +494,7 @@ export default function SuggestionsCenterClient() {
       if (!res.ok) throw new Error(data?.error || "save failed");
       success("Paramètres des suggestions enregistrés.");
     } catch (e: any) {
+      setConfig(previous);
       toastError(formatApiError(e, "Échec de l'enregistrement des paramètres."));
     } finally {
       setSavingConfig(false);

@@ -223,8 +223,6 @@ export default function EconomyCenterClient() {
 
   const currentGuildId = selectedGuild?.id || rawGuildId || "";
   const isBotPresent = Boolean(currentGuildId && botGuildIds && botGuildIds.includes(currentGuildId));
-  const activeGuild = selectedGuild;
-
   const base = `${BOT_API_URL}/api/guilds/${currentGuildId}/economy`;
 
   const [config, setConfig] = useState<EconomyConfig>(DEFAULT_CONFIG);

@@ -32035,10 +32035,62 @@ const v12841_de: ChangelogEntry = {
   ],
 };
 
-CHANGELOG_BY_LANG.fr.unshift(v12841_fr, v12840_fr, v12839_fr, v12838_fr, v12837_fr, v12836_fr, v12835_fr, v12834_fr, v12833_fr);
-CHANGELOG_BY_LANG.en.unshift(v12841_en, v12840_en, v12839_en, v12838_en, v12837_en, v12836_en, v12835_en, v12834_en, v12833_en);
-CHANGELOG_BY_LANG.es.unshift(v12841_es, v12840_es, v12839_es, v12838_es, v12837_es, v12836_es, v12835_es, v12834_es, v12833_es);
-CHANGELOG_BY_LANG.de.unshift(v12841_de, v12840_de, v12839_de, v12838_de, v12837_de, v12836_de, v12835_de, v12834_de, v12833_de);
+const v12842_fr: ChangelogEntry = {
+  version: "v1.28.22",
+  date: "2026-09-22",
+  title: "Corrections de bugs : rollbacks optimistes, console.log prod, imports morts",
+  items: [
+    "Highlights : handleToggleEnabled corrigé — vérification BOT_API_URL avant l'état optimiste (plus de toggle fantôme en UI si le bot est injoignable) ; formatApiError désormais propagé dans le catch.",
+    "Suggestions : saveConfig corrigé — l'état optimiste n'est plus appliqué en mode demo (plus de config affichée comme modifiée alors que rien n'est sauvegardé) ; rollback automatique de la config en cas d'erreur réseau.",
+    "Suggestions : deleteSuggestion corrigé — la suggestion est remise dans la liste en cas d'échec API (plus de disparition fantôme ; la vérification isDemo est effectuée avant toute mutation UI).",
+    "ServiceWorker : console.log('SW registered') supprimé en production (guard NODE_ENV ajouté).",
+    "Nettoyage : suppression de l'import mort ChevronDown dans HighlightsCenterClient, et des variables mortes activeGuild dans EconomyCenterClient et SuggestionsCenterClient.",
+  ],
+};
+
+const v12842_en: ChangelogEntry = {
+  version: "v1.28.22",
+  date: "2026-09-22",
+  title: "Bug fixes: optimistic rollbacks, prod console.log, dead imports",
+  items: [
+    "Highlights: fixed handleToggleEnabled — BOT_API_URL guard now runs before the optimistic state update (no more phantom toggle in UI when bot is unreachable); formatApiError now propagated in catch.",
+    "Suggestions: fixed saveConfig — optimistic state is no longer applied in demo mode (config no longer shown as saved when nothing was persisted); automatic config rollback on network error.",
+    "Suggestions: fixed deleteSuggestion — suggestion is restored in the list on API failure (no more phantom deletion; isDemo check now runs before any UI mutation).",
+    "ServiceWorker: console.log('SW registered') removed from production builds (NODE_ENV guard added).",
+    "Cleanup: removed dead import ChevronDown in HighlightsCenterClient, and dead variables activeGuild in EconomyCenterClient and SuggestionsCenterClient.",
+  ],
+};
+
+const v12842_es: ChangelogEntry = {
+  version: "v1.28.22",
+  date: "2026-09-22",
+  title: "Correcciones: rollbacks optimistas, console.log en prod, imports muertos",
+  items: [
+    "Highlights: corregido handleToggleEnabled — la verificación de BOT_API_URL ahora ocurre antes del estado optimista (sin más toggle fantasma en UI si el bot es inalcanzable); formatApiError ahora propagado en el catch.",
+    "Suggestions: corregido saveConfig — el estado optimista ya no se aplica en modo demo (la config ya no aparece como guardada si nada fue persistido); rollback automático de la config en error de red.",
+    "Suggestions: corregido deleteSuggestion — la sugerencia vuelve a la lista si la API falla (sin más eliminación fantasma; la comprobación isDemo ocurre antes de cualquier mutación de UI).",
+    "ServiceWorker: console.log('SW registered') eliminado en producción (guard NODE_ENV añadido).",
+    "Limpieza: eliminado import muerto ChevronDown en HighlightsCenterClient, y variables muertas activeGuild en EconomyCenterClient y SuggestionsCenterClient.",
+  ],
+};
+
+const v12842_de: ChangelogEntry = {
+  version: "v1.28.22",
+  date: "2026-09-22",
+  title: "Fehlerbehebungen: optimistische Rollbacks, console.log Prod, tote Imports",
+  items: [
+    "Highlights: handleToggleEnabled korrigiert — BOT_API_URL-Prüfung erfolgt nun vor dem optimistischen Zustand (kein Phantomumschalter mehr in der UI, wenn der Bot nicht erreichbar ist); formatApiError jetzt im catch weitergegeben.",
+    "Suggestions: saveConfig korrigiert — optimistischer Zustand wird im Demo-Modus nicht mehr angewendet (Config wird nicht mehr als gespeichert angezeigt, wenn nichts gespeichert wurde); automatisches Config-Rollback bei Netzwerkfehler.",
+    "Suggestions: deleteSuggestion korrigiert — Vorschlag wird bei API-Fehler wieder in die Liste eingefügt (kein Phantomlöschen mehr; isDemo-Prüfung erfolgt nun vor jeder UI-Mutation).",
+    "ServiceWorker: console.log('SW registered') in Produktions-Builds entfernt (NODE_ENV-Guard hinzugefügt).",
+    "Bereinigung: toter Import ChevronDown in HighlightsCenterClient und tote Variablen activeGuild in EconomyCenterClient und SuggestionsCenterClient entfernt.",
+  ],
+};
+
+CHANGELOG_BY_LANG.fr.unshift(v12842_fr, v12841_fr, v12840_fr, v12839_fr, v12838_fr, v12837_fr, v12836_fr, v12835_fr, v12834_fr, v12833_fr);
+CHANGELOG_BY_LANG.en.unshift(v12842_en, v12841_en, v12840_en, v12839_en, v12838_en, v12837_en, v12836_en, v12835_en, v12834_en, v12833_en);
+CHANGELOG_BY_LANG.es.unshift(v12842_es, v12841_es, v12840_es, v12839_es, v12838_es, v12837_es, v12836_es, v12835_es, v12834_es, v12833_es);
+CHANGELOG_BY_LANG.de.unshift(v12842_de, v12841_de, v12840_de, v12839_de, v12838_de, v12837_de, v12836_de, v12835_de, v12834_de, v12833_de);
 
 export const CHANGELOG = CHANGELOG_BY_LANG.fr;
 

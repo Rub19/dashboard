@@ -3,7 +3,7 @@
 import { useCallback, useEffect, useMemo, useState, useRef } from "react";
 import Link from "next/link";
 import { useSearchParams } from "next/navigation";
-import { Eye, ArrowLeft, RefreshCw, Plus, X, ChevronDown, AlertTriangle, Hash, Bot } from "lucide-react";
+import { Eye, ArrowLeft, RefreshCw, Plus, X, AlertTriangle, Hash, Bot } from "lucide-react";
 import { useToast } from "@/components/ToastProvider";
 import { useDiscordOAuth, type DiscordGuild } from "@/lib/hooks/useDiscordOAuth";
 import { useBotGuildIds, pickBotGuild } from "@/lib/hooks/useBotGuildIds";
@@ -172,8 +172,8 @@ export default function HighlightsCenterClient() {
 
   const handleToggleEnabled = async (value: boolean) => {
     if (!selectedGuild) return;
+    if (!BOT_API_URL) { showError("Bot injoignable", "Rien n'a été enregistré."); return; }
     setConfig((c) => (c ? { ...c, enabled: value } : c));
-    if (!BOT_API_URL) return showError("Bot injoignable", "Rien n'a été enregistré.");
     try {
       const res = await fetch(`${BOT_API_URL}/api/guilds/${selectedGuild.id}/highlights/mine/config`, {
         method: "PUT",
@@ -181,10 +181,11 @@ export default function HighlightsCenterClient() {
         credentials: "include",
         body: JSON.stringify({ enabled: value }),
       });
-      if (!res.ok) throw new Error();
+      const body = await res.json().catch(() => null);
+      if (!res.ok) throw new Error(body?.error || `HTTP ${res.status}`);
       success(value ? "Highlights réactivés" : "Highlights en pause", "Tes mots-clés sont conservés.");
-    } catch {
-      showError("Échec de la sauvegarde", "Impossible de joindre le serveur du bot.");
+    } catch (err: unknown) {
+      showError("Échec de la sauvegarde", formatApiError(err, "Impossible de joindre le serveur du bot."));
       load();
     }
   };

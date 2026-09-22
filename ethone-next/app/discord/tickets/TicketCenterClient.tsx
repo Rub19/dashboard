@@ -1405,7 +1405,7 @@ export function TicketCenterClient() {
               </p>
             </div>
             <button
-              onClick={() => {
+              onClick={async () => {
                 const newRule: TicketAutomationItem = {
                   id: `auto-${Date.now()}`,
                   guildId: currentGuildId,
@@ -1415,12 +1415,19 @@ export function TicketCenterClient() {
                   conditions: [{ field: "categoryId", operator: "EQUALS", value: "cat-support" }],
                   actions: [{ type: "ASSIGN_TEAM", payload: { teamId: "team-support" } }],
                 };
-                fetch(`${API_BASE}/api/guilds/${currentGuildId}/tickets/automations`, {
-                  credentials: "include",
-                  method: "POST",
-                  headers: { "Content-Type": "application/json" },
-                  body: JSON.stringify(newRule),
-                }).then(() => fetchAllData());
+                try {
+                  const res = await fetch(`${API_BASE}/api/guilds/${currentGuildId}/tickets/automations`, {
+                    credentials: "include",
+                    method: "POST",
+                    headers: { "Content-Type": "application/json" },
+                    body: JSON.stringify(newRule),
+                  });
+                  const data = await res.json().catch(() => null);
+                  if (!res.ok) throw new Error(data?.error || `HTTP ${res.status}`);
+                  await fetchAllData();
+                } catch (err: unknown) {
+                  showError("Erreur", formatApiError(err, "Impossible d'ajouter la règle d'automatisation."));
+                }
               }}
               className="flex items-center gap-1.5 rounded-xl bg-emerald-600 px-3.5 py-2 text-xs font-bold text-white shadow-sm hover:bg-emerald-500 transition-all cursor-pointer"
             >
@@ -1458,11 +1465,20 @@ export function TicketCenterClient() {
                     {a.enabled ? "Actif" : "Inactif"}
                   </span>
                   <button
-                    onClick={() => {
-                      fetch(`${API_BASE}/api/guilds/${currentGuildId}/tickets/automations/${a.id}`, {
-                        credentials: "include",
-                        method: "DELETE",
-                      }).then(() => fetchAllData());
+                    onClick={async () => {
+                      try {
+                        const res = await fetch(`${API_BASE}/api/guilds/${currentGuildId}/tickets/automations/${a.id}`, {
+                          credentials: "include",
+                          method: "DELETE",
+                        });
+                        if (!res.ok) {
+                          const data = await res.json().catch(() => null);
+                          throw new Error(data?.error || `HTTP ${res.status}`);
+                        }
+                        await fetchAllData();
+                      } catch (err: unknown) {
+                        showError("Erreur", formatApiError(err, "Impossible de supprimer la règle d'automatisation."));
+                      }
                     }}
                     className="p-1.5 text-zinc-400 hover:text-rose-400 transition-colors"
                   >

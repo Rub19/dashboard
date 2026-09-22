@@ -2,6 +2,29 @@
 
 Toutes les modifications notables de ce projet seront documentées dans ce fichier.
 
+## v1.28.23 — 2026-09-22
+
+### Corrections critiques & rollbacks d'état
+- **Tickets Helpdesk (`/discord/tickets`)** : correction de deux appels `fetch` non protégés ("fire-and-forget" sans `try/catch` ni `await`) lors de l'ajout et de la suppression d'une règle d'automatisation Helpdesk, qui provoquaient des *Unhandled Promise Rejections* non gérées en cas d'erreur réseau ou serveur. Les deux actions utilisent désormais `async/await`, un bloc `try/catch`, et un toast d'erreur explicite formaté avec `formatApiError`.
+- **IA RAG (`/discord/ai`)** : `handleDeleteKnowledge` restaure désormais la source de connaissances supprimée en cas d'erreur de suppression côté API (rollback d'état optimiste).
+- **Système de Niveaux (`/discord/leveling`)** : `removeReward` et `removeBoost` restaurent désormais la récompense ou le boost supprimé dans l'état local en cas d'échec de la requête `DELETE` auprès de l'API bot (rollback d'état optimiste avec message d'erreur informatif).
+
+---
+
+## v1.28.22 — 2026-09-22
+
+### Corrections de bugs
+- **Highlights** : `handleToggleEnabled` — la vérification `BOT_API_URL` s'effectue désormais avant l'état optimiste (plus de toggle fantôme en UI si le bot est injoignable) ; `formatApiError` propagé dans le catch pour afficher le message serveur réel.
+- **Suggestions** : `saveConfig` — l'état optimiste n'est plus appliqué en mode demo (plus de config affichée comme modifiée alors que rien n'est sauvegardé) ; rollback automatique de la config en cas d'erreur réseau.
+- **Suggestions** : `deleteSuggestion` — rollback automatique : la suggestion est remise dans la liste si l'API retourne une erreur (plus de disparition fantôme) ; la vérification `isDemo` est effectuée avant toute mutation UI.
+- **ServiceWorker** : `console.log("SW registered")` supprimé des builds de production (guard `NODE_ENV !== "production"` ajouté).
+
+### Nettoyages
+- Suppression de l'import mort `ChevronDown` dans `HighlightsCenterClient.tsx`.
+- Suppression des variables mortes `activeGuild` dans `EconomyCenterClient.tsx` et `SuggestionsCenterClient.tsx`.
+
+---
+
 ## v1.28.21 — 2026-09-22
 
 **Harmonisation des Sous-Pages et Fiabilisation des Actions**

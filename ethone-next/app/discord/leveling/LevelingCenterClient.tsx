@@ -315,12 +315,14 @@ export default function LevelingCenterClient() {
   };
 
   const removeReward = async (id: string) => {
+    const previous = rewards;
     setRewards((prev) => prev.filter((r) => r.id !== id));
     if (isDemo || !BOT_API_URL) return;
     try {
       await fetch(`${base}/rewards/${id}`, { method: "DELETE", credentials: "include" });
     } catch {
-      toastError("Échec de la suppression — rechargez la page.");
+      setRewards(previous);
+      toastError("Échec de la suppression — la récompense a été restaurée.");
     }
   };
 
@@ -353,12 +355,14 @@ export default function LevelingCenterClient() {
   };
 
   const removeBoost = async (id: string) => {
+    const previous = boosts;
     setBoosts((prev) => prev.filter((b) => b.id !== id));
     if (isDemo || !BOT_API_URL) return;
     try {
       await fetch(`${base}/boosts/${id}`, { method: "DELETE", credentials: "include" });
     } catch {
-      toastError("Échec de la suppression — rechargez la page.");
+      setBoosts(previous);
+      toastError("Échec de la suppression — le boost a été restauré.");
     }
   };
 

@@ -366,13 +366,15 @@ export default function AiCenterClient() {
   };
 
   const handleDeleteKnowledge = async (id: string) => {
+    const previous = knowledgeList;
     setKnowledgeList((prev) => prev.filter((k) => k.id !== id));
     if (isDemo) return;
     try {
       const res = await fetch(`${base}/knowledge/${id}`, { method: "DELETE", credentials: "include" });
       if (!res.ok) throw new Error();
     } catch {
-      toastError("Échec de la suppression — rechargez la page.");
+      setKnowledgeList(previous);
+      toastError("Échec de la suppression — la source a été restaurée.");
     }
   };
 

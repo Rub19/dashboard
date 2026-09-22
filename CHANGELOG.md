@@ -2,6 +2,16 @@
 
 Toutes les modifications notables de ce projet seront documentées dans ce fichier.
 
+## v1.28.27 — 2026-09-22
+
+### Refonte du menu profil TopBar & synchronisation de l'identité
+- **Menu Profil TopBar (`components/UserProfileDropdown.tsx`)** : Refonte visuelle complète en dropdown compact et premium (hauteur maîtrisée à ~340px, bordures affinées avec `border-[var(--panel-border)]/80`, glassmorphism subtil avec `backdrop-blur-2xl`, aucun décalage de layout dans la barre supérieure).
+- **Synchronisation de l'identité (`lib/hooks/useUserIdentity.ts`)** : Résolution prioritaire et en temps réel de l'identité réelle depuis Supabase (`ethone_public_profiles` et métadonnées d'authentification) pour l'avatar, le nom d'affichage personnalisé, le `@username` et la bio/rôle, avec propagation instantanée cross-onglets et cross-composants (`ethone:identity:update`).
+- **Contrôles intégrés** : Sélecteur de statut compact segmenté avec pastilles colorées, accès directs (`/profile`, `/settings`, `/settings?category=security`, `/owner/shield`), mini-barre d'outils (Palette `⌘K`, Changelog), jauge de stockage et bouton de déconnexion sécurisé avec confirmation.
+- **Tests E2E & Accessibilité** : Alignement des attributs `data-testid` et `data-open` sur le conteneur du menu et les boutons de déconnexion.
+
+---
+
 ## v1.28.26 — 2026-09-22
 
 ### Correction de l'icône de sidebar & complétion des packs d'icônes

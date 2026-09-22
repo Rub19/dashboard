@@ -32213,10 +32213,54 @@ const v12846_de: ChangelogEntry = {
   ],
 };
 
-CHANGELOG_BY_LANG.fr.unshift(v12846_fr, v12845_fr, v12844_fr, v12843_fr, v12842_fr, v12841_fr, v12840_fr, v12839_fr, v12838_fr, v12837_fr, v12836_fr, v12835_fr, v12834_fr, v12833_fr);
-CHANGELOG_BY_LANG.en.unshift(v12846_en, v12845_en, v12844_en, v12843_en, v12842_en, v12841_en, v12840_en, v12839_en, v12838_en, v12837_en, v12836_en, v12835_en, v12834_en, v12833_en);
-CHANGELOG_BY_LANG.es.unshift(v12846_es, v12845_es, v12844_es, v12843_es, v12842_es, v12841_es, v12840_es, v12839_es, v12838_es, v12837_es, v12836_es, v12835_es, v12834_es, v12833_es);
-CHANGELOG_BY_LANG.de.unshift(v12846_de, v12845_de, v12844_de, v12843_de, v12842_de, v12841_de, v12840_de, v12839_de, v12838_de, v12837_de, v12836_de, v12835_de, v12834_de, v12833_de);
+const v12847_fr: ChangelogEntry = {
+  version: "v1.28.27",
+  date: "2026-09-22",
+  title: "Refonte du menu profil TopBar & synchronisation de l'identité",
+  items: [
+    "Menu Profil TopBar : refonte visuelle complète en menu dropdown premium et compact (hauteur maîtrisée, bordures affinées, glassmorphism subtil, aucun décalage de la barre supérieure).",
+    "Identité utilisateur : synchronisation en temps réel de l'avatar, nom d'affichage personnalisé, @username et bio/rôle depuis Supabase avec réactivité cross-onglets (useUserIdentity).",
+    "Contrôles intégrés : sélecteur de statut compact segmenté avec pastilles colorées, accès directs (Profil, Paramètres, Sécurité, Bouclier Owner), mini-barre de raccourcis (Palette ⌘K, Changelog), jauge de stockage et déconnexion sécurisée.",
+  ],
+};
+
+const v12847_en: ChangelogEntry = {
+  version: "v1.28.27",
+  date: "2026-09-22",
+  title: "TopBar Profile Dropdown Redesign & Identity Sync",
+  items: [
+    "TopBar Profile Menu: complete visual overhaul into a compact, premium dropdown (controlled height, fine borders, subtle glassmorphism, zero TopBar layout shift).",
+    "User Identity: real-time synchronization of avatar, custom display name, @username, and bio/role from Supabase with cross-tab reactivity (useUserIdentity).",
+    "Integrated Controls: sleek segmented status selector with colored dots, quick links (Profile, Settings, Security, Owner Shield), utility mini-bar (Palette ⌘K, Changelog), storage gauge, and secure sign-out.",
+  ],
+};
+
+const v12847_es: ChangelogEntry = {
+  version: "v1.28.27",
+  date: "2026-09-22",
+  title: "Rediseño del menú de perfil de TopBar y sincronización de identidad",
+  items: [
+    "Menú de perfil de TopBar: rediseño completo a un menú desplegable compacto y premium (altura optimizada, bordes finos, glassmorphism sutil, sin desplazamiento en TopBar).",
+    "Identidad del usuario: sincronización en tiempo real del avatar, nombre personalizado, @username y biografía/rol desde Supabase con reactividad entre pestañas (useUserIdentity).",
+    "Controles integrados: selector de estado segmentado con puntos de color, accesos directos (Perfil, Ajustes, Seguridad, Escudo Owner), mini-barra de atajos (Paleta ⌘K, Changelog), indicador de almacenamiento y cierre de sesión seguro.",
+  ],
+};
+
+const v12847_de: ChangelogEntry = {
+  version: "v1.28.27",
+  date: "2026-09-22",
+  title: "Neugestaltung des TopBar-Profilmenüs & Identitätssynchronisierung",
+  items: [
+    "TopBar-Profilmenü: Vollständige visuelle Überarbeitung zu einem kompakten Premium-Dropdown (optimierte Höhe, feine Ränder, dezenter Glassmorphismus, keine Layout-Verschiebung in der TopBar).",
+    "Benutzeridentität: Echtzeitsynchronisierung von Avatar, benutzerdefiniertem Anzeigenamen, @username und Bio/Rolle aus Supabase mit tabübergreifender Reaktivität (useUserIdentity).",
+    "Integrierte Steuerelemente: Kompakte segmentierte Statusauswahl mit farbigen Punkten, Direktlinks (Profil, Einstellungen, Sicherheit, Owner-Schild), Mini-Leiste (Palette ⌘K, Changelog), Speicheranzeige und sicheres Abmelden.",
+  ],
+};
+
+CHANGELOG_BY_LANG.fr.unshift(v12847_fr, v12846_fr, v12845_fr, v12844_fr, v12843_fr, v12842_fr, v12841_fr, v12840_fr, v12839_fr, v12838_fr, v12837_fr, v12836_fr, v12835_fr, v12834_fr, v12833_fr);
+CHANGELOG_BY_LANG.en.unshift(v12847_en, v12846_en, v12845_en, v12844_en, v12843_en, v12842_en, v12841_en, v12840_en, v12839_en, v12838_en, v12837_en, v12836_en, v12835_en, v12834_en, v12833_en);
+CHANGELOG_BY_LANG.es.unshift(v12847_es, v12846_es, v12845_es, v12844_es, v12843_es, v12842_es, v12841_es, v12840_es, v12839_es, v12838_es, v12837_es, v12836_es, v12835_es, v12834_es, v12833_es);
+CHANGELOG_BY_LANG.de.unshift(v12847_de, v12846_de, v12845_de, v12844_de, v12843_de, v12842_de, v12841_de, v12840_de, v12839_de, v12838_de, v12837_de, v12836_de, v12835_de, v12834_de, v12833_de);
 
 export const CHANGELOG = CHANGELOG_BY_LANG.fr;
 

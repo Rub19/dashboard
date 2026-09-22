@@ -14,10 +14,8 @@ import { useI18n } from "@/lib/hooks/useI18n";
 import { useToast } from "@/components/ToastProvider";
 import { useCommandPalette } from "@/components/CommandPaletteProvider";
 import ChangelogModal from "@/components/ChangelogModal";
-import { useIdentity } from "@/lib/identity";
 
-// Lazy: only needed once the user actually opens the avatar picker, but
-// UserProfileDropdown itself is mounted on every page via Shell/TopBar.
+// Lazy: only loaded once the user opens the avatar picker
 const AvatarPickerModal = dynamic(() => import("@/components/AvatarPickerModal"), {
   ssr: false,
 });
@@ -30,7 +28,6 @@ import { USER_STATUS_CONFIG } from "@/lib/settings";
 import { ADMIN_EMAIL } from "@/lib/admin";
 import { Popover, PopoverTrigger, PopoverContent } from "@/components/motion/Popover";
 import { cn } from "@/lib/utils";
-
 
 const STATUS_KEYS = [
   "online",
@@ -54,9 +51,8 @@ export default function UserProfileDropdown({ dataTestId = "user-profile-trigger
   const [confirmSignOut, setConfirmSignOut] = useState(false);
 
   const { signOut } = useAuth();
-  const { displayName, avatarUrl, email, initials } = useUserIdentity();
+  const { displayName, username, avatarUrl, email, initials, bio, verified } = useUserIdentity();
   const { settings, update } = useSettings();
-  const { identity } = useIdentity();
 
   const isFocusRunning = focus.state.phase !== "idle";
   const currentStatus = isFocusRunning
@@ -109,36 +105,30 @@ export default function UserProfileDropdown({ dataTestId = "user-profile-trigger
     return CHANGELOG_BY_LANG[settings.language] || CHANGELOG;
   }, [settings.language]);
 
-  const VERSION_LABEL = changelog[0]?.version || "v1.28.26";
-
-  type MenuItem = {
-    id: string;
-    label: string;
-    description: string;
-    icon: string;
-    action: () => void;
-    kbd?: string;
-    badge?: string;
-    badgeTone?: "success" | "accent";
-  };
+  const VERSION_LABEL = changelog[0]?.version || "v1.28.27";
 
   const isOwner = Boolean(email && email.toLowerCase() === ADMIN_EMAIL.toLowerCase());
 
-  const accountItems: MenuItem[] = [
+  const quickLinks = [
     {
       id: "profile",
       label: i18n("tbProfile", "Mon profil"),
-      description: i18n("tbProfileDesc", "Identité et statut"),
       icon: "user",
       action: () => router.push("/profile"),
     },
     {
+      id: "settings",
+      label: i18n("tbSettings", "Paramètres"),
+      icon: "settings",
+      kbd: "⌘,",
+      action: () => router.push("/settings"),
+    },
+    {
       id: "security",
       label: i18n("tbSecurity", "Sécurité"),
-      description: i18n("tbSecurityDesc", "Appareils et connexions"),
       icon: "shield",
       badge: i18n("tbActive", "Actif"),
-      badgeTone: "success",
+      badgeTone: "success" as const,
       action: () => router.push("/settings?category=security"),
     },
     ...(isOwner
@@ -146,7 +136,6 @@ export default function UserProfileDropdown({ dataTestId = "user-profile-trigger
           {
             id: "owner-shield",
             label: "Bouclier Owner",
-            description: "Protection suprême & sauvetage",
             icon: "shield",
             badge: "Privé",
             badgeTone: "accent" as const,
@@ -155,70 +144,6 @@ export default function UserProfileDropdown({ dataTestId = "user-profile-trigger
         ]
       : []),
   ];
-
-  const appItems: MenuItem[] = [
-    {
-      id: "settings",
-      label: i18n("tbSettings", "Réglages"),
-      description: i18n("tbSettingsDesc", "Apparence, son, système"),
-      icon: "sliders-horizontal",
-      kbd: "⌘,",
-      action: () => router.push("/settings"),
-    },
-    {
-      id: "shortcuts",
-      label: i18n("tbPalette", "Palette de commandes"),
-      description: i18n("tbPaletteDesc", "Recherche et raccourcis"),
-      icon: "terminal",
-      kbd: "⌘K",
-      action: () => setCommandOpen(true),
-    },
-    {
-      id: "changelog",
-      label: i18n("tbChangelog", "Notes de version"),
-      description: i18n("tbChangelogDesc", "Les nouveautés d'ETHONE"),
-      icon: "sparkles",
-      badge: VERSION_LABEL,
-      action: () => setIsChangelogOpen(true),
-    },
-  ];
-
-  const renderRow = (item: MenuItem) => (
-    <button
-      key={item.id}
-      type="button"
-      onClick={() => {
-        setOpen(false);
-        item.action();
-      }}
-      className="group flex w-full items-center gap-3 rounded-xl px-2 py-2 text-left transition-colors hover:bg-[var(--surface-hover)] focus-visible:bg-[var(--surface-hover)] focus-visible:outline-none cursor-pointer"
-    >
-      <span className="flex h-9 w-9 shrink-0 items-center justify-center rounded-[10px] bg-[var(--surface-raised)] text-[var(--text-muted)] transition-colors group-hover:bg-[var(--accent-muted)] group-hover:text-[var(--accent-primary)]">
-        <Icon name={item.icon} className="h-[18px] w-[18px]" />
-      </span>
-      <span className="min-w-0 flex-1">
-        <span className="block truncate text-[13px] font-semibold leading-tight text-[var(--text-primary)]">{item.label}</span>
-        <span className="block truncate text-[11px] leading-snug text-[var(--text-muted)]">{item.description}</span>
-      </span>
-      {item.badge && (
-        <span
-          className={cn(
-            "shrink-0 rounded-full px-2 py-0.5 font-mono text-[10px] font-bold",
-            item.badgeTone === "success"
-              ? "bg-[var(--success)]/15 text-[var(--success)]"
-              : "bg-[var(--accent-muted)] text-[var(--accent-primary)]"
-          )}
-        >
-          {item.badge}
-        </span>
-      )}
-      {item.kbd && (
-        <kbd className="shrink-0 rounded-md border border-[var(--panel-border)] bg-[var(--surface-raised)] px-1.5 py-0.5 font-mono text-[10px] text-[var(--text-muted)]">
-          {item.kbd}
-        </kbd>
-      )}
-    </button>
-  );
 
   const storagePercent = Math.min(
     100,
@@ -236,11 +161,11 @@ export default function UserProfileDropdown({ dataTestId = "user-profile-trigger
         trigger="click"
         side="bottom"
         align="end"
-        sideOffset={10}
-        panelRadius={20}
+        sideOffset={8}
+        panelRadius={18}
         gooStrength={0}
       >
-        {/* Trigger Button */}
+        {/* Trigger Button — strictly preserving layout dimensions to prevent Topbar shift */}
         <PopoverTrigger>
           <button
             type="button"
@@ -286,38 +211,32 @@ export default function UserProfileDropdown({ dataTestId = "user-profile-trigger
           </button>
         </PopoverTrigger>
 
-        {/* User Popover Panel — themed glass panel, matching every other popover
-            in the app (LanguageSwitcher, etc.). Was previously a hardcoded
-            bg-[#0a0b0e], which never changed with the active theme (stayed
-            near-black even on light themes like Arctic) and looked visibly
-            inconsistent next to other dropdowns using the real --panel-bg
-            token. Kept the opacity high (/95, same as LanguageSwitcher) so
-            it reads as solid, just themed instead of frozen black. */}
-        {/* Solid --bg-surface-elevated (not the translucent glass --panel-bg,
-            which is colorMix(bgSurface, transparent, glassOpacity) and made
-            this text-heavy menu hard to read over the busy dashboard behind
-            it). Blur kept only for the frosting at the rounded edges. */}
-        <PopoverContent className="w-[336px] max-w-[calc(100vw-1.5rem)] overflow-hidden rounded-[var(--panel-radius)] border border-[var(--panel-border)] bg-[var(--bg-surface-elevated)] p-0 shadow-2xl backdrop-blur-2xl z-[var(--z-dropdown)]">
-          <div className="flex w-full flex-col select-none">
-            {/* En-tête : avatar, nom, e-mail (copiable), badge vérifié */}
-            <div className="flex items-center gap-3 px-4 pb-3 pt-4">
+        {/* Compact Premium Profile Popover */}
+        <PopoverContent className="w-[300px] max-w-[calc(100vw-1.5rem)] overflow-hidden rounded-[18px] border border-[var(--panel-border)]/80 bg-[var(--bg-surface-elevated)] p-0 shadow-2xl backdrop-blur-2xl z-[var(--z-dropdown)]">
+          <div
+            data-testid={`${dataTestId}-menu`}
+            data-open={open ? "true" : "false"}
+            className="flex w-full flex-col select-none p-3.5 space-y-3"
+          >
+            {/* Header: Avatar, Real Display Name, @username, Email, Verified */}
+            <div className="flex items-start gap-3">
               <button
                 type="button"
                 onClick={() => {
                   setOpen(false);
                   setIsAvatarPickerOpen(true);
                 }}
-                className="group relative h-12 w-12 shrink-0 cursor-pointer overflow-hidden rounded-2xl ring-1 ring-[var(--panel-border)] transition-all hover:ring-[var(--accent-primary)]"
+                className="group relative h-11 w-11 shrink-0 cursor-pointer overflow-hidden rounded-xl ring-1 ring-[var(--panel-border)]/80 transition-all hover:ring-[var(--accent-primary)]/70 shadow-sm"
                 title={i18n("tbChangeAvatar", "Changer d'avatar")}
                 aria-label={i18n("tbChangeAvatar", "Changer d'avatar")}
               >
-                <span className="flex h-full w-full items-center justify-center bg-[var(--accent-primary)]/15 text-base font-bold text-[var(--accent-primary)]">
+                <span className="flex h-full w-full items-center justify-center bg-[var(--accent-primary)]/15 text-sm font-bold text-[var(--accent-primary)]">
                   {avatarUrl ? (
                     <ClientImage
                       src={avatarUrl}
                       alt=""
-                      width={48}
-                      height={48}
+                      width={44}
+                      height={44}
                       className="h-full w-full object-cover"
                       fallback={<span>{initials}</span>}
                     />
@@ -325,45 +244,74 @@ export default function UserProfileDropdown({ dataTestId = "user-profile-trigger
                     <span>{initials}</span>
                   )}
                 </span>
-                <span className="absolute inset-0 flex items-center justify-center bg-black/55 opacity-0 transition-opacity group-hover:opacity-100">
-                  <Icon name="camera" className="h-4 w-4 text-white" />
+                <span className="absolute inset-0 flex items-center justify-center bg-black/50 opacity-0 transition-opacity group-hover:opacity-100">
+                  <Icon name="camera" className="h-3.5 w-3.5 text-white" />
                 </span>
+                <span
+                  className={cn(
+                    "absolute bottom-0 right-0 h-2.5 w-2.5 rounded-full border-2 border-[var(--bg-surface-elevated)]",
+                    USER_STATUS_CONFIG[currentStatus as keyof typeof USER_STATUS_CONFIG]?.dot || "bg-emerald-400"
+                  )}
+                />
               </button>
 
               <div className="min-w-0 flex-1">
                 <div className="flex items-center gap-1.5">
-                  <span className="truncate text-sm font-bold text-[var(--text-primary)]">{displayName}</span>
-                  {identity?.badge_ids?.includes("verified") && (
+                  <span className="truncate text-sm font-bold text-[var(--text-primary)] leading-tight">
+                    {displayName}
+                  </span>
+                  {verified && (
                     <span className="shrink-0 rounded-full bg-[var(--success)]/15 px-1.5 py-px text-[9px] font-bold text-[var(--success)]">
-                      ✓ {i18n("tbVerified", "Vérifié")}
+                      ✓
                     </span>
                   )}
                 </div>
+
+                <p className="truncate font-mono text-[11px] text-[var(--text-muted)] leading-tight mt-0.5">
+                  @{username}
+                </p>
+
                 {email && (
                   <button
                     type="button"
                     onClick={copyEmail}
                     title={i18n("tbCopyEmail", "Copier l'adresse e-mail")}
-                    className="mt-0.5 flex max-w-full items-center gap-1 text-left text-[11px] text-[var(--text-muted)] transition-colors hover:text-[var(--text-primary)] cursor-pointer"
+                    className="mt-0.5 flex max-w-full items-center gap-1 text-left text-[10px] text-[var(--text-muted)]/80 hover:text-[var(--text-primary)] transition-colors cursor-pointer"
                   >
                     <span className="truncate">{email}</span>
-                    <Icon name={copied ? "check" : "copy"} className="h-3 w-3 shrink-0" />
+                    <Icon name={copied ? "check" : "copy"} className="h-2.5 w-2.5 shrink-0" />
                   </button>
-                )}
-                {identity?.bio && (
-                  <p className="mt-0.5 truncate text-[11px] text-[var(--text-muted)]" title={identity.bio}>
-                    {identity.bio}
-                  </p>
                 )}
               </div>
             </div>
 
-            {/* Statut : contrôle segmenté */}
-            <div className="px-4 pb-3">
-              <p className="mb-1.5 text-[10px] font-bold uppercase tracking-wider text-[var(--text-muted)]">
-                {i18n("tbStatus", "Statut")}
-              </p>
-              <div className="grid grid-cols-5 gap-0.5 rounded-xl bg-[var(--surface-raised)] p-0.5">
+            {/* Profile summary / bio or role */}
+            {bio ? (
+              <div className="rounded-lg bg-[var(--surface-raised)]/50 border border-[var(--panel-border)]/40 px-2.5 py-1.5 text-[11px] text-[var(--text-muted)] italic truncate">
+                &ldquo;{bio}&rdquo;
+              </div>
+            ) : isOwner ? (
+              <div className="inline-flex items-center gap-1 text-[10px] font-semibold text-[var(--accent-primary)] bg-[var(--accent-primary)]/10 px-2 py-0.5 rounded-md self-start border border-[var(--accent-primary)]/20">
+                <Icon name="shield-check" className="h-3 w-3" />
+                <span>Owner &bull; Administrateur</span>
+              </div>
+            ) : null}
+
+            {/* Discreet Status Selector */}
+            <div>
+              <div className="mb-1.5 flex items-center justify-between text-[10px] font-bold uppercase tracking-wider text-[var(--text-muted)]">
+                <span>{i18n("tbStatus", "Statut")}</span>
+                <span className="font-medium text-[var(--text-muted)] normal-case flex items-center gap-1">
+                  <span
+                    className={cn(
+                      "h-1.5 w-1.5 rounded-full",
+                      USER_STATUS_CONFIG[currentStatus as keyof typeof USER_STATUS_CONFIG]?.dot
+                    )}
+                  />
+                  {i18n(USER_STATUS_CONFIG[currentStatus as keyof typeof USER_STATUS_CONFIG]?.labelKey || "statusOnline")}
+                </span>
+              </div>
+              <div className="grid grid-cols-5 gap-1 rounded-xl bg-[var(--surface-raised)]/70 p-1 border border-[var(--panel-border)]/40">
                 {STATUS_KEYS.map((st) => {
                   const cfg = USER_STATUS_CONFIG[st];
                   const isSelected = currentStatus === st;
@@ -373,47 +321,109 @@ export default function UserProfileDropdown({ dataTestId = "user-profile-trigger
                       type="button"
                       onClick={() => handleStatusChange(st)}
                       aria-pressed={isSelected}
+                      title={i18n(cfg.labelKey)}
                       className={cn(
-                        "flex flex-col items-center justify-center gap-1 rounded-[10px] py-1.5 text-[10px] font-semibold transition-all cursor-pointer",
+                        "flex items-center justify-center gap-1 rounded-lg py-1 px-1 text-[10px] font-medium transition-all cursor-pointer",
                         isSelected
-                          ? "bg-[var(--bg-surface-elevated)] text-[var(--text-primary)] shadow-sm ring-1 ring-[var(--panel-border)]"
-                          : "text-[var(--text-muted)] hover:text-[var(--text-primary)]"
+                          ? "bg-[var(--bg-surface-elevated)] text-[var(--text-primary)] font-semibold shadow-xs ring-1 ring-[var(--accent-primary)]/40"
+                          : "text-[var(--text-muted)] hover:text-[var(--text-primary)] hover:bg-[var(--surface-hover)]/40"
                       )}
                     >
-                      <span className={cn("h-2 w-2 rounded-full", cfg.dot)} />
-                      <span className="max-w-full truncate px-0.5">{i18n(cfg.labelKey)}</span>
+                      <span className={cn("h-1.5 w-1.5 rounded-full shrink-0", cfg.dot)} />
+                      <span className="truncate">{i18n(cfg.labelKey)}</span>
                     </button>
                   );
                 })}
               </div>
             </div>
 
-            <div className="h-px bg-[var(--panel-border)]/70" />
+            <div className="h-px bg-[var(--panel-border)]/60" />
 
-            {/* Groupes de navigation */}
-            <div className="px-2 py-2">
-              <p className="px-2 pb-1 pt-1 text-[10px] font-bold uppercase tracking-wider text-[var(--text-muted)]">
-                {i18n("tbAccount", "Compte")}
-              </p>
-              {accountItems.map(renderRow)}
-              <p className="px-2 pb-1 pt-3 text-[10px] font-bold uppercase tracking-wider text-[var(--text-muted)]">
-                {i18n("tbApp", "Application")}
-              </p>
-              {appItems.map(renderRow)}
+            {/* Quick Links */}
+            <div className="space-y-0.5">
+              {quickLinks.map((item) => (
+                <button
+                  key={item.id}
+                  type="button"
+                  onClick={() => {
+                    setOpen(false);
+                    item.action();
+                  }}
+                  className="group flex w-full h-8.5 items-center justify-between rounded-xl px-2.5 text-left text-xs font-medium text-[var(--text-primary)] hover:bg-[var(--surface-hover)] hover:text-[var(--accent-primary)] transition-all cursor-pointer"
+                >
+                  <div className="flex items-center gap-2.5 min-w-0">
+                    <span className="flex h-5 w-5 shrink-0 items-center justify-center text-[var(--text-muted)] group-hover:text-[var(--accent-primary)] transition-colors">
+                      <Icon name={item.icon} className="h-4 w-4" />
+                    </span>
+                    <span className="truncate">{item.label}</span>
+                  </div>
+
+                  {item.badge && (
+                    <span
+                      className={cn(
+                        "shrink-0 rounded-md px-1.5 py-0.5 text-[9px] font-bold",
+                        item.badgeTone === "success"
+                          ? "bg-[var(--success)]/15 text-[var(--success)]"
+                          : "bg-[var(--accent-primary)]/15 text-[var(--accent-primary)]"
+                      )}
+                    >
+                      {item.badge}
+                    </span>
+                  )}
+                  {item.kbd && (
+                    <kbd className="shrink-0 rounded border border-[var(--panel-border)] bg-[var(--surface-raised)] px-1.5 py-0.5 font-mono text-[9px] text-[var(--text-muted)]">
+                      {item.kbd}
+                    </kbd>
+                  )}
+                </button>
+              ))}
+
+              {/* Secondary Utility Row (Palette ⌘K & Notes de version) */}
+              <div className="flex items-center gap-1 pt-1">
+                <button
+                  type="button"
+                  onClick={() => {
+                    setOpen(false);
+                    setCommandOpen(true);
+                  }}
+                  className="flex-1 flex items-center justify-between h-7 rounded-lg px-2 text-[11px] text-[var(--text-muted)] hover:text-[var(--text-primary)] hover:bg-[var(--surface-hover)]/60 transition-colors cursor-pointer"
+                >
+                  <span className="flex items-center gap-1.5 truncate">
+                    <Icon name="terminal" className="h-3 w-3" />
+                    <span>Palette</span>
+                  </span>
+                  <kbd className="font-mono text-[9px] text-[var(--text-muted)]">⌘K</kbd>
+                </button>
+
+                <button
+                  type="button"
+                  onClick={() => {
+                    setOpen(false);
+                    setIsChangelogOpen(true);
+                  }}
+                  className="flex-1 flex items-center justify-between h-7 rounded-lg px-2 text-[11px] text-[var(--text-muted)] hover:text-[var(--text-primary)] hover:bg-[var(--surface-hover)]/60 transition-colors cursor-pointer"
+                >
+                  <span className="flex items-center gap-1.5 truncate">
+                    <Icon name="sparkles" className="h-3 w-3" />
+                    <span>Nouveautés</span>
+                  </span>
+                  <span className="font-mono text-[9px] text-[var(--accent-primary)] font-semibold">{VERSION_LABEL}</span>
+                </button>
+              </div>
             </div>
 
-            <div className="h-px bg-[var(--panel-border)]/70" />
+            <div className="h-px bg-[var(--panel-border)]/60" />
 
-            {/* Stockage + déconnexion */}
-            <div className="flex flex-col gap-3 px-4 py-3">
+            {/* Storage & Sign Out */}
+            <div className="space-y-2.5">
               <div>
-                <div className="mb-1 flex items-center justify-between text-[11px]">
-                  <span className="font-semibold text-[var(--text-primary)]">{i18n("tbStorage", "Stockage cloud")}</span>
-                  <span className="font-mono text-[10px] text-[var(--text-muted)]">
+                <div className="mb-1 flex items-center justify-between text-[10px]">
+                  <span className="font-semibold text-[var(--text-muted)]">{i18n("tbStorage", "Stockage")}</span>
+                  <span className="font-mono text-[9px] text-[var(--text-muted)]">
                     {storage.used.toFixed(1)} / {storage.total} Go
                   </span>
                 </div>
-                <div className="h-1.5 w-full overflow-hidden rounded-full bg-[var(--surface-raised)]">
+                <div className="h-1 w-full overflow-hidden rounded-full bg-[var(--surface-raised)]">
                   <div
                     className="h-full rounded-full bg-[var(--accent-primary)] transition-all duration-300"
                     style={{ width: `${storagePercent}%` }}
@@ -424,30 +434,31 @@ export default function UserProfileDropdown({ dataTestId = "user-profile-trigger
               {!confirmSignOut ? (
                 <button
                   type="button"
+                  data-testid="profile-logout-button"
                   onClick={() => setConfirmSignOut(true)}
-                  className="flex w-full items-center justify-center gap-2 rounded-xl border border-[var(--danger)]/25 px-3 py-2 text-xs font-semibold text-[var(--danger)] transition-colors hover:bg-[var(--danger)]/10 cursor-pointer"
+                  className="flex w-full items-center justify-center gap-2 rounded-xl border border-[var(--danger)]/25 py-1.5 px-3 text-xs font-semibold text-[var(--danger)] hover:bg-[var(--danger)]/10 transition-colors cursor-pointer active:scale-98"
                 >
                   <LogOut className="h-3.5 w-3.5" />
-                  {i18n("tbSignOut", "Se déconnecter")}
+                  <span>{i18n("tbSignOut", "Se déconnecter")}</span>
                 </button>
               ) : (
-                <div className="rounded-xl border border-[var(--danger)]/30 bg-[var(--danger)]/10 p-3">
-                  <p className="text-xs font-bold text-[var(--danger)]">{i18n("tbSignOutConfirm", "Se déconnecter ?")}</p>
-                  <p className="mt-0.5 text-[11px] text-[var(--text-muted)]">
-                    {i18n("tbSignOutBody", "Tu devras te reconnecter pour retrouver tes données.")}
+                <div className="rounded-xl border border-[var(--danger)]/30 bg-[var(--danger)]/10 p-2.5 text-center">
+                  <p className="text-xs font-bold text-[var(--danger)] mb-1">
+                    {i18n("tbSignOutConfirm", "Se déconnecter ?")}
                   </p>
-                  <div className="mt-2.5 flex items-center gap-2">
+                  <div className="flex items-center gap-2">
                     <button
                       type="button"
                       onClick={() => setConfirmSignOut(false)}
-                      className="flex-1 rounded-lg border border-[var(--panel-border)] py-1.5 text-xs font-medium text-[var(--text-primary)] hover:bg-[var(--surface-hover)] cursor-pointer"
+                      className="flex-1 rounded-lg border border-[var(--panel-border)] py-1 text-xs font-medium text-[var(--text-primary)] hover:bg-[var(--surface-hover)] cursor-pointer"
                     >
                       {i18n("tbCancel", "Annuler")}
                     </button>
                     <button
                       type="button"
+                      data-testid="profile-logout-confirm"
                       onClick={handleSignOut}
-                      className="flex-1 rounded-lg bg-[var(--danger)] py-1.5 text-xs font-bold text-white hover:opacity-90 cursor-pointer"
+                      className="flex-1 rounded-lg bg-[var(--danger)] py-1 text-xs font-bold text-white hover:opacity-90 cursor-pointer"
                     >
                       {i18n("tbConfirm", "Déconnexion")}
                     </button>

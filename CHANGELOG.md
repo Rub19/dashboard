@@ -2,6 +2,21 @@
 
 Toutes les modifications notables de ce projet seront documentées dans ce fichier.
 
+## v1.28.19 — 2026-09-22
+
+**Barre d'Actions Serveur, Export/Import de Configuration et Harmonisation Overview**
+
+- **Barre d'actions rapides du serveur (`/discord`)** : intégration d'un nouveau bandeau d'actions rapides sous la bannière du serveur sélectionné :
+  - Copie d'identifiant Discord en 1 clic avec retour visuel animé (`Copié`).
+  - Exportation complète de la configuration et des commandes personnalisées au format JSON (`ethone-config-<guildId>.json`).
+  - Importation de configuration JSON avec sélecteur de fichier invisible, parsing sécurisé, validation des champs et synchronisation d'état en direct.
+  - Raccourcis de navigation instantanée vers les modules majeurs : Sécurité (`/discord/security`), Tickets (`/discord/tickets`), Musique (`/discord/music`) et Gestion Serveur (`/discord/server`).
+- **Harmonisation de la Vue d'ensemble (`/discord/overview`)** :
+  - Affichage systématique du `GuildSelector` dès le premier serveur administrable (`length > 0`).
+  - Détection de présence du bot et conditionnement du hook `useGuildOverview` pour stopper 8 requêtes parallèles échouant en boucle lorsque le bot n'est pas installé.
+  - Bannière d'invitation dédiée avec lien OAuth direct sur le serveur actif.
+  - Remplacement des mentions trompeuses « Indisponible pour le moment » par « Bot non installé sur ce serveur » sur l'ensemble des 8 cartes de statistiques et de l'activité récente.
+
 ## v1.28.18 — 2026-09-22
 
 **Formatage Universel des Erreurs API et Toasts Intelligents**

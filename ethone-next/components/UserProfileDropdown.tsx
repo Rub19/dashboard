@@ -109,7 +109,7 @@ export default function UserProfileDropdown({ dataTestId = "user-profile-trigger
     return CHANGELOG_BY_LANG[settings.language] || CHANGELOG;
   }, [settings.language]);
 
-  const VERSION_LABEL = changelog[0]?.version || "v1.28.18";
+  const VERSION_LABEL = changelog[0]?.version || "v1.28.19";
 
   type MenuItem = {
     id: string;

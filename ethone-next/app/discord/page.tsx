@@ -1,6 +1,6 @@
 "use client";
 
-import { useState, useMemo, useEffect, useCallback } from "react";
+import { useState, useMemo, useEffect, useCallback, useRef } from "react";
 import Link from "next/link";
 import {
   ShieldCheck,
@@ -23,6 +23,10 @@ import {
   AlertTriangle,
   ArrowRight,
   Sparkles,
+  Copy,
+  Check,
+  Download,
+  Upload,
   Sliders,
   RefreshCw,
   Plus,
@@ -511,14 +515,29 @@ export default function DiscordDashboardPage() {
   const guildsWithBot = useMemo(() => filteredGuilds.filter((g) => botGuildIds.has(g.id)), [filteredGuilds, botGuildIds]);
   const guildsWithoutBot = useMemo(() => filteredGuilds.filter((g) => !botGuildIds.has(g.id)), [filteredGuilds, botGuildIds]);
 
-  // Sélection automatique du premier serveur réel
+  const userSelectedRef = useRef(false);
+
+  // Sélection automatique intelligente : préfère un serveur où le bot est installé
   useEffect(() => {
-    if (!selectedGuild && displayGuilds.length > 0) {
-      setSelectedGuild(displayGuilds[0]);
-    } else if (selectedGuild && !displayGuilds.some((g) => g.id === selectedGuild.id) && displayGuilds.length > 0) {
+    if (displayGuilds.length === 0) return;
+    if (!userSelectedRef.current) {
+      if (!selectedGuild) {
+        if (botGuildIds.size > 0) {
+          const firstWithBot = displayGuilds.find((g) => botGuildIds.has(g.id));
+          setSelectedGuild(firstWithBot || displayGuilds[0]);
+        } else {
+          setSelectedGuild(displayGuilds[0]);
+        }
+      } else if (botGuildIds.size > 0 && !botGuildIds.has(selectedGuild.id)) {
+        const firstWithBot = displayGuilds.find((g) => botGuildIds.has(g.id));
+        if (firstWithBot) {
+          setSelectedGuild(firstWithBot);
+        }
+      }
+    } else if (selectedGuild && !displayGuilds.some((g) => g.id === selectedGuild.id)) {
       setSelectedGuild(displayGuilds[0]);
     }
-  }, [displayGuilds, selectedGuild]);
+  }, [displayGuilds, selectedGuild, botGuildIds]);
 
   // Paramètres réels du serveur sélectionné avec persistance locale par guildId
   const [guildSettings, setGuildSettings] = useState<GuildSettings>(DEFAULT_SETTINGS);
@@ -537,6 +556,9 @@ export default function DiscordDashboardPage() {
     } catch {}
     setGuildSettings(local);
     if (!api) return;
+    // Si la présence du bot est connue et qu'il n'est pas sur ce serveur, on n'appelle pas l'API
+    if (botPresenceKnown && !botGuildIds.has(selectedGuild.id)) return;
+
     let cancelled = false;
     const base = `${api}/api/guilds/${selectedGuild.id}`;
     Promise.all([
@@ -564,7 +586,70 @@ export default function DiscordDashboardPage() {
     return () => {
       cancelled = true;
     };
-  }, [selectedGuild]);
+  }, [selectedGuild, botPresenceKnown, botGuildIds]);
+
+  // Utilitaires : Copie ID, Exporter / Importer Configuration
+  const [copiedId, setCopiedId] = useState(false);
+  const handleCopyId = useCallback(() => {
+    if (!selectedGuild) return;
+    navigator.clipboard.writeText(selectedGuild.id);
+    setCopiedId(true);
+    success("ID copié", `L'identifiant de "${selectedGuild.name}" a été copié.`);
+    setTimeout(() => setCopiedId(false), 2000);
+  }, [selectedGuild, success]);
+
+  const handleExportConfig = useCallback(() => {
+    if (!selectedGuild) return;
+    const exportData = {
+      version: "1.0",
+      exportedAt: new Date().toISOString(),
+      guild: {
+        id: selectedGuild.id,
+        name: selectedGuild.name,
+      },
+      settings: guildSettings,
+    };
+    const blob = new Blob([JSON.stringify(exportData, null, 2)], { type: "application/json" });
+    const url = URL.createObjectURL(blob);
+    const a = document.createElement("a");
+    a.href = url;
+    a.download = `ethone-config-${selectedGuild.name.toLowerCase().replace(/[^a-z0-9]/g, "-")}-${selectedGuild.id}.json`;
+    document.body.appendChild(a);
+    a.click();
+    document.body.removeChild(a);
+    URL.revokeObjectURL(url);
+    success("Configuration exportée", "Le fichier de sauvegarde JSON a été téléchargé.");
+  }, [selectedGuild, guildSettings, success]);
+
+  const fileInputRef = useRef<HTMLInputElement | null>(null);
+  const handleImportConfig = useCallback(
+    (e: React.ChangeEvent<HTMLInputElement>) => {
+      const file = e.target.files?.[0];
+      if (!file) return;
+      const reader = new FileReader();
+      reader.onload = (event) => {
+        try {
+          const parsed = JSON.parse(event.target?.result as string);
+          if (!parsed || typeof parsed !== "object") throw new Error("Format JSON invalide");
+          const imported = parsed.settings || parsed;
+          setGuildSettings((prev) => ({
+            ...prev,
+            ...(imported.prefix ? { prefix: String(imported.prefix) } : {}),
+            ...(typeof imported.antiRaidEnabled === "boolean" ? { antiRaidEnabled: imported.antiRaidEnabled } : {}),
+            ...(typeof imported.antiSpamEnabled === "boolean" ? { antiSpamEnabled: imported.antiSpamEnabled } : {}),
+            ...(typeof imported.mentionLimit === "number" ? { mentionLimit: imported.mentionLimit } : {}),
+            ...(Array.isArray(imported.customCommands) ? { customCommands: imported.customCommands } : {}),
+          }));
+          success("Configuration importée", "Les réglages ont été appliqués. Cliquez sur « Enregistrer » pour les synchroniser.");
+        } catch (err: any) {
+          showError("Erreur d'import", err.message || "Fichier de configuration invalide.");
+        }
+      };
+      reader.readAsText(file);
+      e.target.value = "";
+    },
+    [success, showError]
+  );
 
   // Sauvegarder : préfixe → PATCH /settings, anti-raid/anti-spam/mentions →
   // PUT /anti-raid/config. Les champs sans backend (salons de logs, XP…)
@@ -578,6 +663,11 @@ export default function DiscordDashboardPage() {
     } catch {}
     if (!api) {
       success("Configuration enregistrée (local)", "API du bot non configurée — réglages gardés dans ce navigateur.");
+      setIsSaving(false);
+      return;
+    }
+    if (botPresenceKnown && !botGuildIds.has(selectedGuild.id)) {
+      info("Sauvegardé localement", `Le bot n'est pas encore installé sur "${selectedGuild.name}". Les réglages seront synchronisés dès son invitation.`);
       setIsSaving(false);
       return;
     }
@@ -690,7 +780,10 @@ export default function DiscordDashboardPage() {
   });
 
   const fetchLiveMusic = useCallback(async () => {
-    if (!selectedGuild || !BOT_API_URL) return;
+    if (!selectedGuild || !BOT_API_URL || (botPresenceKnown && !botGuildIds.has(selectedGuild.id))) {
+      setLiveMusicState({ status: "IDLE", currentTrack: null, queue: [], volume: 80 });
+      return;
+    }
     try {
       const res = await fetch(`${BOT_API_URL}/api/guilds/${selectedGuild.id}/music/state`);
       if (res.ok) {
@@ -700,14 +793,14 @@ export default function DiscordDashboardPage() {
     } catch {
       // Offline fallback
     }
-  }, [selectedGuild, BOT_API_URL]);
+  }, [selectedGuild, BOT_API_URL, botPresenceKnown, botGuildIds]);
 
   useEffect(() => {
-    if (!BOT_API_URL) return;
+    if (!BOT_API_URL || (botPresenceKnown && selectedGuild && !botGuildIds.has(selectedGuild.id))) return;
     fetchLiveMusic();
     const interval = setInterval(fetchLiveMusic, 3000);
     return () => clearInterval(interval);
-  }, [fetchLiveMusic, BOT_API_URL]);
+  }, [fetchLiveMusic, BOT_API_URL, botPresenceKnown, selectedGuild, botGuildIds]);
 
   const handleMusicPlayPause = async () => {
     if (!selectedGuild) return;
@@ -988,7 +1081,10 @@ export default function DiscordDashboardPage() {
                     >
                       {isSelected && <span className={cn("absolute left-0 top-2 bottom-2 w-0.5 rounded-full", hasBot ? "bg-emerald-400" : "bg-[#5865F2]")} />}
                       <button
-                        onClick={() => setSelectedGuild(guild)}
+                        onClick={() => {
+                          userSelectedRef.current = true;
+                          setSelectedGuild(guild);
+                        }}
                         className="flex min-w-0 flex-1 items-center gap-2.5 p-2 text-left cursor-pointer"
                       >
                         <div className="relative shrink-0">
@@ -1119,55 +1215,149 @@ export default function DiscordDashboardPage() {
           {selectedGuild ? (
             <>
               {/* Selected Server Banner (REAL SERVER INFO ONLY) */}
-              <div className="flex flex-col gap-4 rounded-[var(--panel-radius)] border border-[var(--panel-border)] bg-gradient-to-r from-white/[0.03] to-white/[0.01] p-5 backdrop-blur-xl sm:flex-row sm:items-center sm:justify-between">
-                <div className="flex items-center gap-3.5">
-                  <div className="flex h-12 w-12 shrink-0 items-center justify-center rounded-[var(--inset-radius)] border border-[var(--panel-border)] bg-zinc-800 font-bold text-sm text-white shadow-md">
-                    {selectedGuild.iconUrl ? (
-                      <img
-                        src={selectedGuild.iconUrl}
-                        alt={selectedGuild.name}
-                        className="h-full w-full rounded-2xl object-cover"
-                      />
-                    ) : (
-                      <span>
-                        {selectedGuild.name
-                          .split(" ")
-                          .map((n) => n[0])
-                          .join("")
-                          .slice(0, 2)
-                          .toUpperCase()}
-                      </span>
-                    )}
-                  </div>
-                  <div>
-                    <div className="flex items-center gap-2">
-                      <h2 className="text-base font-bold text-white">
-                        {selectedGuild.name}
-                      </h2>
-                      {selectedGuild.owner && (
-                        <span className="flex items-center gap-1 rounded-md border border-amber-500/30 bg-amber-500/10 px-2 py-0.5 text-[10px] font-semibold text-amber-300">
-                          <Crown className="h-3 w-3" />
-                          Propriétaire
+              <div className="rounded-[var(--panel-radius)] border border-[var(--panel-border)] bg-gradient-to-r from-white/[0.03] to-white/[0.01] p-5 backdrop-blur-xl">
+                <div className="flex flex-col gap-4 sm:flex-row sm:items-center sm:justify-between">
+                  <div className="flex items-center gap-3.5">
+                    <div className="flex h-12 w-12 shrink-0 items-center justify-center rounded-[var(--inset-radius)] border border-[var(--panel-border)] bg-zinc-800 font-bold text-sm text-white shadow-md">
+                      {selectedGuild.iconUrl ? (
+                        <img
+                          src={selectedGuild.iconUrl}
+                          alt={selectedGuild.name}
+                          className="h-full w-full rounded-2xl object-cover"
+                        />
+                      ) : (
+                        <span>
+                          {selectedGuild.name
+                            .split(" ")
+                            .map((n) => n[0])
+                            .join("")
+                            .slice(0, 2)
+                            .toUpperCase()}
                         </span>
                       )}
                     </div>
-                    <p className="text-xs text-zinc-400">
-                      ID Discord : <code className="text-zinc-300">{selectedGuild.id}</code>
-                    </p>
+                    <div>
+                      <div className="flex items-center gap-2">
+                        <h2 className="text-base font-bold text-white">
+                          {selectedGuild.name}
+                        </h2>
+                        {selectedGuild.owner && (
+                          <span className="flex items-center gap-1 rounded-md border border-amber-500/30 bg-amber-500/10 px-2 py-0.5 text-[10px] font-semibold text-amber-300">
+                            <Crown className="h-3 w-3" />
+                            Propriétaire
+                          </span>
+                        )}
+                      </div>
+                      <div className="flex items-center gap-2 mt-0.5 flex-wrap">
+                        <p className="text-xs text-zinc-400">
+                          ID : <code className="text-zinc-300 font-mono">{selectedGuild.id}</code>
+                        </p>
+                        <button
+                          onClick={handleCopyId}
+                          className="inline-flex items-center gap-1 rounded-md border border-white/10 bg-white/5 px-1.5 py-0.5 text-[10px] text-zinc-300 hover:bg-white/10 hover:text-white transition-colors cursor-pointer"
+                          title="Copier l'identifiant du serveur"
+                        >
+                          {copiedId ? <Check className="h-2.5 w-2.5 text-emerald-400" /> : <Copy className="h-2.5 w-2.5 text-zinc-400" />}
+                          <span>{copiedId ? "Copié !" : "Copier"}</span>
+                        </button>
+                      </div>
+                    </div>
+                  </div>
+
+                  <div className="flex items-center gap-2 flex-wrap">
+                    <input
+                      type="file"
+                      ref={fileInputRef}
+                      onChange={handleImportConfig}
+                      accept=".json"
+                      className="hidden"
+                    />
+                    <button
+                      onClick={handleExportConfig}
+                      className="flex h-9 items-center gap-1.5 rounded-xl border border-[var(--panel-border)] bg-white/5 px-3 text-xs font-semibold text-zinc-300 hover:bg-white/10 hover:text-white transition-all active:scale-95 cursor-pointer shadow-sm"
+                      title="Télécharger la configuration actuelle en JSON"
+                    >
+                      <Download className="h-3.5 w-3.5 text-zinc-400" />
+                      <span className="hidden sm:inline">Exporter</span>
+                    </button>
+                    <button
+                      onClick={() => fileInputRef.current?.click()}
+                      className="flex h-9 items-center gap-1.5 rounded-xl border border-[var(--panel-border)] bg-white/5 px-3 text-xs font-semibold text-zinc-300 hover:bg-white/10 hover:text-white transition-all active:scale-95 cursor-pointer shadow-sm"
+                      title="Restaurer ou charger un fichier de configuration JSON"
+                    >
+                      <Upload className="h-3.5 w-3.5 text-zinc-400" />
+                      <span className="hidden sm:inline">Importer</span>
+                    </button>
+                    <button
+                      onClick={handleSaveSettings}
+                      disabled={isSaving}
+                      className="flex h-9 items-center gap-2 rounded-xl bg-emerald-500 px-4 text-xs font-semibold text-white shadow-sm transition-all hover:bg-emerald-600 active:scale-95 disabled:opacity-50 cursor-pointer"
+                    >
+                      <Save className="h-3.5 w-3.5" />
+                      <span>{isSaving ? "Sauvegarde..." : "Enregistrer"}</span>
+                    </button>
                   </div>
                 </div>
 
-                <div className="flex items-center gap-2.5">
-                  <button
-                    onClick={handleSaveSettings}
-                    disabled={isSaving}
-                    className="flex h-9 items-center gap-2 rounded-xl bg-emerald-500 px-4 text-xs font-semibold text-white shadow-sm transition-all hover:bg-emerald-600 active:scale-95 disabled:opacity-50 cursor-pointer"
+                {/* Direct module shortcuts row */}
+                <div className="mt-4 pt-3 border-t border-[var(--panel-border)] flex flex-wrap items-center gap-2">
+                  <span className="text-[11px] font-semibold text-zinc-400 mr-1">Raccourcis :</span>
+                  <Link
+                    href={`/discord/security?guildId=${selectedGuild.id}`}
+                    className="inline-flex items-center gap-1.5 rounded-lg border border-red-500/20 bg-red-500/10 px-2.5 py-1 text-xs font-medium text-red-300 hover:bg-red-500/20 transition-colors"
                   >
-                    <Save className="h-3.5 w-3.5" />
-                    <span>{isSaving ? "Sauvegarde..." : "Enregistrer les modifications"}</span>
-                  </button>
+                    <ShieldAlert className="h-3.5 w-3.5 text-red-400" />
+                    <span>Sécurité & Anti-Raid</span>
+                  </Link>
+                  <Link
+                    href={`/discord/tickets?guildId=${selectedGuild.id}`}
+                    className="inline-flex items-center gap-1.5 rounded-lg border border-indigo-500/20 bg-indigo-500/10 px-2.5 py-1 text-xs font-medium text-indigo-300 hover:bg-indigo-500/20 transition-colors"
+                  >
+                    <Ticket className="h-3.5 w-3.5 text-indigo-400" />
+                    <span>Tickets</span>
+                  </Link>
+                  <Link
+                    href={`/discord/music?guildId=${selectedGuild.id}`}
+                    className="inline-flex items-center gap-1.5 rounded-lg border border-violet-500/20 bg-violet-500/10 px-2.5 py-1 text-xs font-medium text-violet-300 hover:bg-violet-500/20 transition-colors"
+                  >
+                    <Music2 className="h-3.5 w-3.5 text-violet-400" />
+                    <span>Musique</span>
+                  </Link>
+                  <Link
+                    href={`/discord/server?guildId=${selectedGuild.id}`}
+                    className="inline-flex items-center gap-1.5 rounded-lg border border-emerald-500/20 bg-emerald-500/10 px-2.5 py-1 text-xs font-medium text-emerald-300 hover:bg-emerald-500/20 transition-colors"
+                  >
+                    <Server className="h-3.5 w-3.5 text-emerald-400" />
+                    <span>Gestion Serveur</span>
+                  </Link>
                 </div>
               </div>
+
+              {/* Bot Invitation Banner if absent */}
+              {botPresenceKnown && !botGuildIds.has(selectedGuild.id) && (
+                <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 rounded-[var(--panel-radius)] border border-indigo-500/30 bg-indigo-500/10 p-4 text-xs text-indigo-200">
+                  <div className="flex items-start gap-3">
+                    <div className="p-2 rounded-xl bg-indigo-500/20 text-indigo-300 shrink-0 mt-0.5">
+                      <Bot className="h-5 w-5" />
+                    </div>
+                    <div>
+                      <p className="font-semibold text-white text-sm">Le bot ETHONE n&apos;est pas installé sur ce serveur</p>
+                      <p className="mt-0.5 text-zinc-300">
+                        Invitez le bot sur « {selectedGuild.name} » pour activer la modération en temps réel, la musique, les tickets et les commandes personnalisées.
+                      </p>
+                    </div>
+                  </div>
+                  <a
+                    href={`${BOT_INVITE_URL}&guild_id=${selectedGuild.id}`}
+                    target="_blank"
+                    rel="noopener noreferrer"
+                    className="inline-flex items-center justify-center gap-1.5 rounded-xl bg-indigo-600 px-4 py-2 text-xs font-semibold text-white shadow-md hover:bg-indigo-500 transition-colors shrink-0"
+                  >
+                    <span>Inviter le bot</span>
+                    <ExternalLink className="h-3 w-3" />
+                  </a>
+                </div>
+              )}
 
               {/* DISCORD HOME NOW PLAYING LIVE CARD */}
               <div className="rounded-[var(--panel-radius)] border border-[var(--panel-border)] bg-gradient-to-r from-violet-500/[0.08] via-indigo-500/[0.05] to-black/40 p-4 sm:p-5 backdrop-blur-xl shadow-xl">

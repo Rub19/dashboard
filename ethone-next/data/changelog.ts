@@ -31899,10 +31899,54 @@ const v12838_de: ChangelogEntry = {
   ],
 };
 
-CHANGELOG_BY_LANG.fr.unshift(v12838_fr, v12837_fr, v12836_fr, v12835_fr, v12834_fr, v12833_fr);
-CHANGELOG_BY_LANG.en.unshift(v12838_en, v12837_en, v12836_en, v12835_en, v12834_en, v12833_en);
-CHANGELOG_BY_LANG.es.unshift(v12838_es, v12837_es, v12836_es, v12835_es, v12834_es, v12833_es);
-CHANGELOG_BY_LANG.de.unshift(v12838_de, v12837_de, v12836_de, v12835_de, v12834_de, v12833_de);
+const v12839_fr: ChangelogEntry = {
+  version: "v1.28.19",
+  date: "2026-09-22",
+  title: "Barre d'Actions Serveur, Export/Import de Configuration et Harmonisation Overview",
+  items: [
+    "Barre d'Actions Rapides du Serveur (/discord) : nouveau bandeau d'actions intégrées au serveur sélectionné avec copie d'identifiant en 1 clic (indicateur visuel Copié), export JSON complet de la configuration du serveur et import JSON avec sélecteur de fichier et validation instantanée.",
+    "Raccourcis de Navigation et Bannière d'Invitation : ajout de raccourcis directs vers les modules clés (Sécurité, Tickets, Musique, Gestion Serveur) et bannière d'invitation avec lien OAuth direct sur le serveur sélectionné lorsque le bot n'est pas installé.",
+    "Harmonisation Vue d'ensemble (/discord/overview) : affichage du sélecteur dès le premier serveur administrable, protection des 8 requêtes parallèles en l'absence du bot et messages d'état explicites au lieu d'erreurs génériques.",
+  ],
+};
+
+const v12839_en: ChangelogEntry = {
+  version: "v1.28.19",
+  date: "2026-09-22",
+  title: "Server Quick Actions Bar, Config Export/Import & Overview Harmonization",
+  items: [
+    "Server Quick Actions Bar (/discord): new server actions banner with 1-click guild ID copy (visual confirmation), full JSON configuration export, and JSON configuration import with file picker and live validation.",
+    "Navigation Shortcuts & Invite Banner: direct module shortcuts (Security, Tickets, Music, Server Management) and direct bot invitation banner with OAuth link when the bot is absent on the selected guild.",
+    "Overview Page Harmonization (/discord/overview): displayed guild selector starting from 1 manageable guild, protected 8 parallel API requests when the bot is absent, and provided informative status badges instead of generic unavailable errors.",
+  ],
+};
+
+const v12839_es: ChangelogEntry = {
+  version: "v1.28.19",
+  date: "2026-09-22",
+  title: "Barra de Acciones Rápidas del Servidor, Exportación/Importación y Armonización Overview",
+  items: [
+    "Barra de Acciones Rápidas del Servidor (/discord): nuevo banner de acciones del servidor con copia de ID en 1 clic, exportación JSON completa de la configuración e importación JSON con selector de archivo y validación en vivo.",
+    "Atajos Rápidos y Banner de Invitación: enlaces directos a módulos clave (Seguridad, Tickets, Música, Gestión) y banner de invitación del bot con enlace OAuth directo si el bot no está instalado.",
+    "Armonización de Vista General (/discord/overview): selector visible desde el primer servidor administrable, protección de 8 llamadas API si el bot no está presente y mensajes claros en lugar de errores genéricos.",
+  ],
+};
+
+const v12839_de: ChangelogEntry = {
+  version: "v1.28.19",
+  date: "2026-09-22",
+  title: "Server-Schnellaktionsleiste, Konfigurations-Export/Import & Overview-Harmonisierung",
+  items: [
+    "Server-Schnellaktionsleiste (/discord): neue Server-Aktionsleiste mit 1-Klick-ID-Kopieren, vollständigem JSON-Konfigurationsexport und JSON-Konfigurationsimport mit Dateiauswahl und Live-Validierung.",
+    "Modul-Schnellzugriffe & Einladungsbanner: direkte Modul-Links (Sicherheit, Tickets, Musik, Server-Verwaltung) und Bot-Einladungsbanner mit direktem OAuth-Link, falls der Bot auf dem ausgewählten Server fehlt.",
+    "Overview-Harmonisierung (/discord/overview): Server-Auswahl ab dem ersten verwaltbaren Server sichtbar, Schutz vor 8 parallelen API-Anfragen bei fehlendem Bot und informative Statusmeldungen.",
+  ],
+};
+
+CHANGELOG_BY_LANG.fr.unshift(v12839_fr, v12838_fr, v12837_fr, v12836_fr, v12835_fr, v12834_fr, v12833_fr);
+CHANGELOG_BY_LANG.en.unshift(v12839_en, v12838_en, v12837_en, v12836_en, v12835_en, v12834_en, v12833_en);
+CHANGELOG_BY_LANG.es.unshift(v12839_es, v12838_es, v12837_es, v12836_es, v12835_es, v12834_es, v12833_es);
+CHANGELOG_BY_LANG.de.unshift(v12839_de, v12838_de, v12837_de, v12836_de, v12835_de, v12834_de, v12833_de);
 
 export const CHANGELOG = CHANGELOG_BY_LANG.fr;
 

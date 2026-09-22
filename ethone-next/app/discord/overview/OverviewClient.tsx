@@ -17,6 +17,8 @@ import {
   Activity,
   Plus,
   ChevronRight,
+  Bot,
+  ExternalLink,
 } from "lucide-react";
 import { useDiscordOAuth, type DiscordGuild, canManageGuild, getStoredDiscordGuilds } from "@/lib/hooks/useDiscordOAuth";
 import { useBotGuildIds, pickBotGuild } from "@/lib/hooks/useBotGuildIds";
@@ -24,6 +26,8 @@ import { useGuildOverview } from "@/lib/hooks/useGuildOverview";
 import { GuildSelector } from "@/components/GuildSelector";
 
 const BOT_API_URL = process.env.NEXT_PUBLIC_DISCORD_BOT_API || "";
+const BOT_CLIENT_ID = "1545139931154878464";
+const BOT_INVITE_URL = `https://discord.com/oauth2/authorize?client_id=${BOT_CLIENT_ID}&permissions=8&scope=bot%20applications.commands`;
 
 function formatUptime(ms: number): string {
   const s = Math.floor((ms || 0) / 1000);
@@ -81,8 +85,8 @@ function CardSkeleton() {
   return <div className="h-16 animate-pulse rounded-[var(--inset-radius)] bg-white/[0.03]" />;
 }
 
-function CardError() {
-  return <p className="text-xs text-[var(--text-muted)]">Indisponible pour le moment.</p>;
+function CardError({ message = "Indisponible pour le moment." }: { message?: string }) {
+  return <p className="text-xs text-[var(--text-muted)]">{message}</p>;
 }
 
 export default function OverviewClient() {
@@ -131,8 +135,9 @@ export default function OverviewClient() {
     }
   }, [manageableGuilds, queryGuildId, selectedGuild, botGuildIds]);
 
+  const isBotPresent = Boolean(selectedGuild && botGuildIds?.includes(selectedGuild.id));
   const { guild, botWide, moderation, music, tickets, giveaways, security, backups, refresh } = useGuildOverview(
-    selectedGuild?.id || null
+    isBotPresent ? selectedGuild?.id || null : null
   );
 
   const anyLoading =
@@ -177,7 +182,7 @@ export default function OverviewClient() {
           </button>
         </div>
 
-        {manageableGuilds.length > 1 && (
+        {manageableGuilds.length > 0 && (
           <GuildSelector
             guilds={manageableGuilds}
             value={selectedGuild?.id || ""}
@@ -186,6 +191,32 @@ export default function OverviewClient() {
               setSelectedGuild(g);
             }}
           />
+        )}
+
+        {/* Bot Invitation Banner if absent */}
+        {selectedGuild && botGuildIds !== null && !isBotPresent && (
+          <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 rounded-[var(--panel-radius)] border border-indigo-500/30 bg-indigo-500/10 p-4 text-xs text-indigo-200">
+            <div className="flex items-start gap-3">
+              <div className="p-2 rounded-xl bg-indigo-500/20 text-indigo-300 shrink-0 mt-0.5">
+                <Bot className="h-5 w-5" />
+              </div>
+              <div>
+                <p className="font-semibold text-white text-sm">Le bot ETHONE n&apos;est pas installé sur ce serveur</p>
+                <p className="mt-0.5 text-zinc-300">
+                  Invitez le bot sur « {selectedGuild.name} » pour activer la modération en temps réel, la musique, les tickets et les statistiques.
+                </p>
+              </div>
+            </div>
+            <a
+              href={`${BOT_INVITE_URL}&guild_id=${selectedGuild.id}`}
+              target="_blank"
+              rel="noopener noreferrer"
+              className="inline-flex items-center justify-center gap-1.5 rounded-xl bg-indigo-600 px-4 py-2 text-xs font-semibold text-white shadow-md hover:bg-indigo-500 transition-colors shrink-0"
+            >
+              <span>Inviter le bot</span>
+              <ExternalLink className="h-3 w-3" />
+            </a>
+          </div>
         )}
 
         {!selectedGuild ? (
@@ -198,6 +229,8 @@ export default function OverviewClient() {
               <OverviewCard icon={<Server className="h-4 w-4" />} color="bg-indigo-500/15 text-indigo-400" title="Statut" href="/discord/bot">
                 {guild.loading ? (
                   <CardSkeleton />
+                ) : !isBotPresent ? (
+                  <CardError message="Bot non installé sur ce serveur." />
                 ) : guild.error || !guild.data?.botStatus ? (
                   <CardError />
                 ) : (
@@ -216,6 +249,8 @@ export default function OverviewClient() {
               <OverviewCard icon={<Users className="h-4 w-4" />} color="bg-cyan-500/15 text-cyan-400" title="Serveurs & Membres" href="/discord/bot">
                 {guild.loading || botWide.loading ? (
                   <CardSkeleton />
+                ) : !isBotPresent ? (
+                  <CardError message="Bot non installé sur ce serveur." />
                 ) : (
                   <>
                     <p className="text-lg font-bold">{guild.data?.guild?.memberCount ?? "—"} membres</p>
@@ -229,6 +264,8 @@ export default function OverviewClient() {
               <OverviewCard icon={<ShieldCheck className="h-4 w-4" />} color="bg-blue-500/15 text-blue-400" title="Modération" href={`/discord/moderation?guildId=${gid}`}>
                 {moderation.loading ? (
                   <CardSkeleton />
+                ) : !isBotPresent ? (
+                  <CardError message="Bot non installé sur ce serveur." />
                 ) : moderation.error || !moderation.data ? (
                   <CardError />
                 ) : (
@@ -246,6 +283,8 @@ export default function OverviewClient() {
               <OverviewCard icon={<ShieldAlert className="h-4 w-4" />} color="bg-rose-500/15 text-rose-400" title="Sécurité" href={`/discord/security?guildId=${gid}`}>
                 {security.loading ? (
                   <CardSkeleton />
+                ) : !isBotPresent ? (
+                  <CardError message="Bot non installé sur ce serveur." />
                 ) : security.error || !security.data ? (
                   <CardError />
                 ) : (
@@ -271,6 +310,8 @@ export default function OverviewClient() {
               <OverviewCard icon={<Music2 className="h-4 w-4" />} color="bg-purple-500/15 text-purple-400" title="Musique" href={`/discord/music?guildId=${gid}`}>
                 {music.loading ? (
                   <CardSkeleton />
+                ) : !isBotPresent ? (
+                  <CardError message="Bot non installé sur ce serveur." />
                 ) : music.error || !music.data ? (
                   <CardError />
                 ) : music.data.currentTrack && (music.data.status === "PLAYING" || music.data.status === "PAUSED") ? (
@@ -288,6 +329,8 @@ export default function OverviewClient() {
               <OverviewCard icon={<Ticket className="h-4 w-4" />} color="bg-amber-500/15 text-amber-400" title="Tickets" href={`/discord/tickets?guildId=${gid}`}>
                 {tickets.loading ? (
                   <CardSkeleton />
+                ) : !isBotPresent ? (
+                  <CardError message="Bot non installé sur ce serveur." />
                 ) : tickets.error || !tickets.data ? (
                   <CardError />
                 ) : (
@@ -301,6 +344,8 @@ export default function OverviewClient() {
               <OverviewCard icon={<Gift className="h-4 w-4" />} color="bg-pink-500/15 text-pink-400" title="Giveaways" href={`/discord/giveaways?guildId=${gid}`}>
                 {giveaways.loading ? (
                   <CardSkeleton />
+                ) : !isBotPresent ? (
+                  <CardError message="Bot non installé sur ce serveur." />
                 ) : giveaways.error || !giveaways.data ? (
                   <CardError />
                 ) : (
@@ -314,6 +359,8 @@ export default function OverviewClient() {
               <OverviewCard icon={<DatabaseBackup className="h-4 w-4" />} color="bg-emerald-500/15 text-emerald-400" title="Backups" href={`/discord/backups?guildId=${gid}`}>
                 {backups.loading ? (
                   <CardSkeleton />
+                ) : !isBotPresent ? (
+                  <CardError message="Bot non installé sur ce serveur." />
                 ) : backups.error || !backups.data ? (
                   <CardError />
                 ) : (
@@ -346,6 +393,8 @@ export default function OverviewClient() {
                   <CardSkeleton />
                   <CardSkeleton />
                 </div>
+              ) : !isBotPresent ? (
+                <p className="text-xs text-[var(--text-muted)]">Bot non installé sur ce serveur.</p>
               ) : guild.error || !guild.data?.stats?.recentActivities?.length ? (
                 <p className="text-xs text-[var(--text-muted)]">Aucune activité récente enregistrée.</p>
               ) : (

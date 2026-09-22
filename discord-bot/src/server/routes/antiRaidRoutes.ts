@@ -47,7 +47,11 @@ export function createAntiRaidRouter(discordClient: Client) {
       emitConfigUpdated('antiRaid', guildId, updated, 'DASHBOARD', req.user?.id);
       res.json({ success: true, config: updated });
     } catch (err: any) {
-      res.status(400).json({ error: err.message || 'Configuration Anti-Raid invalide' });
+      const errorMsg =
+        err?.errors && Array.isArray(err.errors)
+          ? err.errors.map((e: any) => `${e.path?.join('.') || 'paramètre'}: ${e.message}`).join(', ')
+          : err.message || 'Configuration Anti-Raid invalide';
+      res.status(400).json({ error: errorMsg });
     }
   });
 

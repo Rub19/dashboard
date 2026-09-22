@@ -595,14 +595,35 @@ export default function DiscordDashboardPage() {
             messageRaid: { enabled: guildSettings.antiSpamEnabled },
             mentionRaid: {
               enabled: guildSettings.mentionLimit > 0,
-              maxMentionsPerMessage: guildSettings.mentionLimit > 0 ? guildSettings.mentionLimit : 0,
+              maxMentionsPerMessage: guildSettings.mentionLimit >= 2 ? guildSettings.mentionLimit : 5,
             },
           }),
         }),
       ]);
       const failed: string[] = [];
-      if (!settingsRes.ok) failed.push(`préfixe (${(await settingsRes.json().catch(() => null))?.error || settingsRes.status})`);
-      if (!raidRes.ok) failed.push(`anti-raid (${(await raidRes.json().catch(() => null))?.error || raidRes.status})`);
+      const formatError = async (res: Response, label: string) => {
+        try {
+          const data = await res.json().catch(() => null);
+          if (!data?.error) return `${label} (${res.status})`;
+          if (typeof data.error === "string") {
+            try {
+              const parsed = JSON.parse(data.error);
+              if (Array.isArray(parsed) && parsed[0]?.message) {
+                return `${label} (${parsed.map((p: any) => p.message).join(", ")})`;
+              }
+            } catch {}
+            return `${label} (${data.error})`;
+          }
+          if (Array.isArray(data.error) && data.error[0]?.message) {
+            return `${label} (${data.error.map((p: any) => p.message).join(", ")})`;
+          }
+          return `${label} (${res.status})`;
+        } catch {
+          return `${label} (${res.status})`;
+        }
+      };
+      if (!settingsRes.ok) failed.push(await formatError(settingsRes, "préfixe"));
+      if (!raidRes.ok) failed.push(await formatError(raidRes, "anti-raid"));
       if (failed.length > 0) {
         showError("Enregistrement partiel", `Échec : ${failed.join(", ")}.`);
       } else {

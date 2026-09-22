@@ -57,9 +57,9 @@ export type MessageRaidConfig = z.infer<typeof MessageRaidConfigSchema>;
 
 export const MentionRaidConfigSchema = z.object({
   enabled: z.boolean().default(true),
-  maxMentionsPerMessage: z.number().min(2).max(50).default(5),
-  maxMentionsPerUserInWindow: z.number().min(3).max(100).default(10),
-  timeWindowSeconds: z.number().min(3).max(60).default(10),
+  maxMentionsPerMessage: z.number().min(0).max(50).default(5),
+  maxMentionsPerUserInWindow: z.number().min(0).max(100).default(10),
+  timeWindowSeconds: z.number().min(1).max(60).default(10),
   blockEveryoneHere: z.boolean().default(true),
   actions: z.array(RaidActionSchema).default(['DELETE', 'TIMEOUT', 'ALERT_STAFF']),
 });

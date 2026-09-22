@@ -140,10 +140,16 @@ function ThemeToggle() {
 }
 
 function FocusLivePill({ mobile }: { mobile?: boolean } = {}) {
+  const [mounted, setMounted] = useState(false);
   const focus = useFocus();
   const [popoverOpen, setPopoverOpen] = useState(false);
   const { phase, remaining, total, paused, activePreset, goal } = focus.state;
-  const isActive = phase !== "idle";
+
+  useEffect(() => {
+    setMounted(true);
+  }, []);
+
+  const isActive = mounted && phase !== "idle";
 
   if (!isActive) {
     if (mobile) return null;

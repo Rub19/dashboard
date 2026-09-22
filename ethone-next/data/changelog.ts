@@ -32397,10 +32397,58 @@ const v12850_de: ChangelogEntry = {
   ],
 };
 
-CHANGELOG_BY_LANG.fr.unshift(v12850_fr, v12849_fr, v12848_fr, v12847_fr, v12846_fr, v12845_fr, v12844_fr, v12843_fr, v12842_fr, v12841_fr, v12840_fr, v12839_fr, v12838_fr, v12837_fr, v12836_fr, v12835_fr, v12834_fr, v12833_fr);
-CHANGELOG_BY_LANG.en.unshift(v12850_en, v12849_en, v12848_en, v12847_en, v12846_en, v12845_en, v12844_en, v12843_en, v12842_en, v12841_en, v12840_en, v12839_en, v12838_en, v12837_en, v12836_en, v12835_en, v12834_en, v12833_en);
-CHANGELOG_BY_LANG.es.unshift(v12850_es, v12849_es, v12848_es, v12847_es, v12846_es, v12845_es, v12844_es, v12843_es, v12842_es, v12841_es, v12840_es, v12839_es, v12838_es, v12837_es, v12836_es, v12835_es, v12834_es, v12833_es);
-CHANGELOG_BY_LANG.de.unshift(v12850_de, v12849_de, v12848_de, v12847_de, v12846_de, v12845_de, v12844_de, v12843_de, v12842_de, v12841_de, v12840_de, v12839_de, v12838_de, v12837_de, v12836_de, v12835_de, v12834_de, v12833_de);
+const v12851_fr: ChangelogEntry = {
+  version: "v1.28.31",
+  date: "2026-09-23",
+  title: "Correction du crash au rafraîchissement & fiabilisation de l'hydratation Focus",
+  items: [
+    "Correction du crash au rechargement (F5) : élimination du mismatch d'hydratation SSR causé par la lecture synchrone de localStorage au chargement du module FocusProvider.",
+    "Fiabilisation de l'initialisation Focus : initialisation déterministe de FocusTimer et restauration asynchrone sécurisée via useEffect sans blocage du premier rendu.",
+    "Protection de la TopBar : ajout d'une garde de montage (mounted) sur FocusLivePill garantissant un rendu identique entre serveur et client.",
+    "Support de l'icône triangle-alert : ajout du mapping Lucide triangle-alert dans lib/icons.tsx pour afficher proprement les alertes d'erreur sans fallback générique.",
+  ],
+};
+
+const v12851_en: ChangelogEntry = {
+  version: "v1.28.31",
+  date: "2026-09-23",
+  title: "Refresh Crash Fix & Focus SSR Hydration Reliability",
+  items: [
+    "Page Refresh Crash Fix: eliminated SSR hydration mismatch caused by synchronous localStorage reading on FocusProvider module load.",
+    "Focus Initialization Reliability: deterministic FocusTimer initialization with safe asynchronous restoration via useEffect without blocking initial render.",
+    "TopBar Protection: added mounted guard on FocusLivePill ensuring identical DOM output between server and client.",
+    "Icon Support: mapped Lucide triangle-alert in lib/icons.tsx to properly render error banners without generic help-circle fallback.",
+  ],
+};
+
+const v12851_es: ChangelogEntry = {
+  version: "v1.28.31",
+  date: "2026-09-23",
+  title: "Corrección de error al recargar y fiabilidad de hidratación en Focus",
+  items: [
+    "Corrección de error al recargar la página (F5): eliminación del error de hidratación SSR provocado por la lectura síncrona de localStorage.",
+    "Inicialización segura de Focus: estado determinista en FocusTimer y restauración asíncrona mediante useEffect sin bloquear el primer renderizado.",
+    "Protección de TopBar: guardia de montaje (mounted) en FocusLivePill garantizando paridad estricta entre servidor y cliente.",
+    "Soporte para icono triangle-alert: mapeo de Lucide triangle-alert en lib/icons.tsx para visualización limpia de estados de alerta.",
+  ],
+};
+
+const v12851_de: ChangelogEntry = {
+  version: "v1.28.31",
+  date: "2026-09-23",
+  title: "Behebung des Absturzes beim Neuladen & Focus-Hydratisierungszuverlässigkeit",
+  items: [
+    "Behebung des Absturzes beim Aktualisieren (F5): Beseitigung der SSR-Hydratisierungsdiskrepanz durch synchrones Lesen des localStorage beim Modulladen von FocusProvider.",
+    "Zuverlässige Focus-Initialisierung: Deterministische FocusTimer-Initialisierung und sichere asynchrone Wiederherstellung via useEffect ohne Blockieren des ersten Renderns.",
+    "TopBar-Schutz: Mounted-Guard auf FocusLivePill hinzugefügt, um identisches DOM zwischen Server und Client zu gewährleisten.",
+    "Icon-Unterstützung: Lucide-Mapping triangle-alert in lib/icons.tsx ergänzt für saubere Fehleranzeige ohne generischen Fallback.",
+  ],
+};
+
+CHANGELOG_BY_LANG.fr.unshift(v12851_fr, v12850_fr, v12849_fr, v12848_fr, v12847_fr, v12846_fr, v12845_fr, v12844_fr, v12843_fr, v12842_fr, v12841_fr, v12840_fr, v12839_fr, v12838_fr, v12837_fr, v12836_fr, v12835_fr, v12834_fr, v12833_fr);
+CHANGELOG_BY_LANG.en.unshift(v12851_en, v12850_en, v12849_en, v12848_en, v12847_en, v12846_en, v12845_en, v12844_en, v12843_en, v12842_en, v12841_en, v12840_en, v12839_en, v12838_en, v12837_en, v12836_en, v12835_en, v12834_en, v12833_en);
+CHANGELOG_BY_LANG.es.unshift(v12851_es, v12850_es, v12849_es, v12848_es, v12847_es, v12846_es, v12845_es, v12844_es, v12843_es, v12842_es, v12841_es, v12840_es, v12839_es, v12838_es, v12837_es, v12836_es, v12835_es, v12834_es, v12833_es);
+CHANGELOG_BY_LANG.de.unshift(v12851_de, v12850_de, v12849_de, v12848_de, v12847_de, v12846_de, v12845_de, v12844_de, v12843_de, v12842_de, v12841_de, v12840_de, v12839_de, v12838_de, v12837_de, v12836_de, v12835_de, v12834_de, v12833_de);
 
 export const CHANGELOG = CHANGELOG_BY_LANG.fr;
 

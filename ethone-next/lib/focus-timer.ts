@@ -60,7 +60,6 @@ export class FocusTimer {
   private isRestoring = false;
 
   constructor() {
-    const todayStats = getTodayStoredFocusStats();
     this.state = this.makeState({
       phase: "idle",
       remaining: PRESETS.pomodoro.work * 60,
@@ -68,9 +67,9 @@ export class FocusTimer {
       paused: false,
       activePreset: "",
       cycle: 1,
-      completedPomodoros: todayStats.completedPomodoros,
+      completedPomodoros: 0,
       completedBreaks: 0,
-      totalFocusSeconds: todayStats.totalFocusSeconds,
+      totalFocusSeconds: 0,
     });
     this.lastTick = Date.now();
     if (typeof document !== "undefined") {
@@ -190,16 +189,28 @@ export class FocusTimer {
       if (!loaded) {
         const raw = localStorage.getItem(SESSION_KEY);
         if (!raw) {
+          const todayStats = getTodayStoredFocusStats();
+          this.state = this.makeState({
+            completedPomodoros: todayStats.completedPomodoros,
+            totalFocusSeconds: todayStats.totalFocusSeconds,
+          });
           this.isRestoring = false;
           this.persist(fromCloud);
+          this.notify();
           return;
         }
         loaded = JSON.parse(raw) as FocusSession;
       }
 
       if (!loaded || typeof loaded !== "object") {
+        const todayStats = getTodayStoredFocusStats();
+        this.state = this.makeState({
+          completedPomodoros: todayStats.completedPomodoros,
+          totalFocusSeconds: todayStats.totalFocusSeconds,
+        });
         this.isRestoring = false;
         this.persist(fromCloud);
+        this.notify();
         return;
       }
 

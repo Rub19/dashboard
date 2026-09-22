@@ -2,6 +2,16 @@
 
 Toutes les modifications notables de ce projet seront documentées dans ce fichier.
 
+## v1.28.31 — 2026-09-23
+
+### Correction du crash au rafraîchissement & fiabilisation de l'hydratation Focus
+- **Correction du crash au rechargement (`components/FocusProvider.tsx` & `lib/focus-timer.ts`)** : Élimination du mismatch d'hydratation SSR causé par la lecture synchrone de `localStorage` au chargement du module `FocusProvider`. L'initialisation de `FocusTimer` est désormais 100% déterministe entre le serveur et le premier rendu client.
+- **Restauration sécurisée du Focus (`lib/focus-timer.ts`)** : Le chargement de l'historique du jour et de la session en cours est différé dans un `useEffect` après le montage, notifiant proprement les souscripteurs sans conflit avec `useSyncExternalStore`.
+- **Protection de la TopBar (`components/TopBar.tsx`)** : Ajout d'une garde de montage (`mounted`) sur `FocusLivePill` garantissant un DOM initial identique entre SSR et hydratation client.
+- **Support de l'icône triangle-alert (`lib/icons.tsx`)** : Ajout du mapping Lucide `triangle-alert` pour afficher correctement les bannières d'erreur et les écrans d'état sans basculer sur l'icône de secours `help-circle`.
+
+---
+
 ## v1.28.30 — 2026-09-22
 
 ### Parité mobile TopBar, correction du modal Focus & synchronisation globale

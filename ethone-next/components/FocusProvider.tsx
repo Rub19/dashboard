@@ -23,9 +23,6 @@ type FocusContextValue = {
 };
 
 const focusTimer = new FocusTimer();
-if (typeof window !== "undefined") {
-  focusTimer.restore();
-}
 
 const FocusCtx = createContext<FocusContextValue | null>(null);
 
@@ -35,6 +32,10 @@ export function FocusProvider({ children }: { children: React.ReactNode }) {
     () => focusTimer.getState(),
     () => focusTimer.getState()
   );
+
+  useEffect(() => {
+    focusTimer.restore();
+  }, []);
 
   const activityRef = useRef<string | null>(null);
   const canLiveActivity = useRef(false);

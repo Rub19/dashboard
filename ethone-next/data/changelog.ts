@@ -31775,10 +31775,54 @@ const v12835_de: ChangelogEntry = {
   ],
 };
 
-CHANGELOG_BY_LANG.fr.unshift(v12835_fr, v12834_fr, v12833_fr);
-CHANGELOG_BY_LANG.en.unshift(v12835_en, v12834_en, v12833_en);
-CHANGELOG_BY_LANG.es.unshift(v12835_es, v12834_es, v12833_es);
-CHANGELOG_BY_LANG.de.unshift(v12835_de, v12834_de, v12833_de);
+const v12836_fr: ChangelogEntry = {
+  version: "v1.28.16",
+  date: "2026-09-22",
+  title: "Harmonisation des Rôles, IA, Sauvegardes, Événements et Calendrier",
+  items: [
+    "Centre de Rôles (/discord/roles) : intégration de GuildSelector avec détection de présence du bot et bannière d'invitation. Remplacement des champs texte bruts par RolePicker et ChannelPicker dans le constructeur de panneaux et les auto-rôles, et remplacement de window.prompt par une modale native avec ChannelPicker pour la publication.",
+    "Centres IA & Sauvegardes (/discord/ai, /discord/backups) : intégration de GuildSelector, arrêt des requêtes en arrière-plan lorsque le bot est absent avec bannière d'invitation et lien direct d'autorisation.",
+    "Hub Événements, Calendrier & Création (/discord/events, /discord/calendar, /discord/events/create) : intégration de GuildSelector et bannières bot. Ajout de RolePicker dans le wizard de création d'événement (mentions ciblées par rôle et attribution automatique de rôles aux participants inscrits).",
+  ],
+};
+
+const v12836_en: ChangelogEntry = {
+  version: "v1.28.16",
+  date: "2026-09-22",
+  title: "Harmonization of Roles, AI, Backups, Events, and Calendar",
+  items: [
+    "Roles Center (/discord/roles): integrated GuildSelector with bot presence detection and invite banner. Replaced raw text inputs with RolePicker and ChannelPicker in panel builder and auto-roles, and replaced window.prompt with a native modal using ChannelPicker for panel publishing.",
+    "AI & Backups Centers (/discord/ai, /discord/backups): integrated GuildSelector, guarded background API calls when bot is absent with invite banner and direct authorization link.",
+    "Events Hub, Calendar & Creation (/discord/events, /discord/calendar, /discord/events/create): integrated GuildSelector and bot banners. Added RolePicker in the event creation wizard for role-specific mentions and automatic role assignment for RSVP attendees.",
+  ],
+};
+
+const v12836_es: ChangelogEntry = {
+  version: "v1.28.16",
+  date: "2026-09-22",
+  title: "Armonización de Roles, IA, Copias de Seguridad, Eventos y Calendario",
+  items: [
+    "Centro de Roles (/discord/roles): integración de GuildSelector con detección del bot y banner de invitación. Reemplazo de campos de texto por RolePicker y ChannelPicker en el creador de paneles y auto-roles, y reemplazo de window.prompt por un modal nativo con ChannelPicker.",
+    "Centros de IA y Copias de Seguridad (/discord/ai, /discord/backups): integración de GuildSelector, detención de llamadas API en segundo plano cuando el bot está ausente con banner de invitación y enlace directo.",
+    "Hub de Eventos, Calendario y Creación (/discord/events, /discord/calendar, /discord/events/create): integración de GuildSelector y banners del bot. Adición de RolePicker en el asistente de creación de eventos para menciones por rol y asignación automática de roles a participantes.",
+  ],
+};
+
+const v12836_de: ChangelogEntry = {
+  version: "v1.28.16",
+  date: "2026-09-22",
+  title: "Harmonisierung von Rollen, KI, Backups, Events und Kalender",
+  items: [
+    "Rollen-Zentrum (/discord/roles): GuildSelector mit Bot-Präsenzerkennung und Einladungsbanner integriert. Ersatz von Freitextfeldern durch RolePicker und ChannelPicker im Panel-Builder und bei Auto-Rollen sowie Ersatz von window.prompt durch ein natives Modal mit ChannelPicker.",
+    "KI- & Backup-Zentren (/discord/ai, /discord/backups): GuildSelector integriert, Hintergrund-API-Aufrufe bei fehlendem Bot mit Einladungsbanner und direktem Autorisierungslink geschützt.",
+    "Event-Hub, Kalender & Erstellung (/discord/events, /discord/calendar, /discord/events/create): GuildSelector und Bot-Banner integriert. RolePicker im Event-Erstellungs-Assistenten für rollenspezifische Erwähnungen und automatische Rollenzuweisung für Teilnehmer hinzugefügt.",
+  ],
+};
+
+CHANGELOG_BY_LANG.fr.unshift(v12836_fr, v12835_fr, v12834_fr, v12833_fr);
+CHANGELOG_BY_LANG.en.unshift(v12836_en, v12835_en, v12834_en, v12833_en);
+CHANGELOG_BY_LANG.es.unshift(v12836_es, v12835_es, v12834_es, v12833_es);
+CHANGELOG_BY_LANG.de.unshift(v12836_de, v12835_de, v12834_de, v12833_de);
 
 export const CHANGELOG = CHANGELOG_BY_LANG.fr;
 

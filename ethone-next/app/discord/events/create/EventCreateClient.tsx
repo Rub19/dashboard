@@ -21,6 +21,7 @@ import {
   Save,
 } from "lucide-react";
 import ChannelPicker from "@/components/discord/ChannelPicker";
+import RolePicker from "@/components/discord/RolePicker";
 
 interface WizardFormState {
   title: string;
@@ -89,7 +90,7 @@ const DEFAULT_FORM: WizardFormState = {
   automations: {
     createDiscussionThread: true,
     assignRoleOnRSVP: true,
-    roleIdToAssign: "role-event-participant",
+    roleIdToAssign: "",
     removeRoleAfterEvent: true,
   },
 };
@@ -185,13 +186,13 @@ export default function EventCreateClient() {
         actions: [{ type: "CREATE_THREAD" as const }],
         enabled: true,
       },
-      form.automations.assignRoleOnRSVP && {
+      form.automations.assignRoleOnRSVP && form.automations.roleIdToAssign && {
         id: "auto-assign-role",
         trigger: "ON_RSVP" as const,
         actions: [{ type: "ASSIGN_ROLE" as const, targetId: form.automations.roleIdToAssign }],
         enabled: true,
       },
-      form.automations.assignRoleOnRSVP && form.automations.removeRoleAfterEvent && {
+      form.automations.assignRoleOnRSVP && form.automations.removeRoleAfterEvent && form.automations.roleIdToAssign && {
         id: "auto-remove-role",
         trigger: "ON_END" as const,
         actions: [{ type: "REMOVE_ROLE" as const, targetId: form.automations.roleIdToAssign }],
@@ -220,6 +221,12 @@ export default function EventCreateClient() {
         maxParticipants: form.maxParticipants,
         waitlistEnabled: form.waitlistEnabled,
       },
+      announcementChannel: form.announcementChannel,
+      mentionType: form.mentionType,
+      mentionRoleId: form.mentionType === "ROLE" ? form.mentionRoleId : undefined,
+      eventRoleId: form.automations.assignRoleOnRSVP && form.automations.roleIdToAssign ? form.automations.roleIdToAssign : undefined,
+      eventRoleAction: form.automations.assignRoleOnRSVP ? ("ASSIGN_ON_RSVP" as const) : ("NONE" as const),
+      removeRoleAfterEvent: form.automations.removeRoleAfterEvent,
       reminders,
       automations,
       syncToDiscord: form.syncToDiscordScheduled,
@@ -673,6 +680,22 @@ export default function EventCreateClient() {
                   </select>
                 </div>
 
+                {form.mentionType === "ROLE" && (
+                  <div>
+                    <label className="block text-xs font-semibold text-slate-300 mb-1.5">
+                      Rôle à mentionner
+                    </label>
+                    <RolePicker
+                      value={form.mentionRoleId}
+                      onChange={(roleId) => updateForm("mentionRoleId", roleId)}
+                      guildId={guildParam}
+                      placeholder="Sélectionner un rôle à mentionner..."
+                      size="sm"
+                      allowClear
+                    />
+                  </div>
+                )}
+
                 <div className="p-4 rounded-xl bg-indigo-500/10 border border-indigo-500/20 flex items-center justify-between">
                   <div>
                     <span className="text-xs font-bold text-white block">Synchronisation Discord Événement Natif</span>
@@ -776,6 +799,27 @@ export default function EventCreateClient() {
                       className="w-4 h-4 rounded text-indigo-500"
                     />
                   </div>
+
+                  {form.automations.assignRoleOnRSVP && (
+                    <div className="p-4 rounded-xl bg-black/40 border border-[var(--panel-border)] space-y-2">
+                      <label className="block text-xs font-semibold text-slate-300">
+                        Rôle à attribuer aux participants
+                      </label>
+                      <RolePicker
+                        value={form.automations.roleIdToAssign}
+                        onChange={(roleId) =>
+                          setForm((prev) => ({
+                            ...prev,
+                            automations: { ...prev.automations, roleIdToAssign: roleId },
+                          }))
+                        }
+                        guildId={guildParam}
+                        placeholder="Sélectionner un rôle pour les participants..."
+                        size="sm"
+                        allowClear
+                      />
+                    </div>
+                  )}
 
                   <div className="p-4 rounded-xl bg-black/40 border border-[var(--panel-border)] flex items-center justify-between">
                     <div>

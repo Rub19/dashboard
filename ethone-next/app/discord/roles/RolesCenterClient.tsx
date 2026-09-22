@@ -1,6 +1,6 @@
 "use client";
 
-import React, { useState, useMemo, useEffect, useCallback } from "react";
+import React, { useState, useMemo, useEffect, useCallback, useRef } from "react";
 import Link from "next/link";
 import { useSearchParams } from "next/navigation";
 import {
@@ -17,12 +17,20 @@ import {
   Save,
   Edit3,
   ArrowLeft,
+  Bot,
+  AlertTriangle,
+  X,
 } from "lucide-react";
 import { useToast } from "@/components/ToastProvider";
-import { useDiscordOAuth } from "@/lib/hooks/useDiscordOAuth";
+import { useDiscordOAuth, type DiscordGuild, canManageGuild, getStoredDiscordGuilds } from "@/lib/hooks/useDiscordOAuth";
+import { useBotGuildIds, pickBotGuild } from "@/lib/hooks/useBotGuildIds";
 import { cn } from "@/lib/utils";
-import { useResolvedGuildId } from "@/lib/hooks/useBotGuildIds";
+import { GuildSelector } from "@/components/GuildSelector";
+import ChannelPicker from "@/components/discord/ChannelPicker";
+import RolePicker from "@/components/discord/RolePicker";
 
+const BOT_CLIENT_ID = "1545139931154878464";
+const BOT_INVITE_URL = `https://discord.com/oauth2/authorize?client_id=${BOT_CLIENT_ID}&permissions=8&scope=bot%20applications.commands`;
 const BOT_API_URL = process.env.NEXT_PUBLIC_DISCORD_BOT_API || "";
 
 // Mirrors discord-bot/src/modules/roles/types/{rolePanel,autoRoleConfig}.ts.
@@ -99,17 +107,53 @@ function relative(iso: string | null): string {
 
 export default function RolesCenterClient() {
   const searchParams = useSearchParams();
-  const rawGuildId = searchParams.get("guildId");
   const { profile } = useDiscordOAuth();
   const { success, error: toastError } = useToast();
 
-  const currentGuildId = useResolvedGuildId(rawGuildId, profile?.guilds);
+  const allGuilds: DiscordGuild[] = useMemo(() => {
+    if (profile?.guilds && profile.guilds.length > 0) return profile.guilds;
+    return getStoredDiscordGuilds();
+  }, [profile?.guilds]);
 
-  const activeGuild = useMemo(() => {
-    if (!profile?.guilds || profile.guilds.length === 0) return null;
-    return profile.guilds.find((g) => g.id === currentGuildId) || profile.guilds[0];
-  }, [currentGuildId, profile?.guilds]);
+  const botGuildIds = useBotGuildIds(allGuilds);
 
+  const manageableGuilds: DiscordGuild[] = useMemo(() => {
+    if (allGuilds.length === 0) return [];
+    const manageable = allGuilds.filter((g) => canManageGuild(g) || (botGuildIds && botGuildIds.includes(g.id)));
+    return manageable.length > 0 ? manageable : allGuilds;
+  }, [allGuilds, botGuildIds]);
+
+  const appliedQueryGuild = useRef<string | null>(null);
+  const userSelectedRef = useRef(false);
+  const queryGuildId = searchParams.get("guildId");
+  const [selectedGuild, setSelectedGuild] = useState<DiscordGuild | null>(null);
+
+  useEffect(() => {
+    if (manageableGuilds.length === 0) return;
+    if (queryGuildId && appliedQueryGuild.current !== queryGuildId) {
+      const match = manageableGuilds.find((g) => g.id === queryGuildId);
+      if (match) {
+        appliedQueryGuild.current = queryGuildId;
+        setSelectedGuild(match);
+        return;
+      }
+    }
+    if (!userSelectedRef.current && !queryGuildId) {
+      if (!selectedGuild) {
+        if (botGuildIds !== null) {
+          setSelectedGuild(pickBotGuild(manageableGuilds, botGuildIds)!);
+        }
+      } else if (botGuildIds && botGuildIds.length > 0 && !botGuildIds.includes(selectedGuild.id)) {
+        const botGuild = pickBotGuild(manageableGuilds, botGuildIds);
+        if (botGuild && botGuild.id !== selectedGuild.id && botGuildIds.includes(botGuild.id)) {
+          setSelectedGuild(botGuild);
+        }
+      }
+    }
+  }, [manageableGuilds, queryGuildId, selectedGuild, botGuildIds]);
+
+  const currentGuildId = selectedGuild?.id || "";
+  const isBotPresent = Boolean(selectedGuild && botGuildIds && botGuildIds.includes(selectedGuild.id));
   const base = `${BOT_API_URL}/api/guilds/${currentGuildId}/roles`;
   const isRealGuild = Boolean(BOT_API_URL) && Boolean(currentGuildId);
 
@@ -120,6 +164,10 @@ export default function RolesCenterClient() {
   const [autoRole, setAutoRole] = useState<AutoRoleConfig>({ enabled: false, roleIds: [], applyToHumans: true, applyToBots: false });
   const [savingAutoRole, setSavingAutoRole] = useState(false);
   const [busyPanelId, setBusyPanelId] = useState<string | null>(null);
+
+  // Publish modal state
+  const [publishingPanel, setPublishingPanel] = useState<RolePanel | null>(null);
+  const [publishChannelId, setPublishChannelId] = useState("");
 
   // Builder (create or edit)
   const [editingId, setEditingId] = useState<string | null>(null);
@@ -134,6 +182,13 @@ export default function RolesCenterClient() {
   const [submitting, setSubmitting] = useState(false);
 
   const load = useCallback(async () => {
+    if (!selectedGuild) return;
+    if (botGuildIds !== null && !botGuildIds.includes(selectedGuild.id)) {
+      setIsDemo(false);
+      setPanels([]);
+      setAutoRole({ enabled: false, roleIds: [], applyToHumans: true, applyToBots: false });
+      return;
+    }
     if (!isRealGuild) {
       setIsDemo(true);
       return;
@@ -158,7 +213,7 @@ export default function RolesCenterClient() {
     } finally {
       setLoading(false);
     }
-  }, [base, isRealGuild]);
+  }, [base, isRealGuild, selectedGuild, botGuildIds]);
 
   useEffect(() => {
     load();
@@ -197,7 +252,7 @@ export default function RolesCenterClient() {
       return;
     }
     if (items.some((i) => !/^\d{15,22}$/.test(i.roleId))) {
-      toastError("Chaque rôle doit avoir un ID Discord valide (clic droit sur le rôle → Copier l'identifiant).");
+      toastError("Chaque rôle doit avoir un rôle Discord valide sélectionné.");
       return;
     }
     const groupId = editingId ? panels.find((p) => p.id === editingId)?.groups[0]?.id || `grp-${Date.now().toString(36)}` : `grp-${Date.now().toString(36)}`;
@@ -236,9 +291,13 @@ export default function RolesCenterClient() {
     }
   };
 
-  const publishPanel = async (p: RolePanel) => {
-    const channelId = p.channelId || prompt("ID du salon Discord où publier ce panneau :")?.trim();
-    if (!channelId) return;
+  const publishPanel = async (p: RolePanel, targetChannelId?: string) => {
+    const channelId = targetChannelId || p.channelId;
+    if (!channelId) {
+      setPublishingPanel(p);
+      setPublishChannelId("");
+      return;
+    }
     if (isDemo) {
       toastError("Bot injoignable : rien n'a été enregistré.");
       return;
@@ -357,11 +416,21 @@ export default function RolesCenterClient() {
               <h1 className="text-2xl font-bold text-white tracking-tight">Reaction Roles & Auto-Rôles</h1>
               <p className="text-xs text-neutral-400">
                 Panneaux boutons / menus publiés par le bot, et rôles automatiques à l'arrivée.
-                {isDemo && <span className="text-amber-400"> (bot injoignable ou absent de ce serveur)</span>}
+                {isDemo && isBotPresent && <span className="text-amber-400"> (bot temporairement injoignable)</span>}
               </p>
             </div>
           </div>
           <div className="flex items-center gap-2.5 flex-wrap">
+            {manageableGuilds.length > 0 && selectedGuild && (
+              <GuildSelector
+                guilds={manageableGuilds}
+                value={selectedGuild.id}
+                onChange={(g: DiscordGuild) => {
+                  userSelectedRef.current = true;
+                  setSelectedGuild(g);
+                }}
+              />
+            )}
             <button onClick={load} disabled={loading} className="px-3.5 py-2 rounded-xl border border-neutral-800 bg-neutral-900 hover:bg-neutral-800 text-xs font-semibold text-neutral-200 flex items-center gap-2 transition-colors cursor-pointer disabled:opacity-50">
               <RefreshCw className={cn("w-4 h-4 text-pink-400", loading && "animate-spin")} />
               Actualiser
@@ -372,6 +441,31 @@ export default function RolesCenterClient() {
             </button>
           </div>
         </div>
+
+        {/* Bot non installé banner */}
+        {selectedGuild && botGuildIds !== null && !botGuildIds.includes(selectedGuild.id) && (
+          <div className="p-4 rounded-2xl bg-amber-500/10 border border-amber-500/30 flex flex-col sm:flex-row items-start sm:items-center justify-between gap-3">
+            <div className="flex items-center gap-3">
+              <div className="p-2 rounded-xl bg-amber-500/20 text-amber-300">
+                <Bot className="w-5 h-5" />
+              </div>
+              <div>
+                <p className="text-sm font-bold text-white">Bot non présent sur ce serveur</p>
+                <p className="text-xs text-amber-200/80">
+                  Installe le bot sur <span className="font-semibold text-white">{selectedGuild.name}</span> pour gérer les reaction roles et auto-rôles.
+                </p>
+              </div>
+            </div>
+            <a
+              href={BOT_INVITE_URL}
+              target="_blank"
+              rel="noopener noreferrer"
+              className="inline-flex items-center gap-2 px-4 py-2 rounded-xl text-xs font-semibold bg-amber-500 hover:bg-amber-400 text-black transition-all shrink-0 font-medium"
+            >
+              Inviter le bot
+            </a>
+          </div>
+        )}
 
         {/* KPI réels */}
         <div className="grid grid-cols-2 sm:grid-cols-4 gap-3">
@@ -496,11 +590,14 @@ export default function RolesCenterClient() {
                   <input type="text" value={formName} onChange={(e) => setFormName(e.target.value)} placeholder="Notifications" className="w-full h-10 rounded-xl bg-neutral-950 border border-neutral-800 px-3 text-xs text-white" />
                 </div>
                 <div>
-                  <label className="block font-semibold text-neutral-300 mb-1">Salon de publication (ID)</label>
-                  <div className="relative">
-                    <Hash className="w-4 h-4 absolute left-3 top-1/2 -translate-y-1/2 text-neutral-500" />
-                    <input type="text" value={formChannelId} onChange={(e) => setFormChannelId(e.target.value)} placeholder="Clic droit → Copier l'identifiant" className="w-full h-10 rounded-xl bg-neutral-950 border border-neutral-800 pl-9 pr-3 text-xs text-white font-mono" />
-                  </div>
+                  <label className="block font-semibold text-neutral-300 mb-1">Salon de publication</label>
+                  <ChannelPicker
+                    value={formChannelId}
+                    onChange={(id) => setFormChannelId(id)}
+                    guildId={currentGuildId}
+                    placeholder="Sélectionner un salon..."
+                    size="sm"
+                  />
                 </div>
               </div>
               <div>
@@ -547,7 +644,21 @@ export default function RolesCenterClient() {
                     <div key={opt.id} className="grid grid-cols-12 items-center gap-2 p-2.5 rounded-xl bg-neutral-950 border border-neutral-800">
                       <input type="text" value={opt.emoji || ""} onChange={(e) => setFormItems((p) => p.map((x, i) => (i === idx ? { ...x, emoji: e.target.value || null } : x)))} placeholder="⭐" className="col-span-2 sm:col-span-1 h-9 rounded-lg bg-neutral-900 border border-neutral-700 text-center text-xs" />
                       <input type="text" value={opt.label} onChange={(e) => setFormItems((p) => p.map((x, i) => (i === idx ? { ...x, label: e.target.value } : x)))} placeholder="Libellé du bouton" className="col-span-10 sm:col-span-4 h-9 rounded-lg bg-neutral-900 border border-neutral-700 px-3 text-xs text-white" />
-                      <input type="text" value={opt.roleId} onChange={(e) => setFormItems((p) => p.map((x, i) => (i === idx ? { ...x, roleId: e.target.value.trim() } : x)))} placeholder="ID du rôle Discord" className="col-span-8 sm:col-span-4 h-9 rounded-lg bg-neutral-900 border border-neutral-700 px-3 text-xs text-white font-mono" />
+                      <div className="col-span-8 sm:col-span-4">
+                        <RolePicker
+                          value={opt.roleId}
+                          onChange={(id, r) =>
+                            setFormItems((p) =>
+                              p.map((x, i) =>
+                                i === idx ? { ...x, roleId: id, label: x.label === `Rôle ${idx + 1}` && r ? r.name : x.label } : x
+                              )
+                            )
+                          }
+                          guildId={currentGuildId}
+                          placeholder="Sélectionner un rôle..."
+                          size="sm"
+                        />
+                      </div>
                       <select value={opt.style} onChange={(e) => setFormItems((p) => p.map((x, i) => (i === idx ? { ...x, style: e.target.value as ItemStyle } : x)))} className="col-span-3 sm:col-span-2 h-9 rounded-lg bg-neutral-900 border border-neutral-700 px-2 text-xs text-white">
                         <option value="Primary">Bleu</option>
                         <option value="Secondary">Gris</option>
@@ -558,7 +669,6 @@ export default function RolesCenterClient() {
                     </div>
                   ))}
                 </div>
-                <p className="text-[10px] text-neutral-500">Active le mode développeur Discord puis clic droit sur un rôle → « Copier l'identifiant ».</p>
               </div>
 
               <div className="pt-3">
@@ -591,9 +701,32 @@ export default function RolesCenterClient() {
                 </div>
               ))}
             </div>
-            <div className="flex gap-2">
-              <input type="text" value={autoRoleInput} onChange={(e) => setAutoRoleInput(e.target.value)} placeholder="ID du rôle Discord" className="flex-1 h-10 rounded-xl bg-neutral-950 border border-neutral-800 px-3 text-xs text-white font-mono" />
-              <button onClick={() => { const id = autoRoleInput.trim(); if (!/^\d{15,22}$/.test(id)) { toastError("ID de rôle invalide."); return; } if (autoRole.roleIds.includes(id)) return; saveAutoRole({ ...autoRole, roleIds: [...autoRole.roleIds, id] }); setAutoRoleInput(""); }} className="px-4 h-10 rounded-xl bg-amber-600 hover:bg-amber-500 text-white text-xs font-semibold cursor-pointer flex items-center gap-1"><Plus className="w-3.5 h-3.5" /> Ajouter</button>
+            <div className="flex gap-2 items-center">
+              <div className="flex-1">
+                <RolePicker
+                  value={autoRoleInput}
+                  onChange={(id) => setAutoRoleInput(id)}
+                  guildId={currentGuildId}
+                  placeholder="Sélectionner un rôle Discord à ajouter..."
+                  size="sm"
+                />
+              </div>
+              <button
+                onClick={() => {
+                  const id = autoRoleInput.trim();
+                  if (!/^\d{15,22}$/.test(id)) {
+                    toastError("Sélectionne un rôle valide.");
+                    return;
+                  }
+                  if (autoRole.roleIds.includes(id)) return;
+                  saveAutoRole({ ...autoRole, roleIds: [...autoRole.roleIds, id] });
+                  setAutoRoleInput("");
+                }}
+                disabled={!autoRoleInput}
+                className="px-4 h-9 rounded-xl bg-amber-600 hover:bg-amber-500 text-white text-xs font-semibold cursor-pointer flex items-center gap-1 disabled:opacity-50 shrink-0"
+              >
+                <Plus className="w-3.5 h-3.5" /> Ajouter
+              </button>
             </div>
             <div className="grid grid-cols-2 gap-3 pt-3 border-t border-neutral-800 text-xs">
               <label className="flex items-center justify-between p-3 rounded-xl bg-neutral-950 border border-neutral-800 cursor-pointer">
@@ -622,6 +755,61 @@ export default function RolesCenterClient() {
                 <li>Un panneau passe en statut <span className="text-rose-400 font-semibold">Erreur</span> si un rôle est supprimé ou inaccessible.</li>
                 <li>Les rôles gérés par une intégration (bots, boosts) ne peuvent jamais être attribués manuellement.</li>
               </ol>
+            </div>
+          </div>
+        )}
+
+        {/* Modal de publication de panneau */}
+        {publishingPanel && (
+          <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/70 backdrop-blur-sm p-4">
+            <div className="bg-neutral-900 border border-neutral-800 rounded-2xl p-6 max-w-md w-full space-y-4 shadow-2xl">
+              <div className="flex items-center justify-between">
+                <h3 className="text-base font-bold text-white flex items-center gap-2">
+                  <Send className="w-4 h-4 text-pink-400" />
+                  Publier « {publishingPanel.name} »
+                </h3>
+                <button onClick={() => setPublishingPanel(null)} className="p-1 rounded-lg text-neutral-400 hover:text-white cursor-pointer">
+                  <X className="w-4 h-4" />
+                </button>
+              </div>
+              <p className="text-xs text-neutral-400">
+                Choisis le salon Discord dans lequel envoyer le panneau de rôles :
+              </p>
+              <div>
+                <ChannelPicker
+                  value={publishChannelId}
+                  onChange={(id) => setPublishChannelId(id)}
+                  guildId={currentGuildId}
+                  placeholder="Sélectionner le salon de destination..."
+                  size="sm"
+                />
+              </div>
+              <div className="flex justify-end gap-2 pt-2">
+                <button
+                  type="button"
+                  onClick={() => setPublishingPanel(null)}
+                  className="px-3 py-1.5 rounded-xl border border-neutral-800 bg-neutral-800/60 hover:bg-neutral-800 text-xs font-semibold text-neutral-300 cursor-pointer"
+                >
+                  Annuler
+                </button>
+                <button
+                  type="button"
+                  onClick={() => {
+                    if (!publishChannelId) {
+                      toastError("Sélectionne un salon de destination.");
+                      return;
+                    }
+                    const p = publishingPanel;
+                    setPublishingPanel(null);
+                    publishPanel(p, publishChannelId);
+                  }}
+                  disabled={!publishChannelId}
+                  className="px-4 py-1.5 rounded-xl bg-pink-600 hover:bg-pink-500 text-white text-xs font-semibold disabled:opacity-50 cursor-pointer flex items-center gap-1.5"
+                >
+                  <Send className="w-3 h-3" />
+                  Envoyer
+                </button>
+              </div>
             </div>
           </div>
         )}

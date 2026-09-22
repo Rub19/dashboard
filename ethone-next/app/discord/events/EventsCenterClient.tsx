@@ -1,6 +1,6 @@
 "use client";
 
-import React, { useState, useMemo, useEffect, useCallback } from "react";
+import React, { useState, useMemo, useEffect, useCallback, useRef } from "react";
 import Link from "next/link";
 import { useSearchParams } from "next/navigation";
 import { motion, AnimatePresence } from "framer-motion";
@@ -24,11 +24,15 @@ import {
   X,
   RefreshCw,
   ArrowLeft,
+  Bot,
 } from "lucide-react";
-import { useDiscordOAuth } from "@/lib/hooks/useDiscordOAuth";
+import { useDiscordOAuth, type DiscordGuild, canManageGuild, getStoredDiscordGuilds } from "@/lib/hooks/useDiscordOAuth";
+import { useBotGuildIds, pickBotGuild } from "@/lib/hooks/useBotGuildIds";
+import { GuildSelector } from "@/components/GuildSelector";
 import { useToast } from "@/components/ToastProvider";
-import { useResolvedGuildId } from "@/lib/hooks/useBotGuildIds";
 
+const BOT_CLIENT_ID = "1545139931154878464";
+const BOT_INVITE_URL = `https://discord.com/oauth2/authorize?client_id=${BOT_CLIENT_ID}&permissions=8&scope=bot%20applications.commands`;
 const BOT_API_URL = process.env.NEXT_PUBLIC_DISCORD_BOT_API || "";
 
 function mapEvent(raw: Record<string, unknown>): EventItem {
@@ -117,8 +121,51 @@ export default function EventsCenterClient() {
   const searchParams = useSearchParams();
   const { profile } = useDiscordOAuth();
   const { success, error: showError } = useToast();
-  const guildParam =
-    useResolvedGuildId(searchParams.get("guildId"), profile?.guilds);
+
+  const allGuilds: DiscordGuild[] = useMemo(() => {
+    if (profile?.guilds && profile.guilds.length > 0) return profile.guilds;
+    return getStoredDiscordGuilds();
+  }, [profile?.guilds]);
+
+  const botGuildIds = useBotGuildIds(allGuilds);
+
+  const manageableGuilds: DiscordGuild[] = useMemo(() => {
+    if (allGuilds.length === 0) return [];
+    const manageable = allGuilds.filter((g) => canManageGuild(g) || (botGuildIds && botGuildIds.includes(g.id)));
+    return manageable.length > 0 ? manageable : allGuilds;
+  }, [allGuilds, botGuildIds]);
+
+  const appliedQueryGuild = useRef<string | null>(null);
+  const userSelectedRef = useRef(false);
+  const queryGuildId = searchParams.get("guildId");
+  const [selectedGuild, setSelectedGuild] = useState<DiscordGuild | null>(null);
+
+  useEffect(() => {
+    if (manageableGuilds.length === 0) return;
+    if (queryGuildId && appliedQueryGuild.current !== queryGuildId) {
+      const match = manageableGuilds.find((g) => g.id === queryGuildId);
+      if (match) {
+        appliedQueryGuild.current = queryGuildId;
+        setSelectedGuild(match);
+        return;
+      }
+    }
+    if (!userSelectedRef.current && !queryGuildId) {
+      if (!selectedGuild) {
+        if (botGuildIds !== null) {
+          setSelectedGuild(pickBotGuild(manageableGuilds, botGuildIds)!);
+        }
+      } else if (botGuildIds && botGuildIds.length > 0 && !botGuildIds.includes(selectedGuild.id)) {
+        const botGuild = pickBotGuild(manageableGuilds, botGuildIds);
+        if (botGuild && botGuild.id !== selectedGuild.id && botGuildIds.includes(botGuild.id)) {
+          setSelectedGuild(botGuild);
+        }
+      }
+    }
+  }, [manageableGuilds, queryGuildId, selectedGuild, botGuildIds]);
+
+  const currentGuildId = selectedGuild?.id || "";
+  const isBotPresent = Boolean(selectedGuild && botGuildIds && botGuildIds.includes(selectedGuild.id));
 
   const [events, setEvents] = useState<EventItem[]>([]);
   const [isDemo, setIsDemo] = useState(true);
@@ -128,13 +175,19 @@ export default function EventsCenterClient() {
   const [copiedId, setCopiedId] = useState<string | null>(null);
 
   const loadEvents = useCallback(async () => {
-    if (!BOT_API_URL || !guildParam) {
+    if (!selectedGuild) return;
+    if (botGuildIds !== null && !botGuildIds.includes(selectedGuild.id)) {
+      setIsDemo(false);
+      setEvents([]);
+      return;
+    }
+    if (!BOT_API_URL || !currentGuildId) {
       setIsDemo(true);
       return;
     }
     setLoading(true);
     try {
-      const res = await fetch(`${BOT_API_URL}/api/guilds/${guildParam}/events`, { credentials: "include" });
+      const res = await fetch(`${BOT_API_URL}/api/guilds/${currentGuildId}/events`, { credentials: "include" });
       const data = await res.json().catch(() => null);
       if (res.ok && Array.isArray(data?.events)) {
         setEvents(data.events.map(mapEvent));
@@ -147,7 +200,7 @@ export default function EventsCenterClient() {
     } finally {
       setLoading(false);
     }
-  }, [guildParam]);
+  }, [currentGuildId, selectedGuild, botGuildIds]);
 
   useEffect(() => {
     loadEvents();
@@ -155,9 +208,9 @@ export default function EventsCenterClient() {
 
   const eventAction = useCallback(
     async (eventId: string, path: string, method: "POST" | "DELETE" = "POST", body?: Record<string, unknown>): Promise<boolean> => {
-      if (isDemo || !BOT_API_URL) return false;
+      if (isDemo || !BOT_API_URL || !currentGuildId) return false;
       try {
-        const res = await fetch(`${BOT_API_URL}/api/guilds/${guildParam}/events/${eventId}${path}`, {
+        const res = await fetch(`${BOT_API_URL}/api/guilds/${currentGuildId}/events/${eventId}${path}`, {
           method,
           headers: body ? { "Content-Type": "application/json" } : undefined,
           credentials: "include",
@@ -168,7 +221,7 @@ export default function EventsCenterClient() {
         return false;
       }
     },
-    [isDemo, guildParam]
+    [isDemo, currentGuildId]
   );
 
   // Filtered list
@@ -265,7 +318,7 @@ export default function EventsCenterClient() {
           <div>
             <div className="flex flex-wrap items-center gap-2.5 mb-2">
               <Link
-                href={`/discord${guildParam ? `?guildId=${guildParam}` : ""}`}
+                href={`/discord${currentGuildId ? `?guildId=${currentGuildId}` : ""}`}
                 className="inline-flex h-8 items-center gap-1.5 rounded-xl bg-zinc-900 border border-zinc-800 px-3 text-xs font-semibold text-zinc-300 hover:text-white hover:bg-zinc-800 transition-all cursor-pointer shadow-sm"
                 title="Retour au hub Discord"
               >
@@ -276,16 +329,16 @@ export default function EventsCenterClient() {
                 <Calendar className="w-3.5 h-3.5" />
                 Événements
               </span>
-              {isDemo ? (
+              {isDemo && isBotPresent ? (
                 <span className="inline-flex items-center gap-1.5 px-2.5 py-0.5 rounded-full text-xs font-medium bg-amber-500/10 text-amber-300 border border-amber-500/30">
-                  Bot injoignable
+                  Bot temporairement injoignable
                 </span>
-              ) : (
+              ) : isBotPresent ? (
                 <span className="inline-flex items-center gap-1.5 px-2.5 py-0.5 rounded-full text-xs font-medium bg-emerald-500/10 text-emerald-400 border border-emerald-500/20">
                   <span className="w-1.5 h-1.5 rounded-full bg-emerald-400" />
                   Synchronisé
                 </span>
-              )}
+              ) : null}
               <button
                 onClick={loadEvents}
                 disabled={loading}
@@ -299,16 +352,24 @@ export default function EventsCenterClient() {
               Événements & Calendrier
             </h1>
             <p className="text-slate-400 text-sm mt-1 max-w-2xl">
-              {isDemo
-                ? "Connecte un serveur pour planifier et gérer tes vrais événements Discord depuis ici."
-                : "Planifie tes soirées gaming, tournois et réunions — synchronisé avec le bot."}
+              Planifie tes soirées gaming, tournois et réunions — synchronisé avec le bot.
             </p>
           </div>
 
           {/* Action CTAs */}
-          <div className="flex items-center gap-3">
+          <div className="flex items-center gap-3 flex-wrap">
+            {manageableGuilds.length > 0 && selectedGuild && (
+              <GuildSelector
+                guilds={manageableGuilds}
+                value={selectedGuild.id}
+                onChange={(g: DiscordGuild) => {
+                  userSelectedRef.current = true;
+                  setSelectedGuild(g);
+                }}
+              />
+            )}
             <Link
-              href="/discord/calendar"
+              href={`/discord/calendar${currentGuildId ? `?guildId=${currentGuildId}` : ""}`}
               className="inline-flex items-center gap-2 px-4 py-2.5 rounded-xl text-sm font-semibold bg-white/5 hover:bg-white/10 border border-[var(--panel-border)] text-slate-200 transition-all hover:scale-[1.02]"
             >
               <CalendarDays className="w-4 h-4 text-cyan-400" />
@@ -316,7 +377,7 @@ export default function EventsCenterClient() {
             </Link>
 
             <Link
-              href="/discord/events/create"
+              href={`/discord/events/create${currentGuildId ? `?guildId=${currentGuildId}` : ""}`}
               className="inline-flex items-center gap-2 px-5 py-2.5 rounded-xl text-sm font-semibold bg-indigo-600 hover:bg-indigo-600 text-white shadow-sm transition-all hover:scale-[1.02]"
             >
               <Plus className="w-4 h-4" />
@@ -324,6 +385,31 @@ export default function EventsCenterClient() {
             </Link>
           </div>
         </div>
+
+        {/* Bot non installé banner */}
+        {selectedGuild && botGuildIds !== null && !botGuildIds.includes(selectedGuild.id) && (
+          <div className="mt-6 p-4 rounded-2xl bg-amber-500/10 border border-amber-500/30 flex flex-col sm:flex-row items-start sm:items-center justify-between gap-3">
+            <div className="flex items-center gap-3">
+              <div className="p-2 rounded-xl bg-amber-500/20 text-amber-300">
+                <Bot className="w-5 h-5" />
+              </div>
+              <div>
+                <p className="text-sm font-bold text-white">Bot non présent sur ce serveur</p>
+                <p className="text-xs text-amber-200/80">
+                  Installe le bot sur <span className="font-semibold text-white">{selectedGuild.name}</span> pour planifier des événements Discord et gérer les inscriptions.
+                </p>
+              </div>
+            </div>
+            <a
+              href={BOT_INVITE_URL}
+              target="_blank"
+              rel="noopener noreferrer"
+              className="inline-flex items-center gap-2 px-4 py-2 rounded-xl text-xs font-semibold bg-amber-500 hover:bg-amber-400 text-black transition-all shrink-0 font-medium"
+            >
+              Inviter le bot
+            </a>
+          </div>
+        )}
 
         {/* Top KPIs Grid */}
         <div className="grid grid-cols-2 lg:grid-cols-4 gap-4 my-8">

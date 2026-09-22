@@ -1,6 +1,6 @@
 "use client";
 
-import React, { useState, useMemo, useEffect, useCallback } from "react";
+import React, { useState, useMemo, useEffect, useCallback, useRef } from "react";
 import Link from "next/link";
 import { useSearchParams } from "next/navigation";
 import { motion, AnimatePresence } from "framer-motion";
@@ -13,13 +13,18 @@ import {
   Download,
   X,
   ExternalLink,
+  AlertCircle,
   Volume2,
   RefreshCw,
   ArrowLeft,
+  Bot,
 } from "lucide-react";
-import { useDiscordOAuth } from "@/lib/hooks/useDiscordOAuth";
-import { useResolvedGuildId } from "@/lib/hooks/useBotGuildIds";
+import { useDiscordOAuth, type DiscordGuild, canManageGuild, getStoredDiscordGuilds } from "@/lib/hooks/useDiscordOAuth";
+import { useBotGuildIds, pickBotGuild } from "@/lib/hooks/useBotGuildIds";
+import { GuildSelector } from "@/components/GuildSelector";
 
+const BOT_CLIENT_ID = "1545139931154878464";
+const BOT_INVITE_URL = `https://discord.com/oauth2/authorize?client_id=${BOT_CLIENT_ID}&permissions=8&scope=bot%20applications.commands`;
 const BOT_API_URL = process.env.NEXT_PUBLIC_DISCORD_BOT_API || "";
 
 function mapCalendarEvent(raw: Record<string, unknown>): CalendarEvent {
@@ -62,7 +67,51 @@ type ViewMode = "MONTH" | "WEEK" | "DAY" | "AGENDA";
 export default function DiscordCalendarClient() {
   const searchParams = useSearchParams();
   const { profile } = useDiscordOAuth();
-  const guildParam = useResolvedGuildId(searchParams.get("guildId"), profile?.guilds);
+
+  const allGuilds: DiscordGuild[] = useMemo(() => {
+    if (profile?.guilds && profile.guilds.length > 0) return profile.guilds;
+    return getStoredDiscordGuilds();
+  }, [profile?.guilds]);
+
+  const botGuildIds = useBotGuildIds(allGuilds);
+
+  const manageableGuilds: DiscordGuild[] = useMemo(() => {
+    if (allGuilds.length === 0) return [];
+    const manageable = allGuilds.filter((g) => canManageGuild(g) || (botGuildIds && botGuildIds.includes(g.id)));
+    return manageable.length > 0 ? manageable : allGuilds;
+  }, [allGuilds, botGuildIds]);
+
+  const appliedQueryGuild = useRef<string | null>(null);
+  const userSelectedRef = useRef(false);
+  const queryGuildId = searchParams.get("guildId");
+  const [selectedGuild, setSelectedGuild] = useState<DiscordGuild | null>(null);
+
+  useEffect(() => {
+    if (manageableGuilds.length === 0) return;
+    if (queryGuildId && appliedQueryGuild.current !== queryGuildId) {
+      const match = manageableGuilds.find((g) => g.id === queryGuildId);
+      if (match) {
+        appliedQueryGuild.current = queryGuildId;
+        setSelectedGuild(match);
+        return;
+      }
+    }
+    if (!userSelectedRef.current && !queryGuildId) {
+      if (!selectedGuild) {
+        if (botGuildIds !== null) {
+          setSelectedGuild(pickBotGuild(manageableGuilds, botGuildIds)!);
+        }
+      } else if (botGuildIds && botGuildIds.length > 0 && !botGuildIds.includes(selectedGuild.id)) {
+        const botGuild = pickBotGuild(manageableGuilds, botGuildIds);
+        if (botGuild && botGuild.id !== selectedGuild.id && botGuildIds.includes(botGuild.id)) {
+          setSelectedGuild(botGuild);
+        }
+      }
+    }
+  }, [manageableGuilds, queryGuildId, selectedGuild, botGuildIds]);
+
+  const currentGuildId = selectedGuild?.id || "";
+  const isBotPresent = Boolean(selectedGuild && botGuildIds && botGuildIds.includes(selectedGuild.id));
 
   const [currentDate, setCurrentDate] = useState(new Date());
   const [viewMode, setViewMode] = useState<ViewMode>("MONTH");
@@ -73,13 +122,19 @@ export default function DiscordCalendarClient() {
   const [loading, setLoading] = useState(false);
 
   const loadEvents = useCallback(async () => {
-    if (!BOT_API_URL || !guildParam) {
+    if (!selectedGuild) return;
+    if (botGuildIds !== null && !botGuildIds.includes(selectedGuild.id)) {
+      setIsDemo(false);
+      setEvents([]);
+      return;
+    }
+    if (!BOT_API_URL || !currentGuildId) {
       setIsDemo(true);
       return;
     }
     setLoading(true);
     try {
-      const res = await fetch(`${BOT_API_URL}/api/guilds/${guildParam}/calendar`, { credentials: "include" });
+      const res = await fetch(`${BOT_API_URL}/api/guilds/${currentGuildId}/calendar`, { credentials: "include" });
       const data = await res.json().catch(() => null);
       if (res.ok && Array.isArray(data?.events)) {
         setEvents(data.events.map(mapCalendarEvent));
@@ -92,7 +147,7 @@ export default function DiscordCalendarClient() {
     } finally {
       setLoading(false);
     }
-  }, [guildParam]);
+  }, [currentGuildId, selectedGuild, botGuildIds]);
 
   useEffect(() => {
     loadEvents();
@@ -217,7 +272,7 @@ export default function DiscordCalendarClient() {
           <div>
             <div className="flex flex-wrap items-center gap-2.5 mb-2">
               <Link
-                href={`/discord${guildParam ? `?guildId=${guildParam}` : ""}`}
+                href={`/discord${currentGuildId ? `?guildId=${currentGuildId}` : ""}`}
                 className="inline-flex h-8 items-center gap-1.5 rounded-xl bg-zinc-900 border border-zinc-800 px-3 text-xs font-semibold text-zinc-300 hover:text-white hover:bg-zinc-800 transition-all cursor-pointer shadow-sm"
                 title="Retour au hub Discord"
               >
@@ -225,7 +280,7 @@ export default function DiscordCalendarClient() {
                 <span>Retour Discord</span>
               </Link>
               <div className="flex items-center gap-2 text-xs text-indigo-400 font-semibold uppercase tracking-wider">
-                <Link href={`/discord/events${guildParam ? `?guildId=${guildParam}` : ""}`} className="hover:underline flex items-center gap-1">
+                <Link href={`/discord/events${currentGuildId ? `?guildId=${currentGuildId}` : ""}`} className="hover:underline flex items-center gap-1">
                   <CalendarIcon className="w-3.5 h-3.5" />
                   Événements Hub
                 </Link>
@@ -245,6 +300,16 @@ export default function DiscordCalendarClient() {
 
           {/* Top Actions */}
           <div className="flex items-center gap-3 flex-wrap">
+            {manageableGuilds.length > 0 && (
+              <GuildSelector
+                guilds={manageableGuilds}
+                value={currentGuildId}
+                onChange={(g) => {
+                  userSelectedRef.current = true;
+                  setSelectedGuild(g);
+                }}
+              />
+            )}
             <button
               onClick={loadEvents}
               disabled={loading}
@@ -262,7 +327,7 @@ export default function DiscordCalendarClient() {
             </button>
 
             <Link
-              href="/discord/events/create"
+              href={`/discord/events/create${currentGuildId ? `?guildId=${currentGuildId}` : ""}`}
               className="inline-flex items-center gap-2 px-4 py-2 rounded-xl text-xs font-semibold bg-[#5865F2] hover:bg-[#4752C4] text-white transition-colors"
             >
               <Plus className="w-3.5 h-3.5" />
@@ -270,6 +335,27 @@ export default function DiscordCalendarClient() {
             </Link>
           </div>
         </div>
+
+        {/* Bot not present banner */}
+        {!isBotPresent && !isDemo && (
+          <div className="mt-4 flex flex-col sm:flex-row sm:items-center justify-between gap-3 p-4 rounded-xl border border-amber-500/30 bg-amber-500/10 text-amber-200">
+            <div className="flex items-center gap-2.5">
+              <AlertCircle className="w-5 h-5 text-amber-400 shrink-0" />
+              <p className="text-sm">
+                Le bot ETHONE n'est pas encore présent sur ce serveur. Invitez-le pour synchroniser les événements.
+              </p>
+            </div>
+            <a
+              href={BOT_INVITE_URL}
+              target="_blank"
+              rel="noopener noreferrer"
+              className="inline-flex items-center gap-1.5 px-3.5 py-1.5 rounded-lg text-xs font-semibold bg-amber-500 hover:bg-amber-400 text-black transition-colors shrink-0"
+            >
+              Inviter le bot
+              <ExternalLink className="w-3.5 h-3.5" />
+            </a>
+          </div>
+        )}
 
         {/* Toolbar: Navigation & View Switcher */}
         <div className="flex flex-col sm:flex-row items-center justify-between gap-4 my-6 p-4 rounded-2xl bg-white/[0.02] border border-[var(--panel-border)] backdrop-blur-xl">

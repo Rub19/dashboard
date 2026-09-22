@@ -2,6 +2,15 @@
 
 Toutes les modifications notables de ce projet seront documentées dans ce fichier.
 
+## v1.28.16 — 2026-09-22
+
+**Harmonisation des Rôles, IA, Sauvegardes, Événements et Calendrier**
+
+- **Centre de Rôles (`/discord/roles`)** : intégration de `GuildSelector` avec détection de présence du bot et bannière d'invitation avec lien direct OAuth. Remplacement des champs texte bruts par `RolePicker` et `ChannelPicker` dans le constructeur de panneaux de rôles et les auto-rôles, et remplacement du dialogue navigateur `window.prompt` par une modale native élégante avec `ChannelPicker` pour la publication d'un panneau.
+- **Centres IA & Sauvegardes (`/discord/ai`, `/discord/backups`)** : intégration de `GuildSelector`, détection du bot, suspension des requêtes en arrière-plan lorsque le bot est absent et affichage de la bannière d'invitation dédiée.
+- **Hub Événements & Calendrier (`/discord/events`, `/discord/calendar`)** : intégration de `GuildSelector` dans les barres d'outils, détection intelligente de présence du bot et bannière d'invitation.
+- **Création d'Événements (`/discord/events/create`)** : intégration de `RolePicker` pour la sélection du rôle cible lors des mentions programmées (étape 5) et pour l'attribution automatique de rôle aux participants inscrits au RSVP (étape 7).
+
 ## v1.28.15 — 2026-09-22
 
 **Harmonisation Universelle GuildSelector, Pickers Rôles/Salons & Bannières Bot**

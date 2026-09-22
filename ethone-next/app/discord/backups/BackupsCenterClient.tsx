@@ -21,12 +21,16 @@ import {
   RefreshCw,
   Download,
   ArrowLeft,
+  Bot,
 } from "lucide-react";
 import { useToast } from "@/components/ToastProvider";
-import { useDiscordOAuth } from "@/lib/hooks/useDiscordOAuth";
+import { useDiscordOAuth, type DiscordGuild, canManageGuild, getStoredDiscordGuilds } from "@/lib/hooks/useDiscordOAuth";
+import { useBotGuildIds, pickBotGuild } from "@/lib/hooks/useBotGuildIds";
+import { GuildSelector } from "@/components/GuildSelector";
 import { cn } from "@/lib/utils";
-import { useResolvedGuildId } from "@/lib/hooks/useBotGuildIds";
 
+const BOT_CLIENT_ID = "1545139931154878464";
+const BOT_INVITE_URL = `https://discord.com/oauth2/authorize?client_id=${BOT_CLIENT_ID}&permissions=8&scope=bot%20applications.commands`;
 const BOT_API_URL = process.env.NEXT_PUBLIC_DISCORD_BOT_API || "";
 
 // Mirrors discord-bot/src/modules/backup/types/index.ts (BackupSnapshot minus `data`).
@@ -104,20 +108,56 @@ function relative(iso: string | null): string {
 
 export default function BackupsCenterClient() {
   const searchParams = useSearchParams();
-  const rawGuildId = searchParams.get("guildId");
   const { profile } = useDiscordOAuth();
   const { success, error: toastError } = useToast();
 
-  const currentGuildId = useResolvedGuildId(rawGuildId, profile?.guilds);
+  const allGuilds: DiscordGuild[] = useMemo(() => {
+    if (profile?.guilds && profile.guilds.length > 0) return profile.guilds;
+    return getStoredDiscordGuilds();
+  }, [profile?.guilds]);
 
-  const activeGuild = useMemo(() => {
-    if (!profile?.guilds || profile.guilds.length === 0) return null;
-    return profile.guilds.find((g) => g.id === currentGuildId) || profile.guilds[0];
-  }, [currentGuildId, profile?.guilds]);
+  const botGuildIds = useBotGuildIds(allGuilds);
 
+  const manageableGuilds: DiscordGuild[] = useMemo(() => {
+    if (allGuilds.length === 0) return [];
+    const manageable = allGuilds.filter((g) => canManageGuild(g) || (botGuildIds && botGuildIds.includes(g.id)));
+    return manageable.length > 0 ? manageable : allGuilds;
+  }, [allGuilds, botGuildIds]);
+
+  const appliedQueryGuild = useRef<string | null>(null);
+  const userSelectedRef = useRef(false);
+  const queryGuildId = searchParams.get("guildId");
+  const [selectedGuild, setSelectedGuild] = useState<DiscordGuild | null>(null);
+
+  useEffect(() => {
+    if (manageableGuilds.length === 0) return;
+    if (queryGuildId && appliedQueryGuild.current !== queryGuildId) {
+      const match = manageableGuilds.find((g) => g.id === queryGuildId);
+      if (match) {
+        appliedQueryGuild.current = queryGuildId;
+        setSelectedGuild(match);
+        return;
+      }
+    }
+    if (!userSelectedRef.current && !queryGuildId) {
+      if (!selectedGuild) {
+        if (botGuildIds !== null) {
+          setSelectedGuild(pickBotGuild(manageableGuilds, botGuildIds)!);
+        }
+      } else if (botGuildIds && botGuildIds.length > 0 && !botGuildIds.includes(selectedGuild.id)) {
+        const botGuild = pickBotGuild(manageableGuilds, botGuildIds);
+        if (botGuild && botGuild.id !== selectedGuild.id && botGuildIds.includes(botGuild.id)) {
+          setSelectedGuild(botGuild);
+        }
+      }
+    }
+  }, [manageableGuilds, queryGuildId, selectedGuild, botGuildIds]);
+
+  const currentGuildId = selectedGuild?.id || "";
+  const isBotPresent = Boolean(selectedGuild && botGuildIds && botGuildIds.includes(selectedGuild.id));
   const base = `${BOT_API_URL}/api/guilds/${currentGuildId}/backups`;
   const isRealGuild = Boolean(BOT_API_URL) && Boolean(currentGuildId);
-  const guildQuery = activeGuild ? `?guildId=${activeGuild.id}` : "";
+  const guildQuery = selectedGuild ? `?guildId=${selectedGuild.id}` : "";
 
   const [isDemo, setIsDemo] = useState(true);
   const [loading, setLoading] = useState(false);
@@ -165,6 +205,13 @@ export default function BackupsCenterClient() {
   }), []);
 
   const load = useCallback(async () => {
+    if (!selectedGuild) return;
+    if (botGuildIds !== null && !botGuildIds.includes(selectedGuild.id)) {
+      setIsDemo(false);
+      setBackups([]);
+      setKpis(EMPTY_KPIS);
+      return;
+    }
     if (!isRealGuild) {
       setIsDemo(true);
       setKpis(computeKpis(DEMO_BACKUPS));
@@ -190,7 +237,7 @@ export default function BackupsCenterClient() {
     } finally {
       setLoading(false);
     }
-  }, [base, isRealGuild, computeKpis]);
+  }, [base, isRealGuild, selectedGuild, botGuildIds, computeKpis]);
 
   useEffect(() => {
     load();
@@ -332,8 +379,8 @@ export default function BackupsCenterClient() {
   const handleExecuteRestore = async () => {
     const bkp = selectedBackupForAction;
     if (!bkp) return;
-    if (restoreLevel === "DESTRUCTIVE" && activeGuild && confirmServerName !== activeGuild.name) {
-      toastError(`Saisis le nom exact du serveur « ${activeGuild.name} » pour confirmer.`);
+    if (restoreLevel === "DESTRUCTIVE" && selectedGuild && confirmServerName !== selectedGuild.name) {
+      toastError(`Saisis le nom exact du serveur « ${selectedGuild.name} » pour confirmer.`);
       return;
     }
     if (isDemo) {
@@ -420,12 +467,22 @@ export default function BackupsCenterClient() {
                 <h1 className="text-2xl font-bold text-white tracking-tight">Sauvegardes & Disaster Recovery</h1>
                 <p className="text-xs text-neutral-400">
                   Snapshots signés SHA-256 de la structure Discord et des modules ETHONE.
-                  {isDemo && <span className="text-amber-400"> (bot injoignable ou absent de ce serveur)</span>}
+                  {isDemo && isBotPresent && <span className="text-amber-400"> (bot temporairement injoignable)</span>}
                 </p>
               </div>
             </div>
           </div>
           <div className="flex items-center gap-2.5 flex-wrap">
+            {manageableGuilds.length > 0 && selectedGuild && (
+              <GuildSelector
+                guilds={manageableGuilds}
+                value={selectedGuild.id}
+                onChange={(g: DiscordGuild) => {
+                  userSelectedRef.current = true;
+                  setSelectedGuild(g);
+                }}
+              />
+            )}
             <button onClick={load} disabled={loading} className="px-3.5 py-2 rounded-xl border border-neutral-800 bg-neutral-900 hover:bg-neutral-800 text-xs font-semibold text-neutral-200 flex items-center gap-2 transition-colors cursor-pointer disabled:opacity-50">
               <RefreshCw className={cn("w-4 h-4 text-indigo-400", loading && "animate-spin")} />
               Actualiser
@@ -444,6 +501,31 @@ export default function BackupsCenterClient() {
             </button>
           </div>
         </div>
+
+        {/* Bot non installé banner */}
+        {selectedGuild && botGuildIds !== null && !botGuildIds.includes(selectedGuild.id) && (
+          <div className="p-4 rounded-2xl bg-amber-500/10 border border-amber-500/30 flex flex-col sm:flex-row items-start sm:items-center justify-between gap-3">
+            <div className="flex items-center gap-3">
+              <div className="p-2 rounded-xl bg-amber-500/20 text-amber-300">
+                <Bot className="w-5 h-5" />
+              </div>
+              <div>
+                <p className="text-sm font-bold text-white">Bot non présent sur ce serveur</p>
+                <p className="text-xs text-amber-200/80">
+                  Installe le bot sur <span className="font-semibold text-white">{selectedGuild.name}</span> pour sauvegarder et restaurer la structure du serveur.
+                </p>
+              </div>
+            </div>
+            <a
+              href={BOT_INVITE_URL}
+              target="_blank"
+              rel="noopener noreferrer"
+              className="inline-flex items-center gap-2 px-4 py-2 rounded-xl text-xs font-semibold bg-amber-500 hover:bg-amber-400 text-black transition-all shrink-0 font-medium"
+            >
+              Inviter le bot
+            </a>
+          </div>
+        )}
 
         {/* KPI réels */}
         <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-6 gap-3">
@@ -569,7 +651,7 @@ export default function BackupsCenterClient() {
                           <a href={`${base}/${bkp.backupId}/download`} className="p-1.5 rounded-lg bg-neutral-800 hover:bg-neutral-700 text-neutral-300 hover:text-white transition-colors" title="Télécharger (.ethone-backup.json)"><Download className="w-3.5 h-3.5" /></a>
                         )}
                         <button onClick={() => handleOpenRestore(bkp)} className="p-1.5 rounded-lg bg-emerald-600/20 hover:bg-emerald-500/30 text-emerald-400 border border-emerald-500/30 transition-colors cursor-pointer" title="Restaurer"><RotateCcw className="w-3.5 h-3.5" /></button>
-                        <Link href={`/discord/backups/compare?backupA=${bkp.backupId}&backupB=LIVE${activeGuild ? `&guildId=${activeGuild.id}` : ""}`} className="p-1.5 rounded-lg bg-indigo-500/20 hover:bg-indigo-500/30 text-indigo-400 border border-indigo-500/30 transition-colors" title="Comparer avec le direct"><GitCompare className="w-3.5 h-3.5" /></Link>
+                        <Link href={`/discord/backups/compare?backupA=${bkp.backupId}&backupB=LIVE${selectedGuild ? `&guildId=${selectedGuild.id}` : ""}`} className="p-1.5 rounded-lg bg-indigo-500/20 hover:bg-indigo-500/30 text-indigo-400 border border-indigo-500/30 transition-colors" title="Comparer avec le direct"><GitCompare className="w-3.5 h-3.5" /></Link>
                         <button onClick={() => handleToggleProtect(bkp)} className="p-1.5 rounded-lg bg-neutral-800 hover:bg-neutral-700 text-neutral-400 hover:text-white transition-colors cursor-pointer" title={bkp.isProtected ? "Retirer protection" : "Protéger"}>
                           {bkp.isProtected ? <Unlock className="w-3.5 h-3.5" /> : <Lock className="w-3.5 h-3.5" />}
                         </button>
@@ -704,8 +786,8 @@ export default function BackupsCenterClient() {
                   </div>
                   {restoreLevel === "DESTRUCTIVE" && (
                     <div className="space-y-1.5 p-3 bg-rose-500/10 border border-rose-500/20 rounded-xl text-xs">
-                      <label className="font-bold text-rose-300 block">Confirmation : saisis « {activeGuild?.name || "le nom du serveur"} »</label>
-                      <input type="text" value={confirmServerName} onChange={(e) => setConfirmServerName(e.target.value)} placeholder={activeGuild?.name || ""} className="w-full bg-neutral-950 border border-rose-500/40 rounded-lg px-3 py-1.5 text-xs text-white focus:outline-none focus:border-rose-500" />
+                      <label className="font-bold text-rose-300 block">Confirmation : saisis « {selectedGuild?.name || "le nom du serveur"} »</label>
+                      <input type="text" value={confirmServerName} onChange={(e) => setConfirmServerName(e.target.value)} placeholder={selectedGuild?.name || ""} className="w-full bg-neutral-950 border border-rose-500/40 rounded-lg px-3 py-1.5 text-xs text-white focus:outline-none focus:border-rose-500" />
                     </div>
                   )}
                   <div className="flex justify-end gap-2 pt-2">

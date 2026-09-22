@@ -1,6 +1,6 @@
 "use client";
 
-import React, { useState, useMemo, useEffect, useCallback } from "react";
+import React, { useState, useMemo, useEffect, useCallback, useRef } from "react";
 import Link from "next/link";
 import { useSearchParams } from "next/navigation";
 import {
@@ -27,13 +27,17 @@ import {
   RefreshCw,
   Save,
   ArrowLeft,
+  AlertTriangle,
 } from "lucide-react";
 import { useToast } from "@/components/ToastProvider";
-import { useDiscordOAuth } from "@/lib/hooks/useDiscordOAuth";
-import { useResolvedGuildId } from "@/lib/hooks/useBotGuildIds";
+import { useDiscordOAuth, type DiscordGuild, canManageGuild, getStoredDiscordGuilds } from "@/lib/hooks/useDiscordOAuth";
+import { useBotGuildIds, pickBotGuild } from "@/lib/hooks/useBotGuildIds";
+import { GuildSelector } from "@/components/GuildSelector";
 import ChannelPicker from "@/components/discord/ChannelPicker";
 import { cn } from "@/lib/utils";
 
+const BOT_CLIENT_ID = "1545139931154878464";
+const BOT_INVITE_URL = `https://discord.com/oauth2/authorize?client_id=${BOT_CLIENT_ID}&permissions=8&scope=bot%20applications.commands`;
 const BOT_API_URL = process.env.NEXT_PUBLIC_DISCORD_BOT_API || "";
 
 // Mirrors discord-bot/src/modules/ai/types/index.ts.
@@ -152,17 +156,53 @@ function relative(iso: string): string {
 
 export default function AiCenterClient() {
   const searchParams = useSearchParams();
-  const rawGuildId = searchParams.get("guildId");
   const { profile } = useDiscordOAuth();
   const { success, error: toastError } = useToast();
 
-  const currentGuildId = useResolvedGuildId(rawGuildId, profile?.guilds);
+  const allGuilds: DiscordGuild[] = useMemo(() => {
+    if (profile?.guilds && profile.guilds.length > 0) return profile.guilds;
+    return getStoredDiscordGuilds();
+  }, [profile?.guilds]);
 
-  const activeGuild = useMemo(() => {
-    if (!profile?.guilds || profile.guilds.length === 0) return null;
-    return profile.guilds.find((g) => g.id === currentGuildId) || profile.guilds[0];
-  }, [currentGuildId, profile?.guilds]);
+  const botGuildIds = useBotGuildIds(allGuilds);
 
+  const manageableGuilds: DiscordGuild[] = useMemo(() => {
+    if (allGuilds.length === 0) return [];
+    const manageable = allGuilds.filter((g) => canManageGuild(g) || (botGuildIds && botGuildIds.includes(g.id)));
+    return manageable.length > 0 ? manageable : allGuilds;
+  }, [allGuilds, botGuildIds]);
+
+  const appliedQueryGuild = useRef<string | null>(null);
+  const userSelectedRef = useRef(false);
+  const queryGuildId = searchParams.get("guildId");
+  const [selectedGuild, setSelectedGuild] = useState<DiscordGuild | null>(null);
+
+  useEffect(() => {
+    if (manageableGuilds.length === 0) return;
+    if (queryGuildId && appliedQueryGuild.current !== queryGuildId) {
+      const match = manageableGuilds.find((g) => g.id === queryGuildId);
+      if (match) {
+        appliedQueryGuild.current = queryGuildId;
+        setSelectedGuild(match);
+        return;
+      }
+    }
+    if (!userSelectedRef.current && !queryGuildId) {
+      if (!selectedGuild) {
+        if (botGuildIds !== null) {
+          setSelectedGuild(pickBotGuild(manageableGuilds, botGuildIds)!);
+        }
+      } else if (botGuildIds && botGuildIds.length > 0 && !botGuildIds.includes(selectedGuild.id)) {
+        const botGuild = pickBotGuild(manageableGuilds, botGuildIds);
+        if (botGuild && botGuild.id !== selectedGuild.id && botGuildIds.includes(botGuild.id)) {
+          setSelectedGuild(botGuild);
+        }
+      }
+    }
+  }, [manageableGuilds, queryGuildId, selectedGuild, botGuildIds]);
+
+  const currentGuildId = selectedGuild?.id || "";
+  const isBotPresent = Boolean(selectedGuild && botGuildIds && botGuildIds.includes(selectedGuild.id));
   const base = `${BOT_API_URL}/api/guilds/${currentGuildId}/ai`;
   const isRealGuild = Boolean(BOT_API_URL) && Boolean(currentGuildId);
 
@@ -204,6 +244,15 @@ export default function AiCenterClient() {
   };
 
   const load = useCallback(async () => {
+    if (!selectedGuild) return;
+    if (botGuildIds !== null && !botGuildIds.includes(selectedGuild.id)) {
+      setIsDemo(false);
+      setSettings(DEFAULT_SETTINGS);
+      setAnalytics(EMPTY_ANALYTICS);
+      setKnowledgeList([]);
+      setDirty(false);
+      return;
+    }
     if (!isRealGuild) {
       setIsDemo(true);
       return;
@@ -230,7 +279,7 @@ export default function AiCenterClient() {
     } finally {
       setLoading(false);
     }
-  }, [base, isRealGuild]);
+  }, [base, isRealGuild, selectedGuild, botGuildIds]);
 
   useEffect(() => {
     load();
@@ -398,12 +447,22 @@ export default function AiCenterClient() {
                 </h1>
                 <p className="text-xs text-neutral-400">
                   Personnalité, base de connaissances RAG, règles par salon et playground branché sur le vrai modèle.
-                  {isDemo && <span className="text-amber-400"> (bot injoignable ou absent de ce serveur)</span>}
+                  {isDemo && isBotPresent && <span className="text-amber-400"> (bot temporairement injoignable)</span>}
                 </p>
               </div>
             </div>
           </div>
           <div className="flex items-center gap-2.5 flex-wrap">
+            {manageableGuilds.length > 0 && selectedGuild && (
+              <GuildSelector
+                guilds={manageableGuilds}
+                value={selectedGuild.id}
+                onChange={(g: DiscordGuild) => {
+                  userSelectedRef.current = true;
+                  setSelectedGuild(g);
+                }}
+              />
+            )}
             <button onClick={load} disabled={loading} className="px-3.5 py-2 rounded-xl border border-neutral-800 bg-neutral-900 hover:bg-neutral-800 text-xs font-semibold text-neutral-200 flex items-center gap-2 transition-colors cursor-pointer disabled:opacity-50">
               <RefreshCw className={cn("w-4 h-4 text-indigo-400", loading && "animate-spin")} />
               Actualiser
@@ -414,6 +473,31 @@ export default function AiCenterClient() {
             </button>
           </div>
         </div>
+
+        {/* Bot non installé banner */}
+        {selectedGuild && botGuildIds !== null && !botGuildIds.includes(selectedGuild.id) && (
+          <div className="p-4 rounded-2xl bg-amber-500/10 border border-amber-500/30 flex flex-col sm:flex-row items-start sm:items-center justify-between gap-3">
+            <div className="flex items-center gap-3">
+              <div className="p-2 rounded-xl bg-amber-500/20 text-amber-300">
+                <Bot className="w-5 h-5" />
+              </div>
+              <div>
+                <p className="text-sm font-bold text-white">Bot non présent sur ce serveur</p>
+                <p className="text-xs text-amber-200/80">
+                  Installe le bot sur <span className="font-semibold text-white">{selectedGuild.name}</span> pour activer l'assistant IA et le système RAG.
+                </p>
+              </div>
+            </div>
+            <a
+              href={BOT_INVITE_URL}
+              target="_blank"
+              rel="noopener noreferrer"
+              className="inline-flex items-center gap-2 px-4 py-2 rounded-xl text-xs font-semibold bg-amber-500 hover:bg-amber-400 text-black transition-all shrink-0 font-medium"
+            >
+              Inviter le bot
+            </a>
+          </div>
+        )}
 
         {/* KPI réels */}
         <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-6 gap-3">

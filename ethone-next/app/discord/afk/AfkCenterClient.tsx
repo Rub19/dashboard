@@ -3,13 +3,15 @@
 import { useCallback, useEffect, useMemo, useState, useRef } from "react";
 import Link from "next/link";
 import { useSearchParams } from "next/navigation";
-import { Moon, ArrowLeft, RefreshCw, Save, AlertTriangle, X } from "lucide-react";
+import { Moon, ArrowLeft, RefreshCw, Save, AlertTriangle, X, Bot } from "lucide-react";
 import { useToast } from "@/components/ToastProvider";
 import { useDiscordOAuth, type DiscordGuild, canManageGuild, getStoredDiscordGuilds } from "@/lib/hooks/useDiscordOAuth";
 import { useBotGuildIds, pickBotGuild } from "@/lib/hooks/useBotGuildIds";
 import { cn } from "@/lib/utils";
 import { GuildSelector } from "@/components/GuildSelector";
 
+const BOT_CLIENT_ID = "1545139931154878464";
+const BOT_INVITE_URL = `https://discord.com/oauth2/authorize?client_id=${BOT_CLIENT_ID}&permissions=8&scope=bot%20applications.commands`;
 const BOT_API_URL = process.env.NEXT_PUBLIC_DISCORD_BOT_API || "";
 
 interface AfkConfig {
@@ -93,6 +95,7 @@ export default function AfkCenterClient() {
 
   // Le paramètre d'URL n'est appliqué qu'une fois par valeur : sinon il annule le choix fait dans le sélecteur.
   const appliedQueryGuild = useRef<string | null>(null);
+  const userSelectedRef = useRef(false);
   const queryGuildId = searchParams.get("guildId");
   const [selectedGuild, setSelectedGuild] = useState<DiscordGuild | null>(null);
 
@@ -106,7 +109,18 @@ export default function AfkCenterClient() {
         return;
       }
     }
-    if (!selectedGuild && botGuildIds !== null) setSelectedGuild(pickBotGuild(manageableGuilds, botGuildIds)!);
+    if (!userSelectedRef.current && !queryGuildId) {
+      if (!selectedGuild) {
+        if (botGuildIds !== null) {
+          setSelectedGuild(pickBotGuild(manageableGuilds, botGuildIds)!);
+        }
+      } else if (botGuildIds && botGuildIds.length > 0 && !botGuildIds.includes(selectedGuild.id)) {
+        const botGuild = pickBotGuild(manageableGuilds, botGuildIds);
+        if (botGuild && botGuild.id !== selectedGuild.id && botGuildIds.includes(botGuild.id)) {
+          setSelectedGuild(botGuild);
+        }
+      }
+    }
   }, [manageableGuilds, queryGuildId, selectedGuild, botGuildIds]);
 
   const [config, setConfig] = useState<AfkConfig>(DEFAULT_CONFIG);
@@ -117,10 +131,28 @@ export default function AfkCenterClient() {
 
   const load = useCallback(async () => {
     if (!selectedGuild) return;
-    if (!BOT_API_URL) {
-      setOffline(true);
+
+    const localKey = `ethone:afk:${selectedGuild.id}`;
+    let savedLocal: AfkConfig | null = null;
+    try {
+      const raw = localStorage.getItem(localKey);
+      if (raw) savedLocal = JSON.parse(raw);
+    } catch {}
+
+    // Si le bot n'est pas installé sur ce serveur
+    if (botGuildIds !== null && !botGuildIds.includes(selectedGuild.id)) {
+      setOffline(false);
+      setConfig(savedLocal ? { ...DEFAULT_CONFIG, ...savedLocal, guildId: selectedGuild.id } : { ...DEFAULT_CONFIG, guildId: selectedGuild.id });
+      setOverview(null);
       return;
     }
+
+    if (!BOT_API_URL) {
+      setOffline(true);
+      if (savedLocal) setConfig({ ...DEFAULT_CONFIG, ...savedLocal, guildId: selectedGuild.id });
+      return;
+    }
+
     setLoading(true);
     setOffline(false);
     try {
@@ -130,14 +162,22 @@ export default function AfkCenterClient() {
         fetch(`${base}/overview`, { credentials: "include" }),
       ]);
       if (!cfgRes.ok) throw new Error("config");
-      setConfig({ ...DEFAULT_CONFIG, ...(await cfgRes.json()), guildId: selectedGuild.id });
+      const fetchedConfig = await cfgRes.json();
+      const mergedConfig = { ...DEFAULT_CONFIG, ...fetchedConfig, guildId: selectedGuild.id };
+      setConfig(mergedConfig);
+      try {
+        localStorage.setItem(localKey, JSON.stringify(mergedConfig));
+      } catch {}
       if (ovRes.ok) setOverview(await ovRes.json());
     } catch {
       setOffline(true);
+      if (savedLocal) {
+        setConfig({ ...DEFAULT_CONFIG, ...savedLocal, guildId: selectedGuild.id });
+      }
     } finally {
       setLoading(false);
     }
-  }, [selectedGuild]);
+  }, [selectedGuild, botGuildIds]);
 
   useEffect(() => {
     load();
@@ -147,7 +187,25 @@ export default function AfkCenterClient() {
 
   const handleSave = async () => {
     if (!selectedGuild) return;
-    if (!BOT_API_URL) return showError("Bot injoignable", "Rien n'a été enregistré.");
+    const localKey = `ethone:afk:${selectedGuild.id}`;
+
+    // Si le bot n'est pas installé sur ce serveur
+    if (botGuildIds !== null && !botGuildIds.includes(selectedGuild.id)) {
+      try {
+        localStorage.setItem(localKey, JSON.stringify(config));
+      } catch {}
+      success("Réglages enregistrés localement", "Les réglages seront synchronisés dès que le bot aura rejoint ce serveur.");
+      return;
+    }
+
+    if (!BOT_API_URL) {
+      try {
+        localStorage.setItem(localKey, JSON.stringify(config));
+      } catch {}
+      success("Enregistré hors-ligne", "Les réglages sont conservés sur votre appareil et seront appliqués dès que le bot sera joignable.");
+      return;
+    }
+
     setSaving(true);
     try {
       const res = await fetch(`${BOT_API_URL}/api/guilds/${selectedGuild.id}/afk/config`, {
@@ -163,10 +221,16 @@ export default function AfkCenterClient() {
         }),
       });
       if (!res.ok) throw new Error();
+      try {
+        localStorage.setItem(localKey, JSON.stringify(config));
+      } catch {}
       success("AFK synchronisé", "Les réglages ont été appliqués au bot.");
       load();
     } catch {
-      showError("Échec de la sauvegarde", "Impossible de joindre le serveur du bot.");
+      try {
+        localStorage.setItem(localKey, JSON.stringify(config));
+      } catch {}
+      success("Enregistré hors-ligne", "Impossible de joindre le bot. Vos réglages sont conservés localement.");
     } finally {
       setSaving(false);
     }
@@ -207,7 +271,14 @@ export default function AfkCenterClient() {
 
         <div className="flex items-center gap-2.5">
           {manageableGuilds.length > 0 ? (
-            <GuildSelector guilds={manageableGuilds} value={selectedGuild?.id || ""} onChange={setSelectedGuild} />
+            <GuildSelector
+              guilds={manageableGuilds}
+              value={selectedGuild?.id || ""}
+              onChange={(g) => {
+                userSelectedRef.current = true;
+                setSelectedGuild(g);
+              }}
+            />
           ) : (
             <span className="text-xs text-white/70">Aucun serveur administrable</span>
           )}
@@ -232,11 +303,35 @@ export default function AfkCenterClient() {
           </div>
         )}
 
-        {offline && (
+        {selectedGuild && botGuildIds !== null && !botGuildIds.includes(selectedGuild.id) && (
+          <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 rounded-2xl border border-indigo-500/30 bg-indigo-500/10 p-4 text-xs text-indigo-200">
+            <div className="flex items-start gap-3">
+              <div className="p-2 rounded-xl bg-indigo-500/20 text-indigo-300 shrink-0 mt-0.5">
+                <Bot className="h-5 w-5" />
+              </div>
+              <div>
+                <p className="font-semibold text-white text-sm">Le bot ETHONE n&apos;est pas installé sur ce serveur</p>
+                <p className="mt-0.5 text-zinc-300">
+                  Invitez le bot sur « {selectedGuild.name} » pour synchroniser automatiquement les statuts AFK en direct sur Discord.
+                </p>
+              </div>
+            </div>
+            <a
+              href={`${BOT_INVITE_URL}&guild_id=${selectedGuild.id}`}
+              target="_blank"
+              rel="noopener noreferrer"
+              className="inline-flex items-center justify-center gap-2 px-4 py-2 rounded-xl bg-[#5865F2] hover:bg-[#4752C4] text-white font-medium text-xs transition-colors shrink-0 shadow-lg shadow-[#5865F2]/25 cursor-pointer"
+            >
+              Inviter le bot
+            </a>
+          </div>
+        )}
+
+        {offline && selectedGuild && (botGuildIds === null || botGuildIds.includes(selectedGuild.id)) && (
           <div className="flex items-start gap-2.5 rounded-2xl border border-amber-500/25 bg-amber-500/10 px-4 py-3 text-xs text-amber-200">
             <AlertTriangle className="h-4 w-4 shrink-0 mt-0.5" />
             <span>
-              Le serveur du bot n&apos;est pas joignable depuis cet environnement. Réglages affichés à titre indicatif ; réessaie plus tard.
+              Mode hors-ligne : la connexion au serveur du bot est temporairement indisponible. Vos modifications sont conservées localement et seront synchronisées dès le rétablissement de la connexion.
             </span>
           </div>
         )}

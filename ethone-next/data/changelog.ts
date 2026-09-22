@@ -31452,5 +31452,62 @@ CHANGELOG_BY_LANG.en.unshift(v12829_en);
 CHANGELOG_BY_LANG.es.unshift(v12829_es);
 CHANGELOG_BY_LANG.de.unshift(v12829_de);
 
+const v12830_fr: ChangelogEntry = {
+  version: "v1.28.10",
+  date: "2026-09-22",
+  title: "Correction du Statut Serveur Injoignable & Gestion du Bot Non Installé",
+  items: [
+    "Suppression du faux message d'avertissement « Le serveur du bot n'est pas joignable » sur les pages AFK, Tags, Anniversaires, Compteurs, Messages Épinglés, Starboard, Highlights, Rappels et Analytics lorsqu'un serveur sans le bot était sélectionné.",
+    "Sélection automatique intelligente : bascule automatique vers un serveur où le bot est installé dès la fin du chargement des guildes, sans écraser le choix manuel de l'utilisateur.",
+    "Panneau d'information dédié avec bouton direct « Inviter le bot » lorsque le bot n'est pas encore présent sur le serveur sélectionné.",
+    "Persistance locale (localStorage) des configurations sur chaque serveur permettant d'éditer et sauvegarder les réglages même avant l'arrivée du bot.",
+    "Bannière hors-ligne clarifiée et non intrusive uniquement affichée lorsque le bot est réellement injoignable sur un serveur où il est installé.",
+  ],
+};
+
+const v12830_en: ChangelogEntry = {
+  version: "v1.28.10",
+  date: "2026-09-22",
+  title: "Unreachable Bot Server Warning Fix & Not-Installed Guild Handling",
+  items: [
+    "Fixed misleading 'Bot server unreachable' warning across AFK, Tags, Birthdays, Server Stats, Sticky, Starboard, Highlights, Reminders, and Analytics pages when selecting a guild without the bot.",
+    "Smart auto-selection: automatically switches to a guild with the bot installed upon guild loading without overriding explicit user choices.",
+    "Dedicated 'Bot not installed' banner with direct 'Invite bot' OAuth button and persistent GuildSelector access.",
+    "Local storage persistence for module configurations allowing offline editing before the bot joins the server.",
+    "Clarified offline warning banner displayed only when the bot is genuinely unreachable on an installed server.",
+  ],
+};
+
+const v12830_es: ChangelogEntry = {
+  version: "v1.28.10",
+  date: "2026-09-22",
+  title: "Corrección de Advertencia de Servidor Inaccesible y Gestión de Bot No Instalado",
+  items: [
+    "Corrección del mensaje engañoso de 'Servidor del bot no accesible' en las páginas AFK, Tags, Cumpleaños, Estadísticas, Mensajes Fijados, Starboard, Destacados, Recordatorios y Analíticas al seleccionar un servidor sin el bot.",
+    "Selección automática inteligente: cambia automáticamente a un servidor con el bot instalado al cargar las listas.",
+    "Banner dedicado 'Bot no instalado' con botón directo para invitar al bot por OAuth y selector de servidor siempre disponible.",
+    "Persistencia local en localStorage para editar y guardar configuraciones incluso antes de que el bot se una al servidor.",
+    "Banner de modo sin conexión clarificado, mostrado únicamente cuando el bot está realmente fuera de línea en un servidor donde está presente.",
+  ],
+};
+
+const v12830_de: ChangelogEntry = {
+  version: "v1.28.10",
+  date: "2026-09-22",
+  title: "Korrektur der Bot-Server-Warnmeldung & Behandlung nicht installierter Server",
+  items: [
+    "Behebung der irreführenden Warnung 'Bot-Server nicht erreichbar' auf den Seiten AFK, Tags, Geburtstage, Server-Statistiken, Sticky, Starboard, Highlights, Erinnerungen und Analytics bei Servern ohne Bot.",
+    "Intelligente automatische Auswahl: wechselt beim Laden automatisch zu einem Server mit installiertem Bot, ohne manuelle Auswahlen zu überschreiben.",
+    "Dedizierter Bereich 'Bot nicht installiert' mit direktem 'Bot einladen'-Button und dauerhaft zugänglichem Server-Auswahlmenü.",
+    "Lokale Speicherung (localStorage) für Modul-Einstellungen, damit Änderungen auch vor dem Bot-Beitritt erhalten bleiben.",
+    "Klarer Offline-Banner, der nur dann erscheint, wenn der Bot auf einem installierten Server tatsächlich nicht erreichbar ist.",
+  ],
+};
+
+CHANGELOG_BY_LANG.fr.unshift(v12830_fr);
+CHANGELOG_BY_LANG.en.unshift(v12830_en);
+CHANGELOG_BY_LANG.es.unshift(v12830_es);
+CHANGELOG_BY_LANG.de.unshift(v12830_de);
+
 export const CHANGELOG = CHANGELOG_BY_LANG.fr;
 

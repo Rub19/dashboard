@@ -3,7 +3,7 @@
 import { useCallback, useEffect, useMemo, useState, useRef } from "react";
 import Link from "next/link";
 import { useSearchParams } from "next/navigation";
-import { Eye, ArrowLeft, RefreshCw, Plus, X, ChevronDown, AlertTriangle, Hash } from "lucide-react";
+import { Eye, ArrowLeft, RefreshCw, Plus, X, ChevronDown, AlertTriangle, Hash, Bot } from "lucide-react";
 import { useToast } from "@/components/ToastProvider";
 import { useDiscordOAuth, type DiscordGuild } from "@/lib/hooks/useDiscordOAuth";
 import { useBotGuildIds, pickBotGuild } from "@/lib/hooks/useBotGuildIds";
@@ -11,6 +11,8 @@ import { useDiscordSync } from "@/lib/useDiscordSync";
 import { cn } from "@/lib/utils";
 import { GuildSelector } from "@/components/GuildSelector";
 
+const BOT_CLIENT_ID = "1545139931154878464";
+const BOT_INVITE_URL = `https://discord.com/oauth2/authorize?client_id=${BOT_CLIENT_ID}&permissions=8&scope=bot%20applications.commands`;
 const BOT_API_URL = process.env.NEXT_PUBLIC_DISCORD_BOT_API || "";
 const MAX_KEYWORDS = 15;
 const KEYWORD_MIN = 2;
@@ -42,21 +44,21 @@ function Switch({ checked, onChange, label, hint }: { checked: boolean; onChange
       role="switch"
       aria-checked={checked}
       onClick={() => onChange(!checked)}
-      className="flex w-full items-start justify-between gap-3 rounded-xl border border-[var(--panel-border)] bg-[var(--surface-2)]/50 p-3.5 text-left transition-colors hover:bg-[var(--surface-2)] cursor-pointer"
+      className="flex w-full items-start justify-between gap-3 rounded-[var(--panel-radius)] border border-[var(--panel-border)] bg-white/[0.02] p-3.5 text-left transition-colors hover:border-[var(--input-border-hover)] cursor-pointer"
     >
       <span className="min-w-0">
-        <span className="block text-xs font-semibold text-[var(--text-primary)]">{label}</span>
-        {hint && <span className="mt-0.5 block text-[11px] leading-snug text-[var(--text-muted)]">{hint}</span>}
+        <span className="block text-xs font-semibold text-white">{label}</span>
+        {hint && <span className="mt-0.5 block text-[11px] leading-snug text-zinc-400">{hint}</span>}
       </span>
       <span
         className={cn(
           "relative inline-flex mt-0.5 h-5 w-9 shrink-0 cursor-pointer items-center rounded-full p-0.5 transition-colors duration-200",
-          checked ? "bg-[var(--accent-primary)]" : "bg-[var(--panel-border)]"
+          checked ? "bg-[#5865F2]" : "bg-white/15"
         )}
       >
         <span
           className={cn(
-            "pointer-events-none block h-4 w-4 rounded-full bg-[var(--accent-contrast)] shadow transition-transform duration-200",
+            "pointer-events-none block h-4 w-4 rounded-full bg-white shadow transition-transform duration-200",
             checked ? "translate-x-4" : "translate-x-0"
           )}
         />
@@ -69,15 +71,12 @@ export default function HighlightsCenterClient() {
   const searchParams = useSearchParams();
   const { success, error: showError } = useToast();
   const { profile, loading: discordLoading } = useDiscordOAuth();
-  const botGuildIds = useBotGuildIds(profile?.guilds);
+  const allGuilds: DiscordGuild[] = useMemo(() => profile?.guilds ?? [], [profile?.guilds]);
+  const botGuildIds = useBotGuildIds(allGuilds);
+  const manageableGuilds = allGuilds;
 
-  const manageableGuilds: DiscordGuild[] = useMemo(() => {
-    if (!profile?.guilds) return [];
-    return profile.guilds;
-  }, [profile?.guilds]);
-
-  // Le paramètre d'URL n'est appliqué qu'une fois par valeur : sinon il annule le choix fait dans le sélecteur.
   const appliedQueryGuild = useRef<string | null>(null);
+  const userSelectedRef = useRef(false);
   const queryGuildId = searchParams.get("guildId");
   const [selectedGuild, setSelectedGuild] = useState<DiscordGuild | null>(null);
 
@@ -91,7 +90,18 @@ export default function HighlightsCenterClient() {
         return;
       }
     }
-    if (!selectedGuild && botGuildIds !== null) setSelectedGuild(pickBotGuild(manageableGuilds, botGuildIds)!);
+    if (!userSelectedRef.current && !queryGuildId) {
+      if (!selectedGuild) {
+        if (botGuildIds !== null) {
+          setSelectedGuild(pickBotGuild(manageableGuilds, botGuildIds)!);
+        }
+      } else if (botGuildIds && botGuildIds.length > 0 && !botGuildIds.includes(selectedGuild.id)) {
+        const botGuild = pickBotGuild(manageableGuilds, botGuildIds);
+        if (botGuild && botGuild.id !== selectedGuild.id && botGuildIds.includes(botGuild.id)) {
+          setSelectedGuild(botGuild);
+        }
+      }
+    }
   }, [manageableGuilds, queryGuildId, selectedGuild, botGuildIds]);
 
   const [config, setConfig] = useState<HighlightConfig | null>(null);
@@ -105,6 +115,16 @@ export default function HighlightsCenterClient() {
 
   const load = useCallback(async () => {
     if (!selectedGuild) return;
+
+    // Si le bot n'est pas installé sur ce serveur
+    if (botGuildIds !== null && !botGuildIds.includes(selectedGuild.id)) {
+      setOffline(false);
+      setConfig(null);
+      setKeywords([]);
+      setChannels([]);
+      return;
+    }
+
     if (!BOT_API_URL) {
       setOffline(true);
       return;
@@ -130,7 +150,7 @@ export default function HighlightsCenterClient() {
     } finally {
       setLoading(false);
     }
-  }, [selectedGuild]);
+  }, [selectedGuild, botGuildIds]);
 
   useEffect(() => {
     load();
@@ -280,7 +300,14 @@ export default function HighlightsCenterClient() {
 
         <div className="flex items-center gap-2">
           {manageableGuilds.length > 0 ? (
-            <GuildSelector guilds={manageableGuilds} value={selectedGuild?.id || ""} onChange={setSelectedGuild} />
+            <GuildSelector
+              guilds={manageableGuilds}
+              value={selectedGuild?.id || ""}
+              onChange={(g) => {
+                userSelectedRef.current = true;
+                setSelectedGuild(g);
+              }}
+            />
           ) : (
             <span className="text-xs text-[var(--text-muted)]">Aucun serveur Discord connecté</span>
           )}
@@ -301,11 +328,35 @@ export default function HighlightsCenterClient() {
           </div>
         )}
 
-        {offline && (
+        {selectedGuild && botGuildIds !== null && !botGuildIds.includes(selectedGuild.id) && (
+          <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 rounded-2xl border border-indigo-500/30 bg-indigo-500/10 p-4 text-xs text-indigo-200">
+            <div className="flex items-start gap-3">
+              <div className="p-2 rounded-xl bg-indigo-500/20 text-indigo-300 shrink-0 mt-0.5">
+                <Bot className="h-5 w-5" />
+              </div>
+              <div>
+                <p className="font-semibold text-white text-sm">Le bot ETHONE n&apos;est pas installé sur ce serveur</p>
+                <p className="mt-0.5 text-zinc-300">
+                  Invitez le bot sur « {selectedGuild.name} » pour recevoir vos alertes mots-clés en direct sur Discord.
+                </p>
+              </div>
+            </div>
+            <a
+              href={`${BOT_INVITE_URL}&guild_id=${selectedGuild.id}`}
+              target="_blank"
+              rel="noopener noreferrer"
+              className="inline-flex items-center justify-center gap-2 px-4 py-2 rounded-xl bg-[#5865F2] hover:bg-[#4752C4] text-white font-medium text-xs transition-colors shrink-0 shadow-lg shadow-[#5865F2]/25 cursor-pointer"
+            >
+              Inviter le bot
+            </a>
+          </div>
+        )}
+
+        {offline && selectedGuild && (botGuildIds === null || botGuildIds.includes(selectedGuild.id)) && (
           <div className="flex items-start gap-2.5 rounded-xl border border-[var(--warning)]/25 bg-[var(--warning)]/10 px-4 py-3 text-xs text-[var(--warning)]">
             <AlertTriangle className="h-4 w-4 shrink-0 mt-0.5" />
             <span>
-              Le serveur du bot n&apos;est pas joignable depuis cet environnement. Réglages indicatifs ; utilise{" "}
+              Mode hors-ligne : le serveur du bot n&apos;est pas joignable depuis cet environnement. Réglages indicatifs ; utilise{" "}
               <code className="rounded bg-[var(--surface-2)] px-1">/highlight</code> sur Discord.
             </span>
           </div>

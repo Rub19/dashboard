@@ -103,6 +103,7 @@ export default function OverviewClient() {
 
   // Le paramètre d'URL n'est appliqué qu'une fois par valeur : sinon il annule le choix fait dans le sélecteur.
   const appliedQueryGuild = useRef<string | null>(null);
+  const userSelectedRef = useRef(false);
   const queryGuildId = searchParams.get("guildId");
   const [selectedGuild, setSelectedGuild] = useState<DiscordGuild | null>(null);
 
@@ -116,7 +117,18 @@ export default function OverviewClient() {
         return;
       }
     }
-    if (!selectedGuild && botGuildIds !== null) setSelectedGuild(pickBotGuild(manageableGuilds, botGuildIds)!);
+    if (!userSelectedRef.current && !queryGuildId) {
+      if (!selectedGuild) {
+        if (botGuildIds !== null) {
+          setSelectedGuild(pickBotGuild(manageableGuilds, botGuildIds)!);
+        }
+      } else if (botGuildIds && botGuildIds.length > 0 && !botGuildIds.includes(selectedGuild.id)) {
+        const botGuild = pickBotGuild(manageableGuilds, botGuildIds);
+        if (botGuild && botGuild.id !== selectedGuild.id && botGuildIds.includes(botGuild.id)) {
+          setSelectedGuild(botGuild);
+        }
+      }
+    }
   }, [manageableGuilds, queryGuildId, selectedGuild, botGuildIds]);
 
   const { guild, botWide, moderation, music, tickets, giveaways, security, backups, refresh } = useGuildOverview(
@@ -166,7 +178,14 @@ export default function OverviewClient() {
         </div>
 
         {manageableGuilds.length > 1 && (
-          <GuildSelector guilds={manageableGuilds} value={selectedGuild?.id || ""} onChange={setSelectedGuild} />
+          <GuildSelector
+            guilds={manageableGuilds}
+            value={selectedGuild?.id || ""}
+            onChange={(g) => {
+              userSelectedRef.current = true;
+              setSelectedGuild(g);
+            }}
+          />
         )}
 
         {!selectedGuild ? (

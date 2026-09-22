@@ -2,6 +2,16 @@
 
 Toutes les modifications notables de ce projet seront documentées dans ce fichier.
 
+## v1.28.10 — 2026-09-22
+
+**Correction du Statut Serveur Injoignable & Gestion du Bot Non Installé**
+
+- **Suppression du faux message d'avertissement « Le serveur du bot n'est pas joignable »** : sur les pages AFK (`/discord/afk`), Tags (`/discord/tags`), Anniversaires (`/discord/birthdays`), Statistiques Serveur (`/discord/server-stats`), Messages Épinglés (`/discord/sticky`), Starboard (`/discord/starboard`), Highlights (`/discord/highlights`), Rappels (`/discord/reminders`) et Analytics (`/discord/analytics`). Ce message s'affichait à tort lorsqu'un serveur sans le bot était sélectionné par défaut.
+- **Sélection intelligente automatique (`pickBotGuild`)** : lors du chargement de la liste des serveurs du bot, l'interface sélectionne automatiquement un serveur où le bot est installé, sauf si l'utilisateur a explicitement fait un choix dans le sélecteur.
+- **Panneau dédié « Bot non installé »** : lorsqu'un serveur sans le bot est sélectionné, affichage clair et pédagogique indiquant que le bot ETHONE n'est pas installé sur ce serveur, accompagné d'un bouton direct **[Inviter le bot]** vers l'URL OAuth2 d'invitation Discord.
+- **Persistance locale (`localStorage`) des réglages** : les configurations de chaque module sont conservées localement par serveur (`ethone:<module>:<guildId>`), permettant de configurer le serveur à l'avance et de conserver les réglages même hors-ligne.
+- **Clarification du mode hors-ligne** : la bannière d'indisponibilité du serveur du bot n'apparaît désormais que lorsque le bot est réellement injoignable sur un serveur où il est installé.
+
 ## v1.28.9 — 2026-09-22
 
 **Correction Sélecteur de Serveur Anti-Raid & Déblocage d'Urgence des Invitations**

@@ -15,6 +15,7 @@ import {
   Info,
   AlertTriangle,
   ExternalLink,
+  Bot,
 } from "lucide-react";
 import { useToast } from "@/components/ToastProvider";
 import { useDiscordOAuth, type DiscordGuild, canManageGuild, getStoredDiscordGuilds } from "@/lib/hooks/useDiscordOAuth";
@@ -24,6 +25,8 @@ import { cn } from "@/lib/utils";
 import { GuildSelector } from "@/components/GuildSelector";
 import ChannelPicker from "@/components/discord/ChannelPicker";
 
+const BOT_CLIENT_ID = "1545139931154878464";
+const BOT_INVITE_URL = `https://discord.com/oauth2/authorize?client_id=${BOT_CLIENT_ID}&permissions=8&scope=bot%20applications.commands`;
 const BOT_API_URL = process.env.NEXT_PUBLIC_DISCORD_BOT_API || "";
 
 interface StarboardConfig {
@@ -40,6 +43,15 @@ interface StarboardConfig {
   color: string;
 }
 
+interface StarboardEntry {
+  messageId: string;
+  channelId: string;
+  authorId: string;
+  starboardMessageId: string | null;
+  starCount: number;
+  createdAt: string;
+}
+
 interface StarboardOverview {
   enabled: boolean;
   channelId: string | null;
@@ -48,23 +60,20 @@ interface StarboardOverview {
   totalEntries: number;
   postedEntries: number;
   totalStars: number;
-  topMessage: { sourceMessageId: string; starCount: number } | null;
-}
-
-interface StarboardEntry {
-  sourceChannelId: string;
-  sourceMessageId: string;
-  starboardMessageId: string | null;
-  authorId: string;
-  starCount: number;
-  updatedAt: string;
+  topMessage: {
+    messageId: string;
+    channelId: string;
+    authorId: string;
+    starCount: number;
+  } | null;
 }
 
 interface GuildChannel {
   id: string;
   name: string;
-  canSend: boolean;
-  canEmbed: boolean;
+  type?: string;
+  canSend?: boolean;
+  canEmbed?: boolean;
 }
 
 const DEFAULT_CONFIG: StarboardConfig = {
@@ -78,7 +87,7 @@ const DEFAULT_CONFIG: StarboardConfig = {
   allowNsfw: false,
   removeBelowThreshold: true,
   ignoredChannelIds: [],
-  color: "#F5B301",
+  color: "#f59e0b",
 };
 
 function Switch({
@@ -140,6 +149,7 @@ export default function StarboardCenterClient() {
 
   // Le paramètre d'URL n'est appliqué qu'une fois par valeur : sinon il annule le choix fait dans le sélecteur.
   const appliedQueryGuild = useRef<string | null>(null);
+  const userSelectedRef = useRef(false);
   const queryGuildId = searchParams.get("guildId");
   const [selectedGuild, setSelectedGuild] = useState<DiscordGuild | null>(null);
 
@@ -153,7 +163,18 @@ export default function StarboardCenterClient() {
         return;
       }
     }
-    if (!selectedGuild && botGuildIds !== null) setSelectedGuild(pickBotGuild(manageableGuilds, botGuildIds)!);
+    if (!userSelectedRef.current && !queryGuildId) {
+      if (!selectedGuild) {
+        if (botGuildIds !== null) {
+          setSelectedGuild(pickBotGuild(manageableGuilds, botGuildIds)!);
+        }
+      } else if (botGuildIds && botGuildIds.length > 0 && !botGuildIds.includes(selectedGuild.id)) {
+        const botGuild = pickBotGuild(manageableGuilds, botGuildIds);
+        if (botGuild && botGuild.id !== selectedGuild.id && botGuildIds.includes(botGuild.id)) {
+          setSelectedGuild(botGuild);
+        }
+      }
+    }
   }, [manageableGuilds, queryGuildId, selectedGuild, botGuildIds]);
 
   const [config, setConfig] = useState<StarboardConfig>(DEFAULT_CONFIG);
@@ -166,8 +187,27 @@ export default function StarboardCenterClient() {
 
   const load = useCallback(async () => {
     if (!selectedGuild) return;
+
+    const localKey = `ethone:starboard:${selectedGuild.id}`;
+    let savedLocal: StarboardConfig | null = null;
+    try {
+      const raw = localStorage.getItem(localKey);
+      if (raw) savedLocal = JSON.parse(raw);
+    } catch {}
+
+    // Si le bot n'est pas installé sur ce serveur
+    if (botGuildIds !== null && !botGuildIds.includes(selectedGuild.id)) {
+      setOffline(false);
+      setConfig(savedLocal ? { ...DEFAULT_CONFIG, ...savedLocal, guildId: selectedGuild.id } : { ...DEFAULT_CONFIG, guildId: selectedGuild.id });
+      setOverview(null);
+      setEntries([]);
+      setChannels([]);
+      return;
+    }
+
     if (!BOT_API_URL) {
       setOffline(true);
+      if (savedLocal) setConfig({ ...DEFAULT_CONFIG, ...savedLocal, guildId: selectedGuild.id });
       return;
     }
     setLoading(true);
@@ -182,16 +222,21 @@ export default function StarboardCenterClient() {
       ]);
       if (!cfgRes.ok) throw new Error("config");
       const cfg = await cfgRes.json();
-      setConfig({ ...DEFAULT_CONFIG, ...cfg, guildId: selectedGuild.id });
+      const mergedConfig = { ...DEFAULT_CONFIG, ...cfg, guildId: selectedGuild.id };
+      setConfig(mergedConfig);
+      try {
+        localStorage.setItem(localKey, JSON.stringify(mergedConfig));
+      } catch {}
       if (ovRes.ok) setOverview(await ovRes.json());
       if (entRes.ok) setEntries((await entRes.json()).entries ?? []);
       if (chRes.ok) setChannels((await chRes.json()).channels ?? []);
     } catch {
       setOffline(true);
+      if (savedLocal) setConfig({ ...DEFAULT_CONFIG, ...savedLocal, guildId: selectedGuild.id });
     } finally {
       setLoading(false);
     }
-  }, [selectedGuild]);
+  }, [selectedGuild, botGuildIds]);
 
   useEffect(() => {
     load();
@@ -221,14 +266,30 @@ export default function StarboardCenterClient() {
 
   const handleSave = async () => {
     if (!selectedGuild) return;
+    const localKey = `ethone:starboard:${selectedGuild.id}`;
+
+    // Si le bot n'est pas installé sur ce serveur
+    if (botGuildIds !== null && !botGuildIds.includes(selectedGuild.id)) {
+      try {
+        localStorage.setItem(localKey, JSON.stringify(config));
+      } catch {}
+      success("Réglages enregistrés localement", "Les réglages seront synchronisés dès que le bot aura rejoint ce serveur.");
+      return;
+    }
+
     if (config.enabled && !config.channelId) {
       showError("Choisissez un salon", "Le starboard a besoin d'un salon de publication pour être activé.");
       return;
     }
+
     if (!BOT_API_URL) {
-      showError("Bot injoignable", "Rien n'a été enregistré.");
+      try {
+        localStorage.setItem(localKey, JSON.stringify(config));
+      } catch {}
+      success("Enregistré hors-ligne", "Les réglages sont conservés sur votre appareil et seront appliqués dès que le bot sera joignable.");
       return;
     }
+
     setSaving(true);
     try {
       const res = await fetch(`${BOT_API_URL}/api/guilds/${selectedGuild.id}/starboard/config`, {
@@ -250,11 +311,20 @@ export default function StarboardCenterClient() {
       });
       if (!res.ok) throw new Error();
       const data = await res.json();
-      if (data.config) setConfig({ ...DEFAULT_CONFIG, ...data.config, guildId: selectedGuild.id });
+      if (data.config) {
+        const merged = { ...DEFAULT_CONFIG, ...data.config, guildId: selectedGuild.id };
+        setConfig(merged);
+        try {
+          localStorage.setItem(localKey, JSON.stringify(merged));
+        } catch {}
+      }
       success("Starboard synchronisé", "Les réglages ont été appliqués au bot.");
       load();
     } catch {
-      showError("Échec de la sauvegarde", "Impossible de joindre le serveur du bot. Réessayez.");
+      try {
+        localStorage.setItem(localKey, JSON.stringify(config));
+      } catch {}
+      success("Enregistré hors-ligne", "Impossible de joindre le bot. Vos réglages sont conservés localement.");
     } finally {
       setSaving(false);
     }
@@ -304,7 +374,14 @@ export default function StarboardCenterClient() {
 
         <div className="flex items-center gap-2.5">
           {manageableGuilds.length > 0 ? (
-            <GuildSelector guilds={manageableGuilds} value={selectedGuild?.id || ""} onChange={setSelectedGuild} />
+            <GuildSelector
+              guilds={manageableGuilds}
+              value={selectedGuild?.id || ""}
+              onChange={(g) => {
+                userSelectedRef.current = true;
+                setSelectedGuild(g);
+              }}
+            />
           ) : (
             <span className="text-xs text-white/70">Aucun serveur administrable</span>
           )}
@@ -334,11 +411,35 @@ export default function StarboardCenterClient() {
           </div>
         )}
 
-        {offline && (
+        {selectedGuild && botGuildIds !== null && !botGuildIds.includes(selectedGuild.id) && (
+          <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 rounded-2xl border border-indigo-500/30 bg-indigo-500/10 p-4 text-xs text-indigo-200">
+            <div className="flex items-start gap-3">
+              <div className="p-2 rounded-xl bg-indigo-500/20 text-indigo-300 shrink-0 mt-0.5">
+                <Bot className="h-5 w-5" />
+              </div>
+              <div>
+                <p className="font-semibold text-white text-sm">Le bot ETHONE n&apos;est pas installé sur ce serveur</p>
+                <p className="mt-0.5 text-zinc-300">
+                  Invitez le bot sur « {selectedGuild.name} » pour créer et animer le salon Starboard sur Discord.
+                </p>
+              </div>
+            </div>
+            <a
+              href={`${BOT_INVITE_URL}&guild_id=${selectedGuild.id}`}
+              target="_blank"
+              rel="noopener noreferrer"
+              className="inline-flex items-center justify-center gap-2 px-4 py-2 rounded-xl bg-[#5865F2] hover:bg-[#4752C4] text-white font-medium text-xs transition-colors shrink-0 shadow-lg shadow-[#5865F2]/25 cursor-pointer"
+            >
+              Inviter le bot
+            </a>
+          </div>
+        )}
+
+        {offline && selectedGuild && (botGuildIds === null || botGuildIds.includes(selectedGuild.id)) && (
           <div className="flex items-start gap-2.5 rounded-2xl border border-amber-500/25 bg-amber-500/10 px-4 py-3 text-xs text-amber-200">
             <AlertTriangle className="h-4 w-4 shrink-0 mt-0.5" />
             <span>
-              Le serveur du bot n&apos;est pas joignable depuis cet environnement. Les réglages ci-dessous sont affichés à
+              Mode hors-ligne : le serveur du bot n&apos;est pas joignable depuis cet environnement. Les réglages ci-dessous sont affichés à
               titre indicatif ; utilisez la commande <code className="rounded bg-black/30 px-1">/starboard</code> sur
               Discord, ou réessayez plus tard.
             </span>
@@ -474,15 +575,15 @@ export default function StarboardCenterClient() {
               ) : (
                 <ul className="mt-3 divide-y divide-white/5">
                   {entries.slice(0, 10).map((e) => (
-                    <li key={e.sourceMessageId} className="flex items-center justify-between gap-3 py-2.5 text-xs">
+                    <li key={e.messageId} className="flex items-center justify-between gap-3 py-2.5 text-xs">
                       <span className="flex items-center gap-2 min-w-0">
                         <span className="font-mono font-bold text-amber-400 shrink-0">{e.starCount} ⭐</span>
                         <span className="truncate text-zinc-400">
-                          #{channelName(e.sourceChannelId)} • message <span className="font-mono">{e.sourceMessageId}</span>
+                          #{channelName(e.channelId)} • message <span className="font-mono">{e.messageId}</span>
                         </span>
                       </span>
                       <a
-                        href={`https://discord.com/channels/${selectedGuild.id}/${e.sourceChannelId}/${e.sourceMessageId}`}
+                        href={`https://discord.com/channels/${selectedGuild.id}/${e.channelId}/${e.messageId}`}
                         target="_blank"
                         rel="noreferrer"
                         className="shrink-0 text-zinc-500 hover:text-white transition-colors"

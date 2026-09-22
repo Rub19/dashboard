@@ -1,6 +1,6 @@
 "use client";
 
-import { useCallback, useEffect, useMemo, useState } from "react";
+import { useCallback, useEffect, useMemo, useState, useRef } from "react";
 import { useSearchParams } from "next/navigation";
 import {
   BarChart3,
@@ -21,10 +21,15 @@ import {
   Loader2,
   WifiOff,
   User as UserIcon,
+  Bot,
+  AlertTriangle,
 } from "lucide-react";
 import { useDiscordOAuth, type DiscordGuild, canManageGuild, getStoredDiscordGuilds } from "@/lib/hooks/useDiscordOAuth";
 import { useBotGuildIds, pickBotGuild } from "@/lib/hooks/useBotGuildIds";
+import { GuildSelector } from "@/components/GuildSelector";
 
+const BOT_CLIENT_ID = "1545139931154878464";
+const BOT_INVITE_URL = `https://discord.com/oauth2/authorize?client_id=${BOT_CLIENT_ID}&permissions=8&scope=bot%20applications.commands`;
 const BOT_API_URL = process.env.NEXT_PUBLIC_DISCORD_BOT_API || "";
 
 // Mirrors discord-bot/src/modules/analytics/types/analytics.ts's AnalyticsOverview —
@@ -165,19 +170,33 @@ export default function AnalyticsCenterClient() {
     return manageable.length > 0 ? manageable : allGuilds;
   }, [allGuilds, botGuildIds]);
 
+  const appliedQueryGuild = useRef<string | null>(null);
+  const userSelectedRef = useRef(false);
   const queryGuildId = searchParams.get("guildId");
   const [selectedGuild, setSelectedGuild] = useState<DiscordGuild | null>(null);
 
   useEffect(() => {
     if (manageableGuilds.length === 0) return;
-    if (queryGuildId) {
+    if (queryGuildId && appliedQueryGuild.current !== queryGuildId) {
       const match = manageableGuilds.find((g) => g.id === queryGuildId);
       if (match) {
+        appliedQueryGuild.current = queryGuildId;
         setSelectedGuild(match);
         return;
       }
     }
-    if (!selectedGuild && botGuildIds !== null) setSelectedGuild(pickBotGuild(manageableGuilds, botGuildIds)!);
+    if (!userSelectedRef.current && !queryGuildId) {
+      if (!selectedGuild) {
+        if (botGuildIds !== null) {
+          setSelectedGuild(pickBotGuild(manageableGuilds, botGuildIds)!);
+        }
+      } else if (botGuildIds && botGuildIds.length > 0 && !botGuildIds.includes(selectedGuild.id)) {
+        const botGuild = pickBotGuild(manageableGuilds, botGuildIds);
+        if (botGuild && botGuild.id !== selectedGuild.id && botGuildIds.includes(botGuild.id)) {
+          setSelectedGuild(botGuild);
+        }
+      }
+    }
   }, [manageableGuilds, queryGuildId, selectedGuild, botGuildIds]);
 
   const [activeTab, setActiveTab] = useState<
@@ -197,6 +216,11 @@ export default function AnalyticsCenterClient() {
 
   const load = useCallback(async () => {
     if (!selectedGuild) return;
+    if (botGuildIds !== null && !botGuildIds.includes(selectedGuild.id)) {
+      setOffline(false);
+      setOverview(null);
+      return;
+    }
     if (!BOT_API_URL) {
       setOffline(true);
       return;
@@ -215,7 +239,7 @@ export default function AnalyticsCenterClient() {
     } finally {
       setLoading(false);
     }
-  }, [selectedGuild, period]);
+  }, [selectedGuild, period, botGuildIds]);
 
   useEffect(() => {
     setOverview(null);
@@ -248,65 +272,39 @@ export default function AnalyticsCenterClient() {
     }
   }, [selectedGuild, period]);
 
-  if (!BOT_API_URL || offline) {
-    return (
-      <div className="flex h-full items-center justify-center p-8 bg-[var(--bg-main)]">
-        <div className="max-w-sm rounded-2xl border border-neutral-800 bg-neutral-900 p-6 text-center">
-          <WifiOff className="mx-auto mb-3 h-8 w-8 text-neutral-500" />
-          <p className="text-sm text-neutral-400">
-            {!BOT_API_URL
-              ? "Le serveur du bot n'est pas configuré ici."
-              : "Impossible de joindre le bot Discord pour le moment."}
-          </p>
-        </div>
-      </div>
-    );
-  }
-
-  if (!selectedGuild || (loading && !overview)) {
-    return (
-      <div className="flex h-full items-center justify-center p-8 bg-[var(--bg-main)]">
-        <div className="flex items-center gap-2 text-sm text-neutral-400">
-          <Loader2 className="w-4 h-4 animate-spin" />
-          {selectedGuild ? "Chargement des statistiques..." : "Sélection du serveur..."}
-        </div>
-      </div>
-    );
-  }
-
-  if (!overview) {
-    return null;
-  }
-
-  const maxTimeSeries = Math.max(1, ...overview.timeSeries.map((d) => d.messages));
+  const maxTimeSeries = overview ? Math.max(1, ...overview.timeSeries.map((d) => d.messages)) : 1;
   const avgMessages =
-    overview.timeSeries.length > 0
+    overview && overview.timeSeries.length > 0
       ? Math.round(
           overview.timeSeries.reduce((s, d) => s + d.messages, 0) / overview.timeSeries.length
         )
       : 0;
 
-  const joinsTotal = overview.timeSeries.reduce((s, d) => s + d.joins, 0);
-  const leavesTotal = overview.timeSeries.reduce((s, d) => s + d.leaves, 0);
+  const joinsTotal = overview ? overview.timeSeries.reduce((s, d) => s + d.joins, 0) : 0;
+  const leavesTotal = overview ? overview.timeSeries.reduce((s, d) => s + d.leaves, 0) : 0;
   const netGrowth = joinsTotal - leavesTotal;
 
-  const maxHeatmapValue = Math.max(0, ...overview.peakHeatmap.map((c) => c.value));
+  const maxHeatmapValue = overview ? Math.max(0, ...overview.peakHeatmap.map((c) => c.value)) : 0;
   let peakCell: { day: number; hour: number; value: number } | null = null;
-  for (const cell of overview.peakHeatmap) {
-    if (!peakCell || cell.value > peakCell.value) peakCell = cell;
+  if (overview) {
+    for (const cell of overview.peakHeatmap) {
+      if (!peakCell || cell.value > peakCell.value) peakCell = cell;
+    }
   }
 
-  const health = healthStatusLabel(overview.healthScore.status);
+  const health = overview ? healthStatusLabel(overview.healthScore.status) : null;
 
-  const kpiCards: Array<{ label: string; kpi: AnalyticsKPI; colorClass: string }> = [
-    { label: `Messages (${period})`, kpi: overview.kpis.messages, colorClass: "text-white" },
-    { label: "Membres Totaux", kpi: overview.kpis.members, colorClass: "text-cyan-400" },
-    { label: "Membres Actifs", kpi: overview.kpis.activeUsers, colorClass: "text-indigo-400" },
-    { label: "Commandes Exécutées", kpi: overview.kpis.commands, colorClass: "text-amber-400" },
-    { label: "Heures en Vocal", kpi: overview.kpis.voiceHours, colorClass: "text-purple-400" },
-    { label: "Sanctions Modération", kpi: overview.kpis.moderationActions, colorClass: "text-rose-400" },
-    { label: "Tickets Support", kpi: overview.kpis.tickets, colorClass: "text-emerald-400" },
-  ];
+  const kpiCards: Array<{ label: string; kpi: AnalyticsKPI; colorClass: string }> = overview
+    ? [
+        { label: `Messages (${period})`, kpi: overview.kpis.messages, colorClass: "text-white" },
+        { label: "Membres Totaux", kpi: overview.kpis.members, colorClass: "text-cyan-400" },
+        { label: "Membres Actifs", kpi: overview.kpis.activeUsers, colorClass: "text-indigo-400" },
+        { label: "Commandes Exécutées", kpi: overview.kpis.commands, colorClass: "text-amber-400" },
+        { label: "Heures en Vocal", kpi: overview.kpis.voiceHours, colorClass: "text-purple-400" },
+        { label: "Sanctions Modération", kpi: overview.kpis.moderationActions, colorClass: "text-rose-400" },
+        { label: "Tickets Support", kpi: overview.kpis.tickets, colorClass: "text-emerald-400" },
+      ]
+    : [];
 
   return (
     <div className="h-full overflow-y-auto os-scroll [overscroll-behavior:contain] bg-[var(--bg-main)] text-neutral-100 p-4 md:p-8">
@@ -323,7 +321,7 @@ export default function AnalyticsCenterClient() {
                   ETHONE Analytics &amp; Server Insights
                 </h1>
                 <p className="text-xs text-neutral-400">
-                  Métriques d'activité réelles pour {selectedGuild.name} : messages, croissance des
+                  Métriques d'activité réelles pour {selectedGuild?.name || "votre serveur"} : messages, croissance des
                   membres, heatmap horaire et top salons/membres.
                 </p>
               </div>
@@ -331,6 +329,19 @@ export default function AnalyticsCenterClient() {
           </div>
 
           <div className="flex items-center gap-2.5 flex-wrap">
+            {manageableGuilds.length > 0 ? (
+              <GuildSelector
+                guilds={manageableGuilds}
+                value={selectedGuild?.id || ""}
+                onChange={(g) => {
+                  userSelectedRef.current = true;
+                  setSelectedGuild(g);
+                }}
+              />
+            ) : (
+              <span className="text-xs text-neutral-400">Aucun serveur administrable</span>
+            )}
+
             {/* Period Selector */}
             <div className="flex items-center bg-neutral-900 border border-neutral-800 rounded-xl p-1 text-xs font-semibold">
               {(["7d", "30d", "90d"] as const).map((p) => (
@@ -350,7 +361,7 @@ export default function AnalyticsCenterClient() {
 
             <button
               onClick={handleExport}
-              disabled={exporting}
+              disabled={exporting || !selectedGuild || !overview}
               className="px-3.5 py-2 rounded-xl border border-neutral-800 bg-neutral-900 hover:bg-neutral-800 text-xs font-semibold text-neutral-200 flex items-center gap-2 transition-colors cursor-pointer disabled:opacity-50"
             >
               {exporting ? (
@@ -362,6 +373,65 @@ export default function AnalyticsCenterClient() {
             </button>
           </div>
         </div>
+
+        {/* Bot Not Installed Banner */}
+        {selectedGuild && botGuildIds !== null && !botGuildIds.includes(selectedGuild.id) && (
+          <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 rounded-2xl border border-indigo-500/30 bg-indigo-500/10 p-5 text-xs text-indigo-200">
+            <div className="flex items-start gap-3">
+              <div className="p-2.5 rounded-xl bg-indigo-500/20 text-indigo-300 shrink-0 mt-0.5">
+                <Bot className="h-6 w-6" />
+              </div>
+              <div>
+                <p className="font-semibold text-white text-sm">Le bot ETHONE n&apos;est pas installé sur ce serveur</p>
+                <p className="mt-1 text-zinc-300 leading-relaxed">
+                  Invitez le bot sur « {selectedGuild.name} » pour collecter et afficher les métriques en temps réel (messages, vocal, commandes, flux de membres).
+                </p>
+              </div>
+            </div>
+            <a
+              href={`${BOT_INVITE_URL}&guild_id=${selectedGuild.id}`}
+              target="_blank"
+              rel="noopener noreferrer"
+              className="inline-flex items-center justify-center gap-2 px-4 py-2.5 rounded-xl bg-[#5865F2] hover:bg-[#4752C4] text-white font-medium text-xs transition-colors shrink-0 shadow-lg shadow-[#5865F2]/25 cursor-pointer"
+            >
+              Inviter le bot
+            </a>
+          </div>
+        )}
+
+        {/* Offline Banner */}
+        {offline && selectedGuild && (botGuildIds === null || botGuildIds.includes(selectedGuild.id)) && (
+          <div className="flex items-start gap-2.5 rounded-2xl border border-amber-500/25 bg-amber-500/10 px-4 py-3 text-xs text-amber-200">
+            <AlertTriangle className="h-4 w-4 shrink-0 mt-0.5" />
+            <span>
+              Mode hors-ligne : la connexion au serveur du bot est temporairement indisponible. Les statistiques seront actualisées dès le rétablissement de la connexion.
+            </span>
+          </div>
+        )}
+
+        {/* Loading Indicator */}
+        {loading && !overview && (
+          <div className="flex items-center justify-center py-20">
+            <div className="flex items-center gap-2.5 text-sm text-neutral-400">
+              <Loader2 className="w-5 h-5 animate-spin text-cyan-400" />
+              Chargement des statistiques...
+            </div>
+          </div>
+        )}
+
+        {/* No Server Selected */}
+        {!selectedGuild && !loading && (
+          <div className="flex items-center justify-center py-20 text-sm text-neutral-400">
+            Sélectionnez un serveur Discord pour afficher ses analytics.
+          </div>
+        )}
+
+        {/* No Data Available for Installed Guild */}
+        {!overview && !loading && selectedGuild && (botGuildIds === null || botGuildIds.includes(selectedGuild.id)) && (
+          <div className="rounded-2xl border border-neutral-800 bg-neutral-900/50 p-8 text-center text-sm text-neutral-400">
+            Aucune donnée d&apos;analytics disponible pour ce serveur pour le moment.
+          </div>
+        )}
 
         {/* Toast */}
         {toastMsg && (
@@ -377,7 +447,9 @@ export default function AnalyticsCenterClient() {
         )}
 
         {/* KPI Cards */}
-        <div className="grid grid-cols-2 sm:grid-cols-4 gap-3">
+        {overview && health && (
+          <>
+            <div className="grid grid-cols-2 sm:grid-cols-4 gap-3">
           {kpiCards.map(({ label, kpi, colorClass }) => {
             const delta = formatDelta(kpi);
             return (
@@ -808,6 +880,8 @@ export default function AnalyticsCenterClient() {
               </div>
             </div>
           </div>
+        )}
+          </>
         )}
       </div>
     </div>

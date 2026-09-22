@@ -2,6 +2,25 @@
 
 Toutes les modifications notables de ce projet seront documentées dans ce fichier.
 
+## v1.28.24 — 2026-09-22
+
+### Corrections critiques de sécurité & fiabilisation des actions
+- **Centre Anti-Raid (`/discord/security/anti-raid`)** :
+  - **Critique** : Correction majeure des fonctions d'urgence (`toggleRaidMode`, `toggleLockdown`, `quarantineRecentJoins`). Auparavant, en cas d'erreur de requête ou de bot hors-ligne, les blocs `catch` appliquaient manuellement l'état "actif" et affichaient un toast de succès (fausse impression de sécurité). Désormais, les erreurs API et réseau sont correctement interceptées, rejetées et signalées par des alertes claires via `formatApiError`.
+  - **Fiabilisation des invitations** : `handleForceUnblockInvites` et `handleToggleBlockInvites` intègrent désormais un rollback automatique de l'état en cas d'échec API ou réseau, sans plus avaler silencieusement les erreurs dans des `catch` vides.
+- **Gestionnaire de Sauvegardes (`/discord/backups`)** :
+  - **Prévention des boucles infinies** : `pollJob` dispose désormais d'un délai d'expiration maximal (timeout de 3 minutes) et d'un seuil de tolérance de 10 erreurs consécutives afin d'empêcher les requêtes de polling indéfinies si le serveur tombe pendant une restauration.
+  - **Formatage des erreurs (`formatApiError`)** : Uniformisation du traitement des erreurs sur la suppression, création de snapshot, calcul de prévisualisation, lancement de restauration et tests d'intégrité.
+- **Paramètres de Sauvegardes (`/discord/backups/settings`)** :
+  - `handleSave` utilise désormais `formatApiError` pour propager les retours d'erreurs du bot.
+  - `handleUnprotect` restaure l'état de protection en cas d'échec de la requête `PATCH`.
+- **Modération (`/discord/moderation`)** :
+  - Ajout du guard `!BOT_API_URL` dans `handleCreateSanction` et `handleRevertCase` pour éviter les requêtes non résolues vers la racine de l'application Next.js.
+- **Commandes Personnalisées (`/discord/commands`)** :
+  - `toggleCommand` et `deleteCommand` bénéficient désormais de rollbacks d'état automatiques si l'API échoue.
+
+---
+
 ## v1.28.23 — 2026-09-22
 
 ### Corrections critiques & rollbacks d'état

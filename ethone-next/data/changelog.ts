@@ -32079,10 +32079,63 @@ const v12843_de: ChangelogEntry = {
   ],
 };
 
-CHANGELOG_BY_LANG.fr.unshift(v12843_fr, v12842_fr, v12841_fr, v12840_fr, v12839_fr, v12838_fr, v12837_fr, v12836_fr, v12835_fr, v12834_fr, v12833_fr);
-CHANGELOG_BY_LANG.en.unshift(v12843_en, v12842_en, v12841_en, v12840_en, v12839_en, v12838_en, v12837_en, v12836_en, v12835_en, v12834_en, v12833_en);
-CHANGELOG_BY_LANG.es.unshift(v12843_es, v12842_es, v12841_es, v12840_es, v12839_es, v12838_es, v12837_es, v12836_es, v12835_es, v12834_es, v12833_es);
-CHANGELOG_BY_LANG.de.unshift(v12843_de, v12842_de, v12841_de, v12840_de, v12839_de, v12838_de, v12837_de, v12836_de, v12835_de, v12834_de, v12833_de);
+
+const v12844_fr: ChangelogEntry = {
+  version: "v1.28.24",
+  date: "2026-09-22",
+  title: "Sécurité & Fiabilisation : Anti-Raid, Sauvegardes, Modération et Commandes",
+  items: [
+    "Anti-Raid : correction majeure des actions d'urgence (Raid Mode, Lockdown, Quarantaine) — les erreurs réseau/API ne simulent plus un succès et sont correctement rapportées via formatApiError.",
+    "Anti-Raid : rollback automatique de l'état en cas d'échec sur le blocage et déblocage des invitations.",
+    "Sauvegardes : limitation du polling pollJob (timeout 3 min, 10 erreurs consécutives max) évitant les boucles infinies en cas de perte de connexion serveur.",
+    "Sauvegardes : formatApiError étendu à la suppression, création, prévisualisation, restauration et tests d'intégrité, et rollback de déprotection dans les paramètres.",
+    "Modération & Commandes : ajout du guard BOT_API_URL dans la création et révocation de sanctions, et ajout de rollbacks d'état dans l'activation et la suppression de commandes personnalisées.",
+  ],
+};
+
+const v12844_en: ChangelogEntry = {
+  version: "v1.28.24",
+  date: "2026-09-22",
+  title: "Security & Reliability: Anti-Raid, Backups, Moderation and Commands",
+  items: [
+    "Anti-Raid: major fix for emergency actions (Raid Mode, Lockdown, Quarantine) — network/API errors no longer simulate success and are properly reported via formatApiError.",
+    "Anti-Raid: automatic state rollback on failure when blocking/unblocking invites.",
+    "Backups: pollJob polling limit (3 min timeout, 10 consecutive errors max) preventing infinite loops if server connection drops.",
+    "Backups: formatApiError extended to deletion, creation, preview, restore and integrity tests, and unprotect rollback in settings.",
+    "Moderation & Commands: BOT_API_URL guard added to sanction creation and revocation, and state rollbacks added to custom command toggling and deletion.",
+  ],
+};
+
+const v12844_es: ChangelogEntry = {
+  version: "v1.28.24",
+  date: "2026-09-22",
+  title: "Seguridad y Fiabilidad: Anti-Raid, Copias de seguridad, Moderación y Comandos",
+  items: [
+    "Anti-Raid: corrección crítica de acciones de emergencia (Raid Mode, Lockdown, Cuarentena) — los errores de red/API ya no simulan éxito y se informan mediante formatApiError.",
+    "Anti-Raid: rollback automático del estado en caso de fallo al bloquear/desbloquear invitaciones.",
+    "Copias de seguridad: límite en pollJob (timeout de 3 min, 10 errores consecutivos máx.) evitando bucles infinitos en desconexión.",
+    "Copias de seguridad: formatApiError ampliado a eliminación, creación, vista previa, restauración y pruebas de integridad, y rollback de desprotección.",
+    "Moderación y Comandos: guard BOT_API_URL en creación/revocación de sanciones, y rollbacks de estado en comandos personalizados.",
+  ],
+};
+
+const v12844_de: ChangelogEntry = {
+  version: "v1.28.24",
+  date: "2026-09-22",
+  title: "Sicherheit & Zuverlässigkeit: Anti-Raid, Backups, Moderation und Befehle",
+  items: [
+    "Anti-Raid: Kritische Korrektur der Notfallaktionen (Raid Mode, Lockdown, Quarantäne) — Netzwerk-/API-Fehler täuschen keinen Erfolg mehr vor und werden via formatApiError gemeldet.",
+    "Anti-Raid: automatischer Status-Rollback bei Fehlern beim Blockieren/Freigeben von Einladungen.",
+    "Backups: Begrenzung von pollJob (3 Min. Timeout, max. 10 aufeinanderfolgende Fehler), um Endlosschleifen bei Verbindungsverlust zu verhindern.",
+    "Backups: formatApiError auf Löschen, Erstellen, Vorschau, Wiederherstellung und Integritätstests ausgeweitet, plus Schutzaufhebungs-Rollback.",
+    "Moderation & Befehle: BOT_API_URL-Guard beim Erstellen/Aufheben von Sanktionen sowie Status-Rollbacks beim Umschalten/Löschen von benutzerdefinierten Befehlen.",
+  ],
+};
+
+CHANGELOG_BY_LANG.fr.unshift(v12844_fr, v12843_fr, v12842_fr, v12841_fr, v12840_fr, v12839_fr, v12838_fr, v12837_fr, v12836_fr, v12835_fr, v12834_fr, v12833_fr);
+CHANGELOG_BY_LANG.en.unshift(v12844_en, v12843_en, v12842_en, v12841_en, v12840_en, v12839_en, v12838_en, v12837_en, v12836_en, v12835_en, v12834_en, v12833_en);
+CHANGELOG_BY_LANG.es.unshift(v12844_es, v12843_es, v12842_es, v12841_es, v12840_es, v12839_es, v12838_es, v12837_es, v12836_es, v12835_es, v12834_es, v12833_es);
+CHANGELOG_BY_LANG.de.unshift(v12844_de, v12843_de, v12842_de, v12841_de, v12840_de, v12839_de, v12838_de, v12837_de, v12836_de, v12835_de, v12834_de, v12833_de);
 
 export const CHANGELOG = CHANGELOG_BY_LANG.fr;
 

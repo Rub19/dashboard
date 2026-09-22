@@ -401,6 +401,10 @@ export default function ModerationCenterPage() {
   const handleCreateSanction = async (e: React.FormEvent) => {
     e.preventDefault();
     if (!selectedGuild || !sanctionTargetId.trim()) return;
+    if (!BOT_API_URL) {
+      showError("Bot injoignable", "L'API du bot n'est pas configurée.");
+      return;
+    }
 
     setIsSubmittingSanction(true);
     try {
@@ -438,6 +442,10 @@ export default function ModerationCenterPage() {
   // Révoquer une sanction
   const handleRevertCase = async () => {
     if (!selectedGuild || !revertingCase) return;
+    if (!BOT_API_URL) {
+      showError("Bot injoignable", "L'API du bot n'est pas configurée.");
+      return;
+    }
 
     setIsSubmittingRevert(true);
     try {

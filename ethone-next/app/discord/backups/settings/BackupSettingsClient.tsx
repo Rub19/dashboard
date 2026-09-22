@@ -6,7 +6,7 @@ import { useSearchParams } from "next/navigation";
 import { ArrowLeft, Settings, Clock, Archive, Shield, Lock, Unlock, Save, Zap, Hash, RefreshCw } from "lucide-react";
 import { useToast } from "@/components/ToastProvider";
 import { useDiscordOAuth } from "@/lib/hooks/useDiscordOAuth";
-import { cn } from "@/lib/utils";
+import { cn, formatApiError } from "@/lib/utils";
 import { useResolvedGuildId } from "@/lib/hooks/useBotGuildIds";
 import ChannelPicker from "@/components/discord/ChannelPicker";
 
@@ -124,7 +124,7 @@ export default function BackupSettingsClient() {
       setDirty(false);
       success("Planification & rétention enregistrées.");
     } catch (e: any) {
-      toastError(e?.message || "Échec de l'enregistrement.");
+      toastError(formatApiError(e, "Échec de l'enregistrement."));
     } finally {
       setSaving(false);
     }
@@ -132,6 +132,7 @@ export default function BackupSettingsClient() {
 
   const handleUnprotect = async (b: ProtectedBackup) => {
     if (!confirm(`Retirer la protection de « ${b.name} » ? Elle pourra être purgée par la rétention.`)) return;
+    const previous = protectedBackups;
     setProtectedBackups((prev) => prev.filter((x) => x.backupId !== b.backupId));
     if (isDemo) return;
     try {
@@ -139,8 +140,8 @@ export default function BackupSettingsClient() {
       if (!res.ok) throw new Error();
       success("Protection retirée.");
     } catch {
-      toastError("Échec — rechargez la page.");
-      load();
+      setProtectedBackups(previous);
+      toastError("Échec — la protection a été restaurée.");
     }
   };
 

@@ -27,7 +27,7 @@ import { useToast } from "@/components/ToastProvider";
 import { useDiscordOAuth, type DiscordGuild, canManageGuild, getStoredDiscordGuilds } from "@/lib/hooks/useDiscordOAuth";
 import { useBotGuildIds, pickBotGuild } from "@/lib/hooks/useBotGuildIds";
 import { GuildSelector } from "@/components/GuildSelector";
-import { cn } from "@/lib/utils";
+import { cn, formatApiError } from "@/lib/utils";
 
 const BOT_CLIENT_ID = "1545139931154878464";
 const BOT_INVITE_URL = `https://discord.com/oauth2/authorize?client_id=${BOT_CLIENT_ID}&permissions=8&scope=bot%20applications.commands`;
@@ -279,7 +279,7 @@ export default function BackupsCenterClient() {
       success("Sauvegarde supprimée.");
       load();
     } catch (e: any) {
-      toastError(e?.message || "Échec de la suppression.");
+      toastError(formatApiError(e, "Échec de la suppression."));
     }
   };
 
@@ -314,7 +314,7 @@ export default function BackupsCenterClient() {
       success(`Snapshot « ${data.name} » créé (${(data.sizeBytes / 1024).toFixed(0)} Ko).`);
       load();
     } catch (e: any) {
-      toastError(e?.message || "Échec de la création de la sauvegarde.");
+      toastError(formatApiError(e, "Échec de la création de la sauvegarde."));
     } finally {
       setIsCreating(false);
     }
@@ -336,7 +336,7 @@ export default function BackupsCenterClient() {
       setRestorePlan(data);
     } catch (e: any) {
       setRestorePlan(null);
-      toastError(e?.message || "Impossible de prévisualiser la restauration.");
+      toastError(formatApiError(e, "Impossible de prévisualiser la restauration."));
     } finally {
       setPlanLoading(false);
     }
@@ -359,11 +359,31 @@ export default function BackupsCenterClient() {
 
   const pollJob = (jobId: string) => {
     if (pollRef.current) clearInterval(pollRef.current);
+    let consecutiveErrors = 0;
+    const MAX_ERRORS = 10;
+    let ticks = 0;
+    const MAX_TICKS = 120; // 3 minutes max (120 * 1.5s)
     pollRef.current = setInterval(async () => {
+      ticks++;
+      if (ticks > MAX_TICKS) {
+        if (pollRef.current) clearInterval(pollRef.current);
+        pollRef.current = null;
+        toastError("Délai de restauration dépassé (délai d'attente maximum atteint).");
+        return;
+      }
       try {
         const res = await fetch(`${base}/jobs/${jobId}`, { credentials: "include" });
         const job = await res.json().catch(() => null);
-        if (!res.ok || !job?.jobId) return;
+        if (!res.ok || !job?.jobId) {
+          consecutiveErrors++;
+          if (consecutiveErrors >= MAX_ERRORS) {
+            if (pollRef.current) clearInterval(pollRef.current);
+            pollRef.current = null;
+            toastError("Impossible de suivre l'état du travail de restauration.");
+          }
+          return;
+        }
+        consecutiveErrors = 0;
         setRestoreJob(job);
         if (["COMPLETED", "PARTIAL", "FAILED", "ROLLED_BACK"].includes(job.status)) {
           if (pollRef.current) clearInterval(pollRef.current);
@@ -372,7 +392,14 @@ export default function BackupsCenterClient() {
           else toastError(`Restauration : ${job.status} — ${job.errors?.[0] || "voir les logs"}`);
           load();
         }
-      } catch { /* retry next tick */ }
+      } catch {
+        consecutiveErrors++;
+        if (consecutiveErrors >= MAX_ERRORS) {
+          if (pollRef.current) clearInterval(pollRef.current);
+          pollRef.current = null;
+          toastError("Connexion perdue avec le serveur lors du suivi de la restauration.");
+        }
+      }
     }, 1500);
   };
 
@@ -397,7 +424,7 @@ export default function BackupsCenterClient() {
       setRestoreJob(job);
       pollJob(job.jobId);
     } catch (e: any) {
-      toastError(e?.message || "Échec du lancement de la restauration.");
+      toastError(formatApiError(e, "Échec du lancement de la restauration."));
     }
   };
 
@@ -416,7 +443,7 @@ export default function BackupsCenterClient() {
       if (!res.ok || typeof data?.valid !== "boolean") throw new Error(data?.error);
       setTestResult(data);
     } catch (e: any) {
-      toastError(e?.message || "Échec du test d'intégrité.");
+      toastError(formatApiError(e, "Échec du test d'intégrité."));
       setShowTestModal(false);
     } finally {
       setTestLoading(false);

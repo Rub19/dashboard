@@ -286,6 +286,7 @@ export default function CommandsCenterClient() {
   };
 
   const toggleCommand = async (cmd: CustomCommand) => {
+    const previous = commands;
     setCommands((prev) => prev.map((c) => (c.id === cmd.id ? { ...c, enabled: !c.enabled } : c)));
     if (isDemo) return;
     try {
@@ -294,12 +295,14 @@ export default function CommandsCenterClient() {
       if (!res.ok || !data?.command) throw new Error(data?.error);
       setCommands((prev) => prev.map((c) => (c.id === cmd.id ? data.command : c)));
     } catch (err: any) {
-      toastError(formatApiError(err, "Échec du changement d'état — rechargez la page."));
+      setCommands(previous);
+      toastError(formatApiError(err, "Échec du changement d'état — l'état initial a été restauré."));
     }
   };
 
   const deleteCommand = async (cmd: CustomCommand) => {
     if (!confirm(`Supprimer la commande /${cmd.name} ?`)) return;
+    const previous = commands;
     setCommands((prev) => prev.filter((c) => c.id !== cmd.id));
     if (isDemo) return;
     try {
@@ -308,7 +311,8 @@ export default function CommandsCenterClient() {
       if (!res.ok) throw new Error(data?.error);
       success(`Commande /${cmd.name} supprimée.`);
     } catch (err: any) {
-      toastError(formatApiError(err, "Échec de la suppression — rechargez la page."));
+      setCommands(previous);
+      toastError(formatApiError(err, "Échec de la suppression — la commande a été restaurée."));
     }
   };
 

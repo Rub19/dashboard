@@ -29,7 +29,7 @@ import { useToast } from "@/components/ToastProvider";
 import { useDiscordOAuth, type DiscordGuild, canManageGuild, getStoredDiscordGuilds } from "@/lib/hooks/useDiscordOAuth";
 import { useBotGuildIds, pickBotGuild } from "@/lib/hooks/useBotGuildIds";
 import { useDiscordSync } from "@/lib/useDiscordSync";
-import { cn } from "@/lib/utils";
+import { cn, formatApiError } from "@/lib/utils";
 import { GuildSelector } from "@/components/GuildSelector";
 
 const BOT_CLIENT_ID = "1545139931154878464";
@@ -551,27 +551,20 @@ export default function AntiRaidDashboardPage() {
             headers: { "Content-Type": "application/json" },
             body: JSON.stringify({ active: targetState, reason: "Action manuelle depuis le Dashboard ETHONE" }),
           });
-          if (res.ok) {
-            const data = await res.json();
-            setMetrics((prev) => ({
-              ...prev,
-              raidModeActive: data.raidModeActive,
-              threatLevel: targetState ? "CRITICAL" : "SAFE",
-              currentRiskScore: targetState ? Math.max(85, prev.currentRiskScore) : 15,
-            }));
-            success(
-              targetState ? "🚨 Raid Mode Activé" : "🔓 Raid Mode Désactivé",
-              targetState ? "Le serveur est protégé en mode d'urgence." : "Retour au niveau normal."
-            );
-          }
-        } catch {
+          const data = await res.json().catch(() => null);
+          if (!res.ok) throw new Error(data?.error || `HTTP ${res.status}`);
           setMetrics((prev) => ({
             ...prev,
-            raidModeActive: targetState,
+            raidModeActive: data.raidModeActive,
             threatLevel: targetState ? "CRITICAL" : "SAFE",
-            currentRiskScore: targetState ? 90 : 15,
+            currentRiskScore: targetState ? Math.max(85, prev.currentRiskScore) : 15,
           }));
-          success(targetState ? "🚨 Raid Mode Activé" : "🔓 Raid Mode Désactivé");
+          success(
+            targetState ? "🚨 Raid Mode Activé" : "🔓 Raid Mode Désactivé",
+            targetState ? "Le serveur est protégé en mode d'urgence." : "Retour au niveau normal."
+          );
+        } catch (err: unknown) {
+          showError("Échec de l'action", formatApiError(err, "Impossible de modifier le Raid Mode. Vérifiez que le bot est en ligne."));
         } finally {
           setIsActionLoading(false);
           setConfirmModal((prev) => ({ ...prev, open: false }));
@@ -599,22 +592,16 @@ export default function AntiRaidDashboardPage() {
             headers: { "Content-Type": "application/json" },
             body: JSON.stringify({ active: targetState, reason: "Lockdown manuel déclenché depuis ETHONE" }),
           });
-          if (res.ok) {
-            const data = await res.json();
-            setMetrics((prev) => ({
-              ...prev,
-              lockdownActive: data.lockdownActive,
-              lockedChannelsCount: data.affectedChannelsCount || (targetState ? 12 : 0),
-            }));
-            success(targetState ? "🔒 Lockdown Activé" : "🔓 Lockdown Levé");
-          }
-        } catch {
+          const data = await res.json().catch(() => null);
+          if (!res.ok) throw new Error(data?.error || `HTTP ${res.status}`);
           setMetrics((prev) => ({
             ...prev,
-            lockdownActive: targetState,
-            lockedChannelsCount: targetState ? 8 : 0,
+            lockdownActive: data.lockdownActive,
+            lockedChannelsCount: data.affectedChannelsCount || (targetState ? 12 : 0),
           }));
           success(targetState ? "🔒 Lockdown Activé" : "🔓 Lockdown Levé");
+        } catch (err: unknown) {
+          showError("Échec du Lockdown", formatApiError(err, "Impossible de modifier le statut de verrouillage. Vérifiez que le bot est en ligne."));
         } finally {
           setIsActionLoading(false);
           setConfirmModal((prev) => ({ ...prev, open: false }));
@@ -633,12 +620,11 @@ export default function AntiRaidDashboardPage() {
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({ seconds: 60 }),
       });
-      if (res.ok) {
-        const data = await res.json();
-        success("Mise en quarantaine effectuée", `${data.quarantinedCount} membres suspects ont été isolés.`);
-      }
-    } catch {
-      success("Quarantaine appliquée", "Tous les arrivants récents ont été placés sous isolement.");
+      const data = await res.json().catch(() => null);
+      if (!res.ok) throw new Error(data?.error || `HTTP ${res.status}`);
+      success("Mise en quarantaine effectuée", `${data.quarantinedCount} membres suspects ont été isolés.`);
+    } catch (err: unknown) {
+      showError("Échec de la quarantaine", formatApiError(err, "Impossible d'isoler les membres récents."));
     } finally {
       setIsActionLoading(false);
     }
@@ -647,6 +633,7 @@ export default function AntiRaidDashboardPage() {
   // Forcer le déblocage de toutes les invitations (OFF)
   const handleForceUnblockInvites = async () => {
     if (!selectedGuild) return;
+    const previous = settings.raidMode.blockAllInvites;
     setIsActionLoading(true);
     try {
       // 1. Mise à jour immédiate de l'état
@@ -657,25 +644,27 @@ export default function AntiRaidDashboardPage() {
 
       // 2. Appel API vers le bot
       if (BOT_API_URL) {
-        try {
-          const res = await fetch(`${BOT_API_URL}/api/guilds/${selectedGuild.id}/anti-raid/unblock-invites`, {
+        const res = await fetch(`${BOT_API_URL}/api/guilds/${selectedGuild.id}/anti-raid/unblock-invites`, {
+          credentials: "include",
+          method: "POST",
+        });
+        if (!res.ok) {
+          const cfgRes = await fetch(`${BOT_API_URL}/api/guilds/${selectedGuild.id}/anti-raid/config`, {
             credentials: "include",
-            method: "POST",
+            method: "PUT",
+            headers: { "Content-Type": "application/json" },
+            body: JSON.stringify({
+              raidMode: {
+                ...settings.raidMode,
+                blockAllInvites: false,
+              },
+            }),
           });
-          if (!res.ok) {
-            await fetch(`${BOT_API_URL}/api/guilds/${selectedGuild.id}/anti-raid/config`, {
-              credentials: "include",
-              method: "PUT",
-              headers: { "Content-Type": "application/json" },
-              body: JSON.stringify({
-                raidMode: {
-                  ...settings.raidMode,
-                  blockAllInvites: false,
-                },
-              }),
-            });
+          if (!cfgRes.ok) {
+            const errData = await cfgRes.json().catch(() => null);
+            throw new Error(errData?.error || `HTTP ${cfgRes.status}`);
           }
-        } catch {}
+        }
       }
 
       // 3. Persistance localStorage
@@ -690,8 +679,12 @@ export default function AntiRaidDashboardPage() {
         "Invitations débloquées",
         "Le blocage des invitations a été désactivé (OFF). Les liens d'invitation sont de nouveau actifs."
       );
-    } catch {
-      showError("Erreur lors du déblocage des invitations.");
+    } catch (err: unknown) {
+      setSettings((prev) => ({
+        ...prev,
+        raidMode: { ...prev.raidMode, blockAllInvites: previous },
+      }));
+      showError("Erreur lors du déblocage des invitations", formatApiError(err, "Impossible de débloquer les invitations sur le bot."));
     } finally {
       setIsActionLoading(false);
     }
@@ -699,15 +692,16 @@ export default function AntiRaidDashboardPage() {
 
   const handleToggleBlockInvites = async () => {
     if (!selectedGuild) return;
-    const next = !settings.raidMode.blockAllInvites;
+    const previous = settings.raidMode.blockAllInvites;
+    const next = !previous;
     setSettings((prev) => ({
       ...prev,
       raidMode: { ...prev.raidMode, blockAllInvites: next },
     }));
 
-    if (BOT_API_URL) {
-      try {
-        await fetch(`${BOT_API_URL}/api/guilds/${selectedGuild.id}/anti-raid/config`, {
+    try {
+      if (BOT_API_URL) {
+        const res = await fetch(`${BOT_API_URL}/api/guilds/${selectedGuild.id}/anti-raid/config`, {
           credentials: "include",
           method: "PUT",
           headers: { "Content-Type": "application/json" },
@@ -718,23 +712,33 @@ export default function AntiRaidDashboardPage() {
             },
           }),
         });
+        if (!res.ok) {
+          const errData = await res.json().catch(() => null);
+          throw new Error(errData?.error || `HTTP ${res.status}`);
+        }
+      }
+
+      try {
+        const saved = localStorage.getItem(`ethone:anti-raid:${selectedGuild.id}`);
+        const parsed = saved ? JSON.parse(saved) : settings;
+        parsed.raidMode = { ...parsed.raidMode, blockAllInvites: next };
+        localStorage.setItem(`ethone:anti-raid:${selectedGuild.id}`, JSON.stringify(parsed));
       } catch {}
+
+      toggle(
+        "Blocage des invitations",
+        next,
+        next
+          ? "Activé — Toutes les invitations vers le serveur sont temporairement bloquées."
+          : "Désactivé — Les invitations vers le serveur sont de nouveau actives."
+      );
+    } catch (err: unknown) {
+      setSettings((prev) => ({
+        ...prev,
+        raidMode: { ...prev.raidMode, blockAllInvites: previous },
+      }));
+      showError("Erreur lors de la modification des invitations", formatApiError(err, "Impossible de mettre à jour le blocage des invitations sur le bot."));
     }
-
-    try {
-      const saved = localStorage.getItem(`ethone:anti-raid:${selectedGuild.id}`);
-      const parsed = saved ? JSON.parse(saved) : settings;
-      parsed.raidMode = { ...parsed.raidMode, blockAllInvites: next };
-      localStorage.setItem(`ethone:anti-raid:${selectedGuild.id}`, JSON.stringify(parsed));
-    } catch {}
-
-    toggle(
-      "Blocage des invitations",
-      next,
-      next
-        ? "Activé — Toutes les invitations vers le serveur sont temporairement bloquées."
-        : "Désactivé — Les invitations vers le serveur sont de nouveau actives."
-    );
   };
 
   const threat = THREAT_COLORS[metrics.threatLevel] || THREAT_COLORS.SAFE;

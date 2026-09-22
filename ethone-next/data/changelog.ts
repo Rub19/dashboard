@@ -31731,10 +31731,54 @@ const v12834_de: ChangelogEntry = {
   ],
 };
 
-CHANGELOG_BY_LANG.fr.unshift(v12834_fr, v12833_fr);
-CHANGELOG_BY_LANG.en.unshift(v12834_en, v12833_en);
-CHANGELOG_BY_LANG.es.unshift(v12834_es, v12833_es);
-CHANGELOG_BY_LANG.de.unshift(v12834_de, v12833_de);
+const v12835_fr: ChangelogEntry = {
+  version: "v1.28.15",
+  date: "2026-09-22",
+  title: "Harmonisation Universelle GuildSelector, Pickers Rôles/Salons & Bannières Bot",
+  items: [
+    "Sélecteur de serveur universel (GuildSelector) : intégré sur toutes les pages Discord restantes (Leveling, Invitations, Formulaires, Vocal, Logs d'audit, Commandes, Économie, Suggestions) avec auto-sélection intelligente des serveurs où le bot est présent.",
+    "Détection bot & bannières d'invitation : affichage systématique de la bannière « Bot non installé sur ce serveur » avec lien d'invitation direct et suspension des requêtes vers l'API du bot lorsque le bot est absent.",
+    "Remplacement des champs texte bruts par des sélecteurs visuels : intégration de RolePicker dans la création de récompenses d'invitation (/discord/invites) et la boutique de rôles (/discord/economy), et de ChannelPicker pour le salon des suggestions (/discord/suggestions).",
+  ],
+};
+
+const v12835_en: ChangelogEntry = {
+  version: "v1.28.15",
+  date: "2026-09-22",
+  title: "Universal GuildSelector Harmonization, Role/Channel Pickers & Bot Invite Banners",
+  items: [
+    "Universal GuildSelector: integrated across all remaining Discord modules (Leveling, Invites, Forms, Voice, Audit Logs, Commands, Economy, Suggestions) with smart auto-selection of servers where the bot is installed.",
+    "Bot presence detection & invite banners: systematic 'Bot not installed on this server' banner with direct invite link and API fetch guarding when bot is absent.",
+    "Visual Pickers replacing raw inputs: integrated RolePicker in invite rewards modal (/discord/invites) and role shop item creation (/discord/economy), and ChannelPicker in suggestion channel settings (/discord/suggestions).",
+  ],
+};
+
+const v12835_es: ChangelogEntry = {
+  version: "v1.28.15",
+  date: "2026-09-22",
+  title: "Armonización Universal de GuildSelector, Selectores de Roles/Canales y Banners del Bot",
+  items: [
+    "GuildSelector universal: integrado en todos los módulos restantes de Discord (Niveles, Invitaciones, Formularios, Voz, Logs de auditoría, Comandos, Economía, Sugerencias) con selección inteligente de servidores con bot.",
+    "Detección del bot y banners de invitación: banner sistemático 'Bot no instalado en este servidor' con enlace directo y protección de peticiones API cuando el bot está ausente.",
+    "Reemplazo de campos de texto por selectores visuales: RolePicker integrado en recompensas de invitación (/discord/invites) y tienda de roles (/discord/economy), y ChannelPicker para el canal de sugerencias (/discord/suggestions).",
+  ],
+};
+
+const v12835_de: ChangelogEntry = {
+  version: "v1.28.15",
+  date: "2026-09-22",
+  title: "Universelle GuildSelector-Harmonisierung, Rollen-/Kanal-Picker & Bot-Einladungsbanner",
+  items: [
+    "Universeller GuildSelector: in allen verbleibenden Discord-Modulen (Leveling, Einladungen, Formulare, Voice, Audit-Logs, Befehle, Wirtschaft, Vorschläge) mit intelligenter Serverauswahl integriert.",
+    "Bot-Präsenzerkennung & Einladungsbanner: systematisches Banner 'Bot nicht auf diesem Server installiert' mit direktem Link und API-Abfrageschutz bei fehlendem Bot.",
+    "Visuelle Picker statt Texteingaben: RolePicker bei Einladungsbelohnungen (/discord/invites) und im Rollen-Shop (/discord/economy) sowie ChannelPicker in den Vorschlagskanal-Einstellungen (/discord/suggestions) integriert.",
+  ],
+};
+
+CHANGELOG_BY_LANG.fr.unshift(v12835_fr, v12834_fr, v12833_fr);
+CHANGELOG_BY_LANG.en.unshift(v12835_en, v12834_en, v12833_en);
+CHANGELOG_BY_LANG.es.unshift(v12835_es, v12834_es, v12833_es);
+CHANGELOG_BY_LANG.de.unshift(v12835_de, v12834_de, v12833_de);
 
 export const CHANGELOG = CHANGELOG_BY_LANG.fr;
 

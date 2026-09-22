@@ -1,8 +1,9 @@
 "use client";
 
-import { useDiscordOAuth } from "@/lib/hooks/useDiscordOAuth";
-import { useResolvedGuildId } from "@/lib/hooks/useBotGuildIds";
-import { useState, useEffect, useCallback } from "react";
+import { useDiscordOAuth, type DiscordGuild, canManageGuild, getStoredDiscordGuilds } from "@/lib/hooks/useDiscordOAuth";
+import { useBotGuildIds, pickBotGuild } from "@/lib/hooks/useBotGuildIds";
+import { GuildSelector } from "@/components/GuildSelector";
+import { useState, useEffect, useCallback, useMemo, useRef } from "react";
 import Link from "next/link";
 import { useSearchParams } from "next/navigation";
 import {
@@ -26,6 +27,7 @@ import {
   Send,
   UserX,
   ArrowLeft,
+  Bot,
 } from "lucide-react";
 import { useToast } from "@/components/ToastProvider";
 import ChannelPicker from "@/components/discord/ChannelPicker";
@@ -102,13 +104,54 @@ interface VoiceOverviewData {
 }
 
 const BOT_API_URL = process.env.NEXT_PUBLIC_DISCORD_BOT_API || "";
+const BOT_CLIENT_ID = "1545139931154878464";
+const BOT_INVITE_URL = `https://discord.com/oauth2/authorize?client_id=${BOT_CLIENT_ID}&permissions=8&scope=bot%20applications.commands`;
 
 export default function VoiceCenterClient() {
   const searchParams = useSearchParams();
   const { profile } = useDiscordOAuth();
-  const guildId = useResolvedGuildId(searchParams.get("guildId"), profile?.guilds);
-  const [loadError, setLoadError] = useState(false);
   const { success, error: showError } = useToast();
+
+  const allGuilds: DiscordGuild[] = useMemo(() => {
+    if (profile?.guilds && profile.guilds.length > 0) return profile.guilds;
+    return getStoredDiscordGuilds();
+  }, [profile?.guilds]);
+
+  const botGuildIds = useBotGuildIds(allGuilds);
+
+  const manageableGuilds: DiscordGuild[] = useMemo(() => {
+    if (allGuilds.length === 0) return [];
+    const manageable = allGuilds.filter((g) => canManageGuild(g) || (botGuildIds && botGuildIds.includes(g.id)));
+    return manageable.length > 0 ? manageable : allGuilds;
+  }, [allGuilds, botGuildIds]);
+
+  const appliedQueryGuild = useRef<string | null>(null);
+  const userSelectedRef = useRef(false);
+  const [selectedGuild, setSelectedGuild] = useState<DiscordGuild | null>(null);
+
+  useEffect(() => {
+    if (manageableGuilds.length === 0) return;
+    const rawGuildId = searchParams.get("guildId");
+    if (rawGuildId && appliedQueryGuild.current !== rawGuildId) {
+      const match = manageableGuilds.find((g) => g.id === rawGuildId);
+      if (match) {
+        appliedQueryGuild.current = rawGuildId;
+        userSelectedRef.current = true;
+        setSelectedGuild(match);
+        return;
+      }
+    }
+    if (!userSelectedRef.current && botGuildIds !== null) {
+      const picked = pickBotGuild(manageableGuilds, botGuildIds);
+      if (picked) setSelectedGuild(picked);
+    } else if (!selectedGuild) {
+      setSelectedGuild(manageableGuilds[0]);
+    }
+  }, [manageableGuilds, searchParams, selectedGuild, botGuildIds]);
+
+  const guildId = selectedGuild?.id || searchParams.get("guildId") || "";
+  const isBotPresent = Boolean(guildId && botGuildIds && botGuildIds.includes(guildId));
+  const [loadError, setLoadError] = useState(false);
 
   const [activeTab, setActiveTab] = useState<"overview" | "hubs" | "rooms" | "analytics">("overview");
   const [data, setData] = useState<VoiceOverviewData | null>(null);
@@ -130,7 +173,24 @@ export default function VoiceCenterClient() {
 
   // Fetch Voice Overview
   const fetchOverview = useCallback(async () => {
-    if (!guildId) return;
+    if (!guildId || !isBotPresent) {
+      setData({
+        kpis: {
+          activeVoiceChannelsCount: 0,
+          usersInVoiceCount: 0,
+          temporaryChannelsCount: 0,
+          sessionsTodayCount: 0,
+          peakConcurrentUsers: 0,
+          totalVoiceTimeMinutes: 0,
+          averageSessionMinutes: 0,
+        },
+        hubs: [],
+        activeRooms: [],
+      });
+      setSessions([]);
+      setLoadError(false);
+      return;
+    }
     try {
       if (!BOT_API_URL) throw new Error("bot");
       const [ovRes, sessRes] = await Promise.all([
@@ -162,7 +222,7 @@ export default function VoiceCenterClient() {
       setSessions([]);
       setLoadError(true);
     }
-  }, [guildId]);
+  }, [guildId, isBotPresent]);
 
   useEffect(() => {
     fetchOverview().finally(() => setLoading(false));
@@ -264,7 +324,17 @@ export default function VoiceCenterClient() {
           </p>
         </div>
 
-        <div className="flex items-center gap-3">
+        <div className="flex items-center gap-3 flex-wrap">
+          {manageableGuilds.length > 0 && selectedGuild && (
+            <GuildSelector
+              guilds={manageableGuilds}
+              value={selectedGuild.id}
+              onChange={(g: DiscordGuild) => {
+                userSelectedRef.current = true;
+                setSelectedGuild(g);
+              }}
+            />
+          )}
           <button
             onClick={() => {
               setRefreshing(true);
@@ -286,6 +356,31 @@ export default function VoiceCenterClient() {
           </Link>
         </div>
       </div>
+
+      {/* Bot non installé banner */}
+      {selectedGuild && !isBotPresent && (
+        <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-3 p-4 rounded-2xl bg-amber-500/10 border border-amber-500/20 text-amber-200">
+          <div className="flex items-center gap-3">
+            <div className="p-2 rounded-xl bg-amber-500/20 text-amber-400">
+              <Bot className="w-5 h-5" />
+            </div>
+            <div>
+              <p className="text-sm font-semibold text-white">Bot non installé sur ce serveur</p>
+              <p className="text-xs text-amber-300/80">
+                Invitez le bot ETHONE sur <strong>{selectedGuild.name}</strong> pour activer les salons vocaux personnalisés.
+              </p>
+            </div>
+          </div>
+          <a
+            href={BOT_INVITE_URL}
+            target="_blank"
+            rel="noopener noreferrer"
+            className="inline-flex items-center gap-2 px-4 py-2 rounded-xl bg-amber-500 hover:bg-amber-400 text-black font-semibold text-xs shadow-sm transition-colors cursor-pointer shrink-0"
+          >
+            Inviter le bot
+          </a>
+        </div>
+      )}
 
       {/* KPI Cards */}
       <div className="grid grid-cols-2 sm:grid-cols-2 lg:grid-cols-4 gap-4">

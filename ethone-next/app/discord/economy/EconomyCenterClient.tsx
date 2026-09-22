@@ -1,6 +1,6 @@
 "use client";
 
-import { useState, useMemo, useEffect, useCallback } from "react";
+import { useState, useMemo, useEffect, useCallback, useRef } from "react";
 import Link from "next/link";
 import { useSearchParams } from "next/navigation";
 import {
@@ -16,13 +16,18 @@ import {
   History,
   Wallet as WalletIcon,
   ArrowLeft,
+  Bot,
 } from "lucide-react";
 import { useToast } from "@/components/ToastProvider";
-import { useDiscordOAuth } from "@/lib/hooks/useDiscordOAuth";
+import { useDiscordOAuth, type DiscordGuild, canManageGuild, getStoredDiscordGuilds } from "@/lib/hooks/useDiscordOAuth";
+import { useBotGuildIds, pickBotGuild } from "@/lib/hooks/useBotGuildIds";
+import { GuildSelector } from "@/components/GuildSelector";
+import RolePicker from "@/components/discord/RolePicker";
 import { cn } from "@/lib/utils";
-import { useResolvedGuildId } from "@/lib/hooks/useBotGuildIds";
 
 const BOT_API_URL = process.env.NEXT_PUBLIC_DISCORD_BOT_API || "";
+const BOT_CLIENT_ID = "1545139931154878464";
+const BOT_INVITE_URL = `https://discord.com/oauth2/authorize?client_id=${BOT_CLIENT_ID}&permissions=8&scope=bot%20applications.commands`;
 
 interface Wallet {
   userId: string;
@@ -179,12 +184,45 @@ export default function EconomyCenterClient() {
   const { profile } = useDiscordOAuth();
   const { success, error: toastError } = useToast();
 
-  const currentGuildId = useResolvedGuildId(rawGuildId, profile?.guilds);
+  const allGuilds: DiscordGuild[] = useMemo(() => {
+    if (profile?.guilds && profile.guilds.length > 0) return profile.guilds;
+    return getStoredDiscordGuilds();
+  }, [profile?.guilds]);
 
-  const activeGuild = useMemo(() => {
-    if (!profile?.guilds || profile.guilds.length === 0) return null;
-    return profile.guilds.find((g) => g.id === currentGuildId) || profile.guilds[0];
-  }, [currentGuildId, profile?.guilds]);
+  const botGuildIds = useBotGuildIds(allGuilds);
+
+  const manageableGuilds: DiscordGuild[] = useMemo(() => {
+    if (allGuilds.length === 0) return [];
+    const manageable = allGuilds.filter((g) => canManageGuild(g) || (botGuildIds && botGuildIds.includes(g.id)));
+    return manageable.length > 0 ? manageable : allGuilds;
+  }, [allGuilds, botGuildIds]);
+
+  const appliedQueryGuild = useRef<string | null>(null);
+  const userSelectedRef = useRef(false);
+  const [selectedGuild, setSelectedGuild] = useState<DiscordGuild | null>(null);
+
+  useEffect(() => {
+    if (manageableGuilds.length === 0) return;
+    if (rawGuildId && appliedQueryGuild.current !== rawGuildId) {
+      const match = manageableGuilds.find((g) => g.id === rawGuildId);
+      if (match) {
+        appliedQueryGuild.current = rawGuildId;
+        userSelectedRef.current = true;
+        setSelectedGuild(match);
+        return;
+      }
+    }
+    if (!userSelectedRef.current && botGuildIds !== null) {
+      const picked = pickBotGuild(manageableGuilds, botGuildIds);
+      if (picked) setSelectedGuild(picked);
+    } else if (!selectedGuild) {
+      setSelectedGuild(manageableGuilds[0]);
+    }
+  }, [manageableGuilds, rawGuildId, selectedGuild, botGuildIds]);
+
+  const currentGuildId = selectedGuild?.id || rawGuildId || "";
+  const isBotPresent = Boolean(currentGuildId && botGuildIds && botGuildIds.includes(currentGuildId));
+  const activeGuild = selectedGuild;
 
   const base = `${BOT_API_URL}/api/guilds/${currentGuildId}/economy`;
 
@@ -203,7 +241,7 @@ export default function EconomyCenterClient() {
   const [purchasingItemId, setPurchasingItemId] = useState<string | null>(null);
 
   const load = useCallback(async () => {
-    if (!BOT_API_URL || !currentGuildId) {
+    if (!BOT_API_URL || !currentGuildId || !isBotPresent) {
       setIsDemo(true);
       return;
     }
@@ -400,16 +438,53 @@ export default function EconomyCenterClient() {
               {isDemo && <span className="text-amber-400"> (bot injoignable ou absent de ce serveur)</span>}
             </p>
           </div>
-          <button
-            type="button"
-            onClick={load}
-            disabled={loading}
-            className="flex items-center gap-1.5 self-start rounded-lg border border-[var(--panel-border)] bg-white/[0.03] px-3 py-1.5 text-xs font-semibold text-slate-300 hover:bg-white/[0.06] disabled:opacity-50"
-          >
-            <RefreshCw className={cn("h-3.5 w-3.5", loading && "animate-spin")} />
-            Actualiser
-          </button>
+          <div className="flex items-center gap-2.5 flex-wrap">
+            {manageableGuilds.length > 0 && selectedGuild && (
+              <GuildSelector
+                guilds={manageableGuilds}
+                value={selectedGuild.id}
+                onChange={(g: DiscordGuild) => {
+                  userSelectedRef.current = true;
+                  setSelectedGuild(g);
+                }}
+              />
+            )}
+            <button
+              type="button"
+              onClick={load}
+              disabled={loading}
+              className="flex items-center gap-1.5 self-start rounded-lg border border-[var(--panel-border)] bg-white/[0.03] px-3 py-1.5 text-xs font-semibold text-slate-300 hover:bg-white/[0.06] disabled:opacity-50"
+            >
+              <RefreshCw className={cn("h-3.5 w-3.5", loading && "animate-spin")} />
+              Actualiser
+            </button>
+          </div>
         </div>
+
+        {/* Bot non installé banner */}
+        {selectedGuild && !isBotPresent && (
+          <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-3 p-4 rounded-2xl bg-amber-500/10 border border-amber-500/20 text-amber-200">
+            <div className="flex items-center gap-3">
+              <div className="p-2 rounded-xl bg-amber-500/20 text-amber-400">
+                <Bot className="w-5 h-5" />
+              </div>
+              <div>
+                <p className="text-sm font-semibold text-white">Bot non installé sur ce serveur</p>
+                <p className="text-xs text-amber-300/80">
+                  Invitez le bot ETHONE sur <strong>{selectedGuild.name}</strong> pour activer le système d'économie et la boutique de rôles.
+                </p>
+              </div>
+            </div>
+            <a
+              href={BOT_INVITE_URL}
+              target="_blank"
+              rel="noopener noreferrer"
+              className="inline-flex items-center gap-2 px-4 py-2 rounded-xl bg-amber-500 hover:bg-amber-400 text-black font-semibold text-xs shadow-sm transition-colors cursor-pointer shrink-0"
+            >
+              Inviter le bot
+            </a>
+          </div>
+        )}
 
         {/* Activité (réelle) */}
         <div className="grid grid-cols-2 lg:grid-cols-4 gap-3">
@@ -584,12 +659,13 @@ export default function EconomyCenterClient() {
           </div>
 
           <div className="grid grid-cols-1 sm:grid-cols-4 gap-2 pt-3 border-t border-[var(--panel-border)]">
-            <input
-              type="text"
-              placeholder="ID du rôle Discord"
+            <RolePicker
+              guildId={currentGuildId}
               value={newItem.roleId}
-              onChange={(e) => setNewItem((p) => ({ ...p, roleId: e.target.value }))}
-              className="px-3 py-2 rounded-lg bg-black/40 border border-[var(--panel-border)] text-xs text-white"
+              onChange={(roleId) => setNewItem((p) => ({ ...p, roleId }))}
+              placeholder="Choisir un rôle ou ID..."
+              size="sm"
+              allowClear
             />
             <input
               type="text"

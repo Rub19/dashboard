@@ -1,6 +1,6 @@
 "use client";
 
-import { useState, useMemo, useEffect, useCallback } from "react";
+import { useState, useMemo, useEffect, useCallback, useRef } from "react";
 import Link from "next/link";
 import { useSearchParams } from "next/navigation";
 import {
@@ -19,13 +19,18 @@ import {
   Trash2,
   Plus,
   ArrowLeft,
+  Bot,
 } from "lucide-react";
 import { useToast } from "@/components/ToastProvider";
-import { useDiscordOAuth } from "@/lib/hooks/useDiscordOAuth";
+import { useDiscordOAuth, type DiscordGuild, canManageGuild, getStoredDiscordGuilds } from "@/lib/hooks/useDiscordOAuth";
+import { useBotGuildIds, pickBotGuild } from "@/lib/hooks/useBotGuildIds";
+import { GuildSelector } from "@/components/GuildSelector";
+import ChannelPicker from "@/components/discord/ChannelPicker";
 import { cn } from "@/lib/utils";
-import { useResolvedGuildId } from "@/lib/hooks/useBotGuildIds";
 
 const BOT_API_URL = process.env.NEXT_PUBLIC_DISCORD_BOT_API || "";
+const BOT_CLIENT_ID = "1545139931154878464";
+const BOT_INVITE_URL = `https://discord.com/oauth2/authorize?client_id=${BOT_CLIENT_ID}&permissions=8&scope=bot%20applications.commands`;
 
 // Mirrors discord-bot/src/modules/suggestions/types/suggestion.ts — this page
 // reads and writes the real backend shape, not a made-up one.
@@ -164,12 +169,45 @@ export default function SuggestionsCenterClient() {
   const { profile } = useDiscordOAuth();
   const { success, error: toastError } = useToast();
 
-  const currentGuildId = useResolvedGuildId(rawGuildId, profile?.guilds);
+  const allGuilds: DiscordGuild[] = useMemo(() => {
+    if (profile?.guilds && profile.guilds.length > 0) return profile.guilds;
+    return getStoredDiscordGuilds();
+  }, [profile?.guilds]);
 
-  const activeGuild = useMemo(() => {
-    if (!profile?.guilds || profile.guilds.length === 0) return null;
-    return profile.guilds.find((g) => g.id === currentGuildId) || profile.guilds[0];
-  }, [currentGuildId, profile?.guilds]);
+  const botGuildIds = useBotGuildIds(allGuilds);
+
+  const manageableGuilds: DiscordGuild[] = useMemo(() => {
+    if (allGuilds.length === 0) return [];
+    const manageable = allGuilds.filter((g) => canManageGuild(g) || (botGuildIds && botGuildIds.includes(g.id)));
+    return manageable.length > 0 ? manageable : allGuilds;
+  }, [allGuilds, botGuildIds]);
+
+  const appliedQueryGuild = useRef<string | null>(null);
+  const userSelectedRef = useRef(false);
+  const [selectedGuild, setSelectedGuild] = useState<DiscordGuild | null>(null);
+
+  useEffect(() => {
+    if (manageableGuilds.length === 0) return;
+    if (rawGuildId && appliedQueryGuild.current !== rawGuildId) {
+      const match = manageableGuilds.find((g) => g.id === rawGuildId);
+      if (match) {
+        appliedQueryGuild.current = rawGuildId;
+        userSelectedRef.current = true;
+        setSelectedGuild(match);
+        return;
+      }
+    }
+    if (!userSelectedRef.current && botGuildIds !== null) {
+      const picked = pickBotGuild(manageableGuilds, botGuildIds);
+      if (picked) setSelectedGuild(picked);
+    } else if (!selectedGuild) {
+      setSelectedGuild(manageableGuilds[0]);
+    }
+  }, [manageableGuilds, rawGuildId, selectedGuild, botGuildIds]);
+
+  const currentGuildId = selectedGuild?.id || rawGuildId || "";
+  const isBotPresent = Boolean(currentGuildId && botGuildIds && botGuildIds.includes(currentGuildId));
+  const activeGuild = selectedGuild;
 
   const base = `${BOT_API_URL}/api/guilds/${currentGuildId}/suggestions`;
   const isRealGuild = Boolean(BOT_API_URL) && Boolean(currentGuildId);
@@ -226,7 +264,7 @@ export default function SuggestionsCenterClient() {
   }, []);
 
   const load = useCallback(async () => {
-    if (!isRealGuild) {
+    if (!isRealGuild || !isBotPresent) {
       setIsDemo(true);
       setOverview(computeOverview(DEMO_SUGGESTIONS));
       return;
@@ -495,6 +533,16 @@ export default function SuggestionsCenterClient() {
             </div>
           </div>
           <div className="flex items-center gap-2.5 flex-wrap">
+            {manageableGuilds.length > 0 && selectedGuild && (
+              <GuildSelector
+                guilds={manageableGuilds}
+                value={selectedGuild.id}
+                onChange={(g: DiscordGuild) => {
+                  userSelectedRef.current = true;
+                  setSelectedGuild(g);
+                }}
+              />
+            )}
             <button
               onClick={() => setActiveTab("settings")}
               className="px-3.5 py-2 rounded-xl border border-neutral-800 bg-neutral-900 hover:bg-neutral-800 text-xs font-semibold text-neutral-200 flex items-center gap-2 transition-colors cursor-pointer"
@@ -512,6 +560,31 @@ export default function SuggestionsCenterClient() {
             </button>
           </div>
         </div>
+
+        {/* Bot non installé banner */}
+        {selectedGuild && !isBotPresent && (
+          <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-3 p-4 rounded-2xl bg-amber-500/10 border border-amber-500/20 text-amber-200">
+            <div className="flex items-center gap-3">
+              <div className="p-2 rounded-xl bg-amber-500/20 text-amber-400">
+                <Bot className="w-5 h-5" />
+              </div>
+              <div>
+                <p className="text-sm font-semibold text-white">Bot non installé sur ce serveur</p>
+                <p className="text-xs text-amber-300/80">
+                  Invitez le bot ETHONE sur <strong>{selectedGuild.name}</strong> pour activer la boîte à suggestions et les votes.
+                </p>
+              </div>
+            </div>
+            <a
+              href={BOT_INVITE_URL}
+              target="_blank"
+              rel="noopener noreferrer"
+              className="inline-flex items-center gap-2 px-4 py-2 rounded-xl bg-amber-500 hover:bg-amber-400 text-black font-semibold text-xs shadow-sm transition-colors cursor-pointer shrink-0"
+            >
+              Inviter le bot
+            </a>
+          </div>
+        )}
 
         {/* KPI (réels) */}
         <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-6 gap-3">
@@ -824,18 +897,18 @@ export default function SuggestionsCenterClient() {
             </div>
 
             <div>
-              <label className="block text-xs font-semibold text-neutral-300 mb-1">Salon des suggestions (ID)</label>
-              <div className="relative">
-                <Hash className="w-4 h-4 absolute left-3 top-1/2 -translate-y-1/2 text-neutral-500" />
-                <input
-                  type="text"
-                  value={config.channelId || ""}
-                  onChange={(e) => setConfig((p) => ({ ...p, channelId: e.target.value || null }))}
-                  onBlur={() => saveConfig({ channelId: config.channelId })}
-                  placeholder="Clic droit sur le salon → Copier l'identifiant"
-                  className="w-full h-10 rounded-xl bg-neutral-950 border border-neutral-800 pl-9 pr-3 text-xs text-white"
-                />
-              </div>
+              <label className="block text-xs font-semibold text-neutral-300 mb-1">Salon des suggestions</label>
+              <ChannelPicker
+                guildId={currentGuildId}
+                value={config.channelId || ""}
+                onChange={(channelId) => {
+                  const val = channelId || null;
+                  setConfig((p) => ({ ...p, channelId: val }));
+                  saveConfig({ channelId: val });
+                }}
+                placeholder="Sélectionner un salon de suggestions..."
+                allowClear
+              />
             </div>
 
             <div className="flex items-center justify-between p-3.5 rounded-xl bg-neutral-950 border border-neutral-800">

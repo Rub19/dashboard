@@ -1,6 +1,6 @@
 "use client";
 
-import { useState, useMemo, useEffect, useCallback } from "react";
+import { useState, useMemo, useEffect, useCallback, useRef } from "react";
 import Link from "next/link";
 import { useSearchParams } from "next/navigation";
 import {
@@ -19,13 +19,17 @@ import {
   ArrowRight,
   Trash2,
   RefreshCw,
+  Bot,
 } from "lucide-react";
 import { useToast } from "@/components/ToastProvider";
-import { useDiscordOAuth } from "@/lib/hooks/useDiscordOAuth";
+import { useDiscordOAuth, type DiscordGuild, canManageGuild, getStoredDiscordGuilds } from "@/lib/hooks/useDiscordOAuth";
 import { cn } from "@/lib/utils";
-import { useResolvedGuildId } from "@/lib/hooks/useBotGuildIds";
+import { useBotGuildIds, pickBotGuild } from "@/lib/hooks/useBotGuildIds";
+import { GuildSelector } from "@/components/GuildSelector";
 
 const BOT_API_URL = process.env.NEXT_PUBLIC_DISCORD_BOT_API || "";
+const BOT_CLIENT_ID = "1545139931154878464";
+const BOT_INVITE_URL = `https://discord.com/oauth2/authorize?client_id=${BOT_CLIENT_ID}&permissions=8&scope=bot%20applications.commands`;
 
 function mapForm(raw: Record<string, unknown>): FormItem {
   const r = raw as Record<string, any>;
@@ -123,7 +127,44 @@ export default function FormsCenterClient() {
   const { profile } = useDiscordOAuth();
   const { success, error: showError } = useToast();
 
-  const currentGuildId = useResolvedGuildId(rawGuildId, profile?.guilds);
+  const allGuilds: DiscordGuild[] = useMemo(() => {
+    if (profile?.guilds && profile.guilds.length > 0) return profile.guilds;
+    return getStoredDiscordGuilds();
+  }, [profile?.guilds]);
+
+  const botGuildIds = useBotGuildIds(allGuilds);
+
+  const manageableGuilds: DiscordGuild[] = useMemo(() => {
+    if (allGuilds.length === 0) return [];
+    const manageable = allGuilds.filter((g) => canManageGuild(g) || (botGuildIds && botGuildIds.includes(g.id)));
+    return manageable.length > 0 ? manageable : allGuilds;
+  }, [allGuilds, botGuildIds]);
+
+  const appliedQueryGuild = useRef<string | null>(null);
+  const userSelectedRef = useRef(false);
+  const [selectedGuild, setSelectedGuild] = useState<DiscordGuild | null>(null);
+
+  useEffect(() => {
+    if (manageableGuilds.length === 0) return;
+    if (rawGuildId && appliedQueryGuild.current !== rawGuildId) {
+      const match = manageableGuilds.find((g) => g.id === rawGuildId);
+      if (match) {
+        appliedQueryGuild.current = rawGuildId;
+        userSelectedRef.current = true;
+        setSelectedGuild(match);
+        return;
+      }
+    }
+    if (!userSelectedRef.current && botGuildIds !== null) {
+      const picked = pickBotGuild(manageableGuilds, botGuildIds);
+      if (picked) setSelectedGuild(picked);
+    } else if (!selectedGuild) {
+      setSelectedGuild(manageableGuilds[0]);
+    }
+  }, [manageableGuilds, rawGuildId, selectedGuild, botGuildIds]);
+
+  const currentGuildId = selectedGuild?.id || rawGuildId || "";
+  const isBotPresent = Boolean(currentGuildId && botGuildIds && botGuildIds.includes(currentGuildId));
 
   const [forms, setForms] = useState<FormItem[]>(DEMO_FORMS);
   const [isDemo, setIsDemo] = useState(true);
@@ -134,8 +175,7 @@ export default function FormsCenterClient() {
   const [isTemplateModalOpen, setIsTemplateModalOpen] = useState(false);
 
   const loadForms = useCallback(async () => {
-    if (!BOT_API_URL || !currentGuildId) {
-      // Pas de bot joignable : aucune liste locale ni inventée.
+    if (!BOT_API_URL || !currentGuildId || !isBotPresent) {
       setForms([]);
       setIsDemo(true);
       return;
@@ -155,7 +195,7 @@ export default function FormsCenterClient() {
     } finally {
       setLoading(false);
     }
-  }, [currentGuildId]);
+  }, [currentGuildId, isBotPresent]);
 
   useEffect(() => {
     loadForms();
@@ -310,7 +350,17 @@ export default function FormsCenterClient() {
           </button>
         </div>
 
-        <div className="flex items-center gap-2 self-start sm:self-center">
+        <div className="flex items-center gap-2 self-start sm:self-center flex-wrap">
+          {manageableGuilds.length > 0 && selectedGuild && (
+            <GuildSelector
+              guilds={manageableGuilds}
+              value={selectedGuild.id}
+              onChange={(g: DiscordGuild) => {
+                userSelectedRef.current = true;
+                setSelectedGuild(g);
+              }}
+            />
+          )}
           <button
             onClick={() => setIsTemplateModalOpen(true)}
             className="flex h-9 items-center gap-1.5 rounded-[var(--inset-radius)] border border-[var(--panel-border)] bg-white/5 px-3.5 text-xs font-semibold text-zinc-300 hover:bg-white/10 hover:text-white transition-all cursor-pointer"
@@ -327,6 +377,31 @@ export default function FormsCenterClient() {
           </Link>
         </div>
       </div>
+
+      {/* Bot non installé banner */}
+      {selectedGuild && !isBotPresent && (
+        <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-3 p-4 rounded-2xl bg-amber-500/10 border border-amber-500/20 text-amber-200">
+          <div className="flex items-center gap-3">
+            <div className="p-2 rounded-xl bg-amber-500/20 text-amber-400">
+              <Bot className="w-5 h-5" />
+            </div>
+            <div>
+              <p className="text-sm font-semibold text-white">Bot non installé sur ce serveur</p>
+              <p className="text-xs text-amber-300/80">
+                Invitez le bot ETHONE sur <strong>{selectedGuild.name}</strong> pour créer et synchroniser vos formulaires Discord.
+              </p>
+            </div>
+          </div>
+          <a
+            href={BOT_INVITE_URL}
+            target="_blank"
+            rel="noopener noreferrer"
+            className="inline-flex items-center gap-2 px-4 py-2 rounded-xl bg-amber-500 hover:bg-amber-400 text-black font-semibold text-xs shadow-sm transition-colors cursor-pointer shrink-0"
+          >
+            Inviter le bot
+          </a>
+        </div>
+      )}
 
       {/* KPI Cards Grid */}
       <div className="grid grid-cols-2 gap-3 sm:grid-cols-3 lg:grid-cols-5">

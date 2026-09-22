@@ -1,6 +1,6 @@
 "use client";
 
-import { useState, useEffect, useCallback } from "react";
+import { useState, useEffect, useCallback, useMemo, useRef } from "react";
 import Link from "next/link";
 import { useSearchParams } from "next/navigation";
 import {
@@ -24,13 +24,18 @@ import {
   Pause,
   AlertOctagon,
   Scale,
+  Bot,
 } from "lucide-react";
-import { useDiscordOAuth, type DiscordGuild } from "@/lib/hooks/useDiscordOAuth";
+import { useDiscordOAuth, type DiscordGuild, canManageGuild, getStoredDiscordGuilds } from "@/lib/hooks/useDiscordOAuth";
+import { useBotGuildIds, pickBotGuild } from "@/lib/hooks/useBotGuildIds";
+import { GuildSelector } from "@/components/GuildSelector";
 import { useToast } from "@/components/ToastProvider";
 import { useDiscordSync } from "@/lib/useDiscordSync";
 import { cn } from "@/lib/utils";
 
 const API_BASE = process.env.NEXT_PUBLIC_DISCORD_BOT_API || "";
+const BOT_CLIENT_ID = "1545139931154878464";
+const BOT_INVITE_URL = `https://discord.com/oauth2/authorize?client_id=${BOT_CLIENT_ID}&permissions=8&scope=bot%20applications.commands`;
 
 function emptyAuditOverview(): AuditOverview {
   // Aucune statistique inventée : tout à zéro tant que le bot ne répond pas.
@@ -237,24 +242,50 @@ export function AuditCenterClient() {
   const [categoryChannels, setCategoryChannels] = useState<Record<string, string>>({});
   const [testingCategory, setTestingCategory] = useState<string | null>(null);
 
-  // Résolution du serveur
+  // Résolution du serveur et détection bot
+  const allGuilds: DiscordGuild[] = useMemo(() => {
+    if (profile?.guilds && profile.guilds.length > 0) return profile.guilds;
+    return getStoredDiscordGuilds();
+  }, [profile?.guilds]);
+
+  const botGuildIds = useBotGuildIds(allGuilds);
+
+  const manageableGuilds: DiscordGuild[] = useMemo(() => {
+    if (allGuilds.length === 0) return [];
+    const manageable = allGuilds.filter((g) => canManageGuild(g) || (botGuildIds && botGuildIds.includes(g.id)));
+    return manageable.length > 0 ? manageable : allGuilds;
+  }, [allGuilds, botGuildIds]);
+
+  const appliedQueryGuild = useRef<string | null>(null);
+  const userSelectedRef = useRef(false);
+
   useEffect(() => {
-    if (!profile?.guilds) return;
-    if (guildParam) {
-      const found = profile.guilds.find((g) => g.id === guildParam);
-      if (found) {
-        setSelectedGuild(found);
+    if (manageableGuilds.length === 0) return;
+    if (guildParam && appliedQueryGuild.current !== guildParam) {
+      const match = manageableGuilds.find((g) => g.id === guildParam);
+      if (match) {
+        appliedQueryGuild.current = guildParam;
+        userSelectedRef.current = true;
+        setSelectedGuild(match);
         return;
       }
     }
-    if (profile.guilds.length > 0 && !selectedGuild) {
-      setSelectedGuild(profile.guilds[0]);
+    if (!userSelectedRef.current && botGuildIds !== null) {
+      const picked = pickBotGuild(manageableGuilds, botGuildIds);
+      if (picked) setSelectedGuild(picked);
+    } else if (!selectedGuild) {
+      setSelectedGuild(manageableGuilds[0]);
     }
-  }, [profile?.guilds, guildParam, selectedGuild]);
+  }, [manageableGuilds, guildParam, selectedGuild, botGuildIds]);
+
+  const isBotPresent = Boolean(selectedGuild?.id && botGuildIds && botGuildIds.includes(selectedGuild.id));
 
   // Charger les métriques d'aperçu
   const fetchOverview = useCallback(async () => {
-    if (!selectedGuild) return;
+    if (!selectedGuild || !isBotPresent) {
+      setOverview(emptyAuditOverview());
+      return;
+    }
     if (!API_BASE) {
       setOverview(emptyAuditOverview());
       return;
@@ -270,11 +301,17 @@ export function AuditCenterClient() {
     } catch {
       setOverview(emptyAuditOverview());
     }
-  }, [selectedGuild]);
+  }, [selectedGuild, isBotPresent]);
 
   // Charger les événements filtrés
   const fetchEvents = useCallback(async () => {
-    if (!selectedGuild) return;
+    if (!selectedGuild || !isBotPresent) {
+      const demo = selectedGuild ? noAuditEvents(selectedGuild.id) : [];
+      setEvents(demo);
+      setTotalCount(demo.length);
+      setLoadingEvents(false);
+      return;
+    }
     setLoadingEvents(true);
     if (!API_BASE) {
       const demo = noAuditEvents(selectedGuild.id);
@@ -308,11 +345,11 @@ export function AuditCenterClient() {
     } finally {
       setLoadingEvents(false);
     }
-  }, [selectedGuild, selectedModule, selectedSeverity, selectedPeriod, searchQuery]);
+  }, [selectedGuild, isBotPresent, selectedModule, selectedSeverity, selectedPeriod, searchQuery]);
 
   // Charger la configuration de routage
   const fetchConfig = useCallback(async () => {
-    if (!selectedGuild || !API_BASE) return;
+    if (!selectedGuild || !isBotPresent || !API_BASE) return;
     try {
       const res = await fetch(`${API_BASE}/api/guilds/${selectedGuild.id}/logs/config`, { credentials: "include" });
       if (res.ok) {
@@ -586,7 +623,18 @@ export function AuditCenterClient() {
             </div>
           </div>
 
-          <div className="flex items-center gap-2">
+          <div className="flex items-center gap-2 flex-wrap">
+            {manageableGuilds.length > 0 && selectedGuild && (
+              <GuildSelector
+                guilds={manageableGuilds}
+                value={selectedGuild.id}
+                onChange={(g: DiscordGuild) => {
+                  userSelectedRef.current = true;
+                  setSelectedGuild(g);
+                }}
+              />
+            )}
+
             {/* Bouton Live Pause / Play */}
             <button
               type="button"
@@ -625,6 +673,31 @@ export function AuditCenterClient() {
       </div>
 
       <div className="mx-auto max-w-7xl px-4 pt-6 sm:px-6 space-y-6">
+        {/* Bot non installé banner */}
+        {selectedGuild && !isBotPresent && (
+          <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-3 p-4 rounded-2xl bg-amber-500/10 border border-amber-500/20 text-amber-200">
+            <div className="flex items-center gap-3">
+              <div className="p-2 rounded-xl bg-amber-500/20 text-amber-400">
+                <Bot className="w-5 h-5" />
+              </div>
+              <div>
+                <p className="text-sm font-semibold text-white">Bot non installé sur ce serveur</p>
+                <p className="text-xs text-amber-300/80">
+                  Invitez le bot ETHONE sur <strong>{selectedGuild.name}</strong> pour activer la traçabilité des logs et de l'audit en direct.
+                </p>
+              </div>
+            </div>
+            <a
+              href={BOT_INVITE_URL}
+              target="_blank"
+              rel="noopener noreferrer"
+              className="inline-flex items-center gap-2 px-4 py-2 rounded-xl bg-amber-500 hover:bg-amber-400 text-black font-semibold text-xs shadow-sm transition-colors cursor-pointer shrink-0"
+            >
+              Inviter le bot
+            </a>
+          </div>
+        )}
+
         {/* KPI METRICS OVERVIEW BANNER */}
         <div className="grid grid-cols-2 gap-3 sm:grid-cols-5">
           <div className="rounded-[var(--panel-radius)] border border-[var(--panel-border)] bg-zinc-900/60 p-4 backdrop-blur-xl">

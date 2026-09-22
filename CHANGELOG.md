@@ -2,6 +2,17 @@
 
 Toutes les modifications notables de ce projet seront documentées dans ce fichier.
 
+## v1.28.15 — 2026-09-22
+
+**Harmonisation Universelle GuildSelector, Pickers Rôles/Salons & Bannières Bot**
+
+- **Sélecteur de serveur universel (`GuildSelector`)** : intégré sur toutes les pages Discord restantes (Leveling `/discord/leveling`, Invitations `/discord/invites`, Formulaires `/discord/forms`, Vocal `/discord/voice`, Logs d'audit `/discord/logs`, Commandes `/discord/commands`, Économie `/discord/economy`, Suggestions `/discord/suggestions`) avec auto-sélection intelligente des serveurs où le bot est installé (`pickBotGuild` + `userSelectedRef`).
+- **Détection bot & bannières d'invitation** : affichage systématique du bandeau « Bot non installé sur ce serveur » avec lien d'invitation OAuth2 direct et suspension des requêtes vers l'API du bot lorsque le bot est absent.
+- **Remplacement des champs texte bruts par des sélecteurs visuels** :
+  - **Invitations (`/discord/invites`)** : intégration de `RolePicker` dans la création de paliers de récompense et remplacement du sélecteur natif HTML par `GuildSelector`.
+  - **Économie (`/discord/economy`)** : remplacement du champ texte brut d'ID de rôle par `RolePicker` pour l'ajout d'articles dans la boutique de rôles.
+  - **Suggestions (`/discord/suggestions`)** : remplacement du champ texte brut d'ID de salon par `ChannelPicker` dans l'onglet des paramètres.
+
 ## v1.28.14 — 2026-09-22
 
 **Détection Universelle du Bot (Modération & Musique) & Sélecteur de Serveur**

@@ -1,6 +1,6 @@
 "use client";
 
-import { useState, useMemo, useEffect, useCallback } from "react";
+import { useState, useMemo, useEffect, useCallback, useRef } from "react";
 import Link from "next/link";
 import { useSearchParams } from "next/navigation";
 import {
@@ -19,15 +19,19 @@ import {
   Edit2,
   Eye,
   ArrowLeft,
+  Bot,
 } from "lucide-react";
 import { useToast } from "@/components/ToastProvider";
-import { useDiscordOAuth } from "@/lib/hooks/useDiscordOAuth";
-import { useResolvedGuildId } from "@/lib/hooks/useBotGuildIds";
+import { useDiscordOAuth, type DiscordGuild, canManageGuild, getStoredDiscordGuilds } from "@/lib/hooks/useDiscordOAuth";
+import { useBotGuildIds, pickBotGuild } from "@/lib/hooks/useBotGuildIds";
+import { GuildSelector } from "@/components/GuildSelector";
 import ChannelPicker from "@/components/discord/ChannelPicker";
 import RolePicker from "@/components/discord/RolePicker";
 import { cn } from "@/lib/utils";
 
 const BOT_API_URL = process.env.NEXT_PUBLIC_DISCORD_BOT_API || "";
+const BOT_CLIENT_ID = "1545139931154878464";
+const BOT_INVITE_URL = `https://discord.com/oauth2/authorize?client_id=${BOT_CLIENT_ID}&permissions=8&scope=bot%20applications.commands`;
 
 // Mirrors discord-bot/src/modules/leveling/types/*.ts — this page reads and
 // writes the real backend shape, not a made-up one.
@@ -101,7 +105,44 @@ export default function LevelingCenterClient() {
   const { profile } = useDiscordOAuth();
   const { success, error: toastError } = useToast();
 
-  const currentGuildId = useResolvedGuildId(rawGuildId, profile?.guilds);
+  const allGuilds: DiscordGuild[] = useMemo(() => {
+    if (profile?.guilds && profile.guilds.length > 0) return profile.guilds;
+    return getStoredDiscordGuilds();
+  }, [profile?.guilds]);
+
+  const botGuildIds = useBotGuildIds(allGuilds);
+
+  const manageableGuilds: DiscordGuild[] = useMemo(() => {
+    if (allGuilds.length === 0) return [];
+    const manageable = allGuilds.filter((g) => canManageGuild(g) || (botGuildIds && botGuildIds.includes(g.id)));
+    return manageable.length > 0 ? manageable : allGuilds;
+  }, [allGuilds, botGuildIds]);
+
+  const appliedQueryGuild = useRef<string | null>(null);
+  const userSelectedRef = useRef(false);
+  const [selectedGuild, setSelectedGuild] = useState<DiscordGuild | null>(null);
+
+  useEffect(() => {
+    if (manageableGuilds.length === 0) return;
+    if (rawGuildId && appliedQueryGuild.current !== rawGuildId) {
+      const match = manageableGuilds.find((g) => g.id === rawGuildId);
+      if (match) {
+        appliedQueryGuild.current = rawGuildId;
+        userSelectedRef.current = true;
+        setSelectedGuild(match);
+        return;
+      }
+    }
+    if (!userSelectedRef.current && botGuildIds !== null) {
+      const picked = pickBotGuild(manageableGuilds, botGuildIds);
+      if (picked) setSelectedGuild(picked);
+    } else if (!selectedGuild) {
+      setSelectedGuild(manageableGuilds[0]);
+    }
+  }, [manageableGuilds, rawGuildId, selectedGuild, botGuildIds]);
+
+  const currentGuildId = selectedGuild?.id || rawGuildId || "";
+  const isBotPresent = Boolean(currentGuildId && botGuildIds && botGuildIds.includes(currentGuildId));
   const base = `${BOT_API_URL}/api/guilds/${currentGuildId}/leveling`;
   const isRealGuild = Boolean(BOT_API_URL) && Boolean(currentGuildId);
 
@@ -127,7 +168,7 @@ export default function LevelingCenterClient() {
   const [searchQuery, setSearchQuery] = useState("");
 
   const load = useCallback(async () => {
-    if (!isRealGuild) {
+    if (!isRealGuild || !isBotPresent) {
       setIsDemo(true);
       return;
     }
@@ -171,7 +212,7 @@ export default function LevelingCenterClient() {
     } finally {
       setLoading(false);
     }
-  }, [base, isRealGuild]);
+  }, [base, isRealGuild, isBotPresent]);
 
   useEffect(() => {
     load();
@@ -386,6 +427,16 @@ export default function LevelingCenterClient() {
           </div>
 
           <div className="flex items-center gap-2.5 flex-wrap">
+            {manageableGuilds.length > 0 && selectedGuild && (
+              <GuildSelector
+                guilds={manageableGuilds}
+                value={selectedGuild.id}
+                onChange={(g: DiscordGuild) => {
+                  userSelectedRef.current = true;
+                  setSelectedGuild(g);
+                }}
+              />
+            )}
             <button
               onClick={() => setActiveTab("card_designer")}
               className="px-3.5 py-2 rounded-xl border border-neutral-800 bg-neutral-900 hover:bg-neutral-800 text-xs font-semibold text-neutral-200 flex items-center gap-2 transition-colors cursor-pointer"
@@ -403,6 +454,31 @@ export default function LevelingCenterClient() {
             </button>
           </div>
         </div>
+
+        {/* Bot non installé banner */}
+        {selectedGuild && !isBotPresent && (
+          <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-3 p-4 rounded-2xl bg-amber-500/10 border border-amber-500/20 text-amber-200">
+            <div className="flex items-center gap-3">
+              <div className="p-2 rounded-xl bg-amber-500/20 text-amber-400">
+                <Bot className="w-5 h-5" />
+              </div>
+              <div>
+                <p className="text-sm font-semibold text-white">Bot non installé sur ce serveur</p>
+                <p className="text-xs text-amber-300/80">
+                  Invitez le bot ETHONE sur <strong>{selectedGuild.name}</strong> pour activer le système d'XP et les rôles récompenses.
+                </p>
+              </div>
+            </div>
+            <a
+              href={BOT_INVITE_URL}
+              target="_blank"
+              rel="noopener noreferrer"
+              className="inline-flex items-center gap-2 px-4 py-2 rounded-xl bg-amber-500 hover:bg-amber-400 text-black font-semibold text-xs shadow-sm transition-colors cursor-pointer shrink-0"
+            >
+              Inviter le bot
+            </a>
+          </div>
+        )}
 
         {/* 4 Metric KPI Cards (real) */}
         <div className="grid grid-cols-2 sm:grid-cols-4 gap-3">

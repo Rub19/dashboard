@@ -23,6 +23,7 @@ import { useDiscordOAuth, type DiscordGuild, canManageGuild, getStoredDiscordGui
 import { useBotGuildIds, pickBotGuild } from "@/lib/hooks/useBotGuildIds";
 import { GuildSelector } from "@/components/GuildSelector";
 import RolePicker from "@/components/discord/RolePicker";
+import { formatApiError } from "@/lib/format-error";
 import { cn } from "@/lib/utils";
 
 const BOT_API_URL = process.env.NEXT_PUBLIC_DISCORD_BOT_API || "";
@@ -312,14 +313,14 @@ export default function EconomyCenterClient() {
         method: "POST",
         credentials: "include",
       });
-      const data = await res.json();
-      if (!res.ok || !data.success) {
-        throw new Error(data.error || "Impossible de réclamer le bonus quotidien.");
+      const data = await res.json().catch(() => null);
+      if (!res.ok || !data?.success) {
+        throw new Error(data?.error || `HTTP ${res.status}`);
       }
       success("Bonus quotidien réclamé !", `+${data.amount} ${config.currencySymbol} ajoutés à votre solde.`);
       load();
-    } catch (err: any) {
-      toastError("Erreur", err.message || "Échec de la réclamation du bonus.");
+    } catch (err: unknown) {
+      toastError("Erreur", formatApiError(err, "Échec de la réclamation du bonus."));
     } finally {
       setClaimingDaily(false);
     }
@@ -340,14 +341,14 @@ export default function EconomyCenterClient() {
         method: "POST",
         credentials: "include",
       });
-      const data = await res.json();
-      if (!res.ok || !data.success) {
-        throw new Error(data.error || "Achat impossible.");
+      const data = await res.json().catch(() => null);
+      if (!res.ok || !data?.success) {
+        throw new Error(data?.error || `HTTP ${res.status}`);
       }
       success("Rôle acheté avec succès !", `Vous avez obtenu le rôle "${itemLabel}".`);
       load();
-    } catch (err: any) {
-      toastError("Échec de l'achat", err.message || "Une erreur est survenue lors de l'achat.");
+    } catch (err: unknown) {
+      toastError("Échec de l'achat", formatApiError(err, "Une erreur est survenue lors de l'achat."));
     } finally {
       setPurchasingItemId(null);
     }
@@ -366,12 +367,12 @@ export default function EconomyCenterClient() {
         headers: { "content-type": "application/json" },
         body: JSON.stringify(config),
       });
-      if (!res.ok) throw new Error("save failed");
-      const data = await res.json();
-      setConfig(data.config);
+      const data = await res.json().catch(() => null);
+      if (!res.ok) throw new Error(data?.error || `HTTP ${res.status}`);
+      if (data?.config) setConfig(data.config);
       success("Configuration de l'économie enregistrée.");
-    } catch {
-      toastError("Échec de l'enregistrement de la configuration.");
+    } catch (err: unknown) {
+      toastError("Échec de la sauvegarde", formatApiError(err, "Échec de l'enregistrement de la configuration."));
     } finally {
       setSavingConfig(false);
     }
@@ -379,7 +380,7 @@ export default function EconomyCenterClient() {
 
   const addShopItem = async () => {
     if (!newItem.roleId.trim() || !newItem.label.trim()) {
-      toastError("ID de rôle et libellé requis.");
+      toastError("Champs requis", "ID de rôle et libellé requis.");
       return;
     }
     if (isDemo || !BOT_API_URL) {
@@ -393,23 +394,27 @@ export default function EconomyCenterClient() {
         headers: { "content-type": "application/json" },
         body: JSON.stringify(newItem),
       });
-      if (!res.ok) throw new Error("save failed");
-      const data = await res.json();
-      setShopItems((prev) => [...prev, data.item]);
+      const data = await res.json().catch(() => null);
+      if (!res.ok) throw new Error(data?.error || `HTTP ${res.status}`);
+      if (data?.item) setShopItems((prev) => [...prev, data.item]);
       setNewItem({ roleId: "", label: "", price: 100, description: "" });
       success("Article ajouté à la boutique.");
-    } catch {
-      toastError("Échec de l'ajout de l'article.");
+    } catch (err: unknown) {
+      toastError("Échec de l'ajout", formatApiError(err, "Échec de l'ajout de l'article."));
     }
   };
 
   const removeShopItem = async (id: string) => {
+    const previous = shopItems;
     setShopItems((prev) => prev.filter((i) => i.id !== id));
     if (isDemo || !BOT_API_URL) return;
     try {
-      await fetch(`${base}/shop/${id}`, { method: "DELETE", credentials: "include" });
-    } catch {
-      toastError("Échec de la suppression — rechargez la page.");
+      const res = await fetch(`${base}/shop/${id}`, { method: "DELETE", credentials: "include" });
+      const data = await res.json().catch(() => null);
+      if (!res.ok) throw new Error(data?.error || `HTTP ${res.status}`);
+    } catch (err: unknown) {
+      setShopItems(previous);
+      toastError("Échec de la suppression", formatApiError(err, "Échec de la suppression de l'article."));
     }
   };
 

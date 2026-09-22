@@ -2,6 +2,23 @@
 
 Toutes les modifications notables de ce projet seront documentées dans ce fichier.
 
+## v1.28.21 — 2026-09-22
+
+**Harmonisation des Sous-Pages et Fiabilisation des Actions**
+
+- **Remplacement des sélecteurs et inputs bruts par des Pickers dédiés** :
+  - **Points forts (`/discord/highlights`)** : remplacement du sélecteur natif de salon ignoré par `ChannelPicker` (`size="sm"`). Formatage universel des erreurs API (`formatApiError`) sur l'ajout/suppression de mots-clés et l'ignorance/réactivation de salons.
+  - **Paramètres d'invitations (`/discord/invites/settings`)** : remplacement du champ texte libre par `ChannelPicker` (`size="sm"`) pour le salon d'annonces. Intégration de `GuildSelector`, vérification de la présence du bot et affichage d'une bannière d'invitation avec lien OAuth2 direct.
+  - **Paramètres des salons vocaux temporaires (`/discord/voice/settings`)** : élimination définitive de l'identifiant Discord codé en dur (`1128633164290596884`). Intégration de `GuildSelector`, détection de présence du bot avec bannière d'invitation et remplacement du champ texte par `ChannelPicker` (`size="sm"`) pour le salon de création textuel.
+- **Fiabilisation des sauvegardes et formatage API Error (`formatApiError`)** :
+  - **Starboard (`/discord/starboard`)** : capture et formatage des erreurs renvoyées par l'API lors de l'enregistrement plutôt que de masquer les rejets serveur en succès hors-ligne.
+  - **Messages Épinglés / Sticky (`/discord/sticky`)** : capture de `data?.error` et formatage lisible sur la création, suppression et republication des messages collants.
+  - **Anniversaires (`/discord/birthdays`)** : affichage clair des rejets de configuration de l'API.
+  - **Suggestions (`/discord/suggestions`)** : intégration de `formatApiError` sur la mise à jour de statut, priorité, ajout de commentaire, suppression et création de suggestion, ainsi que la configuration globale.
+  - **Tags (`/discord/tags`)** : formatage des erreurs API sur la création, modification et suppression de tags.
+  - **Statut AFK (`/discord/afk`)** : distinction entre coupure réseau et rejets serveur/validation Zod, et fiabilisation de la révocation de statut d'un membre.
+  - **Économie (`/discord/economy`)** : fiabilisation de la réclamation quotidienne (daily), des achats en boutique, de l'enregistrement de la configuration et de l'ajout/suppression d'articles avec formatage des retours d'erreurs du bot.
+
 ## v1.28.20 — 2026-09-22
 
 **Fiabilisation Universelle des Actions et Formatage API Error**

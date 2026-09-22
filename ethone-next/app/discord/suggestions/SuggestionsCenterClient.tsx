@@ -26,6 +26,7 @@ import { useDiscordOAuth, type DiscordGuild, canManageGuild, getStoredDiscordGui
 import { useBotGuildIds, pickBotGuild } from "@/lib/hooks/useBotGuildIds";
 import { GuildSelector } from "@/components/GuildSelector";
 import ChannelPicker from "@/components/discord/ChannelPicker";
+import { formatApiError } from "@/lib/format-error";
 import { cn } from "@/lib/utils";
 
 const BOT_API_URL = process.env.NEXT_PUBLIC_DISCORD_BOT_API || "";
@@ -361,7 +362,7 @@ export default function SuggestionsCenterClient() {
       patchLocal(selected.id, data.suggestion);
       success(`Suggestion #${selected.numericId} : statut « ${STATUS_META[newStatus].label} » publié sur Discord.`);
     } catch (e: any) {
-      toastError(e?.message || "Échec de la mise à jour du statut.");
+      toastError(formatApiError(e, "Échec de la mise à jour du statut."));
     } finally {
       setSubmitting(false);
     }
@@ -381,10 +382,11 @@ export default function SuggestionsCenterClient() {
         headers: { "content-type": "application/json" },
         body: JSON.stringify({ priority }),
       });
-      if (!res.ok) throw new Error("priority failed");
+      const data = await res.json().catch(() => null);
+      if (!res.ok) throw new Error(data?.error || "priority failed");
       patchLocal(selected.id, { priority });
-    } catch {
-      toastError("Échec du changement de priorité.");
+    } catch (e: any) {
+      toastError(formatApiError(e, "Échec du changement de priorité."));
     }
   };
 
@@ -414,7 +416,7 @@ export default function SuggestionsCenterClient() {
       setCommentText("");
       success("Commentaire staff publié.");
     } catch (e: any) {
-      toastError(e?.message || "Échec de l'ajout du commentaire.");
+      toastError(formatApiError(e, "Échec de l'ajout du commentaire."));
     } finally {
       setSubmitting(false);
     }
@@ -430,9 +432,11 @@ export default function SuggestionsCenterClient() {
     if (selectedId === s.id) setSelectedId(null);
     if (isDemo) return;
     try {
-      await fetch(`${base}/${s.id}`, { method: "DELETE", credentials: "include" });
-    } catch {
-      toastError("Échec de la suppression — rechargez la page.");
+      const res = await fetch(`${base}/${s.id}`, { method: "DELETE", credentials: "include" });
+      const data = await res.json().catch(() => null);
+      if (!res.ok) throw new Error(data?.error || "delete failed");
+    } catch (e: any) {
+      toastError(formatApiError(e, "Échec de la suppression — rechargez la page."));
     }
   };
 
@@ -464,7 +468,7 @@ export default function SuggestionsCenterClient() {
       setNewDescription("");
       success("Suggestion publiée dans le salon Discord.");
     } catch (e: any) {
-      toastError(e?.message || "Échec de la création.");
+      toastError(formatApiError(e, "Échec de la création."));
     } finally {
       setSubmitting(false);
     }
@@ -485,10 +489,11 @@ export default function SuggestionsCenterClient() {
         headers: { "content-type": "application/json" },
         body: JSON.stringify(patch),
       });
-      if (!res.ok) throw new Error("save failed");
+      const data = await res.json().catch(() => null);
+      if (!res.ok) throw new Error(data?.error || "save failed");
       success("Paramètres des suggestions enregistrés.");
-    } catch {
-      toastError("Échec de l'enregistrement des paramètres.");
+    } catch (e: any) {
+      toastError(formatApiError(e, "Échec de l'enregistrement des paramètres."));
     } finally {
       setSavingConfig(false);
     }

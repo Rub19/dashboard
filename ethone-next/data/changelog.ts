@@ -31987,10 +31987,58 @@ const v12840_de: ChangelogEntry = {
   ],
 };
 
-CHANGELOG_BY_LANG.fr.unshift(v12840_fr, v12839_fr, v12838_fr, v12837_fr, v12836_fr, v12835_fr, v12834_fr, v12833_fr);
-CHANGELOG_BY_LANG.en.unshift(v12840_en, v12839_en, v12838_en, v12837_en, v12836_en, v12835_en, v12834_en, v12833_en);
-CHANGELOG_BY_LANG.es.unshift(v12840_es, v12839_es, v12838_es, v12837_es, v12836_es, v12835_es, v12834_es, v12833_es);
-CHANGELOG_BY_LANG.de.unshift(v12840_de, v12839_de, v12838_de, v12837_de, v12836_de, v12835_de, v12834_de, v12833_de);
+const v12841_fr: ChangelogEntry = {
+  version: "v1.28.21",
+  date: "2026-09-22",
+  title: "Harmonisation des Sous-Pages et Fiabilisation des Actions",
+  items: [
+    "Remplacement des sélecteurs et inputs bruts : intégration de ChannelPicker et RolePicker dans les pages secondaires (Highlights /discord/highlights, Paramètres d'invitations /discord/invites/settings, Paramètres vocaux /discord/voice/settings) pour garantir la sélection de salons et rôles valides.",
+    "Suppression des identifiants serveurs codés en dur : élimination définitive du fallback factice 1128633164290596884 dans les paramètres vocaux, remplacé par le GuildSelector dynamique et la détection intelligente de présence du bot.",
+    "Bannières de présence du bot : ajout systématique de la détection de présence du bot et de la bannière d'invitation avec lien direct OAuth2 dans les pages secondaires d'invitations et de salons vocaux.",
+    "Formatage universel des erreurs API (formatApiError) : fiabilisation complète des requêtes de sauvegarde, suppression et actions dans Highlights, Invitations, Salons Vocaux, Starboard, Messages Épinglés (Sticky), Anniversaires, Suggestions, Tags, AFK et Économie.",
+  ],
+};
+
+const v12841_en: ChangelogEntry = {
+  version: "v1.28.21",
+  date: "2026-09-22",
+  title: "Sub-Pages Harmonization & Action Hardening",
+  items: [
+    "Picker Migration: replaced raw text inputs and legacy select elements with ChannelPicker and RolePicker across secondary settings pages (Highlights /discord/highlights, Invite Settings /discord/invites/settings, Voice Settings /discord/voice/settings).",
+    "Removal of Hardcoded Guild IDs: purged hardcoded fallback ID 1128633164290596884 from voice settings, replaced with dynamic GuildSelector and bot presence detection.",
+    "Bot Presence Banners: added bot presence checking and direct OAuth2 invite banners across secondary invite and voice settings.",
+    "Universal API Error Formatting (formatApiError): fortified error reporting and data?.error parsing across Highlights, Invites, Voice, Starboard, Sticky Messages, Birthdays, Suggestions, Tags, AFK, and Economy.",
+  ],
+};
+
+const v12841_es: ChangelogEntry = {
+  version: "v1.28.21",
+  date: "2026-09-22",
+  title: "Armonización de Subpáginas y Robustecimiento de Acciones",
+  items: [
+    "Migración a Pickers dedicados: reemplazo de campos de texto e inputs nativos por ChannelPicker y RolePicker en páginas secundarias (Highlights /discord/highlights, Ajustes de invitaciones /discord/invites/settings, Ajustes de voz /discord/voice/settings).",
+    "Eliminación de IDs de servidor codificados: supresión del ID 1128633164290596884 en ajustes de voz, sustituido por el GuildSelector dinámico y detección de presencia del bot.",
+    "Banners de presencia del bot: añadido control de presencia del bot y banner de invitación con enlace OAuth2 directo en las páginas de ajustes de invitaciones y voz.",
+    "Formateo universal de errores de API (formatApiError): fortalecimiento sistemático del informe de errores en Highlights, Invitaciones, Voz, Starboard, Mensajes fijados (Sticky), Cumpleaños, Sugerencias, Tags, AFK y Economía.",
+  ],
+};
+
+const v12841_de: ChangelogEntry = {
+  version: "v1.28.21",
+  date: "2026-09-22",
+  title: "Sub-Seiten-Harmonisierung & Aktionshärtung",
+  items: [
+    "Picker-Migration: Ersetzung von Rohtextfeldern und nativen select-Elementen durch ChannelPicker und RolePicker auf Unterseiten (Highlights /discord/highlights, Einladungseinstellungen /discord/invites/settings, Spracheinstellungen /discord/voice/settings).",
+    "Entfernung fest codierter Server-IDs: Bereinigung der statischen Fallback-ID 1128633164290596884 in den Spracheinstellungen, ersetzt durch dynamischen GuildSelector und Bot-Präsenzerkennung.",
+    "Bot-Präsenzbanner: Hinzufügen der Bot-Präsenzprüfung und direkter OAuth2-Einladungsbanner in den Unterseiten für Einladungen und Sprachkanäle.",
+    "Universelle API-Fehlerformatierung (formatApiError): Systematische Härtung der Fehlerberichterstattung und data?.error-Verarbeitung in Highlights, Einladungen, Sprache, Starboard, Sticky-Nachrichten, Geburtstagen, Vorschlägen, Tags, AFK und Wirtschaft.",
+  ],
+};
+
+CHANGELOG_BY_LANG.fr.unshift(v12841_fr, v12840_fr, v12839_fr, v12838_fr, v12837_fr, v12836_fr, v12835_fr, v12834_fr, v12833_fr);
+CHANGELOG_BY_LANG.en.unshift(v12841_en, v12840_en, v12839_en, v12838_en, v12837_en, v12836_en, v12835_en, v12834_en, v12833_en);
+CHANGELOG_BY_LANG.es.unshift(v12841_es, v12840_es, v12839_es, v12838_es, v12837_es, v12836_es, v12835_es, v12834_es, v12833_es);
+CHANGELOG_BY_LANG.de.unshift(v12841_de, v12840_de, v12839_de, v12838_de, v12837_de, v12836_de, v12835_de, v12834_de, v12833_de);
 
 export const CHANGELOG = CHANGELOG_BY_LANG.fr;
 

@@ -9,6 +9,7 @@ import { useDiscordOAuth, type DiscordGuild, canManageGuild, getStoredDiscordGui
 import { useBotGuildIds, pickBotGuild } from "@/lib/hooks/useBotGuildIds";
 import { cn } from "@/lib/utils";
 import { GuildSelector } from "@/components/GuildSelector";
+import { formatApiError } from "@/lib/format-error";
 
 const BOT_CLIENT_ID = "1545139931154878464";
 const BOT_INVITE_URL = `https://discord.com/oauth2/authorize?client_id=${BOT_CLIENT_ID}&permissions=8&scope=bot%20applications.commands`;
@@ -220,13 +221,20 @@ export default function AfkCenterClient() {
           autoDeleteSeconds: config.autoDeleteSeconds,
         }),
       });
-      if (!res.ok) throw new Error();
+      const data = await res.json().catch(() => null);
+      if (!res.ok) {
+        throw new Error(data?.error || `HTTP ${res.status}`);
+      }
       try {
         localStorage.setItem(localKey, JSON.stringify(config));
       } catch {}
       success("AFK synchronisé", "Les réglages ont été appliqués au bot.");
       load();
-    } catch {
+    } catch (err: unknown) {
+      if (err instanceof Error && err.message !== "Failed to fetch" && !err.message.includes("NetworkError")) {
+        showError("Échec de la sauvegarde", formatApiError(err, "Impossible de joindre le serveur du bot."));
+        return;
+      }
       try {
         localStorage.setItem(localKey, JSON.stringify(config));
       } catch {}
@@ -243,11 +251,14 @@ export default function AfkCenterClient() {
         method: "DELETE",
         credentials: "include",
       });
-      if (!res.ok) throw new Error();
+      const data = await res.json().catch(() => null);
+      if (!res.ok) {
+        throw new Error(data?.error || `HTTP ${res.status}`);
+      }
       success("Statut AFK retiré", "");
       load();
-    } catch {
-      showError("Échec", "Impossible de retirer le statut.");
+    } catch (err) {
+      showError("Échec", formatApiError(err, "Impossible de retirer le statut."));
     }
   };
 

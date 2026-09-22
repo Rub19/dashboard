@@ -12,6 +12,7 @@ import { cn } from "@/lib/utils";
 import { GuildSelector } from "@/components/GuildSelector";
 import ChannelPicker from "@/components/discord/ChannelPicker";
 import RolePicker from "@/components/discord/RolePicker";
+import { formatApiError } from "@/lib/format-error";
 
 const BOT_CLIENT_ID = "1545139931154878464";
 const BOT_INVITE_URL = `https://discord.com/oauth2/authorize?client_id=${BOT_CLIENT_ID}&permissions=8&scope=bot%20applications.commands`;
@@ -254,17 +255,22 @@ export default function BirthdaysCenterClient() {
           mentionUser: config.mentionUser,
         }),
       });
-      if (!res.ok) throw new Error();
+      const data = await res.json().catch(() => null);
+      if (!res.ok) throw new Error(data?.error || "save failed");
       try {
         localStorage.setItem(localKey, JSON.stringify(config));
       } catch {}
       success("Anniversaires synchronisés", "Les réglages ont été appliqués au bot.");
       load();
-    } catch {
-      try {
-        localStorage.setItem(localKey, JSON.stringify(config));
-      } catch {}
-      success("Enregistré hors-ligne", "Impossible de joindre le bot. Vos réglages sont conservés localement.");
+    } catch (err: any) {
+      if (err?.message && err.message !== "save failed" && err.message !== "Failed to fetch") {
+        showError("Échec de la sauvegarde", formatApiError(err, "Impossible de joindre le serveur du bot."));
+      } else {
+        try {
+          localStorage.setItem(localKey, JSON.stringify(config));
+        } catch {}
+        success("Enregistré hors-ligne", "Impossible de joindre le bot. Vos réglages sont conservés localement.");
+      }
     } finally {
       setSaving(false);
     }

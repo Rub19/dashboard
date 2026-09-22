@@ -10,6 +10,8 @@ import { useBotGuildIds, pickBotGuild } from "@/lib/hooks/useBotGuildIds";
 import { useDiscordSync } from "@/lib/useDiscordSync";
 import { cn } from "@/lib/utils";
 import { GuildSelector } from "@/components/GuildSelector";
+import ChannelPicker from "@/components/discord/ChannelPicker";
+import { formatApiError } from "@/lib/format-error";
 
 const BOT_CLIENT_ID = "1545139931154878464";
 const BOT_INVITE_URL = `https://discord.com/oauth2/authorize?client_id=${BOT_CLIENT_ID}&permissions=8&scope=bot%20applications.commands`;
@@ -211,15 +213,15 @@ export default function HighlightsCenterClient() {
         credentials: "include",
         body: JSON.stringify({ keyword: trimmed }),
       });
+      const body = await res.json().catch(() => ({}));
       if (!res.ok) {
-        const body = await res.json().catch(() => ({}));
-        throw new Error(body.error || "add");
+        throw new Error(body?.error || "add");
       }
       setNewKeyword("");
       success("Mot-clé ajouté", `Tu seras notifié quand "${trimmed}" est mentionné.`);
       load();
-    } catch (err) {
-      showError("Échec de l'ajout", err instanceof Error ? err.message : "Impossible de joindre le serveur du bot.");
+    } catch (err: any) {
+      showError("Échec de l'ajout", formatApiError(err, "Impossible de joindre le serveur du bot."));
     } finally {
       setAdding(false);
     }
@@ -234,9 +236,10 @@ export default function HighlightsCenterClient() {
         `${BOT_API_URL}/api/guilds/${selectedGuild.id}/highlights/mine/keywords/${encodeURIComponent(keyword)}`,
         { method: "DELETE", credentials: "include" }
       );
-      if (!res.ok) throw new Error();
-    } catch {
-      showError("Échec de la suppression", "Impossible de joindre le serveur du bot.");
+      const body = await res.json().catch(() => ({}));
+      if (!res.ok) throw new Error(body?.error || "delete failed");
+    } catch (err: any) {
+      showError("Échec de la suppression", formatApiError(err, "Impossible de joindre le serveur du bot."));
       load();
     }
   };
@@ -255,9 +258,10 @@ export default function HighlightsCenterClient() {
         credentials: "include",
         body: JSON.stringify({ ignoredChannelIds: next }),
       });
-      if (!res.ok) throw new Error();
-    } catch {
-      showError("Échec de la sauvegarde", "Impossible de joindre le serveur du bot.");
+      const body = await res.json().catch(() => ({}));
+      if (!res.ok) throw new Error(body?.error || "save failed");
+    } catch (err: any) {
+      showError("Échec de la sauvegarde", formatApiError(err, "Impossible de joindre le serveur du bot."));
       load();
     }
   };
@@ -274,9 +278,10 @@ export default function HighlightsCenterClient() {
         credentials: "include",
         body: JSON.stringify({ ignoredChannelIds: next }),
       });
-      if (!res.ok) throw new Error();
-    } catch {
-      showError("Échec de la sauvegarde", "Impossible de joindre le serveur du bot.");
+      const body = await res.json().catch(() => ({}));
+      if (!res.ok) throw new Error(body?.error || "save failed");
+    } catch (err: any) {
+      showError("Échec de la sauvegarde", formatApiError(err, "Impossible de joindre le serveur du bot."));
       load();
     }
   };
@@ -455,20 +460,15 @@ export default function HighlightsCenterClient() {
                 Un mot-clé mentionné dans ces salons ne te déclenche aucun DM (ex : un salon trop actif).
               </p>
               <div className="flex flex-col gap-2 sm:flex-row sm:items-center">
-                <div className="relative flex-1">
-                  <select
+                <div className="flex-1 min-w-[200px]">
+                  <ChannelPicker
+                    guildId={selectedGuild.id}
                     value={muteChannelId}
-                    onChange={(e) => setMuteChannelId(e.target.value)}
-                    className="w-full cursor-pointer appearance-none rounded-lg border border-[var(--panel-border)] bg-transparent px-3 py-1.5 pr-8 text-xs text-[var(--text-primary)] outline-none hover:bg-[var(--surface-2)]"
-                  >
-                    <option value="" className="bg-[var(--panel-bg)] text-[var(--text-primary)]">— Choisir un salon —</option>
-                    {mutableChannels.map((c) => (
-                      <option key={c.id} value={c.id} className="bg-[var(--panel-bg)] text-[var(--text-primary)]">
-                        #{c.name}
-                      </option>
-                    ))}
-                  </select>
-                  <ChevronDown className="pointer-events-none absolute right-2.5 top-1/2 h-3.5 w-3.5 -translate-y-1/2 text-[var(--text-muted)]" />
+                    onChange={setMuteChannelId}
+                    placeholder="Sélectionner un salon à ignorer..."
+                    size="sm"
+                    allowClear
+                  />
                 </div>
                 <button
                   type="button"

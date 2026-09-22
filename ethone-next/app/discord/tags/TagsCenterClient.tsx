@@ -10,6 +10,7 @@ import { useBotGuildIds, pickBotGuild } from "@/lib/hooks/useBotGuildIds";
 import { useDiscordSync } from "@/lib/useDiscordSync";
 import { cn } from "@/lib/utils";
 import { GuildSelector } from "@/components/GuildSelector";
+import { formatApiError } from "@/lib/format-error";
 
 const BOT_CLIENT_ID = "1545139931154878464";
 const BOT_INVITE_URL = `https://discord.com/oauth2/authorize?client_id=${BOT_CLIENT_ID}&permissions=8&scope=bot%20applications.commands`;
@@ -178,8 +179,8 @@ export default function TagsCenterClient() {
       setEditName("");
       setEditContent("");
       load();
-    } catch (e) {
-      showError("Échec", e instanceof Error && e.message ? e.message : "Impossible d'enregistrer.");
+    } catch (e: any) {
+      showError("Échec", formatApiError(e, "Impossible d'enregistrer."));
     } finally {
       setSaving(false);
     }
@@ -192,15 +193,16 @@ export default function TagsCenterClient() {
         method: "DELETE",
         credentials: "include",
       });
-      if (!res.ok) throw new Error();
+      const data = await res.json().catch(() => ({}));
+      if (!res.ok) throw new Error(data?.error || "delete failed");
       success("Tag supprimé", "");
       if (editName === name) {
         setEditName("");
         setEditContent("");
       }
       load();
-    } catch {
-      showError("Échec", "Impossible de supprimer.");
+    } catch (e: any) {
+      showError("Échec", formatApiError(e, "Impossible de supprimer."));
     }
   };
 

@@ -22,6 +22,7 @@ import { useDiscordSync } from "@/lib/useDiscordSync";
 import { cn } from "@/lib/utils";
 import { GuildSelector } from "@/components/GuildSelector";
 import ChannelPicker from "@/components/discord/ChannelPicker";
+import { formatApiError } from "@/lib/format-error";
 
 const BOT_CLIENT_ID = "1545139931154878464";
 const BOT_INVITE_URL = `https://discord.com/oauth2/authorize?client_id=${BOT_CLIENT_ID}&permissions=8&scope=bot%20applications.commands`;
@@ -274,12 +275,13 @@ export default function StickyCenterClient() {
           cooldownSeconds: draft.cooldownSeconds,
         }),
       });
-      if (!res.ok) throw new Error();
+      const data = await res.json().catch(() => null);
+      if (!res.ok) throw new Error(data?.error || "save failed");
       success("Sticky synchronisé", "Le message a été (re)positionné dans le salon.");
       setDraft(null);
       load();
-    } catch {
-      showError("Échec de la sauvegarde", "Impossible de joindre le serveur du bot. Réessayez.");
+    } catch (err: any) {
+      showError("Échec de la sauvegarde", formatApiError(err, "Impossible de joindre le serveur du bot. Réessayez."));
     } finally {
       setSaving(false);
     }
@@ -292,12 +294,13 @@ export default function StickyCenterClient() {
         method: "DELETE",
         credentials: "include",
       });
-      if (!res.ok) throw new Error();
+      const data = await res.json().catch(() => null);
+      if (!res.ok) throw new Error(data?.error || "delete failed");
       success("Sticky retiré", `Le message ne sera plus fixé dans #${channelName(channelId)}.`);
       if (draft?.channelId === channelId) setDraft(null);
       load();
-    } catch {
-      showError("Échec", "Impossible de retirer le sticky.");
+    } catch (err: any) {
+      showError("Échec", formatApiError(err, "Impossible de retirer le sticky."));
     }
   };
 
@@ -308,11 +311,12 @@ export default function StickyCenterClient() {
         method: "POST",
         credentials: "include",
       });
-      if (!res.ok) throw new Error();
+      const data = await res.json().catch(() => null);
+      if (!res.ok) throw new Error(data?.error || "repost failed");
       success("Republié", `Le sticky a été renvoyé en bas de #${channelName(channelId)}.`);
       load();
-    } catch {
-      showError("Échec", "Impossible de republier le sticky.");
+    } catch (err: any) {
+      showError("Échec", formatApiError(err, "Impossible de republier le sticky."));
     }
   };
 

@@ -1,6 +1,6 @@
 "use client";
 
-import { useState, useEffect, useCallback } from "react";
+import { useState, useEffect, useCallback, useMemo, useRef } from "react";
 import Link from "next/link";
 import { useSearchParams } from "next/navigation";
 import {
@@ -10,8 +10,14 @@ import {
   Sliders,
   Clock,
   RefreshCw,
+  Bot,
 } from "lucide-react";
 import { useToast } from "@/components/ToastProvider";
+import { useDiscordOAuth, type DiscordGuild, canManageGuild, getStoredDiscordGuilds } from "@/lib/hooks/useDiscordOAuth";
+import { useBotGuildIds, pickBotGuild } from "@/lib/hooks/useBotGuildIds";
+import { GuildSelector } from "@/components/GuildSelector";
+import ChannelPicker from "@/components/discord/ChannelPicker";
+import { formatApiError } from "@/lib/format-error";
 import { cn } from "@/lib/utils";
 
 interface VoiceSettings {
@@ -54,12 +60,57 @@ const DEFAULT_SETTINGS: VoiceSettings = {
   notifyOnRoomCreation: false,
 };
 
+const BOT_CLIENT_ID = "1545139931154878464";
+const BOT_INVITE_URL = `https://discord.com/oauth2/authorize?client_id=${BOT_CLIENT_ID}&permissions=8&scope=bot%20applications.commands`;
 const BOT_API_URL = process.env.NEXT_PUBLIC_DISCORD_BOT_API || "";
 
 export default function VoiceSettingsClient() {
   const searchParams = useSearchParams();
-  const guildId = searchParams.get("guildId") || "1128633164290596884";
-  const { success } = useToast();
+  const { profile } = useDiscordOAuth();
+  const allGuilds: DiscordGuild[] = useMemo(() => {
+    if (profile?.guilds && profile.guilds.length > 0) return profile.guilds;
+    return getStoredDiscordGuilds();
+  }, [profile?.guilds]);
+
+  const botGuildIds = useBotGuildIds(allGuilds);
+  const manageableGuilds: DiscordGuild[] = useMemo(() => {
+    if (allGuilds.length === 0) return [];
+    const manageable = allGuilds.filter((g) => canManageGuild(g) || (botGuildIds && botGuildIds.includes(g.id)));
+    return manageable.length > 0 ? manageable : allGuilds;
+  }, [allGuilds, botGuildIds]);
+
+  const appliedQueryGuild = useRef<string | null>(null);
+  const userSelectedRef = useRef(false);
+  const queryGuildId = searchParams.get("guildId");
+  const [selectedGuild, setSelectedGuild] = useState<DiscordGuild | null>(null);
+
+  useEffect(() => {
+    if (manageableGuilds.length === 0) return;
+    if (queryGuildId && appliedQueryGuild.current !== queryGuildId) {
+      const match = manageableGuilds.find((g) => g.id === queryGuildId);
+      if (match) {
+        appliedQueryGuild.current = queryGuildId;
+        setSelectedGuild(match);
+        return;
+      }
+    }
+    if (!userSelectedRef.current && !queryGuildId) {
+      if (!selectedGuild) {
+        if (botGuildIds !== null) {
+          setSelectedGuild(pickBotGuild(manageableGuilds, botGuildIds)!);
+        }
+      } else if (botGuildIds && botGuildIds.length > 0 && !botGuildIds.includes(selectedGuild.id)) {
+        const botGuild = pickBotGuild(manageableGuilds, botGuildIds);
+        if (botGuild && botGuild.id !== selectedGuild.id && botGuildIds.includes(botGuild.id)) {
+          setSelectedGuild(botGuild);
+        }
+      }
+    }
+  }, [manageableGuilds, queryGuildId, selectedGuild, botGuildIds]);
+
+  const guildId = selectedGuild?.id || "";
+  const isBotPresent = Boolean(guildId && botGuildIds && botGuildIds.includes(guildId));
+  const { success, error: showError } = useToast();
 
   const [settings, setSettings] = useState<VoiceSettings>(DEFAULT_SETTINGS);
   const [categories, setCategories] = useState<Array<{ id: string; name: string }>>([]);
@@ -68,7 +119,7 @@ export default function VoiceSettingsClient() {
   const [isSaving, setIsSaving] = useState(false);
 
   const fetchCategories = useCallback(async (notify = false) => {
-    if (!BOT_API_URL || !guildId) return;
+    if (!BOT_API_URL || !guildId || !isBotPresent) return;
     setLoadingCategories(true);
     try {
       const res = await fetch(`${BOT_API_URL}/api/guilds/${guildId}/server/channels`, { credentials: "include" });
@@ -85,28 +136,35 @@ export default function VoiceSettingsClient() {
     } finally {
       setLoadingCategories(false);
     }
-  }, [guildId, success]);
+  }, [guildId, isBotPresent, success]);
 
   const fetchSettings = useCallback(async () => {
-    if (BOT_API_URL) {
-      try {
-        const res = await fetch(`${BOT_API_URL}/api/guilds/${guildId}/voice/settings`, { credentials: "include" });
-        if (res.ok) {
-          const data = await res.json();
-          setSettings({ ...DEFAULT_SETTINGS, ...(data.settings || {}) });
-          return;
-        }
-      } catch {
-        // Fallback
-      }
+    if (!BOT_API_URL || !guildId || !isBotPresent) {
+      setLoading(false);
+      return;
     }
-  }, [guildId]);
+    try {
+      const res = await fetch(`${BOT_API_URL}/api/guilds/${guildId}/voice/settings`, { credentials: "include" });
+      if (res.ok) {
+        const data = await res.json();
+        setSettings({ ...DEFAULT_SETTINGS, ...(data.settings || {}) });
+      }
+    } catch {
+      // Fallback
+    } finally {
+      setLoading(false);
+    }
+  }, [guildId, isBotPresent]);
 
   useEffect(() => {
     Promise.all([fetchSettings(), fetchCategories(false)]).finally(() => setLoading(false));
   }, [fetchSettings, fetchCategories]);
 
   const handleSave = async () => {
+    if (!guildId || !BOT_API_URL) {
+      showError("Bot injoignable", "Rien n'a été enregistré.");
+      return;
+    }
     setIsSaving(true);
     try {
       const res = await fetch(`${BOT_API_URL}/api/guilds/${guildId}/voice/settings`, {
@@ -116,17 +174,15 @@ export default function VoiceSettingsClient() {
         body: JSON.stringify(settings),
       });
 
-      if (res.ok) {
-        success("Paramètres enregistrés avec succès !");
-        setIsSaving(false);
-        return;
-      }
-    } catch {
-      // Local demo fallback
-    }
+      const data = await res.json().catch(() => null);
+      if (!res.ok) throw new Error(data?.error || "save failed");
 
-    success("Paramètres enregistrés (mode local) !");
-    setIsSaving(false);
+      success("Paramètres enregistrés avec succès !");
+    } catch (err: any) {
+      showError("Erreur", formatApiError(err, "Impossible d'enregistrer les paramètres."));
+    } finally {
+      setIsSaving(false);
+    }
   };
 
   if (loading) {
@@ -146,7 +202,7 @@ export default function VoiceSettingsClient() {
       <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4">
         <div>
           <Link
-            href={`/discord/voice?guildId=${guildId}`}
+            href={`/discord/voice${guildId ? `?guildId=${guildId}` : ""}`}
             className="inline-flex items-center gap-1.5 text-xs font-semibold text-zinc-400 hover:text-white transition-colors"
           >
             <ArrowLeft className="h-3.5 w-3.5" />
@@ -161,15 +217,52 @@ export default function VoiceSettingsClient() {
           </p>
         </div>
 
-        <button
-          onClick={handleSave}
-          disabled={isSaving}
-          className="flex h-10 items-center gap-2 rounded-xl bg-emerald-500 px-5 text-xs font-bold text-white shadow-sm hover:bg-emerald-600 transition-all active:scale-95 disabled:opacity-50 cursor-pointer"
-        >
-          <Save className="h-4 w-4" />
-          <span>{isSaving ? "Enregistrement..." : "Enregistrer les modifications"}</span>
-        </button>
+        <div className="flex items-center gap-3 flex-wrap">
+          {manageableGuilds.length > 0 && (
+            <GuildSelector
+              guilds={manageableGuilds}
+              value={selectedGuild?.id || ""}
+              onChange={(g) => {
+                userSelectedRef.current = true;
+                setSelectedGuild(g);
+              }}
+            />
+          )}
+
+          <button
+            onClick={handleSave}
+            disabled={isSaving}
+            className="flex h-10 items-center gap-2 rounded-xl bg-emerald-500 px-5 text-xs font-bold text-white shadow-sm hover:bg-emerald-600 transition-all active:scale-95 disabled:opacity-50 cursor-pointer"
+          >
+            <Save className="h-4 w-4" />
+            <span>{isSaving ? "Enregistrement..." : "Enregistrer les modifications"}</span>
+          </button>
+        </div>
       </div>
+
+      {selectedGuild && botGuildIds !== null && !botGuildIds.includes(selectedGuild.id) && (
+        <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 rounded-2xl border border-indigo-500/30 bg-indigo-500/10 p-4 text-xs text-indigo-200">
+          <div className="flex items-start gap-3">
+            <div className="p-2 rounded-xl bg-indigo-500/20 text-indigo-300 shrink-0 mt-0.5">
+              <Bot className="h-5 w-5" />
+            </div>
+            <div>
+              <p className="font-semibold text-white text-sm">Le bot ETHONE n&apos;est pas installé sur ce serveur</p>
+              <p className="mt-0.5 text-zinc-300">
+                Invitez le bot sur « {selectedGuild.name} » pour activer les salons vocaux temporaires et le panneau de contrôle.
+              </p>
+            </div>
+          </div>
+          <a
+            href={`${BOT_INVITE_URL}&guild_id=${selectedGuild.id}`}
+            target="_blank"
+            rel="noopener noreferrer"
+            className="inline-flex items-center justify-center gap-1.5 rounded-xl bg-indigo-600 px-4 py-2 text-xs font-semibold text-white shadow-md hover:bg-indigo-500 transition-colors shrink-0"
+          >
+            Inviter le bot
+          </a>
+        </div>
+      )}
 
       {/* Grid Settings Sections */}
       <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
@@ -190,12 +283,13 @@ export default function VoiceSettingsClient() {
               <label className="block text-zinc-300 font-semibold mb-1">
                 Salon Textuel du Panneau de Création
               </label>
-              <input
-                type="text"
-                placeholder="ex: 1128633164290596884 ou #create-voice"
+              <ChannelPicker
+                guildId={guildId}
                 value={settings.creationTextChannelId || ""}
-                onChange={(e) => setSettings({ ...settings, creationTextChannelId: e.target.value })}
-                className="w-full h-10 px-3.5 rounded-xl bg-zinc-950 border border-zinc-800 text-white placeholder-zinc-500 focus:outline-none focus:border-indigo-500"
+                onChange={(val) => setSettings({ ...settings, creationTextChannelId: val || "" })}
+                placeholder="Sélectionner un salon textuel pour le panneau..."
+                size="sm"
+                allowClear
               />
               <span className="text-[11px] text-zinc-500 mt-1 block">
                 Salon où le bot publiera le message permanent avec le bouton "Créer mon salon".

@@ -1,6 +1,6 @@
 "use client";
 
-import React, { useState, useEffect } from "react";
+import React, { useState, useEffect, useMemo, useRef, useCallback } from "react";
 import Link from "next/link";
 import { useSearchParams } from "next/navigation";
 import {
@@ -10,18 +10,65 @@ import {
   Bell,
   Download,
   Save,
-  Hash,
+  Bot,
 } from "lucide-react";
 import { useToast } from "@/components/ToastProvider";
-import { useDiscordOAuth } from "@/lib/hooks/useDiscordOAuth";
-import { useResolvedGuildId } from "@/lib/hooks/useBotGuildIds";
+import { useDiscordOAuth, type DiscordGuild, canManageGuild, getStoredDiscordGuilds } from "@/lib/hooks/useDiscordOAuth";
+import { useBotGuildIds, pickBotGuild } from "@/lib/hooks/useBotGuildIds";
+import { GuildSelector } from "@/components/GuildSelector";
+import ChannelPicker from "@/components/discord/ChannelPicker";
+import { formatApiError } from "@/lib/format-error";
 
+const BOT_CLIENT_ID = "1545139931154878464";
+const BOT_INVITE_URL = `https://discord.com/oauth2/authorize?client_id=${BOT_CLIENT_ID}&permissions=8&scope=bot%20applications.commands`;
 const API_BASE = process.env.NEXT_PUBLIC_DISCORD_BOT_API || "";
 
 export default function InviteSettingsClient() {
   const searchParams = useSearchParams();
-  const { profile: oauthProfile } = useDiscordOAuth();
-  const guildId = useResolvedGuildId(searchParams.get("guildId"), oauthProfile?.guilds);
+  const { profile } = useDiscordOAuth();
+  const allGuilds: DiscordGuild[] = useMemo(() => {
+    if (profile?.guilds && profile.guilds.length > 0) return profile.guilds;
+    return getStoredDiscordGuilds();
+  }, [profile?.guilds]);
+
+  const botGuildIds = useBotGuildIds(allGuilds);
+  const manageableGuilds: DiscordGuild[] = useMemo(() => {
+    if (allGuilds.length === 0) return [];
+    const manageable = allGuilds.filter((g) => canManageGuild(g) || (botGuildIds && botGuildIds.includes(g.id)));
+    return manageable.length > 0 ? manageable : allGuilds;
+  }, [allGuilds, botGuildIds]);
+
+  const appliedQueryGuild = useRef<string | null>(null);
+  const userSelectedRef = useRef(false);
+  const queryGuildId = searchParams.get("guildId");
+  const [selectedGuild, setSelectedGuild] = useState<DiscordGuild | null>(null);
+
+  useEffect(() => {
+    if (manageableGuilds.length === 0) return;
+    if (queryGuildId && appliedQueryGuild.current !== queryGuildId) {
+      const match = manageableGuilds.find((g) => g.id === queryGuildId);
+      if (match) {
+        appliedQueryGuild.current = queryGuildId;
+        setSelectedGuild(match);
+        return;
+      }
+    }
+    if (!userSelectedRef.current && !queryGuildId) {
+      if (!selectedGuild) {
+        if (botGuildIds !== null) {
+          setSelectedGuild(pickBotGuild(manageableGuilds, botGuildIds)!);
+        }
+      } else if (botGuildIds && botGuildIds.length > 0 && !botGuildIds.includes(selectedGuild.id)) {
+        const botGuild = pickBotGuild(manageableGuilds, botGuildIds);
+        if (botGuild && botGuild.id !== selectedGuild.id && botGuildIds.includes(botGuild.id)) {
+          setSelectedGuild(botGuild);
+        }
+      }
+    }
+  }, [manageableGuilds, queryGuildId, selectedGuild, botGuildIds]);
+
+  const guildId = selectedGuild?.id || "";
+  const isBotPresent = Boolean(guildId && botGuildIds && botGuildIds.includes(guildId));
   const { success, error: showError } = useToast();
 
   const [loading, setLoading] = useState(true);
@@ -33,19 +80,19 @@ export default function InviteSettingsClient() {
   const [retentionTracking, setRetentionTracking] = useState(true);
   const [riskSensitivity, setRiskSensitivity] = useState("standard");
   const [minAccountAgeHours, setMinAccountAgeHours] = useState(24);
-  const [notificationChannel, setNotificationChannel] = useState("annonces-invitations");
+  const [notificationChannel, setNotificationChannel] = useState("");
   const [onValidJoin, setOnValidJoin] = useState(true);
   const [onSuspiciousJoin, setOnSuspiciousJoin] = useState(true);
   const [messageTemplate, setMessageTemplate] = useState(
     "🎉 Bienvenue {user} invité par {inviter} ({inviteCount} invitations valides) !"
   );
 
-  const fetchSettings = async () => {
-    setLoading(true);
-    if (!API_BASE) {
+  const fetchSettings = useCallback(async () => {
+    if (!guildId || !isBotPresent || !API_BASE) {
       setLoading(false);
       return;
     }
+    setLoading(true);
     try {
       const res = await fetch(`${API_BASE}/api/guilds/${guildId}/invites/settings`, { credentials: "include" });
       if (res.ok) {
@@ -57,7 +104,7 @@ export default function InviteSettingsClient() {
         setRetentionTracking(s.retentionTracking);
         setRiskSensitivity(s.riskSensitivity || "standard");
         setMinAccountAgeHours(s.suspiciousThresholds?.minAccountAgeHours || 24);
-        setNotificationChannel(s.notificationChannel || "annonces-invitations");
+        setNotificationChannel(s.notificationChannel || "");
         setOnValidJoin(s.notificationEvents?.onValidJoin ?? true);
         setOnSuspiciousJoin(s.notificationEvents?.onSuspiciousJoin ?? true);
         setMessageTemplate(s.notificationMessageTemplate || "");
@@ -67,14 +114,14 @@ export default function InviteSettingsClient() {
     } finally {
       setLoading(false);
     }
-  };
+  }, [guildId, isBotPresent]);
 
   useEffect(() => {
     fetchSettings();
-  }, [guildId]);
+  }, [fetchSettings]);
 
   const handleSave = async () => {
-    if (!API_BASE) {
+    if (!guildId || !API_BASE) {
       showError("Bot injoignable", "Rien n'a été enregistré.");
       return;
     }
@@ -106,13 +153,12 @@ export default function InviteSettingsClient() {
         }),
       });
 
-      if (res.ok) {
-        success("Paramètres enregistrés", "La configuration d'Invite Tracker a été mise à jour.");
-      } else {
-        throw new Error();
-      }
-    } catch {
-      showError("Erreur", "Impossible d'enregistrer les paramètres.");
+      const data = await res.json().catch(() => null);
+      if (!res.ok) throw new Error(data?.error || "save failed");
+
+      success("Paramètres enregistrés", "La configuration d'Invite Tracker a été mise à jour.");
+    } catch (err: any) {
+      showError("Erreur", formatApiError(err, "Impossible d'enregistrer les paramètres."));
     } finally {
       setSaving(false);
     }
@@ -129,24 +175,64 @@ export default function InviteSettingsClient() {
   return (
     <div className="h-full overflow-y-auto os-scroll [overscroll-behavior:contain] bg-[var(--bg-main)] text-white flex flex-col p-4 sm:p-8 pb-36 max-w-4xl mx-auto">
       {/* Top Header */}
-      <div className="flex items-center justify-between mb-8 pb-4 border-b border-zinc-800">
-        <Link
-          href={`/discord/invites?guildId=${guildId}`}
-          className="inline-flex items-center gap-2 text-xs font-medium text-zinc-400 hover:text-white transition"
-        >
-          <ChevronLeft className="w-4 h-4" />
-          <span>Retour à l'Invite Tracker</span>
-        </Link>
+      <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 mb-6 pb-4 border-b border-zinc-800">
+        <div>
+          <Link
+            href={`/discord/invites${guildId ? `?guildId=${guildId}` : ""}`}
+            className="inline-flex items-center gap-2 text-xs font-medium text-zinc-400 hover:text-white transition"
+          >
+            <ChevronLeft className="w-4 h-4" />
+            <span>Retour à l'Invite Tracker</span>
+          </Link>
+          <h1 className="text-xl font-bold tracking-tight text-white mt-1">Paramètres de l'Invite Tracker</h1>
+        </div>
 
-        <button
-          onClick={handleSave}
-          disabled={saving}
-          className="inline-flex items-center gap-2 px-5 py-2.5 rounded-xl bg-pink-600 hover:bg-pink-500 text-white text-xs font-bold shadow-sm transition cursor-pointer"
-        >
-          <Save className="w-4 h-4" />
-          <span>{saving ? "Sauvegarde..." : "Enregistrer les modifications"}</span>
-        </button>
+        <div className="flex items-center gap-3 flex-wrap">
+          {manageableGuilds.length > 0 && (
+            <GuildSelector
+              guilds={manageableGuilds}
+              value={selectedGuild?.id || ""}
+              onChange={(g) => {
+                userSelectedRef.current = true;
+                setSelectedGuild(g);
+              }}
+            />
+          )}
+
+          <button
+            onClick={handleSave}
+            disabled={saving}
+            className="inline-flex items-center gap-2 px-5 py-2.5 rounded-xl bg-pink-600 hover:bg-pink-500 text-white text-xs font-bold shadow-sm transition cursor-pointer disabled:opacity-50"
+          >
+            <Save className="w-4 h-4" />
+            <span>{saving ? "Sauvegarde..." : "Enregistrer les modifications"}</span>
+          </button>
+        </div>
       </div>
+
+      {selectedGuild && botGuildIds !== null && !botGuildIds.includes(selectedGuild.id) && (
+        <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 rounded-2xl border border-indigo-500/30 bg-indigo-500/10 p-4 text-xs text-indigo-200 mb-6">
+          <div className="flex items-start gap-3">
+            <div className="p-2 rounded-xl bg-indigo-500/20 text-indigo-300 shrink-0 mt-0.5">
+              <Bot className="h-5 w-5" />
+            </div>
+            <div>
+              <p className="font-semibold text-white text-sm">Le bot ETHONE n&apos;est pas installé sur ce serveur</p>
+              <p className="mt-0.5 text-zinc-300">
+                Invitez le bot sur « {selectedGuild.name} » pour gérer les invitations et récompenses de parrainage.
+              </p>
+            </div>
+          </div>
+          <a
+            href={`${BOT_INVITE_URL}&guild_id=${selectedGuild.id}`}
+            target="_blank"
+            rel="noopener noreferrer"
+            className="inline-flex items-center justify-center gap-1.5 rounded-xl bg-indigo-600 px-4 py-2 text-xs font-semibold text-white shadow-md hover:bg-indigo-500 transition-colors shrink-0"
+          >
+            Inviter le bot
+          </a>
+        </div>
+      )}
 
       <div className="space-y-6">
         {/* Section 1: Tracking Général */}
@@ -283,16 +369,14 @@ export default function InviteSettingsClient() {
               <label className="text-xs font-semibold text-zinc-300 block mb-1.5">
                 Salon Discord des annonces
               </label>
-              <div className="flex items-center gap-2 p-2.5 rounded-xl bg-zinc-950 border border-zinc-800">
-                <Hash className="w-4 h-4 text-zinc-500" />
-                <input
-                  type="text"
-                  value={notificationChannel}
-                  onChange={(e) => setNotificationChannel(e.target.value)}
-                  placeholder="annonces-invitations"
-                  className="bg-transparent text-xs text-white focus:outline-none flex-1"
-                />
-              </div>
+              <ChannelPicker
+                guildId={selectedGuild?.id}
+                value={notificationChannel}
+                onChange={(chId) => setNotificationChannel(chId || "")}
+                placeholder="Sélectionner un salon pour les annonces..."
+                size="sm"
+                allowClear
+              />
             </div>
 
             <div>

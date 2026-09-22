@@ -12,6 +12,7 @@ import Input from "@/components/Input";
 import BentoCard from "@/components/BentoCard";
 import LiveClock from "@/components/LiveClock";
 import { cn } from "@/lib/utils";
+import MarkdownContent from "@/components/MarkdownContent";
 import type { CloudDashboard, NowPlaying } from "@/lib/hooks/useDashboard";
 
 function formatStorage(bytes = 0) {
@@ -235,7 +236,23 @@ const HeroBriefingCard = memo(function HeroBriefingCard({
               </p>
             )}
             {!brain.loading && latestAssistant && !brain.error && (
-              <p className="line-clamp-3 whitespace-pre-wrap leading-relaxed">{latestAssistant}</p>
+              <div className="group relative">
+                <div className="line-clamp-3 overflow-hidden text-xs leading-relaxed">
+                  <MarkdownContent
+                    content={latestAssistant}
+                    className="text-xs space-y-1 [&_p]:text-xs [&_p]:leading-relaxed [&_h1]:text-xs [&_h1]:font-semibold [&_h2]:text-xs [&_h2]:font-semibold [&_h3]:text-xs [&_h3]:font-semibold [&_blockquote]:py-1 [&_blockquote]:my-1"
+                  />
+                </div>
+                <div className="mt-1 flex items-center justify-end">
+                  <Link
+                    href="/brain"
+                    className="inline-flex items-center gap-1 text-[10px] font-medium text-[var(--accent-primary)] hover:underline opacity-80 hover:opacity-100 transition-opacity"
+                  >
+                    <span>Voir dans Brain</span>
+                    <Icon pack="phosphor" name="arrowRight" className="h-2.5 w-2.5" />
+                  </Link>
+                </div>
+              </div>
             )}
           </div>
         )}

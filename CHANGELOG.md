@@ -2,6 +2,14 @@
 
 Toutes les modifications notables de ce projet seront documentées dans ce fichier.
 
+## v1.28.33 — 2026-09-23
+
+### Rendu Markdown dans l'Aperçu & Briefing (HeroBriefingCard)
+- **Intégration du composant MarkdownContent (`ethone-next/components/HeroBriefingCard.tsx`)** : L'aperçu du dernier message de Brain AI sur le tableau de bord d'accueil prend désormais en charge le formatage Markdown riche (gras `**`, italique `*`, code en ligne, listes, citations) au lieu d'afficher les balises brutes en texte plein.
+- **Raccourci direct vers Brain** : Ajout d'un lien « Voir dans Brain » avec icône pour consulter la réponse complète et détaillée sans être limité au résumé tronqué de 3 lignes.
+
+---
+
 ## v1.28.32 — 2026-09-23
 
 ### Correction critique du crash au chargement (ReferenceError v12842)

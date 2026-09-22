@@ -32485,10 +32485,50 @@ const v12852_de: ChangelogEntry = {
   ],
 };
 
-CHANGELOG_BY_LANG.fr.unshift(v12852_fr, v12851_fr, v12850_fr, v12849_fr, v12848_fr, v12847_fr, v12846_fr, v12845_fr, v12844_fr, v12843_fr, v12841_fr, v12840_fr, v12839_fr, v12838_fr, v12837_fr, v12836_fr, v12835_fr, v12834_fr, v12833_fr);
-CHANGELOG_BY_LANG.en.unshift(v12852_en, v12851_en, v12850_en, v12849_en, v12848_en, v12847_en, v12846_en, v12845_en, v12844_en, v12843_en, v12841_en, v12840_en, v12839_en, v12838_en, v12837_en, v12836_en, v12835_en, v12834_en, v12833_en);
-CHANGELOG_BY_LANG.es.unshift(v12852_es, v12851_es, v12850_es, v12849_es, v12848_es, v12847_es, v12846_es, v12845_es, v12844_es, v12843_es, v12841_es, v12840_es, v12839_es, v12838_es, v12837_es, v12836_es, v12835_es, v12834_es, v12833_es);
-CHANGELOG_BY_LANG.de.unshift(v12852_de, v12851_de, v12850_de, v12849_de, v12848_de, v12847_de, v12846_de, v12845_de, v12844_de, v12843_de, v12841_de, v12840_de, v12839_de, v12838_de, v12837_de, v12836_de, v12835_de, v12834_de, v12833_de);
+const v12853_fr: ChangelogEntry = {
+  version: "v1.28.33",
+  date: "2026-09-23",
+  title: "Rendu Markdown dans l'Aperçu & Briefing (HeroBriefingCard)",
+  items: [
+    "Intégration du composant MarkdownContent dans HeroBriefingCard : l'aperçu du dernier message de Brain AI affiche désormais le formatage Markdown riche (gras, italique, code, listes) au lieu des balises brutes.",
+    "Lien direct vers Brain : ajout d'un raccourci « Voir dans Brain » pour consulter l'intégralité de la réponse sans troncature.",
+  ],
+};
+
+const v12853_en: ChangelogEntry = {
+  version: "v1.28.33",
+  date: "2026-09-23",
+  title: "Markdown Rendering in Overview & Briefing (HeroBriefingCard)",
+  items: [
+    "Integration of MarkdownContent in HeroBriefingCard: the preview of the latest Brain AI response now renders rich Markdown formatting (bold, italics, code, lists) instead of raw syntax.",
+    "Direct Brain Link: added a 'View in Brain' shortcut to view the complete untruncated response.",
+  ],
+};
+
+const v12853_es: ChangelogEntry = {
+  version: "v1.28.33",
+  date: "2026-09-23",
+  title: "Renderizado de Markdown en Resumen y Briefing (HeroBriefingCard)",
+  items: [
+    "Integración del componente MarkdownContent en HeroBriefingCard: la vista previa del último mensaje de Brain AI ahora muestra formato Markdown enriquecido (negrita, cursiva, código, listas) en lugar de sintaxis sin procesar.",
+    "Enlace directo a Brain: acceso directo 'Ver en Brain' para consultar la respuesta completa.",
+  ],
+};
+
+const v12853_de: ChangelogEntry = {
+  version: "v1.28.33",
+  date: "2026-09-23",
+  title: "Markdown-Rendering in Übersicht & Briefing (HeroBriefingCard)",
+  items: [
+    "Integration der MarkdownContent-Komponente in HeroBriefingCard: Die Vorschau der neuesten Brain-AI-Antwort zeigt nun Rich-Markdown-Formatierung (Fett, Kursiv, Code, Listen) anstelle von Rohtext.",
+    "Direkter Link zu Brain: 'In Brain ansehen' Verknüpfung hinzugefügt, um die vollständige Antwort anzuzeigen.",
+  ],
+};
+
+CHANGELOG_BY_LANG.fr.unshift(v12853_fr, v12852_fr, v12851_fr, v12850_fr, v12849_fr, v12848_fr, v12847_fr, v12846_fr, v12845_fr, v12844_fr, v12843_fr, v12841_fr, v12840_fr, v12839_fr, v12838_fr, v12837_fr, v12836_fr, v12835_fr, v12834_fr, v12833_fr);
+CHANGELOG_BY_LANG.en.unshift(v12853_en, v12852_en, v12851_en, v12850_en, v12849_en, v12848_en, v12847_en, v12846_en, v12845_en, v12844_en, v12843_en, v12841_en, v12840_en, v12839_en, v12838_en, v12837_en, v12836_en, v12835_en, v12834_en, v12833_en);
+CHANGELOG_BY_LANG.es.unshift(v12853_es, v12852_es, v12851_es, v12850_es, v12849_es, v12848_es, v12847_es, v12846_es, v12845_es, v12844_es, v12843_es, v12841_es, v12840_es, v12839_es, v12838_es, v12837_es, v12836_es, v12835_es, v12834_es, v12833_es);
+CHANGELOG_BY_LANG.de.unshift(v12853_de, v12852_de, v12851_de, v12850_de, v12849_de, v12848_de, v12847_de, v12846_de, v12845_de, v12844_de, v12843_de, v12841_de, v12840_de, v12839_de, v12838_de, v12837_de, v12836_de, v12835_de, v12834_de, v12833_de);
 
 export const CHANGELOG = CHANGELOG_BY_LANG.fr;
 

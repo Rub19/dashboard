@@ -22,6 +22,7 @@ import { useBotGuildIds, pickBotGuild } from "@/lib/hooks/useBotGuildIds";
 import { useToast } from "@/components/ToastProvider";
 import DiscordIcon from "@/components/DiscordIcon";
 import ChannelPicker from "@/components/discord/ChannelPicker";
+import RolePicker from "@/components/discord/RolePicker";
 
 const BOT_CLIENT_ID = "1545139931154878464";
 const BOT_INVITE_URL = `https://discord.com/oauth2/authorize?client_id=${BOT_CLIENT_ID}&permissions=8&scope=bot%20applications.commands`;
@@ -621,25 +622,14 @@ export default function SetupWizardClient() {
                   <label className="text-xs font-semibold text-zinc-300 block mb-1.5">
                     Rôle attribué automatiquement
                   </label>
-                  <select
+                  <RolePicker
                     value={autoRoleId ?? ""}
-                    onChange={(e) => setAutoRoleId(e.target.value || null)}
-                    disabled={isLoadingGuildData || guildRoles.length === 0}
-                    className="w-full p-2.5 rounded-xl bg-zinc-950 border border-zinc-800 text-xs text-white focus:outline-none disabled:opacity-50"
-                  >
-                    <option value="" className="bg-zinc-950">
-                      {isLoadingGuildData
-                        ? "Chargement des rôles…"
-                        : guildRoles.length === 0
-                        ? "Aucun rôle disponible"
-                        : "Aucun (ne pas attribuer de rôle)"}
-                    </option>
-                    {guildRoles.map((r) => (
-                      <option key={r.id} value={r.id} className="bg-zinc-950">
-                        {r.name}
-                      </option>
-                    ))}
-                  </select>
+                    onChange={(id) => setAutoRoleId(id || null)}
+                    roles={guildRoles}
+                    placeholder="Aucun (ne pas attribuer de rôle)"
+                    disabled={isLoadingGuildData}
+                    size="sm"
+                  />
                 </div>
               </div>
             </div>

@@ -2,6 +2,16 @@
 
 Toutes les modifications notables de ce projet seront documentées dans ce fichier.
 
+## v1.28.13 — 2026-09-22
+
+**Harmonisation des Sélecteurs Discord & Améliorations Tâches et Scratchpad**
+
+- **Sondages Discord (`/discord/polls`)** : remplacement des sélecteurs natifs de salon par `ChannelPicker` (recherche en direct, icône `#`) lors de la création et du déploiement de sondages.
+- **Assistant Discord (`/discord/setup`)** : intégration de `RolePicker` avec pastilles de couleur et recherche en direct pour l'Auto-Role à l'étape 4.
+- **Gestion de Serveur (`/discord/server`)** : utilisation de `ChannelPicker` dans la modale de création de Webhook (onglet Intégrations) et dans le débogueur de permissions.
+- **Tâches (`/tasks`)** : modernisation des sélecteurs de catégorie et de priorité dans le formulaire d'ajout rapide avec indicateurs colorés et menu compact.
+- **Bloc-notes (`/scratchpad`)** : ajout de boutons d'action rapide pour exporter le contenu directement vers les Notes ou créer une Tâche en un clic.
+
 ## v1.28.12 — 2026-09-22
 
 **Navigation Hub Sécurité, Détection Bot Anti-Raid & RolePicker Onboarding**

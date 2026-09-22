@@ -31627,5 +31627,62 @@ CHANGELOG_BY_LANG.en.unshift(v12832_en);
 CHANGELOG_BY_LANG.es.unshift(v12832_es);
 CHANGELOG_BY_LANG.de.unshift(v12832_de);
 
+const v12833_fr: ChangelogEntry = {
+  version: "v1.28.13",
+  date: "2026-09-22",
+  title: "Harmonisation des Sélecteurs Discord & Améliorations Tâches et Scratchpad",
+  items: [
+    "Sondages Discord (/discord/polls) : remplacement des sélecteurs natifs de salon par ChannelPicker lors de la création et du déploiement de sondages.",
+    "Assistant Discord (/discord/setup) : intégration de RolePicker avec pastilles de couleur et recherche pour l'Auto-Role à l'étape 4.",
+    "Gestion de Serveur (/discord/server) : utilisation de ChannelPicker dans la modale de création de Webhook et le débogueur de permissions.",
+    "Tâches (/tasks) : modernisation des sélecteurs de catégorie et de priorité dans le formulaire d'ajout rapide avec indicateurs colorés.",
+    "Bloc-notes (/scratchpad) : ajout de boutons d'action rapide pour exporter le contenu directement vers les Notes ou créer une Tâche.",
+  ],
+};
+
+const v12833_en: ChangelogEntry = {
+  version: "v1.28.13",
+  date: "2026-09-22",
+  title: "Discord Selectors Harmonization & Tasks & Scratchpad Enhancements",
+  items: [
+    "Discord Polls (/discord/polls): replaced raw channel selects with ChannelPicker in poll creation and deployment modals.",
+    "Discord Setup Wizard (/discord/setup): integrated RolePicker with color badges and live search for Auto-Role in step 4.",
+    "Server Management (/discord/server): used ChannelPicker in Create Webhook modal and permissions debugger.",
+    "Tasks (/tasks): modernized category and priority pickers in quick add form with colored status indicators.",
+    "Scratchpad (/scratchpad): added quick action buttons to export scratchpad content directly to Notes or create a Task.",
+  ],
+};
+
+const v12833_es: ChangelogEntry = {
+  version: "v1.28.13",
+  date: "2026-09-22",
+  title: "Armonización de Selectores Discord y Mejoras en Tareas y Bloc de Notas",
+  items: [
+    "Encuestas Discord (/discord/polls): selectores de canales sustituidos por ChannelPicker en la creación y despliegue.",
+    "Asistente Discord (/discord/setup): integración de RolePicker con colores y búsqueda para el Auto-Rol en el paso 4.",
+    "Gestión del Servidor (/discord/server): uso de ChannelPicker en la creación de Webhooks y depurador de permisos.",
+    "Tareas (/tasks): modernización de selectores de categoría y prioridad en el formulario rápido con indicadores de color.",
+    "Bloc de notas (/scratchpad): botones de acción rápida para exportar contenido directamente a Notas o crear una Tarea.",
+  ],
+};
+
+const v12833_de: ChangelogEntry = {
+  version: "v1.28.13",
+  date: "2026-09-22",
+  title: "Discord-Auswahl-Harmonisierung & Aufgaben- und Notizblock-Verbesserungen",
+  items: [
+    "Discord-Umfragen (/discord/polls): native Kanalauswahlen durch ChannelPicker bei Erstellung und Bereitstellung ersetzt.",
+    "Discord-Einrichtungsassistent (/discord/setup): RolePicker mit Farb-Badges und Suche für Auto-Rolle in Schritt 4 integriert.",
+    "Serververwaltung (/discord/server): ChannelPicker im Webhook-Erstellungsdialog und Rechte-Debugger integriert.",
+    "Aufgaben (/tasks): Kategorie- und Prioritätsauswahl im Schnellformular mit farbigen Statuspunkten modernisiert.",
+    "Schnellnotizen (/scratchpad): Schnellaktionen zum direkten Exportieren in Notizen oder Erstellen einer Aufgabe hinzugefügt.",
+  ],
+};
+
+CHANGELOG_BY_LANG.fr.unshift(v12833_fr);
+CHANGELOG_BY_LANG.en.unshift(v12833_en);
+CHANGELOG_BY_LANG.es.unshift(v12833_es);
+CHANGELOG_BY_LANG.de.unshift(v12833_de);
+
 export const CHANGELOG = CHANGELOG_BY_LANG.fr;
 

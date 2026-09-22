@@ -1,6 +1,6 @@
 "use client";
 
-import { useState, useEffect, useCallback } from "react";
+import { useState, useEffect, useCallback, useMemo } from "react";
 import Link from "next/link";
 import { useSearchParams } from "next/navigation";
 import {
@@ -44,6 +44,7 @@ import { Tabs, TabsList, TabsTrigger } from "@/components/ui/Tabs";
 import { cn } from "@/lib/utils";
 import { useDiscordOAuth } from "@/lib/hooks/useDiscordOAuth";
 import { useResolvedGuildId } from "@/lib/hooks/useBotGuildIds";
+import ChannelPicker from "@/components/discord/ChannelPicker";
 
 // ==========================================
 // Types
@@ -328,6 +329,10 @@ export default function ServerManagementClient({
     categories: [],
     orphanChannels: [],
   });
+  const allChannels = useMemo(
+    () => [...channelTree.categories.flatMap((c) => c.channels), ...channelTree.orphanChannels],
+    [channelTree]
+  );
   const [channelSearch, setChannelSearch] = useState("");
   const [isCreateChannelOpen, setIsCreateChannelOpen] = useState(false);
   const [newChannelType, setNewChannelType] = useState<number>(0);
@@ -2226,18 +2231,13 @@ export default function ServerManagementClient({
 
                 <div>
                   <label className="text-[11px] font-semibold text-zinc-400 block mb-1">Salon cible :</label>
-                  <select
+                  <ChannelPicker
                     value={debugChannelId}
-                    onChange={(e) => setDebugChannelId(e.target.value)}
-                    className="w-full bg-zinc-900 border border-[var(--panel-border)] rounded-xl px-3 py-2 text-xs text-white"
-                  >
-                    <option value="">Sélectionner un salon...</option>
-                    {[...channelTree.categories.flatMap((c) => c.channels), ...channelTree.orphanChannels].map((c) => (
-                      <option key={c.id} value={c.id}>
-                        #{c.name} ({c.typeName || "text"})
-                      </option>
-                    ))}
-                  </select>
+                    onChange={(id) => setDebugChannelId(id)}
+                    channels={allChannels}
+                    placeholder="Sélectionner un salon..."
+                    size="sm"
+                  />
                 </div>
 
                 <div>
@@ -2553,18 +2553,13 @@ export default function ServerManagementClient({
 
                   <div>
                     <label className="text-xs text-zinc-400 block mb-1">Salon cible :</label>
-                    <select
+                    <ChannelPicker
                       value={newWebhookChannel}
-                      onChange={(e) => setNewWebhookChannel(e.target.value)}
-                      className="w-full bg-zinc-900 border border-[var(--panel-border)] rounded-xl px-3 py-2 text-xs text-white"
-                    >
-                      <option value="">Sélectionner un salon...</option>
-                      {[...channelTree.categories.flatMap((c) => c.channels), ...channelTree.orphanChannels].map((c) => (
-                        <option key={c.id} value={c.id}>
-                          #{c.name}
-                        </option>
-                      ))}
-                    </select>
+                      onChange={(id) => setNewWebhookChannel(id)}
+                      channels={allChannels}
+                      placeholder="Sélectionner un salon..."
+                      size="sm"
+                    />
                   </div>
 
                   <div className="flex justify-end gap-2 pt-3 border-t border-[var(--panel-border)]">

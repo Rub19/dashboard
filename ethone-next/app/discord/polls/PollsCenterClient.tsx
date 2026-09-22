@@ -31,6 +31,7 @@ import { useToast } from "@/components/ToastProvider";
 import { useDiscordOAuth } from "@/lib/hooks/useDiscordOAuth";
 import { cn } from "@/lib/utils";
 import { useResolvedGuildId } from "@/lib/hooks/useBotGuildIds";
+import ChannelPicker from "@/components/discord/ChannelPicker";
 
 const BOT_API_URL =
   process.env.NEXT_PUBLIC_DISCORD_BOT_API_URL ||
@@ -774,24 +775,14 @@ export default function PollsCenterClient() {
                   <span>Rafraîchir</span>
                 </button>
               </div>
-              <select
+              <ChannelPicker
                 value={targetChannelId}
-                onChange={(e) => setTargetChannelId(e.target.value)}
+                onChange={(id) => setTargetChannelId(id)}
+                channels={channels}
+                placeholder="Sélectionner un salon..."
                 disabled={channelsLoading}
-                className="w-full rounded-xl border border-zinc-800 bg-zinc-900 px-3 py-2.5 text-xs text-white focus:border-indigo-500 focus:outline-none disabled:opacity-50"
-              >
-                {channelsLoading ? (
-                  <option value="">Chargement des salons...</option>
-                ) : channels.length === 0 ? (
-                  <option value="">Aucun salon textuel trouvé</option>
-                ) : (
-                  channels.map((ch) => (
-                    <option key={ch.id} value={ch.id}>
-                      #{ch.name}
-                    </option>
-                  ))
-                )}
-              </select>
+                size="sm"
+              />
             </div>
 
             <div className="flex items-center justify-end gap-2">

@@ -1059,24 +1059,14 @@ export default function PollCreateClient() {
                       <span>Rafraîchir</span>
                     </button>
                   </div>
-                  <select
+                  <ChannelPicker
                     value={targetChannel}
-                    onChange={(e) => setTargetChannel(e.target.value)}
+                    onChange={(id) => setTargetChannel(id)}
+                    channels={channels}
+                    placeholder="Sélectionner un salon..."
                     disabled={channelsLoading}
-                    className="w-full rounded-xl border border-zinc-800 bg-zinc-900 px-3 py-2 text-xs text-white focus:outline-none disabled:opacity-50"
-                  >
-                    {channelsLoading ? (
-                      <option value="">Chargement des salons...</option>
-                    ) : channels.length === 0 ? (
-                      <option value="">Aucun salon textuel trouvé</option>
-                    ) : (
-                      channels.map((ch) => (
-                        <option key={ch.id} value={ch.id}>
-                          #{ch.name}
-                        </option>
-                      ))
-                    )}
-                  </select>
+                    size="sm"
+                  />
                 </div>
               </div>
             </div>

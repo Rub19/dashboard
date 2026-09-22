@@ -1,6 +1,6 @@
 "use client";
 
-import { useState, useMemo, useCallback } from "react";
+import { useState, useMemo, useCallback, useRef, useEffect } from "react";
 import { motion, AnimatePresence } from "framer-motion";
 import {
   CheckCircle2,
@@ -14,6 +14,7 @@ import {
   Layers,
   RefreshCw,
   AlertTriangle,
+  ChevronDown,
 } from "lucide-react";
 import { useCloudTasks } from "@/lib/hooks/useCloudTasks";
 import { useToast } from "@/components/ToastProvider";
@@ -28,6 +29,86 @@ type FilterTab = "all" | "open" | "priority" | "done";
 type ViewMode = "list" | "kanban";
 
 const CATEGORIES = ["Tous", "Général", "Dev", "Design", "Organisation", "Personnel", "Projet"];
+
+const PRIORITY_OPTIONS: { id: TaskPriority; label: string; dotColor: string }[] = [
+  { id: "low", label: "Basse", dotColor: "bg-zinc-400" },
+  { id: "medium", label: "Moyenne", dotColor: "bg-sky-400" },
+  { id: "high", label: "Haute", dotColor: "bg-amber-400" },
+  { id: "urgent", label: "Urgente", dotColor: "bg-rose-500" },
+];
+
+const CATEGORY_OPTIONS = CATEGORIES.filter((c) => c !== "Tous").map((c) => ({
+  id: c,
+  label: c,
+}));
+
+function CompactSelect<T extends string>({
+  value,
+  onChange,
+  options,
+}: {
+  value: T;
+  onChange: (val: T) => void;
+  options: { id: T; label: string; dotColor?: string }[];
+}) {
+  const [open, setOpen] = useState(false);
+  const ref = useRef<HTMLDivElement>(null);
+
+  useEffect(() => {
+    if (!open) return;
+    function handleClickOutside(e: MouseEvent) {
+      if (ref.current && !ref.current.contains(e.target as Node)) {
+        setOpen(false);
+      }
+    }
+    document.addEventListener("mousedown", handleClickOutside);
+    return () => document.removeEventListener("mousedown", handleClickOutside);
+  }, [open]);
+
+  const selected = options.find((o) => o.id === value) || options[0];
+
+  return (
+    <div ref={ref} className="relative">
+      <button
+        type="button"
+        onClick={() => setOpen((v) => !v)}
+        className="flex items-center gap-1.5 rounded-[var(--inset-radius)] border border-[var(--panel-border)] bg-[var(--surface-2)]/50 px-2.5 py-1.5 text-xs text-[var(--text-muted)] hover:border-[var(--accent-primary)]/40 hover:text-[var(--text-primary)] transition-colors"
+      >
+        {selected.dotColor && (
+          <span className={cn("h-2 w-2 rounded-full", selected.dotColor)} />
+        )}
+        <span>{selected.label}</span>
+        <ChevronDown className="h-3 w-3 opacity-60" />
+      </button>
+
+      {open && (
+        <div className="absolute left-0 top-full mt-1 z-50 min-w-[120px] rounded-xl border border-[var(--panel-border)] bg-[var(--bg-main)]/95 p-1 shadow-xl backdrop-blur-xl">
+          {options.map((opt) => (
+            <button
+              key={opt.id}
+              type="button"
+              onClick={() => {
+                onChange(opt.id);
+                setOpen(false);
+              }}
+              className={cn(
+                "flex w-full items-center gap-2 rounded-lg px-2.5 py-1.5 text-left text-xs font-medium transition-colors",
+                opt.id === value
+                  ? "bg-[var(--accent-primary)]/15 text-[var(--accent-primary)]"
+                  : "text-[var(--text-muted)] hover:bg-[var(--surface-2)] hover:text-[var(--text-primary)]"
+              )}
+            >
+              {opt.dotColor && (
+                <span className={cn("h-2 w-2 rounded-full shrink-0", opt.dotColor)} />
+              )}
+              <span className="truncate">{opt.label}</span>
+            </button>
+          ))}
+        </div>
+      )}
+    </div>
+  );
+}
 
 export default function TasksPage() {
   const { items, loading, error, create, update, remove, reload } = useCloudTasks();
@@ -238,28 +319,17 @@ export default function TasksPage() {
         />
 
         <div className="flex items-center gap-2 px-1">
-          <select
+          <CompactSelect
             value={newCategory}
-            onChange={(e) => setNewCategory(e.target.value)}
-            className="cursor-pointer rounded-[var(--inset-radius)] border border-[var(--panel-border)] bg-transparent px-2.5 py-1.5 text-xs text-[var(--text-muted)] outline-none hover:text-[var(--text-primary)]"
-          >
-            {CATEGORIES.filter((c) => c !== "Tous").map((c) => (
-              <option key={c} value={c} className="bg-[var(--panel-bg)] text-[var(--text-primary)]">
-                {c}
-              </option>
-            ))}
-          </select>
+            onChange={(val) => setNewCategory(val)}
+            options={CATEGORY_OPTIONS}
+          />
 
-          <select
+          <CompactSelect
             value={newPriority}
-            onChange={(e) => setNewPriority(e.target.value as TaskPriority)}
-            className="cursor-pointer rounded-[var(--inset-radius)] border border-[var(--panel-border)] bg-transparent px-2.5 py-1.5 text-xs text-[var(--text-muted)] outline-none hover:text-[var(--text-primary)]"
-          >
-            <option value="low" className="bg-[var(--panel-bg)] text-[var(--text-primary)]">Basse</option>
-            <option value="medium" className="bg-[var(--panel-bg)] text-[var(--text-primary)]">Moyenne</option>
-            <option value="high" className="bg-[var(--panel-bg)] text-[var(--text-primary)]">Haute</option>
-            <option value="urgent" className="bg-[var(--panel-bg)] text-[var(--text-primary)]">Urgente</option>
-          </select>
+            onChange={(val) => setNewPriority(val)}
+            options={PRIORITY_OPTIONS}
+          />
 
           <button
             type="submit"

@@ -32173,10 +32173,50 @@ const v12845_de: ChangelogEntry = {
   ],
 };
 
-CHANGELOG_BY_LANG.fr.unshift(v12845_fr, v12844_fr, v12843_fr, v12842_fr, v12841_fr, v12840_fr, v12839_fr, v12838_fr, v12837_fr, v12836_fr, v12835_fr, v12834_fr, v12833_fr);
-CHANGELOG_BY_LANG.en.unshift(v12845_en, v12844_en, v12843_en, v12842_en, v12841_en, v12840_en, v12839_en, v12838_en, v12837_en, v12836_en, v12835_en, v12834_en, v12833_en);
-CHANGELOG_BY_LANG.es.unshift(v12845_es, v12844_es, v12843_es, v12842_es, v12841_es, v12840_es, v12839_es, v12838_es, v12837_es, v12836_es, v12835_es, v12834_es, v12833_es);
-CHANGELOG_BY_LANG.de.unshift(v12845_de, v12844_de, v12843_de, v12842_de, v12841_de, v12840_de, v12839_de, v12838_de, v12837_de, v12836_de, v12835_de, v12834_de, v12833_de);
+const v12846_fr: ChangelogEntry = {
+  version: "v1.28.26",
+  date: "2026-09-22",
+  title: "Correction de l'icône de sidebar et complétion des packs d'icônes",
+  items: [
+    "Barre supérieure : correction de l'icône de toggle de la barre latérale qui disparaissait lorsque la sidebar était ouverte (résolution de 'sidebar-simple' vers 'PanelLeftClose' / 'sidebar-simple').",
+    "Système d'icônes : mapping complet cross-packs (Lucide, Phosphor, Tabler, Heroicons, Radix) pour les icônes de panneau, soundscapes, mode zen, sauvegarde, messages et navigation.",
+  ],
+};
+
+const v12846_en: ChangelogEntry = {
+  version: "v1.28.26",
+  date: "2026-09-22",
+  title: "Sidebar Icon Fix & Icon Packs Mapping Completion",
+  items: [
+    "Top Bar: fixed sidebar toggle icon disappearing when the sidebar is opened (proper mapping of 'sidebar-simple' to 'PanelLeftClose' / 'sidebar-simple').",
+    "Icon System: complete cross-pack mapping (Lucide, Phosphor, Tabler, Heroicons, Radix) for panel icons, soundscapes, zen mode, save actions, messages, and navigation.",
+  ],
+};
+
+const v12846_es: ChangelogEntry = {
+  version: "v1.28.26",
+  date: "2026-09-22",
+  title: "Corrección del icono de la barra lateral y mapeo de iconos",
+  items: [
+    "Barra superior: corrección del icono de alternancia de la barra lateral que desaparecía cuando estaba abierta (mapeo de 'sidebar-simple' a 'PanelLeftClose' / 'sidebar-simple').",
+    "Sistema de iconos: mapeo completo entre paquetes (Lucide, Phosphor, Tabler, Heroicons, Radix) para paneles, ambientación sonora, modo zen, guardado y navegación.",
+  ],
+};
+
+const v12846_de: ChangelogEntry = {
+  version: "v1.28.26",
+  date: "2026-09-22",
+  title: "Seitenleisten-Symbol-Korrektur & Vervollständigung der Icon-Packs",
+  items: [
+    "Obere Leiste: Behebung des Seitenleisten-Umschaltsymbols, das beim Öffnen der Leiste verschwand (Auflösung von 'sidebar-simple' zu 'PanelLeftClose' / 'sidebar-simple').",
+    "Icon-System: Vollständiges packübergreifendes Mapping (Lucide, Phosphor, Tabler, Heroicons, Radix) für Panel-Icons, Soundscapes, Zen-Modus, Speichern und Navigation.",
+  ],
+};
+
+CHANGELOG_BY_LANG.fr.unshift(v12846_fr, v12845_fr, v12844_fr, v12843_fr, v12842_fr, v12841_fr, v12840_fr, v12839_fr, v12838_fr, v12837_fr, v12836_fr, v12835_fr, v12834_fr, v12833_fr);
+CHANGELOG_BY_LANG.en.unshift(v12846_en, v12845_en, v12844_en, v12843_en, v12842_en, v12841_en, v12840_en, v12839_en, v12838_en, v12837_en, v12836_en, v12835_en, v12834_en, v12833_en);
+CHANGELOG_BY_LANG.es.unshift(v12846_es, v12845_es, v12844_es, v12843_es, v12842_es, v12841_es, v12840_es, v12839_es, v12838_es, v12837_es, v12836_es, v12835_es, v12834_es, v12833_es);
+CHANGELOG_BY_LANG.de.unshift(v12846_de, v12845_de, v12844_de, v12843_de, v12842_de, v12841_de, v12840_de, v12839_de, v12838_de, v12837_de, v12836_de, v12835_de, v12834_de, v12833_de);
 
 export const CHANGELOG = CHANGELOG_BY_LANG.fr;
 

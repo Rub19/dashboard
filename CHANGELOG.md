@@ -2,6 +2,14 @@
 
 Toutes les modifications notables de ce projet seront documentées dans ce fichier.
 
+## v1.28.26 — 2026-09-22
+
+### Correction de l'icône de sidebar & complétion des packs d'icônes
+- **Barre supérieure (`TopBar`)** : Correction de l'icône de toggle de la barre latérale qui disparaissait lorsque la sidebar était ouverte (`sidebar-simple` est désormais correctement résolu vers `PanelLeftClose` / `sidebar-simple`).
+- **Système d'icônes (`lib/icons.tsx` & `lib/lucide-icons.tsx`)** : Mapping complet et synchronisation cross-packs (Lucide, Phosphor, Tabler, Heroicons, Radix) pour l'ensemble des icônes UI : panneaux (`sidebar`, `sidebar-simple`, `sidebar-close`, `sidebar-open`, `panel-left-close`, `panel-left-open`), mode zen (`corners-out`, `corners-in`), mixer d'ambiance et audio (`speaker-simple-slash`, `speaker-simple-high`, `speaker-slash`), actions (`floppy-disk`, `refresh`), messages & statut (`paper-plane-tilt`, `chat-circle`), ambiances sonores (`drop`, `lightning`, `music-notes`), navigation (`habits`, `admin`) et vocal (`microphone`, `microphone-slash`).
+
+---
+
 ## v1.28.25 — 2026-09-22
 
 ### Fiabilisation & Nettoyage global

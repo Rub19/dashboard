@@ -36,8 +36,8 @@ function loadTurnstileScript(): Promise<void> {
       'script[src^="https://challenges.cloudflare.com/turnstile/v0/api.js"]'
     );
     if (existing) {
-      existing.addEventListener("load", () => resolve());
-      existing.addEventListener("error", () => reject(new Error("Turnstile script failed to load")));
+      existing.addEventListener("load", () => resolve(), { once: true });
+      existing.addEventListener("error", () => reject(new Error("Turnstile script failed to load")), { once: true });
       return;
     }
     const script = document.createElement("script");

@@ -32132,10 +32132,51 @@ const v12844_de: ChangelogEntry = {
   ],
 };
 
-CHANGELOG_BY_LANG.fr.unshift(v12844_fr, v12843_fr, v12842_fr, v12841_fr, v12840_fr, v12839_fr, v12838_fr, v12837_fr, v12836_fr, v12835_fr, v12834_fr, v12833_fr);
-CHANGELOG_BY_LANG.en.unshift(v12844_en, v12843_en, v12842_en, v12841_en, v12840_en, v12839_en, v12838_en, v12837_en, v12836_en, v12835_en, v12834_en, v12833_en);
-CHANGELOG_BY_LANG.es.unshift(v12844_es, v12843_es, v12842_es, v12841_es, v12840_es, v12839_es, v12838_es, v12837_es, v12836_es, v12835_es, v12834_es, v12833_es);
-CHANGELOG_BY_LANG.de.unshift(v12844_de, v12843_de, v12842_de, v12841_de, v12840_de, v12839_de, v12838_de, v12837_de, v12836_de, v12835_de, v12834_de, v12833_de);
+
+const v12845_fr: ChangelogEntry = {
+  version: "v1.28.25",
+  date: "2026-09-22",
+  title: "Fiabilisation globale & Nettoyage d'écouteurs",
+  items: [
+    "Drop : upload attend désormais la mise à jour des métadonnées avec gestion d'erreur locale, évitant tout rejet de promesse non intercepté.",
+    "Turnstile : ajout de { once: true } sur les écouteurs de chargement du script Cloudflare pour un nettoyage mémoire automatique.",
+  ],
+};
+
+const v12845_en: ChangelogEntry = {
+  version: "v1.28.25",
+  date: "2026-09-22",
+  title: "Global Reliability & Event Listener Cleanup",
+  items: [
+    "Drop: upload now properly awaits metadata refresh with local error handling, preventing any unhandled promise rejections.",
+    "Turnstile: added { once: true } on Cloudflare script load listeners for automatic memory cleanup.",
+  ],
+};
+
+const v12845_es: ChangelogEntry = {
+  version: "v1.28.25",
+  date: "2026-09-22",
+  title: "Fiabilidad global y Limpieza de listeners",
+  items: [
+    "Drop: upload ahora espera la actualización de metadatos con manejo de errores local, evitando rechazos de promesas no interceptados.",
+    "Turnstile: añadido { once: true } a los listeners del script de Cloudflare para limpieza de memoria automática.",
+  ],
+};
+
+const v12845_de: ChangelogEntry = {
+  version: "v1.28.25",
+  date: "2026-09-22",
+  title: "Globale Zuverlässigkeit & Listener-Bereinigung",
+  items: [
+    "Drop: upload wartet jetzt ordnungsgemäß auf die Metadaten-Aktualisierung mit lokaler Fehlerbehandlung, wodurch unbehandelte Promise-Rejections vermieden werden.",
+    "Turnstile: { once: true } zu den Lade-Listenern des Cloudflare-Skripts für automatische Speicherbereinigung hinzugefügt.",
+  ],
+};
+
+CHANGELOG_BY_LANG.fr.unshift(v12845_fr, v12844_fr, v12843_fr, v12842_fr, v12841_fr, v12840_fr, v12839_fr, v12838_fr, v12837_fr, v12836_fr, v12835_fr, v12834_fr, v12833_fr);
+CHANGELOG_BY_LANG.en.unshift(v12845_en, v12844_en, v12843_en, v12842_en, v12841_en, v12840_en, v12839_en, v12838_en, v12837_en, v12836_en, v12835_en, v12834_en, v12833_en);
+CHANGELOG_BY_LANG.es.unshift(v12845_es, v12844_es, v12843_es, v12842_es, v12841_es, v12840_es, v12839_es, v12838_es, v12837_es, v12836_es, v12835_es, v12834_es, v12833_es);
+CHANGELOG_BY_LANG.de.unshift(v12845_de, v12844_de, v12843_de, v12842_de, v12841_de, v12840_de, v12839_de, v12838_de, v12837_de, v12836_de, v12835_de, v12834_de, v12833_de);
 
 export const CHANGELOG = CHANGELOG_BY_LANG.fr;
 

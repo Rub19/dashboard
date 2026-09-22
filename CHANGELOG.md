@@ -2,6 +2,14 @@
 
 Toutes les modifications notables de ce projet seront documentées dans ce fichier.
 
+## v1.28.25 — 2026-09-22
+
+### Fiabilisation & Nettoyage global
+- **Transferts de fichiers Drop (`/drop`)** : `upload` attend désormais correctement la promesse de rafraîchissement des métadonnées avec gestion d'erreur locale, évitant les rejets de promesse non interceptés (*unhandled promise rejections*).
+- **Protection Turnstile (`TurnstileWidget`)** : Ajout de l'option `{ once: true }` sur les écouteurs d'événements de chargement du script Cloudflare Turnstile pour un nettoyage immédiat en mémoire.
+
+---
+
 ## v1.28.24 — 2026-09-22
 
 ### Corrections critiques de sécurité & fiabilisation des actions

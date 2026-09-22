@@ -71,7 +71,8 @@ function DropContent() {
       if (password) p.set("password", password);
       await uploadPublic(`/api/cloud/drops/upload?${p.toString()}`, file);
       setSuccess(i18n("uploadedFile").replace("{{name}}", file.name));
-      fetchWorker(resolveUrl).then((res) => res?.data?.drop && setDrop(res.data.drop));
+      const refreshRes = await fetchWorker(resolveUrl).catch(() => null);
+      if (refreshRes?.data?.drop) setDrop(refreshRes.data.drop);
     } catch (err) {
       const message = String(err instanceof Error ? err.message : err);
       setError(message);

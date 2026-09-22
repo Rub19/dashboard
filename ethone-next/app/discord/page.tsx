@@ -59,7 +59,7 @@ import {
 import { useToast } from "@/components/ToastProvider";
 import { useDiscordOAuth, type DiscordGuild } from "@/lib/hooks/useDiscordOAuth";
 import DiscordIcon from "@/components/DiscordIcon";
-import { cn } from "@/lib/utils";
+import { cn, formatApiError } from "@/lib/utils";
 import { useDiscordOnboarding } from "@/lib/hooks/useDiscordOnboarding";
 import DiscordOnboardingModal from "@/components/discord/onboarding/DiscordOnboardingModal";
 import { Checkbox } from "@/components/ui/Checkbox";
@@ -604,20 +604,8 @@ export default function DiscordDashboardPage() {
       const formatError = async (res: Response, label: string) => {
         try {
           const data = await res.json().catch(() => null);
-          if (!data?.error) return `${label} (${res.status})`;
-          if (typeof data.error === "string") {
-            try {
-              const parsed = JSON.parse(data.error);
-              if (Array.isArray(parsed) && parsed[0]?.message) {
-                return `${label} (${parsed.map((p: any) => p.message).join(", ")})`;
-              }
-            } catch {}
-            return `${label} (${data.error})`;
-          }
-          if (Array.isArray(data.error) && data.error[0]?.message) {
-            return `${label} (${data.error.map((p: any) => p.message).join(", ")})`;
-          }
-          return `${label} (${res.status})`;
+          const msg = formatApiError(data?.error, `${res.status}`);
+          return `${label} (${msg})`;
         } catch {
           return `${label} (${res.status})`;
         }

@@ -13,6 +13,7 @@ import {
   Trash2,
   Users,
   DoorOpen,
+  Bot,
 } from "lucide-react";
 import { useToast } from "@/components/ToastProvider";
 import { useDiscordOAuth, type DiscordGuild, canManageGuild, getStoredDiscordGuilds } from "@/lib/hooks/useDiscordOAuth";
@@ -59,6 +60,8 @@ const ACTION_LABELS: Record<AntiNukeAction, { label: string; icon: string }> = {
   ban: { label: "Bannissement immédiat", icon: "🔨" },
 };
 
+const BOT_CLIENT_ID = "1545139931154878464";
+const BOT_INVITE_URL = `https://discord.com/oauth2/authorize?client_id=${BOT_CLIENT_ID}&permissions=8&scope=bot%20applications.commands`;
 const BOT_API_URL = process.env.NEXT_PUBLIC_DISCORD_BOT_API || "";
 
 export default function AntiNukePage() {
@@ -80,6 +83,7 @@ export default function AntiNukePage() {
 
   // Le paramètre d'URL n'est appliqué qu'une fois par valeur : sinon il annule le choix fait dans le sélecteur.
   const appliedQueryGuild = useRef<string | null>(null);
+  const userSelectedRef = useRef(false);
   const queryGuildId = searchParams.get("guildId");
   const [selectedGuild, setSelectedGuild] = useState<DiscordGuild | null>(null);
 
@@ -93,7 +97,18 @@ export default function AntiNukePage() {
         return;
       }
     }
-    if (!selectedGuild && botGuildIds !== null) setSelectedGuild(pickBotGuild(manageableGuilds, botGuildIds)!);
+    if (!userSelectedRef.current && !queryGuildId) {
+      if (!selectedGuild) {
+        if (botGuildIds !== null) {
+          setSelectedGuild(pickBotGuild(manageableGuilds, botGuildIds)!);
+        }
+      } else if (botGuildIds && botGuildIds.length > 0 && !botGuildIds.includes(selectedGuild.id)) {
+        const botGuild = pickBotGuild(manageableGuilds, botGuildIds);
+        if (botGuild && botGuild.id !== selectedGuild.id && botGuildIds.includes(botGuild.id)) {
+          setSelectedGuild(botGuild);
+        }
+      }
+    }
   }, [manageableGuilds, queryGuildId, selectedGuild, botGuildIds]);
 
   const [config, setConfig] = useState<AntiNukeConfig>(DEFAULT_CONFIG);
@@ -103,7 +118,15 @@ export default function AntiNukePage() {
   const [isSaving, setIsSaving] = useState(false);
 
   const fetchAllData = useCallback(async () => {
-    if (!selectedGuild || !BOT_API_URL) return;
+    if (!selectedGuild) return;
+
+    if (botGuildIds !== null && !botGuildIds.includes(selectedGuild.id)) {
+      setIncidents([]);
+      setOpenCount(0);
+      return;
+    }
+
+    if (!BOT_API_URL) return;
     setIsLoading(true);
     try {
       const [overviewRes, configRes] = await Promise.all([
@@ -124,7 +147,7 @@ export default function AntiNukePage() {
     } finally {
       setIsLoading(false);
     }
-  }, [selectedGuild]);
+  }, [selectedGuild, botGuildIds]);
 
   useEffect(() => {
     fetchAllData();
@@ -143,7 +166,17 @@ export default function AntiNukePage() {
 
   const saveConfig = async (patch: Partial<AntiNukeConfig>) => {
     if (!selectedGuild || !BOT_API_URL) return;
-    const next = { ...config, ...patch };
+    const clampedPatch = { ...patch };
+    if (clampedPatch.maxBans !== undefined) {
+      clampedPatch.maxBans = Math.max(2, Math.min(20, Number(clampedPatch.maxBans) || 2));
+    }
+    if (clampedPatch.maxChannelDeletes !== undefined) {
+      clampedPatch.maxChannelDeletes = Math.max(2, Math.min(10, Number(clampedPatch.maxChannelDeletes) || 2));
+    }
+    if (clampedPatch.maxRoleDeletes !== undefined) {
+      clampedPatch.maxRoleDeletes = Math.max(2, Math.min(10, Number(clampedPatch.maxRoleDeletes) || 2));
+    }
+    const next = { ...config, ...clampedPatch };
     setConfig(next);
     setIsSaving(true);
     try {
@@ -151,7 +184,7 @@ export default function AntiNukePage() {
         method: "PUT",
         headers: { "Content-Type": "application/json" },
         credentials: "include",
-        body: JSON.stringify(patch),
+        body: JSON.stringify(clampedPatch),
       });
       if (!res.ok) throw new Error("save failed");
       success("Anti-Nuke mis à jour", "Configuration synchronisée avec le bot.");
@@ -185,9 +218,9 @@ export default function AntiNukePage() {
         <div className="max-w-5xl mx-auto flex flex-col sm:flex-row items-start sm:items-center justify-between gap-3">
           <div className="flex items-center gap-3">
             <Link
-              href={selectedGuild ? `/discord/security/anti-raid?guildId=${selectedGuild.id}` : "/discord"}
+              href={selectedGuild ? `/discord/security?guildId=${selectedGuild.id}` : "/discord/security"}
               className="flex h-8 w-8 items-center justify-center rounded-[var(--inset-radius)] border border-[var(--panel-border)] bg-white/5 text-zinc-400 hover:text-white hover:bg-white/10 transition-all active:scale-95"
-              title="Retour"
+              title="Retour au hub Sécurité"
             >
               <ArrowLeft className="h-4 w-4" />
             </Link>
@@ -204,7 +237,14 @@ export default function AntiNukePage() {
 
           <div className="flex items-center flex-wrap gap-2 w-full sm:w-auto justify-end">
             {manageableGuilds.length > 0 && (
-              <GuildSelector guilds={manageableGuilds} value={selectedGuild?.id || ""} onChange={setSelectedGuild} />
+              <GuildSelector
+                guilds={manageableGuilds}
+                value={selectedGuild?.id || ""}
+                onChange={(g) => {
+                  userSelectedRef.current = true;
+                  setSelectedGuild(g);
+                }}
+              />
             )}
             <button
               onClick={fetchAllData}
@@ -233,6 +273,29 @@ export default function AntiNukePage() {
 
       <main className="flex-1 min-h-0 overflow-y-auto px-4 sm:px-6 py-6 scrollbar-thin scrollbar-thumb-white/10">
         <div className="max-w-5xl mx-auto space-y-6">
+          {selectedGuild && botGuildIds !== null && !botGuildIds.includes(selectedGuild.id) && (
+            <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 rounded-2xl border border-indigo-500/30 bg-indigo-500/10 p-4 text-xs text-indigo-200">
+              <div className="flex items-start gap-3">
+                <div className="p-2 rounded-xl bg-indigo-500/20 text-indigo-300 shrink-0 mt-0.5">
+                  <Bot className="h-5 w-5" />
+                </div>
+                <div>
+                  <p className="font-semibold text-white text-sm">Le bot ETHONE n&apos;est pas installé sur ce serveur</p>
+                  <p className="mt-0.5 text-zinc-300">
+                    Invitez le bot sur « {selectedGuild.name} » pour activer la surveillance Anti-Nuke.
+                  </p>
+                </div>
+              </div>
+              <a
+                href={`${BOT_INVITE_URL}&guild_id=${selectedGuild.id}`}
+                target="_blank"
+                rel="noopener noreferrer"
+                className="inline-flex items-center justify-center gap-1.5 rounded-xl bg-indigo-600 px-4 py-2 text-xs font-semibold text-white shadow-md hover:bg-indigo-500 transition-colors shrink-0"
+              >
+                Inviter le bot
+              </a>
+            </div>
+          )}
           {/* Stat tiles */}
           <div className="grid grid-cols-2 lg:grid-cols-4 gap-3 sm:gap-4">
             <div className="rounded-[var(--panel-radius)] border border-[var(--panel-border)] bg-white/[0.02] p-4 backdrop-blur-md">

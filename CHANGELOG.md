@@ -2,6 +2,18 @@
 
 Toutes les modifications notables de ce projet seront documentées dans ce fichier.
 
+## v1.28.11 — 2026-09-22
+
+**Correction des Pièges d'Interface & Harmonisation des Configurations Discord**
+
+- **Giveaways (`/discord/giveaways`)** : suppression du piège plein écran bloquant lors d'une erreur ou de l'absence du bot. Le sélecteur de serveur reste accessible en permanence et une bannière d'invitation est affichée si le bot n'est pas installé sur le serveur sélectionné.
+- **Sécurité (`/discord/security`)** : création de la page hub dédiée permettant d'accéder directement à l'Anti-Raid et à l'Anti-Nuke avec sélecteur de serveur et détection de présence du bot.
+- **Tickets (`/discord/tickets`)** : alignement des clés de configuration globale (`autoCloseInactivityHours`, `namingFormat`) avec le schéma Zod du bot (`TicketGlobalConfigSchema`).
+- **Anti-Raid (`discord-bot`)** : fusion profonde (`deep merge`) des sous-objets de configuration côté bot (`raidRepository.ts`) afin d'éviter la réinitialisation des seuils personnalisés lors des mises à jour partielles.
+- **Anti-Nuke (`/discord/security/anti-nuke`)** : ajout de la validation et du verrouillage des seuils (minimum 2 pour bans, suppressions de salons et de rôles) et détection de présence du bot.
+- **Formatage des erreurs (`formatApiError`)** : centralisation dans `lib/utils.ts` pour parser et formater lisiblement les erreurs d'API et les tableaux Zod dans les notifications toasts.
+- **Synchronisation du serveur actif** : alignement systématique entre `activeGuild` et `currentGuildId` sur les pages Commandes, Rôles, Backups, IA, Économie et Suggestions.
+
 ## v1.28.10 — 2026-09-22
 
 **Correction du Statut Serveur Injoignable & Gestion du Bot Non Installé**

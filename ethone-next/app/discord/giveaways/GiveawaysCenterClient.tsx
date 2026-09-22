@@ -25,6 +25,7 @@ import {
   AlertTriangle,
   ImageIcon,
   ArrowLeft,
+  Bot,
 } from "lucide-react";
 import { useToast } from "@/components/ToastProvider";
 import { useDiscordOAuth, type DiscordGuild, canManageGuild, getStoredDiscordGuilds } from "@/lib/hooks/useDiscordOAuth";
@@ -33,6 +34,8 @@ import RolePicker from "@/components/discord/RolePicker";
 import { useBotGuildIds, pickBotGuild } from "@/lib/hooks/useBotGuildIds";
 import { GuildSelector } from "@/components/GuildSelector";
 
+const BOT_CLIENT_ID = "1545139931154878464";
+const BOT_INVITE_URL = `https://discord.com/oauth2/authorize?client_id=${BOT_CLIENT_ID}&permissions=8&scope=bot%20applications.commands`;
 const BOT_API_URL = process.env.NEXT_PUBLIC_DISCORD_BOT_API || "";
 
 type GiveawayStatus = "scheduled" | "active" | "paused" | "ended" | "cancelled";
@@ -133,6 +136,7 @@ export default function GiveawaysCenterClient() {
 
   // Le paramètre d'URL n'est appliqué qu'une fois par valeur : sinon il annule le choix fait dans le sélecteur.
   const appliedQueryGuild = useRef<string | null>(null);
+  const userSelectedRef = useRef(false);
   const queryGuildId = searchParams.get("guildId");
   const [selectedGuild, setSelectedGuild] = useState<DiscordGuild | null>(null);
 
@@ -146,7 +150,18 @@ export default function GiveawaysCenterClient() {
         return;
       }
     }
-    if (!selectedGuild && botGuildIds !== null) setSelectedGuild(pickBotGuild(manageableGuilds, botGuildIds)!);
+    if (!userSelectedRef.current && !queryGuildId) {
+      if (!selectedGuild) {
+        if (botGuildIds !== null) {
+          setSelectedGuild(pickBotGuild(manageableGuilds, botGuildIds)!);
+        }
+      } else if (botGuildIds && botGuildIds.length > 0 && !botGuildIds.includes(selectedGuild.id)) {
+        const botGuild = pickBotGuild(manageableGuilds, botGuildIds);
+        if (botGuild && botGuild.id !== selectedGuild.id && botGuildIds.includes(botGuild.id)) {
+          setSelectedGuild(botGuild);
+        }
+      }
+    }
   }, [manageableGuilds, queryGuildId, selectedGuild, botGuildIds]);
 
   const [activeTab, setActiveTab] = useState<"active" | "create" | "history" | "fairness">("active");
@@ -165,6 +180,15 @@ export default function GiveawaysCenterClient() {
 
   const load = useCallback(async () => {
     if (!selectedGuild) return;
+
+    // Si le bot n'est pas installé sur ce serveur
+    if (botGuildIds !== null && !botGuildIds.includes(selectedGuild.id)) {
+      setOffline(false);
+      setGiveaways([]);
+      setOverview(null);
+      return;
+    }
+
     if (!BOT_API_URL) {
       setOffline(true);
       return;
@@ -189,14 +213,13 @@ export default function GiveawaysCenterClient() {
     } finally {
       setLoading(false);
     }
-  }, [selectedGuild]);
+  }, [selectedGuild, botGuildIds]);
 
   useEffect(() => {
     setGiveaways([]);
     setOverview(null);
     load();
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [selectedGuild]);
+  }, [load]);
 
   // Create form state
   const [formPrize, setFormPrize] = useState("");
@@ -446,21 +469,6 @@ export default function GiveawaysCenterClient() {
     );
   }, [participantsList, participantSearch]);
 
-  if (!BOT_API_URL || offline) {
-    return (
-      <div className="flex h-full items-center justify-center p-8">
-        <div className="max-w-sm rounded-[var(--panel-radius)] border border-[var(--panel-border)] bg-[var(--surface-raised)]/40 p-6 text-center">
-          <Gift className="mx-auto mb-3 h-8 w-8 text-[var(--text-muted)]" />
-          <p className="text-sm text-[var(--text-muted)]">
-            {!BOT_API_URL
-              ? "Le serveur du bot n'est pas configuré ici."
-              : "Impossible de joindre le bot Discord pour le moment."}
-          </p>
-        </div>
-      </div>
-    );
-  }
-
   return (
     <div className="h-full overflow-y-auto os-scroll bg-[var(--bg-main)] text-[var(--text-primary)] p-4 md:p-8 pb-44 md:pb-44">
       <div className="max-w-7xl mx-auto space-y-8">
@@ -508,8 +516,50 @@ export default function GiveawaysCenterClient() {
           </div>
         </div>
 
-        {manageableGuilds.length > 1 && (
-          <GuildSelector guilds={manageableGuilds} value={selectedGuild?.id || ""} onChange={setSelectedGuild} />
+        {manageableGuilds.length > 0 && (
+          <GuildSelector
+            guilds={manageableGuilds}
+            value={selectedGuild?.id || ""}
+            onChange={(g) => {
+              userSelectedRef.current = true;
+              setSelectedGuild(g);
+            }}
+          />
+        )}
+
+        {selectedGuild && botGuildIds !== null && !botGuildIds.includes(selectedGuild.id) && (
+          <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 rounded-2xl border border-indigo-500/30 bg-indigo-500/10 p-4 text-xs text-indigo-200">
+            <div className="flex items-start gap-3">
+              <div className="p-2 rounded-xl bg-indigo-500/20 text-indigo-300 shrink-0 mt-0.5">
+                <Bot className="h-5 w-5" />
+              </div>
+              <div>
+                <p className="font-semibold text-white text-sm">Le bot ETHONE n&apos;est pas installé sur ce serveur</p>
+                <p className="mt-0.5 text-zinc-300">
+                  Invitez le bot sur « {selectedGuild.name} » pour gérer vos concours et tirages au sort.
+                </p>
+              </div>
+            </div>
+            <a
+              href={`${BOT_INVITE_URL}&guild_id=${selectedGuild.id}`}
+              target="_blank"
+              rel="noopener noreferrer"
+              className="inline-flex items-center justify-center gap-1.5 rounded-xl bg-indigo-600 px-4 py-2 text-xs font-semibold text-white shadow-md hover:bg-indigo-500 transition-colors shrink-0"
+            >
+              Inviter le bot
+            </a>
+          </div>
+        )}
+
+        {offline && (
+          <div className="rounded-xl border border-amber-500/30 bg-amber-500/10 p-4 text-xs text-amber-200 flex items-center gap-3">
+            <AlertTriangle className="h-5 w-5 text-amber-400 shrink-0" />
+            <span>
+              {!BOT_API_URL
+                ? "Le serveur du bot n'est pas configuré ici."
+                : "Impossible de joindre le bot Discord pour le moment."}
+            </span>
+          </div>
         )}
 
         {/* KPI tiles */}

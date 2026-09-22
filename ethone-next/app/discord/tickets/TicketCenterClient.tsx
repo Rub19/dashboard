@@ -27,7 +27,7 @@ import {
 } from "lucide-react";
 import { useDiscordOAuth, type DiscordGuild } from "@/lib/hooks/useDiscordOAuth";
 import { useToast } from "@/components/ToastProvider";
-import { cn } from "@/lib/utils";
+import { cn, formatApiError } from "@/lib/utils";
 import { GuildSelector } from "@/components/GuildSelector";
 import ChannelPicker from "@/components/discord/ChannelPicker";
 
@@ -587,11 +587,14 @@ export function TicketCenterClient() {
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify(newCfg),
       });
-      if (!res.ok) throw new Error("Échec de mise à jour");
+      if (!res.ok) {
+        const data = await res.json().catch(() => null);
+        throw new Error(data?.error ? (typeof data.error === "string" ? data.error : JSON.stringify(data.error)) : "Échec de mise à jour");
+      }
       success("Configuration enregistrée", "Les paramètres du système de tickets ont été appliqués.");
       setConfig((p: any) => ({ ...p, ...newCfg }));
     } catch (err: any) {
-      showError("Erreur", err.message);
+      showError("Erreur", formatApiError(err, "Impossible d'enregistrer la configuration"));
     } finally {
       setActionLoading(false);
     }
@@ -1505,9 +1508,9 @@ export function TicketCenterClient() {
                   type="number"
                   min="1"
                   max="168"
-                  defaultValue={config.inactivityCloseHours || 24}
+                  defaultValue={config.autoCloseInactivityHours ?? config.inactivityCloseHours ?? 24}
                   onBlur={(e) =>
-                    handleSaveConfig({ inactivityCloseHours: parseInt(e.target.value, 10) })
+                    handleSaveConfig({ autoCloseInactivityHours: parseInt(e.target.value, 10) })
                   }
                   className="mt-1 h-9 w-full rounded-[var(--inset-radius)] border border-[var(--panel-border)] bg-zinc-900/80 px-3 text-xs text-white outline-none focus:border-emerald-500"
                 />
@@ -1517,8 +1520,8 @@ export function TicketCenterClient() {
                 <label className="text-xs font-semibold text-zinc-300">Convention de nommage du salon</label>
                 <input
                   type="text"
-                  defaultValue={config.channelNamingScheme || "ticket-{username}"}
-                  onBlur={(e) => handleSaveConfig({ channelNamingScheme: e.target.value })}
+                  defaultValue={config.namingFormat ?? config.channelNamingScheme ?? "ticket-{username}"}
+                  onBlur={(e) => handleSaveConfig({ namingFormat: e.target.value })}
                   className="mt-1 h-9 w-full rounded-[var(--inset-radius)] border border-[var(--panel-border)] bg-zinc-900/80 px-3 text-xs text-white outline-none focus:border-emerald-500 font-mono"
                 />
                 <p className="text-[10px] text-zinc-400 mt-1">Variables : {"{username}"}, {"{count}"}, {"{category}"}</p>

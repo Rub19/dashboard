@@ -31509,5 +31509,70 @@ CHANGELOG_BY_LANG.en.unshift(v12830_en);
 CHANGELOG_BY_LANG.es.unshift(v12830_es);
 CHANGELOG_BY_LANG.de.unshift(v12830_de);
 
+const v12831_fr: ChangelogEntry = {
+  version: "v1.28.11",
+  date: "2026-09-22",
+  title: "Correction des Pièges d'Interface & Harmonisation des Configurations Discord",
+  items: [
+    "Giveaways : suppression du blocage plein écran en cas d'erreur ou d'absence du bot. Le sélecteur de serveur reste accessible et un panneau d'invitation est proposé si le bot n'est pas installé.",
+    "Sécurité : création de la page hub /discord/security reliant directement l'Anti-Raid et l'Anti-Nuke avec sélecteur de serveur et détection de présence du bot.",
+    "Tickets : alignement des noms de champs de configuration (autoCloseInactivityHours, namingFormat) avec le schéma Zod du bot.",
+    "Anti-Raid : fusion profonde (deep merge) des sous-objets de configuration côté serveur pour éviter la réinitialisation involontaire des seuils personnalisés lors de mises à jour partielles.",
+    "Anti-Nuke : ajout de la validation et du verrouillage des seuils (minimum 2 pour bans, suppressions de salons et de rôles) et affichage du statut du bot.",
+    "Formatage des erreurs : centralisation de formatApiError dans lib/utils pour afficher des messages clairs et lisibles dans les notifications plutôt que du JSON Zod brut.",
+    "Synchronisation du serveur actif : alignement systématique entre activeGuild et currentGuildId sur les pages Commandes, Rôles, Backups, IA, Économie et Suggestions.",
+  ],
+};
+
+const v12831_en: ChangelogEntry = {
+  version: "v1.28.11",
+  date: "2026-09-22",
+  title: "UI Trap Fixes & Discord Configurations Harmonization",
+  items: [
+    "Giveaways: removed full-screen blocking on bot error or absence. The guild selector remains accessible and an invite card is displayed if the bot is missing.",
+    "Security: created the /discord/security hub page connecting Anti-Raid and Anti-Nuke with guild selector and bot presence detection.",
+    "Tickets: aligned configuration field names (autoCloseInactivityHours, namingFormat) with the bot Zod schema.",
+    "Anti-Raid: implemented deep merging of configuration sub-objects on the server to prevent accidental reset of custom thresholds on partial updates.",
+    "Anti-Nuke: added bounds validation (minimum 2 for bans, channel deletes, and role deletes) and bot presence banner.",
+    "Error formatting: centralized formatApiError in lib/utils to display human-readable toast notifications instead of raw Zod JSON.",
+    "Active guild synchronization: guaranteed alignment between activeGuild and currentGuildId across Commands, Roles, Backups, AI, Economy, and Suggestions pages.",
+  ],
+};
+
+const v12831_es: ChangelogEntry = {
+  version: "v1.28.11",
+  date: "2026-09-22",
+  title: "Corrección de Bloqueos de Interfaz y Armonización de Configuraciones Discord",
+  items: [
+    "Sorteos: eliminación del bloqueo de pantalla completa ante errores del bot. El selector de servidor permanece disponible y se muestra un panel de invitación si el bot no está instalado.",
+    "Seguridad: creación de la página central /discord/security que conecta Anti-Raid y Anti-Nuke con selector de servidor y comprobación de presencia del bot.",
+    "Tickets: alineación de los nombres de campos de configuración (autoCloseInactivityHours, namingFormat) con el esquema Zod del bot.",
+    "Anti-Raid: fusión profunda (deep merge) de subobjetos de configuración en el servidor para evitar restablecer umbrales personalizados en actualizaciones parciales.",
+    "Anti-Nuke: validación de límites (mínimo 2 para baneos, eliminaciones de canales y roles) e indicador de presencia del bot.",
+    "Formato de errores: centralización de formatApiError en lib/utils para mostrar notificaciones limpias en lugar de JSON sin procesar.",
+    "Sincronización de servidor activo: alineación garantizada entre activeGuild y currentGuildId en Comandos, Roles, Backups, IA, Economía y Sugerencias.",
+  ],
+};
+
+const v12831_de: ChangelogEntry = {
+  version: "v1.28.11",
+  date: "2026-09-22",
+  title: "Behebung von UI-Blockaden & Harmonisierung der Discord-Konfigurationen",
+  items: [
+    "Giveaways: Entfernung der Vollbildblockade bei Bot-Fehlern. Das Server-Auswahlmenü bleibt zugänglich und ein Einladungsbereich wird angezeigt, falls der Bot fehlt.",
+    "Sicherheit: Erstellung der Übersichtsseite /discord/security, die Anti-Raid und Anti-Nuke mit Server-Auswahl und Bot-Erkennung verbindet.",
+    "Tickets: Anpassung der Konfigurationsfeldnamen (autoCloseInactivityHours, namingFormat) an das Bot-Zod-Schema.",
+    "Anti-Raid: Deep-Merge von Konfigurations-Unterobjekten auf dem Server, um das versehentliche Zurücksetzen benutzerdefinierter Schwellenwerte bei partiellen Updates zu verhindern.",
+    "Anti-Nuke: Begrenzungsvalidierung (mindestens 2 für Banns, Kanal- und Rollenlöschungen) und Bot-Präsenzbanner.",
+    "Fehlerformatierung: Zentralisierung von formatApiError in lib/utils für saubere Benachrichtigungen statt rohem Zod-JSON.",
+    "Aktive Server-Synchronisation: Zuverlässiger Abgleich zwischen activeGuild und currentGuildId auf den Seiten Befehle, Rollen, Backups, KI, Wirtschaft und Vorschläge.",
+  ],
+};
+
+CHANGELOG_BY_LANG.fr.unshift(v12831_fr);
+CHANGELOG_BY_LANG.en.unshift(v12831_en);
+CHANGELOG_BY_LANG.es.unshift(v12831_es);
+CHANGELOG_BY_LANG.de.unshift(v12831_de);
+
 export const CHANGELOG = CHANGELOG_BY_LANG.fr;
 

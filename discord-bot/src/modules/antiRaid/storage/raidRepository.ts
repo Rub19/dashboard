@@ -82,6 +82,16 @@ class RaidRepository {
     const updated = AntiRaidConfigSchema.parse({
       ...current,
       ...partial,
+      joinRaid: partial.joinRaid ? { ...current.joinRaid, ...partial.joinRaid } : current.joinRaid,
+      messageRaid: partial.messageRaid ? { ...current.messageRaid, ...partial.messageRaid } : current.messageRaid,
+      mentionRaid: partial.mentionRaid ? { ...current.mentionRaid, ...partial.mentionRaid } : current.mentionRaid,
+      botRaid: partial.botRaid ? { ...current.botRaid, ...partial.botRaid } : current.botRaid,
+      serverNuke: partial.serverNuke ? { ...current.serverNuke, ...partial.serverNuke } : current.serverNuke,
+      massMod: partial.massMod ? { ...current.massMod, ...partial.massMod } : current.massMod,
+      accountAge: partial.accountAge ? { ...current.accountAge, ...partial.accountAge } : current.accountAge,
+      raidMode: partial.raidMode ? { ...current.raidMode, ...partial.raidMode } : current.raidMode,
+      whitelist: partial.whitelist ? { ...current.whitelist, ...partial.whitelist } : current.whitelist,
+      alerts: partial.alerts ? { ...current.alerts, ...partial.alerts } : current.alerts,
     });
     this.configs.set(guildId, updated);
     this.saveConfigs();

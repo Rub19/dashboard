@@ -179,14 +179,13 @@ export default function EconomyCenterClient() {
   const { profile } = useDiscordOAuth();
   const { success, error: toastError } = useToast();
 
-  const activeGuild = useMemo(() => {
-    if (rawGuildId && profile?.guilds) {
-      return profile.guilds.find((g) => g.id === rawGuildId) || profile.guilds[0];
-    }
-    return profile?.guilds?.[0] || null;
-  }, [rawGuildId, profile?.guilds]);
-
   const currentGuildId = useResolvedGuildId(rawGuildId, profile?.guilds);
+
+  const activeGuild = useMemo(() => {
+    if (!profile?.guilds || profile.guilds.length === 0) return null;
+    return profile.guilds.find((g) => g.id === currentGuildId) || profile.guilds[0];
+  }, [currentGuildId, profile?.guilds]);
+
   const base = `${BOT_API_URL}/api/guilds/${currentGuildId}/economy`;
 
   const [config, setConfig] = useState<EconomyConfig>(DEFAULT_CONFIG);

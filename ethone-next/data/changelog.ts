@@ -32257,10 +32257,58 @@ const v12847_de: ChangelogEntry = {
   ],
 };
 
-CHANGELOG_BY_LANG.fr.unshift(v12847_fr, v12846_fr, v12845_fr, v12844_fr, v12843_fr, v12842_fr, v12841_fr, v12840_fr, v12839_fr, v12838_fr, v12837_fr, v12836_fr, v12835_fr, v12834_fr, v12833_fr);
-CHANGELOG_BY_LANG.en.unshift(v12847_en, v12846_en, v12845_en, v12844_en, v12843_en, v12842_en, v12841_en, v12840_en, v12839_en, v12838_en, v12837_en, v12836_en, v12835_en, v12834_en, v12833_en);
-CHANGELOG_BY_LANG.es.unshift(v12847_es, v12846_es, v12845_es, v12844_es, v12843_es, v12842_es, v12841_es, v12840_es, v12839_es, v12838_es, v12837_es, v12836_es, v12835_es, v12834_es, v12833_es);
-CHANGELOG_BY_LANG.de.unshift(v12847_de, v12846_de, v12845_de, v12844_de, v12843_de, v12842_de, v12841_de, v12840_de, v12839_de, v12838_de, v12837_de, v12836_de, v12835_de, v12834_de, v12833_de);
+const v12848_fr: ChangelogEntry = {
+  version: "v1.28.28",
+  date: "2026-09-22",
+  title: "Correction des statistiques Focus et objectif quotidien dynamique",
+  items: [
+    "Centre Focus : correction de l'affichage trompeur '25 min / 2h00' et de la série hardcodée à 5 jours — calcul en temps réel du temps de focus effectif du jour (0 min si aucune session réalisée aujourd'hui).",
+    "Réactivité en direct : prise en compte instantanée des secondes écoulées lors d'une session de focus active avec progression fluide de la jauge quotidienne.",
+    "Objectif quotidien personnalisable : sélecteur rapide d'objectif (30m, 1h, 1h30, 2h, 3h, 4h) avec mémorisation locale persistante.",
+    "Calcul authentique de série : calcul dynamique du nombre de jours consécutifs de focus basé sur l'historique réel des sessions de l'utilisateur.",
+  ],
+};
+
+const v12848_en: ChangelogEntry = {
+  version: "v1.28.28",
+  date: "2026-09-22",
+  title: "Focus Statistics Fix & Dynamic Daily Goal",
+  items: [
+    "Focus Center: fixed misleading '25 min / 2h00' and hardcoded 5-day streak — real-time calculation of actual focus time done today (starts at 0 min if no session completed today).",
+    "Live Reactivity: instant counting of elapsed focus seconds during active timer sessions with smooth daily progress gauge updates.",
+    "Customizable Daily Goal: quick goal picker (30m, 1h, 1h30, 2h, 3h, 4h) with persistent local storage.",
+    "Authentic Streak Calculation: dynamic consecutive days streak computed from the user's real session history.",
+  ],
+};
+
+const v12848_es: ChangelogEntry = {
+  version: "v1.28.28",
+  date: "2026-09-22",
+  title: "Corrección de estadísticas de Focus y objetivo diario dinámico",
+  items: [
+    "Centro de Focus: corrección del mensaje engañoso '25 min / 2h00' y la racha fija de 5 días — cálculo en tiempo real del tiempo de concentración real de hoy (0 min si no se ha realizado ninguna sesión hoy).",
+    "Reactividad en vivo: conteo instantáneo de los segundos transcurridos en sesiones activas con actualización fluida de la barra de progreso.",
+    "Objetivo diario personalizable: selector rápido de objetivo (30m, 1h, 1h30, 2h, 3h, 4h) con persistencia local.",
+    "Cálculo real de racha: cómputo dinámico de días consecutivos de concentración basado en el historial real del usuario.",
+  ],
+};
+
+const v12848_de: ChangelogEntry = {
+  version: "v1.28.28",
+  date: "2026-09-22",
+  title: "Korrektur der Focus-Statistiken & dynamisches Tagesziel",
+  items: [
+    "Focus-Center: Behebung der irreführenden Anzeige '25 min / 2h00' und der festen 5-Tage-Serie — Echtzeitberechnung der tatsächlichen heutigen Focus-Zeit (0 min, wenn heute noch keine Session abgeschlossen wurde).",
+    "Live-Reaktivität: Sofortige Erfassung der verstrichenen Sekunden bei aktiven Sessions mit flüssiger Aktualisierung der Fortschrittsanzeige.",
+    "Anpassbares Tagesziel: Schnellauswahl des Ziels (30m, 1h, 1h30, 2h, 3h, 4h) mit dauerhafter lokaler Speicherung.",
+    "Echte Serienberechnung: Dynamische Ermittlung aufeinanderfolgender Focus-Tage basierend auf dem realen Verlauf.",
+  ],
+};
+
+CHANGELOG_BY_LANG.fr.unshift(v12848_fr, v12847_fr, v12846_fr, v12845_fr, v12844_fr, v12843_fr, v12842_fr, v12841_fr, v12840_fr, v12839_fr, v12838_fr, v12837_fr, v12836_fr, v12835_fr, v12834_fr, v12833_fr);
+CHANGELOG_BY_LANG.en.unshift(v12848_en, v12847_en, v12846_en, v12845_en, v12844_en, v12843_en, v12842_en, v12841_en, v12840_en, v12839_en, v12838_en, v12837_en, v12836_en, v12835_en, v12834_en, v12833_en);
+CHANGELOG_BY_LANG.es.unshift(v12848_es, v12847_es, v12846_es, v12845_es, v12844_es, v12843_es, v12842_es, v12841_es, v12840_es, v12839_es, v12838_es, v12837_es, v12836_es, v12835_es, v12834_es, v12833_es);
+CHANGELOG_BY_LANG.de.unshift(v12848_de, v12847_de, v12846_de, v12845_de, v12844_de, v12843_de, v12842_de, v12841_de, v12840_de, v12839_de, v12838_de, v12837_de, v12836_de, v12835_de, v12834_de, v12833_de);
 
 export const CHANGELOG = CHANGELOG_BY_LANG.fr;
 

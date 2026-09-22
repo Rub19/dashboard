@@ -1,5 +1,6 @@
 import { supabase } from "./supabase";
 import { useSyncStore } from "./stores/sync";
+import { getTodayStoredFocusStats } from "./focus-stats";
 
 const SESSION_KEY = "ethone-focus-session-v1";
 const CLOUD_SYNC_INTERVAL = 1000; // 1s debounce for continuous ticks
@@ -59,6 +60,7 @@ export class FocusTimer {
   private isRestoring = false;
 
   constructor() {
+    const todayStats = getTodayStoredFocusStats();
     this.state = this.makeState({
       phase: "idle",
       remaining: PRESETS.pomodoro.work * 60,
@@ -66,9 +68,9 @@ export class FocusTimer {
       paused: false,
       activePreset: "",
       cycle: 1,
-      completedPomodoros: 0,
+      completedPomodoros: todayStats.completedPomodoros,
       completedBreaks: 0,
-      totalFocusSeconds: 0,
+      totalFocusSeconds: todayStats.totalFocusSeconds,
     });
     this.lastTick = Date.now();
     if (typeof document !== "undefined") {
@@ -223,6 +225,17 @@ export class FocusTimer {
         return;
       }
 
+      const isSameDay = new Date(savedLastTick).toDateString() === new Date(now).toDateString();
+      const todayStats = getTodayStoredFocusStats();
+
+      const completedPomodoros = isSameDay && loaded.phase !== "idle"
+        ? Math.max(todayStats.completedPomodoros, loaded.completedPomodoros ?? 0)
+        : todayStats.completedPomodoros;
+      const completedBreaks = isSameDay ? (loaded.completedBreaks ?? 0) : 0;
+      const totalFocusSeconds = isSameDay && loaded.phase !== "idle"
+        ? Math.max(todayStats.totalFocusSeconds, loaded.totalFocusSeconds ?? 0)
+        : todayStats.totalFocusSeconds;
+
       this.state = this.makeState({
         phase: loaded.phase || "idle",
         remaining,
@@ -230,9 +243,9 @@ export class FocusTimer {
         paused: loaded.paused ?? false,
         activePreset: loaded.activePreset ?? "",
         cycle: loaded.cycle ?? 1,
-        completedPomodoros: loaded.completedPomodoros ?? 0,
-        completedBreaks: loaded.completedBreaks ?? 0,
-        totalFocusSeconds: loaded.totalFocusSeconds ?? 0,
+        completedPomodoros,
+        completedBreaks,
+        totalFocusSeconds,
       });
 
       if (!this.state.paused && this.state.phase !== "idle") {
@@ -428,8 +441,9 @@ export class FocusTimer {
     const config = this.activeConfig || PRESETS.pomodoro;
 
     if (phase === "focus") {
-      const completedPomodoros = this.state.completedPomodoros + 1;
-      const totalFocusSeconds = this.state.totalFocusSeconds + this.state.total;
+      const todayStats = getTodayStoredFocusStats();
+      const completedPomodoros = todayStats.completedPomodoros + 1;
+      const totalFocusSeconds = todayStats.totalFocusSeconds + this.state.total;
       const isLongBreak = cycle % 4 === 0;
 
       // Save to local focus history

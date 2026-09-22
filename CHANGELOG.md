@@ -2,6 +2,17 @@
 
 Toutes les modifications notables de ce projet seront documentées dans ce fichier.
 
+## v1.28.28 — 2026-09-22
+
+### Correction des statistiques Focus et objectif quotidien dynamique
+- **Centre Focus (`components/focus/FocusStatsAndGoals.tsx`)** : Correction de l'affichage trompeur `25 min / 2h00` et de la série hardcodée à 5 jours. Le widget calcule désormais le temps de focus effectif réalisé **aujourd'hui** à partir de l'historique réel (`ethone-focus-history`) — affichant `0 min` par défaut si aucune session n'a encore été réalisée aujourd'hui.
+- **Réactivité en direct (`lib/focus-stats.ts` & `lib/focus-timer.ts`)** : Prise en compte instantanée, seconde par seconde, du temps écoulé lors d'une session de focus active (`state.total - state.remaining`), avec mise à jour fluide de la barre de progression et des compteurs.
+- **Objectif quotidien personnalisable** : Ajout d'un sélecteur rapide de l'objectif du jour (30m, 1h, 1h30, 2h, 3h, 4h) avec mémorisation persistante dans `localStorage` (`ethone_focus_daily_goal_minutes`).
+- **Calcul authentique de série** : Calcul dynamique du nombre de jours consécutifs avec au moins une session de focus effectuée, avec période de grâce pour la journée en cours.
+- **Moteur Focus (`lib/focus-timer.ts`)** : Nettoyage et synchronisation des compteurs de session sur le jour courant lors de l'initialisation, la restauration et l'avancement des cycles.
+
+---
+
 ## v1.28.27 — 2026-09-22
 
 ### Refonte du menu profil TopBar & synchronisation de l'identité

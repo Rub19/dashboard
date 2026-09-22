@@ -25,14 +25,18 @@ import {
   UserMinus,
   Mail,
   ArrowLeft,
+  AlertCircle,
 } from "lucide-react";
-import { useDiscordOAuth, type DiscordGuild } from "@/lib/hooks/useDiscordOAuth";
+import { useDiscordOAuth, type DiscordGuild, canManageGuild, getStoredDiscordGuilds } from "@/lib/hooks/useDiscordOAuth";
+import { useBotGuildIds, pickBotGuild } from "@/lib/hooks/useBotGuildIds";
 import { useToast } from "@/components/ToastProvider";
 import { cn } from "@/lib/utils";
 import { GuildSelector } from "@/components/GuildSelector";
 import ChannelPicker from "@/components/discord/ChannelPicker";
 import RolePicker from "@/components/discord/RolePicker";
 
+const BOT_CLIENT_ID = "1545139931154878464";
+const BOT_INVITE_URL = `https://discord.com/oauth2/authorize?client_id=${BOT_CLIENT_ID}&permissions=8&scope=bot%20applications.commands`;
 const API_BASE = process.env.NEXT_PUBLIC_DISCORD_BOT_API || "";
 
 export interface EmbedField {
@@ -414,8 +418,21 @@ export function WelcomeCenterClient() {
   const { profile } = useDiscordOAuth();
   const { success, error: showError, info } = useToast();
 
+  const allGuilds: DiscordGuild[] = useMemo(() => {
+    if (profile?.guilds && profile.guilds.length > 0) return profile.guilds;
+    return getStoredDiscordGuilds();
+  }, [profile?.guilds]);
+
+  const botGuildIds = useBotGuildIds(allGuilds);
+
+  const manageableGuilds: DiscordGuild[] = useMemo(() => {
+    if (allGuilds.length === 0) return [];
+    const manageable = allGuilds.filter((g) => canManageGuild(g) || (botGuildIds && botGuildIds.includes(g.id)));
+    return manageable.length > 0 ? manageable : allGuilds;
+  }, [allGuilds, botGuildIds]);
+
+  const userSelectedRef = useRef(false);
   const [selectedGuild, setSelectedGuild] = useState<DiscordGuild | null>(null);
-  const guilds: DiscordGuild[] = useMemo(() => profile?.guilds || [], [profile?.guilds]);
 
   const [activeTab, setActiveTab] = useState<
     | "overview"
@@ -451,23 +468,49 @@ export function WelcomeCenterClient() {
 
   // Sélection automatique de la guilde
   useEffect(() => {
-    if (guildIdParam && guilds.length > 0 && appliedQueryGuild.current !== guildIdParam) {
-      const match = guilds.find((g: DiscordGuild) => g.id === guildIdParam);
+    if (manageableGuilds.length === 0) return;
+    if (guildIdParam && appliedQueryGuild.current !== guildIdParam) {
+      const match = manageableGuilds.find((g: DiscordGuild) => g.id === guildIdParam);
       if (match) {
         appliedQueryGuild.current = guildIdParam;
         setSelectedGuild(match);
+        return;
       }
-    } else if (guilds.length > 0 && !selectedGuild) {
-      setSelectedGuild(guilds[0]);
     }
-  }, [guildIdParam, guilds, selectedGuild]);
+    if (!userSelectedRef.current && !guildIdParam) {
+      if (!selectedGuild) {
+        if (botGuildIds !== null) {
+          setSelectedGuild(pickBotGuild(manageableGuilds, botGuildIds)!);
+        }
+      } else if (botGuildIds && botGuildIds.length > 0 && !botGuildIds.includes(selectedGuild.id)) {
+        const botGuild = pickBotGuild(manageableGuilds, botGuildIds);
+        if (botGuild && botGuild.id !== selectedGuild.id && botGuildIds.includes(botGuild.id)) {
+          setSelectedGuild(botGuild);
+        }
+      }
+    }
+  }, [guildIdParam, manageableGuilds, selectedGuild, botGuildIds]);
 
   const currentGuildId = selectedGuild?.id || guildIdParam || "";
+  const isBotPresent = Boolean(selectedGuild && botGuildIds && botGuildIds.includes(selectedGuild.id));
 
   // Chargement global des données
   const fetchAllData = useCallback(async () => {
     if (!currentGuildId) return;
     setLoading(true);
+
+    if (botGuildIds !== null && selectedGuild && !botGuildIds.includes(selectedGuild.id)) {
+      setLoading(false);
+      setLoadFailed(false);
+      setOverview(null);
+      setConfig(null);
+      setOnboarding(null);
+      setVerification(null);
+      setTemplates([]);
+      setChannels([]);
+      setRoles([]);
+      return;
+    }
 
     if (!API_BASE) {
       setLoadFailed(true);
@@ -721,7 +764,7 @@ export function WelcomeCenterClient() {
       .replace(/\{channel\}/gi, previewContext.channel);
   };
 
-  if (!loading && (loadFailed || !config?.welcome || !config?.goodbye)) {
+  if (!loading && isBotPresent && (loadFailed || !config?.welcome || !config?.goodbye)) {
     return (
       <div className="h-full overflow-y-auto os-scroll bg-[var(--bg-main)] px-4 py-10 text-white sm:px-8">
         <div className="mx-auto max-w-xl space-y-4 rounded-2xl border border-amber-500/30 bg-amber-500/5 p-6">
@@ -730,13 +773,20 @@ export function WelcomeCenterClient() {
             Impossible de charger la configuration de ce serveur. Le bot n&apos;y est peut-être pas installé, ou ta
             session du bot a expiré (reconnecte-toi depuis la page Musique ou le centre de contrôle du bot).
           </p>
-          {guilds.length > 0 && (
-            <GuildSelector guilds={guilds} value={currentGuildId} onChange={setSelectedGuild} />
+          {manageableGuilds.length > 0 && (
+            <GuildSelector
+              guilds={manageableGuilds}
+              value={currentGuildId}
+              onChange={(g) => {
+                userSelectedRef.current = true;
+                setSelectedGuild(g);
+              }}
+            />
           )}
           <button
             type="button"
             onClick={() => fetchAllData()}
-            className="rounded-xl bg-teal-600 px-4 py-2 text-xs font-bold text-white hover:bg-teal-500"
+            className="rounded-xl bg-teal-600 px-4 py-2 text-xs font-bold text-white hover:bg-teal-500 cursor-pointer"
           >
             Réessayer
           </button>
@@ -775,7 +825,16 @@ export function WelcomeCenterClient() {
 
         {/* Guild Selection & Test Button */}
         <div className="flex flex-wrap items-center gap-2.5">
-          <GuildSelector guilds={guilds} value={currentGuildId} onChange={setSelectedGuild} />
+          {manageableGuilds.length > 0 && (
+            <GuildSelector
+              guilds={manageableGuilds}
+              value={currentGuildId}
+              onChange={(g) => {
+                userSelectedRef.current = true;
+                setSelectedGuild(g);
+              }}
+            />
+          )}
 
           <button
             onClick={fetchAllData}
@@ -790,17 +849,32 @@ export function WelcomeCenterClient() {
             onClick={() => setShowTestModal(true)}
             className="flex h-9 items-center gap-1.5 rounded-xl bg-teal-600 px-3.5 text-xs font-bold text-white shadow-sm hover:bg-teal-500 transition-all cursor-pointer"
           >
-            <span>🧪 Tester l&apos;accueil</span>
+            <Zap className="h-4 w-4" />
+            <span>Tester l&apos;accueil</span>
           </button>
-
-          <Link
-            href={`/discord?guildId=${currentGuildId}`}
-            className="flex h-9 items-center gap-1.5 rounded-[var(--inset-radius)] border border-[var(--panel-border)] bg-zinc-900/80 px-3 text-xs font-medium text-zinc-300 hover:bg-white/10 hover:text-white transition-all"
-          >
-            <span>Retour Discord</span>
-          </Link>
         </div>
       </div>
+
+      {/* Bot non présent banner */}
+      {!isBotPresent && selectedGuild && (
+        <div className="mt-4 flex flex-col sm:flex-row sm:items-center justify-between gap-3 p-4 rounded-xl border border-amber-500/30 bg-amber-500/10 text-amber-200">
+          <div className="flex items-center gap-2.5">
+            <AlertCircle className="w-5 h-5 text-amber-400 shrink-0" />
+            <p className="text-sm">
+              Le bot ETHONE n'est pas encore présent sur ce serveur. Invitez-le pour configurer les messages de bienvenue, l'onboarding et la vérification.
+            </p>
+          </div>
+          <a
+            href={BOT_INVITE_URL}
+            target="_blank"
+            rel="noopener noreferrer"
+            className="inline-flex items-center gap-1.5 px-3.5 py-1.5 rounded-lg text-xs font-semibold bg-amber-500 hover:bg-amber-400 text-black transition-colors shrink-0"
+          >
+            Inviter le bot
+            <ExternalLink className="w-3.5 h-3.5" />
+          </a>
+        </div>
+      )}
 
       {/* KPI Header Cards */}
       <div className="grid grid-cols-2 sm:grid-cols-5 gap-3 mt-6">

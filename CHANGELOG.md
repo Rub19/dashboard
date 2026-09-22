@@ -2,6 +2,13 @@
 
 Toutes les modifications notables de ce projet seront documentées dans ce fichier.
 
+## v1.28.17 — 2026-09-22
+
+**Harmonisation des Centres Tickets et Bienvenue**
+
+- **Centre de Tickets (`/discord/tickets`)** : intégration de `GuildSelector` avec détection de présence du bot et bannière d'invitation avec lien OAuth direct. Implémentation complète des 3 modales auparavant inactives (Création/Édition de Catégorie avec `RolePicker`, Panneau avec `ChannelPicker`, et Équipe avec `RolePicker`) et protection des 8 requêtes API en l'absence du bot.
+- **Centre de Bienvenue (`/discord/welcome`)** : intégration de `GuildSelector` avec auto-sélection intelligente, bannière d'invitation du bot et contournement de l'écran d'erreur bloquant lors de la sélection d'un serveur sans bot.
+
 ## v1.28.16 — 2026-09-22
 
 **Harmonisation des Rôles, IA, Sauvegardes, Événements et Calendrier**

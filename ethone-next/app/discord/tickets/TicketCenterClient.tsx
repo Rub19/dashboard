@@ -24,13 +24,20 @@ import {
   Settings2,
   Zap,
   X,
+  AlertCircle,
+  ExternalLink,
+  Bot,
 } from "lucide-react";
-import { useDiscordOAuth, type DiscordGuild } from "@/lib/hooks/useDiscordOAuth";
+import { useDiscordOAuth, type DiscordGuild, canManageGuild, getStoredDiscordGuilds } from "@/lib/hooks/useDiscordOAuth";
+import { useBotGuildIds, pickBotGuild } from "@/lib/hooks/useBotGuildIds";
 import { useToast } from "@/components/ToastProvider";
 import { cn, formatApiError } from "@/lib/utils";
 import { GuildSelector } from "@/components/GuildSelector";
 import ChannelPicker from "@/components/discord/ChannelPicker";
+import RolePicker from "@/components/discord/RolePicker";
 
+const BOT_CLIENT_ID = "1545139931154878464";
+const BOT_INVITE_URL = `https://discord.com/oauth2/authorize?client_id=${BOT_CLIENT_ID}&permissions=8&scope=bot%20applications.commands`;
 const API_BASE = process.env.NEXT_PUBLIC_DISCORD_BOT_API || "";
 
 function emptyOverview(): TicketOverview {
@@ -199,9 +206,21 @@ export function TicketCenterClient() {
   const { profile } = useDiscordOAuth();
   const { success, error: showError, info } = useToast();
 
-  const [selectedGuild, setSelectedGuild] = useState<DiscordGuild | null>(null);
+  const allGuilds: DiscordGuild[] = useMemo(() => {
+    if (profile?.guilds && profile.guilds.length > 0) return profile.guilds;
+    return getStoredDiscordGuilds();
+  }, [profile?.guilds]);
 
-  const guilds: DiscordGuild[] = useMemo(() => profile?.guilds || [], [profile?.guilds]);
+  const botGuildIds = useBotGuildIds(allGuilds);
+
+  const manageableGuilds: DiscordGuild[] = useMemo(() => {
+    if (allGuilds.length === 0) return [];
+    const manageable = allGuilds.filter((g) => canManageGuild(g) || (botGuildIds && botGuildIds.includes(g.id)));
+    return manageable.length > 0 ? manageable : allGuilds;
+  }, [allGuilds, botGuildIds]);
+
+  const userSelectedRef = useRef(false);
+  const [selectedGuild, setSelectedGuild] = useState<DiscordGuild | null>(null);
 
   const [activeTab, setActiveTab] = useState<
     "explorer" | "panels" | "categories" | "teams" | "automations" | "transcripts" | "analytics" | "settings"
@@ -250,25 +269,52 @@ export function TicketCenterClient() {
 
   const [previewTranscriptHtml, setPreviewTranscriptHtml] = useState<string | null>(null);
 
-  // Sélection automatique de la guilde passée dans l'URL
+  // Auto-sélection de la guilde
   useEffect(() => {
-    if (guildIdParam && guilds.length > 0 && appliedQueryGuild.current !== guildIdParam) {
-      const match = guilds.find((g: DiscordGuild) => g.id === guildIdParam);
+    if (manageableGuilds.length === 0) return;
+    if (guildIdParam && appliedQueryGuild.current !== guildIdParam) {
+      const match = manageableGuilds.find((g) => g.id === guildIdParam);
       if (match) {
         appliedQueryGuild.current = guildIdParam;
         setSelectedGuild(match);
+        return;
       }
-    } else if (guilds.length > 0 && !selectedGuild) {
-      setSelectedGuild(guilds[0]);
     }
-  }, [guildIdParam, guilds, selectedGuild]);
+    if (!userSelectedRef.current && !guildIdParam) {
+      if (!selectedGuild) {
+        if (botGuildIds !== null) {
+          setSelectedGuild(pickBotGuild(manageableGuilds, botGuildIds)!);
+        }
+      } else if (botGuildIds && botGuildIds.length > 0 && !botGuildIds.includes(selectedGuild.id)) {
+        const botGuild = pickBotGuild(manageableGuilds, botGuildIds);
+        if (botGuild && botGuild.id !== selectedGuild.id && botGuildIds.includes(botGuild.id)) {
+          setSelectedGuild(botGuild);
+        }
+      }
+    }
+  }, [guildIdParam, manageableGuilds, selectedGuild, botGuildIds]);
 
   const currentGuildId = selectedGuild?.id || guildIdParam || "";
+  const isBotPresent = Boolean(selectedGuild && botGuildIds && botGuildIds.includes(selectedGuild.id));
 
   // Chargement global des données
   const fetchAllData = useCallback(async () => {
     if (!currentGuildId) return;
     setLoading(true);
+
+    if (botGuildIds !== null && selectedGuild && !botGuildIds.includes(selectedGuild.id)) {
+      setOverview(emptyOverview());
+      setTickets([]);
+      setTotalTickets(0);
+      setCategories([]);
+      setPanels([]);
+      setTeams([]);
+      setAutomations([]);
+      setConfig({});
+      setDiscordCats([]);
+      setLoading(false);
+      return;
+    }
 
     if (!API_BASE) {
       setOverview(emptyOverview());
@@ -600,6 +646,43 @@ export function TicketCenterClient() {
     }
   };
 
+  // Sauvegarde Team
+  const handleSaveTeam = async (team: Partial<TicketTeamItem>) => {
+    const id = team.id || `team-${Date.now()}`;
+    const payload: TicketTeamItem = {
+      ...team,
+      id,
+      guildId: currentGuildId,
+      name: team.name || "Nouvelle équipe",
+      description: team.description || "",
+      color: team.color || "#3B82F6",
+      roleIds: team.roleIds || [],
+      categoryIds: team.categoryIds || [],
+    };
+    if (!API_BASE) {
+      showError("Bot injoignable", "Rien n'a été enregistré.");
+      return;
+    }
+    try {
+      setActionLoading(true);
+      const res = await fetch(`${API_BASE}/api/guilds/${currentGuildId}/tickets/teams`, {
+        credentials: "include",
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify(payload),
+      });
+      if (!res.ok) throw new Error("Échec sauvegarde équipe");
+      success("Équipe enregistrée", `Équipe "${payload.name}" mise à jour.`);
+      setShowTeamModal(false);
+      setEditingTeam(null);
+      fetchAllData();
+    } catch (err: any) {
+      showError("Erreur", err.message);
+    } finally {
+      setActionLoading(false);
+    }
+  };
+
   // Couleurs de priorité
   const getPriorityBadge = (p: TicketPriority) => {
     switch (p) {
@@ -656,7 +739,18 @@ export function TicketCenterClient() {
 
         {/* Guild Selection & Refresh */}
         <div className="flex flex-wrap items-center gap-2.5">
-          <GuildSelector guilds={guilds} value={currentGuildId} onChange={setSelectedGuild} />
+          {manageableGuilds.length > 0 ? (
+            <GuildSelector
+              guilds={manageableGuilds}
+              value={currentGuildId}
+              onChange={(g) => {
+                userSelectedRef.current = true;
+                setSelectedGuild(g);
+              }}
+            />
+          ) : (
+            <span className="text-xs text-zinc-400">Aucun serveur administrable</span>
+          )}
 
           <button
             onClick={fetchAllData}
@@ -675,6 +769,27 @@ export function TicketCenterClient() {
           </Link>
         </div>
       </div>
+
+      {/* Bot non présent banner */}
+      {!isBotPresent && selectedGuild && (
+        <div className="mt-4 flex flex-col sm:flex-row sm:items-center justify-between gap-3 p-4 rounded-xl border border-amber-500/30 bg-amber-500/10 text-amber-200">
+          <div className="flex items-center gap-2.5">
+            <AlertCircle className="w-5 h-5 text-amber-400 shrink-0" />
+            <p className="text-sm">
+              Le bot ETHONE n'est pas encore présent sur ce serveur. Invitez-le pour activer le système de tickets et synchroniser les salons.
+            </p>
+          </div>
+          <a
+            href={BOT_INVITE_URL}
+            target="_blank"
+            rel="noopener noreferrer"
+            className="inline-flex items-center gap-1.5 px-3.5 py-1.5 rounded-lg text-xs font-semibold bg-amber-500 hover:bg-amber-400 text-black transition-colors shrink-0"
+          >
+            Inviter le bot
+            <ExternalLink className="w-3.5 h-3.5" />
+          </a>
+        </div>
+      )}
 
       {/* KPI Header Cards */}
       <div className="grid grid-cols-2 sm:grid-cols-5 gap-3 mt-6">
@@ -1564,6 +1679,352 @@ export function TicketCenterClient() {
                 className="rounded-xl bg-rose-600 px-4 py-2 text-xs font-bold text-white hover:bg-rose-500 transition-all cursor-pointer"
               >
                 {actionLoading ? "Fermeture..." : "Confirmer la fermeture"}
+              </button>
+            </div>
+          </div>
+        </div>
+      )}
+
+      {/* MODAL: CATEGORIE */}
+      {showCategoryModal && editingCategory && (
+        <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/80 backdrop-blur-sm p-4">
+          <div className="w-full max-w-lg rounded-[var(--panel-radius)] border border-[var(--panel-border)] bg-zinc-950 p-6 space-y-4 shadow-2xl max-h-[90vh] overflow-y-auto">
+            <div className="flex items-center justify-between border-b border-[var(--panel-border)] pb-3">
+              <h3 className="text-sm font-bold text-white">
+                {editingCategory.id.startsWith("cat-") ? "Créer une Catégorie de Ticket" : `Modifier la Catégorie « ${editingCategory.name} »`}
+              </h3>
+              <button
+                onClick={() => { setShowCategoryModal(false); setEditingCategory(null); }}
+                className="text-zinc-400 hover:text-white cursor-pointer"
+              >
+                <X className="w-4 h-4" />
+              </button>
+            </div>
+
+            <div className="space-y-3 text-xs">
+              <div className="grid grid-cols-3 gap-3">
+                <div className="col-span-2 space-y-1">
+                  <label className="font-semibold text-zinc-300">Nom de la catégorie *</label>
+                  <input
+                    type="text"
+                    value={editingCategory.name}
+                    onChange={(e) => setEditingCategory({ ...editingCategory, name: e.target.value })}
+                    placeholder="Ex: Support Technique"
+                    className="h-9 w-full rounded-[var(--inset-radius)] border border-[var(--panel-border)] bg-zinc-900 px-3 text-white outline-none focus:border-emerald-500"
+                  />
+                </div>
+                <div className="space-y-1">
+                  <label className="font-semibold text-zinc-300">Emoji</label>
+                  <input
+                    type="text"
+                    value={editingCategory.emoji || ""}
+                    onChange={(e) => setEditingCategory({ ...editingCategory, emoji: e.target.value })}
+                    placeholder="🛠️"
+                    className="h-9 w-full rounded-[var(--inset-radius)] border border-[var(--panel-border)] bg-zinc-900 px-3 text-white outline-none focus:border-emerald-500 text-center text-base"
+                  />
+                </div>
+              </div>
+
+              <div className="space-y-1">
+                <label className="font-semibold text-zinc-300">Description</label>
+                <textarea
+                  rows={2}
+                  value={editingCategory.description || ""}
+                  onChange={(e) => setEditingCategory({ ...editingCategory, description: e.target.value })}
+                  placeholder="Décrivez à quoi sert cette catégorie pour les membres..."
+                  className="w-full rounded-[var(--inset-radius)] border border-[var(--panel-border)] bg-zinc-900 p-2.5 text-white outline-none focus:border-emerald-500"
+                />
+              </div>
+
+              <div className="space-y-1">
+                <label className="font-semibold text-zinc-300">Rôle Support Assigné</label>
+                <RolePicker
+                  value={editingCategory.supportRoleIds?.[0] || ""}
+                  onChange={(roleId) => {
+                    setEditingCategory({
+                      ...editingCategory,
+                      supportRoleIds: roleId ? [roleId] : [],
+                    });
+                  }}
+                  guildId={currentGuildId}
+                  placeholder="Sélectionner le rôle Discord de support..."
+                  size="sm"
+                  allowClear
+                />
+              </div>
+
+              <div className="grid grid-cols-2 gap-3">
+                <div className="space-y-1">
+                  <label className="font-semibold text-zinc-300">Priorité par défaut</label>
+                  <select
+                    value={editingCategory.defaultPriority || "NORMAL"}
+                    onChange={(e) => setEditingCategory({ ...editingCategory, defaultPriority: e.target.value as TicketPriority })}
+                    className="h-9 w-full rounded-[var(--inset-radius)] border border-[var(--panel-border)] bg-zinc-900 px-2 text-white outline-none focus:border-emerald-500"
+                  >
+                    <option value="LOW">Basse</option>
+                    <option value="NORMAL">Normale</option>
+                    <option value="HIGH">Élevée</option>
+                    <option value="URGENT">Urgente</option>
+                  </select>
+                </div>
+
+                <div className="space-y-1">
+                  <label className="font-semibold text-zinc-300">Couleur d'accent</label>
+                  <div className="flex items-center gap-2 pt-1">
+                    <input
+                      type="color"
+                      value={editingCategory.color || "#3B82F6"}
+                      onChange={(e) => setEditingCategory({ ...editingCategory, color: e.target.value })}
+                      className="h-7 w-9 cursor-pointer rounded border border-zinc-700 bg-transparent p-0.5"
+                    />
+                    <span className="font-mono text-zinc-400">{editingCategory.color || "#3B82F6"}</span>
+                  </div>
+                </div>
+              </div>
+
+              <div className="space-y-1">
+                <label className="font-semibold text-zinc-300">Message de bienvenue dans le ticket</label>
+                <textarea
+                  rows={2}
+                  value={editingCategory.welcomeMessage || ""}
+                  onChange={(e) => setEditingCategory({ ...editingCategory, welcomeMessage: e.target.value })}
+                  placeholder="Ex: Bonjour {user}, un modérateur va prendre en charge votre demande."
+                  className="w-full rounded-[var(--inset-radius)] border border-[var(--panel-border)] bg-zinc-900 p-2.5 text-white outline-none focus:border-emerald-500"
+                />
+              </div>
+            </div>
+
+            <div className="flex items-center justify-end gap-2 pt-3 border-t border-[var(--panel-border)]">
+              <button
+                onClick={() => { setShowCategoryModal(false); setEditingCategory(null); }}
+                className="rounded-[var(--inset-radius)] border border-[var(--panel-border)] px-4 py-2 text-xs font-medium text-zinc-300 hover:bg-white/5 cursor-pointer"
+              >
+                Annuler
+              </button>
+              <button
+                onClick={() => handleSaveCategory(editingCategory)}
+                disabled={actionLoading || !editingCategory.name.trim()}
+                className="rounded-xl bg-emerald-600 px-4 py-2 text-xs font-bold text-white hover:bg-emerald-500 transition-all cursor-pointer disabled:opacity-50"
+              >
+                {actionLoading ? "Enregistrement..." : "Enregistrer"}
+              </button>
+            </div>
+          </div>
+        </div>
+      )}
+
+      {/* MODAL: PANEL */}
+      {showPanelModal && editingPanel && (
+        <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/80 backdrop-blur-sm p-4">
+          <div className="w-full max-w-lg rounded-[var(--panel-radius)] border border-[var(--panel-border)] bg-zinc-950 p-6 space-y-4 shadow-2xl max-h-[90vh] overflow-y-auto">
+            <div className="flex items-center justify-between border-b border-[var(--panel-border)] pb-3">
+              <h3 className="text-sm font-bold text-white">
+                {editingPanel.id.startsWith("panel-") ? "Créer un Panneau de Tickets" : `Modifier le Panneau « ${editingPanel.title} »`}
+              </h3>
+              <button
+                onClick={() => { setShowPanelModal(false); setEditingPanel(null); }}
+                className="text-zinc-400 hover:text-white cursor-pointer"
+              >
+                <X className="w-4 h-4" />
+              </button>
+            </div>
+
+            <div className="space-y-3 text-xs">
+              <div className="space-y-1">
+                <label className="font-semibold text-zinc-300">Titre du panneau *</label>
+                <input
+                  type="text"
+                  value={editingPanel.title}
+                  onChange={(e) => setEditingPanel({ ...editingPanel, title: e.target.value })}
+                  placeholder="Ex: Centre d'Assistance ETHONE"
+                  className="h-9 w-full rounded-[var(--inset-radius)] border border-[var(--panel-border)] bg-zinc-900 px-3 text-white outline-none focus:border-emerald-500"
+                />
+              </div>
+
+              <div className="space-y-1">
+                <label className="font-semibold text-zinc-300">Description</label>
+                <textarea
+                  rows={2}
+                  value={editingPanel.description}
+                  onChange={(e) => setEditingPanel({ ...editingPanel, description: e.target.value })}
+                  placeholder="Instructions affichées sur le message interactif..."
+                  className="w-full rounded-[var(--inset-radius)] border border-[var(--panel-border)] bg-zinc-900 p-2.5 text-white outline-none focus:border-emerald-500"
+                />
+              </div>
+
+              <div className="space-y-1">
+                <label className="font-semibold text-zinc-300">Salon de publication</label>
+                <ChannelPicker
+                  value={editingPanel.channelId || targetChannelId}
+                  onChange={(chId) => {
+                    setTargetChannelId(chId);
+                    setEditingPanel({ ...editingPanel, channelId: chId });
+                  }}
+                  guildId={currentGuildId}
+                  placeholder="Choisir le salon textuel où poster le panneau..."
+                  size="sm"
+                  allowClear
+                />
+              </div>
+
+              <div className="space-y-1">
+                <label className="font-semibold text-zinc-300">Catégories de tickets associées</label>
+                <div className="space-y-1.5 max-h-36 overflow-y-auto rounded-[var(--inset-radius)] border border-[var(--panel-border)] bg-zinc-900/60 p-2.5">
+                  {categories.length === 0 ? (
+                    <p className="text-[11px] text-zinc-500">Aucune catégorie disponible. Créez d'abord une catégorie.</p>
+                  ) : (
+                    categories.map((c) => {
+                      const isChecked = editingPanel.categoryIds.includes(c.id);
+                      return (
+                        <label key={c.id} className="flex items-center gap-2 cursor-pointer text-zinc-300 hover:text-white">
+                          <input
+                            type="checkbox"
+                            checked={isChecked}
+                            onChange={(e) => {
+                              const updated = e.target.checked
+                                ? [...editingPanel.categoryIds, c.id]
+                                : editingPanel.categoryIds.filter((id) => id !== c.id);
+                              setEditingPanel({ ...editingPanel, categoryIds: updated });
+                            }}
+                            className="rounded border-zinc-700 bg-zinc-800 text-emerald-500"
+                          />
+                          <span>{c.emoji} {c.name}</span>
+                        </label>
+                      );
+                    })
+                  )}
+                </div>
+              </div>
+
+              <div className="grid grid-cols-2 gap-3">
+                <div className="space-y-1">
+                  <label className="font-semibold text-zinc-300">Texte du bouton</label>
+                  <input
+                    type="text"
+                    value={editingPanel.buttonLabel || "Ouvrir un ticket"}
+                    onChange={(e) => setEditingPanel({ ...editingPanel, buttonLabel: e.target.value })}
+                    placeholder="Ouvrir un ticket"
+                    className="h-9 w-full rounded-[var(--inset-radius)] border border-[var(--panel-border)] bg-zinc-900 px-3 text-white outline-none focus:border-emerald-500"
+                  />
+                </div>
+
+                <div className="space-y-1">
+                  <label className="font-semibold text-zinc-300">Couleur d'accent</label>
+                  <div className="flex items-center gap-2 pt-1">
+                    <input
+                      type="color"
+                      value={editingPanel.color || "#5865F2"}
+                      onChange={(e) => setEditingPanel({ ...editingPanel, color: e.target.value })}
+                      className="h-7 w-9 cursor-pointer rounded border border-zinc-700 bg-transparent p-0.5"
+                    />
+                    <span className="font-mono text-zinc-400">{editingPanel.color || "#5865F2"}</span>
+                  </div>
+                </div>
+              </div>
+            </div>
+
+            <div className="flex items-center justify-end gap-2 pt-3 border-t border-[var(--panel-border)]">
+              <button
+                onClick={() => { setShowPanelModal(false); setEditingPanel(null); }}
+                className="rounded-[var(--inset-radius)] border border-[var(--panel-border)] px-4 py-2 text-xs font-medium text-zinc-300 hover:bg-white/5 cursor-pointer"
+              >
+                Annuler
+              </button>
+              <button
+                onClick={() => handleSavePanel(editingPanel)}
+                disabled={actionLoading || !editingPanel.title.trim()}
+                className="rounded-xl bg-emerald-600 px-4 py-2 text-xs font-bold text-white hover:bg-emerald-500 transition-all cursor-pointer disabled:opacity-50"
+              >
+                {actionLoading ? "Enregistrement..." : "Enregistrer"}
+              </button>
+            </div>
+          </div>
+        </div>
+      )}
+
+      {/* MODAL: EQUIPE */}
+      {showTeamModal && editingTeam && (
+        <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/80 backdrop-blur-sm p-4">
+          <div className="w-full max-w-lg rounded-[var(--panel-radius)] border border-[var(--panel-border)] bg-zinc-950 p-6 space-y-4 shadow-2xl">
+            <div className="flex items-center justify-between border-b border-[var(--panel-border)] pb-3">
+              <h3 className="text-sm font-bold text-white">
+                {editingTeam.id.startsWith("team-") ? "Créer une Équipe de Support" : `Modifier l'Équipe « ${editingTeam.name} »`}
+              </h3>
+              <button
+                onClick={() => { setShowTeamModal(false); setEditingTeam(null); }}
+                className="text-zinc-400 hover:text-white cursor-pointer"
+              >
+                <X className="w-4 h-4" />
+              </button>
+            </div>
+
+            <div className="space-y-3 text-xs">
+              <div className="space-y-1">
+                <label className="font-semibold text-zinc-300">Nom de l'équipe *</label>
+                <input
+                  type="text"
+                  value={editingTeam.name}
+                  onChange={(e) => setEditingTeam({ ...editingTeam, name: e.target.value })}
+                  placeholder="Ex: Équipe Modération"
+                  className="h-9 w-full rounded-[var(--inset-radius)] border border-[var(--panel-border)] bg-zinc-900 px-3 text-white outline-none focus:border-emerald-500"
+                />
+              </div>
+
+              <div className="space-y-1">
+                <label className="font-semibold text-zinc-300">Description</label>
+                <textarea
+                  rows={2}
+                  value={editingTeam.description || ""}
+                  onChange={(e) => setEditingTeam({ ...editingTeam, description: e.target.value })}
+                  placeholder="Rôles et attributions de cette équipe..."
+                  className="w-full rounded-[var(--inset-radius)] border border-[var(--panel-border)] bg-zinc-900 p-2.5 text-white outline-none focus:border-emerald-500"
+                />
+              </div>
+
+              <div className="space-y-1">
+                <label className="font-semibold text-zinc-300">Rôle Discord assigné</label>
+                <RolePicker
+                  value={editingTeam.roleIds[0] || ""}
+                  onChange={(roleId) => {
+                    setEditingTeam({
+                      ...editingTeam,
+                      roleIds: roleId ? [roleId] : [],
+                    });
+                  }}
+                  guildId={currentGuildId}
+                  placeholder="Choisir un rôle Discord pour cette équipe..."
+                  size="sm"
+                  allowClear
+                />
+              </div>
+
+              <div className="space-y-1">
+                <label className="font-semibold text-zinc-300">Couleur d'accent</label>
+                <div className="flex items-center gap-2 pt-1">
+                  <input
+                    type="color"
+                    value={editingTeam.color || "#3B82F6"}
+                    onChange={(e) => setEditingTeam({ ...editingTeam, color: e.target.value })}
+                    className="h-7 w-9 cursor-pointer rounded border border-zinc-700 bg-transparent p-0.5"
+                  />
+                  <span className="font-mono text-zinc-400">{editingTeam.color || "#3B82F6"}</span>
+                </div>
+              </div>
+            </div>
+
+            <div className="flex items-center justify-end gap-2 pt-3 border-t border-[var(--panel-border)]">
+              <button
+                onClick={() => { setShowTeamModal(false); setEditingTeam(null); }}
+                className="rounded-[var(--inset-radius)] border border-[var(--panel-border)] px-4 py-2 text-xs font-medium text-zinc-300 hover:bg-white/5 cursor-pointer"
+              >
+                Annuler
+              </button>
+              <button
+                onClick={() => handleSaveTeam(editingTeam)}
+                disabled={actionLoading || !editingTeam.name.trim()}
+                className="rounded-xl bg-emerald-600 px-4 py-2 text-xs font-bold text-white hover:bg-emerald-500 transition-all cursor-pointer disabled:opacity-50"
+              >
+                {actionLoading ? "Enregistrement..." : "Enregistrer"}
               </button>
             </div>
           </div>

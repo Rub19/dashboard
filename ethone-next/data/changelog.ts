@@ -31819,10 +31819,51 @@ const v12836_de: ChangelogEntry = {
   ],
 };
 
-CHANGELOG_BY_LANG.fr.unshift(v12836_fr, v12835_fr, v12834_fr, v12833_fr);
-CHANGELOG_BY_LANG.en.unshift(v12836_en, v12835_en, v12834_en, v12833_en);
-CHANGELOG_BY_LANG.es.unshift(v12836_es, v12835_es, v12834_es, v12833_es);
-CHANGELOG_BY_LANG.de.unshift(v12836_de, v12835_de, v12834_de, v12833_de);
+const v12837_fr: ChangelogEntry = {
+  version: "v1.28.17",
+  date: "2026-09-22",
+  title: "Harmonisation des Centres Tickets et Bienvenue",
+  items: [
+    "Centre de Tickets (/discord/tickets) : intégration de GuildSelector avec détection de présence du bot et bannière d'invitation avec lien OAuth direct. Implémentation des 3 modales auparavant inactives (Création/Édition de Catégorie avec RolePicker, Panneau avec ChannelPicker, et Équipe avec RolePicker) et protection des 8 requêtes API en l'absence du bot.",
+    "Centre de Bienvenue (/discord/welcome) : intégration de GuildSelector avec auto-sélection intelligente, bannière d'invitation du bot et contournement de l'écran d'erreur bloquant lors de la sélection d'un serveur sans bot.",
+  ],
+};
+
+const v12837_en: ChangelogEntry = {
+  version: "v1.28.17",
+  date: "2026-09-22",
+  title: "Tickets and Welcome Centers Harmonization",
+  items: [
+    "Tickets Center (/discord/tickets): integrated GuildSelector with bot presence detection and invite banner with direct OAuth link. Implemented the 3 previously inactive modals (Category creation/edition with RolePicker, Panel with ChannelPicker, and Team with RolePicker) and protected 8 parallel API calls when the bot is absent.",
+    "Welcome Center (/discord/welcome): integrated GuildSelector with smart auto-selection, bot invite banner, and bypassed the full-page blocking error screen when selecting a server without the bot.",
+  ],
+};
+
+const v12837_es: ChangelogEntry = {
+  version: "v1.28.17",
+  date: "2026-09-22",
+  title: "Armonización de los Centros de Tickets y Bienvenida",
+  items: [
+    "Centro de Tickets (/discord/tickets): integración de GuildSelector con detección de presencia del bot y banner de invitación con enlace OAuth directo. Implementación de los 3 modales anteriormente inactivos (Categoría con RolePicker, Panel con ChannelPicker y Equipo con RolePicker) y protección de 8 llamadas API si el bot está ausente.",
+    "Centro de Bienvenida (/discord/welcome): integración de GuildSelector con selección automática inteligente, banner de invitación del bot y resolución de la pantalla de error bloqueante al seleccionar un servidor sin el bot.",
+  ],
+};
+
+const v12837_de: ChangelogEntry = {
+  version: "v1.28.17",
+  date: "2026-09-22",
+  title: "Harmonisierung der Ticket- und Willkommenszentren",
+  items: [
+    "Ticket-Zentrum (/discord/tickets): GuildSelector mit Bot-Präsenzerkennung und Einladungsbanner mit direktem OAuth-Link integriert. Die 3 zuvor inaktiven Modale (Kategorie mit RolePicker, Panel mit ChannelPicker und Team mit RolePicker) implementiert und 8 parallele API-Aufrufe bei fehlendem Bot abgesichert.",
+    "Willkommenszentrum (/discord/welcome): GuildSelector mit intelligenter Auto-Auswahl und Bot-Einladungsbanner integriert sowie den blockierenden Fehlerbildschirm bei Servern ohne Bot umgangen.",
+  ],
+};
+
+CHANGELOG_BY_LANG.fr.unshift(v12837_fr, v12836_fr, v12835_fr, v12834_fr, v12833_fr);
+CHANGELOG_BY_LANG.en.unshift(v12837_en, v12836_en, v12835_en, v12834_en, v12833_en);
+CHANGELOG_BY_LANG.es.unshift(v12837_es, v12836_es, v12835_es, v12834_es, v12833_es);
+CHANGELOG_BY_LANG.de.unshift(v12837_de, v12836_de, v12835_de, v12834_de, v12833_de);
 
 export const CHANGELOG = CHANGELOG_BY_LANG.fr;
+
 
